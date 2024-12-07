@@ -1,27 +1,15 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <errno.h>
 #include <pcap.h>
 #include <string.h>
 #include <asm/types.h>
-<<<<<<< HEAD
-#include "net_user.h"
-#include "pcap_user.h"
-#include "um_malloc.h"
-=======
 #include <net_user.h>
 #include "pcap_user.h"
 #include <um_malloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCAP_FD(p) (*(int *)(p))
 
@@ -44,11 +32,7 @@ static int pcap_user_init(void *data, void *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int pcap_open(void *data)
-=======
 static int pcap_user_open(void *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcap_data *pri = data;
 	__u32 netmask;
@@ -60,22 +44,14 @@ static int pcap_user_open(void *data)
 	if (pri->filter != NULL) {
 		err = dev_netmask(pri->dev, &netmask);
 		if (err < 0) {
-<<<<<<< HEAD
-			printk(UM_KERN_ERR "pcap_open : dev_netmask failed\n");
-=======
 			printk(UM_KERN_ERR "pcap_user_open : dev_netmask failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 
 		pri->compiled = uml_kmalloc(sizeof(struct bpf_program),
 					UM_GFP_KERNEL);
 		if (pri->compiled == NULL) {
-<<<<<<< HEAD
-			printk(UM_KERN_ERR "pcap_open : kmalloc failed\n");
-=======
 			printk(UM_KERN_ERR "pcap_user_open : kmalloc failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 
@@ -83,22 +59,14 @@ static int pcap_user_open(void *data)
 				   (struct bpf_program *) pri->compiled,
 				   pri->filter, pri->optimize, netmask);
 		if (err < 0) {
-<<<<<<< HEAD
-			printk(UM_KERN_ERR "pcap_open : pcap_compile failed - "
-=======
 			printk(UM_KERN_ERR "pcap_user_open : pcap_compile failed - "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "'%s'\n", pcap_geterr(pri->pcap));
 			goto out;
 		}
 
 		err = pcap_setfilter(pri->pcap, pri->compiled);
 		if (err < 0) {
-<<<<<<< HEAD
-			printk(UM_KERN_ERR "pcap_open : pcap_setfilter "
-=======
 			printk(UM_KERN_ERR "pcap_user_open : pcap_setfilter "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "failed - '%s'\n", pcap_geterr(pri->pcap));
 			goto out;
 		}
@@ -159,11 +127,7 @@ int pcap_user_read(int fd, void *buffer, int len, struct pcap_data *pri)
 
 const struct net_user_info pcap_user_info = {
 	.init		= pcap_user_init,
-<<<<<<< HEAD
-	.open		= pcap_open,
-=======
 	.open		= pcap_user_open,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.close	 	= NULL,
 	.remove	 	= pcap_remove,
 	.add_address	= NULL,

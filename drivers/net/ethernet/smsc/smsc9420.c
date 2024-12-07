@@ -1,36 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  /***************************************************************************
  *
  * Copyright (C) 2007,2008  SMSC
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- ***************************************************************************
- */
-
-=======
  ***************************************************************************
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
@@ -45,18 +22,11 @@
 #include "smsc9420.h"
 
 #define DRV_NAME		"smsc9420"
-<<<<<<< HEAD
-#define PFX			DRV_NAME ": "
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRV_MDIONAME		"smsc9420-mdio"
 #define DRV_DESCRIPTION		"SMSC LAN9420 driver"
 #define DRV_VERSION		"1.01"
 
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("SMSC LAN9420 Ethernet driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_VERSION);
 
@@ -73,11 +43,7 @@ struct smsc9420_ring_info {
 };
 
 struct smsc9420_pdata {
-<<<<<<< HEAD
-	void __iomem *base_addr;
-=======
 	void __iomem *ioaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *pdev;
 	struct net_device *dev;
 
@@ -99,22 +65,12 @@ struct smsc9420_pdata {
 	bool rx_csum;
 	u32 msg_enable;
 
-<<<<<<< HEAD
-	struct phy_device *phy_dev;
 	struct mii_bus *mii_bus;
-	int phy_irq[PHY_MAX_ADDR];
-=======
-	struct mii_bus *mii_bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int last_duplex;
 	int last_carrier;
 };
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(smsc9420_id_table) = {
-=======
 static const struct pci_device_id smsc9420_id_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_9420, PCI_DEVICE_ID_9420, PCI_ANY_ID, PCI_ANY_ID, },
 	{ 0, }
 };
@@ -128,40 +84,15 @@ static uint debug = -1;
 module_param(debug, uint, 0);
 MODULE_PARM_DESC(debug, "debug level");
 
-<<<<<<< HEAD
-#define smsc_dbg(TYPE, f, a...) \
-do {	if ((pd)->msg_enable & NETIF_MSG_##TYPE) \
-		printk(KERN_DEBUG PFX f "\n", ## a); \
-} while (0)
-
-#define smsc_info(TYPE, f, a...) \
-do {	if ((pd)->msg_enable & NETIF_MSG_##TYPE) \
-		printk(KERN_INFO PFX f "\n", ## a); \
-} while (0)
-
-#define smsc_warn(TYPE, f, a...) \
-do {	if ((pd)->msg_enable & NETIF_MSG_##TYPE) \
-		printk(KERN_WARNING PFX f "\n", ## a); \
-} while (0)
-
-static inline u32 smsc9420_reg_read(struct smsc9420_pdata *pd, u32 offset)
-{
-	return ioread32(pd->base_addr + offset);
-=======
 static inline u32 smsc9420_reg_read(struct smsc9420_pdata *pd, u32 offset)
 {
 	return ioread32(pd->ioaddr + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void
 smsc9420_reg_write(struct smsc9420_pdata *pd, u32 offset, u32 value)
 {
-<<<<<<< HEAD
-	iowrite32(value, pd->base_addr + offset);
-=======
 	iowrite32(value, pd->ioaddr + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void smsc9420_pci_flush_write(struct smsc9420_pdata *pd)
@@ -172,11 +103,7 @@ static inline void smsc9420_pci_flush_write(struct smsc9420_pdata *pd)
 
 static int smsc9420_mii_read(struct mii_bus *bus, int phyaddr, int regidx)
 {
-<<<<<<< HEAD
-	struct smsc9420_pdata *pd = (struct smsc9420_pdata *)bus->priv;
-=======
 	struct smsc9420_pdata *pd = bus->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	u32 addr;
 	int i, reg = -EIO;
@@ -185,11 +112,7 @@ static int smsc9420_mii_read(struct mii_bus *bus, int phyaddr, int regidx)
 
 	/*  confirm MII not busy */
 	if ((smsc9420_reg_read(pd, MII_ACCESS) & MII_ACCESS_MII_BUSY_)) {
-<<<<<<< HEAD
-		smsc_warn(DRV, "MII is busy???");
-=======
 		netif_warn(pd, drv, pd->dev, "MII is busy???\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -208,11 +131,7 @@ static int smsc9420_mii_read(struct mii_bus *bus, int phyaddr, int regidx)
 		udelay(10);
 	}
 
-<<<<<<< HEAD
-	smsc_warn(DRV, "MII busy timeout!");
-=======
 	netif_warn(pd, drv, pd->dev, "MII busy timeout!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	spin_unlock_irqrestore(&pd->phy_lock, flags);
@@ -222,11 +141,7 @@ out:
 static int smsc9420_mii_write(struct mii_bus *bus, int phyaddr, int regidx,
 			   u16 val)
 {
-<<<<<<< HEAD
-	struct smsc9420_pdata *pd = (struct smsc9420_pdata *)bus->priv;
-=======
 	struct smsc9420_pdata *pd = bus->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	u32 addr;
 	int i, reg = -EIO;
@@ -235,11 +150,7 @@ static int smsc9420_mii_write(struct mii_bus *bus, int phyaddr, int regidx,
 
 	/* confirm MII not busy */
 	if ((smsc9420_reg_read(pd, MII_ACCESS) & MII_ACCESS_MII_BUSY_)) {
-<<<<<<< HEAD
-		smsc_warn(DRV, "MII is busy???");
-=======
 		netif_warn(pd, drv, pd->dev, "MII is busy???\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -261,11 +172,7 @@ static int smsc9420_mii_write(struct mii_bus *bus, int phyaddr, int regidx,
 		udelay(10);
 	}
 
-<<<<<<< HEAD
-	smsc_warn(DRV, "MII busy timeout!");
-=======
 	netif_warn(pd, drv, pd->dev, "MII busy timeout!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	spin_unlock_irqrestore(&pd->phy_lock, flags);
@@ -287,11 +194,7 @@ static int smsc9420_eeprom_reload(struct smsc9420_pdata *pd)
 	BUG_ON(!pd);
 
 	if (smsc9420_reg_read(pd, E2P_CMD) & E2P_CMD_EPC_BUSY_) {
-<<<<<<< HEAD
-		smsc_dbg(DRV, "smsc9420_eeprom_reload: Eeprom busy");
-=======
 		netif_dbg(pd, drv, pd->dev, "%s: Eeprom busy\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -304,68 +207,19 @@ static int smsc9420_eeprom_reload(struct smsc9420_pdata *pd)
 			return 0;
 	} while (timeout--);
 
-<<<<<<< HEAD
-	smsc_warn(DRV, "smsc9420_eeprom_reload: Eeprom timed out");
-	return -EIO;
-}
-
-/* Standard ioctls for mii-tool */
-static int smsc9420_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-{
-	struct smsc9420_pdata *pd = netdev_priv(dev);
-
-	if (!netif_running(dev) || !pd->phy_dev)
-		return -EINVAL;
-
-	return phy_mii_ioctl(pd->phy_dev, ifr, cmd);
-}
-
-static int smsc9420_ethtool_get_settings(struct net_device *dev,
-					 struct ethtool_cmd *cmd)
-{
-	struct smsc9420_pdata *pd = netdev_priv(dev);
-
-	if (!pd->phy_dev)
-		return -ENODEV;
-
-	cmd->maxtxpkt = 1;
-	cmd->maxrxpkt = 1;
-	return phy_ethtool_gset(pd->phy_dev, cmd);
-}
-
-static int smsc9420_ethtool_set_settings(struct net_device *dev,
-					 struct ethtool_cmd *cmd)
-{
-	struct smsc9420_pdata *pd = netdev_priv(dev);
-
-	if (!pd->phy_dev)
-		return -ENODEV;
-
-	return phy_ethtool_sset(pd->phy_dev, cmd);
-}
-
-=======
 	netif_warn(pd, drv, pd->dev, "%s: Eeprom timed out\n", __func__);
 	return -EIO;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void smsc9420_ethtool_get_drvinfo(struct net_device *netdev,
 					 struct ethtool_drvinfo *drvinfo)
 {
 	struct smsc9420_pdata *pd = netdev_priv(netdev);
 
-<<<<<<< HEAD
-	strlcpy(drvinfo->driver, DRV_NAME, sizeof(drvinfo->driver));
-	strlcpy(drvinfo->bus_info, pci_name(pd->pdev),
-		sizeof(drvinfo->bus_info));
-	strlcpy(drvinfo->version, DRV_VERSION, sizeof(drvinfo->version));
-=======
 	strscpy(drvinfo->driver, DRV_NAME, sizeof(drvinfo->driver));
 	strscpy(drvinfo->bus_info, pci_name(pd->pdev),
 		sizeof(drvinfo->bus_info));
 	strscpy(drvinfo->version, DRV_VERSION, sizeof(drvinfo->version));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 smsc9420_ethtool_get_msglevel(struct net_device *netdev)
@@ -380,19 +234,6 @@ static void smsc9420_ethtool_set_msglevel(struct net_device *netdev, u32 data)
 	pd->msg_enable = data;
 }
 
-<<<<<<< HEAD
-static int smsc9420_ethtool_nway_reset(struct net_device *netdev)
-{
-	struct smsc9420_pdata *pd = netdev_priv(netdev);
-
-	if (!pd->phy_dev)
-		return -ENODEV;
-
-	return phy_start_aneg(pd->phy_dev);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int smsc9420_ethtool_getregslen(struct net_device *dev)
 {
 	/* all smsc9420 registers plus all phy registers */
@@ -404,11 +245,7 @@ smsc9420_ethtool_getregs(struct net_device *dev, struct ethtool_regs *regs,
 			 void *buf)
 {
 	struct smsc9420_pdata *pd = netdev_priv(dev);
-<<<<<<< HEAD
-	struct phy_device *phy_dev = pd->phy_dev;
-=======
 	struct phy_device *phy_dev = dev->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i, j = 0;
 	u32 *data = buf;
 
@@ -421,12 +258,8 @@ smsc9420_ethtool_getregs(struct net_device *dev, struct ethtool_regs *regs,
 		return;
 
 	for (i = 0; i <= 31; i++)
-<<<<<<< HEAD
-		data[j++] = smsc9420_mii_read(phy_dev->bus, phy_dev->addr, i);
-=======
 		data[j++] = smsc9420_mii_read(phy_dev->mdio.bus,
 					      phy_dev->mdio.addr, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void smsc9420_eeprom_enable_access(struct smsc9420_pdata *pd)
@@ -442,15 +275,9 @@ static int smsc9420_eeprom_send_cmd(struct smsc9420_pdata *pd, u32 op)
 	int timeout = 100;
 	u32 e2cmd;
 
-<<<<<<< HEAD
-	smsc_dbg(HW, "op 0x%08x", op);
-	if (smsc9420_reg_read(pd, E2P_CMD) & E2P_CMD_EPC_BUSY_) {
-		smsc_warn(HW, "Busy at start");
-=======
 	netif_dbg(pd, hw, pd->dev, "op 0x%08x\n", op);
 	if (smsc9420_reg_read(pd, E2P_CMD) & E2P_CMD_EPC_BUSY_) {
 		netif_warn(pd, hw, pd->dev, "Busy at start\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -463,21 +290,13 @@ static int smsc9420_eeprom_send_cmd(struct smsc9420_pdata *pd, u32 op)
 	} while ((e2cmd & E2P_CMD_EPC_BUSY_) && (--timeout));
 
 	if (!timeout) {
-<<<<<<< HEAD
-		smsc_info(HW, "TIMED OUT");
-=======
 		netif_info(pd, hw, pd->dev, "TIMED OUT\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EAGAIN;
 	}
 
 	if (e2cmd & E2P_CMD_EPC_TIMEOUT_) {
-<<<<<<< HEAD
-		smsc_info(HW, "Error occurred during eeprom operation");
-=======
 		netif_info(pd, hw, pd->dev,
 			   "Error occurred during eeprom operation\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -490,11 +309,7 @@ static int smsc9420_eeprom_read_location(struct smsc9420_pdata *pd,
 	u32 op = E2P_CMD_EPC_CMD_READ_ | address;
 	int ret;
 
-<<<<<<< HEAD
-	smsc_dbg(HW, "address 0x%x", address);
-=======
 	netif_dbg(pd, hw, pd->dev, "address 0x%x\n", address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = smsc9420_eeprom_send_cmd(pd, op);
 
 	if (!ret)
@@ -509,11 +324,7 @@ static int smsc9420_eeprom_write_location(struct smsc9420_pdata *pd,
 	u32 op = E2P_CMD_EPC_CMD_ERASE_ | address;
 	int ret;
 
-<<<<<<< HEAD
-	smsc_dbg(HW, "address 0x%x, data 0x%x", address, data);
-=======
 	netif_dbg(pd, hw, pd->dev, "address 0x%x, data 0x%x\n", address, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = smsc9420_eeprom_send_cmd(pd, op);
 
 	if (!ret) {
@@ -575,42 +386,26 @@ static int smsc9420_ethtool_set_eeprom(struct net_device *dev,
 }
 
 static const struct ethtool_ops smsc9420_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings = smsc9420_ethtool_get_settings,
-	.set_settings = smsc9420_ethtool_set_settings,
-	.get_drvinfo = smsc9420_ethtool_get_drvinfo,
-	.get_msglevel = smsc9420_ethtool_get_msglevel,
-	.set_msglevel = smsc9420_ethtool_set_msglevel,
-	.nway_reset = smsc9420_ethtool_nway_reset,
-=======
 	.get_drvinfo = smsc9420_ethtool_get_drvinfo,
 	.get_msglevel = smsc9420_ethtool_get_msglevel,
 	.set_msglevel = smsc9420_ethtool_set_msglevel,
 	.nway_reset = phy_ethtool_nway_reset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_link = ethtool_op_get_link,
 	.get_eeprom_len = smsc9420_ethtool_get_eeprom_len,
 	.get_eeprom = smsc9420_ethtool_get_eeprom,
 	.set_eeprom = smsc9420_ethtool_set_eeprom,
 	.get_regs_len = smsc9420_ethtool_getregslen,
 	.get_regs = smsc9420_ethtool_getregs,
-<<<<<<< HEAD
-=======
 	.get_ts_info = ethtool_op_get_ts_info,
 	.get_link_ksettings = phy_ethtool_get_link_ksettings,
 	.set_link_ksettings = phy_ethtool_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Sets the device MAC address to dev_addr */
 static void smsc9420_set_mac_address(struct net_device *dev)
 {
 	struct smsc9420_pdata *pd = netdev_priv(dev);
-<<<<<<< HEAD
-	u8 *dev_addr = dev->dev_addr;
-=======
 	const u8 *dev_addr = dev->dev_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mac_high16 = (dev_addr[5] << 8) | dev_addr[4];
 	u32 mac_low32 = (dev_addr[3] << 24) | (dev_addr[2] << 16) |
 	    (dev_addr[1] << 8) | dev_addr[0];
@@ -622,37 +417,18 @@ static void smsc9420_set_mac_address(struct net_device *dev)
 static void smsc9420_check_mac_address(struct net_device *dev)
 {
 	struct smsc9420_pdata *pd = netdev_priv(dev);
-<<<<<<< HEAD
-=======
 	u8 addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check if mac address has been specified when bringing interface up */
 	if (is_valid_ether_addr(dev->dev_addr)) {
 		smsc9420_set_mac_address(dev);
-<<<<<<< HEAD
-		smsc_dbg(PROBE, "MAC Address is specified by configuration");
-=======
 		netif_dbg(pd, probe, pd->dev,
 			  "MAC Address is specified by configuration\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Try reading mac address from device. if EEPROM is present
 		 * it will already have been set */
 		u32 mac_high16 = smsc9420_reg_read(pd, ADDRH);
 		u32 mac_low32 = smsc9420_reg_read(pd, ADDRL);
-<<<<<<< HEAD
-		dev->dev_addr[0] = (u8)(mac_low32);
-		dev->dev_addr[1] = (u8)(mac_low32 >> 8);
-		dev->dev_addr[2] = (u8)(mac_low32 >> 16);
-		dev->dev_addr[3] = (u8)(mac_low32 >> 24);
-		dev->dev_addr[4] = (u8)(mac_high16);
-		dev->dev_addr[5] = (u8)(mac_high16 >> 8);
-
-		if (is_valid_ether_addr(dev->dev_addr)) {
-			/* eeprom values are valid  so use them */
-			smsc_dbg(PROBE, "Mac Address is read from EEPROM");
-=======
 		addr[0] = (u8)(mac_low32);
 		addr[1] = (u8)(mac_low32 >> 8);
 		addr[2] = (u8)(mac_low32 >> 16);
@@ -665,17 +441,12 @@ static void smsc9420_check_mac_address(struct net_device *dev)
 			eth_hw_addr_set(dev, addr);
 			netif_dbg(pd, probe, pd->dev,
 				  "Mac Address is read from EEPROM\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* eeprom values are invalid, generate random MAC */
 			eth_hw_addr_random(dev);
 			smsc9420_set_mac_address(dev);
-<<<<<<< HEAD
-			smsc_dbg(PROBE, "MAC Address is set to random");
-=======
 			netif_dbg(pd, probe, pd->dev,
 				  "MAC Address is set to random\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -698,11 +469,7 @@ static void smsc9420_stop_tx(struct smsc9420_pdata *pd)
 	}
 
 	if (!timeout)
-<<<<<<< HEAD
-		smsc_warn(IFDOWN, "TX DMAC failed to stop");
-=======
 		netif_warn(pd, ifdown, pd->dev, "TX DMAC failed to stop\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ACK Tx DMAC stop bit */
 	smsc9420_reg_write(pd, DMAC_STATUS, DMAC_STS_TXPS_);
@@ -733,14 +500,9 @@ static void smsc9420_free_tx_ring(struct smsc9420_pdata *pd)
 
 		if (skb) {
 			BUG_ON(!pd->tx_buffers[i].mapping);
-<<<<<<< HEAD
-			pci_unmap_single(pd->pdev, pd->tx_buffers[i].mapping,
-					 skb->len, PCI_DMA_TODEVICE);
-=======
 			dma_unmap_single(&pd->pdev->dev,
 					 pd->tx_buffers[i].mapping, skb->len,
 					 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb_any(skb);
 		}
 
@@ -772,14 +534,9 @@ static void smsc9420_free_rx_ring(struct smsc9420_pdata *pd)
 			dev_kfree_skb_any(pd->rx_buffers[i].skb);
 
 		if (pd->rx_buffers[i].mapping)
-<<<<<<< HEAD
-			pci_unmap_single(pd->pdev, pd->rx_buffers[i].mapping,
-				PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
-=======
 			dma_unmap_single(&pd->pdev->dev,
 					 pd->rx_buffers[i].mapping,
 					 PKT_BUF_SZ, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pd->rx_ring[i].status = 0;
 		pd->rx_ring[i].length = 0;
@@ -825,12 +582,8 @@ static void smsc9420_stop_rx(struct smsc9420_pdata *pd)
 	}
 
 	if (!timeout)
-<<<<<<< HEAD
-		smsc_warn(IFDOWN, "RX DMAC did not stop! timeout.");
-=======
 		netif_warn(pd, ifdown, pd->dev,
 			   "RX DMAC did not stop! timeout\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ACK the Rx DMAC stop bit */
 	smsc9420_reg_write(pd, DMAC_STATUS, DMAC_STS_RXPS_);
@@ -844,11 +597,7 @@ static irqreturn_t smsc9420_isr(int irq, void *dev_id)
 	ulong flags;
 
 	BUG_ON(!pd);
-<<<<<<< HEAD
-	BUG_ON(!pd->base_addr);
-=======
 	BUG_ON(!pd->ioaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int_cfg = smsc9420_reg_read(pd, INT_CFG);
 
@@ -909,18 +658,12 @@ static irqreturn_t smsc9420_isr(int irq, void *dev_id)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 static void smsc9420_poll_controller(struct net_device *dev)
 {
-<<<<<<< HEAD
-	disable_irq(dev->irq);
-	smsc9420_isr(0, dev);
-	enable_irq(dev->irq);
-=======
 	struct smsc9420_pdata *pd = netdev_priv(dev);
 	const int irq = pd->pdev->irq;
 
 	disable_irq(irq);
 	smsc9420_isr(0, dev);
 	enable_irq(irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_NET_POLL_CONTROLLER */
 
@@ -930,11 +673,7 @@ static void smsc9420_dmac_soft_reset(struct smsc9420_pdata *pd)
 	smsc9420_reg_read(pd, BUS_MODE);
 	udelay(2);
 	if (smsc9420_reg_read(pd, BUS_MODE) & BUS_MODE_SWR_)
-<<<<<<< HEAD
-		smsc_warn(DRV, "Software reset not cleared");
-=======
 		netif_warn(pd, drv, pd->dev, "Software reset not cleared\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int smsc9420_stop(struct net_device *dev)
@@ -944,11 +683,7 @@ static int smsc9420_stop(struct net_device *dev)
 	ulong flags;
 
 	BUG_ON(!pd);
-<<<<<<< HEAD
-	BUG_ON(!pd->phy_dev);
-=======
 	BUG_ON(!dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable master interrupt */
 	spin_lock_irqsave(&pd->int_lock, flags);
@@ -965,16 +700,6 @@ static int smsc9420_stop(struct net_device *dev)
 	smsc9420_stop_rx(pd);
 	smsc9420_free_rx_ring(pd);
 
-<<<<<<< HEAD
-	free_irq(dev->irq, pd);
-
-	smsc9420_dmac_soft_reset(pd);
-
-	phy_stop(pd->phy_dev);
-
-	phy_disconnect(pd->phy_dev);
-	pd->phy_dev = NULL;
-=======
 	free_irq(pd->pdev->irq, pd);
 
 	smsc9420_dmac_soft_reset(pd);
@@ -982,7 +707,6 @@ static int smsc9420_stop(struct net_device *dev)
 	phy_stop(dev->phydev);
 
 	phy_disconnect(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mdiobus_unregister(pd->mii_bus);
 	mdiobus_free(pd->mii_bus);
 
@@ -1030,13 +754,8 @@ static void smsc9420_rx_handoff(struct smsc9420_pdata *pd, const int index,
 	dev->stats.rx_packets++;
 	dev->stats.rx_bytes += packet_length;
 
-<<<<<<< HEAD
-	pci_unmap_single(pd->pdev, pd->rx_buffers[index].mapping,
-		PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
-=======
 	dma_unmap_single(&pd->pdev->dev, pd->rx_buffers[index].mapping,
 			 PKT_BUF_SZ, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pd->rx_buffers[index].mapping = 0;
 
 	skb = pd->rx_buffers[index].skb;
@@ -1065,18 +784,6 @@ static int smsc9420_alloc_rx_buffer(struct smsc9420_pdata *pd, int index)
 	BUG_ON(pd->rx_buffers[index].skb);
 	BUG_ON(pd->rx_buffers[index].mapping);
 
-<<<<<<< HEAD
-	if (unlikely(!skb)) {
-		smsc_warn(RX_ERR, "Failed to allocate new skb!");
-		return -ENOMEM;
-	}
-
-	mapping = pci_map_single(pd->pdev, skb_tail_pointer(skb),
-				 PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
-	if (pci_dma_mapping_error(pd->pdev, mapping)) {
-		dev_kfree_skb_any(skb);
-		smsc_warn(RX_ERR, "pci_map_single failed!");
-=======
 	if (unlikely(!skb))
 		return -ENOMEM;
 
@@ -1085,7 +792,6 @@ static int smsc9420_alloc_rx_buffer(struct smsc9420_pdata *pd, int index)
 	if (dma_mapping_error(&pd->pdev->dev, mapping)) {
 		dev_kfree_skb_any(skb);
 		netif_warn(pd, rx_err, pd->dev, "dma_map_single failed!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -1139,11 +845,7 @@ static int smsc9420_rx_poll(struct napi_struct *napi, int budget)
 	smsc9420_pci_flush_write(pd);
 
 	if (work_done < budget) {
-<<<<<<< HEAD
-		napi_complete(&pd->napi);
-=======
 		napi_complete_done(&pd->napi, work_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* re-enable RX DMA interrupts */
 		dma_intr_ena = smsc9420_reg_read(pd, DMAC_INTR_ENA);
@@ -1204,15 +906,10 @@ static void smsc9420_complete_tx(struct net_device *dev)
 		BUG_ON(!pd->tx_buffers[index].skb);
 		BUG_ON(!pd->tx_buffers[index].mapping);
 
-<<<<<<< HEAD
-		pci_unmap_single(pd->pdev, pd->tx_buffers[index].mapping,
-			pd->tx_buffers[index].skb->len, PCI_DMA_TODEVICE);
-=======
 		dma_unmap_single(&pd->pdev->dev,
 				 pd->tx_buffers[index].mapping,
 				 pd->tx_buffers[index].skb->len,
 				 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pd->tx_buffers[index].mapping = 0;
 
 		dev_kfree_skb_any(pd->tx_buffers[index].skb);
@@ -1242,18 +939,11 @@ static netdev_tx_t smsc9420_hard_start_xmit(struct sk_buff *skb,
 	BUG_ON(pd->tx_buffers[index].skb);
 	BUG_ON(pd->tx_buffers[index].mapping);
 
-<<<<<<< HEAD
-	mapping = pci_map_single(pd->pdev, skb->data,
-				 skb->len, PCI_DMA_TODEVICE);
-	if (pci_dma_mapping_error(pd->pdev, mapping)) {
-		smsc_warn(TX_ERR, "pci_map_single failed, dropping packet");
-=======
 	mapping = dma_map_single(&pd->pdev->dev, skb->data, skb->len,
 				 DMA_TO_DEVICE);
 	if (dma_mapping_error(&pd->pdev->dev, mapping)) {
 		netif_warn(pd, tx_err, pd->dev,
 			   "dma_map_single failed, dropping packet\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NETDEV_TX_BUSY;
 	}
 
@@ -1305,20 +995,12 @@ static void smsc9420_set_multicast_list(struct net_device *dev)
 	u32 mac_cr = smsc9420_reg_read(pd, MAC_CR);
 
 	if (dev->flags & IFF_PROMISC) {
-<<<<<<< HEAD
-		smsc_dbg(HW, "Promiscuous Mode Enabled");
-=======
 		netif_dbg(pd, hw, pd->dev, "Promiscuous Mode Enabled\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mac_cr |= MAC_CR_PRMS_;
 		mac_cr &= (~MAC_CR_MCPAS_);
 		mac_cr &= (~MAC_CR_HPFILT_);
 	} else if (dev->flags & IFF_ALLMULTI) {
-<<<<<<< HEAD
-		smsc_dbg(HW, "Receive all Multicast Enabled");
-=======
 		netif_dbg(pd, hw, pd->dev, "Receive all Multicast Enabled\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mac_cr &= (~MAC_CR_PRMS_);
 		mac_cr |= MAC_CR_MCPAS_;
 		mac_cr &= (~MAC_CR_HPFILT_);
@@ -1326,11 +1008,7 @@ static void smsc9420_set_multicast_list(struct net_device *dev)
 		struct netdev_hw_addr *ha;
 		u32 hash_lo = 0, hash_hi = 0;
 
-<<<<<<< HEAD
-		smsc_dbg(HW, "Multicast filter enabled");
-=======
 		netif_dbg(pd, hw, pd->dev, "Multicast filter enabled\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netdev_for_each_mc_addr(ha, dev) {
 			u32 bit_num = smsc9420_hash(ha->addr);
 			u32 mask = 1 << (bit_num & 0x1F);
@@ -1348,11 +1026,7 @@ static void smsc9420_set_multicast_list(struct net_device *dev)
 		mac_cr &= (~MAC_CR_MCPAS_);
 		mac_cr |= MAC_CR_HPFILT_;
 	} else {
-<<<<<<< HEAD
-		smsc_dbg(HW, "Receive own packets only.");
-=======
 		netif_dbg(pd, hw, pd->dev, "Receive own packets only\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smsc9420_reg_write(pd, HASHH, 0);
 		smsc9420_reg_write(pd, HASHL, 0);
 
@@ -1367,12 +1041,8 @@ static void smsc9420_set_multicast_list(struct net_device *dev)
 
 static void smsc9420_phy_update_flowcontrol(struct smsc9420_pdata *pd)
 {
-<<<<<<< HEAD
-	struct phy_device *phy_dev = pd->phy_dev;
-=======
 	struct net_device *dev = pd->dev;
 	struct phy_device *phy_dev = dev->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 flow;
 
 	if (phy_dev->duplex == DUPLEX_FULL) {
@@ -1385,19 +1055,11 @@ static void smsc9420_phy_update_flowcontrol(struct smsc9420_pdata *pd)
 		else
 			flow = 0;
 
-<<<<<<< HEAD
-		smsc_info(LINK, "rx pause %s, tx pause %s",
-			(cap & FLOW_CTRL_RX ? "enabled" : "disabled"),
-			(cap & FLOW_CTRL_TX ? "enabled" : "disabled"));
-	} else {
-		smsc_info(LINK, "half duplex");
-=======
 		netif_info(pd, link, pd->dev, "rx pause %s, tx pause %s\n",
 			   cap & FLOW_CTRL_RX ? "enabled" : "disabled",
 			   cap & FLOW_CTRL_TX ? "enabled" : "disabled");
 	} else {
 		netif_info(pd, link, pd->dev, "half duplex\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flow = 0;
 	}
 
@@ -1409,27 +1071,16 @@ static void smsc9420_phy_update_flowcontrol(struct smsc9420_pdata *pd)
 static void smsc9420_phy_adjust_link(struct net_device *dev)
 {
 	struct smsc9420_pdata *pd = netdev_priv(dev);
-<<<<<<< HEAD
-	struct phy_device *phy_dev = pd->phy_dev;
-=======
 	struct phy_device *phy_dev = dev->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int carrier;
 
 	if (phy_dev->duplex != pd->last_duplex) {
 		u32 mac_cr = smsc9420_reg_read(pd, MAC_CR);
 		if (phy_dev->duplex) {
-<<<<<<< HEAD
-			smsc_dbg(LINK, "full duplex mode");
-			mac_cr |= MAC_CR_FDPX_;
-		} else {
-			smsc_dbg(LINK, "half duplex mode");
-=======
 			netif_dbg(pd, link, pd->dev, "full duplex mode\n");
 			mac_cr |= MAC_CR_FDPX_;
 		} else {
 			netif_dbg(pd, link, pd->dev, "half duplex mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mac_cr &= ~MAC_CR_FDPX_;
 		}
 		smsc9420_reg_write(pd, MAC_CR, mac_cr);
@@ -1441,15 +1092,9 @@ static void smsc9420_phy_adjust_link(struct net_device *dev)
 	carrier = netif_carrier_ok(dev);
 	if (carrier != pd->last_carrier) {
 		if (carrier)
-<<<<<<< HEAD
-			smsc_dbg(LINK, "carrier OK");
-		else
-			smsc_dbg(LINK, "no carrier");
-=======
 			netif_dbg(pd, link, pd->dev, "carrier OK\n");
 		else
 			netif_dbg(pd, link, pd->dev, "no carrier\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pd->last_carrier = carrier;
 	}
 }
@@ -1459,37 +1104,6 @@ static int smsc9420_mii_probe(struct net_device *dev)
 	struct smsc9420_pdata *pd = netdev_priv(dev);
 	struct phy_device *phydev = NULL;
 
-<<<<<<< HEAD
-	BUG_ON(pd->phy_dev);
-
-	/* Device only supports internal PHY at address 1 */
-	if (!pd->mii_bus->phy_map[1]) {
-		pr_err("%s: no PHY found at address 1\n", dev->name);
-		return -ENODEV;
-	}
-
-	phydev = pd->mii_bus->phy_map[1];
-	smsc_info(PROBE, "PHY addr %d, phy_id 0x%08X", phydev->addr,
-		phydev->phy_id);
-
-	phydev = phy_connect(dev, dev_name(&phydev->dev),
-		smsc9420_phy_adjust_link, 0, PHY_INTERFACE_MODE_MII);
-
-	if (IS_ERR(phydev)) {
-		pr_err("%s: Could not attach to PHY\n", dev->name);
-		return PTR_ERR(phydev);
-	}
-
-	pr_info("%s: attached PHY driver [%s] (mii_bus:phy_addr=%s, irq=%d)\n",
-		dev->name, phydev->drv->name, dev_name(&phydev->dev), phydev->irq);
-
-	/* mask with MAC supported features */
-	phydev->supported &= (PHY_BASIC_FEATURES | SUPPORTED_Pause |
-			      SUPPORTED_Asym_Pause);
-	phydev->advertising = phydev->supported;
-
-	pd->phy_dev = phydev;
-=======
 	BUG_ON(dev->phydev);
 
 	/* Device only supports internal PHY at address 1 */
@@ -1514,7 +1128,6 @@ static int smsc9420_mii_probe(struct net_device *dev)
 
 	phy_attached_info(phydev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pd->last_duplex = -1;
 	pd->last_carrier = -1;
 
@@ -1524,11 +1137,7 @@ static int smsc9420_mii_probe(struct net_device *dev)
 static int smsc9420_mii_init(struct net_device *dev)
 {
 	struct smsc9420_pdata *pd = netdev_priv(dev);
-<<<<<<< HEAD
-	int err = -ENXIO, i;
-=======
 	int err = -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pd->mii_bus = mdiobus_alloc();
 	if (!pd->mii_bus) {
@@ -1536,40 +1145,21 @@ static int smsc9420_mii_init(struct net_device *dev)
 		goto err_out_1;
 	}
 	pd->mii_bus->name = DRV_MDIONAME;
-<<<<<<< HEAD
-	snprintf(pd->mii_bus->id, MII_BUS_ID_SIZE, "%x",
-		(pd->pdev->bus->number << 8) | pd->pdev->devfn);
-	pd->mii_bus->priv = pd;
-	pd->mii_bus->read = smsc9420_mii_read;
-	pd->mii_bus->write = smsc9420_mii_write;
-	pd->mii_bus->irq = pd->phy_irq;
-	for (i = 0; i < PHY_MAX_ADDR; ++i)
-		pd->mii_bus->irq[i] = PHY_POLL;
-=======
 	snprintf(pd->mii_bus->id, MII_BUS_ID_SIZE, "%x", pci_dev_id(pd->pdev));
 	pd->mii_bus->priv = pd;
 	pd->mii_bus->read = smsc9420_mii_read;
 	pd->mii_bus->write = smsc9420_mii_write;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Mask all PHYs except ID 1 (internal) */
 	pd->mii_bus->phy_mask = ~(1 << 1);
 
 	if (mdiobus_register(pd->mii_bus)) {
-<<<<<<< HEAD
-		smsc_warn(PROBE, "Error registering mii bus");
-=======
 		netif_warn(pd, probe, pd->dev, "Error registering mii bus\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_free_bus_2;
 	}
 
 	if (smsc9420_mii_probe(dev) < 0) {
-<<<<<<< HEAD
-		smsc_warn(PROBE, "Error probing mii bus");
-=======
 		netif_warn(pd, probe, pd->dev, "Error probing mii bus\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_unregister_bus_3;
 	}
 
@@ -1589,20 +1179,11 @@ static int smsc9420_alloc_tx_ring(struct smsc9420_pdata *pd)
 
 	BUG_ON(!pd->tx_ring);
 
-<<<<<<< HEAD
-	pd->tx_buffers = kmalloc((sizeof(struct smsc9420_ring_info) *
-		TX_RING_SIZE), GFP_KERNEL);
-	if (!pd->tx_buffers) {
-		smsc_warn(IFUP, "Failed to allocated tx_buffers");
-		return -ENOMEM;
-	}
-=======
 	pd->tx_buffers = kmalloc_array(TX_RING_SIZE,
 				       sizeof(struct smsc9420_ring_info),
 				       GFP_KERNEL);
 	if (!pd->tx_buffers)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the TX Ring */
 	for (i = 0; i < TX_RING_SIZE; i++) {
@@ -1631,20 +1212,11 @@ static int smsc9420_alloc_rx_ring(struct smsc9420_pdata *pd)
 
 	BUG_ON(!pd->rx_ring);
 
-<<<<<<< HEAD
-	pd->rx_buffers = kmalloc((sizeof(struct smsc9420_ring_info) *
-		RX_RING_SIZE), GFP_KERNEL);
-	if (pd->rx_buffers == NULL) {
-		smsc_warn(IFUP, "Failed to allocated rx_buffers");
-		goto out;
-	}
-=======
 	pd->rx_buffers = kmalloc_array(RX_RING_SIZE,
 				       sizeof(struct smsc9420_ring_info),
 				       GFP_KERNEL);
 	if (pd->rx_buffers == NULL)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialize the rx ring */
 	for (i = 0; i < RX_RING_SIZE; i++) {
@@ -1659,12 +1231,8 @@ static int smsc9420_alloc_rx_ring(struct smsc9420_pdata *pd)
 	/* now allocate the entire ring of skbs */
 	for (i = 0; i < RX_RING_SIZE; i++) {
 		if (smsc9420_alloc_rx_buffer(pd, i)) {
-<<<<<<< HEAD
-			smsc_warn(IFUP, "failed to allocate rx skb %d", i);
-=======
 			netif_warn(pd, ifup, pd->dev,
 				   "failed to allocate rx skb %d\n", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_free_rx_skbs;
 		}
 	}
@@ -1673,22 +1241,14 @@ static int smsc9420_alloc_rx_ring(struct smsc9420_pdata *pd)
 	pd->rx_ring_tail = 0;
 
 	smsc9420_reg_write(pd, VLAN1, ETH_P_8021Q);
-<<<<<<< HEAD
-	smsc_dbg(IFUP, "VLAN1 = 0x%08x", smsc9420_reg_read(pd, VLAN1));
-=======
 	netif_dbg(pd, ifup, pd->dev, "VLAN1 = 0x%08x\n",
 		  smsc9420_reg_read(pd, VLAN1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pd->rx_csum) {
 		/* Enable RX COE */
 		u32 coe = smsc9420_reg_read(pd, COE_CR) | RX_COE_EN;
 		smsc9420_reg_write(pd, COE_CR, coe);
-<<<<<<< HEAD
-		smsc_dbg(IFUP, "COE_CR = 0x%08x", coe);
-=======
 		netif_dbg(pd, ifup, pd->dev, "COE_CR = 0x%08x\n", coe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	smsc9420_reg_write(pd, RX_BASE_ADDR, pd->rx_dma_addr);
@@ -1704,19 +1264,6 @@ out:
 
 static int smsc9420_open(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct smsc9420_pdata *pd;
-	u32 bus_mode, mac_cr, dmac_control, int_cfg, dma_intr_ena, int_ctl;
-	unsigned long flags;
-	int result = 0, timeout;
-
-	BUG_ON(!dev);
-	pd = netdev_priv(dev);
-	BUG_ON(!pd);
-
-	if (!is_valid_ether_addr(dev->dev_addr)) {
-		smsc_warn(IFUP, "dev_addr is not a valid MAC address");
-=======
 	struct smsc9420_pdata *pd = netdev_priv(dev);
 	u32 bus_mode, mac_cr, dmac_control, int_cfg, dma_intr_ena, int_ctl;
 	const int irq = pd->pdev->irq;
@@ -1726,7 +1273,6 @@ static int smsc9420_open(struct net_device *dev)
 	if (!is_valid_ether_addr(dev->dev_addr)) {
 		netif_warn(pd, ifup, pd->dev,
 			   "dev_addr is not a valid MAC address\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = -EADDRNOTAVAIL;
 		goto out_0;
 	}
@@ -1743,15 +1289,9 @@ static int smsc9420_open(struct net_device *dev)
 	smsc9420_reg_write(pd, INT_STAT, 0xFFFFFFFF);
 	smsc9420_pci_flush_write(pd);
 
-<<<<<<< HEAD
-	if (request_irq(dev->irq, smsc9420_isr, IRQF_SHARED | IRQF_DISABLED,
-			DRV_NAME, pd)) {
-		smsc_warn(IFUP, "Unable to use IRQ = %d", dev->irq);
-=======
 	result = request_irq(irq, smsc9420_isr, IRQF_SHARED, DRV_NAME, pd);
 	if (result) {
 		netif_warn(pd, ifup, pd->dev, "Unable to use IRQ = %d\n", irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = -ENODEV;
 		goto out_0;
 	}
@@ -1786,11 +1326,7 @@ static int smsc9420_open(struct net_device *dev)
 	smsc9420_pci_flush_write(pd);
 
 	/* test the IRQ connection to the ISR */
-<<<<<<< HEAD
-	smsc_dbg(IFUP, "Testing ISR using IRQ %d", dev->irq);
-=======
 	netif_dbg(pd, ifup, pd->dev, "Testing ISR using IRQ %d\n", irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pd->software_irq_signal = false;
 
 	spin_lock_irqsave(&pd->int_lock, flags);
@@ -1820,62 +1356,38 @@ static int smsc9420_open(struct net_device *dev)
 	spin_unlock_irqrestore(&pd->int_lock, flags);
 
 	if (!pd->software_irq_signal) {
-<<<<<<< HEAD
-		smsc_warn(IFUP, "ISR failed signaling test");
-=======
 		netif_warn(pd, ifup, pd->dev, "ISR failed signaling test\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = -ENODEV;
 		goto out_free_irq_1;
 	}
 
-<<<<<<< HEAD
-	smsc_dbg(IFUP, "ISR passed test using IRQ %d", dev->irq);
-
-	result = smsc9420_alloc_tx_ring(pd);
-	if (result) {
-		smsc_warn(IFUP, "Failed to Initialize tx dma ring");
-=======
 	netif_dbg(pd, ifup, pd->dev, "ISR passed test using IRQ %d\n", irq);
 
 	result = smsc9420_alloc_tx_ring(pd);
 	if (result) {
 		netif_warn(pd, ifup, pd->dev,
 			   "Failed to Initialize tx dma ring\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = -ENOMEM;
 		goto out_free_irq_1;
 	}
 
 	result = smsc9420_alloc_rx_ring(pd);
 	if (result) {
-<<<<<<< HEAD
-		smsc_warn(IFUP, "Failed to Initialize rx dma ring");
-=======
 		netif_warn(pd, ifup, pd->dev,
 			   "Failed to Initialize rx dma ring\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = -ENOMEM;
 		goto out_free_tx_ring_2;
 	}
 
 	result = smsc9420_mii_init(dev);
 	if (result) {
-<<<<<<< HEAD
-		smsc_warn(IFUP, "Failed to initialize Phy");
-=======
 		netif_warn(pd, ifup, pd->dev, "Failed to initialize Phy\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = -ENODEV;
 		goto out_free_rx_ring_3;
 	}
 
 	/* Bring the PHY up */
-<<<<<<< HEAD
-	phy_start(pd->phy_dev);
-=======
 	phy_start(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	napi_enable(&pd->napi);
 
@@ -1911,26 +1423,14 @@ out_free_rx_ring_3:
 out_free_tx_ring_2:
 	smsc9420_free_tx_ring(pd);
 out_free_irq_1:
-<<<<<<< HEAD
-	free_irq(dev->irq, pd);
-=======
 	free_irq(irq, pd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_0:
 	return result;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-
-static int smsc9420_suspend(struct pci_dev *pdev, pm_message_t state)
-{
-	struct net_device *dev = pci_get_drvdata(pdev);
-=======
 static int __maybe_unused smsc9420_suspend(struct device *dev_d)
 {
 	struct net_device *dev = dev_get_drvdata(dev_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct smsc9420_pdata *pd = netdev_priv(dev);
 	u32 int_cfg;
 	ulong flags;
@@ -1950,49 +1450,16 @@ static int __maybe_unused smsc9420_suspend(struct device *dev_d)
 		smsc9420_stop_rx(pd);
 		smsc9420_free_rx_ring(pd);
 
-<<<<<<< HEAD
-		free_irq(dev->irq, pd);
-=======
 		free_irq(pd->pdev->irq, pd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		netif_device_detach(dev);
 	}
 
-<<<<<<< HEAD
-	pci_save_state(pdev);
-	pci_enable_wake(pdev, pci_choose_state(pdev, state), 0);
-	pci_disable_device(pdev);
-	pci_set_power_state(pdev, pci_choose_state(pdev, state));
-=======
 	device_wakeup_disable(dev_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int smsc9420_resume(struct pci_dev *pdev)
-{
-	struct net_device *dev = pci_get_drvdata(pdev);
-	struct smsc9420_pdata *pd = netdev_priv(dev);
-	int err;
-
-	pci_set_power_state(pdev, PCI_D0);
-	pci_restore_state(pdev);
-
-	err = pci_enable_device(pdev);
-	if (err)
-		return err;
-
-	pci_set_master(pdev);
-
-	err = pci_enable_wake(pdev, 0, 0);
-	if (err)
-		smsc_warn(IFUP, "pci_enable_wake failed: %d", err);
-
-	if (netif_running(dev)) {
-=======
 static int __maybe_unused smsc9420_resume(struct device *dev_d)
 {
 	struct net_device *dev = dev_get_drvdata(dev_d);
@@ -2005,29 +1472,19 @@ static int __maybe_unused smsc9420_resume(struct device *dev_d)
 	err = 0;
 	if (netif_running(dev)) {
 		/* FIXME: gross. It looks like ancient PM relic.*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = smsc9420_open(dev);
 		netif_device_attach(dev);
 	}
 	return err;
 }
 
-<<<<<<< HEAD
-#endif /* CONFIG_PM */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops smsc9420_netdev_ops = {
 	.ndo_open		= smsc9420_open,
 	.ndo_stop		= smsc9420_stop,
 	.ndo_start_xmit		= smsc9420_hard_start_xmit,
 	.ndo_get_stats		= smsc9420_get_stats,
 	.ndo_set_rx_mode	= smsc9420_set_multicast_list,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= smsc9420_do_ioctl,
-=======
 	.ndo_eth_ioctl		= phy_do_ioctl_running,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address 	= eth_mac_addr,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -2035,11 +1492,7 @@ static const struct net_device_ops smsc9420_netdev_ops = {
 #endif /* CONFIG_NET_POLL_CONTROLLER */
 };
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 smsc9420_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
 	struct net_device *dev;
@@ -2048,20 +1501,12 @@ smsc9420_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	int result = 0;
 	u32 id_rev;
 
-<<<<<<< HEAD
-	printk(KERN_INFO DRV_DESCRIPTION " version " DRV_VERSION "\n");
-=======
 	pr_info("%s version %s\n", DRV_DESCRIPTION, DRV_VERSION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First do the PCI initialisation */
 	result = pci_enable_device(pdev);
 	if (unlikely(result)) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Cannot enable smsc9420\n");
-=======
 		pr_err("Cannot enable smsc9420\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_0;
 	}
 
@@ -2074,113 +1519,62 @@ smsc9420_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	SET_NETDEV_DEV(dev, &pdev->dev);
 
 	if (!(pci_resource_flags(pdev, SMSC_BAR) & IORESOURCE_MEM)) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Cannot find PCI device base address\n");
-=======
 		netdev_err(dev, "Cannot find PCI device base address\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_netdev_2;
 	}
 
 	if ((pci_request_regions(pdev, DRV_NAME))) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Cannot obtain PCI resources, aborting.\n");
-		goto out_free_netdev_2;
-	}
-
-	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
-		printk(KERN_ERR "No usable DMA configuration, aborting.\n");
-=======
 		netdev_err(dev, "Cannot obtain PCI resources, aborting\n");
 		goto out_free_netdev_2;
 	}
 
 	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
 		netdev_err(dev, "No usable DMA configuration, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_regions_3;
 	}
 
 	virt_addr = ioremap(pci_resource_start(pdev, SMSC_BAR),
 		pci_resource_len(pdev, SMSC_BAR));
 	if (!virt_addr) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Cannot map device registers, aborting.\n");
-=======
 		netdev_err(dev, "Cannot map device registers, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_regions_3;
 	}
 
 	/* registers are double mapped with 0 offset for LE and 0x200 for BE */
 	virt_addr += LAN9420_CPSR_ENDIAN_OFFSET;
 
-<<<<<<< HEAD
-	dev->base_addr = (ulong)virt_addr;
-
-	pd = netdev_priv(dev);
-
-	/* pci descriptors are created in the PCI consistent area */
-	pd->rx_ring = pci_alloc_consistent(pdev,
-		sizeof(struct smsc9420_dma_desc) * RX_RING_SIZE +
-		sizeof(struct smsc9420_dma_desc) * TX_RING_SIZE,
-		&pd->rx_dma_addr);
-=======
 	pd = netdev_priv(dev);
 
 	/* pci descriptors are created in the PCI consistent area */
 	pd->rx_ring = dma_alloc_coherent(&pdev->dev,
 		sizeof(struct smsc9420_dma_desc) * (RX_RING_SIZE + TX_RING_SIZE),
 		&pd->rx_dma_addr, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pd->rx_ring)
 		goto out_free_io_4;
 
-<<<<<<< HEAD
-	/* descriptors are aligned due to the nature of pci_alloc_consistent */
-	pd->tx_ring = (struct smsc9420_dma_desc *)
-	    (pd->rx_ring + RX_RING_SIZE);
-=======
 	/* descriptors are aligned due to the nature of dma_alloc_coherent */
 	pd->tx_ring = (pd->rx_ring + RX_RING_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pd->tx_dma_addr = pd->rx_dma_addr +
 	    sizeof(struct smsc9420_dma_desc) * RX_RING_SIZE;
 
 	pd->pdev = pdev;
 	pd->dev = dev;
-<<<<<<< HEAD
-	pd->base_addr = virt_addr;
-	pd->msg_enable = smsc_debug;
-	pd->rx_csum = true;
-
-	smsc_dbg(PROBE, "lan_base=0x%08lx", (ulong)virt_addr);
-=======
 	pd->ioaddr = virt_addr;
 	pd->msg_enable = smsc_debug;
 	pd->rx_csum = true;
 
 	netif_dbg(pd, probe, pd->dev, "lan_base=0x%08lx\n", (ulong)virt_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	id_rev = smsc9420_reg_read(pd, ID_REV);
 	switch (id_rev & 0xFFFF0000) {
 	case 0x94200000:
-<<<<<<< HEAD
-		smsc_info(PROBE, "LAN9420 identified, ID_REV=0x%08X", id_rev);
-		break;
-	default:
-		smsc_warn(PROBE, "LAN9420 NOT identified");
-		smsc_warn(PROBE, "ID_REV=0x%08X", id_rev);
-=======
 		netif_info(pd, probe, pd->dev,
 			   "LAN9420 identified, ID_REV=0x%08X\n", id_rev);
 		break;
 	default:
 		netif_warn(pd, probe, pd->dev, "LAN9420 NOT identified\n");
 		netif_warn(pd, probe, pd->dev, "ID_REV=0x%08X\n", id_rev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_dmadesc_5;
 	}
 
@@ -2190,15 +1584,6 @@ smsc9420_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	dev->netdev_ops = &smsc9420_netdev_ops;
 	dev->ethtool_ops = &smsc9420_ethtool_ops;
-<<<<<<< HEAD
-	dev->irq = pdev->irq;
-
-	netif_napi_add(dev, &pd->napi, smsc9420_rx_poll, NAPI_WEIGHT);
-
-	result = register_netdev(dev);
-	if (result) {
-		smsc_warn(PROBE, "error %i registering device", result);
-=======
 
 	netif_napi_add(dev, &pd->napi, smsc9420_rx_poll);
 
@@ -2206,7 +1591,6 @@ smsc9420_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (result) {
 		netif_warn(pd, probe, pd->dev, "error %i registering device\n",
 			   result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_dmadesc_5;
 	}
 
@@ -2220,14 +1604,9 @@ smsc9420_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	return 0;
 
 out_free_dmadesc_5:
-<<<<<<< HEAD
-	pci_free_consistent(pdev, sizeof(struct smsc9420_dma_desc) *
-		(RX_RING_SIZE + TX_RING_SIZE), pd->rx_ring, pd->rx_dma_addr);
-=======
 	dma_free_coherent(&pdev->dev,
 			  sizeof(struct smsc9420_dma_desc) * (RX_RING_SIZE + TX_RING_SIZE),
 			  pd->rx_ring, pd->rx_dma_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_free_io_4:
 	iounmap(virt_addr - LAN9420_CPSR_ENDIAN_OFFSET);
 out_free_regions_3:
@@ -2240,11 +1619,7 @@ out_0:
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static void __devexit smsc9420_remove(struct pci_dev *pdev)
-=======
 static void smsc9420_remove(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct smsc9420_pdata *pd;
@@ -2253,11 +1628,6 @@ static void smsc9420_remove(struct pci_dev *pdev)
 	if (!dev)
 		return;
 
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pd = netdev_priv(dev);
 	unregister_netdev(dev);
 
@@ -2268,42 +1638,24 @@ static void smsc9420_remove(struct pci_dev *pdev)
 	BUG_ON(!pd->tx_ring);
 	BUG_ON(!pd->rx_ring);
 
-<<<<<<< HEAD
-	pci_free_consistent(pdev, sizeof(struct smsc9420_dma_desc) *
-		(RX_RING_SIZE + TX_RING_SIZE), pd->rx_ring, pd->rx_dma_addr);
-
-	iounmap(pd->base_addr - LAN9420_CPSR_ENDIAN_OFFSET);
-=======
 	dma_free_coherent(&pdev->dev,
 			  sizeof(struct smsc9420_dma_desc) * (RX_RING_SIZE + TX_RING_SIZE),
 			  pd->rx_ring, pd->rx_dma_addr);
 
 	iounmap(pd->ioaddr - LAN9420_CPSR_ENDIAN_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_release_regions(pdev);
 	free_netdev(dev);
 	pci_disable_device(pdev);
 }
 
-<<<<<<< HEAD
-=======
 static SIMPLE_DEV_PM_OPS(smsc9420_pm_ops, smsc9420_suspend, smsc9420_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver smsc9420_driver = {
 	.name = DRV_NAME,
 	.id_table = smsc9420_id_table,
 	.probe = smsc9420_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(smsc9420_remove),
-#ifdef CONFIG_PM
-	.suspend = smsc9420_suspend,
-	.resume = smsc9420_resume,
-#endif /* CONFIG_PM */
-=======
 	.remove = smsc9420_remove,
 	.driver.pm = &smsc9420_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init smsc9420_init_module(void)

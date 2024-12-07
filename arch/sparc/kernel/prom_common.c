@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* prom_common.c: OF device tree support common code.
  *
  * Paul Mackerras	August 1996.
@@ -11,14 +8,6 @@
  *    {engebret|bergner}@us.ibm.com
  *
  *  Adapted for sparc by David S. Miller davem@davemloft.net
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -30,10 +19,6 @@
 #include <linux/of_pdt.h>
 #include <asm/prom.h>
 #include <asm/oplib.h>
-<<<<<<< HEAD
-#include <asm/leon.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "prom.h"
 
@@ -65,10 +50,7 @@ EXPORT_SYMBOL(of_set_property_mutex);
 int of_set_property(struct device_node *dp, const char *name, void *val, int len)
 {
 	struct property **prevp;
-<<<<<<< HEAD
-=======
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *new_val;
 	int err;
 
@@ -79,11 +61,7 @@ int of_set_property(struct device_node *dp, const char *name, void *val, int len
 	err = -ENODEV;
 
 	mutex_lock(&of_set_property_mutex);
-<<<<<<< HEAD
-	write_lock(&devtree_lock);
-=======
 	raw_spin_lock_irqsave(&devtree_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prevp = &dp->properties;
 	while (*prevp) {
 		struct property *prop = *prevp;
@@ -110,11 +88,7 @@ int of_set_property(struct device_node *dp, const char *name, void *val, int len
 		}
 		prevp = &(*prevp)->next;
 	}
-<<<<<<< HEAD
-	write_unlock(&devtree_lock);
-=======
 	raw_spin_unlock_irqrestore(&devtree_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&of_set_property_mutex);
 
 	/* XXX Upate procfs if necessary... */

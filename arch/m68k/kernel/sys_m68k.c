@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/m68k/kernel/sys_m68k.c
  *
@@ -26,18 +23,11 @@
 #include <linux/ipc.h>
 
 #include <asm/setup.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/cachectl.h>
-#include <asm/traps.h>
-#include <asm/page.h>
-=======
 #include <linux/uaccess.h>
 #include <asm/cachectl.h>
 #include <asm/traps.h>
 #include <asm/page.h>
 #include <asm/syscalls.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unistd.h>
 #include <asm/cacheflush.h>
 
@@ -45,12 +35,7 @@
 
 #include <asm/tlb.h>
 
-<<<<<<< HEAD
-asmlinkage int do_page_fault(struct pt_regs *regs, unsigned long address,
-			     unsigned long error_code);
-=======
 #include "../mm/fault.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 asmlinkage long sys_mmap2(unsigned long addr, unsigned long len,
 	unsigned long prot, unsigned long flags,
@@ -61,11 +46,7 @@ asmlinkage long sys_mmap2(unsigned long addr, unsigned long len,
 	 * so we need to shift the argument down by 1; m68k mmap64(3)
 	 * (in libc) expects the last argument of mmap2 in 4Kb units.
 	 */
-<<<<<<< HEAD
-	return sys_mmap_pgoff(addr, len, prot, flags, fd, pgoff);
-=======
 	return ksys_mmap_pgoff(addr, len, prot, flags, fd, pgoff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Convert virtual (user) address VADDR to physical address PADDR */
@@ -396,10 +377,6 @@ cache_flush_060 (unsigned long addr, int scope, int cache, unsigned long len)
 asmlinkage int
 sys_cacheflush (unsigned long addr, int scope, int cache, unsigned long len)
 {
-<<<<<<< HEAD
-	struct vm_area_struct *vma;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = -EINVAL;
 
 	if (scope < FLUSH_SCOPE_LINE || scope > FLUSH_SCOPE_ALL ||
@@ -411,9 +388,6 @@ sys_cacheflush (unsigned long addr, int scope, int cache, unsigned long len)
 		ret = -EPERM;
 		if (!capable(CAP_SYS_ADMIN))
 			goto out;
-<<<<<<< HEAD
-	} else {
-=======
 
 		mmap_read_lock(current->mm);
 	} else {
@@ -423,25 +397,14 @@ sys_cacheflush (unsigned long addr, int scope, int cache, unsigned long len)
 		if (addr + len < addr)
 			goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Verify that the specified address region actually belongs
 		 * to this process.
 		 */
-<<<<<<< HEAD
-		vma = find_vma (current->mm, addr);
-		ret = -EINVAL;
-		/* Check for overflow.  */
-		if (addr + len < addr)
-			goto out;
-		if (vma == NULL || addr < vma->vm_start || addr + len > vma->vm_end)
-			goto out;
-=======
 		mmap_read_lock(current->mm);
 		vma = vma_lookup(current->mm, addr);
 		if (!vma || addr + len > vma->vm_end)
 			goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (CPU_IS_020_OR_030) {
@@ -471,11 +434,7 @@ sys_cacheflush (unsigned long addr, int scope, int cache, unsigned long len)
 			__asm__ __volatile__ ("movec %0, %%cacr" : : "r" (cacr));
 		}
 		ret = 0;
-<<<<<<< HEAD
-		goto out;
-=======
 		goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 	    /*
 	     * 040 or 060: don't blindly trust 'scope', someone could
@@ -492,11 +451,8 @@ sys_cacheflush (unsigned long addr, int scope, int cache, unsigned long len)
 		ret = cache_flush_060 (addr, scope, cache, len);
 	    }
 	}
-<<<<<<< HEAD
-=======
 out_unlock:
 	mmap_read_unlock(current->mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
@@ -511,26 +467,13 @@ sys_atomic_cmpxchg_32(unsigned long newval, int oldval, int d3, int d4, int d5,
 	for (;;) {
 		struct mm_struct *mm = current->mm;
 		pgd_t *pgd;
-<<<<<<< HEAD
-=======
 		p4d_t *p4d;
 		pud_t *pud;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pmd_t *pmd;
 		pte_t *pte;
 		spinlock_t *ptl;
 		unsigned long mem_value;
 
-<<<<<<< HEAD
-		down_read(&mm->mmap_sem);
-		pgd = pgd_offset(mm, (unsigned long)mem);
-		if (!pgd_present(*pgd))
-			goto bad_access;
-		pmd = pmd_offset(pgd, (unsigned long)mem);
-		if (!pmd_present(*pmd))
-			goto bad_access;
-		pte = pte_offset_map_lock(mm, pmd, (unsigned long)mem, &ptl);
-=======
 		mmap_read_lock(mm);
 		pgd = pgd_offset(mm, (unsigned long)mem);
 		if (!pgd_present(*pgd))
@@ -547,7 +490,6 @@ sys_atomic_cmpxchg_32(unsigned long newval, int oldval, int d3, int d4, int d5,
 		pte = pte_offset_map_lock(mm, pmd, (unsigned long)mem, &ptl);
 		if (!pte)
 			goto bad_access;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!pte_present(*pte) || !pte_dirty(*pte)
 		    || !pte_write(*pte)) {
 			pte_unmap_unlock(pte, ptl);
@@ -563,19 +505,11 @@ sys_atomic_cmpxchg_32(unsigned long newval, int oldval, int d3, int d4, int d5,
 			__put_user(newval, mem);
 
 		pte_unmap_unlock(pte, ptl);
-<<<<<<< HEAD
-		up_read(&mm->mmap_sem);
-		return mem_value;
-
-	      bad_access:
-		up_read(&mm->mmap_sem);
-=======
 		mmap_read_unlock(mm);
 		return mem_value;
 
 	      bad_access:
 		mmap_read_unlock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* This is not necessarily a bad access, we can get here if
 		   a memory we're trying to write to should be copied-on-write.
 		   Make the kernel do the necessary page stuff, then re-iterate.
@@ -615,21 +549,13 @@ sys_atomic_cmpxchg_32(unsigned long newval, int oldval, int d3, int d4, int d5,
 	struct mm_struct *mm = current->mm;
 	unsigned long mem_value;
 
-<<<<<<< HEAD
-	down_read(&mm->mmap_sem);
-=======
 	mmap_read_lock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mem_value = *mem;
 	if (mem_value == oldval)
 		*mem = newval;
 
-<<<<<<< HEAD
-	up_read(&mm->mmap_sem);
-=======
 	mmap_read_unlock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mem_value;
 }
 
@@ -640,26 +566,6 @@ asmlinkage int sys_getpagesize(void)
 	return PAGE_SIZE;
 }
 
-<<<<<<< HEAD
-/*
- * Do a system call from kernel instead of calling sys_execve so we
- * end up with proper pt_regs.
- */
-int kernel_execve(const char *filename,
-		  const char *const argv[],
-		  const char *const envp[])
-{
-	register long __res asm ("%d0") = __NR_execve;
-	register long __a asm ("%d1") = (long)(filename);
-	register long __b asm ("%d2") = (long)(argv);
-	register long __c asm ("%d3") = (long)(envp);
-	asm volatile ("trap  #0" : "+d" (__res)
-			: "d" (__a), "d" (__b), "d" (__c));
-	return __res;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 asmlinkage unsigned long sys_get_thread_area(void)
 {
 	return current_thread_info()->tp_value;

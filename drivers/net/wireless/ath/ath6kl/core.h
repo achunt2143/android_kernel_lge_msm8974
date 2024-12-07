@@ -91,8 +91,6 @@ enum ath6kl_fw_capability {
 	 */
 	ATH6KL_FW_CAPABILITY_STA_P2PDEV_DUPLEX,
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Firmware has support to cleanup inactive stations
 	 * in AP mode.
@@ -153,7 +151,6 @@ enum ath6kl_fw_capability {
 	/* firmware doesn't support IP checksumming */
 	ATH6KL_FW_CAPABILITY_NO_IP_CHECKSUM,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* this needs to be last */
 	ATH6KL_FW_CAPABILITY_MAX,
 };
@@ -163,24 +160,17 @@ enum ath6kl_fw_capability {
 struct ath6kl_fw_ie {
 	__le32 id;
 	__le32 len;
-<<<<<<< HEAD
-	u8 data[0];
-=======
 	u8 data[];
 };
 
 enum ath6kl_hw_flags {
 	ATH6KL_HW_SDIO_CRC_ERROR_WAR	= BIT(3),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define ATH6KL_FW_API2_FILE "fw-2.bin"
 #define ATH6KL_FW_API3_FILE "fw-3.bin"
-<<<<<<< HEAD
-=======
 #define ATH6KL_FW_API4_FILE "fw-4.bin"
 #define ATH6KL_FW_API5_FILE "fw-5.bin"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* AR6003 1.0 definitions */
 #define AR6003_HW_1_0_VERSION                 0x300002ba
@@ -193,15 +183,9 @@ enum ath6kl_hw_flags {
 #define AR6003_HW_2_0_FIRMWARE_FILE		"athwlan.bin.z77"
 #define AR6003_HW_2_0_TCMD_FIRMWARE_FILE	"athtcmd_ram.bin"
 #define AR6003_HW_2_0_PATCH_FILE		"data.patch.bin"
-<<<<<<< HEAD
-#define AR6003_HW_2_0_BOARD_DATA_FILE "ath6k/AR6003/hw2.0/bdata.bin"
-#define AR6003_HW_2_0_DEFAULT_BOARD_DATA_FILE \
-			"ath6k/AR6003/hw2.0/bdata.SD31.bin"
-=======
 #define AR6003_HW_2_0_BOARD_DATA_FILE AR6003_HW_2_0_FW_DIR "/bdata.bin"
 #define AR6003_HW_2_0_DEFAULT_BOARD_DATA_FILE \
 			AR6003_HW_2_0_FW_DIR "/bdata.SD31.bin"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* AR6003 3.0 definitions */
 #define AR6003_HW_2_1_1_VERSION                 0x30000582
@@ -212,39 +196,22 @@ enum ath6kl_hw_flags {
 #define AR6003_HW_2_1_1_UTF_FIRMWARE_FILE	"utf.bin"
 #define AR6003_HW_2_1_1_TESTSCRIPT_FILE	"nullTestFlow.bin"
 #define AR6003_HW_2_1_1_PATCH_FILE		"data.patch.bin"
-<<<<<<< HEAD
-#define AR6003_HW_2_1_1_BOARD_DATA_FILE "ath6k/AR6003/hw2.1.1/bdata.bin"
-#define AR6003_HW_2_1_1_DEFAULT_BOARD_DATA_FILE	\
-			"ath6k/AR6003/hw2.1.1/bdata.SD31.bin"
-=======
 #define AR6003_HW_2_1_1_BOARD_DATA_FILE AR6003_HW_2_1_1_FW_DIR "/bdata.bin"
 #define AR6003_HW_2_1_1_DEFAULT_BOARD_DATA_FILE	\
 			AR6003_HW_2_1_1_FW_DIR "/bdata.SD31.bin"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* AR6004 1.0 definitions */
 #define AR6004_HW_1_0_VERSION                 0x30000623
 #define AR6004_HW_1_0_FW_DIR			"ath6k/AR6004/hw1.0"
 #define AR6004_HW_1_0_FIRMWARE_FILE		"fw.ram.bin"
-<<<<<<< HEAD
-#define AR6004_HW_1_0_BOARD_DATA_FILE         "ath6k/AR6004/hw1.0/bdata.bin"
-#define AR6004_HW_1_0_DEFAULT_BOARD_DATA_FILE \
-	"ath6k/AR6004/hw1.0/bdata.DB132.bin"
-=======
 #define AR6004_HW_1_0_BOARD_DATA_FILE         AR6004_HW_1_0_FW_DIR "/bdata.bin"
 #define AR6004_HW_1_0_DEFAULT_BOARD_DATA_FILE \
 	AR6004_HW_1_0_FW_DIR "/bdata.DB132.bin"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* AR6004 1.1 definitions */
 #define AR6004_HW_1_1_VERSION                 0x30000001
 #define AR6004_HW_1_1_FW_DIR			"ath6k/AR6004/hw1.1"
 #define AR6004_HW_1_1_FIRMWARE_FILE		"fw.ram.bin"
-<<<<<<< HEAD
-#define AR6004_HW_1_1_BOARD_DATA_FILE         "ath6k/AR6004/hw1.1/bdata.bin"
-#define AR6004_HW_1_1_DEFAULT_BOARD_DATA_FILE \
-	"ath6k/AR6004/hw1.1/bdata.DB132.bin"
-=======
 #define AR6004_HW_1_1_BOARD_DATA_FILE         AR6004_HW_1_1_FW_DIR "/bdata.bin"
 #define AR6004_HW_1_1_DEFAULT_BOARD_DATA_FILE \
 	AR6004_HW_1_1_FW_DIR "/bdata.DB132.bin"
@@ -276,7 +243,6 @@ enum ath6kl_hw_flags {
 #define AR6004_HW_3_0_TESTSCRIPT_FILE		"nullTestFlow.bin"
 #define AR6004_HW_3_0_BOARD_DATA_FILE	      AR6004_HW_3_0_FW_DIR "/bdata.bin"
 #define AR6004_HW_3_0_DEFAULT_BOARD_DATA_FILE AR6004_HW_3_0_FW_DIR "/bdata.bin"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Per STA data, used in AP mode */
 #define STA_PS_AWAKE		BIT(0)
@@ -307,11 +273,7 @@ enum ath6kl_hw_flags {
 
 #define AGGR_NUM_OF_FREE_NETBUFS    16
 
-<<<<<<< HEAD
-#define AGGR_RX_TIMEOUT     400	/* in ms */
-=======
 #define AGGR_RX_TIMEOUT     100	/* in ms */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WMI_TIMEOUT (2 * HZ)
 
@@ -337,11 +299,8 @@ enum ath6kl_hw_flags {
 #define ATH6KL_CONF_ENABLE_TX_BURST		BIT(3)
 #define ATH6KL_CONF_UART_DEBUG			BIT(4)
 
-<<<<<<< HEAD
-=======
 #define P2P_WILDCARD_SSID_LEN			7 /* DIRECT- */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum wlan_low_pwr_state {
 	WLAN_POWER_STATE_ON,
 	WLAN_POWER_STATE_CUT_PWR,
@@ -363,10 +322,6 @@ struct skb_hold_q {
 
 struct rxtid {
 	bool aggr;
-<<<<<<< HEAD
-	bool progress;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool timer_mon;
 	u16 win_sz;
 	u16 seq_next;
@@ -375,11 +330,6 @@ struct rxtid {
 	struct sk_buff_head q;
 
 	/*
-<<<<<<< HEAD
-	 * FIXME: No clue what this should protect. Apparently it should
-	 * protect some of the fields above but they are also accessed
-	 * without taking the lock.
-=======
 	 * lock mainly protects seq_next and hold_q. Movement of seq_next
 	 * needs to be protected between aggr_timeout() and
 	 * aggr_process_recv_frm(). hold_q will be holding the pending
@@ -389,7 +339,6 @@ struct rxtid {
 	 * deleting aggr state all the pending buffers are flushed before
 	 * resetting these fields, so there should not be any race in accessing
 	 * these fields.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	spinlock_t lock;
 };
@@ -457,11 +406,7 @@ struct ath6kl_mgmt_buff {
 	u32 id;
 	bool no_cck;
 	size_t len;
-<<<<<<< HEAD
-	u8 buf[0];
-=======
 	u8 buf[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath6kl_sta {
@@ -610,14 +555,11 @@ enum ath6kl_hif_type {
 	ATH6KL_HIF_TYPE_USB,
 };
 
-<<<<<<< HEAD
-=======
 enum ath6kl_htc_type {
 	ATH6KL_HTC_TYPE_MBOX,
 	ATH6KL_HTC_TYPE_PIPE,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Max number of filters that hw supports */
 #define ATH6K_MAX_MC_FILTERS_PER_LIST 7
 struct ath6kl_mc_filter {
@@ -625,15 +567,12 @@ struct ath6kl_mc_filter {
 	char hw_addr[ATH6KL_MCAST_FILTER_MAC_ADDR_SIZE];
 };
 
-<<<<<<< HEAD
-=======
 struct ath6kl_htcap {
 	bool ht_enable;
 	u8 ampdu_factor;
 	unsigned short cap_info;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver's maximum limit, note that some firmwares support only one vif
  * and the runtime (current) limit must be checked from ar->vif_max.
@@ -647,21 +586,14 @@ enum ath6kl_vif_state {
 	WMM_ENABLED,
 	NETQ_STOPPED,
 	DTIM_EXPIRED,
-<<<<<<< HEAD
-	NETDEV_REGISTERED,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CLEAR_BSSFILTER_ON_BEACON,
 	DTIM_PERIOD_AVAIL,
 	WLAN_ENABLED,
 	STATS_UPDATE_PEND,
 	HOST_SLEEP_MODE_CMD_PROCESSED,
-<<<<<<< HEAD
-=======
 	NETDEV_MCAST_ALL_ON,
 	NETDEV_MCAST_ALL_OFF,
 	SCHED_SCANNING,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath6kl_vif {
@@ -691,10 +623,7 @@ struct ath6kl_vif {
 	struct ath6kl_wep_key wep_key_list[WMI_MAX_KEY_INDEX + 1];
 	struct ath6kl_key keys[WMI_MAX_KEY_INDEX + 1];
 	struct aggr_info *aggr_cntxt;
-<<<<<<< HEAD
-=======
 	struct ath6kl_htcap htcap[NUM_NL80211_BANDS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct timer_list disconnect_timer;
 	struct timer_list sched_scan_timer;
@@ -706,15 +635,6 @@ struct ath6kl_vif {
 	u32 last_cancel_roc_id;
 	u32 send_action_id;
 	bool probe_req_report;
-<<<<<<< HEAD
-	u16 next_chan;
-	u16 assoc_bss_beacon_int;
-	u16 listen_intvl_t;
-	u16 bmiss_time_t;
-	u8 assoc_bss_dtim_period;
-	struct net_device_stats net_stats;
-	struct target_stats target_stats;
-=======
 	u16 assoc_bss_beacon_int;
 	u16 listen_intvl_t;
 	u16 bmiss_time_t;
@@ -724,19 +644,15 @@ struct ath6kl_vif {
 	struct target_stats target_stats;
 	struct wmi_connect_cmd profile;
 	u16 rsn_capab;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct list_head mc_filter;
 };
 
-<<<<<<< HEAD
-=======
 static inline struct ath6kl_vif *ath6kl_vif_from_wdev(struct wireless_dev *wdev)
 {
 	return container_of(wdev, struct ath6kl_vif, wdev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WOW_LIST_ID		0
 #define WOW_HOST_REQ_DELAY	500 /* ms */
 
@@ -752,10 +668,7 @@ enum ath6kl_dev_state {
 	SKIP_SCAN,
 	ROAM_TBL_PEND,
 	FIRST_BOOT,
-<<<<<<< HEAD
-=======
 	RECOVERY_CLEANUP,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum ath6kl_state {
@@ -766,9 +679,6 @@ enum ath6kl_state {
 	ATH6KL_STATE_DEEPSLEEP,
 	ATH6KL_STATE_CUTPOWER,
 	ATH6KL_STATE_WOW,
-<<<<<<< HEAD
-	ATH6KL_STATE_SCHED_SCAN,
-=======
 	ATH6KL_STATE_RECOVERY,
 };
 
@@ -779,7 +689,6 @@ enum ath6kl_fw_err {
 	ATH6KL_FW_ASSERT,
 	ATH6KL_FW_HB_RESP_FAILURE,
 	ATH6KL_FW_EP_FULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath6kl {
@@ -791,10 +700,7 @@ struct ath6kl {
 
 	struct ath6kl_bmi bmi;
 	const struct ath6kl_hif_ops *hif_ops;
-<<<<<<< HEAD
-=======
 	const struct ath6kl_htc_ops *htc_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wmi *wmi;
 	int tx_pending[ENDPOINT_MAX];
 	int total_tx_data_pend;
@@ -841,11 +747,8 @@ struct ath6kl {
 	u8 sta_list_index;
 	struct ath6kl_req_key ap_mode_bkey;
 	struct sk_buff_head mcastpsq;
-<<<<<<< HEAD
-=======
 	u32 want_ch_switch;
 	u16 last_ch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * FIXME: protects access to mcastpsq but is actually useless as
@@ -877,9 +780,6 @@ struct ath6kl {
 		u32 board_addr;
 		u32 refclk_hz;
 		u32 uarttx_pin;
-<<<<<<< HEAD
-		u32 testscript_addr;
-=======
 		u32 uarttx_rate;
 		u32 testscript_addr;
 		u8 tx_ant;
@@ -887,7 +787,6 @@ struct ath6kl {
 		enum wmi_phy_cap cap;
 
 		u32 flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		struct ath6kl_hw_fw {
 			const char *dir;
@@ -938,8 +837,6 @@ struct ath6kl {
 
 	bool wiphy_registered;
 
-<<<<<<< HEAD
-=======
 	struct ath6kl_fw_recovery {
 		struct work_struct recovery_work;
 		unsigned long err_reason;
@@ -951,7 +848,6 @@ struct ath6kl {
 		bool enable;
 	} fw_recovery;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ATH6KL_DEBUG
 	struct {
 		struct sk_buff_head fwlog_queue;
@@ -997,21 +893,13 @@ static inline u32 ath6kl_get_hi_item_addr(struct ath6kl *ar,
 
 int ath6kl_configure_target(struct ath6kl *ar);
 void ath6kl_detect_error(unsigned long ptr);
-<<<<<<< HEAD
-void disconnect_timer_handler(unsigned long ptr);
-=======
 void disconnect_timer_handler(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void init_netdev(struct net_device *dev);
 void ath6kl_cookie_init(struct ath6kl *ar);
 void ath6kl_cookie_cleanup(struct ath6kl *ar);
 void ath6kl_rx(struct htc_target *target, struct htc_packet *packet);
-<<<<<<< HEAD
-void ath6kl_tx_complete(void *context, struct list_head *packet_queue);
-=======
 void ath6kl_tx_complete(struct htc_target *context,
 			struct list_head *packet_queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum htc_send_full_action ath6kl_tx_queue_full(struct htc_target *target,
 					       struct htc_packet *packet);
 void ath6kl_stop_txrx(struct ath6kl *ar);
@@ -1026,11 +914,7 @@ void ath6kl_tx_data_cleanup(struct ath6kl *ar);
 
 struct ath6kl_cookie *ath6kl_alloc_cookie(struct ath6kl *ar);
 void ath6kl_free_cookie(struct ath6kl *ar, struct ath6kl_cookie *cookie);
-<<<<<<< HEAD
-int ath6kl_data_tx(struct sk_buff *skb, struct net_device *dev);
-=======
 netdev_tx_t ath6kl_data_tx(struct sk_buff *skb, struct net_device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct aggr_info *aggr_init(struct ath6kl_vif *vif);
 void aggr_conn_init(struct ath6kl_vif *vif, struct aggr_info *aggr_info,
@@ -1047,12 +931,8 @@ void aggr_reset_state(struct aggr_info_conn *aggr_conn);
 struct ath6kl_sta *ath6kl_find_sta(struct ath6kl_vif *vif, u8 *node_addr);
 struct ath6kl_sta *ath6kl_find_sta_by_aid(struct ath6kl *ar, u8 aid);
 
-<<<<<<< HEAD
-void ath6kl_ready_event(void *devt, u8 *datap, u32 sw_ver, u32 abi_ver);
-=======
 void ath6kl_ready_event(void *devt, u8 *datap, u32 sw_ver, u32 abi_ver,
 			enum wmi_phy_cap cap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ath6kl_control_tx(void *devt, struct sk_buff *skb,
 		      enum htc_endpoint_id eid);
 void ath6kl_connect_event(struct ath6kl_vif *vif, u16 channel,
@@ -1083,17 +963,9 @@ void aggr_recv_addba_req_evt(struct ath6kl_vif *vif, u8 tid, u16 seq_no,
 			     u8 win_sz);
 void ath6kl_wakeup_event(void *dev);
 
-<<<<<<< HEAD
-void ath6kl_reset_device(struct ath6kl *ar, u32 target_type,
-			 bool wait_fot_compltn, bool cold_reset);
-void ath6kl_init_control_info(struct ath6kl_vif *vif);
-struct ath6kl_vif *ath6kl_vif_first(struct ath6kl *ar);
-void ath6kl_cleanup_vif(struct ath6kl_vif *vif, bool wmi_ready);
-=======
 void ath6kl_init_control_info(struct ath6kl_vif *vif);
 struct ath6kl_vif *ath6kl_vif_first(struct ath6kl *ar);
 void ath6kl_cfg80211_vif_stop(struct ath6kl_vif *vif, bool wmi_ready);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ath6kl_init_hw_start(struct ath6kl *ar);
 int ath6kl_init_hw_stop(struct ath6kl *ar);
 int ath6kl_init_fetch_firmwares(struct ath6kl *ar);
@@ -1101,13 +973,6 @@ int ath6kl_init_hw_params(struct ath6kl *ar);
 
 void ath6kl_check_wow_status(struct ath6kl *ar);
 
-<<<<<<< HEAD
-struct ath6kl *ath6kl_core_create(struct device *dev);
-int ath6kl_core_init(struct ath6kl *ar);
-void ath6kl_core_cleanup(struct ath6kl *ar);
-void ath6kl_core_destroy(struct ath6kl *ar);
-
-=======
 void ath6kl_core_tx_complete(struct ath6kl *ar, struct sk_buff *skb);
 void ath6kl_core_rx_complete(struct ath6kl *ar, struct sk_buff *skb, u8 pipe);
 
@@ -1124,5 +989,4 @@ void ath6kl_recovery_init(struct ath6kl *ar);
 void ath6kl_recovery_cleanup(struct ath6kl *ar);
 void ath6kl_recovery_suspend(struct ath6kl *ar);
 void ath6kl_recovery_resume(struct ath6kl *ar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CORE_H */

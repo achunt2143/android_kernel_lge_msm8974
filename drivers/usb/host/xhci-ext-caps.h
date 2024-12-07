@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xHCI host controller driver
  *
@@ -9,29 +6,10 @@
  *
  * Author: Sarah Sharp
  * Some code borrowed from the Linux EHCI driver.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-/* Up to 16 ms to halt an HC */
-#define XHCI_MAX_HALT_USEC	(16*1000)
-=======
  */
 
 /* HC should halt within 16 ms, but use 32 ms as some hosts take longer */
 #define XHCI_MAX_HALT_USEC	(32 * 1000)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* HC not running - set to 1 when run/stop bit is cleared. */
 #define XHCI_STS_HALT		(1<<0)
 
@@ -62,11 +40,8 @@
 #define XHCI_EXT_CAPS_ROUTE	5
 /* IDs 6-9 reserved */
 #define XHCI_EXT_CAPS_DEBUG	10
-<<<<<<< HEAD
-=======
 /* Vendor caps */
 #define XHCI_EXT_CAPS_VENDOR_INTEL	192
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* USB Legacy Support Capability - section 7.1.1 */
 #define XHCI_HC_BIOS_OWNED	(1 << 16)
 #define XHCI_HC_OS_OWNED	(1 << 24)
@@ -87,10 +62,7 @@
 
 /* USB 2.0 xHCI 1.0 hardware LMP capability - section 7.2.2.1.3.2 */
 #define XHCI_HLC               (1 << 19)
-<<<<<<< HEAD
-=======
 #define XHCI_BLC               (1 << 20)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* command register values to disable interrupts and halt the HC */
 /* start/stop HC execution - do not write unless HC is halted*/
@@ -107,46 +79,6 @@
 /* true: Controller Not Ready to accept doorbell or op reg writes after reset */
 #define XHCI_STS_CNR		(1 << 11)
 
-<<<<<<< HEAD
-#include <linux/io.h>
-
-/**
- * Return the next extended capability pointer register.
- *
- * @base	PCI register base address.
- *
- * @ext_offset	Offset of the 32-bit register that contains the extended
- * capabilites pointer.  If searching for the first extended capability, pass
- * in XHCI_HCC_PARAMS_OFFSET.  If searching for the next extended capability,
- * pass in the offset of the current extended capability register.
- *
- * Returns 0 if there is no next extended capability register or returns the register offset
- * from the PCI registers base address.
- */
-static inline int xhci_find_next_cap_offset(void __iomem *base, int ext_offset)
-{
-	u32 next;
-
-	next = readl(base + ext_offset);
-
-	if (ext_offset == XHCI_HCC_PARAMS_OFFSET) {
-		/* Find the first extended capability */
-		next = XHCI_HCC_EXT_CAPS(next);
-		ext_offset = 0;
-	} else {
-		/* Find the next extended capability */
-		next = XHCI_EXT_CAPS_NEXT(next);
-	}
-
-	if (!next)
-		return 0;
-	/*
-	 * Address calculation from offset of extended capabilities
-	 * (or HCCPARAMS) register - see section 5.3.6 and section 7.
-	 */
-	return ext_offset + (next << 2);
-}
-=======
 /**
  * struct xhci_protocol_caps
  * @revision:		major revision, minor revision, capability ID,
@@ -175,35 +107,10 @@ struct xhci_protocol_caps {
 #define	XHCI_EXT_PORT_PSIM(x)	(((x) >> 16) & 0xffff)
 
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Find the offset of the extended capabilities with capability ID id.
  *
-<<<<<<< HEAD
- * @base PCI MMIO registers base address.
- * @ext_offset Offset from base of the first extended capability to look at,
- * 		or the address of HCCPARAMS.
- * @id Extended capability ID to search for.
- *
- * This uses an arbitrary limit of XHCI_MAX_EXT_CAPS extended capabilities
- * to make sure that the list doesn't contain a loop.
- */
-static inline int xhci_find_ext_cap_by_id(void __iomem *base, int ext_offset, int id)
-{
-	u32 val;
-	int limit = XHCI_MAX_EXT_CAPS;
-
-	while (ext_offset && limit > 0) {
-		val = readl(base + ext_offset);
-		if (XHCI_EXT_CAPS_ID(val) == id)
-			break;
-		ext_offset = xhci_find_next_cap_offset(base, ext_offset);
-		limit--;
-	}
-	if (limit > 0)
-		return ext_offset;
-=======
  * @base	PCI MMIO registers base address.
  * @start	address at which to start looking, (0 or HCC_PARAMS to start at
  *		beginning of list)
@@ -241,6 +148,5 @@ static inline int xhci_find_next_ext_cap(void __iomem *base, u32 start, int id)
 		offset += next << 2;
 	} while (next);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

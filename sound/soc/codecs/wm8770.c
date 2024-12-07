@@ -1,38 +1,20 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8770.c  --  WM8770 ALSA SoC Audio driver
  *
  * Copyright 2010 Wolfson Microelectronics plc
  *
  * Author: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-=======
  */
 
 #include <linux/mod_devicetable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-#include <linux/pm.h>
-#include <linux/spi/spi.h>
-=======
 #include <linux/pm.h>
 #include <linux/spi/spi.h>
 #include <linux/regmap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 #include <sound/core.h>
@@ -51,24 +33,6 @@ static const char *wm8770_supply_names[WM8770_NUM_SUPPLIES] = {
 	"DVDD"
 };
 
-<<<<<<< HEAD
-static const u16 wm8770_reg_defs[WM8770_CACHEREGNUM] = {
-	0x7f, 0x7f, 0x7f, 0x7f,
-	0x7f, 0x7f, 0x7f, 0x7f,
-	0x7f, 0xff, 0xff, 0xff,
-	0xff, 0xff, 0xff, 0xff,
-	0xff, 0xff, 0, 0x90, 0,
-	0, 0x22, 0x22, 0x3e,
-	0xc, 0xc, 0x100, 0x189,
-	0x189, 0x8770
-};
-
-struct wm8770_priv {
-	enum snd_soc_control_type control_type;
-	struct regulator_bulk_data supplies[WM8770_NUM_SUPPLIES];
-	struct notifier_block disable_nb[WM8770_NUM_SUPPLIES];
-	struct snd_soc_codec *codec;
-=======
 static const struct reg_default wm8770_reg_defaults[] = {
 	{  0, 0x7f },
 	{  1, 0x7f },
@@ -118,7 +82,6 @@ struct wm8770_priv {
 	struct regulator_bulk_data supplies[WM8770_NUM_SUPPLIES];
 	struct notifier_block disable_nb[WM8770_NUM_SUPPLIES];
 	struct snd_soc_component *component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sysclk;
 };
 
@@ -139,11 +102,7 @@ static int wm8770_regulator_event_##n(struct notifier_block *nb, \
 	struct wm8770_priv *wm8770 = container_of(nb, struct wm8770_priv, \
 				     disable_nb[n]); \
 	if (event & REGULATOR_EVENT_DISABLE) { \
-<<<<<<< HEAD
-		wm8770->codec->cache_sync = 1; \
-=======
 		regcache_mark_dirty(wm8770->regmap);	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} \
 	return 0; \
 }
@@ -346,18 +305,6 @@ static const struct snd_soc_dapm_route wm8770_intercon[] = {
 static int vout12supply_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec;
-
-	codec = w->codec;
-
-	switch (event) {
-	case SND_SOC_DAPM_PRE_PMU:
-		snd_soc_update_bits(codec, WM8770_OUTMUX1, 0x180, 0);
-		break;
-	case SND_SOC_DAPM_POST_PMD:
-		snd_soc_update_bits(codec, WM8770_OUTMUX1, 0x180, 0x180);
-=======
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 
 	switch (event) {
@@ -366,7 +313,6 @@ static int vout12supply_event(struct snd_soc_dapm_widget *w,
 		break;
 	case SND_SOC_DAPM_POST_PMD:
 		snd_soc_component_update_bits(component, WM8770_OUTMUX1, 0x180, 0x180);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -376,18 +322,6 @@ static int vout12supply_event(struct snd_soc_dapm_widget *w,
 static int vout34supply_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec;
-
-	codec = w->codec;
-
-	switch (event) {
-	case SND_SOC_DAPM_PRE_PMU:
-		snd_soc_update_bits(codec, WM8770_OUTMUX2, 0x180, 0);
-		break;
-	case SND_SOC_DAPM_POST_PMD:
-		snd_soc_update_bits(codec, WM8770_OUTMUX2, 0x180, 0x180);
-=======
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 
 	switch (event) {
@@ -396,37 +330,23 @@ static int vout34supply_event(struct snd_soc_dapm_widget *w,
 		break;
 	case SND_SOC_DAPM_POST_PMD:
 		snd_soc_component_update_bits(component, WM8770_OUTMUX2, 0x180, 0x180);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wm8770_reset(struct snd_soc_codec *codec)
-{
-	return snd_soc_write(codec, WM8770_RESET, 0);
-=======
 static int wm8770_reset(struct snd_soc_component *component)
 {
 	return snd_soc_component_write(component, WM8770_RESET, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wm8770_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec;
-	int iface, master;
-
-	codec = dai->codec;
-=======
 	struct snd_soc_component *component;
 	int iface, master;
 
 	component = dai->component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBM_CFM:
@@ -469,13 +389,8 @@ static int wm8770_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM8770_IFACECTRL, 0xf, iface);
-	snd_soc_update_bits(codec, WM8770_MSTRCTRL, 0x100, master);
-=======
 	snd_soc_component_update_bits(component, WM8770_IFACECTRL, 0xf, iface);
 	snd_soc_component_update_bits(component, WM8770_MSTRCTRL, 0x100, master);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -493,33 +408,13 @@ static int wm8770_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec;
-=======
 	struct snd_soc_component *component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8770_priv *wm8770;
 	int i;
 	int iface;
 	int shift;
 	int ratio;
 
-<<<<<<< HEAD
-	codec = dai->codec;
-	wm8770 = snd_soc_codec_get_drvdata(codec);
-
-	iface = 0;
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-		break;
-	case SNDRV_PCM_FORMAT_S20_3LE:
-		iface |= 0x10;
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-		iface |= 0x20;
-		break;
-	case SNDRV_PCM_FORMAT_S32_LE:
-=======
 	component = dai->component;
 	wm8770 = snd_soc_component_get_drvdata(component);
 
@@ -534,7 +429,6 @@ static int wm8770_hw_params(struct snd_pcm_substream *substream,
 		iface |= 0x20;
 		break;
 	case 32:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iface |= 0x30;
 		break;
 	}
@@ -553,11 +447,7 @@ static int wm8770_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	/* Only need to set MCLK/LRCLK ratio if we're master */
-<<<<<<< HEAD
-	if (snd_soc_read(codec, WM8770_MSTRCTRL) & 0x100) {
-=======
 	if (snd_soc_component_read(component, WM8770_MSTRCTRL) & 0x100) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (; i < ARRAY_SIZE(mclk_ratios); ++i) {
 			ratio = wm8770->sysclk / params_rate(params);
 			if (ratio == mclk_ratios[i])
@@ -565,25 +455,12 @@ static int wm8770_hw_params(struct snd_pcm_substream *substream,
 		}
 
 		if (i == ARRAY_SIZE(mclk_ratios)) {
-<<<<<<< HEAD
-			dev_err(codec->dev,
-=======
 			dev_err(component->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Unable to configure MCLK ratio %d/%d\n",
 				wm8770->sysclk, params_rate(params));
 			return -EINVAL;
 		}
 
-<<<<<<< HEAD
-		dev_dbg(codec->dev, "MCLK is %dfs\n", mclk_ratios[i]);
-
-		snd_soc_update_bits(codec, WM8770_MSTRCTRL, 0x7 << shift,
-				    i << shift);
-	}
-
-	snd_soc_update_bits(codec, WM8770_IFACECTRL, 0x30, iface);
-=======
 		dev_dbg(component->dev, "MCLK is %dfs\n", mclk_ratios[i]);
 
 		snd_soc_component_update_bits(component, WM8770_MSTRCTRL, 0x7 << shift,
@@ -591,82 +468,38 @@ static int wm8770_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	snd_soc_component_update_bits(component, WM8770_IFACECTRL, 0x30, iface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wm8770_mute(struct snd_soc_dai *dai, int mute)
-{
-	struct snd_soc_codec *codec;
-
-	codec = dai->codec;
-	return snd_soc_update_bits(codec, WM8770_DACMUTE, 0x10,
-=======
 static int wm8770_mute(struct snd_soc_dai *dai, int mute, int direction)
 {
 	struct snd_soc_component *component;
 
 	component = dai->component;
 	return snd_soc_component_update_bits(component, WM8770_DACMUTE, 0x10,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   !!mute << 4);
 }
 
 static int wm8770_set_sysclk(struct snd_soc_dai *dai,
 			     int clk_id, unsigned int freq, int dir)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec;
-	struct wm8770_priv *wm8770;
-
-	codec = dai->codec;
-	wm8770 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component;
 	struct wm8770_priv *wm8770;
 
 	component = dai->component;
 	wm8770 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wm8770->sysclk = freq;
 	return 0;
 }
 
-<<<<<<< HEAD
-static void wm8770_sync_cache(struct snd_soc_codec *codec)
-{
-	int i;
-	u16 *cache;
-
-	if (!codec->cache_sync)
-		return;
-
-	codec->cache_only = 0;
-	cache = codec->reg_cache;
-	for (i = 0; i < codec->driver->reg_cache_size; i++) {
-		if (i == WM8770_RESET || cache[i] == wm8770_reg_defs[i])
-			continue;
-		snd_soc_write(codec, i, cache[i]);
-	}
-	codec->cache_sync = 0;
-}
-
-static int wm8770_set_bias_level(struct snd_soc_codec *codec,
-=======
 static int wm8770_set_bias_level(struct snd_soc_component *component,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 enum snd_soc_bias_level level)
 {
 	int ret;
 	struct wm8770_priv *wm8770;
 
-<<<<<<< HEAD
-	wm8770 = snd_soc_codec_get_drvdata(codec);
-=======
 	wm8770 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
@@ -674,52 +507,30 @@ static int wm8770_set_bias_level(struct snd_soc_component *component,
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
-<<<<<<< HEAD
-		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
-			ret = regulator_bulk_enable(ARRAY_SIZE(wm8770->supplies),
-						    wm8770->supplies);
-			if (ret) {
-				dev_err(codec->dev,
-=======
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
 			ret = regulator_bulk_enable(ARRAY_SIZE(wm8770->supplies),
 						    wm8770->supplies);
 			if (ret) {
 				dev_err(component->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"Failed to enable supplies: %d\n",
 					ret);
 				return ret;
 			}
-<<<<<<< HEAD
-			wm8770_sync_cache(codec);
-			/* global powerup */
-			snd_soc_write(codec, WM8770_PWDNCTRL, 0);
-=======
 
 			regcache_sync(wm8770->regmap);
 
 			/* global powerup */
 			snd_soc_component_write(component, WM8770_PWDNCTRL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case SND_SOC_BIAS_OFF:
 		/* global powerdown */
-<<<<<<< HEAD
-		snd_soc_write(codec, WM8770_PWDNCTRL, 1);
-=======
 		snd_soc_component_write(component, WM8770_PWDNCTRL, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regulator_bulk_disable(ARRAY_SIZE(wm8770->supplies),
 				       wm8770->supplies);
 		break;
 	}
 
-<<<<<<< HEAD
-	codec->dapm.bias_level = level;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -727,18 +538,11 @@ static int wm8770_set_bias_level(struct snd_soc_component *component,
 			SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
 
 static const struct snd_soc_dai_ops wm8770_dai_ops = {
-<<<<<<< HEAD
-	.digital_mute = wm8770_mute,
-	.hw_params = wm8770_hw_params,
-	.set_fmt = wm8770_set_fmt,
-	.set_sysclk = wm8770_set_sysclk,
-=======
 	.mute_stream = wm8770_mute,
 	.hw_params = wm8770_hw_params,
 	.set_fmt = wm8770_set_fmt,
 	.set_sysclk = wm8770_set_sysclk,
 	.no_capture_mute = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver wm8770_dai = {
@@ -758,50 +562,6 @@ static struct snd_soc_dai_driver wm8770_dai = {
 		.formats = WM8770_FORMATS
 	},
 	.ops = &wm8770_dai_ops,
-<<<<<<< HEAD
-	.symmetric_rates = 1
-};
-
-#ifdef CONFIG_PM
-static int wm8770_suspend(struct snd_soc_codec *codec)
-{
-	wm8770_set_bias_level(codec, SND_SOC_BIAS_OFF);
-	return 0;
-}
-
-static int wm8770_resume(struct snd_soc_codec *codec)
-{
-	wm8770_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-	return 0;
-}
-#else
-#define wm8770_suspend NULL
-#define wm8770_resume NULL
-#endif
-
-static int wm8770_probe(struct snd_soc_codec *codec)
-{
-	struct wm8770_priv *wm8770;
-	int ret;
-	int i;
-
-	wm8770 = snd_soc_codec_get_drvdata(codec);
-	wm8770->codec = codec;
-
-	ret = snd_soc_codec_set_cache_io(codec, 7, 9, wm8770->control_type);
-	if (ret < 0) {
-		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
-		return ret;
-	}
-
-	for (i = 0; i < ARRAY_SIZE(wm8770->supplies); i++)
-		wm8770->supplies[i].supply = wm8770_supply_names[i];
-
-	ret = regulator_bulk_get(codec->dev, ARRAY_SIZE(wm8770->supplies),
-				 wm8770->supplies);
-	if (ret) {
-		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
-=======
 	.symmetric_rate = 1
 };
 
@@ -894,7 +654,6 @@ static int wm8770_spi_probe(struct spi_device *spi)
 				      wm8770->supplies);
 	if (ret) {
 		dev_err(&spi->dev, "Failed to request supplies: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -904,118 +663,16 @@ static int wm8770_spi_probe(struct spi_device *spi)
 
 	/* This should really be moved into the regulator core */
 	for (i = 0; i < ARRAY_SIZE(wm8770->supplies); i++) {
-<<<<<<< HEAD
-		ret = regulator_register_notifier(wm8770->supplies[i].consumer,
-						  &wm8770->disable_nb[i]);
-		if (ret) {
-			dev_err(codec->dev,
-=======
 		ret = devm_regulator_register_notifier(
 						wm8770->supplies[i].consumer,
 						&wm8770->disable_nb[i]);
 		if (ret) {
 			dev_err(&spi->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Failed to register regulator notifier: %d\n",
 				ret);
 		}
 	}
 
-<<<<<<< HEAD
-	ret = regulator_bulk_enable(ARRAY_SIZE(wm8770->supplies),
-				    wm8770->supplies);
-	if (ret) {
-		dev_err(codec->dev, "Failed to enable supplies: %d\n", ret);
-		goto err_reg_get;
-	}
-
-	ret = wm8770_reset(codec);
-	if (ret < 0) {
-		dev_err(codec->dev, "Failed to issue reset: %d\n", ret);
-		goto err_reg_enable;
-	}
-
-	wm8770_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-
-	/* latch the volume update bits */
-	snd_soc_update_bits(codec, WM8770_MSDIGVOL, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8770_MSALGVOL, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8770_VOUT1RVOL, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8770_VOUT2RVOL, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8770_VOUT3RVOL, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8770_VOUT4RVOL, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8770_DAC1RVOL, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8770_DAC2RVOL, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8770_DAC3RVOL, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8770_DAC4RVOL, 0x100, 0x100);
-
-	/* mute all DACs */
-	snd_soc_update_bits(codec, WM8770_DACMUTE, 0x10, 0x10);
-
-	snd_soc_add_codec_controls(codec, wm8770_snd_controls,
-			     ARRAY_SIZE(wm8770_snd_controls));
-	snd_soc_dapm_new_controls(&codec->dapm, wm8770_dapm_widgets,
-				  ARRAY_SIZE(wm8770_dapm_widgets));
-	snd_soc_dapm_add_routes(&codec->dapm, wm8770_intercon,
-				ARRAY_SIZE(wm8770_intercon));
-	return 0;
-
-err_reg_enable:
-	regulator_bulk_disable(ARRAY_SIZE(wm8770->supplies), wm8770->supplies);
-err_reg_get:
-	regulator_bulk_free(ARRAY_SIZE(wm8770->supplies), wm8770->supplies);
-	return ret;
-}
-
-static int wm8770_remove(struct snd_soc_codec *codec)
-{
-	struct wm8770_priv *wm8770;
-	int i;
-
-	wm8770 = snd_soc_codec_get_drvdata(codec);
-	wm8770_set_bias_level(codec, SND_SOC_BIAS_OFF);
-
-	for (i = 0; i < ARRAY_SIZE(wm8770->supplies); ++i)
-		regulator_unregister_notifier(wm8770->supplies[i].consumer,
-					      &wm8770->disable_nb[i]);
-	regulator_bulk_free(ARRAY_SIZE(wm8770->supplies), wm8770->supplies);
-	return 0;
-}
-
-static struct snd_soc_codec_driver soc_codec_dev_wm8770 = {
-	.probe = wm8770_probe,
-	.remove = wm8770_remove,
-	.suspend = wm8770_suspend,
-	.resume = wm8770_resume,
-	.set_bias_level = wm8770_set_bias_level,
-	.idle_bias_off = true,
-	.reg_cache_size = ARRAY_SIZE(wm8770_reg_defs),
-	.reg_word_size = sizeof (u16),
-	.reg_cache_default = wm8770_reg_defs
-};
-
-static const struct of_device_id wm8770_of_match[] = {
-	{ .compatible = "wlf,wm8770", },
-	{ }
-};
-MODULE_DEVICE_TABLE(of, wm8770_of_match);
-
-static int __devinit wm8770_spi_probe(struct spi_device *spi)
-{
-	struct wm8770_priv *wm8770;
-	int ret;
-
-	wm8770 = devm_kzalloc(&spi->dev, sizeof(struct wm8770_priv),
-			      GFP_KERNEL);
-	if (!wm8770)
-		return -ENOMEM;
-
-	wm8770->control_type = SND_SOC_SPI;
-	spi_set_drvdata(spi, wm8770);
-
-	ret = snd_soc_register_codec(&spi->dev,
-				     &soc_codec_dev_wm8770, &wm8770_dai, 1);
-=======
 	wm8770->regmap = devm_regmap_init_spi(spi, &wm8770_regmap);
 	if (IS_ERR(wm8770->regmap))
 		return PTR_ERR(wm8770->regmap);
@@ -1024,47 +681,10 @@ static int __devinit wm8770_spi_probe(struct spi_device *spi)
 
 	ret = devm_snd_soc_register_component(&spi->dev,
 				     &soc_component_dev_wm8770, &wm8770_dai, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit wm8770_spi_remove(struct spi_device *spi)
-{
-	snd_soc_unregister_codec(&spi->dev);
-	return 0;
-}
-
-static struct spi_driver wm8770_spi_driver = {
-	.driver = {
-		.name = "wm8770",
-		.owner = THIS_MODULE,
-		.of_match_table = wm8770_of_match,
-	},
-	.probe = wm8770_spi_probe,
-	.remove = __devexit_p(wm8770_spi_remove)
-};
-
-static int __init wm8770_modinit(void)
-{
-	int ret = 0;
-
-	ret = spi_register_driver(&wm8770_spi_driver);
-	if (ret) {
-		printk(KERN_ERR "Failed to register wm8770 SPI driver: %d\n",
-		       ret);
-	}
-	return ret;
-}
-module_init(wm8770_modinit);
-
-static void __exit wm8770_exit(void)
-{
-	spi_unregister_driver(&wm8770_spi_driver);
-}
-module_exit(wm8770_exit);
-=======
 static struct spi_driver wm8770_spi_driver = {
 	.driver = {
 		.name = "wm8770",
@@ -1074,7 +694,6 @@ static struct spi_driver wm8770_spi_driver = {
 };
 
 module_spi_driver(wm8770_spi_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC WM8770 driver");
 MODULE_AUTHOR("Dimitris Papastamos <dp@opensource.wolfsonmicro.com>");

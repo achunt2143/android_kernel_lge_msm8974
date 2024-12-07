@@ -1,26 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright © 2000-2010 David Woodhouse <dwmw2@infradead.org> et al.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright © 2000-2010 David Woodhouse <dwmw2@infradead.org> et al.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Overhauled routines for dealing with different mmap regions of flash */
@@ -33,15 +13,9 @@
 #include <linux/string.h>
 #include <linux/bug.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-
-#include <asm/unaligned.h>
-#include <asm/io.h>
-=======
 #include <linux/io.h>
 
 #include <asm/unaligned.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/barrier.h>
 
 #ifdef CONFIG_MTD_MAP_BANK_WIDTH_1
@@ -89,11 +63,7 @@
 /* ensure we never evaluate anything shorted than an unsigned long
  * to zero, and ensure we'll never miss the end of an comparison (bjd) */
 
-<<<<<<< HEAD
-#define map_calc_words(map) ((map_bankwidth(map) + (sizeof(unsigned long)-1))/ sizeof(unsigned long))
-=======
 #define map_calc_words(map) ((map_bankwidth(map) + (sizeof(unsigned long)-1)) / sizeof(unsigned long))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_MTD_MAP_BANK_WIDTH_8
 # ifdef map_bankwidth
@@ -138,20 +108,6 @@
 #endif
 
 #ifdef CONFIG_MTD_MAP_BANK_WIDTH_32
-<<<<<<< HEAD
-# ifdef map_bankwidth
-#  undef map_bankwidth
-#  define map_bankwidth(map) ((map)->bankwidth)
-#  undef map_bankwidth_is_large
-#  define map_bankwidth_is_large(map) (map_bankwidth(map) > BITS_PER_LONG/8)
-#  undef map_words
-#  define map_words(map) map_calc_words(map)
-# else
-#  define map_bankwidth(map) 32
-#  define map_bankwidth_is_large(map) (1)
-#  define map_words(map) map_calc_words(map)
-# endif
-=======
 /* always use indirect access for 256-bit to preserve kernel stack */
 # undef map_bankwidth
 # define map_bankwidth(map) ((map)->bankwidth)
@@ -159,7 +115,6 @@
 # define map_bankwidth_is_large(map) (map_bankwidth(map) > BITS_PER_LONG/8)
 # undef map_words
 # define map_words(map) map_calc_words(map)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define map_bankwidth_is_32(map) (map_bankwidth(map) == 32)
 #undef MAX_MAP_BANKWIDTH
 #define MAX_MAP_BANKWIDTH 32
@@ -168,13 +123,9 @@
 #endif
 
 #ifndef map_bankwidth
-<<<<<<< HEAD
-#warning "No CONFIG_MTD_MAP_BANK_WIDTH_xx selected. No NOR chip support can work"
-=======
 #ifdef CONFIG_MTD
 #warning "No CONFIG_MTD_MAP_BANK_WIDTH_xx selected. No NOR chip support can work"
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int map_bankwidth(void *map)
 {
 	BUG();
@@ -213,11 +164,7 @@ static inline int map_bankwidth_supported(int w)
 	}
 }
 
-<<<<<<< HEAD
-#define MAX_MAP_LONGS ( ((MAX_MAP_BANKWIDTH*8) + BITS_PER_LONG - 1) / BITS_PER_LONG )
-=======
 #define MAX_MAP_LONGS (((MAX_MAP_BANKWIDTH * 8) + BITS_PER_LONG - 1) / BITS_PER_LONG)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef union {
 	unsigned long x[MAX_MAP_LONGS];
@@ -274,25 +221,17 @@ struct map_info {
 	   If there is no cache to care about this can be set to NULL. */
 	void (*inval_cache)(struct map_info *, unsigned long, ssize_t);
 
-<<<<<<< HEAD
-	/* set_vpp() must handle being reentered -- enable, enable, disable
-	   must leave it enabled. */
-=======
 	/* This will be called with 1 as parameter when the first map user
 	 * needs VPP, and called with 0 when the last user exits. The map
 	 * core maintains a reference counter, and assumes that VPP is a
 	 * global resource applying to all mapped flash chips on the system.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*set_vpp)(struct map_info *, int);
 
 	unsigned long pfow_base;
 	unsigned long map_priv_1;
 	unsigned long map_priv_2;
-<<<<<<< HEAD
-=======
 	struct device_node *device_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *fldrv_priv;
 	struct mtd_chip_driver *fldrv;
 };
@@ -311,70 +250,6 @@ void unregister_mtd_chip_driver(struct mtd_chip_driver *);
 struct mtd_info *do_map_probe(const char *name, struct map_info *map);
 void map_destroy(struct mtd_info *mtd);
 
-<<<<<<< HEAD
-#define ENABLE_VPP(map) do { if(map->set_vpp) map->set_vpp(map, 1); } while(0)
-#define DISABLE_VPP(map) do { if(map->set_vpp) map->set_vpp(map, 0); } while(0)
-
-#define INVALIDATE_CACHED_RANGE(map, from, size) \
-	do { if(map->inval_cache) map->inval_cache(map, from, size); } while(0)
-
-
-static inline int map_word_equal(struct map_info *map, map_word val1, map_word val2)
-{
-	int i;
-	for (i=0; i<map_words(map); i++) {
-		if (val1.x[i] != val2.x[i])
-			return 0;
-	}
-	return 1;
-}
-
-static inline map_word map_word_and(struct map_info *map, map_word val1, map_word val2)
-{
-	map_word r;
-	int i;
-
-	for (i=0; i<map_words(map); i++) {
-		r.x[i] = val1.x[i] & val2.x[i];
-	}
-	return r;
-}
-
-static inline map_word map_word_clr(struct map_info *map, map_word val1, map_word val2)
-{
-	map_word r;
-	int i;
-
-	for (i=0; i<map_words(map); i++) {
-		r.x[i] = val1.x[i] & ~val2.x[i];
-	}
-	return r;
-}
-
-static inline map_word map_word_or(struct map_info *map, map_word val1, map_word val2)
-{
-	map_word r;
-	int i;
-
-	for (i=0; i<map_words(map); i++) {
-		r.x[i] = val1.x[i] | val2.x[i];
-	}
-	return r;
-}
-
-#define map_word_andequal(m, a, b, z) map_word_equal(m, z, map_word_and(m, a, b))
-
-static inline int map_word_bitsset(struct map_info *map, map_word val1, map_word val2)
-{
-	int i;
-
-	for (i=0; i<map_words(map); i++) {
-		if (val1.x[i] & val2.x[i])
-			return 1;
-	}
-	return 0;
-}
-=======
 #define ENABLE_VPP(map) do { if (map->set_vpp) map->set_vpp(map, 1); } while (0)
 #define DISABLE_VPP(map) do { if (map->set_vpp) map->set_vpp(map, 0); } while (0)
 
@@ -442,7 +317,6 @@ static inline int map_word_bitsset(struct map_info *map, map_word val1, map_word
 	}								\
 	ret;								\
 })
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline map_word map_word_load(struct map_info *map, const void *ptr)
 {
@@ -460,11 +334,8 @@ static inline map_word map_word_load(struct map_info *map, const void *ptr)
 #endif
 	else if (map_bankwidth_is_large(map))
 		memcpy(r.x, ptr, map->bankwidth);
-<<<<<<< HEAD
-=======
 	else
 		BUG();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -475,16 +346,6 @@ static inline map_word map_word_load_partial(struct map_info *map, map_word orig
 
 	if (map_bankwidth_is_large(map)) {
 		char *dest = (char *)&orig;
-<<<<<<< HEAD
-		memcpy(dest+start, buf, len);
-	} else {
-		for (i=start; i < start+len; i++) {
-			int bitpos;
-#ifdef __LITTLE_ENDIAN
-			bitpos = i*8;
-#else /* __BIG_ENDIAN */
-			bitpos = (map_bankwidth(map)-1-i)*8;
-=======
 
 		memcpy(dest+start, buf, len);
 	} else {
@@ -495,7 +356,6 @@ static inline map_word map_word_load_partial(struct map_info *map, map_word orig
 			bitpos = i * 8;
 #else /* __BIG_ENDIAN */
 			bitpos = (map_bankwidth(map) - 1 - i) * 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			orig.x[0] &= ~(0xff << bitpos);
 			orig.x[0] |= (unsigned long)buf[i-start] << bitpos;
@@ -517,16 +377,10 @@ static inline map_word map_word_ff(struct map_info *map)
 
 	if (map_bankwidth(map) < MAP_FF_LIMIT) {
 		int bw = 8 * map_bankwidth(map);
-<<<<<<< HEAD
-		r.x[0] = (1UL << bw) - 1;
-	} else {
-		for (i=0; i<map_words(map); i++)
-=======
 
 		r.x[0] = (1UL << bw) - 1;
 	} else {
 		for (i = 0; i < map_words(map); i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r.x[i] = ~0UL;
 	}
 	return r;
@@ -547,11 +401,7 @@ static inline map_word inline_map_read(struct map_info *map, unsigned long ofs)
 		r.x[0] = __raw_readq(map->virt + ofs);
 #endif
 	else if (map_bankwidth_is_large(map))
-<<<<<<< HEAD
-		memcpy_fromio(r.x, map->virt+ofs, map->bankwidth);
-=======
 		memcpy_fromio(r.x, map->virt + ofs, map->bankwidth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		BUG();
 
@@ -572,11 +422,8 @@ static inline void inline_map_write(struct map_info *map, const map_word datum, 
 #endif
 	else if (map_bankwidth_is_large(map))
 		memcpy_toio(map->virt+ofs, datum.x, map->bankwidth);
-<<<<<<< HEAD
-=======
 	else
 		BUG();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mb();
 }
 

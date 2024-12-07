@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) 2005-2010 Red Hat, Inc.  All rights reserved.
 **
-<<<<<<< HEAD
-**  This copyrighted material is made available to anyone wishing to use,
-**  modify, copy, or redistribute it subject to the terms and conditions
-**  of the GNU General Public License v.2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 *******************************************************************************
 ******************************************************************************/
@@ -20,16 +11,6 @@
 #ifndef __ASTD_DOT_H__
 #define __ASTD_DOT_H__
 
-<<<<<<< HEAD
-void dlm_del_ast(struct dlm_lkb *lkb);
-int dlm_add_lkb_callback(struct dlm_lkb *lkb, uint32_t flags, int mode,
-                         int status, uint32_t sbflags, uint64_t seq);
-int dlm_rem_lkb_callback(struct dlm_ls *ls, struct dlm_lkb *lkb,
-                         struct dlm_callback *cb, int *resid);
-void dlm_add_cb(struct dlm_lkb *lkb, uint32_t flags, int mode, int status,
-                uint32_t sbflags);
-
-=======
 #define DLM_ENQUEUE_CALLBACK_NEED_SCHED	1
 #define DLM_ENQUEUE_CALLBACK_SUCCESS	0
 #define DLM_ENQUEUE_CALLBACK_FAILURE	-1
@@ -45,7 +26,6 @@ void dlm_callback_set_last_ptr(struct dlm_callback **from,
 			       struct dlm_callback *to);
 
 void dlm_release_callback(struct kref *ref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void dlm_callback_work(struct work_struct *work);
 int dlm_callback_start(struct dlm_ls *ls);
 void dlm_callback_stop(struct dlm_ls *ls);

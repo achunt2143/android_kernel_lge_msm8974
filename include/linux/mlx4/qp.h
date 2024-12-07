@@ -34,10 +34,7 @@
 #define MLX4_QP_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-=======
 #include <linux/if_ether.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mlx4/device.h>
 
@@ -59,12 +56,8 @@ enum mlx4_qp_optpar {
 	MLX4_QP_OPTPAR_RNR_RETRY		= 1 << 13,
 	MLX4_QP_OPTPAR_ACK_TIMEOUT		= 1 << 14,
 	MLX4_QP_OPTPAR_SCHED_QUEUE		= 1 << 16,
-<<<<<<< HEAD
-	MLX4_QP_OPTPAR_COUNTER_INDEX		= 1 << 20
-=======
 	MLX4_QP_OPTPAR_COUNTER_INDEX		= 1 << 20,
 	MLX4_QP_OPTPAR_VLAN_STRIPPING		= 1 << 21,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum mlx4_qp_state {
@@ -103,10 +96,7 @@ enum {
 	MLX4_QP_BIT_RRE				= 1 << 15,
 	MLX4_QP_BIT_RWE				= 1 << 14,
 	MLX4_QP_BIT_RAE				= 1 << 13,
-<<<<<<< HEAD
-=======
 	MLX4_QP_BIT_FPP				= 1 <<	3,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_QP_BIT_RIC				= 1 <<	4,
 };
 
@@ -121,49 +111,35 @@ enum {
 	MLX4_RSS_TCP_IPV4			= 1 << 4,
 	MLX4_RSS_IPV4				= 1 << 5,
 
-<<<<<<< HEAD
-=======
 	MLX4_RSS_BY_OUTER_HEADERS		= 0 << 6,
 	MLX4_RSS_BY_INNER_HEADERS		= 2 << 6,
 	MLX4_RSS_BY_INNER_HEADERS_IPONLY	= 3 << 6,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* offset of mlx4_rss_context within mlx4_qp_context.pri_path */
 	MLX4_RSS_OFFSET_IN_QPC_PRI_PATH		= 0x24,
 	/* offset of being RSS indirection QP within mlx4_qp_context.flags */
 	MLX4_RSS_QPC_FLAG_OFFSET		= 13,
 };
 
-<<<<<<< HEAD
-=======
 #define MLX4_EN_RSS_KEY_SIZE 40
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mlx4_rss_context {
 	__be32			base_qpn;
 	__be32			default_qpn;
 	u16			reserved;
 	u8			hash_fn;
 	u8			flags;
-<<<<<<< HEAD
-	__be32			rss_key[10];
-=======
 	__be32			rss_key[MLX4_EN_RSS_KEY_SIZE / sizeof(__be32)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32			base_qpn_udp;
 };
 
 struct mlx4_qp_path {
 	u8			fl;
-<<<<<<< HEAD
-	u8			reserved1[2];
-=======
 	union {
 		u8			vlan_control;
 		u8			control;
 	};
 	u8			disable_pkey_check;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			pkey_index;
 	u8			counter_index;
 	u8			grh_mylmc;
@@ -176,11 +152,6 @@ struct mlx4_qp_path {
 	u8			rgid[16];
 	u8			sched_queue;
 	u8			vlan_index;
-<<<<<<< HEAD
-	u8			reserved3[2];
-	u8			reserved4[2];
-	u8			dmac[6];
-=======
 	u8			feup;
 	u8			fvl_rx;
 	u8			reserved4[2];
@@ -216,7 +187,6 @@ enum { /* feup */
 
 enum { /* fvl_rx */
 	MLX4_FVL_RX_FORCE_ETH_VLAN      = 1 << 0 /* enforce Eth rx vlan */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_qp_context {
@@ -225,11 +195,7 @@ struct mlx4_qp_context {
 	u8			mtu_msgmax;
 	u8			rq_size_stride;
 	u8			sq_size_stride;
-<<<<<<< HEAD
-	u8			rlkey;
-=======
 	u8			rlkey_roce_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32			usr_page;
 	__be32			local_qpn;
 	__be32			remote_qpn;
@@ -239,12 +205,8 @@ struct mlx4_qp_context {
 	u32			reserved1;
 	__be32			next_send_psn;
 	__be32			cqn_send;
-<<<<<<< HEAD
-	u32			reserved2[2];
-=======
 	__be16                  roce_entropy;
 	__be16                  reserved2[3];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32			last_acked_psn;
 	__be32			ssn;
 	__be32			params2;
@@ -257,16 +219,6 @@ struct mlx4_qp_context {
 	__be32			msn;
 	__be16			rq_wqe_counter;
 	__be16			sq_wqe_counter;
-<<<<<<< HEAD
-	u32			reserved3[2];
-	__be32			param3;
-	__be32			nummmcpeers_basemkey;
-	u8			log_page_size;
-	u8			reserved4[2];
-	u8			mtt_base_addr_h;
-	__be32			mtt_base_addr_l;
-	u32			reserved5[10];
-=======
 	u32			reserved3;
 	__be16			rate_limit_params;
 	u8			reserved4;
@@ -321,7 +273,6 @@ enum {
 
 enum { /* param3 */
 	MLX4_STRIP_VLAN = 1 << 30
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Which firmware version adds support for NEC (NoErrorCompletion) bit */
@@ -329,33 +280,19 @@ enum { /* param3 */
 
 enum {
 	MLX4_WQE_CTRL_NEC		= 1 << 29,
-<<<<<<< HEAD
-=======
 	MLX4_WQE_CTRL_IIP		= 1 << 28,
 	MLX4_WQE_CTRL_ILP		= 1 << 27,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_WQE_CTRL_FENCE		= 1 << 6,
 	MLX4_WQE_CTRL_CQ_UPDATE		= 3 << 2,
 	MLX4_WQE_CTRL_SOLICITED		= 1 << 1,
 	MLX4_WQE_CTRL_IP_CSUM		= 1 << 4,
 	MLX4_WQE_CTRL_TCP_UDP_CSUM	= 1 << 5,
-<<<<<<< HEAD
-	MLX4_WQE_CTRL_INS_VLAN		= 1 << 6,
-=======
 	MLX4_WQE_CTRL_INS_CVLAN		= 1 << 6,
 	MLX4_WQE_CTRL_INS_SVLAN		= 1 << 7,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_WQE_CTRL_STRONG_ORDER	= 1 << 7,
 	MLX4_WQE_CTRL_FORCE_LOOPBACK	= 1 << 0,
 };
 
-<<<<<<< HEAD
-struct mlx4_wqe_ctrl_seg {
-	__be32			owner_opcode;
-	__be16			vlan_tag;
-	u8			ins_vlan;
-	u8			fence_size;
-=======
 union mlx4_wqe_qpn_vlan {
 	struct {
 		__be16	vlan_tag;
@@ -368,7 +305,6 @@ union mlx4_wqe_qpn_vlan {
 struct mlx4_wqe_ctrl_seg {
 	__be32			owner_opcode;
 	union mlx4_wqe_qpn_vlan	qpn_vlan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * High 24 bits are SRC remote buffer; low 8 bits are flags:
 	 * [7]   SO (strong ordering)
@@ -399,12 +335,8 @@ struct mlx4_wqe_mlx_seg {
 	u8			owner;
 	u8			reserved1[2];
 	u8			opcode;
-<<<<<<< HEAD
-	u8			reserved2[3];
-=======
 	__be16			sched_prio;
 	u8			reserved2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			size;
 	/*
 	 * [17]    VL15
@@ -425,25 +357,17 @@ struct mlx4_wqe_datagram_seg {
 	__be32			dqpn;
 	__be32			qkey;
 	__be16			vlan;
-<<<<<<< HEAD
-	u8			mac[6];
-=======
 	u8			mac[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_wqe_lso_seg {
 	__be32			mss_hdr_size;
-<<<<<<< HEAD
-	__be32			header[0];
-=======
 	__be32			header[];
 };
 
 enum mlx4_wqe_bind_seg_flags2 {
 	MLX4_WQE_BIND_ZERO_BASED = (1 << 30),
 	MLX4_WQE_BIND_TYPE_2     = (1 << 31),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_wqe_bind_seg {
@@ -458,15 +382,9 @@ struct mlx4_wqe_bind_seg {
 enum {
 	MLX4_WQE_FMR_PERM_LOCAL_READ	= 1 << 27,
 	MLX4_WQE_FMR_PERM_LOCAL_WRITE	= 1 << 28,
-<<<<<<< HEAD
-	MLX4_WQE_FMR_PERM_REMOTE_READ	= 1 << 29,
-	MLX4_WQE_FMR_PERM_REMOTE_WRITE	= 1 << 30,
-	MLX4_WQE_FMR_PERM_ATOMIC	= 1 << 31
-=======
 	MLX4_WQE_FMR_AND_BIND_PERM_REMOTE_READ	= 1 << 29,
 	MLX4_WQE_FMR_AND_BIND_PERM_REMOTE_WRITE	= 1 << 30,
 	MLX4_WQE_FMR_AND_BIND_PERM_ATOMIC	= 1 << 31
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_wqe_fmr_seg {
@@ -491,19 +409,10 @@ struct mlx4_wqe_fmr_ext_seg {
 };
 
 struct mlx4_wqe_local_inval_seg {
-<<<<<<< HEAD
-	__be32			flags;
-	u32			reserved1;
-	__be32			mem_key;
-	u32			reserved2[2];
-	__be32			guest_id;
-	__be64			pa;
-=======
 	u64			reserved1;
 	__be32			mem_key;
 	u32			reserved2;
 	u64			reserved3[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_wqe_raddr_seg {
@@ -537,10 +446,6 @@ enum {
 
 struct mlx4_wqe_inline_seg {
 	__be32			byte_count;
-<<<<<<< HEAD
-};
-
-=======
 	__u8			data[];
 };
 
@@ -570,7 +475,6 @@ struct mlx4_qp *mlx4_qp_lookup(struct mlx4_dev *dev, u32 qpn);
 int mlx4_update_qp(struct mlx4_dev *dev, u32 qpn,
 		   enum mlx4_update_qp_attr attr,
 		   struct mlx4_update_qp_params *params);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_qp_modify(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 		   enum mlx4_qp_state cur_state, enum mlx4_qp_state new_state,
 		   struct mlx4_qp_context *context, enum mlx4_qp_optpar optpar,
@@ -590,8 +494,6 @@ static inline struct mlx4_qp *__mlx4_qp_lookup(struct mlx4_dev *dev, u32 qpn)
 
 void mlx4_qp_remove(struct mlx4_dev *dev, struct mlx4_qp *qp);
 
-<<<<<<< HEAD
-=======
 static inline u16 folded_qp(u32 q)
 {
 	u16 res;
@@ -603,5 +505,4 @@ static inline u16 folded_qp(u32 q)
 u16 mlx4_qp_roce_entropy(struct mlx4_dev *dev, u32 qpn);
 
 void mlx4_put_qp(struct mlx4_qp *qp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* MLX4_QP_H */

@@ -12,11 +12,7 @@ Description:	Make it possible to set/get current led state. Reading from it
 What:		/sys/bus/hid/drivers/wiimote/<dev>/extension
 Date:		August 2011
 KernelVersion:	3.2
-<<<<<<< HEAD
-Contact:	David Herrmann <dh.herrmann@googlemail.com>
-=======
 Contact:	David Herrmann <dh.herrmann@gmail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Description:	This file contains the currently connected and initialized
 		extensions. It can be one of: none, motionp, nunchuck, classic,
 		motionp+nunchuck, motionp+classic
@@ -24,8 +20,6 @@ Description:	This file contains the currently connected and initialized
 		the official Nintendo Nunchuck extension and classic is the
 		Nintendo Classic Controller extension. The motionp extension can
 		be combined with the other two.
-<<<<<<< HEAD
-=======
 
 		Starting with kernel-version 3.11 Motion Plus hotplugging is
 		supported and if detected, it's no longer reported as static
@@ -89,4 +83,3 @@ Description:	This attribute is only provided if the device was detected as a
 		You can write "scan\n" into this file to re-trigger calibration.
 		You can also write data directly in the form "x1:y1 x2:y2" to
 		set the calibration values manually.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

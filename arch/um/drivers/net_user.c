@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdio.h>
@@ -17,15 +11,9 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
-<<<<<<< HEAD
-#include "net_user.h"
-#include "os.h"
-#include "um_malloc.h"
-=======
 #include <net_user.h>
 #include <os.h>
 #include <um_malloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int tap_open_common(void *dev, char *gate_addr)
 {
@@ -178,11 +166,7 @@ int net_sendto(int fd, void *buf, int len, void *to, int sock_len)
 
 struct change_pre_exec_data {
 	int close_me;
-<<<<<<< HEAD
-	int stdout;
-=======
 	int stdout_fd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void change_pre_exec(void *arg)
@@ -190,11 +174,7 @@ static void change_pre_exec(void *arg)
 	struct change_pre_exec_data *data = arg;
 
 	close(data->close_me);
-<<<<<<< HEAD
-	dup2(data->stdout, 1);
-=======
 	dup2(data->stdout_fd, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int change_tramp(char **argv, char *output, int output_len)
@@ -209,11 +189,7 @@ static int change_tramp(char **argv, char *output, int output_len)
 		return err;
 	}
 	pe_data.close_me = fds[0];
-<<<<<<< HEAD
-	pe_data.stdout = fds[1];
-=======
 	pe_data.stdout_fd = fds[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pid = run_helper(change_pre_exec, &pe_data, argv);
 
 	if (pid > 0)	/* Avoid hang as we won't get data in failure case. */
@@ -273,33 +249,17 @@ void close_addr(unsigned char *addr, unsigned char *netmask, void *arg)
 
 char *split_if_spec(char *str, ...)
 {
-<<<<<<< HEAD
-	char **arg, *end;
-=======
 	char **arg, *end, *ret = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	va_list ap;
 
 	va_start(ap, str);
 	while ((arg = va_arg(ap, char **)) != NULL) {
 		if (*str == '\0')
-<<<<<<< HEAD
-			return NULL;
-=======
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		end = strchr(str, ',');
 		if (end != str)
 			*arg = str;
 		if (end == NULL)
-<<<<<<< HEAD
-			return NULL;
-		*end++ = '\0';
-		str = end;
-	}
-	va_end(ap);
-	return str;
-=======
 			goto out;
 		*end++ = '\0';
 		str = end;
@@ -308,5 +268,4 @@ char *split_if_spec(char *str, ...)
 out:
 	va_end(ap);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  psb GEM interface
  *
  * Copyright (c) 2011, Intel Corporation.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Alan Cox
  *
  * TODO:
@@ -30,122 +11,6 @@
  *		accelerated operations on a GEM object)
  */
 
-<<<<<<< HEAD
-#include <drm/drmP.h>
-#include <drm/drm.h>
-#include "gma_drm.h"
-#include "psb_drv.h"
-
-int psb_gem_init_object(struct drm_gem_object *obj)
-{
-	return -EINVAL;
-}
-
-void psb_gem_free_object(struct drm_gem_object *obj)
-{
-	struct gtt_range *gtt = container_of(obj, struct gtt_range, gem);
-	drm_gem_object_release_wrap(obj);
-	/* This must occur last as it frees up the memory of the GEM object */
-	psb_gtt_free_range(obj->dev, gtt);
-}
-
-int psb_gem_get_aperture(struct drm_device *dev, void *data,
-				struct drm_file *file)
-{
-	return -EINVAL;
-}
-
-/**
- *	psb_gem_dumb_map_gtt	-	buffer mapping for dumb interface
- *	@file: our drm client file
- *	@dev: drm device
- *	@handle: GEM handle to the object (from dumb_create)
- *
- *	Do the necessary setup to allow the mapping of the frame buffer
- *	into user memory. We don't have to do much here at the moment.
- */
-int psb_gem_dumb_map_gtt(struct drm_file *file, struct drm_device *dev,
-			 uint32_t handle, uint64_t *offset)
-{
-	int ret = 0;
-	struct drm_gem_object *obj;
-
-	if (!(dev->driver->driver_features & DRIVER_GEM))
-		return -ENODEV;
-
-	mutex_lock(&dev->struct_mutex);
-
-	/* GEM does all our handle to object mapping */
-	obj = drm_gem_object_lookup(dev, file, handle);
-	if (obj == NULL) {
-		ret = -ENOENT;
-		goto unlock;
-	}
-	/* What validation is needed here ? */
-
-	/* Make it mmapable */
-	if (!obj->map_list.map) {
-		ret = gem_create_mmap_offset(obj);
-		if (ret)
-			goto out;
-	}
-	/* GEM should really work out the hash offsets for us */
-	*offset = (u64)obj->map_list.hash.key << PAGE_SHIFT;
-out:
-	drm_gem_object_unreference(obj);
-unlock:
-	mutex_unlock(&dev->struct_mutex);
-	return ret;
-}
-
-/**
- *	psb_gem_create		-	create a mappable object
- *	@file: the DRM file of the client
- *	@dev: our device
- *	@size: the size requested
- *	@handlep: returned handle (opaque number)
- *
- *	Create a GEM object, fill in the boilerplate and attach a handle to
- *	it so that userspace can speak about it. This does the core work
- *	for the various methods that do/will create GEM objects for things
- */
-static int psb_gem_create(struct drm_file *file,
-	struct drm_device *dev, uint64_t size, uint32_t *handlep)
-{
-	struct gtt_range *r;
-	int ret;
-	u32 handle;
-
-	size = roundup(size, PAGE_SIZE);
-
-	/* Allocate our object - for now a direct gtt range which is not
-	   stolen memory backed */
-	r = psb_gtt_alloc_range(dev, size, "gem", 0);
-	if (r == NULL) {
-		dev_err(dev->dev, "no memory for %lld byte GEM object\n", size);
-		return -ENOSPC;
-	}
-	/* Initialize the extra goodies GEM needs to do all the hard work */
-	if (drm_gem_object_init(dev, &r->gem, size) != 0) {
-		psb_gtt_free_range(dev, r);
-		/* GEM doesn't give an error code so use -ENOMEM */
-		dev_err(dev->dev, "GEM init failed for %lld\n", size);
-		return -ENOMEM;
-	}
-	/* Give the object a handle so we can carry it more easily */
-	ret = drm_gem_handle_create(file, &r->gem, &handle);
-	if (ret) {
-		dev_err(dev->dev, "GEM handle failed for %p, %lld\n",
-							&r->gem, size);
-		drm_gem_object_release(&r->gem);
-		psb_gtt_free_range(dev, r);
-		return ret;
-	}
-	/* We have the initial and handle reference but need only one now */
-	drm_gem_object_unreference(&r->gem);
-	*handlep = handle;
-	return 0;
-=======
 #include <linux/pagemap.h>
 
 #include <asm/set_memory.h>
@@ -319,16 +184,11 @@ err_release_resource:
 err_kfree:
 	kfree(pobj);
 	return ERR_PTR(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  *	psb_gem_dumb_create	-	create a dumb buffer
-<<<<<<< HEAD
- *	@drm_file: our client file
-=======
  *	@file: our client file
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@dev: our device
  *	@args: the requested arguments copied from userspace
  *
@@ -339,28 +199,6 @@ err_kfree:
 int psb_gem_dumb_create(struct drm_file *file, struct drm_device *dev,
 			struct drm_mode_create_dumb *args)
 {
-<<<<<<< HEAD
-	args->pitch = ALIGN(args->width * ((args->bpp + 7) / 8), 64);
-	args->size = args->pitch * args->height;
-	return psb_gem_create(file, dev, args->size, &args->handle);
-}
-
-/**
- *	psb_gem_dumb_destroy	-	destroy a dumb buffer
- *	@file: client file
- *	@dev: our DRM device
- *	@handle: the object handle
- *
- *	Destroy a handle that was created via psb_gem_dumb_create, at least
- *	we hope it was created that way. i915 seems to assume the caller
- *	does the checking but that might be worth review ! FIXME
- */
-int psb_gem_dumb_destroy(struct drm_file *file, struct drm_device *dev,
-			uint32_t handle)
-{
-	/* No special work needed, drop the reference and see what falls out */
-	return drm_gem_handle_delete(file, handle);
-=======
 	size_t pitch, size;
 	struct psb_gem_object *pobj;
 	struct drm_gem_object *obj;
@@ -395,15 +233,10 @@ int psb_gem_dumb_destroy(struct drm_file *file, struct drm_device *dev,
 err_drm_gem_object_put:
 	drm_gem_object_put(obj);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  *	psb_gem_fault		-	pagefault handler for GEM objects
-<<<<<<< HEAD
- *	@vma: the VMA of the GEM object
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@vmf: fault detail
  *
  *	Invoked when a fault occurs on an mmap of a GEM managed area. GEM
@@ -418,13 +251,6 @@ err_drm_gem_object_put:
  *	vma->vm_private_data points to the GEM object that is backing this
  *	mapping.
  */
-<<<<<<< HEAD
-int psb_gem_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-	struct drm_gem_object *obj;
-	struct gtt_range *r;
-	int ret;
-=======
 static vm_fault_t psb_gem_fault(struct vm_fault *vmf)
 {
 	struct vm_area_struct *vma = vmf->vma;
@@ -432,7 +258,6 @@ static vm_fault_t psb_gem_fault(struct vm_fault *vmf)
 	struct psb_gem_object *pobj;
 	int err;
 	vm_fault_t ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long pfn;
 	pgoff_t page_offset;
 	struct drm_device *dev;
@@ -440,25 +265,6 @@ static vm_fault_t psb_gem_fault(struct vm_fault *vmf)
 
 	obj = vma->vm_private_data;	/* GEM object */
 	dev = obj->dev;
-<<<<<<< HEAD
-	dev_priv = dev->dev_private;
-
-	r = container_of(obj, struct gtt_range, gem);	/* Get the gtt range */
-
-	/* Make sure we don't parallel update on a fault, nor move or remove
-	   something from beneath our feet */
-	mutex_lock(&dev->struct_mutex);
-
-	/* For now the mmap pins the object and it stays pinned. As things
-	   stand that will do us no harm */
-	if (r->mmapping == 0) {
-		ret = psb_gtt_pin(r);
-		if (ret < 0) {
-			dev_err(dev->dev, "gma500: pin failed: %d\n", ret);
-			goto fail;
-		}
-		r->mmapping = 1;
-=======
 	dev_priv = to_drm_psb_private(dev);
 
 	pobj = to_psb_gem_object(obj);
@@ -477,79 +283,10 @@ static vm_fault_t psb_gem_fault(struct vm_fault *vmf)
 			goto fail;
 		}
 		pobj->mmapping = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Page relative to the VMA start - we must calculate this ourselves
 	   because vmf->pgoff is the fake GEM offset */
-<<<<<<< HEAD
-	page_offset = ((unsigned long) vmf->virtual_address - vma->vm_start)
-				>> PAGE_SHIFT;
-
-	/* CPU view of the page, don't go via the GART for CPU writes */
-	if (r->stolen)
-		pfn = (dev_priv->stolen_base + r->offset) >> PAGE_SHIFT;
-	else
-		pfn = page_to_pfn(r->pages[page_offset]);
-	ret = vm_insert_pfn(vma, (unsigned long)vmf->virtual_address, pfn);
-
-fail:
-	mutex_unlock(&dev->struct_mutex);
-	switch (ret) {
-	case 0:
-	case -ERESTARTSYS:
-	case -EINTR:
-		return VM_FAULT_NOPAGE;
-	case -ENOMEM:
-		return VM_FAULT_OOM;
-	default:
-		return VM_FAULT_SIGBUS;
-	}
-}
-
-static int psb_gem_create_stolen(struct drm_file *file, struct drm_device *dev,
-						int size, u32 *handle)
-{
-	struct gtt_range *gtt = psb_gtt_alloc_range(dev, size, "gem", 1);
-	if (gtt == NULL)
-		return -ENOMEM;
-	if (drm_gem_private_object_init(dev, &gtt->gem, size) != 0)
-		goto free_gtt;
-	if (drm_gem_handle_create(file, &gtt->gem, handle) == 0)
-		return 0;
-free_gtt:
-	psb_gtt_free_range(dev, gtt);
-	return -ENOMEM;
-}
-
-/*
- *	GEM interfaces for our specific client
- */
-int psb_gem_create_ioctl(struct drm_device *dev, void *data,
-					struct drm_file *file)
-{
-	struct drm_psb_gem_create *args = data;
-	int ret;
-	if (args->flags & GMA_GEM_CREATE_STOLEN) {
-		ret = psb_gem_create_stolen(file, dev, args->size,
-							&args->handle);
-		if (ret == 0)
-			return 0;
-		/* Fall throguh */
-		args->flags &= ~GMA_GEM_CREATE_STOLEN;
-	}
-	return psb_gem_create(file, dev, args->size, &args->handle);
-}
-
-int psb_gem_mmap_ioctl(struct drm_device *dev, void *data,
-					struct drm_file *file)
-{
-	struct drm_psb_gem_mmap *args = data;
-	return dev->driver->dumb_map_offset(file, dev,
-						args->handle, &args->offset);
-}
-
-=======
 	page_offset = (vmf->address - vma->vm_start) >> PAGE_SHIFT;
 
 	/* CPU view of the page, don't go via the GART for CPU writes */
@@ -692,4 +429,3 @@ int psb_gem_mm_resume(struct drm_device *dev)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

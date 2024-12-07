@@ -150,8 +150,6 @@ static inline void ath6kl_hif_stop(struct ath6kl *ar)
 	ar->hif_ops->stop(ar);
 }
 
-<<<<<<< HEAD
-=======
 static inline int ath6kl_hif_pipe_send(struct ath6kl *ar,
 				       u8 pipe, struct sk_buff *hdr_buf,
 				       struct sk_buff *buf)
@@ -186,5 +184,4 @@ static inline u16 ath6kl_hif_pipe_get_free_queue_number(struct ath6kl *ar,
 	return ar->hif_ops->pipe_get_free_queue_number(ar, pipe);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

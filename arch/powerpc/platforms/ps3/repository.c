@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 repository routines.
  *
  *  Copyright (C) 2006 Sony Computer Entertainment Inc.
  *  Copyright 2006 Sony Corp.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/lv1call.h>
@@ -92,15 +73,9 @@ static void _dump_node(unsigned int lpar_id, u64 n1, u64 n2, u64 n3, u64 n4,
 
 static u64 make_first_field(const char *text, u64 index)
 {
-<<<<<<< HEAD
-	u64 n;
-
-	strncpy((char *)&n, text, 8);
-=======
 	u64 n = 0;
 
 	memcpy((char *)&n, text, strnlen(text, sizeof(n)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return PS3_VENDOR_ID_NONE + (n >> 32) + index;
 }
 
@@ -114,15 +89,9 @@ static u64 make_first_field(const char *text, u64 index)
 
 static u64 make_field(const char *text, u64 index)
 {
-<<<<<<< HEAD
-	u64 n;
-
-	strncpy((char *)&n, text, 8);
-=======
 	u64 n = 0;
 
 	memcpy((char *)&n, text, strnlen(text, sizeof(n)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return n + index;
 }
 
@@ -189,19 +158,8 @@ int ps3_repository_read_bus_str(unsigned int bus_index, const char *bus_str,
 
 int ps3_repository_read_bus_id(unsigned int bus_index, u64 *bus_id)
 {
-<<<<<<< HEAD
-	int result;
-
-	result = read_node(PS3_LPAR_ID_PME,
-		make_first_field("bus", bus_index),
-		make_field("id", 0),
-		0, 0,
-		bus_id, NULL);
-	return result;
-=======
 	return read_node(PS3_LPAR_ID_PME, make_first_field("bus", bus_index),
 			 make_field("id", 0), 0, 0, bus_id, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ps3_repository_read_bus_type(unsigned int bus_index,
@@ -248,21 +206,9 @@ int ps3_repository_read_dev_str(unsigned int bus_index,
 int ps3_repository_read_dev_id(unsigned int bus_index, unsigned int dev_index,
 	u64 *dev_id)
 {
-<<<<<<< HEAD
-	int result;
-
-	result = read_node(PS3_LPAR_ID_PME,
-		make_first_field("bus", bus_index),
-		make_field("dev", dev_index),
-		make_field("id", 0),
-		0,
-		dev_id, NULL);
-	return result;
-=======
 	return read_node(PS3_LPAR_ID_PME, make_first_field("bus", bus_index),
 			 make_field("dev", dev_index), make_field("id", 0), 0,
 			 dev_id, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ps3_repository_read_dev_type(unsigned int bus_index,
@@ -467,11 +413,7 @@ found_dev:
 	return 0;
 }
 
-<<<<<<< HEAD
-int __devinit ps3_repository_find_devices(enum ps3_bus_type bus_type,
-=======
 int __init ps3_repository_find_devices(enum ps3_bus_type bus_type,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*callback)(const struct ps3_repository_device *repo))
 {
 	int result = 0;
@@ -513,11 +455,7 @@ int __init ps3_repository_find_devices(enum ps3_bus_type bus_type,
 	return result;
 }
 
-<<<<<<< HEAD
-int ps3_repository_find_bus(enum ps3_bus_type bus_type, unsigned int from,
-=======
 int __init ps3_repository_find_bus(enum ps3_bus_type bus_type, unsigned int from,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int *bus_index)
 {
 	unsigned int i;
@@ -817,8 +755,6 @@ int ps3_repository_read_mm_info(u64 *rm_base, u64 *rm_size, u64 *region_total)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ps3_repository_read_highmem_region_count - Read the number of highmem regions
  *
  * Bootloaders must arrange the repository nodes such that regions are indexed
@@ -885,7 +821,6 @@ int ps3_repository_read_highmem_info(unsigned int region_index,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ps3_repository_read_num_spu_reserved - Number of physical spus reserved.
  * @num_spu: Number of physical spus.
  */
@@ -973,11 +908,7 @@ int ps3_repository_read_boot_dat_size(unsigned int *size)
 	return result;
 }
 
-<<<<<<< HEAD
-int ps3_repository_read_vuart_av_port(unsigned int *port)
-=======
 int __init ps3_repository_read_vuart_av_port(unsigned int *port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result;
 	u64 v1 = 0;
@@ -992,11 +923,7 @@ int __init ps3_repository_read_vuart_av_port(unsigned int *port)
 	return result;
 }
 
-<<<<<<< HEAD
-int ps3_repository_read_vuart_sysmgr_port(unsigned int *port)
-=======
 int __init ps3_repository_read_vuart_sysmgr_port(unsigned int *port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result;
 	u64 v1 = 0;
@@ -1078,11 +1005,7 @@ int ps3_repository_read_be_id(u64 node_id, u64 *be_id)
 		be_id, NULL);
 }
 
-<<<<<<< HEAD
-int ps3_repository_read_tb_freq(u64 node_id, u64 *tb_freq)
-=======
 int __init ps3_repository_read_tb_freq(u64 node_id, u64 *tb_freq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return read_node(PS3_LPAR_ID_PME,
 		make_first_field("be", 0),
@@ -1092,11 +1015,7 @@ int __init ps3_repository_read_tb_freq(u64 node_id, u64 *tb_freq)
 		tb_freq, NULL);
 }
 
-<<<<<<< HEAD
-int ps3_repository_read_be_tb_freq(unsigned int be_index, u64 *tb_freq)
-=======
 int __init ps3_repository_read_be_tb_freq(unsigned int be_index, u64 *tb_freq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result;
 	u64 node_id;
@@ -1125,11 +1044,6 @@ int ps3_repository_read_lpm_privileges(unsigned int be_index, u64 *lpar,
 			    lpar, rights);
 }
 
-<<<<<<< HEAD
-#if defined(DEBUG)
-
-int ps3_repository_dump_resource_info(const struct ps3_repository_device *repo)
-=======
 #if defined(CONFIG_PS3_REPOSITORY_WRITE)
 
 static int create_node(u64 n1, u64 n2, u64 n3, u64 n4, u64 v1, u64 v2)
@@ -1265,7 +1179,6 @@ int ps3_repository_delete_highmem_info(unsigned int region_index)
 #if defined(DEBUG)
 
 int __init ps3_repository_dump_resource_info(const struct ps3_repository_device *repo)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result = 0;
 	unsigned int res_index;
@@ -1318,11 +1231,7 @@ int __init ps3_repository_dump_resource_info(const struct ps3_repository_device 
 	return result;
 }
 
-<<<<<<< HEAD
-static int dump_stor_dev_info(struct ps3_repository_device *repo)
-=======
 static int __init dump_stor_dev_info(struct ps3_repository_device *repo)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result = 0;
 	unsigned int num_regions, region_index;
@@ -1370,11 +1279,7 @@ out:
 	return result;
 }
 
-<<<<<<< HEAD
-static int dump_device_info(struct ps3_repository_device *repo,
-=======
 static int __init dump_device_info(struct ps3_repository_device *repo,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int num_dev)
 {
 	int result = 0;
@@ -1418,11 +1323,7 @@ static int __init dump_device_info(struct ps3_repository_device *repo,
 	return result;
 }
 
-<<<<<<< HEAD
-int ps3_repository_dump_bus_info(void)
-=======
 int __init ps3_repository_dump_bus_info(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result = 0;
 	struct ps3_repository_device repo;

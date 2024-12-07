@@ -1,38 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Access to user system call parameters and results
  *
  * Copyright (C) 2008 Red Hat, Inc.  All rights reserved.
  *
-<<<<<<< HEAD
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License v.2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * See asm-generic/syscall.h for descriptions of what we must do here.
  */
 
 #ifndef _ASM_SYSCALL_H
 #define _ASM_SYSCALL_H	1
 
-<<<<<<< HEAD
-#include <linux/sched.h>
-
-/* ftrace syscalls requires exporting the sys_call_table */
-#ifdef CONFIG_FTRACE_SYSCALLS
-extern const unsigned long *sys_call_table;
-#endif /* CONFIG_FTRACE_SYSCALLS */
-
-static inline long syscall_get_nr(struct task_struct *task,
-				  struct pt_regs *regs)
-{
-	return TRAP(regs) == 0xc00 ? regs->gpr[0] : -1L;
-=======
 #include <uapi/linux/audit.h>
 #include <linux/sched.h>
 #include <linux/thread_info.h>
@@ -60,7 +37,6 @@ static inline int syscall_get_nr(struct task_struct *task, struct pt_regs *regs)
 		return regs->gpr[0];
 	else
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void syscall_rollback(struct task_struct *task,
@@ -72,9 +48,6 @@ static inline void syscall_rollback(struct task_struct *task,
 static inline long syscall_get_error(struct task_struct *task,
 				     struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	return (regs->ccr & 0x10000000) ? -regs->gpr[3] : 0;
-=======
 	if (trap_is_scv(regs)) {
 		unsigned long error = regs->gpr[3];
 
@@ -86,7 +59,6 @@ static inline long syscall_get_error(struct task_struct *task,
 		 */
 		return (regs->ccr & 0x10000000UL) ? -regs->gpr[3] : 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline long syscall_get_return_value(struct task_struct *task,
@@ -99,14 +71,6 @@ static inline void syscall_set_return_value(struct task_struct *task,
 					    struct pt_regs *regs,
 					    int error, long val)
 {
-<<<<<<< HEAD
-	if (error) {
-		regs->ccr |= 0x10000000L;
-		regs->gpr[3] = -error;
-	} else {
-		regs->ccr &= ~0x10000000L;
-		regs->gpr[3] = val;
-=======
 	if (trap_is_scv(regs)) {
 		regs->gpr[3] = (long) error ?: val;
 	} else {
@@ -123,41 +87,11 @@ static inline void syscall_set_return_value(struct task_struct *task,
 			regs->ccr &= ~0x10000000L;
 			regs->gpr[3] = val;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static inline void syscall_get_arguments(struct task_struct *task,
 					 struct pt_regs *regs,
-<<<<<<< HEAD
-					 unsigned int i, unsigned int n,
-					 unsigned long *args)
-{
-	BUG_ON(i + n > 6);
-#ifdef CONFIG_PPC64
-	if (test_tsk_thread_flag(task, TIF_32BIT)) {
-		/*
-		 * Zero-extend 32-bit argument values.  The high bits are
-		 * garbage ignored by the actual syscall dispatch.
-		 */
-		while (n-- > 0)
-			args[n] = (u32) regs->gpr[3 + i + n];
-		return;
-	}
-#endif
-	memcpy(args, &regs->gpr[3 + i], n * sizeof(args[0]));
-}
-
-static inline void syscall_set_arguments(struct task_struct *task,
-					 struct pt_regs *regs,
-					 unsigned int i, unsigned int n,
-					 const unsigned long *args)
-{
-	BUG_ON(i + n > 6);
-	memcpy(&regs->gpr[3 + i], args, n * sizeof(args[0]));
-}
-
-=======
 					 unsigned long *args)
 {
 	unsigned long val, mask = -1UL;
@@ -185,5 +119,4 @@ static inline int syscall_get_arch(struct task_struct *task)
 	else
 		return AUDIT_ARCH_PPC64;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _ASM_SYSCALL_H */

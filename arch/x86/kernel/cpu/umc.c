@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h>
 #include "cpu.h"
 
@@ -13,19 +8,11 @@
  * so no special init takes place.
  */
 
-<<<<<<< HEAD
-static const struct cpu_dev __cpuinitconst umc_cpu_dev = {
-	.c_vendor	= "UMC",
-	.c_ident	= { "UMC UMC UMC" },
-	.c_models = {
-		{ .vendor = X86_VENDOR_UMC, .family = 4, .model_names =
-=======
 static const struct cpu_dev umc_cpu_dev = {
 	.c_vendor	= "UMC",
 	.c_ident	= { "UMC UMC UMC" },
 	.legacy_models	= {
 		{ .family = 4, .model_names =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  {
 			  [1] = "U5D",
 			  [2] = "U5S",

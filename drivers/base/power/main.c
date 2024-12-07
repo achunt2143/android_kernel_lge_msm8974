@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/base/power/main.c - Where the driver meets power management.
  *
  * Copyright (c) 2003 Patrick Mochel
  * Copyright (c) 2003 Open Source Development Lab
  *
-<<<<<<< HEAD
- * This file is released under the GPLv2
- *
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The driver model core calls device_pm_add() when a device is registered.
  * This will initialize the embedded device_pm_info object in the device
  * and add it to the list of power-controlled devices. sysfs entries for
@@ -24,26 +15,14 @@
  * subsystem list maintains.
  */
 
-<<<<<<< HEAD
-#include <linux/device.h>
-#include <linux/kallsyms.h>
-=======
 #define pr_fmt(fmt) "PM: " fmt
 #define dev_fmt pr_fmt
 
 #include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/mutex.h>
 #include <linux/pm.h>
 #include <linux/pm_runtime.h>
-<<<<<<< HEAD
-#include <linux/resume-trace.h>
-#include <linux/interrupt.h>
-#include <linux/sched.h>
-#include <linux/async.h>
-#include <linux/suspend.h>
-=======
 #include <linux/pm-trace.h>
 #include <linux/pm_wakeirq.h>
 #include <linux/interrupt.h>
@@ -54,7 +33,6 @@
 #include <trace/events/power.h>
 #include <linux/cpufreq.h>
 #include <linux/devfreq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/timer.h>
 
 #include "../base.h"
@@ -62,13 +40,10 @@
 
 typedef int (*pm_callback_t)(struct device *);
 
-<<<<<<< HEAD
-=======
 #define list_for_each_entry_rcu_locked(pos, head, member) \
 	list_for_each_entry_rcu(pos, head, member, \
 			device_links_read_lock_held())
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The entries in the dpm_list list are in a depth first order, simply
  * because children are guaranteed to be discovered after parents, and
@@ -80,40 +55,6 @@ typedef int (*pm_callback_t)(struct device *);
  */
 
 LIST_HEAD(dpm_list);
-<<<<<<< HEAD
-LIST_HEAD(dpm_prepared_list);
-LIST_HEAD(dpm_suspended_list);
-LIST_HEAD(dpm_late_early_list);
-LIST_HEAD(dpm_noirq_list);
-
-struct suspend_stats suspend_stats;
-static DEFINE_MUTEX(dpm_list_mtx);
-static pm_message_t pm_transition;
-
-static void dpm_drv_timeout(unsigned long data);
-struct dpm_drv_wd_data {
-	struct device *dev;
-	struct task_struct *tsk;
-};
-
-static int async_error;
-
-/**
- * device_pm_init - Initialize the PM-related part of a device object.
- * @dev: Device object being initialized.
- */
-void device_pm_init(struct device *dev)
-{
-	dev->power.is_prepared = false;
-	dev->power.is_suspended = false;
-	init_completion(&dev->power.completion);
-	complete_all(&dev->power.completion);
-	dev->power.wakeup = NULL;
-	spin_lock_init(&dev->power.lock);
-	pm_runtime_init(dev);
-	INIT_LIST_HEAD(&dev->power.entry);
-	dev->power.power_state = PMSG_INVALID;
-=======
 static LIST_HEAD(dpm_prepared_list);
 static LIST_HEAD(dpm_suspended_list);
 static LIST_HEAD(dpm_late_early_list);
@@ -162,7 +103,6 @@ void device_pm_sleep_init(struct device *dev)
 	complete_all(&dev->power.completion);
 	dev->power.wakeup = NULL;
 	INIT_LIST_HEAD(&dev->power.entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -187,10 +127,6 @@ void device_pm_unlock(void)
  */
 void device_pm_add(struct device *dev)
 {
-<<<<<<< HEAD
-	pr_debug("PM: Adding info for %s:%s\n",
-		 dev->bus ? dev->bus->name : "No Bus", dev_name(dev));
-=======
 	/* Skip PM setup/initialization. */
 	if (device_pm_not_required(dev))
 		return;
@@ -198,17 +134,12 @@ void device_pm_add(struct device *dev)
 	pr_debug("Adding info for %s:%s\n",
 		 dev->bus ? dev->bus->name : "No Bus", dev_name(dev));
 	device_pm_check_callbacks(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&dpm_list_mtx);
 	if (dev->parent && dev->parent->power.is_prepared)
 		dev_warn(dev, "parent %s should not be sleeping\n",
 			dev_name(dev->parent));
 	list_add_tail(&dev->power.entry, &dpm_list);
-<<<<<<< HEAD
-	dev_pm_qos_constraints_init(dev);
-=======
 	dev->power.in_dpm_list = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&dpm_list_mtx);
 }
 
@@ -218,17 +149,6 @@ void device_pm_add(struct device *dev)
  */
 void device_pm_remove(struct device *dev)
 {
-<<<<<<< HEAD
-	pr_debug("PM: Removing info for %s:%s\n",
-		 dev->bus ? dev->bus->name : "No Bus", dev_name(dev));
-	complete_all(&dev->power.completion);
-	mutex_lock(&dpm_list_mtx);
-	dev_pm_qos_constraints_destroy(dev);
-	list_del_init(&dev->power.entry);
-	mutex_unlock(&dpm_list_mtx);
-	device_wakeup_disable(dev);
-	pm_runtime_remove(dev);
-=======
 	if (device_pm_not_required(dev))
 		return;
 
@@ -242,7 +162,6 @@ void device_pm_remove(struct device *dev)
 	device_wakeup_disable(dev);
 	pm_runtime_remove(dev);
 	device_pm_check_callbacks(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -252,11 +171,7 @@ void device_pm_remove(struct device *dev)
  */
 void device_pm_move_before(struct device *deva, struct device *devb)
 {
-<<<<<<< HEAD
-	pr_debug("PM: Moving %s:%s before %s:%s\n",
-=======
 	pr_debug("Moving %s:%s before %s:%s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 deva->bus ? deva->bus->name : "No Bus", dev_name(deva),
 		 devb->bus ? devb->bus->name : "No Bus", dev_name(devb));
 	/* Delete deva from dpm_list and reinsert before devb. */
@@ -270,11 +185,7 @@ void device_pm_move_before(struct device *deva, struct device *devb)
  */
 void device_pm_move_after(struct device *deva, struct device *devb)
 {
-<<<<<<< HEAD
-	pr_debug("PM: Moving %s:%s after %s:%s\n",
-=======
 	pr_debug("Moving %s:%s after %s:%s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 deva->bus ? deva->bus->name : "No Bus", dev_name(deva),
 		 devb->bus ? devb->bus->name : "No Bus", dev_name(devb));
 	/* Delete deva from dpm_list and reinsert after devb. */
@@ -287,42 +198,11 @@ void device_pm_move_after(struct device *deva, struct device *devb)
  */
 void device_pm_move_last(struct device *dev)
 {
-<<<<<<< HEAD
-	pr_debug("PM: Moving %s:%s to end of list\n",
-=======
 	pr_debug("Moving %s:%s to end of list\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 dev->bus ? dev->bus->name : "No Bus", dev_name(dev));
 	list_move_tail(&dev->power.entry, &dpm_list);
 }
 
-<<<<<<< HEAD
-static ktime_t initcall_debug_start(struct device *dev)
-{
-	ktime_t calltime = ktime_set(0, 0);
-
-	if (initcall_debug) {
-		pr_info("calling  %s+ @ %i, parent: %s\n",
-			dev_name(dev), task_pid_nr(current),
-			dev->parent ? dev_name(dev->parent) : "none");
-		calltime = ktime_get();
-	}
-
-	return calltime;
-}
-
-static void initcall_debug_report(struct device *dev, ktime_t calltime,
-				  int error)
-{
-	ktime_t delta, rettime;
-
-	if (initcall_debug) {
-		rettime = ktime_get();
-		delta = ktime_sub(rettime, calltime);
-		pr_info("call %s+ returned %d after %Ld usecs\n", dev_name(dev),
-			error, (unsigned long long)ktime_to_ns(delta) >> 10);
-	}
-=======
 static ktime_t initcall_debug_start(struct device *dev, void *cb)
 {
 	if (!pm_print_times_enabled)
@@ -345,7 +225,6 @@ static void initcall_debug_report(struct device *dev, ktime_t calltime,
 	rettime = ktime_get();
 	dev_info(dev, "%pS returned %d after %Ld usecs\n", cb, error,
 		 (unsigned long long)ktime_us_delta(rettime, calltime));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -373,8 +252,6 @@ static void dpm_wait_for_children(struct device *dev, bool async)
        device_for_each_child(dev, &async, dpm_wait_fn);
 }
 
-<<<<<<< HEAD
-=======
 static void dpm_wait_for_suppliers(struct device *dev, bool async)
 {
 	struct device_link *link;
@@ -459,7 +336,6 @@ static void dpm_wait_for_subordinate(struct device *dev, bool async)
 	dpm_wait_for_consumers(dev, async);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pm_op - Return the PM operation appropriate for given PM event.
  * @ops: PM operations to choose from.
@@ -483,10 +359,6 @@ static pm_callback_t pm_op(const struct dev_pm_ops *ops, pm_message_t state)
 	case PM_EVENT_THAW:
 	case PM_EVENT_RECOVER:
 		return ops->thaw;
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PM_EVENT_RESTORE:
 		return ops->restore;
 #endif /* CONFIG_HIBERNATE_CALLBACKS */
@@ -563,47 +435,6 @@ static pm_callback_t pm_noirq_op(const struct dev_pm_ops *ops, pm_message_t stat
 	return NULL;
 }
 
-<<<<<<< HEAD
-static char *pm_verb(int event)
-{
-	switch (event) {
-	case PM_EVENT_SUSPEND:
-		return "suspend";
-	case PM_EVENT_RESUME:
-		return "resume";
-	case PM_EVENT_FREEZE:
-		return "freeze";
-	case PM_EVENT_QUIESCE:
-		return "quiesce";
-	case PM_EVENT_HIBERNATE:
-		return "hibernate";
-	case PM_EVENT_THAW:
-		return "thaw";
-	case PM_EVENT_RESTORE:
-		return "restore";
-	case PM_EVENT_RECOVER:
-		return "recover";
-	default:
-		return "(unknown PM event)";
-	}
-}
-
-static void pm_dev_dbg(struct device *dev, pm_message_t state, char *info)
-{
-	dev_dbg(dev, "%s%s%s\n", info, pm_verb(state.event),
-		((state.event & PM_EVENT_SLEEP) && device_may_wakeup(dev)) ?
-		", may wakeup" : "");
-}
-
-static void pm_dev_err(struct device *dev, pm_message_t state, char *info,
-			int error)
-{
-	printk(KERN_ERR "PM: Device %s failed to %s%s: error %d\n",
-		dev_name(dev), pm_verb(state.event), info, error);
-}
-
-static void dpm_show_time(ktime_t starttime, pm_message_t state, char *info)
-=======
 static void pm_dev_dbg(struct device *dev, pm_message_t state, const char *info)
 {
 	dev_dbg(dev, "%s%s%s driver flags: %x\n", info, pm_verb(state.event),
@@ -620,7 +451,6 @@ static void pm_dev_err(struct device *dev, pm_message_t state, const char *info,
 
 static void dpm_show_time(ktime_t starttime, pm_message_t state, int error,
 			  const char *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ktime_t calltime;
 	u64 usecs64;
@@ -632,15 +462,6 @@ static void dpm_show_time(ktime_t starttime, pm_message_t state, int error,
 	usecs = usecs64;
 	if (usecs == 0)
 		usecs = 1;
-<<<<<<< HEAD
-	pr_info("PM: %s%s%s of devices complete after %ld.%03ld msecs\n",
-		info ?: "", info ? " " : "", pm_verb(state.event),
-		usecs / USEC_PER_MSEC, usecs % USEC_PER_MSEC);
-}
-
-static int dpm_run_callback(pm_callback_t cb, struct device *dev,
-			    pm_message_t state, char *info)
-=======
 
 	pm_pr_dbg("%s%s%s of devices %s after %ld.%03ld msecs\n",
 		  info ?: "", info ? " " : "", pm_verb(state.event),
@@ -650,7 +471,6 @@ static int dpm_run_callback(pm_callback_t cb, struct device *dev,
 
 static int dpm_run_callback(pm_callback_t cb, struct device *dev,
 			    pm_message_t state, const char *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ktime_t calltime;
 	int error;
@@ -658,15 +478,6 @@ static int dpm_run_callback(pm_callback_t cb, struct device *dev,
 	if (!cb)
 		return 0;
 
-<<<<<<< HEAD
-	calltime = initcall_debug_start(dev);
-
-	pm_dev_dbg(dev, state, info);
-	error = cb(dev);
-	suspend_report_result(cb, error);
-
-	initcall_debug_report(dev, calltime, error);
-=======
 	calltime = initcall_debug_start(dev, cb);
 
 	pm_dev_dbg(dev, state, info);
@@ -676,19 +487,10 @@ static int dpm_run_callback(pm_callback_t cb, struct device *dev,
 	suspend_report_result(dev, cb, error);
 
 	initcall_debug_report(dev, calltime, cb, error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 
-<<<<<<< HEAD
-/*------------------------- Resume routines -------------------------*/
-
-/**
- * device_resume_noirq - Execute an "early resume" callback for given device.
- * @dev: Device to handle.
- * @state: PM transition of the system being carried out.
-=======
 #ifdef CONFIG_DPM_WATCHDOG
 struct dpm_watchdog {
 	struct device		*dev;
@@ -809,30 +611,20 @@ static bool dpm_async_fn(struct device *dev, async_func_t func)
  * @dev: Device to handle.
  * @state: PM transition of the system being carried out.
  * @async: If true, the device is being resumed asynchronously.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The driver of @dev will not receive interrupts while this function is being
  * executed.
  */
-<<<<<<< HEAD
-static int device_resume_noirq(struct device *dev, pm_message_t state)
-{
-	pm_callback_t callback = NULL;
-	char *info = NULL;
-=======
 static void device_resume_noirq(struct device *dev, pm_message_t state, bool async)
 {
 	pm_callback_t callback = NULL;
 	const char *info = NULL;
 	bool skip_resume;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = 0;
 
 	TRACE_DEVICE(dev);
 	TRACE_RESUME(0);
 
-<<<<<<< HEAD
-=======
 	if (dev->power.syscore || dev->power.direct_complete)
 		goto Out;
 
@@ -858,7 +650,6 @@ static void device_resume_noirq(struct device *dev, pm_message_t state, bool asy
 	else if (dev_pm_skip_suspend(dev))
 		pm_runtime_set_active(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->pm_domain) {
 		info = "noirq power domain ";
 		callback = pm_noirq_op(&dev->pm_domain->ops, state);
@@ -872,10 +663,6 @@ static void device_resume_noirq(struct device *dev, pm_message_t state, bool asy
 		info = "noirq bus ";
 		callback = pm_noirq_op(dev->bus->pm, state);
 	}
-<<<<<<< HEAD
-
-	if (!callback && dev->driver && dev->driver->pm) {
-=======
 	if (callback)
 		goto Run;
 
@@ -883,17 +670,10 @@ static void device_resume_noirq(struct device *dev, pm_message_t state, bool asy
 		goto Skip;
 
 	if (dev->driver && dev->driver->pm) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info = "noirq driver ";
 		callback = pm_noirq_op(dev->driver->pm, state);
 	}
 
-<<<<<<< HEAD
-	error = dpm_run_callback(callback, dev, state, info);
-
-	TRACE_RESUME(error);
-	return error;
-=======
 Run:
 	error = dpm_run_callback(callback, dev, state, info);
 
@@ -961,45 +741,12 @@ static void dpm_noirq_resume_devices(pm_message_t state)
 		dpm_save_failed_step(SUSPEND_RESUME_NOIRQ);
 
 	trace_suspend_resume(TPS("dpm_resume_noirq"), state.event, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * dpm_resume_noirq - Execute "noirq resume" callbacks for all devices.
  * @state: PM transition of the system being carried out.
  *
-<<<<<<< HEAD
- * Call the "noirq" resume handlers for all devices in dpm_noirq_list and
- * enable device drivers to receive interrupts.
- */
-static void dpm_resume_noirq(pm_message_t state)
-{
-	ktime_t starttime = ktime_get();
-
-	mutex_lock(&dpm_list_mtx);
-	while (!list_empty(&dpm_noirq_list)) {
-		struct device *dev = to_device(dpm_noirq_list.next);
-		int error;
-
-		get_device(dev);
-		list_move_tail(&dev->power.entry, &dpm_late_early_list);
-		mutex_unlock(&dpm_list_mtx);
-
-		error = device_resume_noirq(dev, state);
-		if (error) {
-			suspend_stats.failed_resume_noirq++;
-			dpm_save_failed_step(SUSPEND_RESUME_NOIRQ);
-			dpm_save_failed_dev(dev_name(dev));
-			pm_dev_err(dev, state, " noirq", error);
-		}
-
-		mutex_lock(&dpm_list_mtx);
-		put_device(dev);
-	}
-	mutex_unlock(&dpm_list_mtx);
-	dpm_show_time(starttime, state, "noirq");
-	resume_device_irqs();
-=======
  * Invoke the "noirq" resume callbacks for all devices in dpm_noirq_list and
  * allow device drivers' interrupt handlers to be called.
  */
@@ -1009,22 +756,12 @@ void dpm_resume_noirq(pm_message_t state)
 
 	resume_device_irqs();
 	device_wakeup_disarm_wake_irqs();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * device_resume_early - Execute an "early resume" callback for given device.
  * @dev: Device to handle.
  * @state: PM transition of the system being carried out.
-<<<<<<< HEAD
- *
- * Runtime PM is disabled for @dev while this function is being executed.
- */
-static int device_resume_early(struct device *dev, pm_message_t state)
-{
-	pm_callback_t callback = NULL;
-	char *info = NULL;
-=======
  * @async: If true, the device is being resumed asynchronously.
  *
  * Runtime PM is disabled for @dev while this function is being executed.
@@ -1033,14 +770,11 @@ static void device_resume_early(struct device *dev, pm_message_t state, bool asy
 {
 	pm_callback_t callback = NULL;
 	const char *info = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = 0;
 
 	TRACE_DEVICE(dev);
 	TRACE_RESUME(0);
 
-<<<<<<< HEAD
-=======
 	if (dev->power.syscore || dev->power.direct_complete)
 		goto Out;
 
@@ -1050,7 +784,6 @@ static void device_resume_early(struct device *dev, pm_message_t state, bool asy
 	if (!dpm_wait_for_superior(dev, async))
 		goto Out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->pm_domain) {
 		info = "early power domain ";
 		callback = pm_late_early_op(&dev->pm_domain->ops, state);
@@ -1064,10 +797,6 @@ static void device_resume_early(struct device *dev, pm_message_t state, bool asy
 		info = "early bus ";
 		callback = pm_late_early_op(dev->bus->pm, state);
 	}
-<<<<<<< HEAD
-
-	if (!callback && dev->driver && dev->driver->pm) {
-=======
 	if (callback)
 		goto Run;
 
@@ -1075,17 +804,10 @@ static void device_resume_early(struct device *dev, pm_message_t state, bool asy
 		goto Skip;
 
 	if (dev->driver && dev->driver->pm) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info = "early driver ";
 		callback = pm_late_early_op(dev->driver->pm, state);
 	}
 
-<<<<<<< HEAD
-	error = dpm_run_callback(callback, dev, state, info);
-
-	TRACE_RESUME(error);
-	return error;
-=======
 Run:
 	error = dpm_run_callback(callback, dev, state, info);
 
@@ -1111,41 +833,12 @@ static void async_resume_early(void *data, async_cookie_t cookie)
 
 	device_resume_early(dev, pm_transition, true);
 	put_device(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * dpm_resume_early - Execute "early resume" callbacks for all devices.
  * @state: PM transition of the system being carried out.
  */
-<<<<<<< HEAD
-static void dpm_resume_early(pm_message_t state)
-{
-	ktime_t starttime = ktime_get();
-
-	mutex_lock(&dpm_list_mtx);
-	while (!list_empty(&dpm_late_early_list)) {
-		struct device *dev = to_device(dpm_late_early_list.next);
-		int error;
-
-		get_device(dev);
-		list_move_tail(&dev->power.entry, &dpm_suspended_list);
-		mutex_unlock(&dpm_list_mtx);
-
-		error = device_resume_early(dev, state);
-		if (error) {
-			suspend_stats.failed_resume_early++;
-			dpm_save_failed_step(SUSPEND_RESUME_EARLY);
-			dpm_save_failed_dev(dev_name(dev));
-			pm_dev_err(dev, state, " early", error);
-		}
-
-		mutex_lock(&dpm_list_mtx);
-		put_device(dev);
-	}
-	mutex_unlock(&dpm_list_mtx);
-	dpm_show_time(starttime, state, "early");
-=======
 void dpm_resume_early(pm_message_t state)
 {
 	struct device *dev;
@@ -1188,7 +881,6 @@ void dpm_resume_early(pm_message_t state)
 		dpm_save_failed_step(SUSPEND_RESUME_EARLY);
 
 	trace_suspend_resume(TPS("dpm_resume_early"), state.event, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1208,27 +900,16 @@ EXPORT_SYMBOL_GPL(dpm_resume_start);
  * @state: PM transition of the system being carried out.
  * @async: If true, the device is being resumed asynchronously.
  */
-<<<<<<< HEAD
-static int device_resume(struct device *dev, pm_message_t state, bool async)
-{
-	pm_callback_t callback = NULL;
-	char *info = NULL;
-	int error = 0;
-=======
 static void device_resume(struct device *dev, pm_message_t state, bool async)
 {
 	pm_callback_t callback = NULL;
 	const char *info = NULL;
 	int error = 0;
 	DECLARE_DPM_WATCHDOG_ON_STACK(wd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TRACE_DEVICE(dev);
 	TRACE_RESUME(0);
 
-<<<<<<< HEAD
-	dpm_wait(dev->parent, async);
-=======
 	if (dev->power.syscore)
 		goto Complete;
 
@@ -1242,7 +923,6 @@ static void device_resume(struct device *dev, pm_message_t state, bool async)
 		goto Complete;
 
 	dpm_watchdog_set(&wd, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_lock(dev);
 
 	/*
@@ -1254,11 +934,6 @@ static void device_resume(struct device *dev, pm_message_t state, bool async)
 	if (!dev->power.is_suspended)
 		goto Unlock;
 
-<<<<<<< HEAD
-	pm_runtime_enable(dev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->pm_domain) {
 		info = "power domain ";
 		callback = pm_op(&dev->pm_domain->ops, state);
@@ -1271,23 +946,10 @@ static void device_resume(struct device *dev, pm_message_t state, bool async)
 		goto Driver;
 	}
 
-<<<<<<< HEAD
-	if (dev->class) {
-		if (dev->class->pm) {
-			info = "class ";
-			callback = pm_op(dev->class->pm, state);
-			goto Driver;
-		} else if (dev->class->resume) {
-			info = "legacy class ";
-			callback = dev->class->resume;
-			goto End;
-		}
-=======
 	if (dev->class && dev->class->pm) {
 		info = "class ";
 		callback = pm_op(dev->class->pm, state);
 		goto Driver;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (dev->bus) {
@@ -1313,77 +975,28 @@ static void device_resume(struct device *dev, pm_message_t state, bool async)
 
  Unlock:
 	device_unlock(dev);
-<<<<<<< HEAD
-=======
 	dpm_watchdog_clear(&wd);
 
  Complete:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	complete_all(&dev->power.completion);
 
 	TRACE_RESUME(error);
 
-<<<<<<< HEAD
-	return error;
-=======
 	if (error) {
 		async_error = error;
 		dpm_save_failed_dev(dev_name(dev));
 		pm_dev_err(dev, state, async ? " async" : "", error);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void async_resume(void *data, async_cookie_t cookie)
 {
-<<<<<<< HEAD
-	struct device *dev = (struct device *)data;
-	int error;
-
-	error = device_resume(dev, pm_transition, true);
-	if (error)
-		pm_dev_err(dev, pm_transition, " async", error);
-	put_device(dev);
-}
-
-static bool is_async(struct device *dev)
-{
-	return dev->power.async_suspend && pm_async_enabled
-		&& !pm_trace_is_enabled();
-}
-
-/**
- *	dpm_drv_timeout - Driver suspend / resume watchdog handler
- *	@data: struct device which timed out
- *
- * 	Called when a driver has timed out suspending or resuming.
- * 	There's not much we can do here to recover so
- * 	BUG() out for a crash-dump
- *
- */
-static void dpm_drv_timeout(unsigned long data)
-{
-	struct dpm_drv_wd_data *wd_data = (void *)data;
-	struct device *dev = wd_data->dev;
-	struct task_struct *tsk = wd_data->tsk;
-
-	printk(KERN_EMERG "**** DPM device timeout: %s (%s)\n", dev_name(dev),
-	       (dev->driver ? dev->driver->name : "no driver"));
-
-	printk(KERN_EMERG "dpm suspend stack:\n");
-	show_stack(tsk, NULL);
-
-	BUG();
-}
-
-=======
 	struct device *dev = data;
 
 	device_resume(dev, pm_transition, true);
 	put_device(dev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * dpm_resume - Execute "resume" callbacks for non-sysdev devices.
  * @state: PM transition of the system being carried out.
@@ -1396,47 +1009,6 @@ void dpm_resume(pm_message_t state)
 	struct device *dev;
 	ktime_t starttime = ktime_get();
 
-<<<<<<< HEAD
-	might_sleep();
-
-	mutex_lock(&dpm_list_mtx);
-	pm_transition = state;
-	async_error = 0;
-
-	list_for_each_entry(dev, &dpm_suspended_list, power.entry) {
-		INIT_COMPLETION(dev->power.completion);
-		if (is_async(dev)) {
-			get_device(dev);
-			async_schedule(async_resume, dev);
-		}
-	}
-
-	while (!list_empty(&dpm_suspended_list)) {
-		dev = to_device(dpm_suspended_list.next);
-		get_device(dev);
-		if (!is_async(dev)) {
-			int error;
-
-			mutex_unlock(&dpm_list_mtx);
-
-			error = device_resume(dev, state, false);
-			if (error) {
-				suspend_stats.failed_resume++;
-				dpm_save_failed_step(SUSPEND_RESUME);
-				dpm_save_failed_dev(dev_name(dev));
-				pm_dev_err(dev, state, "", error);
-			}
-
-			mutex_lock(&dpm_list_mtx);
-		}
-		if (!list_empty(&dev->power.entry))
-			list_move_tail(&dev->power.entry, &dpm_prepared_list);
-		put_device(dev);
-	}
-	mutex_unlock(&dpm_list_mtx);
-	async_synchronize_full();
-	dpm_show_time(starttime, state, NULL);
-=======
 	trace_suspend_resume(TPS("dpm_resume"), state.event, true);
 	might_sleep();
 
@@ -1477,7 +1049,6 @@ void dpm_resume(pm_message_t state)
 	cpufreq_resume();
 	devfreq_resume();
 	trace_suspend_resume(TPS("dpm_resume"), state.event, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1488,14 +1059,10 @@ void dpm_resume(pm_message_t state)
 static void device_complete(struct device *dev, pm_message_t state)
 {
 	void (*callback)(struct device *) = NULL;
-<<<<<<< HEAD
-	char *info = NULL;
-=======
 	const char *info = NULL;
 
 	if (dev->power.syscore)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	device_lock(dev);
 
@@ -1525,12 +1092,8 @@ static void device_complete(struct device *dev, pm_message_t state)
 
 	device_unlock(dev);
 
-<<<<<<< HEAD
-	pm_runtime_put_sync(dev);
-=======
 out:
 	pm_runtime_put(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1544,10 +1107,7 @@ void dpm_complete(pm_message_t state)
 {
 	struct list_head list;
 
-<<<<<<< HEAD
-=======
 	trace_suspend_resume(TPS("dpm_complete"), state.event, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	might_sleep();
 
 	INIT_LIST_HEAD(&list);
@@ -1558,17 +1118,6 @@ void dpm_complete(pm_message_t state)
 		get_device(dev);
 		dev->power.is_prepared = false;
 		list_move(&dev->power.entry, &list);
-<<<<<<< HEAD
-		mutex_unlock(&dpm_list_mtx);
-
-		device_complete(dev, state);
-
-		mutex_lock(&dpm_list_mtx);
-		put_device(dev);
-	}
-	list_splice(&list, &dpm_list);
-	mutex_unlock(&dpm_list_mtx);
-=======
 
 		mutex_unlock(&dpm_list_mtx);
 
@@ -1586,7 +1135,6 @@ void dpm_complete(pm_message_t state)
 	/* Allow device probing and trigger re-probing of deferred devices */
 	device_unblock_probing();
 	trace_suspend_resume(TPS("dpm_complete"), state.event, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1627,12 +1175,6 @@ static pm_message_t resume_event(pm_message_t sleep_state)
 	return PMSG_ON;
 }
 
-<<<<<<< HEAD
-/**
- * device_suspend_noirq - Execute a "late suspend" callback for given device.
- * @dev: Device to handle.
- * @state: PM transition of the system being carried out.
-=======
 static void dpm_superior_set_must_resume(struct device *dev)
 {
 	struct device_link *link;
@@ -1654,17 +1196,10 @@ static void dpm_superior_set_must_resume(struct device *dev)
  * @dev: Device to handle.
  * @state: PM transition of the system being carried out.
  * @async: If true, the device is being suspended asynchronously.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The driver of @dev will not receive interrupts while this function is being
  * executed.
  */
-<<<<<<< HEAD
-static int device_suspend_noirq(struct device *dev, pm_message_t state)
-{
-	pm_callback_t callback = NULL;
-	char *info = NULL;
-=======
 static int device_suspend_noirq(struct device *dev, pm_message_t state, bool async)
 {
 	pm_callback_t callback = NULL;
@@ -1681,7 +1216,6 @@ static int device_suspend_noirq(struct device *dev, pm_message_t state, bool asy
 
 	if (dev->power.syscore || dev->power.direct_complete)
 		goto Complete;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->pm_domain) {
 		info = "noirq power domain ";
@@ -1696,10 +1230,6 @@ static int device_suspend_noirq(struct device *dev, pm_message_t state, bool asy
 		info = "noirq bus ";
 		callback = pm_noirq_op(dev->bus->pm, state);
 	}
-<<<<<<< HEAD
-
-	if (!callback && dev->driver && dev->driver->pm) {
-=======
 	if (callback)
 		goto Run;
 
@@ -1707,14 +1237,10 @@ static int device_suspend_noirq(struct device *dev, pm_message_t state, bool asy
 		goto Skip;
 
 	if (dev->driver && dev->driver->pm) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info = "noirq driver ";
 		callback = pm_noirq_op(dev->driver->pm, state);
 	}
 
-<<<<<<< HEAD
-	return dpm_run_callback(callback, dev, state, info);
-=======
 Run:
 	error = dpm_run_callback(callback, dev, state, info);
 	if (error) {
@@ -1801,57 +1327,12 @@ static int dpm_noirq_suspend_devices(pm_message_t state)
 	dpm_show_time(starttime, state, error, "noirq");
 	trace_suspend_resume(TPS("dpm_suspend_noirq"), state.event, false);
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * dpm_suspend_noirq - Execute "noirq suspend" callbacks for all devices.
  * @state: PM transition of the system being carried out.
  *
-<<<<<<< HEAD
- * Prevent device drivers from receiving interrupts and call the "noirq" suspend
- * handlers for all non-sysdev devices.
- */
-static int dpm_suspend_noirq(pm_message_t state)
-{
-	ktime_t starttime = ktime_get();
-	int error = 0;
-
-	suspend_device_irqs();
-	mutex_lock(&dpm_list_mtx);
-	while (!list_empty(&dpm_late_early_list)) {
-		struct device *dev = to_device(dpm_late_early_list.prev);
-
-		get_device(dev);
-		mutex_unlock(&dpm_list_mtx);
-
-		error = device_suspend_noirq(dev, state);
-
-		mutex_lock(&dpm_list_mtx);
-		if (error) {
-			pm_dev_err(dev, state, " noirq", error);
-			suspend_stats.failed_suspend_noirq++;
-			dpm_save_failed_step(SUSPEND_SUSPEND_NOIRQ);
-			dpm_save_failed_dev(dev_name(dev));
-			put_device(dev);
-			break;
-		}
-		if (!list_empty(&dev->power.entry))
-			list_move(&dev->power.entry, &dpm_noirq_list);
-		put_device(dev);
-
-		if (pm_wakeup_pending()) {
-			error = -EBUSY;
-			break;
-		}
-	}
-	mutex_unlock(&dpm_list_mtx);
-	if (error)
-		dpm_resume_noirq(resume_event(state));
-	else
-		dpm_show_time(starttime, state, "noirq");
-	return error;
-=======
  * Prevent device drivers' interrupt handlers from being called and invoke
  * "noirq" suspend callbacks for all non-sysdev devices.
  */
@@ -1882,24 +1363,12 @@ static void dpm_propagate_wakeup_to_parent(struct device *dev)
 		parent->power.wakeup_path = true;
 
 	spin_unlock_irq(&parent->power.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * device_suspend_late - Execute a "late suspend" callback for given device.
  * @dev: Device to handle.
  * @state: PM transition of the system being carried out.
-<<<<<<< HEAD
- *
- * Runtime PM is disabled for @dev while this function is being executed.
- */
-static int device_suspend_late(struct device *dev, pm_message_t state)
-{
-	pm_callback_t callback = NULL;
-	char *info = NULL;
-	int error = 0;
-
-=======
  * @async: If true, the device is being suspended asynchronously.
  *
  * Runtime PM is disabled for @dev while this function is being executed.
@@ -1928,7 +1397,6 @@ static int device_suspend_late(struct device *dev, pm_message_t state, bool asyn
 	if (dev->power.syscore || dev->power.direct_complete)
 		goto Complete;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->pm_domain) {
 		info = "late power domain ";
 		callback = pm_late_early_op(&dev->pm_domain->ops, state);
@@ -1942,10 +1410,6 @@ static int device_suspend_late(struct device *dev, pm_message_t state, bool asyn
 		info = "late bus ";
 		callback = pm_late_early_op(dev->bus->pm, state);
 	}
-<<<<<<< HEAD
-
-	if (!callback && dev->driver && dev->driver->pm) {
-=======
 	if (callback)
 		goto Run;
 
@@ -1953,20 +1417,10 @@ static int device_suspend_late(struct device *dev, pm_message_t state, bool asyn
 		goto Skip;
 
 	if (dev->driver && dev->driver->pm) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info = "late driver ";
 		callback = pm_late_early_op(dev->driver->pm, state);
 	}
 
-<<<<<<< HEAD
-	error = dpm_run_callback(callback, dev, state, info);
-	if (error)
-		pm_runtime_enable(dev);
-
-	return error;
-}
-
-=======
 Run:
 	error = dpm_run_callback(callback, dev, state, info);
 	if (error) {
@@ -1994,55 +1448,15 @@ static void async_suspend_late(void *data, async_cookie_t cookie)
 	put_device(dev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * dpm_suspend_late - Execute "late suspend" callbacks for all devices.
  * @state: PM transition of the system being carried out.
  */
-<<<<<<< HEAD
-static int dpm_suspend_late(pm_message_t state)
-=======
 int dpm_suspend_late(pm_message_t state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ktime_t starttime = ktime_get();
 	int error = 0;
 
-<<<<<<< HEAD
-	mutex_lock(&dpm_list_mtx);
-	while (!list_empty(&dpm_suspended_list)) {
-		struct device *dev = to_device(dpm_suspended_list.prev);
-
-		get_device(dev);
-		mutex_unlock(&dpm_list_mtx);
-
-		error = device_suspend_late(dev, state);
-
-		mutex_lock(&dpm_list_mtx);
-		if (error) {
-			pm_dev_err(dev, state, " late", error);
-			suspend_stats.failed_suspend_late++;
-			dpm_save_failed_step(SUSPEND_SUSPEND_LATE);
-			dpm_save_failed_dev(dev_name(dev));
-			put_device(dev);
-			break;
-		}
-		if (!list_empty(&dev->power.entry))
-			list_move(&dev->power.entry, &dpm_late_early_list);
-		put_device(dev);
-
-		if (pm_wakeup_pending()) {
-			error = -EBUSY;
-			break;
-		}
-	}
-	mutex_unlock(&dpm_list_mtx);
-	if (error)
-		dpm_resume_early(resume_event(state));
-	else
-		dpm_show_time(starttime, state, "late");
-
-=======
 	trace_suspend_resume(TPS("dpm_suspend_late"), state.event, true);
 
 	pm_transition = state;
@@ -2086,7 +1500,6 @@ int dpm_suspend_late(pm_message_t state)
 	}
 	dpm_show_time(starttime, state, error, "late");
 	trace_suspend_resume(TPS("dpm_suspend_late"), state.event, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -2096,19 +1509,6 @@ int dpm_suspend_late(pm_message_t state)
  */
 int dpm_suspend_end(pm_message_t state)
 {
-<<<<<<< HEAD
-	int error = dpm_suspend_late(state);
-	if (error)
-		return error;
-
-	error = dpm_suspend_noirq(state);
-	if (error) {
-		dpm_resume_early(resume_event(state));
-		return error;
-	}
-
-	return 0;
-=======
 	ktime_t starttime = ktime_get();
 	int error;
 
@@ -2123,7 +1523,6 @@ int dpm_suspend_end(pm_message_t state)
 out:
 	dpm_show_time(starttime, state, error, "end");
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(dpm_suspend_end);
 
@@ -2132,29 +1531,15 @@ EXPORT_SYMBOL_GPL(dpm_suspend_end);
  * @dev: Device to suspend.
  * @state: PM transition of the system being carried out.
  * @cb: Suspend callback to execute.
-<<<<<<< HEAD
- */
-static int legacy_suspend(struct device *dev, pm_message_t state,
-			  int (*cb)(struct device *dev, pm_message_t state))
-=======
  * @info: string description of caller.
  */
 static int legacy_suspend(struct device *dev, pm_message_t state,
 			  int (*cb)(struct device *dev, pm_message_t state),
 			  const char *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 	ktime_t calltime;
 
-<<<<<<< HEAD
-	calltime = initcall_debug_start(dev);
-
-	error = cb(dev, state);
-	suspend_report_result(cb, error);
-
-	initcall_debug_report(dev, calltime, error);
-=======
 	calltime = initcall_debug_start(dev, cb);
 
 	trace_device_pm_callback_start(dev, info, state.event);
@@ -2163,13 +1548,10 @@ static int legacy_suspend(struct device *dev, pm_message_t state,
 	suspend_report_result(dev, cb, error);
 
 	initcall_debug_report(dev, calltime, cb, error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 
-<<<<<<< HEAD
-=======
 static void dpm_clear_superiors_direct_complete(struct device *dev)
 {
 	struct device_link *link;
@@ -2192,38 +1574,12 @@ static void dpm_clear_superiors_direct_complete(struct device *dev)
 	device_links_read_unlock(idx);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * device_suspend - Execute "suspend" callbacks for given device.
  * @dev: Device to handle.
  * @state: PM transition of the system being carried out.
  * @async: If true, the device is being suspended asynchronously.
  */
-<<<<<<< HEAD
-static int __device_suspend(struct device *dev, pm_message_t state, bool async)
-{
-	pm_callback_t callback = NULL;
-	char *info = NULL;
-	int error = 0;
-	struct timer_list timer;
-	struct dpm_drv_wd_data data;
-
-	dpm_wait_for_children(dev, async);
-
-	if (async_error)
-		goto Complete;
-
-	/*
-	 * If a device configured to wake up the system from sleep states
-	 * has been suspended at run time and there's a resume request pending
-	 * for it, this is equivalent to the device signaling wakeup, so the
-	 * system suspend operation should be aborted.
-	 */
-	if (pm_runtime_barrier(dev) && device_may_wakeup(dev))
-		pm_wakeup_event(dev, 0);
-
-	if (pm_wakeup_pending()) {
-=======
 static int device_suspend(struct device *dev, pm_message_t state, bool async)
 {
 	pm_callback_t callback = NULL;
@@ -2256,21 +1612,10 @@ static int device_suspend(struct device *dev, pm_message_t state, bool async)
 
 	if (pm_wakeup_pending()) {
 		dev->power.direct_complete = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		async_error = -EBUSY;
 		goto Complete;
 	}
 
-<<<<<<< HEAD
-	data.dev = dev;
-	data.tsk = get_current();
-	init_timer_on_stack(&timer);
-	timer.expires = jiffies + HZ * 12;
-	timer.function = dpm_drv_timeout;
-	timer.data = (unsigned long)&data;
-	add_timer(&timer);
-
-=======
 	if (dev->power.syscore)
 		goto Complete;
 
@@ -2295,7 +1640,6 @@ static int device_suspend(struct device *dev, pm_message_t state, bool async)
 	dev->power.must_resume = !dev_pm_test_driver_flags(dev, DPM_FLAG_MAY_SKIP_RESUME);
 
 	dpm_watchdog_set(&wd, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_lock(dev);
 
 	if (dev->pm_domain) {
@@ -2310,23 +1654,10 @@ static int device_suspend(struct device *dev, pm_message_t state, bool async)
 		goto Run;
 	}
 
-<<<<<<< HEAD
-	if (dev->class) {
-		if (dev->class->pm) {
-			info = "class ";
-			callback = pm_op(dev->class->pm, state);
-			goto Run;
-		} else if (dev->class->suspend) {
-			pm_dev_dbg(dev, state, "legacy class ");
-			error = legacy_suspend(dev, state, dev->class->suspend);
-			goto End;
-		}
-=======
 	if (dev->class && dev->class->pm) {
 		info = "class ";
 		callback = pm_op(dev->class->pm, state);
 		goto Run;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (dev->bus) {
@@ -2335,12 +1666,8 @@ static int device_suspend(struct device *dev, pm_message_t state, bool async)
 			callback = pm_op(dev->bus->pm, state);
 		} else if (dev->bus->suspend) {
 			pm_dev_dbg(dev, state, "legacy bus ");
-<<<<<<< HEAD
-			error = legacy_suspend(dev, state, dev->bus->suspend);
-=======
 			error = legacy_suspend(dev, state, dev->bus->suspend,
 						"legacy bus ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto End;
 		}
 	}
@@ -2356,26 +1683,6 @@ static int device_suspend(struct device *dev, pm_message_t state, bool async)
  End:
 	if (!error) {
 		dev->power.is_suspended = true;
-<<<<<<< HEAD
-		if (dev->power.wakeup_path
-		    && dev->parent && !dev->parent->power.ignore_children)
-			dev->parent->power.wakeup_path = true;
-	}
-
-	device_unlock(dev);
-
-	del_timer_sync(&timer);
-	destroy_timer_on_stack(&timer);
-
- Complete:
-	complete_all(&dev->power.completion);
-
-	if (error)
-		async_error = error;
-	else if (dev->power.is_suspended)
-		__pm_runtime_disable(dev, false);
-
-=======
 		if (device_may_wakeup(dev))
 			dev->power.wakeup_path = true;
 
@@ -2395,46 +1702,17 @@ static int device_suspend(struct device *dev, pm_message_t state, bool async)
 
 	complete_all(&dev->power.completion);
 	TRACE_SUSPEND(error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 static void async_suspend(void *data, async_cookie_t cookie)
 {
-<<<<<<< HEAD
-	struct device *dev = (struct device *)data;
-	int error;
-
-	error = __device_suspend(dev, pm_transition, true);
-	if (error) {
-		dpm_save_failed_dev(dev_name(dev));
-		pm_dev_err(dev, pm_transition, " async", error);
-	}
-
-	put_device(dev);
-}
-
-static int device_suspend(struct device *dev)
-{
-	INIT_COMPLETION(dev->power.completion);
-
-	if (pm_async_enabled && dev->power.async_suspend) {
-		get_device(dev);
-		async_schedule(async_suspend, dev);
-		return 0;
-	}
-
-	return __device_suspend(dev, pm_transition, false);
-}
-
-=======
 	struct device *dev = data;
 
 	device_suspend(dev, pm_transition, true);
 	put_device(dev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * dpm_suspend - Execute "suspend" callbacks for all non-sysdev devices.
  * @state: PM transition of the system being carried out.
@@ -2444,43 +1722,6 @@ int dpm_suspend(pm_message_t state)
 	ktime_t starttime = ktime_get();
 	int error = 0;
 
-<<<<<<< HEAD
-	might_sleep();
-
-	mutex_lock(&dpm_list_mtx);
-	pm_transition = state;
-	async_error = 0;
-	while (!list_empty(&dpm_prepared_list)) {
-		struct device *dev = to_device(dpm_prepared_list.prev);
-
-		get_device(dev);
-		mutex_unlock(&dpm_list_mtx);
-
-		error = device_suspend(dev);
-
-		mutex_lock(&dpm_list_mtx);
-		if (error) {
-			pm_dev_err(dev, state, "", error);
-			dpm_save_failed_dev(dev_name(dev));
-			put_device(dev);
-			break;
-		}
-		if (!list_empty(&dev->power.entry))
-			list_move(&dev->power.entry, &dpm_suspended_list);
-		put_device(dev);
-		if (async_error)
-			break;
-	}
-	mutex_unlock(&dpm_list_mtx);
-	async_synchronize_full();
-	if (!error)
-		error = async_error;
-	if (error) {
-		suspend_stats.failed_suspend++;
-		dpm_save_failed_step(SUSPEND_SUSPEND);
-	} else
-		dpm_show_time(starttime, state, NULL);
-=======
 	trace_suspend_resume(TPS("dpm_suspend"), state.event, true);
 	might_sleep();
 
@@ -2525,7 +1766,6 @@ int dpm_suspend(pm_message_t state)
 
 	dpm_show_time(starttime, state, error, NULL);
 	trace_suspend_resume(TPS("dpm_suspend"), state.event, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -2540,12 +1780,7 @@ int dpm_suspend(pm_message_t state)
 static int device_prepare(struct device *dev, pm_message_t state)
 {
 	int (*callback)(struct device *) = NULL;
-<<<<<<< HEAD
-	char *info = NULL;
-	int error = 0;
-=======
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If a device's parent goes into runtime suspend at the wrong time,
@@ -2555,39 +1790,6 @@ static int device_prepare(struct device *dev, pm_message_t state)
 	 */
 	pm_runtime_get_noresume(dev);
 
-<<<<<<< HEAD
-	device_lock(dev);
-
-	dev->power.wakeup_path = device_may_wakeup(dev);
-
-	if (dev->pm_domain) {
-		info = "preparing power domain ";
-		callback = dev->pm_domain->ops.prepare;
-	} else if (dev->type && dev->type->pm) {
-		info = "preparing type ";
-		callback = dev->type->pm->prepare;
-	} else if (dev->class && dev->class->pm) {
-		info = "preparing class ";
-		callback = dev->class->pm->prepare;
-	} else if (dev->bus && dev->bus->pm) {
-		info = "preparing bus ";
-		callback = dev->bus->pm->prepare;
-	}
-
-	if (!callback && dev->driver && dev->driver->pm) {
-		info = "preparing driver ";
-		callback = dev->driver->pm->prepare;
-	}
-
-	if (callback) {
-		error = callback(dev);
-		suspend_report_result(callback, error);
-	}
-
-	device_unlock(dev);
-
-	return error;
-=======
 	if (dev->power.syscore)
 		return 0;
 
@@ -2634,7 +1836,6 @@ unlock:
 		!dev_pm_test_driver_flags(dev, DPM_FLAG_NO_DIRECT_COMPLETE);
 	spin_unlock_irq(&dev->power.lock);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2647,38 +1848,6 @@ int dpm_prepare(pm_message_t state)
 {
 	int error = 0;
 
-<<<<<<< HEAD
-	might_sleep();
-
-	mutex_lock(&dpm_list_mtx);
-	while (!list_empty(&dpm_list)) {
-		struct device *dev = to_device(dpm_list.next);
-
-		get_device(dev);
-		mutex_unlock(&dpm_list_mtx);
-
-		error = device_prepare(dev, state);
-
-		mutex_lock(&dpm_list_mtx);
-		if (error) {
-			if (error == -EAGAIN) {
-				put_device(dev);
-				error = 0;
-				continue;
-			}
-			printk(KERN_INFO "PM: Device %s not prepared "
-				"for power transition: code %d\n",
-				dev_name(dev), error);
-			put_device(dev);
-			break;
-		}
-		dev->power.is_prepared = true;
-		if (!list_empty(&dev->power.entry))
-			list_move_tail(&dev->power.entry, &dpm_prepared_list);
-		put_device(dev);
-	}
-	mutex_unlock(&dpm_list_mtx);
-=======
 	trace_suspend_resume(TPS("dpm_prepare"), state.event, true);
 	might_sleep();
 
@@ -2729,7 +1898,6 @@ int dpm_prepare(pm_message_t state)
 	}
 	mutex_unlock(&dpm_list_mtx);
 	trace_suspend_resume(TPS("dpm_prepare"), state.event, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -2742,16 +1910,6 @@ int dpm_prepare(pm_message_t state)
  */
 int dpm_suspend_start(pm_message_t state)
 {
-<<<<<<< HEAD
-	int error;
-
-	error = dpm_prepare(state);
-	if (error) {
-		suspend_stats.failed_prepare++;
-		dpm_save_failed_step(SUSPEND_PREPARE);
-	} else
-		error = dpm_suspend(state);
-=======
 	ktime_t starttime = ktime_get();
 	int error;
 
@@ -2762,34 +1920,21 @@ int dpm_suspend_start(pm_message_t state)
 		error = dpm_suspend(state);
 
 	dpm_show_time(starttime, state, error, "start");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 EXPORT_SYMBOL_GPL(dpm_suspend_start);
 
-<<<<<<< HEAD
-void __suspend_report_result(const char *function, void *fn, int ret)
-{
-	if (ret)
-		printk(KERN_ERR "%s(): %pF returns %d\n", function, fn, ret);
-=======
 void __suspend_report_result(const char *function, struct device *dev, void *fn, int ret)
 {
 	if (ret)
 		dev_err(dev, "%s(): %pS returns %d\n", function, fn, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(__suspend_report_result);
 
 /**
  * device_pm_wait_for_dev - Wait for suspend/resume of a device to complete.
-<<<<<<< HEAD
- * @dev: Device to wait for.
- * @subordinate: Device that needs to wait for @dev.
-=======
  * @subordinate: Device that needs to wait for @dev.
  * @dev: Device to wait for.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int device_pm_wait_for_dev(struct device *subordinate, struct device *dev)
 {
@@ -2797,8 +1942,6 @@ int device_pm_wait_for_dev(struct device *subordinate, struct device *dev)
 	return async_error;
 }
 EXPORT_SYMBOL_GPL(device_pm_wait_for_dev);
-<<<<<<< HEAD
-=======
 
 /**
  * dpm_for_each_dev - device iterator.
@@ -2858,4 +2001,3 @@ bool dev_pm_skip_suspend(struct device *dev)
 	return dev_pm_test_driver_flags(dev, DPM_FLAG_SMART_SUSPEND) &&
 		pm_runtime_status_suspended(dev);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

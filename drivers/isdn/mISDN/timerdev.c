@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * general timer device for using in ISDN stacks
@@ -9,19 +6,6 @@
  * Author	Karsten Keil <kkeil@novell.com>
  *
  * Copyright 2008  by Karsten Keil <kkeil@novell.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/poll.h>
@@ -32,11 +16,8 @@
 #include <linux/module.h>
 #include <linux/mISDNif.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/signal.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "core.h"
 
 static DEFINE_MUTEX(mISDN_mutex);
@@ -76,10 +57,6 @@ mISDN_open(struct inode *ino, struct file *filep)
 	dev->work = 0;
 	init_waitqueue_head(&dev->wait);
 	filep->private_data = dev;
-<<<<<<< HEAD
-	__module_get(THIS_MODULE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return nonseekable_open(ino, filep);
 }
 
@@ -87,20 +64,11 @@ static int
 mISDN_close(struct inode *ino, struct file *filep)
 {
 	struct mISDNtimerdev	*dev = filep->private_data;
-<<<<<<< HEAD
-=======
 	struct list_head	*list = &dev->pending;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mISDNtimer	*timer, *next;
 
 	if (*debug & DEBUG_TIMER)
 		printk(KERN_DEBUG "%s(%p,%p)\n", __func__, ino, filep);
-<<<<<<< HEAD
-	list_for_each_entry_safe(timer, next, &dev->pending, list) {
-		del_timer(&timer->tl);
-		kfree(timer);
-	}
-=======
 
 	spin_lock_irq(&dev->lock);
 	while (!list_empty(list)) {
@@ -114,15 +82,10 @@ mISDN_close(struct inode *ino, struct file *filep)
 	}
 	spin_unlock_irq(&dev->lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry_safe(timer, next, &dev->expired, list) {
 		kfree(timer);
 	}
 	kfree(dev);
-<<<<<<< HEAD
-	module_put(THIS_MODULE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -130,38 +93,14 @@ static ssize_t
 mISDN_read(struct file *filep, char __user *buf, size_t count, loff_t *off)
 {
 	struct mISDNtimerdev	*dev = filep->private_data;
-<<<<<<< HEAD
-	struct mISDNtimer	*timer;
-	u_long	flags;
-=======
 	struct list_head *list = &dev->expired;
 	struct mISDNtimer	*timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	ret = 0;
 
 	if (*debug & DEBUG_TIMER)
 		printk(KERN_DEBUG "%s(%p, %p, %d, %p)\n", __func__,
 		       filep, buf, (int)count, off);
 
-<<<<<<< HEAD
-	if (list_empty(&dev->expired) && (dev->work == 0)) {
-		if (filep->f_flags & O_NONBLOCK)
-			return -EAGAIN;
-		wait_event_interruptible(dev->wait, (dev->work ||
-						     !list_empty(&dev->expired)));
-		if (signal_pending(current))
-			return -ERESTARTSYS;
-	}
-	if (count < sizeof(int))
-		return -ENOSPC;
-	if (dev->work)
-		dev->work = 0;
-	if (!list_empty(&dev->expired)) {
-		spin_lock_irqsave(&dev->lock, flags);
-		timer = (struct mISDNtimer *)dev->expired.next;
-		list_del(&timer->list);
-		spin_unlock_irqrestore(&dev->lock, flags);
-=======
 	if (count < sizeof(int))
 		return -ENOSPC;
 
@@ -182,34 +121,22 @@ mISDN_read(struct file *filep, char __user *buf, size_t count, loff_t *off)
 		timer = list_first_entry(list, struct mISDNtimer, list);
 		list_del(&timer->list);
 		spin_unlock_irq(&dev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (put_user(timer->id, (int __user *)buf))
 			ret = -EFAULT;
 		else
 			ret = sizeof(int);
 		kfree(timer);
-<<<<<<< HEAD
-=======
 	} else {
 		spin_unlock_irq(&dev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-static unsigned int
-mISDN_poll(struct file *filep, poll_table *wait)
-{
-	struct mISDNtimerdev	*dev = filep->private_data;
-	unsigned int		mask = POLLERR;
-=======
 static __poll_t
 mISDN_poll(struct file *filep, poll_table *wait)
 {
 	struct mISDNtimerdev	*dev = filep->private_data;
 	__poll_t		mask = EPOLLERR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (*debug & DEBUG_TIMER)
 		printk(KERN_DEBUG "%s(%p, %p)\n", __func__, filep, wait);
@@ -217,11 +144,7 @@ mISDN_poll(struct file *filep, poll_table *wait)
 		poll_wait(filep, &dev->wait, wait);
 		mask = 0;
 		if (dev->work || !list_empty(&dev->expired))
-<<<<<<< HEAD
-			mask |= (POLLIN | POLLRDNORM);
-=======
 			mask |= (EPOLLIN | EPOLLRDNORM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*debug & DEBUG_TIMER)
 			printk(KERN_DEBUG "%s work(%d) empty(%d)\n", __func__,
 			       dev->work, list_empty(&dev->expired));
@@ -230,17 +153,6 @@ mISDN_poll(struct file *filep, poll_table *wait)
 }
 
 static void
-<<<<<<< HEAD
-dev_expire_timer(unsigned long data)
-{
-	struct mISDNtimer *timer = (void *)data;
-	u_long			flags;
-
-	spin_lock_irqsave(&timer->dev->lock, flags);
-	list_move_tail(&timer->list, &timer->dev->expired);
-	spin_unlock_irqrestore(&timer->dev->lock, flags);
-	wake_up_interruptible(&timer->dev->wait);
-=======
 dev_expire_timer(struct timer_list *t)
 {
 	struct mISDNtimer *timer = from_timer(timer, t, tl);
@@ -251,17 +163,12 @@ dev_expire_timer(struct timer_list *t)
 		list_move_tail(&timer->list, &timer->dev->expired);
 	wake_up_interruptible(&timer->dev->wait);
 	spin_unlock_irqrestore(&timer->dev->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 misdn_add_timer(struct mISDNtimerdev *dev, int timeout)
 {
 	int			id;
-<<<<<<< HEAD
-	u_long			flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mISDNtimer	*timer;
 
 	if (!timeout) {
@@ -272,21 +179,6 @@ misdn_add_timer(struct mISDNtimerdev *dev, int timeout)
 		timer = kzalloc(sizeof(struct mISDNtimer), GFP_KERNEL);
 		if (!timer)
 			return -ENOMEM;
-<<<<<<< HEAD
-		spin_lock_irqsave(&dev->lock, flags);
-		timer->id = dev->next_id++;
-		if (dev->next_id < 0)
-			dev->next_id = 1;
-		list_add_tail(&timer->list, &dev->pending);
-		spin_unlock_irqrestore(&dev->lock, flags);
-		timer->dev = dev;
-		timer->tl.data = (long)timer;
-		timer->tl.function = dev_expire_timer;
-		init_timer(&timer->tl);
-		timer->tl.expires = jiffies + ((HZ * (u_long)timeout) / 1000);
-		add_timer(&timer->tl);
-		id = timer->id;
-=======
 		timer->dev = dev;
 		timer_setup(&timer->tl, dev_expire_timer, 0);
 		spin_lock_irq(&dev->lock);
@@ -297,7 +189,6 @@ misdn_add_timer(struct mISDNtimerdev *dev, int timeout)
 		timer->tl.expires = jiffies + ((HZ * (u_long)timeout) / 1000);
 		add_timer(&timer->tl);
 		spin_unlock_irq(&dev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return id;
 }
@@ -305,28 +196,6 @@ misdn_add_timer(struct mISDNtimerdev *dev, int timeout)
 static int
 misdn_del_timer(struct mISDNtimerdev *dev, int id)
 {
-<<<<<<< HEAD
-	u_long			flags;
-	struct mISDNtimer	*timer;
-	int			ret = 0;
-
-	spin_lock_irqsave(&dev->lock, flags);
-	list_for_each_entry(timer, &dev->pending, list) {
-		if (timer->id == id) {
-			list_del_init(&timer->list);
-			/* RED-PEN AK: race -- timer can be still running on
-			 * other CPU. Needs reference count I think
-			 */
-			del_timer(&timer->tl);
-			ret = timer->id;
-			kfree(timer);
-			goto unlock;
-		}
-	}
-unlock:
-	spin_unlock_irqrestore(&dev->lock, flags);
-	return ret;
-=======
 	struct mISDNtimer	*timer;
 
 	spin_lock_irq(&dev->lock);
@@ -342,7 +211,6 @@ unlock:
 	}
 	spin_unlock_irq(&dev->lock);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static long
@@ -392,10 +260,7 @@ mISDN_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 }
 
 static const struct file_operations mISDN_fops = {
-<<<<<<< HEAD
-=======
 	.owner		= THIS_MODULE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read		= mISDN_read,
 	.poll		= mISDN_poll,
 	.unlocked_ioctl	= mISDN_ioctl,

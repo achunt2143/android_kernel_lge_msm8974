@@ -1,38 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * nl802154.h
  *
  * Copyright (C) 2007, 2008, 2009 Siemens AG
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef NL802154_H
 #define NL802154_H
 
-<<<<<<< HEAD
-=======
 #include <net/netlink.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IEEE802154_NL_NAME "802.15.4 MAC"
 #define IEEE802154_MCAST_COORD_NAME "coordinator"
 #define IEEE802154_MCAST_BEACON_NAME "beacon"
@@ -80,8 +57,6 @@ enum {
 	IEEE802154_ATTR_CHANNEL_PAGE_LIST,
 
 	IEEE802154_ATTR_PHY_NAME,
-<<<<<<< HEAD
-=======
 	IEEE802154_ATTR_DEV_TYPE,
 
 	IEEE802154_ATTR_TXPOWER,
@@ -111,7 +86,6 @@ enum {
 	IEEE802154_ATTR_LLSEC_DEV_KEY_MODE,
 
 	IEEE802154_ATTR_PAD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__IEEE802154_ATTR_MAX,
 };
@@ -165,8 +139,6 @@ enum {
 	IEEE802154_ADD_IFACE,
 	IEEE802154_DEL_IFACE,
 
-<<<<<<< HEAD
-=======
 	IEEE802154_SET_MACPARAMS,
 
 	IEEE802154_LLSEC_GETPARAMS,
@@ -184,14 +156,11 @@ enum {
 	IEEE802154_LLSEC_ADD_SECLEVEL,
 	IEEE802154_LLSEC_DEL_SECLEVEL,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__IEEE802154_CMD_MAX,
 };
 
 #define IEEE802154_CMD_MAX (__IEEE802154_CMD_MAX - 1)
 
-<<<<<<< HEAD
-=======
 enum {
 	__IEEE802154_DEV_INVALID = -1,
 
@@ -201,5 +170,4 @@ enum {
 	__IEEE802154_DEV_MAX,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

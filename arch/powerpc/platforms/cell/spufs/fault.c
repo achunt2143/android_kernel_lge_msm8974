@@ -1,34 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Low-level SPU handling
  *
  * (C) Copyright IBM Deutschland Entwicklung GmbH 2005
  *
  * Author: Arnd Bergmann <arndb@de.ibm.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-#include <linux/sched.h>
-=======
  */
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 
 #include <asm/spu.h>
@@ -45,47 +23,12 @@
 static void spufs_handle_event(struct spu_context *ctx,
 				unsigned long ea, int type)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ctx->flags & SPU_CREATE_EVENTS_ENABLED) {
 		ctx->event_return |= type;
 		wake_up_all(&ctx->stop_wq);
 		return;
 	}
 
-<<<<<<< HEAD
-	memset(&info, 0, sizeof(info));
-
-	switch (type) {
-	case SPE_EVENT_INVALID_DMA:
-		info.si_signo = SIGBUS;
-		info.si_code = BUS_OBJERR;
-		break;
-	case SPE_EVENT_SPE_DATA_STORAGE:
-		info.si_signo = SIGSEGV;
-		info.si_addr = (void __user *)ea;
-		info.si_code = SEGV_ACCERR;
-		ctx->ops->restart_dma(ctx);
-		break;
-	case SPE_EVENT_DMA_ALIGNMENT:
-		info.si_signo = SIGBUS;
-		/* DAR isn't set for an alignment fault :( */
-		info.si_code = BUS_ADRALN;
-		break;
-	case SPE_EVENT_SPE_ERROR:
-		info.si_signo = SIGILL;
-		info.si_addr = (void __user *)(unsigned long)
-			ctx->ops->npc_read(ctx) - 4;
-		info.si_code = ILL_ILLOPC;
-		break;
-	}
-
-	if (info.si_signo)
-		force_sig_info(info.si_signo, &info, current);
-=======
 	switch (type) {
 	case SPE_EVENT_INVALID_DMA:
 		force_sig_fault(SIGBUS, BUS_OBJERR, NULL);
@@ -105,7 +48,6 @@ static void spufs_handle_event(struct spu_context *ctx,
 			ctx->ops->npc_read(ctx) - 4);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int spufs_handle_class0(struct spu_context *ctx)
@@ -145,11 +87,7 @@ int spufs_handle_class1(struct spu_context *ctx)
 {
 	u64 ea, dsisr, access;
 	unsigned long flags;
-<<<<<<< HEAD
-	unsigned flt = 0;
-=======
 	vm_fault_t flt = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/*
@@ -176,15 +114,6 @@ int spufs_handle_class1(struct spu_context *ctx)
 	if (ctx->state == SPU_STATE_RUNNABLE)
 		ctx->spu->stats.hash_flt++;
 
-<<<<<<< HEAD
-	/* we must not hold the lock when entering spu_handle_mm_fault */
-	spu_release(ctx);
-
-	access = (_PAGE_PRESENT | _PAGE_USER);
-	access |= (dsisr & MFC_DSISR_ACCESS_PUT) ? _PAGE_RW : 0UL;
-	local_irq_save(flags);
-	ret = hash_page(ea, access, 0x300);
-=======
 	/* we must not hold the lock when entering copro_handle_mm_fault */
 	spu_release(ctx);
 
@@ -192,16 +121,11 @@ int spufs_handle_class1(struct spu_context *ctx)
 	access |= (dsisr & MFC_DSISR_ACCESS_PUT) ? _PAGE_WRITE : 0UL;
 	local_irq_save(flags);
 	ret = hash_page(ea, access, 0x300, dsisr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 
 	/* hashing failed, so try the actual fault handler */
 	if (ret)
-<<<<<<< HEAD
-		ret = spu_handle_mm_fault(current->mm, ea, dsisr, &flt);
-=======
 		ret = copro_handle_mm_fault(current->mm, ea, dsisr, &flt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This is nasty: we need the state_mutex for all the bookkeeping even

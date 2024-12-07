@@ -1,11 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Portions
  * Copyright (C) 2020-2021, 2023 Intel Corporation
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/mac80211.h>
 #include <net/rtnetlink.h>
 
@@ -14,34 +11,11 @@
 #include "driver-ops.h"
 #include "led.h"
 
-<<<<<<< HEAD
-/* return value indicates whether the driver should be further notified */
-static bool ieee80211_quiesce(struct ieee80211_sub_if_data *sdata)
-{
-	switch (sdata->vif.type) {
-	case NL80211_IFTYPE_STATION:
-		ieee80211_sta_quiesce(sdata);
-		return true;
-	case NL80211_IFTYPE_ADHOC:
-		ieee80211_ibss_quiesce(sdata);
-		return true;
-	case NL80211_IFTYPE_MESH_POINT:
-		ieee80211_mesh_quiesce(sdata);
-		return true;
-	case NL80211_IFTYPE_AP_VLAN:
-	case NL80211_IFTYPE_MONITOR:
-		/* don't tell driver about this */
-		return false;
-	default:
-		return true;
-	}
-=======
 static void ieee80211_sched_scan_cancel(struct ieee80211_local *local)
 {
 	if (ieee80211_request_sched_scan_stop(local))
 		return;
 	cfg80211_sched_scan_stopped_locked(local->hw.wiphy, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
@@ -53,21 +27,6 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 	if (!local->open_count)
 		goto suspend;
 
-<<<<<<< HEAD
-	ieee80211_scan_cancel(local);
-
-	if (hw->flags & IEEE80211_HW_AMPDU_AGGREGATION) {
-		mutex_lock(&local->sta_mtx);
-		list_for_each_entry(sta, &local->sta_list, list) {
-			set_sta_flag(sta, WLAN_STA_BLOCK_BA);
-			ieee80211_sta_tear_down_BA_sessions(sta, true);
-		}
-		mutex_unlock(&local->sta_mtx);
-	}
-
-	ieee80211_stop_queues_by_reason(hw,
-			IEEE80211_QUEUE_STOP_REASON_SUSPEND);
-=======
 	local->suspending = true;
 	mb(); /* make suspending visible before any cancellation */
 
@@ -97,16 +56,11 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 					IEEE80211_MAX_QUEUE_MAP,
 					IEEE80211_QUEUE_STOP_REASON_SUSPEND,
 					false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* flush out all packets */
 	synchronize_net();
 
-<<<<<<< HEAD
-	drv_flush(local, false);
-=======
 	ieee80211_flush_queues(local, NULL, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local->quiescing = true;
 	/* make quiescing visible to timers everywhere */
@@ -121,25 +75,6 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 	 * Note that this particular timer doesn't need to be
 	 * restarted at resume.
 	 */
-<<<<<<< HEAD
-	cancel_work_sync(&local->dynamic_ps_enable_work);
-	del_timer_sync(&local->dynamic_ps_timer);
-
-	local->wowlan = wowlan && local->open_count;
-	if (local->wowlan) {
-		int err = drv_suspend(local, wowlan);
-		if (err < 0) {
-			local->quiescing = false;
-			return err;
-		} else if (err > 0) {
-			WARN_ON(err != 1);
-			local->wowlan = false;
-		} else {
-			list_for_each_entry(sdata, &local->interfaces, list) {
-				cancel_work_sync(&sdata->work);
-				ieee80211_quiesce(sdata);
-			}
-=======
 	wiphy_work_cancel(local->hw.wiphy, &local->dynamic_ps_enable_work);
 	del_timer_sync(&local->dynamic_ps_timer);
 
@@ -205,53 +140,10 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 					false);
 			return err;
 		} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto suspend;
 		}
 	}
 
-<<<<<<< HEAD
-	/* disable keys */
-	list_for_each_entry(sdata, &local->interfaces, list)
-		ieee80211_disable_keys(sdata);
-
-	/* tear down aggregation sessions and remove STAs */
-	mutex_lock(&local->sta_mtx);
-	list_for_each_entry(sta, &local->sta_list, list) {
-		if (sta->uploaded) {
-			enum ieee80211_sta_state state;
-
-			state = sta->sta_state;
-			for (; state > IEEE80211_STA_NOTEXIST; state--)
-				WARN_ON(drv_sta_state(local, sta->sdata, sta,
-						      state, state - 1));
-		}
-
-		mesh_plink_quiesce(sta);
-	}
-	mutex_unlock(&local->sta_mtx);
-
-	/* remove all interfaces */
-	list_for_each_entry(sdata, &local->interfaces, list) {
-		cancel_work_sync(&sdata->work);
-
-		if (!ieee80211_quiesce(sdata))
-			continue;
-
-		if (!ieee80211_sdata_running(sdata))
-			continue;
-
-		/* disable beaconing */
-		ieee80211_bss_info_change_notify(sdata,
-			BSS_CHANGED_BEACON_ENABLED);
-
-		drv_remove_interface(local, sdata);
-	}
-
-	/* stop hardware - this must stop RX */
-	if (local->open_count)
-		ieee80211_stop_device(local);
-=======
 	/* remove all interfaces that were created in the driver */
 	list_for_each_entry(sdata, &local->interfaces, list) {
 		if (!ieee80211_sdata_running(sdata))
@@ -280,17 +172,13 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 
 	/* stop hardware - this must stop RX */
 	ieee80211_stop_device(local);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  suspend:
 	local->suspended = true;
 	/* need suspended to be visible before quiescing is false */
 	barrier();
 	local->quiescing = false;
-<<<<<<< HEAD
-=======
 	local->suspending = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -300,8 +188,6 @@ int __ieee80211_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
  * ieee80211_reconfig(), which is also needed for hardware
  * hang/firmware failure/etc. recovery.
  */
-<<<<<<< HEAD
-=======
 
 void ieee80211_report_wowlan_wakeup(struct ieee80211_vif *vif,
 				    struct cfg80211_wowlan_wakeup *wakeup,
@@ -312,4 +198,3 @@ void ieee80211_report_wowlan_wakeup(struct ieee80211_vif *vif,
 	cfg80211_report_wowlan_wakeup(&sdata->wdev, wakeup, gfp);
 }
 EXPORT_SYMBOL(ieee80211_report_wowlan_wakeup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

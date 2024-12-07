@@ -36,11 +36,8 @@
 #include <linux/mlx4/cmd.h>
 #include <linux/module.h>
 #include <linux/cache.h>
-<<<<<<< HEAD
-=======
 #include <linux/kernel.h>
 #include <uapi/rdma/mlx4-abi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "fw.h"
 #include "icm.h"
@@ -56,22 +53,11 @@ extern void __buggy_use_of_MLX4_PUT(void);
 
 static bool enable_qos;
 module_param(enable_qos, bool, 0444);
-<<<<<<< HEAD
-MODULE_PARM_DESC(enable_qos, "Enable Quality of Service support in the HCA (default: off)");
-=======
 MODULE_PARM_DESC(enable_qos, "Enable Enhanced QoS support (default: off)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MLX4_GET(dest, source, offset)				      \
 	do {							      \
 		void *__p = (char *) (source) + (offset);	      \
-<<<<<<< HEAD
-		switch (sizeof (dest)) {			      \
-		case 1: (dest) = *(u8 *) __p;	    break;	      \
-		case 2: (dest) = be16_to_cpup(__p); break;	      \
-		case 4: (dest) = be32_to_cpup(__p); break;	      \
-		case 8: (dest) = be64_to_cpup(__p); break;	      \
-=======
 		__be64 val;                                           \
 		switch (sizeof(dest)) {				      \
 		case 1: (dest) = *(u8 *) __p;	    break;	      \
@@ -79,7 +65,6 @@ MODULE_PARM_DESC(enable_qos, "Enable Enhanced QoS support (default: off)");
 		case 4: (dest) = be32_to_cpup(__p); break;	      \
 		case 8: val = get_unaligned((__be64 *)__p);           \
 			(dest) = be64_to_cpu(val);  break;            \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default: __buggy_use_of_MLX4_GET();		      \
 		}						      \
 	} while (0)
@@ -103,21 +88,11 @@ static void dump_dev_cap_flags(struct mlx4_dev *dev, u64 flags)
 		[ 1] = "UC transport",
 		[ 2] = "UD transport",
 		[ 3] = "XRC transport",
-<<<<<<< HEAD
-		[ 4] = "reliable multicast",
-		[ 5] = "FCoIB support",
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		[ 6] = "SRQ support",
 		[ 7] = "IPoIB checksum offload",
 		[ 8] = "P_Key violation counter",
 		[ 9] = "Q_Key violation counter",
-<<<<<<< HEAD
-		[10] = "VMM",
-		[12] = "DPDP",
-=======
 		[12] = "Dual Port Different Protocol (DPDP) support",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		[15] = "Big LSO headers",
 		[16] = "MW support",
 		[17] = "APM support",
@@ -125,33 +100,21 @@ static void dump_dev_cap_flags(struct mlx4_dev *dev, u64 flags)
 		[19] = "Raw multicast support",
 		[20] = "Address vector port checking support",
 		[21] = "UD multicast support",
-<<<<<<< HEAD
-		[24] = "Demand paging support",
-		[25] = "Router support",
-		[30] = "IBoE support",
-		[32] = "Unicast loopback support",
-		[34] = "FCS header control",
-		[38] = "Wake On LAN support",
-=======
 		[30] = "IBoE support",
 		[32] = "Unicast loopback support",
 		[34] = "FCS header control",
 		[37] = "Wake On LAN (port1) support",
 		[38] = "Wake On LAN (port2) support",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		[40] = "UDP RSS support",
 		[41] = "Unicast VEP steering support",
 		[42] = "Multicast VEP steering support",
 		[48] = "Counters support",
-<<<<<<< HEAD
-=======
 		[52] = "RSS IP fragments support",
 		[53] = "Port ETS Scheduler support",
 		[55] = "Port link type sensing support",
 		[59] = "Port management change event support",
 		[61] = "64 byte EQE support",
 		[62] = "64 byte CQE support",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	int i;
 
@@ -161,8 +124,6 @@ static void dump_dev_cap_flags(struct mlx4_dev *dev, u64 flags)
 			mlx4_dbg(dev, "    %s\n", fname[i]);
 }
 
-<<<<<<< HEAD
-=======
 static void dump_dev_cap_flags2(struct mlx4_dev *dev, u64 flags)
 {
 	static const char * const fname[] = {
@@ -214,7 +175,6 @@ static void dump_dev_cap_flags2(struct mlx4_dev *dev, u64 flags)
 			mlx4_dbg(dev, "    %s\n", fname[i]);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_MOD_STAT_CFG(struct mlx4_dev *dev, struct mlx4_mod_stat_cfg *cfg)
 {
 	struct mlx4_cmd_mailbox *mailbox;
@@ -231,11 +191,6 @@ int mlx4_MOD_STAT_CFG(struct mlx4_dev *dev, struct mlx4_mod_stat_cfg *cfg)
 		return PTR_ERR(mailbox);
 	inbox = mailbox->buf;
 
-<<<<<<< HEAD
-	memset(inbox, 0, MOD_STAT_CFG_IN_SIZE);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_PUT(inbox, cfg->log_pg_sz, MOD_STAT_CFG_PG_SZ_OFFSET);
 	MLX4_PUT(inbox, cfg->log_pg_sz_m, MOD_STAT_CFG_PG_SZ_M_OFFSET);
 
@@ -246,8 +201,6 @@ int mlx4_MOD_STAT_CFG(struct mlx4_dev *dev, struct mlx4_mod_stat_cfg *cfg)
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 int mlx4_QUERY_FUNC(struct mlx4_dev *dev, struct mlx4_func *func, int slave)
 {
 	struct mlx4_cmd_mailbox *mailbox;
@@ -369,81 +322,21 @@ static int mlx4_handle_vst_qinq(struct mlx4_priv *priv, int slave, int port)
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_QUERY_FUNC_CAP_wrapper(struct mlx4_dev *dev, int slave,
 				struct mlx4_vhcr *vhcr,
 				struct mlx4_cmd_mailbox *inbox,
 				struct mlx4_cmd_mailbox *outbox,
 				struct mlx4_cmd_info *cmd)
 {
-<<<<<<< HEAD
-	u8	field;
-	u32	size;
-	int	err = 0;
-=======
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	u8	field, port;
 	u32	size, proxy_qp, qkey;
 	int	err = 0;
 	struct mlx4_func func;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define QUERY_FUNC_CAP_FLAGS_OFFSET		0x0
 #define QUERY_FUNC_CAP_NUM_PORTS_OFFSET		0x1
 #define QUERY_FUNC_CAP_PF_BHVR_OFFSET		0x4
-<<<<<<< HEAD
-#define QUERY_FUNC_CAP_QP_QUOTA_OFFSET		0x10
-#define QUERY_FUNC_CAP_CQ_QUOTA_OFFSET		0x14
-#define QUERY_FUNC_CAP_SRQ_QUOTA_OFFSET		0x18
-#define QUERY_FUNC_CAP_MPT_QUOTA_OFFSET		0x20
-#define QUERY_FUNC_CAP_MTT_QUOTA_OFFSET		0x24
-#define QUERY_FUNC_CAP_MCG_QUOTA_OFFSET		0x28
-#define QUERY_FUNC_CAP_MAX_EQ_OFFSET		0x2c
-#define QUERY_FUNC_CAP_RESERVED_EQ_OFFSET	0X30
-
-#define QUERY_FUNC_CAP_PHYS_PORT_OFFSET		0x3
-#define QUERY_FUNC_CAP_ETH_PROPS_OFFSET		0xc
-
-	if (vhcr->op_modifier == 1) {
-		field = vhcr->in_modifier;
-		MLX4_PUT(outbox->buf, field, QUERY_FUNC_CAP_PHYS_PORT_OFFSET);
-
-		field = 0; /* ensure fvl bit is not set */
-		MLX4_PUT(outbox->buf, field, QUERY_FUNC_CAP_ETH_PROPS_OFFSET);
-	} else if (vhcr->op_modifier == 0) {
-		field = 1 << 7; /* enable only ethernet interface */
-		MLX4_PUT(outbox->buf, field, QUERY_FUNC_CAP_FLAGS_OFFSET);
-
-		field = dev->caps.num_ports;
-		MLX4_PUT(outbox->buf, field, QUERY_FUNC_CAP_NUM_PORTS_OFFSET);
-
-		size = 0; /* no PF behavious is set for now */
-		MLX4_PUT(outbox->buf, size, QUERY_FUNC_CAP_PF_BHVR_OFFSET);
-
-		size = dev->caps.num_qps;
-		MLX4_PUT(outbox->buf, size, QUERY_FUNC_CAP_QP_QUOTA_OFFSET);
-
-		size = dev->caps.num_srqs;
-		MLX4_PUT(outbox->buf, size, QUERY_FUNC_CAP_SRQ_QUOTA_OFFSET);
-
-		size = dev->caps.num_cqs;
-		MLX4_PUT(outbox->buf, size, QUERY_FUNC_CAP_CQ_QUOTA_OFFSET);
-
-		size = dev->caps.num_eqs;
-		MLX4_PUT(outbox->buf, size, QUERY_FUNC_CAP_MAX_EQ_OFFSET);
-
-		size = dev->caps.reserved_eqs;
-		MLX4_PUT(outbox->buf, size, QUERY_FUNC_CAP_RESERVED_EQ_OFFSET);
-
-		size = dev->caps.num_mpts;
-		MLX4_PUT(outbox->buf, size, QUERY_FUNC_CAP_MPT_QUOTA_OFFSET);
-
-		size = dev->caps.num_mtts;
-		MLX4_PUT(outbox->buf, size, QUERY_FUNC_CAP_MTT_QUOTA_OFFSET);
-
-		size = dev->caps.num_mgms + dev->caps.num_amgms;
-		MLX4_PUT(outbox->buf, size, QUERY_FUNC_CAP_MCG_QUOTA_OFFSET);
-=======
 #define QUERY_FUNC_CAP_FMR_OFFSET		0x8
 #define QUERY_FUNC_CAP_QP_QUOTA_OFFSET_DEP	0x10
 #define QUERY_FUNC_CAP_CQ_QUOTA_OFFSET_DEP	0x14
@@ -636,7 +529,6 @@ int mlx4_QUERY_FUNC_CAP_wrapper(struct mlx4_dev *dev, int slave,
 
 		if (vhcr->in_modifier & QUERY_FUNC_CAP_SUPPORTS_VST_QINQ)
 			slave_state->vst_qinq_supported = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else
 		err = -EINVAL;
@@ -644,17 +536,6 @@ int mlx4_QUERY_FUNC_CAP_wrapper(struct mlx4_dev *dev, int slave,
 	return err;
 }
 
-<<<<<<< HEAD
-int mlx4_QUERY_FUNC_CAP(struct mlx4_dev *dev, struct mlx4_func_cap *func_cap)
-{
-	struct mlx4_cmd_mailbox *mailbox;
-	u32			*outbox;
-	u8			field;
-	u32			size;
-	int			i;
-	int			err = 0;
-
-=======
 int mlx4_QUERY_FUNC_CAP(struct mlx4_dev *dev, u8 gen_or_port,
 			struct mlx4_func_cap *func_cap)
 {
@@ -670,72 +551,19 @@ int mlx4_QUERY_FUNC_CAP(struct mlx4_dev *dev, u8 gen_or_port,
 	slave_caps = QUERY_FUNC_CAP_SUPPORTS_VST_QINQ |
 		QUERY_FUNC_CAP_SUPPORTS_NON_POWER_OF_2_NUM_EQS;
 	in_modifier = op_modifier ? gen_or_port : slave_caps;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mailbox = mlx4_alloc_cmd_mailbox(dev);
 	if (IS_ERR(mailbox))
 		return PTR_ERR(mailbox);
 
-<<<<<<< HEAD
-	err = mlx4_cmd_box(dev, 0, mailbox->dma, 0, 0, MLX4_CMD_QUERY_FUNC_CAP,
-=======
 	err = mlx4_cmd_box(dev, 0, mailbox->dma, in_modifier, op_modifier,
 			   MLX4_CMD_QUERY_FUNC_CAP,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
 	if (err)
 		goto out;
 
 	outbox = mailbox->buf;
 
-<<<<<<< HEAD
-	MLX4_GET(field, outbox, QUERY_FUNC_CAP_FLAGS_OFFSET);
-	if (!(field & (1 << 7))) {
-		mlx4_err(dev, "The host doesn't support eth interface\n");
-		err = -EPROTONOSUPPORT;
-		goto out;
-	}
-
-	MLX4_GET(field, outbox, QUERY_FUNC_CAP_NUM_PORTS_OFFSET);
-	func_cap->num_ports = field;
-
-	MLX4_GET(size, outbox, QUERY_FUNC_CAP_PF_BHVR_OFFSET);
-	func_cap->pf_context_behaviour = size;
-
-	MLX4_GET(size, outbox, QUERY_FUNC_CAP_QP_QUOTA_OFFSET);
-	func_cap->qp_quota = size & 0xFFFFFF;
-
-	MLX4_GET(size, outbox, QUERY_FUNC_CAP_SRQ_QUOTA_OFFSET);
-	func_cap->srq_quota = size & 0xFFFFFF;
-
-	MLX4_GET(size, outbox, QUERY_FUNC_CAP_CQ_QUOTA_OFFSET);
-	func_cap->cq_quota = size & 0xFFFFFF;
-
-	MLX4_GET(size, outbox, QUERY_FUNC_CAP_MAX_EQ_OFFSET);
-	func_cap->max_eq = size & 0xFFFFFF;
-
-	MLX4_GET(size, outbox, QUERY_FUNC_CAP_RESERVED_EQ_OFFSET);
-	func_cap->reserved_eq = size & 0xFFFFFF;
-
-	MLX4_GET(size, outbox, QUERY_FUNC_CAP_MPT_QUOTA_OFFSET);
-	func_cap->mpt_quota = size & 0xFFFFFF;
-
-	MLX4_GET(size, outbox, QUERY_FUNC_CAP_MTT_QUOTA_OFFSET);
-	func_cap->mtt_quota = size & 0xFFFFFF;
-
-	MLX4_GET(size, outbox, QUERY_FUNC_CAP_MCG_QUOTA_OFFSET);
-	func_cap->mcg_quota = size & 0xFFFFFF;
-
-	for (i = 1; i <= func_cap->num_ports; ++i) {
-		err = mlx4_cmd_box(dev, 0, mailbox->dma, i, 1,
-				   MLX4_CMD_QUERY_FUNC_CAP,
-				   MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
-		if (err)
-			goto out;
-
-		MLX4_GET(field, outbox, QUERY_FUNC_CAP_ETH_PROPS_OFFSET);
-		if (field & (1 << 7)) {
-=======
 	if (!op_modifier) {
 		MLX4_GET(field, outbox, QUERY_FUNC_CAP_FLAGS_OFFSET);
 		if (!(field & (QUERY_FUNC_CAP_FLAG_ETH | QUERY_FUNC_CAP_FLAG_RDMA))) {
@@ -828,28 +656,16 @@ int mlx4_QUERY_FUNC_CAP(struct mlx4_dev *dev, u8 gen_or_port,
 	MLX4_GET(func_cap->flags1, outbox, QUERY_FUNC_CAP_FLAGS1_OFFSET);
 	if (dev->caps.port_type[gen_or_port] == MLX4_PORT_TYPE_ETH) {
 		if (func_cap->flags1 & QUERY_FUNC_CAP_FLAGS1_FORCE_VLAN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mlx4_err(dev, "VLAN is enforced on this port\n");
 			err = -EPROTONOSUPPORT;
 			goto out;
 		}
 
-<<<<<<< HEAD
-		if (field & (1 << 6)) {
-=======
 		if (func_cap->flags1 & QUERY_FUNC_CAP_FLAGS1_FORCE_MAC) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mlx4_err(dev, "Force mac is enabled on this port\n");
 			err = -EPROTONOSUPPORT;
 			goto out;
 		}
-<<<<<<< HEAD
-
-		MLX4_GET(field, outbox, QUERY_FUNC_CAP_PHYS_PORT_OFFSET);
-		func_cap->physical_port[i] = field;
-	}
-
-=======
 	} else if (dev->caps.port_type[gen_or_port] == MLX4_PORT_TYPE_IB) {
 		MLX4_GET(field, outbox, QUERY_FUNC_CAP_FLAGS0_OFFSET);
 		if (field & QUERY_FUNC_CAP_FLAGS0_FORCE_PHY_WQE_GID) {
@@ -891,7 +707,6 @@ int mlx4_QUERY_FUNC_CAP(struct mlx4_dev *dev, u8 gen_or_port,
 
 	MLX4_GET(func_cap->flags0, outbox, QUERY_FUNC_CAP_FLAGS0_OFFSET);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* All other resources are allocated by the master, but we still report
 	 * 'num' and 'reserved' capabilities as follows:
 	 * - num remains the maximum resource index
@@ -905,11 +720,8 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static void disable_unsupported_roce_caps(void *buf);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 {
 	struct mlx4_cmd_mailbox *mailbox;
@@ -940,38 +752,25 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 #define QUERY_DEV_CAP_MAX_MRW_SZ_OFFSET		0x21
 #define QUERY_DEV_CAP_RSVD_MRW_OFFSET		0x22
 #define QUERY_DEV_CAP_MAX_MTT_SEG_OFFSET	0x23
-<<<<<<< HEAD
-=======
 #define QUERY_DEV_CAP_NUM_SYS_EQ_OFFSET		0x26
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QUERY_DEV_CAP_MAX_AV_OFFSET		0x27
 #define QUERY_DEV_CAP_MAX_REQ_QP_OFFSET		0x29
 #define QUERY_DEV_CAP_MAX_RES_QP_OFFSET		0x2b
 #define QUERY_DEV_CAP_MAX_GSO_OFFSET		0x2d
-<<<<<<< HEAD
-#define QUERY_DEV_CAP_MAX_RDMA_OFFSET		0x2f
-#define QUERY_DEV_CAP_RSZ_SRQ_OFFSET		0x33
-=======
 #define QUERY_DEV_CAP_RSS_OFFSET		0x2e
 #define QUERY_DEV_CAP_MAX_RDMA_OFFSET		0x2f
 #define QUERY_DEV_CAP_RSZ_SRQ_OFFSET		0x33
 #define QUERY_DEV_CAP_PORT_BEACON_OFFSET	0x34
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QUERY_DEV_CAP_ACK_DELAY_OFFSET		0x35
 #define QUERY_DEV_CAP_MTU_WIDTH_OFFSET		0x36
 #define QUERY_DEV_CAP_VL_PORT_OFFSET		0x37
 #define QUERY_DEV_CAP_MAX_MSG_SZ_OFFSET		0x38
 #define QUERY_DEV_CAP_MAX_GID_OFFSET		0x3b
 #define QUERY_DEV_CAP_RATE_SUPPORT_OFFSET	0x3c
-<<<<<<< HEAD
-#define QUERY_DEV_CAP_MAX_PKEY_OFFSET		0x3f
-#define QUERY_DEV_CAP_EXT_FLAGS_OFFSET		0x40
-=======
 #define QUERY_DEV_CAP_CQ_TS_SUPPORT_OFFSET	0x3e
 #define QUERY_DEV_CAP_MAX_PKEY_OFFSET		0x3f
 #define QUERY_DEV_CAP_EXT_FLAGS_OFFSET		0x40
 #define QUERY_DEV_CAP_WOL_OFFSET		0x43
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QUERY_DEV_CAP_FLAGS_OFFSET		0x44
 #define QUERY_DEV_CAP_RSVD_UAR_OFFSET		0x48
 #define QUERY_DEV_CAP_UAR_SZ_OFFSET		0x49
@@ -984,11 +783,8 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 #define QUERY_DEV_CAP_MAX_DESC_SZ_SQ_OFFSET	0x52
 #define QUERY_DEV_CAP_MAX_SG_RQ_OFFSET		0x55
 #define QUERY_DEV_CAP_MAX_DESC_SZ_RQ_OFFSET	0x56
-<<<<<<< HEAD
-=======
 #define QUERY_DEV_CAP_USER_MAC_EN_OFFSET	0x5C
 #define QUERY_DEV_CAP_SVLAN_BY_QP_OFFSET	0x5D
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QUERY_DEV_CAP_MAX_QP_MCG_OFFSET		0x61
 #define QUERY_DEV_CAP_RSVD_MCG_OFFSET		0x62
 #define QUERY_DEV_CAP_MAX_MCG_OFFSET		0x63
@@ -997,8 +793,6 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 #define QUERY_DEV_CAP_RSVD_XRC_OFFSET		0x66
 #define QUERY_DEV_CAP_MAX_XRC_OFFSET		0x67
 #define QUERY_DEV_CAP_MAX_COUNTERS_OFFSET	0x68
-<<<<<<< HEAD
-=======
 #define QUERY_DEV_CAP_PORT_FLOWSTATS_COUNTERS_OFFSET	0x70
 #define QUERY_DEV_CAP_EXT_2_FLAGS_OFFSET	0x70
 #define QUERY_DEV_CAP_FLOW_STEERING_IPOIB_OFFSET	0x74
@@ -1007,7 +801,6 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 #define QUERY_DEV_CAP_SL2VL_EVENT_OFFSET	0x78
 #define QUERY_DEV_CAP_CQ_EQ_CACHE_LINE_STRIDE	0x7a
 #define QUERY_DEV_CAP_ECN_QCN_VER_OFFSET	0x7b
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QUERY_DEV_CAP_RDMARC_ENTRY_SZ_OFFSET	0x80
 #define QUERY_DEV_CAP_QPC_ENTRY_SZ_OFFSET	0x82
 #define QUERY_DEV_CAP_AUX_ENTRY_SZ_OFFSET	0x84
@@ -1019,11 +812,6 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 #define QUERY_DEV_CAP_MTT_ENTRY_SZ_OFFSET	0x90
 #define QUERY_DEV_CAP_D_MPT_ENTRY_SZ_OFFSET	0x92
 #define QUERY_DEV_CAP_BMME_FLAGS_OFFSET		0x94
-<<<<<<< HEAD
-#define QUERY_DEV_CAP_RSVD_LKEY_OFFSET		0x98
-#define QUERY_DEV_CAP_MAX_ICM_SZ_OFFSET		0xa0
-
-=======
 #define QUERY_DEV_CAP_CONFIG_DEV_OFFSET		0x94
 #define QUERY_DEV_CAP_PHV_EN_OFFSET		0x96
 #define QUERY_DEV_CAP_RSVD_LKEY_OFFSET		0x98
@@ -1042,19 +830,12 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 #define QUERY_DEV_CAP_HEALTH_BUFFER_ADDRESS_OFFSET	0xe4
 
 	dev_cap->flags2 = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mailbox = mlx4_alloc_cmd_mailbox(dev);
 	if (IS_ERR(mailbox))
 		return PTR_ERR(mailbox);
 	outbox = mailbox->buf;
 
 	err = mlx4_cmd_box(dev, 0, mailbox->dma, 0, 0, MLX4_CMD_QUERY_DEV_CAP,
-<<<<<<< HEAD
-			   MLX4_CMD_TIME_CLASS_A, !mlx4_is_slave(dev));
-	if (err)
-		goto out;
-
-=======
 			   MLX4_CMD_TIME_CLASS_A, MLX4_CMD_NATIVE);
 	if (err)
 		goto out;
@@ -1063,7 +844,6 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 		disable_unsupported_roce_caps(outbox);
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAP_CLOCK_TO_USER);
 	dev_cap->map_clock_to_user = field & 0x80;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_RSVD_QP_OFFSET);
 	dev_cap->reserved_qps = 1 << (field & 0xf);
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_QP_OFFSET);
@@ -1081,28 +861,15 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_MPT_OFFSET);
 	dev_cap->max_mpts = 1 << (field & 0x3f);
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_RSVD_EQ_OFFSET);
-<<<<<<< HEAD
-	dev_cap->reserved_eqs = field & 0xf;
-=======
 	dev_cap->reserved_eqs = 1 << (field & 0xf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_EQ_OFFSET);
 	dev_cap->max_eqs = 1 << (field & 0xf);
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_RSVD_MTT_OFFSET);
 	dev_cap->reserved_mtts = 1 << (field >> 4);
-<<<<<<< HEAD
-	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_MRW_SZ_OFFSET);
-	dev_cap->max_mrw_sz = 1 << field;
-	MLX4_GET(field, outbox, QUERY_DEV_CAP_RSVD_MRW_OFFSET);
-	dev_cap->reserved_mrws = 1 << (field & 0xf);
-	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_MTT_SEG_OFFSET);
-	dev_cap->max_mtt_seg = 1 << (field & 0x3f);
-=======
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_RSVD_MRW_OFFSET);
 	dev_cap->reserved_mrws = 1 << (field & 0xf);
 	MLX4_GET(size, outbox, QUERY_DEV_CAP_NUM_SYS_EQ_OFFSET);
 	dev_cap->num_sys_eqs = size & 0xfff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_REQ_QP_OFFSET);
 	dev_cap->max_requester_per_qp = 1 << (field & 0x3f);
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_RES_QP_OFFSET);
@@ -1114,8 +881,6 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	else
 		dev_cap->max_gso_sz = 1 << field;
 
-<<<<<<< HEAD
-=======
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_RSS_OFFSET);
 	if (field & 0x20)
 		dev_cap->flags2 |= MLX4_DEV_CAP_FLAG2_RSS_XOR;
@@ -1127,7 +892,6 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 		dev_cap->max_rss_tbl_sz = 1 << field;
 	} else
 		dev_cap->max_rss_tbl_sz = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_RDMA_OFFSET);
 	dev_cap->max_rdma_global = 1 << (field & 0x3f);
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_ACK_DELAY_OFFSET);
@@ -1136,13 +900,6 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	dev_cap->num_ports = field & 0xf;
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_MSG_SZ_OFFSET);
 	dev_cap->max_msg_sz = 1 << (field & 0x1f);
-<<<<<<< HEAD
-	MLX4_GET(stat_rate, outbox, QUERY_DEV_CAP_RATE_SUPPORT_OFFSET);
-	dev_cap->stat_rate_support = stat_rate;
-	MLX4_GET(ext_flags, outbox, QUERY_DEV_CAP_EXT_FLAGS_OFFSET);
-	MLX4_GET(flags, outbox, QUERY_DEV_CAP_FLAGS_OFFSET);
-	dev_cap->flags = flags | (u64)ext_flags << 32;
-=======
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_PORT_FLOWSTATS_COUNTERS_OFFSET);
 	if (field & 0x10)
 		dev_cap->flags2 |= MLX4_DEV_CAP_FLAG2_FLOWSTATS_EN;
@@ -1177,7 +934,6 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_WOL_OFFSET);
 	dev_cap->wol_port[1] = !!(field & 0x20);
 	dev_cap->wol_port[2] = !!(field & 0x40);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_RSVD_UAR_OFFSET);
 	dev_cap->reserved_uars = field >> 4;
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_UAR_SZ_OFFSET);
@@ -1193,16 +949,8 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 		if ((1 << (field & 0x3f)) > (PAGE_SIZE / dev_cap->bf_reg_size))
 			field = 3;
 		dev_cap->bf_regs_per_page = 1 << (field & 0x3f);
-<<<<<<< HEAD
-		mlx4_dbg(dev, "BlueFlame available (reg size %d, regs/page %d)\n",
-			 dev_cap->bf_reg_size, dev_cap->bf_regs_per_page);
 	} else {
 		dev_cap->bf_reg_size = 0;
-		mlx4_dbg(dev, "BlueFlame not available\n");
-=======
-	} else {
-		dev_cap->bf_reg_size = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_SG_SQ_OFFSET);
@@ -1210,15 +958,12 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	MLX4_GET(size, outbox, QUERY_DEV_CAP_MAX_DESC_SZ_SQ_OFFSET);
 	dev_cap->max_sq_desc_sz = size;
 
-<<<<<<< HEAD
-=======
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_USER_MAC_EN_OFFSET);
 	if (field & (1 << 2))
 		dev_cap->flags2 |= MLX4_DEV_CAP_FLAG2_USER_MAC_EN;
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_SVLAN_BY_QP_OFFSET);
 	if (field & 0x1)
 		dev_cap->flags2 |= MLX4_DEV_CAP_FLAG2_SVLAN_BY_QP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_QP_MCG_OFFSET);
 	dev_cap->max_qp_per_mcg = 1 << field;
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_RSVD_MCG_OFFSET);
@@ -1231,11 +976,7 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	dev_cap->max_pds = 1 << (field & 0x3f);
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_RSVD_XRC_OFFSET);
 	dev_cap->reserved_xrcds = field >> 4;
-<<<<<<< HEAD
-	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_PD_OFFSET);
-=======
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_XRC_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_cap->max_xrcds = 1 << (field & 0x1f);
 
 	MLX4_GET(size, outbox, QUERY_DEV_CAP_RDMARC_ENTRY_SZ_OFFSET);
@@ -1269,13 +1010,6 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	dev_cap->max_rq_sg = field;
 	MLX4_GET(size, outbox, QUERY_DEV_CAP_MAX_DESC_SZ_RQ_OFFSET);
 	dev_cap->max_rq_desc_sz = size;
-<<<<<<< HEAD
-
-	MLX4_GET(dev_cap->bmme_flags, outbox,
-		 QUERY_DEV_CAP_BMME_FLAGS_OFFSET);
-	MLX4_GET(dev_cap->reserved_lkey, outbox,
-		 QUERY_DEV_CAP_RSVD_LKEY_OFFSET);
-=======
 	MLX4_GET(field, outbox, QUERY_DEV_CAP_CQ_EQ_CACHE_LINE_STRIDE);
 	if (field & (1 << 4))
 		dev_cap->flags2 |= MLX4_DEV_CAP_FLAG2_QOS_VPP;
@@ -1322,27 +1056,12 @@ int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 		dev_cap->flags2 |= MLX4_DEV_CAP_FLAG2_VXLAN_OFFLOADS;
 	if (field & (1 << 5))
 		dev_cap->flags2 |= MLX4_DEV_CAP_FLAG2_ETS_CFG;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_GET(dev_cap->max_icm_sz, outbox,
 		 QUERY_DEV_CAP_MAX_ICM_SZ_OFFSET);
 	if (dev_cap->flags & MLX4_DEV_CAP_FLAG_COUNTERS)
 		MLX4_GET(dev_cap->max_counters, outbox,
 			 QUERY_DEV_CAP_MAX_COUNTERS_OFFSET);
 
-<<<<<<< HEAD
-	if (dev->flags & MLX4_FLAG_OLD_PORT_CMDS) {
-		for (i = 1; i <= dev_cap->num_ports; ++i) {
-			MLX4_GET(field, outbox, QUERY_DEV_CAP_VL_PORT_OFFSET);
-			dev_cap->max_vl[i]	   = field >> 4;
-			MLX4_GET(field, outbox, QUERY_DEV_CAP_MTU_WIDTH_OFFSET);
-			dev_cap->ib_mtu[i]	   = field >> 4;
-			dev_cap->max_port_width[i] = field & 0xf;
-			MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_GID_OFFSET);
-			dev_cap->max_gids[i]	   = 1 << (field & 0xf);
-			MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_PKEY_OFFSET);
-			dev_cap->max_pkeys[i]	   = 1 << (field & 0xf);
-		}
-=======
 	MLX4_GET(field32, outbox,
 		 QUERY_DEV_CAP_MAD_DEMUX_OFFSET);
 	if (field32 & (1 << 0))
@@ -1494,7 +1213,6 @@ int mlx4_QUERY_PORT(struct mlx4_dev *dev, int port, struct mlx4_port_cap *port_c
 		port_cap->max_gids	   = 1 << (field & 0xf);
 		MLX4_GET(field, outbox, QUERY_DEV_CAP_MAX_PKEY_OFFSET);
 		port_cap->max_pkeys	   = 1 << (field & 0xf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 #define QUERY_PORT_SUPPORTED_TYPE_OFFSET	0x00
 #define QUERY_PORT_MTU_OFFSET			0x01
@@ -1508,82 +1226,6 @@ int mlx4_QUERY_PORT(struct mlx4_dev *dev, int port, struct mlx4_port_cap *port_c
 #define QUERY_PORT_WAVELENGTH_OFFSET		0x1c
 #define QUERY_PORT_TRANS_CODE_OFFSET		0x20
 
-<<<<<<< HEAD
-		for (i = 1; i <= dev_cap->num_ports; ++i) {
-			err = mlx4_cmd_box(dev, 0, mailbox->dma, i, 0, MLX4_CMD_QUERY_PORT,
-					   MLX4_CMD_TIME_CLASS_B,
-					   !mlx4_is_slave(dev));
-			if (err)
-				goto out;
-
-			MLX4_GET(field, outbox, QUERY_PORT_SUPPORTED_TYPE_OFFSET);
-			dev_cap->supported_port_types[i] = field & 3;
-			dev_cap->suggested_type[i] = (field >> 3) & 1;
-			dev_cap->default_sense[i] = (field >> 4) & 1;
-			MLX4_GET(field, outbox, QUERY_PORT_MTU_OFFSET);
-			dev_cap->ib_mtu[i]	   = field & 0xf;
-			MLX4_GET(field, outbox, QUERY_PORT_WIDTH_OFFSET);
-			dev_cap->max_port_width[i] = field & 0xf;
-			MLX4_GET(field, outbox, QUERY_PORT_MAX_GID_PKEY_OFFSET);
-			dev_cap->max_gids[i]	   = 1 << (field >> 4);
-			dev_cap->max_pkeys[i]	   = 1 << (field & 0xf);
-			MLX4_GET(field, outbox, QUERY_PORT_MAX_VL_OFFSET);
-			dev_cap->max_vl[i]	   = field & 0xf;
-			MLX4_GET(field, outbox, QUERY_PORT_MAX_MACVLAN_OFFSET);
-			dev_cap->log_max_macs[i]  = field & 0xf;
-			dev_cap->log_max_vlans[i] = field >> 4;
-			MLX4_GET(dev_cap->eth_mtu[i], outbox, QUERY_PORT_ETH_MTU_OFFSET);
-			MLX4_GET(dev_cap->def_mac[i], outbox, QUERY_PORT_MAC_OFFSET);
-			MLX4_GET(field32, outbox, QUERY_PORT_TRANS_VENDOR_OFFSET);
-			dev_cap->trans_type[i] = field32 >> 24;
-			dev_cap->vendor_oui[i] = field32 & 0xffffff;
-			MLX4_GET(dev_cap->wavelength[i], outbox, QUERY_PORT_WAVELENGTH_OFFSET);
-			MLX4_GET(dev_cap->trans_code[i], outbox, QUERY_PORT_TRANS_CODE_OFFSET);
-		}
-	}
-
-	mlx4_dbg(dev, "Base MM extensions: flags %08x, rsvd L_Key %08x\n",
-		 dev_cap->bmme_flags, dev_cap->reserved_lkey);
-
-	/*
-	 * Each UAR has 4 EQ doorbells; so if a UAR is reserved, then
-	 * we can't use any EQs whose doorbell falls on that page,
-	 * even if the EQ itself isn't reserved.
-	 */
-	dev_cap->reserved_eqs = max(dev_cap->reserved_uars * 4,
-				    dev_cap->reserved_eqs);
-
-	mlx4_dbg(dev, "Max ICM size %lld MB\n",
-		 (unsigned long long) dev_cap->max_icm_sz >> 20);
-	mlx4_dbg(dev, "Max QPs: %d, reserved QPs: %d, entry size: %d\n",
-		 dev_cap->max_qps, dev_cap->reserved_qps, dev_cap->qpc_entry_sz);
-	mlx4_dbg(dev, "Max SRQs: %d, reserved SRQs: %d, entry size: %d\n",
-		 dev_cap->max_srqs, dev_cap->reserved_srqs, dev_cap->srq_entry_sz);
-	mlx4_dbg(dev, "Max CQs: %d, reserved CQs: %d, entry size: %d\n",
-		 dev_cap->max_cqs, dev_cap->reserved_cqs, dev_cap->cqc_entry_sz);
-	mlx4_dbg(dev, "Max EQs: %d, reserved EQs: %d, entry size: %d\n",
-		 dev_cap->max_eqs, dev_cap->reserved_eqs, dev_cap->eqc_entry_sz);
-	mlx4_dbg(dev, "reserved MPTs: %d, reserved MTTs: %d\n",
-		 dev_cap->reserved_mrws, dev_cap->reserved_mtts);
-	mlx4_dbg(dev, "Max PDs: %d, reserved PDs: %d, reserved UARs: %d\n",
-		 dev_cap->max_pds, dev_cap->reserved_pds, dev_cap->reserved_uars);
-	mlx4_dbg(dev, "Max QP/MCG: %d, reserved MGMs: %d\n",
-		 dev_cap->max_pds, dev_cap->reserved_mgms);
-	mlx4_dbg(dev, "Max CQEs: %d, max WQEs: %d, max SRQ WQEs: %d\n",
-		 dev_cap->max_cq_sz, dev_cap->max_qp_sz, dev_cap->max_srq_sz);
-	mlx4_dbg(dev, "Local CA ACK delay: %d, max MTU: %d, port width cap: %d\n",
-		 dev_cap->local_ca_ack_delay, 128 << dev_cap->ib_mtu[1],
-		 dev_cap->max_port_width[1]);
-	mlx4_dbg(dev, "Max SQ desc size: %d, max SQ S/G: %d\n",
-		 dev_cap->max_sq_desc_sz, dev_cap->max_sq_sg);
-	mlx4_dbg(dev, "Max RQ desc size: %d, max RQ S/G: %d\n",
-		 dev_cap->max_rq_desc_sz, dev_cap->max_rq_sg);
-	mlx4_dbg(dev, "Max GSO size: %d\n", dev_cap->max_gso_sz);
-	mlx4_dbg(dev, "Max counters: %d\n", dev_cap->max_counters);
-
-	dump_dev_cap_flags(dev, dev_cap->flags);
-
-=======
 		err = mlx4_cmd_box(dev, 0, mailbox->dma, port, 0, MLX4_CMD_QUERY_PORT,
 				   MLX4_CMD_TIME_CLASS_B, MLX4_CMD_NATIVE);
 		if (err)
@@ -1617,14 +1259,11 @@ int mlx4_QUERY_PORT(struct mlx4_dev *dev, int port, struct mlx4_port_cap *port_c
 		MLX4_GET(port_cap->trans_code, outbox, QUERY_PORT_TRANS_CODE_OFFSET);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	mlx4_free_cmd_mailbox(dev, mailbox);
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 #define DEV_CAP_EXT_2_FLAG_PFC_COUNTERS	(1 << 28)
 #define DEV_CAP_EXT_2_FLAG_VLAN_CONTROL (1 << 26)
 #define DEV_CAP_EXT_2_FLAG_80_VFS	(1 << 21)
@@ -1764,25 +1403,12 @@ static void disable_unsupported_roce_caps(void *buf)
 	MLX4_PUT(buf, flags, QUERY_DEV_CAP_BMME_FLAGS_OFFSET);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_QUERY_PORT_wrapper(struct mlx4_dev *dev, int slave,
 			    struct mlx4_vhcr *vhcr,
 			    struct mlx4_cmd_mailbox *inbox,
 			    struct mlx4_cmd_mailbox *outbox,
 			    struct mlx4_cmd_info *cmd)
 {
-<<<<<<< HEAD
-	u64 def_mac;
-	u8 port_type;
-	int err;
-
-#define MLX4_PORT_SUPPORT_IB		(1 << 0)
-#define MLX4_PORT_SUGGEST_TYPE		(1 << 3)
-#define MLX4_PORT_DEFAULT_SENSE		(1 << 4)
-#define MLX4_VF_PORT_ETH_ONLY_MASK	(0xff & ~MLX4_PORT_SUPPORT_IB & \
-					 ~MLX4_PORT_SUGGEST_TYPE & \
-					 ~MLX4_PORT_DEFAULT_SENSE)
-=======
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	u64 def_mac;
 	u8 port_type;
@@ -1807,42 +1433,19 @@ int mlx4_QUERY_PORT_wrapper(struct mlx4_dev *dev, int slave,
 		return -EINVAL;
 
 	vhcr->in_modifier = port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = mlx4_cmd_box(dev, 0, outbox->dma, vhcr->in_modifier, 0,
 			   MLX4_CMD_QUERY_PORT, MLX4_CMD_TIME_CLASS_B,
 			   MLX4_CMD_NATIVE);
 
 	if (!err && dev->caps.function != slave) {
-<<<<<<< HEAD
-		/* set slave default_mac address */
-		MLX4_GET(def_mac, outbox->buf, QUERY_PORT_MAC_OFFSET);
-		def_mac += slave << 8;
-=======
 		def_mac = priv->mfunc.master.vf_oper[slave].vport[vhcr->in_modifier].state.mac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		MLX4_PUT(outbox->buf, def_mac, QUERY_PORT_MAC_OFFSET);
 
 		/* get port type - currently only eth is enabled */
 		MLX4_GET(port_type, outbox->buf,
 			 QUERY_PORT_SUPPORTED_TYPE_OFFSET);
 
-<<<<<<< HEAD
-		/* Allow only Eth port, no link sensing allowed */
-		port_type &= MLX4_VF_PORT_ETH_ONLY_MASK;
-
-		/* check eth is enabled for this port */
-		if (!(port_type & 2))
-			mlx4_dbg(dev, "QUERY PORT: eth not supported by host");
-
-		MLX4_PUT(outbox->buf, port_type,
-			 QUERY_PORT_SUPPORTED_TYPE_OFFSET);
-	}
-
-	return err;
-}
-
-=======
 		/* No link sensing allowed */
 		port_type &= MLX4_VF_PORT_NO_LINK_SENSE_MASK;
 		/* set port type to currently operating port type */
@@ -1913,7 +1516,6 @@ out:
 }
 EXPORT_SYMBOL(mlx4_get_slave_pkey_gid_tbl_len);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_map_cmd(struct mlx4_dev *dev, u16 op, struct mlx4_icm *icm, u64 virt)
 {
 	struct mlx4_cmd_mailbox *mailbox;
@@ -1928,10 +1530,6 @@ int mlx4_map_cmd(struct mlx4_dev *dev, u16 op, struct mlx4_icm *icm, u64 virt)
 	mailbox = mlx4_alloc_cmd_mailbox(dev);
 	if (IS_ERR(mailbox))
 		return PTR_ERR(mailbox);
-<<<<<<< HEAD
-	memset(mailbox->buf, 0, MLX4_MAILBOX_SIZE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pages = mailbox->buf;
 
 	for (mlx4_icm_first(icm, &iter);
@@ -1944,17 +1542,10 @@ int mlx4_map_cmd(struct mlx4_dev *dev, u16 op, struct mlx4_icm *icm, u64 virt)
 		 */
 		lg = ffs(mlx4_icm_addr(&iter) | mlx4_icm_size(&iter)) - 1;
 		if (lg < MLX4_ICM_PAGE_SHIFT) {
-<<<<<<< HEAD
-			mlx4_warn(dev, "Got FW area not aligned to %d (%llx/%lx).\n",
-				   MLX4_ICM_PAGE_SIZE,
-				   (unsigned long long) mlx4_icm_addr(&iter),
-				   mlx4_icm_size(&iter));
-=======
 			mlx4_warn(dev, "Got FW area not aligned to %d (%llx/%lx)\n",
 				  MLX4_ICM_PAGE_SIZE,
 				  (unsigned long long) mlx4_icm_addr(&iter),
 				  mlx4_icm_size(&iter));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			goto out;
 		}
@@ -1962,11 +1553,7 @@ int mlx4_map_cmd(struct mlx4_dev *dev, u16 op, struct mlx4_icm *icm, u64 virt)
 		for (i = 0; i < mlx4_icm_size(&iter) >> lg; ++i) {
 			if (virt != -1) {
 				pages[nent * 2] = cpu_to_be64(virt);
-<<<<<<< HEAD
-				virt += 1 << lg;
-=======
 				virt += 1ULL << lg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			pages[nent * 2 + 1] =
@@ -1994,16 +1581,6 @@ int mlx4_map_cmd(struct mlx4_dev *dev, u16 op, struct mlx4_icm *icm, u64 virt)
 
 	switch (op) {
 	case MLX4_CMD_MAP_FA:
-<<<<<<< HEAD
-		mlx4_dbg(dev, "Mapped %d chunks/%d KB for FW.\n", tc, ts);
-		break;
-	case MLX4_CMD_MAP_ICM_AUX:
-		mlx4_dbg(dev, "Mapped %d chunks/%d KB for ICM aux.\n", tc, ts);
-		break;
-	case MLX4_CMD_MAP_ICM:
-		mlx4_dbg(dev, "Mapped %d chunks/%d KB at %llx for ICM.\n",
-			  tc, ts, (unsigned long long) virt - (ts << 10));
-=======
 		mlx4_dbg(dev, "Mapped %d chunks/%d KB for FW\n", tc, ts);
 		break;
 	case MLX4_CMD_MAP_ICM_AUX:
@@ -2012,7 +1589,6 @@ int mlx4_map_cmd(struct mlx4_dev *dev, u16 op, struct mlx4_icm *icm, u64 virt)
 	case MLX4_CMD_MAP_ICM:
 		mlx4_dbg(dev, "Mapped %d chunks/%d KB at %llx for ICM\n",
 			 tc, ts, (unsigned long long) virt - (ts << 10));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -2066,12 +1642,9 @@ int mlx4_QUERY_FW(struct mlx4_dev *dev)
 #define QUERY_FW_COMM_BASE_OFFSET      0x40
 #define QUERY_FW_COMM_BAR_OFFSET       0x48
 
-<<<<<<< HEAD
-=======
 #define QUERY_FW_CLOCK_OFFSET	       0x50
 #define QUERY_FW_CLOCK_BAR	       0x58
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mailbox = mlx4_alloc_cmd_mailbox(dev);
 	if (IS_ERR(mailbox))
 		return PTR_ERR(mailbox);
@@ -2094,13 +1667,6 @@ int mlx4_QUERY_FW(struct mlx4_dev *dev)
 	MLX4_GET(lg, outbox, QUERY_FW_PPF_ID);
 	dev->caps.function = lg;
 
-<<<<<<< HEAD
-	MLX4_GET(cmd_if_rev, outbox, QUERY_FW_CMD_IF_REV_OFFSET);
-	if (cmd_if_rev < MLX4_COMMAND_INTERFACE_MIN_REV ||
-	    cmd_if_rev > MLX4_COMMAND_INTERFACE_MAX_REV) {
-		mlx4_err(dev, "Installed FW has unsupported "
-			 "command interface revision %d.\n",
-=======
 	if (mlx4_is_slave(dev))
 		goto out;
 
@@ -2109,17 +1675,12 @@ int mlx4_QUERY_FW(struct mlx4_dev *dev)
 	if (cmd_if_rev < MLX4_COMMAND_INTERFACE_MIN_REV ||
 	    cmd_if_rev > MLX4_COMMAND_INTERFACE_MAX_REV) {
 		mlx4_err(dev, "Installed FW has unsupported command interface revision %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 cmd_if_rev);
 		mlx4_err(dev, "(Installed FW version is %d.%d.%03d)\n",
 			 (int) (dev->caps.fw_ver >> 32),
 			 (int) (dev->caps.fw_ver >> 16) & 0xffff,
 			 (int) dev->caps.fw_ver & 0xffff);
-<<<<<<< HEAD
-		mlx4_err(dev, "This driver version supports only revisions %d to %d.\n",
-=======
 		mlx4_err(dev, "This driver version supports only revisions %d to %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 MLX4_COMMAND_INTERFACE_MIN_REV, MLX4_COMMAND_INTERFACE_MAX_REV);
 		err = -ENODEV;
 		goto out;
@@ -2157,15 +1718,12 @@ int mlx4_QUERY_FW(struct mlx4_dev *dev)
 		 fw->comm_bar, fw->comm_base);
 	mlx4_dbg(dev, "FW size %d KB\n", fw->fw_pages >> 2);
 
-<<<<<<< HEAD
-=======
 	MLX4_GET(fw->clock_offset, outbox, QUERY_FW_CLOCK_OFFSET);
 	MLX4_GET(fw->clock_bar,    outbox, QUERY_FW_CLOCK_BAR);
 	fw->clock_bar = (fw->clock_bar >> 6) * 2;
 	mlx4_dbg(dev, "Internal clock bar:%d offset:0x%llx\n",
 		 fw->clock_bar, fw->clock_offset);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Round up number of system pages needed in case
 	 * MLX4_ICM_PAGE_SIZE < PAGE_SIZE.
@@ -2182,8 +1740,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 int mlx4_QUERY_FW_wrapper(struct mlx4_dev *dev, int slave,
 			  struct mlx4_vhcr *vhcr,
 			  struct mlx4_cmd_mailbox *inbox,
@@ -2208,7 +1764,6 @@ int mlx4_QUERY_FW_wrapper(struct mlx4_dev *dev, int slave,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void get_board_id(void *vsd, char *board_id)
 {
 	int i;
@@ -2224,22 +1779,13 @@ static void get_board_id(void *vsd, char *board_id)
 
 	if (be16_to_cpup(vsd + VSD_OFFSET_SIG1) == VSD_SIGNATURE_TOPSPIN &&
 	    be16_to_cpup(vsd + VSD_OFFSET_SIG2) == VSD_SIGNATURE_TOPSPIN) {
-<<<<<<< HEAD
-		strlcpy(board_id, vsd + VSD_OFFSET_TS_BOARD_ID, MLX4_BOARD_ID_LEN);
-=======
 		strscpy(board_id, vsd + VSD_OFFSET_TS_BOARD_ID, MLX4_BOARD_ID_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/*
 		 * The board ID is a string but the firmware byte
 		 * swaps each 4-byte word before passing it back to
 		 * us.  Therefore we need to swab it before printing.
 		 */
-<<<<<<< HEAD
-		for (i = 0; i < 4; ++i)
-			((u32 *) board_id)[i] =
-				swab32(*(u32 *) (vsd + VSD_OFFSET_MLX_BOARD_ID + i * 4));
-=======
 		u32 *bid_u32 = (u32 *)board_id;
 
 		for (i = 0; i < 4; ++i) {
@@ -2251,7 +1797,6 @@ static void get_board_id(void *vsd, char *board_id)
 			val = swab32(val);
 			put_unaligned(val, &bid_u32[i]);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2290,28 +1835,20 @@ int mlx4_INIT_HCA(struct mlx4_dev *dev, struct mlx4_init_hca_param *param)
 	struct mlx4_cmd_mailbox *mailbox;
 	__be32 *inbox;
 	int err;
-<<<<<<< HEAD
-=======
 	static const u8 a0_dmfs_hw_steering[] =  {
 		[MLX4_STEERING_DMFS_A0_DEFAULT]		= 0,
 		[MLX4_STEERING_DMFS_A0_DYNAMIC]		= 1,
 		[MLX4_STEERING_DMFS_A0_STATIC]		= 2,
 		[MLX4_STEERING_DMFS_A0_DISABLE]		= 3
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define INIT_HCA_IN_SIZE		 0x200
 #define INIT_HCA_VERSION_OFFSET		 0x000
 #define	 INIT_HCA_VERSION		 2
-<<<<<<< HEAD
-#define INIT_HCA_CACHELINE_SZ_OFFSET	 0x0e
-#define INIT_HCA_FLAGS_OFFSET		 0x014
-=======
 #define INIT_HCA_VXLAN_OFFSET		 0x0c
 #define INIT_HCA_CACHELINE_SZ_OFFSET	 0x0e
 #define INIT_HCA_FLAGS_OFFSET		 0x014
 #define INIT_HCA_RECOVERABLE_ERROR_EVENT_OFFSET 0x018
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INIT_HCA_QPC_OFFSET		 0x020
 #define	 INIT_HCA_QPC_BASE_OFFSET	 (INIT_HCA_QPC_OFFSET + 0x10)
 #define	 INIT_HCA_LOG_QP_OFFSET		 (INIT_HCA_QPC_OFFSET + 0x17)
@@ -2320,30 +1857,16 @@ int mlx4_INIT_HCA(struct mlx4_dev *dev, struct mlx4_init_hca_param *param)
 #define	 INIT_HCA_CQC_BASE_OFFSET	 (INIT_HCA_QPC_OFFSET + 0x30)
 #define	 INIT_HCA_LOG_CQ_OFFSET		 (INIT_HCA_QPC_OFFSET + 0x37)
 #define	 INIT_HCA_EQE_CQE_OFFSETS	 (INIT_HCA_QPC_OFFSET + 0x38)
-<<<<<<< HEAD
-=======
 #define	 INIT_HCA_EQE_CQE_STRIDE_OFFSET  (INIT_HCA_QPC_OFFSET + 0x3b)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	 INIT_HCA_ALTC_BASE_OFFSET	 (INIT_HCA_QPC_OFFSET + 0x40)
 #define	 INIT_HCA_AUXC_BASE_OFFSET	 (INIT_HCA_QPC_OFFSET + 0x50)
 #define	 INIT_HCA_EQC_BASE_OFFSET	 (INIT_HCA_QPC_OFFSET + 0x60)
 #define	 INIT_HCA_LOG_EQ_OFFSET		 (INIT_HCA_QPC_OFFSET + 0x67)
-<<<<<<< HEAD
-=======
 #define	INIT_HCA_NUM_SYS_EQS_OFFSET	(INIT_HCA_QPC_OFFSET + 0x6a)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	 INIT_HCA_RDMARC_BASE_OFFSET	 (INIT_HCA_QPC_OFFSET + 0x70)
 #define	 INIT_HCA_LOG_RD_OFFSET		 (INIT_HCA_QPC_OFFSET + 0x77)
 #define INIT_HCA_MCAST_OFFSET		 0x0c0
 #define	 INIT_HCA_MC_BASE_OFFSET	 (INIT_HCA_MCAST_OFFSET + 0x00)
-<<<<<<< HEAD
-#define	 INIT_HCA_LOG_MC_ENTRY_SZ_OFFSET (INIT_HCA_MCAST_OFFSET + 0x12)
-#define	 INIT_HCA_LOG_MC_HASH_SZ_OFFSET	 (INIT_HCA_MCAST_OFFSET + 0x16)
-#define  INIT_HCA_UC_STEERING_OFFSET	 (INIT_HCA_MCAST_OFFSET + 0x18)
-#define	 INIT_HCA_LOG_MC_TABLE_SZ_OFFSET (INIT_HCA_MCAST_OFFSET + 0x1b)
-#define INIT_HCA_TPT_OFFSET		 0x0f0
-#define	 INIT_HCA_DMPT_BASE_OFFSET	 (INIT_HCA_TPT_OFFSET + 0x00)
-=======
 #define	 INIT_HCA_LOG_MC_ENTRY_SZ_OFFSET (INIT_HCA_MCAST_OFFSET + 0x13)
 #define	 INIT_HCA_LOG_MC_HASH_SZ_OFFSET	 (INIT_HCA_MCAST_OFFSET + 0x17)
 #define  INIT_HCA_UC_STEERING_OFFSET	 (INIT_HCA_MCAST_OFFSET + 0x18)
@@ -2363,7 +1886,6 @@ int mlx4_INIT_HCA(struct mlx4_dev *dev, struct mlx4_init_hca_param *param)
 #define INIT_HCA_TPT_OFFSET		 0x0f0
 #define	 INIT_HCA_DMPT_BASE_OFFSET	 (INIT_HCA_TPT_OFFSET + 0x00)
 #define  INIT_HCA_TPT_MW_OFFSET		 (INIT_HCA_TPT_OFFSET + 0x08)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	 INIT_HCA_LOG_MPT_SZ_OFFSET	 (INIT_HCA_TPT_OFFSET + 0x0b)
 #define	 INIT_HCA_MTT_BASE_OFFSET	 (INIT_HCA_TPT_OFFSET + 0x10)
 #define	 INIT_HCA_CMPT_BASE_OFFSET	 (INIT_HCA_TPT_OFFSET + 0x18)
@@ -2376,19 +1898,10 @@ int mlx4_INIT_HCA(struct mlx4_dev *dev, struct mlx4_init_hca_param *param)
 		return PTR_ERR(mailbox);
 	inbox = mailbox->buf;
 
-<<<<<<< HEAD
-	memset(inbox, 0, INIT_HCA_IN_SIZE);
-
-	*((u8 *) mailbox->buf + INIT_HCA_VERSION_OFFSET) = INIT_HCA_VERSION;
-
-	*((u8 *) mailbox->buf + INIT_HCA_CACHELINE_SZ_OFFSET) =
-		(ilog2(cache_line_size()) - 4) << 5;
-=======
 	*((u8 *) mailbox->buf + INIT_HCA_VERSION_OFFSET) = INIT_HCA_VERSION;
 
 	*((u8 *) mailbox->buf + INIT_HCA_CACHELINE_SZ_OFFSET) =
 		((ilog2(cache_line_size()) - 4) << 5) | (1 << 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(__LITTLE_ENDIAN)
 	*(inbox + INIT_HCA_FLAGS_OFFSET / 4) &= ~cpu_to_be32(1 << 1);
@@ -2405,19 +1918,13 @@ int mlx4_INIT_HCA(struct mlx4_dev *dev, struct mlx4_init_hca_param *param)
 		*(inbox + INIT_HCA_FLAGS_OFFSET / 4) |= cpu_to_be32(1 << 3);
 
 	/* Enable QoS support if module parameter set */
-<<<<<<< HEAD
-	if (enable_qos)
-=======
 	if (dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_ETS_CFG && enable_qos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*(inbox + INIT_HCA_FLAGS_OFFSET / 4) |= cpu_to_be32(1 << 2);
 
 	/* enable counters */
 	if (dev->caps.flags & MLX4_DEV_CAP_FLAG_COUNTERS)
 		*(inbox + INIT_HCA_FLAGS_OFFSET / 4) |= cpu_to_be32(1 << 4);
 
-<<<<<<< HEAD
-=======
 	/* Enable RSS spread to fragmented IP packets when supported */
 	if (dev->caps.flags & MLX4_DEV_CAP_FLAG_RSS_IP_FRAG)
 		*(inbox + INIT_HCA_FLAGS_OFFSET / 4) |= cpu_to_be32(1 << 13);
@@ -2464,7 +1971,6 @@ int mlx4_INIT_HCA(struct mlx4_dev *dev, struct mlx4_init_hca_param *param)
 		mlx4_dbg(dev, "Reporting Driver Version to FW: %s\n", dst);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* QPC/EEC/CQC/EQC/RDMARC attributes */
 
 	MLX4_PUT(inbox, param->qpc_base,      INIT_HCA_QPC_BASE_OFFSET);
@@ -2477,19 +1983,6 @@ int mlx4_INIT_HCA(struct mlx4_dev *dev, struct mlx4_init_hca_param *param)
 	MLX4_PUT(inbox, param->auxc_base,     INIT_HCA_AUXC_BASE_OFFSET);
 	MLX4_PUT(inbox, param->eqc_base,      INIT_HCA_EQC_BASE_OFFSET);
 	MLX4_PUT(inbox, param->log_num_eqs,   INIT_HCA_LOG_EQ_OFFSET);
-<<<<<<< HEAD
-	MLX4_PUT(inbox, param->rdmarc_base,   INIT_HCA_RDMARC_BASE_OFFSET);
-	MLX4_PUT(inbox, param->log_rd_per_qp, INIT_HCA_LOG_RD_OFFSET);
-
-	/* multicast attributes */
-
-	MLX4_PUT(inbox, param->mc_base,		INIT_HCA_MC_BASE_OFFSET);
-	MLX4_PUT(inbox, param->log_mc_entry_sz, INIT_HCA_LOG_MC_ENTRY_SZ_OFFSET);
-	MLX4_PUT(inbox, param->log_mc_hash_sz,  INIT_HCA_LOG_MC_HASH_SZ_OFFSET);
-	if (dev->caps.flags & MLX4_DEV_CAP_FLAG_VEP_MC_STEER)
-		MLX4_PUT(inbox, (u8) (1 << 3),	INIT_HCA_UC_STEERING_OFFSET);
-	MLX4_PUT(inbox, param->log_mc_table_sz, INIT_HCA_LOG_MC_TABLE_SZ_OFFSET);
-=======
 	MLX4_PUT(inbox, param->num_sys_eqs,   INIT_HCA_NUM_SYS_EQS_OFFSET);
 	MLX4_PUT(inbox, param->rdmarc_base,   INIT_HCA_RDMARC_BASE_OFFSET);
 	MLX4_PUT(inbox, param->log_rd_per_qp, INIT_HCA_LOG_RD_OFFSET);
@@ -2542,15 +2035,11 @@ int mlx4_INIT_HCA(struct mlx4_dev *dev, struct mlx4_init_hca_param *param)
 			MLX4_PUT(inbox, (u8) (1 << 3),
 				 INIT_HCA_UC_STEERING_OFFSET);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* TPT attributes */
 
 	MLX4_PUT(inbox, param->dmpt_base,  INIT_HCA_DMPT_BASE_OFFSET);
-<<<<<<< HEAD
-=======
 	MLX4_PUT(inbox, param->mw_enabled, INIT_HCA_TPT_MW_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_PUT(inbox, param->log_mpt_sz, INIT_HCA_LOG_MPT_SZ_OFFSET);
 	MLX4_PUT(inbox, param->mtt_base,   INIT_HCA_MTT_BASE_OFFSET);
 	MLX4_PUT(inbox, param->cmpt_base,  INIT_HCA_CMPT_BASE_OFFSET);
@@ -2560,10 +2049,6 @@ int mlx4_INIT_HCA(struct mlx4_dev *dev, struct mlx4_init_hca_param *param)
 	MLX4_PUT(inbox, param->uar_page_sz,	INIT_HCA_UAR_PAGE_SZ_OFFSET);
 	MLX4_PUT(inbox, param->log_uar_sz,      INIT_HCA_LOG_UAR_SZ_OFFSET);
 
-<<<<<<< HEAD
-	err = mlx4_cmd(dev, mailbox->dma, 0, 0, MLX4_CMD_INIT_HCA, 10000,
-		       MLX4_CMD_NATIVE);
-=======
 	/* set parser VXLAN attributes */
 	if (dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_VXLAN_OFFLOADS) {
 		u8 parser_params = 0;
@@ -2572,7 +2057,6 @@ int mlx4_INIT_HCA(struct mlx4_dev *dev, struct mlx4_init_hca_param *param)
 
 	err = mlx4_cmd(dev, mailbox->dma, 0, 0, MLX4_CMD_INIT_HCA,
 		       MLX4_CMD_TIME_CLASS_C, MLX4_CMD_NATIVE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (err)
 		mlx4_err(dev, "INIT_HCA returns %d\n", err);
@@ -2586,11 +2070,6 @@ int mlx4_QUERY_HCA(struct mlx4_dev *dev,
 {
 	struct mlx4_cmd_mailbox *mailbox;
 	__be32 *outbox;
-<<<<<<< HEAD
-	int err;
-
-#define QUERY_HCA_GLOBAL_CAPS_OFFSET	0x04
-=======
 	u64 qword_field;
 	u32 dword_field;
 	u16 word_field;
@@ -2605,7 +2084,6 @@ int mlx4_QUERY_HCA(struct mlx4_dev *dev,
 
 #define QUERY_HCA_GLOBAL_CAPS_OFFSET	0x04
 #define QUERY_HCA_CORE_CLOCK_OFFSET	0x0c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mailbox = mlx4_alloc_cmd_mailbox(dev);
 	if (IS_ERR(mailbox))
@@ -2620,33 +2098,6 @@ int mlx4_QUERY_HCA(struct mlx4_dev *dev,
 		goto out;
 
 	MLX4_GET(param->global_caps, outbox, QUERY_HCA_GLOBAL_CAPS_OFFSET);
-<<<<<<< HEAD
-
-	/* QPC/EEC/CQC/EQC/RDMARC attributes */
-
-	MLX4_GET(param->qpc_base,      outbox, INIT_HCA_QPC_BASE_OFFSET);
-	MLX4_GET(param->log_num_qps,   outbox, INIT_HCA_LOG_QP_OFFSET);
-	MLX4_GET(param->srqc_base,     outbox, INIT_HCA_SRQC_BASE_OFFSET);
-	MLX4_GET(param->log_num_srqs,  outbox, INIT_HCA_LOG_SRQ_OFFSET);
-	MLX4_GET(param->cqc_base,      outbox, INIT_HCA_CQC_BASE_OFFSET);
-	MLX4_GET(param->log_num_cqs,   outbox, INIT_HCA_LOG_CQ_OFFSET);
-	MLX4_GET(param->altc_base,     outbox, INIT_HCA_ALTC_BASE_OFFSET);
-	MLX4_GET(param->auxc_base,     outbox, INIT_HCA_AUXC_BASE_OFFSET);
-	MLX4_GET(param->eqc_base,      outbox, INIT_HCA_EQC_BASE_OFFSET);
-	MLX4_GET(param->log_num_eqs,   outbox, INIT_HCA_LOG_EQ_OFFSET);
-	MLX4_GET(param->rdmarc_base,   outbox, INIT_HCA_RDMARC_BASE_OFFSET);
-	MLX4_GET(param->log_rd_per_qp, outbox, INIT_HCA_LOG_RD_OFFSET);
-
-	/* multicast attributes */
-
-	MLX4_GET(param->mc_base,         outbox, INIT_HCA_MC_BASE_OFFSET);
-	MLX4_GET(param->log_mc_entry_sz, outbox,
-		 INIT_HCA_LOG_MC_ENTRY_SZ_OFFSET);
-	MLX4_GET(param->log_mc_hash_sz,  outbox,
-		 INIT_HCA_LOG_MC_HASH_SZ_OFFSET);
-	MLX4_GET(param->log_mc_table_sz, outbox,
-		 INIT_HCA_LOG_MC_TABLE_SZ_OFFSET);
-=======
 	MLX4_GET(param->hca_core_clock, outbox, QUERY_HCA_CORE_CLOCK_OFFSET);
 
 	/* QPC/EEC/CQC/EQC/RDMARC attributes */
@@ -2729,28 +2180,20 @@ int mlx4_QUERY_HCA(struct mlx4_dev *dev,
 		param->eqe_size = 1 << (((byte_field &
 					  MLX4_EQE_SIZE_MASK_STRIDE) >> 4) + 5);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* TPT attributes */
 
 	MLX4_GET(param->dmpt_base,  outbox, INIT_HCA_DMPT_BASE_OFFSET);
-<<<<<<< HEAD
-	MLX4_GET(param->log_mpt_sz, outbox, INIT_HCA_LOG_MPT_SZ_OFFSET);
-=======
 	MLX4_GET(byte_field, outbox, INIT_HCA_TPT_MW_OFFSET);
 	param->mw_enabled = byte_field >> 7;
 	MLX4_GET(byte_field, outbox, INIT_HCA_LOG_MPT_SZ_OFFSET);
 	param->log_mpt_sz = byte_field & 0x3f;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_GET(param->mtt_base,   outbox, INIT_HCA_MTT_BASE_OFFSET);
 	MLX4_GET(param->cmpt_base,  outbox, INIT_HCA_CMPT_BASE_OFFSET);
 
 	/* UAR attributes */
 
 	MLX4_GET(param->uar_page_sz, outbox, INIT_HCA_UAR_PAGE_SZ_OFFSET);
-<<<<<<< HEAD
-	MLX4_GET(param->log_uar_sz, outbox, INIT_HCA_LOG_UAR_SZ_OFFSET);
-=======
 	MLX4_GET(byte_field, outbox, INIT_HCA_LOG_UAR_SZ_OFFSET);
 	param->log_uar_sz = byte_field & 0xf;
 
@@ -2787,7 +2230,6 @@ static int mlx4_hca_core_clock_update(struct mlx4_dev *dev)
 	}
 
 	MLX4_GET(dev->caps.hca_core_clock, outbox, QUERY_HCA_CORE_CLOCK_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	mlx4_free_cmd_mailbox(dev, mailbox);
@@ -2795,8 +2237,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 /* for IB-type ports only in SRIOV mode. Checks that both proxy QP0
  * and real QP0 are active, so that the paravirtualized QP0 is ready
  * to operate */
@@ -2810,7 +2250,6 @@ static int check_qp0_state(struct mlx4_dev *dev, int function, int port)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_INIT_PORT_wrapper(struct mlx4_dev *dev, int slave,
 			   struct mlx4_vhcr *vhcr,
 			   struct mlx4_cmd_mailbox *inbox,
@@ -2818,25 +2257,6 @@ int mlx4_INIT_PORT_wrapper(struct mlx4_dev *dev, int slave,
 			   struct mlx4_cmd_info *cmd)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
-<<<<<<< HEAD
-	int port = vhcr->in_modifier;
-	int err;
-
-	if (priv->mfunc.master.slave_state[slave].init_port_mask & (1 << port))
-		return 0;
-
-	if (dev->caps.port_mask[port] == MLX4_PORT_TYPE_IB)
-		return -ENODEV;
-
-	/* Enable port only if it was previously disabled */
-	if (!priv->mfunc.master.init_port_ref[port]) {
-		err = mlx4_cmd(dev, 0, port, 0, MLX4_CMD_INIT_PORT,
-			       MLX4_CMD_TIME_CLASS_A, MLX4_CMD_NATIVE);
-		if (err)
-			return err;
-		priv->mfunc.master.slave_state[slave].init_port_mask |=
-			(1 << port);
-=======
 	int port = mlx4_slave_convert_port(dev, slave, vhcr->in_modifier);
 	int err;
 
@@ -2868,7 +2288,6 @@ int mlx4_INIT_PORT_wrapper(struct mlx4_dev *dev, int slave,
 			}
 		} else
 			priv->mfunc.master.slave_state[slave].init_port_mask |= (1 << port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	++priv->mfunc.master.init_port_ref[port];
 	return 0;
@@ -2902,11 +2321,6 @@ int mlx4_INIT_PORT(struct mlx4_dev *dev, int port)
 			return PTR_ERR(mailbox);
 		inbox = mailbox->buf;
 
-<<<<<<< HEAD
-		memset(inbox, 0, INIT_PORT_IN_SIZE);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flags = 0;
 		flags |= (dev->caps.vl_cap[port] & 0xf) << INIT_PORT_VL_SHIFT;
 		flags |= (dev->caps.port_width_cap[port] & 0xf) << INIT_PORT_PORT_WIDTH_SHIFT;
@@ -2927,12 +2341,9 @@ int mlx4_INIT_PORT(struct mlx4_dev *dev, int port)
 		err = mlx4_cmd(dev, 0, port, 0, MLX4_CMD_INIT_PORT,
 			       MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
 
-<<<<<<< HEAD
-=======
 	if (!err)
 		mlx4_hca_core_clock_update(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL_GPL(mlx4_INIT_PORT);
@@ -2944,33 +2355,16 @@ int mlx4_CLOSE_PORT_wrapper(struct mlx4_dev *dev, int slave,
 			    struct mlx4_cmd_info *cmd)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
-<<<<<<< HEAD
-	int port = vhcr->in_modifier;
-	int err;
-
-=======
 	int port = mlx4_slave_convert_port(dev, slave, vhcr->in_modifier);
 	int err;
 
 	if (port < 0)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(priv->mfunc.master.slave_state[slave].init_port_mask &
 	    (1 << port)))
 		return 0;
 
-<<<<<<< HEAD
-	if (dev->caps.port_mask[port] == MLX4_PORT_TYPE_IB)
-		return -ENODEV;
-	if (priv->mfunc.master.init_port_ref[port] == 1) {
-		err = mlx4_cmd(dev, 0, port, 0, MLX4_CMD_CLOSE_PORT, 1000,
-			       MLX4_CMD_NATIVE);
-		if (err)
-			return err;
-	}
-	priv->mfunc.master.slave_state[slave].init_port_mask &= ~(1 << port);
-=======
 	if (dev->caps.port_mask[port] != MLX4_PORT_TYPE_IB) {
 		if (priv->mfunc.master.init_port_ref[port] == 1) {
 			err = mlx4_cmd(dev, 0, port, 0, MLX4_CMD_CLOSE_PORT,
@@ -2994,31 +2388,19 @@ int mlx4_CLOSE_PORT_wrapper(struct mlx4_dev *dev, int slave,
 		} else
 			priv->mfunc.master.slave_state[slave].init_port_mask &= ~(1 << port);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	--priv->mfunc.master.init_port_ref[port];
 	return 0;
 }
 
 int mlx4_CLOSE_PORT(struct mlx4_dev *dev, int port)
 {
-<<<<<<< HEAD
-	return mlx4_cmd(dev, 0, port, 0, MLX4_CMD_CLOSE_PORT, 1000,
-			MLX4_CMD_WRAPPED);
-=======
 	return mlx4_cmd(dev, 0, port, 0, MLX4_CMD_CLOSE_PORT,
 			MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mlx4_CLOSE_PORT);
 
 int mlx4_CLOSE_HCA(struct mlx4_dev *dev, int panic)
 {
-<<<<<<< HEAD
-	return mlx4_cmd(dev, 0, 0, panic, MLX4_CMD_CLOSE_HCA, 1000,
-			MLX4_CMD_NATIVE);
-}
-
-=======
 	return mlx4_cmd(dev, 0, 0, panic, MLX4_CMD_CLOSE_HCA,
 			MLX4_CMD_TIME_CLASS_C, MLX4_CMD_NATIVE);
 }
@@ -3194,7 +2576,6 @@ int mlx4_virt2phy_port_map(struct mlx4_dev *dev, u32 port1, u32 port2)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_SET_ICM_SIZE(struct mlx4_dev *dev, u64 icm_size, u64 *aux_pages)
 {
 	int ret = mlx4_cmd_imm(dev, icm_size, aux_pages, 0, 0,
@@ -3216,9 +2597,6 @@ int mlx4_SET_ICM_SIZE(struct mlx4_dev *dev, u64 icm_size, u64 *aux_pages)
 int mlx4_NOP(struct mlx4_dev *dev)
 {
 	/* Input modifier of 0x1f means "finish as soon as possible." */
-<<<<<<< HEAD
-	return mlx4_cmd(dev, 0, 0x1f, 0, MLX4_CMD_NOP, 100, MLX4_CMD_NATIVE);
-=======
 	return mlx4_cmd(dev, 0, 0x1f, 0, MLX4_CMD_NOP, MLX4_CMD_TIME_CLASS_A,
 			MLX4_CMD_NATIVE);
 }
@@ -3294,7 +2672,6 @@ int mlx4_get_phys_port_id(struct mlx4_dev *dev)
 	}
 	mlx4_free_cmd_mailbox(dev, mailbox);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define MLX4_WOL_SETUP_MODE (5 << 28)
@@ -3316,8 +2693,6 @@ int mlx4_wol_write(struct mlx4_dev *dev, u64 config, int port)
 			MLX4_CMD_TIME_CLASS_A, MLX4_CMD_NATIVE);
 }
 EXPORT_SYMBOL_GPL(mlx4_wol_write);
-<<<<<<< HEAD
-=======
 
 enum {
 	ADD_TO_MCG = 0x26,
@@ -3734,4 +3109,3 @@ void mlx4_replace_zero_macs(struct mlx4_dev *dev)
 		}
 }
 EXPORT_SYMBOL_GPL(mlx4_replace_zero_macs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,35 +1,16 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_SYNCH_H 
 #define _ASM_POWERPC_SYNCH_H 
 #ifdef __KERNEL__
 
-<<<<<<< HEAD
-#include <linux/stringify.h>
-#include <asm/feature-fixups.h>
-
-#if defined(__powerpc64__) || defined(CONFIG_PPC_E500MC)
-#define __SUBARCH_HAS_LWSYNC
-#endif
-=======
 #include <asm/cputable.h>
 #include <asm/feature-fixups.h>
 #include <asm/ppc-opcode.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 extern unsigned int __start___lwsync_fixup, __stop___lwsync_fixup;
 extern void do_lwsync_fixups(unsigned long value, void *fixup_start,
 			     void *fixup_end);
-<<<<<<< HEAD
-extern void do_final_fixups(void);
-
-static inline void eieio(void)
-{
-	__asm__ __volatile__ ("eieio" : : : "memory");
-=======
 
 static inline void eieio(void)
 {
@@ -37,15 +18,12 @@ static inline void eieio(void)
 		__asm__ __volatile__ ("mbar" : : : "memory");
 	else
 		__asm__ __volatile__ ("eieio" : : : "memory");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void isync(void)
 {
 	__asm__ __volatile__ ("isync" : : : "memory");
 }
-<<<<<<< HEAD
-=======
 
 static inline void ppc_after_tlbiel_barrier(void)
 {
@@ -62,16 +40,11 @@ static inline void ppc_after_tlbiel_barrier(void)
 	 */
 	asm volatile(ASM_FTR_IFSET(PPC_CP_ABORT, "", %0) : : "i" (CPU_FTR_ARCH_31) : "memory");
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASSEMBLY__ */
 
 #if defined(__powerpc64__)
 #    define LWSYNC	lwsync
-<<<<<<< HEAD
-#elif defined(CONFIG_E500)
-=======
 #elif defined(CONFIG_PPC_E500)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #    define LWSYNC					\
 	START_LWSYNC_SECTION(96);			\
 	sync;						\
@@ -87,11 +60,7 @@ static inline void ppc_after_tlbiel_barrier(void)
 	MAKE_LWSYNC_SECTION_ENTRY(97, __lwsync_fixup);
 #define PPC_ACQUIRE_BARRIER	 "\n" stringify_in_c(__PPC_ACQUIRE_BARRIER)
 #define PPC_RELEASE_BARRIER	 stringify_in_c(LWSYNC) "\n"
-<<<<<<< HEAD
-#define PPC_ATOMIC_ENTRY_BARRIER "\n" stringify_in_c(LWSYNC) "\n"
-=======
 #define PPC_ATOMIC_ENTRY_BARRIER "\n" stringify_in_c(sync) "\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PPC_ATOMIC_EXIT_BARRIER	 "\n" stringify_in_c(sync) "\n"
 #else
 #define PPC_ACQUIRE_BARRIER

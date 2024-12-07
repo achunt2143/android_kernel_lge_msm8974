@@ -1,27 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -30,13 +11,8 @@
  * Larry Finger <Larry.Finger@lwfinger.net>
  *
  ******************************************************************************/
-<<<<<<< HEAD
-#ifndef _IO_H_
-#define _IO_H_
-=======
 #ifndef _RTL871X_IO_H_
 #define _RTL871X_IO_H_
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "osdep_service.h"
 #include "osdep_intf.h"
@@ -61,15 +37,9 @@
 #define _IO_CMDMASK_	(0x1F80)
 
 /*
-<<<<<<< HEAD
-	For prompt mode accessing, caller shall free io_req
-	Otherwise, io_handler will free io_req
-*/
-=======
  *	For prompt mode accessing, caller shall free io_req
  *	Otherwise, io_handler will free io_req
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IO STATUS TYPE */
 #define _IO_ERR_		BIT(2)
 #define _IO_SUCCESS_	BIT(1)
@@ -87,13 +57,8 @@
 #define IO_WR16_ASYNC	(_IO_WRITE_ | _IO_HW_)
 #define IO_WR8_ASYNC	(_IO_WRITE_ | _IO_BYTE_)
 /*
-<<<<<<< HEAD
-	Only Sync. burst accessing is provided.
-*/
-=======
  *	Only Sync. burst accessing is provided.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IO_WR_BURST(x)		(IO_WRITE_ | _IO_SYNC_ | _IO_BURST_ | \
 				((x) & _IOSZ_MASK_))
 #define IO_RD_BURST(x)		(_IO_SYNC_ | _IO_BURST_ | ((x) & _IOSZ_MASK_))
@@ -140,11 +105,7 @@ struct io_req {
 	u32	command;
 	u32	status;
 	u8	*pbuf;
-<<<<<<< HEAD
-	void (*_async_io_callback)(struct _adapter *padater,
-=======
 	void (*_async_io_callback)(struct _adapter *padapter,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   struct io_req *pio_req, u8 *cnxt);
 	u8 *cnxt;
 };
@@ -162,10 +123,6 @@ struct	intf_hdl {
 };
 
 struct reg_protocol_rd {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __LITTLE_ENDIAN
 	/* DW1 */
 	u32		NumOfTrans:4;
@@ -196,11 +153,7 @@ struct reg_protocol_rd {
 	u32 Byte4Access:1;
 	u32 Byte2Access:1;
 	u32 Byte1Access:1;
-<<<<<<< HEAD
-	u32 BurstMode:1 ;
-=======
 	u32 BurstMode:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 FixOrContinuous:1;
 	u32 Reserved4:16;
 	/*DW3*/
@@ -252,13 +205,8 @@ struct reg_protocol_wt {
 };
 
 /*
-<<<<<<< HEAD
-Below is the data structure used by _io_handler
-*/
-=======
  * Below is the data structure used by _io_handler
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct io_queue {
 	spinlock_t lock;
@@ -271,16 +219,6 @@ struct io_queue {
 	struct	intf_hdl intf;
 };
 
-<<<<<<< HEAD
-static inline u32 _RND4(u32 sz)
-{
-	u32	val;
-	val = ((sz >> 2) + ((sz & 3) ? 1 : 0)) << 2;
-	return val;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u8 r8712_read8(struct _adapter *adapter, u32 addr);
 u16 r8712_read16(struct _adapter *adapter, u32 addr);
 u32 r8712_read32(struct _adapter *adapter, u32 addr);
@@ -295,9 +233,4 @@ void r8712_write_port(struct _adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 uint r8712_alloc_io_queue(struct _adapter *adapter);
 void r8712_free_io_queue(struct _adapter *adapter);
 
-<<<<<<< HEAD
-#endif	/*_RTL8711_IO_H_*/
-
-=======
 #endif	/*_RTL871X_IO_H_*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

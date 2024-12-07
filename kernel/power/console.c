@@ -1,41 +1,22 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Functions for saving/restoring console.
  *
  * Originally from swsusp.
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/console.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vt_kern.h>
 #include <linux/kbd_kern.h>
 #include <linux/vt.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "power.h"
 
 #define SUSPEND_CONSOLE	(MAX_NR_CONSOLES-1)
 
 static int orig_fgconsole, orig_kmsg;
 
-<<<<<<< HEAD
-int pm_prepare_console(void)
-{
-	orig_fgconsole = vt_move_to_console(SUSPEND_CONSOLE, 1);
-	if (orig_fgconsole < 0)
-		return 1;
-
-	orig_kmsg = vt_kmsg_redirect(SUSPEND_CONSOLE);
-	return 0;
-=======
 static DEFINE_MUTEX(vt_switch_mutex);
 
 struct pm_vt_switch {
@@ -157,17 +138,13 @@ void pm_prepare_console(void)
 
 	orig_kmsg = vt_kmsg_redirect(SUSPEND_CONSOLE);
 	return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void pm_restore_console(void)
 {
-<<<<<<< HEAD
-=======
 	if (!pm_vt_switch())
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (orig_fgconsole >= 0) {
 		vt_move_to_console(orig_fgconsole, 0);
 		vt_kmsg_redirect(orig_kmsg);

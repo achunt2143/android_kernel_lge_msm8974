@@ -1,38 +1,13 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
- * Copyright (C) 2002, 2004, 2005 Oracle.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright (C) 2002, 2004, 2005 Oracle.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef OCFS2_AOPS_H
 #define OCFS2_AOPS_H
 
-<<<<<<< HEAD
-=======
 #include <linux/fs.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 handle_t *ocfs2_start_walk_page_trans(struct inode *inode,
 							 struct page *page,
 							 unsigned from,
@@ -53,14 +28,6 @@ int walk_page_buffers(	handle_t *handle,
 					struct buffer_head *bh));
 
 int ocfs2_write_end_nolock(struct address_space *mapping,
-<<<<<<< HEAD
-			   loff_t pos, unsigned len, unsigned copied,
-			   struct page *page, void *fsdata);
-
-int ocfs2_write_begin_nolock(struct file *filp,
-			     struct address_space *mapping,
-			     loff_t pos, unsigned len, unsigned flags,
-=======
 			   loff_t pos, unsigned len, unsigned copied, void *fsdata);
 
 typedef enum {
@@ -71,7 +38,6 @@ typedef enum {
 
 int ocfs2_write_begin_nolock(struct address_space *mapping,
 			     loff_t pos, unsigned len, ocfs2_write_type_t type,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct page **pagep, void **fsdata,
 			     struct buffer_head *di_bh, struct page *mmap_page);
 
@@ -96,20 +62,11 @@ static inline void ocfs2_iocb_set_rw_locked(struct kiocb *iocb, int level)
 /*
  * Using a named enum representing lock types in terms of #N bit stored in
  * iocb->private, which is going to be used for communication between
-<<<<<<< HEAD
- * ocfs2_dio_end_io() and ocfs2_file_aio_write/read().
-=======
  * ocfs2_dio_end_io() and ocfs2_file_write/read_iter().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum ocfs2_iocb_lock_bits {
 	OCFS2_IOCB_RW_LOCK = 0,
 	OCFS2_IOCB_RW_LOCK_LEVEL,
-<<<<<<< HEAD
-	OCFS2_IOCB_SEM,
-	OCFS2_IOCB_UNALIGNED_IO,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OCFS2_IOCB_NUM_LOCKS
 };
 
@@ -117,26 +74,5 @@ enum ocfs2_iocb_lock_bits {
 	clear_bit(OCFS2_IOCB_RW_LOCK, (unsigned long *)&iocb->private)
 #define ocfs2_iocb_rw_locked_level(iocb) \
 	test_bit(OCFS2_IOCB_RW_LOCK_LEVEL, (unsigned long *)&iocb->private)
-<<<<<<< HEAD
-#define ocfs2_iocb_set_sem_locked(iocb) \
-	set_bit(OCFS2_IOCB_SEM, (unsigned long *)&iocb->private)
-#define ocfs2_iocb_clear_sem_locked(iocb) \
-	clear_bit(OCFS2_IOCB_SEM, (unsigned long *)&iocb->private)
-#define ocfs2_iocb_is_sem_locked(iocb) \
-	test_bit(OCFS2_IOCB_SEM, (unsigned long *)&iocb->private)
-
-#define ocfs2_iocb_set_unaligned_aio(iocb) \
-	set_bit(OCFS2_IOCB_UNALIGNED_IO, (unsigned long *)&iocb->private)
-#define ocfs2_iocb_clear_unaligned_aio(iocb) \
-	clear_bit(OCFS2_IOCB_UNALIGNED_IO, (unsigned long *)&iocb->private)
-#define ocfs2_iocb_is_unaligned_aio(iocb) \
-	test_bit(OCFS2_IOCB_UNALIGNED_IO, (unsigned long *)&iocb->private)
-
-#define OCFS2_IOEND_WQ_HASH_SZ	37
-#define ocfs2_ioend_wq(v)   (&ocfs2__ioend_wq[((unsigned long)(v)) %\
-					    OCFS2_IOEND_WQ_HASH_SZ])
-extern wait_queue_head_t ocfs2__ioend_wq[OCFS2_IOEND_WQ_HASH_SZ];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* OCFS2_FILE_H */

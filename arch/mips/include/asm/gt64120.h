@@ -1,29 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2000, 2004, 2005  MIPS Technologies, Inc.
  *	All rights reserved.
  *	Authors: Carsten Langgaard <carstenl@mips.com>
  *		 Maciej W. Rozycki <macro@mips.com>
  * Copyright (C) 2005 Ralf Baechle (ralf@linux-mips.org)
-<<<<<<< HEAD
- *
- *  This program is free software; you can distribute it and/or modify it
- *  under the terms of the GNU General Public License (Version 2) as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASM_GT64120_H
 #define _ASM_GT64120_H
@@ -41,11 +22,7 @@
 
 #define GT_MULTI_OFS		0x120
 
-<<<<<<< HEAD
-/* CPU Address Decode.  */
-=======
 /* CPU Address Decode.	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GT_SCS10LD_OFS		0x008
 #define GT_SCS10HD_OFS		0x010
 #define GT_SCS32LD_OFS		0x018
@@ -117,20 +94,12 @@
 
 #define GT_ADERR_OFS		0x470
 
-<<<<<<< HEAD
-/* SDRAM Configuration.  */
-=======
 /* SDRAM Configuration.	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GT_SDRAM_CFG_OFS	0x448
 
 #define GT_SDRAM_OPMODE_OFS	0x474
 #define GT_SDRAM_BM_OFS		0x478
-<<<<<<< HEAD
-#define GT_SDRAM_ADDRDECODE_OFS	0x47c
-=======
 #define GT_SDRAM_ADDRDECODE_OFS 0x47c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SDRAM Parameters.  */
 #define GT_SDRAM_B0_OFS		0x44c
@@ -145,22 +114,14 @@
 #define GT_DEV_B3_OFS		0x468
 #define GT_DEV_BOOT_OFS		0x46c
 
-<<<<<<< HEAD
-/* ECC.  */
-=======
 /* ECC.	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GT_ECC_ERRDATALO	0x480			/* GT-64120A only  */
 #define GT_ECC_ERRDATAHI	0x484			/* GT-64120A only  */
 #define GT_ECC_MEM		0x488			/* GT-64120A only  */
 #define GT_ECC_CALC		0x48c			/* GT-64120A only  */
 #define GT_ECC_ERRADDR		0x490			/* GT-64120A only  */
 
-<<<<<<< HEAD
-/* DMA Record.  */
-=======
 /* DMA Record.	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GT_DMA0_CNT_OFS		0x800
 #define GT_DMA1_CNT_OFS		0x804
 #define GT_DMA2_CNT_OFS		0x808
@@ -183,21 +144,13 @@
 #define GT_DMA2_CUR_OFS		0x878
 #define GT_DMA3_CUR_OFS		0x87c
 
-<<<<<<< HEAD
-/* DMA Channel Control.  */
-=======
 /* DMA Channel Control.	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GT_DMA0_CTRL_OFS	0x840
 #define GT_DMA1_CTRL_OFS	0x844
 #define GT_DMA2_CTRL_OFS	0x848
 #define GT_DMA3_CTRL_OFS	0x84c
 
-<<<<<<< HEAD
-/* DMA Arbiter.  */
-=======
 /* DMA Arbiter.	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GT_DMA_ARB_OFS		0x860
 
 /* Timer/Counter.  */
@@ -255,11 +208,7 @@
 #define GT_PCI0_CFGADDR_OFS	0xcf8
 #define GT_PCI0_CFGDATA_OFS	0xcfc
 
-<<<<<<< HEAD
-/* Interrupts.  */
-=======
 /* Interrupts.	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GT_INTRCAUSE_OFS	0xc18
 #define GT_INTRMASK_OFS		0xc1c
 
@@ -586,25 +535,15 @@
 #define GT_DEF_BASE		0x14000000UL
 
 #define GT_MAX_BANKSIZE		(256 * 1024 * 1024)	/* Max 256MB bank  */
-<<<<<<< HEAD
-#define GT_LATTIM_MIN		6			/* Minimum lat  */
-=======
 #define GT_LATTIM_MIN		6			/* Minimum lat	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The gt64120_dep.h file must define the following macros
  *
  *   GT_READ(ofs, data_pointer)
-<<<<<<< HEAD
- *   GT_WRITE(ofs, data)           - read/write GT64120 registers in 32bit
- *
- *   TIMER 	- gt64120 timer irq, temporary solution until
-=======
  *   GT_WRITE(ofs, data)	   - read/write GT64120 registers in 32bit
  *
  *   TIMER	- gt64120 timer irq, temporary solution until
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		  full gt64120 cascade interrupt support is in place
  */
 

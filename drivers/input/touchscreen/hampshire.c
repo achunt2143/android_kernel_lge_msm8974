@@ -1,25 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Hampshire serial touchscreen driver
  *
  * Copyright (c) 2010 Adam Bennett
  * Based on the dynapro driver (c) Tias Guns
-<<<<<<< HEAD
- *
  */
 
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 2010/04/08 Adam Bennett <abennett72@gmail.com>
@@ -32,10 +18,6 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"Hampshire serial touchscreen driver"
 
@@ -176,11 +158,7 @@ static int hampshire_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
-<<<<<<< HEAD
-static struct serio_device_id hampshire_serio_ids[] = {
-=======
 static const struct serio_device_id hampshire_serio_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_HAMPSHIRE,
@@ -203,23 +181,4 @@ static struct serio_driver hampshire_drv = {
 	.disconnect	= hampshire_disconnect,
 };
 
-<<<<<<< HEAD
-/*
- * The functions for inserting/removing us as a module.
- */
-
-static int __init hampshire_init(void)
-{
-	return serio_register_driver(&hampshire_drv);
-}
-
-static void __exit hampshire_exit(void)
-{
-	serio_unregister_driver(&hampshire_drv);
-}
-
-module_init(hampshire_init);
-module_exit(hampshire_exit);
-=======
 module_serio_driver(hampshire_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

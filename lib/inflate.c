@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEBG(x)
 #define DEBG1(x)
 /* inflate.c -- Not copyrighted 1992 by Mark Adler

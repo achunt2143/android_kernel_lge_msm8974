@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the Linux/SuperH SH-3 backends.
 #
@@ -34,8 +31,4 @@ clock-$(CONFIG_CPU_SUBTYPE_SH7712)	:= clock-sh7712.o
 pinmux-$(CONFIG_CPU_SUBTYPE_SH7720)	:= pinmux-sh7720.o
 
 obj-y	+= $(clock-y)
-<<<<<<< HEAD
-obj-$(CONFIG_GENERIC_GPIO)	+= $(pinmux-y)
-=======
 obj-$(CONFIG_GPIOLIB)			+= $(pinmux-y)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

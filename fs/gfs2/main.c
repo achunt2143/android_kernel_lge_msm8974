@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
@@ -17,7 +6,6 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/completion.h>
@@ -39,33 +27,15 @@
 #include "quota.h"
 #include "recovery.h"
 #include "dir.h"
-<<<<<<< HEAD
-
-struct workqueue_struct *gfs2_control_wq;
-
-static struct shrinker qd_shrinker = {
-	.shrink = gfs2_shrink_qd_memory,
-	.seeks = DEFAULT_SEEKS,
-};
-
-=======
 #include "glops.h"
 
 struct workqueue_struct *gfs2_control_wq;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void gfs2_init_inode_once(void *foo)
 {
 	struct gfs2_inode *ip = foo;
 
 	inode_init_once(&ip->i_inode);
-<<<<<<< HEAD
-	init_rwsem(&ip->i_rw_mutex);
-	INIT_LIST_HEAD(&ip->i_trunc_list);
-	ip->i_qadata = NULL;
-	ip->i_res = NULL;
-	ip->i_hash_cache = NULL;
-=======
 	atomic_set(&ip->i_sizehint, 0);
 	init_rwsem(&ip->i_rw_mutex);
 	INIT_LIST_HEAD(&ip->i_ordered);
@@ -75,19 +45,13 @@ static void gfs2_init_inode_once(void *foo)
 	RB_CLEAR_NODE(&ip->i_res.rs_node);
 	ip->i_hash_cache = NULL;
 	gfs2_holder_mark_uninitialized(&ip->i_iopen_gh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gfs2_init_glock_once(void *foo)
 {
 	struct gfs2_glock *gl = foo;
 
-<<<<<<< HEAD
-	INIT_HLIST_BL_NODE(&gl->gl_list);
-	spin_lock_init(&gl->gl_spin);
-=======
 	spin_lock_init(&gl->gl_lockref.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&gl->gl_holders);
 	INIT_LIST_HEAD(&gl->gl_lru);
 	INIT_LIST_HEAD(&gl->gl_ail_list);
@@ -97,28 +61,10 @@ static void gfs2_init_glock_once(void *foo)
 
 static void gfs2_init_gl_aspace_once(void *foo)
 {
-<<<<<<< HEAD
-	struct gfs2_glock *gl = foo;
-	struct address_space *mapping = (struct address_space *)(gl + 1);
-
-	gfs2_init_glock_once(gl);
-	address_space_init_once(mapping);
-}
-
-static void *gfs2_bh_alloc(gfp_t mask, void *data)
-{
-	return alloc_buffer_head(mask);
-}
-
-static void gfs2_bh_free(void *ptr, void *data)
-{
-	return free_buffer_head(ptr);
-=======
 	struct gfs2_glock_aspace *gla = foo;
 
 	gfs2_init_glock_once(&gla->glock);
 	address_space_init_once(&gla->mapping);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -133,20 +79,12 @@ static int __init init_gfs2_fs(void)
 
 	gfs2_str2qstr(&gfs2_qdot, ".");
 	gfs2_str2qstr(&gfs2_qdotdot, "..");
-<<<<<<< HEAD
-=======
 	gfs2_quota_hash_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = gfs2_sys_init();
 	if (error)
 		return error;
 
-<<<<<<< HEAD
-	error = gfs2_glock_init();
-	if (error)
-		goto fail;
-=======
 	error = list_lru_init(&gfs2_qd_lru);
 	if (error)
 		goto fail_lru;
@@ -154,25 +92,10 @@ static int __init init_gfs2_fs(void)
 	error = gfs2_glock_init();
 	if (error)
 		goto fail_glock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = -ENOMEM;
 	gfs2_glock_cachep = kmem_cache_create("gfs2_glock",
 					      sizeof(struct gfs2_glock),
-<<<<<<< HEAD
-					      0, 0,
-					      gfs2_init_glock_once);
-	if (!gfs2_glock_cachep)
-		goto fail;
-
-	gfs2_glock_aspace_cachep = kmem_cache_create("gfs2_glock(aspace)",
-					sizeof(struct gfs2_glock) +
-					sizeof(struct address_space),
-					0, 0, gfs2_init_gl_aspace_once);
-
-	if (!gfs2_glock_aspace_cachep)
-		goto fail;
-=======
 					      0, SLAB_RECLAIM_ACCOUNT,
 					      gfs2_init_glock_once);
 	if (!gfs2_glock_cachep)
@@ -184,108 +107,25 @@ static int __init init_gfs2_fs(void)
 
 	if (!gfs2_glock_aspace_cachep)
 		goto fail_cachep2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gfs2_inode_cachep = kmem_cache_create("gfs2_inode",
 					      sizeof(struct gfs2_inode),
 					      0,  SLAB_RECLAIM_ACCOUNT|
-<<<<<<< HEAD
-					          SLAB_MEM_SPREAD,
-					      gfs2_init_inode_once);
-	if (!gfs2_inode_cachep)
-		goto fail;
-=======
 						  SLAB_ACCOUNT,
 					      gfs2_init_inode_once);
 	if (!gfs2_inode_cachep)
 		goto fail_cachep3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gfs2_bufdata_cachep = kmem_cache_create("gfs2_bufdata",
 						sizeof(struct gfs2_bufdata),
 					        0, 0, NULL);
 	if (!gfs2_bufdata_cachep)
-<<<<<<< HEAD
-		goto fail;
-=======
 		goto fail_cachep4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gfs2_rgrpd_cachep = kmem_cache_create("gfs2_rgrpd",
 					      sizeof(struct gfs2_rgrpd),
 					      0, 0, NULL);
 	if (!gfs2_rgrpd_cachep)
-<<<<<<< HEAD
-		goto fail;
-
-	gfs2_quotad_cachep = kmem_cache_create("gfs2_quotad",
-					       sizeof(struct gfs2_quota_data),
-					       0, 0, NULL);
-	if (!gfs2_quotad_cachep)
-		goto fail;
-
-	register_shrinker(&qd_shrinker);
-
-	error = register_filesystem(&gfs2_fs_type);
-	if (error)
-		goto fail;
-
-	error = register_filesystem(&gfs2meta_fs_type);
-	if (error)
-		goto fail_unregister;
-
-	error = -ENOMEM;
-	gfs_recovery_wq = alloc_workqueue("gfs_recovery",
-					  WQ_MEM_RECLAIM | WQ_FREEZABLE, 0);
-	if (!gfs_recovery_wq)
-		goto fail_wq;
-
-	gfs2_control_wq = alloc_workqueue("gfs2_control",
-			       WQ_NON_REENTRANT | WQ_UNBOUND | WQ_FREEZABLE, 0);
-	if (!gfs2_control_wq)
-		goto fail_recovery;
-
-	gfs2_bh_pool = mempool_create(1024, gfs2_bh_alloc, gfs2_bh_free, NULL);
-	if (!gfs2_bh_pool)
-		goto fail_control;
-
-	gfs2_register_debugfs();
-
-	printk("GFS2 installed\n");
-
-	return 0;
-
-fail_control:
-	destroy_workqueue(gfs2_control_wq);
-fail_recovery:
-	destroy_workqueue(gfs_recovery_wq);
-fail_wq:
-	unregister_filesystem(&gfs2meta_fs_type);
-fail_unregister:
-	unregister_filesystem(&gfs2_fs_type);
-fail:
-	unregister_shrinker(&qd_shrinker);
-	gfs2_glock_exit();
-
-	if (gfs2_quotad_cachep)
-		kmem_cache_destroy(gfs2_quotad_cachep);
-
-	if (gfs2_rgrpd_cachep)
-		kmem_cache_destroy(gfs2_rgrpd_cachep);
-
-	if (gfs2_bufdata_cachep)
-		kmem_cache_destroy(gfs2_bufdata_cachep);
-
-	if (gfs2_inode_cachep)
-		kmem_cache_destroy(gfs2_inode_cachep);
-
-	if (gfs2_glock_aspace_cachep)
-		kmem_cache_destroy(gfs2_glock_aspace_cachep);
-
-	if (gfs2_glock_cachep)
-		kmem_cache_destroy(gfs2_glock_cachep);
-
-=======
 		goto fail_cachep5;
 
 	gfs2_quotad_cachep = kmem_cache_create("gfs2_quotad",
@@ -377,7 +217,6 @@ fail_cachep1:
 fail_glock:
 	list_lru_destroy(&gfs2_qd_lru);
 fail_lru:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_sys_uninit();
 	return error;
 }
@@ -389,23 +228,11 @@ fail_lru:
 
 static void __exit exit_gfs2_fs(void)
 {
-<<<<<<< HEAD
-	unregister_shrinker(&qd_shrinker);
-=======
 	gfs2_qd_shrinker_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_glock_exit();
 	gfs2_unregister_debugfs();
 	unregister_filesystem(&gfs2_fs_type);
 	unregister_filesystem(&gfs2meta_fs_type);
-<<<<<<< HEAD
-	destroy_workqueue(gfs_recovery_wq);
-	destroy_workqueue(gfs2_control_wq);
-
-	rcu_barrier();
-
-	mempool_destroy(gfs2_bh_pool);
-=======
 	destroy_workqueue(gfs2_recovery_wq);
 	destroy_workqueue(gfs2_control_wq);
 	destroy_workqueue(gfs2_freeze_wq);
@@ -416,7 +243,6 @@ static void __exit exit_gfs2_fs(void)
 	mempool_destroy(gfs2_page_pool);
 	kmem_cache_destroy(gfs2_trans_cachep);
 	kmem_cache_destroy(gfs2_qadata_cachep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(gfs2_quotad_cachep);
 	kmem_cache_destroy(gfs2_rgrpd_cachep);
 	kmem_cache_destroy(gfs2_bufdata_cachep);

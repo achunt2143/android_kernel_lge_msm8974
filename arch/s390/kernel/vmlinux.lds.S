@@ -1,28 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ld script to make s390 Linux kernel
  * Written by Martin Schwidefsky (schwidefsky@de.ibm.com)
  */
 
 #include <asm/thread_info.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm-generic/vmlinux.lds.h>
-
-#ifndef CONFIG_64BIT
-OUTPUT_FORMAT("elf32-s390", "elf32-s390", "elf32-s390")
-OUTPUT_ARCH(s390:31-bit)
-ENTRY(startup)
-jiffies = jiffies_64 + 4;
-#else
-OUTPUT_FORMAT("elf64-s390", "elf64-s390", "elf64-s390")
-OUTPUT_ARCH(s390:64-bit)
-ENTRY(startup)
-jiffies = jiffies_64;
-#endif
-=======
 #include <asm/ftrace.lds.h>
 
 /*
@@ -48,7 +30,6 @@ OUTPUT_FORMAT("elf64-s390", "elf64-s390", "elf64-s390")
 OUTPUT_ARCH(s390:64-bit)
 ENTRY(startup_continue)
 jiffies = jiffies_64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 PHDRS {
 	text PT_LOAD FLAGS(5);	/* R_E */
@@ -58,48 +39,16 @@ PHDRS {
 
 SECTIONS
 {
-<<<<<<< HEAD
-	. = 0x00000000;
-	.text : {
-	_text = .;		/* Text and read-only data */
-=======
 	. = 0x100000;
 	.text : {
 		_stext = .;		/* Start of text section */
 		_text = .;		/* Text and read-only data */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		HEAD_TEXT
 		TEXT_TEXT
 		SCHED_TEXT
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
-<<<<<<< HEAD
-		*(.fixup)
-		*(.gnu.warning)
-	} :text = 0x0700
-
-	_etext = .;		/* End of text section */
-
-	NOTES :text :note
-
-	.dummy : { *(.dummy) } :data
-
-	RODATA
-
-#ifdef CONFIG_SHARED_KERNEL
-	. = ALIGN(0x100000);	/* VM shared segments are 1MB aligned */
-#endif
-
-	. = ALIGN(PAGE_SIZE);
-	_eshared = .;		/* End of shareable data */
-	_sdata = .;		/* Start of data section */
-
-	EXCEPTION_TABLE(16) :data
-
-	RW_DATA_SECTION(0x100, PAGE_SIZE, THREAD_SIZE)
-
-=======
 		SOFTIRQENTRY_TEXT
 		FTRACE_HOTPATCH_TRAMPOLINES_TEXT
 		*(.text.*_indirect_*)
@@ -145,16 +94,12 @@ SECTIONS
 	}
 
 	. = ALIGN(PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_edata = .;		/* End of data section */
 
 	/* will be freed after init */
 	. = ALIGN(PAGE_SIZE);	/* Init code and data */
 	__init_begin = .;
 
-<<<<<<< HEAD
-	INIT_TEXT_SECTION(PAGE_SIZE)
-=======
 	. = ALIGN(PAGE_SIZE);
 	.init.text : AT(ADDR(.init.text) - LOAD_OFFSET) {
 		_sinittext = .;
@@ -162,7 +107,6 @@ SECTIONS
 		. = ALIGN(PAGE_SIZE);
 		_einittext = .;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * .exit.text is discarded at runtime, not link time,
@@ -172,8 +116,6 @@ SECTIONS
 		EXIT_TEXT
 	}
 
-<<<<<<< HEAD
-=======
 	.exit.data : {
 		EXIT_DATA
 	}
@@ -244,27 +186,11 @@ SECTIONS
 	. = ALIGN(PAGE_SIZE);
 	_eamode31 = .;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* early.c uses stsi, which requires page aligned data. */
 	. = ALIGN(PAGE_SIZE);
 	INIT_DATA_SECTION(0x100)
 
 	PERCPU_SECTION(0x100)
-<<<<<<< HEAD
-	. = ALIGN(PAGE_SIZE);
-	__init_end = .;		/* freed after init ends here */
-
-	BSS_SECTION(0, 2, 0)
-
-	_end = . ;
-
-	/* Debugging sections.	*/
-	STABS_DEBUG
-	DWARF_DEBUG
-
-	/* Sections to be discarded */
-	DISCARDS
-=======
 
 #ifdef CONFIG_PIE_BUILD
 	.dynsym ALIGN(8) : {
@@ -369,5 +295,4 @@ SECTIONS
 		*(.eh_frame)
 		*(.interp)
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

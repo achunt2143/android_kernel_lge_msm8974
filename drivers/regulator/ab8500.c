@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * License Terms: GNU General Public License v2
- *
- * Authors: Sundar Iyer <sundar.iyer@stericsson.com> for ST-Ericsson
- *          Bengt Jonsson <bengt.g.jonsson@stericsson.com> for ST-Ericsson
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) ST-Ericsson SA 2010
@@ -14,18 +5,14 @@
  * Authors: Sundar Iyer <sundar.iyer@stericsson.com> for ST-Ericsson
  *          Bengt Jonsson <bengt.g.jonsson@stericsson.com> for ST-Ericsson
  *          Daniel Willerud <daniel.willerud@stericsson.com> for ST-Ericsson
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * AB8500 peripheral regulators
  *
  * AB8500 supports the following regulators:
  *   VAUX1/2/3, VINTCORE, VTVOUT, VUSB, VAUDIO, VAMIC1/2, VDMIC, VANA
-<<<<<<< HEAD
-=======
  *
  * AB8505 supports the following regulators:
  *   VAUX1/2/3/4/5/6, VINTCORE, VADC, VUSB, VAUDIO, VAMIC1/2, VDMIC, VANA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -34,11 +21,6 @@
 #include <linux/platform_device.h>
 #include <linux/mfd/abx500.h>
 #include <linux/mfd/abx500/ab8500.h>
-<<<<<<< HEAD
-#include <linux/regulator/driver.h>
-#include <linux/regulator/machine.h>
-#include <linux/regulator/ab8500.h>
-=======
 #include <linux/of.h>
 #include <linux/regulator/of_regulator.h>
 #include <linux/regulator/driver.h>
@@ -170,28 +152,11 @@ struct ab8500_shared_mode {
 	struct ab8500_regulator_info *shared_regulator;
 	bool lp_mode_req;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct ab8500_regulator_info - ab8500 regulator information
  * @dev: device pointer
  * @desc: regulator description
-<<<<<<< HEAD
- * @regulator_dev: regulator device
- * @max_uV: maximum voltage (for variable voltage supplies)
- * @min_uV: minimum voltage (for variable voltage supplies)
- * @fixed_uV: typical voltage (for fixed voltage supplies)
- * @update_bank: bank to control on/off
- * @update_reg: register to control on/off
- * @update_mask: mask to enable/disable regulator
- * @update_val_enable: bits to enable the regulator in normal (high power) mode
- * @voltage_bank: bank to control regulator voltage
- * @voltage_reg: register to control regulator voltage
- * @voltage_mask: mask to control regulator voltage
- * @voltages: supported voltage table
- * @voltages_len: number of supported voltages for the regulator
- * @delay: startup/set voltage delay in us
-=======
  * @shared_mode: used when mode is shared between two regulators
  * @load_lp_uA: maximum load in idle (low power) mode
  * @update_bank: bank to control on/off
@@ -209,31 +174,10 @@ struct ab8500_shared_mode {
  * @voltage_reg: register to control regulator voltage
  * @voltage_mask: mask to control regulator voltage
  * @expand_register: 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ab8500_regulator_info {
 	struct device		*dev;
 	struct regulator_desc	desc;
-<<<<<<< HEAD
-	struct regulator_dev	*regulator;
-	int max_uV;
-	int min_uV;
-	int fixed_uV;
-	u8 update_bank;
-	u8 update_reg;
-	u8 update_mask;
-	u8 update_val_enable;
-	u8 voltage_bank;
-	u8 voltage_reg;
-	u8 voltage_mask;
-	int const *voltages;
-	int voltages_len;
-	unsigned int delay;
-};
-
-/* voltage tables for the vauxn/vintcore supplies */
-static const int ldo_vauxn_voltages[] = {
-=======
 	struct ab8500_shared_mode *shared_mode;
 	int load_lp_uA;
 	u8 update_bank;
@@ -254,7 +198,6 @@ static const int ldo_vauxn_voltages[] = {
 
 /* voltage tables for the vauxn/vintcore supplies */
 static const unsigned int ldo_vauxn_voltages[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	1100000,
 	1200000,
 	1300000,
@@ -273,11 +216,7 @@ static const unsigned int ldo_vauxn_voltages[] = {
 	3300000,
 };
 
-<<<<<<< HEAD
-static const int ldo_vaux3_voltages[] = {
-=======
 static const unsigned int ldo_vaux3_voltages[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	1200000,
 	1500000,
 	1800000,
@@ -288,9 +227,6 @@ static const unsigned int ldo_vaux3_voltages[] = {
 	2910000,
 };
 
-<<<<<<< HEAD
-static const int ldo_vintcore_voltages[] = {
-=======
 static const unsigned int ldo_vaux56_voltages[] = {
 	1800000,
 	1050000,
@@ -303,7 +239,6 @@ static const unsigned int ldo_vaux56_voltages[] = {
 };
 
 static const unsigned int ldo_vintcore_voltages[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	1200000,
 	1225000,
 	1250000,
@@ -313,8 +248,6 @@ static const unsigned int ldo_vintcore_voltages[] = {
 	1350000,
 };
 
-<<<<<<< HEAD
-=======
 static const unsigned int fixed_1200000_voltage[] = {
 	1200000,
 };
@@ -357,7 +290,6 @@ static DEFINE_MUTEX(shared_mode_mutex);
 static struct ab8500_shared_mode ldo_anamic1_shared;
 static struct ab8500_shared_mode ldo_anamic2_shared;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ab8500_regulator_enable(struct regulator_dev *rdev)
 {
 	int ret;
@@ -370,28 +302,17 @@ static int ab8500_regulator_enable(struct regulator_dev *rdev)
 
 	ret = abx500_mask_and_set_register_interruptible(info->dev,
 		info->update_bank, info->update_reg,
-<<<<<<< HEAD
-		info->update_mask, info->update_val_enable);
-	if (ret < 0)
-		dev_err(rdev_get_dev(rdev),
-			"couldn't set enable bits for regulator\n");
-=======
 		info->update_mask, info->update_val);
 	if (ret < 0) {
 		dev_err(rdev_get_dev(rdev),
 			"couldn't set enable bits for regulator\n");
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_vdbg(rdev_get_dev(rdev),
 		"%s-enable (bank, reg, mask, value): 0x%x, 0x%x, 0x%x, 0x%x\n",
 		info->desc.name, info->update_bank, info->update_reg,
-<<<<<<< HEAD
-		info->update_mask, info->update_val_enable);
-=======
 		info->update_mask, info->update_val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -409,17 +330,11 @@ static int ab8500_regulator_disable(struct regulator_dev *rdev)
 	ret = abx500_mask_and_set_register_interruptible(info->dev,
 		info->update_bank, info->update_reg,
 		info->update_mask, 0x0);
-<<<<<<< HEAD
-	if (ret < 0)
-		dev_err(rdev_get_dev(rdev),
-			"couldn't set disable bits for regulator\n");
-=======
 	if (ret < 0) {
 		dev_err(rdev_get_dev(rdev),
 			"couldn't set disable bits for regulator\n");
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_vdbg(rdev_get_dev(rdev),
 		"%s-disable (bank, reg, mask, value): 0x%x, 0x%x, 0x%x, 0x%x\n",
@@ -455,15 +370,6 @@ static int ab8500_regulator_is_enabled(struct regulator_dev *rdev)
 		info->update_mask, regval);
 
 	if (regval & info->update_mask)
-<<<<<<< HEAD
-		return true;
-	else
-		return false;
-}
-
-static int ab8500_list_voltage(struct regulator_dev *rdev, unsigned selector)
-{
-=======
 		return 1;
 	else
 		return 0;
@@ -475,7 +381,6 @@ static unsigned int ab8500_regulator_get_optimum_mode(
 {
 	unsigned int mode;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ab8500_regulator_info *info = rdev_get_drvdata(rdev);
 
 	if (info == NULL) {
@@ -483,16 +388,6 @@ static unsigned int ab8500_regulator_get_optimum_mode(
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	/* return the uV for the fixed regulators */
-	if (info->fixed_uV)
-		return info->fixed_uV;
-
-	if (selector >= info->voltages_len)
-		return -EINVAL;
-
-	return info->voltages[selector];
-=======
 	if (load_uA <= info->load_lp_uA)
 		mode = REGULATOR_MODE_IDLE;
 	else
@@ -634,16 +529,11 @@ static unsigned int ab8500_regulator_get_mode(struct regulator_dev *rdev)
 		ret = -EINVAL;
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ab8500_regulator_get_voltage_sel(struct regulator_dev *rdev)
 {
-<<<<<<< HEAD
-	int ret, val;
-=======
 	int ret, voltage_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ab8500_regulator_info *info = rdev_get_drvdata(rdev);
 	u8 regval;
 
@@ -652,11 +542,8 @@ static int ab8500_regulator_get_voltage_sel(struct regulator_dev *rdev)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-=======
 	voltage_shift = ffs(info->voltage_mask) - 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = abx500_get_register_interruptible(info->dev,
 			info->voltage_bank, info->voltage_reg, &regval);
 	if (ret < 0) {
@@ -666,42 +553,6 @@ static int ab8500_regulator_get_voltage_sel(struct regulator_dev *rdev)
 	}
 
 	dev_vdbg(rdev_get_dev(rdev),
-<<<<<<< HEAD
-		"%s-get_voltage (bank, reg, mask, value): 0x%x, 0x%x, 0x%x,"
-		" 0x%x\n",
-		info->desc.name, info->voltage_bank, info->voltage_reg,
-		info->voltage_mask, regval);
-
-	/* vintcore has a different layout */
-	val = regval & info->voltage_mask;
-	if (info->desc.id == AB8500_LDO_INTCORE)
-		return val >> 0x3;
-	else
-		return val;
-}
-
-static int ab8500_get_best_voltage_index(struct regulator_dev *rdev,
-		int min_uV, int max_uV)
-{
-	struct ab8500_regulator_info *info = rdev_get_drvdata(rdev);
-	int i;
-
-	/* check the supported voltage */
-	for (i = 0; i < info->voltages_len; i++) {
-		if ((info->voltages[i] >= min_uV) &&
-		    (info->voltages[i] <= max_uV))
-			return i;
-	}
-
-	return -EINVAL;
-}
-
-static int ab8500_regulator_set_voltage(struct regulator_dev *rdev,
-					int min_uV, int max_uV,
-					unsigned *selector)
-{
-	int ret;
-=======
 		"%s-get_voltage (bank, reg, mask, shift, value): "
 		"0x%x, 0x%x, 0x%x, 0x%x, 0x%x\n",
 		info->desc.name, info->voltage_bank,
@@ -715,7 +566,6 @@ static int ab8500_regulator_set_voltage_sel(struct regulator_dev *rdev,
 					    unsigned selector)
 {
 	int ret, voltage_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ab8500_regulator_info *info = rdev_get_drvdata(rdev);
 	u8 regval;
 
@@ -724,25 +574,10 @@ static int ab8500_regulator_set_voltage_sel(struct regulator_dev *rdev,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	/* get the appropriate voltages within the range */
-	ret = ab8500_get_best_voltage_index(rdev, min_uV, max_uV);
-	if (ret < 0) {
-		dev_err(rdev_get_dev(rdev),
-				"couldn't get best voltage for regulator\n");
-		return ret;
-	}
-
-	*selector = ret;
-
-	/* set the registers for the request */
-	regval = (u8)ret;
-=======
 	voltage_shift = ffs(info->voltage_mask) - 1;
 
 	/* set the registers for the request */
 	regval = (u8)selector << voltage_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = abx500_mask_and_set_register_interruptible(info->dev,
 			info->voltage_bank, info->voltage_reg,
 			info->voltage_mask, regval);
@@ -759,32 +594,6 @@ static int ab8500_regulator_set_voltage_sel(struct regulator_dev *rdev,
 	return ret;
 }
 
-<<<<<<< HEAD
-static int ab8500_regulator_enable_time(struct regulator_dev *rdev)
-{
-	struct ab8500_regulator_info *info = rdev_get_drvdata(rdev);
-
-	return info->delay;
-}
-
-static int ab8500_regulator_set_voltage_time_sel(struct regulator_dev *rdev,
-					     unsigned int old_sel,
-					     unsigned int new_sel)
-{
-	struct ab8500_regulator_info *info = rdev_get_drvdata(rdev);
-	int ret;
-
-	/* If the regulator isn't on, it won't take time here */
-	ret = ab8500_regulator_is_enabled(rdev);
-	if (ret < 0)
-		return ret;
-	if (!ret)
-		return 0;
-	return info->delay;
-}
-
-static struct regulator_ops ab8500_regulator_ops = {
-=======
 static const struct regulator_ops ab8500_regulator_volt_mode_ops = {
 	.enable			= ab8500_regulator_enable,
 	.disable		= ab8500_regulator_disable,
@@ -798,41 +607,10 @@ static const struct regulator_ops ab8500_regulator_volt_mode_ops = {
 };
 
 static const struct regulator_ops ab8500_regulator_volt_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable		= ab8500_regulator_enable,
 	.disable	= ab8500_regulator_disable,
 	.is_enabled	= ab8500_regulator_is_enabled,
 	.get_voltage_sel = ab8500_regulator_get_voltage_sel,
-<<<<<<< HEAD
-	.set_voltage	= ab8500_regulator_set_voltage,
-	.list_voltage	= ab8500_list_voltage,
-	.enable_time	= ab8500_regulator_enable_time,
-	.set_voltage_time_sel = ab8500_regulator_set_voltage_time_sel,
-};
-
-static int ab8500_fixed_get_voltage(struct regulator_dev *rdev)
-{
-	struct ab8500_regulator_info *info = rdev_get_drvdata(rdev);
-
-	if (info == NULL) {
-		dev_err(rdev_get_dev(rdev), "regulator info null pointer\n");
-		return -EINVAL;
-	}
-
-	return info->fixed_uV;
-}
-
-static struct regulator_ops ab8500_regulator_fixed_ops = {
-	.enable		= ab8500_regulator_enable,
-	.disable	= ab8500_regulator_disable,
-	.is_enabled	= ab8500_regulator_is_enabled,
-	.get_voltage	= ab8500_fixed_get_voltage,
-	.list_voltage	= ab8500_list_voltage,
-	.enable_time	= ab8500_regulator_enable_time,
-	.set_voltage_time_sel = ab8500_regulator_set_voltage_time_sel,
-};
-
-=======
 	.set_voltage_sel = ab8500_regulator_set_voltage_sel,
 	.list_voltage	= regulator_list_voltage_table,
 };
@@ -864,45 +642,22 @@ static const struct regulator_ops ab8500_regulator_anamic_mode_ops = {
 };
 
 /* AB8500 regulator information */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ab8500_regulator_info
 		ab8500_regulator_info[AB8500_NUM_REGULATORS] = {
 	/*
 	 * Variable Voltage Regulators
 	 *   name, min mV, max mV,
 	 *   update bank, reg, mask, enable val
-<<<<<<< HEAD
-	 *   volt bank, reg, mask, table, table length
-=======
 	 *   volt bank, reg, mask
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	[AB8500_LDO_AUX1] = {
 		.desc = {
 			.name		= "LDO-AUX1",
-<<<<<<< HEAD
-			.ops		= &ab8500_regulator_ops,
-=======
 			.ops		= &ab8500_regulator_volt_mode_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.type		= REGULATOR_VOLTAGE,
 			.id		= AB8500_LDO_AUX1,
 			.owner		= THIS_MODULE,
 			.n_voltages	= ARRAY_SIZE(ldo_vauxn_voltages),
-<<<<<<< HEAD
-		},
-		.min_uV			= 1100000,
-		.max_uV			= 3300000,
-		.update_bank		= 0x04,
-		.update_reg		= 0x09,
-		.update_mask		= 0x03,
-		.update_val_enable	= 0x01,
-		.voltage_bank		= 0x04,
-		.voltage_reg		= 0x1f,
-		.voltage_mask		= 0x0f,
-		.voltages		= ldo_vauxn_voltages,
-		.voltages_len		= ARRAY_SIZE(ldo_vauxn_voltages),
-=======
 			.volt_table	= ldo_vauxn_voltages,
 			.enable_time	= 200,
 			.supply_name    = "vin",
@@ -917,34 +672,15 @@ static struct ab8500_regulator_info
 		.voltage_bank		= 0x04,
 		.voltage_reg		= 0x1f,
 		.voltage_mask		= 0x0f,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[AB8500_LDO_AUX2] = {
 		.desc = {
 			.name		= "LDO-AUX2",
-<<<<<<< HEAD
-			.ops		= &ab8500_regulator_ops,
-=======
 			.ops		= &ab8500_regulator_volt_mode_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.type		= REGULATOR_VOLTAGE,
 			.id		= AB8500_LDO_AUX2,
 			.owner		= THIS_MODULE,
 			.n_voltages	= ARRAY_SIZE(ldo_vauxn_voltages),
-<<<<<<< HEAD
-		},
-		.min_uV			= 1100000,
-		.max_uV			= 3300000,
-		.update_bank		= 0x04,
-		.update_reg		= 0x09,
-		.update_mask		= 0x0c,
-		.update_val_enable	= 0x04,
-		.voltage_bank		= 0x04,
-		.voltage_reg		= 0x20,
-		.voltage_mask		= 0x0f,
-		.voltages		= ldo_vauxn_voltages,
-		.voltages_len		= ARRAY_SIZE(ldo_vauxn_voltages),
-=======
 			.volt_table	= ldo_vauxn_voltages,
 			.enable_time	= 200,
 			.supply_name    = "vin",
@@ -959,34 +695,15 @@ static struct ab8500_regulator_info
 		.voltage_bank		= 0x04,
 		.voltage_reg		= 0x20,
 		.voltage_mask		= 0x0f,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[AB8500_LDO_AUX3] = {
 		.desc = {
 			.name		= "LDO-AUX3",
-<<<<<<< HEAD
-			.ops		= &ab8500_regulator_ops,
-=======
 			.ops		= &ab8500_regulator_volt_mode_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.type		= REGULATOR_VOLTAGE,
 			.id		= AB8500_LDO_AUX3,
 			.owner		= THIS_MODULE,
 			.n_voltages	= ARRAY_SIZE(ldo_vaux3_voltages),
-<<<<<<< HEAD
-		},
-		.min_uV			= 1100000,
-		.max_uV			= 3300000,
-		.update_bank		= 0x04,
-		.update_reg		= 0x0a,
-		.update_mask		= 0x03,
-		.update_val_enable	= 0x01,
-		.voltage_bank		= 0x04,
-		.voltage_reg		= 0x21,
-		.voltage_mask		= 0x07,
-		.voltages		= ldo_vaux3_voltages,
-		.voltages_len		= ARRAY_SIZE(ldo_vaux3_voltages),
-=======
 			.volt_table	= ldo_vaux3_voltages,
 			.enable_time	= 450,
 			.supply_name    = "vin",
@@ -1001,34 +718,15 @@ static struct ab8500_regulator_info
 		.voltage_bank		= 0x04,
 		.voltage_reg		= 0x21,
 		.voltage_mask		= 0x07,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[AB8500_LDO_INTCORE] = {
 		.desc = {
 			.name		= "LDO-INTCORE",
-<<<<<<< HEAD
-			.ops		= &ab8500_regulator_ops,
-=======
 			.ops		= &ab8500_regulator_volt_mode_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.type		= REGULATOR_VOLTAGE,
 			.id		= AB8500_LDO_INTCORE,
 			.owner		= THIS_MODULE,
 			.n_voltages	= ARRAY_SIZE(ldo_vintcore_voltages),
-<<<<<<< HEAD
-		},
-		.min_uV			= 1100000,
-		.max_uV			= 3300000,
-		.update_bank		= 0x03,
-		.update_reg		= 0x80,
-		.update_mask		= 0x44,
-		.update_val_enable	= 0x04,
-		.voltage_bank		= 0x03,
-		.voltage_reg		= 0x80,
-		.voltage_mask		= 0x38,
-		.voltages		= ldo_vintcore_voltages,
-		.voltages_len		= ARRAY_SIZE(ldo_vintcore_voltages),
-=======
 			.volt_table	= ldo_vintcore_voltages,
 			.enable_time	= 750,
 		},
@@ -1042,7 +740,6 @@ static struct ab8500_regulator_info
 		.voltage_bank		= 0x03,
 		.voltage_reg		= 0x80,
 		.voltage_mask		= 0x38,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	/*
@@ -1053,39 +750,11 @@ static struct ab8500_regulator_info
 	[AB8500_LDO_TVOUT] = {
 		.desc = {
 			.name		= "LDO-TVOUT",
-<<<<<<< HEAD
-			.ops		= &ab8500_regulator_fixed_ops,
-=======
 			.ops		= &ab8500_regulator_mode_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.type		= REGULATOR_VOLTAGE,
 			.id		= AB8500_LDO_TVOUT,
 			.owner		= THIS_MODULE,
 			.n_voltages	= 1,
-<<<<<<< HEAD
-		},
-		.delay			= 10000,
-		.fixed_uV		= 2000000,
-		.update_bank		= 0x03,
-		.update_reg		= 0x80,
-		.update_mask		= 0x82,
-		.update_val_enable	= 0x02,
-	},
-	[AB8500_LDO_USB] = {
-		.desc = {
-			.name           = "LDO-USB",
-			.ops            = &ab8500_regulator_fixed_ops,
-			.type           = REGULATOR_VOLTAGE,
-			.id             = AB8500_LDO_USB,
-			.owner          = THIS_MODULE,
-			.n_voltages     = 1,
-		},
-		.fixed_uV               = 3300000,
-		.update_bank            = 0x03,
-		.update_reg             = 0x82,
-		.update_mask            = 0x03,
-		.update_val_enable      = 0x01,
-=======
 			.volt_table	= fixed_2000000_voltage,
 			.enable_time	= 500,
 		},
@@ -1096,28 +765,15 @@ static struct ab8500_regulator_info
 		.update_val		= 0x02,
 		.update_val_idle	= 0x82,
 		.update_val_normal	= 0x02,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[AB8500_LDO_AUDIO] = {
 		.desc = {
 			.name		= "LDO-AUDIO",
-<<<<<<< HEAD
-			.ops		= &ab8500_regulator_fixed_ops,
-=======
 			.ops		= &ab8500_regulator_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.type		= REGULATOR_VOLTAGE,
 			.id		= AB8500_LDO_AUDIO,
 			.owner		= THIS_MODULE,
 			.n_voltages	= 1,
-<<<<<<< HEAD
-		},
-		.fixed_uV		= 2000000,
-		.update_bank		= 0x03,
-		.update_reg		= 0x83,
-		.update_mask		= 0x02,
-		.update_val_enable	= 0x02,
-=======
 			.enable_time	= 140,
 			.volt_table	= fixed_2000000_voltage,
 		},
@@ -1125,28 +781,15 @@ static struct ab8500_regulator_info
 		.update_reg		= 0x83,
 		.update_mask		= 0x02,
 		.update_val		= 0x02,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[AB8500_LDO_ANAMIC1] = {
 		.desc = {
 			.name		= "LDO-ANAMIC1",
-<<<<<<< HEAD
-			.ops		= &ab8500_regulator_fixed_ops,
-=======
 			.ops		= &ab8500_regulator_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.type		= REGULATOR_VOLTAGE,
 			.id		= AB8500_LDO_ANAMIC1,
 			.owner		= THIS_MODULE,
 			.n_voltages	= 1,
-<<<<<<< HEAD
-		},
-		.fixed_uV		= 2050000,
-		.update_bank		= 0x03,
-		.update_reg		= 0x83,
-		.update_mask		= 0x08,
-		.update_val_enable	= 0x08,
-=======
 			.enable_time	= 500,
 			.volt_table	= fixed_2050000_voltage,
 		},
@@ -1154,28 +797,15 @@ static struct ab8500_regulator_info
 		.update_reg		= 0x83,
 		.update_mask		= 0x08,
 		.update_val		= 0x08,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[AB8500_LDO_ANAMIC2] = {
 		.desc = {
 			.name		= "LDO-ANAMIC2",
-<<<<<<< HEAD
-			.ops		= &ab8500_regulator_fixed_ops,
-=======
 			.ops		= &ab8500_regulator_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.type		= REGULATOR_VOLTAGE,
 			.id		= AB8500_LDO_ANAMIC2,
 			.owner		= THIS_MODULE,
 			.n_voltages	= 1,
-<<<<<<< HEAD
-		},
-		.fixed_uV		= 2050000,
-		.update_bank		= 0x03,
-		.update_reg		= 0x83,
-		.update_mask		= 0x10,
-		.update_val_enable	= 0x10,
-=======
 			.enable_time	= 500,
 			.volt_table	= fixed_2050000_voltage,
 		},
@@ -1183,33 +813,15 @@ static struct ab8500_regulator_info
 		.update_reg		= 0x83,
 		.update_mask		= 0x10,
 		.update_val		= 0x10,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[AB8500_LDO_DMIC] = {
 		.desc = {
 			.name		= "LDO-DMIC",
-<<<<<<< HEAD
-			.ops		= &ab8500_regulator_fixed_ops,
-=======
 			.ops		= &ab8500_regulator_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.type		= REGULATOR_VOLTAGE,
 			.id		= AB8500_LDO_DMIC,
 			.owner		= THIS_MODULE,
 			.n_voltages	= 1,
-<<<<<<< HEAD
-		},
-		.fixed_uV		= 1800000,
-		.update_bank		= 0x03,
-		.update_reg		= 0x83,
-		.update_mask		= 0x04,
-		.update_val_enable	= 0x04,
-	},
-	[AB8500_LDO_ANA] = {
-		.desc = {
-			.name		= "LDO-ANA",
-			.ops		= &ab8500_regulator_fixed_ops,
-=======
 			.enable_time	= 420,
 			.volt_table	= fixed_1800000_voltage,
 		},
@@ -1226,22 +838,10 @@ static struct ab8500_regulator_info
 		.desc = {
 			.name		= "LDO-ANA",
 			.ops		= &ab8500_regulator_mode_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.type		= REGULATOR_VOLTAGE,
 			.id		= AB8500_LDO_ANA,
 			.owner		= THIS_MODULE,
 			.n_voltages	= 1,
-<<<<<<< HEAD
-		},
-		.fixed_uV		= 1200000,
-		.update_bank		= 0x04,
-		.update_reg		= 0x06,
-		.update_mask		= 0x0c,
-		.update_val_enable	= 0x04,
-	},
-
-
-=======
 			.enable_time	= 140,
 			.volt_table	= fixed_1200000_voltage,
 		},
@@ -1547,7 +1147,6 @@ static struct ab8500_shared_mode ldo_anamic1_shared = {
 
 static struct ab8500_shared_mode ldo_anamic2_shared = {
 	.shared_regulator = &ab8505_regulator_info[AB8505_LDO_ANAMIC1],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ab8500_reg_init {
@@ -1563,15 +1162,6 @@ struct ab8500_reg_init {
 		.mask = _mask,			\
 	}
 
-<<<<<<< HEAD
-static struct ab8500_reg_init ab8500_reg_init[] = {
-	/*
-	 * 0x30, VanaRequestCtrl
-	 * 0x0C, VpllRequestCtrl
-	 * 0xc0, VextSupply1RequestCtrl
-	 */
-	REG_INIT(AB8500_REGUREQUESTCTRL2,	0x03, 0x04, 0xfc),
-=======
 /* AB8500 register init */
 static struct ab8500_reg_init ab8500_reg_init[] = {
 	/*
@@ -1579,7 +1169,6 @@ static struct ab8500_reg_init ab8500_reg_init[] = {
 	 * 0xc0, VextSupply1RequestCtrl
 	 */
 	REG_INIT(AB8500_REGUREQUESTCTRL2,	0x03, 0x04, 0xf0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * 0x03, VextSupply2RequestCtrl
 	 * 0x0c, VextSupply3RequestCtrl
@@ -1646,29 +1235,21 @@ static struct ab8500_reg_init ab8500_reg_init[] = {
 	REG_INIT(AB8500_REGUSWHPREQVALID2,	0x03, 0x0e, 0x1f),
 	/*
 	 * 0x02, SysClkReq2Valid1
-<<<<<<< HEAD
-	 * ...
-=======
 	 * 0x04, SysClkReq3Valid1
 	 * 0x08, SysClkReq4Valid1
 	 * 0x10, SysClkReq5Valid1
 	 * 0x20, SysClkReq6Valid1
 	 * 0x40, SysClkReq7Valid1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * 0x80, SysClkReq8Valid1
 	 */
 	REG_INIT(AB8500_REGUSYSCLKREQVALID1,	0x03, 0x0f, 0xfe),
 	/*
 	 * 0x02, SysClkReq2Valid2
-<<<<<<< HEAD
-	 * ...
-=======
 	 * 0x04, SysClkReq3Valid2
 	 * 0x08, SysClkReq4Valid2
 	 * 0x10, SysClkReq5Valid2
 	 * 0x20, SysClkReq6Valid2
 	 * 0x40, SysClkReq7Valid2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * 0x80, SysClkReq8Valid2
 	 */
 	REG_INIT(AB8500_REGUSYSCLKREQVALID2,	0x03, 0x10, 0xfe),
@@ -1693,13 +1274,8 @@ static struct ab8500_reg_init ab8500_reg_init[] = {
 	 */
 	REG_INIT(AB8500_REGUCTRL1VAMIC,		0x03, 0x84, 0x03),
 	/*
-<<<<<<< HEAD
-	 * 0x0c, VanaRegu
-	 * 0x03, VpllRegu
-=======
 	 * 0x03, VpllRegu (NOTE! PRCMU register bits)
 	 * 0x0c, VanaRegu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	REG_INIT(AB8500_VPLLVANAREGU,		0x04, 0x06, 0x0f),
 	/*
@@ -1725,13 +1301,6 @@ static struct ab8500_reg_init ab8500_reg_init[] = {
 	 */
 	REG_INIT(AB8500_VRF1VAUX3REGU,		0x04, 0x0a, 0x03),
 	/*
-<<<<<<< HEAD
-	 * 0x3f, Vsmps1Sel1
-	 */
-	REG_INIT(AB8500_VSMPS1SEL1,		0x04, 0x13, 0x3f),
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * 0x0f, Vaux1Sel
 	 */
 	REG_INIT(AB8500_VAUX1SEL,		0x04, 0x1f, 0x0f),
@@ -1764,108 +1333,6 @@ static struct ab8500_reg_init ab8500_reg_init[] = {
 	REG_INIT(AB8500_REGUCTRLDISCH2,		0x04, 0x44, 0x16),
 };
 
-<<<<<<< HEAD
-static __devinit int ab8500_regulator_probe(struct platform_device *pdev)
-{
-	struct ab8500 *ab8500 = dev_get_drvdata(pdev->dev.parent);
-	struct ab8500_platform_data *pdata;
-	int i, err;
-
-	if (!ab8500) {
-		dev_err(&pdev->dev, "null mfd parent\n");
-		return -EINVAL;
-	}
-	pdata = dev_get_platdata(ab8500->dev);
-	if (!pdata) {
-		dev_err(&pdev->dev, "null pdata\n");
-		return -EINVAL;
-	}
-
-	/* make sure the platform data has the correct size */
-	if (pdata->num_regulator != ARRAY_SIZE(ab8500_regulator_info)) {
-		dev_err(&pdev->dev, "Configuration error: size mismatch.\n");
-		return -EINVAL;
-	}
-
-	/* initialize registers */
-	for (i = 0; i < pdata->num_regulator_reg_init; i++) {
-		int id;
-		u8 value;
-
-		id = pdata->regulator_reg_init[i].id;
-		value = pdata->regulator_reg_init[i].value;
-
-		/* check for configuration errors */
-		if (id >= AB8500_NUM_REGULATOR_REGISTERS) {
-			dev_err(&pdev->dev,
-				"Configuration error: id outside range.\n");
-			return -EINVAL;
-		}
-		if (value & ~ab8500_reg_init[id].mask) {
-			dev_err(&pdev->dev,
-				"Configuration error: value outside mask.\n");
-			return -EINVAL;
-		}
-
-		/* initialize register */
-		err = abx500_mask_and_set_register_interruptible(&pdev->dev,
-			ab8500_reg_init[id].bank,
-			ab8500_reg_init[id].addr,
-			ab8500_reg_init[id].mask,
-			value);
-		if (err < 0) {
-			dev_err(&pdev->dev,
-				"Failed to initialize 0x%02x, 0x%02x.\n",
-				ab8500_reg_init[id].bank,
-				ab8500_reg_init[id].addr);
-			return err;
-		}
-		dev_vdbg(&pdev->dev,
-			"  init: 0x%02x, 0x%02x, 0x%02x, 0x%02x\n",
-			ab8500_reg_init[id].bank,
-			ab8500_reg_init[id].addr,
-			ab8500_reg_init[id].mask,
-			value);
-	}
-
-	/* register all regulators */
-	for (i = 0; i < ARRAY_SIZE(ab8500_regulator_info); i++) {
-		struct ab8500_regulator_info *info = NULL;
-
-		/* assign per-regulator data */
-		info = &ab8500_regulator_info[i];
-		info->dev = &pdev->dev;
-
-		/* fix for hardware before ab8500v2.0 */
-		if (abx500_get_chip_id(info->dev) < 0x20) {
-			if (info->desc.id == AB8500_LDO_AUX3) {
-				info->desc.n_voltages =
-					ARRAY_SIZE(ldo_vauxn_voltages);
-				info->voltages = ldo_vauxn_voltages;
-				info->voltages_len =
-					ARRAY_SIZE(ldo_vauxn_voltages);
-				info->voltage_mask = 0xf;
-			}
-		}
-
-		/* register regulator with framework */
-		info->regulator = regulator_register(&info->desc, &pdev->dev,
-				&pdata->regulator[i], info, NULL);
-		if (IS_ERR(info->regulator)) {
-			err = PTR_ERR(info->regulator);
-			dev_err(&pdev->dev, "failed to register regulator %s\n",
-					info->desc.name);
-			/* when we fail, un-register all earlier regulators */
-			while (--i >= 0) {
-				info = &ab8500_regulator_info[i];
-				regulator_unregister(info->regulator);
-			}
-			return err;
-		}
-
-		dev_vdbg(rdev_get_dev(info->regulator),
-			"%s-probed\n", info->desc.name);
-=======
 /* AB8505 register init */
 static struct ab8500_reg_init ab8505_reg_init[] = {
 	/*
@@ -2227,26 +1694,11 @@ static int ab8500_regulator_register(struct platform_device *pdev,
 		dev_err(&pdev->dev, "failed to register regulator %s\n",
 			info->desc.name);
 		return PTR_ERR(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static __devexit int ab8500_regulator_remove(struct platform_device *pdev)
-{
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(ab8500_regulator_info); i++) {
-		struct ab8500_regulator_info *info = NULL;
-		info = &ab8500_regulator_info[i];
-
-		dev_vdbg(rdev_get_dev(info->regulator),
-			"%s-remove\n", info->desc.name);
-
-		regulator_unregister(info->regulator);
-=======
 static int ab8500_regulator_probe(struct platform_device *pdev)
 {
 	struct ab8500 *ab8500 = dev_get_drvdata(pdev->dev.parent);
@@ -2276,7 +1728,6 @@ static int ab8500_regulator_probe(struct platform_device *pdev)
 						match[i].of_node);
 		if (err)
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -2284,16 +1735,9 @@ static int ab8500_regulator_probe(struct platform_device *pdev)
 
 static struct platform_driver ab8500_regulator_driver = {
 	.probe = ab8500_regulator_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(ab8500_regulator_remove),
-	.driver         = {
-		.name   = "ab8500-regulator",
-		.owner  = THIS_MODULE,
-=======
 	.driver         = {
 		.name   = "ab8500-regulator",
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -2317,10 +1761,7 @@ module_exit(ab8500_regulator_exit);
 
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Sundar Iyer <sundar.iyer@stericsson.com>");
-<<<<<<< HEAD
-=======
 MODULE_AUTHOR("Bengt Jonsson <bengt.g.jonsson@stericsson.com>");
 MODULE_AUTHOR("Daniel Willerud <daniel.willerud@stericsson.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Regulator Driver for ST-Ericsson AB8500 Mixed-Sig PMIC");
 MODULE_ALIAS("platform:ab8500-regulator");

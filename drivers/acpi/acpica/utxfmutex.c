@@ -1,53 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: utxfmutex - external AML mutex access functions
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -65,13 +22,8 @@ acpi_ut_get_mutex_object(acpi_handle handle,
  *
  * FUNCTION:    acpi_ut_get_mutex_object
  *
-<<<<<<< HEAD
- * PARAMETERS:  Handle              - Mutex or prefix handle (optional)
- *              Pathname            - Mutex pathname (optional)
-=======
  * PARAMETERS:  handle              - Mutex or prefix handle (optional)
  *              pathname            - Mutex pathname (optional)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              ret_obj             - Where the mutex object is returned
  *
  * RETURN:      Status
@@ -101,15 +53,9 @@ acpi_ut_get_mutex_object(acpi_handle handle,
 
 	mutex_node = handle;
 	if (pathname != NULL) {
-<<<<<<< HEAD
-		status = acpi_get_handle(handle, pathname,
-					 ACPI_CAST_PTR(acpi_handle,
-						       &mutex_node));
-=======
 		status =
 		    acpi_get_handle(handle, pathname,
 				    ACPI_CAST_PTR(acpi_handle, &mutex_node));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ACPI_FAILURE(status)) {
 			return (status);
 		}
@@ -136,15 +82,9 @@ acpi_ut_get_mutex_object(acpi_handle handle,
  *
  * FUNCTION:    acpi_acquire_mutex
  *
-<<<<<<< HEAD
- * PARAMETERS:  Handle              - Mutex or prefix handle (optional)
- *              Pathname            - Mutex pathname (optional)
- *              Timeout             - Max time to wait for the lock (millisec)
-=======
  * PARAMETERS:  handle              - Mutex or prefix handle (optional)
  *              pathname            - Mutex pathname (optional)
  *              timeout             - Max time to wait for the lock (millisec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -175,22 +115,14 @@ acpi_acquire_mutex(acpi_handle handle, acpi_string pathname, u16 timeout)
 	return (status);
 }
 
-<<<<<<< HEAD
-=======
 ACPI_EXPORT_SYMBOL(acpi_acquire_mutex)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_release_mutex
  *
-<<<<<<< HEAD
- * PARAMETERS:  Handle              - Mutex or prefix handle (optional)
- *              Pathname            - Mutex pathname (optional)
-=======
  * PARAMETERS:  handle              - Mutex or prefix handle (optional)
  *              pathname            - Mutex pathname (optional)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -201,10 +133,6 @@ ACPI_EXPORT_SYMBOL(acpi_acquire_mutex)
  *              not both.
  *
  ******************************************************************************/
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_status acpi_release_mutex(acpi_handle handle, acpi_string pathname)
 {
 	acpi_status status;
@@ -222,8 +150,5 @@ acpi_status acpi_release_mutex(acpi_handle handle, acpi_string pathname)
 	acpi_os_release_mutex(mutex_obj->mutex.os_mutex);
 	return (AE_OK);
 }
-<<<<<<< HEAD
-=======
 
 ACPI_EXPORT_SYMBOL(acpi_release_mutex)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

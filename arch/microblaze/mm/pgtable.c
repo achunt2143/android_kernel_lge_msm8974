@@ -26,15 +26,6 @@
  *
  */
 
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/types.h>
-#include <linux/vmalloc.h>
-#include <linux/init.h>
-
-#include <asm/pgtable.h>
-=======
 #include <linux/export.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -45,29 +36,16 @@
 #include <linux/memblock.h>
 #include <linux/kallsyms.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pgalloc.h>
 #include <linux/io.h>
 #include <asm/mmu.h>
 #include <asm/sections.h>
 #include <asm/fixmap.h>
 
-<<<<<<< HEAD
-#define flush_HPTE(X, va, pg)	_tlbie(va)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned long ioremap_base;
 unsigned long ioremap_bot;
 EXPORT_SYMBOL(ioremap_bot);
 
-<<<<<<< HEAD
-#ifndef CONFIG_SMP
-struct pgtable_cache_struct quicklists;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __iomem *__ioremap(phys_addr_t addr, unsigned long size,
 		unsigned long flags)
 {
@@ -90,15 +68,6 @@ static void __iomem *__ioremap(phys_addr_t addr, unsigned long size,
 	 *
 	 * However, allow remap of rootfs: TBD
 	 */
-<<<<<<< HEAD
-	if (mem_init_done &&
-		p >= memory_start && p < virt_to_phys(high_memory) &&
-		!(p >= virt_to_phys((unsigned long)&__bss_stop) &&
-		p < virt_to_phys((unsigned long)__bss_stop))) {
-		printk(KERN_WARNING "__ioremap(): phys addr "PTE_FMT
-			" is RAM lr %pf\n", (unsigned long)p,
-			__builtin_return_address(0));
-=======
 
 	if (mem_init_done &&
 		p >= memory_start && p < virt_to_phys(high_memory) &&
@@ -106,7 +75,6 @@ static void __iomem *__ioremap(phys_addr_t addr, unsigned long size,
 		p < __virt_to_phys((phys_addr_t)__bss_stop))) {
 		pr_warn("__ioremap(): phys addr "PTE_FMT" is RAM lr %ps\n",
 			(unsigned long)p, __builtin_return_address(0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -157,16 +125,10 @@ void __iomem *ioremap(phys_addr_t addr, unsigned long size)
 }
 EXPORT_SYMBOL(ioremap);
 
-<<<<<<< HEAD
-void iounmap(void *addr)
-{
-	if (addr > high_memory && (unsigned long) addr < ioremap_bot)
-=======
 void iounmap(volatile void __iomem *addr)
 {
 	if ((__force void *)addr > high_memory &&
 					(unsigned long) addr < ioremap_bot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vfree((void *) (PAGE_MASK & (unsigned long) addr));
 }
 EXPORT_SYMBOL(iounmap);
@@ -174,13 +136,6 @@ EXPORT_SYMBOL(iounmap);
 
 int map_page(unsigned long va, phys_addr_t pa, int flags)
 {
-<<<<<<< HEAD
-	pmd_t *pd;
-	pte_t *pg;
-	int err = -ENOMEM;
-	/* Use upper 10 bits of VA to index the first level map */
-	pd = pmd_offset(pgd_offset_k(va), va);
-=======
 	p4d_t *p4d;
 	pud_t *pud;
 	pmd_t *pd;
@@ -191,7 +146,6 @@ int map_page(unsigned long va, phys_addr_t pa, int flags)
 	p4d = p4d_offset(pgd_offset_k(va), va);
 	pud = pud_offset(p4d, va);
 	pd = pmd_offset(pud, va);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Use middle 10 bits of VA to index the second-level map */
 	pg = pte_alloc_kernel(pd, va); /* from powerpc - pgtable.c */
 	/* pg = pte_alloc_kernel(&init_mm, pd, va); */
@@ -201,12 +155,7 @@ int map_page(unsigned long va, phys_addr_t pa, int flags)
 		set_pte_at(&init_mm, va, pg, pfn_pte(pa >> PAGE_SHIFT,
 				__pgprot(flags)));
 		if (unlikely(mem_init_done))
-<<<<<<< HEAD
-			flush_HPTE(0, va, pmd_val(*pd));
-			/* flush_HPTE(0, va, pg); */
-=======
 			_tlbie(va);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
@@ -223,11 +172,7 @@ void __init mapin_ram(void)
 	for (s = 0; s < lowmem_size; s += PAGE_SIZE) {
 		f = _PAGE_PRESENT | _PAGE_ACCESSED |
 				_PAGE_SHARED | _PAGE_HWEXEC;
-<<<<<<< HEAD
-		if ((char *) v < _stext || (char *) v >= _etext)
-=======
 		if (!is_kernel_text(v))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			f |= _PAGE_WRENABLE;
 		else
 			/* On the MicroBlaze, no user access
@@ -250,24 +195,17 @@ void __init mapin_ram(void)
 static int get_pteptr(struct mm_struct *mm, unsigned long addr, pte_t **ptep)
 {
 	pgd_t	*pgd;
-<<<<<<< HEAD
-=======
 	p4d_t	*p4d;
 	pud_t	*pud;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmd_t	*pmd;
 	pte_t	*pte;
 	int     retval = 0;
 
 	pgd = pgd_offset(mm, addr & PAGE_MASK);
 	if (pgd) {
-<<<<<<< HEAD
-		pmd = pmd_offset(pgd, addr & PAGE_MASK);
-=======
 		p4d = p4d_offset(pgd, addr & PAGE_MASK);
 		pud = pud_offset(p4d, addr & PAGE_MASK);
 		pmd = pmd_offset(pud, addr & PAGE_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pmd_present(*pmd)) {
 			pte = pte_offset_kernel(pmd, addr & PAGE_MASK);
 			if (pte) {
@@ -304,21 +242,6 @@ unsigned long iopa(unsigned long addr)
 	return pa;
 }
 
-<<<<<<< HEAD
-__init_refok pte_t *pte_alloc_one_kernel(struct mm_struct *mm,
-		unsigned long address)
-{
-	pte_t *pte;
-	if (mem_init_done) {
-		pte = (pte_t *)__get_free_page(GFP_KERNEL |
-					__GFP_REPEAT | __GFP_ZERO);
-	} else {
-		pte = (pte_t *)early_get_page();
-		if (pte)
-			clear_page(pte);
-	}
-	return pte;
-=======
 __ref pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
 {
 	if (mem_init_done)
@@ -328,7 +251,6 @@ __ref pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
 					      MEMBLOCK_LOW_LIMIT,
 					      memory_start + kernel_tlb,
 					      NUMA_NO_NODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __set_fixmap(enum fixed_addresses idx, phys_addr_t phys, pgprot_t flags)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Off-channel operation helpers
  *
@@ -11,23 +8,12 @@
  * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
  * Copyright 2007, Michael Wu <flamingice@sourmilk.net>
  * Copyright 2009	Johannes Berg <johannes@sipsolutions.net>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
  * Copyright (C) 2019, 2022-2023 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/export.h>
 #include <net/mac80211.h>
 #include "ieee80211_i.h"
-<<<<<<< HEAD
-#include "driver-trace.h"
-=======
 #include "driver-ops.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Tell our hardware to disable PS.
@@ -36,21 +22,11 @@
  * because we *may* be doing work on-operating channel, and want our
  * hardware unconditionally awake, but still let the AP send us normal frames.
  */
-<<<<<<< HEAD
-static void ieee80211_offchannel_ps_enable(struct ieee80211_sub_if_data *sdata,
-					   bool tell_ap)
-{
-	struct ieee80211_local *local = sdata->local;
-	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
-
-	local->offchannel_ps_enabled = false;
-=======
 static void ieee80211_offchannel_ps_enable(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_local *local = sdata->local;
 	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
 	bool offchannel_ps_enabled = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME: what to do when local->pspolling is true? */
 
@@ -58,28 +34,16 @@ static void ieee80211_offchannel_ps_enable(struct ieee80211_sub_if_data *sdata)
 	del_timer_sync(&ifmgd->bcn_mon_timer);
 	del_timer_sync(&ifmgd->conn_mon_timer);
 
-<<<<<<< HEAD
-	cancel_work_sync(&local->dynamic_ps_enable_work);
-
-	if (local->hw.conf.flags & IEEE80211_CONF_PS) {
-		local->offchannel_ps_enabled = true;
-=======
 	wiphy_work_cancel(local->hw.wiphy, &local->dynamic_ps_enable_work);
 
 	if (local->hw.conf.flags & IEEE80211_CONF_PS) {
 		offchannel_ps_enabled = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local->hw.conf.flags &= ~IEEE80211_CONF_PS;
 		ieee80211_hw_config(local, IEEE80211_CONF_CHANGE_PS);
 	}
 
-<<<<<<< HEAD
-	if (tell_ap && (!local->offchannel_ps_enabled ||
-			!(local->hw.flags & IEEE80211_HW_PS_NULLFUNC_STACK)))
-=======
 	if (!offchannel_ps_enabled ||
 	    !ieee80211_hw_check(&local->hw, PS_NULLFUNC_STACK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If power save was enabled, no need to send a nullfunc
 		 * frame because AP knows that we are sleeping. But if the
@@ -90,52 +54,15 @@ static void ieee80211_offchannel_ps_enable(struct ieee80211_sub_if_data *sdata)
 		 * to send a new nullfunc frame to inform the AP that we
 		 * are again sleeping.
 		 */
-<<<<<<< HEAD
-		ieee80211_send_nullfunc(local, sdata, 1);
-}
-
-/* inform AP that we are awake again, unless power save is enabled */
-=======
 		ieee80211_send_nullfunc(local, sdata, true);
 }
 
 /* inform AP that we are awake again */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ieee80211_offchannel_ps_disable(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_local *local = sdata->local;
 
 	if (!local->ps_sdata)
-<<<<<<< HEAD
-		ieee80211_send_nullfunc(local, sdata, 0);
-	else if (local->offchannel_ps_enabled) {
-		/*
-		 * In !IEEE80211_HW_PS_NULLFUNC_STACK case the hardware
-		 * will send a nullfunc frame with the powersave bit set
-		 * even though the AP already knows that we are sleeping.
-		 * This could be avoided by sending a null frame with power
-		 * save bit disabled before enabling the power save, but
-		 * this doesn't gain anything.
-		 *
-		 * When IEEE80211_HW_PS_NULLFUNC_STACK is enabled, no need
-		 * to send a nullfunc frame because AP already knows that
-		 * we are sleeping, let's just enable power save mode in
-		 * hardware.
-		 */
-		/* TODO:  Only set hardware if CONF_PS changed?
-		 * TODO:  Should we set offchannel_ps_enabled to false?
-		 */
-		local->hw.conf.flags |= IEEE80211_CONF_PS;
-		ieee80211_hw_config(local, IEEE80211_CONF_CHANGE_PS);
-	} else if (local->hw.conf.dynamic_ps_timeout > 0) {
-		/*
-		 * If IEEE80211_CONF_PS was not set and the dynamic_ps_timer
-		 * had been running before leaving the operating channel,
-		 * restart the timer now and send a nullfunc frame to inform
-		 * the AP that we are awake.
-		 */
-		ieee80211_send_nullfunc(local, sdata, 0);
-=======
 		ieee80211_send_nullfunc(local, sdata, false);
 	else if (local->hw.conf.dynamic_ps_timeout > 0) {
 		/*
@@ -145,7 +72,6 @@ static void ieee80211_offchannel_ps_disable(struct ieee80211_sub_if_data *sdata)
 		 * the buffered packets (if any).
 		 */
 		ieee80211_send_nullfunc(local, sdata, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mod_timer(&local->dynamic_ps_timer, jiffies +
 			  msecs_to_jiffies(local->hw.conf.dynamic_ps_timeout));
 	}
@@ -158,21 +84,15 @@ void ieee80211_offchannel_stop_vifs(struct ieee80211_local *local)
 {
 	struct ieee80211_sub_if_data *sdata;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_wiphy(local->hw.wiphy);
 
 	if (WARN_ON(!local->emulate_chanctx))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * notify the AP about us leaving the channel and stop all
 	 * STA interfaces.
 	 */
-<<<<<<< HEAD
-	mutex_lock(&local->iflist_mtx);
-=======
 
 	/*
 	 * Stop queues and transmit all frames queued by the driver
@@ -183,38 +103,18 @@ void ieee80211_offchannel_stop_vifs(struct ieee80211_local *local)
 					false);
 	ieee80211_flush_queues(local, NULL, false);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(sdata, &local->interfaces, list) {
 		if (!ieee80211_sdata_running(sdata))
 			continue;
 
-<<<<<<< HEAD
-=======
 		if (sdata->vif.type == NL80211_IFTYPE_P2P_DEVICE ||
 		    sdata->vif.type == NL80211_IFTYPE_NAN)
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sdata->vif.type != NL80211_IFTYPE_MONITOR)
 			set_bit(SDATA_STATE_OFFCHANNEL, &sdata->state);
 
 		/* Check to see if we should disable beaconing. */
-<<<<<<< HEAD
-		if (sdata->vif.type == NL80211_IFTYPE_AP ||
-		    sdata->vif.type == NL80211_IFTYPE_ADHOC ||
-		    sdata->vif.type == NL80211_IFTYPE_MESH_POINT)
-			ieee80211_bss_info_change_notify(
-				sdata, BSS_CHANGED_BEACON_ENABLED);
-
-		if (sdata->vif.type != NL80211_IFTYPE_MONITOR) {
-			netif_tx_stop_all_queues(sdata->dev);
-			if (sdata->vif.type == NL80211_IFTYPE_STATION &&
-			    sdata->u.mgd.associated)
-				ieee80211_offchannel_ps_enable(sdata, true);
-		}
-	}
-	mutex_unlock(&local->iflist_mtx);
-=======
 		if (sdata->vif.bss_conf.enable_beacon) {
 			set_bit(SDATA_STATE_OFFCHANNEL_BEACON_STOPPED,
 				&sdata->state);
@@ -228,17 +128,12 @@ void ieee80211_offchannel_stop_vifs(struct ieee80211_local *local)
 		    sdata->u.mgd.associated)
 			ieee80211_offchannel_ps_enable(sdata);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ieee80211_offchannel_return(struct ieee80211_local *local)
 {
 	struct ieee80211_sub_if_data *sdata;
 
-<<<<<<< HEAD
-	mutex_lock(&local->iflist_mtx);
-	list_for_each_entry(sdata, &local->interfaces, list) {
-=======
 	lockdep_assert_wiphy(local->hw.wiphy);
 
 	if (WARN_ON(!local->emulate_chanctx))
@@ -248,7 +143,6 @@ void ieee80211_offchannel_return(struct ieee80211_local *local)
 		if (sdata->vif.type == NL80211_IFTYPE_P2P_DEVICE)
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sdata->vif.type != NL80211_IFTYPE_MONITOR)
 			clear_bit(SDATA_STATE_OFFCHANNEL, &sdata->state);
 
@@ -260,60 +154,6 @@ void ieee80211_offchannel_return(struct ieee80211_local *local)
 		    sdata->u.mgd.associated)
 			ieee80211_offchannel_ps_disable(sdata);
 
-<<<<<<< HEAD
-		if (sdata->vif.type != NL80211_IFTYPE_MONITOR) {
-			/*
-			 * This may wake up queues even though the driver
-			 * currently has them stopped. This is not very
-			 * likely, since the driver won't have gotten any
-			 * (or hardly any) new packets while we weren't
-			 * on the right channel, and even if it happens
-			 * it will at most lead to queueing up one more
-			 * packet per queue in mac80211 rather than on
-			 * the interface qdisc.
-			 */
-			netif_tx_wake_all_queues(sdata->dev);
-		}
-
-		if (sdata->vif.type == NL80211_IFTYPE_AP ||
-		    sdata->vif.type == NL80211_IFTYPE_ADHOC ||
-		    sdata->vif.type == NL80211_IFTYPE_MESH_POINT)
-			ieee80211_bss_info_change_notify(
-				sdata, BSS_CHANGED_BEACON_ENABLED);
-	}
-	mutex_unlock(&local->iflist_mtx);
-}
-
-static void ieee80211_hw_roc_start(struct work_struct *work)
-{
-	struct ieee80211_local *local =
-		container_of(work, struct ieee80211_local, hw_roc_start);
-	struct ieee80211_sub_if_data *sdata;
-
-	mutex_lock(&local->mtx);
-
-	if (!local->hw_roc_channel) {
-		mutex_unlock(&local->mtx);
-		return;
-	}
-
-	if (local->hw_roc_skb) {
-		sdata = IEEE80211_DEV_TO_SUB_IF(local->hw_roc_dev);
-		ieee80211_tx_skb(sdata, local->hw_roc_skb);
-		local->hw_roc_skb = NULL;
-	} else {
-		cfg80211_ready_on_channel(local->hw_roc_dev,
-					  local->hw_roc_cookie,
-					  local->hw_roc_channel,
-					  local->hw_roc_channel_type,
-					  local->hw_roc_duration,
-					  GFP_KERNEL);
-	}
-
-	ieee80211_recalc_idle(local);
-
-	mutex_unlock(&local->mtx);
-=======
 		if (test_and_clear_bit(SDATA_STATE_OFFCHANNEL_BEACON_STOPPED,
 				       &sdata->state)) {
 			sdata->vif.bss_conf.enable_beacon = true;
@@ -433,22 +273,12 @@ static void ieee80211_hw_roc_start(struct wiphy *wiphy, struct wiphy_work *work)
 		roc->hw_begun = true;
 		ieee80211_handle_roc_started(roc, local->hw_roc_start_time);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ieee80211_ready_on_channel(struct ieee80211_hw *hw)
 {
 	struct ieee80211_local *local = hw_to_local(hw);
 
-<<<<<<< HEAD
-	trace_api_ready_on_channel(local);
-
-	ieee80211_queue_work(hw, &local->hw_roc_start);
-}
-EXPORT_SYMBOL_GPL(ieee80211_ready_on_channel);
-
-static void ieee80211_hw_roc_done(struct work_struct *work)
-=======
 	local->hw_roc_start_time = jiffies;
 
 	trace_api_ready_on_channel(local);
@@ -633,56 +463,16 @@ static void ieee80211_roc_work(struct wiphy *wiphy, struct wiphy_work *work)
 }
 
 static void ieee80211_hw_roc_done(struct wiphy *wiphy, struct wiphy_work *work)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_local *local =
 		container_of(work, struct ieee80211_local, hw_roc_done);
 
-<<<<<<< HEAD
-	mutex_lock(&local->mtx);
-
-	if (!local->hw_roc_channel) {
-		mutex_unlock(&local->mtx);
-		return;
-	}
-
-	/* was never transmitted */
-	if (local->hw_roc_skb) {
-		u64 cookie;
-
-		cookie = local->hw_roc_cookie ^ 2;
-
-		cfg80211_mgmt_tx_status(local->hw_roc_dev, cookie,
-					local->hw_roc_skb->data,
-					local->hw_roc_skb->len, false,
-					GFP_KERNEL);
-
-		kfree_skb(local->hw_roc_skb);
-		local->hw_roc_skb = NULL;
-		local->hw_roc_skb_for_status = NULL;
-	}
-
-	if (!local->hw_roc_for_tx)
-		cfg80211_remain_on_channel_expired(local->hw_roc_dev,
-						   local->hw_roc_cookie,
-						   local->hw_roc_channel,
-						   local->hw_roc_channel_type,
-						   GFP_KERNEL);
-
-	local->hw_roc_channel = NULL;
-	local->hw_roc_cookie = 0;
-
-	ieee80211_recalc_idle(local);
-
-	mutex_unlock(&local->mtx);
-=======
 	lockdep_assert_wiphy(local->hw.wiphy);
 
 	ieee80211_end_finished_rocs(local, jiffies);
 
 	/* if there's another roc, start it now */
 	ieee80211_start_next_roc(local);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ieee80211_remain_on_channel_expired(struct ieee80211_hw *hw)
@@ -691,16 +481,6 @@ void ieee80211_remain_on_channel_expired(struct ieee80211_hw *hw)
 
 	trace_api_remain_on_channel_expired(local);
 
-<<<<<<< HEAD
-	ieee80211_queue_work(hw, &local->hw_roc_done);
-}
-EXPORT_SYMBOL_GPL(ieee80211_remain_on_channel_expired);
-
-void ieee80211_hw_roc_setup(struct ieee80211_local *local)
-{
-	INIT_WORK(&local->hw_roc_start, ieee80211_hw_roc_start);
-	INIT_WORK(&local->hw_roc_done, ieee80211_hw_roc_done);
-=======
 	wiphy_work_queue(hw->wiphy, &local->hw_roc_done);
 }
 EXPORT_SYMBOL_GPL(ieee80211_remain_on_channel_expired);
@@ -1260,5 +1040,4 @@ void ieee80211_roc_purge(struct ieee80211_local *local,
 	}
 	if (work_to_do)
 		__ieee80211_roc_work(local);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

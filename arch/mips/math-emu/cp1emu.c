@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-/*
- * cp1emu.c: a MIPS coprocessor 1 (fpu) instruction emulator
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * cp1emu.c: a MIPS coprocessor 1 (FPU) instruction emulator
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
@@ -13,65 +8,16 @@
  * Kevin D. Kissell, kevink@mips.com and Carsten Langgaard, carstenl@mips.com
  * Copyright (C) 2000  MIPS Technologies, Inc.
  *
-<<<<<<< HEAD
- *  This program is free software; you can distribute it and/or modify it
- *  under the terms of the GNU General Public License (Version 2) as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * A complete emulator for MIPS coprocessor 1 instructions.  This is
  * required for #float(switch) or #float(trap), where it catches all
  * COP1 instructions via the "CoProcessor Unusable" exception.
  *
  * More surprisingly it is also required for #float(ieee), to help out
-<<<<<<< HEAD
- * the hardware fpu at the boundaries of the IEEE-754 representation
-=======
  * the hardware FPU at the boundaries of the IEEE-754 representation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (denormalised values, infinities, underflow, etc).  It is made
  * quite nasty because emulation of some non-COP1 instructions is
  * required, e.g. in branch delay slots.
  *
-<<<<<<< HEAD
- * Note if you know that you won't have an fpu, then you'll get much
- * better performance by compiling with -msoft-float!
- */
-#include <linux/sched.h>
-#include <linux/module.h>
-#include <linux/debugfs.h>
-#include <linux/perf_event.h>
-
-#include <asm/inst.h>
-#include <asm/bootinfo.h>
-#include <asm/processor.h>
-#include <asm/ptrace.h>
-#include <asm/signal.h>
-#include <asm/mipsregs.h>
-#include <asm/fpu_emulator.h>
-#include <asm/uaccess.h>
-#include <asm/branch.h>
-
-#include "ieee754.h"
-
-/* Strap kernel emulator for full MIPS IV emulation */
-
-#ifdef __mips
-#undef __mips
-#endif
-#define __mips 4
-
-=======
  * Note if you know that you won't have an FPU, then you'll get much
  * better performance by compiling with -msoft-float!
  */
@@ -94,57 +40,17 @@
 
 #include "ieee754.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Function which emulates a floating point instruction. */
 
 static int fpu_emu(struct pt_regs *, struct mips_fpu_struct *,
 	mips_instruction);
 
-<<<<<<< HEAD
-#if __mips >= 4 && __mips != 32
-static int fpux_emu(struct pt_regs *,
-	struct mips_fpu_struct *, mips_instruction, void *__user *);
-#endif
-
-/* Further private data for which no space exists in mips_fpu_struct */
-
-#ifdef CONFIG_DEBUG_FS
-DEFINE_PER_CPU(struct mips_fpu_emulator_stats, fpuemustats);
-#endif
-=======
 static int fpux_emu(struct pt_regs *,
 	struct mips_fpu_struct *, mips_instruction, void __user **);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Control registers */
 
 #define FPCREG_RID	0	/* $0  = revision id */
-<<<<<<< HEAD
-#define FPCREG_CSR	31	/* $31 = csr */
-
-/* Determine rounding mode from the RM bits of the FCSR */
-#define modeindex(v) ((v) & FPU_CSR_RM)
-
-/* Convert Mips rounding mode (0..3) to IEEE library modes. */
-static const unsigned char ieee_rm[4] = {
-	[FPU_CSR_RN] = IEEE754_RN,
-	[FPU_CSR_RZ] = IEEE754_RZ,
-	[FPU_CSR_RU] = IEEE754_RU,
-	[FPU_CSR_RD] = IEEE754_RD,
-};
-/* Convert IEEE library modes to Mips rounding mode (0..3). */
-static const unsigned char mips_rm[4] = {
-	[IEEE754_RN] = FPU_CSR_RN,
-	[IEEE754_RZ] = FPU_CSR_RZ,
-	[IEEE754_RD] = FPU_CSR_RD,
-	[IEEE754_RU] = FPU_CSR_RU,
-};
-
-#if __mips >= 4
-/* convert condition code register number to csr bit */
-static const unsigned int fpucondbit[8] = {
-	FPU_CSR_COND0,
-=======
 #define FPCREG_FCCR	25	/* $25 = fccr */
 #define FPCREG_FEXR	26	/* $26 = fexr */
 #define FPCREG_FENR	28	/* $28 = fenr */
@@ -153,7 +59,6 @@ static const unsigned int fpucondbit[8] = {
 /* convert condition code register number to csr bit */
 const unsigned int fpucondbit[8] = {
 	FPU_CSR_COND,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FPU_CSR_COND1,
 	FPU_CSR_COND2,
 	FPU_CSR_COND3,
@@ -162,10 +67,6 @@ const unsigned int fpucondbit[8] = {
 	FPU_CSR_COND6,
 	FPU_CSR_COND7
 };
-<<<<<<< HEAD
-#endif
-
-=======
 
 /* (microMIPS) Convert certain microMIPS instructions to MIPS32 format. */
 static const int sd_format[] = {16, 17, 0, 0, 0, 0, 0, 0};
@@ -513,7 +414,6 @@ static int microMIPS32_to_MIPS32(union mips_instruction *insn_ptr)
 	*insn_ptr = mips32_insn;
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Redundant with logic already in kernel/branch.c,
@@ -521,55 +421,6 @@ static int microMIPS32_to_MIPS32(union mips_instruction *insn_ptr)
  * a single subroutine should be used across both
  * modules.
  */
-<<<<<<< HEAD
-static int isBranchInstr(mips_instruction * i)
-{
-	switch (MIPSInst_OPCODE(*i)) {
-	case spec_op:
-		switch (MIPSInst_FUNC(*i)) {
-		case jalr_op:
-		case jr_op:
-			return 1;
-		}
-		break;
-
-	case bcond_op:
-		switch (MIPSInst_RT(*i)) {
-		case bltz_op:
-		case bgez_op:
-		case bltzl_op:
-		case bgezl_op:
-		case bltzal_op:
-		case bgezal_op:
-		case bltzall_op:
-		case bgezall_op:
-			return 1;
-		}
-		break;
-
-	case j_op:
-	case jal_op:
-	case jalx_op:
-	case beq_op:
-	case bne_op:
-	case blez_op:
-	case bgtz_op:
-	case beql_op:
-	case bnel_op:
-	case blezl_op:
-	case bgtzl_op:
-		return 1;
-
-	case cop0_op:
-	case cop1_op:
-	case cop2_op:
-	case cop1x_op:
-		if (MIPSInst_RS(*i) == bc_op)
-			return 1;
-		break;
-	}
-
-=======
 int isBranchInstr(struct pt_regs *regs, struct mm_decoded_insn dec_insn,
 		  unsigned long *contpc)
 {
@@ -915,42 +766,11 @@ int isBranchInstr(struct pt_regs *regs, struct mm_decoded_insn dec_insn,
 		}
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*
  * In the Linux kernel, we support selection of FPR format on the
-<<<<<<< HEAD
- * basis of the Status.FR bit.  If an FPU is not present, the FR bit
- * is hardwired to zero, which would imply a 32-bit FPU even for
- * 64-bit CPUs.  For 64-bit kernels with no FPU we use TIF_32BIT_REGS
- * as a proxy for the FR bit so that a 64-bit FPU is emulated.  In any
- * case, for a 32-bit kernel which uses the O32 MIPS ABI, only the
- * even FPRs are used (Status.FR = 0).
- */
-static inline int cop1_64bit(struct pt_regs *xcp)
-{
-	if (cpu_has_fpu)
-		return xcp->cp0_status & ST0_FR;
-#ifdef CONFIG_64BIT
-	return !test_thread_flag(TIF_32BIT_REGS);
-#else
-	return 0;
-#endif
-}
-
-#define SIFROMREG(si, x) ((si) = cop1_64bit(xcp) || !(x & 1) ? \
-			(int)ctx->fpr[x] : (int)(ctx->fpr[x & ~1] >> 32))
-
-#define SITOREG(si, x)	(ctx->fpr[x & ~(cop1_64bit(xcp) == 0)] = \
-			cop1_64bit(xcp) || !(x & 1) ? \
-			ctx->fpr[x & ~1] >> 32 << 32 | (u32)(si) : \
-			ctx->fpr[x & ~1] << 32 >> 32 | (u64)(si) << 32)
-
-#define DIFROMREG(di, x) ((di) = ctx->fpr[x & ~(cop1_64bit(xcp) == 0)])
-#define DITOREG(di, x)	(ctx->fpr[x & ~(cop1_64bit(xcp) == 0)] = (di))
-=======
  * basis of the Status.FR bit.	If an FPU is not present, the FR bit
  * is hardwired to zero, which would imply a 32-bit FPU even for
  * 64-bit CPUs so we rather look at TIF_32BIT_FPREGS.
@@ -1016,7 +836,6 @@ do {									\
 	for (i = 1; i < ARRAY_SIZE(ctx->fpr[x].val64); i++)		\
 		set_fpr64(&ctx->fpr[fpr], i, 0);			\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SPFROMREG(sp, x) SIFROMREG((sp).bits, x)
 #define SPTOREG(sp, x)	SITOREG((sp).bits, x)
@@ -1024,8 +843,6 @@ do {									\
 #define DPTOREG(dp, x)	DITOREG((dp).bits, x)
 
 /*
-<<<<<<< HEAD
-=======
  * Emulate a CFC1 instruction.
  */
 static inline void cop1_cfc(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
@@ -1147,39 +964,11 @@ static inline void cop1_ctc(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Emulate the single floating point instruction pointed at by EPC.
  * Two instructions if the instruction is in a branch delay slot.
  */
 
 static int cop1Emulate(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
-<<<<<<< HEAD
-		       void *__user *fault_addr)
-{
-	mips_instruction ir;
-	unsigned long emulpc, contpc;
-	unsigned int cond;
-
-	if (!access_ok(VERIFY_READ, xcp->cp0_epc, sizeof(mips_instruction))) {
-		MIPS_FPU_EMU_INC_STATS(errors);
-		*fault_addr = (mips_instruction __user *)xcp->cp0_epc;
-		return SIGBUS;
-	}
-	if (__get_user(ir, (mips_instruction __user *) xcp->cp0_epc)) {
-		MIPS_FPU_EMU_INC_STATS(errors);
-		*fault_addr = (mips_instruction __user *)xcp->cp0_epc;
-		return SIGSEGV;
-	}
-
-	/* XXX NEC Vr54xx bug workaround */
-	if ((xcp->cp0_cause & CAUSEF_BD) && !isBranchInstr(&ir))
-		xcp->cp0_cause &= ~CAUSEF_BD;
-
-	if (xcp->cp0_cause & CAUSEF_BD) {
-		/*
-		 * The instruction to be emulated is in a branch delay slot
-		 * which means that we have to  emulate the branch instruction
-=======
 		struct mm_decoded_insn dec_insn, void __user **fault_addr)
 {
 	unsigned long contpc = xcp->cp0_epc + dec_insn.pc_inc;
@@ -1215,7 +1004,6 @@ static int cop1Emulate(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 		/*
 		 * The instruction to be emulated is in a branch delay slot
 		 * which means that we have to	emulate the branch instruction
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * BEFORE we do the cop1 instruction.
 		 *
 		 * This branch could be a COP1 branch, but in that case we
@@ -1225,126 +1013,6 @@ static int cop1Emulate(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 		 * Linux MIPS branch emulator operates on context, updating the
 		 * cp0_epc.
 		 */
-<<<<<<< HEAD
-		emulpc = xcp->cp0_epc + 4;	/* Snapshot emulation target */
-
-		if (__compute_return_epc(xcp) < 0) {
-#ifdef CP1DBG
-			printk("failed to emulate branch at %p\n",
-				(void *) (xcp->cp0_epc));
-#endif
-			return SIGILL;
-		}
-		if (!access_ok(VERIFY_READ, emulpc, sizeof(mips_instruction))) {
-			MIPS_FPU_EMU_INC_STATS(errors);
-			*fault_addr = (mips_instruction __user *)emulpc;
-			return SIGBUS;
-		}
-		if (__get_user(ir, (mips_instruction __user *) emulpc)) {
-			MIPS_FPU_EMU_INC_STATS(errors);
-			*fault_addr = (mips_instruction __user *)emulpc;
-			return SIGSEGV;
-		}
-		/* __compute_return_epc() will have updated cp0_epc */
-		contpc = xcp->cp0_epc;
-		/* In order not to confuse ptrace() et al, tweak context */
-		xcp->cp0_epc = emulpc - 4;
-	} else {
-		emulpc = xcp->cp0_epc;
-		contpc = xcp->cp0_epc + 4;
-	}
-
-      emul:
-	perf_sw_event(PERF_COUNT_SW_EMULATION_FAULTS, 1, xcp, 0);
-	MIPS_FPU_EMU_INC_STATS(emulated);
-	switch (MIPSInst_OPCODE(ir)) {
-	case ldc1_op:{
-		u64 __user *va = (u64 __user *) (xcp->regs[MIPSInst_RS(ir)] +
-			MIPSInst_SIMM(ir));
-		u64 val;
-
-		MIPS_FPU_EMU_INC_STATS(loads);
-
-		if (!access_ok(VERIFY_READ, va, sizeof(u64))) {
-			MIPS_FPU_EMU_INC_STATS(errors);
-			*fault_addr = va;
-			return SIGBUS;
-		}
-		if (__get_user(val, va)) {
-			MIPS_FPU_EMU_INC_STATS(errors);
-			*fault_addr = va;
-			return SIGSEGV;
-		}
-		DITOREG(val, MIPSInst_RT(ir));
-		break;
-	}
-
-	case sdc1_op:{
-		u64 __user *va = (u64 __user *) (xcp->regs[MIPSInst_RS(ir)] +
-			MIPSInst_SIMM(ir));
-		u64 val;
-
-		MIPS_FPU_EMU_INC_STATS(stores);
-		DIFROMREG(val, MIPSInst_RT(ir));
-		if (!access_ok(VERIFY_WRITE, va, sizeof(u64))) {
-			MIPS_FPU_EMU_INC_STATS(errors);
-			*fault_addr = va;
-			return SIGBUS;
-		}
-		if (__put_user(val, va)) {
-			MIPS_FPU_EMU_INC_STATS(errors);
-			*fault_addr = va;
-			return SIGSEGV;
-		}
-		break;
-	}
-
-	case lwc1_op:{
-		u32 __user *va = (u32 __user *) (xcp->regs[MIPSInst_RS(ir)] +
-			MIPSInst_SIMM(ir));
-		u32 val;
-
-		MIPS_FPU_EMU_INC_STATS(loads);
-		if (!access_ok(VERIFY_READ, va, sizeof(u32))) {
-			MIPS_FPU_EMU_INC_STATS(errors);
-			*fault_addr = va;
-			return SIGBUS;
-		}
-		if (__get_user(val, va)) {
-			MIPS_FPU_EMU_INC_STATS(errors);
-			*fault_addr = va;
-			return SIGSEGV;
-		}
-		SITOREG(val, MIPSInst_RT(ir));
-		break;
-	}
-
-	case swc1_op:{
-		u32 __user *va = (u32 __user *) (xcp->regs[MIPSInst_RS(ir)] +
-			MIPSInst_SIMM(ir));
-		u32 val;
-
-		MIPS_FPU_EMU_INC_STATS(stores);
-		SIFROMREG(val, MIPSInst_RT(ir));
-		if (!access_ok(VERIFY_WRITE, va, sizeof(u32))) {
-			MIPS_FPU_EMU_INC_STATS(errors);
-			*fault_addr = va;
-			return SIGBUS;
-		}
-		if (__put_user(val, va)) {
-			MIPS_FPU_EMU_INC_STATS(errors);
-			*fault_addr = va;
-			return SIGSEGV;
-		}
-		break;
-	}
-
-	case cop1_op:
-		switch (MIPSInst_RS(ir)) {
-
-#if defined(__mips64)
-		case dmfc_op:
-=======
 		ir = dec_insn.next_insn;  /* process delay slot instr */
 		pc_inc = dec_insn.next_pc_inc;
 	} else {
@@ -1453,7 +1121,6 @@ emul:
 			if (!cpu_has_mips_3_4_5 && !cpu_has_mips64)
 				return SIGILL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* copregister fs -> gpr[rt] */
 			if (MIPSInst_RT(ir) != 0) {
 				DIFROMREG(xcp->regs[MIPSInst_RT(ir)],
@@ -1462,12 +1129,6 @@ emul:
 			break;
 
 		case dmtc_op:
-<<<<<<< HEAD
-			/* copregister fs <- rt */
-			DITOREG(xcp->regs[MIPSInst_RT(ir)], MIPSInst_RD(ir));
-			break;
-#endif
-=======
 			if (!cpu_has_mips_3_4_5 && !cpu_has_mips64)
 				return SIGILL;
 
@@ -1493,7 +1154,6 @@ emul:
 			/* copregister rd <- gpr[rt] */
 			SITOHREG(xcp->regs[MIPSInst_RT(ir)], MIPSInst_RD(ir));
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case mfc_op:
 			/* copregister rd -> gpr[rt] */
@@ -1508,57 +1168,6 @@ emul:
 			SITOREG(xcp->regs[MIPSInst_RT(ir)], MIPSInst_RD(ir));
 			break;
 
-<<<<<<< HEAD
-		case cfc_op:{
-			/* cop control register rd -> gpr[rt] */
-			u32 value;
-
-			if (MIPSInst_RD(ir) == FPCREG_CSR) {
-				value = ctx->fcr31;
-				value = (value & ~FPU_CSR_RM) |
-					mips_rm[modeindex(value)];
-#ifdef CSRTRACE
-				printk("%p gpr[%d]<-csr=%08x\n",
-					(void *) (xcp->cp0_epc),
-					MIPSInst_RT(ir), value);
-#endif
-			}
-			else if (MIPSInst_RD(ir) == FPCREG_RID)
-				value = 0;
-			else
-				value = 0;
-			if (MIPSInst_RT(ir))
-				xcp->regs[MIPSInst_RT(ir)] = value;
-			break;
-		}
-
-		case ctc_op:{
-			/* copregister rd <- rt */
-			u32 value;
-
-			if (MIPSInst_RT(ir) == 0)
-				value = 0;
-			else
-				value = xcp->regs[MIPSInst_RT(ir)];
-
-			/* we only have one writable control reg
-			 */
-			if (MIPSInst_RD(ir) == FPCREG_CSR) {
-#ifdef CSRTRACE
-				printk("%p gpr[%d]->csr=%08x\n",
-					(void *) (xcp->cp0_epc),
-					MIPSInst_RT(ir), value);
-#endif
-
-				/*
-				 * Don't write reserved bits,
-				 * and convert to ieee library modes
-				 */
-				ctx->fcr31 = (value &
-						~(FPU_CSR_RSVD | FPU_CSR_RM)) |
-						ieee_rm[modeindex(value)];
-			}
-=======
 		case cfc_op:
 			/* cop control register rd -> gpr[rt] */
 			cop1_cfc(xcp, ctx, ir);
@@ -1567,29 +1176,10 @@ emul:
 		case ctc_op:
 			/* copregister rd <- rt */
 			cop1_ctc(xcp, ctx, ir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((ctx->fcr31 >> 5) & ctx->fcr31 & FPU_CSR_ALL_E) {
 				return SIGFPE;
 			}
 			break;
-<<<<<<< HEAD
-		}
-
-		case bc_op:{
-			int likely = 0;
-
-			if (xcp->cp0_cause & CAUSEF_BD)
-				return SIGILL;
-
-#if __mips >= 4
-			cond = ctx->fcr31 & fpucondbit[MIPSInst_RT(ir) >> 2];
-#else
-			cond = ctx->fcr31 & FPU_CSR_COND;
-#endif
-			switch (MIPSInst_RT(ir) & 3) {
-			case bcfl_op:
-				likely = 1;
-=======
 
 		case bc1eqz_op:
 		case bc1nez_op:
@@ -1628,42 +1218,10 @@ emul:
 				if (cpu_has_mips_2_3_4_5_r)
 					likely = 1;
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case bcf_op:
 				cond = !cond;
 				break;
 			case bctl_op:
-<<<<<<< HEAD
-				likely = 1;
-			case bct_op:
-				break;
-			default:
-				/* thats an illegal instruction */
-				return SIGILL;
-			}
-
-			xcp->cp0_cause |= CAUSEF_BD;
-			if (cond) {
-				/* branch taken: emulate dslot
-				 * instruction
-				 */
-				xcp->cp0_epc += 4;
-				contpc = (xcp->cp0_epc +
-					(MIPSInst_SIMM(ir) << 2));
-
-				if (!access_ok(VERIFY_READ, xcp->cp0_epc,
-					       sizeof(mips_instruction))) {
-					MIPS_FPU_EMU_INC_STATS(errors);
-					*fault_addr = (mips_instruction __user *)xcp->cp0_epc;
-					return SIGBUS;
-				}
-				if (__get_user(ir,
-				    (mips_instruction __user *) xcp->cp0_epc)) {
-					MIPS_FPU_EMU_INC_STATS(errors);
-					*fault_addr = (mips_instruction __user *)xcp->cp0_epc;
-					return SIGSEGV;
-				}
-=======
 				if (cpu_has_mips_2_3_4_5_r)
 					likely = 1;
 				fallthrough;
@@ -1724,29 +1282,10 @@ branch_common:
 					}
 				} else
 					contpc = (xcp->cp0_epc + (contpc << 2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				switch (MIPSInst_OPCODE(ir)) {
 				case lwc1_op:
 				case swc1_op:
-<<<<<<< HEAD
-#if (__mips >= 2 || defined(__mips64))
-				case ldc1_op:
-				case sdc1_op:
-#endif
-				case cop1_op:
-#if __mips >= 4 && __mips != 32
-				case cop1x_op:
-#endif
-					/* its one of ours */
-					goto emul;
-#if __mips >= 4
-				case spec_op:
-					if (MIPSInst_FUNC(ir) == movc_op)
-						goto emul;
-					break;
-#endif
-=======
 					goto emul;
 
 				case ldc1_op:
@@ -1779,34 +1318,12 @@ branch_common:
 				bc_sigill:
 					xcp->cp0_epc = bcpc;
 					return SIGILL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 
 				/*
 				 * Single step the non-cp1
 				 * instruction in the dslot
 				 */
-<<<<<<< HEAD
-				return mips_dsemul(xcp, ir, contpc);
-			}
-			else {
-				/* branch not taken */
-				if (likely) {
-					/*
-					 * branch likely nullifies
-					 * dslot if not taken
-					 */
-					xcp->cp0_epc += 4;
-					contpc += 4;
-					/*
-					 * else continue & execute
-					 * dslot as normal insn
-					 */
-				}
-			}
-			break;
-		}
-=======
 				sig = mips_dsemul(xcp, ir, bcpc, contpc);
 				if (sig < 0)
 					break;
@@ -1827,34 +1344,10 @@ branch_common:
 				 */
 			}
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		default:
 			if (!(MIPSInst_RS(ir) & 0x10))
 				return SIGILL;
-<<<<<<< HEAD
-			{
-				int sig;
-
-				/* a real fpu computation instruction */
-				if ((sig = fpu_emu(xcp, ctx, ir)))
-					return sig;
-			}
-		}
-		break;
-
-#if __mips >= 4 && __mips != 32
-	case cop1x_op:{
-		int sig = fpux_emu(xcp, ctx, ir, fault_addr);
-		if (sig)
-			return sig;
-		break;
-	}
-#endif
-
-#if __mips >= 4
-	case spec_op:
-=======
 
 			/* a real fpu computation instruction */
 			sig = fpu_emu(xcp, ctx, ir);
@@ -1876,7 +1369,6 @@ branch_common:
 		if (!cpu_has_mips_4_5_r)
 			return SIGILL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (MIPSInst_FUNC(ir) != movc_op)
 			return SIGILL;
 		cond = fpucondbit[MIPSInst_RT(ir) >> 2];
@@ -1884,22 +1376,13 @@ branch_common:
 			xcp->regs[MIPSInst_RD(ir)] =
 				xcp->regs[MIPSInst_RS(ir)];
 		break;
-<<<<<<< HEAD
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return SIGILL;
 	}
 
 	/* we did it !! */
 	xcp->cp0_epc = contpc;
-<<<<<<< HEAD
-	xcp->cp0_cause &= ~CAUSEF_BD;
-=======
 	clear_delay_slot(xcp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1919,10 +1402,6 @@ static const unsigned char cmptab[8] = {
 	IEEE754_CLT | IEEE754_CEQ | IEEE754_CUN,	/* cmp_ule (sig) cmp_ngt */
 };
 
-<<<<<<< HEAD
-
-#if __mips >= 4 && __mips != 32
-=======
 static const unsigned char negative_cmptab[8] = {
 	0, /* Reserved */
 	IEEE754_CLT | IEEE754_CGT | IEEE754_CEQ,
@@ -1931,31 +1410,11 @@ static const unsigned char negative_cmptab[8] = {
 	/* Reserved */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Additional MIPS4 instructions
  */
 
-<<<<<<< HEAD
-#define DEF3OP(name, p, f1, f2, f3) \
-static ieee754##p fpemu_##p##_##name(ieee754##p r, ieee754##p s, \
-    ieee754##p t) \
-{ \
-	struct _ieee754_csr ieee754_csr_save; \
-	s = f1(s, t); \
-	ieee754_csr_save = ieee754_csr; \
-	s = f2(s, r); \
-	ieee754_csr_save.cx |= ieee754_csr.cx; \
-	ieee754_csr_save.sx |= ieee754_csr.sx; \
-	s = f3(s); \
-	ieee754_csr.cx |= ieee754_csr_save.cx; \
-	ieee754_csr.sx |= ieee754_csr_save.sx; \
-	return s; \
-}
-
-static ieee754dp fpemu_dp_recip(ieee754dp d)
-=======
 #define DEF3OP(name, p, f1, f2, f3)					\
 static union ieee754##p fpemu_##p##_##name(union ieee754##p r,		\
 	union ieee754##p s, union ieee754##p t)				\
@@ -1973,34 +1432,21 @@ static union ieee754##p fpemu_##p##_##name(union ieee754##p r,		\
 }
 
 static union ieee754dp fpemu_dp_recip(union ieee754dp d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ieee754dp_div(ieee754dp_one(0), d);
 }
 
-<<<<<<< HEAD
-static ieee754dp fpemu_dp_rsqrt(ieee754dp d)
-=======
 static union ieee754dp fpemu_dp_rsqrt(union ieee754dp d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ieee754dp_div(ieee754dp_one(0), ieee754dp_sqrt(d));
 }
 
-<<<<<<< HEAD
-static ieee754sp fpemu_sp_recip(ieee754sp s)
-=======
 static union ieee754sp fpemu_sp_recip(union ieee754sp s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ieee754sp_div(ieee754sp_one(0), s);
 }
 
-<<<<<<< HEAD
-static ieee754sp fpemu_sp_rsqrt(ieee754sp s)
-=======
 static union ieee754sp fpemu_sp_rsqrt(union ieee754sp s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ieee754sp_div(ieee754sp_one(0), ieee754sp_sqrt(s));
 }
@@ -2015,28 +1461,17 @@ DEF3OP(nmadd, dp, ieee754dp_mul, ieee754dp_add, ieee754dp_neg);
 DEF3OP(nmsub, dp, ieee754dp_mul, ieee754dp_sub, ieee754dp_neg);
 
 static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
-<<<<<<< HEAD
-	mips_instruction ir, void *__user *fault_addr)
-{
-	unsigned rcsr = 0;	/* resulting csr */
-=======
 	mips_instruction ir, void __user **fault_addr)
 {
 	unsigned int rcsr = 0;	/* resulting csr */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	MIPS_FPU_EMU_INC_STATS(cp1xops);
 
 	switch (MIPSInst_FMA_FFMT(ir)) {
 	case s_fmt:{		/* 0 */
 
-<<<<<<< HEAD
-		ieee754sp(*handler) (ieee754sp, ieee754sp, ieee754sp);
-		ieee754sp fd, fr, fs, ft;
-=======
 		union ieee754sp(*handler) (union ieee754sp, union ieee754sp, union ieee754sp);
 		union ieee754sp fd, fr, fs, ft;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 __user *va;
 		u32 val;
 
@@ -2046,11 +1481,7 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 				xcp->regs[MIPSInst_FT(ir)]);
 
 			MIPS_FPU_EMU_INC_STATS(loads);
-<<<<<<< HEAD
-			if (!access_ok(VERIFY_READ, va, sizeof(u32))) {
-=======
 			if (!access_ok(va, sizeof(u32))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				MIPS_FPU_EMU_INC_STATS(errors);
 				*fault_addr = va;
 				return SIGBUS;
@@ -2070,11 +1501,7 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 			MIPS_FPU_EMU_INC_STATS(stores);
 
 			SIFROMREG(val, MIPSInst_FS(ir));
-<<<<<<< HEAD
-			if (!access_ok(VERIFY_WRITE, va, sizeof(u32))) {
-=======
 			if (!access_ok(va, sizeof(u32))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				MIPS_FPU_EMU_INC_STATS(errors);
 				*fault_addr = va;
 				return SIGBUS;
@@ -2087,18 +1514,6 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 			break;
 
 		case madd_s_op:
-<<<<<<< HEAD
-			handler = fpemu_sp_madd;
-			goto scoptop;
-		case msub_s_op:
-			handler = fpemu_sp_msub;
-			goto scoptop;
-		case nmadd_s_op:
-			handler = fpemu_sp_nmadd;
-			goto scoptop;
-		case nmsub_s_op:
-			handler = fpemu_sp_nmsub;
-=======
 			if (cpu_has_mac2008_only)
 				handler = ieee754sp_madd;
 			else
@@ -2121,7 +1536,6 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 				handler = ieee754sp_nmsub;
 			else
 				handler = fpemu_sp_nmsub;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto scoptop;
 
 		      scoptop:
@@ -2132,20 +1546,6 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 			SPTOREG(fd, MIPSInst_FD(ir));
 
 		      copcsr:
-<<<<<<< HEAD
-			if (ieee754_cxtest(IEEE754_INEXACT))
-				rcsr |= FPU_CSR_INE_X | FPU_CSR_INE_S;
-			if (ieee754_cxtest(IEEE754_UNDERFLOW))
-				rcsr |= FPU_CSR_UDF_X | FPU_CSR_UDF_S;
-			if (ieee754_cxtest(IEEE754_OVERFLOW))
-				rcsr |= FPU_CSR_OVF_X | FPU_CSR_OVF_S;
-			if (ieee754_cxtest(IEEE754_INVALID_OPERATION))
-				rcsr |= FPU_CSR_INV_X | FPU_CSR_INV_S;
-
-			ctx->fcr31 = (ctx->fcr31 & ~FPU_CSR_ALL_X) | rcsr;
-			if ((ctx->fcr31 >> 5) & ctx->fcr31 & FPU_CSR_ALL_E) {
-				/*printk ("SIGFPE: fpu csr = %08x\n",
-=======
 			if (ieee754_cxtest(IEEE754_INEXACT)) {
 				MIPS_FPU_EMU_INC_STATS(ieee754_inexact);
 				rcsr |= FPU_CSR_INE_X | FPU_CSR_INE_S;
@@ -2166,7 +1566,6 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 			ctx->fcr31 = (ctx->fcr31 & ~FPU_CSR_ALL_X) | rcsr;
 			if ((ctx->fcr31 >> 5) & ctx->fcr31 & FPU_CSR_ALL_E) {
 				/*printk ("SIGFPE: FPU csr = %08x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   ctx->fcr31); */
 				return SIGFPE;
 			}
@@ -2180,13 +1579,8 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 	}
 
 	case d_fmt:{		/* 1 */
-<<<<<<< HEAD
-		ieee754dp(*handler) (ieee754dp, ieee754dp, ieee754dp);
-		ieee754dp fd, fr, fs, ft;
-=======
 		union ieee754dp(*handler) (union ieee754dp, union ieee754dp, union ieee754dp);
 		union ieee754dp fd, fr, fs, ft;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64 __user *va;
 		u64 val;
 
@@ -2196,11 +1590,7 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 				xcp->regs[MIPSInst_FT(ir)]);
 
 			MIPS_FPU_EMU_INC_STATS(loads);
-<<<<<<< HEAD
-			if (!access_ok(VERIFY_READ, va, sizeof(u64))) {
-=======
 			if (!access_ok(va, sizeof(u64))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				MIPS_FPU_EMU_INC_STATS(errors);
 				*fault_addr = va;
 				return SIGBUS;
@@ -2219,11 +1609,7 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 
 			MIPS_FPU_EMU_INC_STATS(stores);
 			DIFROMREG(val, MIPSInst_FS(ir));
-<<<<<<< HEAD
-			if (!access_ok(VERIFY_WRITE, va, sizeof(u64))) {
-=======
 			if (!access_ok(va, sizeof(u64))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				MIPS_FPU_EMU_INC_STATS(errors);
 				*fault_addr = va;
 				return SIGBUS;
@@ -2236,17 +1622,6 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 			break;
 
 		case madd_d_op:
-<<<<<<< HEAD
-			handler = fpemu_dp_madd;
-			goto dcoptop;
-		case msub_d_op:
-			handler = fpemu_dp_msub;
-			goto dcoptop;
-		case nmadd_d_op:
-			handler = fpemu_dp_nmadd;
-			goto dcoptop;
-		case nmsub_d_op:
-=======
 			if (cpu_has_mac2008_only)
 				handler = ieee754dp_madd;
 			else
@@ -2268,7 +1643,6 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 			if (cpu_has_mac2008_only)
 				handler = ieee754dp_nmsub;
 			else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			handler = fpemu_dp_nmsub;
 			goto dcoptop;
 
@@ -2286,17 +1660,10 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 		break;
 	}
 
-<<<<<<< HEAD
-	case 0x7:		/* 7 */
-		if (MIPSInst_FUNC(ir) != pfetch_op) {
-			return SIGILL;
-		}
-=======
 	case 0x3:
 		if (MIPSInst_FUNC(ir) != pfetch_op)
 			return SIGILL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* ignore prefx operation */
 		break;
 
@@ -2306,10 +1673,6 @@ static int fpux_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 
 	return 0;
 }
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
@@ -2320,26 +1683,6 @@ static int fpu_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 	mips_instruction ir)
 {
 	int rfmt;		/* resulting format */
-<<<<<<< HEAD
-	unsigned rcsr = 0;	/* resulting csr */
-	unsigned cond;
-	union {
-		ieee754dp d;
-		ieee754sp s;
-		int w;
-#ifdef __mips64
-		s64 l;
-#endif
-	} rv;			/* resulting value */
-
-	MIPS_FPU_EMU_INC_STATS(cp1ops);
-	switch (rfmt = (MIPSInst_FFMT(ir) & 0xf)) {
-	case s_fmt:{		/* 0 */
-		union {
-			ieee754sp(*b) (ieee754sp, ieee754sp);
-			ieee754sp(*u) (ieee754sp);
-		} handler;
-=======
 	unsigned int rcsr = 0;	/* resulting csr */
 	unsigned int oldrm;
 	unsigned int cbit;
@@ -2360,22 +1703,10 @@ static int fpu_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 			union ieee754sp(*u) (union ieee754sp);
 		} handler;
 		union ieee754sp fd, fs, ft;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (MIPSInst_FUNC(ir)) {
 			/* binary ops */
 		case fadd_op:
-<<<<<<< HEAD
-			handler.b = ieee754sp_add;
-			goto scopbop;
-		case fsub_op:
-			handler.b = ieee754sp_sub;
-			goto scopbop;
-		case fmul_op:
-			handler.b = ieee754sp_mul;
-			goto scopbop;
-		case fdiv_op:
-=======
 			MIPS_FPU_EMU_INC_STATS(add_s);
 			handler.b = ieee754sp_add;
 			goto scopbop;
@@ -2389,28 +1720,10 @@ static int fpu_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 			goto scopbop;
 		case fdiv_op:
 			MIPS_FPU_EMU_INC_STATS(div_s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			handler.b = ieee754sp_div;
 			goto scopbop;
 
 			/* unary  ops */
-<<<<<<< HEAD
-#if __mips >= 2 || defined(__mips64)
-		case fsqrt_op:
-			handler.u = ieee754sp_sqrt;
-			goto scopuop;
-#endif
-#if __mips >= 4 && __mips != 32
-		case frsqrt_op:
-			handler.u = fpemu_sp_rsqrt;
-			goto scopuop;
-		case frecip_op:
-			handler.u = fpemu_sp_recip;
-			goto scopuop;
-#endif
-#if __mips >= 4
-		case fmovc_op:
-=======
 		case fsqrt_op:
 			if (!cpu_has_mips_2_3_4_5_r)
 				return SIGILL;
@@ -2444,50 +1757,30 @@ static int fpu_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 			if (!cpu_has_mips_4_5_r)
 				return SIGILL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cond = fpucondbit[MIPSInst_FT(ir) >> 2];
 			if (((ctx->fcr31 & cond) != 0) !=
 				((MIPSInst_FT(ir) & 1) != 0))
 				return 0;
 			SPFROMREG(rv.s, MIPSInst_FS(ir));
 			break;
-<<<<<<< HEAD
-		case fmovz_op:
-=======
 
 		case fmovz_op:
 			if (!cpu_has_mips_4_5_r)
 				return SIGILL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (xcp->regs[MIPSInst_FT(ir)] != 0)
 				return 0;
 			SPFROMREG(rv.s, MIPSInst_FS(ir));
 			break;
-<<<<<<< HEAD
-		case fmovn_op:
-=======
 
 		case fmovn_op:
 			if (!cpu_has_mips_4_5_r)
 				return SIGILL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (xcp->regs[MIPSInst_FT(ir)] == 0)
 				return 0;
 			SPFROMREG(rv.s, MIPSInst_FS(ir));
 			break;
-<<<<<<< HEAD
-#endif
-		case fabs_op:
-			handler.u = ieee754sp_abs;
-			goto scopuop;
-		case fneg_op:
-			handler.u = ieee754sp_neg;
-			goto scopuop;
-		case fmov_op:
-			/* an easy one */
-=======
 
 		case fseleqz_op:
 			if (!cpu_has_mips_r6)
@@ -2631,42 +1924,10 @@ static int fpu_emu(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 		case fmov_op:
 			/* an easy one */
 			MIPS_FPU_EMU_INC_STATS(mov_s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SPFROMREG(rv.s, MIPSInst_FS(ir));
 			goto copcsr;
 
 			/* binary op on handler */
-<<<<<<< HEAD
-		      scopbop:
-			{
-				ieee754sp fs, ft;
-
-				SPFROMREG(fs, MIPSInst_FS(ir));
-				SPFROMREG(ft, MIPSInst_FT(ir));
-
-				rv.s = (*handler.b) (fs, ft);
-				goto copcsr;
-			}
-		      scopuop:
-			{
-				ieee754sp fs;
-
-				SPFROMREG(fs, MIPSInst_FS(ir));
-				rv.s = (*handler.u) (fs);
-				goto copcsr;
-			}
-		      copcsr:
-			if (ieee754_cxtest(IEEE754_INEXACT))
-				rcsr |= FPU_CSR_INE_X | FPU_CSR_INE_S;
-			if (ieee754_cxtest(IEEE754_UNDERFLOW))
-				rcsr |= FPU_CSR_UDF_X | FPU_CSR_UDF_S;
-			if (ieee754_cxtest(IEEE754_OVERFLOW))
-				rcsr |= FPU_CSR_OVF_X | FPU_CSR_OVF_S;
-			if (ieee754_cxtest(IEEE754_ZERO_DIVIDE))
-				rcsr |= FPU_CSR_DIV_X | FPU_CSR_DIV_S;
-			if (ieee754_cxtest(IEEE754_INVALID_OPERATION))
-				rcsr |= FPU_CSR_INV_X | FPU_CSR_INV_S;
-=======
 scopbop:
 			SPFROMREG(fs, MIPSInst_FS(ir));
 			SPFROMREG(ft, MIPSInst_FT(ir));
@@ -2698,53 +1959,25 @@ copcsr:
 				MIPS_FPU_EMU_INC_STATS(ieee754_invalidop);
 				rcsr |= FPU_CSR_INV_X | FPU_CSR_INV_S;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 			/* unary conv ops */
 		case fcvts_op:
 			return SIGILL;	/* not defined */
-<<<<<<< HEAD
-		case fcvtd_op:{
-			ieee754sp fs;
-
-=======
 
 		case fcvtd_op:
 			MIPS_FPU_EMU_INC_STATS(cvt_d_s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SPFROMREG(fs, MIPSInst_FS(ir));
 			rv.d = ieee754dp_fsp(fs);
 			rfmt = d_fmt;
 			goto copcsr;
-<<<<<<< HEAD
-		}
-		case fcvtw_op:{
-			ieee754sp fs;
-
-=======
 
 		case fcvtw_op:
 			MIPS_FPU_EMU_INC_STATS(cvt_w_s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SPFROMREG(fs, MIPSInst_FS(ir));
 			rv.w = ieee754sp_tint(fs);
 			rfmt = w_fmt;
 			goto copcsr;
-<<<<<<< HEAD
-		}
-
-#if __mips >= 2 || defined(__mips64)
-		case fround_op:
-		case ftrunc_op:
-		case fceil_op:
-		case ffloor_op:{
-			unsigned int oldrm = ieee754_csr.rm;
-			ieee754sp fs;
-
-			SPFROMREG(fs, MIPSInst_FS(ir));
-			ieee754_csr.rm = ieee_rm[modeindex(MIPSInst_FUNC(ir))];
-=======
 
 		case fround_op:
 		case ftrunc_op:
@@ -2765,20 +1998,10 @@ copcsr:
 			oldrm = ieee754_csr.rm;
 			SPFROMREG(fs, MIPSInst_FS(ir));
 			ieee754_csr.rm = MIPSInst_FUNC(ir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rv.w = ieee754sp_tint(fs);
 			ieee754_csr.rm = oldrm;
 			rfmt = w_fmt;
 			goto copcsr;
-<<<<<<< HEAD
-		}
-#endif /* __mips >= 2 */
-
-#if defined(__mips64)
-		case fcvtl_op:{
-			ieee754sp fs;
-
-=======
 
 		case fsel_op:
 			if (!cpu_has_mips_r6)
@@ -2797,27 +2020,14 @@ copcsr:
 				return SIGILL;
 
 			MIPS_FPU_EMU_INC_STATS(cvt_l_s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SPFROMREG(fs, MIPSInst_FS(ir));
 			rv.l = ieee754sp_tlong(fs);
 			rfmt = l_fmt;
 			goto copcsr;
-<<<<<<< HEAD
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case froundl_op:
 		case ftruncl_op:
 		case fceill_op:
-<<<<<<< HEAD
-		case ffloorl_op:{
-			unsigned int oldrm = ieee754_csr.rm;
-			ieee754sp fs;
-
-			SPFROMREG(fs, MIPSInst_FS(ir));
-			ieee754_csr.rm = ieee_rm[modeindex(MIPSInst_FUNC(ir))];
-=======
 		case ffloorl_op:
 			if (!cpu_has_mips_3_4_5_64_r2_r6)
 				return SIGILL;
@@ -2834,21 +2044,10 @@ copcsr:
 			oldrm = ieee754_csr.rm;
 			SPFROMREG(fs, MIPSInst_FS(ir));
 			ieee754_csr.rm = MIPSInst_FUNC(ir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rv.l = ieee754sp_tlong(fs);
 			ieee754_csr.rm = oldrm;
 			rfmt = l_fmt;
 			goto copcsr;
-<<<<<<< HEAD
-		}
-#endif /* defined(__mips64) */
-
-		default:
-			if (MIPSInst_FUNC(ir) >= fcmp_op) {
-				unsigned cmpop = MIPSInst_FUNC(ir) - fcmp_op;
-				ieee754sp fs, ft;
-
-=======
 
 		default:
 			if (!NO_R6EMU && MIPSInst_FUNC(ir) >= fcmp_op) {
@@ -2856,7 +2055,6 @@ copcsr:
 				union ieee754sp fs, ft;
 
 				cmpop = MIPSInst_FUNC(ir) - fcmp_op;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				SPFROMREG(fs, MIPSInst_FS(ir));
 				SPFROMREG(ft, MIPSInst_FT(ir));
 				rv.w = ieee754sp_cmp(fs, ft,
@@ -2868,48 +2066,23 @@ copcsr:
 				else
 					goto copcsr;
 
-<<<<<<< HEAD
-			}
-			else {
-				return SIGILL;
-			}
-=======
 			} else
 				return SIGILL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		break;
 	}
 
-<<<<<<< HEAD
-	case d_fmt:{
-		union {
-			ieee754dp(*b) (ieee754dp, ieee754dp);
-			ieee754dp(*u) (ieee754dp);
-=======
 	case d_fmt: {
 		union ieee754dp fd, fs, ft;
 		union {
 			union ieee754dp(*b) (union ieee754dp, union ieee754dp);
 			union ieee754dp(*u) (union ieee754dp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} handler;
 
 		switch (MIPSInst_FUNC(ir)) {
 			/* binary ops */
 		case fadd_op:
-<<<<<<< HEAD
-			handler.b = ieee754dp_add;
-			goto dcopbop;
-		case fsub_op:
-			handler.b = ieee754dp_sub;
-			goto dcopbop;
-		case fmul_op:
-			handler.b = ieee754dp_mul;
-			goto dcopbop;
-		case fdiv_op:
-=======
 			MIPS_FPU_EMU_INC_STATS(add_d);
 			handler.b = ieee754dp_add;
 			goto dcopbop;
@@ -2923,28 +2096,10 @@ copcsr:
 			goto dcopbop;
 		case fdiv_op:
 			MIPS_FPU_EMU_INC_STATS(div_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			handler.b = ieee754dp_div;
 			goto dcopbop;
 
 			/* unary  ops */
-<<<<<<< HEAD
-#if __mips >= 2 || defined(__mips64)
-		case fsqrt_op:
-			handler.u = ieee754dp_sqrt;
-			goto dcopuop;
-#endif
-#if __mips >= 4 && __mips != 32
-		case frsqrt_op:
-			handler.u = fpemu_dp_rsqrt;
-			goto dcopuop;
-		case frecip_op:
-			handler.u = fpemu_dp_recip;
-			goto dcopuop;
-#endif
-#if __mips >= 4
-		case fmovc_op:
-=======
 		case fsqrt_op:
 			if (!cpu_has_mips_2_3_4_5_r)
 				return SIGILL;
@@ -2975,7 +2130,6 @@ copcsr:
 			if (!cpu_has_mips_4_5_r)
 				return SIGILL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cond = fpucondbit[MIPSInst_FT(ir) >> 2];
 			if (((ctx->fcr31 & cond) != 0) !=
 				((MIPSInst_FT(ir) & 1) != 0))
@@ -2983,31 +2137,21 @@ copcsr:
 			DPFROMREG(rv.d, MIPSInst_FS(ir));
 			break;
 		case fmovz_op:
-<<<<<<< HEAD
-=======
 			if (!cpu_has_mips_4_5_r)
 				return SIGILL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (xcp->regs[MIPSInst_FT(ir)] != 0)
 				return 0;
 			DPFROMREG(rv.d, MIPSInst_FS(ir));
 			break;
 		case fmovn_op:
-<<<<<<< HEAD
-=======
 			if (!cpu_has_mips_4_5_r)
 				return SIGILL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (xcp->regs[MIPSInst_FT(ir)] == 0)
 				return 0;
 			DPFROMREG(rv.d, MIPSInst_FS(ir));
 			break;
-<<<<<<< HEAD
-#endif
-		case fabs_op:
-=======
 
 		case fseleqz_op:
 			if (!cpu_has_mips_r6)
@@ -3140,51 +2284,21 @@ copcsr:
 
 		case fabs_op:
 			MIPS_FPU_EMU_INC_STATS(abs_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			handler.u = ieee754dp_abs;
 			goto dcopuop;
 
 		case fneg_op:
-<<<<<<< HEAD
-=======
 			MIPS_FPU_EMU_INC_STATS(neg_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			handler.u = ieee754dp_neg;
 			goto dcopuop;
 
 		case fmov_op:
 			/* an easy one */
-<<<<<<< HEAD
-=======
 			MIPS_FPU_EMU_INC_STATS(mov_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DPFROMREG(rv.d, MIPSInst_FS(ir));
 			goto copcsr;
 
 			/* binary op on handler */
-<<<<<<< HEAD
-		      dcopbop:{
-				ieee754dp fs, ft;
-
-				DPFROMREG(fs, MIPSInst_FS(ir));
-				DPFROMREG(ft, MIPSInst_FT(ir));
-
-				rv.d = (*handler.b) (fs, ft);
-				goto copcsr;
-			}
-		      dcopuop:{
-				ieee754dp fs;
-
-				DPFROMREG(fs, MIPSInst_FS(ir));
-				rv.d = (*handler.u) (fs);
-				goto copcsr;
-			}
-
-			/* unary conv ops */
-		case fcvts_op:{
-			ieee754dp fs;
-
-=======
 dcopbop:
 			DPFROMREG(fs, MIPSInst_FS(ir));
 			DPFROMREG(ft, MIPSInst_FT(ir));
@@ -3201,45 +2315,20 @@ dcopuop:
 		 */
 		case fcvts_op:
 			MIPS_FPU_EMU_INC_STATS(cvt_s_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DPFROMREG(fs, MIPSInst_FS(ir));
 			rv.s = ieee754sp_fdp(fs);
 			rfmt = s_fmt;
 			goto copcsr;
-<<<<<<< HEAD
-		}
-		case fcvtd_op:
-			return SIGILL;	/* not defined */
-
-		case fcvtw_op:{
-			ieee754dp fs;
-
-=======
 
 		case fcvtd_op:
 			return SIGILL;	/* not defined */
 
 		case fcvtw_op:
 			MIPS_FPU_EMU_INC_STATS(cvt_w_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DPFROMREG(fs, MIPSInst_FS(ir));
 			rv.w = ieee754dp_tint(fs);	/* wrong */
 			rfmt = w_fmt;
 			goto copcsr;
-<<<<<<< HEAD
-		}
-
-#if __mips >= 2 || defined(__mips64)
-		case fround_op:
-		case ftrunc_op:
-		case fceil_op:
-		case ffloor_op:{
-			unsigned int oldrm = ieee754_csr.rm;
-			ieee754dp fs;
-
-			DPFROMREG(fs, MIPSInst_FS(ir));
-			ieee754_csr.rm = ieee_rm[modeindex(MIPSInst_FUNC(ir))];
-=======
 
 		case fround_op:
 		case ftrunc_op:
@@ -3260,20 +2349,10 @@ dcopuop:
 			oldrm = ieee754_csr.rm;
 			DPFROMREG(fs, MIPSInst_FS(ir));
 			ieee754_csr.rm = MIPSInst_FUNC(ir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rv.w = ieee754dp_tint(fs);
 			ieee754_csr.rm = oldrm;
 			rfmt = w_fmt;
 			goto copcsr;
-<<<<<<< HEAD
-		}
-#endif
-
-#if defined(__mips64)
-		case fcvtl_op:{
-			ieee754dp fs;
-
-=======
 
 		case fsel_op:
 			if (!cpu_has_mips_r6)
@@ -3292,27 +2371,14 @@ dcopuop:
 				return SIGILL;
 
 			MIPS_FPU_EMU_INC_STATS(cvt_l_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DPFROMREG(fs, MIPSInst_FS(ir));
 			rv.l = ieee754dp_tlong(fs);
 			rfmt = l_fmt;
 			goto copcsr;
-<<<<<<< HEAD
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case froundl_op:
 		case ftruncl_op:
 		case fceill_op:
-<<<<<<< HEAD
-		case ffloorl_op:{
-			unsigned int oldrm = ieee754_csr.rm;
-			ieee754dp fs;
-
-			DPFROMREG(fs, MIPSInst_FS(ir));
-			ieee754_csr.rm = ieee_rm[modeindex(MIPSInst_FUNC(ir))];
-=======
 		case ffloorl_op:
 			if (!cpu_has_mips_3_4_5_64_r2_r6)
 				return SIGILL;
@@ -3329,21 +2395,10 @@ dcopuop:
 			oldrm = ieee754_csr.rm;
 			DPFROMREG(fs, MIPSInst_FS(ir));
 			ieee754_csr.rm = MIPSInst_FUNC(ir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rv.l = ieee754dp_tlong(fs);
 			ieee754_csr.rm = oldrm;
 			rfmt = l_fmt;
 			goto copcsr;
-<<<<<<< HEAD
-		}
-#endif /* __mips >= 3 */
-
-		default:
-			if (MIPSInst_FUNC(ir) >= fcmp_op) {
-				unsigned cmpop = MIPSInst_FUNC(ir) - fcmp_op;
-				ieee754dp fs, ft;
-
-=======
 
 		default:
 			if (!NO_R6EMU && MIPSInst_FUNC(ir) >= fcmp_op) {
@@ -3351,7 +2406,6 @@ dcopuop:
 				union ieee754dp fs, ft;
 
 				cmpop = MIPSInst_FUNC(ir) - fcmp_op;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DPFROMREG(fs, MIPSInst_FS(ir));
 				DPFROMREG(ft, MIPSInst_FT(ir));
 				rv.w = ieee754dp_cmp(fs, ft,
@@ -3374,39 +2428,24 @@ dcopuop:
 		break;
 	}
 
-<<<<<<< HEAD
-	case w_fmt:{
-		ieee754sp fs;
-=======
 	case w_fmt: {
 		union ieee754dp fs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (MIPSInst_FUNC(ir)) {
 		case fcvts_op:
 			/* convert word to single precision real */
-<<<<<<< HEAD
-=======
 			MIPS_FPU_EMU_INC_STATS(cvt_s_w);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SPFROMREG(fs, MIPSInst_FS(ir));
 			rv.s = ieee754sp_fint(fs.bits);
 			rfmt = s_fmt;
 			goto copcsr;
 		case fcvtd_op:
 			/* convert word to double precision real */
-<<<<<<< HEAD
-=======
 			MIPS_FPU_EMU_INC_STATS(cvt_d_w);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SPFROMREG(fs, MIPSInst_FS(ir));
 			rv.d = ieee754dp_fint(fs.bits);
 			rfmt = d_fmt;
 			goto copcsr;
-<<<<<<< HEAD
-		default:
-			return SIGILL;
-=======
 		default: {
 			/* Emulating the new CMP.condn.fmt R6 instruction */
 #define CMPOP_MASK	0x7
@@ -3548,19 +2587,10 @@ dcopuop:
 			}
 			break;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	}
 
-<<<<<<< HEAD
-#if defined(__mips64)
-	case l_fmt:{
-		switch (MIPSInst_FUNC(ir)) {
-		case fcvts_op:
-			/* convert long to single precision real */
-			rv.s = ieee754sp_flong(ctx->fpr[MIPSInst_FS(ir)]);
-=======
 	case l_fmt:
 
 		if (!cpu_has_mips_3_4_5_64_r2_r6)
@@ -3573,22 +2603,10 @@ dcopuop:
 			/* convert long to single precision real */
 			MIPS_FPU_EMU_INC_STATS(cvt_s_l);
 			rv.s = ieee754sp_flong(bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rfmt = s_fmt;
 			goto copcsr;
 		case fcvtd_op:
 			/* convert long to double precision real */
-<<<<<<< HEAD
-			rv.d = ieee754dp_flong(ctx->fpr[MIPSInst_FS(ir)]);
-			rfmt = d_fmt;
-			goto copcsr;
-		default:
-			return SIGILL;
-		}
-		break;
-	}
-#endif
-=======
 			MIPS_FPU_EMU_INC_STATS(cvt_d_l);
 			rv.d = ieee754dp_flong(bits);
 			rfmt = d_fmt;
@@ -3731,7 +2749,6 @@ dcopuop:
 			}
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		return SIGILL;
@@ -3746,11 +2763,7 @@ dcopuop:
 	 */
 	ctx->fcr31 = (ctx->fcr31 & ~FPU_CSR_ALL_X) | rcsr;
 	if ((ctx->fcr31 >> 5) & ctx->fcr31 & FPU_CSR_ALL_E) {
-<<<<<<< HEAD
-		/*printk ("SIGFPE: fpu csr = %08x\n",ctx->fcr31); */
-=======
 		/*printk ("SIGFPE: FPU csr = %08x\n",ctx->fcr31); */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SIGFPE;
 	}
 
@@ -3758,20 +2771,6 @@ dcopuop:
 	 * Now we can safely write the result back to the register file.
 	 */
 	switch (rfmt) {
-<<<<<<< HEAD
-	case -1:{
-#if __mips >= 4
-		cond = fpucondbit[MIPSInst_FD(ir) >> 2];
-#else
-		cond = FPU_CSR_COND;
-#endif
-		if (rv.w)
-			ctx->fcr31 |= cond;
-		else
-			ctx->fcr31 &= ~cond;
-		break;
-	}
-=======
 	case -1:
 
 		if (cpu_has_mips_4_5_r)
@@ -3784,7 +2783,6 @@ dcopuop:
 			ctx->fcr31 &= ~cbit;
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case d_fmt:
 		DPTOREG(rv.d, MIPSInst_FD(ir));
 		break;
@@ -3794,20 +2792,12 @@ dcopuop:
 	case w_fmt:
 		SITOREG(rv.w, MIPSInst_FD(ir));
 		break;
-<<<<<<< HEAD
-#if defined(__mips64)
-	case l_fmt:
-		DITOREG(rv.l, MIPSInst_FD(ir));
-		break;
-#endif
-=======
 	case l_fmt:
 		if (!cpu_has_mips_3_4_5_64_r2_r6)
 			return SIGILL;
 
 		DITOREG(rv.l, MIPSInst_FD(ir));
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return SIGILL;
 	}
@@ -3815,15 +2805,6 @@ dcopuop:
 	return 0;
 }
 
-<<<<<<< HEAD
-int fpu_emulator_cop1Handler(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
-	int has_fpu, void *__user *fault_addr)
-{
-	unsigned long oldepc, prevepc;
-	mips_instruction insn;
-	int sig = 0;
-
-=======
 /*
  * Emulate FPU instructions.
  *
@@ -3869,37 +2850,10 @@ int fpu_emulator_cop1Handler(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 	if (!init_fp_ctx(current))
 		lose_fpu(1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oldepc = xcp->cp0_epc;
 	do {
 		prevepc = xcp->cp0_epc;
 
-<<<<<<< HEAD
-		if (!access_ok(VERIFY_READ, xcp->cp0_epc, sizeof(mips_instruction))) {
-			MIPS_FPU_EMU_INC_STATS(errors);
-			*fault_addr = (mips_instruction __user *)xcp->cp0_epc;
-			return SIGBUS;
-		}
-		if (__get_user(insn, (mips_instruction __user *) xcp->cp0_epc)) {
-			MIPS_FPU_EMU_INC_STATS(errors);
-			*fault_addr = (mips_instruction __user *)xcp->cp0_epc;
-			return SIGSEGV;
-		}
-		if (insn == 0)
-			xcp->cp0_epc += 4;	/* skip nops */
-		else {
-			/*
-			 * The 'ieee754_csr' is an alias of
-			 * ctx->fcr31.  No need to copy ctx->fcr31 to
-			 * ieee754_csr.  But ieee754_csr.rm is ieee
-			 * library modes. (not mips rounding mode)
-			 */
-			/* convert to ieee library modes */
-			ieee754_csr.rm = ieee_rm[ieee754_csr.rm];
-			sig = cop1Emulate(xcp, ctx, fault_addr);
-			/* revert to mips rounding mode */
-			ieee754_csr.rm = mips_rm[ieee754_csr.rm];
-=======
 		if (get_isa16_mode(prevepc) && cpu_has_mmips) {
 			/*
 			 * Get next 2 microMIPS instructions and convert them
@@ -3966,15 +2920,12 @@ int fpu_emulator_cop1Handler(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 			 * No need to copy ctx->fcr31 to ieee754_csr.
 			 */
 			sig = cop1Emulate(xcp, ctx, dec_insn, fault_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (has_fpu)
 			break;
 		if (sig)
 			break;
-<<<<<<< HEAD
-=======
 		/*
 		 * We have to check for the ISA bit explicitly here,
 		 * because `get_isa16_mode' may return 0 if support
@@ -3984,72 +2935,14 @@ int fpu_emulator_cop1Handler(struct pt_regs *xcp, struct mips_fpu_struct *ctx,
 		 */
 		if ((xcp->cp0_epc ^ prevepc) & 0x1)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cond_resched();
 	} while (xcp->cp0_epc > prevepc);
 
 	/* SIGILL indicates a non-fpu instruction */
 	if (sig == SIGILL && xcp->cp0_epc != oldepc)
-<<<<<<< HEAD
-		/* but if epc has advanced, then ignore it */
-=======
 		/* but if EPC has advanced, then ignore it */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sig = 0;
 
 	return sig;
 }
-<<<<<<< HEAD
-
-#ifdef CONFIG_DEBUG_FS
-
-static int fpuemu_stat_get(void *data, u64 *val)
-{
-	int cpu;
-	unsigned long sum = 0;
-	for_each_online_cpu(cpu) {
-		struct mips_fpu_emulator_stats *ps;
-		local_t *pv;
-		ps = &per_cpu(fpuemustats, cpu);
-		pv = (void *)ps + (unsigned long)data;
-		sum += local_read(pv);
-	}
-	*val = sum;
-	return 0;
-}
-DEFINE_SIMPLE_ATTRIBUTE(fops_fpuemu_stat, fpuemu_stat_get, NULL, "%llu\n");
-
-extern struct dentry *mips_debugfs_dir;
-static int __init debugfs_fpuemu(void)
-{
-	struct dentry *d, *dir;
-
-	if (!mips_debugfs_dir)
-		return -ENODEV;
-	dir = debugfs_create_dir("fpuemustats", mips_debugfs_dir);
-	if (!dir)
-		return -ENOMEM;
-
-#define FPU_STAT_CREATE(M)						\
-	do {								\
-		d = debugfs_create_file(#M , S_IRUGO, dir,		\
-			(void *)offsetof(struct mips_fpu_emulator_stats, M), \
-			&fops_fpuemu_stat);				\
-		if (!d)							\
-			return -ENOMEM;					\
-	} while (0)
-
-	FPU_STAT_CREATE(emulated);
-	FPU_STAT_CREATE(loads);
-	FPU_STAT_CREATE(stores);
-	FPU_STAT_CREATE(cp1ops);
-	FPU_STAT_CREATE(cp1xops);
-	FPU_STAT_CREATE(errors);
-
-	return 0;
-}
-__initcall(debugfs_fpuemu);
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

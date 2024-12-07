@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     Copyright (c) 1999  Frodo Looijaard <frodol@dds.nl> and
     Philip Edelbrock <phil@netroedge.com> and
     Mark D. Studebaker <mdsxyz123@yahoo.com>
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 /*
@@ -72,10 +53,6 @@
 #include <linux/ioport.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/acpi.h>
 #include <linux/io.h>
 
@@ -134,22 +111,14 @@
 /* If force_addr is set to anything different from 0, we forcibly enable
    the device at the given address. */
 static u16 force_addr;
-<<<<<<< HEAD
-module_param(force_addr, ushort, 0);
-=======
 module_param_hw(force_addr, ushort, ioport, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(force_addr,
 		 "Initialize the base address of the i2c controller");
 
 static struct pci_driver ali15x3_driver;
 static unsigned short ali15x3_smba;
 
-<<<<<<< HEAD
-static int __devinit ali15x3_setup(struct pci_dev *ALI15X3_dev)
-=======
 static int ali15x3_setup(struct pci_dev *ALI15X3_dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 a;
 	unsigned char temp;
@@ -196,16 +165,6 @@ static int ali15x3_setup(struct pci_dev *ALI15X3_dev)
 	}
 
 	if(force_addr) {
-<<<<<<< HEAD
-		dev_info(&ALI15X3_dev->dev, "forcing ISA address 0x%04X\n",
-			ali15x3_smba);
-		if (PCIBIOS_SUCCESSFUL != pci_write_config_word(ALI15X3_dev,
-								SMBBA,
-								ali15x3_smba))
-			goto error;
-		if (PCIBIOS_SUCCESSFUL != pci_read_config_word(ALI15X3_dev,
-								SMBBA, &a))
-=======
 		int ret;
 
 		dev_info(&ALI15X3_dev->dev, "forcing ISA address 0x%04X\n",
@@ -215,7 +174,6 @@ static int ali15x3_setup(struct pci_dev *ALI15X3_dev)
 			goto error;
 		ret = pci_read_config_word(ALI15X3_dev, SMBBA, &a);
 		if (ret != PCIBIOS_SUCCESSFUL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error;
 		if ((a & ~(ALI15X3_SMB_IOSIZE - 1)) != ali15x3_smba) {
 			/* make sure it works */
@@ -503,30 +461,18 @@ static const struct i2c_algorithm smbus_algorithm = {
 
 static struct i2c_adapter ali15x3_adapter = {
 	.owner		= THIS_MODULE,
-<<<<<<< HEAD
-	.class          = I2C_CLASS_HWMON | I2C_CLASS_SPD,
-	.algo		= &smbus_algorithm,
-};
-
-static DEFINE_PCI_DEVICE_TABLE(ali15x3_ids) = {
-=======
 	.class          = I2C_CLASS_HWMON,
 	.algo		= &smbus_algorithm,
 };
 
 static const struct pci_device_id ali15x3_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_AL, PCI_DEVICE_ID_AL_M7101) },
 	{ 0, }
 };
 
 MODULE_DEVICE_TABLE (pci, ali15x3_ids);
 
-<<<<<<< HEAD
-static int __devinit ali15x3_probe(struct pci_dev *dev, const struct pci_device_id *id)
-=======
 static int ali15x3_probe(struct pci_dev *dev, const struct pci_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ali15x3_setup(dev)) {
 		dev_err(&dev->dev,
@@ -542,11 +488,7 @@ static int ali15x3_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	return i2c_add_adapter(&ali15x3_adapter);
 }
 
-<<<<<<< HEAD
-static void __devexit ali15x3_remove(struct pci_dev *dev)
-=======
 static void ali15x3_remove(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	i2c_del_adapter(&ali15x3_adapter);
 	release_region(ali15x3_smba, ALI15X3_SMB_IOSIZE);
@@ -556,29 +498,6 @@ static struct pci_driver ali15x3_driver = {
 	.name		= "ali15x3_smbus",
 	.id_table	= ali15x3_ids,
 	.probe		= ali15x3_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(ali15x3_remove),
-};
-
-static int __init i2c_ali15x3_init(void)
-{
-	return pci_register_driver(&ali15x3_driver);
-}
-
-static void __exit i2c_ali15x3_exit(void)
-{
-	pci_unregister_driver(&ali15x3_driver);
-}
-
-MODULE_AUTHOR ("Frodo Looijaard <frodol@dds.nl>, "
-		"Philip Edelbrock <phil@netroedge.com>, "
-		"and Mark D. Studebaker <mdsxyz123@yahoo.com>");
-MODULE_DESCRIPTION("ALI15X3 SMBus driver");
-MODULE_LICENSE("GPL");
-
-module_init(i2c_ali15x3_init);
-module_exit(i2c_ali15x3_exit);
-=======
 	.remove		= ali15x3_remove,
 };
 
@@ -589,4 +508,3 @@ MODULE_AUTHOR("Philip Edelbrock <phil@netroedge.com>");
 MODULE_AUTHOR("Mark D. Studebaker <mdsxyz123@yahoo.com>");
 MODULE_DESCRIPTION("ALI15X3 SMBus driver");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

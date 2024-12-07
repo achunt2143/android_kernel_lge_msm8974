@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Architecture specific (i386/x86_64) functions for kexec based crash dumps.
  *
  * Created by: Hariprasad Nellitheertha (hari@in.ibm.com)
  *
  * Copyright (C) IBM Corporation, 2004. All rights reserved.
-<<<<<<< HEAD
- *
- */
-
-#include <linux/init.h>
-=======
  * Copyright (C) Red Hat Inc., 2014. All rights reserved.
  * Authors:
  *      Vivek Goyal <vgoyal@redhat.com>
@@ -22,7 +13,6 @@
 
 #define pr_fmt(fmt)	"kexec: " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/smp.h>
@@ -31,35 +21,23 @@
 #include <linux/delay.h>
 #include <linux/elf.h>
 #include <linux/elfcore.h>
-<<<<<<< HEAD
-
-=======
 #include <linux/export.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
 #include <linux/memblock.h>
 
 #include <asm/bootparam.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h>
 #include <asm/hardirq.h>
 #include <asm/nmi.h>
 #include <asm/hw_irq.h>
 #include <asm/apic.h>
-<<<<<<< HEAD
-=======
 #include <asm/e820/types.h>
 #include <asm/io_apic.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/hpet.h>
 #include <linux/kdebug.h>
 #include <asm/cpu.h>
 #include <asm/reboot.h>
-<<<<<<< HEAD
-#include <asm/virtext.h>
-
-int in_crash_kexec;
-=======
 #include <asm/intel_pt.h>
 #include <asm/crash.h>
 #include <asm/cmdline.h>
@@ -71,34 +49,11 @@ struct crash_memmap_data {
 	/* Type of memory */
 	unsigned int type;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_SMP) && defined(CONFIG_X86_LOCAL_APIC)
 
 static void kdump_nmi_callback(int cpu, struct pt_regs *regs)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_X86_32
-	struct pt_regs fixed_regs;
-#endif
-
-#ifdef CONFIG_X86_32
-	if (!user_mode_vm(regs)) {
-		crash_fixup_ss_esp(&fixed_regs, regs);
-		regs = &fixed_regs;
-	}
-#endif
-	crash_save_cpu(regs, cpu);
-
-	/* Disable VMX or SVM if needed.
-	 *
-	 * We need to disable virtualization on all CPUs.
-	 * Having VMX or SVM enabled on any CPU may break rebooting
-	 * after the kdump kernel has finished its task.
-	 */
-	cpu_emergency_vmxoff();
-	cpu_emergency_svm_disable();
-=======
 	crash_save_cpu(regs, cpu);
 
 	/*
@@ -107,28 +62,17 @@ static void kdump_nmi_callback(int cpu, struct pt_regs *regs)
 	cpu_emergency_stop_pt();
 
 	kdump_sev_callback();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	disable_local_APIC();
 }
 
-<<<<<<< HEAD
-static void kdump_nmi_shootdown_cpus(void)
-{
-	in_crash_kexec = 1;
-=======
 void kdump_nmi_shootdown_cpus(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nmi_shootdown_cpus(kdump_nmi_callback);
 
 	disable_local_APIC();
 }
 
-<<<<<<< HEAD
-#else
-static void kdump_nmi_shootdown_cpus(void)
-=======
 /* Override the weak function in kernel/panic.c */
 void crash_smp_send_stop(void)
 {
@@ -147,7 +91,6 @@ void crash_smp_send_stop(void)
 
 #else
 void crash_smp_send_stop(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* There are no cpus to shootdown */
 }
@@ -166,21 +109,6 @@ void native_machine_crash_shutdown(struct pt_regs *regs)
 	/* The kernel is broken so disable interrupts */
 	local_irq_disable();
 
-<<<<<<< HEAD
-	kdump_nmi_shootdown_cpus();
-
-	/* Booting kdump kernel with VMX or SVM enabled won't work,
-	 * because (among other limitations) we can't disable paging
-	 * with the virt flags.
-	 */
-	cpu_emergency_vmxoff();
-	cpu_emergency_svm_disable();
-
-#if defined(CONFIG_X86_IO_APIC)
-	disable_IO_APIC();
-#endif
-	lapic_shutdown();
-=======
 	crash_smp_send_stop();
 
 	cpu_emergency_disable_virtualization();
@@ -197,14 +125,11 @@ void native_machine_crash_shutdown(struct pt_regs *regs)
 #endif
 	lapic_shutdown();
 	restore_boot_irq_mode();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_HPET_TIMER
 	hpet_disable();
 #endif
 	crash_save_cpu(regs, safe_smp_processor_id());
 }
-<<<<<<< HEAD
-=======
 
 #if defined(CONFIG_KEXEC_FILE) || defined(CONFIG_CRASH_HOTPLUG)
 static int get_nr_ram_ranges_callback(struct resource *res, void *arg)
@@ -571,4 +496,3 @@ out:
 	vfree(elfbuf);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-/// Use kstrdup rather than duplicating its implementation
-///
-// Confidence: High
-// Copyright: (C) 2010-2012 Nicolas Palix.  GPLv2.
-// Copyright: (C) 2010-2012 Julia Lawall, INRIA/LIP6.  GPLv2.
-// Copyright: (C) 2010-2012 Gilles Muller, INRIA/LiP6.  GPLv2.
-// URL: http://coccinelle.lip6.fr/
-// Comments:
-// Options: -no_includes -include_headers
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /// Use kstrdup rather than duplicating its implementation
 ///
@@ -19,7 +8,6 @@
 // URL: https://coccinelle.gitlabpages.inria.fr/website
 // Comments:
 // Options: --no-includes --include-headers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 virtual patch
 virtual context
@@ -78,11 +66,7 @@ position p1,p2;
 
 *   x = strlen(from) + 1;
     ... when != \( x = E1 \| from = E1 \)
-<<<<<<< HEAD
-*   to = \(kmalloc@p1\|kzalloc@p2\)(x,flag);
-=======
 *   to = \(kmalloc@p1\|kzalloc@p1\)(x,flag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     ... when != \(x = E2 \| from = E2 \| to = E2 \)
     if (to==NULL || ...) S
     ... when != \(x = E3 \| from = E3 \| to = E3 \)
@@ -93,11 +77,7 @@ p1 << r1.p1;
 p2 << r1.p2;
 @@
 
-<<<<<<< HEAD
-cocci.print_main("WARNING opportunity for kstrdep",p1)
-=======
 cocci.print_main("WARNING opportunity for kstrdup",p1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cocci.print_secs("strcpy",p2)
 
 @script:python depends on org@
@@ -105,11 +85,7 @@ p1 << r2.p1;
 p2 << r2.p2;
 @@
 
-<<<<<<< HEAD
-cocci.print_main("WARNING opportunity for kstrdep",p1)
-=======
 cocci.print_main("WARNING opportunity for kstrdup",p1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cocci.print_secs("memcpy",p2)
 
 @script:python depends on report@
@@ -117,11 +93,7 @@ p1 << r1.p1;
 p2 << r1.p2;
 @@
 
-<<<<<<< HEAD
-msg = "WARNING opportunity for kstrdep (strcpy on line %s)" % (p2[0].line)
-=======
 msg = "WARNING opportunity for kstrdup (strcpy on line %s)" % (p2[0].line)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 coccilib.report.print_report(p1[0], msg)
 
 @script:python depends on report@
@@ -129,9 +101,5 @@ p1 << r2.p1;
 p2 << r2.p2;
 @@
 
-<<<<<<< HEAD
-msg = "WARNING opportunity for kstrdep (memcpy on line %s)" % (p2[0].line)
-=======
 msg = "WARNING opportunity for kstrdup (memcpy on line %s)" % (p2[0].line)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 coccilib.report.print_report(p1[0], msg)

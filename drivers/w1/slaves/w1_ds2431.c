@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * w1_ds2431.c - w1 family 2d (DS2431) driver
  *
  * Copyright (c) 2008 Bernhard Weirich <bernhard.weirich@riedel.net>
  *
  * Heavily inspired by w1_DS2433 driver from Ben Gardner <bgardner@wabtec.com>
-<<<<<<< HEAD
- *
- * This source code is licensed under the GNU General Public License,
- * Version 2. See the file COPYING for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -23,15 +14,9 @@
 #include <linux/types.h>
 #include <linux/delay.h>
 
-<<<<<<< HEAD
-#include "../w1.h"
-#include "../w1_int.h"
-#include "../w1_family.h"
-=======
 #include <linux/w1.h>
 
 #define W1_EEPROM_DS2431	0x2D
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define W1_F2D_EEPROM_SIZE		128
 #define W1_F2D_PAGE_COUNT		4
@@ -109,15 +94,9 @@ static int w1_f2d_readblock(struct w1_slave *sl, int off, int count, char *buf)
 	return -1;
 }
 
-<<<<<<< HEAD
-static ssize_t w1_f2d_read_bin(struct file *filp, struct kobject *kobj,
-			       struct bin_attribute *bin_attr,
-			       char *buf, loff_t off, size_t count)
-=======
 static ssize_t eeprom_read(struct file *filp, struct kobject *kobj,
 			   struct bin_attribute *bin_attr, char *buf,
 			   loff_t off, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	int todo = count;
@@ -126,11 +105,7 @@ static ssize_t eeprom_read(struct file *filp, struct kobject *kobj,
 	if (count == 0)
 		return 0;
 
-<<<<<<< HEAD
-	mutex_lock(&sl->master->mutex);
-=======
 	mutex_lock(&sl->master->bus_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* read directly from the EEPROM in chunks of W1_F2D_READ_MAXLEN */
 	while (todo > 0) {
@@ -149,11 +124,7 @@ static ssize_t eeprom_read(struct file *filp, struct kobject *kobj,
 		off += W1_F2D_READ_MAXLEN;
 	}
 
-<<<<<<< HEAD
-	mutex_unlock(&sl->master->mutex);
-=======
 	mutex_unlock(&sl->master->bus_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return count;
 }
@@ -229,15 +200,9 @@ retry:
 	return 0;
 }
 
-<<<<<<< HEAD
-static ssize_t w1_f2d_write_bin(struct file *filp, struct kobject *kobj,
-				struct bin_attribute *bin_attr,
-				char *buf, loff_t off, size_t count)
-=======
 static ssize_t eeprom_write(struct file *filp, struct kobject *kobj,
 			    struct bin_attribute *bin_attr, char *buf,
 			    loff_t off, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	int addr, len;
@@ -247,11 +212,7 @@ static ssize_t eeprom_write(struct file *filp, struct kobject *kobj,
 	if (count == 0)
 		return 0;
 
-<<<<<<< HEAD
-	mutex_lock(&sl->master->mutex);
-=======
 	mutex_lock(&sl->master->bus_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Can only write data in blocks of the size of the scratchpad */
 	addr = off;
@@ -296,40 +257,11 @@ static ssize_t eeprom_write(struct file *filp, struct kobject *kobj,
 	}
 
 out_up:
-<<<<<<< HEAD
-	mutex_unlock(&sl->master->mutex);
-=======
 	mutex_unlock(&sl->master->bus_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return count;
 }
 
-<<<<<<< HEAD
-static struct bin_attribute w1_f2d_bin_attr = {
-	.attr = {
-		.name = "eeprom",
-		.mode = S_IRUGO | S_IWUSR,
-	},
-	.size = W1_F2D_EEPROM_SIZE,
-	.read = w1_f2d_read_bin,
-	.write = w1_f2d_write_bin,
-};
-
-static int w1_f2d_add_slave(struct w1_slave *sl)
-{
-	return sysfs_create_bin_file(&sl->dev.kobj, &w1_f2d_bin_attr);
-}
-
-static void w1_f2d_remove_slave(struct w1_slave *sl)
-{
-	sysfs_remove_bin_file(&sl->dev.kobj, &w1_f2d_bin_attr);
-}
-
-static struct w1_family_ops w1_f2d_fops = {
-	.add_slave      = w1_f2d_add_slave,
-	.remove_slave   = w1_f2d_remove_slave,
-=======
 static BIN_ATTR_RW(eeprom, W1_F2D_EEPROM_SIZE);
 
 static struct bin_attribute *w1_f2d_bin_attrs[] = {
@@ -348,36 +280,15 @@ static const struct attribute_group *w1_f2d_groups[] = {
 
 static const struct w1_family_ops w1_f2d_fops = {
 	.groups		= w1_f2d_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct w1_family w1_family_2d = {
 	.fid = W1_EEPROM_DS2431,
 	.fops = &w1_f2d_fops,
 };
-<<<<<<< HEAD
-
-static int __init w1_f2d_init(void)
-{
-	return w1_register_family(&w1_family_2d);
-}
-
-static void __exit w1_f2d_fini(void)
-{
-	w1_unregister_family(&w1_family_2d);
-}
-
-module_init(w1_f2d_init);
-module_exit(w1_f2d_fini);
-
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Bernhard Weirich <bernhard.weirich@riedel.net>");
-MODULE_DESCRIPTION("w1 family 2d driver for DS2431, 1kb EEPROM");
-=======
 module_w1_family(w1_family_2d);
 
 MODULE_AUTHOR("Bernhard Weirich <bernhard.weirich@riedel.net>");
 MODULE_DESCRIPTION("w1 family 2d driver for DS2431, 1kb EEPROM");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("w1-family-" __stringify(W1_EEPROM_DS2431));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

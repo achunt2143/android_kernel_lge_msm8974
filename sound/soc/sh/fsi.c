@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-/*
- * Fifo-attached Serial Interface (FSI) support for SH7724
- *
- * Copyright (C) 2009 Renesas Solutions Corp.
- * Kuninori Morimoto <morimoto.kuninori@renesas.com>
- *
- * Based on ssi.c
- * Copyright (c) 2007 Manuel Lauss <mano@roarinelk.homelinux.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0
 //
 // Fifo-attached Serial Interface (FSI) support for SH7724
@@ -22,26 +7,19 @@
 //
 // Based on ssi.c
 // Copyright (c) 2007 Manuel Lauss <mano@roarinelk.homelinux.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
 #include <linux/pm_runtime.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/scatterlist.h>
 #include <linux/sh_dma.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/workqueue.h>
 #include <sound/soc.h>
-<<<<<<< HEAD
-=======
 #include <sound/pcm_params.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/sh_fsi.h>
 
 /* PortA/PortB register */
@@ -150,9 +128,6 @@
 
 #define FSI_FMTS (SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S16_LE)
 
-<<<<<<< HEAD
-typedef int (*set_rate_func)(struct device *dev, int rate, int enable);
-=======
 /*
  * bus options
  *
@@ -171,7 +146,6 @@ typedef int (*set_rate_func)(struct device *dev, int rate, int enable);
 
 #define BUSOP_SET(s, a)	((a) << SHIFT_ ## s ## DATA)
 #define BUSOP_GET(s, a)	(((a) >> SHIFT_ ## s ## DATA) & 0xF)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * FSI driver use below type name for variable
@@ -211,8 +185,6 @@ typedef int (*set_rate_func)(struct device *dev, int rate, int enable);
  */
 
 /*
-<<<<<<< HEAD
-=======
  *	FSI clock
  *
  * FSIxCLK [CPG] (ick) ------->	|
@@ -221,7 +193,6 @@ typedef int (*set_rate_func)(struct device *dev, int rate, int enable);
  */
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		struct
  */
 
@@ -242,16 +213,12 @@ struct fsi_stream {
 	int oerr_num;
 
 	/*
-<<<<<<< HEAD
-	 * thse are initialized by fsi_handler_init()
-=======
 	 * bus options
 	 */
 	u32 bus_option;
 
 	/*
 	 * these are initialized by fsi_handler_init()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	struct fsi_stream_handler *handler;
 	struct fsi_priv		*priv;
@@ -260,11 +227,6 @@ struct fsi_stream {
 	 * these are for DMAEngine
 	 */
 	struct dma_chan		*chan;
-<<<<<<< HEAD
-	struct sh_dmae_slave	slave; /* see fsi_handler_init() */
-	struct work_struct	work;
-	dma_addr_t		dma;
-=======
 	int			dma_id;
 };
 
@@ -279,32 +241,16 @@ struct fsi_clk {
 
 	unsigned long rate;
 	unsigned int count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct fsi_priv {
 	void __iomem *base;
-<<<<<<< HEAD
-	struct fsi_master *master;
-	struct sh_fsi_port_info *info;
-=======
 	phys_addr_t phys;
 	struct fsi_master *master;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct fsi_stream playback;
 	struct fsi_stream capture;
 
-<<<<<<< HEAD
-	u32 do_fmt;
-	u32 di_fmt;
-
-	int chan_num:16;
-	int clk_master:1;
-	int spdif:1;
-
-	long rate;
-=======
 	struct fsi_clk clock;
 
 	u32 fmt;
@@ -316,23 +262,15 @@ struct fsi_priv {
 	unsigned int enable_stream:1;
 	unsigned int bit_clk_inv:1;
 	unsigned int lr_clk_inv:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct fsi_stream_handler {
 	int (*init)(struct fsi_priv *fsi, struct fsi_stream *io);
 	int (*quit)(struct fsi_priv *fsi, struct fsi_stream *io);
-<<<<<<< HEAD
-	int (*probe)(struct fsi_priv *fsi, struct fsi_stream *io);
-	int (*transfer)(struct fsi_priv *fsi, struct fsi_stream *io);
-	int (*remove)(struct fsi_priv *fsi, struct fsi_stream *io);
-	void (*start_stop)(struct fsi_priv *fsi, struct fsi_stream *io,
-=======
 	int (*probe)(struct fsi_priv *fsi, struct fsi_stream *io, struct device *dev);
 	int (*transfer)(struct fsi_priv *fsi, struct fsi_stream *io);
 	int (*remove)(struct fsi_priv *fsi, struct fsi_stream *io);
 	int (*start_stop)(struct fsi_priv *fsi, struct fsi_stream *io,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   int enable);
 };
 #define fsi_stream_handler_call(io, func, args...)	\
@@ -352,16 +290,6 @@ struct fsi_core {
 
 struct fsi_master {
 	void __iomem *base;
-<<<<<<< HEAD
-	int irq;
-	struct fsi_priv fsia;
-	struct fsi_priv fsib;
-	struct fsi_core *core;
-	spinlock_t lock;
-};
-
-static int fsi_stream_is_play(struct fsi_priv *fsi, struct fsi_stream *io);
-=======
 	struct fsi_priv fsia;
 	struct fsi_priv fsib;
 	const struct fsi_core *core;
@@ -374,7 +302,6 @@ static inline int fsi_stream_is_play(struct fsi_priv *fsi,
 	return &fsi->playback == io;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *		basic read write function
@@ -441,13 +368,10 @@ static void _fsi_master_mask_set(struct fsi_master *master,
 /*
  *		basic function
  */
-<<<<<<< HEAD
-=======
 static int fsi_version(struct fsi_master *master)
 {
 	return master->core->ver;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct fsi_master *fsi_get_master(struct fsi_priv *fsi)
 {
@@ -469,14 +393,11 @@ static int fsi_is_spdif(struct fsi_priv *fsi)
 	return fsi->spdif;
 }
 
-<<<<<<< HEAD
-=======
 static int fsi_is_enable_stream(struct fsi_priv *fsi)
 {
 	return fsi->enable_stream;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int fsi_is_play(struct snd_pcm_substream *substream)
 {
 	return substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
@@ -484,15 +405,9 @@ static int fsi_is_play(struct snd_pcm_substream *substream)
 
 static struct snd_soc_dai *fsi_get_dai(struct snd_pcm_substream *substream)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-
-	return  rtd->cpu_dai;
-=======
 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
 
 	return  snd_soc_rtd_to_cpu(rtd, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct fsi_priv *fsi_get_priv_frm_dai(struct snd_soc_dai *dai)
@@ -510,25 +425,6 @@ static struct fsi_priv *fsi_get_priv(struct snd_pcm_substream *substream)
 	return fsi_get_priv_frm_dai(fsi_get_dai(substream));
 }
 
-<<<<<<< HEAD
-static set_rate_func fsi_get_info_set_rate(struct fsi_priv *fsi)
-{
-	if (!fsi->info)
-		return NULL;
-
-	return fsi->info->set_rate;
-}
-
-static u32 fsi_get_info_flags(struct fsi_priv *fsi)
-{
-	if (!fsi->info)
-		return 0;
-
-	return fsi->info->flags;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 fsi_get_port_shift(struct fsi_priv *fsi, struct fsi_stream *io)
 {
 	int is_play = fsi_stream_is_play(fsi, io);
@@ -593,15 +489,6 @@ static void fsi_count_fifo_err(struct fsi_priv *fsi)
 /*
  *		fsi_stream_xx() function
  */
-<<<<<<< HEAD
-static inline int fsi_stream_is_play(struct fsi_priv *fsi,
-				     struct fsi_stream *io)
-{
-	return &fsi->playback == io;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct fsi_stream *fsi_stream_get(struct fsi_priv *fsi,
 					struct snd_pcm_substream *substream)
 {
@@ -642,10 +529,7 @@ static void fsi_stream_init(struct fsi_priv *fsi,
 	io->period_samples	= fsi_frame2sample(fsi, runtime->period_size);
 	io->period_pos		= 0;
 	io->sample_width	= samples_to_bytes(runtime, 1);
-<<<<<<< HEAD
-=======
 	io->bus_option		= 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	io->oerr_num	= -1; /* ignore 1st err */
 	io->uerr_num	= -1; /* ignore 1st err */
 	fsi_stream_handler_call(io, init, fsi, io);
@@ -673,10 +557,7 @@ static void fsi_stream_quit(struct fsi_priv *fsi, struct fsi_stream *io)
 	io->period_samples	= 0;
 	io->period_pos		= 0;
 	io->sample_width	= 0;
-<<<<<<< HEAD
-=======
 	io->bus_option		= 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	io->oerr_num	= 0;
 	io->uerr_num	= 0;
 	spin_unlock_irqrestore(&master->lock, flags);
@@ -697,27 +578,16 @@ static int fsi_stream_transfer(struct fsi_stream *io)
 #define fsi_stream_stop(fsi, io)\
 	fsi_stream_handler_call(io, start_stop, fsi, io, 0)
 
-<<<<<<< HEAD
-static int fsi_stream_probe(struct fsi_priv *fsi)
-=======
 static int fsi_stream_probe(struct fsi_priv *fsi, struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fsi_stream *io;
 	int ret1, ret2;
 
 	io = &fsi->playback;
-<<<<<<< HEAD
-	ret1 = fsi_stream_handler_call(io, probe, fsi, io);
-
-	io = &fsi->capture;
-	ret2 = fsi_stream_handler_call(io, probe, fsi, io);
-=======
 	ret1 = fsi_stream_handler_call(io, probe, fsi, io, dev);
 
 	io = &fsi->capture;
 	ret2 = fsi_stream_handler_call(io, probe, fsi, io, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret1 < 0)
 		return ret1;
@@ -747,8 +617,6 @@ static int fsi_stream_remove(struct fsi_priv *fsi)
 }
 
 /*
-<<<<<<< HEAD
-=======
  *	format/bus/dma setting
  */
 static void fsi_format_bus_setup(struct fsi_priv *fsi, struct fsi_stream *io,
@@ -796,7 +664,6 @@ static void fsi_format_bus_setup(struct fsi_priv *fsi, struct fsi_stream *io,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		irq function
  */
 
@@ -845,14 +712,6 @@ static void fsi_spdif_clk_ctrl(struct fsi_priv *fsi, int enable)
 	struct fsi_master *master = fsi_get_master(fsi);
 	u32 mask, val;
 
-<<<<<<< HEAD
-	if (master->core->ver < 2) {
-		pr_err("fsi: register access err (%s)\n", __func__);
-		return;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mask = BP | SE;
 	val = enable ? mask : 0;
 
@@ -864,84 +723,6 @@ static void fsi_spdif_clk_ctrl(struct fsi_priv *fsi, int enable)
 /*
  *		clock function
  */
-<<<<<<< HEAD
-static int fsi_set_master_clk(struct device *dev, struct fsi_priv *fsi,
-			      long rate, int enable)
-{
-	struct fsi_master *master = fsi_get_master(fsi);
-	set_rate_func set_rate = fsi_get_info_set_rate(fsi);
-	int fsi_ver = master->core->ver;
-	int ret;
-
-	if (!set_rate)
-		return 0;
-
-	ret = set_rate(dev, rate, enable);
-	if (ret < 0) /* error */
-		return ret;
-
-	if (!enable)
-		return 0;
-
-	if (ret > 0) {
-		u32 data = 0;
-
-		switch (ret & SH_FSI_ACKMD_MASK) {
-		default:
-			/* FALL THROUGH */
-		case SH_FSI_ACKMD_512:
-			data |= (0x0 << 12);
-			break;
-		case SH_FSI_ACKMD_256:
-			data |= (0x1 << 12);
-			break;
-		case SH_FSI_ACKMD_128:
-			data |= (0x2 << 12);
-			break;
-		case SH_FSI_ACKMD_64:
-			data |= (0x3 << 12);
-			break;
-		case SH_FSI_ACKMD_32:
-			if (fsi_ver < 2)
-				dev_err(dev, "unsupported ACKMD\n");
-			else
-				data |= (0x4 << 12);
-			break;
-		}
-
-		switch (ret & SH_FSI_BPFMD_MASK) {
-		default:
-			/* FALL THROUGH */
-		case SH_FSI_BPFMD_32:
-			data |= (0x0 << 8);
-			break;
-		case SH_FSI_BPFMD_64:
-			data |= (0x1 << 8);
-			break;
-		case SH_FSI_BPFMD_128:
-			data |= (0x2 << 8);
-			break;
-		case SH_FSI_BPFMD_256:
-			data |= (0x3 << 8);
-			break;
-		case SH_FSI_BPFMD_512:
-			data |= (0x4 << 8);
-			break;
-		case SH_FSI_BPFMD_16:
-			if (fsi_ver < 2)
-				dev_err(dev, "unsupported ACKMD\n");
-			else
-				data |= (0x7 << 8);
-			break;
-		}
-
-		fsi_reg_mask_set(fsi, CKG1, (ACKMD_MASK | BPFMD_MASK) , data);
-		udelay(10);
-		ret = 0;
-	}
-
-	return ret;
-=======
 static int fsi_clk_init(struct device *dev,
 			struct fsi_priv *fsi,
 			int xck,
@@ -1277,7 +1058,6 @@ static void fsi_pointer_update(struct fsi_stream *io, int size)
 
 		snd_pcm_period_elapsed(substream);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1285,13 +1065,6 @@ static void fsi_pointer_update(struct fsi_stream *io, int size)
  */
 static void fsi_pio_push16(struct fsi_priv *fsi, u8 *_buf, int samples)
 {
-<<<<<<< HEAD
-	u16 *buf = (u16 *)_buf;
-	int i;
-
-	for (i = 0; i < samples; i++)
-		fsi_reg_write(fsi, DODT, ((u32)*(buf + i) << 8));
-=======
 	int i;
 
 	if (fsi_is_enable_stream(fsi)) {
@@ -1311,7 +1084,6 @@ static void fsi_pio_push16(struct fsi_priv *fsi, u8 *_buf, int samples)
 		for (i = 0; i < samples; i++)
 			fsi_reg_write(fsi, DODT, ((u32)*(buf + i) << 8));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fsi_pio_pop16(struct fsi_priv *fsi, u8 *_buf, int samples)
@@ -1354,38 +1126,11 @@ static int fsi_pio_transfer(struct fsi_priv *fsi, struct fsi_stream *io,
 		void (*run32)(struct fsi_priv *fsi, u8 *buf, int samples),
 		int samples)
 {
-<<<<<<< HEAD
-	struct snd_pcm_runtime *runtime;
-	struct snd_pcm_substream *substream;
 	u8 *buf;
-	int over_period;
-=======
-	u8 *buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!fsi_stream_is_working(fsi, io))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	over_period	= 0;
-	substream	= io->substream;
-	runtime		= substream->runtime;
-
-	/* FSI FIFO has limit.
-	 * So, this driver can not send periods data at a time
-	 */
-	if (io->buff_sample_pos >=
-	    io->period_samples * (io->period_pos + 1)) {
-
-		over_period = 1;
-		io->period_pos = (io->period_pos + 1) % runtime->periods;
-
-		if (0 == io->period_pos)
-			io->buff_sample_pos = 0;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf = fsi_pio_get_area(fsi, io);
 
 	switch (io->sample_width) {
@@ -1399,15 +1144,7 @@ static int fsi_pio_transfer(struct fsi_priv *fsi, struct fsi_stream *io,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	/* update buff_sample_pos */
-	io->buff_sample_pos += samples;
-
-	if (over_period)
-		snd_pcm_period_elapsed(substream);
-=======
 	fsi_pointer_update(io, samples);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1447,11 +1184,7 @@ static int fsi_pio_push(struct fsi_priv *fsi, struct fsi_stream *io)
 				  samples);
 }
 
-<<<<<<< HEAD
-static void fsi_pio_start_stop(struct fsi_priv *fsi, struct fsi_stream *io,
-=======
 static int fsi_pio_start_stop(struct fsi_priv *fsi, struct fsi_stream *io,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       int enable)
 {
 	struct fsi_master *master = fsi_get_master(fsi);
@@ -1464,11 +1197,6 @@ static int fsi_pio_start_stop(struct fsi_priv *fsi, struct fsi_stream *io,
 
 	if (fsi_is_clk_master(fsi))
 		fsi_master_mask_set(master, CLK_RST, clk, (enable) ? clk : 0);
-<<<<<<< HEAD
-}
-
-static struct fsi_stream_handler fsi_pio_push_handler = {
-=======
 
 	return 0;
 }
@@ -1503,16 +1231,12 @@ static int fsi_pio_pop_init(struct fsi_priv *fsi, struct fsi_stream *io)
 
 static struct fsi_stream_handler fsi_pio_push_handler = {
 	.init		= fsi_pio_push_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.transfer	= fsi_pio_push,
 	.start_stop	= fsi_pio_start_stop,
 };
 
 static struct fsi_stream_handler fsi_pio_pop_handler = {
-<<<<<<< HEAD
-=======
 	.init		= fsi_pio_pop_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.transfer	= fsi_pio_pop,
 	.start_stop	= fsi_pio_start_stop,
 };
@@ -1549,26 +1273,6 @@ static irqreturn_t fsi_interrupt(int irq, void *data)
  */
 static int fsi_dma_init(struct fsi_priv *fsi, struct fsi_stream *io)
 {
-<<<<<<< HEAD
-	struct snd_pcm_runtime *runtime = io->substream->runtime;
-	struct snd_soc_dai *dai = fsi_get_dai(io->substream);
-	enum dma_data_direction dir = fsi_stream_is_play(fsi, io) ?
-				DMA_TO_DEVICE : DMA_FROM_DEVICE;
-
-	io->dma = dma_map_single(dai->dev, runtime->dma_area,
-				 snd_pcm_lib_buffer_bytes(io->substream), dir);
-	return 0;
-}
-
-static int fsi_dma_quit(struct fsi_priv *fsi, struct fsi_stream *io)
-{
-	struct snd_soc_dai *dai = fsi_get_dai(io->substream);
-	enum dma_data_direction dir = fsi_stream_is_play(fsi, io) ?
-		DMA_TO_DEVICE : DMA_FROM_DEVICE;
-
-	dma_unmap_single(dai->dev, io->dma,
-			 snd_pcm_lib_buffer_bytes(io->substream), dir);
-=======
 	/*
 	 * 24bit data : 24bit bus / package in back
 	 * 16bit data : 16bit bus / stream mode
@@ -1576,7 +1280,6 @@ static int fsi_dma_quit(struct fsi_priv *fsi, struct fsi_stream *io)
 	io->bus_option = BUSOP_SET(24, PACKAGE_24BITBUS_BACK) |
 			 BUSOP_SET(16, PACKAGE_16BITBUS_STREAM);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1584,75 +1287,6 @@ static void fsi_dma_complete(void *data)
 {
 	struct fsi_stream *io = (struct fsi_stream *)data;
 	struct fsi_priv *fsi = fsi_stream_to_priv(io);
-<<<<<<< HEAD
-	struct snd_pcm_runtime *runtime = io->substream->runtime;
-	struct snd_soc_dai *dai = fsi_get_dai(io->substream);
-	enum dma_data_direction dir = fsi_stream_is_play(fsi, io) ?
-		DMA_TO_DEVICE : DMA_FROM_DEVICE;
-
-	dma_sync_single_for_cpu(dai->dev, io->dma,
-			samples_to_bytes(runtime, io->period_samples), dir);
-
-	io->buff_sample_pos += io->period_samples;
-	io->period_pos++;
-
-	if (io->period_pos >= runtime->periods) {
-		io->period_pos = 0;
-		io->buff_sample_pos = 0;
-	}
-
-	fsi_count_fifo_err(fsi);
-	fsi_stream_transfer(io);
-
-	snd_pcm_period_elapsed(io->substream);
-}
-
-static dma_addr_t fsi_dma_get_area(struct fsi_stream *io)
-{
-	struct snd_pcm_runtime *runtime = io->substream->runtime;
-
-	return io->dma + samples_to_bytes(runtime, io->buff_sample_pos);
-}
-
-static void fsi_dma_do_work(struct work_struct *work)
-{
-	struct fsi_stream *io = container_of(work, struct fsi_stream, work);
-	struct fsi_priv *fsi = fsi_stream_to_priv(io);
-	struct dma_chan *chan;
-	struct snd_soc_dai *dai;
-	struct dma_async_tx_descriptor *desc;
-	struct scatterlist sg;
-	struct snd_pcm_runtime *runtime;
-	enum dma_data_direction dir;
-	dma_cookie_t cookie;
-	int is_play = fsi_stream_is_play(fsi, io);
-	int len;
-	dma_addr_t buf;
-
-	if (!fsi_stream_is_working(fsi, io))
-		return;
-
-	dai	= fsi_get_dai(io->substream);
-	chan	= io->chan;
-	runtime	= io->substream->runtime;
-	dir	= is_play ? DMA_TO_DEVICE : DMA_FROM_DEVICE;
-	len	= samples_to_bytes(runtime, io->period_samples);
-	buf	= fsi_dma_get_area(io);
-
-	dma_sync_single_for_device(dai->dev, io->dma, len, dir);
-
-	sg_init_table(&sg, 1);
-	sg_set_page(&sg, pfn_to_page(PFN_DOWN(buf)),
-		    len , offset_in_page(buf));
-	sg_dma_address(&sg) = buf;
-	sg_dma_len(&sg) = len;
-
-	desc = dmaengine_prep_slave_sg(chan, &sg, 1, dir,
-				       DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
-	if (!desc) {
-		dev_err(dai->dev, "dmaengine_prep_slave_sg() fail\n");
-		return;
-=======
 
 	fsi_pointer_update(io, io->period_samples);
 
@@ -1682,28 +1316,17 @@ static int fsi_dma_transfer(struct fsi_priv *fsi, struct fsi_stream *io)
 	if (!desc) {
 		dev_err(dai->dev, "dmaengine_prep_dma_cyclic() fail\n");
 		goto fsi_dma_transfer_err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	desc->callback		= fsi_dma_complete;
 	desc->callback_param	= io;
 
-<<<<<<< HEAD
-	cookie = desc->tx_submit(desc);
-	if (cookie < 0) {
-		dev_err(dai->dev, "tx_submit() fail\n");
-		return;
-	}
-
-	dma_async_issue_pending(chan);
-=======
 	if (dmaengine_submit(desc) < 0) {
 		dev_err(dai->dev, "tx_submit() fail\n");
 		goto fsi_dma_transfer_err;
 	}
 
 	dma_async_issue_pending(io->chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * FIXME
@@ -1720,22 +1343,6 @@ static int fsi_dma_transfer(struct fsi_priv *fsi, struct fsi_stream *io)
 			fsi_reg_write(fsi, DIFF_ST, 0);
 		}
 	}
-<<<<<<< HEAD
-}
-
-static bool fsi_dma_filter(struct dma_chan *chan, void *param)
-{
-	struct sh_dmae_slave *slave = param;
-
-	chan->private = slave;
-
-	return true;
-}
-
-static int fsi_dma_transfer(struct fsi_priv *fsi, struct fsi_stream *io)
-{
-	schedule_work(&io->work);
-=======
 
 	ret = 0;
 
@@ -1756,49 +1363,10 @@ static int fsi_dma_push_start_stop(struct fsi_priv *fsi, struct fsi_stream *io,
 
 	if (fsi_is_clk_master(fsi))
 		fsi_master_mask_set(master, CLK_RST, clk, (enable) ? clk : 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void fsi_dma_push_start_stop(struct fsi_priv *fsi, struct fsi_stream *io,
-				 int start)
-{
-	u32 bws;
-	u32 dma;
-
-	switch (io->sample_width * start) {
-	case 2:
-		bws = CR_BWS_16;
-		dma = VDMD_STREAM | DMA_ON;
-		break;
-	case 4:
-		bws = CR_BWS_24;
-		dma = VDMD_BACK | DMA_ON;
-		break;
-	default:
-		bws = 0;
-		dma = 0;
-	}
-
-	fsi_reg_mask_set(fsi, DO_FMT, CR_BWS_MASK, bws);
-	fsi_reg_write(fsi, OUT_DMAC, dma);
-}
-
-static int fsi_dma_probe(struct fsi_priv *fsi, struct fsi_stream *io)
-{
-	dma_cap_mask_t mask;
-
-	dma_cap_zero(mask);
-	dma_cap_set(DMA_SLAVE, mask);
-
-	io->chan = dma_request_channel(mask, fsi_dma_filter, &io->slave);
-	if (!io->chan)
-		return -EIO;
-
-	INIT_WORK(&io->work, fsi_dma_do_work);
-=======
 static int fsi_dma_probe(struct fsi_priv *fsi, struct fsi_stream *io, struct device *dev)
 {
 	int is_play = fsi_stream_is_play(fsi, io);
@@ -1849,18 +1417,12 @@ static int fsi_dma_probe(struct fsi_priv *fsi, struct fsi_stream *io, struct dev
 		/* probe again */
 		return fsi_stream_probe(fsi, dev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int fsi_dma_remove(struct fsi_priv *fsi, struct fsi_stream *io)
 {
-<<<<<<< HEAD
-	cancel_work_sync(&io->work);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fsi_stream_stop(fsi, io);
 
 	if (io->chan)
@@ -1872,10 +1434,6 @@ static int fsi_dma_remove(struct fsi_priv *fsi, struct fsi_stream *io)
 
 static struct fsi_stream_handler fsi_dma_push_handler = {
 	.init		= fsi_dma_init,
-<<<<<<< HEAD
-	.quit		= fsi_dma_quit,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe		= fsi_dma_probe,
 	.transfer	= fsi_dma_transfer,
 	.remove		= fsi_dma_remove,
@@ -1944,12 +1502,6 @@ static int fsi_hw_startup(struct fsi_priv *fsi,
 			  struct fsi_stream *io,
 			  struct device *dev)
 {
-<<<<<<< HEAD
-	struct fsi_master *master = fsi_get_master(fsi);
-	int fsi_ver = master->core->ver;
-	u32 flags = fsi_get_info_flags(fsi);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 data = 0;
 
 	/* clock setting */
@@ -1960,23 +1512,6 @@ static int fsi_hw_startup(struct fsi_priv *fsi,
 
 	/* clock inversion (CKG2) */
 	data = 0;
-<<<<<<< HEAD
-	if (SH_FSI_LRM_INV & flags)
-		data |= 1 << 12;
-	if (SH_FSI_BRM_INV & flags)
-		data |= 1 << 8;
-	if (SH_FSI_LRS_INV & flags)
-		data |= 1 << 4;
-	if (SH_FSI_BRS_INV & flags)
-		data |= 1 << 0;
-
-	fsi_reg_write(fsi, CKG2, data);
-
-	/* set format */
-	fsi_reg_write(fsi, DO_FMT, fsi->do_fmt);
-	fsi_reg_write(fsi, DI_FMT, fsi->di_fmt);
-
-=======
 	if (fsi->bit_clk_inv)
 		data |= (1 << 0);
 	if (fsi->lr_clk_inv)
@@ -1985,7 +1520,6 @@ static int fsi_hw_startup(struct fsi_priv *fsi,
 		data <<= 8;
 	fsi_reg_write(fsi, CKG2, data);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* spdif ? */
 	if (fsi_is_spdif(fsi)) {
 		fsi_spdif_clk_ctrl(fsi, 1);
@@ -1993,17 +1527,6 @@ static int fsi_hw_startup(struct fsi_priv *fsi,
 	}
 
 	/*
-<<<<<<< HEAD
-	 * FIXME
-	 *
-	 * FSI driver assumed that data package is in-back.
-	 * FSI2 chip can select it.
-	 */
-	if (fsi_ver >= 2) {
-		fsi_reg_write(fsi, OUT_DMAC,	(1 << 4));
-		fsi_reg_write(fsi, IN_DMAC,	(1 << 4));
-	}
-=======
 	 * get bus settings
 	 */
 	data = 0;
@@ -2016,7 +1539,6 @@ static int fsi_hw_startup(struct fsi_priv *fsi,
 		break;
 	}
 	fsi_format_bus_setup(fsi, io, data, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* irq clear */
 	fsi_irq_disable(fsi, io);
@@ -2025,16 +1547,6 @@ static int fsi_hw_startup(struct fsi_priv *fsi,
 	/* fifo init */
 	fsi_fifo_init(fsi, io, dev);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-static void fsi_hw_shutdown(struct fsi_priv *fsi,
-			    struct device *dev)
-{
-	if (fsi_is_clk_master(fsi))
-		fsi_set_master_clk(dev, fsi, fsi->rate, 0);
-=======
 	/* start master clock */
 	if (fsi_is_clk_master(fsi))
 		return fsi_clk_enable(dev, fsi);
@@ -2050,7 +1562,6 @@ static int fsi_hw_shutdown(struct fsi_priv *fsi,
 		return fsi_clk_disable(dev, fsi);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fsi_dai_startup(struct snd_pcm_substream *substream,
@@ -2058,13 +1569,9 @@ static int fsi_dai_startup(struct snd_pcm_substream *substream,
 {
 	struct fsi_priv *fsi = fsi_get_priv(substream);
 
-<<<<<<< HEAD
-	return fsi_hw_startup(fsi, fsi_stream_get(fsi, substream), dai->dev);
-=======
 	fsi_clk_invalid(fsi);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fsi_dai_shutdown(struct snd_pcm_substream *substream,
@@ -2072,12 +1579,7 @@ static void fsi_dai_shutdown(struct snd_pcm_substream *substream,
 {
 	struct fsi_priv *fsi = fsi_get_priv(substream);
 
-<<<<<<< HEAD
-	fsi_hw_shutdown(fsi, dai->dev);
-	fsi->rate = 0;
-=======
 	fsi_clk_invalid(fsi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fsi_dai_trigger(struct snd_pcm_substream *substream, int cmd,
@@ -2090,13 +1592,6 @@ static int fsi_dai_trigger(struct snd_pcm_substream *substream, int cmd,
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 		fsi_stream_init(fsi, io, substream);
-<<<<<<< HEAD
-		ret = fsi_stream_transfer(io);
-		if (0 == ret)
-			fsi_stream_start(fsi, io);
-		break;
-	case SNDRV_PCM_TRIGGER_STOP:
-=======
 		if (!ret)
 			ret = fsi_hw_startup(fsi, io, dai->dev);
 		if (!ret)
@@ -2107,7 +1602,6 @@ static int fsi_dai_trigger(struct snd_pcm_substream *substream, int cmd,
 	case SNDRV_PCM_TRIGGER_STOP:
 		if (!ret)
 			ret = fsi_hw_shutdown(fsi, dai->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fsi_stream_stop(fsi, io);
 		fsi_stream_quit(fsi, io);
 		break;
@@ -2118,17 +1612,6 @@ static int fsi_dai_trigger(struct snd_pcm_substream *substream, int cmd,
 
 static int fsi_set_fmt_dai(struct fsi_priv *fsi, unsigned int fmt)
 {
-<<<<<<< HEAD
-	u32 data = 0;
-
-	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
-	case SND_SOC_DAIFMT_I2S:
-		data = CR_I2S;
-		fsi->chan_num = 2;
-		break;
-	case SND_SOC_DAIFMT_LEFT_J:
-		data = CR_PCM;
-=======
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		fsi->fmt = CR_I2S;
@@ -2136,45 +1619,24 @@ static int fsi_set_fmt_dai(struct fsi_priv *fsi, unsigned int fmt)
 		break;
 	case SND_SOC_DAIFMT_LEFT_J:
 		fsi->fmt = CR_PCM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fsi->chan_num = 2;
 		break;
 	default:
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	fsi->do_fmt = data;
-	fsi->di_fmt = data;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int fsi_set_fmt_spdif(struct fsi_priv *fsi)
 {
 	struct fsi_master *master = fsi_get_master(fsi);
-<<<<<<< HEAD
-	u32 data = 0;
-
-	if (master->core->ver < 2)
-		return -EINVAL;
-
-	data = CR_BWS_16 | CR_DTMD_SPDIF_PCM | CR_PCM;
-	fsi->chan_num = 2;
-	fsi->spdif = 1;
-
-	fsi->do_fmt = data;
-	fsi->di_fmt = data;
-=======
 
 	if (fsi_version(master) < 2)
 		return -EINVAL;
 
 	fsi->fmt = CR_DTMD_SPDIF_PCM | CR_PCM;
 	fsi->chan_num = 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2182,18 +1644,6 @@ static int fsi_set_fmt_spdif(struct fsi_priv *fsi)
 static int fsi_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
 	struct fsi_priv *fsi = fsi_get_priv_frm_dai(dai);
-<<<<<<< HEAD
-	set_rate_func set_rate = fsi_get_info_set_rate(fsi);
-	u32 flags = fsi_get_info_flags(fsi);
-	int ret;
-
-	/* set master/slave audio interface */
-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-	case SND_SOC_DAIFMT_CBM_CFM:
-		fsi->clk_master = 1;
-		break;
-	case SND_SOC_DAIFMT_CBS_CFS:
-=======
 	int ret;
 
 	/* set clock master audio interface */
@@ -2202,30 +1652,11 @@ static int fsi_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		break;
 	case SND_SOC_DAIFMT_BP_FP:
 		fsi->clk_master = 1; /* cpu is master */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (fsi_is_clk_master(fsi) && !set_rate) {
-		dev_err(dai->dev, "platform doesn't have set_rate\n");
-		return -EINVAL;
-	}
-
-	/* set format */
-	switch (flags & SH_FSI_FMT_MASK) {
-	case SH_FSI_FMT_DAI:
-		ret = fsi_set_fmt_dai(fsi, fmt & SND_SOC_DAIFMT_FORMAT_MASK);
-		break;
-	case SH_FSI_FMT_SPDIF:
-		ret = fsi_set_fmt_spdif(fsi);
-		break;
-	default:
-		ret = -EINVAL;
-	}
-=======
 	/* set clock inversion */
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_IF:
@@ -2261,7 +1692,6 @@ static int fsi_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		ret = fsi_set_fmt_spdif(fsi);
 	else
 		ret = fsi_set_fmt_dai(fsi, fmt & SND_SOC_DAIFMT_FORMAT_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -2271,23 +1701,6 @@ static int fsi_dai_hw_params(struct snd_pcm_substream *substream,
 			     struct snd_soc_dai *dai)
 {
 	struct fsi_priv *fsi = fsi_get_priv(substream);
-<<<<<<< HEAD
-	long rate = params_rate(params);
-	int ret;
-
-	if (!fsi_is_clk_master(fsi))
-		return 0;
-
-	ret = fsi_set_master_clk(dai->dev, fsi, rate, 1);
-	if (ret < 0)
-		return ret;
-
-	fsi->rate = rate;
-
-	return ret;
-}
-
-=======
 
 	if (fsi_is_clk_master(fsi))
 		fsi_clk_valid(fsi, params_rate(params));
@@ -2308,41 +1721,24 @@ static u64 fsi_dai_formats =
 	SND_SOC_POSSIBLE_DAIFMT_IB_NF	|
 	SND_SOC_POSSIBLE_DAIFMT_IB_IF;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_soc_dai_ops fsi_dai_ops = {
 	.startup	= fsi_dai_startup,
 	.shutdown	= fsi_dai_shutdown,
 	.trigger	= fsi_dai_trigger,
 	.set_fmt	= fsi_dai_set_fmt,
 	.hw_params	= fsi_dai_hw_params,
-<<<<<<< HEAD
-=======
 	.auto_selectable_formats	= &fsi_dai_formats,
 	.num_auto_selectable_formats	= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  *		pcm ops
  */
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware fsi_pcm_hardware = {
-	.info =		SNDRV_PCM_INFO_INTERLEAVED	|
-			SNDRV_PCM_INFO_MMAP		|
-			SNDRV_PCM_INFO_MMAP_VALID,
-	.formats		= FSI_FMTS,
-	.rates			= FSI_RATES,
-	.rate_min		= 8000,
-	.rate_max		= 192000,
-	.channels_min		= 1,
-	.channels_max		= 2,
-=======
 static const struct snd_pcm_hardware fsi_pcm_hardware = {
 	.info =		SNDRV_PCM_INFO_INTERLEAVED	|
 			SNDRV_PCM_INFO_MMAP		|
 			SNDRV_PCM_INFO_MMAP_VALID,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.buffer_bytes_max	= 64 * 1024,
 	.period_bytes_min	= 32,
 	.period_bytes_max	= 8192,
@@ -2351,12 +1747,8 @@ static const struct snd_pcm_hardware fsi_pcm_hardware = {
 	.fifo_size		= 256,
 };
 
-<<<<<<< HEAD
-static int fsi_pcm_open(struct snd_pcm_substream *substream)
-=======
 static int fsi_pcm_open(struct snd_soc_component *component,
 			struct snd_pcm_substream *substream)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int ret = 0;
@@ -2369,24 +1761,8 @@ static int fsi_pcm_open(struct snd_soc_component *component,
 	return ret;
 }
 
-<<<<<<< HEAD
-static int fsi_hw_params(struct snd_pcm_substream *substream,
-			 struct snd_pcm_hw_params *hw_params)
-{
-	return snd_pcm_lib_malloc_pages(substream,
-					params_buffer_bytes(hw_params));
-}
-
-static int fsi_hw_free(struct snd_pcm_substream *substream)
-{
-	return snd_pcm_lib_free_pages(substream);
-}
-
-static snd_pcm_uframes_t fsi_pointer(struct snd_pcm_substream *substream)
-=======
 static snd_pcm_uframes_t fsi_pointer(struct snd_soc_component *component,
 				     struct snd_pcm_substream *substream)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fsi_priv *fsi = fsi_get_priv(substream);
 	struct fsi_stream *io = fsi_stream_get(fsi, substream);
@@ -2394,46 +1770,13 @@ static snd_pcm_uframes_t fsi_pointer(struct snd_soc_component *component,
 	return fsi_sample2frame(fsi, io->buff_sample_pos);
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_ops fsi_pcm_ops = {
-	.open		= fsi_pcm_open,
-	.ioctl		= snd_pcm_lib_ioctl,
-	.hw_params	= fsi_hw_params,
-	.hw_free	= fsi_hw_free,
-	.pointer	= fsi_pointer,
-};
-
-/*
- *		snd_soc_platform
-=======
 /*
  *		snd_soc_component
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define PREALLOC_BUFFER		(32 * 1024)
 #define PREALLOC_BUFFER_MAX	(32 * 1024)
 
-<<<<<<< HEAD
-static void fsi_pcm_free(struct snd_pcm *pcm)
-{
-	snd_pcm_lib_preallocate_free_for_all(pcm);
-}
-
-static int fsi_pcm_new(struct snd_soc_pcm_runtime *rtd)
-{
-	struct snd_pcm *pcm = rtd->pcm;
-
-	/*
-	 * dont use SNDRV_DMA_TYPE_DEV, since it will oops the SH kernel
-	 * in MMAP mode (i.e. aplay -M)
-	 */
-	return snd_pcm_lib_preallocate_pages_for_all(
-		pcm,
-		SNDRV_DMA_TYPE_CONTINUOUS,
-		snd_dma_continuous_data(GFP_KERNEL),
-		PREALLOC_BUFFER, PREALLOC_BUFFER_MAX);
-=======
 static int fsi_pcm_new(struct snd_soc_component *component,
 		       struct snd_soc_pcm_runtime *rtd)
 {
@@ -2443,7 +1786,6 @@ static int fsi_pcm_new(struct snd_soc_component *component,
 		rtd->card->snd_card->dev,
 		PREALLOC_BUFFER, PREALLOC_BUFFER_MAX);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2456,24 +1798,14 @@ static struct snd_soc_dai_driver fsi_soc_dai[] = {
 		.playback = {
 			.rates		= FSI_RATES,
 			.formats	= FSI_FMTS,
-<<<<<<< HEAD
-			.channels_min	= 1,
-			.channels_max	= 8,
-=======
 			.channels_min	= 2,
 			.channels_max	= 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 		.capture = {
 			.rates		= FSI_RATES,
 			.formats	= FSI_FMTS,
-<<<<<<< HEAD
-			.channels_min	= 1,
-			.channels_max	= 8,
-=======
 			.channels_min	= 2,
 			.channels_max	= 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 		.ops = &fsi_dai_ops,
 	},
@@ -2482,49 +1814,29 @@ static struct snd_soc_dai_driver fsi_soc_dai[] = {
 		.playback = {
 			.rates		= FSI_RATES,
 			.formats	= FSI_FMTS,
-<<<<<<< HEAD
-			.channels_min	= 1,
-			.channels_max	= 8,
-=======
 			.channels_min	= 2,
 			.channels_max	= 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 		.capture = {
 			.rates		= FSI_RATES,
 			.formats	= FSI_FMTS,
-<<<<<<< HEAD
-			.channels_min	= 1,
-			.channels_max	= 8,
-=======
 			.channels_min	= 2,
 			.channels_max	= 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 		.ops = &fsi_dai_ops,
 	},
 };
 
-<<<<<<< HEAD
-static struct snd_soc_platform_driver fsi_soc_platform = {
-	.ops		= &fsi_pcm_ops,
-	.pcm_new	= fsi_pcm_new,
-	.pcm_free	= fsi_pcm_free,
-=======
 static const struct snd_soc_component_driver fsi_soc_component = {
 	.name		= "fsi",
 	.open		= fsi_pcm_open,
 	.pointer	= fsi_pointer,
 	.pcm_construct	= fsi_pcm_new,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  *		platform function
  */
-<<<<<<< HEAD
-static void fsi_handler_init(struct fsi_priv *fsi)
-=======
 static void fsi_of_parse(char *name,
 			 struct device_node *np,
 			 struct sh_fsi_port_info *info,
@@ -2567,26 +1879,12 @@ static void fsi_port_info_init(struct fsi_priv *fsi,
 
 static void fsi_handler_init(struct fsi_priv *fsi,
 			     struct sh_fsi_port_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	fsi->playback.handler	= &fsi_pio_push_handler; /* default PIO */
 	fsi->playback.priv	= fsi;
 	fsi->capture.handler	= &fsi_pio_pop_handler;  /* default PIO */
 	fsi->capture.priv	= fsi;
 
-<<<<<<< HEAD
-	if (fsi->info->tx_id) {
-		fsi->playback.slave.slave_id	= fsi->info->tx_id;
-		fsi->playback.handler		= &fsi_dma_push_handler;
-	}
-}
-
-static int fsi_probe(struct platform_device *pdev)
-{
-	struct fsi_master *master;
-	const struct platform_device_id	*id_entry;
-	struct sh_fsi_platform_info *info = pdev->dev.platform_data;
-=======
 	if (info->tx_id) {
 		fsi->playback.dma_id  = info->tx_id;
 		fsi->playback.handler = &fsi_dma_push_handler;
@@ -2633,15 +1931,10 @@ static int fsi_probe(struct platform_device *pdev)
 	struct sh_fsi_platform_info info;
 	const struct fsi_core *core;
 	struct fsi_priv *fsi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource *res;
 	unsigned int irq;
 	int ret;
 
-<<<<<<< HEAD
-	id_entry = pdev->id_entry;
-	if (!id_entry) {
-=======
 	memset(&info, 0, sizeof(info));
 
 	core = NULL;
@@ -2659,7 +1952,6 @@ static int fsi_probe(struct platform_device *pdev)
 	}
 
 	if (!core) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "unknown fsi device\n");
 		return -ENODEV;
 	}
@@ -2668,48 +1960,6 @@ static int fsi_probe(struct platform_device *pdev)
 	irq = platform_get_irq(pdev, 0);
 	if (!res || (int)irq <= 0) {
 		dev_err(&pdev->dev, "Not enough FSI platform resources.\n");
-<<<<<<< HEAD
-		ret = -ENODEV;
-		goto exit;
-	}
-
-	master = kzalloc(sizeof(*master), GFP_KERNEL);
-	if (!master) {
-		dev_err(&pdev->dev, "Could not allocate master\n");
-		ret = -ENOMEM;
-		goto exit;
-	}
-
-	master->base = ioremap_nocache(res->start, resource_size(res));
-	if (!master->base) {
-		ret = -ENXIO;
-		dev_err(&pdev->dev, "Unable to ioremap FSI registers.\n");
-		goto exit_kfree;
-	}
-
-	/* master setting */
-	master->irq		= irq;
-	master->core		= (struct fsi_core *)id_entry->driver_data;
-	spin_lock_init(&master->lock);
-
-	/* FSI A setting */
-	master->fsia.base	= master->base;
-	master->fsia.master	= master;
-	master->fsia.info	= &info->port_a;
-	fsi_handler_init(&master->fsia);
-	ret = fsi_stream_probe(&master->fsia);
-	if (ret < 0) {
-		dev_err(&pdev->dev, "FSIA stream probe failed\n");
-		goto exit_iounmap;
-	}
-
-	/* FSI B setting */
-	master->fsib.base	= master->base + 0x40;
-	master->fsib.master	= master;
-	master->fsib.info	= &info->port_b;
-	fsi_handler_init(&master->fsib);
-	ret = fsi_stream_probe(&master->fsib);
-=======
 		return -ENODEV;
 	}
 
@@ -2748,7 +1998,6 @@ static int fsi_probe(struct platform_device *pdev)
 	fsi_port_info_init(fsi, &info.port_b);
 	fsi_handler_init(fsi, &info.port_b);
 	ret = fsi_stream_probe(fsi, &pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		dev_err(&pdev->dev, "FSIB stream probe failed\n");
 		goto exit_fsia;
@@ -2757,62 +2006,22 @@ static int fsi_probe(struct platform_device *pdev)
 	pm_runtime_enable(&pdev->dev);
 	dev_set_drvdata(&pdev->dev, master);
 
-<<<<<<< HEAD
-	ret = request_irq(irq, &fsi_interrupt, 0,
-			  id_entry->name, master);
-=======
 	ret = devm_request_irq(&pdev->dev, irq, &fsi_interrupt, 0,
 			       dev_name(&pdev->dev), master);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(&pdev->dev, "irq request err\n");
 		goto exit_fsib;
 	}
 
-<<<<<<< HEAD
-	ret = snd_soc_register_platform(&pdev->dev, &fsi_soc_platform);
-	if (ret < 0) {
-		dev_err(&pdev->dev, "cannot snd soc register\n");
-		goto exit_free_irq;
-	}
-
-	ret = snd_soc_register_dais(&pdev->dev, fsi_soc_dai,
-				    ARRAY_SIZE(fsi_soc_dai));
-	if (ret < 0) {
-		dev_err(&pdev->dev, "cannot snd dai register\n");
-		goto exit_snd_soc;
-=======
 	ret = devm_snd_soc_register_component(&pdev->dev, &fsi_soc_component,
 				    fsi_soc_dai, ARRAY_SIZE(fsi_soc_dai));
 	if (ret < 0) {
 		dev_err(&pdev->dev, "cannot snd component register\n");
 		goto exit_fsib;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 
-<<<<<<< HEAD
-exit_snd_soc:
-	snd_soc_unregister_platform(&pdev->dev);
-exit_free_irq:
-	free_irq(irq, master);
-exit_fsib:
-	fsi_stream_remove(&master->fsib);
-exit_fsia:
-	fsi_stream_remove(&master->fsia);
-exit_iounmap:
-	iounmap(master->base);
-	pm_runtime_disable(&pdev->dev);
-exit_kfree:
-	kfree(master);
-	master = NULL;
-exit:
-	return ret;
-}
-
-static int fsi_remove(struct platform_device *pdev)
-=======
 exit_fsib:
 	pm_runtime_disable(&pdev->dev);
 	fsi_stream_remove(&master->fsib);
@@ -2823,32 +2032,15 @@ exit_fsia:
 }
 
 static void fsi_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fsi_master *master;
 
 	master = dev_get_drvdata(&pdev->dev);
 
-<<<<<<< HEAD
-	free_irq(master->irq, master);
-	pm_runtime_disable(&pdev->dev);
-
-	snd_soc_unregister_dais(&pdev->dev, ARRAY_SIZE(fsi_soc_dai));
-	snd_soc_unregister_platform(&pdev->dev);
-
-	fsi_stream_remove(&master->fsia);
-	fsi_stream_remove(&master->fsib);
-
-	iounmap(master->base);
-	kfree(master);
-
-	return 0;
-=======
 	pm_runtime_disable(&pdev->dev);
 
 	fsi_stream_remove(&master->fsia);
 	fsi_stream_remove(&master->fsib);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __fsi_suspend(struct fsi_priv *fsi,
@@ -2870,13 +2062,6 @@ static void __fsi_resume(struct fsi_priv *fsi,
 		return;
 
 	fsi_hw_startup(fsi, io, dev);
-<<<<<<< HEAD
-
-	if (fsi_is_clk_master(fsi) && fsi->rate)
-		fsi_set_master_clk(dev, fsi, fsi->rate, 1);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fsi_stream_start(fsi, io);
 }
 
@@ -2910,69 +2095,25 @@ static int fsi_resume(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct dev_pm_ops fsi_pm_ops = {
-=======
 static const struct dev_pm_ops fsi_pm_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= fsi_suspend,
 	.resume			= fsi_resume,
 };
 
-<<<<<<< HEAD
-static struct fsi_core fsi1_core = {
-	.ver	= 1,
-
-	/* Interrupt */
-	.int_st	= INT_ST,
-	.iemsk	= IEMSK,
-	.imsk	= IMSK,
-};
-
-static struct fsi_core fsi2_core = {
-	.ver	= 2,
-
-	/* Interrupt */
-	.int_st	= CPU_INT_ST,
-	.iemsk	= CPU_IEMSK,
-	.imsk	= CPU_IMSK,
-	.a_mclk	= A_MST_CTLR,
-	.b_mclk	= B_MST_CTLR,
-};
-
-static struct platform_device_id fsi_id_table[] = {
-	{ "sh_fsi",	(kernel_ulong_t)&fsi1_core },
-	{ "sh_fsi2",	(kernel_ulong_t)&fsi2_core },
-	{},
-};
-MODULE_DEVICE_TABLE(platform, fsi_id_table);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_driver fsi_driver = {
 	.driver 	= {
 		.name	= "fsi-pcm-audio",
 		.pm	= &fsi_pm_ops,
-<<<<<<< HEAD
-	},
-	.probe		= fsi_probe,
-	.remove		= fsi_remove,
-=======
 		.of_match_table = fsi_of_match,
 	},
 	.probe		= fsi_probe,
 	.remove_new	= fsi_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= fsi_id_table,
 };
 
 module_platform_driver(fsi_driver);
 
-<<<<<<< HEAD
-MODULE_LICENSE("GPL");
-=======
 MODULE_LICENSE("GPL v2");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("SuperH onchip FSI audio driver");
 MODULE_AUTHOR("Kuninori Morimoto <morimoto.kuninori@renesas.com>");
 MODULE_ALIAS("platform:fsi-pcm-audio");

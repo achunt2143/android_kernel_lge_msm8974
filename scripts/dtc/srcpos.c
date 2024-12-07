@@ -1,26 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright 2007 Jon Loeliger, Freescale Semiconductor, Inc.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
- *                                                                   USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2007 Jon Loeliger, Freescale Semiconductor, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define _GNU_SOURCE
@@ -39,16 +19,11 @@ struct search_path {
 /* This is the list of directories that we search for source files */
 static struct search_path *search_path_head, **search_path_tail;
 
-<<<<<<< HEAD
-
-static char *dirname(const char *path)
-=======
 /* Detect infinite include recursion. */
 #define MAX_SRCFILE_DEPTH     (200)
 static int srcfile_depth; /* = 0 */
 
 static char *get_dirname(const char *path)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *slash = strrchr(path, '/');
 
@@ -65,13 +40,6 @@ static char *get_dirname(const char *path)
 
 FILE *depfile; /* = NULL */
 struct srcfile_state *current_srcfile; /* = NULL */
-<<<<<<< HEAD
-
-/* Detect infinite include recursion. */
-#define MAX_SRCFILE_DEPTH     (100)
-static int srcfile_depth; /* = 0 */
-
-=======
 static char *initial_path; /* = NULL */
 static int initial_pathlen; /* = 0 */
 static bool initial_cpp = true;
@@ -117,7 +85,6 @@ static char *shorten_to_initial_path(char *fname)
 	}
 	return NULL;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Try to open a file in a given directory.
@@ -139,11 +106,7 @@ static char *try_open(const char *dirname, const char *fname, FILE **fp)
 	else
 		fullname = join_path(dirname, fname);
 
-<<<<<<< HEAD
-	*fp = fopen(fullname, "r");
-=======
 	*fp = fopen(fullname, "rb");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!*fp) {
 		free(fullname);
 		fullname = NULL;
@@ -216,29 +179,19 @@ void srcfile_push(const char *fname)
 	srcfile = xmalloc(sizeof(*srcfile));
 
 	srcfile->f = srcfile_relative_open(fname, &srcfile->name);
-<<<<<<< HEAD
-	srcfile->dir = dirname(srcfile->name);
-=======
 	srcfile->dir = get_dirname(srcfile->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srcfile->prev = current_srcfile;
 
 	srcfile->lineno = 1;
 	srcfile->colno = 1;
 
 	current_srcfile = srcfile;
-<<<<<<< HEAD
-}
-
-int srcfile_pop(void)
-=======
 
 	if (srcfile_depth == 1)
 		set_initial_path(srcfile->name);
 }
 
 bool srcfile_pop(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct srcfile_state *srcfile = current_srcfile;
 
@@ -256,11 +209,7 @@ bool srcfile_pop(void)
 	 * fix this we could either allocate all the files from a
 	 * table, or use a pool allocator. */
 
-<<<<<<< HEAD
-	return current_srcfile ? 1 : 0;
-=======
 	return current_srcfile ? true : false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void srcfile_add_search_path(const char *dirname)
@@ -280,23 +229,6 @@ void srcfile_add_search_path(const char *dirname)
 	search_path_tail = &node->next;
 }
 
-<<<<<<< HEAD
-/*
- * The empty source position.
- */
-
-struct srcpos srcpos_empty = {
-	.first_line = 0,
-	.first_column = 0,
-	.last_line = 0,
-	.last_column = 0,
-	.file = NULL,
-};
-
-#define TAB_SIZE      8
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void srcpos_update(struct srcpos *pos, const char *text, int len)
 {
 	int i;
@@ -310,12 +242,6 @@ void srcpos_update(struct srcpos *pos, const char *text, int len)
 		if (text[i] == '\n') {
 			current_srcfile->lineno++;
 			current_srcfile->colno = 1;
-<<<<<<< HEAD
-		} else if (text[i] == '\t') {
-			current_srcfile->colno =
-				ALIGN(current_srcfile->colno, TAB_SIZE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			current_srcfile->colno++;
 		}
@@ -328,29 +254,6 @@ struct srcpos *
 srcpos_copy(struct srcpos *pos)
 {
 	struct srcpos *pos_new;
-<<<<<<< HEAD
-
-	pos_new = xmalloc(sizeof(struct srcpos));
-	memcpy(pos_new, pos, sizeof(struct srcpos));
-
-	return pos_new;
-}
-
-
-
-void
-srcpos_dump(struct srcpos *pos)
-{
-	printf("file        : \"%s\"\n",
-	       pos->file ? (char *) pos->file : "<no file>");
-	printf("first_line  : %d\n", pos->first_line);
-	printf("first_column: %d\n", pos->first_column);
-	printf("last_line   : %d\n", pos->last_line);
-	printf("last_column : %d\n", pos->last_column);
-	printf("file        : %s\n", pos->file->name);
-}
-
-=======
 	struct srcfile_state *srcfile_state;
 
 	if (!pos)
@@ -379,40 +282,18 @@ struct srcpos *srcpos_extend(struct srcpos *pos, struct srcpos *newtail)
 	p->next = newtail;
 	return pos;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 char *
 srcpos_string(struct srcpos *pos)
 {
 	const char *fname = "<no-file>";
 	char *pos_str;
-<<<<<<< HEAD
-	int rc;
-
-	if (pos)
-=======
 
 	if (pos->file && pos->file->name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fname = pos->file->name;
 
 
 	if (pos->first_line != pos->last_line)
-<<<<<<< HEAD
-		rc = asprintf(&pos_str, "%s:%d.%d-%d.%d", fname,
-			      pos->first_line, pos->first_column,
-			      pos->last_line, pos->last_column);
-	else if (pos->first_column != pos->last_column)
-		rc = asprintf(&pos_str, "%s:%d.%d-%d", fname,
-			      pos->first_line, pos->first_column,
-			      pos->last_column);
-	else
-		rc = asprintf(&pos_str, "%s:%d.%d", fname,
-			      pos->first_line, pos->first_column);
-
-	if (rc == -1)
-		die("Couldn't allocate in srcpos string");
-=======
 		xasprintf(&pos_str, "%s:%d.%d-%d.%d", fname,
 			  pos->first_line, pos->first_column,
 			  pos->last_line, pos->last_column);
@@ -423,49 +304,10 @@ srcpos_string(struct srcpos *pos)
 	else
 		xasprintf(&pos_str, "%s:%d.%d", fname,
 			  pos->first_line, pos->first_column);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pos_str;
 }
 
-<<<<<<< HEAD
-void
-srcpos_verror(struct srcpos *pos, char const *fmt, va_list va)
-{
-       const char *srcstr;
-
-       srcstr = srcpos_string(pos);
-
-       fprintf(stdout, "Error: %s ", srcstr);
-       vfprintf(stdout, fmt, va);
-       fprintf(stdout, "\n");
-}
-
-void
-srcpos_error(struct srcpos *pos, char const *fmt, ...)
-{
-	va_list va;
-
-	va_start(va, fmt);
-	srcpos_verror(pos, fmt, va);
-	va_end(va);
-}
-
-
-void
-srcpos_warn(struct srcpos *pos, char const *fmt, ...)
-{
-	const char *srcstr;
-	va_list va;
-	va_start(va, fmt);
-
-	srcstr = srcpos_string(pos);
-
-	fprintf(stderr, "Warning: %s ", srcstr);
-	vfprintf(stderr, fmt, va);
-	fprintf(stderr, "\n");
-
-=======
 static char *
 srcpos_string_comment(struct srcpos *pos, bool first_line, int level)
 {
@@ -549,7 +391,6 @@ void srcpos_error(struct srcpos *pos, const char *prefix,
 
 	va_start(va, fmt);
 	srcpos_verror(pos, prefix, fmt, va);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	va_end(va);
 }
 
@@ -557,12 +398,9 @@ void srcpos_set_line(char *f, int l)
 {
 	current_srcfile->name = f;
 	current_srcfile->lineno = l;
-<<<<<<< HEAD
-=======
 
 	if (initial_cpp) {
 		initial_cpp = false;
 		set_initial_path(f);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

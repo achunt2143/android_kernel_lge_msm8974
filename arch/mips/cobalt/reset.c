@@ -12,10 +12,7 @@
 #include <linux/io.h>
 #include <linux/leds.h>
 
-<<<<<<< HEAD
-=======
 #include <asm/idle.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h>
 
 #include <cobalt.h>

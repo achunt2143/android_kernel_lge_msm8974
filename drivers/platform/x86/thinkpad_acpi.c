@@ -1,44 +1,15 @@
-<<<<<<< HEAD
-/*
- *  thinkpad_acpi.c - ThinkPad ACPI Extras
- *
- *
- *  Copyright (C) 2004-2005 Borislav Deianov <borislav@users.sf.net>
- *  Copyright (C) 2006-2009 Henrique de Moraes Holschuh <hmh@hmh.eng.br>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- *  02110-1301, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  thinkpad_acpi.c - ThinkPad ACPI Extras
  *
  *  Copyright (C) 2004-2005 Borislav Deianov <borislav@users.sf.net>
  *  Copyright (C) 2006-2009 Henrique de Moraes Holschuh <hmh@hmh.eng.br>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-<<<<<<< HEAD
-#define TPACPI_VERSION "0.24"
-#define TPACPI_SYSFS_VERSION 0x020700
-=======
 #define TPACPI_VERSION "0.26"
 #define TPACPI_SYSFS_VERSION 0x030000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Changelog:
@@ -63,47 +34,6 @@
  *			    thanks to Chris Wright <chrisw@osdl.org>
  */
 
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/types.h>
-#include <linux/string.h>
-#include <linux/list.h>
-#include <linux/mutex.h>
-#include <linux/sched.h>
-#include <linux/kthread.h>
-#include <linux/freezer.h>
-#include <linux/delay.h>
-#include <linux/slab.h>
-
-#include <linux/nvram.h>
-#include <linux/proc_fs.h>
-#include <linux/seq_file.h>
-#include <linux/sysfs.h>
-#include <linux/backlight.h>
-#include <linux/fb.h>
-#include <linux/platform_device.h>
-#include <linux/hwmon.h>
-#include <linux/hwmon-sysfs.h>
-#include <linux/input.h>
-#include <linux/leds.h>
-#include <linux/rfkill.h>
-#include <asm/uaccess.h>
-
-#include <linux/dmi.h>
-#include <linux/jiffies.h>
-#include <linux/workqueue.h>
-
-#include <sound/core.h>
-#include <sound/control.h>
-#include <sound/initval.h>
-
-#include <acpi/acpi_drivers.h>
-
-#include <linux/pci_ids.h>
-
-=======
 #include <linux/acpi.h>
 #include <linux/backlight.h>
 #include <linux/bitops.h>
@@ -152,7 +82,6 @@
 #include <sound/initval.h>
 
 #include "dual_accel_detect.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ThinkPad CMOS commands */
 #define TP_CMOS_VOLUME_DOWN	0
@@ -197,10 +126,7 @@ enum {
 /* ACPI HIDs */
 #define TPACPI_ACPI_IBM_HKEY_HID	"IBM0068"
 #define TPACPI_ACPI_LENOVO_HKEY_HID	"LEN0068"
-<<<<<<< HEAD
-=======
 #define TPACPI_ACPI_LENOVO_HKEY_V2_HID	"LEN0268"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TPACPI_ACPI_EC_HID		"PNP0C09"
 
 /* Input IDs */
@@ -235,11 +161,6 @@ enum tpacpi_hkey_event_t {
 	TP_HKEY_EV_HOTKEY_BASE		= 0x1001, /* first hotkey (FN+F1) */
 	TP_HKEY_EV_BRGHT_UP		= 0x1010, /* Brightness up */
 	TP_HKEY_EV_BRGHT_DOWN		= 0x1011, /* Brightness down */
-<<<<<<< HEAD
-	TP_HKEY_EV_VOL_UP		= 0x1015, /* Volume up or unmute */
-	TP_HKEY_EV_VOL_DOWN		= 0x1016, /* Volume down or unmute */
-	TP_HKEY_EV_VOL_MUTE		= 0x1017, /* Mixer output mute */
-=======
 	TP_HKEY_EV_KBD_LIGHT		= 0x1012, /* Thinklight/kbd backlight */
 	TP_HKEY_EV_VOL_UP		= 0x1015, /* Volume up or unmute */
 	TP_HKEY_EV_VOL_DOWN		= 0x1016, /* Volume down or unmute */
@@ -247,7 +168,6 @@ enum tpacpi_hkey_event_t {
 	TP_HKEY_EV_PRIVACYGUARD_TOGGLE	= 0x130f, /* Toggle priv.guard on/off */
 	TP_HKEY_EV_AMT_TOGGLE		= 0x131a, /* Toggle AMT on/off */
 	TP_HKEY_EV_PROFILE_TOGGLE	= 0x131f, /* Toggle platform profile */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reasons for waking up from S3/S4 */
 	TP_HKEY_EV_WKUP_S3_UNDOCK	= 0x2304, /* undock requested, S3 */
@@ -267,27 +187,21 @@ enum tpacpi_hkey_event_t {
 						     or port replicator */
 	TP_HKEY_EV_HOTPLUG_UNDOCK	= 0x4011, /* undocked from hotplug
 						     dock or port replicator */
-<<<<<<< HEAD
-=======
 	/*
 	 * Thinkpad X1 Tablet series devices emit 0x4012 and 0x4013
 	 * when keyboard cover is attached, detached or folded onto the back
 	 */
 	TP_HKEY_EV_KBD_COVER_ATTACH	= 0x4012, /* keyboard cover attached */
 	TP_HKEY_EV_KBD_COVER_DETACH	= 0x4013, /* keyboard cover detached or folded back */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* User-interface events */
 	TP_HKEY_EV_LID_CLOSE		= 0x5001, /* laptop lid closed */
 	TP_HKEY_EV_LID_OPEN		= 0x5002, /* laptop lid opened */
 	TP_HKEY_EV_TABLET_TABLET	= 0x5009, /* tablet swivel up */
 	TP_HKEY_EV_TABLET_NOTEBOOK	= 0x500a, /* tablet swivel down */
-<<<<<<< HEAD
-=======
 	TP_HKEY_EV_TABLET_CHANGED	= 0x60c0, /* X1 Yoga (2016):
 						   * enter/leave tablet mode
 						   */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_HKEY_EV_PEN_INSERTED		= 0x500b, /* tablet pen inserted */
 	TP_HKEY_EV_PEN_REMOVED		= 0x500c, /* tablet pen removed */
 	TP_HKEY_EV_BRGHT_CHANGED	= 0x5010, /* backlight control event */
@@ -295,23 +209,13 @@ enum tpacpi_hkey_event_t {
 	/* Key-related user-interface events */
 	TP_HKEY_EV_KEY_NUMLOCK		= 0x6000, /* NumLock key pressed */
 	TP_HKEY_EV_KEY_FN		= 0x6005, /* Fn key pressed? E420 */
-<<<<<<< HEAD
-=======
 	TP_HKEY_EV_KEY_FN_ESC           = 0x6060, /* Fn+Esc key pressed X240 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Thermal events */
 	TP_HKEY_EV_ALARM_BAT_HOT	= 0x6011, /* battery too hot */
 	TP_HKEY_EV_ALARM_BAT_XHOT	= 0x6012, /* battery critically hot */
 	TP_HKEY_EV_ALARM_SENSOR_HOT	= 0x6021, /* sensor too hot */
 	TP_HKEY_EV_ALARM_SENSOR_XHOT	= 0x6022, /* sensor critically hot */
-<<<<<<< HEAD
-	TP_HKEY_EV_THM_TABLE_CHANGED	= 0x6030, /* thermal table changed */
-
-	TP_HKEY_EV_UNK_6040		= 0x6040, /* Related to AC change?
-						     some sort of APM hint,
-						     W520 */
-=======
 	TP_HKEY_EV_THM_TABLE_CHANGED	= 0x6030, /* windows; thermal table changed */
 	TP_HKEY_EV_THM_CSM_COMPLETED    = 0x6032, /* windows; thermal control set
 						   * command completed. Related to
@@ -325,7 +229,6 @@ enum tpacpi_hkey_event_t {
 	/* Further user-interface events */
 	TP_HKEY_EV_PALM_DETECTED	= 0x60b0, /* palm hoveres keyboard */
 	TP_HKEY_EV_PALM_UNDETECTED	= 0x60b1, /* palm removed */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Misc */
 	TP_HKEY_EV_RFKILL_CHANGED	= 0x7000, /* rfkill switch changed */
@@ -363,14 +266,7 @@ enum tpacpi_hkey_event_t {
 #define TPACPI_DBG_BRGHT	0x0020
 #define TPACPI_DBG_MIXER	0x0040
 
-<<<<<<< HEAD
-#define onoff(status, bit) ((status) & (1 << (bit)) ? "on" : "off")
-#define enabled(status, bit) ((status) & (1 << (bit)) ? "enabled" : "disabled")
-#define strlencmp(a, b) (strncmp((a), (b), strlen(b)))
-
-=======
 #define FAN_NOT_PRESENT		65535
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /****************************************************************************
  * Driver-wide structs and misc. variables
@@ -395,11 +291,7 @@ struct ibm_struct {
 	int (*write) (char *);
 	void (*exit) (void);
 	void (*resume) (void);
-<<<<<<< HEAD
-	void (*suspend) (pm_message_t state);
-=======
 	void (*suspend) (void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*shutdown) (void);
 
 	struct list_head all_drivers;
@@ -423,8 +315,6 @@ struct ibm_init_struct {
 	struct ibm_struct *data;
 };
 
-<<<<<<< HEAD
-=======
 /* DMI Quirks */
 struct quirk_entry {
 	bool btusb_bug;
@@ -434,22 +324,17 @@ static struct quirk_entry quirk_btusb_bug = {
 	.btusb_bug = true,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct {
 	u32 bluetooth:1;
 	u32 hotkey:1;
 	u32 hotkey_mask:1;
 	u32 hotkey_wlsw:1;
-<<<<<<< HEAD
-	u32 hotkey_tablet:1;
-=======
 	enum {
 		TP_HOTKEY_TABLET_NONE = 0,
 		TP_HOTKEY_TABLET_USES_MHKG,
 		TP_HOTKEY_TABLET_USES_GMMS,
 	} hotkey_tablet;
 	u32 kbdlight:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 light:1;
 	u32 light_status:1;
 	u32 bright_acpimode:1;
@@ -458,17 +343,6 @@ static struct {
 	u32 uwb:1;
 	u32 fan_ctrl_status_undef:1;
 	u32 second_fan:1;
-<<<<<<< HEAD
-	u32 beep_needs_two_args:1;
-	u32 mixer_no_level_control:1;
-	u32 input_device_registered:1;
-	u32 platform_drv_registered:1;
-	u32 platform_drv_attrs_registered:1;
-	u32 sensors_pdrv_registered:1;
-	u32 sensors_pdrv_attrs_registered:1;
-	u32 sensors_pdev_attrs_registered:1;
-	u32 hotkey_poll_active:1;
-=======
 	u32 second_fan_ctl:1;
 	u32 beep_needs_two_args:1;
 	u32 mixer_no_level_control:1;
@@ -480,7 +354,6 @@ static struct {
 	u32 has_adaptive_kbd:1;
 	u32 kbd_lang:1;
 	struct quirk_entry *quirks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } tp_features;
 
 static struct {
@@ -495,15 +368,9 @@ struct thinkpad_id_data {
 	char *bios_version_str;	/* Something like 1ZET51WW (1.03z) */
 	char *ec_version_str;	/* Something like 1ZHT51WW-1.04a */
 
-<<<<<<< HEAD
-	u16 bios_model;		/* 1Y = 0x5931, 0 = unknown */
-	u16 ec_model;
-	u16 bios_release;	/* 1ZETK1WW = 0x314b, 0 = unknown */
-=======
 	u32 bios_model;		/* 1Y = 0x3159, 0 = unknown */
 	u32 ec_model;
 	u16 bios_release;	/* 1ZETK1WW = 0x4b31, 0 = unknown */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 ec_release;
 
 	char *model_str;	/* ThinkPad T43 */
@@ -528,19 +395,10 @@ enum led_status_t {
 	TPACPI_LED_BLINK,
 };
 
-<<<<<<< HEAD
-/* Special LED class that can defer work */
-struct tpacpi_led_classdev {
-	struct led_classdev led_classdev;
-	struct work_struct work;
-	enum led_status_t new_state;
-	unsigned int led;
-=======
 /* tpacpi LED class */
 struct tpacpi_led_classdev {
 	struct led_classdev led_classdev;
 	int led;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* brightness level capabilities */
@@ -575,11 +433,7 @@ static const char *str_supported(int is_supported);
 #else
 static inline const char *str_supported(int is_supported) { return ""; }
 #define vdbg_printk(a_dbg_level, format, arg...)	\
-<<<<<<< HEAD
-	no_printk(format, ##arg)
-=======
 	do { if (0) no_printk(format, ##arg); } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static void tpacpi_log_usertask(const char * const what)
@@ -600,24 +454,12 @@ do {									\
 /*
  * Quirk handling helpers
  *
-<<<<<<< HEAD
- * ThinkPad IDs and versions seen in the field so far
- * are two-characters from the set [0-9A-Z], i.e. base 36.
-=======
  * ThinkPad IDs and versions seen in the field so far are
  * two or three characters from the set [0-9A-Z], i.e. base 36.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * We use values well outside that range as specials.
  */
 
-<<<<<<< HEAD
-#define TPACPI_MATCH_ANY		0xffffU
-#define TPACPI_MATCH_UNKNOWN		0U
-
-/* TPID('1', 'Y') == 0x5931 */
-#define TPID(__c1, __c2) (((__c2) << 8) | (__c1))
-=======
 #define TPACPI_MATCH_ANY		0xffffffffU
 #define TPACPI_MATCH_ANY_VERSION	0xffffU
 #define TPACPI_MATCH_UNKNOWN		0U
@@ -626,7 +468,6 @@ do {									\
 #define TPID(__c1, __c2)	(((__c1) << 8) | (__c2))
 #define TPID3(__c1, __c2, __c3)	(((__c1) << 16) | ((__c2) << 8) | (__c3))
 #define TPVER TPID
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TPACPI_Q_IBM(__id1, __id2, __quirk)	\
 	{ .vendor = PCI_VENDOR_ID_IBM,		\
@@ -640,8 +481,6 @@ do {									\
 	  .ec = TPACPI_MATCH_ANY,		\
 	  .quirks = (__quirk) }
 
-<<<<<<< HEAD
-=======
 #define TPACPI_Q_LNV3(__id1, __id2, __id3, __quirk) \
 	{ .vendor = PCI_VENDOR_ID_LENOVO,	\
 	  .bios = TPID3(__id1, __id2, __id3),	\
@@ -654,7 +493,6 @@ do {									\
 	  .ec = TPID(__id1, __id2),		\
 	  .quirks = (__quirk) }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TPACPI_QEC_LNV(__id1, __id2, __quirk)	\
 	{ .vendor = PCI_VENDOR_ID_LENOVO,	\
 	  .bios = TPACPI_MATCH_ANY,		\
@@ -663,13 +501,8 @@ do {									\
 
 struct tpacpi_quirk {
 	unsigned int vendor;
-<<<<<<< HEAD
-	u16 bios;
-	u16 ec;
-=======
 	u32 bios;
 	u32 ec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long quirks;
 };
 
@@ -681,17 +514,10 @@ struct tpacpi_quirk {
  * Iterates over a quirks list until one is found that matches the
  * ThinkPad's vendor, BIOS and EC model.
  *
-<<<<<<< HEAD
- * Returns 0 if nothing matches, otherwise returns the quirks field of
- * the matching &struct tpacpi_quirk entry.
- *
- * The match criteria is: vendor, ec and bios much match.
-=======
  * Returns: %0 if nothing matches, otherwise returns the quirks field of
  * the matching &struct tpacpi_quirk entry.
  *
  * The match criteria is: vendor, ec and bios must match.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static unsigned long __init tpacpi_check_quirks(
 			const struct tpacpi_quirk *qlist,
@@ -739,11 +565,7 @@ static acpi_handle ec_handle;
 
 #define TPACPI_HANDLE(object, parent, paths...)			\
 	static acpi_handle  object##_handle;			\
-<<<<<<< HEAD
-	static const acpi_handle *object##_parent __initdata =	\
-=======
 	static const acpi_handle * const object##_parent __initconst =	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						&parent##_handle; \
 	static char *object##_paths[] __initdata = { paths }
 
@@ -766,11 +588,7 @@ TPACPI_HANDLE(hkey, ec, "\\_SB.HKEY",	/* 600e/x, 770e, 770x */
  */
 
 static int acpi_evalf(acpi_handle handle,
-<<<<<<< HEAD
-		      void *res, char *method, char *fmt, ...)
-=======
 		      int *res, char *method, char *fmt, ...)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *fmt0 = fmt;
 	struct acpi_object_list params;
@@ -809,13 +627,8 @@ static int acpi_evalf(acpi_handle handle,
 			break;
 			/* add more types as needed */
 		default:
-<<<<<<< HEAD
-			pr_err("acpi_evalf() called "
-			       "with invalid format character '%c'\n", c);
-=======
 			pr_err("acpi_evalf() called with invalid format character '%c'\n",
 			       c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			va_end(ap);
 			return 0;
 		}
@@ -836,24 +649,15 @@ static int acpi_evalf(acpi_handle handle,
 		success = (status == AE_OK &&
 			   out_obj.type == ACPI_TYPE_INTEGER);
 		if (success && res)
-<<<<<<< HEAD
-			*(int *)res = out_obj.integer.value;
-=======
 			*res = out_obj.integer.value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 'v':		/* void */
 		success = status == AE_OK;
 		break;
 		/* add more types as needed */
 	default:
-<<<<<<< HEAD
-		pr_err("acpi_evalf() called "
-		       "with invalid format character '%c'\n", res_type);
-=======
 		pr_err("acpi_evalf() called with invalid format character '%c'\n",
 		       res_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -940,8 +744,6 @@ static void __init drv_acpi_handle_init(const char *name,
 static acpi_status __init tpacpi_acpi_handle_locate_callback(acpi_handle handle,
 			u32 level, void *context, void **return_value)
 {
-<<<<<<< HEAD
-=======
 	if (!strcmp(context, "video")) {
 		struct acpi_device *dev = acpi_fetch_acpi_dev(handle);
 
@@ -949,7 +751,6 @@ static acpi_status __init tpacpi_acpi_handle_locate_callback(acpi_handle handle,
 			return AE_OK;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*(acpi_handle *)return_value = handle;
 
 	return AE_CTRL_TERMINATE;
@@ -962,17 +763,10 @@ static void __init tpacpi_acpi_handle_locate(const char *name,
 	acpi_status status;
 	acpi_handle device_found;
 
-<<<<<<< HEAD
-	BUG_ON(!name || !hid || !handle);
-	vdbg_printk(TPACPI_DBG_INIT,
-			"trying to locate ACPI handle for %s, using HID %s\n",
-			name, hid);
-=======
 	BUG_ON(!name || !handle);
 	vdbg_printk(TPACPI_DBG_INIT,
 			"trying to locate ACPI handle for %s, using HID %s\n",
 			name, hid ? hid : "NULL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&device_found, 0, sizeof(device_found));
 	status = acpi_get_devices(hid, tpacpi_acpi_handle_locate_callback,
@@ -1007,10 +801,6 @@ static void dispatch_acpi_notify(acpi_handle handle, u32 event, void *data)
 static int __init setup_acpi_notify(struct ibm_struct *ibm)
 {
 	acpi_status status;
-<<<<<<< HEAD
-	int rc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!ibm->acpi);
 
@@ -1020,15 +810,9 @@ static int __init setup_acpi_notify(struct ibm_struct *ibm)
 	vdbg_printk(TPACPI_DBG_INIT,
 		"setting up ACPI notify for %s\n", ibm->name);
 
-<<<<<<< HEAD
-	rc = acpi_bus_get_device(*ibm->acpi->handle, &ibm->acpi->device);
-	if (rc < 0) {
-		pr_err("acpi_bus_get_device(%s) failed: %d\n", ibm->name, rc);
-=======
 	ibm->acpi->device = acpi_fetch_acpi_dev(*ibm->acpi->handle);
 	if (!ibm->acpi->device) {
 		pr_err("acpi_fetch_acpi_dev(%s) failed\n", ibm->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -1041,13 +825,8 @@ static int __init setup_acpi_notify(struct ibm_struct *ibm)
 			ibm->acpi->type, dispatch_acpi_notify, ibm);
 	if (ACPI_FAILURE(status)) {
 		if (status == AE_ALREADY_EXISTS) {
-<<<<<<< HEAD
-			pr_notice("another device driver is already "
-				  "handling %s events\n", ibm->name);
-=======
 			pr_notice("another device driver is already handling %s events\n",
 				  ibm->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			pr_err("acpi_install_notify_handler(%s) failed: %s\n",
 			       ibm->name, acpi_format_exception(status));
@@ -1115,50 +894,25 @@ static int dispatch_proc_show(struct seq_file *m, void *v)
 
 static int dispatch_proc_open(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	return single_open(file, dispatch_proc_show, PDE(inode)->data);
-=======
 	return single_open(file, dispatch_proc_show, pde_data(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t dispatch_proc_write(struct file *file,
 			const char __user *userbuf,
 			size_t count, loff_t *pos)
 {
-<<<<<<< HEAD
-	struct ibm_struct *ibm = PDE(file->f_path.dentry->d_inode)->data;
-=======
 	struct ibm_struct *ibm = pde_data(file_inode(file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *kernbuf;
 	int ret;
 
 	if (!ibm || !ibm->write)
 		return -EINVAL;
-<<<<<<< HEAD
-	if (count > PAGE_SIZE - 2)
-		return -EINVAL;
-
-	kernbuf = kmalloc(count + 2, GFP_KERNEL);
-	if (!kernbuf)
-		return -ENOMEM;
-
-	if (copy_from_user(kernbuf, userbuf, count)) {
-		kfree(kernbuf);
-		return -EFAULT;
-	}
-
-	kernbuf[count] = 0;
-	strcat(kernbuf, ",");
-=======
 	if (count > PAGE_SIZE - 1)
 		return -EINVAL;
 
 	kernbuf = memdup_user_nul(userbuf, count);
 	if (IS_ERR(kernbuf))
 		return PTR_ERR(kernbuf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ibm->write(kernbuf);
 	if (ret == 0)
 		ret = count;
@@ -1168,34 +922,6 @@ static ssize_t dispatch_proc_write(struct file *file,
 	return ret;
 }
 
-<<<<<<< HEAD
-static const struct file_operations dispatch_proc_fops = {
-	.owner		= THIS_MODULE,
-	.open		= dispatch_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-	.write		= dispatch_proc_write,
-};
-
-static char *next_cmd(char **cmds)
-{
-	char *start = *cmds;
-	char *end;
-
-	while ((end = strchr(start, ',')) && end == start)
-		start = end + 1;
-
-	if (!end)
-		return NULL;
-
-	*end = 0;
-	*cmds = end + 1;
-	return start;
-}
-
-
-=======
 static const struct proc_ops dispatch_proc_ops = {
 	.proc_open	= dispatch_proc_open,
 	.proc_read	= seq_read,
@@ -1204,7 +930,6 @@ static const struct proc_ops dispatch_proc_ops = {
 	.proc_write	= dispatch_proc_write,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************
  ****************************************************************************
  *
@@ -1220,13 +945,8 @@ static struct input_dev *tpacpi_inputdev;
 static struct mutex tpacpi_inputdev_send_mutex;
 static LIST_HEAD(tpacpi_all_drivers);
 
-<<<<<<< HEAD
-static int tpacpi_suspend_handler(struct platform_device *pdev,
-				  pm_message_t state)
-=======
 #ifdef CONFIG_PM_SLEEP
 static int tpacpi_suspend_handler(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ibm_struct *ibm, *itmp;
 
@@ -1234,21 +954,13 @@ static int tpacpi_suspend_handler(struct device *dev)
 				 &tpacpi_all_drivers,
 				 all_drivers) {
 		if (ibm->suspend)
-<<<<<<< HEAD
-			(ibm->suspend)(state);
-=======
 			(ibm->suspend)();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int tpacpi_resume_handler(struct platform_device *pdev)
-=======
 static int tpacpi_resume_handler(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ibm_struct *ibm, *itmp;
 
@@ -1261,13 +973,10 @@ static int tpacpi_resume_handler(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 #endif
 
 static SIMPLE_DEV_PM_OPS(tpacpi_pm,
 			 tpacpi_suspend_handler, tpacpi_resume_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void tpacpi_shutdown_handler(struct platform_device *pdev)
 {
@@ -1281,106 +990,10 @@ static void tpacpi_shutdown_handler(struct platform_device *pdev)
 	}
 }
 
-<<<<<<< HEAD
-static struct platform_driver tpacpi_pdriver = {
-	.driver = {
-		.name = TPACPI_DRVR_NAME,
-		.owner = THIS_MODULE,
-	},
-	.suspend = tpacpi_suspend_handler,
-	.resume = tpacpi_resume_handler,
-	.shutdown = tpacpi_shutdown_handler,
-};
-
-static struct platform_driver tpacpi_hwmon_pdriver = {
-	.driver = {
-		.name = TPACPI_HWMON_DRVR_NAME,
-		.owner = THIS_MODULE,
-	},
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*************************************************************************
  * sysfs support helpers
  */
 
-<<<<<<< HEAD
-struct attribute_set {
-	unsigned int members, max_members;
-	struct attribute_group group;
-};
-
-struct attribute_set_obj {
-	struct attribute_set s;
-	struct attribute *a;
-} __attribute__((packed));
-
-static struct attribute_set *create_attr_set(unsigned int max_members,
-						const char *name)
-{
-	struct attribute_set_obj *sobj;
-
-	if (max_members == 0)
-		return NULL;
-
-	/* Allocates space for implicit NULL at the end too */
-	sobj = kzalloc(sizeof(struct attribute_set_obj) +
-		    max_members * sizeof(struct attribute *),
-		    GFP_KERNEL);
-	if (!sobj)
-		return NULL;
-	sobj->s.max_members = max_members;
-	sobj->s.group.attrs = &sobj->a;
-	sobj->s.group.name = name;
-
-	return &sobj->s;
-}
-
-#define destroy_attr_set(_set) \
-	kfree(_set);
-
-/* not multi-threaded safe, use it in a single thread per set */
-static int add_to_attr_set(struct attribute_set *s, struct attribute *attr)
-{
-	if (!s || !attr)
-		return -EINVAL;
-
-	if (s->members >= s->max_members)
-		return -ENOMEM;
-
-	s->group.attrs[s->members] = attr;
-	s->members++;
-
-	return 0;
-}
-
-static int add_many_to_attr_set(struct attribute_set *s,
-			struct attribute **attr,
-			unsigned int count)
-{
-	int i, res;
-
-	for (i = 0; i < count; i++) {
-		res = add_to_attr_set(s, attr[i]);
-		if (res)
-			return res;
-	}
-
-	return 0;
-}
-
-static void delete_attr_set(struct attribute_set *s, struct kobject *kobj)
-{
-	sysfs_remove_group(kobj, &s->group);
-	destroy_attr_set(s);
-}
-
-#define register_attr_set_with_sysfs(_attr_set, _kobj) \
-	sysfs_create_group(_kobj, &_attr_set->group)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int parse_strtoul(const char *buf,
 		unsigned long max, unsigned long *value)
 {
@@ -1404,12 +1017,7 @@ static void printk_deprecated_attribute(const char * const what,
 					const char * const details)
 {
 	tpacpi_log_usertask("deprecated sysfs attribute");
-<<<<<<< HEAD
-	pr_warn("WARNING: sysfs attribute %s is deprecated and "
-		"will be removed. %s\n",
-=======
 	pr_warn("WARNING: sysfs attribute %s is deprecated and will be removed. %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		what, details);
 }
 
@@ -1490,18 +1098,6 @@ static int tpacpi_rfk_update_swstate(const struct tpacpi_rfk *tp_rfk)
 	return status;
 }
 
-<<<<<<< HEAD
-/* Query FW and update rfkill sw state for all rfkill switches */
-static void tpacpi_rfk_update_swstate_all(void)
-{
-	unsigned int i;
-
-	for (i = 0; i < TPACPI_RFK_SW_MAX; i++)
-		tpacpi_rfk_update_swstate(tpacpi_rfkill_switches[i]);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sync the HW-blocking state of all rfkill switches,
  * do notice it causes the rfkill core to schedule uevents
@@ -1663,11 +1259,7 @@ static ssize_t tpacpi_rfk_sysfs_enable_show(const enum tpacpi_rfk_id id,
 			return status;
 	}
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n",
-=======
 	return sysfs_emit(buf, "%d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(status == TPACPI_RFK_RADIO_ON) ? 1 : 0);
 }
 
@@ -1714,13 +1306,7 @@ static int tpacpi_rfk_procfs_read(const enum tpacpi_rfk_id id, struct seq_file *
 				return status;
 		}
 
-<<<<<<< HEAD
-		seq_printf(m, "status:\t\t%s\n",
-				(status == TPACPI_RFK_RADIO_ON) ?
-					"enabled" : "disabled");
-=======
 		seq_printf(m, "status:\t\t%s\n", str_enabled_disabled(status == TPACPI_RFK_RADIO_ON));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_printf(m, "commands:\tenable, disable\n");
 	}
 
@@ -1736,17 +1322,10 @@ static int tpacpi_rfk_procfs_write(const enum tpacpi_rfk_id id, char *buf)
 	if (id >= TPACPI_RFK_SW_MAX)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	while ((cmd = next_cmd(&buf))) {
-		if (strlencmp(cmd, "enable") == 0)
-			status = TPACPI_RFK_RADIO_ON;
-		else if (strlencmp(cmd, "disable") == 0)
-=======
 	while ((cmd = strsep(&buf, ","))) {
 		if (strstarts(cmd, "enable"))
 			status = TPACPI_RFK_RADIO_ON;
 		else if (strstarts(cmd, "disable"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = TPACPI_RFK_RADIO_OFF;
 		else
 			return -EINVAL;
@@ -1754,12 +1333,7 @@ static int tpacpi_rfk_procfs_write(const enum tpacpi_rfk_id id, char *buf)
 
 	if (status != -1) {
 		tpacpi_disclose_usertask("procfs", "attempt to %s %s\n",
-<<<<<<< HEAD
-				(status == TPACPI_RFK_RADIO_ON) ?
-						"enable" : "disable",
-=======
 				str_enable_disable(status == TPACPI_RFK_RADIO_ON),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				tpacpi_rfkill_names[id]);
 		res = (tpacpi_rfkill_switches[id]->ops->set_status)(status);
 		tpacpi_rfk_update_swstate(tpacpi_rfkill_switches[id]);
@@ -1773,27 +1347,6 @@ static int tpacpi_rfk_procfs_write(const enum tpacpi_rfk_id id, char *buf)
  */
 
 /* interface_version --------------------------------------------------- */
-<<<<<<< HEAD
-static ssize_t tpacpi_driver_interface_version_show(
-				struct device_driver *drv,
-				char *buf)
-{
-	return snprintf(buf, PAGE_SIZE, "0x%08x\n", TPACPI_SYSFS_VERSION);
-}
-
-static DRIVER_ATTR(interface_version, S_IRUGO,
-		tpacpi_driver_interface_version_show, NULL);
-
-/* debug_level --------------------------------------------------------- */
-static ssize_t tpacpi_driver_debug_show(struct device_driver *drv,
-						char *buf)
-{
-	return snprintf(buf, PAGE_SIZE, "0x%04x\n", dbg_level);
-}
-
-static ssize_t tpacpi_driver_debug_store(struct device_driver *drv,
-						const char *buf, size_t count)
-=======
 static ssize_t interface_version_show(struct device_driver *drv, char *buf)
 {
 	return sysfs_emit(buf, "0x%08x\n", TPACPI_SYSFS_VERSION);
@@ -1808,7 +1361,6 @@ static ssize_t debug_level_show(struct device_driver *drv, char *buf)
 
 static ssize_t debug_level_store(struct device_driver *drv, const char *buf,
 				 size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long t;
 
@@ -1819,22 +1371,6 @@ static ssize_t debug_level_store(struct device_driver *drv, const char *buf,
 
 	return count;
 }
-<<<<<<< HEAD
-
-static DRIVER_ATTR(debug_level, S_IWUSR | S_IRUGO,
-		tpacpi_driver_debug_show, tpacpi_driver_debug_store);
-
-/* version ------------------------------------------------------------- */
-static ssize_t tpacpi_driver_version_show(struct device_driver *drv,
-						char *buf)
-{
-	return snprintf(buf, PAGE_SIZE, "%s v%s\n",
-			TPACPI_DESC, TPACPI_VERSION);
-}
-
-static DRIVER_ATTR(version, S_IRUGO,
-		tpacpi_driver_version_show, NULL);
-=======
 static DRIVER_ATTR_RW(debug_level);
 
 /* version ------------------------------------------------------------- */
@@ -1844,23 +1380,12 @@ static ssize_t version_show(struct device_driver *drv, char *buf)
 			TPACPI_DESC, TPACPI_VERSION);
 }
 static DRIVER_ATTR_RO(version);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* --------------------------------------------------------------------- */
 
 #ifdef CONFIG_THINKPAD_ACPI_DEBUGFACILITIES
 
 /* wlsw_emulstate ------------------------------------------------------ */
-<<<<<<< HEAD
-static ssize_t tpacpi_driver_wlsw_emulstate_show(struct device_driver *drv,
-						char *buf)
-{
-	return snprintf(buf, PAGE_SIZE, "%d\n", !!tpacpi_wlsw_emulstate);
-}
-
-static ssize_t tpacpi_driver_wlsw_emulstate_store(struct device_driver *drv,
-						const char *buf, size_t count)
-=======
 static ssize_t wlsw_emulstate_show(struct device_driver *drv, char *buf)
 {
 	return sysfs_emit(buf, "%d\n", !!tpacpi_wlsw_emulstate);
@@ -1868,7 +1393,6 @@ static ssize_t wlsw_emulstate_show(struct device_driver *drv, char *buf)
 
 static ssize_t wlsw_emulstate_store(struct device_driver *drv, const char *buf,
 				    size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long t;
 
@@ -1882,24 +1406,6 @@ static ssize_t wlsw_emulstate_store(struct device_driver *drv, const char *buf,
 
 	return count;
 }
-<<<<<<< HEAD
-
-static DRIVER_ATTR(wlsw_emulstate, S_IWUSR | S_IRUGO,
-		tpacpi_driver_wlsw_emulstate_show,
-		tpacpi_driver_wlsw_emulstate_store);
-
-/* bluetooth_emulstate ------------------------------------------------- */
-static ssize_t tpacpi_driver_bluetooth_emulstate_show(
-					struct device_driver *drv,
-					char *buf)
-{
-	return snprintf(buf, PAGE_SIZE, "%d\n", !!tpacpi_bluetooth_emulstate);
-}
-
-static ssize_t tpacpi_driver_bluetooth_emulstate_store(
-					struct device_driver *drv,
-					const char *buf, size_t count)
-=======
 static DRIVER_ATTR_RW(wlsw_emulstate);
 
 /* bluetooth_emulstate ------------------------------------------------- */
@@ -1910,7 +1416,6 @@ static ssize_t bluetooth_emulstate_show(struct device_driver *drv, char *buf)
 
 static ssize_t bluetooth_emulstate_store(struct device_driver *drv,
 					 const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long t;
 
@@ -1921,24 +1426,6 @@ static ssize_t bluetooth_emulstate_store(struct device_driver *drv,
 
 	return count;
 }
-<<<<<<< HEAD
-
-static DRIVER_ATTR(bluetooth_emulstate, S_IWUSR | S_IRUGO,
-		tpacpi_driver_bluetooth_emulstate_show,
-		tpacpi_driver_bluetooth_emulstate_store);
-
-/* wwan_emulstate ------------------------------------------------- */
-static ssize_t tpacpi_driver_wwan_emulstate_show(
-					struct device_driver *drv,
-					char *buf)
-{
-	return snprintf(buf, PAGE_SIZE, "%d\n", !!tpacpi_wwan_emulstate);
-}
-
-static ssize_t tpacpi_driver_wwan_emulstate_store(
-					struct device_driver *drv,
-					const char *buf, size_t count)
-=======
 static DRIVER_ATTR_RW(bluetooth_emulstate);
 
 /* wwan_emulstate ------------------------------------------------- */
@@ -1949,7 +1436,6 @@ static ssize_t wwan_emulstate_show(struct device_driver *drv, char *buf)
 
 static ssize_t wwan_emulstate_store(struct device_driver *drv, const char *buf,
 				    size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long t;
 
@@ -1960,24 +1446,6 @@ static ssize_t wwan_emulstate_store(struct device_driver *drv, const char *buf,
 
 	return count;
 }
-<<<<<<< HEAD
-
-static DRIVER_ATTR(wwan_emulstate, S_IWUSR | S_IRUGO,
-		tpacpi_driver_wwan_emulstate_show,
-		tpacpi_driver_wwan_emulstate_store);
-
-/* uwb_emulstate ------------------------------------------------- */
-static ssize_t tpacpi_driver_uwb_emulstate_show(
-					struct device_driver *drv,
-					char *buf)
-{
-	return snprintf(buf, PAGE_SIZE, "%d\n", !!tpacpi_uwb_emulstate);
-}
-
-static ssize_t tpacpi_driver_uwb_emulstate_store(
-					struct device_driver *drv,
-					const char *buf, size_t count)
-=======
 static DRIVER_ATTR_RW(wwan_emulstate);
 
 /* uwb_emulstate ------------------------------------------------- */
@@ -1988,7 +1456,6 @@ static ssize_t uwb_emulstate_show(struct device_driver *drv, char *buf)
 
 static ssize_t uwb_emulstate_store(struct device_driver *drv, const char *buf,
 				   size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long t;
 
@@ -1999,65 +1466,9 @@ static ssize_t uwb_emulstate_store(struct device_driver *drv, const char *buf,
 
 	return count;
 }
-<<<<<<< HEAD
-
-static DRIVER_ATTR(uwb_emulstate, S_IWUSR | S_IRUGO,
-		tpacpi_driver_uwb_emulstate_show,
-		tpacpi_driver_uwb_emulstate_store);
-#endif
-
-/* --------------------------------------------------------------------- */
-
-static struct driver_attribute *tpacpi_driver_attributes[] = {
-	&driver_attr_debug_level, &driver_attr_version,
-	&driver_attr_interface_version,
-};
-
-static int __init tpacpi_create_driver_attributes(struct device_driver *drv)
-{
-	int i, res;
-
-	i = 0;
-	res = 0;
-	while (!res && i < ARRAY_SIZE(tpacpi_driver_attributes)) {
-		res = driver_create_file(drv, tpacpi_driver_attributes[i]);
-		i++;
-	}
-
-#ifdef CONFIG_THINKPAD_ACPI_DEBUGFACILITIES
-	if (!res && dbg_wlswemul)
-		res = driver_create_file(drv, &driver_attr_wlsw_emulstate);
-	if (!res && dbg_bluetoothemul)
-		res = driver_create_file(drv, &driver_attr_bluetooth_emulstate);
-	if (!res && dbg_wwanemul)
-		res = driver_create_file(drv, &driver_attr_wwan_emulstate);
-	if (!res && dbg_uwbemul)
-		res = driver_create_file(drv, &driver_attr_uwb_emulstate);
-#endif
-
-	return res;
-}
-
-static void tpacpi_remove_driver_attributes(struct device_driver *drv)
-{
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(tpacpi_driver_attributes); i++)
-		driver_remove_file(drv, tpacpi_driver_attributes[i]);
-
-#ifdef THINKPAD_ACPI_DEBUGFACILITIES
-	driver_remove_file(drv, &driver_attr_wlsw_emulstate);
-	driver_remove_file(drv, &driver_attr_bluetooth_emulstate);
-	driver_remove_file(drv, &driver_attr_wwan_emulstate);
-	driver_remove_file(drv, &driver_attr_uwb_emulstate);
-#endif
-}
-
-=======
 static DRIVER_ATTR_RW(uwb_emulstate);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*************************************************************************
  * Firmware Data
  */
@@ -2087,26 +1498,16 @@ static DRIVER_ATTR_RW(uwb_emulstate);
 	{ .vendor	= (__v),			\
 	  .bios		= TPID(__id1, __id2),		\
 	  .ec		= TPACPI_MATCH_ANY,		\
-<<<<<<< HEAD
-	  .quirks	= TPACPI_MATCH_ANY << 16	\
-			  | (__bv1) << 8 | (__bv2) }
-=======
 	  .quirks	= TPACPI_MATCH_ANY_VERSION << 16 \
 			  | TPVER(__bv1, __bv2) }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TPV_Q_X(__v, __bid1, __bid2, __bv1, __bv2,	\
 		__eid, __ev1, __ev2)			\
 	{ .vendor	= (__v),			\
 	  .bios		= TPID(__bid1, __bid2),		\
 	  .ec		= __eid,			\
-<<<<<<< HEAD
-	  .quirks	= (__ev1) << 24 | (__ev2) << 16 \
-			  | (__bv1) << 8 | (__bv2) }
-=======
 	  .quirks	= TPVER(__ev1, __ev2) << 16	\
 			  | TPVER(__bv1, __bv2) }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TPV_QI0(__id1, __id2, __bv1, __bv2) \
 	TPV_Q(PCI_VENDOR_ID_IBM, __id1, __id2, __bv1, __bv2)
@@ -2248,11 +1649,7 @@ static void __init tpacpi_check_outdated_fw(void)
 	/* note that unknown versions are set to 0x0000 and we use that */
 	if ((bios_version > thinkpad_id.bios_release) ||
 	    (ec_version > thinkpad_id.ec_release &&
-<<<<<<< HEAD
-				ec_version != TPACPI_MATCH_ANY)) {
-=======
 				ec_version != TPACPI_MATCH_ANY_VERSION)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * The changelogs would let us track down the exact
 		 * reason, but it is just too much of a pain to track
@@ -2261,12 +1658,7 @@ static void __init tpacpi_check_outdated_fw(void)
 		 * best if the user upgrades the firmware anyway.
 		 */
 		pr_warn("WARNING: Outdated ThinkPad BIOS/EC firmware\n");
-<<<<<<< HEAD
-		pr_warn("WARNING: This firmware may be missing critical bug "
-			"fixes and/or important features\n");
-=======
 		pr_warn("WARNING: This firmware may be missing critical bug fixes and/or important features\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2359,8 +1751,6 @@ enum {	/* hot key scan codes (derived from ACPI DSDT) */
 	TP_ACPI_HOTKEYSCAN_UNK7,
 	TP_ACPI_HOTKEYSCAN_UNK8,
 
-<<<<<<< HEAD
-=======
 	/* Adaptive keyboard keycodes */
 	TP_ACPI_HOTKEYSCAN_ADAPTIVE_START,
 	TP_ACPI_HOTKEYSCAN_MUTE2        = TP_ACPI_HOTKEYSCAN_ADAPTIVE_START,
@@ -2397,7 +1787,6 @@ enum {	/* hot key scan codes (derived from ACPI DSDT) */
 	TP_ACPI_HOTKEYSCAN_PICKUP_PHONE,
 	TP_ACPI_HOTKEYSCAN_HANGUP_PHONE,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Hotkey keymap size */
 	TPACPI_HOTKEY_MAP_LEN
 };
@@ -2413,11 +1802,7 @@ enum {	/* Positions of some of the keys in hotkey masks */
 	TP_ACPI_HKEY_HIBERNATE_MASK	= 1 << TP_ACPI_HOTKEYSCAN_FNF12,
 	TP_ACPI_HKEY_BRGHTUP_MASK	= 1 << TP_ACPI_HOTKEYSCAN_FNHOME,
 	TP_ACPI_HKEY_BRGHTDWN_MASK	= 1 << TP_ACPI_HOTKEYSCAN_FNEND,
-<<<<<<< HEAD
-	TP_ACPI_HKEY_THNKLGHT_MASK	= 1 << TP_ACPI_HOTKEYSCAN_FNPAGEUP,
-=======
 	TP_ACPI_HKEY_KBD_LIGHT_MASK	= 1 << TP_ACPI_HOTKEYSCAN_FNPAGEUP,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_ACPI_HKEY_ZOOM_MASK		= 1 << TP_ACPI_HOTKEYSCAN_FNSPACE,
 	TP_ACPI_HKEY_VOLUP_MASK		= 1 << TP_ACPI_HOTKEYSCAN_VOLUMEUP,
 	TP_ACPI_HKEY_VOLDWN_MASK	= 1 << TP_ACPI_HOTKEYSCAN_VOLUMEDOWN,
@@ -2457,12 +1842,6 @@ struct tp_nvram_state {
 /* kthread for the hotkey poller */
 static struct task_struct *tpacpi_hotkey_task;
 
-<<<<<<< HEAD
-/* Acquired while the poller kthread is running, use to sync start/stop */
-static struct mutex hotkey_thread_mutex;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Acquire mutex to write poller control variables as an
  * atomic block.
@@ -2516,34 +1895,20 @@ static int hotkey_autosleep_ack;
 
 static u32 hotkey_orig_mask;		/* events the BIOS had enabled */
 static u32 hotkey_all_mask;		/* all events supported in fw */
-<<<<<<< HEAD
-=======
 static u32 hotkey_adaptive_all_mask;	/* all adaptive events supported in fw */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 hotkey_reserved_mask;	/* events better left disabled */
 static u32 hotkey_driver_mask;		/* events needed by the driver */
 static u32 hotkey_user_mask;		/* events visible to userspace */
 static u32 hotkey_acpi_mask;		/* events enabled in firmware */
 
-<<<<<<< HEAD
-static unsigned int hotkey_report_mode;
-
 static u16 *hotkey_keycode_map;
 
-static struct attribute_set *hotkey_dev_attributes;
-
-=======
-static u16 *hotkey_keycode_map;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void tpacpi_driver_event(const unsigned int hkey_event);
 static void hotkey_driver_event(const unsigned int scancode);
 static void hotkey_poll_setup(const bool may_warn);
 
 /* HKEY.MHKG() return bits */
 #define TP_HOTKEY_TABLET_MASK (1 << 3)
-<<<<<<< HEAD
-=======
 enum {
 	TP_ACPI_MULTI_MODE_INVALID	= 0,
 	TP_ACPI_MULTI_MODE_UNKNOWN	= 1 << 0,
@@ -2566,7 +1931,6 @@ enum {
 					  TP_ACPI_MULTI_MODE_TENT |
 					  TP_ACPI_MULTI_MODE_STAND_TENT,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int hotkey_get_wlsw(void)
 {
@@ -2587,8 +1951,6 @@ static int hotkey_get_wlsw(void)
 	return (status) ? TPACPI_RFK_RADIO_ON : TPACPI_RFK_RADIO_OFF;
 }
 
-<<<<<<< HEAD
-=======
 static int hotkey_gmms_get_tablet_mode(int s, int *has_tablet_mode)
 {
 	int type = (s >> 16) & 0xffff;
@@ -2671,17 +2033,10 @@ static int hotkey_gmms_get_tablet_mode(int s, int *has_tablet_mode)
 	return !!(mode & TP_ACPI_MULTI_MODE_TABLET_LIKE);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hotkey_get_tablet_mode(int *status)
 {
 	int s;
 
-<<<<<<< HEAD
-	if (!acpi_evalf(hkey_handle, &s, "MHKG", "d"))
-		return -EIO;
-
-	*status = ((s & TP_HOTKEY_TABLET_MASK) != 0);
-=======
 	switch (tp_features.hotkey_tablet) {
 	case TP_HOTKEY_TABLET_USES_MHKG:
 		if (!acpi_evalf(hkey_handle, &s, "MHKG", "d"))
@@ -2699,7 +2054,6 @@ static int hotkey_get_tablet_mode(int *status)
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2708,19 +2062,11 @@ static int hotkey_get_tablet_mode(int *status)
  * hotkey_acpi_mask accordingly.  Also resets any bits
  * from hotkey_user_mask that are unavailable to be
  * delivered (shadow requirement of the userspace ABI).
-<<<<<<< HEAD
- *
- * Call with hotkey_mutex held
- */
-static int hotkey_mask_get(void)
-{
-=======
  */
 static int hotkey_mask_get(void)
 {
 	lockdep_assert_held(&hotkey_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tp_features.hotkey_mask) {
 		u32 m = 0;
 
@@ -2739,11 +2085,7 @@ static int hotkey_mask_get(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-void static hotkey_mask_warn_incomplete_mask(void)
-=======
 static void hotkey_mask_warn_incomplete_mask(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* log only what the user can fix... */
 	const u32 wantedmask = hotkey_driver_mask &
@@ -2760,11 +2102,6 @@ static void hotkey_mask_warn_incomplete_mask(void)
  * Also calls hotkey_mask_get to update hotkey_acpi_mask.
  *
  * NOTE: does not set bits in hotkey_user_mask, but may reset them.
-<<<<<<< HEAD
- *
- * Call with hotkey_mutex held
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int hotkey_mask_set(u32 mask)
 {
@@ -2773,11 +2110,8 @@ static int hotkey_mask_set(u32 mask)
 
 	const u32 fwmask = mask & ~hotkey_source_mask;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&hotkey_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tp_features.hotkey_mask) {
 		for (i = 0; i < 32; i++) {
 			if (!acpi_evalf(hkey_handle,
@@ -2797,12 +2131,7 @@ static int hotkey_mask_set(u32 mask)
 	 * a given event.
 	 */
 	if (!hotkey_mask_get() && !rc && (fwmask & ~hotkey_acpi_mask)) {
-<<<<<<< HEAD
-		pr_notice("asked for hotkey mask 0x%08x, but "
-			  "firmware forced it to 0x%08x\n",
-=======
 		pr_notice("asked for hotkey mask 0x%08x, but firmware forced it to 0x%08x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  fwmask, hotkey_acpi_mask);
 	}
 
@@ -2814,38 +2143,22 @@ static int hotkey_mask_set(u32 mask)
 
 /*
  * Sets hotkey_user_mask and tries to set the firmware mask
-<<<<<<< HEAD
- *
- * Call with hotkey_mutex held
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int hotkey_user_mask_set(const u32 mask)
 {
 	int rc;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&hotkey_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Give people a chance to notice they are doing something that
 	 * is bound to go boom on their users sooner or later */
 	if (!tp_warned.hotkey_mask_ff &&
 	    (mask == 0xffff || mask == 0xffffff ||
 	     mask == 0xffffffff)) {
 		tp_warned.hotkey_mask_ff = 1;
-<<<<<<< HEAD
-		pr_notice("setting the hotkey mask to 0x%08x is likely "
-			  "not the best way to go about it\n", mask);
-		pr_notice("please consider using the driver defaults, "
-			  "and refer to up-to-date thinkpad-acpi "
-			  "documentation\n");
-=======
 		pr_notice("setting the hotkey mask to 0x%08x is likely not the best way to go about it\n",
 			  mask);
 		pr_notice("please consider using the driver defaults, and refer to up-to-date thinkpad-acpi documentation\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Try to enable what the user asked for, plus whatever we need.
@@ -2958,13 +2271,6 @@ static struct tp_acpi_drv_struct ibm_hotkey_acpidriver;
 static void tpacpi_hotkey_send_key(unsigned int scancode)
 {
 	tpacpi_input_send_key_masked(scancode);
-<<<<<<< HEAD
-	if (hotkey_report_mode < 2) {
-		acpi_bus_generate_proc_event(ibm_hotkey_acpidriver.device,
-				0x80, TP_HKEY_EV_HOTKEY_BASE + scancode);
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hotkey_read_nvram(struct tp_nvram_state *n, const u32 m)
@@ -2978,11 +2284,7 @@ static void hotkey_read_nvram(struct tp_nvram_state *n, const u32 m)
 		n->display_toggle = !!(d & TP_NVRAM_MASK_HKT_DISPLAY);
 		n->hibernate_toggle = !!(d & TP_NVRAM_MASK_HKT_HIBERNATE);
 	}
-<<<<<<< HEAD
-	if (m & TP_ACPI_HKEY_THNKLGHT_MASK) {
-=======
 	if (m & TP_ACPI_HKEY_KBD_LIGHT_MASK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		d = nvram_read_byte(TP_NVRAM_ADDR_THINKLIGHT);
 		n->thinklight_toggle = !!(d & TP_NVRAM_MASK_THINKLIGHT);
 	}
@@ -3007,8 +2309,6 @@ static void hotkey_read_nvram(struct tp_nvram_state *n, const u32 m)
 	}
 }
 
-<<<<<<< HEAD
-=======
 #define TPACPI_COMPARE_KEY(__scancode, __member) \
 do { \
 	if ((event_mask & (1 << __scancode)) && \
@@ -3054,58 +2354,11 @@ static void issue_brightnesschange(const unsigned int oldbrt,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hotkey_compare_and_issue_event(struct tp_nvram_state *oldn,
 					   struct tp_nvram_state *newn,
 					   const u32 event_mask)
 {
 
-<<<<<<< HEAD
-#define TPACPI_COMPARE_KEY(__scancode, __member) \
-	do { \
-		if ((event_mask & (1 << __scancode)) && \
-		    oldn->__member != newn->__member) \
-			tpacpi_hotkey_send_key(__scancode); \
-	} while (0)
-
-#define TPACPI_MAY_SEND_KEY(__scancode) \
-	do { \
-		if (event_mask & (1 << __scancode)) \
-			tpacpi_hotkey_send_key(__scancode); \
-	} while (0)
-
-	void issue_volchange(const unsigned int oldvol,
-			     const unsigned int newvol)
-	{
-		unsigned int i = oldvol;
-
-		while (i > newvol) {
-			TPACPI_MAY_SEND_KEY(TP_ACPI_HOTKEYSCAN_VOLUMEDOWN);
-			i--;
-		}
-		while (i < newvol) {
-			TPACPI_MAY_SEND_KEY(TP_ACPI_HOTKEYSCAN_VOLUMEUP);
-			i++;
-		}
-	}
-
-	void issue_brightnesschange(const unsigned int oldbrt,
-				    const unsigned int newbrt)
-	{
-		unsigned int i = oldbrt;
-
-		while (i > newbrt) {
-			TPACPI_MAY_SEND_KEY(TP_ACPI_HOTKEYSCAN_FNEND);
-			i--;
-		}
-		while (i < newbrt) {
-			TPACPI_MAY_SEND_KEY(TP_ACPI_HOTKEYSCAN_FNHOME);
-			i++;
-		}
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TPACPI_COMPARE_KEY(TP_ACPI_HOTKEYSCAN_THINKPAD, thinkpad_toggle);
 	TPACPI_COMPARE_KEY(TP_ACPI_HOTKEYSCAN_FNSPACE, zoom_toggle);
 	TPACPI_COMPARE_KEY(TP_ACPI_HOTKEYSCAN_FNF7, display_toggle);
@@ -3139,12 +2392,8 @@ static void hotkey_compare_and_issue_event(struct tp_nvram_state *oldn,
 		    oldn->volume_level != newn->volume_level) {
 			/* recently muted, or repeated mute keypress, or
 			 * multiple presses ending in mute */
-<<<<<<< HEAD
-			issue_volchange(oldn->volume_level, newn->volume_level);
-=======
 			issue_volchange(oldn->volume_level, newn->volume_level,
 				event_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			TPACPI_MAY_SEND_KEY(TP_ACPI_HOTKEYSCAN_MUTE);
 		}
 	} else {
@@ -3154,12 +2403,8 @@ static void hotkey_compare_and_issue_event(struct tp_nvram_state *oldn,
 			TPACPI_MAY_SEND_KEY(TP_ACPI_HOTKEYSCAN_VOLUMEUP);
 		}
 		if (oldn->volume_level != newn->volume_level) {
-<<<<<<< HEAD
-			issue_volchange(oldn->volume_level, newn->volume_level);
-=======
 			issue_volchange(oldn->volume_level, newn->volume_level,
 				event_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (oldn->volume_toggle != newn->volume_toggle) {
 			/* repeated vol up/down keypress at end of scale ? */
 			if (newn->volume_level == 0)
@@ -3172,11 +2417,7 @@ static void hotkey_compare_and_issue_event(struct tp_nvram_state *oldn,
 	/* handle brightness */
 	if (oldn->brightness_level != newn->brightness_level) {
 		issue_brightnesschange(oldn->brightness_level,
-<<<<<<< HEAD
-				       newn->brightness_level);
-=======
 				       newn->brightness_level, event_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (oldn->brightness_toggle != newn->brightness_toggle) {
 		/* repeated key presses that didn't change state */
 		if (newn->brightness_level == 0)
@@ -3199,11 +2440,7 @@ static void hotkey_compare_and_issue_event(struct tp_nvram_state *oldn,
  */
 static int hotkey_kthread(void *data)
 {
-<<<<<<< HEAD
-	struct tp_nvram_state s[2];
-=======
 	struct tp_nvram_state s[2] = { 0 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 poll_mask, event_mask;
 	unsigned int si, so;
 	unsigned long t;
@@ -3211,11 +2448,6 @@ static int hotkey_kthread(void *data)
 	unsigned int poll_freq;
 	bool was_frozen;
 
-<<<<<<< HEAD
-	mutex_lock(&hotkey_thread_mutex);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tpacpi_lifecycle == TPACPI_LIFE_EXITING)
 		goto exit;
 
@@ -3275,25 +2507,6 @@ static int hotkey_kthread(void *data)
 	}
 
 exit:
-<<<<<<< HEAD
-	mutex_unlock(&hotkey_thread_mutex);
-	return 0;
-}
-
-/* call with hotkey_mutex held */
-static void hotkey_poll_stop_sync(void)
-{
-	if (tpacpi_hotkey_task) {
-		kthread_stop(tpacpi_hotkey_task);
-		tpacpi_hotkey_task = NULL;
-		mutex_lock(&hotkey_thread_mutex);
-		/* at this point, the thread did exit */
-		mutex_unlock(&hotkey_thread_mutex);
-	}
-}
-
-/* call with hotkey_mutex held */
-=======
 	return 0;
 }
 
@@ -3307,17 +2520,13 @@ static void hotkey_poll_stop_sync(void)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hotkey_poll_setup(const bool may_warn)
 {
 	const u32 poll_driver_mask = hotkey_driver_mask & hotkey_source_mask;
 	const u32 poll_user_mask = hotkey_user_mask & hotkey_source_mask;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&hotkey_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hotkey_poll_freq > 0 &&
 	    (poll_driver_mask ||
 	     (poll_user_mask && tpacpi_inputdev->users > 0))) {
@@ -3326,25 +2535,14 @@ static void hotkey_poll_setup(const bool may_warn)
 					NULL, TPACPI_NVRAM_KTHREAD_NAME);
 			if (IS_ERR(tpacpi_hotkey_task)) {
 				tpacpi_hotkey_task = NULL;
-<<<<<<< HEAD
-				pr_err("could not create kernel thread "
-				       "for hotkey polling\n");
-=======
 				pr_err("could not create kernel thread for hotkey polling\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	} else {
 		hotkey_poll_stop_sync();
 		if (may_warn && (poll_driver_mask || poll_user_mask) &&
 		    hotkey_poll_freq == 0) {
-<<<<<<< HEAD
-			pr_notice("hot keys 0x%08x and/or events 0x%08x "
-				  "require polling, which is currently "
-				  "disabled\n",
-=======
 			pr_notice("hot keys 0x%08x and/or events 0x%08x require polling, which is currently disabled\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  poll_user_mask, poll_driver_mask);
 		}
 	}
@@ -3357,16 +2555,10 @@ static void hotkey_poll_setup_safe(const bool may_warn)
 	mutex_unlock(&hotkey_mutex);
 }
 
-<<<<<<< HEAD
-/* call with hotkey_mutex held */
-static void hotkey_poll_set_freq(unsigned int freq)
-{
-=======
 static void hotkey_poll_set_freq(unsigned int freq)
 {
 	lockdep_assert_held(&hotkey_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!freq)
 		hotkey_poll_stop_sync();
 
@@ -3423,11 +2615,7 @@ static ssize_t hotkey_enable_show(struct device *dev,
 	if (res)
 		return res;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", status);
-=======
 	return sysfs_emit(buf, "%d\n", status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t hotkey_enable_store(struct device *dev,
@@ -3448,24 +2636,14 @@ static ssize_t hotkey_enable_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static struct device_attribute dev_attr_hotkey_enable =
-	__ATTR(hotkey_enable, S_IWUSR | S_IRUGO,
-		hotkey_enable_show, hotkey_enable_store);
-=======
 static DEVICE_ATTR_RW(hotkey_enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sysfs hotkey mask --------------------------------------------------- */
 static ssize_t hotkey_mask_show(struct device *dev,
 			   struct device_attribute *attr,
 			   char *buf)
 {
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "0x%08x\n", hotkey_user_mask);
-=======
 	return sysfs_emit(buf, "0x%08x\n", hotkey_user_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t hotkey_mask_store(struct device *dev,
@@ -3494,13 +2672,7 @@ static ssize_t hotkey_mask_store(struct device *dev,
 	return (res) ? res : count;
 }
 
-<<<<<<< HEAD
-static struct device_attribute dev_attr_hotkey_mask =
-	__ATTR(hotkey_mask, S_IWUSR | S_IRUGO,
-		hotkey_mask_show, hotkey_mask_store);
-=======
 static DEVICE_ATTR_RW(hotkey_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sysfs hotkey bios_enabled ------------------------------------------- */
 static ssize_t hotkey_bios_enabled_show(struct device *dev,
@@ -3510,12 +2682,7 @@ static ssize_t hotkey_bios_enabled_show(struct device *dev,
 	return sprintf(buf, "0\n");
 }
 
-<<<<<<< HEAD
-static struct device_attribute dev_attr_hotkey_bios_enabled =
-	__ATTR(hotkey_bios_enabled, S_IRUGO, hotkey_bios_enabled_show, NULL);
-=======
 static DEVICE_ATTR_RO(hotkey_bios_enabled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sysfs hotkey bios_mask ---------------------------------------------- */
 static ssize_t hotkey_bios_mask_show(struct device *dev,
@@ -3524,32 +2691,16 @@ static ssize_t hotkey_bios_mask_show(struct device *dev,
 {
 	printk_deprecated_attribute("hotkey_bios_mask",
 			"This attribute is useless.");
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "0x%08x\n", hotkey_orig_mask);
-}
-
-static struct device_attribute dev_attr_hotkey_bios_mask =
-	__ATTR(hotkey_bios_mask, S_IRUGO, hotkey_bios_mask_show, NULL);
-=======
 	return sysfs_emit(buf, "0x%08x\n", hotkey_orig_mask);
 }
 
 static DEVICE_ATTR_RO(hotkey_bios_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sysfs hotkey all_mask ----------------------------------------------- */
 static ssize_t hotkey_all_mask_show(struct device *dev,
 			   struct device_attribute *attr,
 			   char *buf)
 {
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "0x%08x\n",
-				hotkey_all_mask | hotkey_source_mask);
-}
-
-static struct device_attribute dev_attr_hotkey_all_mask =
-	__ATTR(hotkey_all_mask, S_IRUGO, hotkey_all_mask_show, NULL);
-=======
 	return sysfs_emit(buf, "0x%08x\n",
 				hotkey_all_mask | hotkey_source_mask);
 }
@@ -3566,29 +2717,18 @@ static ssize_t hotkey_adaptive_all_mask_show(struct device *dev,
 }
 
 static DEVICE_ATTR_RO(hotkey_adaptive_all_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sysfs hotkey recommended_mask --------------------------------------- */
 static ssize_t hotkey_recommended_mask_show(struct device *dev,
 					    struct device_attribute *attr,
 					    char *buf)
 {
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "0x%08x\n",
-=======
 	return sysfs_emit(buf, "0x%08x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(hotkey_all_mask | hotkey_source_mask)
 			& ~hotkey_reserved_mask);
 }
 
-<<<<<<< HEAD
-static struct device_attribute dev_attr_hotkey_recommended_mask =
-	__ATTR(hotkey_recommended_mask, S_IRUGO,
-		hotkey_recommended_mask_show, NULL);
-=======
 static DEVICE_ATTR_RO(hotkey_recommended_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_THINKPAD_ACPI_HOTKEY_POLL
 
@@ -3597,11 +2737,7 @@ static ssize_t hotkey_source_mask_show(struct device *dev,
 			   struct device_attribute *attr,
 			   char *buf)
 {
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "0x%08x\n", hotkey_source_mask);
-=======
 	return sysfs_emit(buf, "0x%08x\n", hotkey_source_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t hotkey_source_mask_store(struct device *dev,
@@ -3634,19 +2770,10 @@ static ssize_t hotkey_source_mask_store(struct device *dev,
 	mutex_unlock(&hotkey_mutex);
 
 	if (rc < 0)
-<<<<<<< HEAD
-		pr_err("hotkey_source_mask: "
-		       "failed to update the firmware event mask!\n");
-
-	if (r_ev)
-		pr_notice("hotkey_source_mask: "
-			  "some important events were disabled: 0x%04x\n",
-=======
 		pr_err("hotkey_source_mask: failed to update the firmware event mask!\n");
 
 	if (r_ev)
 		pr_notice("hotkey_source_mask: some important events were disabled: 0x%04x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  r_ev);
 
 	tpacpi_disclose_usertask("hotkey_source_mask", "set to 0x%08lx\n", t);
@@ -3654,24 +2781,14 @@ static ssize_t hotkey_source_mask_store(struct device *dev,
 	return (rc < 0) ? rc : count;
 }
 
-<<<<<<< HEAD
-static struct device_attribute dev_attr_hotkey_source_mask =
-	__ATTR(hotkey_source_mask, S_IWUSR | S_IRUGO,
-		hotkey_source_mask_show, hotkey_source_mask_store);
-=======
 static DEVICE_ATTR_RW(hotkey_source_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sysfs hotkey hotkey_poll_freq --------------------------------------- */
 static ssize_t hotkey_poll_freq_show(struct device *dev,
 			   struct device_attribute *attr,
 			   char *buf)
 {
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", hotkey_poll_freq);
-=======
 	return sysfs_emit(buf, "%d\n", hotkey_poll_freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t hotkey_poll_freq_store(struct device *dev,
@@ -3696,13 +2813,7 @@ static ssize_t hotkey_poll_freq_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static struct device_attribute dev_attr_hotkey_poll_freq =
-	__ATTR(hotkey_poll_freq, S_IWUSR | S_IRUGO,
-		hotkey_poll_freq_show, hotkey_poll_freq_store);
-=======
 static DEVICE_ATTR_RW(hotkey_poll_freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_THINKPAD_ACPI_HOTKEY_POLL */
 
@@ -3719,20 +2830,11 @@ static ssize_t hotkey_radio_sw_show(struct device *dev,
 	/* Opportunistic update */
 	tpacpi_rfk_update_hwblock_state((res == TPACPI_RFK_RADIO_OFF));
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n",
-			(res == TPACPI_RFK_RADIO_OFF) ? 0 : 1);
-}
-
-static struct device_attribute dev_attr_hotkey_radio_sw =
-	__ATTR(hotkey_radio_sw, S_IRUGO, hotkey_radio_sw_show, NULL);
-=======
 	return sysfs_emit(buf, "%d\n",
 			(res == TPACPI_RFK_RADIO_OFF) ? 0 : 1);
 }
 
 static DEVICE_ATTR_RO(hotkey_radio_sw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void hotkey_radio_sw_notify_change(void)
 {
@@ -3751,18 +2853,10 @@ static ssize_t hotkey_tablet_mode_show(struct device *dev,
 	if (res < 0)
 		return res;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", !!s);
-}
-
-static struct device_attribute dev_attr_hotkey_tablet_mode =
-	__ATTR(hotkey_tablet_mode, S_IRUGO, hotkey_tablet_mode_show, NULL);
-=======
 	return sysfs_emit(buf, "%d\n", !!s);
 }
 
 static DEVICE_ATTR_RO(hotkey_tablet_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void hotkey_tablet_mode_notify_change(void)
 {
@@ -3771,38 +2865,15 @@ static void hotkey_tablet_mode_notify_change(void)
 			     "hotkey_tablet_mode");
 }
 
-<<<<<<< HEAD
-/* sysfs hotkey report_mode -------------------------------------------- */
-static ssize_t hotkey_report_mode_show(struct device *dev,
-			   struct device_attribute *attr,
-			   char *buf)
-{
-	return snprintf(buf, PAGE_SIZE, "%d\n",
-		(hotkey_report_mode != 0) ? hotkey_report_mode : 1);
-}
-
-static struct device_attribute dev_attr_hotkey_report_mode =
-	__ATTR(hotkey_report_mode, S_IRUGO, hotkey_report_mode_show, NULL);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sysfs wakeup reason (pollable) -------------------------------------- */
 static ssize_t hotkey_wakeup_reason_show(struct device *dev,
 			   struct device_attribute *attr,
 			   char *buf)
 {
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", hotkey_wakeup_reason);
-}
-
-static struct device_attribute dev_attr_hotkey_wakeup_reason =
-	__ATTR(wakeup_reason, S_IRUGO, hotkey_wakeup_reason_show, NULL);
-=======
 	return sysfs_emit(buf, "%d\n", hotkey_wakeup_reason);
 }
 
 static DEVICE_ATTR(wakeup_reason, S_IRUGO, hotkey_wakeup_reason_show, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void hotkey_wakeup_reason_notify_change(void)
 {
@@ -3815,20 +2886,11 @@ static ssize_t hotkey_wakeup_hotunplug_complete_show(struct device *dev,
 			   struct device_attribute *attr,
 			   char *buf)
 {
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", hotkey_autosleep_ack);
-}
-
-static struct device_attribute dev_attr_hotkey_wakeup_hotunplug_complete =
-	__ATTR(wakeup_hotunplug_complete, S_IRUGO,
-	       hotkey_wakeup_hotunplug_complete_show, NULL);
-=======
 	return sysfs_emit(buf, "%d\n", hotkey_autosleep_ack);
 }
 
 static DEVICE_ATTR(wakeup_hotunplug_complete, S_IRUGO,
 		   hotkey_wakeup_hotunplug_complete_show, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void hotkey_wakeup_hotunplug_complete_notify_change(void)
 {
@@ -3836,20 +2898,6 @@ static void hotkey_wakeup_hotunplug_complete_notify_change(void)
 		     "wakeup_hotunplug_complete");
 }
 
-<<<<<<< HEAD
-/* --------------------------------------------------------------------- */
-
-static struct attribute *hotkey_attributes[] __initdata = {
-	&dev_attr_hotkey_enable.attr,
-	&dev_attr_hotkey_bios_enabled.attr,
-	&dev_attr_hotkey_bios_mask.attr,
-	&dev_attr_hotkey_report_mode.attr,
-	&dev_attr_hotkey_wakeup_reason.attr,
-	&dev_attr_hotkey_wakeup_hotunplug_complete.attr,
-	&dev_attr_hotkey_mask.attr,
-	&dev_attr_hotkey_all_mask.attr,
-	&dev_attr_hotkey_recommended_mask.attr,
-=======
 /* sysfs adaptive kbd mode --------------------------------------------- */
 
 static int adaptive_keyboard_get_mode(void);
@@ -3922,13 +2970,10 @@ static struct attribute *hotkey_attributes[] = {
 	&dev_attr_hotkey_recommended_mask.attr,
 	&dev_attr_hotkey_tablet_mode.attr,
 	&dev_attr_hotkey_radio_sw.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_THINKPAD_ACPI_HOTKEY_POLL
 	&dev_attr_hotkey_source_mask.attr,
 	&dev_attr_hotkey_poll_freq.attr,
 #endif
-<<<<<<< HEAD
-=======
 	NULL
 };
 
@@ -3949,7 +2994,6 @@ static umode_t hotkey_attr_is_visible(struct kobject *kobj,
 static const struct attribute_group hotkey_attr_group = {
 	.is_visible = hotkey_attr_is_visible,
 	.attrs = hotkey_attributes,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -3976,12 +3020,6 @@ static void tpacpi_send_radiosw_update(void)
 	if (wlsw == TPACPI_RFK_RADIO_OFF)
 		tpacpi_rfk_update_hwblock_state(true);
 
-<<<<<<< HEAD
-	/* Sync sw blocking state */
-	tpacpi_rfk_update_swstate_all();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Sync hw blocking state last if it is hw-unblocked */
 	if (wlsw == TPACPI_RFK_RADIO_ON)
 		tpacpi_rfk_update_hwblock_state(false);
@@ -4011,15 +3049,6 @@ static void hotkey_exit(void)
 	hotkey_poll_stop_sync();
 	mutex_unlock(&hotkey_mutex);
 #endif
-<<<<<<< HEAD
-
-	if (hotkey_dev_attributes)
-		delete_attr_set(hotkey_dev_attributes, &tpacpi_pdev->dev.kobj);
-
-	kfree(hotkey_keycode_map);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dbg_printk(TPACPI_DBG_EXIT | TPACPI_DBG_HKEY,
 		   "restoring original HKEY status and mask\n");
 	/* yes, there is a bitwise or below, we want the
@@ -4027,12 +3056,7 @@ static void hotkey_exit(void)
 	if (((tp_features.hotkey_mask &&
 	      hotkey_mask_set(hotkey_orig_mask)) |
 	     hotkey_status_set(false)) != 0)
-<<<<<<< HEAD
-		pr_err("failed to restore hot key mask "
-		       "to BIOS defaults\n");
-=======
 		pr_err("failed to restore hot key mask to BIOS defaults\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init hotkey_unmap(const unsigned int scancode)
@@ -4076,8 +3100,6 @@ static const struct tpacpi_quirk tpacpi_hotkey_qtable[] __initconst = {
 typedef u16 tpacpi_keymap_entry_t;
 typedef tpacpi_keymap_entry_t tpacpi_keymap_t[TPACPI_HOTKEY_MAP_LEN];
 
-<<<<<<< HEAD
-=======
 static int hotkey_init_tablet_mode(void)
 {
 	int in_tablet_mode = 0, res;
@@ -4114,7 +3136,6 @@ static int hotkey_init_tablet_mode(void)
 	return in_tablet_mode;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init hotkey_init(struct ibm_init_struct *iibm)
 {
 	/* Requirements for changing the default keymaps:
@@ -4187,8 +3208,6 @@ static int __init hotkey_init(struct ibm_init_struct *iibm)
 		/* (assignments unknown, please report if found) */
 		KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,
 		KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,
-<<<<<<< HEAD
-=======
 
 		/* No assignments, only used for Adaptive keyboards. */
 		KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,
@@ -4205,7 +3224,6 @@ static int __init hotkey_init(struct ibm_init_struct *iibm)
 		KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,
 		KEY_UNKNOWN, KEY_UNKNOWN
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 
 	/* Generic keymap for Lenovo ThinkPads */
@@ -4258,10 +3276,6 @@ static int __init hotkey_init(struct ibm_init_struct *iibm)
 		KEY_MICMUTE,	/* 0x1a: Mic mute (since ?400 or so) */
 
 		/* (assignments unknown, please report if found) */
-<<<<<<< HEAD
-		KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,
-		KEY_UNKNOWN,
-=======
 		KEY_UNKNOWN,
 
 		/* Extra keys in use since the X240 / T440 / T540 */
@@ -4322,7 +3336,6 @@ static int __init hotkey_init(struct ibm_init_struct *iibm)
 		KEY_NOTIFICATION_CENTER,	/* Notification Center */
 		KEY_PICKUP_PHONE,		/* Answer incoming call */
 		KEY_HANGUP_PHONE,		/* Decline incoming call */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 	};
 
@@ -4363,10 +3376,6 @@ static int __init hotkey_init(struct ibm_init_struct *iibm)
 	mutex_init(&hotkey_mutex);
 
 #ifdef CONFIG_THINKPAD_ACPI_HOTKEY_POLL
-<<<<<<< HEAD
-	mutex_init(&hotkey_thread_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&hotkey_thread_data_mutex);
 #endif
 
@@ -4378,79 +3387,38 @@ static int __init hotkey_init(struct ibm_init_struct *iibm)
 		str_supported(tp_features.hotkey));
 
 	if (!tp_features.hotkey)
-<<<<<<< HEAD
-		return 1;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	quirks = tpacpi_check_quirks(tpacpi_hotkey_qtable,
 				     ARRAY_SIZE(tpacpi_hotkey_qtable));
 
 	tpacpi_disable_brightness_delay();
 
-<<<<<<< HEAD
-	/* MUST have enough space for all attributes to be added to
-	 * hotkey_dev_attributes */
-	hotkey_dev_attributes = create_attr_set(
-					ARRAY_SIZE(hotkey_attributes) + 2,
-					NULL);
-	if (!hotkey_dev_attributes)
-		return -ENOMEM;
-	res = add_many_to_attr_set(hotkey_dev_attributes,
-			hotkey_attributes,
-			ARRAY_SIZE(hotkey_attributes));
-	if (res)
-		goto err_exit;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* mask not supported on 600e/x, 770e, 770x, A21e, A2xm/p,
 	   A30, R30, R31, T20-22, X20-21, X22-24.  Detected by checking
 	   for HKEY interface version 0x100 */
 	if (acpi_evalf(hkey_handle, &hkeyv, "MHKV", "qd")) {
-<<<<<<< HEAD
-		if ((hkeyv >> 8) != 1) {
-			pr_err("unknown version of the HKEY interface: 0x%x\n",
-			       hkeyv);
-			pr_err("please report this to %s\n", TPACPI_MAIL);
-		} else {
-=======
 		vdbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_HKEY,
 			    "firmware HKEY interface version: 0x%x\n",
 			    hkeyv);
 
 		switch (hkeyv >> 8) {
 		case 1:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * MHKV 0x100 in A31, R40, R40e,
 			 * T4x, X31, and later
 			 */
-<<<<<<< HEAD
-			vdbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_HKEY,
-				"firmware HKEY interface version: 0x%x\n",
-				hkeyv);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Paranoia check AND init hotkey_all_mask */
 			if (!acpi_evalf(hkey_handle, &hotkey_all_mask,
 					"MHKA", "qd")) {
-<<<<<<< HEAD
-				pr_err("missing MHKA handler, "
-				       "please report this to %s\n",
-=======
 				pr_err("missing MHKA handler, please report this to %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       TPACPI_MAIL);
 				/* Fallback: pre-init for FN+F3,F4,F12 */
 				hotkey_all_mask = 0x080cU;
 			} else {
 				tp_features.hotkey_mask = 1;
 			}
-<<<<<<< HEAD
-=======
 			break;
 
 		case 2:
@@ -4488,7 +3456,6 @@ static int __init hotkey_init(struct ibm_init_struct *iibm)
 			       hkeyv);
 			pr_err("please report this to %s\n", TPACPI_MAIL);
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -4505,17 +3472,11 @@ static int __init hotkey_init(struct ibm_init_struct *iibm)
 	if (tp_features.hotkey_mask) {
 		/* hotkey_source_mask *must* be zero for
 		 * the first hotkey_mask_get to return hotkey_orig_mask */
-<<<<<<< HEAD
-		res = hotkey_mask_get();
-		if (res)
-			goto err_exit;
-=======
 		mutex_lock(&hotkey_mutex);
 		res = hotkey_mask_get();
 		mutex_unlock(&hotkey_mutex);
 		if (res)
 			return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hotkey_orig_mask = hotkey_acpi_mask;
 	} else {
@@ -4534,66 +3495,24 @@ static int __init hotkey_init(struct ibm_init_struct *iibm)
 	if (acpi_evalf(hkey_handle, &status, "WLSW", "qd")) {
 		tp_features.hotkey_wlsw = 1;
 		radiosw_state = !!status;
-<<<<<<< HEAD
-		pr_info("radio switch found; radios are %s\n",
-			enabled(status, 0));
-	}
-	if (tp_features.hotkey_wlsw)
-		res = add_to_attr_set(hotkey_dev_attributes,
-				&dev_attr_hotkey_radio_sw.attr);
-
-	/* For X41t, X60t, X61t Tablets... */
-	if (!res && acpi_evalf(hkey_handle, &status, "MHKG", "qd")) {
-		tp_features.hotkey_tablet = 1;
-		tabletsw_state = !!(status & TP_HOTKEY_TABLET_MASK);
-		pr_info("possible tablet mode switch found; "
-			"ThinkPad in %s mode\n",
-			(tabletsw_state) ? "tablet" : "laptop");
-		res = add_to_attr_set(hotkey_dev_attributes,
-				&dev_attr_hotkey_tablet_mode.attr);
-	}
-
-	if (!res)
-		res = register_attr_set_with_sysfs(
-				hotkey_dev_attributes,
-				&tpacpi_pdev->dev.kobj);
-	if (res)
-		goto err_exit;
-
-	/* Set up key map */
-	hotkey_keycode_map = kmalloc(TPACPI_HOTKEY_MAP_SIZE,
-					GFP_KERNEL);
-	if (!hotkey_keycode_map) {
-		pr_err("failed to allocate memory for key map\n");
-		res = -ENOMEM;
-		goto err_exit;
-	}
-
-=======
 		pr_info("radio switch found; radios are %s\n", str_enabled_disabled(status & BIT(0)));
 	}
 
 	tabletsw_state = hotkey_init_tablet_mode();
 
 	/* Set up key map */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	keymap_id = tpacpi_check_quirks(tpacpi_keymap_qtable,
 					ARRAY_SIZE(tpacpi_keymap_qtable));
 	BUG_ON(keymap_id >= ARRAY_SIZE(tpacpi_keymaps));
 	dbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_HKEY,
 		   "using keymap number %lu\n", keymap_id);
 
-<<<<<<< HEAD
-	memcpy(hotkey_keycode_map, &tpacpi_keymaps[keymap_id],
-		TPACPI_HOTKEY_MAP_SIZE);
-=======
 	hotkey_keycode_map = kmemdup(&tpacpi_keymaps[keymap_id],
 			TPACPI_HOTKEY_MAP_SIZE,	GFP_KERNEL);
 	if (!hotkey_keycode_map) {
 		pr_err("failed to allocate memory for key map\n");
 		return -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_set_capability(tpacpi_inputdev, EV_MSC, MSC_SCAN);
 	tpacpi_inputdev->keycodesize = TPACPI_HOTKEY_MAP_TYPESIZE;
@@ -4623,18 +3542,9 @@ static int __init hotkey_init(struct ibm_init_struct *iibm)
 	/* Do not issue duplicate brightness change events to
 	 * userspace. tpacpi_detect_brightness_capabilities() must have
 	 * been called before this point  */
-<<<<<<< HEAD
-	if (acpi_video_backlight_support()) {
-		pr_info("This ThinkPad has standard ACPI backlight "
-			"brightness control, supported by the ACPI "
-			"video driver\n");
-		pr_notice("Disabling thinkpad-acpi brightness events "
-			  "by default...\n");
-=======
 	if (acpi_video_get_backlight_type() != acpi_backlight_vendor) {
 		pr_info("This ThinkPad has standard ACPI backlight brightness control, supported by the ACPI video driver\n");
 		pr_notice("Disabling thinkpad-acpi brightness events by default...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Disable brightness up/down on Lenovo thinkpads when
 		 * ACPI is handling them, otherwise it is plain impossible
@@ -4663,17 +3573,11 @@ static int __init hotkey_init(struct ibm_init_struct *iibm)
 		hotkey_exit();
 		return res;
 	}
-<<<<<<< HEAD
-	res = hotkey_mask_set(((hotkey_all_mask & ~hotkey_reserved_mask)
-			       | hotkey_driver_mask)
-			      & ~hotkey_source_mask);
-=======
 	mutex_lock(&hotkey_mutex);
 	res = hotkey_mask_set(((hotkey_all_mask & ~hotkey_reserved_mask)
 			       | hotkey_driver_mask)
 			      & ~hotkey_source_mask);
 	mutex_unlock(&hotkey_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res < 0 && res != -ENXIO) {
 		hotkey_exit();
 		return res;
@@ -4684,28 +3588,12 @@ static int __init hotkey_init(struct ibm_init_struct *iibm)
 		"initial masks: user=0x%08x, fw=0x%08x, poll=0x%08x\n",
 		hotkey_user_mask, hotkey_acpi_mask, hotkey_source_mask);
 
-<<<<<<< HEAD
-	dbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_HKEY,
-			"legacy ibm/hotkey event reporting over procfs %s\n",
-			(hotkey_report_mode < 2) ?
-				"enabled" : "disabled");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tpacpi_inputdev->open = &hotkey_inputdev_open;
 	tpacpi_inputdev->close = &hotkey_inputdev_close;
 
 	hotkey_poll_setup_safe(true);
 
 	return 0;
-<<<<<<< HEAD
-
-err_exit:
-	delete_attr_set(hotkey_dev_attributes, &tpacpi_pdev->dev.kobj);
-	hotkey_dev_attributes = NULL;
-
-	return (res < 0)? res : 1;
-=======
 }
 
 /* Thinkpad X1 Carbon support 5 modes including Home mode, Web browser
@@ -4862,7 +3750,6 @@ static bool hotkey_notify_extended_hotkey(const u32 hkey)
 	}
 
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool hotkey_notify_hotkey(const u32 hkey,
@@ -4874,19 +3761,6 @@ static bool hotkey_notify_hotkey(const u32 hkey,
 	*send_acpi_ev = true;
 	*ignore_acpi_ev = false;
 
-<<<<<<< HEAD
-	/* HKEY event 0x1001 is scancode 0x00 */
-	if (scancode > 0 && scancode <= TPACPI_HOTKEY_MAP_LEN) {
-		scancode--;
-		if (!(hotkey_source_mask & (1 << scancode))) {
-			tpacpi_input_send_key_masked(scancode);
-			*send_acpi_ev = false;
-		} else {
-			*ignore_acpi_ev = true;
-		}
-		return true;
-	}
-=======
 	/*
 	 * Original events are in the 0x10XX range, the adaptive keyboard
 	 * found in 2014 X1 Carbon emits events are of 0x11XX. In 2017
@@ -4915,7 +3789,6 @@ static bool hotkey_notify_hotkey(const u32 hkey,
 		return hotkey_notify_extended_hotkey(hkey);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return false;
 }
 
@@ -4982,8 +3855,6 @@ static bool hotkey_notify_dockevent(const u32 hkey,
 		pr_info("undocked from hotplug port replicator\n");
 		return true;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Deliberately ignore attaching and detaching the keybord cover to avoid
 	 * duplicates from intel-vbtn, which already emits SW_TABLET_MODE events
@@ -5001,7 +3872,6 @@ static bool hotkey_notify_dockevent(const u32 hkey,
 		*ignore_acpi_ev = true;
 		return true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return false;
 	}
@@ -5040,29 +3910,18 @@ static bool hotkey_notify_usrevent(const u32 hkey,
 }
 
 static void thermal_dump_all_sensors(void);
-<<<<<<< HEAD
-=======
 static void palmsensor_refresh(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool hotkey_notify_6xxx(const u32 hkey,
 				 bool *send_acpi_ev,
 				 bool *ignore_acpi_ev)
 {
-<<<<<<< HEAD
-	bool known = true;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 0x6000-0x6FFF: thermal alarms/notices and keyboard events */
 	*send_acpi_ev = true;
 	*ignore_acpi_ev = false;
 
 	switch (hkey) {
 	case TP_HKEY_EV_THM_TABLE_CHANGED:
-<<<<<<< HEAD
-		pr_info("EC reports that Thermal Table has changed\n");
-=======
 		pr_debug("EC reports: Thermal Table has changed\n");
 		/* recommended action: do nothing, we don't have
 		 * Lenovo ATM information */
@@ -5074,7 +3933,6 @@ static bool hotkey_notify_6xxx(const u32 hkey,
 		return true;
 	case TP_HKEY_EV_THM_TRANSFM_CHANGED:
 		pr_debug("EC reports: Thermal Transformation changed (GMTS)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* recommended action: do nothing, we don't have
 		 * Lenovo ATM information */
 		return true;
@@ -5087,22 +3945,11 @@ static bool hotkey_notify_6xxx(const u32 hkey,
 		/* recommended action: immediate sleep/hibernate */
 		break;
 	case TP_HKEY_EV_ALARM_SENSOR_HOT:
-<<<<<<< HEAD
-		pr_crit("THERMAL ALARM: "
-			"a sensor reports something is too hot!\n");
-=======
 		pr_crit("THERMAL ALARM: a sensor reports something is too hot!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* recommended action: warn user through gui, that */
 		/* some internal component is too hot */
 		break;
 	case TP_HKEY_EV_ALARM_SENSOR_XHOT:
-<<<<<<< HEAD
-		pr_alert("THERMAL EMERGENCY: "
-			 "a sensor reports something is extremely hot!\n");
-		/* recommended action: immediate sleep/hibernate */
-		break;
-=======
 		pr_alert("THERMAL EMERGENCY: a sensor reports something is extremely hot!\n");
 		/* recommended action: immediate sleep/hibernate */
 		break;
@@ -5112,7 +3959,6 @@ static bool hotkey_notify_6xxx(const u32 hkey,
 		 * unplugging AC adapter, docking or undocking. */
 
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case TP_HKEY_EV_KEY_NUMLOCK:
 	case TP_HKEY_EV_KEY_FN:
@@ -5122,16 +3968,6 @@ static bool hotkey_notify_6xxx(const u32 hkey,
 		*ignore_acpi_ev = true;
 		return true;
 
-<<<<<<< HEAD
-	default:
-		pr_warn("unknown possible thermal alarm or keyboard event received\n");
-		known = false;
-	}
-
-	thermal_dump_all_sensors();
-
-	return known;
-=======
 	case TP_HKEY_EV_KEY_FN_ESC:
 		/* Get the media key status to force the status LED to update */
 		acpi_evalf(hkey_handle, NULL, "GMKS", "v");
@@ -5158,7 +3994,6 @@ static bool hotkey_notify_6xxx(const u32 hkey,
 
 	thermal_dump_all_sensors();
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hotkey_notify(struct ibm_struct *ibm, u32 event)
@@ -5245,30 +4080,14 @@ static void hotkey_notify(struct ibm_struct *ibm, u32 event)
 				known_ev = true;
 				break;
 			}
-<<<<<<< HEAD
-			/* fallthrough to default */
-=======
 			fallthrough;	/* to default */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			known_ev = false;
 		}
 		if (!known_ev) {
 			pr_notice("unhandled HKEY event 0x%04x\n", hkey);
-<<<<<<< HEAD
-			pr_notice("please report the conditions when this "
-				  "event happened to %s\n", TPACPI_MAIL);
-		}
-
-		/* Legacy events */
-		if (!ignore_acpi_ev &&
-		    (send_acpi_ev || hotkey_report_mode < 2)) {
-			acpi_bus_generate_proc_event(ibm->acpi->device,
-						     event, hkey);
-=======
 			pr_notice("please report the conditions when this event happened to %s\n",
 				  TPACPI_MAIL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* netlink events */
@@ -5281,17 +4100,11 @@ static void hotkey_notify(struct ibm_struct *ibm, u32 event)
 	}
 }
 
-<<<<<<< HEAD
-static void hotkey_suspend(pm_message_t state)
-=======
 static void hotkey_suspend(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Do these on suspend, we get the events on early resume! */
 	hotkey_wakeup_reason = TP_ACPI_WAKEUP_NONE;
 	hotkey_autosleep_ack = 0;
-<<<<<<< HEAD
-=======
 
 	/* save previous mode of adaptive keyboard of X1 Carbon */
 	if (tp_features.has_adaptive_kbd) {
@@ -5300,21 +4113,12 @@ static void hotkey_suspend(void)
 			pr_err("Cannot read adaptive keyboard mode.\n");
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hotkey_resume(void)
 {
 	tpacpi_disable_brightness_delay();
 
-<<<<<<< HEAD
-	if (hotkey_status_set(true) < 0 ||
-	    hotkey_mask_set(hotkey_acpi_mask) < 0)
-		pr_err("error while attempting to reset the event "
-		       "firmware interface\n");
-
-	tpacpi_send_radiosw_update();
-=======
 	mutex_lock(&hotkey_mutex);
 	if (hotkey_status_set(true) < 0 ||
 	    hotkey_mask_set(hotkey_acpi_mask) < 0)
@@ -5323,13 +4127,10 @@ static void hotkey_resume(void)
 
 	tpacpi_send_radiosw_update();
 	tpacpi_input_send_tabletsw();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hotkey_tablet_mode_notify_change();
 	hotkey_wakeup_reason_notify_change();
 	hotkey_wakeup_hotunplug_complete_notify_change();
 	hotkey_poll_setup_safe(false);
-<<<<<<< HEAD
-=======
 
 	/* restore previous mode of adapive keyboard of X1 Carbon */
 	if (tp_features.has_adaptive_kbd) {
@@ -5338,7 +4139,6 @@ static void hotkey_resume(void)
 			pr_err("Cannot set adaptive keyboard mode.\n");
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* procfs -------------------------------------------------------------- */
@@ -5360,11 +4160,7 @@ static int hotkey_read(struct seq_file *m)
 	if (res)
 		return res;
 
-<<<<<<< HEAD
-	seq_printf(m, "status:\t\t%s\n", enabled(status, 0));
-=======
 	seq_printf(m, "status:\t\t%s\n", str_enabled_disabled(status & BIT(0)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hotkey_all_mask) {
 		seq_printf(m, "mask:\t\t0x%08x\n", hotkey_user_mask);
 		seq_printf(m, "commands:\tenable, disable, reset, <mask>\n");
@@ -5380,17 +4176,8 @@ static void hotkey_enabledisable_warn(bool enable)
 {
 	tpacpi_log_usertask("procfs hotkey enable/disable");
 	if (!WARN((tpacpi_lifecycle == TPACPI_LIFE_RUNNING || !enable),
-<<<<<<< HEAD
-		  pr_fmt("hotkey enable/disable functionality has been "
-			 "removed from the driver.  "
-			 "Hotkeys are always enabled.\n")))
-		pr_err("Please remove the hotkey=enable module "
-		       "parameter, it is deprecated.  "
-		       "Hotkeys are always enabled.\n");
-=======
 		  pr_fmt("hotkey enable/disable functionality has been removed from the driver.  Hotkeys are always enabled.\n")))
 		pr_err("Please remove the hotkey=enable module parameter, it is deprecated.  Hotkeys are always enabled.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hotkey_write(char *buf)
@@ -5408,15 +4195,6 @@ static int hotkey_write(char *buf)
 	mask = hotkey_user_mask;
 
 	res = 0;
-<<<<<<< HEAD
-	while ((cmd = next_cmd(&buf))) {
-		if (strlencmp(cmd, "enable") == 0) {
-			hotkey_enabledisable_warn(1);
-		} else if (strlencmp(cmd, "disable") == 0) {
-			hotkey_enabledisable_warn(0);
-			res = -EPERM;
-		} else if (strlencmp(cmd, "reset") == 0) {
-=======
 	while ((cmd = strsep(&buf, ","))) {
 		if (strstarts(cmd, "enable")) {
 			hotkey_enabledisable_warn(1);
@@ -5424,7 +4202,6 @@ static int hotkey_write(char *buf)
 			hotkey_enabledisable_warn(0);
 			res = -EPERM;
 		} else if (strstarts(cmd, "reset")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mask = (hotkey_all_mask | hotkey_source_mask)
 				& ~hotkey_reserved_mask;
 		} else if (sscanf(cmd, "0x%x", &mask) == 1) {
@@ -5451,10 +4228,7 @@ errexit:
 static const struct acpi_device_id ibm_htk_device_ids[] = {
 	{TPACPI_ACPI_IBM_HKEY_HID, 0},
 	{TPACPI_ACPI_LENOVO_HKEY_HID, 0},
-<<<<<<< HEAD
-=======
 	{TPACPI_ACPI_LENOVO_HKEY_V2_HID, 0},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"", 0},
 };
 
@@ -5519,14 +4293,8 @@ static int bluetooth_set_status(enum tpacpi_rfkill_state state)
 {
 	int status;
 
-<<<<<<< HEAD
-	vdbg_printk(TPACPI_DBG_RFKILL,
-		"will attempt to %s bluetooth\n",
-		(state == TPACPI_RFK_RADIO_ON) ? "enable" : "disable");
-=======
 	vdbg_printk(TPACPI_DBG_RFKILL, "will attempt to %s bluetooth\n",
 		    str_enable_disable(state == TPACPI_RFK_RADIO_ON));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_THINKPAD_ACPI_DEBUGFACILITIES
 	if (dbg_bluetoothemul) {
@@ -5564,13 +4332,7 @@ static ssize_t bluetooth_enable_store(struct device *dev,
 				attr, buf, count);
 }
 
-<<<<<<< HEAD
-static struct device_attribute dev_attr_bluetooth_enable =
-	__ATTR(bluetooth_enable, S_IWUSR | S_IRUGO,
-		bluetooth_enable_show, bluetooth_enable_store);
-=======
 static DEVICE_ATTR_RW(bluetooth_enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* --------------------------------------------------------------------- */
 
@@ -5579,9 +4341,6 @@ static struct attribute *bluetooth_attributes[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static const struct attribute_group bluetooth_attr_group = {
-=======
 static umode_t bluetooth_attr_is_visible(struct kobject *kobj,
 					 struct attribute *attr, int n)
 {
@@ -5590,7 +4349,6 @@ static umode_t bluetooth_attr_is_visible(struct kobject *kobj,
 
 static const struct attribute_group bluetooth_attr_group = {
 	.is_visible = bluetooth_attr_is_visible,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = bluetooth_attributes,
 };
 
@@ -5612,16 +4370,6 @@ static void bluetooth_shutdown(void)
 
 static void bluetooth_exit(void)
 {
-<<<<<<< HEAD
-	sysfs_remove_group(&tpacpi_pdev->dev.kobj,
-			&bluetooth_attr_group);
-
-	tpacpi_destroy_rfkill(TPACPI_RFK_BLUETOOTH_SW_ID);
-
-	bluetooth_shutdown();
-}
-
-=======
 	tpacpi_destroy_rfkill(TPACPI_RFK_BLUETOOTH_SW_ID);
 	bluetooth_shutdown();
 }
@@ -5701,7 +4449,6 @@ static int __init have_bt_fwbug(void)
 		return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init bluetooth_init(struct ibm_init_struct *iibm)
 {
 	int res;
@@ -5714,11 +4461,7 @@ static int __init bluetooth_init(struct ibm_init_struct *iibm)
 
 	/* bluetooth not supported on 570, 600e/x, 770e, 770x, A21e, A2xm/p,
 	   G4x, R30, R31, R40e, R50e, T20-22, X20-21 */
-<<<<<<< HEAD
-	tp_features.bluetooth = hkey_handle &&
-=======
 	tp_features.bluetooth = !have_bt_fwbug() && hkey_handle &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    acpi_evalf(hkey_handle, &status, "GBDC", "qd");
 
 	vdbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_RFKILL,
@@ -5741,32 +4484,14 @@ static int __init bluetooth_init(struct ibm_init_struct *iibm)
 	}
 
 	if (!tp_features.bluetooth)
-<<<<<<< HEAD
-		return 1;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = tpacpi_new_rfkill(TPACPI_RFK_BLUETOOTH_SW_ID,
 				&bluetooth_tprfk_ops,
 				RFKILL_TYPE_BLUETOOTH,
 				TPACPI_RFK_BLUETOOTH_SW_NAME,
 				true);
-<<<<<<< HEAD
-	if (res)
-		return res;
-
-	res = sysfs_create_group(&tpacpi_pdev->dev.kobj,
-				&bluetooth_attr_group);
-	if (res) {
-		tpacpi_destroy_rfkill(TPACPI_RFK_BLUETOOTH_SW_ID);
-		return res;
-	}
-
-	return 0;
-=======
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* procfs -------------------------------------------------------------- */
@@ -5823,14 +4548,8 @@ static int wan_set_status(enum tpacpi_rfkill_state state)
 {
 	int status;
 
-<<<<<<< HEAD
-	vdbg_printk(TPACPI_DBG_RFKILL,
-		"will attempt to %s wwan\n",
-		(state == TPACPI_RFK_RADIO_ON) ? "enable" : "disable");
-=======
 	vdbg_printk(TPACPI_DBG_RFKILL, "will attempt to %s wwan\n",
 		    str_enable_disable(state == TPACPI_RFK_RADIO_ON));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_THINKPAD_ACPI_DEBUGFACILITIES
 	if (dbg_wwanemul) {
@@ -5868,25 +4587,12 @@ static ssize_t wan_enable_store(struct device *dev,
 			attr, buf, count);
 }
 
-<<<<<<< HEAD
-static struct device_attribute dev_attr_wan_enable =
-	__ATTR(wwan_enable, S_IWUSR | S_IRUGO,
-		wan_enable_show, wan_enable_store);
-=======
 static DEVICE_ATTR(wwan_enable, S_IWUSR | S_IRUGO,
 		   wan_enable_show, wan_enable_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* --------------------------------------------------------------------- */
 
 static struct attribute *wan_attributes[] = {
-<<<<<<< HEAD
-	&dev_attr_wan_enable.attr,
-	NULL
-};
-
-static const struct attribute_group wan_attr_group = {
-=======
 	&dev_attr_wwan_enable.attr,
 	NULL
 };
@@ -5899,7 +4605,6 @@ static umode_t wan_attr_is_visible(struct kobject *kobj, struct attribute *attr,
 
 static const struct attribute_group wan_attr_group = {
 	.is_visible = wan_attr_is_visible,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = wan_attributes,
 };
 
@@ -5921,15 +4626,7 @@ static void wan_shutdown(void)
 
 static void wan_exit(void)
 {
-<<<<<<< HEAD
-	sysfs_remove_group(&tpacpi_pdev->dev.kobj,
-		&wan_attr_group);
-
 	tpacpi_destroy_rfkill(TPACPI_RFK_WWAN_SW_ID);
-
-=======
-	tpacpi_destroy_rfkill(TPACPI_RFK_WWAN_SW_ID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wan_shutdown();
 }
 
@@ -5966,33 +4663,14 @@ static int __init wan_init(struct ibm_init_struct *iibm)
 	}
 
 	if (!tp_features.wan)
-<<<<<<< HEAD
-		return 1;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = tpacpi_new_rfkill(TPACPI_RFK_WWAN_SW_ID,
 				&wan_tprfk_ops,
 				RFKILL_TYPE_WWAN,
 				TPACPI_RFK_WWAN_SW_NAME,
 				true);
-<<<<<<< HEAD
-	if (res)
-		return res;
-
-	res = sysfs_create_group(&tpacpi_pdev->dev.kobj,
-				&wan_attr_group);
-
-	if (res) {
-		tpacpi_destroy_rfkill(TPACPI_RFK_WWAN_SW_ID);
-		return res;
-	}
-
-	return 0;
-=======
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* procfs -------------------------------------------------------------- */
@@ -6047,14 +4725,8 @@ static int uwb_set_status(enum tpacpi_rfkill_state state)
 {
 	int status;
 
-<<<<<<< HEAD
-	vdbg_printk(TPACPI_DBG_RFKILL,
-		"will attempt to %s UWB\n",
-		(state == TPACPI_RFK_RADIO_ON) ? "enable" : "disable");
-=======
 	vdbg_printk(TPACPI_DBG_RFKILL, "will attempt to %s UWB\n",
 		    str_enable_disable(state == TPACPI_RFK_RADIO_ON));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_THINKPAD_ACPI_DEBUGFACILITIES
 	if (dbg_uwbemul) {
@@ -6119,11 +4791,7 @@ static int __init uwb_init(struct ibm_init_struct *iibm)
 	}
 
 	if (!tp_features.uwb)
-<<<<<<< HEAD
-		return 1;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = tpacpi_new_rfkill(TPACPI_RFK_UWB_SW_ID,
 				&uwb_tprfk_ops,
@@ -6216,11 +4884,7 @@ static int __init video_init(struct ibm_init_struct *iibm)
 		str_supported(video_supported != TPACPI_VIDEO_NONE),
 		video_supported);
 
-<<<<<<< HEAD
-	return (video_supported != TPACPI_VIDEO_NONE)? 0 : 1;
-=======
 	return (video_supported != TPACPI_VIDEO_NONE) ? 0 : -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void video_exit(void)
@@ -6228,12 +4892,7 @@ static void video_exit(void)
 	dbg_printk(TPACPI_DBG_EXIT,
 		   "restoring original video autoswitch mode\n");
 	if (video_autosw_set(video_orig_autosw))
-<<<<<<< HEAD
-		pr_err("error while trying to restore original "
-			"video autoswitch mode\n");
-=======
 		pr_err("error while trying to restore original video autoswitch mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int video_outputsw_get(void)
@@ -6317,11 +4976,7 @@ static int video_outputsw_set(int status)
 		return -ENOSYS;
 	}
 
-<<<<<<< HEAD
-	return (res)? 0 : -EIO;
-=======
 	return (res) ? 0 : -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int video_autosw_get(void)
@@ -6347,11 +5002,7 @@ static int video_autosw_get(void)
 
 static int video_autosw_set(int enable)
 {
-<<<<<<< HEAD
-	if (!acpi_evalf(vid_handle, NULL, "_DOS", "vd", (enable)? 1 : 0))
-=======
 	if (!acpi_evalf(vid_handle, NULL, "_DOS", "vd", (enable) ? 1 : 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	return 0;
 }
@@ -6386,26 +5037,13 @@ static int video_outputsw_cycle(void)
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-	return (res)? 0 : -EIO;
-=======
 	return (res) ? 0 : -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int video_expand_toggle(void)
 {
 	switch (video_supported) {
 	case TPACPI_VIDEO_570:
-<<<<<<< HEAD
-		return acpi_evalf(ec_handle, NULL, "_Q17", "v")?
-			0 : -EIO;
-	case TPACPI_VIDEO_770:
-		return acpi_evalf(vid_handle, NULL, "VEXP", "v")?
-			0 : -EIO;
-	case TPACPI_VIDEO_NEW:
-		return acpi_evalf(NULL, NULL, "\\VEXP", "v")?
-=======
 		return acpi_evalf(ec_handle, NULL, "_Q17", "v") ?
 			0 : -EIO;
 	case TPACPI_VIDEO_770:
@@ -6413,7 +5051,6 @@ static int video_expand_toggle(void)
 			0 : -EIO;
 	case TPACPI_VIDEO_NEW:
 		return acpi_evalf(NULL, NULL, "\\VEXP", "v") ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			0 : -EIO;
 	default:
 		return -ENOSYS;
@@ -6443,19 +5080,11 @@ static int video_read(struct seq_file *m)
 		return autosw;
 
 	seq_printf(m, "status:\t\tsupported\n");
-<<<<<<< HEAD
-	seq_printf(m, "lcd:\t\t%s\n", enabled(status, 0));
-	seq_printf(m, "crt:\t\t%s\n", enabled(status, 1));
-	if (video_supported == TPACPI_VIDEO_NEW)
-		seq_printf(m, "dvi:\t\t%s\n", enabled(status, 3));
-	seq_printf(m, "auto:\t\t%s\n", enabled(autosw, 0));
-=======
 	seq_printf(m, "lcd:\t\t%s\n", str_enabled_disabled(status & BIT(0)));
 	seq_printf(m, "crt:\t\t%s\n", str_enabled_disabled(status & BIT(1)));
 	if (video_supported == TPACPI_VIDEO_NEW)
 		seq_printf(m, "dvi:\t\t%s\n", str_enabled_disabled(status & BIT(3)));
 	seq_printf(m, "auto:\t\t%s\n", str_enabled_disabled(autosw & BIT(0)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(m, "commands:\tlcd_enable, lcd_disable\n");
 	seq_printf(m, "commands:\tcrt_enable, crt_disable\n");
 	if (video_supported == TPACPI_VIDEO_NEW)
@@ -6482,36 +5111,6 @@ static int video_write(char *buf)
 	enable = 0;
 	disable = 0;
 
-<<<<<<< HEAD
-	while ((cmd = next_cmd(&buf))) {
-		if (strlencmp(cmd, "lcd_enable") == 0) {
-			enable |= TP_ACPI_VIDEO_S_LCD;
-		} else if (strlencmp(cmd, "lcd_disable") == 0) {
-			disable |= TP_ACPI_VIDEO_S_LCD;
-		} else if (strlencmp(cmd, "crt_enable") == 0) {
-			enable |= TP_ACPI_VIDEO_S_CRT;
-		} else if (strlencmp(cmd, "crt_disable") == 0) {
-			disable |= TP_ACPI_VIDEO_S_CRT;
-		} else if (video_supported == TPACPI_VIDEO_NEW &&
-			   strlencmp(cmd, "dvi_enable") == 0) {
-			enable |= TP_ACPI_VIDEO_S_DVI;
-		} else if (video_supported == TPACPI_VIDEO_NEW &&
-			   strlencmp(cmd, "dvi_disable") == 0) {
-			disable |= TP_ACPI_VIDEO_S_DVI;
-		} else if (strlencmp(cmd, "auto_enable") == 0) {
-			res = video_autosw_set(1);
-			if (res)
-				return res;
-		} else if (strlencmp(cmd, "auto_disable") == 0) {
-			res = video_autosw_set(0);
-			if (res)
-				return res;
-		} else if (strlencmp(cmd, "video_switch") == 0) {
-			res = video_outputsw_cycle();
-			if (res)
-				return res;
-		} else if (strlencmp(cmd, "expand_toggle") == 0) {
-=======
 	while ((cmd = strsep(&buf, ","))) {
 		if (strstarts(cmd, "lcd_enable")) {
 			enable |= TP_ACPI_VIDEO_S_LCD;
@@ -6540,7 +5139,6 @@ static int video_write(char *buf)
 			if (res)
 				return res;
 		} else if (strstarts(cmd, "expand_toggle")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res = video_expand_toggle();
 			if (res)
 				return res;
@@ -6570,8 +5168,6 @@ static struct ibm_struct video_driver_data = {
 #endif /* CONFIG_THINKPAD_ACPI_VIDEO */
 
 /*************************************************************************
-<<<<<<< HEAD
-=======
  * Keyboard backlight subdriver
  */
 
@@ -6801,7 +5397,6 @@ static struct ibm_struct kbdlight_driver_data = {
 };
 
 /*************************************************************************
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Light (thinklight) subdriver
  */
 
@@ -6828,76 +5423,36 @@ static int light_set_status(int status)
 	if (tp_features.light) {
 		if (cmos_handle) {
 			rc = acpi_evalf(cmos_handle, NULL, NULL, "vd",
-<<<<<<< HEAD
-					(status)?
-=======
 					(status) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						TP_CMOS_THINKLIGHT_ON :
 						TP_CMOS_THINKLIGHT_OFF);
 		} else {
 			rc = acpi_evalf(lght_handle, NULL, NULL, "vd",
-<<<<<<< HEAD
-					(status)? 1 : 0);
-		}
-		return (rc)? 0 : -EIO;
-=======
 					(status) ? 1 : 0);
 		}
 		return (rc) ? 0 : -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -ENXIO;
 }
 
-<<<<<<< HEAD
-static void light_set_status_worker(struct work_struct *work)
-{
-	struct tpacpi_led_classdev *data =
-			container_of(work, struct tpacpi_led_classdev, work);
-
-	if (likely(tpacpi_lifecycle == TPACPI_LIFE_RUNNING))
-		light_set_status((data->new_state != TPACPI_LED_OFF));
-}
-
-static void light_sysfs_set(struct led_classdev *led_cdev,
-			enum led_brightness brightness)
-{
-	struct tpacpi_led_classdev *data =
-		container_of(led_cdev,
-			     struct tpacpi_led_classdev,
-			     led_classdev);
-	data->new_state = (brightness != LED_OFF) ?
-				TPACPI_LED_ON : TPACPI_LED_OFF;
-	queue_work(tpacpi_wq, &data->work);
-=======
 static int light_sysfs_set(struct led_classdev *led_cdev,
 			enum led_brightness brightness)
 {
 	return light_set_status((brightness != LED_OFF) ?
 				TPACPI_LED_ON : TPACPI_LED_OFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum led_brightness light_sysfs_get(struct led_classdev *led_cdev)
 {
-<<<<<<< HEAD
-	return (light_get_status() == 1)? LED_FULL : LED_OFF;
-=======
 	return (light_get_status() == 1) ? LED_ON : LED_OFF;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct tpacpi_led_classdev tpacpi_led_thinklight = {
 	.led_classdev = {
 		.name		= "tpacpi::thinklight",
-<<<<<<< HEAD
-		.brightness_set	= &light_sysfs_set,
-=======
 		.max_brightness	= 1,
 		.brightness_set_blocking = &light_sysfs_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.brightness_get	= &light_sysfs_get,
 	}
 };
@@ -6913,10 +5468,6 @@ static int __init light_init(struct ibm_init_struct *iibm)
 		TPACPI_ACPIHANDLE_INIT(lght);
 	}
 	TPACPI_ACPIHANDLE_INIT(cmos);
-<<<<<<< HEAD
-	INIT_WORK(&tpacpi_led_thinklight.work, light_set_status_worker);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* light not supported on 570, 600e/x, 770e, 770x, G4x, R30, R31 */
 	tp_features.light = (cmos_handle || lght_handle) && !ledb_handle;
@@ -6932,11 +5483,7 @@ static int __init light_init(struct ibm_init_struct *iibm)
 		str_supported(tp_features.light_status));
 
 	if (!tp_features.light)
-<<<<<<< HEAD
-		return 1;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = led_classdev_register(&tpacpi_pdev->dev,
 				   &tpacpi_led_thinklight.led_classdev);
@@ -6954,11 +5501,6 @@ static int __init light_init(struct ibm_init_struct *iibm)
 static void light_exit(void)
 {
 	led_classdev_unregister(&tpacpi_led_thinklight.led_classdev);
-<<<<<<< HEAD
-	if (work_pending(&tpacpi_led_thinklight.work))
-		flush_workqueue(tpacpi_wq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int light_read(struct seq_file *m)
@@ -6974,11 +5516,7 @@ static int light_read(struct seq_file *m)
 		status = light_get_status();
 		if (status < 0)
 			return status;
-<<<<<<< HEAD
-		seq_printf(m, "status:\t\t%s\n", onoff(status, 0));
-=======
 		seq_printf(m, "status:\t\t%s\n", str_on_off(status & BIT(0)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_printf(m, "commands:\ton, off\n");
 	}
 
@@ -6993,17 +5531,10 @@ static int light_write(char *buf)
 	if (!tp_features.light)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	while ((cmd = next_cmd(&buf))) {
-		if (strlencmp(cmd, "on") == 0) {
-			newstatus = 1;
-		} else if (strlencmp(cmd, "off") == 0) {
-=======
 	while ((cmd = strsep(&buf, ","))) {
 		if (strstarts(cmd, "on")) {
 			newstatus = 1;
 		} else if (strstarts(cmd, "off")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			newstatus = 0;
 		} else
 			return -EINVAL;
@@ -7035,13 +5566,6 @@ static ssize_t cmos_command_store(struct device *dev,
 		return -EINVAL;
 
 	res = issue_thinkpad_cmos_command(cmos_cmd);
-<<<<<<< HEAD
-	return (res)? res : count;
-}
-
-static struct device_attribute dev_attr_cmos_command =
-	__ATTR(cmos_command, S_IWUSR, NULL, cmos_command_store);
-=======
 	return (res) ? res : count;
 }
 
@@ -7062,43 +5586,20 @@ static const struct attribute_group cmos_attr_group = {
 	.is_visible = cmos_attr_is_visible,
 	.attrs = cmos_attributes,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* --------------------------------------------------------------------- */
 
 static int __init cmos_init(struct ibm_init_struct *iibm)
 {
-<<<<<<< HEAD
-	int res;
-
-	vdbg_printk(TPACPI_DBG_INIT,
-		"initializing cmos commands subdriver\n");
-=======
 	vdbg_printk(TPACPI_DBG_INIT,
 		    "initializing cmos commands subdriver\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TPACPI_ACPIHANDLE_INIT(cmos);
 
 	vdbg_printk(TPACPI_DBG_INIT, "cmos commands are %s\n",
-<<<<<<< HEAD
-		str_supported(cmos_handle != NULL));
-
-	res = device_create_file(&tpacpi_pdev->dev, &dev_attr_cmos_command);
-	if (res)
-		return res;
-
-	return (cmos_handle)? 0 : 1;
-}
-
-static void cmos_exit(void)
-{
-	device_remove_file(&tpacpi_pdev->dev, &dev_attr_cmos_command);
-=======
 		    str_supported(cmos_handle != NULL));
 
 	return cmos_handle ? 0 : -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cmos_read(struct seq_file *m)
@@ -7120,11 +5621,7 @@ static int cmos_write(char *buf)
 	char *cmd;
 	int cmos_cmd, res;
 
-<<<<<<< HEAD
-	while ((cmd = next_cmd(&buf))) {
-=======
 	while ((cmd = strsep(&buf, ","))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sscanf(cmd, "%u", &cmos_cmd) == 1 &&
 		    cmos_cmd >= 0 && cmos_cmd <= 21) {
 			/* cmos_cmd set */
@@ -7143,10 +5640,6 @@ static struct ibm_struct cmos_driver_data = {
 	.name = "cmos",
 	.read = cmos_read,
 	.write = cmos_write,
-<<<<<<< HEAD
-	.exit = cmos_exit,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*************************************************************************
@@ -7185,19 +5678,11 @@ static const char * const tpacpi_led_names[TPACPI_LED_NUMLEDS] = {
 	"tpacpi::standby",
 	"tpacpi::dock_status1",
 	"tpacpi::dock_status2",
-<<<<<<< HEAD
-	"tpacpi::unknown_led2",
-	"tpacpi::unknown_led3",
-	"tpacpi::thinkvantage",
-};
-#define TPACPI_SAFE_LEDS	0x1081U
-=======
 	"tpacpi::lid_logo_dot",
 	"tpacpi::unknown_led3",
 	"tpacpi::thinkvantage",
 };
 #define TPACPI_SAFE_LEDS	0x1481U
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline bool tpacpi_is_led_restricted(const unsigned int led)
 {
@@ -7218,15 +5703,9 @@ static int led_get_status(const unsigned int led)
 		if (!acpi_evalf(ec_handle,
 				&status, "GLED", "dd", 1 << led))
 			return -EIO;
-<<<<<<< HEAD
-		led_s = (status == 0)?
-				TPACPI_LED_OFF :
-				((status == 1)?
-=======
 		led_s = (status == 0) ?
 				TPACPI_LED_OFF :
 				((status == 1) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					TPACPI_LED_ON :
 					TPACPI_LED_BLINK);
 		tpacpi_led_state_cache[led] = led_s;
@@ -7256,11 +5735,7 @@ static int led_set_status(const unsigned int led,
 			return -EPERM;
 		if (!acpi_evalf(led_handle, NULL, NULL, "vdd",
 				(1 << led), led_sled_arg1[ledstatus]))
-<<<<<<< HEAD
-			rc = -EIO;
-=======
 			return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case TPACPI_LED_OLD:
 		/* 600e/x, 770e, 770x, A21e, A2xm/p, T20-22, X20 */
@@ -7284,17 +5759,10 @@ static int led_set_status(const unsigned int led,
 			return -EPERM;
 		if (!acpi_evalf(led_handle, NULL, NULL, "vdd",
 				led, led_led_arg1[ledstatus]))
-<<<<<<< HEAD
-			rc = -EIO;
-		break;
-	default:
-		rc = -ENXIO;
-=======
 			return -EIO;
 		break;
 	default:
 		return -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!rc)
@@ -7303,35 +5771,11 @@ static int led_set_status(const unsigned int led,
 	return rc;
 }
 
-<<<<<<< HEAD
-static void led_set_status_worker(struct work_struct *work)
-{
-	struct tpacpi_led_classdev *data =
-		container_of(work, struct tpacpi_led_classdev, work);
-
-	if (likely(tpacpi_lifecycle == TPACPI_LIFE_RUNNING))
-		led_set_status(data->led, data->new_state);
-}
-
-static void led_sysfs_set(struct led_classdev *led_cdev,
-=======
 static int led_sysfs_set(struct led_classdev *led_cdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			enum led_brightness brightness)
 {
 	struct tpacpi_led_classdev *data = container_of(led_cdev,
 			     struct tpacpi_led_classdev, led_classdev);
-<<<<<<< HEAD
-
-	if (brightness == LED_OFF)
-		data->new_state = TPACPI_LED_OFF;
-	else if (tpacpi_led_state_cache[data->led] != TPACPI_LED_BLINK)
-		data->new_state = TPACPI_LED_ON;
-	else
-		data->new_state = TPACPI_LED_BLINK;
-
-	queue_work(tpacpi_wq, &data->work);
-=======
 	enum led_status_t new_state;
 
 	if (brightness == LED_OFF)
@@ -7342,7 +5786,6 @@ static int led_sysfs_set(struct led_classdev *led_cdev,
 		new_state = TPACPI_LED_BLINK;
 
 	return led_set_status(data->led, new_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int led_sysfs_blink_set(struct led_classdev *led_cdev,
@@ -7359,14 +5802,7 @@ static int led_sysfs_blink_set(struct led_classdev *led_cdev,
 	} else if ((*delay_on != 500) || (*delay_off != 500))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	data->new_state = TPACPI_LED_BLINK;
-	queue_work(tpacpi_wq, &data->work);
-
-	return 0;
-=======
 	return led_set_status(data->led, TPACPI_LED_BLINK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum led_brightness led_sysfs_get(struct led_classdev *led_cdev)
@@ -7390,50 +5826,18 @@ static void led_exit(void)
 {
 	unsigned int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < TPACPI_LED_NUMLEDS; i++) {
-		if (tpacpi_leds[i].led_classdev.name)
-			led_classdev_unregister(&tpacpi_leds[i].led_classdev);
-	}
-=======
 	for (i = 0; i < TPACPI_LED_NUMLEDS; i++)
 		led_classdev_unregister(&tpacpi_leds[i].led_classdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(tpacpi_leds);
 }
 
 static int __init tpacpi_init_led(unsigned int led)
 {
-<<<<<<< HEAD
-	int rc;
-
-	tpacpi_leds[led].led = led;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* LEDs with no name don't get registered */
 	if (!tpacpi_led_names[led])
 		return 0;
 
-<<<<<<< HEAD
-	tpacpi_leds[led].led_classdev.brightness_set = &led_sysfs_set;
-	tpacpi_leds[led].led_classdev.blink_set = &led_sysfs_blink_set;
-	if (led_supported == TPACPI_LED_570)
-		tpacpi_leds[led].led_classdev.brightness_get =
-						&led_sysfs_get;
-
-	tpacpi_leds[led].led_classdev.name = tpacpi_led_names[led];
-
-	INIT_WORK(&tpacpi_leds[led].work, led_set_status_worker);
-
-	rc = led_classdev_register(&tpacpi_pdev->dev,
-				&tpacpi_leds[led].led_classdev);
-	if (rc < 0)
-		tpacpi_leds[led].led_classdev.name = NULL;
-
-	return rc;
-=======
 	tpacpi_leds[led].led_classdev.brightness_set_blocking = &led_sysfs_set;
 	tpacpi_leds[led].led_classdev.blink_set = &led_sysfs_blink_set;
 	if (led_supported == TPACPI_LED_570)
@@ -7444,7 +5848,6 @@ static int __init tpacpi_init_led(unsigned int led)
 	tpacpi_leds[led].led = led;
 
 	return led_classdev_register(&tpacpi_pdev->dev, &tpacpi_leds[led].led_classdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct tpacpi_quirk led_useful_qtable[] __initconst = {
@@ -7492,12 +5895,6 @@ static const struct tpacpi_quirk led_useful_qtable[] __initconst = {
 	},
 };
 
-<<<<<<< HEAD
-#undef TPACPI_LEDQ_IBM
-#undef TPACPI_LEDQ_LNV
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum led_access_mode __init led_init_detect_mode(void)
 {
 	acpi_status status;
@@ -7534,8 +5931,6 @@ static int __init led_init(struct ibm_init_struct *iibm)
 
 	led_supported = led_init_detect_mode();
 
-<<<<<<< HEAD
-=======
 	if (led_supported != TPACPI_LED_NONE) {
 		useful_leds = tpacpi_check_quirks(led_useful_qtable,
 				ARRAY_SIZE(led_useful_qtable));
@@ -7546,39 +5941,23 @@ static int __init led_init(struct ibm_init_struct *iibm)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vdbg_printk(TPACPI_DBG_INIT, "LED commands are %s, mode %d\n",
 		str_supported(led_supported), led_supported);
 
 	if (led_supported == TPACPI_LED_NONE)
-<<<<<<< HEAD
-		return 1;
-
-	tpacpi_leds = kzalloc(sizeof(*tpacpi_leds) * TPACPI_LED_NUMLEDS,
-=======
 		return -ENODEV;
 
 	tpacpi_leds = kcalloc(TPACPI_LED_NUMLEDS, sizeof(*tpacpi_leds),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      GFP_KERNEL);
 	if (!tpacpi_leds) {
 		pr_err("Out of memory for LED data\n");
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	useful_leds = tpacpi_check_quirks(led_useful_qtable,
-					  ARRAY_SIZE(led_useful_qtable));
-
-	for (i = 0; i < TPACPI_LED_NUMLEDS; i++) {
-		if (!tpacpi_is_led_restricted(i) &&
-		    test_bit(i, &useful_leds)) {
-=======
 	for (i = 0; i < TPACPI_LED_NUMLEDS; i++) {
 		tpacpi_leds[i].led = -1;
 
 		if (!tpacpi_is_led_restricted(i) && test_bit(i, &useful_leds)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = tpacpi_init_led(i);
 			if (rc < 0) {
 				led_exit();
@@ -7588,23 +5967,12 @@ static int __init led_init(struct ibm_init_struct *iibm)
 	}
 
 #ifdef CONFIG_THINKPAD_ACPI_UNSAFE_LEDS
-<<<<<<< HEAD
-	pr_notice("warning: userspace override of important "
-		  "firmware LEDs is enabled\n");
-=======
 	pr_notice("warning: userspace override of important firmware LEDs is enabled\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return 0;
 }
 
-<<<<<<< HEAD
-#define str_led_status(s) \
-	((s) == TPACPI_LED_OFF ? "off" : \
-		((s) == TPACPI_LED_ON ? "on" : "blinking"))
-=======
 #define str_led_status(s)	((s) >= TPACPI_LED_BLINK ? "blinking" : str_on_off(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int led_read(struct seq_file *m)
 {
@@ -7621,21 +5989,11 @@ static int led_read(struct seq_file *m)
 			status = led_get_status(i);
 			if (status < 0)
 				return -EIO;
-<<<<<<< HEAD
-			seq_printf(m, "%d:\t\t%s\n",
-				       i, str_led_status(status));
-		}
-	}
-
-	seq_printf(m, "commands:\t"
-		       "<led> on, <led> off, <led> blink (<led> is 0-15)\n");
-=======
 			seq_printf(m, "%d:\t\t%s\n", i, str_led_status(status));
 		}
 	}
 
 	seq_printf(m, "commands:\t<led> on, <led> off, <led> blink (<led> is 0-15)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -7649,12 +6007,6 @@ static int led_write(char *buf)
 	if (!led_supported)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	while ((cmd = next_cmd(&buf))) {
-		if (sscanf(cmd, "%d", &led) != 1 || led < 0 || led > 15)
-			return -EINVAL;
-
-=======
 	while ((cmd = strsep(&buf, ","))) {
 		if (sscanf(cmd, "%d", &led) != 1)
 			return -EINVAL;
@@ -7665,7 +6017,6 @@ static int led_write(char *buf)
 		if (tpacpi_leds[led].led < 0)
 			return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (strstr(cmd, "off")) {
 			s = TPACPI_LED_OFF;
 		} else if (strstr(cmd, "on")) {
@@ -7720,11 +6071,7 @@ static int __init beep_init(struct ibm_init_struct *iibm)
 
 	tp_features.beep_needs_two_args = !!(quirks & TPACPI_BEEP_Q1);
 
-<<<<<<< HEAD
-	return (beep_handle)? 0 : 1;
-=======
 	return (beep_handle) ? 0 : -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int beep_read(struct seq_file *m)
@@ -7747,11 +6094,7 @@ static int beep_write(char *buf)
 	if (!beep_handle)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	while ((cmd = next_cmd(&buf))) {
-=======
 	while ((cmd = strsep(&buf, ","))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sscanf(cmd, "%u", &beep_cmd) == 1 &&
 		    beep_cmd >= 0 && beep_cmd <= 17) {
 			/* beep_cmd set */
@@ -7786,22 +6129,16 @@ enum thermal_access_mode {
 	TPACPI_THERMAL_ACPI_TMP07,	/* Use ACPI TMP0-7 */
 	TPACPI_THERMAL_ACPI_UPDT,	/* Use ACPI TMP0-7 with UPDT */
 	TPACPI_THERMAL_TPEC_8,		/* Use ACPI EC regs, 8 sensors */
-<<<<<<< HEAD
-=======
 	TPACPI_THERMAL_TPEC_12,		/* Use ACPI EC regs, 12 sensors */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TPACPI_THERMAL_TPEC_16,		/* Use ACPI EC regs, 16 sensors */
 };
 
 enum { /* TPACPI_THERMAL_TPEC_* */
 	TP_EC_THERMAL_TMP0 = 0x78,	/* ACPI EC regs TMP 0..7 */
 	TP_EC_THERMAL_TMP8 = 0xC0,	/* ACPI EC regs TMP 8..15 */
-<<<<<<< HEAD
-=======
 	TP_EC_THERMAL_TMP0_NS = 0xA8,	/* ACPI EC Non-Standard regs TMP 0..7 */
 	TP_EC_THERMAL_TMP8_NS = 0xB8,	/* ACPI EC Non-standard regs TMP 8..11 */
 	TP_EC_FUNCREV      = 0xEF,      /* ACPI EC Functional revision */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_EC_THERMAL_TMP_NA = -128,	/* ACPI EC sensor not available */
 
 	TPACPI_THERMAL_SENSOR_NA = -128000, /* Sensor not available */
@@ -7813,9 +6150,6 @@ struct ibm_thermal_sensors_struct {
 	s32 temp[TPACPI_MAX_THERMAL_SENSORS];
 };
 
-<<<<<<< HEAD
-static enum thermal_access_mode thermal_read_mode;
-=======
 static const struct tpacpi_quirk thermal_quirk_table[] __initconst = {
 	/* Non-standard address for thermal registers on some ThinkPads */
 	TPACPI_Q_LNV3('R', '1', 'F', true),	/* L13 Yoga Gen 2 */
@@ -7914,7 +6248,6 @@ static enum thermal_access_mode __init thermal_read_mode_check(void)
 	/* temperatures not supported on 570, G4x, R30, R31, R32 */
 	return TPACPI_THERMAL_NONE;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* idx is zero-based */
 static int thermal_get_sensor(int idx, s32 *value)
@@ -7932,13 +6265,8 @@ static int thermal_get_sensor(int idx, s32 *value)
 			t = TP_EC_THERMAL_TMP8;
 			idx -= 8;
 		}
-<<<<<<< HEAD
-		/* fallthrough */
-#endif
-=======
 #endif
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case TPACPI_THERMAL_TPEC_8:
 		if (idx <= 7) {
 			if (!acpi_ec_read(t + idx, &tmp))
@@ -7948,8 +6276,6 @@ static int thermal_get_sensor(int idx, s32 *value)
 		}
 		break;
 
-<<<<<<< HEAD
-=======
 	/* The Non-standard EC uses 12 Thermal areas */
 	case TPACPI_THERMAL_TPEC_12:
 		if (idx >= 12)
@@ -7964,7 +6290,6 @@ static int thermal_get_sensor(int idx, s32 *value)
 		*value = tmp * MILLIDEGREE_PER_DEGREE;
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case TPACPI_THERMAL_ACPI_UPDT:
 		if (idx <= 7) {
 			snprintf(tmpi, sizeof(tmpi), "TMP%c", '0' + idx);
@@ -7999,28 +6324,17 @@ static int thermal_get_sensor(int idx, s32 *value)
 
 static int thermal_get_sensors(struct ibm_thermal_sensors_struct *s)
 {
-<<<<<<< HEAD
-	int res, i;
-	int n;
-
-	n = 8;
-	i = 0;
-=======
 	int res, i, n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!s)
 		return -EINVAL;
 
 	if (thermal_read_mode == TPACPI_THERMAL_TPEC_16)
 		n = 16;
-<<<<<<< HEAD
-=======
 	else if (thermal_read_mode == TPACPI_THERMAL_TPEC_12)
 		n = 12;
 	else
 		n = 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0 ; i < n; i++) {
 		res = thermal_get_sensor(i, &s->temp[i]);
@@ -8070,11 +6384,7 @@ static ssize_t thermal_temp_input_show(struct device *dev,
 	if (value == TPACPI_THERMAL_SENSOR_NA)
 		return -ENXIO;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", value);
-=======
 	return sysfs_emit(buf, "%d\n", value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define THERMAL_SENSOR_ATTR_TEMP(_idxA, _idxB) \
@@ -8104,17 +6414,6 @@ static struct sensor_device_attribute sensor_dev_attr_thermal_temp_input[] = {
 	&sensor_dev_attr_thermal_temp_input[X].dev_attr.attr
 
 static struct attribute *thermal_temp_input_attr[] = {
-<<<<<<< HEAD
-	THERMAL_ATTRS(8),
-	THERMAL_ATTRS(9),
-	THERMAL_ATTRS(10),
-	THERMAL_ATTRS(11),
-	THERMAL_ATTRS(12),
-	THERMAL_ATTRS(13),
-	THERMAL_ATTRS(14),
-	THERMAL_ATTRS(15),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	THERMAL_ATTRS(0),
 	THERMAL_ATTRS(1),
 	THERMAL_ATTRS(2),
@@ -8123,17 +6422,6 @@ static struct attribute *thermal_temp_input_attr[] = {
 	THERMAL_ATTRS(5),
 	THERMAL_ATTRS(6),
 	THERMAL_ATTRS(7),
-<<<<<<< HEAD
-	NULL
-};
-
-static const struct attribute_group thermal_temp_input16_group = {
-	.attrs = thermal_temp_input_attr
-};
-
-static const struct attribute_group thermal_temp_input8_group = {
-	.attrs = &thermal_temp_input_attr[8]
-=======
 	THERMAL_ATTRS(8),
 	THERMAL_ATTRS(9),
 	THERMAL_ATTRS(10),
@@ -8183,14 +6471,11 @@ static umode_t thermal_attr_is_visible(struct kobject *kobj,
 static const struct attribute_group thermal_attr_group = {
 	.is_visible = thermal_attr_is_visible,
 	.attrs = thermal_temp_input_attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #undef THERMAL_SENSOR_ATTR_TEMP
 #undef THERMAL_ATTRS
 
-<<<<<<< HEAD
-=======
 static ssize_t temp1_label_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	return sysfs_emit(buf, "CPU\n");
@@ -8220,128 +6505,19 @@ static const struct attribute_group temp_label_attr_group = {
 	.attrs = temp_label_attributes,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* --------------------------------------------------------------------- */
 
 static int __init thermal_init(struct ibm_init_struct *iibm)
 {
-<<<<<<< HEAD
-	u8 t, ta1, ta2;
-	int i;
-	int acpi_tmp7;
-	int res;
-
-	vdbg_printk(TPACPI_DBG_INIT, "initializing thermal subdriver\n");
-
-	acpi_tmp7 = acpi_evalf(ec_handle, NULL, "TMP7", "qv");
-
-	if (thinkpad_id.ec_model) {
-		/*
-		 * Direct EC access mode: sensors at registers
-		 * 0x78-0x7F, 0xC0-0xC7.  Registers return 0x00 for
-		 * non-implemented, thermal sensors return 0x80 when
-		 * not available
-		 */
-
-		ta1 = ta2 = 0;
-		for (i = 0; i < 8; i++) {
-			if (acpi_ec_read(TP_EC_THERMAL_TMP0 + i, &t)) {
-				ta1 |= t;
-			} else {
-				ta1 = 0;
-				break;
-			}
-			if (acpi_ec_read(TP_EC_THERMAL_TMP8 + i, &t)) {
-				ta2 |= t;
-			} else {
-				ta1 = 0;
-				break;
-			}
-		}
-		if (ta1 == 0) {
-			/* This is sheer paranoia, but we handle it anyway */
-			if (acpi_tmp7) {
-				pr_err("ThinkPad ACPI EC access misbehaving, "
-				       "falling back to ACPI TMPx access "
-				       "mode\n");
-				thermal_read_mode = TPACPI_THERMAL_ACPI_TMP07;
-			} else {
-				pr_err("ThinkPad ACPI EC access misbehaving, "
-				       "disabling thermal sensors access\n");
-				thermal_read_mode = TPACPI_THERMAL_NONE;
-			}
-		} else {
-			thermal_read_mode =
-			    (ta2 != 0) ?
-			    TPACPI_THERMAL_TPEC_16 : TPACPI_THERMAL_TPEC_8;
-		}
-	} else if (acpi_tmp7) {
-		if (tpacpi_is_ibm() &&
-		    acpi_evalf(ec_handle, NULL, "UPDT", "qv")) {
-			/* 600e/x, 770e, 770x */
-			thermal_read_mode = TPACPI_THERMAL_ACPI_UPDT;
-		} else {
-			/* IBM/LENOVO DSDT EC.TMPx access, max 8 sensors */
-			thermal_read_mode = TPACPI_THERMAL_ACPI_TMP07;
-		}
-	} else {
-		/* temperatures not supported on 570, G4x, R30, R31, R32 */
-		thermal_read_mode = TPACPI_THERMAL_NONE;
-	}
-=======
 	vdbg_printk(TPACPI_DBG_INIT, "initializing thermal subdriver\n");
 
 	thermal_read_mode = thermal_read_mode_check();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vdbg_printk(TPACPI_DBG_INIT, "thermal is %s, mode %d\n",
 		str_supported(thermal_read_mode != TPACPI_THERMAL_NONE),
 		thermal_read_mode);
 
-<<<<<<< HEAD
-	switch (thermal_read_mode) {
-	case TPACPI_THERMAL_TPEC_16:
-		res = sysfs_create_group(&tpacpi_sensors_pdev->dev.kobj,
-				&thermal_temp_input16_group);
-		if (res)
-			return res;
-		break;
-	case TPACPI_THERMAL_TPEC_8:
-	case TPACPI_THERMAL_ACPI_TMP07:
-	case TPACPI_THERMAL_ACPI_UPDT:
-		res = sysfs_create_group(&tpacpi_sensors_pdev->dev.kobj,
-				&thermal_temp_input8_group);
-		if (res)
-			return res;
-		break;
-	case TPACPI_THERMAL_NONE:
-	default:
-		return 1;
-	}
-
-	return 0;
-}
-
-static void thermal_exit(void)
-{
-	switch (thermal_read_mode) {
-	case TPACPI_THERMAL_TPEC_16:
-		sysfs_remove_group(&tpacpi_sensors_pdev->dev.kobj,
-				   &thermal_temp_input16_group);
-		break;
-	case TPACPI_THERMAL_TPEC_8:
-	case TPACPI_THERMAL_ACPI_TMP07:
-	case TPACPI_THERMAL_ACPI_UPDT:
-		sysfs_remove_group(&tpacpi_sensors_pdev->dev.kobj,
-				   &thermal_temp_input8_group);
-		break;
-	case TPACPI_THERMAL_NONE:
-	default:
-		break;
-	}
-=======
 	return thermal_read_mode != TPACPI_THERMAL_NONE ? 0 : -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int thermal_read(struct seq_file *m)
@@ -8368,10 +6544,6 @@ static int thermal_read(struct seq_file *m)
 static struct ibm_struct thermal_driver_data = {
 	.name = "thermal",
 	.read = thermal_read,
-<<<<<<< HEAD
-	.exit = thermal_exit,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*************************************************************************
@@ -8424,21 +6596,13 @@ static unsigned int brightness_enable = 2; /* 2 = auto, 0 = no, 1 = yes */
 
 static struct mutex brightness_mutex;
 
-<<<<<<< HEAD
-/* NVRAM brightness access,
- * call with brightness_mutex held! */
-=======
 /* NVRAM brightness access */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int tpacpi_brightness_nvram_get(void)
 {
 	u8 lnvram;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&brightness_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lnvram = (nvram_read_byte(TP_NVRAM_ADDR_BRIGHTNESS)
 		  & TP_NVRAM_MASK_LEVEL_BRIGHTNESS)
 		  >> TP_NVRAM_POS_LEVEL_BRIGHTNESS;
@@ -8486,19 +6650,12 @@ unlock:
 }
 
 
-<<<<<<< HEAD
-/* call with brightness_mutex held! */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tpacpi_brightness_get_raw(int *status)
 {
 	u8 lec = 0;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&brightness_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (brightness_mode) {
 	case TPACPI_BRGHT_MODE_UCMS_STEP:
 		*status = tpacpi_brightness_nvram_get();
@@ -8514,20 +6671,13 @@ static int tpacpi_brightness_get_raw(int *status)
 	}
 }
 
-<<<<<<< HEAD
-/* call with brightness_mutex held! */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* do NOT call with illegal backlight level value */
 static int tpacpi_brightness_set_ec(unsigned int value)
 {
 	u8 lec = 0;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&brightness_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!acpi_ec_read(TP_EC_BACKLIGHT, &lec)))
 		return -EIO;
 
@@ -8539,20 +6689,13 @@ static int tpacpi_brightness_set_ec(unsigned int value)
 	return 0;
 }
 
-<<<<<<< HEAD
-/* call with brightness_mutex held! */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tpacpi_brightness_set_ucmsstep(unsigned int value)
 {
 	int cmos_cmd, inc;
 	unsigned int current_value, i;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&brightness_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	current_value = tpacpi_brightness_nvram_get();
 
 	if (value == current_value)
@@ -8575,11 +6718,7 @@ static int brightness_set(unsigned int value)
 {
 	int res;
 
-<<<<<<< HEAD
-	if (value > bright_maxlvl || value < 0)
-=======
 	if (value > bright_maxlvl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	vdbg_printk(TPACPI_DBG_BRGHT,
@@ -8609,14 +6748,7 @@ static int brightness_set(unsigned int value)
 
 static int brightness_update_status(struct backlight_device *bd)
 {
-<<<<<<< HEAD
-	unsigned int level =
-		(bd->props.fb_blank == FB_BLANK_UNBLANK &&
-		 bd->props.power == FB_BLANK_UNBLANK) ?
-				bd->props.brightness : 0;
-=======
 	int level = backlight_get_brightness(bd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg_printk(TPACPI_DBG_BRGHT,
 			"backlight: attempt to set level to %d\n",
@@ -8658,8 +6790,6 @@ static const struct backlight_ops ibm_backlight_data = {
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-=======
 static int __init tpacpi_evaluate_bcl(struct acpi_device *adev, void *not_used)
 {
 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
@@ -8685,7 +6815,6 @@ static int __init tpacpi_evaluate_bcl(struct acpi_device *adev, void *not_used)
 	return rc;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Call _BCL method of video device.  On some ThinkPads this will
  * switch the firmware to the ACPI brightness control mode.
@@ -8693,27 +6822,6 @@ static int __init tpacpi_evaluate_bcl(struct acpi_device *adev, void *not_used)
 
 static int __init tpacpi_query_bcl_levels(acpi_handle handle)
 {
-<<<<<<< HEAD
-	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-	union acpi_object *obj;
-	int rc;
-
-	if (ACPI_SUCCESS(acpi_evaluate_object(handle, "_BCL", NULL, &buffer))) {
-		obj = (union acpi_object *)buffer.pointer;
-		if (!obj || (obj->type != ACPI_TYPE_PACKAGE)) {
-			pr_err("Unknown _BCL data, please report this to %s\n",
-			       TPACPI_MAIL);
-			rc = 0;
-		} else {
-			rc = obj->package.count;
-		}
-	} else {
-		return 0;
-	}
-
-	kfree(buffer.pointer);
-	return rc;
-=======
 	struct acpi_device *device;
 
 	device = acpi_fetch_acpi_dev(handle);
@@ -8721,7 +6829,6 @@ static int __init tpacpi_query_bcl_levels(acpi_handle handle)
 		return 0;
 
 	return acpi_dev_for_each_child(device, tpacpi_evaluate_bcl, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -8733,11 +6840,7 @@ static unsigned int __init tpacpi_check_std_acpi_brightness_support(void)
 	acpi_handle video_device;
 	int bcl_levels = 0;
 
-<<<<<<< HEAD
-	tpacpi_acpi_handle_locate("video", ACPI_VIDEO_HID, &video_device);
-=======
 	tpacpi_acpi_handle_locate("video", NULL, &video_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (video_device)
 		bcl_levels = tpacpi_query_bcl_levels(video_device);
 
@@ -8799,31 +6902,16 @@ static void __init tpacpi_detect_brightness_capabilities(void)
 	switch (b) {
 	case 16:
 		bright_maxlvl = 15;
-<<<<<<< HEAD
-		pr_info("detected a 16-level brightness capable ThinkPad\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 8:
 	case 0:
 		bright_maxlvl = 7;
-<<<<<<< HEAD
-		pr_info("detected a 8-level brightness capable ThinkPad\n");
-		break;
-	default:
-		pr_err("Unsupported brightness interface, "
-		       "please contact %s\n", TPACPI_MAIL);
-		tp_features.bright_unkfw = 1;
-		bright_maxlvl = b - 1;
-	}
-=======
 		break;
 	default:
 		tp_features.bright_unkfw = 1;
 		bright_maxlvl = b - 1;
 	}
 	pr_debug("detected %u brightness levels\n", bright_maxlvl + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init brightness_init(struct ibm_init_struct *iibm)
@@ -8843,34 +6931,6 @@ static int __init brightness_init(struct ibm_init_struct *iibm)
 
 	/* if it is unknown, we don't handle it: it wouldn't be safe */
 	if (tp_features.bright_unkfw)
-<<<<<<< HEAD
-		return 1;
-
-	if (!brightness_enable) {
-		dbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_BRGHT,
-			   "brightness support disabled by "
-			   "module parameter\n");
-		return 1;
-	}
-
-	if (acpi_video_backlight_support()) {
-		if (brightness_enable > 1) {
-			pr_info("Standard ACPI backlight interface "
-				"available, not loading native one\n");
-			return 1;
-		} else if (brightness_enable == 1) {
-			pr_warn("Cannot enable backlight brightness support, "
-				"ACPI is already handling it.  Refer to the "
-				"acpi_backlight kernel parameter.\n");
-			return 1;
-		}
-	} else if (tp_features.bright_acpimode && brightness_enable > 1) {
-		pr_notice("Standard ACPI backlight interface not "
-			  "available, thinkpad_acpi native "
-			  "brightness control enabled\n");
-	}
-
-=======
 		return -ENODEV;
 
 	if (!brightness_enable) {
@@ -8894,7 +6954,6 @@ static int __init brightness_init(struct ibm_init_struct *iibm)
 
 	pr_notice("ACPI native brightness control enabled\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Check for module parameter bogosity, note that we
 	 * init brightness_mode to TPACPI_BRGHT_MODE_MAX in order to be
@@ -8923,11 +6982,7 @@ static int __init brightness_init(struct ibm_init_struct *iibm)
 		return -EINVAL;
 
 	if (tpacpi_brightness_get_raw(&b) < 0)
-<<<<<<< HEAD
-		return 1;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_PLATFORM;
@@ -8947,17 +7002,10 @@ static int __init brightness_init(struct ibm_init_struct *iibm)
 			"brightness is supported\n");
 
 	if (quirks & TPACPI_BRGHT_Q_ASK) {
-<<<<<<< HEAD
-		pr_notice("brightness: will use unverified default: "
-			  "brightness_mode=%d\n", brightness_mode);
-		pr_notice("brightness: please report to %s whether it works well "
-			  "or not on your ThinkPad\n", TPACPI_MAIL);
-=======
 		pr_notice("brightness: will use unverified default: brightness_mode=%d\n",
 			  brightness_mode);
 		pr_notice("brightness: please report to %s whether it works well or not on your ThinkPad\n",
 			  TPACPI_MAIL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Added by mistake in early 2007.  Probably useless, but it could
@@ -8967,23 +7015,14 @@ static int __init brightness_init(struct ibm_init_struct *iibm)
 	backlight_update_status(ibm_backlight_device);
 
 	vdbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_BRGHT,
-<<<<<<< HEAD
-			"brightness: registering brightness hotkeys "
-			"as change notification\n");
-=======
 		    "brightness: registering brightness hotkeys as change notification\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tpacpi_hotkey_driver_mask_set(hotkey_driver_mask
 				| TP_ACPI_HKEY_BRGHTUP_MASK
 				| TP_ACPI_HKEY_BRGHTDWN_MASK);
 	return 0;
 }
 
-<<<<<<< HEAD
-static void brightness_suspend(pm_message_t state)
-=======
 static void brightness_suspend(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	tpacpi_brightness_checkpoint_nvram();
 }
@@ -9031,19 +7070,11 @@ static int brightness_write(char *buf)
 	if (level < 0)
 		return level;
 
-<<<<<<< HEAD
-	while ((cmd = next_cmd(&buf))) {
-		if (strlencmp(cmd, "up") == 0) {
-			if (level < bright_maxlvl)
-				level++;
-		} else if (strlencmp(cmd, "down") == 0) {
-=======
 	while ((cmd = strsep(&buf, ","))) {
 		if (strstarts(cmd, "up")) {
 			if (level < bright_maxlvl)
 				level++;
 		} else if (strstarts(cmd, "down")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (level > 0)
 				level--;
 		} else if (sscanf(cmd, "level %d", &level) == 1 &&
@@ -9064,11 +7095,7 @@ static int brightness_write(char *buf)
 	if (!rc && ibm_backlight_device)
 		backlight_force_update(ibm_backlight_device,
 					BACKLIGHT_UPDATE_SYSFS);
-<<<<<<< HEAD
-	return (rc == -EINTR)? -ERESTARTSYS : rc;
-=======
 	return (rc == -EINTR) ? -ERESTARTSYS : rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct ibm_struct brightness_driver_data = {
@@ -9100,8 +7127,6 @@ static struct ibm_struct brightness_driver_data = {
  * bits 3-0 (volume).  Other bits in NVRAM may have other functions,
  * such as bit 7 which is used to detect repeated presses of MUTE,
  * and we leave them unchanged.
-<<<<<<< HEAD
-=======
  *
  * On newer Lenovo ThinkPads, the EC can automatically change the volume
  * in response to user input.  Unfortunately, this rarely works well.
@@ -9113,7 +7138,6 @@ static struct ibm_struct brightness_driver_data = {
  *
  * To avoid confusing userspace, we simply disable all EC-based mute
  * and volume controls when possible.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifdef CONFIG_THINKPAD_ACPI_ALSA_SUPPORT
@@ -9122,16 +7146,12 @@ static struct ibm_struct brightness_driver_data = {
 #define TPACPI_ALSA_SHRTNAME "ThinkPad Console Audio Control"
 #define TPACPI_ALSA_MIXERNAME TPACPI_ALSA_SHRTNAME
 
-<<<<<<< HEAD
-static int alsa_index = ~((1 << (SNDRV_CARDS - 3)) - 1); /* last three slots */
-=======
 #if SNDRV_CARDS <= 32
 #define DEFAULT_ALSA_IDX		~((1 << (SNDRV_CARDS - 3)) - 1)
 #else
 #define DEFAULT_ALSA_IDX		~((1 << (32 - 3)) - 1)
 #endif
 static int alsa_index = DEFAULT_ALSA_IDX; /* last three slots */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static char *alsa_id = "ThinkPadEC";
 static bool alsa_enable = SNDRV_DEFAULT_ENABLE1;
 
@@ -9172,8 +7192,6 @@ enum tpacpi_volume_capabilities {
 	TPACPI_VOL_CAP_MAX
 };
 
-<<<<<<< HEAD
-=======
 enum tpacpi_mute_btn_mode {
 	TP_EC_MUTE_BTN_LATCH  = 0,	/* Mute mutes; up/down unmutes */
 	/* We don't know what mode 1 is. */
@@ -9181,18 +7199,14 @@ enum tpacpi_mute_btn_mode {
 	TP_EC_MUTE_BTN_TOGGLE = 3,	/* Mute toggles; up/down unmutes */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum tpacpi_volume_access_mode volume_mode =
 	TPACPI_VOL_MODE_MAX;
 
 static enum tpacpi_volume_capabilities volume_capabilities;
 static bool volume_control_allowed;
-<<<<<<< HEAD
-=======
 static bool software_mute_requested = true;
 static bool software_mute_active;
 static int software_mute_orig_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Used to syncronize writers to TP_EC_AUDIO and
@@ -9210,11 +7224,8 @@ static void tpacpi_volume_checkpoint_nvram(void)
 		return;
 	if (!volume_control_allowed)
 		return;
-<<<<<<< HEAD
-=======
 	if (software_mute_active)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vdbg_printk(TPACPI_DBG_MIXER,
 		"trying to checkpoint mixer state to NVRAM...\n");
@@ -9276,15 +7287,12 @@ static int volume_set_status_ec(const u8 status)
 
 	dbg_printk(TPACPI_DBG_MIXER, "set EC mixer to 0x%02x\n", status);
 
-<<<<<<< HEAD
-=======
 	/*
 	 * On X200s, and possibly on others, it can take a while for
 	 * reads to become correct.
 	 */
 	msleep(1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -9367,8 +7375,6 @@ unlock:
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 static int volume_set_software_mute(bool startup)
 {
 	int result;
@@ -9420,7 +7426,6 @@ static void volume_exit_software_mute(void)
 		pr_warn("Failed to restore mute mode\n");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int volume_alsa_set_volume(const u8 vol)
 {
 	dbg_printk(TPACPI_DBG_MIXER,
@@ -9503,11 +7508,7 @@ static int volume_alsa_mute_put(struct snd_kcontrol *kcontrol,
 	return volume_alsa_set_mute(!ucontrol->value.integer.value[0]);
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new volume_alsa_control_vol __devinitdata = {
-=======
 static struct snd_kcontrol_new volume_alsa_control_vol __initdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Console Playback Volume",
 	.index = 0,
@@ -9516,11 +7517,7 @@ static struct snd_kcontrol_new volume_alsa_control_vol __initdata = {
 	.get = volume_alsa_vol_get,
 };
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new volume_alsa_control_mute __devinitdata = {
-=======
 static struct snd_kcontrol_new volume_alsa_control_mute __initdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Console Playback Switch",
 	.index = 0,
@@ -9529,27 +7526,19 @@ static struct snd_kcontrol_new volume_alsa_control_mute __initdata = {
 	.get = volume_alsa_mute_get,
 };
 
-<<<<<<< HEAD
-static void volume_suspend(pm_message_t state)
-=======
 static void volume_suspend(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	tpacpi_volume_checkpoint_nvram();
 }
 
 static void volume_resume(void)
 {
-<<<<<<< HEAD
-	volume_alsa_notify_change();
-=======
 	if (software_mute_active) {
 		if (volume_set_software_mute(false) < 0)
 			pr_warn("Failed to restore software mute\n");
 	} else {
 		volume_alsa_notify_change();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void volume_shutdown(void)
@@ -9565,12 +7554,9 @@ static void volume_exit(void)
 	}
 
 	tpacpi_volume_checkpoint_nvram();
-<<<<<<< HEAD
-=======
 
 	if (software_mute_active)
 		volume_exit_software_mute();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init volume_create_alsa_mixer(void)
@@ -9581,35 +7567,21 @@ static int __init volume_create_alsa_mixer(void)
 	struct snd_kcontrol *ctl_mute;
 	int rc;
 
-<<<<<<< HEAD
-	rc = snd_card_create(alsa_index, alsa_id, THIS_MODULE,
-			    sizeof(struct tpacpi_alsa_data), &card);
-	if (rc < 0 || !card) {
-		pr_err("Failed to create ALSA card structures: %d\n", rc);
-		return 1;
-=======
 	rc = snd_card_new(&tpacpi_pdev->dev,
 			  alsa_index, alsa_id, THIS_MODULE,
 			  sizeof(struct tpacpi_alsa_data), &card);
 	if (rc < 0 || !card) {
 		pr_err("Failed to create ALSA card structures: %d\n", rc);
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	BUG_ON(!card->private_data);
 	data = card->private_data;
 	data->card = card;
 
-<<<<<<< HEAD
-	strlcpy(card->driver, TPACPI_ALSA_DRVNAME,
-		sizeof(card->driver));
-	strlcpy(card->shortname, TPACPI_ALSA_SHRTNAME,
-=======
 	strscpy(card->driver, TPACPI_ALSA_DRVNAME,
 		sizeof(card->driver));
 	strscpy(card->shortname, TPACPI_ALSA_SHRTNAME,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(card->shortname));
 	snprintf(card->mixername, sizeof(card->mixername), "ThinkPad EC %s",
 		 (thinkpad_id.ec_version_str) ?
@@ -9648,10 +7620,6 @@ static int __init volume_create_alsa_mixer(void)
 	}
 	data->ctl_mute_id = &ctl_mute->id;
 
-<<<<<<< HEAD
-	snd_card_set_dev(card, &tpacpi_pdev->dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = snd_card_register(card);
 	if (rc < 0) {
 		pr_err("Failed to register ALSA card: %d\n", rc);
@@ -9663,11 +7631,7 @@ static int __init volume_create_alsa_mixer(void)
 
 err_exit:
 	snd_card_free(card);
-<<<<<<< HEAD
-	return 1;
-=======
 	return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define TPACPI_VOL_Q_MUTEONLY	0x0001	/* Mute-only control available */
@@ -9714,15 +7678,9 @@ static int __init volume_init(struct ibm_init_struct *iibm)
 		return -EINVAL;
 
 	if (volume_mode == TPACPI_VOL_MODE_UCMS_STEP) {
-<<<<<<< HEAD
-		pr_err("UCMS step volume mode not implemented, "
-		       "please contact %s\n", TPACPI_MAIL);
-		return 1;
-=======
 		pr_err("UCMS step volume mode not implemented, please contact %s\n",
 		       TPACPI_MAIL);
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (volume_capabilities >= TPACPI_VOL_CAP_MAX)
@@ -9734,14 +7692,8 @@ static int __init volume_init(struct ibm_init_struct *iibm)
 	 */
 	if (!alsa_enable) {
 		vdbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_MIXER,
-<<<<<<< HEAD
-			    "ALSA mixer disabled by parameter, "
-			    "not loading volume subdriver...\n");
-		return 1;
-=======
 			    "ALSA mixer disabled by parameter, not loading volume subdriver...\n");
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	quirks = tpacpi_check_quirks(volume_quirk_table,
@@ -9754,11 +7706,7 @@ static int __init volume_init(struct ibm_init_struct *iibm)
 		else if (quirks & TPACPI_VOL_Q_LEVEL)
 			tp_features.mixer_no_level_control = 0;
 		else
-<<<<<<< HEAD
-			return 1; /* no mixer */
-=======
 			return -ENODEV; /* no mixer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case TPACPI_VOL_CAP_VOLMUTE:
 		tp_features.mixer_no_level_control = 0;
@@ -9767,11 +7715,7 @@ static int __init volume_init(struct ibm_init_struct *iibm)
 		tp_features.mixer_no_level_control = 1;
 		break;
 	default:
-<<<<<<< HEAD
-		return 1;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (volume_capabilities != TPACPI_VOL_CAP_AUTO)
@@ -9796,18 +7740,6 @@ static int __init volume_init(struct ibm_init_struct *iibm)
 			"mute is supported, volume control is %s\n",
 			str_supported(!tp_features.mixer_no_level_control));
 
-<<<<<<< HEAD
-	rc = volume_create_alsa_mixer();
-	if (rc) {
-		pr_err("Could not create the ALSA mixer interface\n");
-		return rc;
-	}
-
-	pr_info("Console audio control enabled, mode: %s\n",
-		(volume_control_allowed) ?
-			"override (read/write)" :
-			"monitor (read only)");
-=======
 	if (software_mute_requested && volume_set_software_mute(true) == 0) {
 		software_mute_active = true;
 	} else {
@@ -9822,7 +7754,6 @@ static int __init volume_init(struct ibm_init_struct *iibm)
 				"override (read/write)" :
 				"monitor (read only)");
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vdbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_MIXER,
 		"registering volume hotkeys as change notification\n");
@@ -9847,28 +7778,14 @@ static int volume_read(struct seq_file *m)
 			seq_printf(m, "level:\t\t%d\n",
 					status & TP_EC_AUDIO_LVL_MSK);
 
-<<<<<<< HEAD
-		seq_printf(m, "mute:\t\t%s\n",
-				onoff(status, TP_EC_AUDIO_MUTESW));
-=======
 		seq_printf(m, "mute:\t\t%s\n", str_on_off(status & BIT(TP_EC_AUDIO_MUTESW)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (volume_control_allowed) {
 			seq_printf(m, "commands:\tunmute, mute\n");
 			if (!tp_features.mixer_no_level_control) {
-<<<<<<< HEAD
-				seq_printf(m,
-					       "commands:\tup, down\n");
-				seq_printf(m,
-					       "commands:\tlevel <level>"
-					       " (<level> is 0-%d)\n",
-					       TP_EC_VOLUME_MAX);
-=======
 				seq_printf(m, "commands:\tup, down\n");
 				seq_printf(m, "commands:\tlevel <level> (<level> is 0-%d)\n",
 					      TP_EC_VOLUME_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -9891,15 +7808,8 @@ static int volume_write(char *buf)
 	if (!volume_control_allowed && tpacpi_lifecycle != TPACPI_LIFE_INIT) {
 		if (unlikely(!tp_warned.volume_ctrl_forbidden)) {
 			tp_warned.volume_ctrl_forbidden = 1;
-<<<<<<< HEAD
-			pr_notice("Console audio control in monitor mode, "
-				  "changes are not allowed\n");
-			pr_notice("Use the volume_control=1 module parameter "
-				  "to enable volume control\n");
-=======
 			pr_notice("Console audio control in monitor mode, changes are not allowed\n");
 			pr_notice("Use the volume_control=1 module parameter to enable volume control\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return -EPERM;
 	}
@@ -9911,25 +7821,15 @@ static int volume_write(char *buf)
 	new_level = s & TP_EC_AUDIO_LVL_MSK;
 	new_mute  = s & TP_EC_AUDIO_MUTESW_MSK;
 
-<<<<<<< HEAD
-	while ((cmd = next_cmd(&buf))) {
-		if (!tp_features.mixer_no_level_control) {
-			if (strlencmp(cmd, "up") == 0) {
-=======
 	while ((cmd = strsep(&buf, ","))) {
 		if (!tp_features.mixer_no_level_control) {
 			if (strstarts(cmd, "up")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (new_mute)
 					new_mute = 0;
 				else if (new_level < TP_EC_VOLUME_MAX)
 					new_level++;
 				continue;
-<<<<<<< HEAD
-			} else if (strlencmp(cmd, "down") == 0) {
-=======
 			} else if (strstarts(cmd, "down")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (new_mute)
 					new_mute = 0;
 				else if (new_level > 0)
@@ -9937,15 +7837,6 @@ static int volume_write(char *buf)
 				continue;
 			} else if (sscanf(cmd, "level %u", &l) == 1 &&
 				   l >= 0 && l <= TP_EC_VOLUME_MAX) {
-<<<<<<< HEAD
-					new_level = l;
-				continue;
-			}
-		}
-		if (strlencmp(cmd, "mute") == 0)
-			new_mute = TP_EC_AUDIO_MUTESW_MSK;
-		else if (strlencmp(cmd, "unmute") == 0)
-=======
 				new_level = l;
 				continue;
 			}
@@ -9953,7 +7844,6 @@ static int volume_write(char *buf)
 		if (strstarts(cmd, "mute"))
 			new_mute = TP_EC_AUDIO_MUTESW_MSK;
 		else if (strstarts(cmd, "unmute"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			new_mute = 0;
 		else
 			return -EINVAL;
@@ -9988,11 +7878,7 @@ static struct ibm_struct volume_driver_data = {
 
 #define alsa_card NULL
 
-<<<<<<< HEAD
-static void inline volume_alsa_notify_change(void)
-=======
 static inline void volume_alsa_notify_change(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
@@ -10000,11 +7886,7 @@ static int __init volume_init(struct ibm_init_struct *iibm)
 {
 	pr_info("volume: disabled as there is no ALSA support in this kernel\n");
 
-<<<<<<< HEAD
-	return 1;
-=======
 	return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct ibm_struct volume_driver_data = {
@@ -10069,11 +7951,7 @@ static struct ibm_struct volume_driver_data = {
  *	does so, its initial value is meaningless (0x07).
  *
  *	For firmware bugs, refer to:
-<<<<<<< HEAD
- *	http://thinkwiki.org/wiki/Embedded_Controller_Firmware#Firmware_Issues
-=======
  *	https://thinkwiki.org/wiki/Embedded_Controller_Firmware#Firmware_Issues
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * 	----
  *
@@ -10098,11 +7976,7 @@ static struct ibm_struct volume_driver_data = {
  *	mode.
  *
  *	For firmware bugs, refer to:
-<<<<<<< HEAD
- *	http://thinkwiki.org/wiki/Embedded_Controller_Firmware#Firmware_Issues
-=======
  *	https://thinkwiki.org/wiki/Embedded_Controller_Firmware#Firmware_Issues
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	----
  *
@@ -10139,10 +8013,6 @@ static struct ibm_struct volume_driver_data = {
  * 	TPACPI_FAN_WR_TPEC is also available and should be used to
  * 	command the fan.  The X31/X40/X41 seems to have 8 fan levels,
  * 	but the ACPI tables just mention level 7.
-<<<<<<< HEAD
- */
-
-=======
  *
  * TPACPI_FAN_RD_TPEC_NS:
  *	This mode is used for a few ThinkPads (L13 Yoga Gen2, X13 Yoga Gen2 etc.)
@@ -10156,7 +8026,6 @@ static struct ibm_struct volume_driver_data = {
 #define FAN_NS_CTRL_STATUS	BIT(2)		/* Bit which determines control is enabled or not */
 #define FAN_NS_CTRL		BIT(4)		/* Bit which determines control is by host or EC */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {					/* Fan control constants */
 	fan_status_offset = 0x2f,	/* EC register 0x2f */
 	fan_rpm_offset = 0x84,		/* EC register 0x84: LSB, 0x85 MSB (RPM)
@@ -10164,14 +8033,11 @@ enum {					/* Fan control constants */
 	fan_select_offset = 0x31,	/* EC register 0x31 (Firmware 7M)
 					   bit 0 selects which fan is active */
 
-<<<<<<< HEAD
-=======
 	fan_status_offset_ns = 0x93,	/* Special status/control offset for non-standard EC Fan1 */
 	fan2_status_offset_ns = 0x96,	/* Special status/control offset for non-standard EC Fan2 */
 	fan_rpm_status_ns = 0x95,	/* Special offset for Fan1 RPM status for non-standard EC */
 	fan2_rpm_status_ns = 0x98,	/* Special offset for Fan2 RPM status for non-standard EC */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_EC_FAN_FULLSPEED = 0x40,	/* EC fan mode: full speed */
 	TP_EC_FAN_AUTO	    = 0x80,	/* EC fan mode: auto fan control */
 
@@ -10182,10 +8048,7 @@ enum fan_status_access_mode {
 	TPACPI_FAN_NONE = 0,		/* No fan status or control */
 	TPACPI_FAN_RD_ACPI_GFAN,	/* Use ACPI GFAN */
 	TPACPI_FAN_RD_TPEC,		/* Use ACPI EC regs 0x2f, 0x84-0x85 */
-<<<<<<< HEAD
-=======
 	TPACPI_FAN_RD_TPEC_NS,		/* Use non-standard ACPI EC regs (eg: L13 Yoga gen2 etc.) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum fan_control_access_mode {
@@ -10213,11 +8076,8 @@ static u8 fan_control_desired_level;
 static u8 fan_control_resume_level;
 static int fan_watchdog_maxinterval;
 
-<<<<<<< HEAD
-=======
 static bool fan_with_ns_addr;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct mutex fan_mutex;
 
 static void fan_watchdog_fire(struct work_struct *ignored);
@@ -10250,12 +8110,7 @@ TPACPI_HANDLE(sfan, ec, "SFAN",	/* 570 */
 static void fan_quirk1_setup(void)
 {
 	if (fan_control_initial_status == 0x07) {
-<<<<<<< HEAD
-		pr_notice("fan_init: initial fan status is unknown, "
-			  "assuming it is in auto mode\n");
-=======
 		pr_notice("fan_init: initial fan status is unknown, assuming it is in auto mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tp_features.fan_ctrl_status_undef = 1;
 	}
 }
@@ -10308,18 +8163,10 @@ static bool fan_select_fan2(void)
 	return true;
 }
 
-<<<<<<< HEAD
-/*
- * Call with fan_mutex held
- */
-static void fan_update_desired_level(u8 status)
-{
-=======
 static void fan_update_desired_level(u8 status)
 {
 	lockdep_assert_held(&fan_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((status &
 	     (TP_EC_FAN_AUTO | TP_EC_FAN_FULLSPEED)) == 0) {
 		if (status > 7)
@@ -10337,19 +8184,6 @@ static int fan_get_status(u8 *status)
 	 * Add TPACPI_FAN_RD_ACPI_FANS ? */
 
 	switch (fan_status_access_mode) {
-<<<<<<< HEAD
-	case TPACPI_FAN_RD_ACPI_GFAN:
-		/* 570, 600e/x, 770e, 770x */
-
-		if (unlikely(!acpi_evalf(gfan_handle, &s, NULL, "d")))
-			return -EIO;
-
-		if (likely(status))
-			*status = s & 0x07;
-
-		break;
-
-=======
 	case TPACPI_FAN_RD_ACPI_GFAN: {
 		/* 570, 600e/x, 770e, 770x */
 		int res;
@@ -10362,7 +8196,6 @@ static int fan_get_status(u8 *status)
 
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case TPACPI_FAN_RD_TPEC:
 		/* all except 570, 600e/x, 770e, 770x */
 		if (unlikely(!acpi_ec_read(fan_status_offset, &s)))
@@ -10374,8 +8207,6 @@ static int fan_get_status(u8 *status)
 		}
 
 		break;
-<<<<<<< HEAD
-=======
 	case TPACPI_FAN_RD_TPEC_NS:
 		/* Default mode is AUTO which means controlled by EC */
 		if (!acpi_ec_read(fan_status_offset_ns, &s))
@@ -10385,7 +8216,6 @@ static int fan_get_status(u8 *status)
 			*status = s;
 
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		return -ENXIO;
@@ -10402,16 +8232,6 @@ static int fan_get_status_safe(u8 *status)
 	if (mutex_lock_killable(&fan_mutex))
 		return -ERESTARTSYS;
 	rc = fan_get_status(&s);
-<<<<<<< HEAD
-	if (!rc)
-		fan_update_desired_level(s);
-	mutex_unlock(&fan_mutex);
-
-	if (status)
-		*status = s;
-
-	return rc;
-=======
 	/* NS EC doesn't have register with level settings */
 	if (!rc && !fan_with_ns_addr)
 		fan_update_desired_level(s);
@@ -10423,7 +8243,6 @@ static int fan_get_status_safe(u8 *status)
 		*status = s;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fan_get_speed(unsigned int *speed)
@@ -10441,9 +8260,6 @@ static int fan_get_speed(unsigned int *speed)
 
 		if (likely(speed))
 			*speed = (hi << 8) | lo;
-<<<<<<< HEAD
-
-=======
 		break;
 	case TPACPI_FAN_RD_TPEC_NS:
 		if (!acpi_ec_read(fan_rpm_status_ns, &lo))
@@ -10451,7 +8267,6 @@ static int fan_get_speed(unsigned int *speed)
 
 		if (speed)
 			*speed = lo ? FAN_RPM_CAL_CONST / lo : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -10463,11 +8278,7 @@ static int fan_get_speed(unsigned int *speed)
 
 static int fan2_get_speed(unsigned int *speed)
 {
-<<<<<<< HEAD
-	u8 hi, lo;
-=======
 	u8 hi, lo, status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool rc;
 
 	switch (fan_status_access_mode) {
@@ -10483,9 +8294,6 @@ static int fan2_get_speed(unsigned int *speed)
 
 		if (likely(speed))
 			*speed = (hi << 8) | lo;
-<<<<<<< HEAD
-
-=======
 		break;
 
 	case TPACPI_FAN_RD_TPEC_NS:
@@ -10501,7 +8309,6 @@ static int fan2_get_speed(unsigned int *speed)
 			return -EIO;
 		if (speed)
 			*speed = lo ? FAN_RPM_CAL_CONST / lo : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -10518,13 +8325,6 @@ static int fan_set_level(int level)
 
 	switch (fan_control_access_mode) {
 	case TPACPI_FAN_WR_ACPI_SFAN:
-<<<<<<< HEAD
-		if (level >= 0 && level <= 7) {
-			if (!acpi_evalf(sfan_handle, NULL, NULL, "vd", level))
-				return -EIO;
-		} else
-			return -EINVAL;
-=======
 		if ((level < 0) || (level > 7))
 			return -EINVAL;
 
@@ -10538,7 +8338,6 @@ static int fan_set_level(int level)
 		}
 		if (!acpi_evalf(sfan_handle, NULL, NULL, "vd", level))
 			return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case TPACPI_FAN_WR_ACPI_FANS:
@@ -10555,8 +8354,6 @@ static int fan_set_level(int level)
 		else if (level & TP_EC_FAN_AUTO)
 			level |= 4;	/* safety min speed 4 */
 
-<<<<<<< HEAD
-=======
 		if (tp_features.second_fan_ctl) {
 			if (!fan_select_fan2() ||
 			    !acpi_ec_write(fan_status_offset, level)) {
@@ -10566,7 +8363,6 @@ static int fan_set_level(int level)
 			fan_select_fan1();
 
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!acpi_ec_write(fan_status_offset, level))
 			return -EIO;
 		else
@@ -10618,11 +8414,7 @@ static int fan_set_enable(void)
 	case TPACPI_FAN_WR_ACPI_FANS:
 	case TPACPI_FAN_WR_TPEC:
 		rc = fan_get_status(&s);
-<<<<<<< HEAD
-		if (rc < 0)
-=======
 		if (rc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		/* Don't go out of emergency fan mode */
@@ -10641,11 +8433,7 @@ static int fan_set_enable(void)
 
 	case TPACPI_FAN_WR_ACPI_SFAN:
 		rc = fan_get_status(&s);
-<<<<<<< HEAD
-		if (rc < 0)
-=======
 		if (rc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		s &= 0x07;
@@ -10744,27 +8532,6 @@ static int fan_set_speed(int speed)
 
 static void fan_watchdog_reset(void)
 {
-<<<<<<< HEAD
-	static int fan_watchdog_active;
-
-	if (fan_control_access_mode == TPACPI_FAN_WR_NONE)
-		return;
-
-	if (fan_watchdog_active)
-		cancel_delayed_work(&fan_watchdog_task);
-
-	if (fan_watchdog_maxinterval > 0 &&
-	    tpacpi_lifecycle != TPACPI_LIFE_EXITING) {
-		fan_watchdog_active = 1;
-		if (!queue_delayed_work(tpacpi_wq, &fan_watchdog_task,
-				msecs_to_jiffies(fan_watchdog_maxinterval
-						 * 1000))) {
-			pr_err("failed to queue the fan watchdog, "
-			       "watchdog will not trigger\n");
-		}
-	} else
-		fan_watchdog_active = 0;
-=======
 	if (fan_control_access_mode == TPACPI_FAN_WR_NONE)
 		return;
 
@@ -10774,7 +8541,6 @@ static void fan_watchdog_reset(void)
 			msecs_to_jiffies(fan_watchdog_maxinterval * 1000));
 	else
 		cancel_delayed_work(&fan_watchdog_task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fan_watchdog_fire(struct work_struct *ignored)
@@ -10787,13 +8553,8 @@ static void fan_watchdog_fire(struct work_struct *ignored)
 	pr_notice("fan watchdog: enabling fan\n");
 	rc = fan_set_enable();
 	if (rc < 0) {
-<<<<<<< HEAD
-		pr_err("fan watchdog: error %d while enabling fan, "
-		       "will try again later...\n", -rc);
-=======
 		pr_err("fan watchdog: error %d while enabling fan, will try again later...\n",
 		       rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* reschedule for later */
 		fan_watchdog_reset();
 	}
@@ -10839,11 +8600,7 @@ static ssize_t fan_pwm1_enable_show(struct device *dev,
 	} else
 		mode = 1;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", mode);
-=======
 	return sysfs_emit(buf, "%d\n", mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t fan_pwm1_enable_store(struct device *dev,
@@ -10887,14 +8644,8 @@ static ssize_t fan_pwm1_enable_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static struct device_attribute dev_attr_fan_pwm1_enable =
-	__ATTR(pwm1_enable, S_IWUSR | S_IRUGO,
-		fan_pwm1_enable_show, fan_pwm1_enable_store);
-=======
 static DEVICE_ATTR(pwm1_enable, S_IWUSR | S_IRUGO,
 		   fan_pwm1_enable_show, fan_pwm1_enable_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sysfs fan pwm1 ------------------------------------------------------ */
 static ssize_t fan_pwm1_show(struct device *dev,
@@ -10915,11 +8666,7 @@ static ssize_t fan_pwm1_show(struct device *dev,
 	if (status > 7)
 		status = 7;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%u\n", (status * 255) / 7);
-=======
 	return sysfs_emit(buf, "%u\n", (status * 255) / 7);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t fan_pwm1_store(struct device *dev,
@@ -10955,19 +8702,10 @@ static ssize_t fan_pwm1_store(struct device *dev,
 	}
 
 	mutex_unlock(&fan_mutex);
-<<<<<<< HEAD
-	return (rc)? rc : count;
-}
-
-static struct device_attribute dev_attr_fan_pwm1 =
-	__ATTR(pwm1, S_IWUSR | S_IRUGO,
-		fan_pwm1_show, fan_pwm1_store);
-=======
 	return (rc) ? rc : count;
 }
 
 static DEVICE_ATTR(pwm1, S_IWUSR | S_IRUGO, fan_pwm1_show, fan_pwm1_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sysfs fan fan1_input ------------------------------------------------ */
 static ssize_t fan_fan1_input_show(struct device *dev,
@@ -10981,19 +8719,10 @@ static ssize_t fan_fan1_input_show(struct device *dev,
 	if (res < 0)
 		return res;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%u\n", speed);
-}
-
-static struct device_attribute dev_attr_fan_fan1_input =
-	__ATTR(fan1_input, S_IRUGO,
-		fan_fan1_input_show, NULL);
-=======
 	return sysfs_emit(buf, "%u\n", speed);
 }
 
 static DEVICE_ATTR(fan1_input, S_IRUGO, fan_fan1_input_show, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sysfs fan fan2_input ------------------------------------------------ */
 static ssize_t fan_fan2_input_show(struct device *dev,
@@ -11007,24 +8736,6 @@ static ssize_t fan_fan2_input_show(struct device *dev,
 	if (res < 0)
 		return res;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%u\n", speed);
-}
-
-static struct device_attribute dev_attr_fan_fan2_input =
-	__ATTR(fan2_input, S_IRUGO,
-		fan_fan2_input_show, NULL);
-
-/* sysfs fan fan_watchdog (hwmon driver) ------------------------------- */
-static ssize_t fan_fan_watchdog_show(struct device_driver *drv,
-				     char *buf)
-{
-	return snprintf(buf, PAGE_SIZE, "%u\n", fan_watchdog_maxinterval);
-}
-
-static ssize_t fan_fan_watchdog_store(struct device_driver *drv,
-				      const char *buf, size_t count)
-=======
 	return sysfs_emit(buf, "%u\n", speed);
 }
 
@@ -11038,7 +8749,6 @@ static ssize_t fan_watchdog_show(struct device_driver *drv, char *buf)
 
 static ssize_t fan_watchdog_store(struct device_driver *drv, const char *buf,
 				  size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long t;
 
@@ -11055,53 +8765,6 @@ static ssize_t fan_watchdog_store(struct device_driver *drv, const char *buf,
 
 	return count;
 }
-<<<<<<< HEAD
-
-static DRIVER_ATTR(fan_watchdog, S_IWUSR | S_IRUGO,
-		fan_fan_watchdog_show, fan_fan_watchdog_store);
-
-/* --------------------------------------------------------------------- */
-static struct attribute *fan_attributes[] = {
-	&dev_attr_fan_pwm1_enable.attr, &dev_attr_fan_pwm1.attr,
-	&dev_attr_fan_fan1_input.attr,
-	NULL, /* for fan2_input */
-	NULL
-};
-
-static const struct attribute_group fan_attr_group = {
-	.attrs = fan_attributes,
-};
-
-#define	TPACPI_FAN_Q1	0x0001		/* Unitialized HFSP */
-#define TPACPI_FAN_2FAN	0x0002		/* EC 0x31 bit 0 selects fan2 */
-
-#define TPACPI_FAN_QI(__id1, __id2, __quirks)	\
-	{ .vendor = PCI_VENDOR_ID_IBM,		\
-	  .bios = TPACPI_MATCH_ANY,		\
-	  .ec = TPID(__id1, __id2),		\
-	  .quirks = __quirks }
-
-#define TPACPI_FAN_QL(__id1, __id2, __quirks)	\
-	{ .vendor = PCI_VENDOR_ID_LENOVO,	\
-	  .bios = TPACPI_MATCH_ANY,		\
-	  .ec = TPID(__id1, __id2),		\
-	  .quirks = __quirks }
-
-static const struct tpacpi_quirk fan_quirk_table[] __initconst = {
-	TPACPI_FAN_QI('1', 'Y', TPACPI_FAN_Q1),
-	TPACPI_FAN_QI('7', '8', TPACPI_FAN_Q1),
-	TPACPI_FAN_QI('7', '6', TPACPI_FAN_Q1),
-	TPACPI_FAN_QI('7', '0', TPACPI_FAN_Q1),
-	TPACPI_FAN_QL('7', 'M', TPACPI_FAN_2FAN),
-};
-
-#undef TPACPI_FAN_QL
-#undef TPACPI_FAN_QI
-
-static int __init fan_init(struct ibm_init_struct *iibm)
-{
-	int rc;
-=======
 static DRIVER_ATTR_RW(fan_watchdog);
 
 /* --------------------------------------------------------------------- */
@@ -11181,7 +8844,6 @@ static const struct tpacpi_quirk fan_quirk_table[] __initconst = {
 
 static int __init fan_init(struct ibm_init_struct *iibm)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long quirks;
 
 	vdbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_FAN,
@@ -11194,10 +8856,7 @@ static int __init fan_init(struct ibm_init_struct *iibm)
 	fan_watchdog_maxinterval = 0;
 	tp_features.fan_ctrl_status_undef = 0;
 	tp_features.second_fan = 0;
-<<<<<<< HEAD
-=======
 	tp_features.second_fan_ctl = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fan_control_desired_level = 7;
 
 	if (tpacpi_is_ibm()) {
@@ -11209,8 +8868,6 @@ static int __init fan_init(struct ibm_init_struct *iibm)
 	quirks = tpacpi_check_quirks(fan_quirk_table,
 				     ARRAY_SIZE(fan_quirk_table));
 
-<<<<<<< HEAD
-=======
 	if (quirks & TPACPI_FAN_NOFAN) {
 		pr_info("No integrated ThinkPad fan available\n");
 		return -ENODEV;
@@ -11223,29 +8880,12 @@ static int __init fan_init(struct ibm_init_struct *iibm)
 		tp_features.fan_ctrl_status_undef = 1;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (gfan_handle) {
 		/* 570, 600e/x, 770e, 770x */
 		fan_status_access_mode = TPACPI_FAN_RD_ACPI_GFAN;
 	} else {
 		/* all other ThinkPads: note that even old-style
 		 * ThinkPad ECs supports the fan control register */
-<<<<<<< HEAD
-		if (likely(acpi_ec_read(fan_status_offset,
-					&fan_control_initial_status))) {
-			fan_status_access_mode = TPACPI_FAN_RD_TPEC;
-			if (quirks & TPACPI_FAN_Q1)
-				fan_quirk1_setup();
-			if (quirks & TPACPI_FAN_2FAN) {
-				tp_features.second_fan = 1;
-				dbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_FAN,
-					"secondary fan support enabled\n");
-			}
-		} else {
-			pr_err("ThinkPad ACPI EC access misbehaving, "
-			       "fan status and control unavailable\n");
-			return 1;
-=======
 		if (fan_with_ns_addr ||
 		    likely(acpi_ec_read(fan_status_offset, &fan_control_initial_status))) {
 			int res;
@@ -11281,7 +8921,6 @@ static int __init fan_init(struct ibm_init_struct *iibm)
 		} else {
 			pr_err("ThinkPad ACPI EC access misbehaving, fan status and control unavailable\n");
 			return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -11330,36 +8969,11 @@ static int __init fan_init(struct ibm_init_struct *iibm)
 	if (fan_status_access_mode != TPACPI_FAN_NONE)
 		fan_get_status_safe(NULL);
 
-<<<<<<< HEAD
-	if (fan_status_access_mode != TPACPI_FAN_NONE ||
-	    fan_control_access_mode != TPACPI_FAN_WR_NONE) {
-		if (tp_features.second_fan) {
-			/* attach second fan tachometer */
-			fan_attributes[ARRAY_SIZE(fan_attributes)-2] =
-					&dev_attr_fan_fan2_input.attr;
-		}
-		rc = sysfs_create_group(&tpacpi_sensors_pdev->dev.kobj,
-					 &fan_attr_group);
-		if (rc < 0)
-			return rc;
-
-		rc = driver_create_file(&tpacpi_hwmon_pdriver.driver,
-					&driver_attr_fan_watchdog);
-		if (rc < 0) {
-			sysfs_remove_group(&tpacpi_sensors_pdev->dev.kobj,
-					&fan_attr_group);
-			return rc;
-		}
-		return 0;
-	} else
-		return 1;
-=======
 	if (fan_status_access_mode == TPACPI_FAN_NONE &&
 	    fan_control_access_mode == TPACPI_FAN_WR_NONE)
 		return -ENODEV;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fan_exit(void)
@@ -11367,23 +8981,11 @@ static void fan_exit(void)
 	vdbg_printk(TPACPI_DBG_EXIT | TPACPI_DBG_FAN,
 		    "cancelling any pending fan watchdog tasks\n");
 
-<<<<<<< HEAD
-	/* FIXME: can we really do this unconditionally? */
-	sysfs_remove_group(&tpacpi_sensors_pdev->dev.kobj, &fan_attr_group);
-	driver_remove_file(&tpacpi_hwmon_pdriver.driver,
-			   &driver_attr_fan_watchdog);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cancel_delayed_work(&fan_watchdog_task);
 	flush_workqueue(tpacpi_wq);
 }
 
-<<<<<<< HEAD
-static void fan_suspend(pm_message_t state)
-=======
 static void fan_suspend(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 
@@ -11393,15 +8995,9 @@ static void fan_suspend(void)
 	/* Store fan status in cache */
 	fan_control_resume_level = 0;
 	rc = fan_get_status_safe(&fan_control_resume_level);
-<<<<<<< HEAD
-	if (rc < 0)
-		pr_notice("failed to read fan level for later "
-			  "restore during resume: %d\n", rc);
-=======
 	if (rc)
 		pr_notice("failed to read fan level for later restore during resume: %d\n",
 			  rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if it is undefined, don't attempt to restore it.
 	 * KEEP THIS LAST */
@@ -11420,11 +9016,7 @@ static void fan_resume(void)
 
 	if (!fan_control_allowed ||
 	    !fan_control_resume_level ||
-<<<<<<< HEAD
-	    (fan_get_status_safe(&current_level) < 0))
-=======
 	    fan_get_status_safe(&current_level))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	switch (fan_control_access_mode) {
@@ -11478,28 +9070,11 @@ static int fan_read(struct seq_file *m)
 	case TPACPI_FAN_RD_ACPI_GFAN:
 		/* 570, 600e/x, 770e, 770x */
 		rc = fan_get_status_safe(&status);
-<<<<<<< HEAD
-		if (rc < 0)
-=======
 		if (rc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rc;
 
 		seq_printf(m, "status:\t\t%s\n"
 			       "level:\t\t%d\n",
-<<<<<<< HEAD
-			       (status != 0) ? "enabled" : "disabled", status);
-		break;
-
-	case TPACPI_FAN_RD_TPEC:
-		/* all except 570, 600e/x, 770e, 770x */
-		rc = fan_get_status_safe(&status);
-		if (rc < 0)
-			return rc;
-
-		seq_printf(m, "status:\t\t%s\n",
-			       (status != 0) ? "enabled" : "disabled");
-=======
 			       str_enabled_disabled(status), status);
 		break;
 
@@ -11511,7 +9086,6 @@ static int fan_read(struct seq_file *m)
 			return rc;
 
 		seq_printf(m, "status:\t\t%s\n", str_enabled_disabled(status));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rc = fan_get_speed(&speed);
 		if (rc < 0)
@@ -11519,15 +9093,6 @@ static int fan_read(struct seq_file *m)
 
 		seq_printf(m, "speed:\t\t%d\n", speed);
 
-<<<<<<< HEAD
-		if (status & TP_EC_FAN_FULLSPEED)
-			/* Disengaged mode takes precedence */
-			seq_printf(m, "level:\t\tdisengaged\n");
-		else if (status & TP_EC_FAN_AUTO)
-			seq_printf(m, "level:\t\tauto\n");
-		else
-			seq_printf(m, "level:\t\t%d\n", status);
-=======
 		if (fan_status_access_mode == TPACPI_FAN_RD_TPEC_NS) {
 			/*
 			 * No full speed bit in NS EC
@@ -11544,7 +9109,6 @@ static int fan_read(struct seq_file *m)
 			else
 				seq_printf(m, "level:\t\t%d\n", status);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case TPACPI_FAN_NONE:
@@ -11561,31 +9125,17 @@ static int fan_read(struct seq_file *m)
 			break;
 
 		default:
-<<<<<<< HEAD
-			seq_printf(m, " (<level> is 0-7, "
-				       "auto, disengaged, full-speed)\n");
-=======
 			seq_printf(m, " (<level> is 0-7, auto, disengaged, full-speed)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
 	if (fan_control_commands & TPACPI_FAN_CMD_ENABLE)
 		seq_printf(m, "commands:\tenable, disable\n"
-<<<<<<< HEAD
-			       "commands:\twatchdog <timeout> (<timeout> "
-			       "is 0 (off), 1-120 (seconds))\n");
-
-	if (fan_control_commands & TPACPI_FAN_CMD_SPEED)
-		seq_printf(m, "commands:\tspeed <speed>"
-			       " (<speed> is 0-65535)\n");
-=======
 			       "commands:\twatchdog <timeout> (<timeout> is 0 (off), 1-120 (seconds))\n");
 
 	if (fan_control_commands & TPACPI_FAN_CMD_SPEED)
 		seq_printf(m, "commands:\tspeed <speed> (<speed> is 0-65535)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -11594,16 +9144,9 @@ static int fan_write_cmd_level(const char *cmd, int *rc)
 {
 	int level;
 
-<<<<<<< HEAD
-	if (strlencmp(cmd, "level auto") == 0)
-		level = TP_EC_FAN_AUTO;
-	else if ((strlencmp(cmd, "level disengaged") == 0) |
-			(strlencmp(cmd, "level full-speed") == 0))
-=======
 	if (strstarts(cmd, "level auto"))
 		level = TP_EC_FAN_AUTO;
 	else if (strstarts(cmd, "level disengaged") || strstarts(cmd, "level full-speed"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		level = TP_EC_FAN_FULLSPEED;
 	else if (sscanf(cmd, "level %d", &level) != 1)
 		return 0;
@@ -11621,11 +9164,7 @@ static int fan_write_cmd_level(const char *cmd, int *rc)
 
 static int fan_write_cmd_enable(const char *cmd, int *rc)
 {
-<<<<<<< HEAD
-	if (strlencmp(cmd, "enable") != 0)
-=======
 	if (!strstarts(cmd, "enable"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	*rc = fan_set_enable();
@@ -11640,11 +9179,7 @@ static int fan_write_cmd_enable(const char *cmd, int *rc)
 
 static int fan_write_cmd_disable(const char *cmd, int *rc)
 {
-<<<<<<< HEAD
-	if (strlencmp(cmd, "disable") != 0)
-=======
 	if (!strstarts(cmd, "disable"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	*rc = fan_set_disable();
@@ -11702,11 +9237,7 @@ static int fan_write(char *buf)
 	char *cmd;
 	int rc = 0;
 
-<<<<<<< HEAD
-	while (!rc && (cmd = next_cmd(&buf))) {
-=======
 	while (!rc && (cmd = strsep(&buf, ","))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!((fan_control_commands & TPACPI_FAN_CMD_LEVEL) &&
 		      fan_write_cmd_level(cmd, &rc)) &&
 		    !((fan_control_commands & TPACPI_FAN_CMD_ENABLE) &&
@@ -11733,8 +9264,6 @@ static struct ibm_struct fan_driver_data = {
 	.resume = fan_resume,
 };
 
-<<<<<<< HEAD
-=======
 /*************************************************************************
  * Mute LED subdriver
  */
@@ -13585,7 +11114,6 @@ static struct platform_driver tpacpi_hwmon_pdriver = {
 	},
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************
  ****************************************************************************
  *
@@ -13615,8 +11143,6 @@ static void tpacpi_driver_event(const unsigned int hkey_event)
 			volume_alsa_notify_change();
 		}
 	}
-<<<<<<< HEAD
-=======
 	if (tp_features.kbdlight && hkey_event == TP_HKEY_EV_KBD_LIGHT) {
 		enum led_brightness brightness;
 
@@ -13681,7 +11207,6 @@ static void tpacpi_driver_event(const unsigned int hkey_event)
 		/* Notify user space the profile changed */
 		platform_profile_notify();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hotkey_driver_event(const unsigned int scancode)
@@ -13689,20 +11214,6 @@ static void hotkey_driver_event(const unsigned int scancode)
 	tpacpi_driver_event(TP_HKEY_EV_HOTKEY_BASE + scancode);
 }
 
-<<<<<<< HEAD
-/* sysfs name ---------------------------------------------------------- */
-static ssize_t thinkpad_acpi_pdev_name_show(struct device *dev,
-			   struct device_attribute *attr,
-			   char *buf)
-{
-	return snprintf(buf, PAGE_SIZE, "%s\n", TPACPI_NAME);
-}
-
-static struct device_attribute dev_attr_thinkpad_acpi_pdev_name =
-	__ATTR(name, S_IRUGO, thinkpad_acpi_pdev_name_show, NULL);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* --------------------------------------------------------------------- */
 
 /* /proc support */
@@ -13719,11 +11230,7 @@ static const char * __init str_supported(int is_supported)
 {
 	static char text_unsupported[] __initdata = "not supported";
 
-<<<<<<< HEAD
-	return (is_supported)? &text_unsupported[4] : &text_unsupported[0];
-=======
 	return (is_supported) ? &text_unsupported[4] : &text_unsupported[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_THINKPAD_ACPI_DEBUG */
 
@@ -13786,13 +11293,8 @@ static int __init ibm_init(struct ibm_init_struct *iibm)
 
 	if (iibm->init) {
 		ret = iibm->init(iibm);
-<<<<<<< HEAD
-		if (ret > 0)
-			return 0;	/* probe failed */
-=======
 		if (ret > 0 || ret == -ENODEV)
 			return 0; /* subdriver functionality not available */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 
@@ -13830,11 +11332,7 @@ static int __init ibm_init(struct ibm_init_struct *iibm)
 		if (ibm->write)
 			mode |= S_IWUSR;
 		entry = proc_create_data(ibm->name, mode, proc_dir,
-<<<<<<< HEAD
-					 &dispatch_proc_fops, ibm);
-=======
 					 &dispatch_proc_ops, ibm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!entry) {
 			pr_err("unable to create proc entry %s\n", ibm->name);
 			ret = -ENODEV;
@@ -13853,32 +11351,11 @@ err_out:
 		ibm->name, ret);
 
 	ibm_exit(ibm);
-<<<<<<< HEAD
-	return (ret < 0)? ret : 0;
-=======
 	return (ret < 0) ? ret : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Probing */
 
-<<<<<<< HEAD
-static bool __pure __init tpacpi_is_fw_digit(const char c)
-{
-	return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z');
-}
-
-/* Most models: xxyTkkWW (#.##c); Ancient 570/600 and -SL lacks (#.##c) */
-static bool __pure __init tpacpi_is_valid_fw_id(const char* const s,
-						const char t)
-{
-	return s && strlen(s) >= 8 &&
-		tpacpi_is_fw_digit(s[0]) &&
-		tpacpi_is_fw_digit(s[1]) &&
-		s[2] == t && s[3] == 'T' &&
-		tpacpi_is_fw_digit(s[4]) &&
-		tpacpi_is_fw_digit(s[5]);
-=======
 static char __init tpacpi_parse_fw_id(const char * const s,
 				      u32 *model, u16 *release)
 {
@@ -13944,7 +11421,6 @@ static void find_new_ec_fwstr(const struct dmi_header *dm, void *private)
 	/* fwstr is the first 8byte string  */
 	BUILD_BUG_ON(EC_FW_STRING_LEN <= 8);
 	memcpy(ec_fw_string, dmi_data + 0x0F, 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* returns 0 - probe ok, or < 0 - probe error.
@@ -13954,14 +11430,9 @@ static int __must_check __init get_thinkpad_model_data(
 						struct thinkpad_id_data *tp)
 {
 	const struct dmi_device *dev = NULL;
-<<<<<<< HEAD
-	char ec_fw_string[18];
-	char const *s;
-=======
 	char ec_fw_string[EC_FW_STRING_LEN] = {0};
 	char const *s;
 	char t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tp)
 		return -EINVAL;
@@ -13981,32 +11452,17 @@ static int __must_check __init get_thinkpad_model_data(
 		return -ENOMEM;
 
 	/* Really ancient ThinkPad 240X will fail this, which is fine */
-<<<<<<< HEAD
-	if (!tpacpi_is_valid_fw_id(tp->bios_version_str, 'E'))
-		return 0;
-
-	tp->bios_model = tp->bios_version_str[0]
-			 | (tp->bios_version_str[1] << 8);
-	tp->bios_release = (tp->bios_version_str[4] << 8)
-			 | tp->bios_version_str[5];
-
-=======
 	t = tpacpi_parse_fw_id(tp->bios_version_str,
 			       &tp->bios_model, &tp->bios_release);
 	if (t != 'E' && t != 'C')
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * ThinkPad T23 or newer, A31 or newer, R50e or newer,
 	 * X32 or newer, all Z series;  Some models must have an
 	 * up-to-date BIOS or they will not be detected.
 	 *
-<<<<<<< HEAD
-	 * See http://thinkwiki.org/wiki/List_of_DMI_IDs
-=======
 	 * See https://thinkwiki.org/wiki/List_of_DMI_IDs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	while ((dev = dmi_find_device(DMI_DEV_TYPE_OEM_STRING, NULL, dev))) {
 		if (sscanf(dev->name,
@@ -14014,34 +11470,10 @@ static int __must_check __init get_thinkpad_model_data(
 			   ec_fw_string) == 1) {
 			ec_fw_string[sizeof(ec_fw_string) - 1] = 0;
 			ec_fw_string[strcspn(ec_fw_string, " ]")] = 0;
-<<<<<<< HEAD
-
-			tp->ec_version_str = kstrdup(ec_fw_string, GFP_KERNEL);
-			if (!tp->ec_version_str)
-				return -ENOMEM;
-
-			if (tpacpi_is_valid_fw_id(ec_fw_string, 'H')) {
-				tp->ec_model = ec_fw_string[0]
-						| (ec_fw_string[1] << 8);
-				tp->ec_release = (ec_fw_string[4] << 8)
-						| ec_fw_string[5];
-			} else {
-				pr_notice("ThinkPad firmware release %s "
-					  "doesn't match the known patterns\n",
-					  ec_fw_string);
-				pr_notice("please report this to %s\n",
-					  TPACPI_MAIL);
-			}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	s = dmi_get_system_info(DMI_PRODUCT_VERSION);
-	if (s && !(strnicmp(s, "ThinkPad", 8) && strnicmp(s, "Lenovo", 6))) {
-=======
 	/* Newer ThinkPads have different EC program info table */
 	if (!ec_fw_string[0])
 		dmi_walk(find_new_ec_fwstr, &ec_fw_string);
@@ -14062,17 +11494,12 @@ static int __must_check __init get_thinkpad_model_data(
 
 	s = dmi_get_system_info(DMI_PRODUCT_VERSION);
 	if (s && !(strncasecmp(s, "ThinkPad", 8) && strncasecmp(s, "Lenovo", 6))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tp->model_str = kstrdup(s, GFP_KERNEL);
 		if (!tp->model_str)
 			return -ENOMEM;
 	} else {
 		s = dmi_get_system_info(DMI_BIOS_VENDOR);
-<<<<<<< HEAD
-		if (s && !(strnicmp(s, "Lenovo", 6))) {
-=======
 		if (s && !(strncasecmp(s, "Lenovo", 6))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tp->model_str = kstrdup(s, GFP_KERNEL);
 			if (!tp->model_str)
 				return -ENOMEM;
@@ -14174,13 +11601,10 @@ static struct ibm_init_struct ibms_init[] __initdata = {
 	},
 #endif
 	{
-<<<<<<< HEAD
-=======
 		.init = kbdlight_init,
 		.data = &kbdlight_driver_data,
 	},
 	{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.init = light_init,
 		.data = &light_driver_data,
 	},
@@ -14212,11 +11636,6 @@ static struct ibm_init_struct ibms_init[] __initdata = {
 		.init = fan_init,
 		.data = &fan_driver_data,
 	},
-<<<<<<< HEAD
-};
-
-static int __init set_ibm_param(const char *val, struct kernel_param *kp)
-=======
 	{
 		.init = mute_led_init,
 		.data = &mute_led_driver_data,
@@ -14252,7 +11671,6 @@ static int __init set_ibm_param(const char *val, struct kernel_param *kp)
 };
 
 static int __init set_ibm_param(const char *val, const struct kernel_param *kp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 	struct ibm_struct *ibm;
@@ -14262,25 +11680,13 @@ static int __init set_ibm_param(const char *val, const struct kernel_param *kp)
 
 	for (i = 0; i < ARRAY_SIZE(ibms_init); i++) {
 		ibm = ibms_init[i].data;
-<<<<<<< HEAD
-		WARN_ON(ibm == NULL);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ibm || !ibm->name)
 			continue;
 
 		if (strcmp(ibm->name, kp->name) == 0 && ibm->write) {
-<<<<<<< HEAD
-			if (strlen(val) > sizeof(ibms_init[i].param) - 2)
-				return -ENOSPC;
-			strcpy(ibms_init[i].param, val);
-			strcat(ibms_init[i].param, ",");
-=======
 			if (strlen(val) > sizeof(ibms_init[i].param) - 1)
 				return -ENOSPC;
 			strcpy(ibms_init[i].param, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 	}
@@ -14297,12 +11703,7 @@ MODULE_PARM_DESC(debug, "Sets debug level bit-mask");
 
 module_param(force_load, bool, 0444);
 MODULE_PARM_DESC(force_load,
-<<<<<<< HEAD
-		 "Attempts to load the driver even on a "
-		 "mis-identified ThinkPad when true");
-=======
 		 "Attempts to load the driver even on a mis-identified ThinkPad when true");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_named(fan_control, fan_control_allowed, bool, 0444);
 MODULE_PARM_DESC(fan_control,
@@ -14310,39 +11711,12 @@ MODULE_PARM_DESC(fan_control,
 
 module_param_named(brightness_mode, brightness_mode, uint, 0444);
 MODULE_PARM_DESC(brightness_mode,
-<<<<<<< HEAD
-		 "Selects brightness control strategy: "
-		 "0=auto, 1=EC, 2=UCMS, 3=EC+NVRAM");
-=======
 		 "Selects brightness control strategy: 0=auto, 1=EC, 2=UCMS, 3=EC+NVRAM");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(brightness_enable, uint, 0444);
 MODULE_PARM_DESC(brightness_enable,
 		 "Enables backlight control when 1, disables when 0");
 
-<<<<<<< HEAD
-module_param(hotkey_report_mode, uint, 0444);
-MODULE_PARM_DESC(hotkey_report_mode,
-		 "used for backwards compatibility with userspace, "
-		 "see documentation");
-
-#ifdef CONFIG_THINKPAD_ACPI_ALSA_SUPPORT
-module_param_named(volume_mode, volume_mode, uint, 0444);
-MODULE_PARM_DESC(volume_mode,
-		 "Selects volume control strategy: "
-		 "0=auto, 1=EC, 2=N/A, 3=EC+NVRAM");
-
-module_param_named(volume_capabilities, volume_capabilities, uint, 0444);
-MODULE_PARM_DESC(volume_capabilities,
-		 "Selects the mixer capabilites: "
-		 "0=auto, 1=volume and mute, 2=mute only");
-
-module_param_named(volume_control, volume_control_allowed, bool, 0444);
-MODULE_PARM_DESC(volume_control,
-		 "Enables software override for the console audio "
-		 "control when true");
-=======
 #ifdef CONFIG_THINKPAD_ACPI_ALSA_SUPPORT
 module_param_named(volume_mode, volume_mode, uint, 0444);
 MODULE_PARM_DESC(volume_mode,
@@ -14359,7 +11733,6 @@ MODULE_PARM_DESC(volume_control,
 module_param_named(software_mute, software_mute_requested, bool, 0444);
 MODULE_PARM_DESC(software_mute,
 		 "Request full software mute control");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ALSA module API parameters */
 module_param_named(index, alsa_index, int, 0444);
@@ -14370,17 +11743,10 @@ module_param_named(enable, alsa_enable, bool, 0444);
 MODULE_PARM_DESC(enable, "Enable the ALSA interface for the ACPI EC Mixer");
 #endif /* CONFIG_THINKPAD_ACPI_ALSA_SUPPORT */
 
-<<<<<<< HEAD
-#define TPACPI_PARAM(feature) \
-	module_param_call(feature, set_ibm_param, NULL, NULL, 0); \
-	MODULE_PARM_DESC(feature, "Simulates thinkpad-acpi procfs command " \
-			 "at module load, see documentation")
-=======
 /* The module parameter can't be read back, that's why 0 is used here */
 #define TPACPI_PARAM(feature) \
 	module_param_call(feature, set_ibm_param, NULL, NULL, 0); \
 	MODULE_PARM_DESC(feature, "Simulates thinkpad-acpi procfs command at module load, see documentation")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 TPACPI_PARAM(hotkey);
 TPACPI_PARAM(bluetooth);
@@ -14419,20 +11785,15 @@ MODULE_PARM_DESC(uwb_state,
 		 "Initial state of the emulated UWB switch");
 #endif
 
-<<<<<<< HEAD
-=======
 module_param(profile_force, int, 0444);
 MODULE_PARM_DESC(profile_force, "Force profile mode. -1=off, 1=MMC, 2=PSC");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void thinkpad_acpi_module_exit(void)
 {
 	struct ibm_struct *ibm, *itmp;
 
 	tpacpi_lifecycle = TPACPI_LIFE_EXITING;
 
-<<<<<<< HEAD
-=======
 	if (tpacpi_hwmon)
 		hwmon_device_unregister(tpacpi_hwmon);
 	if (tp_features.sensors_pdrv_registered)
@@ -14440,7 +11801,6 @@ static void thinkpad_acpi_module_exit(void)
 	if (tp_features.platform_drv_registered)
 		platform_driver_unregister(&tpacpi_pdriver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry_safe_reverse(ibm, itmp,
 					 &tpacpi_all_drivers,
 					 all_drivers) {
@@ -14454,76 +11814,33 @@ static void thinkpad_acpi_module_exit(void)
 			input_unregister_device(tpacpi_inputdev);
 		else
 			input_free_device(tpacpi_inputdev);
-<<<<<<< HEAD
-	}
-
-	if (tpacpi_hwmon)
-		hwmon_device_unregister(tpacpi_hwmon);
-
-	if (tp_features.sensors_pdev_attrs_registered)
-		device_remove_file(&tpacpi_sensors_pdev->dev,
-				   &dev_attr_thinkpad_acpi_pdev_name);
-=======
 		kfree(hotkey_keycode_map);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tpacpi_sensors_pdev)
 		platform_device_unregister(tpacpi_sensors_pdev);
 	if (tpacpi_pdev)
 		platform_device_unregister(tpacpi_pdev);
-<<<<<<< HEAD
-
-	if (tp_features.sensors_pdrv_attrs_registered)
-		tpacpi_remove_driver_attributes(&tpacpi_hwmon_pdriver.driver);
-	if (tp_features.platform_drv_attrs_registered)
-		tpacpi_remove_driver_attributes(&tpacpi_pdriver.driver);
-
-	if (tp_features.sensors_pdrv_registered)
-		platform_driver_unregister(&tpacpi_hwmon_pdriver);
-
-	if (tp_features.platform_drv_registered)
-		platform_driver_unregister(&tpacpi_pdriver);
-
 	if (proc_dir)
 		remove_proc_entry(TPACPI_PROC_DIR, acpi_root_dir);
-
-=======
-	if (proc_dir)
-		remove_proc_entry(TPACPI_PROC_DIR, acpi_root_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tpacpi_wq)
 		destroy_workqueue(tpacpi_wq);
 
 	kfree(thinkpad_id.bios_version_str);
 	kfree(thinkpad_id.ec_version_str);
 	kfree(thinkpad_id.model_str);
-<<<<<<< HEAD
-=======
 	kfree(thinkpad_id.nummodel_str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static int __init thinkpad_acpi_module_init(void)
 {
-<<<<<<< HEAD
-	int ret, i;
-
-	tpacpi_lifecycle = TPACPI_LIFE_INIT;
-
-	/* Parameter checking */
-	if (hotkey_report_mode > 2)
-		return -EINVAL;
-
-=======
 	const struct dmi_system_id *dmi_id;
 	int ret, i;
 	acpi_object_type obj_type;
 
 	tpacpi_lifecycle = TPACPI_LIFE_INIT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Driver-level probe */
 
 	ret = get_thinkpad_model_data(&thinkpad_id);
@@ -14546,8 +11863,6 @@ static int __init thinkpad_acpi_module_init(void)
 	TPACPI_ACPIHANDLE_INIT(ecrd);
 	TPACPI_ACPIHANDLE_INIT(ecwr);
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Quirk: in some models (e.g. X380 Yoga), an object named ECRD
 	 * exists, but it is a register, not a method.
@@ -14563,7 +11878,6 @@ static int __init thinkpad_acpi_module_init(void)
 			ecwr_handle = NULL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tpacpi_wq = create_singlethread_workqueue(TPACPI_WORKQUEUE_NAME);
 	if (!tpacpi_wq) {
 		thinkpad_acpi_module_exit();
@@ -14577,47 +11891,12 @@ static int __init thinkpad_acpi_module_init(void)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	ret = platform_driver_register(&tpacpi_pdriver);
-	if (ret) {
-		pr_err("unable to register main platform driver\n");
-		thinkpad_acpi_module_exit();
-		return ret;
-	}
-	tp_features.platform_drv_registered = 1;
-
-	ret = platform_driver_register(&tpacpi_hwmon_pdriver);
-	if (ret) {
-		pr_err("unable to register hwmon platform driver\n");
-		thinkpad_acpi_module_exit();
-		return ret;
-	}
-	tp_features.sensors_pdrv_registered = 1;
-
-	ret = tpacpi_create_driver_attributes(&tpacpi_pdriver.driver);
-	if (!ret) {
-		tp_features.platform_drv_attrs_registered = 1;
-		ret = tpacpi_create_driver_attributes(
-					&tpacpi_hwmon_pdriver.driver);
-	}
-	if (ret) {
-		pr_err("unable to create sysfs driver attributes\n");
-		thinkpad_acpi_module_exit();
-		return ret;
-	}
-	tp_features.sensors_pdrv_attrs_registered = 1;
-
-
-	/* Device initialization */
-	tpacpi_pdev = platform_device_register_simple(TPACPI_DRVR_NAME, -1,
-=======
 	dmi_id = dmi_first_match(fwbug_list);
 	if (dmi_id)
 		tp_features.quirks = dmi_id->driver_data;
 
 	/* Device initialization */
 	tpacpi_pdev = platform_device_register_simple(TPACPI_DRVR_NAME, PLATFORM_DEVID_NONE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							NULL, 0);
 	if (IS_ERR(tpacpi_pdev)) {
 		ret = PTR_ERR(tpacpi_pdev);
@@ -14628,11 +11907,7 @@ static int __init thinkpad_acpi_module_init(void)
 	}
 	tpacpi_sensors_pdev = platform_device_register_simple(
 						TPACPI_HWMON_DRVR_NAME,
-<<<<<<< HEAD
-						-1, NULL, 0);
-=======
 						PLATFORM_DEVID_NONE, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(tpacpi_sensors_pdev)) {
 		ret = PTR_ERR(tpacpi_sensors_pdev);
 		tpacpi_sensors_pdev = NULL;
@@ -14640,33 +11915,10 @@ static int __init thinkpad_acpi_module_init(void)
 		thinkpad_acpi_module_exit();
 		return ret;
 	}
-<<<<<<< HEAD
-	ret = device_create_file(&tpacpi_sensors_pdev->dev,
-				 &dev_attr_thinkpad_acpi_pdev_name);
-	if (ret) {
-		pr_err("unable to create sysfs hwmon device attributes\n");
-		thinkpad_acpi_module_exit();
-		return ret;
-	}
-	tp_features.sensors_pdev_attrs_registered = 1;
-	tpacpi_hwmon = hwmon_device_register(&tpacpi_sensors_pdev->dev);
-	if (IS_ERR(tpacpi_hwmon)) {
-		ret = PTR_ERR(tpacpi_hwmon);
-		tpacpi_hwmon = NULL;
-		pr_err("unable to register hwmon device\n");
-		thinkpad_acpi_module_exit();
-		return ret;
-	}
-	mutex_init(&tpacpi_inputdev_send_mutex);
-	tpacpi_inputdev = input_allocate_device();
-	if (!tpacpi_inputdev) {
-		pr_err("unable to allocate input device\n");
-=======
 
 	mutex_init(&tpacpi_inputdev_send_mutex);
 	tpacpi_inputdev = input_allocate_device();
 	if (!tpacpi_inputdev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		thinkpad_acpi_module_exit();
 		return -ENOMEM;
 	} else {
@@ -14696,8 +11948,6 @@ static int __init thinkpad_acpi_module_init(void)
 
 	tpacpi_lifecycle = TPACPI_LIFE_RUNNING;
 
-<<<<<<< HEAD
-=======
 	ret = platform_driver_register(&tpacpi_pdriver);
 	if (ret) {
 		pr_err("unable to register main platform driver\n");
@@ -14724,7 +11974,6 @@ static int __init thinkpad_acpi_module_init(void)
 		return ret;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = input_register_device(tpacpi_inputdev);
 	if (ret < 0) {
 		pr_err("unable to register input device\n");
@@ -14751,13 +12000,8 @@ MODULE_DEVICE_TABLE(acpi, ibm_htk_device_ids);
 /*
  * DMI matching for module autoloading
  *
-<<<<<<< HEAD
- * See http://thinkwiki.org/wiki/List_of_DMI_IDs
- * See http://thinkwiki.org/wiki/BIOS_Upgrade_Downloads
-=======
  * See https://thinkwiki.org/wiki/List_of_DMI_IDs
  * See https://thinkwiki.org/wiki/BIOS_Upgrade_Downloads
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Only models listed in thinkwiki will be supported, so add yours
  * if it is not there yet.

@@ -6,26 +6,16 @@
  * Copyright (C) 2008 Maxime Bizon <mbizon@freebox.fr>
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/mutex.h>
-#include <linux/err.h>
-#include <linux/clk.h>
-=======
 #include <linux/init.h>
 #include <linux/export.h>
 #include <linux/mutex.h>
 #include <linux/err.h>
 #include <linux/clk.h>
 #include <linux/clkdev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <bcm63xx_cpu.h>
 #include <bcm63xx_io.h>
 #include <bcm63xx_regs.h>
-<<<<<<< HEAD
-#include <bcm63xx_clk.h>
-=======
 #include <bcm63xx_reset.h>
 
 struct clk {
@@ -34,7 +24,6 @@ struct clk {
 	unsigned int	usage;
 	int		id;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_MUTEX(clocks_mutex);
 
@@ -87,11 +76,7 @@ static struct clk clk_enet_misc = {
 };
 
 /*
-<<<<<<< HEAD
- * Ethernet MAC clocks: only revelant on 6358, silently enable misc
-=======
  * Ethernet MAC clocks: only relevant on 6358, silently enable misc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * clocks
  */
 static void enetx_set(struct clk *clk, int enable)
@@ -101,11 +86,7 @@ static void enetx_set(struct clk *clk, int enable)
 	else
 		clk_disable_unlocked(&clk_enet_misc);
 
-<<<<<<< HEAD
-	if (BCMCPU_IS_6358()) {
-=======
 	if (BCMCPU_IS_3368() || BCMCPU_IS_6358()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 mask;
 
 		if (clk->id == 0)
@@ -131,14 +112,8 @@ static struct clk clk_enet1 = {
  */
 static void ephy_set(struct clk *clk, int enable)
 {
-<<<<<<< HEAD
-	if (!BCMCPU_IS_6358())
-		return;
-	bcm_hwclock_set(CKCTL_6358_EPHY_EN, enable);
-=======
 	if (BCMCPU_IS_3368() || BCMCPU_IS_6358())
 		bcm_hwclock_set(CKCTL_6358_EPHY_EN, enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -147,8 +122,6 @@ static struct clk clk_ephy = {
 };
 
 /*
-<<<<<<< HEAD
-=======
  * Ethernet switch SAR clock
  */
 static void swpkt_sar_set(struct clk *clk, int enable)
@@ -179,28 +152,10 @@ static struct clk clk_swpkt_usb = {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Ethernet switch clock
  */
 static void enetsw_set(struct clk *clk, int enable)
 {
-<<<<<<< HEAD
-	if (!BCMCPU_IS_6368())
-		return;
-	bcm_hwclock_set(CKCTL_6368_ROBOSW_CLK_EN |
-			CKCTL_6368_SWPKT_USB_EN |
-			CKCTL_6368_SWPKT_SAR_EN, enable);
-	if (enable) {
-		u32 val;
-
-		/* reset switch core afer clock change */
-		val = bcm_perf_readl(PERF_SOFTRESET_6368_REG);
-		val &= ~SOFTRESET_6368_ENETSW_MASK;
-		bcm_perf_writel(val, PERF_SOFTRESET_6368_REG);
-		msleep(10);
-		val |= SOFTRESET_6368_ENETSW_MASK;
-		bcm_perf_writel(val, PERF_SOFTRESET_6368_REG);
-=======
 	if (BCMCPU_IS_6328()) {
 		bcm_hwclock_set(CKCTL_6328_ROBOSW_EN, enable);
 	} else if (BCMCPU_IS_6362()) {
@@ -223,7 +178,6 @@ static void enetsw_set(struct clk *clk, int enable)
 		bcm63xx_core_set_reset(BCM63XX_RESET_ENETSW, 1);
 		msleep(10);
 		bcm63xx_core_set_reset(BCM63XX_RESET_ENETSW, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(10);
 	}
 }
@@ -237,16 +191,10 @@ static struct clk clk_enetsw = {
  */
 static void pcm_set(struct clk *clk, int enable)
 {
-<<<<<<< HEAD
-	if (!BCMCPU_IS_6358())
-		return;
-	bcm_hwclock_set(CKCTL_6358_PCM_EN, enable);
-=======
 	if (BCMCPU_IS_3368())
 		bcm_hwclock_set(CKCTL_3368_PCM_EN, enable);
 	if (BCMCPU_IS_6358())
 		bcm_hwclock_set(CKCTL_6358_PCM_EN, enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct clk clk_pcm = {
@@ -258,12 +206,6 @@ static struct clk clk_pcm = {
  */
 static void usbh_set(struct clk *clk, int enable)
 {
-<<<<<<< HEAD
-	if (BCMCPU_IS_6348())
-		bcm_hwclock_set(CKCTL_6348_USBH_EN, enable);
-	else if (BCMCPU_IS_6368())
-		bcm_hwclock_set(CKCTL_6368_USBH_CLK_EN, enable);
-=======
 	if (BCMCPU_IS_6328())
 		bcm_hwclock_set(CKCTL_6328_USBH_EN, enable);
 	else if (BCMCPU_IS_6348())
@@ -272,7 +214,6 @@ static void usbh_set(struct clk *clk, int enable)
 		bcm_hwclock_set(CKCTL_6362_USBH_EN, enable);
 	else if (BCMCPU_IS_6368())
 		bcm_hwclock_set(CKCTL_6368_USBH_EN, enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct clk clk_usbh = {
@@ -280,8 +221,6 @@ static struct clk clk_usbh = {
 };
 
 /*
-<<<<<<< HEAD
-=======
  * USB device clock
  */
 static void usbd_set(struct clk *clk, int enable)
@@ -299,7 +238,6 @@ static struct clk clk_usbd = {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SPI clock
  */
 static void spi_set(struct clk *clk, int enable)
@@ -310,11 +248,6 @@ static void spi_set(struct clk *clk, int enable)
 		mask = CKCTL_6338_SPI_EN;
 	else if (BCMCPU_IS_6348())
 		mask = CKCTL_6348_SPI_EN;
-<<<<<<< HEAD
-	else
-		/* BCMCPU_IS_6358 */
-		mask = CKCTL_6358_SPI_EN;
-=======
 	else if (BCMCPU_IS_3368() || BCMCPU_IS_6358())
 		mask = CKCTL_6358_SPI_EN;
 	else if (BCMCPU_IS_6362())
@@ -322,7 +255,6 @@ static void spi_set(struct clk *clk, int enable)
 	else
 		/* BCMCPU_IS_6368 */
 		mask = CKCTL_6368_SPI_EN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bcm_hwclock_set(mask, enable);
 }
 
@@ -331,8 +263,6 @@ static struct clk clk_spi = {
 };
 
 /*
-<<<<<<< HEAD
-=======
  * HSSPI clock
  */
 static void hsspi_set(struct clk *clk, int enable)
@@ -359,7 +289,6 @@ static struct clk clk_hsspi = {
 static struct clk clk_hsspi_pll;
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * XTM clock
  */
 static void xtm_set(struct clk *clk, int enable)
@@ -367,21 +296,6 @@ static void xtm_set(struct clk *clk, int enable)
 	if (!BCMCPU_IS_6368())
 		return;
 
-<<<<<<< HEAD
-	bcm_hwclock_set(CKCTL_6368_SAR_CLK_EN |
-			CKCTL_6368_SWPKT_SAR_EN, enable);
-
-	if (enable) {
-		u32 val;
-
-		/* reset sar core afer clock change */
-		val = bcm_perf_readl(PERF_SOFTRESET_6368_REG);
-		val &= ~SOFTRESET_6368_SAR_MASK;
-		bcm_perf_writel(val, PERF_SOFTRESET_6368_REG);
-		mdelay(1);
-		val |= SOFTRESET_6368_SAR_MASK;
-		bcm_perf_writel(val, PERF_SOFTRESET_6368_REG);
-=======
 	if (enable)
 		clk_enable_unlocked(&clk_swpkt_sar);
 	else
@@ -394,7 +308,6 @@ static void xtm_set(struct clk *clk, int enable)
 		bcm63xx_core_set_reset(BCM63XX_RESET_SAR, 1);
 		mdelay(1);
 		bcm63xx_core_set_reset(BCM63XX_RESET_SAR, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdelay(1);
 	}
 }
@@ -405,8 +318,6 @@ static struct clk clk_xtm = {
 };
 
 /*
-<<<<<<< HEAD
-=======
  * IPsec clock
  */
 static void ipsec_set(struct clk *clk, int enable)
@@ -438,7 +349,6 @@ static struct clk clk_pcie = {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Internal peripheral clock
  */
 static struct clk clk_periph = {
@@ -451,11 +361,8 @@ static struct clk clk_periph = {
  */
 int clk_enable(struct clk *clk)
 {
-<<<<<<< HEAD
-=======
 	if (!clk)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&clocks_mutex);
 	clk_enable_unlocked(clk);
 	mutex_unlock(&clocks_mutex);
@@ -466,12 +373,9 @@ EXPORT_SYMBOL(clk_enable);
 
 void clk_disable(struct clk *clk)
 {
-<<<<<<< HEAD
-=======
 	if (!clk)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&clocks_mutex);
 	clk_disable_unlocked(clk);
 	mutex_unlock(&clocks_mutex);
@@ -479,10 +383,6 @@ void clk_disable(struct clk *clk)
 
 EXPORT_SYMBOL(clk_disable);
 
-<<<<<<< HEAD
-unsigned long clk_get_rate(struct clk *clk)
-{
-=======
 struct clk *clk_get_parent(struct clk *clk)
 {
 	return NULL;
@@ -500,44 +400,11 @@ unsigned long clk_get_rate(struct clk *clk)
 	if (!clk)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return clk->rate;
 }
 
 EXPORT_SYMBOL(clk_get_rate);
 
-<<<<<<< HEAD
-struct clk *clk_get(struct device *dev, const char *id)
-{
-	if (!strcmp(id, "enet0"))
-		return &clk_enet0;
-	if (!strcmp(id, "enet1"))
-		return &clk_enet1;
-	if (!strcmp(id, "enetsw"))
-		return &clk_enetsw;
-	if (!strcmp(id, "ephy"))
-		return &clk_ephy;
-	if (!strcmp(id, "usbh"))
-		return &clk_usbh;
-	if (!strcmp(id, "spi"))
-		return &clk_spi;
-	if (!strcmp(id, "xtm"))
-		return &clk_xtm;
-	if (!strcmp(id, "periph"))
-		return &clk_periph;
-	if (BCMCPU_IS_6358() && !strcmp(id, "pcm"))
-		return &clk_pcm;
-	return ERR_PTR(-ENOENT);
-}
-
-EXPORT_SYMBOL(clk_get);
-
-void clk_put(struct clk *clk)
-{
-}
-
-EXPORT_SYMBOL(clk_put);
-=======
 int clk_set_rate(struct clk *clk, unsigned long rate)
 {
 	return 0;
@@ -710,4 +577,3 @@ static int __init bcm63xx_clk_init(void)
 	return 0;
 }
 arch_initcall(bcm63xx_clk_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

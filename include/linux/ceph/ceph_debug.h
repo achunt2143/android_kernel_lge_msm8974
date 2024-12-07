@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _FS_CEPH_DEBUG_H
 #define _FS_CEPH_DEBUG_H
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-<<<<<<< HEAD
-=======
 #include <linux/string.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CEPH_LIB_PRETTYDEBUG
 
 /*
@@ -21,14 +15,6 @@
  */
 
 # if defined(DEBUG) || defined(CONFIG_DYNAMIC_DEBUG)
-<<<<<<< HEAD
-extern const char *ceph_file_part(const char *s, int len);
-#  define dout(fmt, ...)						\
-	pr_debug("%.*s %12.12s:%-4d : " fmt,				\
-		 8 - (int)sizeof(KBUILD_MODNAME), "    ",		\
-		 ceph_file_part(__FILE__, sizeof(__FILE__)),		\
-		 __LINE__, ##__VA_ARGS__)
-=======
 #  define dout(fmt, ...)						\
 	pr_debug("%.*s %12.12s:%-4d : " fmt,				\
 		 8 - (int)sizeof(KBUILD_MODNAME), "    ",		\
@@ -39,15 +25,12 @@ extern const char *ceph_file_part(const char *s, int len);
 		 kbasename(__FILE__), __LINE__,				\
 		 &client->fsid, client->monc.auth->global_id,		\
 		 ##__VA_ARGS__)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # else
 /* faux printk call just to see any compiler warnings. */
 #  define dout(fmt, ...)	do {				\
 		if (0)						\
 			printk(KERN_DEBUG fmt, ##__VA_ARGS__);	\
 	} while (0)
-<<<<<<< HEAD
-=======
 #  define doutc(client, fmt, ...)	do {			\
 		if (0)						\
 			printk(KERN_DEBUG "[%pU %llu] " fmt,	\
@@ -55,7 +38,6 @@ extern const char *ceph_file_part(const char *s, int len);
 			client->monc.auth->global_id,		\
 			##__VA_ARGS__);				\
 		} while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # endif
 
 #else
@@ -64,11 +46,6 @@ extern const char *ceph_file_part(const char *s, int len);
  * or, just wrap pr_debug
  */
 # define dout(fmt, ...)	pr_debug(" " fmt, ##__VA_ARGS__)
-<<<<<<< HEAD
-
-#endif
-
-=======
 # define doutc(client, fmt, ...)					\
 	pr_debug(" [%pU %llu] %s: " fmt, &client->fsid,			\
 		 client->monc.auth->global_id, __func__, ##__VA_ARGS__)
@@ -97,5 +74,4 @@ extern const char *ceph_file_part(const char *s, int len);
 	pr_err_ratelimited("[%pU %llu]: " fmt, &client->fsid,		\
 			   client->monc.auth->global_id, ##__VA_ARGS__)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

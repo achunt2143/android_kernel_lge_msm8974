@@ -20,19 +20,11 @@
 #include "ath.h"
 #include "reg.h"
 
-<<<<<<< HEAD
-#define REG_READ	(common->ops->read)
-#define REG_WRITE	(common->ops->write)
-
-/**
- * ath_hw_set_bssid_mask - filter out bssids we listen
-=======
 #define REG_READ			(common->ops->read)
 #define REG_WRITE(_ah, _reg, _val)	(common->ops->write)(_ah, _val, _reg)
 
 /**
  * ath_hw_setbssidmask - filter out bssids we listen
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @common: the ath_common struct for the device.
  *
@@ -56,11 +48,7 @@
  * the MAC address to obtain the relevant bits and compare the result with
  * (frame's BSSID & mask) to see if they match.
  *
-<<<<<<< HEAD
- * Simple example: on your card you have have two BSSes you have created with
-=======
  * Simple example: on your card you have two BSSes you have created with
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * BSSID-01 and BSSID-02. Lets assume BSSID-01 will not use the MAC address.
  * There is another BSSID-03 but you are not part of it. For simplicity's sake,
  * assuming only 4 bits for a mac address and for BSSIDs you can then have:
@@ -130,11 +118,6 @@
 void ath_hw_setbssidmask(struct ath_common *common)
 {
 	void *ah = common->ah;
-<<<<<<< HEAD
-
-	REG_WRITE(ah, get_unaligned_le32(common->bssidmask), AR_BSSMSKL);
-	REG_WRITE(ah, get_unaligned_le16(common->bssidmask + 4), AR_BSSMSKU);
-=======
 	u32 id1;
 
 	REG_WRITE(ah, AR_STA_ID0, get_unaligned_le32(common->macaddr));
@@ -144,7 +127,6 @@ void ath_hw_setbssidmask(struct ath_common *common)
 
 	REG_WRITE(ah, AR_BSSMSKL, get_unaligned_le32(common->bssidmask));
 	REG_WRITE(ah, AR_BSSMSKU, get_unaligned_le16(common->bssidmask + 4));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ath_hw_setbssidmask);
 
@@ -163,11 +145,7 @@ void ath_hw_cycle_counters_update(struct ath_common *common)
 	void *ah = common->ah;
 
 	/* freeze */
-<<<<<<< HEAD
-	REG_WRITE(ah, AR_MIBC_FMC, AR_MIBC);
-=======
 	REG_WRITE(ah, AR_MIBC, AR_MIBC_FMC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* read */
 	cycles = REG_READ(ah, AR_CCCNT);
@@ -176,15 +154,6 @@ void ath_hw_cycle_counters_update(struct ath_common *common)
 	tx = REG_READ(ah, AR_TFCNT);
 
 	/* clear */
-<<<<<<< HEAD
-	REG_WRITE(ah, 0, AR_CCCNT);
-	REG_WRITE(ah, 0, AR_RFCNT);
-	REG_WRITE(ah, 0, AR_RCCNT);
-	REG_WRITE(ah, 0, AR_TFCNT);
-
-	/* unfreeze */
-	REG_WRITE(ah, 0, AR_MIBC);
-=======
 	REG_WRITE(ah, AR_CCCNT, 0);
 	REG_WRITE(ah, AR_RFCNT, 0);
 	REG_WRITE(ah, AR_RCCNT, 0);
@@ -192,7 +161,6 @@ void ath_hw_cycle_counters_update(struct ath_common *common)
 
 	/* unfreeze */
 	REG_WRITE(ah, AR_MIBC, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* update all cycle counters here */
 	common->cc_ani.cycles += cycles;

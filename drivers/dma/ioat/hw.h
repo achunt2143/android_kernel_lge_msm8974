@@ -1,47 +1,11 @@
-<<<<<<< HEAD
-/*
- * Copyright(c) 2004 - 2009 Intel Corporation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * The full GNU General Public License is included in this distribution in the
- * file called COPYING.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright(c) 2004 - 2009 Intel Corporation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _IOAT_HW_H_
 #define _IOAT_HW_H_
 
 /* PCI Configuration Space Values */
-<<<<<<< HEAD
-#define IOAT_PCI_VID            0x8086
-#define IOAT_MMIO_BAR		0
-
-/* CB device ID's */
-#define IOAT_PCI_DID_5000       0x1A38
-#define IOAT_PCI_DID_CNB        0x360B
-#define IOAT_PCI_DID_SCNB       0x65FF
-#define IOAT_PCI_DID_SNB        0x402F
-
-#define IOAT_PCI_RID            0x00
-#define IOAT_PCI_SVID           0x8086
-#define IOAT_PCI_SID            0x8086
-=======
 #define IOAT_MMIO_BAR		0
 
 /* CB device ID's */
@@ -92,16 +56,10 @@
 
 #define PCI_DEVICE_ID_INTEL_IOAT_ICX	0x0b00
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IOAT_VER_1_2            0x12    /* Version 1.2 */
 #define IOAT_VER_2_0            0x20    /* Version 2.0 */
 #define IOAT_VER_3_0            0x30    /* Version 3.0 */
 #define IOAT_VER_3_2            0x32    /* Version 3.2 */
-<<<<<<< HEAD
-
-int system_has_dca_enabled(struct pci_dev *pdev);
-
-=======
 #define IOAT_VER_3_3            0x33    /* Version 3.3 */
 #define IOAT_VER_3_4		0x34	/* Version 3.4 */
 
@@ -110,7 +68,6 @@ int system_has_dca_enabled(struct pci_dev *pdev);
 
 #define IOAT_DESC_SZ	64
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ioat_dma_descriptor {
 	uint32_t	size;
 	union {
@@ -145,36 +102,6 @@ struct ioat_dma_descriptor {
 	uint64_t	user2;
 };
 
-<<<<<<< HEAD
-struct ioat_fill_descriptor {
-	uint32_t	size;
-	union {
-		uint32_t ctl;
-		struct {
-			unsigned int int_en:1;
-			unsigned int rsvd:1;
-			unsigned int dest_snoop_dis:1;
-			unsigned int compl_write:1;
-			unsigned int fence:1;
-			unsigned int rsvd2:2;
-			unsigned int dest_brk:1;
-			unsigned int bundle:1;
-			unsigned int rsvd4:15;
-			#define IOAT_OP_FILL 0x01
-			unsigned int op:8;
-		} ctl_f;
-	};
-	uint64_t	src_data;
-	uint64_t	dst_addr;
-	uint64_t	next;
-	uint64_t	rsv1;
-	uint64_t	next_dst_addr;
-	uint64_t	user1;
-	uint64_t	user2;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ioat_xor_descriptor {
 	uint32_t	size;
 	union {
@@ -213,9 +140,6 @@ struct ioat_xor_ext_descriptor {
 };
 
 struct ioat_pq_descriptor {
-<<<<<<< HEAD
-	uint32_t	size;
-=======
 	union {
 		uint32_t	size;
 		uint32_t	dwbes;
@@ -227,7 +151,6 @@ struct ioat_pq_descriptor {
 			unsigned int wbes:1;
 		} dwbes_f;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union {
 		uint32_t ctl;
 		struct {
@@ -242,11 +165,6 @@ struct ioat_pq_descriptor {
 			unsigned int hint:1;
 			unsigned int p_disable:1;
 			unsigned int q_disable:1;
-<<<<<<< HEAD
-			unsigned int rsvd:11;
-			#define IOAT_OP_PQ 0x89
-			#define IOAT_OP_PQ_VAL 0x8a
-=======
 			unsigned int rsvd2:2;
 			unsigned int wb_en:1;
 			unsigned int prl_en:1;
@@ -255,7 +173,6 @@ struct ioat_pq_descriptor {
 			#define IOAT_OP_PQ_VAL 0x8a
 			#define IOAT_OP_PQ_16S 0xa0
 			#define IOAT_OP_PQ_VAL_16S 0xa1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int op:8;
 		} ctl_f;
 	};
@@ -263,14 +180,10 @@ struct ioat_pq_descriptor {
 	uint64_t	p_addr;
 	uint64_t	next;
 	uint64_t	src_addr2;
-<<<<<<< HEAD
-	uint64_t	src_addr3;
-=======
 	union {
 		uint64_t	src_addr3;
 		uint64_t	sed_addr;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t		coef[8];
 	uint64_t	q_addr;
 };
@@ -319,8 +232,6 @@ struct ioat_pq_update_descriptor {
 struct ioat_raw_descriptor {
 	uint64_t	field[8];
 };
-<<<<<<< HEAD
-=======
 
 struct ioat_pq16a_descriptor {
 	uint8_t coef[8];
@@ -357,5 +268,4 @@ struct ioat_sed_raw_descriptor {
 	uint64_t	c[8];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

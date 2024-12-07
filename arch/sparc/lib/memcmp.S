@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Sparc optimized memcmp code.
  *
  * Copyright (C) 1997 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
  * Copyright (C) 2000, 2008 David S. Miller (davem@davemloft.net)
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/linkage.h>
 #include <asm/asm.h>
 
@@ -33,7 +27,4 @@ ENTRY(memcmp)
 2:	retl
 	 mov	0, %o0
 ENDPROC(memcmp)
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(memcmp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

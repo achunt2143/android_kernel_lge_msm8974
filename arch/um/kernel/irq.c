@@ -1,81 +1,12 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2017 - Cambridge Greys Ltd
  * Copyright (C) 2011 - 2014 Cisco Systems Inc
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Derived (i.e. mostly copied) from arch/i386/kernel/irq.c:
  *	Copyright (C) 1992, 1998 Linus Torvalds, Ingo Molnar
  */
 
-<<<<<<< HEAD
-#include "linux/cpumask.h"
-#include "linux/hardirq.h"
-#include "linux/interrupt.h"
-#include "linux/kernel_stat.h"
-#include "linux/module.h"
-#include "linux/sched.h"
-#include "linux/seq_file.h"
-#include "linux/slab.h"
-#include "as-layout.h"
-#include "kern_util.h"
-#include "os.h"
-
-/*
- * This list is accessed under irq_lock, except in sigio_handler,
- * where it is safe from being modified.  IRQ handlers won't change it -
- * if an IRQ source has vanished, it will be freed by free_irqs just
- * before returning from sigio_handler.  That will process a separate
- * list of irqs to free, with its own locking, coming back here to
- * remove list elements, taking the irq_lock to do so.
- */
-static struct irq_fd *active_fds = NULL;
-static struct irq_fd **last_irq_ptr = &active_fds;
-
-extern void free_irqs(void);
-
-void sigio_handler(int sig, struct uml_pt_regs *regs)
-{
-	struct irq_fd *irq_fd;
-	int n;
-
-	if (smp_sigio_handler())
-		return;
-
-	while (1) {
-		n = os_waiting_for_events(active_fds);
-		if (n <= 0) {
-			if (n == -EINTR)
-				continue;
-			else break;
-		}
-
-		for (irq_fd = active_fds; irq_fd != NULL;
-		     irq_fd = irq_fd->next) {
-			if (irq_fd->current_events != 0) {
-				irq_fd->current_events = 0;
-				do_IRQ(irq_fd->irq, regs);
-			}
-		}
-	}
-
-	free_irqs();
-}
-
-static DEFINE_SPINLOCK(irq_lock);
-
-static int activate_fd(int irq, int fd, int type, void *dev_id)
-{
-	struct pollfd *tmp_pfd;
-	struct irq_fd *new_fd, *irq_fd;
-	unsigned long flags;
-	int events, err, n;
-=======
 #include <linux/cpumask.h>
 #include <linux/hardirq.h>
 #include <linux/interrupt.h>
@@ -323,181 +254,11 @@ static int activate_fd(int irq, int fd, enum um_irq_type type, void *dev_id,
 	struct irq_entry *irq_entry;
 	int err, events = os_event_mask(type);
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = os_set_fd_async(fd);
 	if (err < 0)
 		goto out;
 
-<<<<<<< HEAD
-	err = -ENOMEM;
-	new_fd = kmalloc(sizeof(struct irq_fd), GFP_KERNEL);
-	if (new_fd == NULL)
-		goto out;
-
-	if (type == IRQ_READ)
-		events = UM_POLLIN | UM_POLLPRI;
-	else events = UM_POLLOUT;
-	*new_fd = ((struct irq_fd) { .next  		= NULL,
-				     .id 		= dev_id,
-				     .fd 		= fd,
-				     .type 		= type,
-				     .irq 		= irq,
-				     .events 		= events,
-				     .current_events 	= 0 } );
-
-	err = -EBUSY;
-	spin_lock_irqsave(&irq_lock, flags);
-	for (irq_fd = active_fds; irq_fd != NULL; irq_fd = irq_fd->next) {
-		if ((irq_fd->fd == fd) && (irq_fd->type == type)) {
-			printk(KERN_ERR "Registering fd %d twice\n", fd);
-			printk(KERN_ERR "Irqs : %d, %d\n", irq_fd->irq, irq);
-			printk(KERN_ERR "Ids : 0x%p, 0x%p\n", irq_fd->id,
-			       dev_id);
-			goto out_unlock;
-		}
-	}
-
-	if (type == IRQ_WRITE)
-		fd = -1;
-
-	tmp_pfd = NULL;
-	n = 0;
-
-	while (1) {
-		n = os_create_pollfd(fd, events, tmp_pfd, n);
-		if (n == 0)
-			break;
-
-		/*
-		 * n > 0
-		 * It means we couldn't put new pollfd to current pollfds
-		 * and tmp_fds is NULL or too small for new pollfds array.
-		 * Needed size is equal to n as minimum.
-		 *
-		 * Here we have to drop the lock in order to call
-		 * kmalloc, which might sleep.
-		 * If something else came in and changed the pollfds array
-		 * so we will not be able to put new pollfd struct to pollfds
-		 * then we free the buffer tmp_fds and try again.
-		 */
-		spin_unlock_irqrestore(&irq_lock, flags);
-		kfree(tmp_pfd);
-
-		tmp_pfd = kmalloc(n, GFP_KERNEL);
-		if (tmp_pfd == NULL)
-			goto out_kfree;
-
-		spin_lock_irqsave(&irq_lock, flags);
-	}
-
-	*last_irq_ptr = new_fd;
-	last_irq_ptr = &new_fd->next;
-
-	spin_unlock_irqrestore(&irq_lock, flags);
-
-	/*
-	 * This calls activate_fd, so it has to be outside the critical
-	 * section.
-	 */
-	maybe_sigio_broken(fd, (type == IRQ_READ));
-
-	return 0;
-
- out_unlock:
-	spin_unlock_irqrestore(&irq_lock, flags);
- out_kfree:
-	kfree(new_fd);
- out:
-	return err;
-}
-
-static void free_irq_by_cb(int (*test)(struct irq_fd *, void *), void *arg)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&irq_lock, flags);
-	os_free_irq_by_cb(test, arg, active_fds, &last_irq_ptr);
-	spin_unlock_irqrestore(&irq_lock, flags);
-}
-
-struct irq_and_dev {
-	int irq;
-	void *dev;
-};
-
-static int same_irq_and_dev(struct irq_fd *irq, void *d)
-{
-	struct irq_and_dev *data = d;
-
-	return ((irq->irq == data->irq) && (irq->id == data->dev));
-}
-
-static void free_irq_by_irq_and_dev(unsigned int irq, void *dev)
-{
-	struct irq_and_dev data = ((struct irq_and_dev) { .irq  = irq,
-							  .dev  = dev });
-
-	free_irq_by_cb(same_irq_and_dev, &data);
-}
-
-static int same_fd(struct irq_fd *irq, void *fd)
-{
-	return (irq->fd == *((int *)fd));
-}
-
-void free_irq_by_fd(int fd)
-{
-	free_irq_by_cb(same_fd, &fd);
-}
-
-/* Must be called with irq_lock held */
-static struct irq_fd *find_irq_by_fd(int fd, int irqnum, int *index_out)
-{
-	struct irq_fd *irq;
-	int i = 0;
-	int fdi;
-
-	for (irq = active_fds; irq != NULL; irq = irq->next) {
-		if ((irq->fd == fd) && (irq->irq == irqnum))
-			break;
-		i++;
-	}
-	if (irq == NULL) {
-		printk(KERN_ERR "find_irq_by_fd doesn't have descriptor %d\n",
-		       fd);
-		goto out;
-	}
-	fdi = os_get_pollfd(i);
-	if ((fdi != -1) && (fdi != fd)) {
-		printk(KERN_ERR "find_irq_by_fd - mismatch between active_fds "
-		       "and pollfds, fd %d vs %d, need %d\n", irq->fd,
-		       fdi, fd);
-		irq = NULL;
-		goto out;
-	}
-	*index_out = i;
- out:
-	return irq;
-}
-
-void reactivate_fd(int fd, int irqnum)
-{
-	struct irq_fd *irq;
-	unsigned long flags;
-	int i;
-
-	spin_lock_irqsave(&irq_lock, flags);
-	irq = find_irq_by_fd(fd, irqnum, &i);
-	if (irq == NULL) {
-		spin_unlock_irqrestore(&irq_lock, flags);
-		return;
-	}
-	os_set_pollfd(i, irq->fd);
-	spin_unlock_irqrestore(&irq_lock, flags);
-
-	add_sigio_fd(fd);
-=======
 	spin_lock_irqsave(&irq_lock, flags);
 	irq_entry = get_irq_entry_by_fd(fd);
 	if (irq_entry) {
@@ -586,25 +347,10 @@ static void free_irq_by_irq_and_dev(unsigned int irq, void *dev)
 	}
 out:
 	spin_unlock_irqrestore(&irq_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void deactivate_fd(int fd, int irqnum)
 {
-<<<<<<< HEAD
-	struct irq_fd *irq;
-	unsigned long flags;
-	int i;
-
-	spin_lock_irqsave(&irq_lock, flags);
-	irq = find_irq_by_fd(fd, irqnum, &i);
-	if (irq == NULL) {
-		spin_unlock_irqrestore(&irq_lock, flags);
-		return;
-	}
-
-	os_set_pollfd(i, -1);
-=======
 	struct irq_entry *entry;
 	unsigned long flags;
 	enum um_irq_type i;
@@ -625,7 +371,6 @@ void deactivate_fd(int fd, int irqnum)
 
 	update_or_free_irq_entry(entry);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&irq_lock, flags);
 
 	ignore_sigio_fd(fd);
@@ -640,19 +385,6 @@ EXPORT_SYMBOL(deactivate_fd);
  */
 int deactivate_all_fds(void)
 {
-<<<<<<< HEAD
-	struct irq_fd *irq;
-	int err;
-
-	for (irq = active_fds; irq != NULL; irq = irq->next) {
-		err = os_clear_fd_async(irq->fd);
-		if (err)
-			return err;
-	}
-	/* If there is a signal already queued, after unblocking ignore it */
-	os_set_ioignore();
-
-=======
 	struct irq_entry *entry;
 
 	/* Stop IO. The IRQ loop has no lock so this is our
@@ -665,7 +397,6 @@ int deactivate_all_fds(void)
 	list_for_each_entry(entry, &active_fds, list)
 		os_del_epoll_fd(entry->fd);
 	os_close_epoll_fd();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -684,26 +415,6 @@ unsigned int do_IRQ(int irq, struct uml_pt_regs *regs)
 	return 1;
 }
 
-<<<<<<< HEAD
-int um_request_irq(unsigned int irq, int fd, int type,
-		   irq_handler_t handler,
-		   unsigned long irqflags, const char * devname,
-		   void *dev_id)
-{
-	int err;
-
-	if (fd != -1) {
-		err = activate_fd(irq, fd, type, dev_id);
-		if (err)
-			return err;
-	}
-
-	return request_irq(irq, handler, irqflags, devname, dev_id);
-}
-
-EXPORT_SYMBOL(um_request_irq);
-EXPORT_SYMBOL(reactivate_fd);
-=======
 void um_free_irq(int irq, void *dev)
 {
 	if (WARN(irq < 0 || irq > UM_LAST_SIGNAL_IRQ,
@@ -901,7 +612,6 @@ unlock:
 #else
 #define normal_irq_set_wake NULL
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * irq_chip must define at least enable/disable and ack when
@@ -911,23 +621,6 @@ static void dummy(struct irq_data *d)
 {
 }
 
-<<<<<<< HEAD
-/* This is used for everything else than the timer. */
-static struct irq_chip normal_irq_type = {
-	.name = "SIGIO",
-	.release = free_irq_by_irq_and_dev,
-	.irq_disable = dummy,
-	.irq_enable = dummy,
-	.irq_ack = dummy,
-};
-
-static struct irq_chip SIGVTALRM_irq_type = {
-	.name = "SIGVTALRM",
-	.release = free_irq_by_irq_and_dev,
-	.irq_disable = dummy,
-	.irq_enable = dummy,
-	.irq_ack = dummy,
-=======
 /* This is used for everything other than the timer. */
 static struct irq_chip normal_irq_type = {
 	.name = "SIGIO",
@@ -946,26 +639,18 @@ static struct irq_chip alarm_irq_type = {
 	.irq_ack = dummy,
 	.irq_mask = dummy,
 	.irq_unmask = dummy,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init init_IRQ(void)
 {
 	int i;
 
-<<<<<<< HEAD
-	irq_set_chip_and_handler(TIMER_IRQ, &SIGVTALRM_irq_type, handle_edge_irq);
-
-	for (i = 1; i < NR_IRQS; i++)
-		irq_set_chip_and_handler(i, &normal_irq_type, handle_edge_irq);
-=======
 	irq_set_chip_and_handler(TIMER_IRQ, &alarm_irq_type, handle_edge_irq);
 
 	for (i = 1; i < UM_LAST_SIGNAL_IRQ; i++)
 		irq_set_chip_and_handler(i, &normal_irq_type, handle_edge_irq);
 	/* Initialize EPOLL Loop */
 	os_setup_epoll();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*

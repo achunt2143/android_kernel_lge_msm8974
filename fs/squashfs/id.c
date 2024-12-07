@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Squashfs - a compressed read only filesystem for Linux
  *
  * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008
  * Phillip Lougher <phillip@squashfs.org.uk>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2,
- * or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * id.c
  */
 
@@ -55,12 +35,6 @@ int squashfs_get_id(struct super_block *sb, unsigned int index,
 	struct squashfs_sb_info *msblk = sb->s_fs_info;
 	int block = SQUASHFS_ID_BLOCK(index);
 	int offset = SQUASHFS_ID_BLOCK_OFFSET(index);
-<<<<<<< HEAD
-	u64 start_block = le64_to_cpu(msblk->id_table[block]);
-	__le32 disk_id;
-	int err;
-
-=======
 	u64 start_block;
 	__le32 disk_id;
 	int err;
@@ -70,7 +44,6 @@ int squashfs_get_id(struct super_block *sb, unsigned int index,
 
 	start_block = le64_to_cpu(msblk->id_table[block]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = squashfs_read_metadata(sb, &disk_id, &start_block, &offset,
 							sizeof(disk_id));
 	if (err < 0)
@@ -88,14 +61,10 @@ __le64 *squashfs_read_id_index_table(struct super_block *sb,
 		u64 id_table_start, u64 next_table, unsigned short no_ids)
 {
 	unsigned int length = SQUASHFS_ID_BLOCK_BYTES(no_ids);
-<<<<<<< HEAD
-	__le64 *table;
-=======
 	unsigned int indexes = SQUASHFS_ID_BLOCKS(no_ids);
 	int n;
 	__le64 *table;
 	u64 start, end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TRACE("In read_id_index_table, length %d\n", length);
 
@@ -106,22 +75,6 @@ __le64 *squashfs_read_id_index_table(struct super_block *sb,
 		return ERR_PTR(-EINVAL);
 
 	/*
-<<<<<<< HEAD
-	 * length bytes should not extend into the next table - this check
-	 * also traps instances where id_table_start is incorrectly larger
-	 * than the next table start
-	 */
-	if (id_table_start + length > next_table)
-		return ERR_PTR(-EINVAL);
-
-	table = squashfs_read_table(sb, id_table_start, length);
-
-	/*
-	 * table[0] points to the first id lookup table metadata block, this
-	 * should be less than id_table_start
-	 */
-	if (!IS_ERR(table) && le64_to_cpu(table[0]) >= id_table_start) {
-=======
 	 * The computed size of the index table (length bytes) should exactly
 	 * match the table start and end points
 	 */
@@ -154,7 +107,6 @@ __le64 *squashfs_read_id_index_table(struct super_block *sb,
 	start = le64_to_cpu(table[indexes - 1]);
 	if (start >= id_table_start || (id_table_start - start) >
 				(SQUASHFS_METADATA_SIZE + SQUASHFS_BLOCK_OFFSET)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(table);
 		return ERR_PTR(-EINVAL);
 	}

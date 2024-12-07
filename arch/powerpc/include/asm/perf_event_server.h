@@ -1,37 +1,20 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Performance event support - PowerPC classic/server specific definitions.
  *
  * Copyright 2008-2009 Paul Mackerras, IBM Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 #include <asm/hw_irq.h>
-<<<<<<< HEAD
-
-=======
 #include <linux/device.h>
 #include <uapi/asm/perf_event.h>
 
 /* Update perf_event_print_debug() if this changes */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_HWEVENTS		8
 #define MAX_EVENT_ALTERNATIVES	8
 #define MAX_LIMITED_HWCOUNTERS	2
 
-<<<<<<< HEAD
-=======
 struct perf_event;
 
 struct mmcr_regs {
@@ -41,7 +24,6 @@ struct mmcr_regs {
 	unsigned long mmcra;
 	unsigned long mmcr3;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This struct provides the constants and functions needed to
  * describe the PMU on a particular POWER-family CPU.
@@ -53,21 +35,6 @@ struct power_pmu {
 	unsigned long	add_fields;
 	unsigned long	test_adder;
 	int		(*compute_mmcr)(u64 events[], int n_ev,
-<<<<<<< HEAD
-				unsigned int hwc[], unsigned long mmcr[]);
-	int		(*get_constraint)(u64 event_id, unsigned long *mskp,
-				unsigned long *valp);
-	int		(*get_alternatives)(u64 event_id, unsigned int flags,
-				u64 alt[]);
-	void		(*disable_pmc)(unsigned int pmc, unsigned long mmcr[]);
-	int		(*limited_pmc_event)(u64 event_id);
-	u32		flags;
-	int		n_generic;
-	int		*generic_events;
-	int		(*cache_events)[PERF_COUNT_HW_CACHE_MAX]
-			       [PERF_COUNT_HW_CACHE_OP_MAX]
-			       [PERF_COUNT_HW_CACHE_RESULT_MAX];
-=======
 				unsigned int hwc[], struct mmcr_regs *mmcr,
 				struct perf_event *pevents[], u32 flags);
 	int		(*get_constraint)(u64 event_id, unsigned long *mskp,
@@ -106,18 +73,11 @@ struct power_pmu {
 	 * since event code could be spread in attr.config*
 	 */
 	int		(*check_attr_config)(struct perf_event *ev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Values for power_pmu.flags
  */
-<<<<<<< HEAD
-#define PPMU_LIMITED_PMC5_6	1	/* PMC5/6 have limited function */
-#define PPMU_ALT_SIPR		2	/* uses alternate posn for SIPR/HV */
-#define PPMU_NO_SIPR		4	/* no SIPR/HV in MMCRA at all */
-#define PPMU_NO_CONT_SAMPLING	8	/* no continuous sampling */
-=======
 #define PPMU_LIMITED_PMC5_6	0x00000001 /* PMC5/6 have limited function */
 #define PPMU_ALT_SIPR		0x00000002 /* uses alternate posn for SIPR/HV */
 #define PPMU_NO_SIPR		0x00000004 /* no SIPR/HV in MMCRA at all */
@@ -130,7 +90,6 @@ struct power_pmu {
 #define PPMU_ARCH_31		0x00000200 /* Has MMCR3, SIER2 and SIER3 */
 #define PPMU_P10_DD1		0x00000400 /* Is power10 DD1 processor version */
 #define PPMU_HAS_ATTR_CONFIG1	0x00000800 /* Using config1 attribute */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Values for flags to get_alternatives()
@@ -139,19 +98,12 @@ struct power_pmu {
 #define PPMU_LIMITED_PMC_REQD	2	/* have to put this on a limited PMC */
 #define PPMU_ONLY_COUNT_RUN	4	/* only counting in run state */
 
-<<<<<<< HEAD
-extern int register_power_pmu(struct power_pmu *);
-=======
 int __init register_power_pmu(struct power_pmu *pmu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pt_regs;
 extern unsigned long perf_misc_flags(struct pt_regs *regs);
 extern unsigned long perf_instruction_pointer(struct pt_regs *regs);
-<<<<<<< HEAD
-=======
 extern unsigned long int read_bhrb(int n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Only override the default definitions in include/linux/perf_event.h
@@ -198,8 +150,6 @@ extern unsigned long int read_bhrb(int n);
  * If an event_id is not subject to the constraint expressed by a particular
  * field, then it will have 0 in both the mask and value for that field.
  */
-<<<<<<< HEAD
-=======
 
 extern ssize_t power_events_sysfs_show(struct device *dev,
 				struct device_attribute *attr, char *page);
@@ -232,4 +182,3 @@ extern ssize_t power_events_sysfs_show(struct device *dev,
 
 #define	POWER_EVENT_ATTR(_name, _id)	EVENT_ATTR(_name, _id, _p)
 #define	POWER_EVENT_PTR(_id)		EVENT_PTR(_id, _p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP3/4 Voltage Processor (VP) structure and macro definitions
  *
@@ -13,13 +10,6 @@
  * Copyright (C) 2008, 2011 Nokia Corporation
  * Kalle Jokiniemi
  * Paul Walmsley
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ARCH_ARM_MACH_OMAP2_VP_H
 #define __ARCH_ARM_MACH_OMAP2_VP_H
@@ -28,18 +18,6 @@
 
 struct voltagedomain;
 
-<<<<<<< HEAD
-/*
- * Voltage Processor (VP) identifiers
- */
-#define OMAP3_VP_VDD_MPU_ID 0
-#define OMAP3_VP_VDD_CORE_ID 1
-#define OMAP4_VP_VDD_CORE_ID 0
-#define OMAP4_VP_VDD_IVA_ID 1
-#define OMAP4_VP_VDD_MPU_ID 2
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* XXX document */
 #define VP_IDLE_TIMEOUT		200
 #define VP_TRANXDONE_TIMEOUT	300
@@ -127,8 +105,6 @@ extern struct omap_vp_instance omap4_vp_mpu;
 extern struct omap_vp_instance omap4_vp_iva;
 extern struct omap_vp_instance omap4_vp_core;
 
-<<<<<<< HEAD
-=======
 extern struct omap_vp_param omap3_mpu_vp_data;
 extern struct omap_vp_param omap3_core_vp_data;
 
@@ -136,7 +112,6 @@ extern struct omap_vp_param omap4_mpu_vp_data;
 extern struct omap_vp_param omap4_iva_vp_data;
 extern struct omap_vp_param omap4_core_vp_data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void omap_vp_init(struct voltagedomain *voltdm);
 void omap_vp_enable(struct voltagedomain *voltdm);
 void omap_vp_disable(struct voltagedomain *voltdm);

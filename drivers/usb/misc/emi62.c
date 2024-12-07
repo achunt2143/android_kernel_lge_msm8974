@@ -1,26 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * Emagic EMI 2|6 usb audio interface firmware loader.
  * Copyright (C) 2002
  * 	Tapio Laxström (tapio.laxstrom@iptime.fi)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, as published by
- * the Free Software Foundation, version 2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/usb.h>
 #include <linux/delay.h>
@@ -66,11 +52,7 @@ static int emi62_writememory(struct usb_device *dev, int address,
 	unsigned char *buffer =  kmemdup(data, length, GFP_KERNEL);
 
 	if (!buffer) {
-<<<<<<< HEAD
-		err("emi62: kmalloc(%d) failed.", length);
-=======
 		dev_err(&dev->dev, "kmalloc(%d) failed.\n", length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	/* Note: usb_control_msg returns negative value on error or length of the
@@ -87,14 +69,8 @@ static int emi62_set_reset (struct usb_device *dev, unsigned char reset_bit)
 	dev_info(&dev->dev, "%s - %d\n", __func__, reset_bit);
 	
 	response = emi62_writememory (dev, CPUCS_REG, &reset_bit, 1, 0xa0);
-<<<<<<< HEAD
-	if (response < 0) {
-		err("emi62: set_reset (%d) failed", reset_bit);
-	}
-=======
 	if (response < 0)
 		dev_err(&dev->dev, "set_reset (%d) failed\n", reset_bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return response;
 }
 
@@ -106,27 +82,15 @@ static int emi62_load_firmware (struct usb_device *dev)
 	const struct firmware *bitstream_fw = NULL;
 	const struct firmware *firmware_fw = NULL;
 	const struct ihex_binrec *rec;
-<<<<<<< HEAD
-	int err;
-=======
 	int err = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	__u32 addr;	/* Address to write */
 	__u8 *buf;
 
 	dev_dbg(&dev->dev, "load_firmware\n");
 	buf = kmalloc(FW_LOAD_SIZE, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!buf) {
-		err( "%s - error loading firmware: error = %d", __func__, -ENOMEM);
-		err = -ENOMEM;
-		goto wraperr;
-	}
-=======
 	if (!buf)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = request_ihex_firmware(&loader_fw, "emi62/loader.fw", &dev->dev);
 	if (err)
@@ -140,24 +104,13 @@ static int emi62_load_firmware (struct usb_device *dev)
 	err = request_ihex_firmware(&firmware_fw, FIRMWARE_FW, &dev->dev);
 	if (err) {
 	nofw:
-<<<<<<< HEAD
-		err( "%s - request_firmware() failed", __func__);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto wraperr;
 	}
 
 	/* Assert reset (stop the CPU in the EMI) */
 	err = emi62_set_reset(dev,1);
-<<<<<<< HEAD
-	if (err < 0) {
-		err("%s - error loading firmware: error = %d", __func__, err);
-		goto wraperr;
-	}
-=======
 	if (err < 0)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rec = (const struct ihex_binrec *)loader_fw->data;
 
@@ -166,29 +119,15 @@ static int emi62_load_firmware (struct usb_device *dev)
 		err = emi62_writememory(dev, be32_to_cpu(rec->addr),
 					rec->data, be16_to_cpu(rec->len),
 					ANCHOR_LOAD_INTERNAL);
-<<<<<<< HEAD
-		if (err < 0) {
-			err("%s - error loading firmware: error = %d", __func__, err);
-			goto wraperr;
-		}
-=======
 		if (err < 0)
 			goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rec = ihex_next_binrec(rec);
 	}
 
 	/* De-assert reset (let the CPU run) */
 	err = emi62_set_reset(dev,0);
-<<<<<<< HEAD
-	if (err < 0) {
-		err("%s - error loading firmware: error = %d", __func__, err);
-		goto wraperr;
-	}
-=======
 	if (err < 0)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(250);	/* let device settle */
 
 	/* 2. We upload the FPGA firmware into the EMI
@@ -206,28 +145,14 @@ static int emi62_load_firmware (struct usb_device *dev)
 			rec = ihex_next_binrec(rec);
 		}
 		err = emi62_writememory(dev, addr, buf, i, ANCHOR_LOAD_FPGA);
-<<<<<<< HEAD
-		if (err < 0) {
-			err("%s - error loading firmware: error = %d", __func__, err);
-			goto wraperr;
-		}
-=======
 		if (err < 0)
 			goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (rec);
 
 	/* Assert reset (stop the CPU in the EMI) */
 	err = emi62_set_reset(dev,1);
-<<<<<<< HEAD
-	if (err < 0) {
-		err("%s - error loading firmware: error = %d", __func__, err);
-		goto wraperr;
-	}
-=======
 	if (err < 0)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 3. We need to put the loader for the firmware into the EZ-USB (again...) */
 	for (rec = (const struct ihex_binrec *)loader_fw->data;
@@ -235,28 +160,14 @@ static int emi62_load_firmware (struct usb_device *dev)
 		err = emi62_writememory(dev, be32_to_cpu(rec->addr),
 					rec->data, be16_to_cpu(rec->len),
 					ANCHOR_LOAD_INTERNAL);
-<<<<<<< HEAD
-		if (err < 0) {
-			err("%s - error loading firmware: error = %d", __func__, err);
-			goto wraperr;
-		}
-=======
 		if (err < 0)
 			goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* De-assert reset (let the CPU run) */
 	err = emi62_set_reset(dev,0);
-<<<<<<< HEAD
-	if (err < 0) {
-		err("%s - error loading firmware: error = %d", __func__, err);
-		goto wraperr;
-	}
-=======
 	if (err < 0)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(250);	/* let device settle */
 
 	/* 4. We put the part of the firmware that lies in the external RAM into the EZ-USB */
@@ -267,29 +178,15 @@ static int emi62_load_firmware (struct usb_device *dev)
 			err = emi62_writememory(dev, be32_to_cpu(rec->addr),
 						rec->data, be16_to_cpu(rec->len),
 						ANCHOR_LOAD_EXTERNAL);
-<<<<<<< HEAD
-			if (err < 0) {
-				err("%s - error loading firmware: error = %d", __func__, err);
-				goto wraperr;
-			}
-=======
 			if (err < 0)
 				goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* Assert reset (stop the CPU in the EMI) */
 	err = emi62_set_reset(dev,1);
-<<<<<<< HEAD
-	if (err < 0) {
-		err("%s - error loading firmware: error = %d", __func__, err);
-		goto wraperr;
-	}
-=======
 	if (err < 0)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (rec = (const struct ihex_binrec *)firmware_fw->data;
 	     rec; rec = ihex_next_binrec(rec)) {
@@ -297,29 +194,15 @@ static int emi62_load_firmware (struct usb_device *dev)
 			err = emi62_writememory(dev, be32_to_cpu(rec->addr),
 						rec->data, be16_to_cpu(rec->len),
 						ANCHOR_LOAD_EXTERNAL);
-<<<<<<< HEAD
-			if (err < 0) {
-				err("%s - error loading firmware: error = %d", __func__, err);
-				goto wraperr;
-			}
-=======
 			if (err < 0)
 				goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* De-assert reset (let the CPU run) */
 	err = emi62_set_reset(dev,0);
-<<<<<<< HEAD
-	if (err < 0) {
-		err("%s - error loading firmware: error = %d", __func__, err);
-		goto wraperr;
-	}
-=======
 	if (err < 0)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(250);	/* let device settle */
 
 	release_firmware(loader_fw);
@@ -333,12 +216,9 @@ static int emi62_load_firmware (struct usb_device *dev)
 	return 1;
 
 wraperr:
-<<<<<<< HEAD
-=======
 	if (err < 0)
 		dev_err(&dev->dev,"%s - error loading firmware: error = %d\n",
 			__func__, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_firmware(loader_fw);
 	release_firmware(bitstream_fw);
 	release_firmware(firmware_fw);

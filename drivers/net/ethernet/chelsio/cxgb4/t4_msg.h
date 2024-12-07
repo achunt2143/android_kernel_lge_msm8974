@@ -1,11 +1,7 @@
 /*
  * This file is part of the Chelsio T4 Ethernet driver for Linux.
  *
-<<<<<<< HEAD
- * Copyright (c) 2003-2010 Chelsio Communications, Inc. All rights reserved.
-=======
  * Copyright (c) 2003-2014 Chelsio Communications, Inc. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -51,14 +47,6 @@ enum {
 	CPL_CLOSE_LISTSRV_REQ = 0x9,
 	CPL_ABORT_REQ         = 0xA,
 	CPL_ABORT_RPL         = 0xB,
-<<<<<<< HEAD
-	CPL_RX_DATA_ACK       = 0xD,
-	CPL_TX_PKT            = 0xE,
-	CPL_L2T_WRITE_REQ     = 0x12,
-	CPL_TID_RELEASE       = 0x1A,
-
-	CPL_CLOSE_LISTSRV_RPL = 0x20,
-=======
 	CPL_TX_DATA           = 0xC,
 	CPL_RX_DATA_ACK       = 0xD,
 	CPL_TX_PKT            = 0xE,
@@ -70,20 +58,15 @@ enum {
 
 	CPL_CLOSE_LISTSRV_RPL = 0x20,
 	CPL_GET_TCB_RPL       = 0x22,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CPL_L2T_WRITE_RPL     = 0x23,
 	CPL_PASS_OPEN_RPL     = 0x24,
 	CPL_ACT_OPEN_RPL      = 0x25,
 	CPL_PEER_CLOSE        = 0x26,
 	CPL_ABORT_REQ_RSS     = 0x2B,
 	CPL_ABORT_RPL_RSS     = 0x2D,
-<<<<<<< HEAD
-
-=======
 	CPL_SMT_WRITE_RPL     = 0x2E,
 
 	CPL_RX_PHYS_ADDR      = 0x30,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CPL_CLOSE_CON_RPL     = 0x32,
 	CPL_ISCSI_HDR         = 0x33,
 	CPL_RDMA_CQE          = 0x35,
@@ -98,26 +81,16 @@ enum {
 	CPL_PASS_ESTABLISH    = 0x41,
 	CPL_RX_DATA_DDP       = 0x42,
 	CPL_PASS_ACCEPT_REQ   = 0x44,
-<<<<<<< HEAD
-=======
 	CPL_RX_ISCSI_CMP      = 0x45,
 	CPL_TRACE_PKT_T5      = 0x48,
 	CPL_RX_ISCSI_DDP      = 0x49,
 	CPL_RX_TLS_CMP        = 0x4E,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	CPL_RDMA_READ_REQ     = 0x60,
 
 	CPL_PASS_OPEN_REQ6    = 0x81,
 	CPL_ACT_OPEN_REQ6     = 0x83,
 
-<<<<<<< HEAD
-	CPL_RDMA_TERMINATE    = 0xA2,
-	CPL_RDMA_WRITE        = 0xA4,
-	CPL_SGE_EGR_UPDATE    = 0xA5,
-
-	CPL_TRACE_PKT         = 0xB0,
-=======
 	CPL_TX_TLS_PDU        = 0x88,
 	CPL_TX_TLS_SFO        = 0x89,
 	CPL_TX_SEC_PDU        = 0x8A,
@@ -131,16 +104,10 @@ enum {
 	CPL_TRACE_PKT         = 0xB0,
 	CPL_TLS_DATA          = 0xB1,
 	CPL_ISCSI_DATA	      = 0xB2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	CPL_FW4_MSG           = 0xC0,
 	CPL_FW4_PLD           = 0xC1,
 	CPL_FW4_ACK           = 0xC3,
-<<<<<<< HEAD
-
-	CPL_FW6_MSG           = 0xE0,
-	CPL_FW6_PLD           = 0xE1,
-=======
 	CPL_SRQ_TABLE_RPL     = 0xCC,
 
 	CPL_RX_PHYS_DSGL      = 0xD0,
@@ -148,7 +115,6 @@ enum {
 	CPL_FW6_MSG           = 0xE0,
 	CPL_FW6_PLD           = 0xE1,
 	CPL_TX_TNL_LSO        = 0xEC,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CPL_TX_PKT_LSO        = 0xED,
 	CPL_TX_PKT_XT         = 0xEE,
 
@@ -157,11 +123,8 @@ enum {
 
 enum CPL_error {
 	CPL_ERR_NONE               = 0,
-<<<<<<< HEAD
-=======
 	CPL_ERR_TCAM_PARITY        = 1,
 	CPL_ERR_TCAM_MISS          = 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CPL_ERR_TCAM_FULL          = 3,
 	CPL_ERR_BAD_LENGTH         = 15,
 	CPL_ERR_BAD_ROUTE          = 18,
@@ -177,10 +140,6 @@ enum CPL_error {
 	CPL_ERR_KEEPALIVE_TIMEDOUT = 34,
 	CPL_ERR_RTX_NEG_ADVICE     = 35,
 	CPL_ERR_PERSIST_NEG_ADVICE = 36,
-<<<<<<< HEAD
-	CPL_ERR_ABORT_FAILED       = 42,
-	CPL_ERR_IWARP_FLM          = 50,
-=======
 	CPL_ERR_KEEPALV_NEG_ADVICE = 37,
 	CPL_ERR_ABORT_FAILED       = 42,
 	CPL_ERR_IWARP_FLM          = 50,
@@ -193,7 +152,6 @@ enum {
 	CPL_CONN_POLICY_ASK  = 1,
 	CPL_CONN_POLICY_FILTER = 2,
 	CPL_CONN_POLICY_DENY = 3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -202,10 +160,7 @@ enum {
 	ULP_MODE_RDMA          = 4,
 	ULP_MODE_TCPDDP	       = 5,
 	ULP_MODE_FCOE          = 6,
-<<<<<<< HEAD
-=======
 	ULP_MODE_TLS           = 8,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -237,17 +192,6 @@ union opcode_tid {
 	u8 opcode;
 };
 
-<<<<<<< HEAD
-#define CPL_OPCODE(x) ((x) << 24)
-#define MK_OPCODE_TID(opcode, tid) (CPL_OPCODE(opcode) | (tid))
-#define OPCODE_TID(cmd) ((cmd)->ot.opcode_tid)
-#define GET_TID(cmd) (ntohl(OPCODE_TID(cmd)) & 0xFFFFFF)
-
-/* partitioning of TID fields that also carry a queue id */
-#define GET_TID_TID(x) ((x) & 0x3fff)
-#define GET_TID_QID(x) (((x) >> 14) & 0x3ff)
-#define TID_QID(x)     ((x) << 14)
-=======
 #define CPL_OPCODE_S    24
 #define CPL_OPCODE_V(x) ((x) << CPL_OPCODE_S)
 #define CPL_OPCODE_G(x) (((x) >> CPL_OPCODE_S) & 0xFF)
@@ -271,7 +215,6 @@ union opcode_tid {
 #define TID_QID_M    0x3ff
 #define TID_QID_V(x) ((x) << TID_QID_S)
 #define TID_QID_G(x) (((x) >> TID_QID_S) & TID_QID_M)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct rss_header {
 	u8 opcode;
@@ -300,10 +243,6 @@ struct work_request_hdr {
 	__be64 wr_lo;
 };
 
-<<<<<<< HEAD
-#define WR_HDR struct work_request_hdr wr
-
-=======
 /* wr_hi fields */
 #define WR_OP_S    24
 #define WR_OP_V(x) ((__u64)(x) << WR_OP_S)
@@ -369,7 +308,6 @@ struct work_request_hdr {
 #define T5_OPT_2_VALID_V(x) ((x) << T5_OPT_2_VALID_S)
 #define T5_OPT_2_VALID_F    T5_OPT_2_VALID_V(1U)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_pass_open_req {
 	WR_HDR;
 	union opcode_tid ot;
@@ -378,25 +316,6 @@ struct cpl_pass_open_req {
 	__be32 local_ip;
 	__be32 peer_ip;
 	__be64 opt0;
-<<<<<<< HEAD
-#define TX_CHAN(x)    ((x) << 2)
-#define DELACK(x)     ((x) << 5)
-#define ULP_MODE(x)   ((x) << 8)
-#define RCV_BUFSIZ(x) ((x) << 12)
-#define DSCP(x)       ((x) << 22)
-#define SMAC_SEL(x)   ((u64)(x) << 28)
-#define L2T_IDX(x)    ((u64)(x) << 36)
-#define NAGLE(x)      ((u64)(x) << 49)
-#define WND_SCALE(x)  ((u64)(x) << 50)
-#define KEEP_ALIVE(x) ((u64)(x) << 54)
-#define MSS_IDX(x)    ((u64)(x) << 60)
-	__be64 opt1;
-#define SYN_RSS_ENABLE   (1 << 0)
-#define SYN_RSS_QUEUE(x) ((x) << 2)
-#define CONN_POLICY_ASK  (1 << 22)
-};
-
-=======
 	__be64 opt1;
 };
 
@@ -437,7 +356,6 @@ struct cpl_pass_open_req {
 #define CONN_POLICY_S    22
 #define CONN_POLICY_V(x) ((x) << CONN_POLICY_S)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_pass_open_req6 {
 	WR_HDR;
 	union opcode_tid ot;
@@ -457,8 +375,6 @@ struct cpl_pass_open_rpl {
 	u8 status;
 };
 
-<<<<<<< HEAD
-=======
 struct tcp_options {
 	__be16 mss;
 	__u8 wsf;
@@ -540,25 +456,10 @@ enum {                     /* TCP congestion control algorithms */
 #define T5_ISS_V(x) ((x) << T5_ISS_S)
 #define T5_ISS_F    T5_ISS_V(1U)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_pass_accept_rpl {
 	WR_HDR;
 	union opcode_tid ot;
 	__be32 opt2;
-<<<<<<< HEAD
-#define RSS_QUEUE(x)         ((x) << 0)
-#define RSS_QUEUE_VALID      (1 << 10)
-#define RX_COALESCE_VALID(x) ((x) << 11)
-#define RX_COALESCE(x)       ((x) << 12)
-#define TX_QUEUE(x)          ((x) << 23)
-#define RX_CHANNEL(x)        ((x) << 26)
-#define WND_SCALE_EN(x)      ((x) << 28)
-#define TSTAMPS_EN(x)        ((x) << 29)
-#define SACK_EN(x)           ((x) << 30)
-	__be64 opt0;
-};
-
-=======
 	__be64 opt0;
 };
 
@@ -599,7 +500,6 @@ struct cpl_t5_pass_accept_rpl {
 	__be32 rsvd;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_act_open_req {
 	WR_HDR;
 	union opcode_tid ot;
@@ -612,8 +512,6 @@ struct cpl_act_open_req {
 	__be32 opt2;
 };
 
-<<<<<<< HEAD
-=======
 #define FILTER_TUPLE_S  24
 #define FILTER_TUPLE_M  0xFFFFFFFFFF
 #define FILTER_TUPLE_V(x) ((x) << FILTER_TUPLE_S)
@@ -646,7 +544,6 @@ struct cpl_t6_act_open_req {
 	__be32 opt3;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_act_open_req6 {
 	WR_HDR;
 	union opcode_tid ot;
@@ -661,15 +558,6 @@ struct cpl_act_open_req6 {
 	__be32 opt2;
 };
 
-<<<<<<< HEAD
-struct cpl_act_open_rpl {
-	union opcode_tid ot;
-	__be32 atid_status;
-#define GET_AOPEN_STATUS(x) ((x) & 0xff)
-#define GET_AOPEN_ATID(x)   (((x) >> 8) & 0xffffff)
-};
-
-=======
 struct cpl_t5_act_open_req6 {
 	WR_HDR;
 	union opcode_tid ot;
@@ -716,31 +604,16 @@ struct cpl_act_open_rpl {
 #define AOPEN_ATID_M    0xFFFFFF
 #define AOPEN_ATID_G(x) (((x) >> AOPEN_ATID_S) & AOPEN_ATID_M)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_pass_establish {
 	union opcode_tid ot;
 	__be32 rsvd;
 	__be32 tos_stid;
-<<<<<<< HEAD
-#define GET_POPEN_TID(x) ((x) & 0xffffff)
-#define GET_POPEN_TOS(x) (((x) >> 24) & 0xff)
 	__be16 mac_idx;
 	__be16 tcp_opt;
-#define GET_TCPOPT_WSCALE_OK(x)  (((x) >> 5) & 1)
-#define GET_TCPOPT_SACK(x)       (((x) >> 6) & 1)
-#define GET_TCPOPT_TSTAMP(x)     (((x) >> 7) & 1)
-#define GET_TCPOPT_SND_WSCALE(x) (((x) >> 8) & 0xf)
-#define GET_TCPOPT_MSS(x)        (((x) >> 12) & 0xf)
-=======
-	__be16 mac_idx;
-	__be16 tcp_opt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 snd_isn;
 	__be32 rcv_isn;
 };
 
-<<<<<<< HEAD
-=======
 /* cpl_pass_establish.tos_stid fields */
 #define PASS_OPEN_TID_S    0
 #define PASS_OPEN_TID_M    0xFFFFFF
@@ -788,7 +661,6 @@ struct cpl_pass_establish {
 #define T6_ETH_HDR_LEN_V(x) ((x) << T6_ETH_HDR_LEN_S)
 #define T6_ETH_HDR_LEN_G(x) (((x) >> T6_ETH_HDR_LEN_S) & T6_ETH_HDR_LEN_M)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_act_establish {
 	union opcode_tid ot;
 	__be32 rsvd;
@@ -803,14 +675,6 @@ struct cpl_get_tcb {
 	WR_HDR;
 	union opcode_tid ot;
 	__be16 reply_ctrl;
-<<<<<<< HEAD
-#define QUEUENO(x)    ((x) << 0)
-#define REPLY_CHAN(x) ((x) << 14)
-#define NO_REPLY(x)   ((x) << 15)
-	__be16 cookie;
-};
-
-=======
 	__be16 cookie;
 };
 
@@ -833,23 +697,15 @@ struct cpl_get_tcb_rpl {
 	__be16 len;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_set_tcb_field {
 	WR_HDR;
 	union opcode_tid ot;
 	__be16 reply_ctrl;
 	__be16 word_cookie;
-<<<<<<< HEAD
-#define TCB_WORD(x)   ((x) << 0)
-#define TCB_COOKIE(x) ((x) << 5)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be64 mask;
 	__be64 val;
 };
 
-<<<<<<< HEAD
-=======
 struct cpl_set_tcb_field_core {
 	union opcode_tid ot;
 	__be16 reply_ctrl;
@@ -867,7 +723,6 @@ struct cpl_set_tcb_field_core {
 #define TCB_COOKIE_V(x) ((x) << TCB_COOKIE_S)
 #define TCB_COOKIE_G(x) (((x) >> TCB_COOKIE_S) & TCB_COOKIE_M)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_set_tcb_rpl {
 	union opcode_tid ot;
 	__be16 rsvd;
@@ -894,12 +749,6 @@ struct cpl_close_listsvr_req {
 	WR_HDR;
 	union opcode_tid ot;
 	__be16 reply_ctrl;
-<<<<<<< HEAD
-#define LISTSVR_IPV6 (1 << 14)
-	__be16 rsvd;
-};
-
-=======
 	__be16 rsvd;
 };
 
@@ -908,7 +757,6 @@ struct cpl_close_listsvr_req {
 #define LISTSVR_IPV6_V(x) ((x) << LISTSVR_IPV6_S)
 #define LISTSVR_IPV6_F    LISTSVR_IPV6_V(1U)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_close_listsvr_rpl {
 	union opcode_tid ot;
 	u8 rsvd[3];
@@ -921,8 +769,6 @@ struct cpl_abort_req_rss {
 	u8 status;
 };
 
-<<<<<<< HEAD
-=======
 struct cpl_abort_req_rss6 {
 	union opcode_tid ot;
 	__be32 srqidx_status;
@@ -938,7 +784,6 @@ struct cpl_abort_req_rss6 {
 #define ABORT_RSS_SRQIDX_V(x) ((x) << ABORT_RSS_SRQIDX_S)
 #define ABORT_RSS_SRQIDX_G(x) (((x) >> ABORT_RSS_SRQIDX_S) & ABORT_RSS_SRQIDX_M)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_abort_req {
 	WR_HDR;
 	union opcode_tid ot;
@@ -954,14 +799,11 @@ struct cpl_abort_rpl_rss {
 	u8 status;
 };
 
-<<<<<<< HEAD
-=======
 struct cpl_abort_rpl_rss6 {
 	union opcode_tid ot;
 	__be32 srqidx_status;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_abort_rpl {
 	WR_HDR;
 	union opcode_tid ot;
@@ -984,32 +826,9 @@ struct cpl_tid_release {
 
 struct cpl_tx_pkt_core {
 	__be32 ctrl0;
-<<<<<<< HEAD
-#define TXPKT_VF(x)        ((x) << 0)
-#define TXPKT_PF(x)        ((x) << 8)
-#define TXPKT_VF_VLD       (1 << 11)
-#define TXPKT_OVLAN_IDX(x) ((x) << 12)
-#define TXPKT_INTF(x)      ((x) << 16)
-#define TXPKT_INS_OVLAN    (1 << 21)
-#define TXPKT_OPCODE(x)    ((x) << 24)
 	__be16 pack;
 	__be16 len;
 	__be64 ctrl1;
-#define TXPKT_CSUM_END(x)   ((x) << 12)
-#define TXPKT_CSUM_START(x) ((x) << 20)
-#define TXPKT_IPHDR_LEN(x)  ((u64)(x) << 20)
-#define TXPKT_CSUM_LOC(x)   ((u64)(x) << 30)
-#define TXPKT_ETHHDR_LEN(x) ((u64)(x) << 34)
-#define TXPKT_CSUM_TYPE(x)  ((u64)(x) << 40)
-#define TXPKT_VLAN(x)       ((u64)(x) << 44)
-#define TXPKT_VLAN_VLD      (1ULL << 60)
-#define TXPKT_IPCSUM_DIS    (1ULL << 62)
-#define TXPKT_L4CSUM_DIS    (1ULL << 63)
-=======
-	__be16 pack;
-	__be16 len;
-	__be64 ctrl1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct cpl_tx_pkt {
@@ -1019,17 +838,6 @@ struct cpl_tx_pkt {
 
 #define cpl_tx_pkt_xt cpl_tx_pkt
 
-<<<<<<< HEAD
-struct cpl_tx_pkt_lso_core {
-	__be32 lso_ctrl;
-#define LSO_TCPHDR_LEN(x) ((x) << 0)
-#define LSO_IPHDR_LEN(x)  ((x) << 4)
-#define LSO_ETHHDR_LEN(x) ((x) << 16)
-#define LSO_IPV6(x)       ((x) << 20)
-#define LSO_LAST_SLICE    (1 << 22)
-#define LSO_FIRST_SLICE   (1 << 23)
-#define LSO_OPCODE(x)     ((x) << 24)
-=======
 /* cpl_tx_pkt_core.ctrl0 fields */
 #define TXPKT_VF_S    0
 #define TXPKT_VF_V(x) ((x) << TXPKT_VF_S)
@@ -1100,7 +908,6 @@ struct cpl_tx_pkt_lso_core {
 
 struct cpl_tx_pkt_lso_core {
 	__be32 lso_ctrl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be16 ipid_ofst;
 	__be16 mss;
 	__be32 seqno_offset;
@@ -1108,8 +915,6 @@ struct cpl_tx_pkt_lso_core {
 	/* encapsulated CPL (TX_PKT, TX_PKT_XT or TX_DATA) follows here */
 };
 
-<<<<<<< HEAD
-=======
 /* cpl_tx_pkt_lso_core.lso_ctrl fields */
 #define LSO_TCPHDR_LEN_S    0
 #define LSO_TCPHDR_LEN_V(x) ((x) << LSO_TCPHDR_LEN_S)
@@ -1138,7 +943,6 @@ struct cpl_tx_pkt_lso_core {
 #define LSO_T5_XFER_SIZE_S	   0
 #define LSO_T5_XFER_SIZE_V(x) ((x) << LSO_T5_XFER_SIZE_S)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_tx_pkt_lso {
 	WR_HDR;
 	struct cpl_tx_pkt_lso_core c;
@@ -1148,11 +952,6 @@ struct cpl_tx_pkt_lso {
 struct cpl_iscsi_hdr {
 	union opcode_tid ot;
 	__be16 pdu_len_ddp;
-<<<<<<< HEAD
-#define ISCSI_PDU_LEN(x) ((x) & 0x7FFF)
-#define ISCSI_DDP        (1 << 15)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be16 len;
 	__be32 seq;
 	__be16 urg;
@@ -1160,8 +959,6 @@ struct cpl_iscsi_hdr {
 	u8 status;
 };
 
-<<<<<<< HEAD
-=======
 /* cpl_iscsi_hdr.pdu_len_ddp fields */
 #define ISCSI_PDU_LEN_S    0
 #define ISCSI_PDU_LEN_M    0x7FFF
@@ -1288,7 +1085,6 @@ struct cpl_tx_data_iso {
 	(((x) >> CPL_TX_DATA_ISO_SEGLEN_OFFSET_S) & \
 	 CPL_TX_DATA_ISO_SEGLEN_OFFSET_M)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_rx_data {
 	union opcode_tid ot;
 	__be16 rsvd;
@@ -1315,12 +1111,6 @@ struct cpl_rx_data_ack {
 	WR_HDR;
 	union opcode_tid ot;
 	__be32 credit_dack;
-<<<<<<< HEAD
-#define RX_CREDITS(x)   ((x) << 0)
-#define RX_FORCE_ACK(x) ((x) << 28)
-};
-
-=======
 };
 
 /* cpl_rx_data_ack.ack_seq fields */
@@ -1340,7 +1130,6 @@ struct cpl_rx_data_ack {
 #define RX_DACK_CHANGE_V(x) ((x) << RX_DACK_CHANGE_S)
 #define RX_DACK_CHANGE_F    RX_DACK_CHANGE_V(1U)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_rx_pkt {
 	struct rss_header rsshdr;
 	u8 opcode;
@@ -1361,19 +1150,10 @@ struct cpl_rx_pkt {
 	__be16 vlan;
 	__be16 len;
 	__be32 l2info;
-<<<<<<< HEAD
-#define RXF_UDP (1 << 22)
-#define RXF_TCP (1 << 23)
-#define RXF_IP  (1 << 24)
-#define RXF_IP6 (1 << 25)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be16 hdr_len;
 	__be16 err_vec;
 };
 
-<<<<<<< HEAD
-=======
 #define RX_T6_ETHHDR_LEN_M    0xFF
 #define RX_T6_ETHHDR_LEN_G(x) (((x) >> RX_ETHHDR_LEN_S) & RX_T6_ETHHDR_LEN_M)
 
@@ -1474,7 +1254,6 @@ struct cpl_rx_pkt {
 #define T6_RX_TNLHDR_LEN_V(x) ((x) << T6_RX_TNLHDR_LEN_S)
 #define T6_RX_TNLHDR_LEN_G(x) (((x) >> T6_RX_TNLHDR_LEN_S) & T6_RX_TNLHDR_LEN_M)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_trace_pkt {
 	u8 opcode;
 	u8 intf;
@@ -1496,8 +1275,6 @@ struct cpl_trace_pkt {
 	__be64 tstamp;
 };
 
-<<<<<<< HEAD
-=======
 struct cpl_t5_trace_pkt {
 	__u8 opcode;
 	__u8 intf;
@@ -1520,24 +1297,15 @@ struct cpl_t5_trace_pkt {
 	__be64 rsvd1;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_l2t_write_req {
 	WR_HDR;
 	union opcode_tid ot;
 	__be16 params;
-<<<<<<< HEAD
-#define L2T_W_INFO(x)    ((x) << 2)
-#define L2T_W_PORT(x)    ((x) << 8)
-#define L2T_W_NOREPLY(x) ((x) << 15)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be16 l2t_idx;
 	__be16 vlan;
 	u8 dst_mac[6];
 };
 
-<<<<<<< HEAD
-=======
 /* cpl_l2t_write_req.params fields */
 #define L2T_W_INFO_S    2
 #define L2T_W_INFO_V(x) ((x) << L2T_W_INFO_S)
@@ -1551,15 +1319,12 @@ struct cpl_l2t_write_req {
 
 #define CPL_L2T_VLAN_NONE 0xfff
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_l2t_write_rpl {
 	union opcode_tid ot;
 	u8 status;
 	u8 rsvd[3];
 };
 
-<<<<<<< HEAD
-=======
 struct cpl_smt_write_req {
 	WR_HDR;
 	union opcode_tid ot;
@@ -1598,7 +1363,6 @@ struct cpl_smt_write_rpl {
 #define SMTW_NORPL_V(x)	((x) << SMTW_NORPL_S)
 #define SMTW_NORPL_F	SMTW_NORPL_V(1U)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_rdma_terminate {
 	union opcode_tid ot;
 	__be16 rsvd;
@@ -1607,16 +1371,10 @@ struct cpl_rdma_terminate {
 
 struct cpl_sge_egr_update {
 	__be32 opcode_qid;
-<<<<<<< HEAD
-#define EGR_QID(x) ((x) & 0x1FFFF)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be16 cidx;
 	__be16 pidx;
 };
 
-<<<<<<< HEAD
-=======
 /* cpl_sge_egr_update.ot fields */
 #define EGR_QID_S    0
 #define EGR_QID_M    0x1FFFF
@@ -1631,7 +1389,6 @@ enum {
 	FW_TYPE_RSSCPL = 4,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_fw4_pld {
 	u8 opcode;
 	u8 rsvd0[3];
@@ -1667,8 +1424,6 @@ struct cpl_fw4_ack {
 	__be64 rsvd1;
 };
 
-<<<<<<< HEAD
-=======
 enum {
 	CPL_FW4_ACK_FLAGS_SEQVAL	= 0x1,	/* seqn valid */
 	CPL_FW4_ACK_FLAGS_CH		= 0x2,	/* channel change complete */
@@ -1680,7 +1435,6 @@ enum {
 #define CPL_FW4_ACK_FLOWID_G(x) \
 	(((x) >> CPL_FW4_ACK_FLOWID_S) & CPL_FW4_ACK_FLOWID_M)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpl_fw6_msg {
 	u8 opcode;
 	u8 type;
@@ -1692,10 +1446,6 @@ struct cpl_fw6_msg {
 /* cpl_fw6_msg.type values */
 enum {
 	FW6_TYPE_CMD_RPL = 0,
-<<<<<<< HEAD
-};
-
-=======
 	FW6_TYPE_WR_RPL = 1,
 	FW6_TYPE_CQE = 2,
 	FW6_TYPE_OFLD_CONNECTION_WR_RPL = 3,
@@ -1755,7 +1505,6 @@ struct cpl_tx_data {
 #define TX_ULP_MODE_V(x) ((x) << TX_ULP_MODE_S)
 #define TX_ULP_MODE_G(x) (((x) >> TX_ULP_MODE_S) & TX_ULP_MODE_M)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	ULP_TX_MEM_READ = 2,
 	ULP_TX_MEM_WRITE = 3,
@@ -1766,11 +1515,6 @@ enum {
 	ULP_TX_SC_NOOP = 0x80,
 	ULP_TX_SC_IMM  = 0x81,
 	ULP_TX_SC_DSGL = 0x82,
-<<<<<<< HEAD
-	ULP_TX_SC_ISGL = 0x83
-};
-
-=======
 	ULP_TX_SC_ISGL = 0x83,
 	ULP_TX_SC_MEMRD = 0x86
 };
@@ -1786,7 +1530,6 @@ enum {
 #define ULP_TX_SC_MORE_V(x) ((x) << ULP_TX_SC_MORE_S)
 #define ULP_TX_SC_MORE_F  ULP_TX_SC_MORE_V(1U)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ulptx_sge_pair {
 	__be32 len[2];
 	__be64 addr[2];
@@ -1794,27 +1537,6 @@ struct ulptx_sge_pair {
 
 struct ulptx_sgl {
 	__be32 cmd_nsge;
-<<<<<<< HEAD
-#define ULPTX_CMD(x) ((x) << 24)
-#define ULPTX_NSGE(x) ((x) << 0)
-	__be32 len0;
-	__be64 addr0;
-	struct ulptx_sge_pair sge[0];
-};
-
-struct ulp_mem_io {
-	WR_HDR;
-	__be32 cmd;
-#define ULP_MEMIO_ORDER(x) ((x) << 23)
-	__be32 len16;             /* command length */
-	__be32 dlen;              /* data length in 32-byte units */
-#define ULP_MEMIO_DATA_LEN(x) ((x) << 0)
-	__be32 lock_addr;
-#define ULP_MEMIO_ADDR(x) ((x) << 0)
-#define ULP_MEMIO_LOCK(x) ((x) << 31)
-};
-
-=======
 	__be32 len0;
 	__be64 addr0;
 	struct ulptx_sge_pair sge[];
@@ -2627,5 +2349,4 @@ struct cpl_rx_tls_cmp {
 #define CPL_RX_TLS_CMP_LENGTH_V(x)      ((x) << CPL_RX_TLS_CMP_LENGTH_S)
 #define CPL_RX_TLS_CMP_LENGTH_G(x)      \
 	(((x) >> CPL_RX_TLS_CMP_LENGTH_S) & CPL_RX_TLS_CMP_LENGTH_M)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif  /* __T4_MSG_H */

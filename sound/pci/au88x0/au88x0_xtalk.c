@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /***************************************************************************
  *            au88x0_cxtalk.c
  *
@@ -11,22 +8,6 @@
  ****************************************************************************/
 
 /*
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Library General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "au88x0_xtalk.h"
@@ -36,35 +17,16 @@
 static short const sXtalkWideKLeftEq = 0x269C;
 static short const sXtalkWideKRightEq = 0x269C;
 static short const sXtalkWideKLeftXt = 0xF25E;
-<<<<<<< HEAD
-static short const sXtalkWideKRightXt = 0xF25E;
-static short const sXtalkWideShiftLeftEq = 1;
-static short const sXtalkWideShiftRightEq = 1;
-static short const sXtalkWideShiftLeftXt = 0;
-static short const sXtalkWideShiftRightXt = 0;
-=======
 static __maybe_unused short const sXtalkWideKRightXt = 0xF25E;
 static short const sXtalkWideShiftLeftEq = 1;
 static short const sXtalkWideShiftRightEq = 1;
 static short const sXtalkWideShiftLeftXt = 0;
 static __maybe_unused short const sXtalkWideShiftRightXt = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned short const wXtalkWideLeftDelay = 0xd;
 static unsigned short const wXtalkWideRightDelay = 0xd;
 static short const sXtalkNarrowKLeftEq = 0x468D;
 static short const sXtalkNarrowKRightEq = 0x468D;
 static short const sXtalkNarrowKLeftXt = 0xF82E;
-<<<<<<< HEAD
-static short const sXtalkNarrowKRightXt = 0xF82E;
-static short const sXtalkNarrowShiftLeftEq = 0x3;
-static short const sXtalkNarrowShiftRightEq = 0x3;
-static short const sXtalkNarrowShiftLeftXt = 0;
-static short const sXtalkNarrowShiftRightXt = 0;
-static unsigned short const wXtalkNarrowLeftDelay = 0x7;
-static unsigned short const wXtalkNarrowRightDelay = 0x7;
-
-static xtalk_gains_t const asXtalkGainsDefault = {
-=======
 static __maybe_unused short const sXtalkNarrowKRightXt = 0xF82E;
 static short const sXtalkNarrowShiftLeftEq = 0x3;
 static short const sXtalkNarrowShiftRightEq = 0x3;
@@ -74,25 +36,16 @@ static unsigned short const wXtalkNarrowLeftDelay = 0x7;
 static unsigned short const wXtalkNarrowRightDelay = 0x7;
 
 static __maybe_unused xtalk_gains_t const asXtalkGainsDefault = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x4000, 0x4000, 0x4000, 0x4000, 0x4000,
 	0x4000, 0x4000, 0x4000, 0x4000,	0x4000
 };
 
-<<<<<<< HEAD
-static xtalk_gains_t const asXtalkGainsTest = {
-=======
 static __maybe_unused xtalk_gains_t const asXtalkGainsTest = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x7fff, 0x8000, 0x0000, 0x0000, 0x0001,
 	0xffff, 0x4000, 0xc000, 0x0002, 0xfffe
 };
 
-<<<<<<< HEAD
-static xtalk_gains_t const asXtalkGains1Chan = {
-=======
 static __maybe_unused xtalk_gains_t const asXtalkGains1Chan = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x7FFF, 0, 0, 0, 0,
 	0x7FFF, 0, 0, 0, 0,
 };
@@ -111,11 +64,7 @@ static xtalk_dline_t const alXtalkDlineZeros = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
-<<<<<<< HEAD
-static xtalk_dline_t const alXtalkDlineTest = {
-=======
 static __maybe_unused xtalk_dline_t const alXtalkDlineTest = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x0000fc18, 0xfff03e8, 0x000186a0, 0xfffe7960, 1, 0xffffffff, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0
@@ -125,11 +74,7 @@ static xtalk_instate_t const asXtalkInStateZeros = {
 	0, 0, 0, 0
 };
 
-<<<<<<< HEAD
-static xtalk_instate_t const asXtalkInStateTest = {
-=======
 static __maybe_unused xtalk_instate_t const asXtalkInStateTest = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x0080, 0xff80, 0x0001, 0xffff
 };
 
@@ -144,19 +89,11 @@ static xtalk_state_t const asXtalkOutStateZeros = {
 static short const sDiamondKLeftEq = 0x401d;
 static short const sDiamondKRightEq = 0x401d;
 static short const sDiamondKLeftXt = 0xF90E;
-<<<<<<< HEAD
-static short const sDiamondKRightXt = 0xF90E;
-static short const sDiamondShiftLeftEq = 1;
-static short const sDiamondShiftRightEq = 1;
-static short const sDiamondShiftLeftXt = 0;
-static short const sDiamondShiftRightXt = 0;
-=======
 static __maybe_unused short const sDiamondKRightXt = 0xF90E;
 static short const sDiamondShiftLeftEq = 1;
 static short const sDiamondShiftRightEq = 1;
 static short const sDiamondShiftLeftXt = 0;
 static __maybe_unused short const sDiamondShiftRightXt = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned short const wDiamondLeftDelay = 0xb;
 static unsigned short const wDiamondRightDelay = 0xb;
 
@@ -181,11 +118,7 @@ static xtalk_coefs_t const asXtalkWideCoefsLeftXt = {
 	{0x77dc, 0xc79e, 0xffb8, 0x000a, 0},
 	{0, 0, 0, 0, 0}
 };
-<<<<<<< HEAD
-static xtalk_coefs_t const asXtalkWideCoefsRightXt = {
-=======
 static __maybe_unused xtalk_coefs_t const asXtalkWideCoefsRightXt = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x55c6, 0xc97b, 0x005b, 0x0047, 0},
 	{0x6a60, 0xca20, 0xffc6, 0x0040, 0},
 	{0x6411, 0xd711, 0xfca1, 0x0190, 0},
@@ -216,11 +149,7 @@ static xtalk_coefs_t const asXtalkNarrowCoefsLeftXt = {
 	{0, 0, 0, 0, 0}
 };
 
-<<<<<<< HEAD
-static xtalk_coefs_t const asXtalkNarrowCoefsRightXt = {
-=======
 static __maybe_unused xtalk_coefs_t const asXtalkNarrowCoefsRightXt = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x3CB2, 0xDF49, 0xF6EA, 0x095B, 0},
 	{0x6777, 0xC915, 0xFEAF, 0x00B1, 0},
 	{0x7762, 0xC7D9, 0x025B, 0xFDA6, 0},
@@ -243,11 +172,7 @@ static xtalk_coefs_t const asXtalkCoefsPipe = {
 	{0, 0, 0x0FA0, 0, 0},
 	{0, 0, 0x1180, 0, 0},
 };
-<<<<<<< HEAD
-static xtalk_coefs_t const asXtalkCoefsNegPipe = {
-=======
 static __maybe_unused xtalk_coefs_t const asXtalkCoefsNegPipe = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0, 0, 0xF380, 0, 0},
 	{0, 0, 0xF380, 0, 0},
 	{0, 0, 0xF380, 0, 0},
@@ -255,11 +180,7 @@ static __maybe_unused xtalk_coefs_t const asXtalkCoefsNegPipe = {
 	{0, 0, 0xF200, 0, 0}
 };
 
-<<<<<<< HEAD
-static xtalk_coefs_t const asXtalkCoefsNumTest = {
-=======
 static __maybe_unused xtalk_coefs_t const asXtalkCoefsNumTest = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0, 0, 0xF380, 0x8000, 0x6D60},
 	{0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0},
@@ -267,11 +188,7 @@ static __maybe_unused xtalk_coefs_t const asXtalkCoefsNumTest = {
 	{0, 0, 0, 0, 0}
 };
 
-<<<<<<< HEAD
-static xtalk_coefs_t const asXtalkCoefsDenTest = {
-=======
 static __maybe_unused xtalk_coefs_t const asXtalkCoefsDenTest = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0xC000, 0x2000, 0x4000, 0, 0},
 	{0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0},
@@ -279,11 +196,7 @@ static __maybe_unused xtalk_coefs_t const asXtalkCoefsDenTest = {
 	{0, 0, 0, 0, 0}
 };
 
-<<<<<<< HEAD
-static xtalk_state_t const asXtalkOutStateTest = {
-=======
 static __maybe_unused xtalk_state_t const asXtalkOutStateTest = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x7FFF, 0x0004, 0xFFFC, 0},
 	{0xFE00, 0x0008, 0xFFF8, 0x4000},
 	{0x0200, 0x0010, 0xFFF0, 0xC000},
@@ -315,11 +228,7 @@ static xtalk_coefs_t const asDiamondCoefsLeftXt = {
 	{0, 0, 0, 0, 0}
 };
 
-<<<<<<< HEAD
-static xtalk_coefs_t const asDiamondCoefsRightXt = {
-=======
 static __maybe_unused xtalk_coefs_t const asDiamondCoefsRightXt = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x3B50, 0xFE08, 0xF959, 0x0060, 0},
 	{0x9FCB, 0xD8F1, 0x00A2, 0x003A, 0},
 	{0, 0, 0, 0, 0},

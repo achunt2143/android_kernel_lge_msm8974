@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Midi Sequencer interface routines.
  *
  *  Copyright (C) 1999 Steve Ratcliffe
  *  Copyright (c) 1999-2000 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "emux_voice.h"
@@ -39,16 +19,6 @@ static int snd_emux_unuse(void *private_data, struct snd_seq_port_subscribe *inf
 /*
  * MIDI emulation operators
  */
-<<<<<<< HEAD
-static struct snd_midi_op emux_ops = {
-	snd_emux_note_on,
-	snd_emux_note_off,
-	snd_emux_key_press,
-	snd_emux_terminate_note,
-	snd_emux_control,
-	snd_emux_nrpn,
-	snd_emux_sysex,
-=======
 static const struct snd_midi_op emux_ops = {
 	.note_on = snd_emux_note_on,
 	.note_off = snd_emux_note_off,
@@ -57,7 +27,6 @@ static const struct snd_midi_op emux_ops = {
 	.control = snd_emux_control,
 	.nrpn = snd_emux_nrpn,
 	.sysex = snd_emux_sysex,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -117,11 +86,7 @@ snd_emux_init_seq(struct snd_emux *emu, struct snd_card *card, int index)
 		sprintf(tmpname, "%s Port %d", emu->name, i);
 		p = snd_emux_create_port(emu, tmpname, MIDI_CHANNELS,
 					 0, &pinfo);
-<<<<<<< HEAD
-		if (p == NULL) {
-=======
 		if (!p) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR "can't create port\n");
 			return -ENOMEM;
 		}
@@ -166,15 +131,6 @@ snd_emux_create_port(struct snd_emux *emu, char *name,
 	int i, type, cap;
 
 	/* Allocate structures for this channel */
-<<<<<<< HEAD
-	if ((p = kzalloc(sizeof(*p), GFP_KERNEL)) == NULL) {
-		snd_printk(KERN_ERR "no memory\n");
-		return NULL;
-	}
-	p->chset.channels = kcalloc(max_channels, sizeof(struct snd_midi_channel), GFP_KERNEL);
-	if (p->chset.channels == NULL) {
-		snd_printk(KERN_ERR "no memory\n");
-=======
 	p = kzalloc(sizeof(*p), GFP_KERNEL);
 	if (!p)
 		return NULL;
@@ -182,7 +138,6 @@ snd_emux_create_port(struct snd_emux *emu, char *name,
 	p->chset.channels = kcalloc(max_channels, sizeof(*p->chset.channels),
 				    GFP_KERNEL);
 	if (!p->chset.channels) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(p);
 		return NULL;
 	}
@@ -402,13 +357,8 @@ int snd_emux_init_virmidi(struct snd_emux *emu, struct snd_card *card)
 	if (emu->midi_ports <= 0)
 		return 0;
 
-<<<<<<< HEAD
-	emu->vmidi = kcalloc(emu->midi_ports, sizeof(struct snd_rawmidi *), GFP_KERNEL);
-	if (emu->vmidi == NULL)
-=======
 	emu->vmidi = kcalloc(emu->midi_ports, sizeof(*emu->vmidi), GFP_KERNEL);
 	if (!emu->vmidi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	for (i = 0; i < emu->midi_ports; i++) {
@@ -440,11 +390,7 @@ int snd_emux_delete_virmidi(struct snd_emux *emu)
 {
 	int i;
 
-<<<<<<< HEAD
-	if (emu->vmidi == NULL)
-=======
 	if (!emu->vmidi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	for (i = 0; i < emu->midi_ports; i++) {

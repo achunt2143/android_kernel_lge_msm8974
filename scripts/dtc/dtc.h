@@ -1,33 +1,9 @@
-<<<<<<< HEAD
-#ifndef _DTC_H
-#define _DTC_H
-
-/*
- * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
- *                                                                   USA
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef DTC_H
 #define DTC_H
 
 /*
  * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdio.h>
@@ -40,10 +16,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <unistd.h>
-<<<<<<< HEAD
-=======
 #include <inttypes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <libfdt_env.h>
 #include <fdt.h>
@@ -51,33 +24,17 @@
 #include "util.h"
 
 #ifdef DEBUG
-<<<<<<< HEAD
-#define debug(fmt,args...)	printf(fmt, ##args)
-#else
-#define debug(fmt,args...)
-#endif
-
-
-=======
 #define debug(...)	printf(__VA_ARGS__)
 #else
 #define debug(...)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFAULT_FDT_VERSION	17
 
 /*
  * Command line options
  */
 extern int quiet;		/* Level of quietness */
-<<<<<<< HEAD
-extern int reservenum;		/* Number of memory reservation slots */
-extern int minsize;		/* Minimum blob size */
-extern int padsize;		/* Additional padding to blob */
-extern int phandle_format;	/* Use linux,phandle or phandle properties */
-extern int show_deleted_list;	/* show list of deleted node and property */
-=======
 extern unsigned int reservenum;	/* Number of memory reservation slots */
 extern int minsize;		/* Minimum blob size */
 extern int padsize;		/* Additional padding to blob */
@@ -87,35 +44,10 @@ extern int generate_symbols;	/* generate symbols for nodes with labels */
 extern int generate_fixups;	/* generate fixups */
 extern int auto_label_aliases;	/* auto generate labels -> aliases */
 extern int annotate;		/* annotate .dts with input source location */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PHANDLE_LEGACY	0x1
 #define PHANDLE_EPAPR	0x2
 #define PHANDLE_BOTH	0x3
-<<<<<<< HEAD
-#define PHANDLE_SPECIFIC	0x4
-#define PHANDLE_SPECIFIC2	0x5
-
-typedef uint32_t cell_t;
-
-
-#define streq(a, b)	(strcmp((a), (b)) == 0)
-#define strneq(a, b, n)	(strncmp((a), (b), (n)) == 0)
-
-#define ALIGN(x, a)	(((x) + (a) - 1) & ~((a) - 1))
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
-
-/* Data blobs */
-enum markertype {
-	REF_PHANDLE,
-	REF_PATH,
-	LABEL,
-};
-
-struct  marker {
-	enum markertype type;
-	int offset;
-=======
 
 typedef uint32_t cell_t;
 
@@ -195,27 +127,18 @@ extern const char *markername(enum markertype markertype);
 struct  marker {
 	enum markertype type;
 	unsigned int offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *ref;
 	struct marker *next;
 };
 
 struct data {
-<<<<<<< HEAD
-	int len;
-=======
 	unsigned int len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *val;
 	struct marker *markers;
 };
 
 
-<<<<<<< HEAD
-#define empty_data ((struct data){ /* all .members = 0 or NULL */ })
-=======
 #define empty_data ((struct data){ 0 /* all .members = 0 or NULL */ })
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define for_each_marker(m) \
 	for (; (m); (m) = (m)->next)
@@ -223,11 +146,6 @@ struct data {
 	for_each_marker(m) \
 		if ((m)->type == (t))
 
-<<<<<<< HEAD
-void data_free(struct data d);
-
-struct data data_grow_for(struct data d, int xlen);
-=======
 static inline struct marker *next_type_marker(struct marker *m)
 {
 	for_each_marker(m)
@@ -248,7 +166,6 @@ static inline size_t type_marker_length(struct marker *m)
 void data_free(struct data d);
 
 struct data data_grow_for(struct data d, unsigned int xlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct data data_copy_mem(const char *mem, int len);
 struct data data_copy_escape_string(const char *s, int len);
@@ -260,11 +177,7 @@ struct data data_insert_at_marker(struct data d, struct marker *m,
 struct data data_merge(struct data d1, struct data d2);
 struct data data_append_cell(struct data d, cell_t word);
 struct data data_append_integer(struct data d, uint64_t word, int bits);
-<<<<<<< HEAD
-struct data data_append_re(struct data d, const struct fdt_reserve_entry *re);
-=======
 struct data data_append_re(struct data d, uint64_t address, uint64_t size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct data data_append_addr(struct data d, uint64_t addr);
 struct data data_append_byte(struct data d, uint8_t byte);
 struct data data_append_zeroes(struct data d, int len);
@@ -272,11 +185,7 @@ struct data data_append_align(struct data d, int align);
 
 struct data data_add_marker(struct data d, enum markertype type, char *ref);
 
-<<<<<<< HEAD
-int data_is_one_string(struct data d);
-=======
 bool data_is_one_string(struct data d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* DT constraints */
 
@@ -285,44 +194,28 @@ bool data_is_one_string(struct data d);
 
 /* Live trees */
 struct label {
-<<<<<<< HEAD
-	int deleted;
-=======
 	bool deleted;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *label;
 	struct label *next;
 };
 
-<<<<<<< HEAD
-struct property {
-	int deleted;
-=======
 struct bus_type {
 	const char *name;
 };
 
 struct property {
 	bool deleted;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *name;
 	struct data val;
 
 	struct property *next;
 
 	struct label *labels;
-<<<<<<< HEAD
-};
-
-struct node {
-	int deleted;
-=======
 	struct srcpos *srcpos;
 };
 
 struct node {
 	bool deleted;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *name;
 	struct property *proplist;
 	struct node *children;
@@ -337,24 +230,10 @@ struct node {
 	int addr_cells, size_cells;
 
 	struct label *labels;
-<<<<<<< HEAD
-};
-
-enum deltype {
-	DEL_TYPE_PROP,
-	DEL_TYPE_NODE,
-};
-
-struct del_list {
-	char *name;
-	enum deltype type;
-	struct del_list *next;
-=======
 	const struct bus_type *bus;
 	struct srcpos *srcpos;
 
 	bool omit_if_unused, is_referenced;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define for_each_label_withdel(l0, l) \
@@ -378,35 +257,15 @@ struct del_list {
 	for_each_child_withdel(n, c) \
 		if (!(c)->deleted)
 
-<<<<<<< HEAD
-#define for_each_del_list(dl0, dl) \
-	for ((dl) = (dl0); (dl); (dl) = (dl)->next)
-
-void add_label(struct label **labels, char *label);
-void delete_labels(struct label **labels);
-
-void add_del_list_node(struct del_list **dlist, char *ditem);
-void add_del_list_property(struct del_list **dlist, char *ditem);
-
-struct property *build_property(char *name, struct data val);
-=======
 void add_label(struct label **labels, char *label);
 void delete_labels(struct label **labels);
 
 struct property *build_property(char *name, struct data val,
 				struct srcpos *srcpos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct property *build_property_delete(char *name);
 struct property *chain_property(struct property *first, struct property *list);
 struct property *reverse_properties(struct property *first);
 
-<<<<<<< HEAD
-struct node *build_node(struct property *proplist, struct node *children);
-struct node *build_node_delete(void);
-struct node *name_node(struct node *node, char *name);
-struct node *chain_node(struct node *first, struct node *list);
-struct node *merge_nodes(struct node *old_node, struct node *new_node);
-=======
 struct node *build_node(struct property *proplist, struct node *children,
 			struct srcpos *srcpos);
 struct node *build_node_delete(struct srcpos *srcpos);
@@ -416,7 +275,6 @@ struct node *reference_node(struct node *node);
 struct node *chain_node(struct node *first, struct node *list);
 struct node *merge_nodes(struct node *old_node, struct node *new_node);
 struct node *add_orphan_node(struct node *old_node, struct node *new_node, char *ref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void add_property(struct node *node, struct property *prop);
 void delete_property_by_name(struct node *node, char *name);
@@ -424,20 +282,14 @@ void delete_property(struct property *prop);
 void add_child(struct node *parent, struct node *child);
 void delete_node_by_name(struct node *parent, char *name);
 void delete_node(struct node *node);
-<<<<<<< HEAD
-=======
 void append_to_property(struct node *node,
 			char *name, const void *data, int len,
 			enum markertype type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const char *get_unitname(struct node *node);
 struct property *get_property(struct node *node, const char *propname);
 cell_t propval_cell(struct property *prop);
-<<<<<<< HEAD
-=======
 cell_t propval_cell_n(struct property *prop, unsigned int n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct property *get_property_by_label(struct node *tree, const char *label,
 				       struct node **node);
 struct marker *get_marker_label(struct node *tree, const char *label,
@@ -454,11 +306,7 @@ uint32_t guess_boot_cpuid(struct node *tree);
 /* Boot info (tree plus memreserve information */
 
 struct reserve_info {
-<<<<<<< HEAD
-	struct fdt_reserve_entry re;
-=======
 	uint64_t address, size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct reserve_info *next;
 
@@ -472,41 +320,6 @@ struct reserve_info *add_reserve_entry(struct reserve_info *list,
 				       struct reserve_info *new);
 
 
-<<<<<<< HEAD
-struct boot_info {
-	struct reserve_info *reservelist;
-	struct node *dt;		/* the device tree */
-	uint32_t boot_cpuid_phys;
-	struct del_list *deleted_list;
-};
-
-struct boot_info *build_boot_info(struct reserve_info *reservelist,
-				  struct node *tree, uint32_t boot_cpuid_phys);
-void sort_tree(struct boot_info *bi);
-
-/* Checks */
-
-void parse_checks_option(bool warn, bool error, const char *optarg);
-void process_checks(int force, struct boot_info *bi);
-
-/* Flattened trees */
-
-void dt_to_blob(FILE *f, struct boot_info *bi, int version);
-void dt_to_asm(FILE *f, struct boot_info *bi, int version);
-
-struct boot_info *dt_from_blob(const char *fname);
-
-/* Tree source */
-
-void dt_to_source(FILE *f, struct boot_info *bi);
-struct boot_info *dt_from_source(const char *f);
-
-/* FS trees */
-
-struct boot_info *dt_from_fs(const char *dirname);
-
-#endif /* _DTC_H */
-=======
 struct dt_info {
 	unsigned int dtsflags;
 	struct reserve_info *reservelist;
@@ -553,4 +366,3 @@ void dt_to_yaml(FILE *f, struct dt_info *dti);
 struct dt_info *dt_from_fs(const char *dirname);
 
 #endif /* DTC_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

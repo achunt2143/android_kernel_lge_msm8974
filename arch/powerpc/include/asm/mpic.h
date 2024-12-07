@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_MPIC_H
 #define _ASM_POWERPC_MPIC_H
 #ifdef __KERNEL__
@@ -38,13 +35,6 @@
 #define		MPIC_GREG_GCONF_BASE_MASK		0x000fffff
 #define		MPIC_GREG_GCONF_MCK			0x08000000
 #define MPIC_GREG_GLOBAL_CONF_1		0x00030
-<<<<<<< HEAD
-#define		MPIC_GREG_GLOBAL_CONF_1_SIE		0x08000000
-#define		MPIC_GREG_GLOBAL_CONF_1_CLK_RATIO_MASK	0x70000000
-#define		MPIC_GREG_GLOBAL_CONF_1_CLK_RATIO(r)	\
-			(((r) << 28) & MPIC_GREG_GLOBAL_CONF_1_CLK_RATIO_MASK)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MPIC_GREG_VENDOR_0		0x00040
 #define MPIC_GREG_VENDOR_1		0x00050
 #define MPIC_GREG_VENDOR_2		0x00060
@@ -70,10 +60,7 @@
  */
 #define MPIC_TIMER_BASE			0x01100
 #define MPIC_TIMER_STRIDE		0x40
-<<<<<<< HEAD
-=======
 #define MPIC_TIMER_GROUP_STRIDE		0x1000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MPIC_TIMER_CURRENT_CNT		0x00000
 #define MPIC_TIMER_BASE_CNT		0x00010
@@ -121,22 +108,16 @@
 #define 	MPIC_VECPRI_SENSE_MASK			0x00400000
 #define MPIC_IRQ_DESTINATION		0x00010
 
-<<<<<<< HEAD
-=======
 #define MPIC_FSL_BRR1			0x00000
 #define 	MPIC_FSL_BRR1_VER			0x0000ffff
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MPIC_MAX_IRQ_SOURCES	2048
 #define MPIC_MAX_CPUS		32
 #define MPIC_MAX_ISU		32
 
-<<<<<<< HEAD
-=======
 #define MPIC_MAX_ERR      32
 #define MPIC_FSL_ERR_INT  16
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Tsi108 implementation of MPIC has many differences from the original one
  */
@@ -289,10 +270,7 @@ struct mpic
 	struct irq_chip		hc_ipi;
 #endif
 	struct irq_chip		hc_tm;
-<<<<<<< HEAD
-=======
 	struct irq_chip		hc_err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char		*name;
 	/* Flags */
 	unsigned int		flags;
@@ -306,11 +284,8 @@ struct mpic
 	/* vector numbers used for internal sources (ipi/timers) */
 	unsigned int		ipi_vecs[4];
 	unsigned int		timer_vecs[8];
-<<<<<<< HEAD
-=======
 	/* vector numbers used for FSL MPIC error interrupts */
 	unsigned int		err_int_vecs[MPIC_MAX_ERR];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Spurious vector to program into unused sources */
 	unsigned int		spurious_vec;
@@ -328,21 +303,15 @@ struct mpic
 	phys_addr_t paddr;
 
 	/* The various ioremap'ed bases */
-<<<<<<< HEAD
-=======
 	struct mpic_reg_bank	thiscpuregs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mpic_reg_bank	gregs;
 	struct mpic_reg_bank	tmregs;
 	struct mpic_reg_bank	cpuregs[MPIC_MAX_CPUS];
 	struct mpic_reg_bank	isus[MPIC_MAX_ISU];
 
-<<<<<<< HEAD
-=======
 	/* ioremap'ed base for error interrupt registers */
 	u32 __iomem	*err_regs;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Protected sources */
 	unsigned long		*protected;
 
@@ -367,11 +336,8 @@ struct mpic
 #endif
 };
 
-<<<<<<< HEAD
-=======
 extern const struct bus_type mpic_subsys;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MPIC flags (passed to mpic_alloc)
  *
@@ -412,14 +378,11 @@ extern const struct bus_type mpic_subsys;
 #define MPIC_NO_RESET			0x00004000
 /* Freescale MPIC (compatible includes "fsl,mpic") */
 #define MPIC_FSL			0x00008000
-<<<<<<< HEAD
-=======
 /* Freescale MPIC supports EIMR (error interrupt mask register).
  * This flag is set for MPIC version >= 4.1 (version determined
  * from the BRR1 register).
 */
 #define MPIC_FSL_HAS_EIMR		0x00010000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* MPIC HW modification ID */
 #define MPIC_REGSET_MASK		0xf0000000
@@ -429,8 +392,6 @@ extern const struct bus_type mpic_subsys;
 #define	MPIC_REGSET_STANDARD		MPIC_REGSET(0)	/* Original MPIC */
 #define	MPIC_REGSET_TSI108		MPIC_REGSET(1)	/* Tsi108/109 PIC */
 
-<<<<<<< HEAD
-=======
 /* Get the version of primary MPIC */
 #ifdef CONFIG_MPIC
 extern u32 fsl_mpic_primary_get_version(void);
@@ -441,7 +402,6 @@ static inline u32 fsl_mpic_primary_get_version(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Allocate the controller structure and setup the linux irq descs
  * for the range if interrupts passed in. No HW initialization is
  * actually performed.
@@ -512,11 +472,7 @@ extern int mpic_cpu_get_priority(void);
 extern void mpic_cpu_set_priority(int prio);
 
 /* Request IPIs on primary mpic */
-<<<<<<< HEAD
-extern void mpic_request_ipis(void);
-=======
 void __init mpic_request_ipis(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Send a message (IPI) to a given target (cpu number or MSG_*) */
 void smp_mpic_message_pass(int target, int msg);
@@ -537,14 +493,5 @@ extern unsigned int mpic_get_coreint_irq(void);
 /* Fetch Machine Check interrupt from primary mpic */
 extern unsigned int mpic_get_mcirq(void);
 
-<<<<<<< HEAD
-/* Set the EPIC clock ratio */
-void mpic_set_clk_ratio(struct mpic *mpic, u32 clock_ratio);
-
-/* Enable/Disable EPIC serial interrupt mode */
-void mpic_set_serial_int(struct mpic *mpic, int enable);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KERNEL__ */
 #endif	/* _ASM_POWERPC_MPIC_H */

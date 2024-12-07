@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* cpudata.h: Per-cpu parameters.
  *
  * Copyright (C) 2004 Keith M Wesolowski (wesolows@foobazco.org)
@@ -18,10 +15,6 @@
 typedef struct {
 	unsigned long udelay_val;
 	unsigned long clock_tick;
-<<<<<<< HEAD
-	unsigned int multiplier;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int counter;
 #ifdef CONFIG_SMP
 	unsigned int irq_resched_count;
@@ -34,10 +27,6 @@ typedef struct {
 
 DECLARE_PER_CPU(cpuinfo_sparc, __cpu_data);
 #define cpu_data(__cpu) per_cpu(__cpu_data, (__cpu))
-<<<<<<< HEAD
-#define local_cpu_data() __get_cpu_var(__cpu_data)
-=======
 #define local_cpu_data() (*this_cpu_ptr(&__cpu_data))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _SPARC_CPUDATA_H */

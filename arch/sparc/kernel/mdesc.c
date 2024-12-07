@@ -1,45 +1,27 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* mdesc.c: Sun4V machine description handling.
  *
  * Copyright (C) 2007, 2008 David S. Miller <davem@davemloft.net>
  */
 #include <linux/kernel.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/memblock.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/log2.h>
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/mm.h>
 #include <linux/miscdevice.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-#include <linux/export.h>
-=======
 #include <linux/memblock.h>
 #include <linux/export.h>
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/cpudata.h>
 #include <asm/hypervisor.h>
 #include <asm/mdesc.h>
 #include <asm/prom.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/oplib.h>
-#include <asm/smp.h>
-=======
 #include <linux/uaccess.h>
 #include <asm/oplib.h>
 #include <asm/smp.h>
 #include <asm/adi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Unlike the OBP device tree, the machine description is a full-on
  * DAG.  An arbitrary number of ARCs are possible from one
@@ -57,10 +39,7 @@ struct mdesc_hdr {
 	u32	node_sz; /* node block size */
 	u32	name_sz; /* name block size */
 	u32	data_sz; /* data block size */
-<<<<<<< HEAD
-=======
 	char	data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((aligned(16)));
 
 struct mdesc_elem {
@@ -94,17 +73,11 @@ struct mdesc_handle {
 	struct list_head	list;
 	struct mdesc_mem_ops	*mops;
 	void			*self_base;
-<<<<<<< HEAD
-	atomic_t		refcnt;
-=======
 	refcount_t		refcnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		handle_size;
 	struct mdesc_hdr	mdesc;
 };
 
-<<<<<<< HEAD
-=======
 typedef int (*mdesc_node_info_get_f)(struct mdesc_handle *, u64,
 				     union md_node_info *);
 typedef void (*mdesc_node_info_rel_f)(union md_node_info *);
@@ -173,7 +146,6 @@ static void mdesc_get_node_ops(const char *node_name,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mdesc_handle_init(struct mdesc_handle *hp,
 			      unsigned int handle_size,
 			      void *base)
@@ -183,11 +155,7 @@ static void mdesc_handle_init(struct mdesc_handle *hp,
 	memset(hp, 0, handle_size);
 	INIT_LIST_HEAD(&hp->list);
 	hp->self_base = base;
-<<<<<<< HEAD
-	atomic_set(&hp->refcnt, 1);
-=======
 	refcount_set(&hp->refcnt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hp->handle_size = handle_size;
 }
 
@@ -202,11 +170,7 @@ static struct mdesc_handle * __init mdesc_memblock_alloc(unsigned int mdesc_size
 		       mdesc_size);
 	alloc_size = PAGE_ALIGN(handle_size);
 
-<<<<<<< HEAD
-	paddr = memblock_alloc(alloc_size, PAGE_SIZE);
-=======
 	paddr = memblock_phys_alloc(alloc_size, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hp = NULL;
 	if (paddr) {
@@ -221,20 +185,12 @@ static void __init mdesc_memblock_free(struct mdesc_handle *hp)
 	unsigned int alloc_size;
 	unsigned long start;
 
-<<<<<<< HEAD
-	BUG_ON(atomic_read(&hp->refcnt) != 0);
-=======
 	BUG_ON(refcount_read(&hp->refcnt) != 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(!list_empty(&hp->list));
 
 	alloc_size = PAGE_ALIGN(hp->handle_size);
 	start = __pa(hp);
-<<<<<<< HEAD
-	free_bootmem_late(start, alloc_size);
-=======
 	memblock_free_late(start, alloc_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct mdesc_mem_ops memblock_mdesc_ops = {
@@ -245,33 +201,13 @@ static struct mdesc_mem_ops memblock_mdesc_ops = {
 static struct mdesc_handle *mdesc_kmalloc(unsigned int mdesc_size)
 {
 	unsigned int handle_size;
-<<<<<<< HEAD
-=======
 	struct mdesc_handle *hp;
 	unsigned long addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *base;
 
 	handle_size = (sizeof(struct mdesc_handle) -
 		       sizeof(struct mdesc_hdr) +
 		       mdesc_size);
-<<<<<<< HEAD
-
-	base = kmalloc(handle_size + 15, GFP_KERNEL | __GFP_NOFAIL);
-	if (base) {
-		struct mdesc_handle *hp;
-		unsigned long addr;
-
-		addr = (unsigned long)base;
-		addr = (addr + 15UL) & ~15UL;
-		hp = (struct mdesc_handle *) addr;
-
-		mdesc_handle_init(hp, handle_size, base);
-		return hp;
-	}
-
-	return NULL;
-=======
 	base = kmalloc(handle_size + 15, GFP_KERNEL | __GFP_RETRY_MAYFAIL);
 	if (!base)
 		return NULL;
@@ -283,16 +219,11 @@ static struct mdesc_handle *mdesc_kmalloc(unsigned int mdesc_size)
 	mdesc_handle_init(hp, handle_size, base);
 
 	return hp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mdesc_kfree(struct mdesc_handle *hp)
 {
-<<<<<<< HEAD
-	BUG_ON(atomic_read(&hp->refcnt) != 0);
-=======
 	BUG_ON(refcount_read(&hp->refcnt) != 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(!list_empty(&hp->list));
 
 	kfree(hp->self_base);
@@ -331,11 +262,7 @@ struct mdesc_handle *mdesc_grab(void)
 	spin_lock_irqsave(&mdesc_lock, flags);
 	hp = cur_mdesc;
 	if (hp)
-<<<<<<< HEAD
-		atomic_inc(&hp->refcnt);
-=======
 		refcount_inc(&hp->refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&mdesc_lock, flags);
 
 	return hp;
@@ -347,11 +274,7 @@ void mdesc_release(struct mdesc_handle *hp)
 	unsigned long flags;
 
 	spin_lock_irqsave(&mdesc_lock, flags);
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&hp->refcnt)) {
-=======
 	if (refcount_dec_and_test(&hp->refcnt)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del_init(&hp->list);
 		hp->mops->free(hp);
 	}
@@ -364,11 +287,6 @@ static struct mdesc_notifier_client *client_list;
 
 void mdesc_register_notifier(struct mdesc_notifier_client *client)
 {
-<<<<<<< HEAD
-	u64 node;
-
-	mutex_lock(&mdesc_mutex);
-=======
 	bool supported = false;
 	u64 node;
 	int i;
@@ -389,16 +307,11 @@ void mdesc_register_notifier(struct mdesc_notifier_client *client)
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	client->next = client_list;
 	client_list = client;
 
 	mdesc_for_each_node_by_name(cur_mdesc, node, client->node_name)
-<<<<<<< HEAD
-		client->add(cur_mdesc, node);
-=======
 		client->add(cur_mdesc, node, client->node_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&mdesc_mutex);
 }
@@ -422,8 +335,6 @@ static const u64 *parent_cfg_handle(struct mdesc_handle *hp, u64 node)
 	return id;
 }
 
-<<<<<<< HEAD
-=======
 static int get_vdev_port_node_info(struct mdesc_handle *md, u64 node,
 				   union md_node_info *node_info)
 {
@@ -506,62 +417,10 @@ static bool ds_port_node_match(union md_node_info *a_node_info,
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Run 'func' on nodes which are in A but not in B.  */
 static void invoke_on_missing(const char *name,
 			      struct mdesc_handle *a,
 			      struct mdesc_handle *b,
-<<<<<<< HEAD
-			      void (*func)(struct mdesc_handle *, u64))
-{
-	u64 node;
-
-	mdesc_for_each_node_by_name(a, node, name) {
-		int found = 0, is_vdc_port = 0;
-		const char *name_prop;
-		const u64 *id;
-		u64 fnode;
-
-		name_prop = mdesc_get_property(a, node, "name", NULL);
-		if (name_prop && !strcmp(name_prop, "vdc-port")) {
-			is_vdc_port = 1;
-			id = parent_cfg_handle(a, node);
-		} else
-			id = mdesc_get_property(a, node, "id", NULL);
-
-		if (!id) {
-			printk(KERN_ERR "MD: Cannot find ID for %s node.\n",
-			       (name_prop ? name_prop : name));
-			continue;
-		}
-
-		mdesc_for_each_node_by_name(b, fnode, name) {
-			const u64 *fid;
-
-			if (is_vdc_port) {
-				name_prop = mdesc_get_property(b, fnode,
-							       "name", NULL);
-				if (!name_prop ||
-				    strcmp(name_prop, "vdc-port"))
-					continue;
-				fid = parent_cfg_handle(b, fnode);
-				if (!fid) {
-					printk(KERN_ERR "MD: Cannot find ID "
-					       "for vdc-port node.\n");
-					continue;
-				}
-			} else
-				fid = mdesc_get_property(b, fnode,
-							 "id", NULL);
-
-			if (*id == *fid) {
-				found = 1;
-				break;
-			}
-		}
-		if (!found)
-			func(a, node);
-=======
 			      void (*func)(struct mdesc_handle *, u64,
 					   const char *node_name))
 {
@@ -617,7 +476,6 @@ static void invoke_on_missing(const char *name,
 
 		if (!found)
 			func(a, a_node, name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -660,11 +518,7 @@ void mdesc_update(void)
 	if (status != HV_EOK || real_len > len) {
 		printk(KERN_ERR "MD: mdesc reread fails with %lu\n",
 		       status);
-<<<<<<< HEAD
-		atomic_dec(&hp->refcnt);
-=======
 		refcount_dec(&hp->refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdesc_free(hp);
 		goto out;
 	}
@@ -677,11 +531,7 @@ void mdesc_update(void)
 	mdesc_notify_clients(orig_hp, hp);
 
 	spin_lock_irqsave(&mdesc_lock, flags);
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&orig_hp->refcnt))
-=======
 	if (refcount_dec_and_test(&orig_hp->refcnt))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdesc_free(orig_hp);
 	else
 		list_add(&orig_hp->list, &mdesc_zombie_list);
@@ -691,11 +541,6 @@ out:
 	mutex_unlock(&mdesc_mutex);
 }
 
-<<<<<<< HEAD
-static struct mdesc_elem *node_block(struct mdesc_hdr *mdesc)
-{
-	return (struct mdesc_elem *) (mdesc + 1);
-=======
 u64 mdesc_get_node(struct mdesc_handle *hp, const char *node_name,
 		   union md_node_info *node_info)
 {
@@ -769,7 +614,6 @@ EXPORT_SYMBOL(mdesc_get_node_info);
 static struct mdesc_elem *node_block(struct mdesc_hdr *mdesc)
 {
 	return (struct mdesc_elem *) mdesc->data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *name_block(struct mdesc_hdr *mdesc)
@@ -971,13 +815,7 @@ static void __init report_platform_properties(void)
 	mdesc_release(hp);
 }
 
-<<<<<<< HEAD
-static void __cpuinit fill_in_one_cache(cpuinfo_sparc *c,
-					struct mdesc_handle *hp,
-					u64 mp)
-=======
 static void fill_in_one_cache(cpuinfo_sparc *c, struct mdesc_handle *hp, u64 mp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const u64 *level = mdesc_get_property(hp, mp, "level", NULL);
 	const u64 *size = mdesc_get_property(hp, mp, "size", NULL);
@@ -1020,42 +858,6 @@ static void fill_in_one_cache(cpuinfo_sparc *c, struct mdesc_handle *hp, u64 mp)
 	}
 }
 
-<<<<<<< HEAD
-static void __cpuinit mark_core_ids(struct mdesc_handle *hp, u64 mp, int core_id)
-{
-	u64 a;
-
-	mdesc_for_each_arc(a, hp, mp, MDESC_ARC_TYPE_BACK) {
-		u64 t = mdesc_arc_target(hp, a);
-		const char *name;
-		const u64 *id;
-
-		name = mdesc_node_name(hp, t);
-		if (!strcmp(name, "cpu")) {
-			id = mdesc_get_property(hp, t, "id", NULL);
-			if (*id < NR_CPUS)
-				cpu_data(*id).core_id = core_id;
-		} else {
-			u64 j;
-
-			mdesc_for_each_arc(j, hp, t, MDESC_ARC_TYPE_BACK) {
-				u64 n = mdesc_arc_target(hp, j);
-				const char *n_name;
-
-				n_name = mdesc_node_name(hp, n);
-				if (strcmp(n_name, "cpu"))
-					continue;
-
-				id = mdesc_get_property(hp, n, "id", NULL);
-				if (*id < NR_CPUS)
-					cpu_data(*id).core_id = core_id;
-			}
-		}
-	}
-}
-
-static void __cpuinit set_core_ids(struct mdesc_handle *hp)
-=======
 static void find_back_node_value(struct mdesc_handle *hp, u64 node,
 				 char *srch_val,
 				 void (*func)(struct mdesc_handle *, u64, int),
@@ -1117,19 +919,15 @@ static void mark_max_cache_ids(struct mdesc_handle *hp, u64 mp,
 }
 
 static void set_core_ids(struct mdesc_handle *hp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int idx;
 	u64 mp;
 
 	idx = 1;
-<<<<<<< HEAD
-=======
 
 	/* Identify unique cores by looking for cpus backpointed to by
 	 * level 1 instruction caches.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mdesc_for_each_node_by_name(hp, mp, "cache") {
 		const u64 *level;
 		const char *type;
@@ -1144,17 +942,10 @@ static void set_core_ids(struct mdesc_handle *hp)
 			continue;
 
 		mark_core_ids(hp, mp, idx);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		idx++;
 	}
 }
 
-<<<<<<< HEAD
-static void __cpuinit mark_proc_ids(struct mdesc_handle *hp, u64 mp, int proc_id)
-=======
 static int set_max_cache_ids_by_cache(struct mdesc_handle *hp, int level)
 {
 	u64 mp;
@@ -1220,7 +1011,6 @@ static void set_sock_ids(struct mdesc_handle *hp)
 }
 
 static void mark_proc_ids(struct mdesc_handle *hp, u64 mp, int proc_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 a;
 
@@ -1239,11 +1029,7 @@ static void mark_proc_ids(struct mdesc_handle *hp, u64 mp, int proc_id)
 	}
 }
 
-<<<<<<< HEAD
-static void __cpuinit __set_proc_ids(struct mdesc_handle *hp, const char *exec_unit_name)
-=======
 static void __set_proc_ids(struct mdesc_handle *hp, const char *exec_unit_name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int idx;
 	u64 mp;
@@ -1259,31 +1045,18 @@ static void __set_proc_ids(struct mdesc_handle *hp, const char *exec_unit_name)
 			continue;
 
 		mark_proc_ids(hp, mp, idx);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		idx++;
 	}
 }
 
-<<<<<<< HEAD
-static void __cpuinit set_proc_ids(struct mdesc_handle *hp)
-=======
 static void set_proc_ids(struct mdesc_handle *hp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__set_proc_ids(hp, "exec_unit");
 	__set_proc_ids(hp, "exec-unit");
 }
 
-<<<<<<< HEAD
-static void __cpuinit get_one_mondo_bits(const u64 *p, unsigned int *mask,
-					 unsigned long def, unsigned long max)
-=======
 static void get_one_mondo_bits(const u64 *p, unsigned int *mask,
 			       unsigned long def, unsigned long max)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 val;
 
@@ -1304,13 +1077,8 @@ use_default:
 	*mask = ((1U << def) * 64U) - 1U;
 }
 
-<<<<<<< HEAD
-static void __cpuinit get_mondo_data(struct mdesc_handle *hp, u64 mp,
-				     struct trap_per_cpu *tb)
-=======
 static void get_mondo_data(struct mdesc_handle *hp, u64 mp,
 			   struct trap_per_cpu *tb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int printed;
 	const u64 *val;
@@ -1336,11 +1104,7 @@ static void get_mondo_data(struct mdesc_handle *hp, u64 mp,
 	}
 }
 
-<<<<<<< HEAD
-static void * __cpuinit mdesc_iterate_over_cpus(void *(*func)(struct mdesc_handle *, u64, int, void *), void *arg, cpumask_t *mask)
-=======
 static void *mdesc_iterate_over_cpus(void *(*func)(struct mdesc_handle *, u64, int, void *), void *arg, cpumask_t *mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mdesc_handle *hp = mdesc_grab();
 	void *ret = NULL;
@@ -1370,12 +1134,8 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void * __cpuinit record_one_cpu(struct mdesc_handle *hp, u64 mp, int cpuid, void *arg)
-=======
 static void *record_one_cpu(struct mdesc_handle *hp, u64 mp, int cpuid,
 			    void *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ncpus_probed++;
 #ifdef CONFIG_SMP
@@ -1384,11 +1144,7 @@ static void *record_one_cpu(struct mdesc_handle *hp, u64 mp, int cpuid,
 	return NULL;
 }
 
-<<<<<<< HEAD
-void __cpuinit mdesc_populate_present_mask(cpumask_t *mask)
-=======
 void mdesc_populate_present_mask(cpumask_t *mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (tlb_type != hypervisor)
 		return;
@@ -1397,9 +1153,6 @@ void mdesc_populate_present_mask(cpumask_t *mask)
 	mdesc_iterate_over_cpus(record_one_cpu, NULL, mask);
 }
 
-<<<<<<< HEAD
-static void * __cpuinit fill_in_one_cpu(struct mdesc_handle *hp, u64 mp, int cpuid, void *arg)
-=======
 static void * __init check_one_pgsz(struct mdesc_handle *hp, u64 mp, int cpuid, void *arg)
 {
 	const u64 *pgsz_prop = mdesc_get_property(hp, mp, "mmu-page-size-list", NULL);
@@ -1426,7 +1179,6 @@ void __init mdesc_get_page_sizes(cpumask_t *mask, unsigned long *pgsz_mask)
 
 static void *fill_in_one_cpu(struct mdesc_handle *hp, u64 mp, int cpuid,
 			     void *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const u64 *cfreq = mdesc_get_property(hp, mp, "clock-frequency", NULL);
 	struct trap_per_cpu *tb;
@@ -1475,44 +1227,23 @@ static void *fill_in_one_cpu(struct mdesc_handle *hp, u64 mp, int cpuid,
 	return NULL;
 }
 
-<<<<<<< HEAD
-void __cpuinit mdesc_fill_in_cpu_data(cpumask_t *mask)
-=======
 void mdesc_fill_in_cpu_data(cpumask_t *mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mdesc_handle *hp;
 
 	mdesc_iterate_over_cpus(fill_in_one_cpu, NULL, mask);
 
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-	sparc64_multi_core = 1;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hp = mdesc_grab();
 
 	set_core_ids(hp);
 	set_proc_ids(hp);
-<<<<<<< HEAD
-=======
 	set_sock_ids(hp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mdesc_release(hp);
 
 	smp_fill_in_sib_core_maps();
 }
 
-<<<<<<< HEAD
-static ssize_t mdesc_read(struct file *file, char __user *buf,
-			  size_t len, loff_t *offp)
-{
-	struct mdesc_handle *hp = mdesc_grab();
-	int err;
-=======
 /* mdesc_open() - Grab a reference to mdesc_handle when /dev/mdesc is
  * opened. Hold this reference until /dev/mdesc is closed to ensure
  * mdesc data structure is not released underneath us. Store the
@@ -1521,27 +1252,10 @@ static ssize_t mdesc_read(struct file *file, char __user *buf,
 static int mdesc_open(struct inode *inode, struct file *file)
 {
 	struct mdesc_handle *hp = mdesc_grab();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!hp)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	err = hp->handle_size;
-	if (len < hp->handle_size)
-		err = -EMSGSIZE;
-	else if (copy_to_user(buf, &hp->mdesc, hp->handle_size))
-		err = -EFAULT;
-	mdesc_release(hp);
-
-	return err;
-}
-
-static const struct file_operations mdesc_fops = {
-	.read	= mdesc_read,
-	.owner	= THIS_MODULE,
-	.llseek = noop_llseek,
-=======
 	file->private_data = hp;
 
 	return 0;
@@ -1593,7 +1307,6 @@ static const struct file_operations mdesc_fops = {
 	.llseek  = mdesc_llseek,
 	.release = mdesc_close,
 	.owner	 = THIS_MODULE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct miscdevice mdesc_misc = {
@@ -1635,9 +1348,6 @@ void __init sun4v_mdesc_init(void)
 
 	cur_mdesc = hp;
 
-<<<<<<< HEAD
-=======
 	mdesc_adi_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	report_platform_properties();
 }

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/strncpy.S
  * Contributed by Richard Henderson (rth@tamu.edu)
@@ -14,11 +11,7 @@
  * version has cropped that bit o' nastiness as well as assuming that
  * __stxncpy is in range of a branch.
  */
-<<<<<<< HEAD
-
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set noat
 	.set noreorder
 
@@ -87,7 +80,4 @@ $zerolen:
 	ret
 
 	.end	strncpy
-<<<<<<< HEAD
-=======
 	EXPORT_SYMBOL(strncpy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-/*
- * Speyside audio support
- *
- * Copyright 2011 Wolfson Microelectronics
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 //
 // Speyside audio support
 //
 // Copyright 2011 Wolfson Microelectronics
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>
@@ -33,11 +20,6 @@ static int speyside_set_bias_level(struct snd_soc_card *card,
 				   struct snd_soc_dapm_context *dapm,
 				   enum snd_soc_bias_level level)
 {
-<<<<<<< HEAD
-	struct snd_soc_dai *codec_dai = card->rtd[0].codec_dai;
-	int ret;
-
-=======
 	struct snd_soc_pcm_runtime *rtd;
 	struct snd_soc_dai *codec_dai;
 	int ret;
@@ -45,7 +27,6 @@ static int speyside_set_bias_level(struct snd_soc_card *card,
 	rtd = snd_soc_get_pcm_runtime(card, &card->dai_link[1]);
 	codec_dai = snd_soc_rtd_to_codec(rtd, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dapm->dev != codec_dai->dev)
 		return 0;
 
@@ -75,11 +56,6 @@ static int speyside_set_bias_level_post(struct snd_soc_card *card,
 					struct snd_soc_dapm_context *dapm,
 					enum snd_soc_bias_level level)
 {
-<<<<<<< HEAD
-	struct snd_soc_dai *codec_dai = card->rtd[0].codec_dai;
-	int ret;
-
-=======
 	struct snd_soc_pcm_runtime *rtd;
 	struct snd_soc_dai *codec_dai;
 	int ret;
@@ -87,7 +63,6 @@ static int speyside_set_bias_level_post(struct snd_soc_card *card,
 	rtd = snd_soc_get_pcm_runtime(card, &card->dai_link[1]);
 	codec_dai = snd_soc_rtd_to_codec(rtd, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dapm->dev != codec_dai->dev)
 		return 0;
 
@@ -120,36 +95,6 @@ static int speyside_set_bias_level_post(struct snd_soc_card *card,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int speyside_hw_params(struct snd_pcm_substream *substream,
-			      struct snd_pcm_hw_params *params)
-{
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
-	struct snd_soc_dai *codec_dai = rtd->codec_dai;
-	int ret;
-
-	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S
-					 | SND_SOC_DAIFMT_NB_NF
-					 | SND_SOC_DAIFMT_CBM_CFM);
-	if (ret < 0)
-		return ret;
-
-	ret = snd_soc_dai_set_fmt(cpu_dai, SND_SOC_DAIFMT_I2S
-					 | SND_SOC_DAIFMT_NB_NF
-					 | SND_SOC_DAIFMT_CBM_CFM);
-	if (ret < 0)
-		return ret;
-
-	return 0;
-}
-
-static struct snd_soc_ops speyside_ops = {
-	.hw_params = speyside_hw_params,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct snd_soc_jack speyside_headset;
 
 /* Headset jack detection DAPM pins */
@@ -166,34 +111,21 @@ static int speyside_jack_polarity;
 static int speyside_get_micbias(struct snd_soc_dapm_widget *source,
 				struct snd_soc_dapm_widget *sink)
 {
-<<<<<<< HEAD
-	if (speyside_jack_polarity && (strcmp(source->name, "MICB1") == 0))
-		return 1;
-	if (!speyside_jack_polarity && (strcmp(source->name, "MICB2") == 0))
-=======
 	if (speyside_jack_polarity && (snd_soc_dapm_widget_name_cmp(source, "MICB1") == 0))
 		return 1;
 	if (!speyside_jack_polarity && (snd_soc_dapm_widget_name_cmp(source, "MICB2") == 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void speyside_set_polarity(struct snd_soc_codec *codec,
-=======
 static void speyside_set_polarity(struct snd_soc_component *component,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  int polarity)
 {
 	speyside_jack_polarity = !polarity;
 	gpio_direction_output(WM8996_HPSEL_GPIO, speyside_jack_polarity);
 
 	/* Re-run DAPM to make sure we're using the correct mic bias */
-<<<<<<< HEAD
-	snd_soc_dapm_sync(&codec->dapm);
-=======
 	snd_soc_dapm_sync(snd_soc_component_get_dapm(component));
 }
 
@@ -207,18 +139,12 @@ static int speyside_wm0010_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int speyside_wm8996_init(struct snd_soc_pcm_runtime *rtd)
 {
-<<<<<<< HEAD
-	struct snd_soc_dai *dai = rtd->codec_dai;
-	struct snd_soc_codec *codec = rtd->codec;
-=======
 	struct snd_soc_dai *dai = snd_soc_rtd_to_codec(rtd, 0);
 	struct snd_soc_component *component = dai->component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = snd_soc_dai_set_sysclk(dai, WM8996_SYSCLK_MCLK2, 32768, 0);
@@ -230,22 +156,6 @@ static int speyside_wm8996_init(struct snd_soc_pcm_runtime *rtd)
 		pr_err("Failed to request HP_SEL GPIO: %d\n", ret);
 	gpio_direction_output(WM8996_HPSEL_GPIO, speyside_jack_polarity);
 
-<<<<<<< HEAD
-	ret = snd_soc_jack_new(codec, "Headset",
-			       SND_JACK_LINEOUT | SND_JACK_HEADSET |
-			       SND_JACK_BTN_0,
-			       &speyside_headset);
-	if (ret)
-		return ret;
-
-	ret = snd_soc_jack_add_pins(&speyside_headset,
-				    ARRAY_SIZE(speyside_headset_pins),
-				    speyside_headset_pins);
-	if (ret)
-		return ret;
-
-	wm8996_detect(codec, &speyside_headset, speyside_set_polarity);
-=======
 	ret = snd_soc_card_jack_new_pins(rtd->card, "Headset",
 					 SND_JACK_LINEOUT | SND_JACK_HEADSET |
 					 SND_JACK_BTN_0,
@@ -256,7 +166,6 @@ static int speyside_wm8996_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 
 	wm8996_detect(component, &speyside_headset, speyside_set_polarity);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -274,18 +183,6 @@ static int speyside_late_probe(struct snd_soc_card *card)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_soc_dai_link speyside_dai[] = {
-	{
-		.name = "CPU",
-		.stream_name = "CPU",
-		.cpu_dai_name = "samsung-i2s.0",
-		.codec_dai_name = "wm8996-aif1",
-		.platform_name = "samsung-audio",
-		.codec_name = "wm8996.1-001a",
-		.init = speyside_wm8996_init,
-		.ops = &speyside_ops,
-=======
 static const struct snd_soc_pcm_stream dsp_codec_params = {
 	.formats = SNDRV_PCM_FMTBIT_S32_LE,
 	.rate_min = 48000,
@@ -326,25 +223,10 @@ static struct snd_soc_dai_link speyside_dai[] = {
 		.num_c2c_params = 1,
 		.ignore_suspend = 1,
 		SND_SOC_DAILINK_REG(dsp_codec),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name = "Baseband",
 		.stream_name = "Baseband",
-<<<<<<< HEAD
-		.cpu_dai_name = "wm8996-aif2",
-		.codec_dai_name = "wm1250-ev1",
-		.codec_name = "wm1250-ev1.1-0027",
-		.ops = &speyside_ops,
-		.ignore_suspend = 1,
-	},
-};
-
-static int speyside_wm9081_init(struct snd_soc_dapm_context *dapm)
-{
-	/* At any time the WM9081 is active it will have this clock */
-	return snd_soc_codec_set_sysclk(dapm->codec, WM9081_SYSCLK_MCLK, 0,
-=======
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF
 				| SND_SOC_DAIFMT_CBM_CFM,
 		.ignore_suspend = 1,
@@ -356,29 +238,19 @@ static int speyside_wm9081_init(struct snd_soc_component *component)
 {
 	/* At any time the WM9081 is active it will have this clock */
 	return snd_soc_component_set_sysclk(component, WM9081_SYSCLK_MCLK, 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					MCLK_AUDIO_RATE, 0);
 }
 
 static struct snd_soc_aux_dev speyside_aux_dev[] = {
 	{
-<<<<<<< HEAD
-		.name = "wm9081",
-		.codec_name = "wm9081.1-006c",
-=======
 		.dlc = COMP_AUX("wm9081.1-006c"),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.init = speyside_wm9081_init,
 	},
 };
 
 static struct snd_soc_codec_conf speyside_codec_conf[] = {
 	{
-<<<<<<< HEAD
-		.dev_name = "wm9081.1-006c",
-=======
 		.dlc = COMP_CODEC_CONF("wm9081.1-006c"),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name_prefix = "Sub",
 	},
 };
@@ -392,11 +264,7 @@ static const struct snd_kcontrol_new controls[] = {
 	SOC_DAPM_PIN_SWITCH("Headphone"),
 };
 
-<<<<<<< HEAD
-static struct snd_soc_dapm_widget widgets[] = {
-=======
 static const struct snd_soc_dapm_widget widgets[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SND_SOC_DAPM_HP("Headphone", NULL),
 	SND_SOC_DAPM_MIC("Headset Mic", NULL),
 
@@ -406,11 +274,7 @@ static const struct snd_soc_dapm_widget widgets[] = {
 	SND_SOC_DAPM_MIC("Main DMIC", NULL),
 };
 
-<<<<<<< HEAD
-static struct snd_soc_dapm_route audio_paths[] = {
-=======
 static const struct snd_soc_dapm_route audio_paths[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "IN1RN", NULL, "MICB1" },
 	{ "IN1RP", NULL, "MICB1" },
 	{ "IN1RN", NULL, "MICB2" },
@@ -461,58 +325,26 @@ static struct snd_soc_card speyside = {
 	.late_probe = speyside_late_probe,
 };
 
-<<<<<<< HEAD
-static __devinit int speyside_probe(struct platform_device *pdev)
-=======
 static int speyside_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_soc_card *card = &speyside;
 	int ret;
 
 	card->dev = &pdev->dev;
 
-<<<<<<< HEAD
-	ret = snd_soc_register_card(card);
-	if (ret) {
-		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
-			ret);
-		return ret;
-	}
-
-	return 0;
-}
-
-static int __devexit speyside_remove(struct platform_device *pdev)
-{
-	struct snd_soc_card *card = platform_get_drvdata(pdev);
-
-	snd_soc_unregister_card(card);
-
-	return 0;
-=======
 	ret = devm_snd_soc_register_card(&pdev->dev, card);
 	if (ret)
 		dev_err_probe(&pdev->dev, ret, "snd_soc_register_card() failed\n");
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver speyside_driver = {
 	.driver = {
 		.name = "speyside",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
 		.pm = &snd_soc_pm_ops,
 	},
 	.probe = speyside_probe,
-	.remove = __devexit_p(speyside_remove),
-=======
-		.pm = &snd_soc_pm_ops,
-	},
-	.probe = speyside_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(speyside_driver);

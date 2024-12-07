@@ -1,41 +1,20 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _NET_IP6_TUNNEL_H
 #define _NET_IP6_TUNNEL_H
 
 #include <linux/ipv6.h>
 #include <linux/netdevice.h>
-<<<<<<< HEAD
-#include <linux/ip6_tunnel.h>
-=======
 #include <linux/if_tunnel.h>
 #include <linux/ip6_tunnel.h>
 #include <net/ip_tunnels.h>
 #include <net/dst_cache.h>
 
 #define IP6TUNNEL_ERR_TIMEO (30*HZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* capable of sending packets */
 #define IP6_TNL_F_CAP_XMIT 0x10000
 /* capable of receiving packets */
 #define IP6_TNL_F_CAP_RCV 0x20000
-<<<<<<< HEAD
-
-/* IPv6 tunnel */
-
-struct ip6_tnl {
-	struct ip6_tnl __rcu *next;	/* next tunnel in list */
-	struct net_device *dev;	/* virtual device associated with tunnel */
-	struct ip6_tnl_parm parms;	/* tunnel configuration parameters */
-	struct flowi fl;	/* flowi template for xmit */
-	struct dst_entry *dst_cache;    /* cached dst */
-	u32 dst_cookie;
-};
-
-=======
 /* determine capability on a per-packet basis */
 #define IP6_TNL_F_CAP_PER_PACKET 0x40000
 
@@ -148,7 +127,6 @@ static inline int ip6_tnl_encap(struct sk_buff *skb, struct ip6_tnl *t,
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Tunnel encapsulation limit destination sub-option */
 
 struct ipv6_tlv_tnl_enc_lim {
@@ -157,8 +135,6 @@ struct ipv6_tlv_tnl_enc_lim {
 	__u8 encap_limit;	/* tunnel encapsulation limit   */
 } __packed;
 
-<<<<<<< HEAD
-=======
 int ip6_tnl_rcv_ctl(struct ip6_tnl *t, const struct in6_addr *laddr,
 		const struct in6_addr *raddr);
 int ip6_tnl_rcv(struct ip6_tnl *tunnel, struct sk_buff *skb,
@@ -191,5 +167,4 @@ static inline void ip6tunnel_xmit(struct sock *sk, struct sk_buff *skb,
 	}
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

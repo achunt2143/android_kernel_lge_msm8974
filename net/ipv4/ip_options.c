@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -19,11 +16,7 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unaligned.h>
 #include <linux/skbuff.h>
 #include <linux/ip.h>
@@ -35,10 +28,7 @@
 #include <net/icmp.h>
 #include <net/route.h>
 #include <net/cipso_ipv4.h>
-<<<<<<< HEAD
-=======
 #include <net/ip_fib.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Write options to IP header, record destination address to
@@ -52,46 +42,11 @@
  */
 
 void ip_options_build(struct sk_buff *skb, struct ip_options *opt,
-<<<<<<< HEAD
-		      __be32 daddr, struct rtable *rt, int is_frag)
-=======
 		      __be32 daddr, struct rtable *rt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char *iph = skb_network_header(skb);
 
 	memcpy(&(IPCB(skb)->opt), opt, sizeof(struct ip_options));
-<<<<<<< HEAD
-	memcpy(iph+sizeof(struct iphdr), opt->__data, opt->optlen);
-	opt = &(IPCB(skb)->opt);
-
-	if (opt->srr)
-		memcpy(iph+opt->srr+iph[opt->srr+1]-4, &daddr, 4);
-
-	if (!is_frag) {
-		if (opt->rr_needaddr)
-			ip_rt_get_source(iph+opt->rr+iph[opt->rr+2]-5, skb, rt);
-		if (opt->ts_needaddr)
-			ip_rt_get_source(iph+opt->ts+iph[opt->ts+2]-9, skb, rt);
-		if (opt->ts_needtime) {
-			struct timespec tv;
-			__be32 midtime;
-			getnstimeofday(&tv);
-			midtime = htonl((tv.tv_sec % 86400) * MSEC_PER_SEC + tv.tv_nsec / NSEC_PER_MSEC);
-			memcpy(iph+opt->ts+iph[opt->ts+2]-5, &midtime, 4);
-		}
-		return;
-	}
-	if (opt->rr) {
-		memset(iph+opt->rr, IPOPT_NOP, iph[opt->rr+1]);
-		opt->rr = 0;
-		opt->rr_needaddr = 0;
-	}
-	if (opt->ts) {
-		memset(iph+opt->ts, IPOPT_NOP, iph[opt->ts+1]);
-		opt->ts = 0;
-		opt->ts_needaddr = opt->ts_needtime = 0;
-=======
 	memcpy(iph + sizeof(struct iphdr), opt->__data, opt->optlen);
 	opt = &(IPCB(skb)->opt);
 
@@ -107,7 +62,6 @@ void ip_options_build(struct sk_buff *skb, struct ip_options *opt,
 
 		midtime = inet_current_timestamp();
 		memcpy(iph + opt->ts + iph[opt->ts + 2] - 5, &midtime, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -120,20 +74,6 @@ void ip_options_build(struct sk_buff *skb, struct ip_options *opt,
  * NOTE: dopt cannot point to skb.
  */
 
-<<<<<<< HEAD
-int ip_options_echo(struct ip_options *dopt, struct sk_buff *skb)
-{
-	const struct ip_options *sopt;
-	unsigned char *sptr, *dptr;
-	int soffset, doffset;
-	int	optlen;
-	__be32	daddr;
-
-	memset(dopt, 0, sizeof(struct ip_options));
-
-	sopt = &(IPCB(skb)->opt);
-
-=======
 int __ip_options_echo(struct net *net, struct ip_options *dopt,
 		      struct sk_buff *skb, const struct ip_options *sopt)
 {
@@ -143,18 +83,12 @@ int __ip_options_echo(struct net *net, struct ip_options *dopt,
 
 	memset(dopt, 0, sizeof(struct ip_options));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sopt->optlen == 0)
 		return 0;
 
 	sptr = skb_network_header(skb);
 	dptr = dopt->__data;
 
-<<<<<<< HEAD
-	daddr = skb_rtable(skb)->rt_spec_dst;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sopt->rr) {
 		optlen  = sptr[sopt->rr+1];
 		soffset = sptr[sopt->rr+2];
@@ -194,11 +128,7 @@ int __ip_options_echo(struct net *net, struct ip_options *dopt,
 						__be32 addr;
 
 						memcpy(&addr, dptr+soffset-1, 4);
-<<<<<<< HEAD
-						if (inet_addr_type(dev_net(skb_dst(skb)->dev), addr) != RTN_UNICAST) {
-=======
 						if (inet_addr_type(net, addr) != RTN_UNICAST) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							dopt->ts_needtime = 1;
 							soffset += 8;
 						}
@@ -222,11 +152,7 @@ int __ip_options_echo(struct net *net, struct ip_options *dopt,
 		soffset -= 4;
 		if (soffset > 3) {
 			memcpy(&faddr, &start[soffset-1], 4);
-<<<<<<< HEAD
-			for (soffset-=4, doffset=4; soffset > 3; soffset-=4, doffset+=4)
-=======
 			for (soffset -= 4, doffset = 4; soffset > 3; soffset -= 4, doffset += 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				memcpy(&dptr[doffset-1], &start[soffset-1], 4);
 			/*
 			 * RFC1812 requires to fix illegal source routes.
@@ -236,10 +162,6 @@ int __ip_options_echo(struct net *net, struct ip_options *dopt,
 				doffset -= 4;
 		}
 		if (doffset > 3) {
-<<<<<<< HEAD
-			memcpy(&start[doffset-1], &daddr, 4);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dopt->faddr = faddr;
 			dptr[0] = start[0];
 			dptr[1] = doffset+3;
@@ -270,17 +192,10 @@ int __ip_options_echo(struct net *net, struct ip_options *dopt,
  *	Simple and stupid 8), but the most efficient way.
  */
 
-<<<<<<< HEAD
-void ip_options_fragment(struct sk_buff * skb)
-{
-	unsigned char *optptr = skb_network_header(skb) + sizeof(struct iphdr);
-	struct ip_options * opt = &(IPCB(skb)->opt);
-=======
 void ip_options_fragment(struct sk_buff *skb)
 {
 	unsigned char *optptr = skb_network_header(skb) + sizeof(struct iphdr);
 	struct ip_options *opt = &(IPCB(skb)->opt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int  l = opt->optlen;
 	int  optlen;
 
@@ -294,11 +209,7 @@ void ip_options_fragment(struct sk_buff *skb)
 			continue;
 		}
 		optlen = optptr[1];
-<<<<<<< HEAD
-		if (optlen<2 || optlen>l)
-=======
 		if (optlen < 2 || optlen > l)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  return;
 		if (!IPOPT_COPIED(*optptr))
 			memset(optptr, IPOPT_NOOP, optlen);
@@ -312,8 +223,6 @@ void ip_options_fragment(struct sk_buff *skb)
 	opt->ts_needtime = 0;
 }
 
-<<<<<<< HEAD
-=======
 /* helper used by ip_options_compile() to call fib_compute_spec_dst()
  * at most one time.
  */
@@ -323,26 +232,12 @@ static void spec_dst_fill(__be32 *spec_dst, struct sk_buff *skb)
 		*spec_dst = fib_compute_spec_dst(skb);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Verify options and fill pointers in struct options.
  * Caller should clear *opt, and set opt->data.
  * If opt == NULL, then skb->data should point to IP header.
  */
 
-<<<<<<< HEAD
-int ip_options_compile(struct net *net,
-		       struct ip_options * opt, struct sk_buff * skb)
-{
-	int l;
-	unsigned char * iph;
-	unsigned char * optptr;
-	int optlen;
-	unsigned char * pp_ptr = NULL;
-	struct rtable *rt = NULL;
-
-	if (skb != NULL) {
-=======
 int __ip_options_compile(struct net *net,
 			 struct ip_options *opt, struct sk_buff *skb,
 			 __be32 *info)
@@ -355,7 +250,6 @@ int __ip_options_compile(struct net *net,
 	int optlen, l;
 
 	if (skb) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rt = skb_rtable(skb);
 		optptr = (unsigned char *)&(ip_hdr(skb)[1]);
 	} else
@@ -364,24 +258,15 @@ int __ip_options_compile(struct net *net,
 
 	for (l = opt->optlen; l > 0; ) {
 		switch (*optptr) {
-<<<<<<< HEAD
-		      case IPOPT_END:
-			for (optptr++, l--; l>0; optptr++, l--) {
-=======
 		case IPOPT_END:
 			for (optptr++, l--; l > 0; optptr++, l--) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (*optptr != IPOPT_END) {
 					*optptr = IPOPT_END;
 					opt->is_changed = 1;
 				}
 			}
 			goto eol;
-<<<<<<< HEAD
-		      case IPOPT_NOOP:
-=======
 		case IPOPT_NOOP:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			l--;
 			optptr++;
 			continue;
@@ -391,22 +276,13 @@ int __ip_options_compile(struct net *net,
 			goto error;
 		}
 		optlen = optptr[1];
-<<<<<<< HEAD
-		if (optlen<2 || optlen>l) {
-=======
 		if (optlen < 2 || optlen > l) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pp_ptr = optptr;
 			goto error;
 		}
 		switch (*optptr) {
-<<<<<<< HEAD
-		      case IPOPT_SSRR:
-		      case IPOPT_LSRR:
-=======
 		case IPOPT_SSRR:
 		case IPOPT_LSRR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (optlen < 3) {
 				pp_ptr = optptr + 1;
 				goto error;
@@ -432,11 +308,7 @@ int __ip_options_compile(struct net *net,
 			opt->is_strictroute = (optptr[0] == IPOPT_SSRR);
 			opt->srr = optptr - iph;
 			break;
-<<<<<<< HEAD
-		      case IPOPT_RR:
-=======
 		case IPOPT_RR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (opt->rr) {
 				pp_ptr = optptr;
 				goto error;
@@ -455,12 +327,8 @@ int __ip_options_compile(struct net *net,
 					goto error;
 				}
 				if (rt) {
-<<<<<<< HEAD
-					memcpy(&optptr[optptr[2]-1], &rt->rt_spec_dst, 4);
-=======
 					spec_dst_fill(&spec_dst, skb);
 					memcpy(&optptr[optptr[2]-1], &spec_dst, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					opt->is_changed = 1;
 				}
 				optptr[2] += 4;
@@ -468,11 +336,7 @@ int __ip_options_compile(struct net *net,
 			}
 			opt->rr = optptr - iph;
 			break;
-<<<<<<< HEAD
-		      case IPOPT_TIMESTAMP:
-=======
 		case IPOPT_TIMESTAMP:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (opt->ts) {
 				pp_ptr = optptr;
 				goto error;
@@ -487,55 +351,33 @@ int __ip_options_compile(struct net *net,
 			}
 			if (optptr[2] <= optlen) {
 				unsigned char *timeptr = NULL;
-<<<<<<< HEAD
-				if (optptr[2]+3 > optptr[1]) {
-=======
 				if (optptr[2]+3 > optlen) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					pp_ptr = optptr + 2;
 					goto error;
 				}
 				switch (optptr[3]&0xF) {
-<<<<<<< HEAD
-				      case IPOPT_TS_TSONLY:
-=======
 				case IPOPT_TS_TSONLY:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (skb)
 						timeptr = &optptr[optptr[2]-1];
 					opt->ts_needtime = 1;
 					optptr[2] += 4;
 					break;
-<<<<<<< HEAD
-				      case IPOPT_TS_TSANDADDR:
-					if (optptr[2]+7 > optptr[1]) {
-=======
 				case IPOPT_TS_TSANDADDR:
 					if (optptr[2]+7 > optlen) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						pp_ptr = optptr + 2;
 						goto error;
 					}
 					if (rt)  {
-<<<<<<< HEAD
-						memcpy(&optptr[optptr[2]-1], &rt->rt_spec_dst, 4);
-=======
 						spec_dst_fill(&spec_dst, skb);
 						memcpy(&optptr[optptr[2]-1], &spec_dst, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						timeptr = &optptr[optptr[2]+3];
 					}
 					opt->ts_needaddr = 1;
 					opt->ts_needtime = 1;
 					optptr[2] += 8;
 					break;
-<<<<<<< HEAD
-				      case IPOPT_TS_PRESPEC:
-					if (optptr[2]+7 > optptr[1]) {
-=======
 				case IPOPT_TS_PRESPEC:
 					if (optptr[2]+7 > optlen) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						pp_ptr = optptr + 2;
 						goto error;
 					}
@@ -550,11 +392,7 @@ int __ip_options_compile(struct net *net,
 					opt->ts_needtime = 1;
 					optptr[2] += 8;
 					break;
-<<<<<<< HEAD
-				      default:
-=======
 				default:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (!skb && !ns_capable(net->user_ns, CAP_NET_RAW)) {
 						pp_ptr = optptr + 3;
 						goto error;
@@ -562,17 +400,6 @@ int __ip_options_compile(struct net *net,
 					break;
 				}
 				if (timeptr) {
-<<<<<<< HEAD
-					struct timespec tv;
-					u32  midtime;
-					getnstimeofday(&tv);
-					midtime = (tv.tv_sec % 86400) * MSEC_PER_SEC + tv.tv_nsec / NSEC_PER_MSEC;
-					put_unaligned_be32(midtime, timeptr);
-					opt->is_changed = 1;
-				}
-			} else {
-				unsigned overflow = optptr[3]>>4;
-=======
 					__be32 midtime;
 
 					midtime = inet_current_timestamp();
@@ -581,7 +408,6 @@ int __ip_options_compile(struct net *net,
 				}
 			} else if ((optptr[3]&0xF) != IPOPT_TS_PRESPEC) {
 				unsigned int overflow = optptr[3]>>4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (overflow == 15) {
 					pp_ptr = optptr + 3;
 					goto error;
@@ -593,11 +419,7 @@ int __ip_options_compile(struct net *net,
 			}
 			opt->ts = optptr - iph;
 			break;
-<<<<<<< HEAD
-		      case IPOPT_RA:
-=======
 		case IPOPT_RA:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (optlen < 4) {
 				pp_ptr = optptr + 1;
 				goto error;
@@ -605,11 +427,7 @@ int __ip_options_compile(struct net *net,
 			if (optptr[2] == 0 && optptr[3] == 0)
 				opt->router_alert = optptr - iph;
 			break;
-<<<<<<< HEAD
-		      case IPOPT_CIPSO:
-=======
 		case IPOPT_CIPSO:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((!skb && !ns_capable(net->user_ns, CAP_NET_RAW)) || opt->cipso) {
 				pp_ptr = optptr;
 				goto error;
@@ -620,15 +438,9 @@ int __ip_options_compile(struct net *net,
 				goto error;
 			}
 			break;
-<<<<<<< HEAD
-		      case IPOPT_SEC:
-		      case IPOPT_SID:
-		      default:
-=======
 		case IPOPT_SEC:
 		case IPOPT_SID:
 		default:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!skb && !ns_capable(net->user_ns, CAP_NET_RAW)) {
 				pp_ptr = optptr;
 				goto error;
@@ -644,13 +456,6 @@ eol:
 		return 0;
 
 error:
-<<<<<<< HEAD
-	if (skb) {
-		icmp_send(skb, ICMP_PARAMETERPROB, 0, htonl((pp_ptr-iph)<<24));
-	}
-	return -EINVAL;
-}
-=======
 	if (info)
 		*info = htonl((pp_ptr-iph)<<24);
 	return -EINVAL;
@@ -668,33 +473,12 @@ int ip_options_compile(struct net *net,
 		icmp_send(skb, ICMP_PARAMETERPROB, 0, info);
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(ip_options_compile);
 
 /*
  *	Undo all the changes done by ip_options_compile().
  */
 
-<<<<<<< HEAD
-void ip_options_undo(struct ip_options * opt)
-{
-	if (opt->srr) {
-		unsigned  char * optptr = opt->__data+opt->srr-sizeof(struct  iphdr);
-		memmove(optptr+7, optptr+3, optptr[1]-7);
-		memcpy(optptr+3, &opt->faddr, 4);
-	}
-	if (opt->rr_needaddr) {
-		unsigned  char * optptr = opt->__data+opt->rr-sizeof(struct  iphdr);
-		optptr[2] -= 4;
-		memset(&optptr[optptr[2]-1], 0, 4);
-	}
-	if (opt->ts) {
-		unsigned  char * optptr = opt->__data+opt->ts-sizeof(struct  iphdr);
-		if (opt->ts_needtime) {
-			optptr[2] -= 4;
-			memset(&optptr[optptr[2]-1], 0, 4);
-			if ((optptr[3]&0xF) == IPOPT_TS_PRESPEC)
-=======
 void ip_options_undo(struct ip_options *opt)
 {
 	if (opt->srr) {
@@ -716,31 +500,15 @@ void ip_options_undo(struct ip_options *opt)
 			optptr[2] -= 4;
 			memset(&optptr[optptr[2] - 1], 0, 4);
 			if ((optptr[3] & 0xF) == IPOPT_TS_PRESPEC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				optptr[2] -= 4;
 		}
 		if (opt->ts_needaddr) {
 			optptr[2] -= 4;
-<<<<<<< HEAD
-			memset(&optptr[optptr[2]-1], 0, 4);
-=======
 			memset(&optptr[optptr[2] - 1], 0, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-static struct ip_options_rcu *ip_options_get_alloc(const int optlen)
-{
-	return kzalloc(sizeof(struct ip_options_rcu) + ((optlen + 3) & ~3),
-		       GFP_KERNEL);
-}
-
-static int ip_options_get_finish(struct net *net, struct ip_options_rcu **optp,
-				 struct ip_options_rcu *opt, int optlen)
-{
-=======
 int ip_options_get(struct net *net, struct ip_options_rcu **optp,
 		   sockptr_t data, int optlen)
 {
@@ -755,7 +523,6 @@ int ip_options_get(struct net *net, struct ip_options_rcu **optp,
 		return -EFAULT;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (optlen & 3)
 		opt->opt.__data[optlen++] = IPOPT_END;
 	opt->opt.optlen = optlen;
@@ -768,43 +535,10 @@ int ip_options_get(struct net *net, struct ip_options_rcu **optp,
 	return 0;
 }
 
-<<<<<<< HEAD
-int ip_options_get_from_user(struct net *net, struct ip_options_rcu **optp,
-			     unsigned char __user *data, int optlen)
-{
-	struct ip_options_rcu *opt = ip_options_get_alloc(optlen);
-
-	if (!opt)
-		return -ENOMEM;
-	if (optlen && copy_from_user(opt->opt.__data, data, optlen)) {
-		kfree(opt);
-		return -EFAULT;
-	}
-	return ip_options_get_finish(net, optp, opt, optlen);
-}
-
-int ip_options_get(struct net *net, struct ip_options_rcu **optp,
-		   unsigned char *data, int optlen)
-{
-	struct ip_options_rcu *opt = ip_options_get_alloc(optlen);
-
-	if (!opt)
-		return -ENOMEM;
-	if (optlen)
-		memcpy(opt->opt.__data, data, optlen);
-	return ip_options_get_finish(net, optp, opt, optlen);
-}
-
-void ip_forward_options(struct sk_buff *skb)
-{
-	struct   ip_options * opt	= &(IPCB(skb)->opt);
-	unsigned char * optptr;
-=======
 void ip_forward_options(struct sk_buff *skb)
 {
 	struct   ip_options *opt	= &(IPCB(skb)->opt);
 	unsigned char *optptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rtable *rt = skb_rtable(skb);
 	unsigned char *raw = skb_network_header(skb);
 
@@ -818,11 +552,7 @@ void ip_forward_options(struct sk_buff *skb)
 
 		optptr = raw + opt->srr;
 
-<<<<<<< HEAD
-		for ( srrptr=optptr[2], srrspace = optptr[1];
-=======
 		for ( srrptr = optptr[2], srrspace = optptr[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     srrptr <= srrspace;
 		     srrptr += 4
 		     ) {
@@ -836,15 +566,10 @@ void ip_forward_options(struct sk_buff *skb)
 			ip_hdr(skb)->daddr = opt->nexthop;
 			ip_rt_get_source(&optptr[srrptr-1], skb, rt);
 			optptr[2] = srrptr+4;
-<<<<<<< HEAD
-		} else if (net_ratelimit())
-			pr_crit("%s(): Argh! Destination lost!\n", __func__);
-=======
 		} else {
 			net_crit_ratelimited("%s(): Argh! Destination lost!\n",
 					     __func__);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (opt->ts_needaddr) {
 			optptr = raw + opt->ts;
 			ip_rt_get_source(&optptr[optptr[2]-9], skb, rt);
@@ -857,11 +582,7 @@ void ip_forward_options(struct sk_buff *skb)
 	}
 }
 
-<<<<<<< HEAD
-int ip_options_rcv_srr(struct sk_buff *skb)
-=======
 int ip_options_rcv_srr(struct sk_buff *skb, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ip_options *opt = &(IPCB(skb)->opt);
 	int srrspace, srrptr;
@@ -887,11 +608,7 @@ int ip_options_rcv_srr(struct sk_buff *skb, struct net_device *dev)
 	if (rt->rt_type != RTN_LOCAL)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	for (srrptr=optptr[2], srrspace = optptr[1]; srrptr <= srrspace; srrptr += 4) {
-=======
 	for (srrptr = optptr[2], srrspace = optptr[1]; srrptr <= srrspace; srrptr += 4) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (srrptr + 3 > srrspace) {
 			icmp_send(skb, ICMP_PARAMETERPROB, 0, htonl((opt->srr+2)<<24));
 			return -EINVAL;
@@ -900,11 +617,7 @@ int ip_options_rcv_srr(struct sk_buff *skb, struct net_device *dev)
 
 		orefdst = skb->_skb_refdst;
 		skb_dst_set(skb, NULL);
-<<<<<<< HEAD
-		err = ip_route_input(skb, nexthop, iph->saddr, iph->tos, skb->dev);
-=======
 		err = ip_route_input(skb, nexthop, iph->saddr, iph->tos, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rt2 = skb_rtable(skb);
 		if (err || (rt2->rt_type != RTN_UNICAST && rt2->rt_type != RTN_LOCAL)) {
 			skb_dst_drop(skb);

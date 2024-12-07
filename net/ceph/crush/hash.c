@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-
-#include <linux/types.h>
-#include <linux/crush/hash.h>
-
-/*
- * Robert Jenkins' function for mixing 32-bit values
- * http://burtleburtle.net/bob/hash/evahash.html
-=======
 // SPDX-License-Identifier: GPL-2.0
 #ifdef __KERNEL__
 # include <linux/crush/hash.h>
@@ -17,7 +8,6 @@
 /*
  * Robert Jenkins' function for mixing 32-bit values
  * https://burtleburtle.net/bob/hash/evahash.html
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * a, b = random bits, c = input and output
  */
 #define crush_hashmix(a, b, c) do {			\

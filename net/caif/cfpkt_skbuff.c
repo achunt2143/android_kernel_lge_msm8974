@@ -1,24 +1,13 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) ST-Ericsson AB 2010
- * Author:	Sjur Brendeland/sjur.brandeland@stericsson.com
- * License terms: GNU General Public License (GPL) version 2
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) ST-Ericsson AB 2010
  * Author:	Sjur Brendeland
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
 
 #include <linux/string.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-#include <linux/hardirq.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <net/caif/cfpkt.h>
 
@@ -91,15 +80,7 @@ static struct cfpkt *cfpkt_create_pfx(u16 len, u16 pfx)
 {
 	struct sk_buff *skb;
 
-<<<<<<< HEAD
-	if (likely(in_interrupt()))
-		skb = alloc_skb(len + pfx, GFP_ATOMIC);
-	else
-		skb = alloc_skb(len + pfx, GFP_KERNEL);
-
-=======
 	skb = alloc_skb(len + pfx, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(skb == NULL))
 		return NULL;
 
@@ -217,27 +198,10 @@ int cfpkt_add_body(struct cfpkt *pkt, const void *data, u16 len)
 			PKT_ERROR(pkt, "cow failed\n");
 			return -EPROTO;
 		}
-<<<<<<< HEAD
-		/*
-		 * Is the SKB non-linear after skb_cow_data()? If so, we are
-		 * going to add data to the last SKB, so we need to adjust
-		 * lengths of the top SKB.
-		 */
-		if (lastskb != skb) {
-			pr_warn("Packet is non-linear\n");
-			skb->len += len;
-			skb->data_len += len;
-		}
-	}
-
-	/* All set to put the last SKB and optionally write data there. */
-	to = skb_put(lastskb, len);
-=======
 	}
 
 	/* All set to put the last SKB and optionally write data there. */
 	to = pskb_put(skb, lastskb, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(data))
 		memcpy(to, data, len);
 	return 0;
@@ -286,15 +250,9 @@ inline u16 cfpkt_getlen(struct cfpkt *pkt)
 	return skb->len;
 }
 
-<<<<<<< HEAD
-inline u16 cfpkt_iterate(struct cfpkt *pkt,
-			    u16 (*iter_func)(u16, void *, u16),
-			    u16 data)
-=======
 int cfpkt_iterate(struct cfpkt *pkt,
 		  u16 (*iter_func)(u16, void *, u16),
 		  u16 data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Don't care about the performance hit of linearizing,
@@ -323,11 +281,7 @@ int cfpkt_setlen(struct cfpkt *pkt, u16 len)
 		else
 			skb_trim(skb, len);
 
-<<<<<<< HEAD
-			return cfpkt_getlen(pkt);
-=======
 		return cfpkt_getlen(pkt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Need to expand SKB */
@@ -338,13 +292,8 @@ int cfpkt_setlen(struct cfpkt *pkt, u16 len)
 }
 
 struct cfpkt *cfpkt_append(struct cfpkt *dstpkt,
-<<<<<<< HEAD
-			     struct cfpkt *addpkt,
-			     u16 expectlen)
-=======
 			   struct cfpkt *addpkt,
 			   u16 expectlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *dst = pkt_to_skb(dstpkt);
 	struct sk_buff *add = pkt_to_skb(addpkt);
@@ -370,25 +319,12 @@ struct cfpkt *cfpkt_append(struct cfpkt *dstpkt,
 		if (tmppkt == NULL)
 			return NULL;
 		tmp = pkt_to_skb(tmppkt);
-<<<<<<< HEAD
-		skb_set_tail_pointer(tmp, dstlen);
-		tmp->len = dstlen;
-		memcpy(tmp->data, dst->data, dstlen);
-		cfpkt_destroy(dstpkt);
-		dst = tmp;
-	}
-	memcpy(skb_tail_pointer(dst), add->data, skb_headlen(add));
-	cfpkt_destroy(addpkt);
-	dst->tail += addlen;
-	dst->len += addlen;
-=======
 		skb_put_data(tmp, dst->data, dstlen);
 		cfpkt_destroy(dstpkt);
 		dst = tmp;
 	}
 	skb_put_data(dst, add->data, skb_headlen(add));
 	cfpkt_destroy(addpkt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return skb_to_pkt(dst);
 }
 
@@ -419,22 +355,12 @@ struct cfpkt *cfpkt_split(struct cfpkt *pkt, u16 pos)
 	if (skb2 == NULL)
 		return NULL;
 
-<<<<<<< HEAD
-	/* Reduce the length of the original packet */
-	skb_set_tail_pointer(skb, pos);
-	skb->len = pos;
-
-	memcpy(skb2->data, split, len2nd);
-	skb2->tail += len2nd;
-	skb2->len += len2nd;
-=======
 	skb_put_data(skb2, split, len2nd);
 
 	/* Reduce the length of the original packet */
 	skb_trim(skb, pos);
 
 	skb2->priority = skb->priority;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return skb_to_pkt(skb2);
 }
 
@@ -448,12 +374,9 @@ struct caif_payload_info *cfpkt_info(struct cfpkt *pkt)
 	return (struct caif_payload_info *)&pkt_to_skb(pkt)->cb;
 }
 EXPORT_SYMBOL(cfpkt_info);
-<<<<<<< HEAD
-=======
 
 void cfpkt_set_prio(struct cfpkt *pkt, int prio)
 {
 	pkt_to_skb(pkt)->priority = prio;
 }
 EXPORT_SYMBOL(cfpkt_set_prio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

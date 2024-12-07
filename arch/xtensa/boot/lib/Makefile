@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for some libs needed by zImage.
 #
@@ -10,9 +7,6 @@ zlib	:= inffast.c inflate.c inftrees.c
 
 lib-y	+= $(zlib:.c=.o) zmem.o
 
-<<<<<<< HEAD
-ccflags-y	:= -Ilib/zlib_inflate
-=======
 ccflags-y	:= -I $(srctree)/lib/zlib_inflate
 ifdef CONFIG_FUNCTION_TRACER
 CFLAGS_REMOVE_inflate.o = -pg
@@ -30,7 +24,6 @@ CFLAGS_REMOVE_inflate.o += -fstack-protector -fstack-protector-strong
 CFLAGS_REMOVE_zmem.o += -fstack-protector -fstack-protector-strong
 CFLAGS_REMOVE_inftrees.o += -fstack-protector -fstack-protector-strong
 CFLAGS_REMOVE_inffast.o += -fstack-protector -fstack-protector-strong
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 quiet_cmd_copy_zlib = COPY    $@
       cmd_copy_zlib = cat $< > $@

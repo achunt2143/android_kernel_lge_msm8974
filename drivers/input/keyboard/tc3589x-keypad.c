@@ -1,26 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) ST-Ericsson SA 2010
  *
  * Author: Jayeeta Banerjee <jayeeta.banerjee@stericsson.com>
  * Author: Sundar Iyer <sundar.iyer@stericsson.com>
  *
-<<<<<<< HEAD
- * License Terms: GNU General Public License, version 2
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TC35893 MFD Keypad Controller driver
  */
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/input.h>
 #include <linux/platform_device.h>
@@ -28,10 +16,7 @@
 #include <linux/i2c.h>
 #include <linux/slab.h>
 #include <linux/mfd/tc3589x.h>
-<<<<<<< HEAD
-=======
 #include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Maximum supported keypad matrix row/columns size */
 #define TC3589x_MAX_KPROW               8
@@ -46,11 +31,7 @@
 #define TC3589x_PULL_DOWN_MASK		0x1
 #define TC3589x_PULL_UP_MASK		0x2
 #define TC3589x_PULLUP_ALL_MASK		0xAA
-<<<<<<< HEAD
-#define TC3589x_IO_PULL_VAL(index, mask)	((mask)<<((index)%4)*2))
-=======
 #define TC3589x_IO_PULL_VAL(index, mask)	((mask)<<((index)%4)*2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Bit masks for IOCFG register */
 #define IOCFG_BALLCFG		0x01
@@ -88,9 +69,6 @@
 #define TC3589x_EVT_INT_CLR	0x2
 #define TC3589x_KBD_INT_CLR	0x1
 
-<<<<<<< HEAD
-#define TC3589x_KBD_KEYMAP_SIZE     64
-=======
 /**
  * struct tc3589x_keypad_platform_data - platform specific keypad data
  * @keymap_data:        matrix scan code table for keycodes
@@ -112,7 +90,6 @@ struct tc3589x_keypad_platform_data {
 	bool                    enable_wakeup;
 	bool                    no_autorepeat;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct tc_keypad - data structure used by keypad driver
@@ -120,11 +97,7 @@ struct tc3589x_keypad_platform_data {
  * @input:      pointer to input device object
  * @board:      keypad platform device
  * @krow:	number of rows
-<<<<<<< HEAD
- * @kcol:	number of coloumns
-=======
  * @kcol:	number of columns
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @keymap:     matrix scan code table for keycodes
  * @keypad_stopped: holds keypad status
  */
@@ -134,11 +107,7 @@ struct tc_keypad {
 	const struct tc3589x_keypad_platform_data *board;
 	unsigned int krow;
 	unsigned int kcol;
-<<<<<<< HEAD
-	unsigned short keymap[TC3589x_KBD_KEYMAP_SIZE];
-=======
 	unsigned short *keymap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool keypad_stopped;
 };
 
@@ -146,32 +115,15 @@ static int tc3589x_keypad_init_key_hardware(struct tc_keypad *keypad)
 {
 	int ret;
 	struct tc3589x *tc3589x = keypad->tc3589x;
-<<<<<<< HEAD
-	u8 settle_time = keypad->board->settle_time;
-	u8 dbounce_period = keypad->board->debounce_period;
-	u8 rows = keypad->board->krow & 0xf;	/* mask out the nibble */
-	u8 column = keypad->board->kcol & 0xf;	/* mask out the nibble */
-
-	/* validate platform configurations */
-	if (keypad->board->kcol > TC3589x_MAX_KPCOL ||
-	    keypad->board->krow > TC3589x_MAX_KPROW ||
-	    keypad->board->debounce_period > TC3589x_MAX_DEBOUNCE_SETTLE ||
-	    keypad->board->settle_time > TC3589x_MAX_DEBOUNCE_SETTLE)
-=======
 	const struct tc3589x_keypad_platform_data *board = keypad->board;
 
 	/* validate platform configuration */
 	if (board->kcol > TC3589x_MAX_KPCOL || board->krow > TC3589x_MAX_KPROW)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* configure KBDSIZE 4 LSbits for cols and 4 MSbits for rows */
 	ret = tc3589x_reg_write(tc3589x, TC3589x_KBDSIZE,
-<<<<<<< HEAD
-			(rows << KP_ROW_SHIFT) | column);
-=======
 			(board->krow << KP_ROW_SHIFT) | board->kcol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -185,22 +137,14 @@ static int tc3589x_keypad_init_key_hardware(struct tc_keypad *keypad)
 		return ret;
 
 	/* Configure settle time */
-<<<<<<< HEAD
-	ret = tc3589x_reg_write(tc3589x, TC3589x_KBDSETTLE_REG, settle_time);
-=======
 	ret = tc3589x_reg_write(tc3589x, TC3589x_KBDSETTLE_REG,
 				board->settle_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
 	/* Configure debounce time */
-<<<<<<< HEAD
-	ret = tc3589x_reg_write(tc3589x, TC3589x_KBDBOUNCE, dbounce_period);
-=======
 	ret = tc3589x_reg_write(tc3589x, TC3589x_KBDBOUNCE,
 				board->debounce_period);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -374,9 +318,6 @@ static void tc3589x_keypad_close(struct input_dev *input)
 	tc3589x_keypad_disable(keypad);
 }
 
-<<<<<<< HEAD
-static int __devinit tc3589x_keypad_probe(struct platform_device *pdev)
-=======
 static const struct tc3589x_keypad_platform_data *
 tc3589x_keypad_of_probe(struct device *dev)
 {
@@ -431,7 +372,6 @@ tc3589x_keypad_of_probe(struct device *dev)
 }
 
 static int tc3589x_keypad_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tc3589x *tc3589x = dev_get_drvdata(pdev->dev.parent);
 	struct tc_keypad *keypad;
@@ -439,31 +379,16 @@ static int tc3589x_keypad_probe(struct platform_device *pdev)
 	const struct tc3589x_keypad_platform_data *plat;
 	int error, irq;
 
-<<<<<<< HEAD
-	plat = tc3589x->pdata->keypad;
-	if (!plat) {
-		dev_err(&pdev->dev, "invalid keypad platform data\n");
-		return -EINVAL;
-=======
 	plat = tc3589x_keypad_of_probe(&pdev->dev);
 	if (IS_ERR(plat)) {
 		dev_err(&pdev->dev, "invalid keypad platform data\n");
 		return PTR_ERR(plat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
 
-<<<<<<< HEAD
-	keypad = kzalloc(sizeof(struct tc_keypad), GFP_KERNEL);
-	input = input_allocate_device();
-	if (!keypad || !input) {
-		dev_err(&pdev->dev, "failed to allocate keypad memory\n");
-		error = -ENOMEM;
-		goto err_free_mem;
-=======
 	keypad = devm_kzalloc(&pdev->dev, sizeof(struct tc_keypad),
 			      GFP_KERNEL);
 	if (!keypad)
@@ -473,7 +398,6 @@ static int tc3589x_keypad_probe(struct platform_device *pdev)
 	if (!input) {
 		dev_err(&pdev->dev, "failed to allocate input device\n");
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	keypad->board = plat;
@@ -484,34 +408,6 @@ static int tc3589x_keypad_probe(struct platform_device *pdev)
 	input->name = pdev->name;
 	input->dev.parent = &pdev->dev;
 
-<<<<<<< HEAD
-	input->keycode = keypad->keymap;
-	input->keycodesize = sizeof(keypad->keymap[0]);
-	input->keycodemax = ARRAY_SIZE(keypad->keymap);
-
-	input->open = tc3589x_keypad_open;
-	input->close = tc3589x_keypad_close;
-
-	input_set_drvdata(input, keypad);
-
-	input_set_capability(input, EV_MSC, MSC_SCAN);
-
-	__set_bit(EV_KEY, input->evbit);
-	if (!plat->no_autorepeat)
-		__set_bit(EV_REP, input->evbit);
-
-	matrix_keypad_build_keymap(plat->keymap_data, 0x3,
-			input->keycode, input->keybit);
-
-	error = request_threaded_irq(irq, NULL,
-			tc3589x_keypad_irq, plat->irqtype,
-			"tc3589x-keypad", keypad);
-	if (error < 0) {
-		dev_err(&pdev->dev,
-				"Could not allocate irq %d,error %d\n",
-				irq, error);
-		goto err_free_mem;
-=======
 	input->open = tc3589x_keypad_open;
 	input->close = tc3589x_keypad_close;
 
@@ -542,17 +438,12 @@ static int tc3589x_keypad_probe(struct platform_device *pdev)
 				"Could not allocate irq %d,error %d\n",
 				irq, error);
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = input_register_device(input);
 	if (error) {
 		dev_err(&pdev->dev, "Could not register input device\n");
-<<<<<<< HEAD
-		goto err_free_irq;
-=======
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* let platform decide if keypad is a wakeup source or not */
@@ -562,38 +453,8 @@ static int tc3589x_keypad_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, keypad);
 
 	return 0;
-<<<<<<< HEAD
-
-err_free_irq:
-	free_irq(irq, keypad);
-err_free_mem:
-	input_free_device(input);
-	kfree(keypad);
-	return error;
 }
 
-static int __devexit tc3589x_keypad_remove(struct platform_device *pdev)
-{
-	struct tc_keypad *keypad = platform_get_drvdata(pdev);
-	int irq = platform_get_irq(pdev, 0);
-
-	if (!keypad->keypad_stopped)
-		tc3589x_keypad_disable(keypad);
-
-	free_irq(irq, keypad);
-
-	input_unregister_device(keypad->input);
-
-	kfree(keypad);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM_SLEEP
-=======
-}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tc3589x_keypad_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -630,31 +491,16 @@ static int tc3589x_keypad_resume(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-#endif
-
-static SIMPLE_DEV_PM_OPS(tc3589x_keypad_dev_pm_ops,
-			 tc3589x_keypad_suspend, tc3589x_keypad_resume);
-=======
 
 static DEFINE_SIMPLE_DEV_PM_OPS(tc3589x_keypad_dev_pm_ops,
 				tc3589x_keypad_suspend, tc3589x_keypad_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver tc3589x_keypad_driver = {
 	.driver	= {
 		.name	= "tc3589x-keypad",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-		.pm	= &tc3589x_keypad_dev_pm_ops,
-	},
-	.probe	= tc3589x_keypad_probe,
-	.remove	= __devexit_p(tc3589x_keypad_remove),
-=======
 		.pm	= pm_sleep_ptr(&tc3589x_keypad_dev_pm_ops),
 	},
 	.probe	= tc3589x_keypad_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 module_platform_driver(tc3589x_keypad_driver);
 

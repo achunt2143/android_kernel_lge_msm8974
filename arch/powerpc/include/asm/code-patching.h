@@ -1,31 +1,17 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_CODE_PATCHING_H
 #define _ASM_POWERPC_CODE_PATCHING_H
 
 /*
  * Copyright 2008, Michael Ellerman, IBM Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/types.h>
 #include <asm/ppc-opcode.h>
-<<<<<<< HEAD
-=======
 #include <linux/string.h>
 #include <linux/kallsyms.h>
 #include <asm/asm-compat.h>
 #include <asm/inst.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flags for create_branch:
  * "b"   == create_branch(addr, target, 0);
@@ -36,30 +22,6 @@
 #define BRANCH_SET_LINK	0x1
 #define BRANCH_ABSOLUTE	0x2
 
-<<<<<<< HEAD
-unsigned int create_branch(const unsigned int *addr,
-			   unsigned long target, int flags);
-unsigned int create_cond_branch(const unsigned int *addr,
-				unsigned long target, int flags);
-void patch_branch(unsigned int *addr, unsigned long target, int flags);
-void patch_instruction(unsigned int *addr, unsigned int instr);
-
-int instr_is_relative_branch(unsigned int instr);
-int instr_is_branch_to_addr(const unsigned int *instr, unsigned long addr);
-unsigned long branch_target(const unsigned int *instr);
-unsigned int translate_branch(const unsigned int *dest,
-			      const unsigned int *src);
-
-static inline unsigned long ppc_function_entry(void *func)
-{
-#ifdef CONFIG_PPC64
-	/*
-	 * On PPC64 the function pointer actually points to the function's
-	 * descriptor. The first entry in the descriptor is the address
-	 * of the function text.
-	 */
-	return ((func_descr_t *)func)->entry;
-=======
 /*
  * Powerpc branch instruction is :
  *
@@ -201,14 +163,11 @@ static inline unsigned long ppc_function_entry(void *func)
 	 * address of the function text.
 	 */
 	return ((struct func_desc *)func)->addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	return (unsigned long)func;
 #endif
 }
 
-<<<<<<< HEAD
-=======
 static inline unsigned long ppc_global_function_entry(void *func)
 {
 #ifdef CONFIG_PPC64_ELF_ABI_V2
@@ -276,5 +235,4 @@ static inline unsigned long ppc_kallsyms_lookup_name(const char *name)
 /* usually preceded by a mflr r0 */
 #define PPC_INST_STD_LR		PPC_RAW_STD(_R0, _R1, PPC_LR_STKOFF)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_POWERPC_CODE_PATCHING_H */

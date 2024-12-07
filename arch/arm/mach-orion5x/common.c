@@ -1,53 +1,21 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-orion5x/common.c
  *
  * Core functions for Marvell Orion 5x SoCs
  *
  * Maintainer: Tzachi Perelstein <tzachi@marvell.com>
-<<<<<<< HEAD
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
 #include <linux/serial_8250.h>
 #include <linux/mv643xx_i2c.h>
 #include <linux/ata_platform.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <net/dsa.h>
-#include <asm/page.h>
-#include <asm/setup.h>
-#include <asm/system_misc.h>
-#include <asm/timex.h>
-#include <asm/mach/arch.h>
-#include <asm/mach/map.h>
-#include <asm/mach/time.h>
-#include <mach/bridge-regs.h>
-#include <mach/hardware.h>
-#include <mach/orion5x.h>
-#include <plat/orion_nand.h>
-#include <plat/ehci-orion.h>
-#include <plat/time.h>
-#include <plat/common.h>
-#include <plat/addr-map.h>
-#include "common.h"
-=======
 #include <linux/clk-provider.h>
 #include <linux/cpu.h>
 #include <asm/page.h>
@@ -64,37 +32,18 @@
 #include "bridge-regs.h"
 #include "common.h"
 #include "orion5x.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*****************************************************************************
  * I/O Address Mapping
  ****************************************************************************/
 static struct map_desc orion5x_io_desc[] __initdata = {
 	{
-<<<<<<< HEAD
-		.virtual	= ORION5X_REGS_VIRT_BASE,
-=======
 		.virtual	= (unsigned long) ORION5X_REGS_VIRT_BASE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pfn		= __phys_to_pfn(ORION5X_REGS_PHYS_BASE),
 		.length		= ORION5X_REGS_SIZE,
 		.type		= MT_DEVICE,
 	}, {
-<<<<<<< HEAD
-		.virtual	= ORION5X_PCIE_IO_VIRT_BASE,
-		.pfn		= __phys_to_pfn(ORION5X_PCIE_IO_PHYS_BASE),
-		.length		= ORION5X_PCIE_IO_SIZE,
-		.type		= MT_DEVICE,
-	}, {
-		.virtual	= ORION5X_PCI_IO_VIRT_BASE,
-		.pfn		= __phys_to_pfn(ORION5X_PCI_IO_PHYS_BASE),
-		.length		= ORION5X_PCI_IO_SIZE,
-		.type		= MT_DEVICE,
-	}, {
-		.virtual	= ORION5X_PCIE_WA_VIRT_BASE,
-=======
 		.virtual	= (unsigned long) ORION5X_PCIE_WA_VIRT_BASE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pfn		= __phys_to_pfn(ORION5X_PCIE_WA_PHYS_BASE),
 		.length		= ORION5X_PCIE_WA_SIZE,
 		.type		= MT_DEVICE,
@@ -108,8 +57,6 @@ void __init orion5x_map_io(void)
 
 
 /*****************************************************************************
-<<<<<<< HEAD
-=======
  * CLK tree
  ****************************************************************************/
 static struct clk *tclk;
@@ -122,7 +69,6 @@ void __init clk_init(void)
 }
 
 /*****************************************************************************
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * EHCI0
  ****************************************************************************/
 void __init orion5x_ehci0_init(void)
@@ -148,28 +94,12 @@ void __init orion5x_eth_init(struct mv643xx_eth_platform_data *eth_data)
 {
 	orion_ge00_init(eth_data,
 			ORION5X_ETH_PHYS_BASE, IRQ_ORION5X_ETH_SUM,
-<<<<<<< HEAD
-			IRQ_ORION5X_ETH_ERR, orion5x_tclk,
-=======
 			IRQ_ORION5X_ETH_ERR,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			MV643XX_TX_CSUM_DEFAULT_LIMIT);
 }
 
 
 /*****************************************************************************
-<<<<<<< HEAD
- * Ethernet switch
- ****************************************************************************/
-void __init orion5x_eth_switch_init(struct dsa_platform_data *d, int irq)
-{
-	orion_ge00_switch_init(d, irq);
-}
-
-
-/*****************************************************************************
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * I2C
  ****************************************************************************/
 void __init orion5x_i2c_init(void)
@@ -191,15 +121,9 @@ void __init orion5x_sata_init(struct mv_sata_platform_data *sata_data)
 /*****************************************************************************
  * SPI
  ****************************************************************************/
-<<<<<<< HEAD
-void __init orion5x_spi_init()
-{
-	orion_spi_init(SPI_PHYS_BASE, orion5x_tclk);
-=======
 void __init orion5x_spi_init(void)
 {
 	orion_spi_init(SPI_PHYS_BASE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -209,11 +133,7 @@ void __init orion5x_spi_init(void)
 void __init orion5x_uart0_init(void)
 {
 	orion_uart0_init(UART0_VIRT_BASE, UART0_PHYS_BASE,
-<<<<<<< HEAD
-			 IRQ_ORION5X_UART0, orion5x_tclk);
-=======
 			 IRQ_ORION5X_UART0, tclk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*****************************************************************************
@@ -222,11 +142,7 @@ void __init orion5x_uart0_init(void)
 void __init orion5x_uart1_init(void)
 {
 	orion_uart1_init(UART1_VIRT_BASE, UART1_PHYS_BASE,
-<<<<<<< HEAD
-			 IRQ_ORION5X_UART1, orion5x_tclk);
-=======
 			 IRQ_ORION5X_UART1, tclk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*****************************************************************************
@@ -244,14 +160,10 @@ void __init orion5x_xor_init(void)
  ****************************************************************************/
 static void __init orion5x_crypto_init(void)
 {
-<<<<<<< HEAD
-	orion5x_setup_sram_win();
-=======
 	mvebu_mbus_add_window_by_id(ORION_MBUS_SRAM_TARGET,
 				    ORION_MBUS_SRAM_ATTR,
 				    ORION5X_SRAM_PHYS_BASE,
 				    ORION5X_SRAM_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	orion_crypto_init(ORION5X_CRYPTO_PHYS_BASE, ORION5X_SRAM_PHYS_BASE,
 			  SZ_8K, IRQ_ORION5X_CESA);
 }
@@ -259,11 +171,6 @@ static void __init orion5x_crypto_init(void)
 /*****************************************************************************
  * Watchdog
  ****************************************************************************/
-<<<<<<< HEAD
-void __init orion5x_wdt_init(void)
-{
-	orion_wdt_init(orion5x_tclk);
-=======
 static struct resource orion_wdt_resource[] = {
 		DEFINE_RES_MEM(TIMER_PHYS_BASE, 0x04),
 		DEFINE_RES_MEM(RSTOUTn_MASK_PHYS, 0x04),
@@ -279,7 +186,6 @@ static struct platform_device orion_wdt_device = {
 static void __init orion5x_wdt_init(void)
 {
 	platform_device_register(&orion_wdt_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -288,9 +194,6 @@ static void __init orion5x_wdt_init(void)
  ****************************************************************************/
 void __init orion5x_init_early(void)
 {
-<<<<<<< HEAD
-	orion_time_set_base(TIMER_VIRT_BASE);
-=======
 	u32 rev, dev;
 	const char *mbus_soc_name;
 
@@ -337,16 +240,11 @@ void orion5x_setup_wins(void)
 				    ORION_MBUS_PCI_MEM_ATTR,
 				    ORION5X_PCI_MEM_PHYS_BASE,
 				    ORION5X_PCI_MEM_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int orion5x_tclk;
 
-<<<<<<< HEAD
-int __init orion5x_find_tclk(void)
-=======
 static int __init orion5x_find_tclk(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 dev, rev;
 
@@ -358,11 +256,7 @@ static int __init orion5x_find_tclk(void)
 	return 166666667;
 }
 
-<<<<<<< HEAD
-static void orion5x_timer_init(void)
-=======
 void __init orion5x_timer_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	orion5x_tclk = orion5x_find_tclk();
 
@@ -370,13 +264,6 @@ void __init orion5x_timer_init(void)
 			IRQ_ORION5X_BRIDGE, orion5x_tclk);
 }
 
-<<<<<<< HEAD
-struct sys_timer orion5x_timer = {
-	.init = orion5x_timer_init,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*****************************************************************************
  * General
@@ -384,11 +271,7 @@ struct sys_timer orion5x_timer = {
 /*
  * Identify device ID and rev from PCIe configuration header space '0'.
  */
-<<<<<<< HEAD
-static void __init orion5x_id(u32 *dev, u32 *rev, char **dev_name)
-=======
 void __init orion5x_id(u32 *dev, u32 *rev, char **dev_name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	orion5x_pcie_id(dev, rev);
 
@@ -438,14 +321,10 @@ void __init orion5x_init(void)
 	/*
 	 * Setup Orion address map
 	 */
-<<<<<<< HEAD
-	orion5x_setup_cpu_mbus_bridge();
-=======
 	orion5x_setup_wins();
 
 	/* Setup root of clk tree */
 	clk_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Don't issue "Wait for Interrupt" instruction if we are
@@ -453,11 +332,7 @@ void __init orion5x_init(void)
 	 */
 	if (dev == MV88F5281_DEV_ID && rev == MV88F5281_REV_D0) {
 		printk(KERN_INFO "Orion: Applying 5281 D0 WFI workaround.\n");
-<<<<<<< HEAD
-		disable_hlt();
-=======
 		cpu_idle_poll_ctrl(true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -474,11 +349,7 @@ void __init orion5x_init(void)
 	orion5x_wdt_init();
 }
 
-<<<<<<< HEAD
-void orion5x_restart(char mode, const char *cmd)
-=======
 void orion5x_restart(enum reboot_mode mode, const char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Enable and issue soft reset
@@ -493,12 +364,7 @@ void orion5x_restart(enum reboot_mode mode, const char *cmd)
  * Many orion-based systems have buggy bootloader implementations.
  * This is a common fixup for bogus memory tags.
  */
-<<<<<<< HEAD
-void __init tag_fixup_mem32(struct tag *t, char **from,
-			    struct meminfo *meminfo)
-=======
 void __init tag_fixup_mem32(struct tag *t, char **from)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	for (; t->hdr.size; t = tag_next(t))
 		if (t->hdr.tag == ATAG_MEM &&

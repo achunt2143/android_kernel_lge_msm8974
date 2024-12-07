@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* drivers/atm/zeprom.h - ZeitNet ZN122x EEPROM (NM93C46) declarations */
 
 /* Written 1995,1996 by Werner Almesberger, EPFL LRC */
@@ -15,11 +12,7 @@
 #define ZEPROM_V1_REG	PCI_VENDOR_ID	/* PCI register */
 #define ZEPROM_V2_REG	0x40
 
-<<<<<<< HEAD
-/* Bits in contol register */
-=======
 /* Bits in control register */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ZEPROM_SK	0x80000000	/* strobe (probably on raising edge) */
 #define ZEPROM_CS	0x40000000	/* Chip Select */

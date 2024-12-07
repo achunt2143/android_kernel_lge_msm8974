@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/smp.c
  *
@@ -9,13 +6,6 @@
  *
  * Copyright (C) 2002 - 2010 Paul Mundt
  * Copyright (C) 2006 - 2007 Akio Idehara
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/err.h>
 #include <linux/cache.h>
@@ -27,15 +17,10 @@
 #include <linux/module.h>
 #include <linux/cpu.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-#include <linux/atomic.h>
-=======
 #include <linux/sched/mm.h>
 #include <linux/sched/hotplug.h>
 #include <linux/atomic.h>
 #include <linux/clockchips.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h>
 #include <asm/mmu_context.h>
 #include <asm/smp.h>
@@ -51,11 +36,7 @@ struct plat_smp_ops *mp_ops = NULL;
 /* State of each CPU */
 DEFINE_PER_CPU(int, cpu_state) = { 0 };
 
-<<<<<<< HEAD
-void __cpuinit register_smp_ops(struct plat_smp_ops *ops)
-=======
 void register_smp_ops(struct plat_smp_ops *ops)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (mp_ops)
 		printk(KERN_WARNING "Overriding previously set SMP ops\n");
@@ -63,11 +44,7 @@ void register_smp_ops(struct plat_smp_ops *ops)
 	mp_ops = ops;
 }
 
-<<<<<<< HEAD
-static inline void __cpuinit smp_store_cpu_info(unsigned int cpu)
-=======
 static inline void smp_store_cpu_info(unsigned int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sh_cpuinfo *c = cpu_data + cpu;
 
@@ -133,11 +110,7 @@ void play_dead_common(void)
 	irq_ctx_exit(raw_smp_processor_id());
 	mb();
 
-<<<<<<< HEAD
-	__get_cpu_var(cpu_state) = CPU_DEAD;
-=======
 	__this_cpu_write(cpu_state, CPU_DEAD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_disable();
 }
 
@@ -149,10 +122,6 @@ void native_play_dead(void)
 int __cpu_disable(void)
 {
 	unsigned int cpu = smp_processor_id();
-<<<<<<< HEAD
-	struct task_struct *p;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = mp_ops->cpu_disable(cpu);
@@ -171,33 +140,15 @@ int __cpu_disable(void)
 	migrate_irqs();
 
 	/*
-<<<<<<< HEAD
-	 * Stop the local timer for this CPU.
-	 */
-	local_timer_stop(cpu);
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Flush user cache and TLB mappings, and then remove this CPU
 	 * from the vm mask set of all processes.
 	 */
 	flush_cache_all();
-<<<<<<< HEAD
-	local_flush_tlb_all();
-
-	read_lock(&tasklist_lock);
-	for_each_process(p)
-		if (p->mm)
-			cpumask_clear_cpu(cpu, mm_cpumask(p->mm));
-	read_unlock(&tasklist_lock);
-=======
 #ifdef CONFIG_MMU
 	local_flush_tlb_all();
 #endif
 
 	clear_tasks_mm_cpumask(cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -219,28 +170,12 @@ void native_play_dead(void)
 }
 #endif
 
-<<<<<<< HEAD
-asmlinkage void __cpuinit start_secondary(void)
-=======
 asmlinkage void start_secondary(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cpu = smp_processor_id();
 	struct mm_struct *mm = &init_mm;
 
 	enable_mmu();
-<<<<<<< HEAD
-	atomic_inc(&mm->mm_count);
-	atomic_inc(&mm->mm_users);
-	current->active_mm = mm;
-	enter_lazy_tlb(mm, current);
-	local_flush_tlb_all();
-
-	per_cpu_trap_init();
-
-	preempt_disable();
-
-=======
 	mmgrab(mm);
 	mmget(mm);
 	current->active_mm = mm;
@@ -251,16 +186,10 @@ asmlinkage void start_secondary(void)
 
 	per_cpu_trap_init();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	notify_cpu_starting(cpu);
 
 	local_irq_enable();
 
-<<<<<<< HEAD
-	/* Enable local timers */
-	local_timer_setup(cpu);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	calibrate_delay();
 
 	smp_store_cpu_info(cpu);
@@ -268,11 +197,7 @@ asmlinkage void start_secondary(void)
 	set_cpu_online(cpu, true);
 	per_cpu(cpu_state, cpu) = CPU_ONLINE;
 
-<<<<<<< HEAD
-	cpu_idle();
-=======
 	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 extern struct {
@@ -284,29 +209,10 @@ extern struct {
 	void *thread_info;
 } stack_start;
 
-<<<<<<< HEAD
-int __cpuinit __cpu_up(unsigned int cpu)
-{
-	struct task_struct *tsk;
-	unsigned long timeout;
-
-	tsk = cpu_data[cpu].idle;
-	if (!tsk) {
-		tsk = fork_idle(cpu);
-		if (IS_ERR(tsk)) {
-			pr_err("Failed forking idle task for cpu %d\n", cpu);
-			return PTR_ERR(tsk);
-		}
-
-		cpu_data[cpu].idle = tsk;
-	}
-
-=======
 int __cpu_up(unsigned int cpu, struct task_struct *tsk)
 {
 	unsigned long timeout;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	per_cpu(cpu_state, cpu) = CPU_UP_PREPARE;
 
 	/* Fill in data in head.S for secondary cpus */
@@ -350,11 +256,7 @@ void __init smp_cpus_done(unsigned int max_cpus)
 	       (bogosum / (5000/HZ)) % 100);
 }
 
-<<<<<<< HEAD
-void smp_send_reschedule(int cpu)
-=======
 void arch_smp_send_reschedule(int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mp_ops->send_ipi(cpu, SMP_MSG_RESCHEDULE);
 }
@@ -377,12 +279,8 @@ void arch_send_call_function_single_ipi(int cpu)
 	mp_ops->send_ipi(cpu, SMP_MSG_FUNCTION_SINGLE);
 }
 
-<<<<<<< HEAD
-void smp_timer_broadcast(const struct cpumask *mask)
-=======
 #ifdef CONFIG_GENERIC_CLOCKEVENTS_BROADCAST
 void tick_broadcast(const struct cpumask *mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cpu;
 
@@ -393,16 +291,10 @@ void tick_broadcast(const struct cpumask *mask)
 static void ipi_timer(void)
 {
 	irq_enter();
-<<<<<<< HEAD
-	local_timer_interrupt();
-	irq_exit();
-}
-=======
 	tick_receive_broadcast();
 	irq_exit();
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void smp_message_recv(unsigned int msg)
 {
@@ -416,17 +308,11 @@ void smp_message_recv(unsigned int msg)
 	case SMP_MSG_FUNCTION_SINGLE:
 		generic_smp_call_function_single_interrupt();
 		break;
-<<<<<<< HEAD
-	case SMP_MSG_TIMER:
-		ipi_timer();
-		break;
-=======
 #ifdef CONFIG_GENERIC_CLOCKEVENTS_BROADCAST
 	case SMP_MSG_TIMER:
 		ipi_timer();
 		break;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		printk(KERN_WARNING "SMP %d: %s(): unknown IPI %d\n",
 		       smp_processor_id(), __func__, msg);
@@ -440,11 +326,8 @@ int setup_profiling_timer(unsigned int multiplier)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MMU
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void flush_tlb_all_ipi(void *info)
 {
 	local_flush_tlb_all();
@@ -480,11 +363,7 @@ void flush_tlb_mm(struct mm_struct *mm)
 		smp_call_function(flush_tlb_mm_ipi, (void *)mm, 1);
 	} else {
 		int i;
-<<<<<<< HEAD
-		for (i = 0; i < num_online_cpus(); i++)
-=======
 		for_each_online_cpu(i)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (smp_processor_id() != i)
 				cpu_context(i, mm) = 0;
 	}
@@ -521,11 +400,7 @@ void flush_tlb_range(struct vm_area_struct *vma,
 		smp_call_function(flush_tlb_range_ipi, (void *)&fd, 1);
 	} else {
 		int i;
-<<<<<<< HEAD
-		for (i = 0; i < num_online_cpus(); i++)
-=======
 		for_each_online_cpu(i)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (smp_processor_id() != i)
 				cpu_context(i, mm) = 0;
 	}
@@ -568,11 +443,7 @@ void flush_tlb_page(struct vm_area_struct *vma, unsigned long page)
 		smp_call_function(flush_tlb_page_ipi, (void *)&fd, 1);
 	} else {
 		int i;
-<<<<<<< HEAD
-		for (i = 0; i < num_online_cpus(); i++)
-=======
 		for_each_online_cpu(i)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (smp_processor_id() != i)
 				cpu_context(i, vma->vm_mm) = 0;
 	}
@@ -596,8 +467,5 @@ void flush_tlb_one(unsigned long asid, unsigned long vaddr)
 	smp_call_function(flush_tlb_one_ipi, (void *)&fd, 1);
 	local_flush_tlb_one(asid, vaddr);
 }
-<<<<<<< HEAD
-=======
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

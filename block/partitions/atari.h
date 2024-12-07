@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/partitions/atari.h
  *  Moved by Russell King from:
@@ -15,11 +12,8 @@
  * by Guenther Kelleter (guenther@pool.informatik.rwth-aachen.de)
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/compiler.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct partition_info
 {
   u8 flg;			/* bit 0: active; bit 7: bootable */
@@ -38,11 +32,5 @@ struct rootsector
   u32 bsl_st;			/* start of bad sector list */
   u32 bsl_cnt;			/* length of bad sector list */
   u16 checksum;			/* checksum for bootable disks */
-<<<<<<< HEAD
-} __attribute__((__packed__));
-
-int atari_partition(struct parsed_partitions *state);
-=======
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Synopsys DesignWare Multimedia Card Interface driver
  *  (Based on NXP driver for lpc 31xx)
  *
  * Copyright (C) 2009 NXP Semiconductors
  * Copyright (C) 2009, 2010 Imagination Technologies Ltd.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _DW_MMC_H_
 #define _DW_MMC_H_
 
-<<<<<<< HEAD
-#define DW_MMC_240A		0x240a
-=======
 #include <linux/scatterlist.h>
 #include <linux/mmc/core.h>
 #include <linux/dmaengine.h>
@@ -297,7 +283,6 @@ struct dw_mci_board {
 
 #define DW_MMC_240A		0x240a
 #define DW_MMC_280A		0x280a
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SDMMC_CTRL		0x000
 #define SDMMC_PWREN		0x004
@@ -329,10 +314,7 @@ struct dw_mci_board {
 #define SDMMC_VERID		0x06c
 #define SDMMC_HCON		0x070
 #define SDMMC_UHS_REG		0x074
-<<<<<<< HEAD
-=======
 #define SDMMC_RST_N		0x078
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SDMMC_BMOD		0x080
 #define SDMMC_PLDMND		0x084
 #define SDMMC_DBADDR		0x088
@@ -340,9 +322,6 @@ struct dw_mci_board {
 #define SDMMC_IDINTEN		0x090
 #define SDMMC_DSCADDR		0x094
 #define SDMMC_BUFADDR		0x098
-<<<<<<< HEAD
-#define SDMMC_DATA(x)		(x)
-=======
 #define SDMMC_CDTHRCTL		0x100
 #define SDMMC_UHS_REG_EXT	0x108
 #define SDMMC_DDR_REG		0x10c
@@ -359,7 +338,6 @@ struct dw_mci_board {
 #define SDMMC_DSCADDRU		0x09c
 #define SDMMC_BUFADDRL		0x0A0
 #define SDMMC_BUFADDRU		0x0A4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Data offset is difference according to Version
@@ -404,12 +382,8 @@ struct dw_mci_board {
 #define SDMMC_INT_HLE			BIT(12)
 #define SDMMC_INT_FRUN			BIT(11)
 #define SDMMC_INT_HTO			BIT(10)
-<<<<<<< HEAD
-#define SDMMC_INT_DTO			BIT(9)
-=======
 #define SDMMC_INT_VOLT_SWITCH		BIT(10) /* overloads bit 10! */
 #define SDMMC_INT_DRTO			BIT(9)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SDMMC_INT_RTO			BIT(8)
 #define SDMMC_INT_DCRC			BIT(7)
 #define SDMMC_INT_RCRC			BIT(6)
@@ -422,11 +396,8 @@ struct dw_mci_board {
 #define SDMMC_INT_ERROR			0xbfc2
 /* Command register defines */
 #define SDMMC_CMD_START			BIT(31)
-<<<<<<< HEAD
-=======
 #define SDMMC_CMD_USE_HOLD_REG	BIT(29)
 #define SDMMC_CMD_VOLT_SWITCH		BIT(28)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SDMMC_CMD_CCS_EXP		BIT(23)
 #define SDMMC_CMD_CEATA_RD		BIT(22)
 #define SDMMC_CMD_UPD_CLK		BIT(21)
@@ -443,8 +414,6 @@ struct dw_mci_board {
 #define SDMMC_CMD_INDX(n)		((n) & 0x1F)
 /* Status register defines */
 #define SDMMC_GET_FCNT(x)		(((x)>>17) & 0x1FFF)
-<<<<<<< HEAD
-=======
 #define SDMMC_STATUS_DMA_REQ		BIT(31)
 #define SDMMC_STATUS_BUSY		BIT(9)
 /* FIFOTH register defines */
@@ -460,7 +429,6 @@ struct dw_mci_board {
 #define SDMMC_GET_SLOT_NUM(x)		((((x)>>1) & 0x1F) + 1)
 #define SDMMC_GET_HDATA_WIDTH(x)	(((x)>>7) & 0x7)
 #define SDMMC_GET_ADDR_CONFIG(x)	(((x)>>27) & 0x1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Internal DMAC interrupt defines */
 #define SDMMC_IDMAC_INT_AI		BIT(9)
 #define SDMMC_IDMAC_INT_NI		BIT(8)
@@ -473,22 +441,6 @@ struct dw_mci_board {
 #define SDMMC_IDMAC_ENABLE		BIT(7)
 #define SDMMC_IDMAC_FB			BIT(1)
 #define SDMMC_IDMAC_SWRESET		BIT(0)
-<<<<<<< HEAD
-/* Version ID register define */
-#define SDMMC_GET_VERID(x)		((x) & 0xFFFF)
-
-/* Register access macros */
-#define mci_readl(dev, reg)			\
-	__raw_readl((dev)->regs + SDMMC_##reg)
-#define mci_writel(dev, reg, value)			\
-	__raw_writel((value), (dev)->regs + SDMMC_##reg)
-
-/* 16-bit FIFO access macros */
-#define mci_readw(dev, reg)			\
-	__raw_readw((dev)->regs + SDMMC_##reg)
-#define mci_writew(dev, reg, value)			\
-	__raw_writew((value), (dev)->regs + SDMMC_##reg)
-=======
 /* H/W reset */
 #define SDMMC_RST_HWACTIVE		0x1
 /* Version ID register define */
@@ -530,20 +482,13 @@ struct dw_mci_board {
 	readw_relaxed((dev)->regs + SDMMC_##reg)
 #define mci_writew(dev, reg, value)			\
 	writew_relaxed((value), (dev)->regs + SDMMC_##reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 64-bit FIFO access macros */
 #ifdef readq
 #define mci_readq(dev, reg)			\
-<<<<<<< HEAD
-	__raw_readq((dev)->regs + SDMMC_##reg)
-#define mci_writeq(dev, reg, value)			\
-	__raw_writeq((value), (dev)->regs + SDMMC_##reg)
-=======
 	readq_relaxed((dev)->regs + SDMMC_##reg)
 #define mci_writeq(dev, reg, value)			\
 	writeq_relaxed((value), (dev)->regs + SDMMC_##reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 /*
  * Dummy readq implementation for architectures that don't define it.
@@ -557,24 +502,15 @@ struct dw_mci_board {
 	(*(volatile u64 __force *)((dev)->regs + SDMMC_##reg))
 #define mci_writeq(dev, reg, value)			\
 	(*(volatile u64 __force *)((dev)->regs + SDMMC_##reg) = (value))
-<<<<<<< HEAD
-=======
 
 #define __raw_writeq(__value, __reg) \
 	(*(volatile u64 __force *)(__reg) = (__value))
 #define __raw_readq(__reg) (*(volatile u64 __force *)(__reg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 extern int dw_mci_probe(struct dw_mci *host);
 extern void dw_mci_remove(struct dw_mci *host);
 #ifdef CONFIG_PM
-<<<<<<< HEAD
-extern int dw_mci_suspend(struct dw_mci *host);
-extern int dw_mci_resume(struct dw_mci *host);
-#endif
-
-=======
 extern int dw_mci_runtime_suspend(struct device *device);
 extern int dw_mci_runtime_resume(struct device *device);
 #endif
@@ -650,5 +586,4 @@ struct dw_mci_drv_data {
 					  unsigned int timeout_ns);
 	u32		(*get_drto_clks)(struct dw_mci *host);
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _DW_MMC_H_ */

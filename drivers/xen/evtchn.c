@@ -31,11 +31,8 @@
  * IN THE SOFTWARE.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -52,32 +49,17 @@
 #include <linux/init.h>
 #include <linux/mutex.h>
 #include <linux/cpu.h>
-<<<<<<< HEAD
-=======
 #include <linux/mm.h>
 #include <linux/vmalloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <xen/xen.h>
 #include <xen/events.h>
 #include <xen/evtchn.h>
-<<<<<<< HEAD
-=======
 #include <xen/xen-ops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/xen/hypervisor.h>
 
 struct per_user_data {
 	struct mutex bind_mutex; /* serialize bind/unbind operations */
-<<<<<<< HEAD
-
-	/* Notification ring, accessed via /dev/xen/evtchn. */
-#define EVTCHN_RING_SIZE     (PAGE_SIZE / sizeof(evtchn_port_t))
-#define EVTCHN_RING_MASK(_i) ((_i)&(EVTCHN_RING_SIZE-1))
-	evtchn_port_t *ring;
-	unsigned int ring_cons, ring_prod, ring_overflow;
-	struct mutex ring_cons_mutex; /* protect against concurrent readers */
-=======
 	struct rb_root evtchns;
 	unsigned int nr_evtchns;
 
@@ -87,44 +69,11 @@ struct per_user_data {
 	unsigned int ring_cons, ring_prod, ring_overflow;
 	struct mutex ring_cons_mutex; /* protect against concurrent readers */
 	spinlock_t ring_prod_lock; /* product against concurrent interrupts */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Processes wait on this queue when ring is empty. */
 	wait_queue_head_t evtchn_wait;
 	struct fasync_struct *evtchn_async_queue;
 	const char *name;
-<<<<<<< HEAD
-};
-
-/*
- * Who's bound to each port?  This is logically an array of struct
- * per_user_data *, but we encode the current enabled-state in bit 0.
- */
-static unsigned long *port_user;
-static DEFINE_SPINLOCK(port_user_lock); /* protects port_user[] and ring_prod */
-
-static inline struct per_user_data *get_port_user(unsigned port)
-{
-	return (struct per_user_data *)(port_user[port] & ~1);
-}
-
-static inline void set_port_user(unsigned port, struct per_user_data *u)
-{
-	port_user[port] = (unsigned long)u;
-}
-
-static inline bool get_port_enabled(unsigned port)
-{
-	return port_user[port] & 1;
-}
-
-static inline void set_port_enabled(unsigned port, bool enabled)
-{
-	if (enabled)
-		port_user[port] |= 1;
-	else
-		port_user[port] &= ~1;
-=======
 
 	domid_t restrict_domid;
 };
@@ -208,31 +157,10 @@ static struct user_evtchn *find_evtchn(struct per_user_data *u,
 			return evtchn;
 	}
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t evtchn_interrupt(int irq, void *data)
 {
-<<<<<<< HEAD
-	unsigned int port = (unsigned long)data;
-	struct per_user_data *u;
-
-	spin_lock(&port_user_lock);
-
-	u = get_port_user(port);
-
-	WARN(!get_port_enabled(port),
-	     "Interrupt for port %d, but apparently not enabled; per-user %p\n",
-	     port, u);
-
-	disable_irq_nosync(irq);
-	set_port_enabled(port, false);
-
-	if ((u->ring_prod - u->ring_cons) < EVTCHN_RING_SIZE) {
-		u->ring[EVTCHN_RING_MASK(u->ring_prod)] = port;
-		wmb(); /* Ensure ring contents visible */
-		if (u->ring_cons == u->ring_prod++) {
-=======
 	struct user_evtchn *evtchn = data;
 	struct per_user_data *u = evtchn->user;
 	unsigned int prod, cons;
@@ -257,7 +185,6 @@ static irqreturn_t evtchn_interrupt(int irq, void *data)
 		smp_wmb(); /* Ensure ring contents visible */
 		WRITE_ONCE(u->ring_prod, prod + 1);
 		if (cons == prod) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wake_up_interruptible(&u->evtchn_wait);
 			kill_fasync(&u->evtchn_async_queue,
 				    SIGIO, POLL_IN);
@@ -265,11 +192,7 @@ static irqreturn_t evtchn_interrupt(int irq, void *data)
 	} else
 		u->ring_overflow = 1;
 
-<<<<<<< HEAD
-	spin_unlock(&port_user_lock);
-=======
 	spin_unlock(&u->ring_prod_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -297,13 +220,8 @@ static ssize_t evtchn_read(struct file *file, char __user *buf,
 		if (u->ring_overflow)
 			goto unlock_out;
 
-<<<<<<< HEAD
-		c = u->ring_cons;
-		p = u->ring_prod;
-=======
 		c = READ_ONCE(u->ring_cons);
 		p = READ_ONCE(u->ring_prod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (c != p)
 			break;
 
@@ -313,27 +231,16 @@ static ssize_t evtchn_read(struct file *file, char __user *buf,
 			return -EAGAIN;
 
 		rc = wait_event_interruptible(u->evtchn_wait,
-<<<<<<< HEAD
-					      u->ring_cons != u->ring_prod);
-=======
 			READ_ONCE(u->ring_cons) != READ_ONCE(u->ring_prod));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc)
 			return rc;
 	}
 
 	/* Byte lengths of two chunks. Chunk split (if any) is at ring wrap. */
-<<<<<<< HEAD
-	if (((c ^ p) & EVTCHN_RING_SIZE) != 0) {
-		bytes1 = (EVTCHN_RING_SIZE - EVTCHN_RING_MASK(c)) *
-			sizeof(evtchn_port_t);
-		bytes2 = EVTCHN_RING_MASK(p) * sizeof(evtchn_port_t);
-=======
 	if (((c ^ p) & u->ring_size) != 0) {
 		bytes1 = (u->ring_size - evtchn_ring_offset(u, c)) *
 			sizeof(evtchn_port_t);
 		bytes2 = evtchn_ring_offset(u, p) * sizeof(evtchn_port_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		bytes1 = (p - c) * sizeof(evtchn_port_t);
 		bytes2 = 0;
@@ -348,22 +255,13 @@ static ssize_t evtchn_read(struct file *file, char __user *buf,
 	}
 
 	rc = -EFAULT;
-<<<<<<< HEAD
-	rmb(); /* Ensure that we see the port before we copy it. */
-	if (copy_to_user(buf, &u->ring[EVTCHN_RING_MASK(c)], bytes1) ||
-=======
 	smp_rmb(); /* Ensure that we see the port before we copy it. */
 	if (copy_to_user(buf, evtchn_ring_entry(u, c), bytes1) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    ((bytes2 != 0) &&
 	     copy_to_user(&buf[bytes1], &u->ring[0], bytes2)))
 		goto unlock_out;
 
-<<<<<<< HEAD
-	u->ring_cons += (bytes1 + bytes2) / sizeof(evtchn_port_t);
-=======
 	WRITE_ONCE(u->ring_cons, c + (bytes1 + bytes2) / sizeof(evtchn_port_t));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = bytes1 + bytes2;
 
  unlock_out:
@@ -395,22 +293,6 @@ static ssize_t evtchn_write(struct file *file, const char __user *buf,
 	if (copy_from_user(kbuf, buf, count) != 0)
 		goto out;
 
-<<<<<<< HEAD
-	spin_lock_irq(&port_user_lock);
-
-	for (i = 0; i < (count/sizeof(evtchn_port_t)); i++) {
-		unsigned port = kbuf[i];
-
-		if (port < NR_EVENT_CHANNELS &&
-		    get_port_user(port) == u &&
-		    !get_port_enabled(port)) {
-			set_port_enabled(port, true);
-			enable_irq(irq_from_evtchn(port));
-		}
-	}
-
-	spin_unlock_irq(&port_user_lock);
-=======
 	mutex_lock(&u->bind_mutex);
 
 	for (i = 0; i < (count/sizeof(evtchn_port_t)); i++) {
@@ -425,7 +307,6 @@ static ssize_t evtchn_write(struct file *file, const char __user *buf,
 	}
 
 	mutex_unlock(&u->bind_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = count;
 
@@ -434,10 +315,6 @@ static ssize_t evtchn_write(struct file *file, const char __user *buf,
 	return rc;
 }
 
-<<<<<<< HEAD
-static int evtchn_bind_to_user(struct per_user_data *u, int port)
-{
-=======
 static int evtchn_resize_ring(struct per_user_data *u)
 {
 	unsigned int new_size;
@@ -498,7 +375,6 @@ static int evtchn_bind_to_user(struct per_user_data *u, evtchn_port_t port,
 			       bool is_static)
 {
 	struct user_evtchn *evtchn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	/*
@@ -509,37 +385,6 @@ static int evtchn_bind_to_user(struct per_user_data *u, evtchn_port_t port,
 	 * interrupt handler yet, and our caller has already
 	 * serialized bind operations.)
 	 */
-<<<<<<< HEAD
-	BUG_ON(get_port_user(port) != NULL);
-	set_port_user(port, u);
-	set_port_enabled(port, true); /* start enabled */
-
-	rc = bind_evtchn_to_irqhandler(port, evtchn_interrupt, IRQF_DISABLED,
-				       u->name, (void *)(unsigned long)port);
-	if (rc >= 0)
-		rc = evtchn_make_refcounted(port);
-	else {
-		/* bind failed, should close the port now */
-		struct evtchn_close close;
-		close.port = port;
-		if (HYPERVISOR_event_channel_op(EVTCHNOP_close, &close) != 0)
-			BUG();
-		set_port_user(port, NULL);
-	}
-
-	return rc;
-}
-
-static void evtchn_unbind_from_user(struct per_user_data *u, int port)
-{
-	int irq = irq_from_evtchn(port);
-
-	BUG_ON(irq < 0);
-
-	unbind_from_irqhandler(irq, (void *)(unsigned long)port);
-
-	set_port_user(port, NULL);
-=======
 
 	evtchn = kzalloc(sizeof(*evtchn), GFP_KERNEL);
 	if (!evtchn)
@@ -585,7 +430,6 @@ static void evtchn_unbind_from_user(struct per_user_data *u,
 	unbind_from_irqhandler(irq, evtchn);
 
 	del_evtchn(u, evtchn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static long evtchn_ioctl(struct file *file,
@@ -603,33 +447,22 @@ static long evtchn_ioctl(struct file *file,
 		struct ioctl_evtchn_bind_virq bind;
 		struct evtchn_bind_virq bind_virq;
 
-<<<<<<< HEAD
-=======
 		rc = -EACCES;
 		if (u->restrict_domid != UNRESTRICTED_DOMID)
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EFAULT;
 		if (copy_from_user(&bind, uarg, sizeof(bind)))
 			break;
 
 		bind_virq.virq = bind.virq;
-<<<<<<< HEAD
-		bind_virq.vcpu = 0;
-=======
 		bind_virq.vcpu = xen_vcpu_nr(0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = HYPERVISOR_event_channel_op(EVTCHNOP_bind_virq,
 						 &bind_virq);
 		if (rc != 0)
 			break;
 
-<<<<<<< HEAD
-		rc = evtchn_bind_to_user(u, bind_virq.port);
-=======
 		rc = evtchn_bind_to_user(u, bind_virq.port, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc == 0)
 			rc = bind_virq.port;
 		break;
@@ -643,14 +476,11 @@ static long evtchn_ioctl(struct file *file,
 		if (copy_from_user(&bind, uarg, sizeof(bind)))
 			break;
 
-<<<<<<< HEAD
-=======
 		rc = -EACCES;
 		if (u->restrict_domid != UNRESTRICTED_DOMID &&
 		    u->restrict_domid != bind.remote_domain)
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bind_interdomain.remote_dom  = bind.remote_domain;
 		bind_interdomain.remote_port = bind.remote_port;
 		rc = HYPERVISOR_event_channel_op(EVTCHNOP_bind_interdomain,
@@ -658,11 +488,7 @@ static long evtchn_ioctl(struct file *file,
 		if (rc != 0)
 			break;
 
-<<<<<<< HEAD
-		rc = evtchn_bind_to_user(u, bind_interdomain.local_port);
-=======
 		rc = evtchn_bind_to_user(u, bind_interdomain.local_port, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc == 0)
 			rc = bind_interdomain.local_port;
 		break;
@@ -672,13 +498,10 @@ static long evtchn_ioctl(struct file *file,
 		struct ioctl_evtchn_bind_unbound_port bind;
 		struct evtchn_alloc_unbound alloc_unbound;
 
-<<<<<<< HEAD
-=======
 		rc = -EACCES;
 		if (u->restrict_domid != UNRESTRICTED_DOMID)
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EFAULT;
 		if (copy_from_user(&bind, uarg, sizeof(bind)))
 			break;
@@ -690,11 +513,7 @@ static long evtchn_ioctl(struct file *file,
 		if (rc != 0)
 			break;
 
-<<<<<<< HEAD
-		rc = evtchn_bind_to_user(u, alloc_unbound.port);
-=======
 		rc = evtchn_bind_to_user(u, alloc_unbound.port, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc == 0)
 			rc = alloc_unbound.port;
 		break;
@@ -702,29 +521,13 @@ static long evtchn_ioctl(struct file *file,
 
 	case IOCTL_EVTCHN_UNBIND: {
 		struct ioctl_evtchn_unbind unbind;
-<<<<<<< HEAD
-=======
 		struct user_evtchn *evtchn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rc = -EFAULT;
 		if (copy_from_user(&unbind, uarg, sizeof(unbind)))
 			break;
 
 		rc = -EINVAL;
-<<<<<<< HEAD
-		if (unbind.port >= NR_EVENT_CHANNELS)
-			break;
-
-		rc = -ENOTCONN;
-		if (get_port_user(unbind.port) != u)
-			break;
-
-		disable_irq(irq_from_evtchn(unbind.port));
-
-		evtchn_unbind_from_user(u, unbind.port);
-
-=======
 		if (unbind.port >= xen_evtchn_nr_channels())
 			break;
 
@@ -735,15 +538,10 @@ static long evtchn_ioctl(struct file *file,
 
 		disable_irq(irq_from_evtchn(unbind.port));
 		evtchn_unbind_from_user(u, evtchn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = 0;
 		break;
 	}
 
-<<<<<<< HEAD
-	case IOCTL_EVTCHN_NOTIFY: {
-		struct ioctl_evtchn_notify notify;
-=======
 	case IOCTL_EVTCHN_BIND_STATIC: {
 		struct ioctl_evtchn_bind bind;
 		struct user_evtchn *evtchn;
@@ -764,23 +562,14 @@ static long evtchn_ioctl(struct file *file,
 	case IOCTL_EVTCHN_NOTIFY: {
 		struct ioctl_evtchn_notify notify;
 		struct user_evtchn *evtchn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rc = -EFAULT;
 		if (copy_from_user(&notify, uarg, sizeof(notify)))
 			break;
 
-<<<<<<< HEAD
-		if (notify.port >= NR_EVENT_CHANNELS) {
-			rc = -EINVAL;
-		} else if (get_port_user(notify.port) != u) {
-			rc = -ENOTCONN;
-		} else {
-=======
 		rc = -ENOTCONN;
 		evtchn = find_evtchn(u, notify.port);
 		if (evtchn) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			notify_remote_via_evtchn(notify.port);
 			rc = 0;
 		}
@@ -790,24 +579,16 @@ static long evtchn_ioctl(struct file *file,
 	case IOCTL_EVTCHN_RESET: {
 		/* Initialise the ring to empty. Clear errors. */
 		mutex_lock(&u->ring_cons_mutex);
-<<<<<<< HEAD
-		spin_lock_irq(&port_user_lock);
-		u->ring_cons = u->ring_prod = u->ring_overflow = 0;
-		spin_unlock_irq(&port_user_lock);
-=======
 		spin_lock_irq(&u->ring_prod_lock);
 		WRITE_ONCE(u->ring_cons, 0);
 		WRITE_ONCE(u->ring_prod, 0);
 		u->ring_overflow = 0;
 		spin_unlock_irq(&u->ring_prod_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&u->ring_cons_mutex);
 		rc = 0;
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 	case IOCTL_EVTCHN_RESTRICT_DOMID: {
 		struct ioctl_evtchn_restrict_domid ierd;
 
@@ -829,7 +610,6 @@ static long evtchn_ioctl(struct file *file,
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		rc = -ENOSYS;
 		break;
@@ -839,18 +619,6 @@ static long evtchn_ioctl(struct file *file,
 	return rc;
 }
 
-<<<<<<< HEAD
-static unsigned int evtchn_poll(struct file *file, poll_table *wait)
-{
-	unsigned int mask = POLLOUT | POLLWRNORM;
-	struct per_user_data *u = file->private_data;
-
-	poll_wait(file, &u->evtchn_wait, wait);
-	if (u->ring_cons != u->ring_prod)
-		mask |= POLLIN | POLLRDNORM;
-	if (u->ring_overflow)
-		mask = POLLERR;
-=======
 static __poll_t evtchn_poll(struct file *file, poll_table *wait)
 {
 	__poll_t mask = EPOLLOUT | EPOLLWRNORM;
@@ -861,7 +629,6 @@ static __poll_t evtchn_poll(struct file *file, poll_table *wait)
 		mask |= EPOLLIN | EPOLLRDNORM;
 	if (u->ring_overflow)
 		mask = EPOLLERR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mask;
 }
 
@@ -887,21 +654,6 @@ static int evtchn_open(struct inode *inode, struct file *filp)
 
 	init_waitqueue_head(&u->evtchn_wait);
 
-<<<<<<< HEAD
-	u->ring = (evtchn_port_t *)__get_free_page(GFP_KERNEL);
-	if (u->ring == NULL) {
-		kfree(u->name);
-		kfree(u);
-		return -ENOMEM;
-	}
-
-	mutex_init(&u->bind_mutex);
-	mutex_init(&u->ring_cons_mutex);
-
-	filp->private_data = u;
-
-	return nonseekable_open(inode, filp);
-=======
 	mutex_init(&u->bind_mutex);
 	mutex_init(&u->ring_cons_mutex);
 	spin_lock_init(&u->ring_prod_lock);
@@ -911,25 +663,10 @@ static int evtchn_open(struct inode *inode, struct file *filp)
 	filp->private_data = u;
 
 	return stream_open(inode, filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int evtchn_release(struct inode *inode, struct file *filp)
 {
-<<<<<<< HEAD
-	int i;
-	struct per_user_data *u = filp->private_data;
-
-	for (i = 0; i < NR_EVENT_CHANNELS; i++) {
-		if (get_port_user(i) != u)
-			continue;
-
-		disable_irq(irq_from_evtchn(i));
-		evtchn_unbind_from_user(get_port_user(i), i);
-	}
-
-	free_page((unsigned long)u->ring);
-=======
 	struct per_user_data *u = filp->private_data;
 	struct rb_node *node;
 
@@ -942,7 +679,6 @@ static int evtchn_release(struct inode *inode, struct file *filp)
 	}
 
 	evtchn_free_ring(u->ring);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(u->name);
 	kfree(u);
 
@@ -973,22 +709,6 @@ static int __init evtchn_init(void)
 	if (!xen_domain())
 		return -ENODEV;
 
-<<<<<<< HEAD
-	port_user = kcalloc(NR_EVENT_CHANNELS, sizeof(*port_user), GFP_KERNEL);
-	if (port_user == NULL)
-		return -ENOMEM;
-
-	spin_lock_init(&port_user_lock);
-
-	/* Create '/dev/misc/evtchn'. */
-	err = misc_register(&evtchn_miscdev);
-	if (err != 0) {
-		printk(KERN_ALERT "Could not register /dev/misc/evtchn\n");
-		return err;
-	}
-
-	printk(KERN_INFO "Event-channel device installed.\n");
-=======
 	/* Create '/dev/xen/evtchn'. */
 	err = misc_register(&evtchn_miscdev);
 	if (err != 0) {
@@ -997,19 +717,12 @@ static int __init evtchn_init(void)
 	}
 
 	pr_info("Event-channel device installed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static void __exit evtchn_cleanup(void)
 {
-<<<<<<< HEAD
-	kfree(port_user);
-	port_user = NULL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	misc_deregister(&evtchn_miscdev);
 }
 

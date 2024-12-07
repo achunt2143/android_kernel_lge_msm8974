@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale/Motorola Coldfire Queued SPI driver
  *
  * Copyright 2010 Steven King <sfking@fdwdc.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/kernel.h>
@@ -32,19 +11,12 @@
 #include <linux/errno.h>
 #include <linux/platform_device.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <linux/workqueue.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/spi/spi.h>
-<<<<<<< HEAD
-=======
 #include <linux/pm_runtime.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/coldfire.h>
 #include <asm/mcfsim.h>
@@ -91,14 +63,6 @@ struct mcfqspi {
 	struct mcfqspi_cs_control *cs_control;
 
 	wait_queue_head_t waitq;
-<<<<<<< HEAD
-
-	struct work_struct work;
-	struct workqueue_struct *workq;
-	spinlock_t lock;
-	struct list_head msgq;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void mcfqspi_wr_qmr(struct mcfqspi *mcfqspi, u16 val)
@@ -155,21 +119,13 @@ static void mcfqspi_cs_deselect(struct mcfqspi *mcfqspi, u8 chip_select,
 
 static int mcfqspi_cs_setup(struct mcfqspi *mcfqspi)
 {
-<<<<<<< HEAD
-	return (mcfqspi->cs_control && mcfqspi->cs_control->setup) ?
-=======
 	return (mcfqspi->cs_control->setup) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcfqspi->cs_control->setup(mcfqspi->cs_control) : 0;
 }
 
 static void mcfqspi_cs_teardown(struct mcfqspi *mcfqspi)
 {
-<<<<<<< HEAD
-	if (mcfqspi->cs_control && mcfqspi->cs_control->teardown)
-=======
 	if (mcfqspi->cs_control->teardown)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcfqspi->cs_control->teardown(mcfqspi->cs_control);
 }
 
@@ -328,122 +284,6 @@ static void mcfqspi_transfer_msg16(struct mcfqspi *mcfqspi, unsigned count,
 	}
 }
 
-<<<<<<< HEAD
-static void mcfqspi_work(struct work_struct *work)
-{
-	struct mcfqspi *mcfqspi = container_of(work, struct mcfqspi, work);
-	unsigned long flags;
-
-	spin_lock_irqsave(&mcfqspi->lock, flags);
-	while (!list_empty(&mcfqspi->msgq)) {
-		struct spi_message *msg;
-		struct spi_device *spi;
-		struct spi_transfer *xfer;
-		int status = 0;
-
-		msg = container_of(mcfqspi->msgq.next, struct spi_message,
-				   queue);
-
-		list_del_init(&msg->queue);
-		spin_unlock_irqrestore(&mcfqspi->lock, flags);
-
-		spi = msg->spi;
-
-		list_for_each_entry(xfer, &msg->transfers, transfer_list) {
-			bool cs_high = spi->mode & SPI_CS_HIGH;
-			u16 qmr = MCFQSPI_QMR_MSTR;
-
-			if (xfer->bits_per_word)
-				qmr |= xfer->bits_per_word << 10;
-			else
-				qmr |= spi->bits_per_word << 10;
-			if (spi->mode & SPI_CPHA)
-				qmr |= MCFQSPI_QMR_CPHA;
-			if (spi->mode & SPI_CPOL)
-				qmr |= MCFQSPI_QMR_CPOL;
-			if (xfer->speed_hz)
-				qmr |= mcfqspi_qmr_baud(xfer->speed_hz);
-			else
-				qmr |= mcfqspi_qmr_baud(spi->max_speed_hz);
-			mcfqspi_wr_qmr(mcfqspi, qmr);
-
-			mcfqspi_cs_select(mcfqspi, spi->chip_select, cs_high);
-
-			mcfqspi_wr_qir(mcfqspi, MCFQSPI_QIR_SPIFE);
-			if ((xfer->bits_per_word ? xfer->bits_per_word :
-						spi->bits_per_word) == 8)
-				mcfqspi_transfer_msg8(mcfqspi, xfer->len,
-						      xfer->tx_buf,
-						      xfer->rx_buf);
-			else
-				mcfqspi_transfer_msg16(mcfqspi, xfer->len / 2,
-						       xfer->tx_buf,
-						       xfer->rx_buf);
-			mcfqspi_wr_qir(mcfqspi, 0);
-
-			if (xfer->delay_usecs)
-				udelay(xfer->delay_usecs);
-			if (xfer->cs_change) {
-				if (!list_is_last(&xfer->transfer_list,
-						  &msg->transfers))
-					mcfqspi_cs_deselect(mcfqspi,
-							    spi->chip_select,
-							    cs_high);
-			} else {
-				if (list_is_last(&xfer->transfer_list,
-						 &msg->transfers))
-					mcfqspi_cs_deselect(mcfqspi,
-							    spi->chip_select,
-							    cs_high);
-			}
-			msg->actual_length += xfer->len;
-		}
-		msg->status = status;
-		msg->complete(msg->context);
-
-		spin_lock_irqsave(&mcfqspi->lock, flags);
-	}
-	spin_unlock_irqrestore(&mcfqspi->lock, flags);
-}
-
-static int mcfqspi_transfer(struct spi_device *spi, struct spi_message *msg)
-{
-	struct mcfqspi *mcfqspi;
-	struct spi_transfer *xfer;
-	unsigned long flags;
-
-	mcfqspi = spi_master_get_devdata(spi->master);
-
-	list_for_each_entry(xfer, &msg->transfers, transfer_list) {
-		if (xfer->bits_per_word && ((xfer->bits_per_word < 8)
-					|| (xfer->bits_per_word > 16))) {
-			dev_dbg(&spi->dev,
-				"%d bits per word is not supported\n",
-				xfer->bits_per_word);
-			goto fail;
-		}
-		if (xfer->speed_hz) {
-			u32 real_speed = MCFQSPI_BUSCLK /
-				mcfqspi_qmr_baud(xfer->speed_hz);
-			if (real_speed != xfer->speed_hz)
-				dev_dbg(&spi->dev,
-					"using speed %d instead of %d\n",
-					real_speed, xfer->speed_hz);
-		}
-	}
-	msg->status = -EINPROGRESS;
-	msg->actual_length = 0;
-
-	spin_lock_irqsave(&mcfqspi->lock, flags);
-	list_add_tail(&msg->queue, &mcfqspi->msgq);
-	queue_work(mcfqspi->workq, &mcfqspi->work);
-	spin_unlock_irqrestore(&mcfqspi->lock, flags);
-
-	return 0;
-fail:
-	msg->status = -EINVAL;
-	return -EINVAL;
-=======
 static void mcfqspi_set_cs(struct spi_device *spi, bool enable)
 {
 	struct mcfqspi *mcfqspi = spi_controller_get_devdata(spi->controller);
@@ -479,81 +319,22 @@ static int mcfqspi_transfer_one(struct spi_controller *host,
 	mcfqspi_wr_qir(mcfqspi, 0);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mcfqspi_setup(struct spi_device *spi)
 {
-<<<<<<< HEAD
-	if ((spi->bits_per_word < 8) || (spi->bits_per_word > 16)) {
-		dev_dbg(&spi->dev, "%d bits per word is not supported\n",
-			spi->bits_per_word);
-		return -EINVAL;
-	}
-	if (spi->chip_select >= spi->master->num_chipselect) {
-		dev_dbg(&spi->dev, "%d chip select is out of range\n",
-			spi->chip_select);
-		return -EINVAL;
-	}
-
-	mcfqspi_cs_deselect(spi_master_get_devdata(spi->master),
-			    spi->chip_select, spi->mode & SPI_CS_HIGH);
-
-	dev_dbg(&spi->dev,
-			"bits per word %d, chip select %d, speed %d KHz\n",
-			spi->bits_per_word, spi->chip_select,
-=======
 	mcfqspi_cs_deselect(spi_controller_get_devdata(spi->controller),
 			    spi_get_chipselect(spi, 0), spi->mode & SPI_CS_HIGH);
 
 	dev_dbg(&spi->dev,
 			"bits per word %d, chip select %d, speed %d KHz\n",
 			spi->bits_per_word, spi_get_chipselect(spi, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(MCFQSPI_BUSCLK / mcfqspi_qmr_baud(spi->max_speed_hz))
 			/ 1000);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit mcfqspi_probe(struct platform_device *pdev)
-{
-	struct spi_master *master;
-	struct mcfqspi *mcfqspi;
-	struct resource *res;
-	struct mcfqspi_platform_data *pdata;
-	int status;
-
-	master = spi_alloc_master(&pdev->dev, sizeof(*mcfqspi));
-	if (master == NULL) {
-		dev_dbg(&pdev->dev, "spi_alloc_master failed\n");
-		return -ENOMEM;
-	}
-
-	mcfqspi = spi_master_get_devdata(master);
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		dev_dbg(&pdev->dev, "platform_get_resource failed\n");
-		status = -ENXIO;
-		goto fail0;
-	}
-
-	if (!request_mem_region(res->start, resource_size(res), pdev->name)) {
-		dev_dbg(&pdev->dev, "request_mem_region failed\n");
-		status = -EBUSY;
-		goto fail0;
-	}
-
-	mcfqspi->iobase = ioremap(res->start, resource_size(res));
-	if (!mcfqspi->iobase) {
-		dev_dbg(&pdev->dev, "ioremap failed\n");
-		status = -ENOMEM;
-		goto fail1;
-	}
-
-=======
 static int mcfqspi_probe(struct platform_device *pdev)
 {
 	struct spi_controller *host;
@@ -586,49 +367,10 @@ static int mcfqspi_probe(struct platform_device *pdev)
 		goto fail0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcfqspi->irq = platform_get_irq(pdev, 0);
 	if (mcfqspi->irq < 0) {
 		dev_dbg(&pdev->dev, "platform_get_irq failed\n");
 		status = -ENXIO;
-<<<<<<< HEAD
-		goto fail2;
-	}
-
-	status = request_irq(mcfqspi->irq, mcfqspi_irq_handler, 0,
-			     pdev->name, mcfqspi);
-	if (status) {
-		dev_dbg(&pdev->dev, "request_irq failed\n");
-		goto fail2;
-	}
-
-	mcfqspi->clk = clk_get(&pdev->dev, "qspi_clk");
-	if (IS_ERR(mcfqspi->clk)) {
-		dev_dbg(&pdev->dev, "clk_get failed\n");
-		status = PTR_ERR(mcfqspi->clk);
-		goto fail3;
-	}
-	clk_enable(mcfqspi->clk);
-
-	mcfqspi->workq = create_singlethread_workqueue(dev_name(master->dev.parent));
-	if (!mcfqspi->workq) {
-		dev_dbg(&pdev->dev, "create_workqueue failed\n");
-		status = -ENOMEM;
-		goto fail4;
-	}
-	INIT_WORK(&mcfqspi->work, mcfqspi_work);
-	spin_lock_init(&mcfqspi->lock);
-	INIT_LIST_HEAD(&mcfqspi->msgq);
-	init_waitqueue_head(&mcfqspi->waitq);
-
-	pdata = pdev->dev.platform_data;
-	if (!pdata) {
-		dev_dbg(&pdev->dev, "platform data is missing\n");
-		goto fail5;
-	}
-	master->bus_num = pdata->bus_num;
-	master->num_chipselect = pdata->num_chipselect;
-=======
 		goto fail0;
 	}
 
@@ -648,28 +390,11 @@ static int mcfqspi_probe(struct platform_device *pdev)
 
 	host->bus_num = pdata->bus_num;
 	host->num_chipselect = pdata->num_chipselect;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcfqspi->cs_control = pdata->cs_control;
 	status = mcfqspi_cs_setup(mcfqspi);
 	if (status) {
 		dev_dbg(&pdev->dev, "error initializing cs_control\n");
-<<<<<<< HEAD
-		goto fail5;
-	}
-
-	master->mode_bits = SPI_CS_HIGH | SPI_CPOL | SPI_CPHA;
-	master->setup = mcfqspi_setup;
-	master->transfer = mcfqspi_transfer;
-
-	platform_set_drvdata(pdev, master);
-
-	status = spi_register_master(master);
-	if (status) {
-		dev_dbg(&pdev->dev, "spi_register_master failed\n");
-		goto fail6;
-	}
-=======
 		goto fail0;
 	}
 
@@ -691,70 +416,21 @@ static int mcfqspi_probe(struct platform_device *pdev)
 		goto fail1;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(&pdev->dev, "Coldfire QSPI bus driver\n");
 
 	return 0;
 
-<<<<<<< HEAD
-fail6:
-	mcfqspi_cs_teardown(mcfqspi);
-fail5:
-	destroy_workqueue(mcfqspi->workq);
-fail4:
-	clk_disable(mcfqspi->clk);
-	clk_put(mcfqspi->clk);
-fail3:
-	free_irq(mcfqspi->irq, mcfqspi);
-fail2:
-	iounmap(mcfqspi->iobase);
-fail1:
-	release_mem_region(res->start, resource_size(res));
-fail0:
-	spi_master_put(master);
-=======
 fail1:
 	pm_runtime_disable(&pdev->dev);
 	mcfqspi_cs_teardown(mcfqspi);
 fail0:
 	spi_controller_put(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&pdev->dev, "Coldfire QSPI probe failed\n");
 
 	return status;
 }
 
-<<<<<<< HEAD
-static int __devexit mcfqspi_remove(struct platform_device *pdev)
-{
-	struct spi_master *master = platform_get_drvdata(pdev);
-	struct mcfqspi *mcfqspi = spi_master_get_devdata(master);
-	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-
-	/* disable the hardware (set the baud rate to 0) */
-	mcfqspi_wr_qmr(mcfqspi, MCFQSPI_QMR_MSTR);
-
-	platform_set_drvdata(pdev, NULL);
-	mcfqspi_cs_teardown(mcfqspi);
-	destroy_workqueue(mcfqspi->workq);
-	clk_disable(mcfqspi->clk);
-	clk_put(mcfqspi->clk);
-	free_irq(mcfqspi->irq, mcfqspi);
-	iounmap(mcfqspi->iobase);
-	release_mem_region(res->start, resource_size(res));
-	spi_unregister_master(master);
-	spi_master_put(master);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-
-static int mcfqspi_suspend(struct device *dev)
-{
-	struct mcfqspi *mcfqspi = platform_get_drvdata(to_platform_device(dev));
-=======
 static void mcfqspi_remove(struct platform_device *pdev)
 {
 	struct spi_controller *host = platform_get_drvdata(pdev);
@@ -777,7 +453,6 @@ static int mcfqspi_suspend(struct device *dev)
 	ret = spi_controller_suspend(host);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clk_disable(mcfqspi->clk);
 
@@ -786,9 +461,6 @@ static int mcfqspi_suspend(struct device *dev)
 
 static int mcfqspi_resume(struct device *dev)
 {
-<<<<<<< HEAD
-	struct mcfqspi *mcfqspi = platform_get_drvdata(to_platform_device(dev));
-=======
 	struct spi_controller *host = dev_get_drvdata(dev);
 	struct mcfqspi *mcfqspi = spi_controller_get_devdata(host);
 
@@ -813,31 +485,11 @@ static int mcfqspi_runtime_resume(struct device *dev)
 {
 	struct spi_controller *host = dev_get_drvdata(dev);
 	struct mcfqspi *mcfqspi = spi_controller_get_devdata(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clk_enable(mcfqspi->clk);
 
 	return 0;
 }
-<<<<<<< HEAD
-
-static struct dev_pm_ops mcfqspi_dev_pm_ops = {
-	.suspend	= mcfqspi_suspend,
-	.resume		= mcfqspi_resume,
-};
-
-#define	MCFQSPI_DEV_PM_OPS	(&mcfqspi_dev_pm_ops)
-#else
-#define	MCFQSPI_DEV_PM_OPS	NULL
-#endif
-
-static struct platform_driver mcfqspi_driver = {
-	.driver.name	= DRIVER_NAME,
-	.driver.owner	= THIS_MODULE,
-	.driver.pm	= MCFQSPI_DEV_PM_OPS,
-	.probe		= mcfqspi_probe,
-	.remove		= __devexit_p(mcfqspi_remove),
-=======
 #endif
 
 static const struct dev_pm_ops mcfqspi_pm = {
@@ -852,7 +504,6 @@ static struct platform_driver mcfqspi_driver = {
 	.driver.pm	= &mcfqspi_pm,
 	.probe		= mcfqspi_probe,
 	.remove_new	= mcfqspi_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 module_platform_driver(mcfqspi_driver);
 

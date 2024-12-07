@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for building Trusted Computing Group's(TCG) runtime Integrity
 # Measurement Architecture(IMA).
 #
 
-<<<<<<< HEAD
-obj-$(CONFIG_IMA) += ima.o
-
-ima-y := ima_fs.o ima_queue.o ima_init.o ima_main.o ima_crypto.o ima_api.o \
-	 ima_policy.o ima_audit.o
-=======
 obj-$(CONFIG_IMA) += ima.o ima_iint.o
 
 ima-y := ima_fs.o ima_queue.o ima_init.o ima_main.o ima_crypto.o ima_api.o \
@@ -27,4 +18,3 @@ ima-$(CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS) += ima_queue_keys.o
 ifeq ($(CONFIG_EFI),y)
 ima-$(CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT) += ima_efi.o
 endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

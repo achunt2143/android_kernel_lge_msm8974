@@ -1,25 +1,13 @@
-<<<<<<< HEAD
-/*
- *      crc-itu-t.c
- *
- * This source code is licensed under the GNU General Public License,
- * Version 2. See the file COPYING for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *      crc-itu-t.c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 #include <linux/module.h>
 #include <linux/crc-itu-t.h>
 
-<<<<<<< HEAD
-/** CRC table for the CRC ITU-T V.41 0x0x1021 (x^16 + x^12 + x^15 + 1) */
-=======
 /* CRC table for the CRC ITU-T V.41 0x1021 (x^16 + x^12 + x^5 + 1) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const u16 crc_itu_t_table[256] = {
 	0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
 	0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,

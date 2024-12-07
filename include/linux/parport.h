@@ -3,102 +3,9 @@
  * the GNU Free Documentation License, Version 1.1 or any later version
  * published by the Free Software Foundation.
  */
-<<<<<<< HEAD
-
 #ifndef _PARPORT_H_
 #define _PARPORT_H_
 
-/* Start off with user-visible constants */
-
-/* Maximum of 16 ports per machine */
-#define PARPORT_MAX  16
-
-/* Magic numbers */
-#define PARPORT_IRQ_NONE  -1
-#define PARPORT_DMA_NONE  -1
-#define PARPORT_IRQ_AUTO  -2
-#define PARPORT_DMA_AUTO  -2
-#define PARPORT_DMA_NOFIFO -3
-#define PARPORT_DISABLE   -2
-#define PARPORT_IRQ_PROBEONLY -3
-#define PARPORT_IOHI_AUTO -1
-
-#define PARPORT_CONTROL_STROBE    0x1
-#define PARPORT_CONTROL_AUTOFD    0x2
-#define PARPORT_CONTROL_INIT      0x4
-#define PARPORT_CONTROL_SELECT    0x8
-
-#define PARPORT_STATUS_ERROR      0x8
-#define PARPORT_STATUS_SELECT     0x10
-#define PARPORT_STATUS_PAPEROUT   0x20
-#define PARPORT_STATUS_ACK        0x40
-#define PARPORT_STATUS_BUSY       0x80
-
-/* Type classes for Plug-and-Play probe.  */
-typedef enum {
-	PARPORT_CLASS_LEGACY = 0,       /* Non-IEEE1284 device */
-	PARPORT_CLASS_PRINTER,
-	PARPORT_CLASS_MODEM,
-	PARPORT_CLASS_NET,
-	PARPORT_CLASS_HDC,              /* Hard disk controller */
-	PARPORT_CLASS_PCMCIA,
-	PARPORT_CLASS_MEDIA,            /* Multimedia device */
-	PARPORT_CLASS_FDC,              /* Floppy disk controller */
-	PARPORT_CLASS_PORTS,
-	PARPORT_CLASS_SCANNER,
-	PARPORT_CLASS_DIGCAM,
-	PARPORT_CLASS_OTHER,            /* Anything else */
-	PARPORT_CLASS_UNSPEC,           /* No CLS field in ID */
-	PARPORT_CLASS_SCSIADAPTER
-} parport_device_class;
-
-/* The "modes" entry in parport is a bit field representing the
-   capabilities of the hardware. */
-#define PARPORT_MODE_PCSPP	(1<<0) /* IBM PC registers available. */
-#define PARPORT_MODE_TRISTATE	(1<<1) /* Can tristate. */
-#define PARPORT_MODE_EPP	(1<<2) /* Hardware EPP. */
-#define PARPORT_MODE_ECP	(1<<3) /* Hardware ECP. */
-#define PARPORT_MODE_COMPAT	(1<<4) /* Hardware 'printer protocol'. */
-#define PARPORT_MODE_DMA	(1<<5) /* Hardware can DMA. */
-#define PARPORT_MODE_SAFEININT	(1<<6) /* SPP registers accessible in IRQ. */
-
-/* IEEE1284 modes: 
-   Nibble mode, byte mode, ECP, ECPRLE and EPP are their own
-   'extensibility request' values.  Others are special.
-   'Real' ECP modes must have the IEEE1284_MODE_ECP bit set.  */
-#define IEEE1284_MODE_NIBBLE             0
-#define IEEE1284_MODE_BYTE              (1<<0)
-#define IEEE1284_MODE_COMPAT            (1<<8)
-#define IEEE1284_MODE_BECP              (1<<9) /* Bounded ECP mode */
-#define IEEE1284_MODE_ECP               (1<<4)
-#define IEEE1284_MODE_ECPRLE            (IEEE1284_MODE_ECP | (1<<5))
-#define IEEE1284_MODE_ECPSWE            (1<<10) /* Software-emulated */
-#define IEEE1284_MODE_EPP               (1<<6)
-#define IEEE1284_MODE_EPPSL             (1<<11) /* EPP 1.7 */
-#define IEEE1284_MODE_EPPSWE            (1<<12) /* Software-emulated */
-#define IEEE1284_DEVICEID               (1<<2)  /* This is a flag */
-#define IEEE1284_EXT_LINK               (1<<14) /* This flag causes the
-						 * extensibility link to
-						 * be requested, using
-						 * bits 0-6. */
-
-/* For the benefit of parport_read/write, you can use these with
- * parport_negotiate to use address operations.  They have no effect
- * other than to make parport_read/write use address transfers. */
-#define IEEE1284_ADDR			(1<<13)	/* This is a flag */
-#define IEEE1284_DATA			 0	/* So is this */
-
-/* Flags for block transfer operations. */
-#define PARPORT_EPP_FAST		(1<<0) /* Unreliable counts. */
-#define PARPORT_W91284PIC		(1<<1) /* have a Warp9 w91284pic in the device */
-
-/* The rest is for the kernel only */
-#ifdef __KERNEL__
-=======
-#ifndef _PARPORT_H_
-#define _PARPORT_H_
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/jiffies.h>
 #include <linux/proc_fs.h>
@@ -106,13 +13,9 @@ typedef enum {
 #include <linux/wait.h>
 #include <linux/irqreturn.h>
 #include <linux/semaphore.h>
-<<<<<<< HEAD
-#include <asm/ptrace.h>
-=======
 #include <linux/device.h>
 #include <asm/ptrace.h>
 #include <uapi/linux/parport.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Define this later. */
 struct parport;
@@ -137,13 +40,6 @@ struct amiga_parport_state {
        unsigned char statusdir;/* ciab.ddrb & 7 */
 };
 
-<<<<<<< HEAD
-struct ax88796_parport_state {
-	unsigned char cpr;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ip32_parport_state {
 	unsigned int dcr;
 	unsigned int ecr;
@@ -155,10 +51,6 @@ struct parport_state {
 		/* ARC has no state. */
 		struct ax_parport_state ax;
 		struct amiga_parport_state amiga;
-<<<<<<< HEAD
-		struct ax88796_parport_state ax88796;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Atari has not state. */
 		struct ip32_parport_state ip32;
 		void *misc; 
@@ -249,11 +141,8 @@ struct pardevice {
 	unsigned int flags;
 	struct pardevice *next;
 	struct pardevice *prev;
-<<<<<<< HEAD
-=======
 	struct device dev;
 	bool devmodel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct parport_state *state;     /* saved status over preemption */
 	wait_queue_head_t wait_q;
 	unsigned long int time;
@@ -265,11 +154,8 @@ struct pardevice {
 	void * sysctl_table;
 };
 
-<<<<<<< HEAD
-=======
 #define to_pardevice(n) container_of(n, struct pardevice, dev)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IEEE1284 information */
 
 /* IEEE1284 phases. These are exposed to userland through ppdev IOCTL
@@ -309,11 +195,7 @@ struct parport {
 				 * This may unfortulately be null if the
 				 * port has a legacy driver.
 				 */
-<<<<<<< HEAD
-
-=======
 	struct device bus_dev;	/* to link with the bus */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct parport *physport;
 				/* If this is a non-default mux
 				   parport, i.e. we're a clone of a real
@@ -338,10 +220,7 @@ struct parport {
 	struct pardevice *waittail;
 
 	struct list_head list;
-<<<<<<< HEAD
-=======
 	struct timer_list timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int flags;
 
 	void *sysctl_table;
@@ -367,22 +246,14 @@ struct parport {
 	struct parport *slaves[3];
 };
 
-<<<<<<< HEAD
-=======
 #define to_parport_dev(n) container_of(n, struct parport, bus_dev)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFAULT_SPIN_TIME 500 /* us */
 
 struct parport_driver {
 	const char *name;
 	void (*attach) (struct parport *);
 	void (*detach) (struct parport *);
-<<<<<<< HEAD
-	struct list_head list;
-};
-
-=======
 	void (*match_port)(struct parport *);
 	int (*probe)(struct pardevice *);
 	struct device_driver driver;
@@ -395,7 +266,6 @@ struct parport_driver {
 int parport_bus_init(void);
 void parport_bus_exit(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* parport_register_port registers a new parallel port at the given
    address (if one does not already exist) and returns a pointer to it.
    This entails claiming the I/O region, IRQ and DMA.  NULL is returned
@@ -414,12 +284,6 @@ void parport_announce_port (struct parport *port);
 extern void parport_remove_port(struct parport *port);
 
 /* Register a new high-level driver. */
-<<<<<<< HEAD
-extern int parport_register_driver (struct parport_driver *);
-
-/* Unregister a high-level driver. */
-extern void parport_unregister_driver (struct parport_driver *);
-=======
 
 int __must_check __parport_register_driver(struct parport_driver *,
 					   struct module *,
@@ -475,7 +339,6 @@ void parport_unregister_driver(struct parport_driver *);
  */
 #define module_parport_driver(__parport_driver) \
 	module_driver(__parport_driver, parport_register_driver, parport_unregister_driver)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* If parport_register_driver doesn't fit your needs, perhaps
  * parport_find_xxx does. */
@@ -488,20 +351,6 @@ extern irqreturn_t parport_irq_handler(int irq, void *dev_id);
 /* Reference counting for ports. */
 extern struct parport *parport_get_port (struct parport *);
 extern void parport_put_port (struct parport *);
-<<<<<<< HEAD
-
-/* parport_register_device declares that a device is connected to a
-   port, and tells the kernel all it needs to know.
-   - pf is the preemption function (may be NULL for no callback)
-   - kf is the wake-up function (may be NULL for no callback)
-   - irq_func is the interrupt handler (may be NULL for no interrupts)
-   - handle is a user pointer that gets handed to callback functions.  */
-struct pardevice *parport_register_device(struct parport *port, 
-			  const char *name,
-			  int (*pf)(void *), void (*kf)(void *),
-			  void (*irq_func)(void *), 
-			  int flags, void *handle);
-=======
 void parport_del_port(struct parport *);
 
 struct pardev_cb {
@@ -519,7 +368,6 @@ struct pardev_cb {
 struct pardevice *
 parport_register_dev_model(struct parport *port, const char *name,
 			   const struct pardev_cb *par_dev_cb, int cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* parport_unregister unlinks a device from the chain. */
 extern void parport_unregister_device(struct pardevice *dev);
@@ -640,10 +488,7 @@ extern size_t parport_ieee1284_epp_read_addr (struct parport *,
 					      void *, size_t, int);
 
 /* IEEE1284.3 functions */
-<<<<<<< HEAD
-=======
 #define daisy_dev_name "Device ID probe"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int parport_daisy_init (struct parport *port);
 extern void parport_daisy_fini (struct parport *port);
 extern struct pardevice *parport_open (int devnum, const char *name);
@@ -669,11 +514,7 @@ extern int parport_device_proc_register(struct pardevice *device);
 extern int parport_device_proc_unregister(struct pardevice *device);
 
 /* If PC hardware is the only type supported, we can optimise a bit.  */
-<<<<<<< HEAD
-#if !defined(CONFIG_PARPORT_NOT_PC)
-=======
 #if !defined(CONFIG_PARPORT_NOT_PC) && defined(CONFIG_PARPORT_PC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/parport_pc.h>
 #define parport_write_data(p,x)            parport_pc_write_data(p,x)
@@ -706,8 +547,4 @@ extern int parport_device_proc_unregister(struct pardevice *device);
 extern unsigned long parport_default_timeslice;
 extern int parport_default_spintime;
 
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _PARPORT_H_ */

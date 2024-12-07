@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_MMIOTRACE_H
 #define _LINUX_MMIOTRACE_H
 
@@ -110,10 +107,6 @@ extern void enable_mmiotrace(void);
 extern void disable_mmiotrace(void);
 extern void mmio_trace_rw(struct mmiotrace_rw *rw);
 extern void mmio_trace_mapping(struct mmiotrace_map *map);
-<<<<<<< HEAD
-extern int mmio_trace_printk(const char *fmt, va_list args);
-=======
 extern __printf(1, 0) int mmio_trace_printk(const char *fmt, va_list args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_MMIOTRACE_H */

@@ -38,10 +38,6 @@
 #include <linux/serial.h>
 #include <linux/serial_reg.h>
 #include <linux/bitops.h>
-<<<<<<< HEAD
-#include <asm/system.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 #include <pcmcia/cistpl.h>
@@ -66,11 +62,7 @@ MODULE_LICENSE("GPL");
 /* ======================== Local structures ======================== */
 
 
-<<<<<<< HEAD
-typedef struct dtl1_info_t {
-=======
 struct dtl1_info {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pcmcia_device *p_dev;
 
 	struct hci_dev *hdev;
@@ -86,20 +78,10 @@ struct dtl1_info {
 	unsigned long rx_state;
 	unsigned long rx_count;
 	struct sk_buff *rx_skb;
-<<<<<<< HEAD
-} dtl1_info_t;
-
-
-static int dtl1_config(struct pcmcia_device *link);
-static void dtl1_release(struct pcmcia_device *link);
-
-static void dtl1_detach(struct pcmcia_device *p_dev);
-=======
 };
 
 
 static int dtl1_config(struct pcmcia_device *link);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* Transmit states  */
@@ -112,19 +94,11 @@ static int dtl1_config(struct pcmcia_device *link);
 #define RECV_WAIT_DATA  1
 
 
-<<<<<<< HEAD
-typedef struct {
-	u8 type;
-	u8 zero;
-	u16 len;
-} __packed nsh_t;	/* Nokia Specific Header */
-=======
 struct nsh {
 	u8 type;
 	u8 zero;
 	u16 len;
 } __packed;	/* Nokia Specific Header */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NSHL  4				/* Nokia Specific Header Length */
 
@@ -152,11 +126,7 @@ static int dtl1_write(unsigned int iobase, int fifo_size, __u8 *buf, int len)
 }
 
 
-<<<<<<< HEAD
-static void dtl1_write_wakeup(dtl1_info_t *info)
-=======
 static void dtl1_write_wakeup(struct dtl1_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!info) {
 		BT_ERR("Unknown device");
@@ -174,27 +144,17 @@ static void dtl1_write_wakeup(struct dtl1_info *info)
 	}
 
 	do {
-<<<<<<< HEAD
-		register unsigned int iobase = info->p_dev->resource[0]->start;
-		register struct sk_buff *skb;
-		register int len;
-=======
 		unsigned int iobase = info->p_dev->resource[0]->start;
 		register struct sk_buff *skb;
 		int len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		clear_bit(XMIT_WAKEUP, &(info->tx_state));
 
 		if (!pcmcia_dev_present(info->p_dev))
 			return;
 
-<<<<<<< HEAD
-		if (!(skb = skb_dequeue(&(info->txq))))
-=======
 		skb = skb_dequeue(&(info->txq));
 		if (!skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		/* Send frame */
@@ -216,25 +176,15 @@ static void dtl1_write_wakeup(struct dtl1_info *info)
 }
 
 
-<<<<<<< HEAD
-static void dtl1_control(dtl1_info_t *info, struct sk_buff *skb)
-=======
 static void dtl1_control(struct dtl1_info *info, struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 flowmask = *(u8 *)skb->data;
 	int i;
 
 	printk(KERN_INFO "Bluetooth: Nokia control data =");
-<<<<<<< HEAD
-	for (i = 0; i < skb->len; i++) {
-		printk(" %02x", skb->data[i]);
-	}
-=======
 	for (i = 0; i < skb->len; i++)
 		printk(" %02x", skb->data[i]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("\n");
 
 	/* transition to active state */
@@ -249,17 +199,10 @@ static void dtl1_control(struct dtl1_info *info, struct sk_buff *skb)
 }
 
 
-<<<<<<< HEAD
-static void dtl1_receive(dtl1_info_t *info)
-{
-	unsigned int iobase;
-	nsh_t *nsh;
-=======
 static void dtl1_receive(struct dtl1_info *info)
 {
 	unsigned int iobase;
 	struct nsh *nsh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int boguscount = 0;
 
 	if (!info) {
@@ -273,29 +216,18 @@ static void dtl1_receive(struct dtl1_info *info)
 		info->hdev->stat.byte_rx++;
 
 		/* Allocate packet */
-<<<<<<< HEAD
-		if (info->rx_skb == NULL)
-			if (!(info->rx_skb = bt_skb_alloc(HCI_MAX_FRAME_SIZE, GFP_ATOMIC))) {
-=======
 		if (info->rx_skb == NULL) {
 			info->rx_skb = bt_skb_alloc(HCI_MAX_FRAME_SIZE, GFP_ATOMIC);
 			if (!info->rx_skb) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				BT_ERR("Can't allocate mem for new packet");
 				info->rx_state = RECV_WAIT_NSH;
 				info->rx_count = NSHL;
 				return;
 			}
-<<<<<<< HEAD
-
-		*skb_put(info->rx_skb, 1) = inb(iobase + UART_RX);
-		nsh = (nsh_t *)info->rx_skb->data;
-=======
 		}
 
 		skb_put_u8(info->rx_skb, inb(iobase + UART_RX));
 		nsh = (struct nsh *)info->rx_skb->data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		info->rx_count--;
 
@@ -307,11 +239,7 @@ static void dtl1_receive(struct dtl1_info *info)
 				info->rx_count = nsh->len + (nsh->len & 0x0001);
 				break;
 			case RECV_WAIT_DATA:
-<<<<<<< HEAD
-				bt_cb(info->rx_skb)->pkt_type = nsh->type;
-=======
 				hci_skb_pkt_type(info->rx_skb) = nsh->type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* remove PAD byte if it exists */
 				if (nsh->len & 0x0001) {
@@ -322,11 +250,7 @@ static void dtl1_receive(struct dtl1_info *info)
 				/* remove NSH */
 				skb_pull(info->rx_skb, NSHL);
 
-<<<<<<< HEAD
-				switch (bt_cb(info->rx_skb)->pkt_type) {
-=======
 				switch (hci_skb_pkt_type(info->rx_skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				case 0x80:
 					/* control data for the Nokia Card */
 					dtl1_control(info, info->rx_skb);
@@ -335,15 +259,6 @@ static void dtl1_receive(struct dtl1_info *info)
 				case 0x83:
 				case 0x84:
 					/* send frame to the HCI layer */
-<<<<<<< HEAD
-					info->rx_skb->dev = (void *) info->hdev;
-					bt_cb(info->rx_skb)->pkt_type &= 0x0f;
-					hci_recv_frame(info->rx_skb);
-					break;
-				default:
-					/* unknown packet */
-					BT_ERR("Unknown HCI packet with type 0x%02x received", bt_cb(info->rx_skb)->pkt_type);
-=======
 					hci_skb_pkt_type(info->rx_skb) &= 0x0f;
 					hci_recv_frame(info->hdev, info->rx_skb);
 					break;
@@ -351,7 +266,6 @@ static void dtl1_receive(struct dtl1_info *info)
 					/* unknown packet */
 					BT_ERR("Unknown HCI packet with type 0x%02x received",
 					       hci_skb_pkt_type(info->rx_skb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					kfree_skb(info->rx_skb);
 					break;
 				}
@@ -374,11 +288,7 @@ static void dtl1_receive(struct dtl1_info *info)
 
 static irqreturn_t dtl1_interrupt(int irq, void *dev_inst)
 {
-<<<<<<< HEAD
-	dtl1_info_t *info = dev_inst;
-=======
 	struct dtl1_info *info = dev_inst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int iobase;
 	unsigned char msr;
 	int boguscount = 0;
@@ -448,22 +358,13 @@ static irqreturn_t dtl1_interrupt(int irq, void *dev_inst)
 
 static int dtl1_hci_open(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	set_bit(HCI_RUNNING, &(hdev->flags));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 static int dtl1_hci_flush(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	dtl1_info_t *info = (dtl1_info_t *)(hdev->driver_data);
-=======
 	struct dtl1_info *info = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Drop TX queue */
 	skb_queue_purge(&(info->txq));
@@ -474,35 +375,12 @@ static int dtl1_hci_flush(struct hci_dev *hdev)
 
 static int dtl1_hci_close(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	if (!test_and_clear_bit(HCI_RUNNING, &(hdev->flags)))
-		return 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dtl1_hci_flush(hdev);
 
 	return 0;
 }
 
 
-<<<<<<< HEAD
-static int dtl1_hci_send_frame(struct sk_buff *skb)
-{
-	dtl1_info_t *info;
-	struct hci_dev *hdev = (struct hci_dev *)(skb->dev);
-	struct sk_buff *s;
-	nsh_t nsh;
-
-	if (!hdev) {
-		BT_ERR("Frame for unknown HCI device (hdev=NULL)");
-		return -ENODEV;
-	}
-
-	info = (dtl1_info_t *)(hdev->driver_data);
-
-	switch (bt_cb(skb)->pkt_type) {
-=======
 static int dtl1_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct dtl1_info *info = hci_get_drvdata(hdev);
@@ -510,7 +388,6 @@ static int dtl1_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 	struct nsh nsh;
 
 	switch (hci_skb_pkt_type(skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case HCI_COMMAND_PKT:
 		hdev->stat.cmd_tx++;
 		nsh.type = 0x81;
@@ -525,11 +402,7 @@ static int dtl1_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 		break;
 	default:
 		return -EILSEQ;
-<<<<<<< HEAD
-	};
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nsh.zero = 0;
 	nsh.len = skb->len;
@@ -541,11 +414,7 @@ static int dtl1_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 	skb_reserve(s, NSHL);
 	skb_copy_from_linear_data(skb, skb_put(s, skb->len), skb->len);
 	if (skb->len & 0x0001)
-<<<<<<< HEAD
-		*skb_put(s, 1) = 0;	/* PAD */
-=======
 		skb_put_u8(s, 0);	/* PAD */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Prepend skb with Nokia frame header and queue */
 	memcpy(skb_push(s, NSHL), &nsh, NSHL);
@@ -559,29 +428,11 @@ static int dtl1_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 }
 
 
-<<<<<<< HEAD
-static void dtl1_hci_destruct(struct hci_dev *hdev)
-{
-}
-
-
-static int dtl1_hci_ioctl(struct hci_dev *hdev, unsigned int cmd,  unsigned long arg)
-{
-	return -ENOIOCTLCMD;
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ======================== Card services HCI interaction ======================== */
 
 
-<<<<<<< HEAD
-static int dtl1_open(dtl1_info_t *info)
-=======
 static int dtl1_open(struct dtl1_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	unsigned int iobase = info->p_dev->resource[0]->start;
@@ -607,19 +458,6 @@ static int dtl1_open(struct dtl1_info *info)
 	info->hdev = hdev;
 
 	hdev->bus = HCI_PCCARD;
-<<<<<<< HEAD
-	hdev->driver_data = info;
-	SET_HCIDEV_DEV(hdev, &info->p_dev->dev);
-
-	hdev->open     = dtl1_hci_open;
-	hdev->close    = dtl1_hci_close;
-	hdev->flush    = dtl1_hci_flush;
-	hdev->send     = dtl1_hci_send_frame;
-	hdev->destruct = dtl1_hci_destruct;
-	hdev->ioctl    = dtl1_hci_ioctl;
-
-	hdev->owner = THIS_MODULE;
-=======
 	hci_set_drvdata(hdev, info);
 	SET_HCIDEV_DEV(hdev, &info->p_dev->dev);
 
@@ -627,7 +465,6 @@ static int dtl1_open(struct dtl1_info *info)
 	hdev->close = dtl1_hci_close;
 	hdev->flush = dtl1_hci_flush;
 	hdev->send  = dtl1_hci_send_frame;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&(info->lock), flags);
 
@@ -664,11 +501,7 @@ static int dtl1_open(struct dtl1_info *info)
 }
 
 
-<<<<<<< HEAD
-static int dtl1_close(dtl1_info_t *info)
-=======
 static int dtl1_close(struct dtl1_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	unsigned int iobase = info->p_dev->resource[0]->start;
@@ -689,13 +522,7 @@ static int dtl1_close(struct dtl1_info *info)
 
 	spin_unlock_irqrestore(&(info->lock), flags);
 
-<<<<<<< HEAD
-	if (hci_unregister_dev(hdev) < 0)
-		BT_ERR("Can't unregister HCI device %s", hdev->name);
-
-=======
 	hci_unregister_dev(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hci_free_dev(hdev);
 
 	return 0;
@@ -703,17 +530,10 @@ static int dtl1_close(struct dtl1_info *info)
 
 static int dtl1_probe(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-	dtl1_info_t *info;
-
-	/* Create new info device */
-	info = kzalloc(sizeof(*info), GFP_KERNEL);
-=======
 	struct dtl1_info *info;
 
 	/* Create new info device */
 	info = devm_kzalloc(&link->dev, sizeof(*info), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info)
 		return -ENOMEM;
 
@@ -728,18 +548,10 @@ static int dtl1_probe(struct pcmcia_device *link)
 
 static void dtl1_detach(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-	dtl1_info_t *info = link->priv;
-
-	dtl1_release(link);
-
-	kfree(info);
-=======
 	struct dtl1_info *info = link->priv;
 
 	dtl1_close(info);
 	pcmcia_disable_device(link);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dtl1_confcheck(struct pcmcia_device *p_dev, void *priv_data)
@@ -755,25 +567,6 @@ static int dtl1_confcheck(struct pcmcia_device *p_dev, void *priv_data)
 
 static int dtl1_config(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-	dtl1_info_t *info = link->priv;
-	int i;
-
-	/* Look for a generic full-sized window */
-	link->resource[0]->end = 8;
-	if (pcmcia_loop_config(link, dtl1_confcheck, NULL) < 0)
-		goto failed;
-
-	i = pcmcia_request_irq(link, dtl1_interrupt);
-	if (i != 0)
-		goto failed;
-
-	i = pcmcia_enable_device(link);
-	if (i != 0)
-		goto failed;
-
-	if (dtl1_open(info) != 0)
-=======
 	struct dtl1_info *info = link->priv;
 	int ret;
 
@@ -793,36 +586,16 @@ static int dtl1_config(struct pcmcia_device *link)
 
 	ret = dtl1_open(info);
 	if (ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 
 	return 0;
 
 failed:
-<<<<<<< HEAD
-	dtl1_release(link);
-	return -ENODEV;
-}
-
-
-static void dtl1_release(struct pcmcia_device *link)
-{
-	dtl1_info_t *info = link->priv;
-
-	dtl1_close(info);
-
-	pcmcia_disable_device(link);
-}
-
-
-static struct pcmcia_device_id dtl1_ids[] = {
-=======
 	dtl1_detach(link);
 	return ret;
 }
 
 static const struct pcmcia_device_id dtl1_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PCMCIA_DEVICE_PROD_ID12("Nokia Mobile Phones", "DTL-1", 0xe1bfdd64, 0xe168480d),
 	PCMCIA_DEVICE_PROD_ID12("Nokia Mobile Phones", "DTL-4", 0xe1bfdd64, 0x9102bc82),
 	PCMCIA_DEVICE_PROD_ID12("Socket", "CF", 0xb38bcc2e, 0x44ebf863),
@@ -838,21 +611,4 @@ static struct pcmcia_driver dtl1_driver = {
 	.remove		= dtl1_detach,
 	.id_table	= dtl1_ids,
 };
-<<<<<<< HEAD
-
-static int __init init_dtl1_cs(void)
-{
-	return pcmcia_register_driver(&dtl1_driver);
-}
-
-
-static void __exit exit_dtl1_cs(void)
-{
-	pcmcia_unregister_driver(&dtl1_driver);
-}
-
-module_init(init_dtl1_cs);
-module_exit(exit_dtl1_cs);
-=======
 module_pcmcia_driver(dtl1_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

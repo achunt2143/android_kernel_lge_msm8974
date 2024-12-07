@@ -1,24 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for Partition Mobility/Migration
  *
  * Copyright (C) 2010 Nathan Fontenot
  * Copyright (C) 2010 IBM Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- */
-
-#include <linux/kernel.h>
-#include <linux/kobject.h>
-#include <linux/smp.h>
-#include <linux/stat.h>
-=======
  */
 
 
@@ -32,16 +17,10 @@
 #include <linux/smp.h>
 #include <linux/stat.h>
 #include <linux/stop_machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/completion.h>
 #include <linux/device.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <asm/rtas.h>
-#include "pseries.h"
-=======
 #include <linux/stringify.h>
 
 #include <asm/machdep.h>
@@ -50,24 +29,15 @@
 #include "pseries.h"
 #include "vas.h"	/* vas_migration_handler() */
 #include "../../kernel/cacheinfo.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct kobject *mobility_kobj;
 
 struct update_props_workarea {
-<<<<<<< HEAD
-	u32 phandle;
-	u32 state;
-	u64 reserved;
-	u32 nprops;
-};
-=======
 	__be32 phandle;
 	__be32 state;
 	__be64 reserved;
 	__be32 nprops;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NODE_ACTION_MASK	0xff000000
 #define NODE_COUNT_MASK		0x00ffffff
@@ -76,9 +46,6 @@ struct update_props_workarea {
 #define UPDATE_DT_NODE	0x02000000
 #define ADD_DT_NODE	0x03000000
 
-<<<<<<< HEAD
-static int mobility_rtas_call(int token, char *buf)
-=======
 #define MIGRATION_SCOPE	(1)
 #define PRRN_SCOPE -2
 
@@ -107,34 +74,19 @@ device_initcall(register_nmi_wd_lpm_factor_sysctl);
 #endif /* CONFIG_PPC_WATCHDOG */
 
 static int mobility_rtas_call(int token, char *buf, s32 scope)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 
 	spin_lock(&rtas_data_buf_lock);
 
 	memcpy(rtas_data_buf, buf, RTAS_DATA_BUF_SIZE);
-<<<<<<< HEAD
-	rc = rtas_call(token, 2, 1, NULL, rtas_data_buf, 1);
-=======
 	rc = rtas_call(token, 2, 1, NULL, rtas_data_buf, scope);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(buf, rtas_data_buf, RTAS_DATA_BUF_SIZE);
 
 	spin_unlock(&rtas_data_buf_lock);
 	return rc;
 }
 
-<<<<<<< HEAD
-static int delete_dt_node(u32 phandle)
-{
-	struct device_node *dn;
-
-	dn = of_find_node_by_phandle(phandle);
-	if (!dn)
-		return -ENOENT;
-
-=======
 static int delete_dt_node(struct device_node *dn)
 {
 	struct device_node *pdn;
@@ -159,7 +111,6 @@ static int delete_dt_node(struct device_node *dn)
 	}
 
 	pr_debug("removing node %pOFfp\n", dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlpar_detach_node(dn);
 	return 0;
 }
@@ -168,10 +119,6 @@ static int update_dt_property(struct device_node *dn, struct property **prop,
 			      const char *name, u32 vd, char *value)
 {
 	struct property *new_prop = *prop;
-<<<<<<< HEAD
-	struct property *old_prop;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int more = 0;
 
 	/* A negative 'vd' value indicates that only part of the new property
@@ -221,37 +168,14 @@ static int update_dt_property(struct device_node *dn, struct property **prop,
 	}
 
 	if (!more) {
-<<<<<<< HEAD
-		old_prop = of_find_property(dn, new_prop->name, NULL);
-		if (old_prop)
-			prom_update_property(dn, new_prop, old_prop);
-		else
-			prom_add_property(dn, new_prop);
-
-		new_prop = NULL;
-=======
 		pr_debug("updating node %pOF property %s\n", dn, name);
 		of_update_property(dn, new_prop);
 		*prop = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int update_dt_node(u32 phandle)
-{
-	struct update_props_workarea *upwa;
-	struct device_node *dn;
-	struct property *prop = NULL;
-	int i, rc;
-	char *prop_data;
-	char *rtas_buf;
-	int update_properties_token;
-
-	update_properties_token = rtas_token("ibm,update-properties");
-=======
 static int update_dt_node(struct device_node *dn, s32 scope)
 {
 	struct update_props_workarea *upwa;
@@ -264,7 +188,6 @@ static int update_dt_node(struct device_node *dn, s32 scope)
 	u32 vd;
 
 	update_properties_token = rtas_function_token(RTAS_FN_IBM_UPDATE_PROPERTIES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (update_properties_token == RTAS_UNKNOWN_SERVICE)
 		return -EINVAL;
 
@@ -272,31 +195,6 @@ static int update_dt_node(struct device_node *dn, s32 scope)
 	if (!rtas_buf)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	dn = of_find_node_by_phandle(phandle);
-	if (!dn) {
-		kfree(rtas_buf);
-		return -ENOENT;
-	}
-
-	upwa = (struct update_props_workarea *)&rtas_buf[0];
-	upwa->phandle = phandle;
-
-	do {
-		rc = mobility_rtas_call(update_properties_token, rtas_buf);
-		if (rc < 0)
-			break;
-
-		prop_data = rtas_buf + sizeof(*upwa);
-
-		for (i = 0; i < upwa->nprops; i++) {
-			char *prop_name;
-			u32 vd;
-
-			prop_name = prop_data + 1;
-			prop_data += strlen(prop_name) + 1;
-			vd = *prop_data++;
-=======
 	upwa = (struct update_props_workarea *)&rtas_buf[0];
 	upwa->phandle = cpu_to_be32(dn->phandle);
 
@@ -328,7 +226,6 @@ static int update_dt_node(struct device_node *dn, s32 scope)
 			prop_data += strlen(prop_name) + 1;
 			vd = be32_to_cpu(*(__be32 *)prop_data);
 			prop_data += sizeof(vd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			switch (vd) {
 			case 0x00000000:
@@ -336,13 +233,8 @@ static int update_dt_node(struct device_node *dn, s32 scope)
 				break;
 
 			case 0x80000000:
-<<<<<<< HEAD
-				prop = of_find_property(dn, prop_name, NULL);
-				prom_remove_property(dn, prop);
-=======
 				of_remove_property(dn, of_find_property(dn,
 							prop_name, NULL));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				prop = NULL;
 				break;
 
@@ -350,18 +242,6 @@ static int update_dt_node(struct device_node *dn, s32 scope)
 				rc = update_dt_property(dn, &prop, prop_name,
 							vd, prop_data);
 				if (rc) {
-<<<<<<< HEAD
-					printk(KERN_ERR "Could not update %s"
-					       " property\n", prop_name);
-				}
-
-				prop_data += vd;
-			}
-		}
-	} while (rc == 1);
-
-	of_node_put(dn);
-=======
 					pr_err("updating %s property failed: %d\n",
 					       prop_name, rc);
 				}
@@ -376,48 +256,10 @@ static int update_dt_node(struct device_node *dn, s32 scope)
 		cond_resched();
 	} while (rtas_rc == 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(rtas_buf);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int add_dt_node(u32 parent_phandle, u32 drc_index)
-{
-	struct device_node *dn;
-	struct device_node *parent_dn;
-	int rc;
-
-	dn = dlpar_configure_connector(drc_index);
-	if (!dn)
-		return -ENOENT;
-
-	parent_dn = of_find_node_by_phandle(parent_phandle);
-	if (!parent_dn) {
-		dlpar_free_cc_nodes(dn);
-		return -ENOENT;
-	}
-
-	dn->parent = parent_dn;
-	rc = dlpar_attach_node(dn);
-	if (rc)
-		dlpar_free_cc_nodes(dn);
-
-	of_node_put(parent_dn);
-	return rc;
-}
-
-static int pseries_devicetree_update(void)
-{
-	char *rtas_buf;
-	u32 *data;
-	int update_nodes_token;
-	int rc;
-
-	update_nodes_token = rtas_token("ibm,update-nodes");
-	if (update_nodes_token == RTAS_UNKNOWN_SERVICE)
-		return -EINVAL;
-=======
 static int add_dt_node(struct device_node *parent_dn, __be32 drc_index)
 {
 	struct device_node *dn;
@@ -459,24 +301,12 @@ static int pseries_devicetree_update(s32 scope)
 	update_nodes_token = rtas_function_token(RTAS_FN_IBM_UPDATE_NODES);
 	if (update_nodes_token == RTAS_UNKNOWN_SERVICE)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rtas_buf = kzalloc(RTAS_DATA_BUF_SIZE, GFP_KERNEL);
 	if (!rtas_buf)
 		return -ENOMEM;
 
 	do {
-<<<<<<< HEAD
-		rc = mobility_rtas_call(update_nodes_token, rtas_buf);
-		if (rc && rc != 1)
-			break;
-
-		data = (u32 *)rtas_buf + 4;
-		while (*data & NODE_ACTION_MASK) {
-			int i;
-			u32 action = *data & NODE_ACTION_MASK;
-			int node_count = *data & NODE_COUNT_MASK;
-=======
 		rc = mobility_rtas_call(update_nodes_token, rtas_buf, scope);
 		if (rc && rc != 1)
 			break;
@@ -486,30 +316,10 @@ static int pseries_devicetree_update(s32 scope)
 			int i;
 			u32 action = be32_to_cpu(*data) & NODE_ACTION_MASK;
 			u32 node_count = be32_to_cpu(*data) & NODE_COUNT_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			data++;
 
 			for (i = 0; i < node_count; i++) {
-<<<<<<< HEAD
-				u32 phandle = *data++;
-				u32 drc_index;
-
-				switch (action) {
-				case DELETE_DT_NODE:
-					delete_dt_node(phandle);
-					break;
-				case UPDATE_DT_NODE:
-					update_dt_node(phandle);
-					break;
-				case ADD_DT_NODE:
-					drc_index = *data++;
-					add_dt_node(phandle, drc_index);
-					break;
-				}
-			}
-		}
-=======
 				struct device_node *np;
 				__be32 phandle = *data++;
 				__be32 drc_index;
@@ -540,7 +350,6 @@ static int pseries_devicetree_update(s32 scope)
 		}
 
 		cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (rc == 1);
 
 	kfree(rtas_buf);
@@ -550,34 +359,6 @@ static int pseries_devicetree_update(s32 scope)
 void post_mobility_fixup(void)
 {
 	int rc;
-<<<<<<< HEAD
-	int activate_fw_token;
-
-	rc = pseries_devicetree_update();
-	if (rc) {
-		printk(KERN_ERR "Initial post-mobility device tree update "
-		       "failed: %d\n", rc);
-		return;
-	}
-
-	activate_fw_token = rtas_token("ibm,activate-firmware");
-	if (activate_fw_token == RTAS_UNKNOWN_SERVICE) {
-		printk(KERN_ERR "Could not make post-mobility "
-		       "activate-fw call.\n");
-		return;
-	}
-
-	rc = rtas_call(activate_fw_token, 0, 1, NULL);
-	if (!rc) {
-		rc = pseries_devicetree_update();
-		if (rc)
-			printk(KERN_ERR "Secondary post-mobility device tree "
-			       "update failed: %d\n", rc);
-	} else {
-		printk(KERN_ERR "Post-mobility activate-fw failed: %d\n", rc);
-		return;
-	}
-=======
 
 	rtas_activate_firmware();
 
@@ -607,50 +388,10 @@ void post_mobility_fixup(void)
 
 	/* Reinitialise system information for hv-24x7 */
 	read_24x7_sys_info();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 }
 
-<<<<<<< HEAD
-static ssize_t migrate_store(struct class *class, struct class_attribute *attr,
-			     const char *buf, size_t count)
-{
-	struct rtas_args args;
-	u64 streamid;
-	int rc;
-
-	rc = strict_strtoull(buf, 0, &streamid);
-	if (rc)
-		return rc;
-
-	memset(&args, 0, sizeof(args));
-	args.token = rtas_token("ibm,suspend-me");
-	args.nargs = 2;
-	args.nret = 1;
-
-	args.args[0] = streamid >> 32 ;
-	args.args[1] = streamid & 0xffffffff;
-	args.rets = &args.args[args.nargs];
-
-	do {
-		args.rets[0] = 0;
-		rc = rtas_ibm_suspend_me(&args);
-		if (!rc && args.rets[0] == RTAS_NOT_SUSPENDABLE)
-			ssleep(1);
-	} while (!rc && args.rets[0] == RTAS_NOT_SUSPENDABLE);
-
-	if (rc)
-		return rc;
-	else if (args.rets[0])
-		return args.rets[0];
-
-	post_mobility_fixup();
-	return count;
-}
-
-static CLASS_ATTR(migration, S_IWUSR, NULL, migrate_store);
-=======
 static int poll_vasi_state(u64 handle, unsigned long *res)
 {
 	unsigned long retbuf[PLPAR_HCALL_BUFSIZE];
@@ -1066,7 +807,6 @@ static ssize_t migration_store(const struct class *class,
 
 static CLASS_ATTR_WO(migration);
 static CLASS_ATTR_STRING(api_version, 0444, __stringify(MIGRATION_API_VERSION));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init mobility_sysfs_init(void)
 {
@@ -1077,12 +817,6 @@ static int __init mobility_sysfs_init(void)
 		return -ENOMEM;
 
 	rc = sysfs_create_file(mobility_kobj, &class_attr_migration.attr);
-<<<<<<< HEAD
-
-	return rc;
-}
-device_initcall(mobility_sysfs_init);
-=======
 	if (rc)
 		pr_err("unable to create migration sysfs file (%d)\n", rc);
 
@@ -1093,4 +827,3 @@ device_initcall(mobility_sysfs_init);
 	return 0;
 }
 machine_device_initcall(pseries, mobility_sysfs_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

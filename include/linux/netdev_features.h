@@ -1,27 +1,13 @@
-<<<<<<< HEAD
-/*
- * Network device features.
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Network device features.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_NETDEV_FEATURES_H
 #define _LINUX_NETDEV_FEATURES_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-=======
 #include <linux/bitops.h>
 #include <asm/byteorder.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef u64 netdev_features_t;
 
@@ -33,15 +19,9 @@ enum {
 	NETIF_F_IPV6_CSUM_BIT,		/* Can checksum TCP/UDP over IPV6 */
 	NETIF_F_HIGHDMA_BIT,		/* Can DMA to high memory. */
 	NETIF_F_FRAGLIST_BIT,		/* Scatter/gather IO. */
-<<<<<<< HEAD
-	NETIF_F_HW_VLAN_TX_BIT,		/* Transmit VLAN hw acceleration */
-	NETIF_F_HW_VLAN_RX_BIT,		/* Receive VLAN hw acceleration */
-	NETIF_F_HW_VLAN_FILTER_BIT,	/* Receive filtering on VLAN */
-=======
 	NETIF_F_HW_VLAN_CTAG_TX_BIT,	/* Transmit VLAN CTAG HW acceleration */
 	NETIF_F_HW_VLAN_CTAG_RX_BIT,	/* Receive VLAN CTAG HW acceleration */
 	NETIF_F_HW_VLAN_CTAG_FILTER_BIT,/* Receive filtering on VLAN CTAGs */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NETIF_F_VLAN_CHALLENGED_BIT,	/* Device cannot handle VLAN packets */
 	NETIF_F_GSO_BIT,		/* Enable software GSO. */
 	NETIF_F_LLTX_BIT,		/* LockLess TX - deprecated. Please */
@@ -53,20 +33,6 @@ enum {
 	/**/NETIF_F_GSO_SHIFT,		/* keep the order of SKB_GSO_* bits */
 	NETIF_F_TSO_BIT			/* ... TCPv4 segmentation */
 		= NETIF_F_GSO_SHIFT,
-<<<<<<< HEAD
-	NETIF_F_UFO_BIT,		/* ... UDPv4 fragmentation */
-	NETIF_F_GSO_ROBUST_BIT,		/* ... ->SKB_GSO_DODGY */
-	NETIF_F_TSO_ECN_BIT,		/* ... TCP ECN support */
-	NETIF_F_TSO6_BIT,		/* ... TCPv6 segmentation */
-	NETIF_F_FSO_BIT,		/* ... FCoE segmentation */
-	NETIF_F_GSO_RESERVED1,		/* ... free (fill GSO_MASK to 8 bits) */
-	/**/NETIF_F_GSO_LAST,		/* [can't be last bit, see GSO_MASK] */
-	NETIF_F_GSO_RESERVED2		/* ... free (fill GSO_MASK to 8 bits) */
-		= NETIF_F_GSO_LAST,
-
-	NETIF_F_FCOE_CRC_BIT,		/* FCoE CRC32 */
-	NETIF_F_SCTP_CSUM_BIT,		/* SCTP checksum offload */
-=======
 	NETIF_F_GSO_ROBUST_BIT,		/* ... ->SKB_GSO_DODGY */
 	NETIF_F_TSO_ECN_BIT,		/* ... TCP ECN support */
 	NETIF_F_TSO_MANGLEID_BIT,	/* ... IPV4 ID mangling allowed */
@@ -93,7 +59,6 @@ enum {
 
 	NETIF_F_FCOE_CRC_BIT,		/* FCoE CRC32 */
 	NETIF_F_SCTP_CRC_BIT,		/* SCTP checksum offload */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NETIF_F_FCOE_MTU_BIT,		/* Supports max FCoE MTU, 2158 bytes*/
 	NETIF_F_NTUPLE_BIT,		/* N-tuple filters supported */
 	NETIF_F_RXHASH_BIT,		/* Receive hashing offload */
@@ -102,14 +67,6 @@ enum {
 	NETIF_F_LOOPBACK_BIT,		/* Enable loopback */
 	NETIF_F_RXFCS_BIT,		/* Append FCS to skb pkt data */
 	NETIF_F_RXALL_BIT,		/* Receive errored frames too */
-<<<<<<< HEAD
-
-	/*
-	 * Add your fresh new feature above and remember to update
-	 * netdev_features_strings[] in net/core/ethtool.c and maybe
-	 * some feature mask #defines below. Please also describe it
-	 * in Documentation/networking/netdev-features.txt.
-=======
 	NETIF_F_HW_VLAN_STAG_TX_BIT,	/* Transmit VLAN STAG HW acceleration */
 	NETIF_F_HW_VLAN_STAG_RX_BIT,	/* Receive VLAN STAG HW acceleration */
 	NETIF_F_HW_VLAN_STAG_FILTER_BIT,/* Receive filtering on VLAN STAGs */
@@ -139,7 +96,6 @@ enum {
 	 * netdev_features_strings[] in net/ethtool/common.c and maybe
 	 * some feature mask #defines below. Please also describe it
 	 * in Documentation/networking/netdev-features.rst.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	/**/NETDEV_FEATURE_COUNT
@@ -154,23 +110,14 @@ enum {
 #define NETIF_F_FRAGLIST	__NETIF_F(FRAGLIST)
 #define NETIF_F_FSO		__NETIF_F(FSO)
 #define NETIF_F_GRO		__NETIF_F(GRO)
-<<<<<<< HEAD
-=======
 #define NETIF_F_GRO_HW		__NETIF_F(GRO_HW)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NETIF_F_GSO		__NETIF_F(GSO)
 #define NETIF_F_GSO_ROBUST	__NETIF_F(GSO_ROBUST)
 #define NETIF_F_HIGHDMA		__NETIF_F(HIGHDMA)
 #define NETIF_F_HW_CSUM		__NETIF_F(HW_CSUM)
-<<<<<<< HEAD
-#define NETIF_F_HW_VLAN_FILTER	__NETIF_F(HW_VLAN_FILTER)
-#define NETIF_F_HW_VLAN_RX	__NETIF_F(HW_VLAN_RX)
-#define NETIF_F_HW_VLAN_TX	__NETIF_F(HW_VLAN_TX)
-=======
 #define NETIF_F_HW_VLAN_CTAG_FILTER __NETIF_F(HW_VLAN_CTAG_FILTER)
 #define NETIF_F_HW_VLAN_CTAG_RX	__NETIF_F(HW_VLAN_CTAG_RX)
 #define NETIF_F_HW_VLAN_CTAG_TX	__NETIF_F(HW_VLAN_CTAG_TX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NETIF_F_IP_CSUM		__NETIF_F(IP_CSUM)
 #define NETIF_F_IPV6_CSUM	__NETIF_F(IPV6_CSUM)
 #define NETIF_F_LLTX		__NETIF_F(LLTX)
@@ -181,21 +128,11 @@ enum {
 #define NETIF_F_NTUPLE		__NETIF_F(NTUPLE)
 #define NETIF_F_RXCSUM		__NETIF_F(RXCSUM)
 #define NETIF_F_RXHASH		__NETIF_F(RXHASH)
-<<<<<<< HEAD
-#define NETIF_F_SCTP_CSUM	__NETIF_F(SCTP_CSUM)
-=======
 #define NETIF_F_SCTP_CRC	__NETIF_F(SCTP_CRC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NETIF_F_SG		__NETIF_F(SG)
 #define NETIF_F_TSO6		__NETIF_F(TSO6)
 #define NETIF_F_TSO_ECN		__NETIF_F(TSO_ECN)
 #define NETIF_F_TSO		__NETIF_F(TSO)
-<<<<<<< HEAD
-#define NETIF_F_UFO		__NETIF_F(UFO)
-#define NETIF_F_VLAN_CHALLENGED	__NETIF_F(VLAN_CHALLENGED)
-#define NETIF_F_RXFCS		__NETIF_F(RXFCS)
-#define NETIF_F_RXALL		__NETIF_F(RXALL)
-=======
 #define NETIF_F_VLAN_CHALLENGED	__NETIF_F(VLAN_CHALLENGED)
 #define NETIF_F_RXFCS		__NETIF_F(RXFCS)
 #define NETIF_F_RXALL		__NETIF_F(RXALL)
@@ -252,7 +189,6 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
 					      NETDEV_FEATURE_COUNT);	\
 	     (bit) >= 0;						\
 	     (bit) = find_next_netdev_feature((mask_addr), (bit)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Features valid for ethtool to change */
 /* = all defined minus driver/device-class-related */
@@ -268,18 +204,6 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
 #define NETIF_F_GSO_MASK	(__NETIF_F_BIT(NETIF_F_GSO_LAST + 1) - \
 		__NETIF_F_BIT(NETIF_F_GSO_SHIFT))
 
-<<<<<<< HEAD
-/* List of features with software fallbacks. */
-#define NETIF_F_GSO_SOFTWARE	(NETIF_F_TSO | NETIF_F_TSO_ECN | \
-				 NETIF_F_TSO6 | NETIF_F_UFO)
-
-#define NETIF_F_GEN_CSUM	NETIF_F_HW_CSUM
-#define NETIF_F_V4_CSUM		(NETIF_F_GEN_CSUM | NETIF_F_IP_CSUM)
-#define NETIF_F_V6_CSUM		(NETIF_F_GEN_CSUM | NETIF_F_IPV6_CSUM)
-#define NETIF_F_ALL_CSUM	(NETIF_F_V4_CSUM | NETIF_F_V6_CSUM)
-
-#define NETIF_F_ALL_TSO 	(NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_TSO_ECN)
-=======
 /* List of IP checksum features. Note that NETIF_F_HW_CSUM should not be
  * set in features when NETIF_F_IP_CSUM or NETIF_F_IPV6_CSUM are set--
  * this would be contradictory
@@ -289,18 +213,14 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
 
 #define NETIF_F_ALL_TSO 	(NETIF_F_TSO | NETIF_F_TSO6 | \
 				 NETIF_F_TSO_ECN | NETIF_F_TSO_MANGLEID)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NETIF_F_ALL_FCOE	(NETIF_F_FCOE_CRC | NETIF_F_FCOE_MTU | \
 				 NETIF_F_FSO)
 
-<<<<<<< HEAD
-=======
 /* List of features with software fallbacks. */
 #define NETIF_F_GSO_SOFTWARE	(NETIF_F_ALL_TSO | NETIF_F_GSO_SCTP |	     \
 				 NETIF_F_GSO_UDP_L4 | NETIF_F_GSO_FRAGLIST)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * If one device supports one of these features, then enable them
  * for all in netdev_increment_features.
@@ -308,21 +228,13 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
 #define NETIF_F_ONE_FOR_ALL	(NETIF_F_GSO_SOFTWARE | NETIF_F_GSO_ROBUST | \
 				 NETIF_F_SG | NETIF_F_HIGHDMA |		\
 				 NETIF_F_FRAGLIST | NETIF_F_VLAN_CHALLENGED)
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * If one device doesn't support one of these features, then disable it
  * for all in netdev_increment_features.
  */
 #define NETIF_F_ALL_FOR_ALL	(NETIF_F_NOCACHE_COPY | NETIF_F_FSO)
 
-<<<<<<< HEAD
-/* changeable features with no special hardware requirements */
-#define NETIF_F_SOFT_FEATURES	(NETIF_F_GSO | NETIF_F_GRO)
-
-=======
 /*
  * If upper/master device has these features disabled, they must be disabled
  * on all lower/slave devices as well.
@@ -349,5 +261,4 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
 				 NETIF_F_GSO_UDP_TUNNEL |		\
 				 NETIF_F_GSO_UDP_TUNNEL_CSUM)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _LINUX_NETDEV_FEATURES_H */

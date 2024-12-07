@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Seccomp BPF example using a macro-based generator.
  *
@@ -29,13 +26,9 @@
 
 int main(int argc, char **argv)
 {
-<<<<<<< HEAD
-	struct bpf_labels l;
-=======
 	struct bpf_labels l = {
 		.count = 0,
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static const char msg1[] = "Please type something: ";
 	static const char msg2[] = "You typed: ";
 	char buf[256];

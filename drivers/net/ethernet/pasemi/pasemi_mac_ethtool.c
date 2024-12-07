@@ -1,37 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006-2008 PA Semi, Inc
  *
  * Ethtool hooks for the PA Semi PWRficient onchip 1G/10G Ethernet MACs
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
 #include <linux/netdevice.h>
 #include <linux/ethtool.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/inet_lro.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/pasemi_dma.h>
 #include "pasemi_mac.h"
@@ -74,35 +51,6 @@ static struct {
 	{ "tx-1024-1518-byte-packets" },
 };
 
-<<<<<<< HEAD
-static int
-pasemi_mac_ethtool_get_settings(struct net_device *netdev,
-			       struct ethtool_cmd *cmd)
-{
-	struct pasemi_mac *mac = netdev_priv(netdev);
-	struct phy_device *phydev = mac->phydev;
-
-	if (!phydev)
-		return -EOPNOTSUPP;
-
-	return phy_ethtool_gset(phydev, cmd);
-}
-
-static int
-pasemi_mac_ethtool_set_settings(struct net_device *netdev,
-			       struct ethtool_cmd *cmd)
-{
-	struct pasemi_mac *mac = netdev_priv(netdev);
-	struct phy_device *phydev = mac->phydev;
-
-	if (!phydev)
-		return -EOPNOTSUPP;
-
-	return phy_ethtool_sset(phydev, cmd);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32
 pasemi_mac_ethtool_get_msglevel(struct net_device *netdev)
 {
@@ -121,13 +69,9 @@ pasemi_mac_ethtool_set_msglevel(struct net_device *netdev,
 
 static void
 pasemi_mac_ethtool_get_ringparam(struct net_device *netdev,
-<<<<<<< HEAD
-				 struct ethtool_ringparam *ering)
-=======
 				 struct ethtool_ringparam *ering,
 				 struct kernel_ethtool_ringparam *kernel_ering,
 				 struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pasemi_mac *mac = netdev_priv(netdev);
 
@@ -166,11 +110,6 @@ static void pasemi_mac_get_strings(struct net_device *netdev, u32 stringset,
 }
 
 const struct ethtool_ops pasemi_mac_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings		= pasemi_mac_ethtool_get_settings,
-	.set_settings		= pasemi_mac_ethtool_set_settings,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_msglevel		= pasemi_mac_ethtool_get_msglevel,
 	.set_msglevel		= pasemi_mac_ethtool_set_msglevel,
 	.get_link		= ethtool_op_get_link,
@@ -178,10 +117,7 @@ const struct ethtool_ops pasemi_mac_ethtool_ops = {
 	.get_strings		= pasemi_mac_get_strings,
 	.get_sset_count		= pasemi_mac_get_sset_count,
 	.get_ethtool_stats	= pasemi_mac_get_ethtool_stats,
-<<<<<<< HEAD
-=======
 	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
 	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 

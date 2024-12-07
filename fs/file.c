@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/file.c
  *
@@ -10,125 +7,6 @@
  *  Manage the dynamic fd arrays in the process files_struct.
  */
 
-<<<<<<< HEAD
-#include <linux/export.h>
-#include <linux/fs.h>
-#include <linux/mm.h>
-#include <linux/mmzone.h>
-#include <linux/time.h>
-#include <linux/sched.h>
-#include <linux/slab.h>
-#include <linux/vmalloc.h>
-#include <linux/file.h>
-#include <linux/fdtable.h>
-#include <linux/bitops.h>
-#include <linux/interrupt.h>
-#include <linux/spinlock.h>
-#include <linux/rcupdate.h>
-#include <linux/workqueue.h>
-
-struct fdtable_defer {
-	spinlock_t lock;
-	struct work_struct wq;
-	struct fdtable *next;
-};
-
-int sysctl_nr_open __read_mostly = 1024*1024;
-int sysctl_nr_open_min = BITS_PER_LONG;
-int sysctl_nr_open_max = 1024 * 1024; /* raised later */
-
-/*
- * We use this list to defer free fdtables that have vmalloced
- * sets/arrays. By keeping a per-cpu list, we avoid having to embed
- * the work_struct in fdtable itself which avoids a 64 byte (i386) increase in
- * this per-task structure.
- */
-static DEFINE_PER_CPU(struct fdtable_defer, fdtable_defer_list);
-
-static void *alloc_fdmem(size_t size)
-{
-	/*
-	 * Very large allocations can stress page reclaim, so fall back to
-	 * vmalloc() if the allocation size will be considered "large" by the VM.
-	 */
-	if (size <= (PAGE_SIZE << PAGE_ALLOC_COSTLY_ORDER)) {
-		void *data = kmalloc(size, GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY);
-		if (data != NULL)
-			return data;
-	}
-	return vmalloc(size);
-}
-
-static void free_fdmem(void *ptr)
-{
-	is_vmalloc_addr(ptr) ? vfree(ptr) : kfree(ptr);
-}
-
-static void __free_fdtable(struct fdtable *fdt)
-{
-	free_fdmem(fdt->fd);
-	free_fdmem(fdt->open_fds);
-	kfree(fdt);
-}
-
-static void free_fdtable_work(struct work_struct *work)
-{
-	struct fdtable_defer *f =
-		container_of(work, struct fdtable_defer, wq);
-	struct fdtable *fdt;
-
-	spin_lock_bh(&f->lock);
-	fdt = f->next;
-	f->next = NULL;
-	spin_unlock_bh(&f->lock);
-	while(fdt) {
-		struct fdtable *next = fdt->next;
-
-		__free_fdtable(fdt);
-		fdt = next;
-	}
-}
-
-void free_fdtable_rcu(struct rcu_head *rcu)
-{
-	struct fdtable *fdt = container_of(rcu, struct fdtable, rcu);
-	struct fdtable_defer *fddef;
-
-	BUG_ON(!fdt);
-
-	if (fdt->max_fds <= NR_OPEN_DEFAULT) {
-		/*
-		 * This fdtable is embedded in the files structure and that
-		 * structure itself is getting destroyed.
-		 */
-		kmem_cache_free(files_cachep,
-				container_of(fdt, struct files_struct, fdtab));
-		return;
-	}
-	if (!is_vmalloc_addr(fdt->fd) && !is_vmalloc_addr(fdt->open_fds)) {
-		kfree(fdt->fd);
-		kfree(fdt->open_fds);
-		kfree(fdt);
-	} else {
-		fddef = &get_cpu_var(fdtable_defer_list);
-		spin_lock(&fddef->lock);
-		fdt->next = fddef->next;
-		fddef->next = fdt;
-		/* vmallocs are handled from the workqueue context */
-		schedule_work(&fddef->wq);
-		spin_unlock(&fddef->lock);
-		put_cpu_var(fdtable_defer_list);
-	}
-}
-
-/*
- * Expand the fdset in the files_struct.  Called with the files spinlock
- * held for write.
- */
-static void copy_fdtable(struct fdtable *nfdt, struct fdtable *ofdt)
-{
-	unsigned int cpy, set;
-=======
 #include <linux/syscalls.h>
 #include <linux/export.h>
 #include <linux/fs.h>
@@ -198,25 +76,12 @@ static void copy_fd_bitmaps(struct fdtable *nfdt, struct fdtable *ofdt,
 static void copy_fdtable(struct fdtable *nfdt, struct fdtable *ofdt)
 {
 	size_t cpy, set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(nfdt->max_fds < ofdt->max_fds);
 
 	cpy = ofdt->max_fds * sizeof(struct file *);
 	set = (nfdt->max_fds - ofdt->max_fds) * sizeof(struct file *);
 	memcpy(nfdt->fd, ofdt->fd, cpy);
-<<<<<<< HEAD
-	memset((char *)(nfdt->fd) + cpy, 0, set);
-
-	cpy = ofdt->max_fds / BITS_PER_BYTE;
-	set = (nfdt->max_fds - ofdt->max_fds) / BITS_PER_BYTE;
-	memcpy(nfdt->open_fds, ofdt->open_fds, cpy);
-	memset((char *)(nfdt->open_fds) + cpy, 0, set);
-	memcpy(nfdt->close_on_exec, ofdt->close_on_exec, cpy);
-	memset((char *)(nfdt->close_on_exec) + cpy, 0, set);
-}
-
-=======
 	memset((char *)nfdt->fd + cpy, 0, set);
 
 	copy_fd_bitmaps(nfdt, ofdt, ofdt->max_fds);
@@ -237,7 +102,6 @@ static void copy_fdtable(struct fdtable *nfdt, struct fdtable *ofdt)
  * let's consider it documentation (and maybe a test-case for gcc to improve
  * its code generation ;)
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct fdtable * alloc_fdtable(unsigned int nr)
 {
 	struct fdtable *fdt;
@@ -253,10 +117,7 @@ static struct fdtable * alloc_fdtable(unsigned int nr)
 	nr /= (1024 / sizeof(struct file *));
 	nr = roundup_pow_of_two(nr + 1);
 	nr *= (1024 / sizeof(struct file *));
-<<<<<<< HEAD
-=======
 	nr = ALIGN(nr, BITS_PER_LONG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Note that this can drive nr *below* what we had passed if sysctl_nr_open
 	 * had been set lower between the check in expand_files() and here.  Deal
@@ -268,51 +129,30 @@ static struct fdtable * alloc_fdtable(unsigned int nr)
 	if (unlikely(nr > sysctl_nr_open))
 		nr = ((sysctl_nr_open - 1) | (BITS_PER_LONG - 1)) + 1;
 
-<<<<<<< HEAD
-	fdt = kmalloc(sizeof(struct fdtable), GFP_KERNEL);
-	if (!fdt)
-		goto out;
-	fdt->max_fds = nr;
-	data = alloc_fdmem(nr * sizeof(struct file *));
-=======
 	fdt = kmalloc(sizeof(struct fdtable), GFP_KERNEL_ACCOUNT);
 	if (!fdt)
 		goto out;
 	fdt->max_fds = nr;
 	data = kvmalloc_array(nr, sizeof(struct file *), GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data)
 		goto out_fdt;
 	fdt->fd = data;
 
-<<<<<<< HEAD
-	data = alloc_fdmem(max_t(size_t,
-				 2 * nr / BITS_PER_BYTE, L1_CACHE_BYTES));
-=======
 	data = kvmalloc(max_t(size_t,
 				 2 * nr / BITS_PER_BYTE + BITBIT_SIZE(nr), L1_CACHE_BYTES),
 				 GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data)
 		goto out_arr;
 	fdt->open_fds = data;
 	data += nr / BITS_PER_BYTE;
 	fdt->close_on_exec = data;
-<<<<<<< HEAD
-	fdt->next = NULL;
-=======
 	data += nr / BITS_PER_BYTE;
 	fdt->full_fds_bits = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return fdt;
 
 out_arr:
-<<<<<<< HEAD
-	free_fdmem(fdt->fd);
-=======
 	kvfree(fdt->fd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_fdt:
 	kfree(fdt);
 out:
@@ -326,11 +166,7 @@ out:
  * Return <0 error code on error; 1 on successful completion.
  * The files->file_lock should be held on entry, and will be held on exit.
  */
-<<<<<<< HEAD
-static int expand_fdtable(struct files_struct *files, int nr)
-=======
 static int expand_fdtable(struct files_struct *files, unsigned int nr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__releases(files->file_lock)
 	__acquires(files->file_lock)
 {
@@ -338,8 +174,6 @@ static int expand_fdtable(struct files_struct *files, unsigned int nr)
 
 	spin_unlock(&files->file_lock);
 	new_fdt = alloc_fdtable(nr);
-<<<<<<< HEAD
-=======
 
 	/* make sure all fd_install() have seen resize_in_progress
 	 * or have finished their rcu_read_lock_sched() section.
@@ -347,7 +181,6 @@ static int expand_fdtable(struct files_struct *files, unsigned int nr)
 	if (atomic_read(&files->count) > 1)
 		synchronize_rcu();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&files->file_lock);
 	if (!new_fdt)
 		return -ENOMEM;
@@ -359,23 +192,6 @@ static int expand_fdtable(struct files_struct *files, unsigned int nr)
 		__free_fdtable(new_fdt);
 		return -EMFILE;
 	}
-<<<<<<< HEAD
-	/*
-	 * Check again since another task may have expanded the fd table while
-	 * we dropped the lock
-	 */
-	cur_fdt = files_fdtable(files);
-	if (nr >= cur_fdt->max_fds) {
-		/* Continue as planned */
-		copy_fdtable(new_fdt, cur_fdt);
-		rcu_assign_pointer(files->fdt, new_fdt);
-		if (cur_fdt->max_fds > NR_OPEN_DEFAULT)
-			free_fdtable(cur_fdt);
-	} else {
-		/* Somebody else expanded, so undo our attempt */
-		__free_fdtable(new_fdt);
-	}
-=======
 	cur_fdt = files_fdtable(files);
 	BUG_ON(nr < cur_fdt->max_fds);
 	copy_fdtable(new_fdt, cur_fdt);
@@ -384,7 +200,6 @@ static int expand_fdtable(struct files_struct *files, unsigned int nr)
 		call_rcu(&cur_fdt->rcu, free_fdtable_rcu);
 	/* coupled with smp_rmb() in fd_install() */
 	smp_wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -396,24 +211,6 @@ static int expand_fdtable(struct files_struct *files, unsigned int nr)
  * expanded and execution may have blocked.
  * The files->file_lock should be held on entry, and will be held on exit.
  */
-<<<<<<< HEAD
-int expand_files(struct files_struct *files, int nr)
-{
-	struct fdtable *fdt;
-
-	fdt = files_fdtable(files);
-
-	/*
-	 * N.B. For clone tasks sharing a files structure, this test
-	 * will limit the total number of files that can be opened.
-	 */
-	if (nr >= rlimit(RLIMIT_NOFILE))
-		return -EMFILE;
-
-	/* Do we need to expand? */
-	if (nr < fdt->max_fds)
-		return 0;
-=======
 static int expand_files(struct files_struct *files, unsigned int nr)
 	__releases(files->file_lock)
 	__acquires(files->file_lock)
@@ -427,22 +224,11 @@ repeat:
 	/* Do we need to expand? */
 	if (nr < fdt->max_fds)
 		return expanded;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Can we expand? */
 	if (nr >= sysctl_nr_open)
 		return -EMFILE;
 
-<<<<<<< HEAD
-	/* All good, so we try */
-	return expand_fdtable(files, nr);
-}
-
-static int count_open_files(struct fdtable *fdt)
-{
-	int size = fdt->max_fds;
-	int i;
-=======
 	if (unlikely(files->resize_in_progress)) {
 		spin_unlock(&files->file_lock);
 		expanded = 1;
@@ -489,7 +275,6 @@ static unsigned int count_open_files(struct fdtable *fdt)
 {
 	unsigned int size = fdt->max_fds;
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Find the last open fd */
 	for (i = size / BITS_PER_LONG; i > 0; ) {
@@ -501,8 +286,6 @@ static unsigned int count_open_files(struct fdtable *fdt)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Note that a sane fdtable size always has to be a multiple of
  * BITS_PER_LONG, since we have bitmaps that are sized by this.
  *
@@ -526,24 +309,15 @@ static unsigned int sane_fdtable_size(struct fdtable *fdt, unsigned int max_fds)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Allocate a new files structure and copy contents from the
  * passed in files structure.
  * errorp will be valid only when the returned files_struct is NULL.
  */
-<<<<<<< HEAD
-struct files_struct *dup_fd(struct files_struct *oldf, int *errorp)
-{
-	struct files_struct *newf;
-	struct file **old_fds, **new_fds;
-	int open_files, size, i;
-=======
 struct files_struct *dup_fd(struct files_struct *oldf, unsigned int max_fds, int *errorp)
 {
 	struct files_struct *newf;
 	struct file **old_fds, **new_fds;
 	unsigned int open_files, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fdtable *old_fdt, *new_fdt;
 
 	*errorp = -ENOMEM;
@@ -554,31 +328,19 @@ struct files_struct *dup_fd(struct files_struct *oldf, unsigned int max_fds, int
 	atomic_set(&newf->count, 1);
 
 	spin_lock_init(&newf->file_lock);
-<<<<<<< HEAD
-=======
 	newf->resize_in_progress = false;
 	init_waitqueue_head(&newf->resize_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	newf->next_fd = 0;
 	new_fdt = &newf->fdtab;
 	new_fdt->max_fds = NR_OPEN_DEFAULT;
 	new_fdt->close_on_exec = newf->close_on_exec_init;
 	new_fdt->open_fds = newf->open_fds_init;
-<<<<<<< HEAD
-	new_fdt->fd = &newf->fd_array[0];
-	new_fdt->next = NULL;
-
-	spin_lock(&oldf->file_lock);
-	old_fdt = files_fdtable(oldf);
-	open_files = count_open_files(old_fdt);
-=======
 	new_fdt->full_fds_bits = newf->full_fds_bits_init;
 	new_fdt->fd = &newf->fd_array[0];
 
 	spin_lock(&oldf->file_lock);
 	old_fdt = files_fdtable(oldf);
 	open_files = sane_fdtable_size(old_fdt, max_fds);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check whether we need to allocate a larger fd array and fd set.
@@ -609,17 +371,6 @@ struct files_struct *dup_fd(struct files_struct *oldf, unsigned int max_fds, int
 		 */
 		spin_lock(&oldf->file_lock);
 		old_fdt = files_fdtable(oldf);
-<<<<<<< HEAD
-		open_files = count_open_files(old_fdt);
-	}
-
-	old_fds = old_fdt->fd;
-	new_fds = new_fdt->fd;
-
-	memcpy(new_fdt->open_fds, old_fdt->open_fds, open_files / 8);
-	memcpy(new_fdt->close_on_exec, old_fdt->close_on_exec, open_files / 8);
-
-=======
 		open_files = sane_fdtable_size(old_fdt, max_fds);
 	}
 
@@ -628,7 +379,6 @@ struct files_struct *dup_fd(struct files_struct *oldf, unsigned int max_fds, int
 	old_fds = old_fdt->fd;
 	new_fds = new_fdt->fd;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = open_files; i != 0; i--) {
 		struct file *f = *old_fds++;
 		if (f) {
@@ -646,24 +396,8 @@ struct files_struct *dup_fd(struct files_struct *oldf, unsigned int max_fds, int
 	}
 	spin_unlock(&oldf->file_lock);
 
-<<<<<<< HEAD
-	/* compute the remainder to be cleared */
-	size = (new_fdt->max_fds - open_files) * sizeof(struct file *);
-
-	/* This is long word aligned thus could use a optimized version */
-	memset(new_fds, 0, size);
-
-	if (new_fdt->max_fds > open_files) {
-		int left = (new_fdt->max_fds - open_files) / 8;
-		int start = open_files / BITS_PER_LONG;
-
-		memset(&new_fdt->open_fds[start], 0, left);
-		memset(&new_fdt->close_on_exec[start], 0, left);
-	}
-=======
 	/* clear the remainder */
 	memset(new_fds, 0, (new_fdt->max_fds - open_files) * sizeof(struct file *));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_assign_pointer(newf->fdt, new_fdt);
 
@@ -675,23 +409,6 @@ out:
 	return NULL;
 }
 
-<<<<<<< HEAD
-static void __devinit fdtable_defer_list_init(int cpu)
-{
-	struct fdtable_defer *fddef = &per_cpu(fdtable_defer_list, cpu);
-	spin_lock_init(&fddef->lock);
-	INIT_WORK(&fddef->wq, free_fdtable_work);
-	fddef->next = NULL;
-}
-
-void __init files_defer_init(void)
-{
-	int i;
-	for_each_possible_cpu(i)
-		fdtable_defer_list_init(i);
-	sysctl_nr_open_max = min((size_t)INT_MAX, ~(size_t)0/sizeof(void *)) &
-			     -BITS_PER_LONG;
-=======
 static struct fdtable *close_files(struct files_struct * files)
 {
 	/*
@@ -746,7 +463,6 @@ void exit_files(struct task_struct *tsk)
 		task_unlock(tsk);
 		put_files_struct(files);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct files_struct init_files = {
@@ -757,16 +473,6 @@ struct files_struct init_files = {
 		.fd		= &init_files.fd_array[0],
 		.close_on_exec	= init_files.close_on_exec_init,
 		.open_fds	= init_files.open_fds_init,
-<<<<<<< HEAD
-	},
-	.file_lock	= __SPIN_LOCK_UNLOCKED(init_task.file_lock),
-};
-
-/*
- * allocate a file descriptor, mark it busy.
- */
-int alloc_fd(unsigned start, unsigned flags)
-=======
 		.full_fds_bits	= init_files.full_fds_bits_init,
 	},
 	.file_lock	= __SPIN_LOCK_UNLOCKED(init_files.file_lock),
@@ -791,7 +497,6 @@ static unsigned int find_next_fd(struct fdtable *fdt, unsigned int start)
  * allocate a file descriptor, mark it busy.
  */
 static int alloc_fd(unsigned start, unsigned end, unsigned flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct files_struct *files = current->files;
 	unsigned int fd;
@@ -806,9 +511,6 @@ repeat:
 		fd = files->next_fd;
 
 	if (fd < fdt->max_fds)
-<<<<<<< HEAD
-		fd = find_next_zero_bit(fdt->open_fds, fdt->max_fds, fd);
-=======
 		fd = find_next_fd(fdt, fd);
 
 	/*
@@ -818,7 +520,6 @@ repeat:
 	error = -EMFILE;
 	if (fd >= end)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = expand_files(files, fd);
 	if (error < 0)
@@ -842,11 +543,7 @@ repeat:
 	error = fd;
 #if 1
 	/* Sanity check */
-<<<<<<< HEAD
-	if (rcu_dereference_raw(fdt->fd[fd]) != NULL) {
-=======
 	if (rcu_access_pointer(fdt->fd[fd]) != NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "alloc_fd: slot %d not NULL!\n", fd);
 		rcu_assign_pointer(fdt->fd[fd], NULL);
 	}
@@ -856,15 +553,6 @@ out:
 	spin_unlock(&files->file_lock);
 	return error;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(alloc_fd);
-
-int get_unused_fd(void)
-{
-	return alloc_fd(0, 0);
-}
-EXPORT_SYMBOL(get_unused_fd);
-=======
 
 int __get_unused_fd_flags(unsigned flags, unsigned long nofile)
 {
@@ -1772,4 +1460,3 @@ int iterate_fd(struct files_struct *files, unsigned n,
 	return res;
 }
 EXPORT_SYMBOL(iterate_fd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

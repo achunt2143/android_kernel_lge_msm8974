@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-config CRYPTO_DEV_FSL_CAAM
-	tristate "Freescale CAAM-Multicore driver backend"
-	depends on FSL_SOC
-	help
-	  Enables the driver module for Freescale's Cryptographic Accelerator
-	  and Assurance Module (CAAM), also known as the SEC version 4 (SEC4).
-	  This module adds a job ring operation interface, and configures h/w
-=======
 # SPDX-License-Identifier: GPL-2.0
 config CRYPTO_DEV_FSL_CAAM_COMMON
 	tristate
@@ -27,18 +18,12 @@ config CRYPTO_DEV_FSL_CAAM
 	  Enables the driver module for Freescale's Cryptographic Accelerator
 	  and Assurance Module (CAAM), also known as the SEC version 4 (SEC4).
 	  This module creates job ring devices, and configures h/w
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  to operate as a DPAA component automatically, depending
 	  on h/w feature availability.
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called caam.
 
-<<<<<<< HEAD
-config CRYPTO_DEV_FSL_CAAM_RINGSIZE
-	int "Job Ring size"
-	depends on CRYPTO_DEV_FSL_CAAM
-=======
 if CRYPTO_DEV_FSL_CAAM
 
 config CRYPTO_DEV_FSL_CAAM_DEBUG
@@ -64,7 +49,6 @@ if CRYPTO_DEV_FSL_CAAM_JR
 
 config CRYPTO_DEV_FSL_CAAM_RINGSIZE
 	int "Job Ring size"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	range 2 9
 	default "9"
 	help
@@ -82,20 +66,12 @@ config CRYPTO_DEV_FSL_CAAM_RINGSIZE
 
 config CRYPTO_DEV_FSL_CAAM_INTC
 	bool "Job Ring interrupt coalescing"
-<<<<<<< HEAD
-	depends on CRYPTO_DEV_FSL_CAAM
-	default y
-	help
-	  Enable the Job Ring's interrupt coalescing feature.
-
-=======
 	help
 	  Enable the Job Ring's interrupt coalescing feature.
 
 	  Note: the driver already provides adequate
 	  interrupt coalescing in software.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CRYPTO_DEV_FSL_CAAM_INTC_COUNT_THLD
 	int "Job Ring interrupt coalescing count threshold"
 	depends on CRYPTO_DEV_FSL_CAAM_INTC
@@ -118,13 +94,6 @@ config CRYPTO_DEV_FSL_CAAM_INTC_TIME_THLD
 	  threshold. Range is 1-65535.
 
 config CRYPTO_DEV_FSL_CAAM_CRYPTO_API
-<<<<<<< HEAD
-	tristate "Register algorithm implementations with the Crypto API"
-	depends on CRYPTO_DEV_FSL_CAAM
-	default y
-	select CRYPTO_ALGAPI
-	select CRYPTO_AUTHENC
-=======
 	bool "Register algorithm implementations with the Crypto API"
 	default y
 	select CRYPTO_DEV_FSL_CAAM_CRYPTO_API_DESC
@@ -133,16 +102,11 @@ config CRYPTO_DEV_FSL_CAAM_CRYPTO_API
 	select CRYPTO_SKCIPHER
 	select CRYPTO_LIB_DES
 	select CRYPTO_XTS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Selecting this will offload crypto for users of the
 	  scatterlist crypto API (such as the linux native IPSec
 	  stack) to the SEC4 via job ring.
 
-<<<<<<< HEAD
-	  To compile this as a module, choose M here: the module
-	  will be called caamalg.
-=======
 config CRYPTO_DEV_FSL_CAAM_CRYPTO_API_QI
 	bool "Queue Interface as Crypto API backend"
 	depends on FSL_DPAA && NET
@@ -231,4 +195,3 @@ config CRYPTO_DEV_FSL_DPAA2_CAAM
 
 	  To compile this as a module, choose M here: the module
 	  will be called dpaa2_caam.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

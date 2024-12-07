@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/console.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -11,10 +8,7 @@
 #include <linux/pci_regs.h>
 #include <linux/pci_ids.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-=======
 #include <linux/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/processor.h>
 #include <asm/fcntl.h>
@@ -22,15 +16,9 @@
 #include <xen/hvc-console.h>
 #include <asm/pci-direct.h>
 #include <asm/fixmap.h>
-<<<<<<< HEAD
-#include <asm/mrst.h>
-#include <asm/pgtable.h>
-#include <linux/usb/ehci_def.h>
-=======
 #include <linux/usb/ehci_def.h>
 #include <linux/usb/xhci-dbgp.h>
 #include <asm/pci_x86.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Simple VGA output */
 #define VGABASE		(__ISA_IO_base + 0xb8000)
@@ -88,11 +76,7 @@ static struct console early_vga_console = {
 
 /* Serial functions loosely based on a similar package from Klaus P. Gerlicher */
 
-<<<<<<< HEAD
-static int early_serial_base = 0x3f8;  /* ttyS0 */
-=======
 static unsigned long early_serial_base = 0x3f8;  /* ttyS0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define XMTRDY          0x20
 
@@ -110,8 +94,6 @@ static unsigned long early_serial_base = 0x3f8;  /* ttyS0 */
 #define DLL             0       /*  Divisor Latch Low         */
 #define DLH             1       /*  Divisor latch High        */
 
-<<<<<<< HEAD
-=======
 static unsigned int io_serial_in(unsigned long addr, int offset)
 {
 	return inb(addr + offset);
@@ -125,20 +107,13 @@ static void io_serial_out(unsigned long addr, int offset, int value)
 static unsigned int (*serial_in)(unsigned long addr, int offset) = io_serial_in;
 static void (*serial_out)(unsigned long addr, int offset, int value) = io_serial_out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int early_serial_putc(unsigned char ch)
 {
 	unsigned timeout = 0xffff;
 
-<<<<<<< HEAD
-	while ((inb(early_serial_base + LSR) & XMTRDY) == 0 && --timeout)
-		cpu_relax();
-	outb(ch, early_serial_base + TXR);
-=======
 	while ((serial_in(early_serial_base, LSR) & XMTRDY) == 0 && --timeout)
 		cpu_relax();
 	serial_out(early_serial_base, TXR, ch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return timeout ? 0 : -1;
 }
 
@@ -152,8 +127,6 @@ static void early_serial_write(struct console *con, const char *s, unsigned n)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static __init void early_serial_hw_init(unsigned divisor)
 {
 	unsigned char c;
@@ -170,19 +143,12 @@ static __init void early_serial_hw_init(unsigned divisor)
 	serial_out(early_serial_base, LCR, c & ~DLAB);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFAULT_BAUD 9600
 
 static __init void early_serial_init(char *s)
 {
-<<<<<<< HEAD
-	unsigned char c;
-	unsigned divisor;
-	unsigned baud = DEFAULT_BAUD;
-=======
 	unsigned divisor;
 	unsigned long baud = DEFAULT_BAUD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *e;
 
 	if (*s == ',')
@@ -207,33 +173,13 @@ static __init void early_serial_init(char *s)
 			s++;
 	}
 
-<<<<<<< HEAD
-	outb(0x3, early_serial_base + LCR);	/* 8n1 */
-	outb(0, early_serial_base + IER);	/* no interrupt */
-	outb(0, early_serial_base + FCR);	/* no fifo */
-	outb(0x3, early_serial_base + MCR);	/* DTR + RTS */
-
-	if (*s) {
-		baud = simple_strtoul(s, &e, 0);
-=======
 	if (*s) {
 		baud = simple_strtoull(s, &e, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (baud == 0 || s == e)
 			baud = DEFAULT_BAUD;
 	}
 
-<<<<<<< HEAD
-	divisor = 115200 / baud;
-	c = inb(early_serial_base + LCR);
-	outb(c | DLAB, early_serial_base + LCR);
-	outb(divisor & 0xff, early_serial_base + DLL);
-	outb((divisor >> 8) & 0xff, early_serial_base + DLH);
-	outb(c & ~DLAB, early_serial_base + LCR);
-}
-
-=======
 	/* Convert from baud to divisor value */
 	divisor = 115200 / baud;
 
@@ -371,7 +317,6 @@ static __init void early_pci_serial_init(char *s)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct console early_serial_console = {
 	.name =		"earlyser",
 	.write =	early_serial_write,
@@ -379,31 +324,9 @@ static struct console early_serial_console = {
 	.index =	-1,
 };
 
-<<<<<<< HEAD
-/* Direct interface for emergencies */
-static struct console *early_console = &early_vga_console;
-static int __initdata early_console_initialized;
-
-asmlinkage void early_printk(const char *fmt, ...)
-{
-	char buf[512];
-	int n;
-	va_list ap;
-
-	va_start(ap, fmt);
-	n = vscnprintf(buf, sizeof(buf), fmt, ap);
-	early_console->write(early_console, buf, n);
-	va_end(ap);
-}
-
-static inline void early_console_register(struct console *con, int keep_early)
-{
-	if (early_console->index != -1) {
-=======
 static void early_console_register(struct console *con, int keep_early)
 {
 	if (con->index != -1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_CRIT "ERROR: earlyprintk= %s already used\n",
 		       con->name);
 		return;
@@ -423,14 +346,8 @@ static int __init setup_early_printk(char *buf)
 	if (!buf)
 		return 0;
 
-<<<<<<< HEAD
-	if (early_console_initialized)
-		return 0;
-	early_console_initialized = 1;
-=======
 	if (early_console)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	keep = (strstr(buf, "keep") != NULL);
 
@@ -446,8 +363,6 @@ static int __init setup_early_printk(char *buf)
 			early_serial_init(buf + 4);
 			early_console_register(&early_serial_console, keep);
 		}
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PCI
 		if (!strncmp(buf, "pciserial", 9)) {
 			early_pci_serial_init(buf + 9);
@@ -455,7 +370,6 @@ static int __init setup_early_printk(char *buf)
 			buf += 9; /* Keep from match the above "serial" */
 		}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!strncmp(buf, "vga", 3) &&
 		    boot_params.screen_info.orig_video_isVGA == 1) {
 			max_xpos = boot_params.screen_info.orig_video_cols;
@@ -471,25 +385,11 @@ static int __init setup_early_printk(char *buf)
 		if (!strncmp(buf, "xen", 3))
 			early_console_register(&xenboot_console, keep);
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_EARLY_PRINTK_INTEL_MID
-		if (!strncmp(buf, "mrst", 4)) {
-			mrst_early_console_init();
-			early_console_register(&early_mrst_console, keep);
-		}
-
-		if (!strncmp(buf, "hsu", 3)) {
-			hsu_early_console_init(buf + 3);
-			early_console_register(&early_hsu_console, keep);
-		}
-#endif
-=======
 #ifdef CONFIG_EARLY_PRINTK_USB_XDBC
 		if (!strncmp(buf, "xdbc", 4))
 			early_xdbc_parse_parameter(buf + 4, keep);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		buf++;
 	}
 	return 0;

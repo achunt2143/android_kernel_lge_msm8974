@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-/*
- * MIPS SPRAM support
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- *
- * Copyright (C) 2007, 2008 MIPS Technologies, Inc.
- */
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * MIPS SPRAM support
  *
  * Copyright (C) 2007, 2008 MIPS Technologies, Inc.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/ptrace.h>
 #include <linux/stddef.h>
@@ -26,10 +12,7 @@
 #include <asm/mipsregs.h>
 #include <asm/r4kcache.h>
 #include <asm/hazards.h>
-<<<<<<< HEAD
-=======
 #include <asm/spram.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These definitions are correct for the 24K/34K/74K SPRAM sample
@@ -50,11 +33,7 @@
 /*
  * Different semantics to the set_c0_* function built by __BUILD_SET_C0
  */
-<<<<<<< HEAD
-static __cpuinit unsigned int bis_c0_errctl(unsigned int set)
-=======
 static unsigned int bis_c0_errctl(unsigned int set)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int res;
 	res = read_c0_errctl();
@@ -62,11 +41,7 @@ static unsigned int bis_c0_errctl(unsigned int set)
 	return res;
 }
 
-<<<<<<< HEAD
-static __cpuinit void ispram_store_tag(unsigned int offset, unsigned int data)
-=======
 static void ispram_store_tag(unsigned int offset, unsigned int data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int errctl;
 
@@ -85,11 +60,7 @@ static void ispram_store_tag(unsigned int offset, unsigned int data)
 }
 
 
-<<<<<<< HEAD
-static __cpuinit unsigned int ispram_load_tag(unsigned int offset)
-=======
 static unsigned int ispram_load_tag(unsigned int offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int data;
 	unsigned int errctl;
@@ -107,11 +78,7 @@ static unsigned int ispram_load_tag(unsigned int offset)
 	return data;
 }
 
-<<<<<<< HEAD
-static __cpuinit void dspram_store_tag(unsigned int offset, unsigned int data)
-=======
 static void dspram_store_tag(unsigned int offset, unsigned int data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int errctl;
 
@@ -127,11 +94,7 @@ static void dspram_store_tag(unsigned int offset, unsigned int data)
 }
 
 
-<<<<<<< HEAD
-static __cpuinit unsigned int dspram_load_tag(unsigned int offset)
-=======
 static unsigned int dspram_load_tag(unsigned int offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int data;
 	unsigned int errctl;
@@ -148,11 +111,7 @@ static unsigned int dspram_load_tag(unsigned int offset)
 	return data;
 }
 
-<<<<<<< HEAD
-static __cpuinit void probe_spram(char *type,
-=======
 static void probe_spram(char *type,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    unsigned int base,
 	    unsigned int (*read)(unsigned int),
 	    void (*write)(unsigned int, unsigned int))
@@ -233,33 +192,15 @@ static void probe_spram(char *type,
 		offset += 2 * SPRAM_TAG_STRIDE;
 	}
 }
-<<<<<<< HEAD
-void __cpuinit spram_config(void)
-{
-	struct cpuinfo_mips *c = &current_cpu_data;
-	unsigned int config0;
-
-	switch (c->cputype) {
-=======
 void spram_config(void)
 {
 	unsigned int config0;
 
 	switch (current_cpu_type()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPU_24K:
 	case CPU_34K:
 	case CPU_74K:
 	case CPU_1004K:
-<<<<<<< HEAD
-		config0 = read_c0_config();
-		/* FIXME: addresses are Malta specific */
-		if (config0 & (1<<24)) {
-			probe_spram("ISPRAM", 0x1c000000,
-				    &ispram_load_tag, &ispram_store_tag);
-		}
-		if (config0 & (1<<23))
-=======
 	case CPU_1074K:
 	case CPU_INTERAPTIV:
 	case CPU_PROAPTIV:
@@ -274,7 +215,6 @@ void spram_config(void)
 				    &ispram_load_tag, &ispram_store_tag);
 		}
 		if (config0 & MIPS_CONF_DSP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			probe_spram("DSPRAM", 0x1c100000,
 				    &dspram_load_tag, &dspram_store_tag);
 	}

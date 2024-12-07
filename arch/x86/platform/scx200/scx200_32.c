@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2001,2002 Christer Weinigel <wingel@nano-system.com>
  *
@@ -39,11 +36,7 @@ static struct pci_device_id scx200_tbl[] = {
 };
 MODULE_DEVICE_TABLE(pci,scx200_tbl);
 
-<<<<<<< HEAD
-static int __devinit scx200_probe(struct pci_dev *, const struct pci_device_id *);
-=======
 static int scx200_probe(struct pci_dev *, const struct pci_device_id *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver scx200_pci_driver = {
 	.name = "scx200",
@@ -53,11 +46,7 @@ static struct pci_driver scx200_pci_driver = {
 
 static DEFINE_MUTEX(scx200_gpio_config_lock);
 
-<<<<<<< HEAD
-static void __devinit scx200_init_shadow(void)
-=======
 static void scx200_init_shadow(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int bank;
 
@@ -66,11 +55,7 @@ static void scx200_init_shadow(void)
 		scx200_gpio_shadow[bank] = inl(scx200_gpio_base + 0x10 * bank);
 }
 
-<<<<<<< HEAD
-static int __devinit scx200_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
-=======
 static int scx200_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned base;
 

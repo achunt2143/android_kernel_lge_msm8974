@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#ifndef LINUX_BCMA_DRIVER_CC_H_
-#define LINUX_BCMA_DRIVER_CC_H_
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef LINUX_BCMA_DRIVER_CC_H_
 #define LINUX_BCMA_DRIVER_CC_H_
@@ -11,7 +6,6 @@
 #include <linux/platform_data/brcmnand.h>
 #include <linux/gpio/driver.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /** ChipCommon core registers. **/
 #define BCMA_CC_ID			0x0000
 #define  BCMA_CC_ID_ID			0x0000FFFF
@@ -35,11 +29,7 @@
 #define   BCMA_CC_FLASHT_NONE		0x00000000	/* No flash */
 #define   BCMA_CC_FLASHT_STSER		0x00000100	/* ST serial flash */
 #define   BCMA_CC_FLASHT_ATSER		0x00000200	/* Atmel serial flash */
-<<<<<<< HEAD
-#define   BCMA_CC_FLASHT_NFLASH		0x00000200
-=======
 #define   BCMA_CC_FLASHT_NAND		0x00000300	/* NAND flash */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	  BCMA_CC_FLASHT_PARA		0x00000700	/* Parallel flash */
 #define  BCMA_CC_CAP_PLLT		0x00038000	/* PLL Type */
 #define   BCMA_PLLTYPE_NONE		0x00000000
@@ -60,10 +50,7 @@
 #define  BCMA_CC_CAP_PMU		0x10000000	/* PMU available (rev >= 20) */
 #define  BCMA_CC_CAP_ECI		0x20000000	/* ECI available (rev >= 20) */
 #define  BCMA_CC_CAP_SPROM		0x40000000	/* SPROM present */
-<<<<<<< HEAD
-=======
 #define  BCMA_CC_CAP_NFLASH		0x80000000	/* NAND flash present (rev >= 35 or BCM4706?) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCMA_CC_CORECTL			0x0008
 #define  BCMA_CC_CORECTL_UARTCLK0	0x00000001	/* Drive UART with internal clock */
 #define	 BCMA_CC_CORECTL_SE		0x00000002	/* sync clk out enable (corerev >= 3) */
@@ -107,8 +94,6 @@
 #define  BCMA_CC_CHIPST_4313_OTP_PRESENT	2
 #define  BCMA_CC_CHIPST_4331_SPROM_PRESENT	2
 #define  BCMA_CC_CHIPST_4331_OTP_PRESENT	4
-<<<<<<< HEAD
-=======
 #define  BCMA_CC_CHIPST_43228_ILP_DIV_EN	0x00000001
 #define  BCMA_CC_CHIPST_43228_OTP_PRESENT	0x00000002
 #define  BCMA_CC_CHIPST_43228_SERDES_REFCLK_PADSEL	0x00000004
@@ -122,7 +107,6 @@
 #define  BCMA_CC_CHIPST_4706_PCIE1_DISABLE	BIT(5) /* PCIE1 enable strap pin */
 #define  BCMA_CC_CHIPST_5357_NAND_BOOT		BIT(4) /* NAND boot, valid for CC rev 38 and/or BCM5357 */
 #define  BCMA_CC_CHIPST_4360_XTAL_40MZ		0x00000001
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCMA_CC_JCMD			0x0030		/* Rev >= 10 only */
 #define  BCMA_CC_JCMD_START		0x80000000
 #define  BCMA_CC_JCMD_BUSY		0x80000000
@@ -152,12 +136,6 @@
 #define  BCMA_CC_JCTL_EXT_EN		2		/* Enable external targets */
 #define  BCMA_CC_JCTL_EN		1		/* Enable Jtag master */
 #define BCMA_CC_FLASHCTL		0x0040
-<<<<<<< HEAD
-#define  BCMA_CC_FLASHCTL_START		0x80000000
-#define  BCMA_CC_FLASHCTL_BUSY		BCMA_CC_FLASHCTL_START
-#define BCMA_CC_FLASHADDR		0x0044
-#define BCMA_CC_FLASHDATA		0x0048
-=======
 /* Start/busy bit in flashcontrol */
 #define  BCMA_CC_FLASHCTL_OPCODE	0x000000ff
 #define  BCMA_CC_FLASHCTL_ACTION	0x00000700
@@ -210,7 +188,6 @@
 #define  BCMA_CC_FLASHDATA_AT_MISMATCH	0x40
 #define  BCMA_CC_FLASHDATA_AT_ID_MASK	0x38
 #define  BCMA_CC_FLASHDATA_AT_ID_SHIFT	3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCMA_CC_BCAST_ADDR		0x0050
 #define BCMA_CC_BCAST_DATA		0x0054
 #define BCMA_CC_GPIOPULLUP		0x0058		/* Rev >= 20 only */
@@ -242,14 +219,11 @@
 #define	 BCMA_CC_CLKDIV_JTAG_SHIFT	8
 #define	 BCMA_CC_CLKDIV_UART		0x000000FF
 #define BCMA_CC_CAP_EXT			0x00AC		/* Capabilities */
-<<<<<<< HEAD
-=======
 #define  BCMA_CC_CAP_EXT_SECI_PRESENT	0x00000001
 #define  BCMA_CC_CAP_EXT_GSIO_PRESENT	0x00000002
 #define  BCMA_CC_CAP_EXT_GCI_PRESENT	0x00000004
 #define  BCMA_CC_CAP_EXT_SECI_PUART_PRESENT		0x00000008    /* UART present */
 #define  BCMA_CC_CAP_EXT_AOB_PRESENT	0x00000040
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCMA_CC_PLLONDELAY		0x00B0		/* Rev >= 4 only */
 #define BCMA_CC_FREFSELDELAY		0x00B4		/* Rev >= 4 only */
 #define BCMA_CC_SLOWCLKCTL		0x00B8		/* 6 <= Rev <= 9 only */
@@ -297,10 +271,7 @@
 #define  BCMA_CC_SROM_CONTROL_OP_WRDIS	0x40000000
 #define  BCMA_CC_SROM_CONTROL_OP_WREN	0x60000000
 #define  BCMA_CC_SROM_CONTROL_OTPSEL	0x00000010
-<<<<<<< HEAD
-=======
 #define  BCMA_CC_SROM_CONTROL_OTP_PRESENT	0x00000020
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define  BCMA_CC_SROM_CONTROL_LOCK	0x00000008
 #define  BCMA_CC_SROM_CONTROL_SIZE_MASK	0x00000006
 #define  BCMA_CC_SROM_CONTROL_SIZE_1K	0x00000000
@@ -308,8 +279,6 @@
 #define  BCMA_CC_SROM_CONTROL_SIZE_16K	0x00000004
 #define  BCMA_CC_SROM_CONTROL_SIZE_SHIFT	1
 #define  BCMA_CC_SROM_CONTROL_PRESENT	0x00000001
-<<<<<<< HEAD
-=======
 /* Block 0x140 - 0x190 registers are chipset specific */
 #define BCMA_CC_4706_FLASHSCFG		0x18C		/* Flash struct configuration */
 #define  BCMA_CC_4706_FLASHSCFG_MASK	0x000000ff
@@ -333,7 +302,6 @@
 #define BCMA_CC_NFLASH_ROW_ADDR		0x01AC
 #define BCMA_CC_NFLASH_DATA		0x01B0
 #define BCMA_CC_NFLASH_WAITCNT0		0x01B4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 0x1E0 is defined as shared BCMA_CLKCTLST */
 #define BCMA_CC_HW_WORKAROUND		0x01E4 /* Hardware workaround (rev >= 20) */
 #define BCMA_CC_UART0_DATA		0x0300
@@ -356,12 +324,9 @@
 #define BCMA_CC_PMU_CTL			0x0600 /* PMU control */
 #define  BCMA_CC_PMU_CTL_ILP_DIV	0xFFFF0000 /* ILP div mask */
 #define  BCMA_CC_PMU_CTL_ILP_DIV_SHIFT	16
-<<<<<<< HEAD
-=======
 #define  BCMA_CC_PMU_CTL_RES		0x00006000 /* reset control mask */
 #define  BCMA_CC_PMU_CTL_RES_SHIFT	13
 #define  BCMA_CC_PMU_CTL_RES_RELOAD	0x2	/* reload POR values */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define  BCMA_CC_PMU_CTL_PLL_UPD	0x00000400
 #define  BCMA_CC_PMU_CTL_NOILPONW	0x00000200 /* No ILP on wait */
 #define  BCMA_CC_PMU_CTL_HTREQEN	0x00000100 /* HT req enable */
@@ -373,11 +338,8 @@
 #define BCMA_CC_PMU_CAP			0x0604 /* PMU capabilities */
 #define  BCMA_CC_PMU_CAP_REVISION	0x000000FF /* Revision mask */
 #define BCMA_CC_PMU_STAT		0x0608 /* PMU status */
-<<<<<<< HEAD
-=======
 #define  BCMA_CC_PMU_STAT_EXT_LPO_AVAIL	0x00000100
 #define  BCMA_CC_PMU_STAT_WDRESET	0x00000080
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define  BCMA_CC_PMU_STAT_INTPEND	0x00000040 /* Interrupt pending */
 #define  BCMA_CC_PMU_STAT_SBCLKST	0x00000030 /* Backplane clock status? */
 #define  BCMA_CC_PMU_STAT_HAVEALP	0x00000008 /* ALP available */
@@ -397,15 +359,6 @@
 #define BCMA_CC_PMU_RES_REQTS		0x0640 /* PMU res req timer sel */
 #define BCMA_CC_PMU_RES_REQT		0x0644 /* PMU res req timer */
 #define BCMA_CC_PMU_RES_REQM		0x0648 /* PMU res req mask */
-<<<<<<< HEAD
-#define BCMA_CC_CHIPCTL_ADDR		0x0650
-#define BCMA_CC_CHIPCTL_DATA		0x0654
-#define BCMA_CC_REGCTL_ADDR		0x0658
-#define BCMA_CC_REGCTL_DATA		0x065C
-#define BCMA_CC_PLLCTL_ADDR		0x0660
-#define BCMA_CC_PLLCTL_DATA		0x0664
-#define BCMA_CC_SPROM			0x0800 /* SPROM beginning */
-=======
 #define BCMA_CC_PMU_CHIPCTL_ADDR	0x0650
 #define BCMA_CC_PMU_CHIPCTL_DATA	0x0654
 #define BCMA_CC_PMU_REGCTL_ADDR		0x0658
@@ -472,7 +425,6 @@
 #define BCMA_CC_NAND_CACHE_DATA		0x0D44
 #define BCMA_CC_NAND_CTRL_CONFIG	0x0D48
 #define BCMA_CC_NAND_CTRL_STATUS	0x0D4C
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Divider allocation in 4716/47162/5356 */
 #define BCMA_CC_PMU5_MAINPLL_CPU	1
@@ -488,8 +440,6 @@
 
 /* 4706 PMU */
 #define BCMA_CC_PMU4706_MAINPLL_PLL0	0
-<<<<<<< HEAD
-=======
 #define BCMA_CC_PMU6_4706_PROCPLL_OFF	4	/* The CPU PLL */
 #define  BCMA_CC_PMU6_4706_PROC_P2DIV_MASK	0x000f0000
 #define  BCMA_CC_PMU6_4706_PROC_P2DIV_SHIFT	16
@@ -516,7 +466,6 @@
 #define  BCMA_CC_PMU15_PLL_PC0_FDCMODE_SHIFT	30
 #define  BCMA_CC_PMU15_PLL_PC0_CTRLBIAS_MASK	0x80000000
 #define  BCMA_CC_PMU15_PLL_PC0_CTRLBIAS_SHIFT	31
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ALP clock on pre-PMU chips */
 #define BCMA_CC_PMU_ALP_CLOCK		20000000
@@ -545,8 +494,6 @@
 #define BCMA_CC_PPL_PCHI_OFF		5
 #define BCMA_CC_PPL_PCHI_MASK		0x0000003f
 
-<<<<<<< HEAD
-=======
 #define BCMA_CC_PMU_PLL_CTL0		0
 #define BCMA_CC_PMU_PLL_CTL1		1
 #define BCMA_CC_PMU_PLL_CTL2		2
@@ -563,7 +510,6 @@
 #define BCMA_CCB_MII_MNG_CTL		0x0000
 #define BCMA_CCB_MII_MNG_CMD_DATA	0x0004
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* BCM4331 ChipControl numbers. */
 #define BCMA_CHIPCTL_4331_BT_COEXIST		BIT(0)	/* 0 disable */
 #define BCMA_CHIPCTL_4331_SECI			BIT(1)	/* 0 SECI is disabled (JATG functional) */
@@ -577,11 +523,6 @@
 #define BCMA_CHIPCTL_4331_OVR_PIPEAUXPWRDOWN	BIT(9)	/* override core control on pipe_AuxPowerDown */
 #define BCMA_CHIPCTL_4331_PCIE_AUXCLKEN		BIT(10)	/* pcie_auxclkenable */
 #define BCMA_CHIPCTL_4331_PCIE_PIPE_PLLDOWN	BIT(11)	/* pcie_pipe_pllpowerdown */
-<<<<<<< HEAD
-#define BCMA_CHIPCTL_4331_BT_SHD0_ON_GPIO4	BIT(16)	/* enable bt_shd0 at gpio4 */
-#define BCMA_CHIPCTL_4331_BT_SHD1_ON_GPIO5	BIT(17)	/* enable bt_shd1 at gpio5 */
-
-=======
 #define BCMA_CHIPCTL_4331_EXTPA_EN2		BIT(12)	/* 0 ext pa disable, 1 ext pa enabled */
 #define BCMA_CHIPCTL_4331_BT_SHD0_ON_GPIO4	BIT(16)	/* enable bt_shd0 at gpio4 */
 #define BCMA_CHIPCTL_4331_BT_SHD1_ON_GPIO5	BIT(17)	/* enable bt_shd1 at gpio5 */
@@ -632,28 +573,15 @@
 #define BCMA_RES_4314_HT_AVAIL			BIT(28)
 #define BCMA_RES_4314_MACPHY_CLK_AVAIL		BIT(29)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Data for the PMU, if available.
  * Check availability with ((struct bcma_chipcommon)->capabilities & BCMA_CC_CAP_PMU)
  */
 struct bcma_chipcommon_pmu {
-<<<<<<< HEAD
-=======
 	struct bcma_device *core;	/* Can be separated core or just ChipCommon one */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 rev;			/* PMU revision */
 	u32 crystalfreq;	/* The active crystal frequency (in kHz) */
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_BCMA_DRIVER_MIPS
-struct bcma_pflash {
-	u8 buswidth;
-	u32 window;
-	u32 window_size;
-};
-
-=======
 #ifdef CONFIG_BCMA_PFLASH
 struct bcma_pflash {
 	bool present;
@@ -683,7 +611,6 @@ struct bcma_nflash {
 #endif
 
 #ifdef CONFIG_BCMA_DRIVER_MIPS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bcma_serial_port {
 	void *regs;
 	unsigned long clockspeed;
@@ -699,17 +626,6 @@ struct bcma_drv_cc {
 	u32 capabilities;
 	u32 capabilities_ext;
 	u8 setup_done:1;
-<<<<<<< HEAD
-	/* Fast Powerup Delay constant */
-	u16 fast_pwrup_delay;
-	struct bcma_chipcommon_pmu pmu;
-#ifdef CONFIG_BCMA_DRIVER_MIPS
-	struct bcma_pflash pflash;
-
-	int nr_serial_ports;
-	struct bcma_serial_port serial_ports[4];
-#endif /* CONFIG_BCMA_DRIVER_MIPS */
-=======
 	u8 early_setup_done:1;
 	/* Fast Powerup Delay constant */
 	u16 fast_pwrup_delay;
@@ -742,7 +658,6 @@ struct bcma_drv_cc_b {
 	struct bcma_device *core;
 	u8 setup_done:1;
 	void __iomem *mii;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Register access */
@@ -758,17 +673,6 @@ struct bcma_drv_cc_b {
 #define bcma_cc_maskset32(cc, offset, mask, set) \
 	bcma_cc_write32(cc, offset, (bcma_cc_read32(cc, offset) & (mask)) | (set))
 
-<<<<<<< HEAD
-extern void bcma_core_chipcommon_init(struct bcma_drv_cc *cc);
-
-extern void bcma_chipco_suspend(struct bcma_drv_cc *cc);
-extern void bcma_chipco_resume(struct bcma_drv_cc *cc);
-
-void bcma_chipco_bcm4331_ext_pa_lines_ctl(struct bcma_drv_cc *cc, bool enable);
-
-extern void bcma_chipco_watchdog_timer_set(struct bcma_drv_cc *cc,
-					  u32 ticks);
-=======
 /* PMU registers access */
 #define bcma_pmu_read32(cc, offset) \
 	bcma_read32((cc)->pmu.core, offset)
@@ -785,7 +689,6 @@ extern void bcma_chipco_watchdog_timer_set(struct bcma_drv_cc *cc,
 extern u32 bcma_chipco_watchdog_timer_set(struct bcma_drv_cc *cc, u32 ticks);
 
 extern u32 bcma_chipco_get_alp_clock(struct bcma_drv_cc *cc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void bcma_chipco_irq_mask(struct bcma_drv_cc *cc, u32 mask, u32 value);
 
@@ -798,17 +701,10 @@ u32 bcma_chipco_gpio_outen(struct bcma_drv_cc *cc, u32 mask, u32 value);
 u32 bcma_chipco_gpio_control(struct bcma_drv_cc *cc, u32 mask, u32 value);
 u32 bcma_chipco_gpio_intmask(struct bcma_drv_cc *cc, u32 mask, u32 value);
 u32 bcma_chipco_gpio_polarity(struct bcma_drv_cc *cc, u32 mask, u32 value);
-<<<<<<< HEAD
-
-/* PMU support */
-extern void bcma_pmu_init(struct bcma_drv_cc *cc);
-
-=======
 u32 bcma_chipco_gpio_pullup(struct bcma_drv_cc *cc, u32 mask, u32 value);
 u32 bcma_chipco_gpio_pulldown(struct bcma_drv_cc *cc, u32 mask, u32 value);
 
 /* PMU support */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void bcma_chipco_pll_write(struct bcma_drv_cc *cc, u32 offset,
 				  u32 value);
 extern void bcma_chipco_pll_maskset(struct bcma_drv_cc *cc, u32 offset,
@@ -817,13 +713,10 @@ extern void bcma_chipco_chipctl_maskset(struct bcma_drv_cc *cc,
 					u32 offset, u32 mask, u32 set);
 extern void bcma_chipco_regctl_maskset(struct bcma_drv_cc *cc,
 				       u32 offset, u32 mask, u32 set);
-<<<<<<< HEAD
-=======
 extern void bcma_pmu_spuravoid_pllupdate(struct bcma_drv_cc *cc, int spuravoid);
 
 extern u32 bcma_pmu_get_bus_clock(struct bcma_drv_cc *cc);
 
 void bcma_chipco_b_mii_write(struct bcma_drv_cc_b *ccb, u32 offset, u32 value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* LINUX_BCMA_DRIVER_CC_H_ */

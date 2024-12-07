@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#include "util.h"
-#include "string.h"
-#include "strfilter.h"
-
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include "string2.h"
 #include "strfilter.h"
@@ -14,7 +8,6 @@
 #include <linux/string.h>
 #include <linux/zalloc.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Operators */
 static const char *OP_and	= "&";	/* Logical AND */
 static const char *OP_or	= "|";	/* Logical OR */
@@ -23,24 +16,6 @@ static const char *OP_not	= "!";	/* Logical NOT */
 #define is_operator(c)	((c) == '|' || (c) == '&' || (c) == '!')
 #define is_separator(c)	(is_operator(c) || (c) == '(' || (c) == ')')
 
-<<<<<<< HEAD
-static void strfilter_node__delete(struct strfilter_node *self)
-{
-	if (self) {
-		if (self->p && !is_operator(*self->p))
-			free((char *)self->p);
-		strfilter_node__delete(self->l);
-		strfilter_node__delete(self->r);
-		free(self);
-	}
-}
-
-void strfilter__delete(struct strfilter *self)
-{
-	if (self) {
-		strfilter_node__delete(self->root);
-		free(self);
-=======
 static void strfilter_node__delete(struct strfilter_node *node)
 {
 	if (node) {
@@ -57,7 +32,6 @@ void strfilter__delete(struct strfilter *filter)
 	if (filter) {
 		strfilter_node__delete(filter->root);
 		free(filter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -65,12 +39,7 @@ static const char *get_token(const char *s, const char **e)
 {
 	const char *p;
 
-<<<<<<< HEAD
-	while (isspace(*s))	/* Skip spaces */
-		s++;
-=======
 	s = skip_spaces(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (*s == '\0') {
 		p = s;
@@ -98,17 +67,6 @@ static struct strfilter_node *strfilter_node__alloc(const char *op,
 						    struct strfilter_node *l,
 						    struct strfilter_node *r)
 {
-<<<<<<< HEAD
-	struct strfilter_node *ret = zalloc(sizeof(struct strfilter_node));
-
-	if (ret) {
-		ret->p = op;
-		ret->l = l;
-		ret->r = r;
-	}
-
-	return ret;
-=======
 	struct strfilter_node *node = zalloc(sizeof(*node));
 
 	if (node) {
@@ -118,7 +76,6 @@ static struct strfilter_node *strfilter_node__alloc(const char *op,
 	}
 
 	return node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct strfilter_node *strfilter_node__new(const char *s,
@@ -202,41 +159,6 @@ error:
  */
 struct strfilter *strfilter__new(const char *rules, const char **err)
 {
-<<<<<<< HEAD
-	struct strfilter *ret = zalloc(sizeof(struct strfilter));
-	const char *ep = NULL;
-
-	if (ret)
-		ret->root = strfilter_node__new(rules, &ep);
-
-	if (!ret || !ret->root || *ep != '\0') {
-		if (err)
-			*err = ep;
-		strfilter__delete(ret);
-		ret = NULL;
-	}
-
-	return ret;
-}
-
-static bool strfilter_node__compare(struct strfilter_node *self,
-				    const char *str)
-{
-	if (!self || !self->p)
-		return false;
-
-	switch (*self->p) {
-	case '|':	/* OR */
-		return strfilter_node__compare(self->l, str) ||
-			strfilter_node__compare(self->r, str);
-	case '&':	/* AND */
-		return strfilter_node__compare(self->l, str) &&
-			strfilter_node__compare(self->r, str);
-	case '!':	/* NOT */
-		return !strfilter_node__compare(self->r, str);
-	default:
-		return strglobmatch(str, self->p);
-=======
 	struct strfilter *filter = zalloc(sizeof(*filter));
 	const char *ep = NULL;
 
@@ -310,18 +232,10 @@ static bool strfilter_node__compare(struct strfilter_node *node,
 		return !strfilter_node__compare(node->r, str);
 	default:
 		return strglobmatch(str, node->p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /* Return true if STR matches the filter rules */
-<<<<<<< HEAD
-bool strfilter__compare(struct strfilter *self, const char *str)
-{
-	if (!self)
-		return false;
-	return strfilter_node__compare(self->root, str);
-=======
 bool strfilter__compare(struct strfilter *filter, const char *str)
 {
 	if (!filter)
@@ -395,5 +309,4 @@ char *strfilter__string(struct strfilter *filter)
 		strfilter_node__sprint(filter->root, ret);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

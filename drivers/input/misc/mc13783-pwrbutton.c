@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2011 Philippe Rétornaz
  *
  * Based on twl4030-pwrbutton driver by:
@@ -24,10 +20,6 @@
  */
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/input.h>
@@ -96,11 +88,7 @@ static irqreturn_t button_irq(int irq, void *_priv)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit mc13783_pwrbutton_probe(struct platform_device *pdev)
-=======
 static int mc13783_pwrbutton_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct mc13xxx_buttons_platform_data *pdata;
 	struct mc13xxx *mc13783 = dev_get_drvdata(pdev->dev.parent);
@@ -241,11 +229,7 @@ free_input_dev:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit mc13783_pwrbutton_remove(struct platform_device *pdev)
-=======
 static void mc13783_pwrbutton_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mc13783_pwrb *priv = platform_get_drvdata(pdev);
 	const struct mc13xxx_buttons_platform_data *pdata;
@@ -265,26 +249,13 @@ static void mc13783_pwrbutton_remove(struct platform_device *pdev)
 
 	input_unregister_device(priv->pwr);
 	kfree(priv);
-<<<<<<< HEAD
-	platform_set_drvdata(pdev, NULL);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver mc13783_pwrbutton_driver = {
 	.probe		= mc13783_pwrbutton_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(mc13783_pwrbutton_remove),
-	.driver		= {
-		.name	= "mc13783-pwrbutton",
-		.owner	= THIS_MODULE,
-=======
 	.remove_new	= mc13783_pwrbutton_remove,
 	.driver		= {
 		.name	= "mc13783-pwrbutton",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

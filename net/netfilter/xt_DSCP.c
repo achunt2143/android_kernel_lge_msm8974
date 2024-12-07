@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* x_tables module for setting the IPv4/IPv6 DSCP field, Version 1.8
  *
  * (C) 2002 by Harald Welte <laforge@netfilter.org>
  * based on ipt_FTOS.c (C) 2000 by Matthew G. Marsh <mgm@paktronix.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * See RFC2474 for a description of the DSCP field within the IP Header.
 */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -34,11 +24,8 @@ MODULE_ALIAS("ip6t_DSCP");
 MODULE_ALIAS("ipt_TOS");
 MODULE_ALIAS("ip6t_TOS");
 
-<<<<<<< HEAD
-=======
 #define XT_DSCP_ECN_MASK	3u
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int
 dscp_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
@@ -46,17 +33,10 @@ dscp_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	u_int8_t dscp = ipv4_get_dsfield(ip_hdr(skb)) >> XT_DSCP_SHIFT;
 
 	if (dscp != dinfo->dscp) {
-<<<<<<< HEAD
-		if (!skb_make_writable(skb, sizeof(struct iphdr)))
-			return NF_DROP;
-
-		ipv4_change_dsfield(ip_hdr(skb), (__u8)(~XT_DSCP_MASK),
-=======
 		if (skb_ensure_writable(skb, sizeof(struct iphdr)))
 			return NF_DROP;
 
 		ipv4_change_dsfield(ip_hdr(skb), XT_DSCP_ECN_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    dinfo->dscp << XT_DSCP_SHIFT);
 
 	}
@@ -70,17 +50,10 @@ dscp_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 	u_int8_t dscp = ipv6_get_dsfield(ipv6_hdr(skb)) >> XT_DSCP_SHIFT;
 
 	if (dscp != dinfo->dscp) {
-<<<<<<< HEAD
-		if (!skb_make_writable(skb, sizeof(struct ipv6hdr)))
-			return NF_DROP;
-
-		ipv6_change_dsfield(ipv6_hdr(skb), (__u8)(~XT_DSCP_MASK),
-=======
 		if (skb_ensure_writable(skb, sizeof(struct ipv6hdr)))
 			return NF_DROP;
 
 		ipv6_change_dsfield(ipv6_hdr(skb), XT_DSCP_ECN_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    dinfo->dscp << XT_DSCP_SHIFT);
 	}
 	return XT_CONTINUE;
@@ -90,15 +63,8 @@ static int dscp_tg_check(const struct xt_tgchk_param *par)
 {
 	const struct xt_DSCP_info *info = par->targinfo;
 
-<<<<<<< HEAD
-	if (info->dscp > XT_DSCP_MAX) {
-		pr_info("dscp %x out of range\n", info->dscp);
-		return -EDOM;
-	}
-=======
 	if (info->dscp > XT_DSCP_MAX)
 		return -EDOM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -113,11 +79,7 @@ tos_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	nv   = (orig & ~info->tos_mask) ^ info->tos_value;
 
 	if (orig != nv) {
-<<<<<<< HEAD
-		if (!skb_make_writable(skb, sizeof(struct iphdr)))
-=======
 		if (skb_ensure_writable(skb, sizeof(struct iphdr)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NF_DROP;
 		iph = ip_hdr(skb);
 		ipv4_change_dsfield(iph, 0, nv);
@@ -137,11 +99,7 @@ tos_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 	nv   = (orig & ~info->tos_mask) ^ info->tos_value;
 
 	if (orig != nv) {
-<<<<<<< HEAD
-		if (!skb_make_writable(skb, sizeof(struct iphdr)))
-=======
 		if (skb_ensure_writable(skb, sizeof(struct iphdr)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NF_DROP;
 		iph = ipv6_hdr(skb);
 		ipv6_change_dsfield(iph, 0, nv);

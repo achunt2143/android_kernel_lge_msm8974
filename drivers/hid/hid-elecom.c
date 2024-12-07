@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-/*
- *  HID driver for Elecom BM084 (bluetooth mouse).
- *  Removes a non-existing horizontal wheel from
- *  the HID descriptor.
- *  (This module is based on "hid-ortek".)
- *
- *  Copyright (c) 2010 Richard Nauber <Richard.Nauber@gmail.com>
- */
-
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  HID driver for ELECOM devices:
@@ -32,7 +16,6 @@
  */
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -41,20 +24,6 @@
 
 #include "hid-ids.h"
 
-<<<<<<< HEAD
-static __u8 *elecom_report_fixup(struct hid_device *hdev, __u8 *rdesc,
-		unsigned int *rsize)
-{
-	if (*rsize >= 48 && rdesc[46] == 0x05 && rdesc[47] == 0x0c) {
-		hid_info(hdev, "Fixing up Elecom BM084 report descriptor\n");
-		rdesc[47] = 0x00;
-	}
-    return rdesc;
-}
-
-static const struct hid_device_id elecom_devices[] = {
-	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_ELECOM, USB_DEVICE_ID_ELECOM_BM084)},
-=======
 /*
  * Certain ELECOM mice misreport their button count meaning that they only work
  * correctly with the ELECOM mouse assistant software which is unavailable for
@@ -156,7 +125,6 @@ static const struct hid_device_id elecom_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_ELECOM, USB_DEVICE_ID_ELECOM_M_HT1URBK) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_ELECOM, USB_DEVICE_ID_ELECOM_M_HT1DRBK_010D) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_ELECOM, USB_DEVICE_ID_ELECOM_M_HT1DRBK_011C) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(hid, elecom_devices);
@@ -166,22 +134,6 @@ static struct hid_driver elecom_driver = {
 	.id_table = elecom_devices,
 	.report_fixup = elecom_report_fixup
 };
-<<<<<<< HEAD
-
-static int __init elecom_init(void)
-{
-	return hid_register_driver(&elecom_driver);
-}
-
-static void __exit elecom_exit(void)
-{
-	hid_unregister_driver(&elecom_driver);
-}
-
-module_init(elecom_init);
-module_exit(elecom_exit);
-=======
 module_hid_driver(elecom_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

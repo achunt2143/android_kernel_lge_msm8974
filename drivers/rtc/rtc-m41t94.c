@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for ST M41T94 SPI RTC
  *
  * Copyright (C) 2008 Kim B. Heino
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -106,12 +96,7 @@ static int m41t94_read_time(struct device *dev, struct rtc_time *tm)
 		tm->tm_hour, tm->tm_mday,
 		tm->tm_mon, tm->tm_year, tm->tm_wday);
 
-<<<<<<< HEAD
-	/* initial clock setting can be undefined */
-	return rtc_valid_tm(tm);
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct rtc_class_ops m41t94_rtc_ops = {
@@ -121,11 +106,7 @@ static const struct rtc_class_ops m41t94_rtc_ops = {
 
 static struct spi_driver m41t94_driver;
 
-<<<<<<< HEAD
-static int __devinit m41t94_probe(struct spi_device *spi)
-=======
 static int m41t94_probe(struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtc_device *rtc;
 	int res;
@@ -139,31 +120,12 @@ static int m41t94_probe(struct spi_device *spi)
 		return res;
 	}
 
-<<<<<<< HEAD
-	rtc = rtc_device_register(m41t94_driver.driver.name,
-		&spi->dev, &m41t94_rtc_ops, THIS_MODULE);
-	if (IS_ERR(rtc))
-		return PTR_ERR(rtc);
-
-	dev_set_drvdata(&spi->dev, rtc);
-
-	return 0;
-}
-
-static int __devexit m41t94_remove(struct spi_device *spi)
-{
-	struct rtc_device *rtc = spi_get_drvdata(spi);
-
-	if (rtc)
-		rtc_device_unregister(rtc);
-=======
 	rtc = devm_rtc_device_register(&spi->dev, m41t94_driver.driver.name,
 					&m41t94_rtc_ops, THIS_MODULE);
 	if (IS_ERR(rtc))
 		return PTR_ERR(rtc);
 
 	spi_set_drvdata(spi, rtc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -171,15 +133,8 @@ static int __devexit m41t94_remove(struct spi_device *spi)
 static struct spi_driver m41t94_driver = {
 	.driver = {
 		.name	= "rtc-m41t94",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
 	},
 	.probe	= m41t94_probe,
-	.remove = __devexit_p(m41t94_remove),
-=======
-	},
-	.probe	= m41t94_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(m41t94_driver);

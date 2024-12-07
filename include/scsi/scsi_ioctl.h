@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SCSI_IOCTL_H
 #define _SCSI_IOCTL_H 
 
@@ -21,13 +18,9 @@
 
 #ifdef __KERNEL__
 
-<<<<<<< HEAD
-struct scsi_device;
-=======
 struct gendisk;
 struct scsi_device;
 struct sg_io_hdr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Structures used for scsi_ioctl et al.
@@ -36,11 +29,7 @@ struct sg_io_hdr;
 typedef struct scsi_ioctl_command {
 	unsigned int inlen;
 	unsigned int outlen;
-<<<<<<< HEAD
-	unsigned char data[0];
-=======
 	unsigned char data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } Scsi_Ioctl_Command;
 
 typedef struct scsi_idlun {
@@ -54,11 +43,6 @@ typedef struct scsi_fctargaddress {
 	unsigned char host_wwn[8]; // include NULL term.
 } Scsi_FCTargAddress;
 
-<<<<<<< HEAD
-extern int scsi_ioctl(struct scsi_device *, int, void __user *);
-extern int scsi_nonblockable_ioctl(struct scsi_device *sdev, int cmd,
-				   void __user *arg, int ndelay);
-=======
 int scsi_ioctl_block_when_processing_errors(struct scsi_device *sdev,
 		int cmd, bool ndelay);
 int scsi_ioctl(struct scsi_device *sdev, bool open_for_write, int cmd,
@@ -66,7 +50,6 @@ int scsi_ioctl(struct scsi_device *sdev, bool open_for_write, int cmd,
 int get_sg_io_hdr(struct sg_io_hdr *hdr, const void __user *argp);
 int put_sg_io_hdr(const struct sg_io_hdr *hdr, void __user *argp);
 bool scsi_cmd_allowed(unsigned char *cmd, bool open_for_write);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __KERNEL__ */
 #endif /* _SCSI_IOCTL_H */

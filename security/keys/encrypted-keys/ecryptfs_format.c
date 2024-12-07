@@ -1,36 +1,19 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ecryptfs_format.c: helper functions for the encrypted key type
  *
  * Copyright (C) 2006 International Business Machines Corp.
  * Copyright (C) 2010 Politecnico di Torino, Italy
-<<<<<<< HEAD
- *                    TORSEC group -- http://security.polito.it
-=======
  *                    TORSEC group -- https://security.polito.it
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Authors:
  * Michael A. Halcrow <mahalcro@us.ibm.com>
  * Tyler Hicks <tyhicks@ou.edu>
  * Roberto Sassu <roberto.sassu@polito.it>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License.
- */
-
-#include <linux/module.h>
-=======
  */
 
 #include <linux/export.h>
 #include <linux/string.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ecryptfs_format.h"
 
 u8 *ecryptfs_get_auth_tok_key(struct ecryptfs_auth_tok *auth_tok)
@@ -92,8 +75,3 @@ int ecryptfs_fill_auth_tok(struct ecryptfs_auth_tok *auth_tok,
 	return 0;
 }
 EXPORT_SYMBOL(ecryptfs_fill_auth_tok);
-<<<<<<< HEAD
-
-MODULE_LICENSE("GPL");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

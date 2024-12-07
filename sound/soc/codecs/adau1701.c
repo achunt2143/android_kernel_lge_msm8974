@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for ADAU1701 SigmaDSP processor
  *
  * Copyright 2011 Analog Devices Inc.
  * Author: Lars-Peter Clausen <lars@metafoo.de>
  *	based on an inital version by Cliff Cai <cliff.cai@analog.com>
-<<<<<<< HEAD
- *
- * Licensed under the GPL-2 or later.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -20,33 +12,15 @@
 #include <linux/i2c.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
 #include <linux/gpio/consumer.h>
 #include <linux/regulator/consumer.h>
 #include <linux/regmap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 
-<<<<<<< HEAD
-#include "sigmadsp.h"
-#include "adau1701.h"
-
-#define ADAU1701_DSPCTRL	0x1c
-#define ADAU1701_SEROCTL	0x1e
-#define ADAU1701_SERICTL	0x1f
-
-#define ADAU1701_AUXNPOW	0x22
-
-#define ADAU1701_OSCIPOW	0x26
-#define ADAU1701_DACSET		0x27
-
-#define ADAU1701_NUM_REGS	0x28
-=======
 #include <asm/unaligned.h>
 
 #include "sigmadsp.h"
@@ -68,15 +42,11 @@
 #define ADAU1701_DACSET		0x0827
 
 #define ADAU1701_MAX_REGISTER	0x0828
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ADAU1701_DSPCTRL_CR		(1 << 2)
 #define ADAU1701_DSPCTRL_DAM		(1 << 3)
 #define ADAU1701_DSPCTRL_ADM		(1 << 4)
-<<<<<<< HEAD
-=======
 #define ADAU1701_DSPCTRL_IST		(1 << 5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ADAU1701_DSPCTRL_SR_48		0x00
 #define ADAU1701_DSPCTRL_SR_96		0x01
 #define ADAU1701_DSPCTRL_SR_192		0x02
@@ -126,12 +96,6 @@
 #define ADAU1701_OSCIPOW_OPD		0x04
 #define ADAU1701_DACSET_DACINIT		1
 
-<<<<<<< HEAD
-#define ADAU1701_FIRMWARE "adau1701.bin"
-
-struct adau1701 {
-	unsigned int dai_fmt;
-=======
 #define ADAU1707_CLKDIV_UNSET		(-1U)
 
 #define ADAU1701_FIRMWARE "adau1701.bin"
@@ -152,7 +116,6 @@ struct adau1701 {
 
 	struct sigmadsp *sigmadsp;
 	struct regulator_bulk_data supplies[ARRAY_SIZE(supply_names)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct snd_kcontrol_new adau1701_controls[] = {
@@ -184,12 +147,6 @@ static const struct snd_soc_dapm_route adau1701_dapm_routes[] = {
 	{ "ADC", NULL, "IN1" },
 };
 
-<<<<<<< HEAD
-static unsigned int adau1701_register_size(struct snd_soc_codec *codec,
-		unsigned int reg)
-{
-	switch (reg) {
-=======
 static unsigned int adau1701_register_size(struct device *dev,
 		unsigned int reg)
 {
@@ -197,7 +154,6 @@ static unsigned int adau1701_register_size(struct device *dev,
 	case ADAU1701_PINCONF_0:
 	case ADAU1701_PINCONF_1:
 		return 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ADAU1701_DSPCTRL:
 	case ADAU1701_SEROCTL:
 	case ADAU1701_AUXNPOW:
@@ -208,28 +164,6 @@ static unsigned int adau1701_register_size(struct device *dev,
 		return 1;
 	}
 
-<<<<<<< HEAD
-	dev_err(codec->dev, "Unsupported register address: %d\n", reg);
-	return 0;
-}
-
-static int adau1701_write(struct snd_soc_codec *codec, unsigned int reg,
-		unsigned int value)
-{
-	unsigned int i;
-	unsigned int size;
-	uint8_t buf[4];
-	int ret;
-
-	size = adau1701_register_size(codec, reg);
-	if (size == 0)
-		return -EINVAL;
-
-	snd_soc_cache_write(codec, reg, value);
-
-	buf[0] = 0x08;
-	buf[1] = reg;
-=======
 	dev_err(dev, "Unsupported register address: %d\n", reg);
 	return 0;
 }
@@ -260,18 +194,13 @@ static int adau1701_reg_write(void *context, unsigned int reg,
 
 	buf[0] = reg >> 8;
 	buf[1] = reg & 0xff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = size + 1; i >= 2; --i) {
 		buf[i] = value;
 		value >>= 8;
 	}
 
-<<<<<<< HEAD
-	ret = i2c_master_send(to_i2c_client(codec->dev), buf, size + 2);
-=======
 	ret = i2c_master_send(client, buf, size + 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret == size + 2)
 		return 0;
 	else if (ret < 0)
@@ -280,40 +209,6 @@ static int adau1701_reg_write(void *context, unsigned int reg,
 		return -EIO;
 }
 
-<<<<<<< HEAD
-static unsigned int adau1701_read(struct snd_soc_codec *codec, unsigned int reg)
-{
-	unsigned int value;
-	unsigned int ret;
-
-	ret = snd_soc_cache_read(codec, reg, &value);
-	if (ret)
-		return ret;
-
-	return value;
-}
-
-static int adau1701_load_firmware(struct snd_soc_codec *codec)
-{
-	return process_sigma_firmware(codec->control_data, ADAU1701_FIRMWARE);
-}
-
-static int adau1701_set_capture_pcm_format(struct snd_soc_codec *codec,
-		snd_pcm_format_t format)
-{
-	struct adau1701 *adau1701 = snd_soc_codec_get_drvdata(codec);
-	unsigned int mask = ADAU1701_SEROCTL_WORD_LEN_MASK;
-	unsigned int val;
-
-	switch (format) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-		val = ADAU1701_SEROCTL_WORD_LEN_16;
-		break;
-	case SNDRV_PCM_FORMAT_S20_3LE:
-		val = ADAU1701_SEROCTL_WORD_LEN_20;
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-=======
 static int adau1701_reg_read(void *context, unsigned int reg,
 			     unsigned int *value)
 {
@@ -482,7 +377,6 @@ static int adau1701_set_capture_pcm_format(struct snd_soc_component *component,
 		val = ADAU1701_SEROCTL_WORD_LEN_20;
 		break;
 	case 24:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = ADAU1701_SEROCTL_WORD_LEN_24;
 		break;
 	default:
@@ -490,16 +384,6 @@ static int adau1701_set_capture_pcm_format(struct snd_soc_component *component,
 	}
 
 	if (adau1701->dai_fmt == SND_SOC_DAIFMT_RIGHT_J) {
-<<<<<<< HEAD
-		switch (format) {
-		case SNDRV_PCM_FORMAT_S16_LE:
-			val |= ADAU1701_SEROCTL_MSB_DEALY16;
-			break;
-		case SNDRV_PCM_FORMAT_S20_3LE:
-			val |= ADAU1701_SEROCTL_MSB_DEALY12;
-			break;
-		case SNDRV_PCM_FORMAT_S24_LE:
-=======
 		switch (params_width(params)) {
 		case 16:
 			val |= ADAU1701_SEROCTL_MSB_DEALY16;
@@ -508,48 +392,26 @@ static int adau1701_set_capture_pcm_format(struct snd_soc_component *component,
 			val |= ADAU1701_SEROCTL_MSB_DEALY12;
 			break;
 		case 24:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			val |= ADAU1701_SEROCTL_MSB_DEALY8;
 			break;
 		}
 		mask |= ADAU1701_SEROCTL_MSB_DEALY_MASK;
 	}
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, ADAU1701_SEROCTL, mask, val);
-=======
 	regmap_update_bits(adau1701->regmap, ADAU1701_SEROCTL, mask, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int adau1701_set_playback_pcm_format(struct snd_soc_codec *codec,
-			snd_pcm_format_t format)
-{
-	struct adau1701 *adau1701 = snd_soc_codec_get_drvdata(codec);
-=======
 static int adau1701_set_playback_pcm_format(struct snd_soc_component *component,
 					    struct snd_pcm_hw_params *params)
 {
 	struct adau1701 *adau1701 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int val;
 
 	if (adau1701->dai_fmt != SND_SOC_DAIFMT_RIGHT_J)
 		return 0;
 
-<<<<<<< HEAD
-	switch (format) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-		val = ADAU1701_SERICTL_RIGHTJ_16;
-		break;
-	case SNDRV_PCM_FORMAT_S20_3LE:
-		val = ADAU1701_SERICTL_RIGHTJ_20;
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-=======
 	switch (params_width(params)) {
 	case 16:
 		val = ADAU1701_SERICTL_RIGHTJ_16;
@@ -558,18 +420,13 @@ static int adau1701_set_playback_pcm_format(struct snd_soc_component *component,
 		val = ADAU1701_SERICTL_RIGHTJ_20;
 		break;
 	case 24:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = ADAU1701_SERICTL_RIGHTJ_24;
 		break;
 	default:
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, ADAU1701_SERICTL,
-=======
 	regmap_update_bits(adau1701->regmap, ADAU1701_SERICTL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ADAU1701_SERICTL_MODE_MASK, val);
 
 	return 0;
@@ -578,12 +435,6 @@ static int adau1701_set_playback_pcm_format(struct snd_soc_component *component,
 static int adau1701_hw_params(struct snd_pcm_substream *substream,
 		struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_codec *codec = rtd->codec;
-	snd_pcm_format_t format;
-	unsigned int val;
-=======
 	struct snd_soc_component *component = dai->component;
 	struct adau1701 *adau1701 = snd_soc_component_get_drvdata(component);
 	unsigned int clkdiv = adau1701->sysclk / params_rate(params);
@@ -600,7 +451,6 @@ static int adau1701_hw_params(struct snd_pcm_substream *substream,
 		if (ret < 0)
 			return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (params_rate(params)) {
 	case 192000:
@@ -616,16 +466,6 @@ static int adau1701_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, ADAU1701_DSPCTRL,
-		ADAU1701_DSPCTRL_SR_MASK, val);
-
-	format = params_format(params);
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
-		return adau1701_set_playback_pcm_format(codec, format);
-	else
-		return adau1701_set_capture_pcm_format(codec, format);
-=======
 	regmap_update_bits(adau1701->regmap, ADAU1701_DSPCTRL,
 		ADAU1701_DSPCTRL_SR_MASK, val);
 
@@ -633,21 +473,11 @@ static int adau1701_hw_params(struct snd_pcm_substream *substream,
 		return adau1701_set_playback_pcm_format(component, params);
 	else
 		return adau1701_set_capture_pcm_format(component, params);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int adau1701_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	struct adau1701 *adau1701 = snd_soc_codec_get_drvdata(codec);
-	unsigned int serictl = 0x00, seroctl = 0x00;
-	bool invert_lrclk;
-
-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-	case SND_SOC_DAIFMT_CBM_CFM:
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	struct adau1701 *adau1701 = snd_soc_component_get_drvdata(component);
 	unsigned int serictl = 0x00, seroctl = 0x00;
@@ -655,16 +485,11 @@ static int adau1701_set_dai_fmt(struct snd_soc_dai *codec_dai,
 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* master, 64-bits per sample, 1 frame per sample */
 		seroctl |= ADAU1701_SEROCTL_MASTER | ADAU1701_SEROCTL_OBF16
 				| ADAU1701_SEROCTL_OLF1024;
 		break;
-<<<<<<< HEAD
-	case SND_SOC_DAIFMT_CBS_CFS:
-=======
 	case SND_SOC_DAIFMT_CBC_CFC:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -716,30 +541,18 @@ static int adau1701_set_dai_fmt(struct snd_soc_dai *codec_dai,
 
 	adau1701->dai_fmt = fmt & SND_SOC_DAIFMT_FORMAT_MASK;
 
-<<<<<<< HEAD
-	snd_soc_write(codec, ADAU1701_SERICTL, serictl);
-	snd_soc_update_bits(codec, ADAU1701_SEROCTL,
-=======
 	regmap_write(adau1701->regmap, ADAU1701_SERICTL, serictl);
 	regmap_update_bits(adau1701->regmap, ADAU1701_SEROCTL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		~ADAU1701_SEROCTL_WORD_LEN_MASK, seroctl);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int adau1701_set_bias_level(struct snd_soc_codec *codec,
-		enum snd_soc_bias_level level)
-{
-	unsigned int mask = ADAU1701_AUXNPOW_VBPD | ADAU1701_AUXNPOW_VRPD;
-=======
 static int adau1701_set_bias_level(struct snd_soc_component *component,
 		enum snd_soc_bias_level level)
 {
 	unsigned int mask = ADAU1701_AUXNPOW_VBPD | ADAU1701_AUXNPOW_VRPD;
 	struct adau1701 *adau1701 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
@@ -748,24 +561,6 @@ static int adau1701_set_bias_level(struct snd_soc_component *component,
 		break;
 	case SND_SOC_BIAS_STANDBY:
 		/* Enable VREF and VREF buffer */
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, ADAU1701_AUXNPOW, mask, 0x00);
-		break;
-	case SND_SOC_BIAS_OFF:
-		/* Disable VREF and VREF buffer */
-		snd_soc_update_bits(codec, ADAU1701_AUXNPOW, mask, mask);
-		break;
-	}
-
-	codec->dapm.bias_level = level;
-	return 0;
-}
-
-static int adau1701_digital_mute(struct snd_soc_dai *dai, int mute)
-{
-	struct snd_soc_codec *codec = dai->codec;
-	unsigned int mask = ADAU1701_DSPCTRL_DAM;
-=======
 		regmap_update_bits(adau1701->regmap,
 				   ADAU1701_AUXNPOW, mask, 0x00);
 		break;
@@ -784,7 +579,6 @@ static int adau1701_mute_stream(struct snd_soc_dai *dai, int mute, int direction
 	struct snd_soc_component *component = dai->component;
 	unsigned int mask = ADAU1701_DSPCTRL_DAM;
 	struct adau1701 *adau1701 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int val;
 
 	if (mute)
@@ -792,27 +586,16 @@ static int adau1701_mute_stream(struct snd_soc_dai *dai, int mute, int direction
 	else
 		val = mask;
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, ADAU1701_DSPCTRL, mask, val);
-=======
 	regmap_update_bits(adau1701->regmap, ADAU1701_DSPCTRL, mask, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int adau1701_set_sysclk(struct snd_soc_codec *codec, int clk_id,
-	int source, unsigned int freq, int dir)
-{
-	unsigned int val;
-=======
 static int adau1701_set_sysclk(struct snd_soc_component *component, int clk_id,
 	int source, unsigned int freq, int dir)
 {
 	unsigned int val;
 	struct adau1701 *adau1701 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (clk_id) {
 	case ADAU1701_CLK_SRC_OSC:
@@ -825,19 +608,13 @@ static int adau1701_set_sysclk(struct snd_soc_component *component, int clk_id,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, ADAU1701_OSCIPOW, ADAU1701_OSCIPOW_OPD, val);
-=======
 	regmap_update_bits(adau1701->regmap, ADAU1701_OSCIPOW,
 			   ADAU1701_OSCIPOW_OPD, val);
 	adau1701->sysclk = freq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int adau1701_startup(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *dai)
 {
@@ -846,7 +623,6 @@ static int adau1701_startup(struct snd_pcm_substream *substream,
 	return sigmadsp_restrict_params(adau1701->sigmadsp, substream);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ADAU1701_RATES (SNDRV_PCM_RATE_48000 | SNDRV_PCM_RATE_96000 | \
 	SNDRV_PCM_RATE_192000)
 
@@ -856,13 +632,9 @@ static int adau1701_startup(struct snd_pcm_substream *substream,
 static const struct snd_soc_dai_ops adau1701_dai_ops = {
 	.set_fmt	= adau1701_set_dai_fmt,
 	.hw_params	= adau1701_hw_params,
-<<<<<<< HEAD
-	.digital_mute	= adau1701_digital_mute,
-=======
 	.mute_stream	= adau1701_mute_stream,
 	.startup	= adau1701_startup,
 	.no_capture_mute = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver adau1701_dai = {
@@ -882,23 +654,6 @@ static struct snd_soc_dai_driver adau1701_dai = {
 		.formats = ADAU1701_FORMATS,
 	},
 	.ops = &adau1701_dai_ops,
-<<<<<<< HEAD
-	.symmetric_rates = 1,
-};
-
-static int adau1701_probe(struct snd_soc_codec *codec)
-{
-	int ret;
-
-	codec->control_data = to_i2c_client(codec->dev);
-
-	ret = adau1701_load_firmware(codec);
-	if (ret)
-		dev_warn(codec->dev, "Failed to load firmware\n");
-
-	snd_soc_write(codec, ADAU1701_DACSET, ADAU1701_DACSET_DACINIT);
-	snd_soc_write(codec, ADAU1701_DSPCTRL, ADAU1701_DSPCTRL_CR);
-=======
 	.symmetric_rate = 1,
 };
 
@@ -978,21 +733,10 @@ static int adau1701_suspend(struct snd_soc_component *component)
 
 	regulator_bulk_disable(ARRAY_SIZE(adau1701->supplies),
 			       adau1701->supplies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_soc_codec_driver adau1701_codec_drv = {
-	.probe			= adau1701_probe,
-	.set_bias_level		= adau1701_set_bias_level,
-	.idle_bias_off		= true,
-
-	.reg_cache_size		= ADAU1701_NUM_REGS,
-	.reg_word_size		= sizeof(u16),
-
-=======
 static int adau1701_resume(struct snd_soc_component *component)
 {
 	struct adau1701 *adau1701 = snd_soc_component_get_drvdata(component);
@@ -1018,46 +762,12 @@ static const struct snd_soc_component_driver adau1701_component_drv = {
 	.resume			= adau1701_resume,
 	.suspend		= adau1701_suspend,
 	.set_bias_level		= adau1701_set_bias_level,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.controls		= adau1701_controls,
 	.num_controls		= ARRAY_SIZE(adau1701_controls),
 	.dapm_widgets		= adau1701_dapm_widgets,
 	.num_dapm_widgets	= ARRAY_SIZE(adau1701_dapm_widgets),
 	.dapm_routes		= adau1701_dapm_routes,
 	.num_dapm_routes	= ARRAY_SIZE(adau1701_dapm_routes),
-<<<<<<< HEAD
-
-	.write			= adau1701_write,
-	.read			= adau1701_read,
-
-	.set_sysclk		= adau1701_set_sysclk,
-};
-
-static __devinit int adau1701_i2c_probe(struct i2c_client *client,
-		const struct i2c_device_id *id)
-{
-	struct adau1701 *adau1701;
-	int ret;
-
-	adau1701 = devm_kzalloc(&client->dev, sizeof(*adau1701), GFP_KERNEL);
-	if (!adau1701)
-		return -ENOMEM;
-
-	i2c_set_clientdata(client, adau1701);
-	ret = snd_soc_register_codec(&client->dev, &adau1701_codec_drv,
-			&adau1701_dai, 1);
-	return ret;
-}
-
-static __devexit int adau1701_i2c_remove(struct i2c_client *client)
-{
-	snd_soc_unregister_codec(&client->dev);
-	return 0;
-}
-
-static const struct i2c_device_id adau1701_i2c_id[] = {
-	{ "adau1701", 0 },
-=======
 	.set_sysclk		= adau1701_set_sysclk,
 	.use_pmdown_time	= 1,
 	.endianness		= 1,
@@ -1156,7 +866,6 @@ static const struct i2c_device_id adau1701_i2c_id[] = {
 	{ "adau1401a", 0 },
 	{ "adau1701", 0 },
 	{ "adau1702", 0 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, adau1701_i2c_id);
@@ -1164,26 +873,6 @@ MODULE_DEVICE_TABLE(i2c, adau1701_i2c_id);
 static struct i2c_driver adau1701_i2c_driver = {
 	.driver = {
 		.name	= "adau1701",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= adau1701_i2c_probe,
-	.remove		= __devexit_p(adau1701_i2c_remove),
-	.id_table	= adau1701_i2c_id,
-};
-
-static int __init adau1701_init(void)
-{
-	return i2c_add_driver(&adau1701_i2c_driver);
-}
-module_init(adau1701_init);
-
-static void __exit adau1701_exit(void)
-{
-	i2c_del_driver(&adau1701_i2c_driver);
-}
-module_exit(adau1701_exit);
-=======
 		.of_match_table	= of_match_ptr(adau1701_dt_ids),
 	},
 	.probe		= adau1701_i2c_probe,
@@ -1191,7 +880,6 @@ module_exit(adau1701_exit);
 };
 
 module_i2c_driver(adau1701_i2c_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC ADAU1701 SigmaDSP driver");
 MODULE_AUTHOR("Cliff Cai <cliff.cai@analog.com>");

@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-# the core
-obj-$(CONFIG_NET_DSA) += dsa_core.o
-dsa_core-y += dsa.o slave.o
-
-# tagging formats
-dsa_core-$(CONFIG_NET_DSA_TAG_DSA) += tag_dsa.o
-dsa_core-$(CONFIG_NET_DSA_TAG_EDSA) += tag_edsa.o
-dsa_core-$(CONFIG_NET_DSA_TAG_TRAILER) += tag_trailer.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 # the stubs are built-in whenever DSA is built-in or module
@@ -51,4 +41,3 @@ obj-$(CONFIG_NET_DSA_TAG_XRS700X) += tag_xrs700x.o
 
 # for tracing framework to find trace.h
 CFLAGS_trace.o := -I$(src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

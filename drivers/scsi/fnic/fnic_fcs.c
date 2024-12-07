@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/errno.h>
 #include <linux/pci.h>
@@ -38,14 +19,6 @@
 #include <scsi/libfc.h>
 #include "fnic_io.h"
 #include "fnic.h"
-<<<<<<< HEAD
-#include "cq_enet_desc.h"
-#include "cq_exch_desc.h"
-
-struct workqueue_struct *fnic_event_queue;
-
-static void fnic_set_eth_mode(struct fnic *);
-=======
 #include "fnic_fip.h"
 #include "cq_enet_desc.h"
 #include "cq_exch_desc.h"
@@ -60,7 +33,6 @@ static void fnic_fcoe_start_fcf_disc(struct fnic *fnic);
 static void fnic_fcoe_process_vlan_resp(struct fnic *fnic, struct sk_buff *);
 static int fnic_fcoe_vlan_check(struct fnic *fnic, u16 flag);
 static int fnic_fcoe_handle_fip_frame(struct fnic *fnic, struct sk_buff *skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void fnic_handle_link(struct work_struct *work)
 {
@@ -68,18 +40,12 @@ void fnic_handle_link(struct work_struct *work)
 	unsigned long flags;
 	int old_link_status;
 	u32 old_link_down_cnt;
-<<<<<<< HEAD
-
-	spin_lock_irqsave(&fnic->fnic_lock, flags);
-
-=======
 	u64 old_port_speed, new_port_speed;
 
 	spin_lock_irqsave(&fnic->fnic_lock, flags);
 
 	fnic->link_events = 1;      /* less work to just set everytime*/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fnic->stop_rx_link_events) {
 		spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 		return;
@@ -87,16 +53,6 @@ void fnic_handle_link(struct work_struct *work)
 
 	old_link_down_cnt = fnic->link_down_cnt;
 	old_link_status = fnic->link_status;
-<<<<<<< HEAD
-	fnic->link_status = vnic_dev_link_status(fnic->vdev);
-	fnic->link_down_cnt = vnic_dev_link_down_cnt(fnic->vdev);
-
-	if (old_link_status == fnic->link_status) {
-		if (!fnic->link_status)
-			/* DOWN -> DOWN */
-			spin_unlock_irqrestore(&fnic->fnic_lock, flags);
-		else {
-=======
 	old_port_speed = atomic64_read(
 			&fnic->fnic_stats.misc_stats.current_port_speed);
 
@@ -149,22 +105,10 @@ void fnic_handle_link(struct work_struct *work)
 			FNIC_FCS_DBG(KERN_INFO, fnic->lport->host, fnic->fnic_num,
 					"down->down\n");
 		} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (old_link_down_cnt != fnic->link_down_cnt) {
 				/* UP -> DOWN -> UP */
 				fnic->lport->host_stats.link_failure_count++;
 				spin_unlock_irqrestore(&fnic->fnic_lock, flags);
-<<<<<<< HEAD
-				FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host,
-					     "link down\n");
-				fcoe_ctlr_link_down(&fnic->ctlr);
-				FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host,
-					     "link up\n");
-				fcoe_ctlr_link_up(&fnic->ctlr);
-			} else
-				/* UP -> UP */
-				spin_unlock_irqrestore(&fnic->fnic_lock, flags);
-=======
 				fnic_fc_trace_set_data(
 					fnic->lport->host->host_no,
 					FNIC_FC_LE,
@@ -199,14 +143,10 @@ void fnic_handle_link(struct work_struct *work)
 				FNIC_FCS_DBG(KERN_INFO, fnic->lport->host, fnic->fnic_num,
 						"up->up\n");
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else if (fnic->link_status) {
 		/* DOWN -> UP */
 		spin_unlock_irqrestore(&fnic->fnic_lock, flags);
-<<<<<<< HEAD
-		FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host, "link up\n");
-=======
 		if (fnic->config.flags & VFCF_FIP_CAPABLE) {
 			/* start FCoE VLAN discovery */
 			fnic_fc_trace_set_data(fnic->lport->host->host_no,
@@ -221,15 +161,11 @@ void fnic_handle_link(struct work_struct *work)
 				"down->up: Link up\n");
 		fnic_fc_trace_set_data(fnic->lport->host->host_no, FNIC_FC_LE,
 				       "Link Status: DOWN_UP", strlen("Link Status: DOWN_UP"));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fcoe_ctlr_link_up(&fnic->ctlr);
 	} else {
 		/* UP -> DOWN */
 		fnic->lport->host_stats.link_failure_count++;
 		spin_unlock_irqrestore(&fnic->fnic_lock, flags);
-<<<<<<< HEAD
-		FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host, "link down\n");
-=======
 		FNIC_FCS_DBG(KERN_INFO, fnic->lport->host, fnic->fnic_num,
 				"up->down: Link down\n");
 		fnic_fc_trace_set_data(
@@ -241,7 +177,6 @@ void fnic_handle_link(struct work_struct *work)
 				"deleting fip-timer during link-down\n");
 			del_timer_sync(&fnic->fip_timer);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fcoe_ctlr_link_down(&fnic->ctlr);
 	}
 
@@ -284,8 +219,6 @@ void fnic_handle_frame(struct work_struct *work)
 	}
 }
 
-<<<<<<< HEAD
-=======
 void fnic_fcoe_evlist_free(struct fnic *fnic)
 {
 	struct fnic_event *fevt = NULL;
@@ -718,7 +651,6 @@ void fnic_handle_fip_frame(struct work_struct *work)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * fnic_import_rq_eth_pkt() - handle received FCoE or FIP frame.
  * @fnic:	fnic instance.
@@ -737,14 +669,6 @@ static inline int fnic_import_rq_eth_pkt(struct fnic *fnic, struct sk_buff *skb)
 	eh = (struct ethhdr *)skb->data;
 	if (eh->h_proto == htons(ETH_P_8021Q)) {
 		memmove((u8 *)eh + VLAN_HLEN, eh, ETH_ALEN * 2);
-<<<<<<< HEAD
-		eh = (struct ethhdr *)skb_pull(skb, VLAN_HLEN);
-		skb_reset_mac_header(skb);
-	}
-	if (eh->h_proto == htons(ETH_P_FIP)) {
-		skb_pull(skb, sizeof(*eh));
-		fcoe_ctlr_recv(&fnic->ctlr, skb);
-=======
 		eh = skb_pull(skb, VLAN_HLEN);
 		skb_reset_mac_header(skb);
 	}
@@ -761,7 +685,6 @@ static inline int fnic_import_rq_eth_pkt(struct fnic *fnic, struct sk_buff *skb)
 		}
 		skb_queue_tail(&fnic->fip_frame_queue, skb);
 		queue_work(fnic_fip_queue, &fnic->fip_frame_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;		/* let caller know packet was used */
 	}
 	if (eh->h_proto != htons(ETH_P_FCOE))
@@ -802,15 +725,6 @@ void fnic_update_mac_locked(struct fnic *fnic, u8 *new)
 
 	if (is_zero_ether_addr(new))
 		new = ctl;
-<<<<<<< HEAD
-	if (!compare_ether_addr(data, new))
-		return;
-	FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host, "update_mac %pM\n", new);
-	if (!is_zero_ether_addr(data) && compare_ether_addr(data, ctl))
-		vnic_dev_del_addr(fnic->vdev, data);
-	memcpy(data, new, ETH_ALEN);
-	if (compare_ether_addr(new, ctl))
-=======
 	if (ether_addr_equal(data, new))
 		return;
 	FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
@@ -819,7 +733,6 @@ void fnic_update_mac_locked(struct fnic *fnic, u8 *new)
 		vnic_dev_del_addr(fnic->vdev, data);
 	memcpy(data, new, ETH_ALEN);
 	if (!ether_addr_equal(new, ctl))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vnic_dev_add_addr(fnic->vdev, new);
 }
 
@@ -857,14 +770,9 @@ void fnic_set_port_id(struct fc_lport *lport, u32 port_id, struct fc_frame *fp)
 	u8 *mac;
 	int ret;
 
-<<<<<<< HEAD
-	FNIC_FCS_DBG(KERN_DEBUG, lport->host, "set port_id %x fp %p\n",
-		     port_id, fp);
-=======
 	FNIC_FCS_DBG(KERN_DEBUG, lport->host, fnic->fnic_num,
 			"set port_id 0x%x fp 0x%p\n",
 			port_id, fp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we're clearing the FC_ID, change to use the ctl_src_addr.
@@ -890,16 +798,9 @@ void fnic_set_port_id(struct fc_lport *lport, u32 port_id, struct fc_frame *fp)
 	if (fnic->state == FNIC_IN_ETH_MODE || fnic->state == FNIC_IN_FC_MODE)
 		fnic->state = FNIC_IN_ETH_TRANS_FC_MODE;
 	else {
-<<<<<<< HEAD
-		FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host,
-			     "Unexpected fnic state %s while"
-			     " processing flogi resp\n",
-			     fnic_state_to_str(fnic->state));
-=======
 		FNIC_FCS_DBG(KERN_ERR, fnic->lport->host, fnic->fnic_num,
 			     "Unexpected fnic state: %s processing FLOGI response",
 				 fnic_state_to_str(fnic->state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irq(&fnic->fnic_lock);
 		return;
 	}
@@ -927,11 +828,7 @@ static void fnic_rq_cmpl_frame_recv(struct vnic_rq *rq, struct cq_desc
 	struct fnic *fnic = vnic_dev_priv(rq->vdev);
 	struct sk_buff *skb;
 	struct fc_frame *fp;
-<<<<<<< HEAD
-	unsigned int eth_hdrs_stripped;
-=======
 	struct fnic_stats *fnic_stats = &fnic->fnic_stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 type, color, eop, sop, ingress_port, vlan_stripped;
 	u8 fcoe = 0, fcoe_sof, fcoe_eof;
 	u8 fcoe_fc_crc_ok = 1, fcoe_enc_error = 0;
@@ -946,13 +843,8 @@ static void fnic_rq_cmpl_frame_recv(struct vnic_rq *rq, struct cq_desc
 	u32 fcp_bytes_written = 0;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	pci_unmap_single(fnic->pdev, buf->dma_addr, buf->len,
-			 PCI_DMA_FROMDEVICE);
-=======
 	dma_unmap_single(&fnic->pdev->dev, buf->dma_addr, buf->len,
 			 DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb = buf->os_buf;
 	fp = (struct fc_frame *)skb;
 	buf->os_buf = NULL;
@@ -966,10 +858,6 @@ static void fnic_rq_cmpl_frame_recv(struct vnic_rq *rq, struct cq_desc
 				   &ingress_port, &packet_error,
 				   &fcoe_enc_error, &fcs_ok, &vlan_stripped,
 				   &vlan);
-<<<<<<< HEAD
-		eth_hdrs_stripped = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_trim(skb, fcp_bytes_written);
 		fr_sof(fp) = sof;
 		fr_eof(fp) = eof;
@@ -986,17 +874,10 @@ static void fnic_rq_cmpl_frame_recv(struct vnic_rq *rq, struct cq_desc
 				    &tcp_udp_csum_ok, &udp, &tcp,
 				    &ipv4_csum_ok, &ipv6, &ipv4,
 				    &ipv4_fragment, &fcs_ok);
-<<<<<<< HEAD
-		eth_hdrs_stripped = 0;
-		skb_trim(skb, bytes_written);
-		if (!fcs_ok) {
-			FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host,
-=======
 		skb_trim(skb, bytes_written);
 		if (!fcs_ok) {
 			atomic64_inc(&fnic_stats->misc_stats.frame_errors);
 			FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     "fcs error.  dropping packet.\n");
 			goto drop;
 		}
@@ -1011,12 +892,8 @@ static void fnic_rq_cmpl_frame_recv(struct vnic_rq *rq, struct cq_desc
 	}
 
 	if (!fcs_ok || packet_error || !fcoe_fc_crc_ok || fcoe_enc_error) {
-<<<<<<< HEAD
-		FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host,
-=======
 		atomic64_inc(&fnic_stats->misc_stats.frame_errors);
 		FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     "fnic rq_cmpl fcoe x%x fcsok x%x"
 			     " pkterr x%x fcoe_fc_crc_ok x%x, fcoe_enc_err"
 			     " x%x\n",
@@ -1032,13 +909,10 @@ static void fnic_rq_cmpl_frame_recv(struct vnic_rq *rq, struct cq_desc
 	}
 	fr_dev(fp) = fnic->lport;
 	spin_unlock_irqrestore(&fnic->fnic_lock, flags);
-<<<<<<< HEAD
-=======
 	if ((fnic_fc_trace_set_data(fnic->lport->host->host_no, FNIC_FC_RECV,
 					(char *)skb->data, skb->len)) != 0) {
 		printk(KERN_ERR "fnic ctlr frame trace error!!!");
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_queue_tail(&fnic->frame_queue, skb);
 	queue_work(fnic_event_queue, &fnic->frame_work);
@@ -1095,19 +969,12 @@ int fnic_alloc_rq_frame(struct vnic_rq *rq)
 	struct sk_buff *skb;
 	u16 len;
 	dma_addr_t pa;
-<<<<<<< HEAD
-=======
 	int r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	len = FC_FRAME_HEADROOM + FC_MAX_FRAME + FC_FRAME_TAILROOM;
 	skb = dev_alloc_skb(len);
 	if (!skb) {
-<<<<<<< HEAD
-		FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host,
-=======
 		FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     "Unable to allocate RQ sk_buff\n");
 		return -ENOMEM;
 	}
@@ -1115,11 +982,6 @@ int fnic_alloc_rq_frame(struct vnic_rq *rq)
 	skb_reset_transport_header(skb);
 	skb_reset_network_header(skb);
 	skb_put(skb, len);
-<<<<<<< HEAD
-	pa = pci_map_single(fnic->pdev, skb->data, len, PCI_DMA_FROMDEVICE);
-	fnic_queue_rq_desc(rq, skb, pa, len);
-	return 0;
-=======
 	pa = dma_map_single(&fnic->pdev->dev, skb->data, len, DMA_FROM_DEVICE);
 	if (dma_mapping_error(&fnic->pdev->dev, pa)) {
 		r = -ENOMEM;
@@ -1133,7 +995,6 @@ int fnic_alloc_rq_frame(struct vnic_rq *rq)
 free_skb:
 	kfree_skb(skb);
 	return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void fnic_free_rq_buf(struct vnic_rq *rq, struct vnic_rq_buf *buf)
@@ -1141,13 +1002,8 @@ void fnic_free_rq_buf(struct vnic_rq *rq, struct vnic_rq_buf *buf)
 	struct fc_frame *fp = buf->os_buf;
 	struct fnic *fnic = vnic_dev_priv(rq->vdev);
 
-<<<<<<< HEAD
-	pci_unmap_single(fnic->pdev, buf->dma_addr, buf->len,
-			 PCI_DMA_FROMDEVICE);
-=======
 	dma_unmap_single(&fnic->pdev->dev, buf->dma_addr, buf->len,
 			 DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_kfree_skb(fp_skb(fp));
 	buf->os_buf = NULL;
@@ -1169,33 +1025,11 @@ void fnic_eth_send(struct fcoe_ctlr *fip, struct sk_buff *skb)
 
 	if (!fnic->vlan_hw_insert) {
 		eth_hdr = (struct ethhdr *)skb_mac_header(skb);
-<<<<<<< HEAD
-		vlan_hdr = (struct vlan_ethhdr *)skb_push(skb,
-				sizeof(*vlan_hdr) - sizeof(*eth_hdr));
-=======
 		vlan_hdr = skb_push(skb, sizeof(*vlan_hdr) - sizeof(*eth_hdr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(vlan_hdr, eth_hdr, 2 * ETH_ALEN);
 		vlan_hdr->h_vlan_proto = htons(ETH_P_8021Q);
 		vlan_hdr->h_vlan_encapsulated_proto = eth_hdr->h_proto;
 		vlan_hdr->h_vlan_TCI = htons(fnic->vlan_id);
-<<<<<<< HEAD
-	}
-
-	pa = pci_map_single(fnic->pdev, skb->data, skb->len, PCI_DMA_TODEVICE);
-
-	spin_lock_irqsave(&fnic->wq_lock[0], flags);
-	if (!vnic_wq_desc_avail(wq)) {
-		pci_unmap_single(fnic->pdev, pa, skb->len, PCI_DMA_TODEVICE);
-		spin_unlock_irqrestore(&fnic->wq_lock[0], flags);
-		kfree_skb(skb);
-		return;
-	}
-
-	fnic_queue_wq_eth_desc(wq, skb, pa, skb->len,
-			       fnic->vlan_hw_insert, fnic->vlan_id, 1);
-	spin_unlock_irqrestore(&fnic->wq_lock[0], flags);
-=======
 		if ((fnic_fc_trace_set_data(fnic->lport->host->host_no,
 			FNIC_FC_SEND|0x80, (char *)eth_hdr, skb->len)) != 0) {
 			printk(KERN_ERR "fnic ctlr frame trace error!!!");
@@ -1229,7 +1063,6 @@ irq_restore:
 	dma_unmap_single(&fnic->pdev->dev, pa, skb->len, DMA_TO_DEVICE);
 free_skb:
 	kfree_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1257,11 +1090,7 @@ static int fnic_send_frame(struct fnic *fnic, struct fc_frame *fp)
 
 	if (!fnic->vlan_hw_insert) {
 		eth_hdr_len = sizeof(*vlan_hdr) + sizeof(*fcoe_hdr);
-<<<<<<< HEAD
-		vlan_hdr = (struct vlan_ethhdr *)skb_push(skb, eth_hdr_len);
-=======
 		vlan_hdr = skb_push(skb, eth_hdr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eth_hdr = (struct ethhdr *)vlan_hdr;
 		vlan_hdr->h_vlan_proto = htons(ETH_P_8021Q);
 		vlan_hdr->h_vlan_encapsulated_proto = htons(ETH_P_FCOE);
@@ -1269,11 +1098,7 @@ static int fnic_send_frame(struct fnic *fnic, struct fc_frame *fp)
 		fcoe_hdr = (struct fcoe_hdr *)(vlan_hdr + 1);
 	} else {
 		eth_hdr_len = sizeof(*eth_hdr) + sizeof(*fcoe_hdr);
-<<<<<<< HEAD
-		eth_hdr = (struct ethhdr *)skb_push(skb, eth_hdr_len);
-=======
 		eth_hdr = skb_push(skb, eth_hdr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eth_hdr->h_proto = htons(ETH_P_FCOE);
 		fcoe_hdr = (struct fcoe_hdr *)(eth_hdr + 1);
 	}
@@ -1292,9 +1117,6 @@ static int fnic_send_frame(struct fnic *fnic, struct fc_frame *fp)
 	if (FC_FCOE_VER)
 		FC_FCOE_ENCAPS_VER(fcoe_hdr, FC_FCOE_VER);
 
-<<<<<<< HEAD
-	pa = pci_map_single(fnic->pdev, eth_hdr, tot_len, PCI_DMA_TODEVICE);
-=======
 	pa = dma_map_single(&fnic->pdev->dev, eth_hdr, tot_len, DMA_TO_DEVICE);
 	if (dma_mapping_error(&fnic->pdev->dev, pa)) {
 		ret = -ENOMEM;
@@ -1306,24 +1128,10 @@ static int fnic_send_frame(struct fnic *fnic, struct fc_frame *fp)
 				(char *)eth_hdr, tot_len)) != 0) {
 		printk(KERN_ERR "fnic ctlr frame trace error!!!");
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&fnic->wq_lock[0], flags);
 
 	if (!vnic_wq_desc_avail(wq)) {
-<<<<<<< HEAD
-		pci_unmap_single(fnic->pdev, pa,
-				 tot_len, PCI_DMA_TODEVICE);
-		ret = -1;
-		goto fnic_send_frame_end;
-	}
-
-	fnic_queue_wq_desc(wq, skb, pa, tot_len, fr_eof(fp),
-			   fnic->vlan_hw_insert, fnic->vlan_id, 1, 1, 1);
-fnic_send_frame_end:
-	spin_unlock_irqrestore(&fnic->wq_lock[0], flags);
-
-=======
 		dma_unmap_single(&fnic->pdev->dev, pa, tot_len, DMA_TO_DEVICE);
 		ret = -1;
 		goto irq_restore;
@@ -1337,7 +1145,6 @@ irq_restore:
 	spin_unlock_irqrestore(&fnic->wq_lock[0], flags);
 
 free_skb_on_err:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		dev_kfree_skb_any(fp_skb(fp));
 
@@ -1375,11 +1182,7 @@ int fnic_send(struct fc_lport *lp, struct fc_frame *fp)
 
 /**
  * fnic_flush_tx() - send queued frames.
-<<<<<<< HEAD
- * @fnic: fnic device
-=======
  * @work: pointer to work element
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Send frames that were waiting to go out in FC or Ethernet mode.
  * Whenever changing modes we purge queued frames, so these frames should
@@ -1387,14 +1190,9 @@ int fnic_send(struct fc_lport *lp, struct fc_frame *fp)
  *
  * Called without fnic_lock held.
  */
-<<<<<<< HEAD
-void fnic_flush_tx(struct fnic *fnic)
-{
-=======
 void fnic_flush_tx(struct work_struct *work)
 {
 	struct fnic *fnic = container_of(work, struct fnic, flush_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 	struct fc_frame *fp;
 
@@ -1450,13 +1248,8 @@ static void fnic_wq_complete_frame_send(struct vnic_wq *wq,
 	struct fc_frame *fp = (struct fc_frame *)skb;
 	struct fnic *fnic = vnic_dev_priv(wq->vdev);
 
-<<<<<<< HEAD
-	pci_unmap_single(fnic->pdev, buf->dma_addr,
-			 buf->len, PCI_DMA_TODEVICE);
-=======
 	dma_unmap_single(&fnic->pdev->dev, buf->dma_addr, buf->len,
 			 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_kfree_skb_irq(fp_skb(fp));
 	buf->os_buf = NULL;
 }
@@ -1498,19 +1291,12 @@ void fnic_free_wq_buf(struct vnic_wq *wq, struct vnic_wq_buf *buf)
 	struct fc_frame *fp = buf->os_buf;
 	struct fnic *fnic = vnic_dev_priv(wq->vdev);
 
-<<<<<<< HEAD
-	pci_unmap_single(fnic->pdev, buf->dma_addr,
-			 buf->len, PCI_DMA_TODEVICE);
-=======
 	dma_unmap_single(&fnic->pdev->dev, buf->dma_addr, buf->len,
 			 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_kfree_skb(fp_skb(fp));
 	buf->os_buf = NULL;
 }
-<<<<<<< HEAD
-=======
 
 void fnic_fcoe_reset_vlans(struct fnic *fnic)
 {
@@ -1618,4 +1404,3 @@ void fnic_handle_fip_timer(struct fnic *fnic)
 		break;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

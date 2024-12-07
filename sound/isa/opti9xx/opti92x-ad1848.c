@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     card-opti92x-ad1848.c - driver for OPTi 82c92x based soundcards.
     Copyright (C) 1998-2000 by Massimo Piccioni <dafastidio@libero.it>
@@ -11,22 +8,6 @@
 
     Thanks to Maria Grazia Pollarini, Salvatore Vassallo.
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 
@@ -36,11 +17,7 @@
 #include <linux/delay.h>
 #include <linux/pnp.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dma.h>
 #include <sound/core.h>
 #include <sound/tlv.h>
@@ -50,10 +27,7 @@
 #ifndef OPTi93X
 #include <sound/opl4.h>
 #endif
-<<<<<<< HEAD
-=======
 #define SNDRV_LEGACY_FIND_FREE_IOPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SNDRV_LEGACY_FIND_FREE_IRQ
 #define SNDRV_LEGACY_FIND_FREE_DMA
 #include <sound/initval.h>
@@ -62,25 +36,11 @@ MODULE_AUTHOR("Massimo Piccioni <dafastidio@libero.it>");
 MODULE_LICENSE("GPL");
 #ifdef OPTi93X
 MODULE_DESCRIPTION("OPTi93X");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{OPTi,82C931/3}}");
-#else	/* OPTi93X */
-#ifdef CS4231
-MODULE_DESCRIPTION("OPTi92X - CS4231");
-MODULE_SUPPORTED_DEVICE("{{OPTi,82C924 (CS4231)},"
-		"{OPTi,82C925 (CS4231)}}");
-#else	/* CS4231 */
-MODULE_DESCRIPTION("OPTi92X - AD1848");
-MODULE_SUPPORTED_DEVICE("{{OPTi,82C924 (AD1848)},"
-		"{OPTi,82C925 (AD1848)},"
-	        "{OAK,Mozart}}");
-=======
 #else	/* OPTi93X */
 #ifdef CS4231
 MODULE_DESCRIPTION("OPTi92X - CS4231");
 #else	/* CS4231 */
 MODULE_DESCRIPTION("OPTi92X - AD1848");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* CS4231 */
 #endif	/* OPTi93X */
 
@@ -110,22 +70,6 @@ MODULE_PARM_DESC(id, "ID string for opti9xx based soundcard.");
 module_param(isapnp, bool, 0444);
 MODULE_PARM_DESC(isapnp, "Enable ISA PnP detection for specified soundcard.");
 #endif
-<<<<<<< HEAD
-module_param(port, long, 0444);
-MODULE_PARM_DESC(port, "WSS port # for opti9xx driver.");
-module_param(mpu_port, long, 0444);
-MODULE_PARM_DESC(mpu_port, "MPU-401 port # for opti9xx driver.");
-module_param(fm_port, long, 0444);
-MODULE_PARM_DESC(fm_port, "FM port # for opti9xx driver.");
-module_param(irq, int, 0444);
-MODULE_PARM_DESC(irq, "WSS irq # for opti9xx driver.");
-module_param(mpu_irq, int, 0444);
-MODULE_PARM_DESC(mpu_irq, "MPU-401 irq # for opti9xx driver.");
-module_param(dma1, int, 0444);
-MODULE_PARM_DESC(dma1, "1st dma # for opti9xx driver.");
-#if defined(CS4231) || defined(OPTi93X)
-module_param(dma2, int, 0444);
-=======
 module_param_hw(port, long, ioport, 0444);
 MODULE_PARM_DESC(port, "WSS port # for opti9xx driver.");
 module_param_hw(mpu_port, long, ioport, 0444);
@@ -140,7 +84,6 @@ module_param_hw(dma1, int, dma, 0444);
 MODULE_PARM_DESC(dma1, "1st dma # for opti9xx driver.");
 #if defined(CS4231) || defined(OPTi93X)
 module_param_hw(dma2, int, dma, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(dma2, "2nd dma # for opti9xx driver.");
 #endif	/* CS4231 || OPTi93X */
 
@@ -175,16 +118,9 @@ struct snd_opti9xx {
 	unsigned long mc_base_size;
 #ifdef OPTi93X
 	unsigned long mc_indir_index;
-<<<<<<< HEAD
-	unsigned long mc_indir_size;
-	struct resource *res_mc_indir;
-	struct snd_wss *codec;
-#endif	/* OPTi93X */
-=======
 	struct resource *res_mc_indir;
 #endif	/* OPTi93X */
 	struct snd_wss *codec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long pwd_reg;
 
 	spinlock_t lock;
@@ -197,11 +133,7 @@ static int snd_opti9xx_pnp_is_probed;
 
 #ifdef CONFIG_PNP
 
-<<<<<<< HEAD
-static struct pnp_card_device_id snd_opti9xx_pnpids[] = {
-=======
 static const struct pnp_card_device_id snd_opti9xx_pnpids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef OPTi93X
 	/* OPTi 82C924 */
 	{ .id = "OPT0924",
@@ -225,41 +157,17 @@ MODULE_DEVICE_TABLE(pnp_card, snd_opti9xx_pnpids);
 
 #define DEV_NAME KBUILD_MODNAME
 
-<<<<<<< HEAD
-static char * snd_opti9xx_names[] = {
-=======
 static const char * const snd_opti9xx_names[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"unknown",
 	"82C928",	"82C929",
 	"82C924",	"82C925",
 	"82C930",	"82C931",	"82C933"
 };
 
-<<<<<<< HEAD
-
-static long __devinit snd_legacy_find_free_ioport(long *port_table, long size)
-{
-	while (*port_table != -1) {
-		if (request_region(*port_table, size, "ALSA test")) {
-			release_region(*port_table, size);
-			return *port_table;
-		}
-		port_table++;
-	}
-	return -1;
-}
-
-static int __devinit snd_opti9xx_init(struct snd_opti9xx *chip,
-				      unsigned short hardware)
-{
-	static int opti9xx_mc_size[] = {7, 7, 10, 10, 2, 2, 2};
-=======
 static int snd_opti9xx_init(struct snd_opti9xx *chip,
 			    unsigned short hardware)
 {
 	static const int opti9xx_mc_size[] = {7, 7, 10, 10, 2, 2, 2};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->hardware = hardware;
 	strcpy(chip->name, snd_opti9xx_names[hardware]);
@@ -302,15 +210,8 @@ static int snd_opti9xx_init(struct snd_opti9xx *chip,
 	case OPTi9XX_HW_82C931:
 	case OPTi9XX_HW_82C933:
 		chip->mc_base = (hardware == OPTi9XX_HW_82C930) ? 0xf8f : 0xf8d;
-<<<<<<< HEAD
-		if (!chip->mc_indir_index) {
-			chip->mc_indir_index = 0xe0e;
-			chip->mc_indir_size = 2;
-		}
-=======
 		if (!chip->mc_indir_index)
 			chip->mc_indir_index = 0xe0e;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->password = 0xe4;
 		chip->pwd_reg = 0;
 		break;
@@ -342,10 +243,7 @@ static unsigned char snd_opti9xx_read(struct snd_opti9xx *chip,
 			retval = inb(chip->mc_base + 9);
 			break;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case OPTi9XX_HW_82C928:
 	case OPTi9XX_HW_82C929:
@@ -388,10 +286,7 @@ static void snd_opti9xx_write(struct snd_opti9xx *chip, unsigned char reg,
 			outb(value, chip->mc_base + 9);
 			break;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case OPTi9XX_HW_82C928:
 	case OPTi9XX_HW_82C929:
@@ -416,14 +311,6 @@ static void snd_opti9xx_write(struct snd_opti9xx *chip, unsigned char reg,
 }
 
 
-<<<<<<< HEAD
-#define snd_opti9xx_write_mask(chip, reg, value, mask)	\
-	snd_opti9xx_write(chip, reg,			\
-		(snd_opti9xx_read(chip, reg) & ~(mask)) | ((value) & (mask)))
-
-
-static int __devinit snd_opti9xx_configure(struct snd_opti9xx *chip,
-=======
 static inline void snd_opti9xx_write_mask(struct snd_opti9xx *chip,
 		unsigned char reg, unsigned char value, unsigned char mask)
 {
@@ -433,7 +320,6 @@ static inline void snd_opti9xx_write_mask(struct snd_opti9xx *chip,
 }
 
 static int snd_opti9xx_configure(struct snd_opti9xx *chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   long port,
 					   int irq, int dma1, int dma2,
 					   long mpu_port, int mpu_irq)
@@ -451,10 +337,7 @@ static int snd_opti9xx_configure(struct snd_opti9xx *chip,
 		snd_opti9xx_write_mask(chip, OPTi9XX_MC_REG(4), 0xf0, 0xfc);
 		/* enable wave audio */
 		snd_opti9xx_write_mask(chip, OPTi9XX_MC_REG(6), 0x02, 0x02);
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case OPTi9XX_HW_82C925:
 		/* enable WSS mode */
@@ -489,13 +372,10 @@ static int snd_opti9xx_configure(struct snd_opti9xx *chip,
 
 #else	/* OPTi93X */
 	case OPTi9XX_HW_82C931:
-<<<<<<< HEAD
-=======
 		/* disable 3D sound (set GPIO1 as output, low) */
 		snd_opti9xx_write_mask(chip, OPTi9XX_MC_REG(20), 0x04, 0x0c);
 		fallthrough;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case OPTi9XX_HW_82C933:
 		/*
 		 * The BTC 1817DW has QS1000 wavetable which is connected
@@ -507,13 +387,9 @@ static int snd_opti9xx_configure(struct snd_opti9xx *chip,
 		 * or digital input signal.
 		 */
 		snd_opti9xx_write_mask(chip, OPTi9XX_MC_REG(26), 0x01, 0x01);
-<<<<<<< HEAD
-	case OPTi9XX_HW_82C930: /* FALL THROUGH */
-=======
 		fallthrough;
 
 	case OPTi9XX_HW_82C930:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_opti9xx_write_mask(chip, OPTi9XX_MC_REG(6), 0x02, 0x03);
 		snd_opti9xx_write_mask(chip, OPTi9XX_MC_REG(3), 0x00, 0xff);
 		snd_opti9xx_write_mask(chip, OPTi9XX_MC_REG(4), 0x10 |
@@ -673,11 +549,7 @@ static const DECLARE_TLV_DB_SCALE(db_scale_5bit_3db_step, -9300, 300, 0);
 static const DECLARE_TLV_DB_SCALE(db_scale_5bit, -4650, 150, 0);
 static const DECLARE_TLV_DB_SCALE(db_scale_4bit_12db_max, -3300, 300, 0);
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_opti93x_controls[] = {
-=======
 static const struct snd_kcontrol_new snd_opti93x_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 WSS_DOUBLE("Master Playback Switch", 0,
 		OPTi93X_OUT_LEFT, OPTi93X_OUT_RIGHT, 7, 7, 1, 1),
 WSS_DOUBLE_TLV("Master Playback Volume", 0,
@@ -709,11 +581,7 @@ WSS_DOUBLE_TLV("Aux Playback Volume", 0,
 		db_scale_4bit_12db_max),
 };
 
-<<<<<<< HEAD
-static int __devinit snd_opti93x_mixer(struct snd_wss *chip)
-=======
 static int snd_opti93x_mixer(struct snd_wss *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	unsigned int idx;
@@ -786,28 +654,18 @@ static irqreturn_t snd_opti93x_interrupt(int irq, void *dev_id)
 
 #endif /* OPTi93X */
 
-<<<<<<< HEAD
-static int __devinit snd_opti9xx_read_check(struct snd_opti9xx *chip)
-=======
 static int snd_opti9xx_read_check(struct snd_card *card,
 				  struct snd_opti9xx *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char value;
 #ifdef OPTi93X
 	unsigned long flags;
 #endif
 
-<<<<<<< HEAD
-	chip->res_mc_base = request_region(chip->mc_base, chip->mc_base_size,
-					   "OPTi9xx MC");
-	if (chip->res_mc_base == NULL)
-=======
 	chip->res_mc_base =
 		devm_request_region(card->dev, chip->mc_base,
 				    chip->mc_base_size, "OPTi9xx MC");
 	if (!chip->res_mc_base)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 #ifndef OPTi93X
 	value = snd_opti9xx_read(chip, OPTi9XX_MC_REG(1));
@@ -815,17 +673,10 @@ static int snd_opti9xx_read_check(struct snd_card *card,
 		if (value == snd_opti9xx_read(chip, OPTi9XX_MC_REG(1)))
 			return 0;
 #else	/* OPTi93X */
-<<<<<<< HEAD
-	chip->res_mc_indir = request_region(chip->mc_indir_index,
-					    chip->mc_indir_size,
-					    "OPTi93x MC");
-	if (chip->res_mc_indir == NULL)
-=======
 	chip->res_mc_indir =
 		devm_request_region(card->dev, chip->mc_indir_index, 2,
 				    "OPTi93x MC");
 	if (!chip->res_mc_indir)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 
 	spin_lock_irqsave(&chip->lock, flags);
@@ -838,29 +689,17 @@ static int snd_opti9xx_read_check(struct snd_card *card,
 	if (snd_opti9xx_read(chip, OPTi9XX_MC_REG(7)) == 0xff - value)
 		return 0;
 
-<<<<<<< HEAD
-	release_and_free_resource(chip->res_mc_indir);
-	chip->res_mc_indir = NULL;
-#endif	/* OPTi93X */
-	release_and_free_resource(chip->res_mc_base);
-=======
 	devm_release_resource(card->dev, chip->res_mc_indir);
 	chip->res_mc_indir = NULL;
 #endif	/* OPTi93X */
 	devm_release_resource(card->dev, chip->res_mc_base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->res_mc_base = NULL;
 
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_card_opti9xx_detect(struct snd_card *card,
-					     struct snd_opti9xx *chip)
-=======
 static int snd_card_opti9xx_detect(struct snd_card *card,
 				   struct snd_opti9xx *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, err;
 
@@ -873,11 +712,7 @@ static int snd_card_opti9xx_detect(struct snd_card *card,
 		if (err < 0)
 			return err;
 
-<<<<<<< HEAD
-		err = snd_opti9xx_read_check(chip);
-=======
 		err = snd_opti9xx_read_check(card, chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err == 0)
 			return 1;
 #ifdef OPTi93X
@@ -888,15 +723,9 @@ static int snd_card_opti9xx_detect(struct snd_card *card,
 }
 
 #ifdef CONFIG_PNP
-<<<<<<< HEAD
-static int __devinit snd_card_opti9xx_pnp(struct snd_opti9xx *chip,
-					  struct pnp_card_link *card,
-					  const struct pnp_card_device_id *pid)
-=======
 static int snd_card_opti9xx_pnp(struct snd_opti9xx *chip,
 				struct pnp_card_link *card,
 				const struct pnp_card_device_id *pid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pnp_dev *pdev;
 	int err;
@@ -918,14 +747,9 @@ static int snd_card_opti9xx_pnp(struct snd_opti9xx *chip,
 #ifdef OPTi93X
 	port = pnp_port_start(pdev, 0) - 4;
 	fm_port = pnp_port_start(pdev, 1) + 8;
-<<<<<<< HEAD
-	chip->mc_indir_index = pnp_port_start(pdev, 3) + 2;
-	chip->mc_indir_size = pnp_port_len(pdev, 3) - 2;
-=======
 	/* adjust mc_indir_index - some cards report it at 0xe?d,
 	   other at 0xe?c but it really is always at 0xe?e */
 	chip->mc_indir_index = (pnp_port_start(pdev, 3) & ~0xf) | 0xe;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	devmc = pnp_request_card_device(card, pid->devs[2].id, NULL);
 	if (devmc == NULL)
@@ -968,42 +792,13 @@ static int snd_card_opti9xx_pnp(struct snd_opti9xx *chip,
 }
 #endif	/* CONFIG_PNP */
 
-<<<<<<< HEAD
-static void snd_card_opti9xx_free(struct snd_card *card)
-{
-	struct snd_opti9xx *chip = card->private_data;
-
-	if (chip) {
-#ifdef OPTi93X
-		if (chip->irq > 0) {
-			disable_irq(chip->irq);
-			free_irq(chip->irq, chip);
-		}
-		release_and_free_resource(chip->res_mc_indir);
-#endif
-		release_and_free_resource(chip->res_mc_base);
-	}
-}
-
-static int __devinit snd_opti9xx_probe(struct snd_card *card)
-{
-	static long possible_ports[] = {0x530, 0xe80, 0xf40, 0x604, -1};
-=======
 static int snd_opti9xx_probe(struct snd_card *card)
 {
 	static const long possible_ports[] = {0x530, 0xe80, 0xf40, 0x604, -1};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 	int xdma2;
 	struct snd_opti9xx *chip = card->private_data;
 	struct snd_wss *codec;
-<<<<<<< HEAD
-#ifdef CS4231
-	struct snd_timer *timer;
-#endif
-	struct snd_pcm *pcm;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_rawmidi *rmidi;
 	struct snd_hwdep *synth;
 
@@ -1034,15 +829,8 @@ static int snd_opti9xx_probe(struct snd_card *card)
 			       &codec);
 	if (error < 0)
 		return error;
-<<<<<<< HEAD
-#ifdef OPTi93X
-	chip->codec = codec;
-#endif
-	error = snd_wss_pcm(codec, 0, &pcm);
-=======
 	chip->codec = codec;
 	error = snd_wss_pcm(codec, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0)
 		return error;
 	error = snd_wss_mixer(codec);
@@ -1054,39 +842,19 @@ static int snd_opti9xx_probe(struct snd_card *card)
 		return error;
 #endif
 #ifdef CS4231
-<<<<<<< HEAD
-	error = snd_wss_timer(codec, 0, &timer);
-=======
 	error = snd_wss_timer(codec, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0)
 		return error;
 #endif
 #ifdef OPTi93X
-<<<<<<< HEAD
-	error = request_irq(irq, snd_opti93x_interrupt,
-			    0, DEV_NAME" - WSS", chip);
-=======
 	error = devm_request_irq(card->dev, irq, snd_opti93x_interrupt,
 				 0, DEV_NAME" - WSS", chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0) {
 		snd_printk(KERN_ERR "opti9xx: can't grab IRQ %d\n", irq);
 		return error;
 	}
 #endif
 	chip->irq = irq;
-<<<<<<< HEAD
-	strcpy(card->driver, chip->name);
-	sprintf(card->shortname, "OPTi %s", card->driver);
-#if defined(CS4231) || defined(OPTi93X)
-	sprintf(card->longname, "%s, %s at 0x%lx, irq %d, dma %d&%d",
-		card->shortname, pcm->name,
-		chip->wss_base + 4, irq, dma1, xdma2);
-#else
-	sprintf(card->longname, "%s, %s at 0x%lx, irq %d, dma %d",
-		card->shortname, pcm->name, chip->wss_base + 4, irq, dma1);
-=======
 	card->sync_irq = chip->irq;
 	strcpy(card->driver, chip->name);
 	sprintf(card->shortname, "OPTi %s", card->driver);
@@ -1100,7 +868,6 @@ static int snd_opti9xx_probe(struct snd_card *card)
 		  "%s, %s at 0x%lx, irq %d, dma %d",
 		  card->shortname, codec->pcm->name, chip->wss_base + 4, irq,
 		  dma1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* CS4231 || OPTi93X */
 
 	if (mpu_port <= 0 || mpu_port == SNDRV_AUTO_PORT)
@@ -1146,38 +913,21 @@ static int snd_opti9xx_probe(struct snd_card *card)
 	return snd_card_register(card);
 }
 
-<<<<<<< HEAD
-static int snd_opti9xx_card_new(struct snd_card **cardp)
-=======
 static int snd_opti9xx_card_new(struct device *pdev, struct snd_card **cardp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	int err;
 
-<<<<<<< HEAD
-	err = snd_card_create(index, id, THIS_MODULE,
-			      sizeof(struct snd_opti9xx), &card);
-	if (err < 0)
-		return err;
-	card->private_free = snd_card_opti9xx_free;
-=======
 	err = snd_devm_card_new(pdev, index, id, THIS_MODULE,
 				sizeof(struct snd_opti9xx), &card);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*cardp = card;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_opti9xx_isa_match(struct device *devptr,
-					   unsigned int dev)
-=======
 static int snd_opti9xx_isa_match(struct device *devptr,
 				 unsigned int dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_PNP
 	if (snd_opti9xx_pnp_is_probed)
@@ -1188,27 +938,6 @@ static int snd_opti9xx_isa_match(struct device *devptr,
 	return 1;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_opti9xx_isa_probe(struct device *devptr,
-					   unsigned int dev)
-{
-	struct snd_card *card;
-	int error;
-	static long possible_mpu_ports[] = {0x300, 0x310, 0x320, 0x330, -1};
-#ifdef OPTi93X
-	static int possible_irqs[] = {5, 9, 10, 11, 7, -1};
-#else
-	static int possible_irqs[] = {9, 10, 11, 7, -1};
-#endif	/* OPTi93X */
-	static int possible_mpu_irqs[] = {5, 9, 10, 7, -1};
-	static int possible_dma1s[] = {3, 1, 0, -1};
-#if defined(CS4231) || defined(OPTi93X)
-	static int possible_dma2s[][2] = {{1,-1}, {0,-1}, {-1,-1}, {0,-1}};
-#endif	/* CS4231 || OPTi93X */
-
-	if (mpu_port == SNDRV_AUTO_PORT) {
-		if ((mpu_port = snd_legacy_find_free_ioport(possible_mpu_ports, 2)) < 0) {
-=======
 static int snd_opti9xx_isa_probe(struct device *devptr,
 				 unsigned int dev)
 {
@@ -1229,73 +958,41 @@ static int snd_opti9xx_isa_probe(struct device *devptr,
 	if (mpu_port == SNDRV_AUTO_PORT) {
 		mpu_port = snd_legacy_find_free_ioport(possible_mpu_ports, 2);
 		if (mpu_port < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR "unable to find a free MPU401 port\n");
 			return -EBUSY;
 		}
 	}
 	if (irq == SNDRV_AUTO_IRQ) {
-<<<<<<< HEAD
-		if ((irq = snd_legacy_find_free_irq(possible_irqs)) < 0) {
-=======
 		irq = snd_legacy_find_free_irq(possible_irqs);
 		if (irq < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR "unable to find a free IRQ\n");
 			return -EBUSY;
 		}
 	}
 	if (mpu_irq == SNDRV_AUTO_IRQ) {
-<<<<<<< HEAD
-		if ((mpu_irq = snd_legacy_find_free_irq(possible_mpu_irqs)) < 0) {
-=======
 		mpu_irq = snd_legacy_find_free_irq(possible_mpu_irqs);
 		if (mpu_irq < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR "unable to find a free MPU401 IRQ\n");
 			return -EBUSY;
 		}
 	}
 	if (dma1 == SNDRV_AUTO_DMA) {
-<<<<<<< HEAD
-		if ((dma1 = snd_legacy_find_free_dma(possible_dma1s)) < 0) {
-=======
 		dma1 = snd_legacy_find_free_dma(possible_dma1s);
 		if (dma1 < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR "unable to find a free DMA1\n");
 			return -EBUSY;
 		}
 	}
 #if defined(CS4231) || defined(OPTi93X)
 	if (dma2 == SNDRV_AUTO_DMA) {
-<<<<<<< HEAD
-		if ((dma2 = snd_legacy_find_free_dma(possible_dma2s[dma1 % 4])) < 0) {
-=======
 		dma2 = snd_legacy_find_free_dma(possible_dma2s[dma1 % 4]);
 		if (dma2 < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR "unable to find a free DMA2\n");
 			return -EBUSY;
 		}
 	}
 #endif
 
-<<<<<<< HEAD
-	error = snd_opti9xx_card_new(&card);
-	if (error < 0)
-		return error;
-
-	if ((error = snd_card_opti9xx_detect(card, card->private_data)) < 0) {
-		snd_card_free(card);
-		return error;
-	}
-	snd_card_set_dev(card, devptr);
-	if ((error = snd_opti9xx_probe(card)) < 0) {
-		snd_card_free(card);
-		return error;
-	}
-=======
 	error = snd_opti9xx_card_new(devptr, &card);
 	if (error < 0)
 		return error;
@@ -1306,26 +1003,10 @@ static int snd_opti9xx_isa_probe(struct device *devptr,
 	error = snd_opti9xx_probe(card);
 	if (error < 0)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_drvdata(devptr, card);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit snd_opti9xx_isa_remove(struct device *devptr,
-					    unsigned int dev)
-{
-	snd_card_free(dev_get_drvdata(devptr));
-	dev_set_drvdata(devptr, NULL);
-	return 0;
-}
-
-static struct isa_driver snd_opti9xx_driver = {
-	.match		= snd_opti9xx_isa_match,
-	.probe		= snd_opti9xx_isa_probe,
-	.remove		= __devexit_p(snd_opti9xx_isa_remove),
-	/* FIXME: suspend/resume */
-=======
 #ifdef CONFIG_PM
 static int snd_opti9xx_suspend(struct snd_card *card)
 {
@@ -1374,20 +1055,14 @@ static struct isa_driver snd_opti9xx_driver = {
 	.suspend	= snd_opti9xx_isa_suspend,
 	.resume		= snd_opti9xx_isa_resume,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver		= {
 		.name	= DEV_NAME
 	},
 };
 
 #ifdef CONFIG_PNP
-<<<<<<< HEAD
-static int __devinit snd_opti9xx_pnp_probe(struct pnp_card_link *pcard,
-					   const struct pnp_card_device_id *pid)
-=======
 static int snd_opti9xx_pnp_probe(struct pnp_card_link *pcard,
 				 const struct pnp_card_device_id *pid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	int error, hw;
@@ -1397,11 +1072,7 @@ static int snd_opti9xx_pnp_probe(struct pnp_card_link *pcard,
 		return -EBUSY;
 	if (! isapnp)
 		return -ENODEV;
-<<<<<<< HEAD
-	error = snd_opti9xx_card_new(&card);
-=======
 	error = snd_opti9xx_card_new(&pcard->card->dev, &card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0)
 		return error;
 	chip = card->private_data;
@@ -1418,27 +1089,6 @@ static int snd_opti9xx_pnp_probe(struct pnp_card_link *pcard,
 		hw = OPTi9XX_HW_82C931;
 		break;
 	default:
-<<<<<<< HEAD
-		snd_card_free(card);
-		return -ENODEV;
-	}
-
-	if ((error = snd_opti9xx_init(chip, hw))) {
-		snd_card_free(card);
-		return error;
-	}
-	error = snd_opti9xx_read_check(chip);
-	if (error) {
-		snd_printk(KERN_ERR "OPTI chip not found\n");
-		snd_card_free(card);
-		return error;
-	}
-	snd_card_set_dev(card, &pcard->card->dev);
-	if ((error = snd_opti9xx_probe(card)) < 0) {
-		snd_card_free(card);
-		return error;
-	}
-=======
 		return -ENODEV;
 	}
 
@@ -1453,21 +1103,11 @@ static int snd_opti9xx_pnp_probe(struct pnp_card_link *pcard,
 	error = snd_opti9xx_probe(card);
 	if (error < 0)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnp_set_card_drvdata(pcard, card);
 	snd_opti9xx_pnp_is_probed = 1;
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit snd_opti9xx_pnp_remove(struct pnp_card_link * pcard)
-{
-	snd_card_free(pnp_get_card_drvdata(pcard));
-	pnp_set_card_drvdata(pcard, NULL);
-	snd_opti9xx_pnp_is_probed = 0;
-}
-
-=======
 static void snd_opti9xx_pnp_remove(struct pnp_card_link *pcard)
 {
 	snd_opti9xx_pnp_is_probed = 0;
@@ -1486,21 +1126,16 @@ static int snd_opti9xx_pnp_resume(struct pnp_card_link *pcard)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pnp_card_driver opti9xx_pnpc_driver = {
 	.flags		= PNP_DRIVER_RES_DISABLE,
 	.name		= DEV_NAME,
 	.id_table	= snd_opti9xx_pnpids,
 	.probe		= snd_opti9xx_pnp_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(snd_opti9xx_pnp_remove),
-=======
 	.remove		= snd_opti9xx_pnp_remove,
 #ifdef CONFIG_PM
 	.suspend	= snd_opti9xx_pnp_suspend,
 	.resume		= snd_opti9xx_pnp_resume,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif
 

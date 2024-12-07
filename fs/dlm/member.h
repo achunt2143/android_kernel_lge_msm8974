@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) 2005-2011 Red Hat, Inc.  All rights reserved.
 **
-<<<<<<< HEAD
-**  This copyrighted material is made available to anyone wishing to use,
-**  modify, copy, or redistribute it subject to the terms and conditions
-**  of the GNU General Public License v.2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 *******************************************************************************
 ******************************************************************************/
@@ -27,11 +18,7 @@ void dlm_clear_members_gone(struct dlm_ls *ls);
 int dlm_recover_members(struct dlm_ls *ls, struct dlm_recover *rv,int *neg_out);
 int dlm_is_removed(struct dlm_ls *ls, int nodeid);
 int dlm_is_member(struct dlm_ls *ls, int nodeid);
-<<<<<<< HEAD
-int dlm_slots_version(struct dlm_header *h);
-=======
 int dlm_slots_version(const struct dlm_header *h);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void dlm_slot_save(struct dlm_ls *ls, struct dlm_rcom *rc,
 		   struct dlm_member *memb);
 void dlm_slots_copy_out(struct dlm_ls *ls, struct dlm_rcom *rc);

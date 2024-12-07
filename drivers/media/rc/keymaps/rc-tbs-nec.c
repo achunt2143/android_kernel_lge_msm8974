@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-/* tbs-nec.h - Keytable for tbs_nec Remote Controller
- *
- * keymap imported from ir-keymaps.c
- *
- * Copyright (c) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 // tbs-nec.h - Keytable for tbs_nec Remote Controller
 //
 // keymap imported from ir-keymaps.c
 //
 // Copyright (c) 2010 by Mauro Carvalho Chehab
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -25,18 +11,6 @@
 static struct rc_map_table tbs_nec[] = {
 	{ 0x84, KEY_POWER2},		/* power */
 	{ 0x94, KEY_MUTE},		/* mute */
-<<<<<<< HEAD
-	{ 0x87, KEY_1},
-	{ 0x86, KEY_2},
-	{ 0x85, KEY_3},
-	{ 0x8b, KEY_4},
-	{ 0x8a, KEY_5},
-	{ 0x89, KEY_6},
-	{ 0x8f, KEY_7},
-	{ 0x8e, KEY_8},
-	{ 0x8d, KEY_9},
-	{ 0x92, KEY_0},
-=======
 	{ 0x87, KEY_NUMERIC_1},
 	{ 0x86, KEY_NUMERIC_2},
 	{ 0x85, KEY_NUMERIC_3},
@@ -47,7 +21,6 @@ static struct rc_map_table tbs_nec[] = {
 	{ 0x8e, KEY_NUMERIC_8},
 	{ 0x8d, KEY_NUMERIC_9},
 	{ 0x92, KEY_NUMERIC_0},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0xc0, KEY_10CHANNELSUP},	/* 10+ */
 	{ 0xd0, KEY_10CHANNELSDOWN},	/* 10- */
 	{ 0x96, KEY_CHANNELUP},		/* ch+ */
@@ -74,17 +47,10 @@ static struct rc_map_table tbs_nec[] = {
 
 static struct rc_map_list tbs_nec_map = {
 	.map = {
-<<<<<<< HEAD
-		.scan    = tbs_nec,
-		.size    = ARRAY_SIZE(tbs_nec),
-		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
-		.name    = RC_MAP_TBS_NEC,
-=======
 		.scan     = tbs_nec,
 		.size     = ARRAY_SIZE(tbs_nec),
 		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
 		.name     = RC_MAP_TBS_NEC,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -102,9 +68,5 @@ module_init(init_rc_map_tbs_nec)
 module_exit(exit_rc_map_tbs_nec)
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
-=======
 MODULE_AUTHOR("Mauro Carvalho Chehab");
 MODULE_DESCRIPTION("tbs-nec remote controller keytable");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

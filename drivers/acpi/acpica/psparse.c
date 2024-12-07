@@ -1,57 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-/*
- * Parse the AML and build an operation tree as most interpreters,
- * like Perl, do.  Parsing is done by hand rather than with a YACC
- * generated parser to tightly constrain stack and dynamic memory
- * usage.  At the same time, parsing is kept flexible and the code
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
@@ -61,7 +12,6 @@
  * like Perl, do. Parsing is done by hand rather than with a YACC
  * generated parser to tightly constrain stack and dynamic memory
  * usage. At the same time, parsing is kept flexible and the code
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fairly compact by parsing based on a list of AML opcode
  * templates in aml_op_info[]
  */
@@ -72,10 +22,7 @@
 #include "acdispat.h"
 #include "amlcode.h"
 #include "acinterp.h"
-<<<<<<< HEAD
-=======
 #include "acnamesp.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_PARSER
 ACPI_MODULE_NAME("psparse")
@@ -84,11 +31,7 @@ ACPI_MODULE_NAME("psparse")
  *
  * FUNCTION:    acpi_ps_get_opcode_size
  *
-<<<<<<< HEAD
- * PARAMETERS:  Opcode          - An AML opcode
-=======
  * PARAMETERS:  opcode          - An AML opcode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Size of the opcode, in bytes (1 or 2)
  *
@@ -129,11 +72,7 @@ u16 acpi_ps_peek_opcode(struct acpi_parse_state * parser_state)
 	aml = parser_state->aml;
 	opcode = (u16) ACPI_GET8(aml);
 
-<<<<<<< HEAD
-	if (opcode == AML_EXTENDED_OP_PREFIX) {
-=======
 	if (opcode == AML_EXTENDED_PREFIX) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Extended opcode, get the second opcode byte */
 
@@ -149,11 +88,7 @@ u16 acpi_ps_peek_opcode(struct acpi_parse_state * parser_state)
  * FUNCTION:    acpi_ps_complete_this_op
  *
  * PARAMETERS:  walk_state      - Current State
-<<<<<<< HEAD
- *              Op              - Op to complete
-=======
  *              op              - Op to complete
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -162,13 +97,8 @@ u16 acpi_ps_peek_opcode(struct acpi_parse_state * parser_state)
  ******************************************************************************/
 
 acpi_status
-<<<<<<< HEAD
-acpi_ps_complete_this_op(struct acpi_walk_state * walk_state,
-			 union acpi_parse_object * op)
-=======
 acpi_ps_complete_this_op(struct acpi_walk_state *walk_state,
 			 union acpi_parse_object *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union acpi_parse_object *prev;
 	union acpi_parse_object *next;
@@ -184,11 +114,8 @@ acpi_ps_complete_this_op(struct acpi_walk_state *walk_state,
 		return_ACPI_STATUS(AE_OK);	/* OK for now */
 	}
 
-<<<<<<< HEAD
-=======
 	acpi_ex_stop_trace_opcode(op, walk_state);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Delete this op and the subtree below it if asked to */
 
 	if (((walk_state->parse_flags & ACPI_PARSE_TREE_MASK) !=
@@ -218,38 +145,23 @@ acpi_ps_complete_this_op(struct acpi_walk_state *walk_state,
 
 		switch (parent_info->class) {
 		case AML_CLASS_CONTROL:
-<<<<<<< HEAD
-			break;
-
-		case AML_CLASS_CREATE:
-
-=======
 
 			break;
 
 		case AML_CLASS_CREATE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * These opcodes contain term_arg operands. The current
 			 * op must be replaced by a placeholder return op
 			 */
 			replacement_op =
-<<<<<<< HEAD
-			    acpi_ps_alloc_op(AML_INT_RETURN_VALUE_OP);
-=======
 			    acpi_ps_alloc_op(AML_INT_RETURN_VALUE_OP,
 					     op->common.aml);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!replacement_op) {
 				status = AE_NO_MEMORY;
 			}
 			break;
 
 		case AML_CLASS_NAMED_OBJECT:
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * These opcodes contain term_arg operands. The current
 			 * op must be replaced by a placeholder return op
@@ -265,16 +177,10 @@ acpi_ps_complete_this_op(struct acpi_walk_state *walk_state,
 			    || (op->common.parent->common.aml_opcode ==
 				AML_BANK_FIELD_OP)
 			    || (op->common.parent->common.aml_opcode ==
-<<<<<<< HEAD
-				AML_VAR_PACKAGE_OP)) {
-				replacement_op =
-				    acpi_ps_alloc_op(AML_INT_RETURN_VALUE_OP);
-=======
 				AML_VARIABLE_PACKAGE_OP)) {
 				replacement_op =
 				    acpi_ps_alloc_op(AML_INT_RETURN_VALUE_OP,
 						     op->common.aml);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (!replacement_op) {
 					status = AE_NO_MEMORY;
 				}
@@ -286,18 +192,11 @@ acpi_ps_complete_this_op(struct acpi_walk_state *walk_state,
 				if ((op->common.aml_opcode == AML_BUFFER_OP)
 				    || (op->common.aml_opcode == AML_PACKAGE_OP)
 				    || (op->common.aml_opcode ==
-<<<<<<< HEAD
-					AML_VAR_PACKAGE_OP)) {
-					replacement_op =
-					    acpi_ps_alloc_op(op->common.
-							     aml_opcode);
-=======
 					AML_VARIABLE_PACKAGE_OP)) {
 					replacement_op =
 					    acpi_ps_alloc_op(op->common.
 							     aml_opcode,
 							     op->common.aml);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (!replacement_op) {
 						status = AE_NO_MEMORY;
 					} else {
@@ -313,12 +212,8 @@ acpi_ps_complete_this_op(struct acpi_walk_state *walk_state,
 		default:
 
 			replacement_op =
-<<<<<<< HEAD
-			    acpi_ps_alloc_op(AML_INT_RETURN_VALUE_OP);
-=======
 			    acpi_ps_alloc_op(AML_INT_RETURN_VALUE_OP,
 					     op->common.aml);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!replacement_op) {
 				status = AE_NO_MEMORY;
 			}
@@ -375,11 +270,7 @@ acpi_ps_complete_this_op(struct acpi_walk_state *walk_state,
 			}
 	}
 
-<<<<<<< HEAD
-      cleanup:
-=======
 cleanup:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Now we can actually delete the subtree rooted at Op */
 
@@ -392,11 +283,7 @@ cleanup:
  * FUNCTION:    acpi_ps_next_parse_state
  *
  * PARAMETERS:  walk_state          - Current state
-<<<<<<< HEAD
- *              Op                  - Current parse op
-=======
  *              op                  - Current parse op
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              callback_status     - Status from previous operation
  *
  * RETURN:      Status
@@ -464,11 +351,7 @@ acpi_ps_next_parse_state(struct acpi_walk_state *walk_state,
 	case AE_CTRL_FALSE:
 		/*
 		 * Either an IF/WHILE Predicate was false or we encountered a BREAK
-<<<<<<< HEAD
-		 * opcode.  In both cases, we do not execute the rest of the
-=======
 		 * opcode. In both cases, we do not execute the rest of the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * package;  We simply close out the parent (finishing the walk of
 		 * this branch of the tree) and continue execution at the parent
 		 * level.
@@ -500,11 +383,7 @@ acpi_ps_next_parse_state(struct acpi_walk_state *walk_state,
 	default:
 
 		status = callback_status;
-<<<<<<< HEAD
-		if ((callback_status & AE_CODE_MASK) == AE_CODE_CONTROL) {
-=======
 		if (ACPI_CNTL_EXCEPTION(callback_status)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = AE_OK;
 		}
 		break;
@@ -541,11 +420,7 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 			  walk_state->parser_state.aml_size));
 
 	if (!walk_state->parser_state.aml) {
-<<<<<<< HEAD
-		return_ACPI_STATUS(AE_NULL_OBJECT);
-=======
 		return_ACPI_STATUS(AE_BAD_ADDRESS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Create and initialize a new thread state */
@@ -556,14 +431,9 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 
 			/* Executing a control method - additional cleanup */
 
-<<<<<<< HEAD
-			acpi_ds_terminate_control_method(
-				walk_state->method_desc, walk_state);
-=======
 			acpi_ds_terminate_control_method(walk_state->
 							 method_desc,
 							 walk_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		acpi_ds_delete_walk_state(walk_state);
@@ -590,11 +460,7 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 	acpi_gbl_current_walk_list = thread;
 
 	/*
-<<<<<<< HEAD
-	 * Execute the walk loop as long as there is a valid Walk State.  This
-=======
 	 * Execute the walk loop as long as there is a valid Walk State. This
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * handles nested control method invocations without recursion.
 	 */
 	ACPI_DEBUG_PRINT((ACPI_DB_PARSE, "State=%p\n", walk_state));
@@ -613,8 +479,6 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 				  "Completed one call to walk loop, %s State=%p\n",
 				  acpi_format_exception(status), walk_state));
 
-<<<<<<< HEAD
-=======
 		if (walk_state->method_pathname && walk_state->method_is_nested) {
 
 			/* Optional object evaluation log */
@@ -630,7 +494,6 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 			ACPI_FREE(walk_state->method_pathname);
 			walk_state->method_is_nested = FALSE;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status == AE_CTRL_TRANSFER) {
 			/*
 			 * A method call was detected.
@@ -645,13 +508,8 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 			}
 
 			/*
-<<<<<<< HEAD
-			 * If the transfer to the new method method call worked, a new walk
-			 * state was created -- get it
-=======
 			 * If the transfer to the new method method call worked,
 			 * a new walk state was created -- get it
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			walk_state = acpi_ds_get_current_walk_state(thread);
 			continue;
@@ -661,11 +519,6 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 
 			/* Either the method parse or actual execution failed */
 
-<<<<<<< HEAD
-			ACPI_ERROR_METHOD("Method parse/execution failed",
-					  walk_state->method_node, NULL,
-					  status);
-=======
 			acpi_ex_exit_interpreter();
 			if (status == AE_ABORT_METHOD) {
 				acpi_ns_print_node_pathname(walk_state->
@@ -678,18 +531,12 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 						  status);
 			}
 			acpi_ex_enter_interpreter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Check for possible multi-thread reentrancy problem */
 
 			if ((status == AE_ALREADY_EXISTS) &&
-<<<<<<< HEAD
-			    (!(walk_state->method_desc->method.
-			       info_flags & ACPI_METHOD_SERIALIZED))) {
-=======
 			    (!(walk_state->method_desc->method.info_flags &
 			       ACPI_METHOD_SERIALIZED))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * Method is not serialized and tried to create an object
 				 * twice. The probable cause is that the method cannot
@@ -715,13 +562,9 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 		 * cleanup to do
 		 */
 		if (((walk_state->parse_flags & ACPI_PARSE_MODE_MASK) ==
-<<<<<<< HEAD
-		     ACPI_PARSE_EXECUTE) || (ACPI_FAILURE(status))) {
-=======
 		     ACPI_PARSE_EXECUTE &&
 		     !(walk_state->parse_flags & ACPI_PARSE_MODULE_LEVEL)) ||
 		    (ACPI_FAILURE(status))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			acpi_ds_terminate_control_method(walk_state->
 							 method_desc,
 							 walk_state);

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hfs/attr.c
  *
@@ -17,12 +14,6 @@
 #include "hfs_fs.h"
 #include "btree.h"
 
-<<<<<<< HEAD
-int hfs_setxattr(struct dentry *dentry, const char *name,
-		 const void *value, size_t size, int flags)
-{
-	struct inode *inode = dentry->d_inode;
-=======
 enum hfs_xattr_type {
 	HFS_TYPE,
 	HFS_CREATOR,
@@ -31,7 +22,6 @@ enum hfs_xattr_type {
 static int __hfs_setxattr(struct inode *inode, enum hfs_xattr_type type,
 			  const void *value, size_t size, int flags)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hfs_find_data fd;
 	hfs_cat_rec rec;
 	struct hfs_cat_file *file;
@@ -51,35 +41,22 @@ static int __hfs_setxattr(struct inode *inode, enum hfs_xattr_type type,
 			sizeof(struct hfs_cat_file));
 	file = &rec.file;
 
-<<<<<<< HEAD
-	if (!strcmp(name, "hfs.type")) {
-=======
 	switch (type) {
 	case HFS_TYPE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (size == 4)
 			memcpy(&file->UsrWds.fdType, value, 4);
 		else
 			res = -ERANGE;
-<<<<<<< HEAD
-	} else if (!strcmp(name, "hfs.creator")) {
-=======
 		break;
 
 	case HFS_CREATOR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (size == 4)
 			memcpy(&file->UsrWds.fdCreator, value, 4);
 		else
 			res = -ERANGE;
-<<<<<<< HEAD
-	} else
-		res = -EOPNOTSUPP;
-=======
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!res)
 		hfs_bnode_write(fd.bnode, &rec, fd.entryoffset,
 				sizeof(struct hfs_cat_file));
@@ -88,16 +65,9 @@ out:
 	return res;
 }
 
-<<<<<<< HEAD
-ssize_t hfs_getxattr(struct dentry *dentry, const char *name,
-			 void *value, size_t size)
-{
-	struct inode *inode = dentry->d_inode;
-=======
 static ssize_t __hfs_getxattr(struct inode *inode, enum hfs_xattr_type type,
 			      void *value, size_t size)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hfs_find_data fd;
 	hfs_cat_rec rec;
 	struct hfs_cat_file *file;
@@ -119,63 +89,30 @@ static ssize_t __hfs_getxattr(struct inode *inode, enum hfs_xattr_type type,
 	}
 	file = &rec.file;
 
-<<<<<<< HEAD
-	if (!strcmp(name, "hfs.type")) {
-=======
 	switch (type) {
 	case HFS_TYPE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (size >= 4) {
 			memcpy(value, &file->UsrWds.fdType, 4);
 			res = 4;
 		} else
 			res = size ? -ERANGE : 4;
-<<<<<<< HEAD
-	} else if (!strcmp(name, "hfs.creator")) {
-=======
 		break;
 
 	case HFS_CREATOR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (size >= 4) {
 			memcpy(value, &file->UsrWds.fdCreator, 4);
 			res = 4;
 		} else
 			res = size ? -ERANGE : 4;
-<<<<<<< HEAD
-	} else
-		res = -ENODATA;
-=======
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (size)
 		hfs_find_exit(&fd);
 	return res;
 }
 
-<<<<<<< HEAD
-#define HFS_ATTRLIST_SIZE (sizeof("hfs.creator")+sizeof("hfs.type"))
-
-ssize_t hfs_listxattr(struct dentry *dentry, char *buffer, size_t size)
-{
-	struct inode *inode = dentry->d_inode;
-
-	if (!S_ISREG(inode->i_mode) || HFS_IS_RSRC(inode))
-		return -EOPNOTSUPP;
-
-	if (!buffer || !size)
-		return HFS_ATTRLIST_SIZE;
-	if (size < HFS_ATTRLIST_SIZE)
-		return -ERANGE;
-	strcpy(buffer, "hfs.type");
-	strcpy(buffer + sizeof("hfs.type"), "hfs.creator");
-
-	return HFS_ATTRLIST_SIZE;
-}
-=======
 static int hfs_xattr_get(const struct xattr_handler *handler,
 			 struct dentry *unused, struct inode *inode,
 			 const char *name, void *value, size_t size)
@@ -214,4 +151,3 @@ const struct xattr_handler * const hfs_xattr_handlers[] = {
 	&hfs_type_handler,
 	NULL
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

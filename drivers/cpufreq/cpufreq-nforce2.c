@@ -1,24 +1,14 @@
-<<<<<<< HEAD
-/*
- * (C) 2004-2006  Sebastian Witt <se.witt@gmx.net>
- *
- *  Licensed under the terms of the GNU GPL License version 2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * (C) 2004-2006  Sebastian Witt <se.witt@gmx.net>
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Based upon reverse engineered information
  *
  *  BIG FAT DISCLAIMER: Work in progress code. Possibly *dangerous*
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -68,11 +58,6 @@ MODULE_PARM_DESC(fid, "CPU multiplier to use (11.5 = 115)");
 MODULE_PARM_DESC(min_fsb,
 		"Minimum FSB to use, if not defined: current FSB - 50");
 
-<<<<<<< HEAD
-#define PFX "cpufreq-nforce2: "
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * nforce2_calc_fsb - calculate FSB
  * @pll: PLL value
@@ -138,11 +123,6 @@ static void nforce2_write_pll(int pll)
 	/* Now write the value in all 64 registers */
 	for (temp = 0; temp <= 0x3f; temp++)
 		pci_write_config_dword(nforce2_dev, NFORCE2_PLLREG, pll);
-<<<<<<< HEAD
-
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -192,21 +172,13 @@ static int nforce2_set_fsb(unsigned int fsb)
 	int pll = 0;
 
 	if ((fsb > max_fsb) || (fsb < NFORCE2_MIN_FSB)) {
-<<<<<<< HEAD
-		printk(KERN_ERR PFX "FSB %d is out of range!\n", fsb);
-=======
 		pr_err("FSB %d is out of range!\n", fsb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	tfsb = nforce2_fsb_read(0);
 	if (!tfsb) {
-<<<<<<< HEAD
-		printk(KERN_ERR PFX "Error while reading the FSB\n");
-=======
 		pr_err("Error while reading the FSB\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -289,10 +261,6 @@ static int nforce2_target(struct cpufreq_policy *policy,
 
 	freqs.old = nforce2_get(policy->cpu);
 	freqs.new = target_fsb * fid * 100;
-<<<<<<< HEAD
-	freqs.cpu = 0;		/* Only one CPU on nForce2 platforms */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (freqs.old == freqs.new)
 		return 0;
@@ -300,22 +268,13 @@ static int nforce2_target(struct cpufreq_policy *policy,
 	pr_debug("Old CPU frequency %d kHz, new %d kHz\n",
 	       freqs.old, freqs.new);
 
-<<<<<<< HEAD
-	cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
-=======
 	cpufreq_freq_transition_begin(policy, &freqs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable IRQs */
 	/* local_irq_save(flags); */
 
 	if (nforce2_set_fsb(target_fsb) < 0)
-<<<<<<< HEAD
-		printk(KERN_ERR PFX "Changing FSB to %d failed\n",
-			target_fsb);
-=======
 		pr_err("Changing FSB to %d failed\n", target_fsb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		pr_debug("Changed FSB successfully to %d\n",
 			target_fsb);
@@ -323,11 +282,7 @@ static int nforce2_target(struct cpufreq_policy *policy,
 	/* Enable IRQs */
 	/* local_irq_restore(flags); */
 
-<<<<<<< HEAD
-	cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
-=======
 	cpufreq_freq_transition_end(policy, &freqs, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -336,11 +291,7 @@ static int nforce2_target(struct cpufreq_policy *policy,
  * nforce2_verify - verifies a new CPUFreq policy
  * @policy: new policy
  */
-<<<<<<< HEAD
-static int nforce2_verify(struct cpufreq_policy *policy)
-=======
 static int nforce2_verify(struct cpufreq_policy_data *policy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int fsb_pol_max;
 
@@ -349,13 +300,7 @@ static int nforce2_verify(struct cpufreq_policy_data *policy)
 	if (policy->min < (fsb_pol_max * fid * 100))
 		policy->max = (fsb_pol_max + 1) * fid * 100;
 
-<<<<<<< HEAD
-	cpufreq_verify_within_limits(policy,
-				     policy->cpuinfo.min_freq,
-				     policy->cpuinfo.max_freq);
-=======
 	cpufreq_verify_within_cpu_limits(policy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -377,12 +322,7 @@ static int nforce2_cpu_init(struct cpufreq_policy *policy)
 	/* FIX: Get FID from CPU */
 	if (!fid) {
 		if (!cpu_khz) {
-<<<<<<< HEAD
-			printk(KERN_WARNING PFX
-			"cpu_khz not set, can't calculate multiplier!\n");
-=======
 			pr_warn("cpu_khz not set, can't calculate multiplier!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 		}
 
@@ -397,13 +337,8 @@ static int nforce2_cpu_init(struct cpufreq_policy *policy)
 		}
 	}
 
-<<<<<<< HEAD
-	printk(KERN_INFO PFX "FSB currently at %i MHz, FID %d.%d\n", fsb,
-	       fid / 10, fid % 10);
-=======
 	pr_info("FSB currently at %i MHz, FID %d.%d\n",
 		fsb, fid / 10, fid % 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set maximum FSB to FSB at boot time */
 	max_fsb = nforce2_fsb_read(1);
@@ -418,17 +353,8 @@ static int nforce2_cpu_init(struct cpufreq_policy *policy)
 		min_fsb = NFORCE2_MIN_FSB;
 
 	/* cpuinfo and default policy values */
-<<<<<<< HEAD
-	policy->cpuinfo.min_freq = min_fsb * fid * 100;
-	policy->cpuinfo.max_freq = max_fsb * fid * 100;
-	policy->cpuinfo.transition_latency = CPUFREQ_ETERNAL;
-	policy->cur = nforce2_get(policy->cpu);
-	policy->min = policy->cpuinfo.min_freq;
-	policy->max = policy->cpuinfo.max_freq;
-=======
 	policy->min = policy->cpuinfo.min_freq = min_fsb * fid * 100;
 	policy->max = policy->cpuinfo.max_freq = max_fsb * fid * 100;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -440,27 +366,16 @@ static int nforce2_cpu_exit(struct cpufreq_policy *policy)
 
 static struct cpufreq_driver nforce2_driver = {
 	.name = "nforce2",
-<<<<<<< HEAD
-=======
 	.flags = CPUFREQ_NO_AUTO_DYNAMIC_SWITCHING,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.verify = nforce2_verify,
 	.target = nforce2_target,
 	.get = nforce2_get,
 	.init = nforce2_cpu_init,
 	.exit = nforce2_cpu_exit,
-<<<<<<< HEAD
-	.owner = THIS_MODULE,
-};
-
-#ifdef MODULE
-static DEFINE_PCI_DEVICE_TABLE(nforce2_ids) = {
-=======
 };
 
 #ifdef MODULE
 static const struct pci_device_id nforce2_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_NFORCE2 },
 	{}
 };
@@ -482,17 +397,9 @@ static int nforce2_detect_chipset(void)
 	if (nforce2_dev == NULL)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	printk(KERN_INFO PFX "Detected nForce2 chipset revision %X\n",
-	       nforce2_dev->revision);
-	printk(KERN_INFO PFX
-	       "FSB changing is maybe unstable and can lead to "
-	       "crashes and data loss.\n");
-=======
 	pr_info("Detected nForce2 chipset revision %X\n",
 		nforce2_dev->revision);
 	pr_info("FSB changing is maybe unstable and can lead to crashes and data loss\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -501,11 +408,7 @@ static int nforce2_detect_chipset(void)
  * nforce2_init - initializes the nForce2 CPUFreq driver
  *
  * Initializes the nForce2 FSB support. Returns -ENODEV on unsupported
-<<<<<<< HEAD
- * devices, -EINVAL on problems during initiatization, and zero on
-=======
  * devices, -EINVAL on problems during initialization, and zero on
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * success.
  */
 static int __init nforce2_init(void)
@@ -514,11 +417,7 @@ static int __init nforce2_init(void)
 
 	/* detect chipset */
 	if (nforce2_detect_chipset()) {
-<<<<<<< HEAD
-		printk(KERN_INFO PFX "No nForce2 chipset.\n");
-=======
 		pr_info("No nForce2 chipset\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -537,7 +436,3 @@ static void __exit nforce2_exit(void)
 
 module_init(nforce2_init);
 module_exit(nforce2_exit);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,21 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #define PDMA_FILTER_PARAM(_prio, _requestor) (&(struct pxad_param) { \
 	.prio = PXAD_PRIO_##_prio, .drcmr = _requestor })
 struct mmp_dma_platdata;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct platform_device pxa_device_pmu;
 extern struct platform_device pxa_device_mci;
 extern struct platform_device pxa3xx_device_mci2;
 extern struct platform_device pxa3xx_device_mci3;
 extern struct platform_device pxa25x_device_udc;
 extern struct platform_device pxa27x_device_udc;
-<<<<<<< HEAD
-extern struct platform_device pxa3xx_device_u2d;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct platform_device pxa_device_fb;
 extern struct platform_device pxa_device_ffuart;
 extern struct platform_device pxa_device_btuart;
@@ -23,17 +16,9 @@ extern struct platform_device pxa_device_stuart;
 extern struct platform_device pxa_device_hwuart;
 extern struct platform_device pxa_device_i2c;
 extern struct platform_device pxa_device_i2s;
-<<<<<<< HEAD
-extern struct platform_device pxa_device_ficp;
 extern struct platform_device sa1100_device_rtc;
 extern struct platform_device pxa_device_rtc;
 extern struct platform_device pxa_device_ac97;
-extern struct platform_device pxa_device_gpio;
-=======
-extern struct platform_device sa1100_device_rtc;
-extern struct platform_device pxa_device_rtc;
-extern struct platform_device pxa_device_ac97;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct platform_device pxa27x_device_i2c_power;
 extern struct platform_device pxa27x_device_ohci;
@@ -45,12 +30,9 @@ extern struct platform_device pxa25x_device_assp;
 extern struct platform_device pxa27x_device_ssp1;
 extern struct platform_device pxa27x_device_ssp2;
 extern struct platform_device pxa27x_device_ssp3;
-<<<<<<< HEAD
-=======
 extern struct platform_device pxa3xx_device_ssp1;
 extern struct platform_device pxa3xx_device_ssp2;
 extern struct platform_device pxa3xx_device_ssp3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct platform_device pxa3xx_device_ssp4;
 
 extern struct platform_device pxa25x_device_pwm0;
@@ -69,9 +51,6 @@ extern struct platform_device pxa_device_asoc_ssp2;
 extern struct platform_device pxa_device_asoc_ssp3;
 extern struct platform_device pxa_device_asoc_ssp4;
 
-<<<<<<< HEAD
-void __init pxa_register_device(struct platform_device *dev, void *data);
-=======
 extern struct platform_device pxa25x_device_gpio;
 extern struct platform_device pxa27x_device_gpio;
 extern struct platform_device pxa3xx_device_gpio;
@@ -88,4 +67,3 @@ extern void pxa27x_set_i2c_power_info(struct i2c_pxa_platform_data *info);
 #ifdef CONFIG_PXA3xx
 extern void pxa3xx_set_i2c_power_info(struct i2c_pxa_platform_data *info);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

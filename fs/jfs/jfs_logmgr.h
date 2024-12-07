@@ -1,36 +1,13 @@
-<<<<<<< HEAD
-/*
- *   Copyright (C) International Business Machines Corp., 2000-2004
- *   Portions Copyright (C) Christoph Hellwig, 2001-2002
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2004
  *   Portions Copyright (C) Christoph Hellwig, 2001-2002
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef	_H_JFS_LOGMGR
 #define _H_JFS_LOGMGR
 
-<<<<<<< HEAD
-=======
 #include <linux/uuid.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "jfs_filsys.h"
 #include "jfs_lock.h"
 
@@ -85,17 +62,6 @@ struct logsuper {
 	__le32 state;		/* 4: state - see below */
 
 	__le32 end;		/* 4: addr of last log record set by logredo */
-<<<<<<< HEAD
-	char uuid[16];		/* 16: 128-bit journal uuid */
-	char label[16];		/* 16: journal label */
-	struct {
-		char uuid[16];
-	} active[MAX_ACTIVE];	/* 2048: active file systems list */
-};
-
-#define NULL_UUID "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-
-=======
 	uuid_t uuid;		/* 16: 128-bit journal uuid */
 	char label[16];		/* 16: journal label */
 	struct {
@@ -103,7 +69,6 @@ struct logsuper {
 	} active[MAX_ACTIVE];	/* 2048: active file systems list */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* log flag: commit option (see jfs_filsys.h) */
 
 /* log state */
@@ -167,11 +132,7 @@ struct logpage {
  * (this comment should be rewritten !)
  * jfs uses only "after" log records (only a single writer is allowed
  * in a page, pages are written to temporary paging space if
-<<<<<<< HEAD
- * if they must be written to disk before commit, and i/o is
-=======
  * they must be written to disk before commit, and i/o is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * scheduled for modified pages to their home location after
  * the log records containing the after values and the commit
  * record is written to the log on disk, undo discards the copy
@@ -395,11 +356,7 @@ struct jfs_log {
 				 *    before writing syncpt.
 				 */
 	struct list_head journal_list; /* Global list */
-<<<<<<< HEAD
-	struct block_device *bdev; /* 4: log lv pointer */
-=======
 	struct file *bdev_file;	/* 4: log lv pointer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int serial;		/* 4: log mount serial number */
 
 	s64 base;		/* @8: log extent address (inline log ) */
@@ -440,11 +397,7 @@ struct jfs_log {
 	spinlock_t synclock;	/* 4: synclist lock */
 	struct lbuf *wqueue;	/* 4: log pageout queue */
 	int count;		/* 4: count */
-<<<<<<< HEAD
-	char uuid[16];		/* 16: 128-bit uuid of log device */
-=======
 	uuid_t uuid;		/* 16: 128-bit uuid of log device */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int no_integrity;	/* 3: flag to disable journaling to disk */
 };

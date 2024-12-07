@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2010 Werner Fink, Jiri Slaby
- *
- * Licensed under GPLv2
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2010 Werner Fink, Jiri Slaby
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/console.h>
@@ -40,9 +33,6 @@ static int show_console_dev(struct seq_file *m, void *v)
 	if (con->device) {
 		const struct tty_driver *driver;
 		int index;
-<<<<<<< HEAD
-		driver = con->device(con, &index);
-=======
 
 		/*
 		 * Take console_lock to serialize device() callback with
@@ -53,7 +43,6 @@ static int show_console_dev(struct seq_file *m, void *v)
 		driver = con->device(con, &index);
 		console_unlock();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (driver) {
 			dev = MKDEV(driver->major, driver->minor_start);
 			dev += index;
@@ -74,12 +63,7 @@ static int show_console_dev(struct seq_file *m, void *v)
 	if (dev)
 		seq_printf(m, " %4d:%d", MAJOR(dev), MINOR(dev));
 
-<<<<<<< HEAD
-	seq_printf(m, "\n");
-
-=======
 	seq_putc(m, '\n');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -88,16 +72,12 @@ static void *c_start(struct seq_file *m, loff_t *pos)
 	struct console *con;
 	loff_t off = 0;
 
-<<<<<<< HEAD
-	console_lock();
-=======
 	/*
 	 * Hold the console_list_lock to guarantee safe traversal of the
 	 * console list. SRCU cannot be used because there is no
 	 * place to store the SRCU cookie.
 	 */
 	console_list_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for_each_console(con)
 		if (off++ == *pos)
 			break;
@@ -108,23 +88,14 @@ static void *c_start(struct seq_file *m, loff_t *pos)
 static void *c_next(struct seq_file *m, void *v, loff_t *pos)
 {
 	struct console *con = v;
-<<<<<<< HEAD
-	++*pos;
-	return con->next;
-=======
 
 	++*pos;
 	return hlist_entry_safe(con->node.next, struct console, node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void c_stop(struct seq_file *m, void *v)
 {
-<<<<<<< HEAD
-	console_unlock();
-=======
 	console_list_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct seq_operations consoles_op = {
@@ -134,30 +105,9 @@ static const struct seq_operations consoles_op = {
 	.show	= show_console_dev
 };
 
-<<<<<<< HEAD
-static int consoles_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &consoles_op);
-}
-
-static const struct file_operations proc_consoles_operations = {
-	.open		= consoles_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-
-static int __init proc_consoles_init(void)
-{
-	proc_create("consoles", 0, NULL, &proc_consoles_operations);
-	return 0;
-}
-module_init(proc_consoles_init);
-=======
 static int __init proc_consoles_init(void)
 {
 	proc_create_seq("consoles", 0, NULL, &consoles_op);
 	return 0;
 }
 fs_initcall(proc_consoles_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

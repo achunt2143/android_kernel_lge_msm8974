@@ -103,11 +103,7 @@ struct hilse_node {
 
 /* Methods for back-end drivers, e.g. hp_sdc_mlc */
 typedef int	(hil_mlc_cts) (hil_mlc *mlc);
-<<<<<<< HEAD
-typedef void	(hil_mlc_out) (hil_mlc *mlc);
-=======
 typedef int	(hil_mlc_out) (hil_mlc *mlc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef int	(hil_mlc_in)  (hil_mlc *mlc, suseconds_t timeout);
 
 struct hil_mlc_devinfo {
@@ -148,21 +144,12 @@ struct hil_mlc {
 	hil_packet		ipacket[16];
 	hil_packet		imatch;
 	int			icount;
-<<<<<<< HEAD
-	struct timeval		instart;
-	suseconds_t		intimeout;
-
-	int			ddi;	/* Last operational device id */
-	int			lcv;	/* LCV to throttle loops */
-	struct timeval		lcv_tv; /* Time loop was started */
-=======
 	unsigned long		instart;
 	unsigned long		intimeout;
 
 	int			ddi;	/* Last operational device id */
 	int			lcv;	/* LCV to throttle loops */
 	time64_t		lcv_time; /* Time loop was started */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int			di_map[7]; /* Maps below items to live devs */
 	struct hil_mlc_devinfo	di[HIL_MLC_DEVMEM];

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/drivers/pci/fixups-sdk7780.c
  *
@@ -10,30 +7,6 @@
  * Copyright (C) 2003  Lineo uSolutions, Inc.
  * Copyright (C) 2004 - 2006  Paul Mundt
  * Copyright (C) 2006  Nobuhiro Iwamatsu
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
-#include <linux/pci.h>
-#include <linux/io.h>
-#include "pci-sh4.h"
-
-/* IDSEL [16][17][18][19][20][21][22][23][24][25][26][27][28][29][30][31] */
-static char sdk7780_irq_tab[4][16] __initdata = {
-	/* INTA */
-	{ 65, 68, 67, 68, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-	/* INTB */
-	{ 66, 65, -1, 65, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-	/* INTC */
-	{ 67, 66, -1, 66, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-	/* INTD */
-	{ 68, 67, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-};
-
-int __init pcibios_map_platform_irq(const struct pci_dev *pdev, u8 slot, u8 pin)
-=======
  */
 #include <linux/pci.h>
 #include <linux/io.h>
@@ -62,7 +35,6 @@ static char sdk7780_irq_tab[4][16] = {
 };
 
 int pcibios_map_platform_irq(const struct pci_dev *pdev, u8 slot, u8 pin)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
        return sdk7780_irq_tab[pin-1][slot];
 }

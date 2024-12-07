@@ -1,22 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Copyright (C) 2001 Lennert Buytenhek (buytenh@gnu.org) and
  * James Leu (jleu@mindspring.net).
  * Copyright (C) 2001 by various other people who didn't put their name here.
-<<<<<<< HEAD
- * Licensed under the GPL.
- */
-
-#include <linux/bootmem.h>
-=======
  */
 
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
 #include <linux/inetdevice.h>
@@ -28,21 +18,12 @@
 #include <linux/skbuff.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-#include "init.h"
-#include "irq_kern.h"
-#include "irq_user.h"
-#include "mconsole_kern.h"
-#include "net_kern.h"
-#include "net_user.h"
-=======
 #include <init.h>
 #include <irq_kern.h>
 #include <irq_user.h>
 #include "mconsole_kern.h"
 #include <net_kern.h>
 #include <net_user.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_NAME "uml-netdev"
 
@@ -156,11 +137,6 @@ static irqreturn_t uml_net_interrupt(int irq, void *dev_id)
 		schedule_work(&lp->work);
 		goto out;
 	}
-<<<<<<< HEAD
-	reactivate_fd(lp->fd, UM_ETH_IRQ);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	spin_unlock(&lp->lock);
 	return IRQ_HANDLED;
@@ -184,20 +160,12 @@ static int uml_net_open(struct net_device *dev)
 
 	err = um_request_irq(dev->irq, lp->fd, IRQ_READ, uml_net_interrupt,
 			     IRQF_SHARED, dev->name, dev);
-<<<<<<< HEAD
-	if (err != 0) {
-=======
 	if (err < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "uml_net_open: failed to get irq(%d)\n", err);
 		err = -ENETUNREACH;
 		goto out_close;
 	}
 
-<<<<<<< HEAD
-	lp->tl.data = (unsigned long) &lp->user;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_start_queue(dev);
 
 	/* clear buffer - it can happen that the host side of the interface
@@ -224,11 +192,7 @@ static int uml_net_close(struct net_device *dev)
 
 	netif_stop_queue(dev);
 
-<<<<<<< HEAD
-	free_irq(dev->irq, dev);
-=======
 	um_free_irq(dev->irq, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lp->close != NULL)
 		(*lp->close)(lp->fd, &lp->user);
 	lp->fd = -1;
@@ -240,11 +204,7 @@ static int uml_net_close(struct net_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int uml_net_start_xmit(struct sk_buff *skb, struct net_device *dev)
-=======
 static netdev_tx_t uml_net_start_xmit(struct sk_buff *skb, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uml_net_private *lp = netdev_priv(dev);
 	unsigned long flags;
@@ -255,19 +215,12 @@ static netdev_tx_t uml_net_start_xmit(struct sk_buff *skb, struct net_device *de
 	spin_lock_irqsave(&lp->lock, flags);
 
 	len = (*lp->write)(lp->fd, skb, lp);
-<<<<<<< HEAD
-=======
 	skb_tx_timestamp(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len == skb->len) {
 		dev->stats.tx_packets++;
 		dev->stats.tx_bytes += skb->len;
-<<<<<<< HEAD
-		dev->trans_start = jiffies;
-=======
 		netif_trans_update(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_start_queue(dev);
 
 		/* this is normally done in the interrupt when tx finishes */
@@ -284,11 +237,7 @@ static netdev_tx_t uml_net_start_xmit(struct sk_buff *skb, struct net_device *de
 
 	spin_unlock_irqrestore(&lp->lock, flags);
 
-<<<<<<< HEAD
-	dev_kfree_skb(skb);
-=======
 	dev_consume_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NETDEV_TX_OK;
 }
@@ -298,28 +247,12 @@ static void uml_net_set_multicast_list(struct net_device *dev)
 	return;
 }
 
-<<<<<<< HEAD
-static void uml_net_tx_timeout(struct net_device *dev)
-{
-	dev->trans_start = jiffies;
-	netif_wake_queue(dev);
-}
-
-static int uml_net_change_mtu(struct net_device *dev, int new_mtu)
-{
-	dev->mtu = new_mtu;
-
-	return 0;
-}
-
-=======
 static void uml_net_tx_timeout(struct net_device *dev, unsigned int txqueue)
 {
 	netif_trans_update(dev);
 	netif_wake_queue(dev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 static void uml_net_poll_controller(struct net_device *dev)
 {
@@ -332,40 +265,18 @@ static void uml_net_poll_controller(struct net_device *dev)
 static void uml_net_get_drvinfo(struct net_device *dev,
 				struct ethtool_drvinfo *info)
 {
-<<<<<<< HEAD
-	strcpy(info->driver, DRIVER_NAME);
-	strcpy(info->version, "42");
-=======
 	strscpy(info->driver, DRIVER_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct ethtool_ops uml_net_ethtool_ops = {
 	.get_drvinfo	= uml_net_get_drvinfo,
 	.get_link	= ethtool_op_get_link,
-<<<<<<< HEAD
-};
-
-static void uml_net_user_timer_expire(unsigned long _conn)
-{
-#ifdef undef
-	struct connection *conn = (struct connection *)_conn;
-
-	dprintk(KERN_INFO "uml_net_user_timer_expire [%p]\n", conn);
-	do_connect(conn);
-#endif
-}
-
-static int setup_etheraddr(char *str, unsigned char *addr, char *name)
-{
-=======
 	.get_ts_info	= ethtool_op_get_ts_info,
 };
 
 void uml_net_setup_etheraddr(struct net_device *dev, char *str)
 {
 	u8 addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *end;
 	int i;
 
@@ -405,15 +316,6 @@ void uml_net_setup_etheraddr(struct net_device *dev, char *str)
 		       addr[0] | 0x02, addr[1], addr[2], addr[3], addr[4],
 		       addr[5]);
 	}
-<<<<<<< HEAD
-	return 0;
-
-random:
-	printk(KERN_INFO
-	       "Choosing a random ethernet address for device %s\n", name);
-	random_ether_addr(addr);
-	return 1;
-=======
 	eth_hw_addr_set(dev, addr);
 	return;
 
@@ -421,7 +323,6 @@ random:
 	printk(KERN_INFO
 	       "Choosing a random ethernet address for device %s\n", dev->name);
 	eth_hw_addr_random(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEFINE_SPINLOCK(devices_lock);
@@ -453,10 +354,6 @@ static const struct net_device_ops uml_netdev_ops = {
 	.ndo_set_rx_mode	= uml_net_set_multicast_list,
 	.ndo_tx_timeout 	= uml_net_tx_timeout,
 	.ndo_set_mac_address	= eth_mac_addr,
-<<<<<<< HEAD
-	.ndo_change_mtu 	= uml_net_change_mtu,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller = uml_net_poll_controller,
@@ -470,28 +367,16 @@ static const struct net_device_ops uml_netdev_ops = {
 static int driver_registered;
 
 static void eth_configure(int n, void *init, char *mac,
-<<<<<<< HEAD
-			  struct transport *transport)
-=======
 			  struct transport *transport, gfp_t gfp_mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uml_net *device;
 	struct net_device *dev;
 	struct uml_net_private *lp;
 	int err, size;
-<<<<<<< HEAD
-	int random_mac;
-
-	size = transport->private_size + sizeof(struct uml_net_private);
-
-	device = kzalloc(sizeof(*device), GFP_KERNEL);
-=======
 
 	size = transport->private_size + sizeof(struct uml_net_private);
 
 	device = kzalloc(sizeof(*device), gfp_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (device == NULL) {
 		printk(KERN_ERR "eth_configure failed to allocate struct "
 		       "uml_net\n");
@@ -514,15 +399,9 @@ static void eth_configure(int n, void *init, char *mac,
 	 */
 	snprintf(dev->name, sizeof(dev->name), "eth%d", n);
 
-<<<<<<< HEAD
-	random_mac = setup_etheraddr(mac, device->mac, dev->name);
-
-	printk(KERN_INFO "Netdevice %d (%pM) : ", n, device->mac);
-=======
 	uml_net_setup_etheraddr(dev, mac);
 
 	printk(KERN_INFO "Netdevice %d (%pM) : ", n, dev->dev_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lp = netdev_priv(dev);
 	/* This points to the transport private data. It's still clear, but we
@@ -566,28 +445,13 @@ static void eth_configure(int n, void *init, char *mac,
 		  .add_address 		= transport->user->add_address,
 		  .delete_address  	= transport->user->delete_address });
 
-<<<<<<< HEAD
-	init_timer(&lp->tl);
-	spin_lock_init(&lp->lock);
-	lp->tl.function = uml_net_user_timer_expire;
-	memcpy(lp->mac, device->mac, sizeof(lp->mac));
-=======
 	spin_lock_init(&lp->lock);
 	memcpy(lp->mac, dev->dev_addr, sizeof(lp->mac));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((transport->user->init != NULL) &&
 	    ((*transport->user->init)(&lp->user, dev) != 0))
 		goto out_unregister;
 
-<<<<<<< HEAD
-	/* don't use eth_mac_addr, it will not work here */
-	memcpy(dev->dev_addr, device->mac, ETH_ALEN);
-	if (random_mac)
-		dev->addr_assign_type |= NET_ADDR_RANDOM;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->mtu = transport->user->mtu;
 	dev->netdev_ops = &uml_netdev_ops;
 	dev->ethtool_ops = &uml_net_ethtool_ops;
@@ -681,11 +545,7 @@ static LIST_HEAD(transports);
 static LIST_HEAD(eth_cmd_line);
 
 static int check_transport(struct transport *transport, char *eth, int n,
-<<<<<<< HEAD
-			   void **init_out, char **mac_out)
-=======
 			   void **init_out, char **mac_out, gfp_t gfp_mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len;
 
@@ -699,11 +559,7 @@ static int check_transport(struct transport *transport, char *eth, int n,
 	else if (*eth != '\0')
 		return 0;
 
-<<<<<<< HEAD
-	*init_out = kmalloc(transport->setup_size, GFP_KERNEL);
-=======
 	*init_out = kmalloc(transport->setup_size, gfp_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*init_out == NULL)
 		return 1;
 
@@ -730,19 +586,11 @@ void register_transport(struct transport *new)
 	list_for_each_safe(ele, next, &eth_cmd_line) {
 		eth = list_entry(ele, struct eth_init, list);
 		match = check_transport(new, eth->init, eth->index, &init,
-<<<<<<< HEAD
-					&mac);
-		if (!match)
-			continue;
-		else if (init != NULL) {
-			eth_configure(eth->index, init, mac, new);
-=======
 					&mac, GFP_KERNEL);
 		if (!match)
 			continue;
 		else if (init != NULL) {
 			eth_configure(eth->index, init, mac, new, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(init);
 		}
 		list_del(&eth->list);
@@ -760,18 +608,11 @@ static int eth_setup_common(char *str, int index)
 	spin_lock(&transports_lock);
 	list_for_each(ele, &transports) {
 		transport = list_entry(ele, struct transport, list);
-<<<<<<< HEAD
-	        if (!check_transport(transport, str, index, &init, &mac))
-			continue;
-		if (init != NULL) {
-			eth_configure(index, init, mac, transport);
-=======
 	        if (!check_transport(transport, str, index, &init,
 					&mac, GFP_ATOMIC))
 			continue;
 		if (init != NULL) {
 			eth_configure(index, init, mac, transport, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(init);
 		}
 		found = 1;
@@ -795,18 +636,10 @@ static int __init eth_setup(char *str)
 		return 1;
 	}
 
-<<<<<<< HEAD
-	new = alloc_bootmem(sizeof(*new));
-	if (new == NULL) {
-		printk(KERN_ERR "eth_init : alloc_bootmem failed\n");
-		return 1;
-	}
-=======
 	new = memblock_alloc(sizeof(*new), SMP_CACHE_BYTES);
 	if (!new)
 		panic("%s: Failed to allocate %zu bytes\n", __func__,
 		      sizeof(*new));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&new->list);
 	new->index = n;
@@ -975,11 +808,7 @@ static void close_devices(void)
 	spin_lock(&opened_lock);
 	list_for_each(ele, &opened) {
 		lp = list_entry(ele, struct uml_net_private, list);
-<<<<<<< HEAD
-		free_irq(lp->dev->irq, lp->dev);
-=======
 		um_free_irq(lp->dev->irq, lp->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((lp->close != NULL) && (lp->fd >= 0))
 			(*lp->close)(lp->fd, &lp->user);
 		if (lp->remove != NULL)

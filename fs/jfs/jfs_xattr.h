@@ -1,35 +1,13 @@
-<<<<<<< HEAD
-/*
- *   Copyright (C) International Business Machines Corp., 2000-2002
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2002
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef H_JFS_XATTR
 #define H_JFS_XATTR
 
-<<<<<<< HEAD
-=======
 #include <linux/xattr.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * jfs_ea_list describe the on-disk format of the extended attributes.
  * I know the null-terminator is redundant since namelen is stored, but
@@ -39,26 +17,15 @@ struct jfs_ea {
 	u8 flag;	/* Unused? */
 	u8 namelen;	/* Length of name */
 	__le16 valuelen;	/* Length of value */
-<<<<<<< HEAD
-	char name[0];	/* Attribute name (includes null-terminator) */
-=======
 	char name[];	/* Attribute name (includes null-terminator) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };			/* Value immediately follows name */
 
 struct jfs_ea_list {
 	__le32 size;		/* overall size */
-<<<<<<< HEAD
-	struct jfs_ea ea[0];	/* Variable length list */
-};
-
-/* Macros for defining maxiumum number of bytes supported for EAs */
-=======
 	struct jfs_ea ea[];	/* Variable length list */
 };
 
 /* Macros for defining maximum number of bytes supported for EAs */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAXEASIZE	65535
 #define MAXEALISTSIZE	MAXEASIZE
 
@@ -76,19 +43,10 @@ struct jfs_ea_list {
 
 extern int __jfs_setxattr(tid_t, struct inode *, const char *, const void *,
 			  size_t, int);
-<<<<<<< HEAD
-extern int jfs_setxattr(struct dentry *, const char *, const void *, size_t,
-			int);
-extern ssize_t __jfs_getxattr(struct inode *, const char *, void *, size_t);
-extern ssize_t jfs_getxattr(struct dentry *, const char *, void *, size_t);
-extern ssize_t jfs_listxattr(struct dentry *, char *, size_t);
-extern int jfs_removexattr(struct dentry *, const char *);
-=======
 extern ssize_t __jfs_getxattr(struct inode *, const char *, void *, size_t);
 extern ssize_t jfs_listxattr(struct dentry *, char *, size_t);
 
 extern const struct xattr_handler * const jfs_xattr_handlers[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_JFS_SECURITY
 extern int jfs_init_security(tid_t, struct inode *, struct inode *,

@@ -9,16 +9,11 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <bcm63xx_dev_enet.h>
 #include <bcm63xx_io.h>
 #include <bcm63xx_regs.h>
 
-<<<<<<< HEAD
-=======
 static const unsigned long bcm6348_regs_enetdmac[] = {
 	[ENETDMAC_CHANCFG]	= ENETDMAC_CHANCFG_REG,
 	[ENETDMAC_IR]		= ENETDMAC_IR_REG,
@@ -48,15 +43,12 @@ static __init void bcm63xx_enetdmac_regs_init(void)
 		bcm63xx_regs_enetdmac = bcm6348_regs_enetdmac;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource shared_res[] = {
 	{
 		.start		= -1, /* filled at runtime */
 		.end		= -1, /* filled at runtime */
 		.flags		= IORESOURCE_MEM,
 	},
-<<<<<<< HEAD
-=======
 	{
 		.start		= -1, /* filled at runtime */
 		.end		= -1, /* filled at runtime */
@@ -67,7 +59,6 @@ static struct resource shared_res[] = {
 		.end		= -1, /* filled at runtime */
 		.flags		= IORESOURCE_MEM,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device bcm63xx_enet_shared_device = {
@@ -79,11 +70,8 @@ static struct platform_device bcm63xx_enet_shared_device = {
 
 static int shared_device_registered;
 
-<<<<<<< HEAD
-=======
 static u64 enet_dmamask = DMA_BIT_MASK(32);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource enet0_res[] = {
 	{
 		.start		= -1, /* filled at runtime */
@@ -113,11 +101,8 @@ static struct platform_device bcm63xx_enet0_device = {
 	.resource	= enet0_res,
 	.dev		= {
 		.platform_data = &enet0_pd,
-<<<<<<< HEAD
-=======
 		.dma_mask = &enet_dmamask,
 		.coherent_dma_mask = DMA_BIT_MASK(32),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -150,11 +135,6 @@ static struct platform_device bcm63xx_enet1_device = {
 	.resource	= enet1_res,
 	.dev		= {
 		.platform_data = &enet1_pd,
-<<<<<<< HEAD
-	},
-};
-
-=======
 		.dma_mask = &enet_dmamask,
 		.coherent_dma_mask = DMA_BIT_MASK(32),
 	},
@@ -227,7 +207,6 @@ static int __init register_shared(void)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init bcm63xx_enet_register(int unit,
 				 const struct bcm63xx_enet_platform_data *pd)
 {
@@ -238,31 +217,12 @@ int __init bcm63xx_enet_register(int unit,
 	if (unit > 1)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (unit == 1 && BCMCPU_IS_6338())
-		return -ENODEV;
-
-	if (!shared_device_registered) {
-		shared_res[0].start = bcm63xx_regset_address(RSET_ENETDMA);
-		shared_res[0].end = shared_res[0].start;
-		if (BCMCPU_IS_6338())
-			shared_res[0].end += (RSET_ENETDMA_SIZE / 2)  - 1;
-		else
-			shared_res[0].end += (RSET_ENETDMA_SIZE)  - 1;
-
-		ret = platform_device_register(&bcm63xx_enet_shared_device);
-		if (ret)
-			return ret;
-		shared_device_registered = 1;
-	}
-=======
 	if (unit == 1 && (BCMCPU_IS_6338() || BCMCPU_IS_6345()))
 		return -ENODEV;
 
 	ret = register_shared();
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unit == 0) {
 		enet0_res[0].start = bcm63xx_regset_address(RSET_ENET0);
@@ -298,8 +258,6 @@ int __init bcm63xx_enet_register(int unit,
 		dpd->phy_interrupt = bcm63xx_get_irq_number(IRQ_ENET_PHY);
 	}
 
-<<<<<<< HEAD
-=======
 	dpd->dma_chan_en_mask = ENETDMAC_CHANCFG_EN_MASK;
 	dpd->dma_chan_int_mask = ENETDMAC_IR_PKTDONE_MASK;
 	if (BCMCPU_IS_6345()) {
@@ -323,14 +281,11 @@ int __init bcm63xx_enet_register(int unit,
 		dpd->tx_chan = 3;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = platform_device_register(pdev);
 	if (ret)
 		return ret;
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 int __init
 bcm63xx_enetsw_register(const struct bcm63xx_enetsw_platform_data *pd)
@@ -370,4 +325,3 @@ bcm63xx_enetsw_register(const struct bcm63xx_enetsw_platform_data *pd)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

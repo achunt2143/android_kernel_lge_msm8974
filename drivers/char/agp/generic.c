@@ -29,10 +29,6 @@
  */
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pagemap.h>
 #include <linux/miscdevice.h>
 #include <linux/pm.h>
@@ -43,14 +39,9 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/cacheflush.h>
-#include <asm/pgtable.h>
-=======
 #ifdef CONFIG_X86
 #include <asm/set_memory.h>
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "agp.h"
 
 __u32 *agp_gatt_table;
@@ -98,34 +89,10 @@ static int agp_get_key(void)
 
 void agp_alloc_page_array(size_t size, struct agp_memory *mem)
 {
-<<<<<<< HEAD
-	mem->pages = NULL;
-
-	if (size <= 2*PAGE_SIZE)
-		mem->pages = kmalloc(size, GFP_KERNEL | __GFP_NOWARN);
-	if (mem->pages == NULL) {
-		mem->pages = vmalloc(size);
-	}
-}
-EXPORT_SYMBOL(agp_alloc_page_array);
-
-void agp_free_page_array(struct agp_memory *mem)
-{
-	if (is_vmalloc_addr(mem->pages)) {
-		vfree(mem->pages);
-	} else {
-		kfree(mem->pages);
-	}
-}
-EXPORT_SYMBOL(agp_free_page_array);
-
-
-=======
 	mem->pages = kvmalloc(size, GFP_KERNEL);
 }
 EXPORT_SYMBOL(agp_alloc_page_array);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct agp_memory *agp_create_user_memory(unsigned long num_agp_pages)
 {
 	struct agp_memory *new;
@@ -239,10 +206,7 @@ EXPORT_SYMBOL(agp_free_memory);
 /**
  *	agp_allocate_memory  -  allocate a group of pages of a certain type.
  *
-<<<<<<< HEAD
-=======
  *	@bridge: an agp_bridge_data struct allocated for the AGP host bridge.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@page_count:	size_t argument of the number of pages
  *	@type:	u32 argument of the type of memory to be allocated.
  *
@@ -391,10 +355,7 @@ EXPORT_SYMBOL_GPL(agp_num_entries);
 /**
  *	agp_copy_info  -  copy bridge state information
  *
-<<<<<<< HEAD
-=======
  *	@bridge: an agp_bridge_data struct allocated for the AGP host bridge.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@info:		agp_kern_info pointer.  The caller should insure that this pointer is valid.
  *
  *	This function copies information about the agp bridge device and the state of
@@ -890,10 +851,6 @@ int agp_generic_create_gatt_table(struct agp_bridge_data *bridge)
 {
 	char *table;
 	char *table_end;
-<<<<<<< HEAD
-	int size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int page_order;
 	int num_entries;
 	int i;
@@ -907,38 +864,22 @@ int agp_generic_create_gatt_table(struct agp_bridge_data *bridge)
 	table = NULL;
 	i = bridge->aperture_size_idx;
 	temp = bridge->current_size;
-<<<<<<< HEAD
-	size = page_order = num_entries = 0;
-=======
 	page_order = num_entries = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bridge->driver->size_type != FIXED_APER_SIZE) {
 		do {
 			switch (bridge->driver->size_type) {
 			case U8_APER_SIZE:
-<<<<<<< HEAD
-				size = A_SIZE_8(temp)->size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				page_order =
 				    A_SIZE_8(temp)->page_order;
 				num_entries =
 				    A_SIZE_8(temp)->num_entries;
 				break;
 			case U16_APER_SIZE:
-<<<<<<< HEAD
-				size = A_SIZE_16(temp)->size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				page_order = A_SIZE_16(temp)->page_order;
 				num_entries = A_SIZE_16(temp)->num_entries;
 				break;
 			case U32_APER_SIZE:
-<<<<<<< HEAD
-				size = A_SIZE_32(temp)->size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				page_order = A_SIZE_32(temp)->page_order;
 				num_entries = A_SIZE_32(temp)->num_entries;
 				break;
@@ -946,11 +887,7 @@ int agp_generic_create_gatt_table(struct agp_bridge_data *bridge)
 			case FIXED_APER_SIZE:
 			case LVL2_APER_SIZE:
 			default:
-<<<<<<< HEAD
-				size = page_order = num_entries = 0;
-=======
 				page_order = num_entries = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 
@@ -980,10 +917,6 @@ int agp_generic_create_gatt_table(struct agp_bridge_data *bridge)
 			}
 		} while (!table && (i < bridge->driver->num_aperture_sizes));
 	} else {
-<<<<<<< HEAD
-		size = ((struct aper_size_info_fixed *) temp)->size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		page_order = ((struct aper_size_info_fixed *) temp)->page_order;
 		num_entries = ((struct aper_size_info_fixed *) temp)->num_entries;
 		table = alloc_gatt_pages(page_order);
@@ -1005,15 +938,9 @@ int agp_generic_create_gatt_table(struct agp_bridge_data *bridge)
 	if (set_memory_uc((unsigned long)table, 1 << page_order))
 		printk(KERN_WARNING "Could not set GATT table memory to UC!\n");
 
-<<<<<<< HEAD
-	bridge->gatt_table = (void *)table;
-#else
-	bridge->gatt_table = ioremap_nocache(virt_to_phys(table),
-=======
 	bridge->gatt_table = (u32 __iomem *)table;
 #else
 	bridge->gatt_table = ioremap(virt_to_phys(table),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					(PAGE_SIZE * (1 << page_order)));
 	bridge->driver->cache_flush();
 #endif
@@ -1063,10 +990,6 @@ int agp_generic_free_gatt_table(struct agp_bridge_data *bridge)
 	case LVL2_APER_SIZE:
 		/* The generic routines can't deal with 2 level gatt's */
 		return -EINVAL;
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		page_order = 0;
 		break;
@@ -1133,10 +1056,6 @@ int agp_generic_insert_memory(struct agp_memory * mem, off_t pg_start, int type)
 	case LVL2_APER_SIZE:
 		/* The generic routines can't deal with 2 level gatt's */
 		return -EINVAL;
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		num_entries = 0;
 		break;
@@ -1359,10 +1278,7 @@ EXPORT_SYMBOL(agp_generic_destroy_page);
 /**
  * agp_enable  -  initialise the agp point-to-point connection.
  *
-<<<<<<< HEAD
-=======
  * @bridge: an agp_bridge_data struct allocated for the AGP host bridge.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mode:	agp mode register value to configure with.
  */
 void agp_enable(struct agp_bridge_data *bridge, u32 mode)
@@ -1392,12 +1308,7 @@ static void ipi_handler(void *null)
 
 void global_cache_flush(void)
 {
-<<<<<<< HEAD
-	if (on_each_cpu(ipi_handler, NULL, 1) != 0)
-		panic(PFX "timed out waiting for the other CPUs!\n");
-=======
 	on_each_cpu(ipi_handler, NULL, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(global_cache_flush);
 
@@ -1465,13 +1376,8 @@ int agp3_generic_configure(void)
 
 	current_size = A_SIZE_16(agp_bridge->current_size);
 
-<<<<<<< HEAD
-	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
-	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
-=======
 	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
 						    AGP_APERTURE_BAR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set aperture size */
 	pci_write_config_word(agp_bridge->dev, agp_bridge->capndx+AGPAPSIZE, current_size->size_value);

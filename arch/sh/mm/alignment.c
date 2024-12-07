@@ -140,11 +140,7 @@ static int alignment_proc_open(struct inode *inode, struct file *file)
 static ssize_t alignment_proc_write(struct file *file,
 		const char __user *buffer, size_t count, loff_t *pos)
 {
-<<<<<<< HEAD
-	int *data = PDE(file->f_path.dentry->d_inode)->data;
-=======
 	int *data = pde_data(file_inode(file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char mode;
 
 	if (count > 0) {
@@ -156,19 +152,6 @@ static ssize_t alignment_proc_write(struct file *file,
 	return count;
 }
 
-<<<<<<< HEAD
-static const struct file_operations alignment_proc_fops = {
-	.owner		= THIS_MODULE,
-	.open		= alignment_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-	.write		= alignment_proc_write,
-};
-
-/*
- * This needs to be done after sysctl_init, otherwise sys/ will be
-=======
 static const struct proc_ops alignment_proc_ops = {
 	.proc_open	= alignment_proc_open,
 	.proc_read	= seq_read,
@@ -179,7 +162,6 @@ static const struct proc_ops alignment_proc_ops = {
 
 /*
  * This needs to be done after sysctl_init_bases(), otherwise sys/ will be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * overwritten.  Actually, this shouldn't be in sys/ at all since
  * it isn't a sysctl, and it doesn't contain sysctl information.
  * We now locate it in /proc/cpu/alignment instead.
@@ -193,20 +175,12 @@ static int __init alignment_init(void)
 		return -ENOMEM;
 
 	res = proc_create_data("alignment", S_IWUSR | S_IRUGO, dir,
-<<<<<<< HEAD
-			       &alignment_proc_fops, &se_usermode);
-=======
 			       &alignment_proc_ops, &se_usermode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!res)
 		return -ENOMEM;
 
         res = proc_create_data("kernel_alignment", S_IWUSR | S_IRUGO, dir,
-<<<<<<< HEAD
-			       &alignment_proc_fops, &se_kernmode_warn);
-=======
 			       &alignment_proc_ops, &se_kernmode_warn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         if (!res)
                 return -ENOMEM;
 

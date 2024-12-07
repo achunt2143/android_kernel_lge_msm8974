@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * zs.c: Serial port driver for IOASIC DECstations.
  *
@@ -47,13 +44,6 @@
  * complicated and prevents the use of some automatic modes of operation.
  */
 
-<<<<<<< HEAD
-#if defined(CONFIG_SERIAL_ZS_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-#define SUPPORT_SYSRQ
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bug.h>
 #include <linux/console.h>
 #include <linux/delay.h>
@@ -64,10 +54,7 @@
 #include <linux/ioport.h>
 #include <linux/irqflags.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-=======
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/major.h>
 #include <linux/serial.h>
 #include <linux/serial_core.h>
@@ -552,14 +539,9 @@ static void zs_receive_chars(struct zs_port *zport)
 	struct uart_port *uport = &zport->port;
 	struct zs_scc *scc = zport->scc;
 	struct uart_icount *icount;
-<<<<<<< HEAD
-	unsigned int avail, status, ch, flag;
-	int count;
-=======
 	unsigned int avail, status;
 	int count;
 	u8 ch, flag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (count = 16; count; count--) {
 		spin_lock(&scc->zlock);
@@ -619,11 +601,7 @@ static void zs_receive_chars(struct zs_port *zport)
 		uart_insert_char(uport, status, Rx_OVR, ch, flag);
 	}
 
-<<<<<<< HEAD
-	tty_flip_buffer_push(uport->state->port.tty);
-=======
 	tty_flip_buffer_push(&uport->state->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void zs_raw_transmit_chars(struct zs_port *zport)
@@ -646,12 +624,7 @@ static void zs_raw_transmit_chars(struct zs_port *zport)
 
 	/* Send char.  */
 	write_zsdata(zport, xmit->buf[xmit->tail]);
-<<<<<<< HEAD
-	xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-	zport->port.icount.tx++;
-=======
 	uart_xmit_advance(&zport->port, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 		uart_write_wakeup(&zport->port);
@@ -873,11 +846,7 @@ static void zs_reset(struct zs_port *zport)
 }
 
 static void zs_set_termios(struct uart_port *uport, struct ktermios *termios,
-<<<<<<< HEAD
-			   struct ktermios *old_termios)
-=======
 			   const struct ktermios *old_termios)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct zs_port *zport = to_zport(uport);
 	struct zs_scc *scc = zport->scc;
@@ -951,11 +920,7 @@ static void zs_set_termios(struct uart_port *uport, struct ktermios *termios,
 	uport->read_status_mask = Rx_OVR;
 	if (termios->c_iflag & INPCK)
 		uport->read_status_mask |= FRM_ERR | PAR_ERR;
-<<<<<<< HEAD
-	if (termios->c_iflag & (BRKINT | PARMRK))
-=======
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uport->read_status_mask |= Rx_BRK;
 
 	uport->ignore_status_mask = 0;
@@ -1016,22 +981,14 @@ static const char *zs_type(struct uart_port *uport)
 static void zs_release_port(struct uart_port *uport)
 {
 	iounmap(uport->membase);
-<<<<<<< HEAD
-	uport->membase = 0;
-=======
 	uport->membase = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_mem_region(uport->mapbase, ZS_CHAN_IO_SIZE);
 }
 
 static int zs_map_port(struct uart_port *uport)
 {
 	if (!uport->membase)
-<<<<<<< HEAD
-		uport->membase = ioremap_nocache(uport->mapbase,
-=======
 		uport->membase = ioremap(uport->mapbase,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 ZS_CHAN_IO_SIZE);
 	if (!uport->membase) {
 		printk(KERN_ERR "zs: Cannot map MMIO\n");
@@ -1085,11 +1042,7 @@ static int zs_verify_port(struct uart_port *uport, struct serial_struct *ser)
 }
 
 
-<<<<<<< HEAD
-static struct uart_ops zs_ops = {
-=======
 static const struct uart_ops zs_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	= zs_tx_empty,
 	.set_mctrl	= zs_set_mctrl,
 	.get_mctrl	= zs_get_mctrl,
@@ -1149,10 +1102,7 @@ static int __init zs_probe_sccs(void)
 			zport->scc	= &zs_sccs[chip];
 			zport->clk_mode	= 16;
 
-<<<<<<< HEAD
-=======
 			uport->has_sysrq = IS_ENABLED(CONFIG_SERIAL_ZS_CONSOLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			uport->irq	= zs_parms.irq[chip];
 			uport->uartclk	= ZS_CLOCK;
 			uport->fifosize	= 1;
@@ -1174,11 +1124,7 @@ static int __init zs_probe_sccs(void)
 
 
 #ifdef CONFIG_SERIAL_ZS_CONSOLE
-<<<<<<< HEAD
-static void zs_console_putchar(struct uart_port *uport, int ch)
-=======
 static void zs_console_putchar(struct uart_port *uport, unsigned char ch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct zs_port *zport = to_zport(uport);
 	struct zs_scc *scc = zport->scc;
@@ -1233,13 +1179,10 @@ static void zs_console_write(struct console *co, const char *s,
 	if (txint & TxINT_ENAB) {
 		zport->regs[1] |= TxINT_ENAB;
 		write_zsreg(zport, R1, zport->regs[1]);
-<<<<<<< HEAD
-=======
 
 		/* Resume any transmission as the TxIP bit won't be set.  */
 		if (!zport->tx_stopped)
 			zs_raw_transmit_chars(zport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&scc->zlock, flags);
 }

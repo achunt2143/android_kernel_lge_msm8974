@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * System Specific setup for PCEngines ALIX.
  * At the moment this means setup of GPIO control of LEDs
  * on Alix.2/3/6 boards.
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2008 Constantin Baranov <const@mimas.ru>
  * Copyright (C) 2011 Ed Wildgoose <kernel@wildgooses.com>
  *                and Philip Prindeville <philipp@redfish-solutions.com>
@@ -18,34 +11,18 @@
  * TODO: There are large similarities with leds-net5501.c
  * by Alessandro Zummo <a.zummo@towertech.it>
  * In the future leds-net5501.c should be migrated over to platform
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/leds.h>
-#include <linux/platform_device.h>
-#include <linux/gpio.h>
-#include <linux/input.h>
-#include <linux/gpio_keys.h>
-=======
 #include <linux/moduleparam.h>
 #include <linux/leds.h>
 #include <linux/platform_device.h>
 #include <linux/input.h>
 #include <linux/gpio_keys.h>
 #include <linux/gpio/machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dmi.h>
 
 #include <asm/geode.h>
@@ -54,14 +31,11 @@
 #define BIOS_SIGNATURE_COREBOOT		0x500
 #define BIOS_REGION_SIZE		0x10000
 
-<<<<<<< HEAD
-=======
 /*
  * This driver is not modular, but to keep back compatibility
  * with existing use cases, continuing with module_param is
  * the easiest way forward.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool force = 0;
 module_param(force, bool, 0444);
 /* FIXME: Award bios is not automatically detected as Alix platform */
@@ -96,23 +70,6 @@ static struct platform_device alix_buttons_dev = {
 static struct gpio_led alix_leds[] = {
 	{
 		.name = "alix:1",
-<<<<<<< HEAD
-		.gpio = 6,
-		.default_trigger = "default-on",
-		.active_low = 1,
-	},
-	{
-		.name = "alix:2",
-		.gpio = 25,
-		.default_trigger = "default-off",
-		.active_low = 1,
-	},
-	{
-		.name = "alix:3",
-		.gpio = 27,
-		.default_trigger = "default-off",
-		.active_low = 1,
-=======
 		.default_trigger = "default-on",
 	},
 	{
@@ -122,7 +79,6 @@ static struct gpio_led alix_leds[] = {
 	{
 		.name = "alix:3",
 		.default_trigger = "default-off",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -131,8 +87,6 @@ static struct gpio_led_platform_data alix_leds_data = {
 	.leds = alix_leds,
 };
 
-<<<<<<< HEAD
-=======
 static struct gpiod_lookup_table alix_leds_gpio_table = {
 	.dev_id = "leds-gpio",
 	.table = {
@@ -144,18 +98,13 @@ static struct gpiod_lookup_table alix_leds_gpio_table = {
 	},
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_device alix_leds_dev = {
 	.name = "leds-gpio",
 	.id = -1,
 	.dev.platform_data = &alix_leds_data,
 };
 
-<<<<<<< HEAD
-static struct __initdata platform_device *alix_devs[] = {
-=======
 static struct platform_device *alix_devs[] __initdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&alix_buttons_dev,
 	&alix_leds_dev,
 };
@@ -163,10 +112,7 @@ static struct platform_device *alix_devs[] __initdata = {
 static void __init register_alix(void)
 {
 	/* Setup LED control through leds-gpio driver */
-<<<<<<< HEAD
-=======
 	gpiod_add_lookup_table(&alix_leds_gpio_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_add_devices(alix_devs, ARRAY_SIZE(alix_devs));
 }
 
@@ -253,13 +199,4 @@ static int __init alix_init(void)
 
 	return 0;
 }
-<<<<<<< HEAD
-
-module_init(alix_init);
-
-MODULE_AUTHOR("Ed Wildgoose <kernel@wildgooses.com>");
-MODULE_DESCRIPTION("PCEngines ALIX System Setup");
-MODULE_LICENSE("GPL");
-=======
 device_initcall(alix_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

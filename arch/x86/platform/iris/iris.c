@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Eurobraille/Iris power off support.
  *
@@ -9,38 +6,14 @@
  * It is shutdown by a special I/O sequence which this module provides.
  *
  *  Copyright (C) Shérab <Sebastien.Hinderer@ens-lyon.org>
-<<<<<<< HEAD
- *
- * This program is free software ; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation ; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY ; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with the program ; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/moduleparam.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/errno.h>
-#include <linux/delay.h>
-#include <linux/init.h>
-=======
 #include <linux/platform_device.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/delay.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pm.h>
 #include <asm/io.h>
 
@@ -54,10 +27,6 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Sébastien Hinderer <Sebastien.Hinderer@ens-lyon.org>");
 MODULE_DESCRIPTION("A power_off handler for Iris devices from EuroBraille");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("Eurobraille/Iris");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool force;
 
@@ -79,33 +48,17 @@ static void iris_power_off(void)
  * by reading its input port and seeing whether the read value is
  * meaningful.
  */
-<<<<<<< HEAD
-static int iris_init(void)
-{
-	unsigned char status;
-	if (force != 1) {
-		printk(KERN_ERR "The force parameter has not been set to 1 so the Iris poweroff handler will not be installed.\n");
-		return -ENODEV;
-	}
-	status = inb(IRIS_GIO_INPUT);
-	if (status == IRIS_GIO_NODEV) {
-		printk(KERN_ERR "This machine does not seem to be an Iris. Power_off handler not installed.\n");
-=======
 static int iris_probe(struct platform_device *pdev)
 {
 	unsigned char status = inb(IRIS_GIO_INPUT);
 	if (status == IRIS_GIO_NODEV) {
 		printk(KERN_ERR "This machine does not seem to be an Iris. "
 			"Power off handler not installed.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	old_pm_power_off = pm_power_off;
 	pm_power_off = &iris_power_off;
 	printk(KERN_INFO "Iris power_off handler installed.\n");
-<<<<<<< HEAD
-
-=======
 	return 0;
 }
 
@@ -156,19 +109,13 @@ static int iris_init(void)
 		platform_driver_unregister(&iris_driver);
 		return PTR_ERR(iris_device);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void iris_exit(void)
 {
-<<<<<<< HEAD
-	pm_power_off = old_pm_power_off;
-	printk(KERN_INFO "Iris power_off handler uninstalled.\n");
-=======
 	platform_device_unregister(iris_device);
 	platform_driver_unregister(&iris_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(iris_init);

@@ -17,16 +17,10 @@
 #include <linux/slab.h>
 #include <linux/mtd/mtd.h>
 #include <linux/crc32.h>
-<<<<<<< HEAD
-#include <linux/mtd/nand.h>
-#include <linux/jiffies.h>
-#include <linux/sched.h>
-=======
 #include <linux/mtd/rawnand.h>
 #include <linux/jiffies.h>
 #include <linux/sched.h>
 #include <linux/writeback.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "nodelist.h"
 
@@ -92,11 +86,7 @@ static void jffs2_wbuf_dirties_inode(struct jffs2_sb_info *c, uint32_t ino)
 {
 	struct jffs2_inodirty *new;
 
-<<<<<<< HEAD
-	/* Mark the superblock dirty so that kupdated will flush... */
-=======
 	/* Schedule delayed write-buffer write-out */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jffs2_dirty_trigger(c);
 
 	if (jffs2_wbuf_pending_for_ino(c, ino))
@@ -1045,11 +1035,7 @@ int jffs2_check_oob_empty(struct jffs2_sb_info *c,
 {
 	int i, ret;
 	int cmlen = min_t(int, c->oobavail, OOB_CM_SIZE);
-<<<<<<< HEAD
-	struct mtd_oob_ops ops;
-=======
 	struct mtd_oob_ops ops = { };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ops.mode = MTD_OPS_AUTO_OOB;
 	ops.ooblen = NR_OOB_SCAN_PAGES * c->oobavail;
@@ -1090,11 +1076,7 @@ int jffs2_check_oob_empty(struct jffs2_sb_info *c,
 int jffs2_check_nand_cleanmarker(struct jffs2_sb_info *c,
 				 struct jffs2_eraseblock *jeb)
 {
-<<<<<<< HEAD
-	struct mtd_oob_ops ops;
-=======
 	struct mtd_oob_ops ops = { };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret, cmlen = min_t(int, c->oobavail, OOB_CM_SIZE);
 
 	ops.mode = MTD_OPS_AUTO_OOB;
@@ -1119,11 +1101,7 @@ int jffs2_write_nand_cleanmarker(struct jffs2_sb_info *c,
 				 struct jffs2_eraseblock *jeb)
 {
 	int ret;
-<<<<<<< HEAD
-	struct mtd_oob_ops ops;
-=======
 	struct mtd_oob_ops ops = { };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cmlen = min_t(int, c->oobavail, OOB_CM_SIZE);
 
 	ops.mode = MTD_OPS_AUTO_OOB;
@@ -1171,12 +1149,6 @@ int jffs2_write_nand_badblock(struct jffs2_sb_info *c, struct jffs2_eraseblock *
 	return 1;
 }
 
-<<<<<<< HEAD
-int jffs2_nand_flash_setup(struct jffs2_sb_info *c)
-{
-	struct nand_ecclayout *oinfo = c->mtd->ecclayout;
-
-=======
 static struct jffs2_sb_info *work_to_sb(struct work_struct *work)
 {
 	struct delayed_work *dwork;
@@ -1211,36 +1183,24 @@ void jffs2_dirty_trigger(struct jffs2_sb_info *c)
 
 int jffs2_nand_flash_setup(struct jffs2_sb_info *c)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!c->mtd->oobsize)
 		return 0;
 
 	/* Cleanmarker is out-of-band, so inline size zero */
 	c->cleanmarker_size = 0;
 
-<<<<<<< HEAD
-	if (!oinfo || oinfo->oobavail == 0) {
-=======
 	if (c->mtd->oobavail == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("inconsistent device description\n");
 		return -EINVAL;
 	}
 
 	jffs2_dbg(1, "using OOB on NAND\n");
 
-<<<<<<< HEAD
-	c->oobavail = oinfo->oobavail;
-
-	/* Initialise write buffer */
-	init_rwsem(&c->wbuf_sem);
-=======
 	c->oobavail = c->mtd->oobavail;
 
 	/* Initialise write buffer */
 	init_rwsem(&c->wbuf_sem);
 	INIT_DELAYED_WORK(&c->wbuf_dwork, delayed_wbuf_sync);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->wbuf_pagesize = c->mtd->writesize;
 	c->wbuf_ofs = 0xFFFFFFFF;
 
@@ -1248,11 +1208,7 @@ int jffs2_nand_flash_setup(struct jffs2_sb_info *c)
 	if (!c->wbuf)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	c->oobbuf = kmalloc(NR_OOB_SCAN_PAGES * c->oobavail, GFP_KERNEL);
-=======
 	c->oobbuf = kmalloc_array(NR_OOB_SCAN_PAGES, c->oobavail, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!c->oobbuf) {
 		kfree(c->wbuf);
 		return -ENOMEM;
@@ -1283,12 +1239,7 @@ int jffs2_dataflash_setup(struct jffs2_sb_info *c) {
 
 	/* Initialize write buffer */
 	init_rwsem(&c->wbuf_sem);
-<<<<<<< HEAD
-
-
-=======
 	INIT_DELAYED_WORK(&c->wbuf_dwork, delayed_wbuf_sync);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->wbuf_pagesize =  c->mtd->erasesize;
 
 	/* Find a suitable c->sector_size
@@ -1311,11 +1262,7 @@ int jffs2_dataflash_setup(struct jffs2_sb_info *c) {
 	if ((c->flash_size % c->sector_size) != 0) {
 		c->flash_size = (c->flash_size / c->sector_size) * c->sector_size;
 		pr_warn("flash size adjusted to %dKiB\n", c->flash_size);
-<<<<<<< HEAD
-	};
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	c->wbuf_ofs = 0xFFFFFFFF;
 	c->wbuf = kmalloc(c->wbuf_pagesize, GFP_KERNEL);
@@ -1325,10 +1272,6 @@ int jffs2_dataflash_setup(struct jffs2_sb_info *c) {
 #ifdef CONFIG_JFFS2_FS_WBUF_VERIFY
 	c->wbuf_verify = kmalloc(c->wbuf_pagesize, GFP_KERNEL);
 	if (!c->wbuf_verify) {
-<<<<<<< HEAD
-		kfree(c->oobbuf);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(c->wbuf);
 		return -ENOMEM;
 	}
@@ -1354,11 +1297,8 @@ int jffs2_nor_wbuf_flash_setup(struct jffs2_sb_info *c) {
 
 	/* Initialize write buffer */
 	init_rwsem(&c->wbuf_sem);
-<<<<<<< HEAD
-=======
 	INIT_DELAYED_WORK(&c->wbuf_dwork, delayed_wbuf_sync);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->wbuf_pagesize = c->mtd->writesize;
 	c->wbuf_ofs = 0xFFFFFFFF;
 
@@ -1391,10 +1331,7 @@ int jffs2_ubivol_setup(struct jffs2_sb_info *c) {
 		return 0;
 
 	init_rwsem(&c->wbuf_sem);
-<<<<<<< HEAD
-=======
 	INIT_DELAYED_WORK(&c->wbuf_dwork, delayed_wbuf_sync);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	c->wbuf_pagesize =  c->mtd->writesize;
 	c->wbuf_ofs = 0xFFFFFFFF;

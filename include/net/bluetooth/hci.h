@@ -1,11 +1,7 @@
 /*
    BlueZ - Bluetooth protocol stack for Linux
-<<<<<<< HEAD
-   Copyright (c) 2000-2001, 2010-2013 The Linux Foundation. All rights reserved.
-=======
    Copyright (C) 2000-2001 Qualcomm Incorporated
    Copyright 2023 NXP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
 
@@ -30,13 +26,6 @@
 #ifndef __HCI_H
 #define __HCI_H
 
-<<<<<<< HEAD
-#define HCI_MAX_ACL_SIZE	1500
-#define HCI_MAX_SCO_SIZE	255
-#define HCI_MAX_EVENT_SIZE	260
-#define HCI_MAX_FRAME_SIZE	(HCI_MAX_ACL_SIZE + 4)
-
-=======
 #define HCI_MAX_ACL_SIZE	1024
 #define HCI_MAX_SCO_SIZE	255
 #define HCI_MAX_ISO_SIZE	251
@@ -50,7 +39,6 @@
 
 #define HCI_MAX_CPB_DATA_SIZE	252
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* HCI dev events */
 #define HCI_DEV_REG			1
 #define HCI_DEV_UNREG			2
@@ -58,24 +46,17 @@
 #define HCI_DEV_DOWN			4
 #define HCI_DEV_SUSPEND			5
 #define HCI_DEV_RESUME			6
-<<<<<<< HEAD
-#define HCI_DEV_WRITE			7
-=======
 #define HCI_DEV_OPEN			7
 #define HCI_DEV_CLOSE			8
 #define HCI_DEV_SETUP			9
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* HCI notify events */
 #define HCI_NOTIFY_CONN_ADD		1
 #define HCI_NOTIFY_CONN_DEL		2
 #define HCI_NOTIFY_VOICE_SETTING	3
-<<<<<<< HEAD
-=======
 #define HCI_NOTIFY_ENABLE_SCO_CVSD	4
 #define HCI_NOTIFY_ENABLE_SCO_TRANSP	5
 #define HCI_NOTIFY_DISABLE_SCO		6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* HCI bus types */
 #define HCI_VIRTUAL	0
@@ -85,19 +66,6 @@
 #define HCI_RS232	4
 #define HCI_PCI		5
 #define HCI_SDIO	6
-<<<<<<< HEAD
-#define HCI_SMD		7
-
-/* HCI controller types */
-#define HCI_BREDR	0x00
-#define HCI_AMP		0x01
-
-/* HCI device quirks */
-enum {
-	HCI_QUIRK_NO_RESET,
-	HCI_QUIRK_RAW_DEVICE,
-	HCI_QUIRK_FIXUP_BUFFER_SIZE
-=======
 #define HCI_SPI		7
 #define HCI_I2C		8
 #define HCI_SMD		9
@@ -379,7 +347,6 @@ enum {
 	 * claim to support it.
 	 */
 	HCI_QUIRK_BROKEN_READ_ENC_KEY_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* HCI device flags */
@@ -396,54 +363,6 @@ enum {
 
 	HCI_RAW,
 
-<<<<<<< HEAD
-	HCI_SETUP,
-	HCI_AUTO_OFF,
-	HCI_MGMT,
-	HCI_PAIRABLE,
-	HCI_SERVICE_CACHE,
-	HCI_LINK_KEYS,
-	HCI_DEBUG_KEYS,
-
-	HCI_RESET,
-};
-
-/* HCI ioctl defines */
-#define HCIDEVUP	_IOW('H', 201, int)
-#define HCIDEVDOWN	_IOW('H', 202, int)
-#define HCIDEVRESET	_IOW('H', 203, int)
-#define HCIDEVRESTAT	_IOW('H', 204, int)
-
-#define HCIGETDEVLIST	_IOR('H', 210, int)
-#define HCIGETDEVINFO	_IOR('H', 211, int)
-#define HCIGETCONNLIST	_IOR('H', 212, int)
-#define HCIGETCONNINFO	_IOR('H', 213, int)
-#define HCIGETAUTHINFO	_IOR('H', 215, int)
-#define HCISETAUTHINFO  _IOR('H', 216, int)
-
-#define HCISETRAW	_IOW('H', 220, int)
-#define HCISETSCAN	_IOW('H', 221, int)
-#define HCISETAUTH	_IOW('H', 222, int)
-#define HCISETENCRYPT	_IOW('H', 223, int)
-#define HCISETPTYPE	_IOW('H', 224, int)
-#define HCISETLINKPOL	_IOW('H', 225, int)
-#define HCISETLINKMODE	_IOW('H', 226, int)
-#define HCISETACLMTU	_IOW('H', 227, int)
-#define HCISETSCOMTU	_IOW('H', 228, int)
-
-#define HCIBLOCKADDR	_IOW('H', 230, int)
-#define HCIUNBLOCKADDR	_IOW('H', 231, int)
-
-#define HCIINQUIRY	_IOR('H', 240, int)
-
-/* HCI timeouts */
-#define HCI_CONNECT_TIMEOUT	(40000)	/* 40 seconds */
-#define HCI_DISCONN_TIMEOUT	(2000)	/* 2 seconds */
-#define HCI_PAIRING_TIMEOUT	(60000)	/* 60 seconds */
-#define HCI_IDLE_TIMEOUT	(6000)	/* 6 seconds */
-#define HCI_INIT_TIMEOUT	(10000)	/* 10 seconds */
-#define HCI_CMD_TIMEOUT		(5000)	/* 5 seconds */
-=======
 	HCI_RESET,
 };
 
@@ -538,18 +457,14 @@ enum {
 #define HCI_ACL_CONN_TIMEOUT	msecs_to_jiffies(20000)	/* 20 seconds */
 #define HCI_LE_CONN_TIMEOUT	msecs_to_jiffies(20000)	/* 20 seconds */
 #define HCI_LE_AUTOCONN_TIMEOUT	msecs_to_jiffies(4000)	/* 4 seconds */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* HCI data types */
 #define HCI_COMMAND_PKT		0x01
 #define HCI_ACLDATA_PKT		0x02
 #define HCI_SCODATA_PKT		0x03
 #define HCI_EVENT_PKT		0x04
-<<<<<<< HEAD
-=======
 #define HCI_ISODATA_PKT		0x05
 #define HCI_DIAG_PKT		0xf0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_VENDOR_PKT		0xff
 
 /* HCI packet types */
@@ -560,8 +475,6 @@ enum {
 #define HCI_DH3		0x0800
 #define HCI_DH5		0x8000
 
-<<<<<<< HEAD
-=======
 /* HCI packet types inverted masks */
 #define HCI_2DH1	0x0002
 #define HCI_3DH1	0x0004
@@ -570,7 +483,6 @@ enum {
 #define HCI_2DH5	0x1000
 #define HCI_3DH5	0x2000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_HV1		0x0020
 #define HCI_HV2		0x0040
 #define HCI_HV3		0x0080
@@ -590,29 +502,8 @@ enum {
 #define ESCO_2EV5	0x0100
 #define ESCO_3EV5	0x0200
 
-<<<<<<< HEAD
-#define ESCO_WBS	(ESCO_EV3 | (EDR_ESCO_MASK ^ ESCO_2EV3))
-
-#define SCO_ESCO_MASK	(ESCO_HV1 | ESCO_HV2 | ESCO_HV3)
-#define EDR_ESCO_MASK	(ESCO_2EV3 | ESCO_3EV3 | ESCO_2EV5 | ESCO_3EV5)
-#define ALL_ESCO_MASK	(SCO_ESCO_MASK | ESCO_EV3 | ESCO_EV4 | ESCO_EV5 | \
-			EDR_ESCO_MASK)
-
-/* Air Coding Format */
-#define ACF_CVSD	0x0000;
-#define ACF_ULAW	0x0001;
-#define ACF_ALAW	0x0002;
-#define ACF_TRANS	0x0003;
-
-/* Retransmission Effort */
-#define RE_NO_RETRANS		0x00;
-#define RE_POWER_CONSUMP	0x01;
-#define RE_LINK_QUALITY		0x02;
-#define RE_DONT_CARE		0xFF;
-=======
 #define SCO_ESCO_MASK  (ESCO_HV1 | ESCO_HV2 | ESCO_HV3)
 #define EDR_ESCO_MASK  (ESCO_2EV3 | ESCO_3EV3 | ESCO_2EV5 | ESCO_3EV5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ACL flags */
 #define ACL_START_NO_FLUSH	0x00
@@ -622,9 +513,6 @@ enum {
 #define ACL_ACTIVE_BCAST	0x04
 #define ACL_PICO_BCAST		0x08
 
-<<<<<<< HEAD
-#define ACL_PB_MASK	(ACL_CONT | ACL_START)
-=======
 /* ISO PB flags */
 #define ISO_START		0x00
 #define ISO_CONT		0x01
@@ -633,7 +521,6 @@ enum {
 
 /* ISO TS flags */
 #define ISO_TS			0x01
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Baseband links */
 #define SCO_LINK	0x00
@@ -641,12 +528,9 @@ enum {
 #define ESCO_LINK	0x02
 /* Low Energy links do not have defined link type. Use invented one */
 #define LE_LINK		0x80
-<<<<<<< HEAD
-=======
 #define AMP_LINK	0x81
 #define ISO_LINK	0x82
 #define INVALID_LINK	0xff
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* LMP features */
 #define LMP_3SLOT	0x01
@@ -670,29 +554,20 @@ enum {
 #define LMP_CVSD	0x01
 #define LMP_PSCHEME	0x02
 #define LMP_PCONTROL	0x04
-<<<<<<< HEAD
-
-=======
 #define LMP_TRANSPARENT	0x08
 
 #define LMP_EDR_2M		0x02
 #define LMP_EDR_3M		0x04
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LMP_RSSI_INQ	0x40
 #define LMP_ESCO	0x80
 
 #define LMP_EV4		0x01
 #define LMP_EV5		0x02
-<<<<<<< HEAD
-#define LMP_LE		0x40
-
-=======
 #define LMP_NO_BREDR	0x20
 #define LMP_LE		0x40
 #define LMP_EDR_3SLOT	0x80
 
 #define LMP_EDR_5SLOT	0x01
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LMP_SNIFF_SUBR	0x02
 #define LMP_PAUSE_ENC	0x04
 #define LMP_EDR_ESCO_2M	0x20
@@ -700,19 +575,13 @@ enum {
 #define LMP_EDR_3S_ESCO	0x80
 
 #define LMP_EXT_INQ	0x01
-<<<<<<< HEAD
-#define LMP_SIMPLE_PAIR	0x08
-=======
 #define LMP_SIMUL_LE_BR	0x02
 #define LMP_SIMPLE_PAIR	0x08
 #define LMP_ERR_DATA_REPORTING 0x20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LMP_NO_FLUSH	0x40
 
 #define LMP_LSTO	0x01
 #define LMP_INQ_TX_PWR	0x02
-<<<<<<< HEAD
-=======
 #define LMP_EXTFEATURES	0x80
 
 /* Extended LMP features */
@@ -747,7 +616,6 @@ enum {
 #define HCI_LE_CIS_PERIPHERAL		0x20
 #define HCI_LE_ISO_BROADCASTER		0x40
 #define HCI_LE_ISO_SYNC_RECEIVER	0x80
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Connection modes */
 #define HCI_CM_ACTIVE	0x0000
@@ -769,10 +637,7 @@ enum {
 #define HCI_LM_TRUSTED	0x0008
 #define HCI_LM_RELIABLE	0x0010
 #define HCI_LM_SECURE	0x0020
-<<<<<<< HEAD
-=======
 #define HCI_LM_FIPS	0x0040
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Authentication types */
 #define HCI_AT_NO_BONDING		0x00
@@ -782,11 +647,6 @@ enum {
 #define HCI_AT_GENERAL_BONDING		0x04
 #define HCI_AT_GENERAL_BONDING_MITM	0x05
 
-<<<<<<< HEAD
-/* Flow control modes */
-#define HCI_PACKET_BASED_FLOW_CTL_MODE	0x00
-#define HCI_BLOCK_BASED_FLOW_CTL_MODE	0x01
-=======
 /* I/O capabilities */
 #define HCI_IO_DISPLAY_ONLY	0x00
 #define HCI_IO_DISPLAY_YESNO	0x01
@@ -868,7 +728,6 @@ enum {
 #define LE_AD_NO_BREDR		0x04 /* BR/EDR not supported */
 #define LE_AD_SIM_LE_BREDR_CTRL	0x08 /* Simultaneous LE & BR/EDR Controller */
 #define LE_AD_SIM_LE_BREDR_HOST	0x10 /* Simultaneous LE & BR/EDR Host */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* -----  HCI Commands ---- */
 #define HCI_OP_NOP			0x0000
@@ -882,11 +741,8 @@ struct hci_cp_inquiry {
 
 #define HCI_OP_INQUIRY_CANCEL		0x0402
 
-<<<<<<< HEAD
-=======
 #define HCI_OP_PERIODIC_INQ		0x0403
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_OP_EXIT_PERIODIC_INQ	0x0404
 
 #define HCI_OP_CREATE_CONN		0x0405
@@ -931,16 +787,7 @@ struct hci_cp_reject_conn_req {
 #define HCI_OP_LINK_KEY_REPLY		0x040b
 struct hci_cp_link_key_reply {
 	bdaddr_t bdaddr;
-<<<<<<< HEAD
-	__u8     link_key[16];
-} __packed;
-
-struct hci_rp_link_key_reply {
-	__u8     status;
-	bdaddr_t bdaddr;
-=======
 	__u8     link_key[HCI_LINK_KEY_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_OP_LINK_KEY_NEG_REPLY	0x040c
@@ -1071,8 +918,6 @@ struct hci_rp_user_confirm_reply {
 
 #define HCI_OP_USER_CONFIRM_NEG_REPLY	0x042d
 
-<<<<<<< HEAD
-=======
 #define HCI_OP_USER_PASSKEY_REPLY		0x042e
 struct hci_cp_user_passkey_reply {
 	bdaddr_t bdaddr;
@@ -1081,16 +926,11 @@ struct hci_cp_user_passkey_reply {
 
 #define HCI_OP_USER_PASSKEY_NEG_REPLY	0x042f
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_OP_REMOTE_OOB_DATA_REPLY	0x0430
 struct hci_cp_remote_oob_data_reply {
 	bdaddr_t bdaddr;
 	__u8     hash[16];
-<<<<<<< HEAD
-	__u8     randomizer[16];
-=======
 	__u8     rand[16];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_OP_REMOTE_OOB_DATA_NEG_REPLY	0x0433
@@ -1104,26 +944,6 @@ struct hci_cp_io_capability_neg_reply {
 	__u8     reason;
 } __packed;
 
-<<<<<<< HEAD
-#define HCI_OP_CREATE_PHYS_LINK		0x0435
-struct hci_cp_create_phys_link {
-	__u8     phy_handle;
-	__u8     key_len;
-	__u8     type;
-	__u8     data[32];
-} __packed;
-
-#define HCI_OP_ACCEPT_PHYS_LINK		0x0436
-struct hci_cp_accept_phys_link {
-	__u8     phy_handle;
-	__u8     key_len;
-	__u8     type;
-	__u8     data[32];
-} __packed;
-
-#define HCI_OP_DISCONN_PHYS_LINK	0x0437
-struct hci_cp_disconn_phys_link {
-=======
 #define HCI_OP_CREATE_PHY_LINK		0x0435
 struct hci_cp_create_phy_link {
 	__u8     phy_handle;
@@ -1142,42 +962,25 @@ struct hci_cp_accept_phy_link {
 
 #define HCI_OP_DISCONN_PHY_LINK		0x0437
 struct hci_cp_disconn_phy_link {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8     phy_handle;
 	__u8     reason;
 } __packed;
 
-<<<<<<< HEAD
-struct hci_ext_fs {
-	__u8       id;
-	__u8       type;
-	__le16     max_sdu;
-	__le32     sdu_arr_time;
-	__le32     acc_latency;
-=======
 struct ext_flow_spec {
 	__u8       id;
 	__u8       stype;
 	__le16     msdu;
 	__le32     sdu_itime;
 	__le32     acc_lat;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le32     flush_to;
 } __packed;
 
 #define HCI_OP_CREATE_LOGICAL_LINK	0x0438
 #define HCI_OP_ACCEPT_LOGICAL_LINK	0x0439
-<<<<<<< HEAD
-struct hci_cp_create_logical_link {
-	__u8               phy_handle;
-	struct hci_ext_fs  tx_fs;
-	struct hci_ext_fs  rx_fs;
-=======
 struct hci_cp_create_accept_logical_link {
 	__u8                  phy_handle;
 	struct ext_flow_spec  tx_flow_spec;
 	struct ext_flow_spec  rx_flow_spec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_OP_DISCONN_LOGICAL_LINK	0x043a
@@ -1191,8 +994,6 @@ struct hci_cp_logical_link_cancel {
 	__u8     flow_spec_id;
 } __packed;
 
-<<<<<<< HEAD
-=======
 #define HCI_OP_ENHANCED_SETUP_SYNC_CONN		0x043d
 struct hci_coding_format {
 	__u8	id;
@@ -1227,20 +1028,12 @@ struct hci_cp_enhanced_setup_sync_conn {
 	__u8     retrans_effort;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hci_rp_logical_link_cancel {
 	__u8     status;
 	__u8     phy_handle;
 	__u8     flow_spec_id;
 } __packed;
 
-<<<<<<< HEAD
-#define HCI_OP_FLOW_SPEC_MODIFY		0x043c
-struct hci_cp_flow_spec_modify {
-	__le16             log_handle;
-	struct hci_ext_fs  tx_fs;
-	struct hci_ext_fs  rx_fs;
-=======
 #define HCI_OP_SET_CPB			0x0441
 struct hci_cp_set_cpb {
 	__u8	enable;
@@ -1266,7 +1059,6 @@ struct hci_cp_remote_oob_ext_data_reply {
 	__u8     rand192[16];
 	__u8     hash256[16];
 	__u8     rand256[16];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_OP_SNIFF_MODE		0x0803
@@ -1339,22 +1131,10 @@ struct hci_cp_sniff_subrate {
 } __packed;
 
 #define HCI_OP_SET_EVENT_MASK		0x0c01
-<<<<<<< HEAD
-struct hci_cp_set_event_mask {
-	__u8     mask[8];
-} __packed;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HCI_OP_RESET			0x0c03
 
 #define HCI_OP_SET_EVENT_FLT		0x0c05
-<<<<<<< HEAD
-struct hci_cp_set_event_flt {
-	__u8     flt_type;
-	__u8     cond_type;
-	__u8     condition[0];
-=======
 #define HCI_SET_EVENT_FLT_SIZE		9
 struct hci_cp_set_event_filter {
 	__u8		flt_type;
@@ -1363,7 +1143,6 @@ struct hci_cp_set_event_filter {
 		bdaddr_t bdaddr;
 		__u8 auto_accept;
 	} __packed	addr_conn_flt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* Filter types */
@@ -1377,10 +1156,6 @@ struct hci_cp_set_event_filter {
 #define HCI_CONN_SETUP_ALLOW_BDADDR	0x02
 
 /* CONN_SETUP Conditions */
-<<<<<<< HEAD
-#define HCI_CONN_SETUP_AUTO_OFF	0x01
-#define HCI_CONN_SETUP_AUTO_ON	0x02
-=======
 #define HCI_CONN_SETUP_AUTO_OFF		0x01
 #define HCI_CONN_SETUP_AUTO_ON		0x02
 #define HCI_CONN_SETUP_AUTO_ON_WITH_RS	0x03
@@ -1395,20 +1170,16 @@ struct hci_rp_read_stored_link_key {
 	__le16   max_keys;
 	__le16   num_keys;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HCI_OP_DELETE_STORED_LINK_KEY	0x0c12
 struct hci_cp_delete_stored_link_key {
 	bdaddr_t bdaddr;
 	__u8     delete_all;
 } __packed;
-<<<<<<< HEAD
-=======
 struct hci_rp_delete_stored_link_key {
 	__u8     status;
 	__le16   num_keys;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HCI_MAX_NAME_LENGTH		248
 
@@ -1467,15 +1238,6 @@ struct hci_cp_write_voice_setting {
 	__le16   voice_setting;
 } __packed;
 
-<<<<<<< HEAD
-#define HCI_OP_WRITE_AUTOMATIC_FLUSH_TIMEOUT	0x0c28
-struct hci_cp_write_automatic_flush_timeout {
-	__le16   handle;
-	__le16   timeout;
-} __packed;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_OP_HOST_BUFFER_SIZE		0x0c33
 struct hci_cp_host_buffer_size {
 	__le16   acl_mtu;
@@ -1484,12 +1246,6 @@ struct hci_cp_host_buffer_size {
 	__le16   sco_max_pkt;
 } __packed;
 
-<<<<<<< HEAD
-#define HCI_OP_WRITE_CURRENT_IAC_LAP	0x0c3a
-struct hci_cp_write_current_iac_lap {
-	__u8     num_current_iac;
-	__u8     lap[6];
-=======
 #define HCI_OP_READ_NUM_SUPPORTED_IAC	0x0c38
 struct hci_rp_read_num_supported_iac {
 	__u8	status;
@@ -1502,7 +1258,6 @@ struct hci_rp_read_num_supported_iac {
 struct hci_cp_write_current_iac_lap {
 	__u8	num_iac;
 	__u8	iac_lap[6];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_OP_WRITE_INQUIRY_MODE	0x0c45
@@ -1511,13 +1266,8 @@ struct hci_cp_write_current_iac_lap {
 
 #define HCI_OP_WRITE_EIR		0x0c52
 struct hci_cp_write_eir {
-<<<<<<< HEAD
-	uint8_t		fec;
-	uint8_t		data[HCI_MAX_EIR_LENGTH];
-=======
 	__u8	fec;
 	__u8	data[HCI_MAX_EIR_LENGTH];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_OP_READ_SSP_MODE		0x0c55
@@ -1535,45 +1285,6 @@ struct hci_cp_write_ssp_mode {
 struct hci_rp_read_local_oob_data {
 	__u8     status;
 	__u8     hash[16];
-<<<<<<< HEAD
-	__u8     randomizer[16];
-} __packed;
-
-#define HCI_OP_READ_INQ_RSP_TX_POWER	0x0c58
-
-#define HCI_OP_READ_LL_TIMEOUT		0x0c61
-struct hci_rp_read_ll_timeout {
-	__u8     status;
-	__le16   timeout;
-} __packed;
-
-#define HCI_OP_WRITE_LL_TIMEOUT		0x0c62
-struct hci_cp_write_ll_timeout {
-	__le16   timeout;
-} __packed;
-
-#define HCI_OP_SET_EVENT_MASK_PAGE2	0x0c63
-struct hci_cp_set_event_mask_page2 {
-	__u8     mask[8];
-} __packed;
-
-#define HCI_OP_READ_LOCATION_DATA	0x0c64
-struct hci_rp_read_location_data {
-	__u8     status;
-	__u8     loc_dom_aware;
-	__u8     loc_dom;
-	__u8     loc_dom_opts;
-	__u8     loc_opts;
-} __packed;
-
-#define HCI_OP_WRITE_LOCATION_DATA	0x0c65
-struct hci_cp_write_location_data {
-	__u8     loc_dom_aware;
-	__u8     loc_dom;
-	__u8     loc_dom_opts;
-	__u8     loc_opts;
-} __packed;
-=======
 	__u8     rand[16];
 } __packed;
 
@@ -1599,7 +1310,6 @@ struct hci_cp_write_def_err_data_reporting {
 #define HCI_OP_SET_EVENT_MASK_PAGE_2	0x0c63
 
 #define HCI_OP_READ_LOCATION_DATA	0x0c64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HCI_OP_READ_FLOW_CONTROL_MODE	0x0c66
 struct hci_rp_read_flow_control_mode {
@@ -1607,33 +1317,6 @@ struct hci_rp_read_flow_control_mode {
 	__u8     mode;
 } __packed;
 
-<<<<<<< HEAD
-#define HCI_OP_WRITE_FLOW_CONTROL_MODE	0x0c67
-struct hci_cp_write_flow_control_mode {
-	__u8     mode;
-} __packed;
-
-#define HCI_OP_READ_BE_FLUSH_TIMEOUT	0x0c69
-struct hci_cp_read_be_flush_timeout {
-	__le16   log_handle;
-} __packed;
-
-struct hci_rp_read_be_flush_timeout {
-	__u8     status;
-	__le32   timeout;
-} __packed;
-
-#define HCI_OP_WRITE_BE_FLUSH_TIMEOUT	0x0c6a
-struct hci_cp_write_be_flush_timeout {
-	__le16   log_handle;
-	__le32   timeout;
-} __packed;
-
-#define HCI_OP_SHORT_RANGE_MODE		0x0c6b
-struct hci_cp_short_range_mode {
-	__u8     phy_handle;
-	__u8     mode;
-=======
 #define HCI_OP_WRITE_LE_HOST_SUPPORTED	0x0c6d
 struct hci_cp_write_le_host_supported {
 	__u8	le;
@@ -1730,7 +1413,6 @@ struct hci_op_configure_data_path {
 	__u8	data_path_id;
 	__u8	vnd_len;
 	__u8	vnd_data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_OP_READ_LOCAL_VERSION	0x1001
@@ -1756,12 +1438,9 @@ struct hci_rp_read_local_features {
 } __packed;
 
 #define HCI_OP_READ_LOCAL_EXT_FEATURES	0x1004
-<<<<<<< HEAD
-=======
 struct hci_cp_read_local_ext_features {
 	__u8     page;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hci_rp_read_local_ext_features {
 	__u8     status;
 	__u8     page;
@@ -1788,17 +1467,6 @@ struct hci_rp_read_bd_addr {
 struct hci_rp_read_data_block_size {
 	__u8     status;
 	__le16   max_acl_len;
-<<<<<<< HEAD
-	__le16   data_block_len;
-	__le16   num_blocks;
-} __packed;
-
-#define HCI_OP_READ_RSSI	0x1405
-struct hci_cp_read_rssi {
-	__le16   handle;
-} __packed;
-
-=======
 	__le16   block_len;
 	__le16   num_blocks;
 } __packed;
@@ -1919,15 +1587,12 @@ struct hci_rp_read_page_scan_type {
 struct hci_cp_read_rssi {
 	__le16   handle;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hci_rp_read_rssi {
 	__u8     status;
 	__le16   handle;
 	__s8     rssi;
 } __packed;
 
-<<<<<<< HEAD
-=======
 #define HCI_OP_READ_CLOCK		0x1407
 struct hci_cp_read_clock {
 	__le16   handle;
@@ -1950,7 +1615,6 @@ struct hci_rp_read_enc_key_size {
 	__u8     key_size;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_OP_READ_LOCAL_AMP_INFO	0x1409
 struct hci_rp_read_local_amp_info {
 	__u8     status;
@@ -1972,19 +1636,11 @@ struct hci_cp_read_local_amp_assoc {
 	__le16   len_so_far;
 	__le16   max_len;
 } __packed;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hci_rp_read_local_amp_assoc {
 	__u8     status;
 	__u8     phy_handle;
 	__le16   rem_len;
-<<<<<<< HEAD
-	__u8     frag[248];
-=======
 	__u8     frag[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_OP_WRITE_REMOTE_AMP_ASSOC	0x140b
@@ -1992,28 +1648,19 @@ struct hci_cp_write_remote_amp_assoc {
 	__u8     phy_handle;
 	__le16   len_so_far;
 	__le16   rem_len;
-<<<<<<< HEAD
-	__u8     frag[248];
-} __packed;
-
-=======
 	__u8     frag[];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hci_rp_write_remote_amp_assoc {
 	__u8     status;
 	__u8     phy_handle;
 } __packed;
 
-<<<<<<< HEAD
-=======
 #define HCI_OP_GET_MWS_TRANSPORT_CONFIG	0x140c
 
 #define HCI_OP_ENABLE_DUT_MODE		0x1803
 
 #define HCI_OP_WRITE_SSP_DEBUG_MODE	0x1804
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_OP_LE_SET_EVENT_MASK	0x2001
 struct hci_cp_le_set_event_mask {
 	__u8     mask[8];
@@ -2026,23 +1673,6 @@ struct hci_rp_le_read_buffer_size {
 	__u8     le_max_pkt;
 } __packed;
 
-<<<<<<< HEAD
-#define HCI_OP_LE_SET_SCAN_PARAMETERS	0x200b
-struct hci_cp_le_set_scan_parameters {
-	__u8	type;
-	__le16	interval;
-	__le16	window;
-	__u8	own_bdaddr_type;
-	__u8	filter;
-} __packed;
-
-#define HCI_OP_LE_SET_SCAN_ENABLE	0x200c
-struct hci_cp_le_set_scan_enable {
-	__u8	enable;
-	__u8	filter_dup;
-} __packed;
-
-=======
 #define HCI_OP_LE_READ_LOCAL_FEATURES	0x2003
 struct hci_rp_le_read_local_features {
 	__u8     status;
@@ -2111,7 +1741,6 @@ struct hci_cp_le_set_scan_enable {
 #define HCI_LE_USE_PEER_ADDR		0x00
 #define HCI_LE_USE_ACCEPT_LIST		0x01
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_OP_LE_CREATE_CONN		0x200d
 struct hci_cp_le_create_conn {
 	__le16   scan_interval;
@@ -2130,26 +1759,6 @@ struct hci_cp_le_create_conn {
 
 #define HCI_OP_LE_CREATE_CONN_CANCEL	0x200e
 
-<<<<<<< HEAD
-#define HCI_OP_LE_READ_WHITE_LIST_SIZE	0x200F
-struct hci_rp_le_read_white_list_size {
-	__u8     status;
-	__u8     size;
-} __packed;
-
-#define HCI_OP_LE_CLEAR_WHITE_LIST	0x2010
-
-#define HCI_OP_LE_ADD_DEV_WHITE_LIST	0x2011
-struct hci_cp_le_add_dev_white_list {
-	__u8     addr_type;
-	bdaddr_t addr;
-} __packed;
-
-#define HCI_OP_LE_REMOVE_DEV_WHITE_LIST 0x2012
-struct hci_cp_le_remove_dev_white_list {
-	__u8     addr_type;
-	bdaddr_t addr;
-=======
 #define HCI_OP_LE_READ_ACCEPT_LIST_SIZE	0x200f
 struct hci_rp_le_read_accept_list_size {
 	__u8	status;
@@ -2168,7 +1777,6 @@ struct hci_cp_le_add_to_accept_list {
 struct hci_cp_le_del_from_accept_list {
 	__u8     bdaddr_type;
 	bdaddr_t bdaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_OP_LE_CONN_UPDATE		0x2013
@@ -2182,30 +1790,15 @@ struct hci_cp_le_conn_update {
 	__le16   max_ce_len;
 } __packed;
 
-<<<<<<< HEAD
-#define HCI_OP_LE_ENCRYPT		0x2017
-struct hci_cp_le_encrypt {
-	__u8	key[16];
-	__u8	data[16];
-} __packed;
-struct hci_cp_le_encrypt_reply {
-	__u8     status;
-	__u8     encrypted[16];
-=======
 #define HCI_OP_LE_READ_REMOTE_FEATURES	0x2016
 struct hci_cp_le_read_remote_features {
 	__le16	 handle;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_OP_LE_START_ENC		0x2019
 struct hci_cp_le_start_enc {
 	__le16	handle;
-<<<<<<< HEAD
-	__u8	rand[8];
-=======
 	__le64	rand;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16	ediv;
 	__u8	ltk[16];
 } __packed;
@@ -2229,9 +1822,6 @@ struct hci_rp_le_ltk_neg_reply {
 	__le16	handle;
 } __packed;
 
-<<<<<<< HEAD
-/* ---- HCI Events ---- */
-=======
 #define HCI_OP_LE_READ_SUPPORTED_STATES	0x201c
 struct hci_rp_le_read_supported_states {
 	__u8	status;
@@ -2663,7 +2253,6 @@ struct hci_ev_status {
 	__u8    status;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_EV_INQUIRY_COMPLETE		0x01
 
 #define HCI_EV_INQUIRY_RESULT		0x02
@@ -2676,14 +2265,11 @@ struct inquiry_info {
 	__le16   clock_offset;
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct hci_ev_inquiry_result {
 	__u8    num;
 	struct inquiry_info info[];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_EV_CONN_COMPLETE		0x03
 struct hci_ev_conn_complete {
 	__u8     status;
@@ -2778,11 +2364,7 @@ struct hci_ev_cmd_status {
 
 #define HCI_EV_HARDWARE_ERROR		0x10
 struct hci_ev_hardware_error {
-<<<<<<< HEAD
-	__u8   hw_err_code;
-=======
 	__u8     code;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_EV_ROLE_CHANGE		0x12
@@ -2793,11 +2375,6 @@ struct hci_ev_role_change {
 } __packed;
 
 #define HCI_EV_NUM_COMP_PKTS		0x13
-<<<<<<< HEAD
-struct hci_ev_num_comp_pkts {
-	__u8     num_hndl;
-	/* variable length part */
-=======
 struct hci_comp_pkts_info {
 	__le16   handle;
 	__le16   count;
@@ -2806,7 +2383,6 @@ struct hci_comp_pkts_info {
 struct hci_ev_num_comp_pkts {
 	__u8     num;
 	struct hci_comp_pkts_info handles[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_EV_MODE_CHANGE		0x14
@@ -2830,11 +2406,7 @@ struct hci_ev_link_key_req {
 #define HCI_EV_LINK_KEY_NOTIFY		0x18
 struct hci_ev_link_key_notify {
 	bdaddr_t bdaddr;
-<<<<<<< HEAD
-	__u8     link_key[16];
-=======
 	__u8     link_key[HCI_LINK_KEY_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8     key_type;
 } __packed;
 
@@ -2859,11 +2431,7 @@ struct hci_ev_pscan_rep_mode {
 } __packed;
 
 #define HCI_EV_INQUIRY_RESULT_WITH_RSSI	0x22
-<<<<<<< HEAD
-struct inquiry_info_with_rssi {
-=======
 struct inquiry_info_rssi {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bdaddr_t bdaddr;
 	__u8     pscan_rep_mode;
 	__u8     pscan_period_mode;
@@ -2871,11 +2439,7 @@ struct inquiry_info_rssi {
 	__le16   clock_offset;
 	__s8     rssi;
 } __packed;
-<<<<<<< HEAD
-struct inquiry_info_with_rssi_and_pscan_mode {
-=======
 struct inquiry_info_rssi_pscan {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bdaddr_t bdaddr;
 	__u8     pscan_rep_mode;
 	__u8     pscan_period_mode;
@@ -2884,13 +2448,10 @@ struct inquiry_info_rssi_pscan {
 	__le16   clock_offset;
 	__s8     rssi;
 } __packed;
-<<<<<<< HEAD
-=======
 struct hci_ev_inquiry_result_rssi {
 	__u8     num;
 	__u8     data[];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HCI_EV_REMOTE_EXT_FEATURES	0x23
 struct hci_ev_remote_ext_features {
@@ -2945,8 +2506,6 @@ struct extended_inquiry_info {
 	__u8     data[240];
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct hci_ev_ext_inquiry_result {
 	__u8     num;
 	struct extended_inquiry_info info[];
@@ -2958,7 +2517,6 @@ struct hci_ev_key_refresh_complete {
 	__le16	handle;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_EV_IO_CAPA_REQUEST		0x31
 struct hci_ev_io_capa_request {
 	bdaddr_t bdaddr;
@@ -2979,13 +2537,8 @@ struct hci_ev_user_confirm_req {
 } __packed;
 
 #define HCI_EV_USER_PASSKEY_REQUEST	0x34
-<<<<<<< HEAD
-struct hci_ev_user_passkey_request {
-	bdaddr_t bdaddr;
-=======
 struct hci_ev_user_passkey_req {
 	bdaddr_t	bdaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_EV_REMOTE_OOB_DATA_REQUEST	0x35
@@ -2999,19 +2552,12 @@ struct hci_ev_simple_pair_complete {
 	bdaddr_t bdaddr;
 } __packed;
 
-<<<<<<< HEAD
-#define HCI_EV_USER_PASSKEY_NOTIFICATION	0x3b
-struct hci_ev_user_passkey_notification {
-=======
 #define HCI_EV_USER_PASSKEY_NOTIFY	0x3b
 struct hci_ev_user_passkey_notify {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bdaddr_t	bdaddr;
 	__le32		passkey;
 } __packed;
 
-<<<<<<< HEAD
-=======
 #define HCI_KEYPRESS_STARTED		0
 #define HCI_KEYPRESS_ENTERED		1
 #define HCI_KEYPRESS_ERASED		2
@@ -3024,7 +2570,6 @@ struct hci_ev_keypress_notify {
 	__u8		type;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_EV_REMOTE_HOST_FEATURES	0x3d
 struct hci_ev_remote_host_features {
 	bdaddr_t bdaddr;
@@ -3036,9 +2581,6 @@ struct hci_ev_le_meta {
 	__u8     subevent;
 } __packed;
 
-<<<<<<< HEAD
-/* Low energy meta events */
-=======
 #define HCI_EV_PHY_LINK_COMPLETE	0x40
 struct hci_ev_phy_link_complete {
 	__u8     status;
@@ -3092,7 +2634,6 @@ struct hci_ev_sync_train_complete {
 
 #define HCI_EV_PERIPHERAL_PAGE_RESP_TIMEOUT	0x54
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HCI_EV_LE_CONN_COMPLETE		0x01
 struct hci_ev_le_conn_complete {
 	__u8     status;
@@ -3106,24 +2647,6 @@ struct hci_ev_le_conn_complete {
 	__u8     clk_accurancy;
 } __packed;
 
-<<<<<<< HEAD
-#define ADV_IND		0x00
-#define ADV_DIRECT_IND	0x01
-#define ADV_SCAN_IND	0x02
-#define ADV_NONCONN_IND	0x03
-#define ADV_SCAN_RSP	0x04
-
-#define ADDR_LE_DEV_PUBLIC	0x00
-#define ADDR_LE_DEV_RANDOM	0x01
-
-#define HCI_EV_LE_ADVERTISING_REPORT	0x02
-struct hci_ev_le_advertising_info {
-	__u8	 evt_type;
-	__u8	 bdaddr_type;
-	bdaddr_t bdaddr;
-	__u8	 length;
-	__u8	 data[0];
-=======
 /* Advertising report event types */
 #define LE_ADV_IND		0x00
 #define LE_ADV_DIRECT_IND	0x01
@@ -3166,7 +2689,6 @@ struct hci_ev_le_advertising_info {
 struct hci_ev_le_advertising_report {
 	__u8    num;
 	struct hci_ev_le_advertising_info info[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_EV_LE_CONN_UPDATE_COMPLETE	0x03
@@ -3178,74 +2700,6 @@ struct hci_ev_le_conn_update_complete {
 	__le16   supervision_timeout;
 } __packed;
 
-<<<<<<< HEAD
-#define HCI_EV_LE_LTK_REQ		0x05
-struct hci_ev_le_ltk_req {
-	__le16	handle;
-	__u8	random[8];
-	__le16	ediv;
-} __packed;
-
-#define HCI_EV_PHYS_LINK_COMPLETE	0x40
-struct hci_ev_phys_link_complete {
-	__u8     status;
-	__u8     phy_handle;
-} __packed;
-
-#define HCI_EV_CHANNEL_SELECTED		0x41
-struct hci_ev_channel_selected {
-	__u8     phy_handle;
-} __packed;
-
-#define HCI_EV_DISCONN_PHYS_LINK_COMPLETE	0x42
-struct hci_ev_disconn_phys_link_complete {
-	__u8     status;
-	__u8     phy_handle;
-	__u8     reason;
-} __packed;
-
-#define HCI_EV_LOG_LINK_COMPLETE	0x45
-struct hci_ev_log_link_complete {
-	__u8     status;
-	__le16   log_handle;
-	__u8     phy_handle;
-	__u8     flow_spec_id;
-} __packed;
-
-#define HCI_EV_DISCONN_LOG_LINK_COMPLETE	0x46
-struct hci_ev_disconn_log_link_complete {
-	__u8     status;
-	__le16   log_handle;
-	__u8     reason;
-} __packed;
-
-#define HCI_EV_FLOW_SPEC_MODIFY_COMPLETE	0x47
-struct hci_ev_flow_spec_modify_complete {
-	__u8     status;
-	__le16   log_handle;
-} __packed;
-
-#define HCI_EV_NUM_COMP_BLOCKS		0x48
-struct hci_ev_num_comp_blocks {
-	__le16   total_num_blocks;
-	__u8     num_hndl;
-	/* variable length part */
-} __packed;
-
-#define HCI_EV_SHORT_RANGE_MODE_COMPLETE	0x4c
-struct hci_ev_short_range_mode_complete {
-	__u8     status;
-	__u8     phy_handle;
-	__u8     mode;
-} __packed;
-
-#define HCI_EV_AMP_STATUS_CHANGE	0x4d
-struct hci_ev_amp_status_change {
-	__u8     status;
-	__u8     amp_status;
-} __packed;
-
-=======
 #define HCI_EV_LE_REMOTE_FEAT_COMPLETE	0x04
 struct hci_ev_le_remote_feat_complete {
 	__u8     status;
@@ -3452,16 +2906,11 @@ struct hci_evt_le_big_info_adv_report {
 
 #define HCI_EV_VENDOR			0xff
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Internal events generated by Bluetooth stack */
 #define HCI_EV_STACK_INTERNAL	0xfd
 struct hci_ev_stack_internal {
 	__u16    type;
-<<<<<<< HEAD
-	__u8     data[0];
-=======
 	__u8     data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define HCI_EV_SI_DEVICE	0x01
@@ -3483,10 +2932,7 @@ struct hci_ev_si_security {
 #define HCI_EVENT_HDR_SIZE   2
 #define HCI_ACL_HDR_SIZE     4
 #define HCI_SCO_HDR_SIZE     3
-<<<<<<< HEAD
-=======
 #define HCI_ISO_HDR_SIZE     4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hci_command_hdr {
 	__le16	opcode;		/* OCF & OGF */
@@ -3508,10 +2954,6 @@ struct hci_sco_hdr {
 	__u8	dlen;
 } __packed;
 
-<<<<<<< HEAD
-#ifdef __KERNEL__
-#include <linux/skbuff.h>
-=======
 struct hci_iso_hdr {
 	__le16	handle;
 	__le16	dlen;
@@ -3536,7 +2978,6 @@ struct hci_iso_ts_data_hdr {
 	__le16	slen;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct hci_event_hdr *hci_event_hdr(const struct sk_buff *skb)
 {
 	return (struct hci_event_hdr *) skb->data;
@@ -3551,150 +2992,13 @@ static inline struct hci_sco_hdr *hci_sco_hdr(const struct sk_buff *skb)
 {
 	return (struct hci_sco_hdr *) skb->data;
 }
-<<<<<<< HEAD
-#endif
-
-/* Command opcode pack/unpack */
-#define hci_opcode_pack(ogf, ocf)	(__u16) ((ocf & 0x03ff)|(ogf << 10))
-=======
 
 /* Command opcode pack/unpack */
 #define hci_opcode_pack(ogf, ocf)	((__u16) ((ocf & 0x03ff)|(ogf << 10)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define hci_opcode_ogf(op)		(op >> 10)
 #define hci_opcode_ocf(op)		(op & 0x03ff)
 
 /* ACL handle and flags pack/unpack */
-<<<<<<< HEAD
-#define hci_handle_pack(h, f)	(__u16) ((h & 0x0fff)|(f << 12))
-#define hci_handle(h)		(h & 0x0fff)
-#define hci_flags(h)		(h >> 12)
-
-/* ---- HCI Sockets ---- */
-
-/* Socket options */
-#define HCI_DATA_DIR	1
-#define HCI_FILTER	2
-#define HCI_TIME_STAMP	3
-
-/* CMSG flags */
-#define HCI_CMSG_DIR	0x0001
-#define HCI_CMSG_TSTAMP	0x0002
-
-struct sockaddr_hci {
-	sa_family_t    hci_family;
-	unsigned short hci_dev;
-	unsigned short hci_channel;
-};
-#define HCI_DEV_NONE	0xffff
-
-#define HCI_CHANNEL_RAW		0
-#define HCI_CHANNEL_CONTROL	1
-
-struct hci_filter {
-	unsigned long type_mask;
-	unsigned long event_mask[2];
-	__le16 opcode;
-};
-
-struct hci_ufilter {
-	__u32  type_mask;
-	__u32  event_mask[2];
-	__le16 opcode;
-};
-
-#define HCI_FLT_TYPE_BITS	31
-#define HCI_FLT_EVENT_BITS	63
-#define HCI_FLT_OGF_BITS	63
-#define HCI_FLT_OCF_BITS	127
-
-/* ---- HCI Ioctl requests structures ---- */
-struct hci_dev_stats {
-	__u32 err_rx;
-	__u32 err_tx;
-	__u32 cmd_tx;
-	__u32 evt_rx;
-	__u32 acl_tx;
-	__u32 acl_rx;
-	__u32 sco_tx;
-	__u32 sco_rx;
-	__u32 byte_rx;
-	__u32 byte_tx;
-};
-
-struct hci_dev_info {
-	__u16 dev_id;
-	char  name[8];
-
-	bdaddr_t bdaddr;
-
-	__u32 flags;
-	__u8  type;
-
-	__u8  features[8];
-
-	__u32 pkt_type;
-	__u32 link_policy;
-	__u32 link_mode;
-
-	__u16 acl_mtu;
-	__u16 acl_pkts;
-	__u16 sco_mtu;
-	__u16 sco_pkts;
-
-	struct hci_dev_stats stat;
-};
-
-struct hci_conn_info {
-	__u16    handle;
-	bdaddr_t bdaddr;
-	__u8     type;
-	__u8     out;
-	__u16    state;
-	__u32    link_mode;
-	__u32    mtu;
-	__u32    cnt;
-	__u32    pkts;
-	__u8     pending_sec_level;
-	__u8     ssp_mode;
-};
-
-struct hci_dev_req {
-	__u16  dev_id;
-	__u32  dev_opt;
-};
-
-struct hci_dev_list_req {
-	__u16  dev_num;
-	struct hci_dev_req dev_req[0];	/* hci_dev_req structures */
-};
-
-struct hci_conn_list_req {
-	__u16  dev_id;
-	__u16  conn_num;
-	struct hci_conn_info conn_info[0];
-};
-
-struct hci_conn_info_req {
-	bdaddr_t bdaddr;
-	__u8     type;
-	struct   hci_conn_info conn_info[0];
-};
-
-struct hci_auth_info_req {
-	bdaddr_t bdaddr;
-	__u8     type;
-};
-
-struct hci_inquiry_req {
-	__u16 dev_id;
-	__u16 flags;
-	__u8  lap[3];
-	__u8  length;
-	__u8  num_rsp;
-};
-#define IREQ_CACHE_FLUSH 0x0001
-=======
 #define hci_handle_pack(h, f)	((__u16) ((h & 0x0fff)|(f << 12)))
 #define hci_handle(h)		(h & 0x0fff)
 #define hci_flags(h)		(h >> 12)
@@ -3719,6 +3023,5 @@ static inline void hci_cpu_to_le24(__u32 val, __u8 dst[3])
 	dst[1] = (val & 0xff00) >> 8;
 	dst[2] = (val & 0xff0000) >> 16;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __HCI_H */

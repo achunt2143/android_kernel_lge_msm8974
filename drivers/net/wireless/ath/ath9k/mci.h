@@ -32,8 +32,6 @@
 #define ATH_MCI_MAX_PROFILE		(ATH_MCI_MAX_ACL_PROFILE +\
 					 ATH_MCI_MAX_SCO_PROFILE)
 
-<<<<<<< HEAD
-=======
 #define ATH_MCI_INQUIRY_PRIO         62
 #define ATH_MCI_HI_PRIO              60
 #define ATH_MCI_NUM_BT_CHANNELS      79
@@ -55,7 +53,6 @@
 		}							  \
 	} while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INC_PROF(_mci, _info) do {		 \
 		switch (_info->type) {		 \
 		case MCI_GPM_COEX_PROFILE_RFCOMM:\
@@ -73,10 +70,7 @@
 			_mci->num_pan++;	 \
 			break;			 \
 		case MCI_GPM_COEX_PROFILE_VOICE: \
-<<<<<<< HEAD
-=======
 		case MCI_GPM_COEX_PROFILE_A2DPVO:\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			_mci->num_sco++;	 \
 			break;			 \
 		default:			 \
@@ -101,10 +95,7 @@
 			_mci->num_pan--;	 \
 			break;			 \
 		case MCI_GPM_COEX_PROFILE_VOICE: \
-<<<<<<< HEAD
-=======
 		case MCI_GPM_COEX_PROFILE_A2DPVO:\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			_mci->num_sco--;	 \
 			break;			 \
 		default:			 \
@@ -145,10 +136,7 @@ struct ath_mci_profile {
 	u8 num_pan;
 	u8 num_other_acl;
 	u8 num_bdr;
-<<<<<<< HEAD
-=======
 	u8 voice_priority;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath_mci_buf {
@@ -166,9 +154,6 @@ void ath_mci_flush_profile(struct ath_mci_profile *mci);
 int ath_mci_setup(struct ath_softc *sc);
 void ath_mci_cleanup(struct ath_softc *sc);
 void ath_mci_intr(struct ath_softc *sc);
-<<<<<<< HEAD
-#endif
-=======
 void ath9k_mci_update_rssi(struct ath_softc *sc);
 
 #ifdef CONFIG_ATH9K_BTCOEX_SUPPORT
@@ -191,4 +176,3 @@ static inline void ath9k_mci_set_txpower(struct ath_softc *sc, bool setchannel,
 #endif /* CONFIG_ATH9K_BTCOEX_SUPPORT */
 
 #endif /* MCI_H*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

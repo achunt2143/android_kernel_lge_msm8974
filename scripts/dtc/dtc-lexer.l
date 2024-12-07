@@ -1,35 +1,10 @@
-<<<<<<< HEAD
-/*
- * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
- *                                                                   USA
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 %option noyywrap nounput noinput never-interactive
 
-<<<<<<< HEAD
-%x INCLUDE
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 %x BYTESTRING
 %x PROPNODENAME
 %s V1
@@ -48,11 +23,7 @@ LINECOMMENT	"//".*\n
 #include "srcpos.h"
 #include "dtc-parser.tab.h"
 
-<<<<<<< HEAD
-YYLTYPE yylloc;
-=======
 extern bool treesource_error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CAUTION: this will stop working if we ever use yyless() or yyunput() */
 #define	YY_USER_ACTION \
@@ -74,13 +45,9 @@ static int dts_version = 1;
 				BEGIN(V1); \
 
 static void push_input_file(const char *filename);
-<<<<<<< HEAD
-static int pop_input_file(void);
-=======
 static bool pop_input_file(void);
 static void PRINTF(1, 2) lexical_error(const char *fmt, ...);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 %}
 
 %%
@@ -90,27 +57,6 @@ static void PRINTF(1, 2) lexical_error(const char *fmt, ...);
 			push_input_file(name);
 		}
 
-<<<<<<< HEAD
-<*>^"#"(line)?{WS}+[0-9]+{WS}+{STRING}({WS}+[0-9]+)? {
-			char *line, *tmp, *fn;
-			/* skip text before line # */
-			line = yytext;
-			while (!isdigit(*line))
-				line++;
-			/* skip digits in line # */
-			tmp = line;
-			while (!isspace(*tmp))
-				tmp++;
-			/* "NULL"-terminate line # */
-			*tmp = '\0';
-			/* start of filename */
-			fn = strchr(tmp + 1, '"') + 1;
-			/* strip trailing " from filename */
-			tmp = strchr(fn, '"');
-			*tmp = 0;
-			/* -1 since #line is the number of the next line */
-			srcpos_set_line(xstrdup(fn), atoi(line) - 1);
-=======
 <*>^"#"(line)?[ \t]+[0-9]+[ \t]+{STRING}([ \t]+[0-9]+)* {
 			char *line, *fnstart, *fnend;
 			struct data fn;
@@ -138,7 +84,6 @@ static void PRINTF(1, 2) lexical_error(const char *fmt, ...);
 			/* -1 since #line is the number of the next line */
 			srcpos_set_line(xstrdup(fn.val), atoi(line) - 1);
 			data_free(fn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 <*><<EOF>>		{
@@ -161,14 +106,11 @@ static void PRINTF(1, 2) lexical_error(const char *fmt, ...);
 			return DT_V1;
 		}
 
-<<<<<<< HEAD
-=======
 <*>"/plugin/"	{
 			DPRINT("Keyword: /plugin/\n");
 			return DT_PLUGIN;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 <*>"/memreserve/"	{
 			DPRINT("Keyword: /memreserve/\n");
 			BEGIN_DEFAULT();
@@ -195,8 +137,6 @@ static void PRINTF(1, 2) lexical_error(const char *fmt, ...);
 			return DT_DEL_NODE;
 		}
 
-<<<<<<< HEAD
-=======
 <*>"/omit-if-no-ref/"	{
 			DPRINT("Keyword: /omit-if-no-ref/\n");
 			DPRINT("<PROPNODENAME>\n");
@@ -204,7 +144,6 @@ static void PRINTF(1, 2) lexical_error(const char *fmt, ...);
 			return DT_OMIT_NO_REF;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 <*>{LABEL}:	{
 			DPRINT("Label: %s\n", yytext);
 			yylval.labelref = xstrdup(yytext);
@@ -213,10 +152,6 @@ static void PRINTF(1, 2) lexical_error(const char *fmt, ...);
 		}
 
 <V1>([0-9]+|0[xX][0-9a-fA-F]+)(U|L|UL|LL|ULL)? {
-<<<<<<< HEAD
-			yylval.literal = xstrdup(yytext);
-			DPRINT("Literal: '%s'\n", yylval.literal);
-=======
 			char *e;
 			DPRINT("Integer Literal: '%s'\n", yytext);
 
@@ -235,16 +170,10 @@ static void PRINTF(1, 2) lexical_error(const char *fmt, ...);
 				/* ERANGE is the only strtoull error triggerable
 				 *  by strings matching the pattern */
 				assert(errno == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return DT_LITERAL;
 		}
 
 <*>{CHAR_LITERAL}	{
-<<<<<<< HEAD
-			yytext[yyleng-1] = '\0';
-			yylval.literal = xstrdup(yytext+1);
-			DPRINT("Character literal: %s\n", yylval.literal);
-=======
 			struct data d;
 			DPRINT("Character literal: %s\n", yytext);
 
@@ -262,23 +191,12 @@ static void PRINTF(1, 2) lexical_error(const char *fmt, ...);
 			}
 
 			data_free(d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return DT_CHAR_LITERAL;
 		}
 
 <*>\&{LABEL}	{	/* label reference */
 			DPRINT("Ref: %s\n", yytext+1);
 			yylval.labelref = xstrdup(yytext+1);
-<<<<<<< HEAD
-			return DT_REF;
-		}
-
-<*>"&{/"{PATHCHAR}+\}	{	/* new-style path reference */
-			yytext[yyleng-1] = '\0';
-			DPRINT("Ref: %s\n", yytext+2);
-			yylval.labelref = xstrdup(yytext+2);
-			return DT_REF;
-=======
 			return DT_LABEL_REF;
 		}
 
@@ -287,7 +205,6 @@ static void PRINTF(1, 2) lexical_error(const char *fmt, ...);
 			DPRINT("Ref: %s\n", yytext+2);
 			yylval.labelref = xstrdup(yytext+2);
 			return DT_PATH_REF;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 <BYTESTRING>[0-9a-fA-F]{2} {
@@ -357,24 +274,14 @@ static void push_input_file(const char *filename)
 }
 
 
-<<<<<<< HEAD
-static int pop_input_file(void)
-{
-	if (srcfile_pop() == 0)
-		return 0;
-=======
 static bool pop_input_file(void)
 {
 	if (srcfile_pop() == 0)
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	yypop_buffer_state();
 	yyin = current_srcfile->f;
 
-<<<<<<< HEAD
-	return 1;
-=======
 	return true;
 }
 
@@ -387,5 +294,4 @@ static void lexical_error(const char *fmt, ...)
 	va_end(ap);
 
 	treesource_error = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

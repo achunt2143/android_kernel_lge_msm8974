@@ -1,23 +1,12 @@
-<<<<<<< HEAD
-/* Kernel thread helper functions.
- *   Copyright (C) 2004 IBM Corporation, Rusty Russell.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* Kernel thread helper functions.
  *   Copyright (C) 2004 IBM Corporation, Rusty Russell.
  *   Copyright (C) 2009 Red Hat, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Creation is done via kthreadd, so that we get a clean environment
  * even if we're invoked from userspace (think modprobe, hotplug cpu,
  * etc.).
  */
-<<<<<<< HEAD
-#include <linux/sched.h>
-#include <linux/kthread.h>
-#include <linux/completion.h>
-#include <linux/err.h>
-=======
 #include <uapi/linux/sched/types.h>
 #include <linux/mm.h>
 #include <linux/mmu_context.h>
@@ -28,7 +17,6 @@
 #include <linux/completion.h>
 #include <linux/err.h>
 #include <linux/cgroup.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cpuset.h>
 #include <linux/unistd.h>
 #include <linux/file.h>
@@ -36,10 +24,6 @@
 #include <linux/mutex.h>
 #include <linux/slab.h>
 #include <linux/freezer.h>
-<<<<<<< HEAD
-#include <trace/events/sched.h>
-
-=======
 #include <linux/ptrace.h>
 #include <linux/uaccess.h>
 #include <linux/numa.h>
@@ -47,7 +31,6 @@
 #include <trace/events/sched.h>
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_SPINLOCK(kthread_create_lock);
 static LIST_HEAD(kthread_create_list);
 struct task_struct *kthreadd_task;
@@ -55,35 +38,19 @@ struct task_struct *kthreadd_task;
 struct kthread_create_info
 {
 	/* Information passed to kthread() from kthreadd. */
-<<<<<<< HEAD
-=======
 	char *full_name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*threadfn)(void *data);
 	void *data;
 	int node;
 
 	/* Result passed back to kthread_create() from kthreadd. */
 	struct task_struct *result;
-<<<<<<< HEAD
-	struct completion done;
-=======
 	struct completion *done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct list_head list;
 };
 
 struct kthread {
-<<<<<<< HEAD
-	int should_stop;
-	void *data;
-	struct completion exited;
-};
-
-#define to_kthread(tsk)	\
-	container_of((tsk)->vfork_done, struct kthread, exited)
-=======
 	unsigned long flags;
 	unsigned int cpu;
 	int result;
@@ -178,7 +145,6 @@ void free_kthread_struct(struct task_struct *k)
 	kfree(kthread->full_name);
 	kfree(kthread);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * kthread_should_stop - should this kthread return now?
@@ -187,14 +153,6 @@ void free_kthread_struct(struct task_struct *k)
  * and this will return true.  You should then return, and your return
  * value will be passed through to kthread_stop().
  */
-<<<<<<< HEAD
-int kthread_should_stop(void)
-{
-	return to_kthread(current)->should_stop;
-}
-EXPORT_SYMBOL(kthread_should_stop);
-
-=======
 bool kthread_should_stop(void)
 {
 	return test_bit(KTHREAD_SHOULD_STOP, &to_kthread(current)->flags);
@@ -233,7 +191,6 @@ bool kthread_should_stop_or_park(void)
 	return kthread->flags & (BIT(KTHREAD_SHOULD_STOP) | BIT(KTHREAD_SHOULD_PARK));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * kthread_freezable_should_stop - should this freezable kthread return now?
  * @was_frozen: optional out parameter, indicates whether %current was frozen
@@ -260,8 +217,6 @@ bool kthread_freezable_should_stop(bool *was_frozen)
 EXPORT_SYMBOL_GPL(kthread_freezable_should_stop);
 
 /**
-<<<<<<< HEAD
-=======
  * kthread_func - return the function specified on kthread creation
  * @task: kthread task in question
  *
@@ -277,7 +232,6 @@ void *kthread_func(struct task_struct *task)
 EXPORT_SYMBOL_GPL(kthread_func);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * kthread_data - return data value specified on kthread creation
  * @task: kthread task in question
  *
@@ -289,11 +243,6 @@ void *kthread_data(struct task_struct *task)
 {
 	return to_kthread(task)->data;
 }
-<<<<<<< HEAD
-
-static int kthread(void *_create)
-{
-=======
 EXPORT_SYMBOL_GPL(kthread_data);
 
 /**
@@ -391,20 +340,10 @@ EXPORT_SYMBOL(kthread_complete_and_exit);
 static int kthread(void *_create)
 {
 	static const struct sched_param param = { .sched_priority = 0 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Copy data: it's on kthread's stack */
 	struct kthread_create_info *create = _create;
 	int (*threadfn)(void *data) = create->threadfn;
 	void *data = create->data;
-<<<<<<< HEAD
-	struct kthread self;
-	int ret;
-
-	self.should_stop = 0;
-	self.data = data;
-	init_completion(&self.exited);
-	current->vfork_done = &self.exited;
-=======
 	struct completion *done;
 	struct kthread *self;
 	int ret;
@@ -429,25 +368,10 @@ static int kthread(void *_create)
 	 */
 	sched_setscheduler_nocheck(current, SCHED_NORMAL, &param);
 	set_cpus_allowed_ptr(current, housekeeping_cpumask(HK_TYPE_KTHREAD));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* OK, tell user we're spawned, wait for stop or wakeup */
 	__set_current_state(TASK_UNINTERRUPTIBLE);
 	create->result = current;
-<<<<<<< HEAD
-	complete(&create->done);
-	schedule();
-
-	ret = -EINTR;
-	if (!self.should_stop)
-		ret = threadfn(data);
-
-	/* we can't just return, we must preserve "self" on stack */
-	do_exit(ret);
-}
-
-/* called from do_fork() to get node information for about to be created task */
-=======
 	/*
 	 * Thread is going to call schedule(), do not preempt it,
 	 * or the creator may spend more time in wait_task_inactive().
@@ -467,18 +391,13 @@ static int kthread(void *_create)
 }
 
 /* called from kernel_clone() to get node information for about to be created task */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int tsk_fork_get_node(struct task_struct *tsk)
 {
 #ifdef CONFIG_NUMA
 	if (tsk == kthreadd_task)
 		return tsk->pref_node_fork;
 #endif
-<<<<<<< HEAD
-	return numa_node_id();
-=======
 	return NUMA_NO_NODE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void create_kthread(struct kthread_create_info *create)
@@ -489,15 +408,6 @@ static void create_kthread(struct kthread_create_info *create)
 	current->pref_node_fork = create->node;
 #endif
 	/* We want our own signal handler (we take no signals by default). */
-<<<<<<< HEAD
-	pid = kernel_thread(kthread, create, CLONE_FS | CLONE_FILES | SIGCHLD);
-	if (pid < 0) {
-		create->result = ERR_PTR(pid);
-		complete(&create->done);
-	}
-}
-
-=======
 	pid = kernel_thread(kthread, create, create->full_name,
 			    CLONE_FS | CLONE_FILES | SIGCHLD);
 	if (pid < 0) {
@@ -567,28 +477,15 @@ free_create:
 	return task;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * kthread_create_on_node - create a kthread.
  * @threadfn: the function to run until signal_pending(current).
  * @data: data ptr for @threadfn.
-<<<<<<< HEAD
- * @node: memory node number.
-=======
  * @node: task and thread structures for the thread are allocated on this node
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @namefmt: printf-style name for the thread.
  *
  * Description: This helper function creates and names a kernel
  * thread.  The thread will be stopped: use wake_up_process() to start
-<<<<<<< HEAD
- * it.  See also kthread_run().
- *
- * If thread is going to be bound on a particular cpu, give its node
- * in @node, to get NUMA affinity for kthread stack, or else give -1.
- * When woken, the thread will run @threadfn() with @data as its
- * argument. @threadfn() can either call do_exit() directly if it is a
-=======
  * it.  See also kthread_run().  The new thread has SCHED_NORMAL policy and
  * is affine to all CPUs.
  *
@@ -596,55 +493,11 @@ free_create:
  * in @node, to get NUMA affinity for kthread stack, or else give NUMA_NO_NODE.
  * When woken, the thread will run @threadfn() with @data as its
  * argument. @threadfn() can either return directly if it is a
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * standalone thread for which no one will call kthread_stop(), or
  * return when 'kthread_should_stop()' is true (which means
  * kthread_stop() has been called).  The return value should be zero
  * or a negative error number; it will be passed to kthread_stop().
  *
-<<<<<<< HEAD
- * Returns a task_struct or ERR_PTR(-ENOMEM).
- */
-struct task_struct *kthread_create_on_node(int (*threadfn)(void *data),
-					   void *data,
-					   int node,
-					   const char namefmt[],
-					   ...)
-{
-	struct kthread_create_info create;
-
-	create.threadfn = threadfn;
-	create.data = data;
-	create.node = node;
-	init_completion(&create.done);
-
-	spin_lock(&kthread_create_lock);
-	list_add_tail(&create.list, &kthread_create_list);
-	spin_unlock(&kthread_create_lock);
-
-	wake_up_process(kthreadd_task);
-	wait_for_completion(&create.done);
-
-	if (!IS_ERR(create.result)) {
-		static const struct sched_param param = { .sched_priority = 0 };
-		va_list args;
-
-		va_start(args, namefmt);
-		vsnprintf(create.result->comm, sizeof(create.result->comm),
-			  namefmt, args);
-		va_end(args);
-		/*
-		 * root may have changed our (kthreadd's) priority or CPU mask.
-		 * The kernel thread should not inherit these properties.
-		 */
-		sched_setscheduler_nocheck(create.result, SCHED_NORMAL, &param);
-		set_cpus_allowed_ptr(create.result, cpu_all_mask);
-	}
-	return create.result;
-}
-EXPORT_SYMBOL(kthread_create_on_node);
-
-=======
  * Returns a task_struct or ERR_PTR(-ENOMEM) or ERR_PTR(-EINTR).
  */
 struct task_struct *kthread_create_on_node(int (*threadfn)(void *data),
@@ -689,7 +542,6 @@ void kthread_bind_mask(struct task_struct *p, const struct cpumask *mask)
 	__kthread_bind_mask(p, mask, TASK_UNINTERRUPTIBLE);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * kthread_bind - bind a just-created kthread to a cpu.
  * @p: thread created by kthread_create().
@@ -701,19 +553,6 @@ void kthread_bind_mask(struct task_struct *p, const struct cpumask *mask)
  */
 void kthread_bind(struct task_struct *p, unsigned int cpu)
 {
-<<<<<<< HEAD
-	/* Must have done schedule() in kthread() before we set_task_cpu */
-	if (!wait_task_inactive(p, TASK_UNINTERRUPTIBLE)) {
-		WARN_ON(1);
-		return;
-	}
-
-	/* It's safe because the task is inactive. */
-	do_set_cpus_allowed(p, cpumask_of(cpu));
-	p->flags |= PF_THREAD_BOUND;
-}
-EXPORT_SYMBOL(kthread_bind);
-=======
 	__kthread_bind(p, cpu, TASK_UNINTERRUPTIBLE);
 }
 EXPORT_SYMBOL(kthread_bind);
@@ -838,7 +677,6 @@ int kthread_park(struct task_struct *k)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(kthread_park);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * kthread_stop - stop a thread created by kthread_create().
@@ -849,11 +687,7 @@ EXPORT_SYMBOL_GPL(kthread_park);
  * instead of calling wake_up_process(): the thread will exit without
  * calling threadfn().
  *
-<<<<<<< HEAD
- * If threadfn() may call do_exit() itself, the caller must ensure
-=======
  * If threadfn() may call kthread_exit() itself, the caller must ensure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * task_struct can't go away.
  *
  * Returns the result of threadfn(), or %-EINTR if wake_up_process()
@@ -865,22 +699,6 @@ int kthread_stop(struct task_struct *k)
 	int ret;
 
 	trace_sched_kthread_stop(k);
-<<<<<<< HEAD
-	get_task_struct(k);
-
-	kthread = to_kthread(k);
-	barrier(); /* it might have exited */
-	if (k->vfork_done != NULL) {
-		kthread->should_stop = 1;
-		wake_up_process(k);
-		wait_for_completion(&kthread->exited);
-	}
-	ret = k->exit_code;
-
-	put_task_struct(k);
-	trace_sched_kthread_stop_ret(ret);
-
-=======
 
 	get_task_struct(k);
 	kthread = to_kthread(k);
@@ -893,13 +711,10 @@ int kthread_stop(struct task_struct *k)
 	put_task_struct(k);
 
 	trace_sched_kthread_stop_ret(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(kthread_stop);
 
-<<<<<<< HEAD
-=======
 /**
  * kthread_stop_put - stop a thread and put its task struct
  * @k: thread created by kthread_create().
@@ -918,7 +733,6 @@ int kthread_stop_put(struct task_struct *k)
 }
 EXPORT_SYMBOL(kthread_stop_put);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kthreadd(void *unused)
 {
 	struct task_struct *tsk = current;
@@ -926,18 +740,11 @@ int kthreadd(void *unused)
 	/* Setup a clean context for our children to inherit. */
 	set_task_comm(tsk, "kthreadd");
 	ignore_signals(tsk);
-<<<<<<< HEAD
-	set_cpus_allowed_ptr(tsk, cpu_all_mask);
-	set_mems_allowed(node_states[N_HIGH_MEMORY]);
-
-	current->flags |= PF_NOFREEZE;
-=======
 	set_cpus_allowed_ptr(tsk, housekeeping_cpumask(HK_TYPE_KTHREAD));
 	set_mems_allowed(node_states[N_MEMORY]);
 
 	current->flags |= PF_NOFREEZE;
 	cgroup_init_kthreadd();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (;;) {
 		set_current_state(TASK_INTERRUPTIBLE);
@@ -964,18 +771,6 @@ int kthreadd(void *unused)
 	return 0;
 }
 
-<<<<<<< HEAD
-void __init_kthread_worker(struct kthread_worker *worker,
-				const char *name,
-				struct lock_class_key *key)
-{
-	spin_lock_init(&worker->lock);
-	lockdep_set_class_and_name(&worker->lock, key, name);
-	INIT_LIST_HEAD(&worker->work_list);
-	worker->task = NULL;
-}
-EXPORT_SYMBOL_GPL(__init_kthread_worker);
-=======
 void __kthread_init_worker(struct kthread_worker *worker,
 				const char *name,
 				struct lock_class_key *key)
@@ -987,24 +782,11 @@ void __kthread_init_worker(struct kthread_worker *worker,
 	INIT_LIST_HEAD(&worker->delayed_work_list);
 }
 EXPORT_SYMBOL_GPL(__kthread_init_worker);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * kthread_worker_fn - kthread function to process kthread_worker
  * @worker_ptr: pointer to initialized kthread_worker
  *
-<<<<<<< HEAD
- * This function can be used as @threadfn to kthread_create() or
- * kthread_run() with @worker_ptr argument pointing to an initialized
- * kthread_worker.  The started kthread will process work_list until
- * the it is stopped with kthread_stop().  A kthread can also call
- * this function directly after extra initialization.
- *
- * Different kthreads can be used for the same kthread_worker as long
- * as there's only one kthread attached to it at any given time.  A
- * kthread_worker without an attached kthread simply collects queued
- * kthread_works.
-=======
  * This function implements the main cycle of kthread worker. It processes
  * work_list until it is stopped with kthread_stop(). It sleeps when the queue
  * is empty.
@@ -1015,17 +797,12 @@ EXPORT_SYMBOL_GPL(__kthread_init_worker);
  *
  * Also the works must not be handled by more than one worker at the same time,
  * see also kthread_queue_work().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int kthread_worker_fn(void *worker_ptr)
 {
 	struct kthread_worker *worker = worker_ptr;
 	struct kthread_work *work;
 
-<<<<<<< HEAD
-	WARN_ON(worker->task);
-	worker->task = current;
-=======
 	/*
 	 * FIXME: Update the check and remove the assignment when all kthread
 	 * worker users are created using kthread_create_worker*() functions.
@@ -1036,43 +813,25 @@ int kthread_worker_fn(void *worker_ptr)
 	if (worker->flags & KTW_FREEZABLE)
 		set_freezable();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 repeat:
 	set_current_state(TASK_INTERRUPTIBLE);	/* mb paired w/ kthread_stop */
 
 	if (kthread_should_stop()) {
 		__set_current_state(TASK_RUNNING);
-<<<<<<< HEAD
-		spin_lock_irq(&worker->lock);
-		worker->task = NULL;
-		spin_unlock_irq(&worker->lock);
-=======
 		raw_spin_lock_irq(&worker->lock);
 		worker->task = NULL;
 		raw_spin_unlock_irq(&worker->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	work = NULL;
-<<<<<<< HEAD
-	spin_lock_irq(&worker->lock);
-=======
 	raw_spin_lock_irq(&worker->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!list_empty(&worker->work_list)) {
 		work = list_first_entry(&worker->work_list,
 					struct kthread_work, node);
 		list_del_init(&work->node);
 	}
 	worker->current_work = work;
-<<<<<<< HEAD
-	spin_unlock_irq(&worker->lock);
-
-	if (work) {
-		__set_current_state(TASK_RUNNING);
-		work->func(work);
-=======
 	raw_spin_unlock_irq(&worker->lock);
 
 	if (work) {
@@ -1085,31 +844,15 @@ repeat:
 		 * event only cares about the address.
 		 */
 		trace_sched_kthread_work_execute_end(work, func);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (!freezing(current))
 		schedule();
 
 	try_to_freeze();
-<<<<<<< HEAD
-=======
 	cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto repeat;
 }
 EXPORT_SYMBOL_GPL(kthread_worker_fn);
 
-<<<<<<< HEAD
-/* insert @work before @pos in @worker */
-static void insert_kthread_work(struct kthread_worker *worker,
-			       struct kthread_work *work,
-			       struct list_head *pos)
-{
-	lockdep_assert_held(&worker->lock);
-
-	list_add_tail(&work->node, pos);
-	work->worker = worker;
-	if (likely(worker->task))
-=======
 static __printf(3, 0) struct kthread_worker *
 __kthread_create_worker(int cpu, unsigned int flags,
 			const char namefmt[], va_list args)
@@ -1252,48 +995,27 @@ static void kthread_insert_work(struct kthread_worker *worker,
 	list_add_tail(&work->node, pos);
 	work->worker = worker;
 	if (!worker->current_work && likely(worker->task))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up_process(worker->task);
 }
 
 /**
-<<<<<<< HEAD
- * queue_kthread_work - queue a kthread_work
-=======
  * kthread_queue_work - queue a kthread_work
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @worker: target kthread_worker
  * @work: kthread_work to queue
  *
  * Queue @work to work processor @task for async execution.  @task
  * must have been created with kthread_worker_create().  Returns %true
  * if @work was successfully queued, %false if it was already pending.
-<<<<<<< HEAD
- */
-bool queue_kthread_work(struct kthread_worker *worker,
-=======
  *
  * Reinitialize the work if it needs to be used by another worker.
  * For example, when the worker was stopped and started again.
  */
 bool kthread_queue_work(struct kthread_worker *worker,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct kthread_work *work)
 {
 	bool ret = false;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&worker->lock, flags);
-	if (list_empty(&work->node)) {
-		insert_kthread_work(worker, work, &worker->work_list);
-		ret = true;
-	}
-	spin_unlock_irqrestore(&worker->lock, flags);
-	return ret;
-}
-EXPORT_SYMBOL_GPL(queue_kthread_work);
-=======
 	raw_spin_lock_irqsave(&worker->lock, flags);
 	if (!queuing_blocked(worker, work)) {
 		kthread_insert_work(worker, work, &worker->work_list);
@@ -1403,7 +1125,6 @@ bool kthread_queue_delayed_work(struct kthread_worker *worker,
 	return ret;
 }
 EXPORT_SYMBOL_GPL(kthread_queue_delayed_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct kthread_flush_work {
 	struct kthread_work	work;
@@ -1418,20 +1139,12 @@ static void kthread_flush_work_fn(struct kthread_work *work)
 }
 
 /**
-<<<<<<< HEAD
- * flush_kthread_work - flush a kthread_work
-=======
  * kthread_flush_work - flush a kthread_work
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @work: work to flush
  *
  * If @work is queued or executing, wait for it to finish execution.
  */
-<<<<<<< HEAD
-void flush_kthread_work(struct kthread_work *work)
-=======
 void kthread_flush_work(struct kthread_work *work)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kthread_flush_work fwork = {
 		KTHREAD_WORK_INIT(fwork.work, kthread_flush_work_fn),
@@ -1440,30 +1153,10 @@ void kthread_flush_work(struct kthread_work *work)
 	struct kthread_worker *worker;
 	bool noop = false;
 
-<<<<<<< HEAD
-retry:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	worker = work->worker;
 	if (!worker)
 		return;
 
-<<<<<<< HEAD
-	spin_lock_irq(&worker->lock);
-	if (work->worker != worker) {
-		spin_unlock_irq(&worker->lock);
-		goto retry;
-	}
-
-	if (!list_empty(&work->node))
-		insert_kthread_work(worker, &fwork.work, work->node.next);
-	else if (worker->current_work == work)
-		insert_kthread_work(worker, &fwork.work, worker->work_list.next);
-	else
-		noop = true;
-
-	spin_unlock_irq(&worker->lock);
-=======
 	raw_spin_lock_irq(&worker->lock);
 	/* Work must not be used with >1 worker, see kthread_queue_work(). */
 	WARN_ON_ONCE(work->worker != worker);
@@ -1477,17 +1170,10 @@ retry:
 		noop = true;
 
 	raw_spin_unlock_irq(&worker->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!noop)
 		wait_for_completion(&fwork.done);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(flush_kthread_work);
-
-/**
- * flush_kthread_worker - flush all current works on a kthread_worker
-=======
 EXPORT_SYMBOL_GPL(kthread_flush_work);
 
 /*
@@ -1690,29 +1376,18 @@ EXPORT_SYMBOL_GPL(kthread_cancel_delayed_work_sync);
 
 /**
  * kthread_flush_worker - flush all current works on a kthread_worker
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @worker: worker to flush
  *
  * Wait until all currently executing or pending works on @worker are
  * finished.
  */
-<<<<<<< HEAD
-void flush_kthread_worker(struct kthread_worker *worker)
-=======
 void kthread_flush_worker(struct kthread_worker *worker)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kthread_flush_work fwork = {
 		KTHREAD_WORK_INIT(fwork.work, kthread_flush_work_fn),
 		COMPLETION_INITIALIZER_ONSTACK(fwork.done),
 	};
 
-<<<<<<< HEAD
-	queue_kthread_work(worker, &fwork.work);
-	wait_for_completion(&fwork.done);
-}
-EXPORT_SYMBOL_GPL(flush_kthread_worker);
-=======
 	kthread_queue_work(worker, &fwork.work);
 	wait_for_completion(&fwork.done);
 }
@@ -1874,4 +1549,3 @@ struct cgroup_subsys_state *kthread_blkcg(void)
 	return NULL;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

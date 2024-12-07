@@ -1,40 +1,3 @@
-<<<<<<< HEAD
-#ifndef __PERF_SORT_H
-#define __PERF_SORT_H
-#include "../builtin.h"
-
-#include "util.h"
-
-#include "color.h"
-#include <linux/list.h>
-#include "cache.h"
-#include <linux/rbtree.h>
-#include "symbol.h"
-#include "string.h"
-#include "callchain.h"
-#include "strlist.h"
-#include "values.h"
-
-#include "../perf.h"
-#include "debug.h"
-#include "header.h"
-
-#include "parse-options.h"
-#include "parse-events.h"
-
-#include "thread.h"
-#include "sort.h"
-
-extern regex_t parent_regex;
-extern const char *sort_order;
-extern const char default_parent_pattern[];
-extern const char *parent_pattern;
-extern const char default_sort_order[];
-extern int sort__need_collapse;
-extern int sort__has_parent;
-extern int sort__branch_mode;
-extern char *field_sep;
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __PERF_SORT_H
 #define __PERF_SORT_H
@@ -63,7 +26,6 @@ extern const char *default_sort_order;
 extern regex_t ignore_callees_regex;
 extern int have_ignore_callees;
 extern enum sort_mode sort__mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct sort_entry sort_comm;
 extern struct sort_entry sort_dso;
 extern struct sort_entry sort_sym;
@@ -72,9 +34,6 @@ extern struct sort_entry sort_dso_from;
 extern struct sort_entry sort_dso_to;
 extern struct sort_entry sort_sym_from;
 extern struct sort_entry sort_sym_to;
-<<<<<<< HEAD
-extern enum sort_type sort__first_dimension;
-=======
 extern struct sort_entry sort_srcline;
 extern struct sort_entry sort_type;
 extern const char default_mem_sort_order[];
@@ -123,7 +82,6 @@ struct hist_entry_ops {
 	void	*(*new)(size_t size);
 	void	(*free)(void *ptr);
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct hist_entry - histogram entry
@@ -134,38 +92,6 @@ struct hist_entry_ops {
 struct hist_entry {
 	struct rb_node		rb_node_in;
 	struct rb_node		rb_node;
-<<<<<<< HEAD
-	u64			period;
-	u64			period_sys;
-	u64			period_us;
-	u64			period_guest_sys;
-	u64			period_guest_us;
-	struct map_symbol	ms;
-	struct thread		*thread;
-	u64			ip;
-	s32			cpu;
-	u32			nr_events;
-
-	/* XXX These two should move to some tree widget lib */
-	u16			row_offset;
-	u16			nr_rows;
-
-	bool			init_have_children;
-	char			level;
-	bool			used;
-	u8			filtered;
-	struct symbol		*parent;
-	union {
-		unsigned long	  position;
-		struct hist_entry *pair;
-		struct rb_root	  sorted_chain;
-	};
-	struct branch_info	*branch_info;
-	struct callchain_root	callchain[0];
-};
-
-enum sort_type {
-=======
 	union {
 		struct list_head node;
 		struct list_head head;
@@ -293,16 +219,12 @@ enum sort_mode {
 
 enum sort_type {
 	/* common sort keys */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SORT_PID,
 	SORT_COMM,
 	SORT_DSO,
 	SORT_SYM,
 	SORT_PARENT,
 	SORT_CPU,
-<<<<<<< HEAD
-	SORT_DSO_FROM,
-=======
 	SORT_SOCKET,
 	SORT_SRCLINE,
 	SORT_SRCFILE,
@@ -332,13 +254,10 @@ enum sort_type {
 	/* branch stack specific sort keys */
 	__SORT_BRANCH_STACK,
 	SORT_DSO_FROM = __SORT_BRANCH_STACK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SORT_DSO_TO,
 	SORT_SYM_FROM,
 	SORT_SYM_TO,
 	SORT_MISPREDICT,
-<<<<<<< HEAD
-=======
 	SORT_ABORT,
 	SORT_IN_TX,
 	SORT_CYCLES,
@@ -361,7 +280,6 @@ enum sort_type {
 	SORT_MEM_PHYS_DADDR,
 	SORT_MEM_DATA_PAGE_SIZE,
 	SORT_MEM_BLOCKED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -369,31 +287,10 @@ enum sort_type {
  */
 
 struct sort_entry {
-<<<<<<< HEAD
-	struct list_head list;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *se_header;
 
 	int64_t (*se_cmp)(struct hist_entry *, struct hist_entry *);
 	int64_t (*se_collapse)(struct hist_entry *, struct hist_entry *);
-<<<<<<< HEAD
-	int	(*se_snprintf)(struct hist_entry *self, char *bf, size_t size,
-			       unsigned int width);
-	u8	se_width_idx;
-	bool	elide;
-};
-
-extern struct sort_entry sort_thread;
-extern struct list_head hist_entry__sort_list;
-
-void setup_sorting(const char * const usagestr[], const struct option *opts);
-extern int sort_dimension__add(const char *);
-void sort_entry__setup_elide(struct sort_entry *self, struct strlist *list,
-			     const char *list_name, FILE *fp);
-
-=======
 	int64_t	(*se_sort)(struct hist_entry *, struct hist_entry *);
 	int	(*se_snprintf)(struct hist_entry *he, char *bf, size_t size,
 			       unsigned int width);
@@ -442,5 +339,4 @@ sort__dcacheline_cmp(struct hist_entry *left, struct hist_entry *right);
 int64_t
 _sort__sym_cmp(struct symbol *sym_l, struct symbol *sym_r);
 char *hist_entry__srcline(struct hist_entry *he);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* __PERF_SORT_H */

@@ -1,26 +1,14 @@
-<<<<<<< HEAD
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2011 QLogic Corporation
- *
- * See LICENSE.qla2xxx for copyright and licensing details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic Fibre Channel HBA Driver
  * Copyright (c)  2003-2014 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include "qla_def.h"
 
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * NVRAM support routines
@@ -37,26 +25,6 @@ qla2x00_lock_nvram_access(struct qla_hw_data *ha)
 	struct device_reg_2xxx __iomem *reg = &ha->iobase->isp;
 
 	if (!IS_QLA2100(ha) && !IS_QLA2200(ha) && !IS_QLA2300(ha)) {
-<<<<<<< HEAD
-		data = RD_REG_WORD(&reg->nvram);
-		while (data & NVR_BUSY) {
-			udelay(100);
-			data = RD_REG_WORD(&reg->nvram);
-		}
-
-		/* Lock resource */
-		WRT_REG_WORD(&reg->u.isp2300.host_semaphore, 0x1);
-		RD_REG_WORD(&reg->u.isp2300.host_semaphore);
-		udelay(5);
-		data = RD_REG_WORD(&reg->u.isp2300.host_semaphore);
-		while ((data & BIT_0) == 0) {
-			/* Lock failed */
-			udelay(100);
-			WRT_REG_WORD(&reg->u.isp2300.host_semaphore, 0x1);
-			RD_REG_WORD(&reg->u.isp2300.host_semaphore);
-			udelay(5);
-			data = RD_REG_WORD(&reg->u.isp2300.host_semaphore);
-=======
 		data = rd_reg_word(&reg->nvram);
 		while (data & NVR_BUSY) {
 			udelay(100);
@@ -75,7 +43,6 @@ qla2x00_lock_nvram_access(struct qla_hw_data *ha)
 			rd_reg_word(&reg->u.isp2300.host_semaphore);
 			udelay(5);
 			data = rd_reg_word(&reg->u.isp2300.host_semaphore);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -90,13 +57,8 @@ qla2x00_unlock_nvram_access(struct qla_hw_data *ha)
 	struct device_reg_2xxx __iomem *reg = &ha->iobase->isp;
 
 	if (!IS_QLA2100(ha) && !IS_QLA2200(ha) && !IS_QLA2300(ha)) {
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->u.isp2300.host_semaphore, 0);
-		RD_REG_WORD(&reg->u.isp2300.host_semaphore);
-=======
 		wrt_reg_word(&reg->u.isp2300.host_semaphore, 0);
 		rd_reg_word(&reg->u.isp2300.host_semaphore);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -110,17 +72,6 @@ qla2x00_nv_write(struct qla_hw_data *ha, uint16_t data)
 {
 	struct device_reg_2xxx __iomem *reg = &ha->iobase->isp;
 
-<<<<<<< HEAD
-	WRT_REG_WORD(&reg->nvram, data | NVR_SELECT | NVR_WRT_ENABLE);
-	RD_REG_WORD(&reg->nvram);		/* PCI Posting. */
-	NVRAM_DELAY();
-	WRT_REG_WORD(&reg->nvram, data | NVR_SELECT | NVR_CLOCK |
-	    NVR_WRT_ENABLE);
-	RD_REG_WORD(&reg->nvram);		/* PCI Posting. */
-	NVRAM_DELAY();
-	WRT_REG_WORD(&reg->nvram, data | NVR_SELECT | NVR_WRT_ENABLE);
-	RD_REG_WORD(&reg->nvram);		/* PCI Posting. */
-=======
 	wrt_reg_word(&reg->nvram, data | NVR_SELECT | NVR_WRT_ENABLE);
 	rd_reg_word(&reg->nvram);		/* PCI Posting. */
 	NVRAM_DELAY();
@@ -130,7 +81,6 @@ qla2x00_nv_write(struct qla_hw_data *ha, uint16_t data)
 	NVRAM_DELAY();
 	wrt_reg_word(&reg->nvram, data | NVR_SELECT | NVR_WRT_ENABLE);
 	rd_reg_word(&reg->nvram);		/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NVRAM_DELAY();
 }
 
@@ -169,17 +119,6 @@ qla2x00_nvram_request(struct qla_hw_data *ha, uint32_t nv_cmd)
 
 	/* Read data from NVRAM. */
 	for (cnt = 0; cnt < 16; cnt++) {
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->nvram, NVR_SELECT | NVR_CLOCK);
-		RD_REG_WORD(&reg->nvram);	/* PCI Posting. */
-		NVRAM_DELAY();
-		data <<= 1;
-		reg_data = RD_REG_WORD(&reg->nvram);
-		if (reg_data & NVR_DATA_IN)
-			data |= BIT_0;
-		WRT_REG_WORD(&reg->nvram, NVR_SELECT);
-		RD_REG_WORD(&reg->nvram);	/* PCI Posting. */
-=======
 		wrt_reg_word(&reg->nvram, NVR_SELECT | NVR_CLOCK);
 		rd_reg_word(&reg->nvram);	/* PCI Posting. */
 		NVRAM_DELAY();
@@ -189,18 +128,12 @@ qla2x00_nvram_request(struct qla_hw_data *ha, uint32_t nv_cmd)
 			data |= BIT_0;
 		wrt_reg_word(&reg->nvram, NVR_SELECT);
 		rd_reg_word(&reg->nvram);	/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		NVRAM_DELAY();
 	}
 
 	/* Deselect chip. */
-<<<<<<< HEAD
-	WRT_REG_WORD(&reg->nvram, NVR_DESELECT);
-	RD_REG_WORD(&reg->nvram);		/* PCI Posting. */
-=======
 	wrt_reg_word(&reg->nvram, NVR_DESELECT);
 	rd_reg_word(&reg->nvram);		/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NVRAM_DELAY();
 
 	return data;
@@ -237,13 +170,8 @@ qla2x00_nv_deselect(struct qla_hw_data *ha)
 {
 	struct device_reg_2xxx __iomem *reg = &ha->iobase->isp;
 
-<<<<<<< HEAD
-	WRT_REG_WORD(&reg->nvram, NVR_DESELECT);
-	RD_REG_WORD(&reg->nvram);		/* PCI Posting. */
-=======
 	wrt_reg_word(&reg->nvram, NVR_DESELECT);
 	rd_reg_word(&reg->nvram);		/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NVRAM_DELAY();
 }
 
@@ -254,11 +182,7 @@ qla2x00_nv_deselect(struct qla_hw_data *ha)
  * @data: word to program
  */
 static void
-<<<<<<< HEAD
-qla2x00_write_nvram_word(struct qla_hw_data *ha, uint32_t addr, uint16_t data)
-=======
 qla2x00_write_nvram_word(struct qla_hw_data *ha, uint32_t addr, __le16 data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int count;
 	uint16_t word;
@@ -277,11 +201,7 @@ qla2x00_write_nvram_word(struct qla_hw_data *ha, uint32_t addr, __le16 data)
 
 	/* Write data */
 	nv_cmd = (addr << 16) | NV_WRITE_OP;
-<<<<<<< HEAD
-	nv_cmd |= data;
-=======
 	nv_cmd |= (__force u16)data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nv_cmd <<= 5;
 	for (count = 0; count < 27; count++) {
 		if (nv_cmd & BIT_31)
@@ -295,13 +215,8 @@ qla2x00_write_nvram_word(struct qla_hw_data *ha, uint32_t addr, __le16 data)
 	qla2x00_nv_deselect(ha);
 
 	/* Wait for NVRAM to become ready */
-<<<<<<< HEAD
-	WRT_REG_WORD(&reg->nvram, NVR_SELECT);
-	RD_REG_WORD(&reg->nvram);		/* PCI Posting. */
-=======
 	wrt_reg_word(&reg->nvram, NVR_SELECT);
 	rd_reg_word(&reg->nvram);		/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_cnt = NVR_WAIT_CNT;
 	do {
 		if (!--wait_cnt) {
@@ -310,11 +225,7 @@ qla2x00_write_nvram_word(struct qla_hw_data *ha, uint32_t addr, __le16 data)
 			break;
 		}
 		NVRAM_DELAY();
-<<<<<<< HEAD
-		word = RD_REG_WORD(&reg->nvram);
-=======
 		word = rd_reg_word(&reg->nvram);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while ((word & NVR_DATA_IN) == 0);
 
 	qla2x00_nv_deselect(ha);
@@ -329,11 +240,7 @@ qla2x00_write_nvram_word(struct qla_hw_data *ha, uint32_t addr, __le16 data)
 
 static int
 qla2x00_write_nvram_word_tmo(struct qla_hw_data *ha, uint32_t addr,
-<<<<<<< HEAD
-	uint16_t data, uint32_t tmo)
-=======
 			     __le16 data, uint32_t tmo)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret, count;
 	uint16_t word;
@@ -353,11 +260,7 @@ qla2x00_write_nvram_word_tmo(struct qla_hw_data *ha, uint32_t addr,
 
 	/* Write data */
 	nv_cmd = (addr << 16) | NV_WRITE_OP;
-<<<<<<< HEAD
-	nv_cmd |= data;
-=======
 	nv_cmd |= (__force u16)data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nv_cmd <<= 5;
 	for (count = 0; count < 27; count++) {
 		if (nv_cmd & BIT_31)
@@ -371,19 +274,11 @@ qla2x00_write_nvram_word_tmo(struct qla_hw_data *ha, uint32_t addr,
 	qla2x00_nv_deselect(ha);
 
 	/* Wait for NVRAM to become ready */
-<<<<<<< HEAD
-	WRT_REG_WORD(&reg->nvram, NVR_SELECT);
-	RD_REG_WORD(&reg->nvram);		/* PCI Posting. */
-	do {
-		NVRAM_DELAY();
-		word = RD_REG_WORD(&reg->nvram);
-=======
 	wrt_reg_word(&reg->nvram, NVR_SELECT);
 	rd_reg_word(&reg->nvram);		/* PCI Posting. */
 	do {
 		NVRAM_DELAY();
 		word = rd_reg_word(&reg->nvram);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!--tmo) {
 			ret = QLA_FUNCTION_FAILED;
 			break;
@@ -412,11 +307,7 @@ qla2x00_clear_nvram_protection(struct qla_hw_data *ha)
 	int ret, stat;
 	struct device_reg_2xxx __iomem *reg = &ha->iobase->isp;
 	uint32_t word, wait_cnt;
-<<<<<<< HEAD
-	uint16_t wprot, wprot_old;
-=======
 	__le16 wprot, wprot_old;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t *vha = pci_get_drvdata(ha->pdev);
 
 	/* Clear NVRAM write protection. */
@@ -424,15 +315,9 @@ qla2x00_clear_nvram_protection(struct qla_hw_data *ha)
 
 	wprot_old = cpu_to_le16(qla2x00_get_nvram_word(ha, ha->nvram_base));
 	stat = qla2x00_write_nvram_word_tmo(ha, ha->nvram_base,
-<<<<<<< HEAD
-	    __constant_cpu_to_le16(0x1234), 100000);
-	wprot = cpu_to_le16(qla2x00_get_nvram_word(ha, ha->nvram_base));
-	if (stat != QLA_SUCCESS || wprot != 0x1234) {
-=======
 					    cpu_to_le16(0x1234), 100000);
 	wprot = cpu_to_le16(qla2x00_get_nvram_word(ha, ha->nvram_base));
 	if (stat != QLA_SUCCESS || wprot != cpu_to_le16(0x1234)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Write enable. */
 		qla2x00_nv_write(ha, NVR_DATA_OUT);
 		qla2x00_nv_write(ha, 0);
@@ -461,13 +346,8 @@ qla2x00_clear_nvram_protection(struct qla_hw_data *ha)
 		qla2x00_nv_deselect(ha);
 
 		/* Wait for NVRAM to become ready. */
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->nvram, NVR_SELECT);
-		RD_REG_WORD(&reg->nvram);	/* PCI Posting. */
-=======
 		wrt_reg_word(&reg->nvram, NVR_SELECT);
 		rd_reg_word(&reg->nvram);	/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wait_cnt = NVR_WAIT_CNT;
 		do {
 			if (!--wait_cnt) {
@@ -476,11 +356,7 @@ qla2x00_clear_nvram_protection(struct qla_hw_data *ha)
 				break;
 			}
 			NVRAM_DELAY();
-<<<<<<< HEAD
-			word = RD_REG_WORD(&reg->nvram);
-=======
 			word = rd_reg_word(&reg->nvram);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} while ((word & NVR_DATA_IN) == 0);
 
 		if (wait_cnt)
@@ -530,13 +406,8 @@ qla2x00_set_nvram_protection(struct qla_hw_data *ha, int stat)
 	qla2x00_nv_deselect(ha);
 
 	/* Wait for NVRAM to become ready. */
-<<<<<<< HEAD
-	WRT_REG_WORD(&reg->nvram, NVR_SELECT);
-	RD_REG_WORD(&reg->nvram);		/* PCI Posting. */
-=======
 	wrt_reg_word(&reg->nvram, NVR_SELECT);
 	rd_reg_word(&reg->nvram);		/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_cnt = NVR_WAIT_CNT;
 	do {
 		if (!--wait_cnt) {
@@ -545,11 +416,7 @@ qla2x00_set_nvram_protection(struct qla_hw_data *ha, int stat)
 			break;
 		}
 		NVRAM_DELAY();
-<<<<<<< HEAD
-		word = RD_REG_WORD(&reg->nvram);
-=======
 		word = rd_reg_word(&reg->nvram);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while ((word & NVR_DATA_IN) == 0);
 }
 
@@ -561,82 +428,24 @@ qla2x00_set_nvram_protection(struct qla_hw_data *ha, int stat)
 static inline uint32_t
 flash_conf_addr(struct qla_hw_data *ha, uint32_t faddr)
 {
-<<<<<<< HEAD
-	return ha->flash_conf_off | faddr;
-=======
 	return ha->flash_conf_off + faddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline uint32_t
 flash_data_addr(struct qla_hw_data *ha, uint32_t faddr)
 {
-<<<<<<< HEAD
-	return ha->flash_data_off | faddr;
-=======
 	return ha->flash_data_off + faddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline uint32_t
 nvram_conf_addr(struct qla_hw_data *ha, uint32_t naddr)
 {
-<<<<<<< HEAD
-	return ha->nvram_conf_off | naddr;
-=======
 	return ha->nvram_conf_off + naddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline uint32_t
 nvram_data_addr(struct qla_hw_data *ha, uint32_t naddr)
 {
-<<<<<<< HEAD
-	return ha->nvram_data_off | naddr;
-}
-
-static uint32_t
-qla24xx_read_flash_dword(struct qla_hw_data *ha, uint32_t addr)
-{
-	int rval;
-	uint32_t cnt, data;
-	struct device_reg_24xx __iomem *reg = &ha->iobase->isp24;
-
-	WRT_REG_DWORD(&reg->flash_addr, addr & ~FARX_DATA_FLAG);
-	/* Wait for READ cycle to complete. */
-	rval = QLA_SUCCESS;
-	for (cnt = 3000;
-	    (RD_REG_DWORD(&reg->flash_addr) & FARX_DATA_FLAG) == 0 &&
-	    rval == QLA_SUCCESS; cnt--) {
-		if (cnt)
-			udelay(10);
-		else
-			rval = QLA_FUNCTION_TIMEOUT;
-		cond_resched();
-	}
-
-	/* TODO: What happens if we time out? */
-	data = 0xDEADDEAD;
-	if (rval == QLA_SUCCESS)
-		data = RD_REG_DWORD(&reg->flash_data);
-
-	return data;
-}
-
-uint32_t *
-qla24xx_read_flash_data(scsi_qla_host_t *vha, uint32_t *dwptr, uint32_t faddr,
-    uint32_t dwords)
-{
-	uint32_t i;
-	struct qla_hw_data *ha = vha->hw;
-
-	/* Dword reads to flash. */
-	for (i = 0; i < dwords; i++, faddr++)
-		dwptr[i] = cpu_to_le32(qla24xx_read_flash_dword(ha,
-		    flash_data_addr(ha, faddr)));
-
-	return dwptr;
-=======
 	return ha->nvram_data_off + naddr;
 }
 
@@ -681,32 +490,11 @@ qla24xx_read_flash_data(scsi_qla_host_t *vha, uint32_t *dwptr, uint32_t faddr,
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 qla24xx_write_flash_dword(struct qla_hw_data *ha, uint32_t addr, uint32_t data)
 {
-<<<<<<< HEAD
-	int rval;
-	uint32_t cnt;
-	struct device_reg_24xx __iomem *reg = &ha->iobase->isp24;
-
-	WRT_REG_DWORD(&reg->flash_data, data);
-	RD_REG_DWORD(&reg->flash_data);		/* PCI Posting. */
-	WRT_REG_DWORD(&reg->flash_addr, addr | FARX_DATA_FLAG);
-	/* Wait for Write cycle to complete. */
-	rval = QLA_SUCCESS;
-	for (cnt = 500000; (RD_REG_DWORD(&reg->flash_addr) & FARX_DATA_FLAG) &&
-	    rval == QLA_SUCCESS; cnt--) {
-		if (cnt)
-			udelay(10);
-		else
-			rval = QLA_FUNCTION_TIMEOUT;
-		cond_resched();
-	}
-	return rval;
-=======
 	struct device_reg_24xx __iomem *reg = &ha->iobase->isp24;
 	ulong cnt = 500000;
 
@@ -723,20 +511,12 @@ qla24xx_write_flash_dword(struct qla_hw_data *ha, uint32_t addr, uint32_t data)
 	ql_log(ql_log_warn, pci_get_drvdata(ha->pdev), 0x7090,
 	    "Flash write dword at %x timeout.\n", addr);
 	return QLA_FUNCTION_TIMEOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 qla24xx_get_flash_manufacturer(struct qla_hw_data *ha, uint8_t *man_id,
     uint8_t *flash_id)
 {
-<<<<<<< HEAD
-	uint32_t ids;
-
-	ids = qla24xx_read_flash_dword(ha, flash_conf_addr(ha, 0x03ab));
-	*man_id = LSB(ids);
-	*flash_id = MSB(ids);
-=======
 	uint32_t faddr, ids = 0;
 
 	*man_id = *flash_id = 0;
@@ -746,7 +526,6 @@ qla24xx_get_flash_manufacturer(struct qla_hw_data *ha, uint8_t *man_id,
 		*man_id = LSB(ids);
 		*flash_id = MSB(ids);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check if man_id and flash_id are valid. */
 	if (ids != 0xDEADDEAD && (*man_id == 0 || *flash_id == 0)) {
@@ -756,17 +535,11 @@ qla24xx_get_flash_manufacturer(struct qla_hw_data *ha, uint8_t *man_id,
 		 * Example: ATMEL 0x00 01 45 1F
 		 * Extract MFG and Dev ID from last two bytes.
 		 */
-<<<<<<< HEAD
-		ids = qla24xx_read_flash_dword(ha, flash_conf_addr(ha, 0x009f));
-		*man_id = LSB(ids);
-		*flash_id = MSB(ids);
-=======
 		faddr = flash_conf_addr(ha, 0x009f);
 		if (!qla24xx_read_flash_dword(ha, faddr, &ids)) {
 			*man_id = LSB(ids);
 			*flash_id = MSB(ids);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -775,14 +548,6 @@ qla2xxx_find_flt_start(scsi_qla_host_t *vha, uint32_t *start)
 {
 	const char *loc, *locations[] = { "DEF", "PCI" };
 	uint32_t pcihdr, pcids;
-<<<<<<< HEAD
-	uint32_t *dcode;
-	uint8_t *buf, *bcode, last_image;
-	uint16_t cnt, chksum, *wptr;
-	struct qla_flt_location *fltl;
-	struct qla_hw_data *ha = vha->hw;
-	struct req_que *req = ha->req_q_map[0];
-=======
 	uint16_t cnt, chksum;
 	__le16 *wptr;
 	struct qla_hw_data *ha = vha->hw;
@@ -790,7 +555,6 @@ qla2xxx_find_flt_start(scsi_qla_host_t *vha, uint32_t *start)
 	struct qla_flt_location *fltl = (void *)req->ring;
 	uint32_t *dcode = (uint32_t *)req->ring;
 	uint8_t *buf = (void *)req->ring, *bcode,  last_image;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * FLT-location structure resides after the last PCI region.
@@ -805,20 +569,6 @@ qla2xxx_find_flt_start(scsi_qla_host_t *vha, uint32_t *start)
 		*start = FA_FLASH_LAYOUT_ADDR;
 	else if (IS_QLA81XX(ha))
 		*start = FA_FLASH_LAYOUT_ADDR_81;
-<<<<<<< HEAD
-	else if (IS_QLA82XX(ha)) {
-		*start = FA_FLASH_LAYOUT_ADDR_82;
-		goto end;
-	} else if (IS_QLA83XX(ha)) {
-		*start = FA_FLASH_LAYOUT_ADDR_83;
-		goto end;
-	}
-	/* Begin with first PCI expansion ROM header. */
-	buf = (uint8_t *)req->ring;
-	dcode = (uint32_t *)req->ring;
-	pcihdr = 0;
-	last_image = 1;
-=======
 	else if (IS_P3P_TYPE(ha)) {
 		*start = FA_FLASH_LAYOUT_ADDR_82;
 		goto end;
@@ -832,7 +582,6 @@ qla2xxx_find_flt_start(scsi_qla_host_t *vha, uint32_t *start)
 
 	/* Begin with first PCI expansion ROM header. */
 	pcihdr = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		/* Verify PCI expansion ROM header. */
 		qla24xx_read_flash_data(vha, dcode, pcihdr >> 2, 0x20);
@@ -857,19 +606,6 @@ qla2xxx_find_flt_start(scsi_qla_host_t *vha, uint32_t *start)
 	} while (!last_image);
 
 	/* Now verify FLT-location structure. */
-<<<<<<< HEAD
-	fltl = (struct qla_flt_location *)req->ring;
-	qla24xx_read_flash_data(vha, dcode, pcihdr >> 2,
-	    sizeof(struct qla_flt_location) >> 2);
-	if (fltl->sig[0] != 'Q' || fltl->sig[1] != 'F' ||
-	    fltl->sig[2] != 'L' || fltl->sig[3] != 'T')
-		goto end;
-
-	wptr = (uint16_t *)req->ring;
-	cnt = sizeof(struct qla_flt_location) >> 1;
-	for (chksum = 0; cnt; cnt--)
-		chksum += le16_to_cpu(*wptr++);
-=======
 	qla24xx_read_flash_data(vha, dcode, pcihdr >> 2, sizeof(*fltl) >> 2);
 	if (memcmp(fltl->sig, "QFLT", 4))
 		goto end;
@@ -878,16 +614,11 @@ qla2xxx_find_flt_start(scsi_qla_host_t *vha, uint32_t *start)
 	cnt = sizeof(*fltl) / sizeof(*wptr);
 	for (chksum = 0; cnt--; wptr++)
 		chksum += le16_to_cpu(*wptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chksum) {
 		ql_log(ql_log_fatal, vha, 0x0045,
 		    "Inconsistent FLTL detected: checksum=0x%x.\n", chksum);
 		ql_dump_buffer(ql_dbg_init + ql_dbg_buffer, vha, 0x010e,
-<<<<<<< HEAD
-		    buf, sizeof(struct qla_flt_location));
-=======
 		    fltl, sizeof(*fltl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return QLA_FUNCTION_FAILED;
 	}
 
@@ -905,11 +636,7 @@ end:
 static void
 qla2xxx_get_flt_info(scsi_qla_host_t *vha, uint32_t flt_addr)
 {
-<<<<<<< HEAD
-	const char *loc, *locations[] = { "DEF", "FLT" };
-=======
 	const char *locations[] = { "DEF", "FLT" }, *loc = locations[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const uint32_t def_fw[] =
 		{ FA_RISC_CODE_ADDR, FA_RISC_CODE_ADDR, FA_RISC_CODE_ADDR_81 };
 	const uint32_t def_boot[] =
@@ -939,22 +666,6 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vha, uint32_t flt_addr)
 	const uint32_t fcp_prio_cfg1[] =
 		{ FA_FCP_PRIO1_ADDR, FA_FCP_PRIO1_ADDR_25,
 			0 };
-<<<<<<< HEAD
-	uint32_t def;
-	uint16_t *wptr;
-	uint16_t cnt, chksum;
-	uint32_t start;
-	struct qla_flt_header *flt;
-	struct qla_flt_region *region;
-	struct qla_hw_data *ha = vha->hw;
-	struct req_que *req = ha->req_q_map[0];
-
-	def = 0;
-	if (IS_QLA25XX(ha))
-		def = 1;
-	else if (IS_QLA81XX(ha))
-		def = 2;
-=======
 
 	struct qla_hw_data *ha = vha->hw;
 	uint32_t def = IS_QLA81XX(ha) ? 2 : IS_QLA25XX(ha) ? 1 : 0;
@@ -963,25 +674,10 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vha, uint32_t flt_addr)
 	__le16 *wptr;
 	uint16_t cnt, chksum;
 	uint32_t start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Assign FCP prio region since older adapters may not have FLT, or
 	   FCP prio region in it's FLT.
 	 */
-<<<<<<< HEAD
-	ha->flt_region_fcp_prio = ha->flags.port0 ?
-	    fcp_prio_cfg0[def] : fcp_prio_cfg1[def];
-
-	ha->flt_region_flt = flt_addr;
-	wptr = (uint16_t *)req->ring;
-	flt = (struct qla_flt_header *)req->ring;
-	region = (struct qla_flt_region *)&flt[1];
-	ha->isp_ops->read_optrom(vha, (uint8_t *)req->ring,
-	    flt_addr << 2, OPTROM_BURST_SIZE);
-	if (*wptr == __constant_cpu_to_le16(0xffff))
-		goto no_flash_data;
-	if (flt->version != __constant_cpu_to_le16(1)) {
-=======
 	ha->flt_region_fcp_prio = (ha->port_no == 0) ?
 	    fcp_prio_cfg0[def] : fcp_prio_cfg1[def];
 
@@ -993,7 +689,6 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vha, uint32_t flt_addr)
 	if (le16_to_cpu(*wptr) == 0xffff)
 		goto no_flash_data;
 	if (flt->version != cpu_to_le16(1)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ql_log(ql_log_warn, vha, 0x0047,
 		    "Unsupported FLT detected: version=0x%x length=0x%x checksum=0x%x.\n",
 		    le16_to_cpu(flt->version), le16_to_cpu(flt->length),
@@ -1001,15 +696,9 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vha, uint32_t flt_addr)
 		goto no_flash_data;
 	}
 
-<<<<<<< HEAD
-	cnt = (sizeof(struct qla_flt_header) + le16_to_cpu(flt->length)) >> 1;
-	for (chksum = 0; cnt; cnt--)
-		chksum += le16_to_cpu(*wptr++);
-=======
 	cnt = (sizeof(*flt) + le16_to_cpu(flt->length)) / sizeof(*wptr);
 	for (chksum = 0; cnt--; wptr++)
 		chksum += le16_to_cpu(*wptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chksum) {
 		ql_log(ql_log_fatal, vha, 0x0048,
 		    "Inconsistent FLT detected: version=0x%x length=0x%x checksum=0x%x.\n",
@@ -1018,24 +707,11 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vha, uint32_t flt_addr)
 		goto no_flash_data;
 	}
 
-<<<<<<< HEAD
-	loc = locations[1];
-	cnt = le16_to_cpu(flt->length) / sizeof(struct qla_flt_region);
-=======
 	cnt = le16_to_cpu(flt->length) / sizeof(*region);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for ( ; cnt; cnt--, region++) {
 		/* Store addresses as DWORD offsets. */
 		start = le32_to_cpu(region->start) >> 2;
 		ql_dbg(ql_dbg_init, vha, 0x0049,
-<<<<<<< HEAD
-		    "FLT[%02x]: start=0x%x "
-		    "end=0x%x size=0x%x.\n", le32_to_cpu(region->code),
-		    start, le32_to_cpu(region->end) >> 2,
-		    le32_to_cpu(region->size));
-
-		switch (le32_to_cpu(region->code) & 0xff) {
-=======
 		    "FLT[%#x]: start=%#x end=%#x size=%#x.\n",
 		    le16_to_cpu(region->code), start,
 		    le32_to_cpu(region->end) >> 2,
@@ -1045,7 +721,6 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vha, uint32_t flt_addr)
 			    "Region %x is secure\n", region->code);
 
 		switch (le16_to_cpu(region->code)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case FLT_REG_FCOE_FW:
 			if (!IS_QLA8031(ha))
 				break;
@@ -1063,17 +738,6 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vha, uint32_t flt_addr)
 			if (IS_QLA8031(ha))
 				break;
 			ha->flt_region_vpd_nvram = start;
-<<<<<<< HEAD
-			if (IS_QLA82XX(ha))
-				break;
-			if (ha->flags.port0)
-				ha->flt_region_vpd = start;
-			break;
-		case FLT_REG_VPD_1:
-			if (IS_QLA82XX(ha) || IS_QLA8031(ha))
-				break;
-			if (!ha->flags.port0)
-=======
 			if (IS_P3P_TYPE(ha))
 				break;
 			if (ha->port_no == 0)
@@ -1095,25 +759,17 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vha, uint32_t flt_addr)
 			if (!IS_QLA27XX(ha) && !IS_QLA28XX(ha))
 				break;
 			if (ha->port_no == 3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ha->flt_region_vpd = start;
 			break;
 		case FLT_REG_NVRAM_0:
 			if (IS_QLA8031(ha))
 				break;
-<<<<<<< HEAD
-			if (ha->flags.port0)
-=======
 			if (ha->port_no == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ha->flt_region_nvram = start;
 			break;
 		case FLT_REG_NVRAM_1:
 			if (IS_QLA8031(ha))
 				break;
-<<<<<<< HEAD
-			if (!ha->flags.port0)
-=======
 			if (ha->port_no == 1)
 				ha->flt_region_nvram = start;
 			break;
@@ -1127,55 +783,33 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vha, uint32_t flt_addr)
 			if (!IS_QLA27XX(ha) && !IS_QLA28XX(ha))
 				break;
 			if (ha->port_no == 3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ha->flt_region_nvram = start;
 			break;
 		case FLT_REG_FDT:
 			ha->flt_region_fdt = start;
 			break;
 		case FLT_REG_NPIV_CONF_0:
-<<<<<<< HEAD
-			if (ha->flags.port0)
-				ha->flt_region_npiv_conf = start;
-			break;
-		case FLT_REG_NPIV_CONF_1:
-			if (!ha->flags.port0)
-=======
 			if (ha->port_no == 0)
 				ha->flt_region_npiv_conf = start;
 			break;
 		case FLT_REG_NPIV_CONF_1:
 			if (ha->port_no == 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ha->flt_region_npiv_conf = start;
 			break;
 		case FLT_REG_GOLD_FW:
 			ha->flt_region_gold_fw = start;
 			break;
 		case FLT_REG_FCP_PRIO_0:
-<<<<<<< HEAD
-			if (ha->flags.port0)
-				ha->flt_region_fcp_prio = start;
-			break;
-		case FLT_REG_FCP_PRIO_1:
-			if (!ha->flags.port0)
-=======
 			if (ha->port_no == 0)
 				ha->flt_region_fcp_prio = start;
 			break;
 		case FLT_REG_FCP_PRIO_1:
 			if (ha->port_no == 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ha->flt_region_fcp_prio = start;
 			break;
 		case FLT_REG_BOOT_CODE_82XX:
 			ha->flt_region_boot = start;
 			break;
-<<<<<<< HEAD
-		case FLT_REG_FW_82XX:
-			ha->flt_region_fw = start;
-			break;
-=======
 		case FLT_REG_BOOT_CODE_8044:
 			if (IS_QLA8044(ha))
 				ha->flt_region_boot = start;
@@ -1187,43 +821,12 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vha, uint32_t flt_addr)
 			if (IS_CNA_CAPABLE(ha))
 				ha->flt_region_fw = start;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case FLT_REG_GOLD_FW_82XX:
 			ha->flt_region_gold_fw = start;
 			break;
 		case FLT_REG_BOOTLOAD_82XX:
 			ha->flt_region_bootload = start;
 			break;
-<<<<<<< HEAD
-		case FLT_REG_VPD_82XX:
-			ha->flt_region_vpd = start;
-			break;
-		case FLT_REG_FCOE_VPD_0:
-			if (!IS_QLA8031(ha))
-				break;
-			ha->flt_region_vpd_nvram = start;
-			if (ha->flags.port0)
-				ha->flt_region_vpd = start;
-			break;
-		case FLT_REG_FCOE_VPD_1:
-			if (!IS_QLA8031(ha))
-				break;
-			if (!ha->flags.port0)
-				ha->flt_region_vpd = start;
-			break;
-		case FLT_REG_FCOE_NVRAM_0:
-			if (!IS_QLA8031(ha))
-				break;
-			if (ha->flags.port0)
-				ha->flt_region_nvram = start;
-			break;
-		case FLT_REG_FCOE_NVRAM_1:
-			if (!IS_QLA8031(ha))
-				break;
-			if (!ha->flags.port0)
-				ha->flt_region_nvram = start;
-			break;
-=======
 		case FLT_REG_VPD_8XXX:
 			if (IS_CNA_CAPABLE(ha))
 				ha->flt_region_vpd = start;
@@ -1310,7 +913,6 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vha, uint32_t flt_addr)
 				if (ha->port_no == 3)
 					ha->flt_region_vpd_sec = start;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	goto done;
@@ -1321,21 +923,12 @@ no_flash_data:
 	ha->flt_region_fw = def_fw[def];
 	ha->flt_region_boot = def_boot[def];
 	ha->flt_region_vpd_nvram = def_vpd_nvram[def];
-<<<<<<< HEAD
-	ha->flt_region_vpd = ha->flags.port0 ?
-	    def_vpd0[def] : def_vpd1[def];
-	ha->flt_region_nvram = ha->flags.port0 ?
-	    def_nvram0[def] : def_nvram1[def];
-	ha->flt_region_fdt = def_fdt[def];
-	ha->flt_region_npiv_conf = ha->flags.port0 ?
-=======
 	ha->flt_region_vpd = (ha->port_no == 0) ?
 	    def_vpd0[def] : def_vpd1[def];
 	ha->flt_region_nvram = (ha->port_no == 0) ?
 	    def_nvram0[def] : def_nvram1[def];
 	ha->flt_region_fdt = def_fdt[def];
 	ha->flt_region_npiv_conf = (ha->port_no == 0) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    def_npiv_conf0[def] : def_npiv_conf1[def];
 done:
 	ql_dbg(ql_dbg_init, vha, 0x004a,
@@ -1354,29 +947,6 @@ qla2xxx_get_fdt_info(scsi_qla_host_t *vha)
 #define FLASH_BLK_SIZE_32K	0x8000
 #define FLASH_BLK_SIZE_64K	0x10000
 	const char *loc, *locations[] = { "MID", "FDT" };
-<<<<<<< HEAD
-	uint16_t cnt, chksum;
-	uint16_t *wptr;
-	struct qla_fdt_layout *fdt;
-	uint8_t	man_id, flash_id;
-	uint16_t mid = 0, fid = 0;
-	struct qla_hw_data *ha = vha->hw;
-	struct req_que *req = ha->req_q_map[0];
-
-	wptr = (uint16_t *)req->ring;
-	fdt = (struct qla_fdt_layout *)req->ring;
-	ha->isp_ops->read_optrom(vha, (uint8_t *)req->ring,
-	    ha->flt_region_fdt << 2, OPTROM_BURST_SIZE);
-	if (*wptr == __constant_cpu_to_le16(0xffff))
-		goto no_flash_data;
-	if (fdt->sig[0] != 'Q' || fdt->sig[1] != 'L' || fdt->sig[2] != 'I' ||
-	    fdt->sig[3] != 'D')
-		goto no_flash_data;
-
-	for (cnt = 0, chksum = 0; cnt < sizeof(struct qla_fdt_layout) >> 1;
-	    cnt++)
-		chksum += le16_to_cpu(*wptr++);
-=======
 	struct qla_hw_data *ha = vha->hw;
 	struct req_que *req = ha->req_q_map[0];
 	uint16_t cnt, chksum;
@@ -1394,18 +964,13 @@ qla2xxx_get_fdt_info(scsi_qla_host_t *vha)
 
 	for (cnt = 0, chksum = 0; cnt < sizeof(*fdt) >> 1; cnt++, wptr++)
 		chksum += le16_to_cpu(*wptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chksum) {
 		ql_dbg(ql_dbg_init, vha, 0x004c,
 		    "Inconsistent FDT detected:"
 		    " checksum=0x%x id=%c version0x%x.\n", chksum,
 		    fdt->sig[0], le16_to_cpu(fdt->version));
 		ql_dump_buffer(ql_dbg_init + ql_dbg_buffer, vha, 0x0113,
-<<<<<<< HEAD
-		    (uint8_t *)fdt, sizeof(*fdt));
-=======
 		    fdt, sizeof(*fdt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto no_flash_data;
 	}
 
@@ -1413,9 +978,6 @@ qla2xxx_get_fdt_info(scsi_qla_host_t *vha)
 	mid = le16_to_cpu(fdt->man_id);
 	fid = le16_to_cpu(fdt->id);
 	ha->fdt_wrt_disable = fdt->wrt_disable_bits;
-<<<<<<< HEAD
-	ha->fdt_erase_cmd = flash_conf_addr(ha, 0x0300 | fdt->erase_cmd);
-=======
 	ha->fdt_wrt_enable = fdt->wrt_enable_bits;
 	ha->fdt_wrt_sts_reg_cmd = fdt->wrt_sts_reg_cmd;
 	if (IS_QLA8044(ha))
@@ -1423,27 +985,18 @@ qla2xxx_get_fdt_info(scsi_qla_host_t *vha)
 	else
 		ha->fdt_erase_cmd =
 		    flash_conf_addr(ha, 0x0300 | fdt->erase_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ha->fdt_block_size = le32_to_cpu(fdt->block_size);
 	if (fdt->unprotect_sec_cmd) {
 		ha->fdt_unprotect_sec_cmd = flash_conf_addr(ha, 0x0300 |
 		    fdt->unprotect_sec_cmd);
 		ha->fdt_protect_sec_cmd = fdt->protect_sec_cmd ?
-<<<<<<< HEAD
-		    flash_conf_addr(ha, 0x0300 | fdt->protect_sec_cmd):
-=======
 		    flash_conf_addr(ha, 0x0300 | fdt->protect_sec_cmd) :
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    flash_conf_addr(ha, 0x0336);
 	}
 	goto done;
 no_flash_data:
 	loc = locations[0];
-<<<<<<< HEAD
-	if (IS_QLA82XX(ha)) {
-=======
 	if (IS_P3P_TYPE(ha)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ha->fdt_block_size = FLASH_BLK_SIZE_64K;
 		goto done;
 	}
@@ -1490,30 +1043,6 @@ static void
 qla2xxx_get_idc_param(scsi_qla_host_t *vha)
 {
 #define QLA82XX_IDC_PARAM_ADDR       0x003e885c
-<<<<<<< HEAD
-	uint32_t *wptr;
-	struct qla_hw_data *ha = vha->hw;
-	struct req_que *req = ha->req_q_map[0];
-
-	if (!IS_QLA82XX(ha))
-		return;
-
-	wptr = (uint32_t *)req->ring;
-	ha->isp_ops->read_optrom(vha, (uint8_t *)req->ring,
-		QLA82XX_IDC_PARAM_ADDR , 8);
-
-	if (*wptr == __constant_cpu_to_le32(0xffffffff)) {
-		ha->nx_dev_init_timeout = QLA82XX_ROM_DEV_INIT_TIMEOUT;
-		ha->nx_reset_timeout = QLA82XX_ROM_DRV_RESET_ACK_TIMEOUT;
-	} else {
-		ha->nx_dev_init_timeout = le32_to_cpu(*wptr++);
-		ha->nx_reset_timeout = le32_to_cpu(*wptr);
-	}
-	ql_dbg(ql_dbg_init, vha, 0x004e,
-	    "nx_dev_init_timeout=%d "
-	    "nx_reset_timeout=%d.\n", ha->nx_dev_init_timeout,
-	    ha->nx_reset_timeout);
-=======
 	__le32 *wptr;
 	struct qla_hw_data *ha = vha->hw;
 	struct req_que *req = ha->req_q_map[0];
@@ -1536,7 +1065,6 @@ qla2xxx_get_idc_param(scsi_qla_host_t *vha)
 	    "fcoe_dev_init_timeout=%d "
 	    "fcoe_reset_timeout=%d.\n", ha->fcoe_dev_init_timeout,
 	    ha->fcoe_reset_timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -1548,12 +1076,8 @@ qla2xxx_get_flash_info(scsi_qla_host_t *vha)
 	struct qla_hw_data *ha = vha->hw;
 
 	if (!IS_QLA24XX_TYPE(ha) && !IS_QLA25XX(ha) &&
-<<<<<<< HEAD
-	    !IS_CNA_CAPABLE(ha) && !IS_QLA2031(ha))
-=======
 	    !IS_CNA_CAPABLE(ha) && !IS_QLA2031(ha) &&
 	    !IS_QLA27XX(ha) && !IS_QLA28XX(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return QLA_SUCCESS;
 
 	ret = qla2xxx_find_flt_start(vha, &flt_addr);
@@ -1572,11 +1096,7 @@ qla2xxx_flash_npiv_conf(scsi_qla_host_t *vha)
 {
 #define NPIV_CONFIG_SIZE	(16*1024)
 	void *data;
-<<<<<<< HEAD
-	uint16_t *wptr;
-=======
 	__le16 *wptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t cnt, chksum;
 	int i;
 	struct qla_npiv_header hdr;
@@ -1587,16 +1107,6 @@ qla2xxx_flash_npiv_conf(scsi_qla_host_t *vha)
 	    !IS_CNA_CAPABLE(ha) && !IS_QLA2031(ha))
 		return;
 
-<<<<<<< HEAD
-	if (ha->flags.isp82xx_reset_hdlr_active)
-		return;
-
-	ha->isp_ops->read_optrom(vha, (uint8_t *)&hdr,
-	    ha->flt_region_npiv_conf << 2, sizeof(struct qla_npiv_header));
-	if (hdr.version == __constant_cpu_to_le16(0xffff))
-		return;
-	if (hdr.version != __constant_cpu_to_le16(1)) {
-=======
 	if (ha->flags.nic_core_reset_hdlr_active)
 		return;
 
@@ -1608,7 +1118,6 @@ qla2xxx_flash_npiv_conf(scsi_qla_host_t *vha)
 	if (hdr.version == cpu_to_le16(0xffff))
 		return;
 	if (hdr.version != cpu_to_le16(1)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ql_dbg(ql_dbg_user, vha, 0x7090,
 		    "Unsupported NPIV-Config "
 		    "detected: version=0x%x entries=0x%x checksum=0x%x.\n",
@@ -1624,22 +1133,12 @@ qla2xxx_flash_npiv_conf(scsi_qla_host_t *vha)
 		return;
 	}
 
-<<<<<<< HEAD
-	ha->isp_ops->read_optrom(vha, (uint8_t *)data,
-	    ha->flt_region_npiv_conf << 2, NPIV_CONFIG_SIZE);
-
-	cnt = (sizeof(struct qla_npiv_header) + le16_to_cpu(hdr.entries) *
-	    sizeof(struct qla_npiv_entry)) >> 1;
-	for (wptr = data, chksum = 0; cnt; cnt--)
-		chksum += le16_to_cpu(*wptr++);
-=======
 	ha->isp_ops->read_optrom(vha, data, ha->flt_region_npiv_conf << 2,
 	    NPIV_CONFIG_SIZE);
 
 	cnt = (sizeof(hdr) + le16_to_cpu(hdr.entries) * sizeof(*entry)) >> 1;
 	for (wptr = data, chksum = 0; cnt--; wptr++)
 		chksum += le16_to_cpu(*wptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chksum) {
 		ql_dbg(ql_dbg_user, vha, 0x7092,
 		    "Inconsistent NPIV-Config "
@@ -1672,15 +1171,8 @@ qla2xxx_flash_npiv_conf(scsi_qla_host_t *vha)
 		vid.node_name = wwn_to_u64(entry->node_name);
 
 		ql_dbg(ql_dbg_user, vha, 0x7093,
-<<<<<<< HEAD
-		    "NPIV[%02x]: wwpn=%llx "
-		    "wwnn=%llx vf_id=0x%x Q_qos=0x%x F_qos=0x%x.\n", cnt,
-		    (unsigned long long)vid.port_name,
-		    (unsigned long long)vid.node_name,
-=======
 		    "NPIV[%02x]: wwpn=%llx wwnn=%llx vf_id=%#x Q_qos=%#x F_qos=%#x.\n",
 		    cnt, vid.port_name, vid.node_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    le16_to_cpu(entry->vf_id),
 		    entry->q_qos, entry->f_qos);
 
@@ -1688,15 +1180,8 @@ qla2xxx_flash_npiv_conf(scsi_qla_host_t *vha)
 			vport = fc_vport_create(vha->host, 0, &vid);
 			if (!vport)
 				ql_log(ql_log_warn, vha, 0x7094,
-<<<<<<< HEAD
-				    "NPIV-Config Failed to create vport [%02x]: "
-				    "wwpn=%llx wwnn=%llx.\n", cnt,
-				    (unsigned long long)vid.port_name,
-				    (unsigned long long)vid.node_name);
-=======
 				    "NPIV-Config Failed to create vport [%02x]: wwpn=%llx wwnn=%llx.\n",
 				    cnt, vid.port_name, vid.node_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 done:
@@ -1713,15 +1198,9 @@ qla24xx_unprotect_flash(scsi_qla_host_t *vha)
 		return qla81xx_fac_do_write_enable(vha, 1);
 
 	/* Enable flash write. */
-<<<<<<< HEAD
-	WRT_REG_DWORD(&reg->ctrl_status,
-	    RD_REG_DWORD(&reg->ctrl_status) | CSRX_FLASH_ENABLE);
-	RD_REG_DWORD(&reg->ctrl_status);	/* PCI Posting. */
-=======
 	wrt_reg_dword(&reg->ctrl_status,
 	    rd_reg_dword(&reg->ctrl_status) | CSRX_FLASH_ENABLE);
 	rd_reg_dword(&reg->ctrl_status);	/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ha->fdt_wrt_disable)
 		goto done;
@@ -1737,16 +1216,10 @@ done:
 static int
 qla24xx_protect_flash(scsi_qla_host_t *vha)
 {
-<<<<<<< HEAD
-	uint32_t cnt;
-	struct qla_hw_data *ha = vha->hw;
-	struct device_reg_24xx __iomem *reg = &ha->iobase->isp24;
-=======
 	struct qla_hw_data *ha = vha->hw;
 	struct device_reg_24xx __iomem *reg = &ha->iobase->isp24;
 	ulong cnt = 300;
 	uint32_t faddr, dword;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ha->flags.fac_supported)
 		return qla81xx_fac_do_write_enable(vha, 0);
@@ -1755,13 +1228,6 @@ qla24xx_protect_flash(scsi_qla_host_t *vha)
 		goto skip_wrt_protect;
 
 	/* Enable flash write-protection and wait for completion. */
-<<<<<<< HEAD
-	qla24xx_write_flash_dword(ha, flash_conf_addr(ha, 0x101),
-	    ha->fdt_wrt_disable);
-	for (cnt = 300; cnt &&
-	    qla24xx_read_flash_dword(ha, flash_conf_addr(ha, 0x005)) & BIT_0;
-	    cnt--) {
-=======
 	faddr = flash_conf_addr(ha, 0x101);
 	qla24xx_write_flash_dword(ha, faddr, ha->fdt_wrt_disable);
 	faddr = flash_conf_addr(ha, 0x5);
@@ -1770,20 +1236,13 @@ qla24xx_protect_flash(scsi_qla_host_t *vha)
 			if (!(dword & BIT_0))
 				break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		udelay(10);
 	}
 
 skip_wrt_protect:
 	/* Disable flash write. */
-<<<<<<< HEAD
-	WRT_REG_DWORD(&reg->ctrl_status,
-	    RD_REG_DWORD(&reg->ctrl_status) & ~CSRX_FLASH_ENABLE);
-	RD_REG_DWORD(&reg->ctrl_status);	/* PCI Posting. */
-=======
 	wrt_reg_dword(&reg->ctrl_status,
 	    rd_reg_dword(&reg->ctrl_status) & ~CSRX_FLASH_ENABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return QLA_SUCCESS;
 }
@@ -1807,15 +1266,6 @@ qla24xx_erase_sector(scsi_qla_host_t *vha, uint32_t fdata)
 }
 
 static int
-<<<<<<< HEAD
-qla24xx_write_flash_data(scsi_qla_host_t *vha, uint32_t *dwptr, uint32_t faddr,
-    uint32_t dwords)
-{
-	int ret;
-	uint32_t liter;
-	uint32_t sec_mask, rest_addr;
-	uint32_t fdata;
-=======
 qla24xx_write_flash_data(scsi_qla_host_t *vha, __le32 *dwptr, uint32_t faddr,
     uint32_t dwords)
 {
@@ -1823,24 +1273,10 @@ qla24xx_write_flash_data(scsi_qla_host_t *vha, __le32 *dwptr, uint32_t faddr,
 	ulong liter;
 	ulong dburst = OPTROM_BURST_DWORDS; /* burst size in dwords */
 	uint32_t sec_mask, rest_addr, fdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t optrom_dma;
 	void *optrom = NULL;
 	struct qla_hw_data *ha = vha->hw;
 
-<<<<<<< HEAD
-	/* Prepare burst-capable write on supported ISPs. */
-	if ((IS_QLA25XX(ha) || IS_QLA81XX(ha) || IS_QLA83XX(ha)) &&
-	    !(faddr & 0xfff) && dwords > OPTROM_BURST_DWORDS) {
-		optrom = dma_alloc_coherent(&ha->pdev->dev, OPTROM_BURST_SIZE,
-		    &optrom_dma, GFP_KERNEL);
-		if (!optrom) {
-			ql_log(ql_log_warn, vha, 0x7095,
-			    "Unable to allocate "
-			    "memory for optrom burst write (%x KB).\n",
-			    OPTROM_BURST_SIZE / 1024);
-		}
-=======
 	if (!IS_QLA25XX(ha) && !IS_QLA81XX(ha) && !IS_QLA83XX(ha) &&
 	    !IS_QLA27XX(ha) && !IS_QLA28XX(ha))
 		goto next;
@@ -1861,40 +1297,14 @@ next:
 		ql_log(ql_log_warn, vha, 0x7096,
 		    "Failed to unprotect flash.\n");
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rest_addr = (ha->fdt_block_size >> 2) - 1;
 	sec_mask = ~rest_addr;
-<<<<<<< HEAD
-
-	ret = qla24xx_unprotect_flash(vha);
-	if (ret != QLA_SUCCESS) {
-		ql_log(ql_log_warn, vha, 0x7096,
-		    "Unable to unprotect flash for update.\n");
-		goto done;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (liter = 0; liter < dwords; liter++, faddr++, dwptr++) {
 		fdata = (faddr & sec_mask) << 2;
 
 		/* Are we at the beginning of a sector? */
-<<<<<<< HEAD
-		if ((faddr & rest_addr) == 0) {
-			/* Do sector unprotect. */
-			if (ha->fdt_unprotect_sec_cmd)
-				qla24xx_write_flash_dword(ha,
-				    ha->fdt_unprotect_sec_cmd,
-				    (fdata & 0xff00) | ((fdata << 16) &
-				    0xff0000) | ((fdata >> 16) & 0xff));
-			ret = qla24xx_erase_sector(vha, fdata);
-			if (ret != QLA_SUCCESS) {
-				ql_dbg(ql_dbg_user, vha, 0x7007,
-				    "Unable to erase erase sector: address=%x.\n",
-				    faddr);
-=======
 		if (!(faddr & rest_addr)) {
 			ql_log(ql_log_warn + ql_dbg_verbose, vha, 0x7095,
 			    "Erase sector %#x...\n", faddr);
@@ -1903,63 +1313,10 @@ next:
 			if (ret) {
 				ql_dbg(ql_dbg_user, vha, 0x7007,
 				    "Failed to erase sector %x.\n", faddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
 
-<<<<<<< HEAD
-		/* Go with burst-write. */
-		if (optrom && (liter + OPTROM_BURST_DWORDS) <= dwords) {
-			/* Copy data to DMA'ble buffer. */
-			memcpy(optrom, dwptr, OPTROM_BURST_SIZE);
-
-			ret = qla2x00_load_ram(vha, optrom_dma,
-			    flash_data_addr(ha, faddr),
-			    OPTROM_BURST_DWORDS);
-			if (ret != QLA_SUCCESS) {
-				ql_log(ql_log_warn, vha, 0x7097,
-				    "Unable to burst-write optrom segment "
-				    "(%x/%x/%llx).\n", ret,
-				    flash_data_addr(ha, faddr),
-				    (unsigned long long)optrom_dma);
-				ql_log(ql_log_warn, vha, 0x7098,
-				    "Reverting to slow-write.\n");
-
-				dma_free_coherent(&ha->pdev->dev,
-				    OPTROM_BURST_SIZE, optrom, optrom_dma);
-				optrom = NULL;
-			} else {
-				liter += OPTROM_BURST_DWORDS - 1;
-				faddr += OPTROM_BURST_DWORDS - 1;
-				dwptr += OPTROM_BURST_DWORDS - 1;
-				continue;
-			}
-		}
-
-		ret = qla24xx_write_flash_dword(ha,
-		    flash_data_addr(ha, faddr), cpu_to_le32(*dwptr));
-		if (ret != QLA_SUCCESS) {
-			ql_dbg(ql_dbg_user, vha, 0x7006,
-			    "Unable to program flash address=%x data=%x.\n",
-			    faddr, *dwptr);
-			break;
-		}
-
-		/* Do sector protect. */
-		if (ha->fdt_unprotect_sec_cmd &&
-		    ((faddr & rest_addr) == rest_addr))
-			qla24xx_write_flash_dword(ha,
-			    ha->fdt_protect_sec_cmd,
-			    (fdata & 0xff00) | ((fdata << 16) &
-			    0xff0000) | ((fdata >> 16) & 0xff));
-	}
-
-	ret = qla24xx_protect_flash(vha);
-	if (ret != QLA_SUCCESS)
-		ql_log(ql_log_warn, vha, 0x7099,
-		    "Unable to protect flash after update.\n");
-=======
 		if (optrom) {
 			/* If smaller than a burst remaining */
 			if (dwords - liter < dburst)
@@ -2010,7 +1367,6 @@ next:
 	if (ret)
 		ql_log(ql_log_warn, vha, 0x7099,
 		    "Failed to protect flash\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done:
 	if (optrom)
 		dma_free_coherent(&ha->pdev->dev,
@@ -2020,17 +1376,6 @@ done:
 }
 
 uint8_t *
-<<<<<<< HEAD
-qla2x00_read_nvram_data(scsi_qla_host_t *vha, uint8_t *buf, uint32_t naddr,
-    uint32_t bytes)
-{
-	uint32_t i;
-	uint16_t *wptr;
-	struct qla_hw_data *ha = vha->hw;
-
-	/* Word reads to NVRAM via registers. */
-	wptr = (uint16_t *)buf;
-=======
 qla2x00_read_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
     uint32_t bytes)
 {
@@ -2040,7 +1385,6 @@ qla2x00_read_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
 
 	/* Word reads to NVRAM via registers. */
 	wptr = buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qla2x00_lock_nvram_access(ha);
 	for (i = 0; i < bytes >> 1; i++, naddr++)
 		wptr[i] = cpu_to_le16(qla2x00_get_nvram_word(ha,
@@ -2051,23 +1395,6 @@ qla2x00_read_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
 }
 
 uint8_t *
-<<<<<<< HEAD
-qla24xx_read_nvram_data(scsi_qla_host_t *vha, uint8_t *buf, uint32_t naddr,
-    uint32_t bytes)
-{
-	uint32_t i;
-	uint32_t *dwptr;
-	struct qla_hw_data *ha = vha->hw;
-
-	if (IS_QLA82XX(ha))
-		return  buf;
-
-	/* Dword reads to flash. */
-	dwptr = (uint32_t *)buf;
-	for (i = 0; i < bytes >> 2; i++, naddr++)
-		dwptr[i] = cpu_to_le32(qla24xx_read_flash_dword(ha,
-		    nvram_data_addr(ha, naddr)));
-=======
 qla24xx_read_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
     uint32_t bytes)
 {
@@ -2086,17 +1413,12 @@ qla24xx_read_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
 			break;
 		cpu_to_le32s(dwptr);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return buf;
 }
 
 int
-<<<<<<< HEAD
-qla2x00_write_nvram_data(scsi_qla_host_t *vha, uint8_t *buf, uint32_t naddr,
-=======
 qla2x00_write_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     uint32_t bytes)
 {
 	int ret, stat;
@@ -2130,26 +1452,6 @@ qla2x00_write_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
 }
 
 int
-<<<<<<< HEAD
-qla24xx_write_nvram_data(scsi_qla_host_t *vha, uint8_t *buf, uint32_t naddr,
-    uint32_t bytes)
-{
-	int ret;
-	uint32_t i;
-	uint32_t *dwptr;
-	struct qla_hw_data *ha = vha->hw;
-	struct device_reg_24xx __iomem *reg = &ha->iobase->isp24;
-
-	ret = QLA_SUCCESS;
-
-	if (IS_QLA82XX(ha))
-		return ret;
-
-	/* Enable flash write. */
-	WRT_REG_DWORD(&reg->ctrl_status,
-	    RD_REG_DWORD(&reg->ctrl_status) | CSRX_FLASH_ENABLE);
-	RD_REG_DWORD(&reg->ctrl_status);	/* PCI Posting. */
-=======
 qla24xx_write_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
     uint32_t bytes)
 {
@@ -2168,25 +1470,16 @@ qla24xx_write_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
 	wrt_reg_dword(&reg->ctrl_status,
 	    rd_reg_dword(&reg->ctrl_status) | CSRX_FLASH_ENABLE);
 	rd_reg_dword(&reg->ctrl_status);	/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable NVRAM write-protection. */
 	qla24xx_write_flash_dword(ha, nvram_conf_addr(ha, 0x101), 0);
 	qla24xx_write_flash_dword(ha, nvram_conf_addr(ha, 0x101), 0);
 
 	/* Dword writes to flash. */
-<<<<<<< HEAD
-	dwptr = (uint32_t *)buf;
-	for (i = 0; i < bytes >> 2; i++, naddr++, dwptr++) {
-		ret = qla24xx_write_flash_dword(ha,
-		    nvram_data_addr(ha, naddr), cpu_to_le32(*dwptr));
-		if (ret != QLA_SUCCESS) {
-=======
 	naddr = nvram_data_addr(ha, naddr);
 	bytes >>= 2;
 	for (i = 0; i < bytes; i++, naddr++, dwptr++) {
 		if (qla24xx_write_flash_dword(ha, naddr, le32_to_cpu(*dwptr))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ql_dbg(ql_dbg_user, vha, 0x709a,
 			    "Unable to program nvram address=%x data=%x.\n",
 			    naddr, *dwptr);
@@ -2198,34 +1491,14 @@ qla24xx_write_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
 	qla24xx_write_flash_dword(ha, nvram_conf_addr(ha, 0x101), 0x8c);
 
 	/* Disable flash write. */
-<<<<<<< HEAD
-	WRT_REG_DWORD(&reg->ctrl_status,
-	    RD_REG_DWORD(&reg->ctrl_status) & ~CSRX_FLASH_ENABLE);
-	RD_REG_DWORD(&reg->ctrl_status);	/* PCI Posting. */
-=======
 	wrt_reg_dword(&reg->ctrl_status,
 	    rd_reg_dword(&reg->ctrl_status) & ~CSRX_FLASH_ENABLE);
 	rd_reg_dword(&reg->ctrl_status);	/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 uint8_t *
-<<<<<<< HEAD
-qla25xx_read_nvram_data(scsi_qla_host_t *vha, uint8_t *buf, uint32_t naddr,
-    uint32_t bytes)
-{
-	uint32_t i;
-	uint32_t *dwptr;
-	struct qla_hw_data *ha = vha->hw;
-
-	/* Dword reads to flash. */
-	dwptr = (uint32_t *)buf;
-	for (i = 0; i < bytes >> 2; i++, naddr++)
-		dwptr[i] = cpu_to_le32(qla24xx_read_flash_dword(ha,
-		    flash_data_addr(ha, ha->flt_region_vpd_nvram | naddr)));
-=======
 qla25xx_read_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
     uint32_t bytes)
 {
@@ -2242,22 +1515,10 @@ qla25xx_read_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
 
 		cpu_to_le32s(dwptr);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return buf;
 }
 
-<<<<<<< HEAD
-int
-qla25xx_write_nvram_data(scsi_qla_host_t *vha, uint8_t *buf, uint32_t naddr,
-    uint32_t bytes)
-{
-	struct qla_hw_data *ha = vha->hw;
-#define RMW_BUFFER_SIZE	(64 * 1024)
-	uint8_t *dbuf;
-
-	dbuf = vmalloc(RMW_BUFFER_SIZE);
-=======
 #define RMW_BUFFER_SIZE	(64 * 1024)
 int
 qla25xx_write_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
@@ -2266,7 +1527,6 @@ qla25xx_write_nvram_data(scsi_qla_host_t *vha, void *buf, uint32_t naddr,
 	struct qla_hw_data *ha = vha->hw;
 	uint8_t *dbuf = vmalloc(RMW_BUFFER_SIZE);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dbuf)
 		return QLA_MEMORY_ALLOC_FAILED;
 	ha->isp_ops->read_optrom(vha, dbuf, ha->flt_region_vpd_nvram << 2,
@@ -2319,11 +1579,7 @@ qla2x00_beacon_blink(struct scsi_qla_host *vha)
 	struct qla_hw_data *ha = vha->hw;
 	struct device_reg_2xxx __iomem *reg = &ha->iobase->isp;
 
-<<<<<<< HEAD
-	if (IS_QLA82XX(ha))
-=======
 	if (IS_P3P_TYPE(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
@@ -2333,13 +1589,8 @@ qla2x00_beacon_blink(struct scsi_qla_host *vha)
 		gpio_enable = RD_REG_WORD_PIO(PIO_REG(ha, gpioe));
 		gpio_data = RD_REG_WORD_PIO(PIO_REG(ha, gpiod));
 	} else {
-<<<<<<< HEAD
-		gpio_enable = RD_REG_WORD(&reg->gpioe);
-		gpio_data = RD_REG_WORD(&reg->gpiod);
-=======
 		gpio_enable = rd_reg_word(&reg->gpioe);
 		gpio_data = rd_reg_word(&reg->gpiod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Set the modified gpio_enable values */
@@ -2348,13 +1599,8 @@ qla2x00_beacon_blink(struct scsi_qla_host *vha)
 	if (ha->pio_address) {
 		WRT_REG_WORD_PIO(PIO_REG(ha, gpioe), gpio_enable);
 	} else {
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->gpioe, gpio_enable);
-		RD_REG_WORD(&reg->gpioe);
-=======
 		wrt_reg_word(&reg->gpioe, gpio_enable);
 		rd_reg_word(&reg->gpioe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	qla2x00_flip_colors(ha, &led_color);
@@ -2369,13 +1615,8 @@ qla2x00_beacon_blink(struct scsi_qla_host *vha)
 	if (ha->pio_address) {
 		WRT_REG_WORD_PIO(PIO_REG(ha, gpiod), gpio_data);
 	} else {
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->gpiod, gpio_data);
-		RD_REG_WORD(&reg->gpiod);
-=======
 		wrt_reg_word(&reg->gpiod, gpio_data);
 		rd_reg_word(&reg->gpiod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
@@ -2405,13 +1646,8 @@ qla2x00_beacon_on(struct scsi_qla_host *vha)
 		gpio_enable = RD_REG_WORD_PIO(PIO_REG(ha, gpioe));
 		gpio_data = RD_REG_WORD_PIO(PIO_REG(ha, gpiod));
 	} else {
-<<<<<<< HEAD
-		gpio_enable = RD_REG_WORD(&reg->gpioe);
-		gpio_data = RD_REG_WORD(&reg->gpiod);
-=======
 		gpio_enable = rd_reg_word(&reg->gpioe);
 		gpio_data = rd_reg_word(&reg->gpiod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	gpio_enable |= GPIO_LED_MASK;
 
@@ -2419,13 +1655,8 @@ qla2x00_beacon_on(struct scsi_qla_host *vha)
 	if (ha->pio_address) {
 		WRT_REG_WORD_PIO(PIO_REG(ha, gpioe), gpio_enable);
 	} else {
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->gpioe, gpio_enable);
-		RD_REG_WORD(&reg->gpioe);
-=======
 		wrt_reg_word(&reg->gpioe, gpio_enable);
 		rd_reg_word(&reg->gpioe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Clear out previously set LED colour. */
@@ -2433,13 +1664,8 @@ qla2x00_beacon_on(struct scsi_qla_host *vha)
 	if (ha->pio_address) {
 		WRT_REG_WORD_PIO(PIO_REG(ha, gpiod), gpio_data);
 	} else {
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->gpiod, gpio_data);
-		RD_REG_WORD(&reg->gpiod);
-=======
 		wrt_reg_word(&reg->gpiod, gpio_data);
 		rd_reg_word(&reg->gpiod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
@@ -2506,22 +1732,13 @@ qla24xx_beacon_blink(struct scsi_qla_host *vha)
 
 	/* Save the Original GPIOD. */
 	spin_lock_irqsave(&ha->hardware_lock, flags);
-<<<<<<< HEAD
-	gpio_data = RD_REG_DWORD(&reg->gpiod);
-=======
 	gpio_data = rd_reg_dword(&reg->gpiod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable the gpio_data reg for update. */
 	gpio_data |= GPDX_LED_UPDATE_MASK;
 
-<<<<<<< HEAD
-	WRT_REG_DWORD(&reg->gpiod, gpio_data);
-	gpio_data = RD_REG_DWORD(&reg->gpiod);
-=======
 	wrt_reg_dword(&reg->gpiod, gpio_data);
 	gpio_data = rd_reg_dword(&reg->gpiod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set the color bits. */
 	qla24xx_flip_colors(ha, &led_color);
@@ -2533,13 +1750,6 @@ qla24xx_beacon_blink(struct scsi_qla_host *vha)
 	gpio_data |= led_color;
 
 	/* Set the modified gpio_data values. */
-<<<<<<< HEAD
-	WRT_REG_DWORD(&reg->gpiod, gpio_data);
-	gpio_data = RD_REG_DWORD(&reg->gpiod);
-	spin_unlock_irqrestore(&ha->hardware_lock, flags);
-}
-
-=======
 	wrt_reg_dword(&reg->gpiod, gpio_data);
 	gpio_data = rd_reg_dword(&reg->gpiod);
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
@@ -2562,7 +1772,6 @@ out:
 	return led_select_value;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 qla83xx_beacon_blink(struct scsi_qla_host *vha)
 {
@@ -2570,24 +1779,6 @@ qla83xx_beacon_blink(struct scsi_qla_host *vha)
 	struct qla_hw_data *ha = vha->hw;
 	uint16_t led_cfg[6];
 	uint16_t orig_led_cfg[6];
-<<<<<<< HEAD
-
-	if (!IS_QLA83XX(ha) && !IS_QLA81XX(ha))
-		return;
-
-	if (IS_QLA2031(ha) && ha->beacon_blink_led) {
-		if (ha->flags.port0)
-			led_select_value = 0x00201320;
-		else
-			led_select_value = 0x00201328;
-
-		qla83xx_write_remote_reg(vha, led_select_value, 0x40002000);
-		qla83xx_write_remote_reg(vha, led_select_value + 4, 0x40002000);
-		msleep(1000);
-		qla83xx_write_remote_reg(vha, led_select_value, 0x40004000);
-		qla83xx_write_remote_reg(vha, led_select_value + 4, 0x40004000);
-	} else if ((IS_QLA8031(ha) || IS_QLA81XX(ha)) && ha->beacon_blink_led) {
-=======
 	uint32_t led_10_value, led_43_value;
 
 	if (!IS_QLA83XX(ha) && !IS_QLA81XX(ha) && !IS_QLA27XX(ha) &&
@@ -2617,7 +1808,6 @@ qla83xx_beacon_blink(struct scsi_qla_host *vha)
 		qla83xx_wr_reg(vha, led_select_value, led_10_value);
 		qla83xx_wr_reg(vha, led_select_value + 0x10, led_43_value);
 	} else if (IS_QLA81XX(ha)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int rval;
 
 		/* Save Current */
@@ -2668,11 +1858,7 @@ qla24xx_beacon_on(struct scsi_qla_host *vha)
 	struct qla_hw_data *ha = vha->hw;
 	struct device_reg_24xx __iomem *reg = &ha->iobase->isp24;
 
-<<<<<<< HEAD
-	if (IS_QLA82XX(ha))
-=======
 	if (IS_P3P_TYPE(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return QLA_SUCCESS;
 
 	if (IS_QLA8031(ha) || IS_QLA81XX(ha))
@@ -2692,18 +1878,6 @@ qla24xx_beacon_on(struct scsi_qla_host *vha)
 			return QLA_FUNCTION_FAILED;
 		}
 
-<<<<<<< HEAD
-		if (IS_QLA2031(ha))
-			goto skip_gpio;
-
-		spin_lock_irqsave(&ha->hardware_lock, flags);
-		gpio_data = RD_REG_DWORD(&reg->gpiod);
-
-		/* Enable the gpio_data reg for update. */
-		gpio_data |= GPDX_LED_UPDATE_MASK;
-		WRT_REG_DWORD(&reg->gpiod, gpio_data);
-		RD_REG_DWORD(&reg->gpiod);
-=======
 		if (IS_QLA2031(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
 			goto skip_gpio;
 
@@ -2714,7 +1888,6 @@ qla24xx_beacon_on(struct scsi_qla_host *vha)
 		gpio_data |= GPDX_LED_UPDATE_MASK;
 		wrt_reg_dword(&reg->gpiod, gpio_data);
 		rd_reg_dword(&reg->gpiod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_unlock_irqrestore(&ha->hardware_lock, flags);
 	}
@@ -2737,23 +1910,15 @@ qla24xx_beacon_off(struct scsi_qla_host *vha)
 	struct qla_hw_data *ha = vha->hw;
 	struct device_reg_24xx __iomem *reg = &ha->iobase->isp24;
 
-<<<<<<< HEAD
-	if (IS_QLA82XX(ha))
-=======
 	if (IS_P3P_TYPE(ha))
 		return QLA_SUCCESS;
 
 	if (!ha->flags.fw_started)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return QLA_SUCCESS;
 
 	ha->beacon_blink_led = 0;
 
-<<<<<<< HEAD
-	if (IS_QLA2031(ha))
-=======
 	if (IS_QLA2031(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto set_fw_options;
 
 	if (IS_QLA8031(ha) || IS_QLA81XX(ha))
@@ -2765,21 +1930,12 @@ qla24xx_beacon_off(struct scsi_qla_host *vha)
 
 	/* Give control back to firmware. */
 	spin_lock_irqsave(&ha->hardware_lock, flags);
-<<<<<<< HEAD
-	gpio_data = RD_REG_DWORD(&reg->gpiod);
-
-	/* Disable the gpio_data reg for update. */
-	gpio_data &= ~GPDX_LED_UPDATE_MASK;
-	WRT_REG_DWORD(&reg->gpiod, gpio_data);
-	RD_REG_DWORD(&reg->gpiod);
-=======
 	gpio_data = rd_reg_dword(&reg->gpiod);
 
 	/* Disable the gpio_data reg for update. */
 	gpio_data &= ~GPDX_LED_UPDATE_MASK;
 	wrt_reg_dword(&reg->gpiod, gpio_data);
 	rd_reg_dword(&reg->gpiod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
 set_fw_options:
@@ -2815,17 +1971,10 @@ qla2x00_flash_enable(struct qla_hw_data *ha)
 	uint16_t data;
 	struct device_reg_2xxx __iomem *reg = &ha->iobase->isp;
 
-<<<<<<< HEAD
-	data = RD_REG_WORD(&reg->ctrl_status);
-	data |= CSR_FLASH_ENABLE;
-	WRT_REG_WORD(&reg->ctrl_status, data);
-	RD_REG_WORD(&reg->ctrl_status);		/* PCI Posting. */
-=======
 	data = rd_reg_word(&reg->ctrl_status);
 	data |= CSR_FLASH_ENABLE;
 	wrt_reg_word(&reg->ctrl_status, data);
 	rd_reg_word(&reg->ctrl_status);		/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2838,17 +1987,10 @@ qla2x00_flash_disable(struct qla_hw_data *ha)
 	uint16_t data;
 	struct device_reg_2xxx __iomem *reg = &ha->iobase->isp;
 
-<<<<<<< HEAD
-	data = RD_REG_WORD(&reg->ctrl_status);
-	data &= ~(CSR_FLASH_ENABLE);
-	WRT_REG_WORD(&reg->ctrl_status, data);
-	RD_REG_WORD(&reg->ctrl_status);		/* PCI Posting. */
-=======
 	data = rd_reg_word(&reg->ctrl_status);
 	data &= ~(CSR_FLASH_ENABLE);
 	wrt_reg_word(&reg->ctrl_status, data);
 	rd_reg_word(&reg->ctrl_status);		/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2867,11 +2009,7 @@ qla2x00_read_flash_byte(struct qla_hw_data *ha, uint32_t addr)
 	uint16_t bank_select;
 	struct device_reg_2xxx __iomem *reg = &ha->iobase->isp;
 
-<<<<<<< HEAD
-	bank_select = RD_REG_WORD(&reg->ctrl_status);
-=======
 	bank_select = rd_reg_word(&reg->ctrl_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_QLA2322(ha) || IS_QLA6322(ha)) {
 		/* Specify 64K address range: */
@@ -2879,19 +2017,11 @@ qla2x00_read_flash_byte(struct qla_hw_data *ha, uint32_t addr)
 		bank_select &= ~0xf8;
 		bank_select |= addr >> 12 & 0xf0;
 		bank_select |= CSR_FLASH_64K_BANK;
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->ctrl_status, bank_select);
-		RD_REG_WORD(&reg->ctrl_status);	/* PCI Posting. */
-
-		WRT_REG_WORD(&reg->flash_address, (uint16_t)addr);
-		data = RD_REG_WORD(&reg->flash_data);
-=======
 		wrt_reg_word(&reg->ctrl_status, bank_select);
 		rd_reg_word(&reg->ctrl_status);	/* PCI Posting. */
 
 		wrt_reg_word(&reg->flash_address, (uint16_t)addr);
 		data = rd_reg_word(&reg->flash_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return (uint8_t)data;
 	}
@@ -2899,15 +2029,6 @@ qla2x00_read_flash_byte(struct qla_hw_data *ha, uint32_t addr)
 	/* Setup bit 16 of flash address. */
 	if ((addr & BIT_16) && ((bank_select & CSR_FLASH_64K_BANK) == 0)) {
 		bank_select |= CSR_FLASH_64K_BANK;
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->ctrl_status, bank_select);
-		RD_REG_WORD(&reg->ctrl_status);	/* PCI Posting. */
-	} else if (((addr & BIT_16) == 0) &&
-	    (bank_select & CSR_FLASH_64K_BANK)) {
-		bank_select &= ~(CSR_FLASH_64K_BANK);
-		WRT_REG_WORD(&reg->ctrl_status, bank_select);
-		RD_REG_WORD(&reg->ctrl_status);	/* PCI Posting. */
-=======
 		wrt_reg_word(&reg->ctrl_status, bank_select);
 		rd_reg_word(&reg->ctrl_status);	/* PCI Posting. */
 	} else if (((addr & BIT_16) == 0) &&
@@ -2915,7 +2036,6 @@ qla2x00_read_flash_byte(struct qla_hw_data *ha, uint32_t addr)
 		bank_select &= ~(CSR_FLASH_64K_BANK);
 		wrt_reg_word(&reg->ctrl_status, bank_select);
 		rd_reg_word(&reg->ctrl_status);	/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Always perform IO mapped accesses to the FLASH registers. */
@@ -2930,11 +2050,7 @@ qla2x00_read_flash_byte(struct qla_hw_data *ha, uint32_t addr)
 			data2 = RD_REG_WORD_PIO(PIO_REG(ha, flash_data));
 		} while (data != data2);
 	} else {
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->flash_address, (uint16_t)addr);
-=======
 		wrt_reg_word(&reg->flash_address, (uint16_t)addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data = qla2x00_debounce_register(&reg->flash_data);
 	}
 
@@ -2953,26 +2069,13 @@ qla2x00_write_flash_byte(struct qla_hw_data *ha, uint32_t addr, uint8_t data)
 	uint16_t bank_select;
 	struct device_reg_2xxx __iomem *reg = &ha->iobase->isp;
 
-<<<<<<< HEAD
-	bank_select = RD_REG_WORD(&reg->ctrl_status);
-=======
 	bank_select = rd_reg_word(&reg->ctrl_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_QLA2322(ha) || IS_QLA6322(ha)) {
 		/* Specify 64K address range: */
 		/*  clear out Module Select and Flash Address bits [19:16]. */
 		bank_select &= ~0xf8;
 		bank_select |= addr >> 12 & 0xf0;
 		bank_select |= CSR_FLASH_64K_BANK;
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->ctrl_status, bank_select);
-		RD_REG_WORD(&reg->ctrl_status);	/* PCI Posting. */
-
-		WRT_REG_WORD(&reg->flash_address, (uint16_t)addr);
-		RD_REG_WORD(&reg->ctrl_status);		/* PCI Posting. */
-		WRT_REG_WORD(&reg->flash_data, (uint16_t)data);
-		RD_REG_WORD(&reg->ctrl_status);		/* PCI Posting. */
-=======
 		wrt_reg_word(&reg->ctrl_status, bank_select);
 		rd_reg_word(&reg->ctrl_status);	/* PCI Posting. */
 
@@ -2980,7 +2083,6 @@ qla2x00_write_flash_byte(struct qla_hw_data *ha, uint32_t addr, uint8_t data)
 		rd_reg_word(&reg->ctrl_status);		/* PCI Posting. */
 		wrt_reg_word(&reg->flash_data, (uint16_t)data);
 		rd_reg_word(&reg->ctrl_status);		/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return;
 	}
@@ -2988,15 +2090,6 @@ qla2x00_write_flash_byte(struct qla_hw_data *ha, uint32_t addr, uint8_t data)
 	/* Setup bit 16 of flash address. */
 	if ((addr & BIT_16) && ((bank_select & CSR_FLASH_64K_BANK) == 0)) {
 		bank_select |= CSR_FLASH_64K_BANK;
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->ctrl_status, bank_select);
-		RD_REG_WORD(&reg->ctrl_status);	/* PCI Posting. */
-	} else if (((addr & BIT_16) == 0) &&
-	    (bank_select & CSR_FLASH_64K_BANK)) {
-		bank_select &= ~(CSR_FLASH_64K_BANK);
-		WRT_REG_WORD(&reg->ctrl_status, bank_select);
-		RD_REG_WORD(&reg->ctrl_status);	/* PCI Posting. */
-=======
 		wrt_reg_word(&reg->ctrl_status, bank_select);
 		rd_reg_word(&reg->ctrl_status);	/* PCI Posting. */
 	} else if (((addr & BIT_16) == 0) &&
@@ -3004,7 +2097,6 @@ qla2x00_write_flash_byte(struct qla_hw_data *ha, uint32_t addr, uint8_t data)
 		bank_select &= ~(CSR_FLASH_64K_BANK);
 		wrt_reg_word(&reg->ctrl_status, bank_select);
 		rd_reg_word(&reg->ctrl_status);	/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Always perform IO mapped accesses to the FLASH registers. */
@@ -3012,17 +2104,10 @@ qla2x00_write_flash_byte(struct qla_hw_data *ha, uint32_t addr, uint8_t data)
 		WRT_REG_WORD_PIO(PIO_REG(ha, flash_address), (uint16_t)addr);
 		WRT_REG_WORD_PIO(PIO_REG(ha, flash_data), (uint16_t)data);
 	} else {
-<<<<<<< HEAD
-		WRT_REG_WORD(&reg->flash_address, (uint16_t)addr);
-		RD_REG_WORD(&reg->ctrl_status);		/* PCI Posting. */
-		WRT_REG_WORD(&reg->flash_data, (uint16_t)data);
-		RD_REG_WORD(&reg->ctrl_status);		/* PCI Posting. */
-=======
 		wrt_reg_word(&reg->flash_address, (uint16_t)addr);
 		rd_reg_word(&reg->ctrl_status);		/* PCI Posting. */
 		wrt_reg_word(&reg->flash_data, (uint16_t)data);
 		rd_reg_word(&reg->ctrl_status);		/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -3177,10 +2262,7 @@ qla2x00_erase_flash_sector(struct qla_hw_data *ha, uint32_t addr,
 
 /**
  * qla2x00_get_flash_manufacturer() - Read manufacturer ID from flash chip.
-<<<<<<< HEAD
-=======
  * @ha: host adapter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @man_id: Flash manufacturer ID
  * @flash_id: Flash ID
  */
@@ -3208,21 +2290,12 @@ qla2x00_read_flash_data(struct qla_hw_data *ha, uint8_t *tmp_buf,
 
 	midpoint = length / 2;
 
-<<<<<<< HEAD
-	WRT_REG_WORD(&reg->nvram, 0);
-	RD_REG_WORD(&reg->nvram);
-	for (ilength = 0; ilength < length; saddr++, ilength++, tmp_buf++) {
-		if (ilength == midpoint) {
-			WRT_REG_WORD(&reg->nvram, NVR_SELECT);
-			RD_REG_WORD(&reg->nvram);
-=======
 	wrt_reg_word(&reg->nvram, 0);
 	rd_reg_word(&reg->nvram);
 	for (ilength = 0; ilength < length; saddr++, ilength++, tmp_buf++) {
 		if (ilength == midpoint) {
 			wrt_reg_word(&reg->nvram, NVR_SELECT);
 			rd_reg_word(&reg->nvram);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		data = qla2x00_read_flash_byte(ha, saddr);
 		if (saddr % 100)
@@ -3247,19 +2320,11 @@ qla2x00_suspend_hba(struct scsi_qla_host *vha)
 
 	/* Pause RISC. */
 	spin_lock_irqsave(&ha->hardware_lock, flags);
-<<<<<<< HEAD
-	WRT_REG_WORD(&reg->hccr, HCCR_PAUSE_RISC);
-	RD_REG_WORD(&reg->hccr);
-	if (IS_QLA2100(ha) || IS_QLA2200(ha) || IS_QLA2300(ha)) {
-		for (cnt = 0; cnt < 30000; cnt++) {
-			if ((RD_REG_WORD(&reg->hccr) & HCCR_RISC_PAUSE) != 0)
-=======
 	wrt_reg_word(&reg->hccr, HCCR_PAUSE_RISC);
 	rd_reg_word(&reg->hccr);
 	if (IS_QLA2100(ha) || IS_QLA2200(ha) || IS_QLA2300(ha)) {
 		for (cnt = 0; cnt < 30000; cnt++) {
 			if ((rd_reg_word(&reg->hccr) & HCCR_RISC_PAUSE) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			udelay(100);
 		}
@@ -3282,13 +2347,8 @@ qla2x00_resume_hba(struct scsi_qla_host *vha)
 	scsi_unblock_requests(vha->host);
 }
 
-<<<<<<< HEAD
-uint8_t *
-qla2x00_read_optrom_data(struct scsi_qla_host *vha, uint8_t *buf,
-=======
 void *
 qla2x00_read_optrom_data(struct scsi_qla_host *vha, void *buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     uint32_t offset, uint32_t length)
 {
 	uint32_t addr, midpoint;
@@ -3303,21 +2363,12 @@ qla2x00_read_optrom_data(struct scsi_qla_host *vha, void *buf,
 	midpoint = ha->optrom_size / 2;
 
 	qla2x00_flash_enable(ha);
-<<<<<<< HEAD
-	WRT_REG_WORD(&reg->nvram, 0);
-	RD_REG_WORD(&reg->nvram);		/* PCI Posting. */
-	for (addr = offset, data = buf; addr < length; addr++, data++) {
-		if (addr == midpoint) {
-			WRT_REG_WORD(&reg->nvram, NVR_SELECT);
-			RD_REG_WORD(&reg->nvram);	/* PCI Posting. */
-=======
 	wrt_reg_word(&reg->nvram, 0);
 	rd_reg_word(&reg->nvram);		/* PCI Posting. */
 	for (addr = offset, data = buf; addr < length; addr++, data++) {
 		if (addr == midpoint) {
 			wrt_reg_word(&reg->nvram, NVR_SELECT);
 			rd_reg_word(&reg->nvram);	/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		*data = qla2x00_read_flash_byte(ha, addr);
@@ -3331,20 +2382,12 @@ qla2x00_read_optrom_data(struct scsi_qla_host *vha, void *buf,
 }
 
 int
-<<<<<<< HEAD
-qla2x00_write_optrom_data(struct scsi_qla_host *vha, uint8_t *buf,
-=======
 qla2x00_write_optrom_data(struct scsi_qla_host *vha, void *buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     uint32_t offset, uint32_t length)
 {
 
 	int rval;
-<<<<<<< HEAD
-	uint8_t man_id, flash_id, sec_number, data;
-=======
 	uint8_t man_id, flash_id, sec_number, *data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t wd;
 	uint32_t addr, liter, sec_mask, rest_addr;
 	struct qla_hw_data *ha = vha->hw;
@@ -3357,11 +2400,7 @@ qla2x00_write_optrom_data(struct scsi_qla_host *vha, void *buf,
 	sec_number = 0;
 
 	/* Reset ISP chip. */
-<<<<<<< HEAD
-	WRT_REG_WORD(&reg->ctrl_status, CSR_ISP_SOFT_RESET);
-=======
 	wrt_reg_word(&reg->ctrl_status, CSR_ISP_SOFT_RESET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_read_config_word(ha->pdev, PCI_COMMAND, &wd);
 
 	/* Go with write. */
@@ -3386,11 +2425,7 @@ qla2x00_write_optrom_data(struct scsi_qla_host *vha, void *buf,
 				 */
 				rest_addr = 0xffff;
 				sec_mask = 0x10000;
-<<<<<<< HEAD
-				break;   
-=======
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			/*
 			 * ST m29w010b part - 16kb sector size
@@ -3421,11 +2456,7 @@ qla2x00_write_optrom_data(struct scsi_qla_host *vha, void *buf,
 				sec_mask = 0x10000;
 				break;
 			}
-<<<<<<< HEAD
-			/* Fall through... */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case 0x1f: /* Atmel flash. */
 			/* 512k sector size. */
@@ -3434,11 +2465,7 @@ qla2x00_write_optrom_data(struct scsi_qla_host *vha, void *buf,
 				sec_mask =   0x80000000;
 				break;
 			}
-<<<<<<< HEAD
-			/* Fall through... */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case 0x01: /* AMD flash. */
 			if (flash_id == 0x38 || flash_id == 0x40 ||
@@ -3471,10 +2498,7 @@ qla2x00_write_optrom_data(struct scsi_qla_host *vha, void *buf,
 				sec_mask = 0x1e000;
 				break;
 			}
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			/* Default to 16 kb sector size. */
 			rest_addr = 0x3fff;
@@ -3492,11 +2516,7 @@ update_flash:
 
 		for (addr = offset, liter = 0; liter < length; liter++,
 		    addr++) {
-<<<<<<< HEAD
-			data = buf[liter];
-=======
 			data = buf + liter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Are we at the beginning of a sector? */
 			if ((addr & rest_addr) == 0) {
 				if (IS_QLA2322(ha) || IS_QLA6322(ha)) {
@@ -3529,13 +2549,8 @@ update_flash:
 						}
 					}
 				} else if (addr == ha->optrom_size / 2) {
-<<<<<<< HEAD
-					WRT_REG_WORD(&reg->nvram, NVR_SELECT);
-					RD_REG_WORD(&reg->nvram);
-=======
 					wrt_reg_word(&reg->nvram, NVR_SELECT);
 					rd_reg_word(&reg->nvram);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 
 				if (flash_id == 0xda && man_id == 0xc1) {
@@ -3569,11 +2584,7 @@ update_flash:
 				}
 			}
 
-<<<<<<< HEAD
-			if (qla2x00_program_flash_address(ha, addr, data,
-=======
 			if (qla2x00_program_flash_address(ha, addr, *data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    man_id, flash_id)) {
 				rval = QLA_FUNCTION_FAILED;
 				break;
@@ -3589,13 +2600,8 @@ update_flash:
 	return rval;
 }
 
-<<<<<<< HEAD
-uint8_t *
-qla24xx_read_optrom_data(struct scsi_qla_host *vha, uint8_t *buf,
-=======
 void *
 qla24xx_read_optrom_data(struct scsi_qla_host *vha, void *buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     uint32_t offset, uint32_t length)
 {
 	struct qla_hw_data *ha = vha->hw;
@@ -3605,11 +2611,7 @@ qla24xx_read_optrom_data(struct scsi_qla_host *vha, void *buf,
 	set_bit(MBX_UPDATE_FLASH_ACTIVE, &ha->mbx_cmd_flags);
 
 	/* Go with read. */
-<<<<<<< HEAD
-	qla24xx_read_flash_data(vha, (uint32_t *)buf, offset >> 2, length >> 2);
-=======
 	qla24xx_read_flash_data(vha, buf, offset >> 2, length >> 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Resume HBA. */
 	clear_bit(MBX_UPDATE_FLASH_ACTIVE, &ha->mbx_cmd_flags);
@@ -3618,10 +2620,6 @@ qla24xx_read_optrom_data(struct scsi_qla_host *vha, void *buf,
 	return buf;
 }
 
-<<<<<<< HEAD
-int
-qla24xx_write_optrom_data(struct scsi_qla_host *vha, uint8_t *buf,
-=======
 static int
 qla28xx_extract_sfub_and_verify(struct scsi_qla_host *vha, __le32 *buf,
     uint32_t len, uint32_t buf_size_without_sfub, uint8_t *sfub_buf)
@@ -3974,7 +2972,6 @@ done:
 
 int
 qla24xx_write_optrom_data(struct scsi_qla_host *vha, void *buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     uint32_t offset, uint32_t length)
 {
 	int rval;
@@ -3985,17 +2982,12 @@ qla24xx_write_optrom_data(struct scsi_qla_host *vha, void *buf,
 	set_bit(MBX_UPDATE_FLASH_ACTIVE, &ha->mbx_cmd_flags);
 
 	/* Go with write. */
-<<<<<<< HEAD
-	rval = qla24xx_write_flash_data(vha, (uint32_t *)buf, offset >> 2,
-	    length >> 2);
-=======
 	if (IS_QLA28XX(ha))
 		rval = qla28xx_write_flash_data(vha, buf, offset >> 2,
 						length >> 2);
 	else
 		rval = qla24xx_write_flash_data(vha, buf, offset >> 2,
 						length >> 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clear_bit(MBX_UPDATE_FLASH_ACTIVE, &ha->mbx_cmd_flags);
 	scsi_unblock_requests(vha->host);
@@ -4003,13 +2995,8 @@ qla24xx_write_optrom_data(struct scsi_qla_host *vha, void *buf,
 	return rval;
 }
 
-<<<<<<< HEAD
-uint8_t *
-qla25xx_read_optrom_data(struct scsi_qla_host *vha, uint8_t *buf,
-=======
 void *
 qla25xx_read_optrom_data(struct scsi_qla_host *vha, void *buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     uint32_t offset, uint32_t length)
 {
 	int rval;
@@ -4019,12 +3006,8 @@ qla25xx_read_optrom_data(struct scsi_qla_host *vha, void *buf,
 	uint32_t faddr, left, burst;
 	struct qla_hw_data *ha = vha->hw;
 
-<<<<<<< HEAD
-	if (IS_QLA25XX(ha) || IS_QLA81XX(ha))
-=======
 	if (IS_QLA25XX(ha) || IS_QLA81XX(ha) || IS_QLA83XX(ha) ||
 	    IS_QLA27XX(ha) || IS_QLA28XX(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto try_fast;
 	if (offset & 0xfff)
 		goto slow_read;
@@ -4032,11 +3015,8 @@ qla25xx_read_optrom_data(struct scsi_qla_host *vha, void *buf,
 		goto slow_read;
 
 try_fast:
-<<<<<<< HEAD
-=======
 	if (offset & 0xff)
 		goto slow_read;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	optrom = dma_alloc_coherent(&ha->pdev->dev, OPTROM_BURST_SIZE,
 	    &optrom_dma, GFP_KERNEL);
 	if (!optrom) {
@@ -4283,11 +3263,7 @@ qla2x00_get_flash_version(scsi_qla_host_t *vha, void *mbuf)
 		    "Dumping fw "
 		    "ver from flash:.\n");
 		ql_dump_buffer(ql_dbg_init + ql_dbg_buffer, vha, 0x010b,
-<<<<<<< HEAD
-		    (uint8_t *)dbyte, 8);
-=======
 		    dbyte, 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if ((dcode[0] == 0xffff && dcode[1] == 0xffff &&
 		    dcode[2] == 0xffff && dcode[3] == 0xffff) ||
@@ -4314,19 +3290,6 @@ qla2x00_get_flash_version(scsi_qla_host_t *vha, void *mbuf)
 }
 
 int
-<<<<<<< HEAD
-qla24xx_get_flash_version(scsi_qla_host_t *vha, void *mbuf)
-{
-	int ret = QLA_SUCCESS;
-	uint32_t pcihdr, pcids;
-	uint32_t *dcode;
-	uint8_t *bcode;
-	uint8_t code_type, last_image;
-	int i;
-	struct qla_hw_data *ha = vha->hw;
-
-	if (IS_QLA82XX(ha))
-=======
 qla82xx_get_flash_version(scsi_qla_host_t *vha, void *mbuf)
 {
 	int ret = QLA_SUCCESS;
@@ -4449,7 +3412,6 @@ qla24xx_get_flash_version(scsi_qla_host_t *vha, void *mbuf)
 	struct active_regions active_regions = { };
 
 	if (IS_P3P_TYPE(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 
 	if (!mbuf)
@@ -4460,13 +3422,6 @@ qla24xx_get_flash_version(scsi_qla_host_t *vha, void *mbuf)
 	memset(ha->fcode_revision, 0, sizeof(ha->fcode_revision));
 	memset(ha->fw_revision, 0, sizeof(ha->fw_revision));
 
-<<<<<<< HEAD
-	dcode = mbuf;
-
-	/* Begin with first PCI expansion ROM header. */
-	pcihdr = ha->flt_region_boot << 2;
-	last_image = 1;
-=======
 	pcihdr = ha->flt_region_boot << 2;
 	if (IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
 		qla27xx_get_active_image(vha, &active_regions);
@@ -4475,16 +3430,11 @@ qla24xx_get_flash_version(scsi_qla_host_t *vha, void *mbuf)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		/* Verify PCI expansion ROM header. */
 		qla24xx_read_flash_data(vha, dcode, pcihdr >> 2, 0x20);
 		bcode = mbuf + (pcihdr % 4);
-<<<<<<< HEAD
-		if (bcode[0x0] != 0x55 || bcode[0x1] != 0xaa) {
-=======
 		if (memcmp(bcode, "\x55\xaa", 2)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* No signature */
 			ql_log(ql_log_fatal, vha, 0x0059,
 			    "No matching ROM signature.\n");
@@ -4499,19 +3449,11 @@ qla24xx_get_flash_version(scsi_qla_host_t *vha, void *mbuf)
 		bcode = mbuf + (pcihdr % 4);
 
 		/* Validate signature of PCI data structure. */
-<<<<<<< HEAD
-		if (bcode[0x0] != 'P' || bcode[0x1] != 'C' ||
-		    bcode[0x2] != 'I' || bcode[0x3] != 'R') {
-			/* Incorrect header. */
-			ql_log(ql_log_fatal, vha, 0x005a,
-			    "PCI data struct not found pcir_adr=%x.\n", pcids);
-=======
 		if (memcmp(bcode, "PCIR", 4)) {
 			/* Incorrect header. */
 			ql_log(ql_log_fatal, vha, 0x005a,
 			    "PCI data struct not found pcir_adr=%x.\n", pcids);
 			ql_dump_buffer(ql_dbg_init, vha, 0x0059, dcode, 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = QLA_FUNCTION_FAILED;
 			break;
 		}
@@ -4558,28 +3500,6 @@ qla24xx_get_flash_version(scsi_qla_host_t *vha, void *mbuf)
 
 	/* Read firmware image information. */
 	memset(ha->fw_revision, 0, sizeof(ha->fw_revision));
-<<<<<<< HEAD
-	dcode = mbuf;
-
-	qla24xx_read_flash_data(vha, dcode, ha->flt_region_fw + 4, 4);
-	for (i = 0; i < 4; i++)
-		dcode[i] = be32_to_cpu(dcode[i]);
-
-	if ((dcode[0] == 0xffffffff && dcode[1] == 0xffffffff &&
-	    dcode[2] == 0xffffffff && dcode[3] == 0xffffffff) ||
-	    (dcode[0] == 0 && dcode[1] == 0 && dcode[2] == 0 &&
-	    dcode[3] == 0)) {
-		ql_log(ql_log_warn, vha, 0x005f,
-		    "Unrecognized fw revision at %x.\n",
-		    ha->flt_region_fw * 4);
-	} else {
-		ha->fw_revision[0] = dcode[0];
-		ha->fw_revision[1] = dcode[1];
-		ha->fw_revision[2] = dcode[2];
-		ha->fw_revision[3] = dcode[3];
-		ql_dbg(ql_dbg_init, vha, 0x0060,
-		    "Firmware revision %d.%d.%d.%d.\n",
-=======
 	faddr = ha->flt_region_fw;
 	if (IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
 		qla27xx_get_active_image(vha, &active_regions);
@@ -4599,7 +3519,6 @@ qla24xx_get_flash_version(scsi_qla_host_t *vha, void *mbuf)
 				be32_to_cpu((__force __be32)dcode[4+i]);
 		ql_dbg(ql_dbg_init, vha, 0x0060,
 		    "Firmware revision (flash) %u.%u.%u (%x).\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    ha->fw_revision[0], ha->fw_revision[1],
 		    ha->fw_revision[2], ha->fw_revision[3]);
 	}
@@ -4611,22 +3530,6 @@ qla24xx_get_flash_version(scsi_qla_host_t *vha, void *mbuf)
 	}
 
 	memset(ha->gold_fw_version, 0, sizeof(ha->gold_fw_version));
-<<<<<<< HEAD
-	dcode = mbuf;
-	ha->isp_ops->read_optrom(vha, (uint8_t *)dcode,
-	    ha->flt_region_gold_fw << 2, 32);
-
-	if (dcode[4] == 0xFFFFFFFF && dcode[5] == 0xFFFFFFFF &&
-	    dcode[6] == 0xFFFFFFFF && dcode[7] == 0xFFFFFFFF) {
-		ql_log(ql_log_warn, vha, 0x0056,
-		    "Unrecognized golden fw at 0x%x.\n",
-		    ha->flt_region_gold_fw * 4);
-		return ret;
-	}
-
-	for (i = 4; i < 8; i++)
-		ha->gold_fw_version[i-4] = be32_to_cpu(dcode[i]);
-=======
 	faddr = ha->flt_region_gold_fw;
 	qla24xx_read_flash_data(vha, dcode, ha->flt_region_gold_fw, 8);
 	if (qla24xx_risc_firmware_invalid(dcode)) {
@@ -4639,7 +3542,6 @@ qla24xx_get_flash_version(scsi_qla_host_t *vha, void *mbuf)
 	for (i = 0; i < 4; i++)
 		ha->gold_fw_version[i] =
 			be32_to_cpu((__force __be32)dcode[4+i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -4685,11 +3587,7 @@ qla2xxx_get_vpd_field(scsi_qla_host_t *vha, char *key, char *str, size_t size)
 	}
 
 	if (pos < end - len && *pos != 0x78)
-<<<<<<< HEAD
-		return snprintf(str, size, "%.*s", len, pos + 3);
-=======
 		return scnprintf(str, size, "%.*s", len, pos + 3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -4705,11 +3603,7 @@ qla24xx_read_fcp_prio_cfg(scsi_qla_host_t *vha)
 		ha->fcp_prio_cfg = vmalloc(FCP_PRIO_CFG_SIZE);
 		if (!ha->fcp_prio_cfg) {
 			ql_log(ql_log_warn, vha, 0x00d5,
-<<<<<<< HEAD
-			    "Unable to allocate memory for fcp priorty data (%x).\n",
-=======
 			    "Unable to allocate memory for fcp priority data (%x).\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    FCP_PRIO_CFG_SIZE);
 			return QLA_FUNCTION_FAILED;
 		}
@@ -4719,11 +3613,7 @@ qla24xx_read_fcp_prio_cfg(scsi_qla_host_t *vha)
 	fcp_prio_addr = ha->flt_region_fcp_prio;
 
 	/* first read the fcp priority data header from flash */
-<<<<<<< HEAD
-	ha->isp_ops->read_optrom(vha, (uint8_t *)ha->fcp_prio_cfg,
-=======
 	ha->isp_ops->read_optrom(vha, ha->fcp_prio_cfg,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fcp_prio_addr << 2, FCP_PRIO_CFG_HDR_SIZE);
 
 	if (!qla24xx_fcp_prio_cfg_valid(vha, ha->fcp_prio_cfg, 0))
@@ -4731,17 +3621,10 @@ qla24xx_read_fcp_prio_cfg(scsi_qla_host_t *vha)
 
 	/* read remaining FCP CMD config data from flash */
 	fcp_prio_addr += (FCP_PRIO_CFG_HDR_SIZE >> 2);
-<<<<<<< HEAD
-	len = ha->fcp_prio_cfg->num_entries * FCP_PRIO_CFG_ENTRY_SIZE;
-	max_len = FCP_PRIO_CFG_SIZE - FCP_PRIO_CFG_HDR_SIZE;
-
-	ha->isp_ops->read_optrom(vha, (uint8_t *)&ha->fcp_prio_cfg->entry[0],
-=======
 	len = ha->fcp_prio_cfg->num_entries * sizeof(struct qla_fcp_prio_entry);
 	max_len = FCP_PRIO_CFG_SIZE - FCP_PRIO_CFG_HDR_SIZE;
 
 	ha->isp_ops->read_optrom(vha, &ha->fcp_prio_cfg->entry[0],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fcp_prio_addr << 2, (len < max_len ? len : max_len));
 
 	/* revalidate the entire FCP priority config data, including entries */

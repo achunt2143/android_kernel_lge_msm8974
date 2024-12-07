@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * generic net pointers
  */
@@ -11,10 +8,7 @@
 
 #include <linux/bug.h>
 #include <linux/rcupdate.h>
-<<<<<<< HEAD
-=======
 #include <net/net_namespace.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Generic net pointers are to be used by modules to put some private
@@ -33,15 +27,6 @@
  */
 
 struct net_generic {
-<<<<<<< HEAD
-	unsigned int len;
-	struct rcu_head rcu;
-
-	void *ptr[0];
-};
-
-static inline void *net_generic(const struct net *net, int id)
-=======
 	union {
 		struct {
 			unsigned int len;
@@ -53,24 +38,15 @@ static inline void *net_generic(const struct net *net, int id)
 };
 
 static inline void *net_generic(const struct net *net, unsigned int id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_generic *ng;
 	void *ptr;
 
 	rcu_read_lock();
 	ng = rcu_dereference(net->gen);
-<<<<<<< HEAD
-	BUG_ON(id == 0 || id > ng->len);
-	ptr = ng->ptr[id - 1];
-	rcu_read_unlock();
-
-	BUG_ON(!ptr);
-=======
 	ptr = ng->ptr[id];
 	rcu_read_unlock();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ptr;
 }
 #endif

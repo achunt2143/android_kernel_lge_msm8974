@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/net/sunrpc/stats.c
  *
@@ -28,11 +25,8 @@
 #include <linux/sunrpc/metrics.h>
 #include <linux/rcupdate.h>
 
-<<<<<<< HEAD
-=======
 #include <trace/events/sunrpc.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "netns.h"
 
 #define RPCDBG_FACILITY	RPCDBG_MISC
@@ -64,12 +58,7 @@ static int rpc_proc_show(struct seq_file *seq, void *v) {
 		seq_printf(seq, "proc%u %u",
 					vers->number, vers->nrprocs);
 		for (j = 0; j < vers->nrprocs; j++)
-<<<<<<< HEAD
-			seq_printf(seq, " %u",
-					vers->procs[j].p_count);
-=======
 			seq_printf(seq, " %u", vers->counts[j]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_putc(seq, '\n');
 	}
 	return 0;
@@ -77,17 +66,6 @@ static int rpc_proc_show(struct seq_file *seq, void *v) {
 
 static int rpc_proc_open(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	return single_open(file, rpc_proc_show, PDE(inode)->data);
-}
-
-static const struct file_operations rpc_proc_fops = {
-	.owner = THIS_MODULE,
-	.open = rpc_proc_open,
-	.read  = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
-=======
 	return single_open(file, rpc_proc_show, pde_data(inode));
 }
 
@@ -96,26 +74,17 @@ static const struct proc_ops rpc_proc_ops = {
 	.proc_read	= seq_read,
 	.proc_lseek	= seq_lseek,
 	.proc_release	= single_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Get RPC server stats
  */
-<<<<<<< HEAD
-void svc_seq_show(struct seq_file *seq, const struct svc_stat *statp) {
-	const struct svc_program *prog = statp->program;
-	const struct svc_procedure *proc;
-	const struct svc_version *vers;
-	unsigned int i, j;
-=======
 void svc_seq_show(struct seq_file *seq, const struct svc_stat *statp)
 {
 	const struct svc_program *prog = statp->program;
 	const struct svc_version *vers;
 	unsigned int i, j, k;
 	unsigned long count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seq_printf(seq,
 		"net %u %u %u %u\n",
@@ -132,13 +101,6 @@ void svc_seq_show(struct seq_file *seq, const struct svc_stat *statp)
 			statp->rpcbadclnt);
 
 	for (i = 0; i < prog->pg_nvers; i++) {
-<<<<<<< HEAD
-		if (!(vers = prog->pg_vers[i]) || !(proc = vers->vs_proc))
-			continue;
-		seq_printf(seq, "proc%d %u", i, vers->vs_nproc);
-		for (j = 0; j < vers->vs_nproc; j++, proc++)
-			seq_printf(seq, " %u", proc->pc_count);
-=======
 		vers = prog->pg_vers[i];
 		if (!vers)
 			continue;
@@ -149,7 +111,6 @@ void svc_seq_show(struct seq_file *seq, const struct svc_stat *statp)
 				count += per_cpu(vers->vs_count[j], k);
 			seq_printf(seq, " %lu", count);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_putc(seq, '\n');
 	}
 }
@@ -162,9 +123,6 @@ EXPORT_SYMBOL_GPL(svc_seq_show);
  */
 struct rpc_iostats *rpc_alloc_iostats(struct rpc_clnt *clnt)
 {
-<<<<<<< HEAD
-	return kcalloc(clnt->cl_maxproc, sizeof(struct rpc_iostats), GFP_KERNEL);
-=======
 	struct rpc_iostats *stats;
 	int i;
 
@@ -174,7 +132,6 @@ struct rpc_iostats *rpc_alloc_iostats(struct rpc_clnt *clnt)
 			spin_lock_init(&stats[i].om_lock);
 	}
 	return stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(rpc_alloc_iostats);
 
@@ -190,27 +147,6 @@ void rpc_free_iostats(struct rpc_iostats *stats)
 EXPORT_SYMBOL_GPL(rpc_free_iostats);
 
 /**
-<<<<<<< HEAD
- * rpc_count_iostats - tally up per-task stats
- * @task: completed rpc_task
- * @stats: array of stat structures
- *
- * Relies on the caller for serialization.
- */
-void rpc_count_iostats(const struct rpc_task *task, struct rpc_iostats *stats)
-{
-	struct rpc_rqst *req = task->tk_rqstp;
-	struct rpc_iostats *op_metrics;
-	ktime_t delta;
-
-	if (!stats || !req)
-		return;
-
-	op_metrics = &stats[task->tk_msg.rpc_proc->p_statidx];
-
-	op_metrics->om_ops++;
-	op_metrics->om_ntrans += req->rq_ntrans;
-=======
  * rpc_count_iostats_metrics - tally up per-task stats
  * @task: completed rpc_task
  * @op_metrics: stat structure for OP that will accumulate stats from @task
@@ -230,21 +166,11 @@ void rpc_count_iostats_metrics(const struct rpc_task *task,
 	op_metrics->om_ops++;
 	/* kernel API: om_ops must never become larger than om_ntrans */
 	op_metrics->om_ntrans += max(req->rq_ntrans, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	op_metrics->om_timeouts += task->tk_timeouts;
 
 	op_metrics->om_bytes_sent += req->rq_xmit_bytes_sent;
 	op_metrics->om_bytes_recv += req->rq_reply_bytes_recvd;
 
-<<<<<<< HEAD
-	delta = ktime_sub(req->rq_xtime, task->tk_start);
-	op_metrics->om_queue = ktime_add(op_metrics->om_queue, delta);
-
-	op_metrics->om_rtt = ktime_add(op_metrics->om_rtt, req->rq_rtt);
-
-	delta = ktime_sub(ktime_get(), task->tk_start);
-	op_metrics->om_execute = ktime_add(op_metrics->om_execute, delta);
-=======
 	backlog = 0;
 	if (ktime_to_ns(req->rq_xtime)) {
 		backlog = ktime_sub(req->rq_xtime, task->tk_start);
@@ -275,16 +201,11 @@ void rpc_count_iostats(const struct rpc_task *task, struct rpc_iostats *stats)
 {
 	rpc_count_iostats_metrics(task,
 				  &stats[task->tk_msg.rpc_proc->p_statidx]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(rpc_count_iostats);
 
 static void _print_name(struct seq_file *seq, unsigned int op,
-<<<<<<< HEAD
-			struct rpc_procinfo *procs)
-=======
 			const struct rpc_procinfo *procs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (procs[op].p_name)
 		seq_printf(seq, "\t%12s: ", procs[op].p_name);
@@ -294,15 +215,6 @@ static void _print_name(struct seq_file *seq, unsigned int op,
 		seq_printf(seq, "\t%12u: ", op);
 }
 
-<<<<<<< HEAD
-void rpc_print_iostats(struct seq_file *seq, struct rpc_clnt *clnt)
-{
-	struct rpc_iostats *stats = clnt->cl_metrics;
-	struct rpc_xprt *xprt;
-	unsigned int op, maxproc = clnt->cl_maxproc;
-
-	if (!stats)
-=======
 static void _add_rpc_iostats(struct rpc_iostats *a, struct rpc_iostats *b)
 {
 	a->om_ops += b->om_ops;
@@ -345,37 +257,10 @@ void rpc_clnt_show_stats(struct seq_file *seq, struct rpc_clnt *clnt)
 	unsigned int op, maxproc = clnt->cl_maxproc;
 
 	if (!clnt->cl_metrics)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	seq_printf(seq, "\tRPC iostats version: %s  ", RPC_IOSTATS_VERS);
 	seq_printf(seq, "p/v: %u/%u (%s)\n",
-<<<<<<< HEAD
-			clnt->cl_prog, clnt->cl_vers, clnt->cl_protname);
-
-	rcu_read_lock();
-	xprt = rcu_dereference(clnt->cl_xprt);
-	if (xprt)
-		xprt->ops->print_stats(xprt, seq);
-	rcu_read_unlock();
-
-	seq_printf(seq, "\tper-op statistics\n");
-	for (op = 0; op < maxproc; op++) {
-		struct rpc_iostats *metrics = &stats[op];
-		_print_name(seq, op, clnt->cl_procinfo);
-		seq_printf(seq, "%lu %lu %lu %Lu %Lu %Lu %Lu %Lu\n",
-				metrics->om_ops,
-				metrics->om_ntrans,
-				metrics->om_timeouts,
-				metrics->om_bytes_sent,
-				metrics->om_bytes_recv,
-				ktime_to_ms(metrics->om_queue),
-				ktime_to_ms(metrics->om_rtt),
-				ktime_to_ms(metrics->om_execute));
-	}
-}
-EXPORT_SYMBOL_GPL(rpc_print_iostats);
-=======
 			clnt->cl_prog, clnt->cl_vers, clnt->cl_program->name);
 
 	rpc_clnt_iterate_for_each_xprt(clnt, do_print_stats, seq);
@@ -394,38 +279,25 @@ EXPORT_SYMBOL_GPL(rpc_print_iostats);
 	}
 }
 EXPORT_SYMBOL_GPL(rpc_clnt_show_stats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Register/unregister RPC proc files
  */
 static inline struct proc_dir_entry *
 do_register(struct net *net, const char *name, void *data,
-<<<<<<< HEAD
-	    const struct file_operations *fops)
-=======
 	    const struct proc_ops *proc_ops)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sunrpc_net *sn;
 
 	dprintk("RPC:       registering /proc/net/rpc/%s\n", name);
 	sn = net_generic(net, sunrpc_net_id);
-<<<<<<< HEAD
-	return proc_create_data(name, 0, sn->proc_net_rpc, fops, data);
-=======
 	return proc_create_data(name, 0, sn->proc_net_rpc, proc_ops, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct proc_dir_entry *
 rpc_proc_register(struct net *net, struct rpc_stat *statp)
 {
-<<<<<<< HEAD
-	return do_register(net, statp->program->name, statp, &rpc_proc_fops);
-=======
 	return do_register(net, statp->program->name, statp, &rpc_proc_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(rpc_proc_register);
 
@@ -440,15 +312,9 @@ rpc_proc_unregister(struct net *net, const char *name)
 EXPORT_SYMBOL_GPL(rpc_proc_unregister);
 
 struct proc_dir_entry *
-<<<<<<< HEAD
-svc_proc_register(struct net *net, struct svc_stat *statp, const struct file_operations *fops)
-{
-	return do_register(net, statp->program->pg_name, statp, fops);
-=======
 svc_proc_register(struct net *net, struct svc_stat *statp, const struct proc_ops *proc_ops)
 {
 	return do_register(net, statp->program->pg_name, net, proc_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(svc_proc_register);
 
@@ -480,7 +346,3 @@ void rpc_proc_exit(struct net *net)
 	dprintk("RPC:       unregistering /proc/net/rpc\n");
 	remove_proc_entry("rpc", net->proc_net);
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

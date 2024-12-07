@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IBM Hot Plug Controller Driver
  *
@@ -11,24 +8,6 @@
  *
  * All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- * NON INFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <gregkh@us.ibm.com>
  *                  <jshah@us.ibm.com>
  *
@@ -36,29 +15,18 @@
 
 #include <linux/wait.h>
 #include <linux/time.h>
-<<<<<<< HEAD
-=======
 #include <linux/completion.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/init.h>
 #include <linux/mutex.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <linux/semaphore.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kthread.h>
 #include "ibmphp.h"
 
 static int to_debug = 0;
-<<<<<<< HEAD
-#define debug_polling(fmt, arg...)	do { if (to_debug) debug (fmt, arg); } while (0)
-=======
 #define debug_polling(fmt, arg...)	do { if (to_debug) debug(fmt, arg); } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 //----------------------------------------------------------------------------
 // timeout values
@@ -120,33 +88,14 @@ static int to_debug = 0;
 //----------------------------------------------------------------------------
 // global variables
 //----------------------------------------------------------------------------
-<<<<<<< HEAD
-static struct mutex sem_hpcaccess;	// lock access to HPC
-static struct semaphore semOperations;	// lock all operations and
-					// access to data structures
-static struct semaphore sem_exit;	// make sure polling thread goes away
-=======
 static DEFINE_MUTEX(sem_hpcaccess);	// lock access to HPC
 static DEFINE_MUTEX(operations_mutex);	// lock all operations and
 					// access to data structures
 static DECLARE_COMPLETION(exit_complete); // make sure polling thread goes away
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct task_struct *ibmphp_poll_thread;
 //----------------------------------------------------------------------------
 // local function prototypes
 //----------------------------------------------------------------------------
-<<<<<<< HEAD
-static u8 i2c_ctrl_read (struct controller *, void __iomem *, u8);
-static u8 i2c_ctrl_write (struct controller *, void __iomem *, u8, u8);
-static u8 hpc_writecmdtoindex (u8, u8);
-static u8 hpc_readcmdtoindex (u8, u8);
-static void get_hpc_access (void);
-static void free_hpc_access (void);
-static int poll_hpc(void *data);
-static int process_changeinstatus (struct slot *, struct slot *);
-static int process_changeinlatch (u8, u8, struct controller *);
-static int hpc_wait_ctlr_notworking (int, struct controller *, void __iomem *, u8 *);
-=======
 static u8 i2c_ctrl_read(struct controller *, void __iomem *, u8);
 static u8 i2c_ctrl_write(struct controller *, void __iomem *, u8, u8);
 static u8 hpc_writecmdtoindex(u8, u8);
@@ -157,41 +106,16 @@ static int poll_hpc(void *data);
 static int process_changeinstatus(struct slot *, struct slot *);
 static int process_changeinlatch(u8, u8, struct controller *);
 static int hpc_wait_ctlr_notworking(int, struct controller *, void __iomem *, u8 *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 //----------------------------------------------------------------------------
 
 
 /*----------------------------------------------------------------------
-<<<<<<< HEAD
-* Name:    ibmphp_hpc_initvars
-*
-* Action:  initialize semaphores and variables
-*---------------------------------------------------------------------*/
-void __init ibmphp_hpc_initvars (void)
-{
-	debug ("%s - Entry\n", __func__);
-
-	mutex_init(&sem_hpcaccess);
-	sema_init(&semOperations, 1);
-	sema_init(&sem_exit, 0);
-	to_debug = 0;
-
-	debug ("%s - Exit\n", __func__);
-}
-
-/*----------------------------------------------------------------------
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 * Name:    i2c_ctrl_read
 *
 * Action:  read from HPC over I2C
 *
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-static u8 i2c_ctrl_read (struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 index)
-=======
 static u8 i2c_ctrl_read(struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 index)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 status;
 	int i;
@@ -200,11 +124,7 @@ static u8 i2c_ctrl_read(struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 i
 	unsigned long ultemp;
 	unsigned long data;	// actual data HILO format
 
-<<<<<<< HEAD
-	debug_polling ("%s - Entry WPGBbar[%p] index[%x] \n", __func__, WPGBbar, index);
-=======
 	debug_polling("%s - Entry WPGBbar[%p] index[%x] \n", __func__, WPGBbar, index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	//--------------------------------------------------------------------
 	// READ - step 1
@@ -227,15 +147,6 @@ static u8 i2c_ctrl_read(struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 i
 		ultemp = ultemp << 8;
 		data |= ultemp;
 	} else {
-<<<<<<< HEAD
-		err ("this controller type is not supported \n");
-		return HPC_ERROR;
-	}
-
-	wpg_data = swab32 (data);	// swap data before writing
-	wpg_addr = WPGBbar + WPG_I2CMOSUP_OFFSET;
-	writel (wpg_data, wpg_addr);
-=======
 		err("this controller type is not supported \n");
 		return HPC_ERROR;
 	}
@@ -243,34 +154,21 @@ static u8 i2c_ctrl_read(struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 i
 	wpg_data = swab32(data);	// swap data before writing
 	wpg_addr = WPGBbar + WPG_I2CMOSUP_OFFSET;
 	writel(wpg_data, wpg_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	//--------------------------------------------------------------------
 	// READ - step 2 : clear the message buffer
 	data = 0x00000000;
-<<<<<<< HEAD
-	wpg_data = swab32 (data);
-	wpg_addr = WPGBbar + WPG_I2CMBUFL_OFFSET;
-	writel (wpg_data, wpg_addr);
-=======
 	wpg_data = swab32(data);
 	wpg_addr = WPGBbar + WPG_I2CMBUFL_OFFSET;
 	writel(wpg_data, wpg_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	//--------------------------------------------------------------------
 	// READ - step 3 : issue start operation, I2C master control bit 30:ON
 	//                 2020 : [20] OR operation at [20] offset 0x20
 	data = WPG_I2CMCNTL_STARTOP_MASK;
-<<<<<<< HEAD
-	wpg_data = swab32 (data);
-	wpg_addr = WPGBbar + WPG_I2CMCNTL_OFFSET + WPG_I2C_OR;
-	writel (wpg_data, wpg_addr);
-=======
 	wpg_data = swab32(data);
 	wpg_addr = WPGBbar + WPG_I2CMCNTL_OFFSET + WPG_I2C_OR;
 	writel(wpg_data, wpg_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	//--------------------------------------------------------------------
 	// READ - step 4 : wait until start operation bit clears
@@ -278,23 +176,14 @@ static u8 i2c_ctrl_read(struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 i
 	while (i) {
 		msleep(10);
 		wpg_addr = WPGBbar + WPG_I2CMCNTL_OFFSET;
-<<<<<<< HEAD
-		wpg_data = readl (wpg_addr);
-		data = swab32 (wpg_data);
-=======
 		wpg_data = readl(wpg_addr);
 		data = swab32(wpg_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(data & WPG_I2CMCNTL_STARTOP_MASK))
 			break;
 		i--;
 	}
 	if (i == 0) {
-<<<<<<< HEAD
-		debug ("%s - Error : WPG timeout\n", __func__);
-=======
 		debug("%s - Error : WPG timeout\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return HPC_ERROR;
 	}
 	//--------------------------------------------------------------------
@@ -303,45 +192,26 @@ static u8 i2c_ctrl_read(struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 i
 	while (i) {
 		msleep(10);
 		wpg_addr = WPGBbar + WPG_I2CSTAT_OFFSET;
-<<<<<<< HEAD
-		wpg_data = readl (wpg_addr);
-		data = swab32 (wpg_data);
-		if (HPC_I2CSTATUS_CHECK (data))
-=======
 		wpg_data = readl(wpg_addr);
 		data = swab32(wpg_data);
 		if (HPC_I2CSTATUS_CHECK(data))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		i--;
 	}
 	if (i == 0) {
-<<<<<<< HEAD
-		debug ("ctrl_read - Exit Error:I2C timeout\n");
-=======
 		debug("ctrl_read - Exit Error:I2C timeout\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return HPC_ERROR;
 	}
 
 	//--------------------------------------------------------------------
 	// READ - step 6 : get DATA
 	wpg_addr = WPGBbar + WPG_I2CMBUFL_OFFSET;
-<<<<<<< HEAD
-	wpg_data = readl (wpg_addr);
-	data = swab32 (wpg_data);
-
-	status = (u8) data;
-
-	debug_polling ("%s - Exit index[%x] status[%x]\n", __func__, index, status);
-=======
 	wpg_data = readl(wpg_addr);
 	data = swab32(wpg_data);
 
 	status = (u8) data;
 
 	debug_polling("%s - Exit index[%x] status[%x]\n", __func__, index, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (status);
 }
@@ -353,28 +223,16 @@ static u8 i2c_ctrl_read(struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 i
 *
 * Return   0 or error codes
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-static u8 i2c_ctrl_write (struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 index, u8 cmd)
-{
-	u8 rc;
-	void __iomem *wpg_addr;	// base addr + offset
-	unsigned long wpg_data;	// data to/from WPG LOHI format 
-=======
 static u8 i2c_ctrl_write(struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 index, u8 cmd)
 {
 	u8 rc;
 	void __iomem *wpg_addr;	// base addr + offset
 	unsigned long wpg_data;	// data to/from WPG LOHI format
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long ultemp;
 	unsigned long data;	// actual data HILO format
 	int i;
 
-<<<<<<< HEAD
-	debug_polling ("%s - Entry WPGBbar[%p] index[%x] cmd[%x]\n", __func__, WPGBbar, index, cmd);
-=======
 	debug_polling("%s - Entry WPGBbar[%p] index[%x] cmd[%x]\n", __func__, WPGBbar, index, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = 0;
 	//--------------------------------------------------------------------
@@ -400,15 +258,6 @@ static u8 i2c_ctrl_write(struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 
 		ultemp = ultemp << 8;
 		data |= ultemp;
 	} else {
-<<<<<<< HEAD
-		err ("this controller type is not supported \n");
-		return HPC_ERROR;
-	}
-
-	wpg_data = swab32 (data);	// swap data before writing
-	wpg_addr = WPGBbar + WPG_I2CMOSUP_OFFSET;
-	writel (wpg_data, wpg_addr);
-=======
 		err("this controller type is not supported \n");
 		return HPC_ERROR;
 	}
@@ -416,34 +265,21 @@ static u8 i2c_ctrl_write(struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 
 	wpg_data = swab32(data);	// swap data before writing
 	wpg_addr = WPGBbar + WPG_I2CMOSUP_OFFSET;
 	writel(wpg_data, wpg_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	//--------------------------------------------------------------------
 	// WRITE - step 2 : clear the message buffer
 	data = 0x00000000 | (unsigned long)cmd;
-<<<<<<< HEAD
-	wpg_data = swab32 (data);
-	wpg_addr = WPGBbar + WPG_I2CMBUFL_OFFSET;
-	writel (wpg_data, wpg_addr);
-=======
 	wpg_data = swab32(data);
 	wpg_addr = WPGBbar + WPG_I2CMBUFL_OFFSET;
 	writel(wpg_data, wpg_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	//--------------------------------------------------------------------
 	// WRITE - step 3 : issue start operation,I2C master control bit 30:ON
 	//                 2020 : [20] OR operation at [20] offset 0x20
 	data = WPG_I2CMCNTL_STARTOP_MASK;
-<<<<<<< HEAD
-	wpg_data = swab32 (data);
-	wpg_addr = WPGBbar + WPG_I2CMCNTL_OFFSET + WPG_I2C_OR;
-	writel (wpg_data, wpg_addr);
-=======
 	wpg_data = swab32(data);
 	wpg_addr = WPGBbar + WPG_I2CMCNTL_OFFSET + WPG_I2C_OR;
 	writel(wpg_data, wpg_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	//--------------------------------------------------------------------
 	// WRITE - step 4 : wait until start operation bit clears
@@ -451,23 +287,14 @@ static u8 i2c_ctrl_write(struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 
 	while (i) {
 		msleep(10);
 		wpg_addr = WPGBbar + WPG_I2CMCNTL_OFFSET;
-<<<<<<< HEAD
-		wpg_data = readl (wpg_addr);
-		data = swab32 (wpg_data);
-=======
 		wpg_data = readl(wpg_addr);
 		data = swab32(wpg_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(data & WPG_I2CMCNTL_STARTOP_MASK))
 			break;
 		i--;
 	}
 	if (i == 0) {
-<<<<<<< HEAD
-		debug ("%s - Exit Error:WPG timeout\n", __func__);
-=======
 		debug("%s - Exit Error:WPG timeout\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = HPC_ERROR;
 	}
 
@@ -477,49 +304,22 @@ static u8 i2c_ctrl_write(struct controller *ctlr_ptr, void __iomem *WPGBbar, u8 
 	while (i) {
 		msleep(10);
 		wpg_addr = WPGBbar + WPG_I2CSTAT_OFFSET;
-<<<<<<< HEAD
-		wpg_data = readl (wpg_addr);
-		data = swab32 (wpg_data);
-		if (HPC_I2CSTATUS_CHECK (data))
-=======
 		wpg_data = readl(wpg_addr);
 		data = swab32(wpg_data);
 		if (HPC_I2CSTATUS_CHECK(data))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		i--;
 	}
 	if (i == 0) {
-<<<<<<< HEAD
-		debug ("ctrl_read - Error : I2C timeout\n");
-		rc = HPC_ERROR;
-	}
-
-	debug_polling ("%s Exit rc[%x]\n", __func__, rc);
-=======
 		debug("ctrl_read - Error : I2C timeout\n");
 		rc = HPC_ERROR;
 	}
 
 	debug_polling("%s Exit rc[%x]\n", __func__, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (rc);
 }
 
 //------------------------------------------------------------
-<<<<<<< HEAD
-//  Read from ISA type HPC 
-//------------------------------------------------------------
-static u8 isa_ctrl_read (struct controller *ctlr_ptr, u8 offset)
-{
-	u16 start_address;
-	u16 end_address;
-	u8 data;
-
-	start_address = ctlr_ptr->u.isa_ctlr.io_start;
-	end_address = ctlr_ptr->u.isa_ctlr.io_end;
-	data = inb (start_address + offset);
-=======
 //  Read from ISA type HPC
 //------------------------------------------------------------
 static u8 isa_ctrl_read(struct controller *ctlr_ptr, u8 offset)
@@ -529,40 +329,12 @@ static u8 isa_ctrl_read(struct controller *ctlr_ptr, u8 offset)
 
 	start_address = ctlr_ptr->u.isa_ctlr.io_start;
 	data = inb(start_address + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return data;
 }
 
 //--------------------------------------------------------------
 // Write to ISA type HPC
 //--------------------------------------------------------------
-<<<<<<< HEAD
-static void isa_ctrl_write (struct controller *ctlr_ptr, u8 offset, u8 data)
-{
-	u16 start_address;
-	u16 port_address;
-	
-	start_address = ctlr_ptr->u.isa_ctlr.io_start;
-	port_address = start_address + (u16) offset;
-	outb (data, port_address);
-}
-
-static u8 pci_ctrl_read (struct controller *ctrl, u8 offset)
-{
-	u8 data = 0x00;
-	debug ("inside pci_ctrl_read\n");
-	if (ctrl->ctrl_dev)
-		pci_read_config_byte (ctrl->ctrl_dev, HPC_PCI_OFFSET + offset, &data);
-	return data;
-}
-
-static u8 pci_ctrl_write (struct controller *ctrl, u8 offset, u8 data)
-{
-	u8 rc = -ENODEV;
-	debug ("inside pci_ctrl_write\n");
-	if (ctrl->ctrl_dev) {
-		pci_write_config_byte (ctrl->ctrl_dev, HPC_PCI_OFFSET + offset, data);
-=======
 static void isa_ctrl_write(struct controller *ctlr_ptr, u8 offset, u8 data)
 {
 	u16 start_address;
@@ -588,31 +360,16 @@ static u8 pci_ctrl_write(struct controller *ctrl, u8 offset, u8 data)
 	debug("inside pci_ctrl_write\n");
 	if (ctrl->ctrl_dev) {
 		pci_write_config_byte(ctrl->ctrl_dev, HPC_PCI_OFFSET + offset, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = 0;
 	}
 	return rc;
 }
 
-<<<<<<< HEAD
-static u8 ctrl_read (struct controller *ctlr, void __iomem *base, u8 offset)
-=======
 static u8 ctrl_read(struct controller *ctlr, void __iomem *base, u8 offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 rc;
 	switch (ctlr->ctlr_type) {
 	case 0:
-<<<<<<< HEAD
-		rc = isa_ctrl_read (ctlr, offset);
-		break;
-	case 1:
-		rc = pci_ctrl_read (ctlr, offset);
-		break;
-	case 2:
-	case 4:
-		rc = i2c_ctrl_read (ctlr, base, offset);
-=======
 		rc = isa_ctrl_read(ctlr, offset);
 		break;
 	case 1:
@@ -621,7 +378,6 @@ static u8 ctrl_read(struct controller *ctlr, void __iomem *base, u8 offset)
 	case 2:
 	case 4:
 		rc = i2c_ctrl_read(ctlr, base, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -ENODEV;
@@ -629,11 +385,7 @@ static u8 ctrl_read(struct controller *ctlr, void __iomem *base, u8 offset)
 	return rc;
 }
 
-<<<<<<< HEAD
-static u8 ctrl_write (struct controller *ctlr, void __iomem *base, u8 offset, u8 data)
-=======
 static u8 ctrl_write(struct controller *ctlr, void __iomem *base, u8 offset, u8 data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 rc = 0;
 	switch (ctlr->ctlr_type) {
@@ -641,11 +393,7 @@ static u8 ctrl_write(struct controller *ctlr, void __iomem *base, u8 offset, u8 
 		isa_ctrl_write(ctlr, offset, data);
 		break;
 	case 1:
-<<<<<<< HEAD
-		rc = pci_ctrl_write (ctlr, offset, data);
-=======
 		rc = pci_ctrl_write(ctlr, offset, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 2:
 	case 4:
@@ -663,11 +411,7 @@ static u8 ctrl_write(struct controller *ctlr, void __iomem *base, u8 offset, u8 
 *
 * Return   index, HPC_ERROR
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-static u8 hpc_writecmdtoindex (u8 cmd, u8 index)
-=======
 static u8 hpc_writecmdtoindex(u8 cmd, u8 index)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 rc;
 
@@ -699,11 +443,7 @@ static u8 hpc_writecmdtoindex(u8 cmd, u8 index)
 		break;
 
 	default:
-<<<<<<< HEAD
-		err ("hpc_writecmdtoindex - Error invalid cmd[%x]\n", cmd);
-=======
 		err("hpc_writecmdtoindex - Error invalid cmd[%x]\n", cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = HPC_ERROR;
 	}
 
@@ -717,11 +457,7 @@ static u8 hpc_writecmdtoindex(u8 cmd, u8 index)
 *
 * Return   index, HPC_ERROR
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-static u8 hpc_readcmdtoindex (u8 cmd, u8 index)
-=======
 static u8 hpc_readcmdtoindex(u8 cmd, u8 index)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 rc;
 
@@ -764,136 +500,77 @@ static u8 hpc_readcmdtoindex(u8 cmd, u8 index)
 *
 * Return   0 or error codes
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-int ibmphp_hpc_readslot (struct slot * pslot, u8 cmd, u8 * pstatus)
-{
-	void __iomem *wpg_bbar = NULL;
-	struct controller *ctlr_ptr;
-	struct list_head *pslotlist;
-=======
 int ibmphp_hpc_readslot(struct slot *pslot, u8 cmd, u8 *pstatus)
 {
 	void __iomem *wpg_bbar = NULL;
 	struct controller *ctlr_ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 index, status;
 	int rc = 0;
 	int busindex;
 
-<<<<<<< HEAD
-	debug_polling ("%s - Entry pslot[%p] cmd[%x] pstatus[%p]\n", __func__, pslot, cmd, pstatus);
-=======
 	debug_polling("%s - Entry pslot[%p] cmd[%x] pstatus[%p]\n", __func__, pslot, cmd, pstatus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((pslot == NULL)
 	    || ((pstatus == NULL) && (cmd != READ_ALLSTAT) && (cmd != READ_BUSSTATUS))) {
 		rc = -EINVAL;
-<<<<<<< HEAD
-		err ("%s - Error invalid pointer, rc[%d]\n", __func__, rc);
-=======
 		err("%s - Error invalid pointer, rc[%d]\n", __func__, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 
 	if (cmd == READ_BUSSTATUS) {
-<<<<<<< HEAD
-		busindex = ibmphp_get_bus_index (pslot->bus);
-		if (busindex < 0) {
-			rc = -EINVAL;
-			err ("%s - Exit Error:invalid bus, rc[%d]\n", __func__, rc);
-=======
 		busindex = ibmphp_get_bus_index(pslot->bus);
 		if (busindex < 0) {
 			rc = -EINVAL;
 			err("%s - Exit Error:invalid bus, rc[%d]\n", __func__, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rc;
 		} else
 			index = (u8) busindex;
 	} else
 		index = pslot->ctlr_index;
 
-<<<<<<< HEAD
-	index = hpc_readcmdtoindex (cmd, index);
-
-	if (index == HPC_ERROR) {
-		rc = -EINVAL;
-		err ("%s - Exit Error:invalid index, rc[%d]\n", __func__, rc);
-=======
 	index = hpc_readcmdtoindex(cmd, index);
 
 	if (index == HPC_ERROR) {
 		rc = -EINVAL;
 		err("%s - Exit Error:invalid index, rc[%d]\n", __func__, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 
 	ctlr_ptr = pslot->ctrl;
 
-<<<<<<< HEAD
-	get_hpc_access ();
-=======
 	get_hpc_access();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	//--------------------------------------------------------------------
 	// map physical address to logical address
 	//--------------------------------------------------------------------
 	if ((ctlr_ptr->ctlr_type == 2) || (ctlr_ptr->ctlr_type == 4))
-<<<<<<< HEAD
-		wpg_bbar = ioremap (ctlr_ptr->u.wpeg_ctlr.wpegbbar, WPG_I2C_IOREMAP_SIZE);
-=======
 		wpg_bbar = ioremap(ctlr_ptr->u.wpeg_ctlr.wpegbbar, WPG_I2C_IOREMAP_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	//--------------------------------------------------------------------
 	// check controller status before reading
 	//--------------------------------------------------------------------
-<<<<<<< HEAD
-	rc = hpc_wait_ctlr_notworking (HPC_CTLR_WORKING_TOUT, ctlr_ptr, wpg_bbar, &status);
-=======
 	rc = hpc_wait_ctlr_notworking(HPC_CTLR_WORKING_TOUT, ctlr_ptr, wpg_bbar, &status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rc) {
 		switch (cmd) {
 		case READ_ALLSTAT:
 			// update the slot structure
 			pslot->ctrl->status = status;
-<<<<<<< HEAD
-			pslot->status = ctrl_read (ctlr_ptr, wpg_bbar, index);
-			rc = hpc_wait_ctlr_notworking (HPC_CTLR_WORKING_TOUT, ctlr_ptr, wpg_bbar,
-						       &status);
-			if (!rc)
-				pslot->ext_status = ctrl_read (ctlr_ptr, wpg_bbar, index + WPG_1ST_EXTSLOT_INDEX);
-=======
 			pslot->status = ctrl_read(ctlr_ptr, wpg_bbar, index);
 			rc = hpc_wait_ctlr_notworking(HPC_CTLR_WORKING_TOUT, ctlr_ptr, wpg_bbar,
 						       &status);
 			if (!rc)
 				pslot->ext_status = ctrl_read(ctlr_ptr, wpg_bbar, index + WPG_1ST_EXTSLOT_INDEX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			break;
 
 		case READ_SLOTSTATUS:
 			// DO NOT update the slot structure
-<<<<<<< HEAD
-			*pstatus = ctrl_read (ctlr_ptr, wpg_bbar, index);
-=======
 			*pstatus = ctrl_read(ctlr_ptr, wpg_bbar, index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case READ_EXTSLOTSTATUS:
 			// DO NOT update the slot structure
-<<<<<<< HEAD
-			*pstatus = ctrl_read (ctlr_ptr, wpg_bbar, index);
-=======
 			*pstatus = ctrl_read(ctlr_ptr, wpg_bbar, index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case READ_CTLRSTATUS:
@@ -902,19 +579,6 @@ int ibmphp_hpc_readslot(struct slot *pslot, u8 cmd, u8 *pstatus)
 			break;
 
 		case READ_BUSSTATUS:
-<<<<<<< HEAD
-			pslot->busstatus = ctrl_read (ctlr_ptr, wpg_bbar, index);
-			break;
-		case READ_REVLEVEL:
-			*pstatus = ctrl_read (ctlr_ptr, wpg_bbar, index);
-			break;
-		case READ_HPCOPTIONS:
-			*pstatus = ctrl_read (ctlr_ptr, wpg_bbar, index);
-			break;
-		case READ_SLOTLATCHLOWREG:
-			// DO NOT update the slot structure
-			*pstatus = ctrl_read (ctlr_ptr, wpg_bbar, index);
-=======
 			pslot->busstatus = ctrl_read(ctlr_ptr, wpg_bbar, index);
 			break;
 		case READ_REVLEVEL:
@@ -926,28 +590,10 @@ int ibmphp_hpc_readslot(struct slot *pslot, u8 cmd, u8 *pstatus)
 		case READ_SLOTLATCHLOWREG:
 			// DO NOT update the slot structure
 			*pstatus = ctrl_read(ctlr_ptr, wpg_bbar, index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 			// Not used
 		case READ_ALLSLOT:
-<<<<<<< HEAD
-			list_for_each (pslotlist, &ibmphp_slot_head) {
-				pslot = list_entry (pslotlist, struct slot, ibm_slot_list);
-				index = pslot->ctlr_index;
-				rc = hpc_wait_ctlr_notworking (HPC_CTLR_WORKING_TOUT, ctlr_ptr,
-								wpg_bbar, &status);
-				if (!rc) {
-					pslot->status = ctrl_read (ctlr_ptr, wpg_bbar, index);
-					rc = hpc_wait_ctlr_notworking (HPC_CTLR_WORKING_TOUT,
-									ctlr_ptr, wpg_bbar, &status);
-					if (!rc)
-						pslot->ext_status =
-						    ctrl_read (ctlr_ptr, wpg_bbar,
-								index + WPG_1ST_EXTSLOT_INDEX);
-				} else {
-					err ("%s - Error ctrl_read failed\n", __func__);
-=======
 			list_for_each_entry(pslot, &ibmphp_slot_head,
 					    ibm_slot_list) {
 				index = pslot->ctlr_index;
@@ -963,7 +609,6 @@ int ibmphp_hpc_readslot(struct slot *pslot, u8 cmd, u8 *pstatus)
 								index + WPG_1ST_EXTSLOT_INDEX);
 				} else {
 					err("%s - Error ctrl_read failed\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					rc = -EINVAL;
 					break;
 				}
@@ -977,16 +622,6 @@ int ibmphp_hpc_readslot(struct slot *pslot, u8 cmd, u8 *pstatus)
 	//--------------------------------------------------------------------
 	// cleanup
 	//--------------------------------------------------------------------
-<<<<<<< HEAD
-	
-	// remove physical to logical address mapping
-	if ((ctlr_ptr->ctlr_type == 2) || (ctlr_ptr->ctlr_type == 4))
-		iounmap (wpg_bbar);
-	
-	free_hpc_access ();
-
-	debug_polling ("%s - Exit rc[%d]\n", __func__, rc);
-=======
 
 	// remove physical to logical address mapping
 	if ((ctlr_ptr->ctlr_type == 2) || (ctlr_ptr->ctlr_type == 4))
@@ -995,7 +630,6 @@ int ibmphp_hpc_readslot(struct slot *pslot, u8 cmd, u8 *pstatus)
 	free_hpc_access();
 
 	debug_polling("%s - Exit rc[%d]\n", __func__, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -1004,11 +638,7 @@ int ibmphp_hpc_readslot(struct slot *pslot, u8 cmd, u8 *pstatus)
 *
 * Action: issue a WRITE command to HPC
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-int ibmphp_hpc_writeslot (struct slot * pslot, u8 cmd)
-=======
 int ibmphp_hpc_writeslot(struct slot *pslot, u8 cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *wpg_bbar = NULL;
 	struct controller *ctlr_ptr;
@@ -1018,94 +648,55 @@ int ibmphp_hpc_writeslot(struct slot *pslot, u8 cmd)
 	int rc = 0;
 	int timeout;
 
-<<<<<<< HEAD
-	debug_polling ("%s - Entry pslot[%p] cmd[%x]\n", __func__, pslot, cmd);
-	if (pslot == NULL) {
-		rc = -EINVAL;
-		err ("%s - Error Exit rc[%d]\n", __func__, rc);
-=======
 	debug_polling("%s - Entry pslot[%p] cmd[%x]\n", __func__, pslot, cmd);
 	if (pslot == NULL) {
 		rc = -EINVAL;
 		err("%s - Error Exit rc[%d]\n", __func__, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 
 	if ((cmd == HPC_BUS_33CONVMODE) || (cmd == HPC_BUS_66CONVMODE) ||
 		(cmd == HPC_BUS_66PCIXMODE) || (cmd == HPC_BUS_100PCIXMODE) ||
 		(cmd == HPC_BUS_133PCIXMODE)) {
-<<<<<<< HEAD
-		busindex = ibmphp_get_bus_index (pslot->bus);
-		if (busindex < 0) {
-			rc = -EINVAL;
-			err ("%s - Exit Error:invalid bus, rc[%d]\n", __func__, rc);
-=======
 		busindex = ibmphp_get_bus_index(pslot->bus);
 		if (busindex < 0) {
 			rc = -EINVAL;
 			err("%s - Exit Error:invalid bus, rc[%d]\n", __func__, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rc;
 		} else
 			index = (u8) busindex;
 	} else
 		index = pslot->ctlr_index;
 
-<<<<<<< HEAD
-	index = hpc_writecmdtoindex (cmd, index);
-
-	if (index == HPC_ERROR) {
-		rc = -EINVAL;
-		err ("%s - Error Exit rc[%d]\n", __func__, rc);
-=======
 	index = hpc_writecmdtoindex(cmd, index);
 
 	if (index == HPC_ERROR) {
 		rc = -EINVAL;
 		err("%s - Error Exit rc[%d]\n", __func__, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 
 	ctlr_ptr = pslot->ctrl;
 
-<<<<<<< HEAD
-	get_hpc_access ();
-=======
 	get_hpc_access();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	//--------------------------------------------------------------------
 	// map physical address to logical address
 	//--------------------------------------------------------------------
 	if ((ctlr_ptr->ctlr_type == 2) || (ctlr_ptr->ctlr_type == 4)) {
-<<<<<<< HEAD
-		wpg_bbar = ioremap (ctlr_ptr->u.wpeg_ctlr.wpegbbar, WPG_I2C_IOREMAP_SIZE);
-
-		debug ("%s - ctlr id[%x] physical[%lx] logical[%lx] i2c[%x]\n", __func__,
-=======
 		wpg_bbar = ioremap(ctlr_ptr->u.wpeg_ctlr.wpegbbar, WPG_I2C_IOREMAP_SIZE);
 
 		debug("%s - ctlr id[%x] physical[%lx] logical[%lx] i2c[%x]\n", __func__,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ctlr_ptr->ctlr_id, (ulong) (ctlr_ptr->u.wpeg_ctlr.wpegbbar), (ulong) wpg_bbar,
 		ctlr_ptr->u.wpeg_ctlr.i2c_addr);
 	}
 	//--------------------------------------------------------------------
 	// check controller status before writing
 	//--------------------------------------------------------------------
-<<<<<<< HEAD
-	rc = hpc_wait_ctlr_notworking (HPC_CTLR_WORKING_TOUT, ctlr_ptr, wpg_bbar, &status);
-	if (!rc) {
-
-		ctrl_write (ctlr_ptr, wpg_bbar, index, cmd);
-=======
 	rc = hpc_wait_ctlr_notworking(HPC_CTLR_WORKING_TOUT, ctlr_ptr, wpg_bbar, &status);
 	if (!rc) {
 
 		ctrl_write(ctlr_ptr, wpg_bbar, index, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		//--------------------------------------------------------------------
 		// check controller is still not working on the command
@@ -1113,19 +704,11 @@ int ibmphp_hpc_writeslot(struct slot *pslot, u8 cmd)
 		timeout = CMD_COMPLETE_TOUT_SEC;
 		done = 0;
 		while (!done) {
-<<<<<<< HEAD
-			rc = hpc_wait_ctlr_notworking (HPC_CTLR_WORKING_TOUT, ctlr_ptr, wpg_bbar,
-							&status);
-			if (!rc) {
-				if (NEEDTOCHECK_CMDSTATUS (cmd)) {
-					if (CTLR_FINISHED (status) == HPC_CTLR_FINISHED_YES)
-=======
 			rc = hpc_wait_ctlr_notworking(HPC_CTLR_WORKING_TOUT, ctlr_ptr, wpg_bbar,
 							&status);
 			if (!rc) {
 				if (NEEDTOCHECK_CMDSTATUS(cmd)) {
 					if (CTLR_FINISHED(status) == HPC_CTLR_FINISHED_YES)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						done = 1;
 				} else
 					done = 1;
@@ -1134,11 +717,7 @@ int ibmphp_hpc_writeslot(struct slot *pslot, u8 cmd)
 				msleep(1000);
 				if (timeout < 1) {
 					done = 1;
-<<<<<<< HEAD
-					err ("%s - Error command complete timeout\n", __func__);
-=======
 					err("%s - Error command complete timeout\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					rc = -EFAULT;
 				} else
 					timeout--;
@@ -1150,17 +729,10 @@ int ibmphp_hpc_writeslot(struct slot *pslot, u8 cmd)
 
 	// remove physical to logical address mapping
 	if ((ctlr_ptr->ctlr_type == 2) || (ctlr_ptr->ctlr_type == 4))
-<<<<<<< HEAD
-		iounmap (wpg_bbar);
-	free_hpc_access ();
-
-	debug_polling ("%s - Exit rc[%d]\n", __func__, rc);
-=======
 		iounmap(wpg_bbar);
 	free_hpc_access();
 
 	debug_polling("%s - Exit rc[%d]\n", __func__, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -1169,11 +741,7 @@ int ibmphp_hpc_writeslot(struct slot *pslot, u8 cmd)
 *
 * Action: make sure only one process can access HPC at one time
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-static void get_hpc_access (void)
-=======
 static void get_hpc_access(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&sem_hpcaccess);
 }
@@ -1181,11 +749,7 @@ static void get_hpc_access(void)
 /*----------------------------------------------------------------------
 * Name:    free_hpc_access()
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-void free_hpc_access (void)
-=======
 void free_hpc_access(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_unlock(&sem_hpcaccess);
 }
@@ -1195,36 +759,21 @@ void free_hpc_access(void)
 *
 * Action: make sure only one process can change the data structure
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-void ibmphp_lock_operations (void)
-{
-	down (&semOperations);
-=======
 void ibmphp_lock_operations(void)
 {
 	mutex_lock(&operations_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	to_debug = 1;
 }
 
 /*----------------------------------------------------------------------
 * Name:    ibmphp_unlock_operations()
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-void ibmphp_unlock_operations (void)
-{
-	debug ("%s - Entry\n", __func__);
-	up (&semOperations);
-	to_debug = 0;
-	debug ("%s - Exit\n", __func__);
-=======
 void ibmphp_unlock_operations(void)
 {
 	debug("%s - Entry\n", __func__);
 	mutex_unlock(&operations_mutex);
 	to_debug = 0;
 	debug("%s - Exit\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*----------------------------------------------------------------------
@@ -1237,10 +786,6 @@ static int poll_hpc(void *data)
 {
 	struct slot myslot;
 	struct slot *pslot = NULL;
-<<<<<<< HEAD
-	struct list_head *pslotlist;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 	int poll_state = POLL_LATCH_REGISTER;
 	u8 oldlatchlow = 0x00;
@@ -1248,30 +793,6 @@ static int poll_hpc(void *data)
 	int poll_count = 0;
 	u8 ctrl_count = 0x00;
 
-<<<<<<< HEAD
-	debug ("%s - Entry\n", __func__);
-
-	while (!kthread_should_stop()) {
-		/* try to get the lock to do some kind of hardware access */
-		down (&semOperations);
-
-		switch (poll_state) {
-		case POLL_LATCH_REGISTER: 
-			oldlatchlow = curlatchlow;
-			ctrl_count = 0x00;
-			list_for_each (pslotlist, &ibmphp_slot_head) {
-				if (ctrl_count >= ibmphp_get_total_controllers())
-					break;
-				pslot = list_entry (pslotlist, struct slot, ibm_slot_list);
-				if (pslot->ctrl->ctlr_relative_id == ctrl_count) {
-					ctrl_count++;
-					if (READ_SLOT_LATCH (pslot->ctrl)) {
-						rc = ibmphp_hpc_readslot (pslot,
-									  READ_SLOTLATCHLOWREG,
-									  &curlatchlow);
-						if (oldlatchlow != curlatchlow)
-							process_changeinlatch (oldlatchlow,
-=======
 	debug("%s - Entry\n", __func__);
 
 	while (!kthread_should_stop()) {
@@ -1294,7 +815,6 @@ static int poll_hpc(void *data)
 									  &curlatchlow);
 						if (oldlatchlow != curlatchlow)
 							process_changeinlatch(oldlatchlow,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 									       curlatchlow,
 									       pslot->ctrl);
 					}
@@ -1304,27 +824,6 @@ static int poll_hpc(void *data)
 			poll_state = POLL_SLEEP;
 			break;
 		case POLL_SLOTS:
-<<<<<<< HEAD
-			list_for_each (pslotlist, &ibmphp_slot_head) {
-				pslot = list_entry (pslotlist, struct slot, ibm_slot_list);
-				// make a copy of the old status
-				memcpy ((void *) &myslot, (void *) pslot,
-					sizeof (struct slot));
-				rc = ibmphp_hpc_readslot (pslot, READ_ALLSTAT, NULL);
-				if ((myslot.status != pslot->status)
-				    || (myslot.ext_status != pslot->ext_status))
-					process_changeinstatus (pslot, &myslot);
-			}
-			ctrl_count = 0x00;
-			list_for_each (pslotlist, &ibmphp_slot_head) {
-				if (ctrl_count >= ibmphp_get_total_controllers())
-					break;
-				pslot = list_entry (pslotlist, struct slot, ibm_slot_list);
-				if (pslot->ctrl->ctlr_relative_id == ctrl_count) {
-					ctrl_count++;
-					if (READ_SLOT_LATCH (pslot->ctrl))
-						rc = ibmphp_hpc_readslot (pslot,
-=======
 			list_for_each_entry(pslot, &ibmphp_slot_head,
 					    ibm_slot_list) {
 				// make a copy of the old status
@@ -1344,7 +843,6 @@ static int poll_hpc(void *data)
 					ctrl_count++;
 					if (READ_SLOT_LATCH(pslot->ctrl))
 						rc = ibmphp_hpc_readslot(pslot,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 									  READ_SLOTLATCHLOWREG,
 									  &curlatchlow);
 				}
@@ -1354,50 +852,29 @@ static int poll_hpc(void *data)
 			break;
 		case POLL_SLEEP:
 			/* don't sleep with a lock on the hardware */
-<<<<<<< HEAD
-			up (&semOperations);
-=======
 			mutex_unlock(&operations_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msleep(POLL_INTERVAL_SEC * 1000);
 
 			if (kthread_should_stop())
 				goto out_sleep;
-<<<<<<< HEAD
-			
-			down (&semOperations);
-			
-=======
 
 			mutex_lock(&operations_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (poll_count >= POLL_LATCH_CNT) {
 				poll_count = 0;
 				poll_state = POLL_SLOTS;
 			} else
 				poll_state = POLL_LATCH_REGISTER;
 			break;
-<<<<<<< HEAD
-		}	
-		/* give up the hardware semaphore */
-		up (&semOperations);
-=======
 		}
 		/* give up the hardware semaphore */
 		mutex_unlock(&operations_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* sleep for a short time just for good measure */
 out_sleep:
 		msleep(100);
 	}
-<<<<<<< HEAD
-	up (&sem_exit);
-	debug ("%s - Exit\n", __func__);
-=======
 	complete(&exit_complete);
 	debug("%s - Exit\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1417,22 +894,14 @@ out_sleep:
 *
 * Notes:
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-static int process_changeinstatus (struct slot *pslot, struct slot *poldslot)
-=======
 static int process_changeinstatus(struct slot *pslot, struct slot *poldslot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 status;
 	int rc = 0;
 	u8 disable = 0;
 	u8 update = 0;
 
-<<<<<<< HEAD
-	debug ("process_changeinstatus - Entry pslot[%p], poldslot[%p]\n", pslot, poldslot);
-=======
 	debug("process_changeinstatus - Entry pslot[%p], poldslot[%p]\n", pslot, poldslot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	// bit 0 - HPC_SLOT_POWER
 	if ((pslot->status & 0x01) != (poldslot->status & 0x01))
@@ -1454,11 +923,7 @@ static int process_changeinstatus(struct slot *pslot, struct slot *poldslot)
 	// bit 5 - HPC_SLOT_PWRGD
 	if ((pslot->status & 0x20) != (poldslot->status & 0x20))
 		// OFF -> ON: ignore, ON -> OFF: disable slot
-<<<<<<< HEAD
-		if ((poldslot->status & 0x20) && (SLOT_CONNECT (poldslot->status) == HPC_SLOT_CONNECTED) && (SLOT_PRESENT (poldslot->status))) 
-=======
 		if ((poldslot->status & 0x20) && (SLOT_CONNECT(poldslot->status) == HPC_SLOT_CONNECTED) && (SLOT_PRESENT(poldslot->status)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			disable = 1;
 
 	// bit 6 - HPC_SLOT_BUS_SPEED
@@ -1469,35 +934,20 @@ static int process_changeinstatus(struct slot *pslot, struct slot *poldslot)
 		update = 1;
 		// OPEN -> CLOSE
 		if (pslot->status & 0x80) {
-<<<<<<< HEAD
-			if (SLOT_PWRGD (pslot->status)) {
-				// power goes on and off after closing latch
-				// check again to make sure power is still ON
-				msleep(1000);
-				rc = ibmphp_hpc_readslot (pslot, READ_SLOTSTATUS, &status);
-				if (SLOT_PWRGD (status))
-=======
 			if (SLOT_PWRGD(pslot->status)) {
 				// power goes on and off after closing latch
 				// check again to make sure power is still ON
 				msleep(1000);
 				rc = ibmphp_hpc_readslot(pslot, READ_SLOTSTATUS, &status);
 				if (SLOT_PWRGD(status))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					update = 1;
 				else	// overwrite power in pslot to OFF
 					pslot->status &= ~HPC_SLOT_POWER;
 			}
 		}
-<<<<<<< HEAD
-		// CLOSE -> OPEN 
-		else if ((SLOT_PWRGD (poldslot->status) == HPC_SLOT_PWRGD_GOOD)
-			&& (SLOT_CONNECT (poldslot->status) == HPC_SLOT_CONNECTED) && (SLOT_PRESENT (poldslot->status))) {
-=======
 		// CLOSE -> OPEN
 		else if ((SLOT_PWRGD(poldslot->status) == HPC_SLOT_PWRGD_GOOD)
 			&& (SLOT_CONNECT(poldslot->status) == HPC_SLOT_CONNECTED) && (SLOT_PRESENT(poldslot->status))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			disable = 1;
 		}
 		// else - ignore
@@ -1507,18 +957,6 @@ static int process_changeinstatus(struct slot *pslot, struct slot *poldslot)
 		update = 1;
 
 	if (disable) {
-<<<<<<< HEAD
-		debug ("process_changeinstatus - disable slot\n");
-		pslot->flag = 0;
-		rc = ibmphp_do_disable_slot (pslot);
-	}
-
-	if (update || disable) {
-		ibmphp_update_slot_info (pslot);
-	}
-
-	debug ("%s - Exit rc[%d] disable[%x] update[%x]\n", __func__, rc, disable, update);
-=======
 		debug("process_changeinstatus - disable slot\n");
 		pslot->flag = 0;
 		rc = ibmphp_do_disable_slot(pslot);
@@ -1528,7 +966,6 @@ static int process_changeinstatus(struct slot *pslot, struct slot *poldslot)
 		ibmphp_update_slot_info(pslot);
 
 	debug("%s - Exit rc[%d] disable[%x] update[%x]\n", __func__, rc, disable, update);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -1543,42 +980,19 @@ static int process_changeinstatus(struct slot *pslot, struct slot *poldslot)
 * Return   0 or error codes
 * Value:
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-static int process_changeinlatch (u8 old, u8 new, struct controller *ctrl)
-=======
 static int process_changeinlatch(u8 old, u8 new, struct controller *ctrl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slot myslot, *pslot;
 	u8 i;
 	u8 mask;
 	int rc = 0;
 
-<<<<<<< HEAD
-	debug ("%s - Entry old[%x], new[%x]\n", __func__, old, new);
-=======
 	debug("%s - Entry old[%x], new[%x]\n", __func__, old, new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	// bit 0 reserved, 0 is LSB, check bit 1-6 for 6 slots
 
 	for (i = ctrl->starting_slot_num; i <= ctrl->ending_slot_num; i++) {
 		mask = 0x01 << i;
 		if ((mask & old) != (mask & new)) {
-<<<<<<< HEAD
-			pslot = ibmphp_get_slot_from_physical_num (i);
-			if (pslot) {
-				memcpy ((void *) &myslot, (void *) pslot, sizeof (struct slot));
-				rc = ibmphp_hpc_readslot (pslot, READ_ALLSTAT, NULL);
-				debug ("%s - call process_changeinstatus for slot[%d]\n", __func__, i);
-				process_changeinstatus (pslot, &myslot);
-			} else {
-				rc = -EINVAL;
-				err ("%s - Error bad pointer for slot[%d]\n", __func__, i);
-			}
-		}
-	}
-	debug ("%s - Exit rc[%d]\n", __func__, rc);
-=======
 			pslot = ibmphp_get_slot_from_physical_num(i);
 			if (pslot) {
 				memcpy((void *) &myslot, (void *) pslot, sizeof(struct slot));
@@ -1592,7 +1006,6 @@ static int process_changeinlatch(u8 old, u8 new, struct controller *ctrl)
 		}
 	}
 	debug("%s - Exit rc[%d]\n", __func__, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -1601,15 +1014,6 @@ static int process_changeinlatch(u8 old, u8 new, struct controller *ctrl)
 *
 * Action:  start polling thread
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-int __init ibmphp_hpc_start_poll_thread (void)
-{
-	debug ("%s - Entry\n", __func__);
-
-	ibmphp_poll_thread = kthread_run(poll_hpc, NULL, "hpc_poll");
-	if (IS_ERR(ibmphp_poll_thread)) {
-		err ("%s - Error, thread not started\n", __func__);
-=======
 int __init ibmphp_hpc_start_poll_thread(void)
 {
 	debug("%s - Entry\n", __func__);
@@ -1617,7 +1021,6 @@ int __init ibmphp_hpc_start_poll_thread(void)
 	ibmphp_poll_thread = kthread_run(poll_hpc, NULL, "hpc_poll");
 	if (IS_ERR(ibmphp_poll_thread)) {
 		err("%s - Error, thread not started\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return PTR_ERR(ibmphp_poll_thread);
 	}
 	return 0;
@@ -1628,32 +1031,6 @@ int __init ibmphp_hpc_start_poll_thread(void)
 *
 * Action:  stop polling thread and cleanup
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-void __exit ibmphp_hpc_stop_poll_thread (void)
-{
-	debug ("%s - Entry\n", __func__);
-
-	kthread_stop(ibmphp_poll_thread);
-	debug ("before locking operations \n");
-	ibmphp_lock_operations ();
-	debug ("after locking operations \n");
-	
-	// wait for poll thread to exit
-	debug ("before sem_exit down \n");
-	down (&sem_exit);
-	debug ("after sem_exit down \n");
-
-	// cleanup
-	debug ("before free_hpc_access \n");
-	free_hpc_access ();
-	debug ("after free_hpc_access \n");
-	ibmphp_unlock_operations ();
-	debug ("after unlock operations \n");
-	up (&sem_exit);
-	debug ("after sem exit up\n");
-
-	debug ("%s - Exit\n", __func__);
-=======
 void __exit ibmphp_hpc_stop_poll_thread(void)
 {
 	debug("%s - Entry\n", __func__);
@@ -1676,7 +1053,6 @@ void __exit ibmphp_hpc_stop_poll_thread(void)
 	debug("after unlock operations\n");
 
 	debug("%s - Exit\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*----------------------------------------------------------------------
@@ -1687,56 +1063,32 @@ void __exit ibmphp_hpc_stop_poll_thread(void)
 * Return   0, HPC_ERROR
 * Value:
 *---------------------------------------------------------------------*/
-<<<<<<< HEAD
-static int hpc_wait_ctlr_notworking (int timeout, struct controller *ctlr_ptr, void __iomem *wpg_bbar,
-				    u8 * pstatus)
-=======
 static int hpc_wait_ctlr_notworking(int timeout, struct controller *ctlr_ptr, void __iomem *wpg_bbar,
 				    u8 *pstatus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = 0;
 	u8 done = 0;
 
-<<<<<<< HEAD
-	debug_polling ("hpc_wait_ctlr_notworking - Entry timeout[%d]\n", timeout);
-
-	while (!done) {
-		*pstatus = ctrl_read (ctlr_ptr, wpg_bbar, WPG_CTLR_INDEX);
-=======
 	debug_polling("hpc_wait_ctlr_notworking - Entry timeout[%d]\n", timeout);
 
 	while (!done) {
 		*pstatus = ctrl_read(ctlr_ptr, wpg_bbar, WPG_CTLR_INDEX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*pstatus == HPC_ERROR) {
 			rc = HPC_ERROR;
 			done = 1;
 		}
-<<<<<<< HEAD
-		if (CTLR_WORKING (*pstatus) == HPC_CTLR_WORKING_NO)
-=======
 		if (CTLR_WORKING(*pstatus) == HPC_CTLR_WORKING_NO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			done = 1;
 		if (!done) {
 			msleep(1000);
 			if (timeout < 1) {
 				done = 1;
-<<<<<<< HEAD
-				err ("HPCreadslot - Error ctlr timeout\n");
-=======
 				err("HPCreadslot - Error ctlr timeout\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rc = HPC_ERROR;
 			} else
 				timeout--;
 		}
 	}
-<<<<<<< HEAD
-	debug_polling ("hpc_wait_ctlr_notworking - Exit rc[%x] status[%x]\n", rc, *pstatus);
-=======
 	debug_polling("hpc_wait_ctlr_notworking - Exit rc[%x] status[%x]\n", rc, *pstatus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }

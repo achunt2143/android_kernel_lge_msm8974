@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 1996 Mike Shaver (shaver@zeroknowledge.com)
  */
@@ -39,11 +31,7 @@ static int min_reset[]   = {0}, max_reset[]   = {1};
 
 static struct ctl_table_header *nr_table_header;
 
-<<<<<<< HEAD
-static ctl_table nr_table[] = {
-=======
 static struct ctl_table nr_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "default_path_quality",
 		.data		= &sysctl_netrom_default_path_quality,
@@ -155,31 +143,15 @@ static struct ctl_table nr_table[] = {
 	{ }
 };
 
-<<<<<<< HEAD
-static struct ctl_path nr_path[] = {
-	{ .procname = "net", },
-	{ .procname = "netrom", },
-	{ }
-};
-
-void __init nr_register_sysctl(void)
-{
-	nr_table_header = register_sysctl_paths(nr_path, nr_table);
-=======
 int __init nr_register_sysctl(void)
 {
 	nr_table_header = register_net_sysctl(&init_net, "net/netrom", nr_table);
 	if (!nr_table_header)
 		return -ENOMEM;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nr_unregister_sysctl(void)
 {
-<<<<<<< HEAD
-	unregister_sysctl_table(nr_table_header);
-=======
 	unregister_net_sysctl_table(nr_table_header);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

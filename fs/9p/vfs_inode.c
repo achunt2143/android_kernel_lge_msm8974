@@ -1,34 +1,9 @@
-<<<<<<< HEAD
-/*
- *  linux/fs/9p/vfs_inode.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file contains vfs inode ops for the 9P2000 protocol.
  *
  *  Copyright (C) 2004 by Eric Van Hensbergen <ericvh@gmail.com>
  *  Copyright (C) 2002 by Ron Minnich <rminnich@lanl.gov>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2
- *  as published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to:
- *  Free Software Foundation
- *  51 Franklin Street, Fifth Floor
- *  Boston, MA  02111-1301  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -40,13 +15,7 @@
 #include <linux/pagemap.h>
 #include <linux/stat.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/inet.h>
 #include <linux/namei.h>
-#include <linux/idr.h>
-=======
-#include <linux/namei.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/xattr.h>
@@ -76,10 +45,7 @@ static const struct inode_operations v9fs_symlink_inode_operations;
 static u32 unixmode2p9mode(struct v9fs_session_info *v9ses, umode_t mode)
 {
 	int res;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = mode & 0777;
 	if (S_ISDIR(mode))
 		res |= P9_DMDIR;
@@ -117,11 +83,7 @@ static int p9mode2perm(struct v9fs_session_info *v9ses,
 	int res;
 	int mode = stat->mode;
 
-<<<<<<< HEAD
-	res = mode & S_IALLUGO;
-=======
 	res = mode & 0777; /* S_IRWXUGO */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (v9fs_proto_dotu(v9ses)) {
 		if ((mode & P9_DMSETUID) == P9_DMSETUID)
 			res |= S_ISUID;
@@ -145,11 +107,7 @@ static int p9mode2perm(struct v9fs_session_info *v9ses,
 static umode_t p9mode2unixmode(struct v9fs_session_info *v9ses,
 			       struct p9_wstat *stat, dev_t *rdev)
 {
-<<<<<<< HEAD
-	int res;
-=======
 	int res, r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mode = stat->mode;
 
 	*rdev = 0;
@@ -167,13 +125,6 @@ static umode_t p9mode2unixmode(struct v9fs_session_info *v9ses,
 		res |= S_IFIFO;
 	else if ((mode & P9_DMDEVICE) && (v9fs_proto_dotu(v9ses))
 		 && (v9ses->nodev == 0)) {
-<<<<<<< HEAD
-		char type = 0, ext[32];
-		int major = -1, minor = -1;
-
-		strncpy(ext, stat->extension, sizeof(ext));
-		sscanf(ext, "%c %u %u", &type, &major, &minor);
-=======
 		char type = 0;
 		int major = -1, minor = -1;
 
@@ -184,7 +135,6 @@ static umode_t p9mode2unixmode(struct v9fs_session_info *v9ses,
 				 stat->extension);
 			return res;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (type) {
 		case 'c':
 			res |= S_IFCHR;
@@ -195,11 +145,7 @@ static umode_t p9mode2unixmode(struct v9fs_session_info *v9ses,
 		default:
 			p9_debug(P9_DEBUG_ERROR, "Unknown special type %c %s\n",
 				 type, stat->extension);
-<<<<<<< HEAD
-		};
-=======
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*rdev = MKDEV(major, minor);
 	} else
 		res |= S_IFREG;
@@ -217,10 +163,6 @@ int v9fs_uflags2omode(int uflags, int extended)
 {
 	int ret;
 
-<<<<<<< HEAD
-	ret = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (uflags&3) {
 	default:
 	case O_RDONLY:
@@ -272,71 +214,19 @@ v9fs_blank_wstat(struct p9_wstat *wstat)
 	wstat->uid = NULL;
 	wstat->gid = NULL;
 	wstat->muid = NULL;
-<<<<<<< HEAD
-	wstat->n_uid = ~0;
-	wstat->n_gid = ~0;
-	wstat->n_muid = ~0;
-=======
 	wstat->n_uid = INVALID_UID;
 	wstat->n_gid = INVALID_GID;
 	wstat->n_muid = INVALID_UID;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wstat->extension = NULL;
 }
 
 /**
  * v9fs_alloc_inode - helper function to allocate an inode
-<<<<<<< HEAD
- *
-=======
  * @sb: The superblock to allocate the inode from
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct inode *v9fs_alloc_inode(struct super_block *sb)
 {
 	struct v9fs_inode *v9inode;
-<<<<<<< HEAD
-	v9inode = (struct v9fs_inode *)kmem_cache_alloc(v9fs_inode_cache,
-							GFP_KERNEL);
-	if (!v9inode)
-		return NULL;
-#ifdef CONFIG_9P_FSCACHE
-	v9inode->fscache = NULL;
-	spin_lock_init(&v9inode->fscache_lock);
-#endif
-	v9inode->writeback_fid = NULL;
-	v9inode->cache_validity = 0;
-	mutex_init(&v9inode->v_mutex);
-	return &v9inode->vfs_inode;
-}
-
-/**
- * v9fs_destroy_inode - destroy an inode
- *
- */
-
-static void v9fs_i_callback(struct rcu_head *head)
-{
-	struct inode *inode = container_of(head, struct inode, i_rcu);
-	kmem_cache_free(v9fs_inode_cache, V9FS_I(inode));
-}
-
-void v9fs_destroy_inode(struct inode *inode)
-{
-	call_rcu(&inode->i_rcu, v9fs_i_callback);
-}
-
-int v9fs_init_inode(struct v9fs_session_info *v9ses,
-		    struct inode *inode, umode_t mode, dev_t rdev)
-{
-	int err = 0;
-
-	inode_init_owner(inode, NULL, mode);
-	inode->i_blocks = 0;
-	inode->i_rdev = rdev;
-	inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
-	inode->i_mapping->a_ops = &v9fs_addr_operations;
-=======
 
 	v9inode = alloc_inode_sb(sb, v9fs_inode_cache, GFP_KERNEL);
 	if (!v9inode)
@@ -379,7 +269,6 @@ int v9fs_init_inode(struct v9fs_session_info *v9ses,
 	simple_inode_init_ts(inode);
 	inode->i_mapping->a_ops = &v9fs_addr_operations;
 	inode->i_private = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (mode & S_IFMT) {
 	case S_IFIFO:
@@ -401,24 +290,10 @@ int v9fs_init_inode(struct v9fs_session_info *v9ses,
 	case S_IFREG:
 		if (v9fs_proto_dotl(v9ses)) {
 			inode->i_op = &v9fs_file_inode_operations_dotl;
-<<<<<<< HEAD
-			if (v9ses->cache)
-				inode->i_fop =
-					&v9fs_cached_file_operations_dotl;
-			else
-				inode->i_fop = &v9fs_file_operations_dotl;
-		} else {
-			inode->i_op = &v9fs_file_inode_operations;
-			if (v9ses->cache)
-				inode->i_fop = &v9fs_cached_file_operations;
-			else
-				inode->i_fop = &v9fs_file_operations;
-=======
 			inode->i_fop = &v9fs_file_operations_dotl;
 		} else {
 			inode->i_op = &v9fs_file_inode_operations;
 			inode->i_fop = &v9fs_file_operations;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		break;
@@ -463,157 +338,12 @@ error:
 }
 
 /**
-<<<<<<< HEAD
- * v9fs_get_inode - helper function to setup an inode
- * @sb: superblock
- * @mode: mode to setup inode with
- *
- */
-
-struct inode *v9fs_get_inode(struct super_block *sb, umode_t mode, dev_t rdev)
-{
-	int err;
-	struct inode *inode;
-	struct v9fs_session_info *v9ses = sb->s_fs_info;
-
-	p9_debug(P9_DEBUG_VFS, "super block: %p mode: %ho\n", sb, mode);
-
-	inode = new_inode(sb);
-	if (!inode) {
-		pr_warn("%s (%d): Problem allocating inode\n",
-			__func__, task_pid_nr(current));
-		return ERR_PTR(-ENOMEM);
-	}
-	err = v9fs_init_inode(v9ses, inode, mode, rdev);
-	if (err) {
-		iput(inode);
-		return ERR_PTR(err);
-	}
-	return inode;
-}
-
-/*
-static struct v9fs_fid*
-v9fs_clone_walk(struct v9fs_session_info *v9ses, u32 fid, struct dentry *dentry)
-{
-	int err;
-	int nfid;
-	struct v9fs_fid *ret;
-	struct v9fs_fcall *fcall;
-
-	nfid = v9fs_get_idpool(&v9ses->fidpool);
-	if (nfid < 0) {
-		eprintk(KERN_WARNING, "no free fids available\n");
-		return ERR_PTR(-ENOSPC);
-	}
-
-	err = v9fs_t_walk(v9ses, fid, nfid, (char *) dentry->d_name.name,
-		&fcall);
-
-	if (err < 0) {
-		if (fcall && fcall->id == RWALK)
-			goto clunk_fid;
-
-		PRINT_FCALL_ERROR("walk error", fcall);
-		v9fs_put_idpool(nfid, &v9ses->fidpool);
-		goto error;
-	}
-
-	kfree(fcall);
-	fcall = NULL;
-	ret = v9fs_fid_create(v9ses, nfid);
-	if (!ret) {
-		err = -ENOMEM;
-		goto clunk_fid;
-	}
-
-	err = v9fs_fid_insert(ret, dentry);
-	if (err < 0) {
-		v9fs_fid_destroy(ret);
-		goto clunk_fid;
-	}
-
-	return ret;
-
-clunk_fid:
-	v9fs_t_clunk(v9ses, nfid);
-
-error:
-	kfree(fcall);
-	return ERR_PTR(err);
-}
-*/
-
-
-/**
- * v9fs_clear_inode - release an inode
-=======
  * v9fs_evict_inode - Remove an inode from the inode cache
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @inode: inode to release
  *
  */
 void v9fs_evict_inode(struct inode *inode)
 {
-<<<<<<< HEAD
-	struct v9fs_inode *v9inode = V9FS_I(inode);
-
-	truncate_inode_pages(&inode->i_data, 0);
-	end_writeback(inode);
-	filemap_fdatawrite(&inode->i_data);
-
-#ifdef CONFIG_9P_FSCACHE
-	v9fs_cache_inode_put_cookie(inode);
-#endif
-	/* clunk the fid stashed in writeback_fid */
-	if (v9inode->writeback_fid) {
-		p9_client_clunk(v9inode->writeback_fid);
-		v9inode->writeback_fid = NULL;
-	}
-}
-
-static int v9fs_test_inode(struct inode *inode, void *data)
-{
-	int umode;
-	dev_t rdev;
-	struct v9fs_inode *v9inode = V9FS_I(inode);
-	struct p9_wstat *st = (struct p9_wstat *)data;
-	struct v9fs_session_info *v9ses = v9fs_inode2v9ses(inode);
-
-	umode = p9mode2unixmode(v9ses, st, &rdev);
-	/* don't match inode of different type */
-	if ((inode->i_mode & S_IFMT) != (umode & S_IFMT))
-		return 0;
-
-	/* compare qid details */
-	if (memcmp(&v9inode->qid.version,
-		   &st->qid.version, sizeof(v9inode->qid.version)))
-		return 0;
-
-	if (v9inode->qid.type != st->qid.type)
-		return 0;
-	return 1;
-}
-
-static int v9fs_test_new_inode(struct inode *inode, void *data)
-{
-	return 0;
-}
-
-static int v9fs_set_inode(struct inode *inode,  void *data)
-{
-	struct v9fs_inode *v9inode = V9FS_I(inode);
-	struct p9_wstat *st = (struct p9_wstat *)data;
-
-	memcpy(&v9inode->qid, &st->qid, sizeof(st->qid));
-	return 0;
-}
-
-static struct inode *v9fs_qid_iget(struct super_block *sb,
-				   struct p9_qid *qid,
-				   struct p9_wstat *st,
-				   int new)
-=======
 	struct v9fs_inode __maybe_unused *v9inode = V9FS_I(inode);
 	__le32 __maybe_unused version;
 
@@ -636,29 +366,10 @@ static struct inode *v9fs_qid_iget(struct super_block *sb,
 
 struct inode *
 v9fs_fid_iget(struct super_block *sb, struct p9_fid *fid, bool new)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dev_t rdev;
 	int retval;
 	umode_t umode;
-<<<<<<< HEAD
-	unsigned long i_ino;
-	struct inode *inode;
-	struct v9fs_session_info *v9ses = sb->s_fs_info;
-	int (*test)(struct inode *, void *);
-
-	if (new)
-		test = v9fs_test_new_inode;
-	else
-		test = v9fs_test_inode;
-
-	i_ino = v9fs_qid2ino(qid);
-	inode = iget5_locked(sb, i_ino, test, v9fs_set_inode, st);
-	if (!inode)
-		return ERR_PTR(-ENOMEM);
-	if (!(inode->i_state & I_NEW))
-		return inode;
-=======
 	struct inode *inode;
 	struct p9_wstat *st;
 	struct v9fs_session_info *v9ses = sb->s_fs_info;
@@ -679,25 +390,11 @@ v9fs_fid_iget(struct super_block *sb, struct p9_fid *fid, bool new)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * initialize the inode with the stat info
 	 * FIXME!! we may need support for stale inodes
 	 * later.
 	 */
-<<<<<<< HEAD
-	inode->i_ino = i_ino;
-	umode = p9mode2unixmode(v9ses, st, &rdev);
-	retval = v9fs_init_inode(v9ses, inode, umode, rdev);
-	if (retval)
-		goto error;
-
-	v9fs_stat2inode(st, inode, sb);
-#ifdef CONFIG_9P_FSCACHE
-	v9fs_cache_inode_get_cookie(inode);
-#endif
-	unlock_new_inode(inode);
-=======
 	st = p9_client_stat(fid);
 	if (IS_ERR(st)) {
 		retval = PTR_ERR(st);
@@ -716,32 +413,10 @@ v9fs_fid_iget(struct super_block *sb, struct p9_fid *fid, bool new)
 	v9fs_cache_inode_get_cookie(inode);
 	unlock_new_inode(inode);
 done:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return inode;
 error:
 	iget_failed(inode);
 	return ERR_PTR(retval);
-<<<<<<< HEAD
-
-}
-
-struct inode *
-v9fs_inode_from_fid(struct v9fs_session_info *v9ses, struct p9_fid *fid,
-		    struct super_block *sb, int new)
-{
-	struct p9_wstat *st;
-	struct inode *inode = NULL;
-
-	st = p9_client_stat(fid);
-	if (IS_ERR(st))
-		return ERR_CAST(st);
-
-	inode = v9fs_qid_iget(sb, &st->qid, st, new);
-	p9stat_free(st);
-	kfree(st);
-	return inode;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -752,25 +427,14 @@ v9fs_inode_from_fid(struct v9fs_session_info *v9ses, struct p9_fid *fid,
 static int v9fs_at_to_dotl_flags(int flags)
 {
 	int rflags = 0;
-<<<<<<< HEAD
-	if (flags & AT_REMOVEDIR)
-		rflags |= P9_DOTL_AT_REMOVEDIR;
-=======
 
 	if (flags & AT_REMOVEDIR)
 		rflags |= P9_DOTL_AT_REMOVEDIR;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rflags;
 }
 
 /**
-<<<<<<< HEAD
- * v9fs_remove - helper function to remove files and directories
- * @dir: directory inode that is being deleted
- * @dentry:  dentry that is being deleted
- * @rmdir: removing a directory
-=======
  * v9fs_dec_count - helper functon to drop i_nlink.
  *
  * If a directory had nlink <= 2 (including . and ..), then we should not drop
@@ -800,7 +464,6 @@ static void v9fs_dec_count(struct inode *inode)
  * @dir: directory inode that is being deleted
  * @dentry:  dentry that is being deleted
  * @flags: removing a directory
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -815,13 +478,8 @@ static int v9fs_remove(struct inode *dir, struct dentry *dentry, int flags)
 		 dir, dentry, flags);
 
 	v9ses = v9fs_inode2v9ses(dir);
-<<<<<<< HEAD
-	inode = dentry->d_inode;
-	dfid = v9fs_fid_lookup(dentry->d_parent);
-=======
 	inode = d_inode(dentry);
 	dfid = v9fs_parent_fid(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(dfid)) {
 		retval = PTR_ERR(dfid);
 		p9_debug(P9_DEBUG_VFS, "fid lookup failed %d\n", retval);
@@ -830,10 +488,7 @@ static int v9fs_remove(struct inode *dir, struct dentry *dentry, int flags)
 	if (v9fs_proto_dotl(v9ses))
 		retval = p9_client_unlinkat(dfid, dentry->d_name.name,
 					    v9fs_at_to_dotl_flags(flags));
-<<<<<<< HEAD
-=======
 	p9_fid_put(dfid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval == -EOPNOTSUPP) {
 		/* Try the one based on path */
 		v9fid = v9fs_fid_clone(dentry);
@@ -848,14 +503,6 @@ static int v9fs_remove(struct inode *dir, struct dentry *dentry, int flags)
 		 */
 		if (flags & AT_REMOVEDIR) {
 			clear_nlink(inode);
-<<<<<<< HEAD
-			drop_nlink(dir);
-		} else
-			drop_nlink(inode);
-
-		v9fs_invalidate_inode_attr(inode);
-		v9fs_invalidate_inode_attr(dir);
-=======
 			v9fs_dec_count(dir);
 		} else
 			v9fs_dec_count(inode);
@@ -869,7 +516,6 @@ static int v9fs_remove(struct inode *dir, struct dentry *dentry, int flags)
 		/* invalidate all fids associated with dentry */
 		/* NOTE: This will not include open fids */
 		dentry->d_op->d_release(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return retval;
 }
@@ -889,19 +535,6 @@ v9fs_create(struct v9fs_session_info *v9ses, struct inode *dir,
 		struct dentry *dentry, char *extension, u32 perm, u8 mode)
 {
 	int err;
-<<<<<<< HEAD
-	char *name;
-	struct p9_fid *dfid, *ofid, *fid;
-	struct inode *inode;
-
-	p9_debug(P9_DEBUG_VFS, "name %s\n", dentry->d_name.name);
-
-	err = 0;
-	ofid = NULL;
-	fid = NULL;
-	name = (char *) dentry->d_name.name;
-	dfid = v9fs_fid_lookup(dentry->d_parent);
-=======
 	const unsigned char *name;
 	struct p9_fid *dfid, *ofid = NULL, *fid = NULL;
 	struct inode *inode;
@@ -910,7 +543,6 @@ v9fs_create(struct v9fs_session_info *v9ses, struct inode *dir,
 
 	name = dentry->d_name.name;
 	dfid = v9fs_parent_fid(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(dfid)) {
 		err = PTR_ERR(dfid);
 		p9_debug(P9_DEBUG_VFS, "fid lookup failed %d\n", err);
@@ -918,19 +550,11 @@ v9fs_create(struct v9fs_session_info *v9ses, struct inode *dir,
 	}
 
 	/* clone a fid to use for creation */
-<<<<<<< HEAD
-	ofid = p9_client_walk(dfid, 0, NULL, 1);
-	if (IS_ERR(ofid)) {
-		err = PTR_ERR(ofid);
-		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
-		return ERR_PTR(err);
-=======
 	ofid = clone_fid(dfid);
 	if (IS_ERR(ofid)) {
 		err = PTR_ERR(ofid);
 		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
 		goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = p9_client_fcreate(ofid, name, perm, mode, extension);
@@ -946,41 +570,18 @@ v9fs_create(struct v9fs_session_info *v9ses, struct inode *dir,
 			err = PTR_ERR(fid);
 			p9_debug(P9_DEBUG_VFS,
 				   "p9_client_walk failed %d\n", err);
-<<<<<<< HEAD
-			fid = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error;
 		}
 		/*
 		 * instantiate inode and assign the unopened fid to the dentry
 		 */
-<<<<<<< HEAD
-		inode = v9fs_get_new_inode_from_fid(v9ses, fid, dir->i_sb);
-=======
 		inode = v9fs_get_inode_from_fid(v9ses, fid, dir->i_sb, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(inode)) {
 			err = PTR_ERR(inode);
 			p9_debug(P9_DEBUG_VFS,
 				   "inode creation failed %d\n", err);
 			goto error;
 		}
-<<<<<<< HEAD
-		err = v9fs_fid_add(dentry, fid);
-		if (err < 0)
-			goto error;
-		d_instantiate(dentry, inode);
-	}
-	return ofid;
-error:
-	if (ofid)
-		p9_client_clunk(ofid);
-
-	if (fid)
-		p9_client_clunk(fid);
-
-=======
 		v9fs_fid_add(dentry, &fid);
 		d_instantiate(dentry, inode);
 	}
@@ -990,41 +591,25 @@ error:
 	p9_fid_put(dfid);
 	p9_fid_put(ofid);
 	p9_fid_put(fid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ERR_PTR(err);
 }
 
 /**
  * v9fs_vfs_create - VFS hook to create a regular file
-<<<<<<< HEAD
-=======
  * @idmap: idmap of the mount
  * @dir: The parent directory
  * @dentry: The name of file to be created
  * @mode: The UNIX file mode to set
  * @excl: True if the file must not yet exist
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * open(.., O_CREAT) is handled in v9fs_vfs_atomic_open().  This is only called
  * for mknod(2).
  *
-<<<<<<< HEAD
- * @dir: directory inode that is being created
- * @dentry:  dentry that is being deleted
- * @mode: create permissions
- *
- */
-
-static int
-v9fs_vfs_create(struct inode *dir, struct dentry *dentry, umode_t mode,
-		bool excl)
-=======
  */
 
 static int
 v9fs_vfs_create(struct mnt_idmap *idmap, struct inode *dir,
 		struct dentry *dentry, umode_t mode, bool excl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct v9fs_session_info *v9ses = v9fs_inode2v9ses(dir);
 	u32 perm = unixmode2p9mode(v9ses, mode);
@@ -1036,44 +621,29 @@ v9fs_vfs_create(struct mnt_idmap *idmap, struct inode *dir,
 		return PTR_ERR(fid);
 
 	v9fs_invalidate_inode_attr(dir);
-<<<<<<< HEAD
-	p9_client_clunk(fid);
-=======
 	p9_fid_put(fid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /**
  * v9fs_vfs_mkdir - VFS mkdir hook to create a directory
-<<<<<<< HEAD
-=======
  * @idmap: idmap of the mount
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dir:  inode that is being unlinked
  * @dentry: dentry that is being unlinked
  * @mode: mode for new directory
  *
  */
 
-<<<<<<< HEAD
-static int v9fs_vfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
-=======
 static int v9fs_vfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 			  struct dentry *dentry, umode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	u32 perm;
 	struct p9_fid *fid;
 	struct v9fs_session_info *v9ses;
 
-<<<<<<< HEAD
-	p9_debug(P9_DEBUG_VFS, "name %s\n", dentry->d_name.name);
-=======
 	p9_debug(P9_DEBUG_VFS, "name %pd\n", dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = 0;
 	v9ses = v9fs_inode2v9ses(dir);
 	perm = unixmode2p9mode(v9ses, mode | S_IFDIR);
@@ -1087,11 +657,7 @@ static int v9fs_vfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 	}
 
 	if (fid)
-<<<<<<< HEAD
-		p9_client_clunk(fid);
-=======
 		p9_fid_put(fid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -1100,11 +666,7 @@ static int v9fs_vfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
  * v9fs_vfs_lookup - VFS lookup hook to "walk" to a new inode
  * @dir:  inode that is being walked from
  * @dentry: dentry that is being walked to?
-<<<<<<< HEAD
- * @nameidata: path data
-=======
  * @flags: lookup flags (unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -1112,17 +674,6 @@ struct dentry *v9fs_vfs_lookup(struct inode *dir, struct dentry *dentry,
 				      unsigned int flags)
 {
 	struct dentry *res;
-<<<<<<< HEAD
-	struct super_block *sb;
-	struct v9fs_session_info *v9ses;
-	struct p9_fid *dfid, *fid;
-	struct inode *inode;
-	char *name;
-	int result = 0;
-
-	p9_debug(P9_DEBUG_VFS, "dir: %p dentry: (%s) %p flags: %x\n",
-		 dir, dentry->d_name.name, dentry, flags);
-=======
 	struct v9fs_session_info *v9ses;
 	struct p9_fid *dfid, *fid;
 	struct inode *inode;
@@ -1130,58 +681,21 @@ struct dentry *v9fs_vfs_lookup(struct inode *dir, struct dentry *dentry,
 
 	p9_debug(P9_DEBUG_VFS, "dir: %p dentry: (%pd) %p flags: %x\n",
 		 dir, dentry, dentry, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dentry->d_name.len > NAME_MAX)
 		return ERR_PTR(-ENAMETOOLONG);
 
-<<<<<<< HEAD
-	sb = dir->i_sb;
-	v9ses = v9fs_inode2v9ses(dir);
-	/* We can walk d_parent because we hold the dir->i_mutex */
-	dfid = v9fs_fid_lookup(dentry->d_parent);
-	if (IS_ERR(dfid))
-		return ERR_CAST(dfid);
-
-	name = (char *) dentry->d_name.name;
-	fid = p9_client_walk(dfid, 1, &name, 1);
-	if (IS_ERR(fid)) {
-		result = PTR_ERR(fid);
-		if (result == -ENOENT) {
-			inode = NULL;
-			goto inst_out;
-		}
-
-		return ERR_PTR(result);
-	}
-=======
 	v9ses = v9fs_inode2v9ses(dir);
 	/* We can walk d_parent because we hold the dir->i_mutex */
 	dfid = v9fs_parent_fid(dentry);
 	if (IS_ERR(dfid))
 		return ERR_CAST(dfid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Make sure we don't use a wrong inode due to parallel
 	 * unlink. For cached mode create calls request for new
 	 * inode. But with cache disabled, lookup should do this.
 	 */
-<<<<<<< HEAD
-	if (v9ses->cache)
-		inode = v9fs_get_inode_from_fid(v9ses, fid, dir->i_sb);
-	else
-		inode = v9fs_get_new_inode_from_fid(v9ses, fid, dir->i_sb);
-	if (IS_ERR(inode)) {
-		result = PTR_ERR(inode);
-		inode = NULL;
-		goto error;
-	}
-	result = v9fs_fid_add(dentry, fid);
-	if (result < 0)
-		goto error_iput;
-inst_out:
-=======
 	name = dentry->d_name.name;
 	fid = p9_client_walk(dfid, 1, &name, 1);
 	p9_fid_put(dfid);
@@ -1191,7 +705,6 @@ inst_out:
 		inode = ERR_CAST(fid);
 	else
 		inode = v9fs_get_inode_from_fid(v9ses, fid, dir->i_sb, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If we had a rename on the server and a parallel lookup
 	 * for the new name, then make sure we instantiate with
@@ -1199,18 +712,6 @@ inst_out:
 	 * moved b under k and client parallely did a lookup for
 	 * k/b.
 	 */
-<<<<<<< HEAD
-	res = d_materialise_unique(dentry, inode);
-	if (!IS_ERR(res))
-		return res;
-	result = PTR_ERR(res);
-error_iput:
-	iput(inode);
-error:
-	p9_client_clunk(fid);
-
-	return ERR_PTR(result);
-=======
 	res = d_splice_alias(inode, dentry);
 	if (!IS_ERR(fid)) {
 		if (!res)
@@ -1221,24 +722,10 @@ error:
 			p9_fid_put(fid);
 	}
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 v9fs_vfs_atomic_open(struct inode *dir, struct dentry *dentry,
-<<<<<<< HEAD
-		     struct file *file, unsigned flags, umode_t mode,
-		     int *opened)
-{
-	int err;
-	u32 perm;
-	struct v9fs_inode *v9inode;
-	struct v9fs_session_info *v9ses;
-	struct p9_fid *fid, *inode_fid;
-	struct dentry *res = NULL;
-
-	if (d_unhashed(dentry)) {
-=======
 		     struct file *file, unsigned int flags, umode_t mode)
 {
 	int err;
@@ -1251,7 +738,6 @@ v9fs_vfs_atomic_open(struct inode *dir, struct dentry *dentry,
 	int p9_omode;
 
 	if (d_in_lookup(dentry)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res = v9fs_vfs_lookup(dir, dentry, 0);
 		if (IS_ERR(res))
 			return PTR_ERR(res);
@@ -1261,21 +747,6 @@ v9fs_vfs_atomic_open(struct inode *dir, struct dentry *dentry,
 	}
 
 	/* Only creates */
-<<<<<<< HEAD
-	if (!(flags & O_CREAT) || dentry->d_inode)
-		return finish_no_open(file, res);
-
-	err = 0;
-	fid = NULL;
-	v9ses = v9fs_inode2v9ses(dir);
-	perm = unixmode2p9mode(v9ses, mode);
-	fid = v9fs_create(v9ses, dir, dentry, NULL, perm,
-				v9fs_uflags2omode(flags,
-						v9fs_proto_dotu(v9ses)));
-	if (IS_ERR(fid)) {
-		err = PTR_ERR(fid);
-		fid = NULL;
-=======
 	if (!(flags & O_CREAT) || d_really_is_positive(dentry))
 		return finish_no_open(file, res);
 
@@ -1291,50 +762,18 @@ v9fs_vfs_atomic_open(struct inode *dir, struct dentry *dentry,
 	fid = v9fs_create(v9ses, dir, dentry, NULL, perm, p9_omode);
 	if (IS_ERR(fid)) {
 		err = PTR_ERR(fid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
 	v9fs_invalidate_inode_attr(dir);
-<<<<<<< HEAD
-	v9inode = V9FS_I(dentry->d_inode);
-	mutex_lock(&v9inode->v_mutex);
-	if (v9ses->cache && !v9inode->writeback_fid &&
-	    ((flags & O_ACCMODE) != O_RDONLY)) {
-		/*
-		 * clone a fid and add it to writeback_fid
-		 * we do it during open time instead of
-		 * page dirty time via write_begin/page_mkwrite
-		 * because we want write after unlink usecase
-		 * to work.
-		 */
-		inode_fid = v9fs_writeback_fid(dentry);
-		if (IS_ERR(inode_fid)) {
-			err = PTR_ERR(inode_fid);
-			mutex_unlock(&v9inode->v_mutex);
-			goto error;
-		}
-		v9inode->writeback_fid = (void *) inode_fid;
-	}
-	mutex_unlock(&v9inode->v_mutex);
-	err = finish_open(file, dentry, generic_file_open, opened);
-=======
 	inode = d_inode(dentry);
 	v9inode = V9FS_I(inode);
 	err = finish_open(file, dentry, generic_file_open);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto error;
 
 	file->private_data = fid;
 #ifdef CONFIG_9P_FSCACHE
-<<<<<<< HEAD
-	if (v9ses->cache)
-		v9fs_cache_inode_set_cookie(dentry->d_inode, file);
-#endif
-
-	*opened |= FILE_CREATED;
-=======
 	if (v9ses->cache & CACHE_FSCACHE)
 		fscache_use_cookie(v9fs_inode_cookie(v9inode),
 				   file->f_mode & FMODE_WRITE);
@@ -1344,18 +783,12 @@ v9fs_vfs_atomic_open(struct inode *dir, struct dentry *dentry,
 	v9fs_open_fid_add(inode, &fid);
 
 	file->f_mode |= FMODE_CREATED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	dput(res);
 	return err;
 
 error:
-<<<<<<< HEAD
-	if (fid)
-		p9_client_clunk(fid);
-=======
 	p9_fid_put(fid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out;
 }
 
@@ -1385,46 +818,24 @@ int v9fs_vfs_rmdir(struct inode *i, struct dentry *d)
 
 /**
  * v9fs_vfs_rename - VFS hook to rename an inode
-<<<<<<< HEAD
-=======
  * @idmap: The idmap of the mount
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @old_dir:  old dir inode
  * @old_dentry: old dentry
  * @new_dir: new dir inode
  * @new_dentry: new dentry
-<<<<<<< HEAD
-=======
  * @flags: RENAME_* flags
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
 int
-<<<<<<< HEAD
-v9fs_vfs_rename(struct inode *old_dir, struct dentry *old_dentry,
-		struct inode *new_dir, struct dentry *new_dentry)
-=======
 v9fs_vfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 		struct dentry *old_dentry, struct inode *new_dir,
 		struct dentry *new_dentry, unsigned int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 	struct inode *old_inode;
 	struct inode *new_inode;
 	struct v9fs_session_info *v9ses;
-<<<<<<< HEAD
-	struct p9_fid *oldfid;
-	struct p9_fid *olddirfid;
-	struct p9_fid *newdirfid;
-	struct p9_wstat wstat;
-
-	p9_debug(P9_DEBUG_VFS, "\n");
-	retval = 0;
-	old_inode = old_dentry->d_inode;
-	new_inode = new_dentry->d_inode;
-=======
 	struct p9_fid *oldfid = NULL, *dfid = NULL;
 	struct p9_fid *olddirfid = NULL;
 	struct p9_fid *newdirfid = NULL;
@@ -1436,24 +847,11 @@ v9fs_vfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 	p9_debug(P9_DEBUG_VFS, "\n");
 	old_inode = d_inode(old_dentry);
 	new_inode = d_inode(new_dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v9ses = v9fs_inode2v9ses(old_inode);
 	oldfid = v9fs_fid_lookup(old_dentry);
 	if (IS_ERR(oldfid))
 		return PTR_ERR(oldfid);
 
-<<<<<<< HEAD
-	olddirfid = v9fs_fid_clone(old_dentry->d_parent);
-	if (IS_ERR(olddirfid)) {
-		retval = PTR_ERR(olddirfid);
-		goto done;
-	}
-
-	newdirfid = v9fs_fid_clone(new_dentry->d_parent);
-	if (IS_ERR(newdirfid)) {
-		retval = PTR_ERR(newdirfid);
-		goto clunk_olddir;
-=======
 	dfid = v9fs_parent_fid(old_dentry);
 	olddirfid = clone_fid(dfid);
 	p9_fid_put(dfid);
@@ -1472,7 +870,6 @@ v9fs_vfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 	if (IS_ERR(newdirfid)) {
 		retval = PTR_ERR(newdirfid);
 		goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	down_write(&v9ses->rename_sem);
@@ -1483,11 +880,7 @@ v9fs_vfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 			retval = p9_client_rename(oldfid, newdirfid,
 						  new_dentry->d_name.name);
 		if (retval != -EOPNOTSUPP)
-<<<<<<< HEAD
-			goto clunk_newdir;
-=======
 			goto error_locked;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (old_dentry->d_parent != new_dentry->d_parent) {
 		/*
@@ -1496,16 +889,6 @@ v9fs_vfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 
 		p9_debug(P9_DEBUG_ERROR, "old dir and new dir are different\n");
 		retval = -EXDEV;
-<<<<<<< HEAD
-		goto clunk_newdir;
-	}
-	v9fs_blank_wstat(&wstat);
-	wstat.muid = v9ses->uname;
-	wstat.name = (char *) new_dentry->d_name.name;
-	retval = p9_client_wstat(oldfid, &wstat);
-
-clunk_newdir:
-=======
 		goto error_locked;
 	}
 	v9fs_blank_wstat(&wstat);
@@ -1514,26 +897,17 @@ clunk_newdir:
 	retval = p9_client_wstat(oldfid, &wstat);
 
 error_locked:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!retval) {
 		if (new_inode) {
 			if (S_ISDIR(new_inode->i_mode))
 				clear_nlink(new_inode);
 			else
-<<<<<<< HEAD
-				drop_nlink(new_inode);
-=======
 				v9fs_dec_count(new_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (S_ISDIR(old_inode->i_mode)) {
 			if (!new_inode)
 				inc_nlink(new_dir);
-<<<<<<< HEAD
-			drop_nlink(old_dir);
-=======
 			v9fs_dec_count(old_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		v9fs_invalidate_inode_attr(old_inode);
 		v9fs_invalidate_inode_attr(old_dir);
@@ -1543,64 +917,35 @@ error_locked:
 		d_move(old_dentry, new_dentry);
 	}
 	up_write(&v9ses->rename_sem);
-<<<<<<< HEAD
-	p9_client_clunk(newdirfid);
-
-clunk_olddir:
-	p9_client_clunk(olddirfid);
-
-done:
-=======
 
 error:
 	p9_fid_put(newdirfid);
 	p9_fid_put(olddirfid);
 	p9_fid_put(oldfid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
 /**
  * v9fs_vfs_getattr - retrieve file metadata
-<<<<<<< HEAD
- * @mnt: mount information
- * @dentry: file to get attributes on
- * @stat: metadata structure to populate
-=======
  * @idmap: idmap of the mount
  * @path: Object to query
  * @stat: metadata structure to populate
  * @request_mask: Mask of STATX_xxx flags indicating the caller's interests
  * @flags: AT_STATX_xxx setting
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
 static int
-<<<<<<< HEAD
-v9fs_vfs_getattr(struct vfsmount *mnt, struct dentry *dentry,
-		 struct kstat *stat)
-{
-	int err;
-=======
 v9fs_vfs_getattr(struct mnt_idmap *idmap, const struct path *path,
 		 struct kstat *stat, u32 request_mask, unsigned int flags)
 {
 	struct dentry *dentry = path->dentry;
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct v9fs_session_info *v9ses;
 	struct p9_fid *fid;
 	struct p9_wstat *st;
 
 	p9_debug(P9_DEBUG_VFS, "dentry: %p\n", dentry);
-<<<<<<< HEAD
-	err = -EPERM;
-	v9ses = v9fs_dentry2v9ses(dentry);
-	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE) {
-		generic_fillattr(dentry->d_inode, stat);
-		return 0;
-=======
 	v9ses = v9fs_dentry2v9ses(dentry);
 	if (v9ses->cache & (CACHE_META|CACHE_LOOSE)) {
 		generic_fillattr(&nop_mnt_idmap, request_mask, inode, stat);
@@ -1613,27 +958,18 @@ v9fs_vfs_getattr(struct mnt_idmap *idmap, const struct path *path,
 				p9_debug(P9_DEBUG_ERROR,
 				    "flushing writeback during getattr returned %d\n", retval);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	fid = v9fs_fid_lookup(dentry);
 	if (IS_ERR(fid))
 		return PTR_ERR(fid);
 
 	st = p9_client_stat(fid);
-<<<<<<< HEAD
-	if (IS_ERR(st))
-		return PTR_ERR(st);
-
-	v9fs_stat2inode(st, dentry->d_inode, dentry->d_inode->i_sb);
-	generic_fillattr(dentry->d_inode, stat);
-=======
 	p9_fid_put(fid);
 	if (IS_ERR(st))
 		return PTR_ERR(st);
 
 	v9fs_stat2inode(st, d_inode(dentry), dentry->d_sb, 0);
 	generic_fillattr(&nop_mnt_idmap, request_mask, d_inode(dentry), stat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p9stat_free(st);
 	kfree(st);
@@ -1642,33 +978,12 @@ v9fs_vfs_getattr(struct mnt_idmap *idmap, const struct path *path,
 
 /**
  * v9fs_vfs_setattr - set file metadata
-<<<<<<< HEAD
-=======
  * @idmap: idmap of the mount
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dentry: file whose metadata to set
  * @iattr: metadata assignment structure
  *
  */
 
-<<<<<<< HEAD
-static int v9fs_vfs_setattr(struct dentry *dentry, struct iattr *iattr)
-{
-	int retval;
-	struct v9fs_session_info *v9ses;
-	struct p9_fid *fid;
-	struct p9_wstat wstat;
-
-	p9_debug(P9_DEBUG_VFS, "\n");
-	retval = inode_change_ok(dentry->d_inode, iattr);
-	if (retval)
-		return retval;
-
-	retval = -EPERM;
-	v9ses = v9fs_dentry2v9ses(dentry);
-	fid = v9fs_fid_lookup(dentry);
-	if(IS_ERR(fid))
-=======
 static int v9fs_vfs_setattr(struct mnt_idmap *idmap,
 			    struct dentry *dentry, struct iattr *iattr)
 {
@@ -1693,7 +1008,6 @@ static int v9fs_vfs_setattr(struct mnt_idmap *idmap,
 		use_dentry = 1;
 	}
 	if (IS_ERR(fid))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return PTR_ERR(fid);
 
 	v9fs_blank_wstat(&wstat);
@@ -1718,12 +1032,6 @@ static int v9fs_vfs_setattr(struct mnt_idmap *idmap,
 	}
 
 	/* Write all dirty data */
-<<<<<<< HEAD
-	if (S_ISREG(dentry->d_inode->i_mode))
-		filemap_write_and_wait(dentry->d_inode->i_mapping);
-
-	retval = p9_client_wstat(fid, &wstat);
-=======
 	if (d_is_reg(dentry)) {
 		retval = filemap_fdatawrite(inode->i_mapping);
 		if (retval)
@@ -1736,20 +1044,10 @@ static int v9fs_vfs_setattr(struct mnt_idmap *idmap,
 	if (use_dentry)
 		p9_fid_put(fid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval < 0)
 		return retval;
 
 	if ((iattr->ia_valid & ATTR_SIZE) &&
-<<<<<<< HEAD
-	    iattr->ia_size != i_size_read(dentry->d_inode))
-		truncate_setsize(dentry->d_inode, iattr->ia_size);
-
-	v9fs_invalidate_inode_attr(dentry->d_inode);
-
-	setattr_copy(dentry->d_inode, iattr);
-	mark_inode_dirty(dentry->d_inode);
-=======
 		 iattr->ia_size != i_size_read(inode)) {
 		truncate_setsize(inode, iattr->ia_size);
 		netfs_resize_file(netfs_inode(inode), iattr->ia_size, true);
@@ -1767,7 +1065,6 @@ static int v9fs_vfs_setattr(struct mnt_idmap *idmap,
 
 	setattr_copy(&nop_mnt_idmap, inode, iattr);
 	mark_inode_dirty(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1776,31 +1073,12 @@ static int v9fs_vfs_setattr(struct mnt_idmap *idmap,
  * @stat: Plan 9 metadata (mistat) structure
  * @inode: inode to populate
  * @sb: superblock of filesystem
-<<<<<<< HEAD
-=======
  * @flags: control flags (e.g. V9FS_STAT2INODE_KEEP_ISIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
 void
 v9fs_stat2inode(struct p9_wstat *stat, struct inode *inode,
-<<<<<<< HEAD
-	struct super_block *sb)
-{
-	umode_t mode;
-	char ext[32];
-	char tag_name[14];
-	unsigned int i_nlink;
-	struct v9fs_session_info *v9ses = sb->s_fs_info;
-	struct v9fs_inode *v9inode = V9FS_I(inode);
-
-	set_nlink(inode, 1);
-
-	inode->i_atime.tv_sec = stat->atime;
-	inode->i_mtime.tv_sec = stat->mtime;
-	inode->i_ctime.tv_sec = stat->mtime;
-=======
 		 struct super_block *sb, unsigned int flags)
 {
 	umode_t mode;
@@ -1810,7 +1088,6 @@ v9fs_stat2inode(struct p9_wstat *stat, struct inode *inode,
 	inode_set_atime(inode, stat->atime, 0);
 	inode_set_mtime(inode, stat->mtime, 0);
 	inode_set_ctime(inode, stat->mtime, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inode->i_uid = v9ses->dfltuid;
 	inode->i_gid = v9ses->dfltgid;
@@ -1820,20 +1097,6 @@ v9fs_stat2inode(struct p9_wstat *stat, struct inode *inode,
 		inode->i_gid = stat->n_gid;
 	}
 	if ((S_ISREG(inode->i_mode)) || (S_ISDIR(inode->i_mode))) {
-<<<<<<< HEAD
-		if (v9fs_proto_dotu(v9ses) && (stat->extension[0] != '\0')) {
-			/*
-			 * Hadlink support got added later to
-			 * to the .u extension. So there can be
-			 * server out there that doesn't support
-			 * this even with .u extension. So check
-			 * for non NULL stat->extension
-			 */
-			strncpy(ext, stat->extension, sizeof(ext));
-			/* HARDLINKCOUNT %u */
-			sscanf(ext, "%13s %u", tag_name, &i_nlink);
-			if (!strncmp(tag_name, "HARDLINKCOUNT", 13))
-=======
 		if (v9fs_proto_dotu(v9ses)) {
 			unsigned int i_nlink;
 			/*
@@ -1846,146 +1109,22 @@ v9fs_stat2inode(struct p9_wstat *stat, struct inode *inode,
 			/* HARDLINKCOUNT %u */
 			if (sscanf(stat->extension,
 				   " HARDLINKCOUNT %u", &i_nlink) == 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				set_nlink(inode, i_nlink);
 		}
 	}
 	mode = p9mode2perm(v9ses, stat);
 	mode |= inode->i_mode & ~S_IALLUGO;
 	inode->i_mode = mode;
-<<<<<<< HEAD
-	i_size_write(inode, stat->length);
-
-	/* not real number of blocks, but 512 byte ones ... */
-	inode->i_blocks = (i_size_read(inode) + 512 - 1) >> 9;
-=======
 
 	v9inode->netfs.remote_i_size = stat->length;
 	if (!(flags & V9FS_STAT2INODE_KEEP_ISIZE))
 		v9fs_i_size_write(inode, stat->length);
 	/* not real number of blocks, but 512 byte ones ... */
 	inode->i_blocks = (stat->length + 512 - 1) >> 9;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v9inode->cache_validity &= ~V9FS_INO_INVALID_ATTR;
 }
 
 /**
-<<<<<<< HEAD
- * v9fs_qid2ino - convert qid into inode number
- * @qid: qid to hash
- *
- * BUG: potential for inode number collisions?
- */
-
-ino_t v9fs_qid2ino(struct p9_qid *qid)
-{
-	u64 path = qid->path + 2;
-	ino_t i = 0;
-
-	if (sizeof(ino_t) == sizeof(path))
-		memcpy(&i, &path, sizeof(ino_t));
-	else
-		i = (ino_t) (path ^ (path >> 32));
-
-	return i;
-}
-
-/**
- * v9fs_readlink - read a symlink's location (internal version)
- * @dentry: dentry for symlink
- * @buffer: buffer to load symlink location into
- * @buflen: length of buffer
- *
- */
-
-static int v9fs_readlink(struct dentry *dentry, char *buffer, int buflen)
-{
-	int retval;
-
-	struct v9fs_session_info *v9ses;
-	struct p9_fid *fid;
-	struct p9_wstat *st;
-
-	p9_debug(P9_DEBUG_VFS, " %s\n", dentry->d_name.name);
-	retval = -EPERM;
-	v9ses = v9fs_dentry2v9ses(dentry);
-	fid = v9fs_fid_lookup(dentry);
-	if (IS_ERR(fid))
-		return PTR_ERR(fid);
-
-	if (!v9fs_proto_dotu(v9ses))
-		return -EBADF;
-
-	st = p9_client_stat(fid);
-	if (IS_ERR(st))
-		return PTR_ERR(st);
-
-	if (!(st->mode & P9_DMSYMLINK)) {
-		retval = -EINVAL;
-		goto done;
-	}
-
-	/* copy extension buffer into buffer */
-	strncpy(buffer, st->extension, buflen);
-
-	p9_debug(P9_DEBUG_VFS, "%s -> %s (%s)\n",
-		 dentry->d_name.name, st->extension, buffer);
-
-	retval = strnlen(buffer, buflen);
-done:
-	p9stat_free(st);
-	kfree(st);
-	return retval;
-}
-
-/**
- * v9fs_vfs_follow_link - follow a symlink path
- * @dentry: dentry for symlink
- * @nd: nameidata
- *
- */
-
-static void *v9fs_vfs_follow_link(struct dentry *dentry, struct nameidata *nd)
-{
-	int len = 0;
-	char *link = __getname();
-
-	p9_debug(P9_DEBUG_VFS, "%s\n", dentry->d_name.name);
-
-	if (!link)
-		link = ERR_PTR(-ENOMEM);
-	else {
-		len = v9fs_readlink(dentry, link, PATH_MAX);
-
-		if (len < 0) {
-			__putname(link);
-			link = ERR_PTR(len);
-		} else
-			link[min(len, PATH_MAX-1)] = 0;
-	}
-	nd_set_link(nd, link);
-
-	return NULL;
-}
-
-/**
- * v9fs_vfs_put_link - release a symlink path
- * @dentry: dentry for symlink
- * @nd: nameidata
- * @p: unused
- *
- */
-
-void
-v9fs_vfs_put_link(struct dentry *dentry, struct nameidata *nd, void *p)
-{
-	char *s = nd_get_link(nd);
-
-	p9_debug(P9_DEBUG_VFS, " %s %s\n",
-		 dentry->d_name.name, IS_ERR(s) ? "<error>" : s);
-	if (!IS_ERR(s))
-		__putname(s);
-=======
  * v9fs_vfs_get_link - follow a symlink path
  * @dentry: dentry for symlink
  * @inode: inode for symlink
@@ -2033,18 +1172,13 @@ static const char *v9fs_vfs_get_link(struct dentry *dentry,
 	kfree(st);
 	set_delayed_call(done, kfree_link, res);
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * v9fs_vfs_mkspecial - create a special file
  * @dir: inode to create special file in
  * @dentry: dentry to create
-<<<<<<< HEAD
- * @mode: mode to create special file
-=======
  * @perm: mode to create special file
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @extension: 9p2000.u format extension string representing special file
  *
  */
@@ -2067,20 +1201,13 @@ static int v9fs_vfs_mkspecial(struct inode *dir, struct dentry *dentry,
 		return PTR_ERR(fid);
 
 	v9fs_invalidate_inode_attr(dir);
-<<<<<<< HEAD
-	p9_client_clunk(fid);
-=======
 	p9_fid_put(fid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
  * v9fs_vfs_symlink - helper function to create symlinks
-<<<<<<< HEAD
-=======
  * @idmap: idmap of the mount
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dir: directory inode containing symlink
  * @dentry: dentry for symlink
  * @symname: symlink data
@@ -2090,27 +1217,17 @@ static int v9fs_vfs_mkspecial(struct inode *dir, struct dentry *dentry,
  */
 
 static int
-<<<<<<< HEAD
-v9fs_vfs_symlink(struct inode *dir, struct dentry *dentry, const char *symname)
-{
-	p9_debug(P9_DEBUG_VFS, " %lu,%s,%s\n",
-		 dir->i_ino, dentry->d_name.name, symname);
-=======
 v9fs_vfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
 		 struct dentry *dentry, const char *symname)
 {
 	p9_debug(P9_DEBUG_VFS, " %lu,%pd,%s\n",
 		 dir->i_ino, dentry, symname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return v9fs_vfs_mkspecial(dir, dentry, P9_DMSYMLINK, symname);
 }
 
-<<<<<<< HEAD
-=======
 #define U32_MAX_DIGITS 10
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * v9fs_vfs_link - create a hardlink
  * @old_dentry: dentry for file to link to
@@ -2124,41 +1241,16 @@ v9fs_vfs_link(struct dentry *old_dentry, struct inode *dir,
 	      struct dentry *dentry)
 {
 	int retval;
-<<<<<<< HEAD
-	char *name;
-	struct p9_fid *oldfid;
-
-	p9_debug(P9_DEBUG_VFS, " %lu,%s,%s\n",
-		 dir->i_ino, dentry->d_name.name, old_dentry->d_name.name);
-=======
 	char name[1 + U32_MAX_DIGITS + 2]; /* sign + number + \n + \0 */
 	struct p9_fid *oldfid;
 
 	p9_debug(P9_DEBUG_VFS, " %lu,%pd,%pd\n",
 		 dir->i_ino, dentry, old_dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	oldfid = v9fs_fid_clone(old_dentry);
 	if (IS_ERR(oldfid))
 		return PTR_ERR(oldfid);
 
-<<<<<<< HEAD
-	name = __getname();
-	if (unlikely(!name)) {
-		retval = -ENOMEM;
-		goto clunk_fid;
-	}
-
-	sprintf(name, "%d\n", oldfid->fid);
-	retval = v9fs_vfs_mkspecial(dir, dentry, P9_DMLINK, name);
-	__putname(name);
-	if (!retval) {
-		v9fs_refresh_inode(oldfid, old_dentry->d_inode);
-		v9fs_invalidate_inode_attr(dir);
-	}
-clunk_fid:
-	p9_client_clunk(oldfid);
-=======
 	sprintf(name, "%d\n", oldfid->fid);
 	retval = v9fs_vfs_mkspecial(dir, dentry, P9_DMLINK, name);
 	if (!retval) {
@@ -2166,16 +1258,12 @@ clunk_fid:
 		v9fs_invalidate_inode_attr(dir);
 	}
 	p9_fid_put(oldfid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
 /**
  * v9fs_vfs_mknod - create a special file
-<<<<<<< HEAD
-=======
  * @idmap: idmap of the mount
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dir: inode destination for new link
  * @dentry: dentry for file
  * @mode: mode for creation
@@ -2184,25 +1272,6 @@ clunk_fid:
  */
 
 static int
-<<<<<<< HEAD
-v9fs_vfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t rdev)
-{
-	struct v9fs_session_info *v9ses = v9fs_inode2v9ses(dir);
-	int retval;
-	char *name;
-	u32 perm;
-
-	p9_debug(P9_DEBUG_VFS, " %lu,%s mode: %hx MAJOR: %u MINOR: %u\n",
-		 dir->i_ino, dentry->d_name.name, mode,
-		 MAJOR(rdev), MINOR(rdev));
-
-	if (!new_valid_dev(rdev))
-		return -EINVAL;
-
-	name = __getname();
-	if (!name)
-		return -ENOMEM;
-=======
 v9fs_vfs_mknod(struct mnt_idmap *idmap, struct inode *dir,
 	       struct dentry *dentry, umode_t mode, dev_t rdev)
 {
@@ -2215,32 +1284,16 @@ v9fs_vfs_mknod(struct mnt_idmap *idmap, struct inode *dir,
 		 dir->i_ino, dentry, mode,
 		 MAJOR(rdev), MINOR(rdev));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* build extension */
 	if (S_ISBLK(mode))
 		sprintf(name, "b %u %u", MAJOR(rdev), MINOR(rdev));
 	else if (S_ISCHR(mode))
 		sprintf(name, "c %u %u", MAJOR(rdev), MINOR(rdev));
-<<<<<<< HEAD
-	else if (S_ISFIFO(mode))
-		*name = 0;
-	else if (S_ISSOCK(mode))
-		*name = 0;
-	else {
-		__putname(name);
-		return -EINVAL;
-	}
-
-	perm = unixmode2p9mode(v9ses, mode);
-	retval = v9fs_vfs_mkspecial(dir, dentry, perm, name);
-	__putname(name);
-=======
 	else
 		*name = 0;
 
 	perm = unixmode2p9mode(v9ses, mode);
 	retval = v9fs_vfs_mkspecial(dir, dentry, perm, name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
@@ -2249,15 +1302,9 @@ int v9fs_refresh_inode(struct p9_fid *fid, struct inode *inode)
 {
 	int umode;
 	dev_t rdev;
-<<<<<<< HEAD
-	loff_t i_size;
-	struct p9_wstat *st;
-	struct v9fs_session_info *v9ses;
-=======
 	struct p9_wstat *st;
 	struct v9fs_session_info *v9ses;
 	unsigned int flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	v9ses = v9fs_inode2v9ses(inode);
 	st = p9_client_stat(fid);
@@ -2267,31 +1314,16 @@ int v9fs_refresh_inode(struct p9_fid *fid, struct inode *inode)
 	 * Don't update inode if the file type is different
 	 */
 	umode = p9mode2unixmode(v9ses, st, &rdev);
-<<<<<<< HEAD
-	if ((inode->i_mode & S_IFMT) != (umode & S_IFMT))
-		goto out;
-
-	spin_lock(&inode->i_lock);
-=======
 	if (inode_wrong_type(inode, umode))
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We don't want to refresh inode->i_size,
 	 * because we may have cached data
 	 */
-<<<<<<< HEAD
-	i_size = inode->i_size;
-	v9fs_stat2inode(st, inode, inode->i_sb);
-	if (v9ses->cache)
-		inode->i_size = i_size;
-	spin_unlock(&inode->i_lock);
-=======
 	flags = (v9ses->cache & CACHE_LOOSE) ?
 		V9FS_STAT2INODE_KEEP_ISIZE : 0;
 	v9fs_stat2inode(st, inode, inode->i_sb, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	p9stat_free(st);
 	kfree(st);
@@ -2332,13 +1364,7 @@ static const struct inode_operations v9fs_file_inode_operations = {
 };
 
 static const struct inode_operations v9fs_symlink_inode_operations = {
-<<<<<<< HEAD
-	.readlink = generic_readlink,
-	.follow_link = v9fs_vfs_follow_link,
-	.put_link = v9fs_vfs_put_link,
-=======
 	.get_link = v9fs_vfs_get_link,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.getattr = v9fs_vfs_getattr,
 	.setattr = v9fs_vfs_setattr,
 };

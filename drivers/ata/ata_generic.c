@@ -19,10 +19,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -99,11 +95,7 @@ static int generic_set_mode(struct ata_link *link, struct ata_device **unused)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template generic_sht = {
-=======
 static const struct scsi_host_template generic_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -159,11 +151,7 @@ static int is_intel_ider(struct pci_dev *dev)
 }
 
 /**
-<<<<<<< HEAD
- *	ata_generic_init		-	attach generic IDE
-=======
  *	ata_generic_init_one		-	attach generic IDE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@dev: PCI device found
  *	@id: match entry
  *
@@ -188,11 +176,7 @@ static int ata_generic_init_one(struct pci_dev *dev, const struct pci_device_id 
 	if ((id->driver_data & ATA_GEN_CLASS_MATCH) && all_generic_ide == 0)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (id->driver_data & ATA_GEN_INTEL_IDER)
-=======
 	if ((id->driver_data & ATA_GEN_INTEL_IDER) && !all_generic_ide)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!is_intel_ider(dev))
 			return -ENODEV;
 
@@ -236,16 +220,6 @@ static struct pci_device_id ata_generic[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_OPTI,   PCI_DEVICE_ID_OPTI_82C558), },
 	{ PCI_DEVICE(PCI_VENDOR_ID_CENATEK,PCI_DEVICE_ID_CENATEK_IDE),
 	  .driver_data = ATA_GEN_FORCE_DMA },
-<<<<<<< HEAD
-	/*
-	 * For some reason, MCP89 on MacBook 7,1 doesn't work with
-	 * ahci, use ata_generic instead.
-	 */
-	{ PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_NFORCE_MCP89_SATA,
-	  PCI_VENDOR_ID_APPLE, 0xcb89,
-	  .driver_data = ATA_GEN_FORCE_DMA },
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if !defined(CONFIG_PATA_TOSHIBA) && !defined(CONFIG_PATA_TOSHIBA_MODULE)
 	{ PCI_DEVICE(PCI_VENDOR_ID_TOSHIBA,PCI_DEVICE_ID_TOSHIBA_PICCOLO_1), },
 	{ PCI_DEVICE(PCI_VENDOR_ID_TOSHIBA,PCI_DEVICE_ID_TOSHIBA_PICCOLO_2),  },
@@ -267,31 +241,13 @@ static struct pci_driver ata_generic_pci_driver = {
 	.id_table	= ata_generic,
 	.probe 		= ata_generic_init_one,
 	.remove		= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= ata_pci_device_resume,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init ata_generic_init(void)
-{
-	return pci_register_driver(&ata_generic_pci_driver);
-}
-
-
-static void __exit ata_generic_exit(void)
-{
-	pci_unregister_driver(&ata_generic_pci_driver);
-}
-
-=======
 module_pci_driver(ata_generic_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for generic ATA");
@@ -299,10 +255,4 @@ MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, ata_generic);
 MODULE_VERSION(DRV_VERSION);
 
-<<<<<<< HEAD
-module_init(ata_generic_init);
-module_exit(ata_generic_exit);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(all_generic_ide, int, 0);

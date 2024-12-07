@@ -1,19 +1,7 @@
-<<<<<<< HEAD
-/*
- *  MachZ ZF-Logic Watchdog Timer driver for Linux
- *
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  MachZ ZF-Logic Watchdog Timer driver for Linux
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  The author does NOT admit liability nor provide warranty for
  *  any of this software. This material is provided "AS-IS" in
  *  the hope that it may be useful for others.
@@ -22,10 +10,6 @@
  *
  *  Based on sbc60xxwdt.c by Jakob Oestergaard
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  We have two timers (wd#1, wd#2) driven by a 32 KHz clock with the
  *  following periods:
  *      wd#1 - 2 seconds;
@@ -102,10 +86,6 @@ static unsigned short zf_readw(unsigned char port)
 MODULE_AUTHOR("Fernando Fuganti <fuganti@conectiva.com.br>");
 MODULE_DESCRIPTION("MachZ ZF-Logic Watchdog driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
 module_param(nowayout, bool, 0);
@@ -135,21 +115,13 @@ module_param(action, int, 0);
 MODULE_PARM_DESC(action, "after watchdog resets, generate: "
 				"0 = RESET(*)  1 = SMI  2 = NMI  3 = SCI");
 
-<<<<<<< HEAD
-static void zf_ping(unsigned long data);
-=======
 static void zf_ping(struct timer_list *unused);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int zf_action = GEN_RESET;
 static unsigned long zf_is_open;
 static char zf_expect_close;
 static DEFINE_SPINLOCK(zf_port_lock);
-<<<<<<< HEAD
-static DEFINE_TIMER(zf_timer, zf_ping, 0, 0);
-=======
 static DEFINE_TIMER(zf_timer, zf_ping);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long next_heartbeat;
 
 
@@ -199,15 +171,10 @@ static inline void zf_set_timer(unsigned short new, unsigned char n)
 	switch (n) {
 	case WD1:
 		zf_writew(COUNTER_1, new);
-<<<<<<< HEAD
-	case WD2:
-		zf_writeb(COUNTER_2, new > 0xff ? 0xff : new);
-=======
 		fallthrough;
 	case WD2:
 		zf_writeb(COUNTER_2, new > 0xff ? 0xff : new);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return;
 	}
@@ -266,11 +233,7 @@ static void zf_timer_on(void)
 }
 
 
-<<<<<<< HEAD
-static void zf_ping(unsigned long data)
-=======
 static void zf_ping(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int ctrl_reg = 0;
 	unsigned long flags;
@@ -351,11 +314,7 @@ static long zf_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	case WDIOC_GETBOOTSTATUS:
 		return put_user(0, p);
 	case WDIOC_KEEPALIVE:
-<<<<<<< HEAD
-		zf_ping(0);
-=======
 		zf_ping(NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -ENOTTY;
@@ -370,11 +329,7 @@ static int zf_open(struct inode *inode, struct file *file)
 	if (nowayout)
 		__module_get(THIS_MODULE);
 	zf_timer_on();
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int zf_close(struct inode *inode, struct file *file)
@@ -407,10 +362,7 @@ static const struct file_operations zf_fops = {
 	.llseek		= no_llseek,
 	.write		= zf_write,
 	.unlocked_ioctl = zf_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= zf_open,
 	.release	= zf_close,
 };

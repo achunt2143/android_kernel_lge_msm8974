@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fs/f2fs/file.c
  *
  * Copyright (c) 2012 Samsung Electronics Co., Ltd.
  *             http://www.samsung.com/
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
@@ -27,10 +17,6 @@
 #include <linux/uaccess.h>
 #include <linux/mount.h>
 #include <linux/pagevec.h>
-<<<<<<< HEAD
-#include <linux/random.h>
-#include <linux/aio.h>
-=======
 #include <linux/uio.h>
 #include <linux/uuid.h>
 #include <linux/file.h>
@@ -39,7 +25,6 @@
 #include <linux/fileattr.h>
 #include <linux/fadvise.h>
 #include <linux/iomap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "f2fs.h"
 #include "node.h"
@@ -47,38 +32,6 @@
 #include "xattr.h"
 #include "acl.h"
 #include "gc.h"
-<<<<<<< HEAD
-#include "trace.h"
-#include <trace/events/f2fs.h>
-
-static int f2fs_vm_page_mkwrite(struct vm_area_struct *vma,
-						struct vm_fault *vmf)
-{
-	struct page *page = vmf->page;
-	struct inode *inode = file_inode(vma->vm_file);
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	struct dnode_of_data dn;
-	int err;
-
-	vfs_check_frozen(inode->i_sb, SB_FREEZE_WRITE);
-
-	f2fs_bug_on(sbi, f2fs_has_inline_data(inode));
-
-	/* block allocation */
-	f2fs_lock_op(sbi);
-	set_new_dnode(&dn, inode, NULL, NULL, 0);
-	err = f2fs_reserve_block(&dn, page->index);
-	if (err) {
-		f2fs_unlock_op(sbi);
-		goto out;
-	}
-	f2fs_put_dnode(&dn);
-	f2fs_unlock_op(sbi);
-
-	f2fs_balance_fs(sbi, dn.node_changed);
-
-	file_update_time(vma->vm_file);
-=======
 #include "iostat.h"
 #include <trace/events/f2fs.h>
 #include <uapi/linux/f2fs.h>
@@ -153,18 +106,12 @@ static vm_fault_t f2fs_vm_page_mkwrite(struct vm_fault *vmf)
 
 	file_update_time(vmf->vma->vm_file);
 	filemap_invalidate_lock_shared(inode->i_mapping);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock_page(page);
 	if (unlikely(page->mapping != inode->i_mapping ||
 			page_offset(page) > i_size_read(inode) ||
 			!PageUptodate(page))) {
 		unlock_page(page);
 		err = -EFAULT;
-<<<<<<< HEAD
-		goto out;
-	}
-
-=======
 		goto out_sem;
 	}
 
@@ -191,43 +138,10 @@ static vm_fault_t f2fs_vm_page_mkwrite(struct vm_fault *vmf)
 	/* wait for GCed page writeback via META_MAPPING */
 	f2fs_wait_on_block_writeback(inode, dn.data_blkaddr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * check to see if the page is mapped already (no holes)
 	 */
 	if (PageMappedToDisk(page))
-<<<<<<< HEAD
-		goto mapped;
-
-	/* page is wholly or partially inside EOF */
-	if (((loff_t)(page->index + 1) << PAGE_CACHE_SHIFT) >
-						i_size_read(inode)) {
-		unsigned offset;
-		offset = i_size_read(inode) & ~PAGE_CACHE_MASK;
-		zero_user_segment(page, offset, PAGE_CACHE_SIZE);
-	}
-	set_page_dirty(page);
-	SetPageUptodate(page);
-
-	trace_f2fs_vm_page_mkwrite(page, DATA);
-mapped:
-	/* fill the page */
-	f2fs_wait_on_page_writeback(page, DATA, false);
-
-	/* wait for GCed encrypted page writeback */
-	if (f2fs_encrypted_inode(inode) && S_ISREG(inode->i_mode))
-		f2fs_wait_on_encrypted_page_writeback(sbi, dn.data_blkaddr);
-
-	/* if gced page is attached, don't write to cold segment */
-	clear_cold_data(page);
-out:
-	f2fs_update_time(sbi, REQ_TIME);
-	return block_page_mkwrite_return(err);
-}
-
-static const struct vm_operations_struct f2fs_file_vm_ops = {
-	.fault		= filemap_fault,
-=======
 		goto out_sem;
 
 	/* page is wholly or partially inside EOF */
@@ -257,7 +171,6 @@ out:
 static const struct vm_operations_struct f2fs_file_vm_ops = {
 	.fault		= f2fs_filemap_fault,
 	.map_pages	= filemap_map_pages,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.page_mkwrite	= f2fs_vm_page_mkwrite,
 };
 
@@ -265,19 +178,6 @@ static int get_parent_ino(struct inode *inode, nid_t *pino)
 {
 	struct dentry *dentry;
 
-<<<<<<< HEAD
-	inode = igrab(inode);
-	dentry = d_find_any_alias(inode);
-	iput(inode);
-	if (!dentry)
-		return 0;
-
-	if (update_dent_inode(inode, inode, &dentry->d_name)) {
-		dput(dentry);
-		return 0;
-	}
-
-=======
 	/*
 	 * Make sure to get the non-deleted alias.  The alias associated with
 	 * the open file descriptor being fsync()'ed may be deleted already.
@@ -286,37 +186,11 @@ static int get_parent_ino(struct inode *inode, nid_t *pino)
 	if (!dentry)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*pino = parent_ino(dentry);
 	dput(dentry);
 	return 1;
 }
 
-<<<<<<< HEAD
-static inline bool need_do_checkpoint(struct inode *inode)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	bool need_cp = false;
-
-	if (!S_ISREG(inode->i_mode) || inode->i_nlink != 1)
-		need_cp = true;
-	else if (file_enc_name(inode) && need_dentry_mark(sbi, inode->i_ino))
-		need_cp = true;
-	else if (file_wrong_pino(inode))
-		need_cp = true;
-	else if (!space_for_roll_forward(sbi))
-		need_cp = true;
-	else if (!is_checkpointed_node(sbi, F2FS_I(inode)->i_pino))
-		need_cp = true;
-	else if (F2FS_I(inode)->xattr_ver == cur_cp_version(F2FS_CKPT(sbi)))
-		need_cp = true;
-	else if (test_opt(sbi, FASTBOOT))
-		need_cp = true;
-	else if (sbi->active_logs == 2)
-		need_cp = true;
-
-	return need_cp;
-=======
 static inline enum cp_reason_type need_do_checkpoint(struct inode *inode)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
@@ -347,7 +221,6 @@ static inline enum cp_reason_type need_do_checkpoint(struct inode *inode)
 		cp_reason = CP_RECOVER_DIR;
 
 	return cp_reason;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool need_inode_page_update(struct f2fs_sb_info *sbi, nid_t ino)
@@ -355,11 +228,7 @@ static bool need_inode_page_update(struct f2fs_sb_info *sbi, nid_t ino)
 	struct page *i = find_get_page(NODE_MAPPING(sbi), ino);
 	bool ret = false;
 	/* But we need to avoid that there are some inode updates */
-<<<<<<< HEAD
-	if ((i && PageDirty(i)) || need_inode_block_update(sbi, ino))
-=======
 	if ((i && PageDirty(i)) || f2fs_need_inode_block_update(sbi, ino))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = true;
 	f2fs_put_page(i, 0);
 	return ret;
@@ -370,31 +239,6 @@ static void try_to_fix_pino(struct inode *inode)
 	struct f2fs_inode_info *fi = F2FS_I(inode);
 	nid_t pino;
 
-<<<<<<< HEAD
-	down_write(&fi->i_sem);
-	fi->xattr_ver = 0;
-	if (file_wrong_pino(inode) && inode->i_nlink == 1 &&
-			get_parent_ino(inode, &pino)) {
-		fi->i_pino = pino;
-		file_got_pino(inode);
-		up_write(&fi->i_sem);
-
-		mark_inode_dirty_sync(inode);
-		f2fs_write_inode(inode, NULL);
-	} else {
-		up_write(&fi->i_sem);
-	}
-}
-
-int f2fs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
-{
-	struct inode *inode = file->f_mapping->host;
-	struct f2fs_inode_info *fi = F2FS_I(inode);
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	nid_t ino = inode->i_ino;
-	int ret = 0;
-	bool need_cp = false;
-=======
 	f2fs_down_write(&fi->i_sem);
 	if (file_wrong_pino(inode) && inode->i_nlink == 1 &&
 			get_parent_ino(inode, &pino)) {
@@ -412,32 +256,18 @@ static int f2fs_do_sync_file(struct file *file, loff_t start, loff_t end,
 	nid_t ino = inode->i_ino;
 	int ret = 0;
 	enum cp_reason_type cp_reason = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct writeback_control wbc = {
 		.sync_mode = WB_SYNC_ALL,
 		.nr_to_write = LONG_MAX,
 		.for_reclaim = 0,
 	};
-<<<<<<< HEAD
-=======
 	unsigned int seq_id = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(f2fs_readonly(inode->i_sb)))
 		return 0;
 
 	trace_f2fs_sync_file_enter(inode);
 
-<<<<<<< HEAD
-	/* if fdatasync is triggered, let's do in-place-update */
-	if (datasync || get_dirty_pages(inode) <= SM_I(sbi)->min_fsync_blocks)
-		set_inode_flag(fi, FI_NEED_IPU);
-	ret = filemap_write_and_wait_range(inode->i_mapping, start, end);
-	clear_inode_flag(fi, FI_NEED_IPU);
-
-	if (ret) {
-		trace_f2fs_sync_file_exit(inode, need_cp, datasync, ret);
-=======
 	if (S_ISDIR(inode->i_mode))
 		goto go_write;
 
@@ -449,16 +279,11 @@ static int f2fs_do_sync_file(struct file *file, loff_t start, loff_t end,
 
 	if (ret || is_sbi_flag_set(sbi, SBI_CP_DISABLED)) {
 		trace_f2fs_sync_file_exit(inode, cp_reason, datasync, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	/* if the inode is dirty, let's recover all the time */
-<<<<<<< HEAD
-	if (!datasync) {
-=======
 	if (!f2fs_skip_inode_update(inode, datasync)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		f2fs_write_inode(inode, NULL);
 		goto go_write;
 	}
@@ -466,24 +291,13 @@ static int f2fs_do_sync_file(struct file *file, loff_t start, loff_t end,
 	/*
 	 * if there is no written data, don't waste time to write recovery info.
 	 */
-<<<<<<< HEAD
-	if (!is_inode_flag_set(fi, FI_APPEND_WRITE) &&
-			!exist_written_data(sbi, ino, APPEND_INO)) {
-=======
 	if (!is_inode_flag_set(inode, FI_APPEND_WRITE) &&
 			!f2fs_exist_written_data(sbi, ino, APPEND_INO)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* it may call write_inode just prior to fsync */
 		if (need_inode_page_update(sbi, ino))
 			goto go_write;
 
-<<<<<<< HEAD
-		if (is_inode_flag_set(fi, FI_UPDATE_WRITE) ||
-				exist_written_data(sbi, ino, UPDATE_INO))
-			goto flush_out;
-		goto out;
-=======
 		if (is_inode_flag_set(inode, FI_UPDATE_WRITE) ||
 				f2fs_exist_written_data(sbi, ino, UPDATE_INO))
 			goto flush_out;
@@ -500,26 +314,17 @@ static int f2fs_do_sync_file(struct file *file, loff_t start, loff_t end,
 		if (F2FS_OPTION(sbi).fsync_mode ==
 				FSYNC_MODE_STRICT && !atomic)
 			atomic = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 go_write:
 	/*
 	 * Both of fdatasync() and fsync() are able to be recovered from
 	 * sudden-power-off.
 	 */
-<<<<<<< HEAD
-	down_read(&fi->i_sem);
-	need_cp = need_do_checkpoint(inode);
-	up_read(&fi->i_sem);
-
-	if (need_cp) {
-=======
 	f2fs_down_read(&F2FS_I(inode)->i_sem);
 	cp_reason = need_do_checkpoint(inode);
 	f2fs_up_read(&F2FS_I(inode)->i_sem);
 
 	if (cp_reason) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* all the dirty node pages should be flushed for POR */
 		ret = f2fs_sync_fs(inode->i_sb, 1);
 
@@ -528,14 +333,6 @@ go_write:
 		 * will be used only for fsynced inodes after checkpoint.
 		 */
 		try_to_fix_pino(inode);
-<<<<<<< HEAD
-		clear_inode_flag(fi, FI_APPEND_WRITE);
-		clear_inode_flag(fi, FI_UPDATE_WRITE);
-		goto out;
-	}
-sync_nodes:
-	sync_node_pages(sbi, ino, &wbc);
-=======
 		clear_inode_flag(inode, FI_APPEND_WRITE);
 		clear_inode_flag(inode, FI_UPDATE_WRITE);
 		goto out;
@@ -546,7 +343,6 @@ sync_nodes:
 	atomic_dec(&sbi->wb_sync_req[NODE]);
 	if (ret)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if cp_error was enabled, we should avoid infinite loop */
 	if (unlikely(f2fs_cp_error(sbi))) {
@@ -554,65 +350,12 @@ sync_nodes:
 		goto out;
 	}
 
-<<<<<<< HEAD
-	if (need_inode_block_update(sbi, ino)) {
-		mark_inode_dirty_sync(inode);
-=======
 	if (f2fs_need_inode_block_update(sbi, ino)) {
 		f2fs_mark_inode_dirty_sync(inode, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		f2fs_write_inode(inode, NULL);
 		goto sync_nodes;
 	}
 
-<<<<<<< HEAD
-	ret = wait_on_node_pages_writeback(sbi, ino);
-	if (ret)
-		goto out;
-
-	/* once recovery info is written, don't need to tack this */
-	remove_ino_entry(sbi, ino, APPEND_INO);
-	clear_inode_flag(fi, FI_APPEND_WRITE);
-flush_out:
-	remove_ino_entry(sbi, ino, UPDATE_INO);
-	clear_inode_flag(fi, FI_UPDATE_WRITE);
-	ret = f2fs_issue_flush(sbi);
-	f2fs_update_time(sbi, REQ_TIME);
-out:
-	trace_f2fs_sync_file_exit(inode, need_cp, datasync, ret);
-	f2fs_trace_ios(NULL, 1);
-	return ret;
-}
-
-static pgoff_t __get_first_dirty_index(struct address_space *mapping,
-						pgoff_t pgofs, int whence)
-{
-	struct pagevec pvec;
-	int nr_pages;
-
-	if (whence != SEEK_DATA)
-		return 0;
-
-	/* find first dirty page index */
-	pagevec_init(&pvec, 0);
-	nr_pages = pagevec_lookup_tag(&pvec, mapping, &pgofs,
-					PAGECACHE_TAG_DIRTY, 1);
-	pgofs = nr_pages ? pvec.pages[0]->index : ULONG_MAX;
-	pagevec_release(&pvec);
-	return pgofs;
-}
-
-static bool __found_offset(block_t blkaddr, pgoff_t dirty, pgoff_t pgofs,
-							int whence)
-{
-	switch (whence) {
-	case SEEK_DATA:
-		if ((blkaddr == NEW_ADDR && dirty == pgofs) ||
-			(blkaddr != NEW_ADDR && blkaddr != NULL_ADDR))
-			return true;
-		break;
-	case SEEK_HOLE:
-=======
 	/*
 	 * If it's atomic_write, it's just fine to keep write ordering. So
 	 * here we don't need to wait for node write completion, since we use
@@ -679,7 +422,6 @@ static bool __found_offset(struct address_space *mapping,
 	case SEEK_HOLE:
 		if (compressed_cluster)
 			return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (blkaddr == NULL_ADDR)
 			return true;
 		break;
@@ -687,68 +429,23 @@ static bool __found_offset(struct address_space *mapping,
 	return false;
 }
 
-<<<<<<< HEAD
-static inline int unsigned_offsets(struct file *file)
-{
-	return file->f_mode & FMODE_UNSIGNED_OFFSET;
-}
-
-static loff_t vfs_setpos(struct file *file, loff_t offset, loff_t maxsize)
-{
-	if (offset < 0 && !unsigned_offsets(file))
-		return -EINVAL;
-	if (offset > maxsize)
-		return -EINVAL;
-
-	if (offset != file->f_pos) {
-		file->f_pos = offset;
-		file->f_version = 0;
-	}
-	return offset;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static loff_t f2fs_seek_block(struct file *file, loff_t offset, int whence)
 {
 	struct inode *inode = file->f_mapping->host;
 	loff_t maxbytes = inode->i_sb->s_maxbytes;
 	struct dnode_of_data dn;
-<<<<<<< HEAD
-	pgoff_t pgofs, end_offset, dirty;
-=======
 	pgoff_t pgofs, end_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	loff_t data_ofs = offset;
 	loff_t isize;
 	int err = 0;
 
-<<<<<<< HEAD
-	mutex_lock(&inode->i_mutex);
-=======
 	inode_lock_shared(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	isize = i_size_read(inode);
 	if (offset >= isize)
 		goto fail;
 
 	/* handle inline data case */
-<<<<<<< HEAD
-	if (f2fs_has_inline_data(inode) || f2fs_has_inline_dentry(inode)) {
-		if (whence == SEEK_HOLE)
-			data_ofs = isize;
-		goto found;
-	}
-
-	pgofs = (pgoff_t)(offset >> PAGE_CACHE_SHIFT);
-
-	dirty = __get_first_dirty_index(inode->i_mapping, pgofs, whence);
-
-	for (; data_ofs < isize; data_ofs = (loff_t)pgofs << PAGE_CACHE_SHIFT) {
-		set_new_dnode(&dn, inode, NULL, NULL, 0);
-		err = get_dnode_of_data(&dn, pgofs, LOOKUP_NODE_RA);
-=======
 	if (f2fs_has_inline_data(inode)) {
 		if (whence == SEEK_HOLE) {
 			data_ofs = isize;
@@ -764,17 +461,12 @@ static loff_t f2fs_seek_block(struct file *file, loff_t offset, int whence)
 	for (; data_ofs < isize; data_ofs = (loff_t)pgofs << PAGE_SHIFT) {
 		set_new_dnode(&dn, inode, NULL, NULL, 0);
 		err = f2fs_get_dnode_of_data(&dn, pgofs, LOOKUP_NODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err && err != -ENOENT) {
 			goto fail;
 		} else if (err == -ENOENT) {
 			/* direct node does not exists */
 			if (whence == SEEK_DATA) {
-<<<<<<< HEAD
-				pgofs = get_next_page_offset(&dn, pgofs);
-=======
 				pgofs = f2fs_get_next_page_offset(&dn, pgofs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			} else {
 				goto found;
@@ -786,13 +478,6 @@ static loff_t f2fs_seek_block(struct file *file, loff_t offset, int whence)
 		/* find data/hole in dnode block */
 		for (; dn.ofs_in_node < end_offset;
 				dn.ofs_in_node++, pgofs++,
-<<<<<<< HEAD
-				data_ofs = (loff_t)pgofs << PAGE_CACHE_SHIFT) {
-			block_t blkaddr;
-			blkaddr = datablock_addr(dn.node_page, dn.ofs_in_node);
-
-			if (__found_offset(blkaddr, dirty, pgofs, whence)) {
-=======
 				data_ofs = (loff_t)pgofs << PAGE_SHIFT) {
 			block_t blkaddr;
 
@@ -807,7 +492,6 @@ static loff_t f2fs_seek_block(struct file *file, loff_t offset, int whence)
 
 			if (__found_offset(file->f_mapping, &dn,
 							pgofs, whence)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				f2fs_put_dnode(&dn);
 				goto found;
 			}
@@ -820,17 +504,10 @@ static loff_t f2fs_seek_block(struct file *file, loff_t offset, int whence)
 found:
 	if (whence == SEEK_HOLE && data_ofs > isize)
 		data_ofs = isize;
-<<<<<<< HEAD
-	mutex_unlock(&inode->i_mutex);
-	return vfs_setpos(file, data_ofs, maxbytes);
-fail:
-	mutex_unlock(&inode->i_mutex);
-=======
 	inode_unlock_shared(inode);
 	return vfs_setpos(file, data_ofs, maxbytes);
 fail:
 	inode_unlock_shared(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENXIO;
 }
 
@@ -839,22 +516,15 @@ static loff_t f2fs_llseek(struct file *file, loff_t offset, int whence)
 	struct inode *inode = file->f_mapping->host;
 	loff_t maxbytes = inode->i_sb->s_maxbytes;
 
-<<<<<<< HEAD
-=======
 	if (f2fs_compressed_file(inode))
 		maxbytes = max_file_blocks(inode) << F2FS_BLKSIZE_BITS;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (whence) {
 	case SEEK_SET:
 	case SEEK_CUR:
 	case SEEK_END:
 		return generic_file_llseek_size(file, offset, whence,
-<<<<<<< HEAD
-						maxbytes);
-=======
 						maxbytes, i_size_read(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SEEK_DATA:
 	case SEEK_HOLE:
 		if (offset < 0)
@@ -868,25 +538,6 @@ static loff_t f2fs_llseek(struct file *file, loff_t offset, int whence)
 static int f2fs_file_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	struct inode *inode = file_inode(file);
-<<<<<<< HEAD
-	int err;
-
-	if (f2fs_encrypted_inode(inode)) {
-		err = fscrypt_get_encryption_info(inode);
-		if (err)
-			return 0;
-		if (!f2fs_encrypted_inode(inode))
-			return -ENOKEY;
-	}
-
-	/* we don't need to use inline_data strictly */
-	err = f2fs_convert_inline_inode(inode);
-	if (err)
-		return err;
-
-	file_accessed(file);
-	vma->vm_ops = &f2fs_file_vm_ops;
-=======
 
 	if (unlikely(f2fs_cp_error(F2FS_I_SB(inode))))
 		return -EIO;
@@ -901,58 +552,11 @@ static int f2fs_file_mmap(struct file *file, struct vm_area_struct *vma)
 	set_inode_flag(inode, FI_MMAP_FILE);
 	f2fs_up_read(&F2FS_I(inode)->i_sem);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int f2fs_file_open(struct inode *inode, struct file *filp)
 {
-<<<<<<< HEAD
-	int ret = generic_file_open(inode, filp);
-	struct dentry *dir;
-
-	if (!ret && f2fs_encrypted_inode(inode)) {
-		ret = fscrypt_get_encryption_info(inode);
-		if (ret)
-			return -EACCES;
-		if (!fscrypt_has_encryption_key(inode))
-			return -ENOKEY;
-	}
-	dir = dget_parent(filp->f_path.dentry);
-	if (f2fs_encrypted_inode(dir->d_inode) &&
-			!fscrypt_has_permitted_context(dir->d_inode, inode)) {
-		dput(dir);
-		return -EPERM;
-	}
-	dput(dir);
-	return ret;
-}
-
-int truncate_data_blocks_range(struct dnode_of_data *dn, int count)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(dn->inode);
-	struct f2fs_node *raw_node;
-	int nr_free = 0, ofs = dn->ofs_in_node, len = count;
-	__le32 *addr;
-
-	raw_node = F2FS_NODE(dn->node_page);
-	addr = blkaddr_in_node(raw_node) + ofs;
-
-	for (; count > 0; count--, addr++, dn->ofs_in_node++) {
-		block_t blkaddr = le32_to_cpu(*addr);
-		if (blkaddr == NULL_ADDR)
-			continue;
-
-		dn->data_blkaddr = NULL_ADDR;
-		set_data_blkaddr(dn);
-		invalidate_blocks(sbi, blkaddr);
-		if (dn->ofs_in_node == 0 && IS_INODE(dn->node_page))
-			clear_inode_flag(F2FS_I(dn->inode),
-						FI_FIRST_BLOCK_WRITTEN);
-		nr_free++;
-	}
-
-=======
 	int err = fscrypt_file_open(inode, filp);
 
 	if (err)
@@ -1020,53 +624,30 @@ void f2fs_truncate_data_blocks_range(struct dnode_of_data *dn, int count)
 	if (compressed_cluster)
 		f2fs_i_compr_blocks_update(dn->inode, valid_blocks, false);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nr_free) {
 		pgoff_t fofs;
 		/*
 		 * once we invalidate valid blkaddr in range [ofs, ofs + count],
 		 * we will invalidate all blkaddr in the whole range.
 		 */
-<<<<<<< HEAD
-		fofs = start_bidx_of_node(ofs_of_node(dn->node_page),
-							dn->inode) + ofs;
-		f2fs_update_extent_cache_range(dn, fofs, 0, len);
-		dec_valid_block_count(sbi, dn->inode, nr_free);
-		sync_inode_page(dn);
-=======
 		fofs = f2fs_start_bidx_of_node(ofs_of_node(dn->node_page),
 							dn->inode) + ofs;
 		f2fs_update_read_extent_cache_range(dn, fofs, 0, len);
 		f2fs_update_age_extent_cache_range(dn, fofs, len);
 		dec_valid_block_count(sbi, dn->inode, nr_free);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	dn->ofs_in_node = ofs;
 
 	f2fs_update_time(sbi, REQ_TIME);
 	trace_f2fs_truncate_data_blocks_range(dn->inode, dn->nid,
 					 dn->ofs_in_node, nr_free);
-<<<<<<< HEAD
-	return nr_free;
-}
-
-void truncate_data_blocks(struct dnode_of_data *dn)
-{
-	truncate_data_blocks_range(dn, ADDRS_PER_BLOCK);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int truncate_partial_data_page(struct inode *inode, u64 from,
 								bool cache_only)
 {
-<<<<<<< HEAD
-	unsigned offset = from & (PAGE_CACHE_SIZE - 1);
-	pgoff_t index = from >> PAGE_CACHE_SHIFT;
-=======
 	loff_t offset = from & (PAGE_SIZE - 1);
 	pgoff_t index = from >> PAGE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct address_space *mapping = inode->i_mapping;
 	struct page *page;
 
@@ -1074,27 +655,13 @@ static int truncate_partial_data_page(struct inode *inode, u64 from,
 		return 0;
 
 	if (cache_only) {
-<<<<<<< HEAD
-		page = f2fs_grab_cache_page(mapping, index, false);
-=======
 		page = find_lock_page(mapping, index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (page && PageUptodate(page))
 			goto truncate_out;
 		f2fs_put_page(page, 1);
 		return 0;
 	}
 
-<<<<<<< HEAD
-	page = get_lock_data_page(inode, index, true);
-	if (IS_ERR(page))
-		return 0;
-truncate_out:
-	f2fs_wait_on_page_writeback(page, DATA, true);
-	zero_user(page, offset, PAGE_CACHE_SIZE - offset);
-	if (!cache_only || !f2fs_encrypted_inode(inode) ||
-					!S_ISREG(inode->i_mode))
-=======
 	page = f2fs_get_lock_data_page(inode, index, true);
 	if (IS_ERR(page))
 		return PTR_ERR(page) == -ENOENT ? 0 : PTR_ERR(page);
@@ -1105,22 +672,14 @@ truncate_out:
 	/* An encrypted inode should have a key and truncate the last page. */
 	f2fs_bug_on(F2FS_I_SB(inode), cache_only && IS_ENCRYPTED(inode));
 	if (!cache_only)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_page_dirty(page);
 	f2fs_put_page(page, 1);
 	return 0;
 }
 
-<<<<<<< HEAD
-int truncate_blocks(struct inode *inode, u64 from, bool lock)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	unsigned int blocksize = inode->i_sb->s_blocksize;
-=======
 int f2fs_do_truncate_blocks(struct inode *inode, u64 from, bool lock)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dnode_of_data dn;
 	pgoff_t free_from;
 	int count = 0, err = 0;
@@ -1129,46 +688,29 @@ int f2fs_do_truncate_blocks(struct inode *inode, u64 from, bool lock)
 
 	trace_f2fs_truncate_blocks_enter(inode, from);
 
-<<<<<<< HEAD
-	free_from = (pgoff_t)F2FS_BYTES_TO_BLK(from + blocksize - 1);
-=======
 	free_from = (pgoff_t)F2FS_BLK_ALIGN(from);
 
 	if (free_from >= max_file_blocks(inode))
 		goto free_partial;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lock)
 		f2fs_lock_op(sbi);
 
-<<<<<<< HEAD
-	ipage = get_node_page(sbi, inode->i_ino);
-=======
 	ipage = f2fs_get_node_page(sbi, inode->i_ino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(ipage)) {
 		err = PTR_ERR(ipage);
 		goto out;
 	}
 
 	if (f2fs_has_inline_data(inode)) {
-<<<<<<< HEAD
-		if (truncate_inline_inode(ipage, from))
-			set_page_dirty(ipage);
-=======
 		f2fs_truncate_inline_inode(inode, ipage, from);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		f2fs_put_page(ipage, 1);
 		truncate_page = true;
 		goto out;
 	}
 
 	set_new_dnode(&dn, inode, ipage, NULL, 0);
-<<<<<<< HEAD
-	err = get_dnode_of_data(&dn, free_from, LOOKUP_NODE);
-=======
 	err = f2fs_get_dnode_of_data(&dn, free_from, LOOKUP_NODE_RA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		if (err == -ENOENT)
 			goto free_next;
@@ -1181,29 +723,17 @@ int f2fs_do_truncate_blocks(struct inode *inode, u64 from, bool lock)
 	f2fs_bug_on(sbi, count < 0);
 
 	if (dn.ofs_in_node || IS_INODE(dn.node_page)) {
-<<<<<<< HEAD
-		truncate_data_blocks_range(&dn, count);
-=======
 		f2fs_truncate_data_blocks_range(&dn, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_from += count;
 	}
 
 	f2fs_put_dnode(&dn);
 free_next:
-<<<<<<< HEAD
-	err = truncate_inode_blocks(inode, free_from);
-out:
-	if (lock)
-		f2fs_unlock_op(sbi);
-
-=======
 	err = f2fs_truncate_inode_blocks(inode, free_from);
 out:
 	if (lock)
 		f2fs_unlock_op(sbi);
 free_partial:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* lastly zero out the first data page */
 	if (!err)
 		err = truncate_partial_data_page(inode, from, truncate_page);
@@ -1212,12 +742,6 @@ free_partial:
 	return err;
 }
 
-<<<<<<< HEAD
-int f2fs_truncate(struct inode *inode, bool lock)
-{
-	int err;
-
-=======
 int f2fs_truncate_blocks(struct inode *inode, u64 from, bool lock)
 {
 	u64 free_from = from;
@@ -1263,15 +787,12 @@ int f2fs_truncate(struct inode *inode)
 	if (unlikely(f2fs_cp_error(F2FS_I_SB(inode))))
 		return -EIO;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode) ||
 				S_ISLNK(inode->i_mode)))
 		return 0;
 
 	trace_f2fs_truncate(inode);
 
-<<<<<<< HEAD
-=======
 	if (time_to_inject(F2FS_I_SB(inode), FAULT_TRUNCATE))
 		return -EIO;
 
@@ -1279,7 +800,6 @@ int f2fs_truncate(struct inode *inode)
 	if (err)
 		return err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* we should check inline_data size */
 	if (!f2fs_may_inline_data(inode)) {
 		err = f2fs_convert_inline_inode(inode);
@@ -1287,23 +807,6 @@ int f2fs_truncate(struct inode *inode)
 			return err;
 	}
 
-<<<<<<< HEAD
-	err = truncate_blocks(inode, i_size_read(inode), lock);
-	if (err)
-		return err;
-
-	inode->i_mtime = inode->i_ctime = CURRENT_TIME;
-	mark_inode_dirty(inode);
-	return 0;
-}
-
-int f2fs_getattr(struct vfsmount *mnt,
-			 struct dentry *dentry, struct kstat *stat)
-{
-	struct inode *inode = dentry->d_inode;
-	generic_fillattr(inode, stat);
-	stat->blocks <<= 3;
-=======
 	err = f2fs_truncate_blocks(inode, i_size_read(inode), true);
 	if (err)
 		return err;
@@ -1401,37 +904,10 @@ int f2fs_getattr(struct mnt_idmap *idmap, const struct path *path,
 					f2fs_has_inline_dentry(inode))
 		stat->blocks += (stat->size + 511) >> 9;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 #ifdef CONFIG_F2FS_FS_POSIX_ACL
-<<<<<<< HEAD
-static void __setattr_copy(struct inode *inode, const struct iattr *attr)
-{
-	struct f2fs_inode_info *fi = F2FS_I(inode);
-	unsigned int ia_valid = attr->ia_valid;
-
-	if (ia_valid & ATTR_UID)
-		inode->i_uid = attr->ia_uid;
-	if (ia_valid & ATTR_GID)
-		inode->i_gid = attr->ia_gid;
-	if (ia_valid & ATTR_ATIME)
-		inode->i_atime = timespec_trunc(attr->ia_atime,
-						inode->i_sb->s_time_gran);
-	if (ia_valid & ATTR_MTIME)
-		inode->i_mtime = timespec_trunc(attr->ia_mtime,
-						inode->i_sb->s_time_gran);
-	if (ia_valid & ATTR_CTIME)
-		inode->i_ctime = timespec_trunc(attr->ia_ctime,
-						inode->i_sb->s_time_gran);
-	if (ia_valid & ATTR_MODE) {
-		umode_t mode = attr->ia_mode;
-
-		if (!in_group_p(inode->i_gid) && !capable(CAP_FSETID))
-			mode &= ~S_ISGID;
-		set_acl_inode(fi, mode);
-=======
 static void __setattr_copy(struct mnt_idmap *idmap,
 			   struct inode *inode, const struct iattr *attr)
 {
@@ -1453,64 +929,12 @@ static void __setattr_copy(struct mnt_idmap *idmap,
 		    !capable_wrt_inode_uidgid(idmap, inode, CAP_FSETID))
 			mode &= ~S_ISGID;
 		set_acl_inode(inode, mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #else
 #define __setattr_copy setattr_copy
 #endif
 
-<<<<<<< HEAD
-int f2fs_setattr(struct dentry *dentry, struct iattr *attr)
-{
-	struct inode *inode = dentry->d_inode;
-	struct f2fs_inode_info *fi = F2FS_I(inode);
-	int err;
-
-	err = inode_change_ok(inode, attr);
-	if (err)
-		return err;
-
-	if (attr->ia_valid & ATTR_SIZE) {
-		if (f2fs_encrypted_inode(inode) &&
-				fscrypt_get_encryption_info(inode))
-			return -EACCES;
-
-		if (attr->ia_size <= i_size_read(inode)) {
-			truncate_setsize(inode, attr->ia_size);
-			err = f2fs_truncate(inode, true);
-			if (err)
-				return err;
-			f2fs_balance_fs(F2FS_I_SB(inode), true);
-		} else {
-			/*
-			 * do not trim all blocks after i_size if target size is
-			 * larger than i_size.
-			 */
-			truncate_setsize(inode, attr->ia_size);
-
-			/* should convert inline inode here */
-			if (!f2fs_may_inline_data(inode)) {
-				err = f2fs_convert_inline_inode(inode);
-				if (err)
-					return err;
-			}
-			inode->i_mtime = inode->i_ctime = CURRENT_TIME;
-		}
-	}
-
-	__setattr_copy(inode, attr);
-
-	if (attr->ia_valid & ATTR_MODE) {
-		err = f2fs_acl_chmod(inode);
-		if (err || is_inode_flag_set(fi, FI_ACL_MODE)) {
-			inode->i_mode = fi->i_acl_mode;
-			clear_inode_flag(fi, FI_ACL_MODE);
-		}
-	}
-
-	mark_inode_dirty(inode);
-=======
 int f2fs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		 struct iattr *attr)
 {
@@ -1622,30 +1046,18 @@ int f2fs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	/* inode change will produce dirty node pages flushed by checkpoint */
 	f2fs_balance_fs(F2FS_I_SB(inode), true);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 const struct inode_operations f2fs_file_inode_operations = {
 	.getattr	= f2fs_getattr,
 	.setattr	= f2fs_setattr,
-<<<<<<< HEAD
-	.get_acl	= f2fs_get_acl,
-#ifdef CONFIG_F2FS_FS_XATTR
-	.setxattr	= generic_setxattr,
-	.getxattr	= generic_getxattr,
-	.listxattr	= f2fs_listxattr,
-	.removexattr	= generic_removexattr,
-#endif
-	.fiemap		= f2fs_fiemap,
-=======
 	.get_inode_acl	= f2fs_get_acl,
 	.set_acl	= f2fs_set_acl,
 	.listxattr	= f2fs_listxattr,
 	.fiemap		= f2fs_fiemap,
 	.fileattr_get	= f2fs_fileattr_get,
 	.fileattr_set	= f2fs_fileattr_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int fill_zero(struct inode *inode, pgoff_t index,
@@ -1660,32 +1072,20 @@ static int fill_zero(struct inode *inode, pgoff_t index,
 	f2fs_balance_fs(sbi, true);
 
 	f2fs_lock_op(sbi);
-<<<<<<< HEAD
-	page = get_new_data_page(inode, NULL, index, false);
-=======
 	page = f2fs_get_new_data_page(inode, NULL, index, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	f2fs_unlock_op(sbi);
 
 	if (IS_ERR(page))
 		return PTR_ERR(page);
 
-<<<<<<< HEAD
-	f2fs_wait_on_page_writeback(page, DATA, true);
-=======
 	f2fs_wait_on_page_writeback(page, DATA, true, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	zero_user(page, start, len);
 	set_page_dirty(page);
 	f2fs_put_page(page, 1);
 	return 0;
 }
 
-<<<<<<< HEAD
-int truncate_hole(struct inode *inode, pgoff_t pg_start, pgoff_t pg_end)
-=======
 int f2fs_truncate_hole(struct inode *inode, pgoff_t pg_start, pgoff_t pg_end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -1694,18 +1094,11 @@ int f2fs_truncate_hole(struct inode *inode, pgoff_t pg_start, pgoff_t pg_end)
 		pgoff_t end_offset, count;
 
 		set_new_dnode(&dn, inode, NULL, NULL, 0);
-<<<<<<< HEAD
-		err = get_dnode_of_data(&dn, pg_start, LOOKUP_NODE);
-		if (err) {
-			if (err == -ENOENT) {
-				pg_start++;
-=======
 		err = f2fs_get_dnode_of_data(&dn, pg_start, LOOKUP_NODE);
 		if (err) {
 			if (err == -ENOENT) {
 				pg_start = f2fs_get_next_page_offset(&dn,
 								pg_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 			return err;
@@ -1716,11 +1109,7 @@ int f2fs_truncate_hole(struct inode *inode, pgoff_t pg_start, pgoff_t pg_end)
 
 		f2fs_bug_on(F2FS_I_SB(inode), count == 0 || count > end_offset);
 
-<<<<<<< HEAD
-		truncate_data_blocks_range(&dn, count);
-=======
 		f2fs_truncate_data_blocks_range(&dn, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		f2fs_put_dnode(&dn);
 
 		pg_start += count;
@@ -1728,11 +1117,7 @@ int f2fs_truncate_hole(struct inode *inode, pgoff_t pg_start, pgoff_t pg_end)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int punch_hole(struct inode *inode, loff_t offset, loff_t len)
-=======
 static int f2fs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pgoff_t pg_start, pg_end;
 	loff_t off_start, off_end;
@@ -1742,19 +1127,11 @@ static int f2fs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	pg_start = ((unsigned long long) offset) >> PAGE_CACHE_SHIFT;
-	pg_end = ((unsigned long long) offset + len) >> PAGE_CACHE_SHIFT;
-
-	off_start = offset & (PAGE_CACHE_SIZE - 1);
-	off_end = (offset + len) & (PAGE_CACHE_SIZE - 1);
-=======
 	pg_start = ((unsigned long long) offset) >> PAGE_SHIFT;
 	pg_end = ((unsigned long long) offset + len) >> PAGE_SHIFT;
 
 	off_start = offset & (PAGE_SIZE - 1);
 	off_end = (offset + len) & (PAGE_SIZE - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pg_start == pg_end) {
 		ret = fill_zero(inode, pg_start, off_start,
@@ -1764,11 +1141,7 @@ static int f2fs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
 	} else {
 		if (off_start) {
 			ret = fill_zero(inode, pg_start++, off_start,
-<<<<<<< HEAD
-						PAGE_CACHE_SIZE - off_start);
-=======
 						PAGE_SIZE - off_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret)
 				return ret;
 		}
@@ -1779,25 +1152,11 @@ static int f2fs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
 		}
 
 		if (pg_start < pg_end) {
-<<<<<<< HEAD
-			struct address_space *mapping = inode->i_mapping;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			loff_t blk_start, blk_end;
 			struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 
 			f2fs_balance_fs(sbi, true);
 
-<<<<<<< HEAD
-			blk_start = (loff_t)pg_start << PAGE_CACHE_SHIFT;
-			blk_end = (loff_t)pg_end << PAGE_CACHE_SHIFT;
-			truncate_inode_pages_range(mapping, blk_start,
-					blk_end - 1);
-
-			f2fs_lock_op(sbi);
-			ret = truncate_hole(inode, pg_start, pg_end);
-			f2fs_unlock_op(sbi);
-=======
 			blk_start = (loff_t)pg_start << PAGE_SHIFT;
 			blk_end = (loff_t)pg_end << PAGE_SHIFT;
 
@@ -1812,105 +1171,12 @@ static int f2fs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
 
 			filemap_invalidate_unlock(inode->i_mapping);
 			f2fs_up_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __exchange_data_block(struct inode *inode, pgoff_t src,
-					pgoff_t dst, bool full)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	struct dnode_of_data dn;
-	block_t new_addr;
-	bool do_replace = false;
-	int ret;
-
-	set_new_dnode(&dn, inode, NULL, NULL, 0);
-	ret = get_dnode_of_data(&dn, src, LOOKUP_NODE_RA);
-	if (ret && ret != -ENOENT) {
-		return ret;
-	} else if (ret == -ENOENT) {
-		new_addr = NULL_ADDR;
-	} else {
-		new_addr = dn.data_blkaddr;
-		if (!is_checkpointed_data(sbi, new_addr)) {
-			/* do not invalidate this block address */
-			f2fs_update_data_blkaddr(&dn, NULL_ADDR);
-			do_replace = true;
-		}
-		f2fs_put_dnode(&dn);
-	}
-
-	if (new_addr == NULL_ADDR)
-		return full ? truncate_hole(inode, dst, dst + 1) : 0;
-
-	if (do_replace) {
-		struct page *ipage = get_node_page(sbi, inode->i_ino);
-		struct node_info ni;
-
-		if (IS_ERR(ipage)) {
-			ret = PTR_ERR(ipage);
-			goto err_out;
-		}
-
-		set_new_dnode(&dn, inode, ipage, NULL, 0);
-		ret = f2fs_reserve_block(&dn, dst);
-		if (ret)
-			goto err_out;
-
-		truncate_data_blocks_range(&dn, 1);
-
-		get_node_info(sbi, dn.nid, &ni);
-		f2fs_replace_block(sbi, &dn, dn.data_blkaddr, new_addr,
-				ni.version, true, false);
-		f2fs_put_dnode(&dn);
-	} else {
-		struct page *psrc, *pdst;
-
-		psrc = get_lock_data_page(inode, src, true);
-		if (IS_ERR(psrc))
-			return PTR_ERR(psrc);
-		pdst = get_new_data_page(inode, NULL, dst, true);
-		if (IS_ERR(pdst)) {
-			f2fs_put_page(psrc, 1);
-			return PTR_ERR(pdst);
-		}
-		f2fs_copy_page(psrc, pdst);
-		set_page_dirty(pdst);
-		f2fs_put_page(pdst, 1);
-		f2fs_put_page(psrc, 1);
-
-		return truncate_hole(inode, src, src + 1);
-	}
-	return 0;
-
-err_out:
-	if (!get_dnode_of_data(&dn, src, LOOKUP_NODE)) {
-		f2fs_update_data_blkaddr(&dn, new_addr);
-		f2fs_put_dnode(&dn);
-	}
-	return ret;
-}
-
-static int f2fs_do_collapse(struct inode *inode, pgoff_t start, pgoff_t end)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	pgoff_t nrpages = (i_size_read(inode) + PAGE_SIZE - 1) / PAGE_SIZE;
-	int ret = 0;
-
-	for (; end < nrpages; start++, end++) {
-		f2fs_balance_fs(sbi, true);
-		f2fs_lock_op(sbi);
-		ret = __exchange_data_block(inode, end, start, true);
-		f2fs_unlock_op(sbi);
-		if (ret)
-			break;
-	}
-=======
 static int __read_out_blkaddrs(struct inode *inode, block_t *blkaddr,
 				int *do_replace, pgoff_t off, pgoff_t len)
 {
@@ -2149,16 +1415,11 @@ static int f2fs_do_collapse(struct inode *inode, loff_t offset, loff_t len)
 
 	filemap_invalidate_unlock(inode->i_mapping);
 	f2fs_up_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int f2fs_collapse_range(struct inode *inode, loff_t offset, loff_t len)
 {
-<<<<<<< HEAD
-	pgoff_t pg_start, pg_end;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	loff_t new_size;
 	int ret;
 
@@ -2173,39 +1434,16 @@ static int f2fs_collapse_range(struct inode *inode, loff_t offset, loff_t len)
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	pg_start = offset >> PAGE_CACHE_SHIFT;
-	pg_end = (offset + len) >> PAGE_CACHE_SHIFT;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* write out all dirty pages from offset */
 	ret = filemap_write_and_wait_range(inode->i_mapping, offset, LLONG_MAX);
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	truncate_pagecache(inode, 0, offset);
-
-	ret = f2fs_do_collapse(inode, pg_start, pg_end);
-=======
 	ret = f2fs_do_collapse(inode, offset, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
 	/* write out all moved pages, if possible */
-<<<<<<< HEAD
-	filemap_write_and_wait_range(inode->i_mapping, offset, LLONG_MAX);
-	truncate_pagecache(inode, 0, offset);
-
-	new_size = i_size_read(inode) - len;
-	truncate_pagecache(inode, 0, new_size);
-
-	ret = truncate_blocks(inode, new_size, true);
-	if (!ret)
-		i_size_write(inode, new_size);
-=======
 	filemap_invalidate_lock(inode->i_mapping);
 	filemap_write_and_wait_range(inode->i_mapping, offset, LLONG_MAX);
 	truncate_pagecache(inode, offset);
@@ -2264,7 +1502,6 @@ static int f2fs_do_zero_range(struct dnode_of_data *dn, pgoff_t start,
 
 	f2fs_update_read_extent_cache_range(dn, start, 0, index - start);
 	f2fs_update_age_extent_cache_range(dn, start, index - start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -2291,21 +1528,11 @@ static int f2fs_zero_range(struct inode *inode, loff_t offset, loff_t len,
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	truncate_pagecache_range(inode, offset, offset + len - 1);
-
-	pg_start = ((unsigned long long) offset) >> PAGE_CACHE_SHIFT;
-	pg_end = ((unsigned long long) offset + len) >> PAGE_CACHE_SHIFT;
-
-	off_start = offset & (PAGE_CACHE_SIZE - 1);
-	off_end = (offset + len) & (PAGE_CACHE_SIZE - 1);
-=======
 	pg_start = ((unsigned long long) offset) >> PAGE_SHIFT;
 	pg_end = ((unsigned long long) offset + len) >> PAGE_SHIFT;
 
 	off_start = offset & (PAGE_SIZE - 1);
 	off_end = (offset + len) & (PAGE_SIZE - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pg_start == pg_end) {
 		ret = fill_zero(inode, pg_start, off_start,
@@ -2313,58 +1540,15 @@ static int f2fs_zero_range(struct inode *inode, loff_t offset, loff_t len,
 		if (ret)
 			return ret;
 
-<<<<<<< HEAD
-		if (offset + len > new_size)
-			new_size = offset + len;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		new_size = max_t(loff_t, new_size, offset + len);
 	} else {
 		if (off_start) {
 			ret = fill_zero(inode, pg_start++, off_start,
-<<<<<<< HEAD
-						PAGE_CACHE_SIZE - off_start);
-=======
 						PAGE_SIZE - off_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret)
 				return ret;
 
 			new_size = max_t(loff_t, new_size,
-<<<<<<< HEAD
-					(loff_t)pg_start << PAGE_CACHE_SHIFT);
-		}
-
-		for (index = pg_start; index < pg_end; index++) {
-			struct dnode_of_data dn;
-			struct page *ipage;
-
-			f2fs_lock_op(sbi);
-
-			ipage = get_node_page(sbi, inode->i_ino);
-			if (IS_ERR(ipage)) {
-				ret = PTR_ERR(ipage);
-				f2fs_unlock_op(sbi);
-				goto out;
-			}
-
-			set_new_dnode(&dn, inode, ipage, NULL, 0);
-			ret = f2fs_reserve_block(&dn, index);
-			if (ret) {
-				f2fs_unlock_op(sbi);
-				goto out;
-			}
-
-			if (dn.data_blkaddr != NEW_ADDR) {
-				invalidate_blocks(sbi, dn.data_blkaddr);
-				f2fs_update_data_blkaddr(&dn, NEW_ADDR);
-			}
-			f2fs_put_dnode(&dn);
-			f2fs_unlock_op(sbi);
-
-			new_size = max_t(loff_t, new_size,
-				(loff_t)(index + 1) << PAGE_CACHE_SHIFT);
-=======
 					(loff_t)pg_start << PAGE_SHIFT);
 		}
 
@@ -2409,7 +1593,6 @@ static int f2fs_zero_range(struct inode *inode, loff_t offset, loff_t len,
 			index = end;
 			new_size = max_t(loff_t, new_size,
 					(loff_t)index << PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (off_end) {
@@ -2422,45 +1605,27 @@ static int f2fs_zero_range(struct inode *inode, loff_t offset, loff_t len,
 	}
 
 out:
-<<<<<<< HEAD
-	if (!(mode & FALLOC_FL_KEEP_SIZE) && i_size_read(inode) < new_size) {
-		i_size_write(inode, new_size);
-		mark_inode_dirty(inode);
-		update_inode_page(inode);
-	}
-
-=======
 	if (new_size > i_size_read(inode)) {
 		if (mode & FALLOC_FL_KEEP_SIZE)
 			file_set_keep_isize(inode);
 		else
 			f2fs_i_size_write(inode, new_size);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int f2fs_insert_range(struct inode *inode, loff_t offset, loff_t len)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-<<<<<<< HEAD
-	pgoff_t pg_start, pg_end, delta, nrpages, idx;
-=======
 	struct address_space *mapping = inode->i_mapping;
 	pgoff_t nr, pg_start, pg_end, delta, idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	loff_t new_size;
 	int ret = 0;
 
 	new_size = i_size_read(inode) + len;
-<<<<<<< HEAD
-	if (new_size > inode->i_sb->s_maxbytes)
-		return -EFBIG;
-=======
 	ret = inode_newsize_ok(inode, new_size);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (offset >= i_size_read(inode))
 		return -EINVAL;
@@ -2475,117 +1640,13 @@ static int f2fs_insert_range(struct inode *inode, loff_t offset, loff_t len)
 
 	f2fs_balance_fs(sbi, true);
 
-<<<<<<< HEAD
-	ret = truncate_blocks(inode, i_size_read(inode), true);
-=======
 	filemap_invalidate_lock(mapping);
 	ret = f2fs_truncate_blocks(inode, i_size_read(inode), true);
 	filemap_invalidate_unlock(mapping);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
 	/* write out all dirty pages from offset */
-<<<<<<< HEAD
-	ret = filemap_write_and_wait_range(inode->i_mapping, offset, LLONG_MAX);
-	if (ret)
-		return ret;
-
-	truncate_pagecache(inode, 0, offset);
-
-	pg_start = offset >> PAGE_CACHE_SHIFT;
-	pg_end = (offset + len) >> PAGE_CACHE_SHIFT;
-	delta = pg_end - pg_start;
-	nrpages = (i_size_read(inode) + PAGE_SIZE - 1) / PAGE_SIZE;
-
-	for (idx = nrpages - 1; idx >= pg_start && idx != -1; idx--) {
-		f2fs_lock_op(sbi);
-		ret = __exchange_data_block(inode, idx, idx + delta, false);
-		f2fs_unlock_op(sbi);
-		if (ret)
-			break;
-	}
-
-	/* write out all moved pages, if possible */
-	filemap_write_and_wait_range(inode->i_mapping, offset, LLONG_MAX);
-	truncate_pagecache(inode, 0, offset);
-
-	if (!ret)
-		i_size_write(inode, new_size);
-	return ret;
-}
-
-static int expand_inode_data(struct inode *inode, loff_t offset,
-					loff_t len, int mode)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	pgoff_t index, pg_start, pg_end;
-	loff_t new_size = i_size_read(inode);
-	loff_t off_start, off_end;
-	int ret = 0;
-
-	ret = inode_newsize_ok(inode, (len + offset));
-	if (ret)
-		return ret;
-
-	ret = f2fs_convert_inline_inode(inode);
-	if (ret)
-		return ret;
-
-	f2fs_balance_fs(sbi, true);
-
-	pg_start = ((unsigned long long) offset) >> PAGE_CACHE_SHIFT;
-	pg_end = ((unsigned long long) offset + len) >> PAGE_CACHE_SHIFT;
-
-	off_start = offset & (PAGE_CACHE_SIZE - 1);
-	off_end = (offset + len) & (PAGE_CACHE_SIZE - 1);
-
-	f2fs_lock_op(sbi);
-
-	for (index = pg_start; index <= pg_end; index++) {
-		struct dnode_of_data dn;
-
-		if (index == pg_end && !off_end)
-			goto noalloc;
-
-		set_new_dnode(&dn, inode, NULL, NULL, 0);
-		ret = f2fs_reserve_block(&dn, index);
-		if (ret)
-			break;
-noalloc:
-		if (pg_start == pg_end)
-			new_size = offset + len;
-		else if (index == pg_start && off_start)
-			new_size = (loff_t)(index + 1) << PAGE_CACHE_SHIFT;
-		else if (index == pg_end)
-			new_size = ((loff_t)index << PAGE_CACHE_SHIFT) +
-								off_end;
-		else
-			new_size += PAGE_CACHE_SIZE;
-	}
-
-	if (!(mode & FALLOC_FL_KEEP_SIZE) &&
-		i_size_read(inode) < new_size) {
-		i_size_write(inode, new_size);
-		mark_inode_dirty(inode);
-		update_inode_page(inode);
-	}
-	f2fs_unlock_op(sbi);
-
-	return ret;
-}
-
-#ifndef FALLOC_FL_COLLAPSE_RANGE
-#define FALLOC_FL_COLLAPSE_RANGE	0X08
-#endif
-#ifndef FALLOC_FL_ZERO_RANGE
-#define FALLOC_FL_ZERO_RANGE		0X10
-#endif
-#ifndef FALLOC_FL_INSERT_RANGE
-#define FALLOC_FL_INSERT_RANGE		0X20
-#endif
-
-=======
 	ret = filemap_write_and_wait_range(mapping, offset, LLONG_MAX);
 	if (ret)
 		return ret;
@@ -2735,15 +1796,12 @@ out_err:
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long f2fs_fallocate(struct file *file, int mode,
 				loff_t offset, loff_t len)
 {
 	struct inode *inode = file_inode(file);
 	long ret = 0;
 
-<<<<<<< HEAD
-=======
 	if (unlikely(f2fs_cp_error(F2FS_I_SB(inode))))
 		return -EIO;
 	if (!f2fs_is_checkpoint_ready(F2FS_I_SB(inode)))
@@ -2751,17 +1809,10 @@ static long f2fs_fallocate(struct file *file, int mode,
 	if (!f2fs_is_compress_backend_ready(inode))
 		return -EOPNOTSUPP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* f2fs only support ->fallocate for regular file */
 	if (!S_ISREG(inode->i_mode))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (f2fs_encrypted_inode(inode) &&
-		(mode & (FALLOC_FL_COLLAPSE_RANGE | FALLOC_FL_INSERT_RANGE)))
-		return -EOPNOTSUPP;
-
-=======
 	if (IS_ENCRYPTED(inode) &&
 		(mode & (FALLOC_FL_COLLAPSE_RANGE | FALLOC_FL_INSERT_RANGE)))
 		return -EOPNOTSUPP;
@@ -2775,31 +1826,22 @@ static long f2fs_fallocate(struct file *file, int mode,
 			FALLOC_FL_ZERO_RANGE | FALLOC_FL_INSERT_RANGE)))
 		return -EOPNOTSUPP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mode & ~(FALLOC_FL_KEEP_SIZE | FALLOC_FL_PUNCH_HOLE |
 			FALLOC_FL_COLLAPSE_RANGE | FALLOC_FL_ZERO_RANGE |
 			FALLOC_FL_INSERT_RANGE))
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	mutex_lock(&inode->i_mutex);
-=======
 	inode_lock(inode);
 
 	ret = file_modified(file);
 	if (ret)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mode & FALLOC_FL_PUNCH_HOLE) {
 		if (offset >= inode->i_size)
 			goto out;
 
-<<<<<<< HEAD
-		ret = punch_hole(inode, offset, len);
-=======
 		ret = f2fs_punch_hole(inode, offset, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (mode & FALLOC_FL_COLLAPSE_RANGE) {
 		ret = f2fs_collapse_range(inode, offset, len);
 	} else if (mode & FALLOC_FL_ZERO_RANGE) {
@@ -2807,30 +1849,17 @@ static long f2fs_fallocate(struct file *file, int mode,
 	} else if (mode & FALLOC_FL_INSERT_RANGE) {
 		ret = f2fs_insert_range(inode, offset, len);
 	} else {
-<<<<<<< HEAD
-		ret = expand_inode_data(inode, offset, len, mode);
-	}
-
-	if (!ret) {
-		inode->i_mtime = inode->i_ctime = CURRENT_TIME;
-		mark_inode_dirty(inode);
-=======
 		ret = f2fs_expand_inode_data(inode, offset, len, mode);
 	}
 
 	if (!ret) {
 		inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
 		f2fs_mark_inode_dirty_sync(inode, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		f2fs_update_time(F2FS_I_SB(inode), REQ_TIME);
 	}
 
 out:
-<<<<<<< HEAD
-	mutex_unlock(&inode->i_mutex);
-=======
 	inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_f2fs_fallocate(inode, mode, offset, len, ret);
 	return ret;
@@ -2838,87 +1867,6 @@ out:
 
 static int f2fs_release_file(struct inode *inode, struct file *filp)
 {
-<<<<<<< HEAD
-	/* some remained atomic pages should discarded */
-	if (f2fs_is_atomic_file(inode))
-		drop_inmem_pages(inode);
-	if (f2fs_is_volatile_file(inode)) {
-		set_inode_flag(F2FS_I(inode), FI_DROP_CACHE);
-		filemap_fdatawrite(inode->i_mapping);
-		clear_inode_flag(F2FS_I(inode), FI_DROP_CACHE);
-	}
-	return 0;
-}
-
-#define F2FS_REG_FLMASK		(~(FS_DIRSYNC_FL | FS_TOPDIR_FL))
-#define F2FS_OTHER_FLMASK	(FS_NODUMP_FL | FS_NOATIME_FL)
-
-static inline __u32 f2fs_mask_flags(umode_t mode, __u32 flags)
-{
-	if (S_ISDIR(mode))
-		return flags;
-	else if (S_ISREG(mode))
-		return flags & F2FS_REG_FLMASK;
-	else
-		return flags & F2FS_OTHER_FLMASK;
-}
-
-static int f2fs_ioc_getflags(struct file *filp, unsigned long arg)
-{
-	struct inode *inode = file_inode(filp);
-	struct f2fs_inode_info *fi = F2FS_I(inode);
-	unsigned int flags = fi->i_flags & FS_FL_USER_VISIBLE;
-	return put_user(flags, (int __user *)arg);
-}
-
-static int f2fs_ioc_setflags(struct file *filp, unsigned long arg)
-{
-	struct inode *inode = file_inode(filp);
-	struct f2fs_inode_info *fi = F2FS_I(inode);
-	unsigned int flags = fi->i_flags & FS_FL_USER_VISIBLE;
-	unsigned int oldflags;
-	int ret;
-
-	ret = mnt_want_write_file(filp);
-	if (ret)
-		return ret;
-
-	if (!inode_owner_or_capable(inode)) {
-		ret = -EACCES;
-		goto out;
-	}
-
-	if (get_user(flags, (int __user *)arg)) {
-		ret = -EFAULT;
-		goto out;
-	}
-
-	flags = f2fs_mask_flags(inode->i_mode, flags);
-
-	mutex_lock(&inode->i_mutex);
-
-	oldflags = fi->i_flags;
-
-	if ((flags ^ oldflags) & (FS_APPEND_FL | FS_IMMUTABLE_FL)) {
-		if (!capable(CAP_LINUX_IMMUTABLE)) {
-			mutex_unlock(&inode->i_mutex);
-			ret = -EPERM;
-			goto out;
-		}
-	}
-
-	flags = flags & FS_FL_USER_MODIFIABLE;
-	flags |= oldflags & ~FS_FL_USER_MODIFIABLE;
-	fi->i_flags = flags;
-	mutex_unlock(&inode->i_mutex);
-
-	f2fs_set_inode_flags(inode);
-	inode->i_ctime = CURRENT_TIME;
-	mark_inode_dirty(inode);
-out:
-	mnt_drop_write_file(filp);
-	return ret;
-=======
 	/*
 	 * f2fs_release_file is called at every close calls. So we should
 	 * not drop any inmemory pages by close called by other process.
@@ -3102,7 +2050,6 @@ static inline u32 f2fs_fsflags_to_iflags(u32 fsflags)
 			iflags |= f2fs_fsflags_map[i].iflag;
 
 	return iflags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int f2fs_ioc_getversion(struct file *filp, unsigned long arg)
@@ -3112,27 +2059,6 @@ static int f2fs_ioc_getversion(struct file *filp, unsigned long arg)
 	return put_user(inode->i_generation, (int __user *)arg);
 }
 
-<<<<<<< HEAD
-static int f2fs_ioc_start_atomic_write(struct file *filp)
-{
-	struct inode *inode = file_inode(filp);
-	int ret;
-
-	if (!inode_owner_or_capable(inode))
-		return -EACCES;
-
-	if (f2fs_is_atomic_file(inode))
-		return 0;
-
-	ret = f2fs_convert_inline_inode(inode);
-	if (ret)
-		return ret;
-
-	set_inode_flag(F2FS_I(inode), FI_ATOMIC_FILE);
-	f2fs_update_time(F2FS_I_SB(inode), REQ_TIME);
-
-	return 0;
-=======
 static int f2fs_ioc_start_atomic_write(struct file *filp, bool truncate)
 {
 	struct inode *inode = file_inode(filp);
@@ -3240,46 +2166,21 @@ out:
 	inode_unlock(inode);
 	mnt_drop_write_file(filp);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int f2fs_ioc_commit_atomic_write(struct file *filp)
 {
 	struct inode *inode = file_inode(filp);
-<<<<<<< HEAD
-	int ret;
-
-	if (!inode_owner_or_capable(inode))
-		return -EACCES;
-
-	if (f2fs_is_volatile_file(inode))
-		return 0;
-
-=======
 	struct mnt_idmap *idmap = file_mnt_idmap(filp);
 	int ret;
 
 	if (!inode_owner_or_capable(idmap, inode))
 		return -EACCES;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = mnt_want_write_file(filp);
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	if (f2fs_is_atomic_file(inode)) {
-		clear_inode_flag(F2FS_I(inode), FI_ATOMIC_FILE);
-		ret = commit_inmem_pages(inode);
-		if (ret) {
-			set_inode_flag(F2FS_I(inode), FI_ATOMIC_FILE);
-			goto err_out;
-		}
-	}
-
-	ret = f2fs_sync_file(filp, 0, LLONG_MAX, 0);
-err_out:
-=======
 	f2fs_balance_fs(F2FS_I_SB(inode), true);
 
 	inode_lock(inode);
@@ -3295,55 +2196,10 @@ err_out:
 	}
 
 	inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mnt_drop_write_file(filp);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int f2fs_ioc_start_volatile_write(struct file *filp)
-{
-	struct inode *inode = file_inode(filp);
-	int ret;
-
-	if (!inode_owner_or_capable(inode))
-		return -EACCES;
-
-	if (f2fs_is_volatile_file(inode))
-		return 0;
-
-	ret = f2fs_convert_inline_inode(inode);
-	if (ret)
-		return ret;
-
-	set_inode_flag(F2FS_I(inode), FI_VOLATILE_FILE);
-	f2fs_update_time(F2FS_I_SB(inode), REQ_TIME);
-	return 0;
-}
-
-static int f2fs_ioc_release_volatile_write(struct file *filp)
-{
-	struct inode *inode = file_inode(filp);
-
-	if (!inode_owner_or_capable(inode))
-		return -EACCES;
-
-	if (!f2fs_is_volatile_file(inode))
-		return 0;
-
-	if (!f2fs_is_first_block_written(inode))
-		return truncate_partial_data_page(inode, 0, true);
-
-	return punch_hole(inode, 0, F2FS_BLKSIZE);
-}
-
-static int f2fs_ioc_abort_volatile_write(struct file *filp)
-{
-	struct inode *inode = file_inode(filp);
-	int ret;
-
-	if (!inode_owner_or_capable(inode))
-=======
 static int f2fs_ioc_abort_atomic_write(struct file *filp)
 {
 	struct inode *inode = file_inode(filp);
@@ -3351,29 +2207,17 @@ static int f2fs_ioc_abort_atomic_write(struct file *filp)
 	int ret;
 
 	if (!inode_owner_or_capable(idmap, inode))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EACCES;
 
 	ret = mnt_want_write_file(filp);
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	if (f2fs_is_atomic_file(inode)) {
-		clear_inode_flag(F2FS_I(inode), FI_ATOMIC_FILE);
-		drop_inmem_pages(inode);
-	}
-	if (f2fs_is_volatile_file(inode)) {
-		clear_inode_flag(F2FS_I(inode), FI_VOLATILE_FILE);
-		ret = f2fs_sync_file(filp, 0, LLONG_MAX, 0);
-	}
-=======
 	inode_lock(inode);
 
 	f2fs_abort_atomic_write(inode, true);
 
 	inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mnt_drop_write_file(filp);
 	f2fs_update_time(F2FS_I_SB(inode), REQ_TIME);
@@ -3386,10 +2230,7 @@ static int f2fs_ioc_shutdown(struct file *filp, unsigned long arg)
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 	struct super_block *sb = sbi->sb;
 	__u32 in;
-<<<<<<< HEAD
-=======
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
@@ -3397,33 +2238,6 @@ static int f2fs_ioc_shutdown(struct file *filp, unsigned long arg)
 	if (get_user(in, (__u32 __user *)arg))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	switch (in) {
-	case FS_GOING_DOWN_FULLSYNC:
-		sb = freeze_bdev(sb->s_bdev);
-		if (sb && !IS_ERR(sb)) {
-			f2fs_stop_checkpoint(sbi);
-			thaw_bdev(sb->s_bdev, sb);
-		}
-		break;
-	case FS_GOING_DOWN_METASYNC:
-		/* do checkpoint only */
-		f2fs_sync_fs(sb, 1);
-		f2fs_stop_checkpoint(sbi);
-		break;
-	case FS_GOING_DOWN_NOSYNC:
-		f2fs_stop_checkpoint(sbi);
-		break;
-	case FS_GOING_DOWN_METAFLUSH:
-		sync_meta_pages(sbi, META, LONG_MAX);
-		f2fs_stop_checkpoint(sbi);
-		break;
-	default:
-		return -EINVAL;
-	}
-	f2fs_update_time(sbi, REQ_TIME);
-	return 0;
-=======
 	if (in != F2FS_GOING_DOWN_FULLSYNC) {
 		ret = mnt_want_write_file(filp);
 		if (ret) {
@@ -3490,39 +2304,25 @@ out:
 	trace_f2fs_shutdown(sbi, in, ret);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int f2fs_ioc_fitrim(struct file *filp, unsigned long arg)
 {
 	struct inode *inode = file_inode(filp);
 	struct super_block *sb = inode->i_sb;
-<<<<<<< HEAD
-	struct request_queue *q = bdev_get_queue(sb->s_bdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fstrim_range range;
 	int ret;
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
-<<<<<<< HEAD
-	if (!blk_queue_discard(q))
-=======
 	if (!f2fs_hw_support_discard(F2FS_SB(sb)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EOPNOTSUPP;
 
 	if (copy_from_user(&range, (struct fstrim_range __user *)arg,
 				sizeof(range)))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	range.minlen = max((unsigned int)range.minlen,
-				q->limits.discard_granularity);
-	ret = f2fs_trim_fs(F2FS_SB(sb), &range);
-=======
 	ret = mnt_want_write_file(filp);
 	if (ret)
 		return ret;
@@ -3531,7 +2331,6 @@ static int f2fs_ioc_fitrim(struct file *filp, unsigned long arg)
 			   bdev_discard_granularity(sb->s_bdev));
 	ret = f2fs_trim_fs(F2FS_SB(sb), &range);
 	mnt_drop_write_file(filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -3554,17 +2353,6 @@ static bool uuid_is_nonzero(__u8 u[16])
 
 static int f2fs_ioc_set_encryption_policy(struct file *filp, unsigned long arg)
 {
-<<<<<<< HEAD
-	struct fscrypt_policy policy;
-	struct inode *inode = file_inode(filp);
-
-	if (copy_from_user(&policy, (struct fscrypt_policy __user *)arg,
-							sizeof(policy)))
-		return -EFAULT;
-
-	f2fs_update_time(F2FS_I_SB(inode), REQ_TIME);
-	return fscrypt_process_policy(inode, &policy);
-=======
 	struct inode *inode = file_inode(filp);
 
 	if (!f2fs_sb_has_encrypt(F2FS_I_SB(inode)))
@@ -3573,63 +2361,34 @@ static int f2fs_ioc_set_encryption_policy(struct file *filp, unsigned long arg)
 	f2fs_update_time(F2FS_I_SB(inode), REQ_TIME);
 
 	return fscrypt_ioctl_set_policy(filp, (const void __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int f2fs_ioc_get_encryption_policy(struct file *filp, unsigned long arg)
 {
-<<<<<<< HEAD
-	struct fscrypt_policy policy;
-	struct inode *inode = file_inode(filp);
-	int err;
-
-	err = fscrypt_get_policy(inode, &policy);
-	if (err)
-		return err;
-
-	if (copy_to_user((struct fscrypt_policy __user *)arg, &policy, sizeof(policy)))
-		return -EFAULT;
-	return 0;
-=======
 	if (!f2fs_sb_has_encrypt(F2FS_I_SB(file_inode(filp))))
 		return -EOPNOTSUPP;
 	return fscrypt_ioctl_get_policy(filp, (void __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int f2fs_ioc_get_encryption_pwsalt(struct file *filp, unsigned long arg)
 {
 	struct inode *inode = file_inode(filp);
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-<<<<<<< HEAD
-	int err;
-
-	if (!f2fs_sb_has_crypto(inode->i_sb))
-		return -EOPNOTSUPP;
-
-	if (uuid_is_nonzero(sbi->raw_super->encrypt_pw_salt))
-		goto got_it;
-
-=======
 	u8 encrypt_pw_salt[16];
 	int err;
 
 	if (!f2fs_sb_has_encrypt(sbi))
 		return -EOPNOTSUPP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = mnt_want_write_file(filp);
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-=======
 	f2fs_down_write(&sbi->sb_lock);
 
 	if (uuid_is_nonzero(sbi->raw_super->encrypt_pw_salt))
 		goto got_it;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* update superblock with uuid */
 	generate_random_uuid(sbi->raw_super->encrypt_pw_salt);
 
@@ -3637,17 +2396,6 @@ static int f2fs_ioc_get_encryption_pwsalt(struct file *filp, unsigned long arg)
 	if (err) {
 		/* undo new data */
 		memset(sbi->raw_super->encrypt_pw_salt, 0, 16);
-<<<<<<< HEAD
-		mnt_drop_write_file(filp);
-		return err;
-	}
-	mnt_drop_write_file(filp);
-got_it:
-	if (copy_to_user((__u8 __user *)arg, sbi->raw_super->encrypt_pw_salt,
-									16))
-		return -EFAULT;
-	return 0;
-=======
 		goto out_err;
 	}
 got_it:
@@ -3711,23 +2459,18 @@ static int f2fs_ioc_get_encryption_nonce(struct file *filp, unsigned long arg)
 		return -EOPNOTSUPP;
 
 	return fscrypt_ioctl_get_nonce(filp, (void __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int f2fs_ioc_gc(struct file *filp, unsigned long arg)
 {
 	struct inode *inode = file_inode(filp);
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-<<<<<<< HEAD
-	__u32 sync;
-=======
 	struct f2fs_gc_control gc_control = { .victim_segno = NULL_SEGNO,
 			.no_bg_gc = false,
 			.should_migrate_blocks = false,
 			.nr_free_secs = 0 };
 	__u32 sync;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
@@ -3738,22 +2481,6 @@ static int f2fs_ioc_gc(struct file *filp, unsigned long arg)
 	if (f2fs_readonly(sbi->sb))
 		return -EROFS;
 
-<<<<<<< HEAD
-	if (!sync) {
-		if (!mutex_trylock(&sbi->gc_mutex))
-			return -EBUSY;
-	} else {
-		mutex_lock(&sbi->gc_mutex);
-	}
-
-	return f2fs_gc(sbi, sync);
-}
-
-static int f2fs_ioc_write_checkpoint(struct file *filp, unsigned long arg)
-{
-	struct inode *inode = file_inode(filp);
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-=======
 	ret = mnt_want_write_file(filp);
 	if (ret)
 		return ret;
@@ -3843,7 +2570,6 @@ static int f2fs_ioc_write_checkpoint(struct file *filp)
 	struct inode *inode = file_inode(filp);
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
@@ -3851,9 +2577,6 @@ static int f2fs_ioc_write_checkpoint(struct file *filp)
 	if (f2fs_readonly(sbi->sb))
 		return -EROFS;
 
-<<<<<<< HEAD
-	return f2fs_sync_fs(sbi->sb, 1);
-=======
 	if (unlikely(is_sbi_flag_set(sbi, SBI_CP_DISABLED))) {
 		f2fs_info(sbi, "Skipping Checkpoint. Checkpoints currently disabled.");
 		return -EINVAL;
@@ -3867,7 +2590,6 @@ static int f2fs_ioc_write_checkpoint(struct file *filp)
 
 	mnt_drop_write_file(filp);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
@@ -3875,37 +2597,16 @@ static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
 					struct f2fs_defragment *range)
 {
 	struct inode *inode = file_inode(filp);
-<<<<<<< HEAD
-	struct f2fs_map_blocks map = { .m_next_pgofs = NULL };
-	struct extent_info ei;
-	pgoff_t pg_start, pg_end;
-	unsigned int blk_per_seg = sbi->blocks_per_seg;
-	unsigned int total = 0, sec_num;
-	unsigned int pages_per_sec = sbi->segs_per_sec * blk_per_seg;
-=======
 	struct f2fs_map_blocks map = { .m_next_extent = NULL,
 					.m_seg_type = NO_CHECK_TYPE,
 					.m_may_create = false };
 	struct extent_info ei = {};
 	pgoff_t pg_start, pg_end, next_pgofs;
 	unsigned int total = 0, sec_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	block_t blk_end = 0;
 	bool fragmented = false;
 	int err;
 
-<<<<<<< HEAD
-	/* if in-place-update policy is enabled, don't waste time here */
-	if (need_inplace_update(inode))
-		return -EINVAL;
-
-	pg_start = range->start >> PAGE_CACHE_SHIFT;
-	pg_end = (range->start + range->len) >> PAGE_CACHE_SHIFT;
-
-	f2fs_balance_fs(sbi, true);
-
-	mutex_lock(&inode->i_mutex);
-=======
 	pg_start = range->start >> PAGE_SHIFT;
 	pg_end = (range->start + range->len) >> PAGE_SHIFT;
 
@@ -3924,7 +2625,6 @@ static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
 		err = -EINVAL;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* writeback all dirty pages in the range */
 	err = filemap_write_and_wait_range(inode->i_mapping, range->start,
@@ -3936,20 +2636,13 @@ static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
 	 * lookup mapping info in extent cache, skip defragmenting if physical
 	 * block addresses are continuous.
 	 */
-<<<<<<< HEAD
-	if (f2fs_lookup_extent_cache(inode, pg_start, &ei)) {
-=======
 	if (f2fs_lookup_read_extent_cache(inode, pg_start, &ei)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ei.fofs + ei.len >= pg_end)
 			goto out;
 	}
 
 	map.m_lblk = pg_start;
-<<<<<<< HEAD
-=======
 	map.m_next_pgofs = &next_pgofs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * lookup mapping info in dnode page cache, skip defragmenting if all
@@ -3958,25 +2651,11 @@ static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
 	 */
 	while (map.m_lblk < pg_end) {
 		map.m_len = pg_end - map.m_lblk;
-<<<<<<< HEAD
-		err = f2fs_map_blocks(inode, &map, 0, F2FS_GET_BLOCK_READ);
-=======
 		err = f2fs_map_blocks(inode, &map, F2FS_GET_BLOCK_DEFAULT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto out;
 
 		if (!(map.m_flags & F2FS_MAP_FLAGS)) {
-<<<<<<< HEAD
-			map.m_lblk++;
-			continue;
-		}
-
-		if (blk_end && blk_end != map.m_pblk) {
-			fragmented = true;
-			break;
-		}
-=======
 			map.m_lblk = next_pgofs;
 			continue;
 		}
@@ -3987,78 +2666,43 @@ static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
 		/* record total count of block that we're going to move */
 		total += map.m_len;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		blk_end = map.m_pblk + map.m_len;
 
 		map.m_lblk += map.m_len;
 	}
 
-<<<<<<< HEAD
-	if (!fragmented)
-		goto out;
-
-	map.m_lblk = pg_start;
-	map.m_len = pg_end - pg_start;
-
-	sec_num = (map.m_len + pages_per_sec - 1) / pages_per_sec;
-=======
 	if (!fragmented) {
 		total = 0;
 		goto out;
 	}
 
 	sec_num = DIV_ROUND_UP(total, CAP_BLKS_PER_SEC(sbi));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * make sure there are enough free section for LFS allocation, this can
 	 * avoid defragment running in SSR mode when free section are allocated
 	 * intensively
 	 */
-<<<<<<< HEAD
-	if (has_not_enough_free_secs(sbi, sec_num)) {
-=======
 	if (has_not_enough_free_secs(sbi, 0, sec_num)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EAGAIN;
 		goto out;
 	}
 
-<<<<<<< HEAD
-=======
 	map.m_lblk = pg_start;
 	map.m_len = pg_end - pg_start;
 	total = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (map.m_lblk < pg_end) {
 		pgoff_t idx;
 		int cnt = 0;
 
 do_map:
 		map.m_len = pg_end - map.m_lblk;
-<<<<<<< HEAD
-		err = f2fs_map_blocks(inode, &map, 0, F2FS_GET_BLOCK_READ);
-=======
 		err = f2fs_map_blocks(inode, &map, F2FS_GET_BLOCK_DEFAULT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto clear_out;
 
 		if (!(map.m_flags & F2FS_MAP_FLAGS)) {
-<<<<<<< HEAD
-			map.m_lblk++;
-			continue;
-		}
-
-		set_inode_flag(F2FS_I(inode), FI_DO_DEFRAG);
-
-		idx = map.m_lblk;
-		while (idx < map.m_lblk + map.m_len && cnt < blk_per_seg) {
-			struct page *page;
-
-			page = get_lock_data_page(inode, idx, true);
-=======
 			map.m_lblk = next_pgofs;
 			goto check;
 		}
@@ -4071,17 +2715,13 @@ do_map:
 			struct page *page;
 
 			page = f2fs_get_lock_data_page(inode, idx, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (IS_ERR(page)) {
 				err = PTR_ERR(page);
 				goto clear_out;
 			}
 
 			set_page_dirty(page);
-<<<<<<< HEAD
-=======
 			set_page_private_gcing(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			f2fs_put_page(page, 1);
 
 			idx++;
@@ -4090,32 +2730,17 @@ do_map:
 		}
 
 		map.m_lblk = idx;
-<<<<<<< HEAD
-
-		if (idx < pg_end && cnt < blk_per_seg)
-			goto do_map;
-
-		clear_inode_flag(F2FS_I(inode), FI_DO_DEFRAG);
-=======
 check:
 		if (map.m_lblk < pg_end && cnt < BLKS_PER_SEG(sbi))
 			goto do_map;
 
 		clear_inode_flag(inode, FI_SKIP_WRITES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = filemap_fdatawrite(inode->i_mapping);
 		if (err)
 			goto out;
 	}
 clear_out:
-<<<<<<< HEAD
-	clear_inode_flag(F2FS_I(inode), FI_DO_DEFRAG);
-out:
-	mutex_unlock(&inode->i_mutex);
-	if (!err)
-		range->len = (u64)total << PAGE_CACHE_SHIFT;
-=======
 	clear_inode_flag(inode, FI_SKIP_WRITES);
 out:
 	clear_inode_flag(inode, FI_OPU_WRITE);
@@ -4123,7 +2748,6 @@ unlock_out:
 	inode_unlock(inode);
 	if (!err)
 		range->len = (u64)total << PAGE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -4137,9 +2761,6 @@ static int f2fs_ioc_defragment(struct file *filp, unsigned long arg)
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
-<<<<<<< HEAD
-	if (!S_ISREG(inode->i_mode))
-=======
 	if (!S_ISREG(inode->i_mode) || f2fs_is_atomic_file(inode))
 		return -EINVAL;
 
@@ -4156,81 +2777,12 @@ static int f2fs_ioc_defragment(struct file *filp, unsigned long arg)
 
 	if (unlikely((range.start + range.len) >> PAGE_SHIFT >
 					max_file_blocks(inode)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	err = mnt_want_write_file(filp);
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	if (f2fs_readonly(sbi->sb)) {
-		err = -EROFS;
-		goto out;
-	}
-
-	if (copy_from_user(&range, (struct f2fs_defragment __user *)arg,
-							sizeof(range))) {
-		err = -EFAULT;
-		goto out;
-	}
-
-	/* verify alignment of offset & size */
-	if (range.start & (F2FS_BLKSIZE - 1) ||
-		range.len & (F2FS_BLKSIZE - 1)) {
-		err = -EINVAL;
-		goto out;
-	}
-
-	err = f2fs_defragment_range(sbi, filp, &range);
-	f2fs_update_time(sbi, REQ_TIME);
-	if (err < 0)
-		goto out;
-
-	if (copy_to_user((struct f2fs_defragment __user *)arg, &range,
-							sizeof(range)))
-		err = -EFAULT;
-out:
-	mnt_drop_write_file(filp);
-	return err;
-}
-
-long f2fs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
-{
-	switch (cmd) {
-	case F2FS_IOC_GETFLAGS:
-		return f2fs_ioc_getflags(filp, arg);
-	case F2FS_IOC_SETFLAGS:
-		return f2fs_ioc_setflags(filp, arg);
-	case F2FS_IOC_GETVERSION:
-		return f2fs_ioc_getversion(filp, arg);
-	case F2FS_IOC_START_ATOMIC_WRITE:
-		return f2fs_ioc_start_atomic_write(filp);
-	case F2FS_IOC_COMMIT_ATOMIC_WRITE:
-		return f2fs_ioc_commit_atomic_write(filp);
-	case F2FS_IOC_START_VOLATILE_WRITE:
-		return f2fs_ioc_start_volatile_write(filp);
-	case F2FS_IOC_RELEASE_VOLATILE_WRITE:
-		return f2fs_ioc_release_volatile_write(filp);
-	case F2FS_IOC_ABORT_VOLATILE_WRITE:
-		return f2fs_ioc_abort_volatile_write(filp);
-	case FS_IOC_SHUTDOWN:
-		return f2fs_ioc_shutdown(filp, arg);
-	case FITRIM:
-		return f2fs_ioc_fitrim(filp, arg);
-	case F2FS_IOC_SET_ENCRYPTION_POLICY:
-		return f2fs_ioc_set_encryption_policy(filp, arg);
-	case F2FS_IOC_GET_ENCRYPTION_POLICY:
-		return f2fs_ioc_get_encryption_policy(filp, arg);
-	case F2FS_IOC_GET_ENCRYPTION_PWSALT:
-		return f2fs_ioc_get_encryption_pwsalt(filp, arg);
-	case F2FS_IOC_GARBAGE_COLLECT:
-		return f2fs_ioc_gc(filp, arg);
-	case F2FS_IOC_WRITE_CHECKPOINT:
-		return f2fs_ioc_write_checkpoint(filp, arg);
-	case F2FS_IOC_DEFRAGMENT:
-		return f2fs_ioc_defragment(filp, arg);
-=======
 	err = f2fs_defragment_range(sbi, filp, &range);
 	mnt_drop_write_file(filp);
 
@@ -5795,48 +4347,11 @@ static long __f2fs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		return f2fs_ioc_decompress_file(filp);
 	case F2FS_IOC_COMPRESS_FILE:
 		return f2fs_ioc_compress_file(filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -ENOTTY;
 	}
 }
 
-<<<<<<< HEAD
-static ssize_t f2fs_file_aio_write(struct kiocb *iocb, const struct iovec *iov,
-		unsigned long nr_segs, loff_t pos)
-{
-	struct file *file = iocb->ki_filp;
-	struct inode *inode = file_inode(file);
-	size_t count;
-	ssize_t ret;
-
-	if (f2fs_encrypted_inode(inode) &&
-				!fscrypt_has_encryption_key(inode) &&
-				fscrypt_get_encryption_info(inode))
-		return -EACCES;
-
-	ret = generic_segment_checks(iov, &nr_segs, &count, VERIFY_READ);
-	if (ret)
-		return ret;
-
-	inode_lock(inode);
-	ret = generic_write_checks(file, &pos, &count, S_ISBLK(inode->i_mode));
-	if (!ret) {
-		ret = f2fs_preallocate_blocks(inode, pos, count,
-				iocb->ki_filp->f_flags & O_DIRECT);
-		if (!ret)
-			ret = __generic_file_aio_write(iocb, iov, nr_segs,
-								&iocb->ki_pos);
-	}
-	inode_unlock(inode);
-
-	if (ret > 0 || ret == -EIOCBQUEUED) {
-		ssize_t err;
-
-		err = generic_write_sync(file, iocb->ki_pos - ret, ret);
-		if (err < 0 && ret > 0)
-			ret = err;
-=======
 long f2fs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	if (unlikely(f2fs_cp_error(F2FS_I_SB(file_inode(filp)))))
@@ -6128,38 +4643,10 @@ static ssize_t f2fs_buffered_write_iter(struct kiocb *iocb,
 	if (ret > 0) {
 		f2fs_update_iostat(F2FS_I_SB(inode), inode,
 						APP_BUFFERED_IO, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-long f2fs_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
-{
-	switch (cmd) {
-	case F2FS_IOC32_GETFLAGS:
-		cmd = F2FS_IOC_GETFLAGS;
-		break;
-	case F2FS_IOC32_SETFLAGS:
-		cmd = F2FS_IOC_SETFLAGS;
-		break;
-	case F2FS_IOC32_GETVERSION:
-		cmd = F2FS_IOC_GETVERSION;
-		break;
-	case F2FS_IOC_START_ATOMIC_WRITE:
-	case F2FS_IOC_COMMIT_ATOMIC_WRITE:
-	case F2FS_IOC_START_VOLATILE_WRITE:
-	case F2FS_IOC_RELEASE_VOLATILE_WRITE:
-	case F2FS_IOC_ABORT_VOLATILE_WRITE:
-	case FS_IOC_SHUTDOWN:
-	case F2FS_IOC_SET_ENCRYPTION_POLICY:
-	case F2FS_IOC_GET_ENCRYPTION_PWSALT:
-	case F2FS_IOC_GET_ENCRYPTION_POLICY:
-	case F2FS_IOC_GARBAGE_COLLECT:
-	case F2FS_IOC_WRITE_CHECKPOINT:
-	case F2FS_IOC_DEFRAGMENT:
-=======
 static int f2fs_dio_write_end_io(struct kiocb *iocb, ssize_t size, int error,
 				 unsigned int flags)
 {
@@ -6532,43 +5019,10 @@ long f2fs_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	case F2FS_IOC_SET_COMPRESS_OPTION:
 	case F2FS_IOC_DECOMPRESS_FILE:
 	case F2FS_IOC_COMPRESS_FILE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -ENOIOCTLCMD;
 	}
-<<<<<<< HEAD
-	return f2fs_ioctl(file, cmd, (unsigned long) compat_ptr(arg));
-}
-#endif
-
-static ssize_t f2fs_file_splice_write(struct pipe_inode_info *pipe,
-			struct file *out,
-			  loff_t *ppos, size_t len, unsigned int flags)
-{
-	struct address_space *mapping = out->f_mapping;
-	struct inode *inode = mapping->host;
-	int ret;
-
-	ret = generic_write_checks(out, ppos, &len, S_ISBLK(inode->i_mode));
-	if (ret)
-		return ret;
-	ret = f2fs_preallocate_blocks(inode, *ppos, len, false);
-	if (ret)
-		return ret;
-	return generic_file_splice_write(pipe, out, ppos, len, flags);
-}
-
-const struct file_operations f2fs_file_operations = {
-	.llseek		= f2fs_llseek,
-	.read		= do_sync_read,
-	.write		= do_sync_write,
-	.aio_read	= generic_file_aio_read,
-	.aio_write	= f2fs_file_aio_write,
-	.open		= f2fs_file_open,
-	.release	= f2fs_release_file,
-	.mmap		= f2fs_file_mmap,
-=======
 	return __f2fs_ioctl(file, cmd, (unsigned long) compat_ptr(arg));
 }
 #endif
@@ -6582,19 +5036,13 @@ const struct file_operations f2fs_file_operations = {
 	.release	= f2fs_release_file,
 	.mmap		= f2fs_file_mmap,
 	.flush		= f2fs_file_flush,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fsync		= f2fs_sync_file,
 	.fallocate	= f2fs_fallocate,
 	.unlocked_ioctl	= f2fs_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= f2fs_compat_ioctl,
 #endif
-<<<<<<< HEAD
-	.splice_read	= generic_file_splice_read,
-	.splice_write	= f2fs_file_splice_write,
-=======
 	.splice_read	= f2fs_file_splice_read,
 	.splice_write	= iter_file_splice_write,
 	.fadvise	= f2fs_file_fadvise,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

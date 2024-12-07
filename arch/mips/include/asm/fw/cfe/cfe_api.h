@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000, 2001, 2002 Broadcom Corporation
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright (C) 2000, 2001, 2002 Broadcom Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * Broadcom Common Firmware Environment (CFE)
@@ -36,12 +17,6 @@
 #include <linux/types.h>
 #include <linux/string.h>
 
-<<<<<<< HEAD
-typedef long intptr_t;
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Constants
  */
@@ -49,11 +24,7 @@ typedef long intptr_t;
 /* Seal indicating CFE's presence, passed to user program. */
 #define CFE_EPTSEAL 0x43464531
 
-<<<<<<< HEAD
-#define CFE_MI_RESERVED	0	/* memory is reserved, do not use */
-=======
 #define CFE_MI_RESERVED 0	/* memory is reserved, do not use */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CFE_MI_AVAILABLE 1	/* memory is available */
 
 #define CFE_FLG_WARMSTART     0x00000001
@@ -65,21 +36,13 @@ typedef long intptr_t;
 
 #define CFE_STDHANDLE_CONSOLE	0
 
-<<<<<<< HEAD
-#define CFE_DEV_NETWORK 	1
-=======
 #define CFE_DEV_NETWORK		1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CFE_DEV_DISK		2
 #define CFE_DEV_FLASH		3
 #define CFE_DEV_SERIAL		4
 #define CFE_DEV_CPU		5
 #define CFE_DEV_NVRAM		6
-<<<<<<< HEAD
-#define CFE_DEV_CLOCK           7
-=======
 #define CFE_DEV_CLOCK		7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CFE_DEV_OTHER		8
 #define CFE_DEV_MASK		0x0F
 
@@ -136,16 +99,10 @@ int cfe_read(int handle, unsigned char *buffer, int length);
 int cfe_readblk(int handle, int64_t offset, unsigned char *buffer,
 		int length);
 int cfe_setenv(char *name, char *val);
-<<<<<<< HEAD
-int cfe_write(int handle, unsigned char *buffer, int length);
-int cfe_writeblk(int handle, int64_t offset, unsigned char *buffer,
-		 int length);
-=======
 int cfe_write(int handle, const char *buffer, int length);
 int cfe_writeblk(int handle, int64_t offset, const char *buffer,
 		 int length);
 extern unsigned long cfe_seal;
 __printf(1, 2) void cfe_die(char *fmt, ...);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif				/* CFE_API_H */

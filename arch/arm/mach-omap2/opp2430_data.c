@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * opp2430_data.c - old-style "OPP" table for OMAP2430
  *
@@ -30,11 +27,7 @@
  * This is technically part of the OMAP2xxx clock code.
  */
 
-<<<<<<< HEAD
-#include <plat/hardware.h>
-=======
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "opp2xxx.h"
 #include "sdrc.h"
@@ -124,11 +117,7 @@ const struct prcm_config omap2430_rate_table[] = {
 		RATE_IN_243X},
 
 	/* PRCM-boot/bypass */
-<<<<<<< HEAD
-	{S13M, S13M, S13M, RB_CM_CLKSEL_MPU_VAL,		/* 13Mhz */
-=======
 	{S13M, S13M, S13M, RB_CM_CLKSEL_MPU_VAL,		/* 13MHz */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		RB_CM_CLKSEL_DSP_VAL, RB_CM_CLKSEL_GFX_VAL,
 		RB_CM_CLKSEL1_CORE_VAL, MB_CM_CLKSEL1_PLL_13_VAL,
 		MX_CLKSEL2_PLL_2x_VAL, RB_CM_CLKSEL_MDM_VAL,
@@ -136,11 +125,7 @@ const struct prcm_config omap2430_rate_table[] = {
 		RATE_IN_243X},
 
 	/* PRCM-boot/bypass */
-<<<<<<< HEAD
-	{S12M, S12M, S12M, RB_CM_CLKSEL_MPU_VAL,		/* 12Mhz */
-=======
 	{S12M, S12M, S12M, RB_CM_CLKSEL_MPU_VAL,		/* 12MHz */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		RB_CM_CLKSEL_DSP_VAL, RB_CM_CLKSEL_GFX_VAL,
 		RB_CM_CLKSEL1_CORE_VAL, MB_CM_CLKSEL1_PLL_12_VAL,
 		MX_CLKSEL2_PLL_2x_VAL, RB_CM_CLKSEL_MDM_VAL,

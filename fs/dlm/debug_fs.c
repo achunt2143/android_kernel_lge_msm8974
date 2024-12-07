@@ -1,51 +1,31 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) 2005-2009 Red Hat, Inc.  All rights reserved.
 **
-<<<<<<< HEAD
-**  This copyrighted material is made available to anyone wishing to use,
-**  modify, copy, or redistribute it subject to the terms and conditions
-**  of the GNU General Public License v.2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 *******************************************************************************
 ******************************************************************************/
 
 #include <linux/pagemap.h>
 #include <linux/seq_file.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ctype.h>
 #include <linux/debugfs.h>
 #include <linux/slab.h>
 
 #include "dlm_internal.h"
-<<<<<<< HEAD
-#include "lock.h"
-=======
 #include "midcomms.h"
 #include "lock.h"
 #include "ast.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DLM_DEBUG_BUF_LEN 4096
 static char debug_buf[DLM_DEBUG_BUF_LEN];
 static struct mutex debug_buf_lock;
 
 static struct dentry *dlm_root;
-<<<<<<< HEAD
-=======
 static struct dentry *dlm_comms;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static char *print_lockmode(int mode)
 {
@@ -69,13 +49,8 @@ static char *print_lockmode(int mode)
 	}
 }
 
-<<<<<<< HEAD
-static int print_format1_lock(struct seq_file *s, struct dlm_lkb *lkb,
-			      struct dlm_rsb *res)
-=======
 static void print_format1_lock(struct seq_file *s, struct dlm_lkb *lkb,
 			       struct dlm_rsb *res)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	seq_printf(s, "%08x %s", lkb->lkb_id, print_lockmode(lkb->lkb_grmode));
 
@@ -94,23 +69,6 @@ static void print_format1_lock(struct seq_file *s, struct dlm_lkb *lkb,
 	if (lkb->lkb_wait_type)
 		seq_printf(s, " wait_type: %d", lkb->lkb_wait_type);
 
-<<<<<<< HEAD
-	return seq_printf(s, "\n");
-}
-
-static int print_format1(struct dlm_rsb *res, struct seq_file *s)
-{
-	struct dlm_lkb *lkb;
-	int i, lvblen = res->res_ls->ls_lvblen, recover_list, root_list;
-	int rv;
-
-	lock_rsb(res);
-
-	rv = seq_printf(s, "\nResource %p Name (len=%d) \"",
-			res, res->res_length);
-	if (rv)
-		goto out;
-=======
 	seq_putc(s, '\n');
 }
 
@@ -122,7 +80,6 @@ static void print_format1(struct dlm_rsb *res, struct seq_file *s)
 	lock_rsb(res);
 
 	seq_printf(s, "\nResource %p Name (len=%d) \"", res, res->res_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < res->res_length; i++) {
 		if (isprint(res->res_name[i]))
@@ -132,19 +89,6 @@ static void print_format1(struct dlm_rsb *res, struct seq_file *s)
 	}
 
 	if (res->res_nodeid > 0)
-<<<<<<< HEAD
-		rv = seq_printf(s, "\"  \nLocal Copy, Master is node %d\n",
-				res->res_nodeid);
-	else if (res->res_nodeid == 0)
-		rv = seq_printf(s, "\"  \nMaster Copy\n");
-	else if (res->res_nodeid == -1)
-		rv = seq_printf(s, "\"  \nLooking up master (lkid %x)\n",
-			   	res->res_first_lkid);
-	else
-		rv = seq_printf(s, "\"  \nInvalid master %d\n",
-				res->res_nodeid);
-	if (rv)
-=======
 		seq_printf(s, "\"\nLocal Copy, Master is node %d\n",
 			   res->res_nodeid);
 	else if (res->res_nodeid == 0)
@@ -155,35 +99,21 @@ static void print_format1(struct dlm_rsb *res, struct seq_file *s)
 	else
 		seq_printf(s, "\"\nInvalid master %d\n", res->res_nodeid);
 	if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	/* Print the LVB: */
 	if (res->res_lvbptr) {
-<<<<<<< HEAD
-		seq_printf(s, "LVB: ");
-		for (i = 0; i < lvblen; i++) {
-			if (i == lvblen / 2)
-				seq_printf(s, "\n     ");
-=======
 		seq_puts(s, "LVB: ");
 		for (i = 0; i < lvblen; i++) {
 			if (i == lvblen / 2)
 				seq_puts(s, "\n     ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			seq_printf(s, "%02x ",
 				   (unsigned char) res->res_lvbptr[i]);
 		}
 		if (rsb_flag(res, RSB_VALNOTVALID))
-<<<<<<< HEAD
-			seq_printf(s, " (INVALID)");
-		rv = seq_printf(s, "\n");
-		if (rv)
-=======
 			seq_puts(s, " (INVALID)");
 		seq_putc(s, '\n');
 		if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 	}
 
@@ -191,34 +121,6 @@ static void print_format1(struct dlm_rsb *res, struct seq_file *s)
 	recover_list = !list_empty(&res->res_recover_list);
 
 	if (root_list || recover_list) {
-<<<<<<< HEAD
-		rv = seq_printf(s, "Recovery: root %d recover %d flags %lx "
-				"count %d\n", root_list, recover_list,
-			   	res->res_flags, res->res_recover_locks_count);
-		if (rv)
-			goto out;
-	}
-
-	/* Print the locks attached to this resource */
-	seq_printf(s, "Granted Queue\n");
-	list_for_each_entry(lkb, &res->res_grantqueue, lkb_statequeue) {
-		rv = print_format1_lock(s, lkb, res);
-		if (rv)
-			goto out;
-	}
-
-	seq_printf(s, "Conversion Queue\n");
-	list_for_each_entry(lkb, &res->res_convertqueue, lkb_statequeue) {
-		rv = print_format1_lock(s, lkb, res);
-		if (rv)
-			goto out;
-	}
-
-	seq_printf(s, "Waiting Queue\n");
-	list_for_each_entry(lkb, &res->res_waitqueue, lkb_statequeue) {
-		rv = print_format1_lock(s, lkb, res);
-		if (rv)
-=======
 		seq_printf(s, "Recovery: root %d recover %d flags %lx count %d\n",
 			   root_list, recover_list,
 			   res->res_flags, res->res_recover_locks_count);
@@ -243,36 +145,12 @@ static void print_format1(struct dlm_rsb *res, struct seq_file *s)
 	list_for_each_entry(lkb, &res->res_waitqueue, lkb_statequeue) {
 		print_format1_lock(s, lkb, res);
 		if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 	}
 
 	if (list_empty(&res->res_lookup))
 		goto out;
 
-<<<<<<< HEAD
-	seq_printf(s, "Lookup Queue\n");
-	list_for_each_entry(lkb, &res->res_lookup, lkb_rsb_lookup) {
-		rv = seq_printf(s, "%08x %s", lkb->lkb_id,
-				print_lockmode(lkb->lkb_rqmode));
-		if (lkb->lkb_wait_type)
-			seq_printf(s, " wait_type: %d", lkb->lkb_wait_type);
-		rv = seq_printf(s, "\n");
-	}
- out:
-	unlock_rsb(res);
-	return rv;
-}
-
-static int print_format2_lock(struct seq_file *s, struct dlm_lkb *lkb,
-			      struct dlm_rsb *r)
-{
-	u64 xid = 0;
-	u64 us;
-	int rv;
-
-	if (lkb->lkb_flags & DLM_IFL_USER) {
-=======
 	seq_puts(s, "Lookup Queue\n");
 	list_for_each_entry(lkb, &res->res_lookup, lkb_rsb_lookup) {
 		seq_printf(s, "%08x %s",
@@ -294,7 +172,6 @@ static void print_format2_lock(struct seq_file *s, struct dlm_lkb *lkb,
 	u64 us;
 
 	if (test_bit(DLM_DFL_USER_BIT, &lkb->lkb_dflags)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lkb->lkb_ua)
 			xid = lkb->lkb_ua->xid;
 	}
@@ -305,30 +182,6 @@ static void print_format2_lock(struct seq_file *s, struct dlm_lkb *lkb,
 	/* id nodeid remid pid xid exflags flags sts grmode rqmode time_us
 	   r_nodeid r_len r_name */
 
-<<<<<<< HEAD
-	rv = seq_printf(s, "%x %d %x %u %llu %x %x %d %d %d %llu %u %d \"%s\"\n",
-			lkb->lkb_id,
-			lkb->lkb_nodeid,
-			lkb->lkb_remid,
-			lkb->lkb_ownpid,
-			(unsigned long long)xid,
-			lkb->lkb_exflags,
-			lkb->lkb_flags,
-			lkb->lkb_status,
-			lkb->lkb_grmode,
-			lkb->lkb_rqmode,
-			(unsigned long long)us,
-			r->res_nodeid,
-			r->res_length,
-			r->res_name);
-	return rv;
-}
-
-static int print_format2(struct dlm_rsb *r, struct seq_file *s)
-{
-	struct dlm_lkb *lkb;
-	int rv = 0;
-=======
 	seq_printf(s, "%x %d %x %u %llu %x %x %d %d %d %llu %u %d \"%s\"\n",
 		   lkb->lkb_id,
 		   lkb->lkb_nodeid,
@@ -349,56 +202,28 @@ static int print_format2(struct dlm_rsb *r, struct seq_file *s)
 static void print_format2(struct dlm_rsb *r, struct seq_file *s)
 {
 	struct dlm_lkb *lkb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lock_rsb(r);
 
 	list_for_each_entry(lkb, &r->res_grantqueue, lkb_statequeue) {
-<<<<<<< HEAD
-		rv = print_format2_lock(s, lkb, r);
-		if (rv)
-=======
 		print_format2_lock(s, lkb, r);
 		if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 	}
 
 	list_for_each_entry(lkb, &r->res_convertqueue, lkb_statequeue) {
-<<<<<<< HEAD
-		rv = print_format2_lock(s, lkb, r);
-		if (rv)
-=======
 		print_format2_lock(s, lkb, r);
 		if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 	}
 
 	list_for_each_entry(lkb, &r->res_waitqueue, lkb_statequeue) {
-<<<<<<< HEAD
-		rv = print_format2_lock(s, lkb, r);
-		if (rv)
-=======
 		print_format2_lock(s, lkb, r);
 		if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 	}
  out:
 	unlock_rsb(r);
-<<<<<<< HEAD
-	return rv;
-}
-
-static int print_format3_lock(struct seq_file *s, struct dlm_lkb *lkb,
-			      int rsb_lookup)
-{
-	u64 xid = 0;
-	int rv;
-
-	if (lkb->lkb_flags & DLM_IFL_USER) {
-=======
 }
 
 static void print_format3_lock(struct seq_file *s, struct dlm_lkb *lkb,
@@ -407,34 +232,10 @@ static void print_format3_lock(struct seq_file *s, struct dlm_lkb *lkb,
 	u64 xid = 0;
 
 	if (test_bit(DLM_DFL_USER_BIT, &lkb->lkb_dflags)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lkb->lkb_ua)
 			xid = lkb->lkb_ua->xid;
 	}
 
-<<<<<<< HEAD
-	rv = seq_printf(s, "lkb %x %d %x %u %llu %x %x %d %d %d %d %d %d %u %llu %llu\n",
-			lkb->lkb_id,
-			lkb->lkb_nodeid,
-			lkb->lkb_remid,
-			lkb->lkb_ownpid,
-			(unsigned long long)xid,
-			lkb->lkb_exflags,
-			lkb->lkb_flags,
-			lkb->lkb_status,
-			lkb->lkb_grmode,
-			lkb->lkb_rqmode,
-			lkb->lkb_last_bast.mode,
-			rsb_lookup,
-			lkb->lkb_wait_type,
-			lkb->lkb_lvbseq,
-			(unsigned long long)ktime_to_ns(lkb->lkb_timestamp),
-			(unsigned long long)ktime_to_ns(lkb->lkb_last_bast_time));
-	return rv;
-}
-
-static int print_format3(struct dlm_rsb *r, struct seq_file *s)
-=======
 	seq_printf(s, "lkb %x %d %x %u %llu %x %x %d %d %d %d %d %d %u %llu %llu\n",
 		   lkb->lkb_id,
 		   lkb->lkb_nodeid,
@@ -455,27 +256,10 @@ static int print_format3(struct dlm_rsb *r, struct seq_file *s)
 }
 
 static void print_format3(struct dlm_rsb *r, struct seq_file *s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb;
 	int i, lvblen = r->res_ls->ls_lvblen;
 	int print_name = 1;
-<<<<<<< HEAD
-	int rv;
-
-	lock_rsb(r);
-
-	rv = seq_printf(s, "rsb %p %d %x %lx %d %d %u %d ",
-			r,
-			r->res_nodeid,
-			r->res_first_lkid,
-			r->res_flags,
-			!list_empty(&r->res_root_list),
-			!list_empty(&r->res_recover_list),
-			r->res_recover_locks_count,
-			r->res_length);
-	if (rv)
-=======
 
 	lock_rsb(r);
 
@@ -489,7 +273,6 @@ static void print_format3(struct dlm_rsb *r, struct seq_file *s)
 		   r->res_recover_locks_count,
 		   r->res_length);
 	if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	for (i = 0; i < r->res_length; i++) {
@@ -497,11 +280,7 @@ static void print_format3(struct dlm_rsb *r, struct seq_file *s)
 			print_name = 0;
 	}
 
-<<<<<<< HEAD
-	seq_printf(s, "%s", print_name ? "str " : "hex");
-=======
 	seq_puts(s, print_name ? "str " : "hex");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < r->res_length; i++) {
 		if (print_name)
@@ -509,13 +288,8 @@ static void print_format3(struct dlm_rsb *r, struct seq_file *s)
 		else
 			seq_printf(s, " %02x", (unsigned char)r->res_name[i]);
 	}
-<<<<<<< HEAD
-	rv = seq_printf(s, "\n");
-	if (rv)
-=======
 	seq_putc(s, '\n');
 	if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	if (!r->res_lvbptr)
@@ -525,54 +299,30 @@ static void print_format3(struct dlm_rsb *r, struct seq_file *s)
 
 	for (i = 0; i < lvblen; i++)
 		seq_printf(s, " %02x", (unsigned char)r->res_lvbptr[i]);
-<<<<<<< HEAD
-	rv = seq_printf(s, "\n");
-	if (rv)
-=======
 	seq_putc(s, '\n');
 	if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
  do_locks:
 	list_for_each_entry(lkb, &r->res_grantqueue, lkb_statequeue) {
-<<<<<<< HEAD
-		rv = print_format3_lock(s, lkb, 0);
-		if (rv)
-=======
 		print_format3_lock(s, lkb, 0);
 		if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 	}
 
 	list_for_each_entry(lkb, &r->res_convertqueue, lkb_statequeue) {
-<<<<<<< HEAD
-		rv = print_format3_lock(s, lkb, 0);
-		if (rv)
-=======
 		print_format3_lock(s, lkb, 0);
 		if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 	}
 
 	list_for_each_entry(lkb, &r->res_waitqueue, lkb_statequeue) {
-<<<<<<< HEAD
-		rv = print_format3_lock(s, lkb, 0);
-		if (rv)
-=======
 		print_format3_lock(s, lkb, 0);
 		if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 	}
 
 	list_for_each_entry(lkb, &r->res_lookup, lkb_rsb_lookup) {
-<<<<<<< HEAD
-		rv = print_format3_lock(s, lkb, 1);
-		if (rv)
-=======
 		print_format3_lock(s, lkb, 1);
 		if (seq_has_overflowed(s))
 			goto out;
@@ -656,15 +406,10 @@ static void print_format5(struct dlm_rsb *r, struct seq_file *s)
 	list_for_each_entry(lkb, &r->res_waitqueue, lkb_statequeue) {
 		print_format5_lock(s, lkb);
 		if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 	}
  out:
 	unlock_rsb(r);
-<<<<<<< HEAD
-	return rv;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct rsbtbl_iter {
@@ -674,51 +419,16 @@ struct rsbtbl_iter {
 	int header;
 };
 
-<<<<<<< HEAD
-/* seq_printf returns -1 if the buffer is full, and 0 otherwise.
-   If the buffer is full, seq_printf can be called again, but it
-   does nothing and just returns -1.  So, the these printing routines
-   periodically check the return value to avoid wasting too much time
-   trying to print to a full buffer. */
-=======
 /*
  * If the buffer is full, seq_printf can be called again, but it
  * does nothing.  So, the these printing routines periodically check
  * seq_has_overflowed to avoid wasting too much time trying to print to
  * a full buffer.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int table_seq_show(struct seq_file *seq, void *iter_ptr)
 {
 	struct rsbtbl_iter *ri = iter_ptr;
-<<<<<<< HEAD
-	int rv = 0;
-
-	switch (ri->format) {
-	case 1:
-		rv = print_format1(ri->rsb, seq);
-		break;
-	case 2:
-		if (ri->header) {
-			seq_printf(seq, "id nodeid remid pid xid exflags "
-					"flags sts grmode rqmode time_ms "
-					"r_nodeid r_len r_name\n");
-			ri->header = 0;
-		}
-		rv = print_format2(ri->rsb, seq);
-		break;
-	case 3:
-		if (ri->header) {
-			seq_printf(seq, "version rsb 1.1 lvb 1.1 lkb 1.1\n");
-			ri->header = 0;
-		}
-		rv = print_format3(ri->rsb, seq);
-		break;
-	}
-
-	return rv;
-=======
 
 	switch (ri->format) {
 	case 1:
@@ -755,34 +465,24 @@ static int table_seq_show(struct seq_file *seq, void *iter_ptr)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct seq_operations format1_seq_ops;
 static const struct seq_operations format2_seq_ops;
 static const struct seq_operations format3_seq_ops;
-<<<<<<< HEAD
-
-static void *table_seq_start(struct seq_file *seq, loff_t *pos)
-{
-=======
 static const struct seq_operations format4_seq_ops;
 static const struct seq_operations format5_seq_ops;
 
 static void *table_seq_start(struct seq_file *seq, loff_t *pos)
 {
 	struct rb_root *tree;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_node *node;
 	struct dlm_ls *ls = seq->private;
 	struct rsbtbl_iter *ri;
 	struct dlm_rsb *r;
 	loff_t n = *pos;
 	unsigned bucket, entry;
-<<<<<<< HEAD
-=======
 	int toss = (seq->op == &format4_seq_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bucket = n >> 32;
 	entry = n & ((1LL << 32) - 1);
@@ -790,11 +490,7 @@ static void *table_seq_start(struct seq_file *seq, loff_t *pos)
 	if (bucket >= ls->ls_rsbtbl_size)
 		return NULL;
 
-<<<<<<< HEAD
-	ri = kzalloc(sizeof(struct rsbtbl_iter), GFP_NOFS);
-=======
 	ri = kzalloc(sizeof(*ri), GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ri)
 		return NULL;
 	if (n == 0)
@@ -805,13 +501,6 @@ static void *table_seq_start(struct seq_file *seq, loff_t *pos)
 		ri->format = 2;
 	if (seq->op == &format3_seq_ops)
 		ri->format = 3;
-<<<<<<< HEAD
-
-	spin_lock(&ls->ls_rsbtbl[bucket].lock);
-	if (!RB_EMPTY_ROOT(&ls->ls_rsbtbl[bucket].keep)) {
-		for (node = rb_first(&ls->ls_rsbtbl[bucket].keep); node;
-		     node = rb_next(node)) {
-=======
 	if (seq->op == &format4_seq_ops)
 		ri->format = 4;
 	if (seq->op == &format5_seq_ops)
@@ -822,7 +511,6 @@ static void *table_seq_start(struct seq_file *seq, loff_t *pos)
 	spin_lock(&ls->ls_rsbtbl[bucket].lock);
 	if (!RB_EMPTY_ROOT(tree)) {
 		for (node = rb_first(tree); node; node = rb_next(node)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = rb_entry(node, struct dlm_rsb, res_hashnode);
 			if (!entry--) {
 				dlm_hold_rsb(r);
@@ -850,18 +538,11 @@ static void *table_seq_start(struct seq_file *seq, loff_t *pos)
 			kfree(ri);
 			return NULL;
 		}
-<<<<<<< HEAD
-
-		spin_lock(&ls->ls_rsbtbl[bucket].lock);
-		if (!RB_EMPTY_ROOT(&ls->ls_rsbtbl[bucket].keep)) {
-			node = rb_first(&ls->ls_rsbtbl[bucket].keep);
-=======
 		tree = toss ? &ls->ls_rsbtbl[bucket].toss : &ls->ls_rsbtbl[bucket].keep;
 
 		spin_lock(&ls->ls_rsbtbl[bucket].lock);
 		if (!RB_EMPTY_ROOT(tree)) {
 			node = rb_first(tree);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = rb_entry(node, struct dlm_rsb, res_hashnode);
 			dlm_hold_rsb(r);
 			ri->rsb = r;
@@ -878,18 +559,12 @@ static void *table_seq_next(struct seq_file *seq, void *iter_ptr, loff_t *pos)
 {
 	struct dlm_ls *ls = seq->private;
 	struct rsbtbl_iter *ri = iter_ptr;
-<<<<<<< HEAD
-=======
 	struct rb_root *tree;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_node *next;
 	struct dlm_rsb *r, *rp;
 	loff_t n = *pos;
 	unsigned bucket;
-<<<<<<< HEAD
-=======
 	int toss = (seq->op == &format4_seq_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bucket = n >> 32;
 
@@ -926,14 +601,6 @@ static void *table_seq_next(struct seq_file *seq, void *iter_ptr, loff_t *pos)
 
 		if (bucket >= ls->ls_rsbtbl_size) {
 			kfree(ri);
-<<<<<<< HEAD
-			return NULL;
-		}
-
-		spin_lock(&ls->ls_rsbtbl[bucket].lock);
-		if (!RB_EMPTY_ROOT(&ls->ls_rsbtbl[bucket].keep)) {
-			next = rb_first(&ls->ls_rsbtbl[bucket].keep);
-=======
 			++*pos;
 			return NULL;
 		}
@@ -942,7 +609,6 @@ static void *table_seq_next(struct seq_file *seq, void *iter_ptr, loff_t *pos)
 		spin_lock(&ls->ls_rsbtbl[bucket].lock);
 		if (!RB_EMPTY_ROOT(tree)) {
 			next = rb_first(tree);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = rb_entry(next, struct dlm_rsb, res_hashnode);
 			dlm_hold_rsb(r);
 			ri->rsb = r;
@@ -986,24 +652,6 @@ static const struct seq_operations format3_seq_ops = {
 	.show  = table_seq_show,
 };
 
-<<<<<<< HEAD
-static const struct file_operations format1_fops;
-static const struct file_operations format2_fops;
-static const struct file_operations format3_fops;
-
-static int table_open(struct inode *inode, struct file *file)
-{
-	struct seq_file *seq;
-	int ret = -1;
-
-	if (file->f_op == &format1_fops)
-		ret = seq_open(file, &format1_seq_ops);
-	else if (file->f_op == &format2_fops)
-		ret = seq_open(file, &format2_seq_ops);
-	else if (file->f_op == &format3_fops)
-		ret = seq_open(file, &format3_seq_ops);
-
-=======
 static const struct seq_operations format4_seq_ops = {
 	.start = table_seq_start,
 	.next  = table_seq_next,
@@ -1115,7 +763,6 @@ static int table_open5(struct inode *inode, struct file *file)
 	int ret;
 
 	ret = seq_open(file, &format5_seq_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -1126,11 +773,7 @@ static int table_open5(struct inode *inode, struct file *file)
 
 static const struct file_operations format1_fops = {
 	.owner   = THIS_MODULE,
-<<<<<<< HEAD
-	.open    = table_open,
-=======
 	.open    = table_open1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read    = seq_read,
 	.llseek  = seq_lseek,
 	.release = seq_release
@@ -1138,23 +781,15 @@ static const struct file_operations format1_fops = {
 
 static const struct file_operations format2_fops = {
 	.owner   = THIS_MODULE,
-<<<<<<< HEAD
-	.open    = table_open,
-	.read    = seq_read,
-=======
 	.open    = table_open2,
 	.read    = seq_read,
 	.write   = table_write2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.llseek  = seq_lseek,
 	.release = seq_release
 };
 
 static const struct file_operations format3_fops = {
 	.owner   = THIS_MODULE,
-<<<<<<< HEAD
-	.open    = table_open,
-=======
 	.open    = table_open3,
 	.read    = seq_read,
 	.llseek  = seq_lseek,
@@ -1172,7 +807,6 @@ static const struct file_operations format4_fops = {
 static const struct file_operations format5_fops = {
 	.owner   = THIS_MODULE,
 	.open    = table_open5,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read    = seq_read,
 	.llseek  = seq_lseek,
 	.release = seq_release
@@ -1207,8 +841,6 @@ static ssize_t waiters_read(struct file *file, char __user *userbuf,
 	return rv;
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t waiters_write(struct file *file, const char __user *user_buf,
 			     size_t count, loff_t *ppos)
 {
@@ -1233,35 +865,16 @@ static ssize_t waiters_write(struct file *file, const char __user *user_buf,
 	return count;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct file_operations waiters_fops = {
 	.owner   = THIS_MODULE,
 	.open    = simple_open,
 	.read    = waiters_read,
-<<<<<<< HEAD
-=======
 	.write   = waiters_write,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.llseek  = default_llseek,
 };
 
 void dlm_delete_debug_file(struct dlm_ls *ls)
 {
-<<<<<<< HEAD
-	if (ls->ls_debug_rsb_dentry)
-		debugfs_remove(ls->ls_debug_rsb_dentry);
-	if (ls->ls_debug_waiters_dentry)
-		debugfs_remove(ls->ls_debug_waiters_dentry);
-	if (ls->ls_debug_locks_dentry)
-		debugfs_remove(ls->ls_debug_locks_dentry);
-	if (ls->ls_debug_all_dentry)
-		debugfs_remove(ls->ls_debug_all_dentry);
-}
-
-int dlm_create_debug_file(struct dlm_ls *ls)
-{
-	char name[DLM_LOCKSPACE_LEN+8];
-=======
 	debugfs_remove(ls->ls_debug_rsb_dentry);
 	debugfs_remove(ls->ls_debug_waiters_dentry);
 	debugfs_remove(ls->ls_debug_locks_dentry);
@@ -1362,7 +975,6 @@ void dlm_create_debug_file(struct dlm_ls *ls)
 {
 	/* Reserve enough space for the longest file name */
 	char name[DLM_LOCKSPACE_LEN + sizeof("_queued_asts")];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* format 1 */
 
@@ -1371,28 +983,6 @@ void dlm_create_debug_file(struct dlm_ls *ls)
 						      dlm_root,
 						      ls,
 						      &format1_fops);
-<<<<<<< HEAD
-	if (!ls->ls_debug_rsb_dentry)
-		goto fail;
-
-	/* format 2 */
-
-	memset(name, 0, sizeof(name));
-	snprintf(name, DLM_LOCKSPACE_LEN+8, "%s_locks", ls->ls_name);
-
-	ls->ls_debug_locks_dentry = debugfs_create_file(name,
-							S_IFREG | S_IRUGO,
-							dlm_root,
-							ls,
-							&format2_fops);
-	if (!ls->ls_debug_locks_dentry)
-		goto fail;
-
-	/* format 3 */
-
-	memset(name, 0, sizeof(name));
-	snprintf(name, DLM_LOCKSPACE_LEN+8, "%s_all", ls->ls_name);
-=======
 
 	/* format 2 */
 
@@ -1407,41 +997,12 @@ void dlm_create_debug_file(struct dlm_ls *ls)
 	/* format 3 */
 
 	snprintf(name, sizeof(name), "%s_all", ls->ls_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ls->ls_debug_all_dentry = debugfs_create_file(name,
 						      S_IFREG | S_IRUGO,
 						      dlm_root,
 						      ls,
 						      &format3_fops);
-<<<<<<< HEAD
-	if (!ls->ls_debug_all_dentry)
-		goto fail;
-
-	memset(name, 0, sizeof(name));
-	snprintf(name, DLM_LOCKSPACE_LEN+8, "%s_waiters", ls->ls_name);
-
-	ls->ls_debug_waiters_dentry = debugfs_create_file(name,
-							  S_IFREG | S_IRUGO,
-							  dlm_root,
-							  ls,
-							  &waiters_fops);
-	if (!ls->ls_debug_waiters_dentry)
-		goto fail;
-
-	return 0;
-
- fail:
-	dlm_delete_debug_file(ls);
-	return -ENOMEM;
-}
-
-int __init dlm_register_debugfs(void)
-{
-	mutex_init(&debug_buf_lock);
-	dlm_root = debugfs_create_dir("dlm", NULL);
-	return dlm_root ? 0 : -ENOMEM;
-=======
 
 	/* format 4 */
 
@@ -1477,7 +1038,6 @@ void __init dlm_register_debugfs(void)
 	mutex_init(&debug_buf_lock);
 	dlm_root = debugfs_create_dir("dlm", NULL);
 	dlm_comms = debugfs_create_dir("comms", dlm_root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void dlm_unregister_debugfs(void)

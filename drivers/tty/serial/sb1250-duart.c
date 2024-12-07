@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Support for the asynchronous serial interface (DUART) included
  *	in the BCM1250 and derived System-On-a-Chip (SOC) devices.
@@ -13,26 +10,11 @@
  *
  *	Copyright (c) 2000, 2001, 2002, 2003, 2004  Broadcom Corporation
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	References:
  *
  *	"BCM1250/BCM1125/BCM1125H User Manual", Broadcom Corporation
  */
 
-<<<<<<< HEAD
-#if defined(CONFIG_SERIAL_SB1250_DUART_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-#define SUPPORT_SYSRQ
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/compiler.h>
 #include <linux/console.h>
 #include <linux/delay.h>
@@ -41,10 +23,7 @@
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-=======
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/major.h>
 #include <linux/serial.h>
 #include <linux/serial_core.h>
@@ -54,25 +33,15 @@
 #include <linux/tty_flip.h>
 #include <linux/types.h>
 
-<<<<<<< HEAD
-#include <linux/atomic.h>
-#include <asm/io.h>
-#include <asm/war.h>
-=======
 #include <linux/refcount.h>
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/sibyte/sb1250.h>
 #include <asm/sibyte/sb1250_uart.h>
 #include <asm/sibyte/swarm.h>
 
 
-<<<<<<< HEAD
-#if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
-=======
 #if defined(CONFIG_SIBYTE_BCM1x80)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sibyte/bcm1480_regs.h>
 #include <asm/sibyte/bcm1480_int.h>
 
@@ -125,11 +94,7 @@ struct sbd_port {
 struct sbd_duart {
 	struct sbd_port		sport[2];
 	unsigned long		mapctrl;
-<<<<<<< HEAD
-	atomic_t		map_guard;
-=======
 	refcount_t		map_guard;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define to_sport(uport) container_of(uport, struct sbd_port, port)
@@ -191,11 +156,7 @@ static unsigned char read_sbdchn(struct sbd_port *sport, int reg)
 	unsigned char retval;
 
 	retval = __read_sbdchn(sport, reg);
-<<<<<<< HEAD
-	if (SIBYTE_1956_WAR)
-=======
 	if (IS_ENABLED(CONFIG_SB1_PASS_2_WORKAROUNDS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__war_sbd1956(sport);
 	return retval;
 }
@@ -205,11 +166,7 @@ static unsigned char read_sbdshr(struct sbd_port *sport, int reg)
 	unsigned char retval;
 
 	retval = __read_sbdshr(sport, reg);
-<<<<<<< HEAD
-	if (SIBYTE_1956_WAR)
-=======
 	if (IS_ENABLED(CONFIG_SB1_PASS_2_WORKAROUNDS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__war_sbd1956(sport);
 	return retval;
 }
@@ -217,22 +174,14 @@ static unsigned char read_sbdshr(struct sbd_port *sport, int reg)
 static void write_sbdchn(struct sbd_port *sport, int reg, unsigned int value)
 {
 	__write_sbdchn(sport, reg, value);
-<<<<<<< HEAD
-	if (SIBYTE_1956_WAR)
-=======
 	if (IS_ENABLED(CONFIG_SB1_PASS_2_WORKAROUNDS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__war_sbd1956(sport);
 }
 
 static void write_sbdshr(struct sbd_port *sport, int reg, unsigned int value)
 {
 	__write_sbdshr(sport, reg, value);
-<<<<<<< HEAD
-	if (SIBYTE_1956_WAR)
-=======
 	if (IS_ENABLED(CONFIG_SB1_PASS_2_WORKAROUNDS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__war_sbd1956(sport);
 }
 
@@ -382,14 +331,9 @@ static void sbd_receive_chars(struct sbd_port *sport)
 {
 	struct uart_port *uport = &sport->port;
 	struct uart_icount *icount;
-<<<<<<< HEAD
-	unsigned int status, ch, flag;
-	int count;
-=======
 	unsigned int status;
 	int count;
 	u8 ch, flag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (count = 16; count; count--) {
 		status = read_sbdchn(sport, R_DUART_STATUS);
@@ -432,11 +376,7 @@ static void sbd_receive_chars(struct sbd_port *sport)
 		uart_insert_char(uport, status, M_DUART_OVRUN_ERR, ch, flag);
 	}
 
-<<<<<<< HEAD
-	tty_flip_buffer_push(uport->state->port.tty);
-=======
 	tty_flip_buffer_push(&uport->state->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sbd_transmit_chars(struct sbd_port *sport)
@@ -460,12 +400,7 @@ static void sbd_transmit_chars(struct sbd_port *sport)
 	/* Send char.  */
 	if (!stop_tx) {
 		write_sbdchn(sport, R_DUART_TX_HOLD, xmit->buf[xmit->tail]);
-<<<<<<< HEAD
-		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-		sport->port.icount.tx++;
-=======
 		uart_xmit_advance(&sport->port, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 			uart_write_wakeup(&sport->port);
@@ -596,11 +531,7 @@ static void sbd_init_port(struct sbd_port *sport)
 }
 
 static void sbd_set_termios(struct uart_port *uport, struct ktermios *termios,
-<<<<<<< HEAD
-			    struct ktermios *old_termios)
-=======
 			    const struct ktermios *old_termios)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sbd_port *sport = to_sport(uport);
 	unsigned int mode1 = 0, mode2 = 0, aux = 0;
@@ -656,11 +587,7 @@ static void sbd_set_termios(struct uart_port *uport, struct ktermios *termios,
 	if (termios->c_iflag & INPCK)
 		uport->read_status_mask |= M_DUART_FRM_ERR |
 					   M_DUART_PARITY_ERR;
-<<<<<<< HEAD
-	if (termios->c_iflag & (BRKINT | PARMRK))
-=======
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uport->read_status_mask |= M_DUART_RCVD_BRK;
 
 	uport->ignore_status_mask = 0;
@@ -683,11 +610,7 @@ static void sbd_set_termios(struct uart_port *uport, struct ktermios *termios,
 	else
 		aux &= ~M_DUART_CTS_CHNG_ENA;
 
-<<<<<<< HEAD
-	spin_lock(&uport->lock);
-=======
 	uart_port_lock(uport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sport->tx_stopped)
 		command |= M_DUART_TX_DIS;
@@ -709,11 +632,7 @@ static void sbd_set_termios(struct uart_port *uport, struct ktermios *termios,
 
 	write_sbdchn(sport, R_DUART_CMD, command);
 
-<<<<<<< HEAD
-	spin_unlock(&uport->lock);
-=======
 	uart_port_unlock(uport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -726,22 +645,13 @@ static void sbd_release_port(struct uart_port *uport)
 {
 	struct sbd_port *sport = to_sport(uport);
 	struct sbd_duart *duart = sport->duart;
-<<<<<<< HEAD
-	int map_guard;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iounmap(sport->memctrl);
 	sport->memctrl = NULL;
 	iounmap(uport->membase);
 	uport->membase = NULL;
 
-<<<<<<< HEAD
-	map_guard = atomic_add_return(-1, &duart->map_guard);
-	if (!map_guard)
-=======
 	if(refcount_dec_and_test(&duart->map_guard))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_mem_region(duart->mapctrl, DUART_CHANREG_SPACING);
 	release_mem_region(uport->mapbase, DUART_CHANREG_SPACING);
 }
@@ -753,11 +663,7 @@ static int sbd_map_port(struct uart_port *uport)
 	struct sbd_duart *duart = sport->duart;
 
 	if (!uport->membase)
-<<<<<<< HEAD
-		uport->membase = ioremap_nocache(uport->mapbase,
-=======
 		uport->membase = ioremap(uport->mapbase,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 DUART_CHANREG_SPACING);
 	if (!uport->membase) {
 		printk(err);
@@ -765,11 +671,7 @@ static int sbd_map_port(struct uart_port *uport)
 	}
 
 	if (!sport->memctrl)
-<<<<<<< HEAD
-		sport->memctrl = ioremap_nocache(duart->mapctrl,
-=======
 		sport->memctrl = ioremap(duart->mapctrl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 DUART_CHANREG_SPACING);
 	if (!sport->memctrl) {
 		printk(err);
@@ -785,10 +687,6 @@ static int sbd_request_port(struct uart_port *uport)
 {
 	const char *err = KERN_ERR "sbd: Unable to reserve MMIO resource\n";
 	struct sbd_duart *duart = to_sport(uport)->duart;
-<<<<<<< HEAD
-	int map_guard;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	if (!request_mem_region(uport->mapbase, DUART_CHANREG_SPACING,
@@ -796,19 +694,11 @@ static int sbd_request_port(struct uart_port *uport)
 		printk(err);
 		return -EBUSY;
 	}
-<<<<<<< HEAD
-	map_guard = atomic_add_return(1, &duart->map_guard);
-	if (map_guard == 1) {
-		if (!request_mem_region(duart->mapctrl, DUART_CHANREG_SPACING,
-					"sb1250-duart")) {
-			atomic_add(-1, &duart->map_guard);
-=======
 	refcount_inc(&duart->map_guard);
 	if (refcount_read(&duart->map_guard) == 1) {
 		if (!request_mem_region(duart->mapctrl, DUART_CHANREG_SPACING,
 					"sb1250-duart")) {
 			refcount_dec(&duart->map_guard);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(err);
 			ret = -EBUSY;
 		}
@@ -816,12 +706,7 @@ static int sbd_request_port(struct uart_port *uport)
 	if (!ret) {
 		ret = sbd_map_port(uport);
 		if (ret) {
-<<<<<<< HEAD
-			map_guard = atomic_add_return(-1, &duart->map_guard);
-			if (!map_guard)
-=======
 			if (refcount_dec_and_test(&duart->map_guard))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				release_mem_region(duart->mapctrl,
 						   DUART_CHANREG_SPACING);
 		}
@@ -923,10 +808,7 @@ static void __init sbd_probe_duarts(void)
 			uport->ops	= &sbd_ops;
 			uport->line	= line;
 			uport->mapbase	= SBD_CHANREGS(line);
-<<<<<<< HEAD
-=======
 			uport->has_sysrq = IS_ENABLED(CONFIG_SERIAL_SB1250_DUART_CONSOLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -938,11 +820,7 @@ static void __init sbd_probe_duarts(void)
  * console output.  The console_lock is held by the caller, so we
  * shouldn't be interrupted for more console activity.
  */
-<<<<<<< HEAD
-static void sbd_console_putchar(struct uart_port *uport, int ch)
-=======
 static void sbd_console_putchar(struct uart_port *uport, unsigned char ch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sbd_port *sport = to_sport(uport);
 
@@ -961,38 +839,22 @@ static void sbd_console_write(struct console *co, const char *s,
 	unsigned int mask;
 
 	/* Disable transmit interrupts and enable the transmitter. */
-<<<<<<< HEAD
-	spin_lock_irqsave(&uport->lock, flags);
-=======
 	uart_port_lock_irqsave(uport, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mask = read_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2));
 	write_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2),
 		     mask & ~M_DUART_IMR_TX);
 	write_sbdchn(sport, R_DUART_CMD, M_DUART_TX_EN);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&uport->lock, flags);
-=======
 	uart_port_unlock_irqrestore(uport, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uart_console_write(&sport->port, s, count, sbd_console_putchar);
 
 	/* Restore transmit interrupts and the transmitter enable. */
-<<<<<<< HEAD
-	spin_lock_irqsave(&uport->lock, flags);
-=======
 	uart_port_lock_irqsave(uport, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbd_line_drain(sport);
 	if (sport->tx_stopped)
 		write_sbdchn(sport, R_DUART_CMD, M_DUART_TX_DIS);
 	write_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2), mask);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&uport->lock, flags);
-=======
 	uart_port_unlock_irqrestore(uport, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init sbd_console_setup(struct console *co, char *options)

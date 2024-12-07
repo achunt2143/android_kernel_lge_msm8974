@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 Release Date    : Thu. Jun 19, 2014 17:00:00 PST 2014 -
 			(emaild-id:megaraidlinux@lsi.com)
 			Adam Radford
@@ -99,7 +97,6 @@ Old Version     : 00.00.06.14-rc1
     1. Optimize HostMSIxVectors setting.
     2. Add fpRead/WriteCapable, fpRead/WriteAcrossStripe checks.
 -------------------------------------------------------------------------------
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Release Date    : Fri. Jan 6, 2012 17:00:00 PST 2010 -
 			(emaild-id:megaraidlinux@lsi.com)
 			Adam Radford
@@ -108,11 +105,7 @@ Old Version     : 00.00.06.12-rc1
     1. Fix reglockFlags for degraded raid5/6 for MR 9360/9380.
     2. Mask off flags in ioctl path to prevent memory scribble with older
        MegaCLI versions.
-<<<<<<< HEAD
-    3. Remove poll_mode_io module paramater, sysfs node, and associated code.
-=======
     3. Remove poll_mode_io module parameter, sysfs node, and associated code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 -------------------------------------------------------------------------------
 Release Date    : Wed. Oct 5, 2011 17:00:00 PST 2010 -
 			(emaild-id:megaraidlinux@lsi.com)
@@ -206,11 +199,7 @@ Old Version     : 00.00.04.31-rc1
 1.	Add the Online Controller Reset (OCR) to the Driver.
 	OCR is the new feature for megaraid_sas driver which
 	will allow the fw to do the chip reset which will not
-<<<<<<< HEAD
-	affact the OS behavious.
-=======
 	affect the OS behavior.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	To add the OCR support, driver need to do:
 		a). reset the controller chips -- Xscale and Gen2 which
@@ -244,11 +233,7 @@ Old Version     : 00.00.04.31-rc1
 	failed state.  Driver will kill adapter if can't bring back FW after the
 	this three times reset.
 4.	Add the input parameter max_sectors to 1MB support to our GEN2 controller.
-<<<<<<< HEAD
-	customer can use the input paramenter max_sectors to add 1MB support to GEN2
-=======
 	customer can use the input parameter max_sectors to add 1MB support to GEN2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	controller.
 
 1 Release Date    : Thur.  Oct 29, 2009 09:12:45 PST 2009 -
@@ -532,11 +517,7 @@ i.	bios_param entry added in scsi_host_template that returns disk geometry
 
 1. Added new memory management module to support the IOCTL memory allocation. For IOCTL we try to allocate from the memory pool created during driver initialization. If mem pool is empty then we allocate at run time.
 2. Added check in megasas_queue_command and dpc/isr routine to see if we have already declared adapter dead
-<<<<<<< HEAD
-   (hw_crit_error=1). If hw_crit_error==1, now we donot accept any processing of pending cmds/accept any cmd from OS
-=======
    (hw_crit_error=1). If hw_crit_error==1, now we do not accept any processing of pending cmds/accept any cmd from OS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 1 Release Date    : Mon Oct 02 11:21:32 PDT 2006 - Sumant Patro <Sumant.Patro@lsil.com>
 2 Current Version : 00.00.03.05
@@ -568,11 +549,7 @@ ii.	Reduced by 1 max cmds sent to FW from Driver to make the reply_q_sz same
 3 Older Version   : 00.00.03.02
 
 i.	Send stop adapter to FW & Dump pending FW cmds before declaring adapter dead.
-<<<<<<< HEAD
-	New varible added to set dbg level.
-=======
 	New variable added to set dbg level.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ii.	Disable interrupt made as fn pointer as they are different for 1068 / 1078
 iii.	Frame count optimization. Main frame can contain 2 SGE for 64 bit SGLs and
 	3 SGE for 32 bit SGL
@@ -585,11 +562,7 @@ vii.	Added print : FW now in Ready State during initialization
 2 Current Version : 00.00.03.02
 3 Older Version   : 00.00.03.01
 
-<<<<<<< HEAD
-i.	Added FW tranistion state for Hotplug scenario
-=======
 i.	Added FW transition state for Hotplug scenario
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 1 Release Date    : Sun May 14 22:49:52 PDT 2006 - Sumant Patro <Sumant.Patro@lsil.com>
 2 Current Version : 00.00.03.01
@@ -609,19 +582,11 @@ ii.	Bug fix : Disable controller interrupt before firing INIT cmd to FW.
 
 1 Release Date    : Wed Feb 03 14:31:44 PST 2006 - Sumant Patro <Sumant.Patro@lsil.com>
 2 Current Version : 00.00.02.04
-<<<<<<< HEAD
-3 Older Version   : 00.00.02.04 
-
-i.	Remove superflous instance_lock
-
-	gets rid of the otherwise superflous instance_lock and avoids an unsave 
-=======
 3 Older Version   : 00.00.02.04
 
 i.	Remove superfluous instance_lock
 
 	gets rid of the otherwise superfluous instance_lock and avoids an unsafe
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsynchronized access in the error handler.
 
 		- Christoph Hellwig <hch@lst.de>
@@ -629,35 +594,6 @@ i.	Remove superfluous instance_lock
 
 1 Release Date    : Wed Feb 03 14:31:44 PST 2006 - Sumant Patro <Sumant.Patro@lsil.com>
 2 Current Version : 00.00.02.04
-<<<<<<< HEAD
-3 Older Version   : 00.00.02.04 
-
-i.	Support for 1078 type (ppc IOP) controller, device id : 0x60 added.
-	During initialization, depending on the device id, the template members 
-	are initialized with function pointers specific to the ppc or 
-	xscale controllers.  
-
-		-Sumant Patro <Sumant.Patro@lsil.com>
-		
-1 Release Date    : Fri Feb 03 14:16:25 PST 2006 - Sumant Patro 
-							<Sumant.Patro@lsil.com>
-2 Current Version : 00.00.02.04
-3 Older Version   : 00.00.02.02 
-i.	Register 16 byte CDB capability with scsi midlayer 
-
-	"This patch properly registers the 16 byte command length capability of the 
-	megaraid_sas controlled hardware with the scsi midlayer. All megaraid_sas 
-	hardware supports 16 byte CDB's."
-
-		-Joshua Giles <joshua_giles@dell.com> 
-
-1 Release Date    : Mon Jan 23 14:09:01 PST 2006 - Sumant Patro <Sumant.Patro@lsil.com>
-2 Current Version : 00.00.02.02
-3 Older Version   : 00.00.02.01 
-
-i.	New template defined to represent each family of controllers (identified by processor used). 
-	The template will have defintions that will be initialised to appropritae values for a specific family of controllers. The template definition has four function pointers. During driver initialisation the function pointers will be set based on the controller family type. This change is done to support new controllers that has different processors and thus different register set.
-=======
 3 Older Version   : 00.00.02.04
 
 i.	Support for 1078 type (ppc IOP) controller, device id : 0x60 added.
@@ -685,26 +621,16 @@ i.	Register 16 byte CDB capability with scsi midlayer
 
 i.	New template defined to represent each family of controllers (identified by processor used).
 	The template will have definitions that will be initialised to appropriate values for a specific family of controllers. The template definition has four function pointers. During driver initialisation the function pointers will be set based on the controller family type. This change is done to support new controllers that has different processors and thus different register set.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		-Sumant Patro <Sumant.Patro@lsil.com>
 
 1 Release Date    : Mon Dec 19 14:36:26 PST 2005 - Sumant Patro <Sumant.Patro@lsil.com>
-<<<<<<< HEAD
-2 Current Version : 00.00.02.00-rc4 
-3 Older Version   : 00.00.02.01 
-
-i.	Code reorganized to remove code duplication in megasas_build_cmd. 
-
-	"There's a lot of duplicate code megasas_build_cmd.  Move that out of the different codepathes and merge the reminder of megasas_build_cmd into megasas_queue_command"
-=======
 2 Current Version : 00.00.02.00-rc4
 3 Older Version   : 00.00.02.01
 
 i.	Code reorganized to remove code duplication in megasas_build_cmd.
 
 	"There's a lot of duplicate code megasas_build_cmd.  Move that out of the different codepaths and merge the reminder of megasas_build_cmd into megasas_queue_command"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		- Christoph Hellwig <hch@lst.de>
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * security/tomoyo/audit.c
  *
@@ -35,10 +32,7 @@ static char *tomoyo_print_bprm(struct linux_binprm *bprm,
 	int argv_count = bprm->argc;
 	int envp_count = bprm->envc;
 	bool truncated = false;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buffer)
 		return NULL;
 	len = snprintf(buffer, tomoyo_buffer_len - 1, "argv[]={ ");
@@ -56,10 +50,7 @@ static char *tomoyo_print_bprm(struct linux_binprm *bprm,
 		while (offset < PAGE_SIZE) {
 			const char *kaddr = dump->data;
 			const unsigned char c = kaddr[offset++];
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cp == last_start)
 				*cp++ = '"';
 			if (cp >= buffer + tomoyo_buffer_len - 32) {
@@ -165,26 +156,6 @@ static char *tomoyo_print_header(struct tomoyo_request_info *r)
 	char *buffer = kmalloc(tomoyo_buffer_len, GFP_NOFS);
 	int pos;
 	u8 i;
-<<<<<<< HEAD
-	if (!buffer)
-		return NULL;
-	{
-		struct timeval tv;
-		do_gettimeofday(&tv);
-		tomoyo_convert_time(tv.tv_sec, &stamp);
-	}
-	pos = snprintf(buffer, tomoyo_buffer_len - 1,
-		       "#%04u/%02u/%02u %02u:%02u:%02u# profile=%u mode=%s "
-		       "granted=%s (global-pid=%u) task={ pid=%u ppid=%u "
-		       "uid=%u gid=%u euid=%u egid=%u suid=%u sgid=%u "
-		       "fsuid=%u fsgid=%u }", stamp.year, stamp.month,
-		       stamp.day, stamp.hour, stamp.min, stamp.sec, r->profile,
-		       tomoyo_mode[r->mode], tomoyo_yesno(r->granted), gpid,
-		       tomoyo_sys_getpid(), tomoyo_sys_getppid(),
-		       current_uid(), current_gid(), current_euid(),
-		       current_egid(), current_suid(), current_sgid(),
-		       current_fsuid(), current_fsgid());
-=======
 
 	if (!buffer)
 		return NULL;
@@ -205,7 +176,6 @@ static char *tomoyo_print_header(struct tomoyo_request_info *r)
 		       from_kgid(&init_user_ns, current_sgid()),
 		       from_kuid(&init_user_ns, current_fsuid()),
 		       from_kgid(&init_user_ns, current_fsgid()));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!obj)
 		goto no_obj_info;
 	if (!obj->validate_done) {
@@ -216,10 +186,7 @@ static char *tomoyo_print_header(struct tomoyo_request_info *r)
 		struct tomoyo_mini_stat *stat;
 		unsigned int dev;
 		umode_t mode;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!obj->stat_valid[i])
 			continue;
 		stat = &obj->stat[i];
@@ -228,19 +195,6 @@ static char *tomoyo_print_header(struct tomoyo_request_info *r)
 		if (i & 1) {
 			pos += snprintf(buffer + pos,
 					tomoyo_buffer_len - 1 - pos,
-<<<<<<< HEAD
-					" path%u.parent={ uid=%u gid=%u "
-					"ino=%lu perm=0%o }", (i >> 1) + 1,
-					stat->uid, stat->gid, (unsigned long)
-					stat->ino, stat->mode & S_IALLUGO);
-			continue;
-		}
-		pos += snprintf(buffer + pos, tomoyo_buffer_len - 1 - pos,
-				" path%u={ uid=%u gid=%u ino=%lu major=%u"
-				" minor=%u perm=0%o type=%s", (i >> 1) + 1,
-				stat->uid, stat->gid, (unsigned long)
-				stat->ino, MAJOR(dev), MINOR(dev),
-=======
 					" path%u.parent={ uid=%u gid=%u ino=%lu perm=0%o }",
 					(i >> 1) + 1,
 					from_kuid(&init_user_ns, stat->uid),
@@ -256,7 +210,6 @@ static char *tomoyo_print_header(struct tomoyo_request_info *r)
 				from_kgid(&init_user_ns, stat->gid),
 				(unsigned long)stat->ino,
 				MAJOR(dev), MINOR(dev),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mode & S_IALLUGO, tomoyo_filetype(mode));
 		if (S_ISCHR(mode) || S_ISBLK(mode)) {
 			dev = stat->rdev;
@@ -298,10 +251,7 @@ char *tomoyo_init_log(struct tomoyo_request_info *r, int len, const char *fmt,
 	const char *symlink = NULL;
 	int pos;
 	const char *domainname = r->domain->domainname->name;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	header = tomoyo_print_header(r);
 	if (!header)
 		return NULL;
@@ -309,10 +259,7 @@ char *tomoyo_init_log(struct tomoyo_request_info *r, int len, const char *fmt,
 	len += strlen(domainname) + strlen(header) + 10;
 	if (r->ee) {
 		struct file *file = r->ee->bprm->file;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		realpath = tomoyo_realpath_from_path(&file->f_path);
 		bprm_info = tomoyo_print_bprm(r->ee->bprm, &r->ee->dump);
 		if (!realpath || !bprm_info)
@@ -324,11 +271,7 @@ char *tomoyo_init_log(struct tomoyo_request_info *r, int len, const char *fmt,
 		/* +18 is for " symlink.target=\"%s\"" */
 		len += 18 + strlen(symlink);
 	}
-<<<<<<< HEAD
-	len = tomoyo_round2(len);
-=======
 	len = kmalloc_size_roundup(len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf = kzalloc(len, GFP_NOFS);
 	if (!buf)
 		goto out;
@@ -336,10 +279,7 @@ char *tomoyo_init_log(struct tomoyo_request_info *r, int len, const char *fmt,
 	pos = snprintf(buf, len, "%s", header);
 	if (realpath) {
 		struct linux_binprm *bprm = r->ee->bprm;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pos += snprintf(buf + pos, len - pos,
 				" exec={ realpath=\"%s\" argc=%d envc=%d %s }",
 				realpath, bprm->argc, bprm->envc, bprm_info);
@@ -371,11 +311,7 @@ static LIST_HEAD(tomoyo_log);
 /* Lock for "struct list_head tomoyo_log". */
 static DEFINE_SPINLOCK(tomoyo_log_lock);
 
-<<<<<<< HEAD
-/* Length of "stuct list_head tomoyo_log". */
-=======
 /* Length of "struct list_head tomoyo_log". */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int tomoyo_log_count;
 
 /**
@@ -384,10 +320,7 @@ static unsigned int tomoyo_log_count;
  * @ns:          Pointer to "struct tomoyo_policy_namespace".
  * @profile:     Profile number.
  * @index:       Index number of functionality.
-<<<<<<< HEAD
-=======
  * @matched_acl: Pointer to "struct tomoyo_acl_info".
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @is_granted:  True if granted log, false otherwise.
  *
  * Returns true if this request should be audited, false otherwise.
@@ -401,10 +334,7 @@ static bool tomoyo_get_audit(const struct tomoyo_policy_namespace *ns,
 	const u8 category = tomoyo_index2category[index] +
 		TOMOYO_MAX_MAC_INDEX;
 	struct tomoyo_profile *p;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tomoyo_policy_loaded)
 		return false;
 	p = tomoyo_profile(ns, profile);
@@ -439,10 +369,7 @@ void tomoyo_write_log2(struct tomoyo_request_info *r, int len, const char *fmt,
 	char *buf;
 	struct tomoyo_log *entry;
 	bool quota_exceeded = false;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tomoyo_get_audit(r->domain->ns, r->profile, r->type,
 			      r->matched_acl, r->granted))
 		goto out;
@@ -455,20 +382,12 @@ void tomoyo_write_log2(struct tomoyo_request_info *r, int len, const char *fmt,
 		goto out;
 	}
 	entry->log = buf;
-<<<<<<< HEAD
-	len = tomoyo_round2(strlen(buf) + 1);
-=======
 	len = kmalloc_size_roundup(strlen(buf) + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The entry->size is used for memory quota checks.
 	 * Don't go beyond strlen(entry->log).
 	 */
-<<<<<<< HEAD
-	entry->size = len + tomoyo_round2(sizeof(*entry));
-=======
 	entry->size = len + kmalloc_size_roundup(sizeof(*entry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&tomoyo_log_lock);
 	if (tomoyo_memory_quota[TOMOYO_MEMORY_AUDIT] &&
 	    tomoyo_memory_used[TOMOYO_MEMORY_AUDIT] + entry->size >=
@@ -502,14 +421,9 @@ void tomoyo_write_log(struct tomoyo_request_info *r, const char *fmt, ...)
 {
 	va_list args;
 	int len;
-<<<<<<< HEAD
-	va_start(args, fmt);
-	len = vsnprintf((char *) &len, 1, fmt, args) + 1;
-=======
 
 	va_start(args, fmt);
 	len = vsnprintf(NULL, 0, fmt, args) + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	va_end(args);
 	va_start(args, fmt);
 	tomoyo_write_log2(r, len, fmt, args);
@@ -526,10 +440,7 @@ void tomoyo_write_log(struct tomoyo_request_info *r, const char *fmt, ...)
 void tomoyo_read_log(struct tomoyo_io_buffer *head)
 {
 	struct tomoyo_log *ptr = NULL;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (head->r.w_pos)
 		return;
 	kfree(head->read_buf);
@@ -555,17 +466,6 @@ void tomoyo_read_log(struct tomoyo_io_buffer *head)
  * @file: Pointer to "struct file".
  * @wait: Pointer to "poll_table". Maybe NULL.
  *
-<<<<<<< HEAD
- * Returns POLLIN | POLLRDNORM when ready to read an audit log.
- */
-unsigned int tomoyo_poll_log(struct file *file, poll_table *wait)
-{
-	if (tomoyo_log_count)
-		return POLLIN | POLLRDNORM;
-	poll_wait(file, &tomoyo_log_wait, wait);
-	if (tomoyo_log_count)
-		return POLLIN | POLLRDNORM;
-=======
  * Returns EPOLLIN | EPOLLRDNORM when ready to read an audit log.
  */
 __poll_t tomoyo_poll_log(struct file *file, poll_table *wait)
@@ -575,6 +475,5 @@ __poll_t tomoyo_poll_log(struct file *file, poll_table *wait)
 	poll_wait(file, &tomoyo_log_wait, wait);
 	if (tomoyo_log_count)
 		return EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

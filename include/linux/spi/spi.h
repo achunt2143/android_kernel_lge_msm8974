@@ -1,51 +1,11 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2005 David Brownell
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later
  *
  * Copyright (C) 2005 David Brownell
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_SPI_H
 #define __LINUX_SPI_H
 
-<<<<<<< HEAD
-#include <linux/device.h>
-#include <linux/mod_devicetable.h>
-#include <linux/slab.h>
-#include <linux/kthread.h>
-
-/*
- * INTERFACES between SPI master-side drivers and SPI infrastructure.
- * (There's no SPI slave support for Linux yet...)
- */
-extern struct bus_type spi_bus_type;
-
-/**
- * struct spi_device - Master side proxy for an SPI slave device
- * @dev: Driver model representation of the device.
- * @master: SPI controller used with the device.
- * @max_speed_hz: Maximum clock rate to be used with this chip
- *	(on this board); may be changed by the device's driver.
- *	The spi_transfer.speed_hz can override this for each transfer.
- * @chip_select: Chipselect, distinguishing chips handled by @master.
-=======
 #include <linux/acpi.h>
 #include <linux/bits.h>
 #include <linux/completion.h>
@@ -176,7 +136,6 @@ extern void spi_transfer_cs_change_delay_exec(struct spi_message *msg,
  *	The spi_transfer.speed_hz can override this for each transfer.
  * @chip_select: Array of physical chipselect, spi->chipselect[i] gives
  *	the corresponding physical CS for logical CS i.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mode: The spi mode defines how data is clocked out and in.
  *	This may be changed by the device's driver.
  *	The "active low" default for chipselect mode can be overridden
@@ -188,10 +147,7 @@ extern void spi_transfer_cs_change_delay_exec(struct spi_message *msg,
  *	This may be changed by the device's driver, or left at the
  *	default (0) indicating protocol words are eight bit bytes.
  *	The spi_transfer.bits_per_word can override this for each transfer.
-<<<<<<< HEAD
-=======
  * @rt: Make the pump thread real time priority.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @irq: Negative, or the number passed to request_irq() to receive
  *	interrupts from this device.
  * @controller_state: Controller's runtime state
@@ -200,8 +156,6 @@ extern void spi_transfer_cs_change_delay_exec(struct spi_message *msg,
  * @modalias: Name of the driver to use with this device, or an alias
  *	for that name.  This appears in the sysfs "modalias" attribute
  *	for driver coldplugging, and in uevents used for hotplugging
-<<<<<<< HEAD
-=======
  * @driver_override: If the name of a driver is written to this attribute, then
  *	the device will bind to the named driver and only the named driver.
  *	Do not set directly, because core frees it; use driver_set_override() to
@@ -217,7 +171,6 @@ extern void spi_transfer_cs_change_delay_exec(struct spi_message *msg,
  *	two delays will be added up.
  * @pcpu_statistics: statistics for the spi_device
  * @cs_index_mask: Bit mask of the active chipselect(s) in the chipselect array
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * A @spi_device is used to interchange data between an SPI slave
  * (usually a discrete chip) and CPU memory.
@@ -230,25 +183,6 @@ extern void spi_transfer_cs_change_delay_exec(struct spi_message *msg,
  */
 struct spi_device {
 	struct device		dev;
-<<<<<<< HEAD
-	struct spi_master	*master;
-	u32			max_speed_hz;
-	u8			chip_select;
-	u8			mode;
-#define	SPI_CPHA	0x01			/* clock phase */
-#define	SPI_CPOL	0x02			/* clock polarity */
-#define	SPI_MODE_0	(0|0)			/* (original MicroWire) */
-#define	SPI_MODE_1	(0|SPI_CPHA)
-#define	SPI_MODE_2	(SPI_CPOL|0)
-#define	SPI_MODE_3	(SPI_CPOL|SPI_CPHA)
-#define	SPI_CS_HIGH	0x04			/* chipselect active high? */
-#define	SPI_LSB_FIRST	0x08			/* per-word bits-on-wire */
-#define	SPI_3WIRE	0x10			/* SI/SO signals shared */
-#define	SPI_LOOP	0x20			/* loopback mode */
-#define	SPI_NO_CS	0x40			/* 1 dev/bus, no chipselect */
-#define	SPI_READY	0x80			/* slave pulls low to pause */
-	u8			bits_per_word;
-=======
 	struct spi_controller	*controller;
 	u32			max_speed_hz;
 	u8			chip_select[SPI_CS_CNT_MAX];
@@ -277,20 +211,10 @@ struct spi_device {
 	 */
 #define SPI_MODE_KERNEL_MASK	(~(BIT(29) - 1))
 	u32			mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			irq;
 	void			*controller_state;
 	void			*controller_data;
 	char			modalias[SPI_NAME_SIZE];
-<<<<<<< HEAD
-
-	/*
-	 * likely need more hooks for more protocol options affecting how
-	 * the controller talks to each chip, like:
-	 *  - memory packing (12 bit samples into low bits, others zeroed)
-	 *  - priority
-	 *  - drop chipselect after each word
-=======
 	const char		*driver_override;
 	struct gpio_desc	*cs_gpiod[SPI_CS_CNT_MAX];	/* Chip select gpio desc */
 	struct spi_delay	word_delay; /* Inter-word delay */
@@ -314,30 +238,21 @@ struct spi_device {
 	 * the controller talks to each chip, like:
 	 *  - memory packing (12 bit samples into low bits, others zeroed)
 	 *  - priority
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *  - chipselect delays
 	 *  - ...
 	 */
 };
 
-<<<<<<< HEAD
-static inline struct spi_device *to_spi_device(struct device *dev)
-=======
 /* Make sure that SPI_MODE_KERNEL_MASK & SPI_MODE_USER_MASK don't overlap */
 static_assert((SPI_MODE_KERNEL_MASK & SPI_MODE_USER_MASK) == 0,
 	      "SPI_MODE_USER_MASK & SPI_MODE_KERNEL_MASK must not overlap");
 
 static inline struct spi_device *to_spi_device(const struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return dev ? container_of(dev, struct spi_device, dev) : NULL;
 }
 
-<<<<<<< HEAD
-/* most drivers won't need to care about device refcounting */
-=======
 /* Most drivers won't need to care about device refcounting */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct spi_device *spi_dev_get(struct spi_device *spi)
 {
 	return (spi && get_device(&spi->dev)) ? spi : NULL;
@@ -349,13 +264,8 @@ static inline void spi_dev_put(struct spi_device *spi)
 		put_device(&spi->dev);
 }
 
-<<<<<<< HEAD
-/* ctldata is for the bus_master driver's runtime state */
-static inline void *spi_get_ctldata(struct spi_device *spi)
-=======
 /* ctldata is for the bus_controller driver's runtime state */
 static inline void *spi_get_ctldata(const struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return spi->controller_state;
 }
@@ -365,31 +275,18 @@ static inline void spi_set_ctldata(struct spi_device *spi, void *state)
 	spi->controller_state = state;
 }
 
-<<<<<<< HEAD
-/* device driver data */
-=======
 /* Device driver data */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void spi_set_drvdata(struct spi_device *spi, void *data)
 {
 	dev_set_drvdata(&spi->dev, data);
 }
 
-<<<<<<< HEAD
-static inline void *spi_get_drvdata(struct spi_device *spi)
-=======
 static inline void *spi_get_drvdata(const struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return dev_get_drvdata(&spi->dev);
 }
 
-<<<<<<< HEAD
-struct spi_message;
-
-
-=======
 static inline u8 spi_get_chipselect(const struct spi_device *spi, u8 idx)
 {
 	return spi->chip_select[idx];
@@ -420,22 +317,10 @@ static inline bool spi_is_csgpiod(struct spi_device *spi)
 	}
 	return false;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct spi_driver - Host side "protocol" driver
  * @id_table: List of SPI devices supported by this driver
-<<<<<<< HEAD
- * @probe: Binds this driver to the spi device.  Drivers can verify
- *	that the device is actually present, and may need to configure
- *	characteristics (such as bits_per_word) which weren't needed for
- *	the initial configuration done during system setup.
- * @remove: Unbinds this driver from the spi device
- * @shutdown: Standard shutdown callback used during system state
- *	transitions such as powerdown/halt and kexec
- * @suspend: Standard suspend callback used during system state transitions
- * @resume: Standard resume callback used during system state transitions
-=======
  * @probe: Binds this driver to the SPI device.  Drivers can verify
  *	that the device is actually present, and may need to configure
  *	characteristics (such as bits_per_word) which weren't needed for
@@ -443,7 +328,6 @@ static inline bool spi_is_csgpiod(struct spi_device *spi)
  * @remove: Unbinds this driver from the SPI device
  * @shutdown: Standard shutdown callback used during system state
  *	transitions such as powerdown/halt and kexec
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @driver: SPI device drivers should initialize the name and owner
  *	field of this structure.
  *
@@ -462,15 +346,8 @@ static inline bool spi_is_csgpiod(struct spi_device *spi)
 struct spi_driver {
 	const struct spi_device_id *id_table;
 	int			(*probe)(struct spi_device *spi);
-<<<<<<< HEAD
-	int			(*remove)(struct spi_device *spi);
-	void			(*shutdown)(struct spi_device *spi);
-	int			(*suspend)(struct spi_device *spi, pm_message_t mesg);
-	int			(*resume)(struct spi_device *spi);
-=======
 	void			(*remove)(struct spi_device *spi);
 	void			(*shutdown)(struct spi_device *spi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_driver	driver;
 };
 
@@ -479,11 +356,7 @@ static inline struct spi_driver *to_spi_driver(struct device_driver *drv)
 	return drv ? container_of(drv, struct spi_driver, driver) : NULL;
 }
 
-<<<<<<< HEAD
-extern int spi_register_driver(struct spi_driver *sdrv);
-=======
 extern int __spi_register_driver(struct module *owner, struct spi_driver *sdrv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * spi_unregister_driver - reverse effect of spi_register_driver
@@ -496,15 +369,12 @@ static inline void spi_unregister_driver(struct spi_driver *sdrv)
 		driver_unregister(&sdrv->driver);
 }
 
-<<<<<<< HEAD
-=======
 extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 chip_select);
 
 /* Use a define to avoid include chaining to get THIS_MODULE */
 #define spi_register_driver(driver) \
 	__spi_register_driver(THIS_MODULE, driver)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * module_spi_driver() - Helper macro for registering a SPI driver
  * @__spi_driver: spi_driver struct
@@ -518,15 +388,9 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
 			spi_unregister_driver)
 
 /**
-<<<<<<< HEAD
- * struct spi_master - interface to SPI master controller
- * @dev: device interface to this driver
- * @list: link with the global spi_master list
-=======
  * struct spi_controller - interface to SPI master or slave controller
  * @dev: device interface to this driver
  * @list: link with the global spi_controller list
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bus_num: board-specific (and often SOC-specific) identifier for a
  *	given SPI controller.
  * @num_chipselect: chipselects are used to distinguish individual
@@ -535,11 +399,6 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
  *	every chipselect is connected to a slave.
  * @dma_alignment: SPI controller constraint on DMA buffers alignment.
  * @mode_bits: flags understood by this controller driver
-<<<<<<< HEAD
- * @flags: other constraints relevant to this driver
- * @bus_lock_spinlock: spinlock for SPI bus locking
- * @bus_lock_mutex: mutex for SPI bus locking
-=======
  * @buswidth_override_bits: flags to override for this controller driver
  * @bits_per_word_mask: A mask indicating which values of bits_per_word are
  *	supported by the driver. Bit n indicates that a bits_per_word n+1 is
@@ -560,27 +419,12 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
  * @add_lock: mutex to avoid adding devices to the same chipselect
  * @bus_lock_spinlock: spinlock for SPI bus locking
  * @bus_lock_mutex: mutex for exclusion of multiple callers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bus_lock_flag: indicates that the SPI bus is locked for exclusive use
  * @setup: updates the device mode and clocking records used by a
  *	device's SPI controller; protocol code may call this.  This
  *	must fail if an unrecognized or unsupported mode is requested.
  *	It's always safe to call this unless transfers are pending on
  *	the device whose settings are being modified.
-<<<<<<< HEAD
- * @transfer: adds a message to the controller's transfer queue.
- * @cleanup: frees controller-specific state
- * @queued: whether this master is providing an internal message queue
- * @kworker: thread struct for message pump
- * @kworker_task: pointer to task for message pump kworker thread
- * @pump_messages: work struct for scheduling work to the message pump
- * @queue_lock: spinlock to syncronise access to message queue
- * @queue: message queue
- * @cur_msg: the currently in-flight message
- * @busy: message pump is busy
- * @running: message pump is running
- * @rt: whether this queue is set to run as a realtime task
-=======
  * @set_cs_timing: optional hook for SPI devices to request SPI master
  * controller for configuring specific CS setup time, hold time and inactive
  * delay interms of clock counts
@@ -617,7 +461,6 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
  *                   while the hardware is prepared, using the parent
  *                   device for the spidev
  * @max_dma_len: Maximum length of a DMA transfer for the device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @prepare_transfer_hardware: a message will soon arrive from the queue
  *	so the subsystem requests the driver to prepare the transfer hardware
  *	by issuing this call
@@ -625,18 +468,11 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
  *	message while queuing transfers that arrive in the meantime. When the
  *	driver is finished with this message, it must call
  *	spi_finalize_current_message() so the subsystem can issue the next
-<<<<<<< HEAD
- *	transfer
-=======
  *	message
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @unprepare_transfer_hardware: there are currently no more messages on the
  *	queue so the subsystem notifies the driver that it may relax the
  *	hardware by issuing this call
  *
-<<<<<<< HEAD
- * Each SPI master controller can communicate with one or more @spi_device
-=======
  * @set_cs: set the logic level of the chip select line.  May be called
  *          from interrupt context.
  * @optimize_message: optimize the message for reuse
@@ -698,7 +534,6 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
  * @must_async: disable all fast paths in the core
  *
  * Each SPI controller can communicate with one or more @spi_device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * children.  These make a small bus, sharing MOSI, MISO and SCK signals
  * but not chip select signals.  Each device may be configured to use a
  * different clock rate, since those shared signals are ignored unless
@@ -709,69 +544,32 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
  * an SPI slave device.  For each such message it queues, it calls the
  * message's completion function when the transaction completes.
  */
-<<<<<<< HEAD
-struct spi_master {
-=======
 struct spi_controller {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device	dev;
 
 	struct list_head list;
 
-<<<<<<< HEAD
-	/* other than negative (== assign one dynamically), bus_num is fully
-	 * board-specific.  usually that simplifies to being SOC-specific.
-	 * example:  one SOC has three SPI controllers, numbered 0..2,
-	 * and one board's schematics might show it using SPI-2.  software
-=======
 	/*
 	 * Other than negative (== assign one dynamically), bus_num is fully
 	 * board-specific. Usually that simplifies to being SoC-specific.
 	 * example: one SoC has three SPI controllers, numbered 0..2,
 	 * and one board's schematics might show it using SPI-2. Software
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * would normally use bus_num=2 for that controller.
 	 */
 	s16			bus_num;
 
-<<<<<<< HEAD
-	/* chipselects will be integral to many controllers; some others
-=======
 	/*
 	 * Chipselects will be integral to many controllers; some others
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * might use board-specific GPIOs.
 	 */
 	u16			num_chipselect;
 
-<<<<<<< HEAD
-	/* some SPI controllers pose alignment requirements on DMAable
-=======
 	/* Some SPI controllers pose alignment requirements on DMAable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * buffers; let protocol drivers know about these requirements.
 	 */
 	u16			dma_alignment;
 
 	/* spi_device.mode flags understood by this controller driver */
-<<<<<<< HEAD
-	u16			mode_bits;
-
-	/* other constraints relevant to this driver */
-	u16			flags;
-#define SPI_MASTER_HALF_DUPLEX	BIT(0)		/* can't do full duplex */
-#define SPI_MASTER_NO_RX	BIT(1)		/* can't do buffer read */
-#define SPI_MASTER_NO_TX	BIT(2)		/* can't do buffer write */
-
-	/* lock and mutex for SPI bus locking */
-	spinlock_t		bus_lock_spinlock;
-	struct mutex		bus_lock_mutex;
-
-	/* flag indicating that the SPI bus is locked for exclusive use */
-	bool			bus_lock_flag;
-
-	/* Setup mode and clock, etc (spi driver may call many times).
-=======
 	u32			mode_bits;
 
 	/* spi_device.mode flags override flags for this controller */
@@ -833,7 +631,6 @@ struct spi_controller {
 
 	/*
 	 * Setup mode and clock, etc (SPI driver may call many times).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * IMPORTANT:  this may be called when transfers to another
 	 * device are active.  DO NOT UPDATE SHARED REGISTERS in ways
@@ -841,9 +638,6 @@ struct spi_controller {
 	 */
 	int			(*setup)(struct spi_device *spi);
 
-<<<<<<< HEAD
-	/* bidirectional bulk transfers
-=======
 	/*
 	 * set_cs_timing() method is for SPI controllers that supports
 	 * configuring CS timing.
@@ -856,27 +650,17 @@ struct spi_controller {
 
 	/*
 	 * Bidirectional bulk transfers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * + The transfer() method may not sleep; its main role is
 	 *   just to add the message to the queue.
 	 * + For now there's no remove-from-queue operation, or
 	 *   any other request management
-<<<<<<< HEAD
-	 * + To a given spi_device, message queueing is pure fifo
-	 *
-	 * + The master's main job is to process its message queue,
-	 *   selecting a chip then transferring data
-	 * + If there are multiple spi_device children, the i/o queue
-	 *   arbitration algorithm is unspecified (round robin, fifo,
-=======
 	 * + To a given spi_device, message queueing is pure FIFO
 	 *
 	 * + The controller's main job is to process its message queue,
 	 *   selecting a chip (for masters), then transferring data
 	 * + If there are multiple spi_device children, the i/o queue
 	 *   arbitration algorithm is unspecified (round robin, FIFO,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *   priority, reservations, preemption, etc)
 	 *
 	 * + Chipselect stays active during the entire message
@@ -887,14 +671,6 @@ struct spi_controller {
 	int			(*transfer)(struct spi_device *spi,
 						struct spi_message *mesg);
 
-<<<<<<< HEAD
-	/* called on release() to free memory provided by spi_master */
-	void			(*cleanup)(struct spi_device *spi);
-
-	/*
-	 * These hooks are for drivers that want to use the generic
-	 * master transfer queueing mechanism. If these are used, the
-=======
 	/* Called on release() to free memory provided by spi_controller */
 	void			(*cleanup)(struct spi_device *spi);
 
@@ -915,72 +691,15 @@ struct spi_controller {
 	/*
 	 * These hooks are for drivers that want to use the generic
 	 * controller transfer queueing mechanism. If these are used, the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * transfer() function above must NOT be specified by the driver.
 	 * Over time we expect SPI drivers to be phased over to this API.
 	 */
 	bool				queued;
-<<<<<<< HEAD
-	struct kthread_worker		kworker;
-	struct task_struct		*kworker_task;
-=======
 	struct kthread_worker		*kworker;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kthread_work		pump_messages;
 	spinlock_t			queue_lock;
 	struct list_head		queue;
 	struct spi_message		*cur_msg;
-<<<<<<< HEAD
-	bool				busy;
-	bool				running;
-	bool				rt;
-
-	int (*prepare_transfer_hardware)(struct spi_master *master);
-	int (*transfer_one_message)(struct spi_master *master,
-				    struct spi_message *mesg);
-	int (*unprepare_transfer_hardware)(struct spi_master *master);
-};
-
-static inline void *spi_master_get_devdata(struct spi_master *master)
-{
-	return dev_get_drvdata(&master->dev);
-}
-
-static inline void spi_master_set_devdata(struct spi_master *master, void *data)
-{
-	dev_set_drvdata(&master->dev, data);
-}
-
-static inline struct spi_master *spi_master_get(struct spi_master *master)
-{
-	if (!master || !get_device(&master->dev))
-		return NULL;
-	return master;
-}
-
-static inline void spi_master_put(struct spi_master *master)
-{
-	if (master)
-		put_device(&master->dev);
-}
-
-/* PM calls that need to be issued by the driver */
-extern int spi_master_suspend(struct spi_master *master);
-extern int spi_master_resume(struct spi_master *master);
-
-/* Calls the driver make to interact with the message queue */
-extern struct spi_message *spi_get_next_queued_message(struct spi_master *master);
-extern void spi_finalize_current_message(struct spi_master *master);
-
-/* the spi driver core manages memory for the spi_master classdev */
-extern struct spi_master *
-spi_alloc_master(struct device *host, unsigned size);
-
-extern int spi_register_master(struct spi_master *master);
-extern void spi_unregister_master(struct spi_master *master);
-
-extern struct spi_master *spi_busnum_to_master(u16 busnum);
-=======
 	struct completion               cur_msg_completion;
 	bool				cur_msg_incomplete;
 	bool				cur_msg_need_completion;
@@ -1212,7 +931,6 @@ struct spi_res {
 	spi_res_release_t       release;
 	unsigned long long      data[]; /* Guarantee ull alignment */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*---------------------------------------------------------------------------*/
 
@@ -1224,11 +942,7 @@ struct spi_res {
  *
  * The spi_messages themselves consist of a series of read+write transfer
  * segments.  Those segments always read the same number of bits as they
-<<<<<<< HEAD
- * write; but one or the other is easily ignored by passing a null buffer
-=======
  * write; but one or the other is easily ignored by passing a NULL buffer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pointer.  (This is unlike most types of I/O API, because SPI hardware
  * is full duplex.)
  *
@@ -1239,12 +953,6 @@ struct spi_res {
 
 /**
  * struct spi_transfer - a read/write buffer pair
-<<<<<<< HEAD
- * @tx_buf: data to be written (dma-safe memory), or NULL
- * @rx_buf: data to be read (dma-safe memory), or NULL
- * @tx_dma: DMA address of tx_buf, if @spi_message.is_dma_mapped
- * @rx_dma: DMA address of rx_buf, if @spi_message.is_dma_mapped
-=======
  * @tx_buf: data to be written (DMA-safe memory), or NULL
  * @rx_buf: data to be read (DMA-safe memory), or NULL
  * @tx_dma: DMA address of tx_buf, if @spi_message.is_dma_mapped
@@ -1253,19 +961,11 @@ struct spi_res {
  *      (SPI_NBITS_SINGLE) is used.
  * @rx_nbits: number of bits used for reading. If 0 the default
  *      (SPI_NBITS_SINGLE) is used.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @len: size of rx and tx buffers (in bytes)
  * @speed_hz: Select a speed other than the device default for this
  *      transfer. If 0 the default (from @spi_device) is used.
  * @bits_per_word: select a bits_per_word other than the device default
  *      for this transfer. If 0 the default (from @spi_device) is used.
-<<<<<<< HEAD
- * @cs_change: affects chipselect after this transfer completes
- * @delay_usecs: microseconds to delay after this transfer before
- *	(optionally) changing the chipselect status, then starting
- *	the next transfer or completing this @spi_message.
- * @transfer_list: transfers are sequenced through @spi_message.transfers
-=======
  * @dummy_data: indicates transfer is dummy bytes transfer.
  * @cs_off: performs the transfer with chipselect off.
  * @cs_change: affects chipselect after this transfer completes
@@ -1307,23 +1007,15 @@ struct spi_res {
  *	transmit confirmation from the controller for the "post" word.
  * @timestamped: true if the transfer has been timestamped
  * @error: Error status logged by SPI controller driver.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * SPI transfers always write the same number of bytes as they read.
  * Protocol drivers should always provide @rx_buf and/or @tx_buf.
  * In some cases, they may also want to provide DMA addresses for
  * the data being transferred; that may reduce overhead, when the
-<<<<<<< HEAD
- * underlying driver uses dma.
- *
- * If the transmit buffer is null, zeroes will be shifted out
- * while filling @rx_buf.  If the receive buffer is null, the data
-=======
  * underlying driver uses DMA.
  *
  * If the transmit buffer is NULL, zeroes will be shifted out
  * while filling @rx_buf.  If the receive buffer is NULL, the data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * shifted in will be discarded.  Only "len" bytes shift out (or in).
  * It's an error to try to shift out a partial word.  (For example, by
  * shifting out three bytes with word size of sixteen or twenty bits;
@@ -1357,16 +1049,12 @@ struct spi_res {
  * Some devices need protocol transactions to be built from a series of
  * spi_message submissions, where the content of one message is determined
  * by the results of previous messages and where the whole transaction
-<<<<<<< HEAD
- * ends when the chipselect goes intactive.
-=======
  * ends when the chipselect goes inactive.
  *
  * When SPI can transfer in 1x,2x or 4x. It can get this transfer information
  * from device through @tx_nbits and @rx_nbits. In Bi-direction, these
  * two should both be set. User can set transfer mode with SPI_NBITS_SINGLE(1x)
  * SPI_NBITS_DUAL(2x) and SPI_NBITS_QUAD(4x) to support these three transfer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The code that submits an spi_message (and its spi_transfers)
  * to the lower layers is responsible for managing its memory.
@@ -1375,33 +1063,16 @@ struct spi_res {
  * and its transfers, ignore them until its completion callback.
  */
 struct spi_transfer {
-<<<<<<< HEAD
-	/* it's ok if tx_buf == rx_buf (right?)
-	 * for MicroWire, one buffer must be null
-	 * buffers must work with dma_*map_single() calls, unless
-	 *   spi_message.is_dma_mapped reports a pre-existing mapping
-=======
 	/*
 	 * It's okay if tx_buf == rx_buf (right?).
 	 * For MicroWire, one buffer must be NULL.
 	 * Buffers must work with dma_*map_single() calls, unless
 	 * spi_message.is_dma_mapped reports a pre-existing mapping.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	const void	*tx_buf;
 	void		*rx_buf;
 	unsigned	len;
 
-<<<<<<< HEAD
-	dma_addr_t	tx_dma;
-	dma_addr_t	rx_dma;
-
-	unsigned	cs_change:1;
-	u8		bits_per_word;
-	u16		delay_usecs;
-	u32		speed_hz;
-
-=======
 #define SPI_TRANS_FAIL_NO_START	BIT(0)
 #define SPI_TRANS_FAIL_IO	BIT(1)
 	u16		error;
@@ -1433,7 +1104,6 @@ struct spi_transfer {
 
 	struct ptp_system_timestamp *ptp_sts;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head transfer_list;
 };
 
@@ -1441,17 +1111,6 @@ struct spi_transfer {
  * struct spi_message - one multi-segment SPI transaction
  * @transfers: list of transfer segments in this transaction
  * @spi: SPI device to which the transaction is queued
-<<<<<<< HEAD
- * @is_dma_mapped: if true, the caller provided both dma and cpu virtual
- *	addresses for each transfer buffer
- * @complete: called to report transaction completions
- * @context: the argument to complete() when it's called
- * @actual_length: the total number of bytes that were transferred in all
- *	successful segments
- * @status: zero for success, else negative errno
- * @queue: for use by whichever driver currently owns the message
- * @state: for use by whichever driver currently owns the message
-=======
  * @is_dma_mapped: if true, the caller provided both DMA and CPU virtual
  *	addresses for each transfer buffer
  * @pre_optimized: peripheral driver pre-optimized the message
@@ -1467,21 +1126,14 @@ struct spi_transfer {
  * @state: for use by whichever driver currently owns the message
  * @opt_state: for use by whichever driver currently owns the message
  * @resources: for resource management when the SPI message is processed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * A @spi_message is used to execute an atomic sequence of data transfers,
  * each represented by a struct spi_transfer.  The sequence is "atomic"
  * in the sense that no other spi_message may use that SPI bus until that
  * sequence completes.  On some systems, many such sequences can execute as
-<<<<<<< HEAD
- * as single programmed DMA transfer.  On all systems, these messages are
- * queued, and might complete after transactions to other devices.  Messages
- * sent to a given spi_device are alway executed in FIFO order.
-=======
  * a single programmed DMA transfer.  On all systems, these messages are
  * queued, and might complete after transactions to other devices.  Messages
  * sent to a given spi_device are always executed in FIFO order.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The code that submits an spi_message (and its spi_transfers)
  * to the lower layers is responsible for managing its memory.
@@ -1496,9 +1148,6 @@ struct spi_message {
 
 	unsigned		is_dma_mapped:1;
 
-<<<<<<< HEAD
-	/* REVISIT:  we might want a flag affecting the behavior of the
-=======
 	/* spi_optimize_message() was called for this message */
 	bool			pre_optimized;
 	/* __spi_optimize_message() was called for this message */
@@ -1509,7 +1158,6 @@ struct spi_message {
 
 	/*
 	 * REVISIT: we might want a flag affecting the behavior of the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * last transfer ... allowing things like "read 16 bit length L"
 	 * immediately followed by "read L bytes".  Basically imposing
 	 * a specific message scheduling algorithm.
@@ -1520,26 +1168,6 @@ struct spi_message {
 	 * tell them about such special cases.
 	 */
 
-<<<<<<< HEAD
-	/* completion is reported through a callback */
-	void			(*complete)(void *context);
-	void			*context;
-	unsigned		actual_length;
-	int			status;
-
-	/* for optional use by whatever driver currently owns the
-	 * spi_message ...  between calls to spi_async and then later
-	 * complete(), that's the spi_master controller driver.
-	 */
-	struct list_head	queue;
-	void			*state;
-};
-
-static inline void spi_message_init(struct spi_message *m)
-{
-	memset(m, 0, sizeof *m);
-	INIT_LIST_HEAD(&m->transfers);
-=======
 	/* Completion is reported through a callback */
 	int			status;
 	void			(*complete)(void *context);
@@ -1574,7 +1202,6 @@ static inline void spi_message_init(struct spi_message *m)
 {
 	memset(m, 0, sizeof *m);
 	spi_message_init_no_memset(m);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void
@@ -1589,12 +1216,6 @@ spi_transfer_del(struct spi_transfer *t)
 	list_del(&t->transfer_list);
 }
 
-<<<<<<< HEAD
-/**
- * spi_message_init_with_transfers - Initialize spi_message and append transfers
- * @m: spi_message to be initialized
- * @xfers: An array of spi transfers
-=======
 static inline int
 spi_transfer_delay_exec(struct spi_transfer *t)
 {
@@ -1605,7 +1226,6 @@ spi_transfer_delay_exec(struct spi_transfer *t)
  * spi_message_init_with_transfers - Initialize spi_message and append transfers
  * @m: spi_message to be initialized
  * @xfers: An array of SPI transfers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @num_xfers: Number of items in the xfer array
  *
  * This function initializes the given spi_message and adds each spi_transfer in
@@ -1622,28 +1242,6 @@ struct spi_transfer *xfers, unsigned int num_xfers)
 		spi_message_add_tail(&xfers[i], m);
 }
 
-<<<<<<< HEAD
-/* It's fine to embed message and transaction structures in other data
- * structures so long as you don't free them while they're in use.
- */
-
-static inline struct spi_message *spi_message_alloc(unsigned ntrans, gfp_t flags)
-{
-	struct spi_message *m;
-
-	m = kzalloc(sizeof(struct spi_message)
-			+ ntrans * sizeof(struct spi_transfer),
-			flags);
-	if (m) {
-		unsigned i;
-		struct spi_transfer *t = (struct spi_transfer *)(m + 1);
-
-		INIT_LIST_HEAD(&m->transfers);
-		for (i = 0; i < ntrans; i++, t++)
-			spi_message_add_tail(t, m);
-	}
-	return m;
-=======
 /*
  * It's fine to embed message and transaction structures in other data
  * structures so long as you don't free them while they're in use.
@@ -1665,7 +1263,6 @@ static inline struct spi_message *spi_message_alloc(unsigned ntrans, gfp_t flags
 		spi_message_add_tail(&mwt->t[i], &mwt->m);
 
 	return &mwt->m;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void spi_message_free(struct spi_message *m)
@@ -1673,16 +1270,6 @@ static inline void spi_message_free(struct spi_message *m)
 	kfree(m);
 }
 
-<<<<<<< HEAD
-extern int spi_setup(struct spi_device *spi);
-extern int spi_async(struct spi_device *spi, struct spi_message *message);
-extern int spi_async_locked(struct spi_device *spi,
-			    struct spi_message *message);
-
-/*---------------------------------------------------------------------------*/
-
-/* All these synchronous SPI transfer routines are utilities layered
-=======
 extern int spi_optimize_message(struct spi_device *spi, struct spi_message *msg);
 extern void spi_unoptimize_message(struct spi_message *msg);
 
@@ -1803,68 +1390,14 @@ extern int spi_split_transfers_maxwords(struct spi_controller *ctlr,
 
 /*
  * All these synchronous SPI transfer routines are utilities layered
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * over the core async transfer primitive.  Here, "synchronous" means
  * they will sleep uninterruptibly until the async transfer completes.
  */
 
 extern int spi_sync(struct spi_device *spi, struct spi_message *message);
 extern int spi_sync_locked(struct spi_device *spi, struct spi_message *message);
-<<<<<<< HEAD
-extern int spi_bus_lock(struct spi_master *master);
-extern int spi_bus_unlock(struct spi_master *master);
-
-/**
- * spi_write - SPI synchronous write
- * @spi: device to which data will be written
- * @buf: data buffer
- * @len: data buffer size
- * Context: can sleep
- *
- * This writes the buffer and returns zero or a negative error code.
- * Callable only from contexts that can sleep.
- */
-static inline int
-spi_write(struct spi_device *spi, const void *buf, size_t len)
-{
-	struct spi_transfer	t = {
-			.tx_buf		= buf,
-			.len		= len,
-		};
-	struct spi_message	m;
-
-	spi_message_init(&m);
-	spi_message_add_tail(&t, &m);
-	return spi_sync(spi, &m);
-}
-
-/**
- * spi_read - SPI synchronous read
- * @spi: device from which data will be read
- * @buf: data buffer
- * @len: data buffer size
- * Context: can sleep
- *
- * This reads the buffer and returns zero or a negative error code.
- * Callable only from contexts that can sleep.
- */
-static inline int
-spi_read(struct spi_device *spi, void *buf, size_t len)
-{
-	struct spi_transfer	t = {
-			.rx_buf		= buf,
-			.len		= len,
-		};
-	struct spi_message	m;
-
-	spi_message_init(&m);
-	spi_message_add_tail(&t, &m);
-	return spi_sync(spi, &m);
-}
-=======
 extern int spi_bus_lock(struct spi_controller *ctlr);
 extern int spi_bus_unlock(struct spi_controller *ctlr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * spi_sync_transfer - synchronous SPI data transfer
@@ -1877,11 +1410,7 @@ extern int spi_bus_unlock(struct spi_controller *ctlr);
  *
  * For more specific semantics see spi_sync().
  *
-<<<<<<< HEAD
- * It returns zero on success, else a negative error code.
-=======
  * Return: zero on success, else a negative error code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int
 spi_sync_transfer(struct spi_device *spi, struct spi_transfer *xfers,
@@ -1894,9 +1423,6 @@ spi_sync_transfer(struct spi_device *spi, struct spi_transfer *xfers,
 	return spi_sync(spi, &msg);
 }
 
-<<<<<<< HEAD
-/* this copies txbuf and rxbuf data; for small transfers only! */
-=======
 /**
  * spi_write - SPI synchronous write
  * @spi: device to which data will be written
@@ -1944,7 +1470,6 @@ spi_read(struct spi_device *spi, void *buf, size_t len)
 }
 
 /* This copies txbuf and rxbuf data; for small transfers only! */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int spi_write_then_read(struct spi_device *spi,
 		const void *txbuf, unsigned n_tx,
 		void *rxbuf, unsigned n_rx);
@@ -1955,16 +1480,10 @@ extern int spi_write_then_read(struct spi_device *spi,
  * @cmd: command to be written before data is read back
  * Context: can sleep
  *
-<<<<<<< HEAD
- * This returns the (unsigned) eight bit number returned by the
- * device, or else a negative error code.  Callable only from
- * contexts that can sleep.
-=======
  * Callable only from contexts that can sleep.
  *
  * Return: the (unsigned) eight bit number returned by the
  * device, or else a negative error code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline ssize_t spi_w8r8(struct spi_device *spi, u8 cmd)
 {
@@ -1973,11 +1492,7 @@ static inline ssize_t spi_w8r8(struct spi_device *spi, u8 cmd)
 
 	status = spi_write_then_read(spi, &cmd, 1, &result, 1);
 
-<<<<<<< HEAD
-	/* return negative errno or unsigned value */
-=======
 	/* Return negative errno or unsigned value */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (status < 0) ? status : result;
 }
 
@@ -1987,14 +1502,6 @@ static inline ssize_t spi_w8r8(struct spi_device *spi, u8 cmd)
  * @cmd: command to be written before data is read back
  * Context: can sleep
  *
-<<<<<<< HEAD
- * This returns the (unsigned) sixteen bit number returned by the
- * device, or else a negative error code.  Callable only from
- * contexts that can sleep.
- *
- * The number is returned in wire-order, which is at least sometimes
- * big-endian.
-=======
  * The number is returned in wire-order, which is at least sometimes
  * big-endian.
  *
@@ -2002,21 +1509,12 @@ static inline ssize_t spi_w8r8(struct spi_device *spi, u8 cmd)
  *
  * Return: the (unsigned) sixteen bit number returned by the
  * device, or else a negative error code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline ssize_t spi_w8r16(struct spi_device *spi, u8 cmd)
 {
 	ssize_t			status;
 	u16			result;
 
-<<<<<<< HEAD
-	status = spi_write_then_read(spi, &cmd, 1, (u8 *) &result, 2);
-
-	/* return negative errno or unsigned value */
-	return (status < 0) ? status : result;
-}
-
-=======
 	status = spi_write_then_read(spi, &cmd, 1, &result, 2);
 
 	/* Return negative errno or unsigned value */
@@ -2050,7 +1548,6 @@ static inline ssize_t spi_w8r16be(struct spi_device *spi, u8 cmd)
 	return be16_to_cpu(result);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*---------------------------------------------------------------------------*/
 
 /*
@@ -2063,11 +1560,7 @@ static inline ssize_t spi_w8r16be(struct spi_device *spi, u8 cmd)
  * As a rule, SPI devices can't be probed.  Instead, board init code
  * provides a table listing the devices which are present, with enough
  * information to bind and set up the device's driver.  There's basic
-<<<<<<< HEAD
- * support for nonstatic configurations too; enough to handle adding
-=======
  * support for non-static configurations too; enough to handle adding
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * parport adapters, or microcontrollers acting as USB-to-SPI bridges.
  */
 
@@ -2076,20 +1569,13 @@ static inline ssize_t spi_w8r16be(struct spi_device *spi, u8 cmd)
  * @modalias: Initializes spi_device.modalias; identifies the driver.
  * @platform_data: Initializes spi_device.platform_data; the particular
  *	data stored there is driver-specific.
-<<<<<<< HEAD
-=======
  * @swnode: Software node for the device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @controller_data: Initializes spi_device.controller_data; some
  *	controllers need hints about hardware setup, e.g. for DMA.
  * @irq: Initializes spi_device.irq; depends on how the board is wired.
  * @max_speed_hz: Initializes spi_device.max_speed_hz; based on limits
  *	from the chip datasheet and board-specific signal quality issues.
-<<<<<<< HEAD
- * @bus_num: Identifies which spi_master parents the spi_device; unused
-=======
  * @bus_num: Identifies which spi_controller parents the spi_device; unused
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	by spi_new_device(), and otherwise depends on board wiring.
  * @chip_select: Initializes spi_device.chip_select; depends on how
  *	the board is wired.
@@ -2111,31 +1597,12 @@ static inline ssize_t spi_w8r16be(struct spi_device *spi, u8 cmd)
  * are active in some dynamic board configuration models.
  */
 struct spi_board_info {
-<<<<<<< HEAD
-	/* the device name and module name are coupled, like platform_bus;
-=======
 	/*
 	 * The device name and module name are coupled, like platform_bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * "modalias" is normally the driver name.
 	 *
 	 * platform_data goes to spi_device.dev.platform_data,
 	 * controller_data goes to spi_device.controller_data,
-<<<<<<< HEAD
-	 * irq is copied too
-	 */
-	char		modalias[SPI_NAME_SIZE];
-	const void	*platform_data;
-	void		*controller_data;
-	int		irq;
-
-	/* slower signaling on noisy or low voltage boards */
-	u32		max_speed_hz;
-
-
-	/* bus_num is board specific and matches the bus_num of some
-	 * spi_master that will probably be registered later.
-=======
 	 * IRQ is copied too.
 	 */
 	char		modalias[SPI_NAME_SIZE];
@@ -2151,7 +1618,6 @@ struct spi_board_info {
 	/*
 	 * bus_num is board specific and matches the bus_num of some
 	 * spi_controller that will probably be registered later.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * chip_select reflects how this chip is wired to that master;
 	 * it's less than num_chipselect.
@@ -2159,14 +1625,6 @@ struct spi_board_info {
 	u16		bus_num;
 	u16		chip_select;
 
-<<<<<<< HEAD
-	/* mode becomes spi_device.mode, and is essential for chips
-	 * where the default of SPI_CS_HIGH = 0 is wrong.
-	 */
-	u8		mode;
-
-	/* ... may need additional spi_device chip config data here.
-=======
 	/*
 	 * mode becomes spi_device.mode, and is essential for chips
 	 * where the default of SPI_CS_HIGH = 0 is wrong.
@@ -2175,7 +1633,6 @@ struct spi_board_info {
 
 	/*
 	 * ... may need additional spi_device chip config data here.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * avoid stuff protocol drivers can set; but include stuff
 	 * needed to behave without being bound to a driver:
 	 *  - quirks like clock rate mattering when not selected
@@ -2186,26 +1643,12 @@ struct spi_board_info {
 extern int
 spi_register_board_info(struct spi_board_info const *info, unsigned n);
 #else
-<<<<<<< HEAD
-/* board init code may ignore whether SPI is configured or not */
-=======
 /* Board init code may ignore whether SPI is configured or not */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int
 spi_register_board_info(struct spi_board_info const *info, unsigned n)
 	{ return 0; }
 #endif
 
-<<<<<<< HEAD
-
-/* If you're hotplugging an adapter with devices (parport, usb, etc)
- * use spi_new_device() to describe each device.  You can also call
- * spi_unregister_device() to start making that device vanish, but
- * normally that would be handled by spi_unregister_master().
- *
- * You can also use spi_alloc_device() and spi_add_device() to use a two
- * stage registration sequence for each spi_device.  This gives the caller
-=======
 /*
  * If you're hotplugging an adapter with devices (parport, USB, etc)
  * use spi_new_device() to describe each device.  You can also call
@@ -2214,42 +1657,24 @@ spi_register_board_info(struct spi_board_info const *info, unsigned n)
  *
  * You can also use spi_alloc_device() and spi_add_device() to use a two
  * stage registration sequence for each spi_device. This gives the caller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * some more control over the spi_device structure before it is registered,
  * but requires that caller to initialize fields that would otherwise
  * be defined using the board info.
  */
 extern struct spi_device *
-<<<<<<< HEAD
-spi_alloc_device(struct spi_master *master);
-=======
 spi_alloc_device(struct spi_controller *ctlr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int
 spi_add_device(struct spi_device *spi);
 
 extern struct spi_device *
-<<<<<<< HEAD
-spi_new_device(struct spi_master *, struct spi_board_info *);
-
-static inline void
-spi_unregister_device(struct spi_device *spi)
-{
-	if (spi)
-		device_unregister(&spi->dev);
-}
-=======
 spi_new_device(struct spi_controller *, struct spi_board_info *);
 
 extern void spi_unregister_device(struct spi_device *spi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern const struct spi_device_id *
 spi_get_device_id(const struct spi_device *sdev);
 
-<<<<<<< HEAD
-=======
 extern const void *
 spi_get_device_match_data(const struct spi_device *sdev);
 
@@ -2259,5 +1684,4 @@ spi_transfer_is_last(struct spi_controller *ctlr, struct spi_transfer *xfer)
 	return list_is_last(&xfer->transfer_list, &ctlr->cur_msg->transfers);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_SPI_H */

@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) Alan Cox GW4PTS (alan@lxorguk.ukuu.org.uk)
  * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
@@ -33,31 +25,11 @@
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
 #include <net/sock.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fcntl.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 
-<<<<<<< HEAD
-static void ax25_heartbeat_expiry(unsigned long);
-static void ax25_t1timer_expiry(unsigned long);
-static void ax25_t2timer_expiry(unsigned long);
-static void ax25_t3timer_expiry(unsigned long);
-static void ax25_idletimer_expiry(unsigned long);
-
-void ax25_setup_timers(ax25_cb *ax25)
-{
-	setup_timer(&ax25->timer, ax25_heartbeat_expiry, (unsigned long)ax25);
-	setup_timer(&ax25->t1timer, ax25_t1timer_expiry, (unsigned long)ax25);
-	setup_timer(&ax25->t2timer, ax25_t2timer_expiry, (unsigned long)ax25);
-	setup_timer(&ax25->t3timer, ax25_t3timer_expiry, (unsigned long)ax25);
-	setup_timer(&ax25->idletimer, ax25_idletimer_expiry,
-		    (unsigned long)ax25);
-=======
 static void ax25_heartbeat_expiry(struct timer_list *);
 static void ax25_t1timer_expiry(struct timer_list *);
 static void ax25_t2timer_expiry(struct timer_list *);
@@ -71,7 +43,6 @@ void ax25_setup_timers(ax25_cb *ax25)
 	timer_setup(&ax25->t2timer, ax25_t2timer_expiry, 0);
 	timer_setup(&ax25->t3timer, ax25_t3timer_expiry, 0);
 	timer_setup(&ax25->idletimer, ax25_idletimer_expiry, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ax25_start_heartbeat(ax25_cb *ax25)
@@ -137,34 +108,20 @@ int ax25_t1timer_running(ax25_cb *ax25)
 
 unsigned long ax25_display_timer(struct timer_list *timer)
 {
-<<<<<<< HEAD
-	if (!timer_pending(timer))
-		return 0;
-
-	return timer->expires - jiffies;
-=======
 	long delta = timer->expires - jiffies;
 
 	if (!timer_pending(timer))
 		return 0;
 
 	return max(0L, delta);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL(ax25_display_timer);
 
-<<<<<<< HEAD
-static void ax25_heartbeat_expiry(unsigned long param)
-{
-	int proto = AX25_PROTO_STD_SIMPLEX;
-	ax25_cb *ax25 = (ax25_cb *)param;
-=======
 static void ax25_heartbeat_expiry(struct timer_list *t)
 {
 	int proto = AX25_PROTO_STD_SIMPLEX;
 	ax25_cb *ax25 = from_timer(ax25, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ax25->ax25_dev)
 		proto = ax25->ax25_dev->values[AX25_VALUES_PROTOCOL];
@@ -186,15 +143,9 @@ static void ax25_heartbeat_expiry(struct timer_list *t)
 	}
 }
 
-<<<<<<< HEAD
-static void ax25_t1timer_expiry(unsigned long param)
-{
-	ax25_cb *ax25 = (ax25_cb *)param;
-=======
 static void ax25_t1timer_expiry(struct timer_list *t)
 {
 	ax25_cb *ax25 = from_timer(ax25, t, t1timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (ax25->ax25_dev->values[AX25_VALUES_PROTOCOL]) {
 	case AX25_PROTO_STD_SIMPLEX:
@@ -211,15 +162,9 @@ static void ax25_t1timer_expiry(struct timer_list *t)
 	}
 }
 
-<<<<<<< HEAD
-static void ax25_t2timer_expiry(unsigned long param)
-{
-	ax25_cb *ax25 = (ax25_cb *)param;
-=======
 static void ax25_t2timer_expiry(struct timer_list *t)
 {
 	ax25_cb *ax25 = from_timer(ax25, t, t2timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (ax25->ax25_dev->values[AX25_VALUES_PROTOCOL]) {
 	case AX25_PROTO_STD_SIMPLEX:
@@ -236,15 +181,9 @@ static void ax25_t2timer_expiry(struct timer_list *t)
 	}
 }
 
-<<<<<<< HEAD
-static void ax25_t3timer_expiry(unsigned long param)
-{
-	ax25_cb *ax25 = (ax25_cb *)param;
-=======
 static void ax25_t3timer_expiry(struct timer_list *t)
 {
 	ax25_cb *ax25 = from_timer(ax25, t, t3timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (ax25->ax25_dev->values[AX25_VALUES_PROTOCOL]) {
 	case AX25_PROTO_STD_SIMPLEX:
@@ -263,15 +202,9 @@ static void ax25_t3timer_expiry(struct timer_list *t)
 	}
 }
 
-<<<<<<< HEAD
-static void ax25_idletimer_expiry(unsigned long param)
-{
-	ax25_cb *ax25 = (ax25_cb *)param;
-=======
 static void ax25_idletimer_expiry(struct timer_list *t)
 {
 	ax25_cb *ax25 = from_timer(ax25, t, idletimer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (ax25->ax25_dev->values[AX25_VALUES_PROTOCOL]) {
 	case AX25_PROTO_STD_SIMPLEX:

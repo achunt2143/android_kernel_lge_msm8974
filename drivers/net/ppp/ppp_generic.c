@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic PPP layer for Linux.
  *
  * Copyright 1999-2002 Paul Mackerras.
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The generic PPP layer handles the PPP network interfaces, the
  * /dev/ppp device, packet and VJ compression, and multilink.
  * It talks to PPP `channels' via the interface defined in
@@ -31,10 +20,7 @@
 
 #include <linux/module.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kmod.h>
 #include <linux/init.h>
 #include <linux/list.h>
@@ -57,17 +43,11 @@
 #include <linux/device.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <asm/unaligned.h>
-#include <net/slhc_vj.h>
-#include <linux/atomic.h>
-=======
 #include <linux/file.h>
 #include <asm/unaligned.h>
 #include <net/slhc_vj.h>
 #include <linux/atomic.h>
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/nsproxy.h>
 #include <net/net_namespace.h>
@@ -89,11 +69,8 @@
 #define MPHDRLEN	6	/* multilink protocol header length */
 #define MPHDRLEN_SSN	4	/* ditto with short sequence numbers */
 
-<<<<<<< HEAD
-=======
 #define PPP_PROTO_LEN	2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * An instance of /dev/ppp can be associated with either a ppp
  * interface unit or a ppp channel.  In both cases, file->private_data
@@ -106,11 +83,7 @@ struct ppp_file {
 	struct sk_buff_head xq;		/* pppd transmit queue */
 	struct sk_buff_head rq;		/* receive queue for pppd */
 	wait_queue_head_t rwait;	/* for poll on reading /dev/ppp */
-<<<<<<< HEAD
-	atomic_t	refcnt;		/* # refs (incl /dev/ppp attached) */
-=======
 	refcount_t	refcnt;		/* # refs (incl /dev/ppp attached) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		hdrlen;		/* space to leave for headers */
 	int		index;		/* interface unit / channel number */
 	int		dead;		/* unit/channel has been shut down */
@@ -122,8 +95,6 @@ struct ppp_file {
 #define PF_TO_CHANNEL(pf)	PF_TO_X(pf, struct channel)
 
 /*
-<<<<<<< HEAD
-=======
  * Data structure to hold primary network stats for which
  * we want to use 64 bit storage.  Other network stats
  * are stored in dev->stats of the ppp strucute.
@@ -136,7 +107,6 @@ struct ppp_link_stats {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Data structure describing one ppp unit.
  * A ppp unit corresponds to a ppp network interface device
  * and represents a multilink bundle.
@@ -149,10 +119,7 @@ struct ppp {
 	int		n_channels;	/* how many channels are attached 54 */
 	spinlock_t	rlock;		/* lock for receive side 58 */
 	spinlock_t	wlock;		/* lock for transmit side 5c */
-<<<<<<< HEAD
-=======
 	int __percpu	*xmit_recursion; /* xmit recursion detect */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		mru;		/* max receive unit 60 */
 	unsigned int	flags;		/* control bits 64 */
 	unsigned int	xstate;		/* transmit state bits 68 */
@@ -178,19 +145,11 @@ struct ppp {
 	struct sk_buff_head mrq;	/* MP: receive reconstruction queue */
 #endif /* CONFIG_PPP_MULTILINK */
 #ifdef CONFIG_PPP_FILTER
-<<<<<<< HEAD
-	struct sock_filter *pass_filter;	/* filter for packets to pass */
-	struct sock_filter *active_filter;/* filter for pkts to reset idle */
-	unsigned pass_len, active_len;
-#endif /* CONFIG_PPP_FILTER */
-	struct net	*ppp_net;	/* the net we belong to */
-=======
 	struct bpf_prog *pass_filter;	/* filter for packets to pass */
 	struct bpf_prog *active_filter; /* filter for pkts to reset idle */
 #endif /* CONFIG_PPP_FILTER */
 	struct net	*ppp_net;	/* the net we belong to */
 	struct ppp_link_stats stats64;	/* 64 bit network stats */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -216,15 +175,10 @@ struct channel {
 	spinlock_t	downl;		/* protects `chan', file.xq dequeue */
 	struct ppp	*ppp;		/* ppp unit we're connected to */
 	struct net	*chan_net;	/* the net channel belongs to */
-<<<<<<< HEAD
-	struct list_head clist;		/* link in list of channels per unit */
-	rwlock_t	upl;		/* protects `ppp' */
-=======
 	netns_tracker	ns_tracker;
 	struct list_head clist;		/* link in list of channels per unit */
 	rwlock_t	upl;		/* protects `ppp' and 'bridge' */
 	struct channel __rcu *bridge;	/* "bridged" ppp channel */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PPP_MULTILINK
 	u8		avail;		/* flag used in multilink stuff */
 	u8		had_frag;	/* >= 1 fragments have been sent */
@@ -233,15 +187,12 @@ struct channel {
 #endif /* CONFIG_PPP_MULTILINK */
 };
 
-<<<<<<< HEAD
-=======
 struct ppp_config {
 	struct file *file;
 	s32 unit;
 	bool ifname_is_set;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SMP locking issues:
  * Both the ppp.rlock and ppp.wlock locks protect the ppp.channels
@@ -256,11 +207,7 @@ static atomic_t ppp_unit_count = ATOMIC_INIT(0);
 static atomic_t channel_count = ATOMIC_INIT(0);
 
 /* per-net private data for this module */
-<<<<<<< HEAD
-static int ppp_net_id __read_mostly;
-=======
 static unsigned int ppp_net_id __read_mostly;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ppp_net {
 	/* units to ppp mapping */
 	struct idr units_idr;
@@ -310,11 +257,7 @@ struct ppp_net {
 /* Prototypes. */
 static int ppp_unattached_ioctl(struct net *net, struct ppp_file *pf,
 			struct file *file, unsigned int cmd, unsigned long arg);
-<<<<<<< HEAD
-static void ppp_xmit_process(struct ppp *ppp);
-=======
 static void ppp_xmit_process(struct ppp *ppp, struct sk_buff *skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ppp_send_frame(struct ppp *ppp, struct sk_buff *skb);
 static void ppp_push(struct ppp *ppp);
 static void ppp_channel_push(struct channel *pch);
@@ -331,37 +274,19 @@ static void ppp_mp_insert(struct ppp *ppp, struct sk_buff *skb);
 static struct sk_buff *ppp_mp_reconstruct(struct ppp *ppp);
 static int ppp_mp_explode(struct ppp *ppp, struct sk_buff *skb);
 #endif /* CONFIG_PPP_MULTILINK */
-<<<<<<< HEAD
-static int ppp_set_compress(struct ppp *ppp, unsigned long arg);
-=======
 static int ppp_set_compress(struct ppp *ppp, struct ppp_option_data *data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ppp_ccp_peek(struct ppp *ppp, struct sk_buff *skb, int inbound);
 static void ppp_ccp_closed(struct ppp *ppp);
 static struct compressor *find_compressor(int type);
 static void ppp_get_stats(struct ppp *ppp, struct ppp_stats *st);
-<<<<<<< HEAD
-static struct ppp *ppp_create_interface(struct net *net, int unit, int *retp);
-static void init_ppp_file(struct ppp_file *pf, int kind);
-static void ppp_shutdown_interface(struct ppp *ppp);
-=======
 static int ppp_create_interface(struct net *net, struct file *file, int *unit);
 static void init_ppp_file(struct ppp_file *pf, int kind);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ppp_destroy_interface(struct ppp *ppp);
 static struct ppp *ppp_find_unit(struct ppp_net *pn, int unit);
 static struct channel *ppp_find_channel(struct ppp_net *pn, int unit);
 static int ppp_connect_channel(struct channel *pch, int unit);
 static int ppp_disconnect_channel(struct channel *pch);
 static void ppp_destroy_channel(struct channel *pch);
-<<<<<<< HEAD
-static int unit_get(struct idr *p, void *ptr);
-static int unit_set(struct idr *p, void *ptr, int n);
-static void unit_put(struct idr *p, int n);
-static void *unit_find(struct idr *p, int n);
-
-static struct class *ppp_class;
-=======
 static int unit_get(struct idr *p, void *ptr, int min);
 static int unit_set(struct idr *p, void *ptr, int n);
 static void unit_put(struct idr *p, int n);
@@ -373,16 +298,10 @@ static const struct net_device_ops ppp_netdev_ops;
 static const struct class ppp_class = {
 	.name = "ppp",
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* per net-namespace data */
 static inline struct ppp_net *ppp_pernet(struct net *net)
 {
-<<<<<<< HEAD
-	BUG_ON(!net);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return net_generic(net, ppp_net_id);
 }
 
@@ -471,11 +390,7 @@ static int ppp_open(struct inode *inode, struct file *file)
 	/*
 	 * This could (should?) be enforced by the permissions on /dev/ppp.
 	 */
-<<<<<<< HEAD
-	if (!capable(CAP_NET_ADMIN))
-=======
 	if (!ns_capable(file->f_cred->user_ns, CAP_NET_ADMIN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 	return 0;
 }
@@ -489,19 +404,12 @@ static int ppp_release(struct inode *unused, struct file *file)
 		file->private_data = NULL;
 		if (pf->kind == INTERFACE) {
 			ppp = PF_TO_PPP(pf);
-<<<<<<< HEAD
-			if (file == ppp->owner)
-				ppp_shutdown_interface(ppp);
-		}
-		if (atomic_dec_and_test(&pf->refcnt)) {
-=======
 			rtnl_lock();
 			if (file == ppp->owner)
 				unregister_netdevice(ppp->dev);
 			rtnl_unlock();
 		}
 		if (refcount_dec_and_test(&pf->refcnt)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (pf->kind) {
 			case INTERFACE:
 				ppp_destroy_interface(PF_TO_PPP(pf));
@@ -523,10 +431,7 @@ static ssize_t ppp_read(struct file *file, char __user *buf,
 	ssize_t ret;
 	struct sk_buff *skb = NULL;
 	struct iovec iov;
-<<<<<<< HEAD
-=======
 	struct iov_iter to;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = count;
 
@@ -548,11 +453,6 @@ static ssize_t ppp_read(struct file *file, char __user *buf,
 			 * network traffic (demand mode).
 			 */
 			struct ppp *ppp = PF_TO_PPP(pf);
-<<<<<<< HEAD
-			if (ppp->n_channels == 0 &&
-			    (ppp->flags & SC_LOOP_TRAFFIC) == 0)
-				break;
-=======
 
 			ppp_recv_lock(ppp);
 			if (ppp->n_channels == 0 &&
@@ -561,7 +461,6 @@ static ssize_t ppp_read(struct file *file, char __user *buf,
 				break;
 			}
 			ppp_recv_unlock(ppp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		ret = -EAGAIN;
 		if (file->f_flags & O_NONBLOCK)
@@ -583,12 +482,8 @@ static ssize_t ppp_read(struct file *file, char __user *buf,
 	ret = -EFAULT;
 	iov.iov_base = buf;
 	iov.iov_len = count;
-<<<<<<< HEAD
-	if (skb_copy_datagram_iovec(skb, 0, &iov, skb->len))
-=======
 	iov_iter_init(&to, ITER_DEST, &iov, 1, count);
 	if (skb_copy_datagram_iter(skb, 0, &to, skb->len))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto outf;
 	ret = skb->len;
 
@@ -607,12 +502,9 @@ static ssize_t ppp_write(struct file *file, const char __user *buf,
 
 	if (!pf)
 		return -ENXIO;
-<<<<<<< HEAD
-=======
 	/* All PPP packets should start with the 2-byte protocol */
 	if (count < PPP_PROTO_LEN)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = -ENOMEM;
 	skb = alloc_skb(count + pf->hdrlen, GFP_KERNEL);
 	if (!skb)
@@ -624,22 +516,12 @@ static ssize_t ppp_write(struct file *file, const char __user *buf,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	skb_queue_tail(&pf->xq, skb);
-
-	switch (pf->kind) {
-	case INTERFACE:
-		ppp_xmit_process(PF_TO_PPP(pf));
-		break;
-	case CHANNEL:
-=======
 	switch (pf->kind) {
 	case INTERFACE:
 		ppp_xmit_process(PF_TO_PPP(pf), skb);
 		break;
 	case CHANNEL:
 		skb_queue_tail(&pf->xq, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ppp_channel_push(PF_TO_CHANNEL(pf));
 		break;
 	}
@@ -651,34 +533,14 @@ static ssize_t ppp_write(struct file *file, const char __user *buf,
 }
 
 /* No kernel lock - fine */
-<<<<<<< HEAD
-static unsigned int ppp_poll(struct file *file, poll_table *wait)
-{
-	struct ppp_file *pf = file->private_data;
-	unsigned int mask;
-=======
 static __poll_t ppp_poll(struct file *file, poll_table *wait)
 {
 	struct ppp_file *pf = file->private_data;
 	__poll_t mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pf)
 		return 0;
 	poll_wait(file, &pf->rwait, wait);
-<<<<<<< HEAD
-	mask = POLLOUT | POLLWRNORM;
-	if (skb_peek(&pf->rq))
-		mask |= POLLIN | POLLRDNORM;
-	if (pf->dead)
-		mask |= POLLHUP;
-	else if (pf->kind == INTERFACE) {
-		/* see comment in ppp_read */
-		struct ppp *ppp = PF_TO_PPP(pf);
-		if (ppp->n_channels == 0 &&
-		    (ppp->flags & SC_LOOP_TRAFFIC) == 0)
-			mask |= POLLIN | POLLRDNORM;
-=======
 	mask = EPOLLOUT | EPOLLWRNORM;
 	if (skb_peek(&pf->rq))
 		mask |= EPOLLIN | EPOLLRDNORM;
@@ -693,51 +555,12 @@ static __poll_t ppp_poll(struct file *file, poll_table *wait)
 		    (ppp->flags & SC_LOOP_TRAFFIC) == 0)
 			mask |= EPOLLIN | EPOLLRDNORM;
 		ppp_recv_unlock(ppp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return mask;
 }
 
 #ifdef CONFIG_PPP_FILTER
-<<<<<<< HEAD
-static int get_filter(void __user *arg, struct sock_filter **p)
-{
-	struct sock_fprog uprog;
-	struct sock_filter *code = NULL;
-	int len, err;
-
-	if (copy_from_user(&uprog, arg, sizeof(uprog)))
-		return -EFAULT;
-
-	if (!uprog.len) {
-		*p = NULL;
-		return 0;
-	}
-
-	len = uprog.len * sizeof(struct sock_filter);
-	code = memdup_user(uprog.filter, len);
-	if (IS_ERR(code))
-		return PTR_ERR(code);
-
-	err = sk_chk_filter(code, uprog.len);
-	if (err) {
-		kfree(code);
-		return err;
-	}
-
-	*p = code;
-	return uprog.len;
-}
-#endif /* CONFIG_PPP_FILTER */
-
-static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
-{
-	struct ppp_file *pf = file->private_data;
-	struct ppp *ppp;
-	int err = -EFAULT, val, val2, i;
-	struct ppp_idle idle;
-=======
 static struct bpf_prog *get_filter(struct sock_fprog *uprog)
 {
 	struct sock_fprog_kern fprog;
@@ -882,53 +705,12 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	int err = -EFAULT, val, val2, i;
 	struct ppp_idle32 idle32;
 	struct ppp_idle64 idle64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct npioctl npi;
 	int unit, cflags;
 	struct slcompress *vj;
 	void __user *argp = (void __user *)arg;
 	int __user *p = argp;
 
-<<<<<<< HEAD
-	if (!pf)
-		return ppp_unattached_ioctl(current->nsproxy->net_ns,
-					pf, file, cmd, arg);
-
-	if (cmd == PPPIOCDETACH) {
-		/*
-		 * We have to be careful here... if the file descriptor
-		 * has been dup'd, we could have another process in the
-		 * middle of a poll using the same file *, so we had
-		 * better not free the interface data structures -
-		 * instead we fail the ioctl.  Even in this case, we
-		 * shut down the interface if we are the owner of it.
-		 * Actually, we should get rid of PPPIOCDETACH, userland
-		 * (i.e. pppd) could achieve the same effect by closing
-		 * this fd and reopening /dev/ppp.
-		 */
-		err = -EINVAL;
-		mutex_lock(&ppp_mutex);
-		if (pf->kind == INTERFACE) {
-			ppp = PF_TO_PPP(pf);
-			if (file == ppp->owner)
-				ppp_shutdown_interface(ppp);
-		}
-		if (atomic_long_read(&file->f_count) < 2) {
-			ppp_release(NULL, file);
-			err = 0;
-		} else
-			pr_warn("PPPIOCDETACH file->f_count=%ld\n",
-				atomic_long_read(&file->f_count));
-		mutex_unlock(&ppp_mutex);
-		return err;
-	}
-
-	if (pf->kind == CHANNEL) {
-		struct channel *pch;
-		struct ppp_channel *chan;
-
-		mutex_lock(&ppp_mutex);
-=======
 	mutex_lock(&ppp_mutex);
 
 	pf = file->private_data;
@@ -955,7 +737,6 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		struct ppp_channel *chan;
 		struct ppp_net *pn;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pch = PF_TO_CHANNEL(pf);
 
 		switch (cmd) {
@@ -969,8 +750,6 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			err = ppp_disconnect_channel(pch);
 			break;
 
-<<<<<<< HEAD
-=======
 		case PPPIOCBRIDGECHAN:
 			if (get_user(unit, p))
 				break;
@@ -996,7 +775,6 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			err = ppp_unbridge_channels(pch);
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			down_read(&pch->chan_sem);
 			chan = pch->chan;
@@ -1005,28 +783,16 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 				err = chan->ops->ioctl(chan, cmd, arg);
 			up_read(&pch->chan_sem);
 		}
-<<<<<<< HEAD
-		mutex_unlock(&ppp_mutex);
-		return err;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pf->kind != INTERFACE) {
 		/* can't happen */
 		pr_err("PPP: not interface or channel??\n");
-<<<<<<< HEAD
-		return -EINVAL;
-	}
-
-	mutex_lock(&ppp_mutex);
-=======
 		err = -EINVAL;
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ppp = PF_TO_PPP(pf);
 	switch (cmd) {
 	case PPPIOCSMRU:
@@ -1041,13 +807,10 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			break;
 		ppp_lock(ppp);
 		cflags = ppp->flags & ~val;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPP_MULTILINK
 		if (!(ppp->flags & SC_MULTILINK) && (val & SC_MULTILINK))
 			ppp->nextseq = 0;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ppp->flags = val & SC_FLAG_BITS;
 		ppp_unlock(ppp);
 		if (cflags & SC_CCP_OPEN)
@@ -1063,11 +826,6 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 
 	case PPPIOCSCOMPRESS:
-<<<<<<< HEAD
-		err = ppp_set_compress(ppp, arg);
-		break;
-
-=======
 	{
 		struct ppp_option_data data;
 		if (copy_from_user(&data, argp, sizeof(data)))
@@ -1076,7 +834,6 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			err = ppp_set_compress(ppp, &data);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PPPIOCGUNIT:
 		if (put_user(ppp->file.index, p))
 			break;
@@ -1096,12 +853,6 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		err = 0;
 		break;
 
-<<<<<<< HEAD
-	case PPPIOCGIDLE:
-		idle.xmit_idle = (jiffies - ppp->last_xmit) / HZ;
-		idle.recv_idle = (jiffies - ppp->last_recv) / HZ;
-		if (copy_to_user(argp, &idle, sizeof(idle)))
-=======
 	case PPPIOCGIDLE32:
                 idle32.xmit_idle = (jiffies - ppp->last_xmit) / HZ;
                 idle32.recv_idle = (jiffies - ppp->last_recv) / HZ;
@@ -1114,7 +865,6 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		idle64.xmit_idle = (jiffies - ppp->last_xmit) / HZ;
 		idle64.recv_idle = (jiffies - ppp->last_recv) / HZ;
 		if (copy_to_user(argp, &idle64, sizeof(idle64)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		err = 0;
 		break;
@@ -1163,33 +913,6 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 #ifdef CONFIG_PPP_FILTER
 	case PPPIOCSPASS:
-<<<<<<< HEAD
-	{
-		struct sock_filter *code;
-		err = get_filter(argp, &code);
-		if (err >= 0) {
-			ppp_lock(ppp);
-			kfree(ppp->pass_filter);
-			ppp->pass_filter = code;
-			ppp->pass_len = err;
-			ppp_unlock(ppp);
-			err = 0;
-		}
-		break;
-	}
-	case PPPIOCSACTIVE:
-	{
-		struct sock_filter *code;
-		err = get_filter(argp, &code);
-		if (err >= 0) {
-			ppp_lock(ppp);
-			kfree(ppp->active_filter);
-			ppp->active_filter = code;
-			ppp->active_len = err;
-			ppp_unlock(ppp);
-			err = 0;
-		}
-=======
 	case PPPIOCSACTIVE:
 	{
 		struct bpf_prog *filter = ppp_get_filter(argp);
@@ -1209,7 +932,6 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		*which = filter;
 		ppp_unlock(ppp);
 		err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 #endif /* CONFIG_PPP_FILTER */
@@ -1228,12 +950,6 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	default:
 		err = -ENOTTY;
 	}
-<<<<<<< HEAD
-	mutex_unlock(&ppp_mutex);
-	return err;
-}
-
-=======
 
 out:
 	mutex_unlock(&ppp_mutex);
@@ -1312,7 +1028,6 @@ static long ppp_compat_ioctl(struct file *file, unsigned int cmd, unsigned long 
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ppp_unattached_ioctl(struct net *net, struct ppp_file *pf,
 			struct file *file, unsigned int cmd, unsigned long arg)
 {
@@ -1322,31 +1037,17 @@ static int ppp_unattached_ioctl(struct net *net, struct ppp_file *pf,
 	struct ppp_net *pn;
 	int __user *p = (int __user *)arg;
 
-<<<<<<< HEAD
-	mutex_lock(&ppp_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case PPPIOCNEWUNIT:
 		/* Create a new ppp unit */
 		if (get_user(unit, p))
 			break;
-<<<<<<< HEAD
-		ppp = ppp_create_interface(net, unit, &err);
-		if (!ppp)
-			break;
-		file->private_data = &ppp->file;
-		ppp->owner = file;
-		err = -EFAULT;
-		if (put_user(ppp->file.index, p))
-=======
 		err = ppp_create_interface(net, file, &unit);
 		if (err < 0)
 			break;
 
 		err = -EFAULT;
 		if (put_user(unit, p))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		err = 0;
 		break;
@@ -1360,11 +1061,7 @@ static int ppp_unattached_ioctl(struct net *net, struct ppp_file *pf,
 		mutex_lock(&pn->all_ppp_mutex);
 		ppp = ppp_find_unit(pn, unit);
 		if (ppp) {
-<<<<<<< HEAD
-			atomic_inc(&ppp->file.refcnt);
-=======
 			refcount_inc(&ppp->file.refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			file->private_data = &ppp->file;
 			err = 0;
 		}
@@ -1379,11 +1076,7 @@ static int ppp_unattached_ioctl(struct net *net, struct ppp_file *pf,
 		spin_lock_bh(&pn->all_channels_lock);
 		chan = ppp_find_channel(pn, unit);
 		if (chan) {
-<<<<<<< HEAD
-			atomic_inc(&chan->file.refcnt);
-=======
 			refcount_inc(&chan->file.refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			file->private_data = &chan->file;
 			err = 0;
 		}
@@ -1393,11 +1086,7 @@ static int ppp_unattached_ioctl(struct net *net, struct ppp_file *pf,
 	default:
 		err = -ENOTTY;
 	}
-<<<<<<< HEAD
-	mutex_unlock(&ppp_mutex);
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1407,12 +1096,9 @@ static const struct file_operations ppp_device_fops = {
 	.write		= ppp_write,
 	.poll		= ppp_poll,
 	.unlocked_ioctl	= ppp_ioctl,
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= ppp_compat_ioctl,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= ppp_open,
 	.release	= ppp_release,
 	.llseek		= noop_llseek,
@@ -1436,10 +1122,6 @@ static __net_init int ppp_init_net(struct net *net)
 static __net_exit void ppp_exit_net(struct net *net)
 {
 	struct ppp_net *pn = net_generic(net, ppp_net_id);
-<<<<<<< HEAD
-
-	idr_destroy(&pn->units_idr);
-=======
 	struct net_device *dev;
 	struct net_device *aux;
 	struct ppp *ppp;
@@ -1464,7 +1146,6 @@ static __net_exit void ppp_exit_net(struct net *net)
 	idr_destroy(&pn->units_idr);
 	WARN_ON_ONCE(!list_empty(&pn->all_channels));
 	WARN_ON_ONCE(!list_empty(&pn->new_channels));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pernet_operations ppp_net_ops = {
@@ -1474,8 +1155,6 @@ static struct pernet_operations ppp_net_ops = {
 	.size = sizeof(struct ppp_net),
 };
 
-<<<<<<< HEAD
-=======
 static int ppp_unit_register(struct ppp *ppp, int unit, bool ifname_is_set)
 {
 	struct ppp_net *pn = ppp_pernet(ppp->ppp_net);
@@ -1695,7 +1374,6 @@ static struct rtnl_link_ops ppp_link_ops __read_mostly = {
 	.get_link_net	= ppp_nl_get_link_net,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PPP_MAJOR	108
 
 /* Called at boot time if ppp is compiled into the kernel,
@@ -1718,19 +1396,6 @@ static int __init ppp_init(void)
 		goto out_net;
 	}
 
-<<<<<<< HEAD
-	ppp_class = class_create(THIS_MODULE, "ppp");
-	if (IS_ERR(ppp_class)) {
-		err = PTR_ERR(ppp_class);
-		goto out_chrdev;
-	}
-
-	/* not a big deal if we fail here :-) */
-	device_create(ppp_class, NULL, MKDEV(PPP_MAJOR, 0), NULL, "ppp");
-
-	return 0;
-
-=======
 	err = class_register(&ppp_class);
 	if (err)
 		goto out_chrdev;
@@ -1748,7 +1413,6 @@ static int __init ppp_init(void)
 
 out_class:
 	class_unregister(&ppp_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_chrdev:
 	unregister_chrdev(PPP_MAJOR, "ppp");
 out_net:
@@ -1793,14 +1457,9 @@ ppp_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	proto = npindex_to_proto[npi];
 	put_unaligned_be16(proto, pp);
 
-<<<<<<< HEAD
-	skb_queue_tail(&ppp->file.xq, skb);
-	ppp_xmit_process(ppp);
-=======
 	skb_scrub_packet(skb, !net_eq(ppp->ppp_net, dev_net(dev)));
 	ppp_xmit_process(ppp, skb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NETDEV_TX_OK;
 
  outf:
@@ -1810,19 +1469,11 @@ ppp_start_xmit(struct sk_buff *skb, struct net_device *dev)
 }
 
 static int
-<<<<<<< HEAD
-ppp_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-{
-	struct ppp *ppp = netdev_priv(dev);
-	int err = -EFAULT;
-	void __user *addr = (void __user *) ifr->ifr_ifru.ifru_data;
-=======
 ppp_net_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 		       void __user *addr, int cmd)
 {
 	struct ppp *ppp = netdev_priv(dev);
 	int err = -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ppp_stats stats;
 	struct ppp_comp_stats cstats;
 	char *vers;
@@ -1860,11 +1511,6 @@ ppp_net_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 	return err;
 }
 
-<<<<<<< HEAD
-static const struct net_device_ops ppp_netdev_ops = {
-	.ndo_start_xmit = ppp_start_xmit,
-	.ndo_do_ioctl   = ppp_net_ioctl,
-=======
 static void
 ppp_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats64)
 {
@@ -1963,52 +1609,29 @@ static const struct net_device_ops ppp_netdev_ops = {
 
 static const struct device_type ppp_type = {
 	.name = "ppp",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void ppp_setup(struct net_device *dev)
 {
 	dev->netdev_ops = &ppp_netdev_ops;
-<<<<<<< HEAD
-=======
 	SET_NETDEV_DEVTYPE(dev, &ppp_type);
 
 	dev->features |= NETIF_F_LLTX;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->hard_header_len = PPP_HDRLEN;
 	dev->mtu = PPP_MRU;
 	dev->addr_len = 0;
 	dev->tx_queue_len = 3;
 	dev->type = ARPHRD_PPP;
 	dev->flags = IFF_POINTOPOINT | IFF_NOARP | IFF_MULTICAST;
-<<<<<<< HEAD
-	dev->features |= NETIF_F_NETNS_LOCAL;
-	dev->priv_flags &= ~IFF_XMIT_DST_RELEASE;
-=======
 	dev->priv_destructor = ppp_dev_priv_destructor;
 	netif_keep_dst(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Transmit-side routines.
  */
 
-<<<<<<< HEAD
-/*
- * Called to do any work queued up on the transmit side
- * that can now be done.
- */
-static void
-ppp_xmit_process(struct ppp *ppp)
-{
-	struct sk_buff *skb;
-
-	ppp_xmit_lock(ppp);
-	if (!ppp->closing) {
-		ppp_push(ppp);
-=======
 /* Called to do any work queued up on the transmit side that can now be done */
 static void __ppp_xmit_process(struct ppp *ppp, struct sk_buff *skb)
 {
@@ -2018,7 +1641,6 @@ static void __ppp_xmit_process(struct ppp *ppp, struct sk_buff *skb)
 
 		if (skb)
 			skb_queue_tail(&ppp->file.xq, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (!ppp->xmit_pending &&
 		       (skb = skb_dequeue(&ppp->file.xq)))
 			ppp_send_frame(ppp, skb);
@@ -2028,17 +1650,12 @@ static void __ppp_xmit_process(struct ppp *ppp, struct sk_buff *skb)
 			netif_wake_queue(ppp->dev);
 		else
 			netif_stop_queue(ppp->dev);
-<<<<<<< HEAD
-=======
 	} else {
 		kfree_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ppp_xmit_unlock(ppp);
 }
 
-<<<<<<< HEAD
-=======
 static void ppp_xmit_process(struct ppp *ppp, struct sk_buff *skb)
 {
 	local_bh_disable();
@@ -2063,7 +1680,6 @@ err:
 		netdev_err(ppp->dev, "recursion detected\n");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct sk_buff *
 pad_compress_skb(struct ppp *ppp, struct sk_buff *skb)
 {
@@ -2088,21 +1704,13 @@ pad_compress_skb(struct ppp *ppp, struct sk_buff *skb)
 				   new_skb->data, skb->len + 2,
 				   compressor_skb_size);
 	if (len > 0 && (ppp->flags & SC_CCP_UP)) {
-<<<<<<< HEAD
-		kfree_skb(skb);
-=======
 		consume_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb = new_skb;
 		skb_put(skb, len);
 		skb_pull(skb, 2);	/* pull off A/C bytes */
 	} else if (len == 0) {
 		/* didn't compress, or CCP not up yet */
-<<<<<<< HEAD
-		kfree_skb(new_skb);
-=======
 		consume_skb(new_skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		new_skb = skb;
 	} else {
 		/*
@@ -2116,11 +1724,7 @@ pad_compress_skb(struct ppp *ppp, struct sk_buff *skb)
 		if (net_ratelimit())
 			netdev_err(ppp->dev, "ppp: compressor dropped pkt\n");
 		kfree_skb(skb);
-<<<<<<< HEAD
-		kfree_skb(new_skb);
-=======
 		consume_skb(new_skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		new_skb = NULL;
 	}
 	return new_skb;
@@ -2139,25 +1743,16 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
 	int len;
 	unsigned char *cp;
 
-<<<<<<< HEAD
-=======
 	skb->dev = ppp->dev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (proto < 0x8000) {
 #ifdef CONFIG_PPP_FILTER
 		/* check if we should pass this packet */
 		/* the filter instructions are constructed assuming
 		   a four-byte PPP header on each packet */
-<<<<<<< HEAD
-		*skb_push(skb, 2) = 1;
-		if (ppp->pass_filter &&
-		    sk_run_filter(skb, ppp->pass_filter) == 0) {
-=======
 		*(u8 *)skb_push(skb, 2) = 1;
 		if (ppp->pass_filter &&
 		    bpf_prog_run(ppp->pass_filter, skb) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ppp->debug & 1)
 				netdev_printk(KERN_DEBUG, ppp->dev,
 					      "PPP: outbound frame "
@@ -2167,11 +1762,7 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
 		}
 		/* if this packet passes the active filter, record the time */
 		if (!(ppp->active_filter &&
-<<<<<<< HEAD
-		      sk_run_filter(skb, ppp->active_filter) == 0))
-=======
 		      bpf_prog_run(ppp->active_filter, skb) == 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ppp->last_xmit = jiffies;
 		skb_pull(skb, 2);
 #else
@@ -2180,13 +1771,8 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
 #endif /* CONFIG_PPP_FILTER */
 	}
 
-<<<<<<< HEAD
-	++ppp->dev->stats.tx_packets;
-	ppp->dev->stats.tx_bytes += skb->len - 2;
-=======
 	++ppp->stats64.tx_packets;
 	ppp->stats64.tx_bytes += skb->len - PPP_PROTO_LEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (proto) {
 	case PPP_IP:
@@ -2206,11 +1792,7 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
 				    !(ppp->flags & SC_NO_TCP_CCID));
 		if (cp == skb->data + 2) {
 			/* didn't compress */
-<<<<<<< HEAD
-			kfree_skb(new_skb);
-=======
 			consume_skb(new_skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			if (cp[0] & SL_TYPE_COMPRESSED_TCP) {
 				proto = PPP_VJC_COMP;
@@ -2219,11 +1801,7 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
 				proto = PPP_VJC_UNCOMP;
 				cp[0] = skb->data[2];
 			}
-<<<<<<< HEAD
-			kfree_skb(skb);
-=======
 			consume_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb = new_skb;
 			cp = skb_put(skb, len + 2);
 			cp[0] = 0;
@@ -2300,11 +1878,7 @@ ppp_push(struct ppp *ppp)
 		list = list->next;
 		pch = list_entry(list, struct channel, clist);
 
-<<<<<<< HEAD
-		spin_lock_bh(&pch->downl);
-=======
 		spin_lock(&pch->downl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pch->chan) {
 			if (pch->chan->ops->start_xmit(pch->chan, skb))
 				ppp->xmit_pending = NULL;
@@ -2313,11 +1887,7 @@ ppp_push(struct ppp *ppp)
 			kfree_skb(skb);
 			ppp->xmit_pending = NULL;
 		}
-<<<<<<< HEAD
-		spin_unlock_bh(&pch->downl);
-=======
 		spin_unlock(&pch->downl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -2334,11 +1904,7 @@ ppp_push(struct ppp *ppp)
 
 #ifdef CONFIG_PPP_MULTILINK
 static bool mp_protocol_compress __read_mostly = true;
-<<<<<<< HEAD
-module_param(mp_protocol_compress, bool, S_IRUGO | S_IWUSR);
-=======
 module_param(mp_protocol_compress, bool, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(mp_protocol_compress,
 		 "compress protocol id in multilink fragments");
 
@@ -2451,11 +2017,7 @@ static int ppp_mp_explode(struct ppp *ppp, struct sk_buff *skb)
 		}
 
 		/* check the channel's mtu and whether it is still attached. */
-<<<<<<< HEAD
-		spin_lock_bh(&pch->downl);
-=======
 		spin_lock(&pch->downl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pch->chan == NULL) {
 			/* can't use this channel, it's being deregistered */
 			if (pch->speed == 0)
@@ -2463,11 +2025,7 @@ static int ppp_mp_explode(struct ppp *ppp, struct sk_buff *skb)
 			else
 				totspeed -= pch->speed;
 
-<<<<<<< HEAD
-			spin_unlock_bh(&pch->downl);
-=======
 			spin_unlock(&pch->downl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pch->avail = 0;
 			totlen = len;
 			totfree--;
@@ -2518,11 +2076,7 @@ static int ppp_mp_explode(struct ppp *ppp, struct sk_buff *skb)
 		 */
 		if (flen <= 0) {
 			pch->avail = 2;
-<<<<<<< HEAD
-			spin_unlock_bh(&pch->downl);
-=======
 			spin_unlock(&pch->downl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -2567,22 +2121,14 @@ static int ppp_mp_explode(struct ppp *ppp, struct sk_buff *skb)
 		len -= flen;
 		++ppp->nxseq;
 		bits = 0;
-<<<<<<< HEAD
-		spin_unlock_bh(&pch->downl);
-=======
 		spin_unlock(&pch->downl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ppp->nxchan = i;
 
 	return 1;
 
  noskb:
-<<<<<<< HEAD
-	spin_unlock_bh(&pch->downl);
-=======
 	spin_unlock(&pch->downl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ppp->debug & 1)
 		netdev_err(ppp->dev, "PPP: no memory (fragment)\n");
 	++ppp->dev->stats.tx_errors;
@@ -2591,25 +2137,13 @@ static int ppp_mp_explode(struct ppp *ppp, struct sk_buff *skb)
 }
 #endif /* CONFIG_PPP_MULTILINK */
 
-<<<<<<< HEAD
-/*
- * Try to send data out on a channel.
- */
-static void
-ppp_channel_push(struct channel *pch)
-=======
 /* Try to send data out on a channel */
 static void __ppp_channel_push(struct channel *pch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb;
 	struct ppp *ppp;
 
-<<<<<<< HEAD
-	spin_lock_bh(&pch->downl);
-=======
 	spin_lock(&pch->downl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pch->chan) {
 		while (!skb_queue_empty(&pch->file.xq)) {
 			skb = skb_dequeue(&pch->file.xq);
@@ -2623,19 +2157,6 @@ static void __ppp_channel_push(struct channel *pch)
 		/* channel got deregistered */
 		skb_queue_purge(&pch->file.xq);
 	}
-<<<<<<< HEAD
-	spin_unlock_bh(&pch->downl);
-	/* see if there is anything from the attached unit to be sent */
-	if (skb_queue_empty(&pch->file.xq)) {
-		read_lock_bh(&pch->upl);
-		ppp = pch->ppp;
-		if (ppp)
-			ppp_xmit_process(ppp);
-		read_unlock_bh(&pch->upl);
-	}
-}
-
-=======
 	spin_unlock(&pch->downl);
 	/* see if there is anything from the attached unit to be sent */
 	if (skb_queue_empty(&pch->file.xq)) {
@@ -2658,7 +2179,6 @@ static void ppp_channel_push(struct channel *pch)
 	read_unlock_bh(&pch->upl);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Receive-side routines.
  */
@@ -2680,8 +2200,6 @@ ppp_do_recv(struct ppp *ppp, struct sk_buff *skb, struct channel *pch)
 	ppp_recv_unlock(ppp);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * __ppp_decompress_proto - Decompress protocol field, slim version.
  * @skb: Socket buffer where protocol field should be decompressed. It must have
@@ -2756,7 +2274,6 @@ out_rcu:
 	return !!pchb;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 ppp_input(struct ppp_channel *chan, struct sk_buff *skb)
 {
@@ -2768,17 +2285,12 @@ ppp_input(struct ppp_channel *chan, struct sk_buff *skb)
 		return;
 	}
 
-<<<<<<< HEAD
-	read_lock_bh(&pch->upl);
-	if (!pskb_may_pull(skb, 2)) {
-=======
 	/* If the channel is bridged, transmit via. bridge */
 	if (ppp_channel_bridge_input(pch, skb))
 		return;
 
 	read_lock_bh(&pch->upl);
 	if (!ppp_decompress_proto(skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_skb(skb);
 		if (pch->ppp) {
 			++pch->ppp->dev->stats.rx_length_errors;
@@ -2835,10 +2347,7 @@ ppp_receive_frame(struct ppp *ppp, struct sk_buff *skb, struct channel *pch)
 {
 	/* note: a 0-length skb is used as an error indication */
 	if (skb->len > 0) {
-<<<<<<< HEAD
-=======
 		skb_checksum_complete_unset(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PPP_MULTILINK
 		/* XXX do channel-level decompression here */
 		if (PPP_PROTO(skb) == PPP_MP)
@@ -2878,12 +2387,9 @@ ppp_receive_nonmp_frame(struct ppp *ppp, struct sk_buff *skb)
 	if (ppp->flags & SC_MUST_COMP && ppp->rstate & SC_DC_FERROR)
 		goto err;
 
-<<<<<<< HEAD
-=======
 	/* At this point the "Protocol" field MUST be decompressed, either in
 	 * ppp_input(), ppp_decompress_frame() or in ppp_receive_mp_frame().
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	proto = PPP_PROTO(skb);
 	switch (proto) {
 	case PPP_VJC_COMP:
@@ -2901,11 +2407,7 @@ ppp_receive_nonmp_frame(struct ppp *ppp, struct sk_buff *skb)
 			}
 			skb_reserve(ns, 2);
 			skb_copy_bits(skb, 0, skb_put(ns, skb->len), skb->len);
-<<<<<<< HEAD
-			kfree_skb(skb);
-=======
 			consume_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb = ns;
 		}
 		else
@@ -2947,13 +2449,8 @@ ppp_receive_nonmp_frame(struct ppp *ppp, struct sk_buff *skb)
 		break;
 	}
 
-<<<<<<< HEAD
-	++ppp->dev->stats.rx_packets;
-	ppp->dev->stats.rx_bytes += skb->len - 2;
-=======
 	++ppp->stats64.rx_packets;
 	ppp->stats64.rx_bytes += skb->len - 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	npi = proto_to_npindex(proto);
 	if (npi < 0) {
@@ -2974,22 +2471,12 @@ ppp_receive_nonmp_frame(struct ppp *ppp, struct sk_buff *skb)
 		/* the filter instructions are constructed assuming
 		   a four-byte PPP header on each packet */
 		if (ppp->pass_filter || ppp->active_filter) {
-<<<<<<< HEAD
-			if (skb_cloned(skb) &&
-			    pskb_expand_head(skb, 0, 0, GFP_ATOMIC))
-				goto err;
-
-			*skb_push(skb, 2) = 0;
-			if (ppp->pass_filter &&
-			    sk_run_filter(skb, ppp->pass_filter) == 0) {
-=======
 			if (skb_unclone(skb, GFP_ATOMIC))
 				goto err;
 
 			*(u8 *)skb_push(skb, 2) = 0;
 			if (ppp->pass_filter &&
 			    bpf_prog_run(ppp->pass_filter, skb) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ppp->debug & 1)
 					netdev_printk(KERN_DEBUG, ppp->dev,
 						      "PPP: inbound frame "
@@ -2998,11 +2485,7 @@ ppp_receive_nonmp_frame(struct ppp *ppp, struct sk_buff *skb)
 				return;
 			}
 			if (!(ppp->active_filter &&
-<<<<<<< HEAD
-			      sk_run_filter(skb, ppp->active_filter) == 0))
-=======
 			      bpf_prog_run(ppp->active_filter, skb) == 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ppp->last_recv = jiffies;
 			__skb_pull(skb, 2);
 		} else
@@ -3018,11 +2501,8 @@ ppp_receive_nonmp_frame(struct ppp *ppp, struct sk_buff *skb)
 			skb->dev = ppp->dev;
 			skb->protocol = htons(npindex_to_ethertype[npi]);
 			skb_reset_mac_header(skb);
-<<<<<<< HEAD
-=======
 			skb_scrub_packet(skb, !net_eq(ppp->ppp_net,
 						      dev_net(ppp->dev)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netif_rx(skb);
 		}
 	}
@@ -3076,21 +2556,14 @@ ppp_decompress_frame(struct ppp *ppp, struct sk_buff *skb)
 			goto err;
 		}
 
-<<<<<<< HEAD
-		kfree_skb(skb);
-=======
 		consume_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb = ns;
 		skb_put(skb, len);
 		skb_pull(skb, 2);	/* pull off the A/C bytes */
 
-<<<<<<< HEAD
-=======
 		/* Don't call __ppp_decompress_proto() here, but instead rely on
 		 * corresponding algo (mppe/bsd/deflate) to decompress it.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Uncompressed frame - pass to decompressor so it
 		   can update its dictionary if necessary. */
@@ -3136,17 +2609,11 @@ ppp_receive_mp_frame(struct ppp *ppp, struct sk_buff *skb, struct channel *pch)
 
 	/*
 	 * Do protocol ID decompression on the first fragment of each packet.
-<<<<<<< HEAD
-	 */
-	if ((PPP_MP_CB(skb)->BEbits & B) && (skb->data[0] & 1))
-		*skb_push(skb, 1) = 0;
-=======
 	 * We have to do that here, because ppp_receive_nonmp_frame() expects
 	 * decompressed protocol field.
 	 */
 	if (PPP_MP_CB(skb)->BEbits & B)
 		__ppp_decompress_proto(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Expand sequence number to 32 bits, making it as close
@@ -3254,11 +2721,7 @@ ppp_mp_reconstruct(struct ppp *ppp)
 
 	if (ppp->mrru == 0)	/* do nothing until mrru is set */
 		return NULL;
-<<<<<<< HEAD
-	head = list->next;
-=======
 	head = __skb_peek(list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tail = NULL;
 	skb_queue_walk_safe(list, p, tmp) {
 	again:
@@ -3424,11 +2887,7 @@ int ppp_register_net_channel(struct net *net, struct ppp_channel *chan)
 
 	pch->ppp = NULL;
 	pch->chan = chan;
-<<<<<<< HEAD
-	pch->chan_net = get_net(net);
-=======
 	pch->chan_net = get_net_track(net, &pch->ns_tracker, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chan->ppp = pch;
 	init_ppp_file(&pch->file, CHANNEL);
 	pch->file.hdrlen = chan->hdrlen;
@@ -3511,11 +2970,7 @@ ppp_unregister_channel(struct ppp_channel *chan)
 	chan->ppp = NULL;
 
 	/*
-<<<<<<< HEAD
-	 * This ensures that we have returned from any calls into the
-=======
 	 * This ensures that we have returned from any calls into
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the channel's start_xmit or ioctl routine before we proceed.
 	 */
 	down_write(&pch->chan_sem);
@@ -3530,18 +2985,12 @@ ppp_unregister_channel(struct ppp_channel *chan)
 	list_del(&pch->list);
 	spin_unlock_bh(&pn->all_channels_lock);
 
-<<<<<<< HEAD
-	pch->file.dead = 1;
-	wake_up_interruptible(&pch->file.rwait);
-	if (atomic_dec_and_test(&pch->file.refcnt))
-=======
 	ppp_unbridge_channels(pch);
 
 	pch->file.dead = 1;
 	wake_up_interruptible(&pch->file.rwait);
 
 	if (refcount_dec_and_test(&pch->file.refcnt))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ppp_destroy_channel(pch);
 }
 
@@ -3565,24 +3014,6 @@ ppp_output_wakeup(struct ppp_channel *chan)
 
 /* Process the PPPIOCSCOMPRESS ioctl. */
 static int
-<<<<<<< HEAD
-ppp_set_compress(struct ppp *ppp, unsigned long arg)
-{
-	int err;
-	struct compressor *cp, *ocomp;
-	struct ppp_option_data data;
-	void *state, *ostate;
-	unsigned char ccp_option[CCP_MAX_OPTION_LENGTH];
-
-	err = -EFAULT;
-	if (copy_from_user(&data, (void __user *) arg, sizeof(data)) ||
-	    (data.length <= CCP_MAX_OPTION_LENGTH &&
-	     copy_from_user(ccp_option, (void __user *) data.ptr, data.length)))
-		goto out;
-	err = -EINVAL;
-	if (data.length > CCP_MAX_OPTION_LENGTH ||
-	    ccp_option[1] < 2 || ccp_option[1] > data.length)
-=======
 ppp_set_compress(struct ppp *ppp, struct ppp_option_data *data)
 {
 	int err = -EFAULT;
@@ -3597,7 +3028,6 @@ ppp_set_compress(struct ppp *ppp, struct ppp_option_data *data)
 
 	err = -EINVAL;
 	if (data->length < 2 || ccp_option[1] < 2 || ccp_option[1] > data->length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	cp = try_then_request_module(
@@ -3607,13 +3037,8 @@ ppp_set_compress(struct ppp *ppp, struct ppp_option_data *data)
 		goto out;
 
 	err = -ENOBUFS;
-<<<<<<< HEAD
-	if (data.transmit) {
-		state = cp->comp_alloc(ccp_option, data.length);
-=======
 	if (data->transmit) {
 		state = cp->comp_alloc(ccp_option, data->length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (state) {
 			ppp_xmit_lock(ppp);
 			ppp->xstate &= ~SC_COMP_RUN;
@@ -3631,11 +3056,7 @@ ppp_set_compress(struct ppp *ppp, struct ppp_option_data *data)
 			module_put(cp->owner);
 
 	} else {
-<<<<<<< HEAD
-		state = cp->decomp_alloc(ccp_option, data.length);
-=======
 		state = cp->decomp_alloc(ccp_option, data->length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (state) {
 			ppp_recv_lock(ppp);
 			ppp->rstate &= ~SC_DECOMP_RUN;
@@ -3860,21 +3281,12 @@ ppp_get_stats(struct ppp *ppp, struct ppp_stats *st)
 	struct slcompress *vj = ppp->vj;
 
 	memset(st, 0, sizeof(*st));
-<<<<<<< HEAD
-	st->p.ppp_ipackets = ppp->dev->stats.rx_packets;
-	st->p.ppp_ierrors = ppp->dev->stats.rx_errors;
-	st->p.ppp_ibytes = ppp->dev->stats.rx_bytes;
-	st->p.ppp_opackets = ppp->dev->stats.tx_packets;
-	st->p.ppp_oerrors = ppp->dev->stats.tx_errors;
-	st->p.ppp_obytes = ppp->dev->stats.tx_bytes;
-=======
 	st->p.ppp_ipackets = ppp->stats64.rx_packets;
 	st->p.ppp_ierrors = ppp->dev->stats.rx_errors;
 	st->p.ppp_ibytes = ppp->stats64.rx_bytes;
 	st->p.ppp_opackets = ppp->stats64.tx_packets;
 	st->p.ppp_oerrors = ppp->dev->stats.tx_errors;
 	st->p.ppp_obytes = ppp->stats64.tx_bytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!vj)
 		return;
 	st->vj.vjs_packets = vj->sls_o_compressed + vj->sls_o_uncompressed;
@@ -3897,96 +3309,6 @@ ppp_get_stats(struct ppp *ppp, struct ppp_stats *st)
  * or if there is already a unit with the requested number.
  * unit == -1 means allocate a new number.
  */
-<<<<<<< HEAD
-static struct ppp *
-ppp_create_interface(struct net *net, int unit, int *retp)
-{
-	struct ppp *ppp;
-	struct ppp_net *pn;
-	struct net_device *dev = NULL;
-	int ret = -ENOMEM;
-	int i;
-
-	dev = alloc_netdev(sizeof(struct ppp), "", ppp_setup);
-	if (!dev)
-		goto out1;
-
-	pn = ppp_pernet(net);
-
-	ppp = netdev_priv(dev);
-	ppp->dev = dev;
-	ppp->mru = PPP_MRU;
-	init_ppp_file(&ppp->file, INTERFACE);
-	ppp->file.hdrlen = PPP_HDRLEN - 2;	/* don't count proto bytes */
-	for (i = 0; i < NUM_NP; ++i)
-		ppp->npmode[i] = NPMODE_PASS;
-	INIT_LIST_HEAD(&ppp->channels);
-	spin_lock_init(&ppp->rlock);
-	spin_lock_init(&ppp->wlock);
-#ifdef CONFIG_PPP_MULTILINK
-	ppp->minseq = -1;
-	skb_queue_head_init(&ppp->mrq);
-#endif /* CONFIG_PPP_MULTILINK */
-
-	/*
-	 * drum roll: don't forget to set
-	 * the net device is belong to
-	 */
-	dev_net_set(dev, net);
-
-	mutex_lock(&pn->all_ppp_mutex);
-
-	if (unit < 0) {
-		unit = unit_get(&pn->units_idr, ppp);
-		if (unit < 0) {
-			ret = unit;
-			goto out2;
-		}
-	} else {
-		ret = -EEXIST;
-		if (unit_find(&pn->units_idr, unit))
-			goto out2; /* unit already exists */
-		/*
-		 * if caller need a specified unit number
-		 * lets try to satisfy him, otherwise --
-		 * he should better ask us for new unit number
-		 *
-		 * NOTE: yes I know that returning EEXIST it's not
-		 * fair but at least pppd will ask us to allocate
-		 * new unit in this case so user is happy :)
-		 */
-		unit = unit_set(&pn->units_idr, ppp, unit);
-		if (unit < 0)
-			goto out2;
-	}
-
-	/* Initialize the new ppp unit */
-	ppp->file.index = unit;
-	sprintf(dev->name, "ppp%d", unit);
-
-	ret = register_netdev(dev);
-	if (ret != 0) {
-		unit_put(&pn->units_idr, unit);
-		netdev_err(ppp->dev, "PPP: couldn't register device %s (%d)\n",
-			   dev->name, ret);
-		goto out2;
-	}
-
-	ppp->ppp_net = net;
-
-	atomic_inc(&ppp_unit_count);
-	mutex_unlock(&pn->all_ppp_mutex);
-
-	*retp = 0;
-	return ppp;
-
-out2:
-	mutex_unlock(&pn->all_ppp_mutex);
-	free_netdev(dev);
-out1:
-	*retp = ret;
-	return NULL;
-=======
 static int ppp_create_interface(struct net *net, struct file *file, int *unit)
 {
 	struct ppp_config conf = {
@@ -4023,7 +3345,6 @@ err_dev:
 	free_netdev(dev);
 err:
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -4035,46 +3356,11 @@ init_ppp_file(struct ppp_file *pf, int kind)
 	pf->kind = kind;
 	skb_queue_head_init(&pf->xq);
 	skb_queue_head_init(&pf->rq);
-<<<<<<< HEAD
-	atomic_set(&pf->refcnt, 1);
-=======
 	refcount_set(&pf->refcnt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_waitqueue_head(&pf->rwait);
 }
 
 /*
-<<<<<<< HEAD
- * Take down a ppp interface unit - called when the owning file
- * (the one that created the unit) is closed or detached.
- */
-static void ppp_shutdown_interface(struct ppp *ppp)
-{
-	struct ppp_net *pn;
-
-	pn = ppp_pernet(ppp->ppp_net);
-	mutex_lock(&pn->all_ppp_mutex);
-
-	/* This will call dev_close() for us. */
-	ppp_lock(ppp);
-	if (!ppp->closing) {
-		ppp->closing = 1;
-		ppp_unlock(ppp);
-		unregister_netdev(ppp->dev);
-		unit_put(&pn->units_idr, ppp->file.index);
-	} else
-		ppp_unlock(ppp);
-
-	ppp->file.dead = 1;
-	ppp->owner = NULL;
-	wake_up_interruptible(&ppp->file.rwait);
-
-	mutex_unlock(&pn->all_ppp_mutex);
-}
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Free the memory used by a ppp unit.  This is only called once
  * there are no channels connected to the unit and no file structs
  * that reference the unit.
@@ -4102,15 +3388,6 @@ static void ppp_destroy_interface(struct ppp *ppp)
 	skb_queue_purge(&ppp->mrq);
 #endif /* CONFIG_PPP_MULTILINK */
 #ifdef CONFIG_PPP_FILTER
-<<<<<<< HEAD
-	kfree(ppp->pass_filter);
-	ppp->pass_filter = NULL;
-	kfree(ppp->active_filter);
-	ppp->active_filter = NULL;
-#endif /* CONFIG_PPP_FILTER */
-
-	kfree_skb(ppp->xmit_pending);
-=======
 	if (ppp->pass_filter) {
 		bpf_prog_destroy(ppp->pass_filter);
 		ppp->pass_filter = NULL;
@@ -4124,7 +3401,6 @@ static void ppp_destroy_interface(struct ppp *ppp)
 
 	kfree_skb(ppp->xmit_pending);
 	free_percpu(ppp->xmit_recursion);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	free_netdev(ppp->dev);
 }
@@ -4186,12 +3462,6 @@ ppp_connect_channel(struct channel *pch, int unit)
 		goto out;
 	write_lock_bh(&pch->upl);
 	ret = -EINVAL;
-<<<<<<< HEAD
-	if (pch->ppp)
-		goto outl;
-
-	ppp_lock(ppp);
-=======
 	if (pch->ppp ||
 	    rcu_dereference_protected(pch->bridge, lockdep_is_held(&pch->upl)))
 		goto outl;
@@ -4206,7 +3476,6 @@ ppp_connect_channel(struct channel *pch, int unit)
 		goto outl;
 	}
 	spin_unlock_bh(&pch->downl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pch->file.hdrlen > ppp->file.hdrlen)
 		ppp->file.hdrlen = pch->file.hdrlen;
 	hdrlen = pch->file.hdrlen + 2;	/* for protocol bytes */
@@ -4215,11 +3484,7 @@ ppp_connect_channel(struct channel *pch, int unit)
 	list_add_tail(&pch->clist, &ppp->channels);
 	++ppp->n_channels;
 	pch->ppp = ppp;
-<<<<<<< HEAD
-	atomic_inc(&ppp->file.refcnt);
-=======
 	refcount_inc(&ppp->file.refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ppp_unlock(ppp);
 	ret = 0;
 
@@ -4250,11 +3515,7 @@ ppp_disconnect_channel(struct channel *pch)
 		if (--ppp->n_channels == 0)
 			wake_up_interruptible(&ppp->file.rwait);
 		ppp_unlock(ppp);
-<<<<<<< HEAD
-		if (atomic_dec_and_test(&ppp->file.refcnt))
-=======
 		if (refcount_dec_and_test(&ppp->file.refcnt))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ppp_destroy_interface(ppp);
 		err = 0;
 	}
@@ -4266,11 +3527,7 @@ ppp_disconnect_channel(struct channel *pch)
  */
 static void ppp_destroy_channel(struct channel *pch)
 {
-<<<<<<< HEAD
-	put_net(pch->chan_net);
-=======
 	put_net_track(pch->chan_net, &pch->ns_tracker);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pch->chan_net = NULL;
 
 	atomic_dec(&channel_count);
@@ -4290,16 +3547,10 @@ static void __exit ppp_cleanup(void)
 	/* should never happen */
 	if (atomic_read(&ppp_unit_count) || atomic_read(&channel_count))
 		pr_err("PPP: removing module but units remain!\n");
-<<<<<<< HEAD
-	unregister_chrdev(PPP_MAJOR, "ppp");
-	device_destroy(ppp_class, MKDEV(PPP_MAJOR, 0));
-	class_destroy(ppp_class);
-=======
 	rtnl_link_unregister(&ppp_link_ops);
 	unregister_chrdev(PPP_MAJOR, "ppp");
 	device_destroy(&ppp_class, MKDEV(PPP_MAJOR, 0));
 	class_unregister(&ppp_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_pernet_device(&ppp_net_ops);
 }
 
@@ -4308,61 +3559,21 @@ static void __exit ppp_cleanup(void)
  * by holding all_ppp_mutex
  */
 
-<<<<<<< HEAD
-static int __unit_alloc(struct idr *p, void *ptr, int n)
-{
-	int unit, err;
-
-again:
-	if (!idr_pre_get(p, GFP_KERNEL)) {
-		pr_err("PPP: No free memory for idr\n");
-		return -ENOMEM;
-	}
-
-	err = idr_get_new_above(p, ptr, n, &unit);
-	if (err < 0) {
-		if (err == -EAGAIN)
-			goto again;
-		return err;
-	}
-
-	return unit;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* associate pointer with specified number */
 static int unit_set(struct idr *p, void *ptr, int n)
 {
 	int unit;
 
-<<<<<<< HEAD
-	unit = __unit_alloc(p, ptr, n);
-	if (unit < 0)
-		return unit;
-	else if (unit != n) {
-		idr_remove(p, unit);
-		return -EINVAL;
-	}
-
-=======
 	unit = idr_alloc(p, ptr, n, n + 1, GFP_KERNEL);
 	if (unit == -ENOSPC)
 		unit = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return unit;
 }
 
 /* get new free unit number and associate pointer with it */
-<<<<<<< HEAD
-static int unit_get(struct idr *p, void *ptr)
-{
-	return __unit_alloc(p, ptr, 0);
-=======
 static int unit_get(struct idr *p, void *ptr, int min)
 {
 	return idr_alloc(p, ptr, min, 0, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* put unit number back to a pool */
@@ -4393,13 +3604,8 @@ EXPORT_SYMBOL(ppp_input_error);
 EXPORT_SYMBOL(ppp_output_wakeup);
 EXPORT_SYMBOL(ppp_register_compressor);
 EXPORT_SYMBOL(ppp_unregister_compressor);
-<<<<<<< HEAD
-MODULE_LICENSE("GPL");
-MODULE_ALIAS_CHARDEV(PPP_MAJOR, 0);
-=======
 MODULE_DESCRIPTION("Generic PPP layer driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_CHARDEV(PPP_MAJOR, 0);
 MODULE_ALIAS_RTNL_LINK("ppp");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("devname:ppp");

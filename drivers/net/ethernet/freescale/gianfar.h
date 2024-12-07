@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/net/ethernet/freescale/gianfar.h
  *
@@ -13,16 +10,7 @@
  * Maintainer: Kumar Gala
  * Modifier: Sandeep Gopalpet <sandeep.kumar@freescale.com>
  *
-<<<<<<< HEAD
- * Copyright 2002-2009, 2011 Freescale Semiconductor, Inc.
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
  * Copyright 2002-2009, 2011-2013 Freescale Semiconductor, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Still left to do:
  *      -Add support for module parameters
@@ -37,10 +25,6 @@
 #include <linux/errno.h>
 #include <linux/slab.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -52,11 +36,7 @@
 
 #include <asm/io.h>
 #include <asm/irq.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/crc32.h>
 #include <linux/workqueue.h>
@@ -72,12 +52,6 @@ struct ethtool_rx_list {
 	unsigned int count;
 };
 
-<<<<<<< HEAD
-/* The maximum number of packets to be handled in one call of gfar_poll */
-#define GFAR_DEV_WEIGHT 64
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Length for FCB */
 #define GMAC_FCB_LEN 8
 
@@ -90,19 +64,7 @@ struct ethtool_rx_list {
 /* Number of bytes to align the rx bufs to */
 #define RXBUF_ALIGNMENT 64
 
-<<<<<<< HEAD
-/* The number of bytes which composes a unit for the purpose of
- * allocating data buffers.  ie-for any given MTU, the data buffer
- * will be the next highest multiple of 512 bytes. */
-#define INCREMENTAL_BUFFER_SIZE 512
-
-#define PHY_INIT_TIMEOUT 100000
-
 #define DRV_NAME "gfar-enet"
-extern const char gfar_driver_version[];
-=======
-#define DRV_NAME "gfar-enet"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* MAXIMUM NUMBER OF QUEUES SUPPORTED */
 #define MAX_TX_QS	0x8
@@ -115,20 +77,6 @@ extern const char gfar_driver_version[];
 #define DEFAULT_TX_RING_SIZE	256
 #define DEFAULT_RX_RING_SIZE	256
 
-<<<<<<< HEAD
-#define GFAR_RX_MAX_RING_SIZE   256
-#define GFAR_TX_MAX_RING_SIZE   256
-
-#define GFAR_MAX_FIFO_THRESHOLD 511
-#define GFAR_MAX_FIFO_STARVE	511
-#define GFAR_MAX_FIFO_STARVE_OFF 511
-
-#define DEFAULT_RX_BUFFER_SIZE  1536
-#define TX_RING_MOD_MASK(size) (size-1)
-#define RX_RING_MOD_MASK(size) (size-1)
-#define JUMBO_BUFFER_SIZE 9728
-#define JUMBO_FRAME_SIZE 9600
-=======
 #define GFAR_RX_BUFF_ALLOC	16
 
 #define GFAR_RX_MAX_RING_SIZE   256
@@ -147,17 +95,10 @@ extern const char gfar_driver_version[];
 #define TX_RING_MOD_MASK(size) (size-1)
 #define RX_RING_MOD_MASK(size) (size-1)
 #define GFAR_JUMBO_FRAME_SIZE 9600
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DEFAULT_FIFO_TX_THR 0x100
 #define DEFAULT_FIFO_TX_STARVE 0x40
 #define DEFAULT_FIFO_TX_STARVE_OFF 0x80
-<<<<<<< HEAD
-#define DEFAULT_BD_STASH 1
-#define DEFAULT_STASH_LENGTH	96
-#define DEFAULT_STASH_INDEX	0
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The number of Exact Match registers */
 #define GFAR_EM_NUM	15
@@ -185,16 +126,6 @@ extern const char gfar_driver_version[];
 #define DEFAULT_RX_COALESCE 0
 #define DEFAULT_RXCOUNT	0
 
-<<<<<<< HEAD
-#define GFAR_SUPPORTED (SUPPORTED_10baseT_Half \
-		| SUPPORTED_10baseT_Full \
-		| SUPPORTED_100baseT_Half \
-		| SUPPORTED_100baseT_Full \
-		| SUPPORTED_Autoneg \
-		| SUPPORTED_MII)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* TBI register addresses */
 #define MII_TBICON		0x11
 
@@ -232,11 +163,6 @@ extern const char gfar_driver_version[];
 #define ECNTRL_REDUCED_MII_MODE	0x00000004
 #define ECNTRL_SGMII_MODE	0x00000002
 
-<<<<<<< HEAD
-#define MRBLR_INIT_SETTINGS	DEFAULT_RX_BUFFER_SIZE
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MINFLR_INIT_SETTINGS	0x00000040
 
 /* Tqueue control */
@@ -316,20 +242,9 @@ extern const char gfar_driver_version[];
 #define DEFAULT_TXIC mk_ic_value(DEFAULT_TXCOUNT, DEFAULT_TXTIME)
 #define DEFAULT_RXIC mk_ic_value(DEFAULT_RXCOUNT, DEFAULT_RXTIME)
 
-<<<<<<< HEAD
-#define skip_bd(bdp, stride, base, ring_size) ({ \
-	typeof(bdp) new_bd = (bdp) + (stride); \
-	(new_bd >= (base) + (ring_size)) ? (new_bd - (ring_size)) : new_bd; })
-
-#define next_bd(bdp, base, ring_size) skip_bd(bdp, 1, base, ring_size)
-
-#define RCTRL_TS_ENABLE 	0x01000000
-#define RCTRL_PAL_MASK		0x001f0000
-=======
 #define RCTRL_TS_ENABLE 	0x01000000
 #define RCTRL_PAL_MASK		0x001f0000
 #define RCTRL_LFC		0x00004000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RCTRL_VLEX		0x00002000
 #define RCTRL_FILREN		0x00001000
 #define RCTRL_GHTX		0x00000400
@@ -349,13 +264,9 @@ extern const char gfar_driver_version[];
 #define RCTRL_PADDING(x)	((x << 16) & RCTRL_PAL_MASK)
 
 
-<<<<<<< HEAD
-#define RSTAT_CLEAR_RHALT       0x00800000
-=======
 #define RSTAT_CLEAR_RHALT	0x00800000
 #define RSTAT_CLEAR_RXF0	0x00000080
 #define RSTAT_RXF_MASK		0x000000ff
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TCTRL_IPCSEN		0x00004000
 #define TCTRL_TUCSEN		0x00002000
@@ -396,10 +307,7 @@ extern const char gfar_driver_version[];
 #define IEVENT_MAG		0x00000800
 #define IEVENT_GRSC		0x00000100
 #define IEVENT_RXF0		0x00000080
-<<<<<<< HEAD
-=======
 #define IEVENT_FGPI		0x00000010
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IEVENT_FIR		0x00000008
 #define IEVENT_FIQ		0x00000004
 #define IEVENT_DPE		0x00000002
@@ -432,10 +340,7 @@ extern const char gfar_driver_version[];
 #define IMASK_MAG		0x00000800
 #define IMASK_GRSC              0x00000100
 #define IMASK_RXFEN0		0x00000080
-<<<<<<< HEAD
-=======
 #define IMASK_FGPI		0x00000010
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IMASK_FIR		0x00000008
 #define IMASK_FIQ		0x00000004
 #define IMASK_DPE		0x00000002
@@ -444,21 +349,11 @@ extern const char gfar_driver_version[];
 		IMASK_RXFEN0 | IMASK_BSY | IMASK_EBERR | IMASK_BABR | \
 		IMASK_XFUN | IMASK_RXC | IMASK_BABT | IMASK_DPE \
 		| IMASK_PERR)
-<<<<<<< HEAD
-#define IMASK_RTX_DISABLED ((~(IMASK_RXFEN0 | IMASK_TXFEN | IMASK_BSY)) \
-			   & IMASK_DEFAULT)
-
-/* Fifo management */
-#define FIFO_TX_THR_MASK	0x01ff
-#define FIFO_TX_STARVE_MASK	0x01ff
-#define FIFO_TX_STARVE_OFF_MASK	0x01ff
-=======
 #define IMASK_RX_DEFAULT (IMASK_RXFEN0 | IMASK_BSY)
 #define IMASK_TX_DEFAULT (IMASK_TXFEN | IMASK_TXBEN)
 
 #define IMASK_RX_DISABLED ((~(IMASK_RX_DEFAULT)) & IMASK_DEFAULT)
 #define IMASK_TX_DISABLED ((~(IMASK_TX_DEFAULT)) & IMASK_DEFAULT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Attribute fields */
 
@@ -484,13 +379,9 @@ extern const char gfar_driver_version[];
 
 /* This default RIR value directly corresponds
  * to the 3-bit hash value generated */
-<<<<<<< HEAD
-#define DEFAULT_RIR0	0x05397700
-=======
 #define DEFAULT_8RXQ_RIR0	0x05397700
 /* Map even hash values to Q0, and odd ones to Q1 */
 #define DEFAULT_2RXQ_RIR0	0x04104100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* RQFCR register bits */
 #define RQFCR_GPI		0x80000000
@@ -551,8 +442,6 @@ extern const char gfar_driver_version[];
 #define RQFPR_PER		0x00000002
 #define RQFPR_EER		0x00000001
 
-<<<<<<< HEAD
-=======
 /* CAR1 bits */
 #define CAR1_C164		0x80000000
 #define CAR1_C1127		0x40000000
@@ -607,7 +496,6 @@ extern const char gfar_driver_version[];
 #define CAM1_M1RJB		0x00000002
 #define CAM1_M1RDR		0x00000001
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* TxBD status field bits */
 #define TXBD_READY		0x8000
 #define TXBD_PADCRC		0x4000
@@ -670,31 +558,19 @@ extern const char gfar_driver_version[];
 
 #define GFAR_INT_NAME_MAX	(IFNAMSIZ + 6)	/* '_g#_xx' */
 
-<<<<<<< HEAD
-=======
 #define GFAR_WOL_MAGIC		0x00000001
 #define GFAR_WOL_FILER_UCAST	0x00000002
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct txbd8
 {
 	union {
 		struct {
-<<<<<<< HEAD
-			u16	status;	/* Status Fields */
-			u16	length;	/* Buffer length */
-		};
-		u32 lstatus;
-	};
-	u32	bufPtr;	/* Buffer Pointer */
-=======
 			__be16	status;	/* Status Fields */
 			__be16	length;	/* Buffer length */
 		};
 		__be32 lstatus;
 	};
 	__be32	bufPtr;	/* Buffer Pointer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct txfcb {
@@ -702,39 +578,14 @@ struct txfcb {
 	u8	ptp;    /* Flag to enable tx timestamping */
 	u8	l4os;	/* Level 4 Header Offset */
 	u8	l3os; 	/* Level 3 Header Offset */
-<<<<<<< HEAD
-	u16	phcs;	/* Pseudo-header Checksum */
-	u16	vlctl;	/* VLAN control word */
-=======
 	__be16	phcs;	/* Pseudo-header Checksum */
 	__be16	vlctl;	/* VLAN control word */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct rxbd8
 {
 	union {
 		struct {
-<<<<<<< HEAD
-			u16	status;	/* Status Fields */
-			u16	length;	/* Buffer Length */
-		};
-		u32 lstatus;
-	};
-	u32	bufPtr;	/* Buffer Pointer */
-};
-
-struct rxfcb {
-	u16	flags;
-	u8	rq;	/* Receive Queue index */
-	u8	pro;	/* Layer 4 Protocol */
-	u16	reserved;
-	u16	vlctl;	/* VLAN control word */
-};
-
-struct gianfar_skb_cb {
-	int alignamount;
-=======
 			__be16	status;	/* Status Fields */
 			__be16	length;	/* Buffer Length */
 		};
@@ -753,7 +604,6 @@ struct rxfcb {
 
 struct gianfar_skb_cb {
 	unsigned int bytes_sent; /* bytes-on-wire (i.e. no FCB) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define GFAR_CB(skb) ((struct gianfar_skb_cb *)((skb)->cb))
@@ -810,39 +660,6 @@ struct rmon_mib
 	u32	cam2;	/* 0x.73c - Carry Mask Register Two */
 };
 
-<<<<<<< HEAD
-struct gfar_extra_stats {
-	u64 kernel_dropped;
-	u64 rx_large;
-	u64 rx_short;
-	u64 rx_nonoctet;
-	u64 rx_crcerr;
-	u64 rx_overrun;
-	u64 rx_bsy;
-	u64 rx_babr;
-	u64 rx_trunc;
-	u64 eberr;
-	u64 tx_babt;
-	u64 tx_underrun;
-	u64 rx_skbmissing;
-	u64 tx_timeout;
-};
-
-#define GFAR_RMON_LEN ((sizeof(struct rmon_mib) - 16)/sizeof(u32))
-#define GFAR_EXTRA_STATS_LEN (sizeof(struct gfar_extra_stats)/sizeof(u64))
-
-/* Number of stats in the stats structure (ignore car and cam regs)*/
-#define GFAR_STATS_LEN (GFAR_RMON_LEN + GFAR_EXTRA_STATS_LEN)
-
-#define GFAR_INFOSTR_LEN 32
-
-struct gfar_stats {
-	u64 extra[GFAR_EXTRA_STATS_LEN];
-	u64 rmon[GFAR_RMON_LEN];
-};
-
-
-=======
 struct rmon_overflow {
 	/* lock for synchronization of the rdrp field of this struct, and
 	 * CAR1/CAR2 registers
@@ -875,7 +692,6 @@ struct gfar_extra_stats {
 /* Number of stats exported via ethtool */
 #define GFAR_STATS_LEN (GFAR_RMON_LEN + GFAR_EXTRA_STATS_LEN)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct gfar {
 	u32	tsec_id;	/* 0x.000 - Controller ID register */
 	u32	tsec_id2;	/* 0x.004 - Controller ID2 register */
@@ -1068,9 +884,6 @@ struct gfar {
 	u8	res23c[248];
 	u32	attr;		/* 0x.bf8 - Attributes Register */
 	u32	attreli;	/* 0x.bfc - Attributes Extract Length and Extract Index Register */
-<<<<<<< HEAD
-	u8	res24[688];
-=======
 	u32	rqprm0;	/* 0x.c00 - Receive queue parameters register 0 */
 	u32	rqprm1;	/* 0x.c04 - Receive queue parameters register 1 */
 	u32	rqprm2;	/* 0x.c08 - Receive queue parameters register 2 */
@@ -1097,7 +910,6 @@ struct gfar {
 	u32	rfbptr7; /* 0x.c7c - Last free RxBD pointer for ring 7 */
 	u8	res24h[4];
 	u8	res24x[556];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	isrg0;		/* 0x.eb0 - Interrupt steering group 0 register */
 	u32	isrg1;		/* 0x.eb4 - Interrupt steering group 1 register */
 	u32	isrg2;		/* 0x.eb8 - Interrupt steering group 2 register */
@@ -1131,19 +943,12 @@ struct gfar {
 #define FSL_GIANFAR_DEV_HAS_CSUM		0x00000010
 #define FSL_GIANFAR_DEV_HAS_VLAN		0x00000020
 #define FSL_GIANFAR_DEV_HAS_EXTENDED_HASH	0x00000040
-<<<<<<< HEAD
-#define FSL_GIANFAR_DEV_HAS_PADDING		0x00000080
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FSL_GIANFAR_DEV_HAS_MAGIC_PACKET	0x00000100
 #define FSL_GIANFAR_DEV_HAS_BD_STASHING		0x00000200
 #define FSL_GIANFAR_DEV_HAS_BUF_STASHING	0x00000400
 #define FSL_GIANFAR_DEV_HAS_TIMER		0x00000800
-<<<<<<< HEAD
-=======
 #define FSL_GIANFAR_DEV_HAS_WAKE_ON_FILER	0x00001000
 #define FSL_GIANFAR_DEV_HAS_RX_FILER		0x00002000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if (MAXGROUPS == 2)
 #define DEFAULT_MAPPING 	0xAA
@@ -1151,13 +956,8 @@ struct gfar {
 #define DEFAULT_MAPPING 	0xFF
 #endif
 
-<<<<<<< HEAD
-#define ISRG_SHIFT_TX	0x10
-#define ISRG_SHIFT_RX	0x18
-=======
 #define ISRG_RR0	0x80000000
 #define ISRG_TR0	0x00800000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The same driver can operate in two modes */
 /* SQ_SG_MODE: Single Queue Single Group Mode
@@ -1173,13 +973,8 @@ enum {
  * Per TX queue stats
  */
 struct tx_q_stats {
-<<<<<<< HEAD
-	unsigned long tx_packets;
-	unsigned long tx_bytes;
-=======
 	u64 tx_packets;
 	u64 tx_bytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -1203,28 +998,6 @@ struct tx_q_stats {
  *	@txtime: coalescing value if based on time
  */
 struct gfar_priv_tx_q {
-<<<<<<< HEAD
-	spinlock_t txlock __attribute__ ((aligned (SMP_CACHE_BYTES)));
-	struct sk_buff ** tx_skbuff;
-	/* Buffer descriptor pointers */
-	dma_addr_t tx_bd_dma_base;
-	struct	txbd8 *tx_bd_base;
-	struct	txbd8 *cur_tx;
-	struct	txbd8 *dirty_tx;
-	struct tx_q_stats stats;
-	struct	net_device *dev;
-	struct gfar_priv_grp *grp;
-	u16	skb_curtx;
-	u16	skb_dirtytx;
-	u16	qindex;
-	unsigned int tx_ring_size;
-	unsigned int num_txbdfree;
-	/* Configuration info for the coalescing features */
-	unsigned char txcoalescing;
-	unsigned long txic;
-	unsigned short txcount;
-	unsigned short txtime;
-=======
 	/* cacheline 1 */
 	spinlock_t txlock __attribute__ ((aligned (SMP_CACHE_BYTES)));
 	struct	txbd8 *tx_bd_base;
@@ -1244,18 +1017,12 @@ struct gfar_priv_tx_q {
 	unsigned int txcoalescing;
 	unsigned long txic;
 	dma_addr_t tx_bd_dma_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Per RX queue stats
  */
 struct rx_q_stats {
-<<<<<<< HEAD
-	unsigned long rx_packets;
-	unsigned long rx_bytes;
-	unsigned long rx_dropped;
-=======
 	u64 rx_packets;
 	u64 rx_bytes;
 	u64 rx_dropped;
@@ -1265,49 +1032,22 @@ struct gfar_rx_buff {
 	dma_addr_t dma;
 	struct page *page;
 	unsigned int page_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  *	struct gfar_priv_rx_q - per rx queue structure
-<<<<<<< HEAD
- *	@rxlock: per queue rx spin lock
- *	@rx_skbuff: skb pointers
- *	@skb_currx: currently use skb pointer
- *	@rx_bd_base: First rx buffer descriptor
- *	@cur_rx: Next free rx ring entry
- *	@qindex: index of this queue
- *	@dev: back pointer to the dev structure
-=======
  *	@rx_buff: Array of buffer info metadata structs
  *	@rx_bd_base: First rx buffer descriptor
  *	@next_to_use: index of the next buffer to be alloc'd
  *	@next_to_clean: index of the next buffer to be cleaned
  *	@qindex: index of this queue
  *	@ndev: back pointer to net_device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@rx_ring_size: Rx ring size
  *	@rxcoalescing: enable/disable rx-coalescing
  *	@rxic: receive interrupt coalescing vlaue
  */
 
 struct gfar_priv_rx_q {
-<<<<<<< HEAD
-	spinlock_t rxlock __attribute__ ((aligned (SMP_CACHE_BYTES)));
-	struct	sk_buff ** rx_skbuff;
-	dma_addr_t rx_bd_dma_base;
-	struct	rxbd8 *rx_bd_base;
-	struct	rxbd8 *cur_rx;
-	struct	net_device *dev;
-	struct gfar_priv_grp *grp;
-	struct rx_q_stats stats;
-	u16	skb_currx;
-	u16	qindex;
-	unsigned int	rx_ring_size;
-	/* RX Coalescing values */
-	unsigned char rxcoalescing;
-	unsigned long rxic;
-=======
 	struct	gfar_rx_buff *rx_buff __aligned(SMP_CACHE_BYTES);
 	struct	rxbd8 *rx_bd_base;
 	struct	net_device *ndev;
@@ -1336,7 +1076,6 @@ enum gfar_irqinfo_id {
 struct gfar_irqinfo {
 	unsigned int irq;
 	char name[GFAR_INT_NAME_MAX];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -1344,40 +1083,6 @@ struct gfar_irqinfo {
  *	@napi: the napi poll function
  *	@priv: back pointer to the priv structure
  *	@regs: the ioremapped register space for this group
-<<<<<<< HEAD
- *	@grp_id: group id for this group
- *	@interruptTransmit: The TX interrupt number for this group
- *	@interruptReceive: The RX interrupt number for this group
- *	@interruptError: The ERROR interrupt number for this group
- *	@int_name_tx: tx interrupt name for this group
- *	@int_name_rx: rx interrupt name for this group
- *	@int_name_er: er interrupt name for this group
- */
-
-struct gfar_priv_grp {
-	spinlock_t grplock __attribute__ ((aligned (SMP_CACHE_BYTES)));
-	struct	napi_struct napi;
-	struct gfar_private *priv;
-	struct gfar __iomem *regs;
-	unsigned int grp_id;
-	unsigned long rx_bit_map;
-	unsigned long tx_bit_map;
-	unsigned long num_tx_queues;
-	unsigned long num_rx_queues;
-	unsigned int rstat;
-	unsigned int tstat;
-	unsigned int imask;
-	unsigned int ievent;
-	unsigned int interruptTransmit;
-	unsigned int interruptReceive;
-	unsigned int interruptError;
-
-	char int_name_tx[GFAR_INT_NAME_MAX];
-	char int_name_rx[GFAR_INT_NAME_MAX];
-	char int_name_er[GFAR_INT_NAME_MAX];
-};
-
-=======
  *	@irqinfo: TX/RX/ER irq data for this group
  */
 
@@ -1403,7 +1108,6 @@ struct gfar_priv_grp {
 #define gfar_irq(grp, ID) \
 	((grp)->irqinfo[GFAR_##ID])
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum gfar_errata {
 	GFAR_ERRATA_74		= 0x01,
 	GFAR_ERRATA_76		= 0x02,
@@ -1411,14 +1115,11 @@ enum gfar_errata {
 	GFAR_ERRATA_12		= 0x08, /* a.k.a errata eTSEC49 */
 };
 
-<<<<<<< HEAD
-=======
 enum gfar_dev_state {
 	GFAR_DOWN = 1,
 	GFAR_RESETTING
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Struct stolen almost completely (and shamelessly) from the FCC enet source
  * (Ok, that's not so true anymore, but there is a family resemblance)
  * The GFAR buffer descriptors track the ring buffers.  The rx_bd_base
@@ -1429,67 +1130,6 @@ enum gfar_dev_state {
  * the buffer descriptor determines the actual condition.
  */
 struct gfar_private {
-<<<<<<< HEAD
-
-	/* Indicates how many tx, rx queues are enabled */
-	unsigned int num_tx_queues;
-	unsigned int num_rx_queues;
-	unsigned int num_grps;
-	unsigned int mode;
-
-	/* The total tx and rx ring size for the enabled queues */
-	unsigned int total_tx_ring_size;
-	unsigned int total_rx_ring_size;
-
-	struct device_node *node;
-	struct net_device *ndev;
-	struct platform_device *ofdev;
-	enum gfar_errata errata;
-
-	struct gfar_priv_grp gfargrp[MAXGROUPS];
-	struct gfar_priv_tx_q *tx_queue[MAX_TX_QS];
-	struct gfar_priv_rx_q *rx_queue[MAX_RX_QS];
-
-	/* RX per device parameters */
-	unsigned int rx_buffer_size;
-	unsigned int rx_stash_size;
-	unsigned int rx_stash_index;
-
-	u32 cur_filer_idx;
-
-	struct sk_buff_head rx_recycle;
-
-	/* RX queue filer rule set*/
-	struct ethtool_rx_list rx_list;
-	struct mutex rx_queue_access;
-
-	/* Hash registers and their width */
-	u32 __iomem *hash_regs[16];
-	int hash_width;
-
-	/* global parameters */
-	unsigned int fifo_threshold;
-	unsigned int fifo_starve;
-	unsigned int fifo_starve_off;
-
-	/* Bitfield update lock */
-	spinlock_t bflock;
-
-	phy_interface_t interface;
-	struct device_node *phy_node;
-	struct device_node *tbi_node;
-	u32 device_flags;
-	unsigned char
-		extended_hash:1,
-		bd_stash_en:1,
-		rx_filer_enable:1,
-		wol_en:1, /* Wake-on-LAN enabled */
-		prio_sched_en:1; /* Enable priorty based Tx scheduling in Hw */
-	unsigned short padding;
-
-	/* PHY stuff */
-	struct phy_device *phydev;
-=======
 	struct device *dev;
 	struct net_device *ndev;
 	enum gfar_errata errata;
@@ -1522,7 +1162,6 @@ struct gfar_private {
 	phy_interface_t interface;
 	struct device_node *phy_node;
 	struct device_node *tbi_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mii_bus *mii_bus;
 	int oldspeed;
 	int oldduplex;
@@ -1532,14 +1171,6 @@ struct gfar_private {
 
 	struct work_struct reset_task;
 
-<<<<<<< HEAD
-	/* Network Statistics */
-	struct gfar_extra_stats extra_stats;
-
-	/* HW time stamping enabled flag */
-	int hwts_rx_en;
-	int hwts_tx_en;
-=======
 	struct platform_device *ofdev;
 	unsigned char
 		extended_hash:1,
@@ -1576,7 +1207,6 @@ struct gfar_private {
 	/* wake-on-lan settings */
 	u16 wol_opts;
 	u16 wol_supported;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*Filer table*/
 	unsigned int ftp_rqfpr[MAX_FILER_IDX + 1];
@@ -1590,18 +1220,6 @@ static inline int gfar_has_errata(struct gfar_private *priv,
 	return priv->errata & err;
 }
 
-<<<<<<< HEAD
-static inline u32 gfar_read(volatile unsigned __iomem *addr)
-{
-	u32 val;
-	val = in_be32(addr);
-	return val;
-}
-
-static inline void gfar_write(volatile unsigned __iomem *addr, u32 val)
-{
-	out_be32(addr, val);
-=======
 static inline u32 gfar_read(unsigned __iomem *addr)
 {
 	u32 val;
@@ -1612,7 +1230,6 @@ static inline u32 gfar_read(unsigned __iomem *addr)
 static inline void gfar_write(unsigned __iomem *addr, u32 val)
 {
 	iowrite32be(val, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void gfar_write_filer(struct gfar_private *priv,
@@ -1635,24 +1252,6 @@ static inline void gfar_read_filer(struct gfar_private *priv,
 	*fpr = gfar_read(&regs->rqfpr);
 }
 
-<<<<<<< HEAD
-extern void lock_rx_qs(struct gfar_private *priv);
-extern void lock_tx_qs(struct gfar_private *priv);
-extern void unlock_rx_qs(struct gfar_private *priv);
-extern void unlock_tx_qs(struct gfar_private *priv);
-extern irqreturn_t gfar_receive(int irq, void *dev_id);
-extern int startup_gfar(struct net_device *dev);
-extern void stop_gfar(struct net_device *dev);
-extern void gfar_halt(struct net_device *dev);
-extern void gfar_phy_test(struct mii_bus *bus, struct phy_device *phydev,
-		int enable, u32 regnum, u32 read);
-extern void gfar_configure_coalescing(struct gfar_private *priv,
-		unsigned long tx_mask, unsigned long rx_mask);
-void gfar_init_sysfs(struct net_device *dev);
-int gfar_set_features(struct net_device *dev, netdev_features_t features);
-extern void gfar_check_rx_parser_mode(struct gfar_private *priv);
-extern void gfar_vlan_mode(struct net_device *dev, netdev_features_t features);
-=======
 static inline void gfar_write_isrg(struct gfar_private *priv)
 {
 	struct gfar __iomem *regs = priv->gfargrp[0].regs;
@@ -1743,7 +1342,6 @@ int startup_gfar(struct net_device *dev);
 void stop_gfar(struct net_device *dev);
 void gfar_mac_reset(struct gfar_private *priv);
 int gfar_set_features(struct net_device *dev, netdev_features_t features);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern const struct ethtool_ops gfar_ethtool_ops;
 
@@ -1755,16 +1353,6 @@ extern const struct ethtool_ops gfar_ethtool_ops;
 #define RQFCR_PID_PORT_MASK 0xFFFF0000
 #define RQFCR_PID_MAC_MASK 0xFF000000
 
-<<<<<<< HEAD
-struct gfar_mask_entry {
-	unsigned int mask; /* The mask value which is valid form start to end */
-	unsigned int start;
-	unsigned int end;
-	unsigned int block; /* Same block values indicate depended entries */
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Represents a receive filer table entry */
 struct gfar_filer_entry {
 	u32 ctrl;

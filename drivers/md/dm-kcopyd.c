@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2002 Sistina Software (UK) Limited.
  * Copyright (C) 2006 Red Hat GmbH
@@ -26,26 +23,6 @@
 #include <linux/vmalloc.h>
 #include <linux/workqueue.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <linux/device-mapper.h>
-#include <linux/dm-kcopyd.h>
-
-#include "dm.h"
-
-#define SUB_JOB_SIZE	128
-#define SPLIT_COUNT	8
-#define MIN_JOBS	8
-#define RESERVE_PAGES	(DIV_ROUND_UP(SUB_JOB_SIZE << SECTOR_SHIFT, PAGE_SIZE))
-
-/*-----------------------------------------------------------------
- * Each kcopyd client has its own little pool of preallocated
- * pages for kcopyd io.
- *---------------------------------------------------------------*/
-struct dm_kcopyd_client {
-	struct page_list *pages;
-	unsigned nr_reserved_pages;
-	unsigned nr_free_pages;
-=======
 #include <linux/delay.h>
 #include <linux/device-mapper.h>
 #include <linux/dm-kcopyd.h>
@@ -85,35 +62,16 @@ struct dm_kcopyd_client {
 	unsigned int nr_reserved_pages;
 	unsigned int nr_free_pages;
 	unsigned int sub_job_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct dm_io_client *io_client;
 
 	wait_queue_head_t destroyq;
-<<<<<<< HEAD
-	atomic_t nr_jobs;
-
-	mempool_t *job_pool;
-=======
 
 	mempool_t job_pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct workqueue_struct *kcopyd_wq;
 	struct work_struct kcopyd_work;
 
-<<<<<<< HEAD
-/*
- * We maintain three lists of jobs:
- *
- * i)   jobs waiting for pages
- * ii)  jobs that have pages, and are waiting for the io to be issued.
- * iii) jobs that have completed.
- *
- * All three of these are protected by job_lock.
- */
-	spinlock_t job_lock;
-=======
 	struct dm_kcopyd_throttle *throttle;
 
 	atomic_t nr_jobs;
@@ -130,7 +88,6 @@ struct dm_kcopyd_client {
  */
 	spinlock_t job_lock;
 	struct list_head callback_jobs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head complete_jobs;
 	struct list_head io_jobs;
 	struct list_head pages_jobs;
@@ -138,8 +95,6 @@ struct dm_kcopyd_client {
 
 static struct page_list zero_page_list;
 
-<<<<<<< HEAD
-=======
 static DEFINE_SPINLOCK(throttle_spinlock);
 
 /*
@@ -252,7 +207,6 @@ skip_limit:
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void wake(struct dm_kcopyd_client *kc)
 {
 	queue_work(kc->kcopyd_wq, &kc->kcopyd_work);
@@ -269,11 +223,7 @@ static struct page_list *alloc_pl(gfp_t gfp)
 	if (!pl)
 		return NULL;
 
-<<<<<<< HEAD
-	pl->page = alloc_page(gfp);
-=======
 	pl->page = alloc_page(gfp | __GFP_HIGHMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pl->page) {
 		kfree(pl);
 		return NULL;
@@ -319,11 +269,7 @@ static int kcopyd_get_pages(struct dm_kcopyd_client *kc,
 	*pages = NULL;
 
 	do {
-<<<<<<< HEAD
-		pl = alloc_pl(__GFP_NOWARN | __GFP_NORETRY);
-=======
 		pl = alloc_pl(__GFP_NOWARN | __GFP_NORETRY | __GFP_KSWAPD_RECLAIM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(!pl)) {
 			/* Use reserved pages */
 			pl = kc->pages;
@@ -361,15 +307,9 @@ static void drop_pages(struct page_list *pl)
 /*
  * Allocate and reserve nr_pages for the use of a specific client.
  */
-<<<<<<< HEAD
-static int client_reserve_pages(struct dm_kcopyd_client *kc, unsigned nr_pages)
-{
-	unsigned i;
-=======
 static int client_reserve_pages(struct dm_kcopyd_client *kc, unsigned int nr_pages)
 {
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page_list *pl = NULL, *next;
 
 	for (i = 0; i < nr_pages; i++) {
@@ -397,17 +337,6 @@ static void client_free_pages(struct dm_kcopyd_client *kc)
 	kc->nr_free_pages = kc->nr_reserved_pages = 0;
 }
 
-<<<<<<< HEAD
-/*-----------------------------------------------------------------
- * kcopyd_jobs need to be allocated by the *clients* of kcopyd,
- * for this reason we use a mempool to prevent the client from
- * ever having to do io (which could cause a deadlock).
- *---------------------------------------------------------------*/
-struct kcopyd_job {
-	struct dm_kcopyd_client *kc;
-	struct list_head list;
-	unsigned long flags;
-=======
 /*
  *---------------------------------------------------------------
  * kcopyd_jobs need to be allocated by the *clients* of kcopyd,
@@ -419,7 +348,6 @@ struct kcopyd_job {
 	struct dm_kcopyd_client *kc;
 	struct list_head list;
 	unsigned int flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Error state of the job.
@@ -428,15 +356,9 @@ struct kcopyd_job {
 	unsigned long write_err;
 
 	/*
-<<<<<<< HEAD
-	 * Either READ or WRITE
-	 */
-	int rw;
-=======
 	 * REQ_OP_READ, REQ_OP_WRITE or REQ_OP_WRITE_ZEROES.
 	 */
 	enum req_op op;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_io_region source;
 
 	/*
@@ -461,10 +383,7 @@ struct kcopyd_job {
 	struct mutex lock;
 	atomic_t sub_jobs;
 	sector_t progress;
-<<<<<<< HEAD
-=======
 	sector_t write_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct kcopyd_job *master_job;
 };
@@ -495,8 +414,6 @@ void dm_kcopyd_exit(void)
  * Functions to push and pop a job onto the head of a given job
  * list.
  */
-<<<<<<< HEAD
-=======
 static struct kcopyd_job *pop_io_job(struct list_head *jobs,
 				     struct dm_kcopyd_client *kc)
 {
@@ -523,22 +440,10 @@ static struct kcopyd_job *pop_io_job(struct list_head *jobs,
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct kcopyd_job *pop(struct list_head *jobs,
 			      struct dm_kcopyd_client *kc)
 {
 	struct kcopyd_job *job = NULL;
-<<<<<<< HEAD
-	unsigned long flags;
-
-	spin_lock_irqsave(&kc->job_lock, flags);
-
-	if (!list_empty(jobs)) {
-		job = list_entry(jobs->next, struct kcopyd_job, list);
-		list_del(&job->list);
-	}
-	spin_unlock_irqrestore(&kc->job_lock, flags);
-=======
 
 	spin_lock_irq(&kc->job_lock);
 
@@ -551,7 +456,6 @@ static struct kcopyd_job *pop(struct list_head *jobs,
 		}
 	}
 	spin_unlock_irq(&kc->job_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return job;
 }
@@ -569,20 +473,11 @@ static void push(struct list_head *jobs, struct kcopyd_job *job)
 
 static void push_head(struct list_head *jobs, struct kcopyd_job *job)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-	struct dm_kcopyd_client *kc = job->kc;
-
-	spin_lock_irqsave(&kc->job_lock, flags);
-	list_add(&job->list, jobs);
-	spin_unlock_irqrestore(&kc->job_lock, flags);
-=======
 	struct dm_kcopyd_client *kc = job->kc;
 
 	spin_lock_irq(&kc->job_lock);
 	list_add(&job->list, jobs);
 	spin_unlock_irq(&kc->job_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -608,37 +503,22 @@ static int run_complete_job(struct kcopyd_job *job)
 	 * If this is the master job, the sub jobs have already
 	 * completed so we can free everything.
 	 */
-<<<<<<< HEAD
-	if (job->master_job == job)
-		mempool_free(job, kc->job_pool);
-=======
 	if (job->master_job == job) {
 		mutex_destroy(&job->lock);
 		mempool_free(job, &kc->job_pool);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fn(read_err, write_err, context);
 
 	if (atomic_dec_and_test(&kc->nr_jobs))
 		wake_up(&kc->destroyq);
 
-<<<<<<< HEAD
-=======
 	cond_resched();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void complete_io(unsigned long error, void *context)
 {
-<<<<<<< HEAD
-	struct kcopyd_job *job = (struct kcopyd_job *) context;
-	struct dm_kcopyd_client *kc = job->kc;
-
-	if (error) {
-		if (job->rw == WRITE)
-=======
 	struct kcopyd_job *job = context;
 	struct dm_kcopyd_client *kc = job->kc;
 
@@ -646,35 +526,22 @@ static void complete_io(unsigned long error, void *context)
 
 	if (error) {
 		if (op_is_write(job->op))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			job->write_err |= error;
 		else
 			job->read_err = 1;
 
-<<<<<<< HEAD
-		if (!test_bit(DM_KCOPYD_IGNORE_ERROR, &job->flags)) {
-=======
 		if (!(job->flags & BIT(DM_KCOPYD_IGNORE_ERROR))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			push(&kc->complete_jobs, job);
 			wake(kc);
 			return;
 		}
 	}
 
-<<<<<<< HEAD
-	if (job->rw == WRITE)
-		push(&kc->complete_jobs, job);
-
-	else {
-		job->rw = WRITE;
-=======
 	if (op_is_write(job->op))
 		push(&kc->complete_jobs, job);
 
 	else {
 		job->op = REQ_OP_WRITE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		push(&kc->io_jobs, job);
 	}
 
@@ -689,11 +556,7 @@ static int run_io_job(struct kcopyd_job *job)
 {
 	int r;
 	struct dm_io_request io_req = {
-<<<<<<< HEAD
-		.bi_rw = job->rw,
-=======
 		.bi_opf = job->op,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mem.type = DM_IO_PAGE_LIST,
 		.mem.ptr.pl = job->pages,
 		.mem.offset = 0,
@@ -702,12 +565,6 @@ static int run_io_job(struct kcopyd_job *job)
 		.client = job->kc->io_client,
 	};
 
-<<<<<<< HEAD
-	if (job->rw == READ)
-		r = dm_io(&io_req, 1, &job->source, NULL);
-	else
-		r = dm_io(&io_req, job->num_dests, job->dests, NULL);
-=======
 	/*
 	 * If we need to write sequentially and some reads or writes failed,
 	 * no point in continuing.
@@ -724,7 +581,6 @@ static int run_io_job(struct kcopyd_job *job)
 		r = dm_io(&io_req, 1, &job->source, NULL, IOPRIO_DEFAULT);
 	else
 		r = dm_io(&io_req, job->num_dests, job->dests, NULL, IOPRIO_DEFAULT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -732,11 +588,7 @@ static int run_io_job(struct kcopyd_job *job)
 static int run_pages_job(struct kcopyd_job *job)
 {
 	int r;
-<<<<<<< HEAD
-	unsigned nr_pages = dm_div_up(job->dests[0].count, PAGE_SIZE >> 9);
-=======
 	unsigned int nr_pages = dm_div_up(job->dests[0].count, PAGE_SIZE >> 9);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = kcopyd_get_pages(job->kc, nr_pages, &job->pages);
 	if (!r) {
@@ -757,11 +609,7 @@ static int run_pages_job(struct kcopyd_job *job)
  * of successful jobs.
  */
 static int process_jobs(struct list_head *jobs, struct dm_kcopyd_client *kc,
-<<<<<<< HEAD
-			int (*fn) (struct kcopyd_job *))
-=======
 			int (*fn)(struct kcopyd_job *))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kcopyd_job *job;
 	int r, count = 0;
@@ -772,19 +620,12 @@ static int process_jobs(struct list_head *jobs, struct dm_kcopyd_client *kc,
 
 		if (r < 0) {
 			/* error this rogue job */
-<<<<<<< HEAD
-			if (job->rw == WRITE)
-=======
 			if (op_is_write(job->op))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				job->write_err = (unsigned long) -1L;
 			else
 				job->read_err = 1;
 			push(&kc->complete_jobs, job);
-<<<<<<< HEAD
-=======
 			wake(kc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -819,13 +660,10 @@ static void do_work(struct work_struct *work)
 	 * list.  io jobs call wake when they complete and it all
 	 * starts again.
 	 */
-<<<<<<< HEAD
-=======
 	spin_lock_irq(&kc->job_lock);
 	list_splice_tail_init(&kc->callback_jobs, &kc->complete_jobs);
 	spin_unlock_irq(&kc->job_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blk_start_plug(&plug);
 	process_jobs(&kc->complete_jobs, kc, run_complete_job);
 	process_jobs(&kc->pages_jobs, kc, run_pages_job);
@@ -841,16 +679,10 @@ static void do_work(struct work_struct *work)
 static void dispatch_job(struct kcopyd_job *job)
 {
 	struct dm_kcopyd_client *kc = job->kc;
-<<<<<<< HEAD
-	atomic_inc(&kc->nr_jobs);
-	if (unlikely(!job->source.count))
-		push(&kc->complete_jobs, job);
-=======
 
 	atomic_inc(&kc->nr_jobs);
 	if (unlikely(!job->source.count))
 		push(&kc->callback_jobs, job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (job->pages == &zero_page_list)
 		push(&kc->io_jobs, job);
 	else
@@ -864,11 +696,7 @@ static void segment_complete(int read_err, unsigned long write_err,
 	/* FIXME: tidy this function */
 	sector_t progress = 0;
 	sector_t count = 0;
-<<<<<<< HEAD
-	struct kcopyd_job *sub_job = (struct kcopyd_job *) context;
-=======
 	struct kcopyd_job *sub_job = context;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kcopyd_job *job = sub_job->master_job;
 	struct dm_kcopyd_client *kc = job->kc;
 
@@ -885,22 +713,13 @@ static void segment_complete(int read_err, unsigned long write_err,
 	 * Only dispatch more work if there hasn't been an error.
 	 */
 	if ((!job->read_err && !job->write_err) ||
-<<<<<<< HEAD
-	    test_bit(DM_KCOPYD_IGNORE_ERROR, &job->flags)) {
-=======
 	    job->flags & BIT(DM_KCOPYD_IGNORE_ERROR)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* get the next chunk of work */
 		progress = job->progress;
 		count = job->source.count - progress;
 		if (count) {
-<<<<<<< HEAD
-			if (count > SUB_JOB_SIZE)
-				count = SUB_JOB_SIZE;
-=======
 			if (count > kc->sub_job_size)
 				count = kc->sub_job_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			job->progress += count;
 		}
@@ -911,10 +730,7 @@ static void segment_complete(int read_err, unsigned long write_err,
 		int i;
 
 		*sub_job = *job;
-<<<<<<< HEAD
-=======
 		sub_job->write_offset = progress;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sub_job->source.sector += progress;
 		sub_job->source.count = count;
 
@@ -959,31 +775,19 @@ static void split_job(struct kcopyd_job *master_job)
 	}
 }
 
-<<<<<<< HEAD
-int dm_kcopyd_copy(struct dm_kcopyd_client *kc, struct dm_io_region *from,
-		   unsigned int num_dests, struct dm_io_region *dests,
-		   unsigned int flags, dm_kcopyd_notify_fn fn, void *context)
-{
-	struct kcopyd_job *job;
-=======
 void dm_kcopyd_copy(struct dm_kcopyd_client *kc, struct dm_io_region *from,
 		    unsigned int num_dests, struct dm_io_region *dests,
 		    unsigned int flags, dm_kcopyd_notify_fn fn, void *context)
 {
 	struct kcopyd_job *job;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Allocate an array of jobs consisting of one master job
 	 * followed by SPLIT_COUNT sub jobs.
 	 */
-<<<<<<< HEAD
-	job = mempool_alloc(kc->job_pool, GFP_NOIO);
-=======
 	job = mempool_alloc(&kc->job_pool, GFP_NOIO);
 	mutex_init(&job->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * set up for the read.
@@ -996,17 +800,6 @@ void dm_kcopyd_copy(struct dm_kcopyd_client *kc, struct dm_io_region *from,
 	job->num_dests = num_dests;
 	memcpy(&job->dests, dests, sizeof(*dests) * num_dests);
 
-<<<<<<< HEAD
-	if (from) {
-		job->source = *from;
-		job->pages = NULL;
-		job->rw = READ;
-	} else {
-		memset(&job->source, 0, sizeof job->source);
-		job->source.count = job->dests[0].count;
-		job->pages = &zero_page_list;
-		job->rw = WRITE;
-=======
 	/*
 	 * If one of the destination is a host-managed zoned block device,
 	 * we need to write sequentially. If one of the destination is a
@@ -1046,32 +839,11 @@ void dm_kcopyd_copy(struct dm_kcopyd_client *kc, struct dm_io_region *from,
 				job->op = REQ_OP_WRITE;
 				break;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	job->fn = fn;
 	job->context = context;
 	job->master_job = job;
-<<<<<<< HEAD
-
-	if (job->source.count <= SUB_JOB_SIZE)
-		dispatch_job(job);
-	else {
-		mutex_init(&job->lock);
-		job->progress = 0;
-		split_job(job);
-	}
-
-	return 0;
-}
-EXPORT_SYMBOL(dm_kcopyd_copy);
-
-int dm_kcopyd_zero(struct dm_kcopyd_client *kc,
-		   unsigned num_dests, struct dm_io_region *dests,
-		   unsigned flags, dm_kcopyd_notify_fn fn, void *context)
-{
-	return dm_kcopyd_copy(kc, NULL, num_dests, dests, flags, fn, context);
-=======
 	job->write_offset = 0;
 
 	if (job->source.count <= kc->sub_job_size)
@@ -1088,7 +860,6 @@ void dm_kcopyd_zero(struct dm_kcopyd_client *kc,
 		    unsigned int flags, dm_kcopyd_notify_fn fn, void *context)
 {
 	dm_kcopyd_copy(kc, NULL, num_dests, dests, flags, fn, context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(dm_kcopyd_zero);
 
@@ -1097,11 +868,7 @@ void *dm_kcopyd_prepare_callback(struct dm_kcopyd_client *kc,
 {
 	struct kcopyd_job *job;
 
-<<<<<<< HEAD
-	job = mempool_alloc(kc->job_pool, GFP_NOIO);
-=======
 	job = mempool_alloc(&kc->job_pool, GFP_NOIO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(job, 0, sizeof(struct kcopyd_job));
 	job->kc = kc;
@@ -1123,11 +890,7 @@ void dm_kcopyd_do_callback(void *j, int read_err, unsigned long write_err)
 	job->read_err = read_err;
 	job->write_err = write_err;
 
-<<<<<<< HEAD
-	push(&kc->complete_jobs, job);
-=======
 	push(&kc->callback_jobs, job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake(kc);
 }
 EXPORT_SYMBOL(dm_kcopyd_do_callback);
@@ -1144,17 +907,6 @@ int kcopyd_cancel(struct kcopyd_job *job, int block)
 }
 #endif  /*  0  */
 
-<<<<<<< HEAD
-/*-----------------------------------------------------------------
- * Client setup
- *---------------------------------------------------------------*/
-struct dm_kcopyd_client *dm_kcopyd_client_create(void)
-{
-	int r = -ENOMEM;
-	struct dm_kcopyd_client *kc;
-
-	kc = kmalloc(sizeof(*kc), GFP_KERNEL);
-=======
 /*
  *---------------------------------------------------------------
  * Client setup
@@ -1167,30 +919,10 @@ struct dm_kcopyd_client *dm_kcopyd_client_create(struct dm_kcopyd_throttle *thro
 	struct dm_kcopyd_client *kc;
 
 	kc = kzalloc(sizeof(*kc), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!kc)
 		return ERR_PTR(-ENOMEM);
 
 	spin_lock_init(&kc->job_lock);
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&kc->complete_jobs);
-	INIT_LIST_HEAD(&kc->io_jobs);
-	INIT_LIST_HEAD(&kc->pages_jobs);
-
-	kc->job_pool = mempool_create_slab_pool(MIN_JOBS, _job_cache);
-	if (!kc->job_pool)
-		goto bad_slab;
-
-	INIT_WORK(&kc->kcopyd_work, do_work);
-	kc->kcopyd_wq = alloc_workqueue("kcopyd",
-					WQ_NON_REENTRANT | WQ_MEM_RECLAIM, 0);
-	if (!kc->kcopyd_wq)
-		goto bad_workqueue;
-
-	kc->pages = NULL;
-	kc->nr_reserved_pages = kc->nr_free_pages = 0;
-	r = client_reserve_pages(kc, RESERVE_PAGES);
-=======
 	INIT_LIST_HEAD(&kc->callback_jobs);
 	INIT_LIST_HEAD(&kc->complete_jobs);
 	INIT_LIST_HEAD(&kc->io_jobs);
@@ -1214,7 +946,6 @@ struct dm_kcopyd_client *dm_kcopyd_client_create(struct dm_kcopyd_throttle *thro
 	kc->pages = NULL;
 	kc->nr_reserved_pages = kc->nr_free_pages = 0;
 	r = client_reserve_pages(kc, reserve_pages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r)
 		goto bad_client_pages;
 
@@ -1234,11 +965,7 @@ bad_io_client:
 bad_client_pages:
 	destroy_workqueue(kc->kcopyd_wq);
 bad_workqueue:
-<<<<<<< HEAD
-	mempool_destroy(kc->job_pool);
-=======
 	mempool_exit(&kc->job_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bad_slab:
 	kfree(kc);
 
@@ -1251,22 +978,13 @@ void dm_kcopyd_client_destroy(struct dm_kcopyd_client *kc)
 	/* Wait for completion of all jobs submitted by this client. */
 	wait_event(kc->destroyq, !atomic_read(&kc->nr_jobs));
 
-<<<<<<< HEAD
-=======
 	BUG_ON(!list_empty(&kc->callback_jobs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(!list_empty(&kc->complete_jobs));
 	BUG_ON(!list_empty(&kc->io_jobs));
 	BUG_ON(!list_empty(&kc->pages_jobs));
 	destroy_workqueue(kc->kcopyd_wq);
 	dm_io_client_destroy(kc->io_client);
 	client_free_pages(kc);
-<<<<<<< HEAD
-	mempool_destroy(kc->job_pool);
-	kfree(kc);
-}
-EXPORT_SYMBOL(dm_kcopyd_client_destroy);
-=======
 	mempool_exit(&kc->job_pool);
 	kfree(kc);
 }
@@ -1277,4 +995,3 @@ void dm_kcopyd_client_flush(struct dm_kcopyd_client *kc)
 	flush_workqueue(kc->kcopyd_wq);
 }
 EXPORT_SYMBOL(dm_kcopyd_client_flush);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

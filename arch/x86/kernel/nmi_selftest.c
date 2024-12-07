@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/x86/kernel/nmi-selftest.c
  *
@@ -17,10 +14,7 @@
 #include <linux/cpumask.h>
 #include <linux/delay.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-=======
 #include <linux/percpu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/apic.h>
 #include <asm/nmi.h>
@@ -49,12 +43,8 @@ static int __init nmi_unk_cb(unsigned int val, struct pt_regs *regs)
 static void __init init_nmi_testsuite(void)
 {
 	/* trap all the unknown NMIs we may generate */
-<<<<<<< HEAD
-	register_nmi_handler(NMI_UNKNOWN, nmi_unk_cb, 0, "nmi_selftest_unk");
-=======
 	register_nmi_handler(NMI_UNKNOWN, nmi_unk_cb, 0, "nmi_selftest_unk",
 			__initdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init cleanup_nmi_testsuite(void)
@@ -77,11 +67,7 @@ static void __init test_nmi_ipi(struct cpumask *mask)
 	unsigned long timeout;
 
 	if (register_nmi_handler(NMI_LOCAL, test_nmi_ipi_callback,
-<<<<<<< HEAD
-				 NMI_FLAG_FIRST, "nmi_selftest")) {
-=======
 				 NMI_FLAG_FIRST, "nmi_selftest", __initdata)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nmi_fail = FAILURE;
 		return;
 	}
@@ -89,19 +75,11 @@ static void __init test_nmi_ipi(struct cpumask *mask)
 	/* sync above data before sending NMI */
 	wmb();
 
-<<<<<<< HEAD
-	apic->send_IPI_mask(mask, NMI_VECTOR);
-
-	/* Don't wait longer than a second */
-	timeout = USEC_PER_SEC;
-	while (!cpumask_empty(mask) && timeout--)
-=======
 	__apic_send_IPI_mask(mask, NMI_VECTOR);
 
 	/* Don't wait longer than a second */
 	timeout = USEC_PER_SEC;
 	while (!cpumask_empty(mask) && --timeout)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	        udelay(1);
 
 	/* What happens if we timeout, do we still unregister?? */
@@ -142,17 +120,6 @@ static void __init dotest(void (*testcase_fn)(void), int expected)
 		unexpected_testcase_failures++;
 
 		if (nmi_fail == FAILURE)
-<<<<<<< HEAD
-			printk("FAILED |");
-		else if (nmi_fail == TIMEOUT)
-			printk("TIMEOUT|");
-		else
-			printk("ERROR  |");
-		dump_stack();
-	} else {
-		testcase_successes++;
-		printk("  ok  |");
-=======
 			printk(KERN_CONT "FAILED |");
 		else if (nmi_fail == TIMEOUT)
 			printk(KERN_CONT "TIMEOUT|");
@@ -162,7 +129,6 @@ static void __init dotest(void (*testcase_fn)(void), int expected)
 	} else {
 		testcase_successes++;
 		printk(KERN_CONT "  ok  |");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	testcase_total++;
 
@@ -187,17 +153,10 @@ void __init nmi_selftest(void)
 
 	print_testname("remote IPI");
 	dotest(remote_ipi, SUCCESS);
-<<<<<<< HEAD
-	printk("\n");
-	print_testname("local IPI");
-	dotest(local_ipi, SUCCESS);
-	printk("\n");
-=======
 	printk(KERN_CONT "\n");
 	print_testname("local IPI");
 	dotest(local_ipi, SUCCESS);
 	printk(KERN_CONT "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cleanup_nmi_testsuite();
 

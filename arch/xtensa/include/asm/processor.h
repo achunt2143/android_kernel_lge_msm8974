@@ -1,52 +1,26 @@
 /*
-<<<<<<< HEAD
- * include/asm-xtensa/processor.h
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
-<<<<<<< HEAD
- * Copyright (C) 2001 - 2005 Tensilica Inc.
-=======
  * Copyright (C) 2001 - 2008 Tensilica Inc.
  * Copyright (C) 2015 Cadence Design Systems Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _XTENSA_PROCESSOR_H
 #define _XTENSA_PROCESSOR_H
 
-<<<<<<< HEAD
-#include <variant/core.h>
-#include <platform/hardware.h>
-
-#include <linux/compiler.h>
-=======
 #include <asm/core.h>
 
 #include <linux/compiler.h>
 #include <linux/stringify.h>
 
 #include <asm/bootparam.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ptrace.h>
 #include <asm/types.h>
 #include <asm/regs.h>
 
-<<<<<<< HEAD
-/* Assertions. */
-
-#if (XCHAL_HAVE_WINDOWED != 1)
-# error Linux requires the Xtensa Windowed Registers Option.
-#endif
-
-#define ARCH_SLAB_MINALIGN	XCHAL_DATA_WIDTH
-=======
 #define ARCH_SLAB_MINALIGN XTENSA_STACK_ALIGNMENT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * User space process size: 1 GB.
@@ -59,19 +33,13 @@
 #ifdef CONFIG_MMU
 #define TASK_SIZE	__XTENSA_UL_CONST(0x40000000)
 #else
-<<<<<<< HEAD
-#define TASK_SIZE	(PLATFORM_DEFAULT_MEM_START + PLATFORM_DEFAULT_MEM_SIZE)
-=======
 #define TASK_SIZE	__XTENSA_UL_CONST(0xffffffff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define STACK_TOP	TASK_SIZE
 #define STACK_TOP_MAX	STACK_TOP
 
 /*
-<<<<<<< HEAD
-=======
  * General exception cause assigned to fake NMI. Fake NMI needs to be handled
  * differently from other interrupts, but it uses common kernel entry/exit
  * code.
@@ -80,7 +48,6 @@
 #define EXCCAUSE_MAPPED_NMI	62
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * General exception cause assigned to debug exceptions. Debug exceptions go
  * to their own vector, rather than the general exception vectors (user,
  * kernel, double); and their specific causes are reported via DEBUGCAUSE
@@ -101,12 +68,6 @@
 
 #define VALID_DOUBLE_EXCEPTION_ADDRESS	64
 
-<<<<<<< HEAD
-/* LOCKLEVEL defines the interrupt level that masks all
- * general-purpose interrupts.
- */
-#define LOCKLEVEL 1
-=======
 #define XTENSA_INT_LEVEL(intno) _XTENSA_INT_LEVEL(intno)
 #define _XTENSA_INT_LEVEL(intno) XCHAL_INT##intno##_LEVEL
 
@@ -129,7 +90,6 @@
 
 #define TOPLEVEL XCHAL_EXCM_LEVEL
 #define XTENSA_FAKE_NMI (LOCKLEVEL < TOPLEVEL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* WSBITS and WBBITS are the width of the WINDOWSTART and WINDOWBASE
  * registers
@@ -137,10 +97,6 @@
 #define WSBITS  (XCHAL_NUM_AREGS / 4)      /* width of WINDOWSTART in bits */
 #define WBBITS  (XCHAL_NUM_AREGS_LOG2 - 2) /* width of WINDOWBASE in bits */
 
-<<<<<<< HEAD
-#ifndef __ASSEMBLY__
-
-=======
 #if defined(__XTENSA_WINDOWED_ABI__)
 #define KERNEL_PS_WOE_MASK PS_WOE_MASK
 #elif defined(__XTENSA_CALL0_ABI__)
@@ -153,22 +109,12 @@
 
 #if defined(__XTENSA_WINDOWED_ABI__)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Build a valid return address for the specified call winsize.
  * winsize must be 1 (call4), 2 (call8), or 3 (call12)
  */
 #define MAKE_RA_FOR_CALL(ra,ws)   (((ra) & 0x3fffffff) | (ws) << 30)
 
 /* Convert return address to a valid pc
-<<<<<<< HEAD
- * Note: We assume that the stack pointer is in the same 1GB ranges as the ra
- */
-#define MAKE_PC_FROM_RA(ra,sp)    (((ra) & 0x3fffffff) | ((sp) & 0xc0000000))
-
-typedef struct {
-    unsigned long seg;
-} mm_segment_t;
-=======
  * Note: 'text' is the address within the same 1GB range as the ra
  */
 #define MAKE_PC_FROM_RA(ra, text) (((ra) & 0x3fffffff) | ((unsigned long)(text) & 0xc0000000))
@@ -203,7 +149,6 @@ typedef struct {
  * pointer sp for the call12. reg must be in the range [4..12).
  */
 #define SPILL_SLOT_CALL12(sp, reg) (*(((unsigned long *)(sp)) - 16 + (reg)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct thread_struct {
 
@@ -211,40 +156,14 @@ struct thread_struct {
 	unsigned long ra; /* kernel's a0: return address and window call size */
 	unsigned long sp; /* kernel's a1: stack pointer */
 
-<<<<<<< HEAD
-	mm_segment_t current_ds;    /* see uaccess.h for example uses */
-
-	/* struct xtensa_cpuinfo info; */
-
-	unsigned long bad_vaddr; /* last user fault */
-	unsigned long bad_uaddr; /* last kernel fault accessing user space */
-	unsigned long error_code;
-
-	unsigned long ibreak[XCHAL_NUM_IBREAK];
-	unsigned long dbreaka[XCHAL_NUM_DBREAK];
-	unsigned long dbreakc[XCHAL_NUM_DBREAK];
-
-=======
 #ifdef CONFIG_HAVE_HW_BREAKPOINT
 	struct perf_event *ptrace_bp[XCHAL_NUM_IBREAK];
 	struct perf_event *ptrace_wp[XCHAL_NUM_DBREAK];
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Make structure 16 bytes aligned. */
 	int align[0] __attribute__ ((aligned(16)));
 };
 
-<<<<<<< HEAD
-
-/*
- * Default implementation of macro that returns current
- * instruction pointer ("program counter").
- */
-#define current_text_addr()  ({ __label__ _l; _l: &&_l;})
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This decides where the kernel will search for a free chunk of vm
  * space during mmap's.
  */
@@ -254,40 +173,11 @@ struct thread_struct {
 {									\
 	ra:		0, 						\
 	sp:		sizeof(init_stack) + (long) &init_stack,	\
-<<<<<<< HEAD
-	current_ds:	{0},						\
-	/*info:		{0}, */						\
-	bad_vaddr:	0,						\
-	bad_uaddr:	0,						\
-	error_code:	0,						\
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /*
  * Do necessary setup to start up a newly executed thread.
-<<<<<<< HEAD
- * Note: We set-up ps as if we did a call4 to the new pc.
- *       set_thread_state in signal.c depends on it.
- */
-#define USER_PS_VALUE ((1 << PS_WOE_BIT) |				\
-                       (1 << PS_CALLINC_SHIFT) |			\
-                       (USER_RING << PS_RING_SHIFT) |			\
-                       (1 << PS_UM_BIT) |				\
-                       (1 << PS_EXCM_BIT))
-
-/* Clearing a0 terminates the backtrace. */
-#define start_thread(regs, new_pc, new_sp) \
-	regs->pc = new_pc; \
-	regs->ps = USER_PS_VALUE; \
-	regs->areg[1] = new_sp; \
-	regs->areg[0] = 0; \
-	regs->wmask = 1; \
-	regs->depc = 0; \
-	regs->windowbase = 0; \
-	regs->windowstart = 1;
-=======
  * Note: When windowed ABI is used for userspace we set-up ps
  *       as if we did a call4 to the new pc.
  *       set_thread_state in signal.c depends on it.
@@ -322,36 +212,15 @@ struct thread_struct {
 		(regs)->windowstart = 1; \
 		(regs)->syscall = syscall; \
 	} while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Forward declaration */
 struct task_struct;
 struct mm_struct;
 
-<<<<<<< HEAD
-/* Free all resources held by a thread. */
-#define release_thread(thread) do { } while(0)
-
-/* Prepare to copy thread state - unlazy all lazy status */
-extern void prepare_to_copy(struct task_struct*);
-
-/* Create a kernel thread without removing it from tasklists */
-extern int kernel_thread(int (*fn)(void *), void * arg, unsigned long flags);
-
-/* Copy and release all segment info associated with a VM */
-#define copy_segments(p, mm)	do { } while(0)
-#define release_segments(mm)	do { } while(0)
-#define forget_segments()	do { } while (0)
-
-#define thread_saved_pc(tsk)	(task_pt_regs(tsk)->pc)
-
-extern unsigned long get_wchan(struct task_struct *p);
-=======
 extern unsigned long __get_wchan(struct task_struct *p);
 
 void init_arch(bp_tag_t *bp_start);
 void do_notify_resume(struct pt_regs *regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KSTK_EIP(tsk)		(task_pt_regs(tsk)->pc)
 #define KSTK_ESP(tsk)		(task_pt_regs(tsk)->areg[1])
@@ -360,13 +229,6 @@ void do_notify_resume(struct pt_regs *regs);
 
 /* Special register access. */
 
-<<<<<<< HEAD
-#define WSR(v,sr) __asm__ __volatile__ ("wsr %0,"__stringify(sr) :: "a"(v));
-#define RSR(v,sr) __asm__ __volatile__ ("rsr %0,"__stringify(sr) : "=a"(v));
-
-#define set_sr(x,sr) ({unsigned int v=(unsigned int)x; WSR(v,sr);})
-#define get_sr(sr) ({unsigned int v; RSR(v,sr); v; })
-=======
 #define xtensa_set_sr(x, sr) \
 	({ \
 	 __asm__ __volatile__ ("wsr %0, "__stringify(sr) :: \
@@ -402,7 +264,6 @@ static inline unsigned long get_er(unsigned long addr)
 }
 
 #endif /* XCHAL_HAVE_EXTERN_REGS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __ASSEMBLY__ */
 #endif	/* _XTENSA_PROCESSOR_H */

@@ -1,33 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * GPIO Driver for Dialog DA9052 PMICs.
  *
  * Copyright(c) 2011 Dialog Semiconductor Ltd.
  *
  * Author: David Dajun Chen <dchen@diasemi.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
- */
-#include <linux/module.h>
-#include <linux/fs.h>
-#include <linux/uaccess.h>
-#include <linux/platform_device.h>
-#include <linux/gpio.h>
-#include <linux/syscalls.h>
-#include <linux/seq_file.h>
-
-#include <linux/mfd/da9052/da9052.h>
-#include <linux/mfd/da9052/reg.h>
-#include <linux/mfd/da9052/pdata.h>
-=======
  */
 #include <linux/fs.h>
 #include <linux/gpio/driver.h>
@@ -39,7 +16,6 @@
 #include <linux/mfd/da9052/da9052.h>
 #include <linux/mfd/da9052/pdata.h>
 #include <linux/mfd/da9052/reg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DA9052_INPUT				1
 #define DA9052_OUTPUT_OPENDRAIN		2
@@ -69,14 +45,6 @@ struct da9052_gpio {
 	struct gpio_chip gp;
 };
 
-<<<<<<< HEAD
-static inline struct da9052_gpio *to_da9052_gpio(struct gpio_chip *chip)
-{
-	return container_of(chip, struct da9052_gpio, gp);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned char da9052_gpio_port_odd(unsigned offset)
 {
 	return offset % 2;
@@ -84,11 +52,7 @@ static unsigned char da9052_gpio_port_odd(unsigned offset)
 
 static int da9052_gpio_get(struct gpio_chip *gc, unsigned offset)
 {
-<<<<<<< HEAD
-	struct da9052_gpio *gpio = to_da9052_gpio(gc);
-=======
 	struct da9052_gpio *gpio = gpiochip_get_data(gc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int da9052_port_direction = 0;
 	int ret;
 
@@ -114,24 +78,12 @@ static int da9052_gpio_get(struct gpio_chip *gc, unsigned offset)
 					      DA9052_STATUS_D_REG);
 		if (ret < 0)
 			return ret;
-<<<<<<< HEAD
-		if (ret & (1 << DA9052_GPIO_SHIFT_COUNT(offset)))
-			return 1;
-		else
-			return 0;
-	case DA9052_OUTPUT_PUSHPULL:
-		if (da9052_gpio_port_odd(offset))
-			return ret & DA9052_GPIO_ODD_PORT_MODE;
-		else
-			return ret & DA9052_GPIO_EVEN_PORT_MODE;
-=======
 		return !!(ret & (1 << DA9052_GPIO_SHIFT_COUNT(offset)));
 	case DA9052_OUTPUT_PUSHPULL:
 		if (da9052_gpio_port_odd(offset))
 			return !!(ret & DA9052_GPIO_ODD_PORT_MODE);
 		else
 			return !!(ret & DA9052_GPIO_EVEN_PORT_MODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EINVAL;
 	}
@@ -139,11 +91,7 @@ static int da9052_gpio_get(struct gpio_chip *gc, unsigned offset)
 
 static void da9052_gpio_set(struct gpio_chip *gc, unsigned offset, int value)
 {
-<<<<<<< HEAD
-	struct da9052_gpio *gpio = to_da9052_gpio(gc);
-=======
 	struct da9052_gpio *gpio = gpiochip_get_data(gc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (da9052_gpio_port_odd(offset)) {
@@ -169,11 +117,7 @@ static void da9052_gpio_set(struct gpio_chip *gc, unsigned offset, int value)
 
 static int da9052_gpio_direction_input(struct gpio_chip *gc, unsigned offset)
 {
-<<<<<<< HEAD
-	struct da9052_gpio *gpio = to_da9052_gpio(gc);
-=======
 	struct da9052_gpio *gpio = gpiochip_get_data(gc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char register_value;
 	int ret;
 
@@ -199,11 +143,7 @@ static int da9052_gpio_direction_input(struct gpio_chip *gc, unsigned offset)
 static int da9052_gpio_direction_output(struct gpio_chip *gc,
 					unsigned offset, int value)
 {
-<<<<<<< HEAD
-	struct da9052_gpio *gpio = to_da9052_gpio(gc);
-=======
 	struct da9052_gpio *gpio = gpiochip_get_data(gc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char register_value;
 	int ret;
 
@@ -228,15 +168,6 @@ static int da9052_gpio_direction_output(struct gpio_chip *gc,
 
 static int da9052_gpio_to_irq(struct gpio_chip *gc, u32 offset)
 {
-<<<<<<< HEAD
-	struct da9052_gpio *gpio = to_da9052_gpio(gc);
-	struct da9052 *da9052 = gpio->da9052;
-
-	return da9052->irq_base + DA9052_IRQ_GPI0 + offset;
-}
-
-static struct gpio_chip reference_gp __devinitdata = {
-=======
 	struct da9052_gpio *gpio = gpiochip_get_data(gc);
 	struct da9052 *da9052 = gpio->da9052;
 
@@ -248,7 +179,6 @@ static struct gpio_chip reference_gp __devinitdata = {
 }
 
 static const struct gpio_chip reference_gp = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.label = "da9052-gpio",
 	.owner = THIS_MODULE,
 	.get = da9052_gpio_get,
@@ -256,29 +186,11 @@ static const struct gpio_chip reference_gp = {
 	.direction_input = da9052_gpio_direction_input,
 	.direction_output = da9052_gpio_direction_output,
 	.to_irq = da9052_gpio_to_irq,
-<<<<<<< HEAD
-	.can_sleep = 1,
-=======
 	.can_sleep = true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ngpio = 16,
 	.base = -1,
 };
 
-<<<<<<< HEAD
-static int __devinit da9052_gpio_probe(struct platform_device *pdev)
-{
-	struct da9052_gpio *gpio;
-	struct da9052_pdata *pdata;
-	int ret;
-
-	gpio = kzalloc(sizeof(*gpio), GFP_KERNEL);
-	if (gpio == NULL)
-		return -ENOMEM;
-
-	gpio->da9052 = dev_get_drvdata(pdev->dev.parent);
-	pdata = gpio->da9052->dev->platform_data;
-=======
 static int da9052_gpio_probe(struct platform_device *pdev)
 {
 	struct da9052_gpio *gpio;
@@ -290,54 +202,18 @@ static int da9052_gpio_probe(struct platform_device *pdev)
 
 	gpio->da9052 = dev_get_drvdata(pdev->dev.parent);
 	pdata = dev_get_platdata(gpio->da9052->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gpio->gp = reference_gp;
 	if (pdata && pdata->gpio_base)
 		gpio->gp.base = pdata->gpio_base;
 
-<<<<<<< HEAD
-	ret = gpiochip_add(&gpio->gp);
-	if (ret < 0) {
-		dev_err(&pdev->dev, "Could not register gpiochip, %d\n", ret);
-		goto err_mem;
-	}
-
-	platform_set_drvdata(pdev, gpio);
-
-	return 0;
-
-err_mem:
-	kfree(gpio);
-	return ret;
-}
-
-static int __devexit da9052_gpio_remove(struct platform_device *pdev)
-{
-	struct da9052_gpio *gpio = platform_get_drvdata(pdev);
-	int ret;
-
-	ret = gpiochip_remove(&gpio->gp);
-	if (ret == 0)
-		kfree(gpio);
-
-	return ret;
-=======
 	return devm_gpiochip_add_data(&pdev->dev, &gpio->gp, gpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver da9052_gpio_driver = {
 	.probe = da9052_gpio_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(da9052_gpio_remove),
 	.driver = {
 		.name	= "da9052-gpio",
-		.owner	= THIS_MODULE,
-=======
-	.driver = {
-		.name	= "da9052-gpio",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

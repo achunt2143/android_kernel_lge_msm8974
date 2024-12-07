@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_OF_PLATFORM_H
 #define _LINUX_OF_PLATFORM_H
 /*
  *    Copyright (C) 2006 Benjamin Herrenschmidt, IBM Corp.
  *			 <benh@kernel.crashing.org>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
- *
- */
-
-#ifdef CONFIG_OF_DEVICE
-#include <linux/device.h>
-#include <linux/mod_devicetable.h>
-#include <linux/pm.h>
-#include <linux/of_device.h>
-#include <linux/platform_device.h>
-=======
  */
 
 #include <linux/mod_devicetable.h>
@@ -31,7 +12,6 @@ struct device;
 struct device_node;
 struct of_device_id;
 struct platform_device;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct of_dev_auxdata - lookup table entry for device names & platform_data
@@ -53,11 +33,7 @@ struct platform_device;
  * Note: Using an auxdata lookup table should be considered a last resort when
  * converting a platform to use the DT.  Normally the automatically generated
  * device name will not matter, and drivers should obtain data from the device
-<<<<<<< HEAD
- * node instead of from an anonymouns platform_data pointer.
-=======
  * node instead of from an anonymous platform_data pointer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct of_dev_auxdata {
 	char *compatible;
@@ -71,41 +47,12 @@ struct of_dev_auxdata {
 	{ .compatible = _compat, .phys_addr = _phys, .name = _name, \
 	  .platform_data = _pdata }
 
-<<<<<<< HEAD
-/**
- * of_platform_driver - Legacy of-aware driver for platform devices.
- *
- * An of_platform_driver driver is attached to a basic platform_device on
- * the ibm ebus (ibmebus_bus_type).
- */
-struct of_platform_driver
-{
-	int	(*probe)(struct platform_device* dev,
-			 const struct of_device_id *match);
-	int	(*remove)(struct platform_device* dev);
-
-	int	(*suspend)(struct platform_device* dev, pm_message_t state);
-	int	(*resume)(struct platform_device* dev);
-	int	(*shutdown)(struct platform_device* dev);
-
-	struct device_driver	driver;
-};
-#define	to_of_platform_driver(drv) \
-	container_of(drv,struct of_platform_driver, driver)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct of_device_id of_default_bus_match_table[];
 
 /* Platform drivers register/unregister */
 extern struct platform_device *of_device_alloc(struct device_node *np,
 					 const char *bus_id,
 					 struct device *parent);
-<<<<<<< HEAD
-extern struct platform_device *of_find_device_by_node(struct device_node *np);
-
-#ifdef CONFIG_OF_ADDRESS /* device reg helpers depend on OF_ADDRESS */
-=======
 
 extern int of_device_add(struct platform_device *pdev);
 extern int of_device_register(struct platform_device *ofdev);
@@ -125,32 +72,17 @@ extern int of_platform_bus_probe(struct device_node *root,
 				 struct device *parent);
 
 #ifdef CONFIG_OF_ADDRESS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Platform devices and busses creation */
 extern struct platform_device *of_platform_device_create(struct device_node *np,
 						   const char *bus_id,
 						   struct device *parent);
 
-<<<<<<< HEAD
-extern int of_platform_bus_probe(struct device_node *root,
-				 const struct of_device_id *matches,
-				 struct device *parent);
-=======
 extern int of_platform_device_destroy(struct device *dev, void *data);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int of_platform_populate(struct device_node *root,
 				const struct of_device_id *matches,
 				const struct of_dev_auxdata *lookup,
 				struct device *parent);
-<<<<<<< HEAD
-#endif /* CONFIG_OF_ADDRESS */
-
-#endif /* CONFIG_OF_DEVICE */
-
-#if !defined(CONFIG_OF_ADDRESS)
-struct of_dev_auxdata;
-=======
 extern int of_platform_default_populate(struct device_node *root,
 					const struct of_dev_auxdata *lookup,
 					struct device *parent);
@@ -172,7 +104,6 @@ static inline int of_platform_device_destroy(struct device *dev, void *data)
 	return -ENODEV;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int of_platform_populate(struct device_node *root,
 					const struct of_device_id *matches,
 					const struct of_dev_auxdata *lookup,
@@ -180,9 +111,6 @@ static inline int of_platform_populate(struct device_node *root,
 {
 	return -ENODEV;
 }
-<<<<<<< HEAD
-#endif /* !CONFIG_OF_ADDRESS */
-=======
 static inline int of_platform_default_populate(struct device_node *root,
 					       const struct of_dev_auxdata *lookup,
 					       struct device *parent)
@@ -198,6 +126,5 @@ static inline int devm_of_platform_populate(struct device *dev)
 
 static inline void devm_of_platform_depopulate(struct device *dev) { }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _LINUX_OF_PLATFORM_H */

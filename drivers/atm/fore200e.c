@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
   A FORE Systems 200E-series driver for ATM on Linux.
   Christophe Lizzi (lizzi@cnam.fr), October 1999-March 2003.
@@ -11,22 +8,6 @@
   This driver simultaneously supports PCA-200E and SBA-200E adapters
   on i386, alpha (untested), powerpc, sparc and sparc64 architectures.
 
-<<<<<<< HEAD
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 
@@ -40,44 +21,25 @@
 #include <linux/module.h>
 #include <linux/atmdev.h>
 #include <linux/sonet.h>
-<<<<<<< HEAD
-#include <linux/atm_suni.h>
-#include <linux/dma-mapping.h>
-#include <linux/delay.h>
-#include <linux/firmware.h>
-=======
 #include <linux/dma-mapping.h>
 #include <linux/delay.h>
 #include <linux/firmware.h>
 #include <linux/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/string.h>
 #include <asm/page.h>
 #include <asm/irq.h>
 #include <asm/dma.h>
 #include <asm/byteorder.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 
 #ifdef CONFIG_SBUS
 #include <linux/of.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-#include <asm/idprom.h>
-#include <asm/openprom.h>
-#include <asm/oplib.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/platform_device.h>
 #include <asm/idprom.h>
 #include <asm/openprom.h>
 #include <asm/oplib.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #if defined(CONFIG_ATM_FORE200E_USE_TASKLET) /* defer interrupt work to a tasklet */
@@ -131,21 +93,12 @@
 
 
 static const struct atmdev_ops   fore200e_ops;
-<<<<<<< HEAD
-static const struct fore200e_bus fore200e_bus[];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static LIST_HEAD(fore200e_boards);
 
 
 MODULE_AUTHOR("Christophe Lizzi - credits to Uwe Dannowski and Heikki Vatiainen");
 MODULE_DESCRIPTION("FORE Systems 200E-series ATM driver - version " FORE200E_VERSION);
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("PCA-200E, SBA-200E");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const int fore200e_rx_buf_nbr[ BUFFER_SCHEME_NBR ][ BUFFER_MAGN_NBR ] = {
     { BUFFER_S1_NBR, BUFFER_L1_NBR },
@@ -214,16 +167,9 @@ fore200e_chunk_alloc(struct fore200e* fore200e, struct chunk* chunk, int size, i
 	alignment = 0;
 
     chunk->alloc_size = size + alignment;
-<<<<<<< HEAD
-    chunk->align_size = size;
-    chunk->direction  = direction;
-
-    chunk->alloc_addr = kzalloc(chunk->alloc_size, GFP_KERNEL | GFP_DMA);
-=======
     chunk->direction  = direction;
 
     chunk->alloc_addr = kzalloc(chunk->alloc_size, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (chunk->alloc_addr == NULL)
 	return -ENOMEM;
 
@@ -232,17 +178,12 @@ fore200e_chunk_alloc(struct fore200e* fore200e, struct chunk* chunk, int size, i
     
     chunk->align_addr = chunk->alloc_addr + offset;
 
-<<<<<<< HEAD
-    chunk->dma_addr = fore200e->bus->dma_map(fore200e, chunk->align_addr, chunk->align_size, direction);
-    
-=======
     chunk->dma_addr = dma_map_single(fore200e->dev, chunk->align_addr,
 				     size, direction);
     if (dma_mapping_error(fore200e->dev, chunk->dma_addr)) {
 	kfree(chunk->alloc_addr);
 	return -ENOMEM;
     }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     return 0;
 }
 
@@ -252,13 +193,6 @@ fore200e_chunk_alloc(struct fore200e* fore200e, struct chunk* chunk, int size, i
 static void
 fore200e_chunk_free(struct fore200e* fore200e, struct chunk* chunk)
 {
-<<<<<<< HEAD
-    fore200e->bus->dma_unmap(fore200e, chunk->dma_addr, chunk->dma_size, chunk->direction);
-
-    kfree(chunk->alloc_addr);
-}
-
-=======
     dma_unmap_single(fore200e->dev, chunk->dma_addr, chunk->dma_size,
 		     chunk->direction);
     kfree(chunk->alloc_addr);
@@ -292,7 +226,6 @@ fore200e_dma_chunk_free(struct fore200e* fore200e, struct chunk* chunk)
 	dma_free_coherent(fore200e->dev, chunk->alloc_size, chunk->alloc_addr,
 			  chunk->dma_addr);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 fore200e_spin(int msecs)
@@ -385,17 +318,10 @@ fore200e_uninit_bs_queue(struct fore200e* fore200e)
 	    struct chunk* rbd_block = &fore200e->host_bsq[ scheme ][ magn ].rbd_block;
 	    
 	    if (status->alloc_addr)
-<<<<<<< HEAD
-		fore200e->bus->dma_chunk_free(fore200e, status);
-	    
-	    if (rbd_block->alloc_addr)
-		fore200e->bus->dma_chunk_free(fore200e, rbd_block);
-=======
 		fore200e_dma_chunk_free(fore200e, status);
 	    
 	    if (rbd_block->alloc_addr)
 		fore200e_dma_chunk_free(fore200e, rbd_block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
     }
 }
@@ -447,28 +373,6 @@ fore200e_shutdown(struct fore200e* fore200e)
     case FORE200E_STATE_COMPLETE:
 	kfree(fore200e->stats);
 
-<<<<<<< HEAD
-    case FORE200E_STATE_IRQ:
-	free_irq(fore200e->irq, fore200e->atm_dev);
-
-    case FORE200E_STATE_ALLOC_BUF:
-	fore200e_free_rx_buf(fore200e);
-
-    case FORE200E_STATE_INIT_BSQ:
-	fore200e_uninit_bs_queue(fore200e);
-
-    case FORE200E_STATE_INIT_RXQ:
-	fore200e->bus->dma_chunk_free(fore200e, &fore200e->host_rxq.status);
-	fore200e->bus->dma_chunk_free(fore200e, &fore200e->host_rxq.rpd);
-
-    case FORE200E_STATE_INIT_TXQ:
-	fore200e->bus->dma_chunk_free(fore200e, &fore200e->host_txq.status);
-	fore200e->bus->dma_chunk_free(fore200e, &fore200e->host_txq.tpd);
-
-    case FORE200E_STATE_INIT_CMDQ:
-	fore200e->bus->dma_chunk_free(fore200e, &fore200e->host_cmdq.status);
-
-=======
 	fallthrough;
     case FORE200E_STATE_IRQ:
 	free_irq(fore200e->irq, fore200e->atm_dev);
@@ -496,7 +400,6 @@ fore200e_shutdown(struct fore200e* fore200e)
 	fore200e_dma_chunk_free(fore200e, &fore200e->host_cmdq.status);
 
 	fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     case FORE200E_STATE_INITIALIZE:
 	/* nothing to do for that state */
 
@@ -509,10 +412,7 @@ fore200e_shutdown(struct fore200e* fore200e)
     case FORE200E_STATE_MAP:
 	fore200e->bus->unmap(fore200e);
 
-<<<<<<< HEAD
-=======
 	fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     case FORE200E_STATE_CONFIGURE:
 	/* nothing to do for that state */
 
@@ -520,10 +420,7 @@ fore200e_shutdown(struct fore200e* fore200e)
 	/* XXX shouldn't we *start* by deregistering the device? */
 	atm_dev_deregister(fore200e->atm_dev);
 
-<<<<<<< HEAD
-=======
 	fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     case FORE200E_STATE_BLANK:
 	/* nothing to do for that state */
 	break;
@@ -548,83 +445,6 @@ static void fore200e_pca_write(u32 val, volatile u32 __iomem *addr)
     writel(cpu_to_le32(val), addr);
 }
 
-<<<<<<< HEAD
-
-static u32
-fore200e_pca_dma_map(struct fore200e* fore200e, void* virt_addr, int size, int direction)
-{
-    u32 dma_addr = pci_map_single((struct pci_dev*)fore200e->bus_dev, virt_addr, size, direction);
-
-    DPRINTK(3, "PCI DVMA mapping: virt_addr = 0x%p, size = %d, direction = %d,  --> dma_addr = 0x%08x\n",
-	    virt_addr, size, direction, dma_addr);
-    
-    return dma_addr;
-}
-
-
-static void
-fore200e_pca_dma_unmap(struct fore200e* fore200e, u32 dma_addr, int size, int direction)
-{
-    DPRINTK(3, "PCI DVMA unmapping: dma_addr = 0x%08x, size = %d, direction = %d\n",
-	    dma_addr, size, direction);
-
-    pci_unmap_single((struct pci_dev*)fore200e->bus_dev, dma_addr, size, direction);
-}
-
-
-static void
-fore200e_pca_dma_sync_for_cpu(struct fore200e* fore200e, u32 dma_addr, int size, int direction)
-{
-    DPRINTK(3, "PCI DVMA sync: dma_addr = 0x%08x, size = %d, direction = %d\n", dma_addr, size, direction);
-
-    pci_dma_sync_single_for_cpu((struct pci_dev*)fore200e->bus_dev, dma_addr, size, direction);
-}
-
-static void
-fore200e_pca_dma_sync_for_device(struct fore200e* fore200e, u32 dma_addr, int size, int direction)
-{
-    DPRINTK(3, "PCI DVMA sync: dma_addr = 0x%08x, size = %d, direction = %d\n", dma_addr, size, direction);
-
-    pci_dma_sync_single_for_device((struct pci_dev*)fore200e->bus_dev, dma_addr, size, direction);
-}
-
-
-/* allocate a DMA consistent chunk of memory intended to act as a communication mechanism
-   (to hold descriptors, status, queues, etc.) shared by the driver and the adapter */
-
-static int
-fore200e_pca_dma_chunk_alloc(struct fore200e* fore200e, struct chunk* chunk,
-			     int size, int nbr, int alignment)
-{
-    /* returned chunks are page-aligned */
-    chunk->alloc_size = size * nbr;
-    chunk->alloc_addr = pci_alloc_consistent((struct pci_dev*)fore200e->bus_dev,
-					     chunk->alloc_size,
-					     &chunk->dma_addr);
-    
-    if ((chunk->alloc_addr == NULL) || (chunk->dma_addr == 0))
-	return -ENOMEM;
-
-    chunk->align_addr = chunk->alloc_addr;
-    
-    return 0;
-}
-
-
-/* free a DMA consistent chunk of memory */
-
-static void
-fore200e_pca_dma_chunk_free(struct fore200e* fore200e, struct chunk* chunk)
-{
-    pci_free_consistent((struct pci_dev*)fore200e->bus_dev,
-			chunk->alloc_size,
-			chunk->alloc_addr,
-			chunk->dma_addr);
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 fore200e_pca_irq_check(struct fore200e* fore200e)
 {
@@ -657,12 +477,7 @@ fore200e_pca_reset(struct fore200e* fore200e)
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_pca_map(struct fore200e* fore200e)
-=======
 static int fore200e_pca_map(struct fore200e* fore200e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     DPRINTK(2, "device %s being mapped in memory\n", fore200e->name);
 
@@ -695,16 +510,9 @@ fore200e_pca_unmap(struct fore200e* fore200e)
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_pca_configure(struct fore200e* fore200e)
-{
-    struct pci_dev* pci_dev = (struct pci_dev*)fore200e->bus_dev;
-=======
 static int fore200e_pca_configure(struct fore200e *fore200e)
 {
     struct pci_dev *pci_dev = to_pci_dev(fore200e->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     u8              master_ctrl, latency;
 
     DPRINTK(2, "device %s being configured\n", fore200e->name);
@@ -756,14 +564,10 @@ fore200e_pca_prom_read(struct fore200e* fore200e, struct prom_data* prom)
     opcode.opcode = OPCODE_GET_PROM;
     opcode.pad    = 0;
 
-<<<<<<< HEAD
-    prom_dma = fore200e->bus->dma_map(fore200e, prom, sizeof(struct prom_data), DMA_FROM_DEVICE);
-=======
     prom_dma = dma_map_single(fore200e->dev, prom, sizeof(struct prom_data),
 			      DMA_FROM_DEVICE);
     if (dma_mapping_error(fore200e->dev, prom_dma))
 	return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     fore200e->bus->write(prom_dma, &entry->cp_entry->cmd.prom_block.prom_haddr);
     
@@ -775,11 +579,7 @@ fore200e_pca_prom_read(struct fore200e* fore200e, struct prom_data* prom)
 
     *entry->status = STATUS_FREE;
 
-<<<<<<< HEAD
-    fore200e->bus->dma_unmap(fore200e, prom_dma, sizeof(struct prom_data), DMA_FROM_DEVICE);
-=======
     dma_unmap_single(fore200e->dev, prom_dma, sizeof(struct prom_data), DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     if (ok == 0) {
 	printk(FORE200E "unable to get PROM data from device %s\n", fore200e->name);
@@ -802,21 +602,12 @@ fore200e_pca_prom_read(struct fore200e* fore200e, struct prom_data* prom)
 static int
 fore200e_pca_proc_read(struct fore200e* fore200e, char *page)
 {
-<<<<<<< HEAD
-    struct pci_dev* pci_dev = (struct pci_dev*)fore200e->bus_dev;
-=======
     struct pci_dev *pci_dev = to_pci_dev(fore200e->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     return sprintf(page, "   PCI bus/slot/function:\t%d/%d/%d\n",
 		   pci_dev->bus->number, PCI_SLOT(pci_dev->devfn), PCI_FUNC(pci_dev->devfn));
 }
 
-<<<<<<< HEAD
-#endif /* CONFIG_PCI */
-
-
-=======
 static const struct fore200e_bus fore200e_pci_ops = {
 	.model_name		= "PCA-200E",
 	.proc_name		= "pca200e",
@@ -836,7 +627,6 @@ static const struct fore200e_bus fore200e_pci_ops = {
 };
 #endif /* CONFIG_PCI */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SBUS
 
 static u32 fore200e_sba_read(volatile u32 __iomem *addr)
@@ -849,81 +639,6 @@ static void fore200e_sba_write(u32 val, volatile u32 __iomem *addr)
     sbus_writel(val, addr);
 }
 
-<<<<<<< HEAD
-static u32 fore200e_sba_dma_map(struct fore200e *fore200e, void* virt_addr, int size, int direction)
-{
-	struct platform_device *op = fore200e->bus_dev;
-	u32 dma_addr;
-
-	dma_addr = dma_map_single(&op->dev, virt_addr, size, direction);
-
-	DPRINTK(3, "SBUS DVMA mapping: virt_addr = 0x%p, size = %d, direction = %d --> dma_addr = 0x%08x\n",
-		virt_addr, size, direction, dma_addr);
-    
-	return dma_addr;
-}
-
-static void fore200e_sba_dma_unmap(struct fore200e *fore200e, u32 dma_addr, int size, int direction)
-{
-	struct platform_device *op = fore200e->bus_dev;
-
-	DPRINTK(3, "SBUS DVMA unmapping: dma_addr = 0x%08x, size = %d, direction = %d,\n",
-		dma_addr, size, direction);
-
-	dma_unmap_single(&op->dev, dma_addr, size, direction);
-}
-
-static void fore200e_sba_dma_sync_for_cpu(struct fore200e *fore200e, u32 dma_addr, int size, int direction)
-{
-	struct platform_device *op = fore200e->bus_dev;
-
-	DPRINTK(3, "SBUS DVMA sync: dma_addr = 0x%08x, size = %d, direction = %d\n", dma_addr, size, direction);
-    
-	dma_sync_single_for_cpu(&op->dev, dma_addr, size, direction);
-}
-
-static void fore200e_sba_dma_sync_for_device(struct fore200e *fore200e, u32 dma_addr, int size, int direction)
-{
-	struct platform_device *op = fore200e->bus_dev;
-
-	DPRINTK(3, "SBUS DVMA sync: dma_addr = 0x%08x, size = %d, direction = %d\n", dma_addr, size, direction);
-
-	dma_sync_single_for_device(&op->dev, dma_addr, size, direction);
-}
-
-/* Allocate a DVMA consistent chunk of memory intended to act as a communication mechanism
- * (to hold descriptors, status, queues, etc.) shared by the driver and the adapter.
- */
-static int fore200e_sba_dma_chunk_alloc(struct fore200e *fore200e, struct chunk *chunk,
-					int size, int nbr, int alignment)
-{
-	struct platform_device *op = fore200e->bus_dev;
-
-	chunk->alloc_size = chunk->align_size = size * nbr;
-
-	/* returned chunks are page-aligned */
-	chunk->alloc_addr = dma_alloc_coherent(&op->dev, chunk->alloc_size,
-					       &chunk->dma_addr, GFP_ATOMIC);
-
-	if ((chunk->alloc_addr == NULL) || (chunk->dma_addr == 0))
-		return -ENOMEM;
-
-	chunk->align_addr = chunk->alloc_addr;
-    
-	return 0;
-}
-
-/* free a DVMA consistent chunk of memory */
-static void fore200e_sba_dma_chunk_free(struct fore200e *fore200e, struct chunk *chunk)
-{
-	struct platform_device *op = fore200e->bus_dev;
-
-	dma_free_coherent(&op->dev, chunk->alloc_size,
-			  chunk->alloc_addr, chunk->dma_addr);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void fore200e_sba_irq_enable(struct fore200e *fore200e)
 {
 	u32 hcr = fore200e->bus->read(fore200e->regs.sba.hcr) & SBA200E_HCR_STICKY;
@@ -950,11 +665,7 @@ static void fore200e_sba_reset(struct fore200e *fore200e)
 
 static int __init fore200e_sba_map(struct fore200e *fore200e)
 {
-<<<<<<< HEAD
-	struct platform_device *op = fore200e->bus_dev;
-=======
 	struct platform_device *op = to_platform_device(fore200e->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int bursts;
 
 	/* gain access to the SBA specific registers  */
@@ -984,11 +695,7 @@ static int __init fore200e_sba_map(struct fore200e *fore200e)
 
 static void fore200e_sba_unmap(struct fore200e *fore200e)
 {
-<<<<<<< HEAD
-	struct platform_device *op = fore200e->bus_dev;
-=======
 	struct platform_device *op = to_platform_device(fore200e->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	of_iounmap(&op->resource[0], fore200e->regs.sba.hcr, SBA200E_HCR_LENGTH);
 	of_iounmap(&op->resource[1], fore200e->regs.sba.bsr, SBA200E_BSR_LENGTH);
@@ -1004,11 +711,7 @@ static int __init fore200e_sba_configure(struct fore200e *fore200e)
 
 static int __init fore200e_sba_prom_read(struct fore200e *fore200e, struct prom_data *prom)
 {
-<<<<<<< HEAD
-	struct platform_device *op = fore200e->bus_dev;
-=======
 	struct platform_device *op = to_platform_device(fore200e->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const u8 *prop;
 	int len;
 
@@ -1032,22 +735,11 @@ static int __init fore200e_sba_prom_read(struct fore200e *fore200e, struct prom_
 
 static int fore200e_sba_proc_read(struct fore200e *fore200e, char *page)
 {
-<<<<<<< HEAD
-	struct platform_device *op = fore200e->bus_dev;
-=======
 	struct platform_device *op = to_platform_device(fore200e->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct linux_prom_registers *regs;
 
 	regs = of_get_property(op->dev.of_node, "reg", NULL);
 
-<<<<<<< HEAD
-	return sprintf(page, "   SBUS slot/device:\t\t%d/'%s'\n",
-		       (regs ? regs->which_io : 0), op->dev.of_node->name);
-}
-#endif /* CONFIG_SBUS */
-
-=======
 	return sprintf(page, "   SBUS slot/device:\t\t%d/'%pOFn'\n",
 		       (regs ? regs->which_io : 0), op->dev.of_node);
 }
@@ -1071,7 +763,6 @@ static const struct fore200e_bus fore200e_sbus_ops = {
 	.proc_read		= fore200e_sba_proc_read,
 };
 #endif /* CONFIG_SBUS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 fore200e_tx_irq(struct fore200e* fore200e)
@@ -1099,11 +790,7 @@ fore200e_tx_irq(struct fore200e* fore200e)
 	kfree(entry->data);
 	
 	/* remove DMA mapping */
-<<<<<<< HEAD
-	fore200e->bus->dma_unmap(fore200e, entry->tpd->tsd[ 0 ].buffer, entry->tpd->tsd[ 0 ].length,
-=======
 	dma_unmap_single(fore200e->dev, entry->tpd->tsd[ 0 ].buffer, entry->tpd->tsd[ 0 ].length,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 DMA_TO_DEVICE);
 
 	vc_map = entry->vc_map;
@@ -1151,16 +838,7 @@ fore200e_tx_irq(struct fore200e* fore200e)
 		else {
 		    dev_kfree_skb_any(entry->skb);
 		}
-<<<<<<< HEAD
-#if 1
-		/* race fixed by the above incarnation mechanism, but... */
-		if (atomic_read(&sk_atm(vcc)->sk_wmem_alloc) < 0) {
-		    atomic_set(&sk_atm(vcc)->sk_wmem_alloc, 0);
-		}
-#endif
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* check error condition */
 		if (*entry->status & STATUS_ERROR)
 		    atomic_inc(&vcc->stats->tx_err);
@@ -1333,14 +1011,6 @@ fore200e_push_rpd(struct fore200e* fore200e, struct atm_vcc* vcc, struct rpd* rp
 	buffer = FORE200E_HDL2BUF(rpd->rsd[ i ].handle);
 	
 	/* Make device DMA transfer visible to CPU.  */
-<<<<<<< HEAD
-	fore200e->bus->dma_sync_for_cpu(fore200e, buffer->data.dma_addr, rpd->rsd[ i ].length, DMA_FROM_DEVICE);
-	
-	memcpy(skb_put(skb, rpd->rsd[ i ].length), buffer->data.align_addr, rpd->rsd[ i ].length);
-
-	/* Now let the device get at it again.  */
-	fore200e->bus->dma_sync_for_device(fore200e, buffer->data.dma_addr, rpd->rsd[ i ].length, DMA_FROM_DEVICE);
-=======
 	dma_sync_single_for_cpu(fore200e->dev, buffer->data.dma_addr,
 				rpd->rsd[i].length, DMA_FROM_DEVICE);
 	
@@ -1349,7 +1019,6 @@ fore200e_push_rpd(struct fore200e* fore200e, struct atm_vcc* vcc, struct rpd* rp
 	/* Now let the device get at it again.  */
 	dma_sync_single_for_device(fore200e->dev, buffer->data.dma_addr,
 				   rpd->rsd[i].length, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     }
 
     DPRINTK(3, "rx skb: len = %d, truesize = %d\n", skb->len, skb->truesize);
@@ -1372,19 +1041,9 @@ fore200e_push_rpd(struct fore200e* fore200e, struct atm_vcc* vcc, struct rpd* rp
 	return -ENOMEM;
     }
 
-<<<<<<< HEAD
-    ASSERT(atomic_read(&sk_atm(vcc)->sk_wmem_alloc) >= 0);
-
     vcc->push(vcc, skb);
     atomic_inc(&vcc->stats->rx);
 
-    ASSERT(atomic_read(&sk_atm(vcc)->sk_wmem_alloc) >= 0);
-
-=======
-    vcc->push(vcc, skb);
-    atomic_inc(&vcc->stats->rx);
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     return 0;
 }
 
@@ -1753,22 +1412,14 @@ fore200e_open(struct atm_vcc *vcc)
 static void
 fore200e_close(struct atm_vcc* vcc)
 {
-<<<<<<< HEAD
-    struct fore200e*        fore200e = FORE200E_DEV(vcc->dev);
-    struct fore200e_vcc*    fore200e_vcc;
-=======
     struct fore200e_vcc*    fore200e_vcc;
     struct fore200e*        fore200e;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct fore200e_vc_map* vc_map;
     unsigned long           flags;
 
     ASSERT(vcc);
-<<<<<<< HEAD
-=======
     fore200e = FORE200E_DEV(vcc->dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     ASSERT((vcc->vpi >= 0) && (vcc->vpi < 1<<FORE200E_VPI_BITS));
     ASSERT((vcc->vci >= 0) && (vcc->vci < 1<<FORE200E_VCI_BITS));
 
@@ -1813,17 +1464,10 @@ fore200e_close(struct atm_vcc* vcc)
 static int
 fore200e_send(struct atm_vcc *vcc, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-    struct fore200e*        fore200e     = FORE200E_DEV(vcc->dev);
-    struct fore200e_vcc*    fore200e_vcc = FORE200E_VCC(vcc);
-    struct fore200e_vc_map* vc_map;
-    struct host_txq*        txq          = &fore200e->host_txq;
-=======
     struct fore200e*        fore200e;
     struct fore200e_vcc*    fore200e_vcc;
     struct fore200e_vc_map* vc_map;
     struct host_txq*        txq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct host_txq_entry*  entry;
     struct tpd*             tpd;
     struct tpd_haddr        tpd_haddr;
@@ -1836,12 +1480,6 @@ fore200e_send(struct atm_vcc *vcc, struct sk_buff *skb)
     unsigned char*          data;
     unsigned long           flags;
 
-<<<<<<< HEAD
-    ASSERT(vcc);
-    ASSERT(atomic_read(&sk_atm(vcc)->sk_wmem_alloc) >= 0);
-    ASSERT(fore200e);
-    ASSERT(fore200e_vcc);
-=======
     if (!vcc)
         return -EINVAL;
 
@@ -1854,7 +1492,6 @@ fore200e_send(struct atm_vcc *vcc, struct sk_buff *skb)
     txq = &fore200e->host_txq;
     if (!fore200e_vcc)
         return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     if (!test_bit(ATM_VF_READY, &vcc->flags)) {
 	DPRINTK(1, "VC %d.%d.%d not ready for tx\n", vcc->itf, vcc->vpi, vcc->vpi);
@@ -1893,11 +1530,7 @@ fore200e_send(struct atm_vcc *vcc, struct sk_buff *skb)
     }
     
     if (tx_copy) {
-<<<<<<< HEAD
-	data = kmalloc(tx_len, GFP_ATOMIC | GFP_DMA);
-=======
 	data = kmalloc(tx_len, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data == NULL) {
 	    if (vcc->pop) {
 		vcc->pop(vcc, skb);
@@ -1965,9 +1598,6 @@ fore200e_send(struct atm_vcc *vcc, struct sk_buff *skb)
     entry->data   = tx_copy ? data : NULL;
 
     tpd = entry->tpd;
-<<<<<<< HEAD
-    tpd->tsd[ 0 ].buffer = fore200e->bus->dma_map(fore200e, data, tx_len, DMA_TO_DEVICE);
-=======
     tpd->tsd[ 0 ].buffer = dma_map_single(fore200e->dev, data, tx_len,
 					  DMA_TO_DEVICE);
     if (dma_mapping_error(fore200e->dev, tpd->tsd[0].buffer)) {
@@ -1976,7 +1606,6 @@ fore200e_send(struct atm_vcc *vcc, struct sk_buff *skb)
 	spin_unlock_irqrestore(&fore200e->q_lock, flags);
 	return -ENOMEM;
     }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     tpd->tsd[ 0 ].length = tx_len;
 
     FORE200E_NEXT_ENTRY(txq->head, QUEUE_SIZE_TX);
@@ -2044,24 +1673,15 @@ fore200e_getstats(struct fore200e* fore200e)
     u32                     stats_dma_addr;
 
     if (fore200e->stats == NULL) {
-<<<<<<< HEAD
-	fore200e->stats = kzalloc(sizeof(struct stats), GFP_KERNEL | GFP_DMA);
-=======
 	fore200e->stats = kzalloc(sizeof(struct stats), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fore200e->stats == NULL)
 	    return -ENOMEM;
     }
     
-<<<<<<< HEAD
-    stats_dma_addr = fore200e->bus->dma_map(fore200e, fore200e->stats,
-					    sizeof(struct stats), DMA_FROM_DEVICE);
-=======
     stats_dma_addr = dma_map_single(fore200e->dev, fore200e->stats,
 				    sizeof(struct stats), DMA_FROM_DEVICE);
     if (dma_mapping_error(fore200e->dev, stats_dma_addr))
     	return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     
     FORE200E_NEXT_ENTRY(cmdq->head, QUEUE_SIZE_CMD);
 
@@ -2078,11 +1698,7 @@ fore200e_getstats(struct fore200e* fore200e)
 
     *entry->status = STATUS_FREE;
 
-<<<<<<< HEAD
-    fore200e->bus->dma_unmap(fore200e, stats_dma_addr, sizeof(struct stats), DMA_FROM_DEVICE);
-=======
     dma_unmap_single(fore200e->dev, stats_dma_addr, sizeof(struct stats), DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     
     if (ok == 0) {
 	printk(FORE200E "unable to get statistics from device %s\n", fore200e->name);
@@ -2092,34 +1708,6 @@ fore200e_getstats(struct fore200e* fore200e)
     return 0;
 }
 
-<<<<<<< HEAD
-
-static int
-fore200e_getsockopt(struct atm_vcc* vcc, int level, int optname, void __user *optval, int optlen)
-{
-    /* struct fore200e* fore200e = FORE200E_DEV(vcc->dev); */
-
-    DPRINTK(2, "getsockopt %d.%d.%d, level = %d, optname = 0x%x, optval = 0x%p, optlen = %d\n",
-	    vcc->itf, vcc->vpi, vcc->vci, level, optname, optval, optlen);
-
-    return -EINVAL;
-}
-
-
-static int
-fore200e_setsockopt(struct atm_vcc* vcc, int level, int optname, void __user *optval, unsigned int optlen)
-{
-    /* struct fore200e* fore200e = FORE200E_DEV(vcc->dev); */
-    
-    DPRINTK(2, "setsockopt %d.%d.%d, level = %d, optname = 0x%x, optval = 0x%p, optlen = %d\n",
-	    vcc->itf, vcc->vpi, vcc->vci, level, optname, optval, optlen);
-    
-    return -EINVAL;
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if 0 /* currently unused */
 static int
 fore200e_get_oc3(struct fore200e* fore200e, struct oc3_regs* regs)
@@ -2340,12 +1928,7 @@ fore200e_change_qos(struct atm_vcc* vcc,struct atm_qos* qos, int flags)
 }
     
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_irq_request(struct fore200e* fore200e)
-=======
 static int fore200e_irq_request(struct fore200e *fore200e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     if (request_irq(fore200e->irq, fore200e_interrupt, IRQF_SHARED, fore200e->name, fore200e->atm_dev) < 0) {
 
@@ -2367,16 +1950,9 @@ static int fore200e_irq_request(struct fore200e *fore200e)
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_get_esi(struct fore200e* fore200e)
-{
-    struct prom_data* prom = kzalloc(sizeof(struct prom_data), GFP_KERNEL | GFP_DMA);
-=======
 static int fore200e_get_esi(struct fore200e *fore200e)
 {
     struct prom_data* prom = kzalloc(sizeof(struct prom_data), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int ok, i;
 
     if (!prom)
@@ -2403,12 +1979,7 @@ static int fore200e_get_esi(struct fore200e *fore200e)
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_alloc_rx_buf(struct fore200e* fore200e)
-=======
 static int fore200e_alloc_rx_buf(struct fore200e *fore200e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     int scheme, magn, nbr, size, i;
 
@@ -2426,12 +1997,8 @@ static int fore200e_alloc_rx_buf(struct fore200e *fore200e)
 	    DPRINTK(2, "rx buffers %d / %d are being allocated\n", scheme, magn);
 
 	    /* allocate the array of receive buffers */
-<<<<<<< HEAD
-	    buffer = bsq->buffer = kzalloc(nbr * sizeof(struct buffer), GFP_KERNEL);
-=======
 	    buffer = bsq->buffer = kcalloc(nbr, sizeof(struct buffer),
                                            GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	    if (buffer == NULL)
 		return -ENOMEM;
@@ -2477,12 +2044,7 @@ static int fore200e_alloc_rx_buf(struct fore200e *fore200e)
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_init_bs_queue(struct fore200e* fore200e)
-=======
 static int fore200e_init_bs_queue(struct fore200e *fore200e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     int scheme, magn, i;
 
@@ -2497,11 +2059,7 @@ static int fore200e_init_bs_queue(struct fore200e *fore200e)
 	    bsq = &fore200e->host_bsq[ scheme ][ magn ];
 
 	    /* allocate and align the array of status words */
-<<<<<<< HEAD
-	    if (fore200e->bus->dma_chunk_alloc(fore200e,
-=======
 	    if (fore200e_dma_chunk_alloc(fore200e,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       &bsq->status,
 					       sizeof(enum status), 
 					       QUEUE_SIZE_BS,
@@ -2510,21 +2068,13 @@ static int fore200e_init_bs_queue(struct fore200e *fore200e)
 	    }
 
 	    /* allocate and align the array of receive buffer descriptors */
-<<<<<<< HEAD
-	    if (fore200e->bus->dma_chunk_alloc(fore200e,
-=======
 	    if (fore200e_dma_chunk_alloc(fore200e,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       &bsq->rbd_block,
 					       sizeof(struct rbd_block),
 					       QUEUE_SIZE_BS,
 					       fore200e->bus->descr_alignment) < 0) {
 		
-<<<<<<< HEAD
-		fore200e->bus->dma_chunk_free(fore200e, &bsq->status);
-=======
 		fore200e_dma_chunk_free(fore200e, &bsq->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	    }
 	    
@@ -2556,12 +2106,7 @@ static int fore200e_init_bs_queue(struct fore200e *fore200e)
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_init_rx_queue(struct fore200e* fore200e)
-=======
 static int fore200e_init_rx_queue(struct fore200e *fore200e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct host_rxq*     rxq =  &fore200e->host_rxq;
     struct cp_rxq_entry __iomem * cp_entry;
@@ -2570,11 +2115,7 @@ static int fore200e_init_rx_queue(struct fore200e *fore200e)
     DPRINTK(2, "receive queue is being initialized\n");
 
     /* allocate and align the array of status words */
-<<<<<<< HEAD
-    if (fore200e->bus->dma_chunk_alloc(fore200e,
-=======
     if (fore200e_dma_chunk_alloc(fore200e,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       &rxq->status,
 				       sizeof(enum status), 
 				       QUEUE_SIZE_RX,
@@ -2583,21 +2124,13 @@ static int fore200e_init_rx_queue(struct fore200e *fore200e)
     }
 
     /* allocate and align the array of receive PDU descriptors */
-<<<<<<< HEAD
-    if (fore200e->bus->dma_chunk_alloc(fore200e,
-=======
     if (fore200e_dma_chunk_alloc(fore200e,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       &rxq->rpd,
 				       sizeof(struct rpd), 
 				       QUEUE_SIZE_RX,
 				       fore200e->bus->descr_alignment) < 0) {
 	
-<<<<<<< HEAD
-	fore200e->bus->dma_chunk_free(fore200e, &rxq->status);
-=======
 	fore200e_dma_chunk_free(fore200e, &rxq->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
     }
 
@@ -2632,12 +2165,7 @@ static int fore200e_init_rx_queue(struct fore200e *fore200e)
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_init_tx_queue(struct fore200e* fore200e)
-=======
 static int fore200e_init_tx_queue(struct fore200e *fore200e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct host_txq*     txq =  &fore200e->host_txq;
     struct cp_txq_entry __iomem * cp_entry;
@@ -2646,11 +2174,7 @@ static int fore200e_init_tx_queue(struct fore200e *fore200e)
     DPRINTK(2, "transmit queue is being initialized\n");
 
     /* allocate and align the array of status words */
-<<<<<<< HEAD
-    if (fore200e->bus->dma_chunk_alloc(fore200e,
-=======
     if (fore200e_dma_chunk_alloc(fore200e,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       &txq->status,
 				       sizeof(enum status), 
 				       QUEUE_SIZE_TX,
@@ -2659,21 +2183,13 @@ static int fore200e_init_tx_queue(struct fore200e *fore200e)
     }
 
     /* allocate and align the array of transmit PDU descriptors */
-<<<<<<< HEAD
-    if (fore200e->bus->dma_chunk_alloc(fore200e,
-=======
     if (fore200e_dma_chunk_alloc(fore200e,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       &txq->tpd,
 				       sizeof(struct tpd), 
 				       QUEUE_SIZE_TX,
 				       fore200e->bus->descr_alignment) < 0) {
 	
-<<<<<<< HEAD
-	fore200e->bus->dma_chunk_free(fore200e, &txq->status);
-=======
 	fore200e_dma_chunk_free(fore200e, &txq->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
     }
 
@@ -2711,12 +2227,7 @@ static int fore200e_init_tx_queue(struct fore200e *fore200e)
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_init_cmd_queue(struct fore200e* fore200e)
-=======
 static int fore200e_init_cmd_queue(struct fore200e *fore200e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct host_cmdq*     cmdq =  &fore200e->host_cmdq;
     struct cp_cmdq_entry __iomem * cp_entry;
@@ -2725,11 +2236,7 @@ static int fore200e_init_cmd_queue(struct fore200e *fore200e)
     DPRINTK(2, "command queue is being initialized\n");
 
     /* allocate and align the array of status words */
-<<<<<<< HEAD
-    if (fore200e->bus->dma_chunk_alloc(fore200e,
-=======
     if (fore200e_dma_chunk_alloc(fore200e,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       &cmdq->status,
 				       sizeof(enum status), 
 				       QUEUE_SIZE_CMD,
@@ -2761,17 +2268,10 @@ static int fore200e_init_cmd_queue(struct fore200e *fore200e)
 }
 
 
-<<<<<<< HEAD
-static void __devinit
-fore200e_param_bs_queue(struct fore200e* fore200e,
-			enum buffer_scheme scheme, enum buffer_magn magn,
-			int queue_length, int pool_size, int supply_blksize)
-=======
 static void fore200e_param_bs_queue(struct fore200e *fore200e,
 				    enum buffer_scheme scheme,
 				    enum buffer_magn magn, int queue_length,
 				    int pool_size, int supply_blksize)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct bs_spec __iomem * bs_spec = &fore200e->cp_queues->init.bs_spec[ scheme ][ magn ];
 
@@ -2782,12 +2282,7 @@ static void fore200e_param_bs_queue(struct fore200e *fore200e,
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_initialize(struct fore200e* fore200e)
-=======
 static int fore200e_initialize(struct fore200e *fore200e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct cp_queues __iomem * cpq;
     int               ok, scheme, magn;
@@ -2838,12 +2333,7 @@ static int fore200e_initialize(struct fore200e *fore200e)
 }
 
 
-<<<<<<< HEAD
-static void __devinit
-fore200e_monitor_putc(struct fore200e* fore200e, char c)
-=======
 static void fore200e_monitor_putc(struct fore200e *fore200e, char c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct cp_monitor __iomem * monitor = fore200e->cp_monitor;
 
@@ -2854,12 +2344,7 @@ static void fore200e_monitor_putc(struct fore200e *fore200e, char c)
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_monitor_getc(struct fore200e* fore200e)
-=======
 static int fore200e_monitor_getc(struct fore200e *fore200e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct cp_monitor __iomem * monitor = fore200e->cp_monitor;
     unsigned long      timeout = jiffies + msecs_to_jiffies(50);
@@ -2883,12 +2368,7 @@ static int fore200e_monitor_getc(struct fore200e *fore200e)
 }
 
 
-<<<<<<< HEAD
-static void __devinit
-fore200e_monitor_puts(struct fore200e* fore200e, char* str)
-=======
 static void fore200e_monitor_puts(struct fore200e *fore200e, char *str)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     while (*str) {
 
@@ -2907,56 +2387,25 @@ static void fore200e_monitor_puts(struct fore200e *fore200e, char *str)
 #define FW_EXT "_ecd.bin2"
 #endif
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_load_and_start_fw(struct fore200e* fore200e)
-{
-    const struct firmware *firmware;
-    struct device *device;
-    struct fw_header *fw_header;
-=======
 static int fore200e_load_and_start_fw(struct fore200e *fore200e)
 {
     const struct firmware *firmware;
     const struct fw_header *fw_header;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     const __le32 *fw_data;
     u32 fw_size;
     u32 __iomem *load_addr;
     char buf[48];
-<<<<<<< HEAD
-    int err = -ENODEV;
-
-    if (strcmp(fore200e->bus->model_name, "PCA-200E") == 0)
-	device = &((struct pci_dev *) fore200e->bus_dev)->dev;
-#ifdef CONFIG_SBUS
-    else if (strcmp(fore200e->bus->model_name, "SBA-200E") == 0)
-	device = &((struct platform_device *) fore200e->bus_dev)->dev;
-#endif
-    else
-	return err;
-
-    sprintf(buf, "%s%s", fore200e->bus->proc_name, FW_EXT);
-    if ((err = request_firmware(&firmware, buf, device)) < 0) {
-=======
     int err;
 
     sprintf(buf, "%s%s", fore200e->bus->proc_name, FW_EXT);
     if ((err = request_firmware(&firmware, buf, fore200e->dev)) < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(FORE200E "problem loading firmware image %s\n", fore200e->bus->model_name);
 	return err;
     }
 
-<<<<<<< HEAD
-    fw_data = (__le32 *) firmware->data;
-    fw_size = firmware->size / sizeof(u32);
-    fw_header = (struct fw_header *) firmware->data;
-=======
     fw_data = (const __le32 *)firmware->data;
     fw_size = firmware->size / sizeof(u32);
     fw_header = (const struct fw_header *)firmware->data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     load_addr = fore200e->virt_base + le32_to_cpu(fw_header->load_offset);
 
     DPRINTK(2, "device %s firmware being loaded at 0x%p (%d words)\n",
@@ -2996,12 +2445,7 @@ release:
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_register(struct fore200e* fore200e, struct device *parent)
-=======
 static int fore200e_register(struct fore200e *fore200e, struct device *parent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct atm_dev* atm_dev;
 
@@ -3027,12 +2471,7 @@ static int fore200e_register(struct fore200e *fore200e, struct device *parent)
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-fore200e_init(struct fore200e* fore200e, struct device *parent)
-=======
 static int fore200e_init(struct fore200e *fore200e, struct device *parent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     if (fore200e_register(fore200e, parent) < 0)
 	return -ENODEV;
@@ -3081,47 +2520,22 @@ static int fore200e_init(struct fore200e *fore200e, struct device *parent)
 }
 
 #ifdef CONFIG_SBUS
-<<<<<<< HEAD
-static const struct of_device_id fore200e_sba_match[];
-static int __devinit fore200e_sba_probe(struct platform_device *op)
-{
-	const struct of_device_id *match;
-	const struct fore200e_bus *bus;
-=======
 static int fore200e_sba_probe(struct platform_device *op)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fore200e *fore200e;
 	static int index = 0;
 	int err;
 
-<<<<<<< HEAD
-	match = of_match_device(fore200e_sba_match, &op->dev);
-	if (!match)
-		return -EINVAL;
-	bus = match->data;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fore200e = kzalloc(sizeof(struct fore200e), GFP_KERNEL);
 	if (!fore200e)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	fore200e->bus = bus;
-	fore200e->bus_dev = op;
-	fore200e->irq = op->archdata.irqs[0];
-	fore200e->phys_base = op->resource[0].start;
-
-	sprintf(fore200e->name, "%s-%d", bus->model_name, index);
-=======
 	fore200e->bus = &fore200e_sbus_ops;
 	fore200e->dev = &op->dev;
 	fore200e->irq = op->archdata.irqs[0];
 	fore200e->phys_base = op->resource[0].start;
 
 	sprintf(fore200e->name, "SBA-200E-%d", index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = fore200e_init(fore200e, &op->dev);
 	if (err < 0) {
@@ -3136,30 +2550,17 @@ static int fore200e_sba_probe(struct platform_device *op)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit fore200e_sba_remove(struct platform_device *op)
-=======
 static void fore200e_sba_remove(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fore200e *fore200e = dev_get_drvdata(&op->dev);
 
 	fore200e_shutdown(fore200e);
 	kfree(fore200e);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id fore200e_sba_match[] = {
 	{
 		.name = SBA200E_PROM_NAME,
-<<<<<<< HEAD
-		.data = (void *) &fore200e_bus[1],
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{},
 };
@@ -3168,32 +2569,17 @@ MODULE_DEVICE_TABLE(of, fore200e_sba_match);
 static struct platform_driver fore200e_sba_driver = {
 	.driver = {
 		.name = "fore_200e",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = fore200e_sba_match,
-	},
-	.probe		= fore200e_sba_probe,
-	.remove		= __devexit_p(fore200e_sba_remove),
-=======
 		.of_match_table = fore200e_sba_match,
 	},
 	.probe		= fore200e_sba_probe,
 	.remove_new	= fore200e_sba_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif
 
 #ifdef CONFIG_PCI
-<<<<<<< HEAD
-static int __devinit
-fore200e_pca_detect(struct pci_dev *pci_dev, const struct pci_device_id *pci_ent)
-{
-    const struct fore200e_bus* bus = (struct fore200e_bus*) pci_ent->driver_data;
-=======
 static int fore200e_pca_detect(struct pci_dev *pci_dev,
 			       const struct pci_device_id *pci_ent)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct fore200e* fore200e;
     int err = 0;
     static int index = 0;
@@ -3202,14 +2588,11 @@ static int fore200e_pca_detect(struct pci_dev *pci_dev,
 	err = -EINVAL;
 	goto out;
     }
-<<<<<<< HEAD
-=======
 
     if (dma_set_mask_and_coherent(&pci_dev->dev, DMA_BIT_MASK(32))) {
 	err = -EINVAL;
 	goto out;
     }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     
     fore200e = kzalloc(sizeof(struct fore200e), GFP_KERNEL);
     if (fore200e == NULL) {
@@ -3217,22 +2600,6 @@ static int fore200e_pca_detect(struct pci_dev *pci_dev,
 	goto out_disable;
     }
 
-<<<<<<< HEAD
-    fore200e->bus       = bus;
-    fore200e->bus_dev   = pci_dev;    
-    fore200e->irq       = pci_dev->irq;
-    fore200e->phys_base = pci_resource_start(pci_dev, 0);
-
-    sprintf(fore200e->name, "%s-%d", bus->model_name, index - 1);
-
-    pci_set_master(pci_dev);
-
-    printk(FORE200E "device %s found at 0x%lx, IRQ %s\n",
-	   fore200e->bus->model_name, 
-	   fore200e->phys_base, fore200e_irq_itoa(fore200e->irq));
-
-    sprintf(fore200e->name, "%s-%d", bus->model_name, index);
-=======
     fore200e->bus       = &fore200e_pci_ops;
     fore200e->dev	= &pci_dev->dev;
     fore200e->irq       = pci_dev->irq;
@@ -3246,7 +2613,6 @@ static int fore200e_pca_detect(struct pci_dev *pci_dev,
 	   fore200e->phys_base, fore200e_irq_itoa(fore200e->irq));
 
     sprintf(fore200e->name, "PCA-200E-%d", index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     err = fore200e_init(fore200e, &pci_dev->dev);
     if (err < 0) {
@@ -3268,11 +2634,7 @@ out_disable:
 }
 
 
-<<<<<<< HEAD
-static void __devexit fore200e_pca_remove_one(struct pci_dev *pci_dev)
-=======
 static void fore200e_pca_remove_one(struct pci_dev *pci_dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct fore200e *fore200e;
 
@@ -3284,14 +2646,8 @@ static void fore200e_pca_remove_one(struct pci_dev *pci_dev)
 }
 
 
-<<<<<<< HEAD
-static struct pci_device_id fore200e_pca_tbl[] = {
-    { PCI_VENDOR_ID_FORE, PCI_DEVICE_ID_FORE_PCA200E, PCI_ANY_ID, PCI_ANY_ID,
-      0, 0, (unsigned long) &fore200e_bus[0] },
-=======
 static const struct pci_device_id fore200e_pca_tbl[] = {
     { PCI_VENDOR_ID_FORE, PCI_DEVICE_ID_FORE_PCA200E, PCI_ANY_ID, PCI_ANY_ID },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     { 0, }
 };
 
@@ -3300,22 +2656,14 @@ MODULE_DEVICE_TABLE(pci, fore200e_pca_tbl);
 static struct pci_driver fore200e_pca_driver = {
     .name =     "fore_200e",
     .probe =    fore200e_pca_detect,
-<<<<<<< HEAD
-    .remove =   __devexit_p(fore200e_pca_remove_one),
-=======
     .remove =   fore200e_pca_remove_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     .id_table = fore200e_pca_tbl,
 };
 #endif
 
 static int __init fore200e_module_init(void)
 {
-<<<<<<< HEAD
-	int err;
-=======
 	int err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(FORE200E "FORE Systems 200E-series ATM driver - version " FORE200E_VERSION "\n");
 
@@ -3615,13 +2963,8 @@ fore200e_proc_read(struct atm_dev *dev, loff_t* pos, char* page)
 	    ASSERT(fore200e_vcc);
 
 	    len = sprintf(page,
-<<<<<<< HEAD
-			  "  %08x  %03d %05d %1d   %09lu %05d/%05d      %09lu %05d/%05d\n",
-			  (u32)(unsigned long)vcc,
-=======
 			  "  %pK  %03d %05d %1d   %09lu %05d/%05d      %09lu %05d/%05d\n",
 			  vcc,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  vcc->vpi, vcc->vci, fore200e_atm2fore_aal(vcc->qos.aal),
 			  fore200e_vcc->tx_pdu,
 			  fore200e_vcc->tx_min_pdu > 0xFFFF ? 0 : fore200e_vcc->tx_min_pdu,
@@ -3644,76 +2987,16 @@ module_init(fore200e_module_init);
 module_exit(fore200e_module_cleanup);
 
 
-<<<<<<< HEAD
-static const struct atmdev_ops fore200e_ops =
-{
-	.open       = fore200e_open,
-	.close      = fore200e_close,
-	.ioctl      = fore200e_ioctl,
-	.getsockopt = fore200e_getsockopt,
-	.setsockopt = fore200e_setsockopt,
-=======
 static const struct atmdev_ops fore200e_ops = {
 	.open       = fore200e_open,
 	.close      = fore200e_close,
 	.ioctl      = fore200e_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.send       = fore200e_send,
 	.change_qos = fore200e_change_qos,
 	.proc_read  = fore200e_proc_read,
 	.owner      = THIS_MODULE
 };
 
-<<<<<<< HEAD
-
-static const struct fore200e_bus fore200e_bus[] = {
-#ifdef CONFIG_PCI
-    { "PCA-200E", "pca200e", 32, 4, 32, 
-      fore200e_pca_read,
-      fore200e_pca_write,
-      fore200e_pca_dma_map,
-      fore200e_pca_dma_unmap,
-      fore200e_pca_dma_sync_for_cpu,
-      fore200e_pca_dma_sync_for_device,
-      fore200e_pca_dma_chunk_alloc,
-      fore200e_pca_dma_chunk_free,
-      fore200e_pca_configure,
-      fore200e_pca_map,
-      fore200e_pca_reset,
-      fore200e_pca_prom_read,
-      fore200e_pca_unmap,
-      NULL,
-      fore200e_pca_irq_check,
-      fore200e_pca_irq_ack,
-      fore200e_pca_proc_read,
-    },
-#endif
-#ifdef CONFIG_SBUS
-    { "SBA-200E", "sba200e", 32, 64, 32,
-      fore200e_sba_read,
-      fore200e_sba_write,
-      fore200e_sba_dma_map,
-      fore200e_sba_dma_unmap,
-      fore200e_sba_dma_sync_for_cpu,
-      fore200e_sba_dma_sync_for_device,
-      fore200e_sba_dma_chunk_alloc,
-      fore200e_sba_dma_chunk_free,
-      fore200e_sba_configure,
-      fore200e_sba_map,
-      fore200e_sba_reset,
-      fore200e_sba_prom_read,
-      fore200e_sba_unmap,
-      fore200e_sba_irq_enable,
-      fore200e_sba_irq_check,
-      fore200e_sba_irq_ack,
-      fore200e_sba_proc_read,
-    },
-#endif
-    {}
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 #ifdef CONFIG_PCI
 #ifdef __LITTLE_ENDIAN__

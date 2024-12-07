@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-/*
- * include/asm-s390/appldata.h
- *
- * Copyright (C) IBM Corp. 2006
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright IBM Corp. 2006
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Author(s): Melissa Howland <melissah@us.ibm.com>
  */
@@ -15,34 +8,8 @@
 #ifndef _ASM_S390_APPLDATA_H
 #define _ASM_S390_APPLDATA_H
 
-<<<<<<< HEAD
-#include <asm/io.h>
-
-#ifndef CONFIG_64BIT
-
-#define APPLDATA_START_INTERVAL_REC	0x00	/* Function codes for */
-#define APPLDATA_STOP_REC		0x01	/* DIAG 0xDC	      */
-#define APPLDATA_GEN_EVENT_REC		0x02
-#define APPLDATA_START_CONFIG_REC	0x03
-
-/*
- * Parameter list for DIAGNOSE X'DC'
- */
-struct appldata_parameter_list {
-	u16 diag;		/* The DIAGNOSE code X'00DC'	      */
-	u8  function;		/* The function code for the DIAGNOSE */
-	u8  parlist_length;	/* Length of the parameter list       */
-	u32 product_id_addr;	/* Address of the 16-byte product ID  */
-	u16 reserved;
-	u16 buffer_length;	/* Length of the application data buffer  */
-	u32 buffer_addr;	/* Address of the application data buffer */
-} __attribute__ ((packed));
-
-#else /* CONFIG_64BIT */
-=======
 #include <linux/io.h>
 #include <asm/diag.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define APPLDATA_START_INTERVAL_REC	0x80
 #define APPLDATA_STOP_REC		0x81
@@ -64,11 +31,6 @@ struct appldata_parameter_list {
 	u64 buffer_addr;
 } __attribute__ ((packed));
 
-<<<<<<< HEAD
-#endif /* CONFIG_64BIT */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct appldata_product_id {
 	char prod_nr[7];	/* product number */
 	u16  prod_fn;		/* product function */
@@ -78,27 +40,6 @@ struct appldata_product_id {
 	u16  mod_lvl;		/* modification level */
 } __attribute__ ((packed));
 
-<<<<<<< HEAD
-static inline int appldata_asm(struct appldata_product_id *id,
-			       unsigned short fn, void *buffer,
-			       unsigned short length)
-{
-	struct appldata_parameter_list parm_list;
-	int ry;
-
-	if (!MACHINE_IS_VM)
-		return -ENOSYS;
-	parm_list.diag = 0xdc;
-	parm_list.function = fn;
-	parm_list.parlist_length = sizeof(parm_list);
-	parm_list.buffer_length = length;
-	parm_list.product_id_addr = (unsigned long) id;
-	parm_list.buffer_addr = virt_to_phys(buffer);
-	asm volatile(
-		"	diag	%1,%0,0xdc"
-		: "=d" (ry)
-		: "d" (&parm_list), "m" (parm_list), "m" (*id)
-=======
 
 static inline int appldata_asm(struct appldata_parameter_list *parm_list,
 			       struct appldata_product_id *id,
@@ -120,7 +61,6 @@ static inline int appldata_asm(struct appldata_parameter_list *parm_list,
 		"	diag	%1,%0,0xdc"
 		: "=d" (ry)
 		: "d" (virt_to_phys(parm_list)), "m" (*parm_list), "m" (*id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "cc");
 	return ry;
 }

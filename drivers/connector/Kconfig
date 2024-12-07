@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 menuconfig CONNECTOR
 	tristate "Connector - unified userspace <-> kernelspace linker"
 	depends on NET
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is unified userspace <-> kernelspace connector working on top
 	  of the netlink socket protocol.
 
@@ -20,17 +13,10 @@ menuconfig CONNECTOR
 if CONNECTOR
 
 config PROC_EVENTS
-<<<<<<< HEAD
-	boolean "Report process events to userspace"
-	depends on CONNECTOR=y
-	default y
-	---help---
-=======
 	bool "Report process events to userspace"
 	depends on CONNECTOR=y
 	default y
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Provide a connector that reports process events to userspace. Send
 	  events such as fork, exec, id change (uid, gid, suid, etc), and exit.
 

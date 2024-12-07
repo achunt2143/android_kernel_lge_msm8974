@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
@@ -9,14 +6,6 @@
  *
  *	See the file "skfddi.c" for further information.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
@@ -37,10 +26,6 @@
  * 	The following external HW dependent functions are referenced :
  * 		sm_pm_control()
  *		sm_ph_linestate()
-<<<<<<< HEAD
- *		sm_pm_ls_latch()
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * 	The following HW dependent events are required :
  *		PC_QLS
@@ -60,13 +45,6 @@
 #define KERNEL
 #include "h/smtstate.h"
 
-<<<<<<< HEAD
-#ifndef	lint
-static const char ID_sccs[] = "@(#)pcmplc.c	2.55 99/08/05 (C) SK " ;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef	FDDI_MIB
 extern int snmp_fddi_trap(
 #ifdef	ANSIC
@@ -104,10 +82,6 @@ int p
 #define PC8_ACTIVE		8
 #define PC9_MAINT		9
 
-<<<<<<< HEAD
-#ifdef	DEBUG
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * symbolic state names
  */
@@ -129,10 +103,6 @@ static const char * const pcm_events[] = {
 	"PC_TIMEOUT_TL_MIN","PC_TIMEOUT_T_NEXT","PC_TIMEOUT_LCT",
 	"PC_NSE","PC_LEM"
 } ;
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef	MOT_ELM
 /*
@@ -629,20 +599,11 @@ void pcm(struct s_smc *smc, const int np, int event)
 	mib = phy->mib ;
 	oldstate = mib->fddiPORTPCMState ;
 	do {
-<<<<<<< HEAD
-		DB_PCM("PCM %c: state %s",
-			phy->phy_name,
-			(mib->fddiPORTPCMState & AFLAG) ? "ACTIONS " : "") ;
-		DB_PCM("%s, event %s\n",
-			pcm_states[mib->fddiPORTPCMState & ~AFLAG],
-			pcm_events[event]) ;
-=======
 		DB_PCM("PCM %c: state %s%s, event %s",
 		       phy->phy_name,
 		       mib->fddiPORTPCMState & AFLAG ? "ACTIONS " : "",
 		       pcm_states[mib->fddiPORTPCMState & ~AFLAG],
 		       pcm_events[event]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		state = mib->fddiPORTPCMState ;
 		pcm_fsm(smc,phy,event) ;
 		event = 0 ;
@@ -882,10 +843,7 @@ static void pcm_fsm(struct s_smc *smc, struct s_phy *phy, int cmd)
 
 	case ACTIONS(PC5_SIGNAL) :
 		ACTIONS_DONE() ;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PC5_SIGNAL :
 		if ((cmd != PC_SIGNAL) && (cmd != PC_TIMEOUT_LCT))
 			break ;
@@ -984,11 +942,7 @@ static void pcm_fsm(struct s_smc *smc, struct s_phy *phy, int cmd)
 		SETMASK(PLC(np,PL_CNTRL_B),PL_PC_JOIN,PL_PC_JOIN) ;
 		ACTIONS_DONE() ;
 		cmd = 0 ;
-<<<<<<< HEAD
-		/* fall thru */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PC6_JOIN :
 		switch (plc->p_state) {
 		case PS_ACTIVE:
@@ -1052,11 +1006,7 @@ static void pcm_fsm(struct s_smc *smc, struct s_phy *phy, int cmd)
 		ACTIONS_DONE() ;
 		break ;
 	case PC9_MAINT :
-<<<<<<< HEAD
-		DB_PCMN(1,"PCM %c : MAINT\n",phy->phy_name,0) ;
-=======
 		DB_PCMN(1, "PCM %c : MAINT", phy->phy_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*PC90*/
 		if (cmd == PC_ENABLE) {
 			GO_STATE(PC0_OFF) ;
@@ -1165,22 +1115,12 @@ static void lem_evaluate(struct s_smc *smc, struct s_phy *phy)
 	}
 
 	if (lem->lem_errors) {
-<<<<<<< HEAD
-		DB_PCMN(1,"LEM %c :\n",phy->np == PB? 'B' : 'A',0) ;
-		DB_PCMN(1,"errors      : %ld\n",lem->lem_errors,0) ;
-		DB_PCMN(1,"sum_errors  : %ld\n",mib->fddiPORTLem_Ct,0) ;
-		DB_PCMN(1,"current BER : 10E-%d\n",ber/100,0) ;
-		DB_PCMN(1,"float BER   : 10E-(%d/100)\n",lem->lem_float_ber,0) ;
-		DB_PCMN(1,"avg. BER    : 10E-%d\n",
-			mib->fddiPORTLer_Estimate,0) ;
-=======
 		DB_PCMN(1, "LEM %c :", phy->np == PB ? 'B' : 'A');
 		DB_PCMN(1, "errors      : %ld", lem->lem_errors);
 		DB_PCMN(1, "sum_errors  : %ld", mib->fddiPORTLem_Ct);
 		DB_PCMN(1, "current BER : 10E-%d", ber / 100);
 		DB_PCMN(1, "float BER   : 10E-(%d/100)", lem->lem_float_ber);
 		DB_PCMN(1, "avg. BER    : 10E-%d", mib->fddiPORTLer_Estimate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	lem->lem_errors = 0L ;
@@ -1208,13 +1148,8 @@ static void lem_evaluate(struct s_smc *smc, struct s_phy *phy)
 
 		/*PC81b*/
 #ifdef	CONCENTRATOR
-<<<<<<< HEAD
-		DB_PCMN(1,"PCM: LER cutoff on port %d cutoff %d\n",
-			phy->np, mib->fddiPORTLer_Cutoff) ;
-=======
 		DB_PCMN(1, "PCM: LER cutoff on port %d cutoff %d",
 			phy->np, mib->fddiPORTLer_Cutoff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifdef	SMT_EXT_CUTOFF
 		smt_port_off_event(smc,phy->np);
@@ -1266,11 +1201,7 @@ static void lem_check_lct(struct s_smc *smc, struct s_phy *phy)
 				phy->pc_lem_fail = TRUE ;
 			break ;
 		}
-<<<<<<< HEAD
-		DB_PCMN(1," >>errors : %d\n",lem->lem_errors,0) ;
-=======
 		DB_PCMN(1, " >>errors : %lu", lem->lem_errors);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (phy->pc_lem_fail) {
 		mib->fddiPORTLCTFail_Ct++ ;
@@ -1309,19 +1240,6 @@ static void sm_ph_lem_stop(struct s_smc *smc, int np)
 	CLEAR(PLC(np,PL_INTR_MASK),PL_LE_CTR) ;
 }
 
-<<<<<<< HEAD
-/* ARGSUSED */
-void sm_pm_ls_latch(struct s_smc *smc, int phy, int on_off)
-/* int on_off;	en- or disable ident. ls */
-{
-	SK_UNUSED(smc) ;
-
-	phy = phy ; on_off = on_off ;
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCM pseudo code
  * receive actions are called AFTER the bit n is received,
@@ -1337,11 +1255,7 @@ static void pc_rcode_actions(struct s_smc *smc, int bit, struct s_phy *phy)
 
 	mib = phy->mib ;
 
-<<<<<<< HEAD
-	DB_PCMN(1,"SIG rec %x %x:\n", bit,phy->r_val[bit] ) ;
-=======
 	DB_PCMN(1, "SIG rec %x %x:", bit, phy->r_val[bit]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bit++ ;
 
 	switch(bit) {
@@ -1362,13 +1276,8 @@ static void pc_rcode_actions(struct s_smc *smc, int bit, struct s_phy *phy)
 	case 4:
 		if (mib->fddiPORTMy_Type == TM &&
 			mib->fddiPORTNeighborType == TM) {
-<<<<<<< HEAD
-			DB_PCMN(1,"PCM %c : E100 withhold M-M\n",
-				phy->phy_name,0) ;
-=======
 			DB_PCMN(1, "PCM %c : E100 withhold M-M",
 				phy->phy_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mib->fddiPORTPC_Withhold = PC_WH_M_M ;
 			RS_SET(smc,RS_EVENT) ;
 		}
@@ -1390,26 +1299,16 @@ static void pc_rcode_actions(struct s_smc *smc, int bit, struct s_phy *phy)
 		else {
 			mib->fddiPORTPC_Withhold = PC_WH_OTHER ;
 			RS_SET(smc,RS_EVENT) ;
-<<<<<<< HEAD
-			DB_PCMN(1,"PCM %c : E101 withhold other\n",
-				phy->phy_name,0) ;
-=======
 			DB_PCMN(1, "PCM %c : E101 withhold other",
 				phy->phy_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		phy->twisted = ((mib->fddiPORTMy_Type != TS) &&
 				(mib->fddiPORTMy_Type != TM) &&
 				(mib->fddiPORTNeighborType ==
 				mib->fddiPORTMy_Type)) ;
 		if (phy->twisted) {
-<<<<<<< HEAD
-			DB_PCMN(1,"PCM %c : E102 !!! TWISTED !!!\n",
-				phy->phy_name,0) ;
-=======
 			DB_PCMN(1, "PCM %c : E102 !!! TWISTED !!!",
 				phy->phy_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break ;
 	case 5 :
@@ -1447,11 +1346,7 @@ static void pc_rcode_actions(struct s_smc *smc, int bit, struct s_phy *phy)
 		if (phy->t_next[7] > smc->s.pcm_lc_medium) {
 			start_pcm_timer0(smc,phy->t_next[7],PC_TIMEOUT_LCT,phy);
 		}
-<<<<<<< HEAD
-		DB_PCMN(1,"LCT timer = %ld us\n", phy->t_next[7], 0) ;
-=======
 		DB_PCMN(1, "LCT timer = %ld us", phy->t_next[7]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phy->t_next[9] = smc->s.pcm_t_next_9 ;
 		break ;
 	case 7:
@@ -1462,14 +1357,9 @@ static void pc_rcode_actions(struct s_smc *smc, int bit, struct s_phy *phy)
 		break ;
 	case 8:
 		if (phy->t_val[7] || phy->r_val[7]) {
-<<<<<<< HEAD
-			DB_PCMN(1,"PCM %c : E103 LCT fail %s\n",
-				phy->phy_name,phy->t_val[7]? "local":"remote") ;
-=======
 			DB_PCMN(1, "PCM %c : E103 LCT fail %s",
 				phy->phy_name,
 				phy->t_val[7] ? "local" : "remote");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			queue_event(smc,(int)(EVENT_PCM+phy->np),PC_START) ;
 		}
 		break ;
@@ -1618,12 +1508,7 @@ static void pc_tcode_actions(struct s_smc *smc, const int bit, struct s_phy *phy
 		phy->cf_loop = FALSE ;
 		lem_check_lct(smc,phy) ;
 		if (phy->pc_lem_fail) {
-<<<<<<< HEAD
-			DB_PCMN(1,"PCM %c : E104 LCT failed\n",
-				phy->phy_name,0) ;
-=======
 			DB_PCMN(1, "PCM %c : E104 LCT failed", phy->phy_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			phy->t_val[7] = 1 ;
 		}
 		else
@@ -1673,11 +1558,7 @@ static void pc_tcode_actions(struct s_smc *smc, const int bit, struct s_phy *phy
 		mib->fddiPORTMacIndicated.T_val = phy->t_val[9] ;
 		break ;
 	}
-<<<<<<< HEAD
-	DB_PCMN(1,"SIG snd %x %x:\n", bit,phy->t_val[bit] ) ;
-=======
 	DB_PCMN(1, "SIG snd %x %x:", bit, phy->t_val[bit]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1880,15 +1761,6 @@ void plc_irq(struct s_smc *smc, int np, unsigned int cmd)
 		}
 
 		/*jd 05-Aug-1999 changed: Bug #10419 */
-<<<<<<< HEAD
-		DB_PCMN(1,"PLC %d: MDcF = %x\n", np, smc->e.DisconnectFlag);
-		if (smc->e.DisconnectFlag == FALSE) {
-			DB_PCMN(1,"PLC %d: restart (reason %x)\n", np, reason);
-			queue_event(smc,EVENT_PCM+np,PC_START) ;
-		}
-		else {
-			DB_PCMN(1,"PLC %d: NO!! restart (reason %x)\n", np, reason);
-=======
 		DB_PCMN(1, "PLC %d: MDcF = %x", np, smc->e.DisconnectFlag);
 		if (smc->e.DisconnectFlag == FALSE) {
 			DB_PCMN(1, "PLC %d: restart (reason %x)", np, reason);
@@ -1897,7 +1769,6 @@ void plc_irq(struct s_smc *smc, int np, unsigned int cmd)
 		else {
 			DB_PCMN(1, "PLC %d: NO!! restart (reason %x)",
 				np, reason);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return ;
 	}
@@ -1918,13 +1789,8 @@ void plc_irq(struct s_smc *smc, int np, unsigned int cmd)
 	if (cmd & PL_TRACE_PROP) {	/* MLS while PC8_ACTIV || PC2_TRACE */
 		/*PC22b*/
 		if (!phy->tr_flag) {
-<<<<<<< HEAD
-			DB_PCMN(1,"PCM : irq TRACE_PROP %d %d\n",
-				np,smc->mib.fddiSMTECMState) ;
-=======
 			DB_PCMN(1, "PCM : irq TRACE_PROP %d %d",
 				np, smc->mib.fddiSMTECMState);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			phy->tr_flag = TRUE ;
 			smc->e.trace_prop |= ENTITY_BIT(ENTITY_PHY(np)) ;
 			queue_event(smc,EVENT_ECM,EC_TRACE_PROP) ;
@@ -1937,14 +1803,9 @@ void plc_irq(struct s_smc *smc, int np, unsigned int cmd)
 	if ((cmd & PL_SELF_TEST) && (phy->mib->fddiPORTPCMState == PC2_TRACE)) {
 		/*PC22a*/
 		if (smc->e.path_test == PT_PASSED) {
-<<<<<<< HEAD
-			DB_PCMN(1,"PCM : state = %s %d\n", get_pcmstate(smc,np),
-				phy->mib->fddiPORTPCMState) ;
-=======
 			DB_PCMN(1, "PCM : state = %s %d",
 				get_pcmstate(smc, np),
 				phy->mib->fddiPORTPCMState);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			smc->e.path_test = PT_PENDING ;
 			queue_event(smc,EVENT_ECM,EC_PATH_TEST) ;
@@ -1954,16 +1815,10 @@ void plc_irq(struct s_smc *smc, int np, unsigned int cmd)
 		/* break_required (TNE > NS_Max) */
 		if (phy->mib->fddiPORTPCMState == PC8_ACTIVE) {
 			if (!phy->tr_flag) {
-<<<<<<< HEAD
-			   DB_PCMN(1,"PCM %c : PC81 %s\n",phy->phy_name,"NSE");
-			   queue_event(smc,EVENT_PCM+np,PC_START) ;
-			   return ;
-=======
 				DB_PCMN(1, "PCM %c : PC81 %s",
 					phy->phy_name, "NSE");
 				queue_event(smc, EVENT_PCM + np, PC_START);
 				return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}

@@ -8,10 +8,6 @@
 #ifndef __ASM_MACH_GENERIC_CPU_FEATURE_OVERRIDES_H
 #define __ASM_MACH_GENERIC_CPU_FEATURE_OVERRIDES_H
 
-<<<<<<< HEAD
-/* Intentionally empty file ...  */
-=======
 /* Intentionally empty file ...	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_MACH_GENERIC_CPU_FEATURE_OVERRIDES_H */

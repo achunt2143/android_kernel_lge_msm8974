@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/debugfs.h>
@@ -91,11 +73,7 @@ bfad_debugfs_open_fwtrc(struct inode *inode, struct file *file)
 
 	fw_debug->buffer_len = sizeof(struct bfa_trc_mod_s);
 
-<<<<<<< HEAD
-	fw_debug->debug_buffer = vmalloc(fw_debug->buffer_len);
-=======
 	fw_debug->debug_buffer = vzalloc(fw_debug->buffer_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fw_debug->debug_buffer) {
 		kfree(fw_debug);
 		printk(KERN_INFO "bfad[%d]: Failed to allocate fwtrc buffer\n",
@@ -103,11 +81,6 @@ bfad_debugfs_open_fwtrc(struct inode *inode, struct file *file)
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	memset(fw_debug->debug_buffer, 0, fw_debug->buffer_len);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	rc = bfa_ioc_debug_fwtrc(&bfad->bfa.ioc,
 			fw_debug->debug_buffer,
@@ -142,11 +115,7 @@ bfad_debugfs_open_fwsave(struct inode *inode, struct file *file)
 
 	fw_debug->buffer_len = sizeof(struct bfa_trc_mod_s);
 
-<<<<<<< HEAD
-	fw_debug->debug_buffer = vmalloc(fw_debug->buffer_len);
-=======
 	fw_debug->debug_buffer = vzalloc(fw_debug->buffer_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fw_debug->debug_buffer) {
 		kfree(fw_debug);
 		printk(KERN_INFO "bfad[%d]: Failed to allocate fwsave buffer\n",
@@ -154,11 +123,6 @@ bfad_debugfs_open_fwsave(struct inode *inode, struct file *file)
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	memset(fw_debug->debug_buffer, 0, fw_debug->buffer_len);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	rc = bfa_ioc_debug_fwsave(&bfad->bfa.ioc,
 			fw_debug->debug_buffer,
@@ -198,37 +162,9 @@ bfad_debugfs_open_reg(struct inode *inode, struct file *file)
 static loff_t
 bfad_debugfs_lseek(struct file *file, loff_t offset, int orig)
 {
-<<<<<<< HEAD
-	struct bfad_debug_info *debug;
-	loff_t pos = file->f_pos;
-
-	debug = file->private_data;
-
-	switch (orig) {
-	case 0:
-		file->f_pos = offset;
-		break;
-	case 1:
-		file->f_pos += offset;
-		break;
-	case 2:
-		file->f_pos = debug->buffer_len - offset;
-		break;
-	default:
-		return -EINVAL;
-	}
-
-	if (file->f_pos < 0 || file->f_pos > debug->buffer_len) {
-		file->f_pos = pos;
-		return -EINVAL;
-	}
-
-	return file->f_pos;
-=======
 	struct bfad_debug_info *debug = file->private_data;
 	return fixed_size_llseek(file, offset, orig,
 				debug->buffer_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -307,41 +243,19 @@ bfad_debugfs_write_regrd(struct file *file, const char __user *buf,
 	struct bfad_s *bfad = port->bfad;
 	struct bfa_s *bfa = &bfad->bfa;
 	struct bfa_ioc_s *ioc = &bfa->ioc;
-<<<<<<< HEAD
-	int addr, len, rc, i;
-=======
 	int addr, rc, i;
 	u32 len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 *regbuf;
 	void __iomem *rb, *reg_addr;
 	unsigned long flags;
 	void *kern_buf;
 
-<<<<<<< HEAD
-	kern_buf = kzalloc(nbytes, GFP_KERNEL);
-
-	if (!kern_buf) {
-		printk(KERN_INFO "bfad[%d]: Failed to allocate buffer\n",
-				bfad->inst_no);
-		return -ENOMEM;
-	}
-
-	if (copy_from_user(kern_buf, (void  __user *)buf, nbytes)) {
-		kfree(kern_buf);
-		return -ENOMEM;
-	}
-
-	rc = sscanf(kern_buf, "%x:%x", &addr, &len);
-	if (rc < 2) {
-=======
 	kern_buf = memdup_user(buf, nbytes);
 	if (IS_ERR(kern_buf))
 		return PTR_ERR(kern_buf);
 
 	rc = sscanf(kern_buf, "%x:%x", &addr, &len);
 	if (rc < 2 || len > (UINT_MAX >> 2)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_INFO
 			"bfad[%d]: %s failed to read user buf\n",
 			bfad->inst_no, __func__);
@@ -403,24 +317,9 @@ bfad_debugfs_write_regwr(struct file *file, const char __user *buf,
 	unsigned long flags;
 	void *kern_buf;
 
-<<<<<<< HEAD
-	kern_buf = kzalloc(nbytes, GFP_KERNEL);
-
-	if (!kern_buf) {
-		printk(KERN_INFO "bfad[%d]: Failed to allocate buffer\n",
-				bfad->inst_no);
-		return -ENOMEM;
-	}
-
-	if (copy_from_user(kern_buf, (void  __user *)buf, nbytes)) {
-		kfree(kern_buf);
-		return -ENOMEM;
-	}
-=======
 	kern_buf = memdup_user(buf, nbytes);
 	if (IS_ERR(kern_buf))
 		return PTR_ERR(kern_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = sscanf(kern_buf, "%x:%x", &addr, &val);
 	if (rc < 2) {
@@ -472,12 +371,7 @@ bfad_debugfs_release_fwtrc(struct inode *inode, struct file *file)
 	if (!fw_debug)
 		return 0;
 
-<<<<<<< HEAD
-	if (fw_debug->debug_buffer)
-		vfree(fw_debug->debug_buffer);
-=======
 	vfree(fw_debug->debug_buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	file->private_data = NULL;
 	kfree(fw_debug);
@@ -557,14 +451,6 @@ bfad_debugfs_init(struct bfad_port_s *port)
 	if (!bfa_debugfs_root) {
 		bfa_debugfs_root = debugfs_create_dir("bfa", NULL);
 		atomic_set(&bfa_debugfs_port_count, 0);
-<<<<<<< HEAD
-		if (!bfa_debugfs_root) {
-			printk(KERN_WARNING
-				"BFA debugfs root dir creation failed\n");
-			goto err;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Setup the pci_dev debugfs directory for the port */
@@ -572,15 +458,6 @@ bfad_debugfs_init(struct bfad_port_s *port)
 	if (!port->port_debugfs_root) {
 		port->port_debugfs_root =
 			debugfs_create_dir(name, bfa_debugfs_root);
-<<<<<<< HEAD
-		if (!port->port_debugfs_root) {
-			printk(KERN_WARNING
-				"bfa %s: debugfs root creation failed\n",
-				bfad->pci_name);
-			goto err;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		atomic_inc(&bfa_debugfs_port_count);
 
@@ -592,22 +469,9 @@ bfad_debugfs_init(struct bfad_port_s *port)
 							port->port_debugfs_root,
 							port,
 							file->fops);
-<<<<<<< HEAD
-			if (!bfad->bfad_dentry_files[i]) {
-				printk(KERN_WARNING
-					"bfa %s: debugfs %s creation failed\n",
-					bfad->pci_name, file->name);
-				goto err;
-			}
 		}
 	}
 
-err:
-=======
-		}
-	}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 

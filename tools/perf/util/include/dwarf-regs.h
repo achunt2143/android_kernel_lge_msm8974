@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-#ifndef _PERF_DWARF_REGS_H_
-#define _PERF_DWARF_REGS_H_
-
-#ifdef DWARF_SUPPORT
-const char *get_arch_regstr(unsigned int n);
-#endif
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _PERF_DWARF_REGS_H_
 #define _PERF_DWARF_REGS_H_
@@ -48,5 +39,4 @@ static inline int get_dwarf_regnum(const char *name __maybe_unused,
  */
 int regs_query_register_offset(const char *name);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

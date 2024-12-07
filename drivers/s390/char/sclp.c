@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * core function to access sclp interface
  *
@@ -14,35 +11,22 @@
 #include <linux/kernel_stat.h>
 #include <linux/module.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-=======
 #include <linux/panic_notifier.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>
 #include <linux/timer.h>
 #include <linux/reboot.h>
 #include <linux/jiffies.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/suspend.h>
-#include <linux/completion.h>
-#include <linux/platform_device.h>
-#include <asm/types.h>
-#include <asm/irq.h>
-=======
 #include <linux/platform_device.h>
 #include <asm/types.h>
 #include <asm/irq.h>
 #include <asm/debug.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "sclp.h"
 
 #define SCLP_HEADER		"sclp: "
 
-<<<<<<< HEAD
-=======
 struct sclp_trace_entry {
 	char id[4] __nonstring;
 	u32 a;
@@ -61,7 +45,6 @@ DEFINE_STATIC_DEBUG_INFO(sclp_debug, "sclp", 8, 1, SCLP_TRACE_ENTRY_SIZE,
 DEFINE_STATIC_DEBUG_INFO(sclp_debug_err, "sclp_err", 4, 1,
 			 SCLP_TRACE_ENTRY_SIZE, &debug_hex_ascii_view);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Lock to protect internal data consistency. */
 static DEFINE_SPINLOCK(sclp_lock);
 
@@ -72,28 +55,6 @@ static sccb_mask_t sclp_receive_mask;
 static sccb_mask_t sclp_send_mask;
 
 /* List of registered event listeners and senders. */
-<<<<<<< HEAD
-static struct list_head sclp_reg_list;
-
-/* List of queued requests. */
-static struct list_head sclp_req_queue;
-
-/* Data for read and and init requests. */
-static struct sclp_req sclp_read_req;
-static struct sclp_req sclp_init_req;
-static char sclp_read_sccb[PAGE_SIZE] __attribute__((__aligned__(PAGE_SIZE)));
-static char sclp_init_sccb[PAGE_SIZE] __attribute__((__aligned__(PAGE_SIZE)));
-
-/* Suspend request */
-static DECLARE_COMPLETION(sclp_request_queue_flushed);
-
-static void sclp_suspend_req_cb(struct sclp_req *req, void *data)
-{
-	complete(&sclp_request_queue_flushed);
-}
-
-static struct sclp_req sclp_suspend_req;
-=======
 static LIST_HEAD(sclp_reg_list);
 
 /* List of queued requests. */
@@ -238,22 +199,12 @@ static int __init sclp_setup_console_drop(char *str)
 }
 
 __setup("sclp_con_drop=", sclp_setup_console_drop);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Timer for request retries. */
 static struct timer_list sclp_request_timer;
 
-<<<<<<< HEAD
-/* Internal state: is the driver initialized? */
-static volatile enum sclp_init_state_t {
-	sclp_init_state_uninitialized,
-	sclp_init_state_initializing,
-	sclp_init_state_initialized
-} sclp_init_state = sclp_init_state_uninitialized;
-=======
 /* Timer for queued requests. */
 static struct timer_list sclp_queue_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Internal state: is a request active at the sclp? */
 static volatile enum sclp_running_state_t {
@@ -282,15 +233,6 @@ static volatile enum sclp_mask_state_t {
 	sclp_mask_state_initializing
 } sclp_mask_state = sclp_mask_state_idle;
 
-<<<<<<< HEAD
-/* Internal state: is the driver suspended? */
-static enum sclp_suspend_state_t {
-	sclp_suspend_state_running,
-	sclp_suspend_state_suspended,
-} sclp_suspend_state = sclp_suspend_state_running;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Maximum retry counts */
 #define SCLP_INIT_RETRY		3
 #define SCLP_MASK_RETRY		3
@@ -299,38 +241,12 @@ static enum sclp_suspend_state_t {
 #define SCLP_BUSY_INTERVAL	10
 #define SCLP_RETRY_INTERVAL	30
 
-<<<<<<< HEAD
-=======
 static void sclp_request_timeout(bool force_restart);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sclp_process_queue(void);
 static void __sclp_make_read_req(void);
 static int sclp_init_mask(int calculate);
 static int sclp_init(void);
 
-<<<<<<< HEAD
-/* Perform service call. Return 0 on success, non-zero otherwise. */
-int
-sclp_service_call(sclp_cmdw_t command, void *sccb)
-{
-	int cc;
-
-	asm volatile(
-		"	.insn	rre,0xb2200000,%1,%2\n"  /* servc %1,%2 */
-		"	ipm	%0\n"
-		"	srl	%0,28"
-		: "=&d" (cc) : "d" (command), "a" (__pa(sccb))
-		: "cc", "memory");
-	if (cc == 3)
-		return -EIO;
-	if (cc == 2)
-		return -EBUSY;
-	return 0;
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 __sclp_queue_read_req(void)
 {
@@ -344,34 +260,14 @@ __sclp_queue_read_req(void)
 
 /* Set up request retry timer. Called while sclp_lock is locked. */
 static inline void
-<<<<<<< HEAD
-__sclp_set_request_timer(unsigned long time, void (*function)(unsigned long),
-			 unsigned long data)
-{
-	del_timer(&sclp_request_timer);
-	sclp_request_timer.function = function;
-	sclp_request_timer.data = data;
-=======
 __sclp_set_request_timer(unsigned long time, void (*cb)(struct timer_list *))
 {
 	del_timer(&sclp_request_timer);
 	sclp_request_timer.function = cb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sclp_request_timer.expires = jiffies + time;
 	add_timer(&sclp_request_timer);
 }
 
-<<<<<<< HEAD
-/* Request timeout handler. Restart the request queue. If DATA is non-zero,
- * force restart of running request. */
-static void
-sclp_request_timeout(unsigned long data)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&sclp_lock, flags);
-	if (data) {
-=======
 static void sclp_request_timeout_restart(struct timer_list *unused)
 {
 	sclp_request_timeout(true);
@@ -393,7 +289,6 @@ static void sclp_request_timeout(bool force_restart)
 
 	spin_lock_irqsave(&sclp_lock, flags);
 	if (force_restart) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sclp_running_state == sclp_running_state_running) {
 			/* Break running state and queue NOP read event request
 			 * to get a defined interface state. */
@@ -402,18 +297,12 @@ static void sclp_request_timeout(bool force_restart)
 		}
 	} else {
 		__sclp_set_request_timer(SCLP_BUSY_INTERVAL * HZ,
-<<<<<<< HEAD
-					 sclp_request_timeout, 0);
-=======
 					 sclp_request_timeout_normal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	sclp_process_queue();
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Returns the expire value in jiffies of the next pending request timeout,
  * if any. Needs to be called with sclp_lock.
@@ -509,7 +398,6 @@ static int sclp_service_call_trace(sclp_cmdw_t command, void *sccb)
 	return rc;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Try to start a request. Return zero if the request was successfully
  * started or if it will be started at a later time. Return non-zero otherwise.
  * Called while sclp_lock is locked. */
@@ -521,11 +409,7 @@ __sclp_start_request(struct sclp_req *req)
 	if (sclp_running_state != sclp_running_state_idle)
 		return 0;
 	del_timer(&sclp_request_timer);
-<<<<<<< HEAD
-	rc = sclp_service_call(req->command, req->sccb);
-=======
 	rc = sclp_service_call_trace(req->command, req->sccb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->start_count++;
 
 	if (rc == 0) {
@@ -533,20 +417,12 @@ __sclp_start_request(struct sclp_req *req)
 		req->status = SCLP_REQ_RUNNING;
 		sclp_running_state = sclp_running_state_running;
 		__sclp_set_request_timer(SCLP_RETRY_INTERVAL * HZ,
-<<<<<<< HEAD
-					 sclp_request_timeout, 1);
-=======
 					 sclp_request_timeout_restart);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	} else if (rc == -EBUSY) {
 		/* Try again later */
 		__sclp_set_request_timer(SCLP_BUSY_INTERVAL * HZ,
-<<<<<<< HEAD
-					 sclp_request_timeout, 0);
-=======
 					 sclp_request_timeout_normal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	/* Request failed */
@@ -570,11 +446,6 @@ sclp_process_queue(void)
 	del_timer(&sclp_request_timer);
 	while (!list_empty(&sclp_req_queue)) {
 		req = list_entry(sclp_req_queue.next, struct sclp_req, list);
-<<<<<<< HEAD
-		if (!req->sccb)
-			goto do_post;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = __sclp_start_request(req);
 		if (rc == 0)
 			break;
@@ -583,14 +454,6 @@ sclp_process_queue(void)
 			/* Cannot abort already submitted request - could still
 			 * be active at the SCLP */
 			__sclp_set_request_timer(SCLP_BUSY_INTERVAL * HZ,
-<<<<<<< HEAD
-						 sclp_request_timeout, 0);
-			break;
-		}
-do_post:
-		/* Post-processing for aborted request */
-		list_del(&req->list);
-=======
 						 sclp_request_timeout_normal);
 			break;
 		}
@@ -600,7 +463,6 @@ do_post:
 		/* RQAB: Request aborted (a=sccb, b=summary) */
 		sclp_trace_req(2, "RQAB", req, true);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (req->callback) {
 			spin_unlock_irqrestore(&sclp_lock, flags);
 			req->callback(req, req->callback_data);
@@ -612,15 +474,8 @@ do_post:
 
 static int __sclp_can_add_request(struct sclp_req *req)
 {
-<<<<<<< HEAD
-	if (req == &sclp_suspend_req || req == &sclp_init_req)
-		return 1;
-	if (sclp_suspend_state != sclp_suspend_state_running)
-		return 0;
-=======
 	if (req == &sclp_init_req)
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sclp_init_state != sclp_init_state_initialized)
 		return 0;
 	if (sclp_activation_state != sclp_activation_state_active)
@@ -640,27 +495,14 @@ sclp_add_request(struct sclp_req *req)
 		spin_unlock_irqrestore(&sclp_lock, flags);
 		return -EIO;
 	}
-<<<<<<< HEAD
-=======
 
 	/* RQAD: Request was added (a=sccb, b=caller) */
 	sclp_trace(2, "RQAD", __pa(req->sccb), _RET_IP_, false);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->status = SCLP_REQ_QUEUED;
 	req->start_count = 0;
 	list_add_tail(&req->list, &sclp_req_queue);
 	rc = 0;
-<<<<<<< HEAD
-	/* Start if request is first in list */
-	if (sclp_running_state == sclp_running_state_idle &&
-	    req->list.prev == &sclp_req_queue) {
-		if (!req->sccb) {
-			list_del(&req->list);
-			rc = -ENODATA;
-			goto out;
-		}
-=======
 	if (req->queue_timeout) {
 		req->queue_expires = jiffies + req->queue_timeout * HZ;
 		if (!timer_pending(&sclp_queue_timer) ||
@@ -671,15 +513,10 @@ sclp_add_request(struct sclp_req *req)
 	/* Start if request is first in list */
 	if (sclp_running_state == sclp_running_state_idle &&
 	    req->list.prev == &sclp_req_queue) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = __sclp_start_request(req);
 		if (rc)
 			list_del(&req->list);
 	}
-<<<<<<< HEAD
-out:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	return rc;
 }
@@ -710,33 +547,22 @@ sclp_dispatch_evbufs(struct sccb_header *sccb)
 		reg = NULL;
 		list_for_each(l, &sclp_reg_list) {
 			reg = list_entry(l, struct sclp_register, list);
-<<<<<<< HEAD
-			if (reg->receive_mask & (1 << (32 - evbuf->type)))
-=======
 			if (reg->receive_mask & SCLP_EVTYP_MASK(evbuf->type))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			else
 				reg = NULL;
 		}
-<<<<<<< HEAD
-=======
 
 		/* EVNT: Event callback (b=receiver) */
 		sclp_trace_evbuf(2, "EVNT", 0, reg ? (u64)reg->receiver_fn : 0,
 				 evbuf, !reg);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (reg && reg->receiver_fn) {
 			spin_unlock_irqrestore(&sclp_lock, flags);
 			reg->receiver_fn(evbuf);
 			spin_lock_irqsave(&sclp_lock, flags);
 		} else if (reg == NULL)
-<<<<<<< HEAD
-			rc = -ENOSYS;
-=======
 			rc = -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	return rc;
@@ -786,19 +612,12 @@ __sclp_find_req(u32 sccb)
 
 	list_for_each(l, &sclp_req_queue) {
 		req = list_entry(l, struct sclp_req, list);
-<<<<<<< HEAD
-		if (sccb == (u32) (addr_t) req->sccb)
-				return req;
-=======
 		if (sccb == __pa(req->sccb))
 			return req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 static bool ok_response(u32 sccb_int, sclp_cmdw_t cmd)
 {
 	struct sccb_header *sccb = (struct sccb_header *)__va(sccb_int);
@@ -823,7 +642,6 @@ static bool ok_response(u32 sccb_int, sclp_cmdw_t cmd)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Handler for external interruption. Perform request post-processing.
  * Prepare read event data request if necessary. Start processing of next
  * request on queue. */
@@ -834,12 +652,6 @@ static void sclp_interrupt_handler(struct ext_code ext_code,
 	u32 finished_sccb;
 	u32 evbuf_pending;
 
-<<<<<<< HEAD
-	kstat_cpu(smp_processor_id()).irqs[EXTINT_SCP]++;
-	spin_lock(&sclp_lock);
-	finished_sccb = param32 & 0xfffffff8;
-	evbuf_pending = param32 & 0x3;
-=======
 	inc_irq_stat(IRQEXT_SCP);
 	spin_lock(&sclp_lock);
 	finished_sccb = param32 & 0xfffffff8;
@@ -850,7 +662,6 @@ static void sclp_interrupt_handler(struct ext_code ext_code,
 			(struct sccb_header *)__va(finished_sccb),
 			!ok_response(finished_sccb, active_cmd));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (finished_sccb) {
 		del_timer(&sclp_request_timer);
 		sclp_running_state = sclp_running_state_reset_pending;
@@ -859,29 +670,21 @@ static void sclp_interrupt_handler(struct ext_code ext_code,
 			/* Request post-processing */
 			list_del(&req->list);
 			req->status = SCLP_REQ_DONE;
-<<<<<<< HEAD
-=======
 
 			/* RQOK: Request success (a=sccb, b=summary) */
 			sclp_trace_req(2, "RQOK", req, false);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (req->callback) {
 				spin_unlock(&sclp_lock);
 				req->callback(req, req->callback_data);
 				spin_lock(&sclp_lock);
 			}
-<<<<<<< HEAD
-		}
-		sclp_running_state = sclp_running_state_idle;
-=======
 		} else {
 			/* UNEX: Unexpected SCCB completion (a=sccb address) */
 			sclp_trace(0, "UNEX", finished_sccb, 0, true);
 		}
 		sclp_running_state = sclp_running_state_idle;
 		active_cmd = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (evbuf_pending &&
 	    sclp_activation_state == sclp_activation_state_active)
@@ -903,13 +706,6 @@ void
 sclp_sync_wait(void)
 {
 	unsigned long long old_tick;
-<<<<<<< HEAD
-	unsigned long flags;
-	unsigned long cr0, cr0_sync;
-	u64 timeout;
-	int irq_context;
-
-=======
 	struct ctlreg cr0, cr0_sync;
 	unsigned long flags;
 	static u64 sync_count;
@@ -919,17 +715,12 @@ sclp_sync_wait(void)
 	/* SYN1: Synchronous wait start (a=runstate, b=sync count) */
 	sclp_trace(4, "SYN1", sclp_running_state, ++sync_count, false);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We'll be disabling timer interrupts, so we need a custom timeout
 	 * mechanism */
 	timeout = 0;
 	if (timer_pending(&sclp_request_timer)) {
 		/* Get timeout TOD value */
-<<<<<<< HEAD
-		timeout = get_clock() +
-=======
 		timeout = get_tod_clock_fast() +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  sclp_tod_from_jiffies(sclp_request_timer.expires -
 						jiffies);
 	}
@@ -941,49 +732,27 @@ sclp_sync_wait(void)
 	/* Enable service-signal interruption, disable timer interrupts */
 	old_tick = local_tick_disable();
 	trace_hardirqs_on();
-<<<<<<< HEAD
-	__ctl_store(cr0, 0, 0);
-	cr0_sync = cr0;
-	cr0_sync &= 0xffff00a0;
-	cr0_sync |= 0x00000200;
-	__ctl_load(cr0_sync, 0, 0);
-=======
 	local_ctl_store(0, &cr0);
 	cr0_sync.val = cr0.val & ~CR0_IRQ_SUBCLASS_MASK;
 	cr0_sync.val |= 1UL << (63 - 54);
 	local_ctl_load(0, &cr0_sync);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__arch_local_irq_stosm(0x01);
 	/* Loop until driver state indicates finished request */
 	while (sclp_running_state != sclp_running_state_idle) {
 		/* Check for expired request timer */
-<<<<<<< HEAD
-		if (timer_pending(&sclp_request_timer) &&
-		    get_clock() > timeout &&
-		    del_timer(&sclp_request_timer))
-			sclp_request_timer.function(sclp_request_timer.data);
-		cpu_relax();
-	}
-	local_irq_disable();
-	__ctl_load(cr0, 0, 0);
-=======
 		if (get_tod_clock_fast() > timeout && del_timer(&sclp_request_timer))
 			sclp_request_timer.function(&sclp_request_timer);
 		cpu_relax();
 	}
 	local_irq_disable();
 	local_ctl_load(0, &cr0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!irq_context)
 		_local_bh_enable();
 	local_tick_enable(old_tick);
 	local_irq_restore(flags);
-<<<<<<< HEAD
-=======
 
 	/* SYN2: Synchronous wait end (a=runstate, b=sync_count) */
 	sclp_trace(4, "SYN2", sclp_running_state, sync_count, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(sclp_sync_wait);
 
@@ -1013,10 +782,6 @@ sclp_dispatch_state_change(void)
 				reg = NULL;
 		}
 		spin_unlock_irqrestore(&sclp_lock, flags);
-<<<<<<< HEAD
-		if (reg && reg->state_change_fn)
-			reg->state_change_fn(reg);
-=======
 		if (reg && reg->state_change_fn) {
 			/* STCG: State-change callback (b=callback) */
 			sclp_trace(2, "STCG", 0, (u64)reg->state_change_fn,
@@ -1024,7 +789,6 @@ sclp_dispatch_state_change(void)
 
 			reg->state_change_fn(reg);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (reg);
 }
 
@@ -1037,18 +801,12 @@ struct sclp_statechangebuf {
 	u16		_zeros : 12;
 	u16		mask_length;
 	u64		sclp_active_facility_mask;
-<<<<<<< HEAD
-	sccb_mask_t	sclp_receive_mask;
-	sccb_mask_t	sclp_send_mask;
-	u32		read_data_function_mask;
-=======
 	u8		masks[2 * 1021 + 4];	/* variable length */
 	/*
 	 * u8		sclp_receive_mask[mask_length];
 	 * u8		sclp_send_mask[mask_length];
 	 * u32		read_data_function_mask;
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((packed));
 
 
@@ -1059,19 +817,6 @@ sclp_state_change_cb(struct evbuf_header *evbuf)
 	unsigned long flags;
 	struct sclp_statechangebuf *scbuf;
 
-<<<<<<< HEAD
-	scbuf = (struct sclp_statechangebuf *) evbuf;
-	if (scbuf->mask_length != sizeof(sccb_mask_t))
-		return;
-	spin_lock_irqsave(&sclp_lock, flags);
-	if (scbuf->validity_sclp_receive_mask)
-		sclp_receive_mask = scbuf->sclp_receive_mask;
-	if (scbuf->validity_sclp_send_mask)
-		sclp_send_mask = scbuf->sclp_send_mask;
-	spin_unlock_irqrestore(&sclp_lock, flags);
-	if (scbuf->validity_sclp_active_facility_mask)
-		sclp_facilities = scbuf->sclp_active_facility_mask;
-=======
 	BUILD_BUG_ON(sizeof(struct sclp_statechangebuf) > PAGE_SIZE);
 
 	scbuf = (struct sclp_statechangebuf *) evbuf;
@@ -1083,7 +828,6 @@ sclp_state_change_cb(struct evbuf_header *evbuf)
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	if (scbuf->validity_sclp_active_facility_mask)
 		sclp.facilities = scbuf->sclp_active_facility_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sclp_dispatch_state_change();
 }
 
@@ -1118,12 +862,9 @@ sclp_register(struct sclp_register *reg)
 	sccb_mask_t send_mask;
 	int rc;
 
-<<<<<<< HEAD
-=======
 	/* REG: Event listener registered (b=caller) */
 	sclp_trace_register(2, "REG", 0, _RET_IP_, reg);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = sclp_init();
 	if (rc)
 		return rc;
@@ -1137,10 +878,6 @@ sclp_register(struct sclp_register *reg)
 	/* Trigger initial state change callback */
 	reg->sclp_receive_mask = 0;
 	reg->sclp_send_mask = 0;
-<<<<<<< HEAD
-	reg->pm_event_posted = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add(&reg->list, &sclp_reg_list);
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	rc = sclp_init_mask(1);
@@ -1160,12 +897,9 @@ sclp_unregister(struct sclp_register *reg)
 {
 	unsigned long flags;
 
-<<<<<<< HEAD
-=======
 	/* UREG: Event listener unregistered (b=caller) */
 	sclp_trace_register(2, "UREG", 0, _RET_IP_, reg);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&sclp_lock, flags);
 	list_del(&reg->list);
 	spin_unlock_irqrestore(&sclp_lock, flags);
@@ -1203,32 +937,12 @@ sclp_remove_processed(struct sccb_header *sccb)
 
 EXPORT_SYMBOL(sclp_remove_processed);
 
-<<<<<<< HEAD
-struct init_sccb {
-	struct sccb_header header;
-	u16 _reserved;
-	u16 mask_length;
-	sccb_mask_t receive_mask;
-	sccb_mask_t send_mask;
-	sccb_mask_t sclp_receive_mask;
-	sccb_mask_t sclp_send_mask;
-} __attribute__((packed));
-
-/* Prepare init mask request. Called while sclp_lock is locked. */
-static inline void
-__sclp_make_init_req(u32 receive_mask, u32 send_mask)
-{
-	struct init_sccb *sccb;
-
-	sccb = (struct init_sccb *) sclp_init_sccb;
-=======
 /* Prepare init mask request. Called while sclp_lock is locked. */
 static inline void
 __sclp_make_init_req(sccb_mask_t receive_mask, sccb_mask_t send_mask)
 {
 	struct init_sccb *sccb = sclp_init_sccb;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_page(sccb);
 	memset(&sclp_init_req, 0, sizeof(struct sclp_req));
 	sclp_init_req.command = SCLP_CMDW_WRITE_EVENT_MASK;
@@ -1237,14 +951,6 @@ __sclp_make_init_req(sccb_mask_t receive_mask, sccb_mask_t send_mask)
 	sclp_init_req.callback = NULL;
 	sclp_init_req.callback_data = NULL;
 	sclp_init_req.sccb = sccb;
-<<<<<<< HEAD
-	sccb->header.length = sizeof(struct init_sccb);
-	sccb->mask_length = sizeof(sccb_mask_t);
-	sccb->receive_mask = receive_mask;
-	sccb->send_mask = send_mask;
-	sccb->sclp_receive_mask = 0;
-	sccb->sclp_send_mask = 0;
-=======
 	sccb->header.length = sizeof(*sccb);
 	if (sclp_mask_compat_mode)
 		sccb->mask_length = SCLP_MASK_SIZE_COMPAT;
@@ -1254,7 +960,6 @@ __sclp_make_init_req(sccb_mask_t receive_mask, sccb_mask_t send_mask)
 	sccb_set_send_mask(sccb, send_mask);
 	sccb_set_sclp_recv_mask(sccb, 0);
 	sccb_set_sclp_send_mask(sccb, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Start init mask request. If calculate is non-zero, calculate the mask as
@@ -1264,11 +969,7 @@ static int
 sclp_init_mask(int calculate)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-	struct init_sccb *sccb = (struct init_sccb *) sclp_init_sccb;
-=======
 	struct init_sccb *sccb = sclp_init_sccb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sccb_mask_t receive_mask;
 	sccb_mask_t send_mask;
 	int retry;
@@ -1314,13 +1015,8 @@ sclp_init_mask(int calculate)
 		    sccb->header.response_code == 0x20) {
 			/* Successful request */
 			if (calculate) {
-<<<<<<< HEAD
-				sclp_receive_mask = sccb->sclp_receive_mask;
-				sclp_send_mask = sccb->sclp_send_mask;
-=======
 				sclp_receive_mask = sccb_get_sclp_recv_mask(sccb);
 				sclp_send_mask = sccb_get_sclp_send_mask(sccb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				sclp_receive_mask = 0;
 				sclp_send_mask = 0;
@@ -1402,20 +1098,12 @@ static void sclp_check_handler(struct ext_code ext_code,
 {
 	u32 finished_sccb;
 
-<<<<<<< HEAD
-	kstat_cpu(smp_processor_id()).irqs[EXTINT_SCP]++;
-=======
 	inc_irq_stat(IRQEXT_SCP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	finished_sccb = param32 & 0xfffffff8;
 	/* Is this the interrupt we are waiting for? */
 	if (finished_sccb == 0)
 		return;
-<<<<<<< HEAD
-	if (finished_sccb != (u32) (addr_t) sclp_init_sccb)
-=======
 	if (finished_sccb != __pa(sclp_init_sccb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		panic("sclp: unsolicited interrupt for buffer at 0x%x\n",
 		      finished_sccb);
 	spin_lock(&sclp_lock);
@@ -1428,11 +1116,7 @@ static void sclp_check_handler(struct ext_code ext_code,
 
 /* Initial init mask request timed out. Modify request state to failed. */
 static void
-<<<<<<< HEAD
-sclp_check_timeout(unsigned long data)
-=======
 sclp_check_timeout(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -1457,11 +1141,7 @@ sclp_check_interface(void)
 
 	spin_lock_irqsave(&sclp_lock, flags);
 	/* Prepare init mask command */
-<<<<<<< HEAD
-	rc = register_external_interrupt(0x2401, sclp_check_handler);
-=======
 	rc = register_external_irq(EXT_IRQ_SERVICE_SIG, sclp_check_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		spin_unlock_irqrestore(&sclp_lock, flags);
 		return rc;
@@ -1469,46 +1149,21 @@ sclp_check_interface(void)
 	for (retry = 0; retry <= SCLP_INIT_RETRY; retry++) {
 		__sclp_make_init_req(0, 0);
 		sccb = (struct init_sccb *) sclp_init_req.sccb;
-<<<<<<< HEAD
-		rc = sclp_service_call(sclp_init_req.command, sccb);
-=======
 		rc = sclp_service_call_trace(sclp_init_req.command, sccb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc == -EIO)
 			break;
 		sclp_init_req.status = SCLP_REQ_RUNNING;
 		sclp_running_state = sclp_running_state_running;
 		__sclp_set_request_timer(SCLP_RETRY_INTERVAL * HZ,
-<<<<<<< HEAD
-					 sclp_check_timeout, 0);
-		spin_unlock_irqrestore(&sclp_lock, flags);
-		/* Enable service-signal interruption - needs to happen
-		 * with IRQs enabled. */
-		service_subclass_irq_register();
-=======
 					 sclp_check_timeout);
 		spin_unlock_irqrestore(&sclp_lock, flags);
 		/* Enable service-signal interruption - needs to happen
 		 * with IRQs enabled. */
 		irq_subclass_register(IRQ_SUBCLASS_SERVICE_SIGNAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Wait for signal from interrupt or timeout */
 		sclp_sync_wait();
 		/* Disable service-signal interruption - needs to happen
 		 * with IRQs enabled. */
-<<<<<<< HEAD
-		service_subclass_irq_unregister();
-		spin_lock_irqsave(&sclp_lock, flags);
-		del_timer(&sclp_request_timer);
-		if (sclp_init_req.status == SCLP_REQ_DONE &&
-		    sccb->header.response_code == 0x20) {
-			rc = 0;
-			break;
-		} else
-			rc = -EBUSY;
-	}
-	unregister_external_interrupt(0x2401, sclp_check_handler);
-=======
 		irq_subclass_unregister(IRQ_SUBCLASS_SERVICE_SIGNAL);
 		spin_lock_irqsave(&sclp_lock, flags);
 		del_timer(&sclp_request_timer);
@@ -1526,7 +1181,6 @@ sclp_check_interface(void)
 		}
 	}
 	unregister_external_irq(EXT_IRQ_SERVICE_SIG, sclp_check_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	return rc;
 }
@@ -1544,112 +1198,6 @@ static struct notifier_block sclp_reboot_notifier = {
 	.notifier_call = sclp_reboot_event
 };
 
-<<<<<<< HEAD
-/*
- * Suspend/resume SCLP notifier implementation
- */
-
-static void sclp_pm_event(enum sclp_pm_event sclp_pm_event, int rollback)
-{
-	struct sclp_register *reg;
-	unsigned long flags;
-
-	if (!rollback) {
-		spin_lock_irqsave(&sclp_lock, flags);
-		list_for_each_entry(reg, &sclp_reg_list, list)
-			reg->pm_event_posted = 0;
-		spin_unlock_irqrestore(&sclp_lock, flags);
-	}
-	do {
-		spin_lock_irqsave(&sclp_lock, flags);
-		list_for_each_entry(reg, &sclp_reg_list, list) {
-			if (rollback && reg->pm_event_posted)
-				goto found;
-			if (!rollback && !reg->pm_event_posted)
-				goto found;
-		}
-		spin_unlock_irqrestore(&sclp_lock, flags);
-		return;
-found:
-		spin_unlock_irqrestore(&sclp_lock, flags);
-		if (reg->pm_event_fn)
-			reg->pm_event_fn(reg, sclp_pm_event);
-		reg->pm_event_posted = rollback ? 0 : 1;
-	} while (1);
-}
-
-/*
- * Susend/resume callbacks for platform device
- */
-
-static int sclp_freeze(struct device *dev)
-{
-	unsigned long flags;
-	int rc;
-
-	sclp_pm_event(SCLP_PM_EVENT_FREEZE, 0);
-
-	spin_lock_irqsave(&sclp_lock, flags);
-	sclp_suspend_state = sclp_suspend_state_suspended;
-	spin_unlock_irqrestore(&sclp_lock, flags);
-
-	/* Init supend data */
-	memset(&sclp_suspend_req, 0, sizeof(sclp_suspend_req));
-	sclp_suspend_req.callback = sclp_suspend_req_cb;
-	sclp_suspend_req.status = SCLP_REQ_FILLED;
-	init_completion(&sclp_request_queue_flushed);
-
-	rc = sclp_add_request(&sclp_suspend_req);
-	if (rc == 0)
-		wait_for_completion(&sclp_request_queue_flushed);
-	else if (rc != -ENODATA)
-		goto fail_thaw;
-
-	rc = sclp_deactivate();
-	if (rc)
-		goto fail_thaw;
-	return 0;
-
-fail_thaw:
-	spin_lock_irqsave(&sclp_lock, flags);
-	sclp_suspend_state = sclp_suspend_state_running;
-	spin_unlock_irqrestore(&sclp_lock, flags);
-	sclp_pm_event(SCLP_PM_EVENT_THAW, 1);
-	return rc;
-}
-
-static int sclp_undo_suspend(enum sclp_pm_event event)
-{
-	unsigned long flags;
-	int rc;
-
-	rc = sclp_reactivate();
-	if (rc)
-		return rc;
-
-	spin_lock_irqsave(&sclp_lock, flags);
-	sclp_suspend_state = sclp_suspend_state_running;
-	spin_unlock_irqrestore(&sclp_lock, flags);
-
-	sclp_pm_event(event, 0);
-	return 0;
-}
-
-static int sclp_thaw(struct device *dev)
-{
-	return sclp_undo_suspend(SCLP_PM_EVENT_THAW);
-}
-
-static int sclp_restore(struct device *dev)
-{
-	return sclp_undo_suspend(SCLP_PM_EVENT_RESTORE);
-}
-
-static const struct dev_pm_ops sclp_pm_ops = {
-	.freeze		= sclp_freeze,
-	.thaw		= sclp_thaw,
-	.restore	= sclp_restore,
-=======
 static ssize_t con_pages_show(struct device_driver *dev, char *buf)
 {
 	return sysfs_emit(buf, "%i\n", sclp_console_pages);
@@ -1691,26 +1239,15 @@ static struct attribute_group sclp_drv_attr_group = {
 static const struct attribute_group *sclp_drv_attr_groups[] = {
 	&sclp_drv_attr_group,
 	NULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_driver sclp_pdrv = {
 	.driver = {
 		.name	= "sclp",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-		.pm	= &sclp_pm_ops,
-	},
-};
-
-static struct platform_device *sclp_pdev;
-
-=======
 		.groups = sclp_drv_attr_groups,
 	},
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Initialize SCLP driver. Return zero if driver is operational, non-zero
  * otherwise. */
 static int
@@ -1724,13 +1261,6 @@ sclp_init(void)
 	if (sclp_init_state != sclp_init_state_uninitialized)
 		goto fail_unlock;
 	sclp_init_state = sclp_init_state_initializing;
-<<<<<<< HEAD
-	/* Set up variables */
-	INIT_LIST_HEAD(&sclp_req_queue);
-	INIT_LIST_HEAD(&sclp_reg_list);
-	list_add(&sclp_state_change_event.list, &sclp_reg_list);
-	init_timer(&sclp_request_timer);
-=======
 	sclp_read_sccb = (void *) __get_free_page(GFP_ATOMIC | GFP_DMA);
 	sclp_init_sccb = (void *) __get_free_page(GFP_ATOMIC | GFP_DMA);
 	BUG_ON(!sclp_read_sccb || !sclp_init_sccb);
@@ -1738,7 +1268,6 @@ sclp_init(void)
 	list_add(&sclp_state_change_event.list, &sclp_reg_list);
 	timer_setup(&sclp_request_timer, NULL, 0);
 	timer_setup(&sclp_queue_timer, sclp_req_queue_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check interface */
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	rc = sclp_check_interface();
@@ -1750,22 +1279,14 @@ sclp_init(void)
 	if (rc)
 		goto fail_init_state_uninitialized;
 	/* Register interrupt handler */
-<<<<<<< HEAD
-	rc = register_external_interrupt(0x2401, sclp_interrupt_handler);
-=======
 	rc = register_external_irq(EXT_IRQ_SERVICE_SIG, sclp_interrupt_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto fail_unregister_reboot_notifier;
 	sclp_init_state = sclp_init_state_initialized;
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	/* Enable service-signal external interruption - needs to happen with
 	 * IRQs enabled. */
-<<<<<<< HEAD
-	service_subclass_irq_register();
-=======
 	irq_subclass_register(IRQ_SUBCLASS_SERVICE_SIGNAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sclp_init_mask(1);
 	return 0;
 
@@ -1773,36 +1294,13 @@ fail_unregister_reboot_notifier:
 	unregister_reboot_notifier(&sclp_reboot_notifier);
 fail_init_state_uninitialized:
 	sclp_init_state = sclp_init_state_uninitialized;
-<<<<<<< HEAD
-=======
 	free_page((unsigned long) sclp_read_sccb);
 	free_page((unsigned long) sclp_init_sccb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_unlock:
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	return rc;
 }
 
-<<<<<<< HEAD
-/*
- * SCLP panic notifier: If we are suspended, we thaw SCLP in order to be able
- * to print the panic message.
- */
-static int sclp_panic_notify(struct notifier_block *self,
-			     unsigned long event, void *data)
-{
-	if (sclp_suspend_state == sclp_suspend_state_suspended)
-		sclp_undo_suspend(SCLP_PM_EVENT_THAW);
-	return NOTIFY_OK;
-}
-
-static struct notifier_block sclp_on_panic_nb = {
-	.notifier_call = sclp_panic_notify,
-	.priority = SCLP_PANIC_PRIO,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __init int sclp_initcall(void)
 {
 	int rc;
@@ -1810,27 +1308,8 @@ static __init int sclp_initcall(void)
 	rc = platform_driver_register(&sclp_pdrv);
 	if (rc)
 		return rc;
-<<<<<<< HEAD
-	sclp_pdev = platform_device_register_simple("sclp", -1, NULL, 0);
-	rc = IS_ERR(sclp_pdev) ? PTR_ERR(sclp_pdev) : 0;
-	if (rc)
-		goto fail_platform_driver_unregister;
-	rc = atomic_notifier_chain_register(&panic_notifier_list,
-					    &sclp_on_panic_nb);
-	if (rc)
-		goto fail_platform_device_unregister;
 
 	return sclp_init();
-
-fail_platform_device_unregister:
-	platform_device_unregister(sclp_pdev);
-fail_platform_driver_unregister:
-	platform_driver_unregister(&sclp_pdrv);
-	return rc;
-=======
-
-	return sclp_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 arch_initcall(sclp_initcall);

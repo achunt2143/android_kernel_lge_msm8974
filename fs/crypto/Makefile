@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-obj-$(CONFIG_FS_ENCRYPTION)	+= fscrypto.o
-
-fscrypto-y := crypto.o fname.o policy.o keyinfo.o
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 obj-$(CONFIG_FS_ENCRYPTION)	+= fscrypto.o
 
@@ -17,4 +12,3 @@ fscrypto-y := crypto.o \
 
 fscrypto-$(CONFIG_BLOCK) += bio.o
 fscrypto-$(CONFIG_FS_ENCRYPTION_INLINE_CRYPT) += inline_crypt.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

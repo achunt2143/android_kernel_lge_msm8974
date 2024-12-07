@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/module.h>
-#include <asm/sizes.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/sizes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm/addrspace.h>
 

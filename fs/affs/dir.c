@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/affs/dir.c
  *
@@ -17,25 +14,15 @@
  *
  */
 
-<<<<<<< HEAD
-#include "affs.h"
-
-static int affs_readdir(struct file *, void *, filldir_t);
-=======
 #include <linux/iversion.h>
 #include "affs.h"
 
 static int affs_readdir(struct file *, struct dir_context *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const struct file_operations affs_dir_operations = {
 	.read		= generic_read_dir,
 	.llseek		= generic_file_llseek,
-<<<<<<< HEAD
-	.readdir	= affs_readdir,
-=======
 	.iterate_shared	= affs_readdir,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fsync		= affs_file_fsync,
 };
 
@@ -50,67 +37,22 @@ const struct inode_operations affs_dir_inode_operations = {
 	.symlink	= affs_symlink,
 	.mkdir		= affs_mkdir,
 	.rmdir		= affs_rmdir,
-<<<<<<< HEAD
-	.rename		= affs_rename,
-=======
 	.rename		= affs_rename2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setattr	= affs_notify_change,
 };
 
 static int
-<<<<<<< HEAD
-affs_readdir(struct file *filp, void *dirent, filldir_t filldir)
-{
-	struct inode		*inode = filp->f_path.dentry->d_inode;
-	struct super_block	*sb = inode->i_sb;
-	struct buffer_head	*dir_bh;
-	struct buffer_head	*fh_bh;
-=======
 affs_readdir(struct file *file, struct dir_context *ctx)
 {
 	struct inode		*inode = file_inode(file);
 	struct super_block	*sb = inode->i_sb;
 	struct buffer_head	*dir_bh = NULL;
 	struct buffer_head	*fh_bh = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char		*name;
 	int			 namelen;
 	u32			 i;
 	int			 hash_pos;
 	int			 chain_pos;
-<<<<<<< HEAD
-	u32			 f_pos;
-	u32			 ino;
-	int			 stored;
-	int			 res;
-
-	pr_debug("AFFS: readdir(ino=%lu,f_pos=%lx)\n",inode->i_ino,(unsigned long)filp->f_pos);
-
-	stored = 0;
-	res    = -EIO;
-	dir_bh = NULL;
-	fh_bh  = NULL;
-	f_pos  = filp->f_pos;
-
-	if (f_pos == 0) {
-		filp->private_data = (void *)0;
-		if (filldir(dirent, ".", 1, f_pos, inode->i_ino, DT_DIR) < 0)
-			return 0;
-		filp->f_pos = f_pos = 1;
-		stored++;
-	}
-	if (f_pos == 1) {
-		if (filldir(dirent, "..", 2, f_pos, parent_ino(filp->f_path.dentry), DT_DIR) < 0)
-			return stored;
-		filp->f_pos = f_pos = 2;
-		stored++;
-	}
-
-	affs_lock_dir(inode);
-	chain_pos = (f_pos - 2) & 0xffff;
-	hash_pos  = (f_pos - 2) >> 16;
-=======
 	u32			 ino;
 	int			 error = 0;
 
@@ -125,37 +67,22 @@ affs_readdir(struct file *file, struct dir_context *ctx)
 	affs_lock_dir(inode);
 	chain_pos = (ctx->pos - 2) & 0xffff;
 	hash_pos  = (ctx->pos - 2) >> 16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chain_pos == 0xffff) {
 		affs_warning(sb, "readdir", "More than 65535 entries in chain");
 		chain_pos = 0;
 		hash_pos++;
-<<<<<<< HEAD
-		filp->f_pos = ((hash_pos << 16) | chain_pos) + 2;
-	}
-	dir_bh = affs_bread(sb, inode->i_ino);
-	if (!dir_bh)
-		goto readdir_out;
-=======
 		ctx->pos = ((hash_pos << 16) | chain_pos) + 2;
 	}
 	dir_bh = affs_bread(sb, inode->i_ino);
 	if (!dir_bh)
 		goto out_unlock_dir;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the directory hasn't changed since the last call to readdir(),
 	 * we can jump directly to where we left off.
 	 */
-<<<<<<< HEAD
-	ino = (u32)(long)filp->private_data;
-	if (ino && filp->f_version == inode->i_version) {
-		pr_debug("AFFS: readdir() left off=%d\n", ino);
-=======
 	ino = (u32)(long)file->private_data;
 	if (ino && inode_eq_iversion(inode, file->f_version)) {
 		pr_debug("readdir() left off=%d\n", ino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto inside;
 	}
 
@@ -164,12 +91,8 @@ affs_readdir(struct file *file, struct dir_context *ctx)
 		fh_bh = affs_bread(sb, ino);
 		if (!fh_bh) {
 			affs_error(sb, "readdir","Cannot read block %d", i);
-<<<<<<< HEAD
-			goto readdir_out;
-=======
 			error = -EIO;
 			goto out_brelse_dir;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		ino = be32_to_cpu(AFFS_TAIL(sb, fh_bh)->hash_chain);
 		affs_brelse(fh_bh);
@@ -183,29 +106,11 @@ affs_readdir(struct file *file, struct dir_context *ctx)
 		ino = be32_to_cpu(AFFS_HEAD(dir_bh)->table[hash_pos]);
 		if (!ino)
 			continue;
-<<<<<<< HEAD
-		f_pos = (hash_pos << 16) + 2;
-=======
 		ctx->pos = (hash_pos << 16) + 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 inside:
 		do {
 			fh_bh = affs_bread(sb, ino);
 			if (!fh_bh) {
-<<<<<<< HEAD
-				affs_error(sb, "readdir","Cannot read block %d", ino);
-				goto readdir_done;
-			}
-
-			namelen = min(AFFS_TAIL(sb, fh_bh)->name[0], (u8)30);
-			name = AFFS_TAIL(sb, fh_bh)->name + 1;
-			pr_debug("AFFS: readdir(): filldir(\"%.*s\", ino=%u), hash=%d, f_pos=%x\n",
-				 namelen, name, ino, hash_pos, f_pos);
-			if (filldir(dirent, name, namelen, f_pos, ino, DT_UNKNOWN) < 0)
-				goto readdir_done;
-			stored++;
-			f_pos++;
-=======
 				affs_error(sb, "readdir",
 					   "Cannot read block %d", ino);
 				break;
@@ -220,26 +125,11 @@ inside:
 			if (!dir_emit(ctx, name, namelen, ino, DT_UNKNOWN))
 				goto done;
 			ctx->pos++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ino = be32_to_cpu(AFFS_TAIL(sb, fh_bh)->hash_chain);
 			affs_brelse(fh_bh);
 			fh_bh = NULL;
 		} while (ino);
 	}
-<<<<<<< HEAD
-readdir_done:
-	filp->f_pos = f_pos;
-	filp->f_version = inode->i_version;
-	filp->private_data = (void *)(long)ino;
-	res = stored;
-
-readdir_out:
-	affs_brelse(dir_bh);
-	affs_brelse(fh_bh);
-	affs_unlock_dir(inode);
-	pr_debug("AFFS: readdir()=%d\n", stored);
-	return res;
-=======
 done:
 	file->f_version = inode_query_iversion(inode);
 	file->private_data = (void *)(long)ino;
@@ -251,5 +141,4 @@ out_brelse_dir:
 out_unlock_dir:
 	affs_unlock_dir(inode);
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

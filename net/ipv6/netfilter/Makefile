@@ -1,42 +1,20 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the netfilter modules on top of IPv6.
 #
 
 # Link order matters here.
-<<<<<<< HEAD
-obj-$(CONFIG_IP6_NF_IPTABLES) += ip6_tables.o
-=======
 obj-$(CONFIG_IP6_NF_IPTABLES_LEGACY) += ip6_tables.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_IP6_NF_FILTER) += ip6table_filter.o
 obj-$(CONFIG_IP6_NF_MANGLE) += ip6table_mangle.o
 obj-$(CONFIG_IP6_NF_RAW) += ip6table_raw.o
 obj-$(CONFIG_IP6_NF_SECURITY) += ip6table_security.o
-<<<<<<< HEAD
-obj-$(CONFIG_NF_NAT_IPV6) += ip6table_nat.o
-
-# objects for l3 independent conntrack
-nf_conntrack_ipv6-y  :=  nf_conntrack_l3proto_ipv6.o nf_conntrack_proto_icmpv6.o
-
-# l3 independent conntrack
-obj-$(CONFIG_NF_CONNTRACK_IPV6) += nf_conntrack_ipv6.o nf_defrag_ipv6.o
-
-nf_nat_ipv6-y		:= nf_nat_l3proto_ipv6.o nf_nat_proto_icmpv6.o
-obj-$(CONFIG_NF_NAT_IPV6) += nf_nat_ipv6.o
-=======
 obj-$(CONFIG_IP6_NF_NAT) += ip6table_nat.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # defrag
 nf_defrag_ipv6-y := nf_defrag_ipv6_hooks.o nf_conntrack_reasm.o
 obj-$(CONFIG_NF_DEFRAG_IPV6) += nf_defrag_ipv6.o
 
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_NF_SOCKET_IPV6) += nf_socket_ipv6.o
 obj-$(CONFIG_NF_TPROXY_IPV6) += nf_tproxy_ipv6.o
 
@@ -50,7 +28,6 @@ obj-$(CONFIG_NFT_REJECT_IPV6) += nft_reject_ipv6.o
 obj-$(CONFIG_NFT_DUP_IPV6) += nft_dup_ipv6.o
 obj-$(CONFIG_NFT_FIB_IPV6) += nft_fib_ipv6.o
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # matches
 obj-$(CONFIG_IP6_NF_MATCH_AH) += ip6t_ah.o
 obj-$(CONFIG_IP6_NF_MATCH_EUI64) += ip6t_eui64.o
@@ -60,19 +37,9 @@ obj-$(CONFIG_IP6_NF_MATCH_MH) += ip6t_mh.o
 obj-$(CONFIG_IP6_NF_MATCH_OPTS) += ip6t_hbh.o
 obj-$(CONFIG_IP6_NF_MATCH_RPFILTER) += ip6t_rpfilter.o
 obj-$(CONFIG_IP6_NF_MATCH_RT) += ip6t_rt.o
-<<<<<<< HEAD
-
-# targets
-obj-$(CONFIG_IP6_NF_TARGET_MASQUERADE) += ip6t_MASQUERADE.o
-obj-$(CONFIG_IP6_NF_TARGET_NETMAP) += ip6t_NETMAP.o
-obj-$(CONFIG_IP6_NF_TARGET_NPT) += ip6t_NPT.o
-obj-$(CONFIG_IP6_NF_TARGET_REDIRECT) += ip6t_REDIRECT.o
-obj-$(CONFIG_IP6_NF_TARGET_REJECT) += ip6t_REJECT.o
-=======
 obj-$(CONFIG_IP6_NF_MATCH_SRH) += ip6t_srh.o
 
 # targets
 obj-$(CONFIG_IP6_NF_TARGET_NPT) += ip6t_NPT.o
 obj-$(CONFIG_IP6_NF_TARGET_REJECT) += ip6t_REJECT.o
 obj-$(CONFIG_IP6_NF_TARGET_SYNPROXY) += ip6t_SYNPROXY.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

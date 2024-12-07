@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-#include <linux/mm.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/pagewalk.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/highmem.h>
 #include <linux/sched.h>
 #include <linux/hugetlb.h>
 
-<<<<<<< HEAD
-=======
 /*
  * We want to know the real level where a entry is located ignoring any
  * folding of levels which may be happening. For example if p4d is folded then
@@ -44,30 +38,11 @@ static int walk_pte_range_inner(pte_t *pte, unsigned long addr,
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int walk_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end,
 			  struct mm_walk *walk)
 {
 	pte_t *pte;
 	int err = 0;
-<<<<<<< HEAD
-
-	pte = pte_offset_map(pmd, addr);
-	for (;;) {
-		err = walk->pte_entry(pte, addr, addr + PAGE_SIZE, walk);
-		if (err)
-		       break;
-		addr += PAGE_SIZE;
-		if (addr == end)
-			break;
-		pte++;
-	}
-
-	pte_unmap(pte);
-	return err;
-}
-
-=======
 	spinlock_t *ptl;
 
 	if (walk->no_vma) {
@@ -137,53 +112,33 @@ static int walk_hugepd_range(hugepd_t *phpd, unsigned long addr,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int walk_pmd_range(pud_t *pud, unsigned long addr, unsigned long end,
 			  struct mm_walk *walk)
 {
 	pmd_t *pmd;
 	unsigned long next;
-<<<<<<< HEAD
-	int err = 0;
-=======
 	const struct mm_walk_ops *ops = walk->ops;
 	int err = 0;
 	int depth = real_depth(3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pmd = pmd_offset(pud, addr);
 	do {
 again:
 		next = pmd_addr_end(addr, end);
 		if (pmd_none(*pmd)) {
-<<<<<<< HEAD
-			if (walk->pte_hole)
-				err = walk->pte_hole(addr, next, walk);
-=======
 			if (ops->pte_hole)
 				err = ops->pte_hole(addr, next, depth, walk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err)
 				break;
 			continue;
 		}
-<<<<<<< HEAD
-=======
 
 		walk->action = ACTION_SUBTREE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * This implies that each ->pmd_entry() handler
 		 * needs to know about pmd_trans_huge() pmds
 		 */
-<<<<<<< HEAD
-		if (walk->pmd_entry)
-			err = walk->pmd_entry(pmd, addr, next, walk);
-		if (err)
-			break;
-
-=======
 		if (ops->pmd_entry)
 			err = ops->pmd_entry(pmd, addr, next, walk);
 		if (err)
@@ -192,22 +147,10 @@ again:
 		if (walk->action == ACTION_AGAIN)
 			goto again;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Check this here so we only break down trans_huge
 		 * pages when we _need_ to
 		 */
-<<<<<<< HEAD
-		if (!walk->pte_entry)
-			continue;
-
-		split_huge_page_pmd(walk->mm, pmd);
-		if (pmd_none_or_trans_huge_or_clear_bad(pmd))
-			goto again;
-		err = walk_pte_range(pmd, addr, next, walk);
-		if (err)
-			break;
-=======
 		if ((!walk->vma && (pmd_leaf(*pmd) || !pmd_present(*pmd))) ||
 		    walk->action == ACTION_CONTINUE ||
 		    !(ops->pte_entry))
@@ -226,31 +169,16 @@ again:
 		if (walk->action == ACTION_AGAIN)
 			goto again;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (pmd++, addr = next, addr != end);
 
 	return err;
 }
 
-<<<<<<< HEAD
-static int walk_pud_range(pgd_t *pgd, unsigned long addr, unsigned long end,
-=======
 static int walk_pud_range(p4d_t *p4d, unsigned long addr, unsigned long end,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct mm_walk *walk)
 {
 	pud_t *pud;
 	unsigned long next;
-<<<<<<< HEAD
-	int err = 0;
-
-	pud = pud_offset(pgd, addr);
-	do {
-		next = pud_addr_end(addr, end);
-		if (pud_none_or_clear_bad(pud)) {
-			if (walk->pte_hole)
-				err = walk->pte_hole(addr, next, walk);
-=======
 	const struct mm_walk_ops *ops = walk->ops;
 	int err = 0;
 	int depth = real_depth(2);
@@ -262,16 +190,10 @@ static int walk_pud_range(p4d_t *p4d, unsigned long addr, unsigned long end,
 		if (pud_none(*pud)) {
 			if (ops->pte_hole)
 				err = ops->pte_hole(addr, next, depth, walk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err)
 				break;
 			continue;
 		}
-<<<<<<< HEAD
-		if (walk->pud_entry)
-			err = walk->pud_entry(pud, addr, next, walk);
-		if (!err && (walk->pmd_entry || walk->pte_entry))
-=======
 
 		walk->action = ACTION_SUBTREE;
 
@@ -296,7 +218,6 @@ static int walk_pud_range(p4d_t *p4d, unsigned long addr, unsigned long end,
 		if (is_hugepd(__hugepd(pud_val(*pud))))
 			err = walk_hugepd_range((hugepd_t *)pud, addr, next, walk, PUD_SHIFT);
 		else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = walk_pmd_range(pud, addr, next, walk);
 		if (err)
 			break;
@@ -305,8 +226,6 @@ static int walk_pud_range(p4d_t *p4d, unsigned long addr, unsigned long end,
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int walk_p4d_range(pgd_t *pgd, unsigned long addr, unsigned long end,
 			  struct mm_walk *walk)
 {
@@ -379,7 +298,6 @@ static int walk_pgd_range(unsigned long addr, unsigned long end,
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_HUGETLB_PAGE
 static unsigned long hugetlb_entry_end(struct hstate *h, unsigned long addr,
 				       unsigned long end)
@@ -388,33 +306,6 @@ static unsigned long hugetlb_entry_end(struct hstate *h, unsigned long addr,
 	return boundary < end ? boundary : end;
 }
 
-<<<<<<< HEAD
-static int walk_hugetlb_range(struct vm_area_struct *vma,
-			      unsigned long addr, unsigned long end,
-			      struct mm_walk *walk)
-{
-	struct hstate *h = hstate_vma(vma);
-	unsigned long next;
-	unsigned long hmask = huge_page_mask(h);
-	pte_t *pte;
-	int err = 0;
-
-	do {
-		next = hugetlb_entry_end(h, addr, end);
-		pte = huge_pte_offset(walk->mm, addr & hmask);
-		if (pte && walk->hugetlb_entry)
-			err = walk->hugetlb_entry(pte, hmask, addr, next, walk);
-		if (err)
-			return err;
-	} while (addr = next, addr != end);
-
-	return 0;
-}
-
-#else /* CONFIG_HUGETLB_PAGE */
-static int walk_hugetlb_range(struct vm_area_struct *vma,
-			      unsigned long addr, unsigned long end,
-=======
 static int walk_hugetlb_range(unsigned long addr, unsigned long end,
 			      struct mm_walk *walk)
 {
@@ -445,7 +336,6 @@ static int walk_hugetlb_range(unsigned long addr, unsigned long end,
 
 #else /* CONFIG_HUGETLB_PAGE */
 static int walk_hugetlb_range(unsigned long addr, unsigned long end,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      struct mm_walk *walk)
 {
 	return 0;
@@ -453,115 +343,6 @@ static int walk_hugetlb_range(unsigned long addr, unsigned long end,
 
 #endif /* CONFIG_HUGETLB_PAGE */
 
-<<<<<<< HEAD
-
-
-/**
- * walk_page_range - walk a memory map's page tables with a callback
- * @mm: memory map to walk
- * @addr: starting address
- * @end: ending address
- * @walk: set of callbacks to invoke for each level of the tree
- *
- * Recursively walk the page table for the memory area in a VMA,
- * calling supplied callbacks. Callbacks are called in-order (first
- * PGD, first PUD, first PMD, first PTE, second PTE... second PMD,
- * etc.). If lower-level callbacks are omitted, walking depth is reduced.
- *
- * Each callback receives an entry pointer and the start and end of the
- * associated range, and a copy of the original mm_walk for access to
- * the ->private or ->mm fields.
- *
- * Usually no locks are taken, but splitting transparent huge page may
- * take page table lock. And the bottom level iterator will map PTE
- * directories from highmem if necessary.
- *
- * If any callback returns a non-zero value, the walk is aborted and
- * the return value is propagated back to the caller. Otherwise 0 is returned.
- *
- * walk->mm->mmap_sem must be held for at least read if walk->hugetlb_entry
- * is !NULL.
- */
-int walk_page_range(unsigned long addr, unsigned long end,
-		    struct mm_walk *walk)
-{
-	pgd_t *pgd;
-	unsigned long next;
-	int err = 0;
-
-	if (addr >= end)
-		return err;
-
-	if (!walk->mm)
-		return -EINVAL;
-
-	VM_BUG_ON(!rwsem_is_locked(&walk->mm->mmap_sem));
-
-	pgd = pgd_offset(walk->mm, addr);
-	do {
-		struct vm_area_struct *vma = NULL;
-
-		next = pgd_addr_end(addr, end);
-
-		/*
-		 * This function was not intended to be vma based.
-		 * But there are vma special cases to be handled:
-		 * - hugetlb vma's
-		 * - VM_PFNMAP vma's
-		 */
-		vma = find_vma(walk->mm, addr);
-		if (vma) {
-			/*
-			 * There are no page structures backing a VM_PFNMAP
-			 * range, so do not allow split_huge_page_pmd().
-			 */
-			if ((vma->vm_start <= addr) &&
-			    (vma->vm_flags & VM_PFNMAP)) {
-				next = vma->vm_end;
-				pgd = pgd_offset(walk->mm, next);
-				continue;
-			}
-			/*
-			 * Handle hugetlb vma individually because pagetable
-			 * walk for the hugetlb page is dependent on the
-			 * architecture and we can't handled it in the same
-			 * manner as non-huge pages.
-			 */
-			if (walk->hugetlb_entry && (vma->vm_start <= addr) &&
-			    is_vm_hugetlb_page(vma)) {
-				if (vma->vm_end < next)
-					next = vma->vm_end;
-				/*
-				 * Hugepage is very tightly coupled with vma,
-				 * so walk through hugetlb entries within a
-				 * given vma.
-				 */
-				err = walk_hugetlb_range(vma, addr, next, walk);
-				if (err)
-					break;
-				pgd = pgd_offset(walk->mm, next);
-				continue;
-			}
-		}
-
-		if (pgd_none_or_clear_bad(pgd)) {
-			if (walk->pte_hole)
-				err = walk->pte_hole(addr, next, walk);
-			if (err)
-				break;
-			pgd++;
-			continue;
-		}
-		if (walk->pgd_entry)
-			err = walk->pgd_entry(pgd, addr, next, walk);
-		if (!err &&
-		    (walk->pud_entry || walk->pmd_entry || walk->pte_entry))
-			err = walk_pud_range(pgd, addr, next, walk);
-		if (err)
-			break;
-		pgd++;
-	} while (addr = next, addr != end);
-=======
 /*
  * Decide whether we really walk over the current vma on [@start, @end)
  * or skip it via the returned value. Return 0 if we do walk over the
@@ -919,7 +700,6 @@ int walk_page_mapping(struct address_space *mapping, pgoff_t first_index,
 		if (err)
 			break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }

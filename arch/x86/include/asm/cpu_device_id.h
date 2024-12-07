@@ -1,24 +1,10 @@
-<<<<<<< HEAD
-#ifndef _CPU_DEVICE_ID
-#define _CPU_DEVICE_ID 1
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_CPU_DEVICE_ID
 #define _ASM_X86_CPU_DEVICE_ID
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Declare drivers belonging to specific x86 CPUs
  * Similar in spirit to pci_device_id and related PCI functions
-<<<<<<< HEAD
- */
-
-#include <linux/mod_devicetable.h>
-
-extern const struct x86_cpu_id *x86_match_cpu(const struct x86_cpu_id *match);
-
-#endif
-=======
  *
  * The wildcard initializers are in mod_devicetable.h because
  * file2alias needs them. Sigh.
@@ -208,4 +194,3 @@ extern const struct x86_cpu_id *x86_match_cpu(const struct x86_cpu_id *match);
 extern bool x86_cpu_has_min_microcode_rev(const struct x86_cpu_desc *table);
 
 #endif /* _ASM_X86_CPU_DEVICE_ID */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

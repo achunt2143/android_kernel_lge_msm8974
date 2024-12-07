@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sony Programmable I/O Control Device driver for VAIO
  *
@@ -22,24 +19,6 @@
  * Copyright (C) 2000 Andrew Tridgell <tridge@valinux.com>
  *
  * Earlier work by Werner Almesberger, Paul `Rusty' Russell and Paul Mackerras.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -59,11 +38,7 @@
 #include <linux/platform_device.h>
 #include <linux/gfp.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 #include <linux/sonypi.h>
@@ -614,11 +589,7 @@ static void sonypi_type3_srs(void)
 	u16 v16;
 	u8  v8;
 
-<<<<<<< HEAD
-	/* This model type uses the same initialiazation of
-=======
 	/* This model type uses the same initialization of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the embedded controller as the type2 models. */
 	sonypi_type2_srs();
 
@@ -891,14 +862,6 @@ found:
 	if (useinput)
 		sonypi_report_input_event(event);
 
-<<<<<<< HEAD
-#ifdef CONFIG_ACPI
-	if (sonypi_acpi_device)
-		acpi_bus_generate_proc_event(sonypi_acpi_device, 1, event);
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfifo_in_locked(&sonypi_device.fifo, (unsigned char *)&event,
 			sizeof(event), &sonypi_device.fifo_lock);
 	kill_fasync(&sonypi_device.fifo_async, SIGIO, POLL_IN);
@@ -956,31 +919,18 @@ static ssize_t sonypi_misc_read(struct file *file, char __user *buf,
 	}
 
 	if (ret > 0) {
-<<<<<<< HEAD
-		struct inode *inode = file->f_path.dentry->d_inode;
-		inode->i_atime = current_fs_time(inode->i_sb);
-=======
 		struct inode *inode = file_inode(file);
 		inode_set_atime_to_ts(inode, current_time(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static unsigned int sonypi_misc_poll(struct file *file, poll_table *wait)
-{
-	poll_wait(file, &sonypi_device.fifo_proc_list, wait);
-	if (kfifo_len(&sonypi_device.fifo))
-		return POLLIN | POLLRDNORM;
-=======
 static __poll_t sonypi_misc_poll(struct file *file, poll_table *wait)
 {
 	poll_wait(file, &sonypi_device.fifo_proc_list, wait);
 	if (kfifo_len(&sonypi_device.fifo))
 		return EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1173,16 +1123,9 @@ static int sonypi_acpi_add(struct acpi_device *device)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sonypi_acpi_remove(struct acpi_device *device, int type)
-{
-	sonypi_acpi_device = NULL;
-	return 0;
-=======
 static void sonypi_acpi_remove(struct acpi_device *device)
 {
 	sonypi_acpi_device = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct acpi_device_id sonypi_device_ids[] = {
@@ -1201,11 +1144,7 @@ static struct acpi_driver sonypi_acpi_driver = {
 };
 #endif
 
-<<<<<<< HEAD
-static int __devinit sonypi_create_input_devices(struct platform_device *pdev)
-=======
 static int sonypi_create_input_devices(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct input_dev *jog_dev;
 	struct input_dev *key_dev;
@@ -1266,11 +1205,7 @@ static int sonypi_create_input_devices(struct platform_device *pdev)
 	return error;
 }
 
-<<<<<<< HEAD
-static int __devinit sonypi_setup_ioports(struct sonypi_device *dev,
-=======
 static int sonypi_setup_ioports(struct sonypi_device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				const struct sonypi_ioport_list *ioport_list)
 {
 	/* try to detect if sony-laptop is being used and thus
@@ -1310,11 +1245,7 @@ static int sonypi_setup_ioports(struct sonypi_device *dev,
 	return -EBUSY;
 }
 
-<<<<<<< HEAD
-static int __devinit sonypi_setup_irq(struct sonypi_device *dev,
-=======
 static int sonypi_setup_irq(struct sonypi_device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      const struct sonypi_irq_list *irq_list)
 {
 	while (irq_list->irq) {
@@ -1331,11 +1262,7 @@ static int sonypi_setup_irq(struct sonypi_device *dev,
 	return -EBUSY;
 }
 
-<<<<<<< HEAD
-static void __devinit sonypi_display_info(void)
-=======
 static void sonypi_display_info(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk(KERN_INFO "sonypi: detected type%d model, "
 	       "verbose = %d, fnkeyinit = %s, camera = %s, "
@@ -1357,11 +1284,7 @@ static void sonypi_display_info(void)
 		       sonypi_misc_device.minor);
 }
 
-<<<<<<< HEAD
-static int __devinit sonypi_probe(struct platform_device *dev)
-=======
 static int sonypi_probe(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct sonypi_ioport_list *ioport_list;
 	const struct sonypi_irq_list *irq_list;
@@ -1485,20 +1408,12 @@ static int sonypi_probe(struct platform_device *dev)
 	return error;
 }
 
-<<<<<<< HEAD
-static int __devexit sonypi_remove(struct platform_device *dev)
-=======
 static int sonypi_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sonypi_disable();
 
 	synchronize_irq(sonypi_device.irq);
-<<<<<<< HEAD
-	flush_work_sync(&sonypi_device.input_work);
-=======
 	flush_work(&sonypi_device.input_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (useinput) {
 		input_unregister_device(sonypi_device.input_key_dev);
@@ -1521,17 +1436,10 @@ static int sonypi_remove(struct platform_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int old_camera_power;
-
-static int sonypi_suspend(struct platform_device *dev, pm_message_t state)
-=======
 #ifdef CONFIG_PM_SLEEP
 static int old_camera_power;
 
 static int sonypi_suspend(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	old_camera_power = sonypi_device.camera_power;
 	sonypi_disable();
@@ -1539,26 +1447,16 @@ static int sonypi_suspend(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sonypi_resume(struct platform_device *dev)
-=======
 static int sonypi_resume(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sonypi_enable(old_camera_power);
 	return 0;
 }
-<<<<<<< HEAD
-#else
-#define sonypi_suspend	NULL
-#define sonypi_resume	NULL
-=======
 
 static SIMPLE_DEV_PM_OPS(sonypi_pm, sonypi_suspend, sonypi_resume);
 #define SONYPI_PM	(&sonypi_pm)
 #else
 #define SONYPI_PM	NULL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static void sonypi_shutdown(struct platform_device *dev)
@@ -1569,30 +1467,16 @@ static void sonypi_shutdown(struct platform_device *dev)
 static struct platform_driver sonypi_driver = {
 	.driver		= {
 		.name	= "sonypi",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= sonypi_probe,
-	.remove		= __devexit_p(sonypi_remove),
-	.shutdown	= sonypi_shutdown,
-	.suspend	= sonypi_suspend,
-	.resume		= sonypi_resume,
-=======
 		.pm	= SONYPI_PM,
 	},
 	.probe		= sonypi_probe,
 	.remove		= sonypi_remove,
 	.shutdown	= sonypi_shutdown,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device *sonypi_platform_device;
 
-<<<<<<< HEAD
-static struct dmi_system_id __initdata sonypi_dmi_table[] = {
-=======
 static const struct dmi_system_id sonypi_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "Sony Vaio",
 		.matches = {

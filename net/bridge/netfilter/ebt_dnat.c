@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ebt_dnat
  *
@@ -13,10 +10,7 @@
  */
 #include <linux/module.h>
 #include <net/sock.h>
-<<<<<<< HEAD
-=======
 #include "../br_private.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netfilter.h>
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter_bridge/ebtables.h>
@@ -27,12 +21,6 @@ ebt_dnat_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct ebt_nat_info *info = par->targinfo;
 
-<<<<<<< HEAD
-	if (!skb_make_writable(skb, 0))
-		return EBT_DROP;
-
-	memcpy(eth_hdr(skb)->h_dest, info->mac, ETH_ALEN);
-=======
 	if (skb_ensure_writable(skb, 0))
 		return EBT_DROP;
 
@@ -67,7 +55,6 @@ ebt_dnat_tg(struct sk_buff *skb, const struct xt_action_param *par)
 			skb->pkt_type = PACKET_OTHERHOST;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return info->target;
 }
 
@@ -86,11 +73,7 @@ static int ebt_dnat_tg_check(const struct xt_tgchk_param *par)
 	    (strcmp(par->table, "broute") != 0 ||
 	    hook_mask & ~(1 << NF_BR_BROUTING)))
 		return -EINVAL;
-<<<<<<< HEAD
-	if (INVALID_TARGET)
-=======
 	if (ebt_invalid_target(info->target))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	return 0;
 }

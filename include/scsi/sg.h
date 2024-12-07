@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SCSI_GENERIC_H
 #define _SCSI_GENERIC_H
 
@@ -27,22 +24,11 @@
  *	http://sg.danny.cz/sg  [alternatively check the MAINTAINERS file]
  * The documentation for the sg version 3 driver can be found at:
  *	http://sg.danny.cz/sg/p/sg_v3_ho.html
-<<<<<<< HEAD
- * Also see: <kernel_source>/Documentation/scsi/scsi-generic.txt
-=======
  * Also see: <kernel_source>/Documentation/scsi/scsi-generic.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * For utility and test programs see: http://sg.danny.cz/sg/sg3_utils.html
  */
 
-<<<<<<< HEAD
-#ifdef __KERNEL__
-extern int sg_big_buff; /* for sysctl */
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct sg_iovec /* same structure as used by readv() Linux system */
 {                       /* call. It defines one scatter-gather element. */
@@ -78,8 +64,6 @@ typedef struct sg_io_hdr
     unsigned int info;          /* [o] auxiliary information */
 } sg_io_hdr_t;  /* 64 bytes long (on i386) */
 
-<<<<<<< HEAD
-=======
 #if defined(__KERNEL__)
 #include <linux/compat.h>
 
@@ -110,7 +94,6 @@ struct compat_sg_io_hdr {
 };
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SG_INTERFACE_ID_ORIG 'S'
 
 /* Use negative values to flag difference from original sg_header structure */
@@ -130,12 +113,9 @@ struct compat_sg_io_hdr {
 #define SG_FLAG_MMAP_IO 4       /* request memory mapped IO */
 #define SG_FLAG_NO_DXFER 0x10000 /* no transfer of kernel buffers to/from */
 				/* user space (debug indirect IO) */
-<<<<<<< HEAD
-=======
 /* defaults:: for sg driver: Q_AT_HEAD; for block layer: Q_AT_TAIL */
 #define SG_FLAG_Q_AT_TAIL 0x10
 #define SG_FLAG_Q_AT_HEAD 0x20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* following 'info' values are "or"-ed together */
 #define SG_INFO_OK_MASK 0x1
@@ -147,8 +127,6 @@ struct compat_sg_io_hdr {
 #define SG_INFO_DIRECT_IO 0x2   /* direct IO requested and performed */
 #define SG_INFO_MIXED_IO 0x4    /* part direct, part indirect IO */
 
-<<<<<<< HEAD
-=======
 /*
  * Obsolete DRIVER_SENSE driver byte
  *
@@ -182,7 +160,6 @@ struct compat_sg_io_hdr {
 
 /* Obsolete status_byte() declaration */
 #define sg_status_byte(result) (((result) >> 1) & 0x7f)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct sg_scsi_id { /* used by SG_GET_SCSI_ID ioctl() */
     int host_no;        /* as in "scsi<n>" where 'n' is one of 0, 1, 2 etc */
@@ -197,11 +174,7 @@ typedef struct sg_scsi_id { /* used by SG_GET_SCSI_ID ioctl() */
 
 typedef struct sg_req_info { /* used by SG_GET_REQUEST_TABLE ioctl() */
     char req_state;     /* 0 -> not used, 1 -> written, 2 -> ready to read */
-<<<<<<< HEAD
-    char orphan;        /* 0 -> normal request, 1 -> from interruped SG_IO */
-=======
     char orphan;        /* 0 -> normal request, 1 -> from interrupted SG_IO */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     char sg_io_owned;   /* 0 -> complete with read(), 1 -> owned by SG_IO */
     char problem;       /* 0 -> no problem detected, 1 -> error to report */
     int pack_id;        /* pack_id associated with request */
@@ -251,22 +224,15 @@ typedef struct sg_req_info { /* used by SG_GET_REQUEST_TABLE ioctl() */
 
 /* Returns -EBUSY if occupied. 3rd argument pointer to int (see next) */
 #define SG_SCSI_RESET 0x2284
-<<<<<<< HEAD
-/* Associated values that can be given to SG_SCSI_RESET follow */
-=======
 /* Associated values that can be given to SG_SCSI_RESET follow.
  * SG_SCSI_RESET_NO_ESCALATE may be OR-ed to the _DEVICE, _TARGET, _BUS
  * or _HOST reset value so only that action is attempted. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define		SG_SCSI_RESET_NOTHING	0
 #define		SG_SCSI_RESET_DEVICE	1
 #define		SG_SCSI_RESET_BUS	2
 #define		SG_SCSI_RESET_HOST	3
 #define		SG_SCSI_RESET_TARGET	4
-<<<<<<< HEAD
-=======
 #define		SG_SCSI_RESET_NO_ESCALATE	0x100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* synchronous SCSI command ioctl, (only in version 3 interface) */
 #define SG_IO 0x2285   /* similar effect as write() followed by read() */
@@ -291,10 +257,6 @@ typedef struct sg_req_info { /* used by SG_GET_REQUEST_TABLE ioctl() */
 #define SG_DEFAULT_RETRIES 0
 
 /* Defaults, commented if they differ from original sg driver */
-<<<<<<< HEAD
-#define SG_DEF_FORCE_LOW_DMA 0  /* was 1 -> memory below 16MB on i386 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SG_DEF_FORCE_PACK_ID 0
 #define SG_DEF_KEEP_ORPHAN 0
 #define SG_DEF_RESERVED_SIZE SG_SCATTER_SZ /* load time option */

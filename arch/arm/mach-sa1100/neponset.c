@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-sa1100/neponset.c
  */
 #include <linux/err.h>
-<<<<<<< HEAD
-=======
 #include <linux/gpio/driver.h>
 #include <linux/gpio/gpio-reg.h>
 #include <linux/gpio/machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/ioport.h>
 #include <linux/irq.h>
@@ -21,21 +15,12 @@
 #include <linux/pm.h>
 #include <linux/serial_core.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <asm/mach-types.h>
-#include <asm/mach/map.h>
-#include <asm/mach/serial_sa1100.h>
-#include <asm/hardware/sa1111.h>
-#include <asm/sizes.h>
-=======
 #include <linux/smc91x.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/map.h>
 #include <asm/hardware/sa1111.h>
 #include <linux/sizes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <mach/hardware.h>
 #include <mach/assabet.h>
@@ -62,25 +47,6 @@
 #define IRR_USAR	(1 << 1)
 #define IRR_SA1111	(1 << 2)
 
-<<<<<<< HEAD
-#define MDM_CTL0_RTS1	(1 << 0)
-#define MDM_CTL0_DTR1	(1 << 1)
-#define MDM_CTL0_RTS2	(1 << 2)
-#define MDM_CTL0_DTR2	(1 << 3)
-
-#define MDM_CTL1_CTS1	(1 << 0)
-#define MDM_CTL1_DSR1	(1 << 1)
-#define MDM_CTL1_DCD1	(1 << 2)
-#define MDM_CTL1_CTS2	(1 << 3)
-#define MDM_CTL1_DSR2	(1 << 4)
-#define MDM_CTL1_DCD2	(1 << 5)
-
-#define AUD_SEL_1341	(1 << 0)
-#define AUD_MUTE_1341	(1 << 1)
-
-extern void sa1110_mb_disable(void);
-
-=======
 #define NCR_NGPIO	7
 #define MDM_CTL0_NGPIO	4
 #define MDM_CTL1_NGPIO	6
@@ -107,106 +73,11 @@ static const char *neponset_aud_names[] = {
 	"sel_1341", "mute_1341",
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct neponset_drvdata {
 	void __iomem *base;
 	struct platform_device *sa1111;
 	struct platform_device *smc91x;
 	unsigned irq_base;
-<<<<<<< HEAD
-#ifdef CONFIG_PM_SLEEP
-	u32 ncr0;
-	u32 mdm_ctl_0;
-#endif
-};
-
-static void __iomem *nep_base;
-
-void neponset_ncr_frob(unsigned int mask, unsigned int val)
-{
-	void __iomem *base = nep_base;
-
-	if (base) {
-		unsigned long flags;
-		unsigned v;
-
-		local_irq_save(flags);
-		v = readb_relaxed(base + NCR_0);
-		writeb_relaxed((v & ~mask) | val, base + NCR_0);
-		local_irq_restore(flags);
-	} else {
-		WARN(1, "nep_base unset\n");
-	}
-}
-
-static void neponset_set_mctrl(struct uart_port *port, u_int mctrl)
-{
-	void __iomem *base = nep_base;
-	u_int mdm_ctl0;
-
-	if (!base)
-		return;
-
-	mdm_ctl0 = readb_relaxed(base + MDM_CTL_0);
-	if (port->mapbase == _Ser1UTCR0) {
-		if (mctrl & TIOCM_RTS)
-			mdm_ctl0 &= ~MDM_CTL0_RTS2;
-		else
-			mdm_ctl0 |= MDM_CTL0_RTS2;
-
-		if (mctrl & TIOCM_DTR)
-			mdm_ctl0 &= ~MDM_CTL0_DTR2;
-		else
-			mdm_ctl0 |= MDM_CTL0_DTR2;
-	} else if (port->mapbase == _Ser3UTCR0) {
-		if (mctrl & TIOCM_RTS)
-			mdm_ctl0 &= ~MDM_CTL0_RTS1;
-		else
-			mdm_ctl0 |= MDM_CTL0_RTS1;
-
-		if (mctrl & TIOCM_DTR)
-			mdm_ctl0 &= ~MDM_CTL0_DTR1;
-		else
-			mdm_ctl0 |= MDM_CTL0_DTR1;
-	}
-
-	writeb_relaxed(mdm_ctl0, base + MDM_CTL_0);
-}
-
-static u_int neponset_get_mctrl(struct uart_port *port)
-{
-	void __iomem *base = nep_base;
-	u_int ret = TIOCM_CD | TIOCM_CTS | TIOCM_DSR;
-	u_int mdm_ctl1;
-
-	if (!base)
-		return ret;
-
-	mdm_ctl1 = readb_relaxed(base + MDM_CTL_1);
-	if (port->mapbase == _Ser1UTCR0) {
-		if (mdm_ctl1 & MDM_CTL1_DCD2)
-			ret &= ~TIOCM_CD;
-		if (mdm_ctl1 & MDM_CTL1_CTS2)
-			ret &= ~TIOCM_CTS;
-		if (mdm_ctl1 & MDM_CTL1_DSR2)
-			ret &= ~TIOCM_DSR;
-	} else if (port->mapbase == _Ser3UTCR0) {
-		if (mdm_ctl1 & MDM_CTL1_DCD1)
-			ret &= ~TIOCM_CD;
-		if (mdm_ctl1 & MDM_CTL1_CTS1)
-			ret &= ~TIOCM_CTS;
-		if (mdm_ctl1 & MDM_CTL1_DSR1)
-			ret &= ~TIOCM_DSR;
-	}
-
-	return ret;
-}
-
-static struct sa1100_port_fns neponset_port_fns __devinitdata = {
-	.set_mctrl	= neponset_set_mctrl,
-	.get_mctrl	= neponset_get_mctrl,
-};
-=======
 	struct gpio_chip *gpio[4];
 };
 
@@ -260,7 +131,6 @@ void neponset_ncr_frob(unsigned int mask, unsigned int val)
 		WARN(1, "nep unset\n");
 }
 EXPORT_SYMBOL(neponset_ncr_frob);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Install handler for Neponset IRQ.  Note that we have to loop here
@@ -268,11 +138,7 @@ EXPORT_SYMBOL(neponset_ncr_frob);
  * ensure that the IRQ signal is deasserted before returning.  This
  * is rather unfortunate.
  */
-<<<<<<< HEAD
-static void neponset_irq_handler(unsigned int irq, struct irq_desc *desc)
-=======
 static void neponset_irq_handler(struct irq_desc *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct neponset_drvdata *d = irq_desc_get_handler_data(desc);
 	unsigned int irr;
@@ -336,8 +202,6 @@ static struct irq_chip nochip = {
 	.irq_unmask = nochip_noop,
 };
 
-<<<<<<< HEAD
-=======
 static int neponset_init_gpio(struct gpio_chip **gcp,
 	struct device *dev, const char *label, void __iomem *reg,
 	unsigned num, bool in, const char *const * names)
@@ -354,16 +218,11 @@ static int neponset_init_gpio(struct gpio_chip **gcp,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct sa1111_platform_data sa1111_info = {
 	.disable_devs	= SA1111_DEVID_PS2_MSE,
 };
 
-<<<<<<< HEAD
-static int __devinit neponset_probe(struct platform_device *dev)
-=======
 static int neponset_probe(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct neponset_drvdata *d;
 	struct resource *nep_res, *sa1111_res, *smc91x_res;
@@ -388,31 +247,21 @@ static int neponset_probe(struct platform_device *dev)
 			0x02000000, "smc91x-attrib"),
 		{ .flags = IORESOURCE_IRQ },
 	};
-<<<<<<< HEAD
-=======
 	struct smc91x_platdata smc91x_platdata = {
 		.flags = SMC91X_USE_8BIT | SMC91X_IO_SHIFT_2 | SMC91X_NOWAIT,
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct platform_device_info smc91x_devinfo = {
 		.parent = &dev->dev,
 		.name = "smc91x",
 		.id = 0,
 		.res = smc91x_resources,
 		.num_res = ARRAY_SIZE(smc91x_resources),
-<<<<<<< HEAD
-	};
-	int ret, irq;
-
-	if (nep_base)
-=======
 		.data = &smc91x_platdata,
 		.size_data = sizeof(smc91x_platdata),
 	};
 	int ret, irq;
 
 	if (nep)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 
 	irq = ret = platform_get_irq(dev, 0);
@@ -459,17 +308,6 @@ static int neponset_probe(struct platform_device *dev)
 
 	irq_set_chip_and_handler(d->irq_base + NEP_IRQ_SMC91X, &nochip,
 		handle_simple_irq);
-<<<<<<< HEAD
-	set_irq_flags(d->irq_base + NEP_IRQ_SMC91X, IRQF_VALID | IRQF_PROBE);
-	irq_set_chip_and_handler(d->irq_base + NEP_IRQ_USAR, &nochip,
-		handle_simple_irq);
-	set_irq_flags(d->irq_base + NEP_IRQ_USAR, IRQF_VALID | IRQF_PROBE);
-	irq_set_chip(d->irq_base + NEP_IRQ_SA1111, &nochip);
-
-	irq_set_irq_type(irq, IRQ_TYPE_EDGE_RISING);
-	irq_set_handler_data(irq, d);
-	irq_set_chained_handler(irq, neponset_irq_handler);
-=======
 	irq_clear_status_flags(d->irq_base + NEP_IRQ_SMC91X, IRQ_NOREQUEST | IRQ_NOPROBE);
 	irq_set_chip_and_handler(d->irq_base + NEP_IRQ_USAR, &nochip,
 		handle_simple_irq);
@@ -498,7 +336,6 @@ static int neponset_probe(struct platform_device *dev)
 	gpiod_add_lookup_table(&neponset_uart1_gpio_table);
 	gpiod_add_lookup_table(&neponset_uart3_gpio_table);
 	gpiod_add_lookup_table(&neponset_pcmcia_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We would set IRQ_GPIO25 to be a wake-up IRQ, but unfortunately
@@ -510,23 +347,11 @@ static int neponset_probe(struct platform_device *dev)
 
 	dev_info(&dev->dev, "Neponset daughter board, providing IRQ%u-%u\n",
 		 d->irq_base, d->irq_base + NEP_IRQ_NR - 1);
-<<<<<<< HEAD
-	nep_base = d->base;
-
-	sa1100_register_uart_fns(&neponset_port_fns);
-=======
 	nep = d;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ensure that the memory bus request/grant signals are setup */
 	sa1110_mb_disable();
 
-<<<<<<< HEAD
-	/* Disable GPIO 0/1 drivers so the buttons work on the Assabet */
-	writeb_relaxed(NCR_GP01_OFF, d->base + NCR_0);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sa1111_resources[0].parent = sa1111_res;
 	sa1111_resources[1].start = d->irq_base + NEP_IRQ_SA1111;
 	sa1111_resources[1].end = d->irq_base + NEP_IRQ_SA1111;
@@ -551,11 +376,7 @@ static int neponset_probe(struct platform_device *dev)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit neponset_remove(struct platform_device *dev)
-=======
 static void neponset_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct neponset_drvdata *d = platform_get_drvdata(dev);
 	int irq = platform_get_irq(dev, 0);
@@ -564,42 +385,6 @@ static void neponset_remove(struct platform_device *dev)
 		platform_device_unregister(d->sa1111);
 	if (!IS_ERR(d->smc91x))
 		platform_device_unregister(d->smc91x);
-<<<<<<< HEAD
-	irq_set_chained_handler(irq, NULL);
-	irq_free_descs(d->irq_base, NEP_IRQ_NR);
-	nep_base = NULL;
-	iounmap(d->base);
-	kfree(d);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM_SLEEP
-static int neponset_suspend(struct device *dev)
-{
-	struct neponset_drvdata *d = dev_get_drvdata(dev);
-
-	d->ncr0 = readb_relaxed(d->base + NCR_0);
-	d->mdm_ctl_0 = readb_relaxed(d->base + MDM_CTL_0);
-
-	return 0;
-}
-
-static int neponset_resume(struct device *dev)
-{
-	struct neponset_drvdata *d = dev_get_drvdata(dev);
-
-	writeb_relaxed(d->ncr0, d->base + NCR_0);
-	writeb_relaxed(d->mdm_ctl_0, d->base + MDM_CTL_0);
-
-	return 0;
-}
-
-static const struct dev_pm_ops neponset_pm_ops = {
-	.suspend_noirq = neponset_suspend,
-	.resume_noirq = neponset_resume,
-	.freeze_noirq = neponset_suspend,
-=======
 
 	gpiod_remove_lookup_table(&neponset_pcmcia_table);
 	gpiod_remove_lookup_table(&neponset_uart3_gpio_table);
@@ -629,7 +414,6 @@ static int neponset_resume(struct device *dev)
 
 static const struct dev_pm_ops neponset_pm_ops = {
 	.resume_noirq = neponset_resume,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restore_noirq = neponset_resume,
 };
 #define PM_OPS &neponset_pm_ops
@@ -639,16 +423,9 @@ static const struct dev_pm_ops neponset_pm_ops = {
 
 static struct platform_driver neponset_device_driver = {
 	.probe		= neponset_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(neponset_remove),
-	.driver		= {
-		.name	= "neponset",
-		.owner	= THIS_MODULE,
-=======
 	.remove_new	= neponset_remove,
 	.driver		= {
 		.name	= "neponset",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pm	= PM_OPS,
 	},
 };

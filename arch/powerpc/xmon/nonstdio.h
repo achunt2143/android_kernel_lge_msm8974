@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-#define EOF	(-1)
-
-#define printf	xmon_printf
-#define putchar	xmon_putchar
-
-extern int xmon_putchar(int c);
-extern int xmon_getchar(void);
-extern void xmon_puts(const char *);
-extern char *xmon_gets(char *, int);
-extern void xmon_printf(const char *, ...);
-extern void xmon_map_scc(void);
-extern int xmon_expect(const char *str, unsigned long timeout);
-extern int xmon_write(const void *ptr, int nb);
-extern int xmon_readchar(void);
-extern int xmon_read_poll(void);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #define EOF	(-1)
 
@@ -28,4 +11,3 @@ extern __printf(1, 2) void xmon_printf(const char *fmt, ...);
 
 #define printf	xmon_printf
 #define putchar	xmon_putchar
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

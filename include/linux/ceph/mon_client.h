@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _FS_CEPH_MON_CLIENT_H
 #define _FS_CEPH_MON_CLIENT_H
 
@@ -9,11 +6,7 @@
 #include <linux/kref.h>
 #include <linux/rbtree.h>
 
-<<<<<<< HEAD
-#include "messenger.h"
-=======
 #include <linux/ceph/messenger.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ceph_client;
 struct ceph_mount_args;
@@ -26,11 +19,7 @@ struct ceph_monmap {
 	struct ceph_fsid fsid;
 	u32 epoch;
 	u32 num_mon;
-<<<<<<< HEAD
-	struct ceph_entity_inst mon_inst[0];
-=======
 	struct ceph_entity_inst mon_inst[] __counted_by(num_mon);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ceph_mon_client;
@@ -51,14 +40,6 @@ struct ceph_mon_request {
 	ceph_monc_request_func_t do_request;
 };
 
-<<<<<<< HEAD
-/*
- * ceph_mon_generic_request is being used for the statfs and poolop requests
- * which are bening done a bit differently because we need to get data back
- * to the caller
- */
-struct ceph_mon_generic_request {
-=======
 typedef void (*ceph_monc_callback_t)(struct ceph_mon_generic_request *);
 
 /*
@@ -68,18 +49,10 @@ typedef void (*ceph_monc_callback_t)(struct ceph_mon_generic_request *);
  */
 struct ceph_mon_generic_request {
 	struct ceph_mon_client *monc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kref kref;
 	u64 tid;
 	struct rb_node node;
 	int result;
-<<<<<<< HEAD
-	void *buf;
-	int buf_len;
-	struct completion completion;
-	struct ceph_msg *request;  /* original request */
-	struct ceph_msg *reply;    /* and reply */
-=======
 
 	struct completion completion;
 	ceph_monc_callback_t complete_cb;
@@ -92,7 +65,6 @@ struct ceph_mon_generic_request {
 		struct ceph_statfs *st;
 		u64 newest;
 	} u;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ceph_mon_client {
@@ -108,21 +80,6 @@ struct ceph_mon_client {
 
 	bool hunting;
 	int cur_mon;                       /* last monitor i contacted */
-<<<<<<< HEAD
-	unsigned long sub_sent, sub_renew_after;
-	struct ceph_connection con;
-	bool have_fsid;
-
-	/* pending generic requests */
-	struct rb_root generic_request_tree;
-	int num_generic_requests;
-	u64 last_tid;
-
-	/* mds/osd map */
-	int want_mdsmap;
-	int want_next_osdmap; /* 1 = want, 2 = want+asked */
-	u32 have_osdmap, have_mdsmap;
-=======
 	unsigned long sub_renew_after;
 	unsigned long sub_renew_sent;
 	struct ceph_connection con;
@@ -141,38 +98,17 @@ struct ceph_mon_client {
 		u32 have; /* epoch */
 	} subs[4];
 	int fs_cluster_id; /* "mdsmap.<id>" sub */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_DEBUG_FS
 	struct dentry *debugfs_file;
 #endif
 };
 
-<<<<<<< HEAD
-extern struct ceph_monmap *ceph_monmap_decode(void *p, void *end);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int ceph_monmap_contains(struct ceph_monmap *m,
 				struct ceph_entity_addr *addr);
 
 extern int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl);
 extern void ceph_monc_stop(struct ceph_mon_client *monc);
-<<<<<<< HEAD
-
-/*
- * The model here is to indicate that we need a new map of at least
- * epoch @want, and also call in when we receive a map.  We will
- * periodically rerequest the map from the monitor cluster until we
- * get what we want.
- */
-extern int ceph_monc_got_mdsmap(struct ceph_mon_client *monc, u32 have);
-extern int ceph_monc_got_osdmap(struct ceph_mon_client *monc, u32 have);
-
-extern void ceph_monc_request_next_osdmap(struct ceph_mon_client *monc);
-
-extern int ceph_monc_do_statfs(struct ceph_mon_client *monc,
-			       struct ceph_statfs *buf);
-=======
 extern void ceph_monc_reopen_session(struct ceph_mon_client *monc);
 
 enum {
@@ -208,19 +144,9 @@ int ceph_monc_get_version_async(struct ceph_mon_client *monc, const char *what,
 
 int ceph_monc_blocklist_add(struct ceph_mon_client *monc,
 			    struct ceph_entity_addr *client_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int ceph_monc_open_session(struct ceph_mon_client *monc);
 
 extern int ceph_monc_validate_auth(struct ceph_mon_client *monc);
 
-<<<<<<< HEAD
-extern int ceph_monc_create_snapid(struct ceph_mon_client *monc,
-				   u32 pool, u64 *snapid);
-
-extern int ceph_monc_delete_snapid(struct ceph_mon_client *monc,
-				   u32 pool, u64 snapid);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

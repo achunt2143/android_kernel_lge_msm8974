@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * KLSI KL5KUSB105 chip RS232 converter driver
  *
  *   Copyright (C) 2010 Johan Hovold <jhovold@gmail.com>
  *   Copyright (C) 2001 Utz-Uwe Haus <haus@uuhaus.de>
  *
-<<<<<<< HEAD
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * All information about the device was acquired using SniffUSB ans snoopUSB
  * on Windows98.
  * It was written out of frustration with the PalmConnect USB Serial adapter
@@ -44,10 +33,6 @@
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -59,15 +44,6 @@
 #include <linux/usb/serial.h>
 #include "kl5kusb105.h"
 
-<<<<<<< HEAD
-static bool debug;
-
-/*
- * Version Information
- */
-#define DRIVER_VERSION "v0.4"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_AUTHOR "Utz-Uwe Haus <haus@uuhaus.de>, Johan Hovold <jhovold@gmail.com>"
 #define DRIVER_DESC "KLSI KL5KUSB105 chipset USB->Serial Converter driver"
 
@@ -75,17 +51,6 @@ static bool debug;
 /*
  * Function prototypes
  */
-<<<<<<< HEAD
-static int  klsi_105_startup(struct usb_serial *serial);
-static void klsi_105_release(struct usb_serial *serial);
-static int  klsi_105_open(struct tty_struct *tty, struct usb_serial_port *port);
-static void klsi_105_close(struct usb_serial_port *port);
-static void klsi_105_set_termios(struct tty_struct *tty,
-			struct usb_serial_port *port, struct ktermios *old);
-static int  klsi_105_tiocmget(struct tty_struct *tty);
-static int  klsi_105_tiocmset(struct tty_struct *tty,
-			unsigned int set, unsigned int clear);
-=======
 static int klsi_105_port_probe(struct usb_serial_port *port);
 static void klsi_105_port_remove(struct usb_serial_port *port);
 static int  klsi_105_open(struct tty_struct *tty, struct usb_serial_port *port);
@@ -94,7 +59,6 @@ static void klsi_105_set_termios(struct tty_struct *tty,
 				 struct usb_serial_port *port,
 				 const struct ktermios *old_termios);
 static int  klsi_105_tiocmget(struct tty_struct *tty);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void klsi_105_process_read_urb(struct urb *urb);
 static int klsi_105_prepare_write_buffer(struct usb_serial_port *port,
 						void *dest, size_t size);
@@ -104,25 +68,11 @@ static int klsi_105_prepare_write_buffer(struct usb_serial_port *port,
  */
 static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(PALMCONNECT_VID, PALMCONNECT_PID) },
-<<<<<<< HEAD
-	{ USB_DEVICE(KLSI_VID, KLSI_KL5KUSB105D_PID) },
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }		/* Terminating entry */
 };
 
 MODULE_DEVICE_TABLE(usb, id_table);
 
-<<<<<<< HEAD
-static struct usb_driver kl5kusb105d_driver = {
-	.name =		"kl5kusb105d",
-	.probe =	usb_serial_probe,
-	.disconnect =	usb_serial_disconnect,
-	.id_table =	id_table,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct usb_serial_driver kl5kusb105d_device = {
 	.driver = {
 		.owner =	THIS_MODULE,
@@ -135,17 +85,9 @@ static struct usb_serial_driver kl5kusb105d_device = {
 	.open =			klsi_105_open,
 	.close =		klsi_105_close,
 	.set_termios =		klsi_105_set_termios,
-<<<<<<< HEAD
-	/*.break_ctl =		klsi_105_break_ctl,*/
-	.tiocmget =		klsi_105_tiocmget,
-	.tiocmset =		klsi_105_tiocmset,
-	.attach =		klsi_105_startup,
-	.release =		klsi_105_release,
-=======
 	.tiocmget =		klsi_105_tiocmget,
 	.port_probe =		klsi_105_port_probe,
 	.port_remove =		klsi_105_port_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.throttle =		usb_serial_generic_throttle,
 	.unthrottle =		usb_serial_generic_unthrottle,
 	.process_read_urb =	klsi_105_process_read_urb,
@@ -157,18 +99,6 @@ static struct usb_serial_driver * const serial_drivers[] = {
 };
 
 struct klsi_105_port_settings {
-<<<<<<< HEAD
-	__u8	pktlen;		/* always 5, it seems */
-	__u8	baudrate;
-	__u8	databits;
-	__u8	unknown1;
-	__u8	unknown2;
-} __attribute__ ((packed));
-
-struct klsi_105_private {
-	struct klsi_105_port_settings	cfg;
-	struct ktermios			termios;
-=======
 	u8	pktlen;		/* always 5, it seems */
 	u8	baudrate;
 	u8	databits;
@@ -178,7 +108,6 @@ struct klsi_105_private {
 
 struct klsi_105_private {
 	struct klsi_105_port_settings	cfg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long			line_state; /* modem line settings */
 	spinlock_t			lock;
 };
@@ -196,85 +125,6 @@ static int klsi_105_chg_port_settings(struct usb_serial_port *port,
 {
 	int rc;
 
-<<<<<<< HEAD
-	rc = usb_control_msg(port->serial->dev,
-			usb_sndctrlpipe(port->serial->dev, 0),
-			KL5KUSB105A_SIO_SET_DATA,
-			USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_INTERFACE,
-			0, /* value */
-			0, /* index */
-			settings,
-			sizeof(struct klsi_105_port_settings),
-			KLSI_TIMEOUT);
-	if (rc < 0)
-		dev_err(&port->dev,
-			"Change port settings failed (error = %d)\n", rc);
-	dev_info(&port->serial->dev->dev,
-		 "%d byte block, baudrate %x, databits %d, u1 %d, u2 %d\n",
-		 settings->pktlen, settings->baudrate, settings->databits,
-		 settings->unknown1, settings->unknown2);
-	return rc;
-}
-
-/* translate a 16-bit status value from the device to linux's TIO bits */
-static unsigned long klsi_105_status2linestate(const __u16 status)
-{
-	unsigned long res = 0;
-
-	res =   ((status & KL5KUSB105A_DSR) ? TIOCM_DSR : 0)
-	      | ((status & KL5KUSB105A_CTS) ? TIOCM_CTS : 0)
-	      ;
-
-	return res;
-}
-
-/*
- * Read line control via vendor command and return result through
- * *line_state_p
- */
-/* It seems that the status buffer has always only 2 bytes length */
-#define KLSI_STATUSBUF_LEN	2
-static int klsi_105_get_line_state(struct usb_serial_port *port,
-				   unsigned long *line_state_p)
-{
-	int rc;
-	u8 *status_buf;
-	__u16 status;
-
-	dev_info(&port->serial->dev->dev, "sending SIO Poll request\n");
-
-	status_buf = kmalloc(KLSI_STATUSBUF_LEN, GFP_KERNEL);
-	if (!status_buf) {
-		dev_err(&port->dev, "%s - out of memory for status buffer.\n",
-				__func__);
-		return -ENOMEM;
-	}
-	status_buf[0] = 0xff;
-	status_buf[1] = 0xff;
-	rc = usb_control_msg(port->serial->dev,
-			     usb_rcvctrlpipe(port->serial->dev, 0),
-			     KL5KUSB105A_SIO_POLL,
-			     USB_TYPE_VENDOR | USB_DIR_IN,
-			     0, /* value */
-			     0, /* index */
-			     status_buf, KLSI_STATUSBUF_LEN,
-			     10000
-			     );
-	if (rc < 0)
-		dev_err(&port->dev, "Reading line status failed (error = %d)\n",
-			rc);
-	else {
-		status = get_unaligned_le16(status_buf);
-
-		dev_info(&port->serial->dev->dev, "read status %x %x",
-			 status_buf[0], status_buf[1]);
-
-		*line_state_p = klsi_105_status2linestate(status);
-	}
-
-	kfree(status_buf);
-	return rc;
-=======
 	rc = usb_control_msg_send(port->serial->dev,
 				  0,
 				  KL5KUSB105A_SIO_SET_DATA,
@@ -329,7 +179,6 @@ static int klsi_105_get_line_state(struct usb_serial_port *port,
 		 ((status & KL5KUSB105A_CTS) ? TIOCM_CTS : 0);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -337,62 +186,6 @@ static int klsi_105_get_line_state(struct usb_serial_port *port,
  * Driver's tty interface functions
  */
 
-<<<<<<< HEAD
-static int klsi_105_startup(struct usb_serial *serial)
-{
-	struct klsi_105_private *priv;
-	int i;
-
-	/* check if we support the product id (see keyspan.c)
-	 * FIXME
-	 */
-
-	/* allocate the private data structure */
-	for (i = 0; i < serial->num_ports; i++) {
-		priv = kmalloc(sizeof(struct klsi_105_private),
-						   GFP_KERNEL);
-		if (!priv) {
-			dbg("%skmalloc for klsi_105_private failed.", __func__);
-			i--;
-			goto err_cleanup;
-		}
-		/* set initial values for control structures */
-		priv->cfg.pktlen    = 5;
-		priv->cfg.baudrate  = kl5kusb105a_sio_b9600;
-		priv->cfg.databits  = kl5kusb105a_dtb_8;
-		priv->cfg.unknown1  = 0;
-		priv->cfg.unknown2  = 1;
-
-		priv->line_state    = 0;
-
-		usb_set_serial_port_data(serial->port[i], priv);
-
-		spin_lock_init(&priv->lock);
-
-		/* priv->termios is left uninitialized until port opening */
-		init_waitqueue_head(&serial->port[i]->write_wait);
-	}
-
-	return 0;
-
-err_cleanup:
-	for (; i >= 0; i--) {
-		priv = usb_get_serial_port_data(serial->port[i]);
-		kfree(priv);
-		usb_set_serial_port_data(serial->port[i], NULL);
-	}
-	return -ENOMEM;
-}
-
-static void klsi_105_release(struct usb_serial *serial)
-{
-	int i;
-
-	dbg("%s", __func__);
-
-	for (i = 0; i < serial->num_ports; ++i)
-		kfree(usb_get_serial_port_data(serial->port[i]));
-=======
 static int klsi_105_port_probe(struct usb_serial_port *port)
 {
 	struct klsi_105_private *priv;
@@ -423,7 +216,6 @@ static void klsi_105_port_remove(struct usb_serial_port *port)
 
 	priv = usb_get_serial_port_data(port);
 	kfree(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int  klsi_105_open(struct tty_struct *tty, struct usb_serial_port *port)
@@ -431,20 +223,10 @@ static int  klsi_105_open(struct tty_struct *tty, struct usb_serial_port *port)
 	struct klsi_105_private *priv = usb_get_serial_port_data(port);
 	int retval = 0;
 	int rc;
-<<<<<<< HEAD
-	int i;
-	unsigned long line_state;
-	struct klsi_105_port_settings *cfg;
-	unsigned long flags;
-
-	dbg("%s port %d", __func__, port->number);
-
-=======
 	unsigned long line_state;
 	struct klsi_105_port_settings cfg;
 	unsigned long flags;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Do a defined restart:
 	 * Set up sane default baud rate and send the 'READ_ON'
 	 * vendor command.
@@ -452,34 +234,6 @@ static int  klsi_105_open(struct tty_struct *tty, struct usb_serial_port *port)
 	 * Then read the modem line control and store values in
 	 * priv->line_state.
 	 */
-<<<<<<< HEAD
-	cfg = kmalloc(sizeof(*cfg), GFP_KERNEL);
-	if (!cfg) {
-		dev_err(&port->dev, "%s - out of memory for config buffer.\n",
-				__func__);
-		return -ENOMEM;
-	}
-	cfg->pktlen   = 5;
-	cfg->baudrate = kl5kusb105a_sio_b9600;
-	cfg->databits = kl5kusb105a_dtb_8;
-	cfg->unknown1 = 0;
-	cfg->unknown2 = 1;
-	klsi_105_chg_port_settings(port, cfg);
-
-	/* set up termios structure */
-	spin_lock_irqsave(&priv->lock, flags);
-	priv->termios.c_iflag = tty->termios->c_iflag;
-	priv->termios.c_oflag = tty->termios->c_oflag;
-	priv->termios.c_cflag = tty->termios->c_cflag;
-	priv->termios.c_lflag = tty->termios->c_lflag;
-	for (i = 0; i < NCCS; i++)
-		priv->termios.c_cc[i] = tty->termios->c_cc[i];
-	priv->cfg.pktlen   = cfg->pktlen;
-	priv->cfg.baudrate = cfg->baudrate;
-	priv->cfg.databits = cfg->databits;
-	priv->cfg.unknown1 = cfg->unknown1;
-	priv->cfg.unknown2 = cfg->unknown2;
-=======
 
 	cfg.pktlen   = 5;
 	cfg.baudrate = kl5kusb105a_sio_b9600;
@@ -494,20 +248,12 @@ static int  klsi_105_open(struct tty_struct *tty, struct usb_serial_port *port)
 	priv->cfg.databits = cfg.databits;
 	priv->cfg.unknown1 = cfg.unknown1;
 	priv->cfg.unknown2 = cfg.unknown2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&priv->lock, flags);
 
 	/* READ_ON and urb submission */
 	rc = usb_serial_generic_open(tty, port);
-<<<<<<< HEAD
-	if (rc) {
-		retval = rc;
-		goto exit;
-	}
-=======
 	if (rc)
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = usb_control_msg(port->serial->dev,
 			     usb_sndctrlpipe(port->serial->dev, 0),
@@ -521,23 +267,6 @@ static int  klsi_105_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (rc < 0) {
 		dev_err(&port->dev, "Enabling read failed (error = %d)\n", rc);
 		retval = rc;
-<<<<<<< HEAD
-	} else
-		dbg("%s - enabled reading", __func__);
-
-	rc = klsi_105_get_line_state(port, &line_state);
-	if (rc >= 0) {
-		spin_lock_irqsave(&priv->lock, flags);
-		priv->line_state = line_state;
-		spin_unlock_irqrestore(&priv->lock, flags);
-		dbg("%s - read line state 0x%lx", __func__, line_state);
-		retval = 0;
-	} else
-		retval = rc;
-
-exit:
-	kfree(cfg);
-=======
 		goto err_generic_close;
 	} else
 		dev_dbg(&port->dev, "%s - enabled reading\n", __func__);
@@ -568,7 +297,6 @@ err_disable_read:
 err_generic_close:
 	usb_serial_generic_close(port);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -576,32 +304,6 @@ static void klsi_105_close(struct usb_serial_port *port)
 {
 	int rc;
 
-<<<<<<< HEAD
-	dbg("%s port %d", __func__, port->number);
-
-	mutex_lock(&port->serial->disc_mutex);
-	if (!port->serial->disconnected) {
-		/* send READ_OFF */
-		rc = usb_control_msg(port->serial->dev,
-				     usb_sndctrlpipe(port->serial->dev, 0),
-				     KL5KUSB105A_SIO_CONFIGURE,
-				     USB_TYPE_VENDOR | USB_DIR_OUT,
-				     KL5KUSB105A_SIO_CONFIGURE_READ_OFF,
-				     0, /* index */
-				     NULL, 0,
-				     KLSI_TIMEOUT);
-		if (rc < 0)
-			dev_err(&port->dev,
-				"Disabling read failed (error = %d)\n", rc);
-	}
-	mutex_unlock(&port->serial->disc_mutex);
-
-	/* shutdown our bulk reads and writes */
-	usb_serial_generic_close(port);
-
-	/* wgg - do I need this? I think so. */
-	usb_kill_urb(port->interrupt_in_urb);
-=======
 	/* send READ_OFF */
 	rc = usb_control_msg(port->serial->dev,
 			     usb_sndctrlpipe(port->serial->dev, 0),
@@ -616,7 +318,6 @@ static void klsi_105_close(struct usb_serial_port *port)
 
 	/* shutdown our bulk reads and writes */
 	usb_serial_generic_close(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* We need to write a complete 64-byte data block and encode the
@@ -643,10 +344,6 @@ static void klsi_105_process_read_urb(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
 	unsigned char *data = urb->transfer_buffer;
-<<<<<<< HEAD
-	struct tty_struct *tty;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned len;
 
 	/* empty urbs seem to happen, we ignore them */
@@ -654,25 +351,6 @@ static void klsi_105_process_read_urb(struct urb *urb)
 		return;
 
 	if (urb->actual_length <= KLSI_HDR_LEN) {
-<<<<<<< HEAD
-		dbg("%s - malformed packet", __func__);
-		return;
-	}
-
-	tty = tty_port_tty_get(&port->port);
-	if (!tty)
-		return;
-
-	len = get_unaligned_le16(data);
-	if (len > urb->actual_length - KLSI_HDR_LEN) {
-		dbg("%s - packet length mismatch", __func__);
-		len = urb->actual_length - KLSI_HDR_LEN;
-	}
-
-	tty_insert_flip_string(tty, data + KLSI_HDR_LEN, len);
-	tty_flip_buffer_push(tty);
-	tty_kref_put(tty);
-=======
 		dev_dbg(&port->dev, "%s - malformed packet\n", __func__);
 		return;
 	}
@@ -685,19 +363,10 @@ static void klsi_105_process_read_urb(struct urb *urb)
 
 	tty_insert_flip_string(&port->port, data + KLSI_HDR_LEN, len);
 	tty_flip_buffer_push(&port->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void klsi_105_set_termios(struct tty_struct *tty,
 				 struct usb_serial_port *port,
-<<<<<<< HEAD
-				 struct ktermios *old_termios)
-{
-	struct klsi_105_private *priv = usb_get_serial_port_data(port);
-	unsigned int iflag = tty->termios->c_iflag;
-	unsigned int old_iflag = old_termios->c_iflag;
-	unsigned int cflag = tty->termios->c_cflag;
-=======
 				 const struct ktermios *old_termios)
 {
 	struct klsi_105_private *priv = usb_get_serial_port_data(port);
@@ -705,23 +374,14 @@ static void klsi_105_set_termios(struct tty_struct *tty,
 	unsigned int iflag = tty->termios.c_iflag;
 	unsigned int old_iflag = old_termios->c_iflag;
 	unsigned int cflag = tty->termios.c_cflag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int old_cflag = old_termios->c_cflag;
 	struct klsi_105_port_settings *cfg;
 	unsigned long flags;
 	speed_t baud;
 
 	cfg = kmalloc(sizeof(*cfg), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!cfg) {
-		dev_err(&port->dev, "%s - out of memory for config buffer.\n",
-				__func__);
-		return;
-	}
-=======
 	if (!cfg)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* lock while we are modifying the settings */
 	spin_lock_irqsave(&priv->lock, flags);
@@ -731,22 +391,6 @@ static void klsi_105_set_termios(struct tty_struct *tty,
 	 */
 	baud = tty_get_baud_rate(tty);
 
-<<<<<<< HEAD
-	if ((cflag & CBAUD) != (old_cflag & CBAUD)) {
-		/* reassert DTR and (maybe) RTS on transition from B0 */
-		if ((old_cflag & CBAUD) == B0) {
-			dbg("%s: baud was B0", __func__);
-#if 0
-			priv->control_state |= TIOCM_DTR;
-			/* don't set RTS if using hardware flow control */
-			if (!(old_cflag & CRTSCTS))
-				priv->control_state |= TIOCM_RTS;
-			mct_u232_set_modem_ctrl(serial, priv->control_state);
-#endif
-		}
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (baud) {
 	case 0: /* handled below */
 		break;
@@ -775,26 +419,6 @@ static void klsi_105_set_termios(struct tty_struct *tty,
 		priv->cfg.baudrate = kl5kusb105a_sio_b115200;
 		break;
 	default:
-<<<<<<< HEAD
-		dbg("KLSI USB->Serial converter:"
-		    " unsupported baudrate request, using default of 9600");
-			priv->cfg.baudrate = kl5kusb105a_sio_b9600;
-		baud = 9600;
-		break;
-	}
-	if ((cflag & CBAUD) == B0) {
-		dbg("%s: baud is B0", __func__);
-		/* Drop RTS and DTR */
-		/* maybe this should be simulated by sending read
-		 * disable and read enable messages?
-		 */
-		;
-#if 0
-		priv->control_state &= ~(TIOCM_DTR | TIOCM_RTS);
-		mct_u232_set_modem_ctrl(serial, priv->control_state);
-#endif
-	}
-=======
 		dev_dbg(dev, "unsupported baudrate, using 9600\n");
 		priv->cfg.baudrate = kl5kusb105a_sio_b9600;
 		baud = 9600;
@@ -808,26 +432,17 @@ static void klsi_105_set_termios(struct tty_struct *tty,
 	 * enable messages?
 	 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tty_encode_baud_rate(tty, baud, baud);
 
 	if ((cflag & CSIZE) != (old_cflag & CSIZE)) {
 		/* set the number of data bits */
 		switch (cflag & CSIZE) {
 		case CS5:
-<<<<<<< HEAD
-			dbg("%s - 5 bits/byte not supported", __func__);
-			spin_unlock_irqrestore(&priv->lock, flags);
-			goto err;
-		case CS6:
-			dbg("%s - 6 bits/byte not supported", __func__);
-=======
 			dev_dbg(dev, "%s - 5 bits/byte not supported\n", __func__);
 			spin_unlock_irqrestore(&priv->lock, flags);
 			goto err;
 		case CS6:
 			dev_dbg(dev, "%s - 6 bits/byte not supported\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_irqrestore(&priv->lock, flags);
 			goto err;
 		case CS7:
@@ -837,12 +452,7 @@ static void klsi_105_set_termios(struct tty_struct *tty,
 			priv->cfg.databits = kl5kusb105a_dtb_8;
 			break;
 		default:
-<<<<<<< HEAD
-			dev_err(&port->dev,
-				"CSIZE was not CS5-CS8, using default of 8\n");
-=======
 			dev_err(dev, "CSIZE was not CS5-CS8, using default of 8\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			priv->cfg.databits = kl5kusb105a_dtb_8;
 			break;
 		}
@@ -854,28 +464,7 @@ static void klsi_105_set_termios(struct tty_struct *tty,
 	if ((cflag & (PARENB|PARODD)) != (old_cflag & (PARENB|PARODD))
 	    || (cflag & CSTOPB) != (old_cflag & CSTOPB)) {
 		/* Not currently supported */
-<<<<<<< HEAD
-		tty->termios->c_cflag &= ~(PARENB|PARODD|CSTOPB);
-#if 0
-		priv->last_lcr = 0;
-
-		/* set the parity */
-		if (cflag & PARENB)
-			priv->last_lcr |= (cflag & PARODD) ?
-				MCT_U232_PARITY_ODD : MCT_U232_PARITY_EVEN;
-		else
-			priv->last_lcr |= MCT_U232_PARITY_NONE;
-
-		/* set the number of stop bits */
-		priv->last_lcr |= (cflag & CSTOPB) ?
-			MCT_U232_STOP_BITS_2 : MCT_U232_STOP_BITS_1;
-
-		mct_u232_set_line_ctrl(serial, priv->last_lcr);
-#endif
-		;
-=======
 		tty->termios.c_cflag &= ~(PARENB|PARODD|CSTOPB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/*
 	 * Set flow control: well, I do not really now how to handle DTR/RTS.
@@ -885,20 +474,7 @@ static void klsi_105_set_termios(struct tty_struct *tty,
 	    || (iflag & IXON) != (old_iflag & IXON)
 	    ||  (cflag & CRTSCTS) != (old_cflag & CRTSCTS)) {
 		/* Not currently supported */
-<<<<<<< HEAD
-		tty->termios->c_cflag &= ~CRTSCTS;
-		/* Drop DTR/RTS if no flow control otherwise assert */
-#if 0
-		if ((iflag & IXOFF) || (iflag & IXON) || (cflag & CRTSCTS))
-			priv->control_state |= TIOCM_DTR | TIOCM_RTS;
-		else
-			priv->control_state &= ~(TIOCM_DTR | TIOCM_RTS);
-		mct_u232_set_modem_ctrl(serial, priv->control_state);
-#endif
-		;
-=======
 		tty->termios.c_cflag &= ~CRTSCTS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	memcpy(cfg, &priv->cfg, sizeof(*cfg));
 	spin_unlock_irqrestore(&priv->lock, flags);
@@ -909,28 +485,6 @@ err:
 	kfree(cfg);
 }
 
-<<<<<<< HEAD
-#if 0
-static void mct_u232_break_ctl(struct tty_struct *tty, int break_state)
-{
-	struct usb_serial_port *port = tty->driver_data;
-	struct usb_serial *serial = port->serial;
-	struct mct_u232_private *priv =
-				(struct mct_u232_private *)port->private;
-	unsigned char lcr = priv->last_lcr;
-
-	dbg("%sstate=%d", __func__, break_state);
-
-	/* LOCKING */
-	if (break_state)
-		lcr |= MCT_U232_SET_BREAK;
-
-	mct_u232_set_line_ctrl(serial, lcr);
-}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int klsi_105_tiocmget(struct tty_struct *tty)
 {
 	struct usb_serial_port *port = tty->driver_data;
@@ -938,10 +492,6 @@ static int klsi_105_tiocmget(struct tty_struct *tty)
 	unsigned long flags;
 	int rc;
 	unsigned long line_state;
-<<<<<<< HEAD
-	dbg("%s - request, just guessing", __func__);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = klsi_105_get_line_state(port, &line_state);
 	if (rc < 0) {
@@ -954,55 +504,12 @@ static int klsi_105_tiocmget(struct tty_struct *tty)
 	spin_lock_irqsave(&priv->lock, flags);
 	priv->line_state = line_state;
 	spin_unlock_irqrestore(&priv->lock, flags);
-<<<<<<< HEAD
-	dbg("%s - read line state 0x%lx", __func__, line_state);
-	return (int)line_state;
-}
-
-static int klsi_105_tiocmset(struct tty_struct *tty,
-			     unsigned int set, unsigned int clear)
-{
-	int retval = -EINVAL;
-
-	dbg("%s", __func__);
-
-/* if this ever gets implemented, it should be done something like this:
-	struct usb_serial *serial = port->serial;
-	struct klsi_105_private *priv = usb_get_serial_port_data(port);
-	unsigned long flags;
-	int control;
-
-	spin_lock_irqsave (&priv->lock, flags);
-	if (set & TIOCM_RTS)
-		priv->control_state |= TIOCM_RTS;
-	if (set & TIOCM_DTR)
-		priv->control_state |= TIOCM_DTR;
-	if (clear & TIOCM_RTS)
-		priv->control_state &= ~TIOCM_RTS;
-	if (clear & TIOCM_DTR)
-		priv->control_state &= ~TIOCM_DTR;
-	control = priv->control_state;
-	spin_unlock_irqrestore (&priv->lock, flags);
-	retval = mct_u232_set_modem_ctrl(serial, control);
-*/
-	return retval;
-}
-
-module_usb_serial_driver(kl5kusb105d_driver, serial_drivers);
-=======
 	dev_dbg(&port->dev, "%s - read line state 0x%lx\n", __func__, line_state);
 	return (int)line_state;
 }
 
 module_usb_serial_driver(serial_drivers, id_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-
-module_param(debug, bool, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(debug, "enable extensive debugging messages");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

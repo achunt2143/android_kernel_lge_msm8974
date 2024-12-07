@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Interface for power-management for ppc64 compliant platform
  *
@@ -10,34 +7,15 @@
  *  Feb 2007
  *
  *  Copyright (C) 2007 IBM Corporation.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kobject.h>
 #include <linux/string.h>
 #include <linux/errno.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-=======
 #include <asm/machdep.h>
 
 #include "pseries.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned long rtas_poweron_auto; /* default and normal state is 0 */
 
@@ -73,11 +51,7 @@ static struct attribute *g[] = {
         NULL,
 };
 
-<<<<<<< HEAD
-static struct attribute_group attr_group = {
-=======
 static const struct attribute_group attr_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         .attrs = g,
 };
 
@@ -88,19 +62,11 @@ static int __init pm_init(void)
 		return -ENOMEM;
 	return sysfs_create_group(power_kobj, &attr_group);
 }
-<<<<<<< HEAD
-core_initcall(pm_init);
-=======
 machine_core_initcall(pseries, pm_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static int __init apo_pm_init(void)
 {
 	return (sysfs_create_file(power_kobj, &auto_poweron_attr.attr));
 }
-<<<<<<< HEAD
-__initcall(apo_pm_init);
-=======
 machine_device_initcall(pseries, apo_pm_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

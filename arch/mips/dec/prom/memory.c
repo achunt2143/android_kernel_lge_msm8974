@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * memory.c: memory initialisation code.
  *
@@ -11,18 +8,10 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-#include <linux/types.h>
-
-#include <asm/addrspace.h>
-#include <asm/bootinfo.h>
-=======
 #include <linux/memblock.h>
 #include <linux/types.h>
 
 #include <asm/addrspace.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dec/machtype.h>
 #include <asm/dec/prom.h>
 #include <asm/page.h>
@@ -38,11 +27,7 @@ volatile unsigned long mem_err;		/* So we know an error occurred */
 
 #define CHUNK_SIZE 0x400000
 
-<<<<<<< HEAD
-static inline void pmax_setup_memory_region(void)
-=======
 static __init void pmax_setup_memory_region(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	volatile unsigned char *memory_page, dummy;
 	char old_handler[0x80];
@@ -64,23 +49,14 @@ static __init void pmax_setup_memory_region(void)
 	}
 	memcpy((void *)(CKSEG0 + 0x80), &old_handler, 0x80);
 
-<<<<<<< HEAD
-	add_memory_region(0, (unsigned long)memory_page - CKSEG1 - CHUNK_SIZE,
-			  BOOT_MEM_RAM);
-=======
 	memblock_add(0, (unsigned long)memory_page - CKSEG1 - CHUNK_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Use the REX prom calls to get hold of the memory bitmap, and thence
  * determine memory size.
  */
-<<<<<<< HEAD
-static inline void rex_setup_memory_region(void)
-=======
 static __init void rex_setup_memory_region(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, bitmap_size;
 	unsigned long mem_start = 0, mem_size = 0;
@@ -98,21 +74,13 @@ static __init void rex_setup_memory_region(void)
 		else if (!mem_size)
 			mem_start += (8 * bm->pagesize);
 		else {
-<<<<<<< HEAD
-			add_memory_region(mem_start, mem_size, BOOT_MEM_RAM);
-=======
 			memblock_add(mem_start, mem_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mem_start += mem_size + (8 * bm->pagesize);
 			mem_size = 0;
 		}
 	}
 	if (mem_size)
-<<<<<<< HEAD
-		add_memory_region(mem_start, mem_size, BOOT_MEM_RAM);
-=======
 		memblock_add(mem_start, mem_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init prom_meminit(u32 magic)
@@ -132,11 +100,7 @@ void __init prom_free_prom_memory(void)
 	 * the first page reserved for the exception handlers.
 	 */
 
-<<<<<<< HEAD
-#if defined(CONFIG_DECLANCE) || defined(CONFIG_DECLANCE_MODULE)
-=======
 #if IS_ENABLED(CONFIG_DECLANCE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Leave 128 KB reserved for Lance memory for
 	 * IOASIC DECstations.

@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-/*
- *  (C) 2004-2009  Dominik Brodowski <linux@dominikbrodowski.de>
- *
- *  Licensed under the terms of the GNU GPL License version 2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *  (C) 2004-2009  Dominik Brodowski <linux@dominikbrodowski.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -15,20 +8,6 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-<<<<<<< HEAD
-
-#include "cpufreq.h"
-#include "sysfs.h"
-
-int cpufreq_cpu_exists(unsigned int cpu)
-{
-	return sysfs_cpu_exists(cpu);
-}
-
-unsigned long cpufreq_get_freq_kernel(unsigned int cpu)
-{
-	return sysfs_get_freq_kernel(cpu);
-=======
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -212,25 +191,16 @@ static int sysfs_cpufreq_write_one_value(unsigned int cpu,
 unsigned long cpufreq_get_freq_kernel(unsigned int cpu)
 {
 	return sysfs_cpufreq_get_one_value(cpu, SCALING_CUR_FREQ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 unsigned long cpufreq_get_freq_hardware(unsigned int cpu)
 {
-<<<<<<< HEAD
-	return sysfs_get_freq_hardware(cpu);
-=======
 	return sysfs_cpufreq_get_one_value(cpu, CPUINFO_CUR_FREQ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 unsigned long cpufreq_get_transition_latency(unsigned int cpu)
 {
-<<<<<<< HEAD
-	return sysfs_get_freq_transition_latency(cpu);
-=======
 	return sysfs_cpufreq_get_one_value(cpu, CPUINFO_LATENCY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int cpufreq_get_hardware_limits(unsigned int cpu,
@@ -239,9 +209,6 @@ int cpufreq_get_hardware_limits(unsigned int cpu,
 {
 	if ((!min) || (!max))
 		return -EINVAL;
-<<<<<<< HEAD
-	return sysfs_get_freq_hardware_limits(cpu, min, max);
-=======
 
 	*min = sysfs_cpufreq_get_one_value(cpu, CPUINFO_MIN_FREQ);
 	if (!*min)
@@ -252,16 +219,11 @@ int cpufreq_get_hardware_limits(unsigned int cpu,
 		return -ENODEV;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 char *cpufreq_get_driver(unsigned int cpu)
 {
-<<<<<<< HEAD
-	return sysfs_get_freq_driver(cpu);
-=======
 	return sysfs_cpufreq_get_one_string(cpu, SCALING_DRIVER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void cpufreq_put_driver(char *ptr)
@@ -273,9 +235,6 @@ void cpufreq_put_driver(char *ptr)
 
 struct cpufreq_policy *cpufreq_get_policy(unsigned int cpu)
 {
-<<<<<<< HEAD
-	return sysfs_get_freq_policy(cpu);
-=======
 	struct cpufreq_policy *policy;
 
 	policy = malloc(sizeof(struct cpufreq_policy));
@@ -296,7 +255,6 @@ struct cpufreq_policy *cpufreq_get_policy(unsigned int cpu)
 	}
 
 	return policy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void cpufreq_put_policy(struct cpufreq_policy *policy)
@@ -312,9 +270,6 @@ void cpufreq_put_policy(struct cpufreq_policy *policy)
 struct cpufreq_available_governors *cpufreq_get_available_governors(unsigned
 								int cpu)
 {
-<<<<<<< HEAD
-	return sysfs_get_freq_available_governors(cpu);
-=======
 	struct cpufreq_available_governors *first = NULL;
 	struct cpufreq_available_governors *current = NULL;
 	char linebuf[MAX_LINE_LEN];
@@ -366,7 +321,6 @@ struct cpufreq_available_governors *cpufreq_get_available_governors(unsigned
 		first = current;
 	}
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void cpufreq_put_available_governors(struct cpufreq_available_governors *any)
@@ -390,13 +344,6 @@ void cpufreq_put_available_governors(struct cpufreq_available_governors *any)
 struct cpufreq_available_frequencies
 *cpufreq_get_available_frequencies(unsigned int cpu)
 {
-<<<<<<< HEAD
-	return sysfs_get_available_frequencies(cpu);
-}
-
-void cpufreq_put_available_frequencies(struct cpufreq_available_frequencies
-				*any) {
-=======
 	struct cpufreq_available_frequencies *first = NULL;
 	struct cpufreq_available_frequencies *current = NULL;
 	char one_value[SYSFS_PATH_MAX];
@@ -508,7 +455,6 @@ struct cpufreq_available_frequencies
 
 void cpufreq_put_available_frequencies(struct cpufreq_available_frequencies *any)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cpufreq_available_frequencies *tmp, *next;
 
 	if (!any)
@@ -522,12 +468,6 @@ void cpufreq_put_available_frequencies(struct cpufreq_available_frequencies *any
 	}
 }
 
-<<<<<<< HEAD
-
-struct cpufreq_affected_cpus *cpufreq_get_affected_cpus(unsigned int cpu)
-{
-	return sysfs_get_freq_affected_cpus(cpu);
-=======
 void cpufreq_put_boost_frequencies(struct cpufreq_available_frequencies *any)
 {
 	cpufreq_put_available_frequencies(any);
@@ -592,7 +532,6 @@ static struct cpufreq_affected_cpus *sysfs_get_cpu_list(unsigned int cpu,
 struct cpufreq_affected_cpus *cpufreq_get_affected_cpus(unsigned int cpu)
 {
 	return sysfs_get_cpu_list(cpu, "affected_cpus");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void cpufreq_put_affected_cpus(struct cpufreq_affected_cpus *any)
@@ -613,11 +552,7 @@ void cpufreq_put_affected_cpus(struct cpufreq_affected_cpus *any)
 
 struct cpufreq_affected_cpus *cpufreq_get_related_cpus(unsigned int cpu)
 {
-<<<<<<< HEAD
-	return sysfs_get_freq_related_cpus(cpu);
-=======
 	return sysfs_get_cpu_list(cpu, "related_cpus");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void cpufreq_put_related_cpus(struct cpufreq_affected_cpus *any)
@@ -625,15 +560,6 @@ void cpufreq_put_related_cpus(struct cpufreq_affected_cpus *any)
 	cpufreq_put_affected_cpus(any);
 }
 
-<<<<<<< HEAD
-
-int cpufreq_set_policy(unsigned int cpu, struct cpufreq_policy *policy)
-{
-	if (!policy || !(policy->governor))
-		return -EINVAL;
-
-	return sysfs_set_freq_policy(cpu, policy);
-=======
 static int verify_gov(char *new_gov, char *passed_gov)
 {
 	unsigned int i, j = 0;
@@ -714,39 +640,22 @@ int cpufreq_set_policy(unsigned int cpu, struct cpufreq_policy *policy)
 
 	return sysfs_cpufreq_write_one_value(cpu, WRITE_SCALING_GOVERNOR,
 					     gov, strlen(gov));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 int cpufreq_modify_policy_min(unsigned int cpu, unsigned long min_freq)
 {
-<<<<<<< HEAD
-	return sysfs_modify_freq_policy_min(cpu, min_freq);
-=======
 	char value[SYSFS_PATH_MAX];
 
 	snprintf(value, SYSFS_PATH_MAX, "%lu", min_freq);
 
 	return sysfs_cpufreq_write_one_value(cpu, WRITE_SCALING_MIN_FREQ,
 					     value, strlen(value));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 int cpufreq_modify_policy_max(unsigned int cpu, unsigned long max_freq)
 {
-<<<<<<< HEAD
-	return sysfs_modify_freq_policy_max(cpu, max_freq);
-}
-
-
-int cpufreq_modify_policy_governor(unsigned int cpu, char *governor)
-{
-	if ((!governor) || (strlen(governor) > 19))
-		return -EINVAL;
-
-	return sysfs_modify_freq_policy_governor(cpu, governor);
-=======
 	char value[SYSFS_PATH_MAX];
 
 	snprintf(value, SYSFS_PATH_MAX, "%lu", max_freq);
@@ -767,14 +676,10 @@ int cpufreq_modify_policy_governor(unsigned int cpu, char *governor)
 
 	return sysfs_cpufreq_write_one_value(cpu, WRITE_SCALING_GOVERNOR,
 					     new_gov, strlen(new_gov));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int cpufreq_set_frequency(unsigned int cpu, unsigned long target_frequency)
 {
-<<<<<<< HEAD
-	return sysfs_set_frequency(cpu, target_frequency);
-=======
 	struct cpufreq_policy *pol = cpufreq_get_policy(cpu);
 	char userspace_gov[] = "userspace";
 	char freq[SYSFS_PATH_MAX];
@@ -797,15 +702,11 @@ int cpufreq_set_frequency(unsigned int cpu, unsigned long target_frequency)
 
 	return sysfs_cpufreq_write_one_value(cpu, WRITE_SCALING_SET_SPEED,
 					     freq, strlen(freq));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct cpufreq_stats *cpufreq_get_stats(unsigned int cpu,
 					unsigned long long *total_time)
 {
-<<<<<<< HEAD
-	return sysfs_get_freq_stats(cpu, total_time);
-=======
 	struct cpufreq_stats *first = NULL;
 	struct cpufreq_stats *current = NULL;
 	char one_value[SYSFS_PATH_MAX];
@@ -861,7 +762,6 @@ struct cpufreq_stats *cpufreq_get_stats(unsigned int cpu,
 		first = current;
 	}
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void cpufreq_put_stats(struct cpufreq_stats *any)
@@ -881,9 +781,5 @@ void cpufreq_put_stats(struct cpufreq_stats *any)
 
 unsigned long cpufreq_get_transitions(unsigned int cpu)
 {
-<<<<<<< HEAD
-	return sysfs_get_freq_transitions(cpu);
-=======
 	return sysfs_cpufreq_get_one_value(cpu, STATS_NUM_TRANSITIONS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

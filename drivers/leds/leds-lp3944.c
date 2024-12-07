@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * leds-lp3944.c - driver for National Semiconductor LP3944 Funlight Chip
  *
  * Copyright (C) 2009 Antonio Ospite <ospite@studenti.unina.it>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -38,10 +27,6 @@
 #include <linux/slab.h>
 #include <linux/leds.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <linux/workqueue.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/leds-lp3944.h>
 
 /* Read Only Registers */
@@ -78,15 +63,8 @@
 struct lp3944_led_data {
 	u8 id;
 	enum lp3944_type type;
-<<<<<<< HEAD
-	enum lp3944_status status;
 	struct led_classdev ldev;
 	struct i2c_client *client;
-	struct work_struct work;
-=======
-	struct led_classdev ldev;
-	struct i2c_client *client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct lp3944_data {
@@ -101,11 +79,7 @@ static int lp3944_reg_read(struct i2c_client *client, u8 reg, u8 *value)
 
 	tmp = i2c_smbus_read_byte_data(client, reg);
 	if (tmp < 0)
-<<<<<<< HEAD
-		return -EINVAL;
-=======
 		return tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*value = tmp;
 
@@ -118,11 +92,7 @@ static int lp3944_reg_write(struct i2c_client *client, u8 reg, u8 value)
 }
 
 /**
-<<<<<<< HEAD
- * Set the period for DIM status
-=======
  * lp3944_dim_set_period() - Set the period for DIM status
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @client: the i2c client
  * @dim: either LP3944_DIM0 or LP3944_DIM1
@@ -153,11 +123,7 @@ static int lp3944_dim_set_period(struct i2c_client *client, u8 dim, u16 period)
 }
 
 /**
-<<<<<<< HEAD
- * Set the duty cycle for DIM status
-=======
  * lp3944_dim_set_dutycycle - Set the duty cycle for DIM status
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @client: the i2c client
  * @dim: either LP3944_DIM0 or LP3944_DIM1
@@ -189,11 +155,7 @@ static int lp3944_dim_set_dutycycle(struct i2c_client *client, u8 dim,
 }
 
 /**
-<<<<<<< HEAD
- * Set the led status
-=======
  * lp3944_led_set() - Set the led status
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @led: a lp3944_led_data structure
  * @status: one of LP3944_LED_STATUS_OFF
@@ -233,16 +195,11 @@ static int lp3944_led_set(struct lp3944_led_data *led, u8 status)
 	if (status > LP3944_LED_STATUS_DIM1)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	/* invert only 0 and 1, leave unchanged the other values,
-	 * remember we are abusing status to set blink patterns
-=======
 	/*
 	 * Invert status only when it's < 2 (i.e. 0 or 1) which means it's
 	 * controlling the on/off state directly.
 	 * When, instead, status is >= 2 don't invert it because it would mean
 	 * to mess with the hardware blinking mode.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (led->type == LP3944_LED_TYPE_LED_INVERTED && status < 2)
 		status = 1 - status;
@@ -314,21 +271,12 @@ static int lp3944_led_set_blink(struct led_classdev *led_cdev,
 	dev_dbg(&led->client->dev, "%s: OK hardware accelerated blink!\n",
 		__func__);
 
-<<<<<<< HEAD
-	led->status = LP3944_LED_STATUS_DIM0;
-	schedule_work(&led->work);
-=======
 	lp3944_led_set(led, LP3944_LED_STATUS_DIM0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void lp3944_led_set_brightness(struct led_classdev *led_cdev,
-=======
 static int lp3944_led_set_brightness(struct led_classdev *led_cdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      enum led_brightness brightness)
 {
 	struct lp3944_led_data *led = ldev_to_led(led_cdev);
@@ -336,20 +284,7 @@ static int lp3944_led_set_brightness(struct led_classdev *led_cdev,
 	dev_dbg(&led->client->dev, "%s: %s, %d\n",
 		__func__, led_cdev->name, brightness);
 
-<<<<<<< HEAD
-	led->status = brightness;
-	schedule_work(&led->work);
-}
-
-static void lp3944_led_work(struct work_struct *work)
-{
-	struct lp3944_led_data *led;
-
-	led = container_of(work, struct lp3944_led_data, work);
-	lp3944_led_set(led, led->status);
-=======
 	return lp3944_led_set(led, !!brightness);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int lp3944_configure(struct i2c_client *client,
@@ -369,16 +304,6 @@ static int lp3944_configure(struct i2c_client *client,
 		case LP3944_LED_TYPE_LED:
 		case LP3944_LED_TYPE_LED_INVERTED:
 			led->type = pled->type;
-<<<<<<< HEAD
-			led->status = pled->status;
-			led->ldev.name = pled->name;
-			led->ldev.max_brightness = 1;
-			led->ldev.brightness_set = lp3944_led_set_brightness;
-			led->ldev.blink_set = lp3944_led_set_blink;
-			led->ldev.flags = LED_CORE_SUSPENDRESUME;
-
-			INIT_WORK(&led->work, lp3944_led_work);
-=======
 			led->ldev.name = pled->name;
 			led->ldev.max_brightness = 1;
 			led->ldev.brightness_set_blocking =
@@ -386,7 +311,6 @@ static int lp3944_configure(struct i2c_client *client,
 			led->ldev.blink_set = lp3944_led_set_blink;
 			led->ldev.flags = LED_CORE_SUSPENDRESUME;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = led_classdev_register(&client->dev, &led->ldev);
 			if (err < 0) {
 				dev_err(&client->dev,
@@ -396,16 +320,6 @@ static int lp3944_configure(struct i2c_client *client,
 			}
 
 			/* to expose the default value to userspace */
-<<<<<<< HEAD
-			led->ldev.brightness = led->status;
-
-			/* Set the default led status */
-			err = lp3944_led_set(led, led->status);
-			if (err < 0) {
-				dev_err(&client->dev,
-					"%s couldn't set STATUS %d\n",
-					led->ldev.name, led->status);
-=======
 			led->ldev.brightness =
 					(enum led_brightness) pled->status;
 
@@ -415,7 +329,6 @@ static int lp3944_configure(struct i2c_client *client,
 				dev_err(&client->dev,
 					"%s couldn't set STATUS %d\n",
 					led->ldev.name, pled->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto exit;
 			}
 			break;
@@ -436,10 +349,6 @@ exit:
 			case LP3944_LED_TYPE_LED:
 			case LP3944_LED_TYPE_LED_INVERTED:
 				led_classdev_unregister(&data->leds[i].ldev);
-<<<<<<< HEAD
-				cancel_work_sync(&data->leds[i].work);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 
 			case LP3944_LED_TYPE_NONE:
@@ -450,17 +359,10 @@ exit:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit lp3944_probe(struct i2c_client *client,
-				  const struct i2c_device_id *id)
-{
-	struct lp3944_platform_data *lp3944_pdata = client->dev.platform_data;
-=======
 static int lp3944_probe(struct i2c_client *client)
 {
 	struct lp3944_platform_data *lp3944_pdata =
 			dev_get_platdata(&client->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lp3944_data *data;
 	int err;
 
@@ -476,12 +378,8 @@ static int lp3944_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	data = kzalloc(sizeof(struct lp3944_data), GFP_KERNEL);
-=======
 	data = devm_kzalloc(&client->dev, sizeof(struct lp3944_data),
 			GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data)
 		return -ENOMEM;
 
@@ -491,29 +389,16 @@ static int lp3944_probe(struct i2c_client *client)
 	mutex_init(&data->lock);
 
 	err = lp3944_configure(client, data, lp3944_pdata);
-<<<<<<< HEAD
-	if (err < 0) {
-		kfree(data);
-		return err;
-	}
-=======
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(&client->dev, "lp3944 enabled\n");
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit lp3944_remove(struct i2c_client *client)
-{
-	struct lp3944_platform_data *pdata = client->dev.platform_data;
-=======
 static void lp3944_remove(struct i2c_client *client)
 {
 	struct lp3944_platform_data *pdata = dev_get_platdata(&client->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lp3944_data *data = i2c_get_clientdata(client);
 	int i;
 
@@ -522,23 +407,12 @@ static void lp3944_remove(struct i2c_client *client)
 		case LP3944_LED_TYPE_LED:
 		case LP3944_LED_TYPE_LED_INVERTED:
 			led_classdev_unregister(&data->leds[i].ldev);
-<<<<<<< HEAD
-			cancel_work_sync(&data->leds[i].work);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case LP3944_LED_TYPE_NONE:
 		default:
 			break;
 		}
-<<<<<<< HEAD
-
-	kfree(data);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* lp3944 i2c driver struct */
@@ -554,11 +428,7 @@ static struct i2c_driver lp3944_driver = {
 		   .name = "lp3944",
 	},
 	.probe    = lp3944_probe,
-<<<<<<< HEAD
-	.remove   = __devexit_p(lp3944_remove),
-=======
 	.remove   = lp3944_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = lp3944_id,
 };
 

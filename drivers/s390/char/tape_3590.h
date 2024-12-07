@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-/*
- *  drivers/s390/char/tape_3590.h
- *    tape device discipline for 3590 tapes.
- *
- *    Copyright IBM Corp. 2001,2006
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *    tape device discipline for 3590 tapes.
  *
  *    Copyright IBM Corp. 2001, 2006
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Stefan Bader <shbader@de.ibm.com>
  *		 Michael Holzheu <holzheu@de.ibm.com>
  *		 Martin Schwidefsky <schwidefsky@de.ibm.com>

@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-/* bnx2x_dcb.c: Broadcom Everest network driver.
- *
- * Copyright 2009-2012 Broadcom Corporation
- *
- * Unless you and Broadcom execute a separate written software license
-=======
 /* bnx2x_dcb.c: QLogic Everest network driver.
  *
  * Copyright 2009-2013 Broadcom Corporation
@@ -12,25 +5,16 @@
  * All rights reserved
  *
  * Unless you and QLogic execute a separate written software license
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2, available
  * at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html (the "GPL").
  *
  * Notwithstanding the above, under no circumstances may you combine this
-<<<<<<< HEAD
- * software in any way with any other Broadcom software provided under a
- * license other than the GPL, without Broadcom's express prior written
- * consent.
- *
- * Maintained by: Eilon Greenstein <eilong@broadcom.com>
-=======
  * software in any way with any other QLogic software provided under a
  * license other than the GPL, without QLogic's express prior written
  * consent.
  *
  * Maintained by: Ariel Elior <ariel.elior@qlogic.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Written by: Dmitry Kravkov
  *
  */
@@ -48,15 +32,8 @@
 #include "bnx2x_dcb.h"
 
 /* forward declarations of dcbx related functions */
-<<<<<<< HEAD
-static int bnx2x_dcbx_stop_hw_tx(struct bnx2x *bp);
 static void bnx2x_pfc_set_pfc(struct bnx2x *bp);
 static void bnx2x_dcbx_update_ets_params(struct bnx2x *bp);
-static int bnx2x_dcbx_resume_hw_tx(struct bnx2x *bp);
-=======
-static void bnx2x_pfc_set_pfc(struct bnx2x *bp);
-static void bnx2x_dcbx_update_ets_params(struct bnx2x *bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bnx2x_dcbx_get_ets_pri_pg_tbl(struct bnx2x *bp,
 					  u32 *set_configuration_ets_pg,
 					  u32 *pri_pg_tbl);
@@ -114,39 +91,21 @@ static void bnx2x_pfc_set(struct bnx2x *bp)
 	/*
 	 * Rx COS configuration
 	 * Changing PFC RX configuration .
-<<<<<<< HEAD
-	 * In RX COS0 will always be configured to lossy and COS1 to lossless
-=======
 	 * In RX COS0 will always be configured to lossless and COS1 to lossy
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	for (i = 0 ; i < MAX_PFC_PRIORITIES ; i++) {
 		pri_bit = 1 << i;
 
-<<<<<<< HEAD
-		if (pri_bit & DCBX_PFC_PRI_PAUSE_MASK(bp))
-=======
 		if (!(pri_bit & DCBX_PFC_PRI_PAUSE_MASK(bp)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			val |= 1 << (i * 4);
 	}
 
 	pfc_params.pkt_priority_to_cos = val;
 
 	/* RX COS0 */
-<<<<<<< HEAD
-	pfc_params.llfc_low_priority_classes = 0;
-	/* RX COS1 */
-	pfc_params.llfc_high_priority_classes = DCBX_PFC_PRI_PAUSE_MASK(bp);
-
-	/* BRB configuration */
-	pfc_params.cos0_pauseable = false;
-	pfc_params.cos1_pauseable = true;
-=======
 	pfc_params.llfc_low_priority_classes = DCBX_PFC_PRI_PAUSE_MASK(bp);
 	/* RX COS1 */
 	pfc_params.llfc_high_priority_classes = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bnx2x_acquire_phy_lock(bp);
 	bp->link_params.feature_config_flags |= FEATURE_CONFIG_PFC_ENABLED;
@@ -236,10 +195,7 @@ static void bnx2x_dcbx_get_ap_feature(struct bnx2x *bp,
 				   u32 error) {
 	u8 index;
 	u32 *ttp = bp->dcbx_port_params.app.traffic_type_priority;
-<<<<<<< HEAD
-=======
 	u8 iscsi_pri_found = 0, fcoe_pri_found = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (GET_FLAGS(error, DCBX_LOCAL_APP_ERROR))
 		DP(BNX2X_MSG_DCB, "DCBX_LOCAL_APP_ERROR\n");
@@ -255,31 +211,6 @@ static void bnx2x_dcbx_get_ap_feature(struct bnx2x *bp,
 
 		bp->dcbx_port_params.app.enabled = true;
 
-<<<<<<< HEAD
-		for (index = 0 ; index < LLFC_DRIVER_TRAFFIC_TYPE_MAX; index++)
-			ttp[index] = 0;
-
-		if (app->default_pri < MAX_PFC_PRIORITIES)
-			ttp[LLFC_TRAFFIC_TYPE_NW] = app->default_pri;
-
-		for (index = 0 ; index < DCBX_MAX_APP_PROTOCOL; index++) {
-			struct dcbx_app_priority_entry *entry =
-							app->app_pri_tbl;
-
-			if (GET_FLAGS(entry[index].appBitfield,
-				     DCBX_APP_SF_ETH_TYPE) &&
-			   ETH_TYPE_FCOE == entry[index].app_id)
-				bnx2x_dcbx_get_ap_priority(bp,
-						entry[index].pri_bitmap,
-						LLFC_TRAFFIC_TYPE_FCOE);
-
-			if (GET_FLAGS(entry[index].appBitfield,
-				     DCBX_APP_SF_PORT) &&
-			   TCP_PORT_ISCSI == entry[index].app_id)
-				bnx2x_dcbx_get_ap_priority(bp,
-						entry[index].pri_bitmap,
-						LLFC_TRAFFIC_TYPE_ISCSI);
-=======
 		/* Use 0 as the default application priority for all. */
 		for (index = 0 ; index < LLFC_DRIVER_TRAFFIC_TYPE_MAX; index++)
 			ttp[index] = 0;
@@ -331,7 +262,6 @@ static void bnx2x_dcbx_get_ap_feature(struct bnx2x *bp,
 				DP(BNX2X_MSG_DCB,
 				   "FCoE is using default priority.\n");
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		DP(BNX2X_MSG_DCB, "DCBX_LOCAL_APP_DISABLED\n");
@@ -352,10 +282,6 @@ static void bnx2x_dcbx_get_ets_feature(struct bnx2x *bp,
 
 	memset(&pg_help_data, 0, sizeof(struct pg_help_data));
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (GET_FLAGS(error, DCBX_LOCAL_ETS_ERROR))
 		DP(BNX2X_MSG_DCB, "DCBX_LOCAL_ETS_ERROR\n");
 
@@ -400,10 +326,6 @@ static void bnx2x_dcbx_get_ets_feature(struct bnx2x *bp,
 static void  bnx2x_dcbx_get_pfc_feature(struct bnx2x *bp,
 					struct dcbx_pfc_feature *pfc, u32 error)
 {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (GET_FLAGS(error, DCBX_LOCAL_PFC_ERROR))
 		DP(BNX2X_MSG_DCB, "DCBX_LOCAL_PFC_ERROR\n");
 
@@ -472,10 +394,6 @@ static int bnx2x_dcbx_read_mib(struct bnx2x *bp,
 	struct lldp_remote_mib *remote_mib ;
 	struct lldp_local_mib  *local_mib;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (read_mib_type) {
 	case DCBX_READ_LOCAL_MIB:
 		mib_size = sizeof(struct lldp_local_mib);
@@ -521,17 +439,12 @@ static int bnx2x_dcbx_read_mib(struct bnx2x *bp,
 
 static void bnx2x_pfc_set_pfc(struct bnx2x *bp)
 {
-<<<<<<< HEAD
-	if (bp->dcbx_port_params.pfc.enabled &&
-	    !(bp->dcbx_error & DCBX_REMOTE_MIB_ERROR))
-=======
 	int mfw_configured = SHMEM2_HAS(bp, drv_flags) &&
 			     GET_FLAGS(SHMEM2_RD(bp, drv_flags),
 				       1 << DRV_FLAGS_DCB_MFW_CONFIGURED);
 
 	if (bp->dcbx_port_params.pfc.enabled &&
 	    (!(bp->dcbx_error & DCBX_REMOTE_MIB_ERROR) || mfw_configured))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * 1. Fills up common PFC structures if required
 		 * 2. Configure NIG, MAC and BRB via the elink
@@ -541,27 +454,14 @@ static void bnx2x_pfc_set_pfc(struct bnx2x *bp)
 		bnx2x_pfc_clear(bp);
 }
 
-<<<<<<< HEAD
-static int bnx2x_dcbx_stop_hw_tx(struct bnx2x *bp)
-{
-	struct bnx2x_func_state_params func_params = {NULL};
-=======
 int bnx2x_dcbx_stop_hw_tx(struct bnx2x *bp)
 {
 	struct bnx2x_func_state_params func_params = {NULL};
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	func_params.f_obj = &bp->func_obj;
 	func_params.cmd = BNX2X_F_CMD_TX_STOP;
 
-<<<<<<< HEAD
-	DP(BNX2X_MSG_DCB, "STOP TRAFFIC\n");
-	return bnx2x_func_state_change(bp, &func_params);
-}
-
-static int bnx2x_dcbx_resume_hw_tx(struct bnx2x *bp)
-=======
 	__set_bit(RAMROD_COMP_WAIT, &func_params.ramrod_flags);
 	__set_bit(RAMROD_RETRY, &func_params.ramrod_flags);
 
@@ -577,25 +477,15 @@ static int bnx2x_dcbx_resume_hw_tx(struct bnx2x *bp)
 }
 
 int bnx2x_dcbx_resume_hw_tx(struct bnx2x *bp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x_func_state_params func_params = {NULL};
 	struct bnx2x_func_tx_start_params *tx_params =
 		&func_params.params.tx_start;
-<<<<<<< HEAD
-=======
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	func_params.f_obj = &bp->func_obj;
 	func_params.cmd = BNX2X_F_CMD_TX_START;
 
-<<<<<<< HEAD
-	bnx2x_dcbx_fw_struct(bp, tx_params);
-
-	DP(BNX2X_MSG_DCB, "START TRAFFIC\n");
-	return bnx2x_func_state_change(bp, &func_params);
-=======
 	__set_bit(RAMROD_COMP_WAIT, &func_params.ramrod_flags);
 	__set_bit(RAMROD_RETRY, &func_params.ramrod_flags);
 
@@ -610,7 +500,6 @@ int bnx2x_dcbx_resume_hw_tx(struct bnx2x *bp)
 	}
 
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bnx2x_dcbx_2cos_limit_update_ets_config(struct bnx2x *bp)
@@ -715,12 +604,6 @@ static void bnx2x_dcbx_update_ets_config(struct bnx2x *bp)
 
 static void bnx2x_dcbx_update_ets_params(struct bnx2x *bp)
 {
-<<<<<<< HEAD
-	bnx2x_ets_disabled(&bp->link_params, &bp->link_vars);
-
-	if (!bp->dcbx_port_params.ets.enabled ||
-	    (bp->dcbx_error & DCBX_REMOTE_MIB_ERROR))
-=======
 	int mfw_configured = SHMEM2_HAS(bp, drv_flags) &&
 			     GET_FLAGS(SHMEM2_RD(bp, drv_flags),
 				       1 << DRV_FLAGS_DCB_MFW_CONFIGURED);
@@ -729,7 +612,6 @@ static void bnx2x_dcbx_update_ets_params(struct bnx2x *bp)
 
 	if (!bp->dcbx_port_params.ets.enabled ||
 	    ((bp->dcbx_error & DCBX_REMOTE_MIB_ERROR) && !mfw_configured))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (CHIP_IS_E3B0(bp))
@@ -757,11 +639,7 @@ static int bnx2x_dcbx_read_shmem_remote_mib(struct bnx2x *bp)
 				 DCBX_READ_REMOTE_MIB);
 
 	if (rc) {
-<<<<<<< HEAD
-		BNX2X_ERR("Faild to read remote mib from FW\n");
-=======
 		BNX2X_ERR("Failed to read remote mib from FW\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 
@@ -789,11 +667,7 @@ static int bnx2x_dcbx_read_shmem_neg_results(struct bnx2x *bp)
 				 DCBX_READ_LOCAL_MIB);
 
 	if (rc) {
-<<<<<<< HEAD
-		BNX2X_ERR("Faild to read local mib from FW\n");
-=======
 		BNX2X_ERR("Failed to read local mib from FW\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 
@@ -803,10 +677,6 @@ static int bnx2x_dcbx_read_shmem_neg_results(struct bnx2x *bp)
 	return 0;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef BCM_DCBNL
 static inline
 u8 bnx2x_dcbx_dcbnl_app_up(struct dcbx_app_priority_entry *ent)
@@ -868,18 +738,10 @@ static inline void bnx2x_dcbx_update_tc_mapping(struct bnx2x *bp)
 	}
 
 	/* setup tc must be called under rtnl lock, but we can't take it here
-<<<<<<< HEAD
-	 * as we are handling an attetntion on a work queue which must be
-	 * flushed at some rtnl-locked contexts (e.g. if down)
-	 */
-	if (!test_and_set_bit(BNX2X_SP_RTNL_SETUP_TC, &bp->sp_rtnl_state))
-		schedule_delayed_work(&bp->sp_rtnl_task, 0);
-=======
 	 * as we are handling an attention on a work queue which must be
 	 * flushed at some rtnl-locked contexts (e.g. if down)
 	 */
 	bnx2x_schedule_sp_rtnl(bp, BNX2X_SP_RTNL_SETUP_TC, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void bnx2x_dcbx_set_params(struct bnx2x *bp, u32 state)
@@ -895,11 +757,7 @@ void bnx2x_dcbx_set_params(struct bnx2x *bp, u32 state)
 			 */
 			bnx2x_dcbnl_update_applist(bp, true);
 
-<<<<<<< HEAD
-			/* Read rmeote mib if dcbx is in the FW */
-=======
 			/* Read remote mib if dcbx is in the FW */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (bnx2x_dcbx_read_shmem_remote_mib(bp))
 				return;
 #endif
@@ -930,22 +788,13 @@ void bnx2x_dcbx_set_params(struct bnx2x *bp, u32 state)
 			bnx2x_dcbx_update_tc_mapping(bp);
 
 			/*
-<<<<<<< HEAD
-			 * allow other funtions to update their netdevices
-=======
 			 * allow other functions to update their netdevices
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * accordingly
 			 */
 			if (IS_MF(bp))
 				bnx2x_link_sync_notify(bp);
 
-<<<<<<< HEAD
-			bnx2x_dcbx_stop_hw_tx(bp);
-
-=======
 			bnx2x_schedule_sp_rtnl(bp, BNX2X_SP_RTNL_TX_STOP, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	case BNX2X_DCBX_STATE_TX_PAUSED:
@@ -953,14 +802,9 @@ void bnx2x_dcbx_set_params(struct bnx2x *bp, u32 state)
 		bnx2x_pfc_set_pfc(bp);
 
 		bnx2x_dcbx_update_ets_params(bp);
-<<<<<<< HEAD
-		bnx2x_dcbx_resume_hw_tx(bp);
-
-=======
 
 		/* ets may affect cmng configuration: reinit it in hw */
 		bnx2x_set_local_cmng(bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	case BNX2X_DCBX_STATE_TX_RELEASED:
 		DP(BNX2X_MSG_DCB, "BNX2X_DCBX_STATE_TX_RELEASED\n");
@@ -1066,11 +910,7 @@ static void bnx2x_dcbx_admin_mib_updated_params(struct bnx2x *bp,
 			   i, DCBX_PRI_PG_GET(af->ets.pri_pg_tbl, i));
 		}
 
-<<<<<<< HEAD
-		/*For IEEE admin_recommendation_bw_precentage
-=======
 		/*For IEEE admin_recommendation_bw_percentage
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 *For IEEE admin_recommendation_ets_pg */
 		af->pfc.pri_en_bitmap = (u8)dp->admin_pfc_bitmap;
 		for (i = 0; i < DCBX_CONFIG_MAX_APP_PROTOCOL; i++) {
@@ -1102,19 +942,11 @@ static void bnx2x_dcbx_admin_mib_updated_params(struct bnx2x *bp,
 		}
 
 		af->app.default_pri = (u8)dp->admin_default_priority;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Write the data. */
 	bnx2x_write_data(bp, (u32 *)&admin_mib, offset,
 			 sizeof(struct lldp_admin_mib));
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void bnx2x_dcbx_set_state(struct bnx2x *bp, bool dcb_on, u32 dcbx_enabled)
@@ -1188,12 +1020,6 @@ void bnx2x_dcbx_init_params(struct bnx2x *bp)
 	bp->dcbx_config_params.admin_default_priority = 0;
 }
 
-<<<<<<< HEAD
-void bnx2x_dcbx_init(struct bnx2x *bp)
-{
-	u32 dcbx_lldp_params_offset = SHMEM_LLDP_DCBX_PARAMS_NONE;
-
-=======
 void bnx2x_dcbx_init(struct bnx2x *bp, bool update_shmem)
 {
 	u32 dcbx_lldp_params_offset = SHMEM_LLDP_DCBX_PARAMS_NONE;
@@ -1202,27 +1028,18 @@ void bnx2x_dcbx_init(struct bnx2x *bp, bool update_shmem)
 	if ((!bp->port.pmf) && (!(bp->flags & BC_SUPPORTS_DCBX_MSG_NON_PMF)))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bp->dcbx_enabled <= 0)
 		return;
 
 	/* validate:
 	 * chip of good for dcbx version,
 	 * dcb is wanted
-<<<<<<< HEAD
-	 * the function is pmf
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * shmem2 contains DCBX support fields
 	 */
 	DP(BNX2X_MSG_DCB, "dcb_state %d bp->port.pmf %d\n",
 	   bp->dcb_state, bp->port.pmf);
 
-<<<<<<< HEAD
-	if (bp->dcb_state == BNX2X_DCB_STATE_ON && bp->port.pmf &&
-=======
 	if (bp->dcb_state == BNX2X_DCB_STATE_ON &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    SHMEM2_HAS(bp, dcbx_lldp_params_offset)) {
 		dcbx_lldp_params_offset =
 			SHMEM2_RD(bp, dcbx_lldp_params_offset);
@@ -1233,10 +1050,6 @@ void bnx2x_dcbx_init(struct bnx2x *bp, bool update_shmem)
 		bnx2x_update_drv_flags(bp, 1 << DRV_FLAGS_DCB_CONFIGURED, 0);
 
 		if (SHMEM_LLDP_DCBX_PARAMS_NONE != dcbx_lldp_params_offset) {
-<<<<<<< HEAD
-			bnx2x_dcbx_admin_mib_updated_params(bp,
-				dcbx_lldp_params_offset);
-=======
 			/* need HW lock to avoid scenario of two drivers
 			 * writing in parallel to shmem
 			 */
@@ -1245,19 +1058,15 @@ void bnx2x_dcbx_init(struct bnx2x *bp, bool update_shmem)
 			if (update_shmem)
 				bnx2x_dcbx_admin_mib_updated_params(bp,
 					dcbx_lldp_params_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Let HW start negotiation */
 			bnx2x_fw_command(bp,
 					 DRV_MSG_CODE_DCBX_ADMIN_PMF_MSG, 0);
-<<<<<<< HEAD
-=======
 			/* release HW lock only after MFW acks that it finished
 			 * reading values from shmem
 			 */
 			bnx2x_release_hw_lock(bp,
 					      HW_LOCK_RESOURCE_DCBX_ADMIN_MIB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -1311,11 +1120,7 @@ static void bnx2x_dcbx_get_num_pg_traf_type(struct bnx2x *bp,
 	bool pg_found  = false;
 	u32 i, traf_type, add_traf_type, add_pg;
 	u32 *ttp = bp->dcbx_port_params.app.traffic_type_priority;
-<<<<<<< HEAD
-	struct pg_entry_help_data *data = help_data->data; /*shotcut*/
-=======
 	struct pg_entry_help_data *data = help_data->data; /*shortcut*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set to invalid */
 	for (i = 0; i < LLFC_DRIVER_TRAFFIC_TYPE_MAX; i++)
@@ -1340,11 +1145,7 @@ static void bnx2x_dcbx_get_num_pg_traf_type(struct bnx2x *bp,
 					break;
 				}
 			}
-<<<<<<< HEAD
-			if (false == pg_found) {
-=======
 			if (!pg_found) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				data[help_data->num_of_pg].pg = add_pg;
 				data[help_data->num_of_pg].pg_priority =
 						(1 << ttp[add_traf_type]);
@@ -1354,11 +1155,7 @@ static void bnx2x_dcbx_get_num_pg_traf_type(struct bnx2x *bp,
 		}
 		DP(BNX2X_MSG_DCB,
 		   "add_traf_type %d pg_found %s num_of_pg %d\n",
-<<<<<<< HEAD
-		   add_traf_type, (false == pg_found) ? "NO" : "YES",
-=======
 		   add_traf_type, !pg_found ? "NO" : "YES",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   help_data->num_of_pg);
 	}
 }
@@ -1419,12 +1216,8 @@ static void bnx2x_dcbx_separate_pauseable_from_non(struct bnx2x *bp,
 				DCBX_PG_BW_GET(ets->pg_bw_tbl, pg_entry));
 		else
 			/* If we join a group and one is strict
-<<<<<<< HEAD
-			 * than the bw rulls */
-=======
 			 * than the bw rules
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cos_data->data[entry].strict =
 						BNX2X_DCBX_STRICT_COS_HIGHEST;
 	}
@@ -1433,10 +1226,6 @@ static void bnx2x_dcbx_separate_pauseable_from_non(struct bnx2x *bp,
 		BNX2X_ERR("dcbx error: Both groups must have priorities\n");
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef POWER_OF_2
 #define POWER_OF_2(x)	((0 != x) && (0 == (x & (x-1))))
 #endif
@@ -1539,11 +1328,7 @@ static void bnx2x_dcbx_2cos_limit_cee_single_pg_to_cos_params(struct bnx2x *bp,
 		} else {
 			/* If there are only pauseable priorities or
 			 * only non-pauseable,* the lower priorities go
-<<<<<<< HEAD
-			 * to the first queue and the higherpriorities go
-=======
 			 * to the first queue and the higher priorities go
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * to the second queue.
 			 */
 			cos_data->data[0].pausable =
@@ -1743,11 +1528,7 @@ static void bnx2x_dcbx_2cos_limit_cee_three_pg_to_cos_params(
 		 * queue and one priority goes to the second queue.
 		 *
 		 * We will join this two cases:
-<<<<<<< HEAD
-		 * if one is BW limited it will go to the secoend queue
-=======
 		 * if one is BW limited it will go to the second queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * otherwise the last priority will get it
 		 */
 
@@ -1763,19 +1544,11 @@ static void bnx2x_dcbx_2cos_limit_cee_three_pg_to_cos_params(
 			if (pg_entry < DCBX_MAX_NUM_PG_BW_ENTRIES) {
 				entry = 0;
 
-<<<<<<< HEAD
-				if (i == (num_of_pri-1) &&
-				    false == b_found_strict)
-					/* last entry will be handled separately
-					 * If no priority is strict than last
-					 * enty goes to last queue.*/
-=======
 				if (i == (num_of_pri-1) && !b_found_strict)
 					/* last entry will be handled separately
 					 * If no priority is strict than last
 					 * entry goes to last queue.
 					 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					entry = 1;
 				cos_data->data[entry].pri_join_mask |=
 								pri_tested;
@@ -1787,12 +1560,8 @@ static void bnx2x_dcbx_2cos_limit_cee_three_pg_to_cos_params(
 				b_found_strict = true;
 				cos_data->data[1].pri_join_mask |= pri_tested;
 				/* If we join a group and one is strict
-<<<<<<< HEAD
-				 * than the bw rulls */
-=======
 				 * than the bw rules
 				 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cos_data->data[1].strict =
 					BNX2X_DCBX_STRICT_COS_HIGHEST;
 			}
@@ -1800,10 +1569,6 @@ static void bnx2x_dcbx_2cos_limit_cee_three_pg_to_cos_params(
 	}
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bnx2x_dcbx_2cos_limit_cee_fill_cos_params(struct bnx2x *bp,
 				       struct pg_help_data *help_data,
 				       struct dcbx_ets_feature *ets,
@@ -1812,10 +1577,6 @@ static void bnx2x_dcbx_2cos_limit_cee_fill_cos_params(struct bnx2x *bp,
 				       u32 pri_join_mask,
 				       u8 num_of_dif_pri)
 {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* default E2 settings */
 	cos_data->num_of_cos = DCBX_COS_MAX_NUM_E2;
 
@@ -1911,10 +1672,6 @@ static u8 bnx2x_dcbx_cee_fill_strict_pri(struct bnx2x *bp,
 					 u8 num_spread_of_entries,
 					 u8 strict_app_pris)
 {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bnx2x_dcbx_spread_strict_pri(bp, cos_data, entry,
 					 num_spread_of_entries,
 					 strict_app_pris)) {
@@ -2095,21 +1852,14 @@ static void bnx2x_dcbx_fw_struct(struct bnx2x *bp,
 	u8 cos = 0, pri = 0;
 	struct priority_cos *tt2cos;
 	u32 *ttp = bp->dcbx_port_params.app.traffic_type_priority;
-<<<<<<< HEAD
-=======
 	int mfw_configured = SHMEM2_HAS(bp, drv_flags) &&
 			     GET_FLAGS(SHMEM2_RD(bp, drv_flags),
 				       1 << DRV_FLAGS_DCB_MFW_CONFIGURED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(pfc_fw_cfg, 0, sizeof(*pfc_fw_cfg));
 
 	/* to disable DCB - the structure must be zeroed */
-<<<<<<< HEAD
-	if (bp->dcbx_error & DCBX_REMOTE_MIB_ERROR)
-=======
 	if ((bp->dcbx_error & DCBX_REMOTE_MIB_ERROR) && !mfw_configured)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/*shortcut*/
@@ -2130,11 +1880,8 @@ static void bnx2x_dcbx_fw_struct(struct bnx2x *bp,
 			if (bp->dcbx_port_params.ets.cos_params[cos].
 						pri_bitmask & pri_bit)
 					tt2cos[pri].cos = cos;
-<<<<<<< HEAD
-=======
 
 		pfc_fw_cfg->dcb_outer_pri[pri]  = ttp[pri];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* we never want the FW to add a 0 vlan tag */
@@ -2145,11 +1892,7 @@ static void bnx2x_dcbx_fw_struct(struct bnx2x *bp,
 
 void bnx2x_dcbx_pmf_update(struct bnx2x *bp)
 {
-<<<<<<< HEAD
-	/* if we need to syncronize DCBX result from prev PMF
-=======
 	/* if we need to synchronize DCBX result from prev PMF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * read it from shmem and update bp and netdev accordingly
 	 */
 	if (SHMEM2_HAS(bp, drv_flags) &&
@@ -2177,10 +1920,6 @@ void bnx2x_dcbx_pmf_update(struct bnx2x *bp)
 		 * dcbx negotiation.
 		 */
 		bnx2x_dcbx_update_tc_mapping(bp);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2210,8 +1949,6 @@ static u8 bnx2x_dcbnl_set_state(struct net_device *netdev, u8 state)
 	struct bnx2x *bp = netdev_priv(netdev);
 	DP(BNX2X_MSG_DCB, "state = %s\n", state ? "on" : "off");
 
-<<<<<<< HEAD
-=======
 	/* Fail to set state to "enabled" if dcbx is disabled in nvram */
 	if (state && ((bp->dcbx_enabled == BNX2X_DCBX_ENABLED_OFF) ||
 		      (bp->dcbx_enabled == BNX2X_DCBX_ENABLED_INVALID))) {
@@ -2219,7 +1956,6 @@ static u8 bnx2x_dcbnl_set_state(struct net_device *netdev, u8 state)
 		return 1;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnx2x_dcbx_set_state(bp, (state ? true : false), bp->dcbx_enabled);
 	return 0;
 }
@@ -2233,17 +1969,10 @@ static void bnx2x_dcbnl_get_perm_hw_addr(struct net_device *netdev,
 	/* first the HW mac address */
 	memcpy(perm_addr, netdev->dev_addr, netdev->addr_len);
 
-<<<<<<< HEAD
-#ifdef BCM_CNIC
-	/* second SAN address */
-	memcpy(perm_addr+netdev->addr_len, bp->fip_mac, netdev->addr_len);
-#endif
-=======
 	if (CNIC_LOADED(bp))
 		/* second SAN address */
 		memcpy(perm_addr+netdev->addr_len, bp->fip_mac,
 		       netdev->addr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bnx2x_dcbnl_set_pg_tccfg_tx(struct net_device *netdev, int prio,
@@ -2257,16 +1986,6 @@ static void bnx2x_dcbnl_set_pg_tccfg_tx(struct net_device *netdev, int prio,
 		return;
 
 	/**
-<<<<<<< HEAD
-	 * bw_pct ingnored -	band-width percentage devision between user
-	 *			priorities within the same group is not
-	 *			standard and hence not supported
-	 *
-	 * prio_type igonred -	priority levels within the same group are not
-	 *			standard and hence are not supported. According
-	 *			to the standard pgid 15 is dedicated to strict
-	 *			prioirty traffic (on the port level).
-=======
 	 * bw_pct ignored -	band-width percentage devision between user
 	 *			priorities within the same group is not
 	 *			standard and hence not supported
@@ -2275,7 +1994,6 @@ static void bnx2x_dcbnl_set_pg_tccfg_tx(struct net_device *netdev, int prio,
 	 *			standard and hence are not supported. According
 	 *			to the standard pgid 15 is dedicated to strict
 	 *			priority traffic (on the port level).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * up_map ignored
 	 */
@@ -2320,16 +2038,6 @@ static void bnx2x_dcbnl_get_pg_tccfg_tx(struct net_device *netdev, int prio,
 	DP(BNX2X_MSG_DCB, "prio = %d\n", prio);
 
 	/**
-<<<<<<< HEAD
-	 * bw_pct ingnored -	band-width percentage devision between user
-	 *			priorities within the same group is not
-	 *			standard and hence not supported
-	 *
-	 * prio_type igonred -	priority levels within the same group are not
-	 *			standard and hence are not supported. According
-	 *			to the standard pgid 15 is dedicated to strict
-	 *			prioirty traffic (on the port level).
-=======
 	 * bw_pct ignored -	band-width percentage devision between user
 	 *			priorities within the same group is not
 	 *			standard and hence not supported
@@ -2338,7 +2046,6 @@ static void bnx2x_dcbnl_get_pg_tccfg_tx(struct net_device *netdev, int prio,
 	 *			standard and hence are not supported. According
 	 *			to the standard pgid 15 is dedicated to strict
 	 *			priority traffic (on the port level).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * up_map ignored
 	 */
@@ -2392,19 +2099,12 @@ static void bnx2x_dcbnl_set_pfc_cfg(struct net_device *netdev, int prio,
 	if (!bnx2x_dcbnl_set_valid(bp) || prio >= MAX_PFC_PRIORITIES)
 		return;
 
-<<<<<<< HEAD
-	bp->dcbx_config_params.admin_pfc_bitmap |= ((setting ? 1 : 0) << prio);
-
-	if (setting)
-		bp->dcbx_config_params.admin_pfc_tx_enable = 1;
-=======
 	if (setting) {
 		bp->dcbx_config_params.admin_pfc_bitmap |= (1 << prio);
 		bp->dcbx_config_params.admin_pfc_tx_enable = 1;
 	} else {
 		bp->dcbx_config_params.admin_pfc_bitmap &= ~(1 << prio);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bnx2x_dcbnl_get_pfc_cfg(struct net_device *netdev, int prio,
@@ -2424,10 +2124,6 @@ static void bnx2x_dcbnl_get_pfc_cfg(struct net_device *netdev, int prio,
 static u8 bnx2x_dcbnl_set_all(struct net_device *netdev)
 {
 	struct bnx2x *bp = netdev_priv(netdev);
-<<<<<<< HEAD
-	int rc = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DP(BNX2X_MSG_DCB, "SET-ALL\n");
 
@@ -2440,21 +2136,12 @@ static u8 bnx2x_dcbnl_set_all(struct net_device *netdev)
 		return 1;
 	}
 	if (netif_running(bp->dev)) {
-<<<<<<< HEAD
-		bnx2x_nic_unload(bp, UNLOAD_NORMAL);
-		rc = bnx2x_nic_load(bp, LOAD_NORMAL);
-	}
-	DP(BNX2X_MSG_DCB, "set_dcbx_params done (%d)\n", rc);
-	if (rc)
-		return 1;
-=======
 		bnx2x_update_drv_flags(bp,
 				       1 << DRV_FLAGS_DCB_MFW_CONFIGURED,
 				       1);
 		bnx2x_dcbx_init(bp, true);
 	}
 	DP(BNX2X_MSG_DCB, "set_dcbx_params done\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2492,20 +2179,12 @@ static u8 bnx2x_dcbnl_get_cap(struct net_device *netdev, int capid, u8 *cap)
 			break;
 		default:
 			BNX2X_ERR("Non valid capability ID\n");
-<<<<<<< HEAD
-			rval = -EINVAL;
-=======
 			rval = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	} else {
 		DP(BNX2X_MSG_DCB, "DCB disabled\n");
-<<<<<<< HEAD
-		rval = -EINVAL;
-=======
 		rval = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	DP(BNX2X_MSG_DCB, "capid %d:%x\n", capid, *cap);
@@ -2531,20 +2210,12 @@ static int bnx2x_dcbnl_get_numtcs(struct net_device *netdev, int tcid, u8 *num)
 			break;
 		default:
 			BNX2X_ERR("Non valid TC-ID\n");
-<<<<<<< HEAD
-			rval = -EINVAL;
-=======
 			rval = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	} else {
 		DP(BNX2X_MSG_DCB, "DCB disabled\n");
-<<<<<<< HEAD
-		rval = -EINVAL;
-=======
 		rval = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -2557,11 +2228,7 @@ static int bnx2x_dcbnl_set_numtcs(struct net_device *netdev, int tcid, u8 num)
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static u8  bnx2x_dcbnl_get_pfc_state(struct net_device *netdev)
-=======
 static u8 bnx2x_dcbnl_get_pfc_state(struct net_device *netdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x *bp = netdev_priv(netdev);
 	DP(BNX2X_MSG_DCB, "state = %d\n", bp->dcbx_local_feat.pfc.enabled);
@@ -2665,13 +2332,8 @@ static int bnx2x_set_admin_app_up(struct bnx2x *bp, u8 idtype, u16 idval, u8 up)
 	return 0;
 }
 
-<<<<<<< HEAD
-static u8 bnx2x_dcbnl_set_app_up(struct net_device *netdev, u8 idtype,
-				 u16 idval, u8 up)
-=======
 static int bnx2x_dcbnl_set_app_up(struct net_device *netdev, u8 idtype,
 				  u16 idval, u8 up)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x *bp = netdev_priv(netdev);
 
@@ -2749,38 +2411,22 @@ static u8 bnx2x_dcbnl_get_featcfg(struct net_device *netdev, int featid,
 		case DCB_FEATCFG_ATTR_PG:
 			if (bp->dcbx_local_feat.ets.enabled)
 				*flags |= DCB_FEATCFG_ENABLE;
-<<<<<<< HEAD
-			if (bp->dcbx_error & DCBX_LOCAL_ETS_ERROR)
-=======
 			if (bp->dcbx_error & (DCBX_LOCAL_ETS_ERROR |
 					      DCBX_REMOTE_MIB_ERROR))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				*flags |= DCB_FEATCFG_ERROR;
 			break;
 		case DCB_FEATCFG_ATTR_PFC:
 			if (bp->dcbx_local_feat.pfc.enabled)
 				*flags |= DCB_FEATCFG_ENABLE;
 			if (bp->dcbx_error & (DCBX_LOCAL_PFC_ERROR |
-<<<<<<< HEAD
-			    DCBX_LOCAL_PFC_MISMATCH))
-=======
 					      DCBX_LOCAL_PFC_MISMATCH |
 					      DCBX_REMOTE_MIB_ERROR))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				*flags |= DCB_FEATCFG_ERROR;
 			break;
 		case DCB_FEATCFG_ATTR_APP:
 			if (bp->dcbx_local_feat.app.enabled)
 				*flags |= DCB_FEATCFG_ENABLE;
 			if (bp->dcbx_error & (DCBX_LOCAL_APP_ERROR |
-<<<<<<< HEAD
-			    DCBX_LOCAL_APP_MISMATCH))
-				*flags |= DCB_FEATCFG_ERROR;
-			break;
-		default:
-			BNX2X_ERR("Non valid featrue-ID\n");
-			rval = -EINVAL;
-=======
 					      DCBX_LOCAL_APP_MISMATCH |
 					      DCBX_REMOTE_MIB_ERROR))
 				*flags |= DCB_FEATCFG_ERROR;
@@ -2788,16 +2434,11 @@ static u8 bnx2x_dcbnl_get_featcfg(struct net_device *netdev, int featid,
 		default:
 			BNX2X_ERR("Non valid feature-ID\n");
 			rval = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	} else {
 		DP(BNX2X_MSG_DCB, "DCB disabled\n");
-<<<<<<< HEAD
-		rval = -EINVAL;
-=======
 		rval = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -2832,22 +2473,13 @@ static u8 bnx2x_dcbnl_set_featcfg(struct net_device *netdev, int featid,
 				flags & DCB_FEATCFG_WILLING ? 1 : 0;
 			break;
 		default:
-<<<<<<< HEAD
-			BNX2X_ERR("Non valid featrue-ID\n");
-			rval = -EINVAL;
-=======
 			BNX2X_ERR("Non valid feature-ID\n");
 			rval = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	} else {
 		DP(BNX2X_MSG_DCB, "dcbnl call not valid\n");
-<<<<<<< HEAD
-		rval = -EINVAL;
-=======
 		rval = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;

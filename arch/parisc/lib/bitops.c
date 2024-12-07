@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bitops.c: atomic operations which got too long to be inlined all over
  *      the place.
@@ -21,11 +18,7 @@ arch_spinlock_t __atomic_hash[ATOMIC_HASH_SIZE] __lock_aligned = {
 #endif
 
 #ifdef CONFIG_64BIT
-<<<<<<< HEAD
-unsigned long __xchg64(unsigned long x, unsigned long *ptr)
-=======
 unsigned long notrace __xchg64(unsigned long x, volatile unsigned long *ptr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long temp, flags;
 
@@ -37,11 +30,7 @@ unsigned long notrace __xchg64(unsigned long x, volatile unsigned long *ptr)
 }
 #endif
 
-<<<<<<< HEAD
-unsigned long __xchg32(int x, int *ptr)
-=======
 unsigned long notrace __xchg32(int x, volatile int *ptr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	long temp;
@@ -54,11 +43,7 @@ unsigned long notrace __xchg32(int x, volatile int *ptr)
 }
 
 
-<<<<<<< HEAD
-unsigned long __xchg8(char x, char *ptr)
-=======
 unsigned long notrace __xchg8(char x, volatile char *ptr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	long temp;
@@ -71,18 +56,10 @@ unsigned long notrace __xchg8(char x, volatile char *ptr)
 }
 
 
-<<<<<<< HEAD
-#ifdef CONFIG_64BIT
-unsigned long __cmpxchg_u64(volatile unsigned long *ptr, unsigned long old, unsigned long new)
-{
-	unsigned long flags;
-	unsigned long prev;
-=======
 u64 notrace __cmpxchg_u64(volatile u64 *ptr, u64 old, u64 new)
 {
 	unsigned long flags;
 	u64 prev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	_atomic_spin_lock_irqsave(ptr, flags);
 	if ((prev = *ptr) == old)
@@ -90,14 +67,8 @@ u64 notrace __cmpxchg_u64(volatile u64 *ptr, u64 old, u64 new)
 	_atomic_spin_unlock_irqrestore(ptr, flags);
 	return prev;
 }
-<<<<<<< HEAD
-#endif
-
-unsigned long __cmpxchg_u32(volatile unsigned int *ptr, unsigned int old, unsigned int new)
-=======
 
 unsigned long notrace __cmpxchg_u32(volatile unsigned int *ptr, unsigned int old, unsigned int new)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	unsigned int prev;
@@ -108,8 +79,6 @@ unsigned long notrace __cmpxchg_u32(volatile unsigned int *ptr, unsigned int old
 	_atomic_spin_unlock_irqrestore(ptr, flags);
 	return (unsigned long)prev;
 }
-<<<<<<< HEAD
-=======
 
 u8 notrace __cmpxchg_u8(volatile u8 *ptr, u8 old, u8 new)
 {
@@ -122,4 +91,3 @@ u8 notrace __cmpxchg_u8(volatile u8 *ptr, u8 old, u8 new)
 	_atomic_spin_unlock_irqrestore(ptr, flags);
 	return prev;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

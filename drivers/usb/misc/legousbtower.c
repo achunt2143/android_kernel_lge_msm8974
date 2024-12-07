@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LEGO USB Tower driver
  *
  * Copyright (C) 2003 David Glance <davidgsf@sourceforge.net>
  *               2001-2004 Juergen Stuber <starblue@users.sourceforge.net>
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License as
- *	published by the Free Software Foundation; either version 2 of
- *	the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * derived from USB Skeleton driver - 0.5
  * Copyright (C) 2001 Greg Kroah-Hartman (greg@kroah.com)
  *
@@ -82,57 +71,22 @@
  *   - move reset into open to clean out spurious data
  */
 
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/errno.h>
-#include <linux/init.h>
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/completion.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/usb.h>
 #include <linux/poll.h>
 
 
-<<<<<<< HEAD
-#ifdef CONFIG_USB_DEBUG
-	static int debug = 4;
-#else
-	static int debug = 0;
-#endif
-
-/* Use our own dbg macro */
-#undef dbg
-#define dbg(lvl, format, arg...)					\
-do {									\
-	if (debug >= lvl)						\
-		printk(KERN_DEBUG "%s: " format "\n", __FILE__, ##arg);	\
-} while (0)
-
-/* Version Information */
-#define DRIVER_VERSION "v0.96"
 #define DRIVER_AUTHOR "Juergen Stuber <starblue@sourceforge.net>"
 #define DRIVER_DESC "LEGO USB Tower Driver"
 
-/* Module parameters */
-module_param(debug, int, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(debug, "Debug enabled or not");
-=======
-#define DRIVER_AUTHOR "Juergen Stuber <starblue@sourceforge.net>"
-#define DRIVER_DESC "LEGO USB Tower Driver"
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The defaults are chosen to work with the latest versions of leJOS and NQC.
  */
@@ -203,15 +157,6 @@ MODULE_PARM_DESC(interrupt_out_interval, "Interrupt out interval in ms");
 #define LEGO_USB_TOWER_REQUEST_GET_VERSION	0xFD
 
 struct tower_reset_reply {
-<<<<<<< HEAD
-	__le16 size;		/* little-endian */
-	__u8 err_code;
-	__u8 spare;
-} __attribute__ ((packed));
-
-struct tower_get_version_reply {
-	__le16 size;		/* little-endian */
-=======
 	__le16 size;
 	__u8 err_code;
 	__u8 spare;
@@ -219,18 +164,12 @@ struct tower_get_version_reply {
 
 struct tower_get_version_reply {
 	__le16 size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 err_code;
 	__u8 spare;
 	__u8 major;
 	__u8 minor;
-<<<<<<< HEAD
-	__le16 build_no;		/* little-endian */
-} __attribute__ ((packed));
-=======
 	__le16 build_no;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* table of devices that work with this driver */
@@ -239,12 +178,7 @@ static const struct usb_device_id tower_table[] = {
 	{ }					/* Terminating entry */
 };
 
-<<<<<<< HEAD
-MODULE_DEVICE_TABLE (usb, tower_table);
-static DEFINE_MUTEX(open_disc_mutex);
-=======
 MODULE_DEVICE_TABLE(usb, tower_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LEGO_USB_TOWER_MINOR_BASE	160
 
@@ -252,14 +186,6 @@ MODULE_DEVICE_TABLE(usb, tower_table);
 /* Structure to hold all of our device specific stuff */
 struct lego_usb_tower {
 	struct mutex		lock;		/* locks this structure */
-<<<<<<< HEAD
-	struct usb_device*	udev;		/* save off the usb device pointer */
-	unsigned char		minor;		/* the starting minor number for this device */
-
-	int			open_count;	/* number of times this port has been opened */
-
-	char*			read_buffer;
-=======
 	struct usb_device	*udev;		/* save off the usb device pointer */
 	unsigned char		minor;		/* the starting minor number for this device */
 
@@ -267,7 +193,6 @@ struct lego_usb_tower {
 	unsigned long		disconnected:1;
 
 	char			*read_buffer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t			read_buffer_length; /* this much came in */
 	size_t			read_packet_length; /* this much will be returned on read */
 	spinlock_t		read_buffer_lock;
@@ -277,18 +202,6 @@ struct lego_usb_tower {
 	wait_queue_head_t	read_wait;
 	wait_queue_head_t	write_wait;
 
-<<<<<<< HEAD
-	char*			interrupt_in_buffer;
-	struct usb_endpoint_descriptor* interrupt_in_endpoint;
-	struct urb*		interrupt_in_urb;
-	int			interrupt_in_interval;
-	int			interrupt_in_running;
-	int			interrupt_in_done;
-
-	char*			interrupt_out_buffer;
-	struct usb_endpoint_descriptor* interrupt_out_endpoint;
-	struct urb*		interrupt_out_urb;
-=======
 	char			*interrupt_in_buffer;
 	struct usb_endpoint_descriptor *interrupt_in_endpoint;
 	struct urb		*interrupt_in_urb;
@@ -298,7 +211,6 @@ struct lego_usb_tower {
 	char			*interrupt_out_buffer;
 	struct usb_endpoint_descriptor *interrupt_out_endpoint;
 	struct urb		*interrupt_out_urb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			interrupt_out_interval;
 	int			interrupt_out_busy;
 
@@ -306,23 +218,6 @@ struct lego_usb_tower {
 
 
 /* local function prototypes */
-<<<<<<< HEAD
-static ssize_t tower_read	(struct file *file, char __user *buffer, size_t count, loff_t *ppos);
-static ssize_t tower_write	(struct file *file, const char __user *buffer, size_t count, loff_t *ppos);
-static inline void tower_delete (struct lego_usb_tower *dev);
-static int tower_open		(struct inode *inode, struct file *file);
-static int tower_release	(struct inode *inode, struct file *file);
-static unsigned int tower_poll	(struct file *file, poll_table *wait);
-static loff_t tower_llseek	(struct file *file, loff_t off, int whence);
-
-static void tower_abort_transfers (struct lego_usb_tower *dev);
-static void tower_check_for_read_packet (struct lego_usb_tower *dev);
-static void tower_interrupt_in_callback (struct urb *urb);
-static void tower_interrupt_out_callback (struct urb *urb);
-
-static int  tower_probe	(struct usb_interface *interface, const struct usb_device_id *id);
-static void tower_disconnect	(struct usb_interface *interface);
-=======
 static ssize_t tower_read(struct file *file, char __user *buffer, size_t count, loff_t *ppos);
 static ssize_t tower_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos);
 static inline void tower_delete(struct lego_usb_tower *dev);
@@ -337,7 +232,6 @@ static void tower_interrupt_out_callback(struct urb *urb);
 
 static int  tower_probe(struct usb_interface *interface, const struct usb_device_id *id);
 static void tower_disconnect(struct usb_interface *interface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* file operations needed when we register this driver */
@@ -351,11 +245,7 @@ static const struct file_operations tower_fops = {
 	.llseek =	tower_llseek,
 };
 
-<<<<<<< HEAD
-static char *legousbtower_devnode(struct device *dev, umode_t *mode)
-=======
 static char *legousbtower_devnode(const struct device *dev, umode_t *mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return kasprintf(GFP_KERNEL, "usb/%s", dev_name(dev));
 }
@@ -381,51 +271,6 @@ static struct usb_driver tower_driver = {
 };
 
 
-<<<<<<< HEAD
-/**
- *	lego_usb_tower_debug_data
- */
-static inline void lego_usb_tower_debug_data (int level, const char *function, int size, const unsigned char *data)
-{
-	int i;
-
-	if (debug < level)
-		return;
-
-	printk (KERN_DEBUG "%s: %s - length = %d, data = ", __FILE__, function, size);
-	for (i = 0; i < size; ++i) {
-		printk ("%.2x ", data[i]);
-	}
-	printk ("\n");
-}
-
-
-/**
- *	tower_delete
- */
-static inline void tower_delete (struct lego_usb_tower *dev)
-{
-	dbg(2, "%s: enter", __func__);
-
-	tower_abort_transfers (dev);
-
-	/* free data structures */
-	usb_free_urb(dev->interrupt_in_urb);
-	usb_free_urb(dev->interrupt_out_urb);
-	kfree (dev->read_buffer);
-	kfree (dev->interrupt_in_buffer);
-	kfree (dev->interrupt_out_buffer);
-	kfree (dev);
-
-	dbg(2, "%s: leave", __func__);
-}
-
-
-/**
- *	tower_open
- */
-static int tower_open (struct inode *inode, struct file *file)
-=======
 /*
  *	lego_usb_tower_debug_data
  */
@@ -458,7 +303,6 @@ static inline void tower_delete(struct lego_usb_tower *dev)
  *	tower_open
  */
 static int tower_open(struct inode *inode, struct file *file)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lego_usb_tower *dev = NULL;
 	int subminor;
@@ -467,49 +311,24 @@ static int tower_open(struct inode *inode, struct file *file)
 	struct tower_reset_reply reset_reply;
 	int result;
 
-<<<<<<< HEAD
-	dbg(2, "%s: enter", __func__);
-
-	nonseekable_open(inode, file);
-	subminor = iminor(inode);
-
-	interface = usb_find_interface (&tower_driver, subminor);
-
-	if (!interface) {
-		err ("%s - error, can't find device for minor %d",
-		     __func__, subminor);
-=======
 	nonseekable_open(inode, file);
 	subminor = iminor(inode);
 
 	interface = usb_find_interface(&tower_driver, subminor);
 	if (!interface) {
 		pr_err("error, can't find device for minor %d\n", subminor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENODEV;
 		goto exit;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&open_disc_mutex);
-	dev = usb_get_intfdata(interface);
-
-	if (!dev) {
-		mutex_unlock(&open_disc_mutex);
-=======
 	dev = usb_get_intfdata(interface);
 	if (!dev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENODEV;
 		goto exit;
 	}
 
 	/* lock this device */
 	if (mutex_lock_interruptible(&dev->lock)) {
-<<<<<<< HEAD
-		mutex_unlock(&open_disc_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	        retval = -ERESTARTSYS;
 		goto exit;
 	}
@@ -517,27 +336,6 @@ static int tower_open(struct inode *inode, struct file *file)
 
 	/* allow opening only once */
 	if (dev->open_count) {
-<<<<<<< HEAD
-		mutex_unlock(&open_disc_mutex);
-		retval = -EBUSY;
-		goto unlock_exit;
-	}
-	dev->open_count = 1;
-	mutex_unlock(&open_disc_mutex);
-
-	/* reset the tower */
-	result = usb_control_msg (dev->udev,
-				  usb_rcvctrlpipe(dev->udev, 0),
-				  LEGO_USB_TOWER_REQUEST_RESET,
-				  USB_TYPE_VENDOR | USB_DIR_IN | USB_RECIP_DEVICE,
-				  0,
-				  0,
-				  &reset_reply,
-				  sizeof(reset_reply),
-				  1000);
-	if (result < 0) {
-		err("LEGO USB Tower reset control request failed");
-=======
 		retval = -EBUSY;
 		goto unlock_exit;
 	}
@@ -552,7 +350,6 @@ static int tower_open(struct inode *inode, struct file *file)
 	if (result < 0) {
 		dev_err(&dev->udev->dev,
 			"LEGO USB Tower reset control request failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = result;
 		goto unlock_exit;
 	}
@@ -560,26 +357,6 @@ static int tower_open(struct inode *inode, struct file *file)
 	/* initialize in direction */
 	dev->read_buffer_length = 0;
 	dev->read_packet_length = 0;
-<<<<<<< HEAD
-	usb_fill_int_urb (dev->interrupt_in_urb,
-			  dev->udev,
-			  usb_rcvintpipe(dev->udev, dev->interrupt_in_endpoint->bEndpointAddress),
-			  dev->interrupt_in_buffer,
-			  usb_endpoint_maxp(dev->interrupt_in_endpoint),
-			  tower_interrupt_in_callback,
-			  dev,
-			  dev->interrupt_in_interval);
-
-	dev->interrupt_in_running = 1;
-	dev->interrupt_in_done = 0;
-	mb();
-
-	retval = usb_submit_urb (dev->interrupt_in_urb, GFP_KERNEL);
-	if (retval) {
-		err("Couldn't submit interrupt_in_urb %d", retval);
-		dev->interrupt_in_running = 0;
-		dev->open_count = 0;
-=======
 	usb_fill_int_urb(dev->interrupt_in_urb,
 			 dev->udev,
 			 usb_rcvintpipe(dev->udev, dev->interrupt_in_endpoint->bEndpointAddress),
@@ -596,33 +373,18 @@ static int tower_open(struct inode *inode, struct file *file)
 	if (retval) {
 		dev_err(&dev->udev->dev,
 			"Couldn't submit interrupt_in_urb %d\n", retval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock_exit;
 	}
 
 	/* save device in the file's private structure */
 	file->private_data = dev;
 
-<<<<<<< HEAD
-=======
 	dev->open_count = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unlock_exit:
 	mutex_unlock(&dev->lock);
 
 exit:
-<<<<<<< HEAD
-	dbg(2, "%s: leave, return value %d ", __func__, retval);
-
-	return retval;
-}
-
-/**
- *	tower_release
- */
-static int tower_release (struct inode *inode, struct file *file)
-=======
 	return retval;
 }
 
@@ -630,35 +392,10 @@ static int tower_release (struct inode *inode, struct file *file)
  *	tower_release
  */
 static int tower_release(struct inode *inode, struct file *file)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lego_usb_tower *dev;
 	int retval = 0;
 
-<<<<<<< HEAD
-	dbg(2, "%s: enter", __func__);
-
-	dev = file->private_data;
-
-	if (dev == NULL) {
-		dbg(1, "%s: object is NULL", __func__);
-		retval = -ENODEV;
-		goto exit_nolock;
-	}
-
-	mutex_lock(&open_disc_mutex);
-	if (mutex_lock_interruptible(&dev->lock)) {
-	        retval = -ERESTARTSYS;
-		goto exit;
-	}
-
-	if (dev->open_count != 1) {
-		dbg(1, "%s: device not opened exactly once", __func__);
-		retval = -ENODEV;
-		goto unlock_exit;
-	}
-	if (dev->udev == NULL) {
-=======
 	dev = file->private_data;
 	if (dev == NULL) {
 		retval = -ENODEV;
@@ -668,68 +405,16 @@ static int tower_release(struct inode *inode, struct file *file)
 	mutex_lock(&dev->lock);
 
 	if (dev->disconnected) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* the device was unplugged before the file was released */
 
 		/* unlock here as tower_delete frees dev */
 		mutex_unlock(&dev->lock);
-<<<<<<< HEAD
-		tower_delete (dev);
-=======
 		tower_delete(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
 	/* wait until write transfer is finished */
 	if (dev->interrupt_out_busy) {
-<<<<<<< HEAD
-		wait_event_interruptible_timeout (dev->write_wait, !dev->interrupt_out_busy, 2 * HZ);
-	}
-	tower_abort_transfers (dev);
-	dev->open_count = 0;
-
-unlock_exit:
-	mutex_unlock(&dev->lock);
-
-exit:
-	mutex_unlock(&open_disc_mutex);
-exit_nolock:
-	dbg(2, "%s: leave, return value %d", __func__, retval);
-	return retval;
-}
-
-
-/**
- *	tower_abort_transfers
- *      aborts transfers and frees associated data structures
- */
-static void tower_abort_transfers (struct lego_usb_tower *dev)
-{
-	dbg(2, "%s: enter", __func__);
-
-	if (dev == NULL) {
-		dbg(1, "%s: dev is null", __func__);
-		goto exit;
-	}
-
-	/* shutdown transfer */
-	if (dev->interrupt_in_running) {
-		dev->interrupt_in_running = 0;
-		mb();
-		if (dev->udev)
-			usb_kill_urb (dev->interrupt_in_urb);
-	}
-	if (dev->interrupt_out_busy && dev->udev)
-		usb_kill_urb(dev->interrupt_out_urb);
-
-exit:
-	dbg(2, "%s: leave", __func__);
-}
-
-
-/**
-=======
 		wait_event_interruptible_timeout(dev->write_wait, !dev->interrupt_out_busy,
 						 2 * HZ);
 	}
@@ -746,7 +431,6 @@ exit:
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	tower_check_for_read_packet
  *
  *      To get correct semantics for signals and non-blocking I/O
@@ -754,41 +438,15 @@ exit:
  *      until it has been there unchanged for at least
  *      dev->packet_timeout_jiffies, or until the buffer is full.
  */
-<<<<<<< HEAD
-static void tower_check_for_read_packet (struct lego_usb_tower *dev)
-{
-	spin_lock_irq (&dev->read_buffer_lock);
-=======
 static void tower_check_for_read_packet(struct lego_usb_tower *dev)
 {
 	spin_lock_irq(&dev->read_buffer_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!packet_timeout
 	    || time_after(jiffies, dev->read_last_arrival + dev->packet_timeout_jiffies)
 	    || dev->read_buffer_length == read_buffer_size) {
 		dev->read_packet_length = dev->read_buffer_length;
 	}
 	dev->interrupt_in_done = 0;
-<<<<<<< HEAD
-	spin_unlock_irq (&dev->read_buffer_lock);
-}
-
-
-/**
- *	tower_poll
- */
-static unsigned int tower_poll (struct file *file, poll_table *wait)
-{
-	struct lego_usb_tower *dev;
-	unsigned int mask = 0;
-
-	dbg(2, "%s: enter", __func__);
-
-	dev = file->private_data;
-
-	if (!dev->udev)
-		return POLLERR | POLLHUP;
-=======
 	spin_unlock_irq(&dev->read_buffer_lock);
 }
 
@@ -805,59 +463,33 @@ static __poll_t tower_poll(struct file *file, poll_table *wait)
 
 	if (dev->disconnected)
 		return EPOLLERR | EPOLLHUP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	poll_wait(file, &dev->read_wait, wait);
 	poll_wait(file, &dev->write_wait, wait);
 
 	tower_check_for_read_packet(dev);
-<<<<<<< HEAD
-	if (dev->read_packet_length > 0) {
-		mask |= POLLIN | POLLRDNORM;
-	}
-	if (!dev->interrupt_out_busy) {
-		mask |= POLLOUT | POLLWRNORM;
-	}
-
-	dbg(2, "%s: leave, mask = %d", __func__, mask);
-=======
 	if (dev->read_packet_length > 0)
 		mask |= EPOLLIN | EPOLLRDNORM;
 	if (!dev->interrupt_out_busy)
 		mask |= EPOLLOUT | EPOLLWRNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mask;
 }
 
 
-<<<<<<< HEAD
-/**
- *	tower_llseek
- */
-static loff_t tower_llseek (struct file *file, loff_t off, int whence)
-=======
 /*
  *	tower_llseek
  */
 static loff_t tower_llseek(struct file *file, loff_t off, int whence)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ESPIPE;		/* unseekable */
 }
 
 
-<<<<<<< HEAD
-/**
- *	tower_read
- */
-static ssize_t tower_read (struct file *file, char __user *buffer, size_t count, loff_t *ppos)
-=======
 /*
  *	tower_read
  */
 static ssize_t tower_read(struct file *file, char __user *buffer, size_t count, loff_t *ppos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lego_usb_tower *dev;
 	size_t bytes_to_read;
@@ -865,11 +497,6 @@ static ssize_t tower_read(struct file *file, char __user *buffer, size_t count, 
 	int retval = 0;
 	unsigned long timeout = 0;
 
-<<<<<<< HEAD
-	dbg(2, "%s: enter, count = %Zd", __func__, count);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev = file->private_data;
 
 	/* lock this object */
@@ -879,31 +506,13 @@ static ssize_t tower_read(struct file *file, char __user *buffer, size_t count, 
 	}
 
 	/* verify that the device wasn't unplugged */
-<<<<<<< HEAD
-	if (dev->udev == NULL) {
-		retval = -ENODEV;
-		err("No device or device unplugged %d", retval);
-=======
 	if (dev->disconnected) {
 		retval = -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock_exit;
 	}
 
 	/* verify that we actually have some data to read */
 	if (count == 0) {
-<<<<<<< HEAD
-		dbg(1, "%s: read request of 0 bytes", __func__);
-		goto unlock_exit;
-	}
-
-	if (read_timeout) {
-		timeout = jiffies + read_timeout * HZ / 1000;
-	}
-
-	/* wait for data */
-	tower_check_for_read_packet (dev);
-=======
 		dev_dbg(&dev->udev->dev, "read request of 0 bytes\n");
 		goto unlock_exit;
 	}
@@ -913,35 +522,18 @@ static ssize_t tower_read(struct file *file, char __user *buffer, size_t count, 
 
 	/* wait for data */
 	tower_check_for_read_packet(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (dev->read_packet_length == 0) {
 		if (file->f_flags & O_NONBLOCK) {
 			retval = -EAGAIN;
 			goto unlock_exit;
 		}
 		retval = wait_event_interruptible_timeout(dev->read_wait, dev->interrupt_in_done, dev->packet_timeout_jiffies);
-<<<<<<< HEAD
-		if (retval < 0) {
-			goto unlock_exit;
-		}
-=======
 		if (retval < 0)
 			goto unlock_exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* reset read timeout during read or write activity */
 		if (read_timeout
 		    && (dev->read_buffer_length || dev->interrupt_out_busy)) {
-<<<<<<< HEAD
-			timeout = jiffies + read_timeout * HZ / 1000;
-		}
-		/* check for read timeout */
-		if (read_timeout && time_after (jiffies, timeout)) {
-			retval = -ETIMEDOUT;
-			goto unlock_exit;
-		}
-		tower_check_for_read_packet (dev);
-=======
 			timeout = jiffies + msecs_to_jiffies(read_timeout);
 		}
 		/* check for read timeout */
@@ -950,37 +542,22 @@ static ssize_t tower_read(struct file *file, char __user *buffer, size_t count, 
 			goto unlock_exit;
 		}
 		tower_check_for_read_packet(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* copy the data from read_buffer into userspace */
 	bytes_to_read = min(count, dev->read_packet_length);
 
-<<<<<<< HEAD
-	if (copy_to_user (buffer, dev->read_buffer, bytes_to_read)) {
-=======
 	if (copy_to_user(buffer, dev->read_buffer, bytes_to_read)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EFAULT;
 		goto unlock_exit;
 	}
 
-<<<<<<< HEAD
-	spin_lock_irq (&dev->read_buffer_lock);
-	dev->read_buffer_length -= bytes_to_read;
-	dev->read_packet_length -= bytes_to_read;
-	for (i=0; i<dev->read_buffer_length; i++) {
-		dev->read_buffer[i] = dev->read_buffer[i+bytes_to_read];
-	}
-	spin_unlock_irq (&dev->read_buffer_lock);
-=======
 	spin_lock_irq(&dev->read_buffer_lock);
 	dev->read_buffer_length -= bytes_to_read;
 	dev->read_packet_length -= bytes_to_read;
 	for (i = 0; i < dev->read_buffer_length; i++)
 		dev->read_buffer[i] = dev->read_buffer[i+bytes_to_read];
 	spin_unlock_irq(&dev->read_buffer_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = bytes_to_read;
 
@@ -989,35 +566,19 @@ unlock_exit:
 	mutex_unlock(&dev->lock);
 
 exit:
-<<<<<<< HEAD
-	dbg(2, "%s: leave, return value %d", __func__, retval);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
 
-<<<<<<< HEAD
-/**
- *	tower_write
- */
-static ssize_t tower_write (struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
-=======
 /*
  *	tower_write
  */
 static ssize_t tower_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lego_usb_tower *dev;
 	size_t bytes_to_write;
 	int retval = 0;
 
-<<<<<<< HEAD
-	dbg(2, "%s: enter, count = %Zd", __func__, count);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev = file->private_data;
 
 	/* lock this object */
@@ -1027,24 +588,14 @@ static ssize_t tower_write(struct file *file, const char __user *buffer, size_t 
 	}
 
 	/* verify that the device wasn't unplugged */
-<<<<<<< HEAD
-	if (dev->udev == NULL) {
-		retval = -ENODEV;
-		err("No device or device unplugged %d", retval);
-=======
 	if (dev->disconnected) {
 		retval = -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock_exit;
 	}
 
 	/* verify that we actually have some data to write */
 	if (count == 0) {
-<<<<<<< HEAD
-		dbg(1, "%s: write request of 0 bytes", __func__);
-=======
 		dev_dbg(&dev->udev->dev, "write request of 0 bytes\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock_exit;
 	}
 
@@ -1054,31 +605,18 @@ static ssize_t tower_write(struct file *file, const char __user *buffer, size_t 
 			retval = -EAGAIN;
 			goto unlock_exit;
 		}
-<<<<<<< HEAD
-		retval = wait_event_interruptible (dev->write_wait, !dev->interrupt_out_busy);
-		if (retval) {
-			goto unlock_exit;
-		}
-=======
 		retval = wait_event_interruptible(dev->write_wait,
 						  !dev->interrupt_out_busy);
 		if (retval)
 			goto unlock_exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* write the data into interrupt_out_buffer from userspace */
 	bytes_to_write = min_t(int, count, write_buffer_size);
-<<<<<<< HEAD
-	dbg(4, "%s: count = %Zd, bytes_to_write = %Zd", __func__, count, bytes_to_write);
-
-	if (copy_from_user (dev->interrupt_out_buffer, buffer, bytes_to_write)) {
-=======
 	dev_dbg(&dev->udev->dev, "%s: count = %zd, bytes_to_write = %zd\n",
 		__func__, count, bytes_to_write);
 
 	if (copy_from_user(dev->interrupt_out_buffer, buffer, bytes_to_write)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EFAULT;
 		goto unlock_exit;
 	}
@@ -1096,18 +634,11 @@ static ssize_t tower_write(struct file *file, const char __user *buffer, size_t 
 	dev->interrupt_out_busy = 1;
 	wmb();
 
-<<<<<<< HEAD
-	retval = usb_submit_urb (dev->interrupt_out_urb, GFP_KERNEL);
-	if (retval) {
-		dev->interrupt_out_busy = 0;
-		err("Couldn't submit interrupt_out_urb %d", retval);
-=======
 	retval = usb_submit_urb(dev->interrupt_out_urb, GFP_KERNEL);
 	if (retval) {
 		dev->interrupt_out_busy = 0;
 		dev_err(&dev->udev->dev,
 			"Couldn't submit interrupt_out_urb %d\n", retval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock_exit;
 	}
 	retval = bytes_to_write;
@@ -1117,41 +648,22 @@ unlock_exit:
 	mutex_unlock(&dev->lock);
 
 exit:
-<<<<<<< HEAD
-	dbg(2, "%s: leave, return value %d", __func__, retval);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
 
-<<<<<<< HEAD
-/**
- *	tower_interrupt_in_callback
- */
-static void tower_interrupt_in_callback (struct urb *urb)
-=======
 /*
  *	tower_interrupt_in_callback
  */
 static void tower_interrupt_in_callback(struct urb *urb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lego_usb_tower *dev = urb->context;
 	int status = urb->status;
 	int retval;
-<<<<<<< HEAD
-
-	dbg(4, "%s: enter, status %d", __func__, status);
-
-	lego_usb_tower_debug_data(5, __func__, urb->actual_length, urb->transfer_buffer);
-=======
 	unsigned long flags;
 
 	lego_usb_tower_debug_data(&dev->udev->dev, __func__,
 				  urb->actual_length, urb->transfer_buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status) {
 		if (status == -ENOENT ||
@@ -1159,56 +671,14 @@ static void tower_interrupt_in_callback(struct urb *urb)
 		    status == -ESHUTDOWN) {
 			goto exit;
 		} else {
-<<<<<<< HEAD
-			dbg(1, "%s: nonzero status received: %d", __func__, status);
-=======
 			dev_dbg(&dev->udev->dev,
 				"%s: nonzero status received: %d\n", __func__,
 				status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto resubmit; /* maybe we can recover */
 		}
 	}
 
 	if (urb->actual_length > 0) {
-<<<<<<< HEAD
-		spin_lock (&dev->read_buffer_lock);
-		if (dev->read_buffer_length + urb->actual_length < read_buffer_size) {
-			memcpy (dev->read_buffer + dev->read_buffer_length,
-				dev->interrupt_in_buffer,
-				urb->actual_length);
-			dev->read_buffer_length += urb->actual_length;
-			dev->read_last_arrival = jiffies;
-			dbg(3, "%s: received %d bytes", __func__, urb->actual_length);
-		} else {
-			printk(KERN_WARNING "%s: read_buffer overflow, %d bytes dropped", __func__, urb->actual_length);
-		}
-		spin_unlock (&dev->read_buffer_lock);
-	}
-
-resubmit:
-	/* resubmit if we're still running */
-	if (dev->interrupt_in_running && dev->udev) {
-		retval = usb_submit_urb (dev->interrupt_in_urb, GFP_ATOMIC);
-		if (retval) {
-			err("%s: usb_submit_urb failed (%d)", __func__, retval);
-		}
-	}
-
-exit:
-	dev->interrupt_in_done = 1;
-	wake_up_interruptible (&dev->read_wait);
-
-	lego_usb_tower_debug_data(5, __func__, urb->actual_length, urb->transfer_buffer);
-	dbg(4, "%s: leave, status %d", __func__, status);
-}
-
-
-/**
- *	tower_interrupt_out_callback
- */
-static void tower_interrupt_out_callback (struct urb *urb)
-=======
 		spin_lock_irqsave(&dev->read_buffer_lock, flags);
 		if (dev->read_buffer_length + urb->actual_length < read_buffer_size) {
 			memcpy(dev->read_buffer + dev->read_buffer_length,
@@ -1241,166 +711,33 @@ exit:
  *	tower_interrupt_out_callback
  */
 static void tower_interrupt_out_callback(struct urb *urb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lego_usb_tower *dev = urb->context;
 	int status = urb->status;
 
-<<<<<<< HEAD
-	dbg(4, "%s: enter, status %d", __func__, status);
-	lego_usb_tower_debug_data(5, __func__, urb->actual_length, urb->transfer_buffer);
-=======
 	lego_usb_tower_debug_data(&dev->udev->dev, __func__,
 				  urb->actual_length, urb->transfer_buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sync/async unlink faults aren't errors */
 	if (status && !(status == -ENOENT ||
 			status == -ECONNRESET ||
 			status == -ESHUTDOWN)) {
-<<<<<<< HEAD
-		dbg(1, "%s - nonzero write bulk status received: %d",
-		    __func__, status);
-=======
 		dev_dbg(&dev->udev->dev,
 			"%s: nonzero write bulk status received: %d\n", __func__,
 			status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev->interrupt_out_busy = 0;
 	wake_up_interruptible(&dev->write_wait);
-<<<<<<< HEAD
-
-	lego_usb_tower_debug_data(5, __func__, urb->actual_length, urb->transfer_buffer);
-	dbg(4, "%s: leave, status %d", __func__, status);
-}
-
-
-/**
-=======
 }
 
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	tower_probe
  *
  *	Called by the usb core when a new device is connected that it thinks
  *	this driver might be interested in.
  */
-<<<<<<< HEAD
-static int tower_probe (struct usb_interface *interface, const struct usb_device_id *id)
-{
-	struct usb_device *udev = interface_to_usbdev(interface);
-	struct lego_usb_tower *dev = NULL;
-	struct usb_host_interface *iface_desc;
-	struct usb_endpoint_descriptor* endpoint;
-	struct tower_get_version_reply get_version_reply;
-	int i;
-	int retval = -ENOMEM;
-	int result;
-
-	dbg(2, "%s: enter", __func__);
-
-	if (udev == NULL)
-		dev_info(&interface->dev, "udev is NULL.\n");
-
-	/* allocate memory for our device state and initialize it */
-
-	dev = kmalloc (sizeof(struct lego_usb_tower), GFP_KERNEL);
-
-	if (dev == NULL) {
-		err ("Out of memory");
-		goto exit;
-	}
-
-	mutex_init(&dev->lock);
-
-	dev->udev = udev;
-	dev->open_count = 0;
-
-	dev->read_buffer = NULL;
-	dev->read_buffer_length = 0;
-	dev->read_packet_length = 0;
-	spin_lock_init (&dev->read_buffer_lock);
-	dev->packet_timeout_jiffies = packet_timeout * HZ / 1000;
-	dev->read_last_arrival = jiffies;
-
-	init_waitqueue_head (&dev->read_wait);
-	init_waitqueue_head (&dev->write_wait);
-
-	dev->interrupt_in_buffer = NULL;
-	dev->interrupt_in_endpoint = NULL;
-	dev->interrupt_in_urb = NULL;
-	dev->interrupt_in_running = 0;
-	dev->interrupt_in_done = 0;
-
-	dev->interrupt_out_buffer = NULL;
-	dev->interrupt_out_endpoint = NULL;
-	dev->interrupt_out_urb = NULL;
-	dev->interrupt_out_busy = 0;
-
-	iface_desc = interface->cur_altsetting;
-
-	/* set up the endpoint information */
-	for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
-		endpoint = &iface_desc->endpoint[i].desc;
-
-		if (usb_endpoint_xfer_int(endpoint)) {
-			if (usb_endpoint_dir_in(endpoint))
-				dev->interrupt_in_endpoint = endpoint;
-			else
-				dev->interrupt_out_endpoint = endpoint;
-		}
-	}
-	if(dev->interrupt_in_endpoint == NULL) {
-		err("interrupt in endpoint not found");
-		goto error;
-	}
-	if (dev->interrupt_out_endpoint == NULL) {
-		err("interrupt out endpoint not found");
-		goto error;
-	}
-
-	dev->read_buffer = kmalloc (read_buffer_size, GFP_KERNEL);
-	if (!dev->read_buffer) {
-		err("Couldn't allocate read_buffer");
-		goto error;
-	}
-	dev->interrupt_in_buffer = kmalloc (usb_endpoint_maxp(dev->interrupt_in_endpoint), GFP_KERNEL);
-	if (!dev->interrupt_in_buffer) {
-		err("Couldn't allocate interrupt_in_buffer");
-		goto error;
-	}
-	dev->interrupt_in_urb = usb_alloc_urb(0, GFP_KERNEL);
-	if (!dev->interrupt_in_urb) {
-		err("Couldn't allocate interrupt_in_urb");
-		goto error;
-	}
-	dev->interrupt_out_buffer = kmalloc (write_buffer_size, GFP_KERNEL);
-	if (!dev->interrupt_out_buffer) {
-		err("Couldn't allocate interrupt_out_buffer");
-		goto error;
-	}
-	dev->interrupt_out_urb = usb_alloc_urb(0, GFP_KERNEL);
-	if (!dev->interrupt_out_urb) {
-		err("Couldn't allocate interrupt_out_urb");
-		goto error;
-	}
-	dev->interrupt_in_interval = interrupt_in_interval ? interrupt_in_interval : dev->interrupt_in_endpoint->bInterval;
-	dev->interrupt_out_interval = interrupt_out_interval ? interrupt_out_interval : dev->interrupt_out_endpoint->bInterval;
-
-	/* we can register the device now, as it is ready */
-	usb_set_intfdata (interface, dev);
-
-	retval = usb_register_dev (interface, &tower_class);
-
-	if (retval) {
-		/* something prevented us from registering this driver */
-		err ("Not able to get a minor for this device.");
-		usb_set_intfdata (interface, NULL);
-=======
 static int tower_probe(struct usb_interface *interface, const struct usb_device_id *id)
 {
 	struct device *idev = &interface->dev;
@@ -1478,7 +815,6 @@ static int tower_probe(struct usb_interface *interface, const struct usb_device_
 	if (retval) {
 		/* something prevented us from registering this driver */
 		dev_err(idev, "Not able to get a minor for this device.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 	dev->minor = interface->minor;
@@ -1488,34 +824,7 @@ static int tower_probe(struct usb_interface *interface, const struct usb_device_
 		 "%d minor %d\n", (dev->minor - LEGO_USB_TOWER_MINOR_BASE),
 		 USB_MAJOR, dev->minor);
 
-<<<<<<< HEAD
-	/* get the firmware version and log it */
-	result = usb_control_msg (udev,
-				  usb_rcvctrlpipe(udev, 0),
-				  LEGO_USB_TOWER_REQUEST_GET_VERSION,
-				  USB_TYPE_VENDOR | USB_DIR_IN | USB_RECIP_DEVICE,
-				  0,
-				  0,
-				  &get_version_reply,
-				  sizeof(get_version_reply),
-				  1000);
-	if (result < 0) {
-		err("LEGO USB Tower get version control request failed");
-		retval = result;
-		goto error;
-	}
-	dev_info(&interface->dev, "LEGO USB Tower firmware version is %d.%d "
-		 "build %d\n", get_version_reply.major,
-		 get_version_reply.minor,
-		 le16_to_cpu(get_version_reply.build_no));
-
-
 exit:
-	dbg(2, "%s: leave, return value 0x%.8lx (dev)", __func__, (long) dev);
-
-=======
-exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 
 error:
@@ -1524,39 +833,16 @@ error:
 }
 
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	tower_disconnect
  *
  *	Called by the usb core when the device is removed from the system.
  */
-<<<<<<< HEAD
-static void tower_disconnect (struct usb_interface *interface)
-=======
 static void tower_disconnect(struct usb_interface *interface)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lego_usb_tower *dev;
 	int minor;
 
-<<<<<<< HEAD
-	dbg(2, "%s: enter", __func__);
-
-	dev = usb_get_intfdata (interface);
-	mutex_lock(&open_disc_mutex);
-	usb_set_intfdata (interface, NULL);
-
-	minor = dev->minor;
-
-	/* give back our minor */
-	usb_deregister_dev (interface, &tower_class);
-
-	mutex_lock(&dev->lock);
-	mutex_unlock(&open_disc_mutex);
-=======
 	dev = usb_get_intfdata(interface);
 
 	minor = dev->minor;
@@ -1569,20 +855,13 @@ static void tower_disconnect(struct usb_interface *interface)
 	usb_poison_urb(dev->interrupt_out_urb);
 
 	mutex_lock(&dev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if the device is not opened, then we clean up right now */
 	if (!dev->open_count) {
 		mutex_unlock(&dev->lock);
-<<<<<<< HEAD
-		tower_delete (dev);
-	} else {
-		dev->udev = NULL;
-=======
 		tower_delete(dev);
 	} else {
 		dev->disconnected = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* wake up pollers */
 		wake_up_interruptible_all(&dev->read_wait);
 		wake_up_interruptible_all(&dev->write_wait);
@@ -1591,21 +870,10 @@ static void tower_disconnect(struct usb_interface *interface)
 
 	dev_info(&interface->dev, "LEGO USB Tower #%d now disconnected\n",
 		 (minor - LEGO_USB_TOWER_MINOR_BASE));
-<<<<<<< HEAD
-
-	dbg(2, "%s: leave", __func__);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_usb_driver(tower_driver);
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
-<<<<<<< HEAD
-#ifdef MODULE_LICENSE
 MODULE_LICENSE("GPL");
-#endif
-=======
-MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

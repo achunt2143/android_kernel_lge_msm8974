@@ -1,34 +1,5 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel 10 Gigabit PCI Express Linux driver
-  Copyright(c) 1999 - 2012 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /* Copyright(c) 1999 - 2018 Intel Corporation. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _IXGBE_MBX_H_
 #define _IXGBE_MBX_H_
@@ -36,10 +7,6 @@
 #include "ixgbe_type.h"
 
 #define IXGBE_VFMAILBOX_SIZE        16 /* 16 32 bit words - 64 bytes */
-<<<<<<< HEAD
-#define IXGBE_ERR_MBX               -100
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IXGBE_VFMAILBOX             0x002FC
 #define IXGBE_VFMBMEM               0x00200
@@ -61,25 +28,15 @@
  * Message ACK's are the value or'd with 0xF0000000
  */
 #define IXGBE_VT_MSGTYPE_ACK      0x80000000  /* Messages below or'd with
-<<<<<<< HEAD
-                                               * this are the ACK */
-#define IXGBE_VT_MSGTYPE_NACK     0x40000000  /* Messages below or'd with
-                                               * this are the NACK */
-#define IXGBE_VT_MSGTYPE_CTS      0x20000000  /* Indicates that VF is still
-                                                 clear to send requests */
-=======
 					       * this are the ACK */
 #define IXGBE_VT_MSGTYPE_NACK     0x40000000  /* Messages below or'd with
 					       * this are the NACK */
 #define IXGBE_VT_MSGTYPE_CTS      0x20000000  /* Indicates that VF is still
 						 clear to send requests */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IXGBE_VT_MSGINFO_SHIFT    16
 /* bits 23:16 are used for exra info for certain messages */
 #define IXGBE_VT_MSGINFO_MASK     (0xFF << IXGBE_VT_MSGINFO_SHIFT)
 
-<<<<<<< HEAD
-=======
 /* definitions to support mailbox API version negotiation */
 
 /*
@@ -98,15 +55,10 @@ enum ixgbe_pfvf_api_rev {
 };
 
 /* mailbox API, legacy requests */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IXGBE_VF_RESET            0x01 /* VF requests reset */
 #define IXGBE_VF_SET_MAC_ADDR     0x02 /* VF requests PF to set MAC addr */
 #define IXGBE_VF_SET_MULTICAST    0x03 /* VF requests PF to set MC addr */
 #define IXGBE_VF_SET_VLAN         0x04 /* VF requests PF to set VLAN */
-<<<<<<< HEAD
-#define IXGBE_VF_SET_LPE          0x05 /* VF requests PF to set VMOLR.LPE */
-#define IXGBE_VF_SET_MACVLAN      0x06 /* VF requests PF for unicast filter */
-=======
 
 /* mailbox API, version 1.0 VF requests */
 #define IXGBE_VF_SET_LPE	0x05 /* VF requests PF to set VMOLR.LPE */
@@ -133,7 +85,6 @@ enum ixgbe_pfvf_api_rev {
 #define IXGBE_VF_IPSEC_DEL	0x0e
 
 #define IXGBE_VF_GET_LINK_STATE 0x10 /* get vf link state */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* length of permanent address message returned from PF */
 #define IXGBE_VF_PERMADDR_MSG_LEN 4
@@ -145,27 +96,15 @@ enum ixgbe_pfvf_api_rev {
 #define IXGBE_VF_MBX_INIT_TIMEOUT 2000 /* number of retries on mailbox */
 #define IXGBE_VF_MBX_INIT_DELAY   500  /* microseconds between retries */
 
-<<<<<<< HEAD
-s32 ixgbe_read_mbx(struct ixgbe_hw *, u32 *, u16, u16);
-s32 ixgbe_write_mbx(struct ixgbe_hw *, u32 *, u16, u16);
-s32 ixgbe_check_for_msg(struct ixgbe_hw *, u16);
-s32 ixgbe_check_for_ack(struct ixgbe_hw *, u16);
-s32 ixgbe_check_for_rst(struct ixgbe_hw *, u16);
-=======
 int ixgbe_read_mbx(struct ixgbe_hw *, u32 *, u16, u16);
 int ixgbe_write_mbx(struct ixgbe_hw *, u32 *, u16, u16);
 int ixgbe_check_for_msg(struct ixgbe_hw *, u16);
 int ixgbe_check_for_ack(struct ixgbe_hw *, u16);
 int ixgbe_check_for_rst(struct ixgbe_hw *, u16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PCI_IOV
 void ixgbe_init_mbx_params_pf(struct ixgbe_hw *);
 #endif /* CONFIG_PCI_IOV */
 
-<<<<<<< HEAD
-extern struct ixgbe_mbx_operations mbx_ops_generic;
-=======
 extern const struct ixgbe_mbx_operations mbx_ops_generic;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _IXGBE_MBX_H_ */

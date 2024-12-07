@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Platform data for MAX98095
  *
  * Copyright 2011 Maxim Integrated Products
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __SOUND_MAX98095_PDATA_H__
@@ -56,8 +44,6 @@ struct max98095_pdata {
 	 */
 	unsigned int digmic_left_mode:1;
 	unsigned int digmic_right_mode:1;
-<<<<<<< HEAD
-=======
 
 	/* Pin5 is the mechanical method of sensing jack insertion
 	 * but it is something that might not be supported.
@@ -70,7 +56,6 @@ struct max98095_pdata {
 	 * Default delay is 24 to get a time of 100ms.
 	 */
 	unsigned int jack_detect_delay;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

@@ -1,8 +1,5 @@
 #!/bin/sh
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Script which prints out the version to use for building cpupowerutils.
 # Must be called from tools/power/cpupower/

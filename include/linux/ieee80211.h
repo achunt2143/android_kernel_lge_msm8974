@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IEEE 802.11 defines
  *
@@ -10,31 +7,20 @@
  * Copyright (c) 2002-2003, Jouni Malinen <jkmaline@cc.hut.fi>
  * Copyright (c) 2005, Devicescape Software, Inc.
  * Copyright (c) 2006, Michael Wu <flamingice@sourmilk.net>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
  * Copyright (c) 2013 - 2014 Intel Mobile Communications GmbH
  * Copyright (c) 2016 - 2017 Intel Deutschland GmbH
  * Copyright (c) 2018 - 2024 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef LINUX_IEEE80211_H
 #define LINUX_IEEE80211_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <asm/byteorder.h>
-=======
 #include <linux/if_ether.h>
 #include <linux/etherdevice.h>
 #include <linux/bitfield.h>
 #include <asm/byteorder.h>
 #include <asm/unaligned.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * DS bit usage
@@ -65,10 +51,7 @@
 #define IEEE80211_FCTL_MOREDATA		0x2000
 #define IEEE80211_FCTL_PROTECTED	0x4000
 #define IEEE80211_FCTL_ORDER		0x8000
-<<<<<<< HEAD
-=======
 #define IEEE80211_FCTL_CTL_EXT		0x0f00
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IEEE80211_SCTL_FRAG		0x000F
 #define IEEE80211_SCTL_SEQ		0xFFF0
@@ -76,10 +59,7 @@
 #define IEEE80211_FTYPE_MGMT		0x0000
 #define IEEE80211_FTYPE_CTL		0x0004
 #define IEEE80211_FTYPE_DATA		0x0008
-<<<<<<< HEAD
-=======
 #define IEEE80211_FTYPE_EXT		0x000c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* management */
 #define IEEE80211_STYPE_ASSOC_REQ	0x0000
@@ -96,11 +76,8 @@
 #define IEEE80211_STYPE_ACTION		0x00D0
 
 /* control */
-<<<<<<< HEAD
-=======
 #define IEEE80211_STYPE_TRIGGER		0x0020
 #define IEEE80211_STYPE_CTL_EXT		0x0060
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IEEE80211_STYPE_BACK_REQ	0x0080
 #define IEEE80211_STYPE_BACK		0x0090
 #define IEEE80211_STYPE_PSPOLL		0x00A0
@@ -128,8 +105,6 @@
 #define IEEE80211_STYPE_QOS_CFPOLL		0x00E0
 #define IEEE80211_STYPE_QOS_CFACKPOLL		0x00F0
 
-<<<<<<< HEAD
-=======
 /* extension, added by 802.11ad */
 #define IEEE80211_STYPE_DMG_BEACON		0x0000
 #define IEEE80211_STYPE_S1G_BEACON		0x0010
@@ -238,30 +213,20 @@ static inline u16 ieee80211_sn_sub(u16 sn1, u16 sn2)
 
 #define IEEE80211_SEQ_TO_SN(seq)	(((seq) & IEEE80211_SCTL_SEQ) >> 4)
 #define IEEE80211_SN_TO_SEQ(ssn)	(((ssn) << 4) & IEEE80211_SCTL_SEQ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* miscellaneous IEEE 802.11 constants */
 #define IEEE80211_MAX_FRAG_THRESHOLD	2352
 #define IEEE80211_MAX_RTS_THRESHOLD	2353
 #define IEEE80211_MAX_AID		2007
-<<<<<<< HEAD
-#define IEEE80211_MAX_TIM_LEN		251
-=======
 #define IEEE80211_MAX_AID_S1G		8191
 #define IEEE80211_MAX_TIM_LEN		251
 #define IEEE80211_MAX_MESH_PEERINGS	63
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Maximum size for the MA-UNITDATA primitive, 802.11 standard section
    6.2.1.1.2.
 
    802.11e clarifies the figure in section 7.1.2. The frame body is
    up to 2304 octets long (maximum MSDU size) plus any crypt overhead. */
 #define IEEE80211_MAX_DATA_LEN		2304
-<<<<<<< HEAD
-/* 30 byte 4 addr hdr, 2 byte QoS, 2304 byte MSDU, 12 byte crypt, 4 byte FCS */
-#define IEEE80211_MAX_FRAME_LEN		2352
-
-=======
 /* 802.11ad extends maximum MSDU size for DMG (freq > 40Ghz) networks
  * to 7920 bytes, see 8.2.3 General frame format
  */
@@ -280,13 +245,10 @@ static inline u16 ieee80211_sn_sub(u16 sn1, u16 sn2)
 #define IEEE80211_MAX_MPDU_LEN_VHT_7991		7991
 #define IEEE80211_MAX_MPDU_LEN_VHT_11454	11454
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IEEE80211_MAX_SSID_LEN		32
 
 #define IEEE80211_MAX_MESH_ID_LEN	32
 
-<<<<<<< HEAD
-=======
 #define IEEE80211_FIRST_TSPEC_TSID	8
 #define IEEE80211_NUM_TIDS		16
 
@@ -295,7 +257,6 @@ static inline u16 ieee80211_sn_sub(u16 sn1, u16 sn2)
 /* number of ACs */
 #define IEEE80211_NUM_ACS		4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IEEE80211_QOS_CTL_LEN		2
 /* 1d tag mask */
 #define IEEE80211_QOS_CTL_TAG1D_MASK		0x0007
@@ -314,14 +275,11 @@ static inline u16 ieee80211_sn_sub(u16 sn1, u16 sn2)
 /* Mesh Control 802.11s */
 #define IEEE80211_QOS_CTL_MESH_CONTROL_PRESENT  0x0100
 
-<<<<<<< HEAD
-=======
 /* Mesh Power Save Level */
 #define IEEE80211_QOS_CTL_MESH_PS_LEVEL		0x0200
 /* Mesh Receiver Service Period Initiated */
 #define IEEE80211_QOS_CTL_RSPI			0x0400
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* U-APSD queue for WMM IEs sent by AP */
 #define IEEE80211_WMM_IE_AP_QOSINFO_UAPSD	(1<<7)
 #define IEEE80211_WMM_IE_AP_QOSINFO_PARAM_SET_CNT_MASK	0x0f
@@ -343,17 +301,6 @@ static inline u16 ieee80211_sn_sub(u16 sn1, u16 sn2)
 
 #define IEEE80211_HT_CTL_LEN		4
 
-<<<<<<< HEAD
-struct ieee80211_hdr {
-	__le16 frame_control;
-	__le16 duration_id;
-	u8 addr1[6];
-	u8 addr2[6];
-	u8 addr3[6];
-	__le16 seq_ctrl;
-	u8 addr4[6];
-} __attribute__ ((packed));
-=======
 /* trigger type within common_info of trigger frame */
 #define IEEE80211_TRIGGER_TYPE_MASK		0xf
 #define IEEE80211_TRIGGER_TYPE_BASIC		0x0
@@ -383,36 +330,19 @@ struct ieee80211_hdr {
 	__le16 seq_ctrl;
 	u8 addr4[ETH_ALEN];
 } __packed __aligned(2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ieee80211_hdr_3addr {
 	__le16 frame_control;
 	__le16 duration_id;
-<<<<<<< HEAD
-	u8 addr1[6];
-	u8 addr2[6];
-	u8 addr3[6];
-	__le16 seq_ctrl;
-} __attribute__ ((packed));
-=======
 	u8 addr1[ETH_ALEN];
 	u8 addr2[ETH_ALEN];
 	u8 addr3[ETH_ALEN];
 	__le16 seq_ctrl;
 } __packed __aligned(2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ieee80211_qos_hdr {
 	__le16 frame_control;
 	__le16 duration_id;
-<<<<<<< HEAD
-	u8 addr1[6];
-	u8 addr2[6];
-	u8 addr3[6];
-	__le16 seq_ctrl;
-	__le16 qos_ctrl;
-} __attribute__ ((packed));
-=======
 	u8 addr1[ETH_ALEN];
 	u8 addr2[ETH_ALEN];
 	u8 addr3[ETH_ALEN];
@@ -439,17 +369,12 @@ struct ieee80211_trigger {
 	__le64 common_info;
 	u8 variable[];
 } __packed __aligned(2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ieee80211_has_tods - check if IEEE80211_FCTL_TODS is set
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_has_tods(__le16 fc)
-=======
 static inline bool ieee80211_has_tods(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_TODS)) != 0;
 }
@@ -458,11 +383,7 @@ static inline bool ieee80211_has_tods(__le16 fc)
  * ieee80211_has_fromds - check if IEEE80211_FCTL_FROMDS is set
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_has_fromds(__le16 fc)
-=======
 static inline bool ieee80211_has_fromds(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FROMDS)) != 0;
 }
@@ -471,11 +392,7 @@ static inline bool ieee80211_has_fromds(__le16 fc)
  * ieee80211_has_a4 - check if IEEE80211_FCTL_TODS and IEEE80211_FCTL_FROMDS are set
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_has_a4(__le16 fc)
-=======
 static inline bool ieee80211_has_a4(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__le16 tmp = cpu_to_le16(IEEE80211_FCTL_TODS | IEEE80211_FCTL_FROMDS);
 	return (fc & tmp) == tmp;
@@ -485,11 +402,7 @@ static inline bool ieee80211_has_a4(__le16 fc)
  * ieee80211_has_morefrags - check if IEEE80211_FCTL_MOREFRAGS is set
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_has_morefrags(__le16 fc)
-=======
 static inline bool ieee80211_has_morefrags(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_MOREFRAGS)) != 0;
 }
@@ -498,11 +411,7 @@ static inline bool ieee80211_has_morefrags(__le16 fc)
  * ieee80211_has_retry - check if IEEE80211_FCTL_RETRY is set
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_has_retry(__le16 fc)
-=======
 static inline bool ieee80211_has_retry(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_RETRY)) != 0;
 }
@@ -511,11 +420,7 @@ static inline bool ieee80211_has_retry(__le16 fc)
  * ieee80211_has_pm - check if IEEE80211_FCTL_PM is set
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_has_pm(__le16 fc)
-=======
 static inline bool ieee80211_has_pm(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_PM)) != 0;
 }
@@ -524,11 +429,7 @@ static inline bool ieee80211_has_pm(__le16 fc)
  * ieee80211_has_moredata - check if IEEE80211_FCTL_MOREDATA is set
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_has_moredata(__le16 fc)
-=======
 static inline bool ieee80211_has_moredata(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_MOREDATA)) != 0;
 }
@@ -537,11 +438,7 @@ static inline bool ieee80211_has_moredata(__le16 fc)
  * ieee80211_has_protected - check if IEEE80211_FCTL_PROTECTED is set
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_has_protected(__le16 fc)
-=======
 static inline bool ieee80211_has_protected(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_PROTECTED)) != 0;
 }
@@ -550,11 +447,7 @@ static inline bool ieee80211_has_protected(__le16 fc)
  * ieee80211_has_order - check if IEEE80211_FCTL_ORDER is set
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_has_order(__le16 fc)
-=======
 static inline bool ieee80211_has_order(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_ORDER)) != 0;
 }
@@ -563,11 +456,7 @@ static inline bool ieee80211_has_order(__le16 fc)
  * ieee80211_is_mgmt - check if type is IEEE80211_FTYPE_MGMT
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_mgmt(__le16 fc)
-=======
 static inline bool ieee80211_is_mgmt(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT);
@@ -577,11 +466,7 @@ static inline bool ieee80211_is_mgmt(__le16 fc)
  * ieee80211_is_ctl - check if type is IEEE80211_FTYPE_CTL
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_ctl(__le16 fc)
-=======
 static inline bool ieee80211_is_ctl(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL);
@@ -591,23 +476,13 @@ static inline bool ieee80211_is_ctl(__le16 fc)
  * ieee80211_is_data - check if type is IEEE80211_FTYPE_DATA
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_data(__le16 fc)
-=======
 static inline bool ieee80211_is_data(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_DATA);
 }
 
 /**
-<<<<<<< HEAD
- * ieee80211_is_data_qos - check if type is IEEE80211_FTYPE_DATA and IEEE80211_STYPE_QOS_DATA is set
- * @fc: frame control bytes in little-endian byteorder
- */
-static inline int ieee80211_is_data_qos(__le16 fc)
-=======
  * ieee80211_is_ext - check if type is IEEE80211_FTYPE_EXT
  * @fc: frame control bytes in little-endian byteorder
  */
@@ -623,7 +498,6 @@ static inline bool ieee80211_is_ext(__le16 fc)
  * @fc: frame control bytes in little-endian byteorder
  */
 static inline bool ieee80211_is_data_qos(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * mask with QOS_DATA rather than IEEE80211_FCTL_STYPE as we just need
@@ -637,11 +511,7 @@ static inline bool ieee80211_is_data_qos(__le16 fc)
  * ieee80211_is_data_present - check if type is IEEE80211_FTYPE_DATA and has data
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_data_present(__le16 fc)
-=======
 static inline bool ieee80211_is_data_present(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * mask with 0x40 and test that that bit is clear to only return true
@@ -655,11 +525,7 @@ static inline bool ieee80211_is_data_present(__le16 fc)
  * ieee80211_is_assoc_req - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_ASSOC_REQ
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_assoc_req(__le16 fc)
-=======
 static inline bool ieee80211_is_assoc_req(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_ASSOC_REQ);
@@ -669,11 +535,7 @@ static inline bool ieee80211_is_assoc_req(__le16 fc)
  * ieee80211_is_assoc_resp - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_ASSOC_RESP
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_assoc_resp(__le16 fc)
-=======
 static inline bool ieee80211_is_assoc_resp(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_ASSOC_RESP);
@@ -683,11 +545,7 @@ static inline bool ieee80211_is_assoc_resp(__le16 fc)
  * ieee80211_is_reassoc_req - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_REASSOC_REQ
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_reassoc_req(__le16 fc)
-=======
 static inline bool ieee80211_is_reassoc_req(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_REASSOC_REQ);
@@ -697,11 +555,7 @@ static inline bool ieee80211_is_reassoc_req(__le16 fc)
  * ieee80211_is_reassoc_resp - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_REASSOC_RESP
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_reassoc_resp(__le16 fc)
-=======
 static inline bool ieee80211_is_reassoc_resp(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_REASSOC_RESP);
@@ -711,11 +565,7 @@ static inline bool ieee80211_is_reassoc_resp(__le16 fc)
  * ieee80211_is_probe_req - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_PROBE_REQ
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_probe_req(__le16 fc)
-=======
 static inline bool ieee80211_is_probe_req(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_PROBE_REQ);
@@ -725,11 +575,7 @@ static inline bool ieee80211_is_probe_req(__le16 fc)
  * ieee80211_is_probe_resp - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_PROBE_RESP
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_probe_resp(__le16 fc)
-=======
 static inline bool ieee80211_is_probe_resp(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_PROBE_RESP);
@@ -739,23 +585,13 @@ static inline bool ieee80211_is_probe_resp(__le16 fc)
  * ieee80211_is_beacon - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_BEACON
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_beacon(__le16 fc)
-=======
 static inline bool ieee80211_is_beacon(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON);
 }
 
 /**
-<<<<<<< HEAD
- * ieee80211_is_atim - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_ATIM
- * @fc: frame control bytes in little-endian byteorder
- */
-static inline int ieee80211_is_atim(__le16 fc)
-=======
  * ieee80211_is_s1g_beacon - check if IEEE80211_FTYPE_EXT &&
  * IEEE80211_STYPE_S1G_BEACON
  * @fc: frame control bytes in little-endian byteorder
@@ -794,7 +630,6 @@ static inline bool ieee80211_is_s1g_short_beacon(__le16 fc)
  * @fc: frame control bytes in little-endian byteorder
  */
 static inline bool ieee80211_is_atim(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_ATIM);
@@ -804,11 +639,7 @@ static inline bool ieee80211_is_atim(__le16 fc)
  * ieee80211_is_disassoc - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_DISASSOC
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_disassoc(__le16 fc)
-=======
 static inline bool ieee80211_is_disassoc(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_DISASSOC);
@@ -818,11 +649,7 @@ static inline bool ieee80211_is_disassoc(__le16 fc)
  * ieee80211_is_auth - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_AUTH
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_auth(__le16 fc)
-=======
 static inline bool ieee80211_is_auth(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_AUTH);
@@ -832,11 +659,7 @@ static inline bool ieee80211_is_auth(__le16 fc)
  * ieee80211_is_deauth - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_DEAUTH
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_deauth(__le16 fc)
-=======
 static inline bool ieee80211_is_deauth(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_DEAUTH);
@@ -846,11 +669,7 @@ static inline bool ieee80211_is_deauth(__le16 fc)
  * ieee80211_is_action - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_ACTION
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_action(__le16 fc)
-=======
 static inline bool ieee80211_is_action(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_ACTION);
@@ -860,11 +679,7 @@ static inline bool ieee80211_is_action(__le16 fc)
  * ieee80211_is_back_req - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_BACK_REQ
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_back_req(__le16 fc)
-=======
 static inline bool ieee80211_is_back_req(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_BACK_REQ);
@@ -874,11 +689,7 @@ static inline bool ieee80211_is_back_req(__le16 fc)
  * ieee80211_is_back - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_BACK
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_back(__le16 fc)
-=======
 static inline bool ieee80211_is_back(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_BACK);
@@ -888,11 +699,7 @@ static inline bool ieee80211_is_back(__le16 fc)
  * ieee80211_is_pspoll - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_PSPOLL
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_pspoll(__le16 fc)
-=======
 static inline bool ieee80211_is_pspoll(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_PSPOLL);
@@ -902,11 +709,7 @@ static inline bool ieee80211_is_pspoll(__le16 fc)
  * ieee80211_is_rts - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_RTS
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_rts(__le16 fc)
-=======
 static inline bool ieee80211_is_rts(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_RTS);
@@ -916,11 +719,7 @@ static inline bool ieee80211_is_rts(__le16 fc)
  * ieee80211_is_cts - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_CTS
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_cts(__le16 fc)
-=======
 static inline bool ieee80211_is_cts(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_CTS);
@@ -930,11 +729,7 @@ static inline bool ieee80211_is_cts(__le16 fc)
  * ieee80211_is_ack - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_ACK
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_ack(__le16 fc)
-=======
 static inline bool ieee80211_is_ack(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_ACK);
@@ -944,11 +739,7 @@ static inline bool ieee80211_is_ack(__le16 fc)
  * ieee80211_is_cfend - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_CFEND
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_cfend(__le16 fc)
-=======
 static inline bool ieee80211_is_cfend(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_CFEND);
@@ -958,11 +749,7 @@ static inline bool ieee80211_is_cfend(__le16 fc)
  * ieee80211_is_cfendack - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_CFENDACK
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_cfendack(__le16 fc)
-=======
 static inline bool ieee80211_is_cfendack(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_CFENDACK);
@@ -972,11 +759,7 @@ static inline bool ieee80211_is_cfendack(__le16 fc)
  * ieee80211_is_nullfunc - check if frame is a regular (non-QoS) nullfunc frame
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_nullfunc(__le16 fc)
-=======
 static inline bool ieee80211_is_nullfunc(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_NULLFUNC);
@@ -986,23 +769,13 @@ static inline bool ieee80211_is_nullfunc(__le16 fc)
  * ieee80211_is_qos_nullfunc - check if frame is a QoS nullfunc frame
  * @fc: frame control bytes in little-endian byteorder
  */
-<<<<<<< HEAD
-static inline int ieee80211_is_qos_nullfunc(__le16 fc)
-=======
 static inline bool ieee80211_is_qos_nullfunc(__le16 fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_QOS_NULLFUNC);
 }
 
 /**
-<<<<<<< HEAD
- * ieee80211_is_first_frag - check if IEEE80211_SCTL_FRAG is not set
- * @seq_ctrl: frame sequence control bytes in little-endian byteorder
- */
-static inline int ieee80211_is_first_frag(__le16 seq_ctrl)
-=======
  * ieee80211_is_trigger - check if frame is trigger frame
  * @fc: frame control field in little-endian byteorder
  */
@@ -1026,13 +799,10 @@ static inline bool ieee80211_is_any_nullfunc(__le16 fc)
  * @seq_ctrl: frame sequence control bytes in little-endian byteorder
  */
 static inline bool ieee80211_is_first_frag(__le16 seq_ctrl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (seq_ctrl & cpu_to_le16(IEEE80211_SCTL_FRAG)) == 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * ieee80211_is_frag - check if a frame is a fragment
  * @hdr: 802.11 header of the frame
@@ -1048,20 +818,13 @@ static inline u16 ieee80211_get_sn(struct ieee80211_hdr *hdr)
 	return le16_get_bits(hdr->seq_ctrl, IEEE80211_SCTL_SEQ);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ieee80211s_hdr {
 	u8 flags;
 	u8 ttl;
 	__le32 seqnum;
-<<<<<<< HEAD
-	u8 eaddr1[6];
-	u8 eaddr2[6];
-} __attribute__ ((packed));
-=======
 	u8 eaddr1[ETH_ALEN];
 	u8 eaddr2[ETH_ALEN];
 } __packed __aligned(2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Mesh flags */
 #define MESH_FLAGS_AE_A4 	0x1
@@ -1070,11 +833,6 @@ struct ieee80211s_hdr {
 #define MESH_FLAGS_PS_DEEP	0x4
 
 /**
-<<<<<<< HEAD
- * struct ieee80211_quiet_ie
- *
- * This structure refers to "Quiet information element"
-=======
  * enum ieee80211_preq_flags - mesh PREQ element flags
  *
  * @IEEE80211_PREQ_PROACTIVE_PREP_FLAG: proactive PREP subfield
@@ -1103,21 +861,12 @@ enum ieee80211_preq_target_flags {
  *
  * This structure represents the payload of the "Quiet element" as
  * described in IEEE Std 802.11-2020 section 9.4.2.22.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ieee80211_quiet_ie {
 	u8 count;
 	u8 period;
 	__le16 duration;
 	__le16 offset;
-<<<<<<< HEAD
-} __attribute__ ((packed));
-
-/**
- * struct ieee80211_msrment_ie
- *
- * This structure refers to "Measurement Request/Report information element"
-=======
 } __packed;
 
 /**
@@ -1130,21 +879,11 @@ struct ieee80211_quiet_ie {
  * This structure represents the payload of both the "Measurement
  * Request element" and the "Measurement Report element" as described
  * in IEEE Std 802.11-2020 sections 9.4.2.20 and 9.4.2.21.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ieee80211_msrment_ie {
 	u8 token;
 	u8 mode;
 	u8 type;
-<<<<<<< HEAD
-	u8 request[0];
-} __attribute__ ((packed));
-
-/**
- * struct ieee80211_channel_sw_ie
- *
- * This structure refers to "Channel Switch Announcement information element"
-=======
 	u8 request[];
 } __packed;
 
@@ -1157,20 +896,11 @@ struct ieee80211_msrment_ie {
  * This structure represents the payload of the "Channel Switch
  * Announcement element" as described in IEEE Std 802.11-2020 section
  * 9.4.2.18.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ieee80211_channel_sw_ie {
 	u8 mode;
 	u8 new_ch_num;
 	u8 count;
-<<<<<<< HEAD
-} __attribute__ ((packed));
-
-/**
- * struct ieee80211_tim
- *
- * This structure refers to "Traffic Indication Map information element"
-=======
 } __packed;
 
 /**
@@ -1247,22 +977,11 @@ struct ieee80211_wide_bw_chansw_ie {
  * definition is only applicable when the element is carried in a
  * non-S1G PPDU. When the TIM is carried in an S1G PPDU, the Bitmap
  * Control and Partial Virtual Bitmap may not be present.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ieee80211_tim_ie {
 	u8 dtim_count;
 	u8 dtim_period;
 	u8 bitmap_ctrl;
-<<<<<<< HEAD
-	/* variable size: 1 - 251 bytes */
-	u8 virtual_map[1];
-} __attribute__ ((packed));
-
-/**
- * struct ieee80211_meshconf_ie
- *
- * This structure refers to "Mesh Configuration information element"
-=======
 	union {
 		u8 required_octet;
 		DECLARE_FLEX_ARRAY(u8, virtual_map);
@@ -1281,7 +1000,6 @@ struct ieee80211_tim_ie {
  *
  * This structure represents the payload of the "Mesh Configuration
  * element" as described in IEEE Std 802.11-2020 section 9.4.2.97.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ieee80211_meshconf_ie {
 	u8 meshconf_psel;
@@ -1291,14 +1009,6 @@ struct ieee80211_meshconf_ie {
 	u8 meshconf_auth;
 	u8 meshconf_form;
 	u8 meshconf_cap;
-<<<<<<< HEAD
-} __attribute__ ((packed));
-
-/**
- * struct ieee80211_rann_ie
- *
- * This structure refers to "Root Announcement information element"
-=======
 } __packed;
 
 /**
@@ -1344,33 +1054,21 @@ enum mesh_config_capab_flags {
  *
  * This structure represents the payload of the "RANN element" as
  * described in IEEE Std 802.11-2020 section 9.4.2.111.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ieee80211_rann_ie {
 	u8 rann_flags;
 	u8 rann_hopcount;
 	u8 rann_ttl;
-<<<<<<< HEAD
-	u8 rann_addr[6];
-	u32 rann_seq;
-	u32 rann_interval;
-	u32 rann_metric;
-} __attribute__ ((packed));
-=======
 	u8 rann_addr[ETH_ALEN];
 	__le32 rann_seq;
 	__le32 rann_interval;
 	__le32 rann_metric;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum ieee80211_rann_flags {
 	RANN_FLAG_IS_GATE = 1 << 0,
 };
 
-<<<<<<< HEAD
-#define WLAN_SA_QUERY_TR_ID_LEN 2
-=======
 enum ieee80211_ht_chanwidth_values {
 	IEEE80211_HT_CHANWIDTH_20MHZ = 0,
 	IEEE80211_HT_CHANWIDTH_ANY = 1,
@@ -1588,20 +1286,13 @@ struct ieee80211_ttlm_elem {
 	u8 control;
 	u8 optional[];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ieee80211_mgmt {
 	__le16 frame_control;
 	__le16 duration;
-<<<<<<< HEAD
-	u8 da[6];
-	u8 sa[6];
-	u8 bssid[6];
-=======
 	u8 da[ETH_ALEN];
 	u8 sa[ETH_ALEN];
 	u8 bssid[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16 seq_ctrl;
 	union {
 		struct {
@@ -1609,49 +1300,22 @@ struct ieee80211_mgmt {
 			__le16 auth_transaction;
 			__le16 status_code;
 			/* possibly followed by Challenge text */
-<<<<<<< HEAD
-			u8 variable[0];
-		} __attribute__ ((packed)) auth;
-		struct {
-			__le16 reason_code;
-		} __attribute__ ((packed)) deauth;
-=======
 			u8 variable[];
 		} __packed auth;
 		struct {
 			__le16 reason_code;
 		} __packed deauth;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct {
 			__le16 capab_info;
 			__le16 listen_interval;
 			/* followed by SSID and Supported rates */
-<<<<<<< HEAD
-			u8 variable[0];
-		} __attribute__ ((packed)) assoc_req;
-=======
 			u8 variable[];
 		} __packed assoc_req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct {
 			__le16 capab_info;
 			__le16 status_code;
 			__le16 aid;
 			/* followed by Supported rates */
-<<<<<<< HEAD
-			u8 variable[0];
-		} __attribute__ ((packed)) assoc_resp, reassoc_resp;
-		struct {
-			__le16 capab_info;
-			__le16 listen_interval;
-			u8 current_ap[6];
-			/* followed by SSID and Supported rates */
-			u8 variable[0];
-		} __attribute__ ((packed)) reassoc_req;
-		struct {
-			__le16 reason_code;
-		} __attribute__ ((packed)) disassoc;
-=======
 			u8 variable[];
 		} __packed assoc_resp, reassoc_resp;
 		struct {
@@ -1669,41 +1333,26 @@ struct ieee80211_mgmt {
 		struct {
 			__le16 reason_code;
 		} __packed disassoc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct {
 			__le64 timestamp;
 			__le16 beacon_int;
 			__le16 capab_info;
 			/* followed by some of SSID, Supported rates,
 			 * FH Params, DS Params, CF Params, IBSS Params, TIM */
-<<<<<<< HEAD
-			u8 variable[0];
-		} __attribute__ ((packed)) beacon;
-		struct {
-			/* only variable items: SSID, Supported rates */
-			u8 variable[0];
-		} __attribute__ ((packed)) probe_req;
-=======
 			u8 variable[];
 		} __packed beacon;
 		struct {
 			/* only variable items: SSID, Supported rates */
 			DECLARE_FLEX_ARRAY(u8, variable);
 		} __packed probe_req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct {
 			__le64 timestamp;
 			__le16 beacon_int;
 			__le16 capab_info;
 			/* followed by some of SSID, Supported rates,
 			 * FH Params, DS Params, CF Params, IBSS Params */
-<<<<<<< HEAD
-			u8 variable[0];
-		} __attribute__ ((packed)) probe_resp;
-=======
 			u8 variable[];
 		} __packed probe_resp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct {
 			u8 category;
 			union {
@@ -1711,16 +1360,6 @@ struct ieee80211_mgmt {
 					u8 action_code;
 					u8 dialog_token;
 					u8 status_code;
-<<<<<<< HEAD
-					u8 variable[0];
-				} __attribute__ ((packed)) wme_action;
-				struct{
-					u8 action_code;
-					u8 element_id;
-					u8 length;
-					struct ieee80211_channel_sw_ie sw_elem;
-				} __attribute__((packed)) chan_switch;
-=======
 					u8 variable[];
 				} __packed wme_action;
 				struct{
@@ -1732,65 +1371,33 @@ struct ieee80211_mgmt {
 					struct ieee80211_ext_chansw_ie data;
 					u8 variable[];
 				} __packed ext_chan_switch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct{
 					u8 action_code;
 					u8 dialog_token;
 					u8 element_id;
 					u8 length;
 					struct ieee80211_msrment_ie msr_elem;
-<<<<<<< HEAD
-				} __attribute__((packed)) measurement;
-=======
 				} __packed measurement;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct{
 					u8 action_code;
 					u8 dialog_token;
 					__le16 capab;
 					__le16 timeout;
 					__le16 start_seq_num;
-<<<<<<< HEAD
-				} __attribute__((packed)) addba_req;
-=======
 					/* followed by BA Extension */
 					u8 variable[];
 				} __packed addba_req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct{
 					u8 action_code;
 					u8 dialog_token;
 					__le16 status;
 					__le16 capab;
 					__le16 timeout;
-<<<<<<< HEAD
-				} __attribute__((packed)) addba_resp;
-=======
 				} __packed addba_resp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct{
 					u8 action_code;
 					__le16 params;
 					__le16 reason_code;
-<<<<<<< HEAD
-				} __attribute__((packed)) delba;
-				struct {
-					u8 action_code;
-					u8 variable[0];
-				} __attribute__((packed)) self_prot;
-				struct{
-					u8 action_code;
-					u8 variable[0];
-				} __attribute__((packed)) mesh_action;
-				struct {
-					u8 action;
-					u8 trans_id[WLAN_SA_QUERY_TR_ID_LEN];
-				} __attribute__ ((packed)) sa_query;
-				struct {
-					u8 action;
-					u8 smps_control;
-				} __attribute__ ((packed)) ht_smps;
-=======
 				} __packed delba;
 				struct {
 					u8 action_code;
@@ -1812,22 +1419,12 @@ struct ieee80211_mgmt {
 					u8 action_code;
 					u8 chanwidth;
 				} __packed ht_notify_cw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct {
 					u8 action_code;
 					u8 dialog_token;
 					__le16 capability;
 					u8 variable[0];
 				} __packed tdls_discover_resp;
-<<<<<<< HEAD
-			} u;
-		} __attribute__ ((packed)) action;
-	} u;
-} __attribute__ ((packed));
-
-/* Supported Rates value encodings in 802.11n-2009 7.3.2.2 */
-#define BSS_MEMBERSHIP_SELECTOR_HT_PHY	127
-=======
 				struct {
 					u8 action_code;
 					u8 operating_mode;
@@ -1895,7 +1492,6 @@ struct ieee80211_mgmt {
 #define BSS_MEMBERSHIP_SELECTOR_SAE_H2E 123
 #define BSS_MEMBERSHIP_SELECTOR_HE_PHY	122
 #define BSS_MEMBERSHIP_SELECTOR_EHT_PHY	121
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* mgmt header + 1 byte category code */
 #define IEEE80211_MIN_ACTION_SIZE offsetof(struct ieee80211_mgmt, u.action.u)
@@ -1908,9 +1504,6 @@ struct ieee80211_mmie {
 	__le16 key_id;
 	u8 sequence_number[6];
 	u8 mic[8];
-<<<<<<< HEAD
-} __attribute__ ((packed));
-=======
 } __packed;
 
 /* Management MIC information element (IEEE 802.11w) for GMAC and CMAC-256 */
@@ -1921,7 +1514,6 @@ struct ieee80211_mmie_16 {
 	u8 sequence_number[6];
 	u8 mic[16];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ieee80211_vendor_ie {
 	u8 element_id;
@@ -1930,8 +1522,6 @@ struct ieee80211_vendor_ie {
 	u8 oui_type;
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct ieee80211_wmm_ac_param {
 	u8 aci_aifsn; /* AIFSN, ACM, ACI */
 	u8 cw; /* ECWmin, ECWmax (CW = 2^ECW - 1) */
@@ -1952,43 +1542,23 @@ struct ieee80211_wmm_param_ie {
 	struct ieee80211_wmm_ac_param ac[4];
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Control frames */
 struct ieee80211_rts {
 	__le16 frame_control;
 	__le16 duration;
-<<<<<<< HEAD
-	u8 ra[6];
-	u8 ta[6];
-} __attribute__ ((packed));
-=======
 	u8 ra[ETH_ALEN];
 	u8 ta[ETH_ALEN];
 } __packed __aligned(2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ieee80211_cts {
 	__le16 frame_control;
 	__le16 duration;
-<<<<<<< HEAD
-	u8 ra[6];
-} __attribute__ ((packed));
-=======
 	u8 ra[ETH_ALEN];
 } __packed __aligned(2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ieee80211_pspoll {
 	__le16 frame_control;
 	__le16 aid;
-<<<<<<< HEAD
-	u8 bssid[6];
-	u8 ta[6];
-} __attribute__ ((packed));
-
-/* TDLS */
-
-=======
 	u8 bssid[ETH_ALEN];
 	u8 ta[ETH_ALEN];
 } __packed __aligned(2);
@@ -2001,21 +1571,10 @@ struct ieee80211_ch_switch_timing {
 	__le16 switch_timeout;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Link-id information element */
 struct ieee80211_tdls_lnkie {
 	u8 ie_type; /* Link Identifier IE */
 	u8 ie_len;
-<<<<<<< HEAD
-	u8 bssid[6];
-	u8 init_sta[6];
-	u8 resp_sta[6];
-} __packed;
-
-struct ieee80211_tdls_data {
-	u8 da[6];
-	u8 sa[6];
-=======
 	u8 bssid[ETH_ALEN];
 	u8 init_sta[ETH_ALEN];
 	u8 resp_sta[ETH_ALEN];
@@ -2024,7 +1583,6 @@ struct ieee80211_tdls_data {
 struct ieee80211_tdls_data {
 	u8 da[ETH_ALEN];
 	u8 sa[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be16 ether_type;
 	u8 payload_type;
 	u8 category;
@@ -2054,25 +1612,6 @@ struct ieee80211_tdls_data {
 			u8 dialog_token;
 			u8 variable[0];
 		} __packed discover_req;
-<<<<<<< HEAD
-	} u;
-} __packed;
-
-/**
- * struct ieee80211_bar - HT Block Ack Request
- *
- * This structure refers to "HT BlockAckReq" as
- * described in 802.11n draft section 7.2.1.7.1
- */
-struct ieee80211_bar {
-	__le16 frame_control;
-	__le16 duration;
-	__u8 ra[6];
-	__u8 ta[6];
-	__le16 control;
-	__le16 start_seq_num;
-} __attribute__((packed));
-=======
 		struct {
 			u8 target_channel;
 			u8 oper_class;
@@ -2157,7 +1696,6 @@ struct ieee80211_bar {
 	__le16 control;
 	__le16 start_seq_num;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 802.11 BAR control masks */
 #define IEEE80211_BAR_CTRL_ACK_POLICY_NORMAL	0x0000
@@ -2169,35 +1707,24 @@ struct ieee80211_bar {
 #define IEEE80211_HT_MCS_MASK_LEN		10
 
 /**
-<<<<<<< HEAD
- * struct ieee80211_mcs_info - MCS information
-=======
  * struct ieee80211_mcs_info - Supported MCS Set field
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rx_mask: RX mask
  * @rx_highest: highest supported RX rate. If set represents
  *	the highest supported RX data rate in units of 1 Mbps.
  *	If this field is 0 this value should not be used to
  *	consider the highest RX data rate supported.
  * @tx_params: TX parameters
-<<<<<<< HEAD
-=======
  * @reserved: Reserved bits
  *
  * This structure represents the "Supported MCS Set field" as
  * described in IEEE Std 802.11-2020 section 9.4.2.55.4.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ieee80211_mcs_info {
 	u8 rx_mask[IEEE80211_HT_MCS_MASK_LEN];
 	__le16 rx_highest;
 	u8 tx_params;
 	u8 reserved[3];
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 802.11n HT capability MSC set */
 #define IEEE80211_HT_MCS_RX_HIGHEST_MASK	0x3ff
@@ -2209,11 +1736,8 @@ struct ieee80211_mcs_info {
 #define		IEEE80211_HT_MCS_TX_MAX_STREAMS	4
 #define IEEE80211_HT_MCS_TX_UNEQUAL_MODULATION	0x10
 
-<<<<<<< HEAD
-=======
 #define IEEE80211_HT_MCS_CHAINS(mcs) ((mcs) == 32 ? 1 : (1 + ((mcs) >> 3)))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 802.11n D5.0 20.3.5 / 20.6 says:
  * - indices 0 to 7 and 32 are single spatial stream
@@ -2226,12 +1750,6 @@ struct ieee80211_mcs_info {
 	(IEEE80211_HT_MCS_UNEQUAL_MODULATION_START / 8)
 
 /**
-<<<<<<< HEAD
- * struct ieee80211_ht_cap - HT capabilities
- *
- * This structure is the "HT capabilities element" as
- * described in 802.11n D5.0 7.3.2.57
-=======
  * struct ieee80211_ht_cap - HT capabilities element
  * @cap_info: HT Capability Information
  * @ampdu_params_info: A-MPDU Parameters
@@ -2242,7 +1760,6 @@ struct ieee80211_mcs_info {
  *
  * This structure represents the payload of the "HT Capabilities
  * element" as described in IEEE Std 802.11-2020 section 9.4.2.55.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ieee80211_ht_cap {
 	__le16 cap_info;
@@ -2254,11 +1771,7 @@ struct ieee80211_ht_cap {
 	__le16 extended_ht_cap_info;
 	__le32 tx_BF_cap_info;
 	u8 antenna_selection_info;
-<<<<<<< HEAD
-} __attribute__ ((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 802.11n HT capabilities masks (for cap_info) */
 #define IEEE80211_HT_CAP_LDPC_CODING		0x0001
@@ -2293,11 +1806,7 @@ struct ieee80211_ht_cap {
 #define		IEEE80211_HT_AMPDU_PARM_DENSITY_SHIFT	2
 
 /*
-<<<<<<< HEAD
- * Maximum length of AMPDU that the STA can receive.
-=======
  * Maximum length of AMPDU that the STA can receive in high-throughput (HT).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Length = 2 ^ (13 + max_ampdu_length_exp) - 1 (octets)
  */
 enum ieee80211_max_ampdu_length_exp {
@@ -2307,8 +1816,6 @@ enum ieee80211_max_ampdu_length_exp {
 	IEEE80211_HT_MAX_AMPDU_64K = 3
 };
 
-<<<<<<< HEAD
-=======
 /*
  * Maximum length of AMPDU that the STA can receive in VHT.
  * Length = 2 ^ (13 + max_ampdu_length_exp) - 1 (octets)
@@ -2324,7 +1831,6 @@ enum ieee80211_vht_max_ampdu_length_exp {
 	IEEE80211_VHT_MAX_AMPDU_1024K = 7
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IEEE80211_HT_MAX_AMPDU_FACTOR 13
 
 /* Minimum MPDU start spacing */
@@ -2340,15 +1846,6 @@ enum ieee80211_min_mpdu_spacing {
 };
 
 /**
-<<<<<<< HEAD
- * struct ieee80211_ht_info - HT information
- *
- * This structure is the "HT information element" as
- * described in 802.11n D5.0 7.3.2.58
- */
-struct ieee80211_ht_info {
-	u8 control_chan;
-=======
  * struct ieee80211_ht_operation - HT operation IE
  * @primary_chan: Primary Channel
  * @ht_param: HT Operation Information parameters
@@ -2361,16 +1858,11 @@ struct ieee80211_ht_info {
  */
 struct ieee80211_ht_operation {
 	u8 primary_chan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 ht_param;
 	__le16 operation_mode;
 	__le16 stbc_param;
 	u8 basic_set[16];
-<<<<<<< HEAD
-} __attribute__ ((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* for ht_param */
 #define IEEE80211_HT_PARAM_CHA_SEC_OFFSET		0x03
@@ -2379,11 +1871,6 @@ struct ieee80211_ht_operation {
 #define		IEEE80211_HT_PARAM_CHA_SEC_BELOW	0x03
 #define IEEE80211_HT_PARAM_CHAN_WIDTH_ANY		0x04
 #define IEEE80211_HT_PARAM_RIFS_MODE			0x08
-<<<<<<< HEAD
-#define IEEE80211_HT_PARAM_SPSMP_SUPPORT		0x10
-#define IEEE80211_HT_PARAM_SERV_INTERVAL_GRAN		0xE0
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* for operation_mode */
 #define IEEE80211_HT_OP_MODE_PROTECTION			0x0003
@@ -2393,11 +1880,8 @@ struct ieee80211_ht_operation {
 #define		IEEE80211_HT_OP_MODE_PROTECTION_NONHT_MIXED	3
 #define IEEE80211_HT_OP_MODE_NON_GF_STA_PRSNT		0x0004
 #define IEEE80211_HT_OP_MODE_NON_HT_STA_PRSNT		0x0010
-<<<<<<< HEAD
-=======
 #define IEEE80211_HT_OP_MODE_CCFS2_SHIFT		5
 #define IEEE80211_HT_OP_MODE_CCFS2_MASK			0x1fe0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* for stbc_param */
 #define IEEE80211_HT_STBC_PARAM_DUAL_BEACON		0x0040
@@ -2409,10 +1893,7 @@ struct ieee80211_ht_operation {
 
 
 /* block-ack parameters */
-<<<<<<< HEAD
-=======
 #define IEEE80211_ADDBA_PARAM_AMSDU_MASK 0x0001
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IEEE80211_ADDBA_PARAM_POLICY_MASK 0x0002
 #define IEEE80211_ADDBA_PARAM_TID_MASK 0x003C
 #define IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK 0xFFC0
@@ -2420,13 +1901,6 @@ struct ieee80211_ht_operation {
 #define IEEE80211_DELBA_PARAM_INITIATOR_MASK 0x0800
 
 /*
-<<<<<<< HEAD
- * A-PMDU buffer sizes
- * According to IEEE802.11n spec size varies from 8K to 64K (in powers of 2)
- */
-#define IEEE80211_MIN_AMPDU_BUF 0x8
-#define IEEE80211_MAX_AMPDU_BUF 0x40
-=======
  * A-MPDU buffer sizes
  * According to HT size varies from 8 to 64 frames
  * HE adds the ability to have up to 256 frames.
@@ -2436,7 +1910,6 @@ struct ieee80211_ht_operation {
 #define IEEE80211_MAX_AMPDU_BUF_HT	0x40
 #define IEEE80211_MAX_AMPDU_BUF_HE	0x100
 #define IEEE80211_MAX_AMPDU_BUF_EHT	0x400
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* Spatial Multiplexing Power Save Modes (for capability) */
@@ -2457,22 +1930,16 @@ struct ieee80211_ht_operation {
  *	STA can receive. Rate expressed in units of 1 Mbps.
  *	If this field is 0 this value should not be used to
  *	consider the highest RX data rate supported.
-<<<<<<< HEAD
-=======
  *	The top 3 bits of this field indicate the Maximum NSTS,total
  *	(a beamformee capability.)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @tx_mcs_map: TX MCS map 2 bits for each stream, total 8 streams
  * @tx_highest: Indicates highest long GI VHT PPDU data rate
  *	STA can transmit. Rate expressed in units of 1 Mbps.
  *	If this field is 0 this value should not be used to
  *	consider the highest TX data rate supported.
-<<<<<<< HEAD
-=======
  *	The top 2 bits of this field are reserved, the
  *	3rd bit from the top indiciates VHT Extended NSS BW
  *	Capability.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ieee80211_vht_mcs_info {
 	__le16 rx_mcs_map;
@@ -2481,8 +1948,6 @@ struct ieee80211_vht_mcs_info {
 	__le16 tx_highest;
 } __packed;
 
-<<<<<<< HEAD
-=======
 /* for rx_highest */
 #define IEEE80211_VHT_MAX_NSTS_TOTAL_SHIFT	13
 #define IEEE80211_VHT_MAX_NSTS_TOTAL_MASK	(7 << IEEE80211_VHT_MAX_NSTS_TOTAL_SHIFT)
@@ -2511,7 +1976,6 @@ enum ieee80211_vht_mcs_support {
 	IEEE80211_VHT_MCS_NOT_SUPPORTED	= 3,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct ieee80211_vht_cap - VHT capabilities
  *
@@ -2526,8 +1990,6 @@ struct ieee80211_vht_cap {
 } __packed;
 
 /**
-<<<<<<< HEAD
-=======
  * enum ieee80211_vht_chanwidth - VHT channel width
  * @IEEE80211_VHT_CHANWIDTH_USE_HT: use the HT operation IE to
  *	determine the channel width (20 or 40 MHz)
@@ -2543,63 +2005,17 @@ enum ieee80211_vht_chanwidth {
 };
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * struct ieee80211_vht_operation - VHT operation IE
  *
  * This structure is the "VHT operation element" as
  * described in 802.11ac D3.0 8.4.2.161
  * @chan_width: Operating channel width
-<<<<<<< HEAD
- * @center_freq_seg1_idx: center freq segment 1 index
- * @center_freq_seg2_idx: center freq segment 2 index
-=======
  * @center_freq_seg0_idx: center freq segment 0 index
  * @center_freq_seg1_idx: center freq segment 1 index
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @basic_mcs_set: VHT Basic MCS rate set
  */
 struct ieee80211_vht_operation {
 	u8 chan_width;
-<<<<<<< HEAD
-	u8 center_freq_seg1_idx;
-	u8 center_freq_seg2_idx;
-	__le16 basic_mcs_set;
-} __packed;
-
-
-#define IEEE80211_VHT_MCS_ZERO_TO_SEVEN_SUPPORT 0
-#define IEEE80211_VHT_MCS_ZERO_TO_EIGHT_SUPPORT 1
-#define IEEE80211_VHT_MCS_ZERO_TO_NINE_SUPPORT  2
-#define IEEE80211_VHT_MCS_NOT_SUPPORTED 3
-
-/* 802.11ac VHT Capabilities */
-#define IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_3895                0x00000000
-#define IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_7991                0x00000001
-#define IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_11454               0x00000002
-#define IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160MHZ              0x00000004
-#define IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160_80PLUS80MHZ     0x00000008
-#define IEEE80211_VHT_CAP_RXLDPC                              0x00000010
-#define IEEE80211_VHT_CAP_SHORT_GI_80                         0x00000020
-#define IEEE80211_VHT_CAP_SHORT_GI_160                        0x00000040
-#define IEEE80211_VHT_CAP_TXSTBC                              0x00000080
-#define IEEE80211_VHT_CAP_RXSTBC_1                            0x00000100
-#define IEEE80211_VHT_CAP_RXSTBC_2                            0x00000200
-#define IEEE80211_VHT_CAP_RXSTBC_3                            0x00000300
-#define IEEE80211_VHT_CAP_RXSTBC_4                            0x00000400
-#define IEEE80211_VHT_CAP_SU_BEAMFORMER_CAPABLE               0x00000800
-#define IEEE80211_VHT_CAP_SU_BEAMFORMEE_CAPABLE               0x00001000
-#define IEEE80211_VHT_CAP_BEAMFORMER_ANTENNAS_MAX             0x00006000
-#define IEEE80211_VHT_CAP_SOUNDING_DIMENTION_MAX              0x00030000
-#define IEEE80211_VHT_CAP_MU_BEAMFORMER_CAPABLE               0x00080000
-#define IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE               0x00100000
-#define IEEE80211_VHT_CAP_VHT_TXOP_PS                         0x00200000
-#define IEEE80211_VHT_CAP_HTC_VHT                             0x00400000
-#define IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT          0x00800000
-#define IEEE80211_VHT_CAP_VHT_LINK_ADAPTATION_VHT_UNSOL_MFB   0x08000000
-#define IEEE80211_VHT_CAP_VHT_LINK_ADAPTATION_VHT_MRQ_MFB     0x0c000000
-#define IEEE80211_VHT_CAP_RX_ANTENNA_PATTERN                  0x10000000
-#define IEEE80211_VHT_CAP_TX_ANTENNA_PATTERN                  0x20000000
-=======
 	u8 center_freq_seg0_idx;
 	u8 center_freq_seg1_idx;
 	__le16 basic_mcs_set;
@@ -3829,19 +3245,15 @@ ieee80211_bandwidth_indication_size_ok(const u8 *data, u8 len)
 
 #define IEEE80211_MAX_USF	FIELD_MAX(LISTEN_INT_USF)
 #define IEEE80211_MAX_UI	FIELD_MAX(LISTEN_INT_UI)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Authentication algorithms */
 #define WLAN_AUTH_OPEN 0
 #define WLAN_AUTH_SHARED_KEY 1
 #define WLAN_AUTH_FT 2
 #define WLAN_AUTH_SAE 3
-<<<<<<< HEAD
-=======
 #define WLAN_AUTH_FILS_SK 4
 #define WLAN_AUTH_FILS_SK_PFS 5
 #define WLAN_AUTH_FILS_PK 6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WLAN_AUTH_LEAP 128
 
 #define WLAN_AUTH_CHALLENGE_LEN 128
@@ -3868,9 +3280,6 @@ ieee80211_bandwidth_indication_size_ok(const u8 *data, u8 len)
 #define WLAN_CAPABILITY_SPECTRUM_MGMT	(1<<8)
 #define WLAN_CAPABILITY_QOS		(1<<9)
 #define WLAN_CAPABILITY_SHORT_SLOT_TIME	(1<<10)
-<<<<<<< HEAD
-#define WLAN_CAPABILITY_DSSS_OFDM	(1<<13)
-=======
 #define WLAN_CAPABILITY_APSD		(1<<11)
 #define WLAN_CAPABILITY_RADIO_MEASURE	(1<<12)
 #define WLAN_CAPABILITY_DSSS_OFDM	(1<<13)
@@ -3892,7 +3301,6 @@ ieee80211_bandwidth_indication_size_ok(const u8 *data, u8 len)
 #define WLAN_CAPABILITY_DMG_SPECTRUM_MGMT	(1<<8)
 #define WLAN_CAPABILITY_DMG_RADIO_MEASURE	(1<<12)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* measurement */
 #define IEEE80211_SPCT_MSR_RPRT_MODE_LATE	(1<<0)
 #define IEEE80211_SPCT_MSR_RPRT_MODE_INCAPABLE	(1<<1)
@@ -3901,12 +3309,8 @@ ieee80211_bandwidth_indication_size_ok(const u8 *data, u8 len)
 #define IEEE80211_SPCT_MSR_RPRT_TYPE_BASIC	0
 #define IEEE80211_SPCT_MSR_RPRT_TYPE_CCA	1
 #define IEEE80211_SPCT_MSR_RPRT_TYPE_RPI	2
-<<<<<<< HEAD
-
-=======
 #define IEEE80211_SPCT_MSR_RPRT_TYPE_LCI	8
 #define IEEE80211_SPCT_MSR_RPRT_TYPE_CIVIC	11
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 802.11g ERP information element */
 #define WLAN_ERP_NON_ERP_PRESENT (1<<0)
@@ -3919,8 +3323,6 @@ enum {
 	WLAN_ERP_PREAMBLE_LONG = 1,
 };
 
-<<<<<<< HEAD
-=======
 /* Band ID, 802.11ad #8.4.1.45 */
 enum {
 	IEEE80211_BANDID_TV_WS = 0, /* TV white spaces */
@@ -3931,7 +3333,6 @@ enum {
 	IEEE80211_BANDID_60G   = 5, /* 60 GHz */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Status codes */
 enum ieee80211_statuscode {
 	WLAN_STATUS_SUCCESS = 0,
@@ -3983,8 +3384,6 @@ enum ieee80211_statuscode {
 	WLAN_STATUS_ANTI_CLOG_REQUIRED = 76,
 	WLAN_STATUS_FCG_NOT_SUPP = 78,
 	WLAN_STATUS_STA_NO_TBTT = 78,
-<<<<<<< HEAD
-=======
 	/* 802.11ad */
 	WLAN_STATUS_REJECTED_WITH_SUGGESTED_CHANGES = 39,
 	WLAN_STATUS_REJECTED_FOR_DELAY_PERIOD = 47,
@@ -4003,7 +3402,6 @@ enum ieee80211_statuscode {
 	WLAN_STATUS_SAE_PK = 127,
 	WLAN_STATUS_DENIED_TID_TO_LINK_MAPPING = 133,
 	WLAN_STATUS_PREF_TID_TO_LINK_MAPPING_SUGGESTED = 134,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -4034,12 +3432,9 @@ enum ieee80211_reasoncode {
 	WLAN_REASON_INVALID_RSN_IE_CAP = 22,
 	WLAN_REASON_IEEE8021X_FAILED = 23,
 	WLAN_REASON_CIPHER_SUITE_REJECTED = 24,
-<<<<<<< HEAD
-=======
 	/* TDLS (802.11z) */
 	WLAN_REASON_TDLS_TEARDOWN_UNREACHABLE = 25,
 	WLAN_REASON_TDLS_TEARDOWN_UNSPECIFIED = 26,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 802.11e */
 	WLAN_REASON_DISASSOC_UNSPECIFIED_QOS = 32,
 	WLAN_REASON_DISASSOC_QAP_NO_BANDWIDTH = 33,
@@ -4073,41 +3468,19 @@ enum ieee80211_reasoncode {
 enum ieee80211_eid {
 	WLAN_EID_SSID = 0,
 	WLAN_EID_SUPP_RATES = 1,
-<<<<<<< HEAD
-	WLAN_EID_FH_PARAMS = 2,
-=======
 	WLAN_EID_FH_PARAMS = 2, /* reserved now */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WLAN_EID_DS_PARAMS = 3,
 	WLAN_EID_CF_PARAMS = 4,
 	WLAN_EID_TIM = 5,
 	WLAN_EID_IBSS_PARAMS = 6,
-<<<<<<< HEAD
-	WLAN_EID_CHALLENGE = 16,
-
-	WLAN_EID_COUNTRY = 7,
-	WLAN_EID_HP_PARAMS = 8,
-	WLAN_EID_HP_TABLE = 9,
-	WLAN_EID_REQUEST = 10,
-
-=======
 	WLAN_EID_COUNTRY = 7,
 	/* 8, 9 reserved */
 	WLAN_EID_REQUEST = 10,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WLAN_EID_QBSS_LOAD = 11,
 	WLAN_EID_EDCA_PARAM_SET = 12,
 	WLAN_EID_TSPEC = 13,
 	WLAN_EID_TCLAS = 14,
 	WLAN_EID_SCHEDULE = 15,
-<<<<<<< HEAD
-	WLAN_EID_TS_DELAY = 43,
-	WLAN_EID_TCLAS_PROCESSING = 44,
-	WLAN_EID_QOS_CAPA = 46,
-	/* 802.11z */
-	WLAN_EID_LINK_ID = 101,
-	/* 802.11s */
-=======
 	WLAN_EID_CHALLENGE = 16,
 	/* 17-31 reserved for challenge text extension */
 	WLAN_EID_PWR_CONSTRAINT = 32,
@@ -4191,7 +3564,6 @@ enum ieee80211_eid {
 	WLAN_EID_QOS_MAP_SET = 110,
 	WLAN_EID_ROAMING_CONSORTIUM = 111,
 	WLAN_EID_EMERGENCY_ALERT = 112,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WLAN_EID_MESH_CONFIG = 113,
 	WLAN_EID_MESH_ID = 114,
 	WLAN_EID_LINK_METRIC_REPORT = 115,
@@ -4206,76 +3578,16 @@ enum ieee80211_eid {
 	WLAN_EID_MCCAOP_TEARDOWN = 124,
 	WLAN_EID_GANN = 125,
 	WLAN_EID_RANN = 126,
-<<<<<<< HEAD
-	WLAN_EID_PREQ = 130,
-	WLAN_EID_PREP = 131,
-	WLAN_EID_PERR = 132,
-=======
 	WLAN_EID_EXT_CAPABILITY = 127,
 	/* 128, 129 reserved for Agere */
 	WLAN_EID_PREQ = 130,
 	WLAN_EID_PREP = 131,
 	WLAN_EID_PERR = 132,
 	/* 133-136 reserved for Cisco */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WLAN_EID_PXU = 137,
 	WLAN_EID_PXUC = 138,
 	WLAN_EID_AUTH_MESH_PEER_EXCH = 139,
 	WLAN_EID_MIC = 140,
-<<<<<<< HEAD
-
-	WLAN_EID_PWR_CONSTRAINT = 32,
-	WLAN_EID_PWR_CAPABILITY = 33,
-	WLAN_EID_TPC_REQUEST = 34,
-	WLAN_EID_TPC_REPORT = 35,
-	WLAN_EID_SUPPORTED_CHANNELS = 36,
-	WLAN_EID_CHANNEL_SWITCH = 37,
-	WLAN_EID_MEASURE_REQUEST = 38,
-	WLAN_EID_MEASURE_REPORT = 39,
-	WLAN_EID_QUIET = 40,
-	WLAN_EID_IBSS_DFS = 41,
-
-	WLAN_EID_ERP_INFO = 42,
-	WLAN_EID_EXT_SUPP_RATES = 50,
-
-	WLAN_EID_HT_CAPABILITY = 45,
-	WLAN_EID_HT_INFORMATION = 61,
-
-	WLAN_EID_RSN = 48,
-	WLAN_EID_MMIE = 76,
-	WLAN_EID_WPA = 221,
-	WLAN_EID_GENERIC = 221,
-	WLAN_EID_VENDOR_SPECIFIC = 221,
-	WLAN_EID_QOS_PARAMETER = 222,
-
-	WLAN_EID_AP_CHAN_REPORT = 51,
-	WLAN_EID_NEIGHBOR_REPORT = 52,
-	WLAN_EID_RCPI = 53,
-	WLAN_EID_BSS_AVG_ACCESS_DELAY = 63,
-	WLAN_EID_ANTENNA_INFO = 64,
-	WLAN_EID_RSNI = 65,
-	WLAN_EID_MEASUREMENT_PILOT_TX_INFO = 66,
-	WLAN_EID_BSS_AVAILABLE_CAPACITY = 67,
-	WLAN_EID_BSS_AC_ACCESS_DELAY = 68,
-	WLAN_EID_RRM_ENABLED_CAPABILITIES = 70,
-	WLAN_EID_MULTIPLE_BSSID = 71,
-	WLAN_EID_BSS_COEX_2040 = 72,
-	WLAN_EID_OVERLAP_BSS_SCAN_PARAM = 74,
-	WLAN_EID_EXT_CAPABILITY = 127,
-
-	WLAN_EID_MOBILITY_DOMAIN = 54,
-	WLAN_EID_FAST_BSS_TRANSITION = 55,
-	WLAN_EID_TIMEOUT_INTERVAL = 56,
-	WLAN_EID_RIC_DATA = 57,
-	WLAN_EID_RIC_DESCRIPTOR = 75,
-
-	WLAN_EID_DSE_REGISTERED_LOCATION = 58,
-	WLAN_EID_SUPPORTED_REGULATORY_CLASSES = 59,
-	WLAN_EID_EXT_CHANSWITCH_ANN = 60,
-
-	WLAN_EID_VHT_CAPABILITY = 191,
-	WLAN_EID_VHT_OPERATION = 192,
-=======
 	WLAN_EID_DESTINATION_URI = 141,
 	WLAN_EID_UAPSD_COEX = 142,
 	WLAN_EID_WAKEUP_SCHEDULE = 143,
@@ -4389,7 +3701,6 @@ enum ieee80211_eid_ext {
 	WLAN_EID_EXT_EHT_CAPABILITY = 108,
 	WLAN_EID_EXT_TID_TO_LINK_MAPPING = 109,
 	WLAN_EID_EXT_BANDWIDTH_INDICATION = 135,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Action category code */
@@ -4399,11 +3710,6 @@ enum ieee80211_category {
 	WLAN_CATEGORY_DLS = 2,
 	WLAN_CATEGORY_BACK = 3,
 	WLAN_CATEGORY_PUBLIC = 4,
-<<<<<<< HEAD
-	WLAN_CATEGORY_HT = 7,
-	WLAN_CATEGORY_SA_QUERY = 8,
-	WLAN_CATEGORY_PROTECTED_DUAL_OF_ACTION = 9,
-=======
 	WLAN_CATEGORY_RADIO_MEASUREMENT = 5,
 	WLAN_CATEGORY_FAST_BBS_TRANSITION = 6,
 	WLAN_CATEGORY_HT = 7,
@@ -4411,14 +3717,10 @@ enum ieee80211_category {
 	WLAN_CATEGORY_PROTECTED_DUAL_OF_ACTION = 9,
 	WLAN_CATEGORY_WNM = 10,
 	WLAN_CATEGORY_WNM_UNPROTECTED = 11,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WLAN_CATEGORY_TDLS = 12,
 	WLAN_CATEGORY_MESH_ACTION = 13,
 	WLAN_CATEGORY_MULTIHOP_ACTION = 14,
 	WLAN_CATEGORY_SELF_PROTECTED = 15,
-<<<<<<< HEAD
-	WLAN_CATEGORY_WMM = 17,
-=======
 	WLAN_CATEGORY_DMG = 16,
 	WLAN_CATEGORY_WMM = 17,
 	WLAN_CATEGORY_FST = 18,
@@ -4426,7 +3728,6 @@ enum ieee80211_category {
 	WLAN_CATEGORY_VHT = 21,
 	WLAN_CATEGORY_S1G = 22,
 	WLAN_CATEGORY_PROTECTED_EHT = 37,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WLAN_CATEGORY_VENDOR_SPECIFIC_PROTECTED = 126,
 	WLAN_CATEGORY_VENDOR_SPECIFIC = 127,
 };
@@ -4452,8 +3753,6 @@ enum ieee80211_ht_actioncode {
 	WLAN_HT_ACTION_ASEL_IDX_FEEDBACK = 7,
 };
 
-<<<<<<< HEAD
-=======
 /* VHT action codes */
 enum ieee80211_vht_actioncode {
 	WLAN_VHT_ACTION_COMPRESSED_BF = 0,
@@ -4461,7 +3760,6 @@ enum ieee80211_vht_actioncode {
 	WLAN_VHT_ACTION_OPMODE_NOTIF = 2,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Self Protected Action codes */
 enum ieee80211_self_protected_actioncode {
 	WLAN_SP_RESERVED = 0,
@@ -4487,8 +3785,6 @@ enum ieee80211_mesh_actioncode {
 	WLAN_MESH_ACTION_TBTT_ADJUSTMENT_RESPONSE,
 };
 
-<<<<<<< HEAD
-=======
 /* Unprotected WNM action codes */
 enum ieee80211_unprotected_wnm_actioncode {
 	WLAN_UNPROTECTED_WNM_ACTION_TIM = 0,
@@ -4502,22 +3798,11 @@ enum ieee80211_protected_eht_actioncode {
 	WLAN_PROTECTED_EHT_ACTION_TTLM_TEARDOWN = 2,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Security key length */
 enum ieee80211_key_len {
 	WLAN_KEY_LEN_WEP40 = 5,
 	WLAN_KEY_LEN_WEP104 = 13,
 	WLAN_KEY_LEN_CCMP = 16,
-<<<<<<< HEAD
-	WLAN_KEY_LEN_TKIP = 32,
-	WLAN_KEY_LEN_AES_CMAC = 16,
-	WLAN_KEY_LEN_WAPI_SMS4 = 32,
-};
-
-/* Public action codes */
-enum ieee80211_pub_actioncode {
-	WLAN_PUB_ACTION_TDLS_DISCOVER_RES = 14,
-=======
 	WLAN_KEY_LEN_CCMP_256 = 32,
 	WLAN_KEY_LEN_TKIP = 32,
 	WLAN_KEY_LEN_AES_CMAC = 16,
@@ -4606,7 +3891,6 @@ enum ieee80211_pub_actioncode {
 	WLAN_PUB_ACTION_FTM_REQUEST = 32,
 	WLAN_PUB_ACTION_FTM_RESPONSE = 33,
 	WLAN_PUB_ACTION_FILS_DISCOVERY = 34,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* TDLS action codes */
@@ -4624,8 +3908,6 @@ enum ieee80211_tdls_actioncode {
 	WLAN_TDLS_DISCOVERY_REQUEST = 10,
 };
 
-<<<<<<< HEAD
-=======
 /* Extended Channel Switching capability to be set in the 1st byte of
  * the @WLAN_EID_EXT_CAPABILITY information element
  */
@@ -4651,15 +3933,12 @@ enum ieee80211_tdls_actioncode {
  */
 #define WLAN_EXT_CAPA4_INTERWORKING_ENABLED	BIT(7)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TDLS capabililites to be enabled in the 5th byte of the
  * @WLAN_EID_EXT_CAPABILITY information element
  */
 #define WLAN_EXT_CAPA5_TDLS_ENABLED	BIT(5)
 #define WLAN_EXT_CAPA5_TDLS_PROHIBITED	BIT(6)
-<<<<<<< HEAD
-=======
 #define WLAN_EXT_CAPA5_TDLS_CH_SW_PROHIBITED	BIT(7)
 
 #define WLAN_EXT_CAPA8_TDLS_WIDE_BW_ENABLED	BIT(5)
@@ -4688,22 +3967,10 @@ enum ieee80211_tdls_actioncode {
 
 /* Defines support for enhanced multi-bssid advertisement*/
 #define WLAN_EXT_CAPA11_EMA_SUPPORT	BIT(3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* TDLS specific payload type in the LLC/SNAP header */
 #define WLAN_TDLS_SNAP_RFTYPE	0x2
 
-<<<<<<< HEAD
-/**
- * enum - mesh path selection protocol identifier
- *
- * @IEEE80211_PATH_PROTOCOL_HWMP: the default path selection protocol
- * @IEEE80211_PATH_PROTOCOL_VENDOR: a vendor specific protocol that will
- * be specified in a vendor specific information element
- */
-enum {
-	IEEE80211_PATH_PROTOCOL_HWMP = 0,
-=======
 /* BSS Coex IE information field bits */
 #define WLAN_BSS_COEX_INFORMATION_REQUEST	BIT(0)
 
@@ -4728,24 +3995,10 @@ enum ieee80211_mesh_sync_method {
  */
 enum ieee80211_mesh_path_protocol {
 	IEEE80211_PATH_PROTOCOL_HWMP = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IEEE80211_PATH_PROTOCOL_VENDOR = 255,
 };
 
 /**
-<<<<<<< HEAD
- * enum - mesh path selection metric identifier
- *
- * @IEEE80211_PATH_METRIC_AIRTIME: the default path selection metric
- * @IEEE80211_PATH_METRIC_VENDOR: a vendor specific metric that will be
- * specified in a vendor specific information element
- */
-enum {
-	IEEE80211_PATH_METRIC_AIRTIME = 0,
-	IEEE80211_PATH_METRIC_VENDOR = 255,
-};
-
-=======
  * enum ieee80211_mesh_path_metric - mesh path selection metric identifier
  *
  * @IEEE80211_PATH_METRIC_AIRTIME: the default path selection metric
@@ -4779,7 +4032,6 @@ enum ieee80211_root_mode_identifier {
 	IEEE80211_PROACTIVE_PREQ_WITH_PREP = 3,
 	IEEE80211_PROACTIVE_RANN = 4,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IEEE 802.11-2007 7.3.2.9 Country information element
@@ -4837,24 +4089,14 @@ struct ieee80211_country_ie_triplet {
 			u8 first_channel;
 			u8 num_channels;
 			s8 max_power;
-<<<<<<< HEAD
-		} __attribute__ ((packed)) chans;
-=======
 		} __packed chans;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct {
 			u8 reg_extension_id;
 			u8 reg_class;
 			u8 coverage_class;
-<<<<<<< HEAD
-		} __attribute__ ((packed)) ext;
-	};
-} __attribute__ ((packed));
-=======
 		} __packed ext;
 	};
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum ieee80211_timeout_interval_type {
 	WLAN_TIMEOUT_REASSOC_DEADLINE = 1 /* 802.11r */,
@@ -4862,8 +4104,6 @@ enum ieee80211_timeout_interval_type {
 	WLAN_TIMEOUT_ASSOC_COMEBACK = 3 /* 802.11w */,
 };
 
-<<<<<<< HEAD
-=======
 /**
  * struct ieee80211_timeout_interval_ie - Timeout Interval element
  * @type: type, see &enum ieee80211_timeout_interval_type
@@ -4900,7 +4140,6 @@ struct ieee80211_bss_max_idle_period_ie {
 	u8 idle_options;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* BACK action code */
 enum ieee80211_back_actioncode {
 	WLAN_ACTION_ADDBA_REQ = 0,
@@ -4920,53 +4159,6 @@ enum ieee80211_sa_query_action {
 	WLAN_ACTION_SA_QUERY_RESPONSE = 1,
 };
 
-<<<<<<< HEAD
-
-/* cipher suite selectors */
-#define WLAN_CIPHER_SUITE_USE_GROUP	0x000FAC00
-#define WLAN_CIPHER_SUITE_WEP40		0x000FAC01
-#define WLAN_CIPHER_SUITE_TKIP		0x000FAC02
-/* reserved: 				0x000FAC03 */
-#define WLAN_CIPHER_SUITE_CCMP		0x000FAC04
-#define WLAN_CIPHER_SUITE_WEP104	0x000FAC05
-#define WLAN_CIPHER_SUITE_AES_CMAC	0x000FAC06
-//yongcan.guo@lge.com import BRCM WAPI patch for kk [start]
-/* WAPI brcm will use the value 0x000FAC30*/
-#ifdef CONFIG_BRCM_WAPI
-#define WLAN_CIPHER_SUITE_SMS4          0x000FAC30
-#else
-#define WLAN_CIPHER_SUITE_SMS4		0x00147201
-#endif
-/* AKM suite selectors */
-#define WLAN_AKM_SUITE_8021X		0x000FAC01
-#define WLAN_AKM_SUITE_PSK		0x000FAC02
-
-/* soonhyuk.choi@lge.com add for VE,CCX of BRCM */
-/* BRCM_VE */
-#define WLAN_AKM_SUITE_FT_8021X		0x000FAC03
-#define WLAN_AKM_SUITE_FT_PSK		0x000FAC04
-#define WLAN_CIPHER_SUITE_PMK		0x00904C00
-/* BRCM_VE */
-/* BRCM_CCX */
-#define WLAN_AKM_SUITE_CCKM		0x00409600
-#define WLAN_AKM_SUITE_OSEN		0x506f9a01
-/* BRCM_CCX */
-/* soonhyuk.choi@lge.com add for VE,CCX of BRCM */
-
-#define WLAN_AKM_SUITE_SAE			0x000FAC08
-#define WLAN_AKM_SUITE_FT_OVER_SAE	0x000FAC09
-/* WAPI */
-#define WLAN_AKM_SUITE_WAPI_PSK         0x000FAC32
-#define WLAN_AKM_SUITE_WAPI_CERT        0x000FAC38
-//yongcan.guo@lge.com import BRCM WAPI patch for kk [end]
-
-#define WLAN_MAX_KEY_LEN		32
-
-#define WLAN_PMKID_LEN			16
-
-#define WLAN_OUI_WFA			0x506f9a
-#define WLAN_OUI_TYPE_WFA_P2P		9
-=======
 /**
  * struct ieee80211_bssid_index
  *
@@ -5055,7 +4247,6 @@ struct ieee80211_multiple_bssid_configuration {
 #define WLAN_OUI_TYPE_MICROSOFT_WMM	2
 #define WLAN_OUI_TYPE_MICROSOFT_WPS	4
 #define WLAN_OUI_TYPE_MICROSOFT_TPC	8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * WMM/802.11e Tspec Element
@@ -5094,8 +4285,6 @@ struct ieee80211_tspec_ie {
 	__le16 medium_time;
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct ieee80211_he_6ghz_capa {
 	/* uses IEEE80211_HE_6GHZ_CAP_* below */
 	__le16 capa;
@@ -5114,24 +4303,11 @@ struct ieee80211_he_6ghz_capa {
 #define IEEE80211_HE_6GHZ_CAP_RX_ANTPAT_CONS	0x1000
 #define IEEE80211_HE_6GHZ_CAP_TX_ANTPAT_CONS	0x2000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ieee80211_get_qos_ctl - get pointer to qos control bytes
  * @hdr: the frame
  *
  * The qos ctrl bytes come after the frame_control, duration, seq_num
-<<<<<<< HEAD
- * and 3 or 4 addresses of length ETH_ALEN.
- * 3 addr: 2 + 2 + 2 + 3*6 = 24
- * 4 addr: 2 + 2 + 2 + 4*6 = 30
- */
-static inline u8 *ieee80211_get_qos_ctl(struct ieee80211_hdr *hdr)
-{
-	if (ieee80211_has_a4(hdr->frame_control))
-		return (u8 *)hdr + 30;
-	else
-		return (u8 *)hdr + 24;
-=======
  * and 3 or 4 addresses of length ETH_ALEN. Checks frame_control to choose
  * between struct ieee80211_qos_hdr_4addr and struct ieee80211_qos_hdr.
  */
@@ -5158,7 +4334,6 @@ static inline u8 ieee80211_get_tid(struct ieee80211_hdr *hdr)
 	u8 *qc = ieee80211_get_qos_ctl(hdr);
 
 	return qc[0] & IEEE80211_QOS_CTL_TID_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -5199,12 +4374,6 @@ static inline u8 *ieee80211_get_DA(struct ieee80211_hdr *hdr)
 }
 
 /**
-<<<<<<< HEAD
- * ieee80211_is_robust_mgmt_frame - check if frame is a robust management frame
- * @hdr: the frame (buffer must include at least the first octet of payload)
- */
-static inline bool ieee80211_is_robust_mgmt_frame(struct ieee80211_hdr *hdr)
-=======
  * ieee80211_is_bufferable_mmpdu - check if frame is bufferable MMPDU
  * @skb: the skb to check, starting with the 802.11 header
  */
@@ -5247,7 +4416,6 @@ static inline bool ieee80211_is_bufferable_mmpdu(struct sk_buff *skb)
  * @hdr: the frame (buffer must include at least the first octet of payload)
  */
 static inline bool _ieee80211_is_robust_mgmt_frame(struct ieee80211_hdr *hdr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ieee80211_is_disassoc(hdr->frame_control) ||
 	    ieee80211_is_deauth(hdr->frame_control))
@@ -5268,15 +4436,11 @@ static inline bool _ieee80211_is_robust_mgmt_frame(struct ieee80211_hdr *hdr)
 		category = ((u8 *) hdr) + 24;
 		return *category != WLAN_CATEGORY_PUBLIC &&
 			*category != WLAN_CATEGORY_HT &&
-<<<<<<< HEAD
-			*category != WLAN_CATEGORY_SELF_PROTECTED &&
-=======
 			*category != WLAN_CATEGORY_WNM_UNPROTECTED &&
 			*category != WLAN_CATEGORY_SELF_PROTECTED &&
 			*category != WLAN_CATEGORY_UNPROT_DMG &&
 			*category != WLAN_CATEGORY_VHT &&
 			*category != WLAN_CATEGORY_S1G &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*category != WLAN_CATEGORY_VENDOR_SPECIFIC;
 	}
 
@@ -5284,8 +4448,6 @@ static inline bool _ieee80211_is_robust_mgmt_frame(struct ieee80211_hdr *hdr)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ieee80211_is_robust_mgmt_frame - check if skb contains a robust mgmt frame
  * @skb: the skb containing the frame, length will be checked
  */
@@ -5297,7 +4459,6 @@ static inline bool ieee80211_is_robust_mgmt_frame(struct sk_buff *skb)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ieee80211_is_public_action - check if frame is a public action frame
  * @hdr: the frame
  * @len: length of the frame
@@ -5315,121 +4476,6 @@ static inline bool ieee80211_is_public_action(struct ieee80211_hdr *hdr,
 }
 
 /**
-<<<<<<< HEAD
- * ieee80211_fhss_chan_to_freq - get channel frequency
- * @channel: the FHSS channel
- *
- * Convert IEEE802.11 FHSS channel to frequency (MHz)
- * Ref IEEE 802.11-2007 section 14.6
- */
-static inline int ieee80211_fhss_chan_to_freq(int channel)
-{
-	if ((channel > 1) && (channel < 96))
-		return channel + 2400;
-	else
-		return -1;
-}
-
-/**
- * ieee80211_freq_to_fhss_chan - get channel
- * @freq: the channels frequency
- *
- * Convert frequency (MHz) to IEEE802.11 FHSS channel
- * Ref IEEE 802.11-2007 section 14.6
- */
-static inline int ieee80211_freq_to_fhss_chan(int freq)
-{
-	if ((freq > 2401) && (freq < 2496))
-		return freq - 2400;
-	else
-		return -1;
-}
-
-/**
- * ieee80211_dsss_chan_to_freq - get channel center frequency
- * @channel: the DSSS channel
- *
- * Convert IEEE802.11 DSSS channel to the center frequency (MHz).
- * Ref IEEE 802.11-2007 section 15.6
- */
-static inline int ieee80211_dsss_chan_to_freq(int channel)
-{
-	if ((channel > 0) && (channel < 14))
-		return 2407 + (channel * 5);
-	else if (channel == 14)
-		return 2484;
-	else
-		return -1;
-}
-
-/**
- * ieee80211_freq_to_dsss_chan - get channel
- * @freq: the frequency
- *
- * Convert frequency (MHz) to IEEE802.11 DSSS channel
- * Ref IEEE 802.11-2007 section 15.6
- *
- * This routine selects the channel with the closest center frequency.
- */
-static inline int ieee80211_freq_to_dsss_chan(int freq)
-{
-	if ((freq >= 2410) && (freq < 2475))
-		return (freq - 2405) / 5;
-	else if ((freq >= 2482) && (freq < 2487))
-		return 14;
-	else
-		return -1;
-}
-
-/* Convert IEEE802.11 HR DSSS channel to frequency (MHz) and back
- * Ref IEEE 802.11-2007 section 18.4.6.2
- *
- * The channels and frequencies are the same as those defined for DSSS
- */
-#define ieee80211_hr_chan_to_freq(chan) ieee80211_dsss_chan_to_freq(chan)
-#define ieee80211_freq_to_hr_chan(freq) ieee80211_freq_to_dsss_chan(freq)
-
-/* Convert IEEE802.11 ERP channel to frequency (MHz) and back
- * Ref IEEE 802.11-2007 section 19.4.2
- */
-#define ieee80211_erp_chan_to_freq(chan) ieee80211_hr_chan_to_freq(chan)
-#define ieee80211_freq_to_erp_chan(freq) ieee80211_freq_to_hr_chan(freq)
-
-/**
- * ieee80211_ofdm_chan_to_freq - get channel center frequency
- * @s_freq: starting frequency == (dotChannelStartingFactor/2) MHz
- * @channel: the OFDM channel
- *
- * Convert IEEE802.11 OFDM channel to center frequency (MHz)
- * Ref IEEE 802.11-2007 section 17.3.8.3.2
- */
-static inline int ieee80211_ofdm_chan_to_freq(int s_freq, int channel)
-{
-	if ((channel > 0) && (channel <= 200) &&
-	    (s_freq >= 4000))
-		return s_freq + (channel * 5);
-	else
-		return -1;
-}
-
-/**
- * ieee80211_freq_to_ofdm_channel - get channel
- * @s_freq: starting frequency == (dotChannelStartingFactor/2) MHz
- * @freq: the frequency
- *
- * Convert frequency (MHz) to IEEE802.11 OFDM channel
- * Ref IEEE 802.11-2007 section 17.3.8.3.2
- *
- * This routine selects the channel with the closest center frequency.
- */
-static inline int ieee80211_freq_to_ofdm_chan(int s_freq, int freq)
-{
-	if ((freq > (s_freq + 2)) && (freq <= (s_freq + 1202)) &&
-	    (s_freq >= 4000))
-		return (freq + 2 - s_freq) / 5;
-	else
-		return -1;
-=======
  * ieee80211_is_protected_dual_of_public_action - check if skb contains a
  * protected dual of public action management frame
  * @skb: the skb containing the frame, length will be checked
@@ -5486,7 +4532,6 @@ static inline bool ieee80211_is_group_privacy_action(struct sk_buff *skb)
 	if (skb->len < IEEE80211_MIN_ACTION_SIZE)
 		return false;
 	return _ieee80211_is_group_privacy_action((void *)skb->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -5504,11 +4549,7 @@ static inline unsigned long ieee80211_tu_to_usec(unsigned long tu)
  * @tim_len: length of the TIM IE
  * @aid: the AID to look for
  */
-<<<<<<< HEAD
-static inline bool ieee80211_check_tim(struct ieee80211_tim_ie *tim,
-=======
 static inline bool ieee80211_check_tim(const struct ieee80211_tim_ie *tim,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       u8 tim_len, u16 aid)
 {
 	u8 mask;
@@ -5532,8 +4573,6 @@ static inline bool ieee80211_check_tim(const struct ieee80211_tim_ie *tim,
 	return !!(tim->virtual_map[index] & mask);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * ieee80211_get_tdls_action - get tdls packet action (or -1, if not tdls packet)
  * @skb: the skb containing the frame, length will not be checked
@@ -6378,5 +5417,4 @@ static inline bool ieee80211_tid_to_link_map_size_ok(const u8 *data, size_t len)
 				 _data + ieee80211_mle_common_size(_data),\
 				 _len - ieee80211_mle_common_size(_data))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LINUX_IEEE80211_H */

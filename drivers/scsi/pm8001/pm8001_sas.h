@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * PMC-Sierra SPC 8001 SAS/SATA based host adapters driver
-=======
  * PMC-Sierra PM8001/8081/8088/8089 SAS/SATA based host adapters driver
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (c) 2008-2009 USI Co., Ltd.
  * All rights reserved.
@@ -59,19 +55,12 @@
 #include <scsi/scsi_tcq.h>
 #include <scsi/sas_ata.h>
 #include <linux/atomic.h>
-<<<<<<< HEAD
-#include "pm8001_defs.h"
-
-#define DRV_NAME		"pm8001"
-#define DRV_VERSION		"0.1.36"
-=======
 #include <linux/blk-mq.h>
 #include <linux/blk-mq-pci.h>
 #include "pm8001_defs.h"
 
 #define DRV_NAME		"pm80xx"
 #define DRV_VERSION		"0.1.40"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PM8001_FAIL_LOGGING	0x01 /* Error message logging */
 #define PM8001_INIT_LOGGING	0x02 /* driver init logging */
 #define PM8001_DISC_LOGGING	0x04 /* discovery layer logging */
@@ -79,46 +68,6 @@
 #define PM8001_EH_LOGGING	0x10 /* libsas EH function logging*/
 #define PM8001_IOCTL_LOGGING	0x20 /* IOCTL message logging */
 #define PM8001_MSG_LOGGING	0x40 /* misc message logging */
-<<<<<<< HEAD
-#define pm8001_printk(format, arg...)	printk(KERN_INFO "%s %d:" format,\
-				__func__, __LINE__, ## arg)
-#define PM8001_CHECK_LOGGING(HBA, LEVEL, CMD)	\
-do {						\
-	if (unlikely(HBA->logging_level & LEVEL))	\
-		do {					\
-			CMD;				\
-		} while (0);				\
-} while (0);
-
-#define PM8001_EH_DBG(HBA, CMD)			\
-	PM8001_CHECK_LOGGING(HBA, PM8001_EH_LOGGING, CMD)
-
-#define PM8001_INIT_DBG(HBA, CMD)		\
-	PM8001_CHECK_LOGGING(HBA, PM8001_INIT_LOGGING, CMD)
-
-#define PM8001_DISC_DBG(HBA, CMD)		\
-	PM8001_CHECK_LOGGING(HBA, PM8001_DISC_LOGGING, CMD)
-
-#define PM8001_IO_DBG(HBA, CMD)		\
-	PM8001_CHECK_LOGGING(HBA, PM8001_IO_LOGGING, CMD)
-
-#define PM8001_FAIL_DBG(HBA, CMD)		\
-	PM8001_CHECK_LOGGING(HBA, PM8001_FAIL_LOGGING, CMD)
-
-#define PM8001_IOCTL_DBG(HBA, CMD)		\
-	PM8001_CHECK_LOGGING(HBA, PM8001_IOCTL_LOGGING, CMD)
-
-#define PM8001_MSG_DBG(HBA, CMD)		\
-	PM8001_CHECK_LOGGING(HBA, PM8001_MSG_LOGGING, CMD)
-
-
-#define PM8001_USE_TASKLET
-#define PM8001_USE_MSIX
-#define PM8001_READ_VPD
-
-
-#define DEV_IS_EXPANDER(type)	((type == EDGE_DEV) || (type == FANOUT_DEV))
-=======
 #define PM8001_DEV_LOGGING	0x80 /* development message logging */
 #define PM8001_DEVIO_LOGGING	0x100 /* development io message logging */
 #define PM8001_IOERR_LOGGING	0x200 /* development io err message logging */
@@ -141,53 +90,20 @@ extern bool pm8001_use_msix;
 				|| (dev->device == 0X8077)		\
 				|| (dev->device == 0X8070)		\
 				|| (dev->device == 0X8072))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PM8001_NAME_LENGTH		32/* generic length of strings */
 extern struct list_head hba_list;
 extern const struct pm8001_dispatch pm8001_8001_dispatch;
-<<<<<<< HEAD
-=======
 extern const struct pm8001_dispatch pm8001_80xx_dispatch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pm8001_hba_info;
 struct pm8001_ccb_info;
 struct pm8001_device;
-<<<<<<< HEAD
-/* define task management IU */
-struct pm8001_tmf_task {
-	u8	tmf;
-	u32	tag_of_task_to_be_managed;
-};
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pm8001_ioctl_payload {
 	u32	signature;
 	u16	major_function;
 	u16	minor_function;
-<<<<<<< HEAD
-	u16	length;
-	u16	status;
-	u16	offset;
-	u16	id;
-	u8	*func_specific;
-};
-
-struct pm8001_dispatch {
-	char *name;
-	int (*chip_init)(struct pm8001_hba_info *pm8001_ha);
-	int (*chip_soft_rst)(struct pm8001_hba_info *pm8001_ha, u32 signature);
-	void (*chip_rst)(struct pm8001_hba_info *pm8001_ha);
-	int (*chip_ioremap)(struct pm8001_hba_info *pm8001_ha);
-	void (*chip_iounmap)(struct pm8001_hba_info *pm8001_ha);
-	irqreturn_t (*isr)(struct pm8001_hba_info *pm8001_ha);
-	u32 (*is_our_interupt)(struct pm8001_hba_info *pm8001_ha);
-	int (*isr_process_oq)(struct pm8001_hba_info *pm8001_ha);
-	void (*interrupt_enable)(struct pm8001_hba_info *pm8001_ha);
-	void (*interrupt_disable)(struct pm8001_hba_info *pm8001_ha);
-=======
 	u16	status;
 	u16	offset;
 	u16	id;
@@ -266,7 +182,6 @@ struct pm8001_dispatch {
 	int (*isr_process_oq)(struct pm8001_hba_info *pm8001_ha, u8 vec);
 	void (*interrupt_enable)(struct pm8001_hba_info *pm8001_ha, u8 vec);
 	void (*interrupt_disable)(struct pm8001_hba_info *pm8001_ha, u8 vec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*make_prd)(struct scatterlist *scatter, int nr, void *prd);
 	int (*smp_req)(struct pm8001_hba_info *pm8001_ha,
 		struct pm8001_ccb_info *ccb);
@@ -282,16 +197,9 @@ struct pm8001_dispatch {
 	int (*phy_ctl_req)(struct pm8001_hba_info *pm8001_ha,
 		u32 phy_id, u32 phy_op);
 	int (*task_abort)(struct pm8001_hba_info *pm8001_ha,
-<<<<<<< HEAD
-		struct pm8001_device *pm8001_dev, u8 flag, u32 task_tag,
-		u32 cmd_tag);
-	int (*ssp_tm_req)(struct pm8001_hba_info *pm8001_ha,
-		struct pm8001_ccb_info *ccb, struct pm8001_tmf_task *tmf);
-=======
 		struct pm8001_ccb_info *ccb);
 	int (*ssp_tm_req)(struct pm8001_hba_info *pm8001_ha,
 		struct pm8001_ccb_info *ccb, struct sas_tmf_task *tmf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*get_nvmd_req)(struct pm8001_hba_info *pm8001_ha, void *payload);
 	int (*set_nvmd_req)(struct pm8001_hba_info *pm8001_ha, void *payload);
 	int (*fw_flash_update_req)(struct pm8001_hba_info *pm8001_ha,
@@ -303,11 +211,6 @@ struct pm8001_dispatch {
 	int (*sas_diag_execute_req)(struct pm8001_hba_info *pm8001_ha,
 		u32 state);
 	int (*sas_re_init_req)(struct pm8001_hba_info *pm8001_ha);
-<<<<<<< HEAD
-};
-
-struct pm8001_chip_info {
-=======
 	int (*fatal_errors)(struct pm8001_hba_info *pm8001_ha);
 	void (*hw_event_ack_req)(struct pm8001_hba_info *pm8001_ha,
 		u32 Qnum, u32 SEA, u32 port_id, u32 phyId, u32 param0,
@@ -316,7 +219,6 @@ struct pm8001_chip_info {
 
 struct pm8001_chip_info {
 	u32     encrypt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	n_phy;
 	const struct pm8001_dispatch	*dispatch;
 };
@@ -325,14 +227,9 @@ struct pm8001_chip_info {
 struct pm8001_port {
 	struct asd_sas_port	sas_port;
 	u8			port_attached;
-<<<<<<< HEAD
-	u8			wide_port_phymap;
-	u8			port_state;
-=======
 	u16			wide_port_phymap;
 	u8			port_state;
 	u8			port_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	list;
 };
 
@@ -351,12 +248,6 @@ struct pm8001_phy {
 	u8			phy_state;
 	enum sas_linkrate	minimum_linkrate;
 	enum sas_linkrate	maximum_linkrate;
-<<<<<<< HEAD
-};
-
-struct pm8001_device {
-	enum sas_dev_type	dev_type;
-=======
 	struct completion	*reset_completion;
 	bool			port_reset_status;
 	bool			reset_success;
@@ -368,18 +259,13 @@ struct pm8001_device {
 
 struct pm8001_device {
 	enum sas_device_type	dev_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct domain_device	*sas_device;
 	u32			attached_phy;
 	u32			id;
 	struct completion	*dcompletion;
 	struct completion	*setds_completion;
 	u32			device_id;
-<<<<<<< HEAD
-	u32			running_req;
-=======
 	atomic_t		running_req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct pm8001_prd_imt {
@@ -395,20 +281,12 @@ struct pm8001_prd {
  * CCB(Command Control Block)
  */
 struct pm8001_ccb_info {
-<<<<<<< HEAD
-	struct list_head	entry;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sas_task		*task;
 	u32			n_elem;
 	u32			ccb_tag;
 	dma_addr_t		ccb_dma_handle;
 	struct pm8001_device	*device;
-<<<<<<< HEAD
-	struct pm8001_prd	buf_prd[PM8001_MAX_DMA_SG];
-=======
 	struct pm8001_prd	*buf_prd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fw_control_ex	*fw_control_context;
 	u8			open_retry;
 };
@@ -431,9 +309,6 @@ struct mpi_mem_req {
 	struct mpi_mem		region[USI_MAX_MEMCNT];
 };
 
-<<<<<<< HEAD
-struct main_cfg_table {
-=======
 struct encrypt {
 	u32	cipher_mode;
 	u32	sec_mode;
@@ -448,7 +323,6 @@ struct sas_phy_attribute_table {
 
 union main_cfg_table {
 	struct {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			signature;
 	u32			interface_rev;
 	u32			firmware_rev;
@@ -484,10 +358,6 @@ union main_cfg_table {
 	u32			fatal_err_dump_length1;
 	u32			hda_mode_flag;
 	u32			anolog_setup_table_offset;
-<<<<<<< HEAD
-};
-struct general_status_table {
-=======
 	u32			rsvd[4];
 	} pm8001_tbl;
 
@@ -532,20 +402,11 @@ struct general_status_table {
 
 union general_status_table {
 	struct {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			gst_len_mpistate;
 	u32			iq_freeze_state0;
 	u32			iq_freeze_state1;
 	u32			msgu_tcnt;
 	u32			iop_tcnt;
-<<<<<<< HEAD
-	u32			reserved;
-	u32			phy_state[8];
-	u32			reserved1;
-	u32			reserved2;
-	u32			reserved3;
-	u32			recover_err_info[8];
-=======
 	u32			rsvd;
 	u32			phy_state[8];
 	u32			gpio_input_val;
@@ -563,7 +424,6 @@ union general_status_table {
 	u32			rsvd1[2];
 	u32			recover_err_info[8];
 	} pm80xx_tbl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 struct inbound_queue_table {
 	u32			element_pri_size_cnt;
@@ -579,10 +439,7 @@ struct inbound_queue_table {
 	u32			reserved;
 	__le32			consumer_index;
 	u32			producer_idx;
-<<<<<<< HEAD
-=======
 	spinlock_t		iq_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 struct outbound_queue_table {
 	u32			element_size_cnt;
@@ -599,39 +456,28 @@ struct outbound_queue_table {
 	u32			dinterrup_to_pci_offset;
 	__le32			producer_index;
 	u32			consumer_idx;
-<<<<<<< HEAD
-=======
 	spinlock_t		oq_lock;
 	unsigned long		lock_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 struct pm8001_hba_memspace {
 	void __iomem  		*memvirtaddr;
 	u64			membase;
 	u32			memsize;
 };
-<<<<<<< HEAD
-=======
 struct isr_param {
 	struct pm8001_hba_info *drv_inst;
 	u32 irq_id;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pm8001_hba_info {
 	char			name[PM8001_NAME_LENGTH];
 	struct list_head	list;
 	unsigned long		flags;
 	spinlock_t		lock;/* host-wide lock */
-<<<<<<< HEAD
-=======
 	spinlock_t		bitmap_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev		*pdev;/* our device */
 	struct device		*dev;
 	struct pm8001_hba_memspace io_mem[6];
 	struct mpi_mem_req	memoryMap;
-<<<<<<< HEAD
-=======
 	struct encrypt		encrypt_info; /* support encryption */
 	struct forensic_data	forensic_info;
 	u32			fatal_bar_loc;
@@ -641,18 +487,11 @@ struct pm8001_hba_info {
 	u32			forensic_preserved_accumulated_transfer;
 	u32			evtlog_ib_offset;
 	u32			evtlog_ob_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem	*msg_unit_tbl_addr;/*Message Unit Table Addr*/
 	void __iomem	*main_cfg_tbl_addr;/*Main Config Table Addr*/
 	void __iomem	*general_stat_tbl_addr;/*General Status Table Addr*/
 	void __iomem	*inbnd_q_tbl_addr;/*Inbound Queue Config Table Addr*/
 	void __iomem	*outbnd_q_tbl_addr;/*Outbound Queue Config Table Addr*/
-<<<<<<< HEAD
-	struct main_cfg_table	main_cfg_tbl;
-	struct general_status_table	gs_tbl;
-	struct inbound_queue_table	inbnd_q_tbl[PM8001_MAX_INB_NUM];
-	struct outbound_queue_table	outbnd_q_tbl[PM8001_MAX_OUTB_NUM];
-=======
 	void __iomem	*pspa_q_tbl_addr;
 			/*MPI SAS PHY attributes Queue Config Table Addr*/
 	void __iomem	*ivt_tbl_addr; /*MPI IVT Table Addr */
@@ -663,37 +502,17 @@ struct pm8001_hba_info {
 	struct outbound_queue_table	outbnd_q_tbl[PM8001_MAX_OUTB_NUM];
 	struct sas_phy_attribute_table	phy_attr_table;
 					/* MPI SAS PHY attributes */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			sas_addr[SAS_ADDR_SIZE];
 	struct sas_ha_struct	*sas;/* SCSI/SAS glue */
 	struct Scsi_Host	*shost;
 	u32			chip_id;
 	const struct pm8001_chip_info	*chip;
 	struct completion	*nvmd_completion;
-<<<<<<< HEAD
-	int			tags_num;
-	unsigned long		*tags;
-=======
 	unsigned long		*rsvd_tags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pm8001_phy	phy[PM8001_MAX_PHYS];
 	struct pm8001_port	port[PM8001_MAX_PHYS];
 	u32			id;
 	u32			irq;
-<<<<<<< HEAD
-	struct pm8001_device	*devices;
-	struct pm8001_ccb_info	*ccb_info;
-#ifdef PM8001_USE_MSIX
-	struct msix_entry	msix_entries[16];/*for msi-x interrupt*/
-	int			number_of_intr;/*will be used in remove()*/
-#endif
-#ifdef PM8001_USE_TASKLET
-	struct tasklet_struct	tasklet;
-#endif
-	u32			logging_level;
-	u32			fw_status;
-	const struct firmware 	*fw_image;
-=======
 	u32			iomb_size; /* SPC and SPCV IOMB size */
 	struct pm8001_device	*devices;
 	struct pm8001_ccb_info	*ccb_info;
@@ -719,7 +538,6 @@ struct pm8001_hba_info {
 	u32 ci_offset;
 	u32 pi_offset;
 	u32 max_memcnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct pm8001_work {
@@ -755,8 +573,6 @@ struct pm8001_fw_image_header {
 #define FLASH_UPDATE_DNLD_NOT_SUPPORTED		0x10
 #define FLASH_UPDATE_DISABLED			0x11
 
-<<<<<<< HEAD
-=======
 /* Device states */
 #define DS_OPERATIONAL				0x01
 #define DS_PORT_IN_RESET			0x02
@@ -764,7 +580,6 @@ struct pm8001_fw_image_header {
 #define DS_IN_ERROR				0x04
 #define DS_NON_OPERATIONAL			0x07
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * brief param structure for firmware flash update.
  */
@@ -787,11 +602,7 @@ struct fw_control_info {
 	operations.*/
 	u32			reserved;/* padding required for 64 bit
 	alignment */
-<<<<<<< HEAD
-	u8			buffer[1];/* Start of buffer */
-=======
 	u8			buffer[];/* Start of buffer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 struct fw_control_ex {
 	struct fw_control_info *fw_control;
@@ -815,43 +626,23 @@ extern struct workqueue_struct *pm8001_wq;
 
 /******************** function prototype *********************/
 int pm8001_tag_alloc(struct pm8001_hba_info *pm8001_ha, u32 *tag_out);
-<<<<<<< HEAD
-void pm8001_tag_init(struct pm8001_hba_info *pm8001_ha);
-u32 pm8001_get_ncq_tag(struct sas_task *task, u32 *tag);
-void pm8001_ccb_free(struct pm8001_hba_info *pm8001_ha, u32 ccb_idx);
-void pm8001_ccb_task_free(struct pm8001_hba_info *pm8001_ha,
-	struct sas_task *task, struct pm8001_ccb_info *ccb, u32 ccb_idx);
-=======
 u32 pm8001_get_ncq_tag(struct sas_task *task, u32 *tag);
 void pm8001_ccb_task_free(struct pm8001_hba_info *pm8001_ha,
 			  struct pm8001_ccb_info *ccb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int pm8001_phy_control(struct asd_sas_phy *sas_phy, enum phy_func func,
 	void *funcdata);
 void pm8001_scan_start(struct Scsi_Host *shost);
 int pm8001_scan_finished(struct Scsi_Host *shost, unsigned long time);
-<<<<<<< HEAD
-int pm8001_queue_command(struct sas_task *task, const int num,
-	gfp_t gfp_flags);
-int pm8001_abort_task(struct sas_task *task);
-int pm8001_abort_task_set(struct domain_device *dev, u8 *lun);
-int pm8001_clear_aca(struct domain_device *dev, u8 *lun);
-=======
 int pm8001_queue_command(struct sas_task *task, gfp_t gfp_flags);
 int pm8001_abort_task(struct sas_task *task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int pm8001_clear_task_set(struct domain_device *dev, u8 *lun);
 int pm8001_dev_found(struct domain_device *dev);
 void pm8001_dev_gone(struct domain_device *dev);
 int pm8001_lu_reset(struct domain_device *dev, u8 *lun);
 int pm8001_I_T_nexus_reset(struct domain_device *dev);
-<<<<<<< HEAD
-int pm8001_query_task(struct sas_task *task);
-=======
 int pm8001_I_T_nexus_event_handler(struct domain_device *dev);
 int pm8001_query_task(struct sas_task *task);
 void pm8001_port_formed(struct asd_sas_phy *sas_phy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void pm8001_open_reject_retry(
 	struct pm8001_hba_info *pm8001_ha,
 	struct sas_task *task_to_close,
@@ -860,12 +651,6 @@ int pm8001_mem_alloc(struct pci_dev *pdev, void **virt_addr,
 	dma_addr_t *pphys_addr, u32 *pphys_addr_hi, u32 *pphys_addr_lo,
 	u32 mem_size, u32 align);
 
-<<<<<<< HEAD
-int pm8001_bar4_shift(struct pm8001_hba_info *pm8001_ha, u32 shiftValue);
-
-/* ctl shared API */
-extern struct device_attribute *pm8001_host_attrs[];
-=======
 void pm8001_chip_iounmap(struct pm8001_hba_info *pm8001_ha);
 int pm8001_mpi_build_cmd(struct pm8001_hba_info *pm8001_ha,
 			u32 q_index, u32 opCode, void *payload, size_t nb,
@@ -999,7 +784,6 @@ static inline void pm8001_ccb_task_free_done(struct pm8001_hba_info *pm8001_ha,
 }
 void pm8001_setds_completion(struct domain_device *dev);
 void pm8001_tmf_aborted(struct sas_task *task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 

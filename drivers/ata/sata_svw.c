@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  sata_svw.c - ServerWorks / Apple K2 SATA
  *
@@ -17,43 +14,15 @@
  *  This driver probably works with non-Apple versions of the
  *  Broadcom chipset...
  *
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *
- *  libata documentation is available via 'make {ps|pdf}docs',
- *  as Documentation/DocBook/libata.*
- *
- *  Hardware documentation available under NDA.
- *
-=======
  *  libata documentation is available via 'make {ps|pdf}docs',
  *  as Documentation/driver-api/libata.rst
  *
  *  Hardware documentation available under NDA.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -62,16 +31,8 @@
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi.h>
 #include <linux/libata.h>
-<<<<<<< HEAD
-
-#ifdef CONFIG_PPC_OF
-#include <asm/prom.h>
-#include <asm/pci-bridge.h>
-#endif /* CONFIG_PPC_OF */
-=======
 #include <linux/of.h>
 #include <linux/of_address.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_NAME	"sata_svw"
 #define DRV_VERSION	"2.3"
@@ -234,40 +195,24 @@ static void k2_sata_tf_load(struct ata_port *ap, const struct ata_taskfile *tf)
 static void k2_sata_tf_read(struct ata_port *ap, struct ata_taskfile *tf)
 {
 	struct ata_ioports *ioaddr = &ap->ioaddr;
-<<<<<<< HEAD
-	u16 nsect, lbal, lbam, lbah, feature;
-
-	tf->command = k2_stat_check_status(ap);
-	tf->device = readw(ioaddr->device_addr);
-	feature = readw(ioaddr->error_addr);
-=======
 	u16 nsect, lbal, lbam, lbah, error;
 
 	tf->status = k2_stat_check_status(ap);
 	tf->device = readw(ioaddr->device_addr);
 	error = readw(ioaddr->error_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nsect = readw(ioaddr->nsect_addr);
 	lbal = readw(ioaddr->lbal_addr);
 	lbam = readw(ioaddr->lbam_addr);
 	lbah = readw(ioaddr->lbah_addr);
 
-<<<<<<< HEAD
-	tf->feature = feature;
-=======
 	tf->error = error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tf->nsect = nsect;
 	tf->lbal = lbal;
 	tf->lbam = lbam;
 	tf->lbah = lbah;
 
 	if (tf->flags & ATA_TFLAG_LBA48) {
-<<<<<<< HEAD
-		tf->hob_feature = feature >> 8;
-=======
 		tf->hob_feature = error >> 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tf->hob_nsect = nsect >> 8;
 		tf->hob_lbal = lbal >> 8;
 		tf->hob_lbam = lbam >> 8;
@@ -356,32 +301,11 @@ static u8 k2_stat_check_status(struct ata_port *ap)
 	return readl(ap->ioaddr.status_addr);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PPC_OF
-/*
- * k2_sata_proc_info
- * inout : decides on the direction of the dataflow and the meaning of the
- *	   variables
- * buffer: If inout==FALSE data is being written to it else read from it
- * *start: If inout==FALSE start of the valid data in the buffer
- * offset: If inout==FALSE offset from the beginning of the imaginary file
- *	   from which we start writing into the buffer
- * length: If inout==FALSE max number of bytes to be written into the buffer
- *	   else number of bytes in the buffer
- */
-static int k2_sata_proc_info(struct Scsi_Host *shost, char *page, char **start,
-			     off_t offset, int count, int inout)
-{
-	struct ata_port *ap;
-	struct device_node *np;
-	int len, index;
-=======
 static int k2_sata_show_info(struct seq_file *m, struct Scsi_Host *shost)
 {
 	struct ata_port *ap;
 	struct device_node *np;
 	int index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Find  the ata_port */
 	ap = ata_shost_to_port(shost);
@@ -396,29 +320,6 @@ static int k2_sata_show_info(struct seq_file *m, struct Scsi_Host *shost)
 	/* Match it to a port node */
 	index = (ap == ap->host->ports[0]) ? 0 : 1;
 	for (np = np->child; np != NULL; np = np->sibling) {
-<<<<<<< HEAD
-		const u32 *reg = of_get_property(np, "reg", NULL);
-		if (!reg)
-			continue;
-		if (index == *reg)
-			break;
-	}
-	if (np == NULL)
-		return 0;
-
-	len = sprintf(page, "devspec: %s\n", np->full_name);
-
-	return len;
-}
-#endif /* CONFIG_PPC_OF */
-
-
-static struct scsi_host_template k2_sata_sht = {
-	ATA_BMDMA_SHT(DRV_NAME),
-#ifdef CONFIG_PPC_OF
-	.proc_info		= k2_sata_proc_info,
-#endif
-=======
 		u64 reg;
 
 		if (of_property_read_reg(np, 0, &reg, NULL))
@@ -434,7 +335,6 @@ static struct scsi_host_template k2_sata_sht = {
 static const struct scsi_host_template k2_sata_sht = {
 	ATA_BMDMA_SHT(DRV_NAME),
 	.show_info		= k2_sata_show_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -573,14 +473,7 @@ static int k2_sata_init_one(struct pci_dev *pdev, const struct pci_device_id *en
 		ata_port_pbar_desc(ap, 5, offset, "port");
 	}
 
-<<<<<<< HEAD
-	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
-	if (rc)
-		return rc;
-	rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
-=======
 	rc = dma_set_mask_and_coherent(&pdev->dev, ATA_DMA_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -625,28 +518,10 @@ static struct pci_driver k2_sata_pci_driver = {
 	.remove			= ata_pci_remove_one,
 };
 
-<<<<<<< HEAD
-static int __init k2_sata_init(void)
-{
-	return pci_register_driver(&k2_sata_pci_driver);
-}
-
-static void __exit k2_sata_exit(void)
-{
-	pci_unregister_driver(&k2_sata_pci_driver);
-}
-=======
 module_pci_driver(k2_sata_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Benjamin Herrenschmidt");
 MODULE_DESCRIPTION("low-level driver for K2 SATA controller");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, k2_sata_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(k2_sata_init);
-module_exit(k2_sata_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

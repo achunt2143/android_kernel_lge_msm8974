@@ -24,24 +24,14 @@ u32 bcma_pcie_read(struct bcma_drv_pci *pc, u32 address)
 	return pcicore_read32(pc, BCMA_CORE_PCI_PCIEIND_DATA);
 }
 
-<<<<<<< HEAD
-#if 0
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bcma_pcie_write(struct bcma_drv_pci *pc, u32 address, u32 data)
 {
 	pcicore_write32(pc, BCMA_CORE_PCI_PCIEIND_ADDR, address);
 	pcicore_read32(pc, BCMA_CORE_PCI_PCIEIND_ADDR);
 	pcicore_write32(pc, BCMA_CORE_PCI_PCIEIND_DATA, data);
 }
-<<<<<<< HEAD
-#endif
-
-static void bcma_pcie_mdio_set_phy(struct bcma_drv_pci *pc, u8 phy)
-=======
 
 static void bcma_pcie_mdio_set_phy(struct bcma_drv_pci *pc, u16 phy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 v;
 	int i;
@@ -61,19 +51,11 @@ static void bcma_pcie_mdio_set_phy(struct bcma_drv_pci *pc, u16 phy)
 		v = pcicore_read32(pc, BCMA_CORE_PCI_MDIO_CONTROL);
 		if (v & BCMA_CORE_PCI_MDIOCTL_ACCESS_DONE)
 			break;
-<<<<<<< HEAD
-		msleep(1);
-	}
-}
-
-static u16 bcma_pcie_mdio_read(struct bcma_drv_pci *pc, u8 device, u8 address)
-=======
 		usleep_range(1000, 2000);
 	}
 }
 
 static u16 bcma_pcie_mdio_read(struct bcma_drv_pci *pc, u16 device, u8 address)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int max_retries = 10;
 	u16 ret = 0;
@@ -96,11 +78,7 @@ static u16 bcma_pcie_mdio_read(struct bcma_drv_pci *pc, u16 device, u8 address)
 		v |= (address << BCMA_CORE_PCI_MDIODATA_REGADDR_SHF_OLD);
 	}
 
-<<<<<<< HEAD
-	v = BCMA_CORE_PCI_MDIODATA_START;
-=======
 	v |= BCMA_CORE_PCI_MDIODATA_START;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v |= BCMA_CORE_PCI_MDIODATA_READ;
 	v |= BCMA_CORE_PCI_MDIODATA_TA;
 
@@ -114,21 +92,13 @@ static u16 bcma_pcie_mdio_read(struct bcma_drv_pci *pc, u16 device, u8 address)
 			ret = pcicore_read32(pc, BCMA_CORE_PCI_MDIO_DATA);
 			break;
 		}
-<<<<<<< HEAD
-		msleep(1);
-=======
 		usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pcicore_write32(pc, BCMA_CORE_PCI_MDIO_CONTROL, 0);
 	return ret;
 }
 
-<<<<<<< HEAD
-static void bcma_pcie_mdio_write(struct bcma_drv_pci *pc, u8 device,
-=======
 static void bcma_pcie_mdio_write(struct bcma_drv_pci *pc, u16 device,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				u8 address, u16 data)
 {
 	int max_retries = 10;
@@ -151,11 +121,7 @@ static void bcma_pcie_mdio_write(struct bcma_drv_pci *pc, u16 device,
 		v |= (address << BCMA_CORE_PCI_MDIODATA_REGADDR_SHF_OLD);
 	}
 
-<<<<<<< HEAD
-	v = BCMA_CORE_PCI_MDIODATA_START;
-=======
 	v |= BCMA_CORE_PCI_MDIODATA_START;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v |= BCMA_CORE_PCI_MDIODATA_WRITE;
 	v |= BCMA_CORE_PCI_MDIODATA_TA;
 	v |= data;
@@ -166,17 +132,11 @@ static void bcma_pcie_mdio_write(struct bcma_drv_pci *pc, u16 device,
 		v = pcicore_read32(pc, BCMA_CORE_PCI_MDIO_CONTROL);
 		if (v & BCMA_CORE_PCI_MDIOCTL_ACCESS_DONE)
 			break;
-<<<<<<< HEAD
-		msleep(1);
-=======
 		usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pcicore_write32(pc, BCMA_CORE_PCI_MDIO_CONTROL, 0);
 }
 
-<<<<<<< HEAD
-=======
 static u16 bcma_pcie_mdio_writeread(struct bcma_drv_pci *pc, u16 device,
 				    u8 address, u16 data)
 {
@@ -225,7 +185,6 @@ out:
 	pc->early_setup_done = true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************
  * Workarounds.
  **************************************************/
@@ -257,8 +216,6 @@ static void bcma_pcicore_serdes_workaround(struct bcma_drv_pci *pc)
 		                     tmp & ~BCMA_CORE_PCI_PLL_CTRL_FREQDET_EN);
 }
 
-<<<<<<< HEAD
-=======
 /* Fix MISC config to allow coming out of L2/L3-Ready state w/o PRST */
 /* Needs to happen when coming out of 'standby'/'hibernate' */
 static void bcma_core_pci_config_fixup(struct bcma_drv_pci *pc)
@@ -276,19 +233,10 @@ static void bcma_core_pci_config_fixup(struct bcma_drv_pci *pc)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************
  * Init.
  **************************************************/
 
-<<<<<<< HEAD
-static void __devinit bcma_core_pci_clientmode_init(struct bcma_drv_pci *pc)
-{
-	bcma_pcicore_serdes_workaround(pc);
-}
-
-void __devinit bcma_core_pci_init(struct bcma_drv_pci *pc)
-=======
 static void bcma_core_pci_clientmode_init(struct bcma_drv_pci *pc)
 {
 	bcma_pcicore_serdes_workaround(pc);
@@ -296,53 +244,10 @@ static void bcma_core_pci_clientmode_init(struct bcma_drv_pci *pc)
 }
 
 void bcma_core_pci_init(struct bcma_drv_pci *pc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (pc->setup_done)
 		return;
 
-<<<<<<< HEAD
-#ifdef CONFIG_BCMA_DRIVER_PCI_HOSTMODE
-	pc->hostmode = bcma_core_pci_is_in_hostmode(pc);
-	if (pc->hostmode)
-		bcma_core_pci_hostmode_init(pc);
-#endif /* CONFIG_BCMA_DRIVER_PCI_HOSTMODE */
-
-	if (!pc->hostmode)
-		bcma_core_pci_clientmode_init(pc);
-}
-
-int bcma_core_pci_irq_ctl(struct bcma_drv_pci *pc, struct bcma_device *core,
-			  bool enable)
-{
-	struct pci_dev *pdev = pc->core->bus->host_pci;
-	u32 coremask, tmp;
-	int err = 0;
-
-	if (core->bus->hosttype != BCMA_HOSTTYPE_PCI) {
-		/* This bcma device is not on a PCI host-bus. So the IRQs are
-		 * not routed through the PCI core.
-		 * So we must not enable routing through the PCI core. */
-		goto out;
-	}
-
-	err = pci_read_config_dword(pdev, BCMA_PCI_IRQMASK, &tmp);
-	if (err)
-		goto out;
-
-	coremask = BIT(core->core_index) << 8;
-	if (enable)
-		tmp |= coremask;
-	else
-		tmp &= ~coremask;
-
-	err = pci_write_config_dword(pdev, BCMA_PCI_IRQMASK, tmp);
-
-out:
-	return err;
-}
-EXPORT_SYMBOL_GPL(bcma_core_pci_irq_ctl);
-=======
 	bcma_core_pci_early_init(pc);
 
 	if (pc->hostmode)
@@ -399,4 +304,3 @@ void bcma_core_pci_down(struct bcma_drv_pci *pc)
 {
 	bcma_core_pci_extend_L1timer(pc, false);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

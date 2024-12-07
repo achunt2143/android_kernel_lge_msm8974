@@ -1,26 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2010-2011 Canonical Ltd <jeremy.kerr@canonical.com>
  * Copyright (C) 2011-2012 Mike Turquette, Linaro Ltd <mturquette@linaro.org>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Gated clock implementation
  */
 
 #include <linux/clk-provider.h>
-<<<<<<< HEAD
-=======
 #include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/io.h>
@@ -28,11 +15,7 @@
 #include <linux/string.h>
 
 /**
-<<<<<<< HEAD
- * DOC: basic gatable clock which can gate and ungate it's ouput
-=======
  * DOC: basic gatable clock which can gate and ungate its output
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Traits of this clock:
  * prepare - clk_(un)prepare only ensures parent is (un)prepared
@@ -41,40 +24,6 @@
  * parent - fixed parent.  No clk_set_parent support
  */
 
-<<<<<<< HEAD
-#define to_clk_gate(_hw) container_of(_hw, struct clk_gate, hw)
-
-static void clk_gate_set_bit(struct clk_gate *gate)
-{
-	u32 reg;
-	unsigned long flags = 0;
-
-	if (gate->lock)
-		spin_lock_irqsave(gate->lock, flags);
-
-	reg = readl(gate->reg);
-	reg |= BIT(gate->bit_idx);
-	writel(reg, gate->reg);
-
-	if (gate->lock)
-		spin_unlock_irqrestore(gate->lock, flags);
-}
-
-static void clk_gate_clear_bit(struct clk_gate *gate)
-{
-	u32 reg;
-	unsigned long flags = 0;
-
-	if (gate->lock)
-		spin_lock_irqsave(gate->lock, flags);
-
-	reg = readl(gate->reg);
-	reg &= ~BIT(gate->bit_idx);
-	writel(reg, gate->reg);
-
-	if (gate->lock)
-		spin_unlock_irqrestore(gate->lock, flags);
-=======
 static inline u32 clk_gate_readl(struct clk_gate *gate)
 {
 	if (gate->flags & CLK_GATE_BIG_ENDIAN)
@@ -137,36 +86,10 @@ static void clk_gate_endisable(struct clk_hw *hw, int enable)
 		spin_unlock_irqrestore(gate->lock, flags);
 	else
 		__release(gate->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int clk_gate_enable(struct clk_hw *hw)
 {
-<<<<<<< HEAD
-	struct clk_gate *gate = to_clk_gate(hw);
-
-	if (gate->flags & CLK_GATE_SET_TO_DISABLE)
-		clk_gate_clear_bit(gate);
-	else
-		clk_gate_set_bit(gate);
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(clk_gate_enable);
-
-static void clk_gate_disable(struct clk_hw *hw)
-{
-	struct clk_gate *gate = to_clk_gate(hw);
-
-	if (gate->flags & CLK_GATE_SET_TO_DISABLE)
-		clk_gate_set_bit(gate);
-	else
-		clk_gate_clear_bit(gate);
-}
-EXPORT_SYMBOL_GPL(clk_gate_disable);
-
-static int clk_gate_is_enabled(struct clk_hw *hw)
-=======
 	clk_gate_endisable(hw, 1);
 
 	return 0;
@@ -178,16 +101,11 @@ static void clk_gate_disable(struct clk_hw *hw)
 }
 
 int clk_gate_is_enabled(struct clk_hw *hw)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 reg;
 	struct clk_gate *gate = to_clk_gate(hw);
 
-<<<<<<< HEAD
-	reg = readl(gate->reg);
-=======
 	reg = clk_gate_readl(gate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if a set bit disables this clk, flip it before masking */
 	if (gate->flags & CLK_GATE_SET_TO_DISABLE)
@@ -199,42 +117,22 @@ int clk_gate_is_enabled(struct clk_hw *hw)
 }
 EXPORT_SYMBOL_GPL(clk_gate_is_enabled);
 
-<<<<<<< HEAD
-struct clk_ops clk_gate_ops = {
-=======
 const struct clk_ops clk_gate_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable = clk_gate_enable,
 	.disable = clk_gate_disable,
 	.is_enabled = clk_gate_is_enabled,
 };
 EXPORT_SYMBOL_GPL(clk_gate_ops);
 
-<<<<<<< HEAD
-struct clk *clk_register_gate(struct device *dev, const char *name,
-		const char *parent_name, unsigned long flags,
-=======
 struct clk_hw *__clk_hw_register_gate(struct device *dev,
 		struct device_node *np, const char *name,
 		const char *parent_name, const struct clk_hw *parent_hw,
 		const struct clk_parent_data *parent_data,
 		unsigned long flags,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void __iomem *reg, u8 bit_idx,
 		u8 clk_gate_flags, spinlock_t *lock)
 {
 	struct clk_gate *gate;
-<<<<<<< HEAD
-	struct clk *clk;
-
-	gate = kzalloc(sizeof(struct clk_gate), GFP_KERNEL);
-
-	if (!gate) {
-		pr_err("%s: could not allocate gated clk\n", __func__);
-		return NULL;
-	}
-
-=======
 	struct clk_hw *hw;
 	struct clk_init_data init = {};
 	int ret = -EINVAL;
@@ -262,34 +160,11 @@ struct clk_hw *__clk_hw_register_gate(struct device *dev,
 	else
 		init.num_parents = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* struct clk_gate assignments */
 	gate->reg = reg;
 	gate->bit_idx = bit_idx;
 	gate->flags = clk_gate_flags;
 	gate->lock = lock;
-<<<<<<< HEAD
-
-	if (parent_name) {
-		gate->parent[0] = kstrdup(parent_name, GFP_KERNEL);
-		if (!gate->parent[0])
-			goto out;
-	}
-
-	clk = clk_register(dev, name,
-			&clk_gate_ops, &gate->hw,
-			gate->parent,
-			(parent_name ? 1 : 0),
-			flags);
-	if (clk)
-		return clk;
-out:
-	kfree(gate->parent[0]);
-	kfree(gate);
-
-	return NULL;
-}
-=======
 	gate->hw.init = &init;
 
 	hw = &gate->hw;
@@ -382,4 +257,3 @@ struct clk_hw *__devm_clk_hw_register_gate(struct device *dev,
 	return hw;
 }
 EXPORT_SYMBOL_GPL(__devm_clk_hw_register_gate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

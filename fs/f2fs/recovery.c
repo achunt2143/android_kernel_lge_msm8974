@@ -1,27 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fs/f2fs/recovery.c
  *
  * Copyright (c) 2012 Samsung Electronics Co., Ltd.
  *             http://www.samsung.com/
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#include <linux/fs.h>
-#include <linux/f2fs_fs.h>
-=======
  */
 #include <asm/unaligned.h>
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
 #include <linux/sched/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "f2fs.h"
 #include "node.h"
 #include "segment.h"
@@ -59,12 +46,6 @@
 
 static struct kmem_cache *fsync_entry_slab;
 
-<<<<<<< HEAD
-bool space_for_roll_forward(struct f2fs_sb_info *sbi)
-{
-	if (sbi->last_valid_block_count + sbi->alloc_valid_block_count
-			> sbi->user_block_count)
-=======
 #if IS_ENABLED(CONFIG_UNICODE)
 extern struct kmem_cache *f2fs_cf_name_slab;
 #endif
@@ -78,7 +59,6 @@ bool f2fs_space_for_roll_forward(struct f2fs_sb_info *sbi)
 	if (NM_I(sbi)->max_rf_node_blocks &&
 		percpu_counter_sum_positive(&sbi->rf_node_block_count) >=
 						NM_I(sbi)->max_rf_node_blocks)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	return true;
 }
@@ -95,9 +75,6 @@ static struct fsync_inode_entry *get_fsync_inode(struct list_head *head,
 	return NULL;
 }
 
-<<<<<<< HEAD
-static int recover_dentry(struct inode *inode, struct page *ipage)
-=======
 static struct fsync_inode_entry *add_fsync_inode(struct f2fs_sb_info *sbi,
 			struct list_head *head, nid_t ino, bool quota_inode)
 {
@@ -189,44 +166,10 @@ static int init_recovered_filename(const struct inode *dir,
 
 static int recover_dentry(struct inode *inode, struct page *ipage,
 						struct list_head *dir_list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_inode *raw_inode = F2FS_INODE(ipage);
 	nid_t pino = le32_to_cpu(raw_inode->i_pino);
 	struct f2fs_dir_entry *de;
-<<<<<<< HEAD
-	struct qstr name;
-	struct page *page;
-	struct inode *dir, *einode;
-	int err = 0;
-
-	dir = f2fs_iget(inode->i_sb, pino);
-	if (IS_ERR(dir)) {
-		err = PTR_ERR(dir);
-		goto out;
-	}
-
-	if (file_enc_name(inode)) {
-		iput(dir);
-		return 0;
-	}
-
-	name.len = le32_to_cpu(raw_inode->i_namelen);
-	name.name = raw_inode->i_name;
-
-	if (unlikely(name.len > F2FS_NAME_LEN)) {
-		WARN_ON(1);
-		err = -ENAMETOOLONG;
-		goto out_err;
-	}
-retry:
-	de = f2fs_find_entry(dir, &name, &page);
-	if (de && inode->i_ino == le32_to_cpu(de->ino))
-		goto out_unmap_put;
-
-	if (de) {
-		einode = f2fs_iget(inode->i_sb, le32_to_cpu(de->ino));
-=======
 	struct f2fs_filename fname;
 	struct qstr usr_fname;
 	struct page *page;
@@ -257,20 +200,11 @@ retry:
 
 	if (de) {
 		einode = f2fs_iget_retry(inode->i_sb, le32_to_cpu(de->ino));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(einode)) {
 			WARN_ON(1);
 			err = PTR_ERR(einode);
 			if (err == -ENOENT)
 				err = -EEXIST;
-<<<<<<< HEAD
-			goto out_unmap_put;
-		}
-		err = acquire_orphan_inode(F2FS_I_SB(inode));
-		if (err) {
-			iput(einode);
-			goto out_unmap_put;
-=======
 			goto out_put;
 		}
 
@@ -284,53 +218,10 @@ retry:
 		if (err) {
 			iput(einode);
 			goto out_put;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		f2fs_delete_entry(de, page, dir, einode);
 		iput(einode);
 		goto retry;
-<<<<<<< HEAD
-	}
-	err = __f2fs_add_link(dir, &name, inode, inode->i_ino, inode->i_mode);
-	if (err)
-		goto out_err;
-
-	if (is_inode_flag_set(F2FS_I(dir), FI_DELAY_IPUT)) {
-		iput(dir);
-	} else {
-		add_dirty_dir_inode(dir);
-		set_inode_flag(F2FS_I(dir), FI_DELAY_IPUT);
-	}
-
-	goto out;
-
-out_unmap_put:
-	f2fs_dentry_kunmap(dir, page);
-	f2fs_put_page(page, 0);
-out_err:
-	iput(dir);
-out:
-	f2fs_msg(inode->i_sb, KERN_NOTICE,
-			"%s: ino = %x, name = %s, dir = %lx, err = %d",
-			__func__, ino_of_node(ipage), raw_inode->i_name,
-			IS_ERR(dir) ? 0 : dir->i_ino, err);
-	return err;
-}
-
-static void recover_inode(struct inode *inode, struct page *page)
-{
-	struct f2fs_inode *raw = F2FS_INODE(page);
-	char *name;
-
-	inode->i_mode = le16_to_cpu(raw->i_mode);
-	i_size_write(inode, le64_to_cpu(raw->i_size));
-	inode->i_atime.tv_sec = le64_to_cpu(raw->i_mtime);
-	inode->i_ctime.tv_sec = le64_to_cpu(raw->i_ctime);
-	inode->i_mtime.tv_sec = le64_to_cpu(raw->i_mtime);
-	inode->i_atime.tv_nsec = le32_to_cpu(raw->i_mtime_nsec);
-	inode->i_ctime.tv_nsec = le32_to_cpu(raw->i_ctime_nsec);
-	inode->i_mtime.tv_nsec = le32_to_cpu(raw->i_mtime_nsec);
-=======
 	} else if (IS_ERR(page)) {
 		err = PTR_ERR(page);
 	} else {
@@ -445,51 +336,12 @@ static int recover_inode(struct inode *inode, struct page *page)
 	recover_inline_flags(inode, raw);
 
 	f2fs_mark_inode_dirty_sync(inode, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (file_enc_name(inode))
 		name = "<encrypted>";
 	else
 		name = F2FS_INODE(page)->i_name;
 
-<<<<<<< HEAD
-	f2fs_msg(inode->i_sb, KERN_NOTICE, "recover_inode: ino = %x, name = %s",
-			ino_of_node(page), name);
-}
-
-static bool is_same_inode(struct inode *inode, struct page *ipage)
-{
-	struct f2fs_inode *ri = F2FS_INODE(ipage);
-	struct timespec disk;
-
-	if (!IS_INODE(ipage))
-		return true;
-
-	disk.tv_sec = le64_to_cpu(ri->i_ctime);
-	disk.tv_nsec = le32_to_cpu(ri->i_ctime_nsec);
-	if (timespec_compare(&inode->i_ctime, &disk) > 0)
-		return false;
-
-	disk.tv_sec = le64_to_cpu(ri->i_atime);
-	disk.tv_nsec = le32_to_cpu(ri->i_atime_nsec);
-	if (timespec_compare(&inode->i_atime, &disk) > 0)
-		return false;
-
-	disk.tv_sec = le64_to_cpu(ri->i_mtime);
-	disk.tv_nsec = le32_to_cpu(ri->i_mtime_nsec);
-	if (timespec_compare(&inode->i_mtime, &disk) > 0)
-		return false;
-
-	return true;
-}
-
-static int find_fsync_dnodes(struct f2fs_sb_info *sbi, struct list_head *head)
-{
-	unsigned long long cp_ver = cur_cp_version(F2FS_CKPT(sbi));
-	struct curseg_info *curseg;
-	struct page *page = NULL;
-	block_t blkaddr;
-=======
 	f2fs_notice(F2FS_I_SB(inode), "recover_inode: ino = %x, name = %s, inline = %x",
 		    ino_of_node(page), name, raw->i_inline);
 	return 0;
@@ -559,31 +411,16 @@ static int find_fsync_dnodes(struct f2fs_sb_info *sbi, struct list_head *head,
 	struct page *page = NULL;
 	block_t blkaddr, blkaddr_fast;
 	bool is_detecting = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	/* get node pages in the current segment */
 	curseg = CURSEG_I(sbi, CURSEG_WARM_NODE);
 	blkaddr = NEXT_FREE_BLKADDR(sbi, curseg);
-<<<<<<< HEAD
-
-	ra_meta_pages(sbi, blkaddr, 1, META_POR, true);
-=======
 	blkaddr_fast = blkaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (1) {
 		struct fsync_inode_entry *entry;
 
-<<<<<<< HEAD
-		if (!is_valid_blkaddr(sbi, blkaddr, META_POR))
-			return 0;
-
-		page = get_tmp_page(sbi, blkaddr);
-
-		if (cp_ver != cpver_of_node(page))
-			break;
-=======
 		if (!f2fs_is_valid_blkaddr(sbi, blkaddr, META_POR))
 			return 0;
 
@@ -597,30 +434,11 @@ static int find_fsync_dnodes(struct f2fs_sb_info *sbi, struct list_head *head,
 			f2fs_put_page(page, 1);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!is_fsync_dnode(page))
 			goto next;
 
 		entry = get_fsync_inode(head, ino_of_node(page));
-<<<<<<< HEAD
-		if (entry) {
-			if (!is_same_inode(entry->inode, page))
-				goto next;
-		} else {
-			if (IS_INODE(page) && is_dent_dnode(page)) {
-				err = recover_inode_page(sbi, page);
-				if (err)
-					break;
-			}
-
-			/* add this fsync inode to the list */
-			entry = kmem_cache_alloc(fsync_entry_slab, GFP_F2FS_ZERO);
-			if (!entry) {
-				err = -ENOMEM;
-				break;
-			}
-=======
 		if (!entry) {
 			bool quota_inode = false;
 
@@ -634,32 +452,10 @@ static int find_fsync_dnodes(struct f2fs_sb_info *sbi, struct list_head *head,
 				quota_inode = true;
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * CP | dnode(F) | inode(DF)
 			 * For this case, we should not give up now.
 			 */
-<<<<<<< HEAD
-			entry->inode = f2fs_iget(sbi->sb, ino_of_node(page));
-			if (IS_ERR(entry->inode)) {
-				err = PTR_ERR(entry->inode);
-				kmem_cache_free(fsync_entry_slab, entry);
-				if (err == -ENOENT) {
-					err = 0;
-					goto next;
-				}
-				break;
-			}
-			list_add_tail(&entry->list, head);
-		}
-		entry->blkaddr = blkaddr;
-
-		if (IS_INODE(page)) {
-			entry->last_inode = blkaddr;
-			if (is_dent_dnode(page))
-				entry->last_dentry = blkaddr;
-		}
-=======
 			entry = add_fsync_inode(sbi, head, ino_of_node(page),
 								quota_inode);
 			if (IS_ERR(entry)) {
@@ -674,29 +470,11 @@ static int find_fsync_dnodes(struct f2fs_sb_info *sbi, struct list_head *head,
 
 		if (IS_INODE(page) && is_dent_dnode(page))
 			entry->last_dentry = blkaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 next:
 		/* check next segment */
 		blkaddr = next_blkaddr_of_node(page);
 		f2fs_put_page(page, 1);
 
-<<<<<<< HEAD
-		ra_meta_pages_cond(sbi, blkaddr);
-	}
-	f2fs_put_page(page, 1);
-	return err;
-}
-
-static void destroy_fsync_dnodes(struct list_head *head)
-{
-	struct fsync_inode_entry *entry, *tmp;
-
-	list_for_each_entry_safe(entry, tmp, head, list) {
-		iput(entry->inode);
-		list_del(&entry->list);
-		kmem_cache_free(fsync_entry_slab, entry);
-	}
-=======
 		err = sanity_check_node_chain(sbi, blkaddr, &blkaddr_fast,
 				&is_detecting);
 		if (err)
@@ -711,7 +489,6 @@ static void destroy_fsync_dnodes(struct list_head *head, int drop)
 
 	list_for_each_entry_safe(entry, tmp, head, list)
 		del_fsync_inode(entry, drop);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int check_index_in_prev_nodes(struct f2fs_sb_info *sbi,
@@ -726,11 +503,7 @@ static int check_index_in_prev_nodes(struct f2fs_sb_info *sbi,
 	struct dnode_of_data tdn = *dn;
 	nid_t ino, nid;
 	struct inode *inode;
-<<<<<<< HEAD
-	unsigned int offset;
-=======
 	unsigned int offset, ofs_in_node, max_addrs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	block_t bidx;
 	int i;
 
@@ -739,35 +512,24 @@ static int check_index_in_prev_nodes(struct f2fs_sb_info *sbi,
 		return 0;
 
 	/* Get the previous summary */
-<<<<<<< HEAD
-	for (i = CURSEG_WARM_DATA; i <= CURSEG_COLD_DATA; i++) {
-		struct curseg_info *curseg = CURSEG_I(sbi, i);
-=======
 	for (i = CURSEG_HOT_DATA; i <= CURSEG_COLD_DATA; i++) {
 		struct curseg_info *curseg = CURSEG_I(sbi, i);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (curseg->segno == segno) {
 			sum = curseg->sum_blk->entries[blkoff];
 			goto got_it;
 		}
 	}
 
-<<<<<<< HEAD
-	sum_page = get_sum_page(sbi, segno);
-=======
 	sum_page = f2fs_get_sum_page(sbi, segno);
 	if (IS_ERR(sum_page))
 		return PTR_ERR(sum_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sum_node = (struct f2fs_summary_block *)page_address(sum_page);
 	sum = sum_node->entries[blkoff];
 	f2fs_put_page(sum_page, 1);
 got_it:
 	/* Use the locked dnode page and inode */
 	nid = le32_to_cpu(sum.nid);
-<<<<<<< HEAD
-=======
 	ofs_in_node = le16_to_cpu(sum.ofs_in_node);
 
 	max_addrs = ADDRS_PER_PAGE(dn->node_page, dn->inode);
@@ -778,32 +540,20 @@ got_it:
 		return -EFSCORRUPTED;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dn->inode->i_ino == nid) {
 		tdn.nid = nid;
 		if (!dn->inode_page_locked)
 			lock_page(dn->inode_page);
 		tdn.node_page = dn->inode_page;
-<<<<<<< HEAD
-		tdn.ofs_in_node = le16_to_cpu(sum.ofs_in_node);
-		goto truncate_out;
-	} else if (dn->nid == nid) {
-		tdn.ofs_in_node = le16_to_cpu(sum.ofs_in_node);
-=======
 		tdn.ofs_in_node = ofs_in_node;
 		goto truncate_out;
 	} else if (dn->nid == nid) {
 		tdn.ofs_in_node = ofs_in_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto truncate_out;
 	}
 
 	/* Get the node page */
-<<<<<<< HEAD
-	node_page = get_node_page(sbi, nid);
-=======
 	node_page = f2fs_get_node_page(sbi, nid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(node_page))
 		return PTR_ERR(node_page);
 
@@ -812,12 +562,6 @@ got_it:
 	f2fs_put_page(node_page, 1);
 
 	if (ino != dn->inode->i_ino) {
-<<<<<<< HEAD
-		/* Deallocate previous index in the node page */
-		inode = f2fs_iget(sbi->sb, ino);
-		if (IS_ERR(inode))
-			return PTR_ERR(inode);
-=======
 		int ret;
 
 		/* Deallocate previous index in the node page */
@@ -830,17 +574,12 @@ got_it:
 			iput(inode);
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		inode = dn->inode;
 	}
 
-<<<<<<< HEAD
-	bidx = start_bidx_of_node(offset, inode) + le16_to_cpu(sum.ofs_in_node);
-=======
 	bidx = f2fs_start_bidx_of_node(offset, inode) +
 				le16_to_cpu(sum.ofs_in_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * if inode page is locked, unlock temporarily, but its reference
@@ -850,19 +589,11 @@ got_it:
 		unlock_page(dn->inode_page);
 
 	set_new_dnode(&tdn, inode, NULL, NULL, 0);
-<<<<<<< HEAD
-	if (get_dnode_of_data(&tdn, bidx, LOOKUP_NODE))
-		goto out;
-
-	if (tdn.data_blkaddr == blkaddr)
-		truncate_data_blocks_range(&tdn, 1);
-=======
 	if (f2fs_get_dnode_of_data(&tdn, bidx, LOOKUP_NODE))
 		goto out;
 
 	if (tdn.data_blkaddr == blkaddr)
 		f2fs_truncate_data_blocks_range(&tdn, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	f2fs_put_dnode(&tdn);
 out:
@@ -873,22 +604,13 @@ out:
 	return 0;
 
 truncate_out:
-<<<<<<< HEAD
-	if (datablock_addr(tdn.node_page, tdn.ofs_in_node) == blkaddr)
-		truncate_data_blocks_range(&tdn, 1);
-=======
 	if (f2fs_data_blkaddr(&tdn) == blkaddr)
 		f2fs_truncate_data_blocks_range(&tdn, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dn->inode->i_ino == nid && !dn->inode_page_locked)
 		unlock_page(dn->inode_page);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int do_recover_data(struct f2fs_sb_info *sbi, struct inode *inode,
-					struct page *page, block_t blkaddr)
-=======
 static int f2fs_reserve_new_block_retry(struct dnode_of_data *dn)
 {
 	int i, err = 0;
@@ -904,7 +626,6 @@ static int f2fs_reserve_new_block_retry(struct dnode_of_data *dn)
 
 static int do_recover_data(struct f2fs_sb_info *sbi, struct inode *inode,
 					struct page *page)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dnode_of_data dn;
 	struct node_info ni;
@@ -913,15 +634,6 @@ static int do_recover_data(struct f2fs_sb_info *sbi, struct inode *inode,
 
 	/* step 1: recover xattr */
 	if (IS_INODE(page)) {
-<<<<<<< HEAD
-		recover_inline_xattr(inode, page);
-	} else if (f2fs_has_xattr_block(ofs_of_node(page))) {
-		/*
-		 * Deprecated; xattr blocks should be found from cold log.
-		 * But, we should remain this for backward compatibility.
-		 */
-		recover_xattr_data(inode, page, blkaddr);
-=======
 		err = f2fs_recover_inline_xattr(inode, page);
 		if (err)
 			goto out;
@@ -929,31 +641,10 @@ static int do_recover_data(struct f2fs_sb_info *sbi, struct inode *inode,
 		err = f2fs_recover_xattr_data(inode, page);
 		if (!err)
 			recovered++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	/* step 2: recover inline data */
-<<<<<<< HEAD
-	if (recover_inline_data(inode, page))
-		goto out;
-
-	/* step 3: recover data indices */
-	start = start_bidx_of_node(ofs_of_node(page), inode);
-	end = start + ADDRS_PER_PAGE(page, inode);
-
-	set_new_dnode(&dn, inode, NULL, NULL, 0);
-
-	err = get_dnode_of_data(&dn, start, ALLOC_NODE);
-	if (err)
-		goto out;
-
-	f2fs_wait_on_page_writeback(dn.node_page, NODE, true);
-
-	get_node_info(sbi, dn.nid, &ni);
-	f2fs_bug_on(sbi, ni.ino != ino_of_node(page));
-	f2fs_bug_on(sbi, ofs_of_node(dn.node_page) != ofs_of_node(page));
-=======
 	err = f2fs_recover_inline_data(inode, page);
 	if (err) {
 		if (err == 1)
@@ -992,15 +683,10 @@ retry_dn:
 		f2fs_handle_error(sbi, ERROR_INCONSISTENT_FOOTER);
 		goto err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (; start < end; start++, dn.ofs_in_node++) {
 		block_t src, dest;
 
-<<<<<<< HEAD
-		src = datablock_addr(dn.node_page, dn.ofs_in_node);
-		dest = datablock_addr(page, dn.ofs_in_node);
-=======
 		src = f2fs_data_blkaddr(&dn);
 		dest = data_blkaddr(dn.inode, page, dn.ofs_in_node);
 
@@ -1015,7 +701,6 @@ retry_dn:
 			err = -EFSCORRUPTED;
 			goto err;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* skip recovering if dest is the same as src */
 		if (src == dest)
@@ -1023,12 +708,6 @@ retry_dn:
 
 		/* dest is invalid, just invalidate src block */
 		if (dest == NULL_ADDR) {
-<<<<<<< HEAD
-			truncate_data_blocks_range(&dn, 1);
-			continue;
-		}
-
-=======
 			f2fs_truncate_data_blocks_range(&dn, 1);
 			continue;
 		}
@@ -1038,41 +717,20 @@ retry_dn:
 			f2fs_i_size_write(inode,
 				(loff_t)(start + 1) << PAGE_SHIFT);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * dest is reserved block, invalidate src block
 		 * and then reserve one new block in dnode page.
 		 */
 		if (dest == NEW_ADDR) {
-<<<<<<< HEAD
-			truncate_data_blocks_range(&dn, 1);
-			err = reserve_new_block(&dn);
-			f2fs_bug_on(sbi, err);
-=======
 			f2fs_truncate_data_blocks_range(&dn, 1);
 
 			err = f2fs_reserve_new_block_retry(&dn);
 			if (err)
 				goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
 		/* dest is valid block, try to recover from src to dest */
-<<<<<<< HEAD
-		if (is_valid_blkaddr(sbi, dest, META_POR)) {
-
-			if (src == NULL_ADDR) {
-				err = reserve_new_block(&dn);
-				/* We should not get -ENOSPC */
-				f2fs_bug_on(sbi, err);
-			}
-
-			/* Check the previous node page having this index */
-			err = check_index_in_prev_nodes(sbi, dest, &dn);
-			if (err)
-				goto err;
-=======
 		if (f2fs_is_valid_blkaddr(sbi, dest, META_POR)) {
 			if (src == NULL_ADDR) {
 				err = f2fs_reserve_new_block_retry(&dn);
@@ -1097,7 +755,6 @@ retry_prev:
 				err = -EFSCORRUPTED;
 				goto err;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* write dummy data page */
 			f2fs_replace_block(sbi, &dn, src, dest,
@@ -1106,12 +763,6 @@ retry_prev:
 		}
 	}
 
-<<<<<<< HEAD
-	if (IS_INODE(dn.node_page))
-		sync_inode_page(&dn);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	copy_node_footer(dn.node_page, page);
 	fill_node_footer(dn.node_page, dn.nid, ni.ino,
 					ofs_of_node(page), false);
@@ -1119,17 +770,6 @@ retry_prev:
 err:
 	f2fs_put_dnode(&dn);
 out:
-<<<<<<< HEAD
-	f2fs_msg(sbi->sb, KERN_NOTICE,
-		"recover_data: ino = %lx, recovered = %d blocks, err = %d",
-		inode->i_ino, recovered, err);
-	return err;
-}
-
-static int recover_data(struct f2fs_sb_info *sbi, struct list_head *head)
-{
-	unsigned long long cp_ver = cur_cp_version(F2FS_CKPT(sbi));
-=======
 	f2fs_notice(sbi, "recover_data: ino = %lx (i_size: %s) recovered = %d, err = %d",
 		    inode->i_ino, file_keep_isize(inode) ? "keep" : "recover",
 		    recovered, err);
@@ -1139,15 +779,11 @@ static int recover_data(struct f2fs_sb_info *sbi, struct list_head *head)
 static int recover_data(struct f2fs_sb_info *sbi, struct list_head *inode_list,
 		struct list_head *tmp_inode_list, struct list_head *dir_list)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct curseg_info *curseg;
 	struct page *page = NULL;
 	int err = 0;
 	block_t blkaddr;
-<<<<<<< HEAD
-=======
 	unsigned int ra_blocks = RECOVERY_MAX_RA_BLOCKS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get node pages in the current segment */
 	curseg = CURSEG_I(sbi, CURSEG_WARM_NODE);
@@ -1156,16 +792,6 @@ static int recover_data(struct f2fs_sb_info *sbi, struct list_head *inode_list,
 	while (1) {
 		struct fsync_inode_entry *entry;
 
-<<<<<<< HEAD
-		if (!is_valid_blkaddr(sbi, blkaddr, META_POR))
-			break;
-
-		ra_meta_pages_cond(sbi, blkaddr);
-
-		page = get_tmp_page(sbi, blkaddr);
-
-		if (cp_ver != cpver_of_node(page)) {
-=======
 		if (!f2fs_is_valid_blkaddr(sbi, blkaddr, META_POR))
 			break;
 
@@ -1176,16 +802,11 @@ static int recover_data(struct f2fs_sb_info *sbi, struct list_head *inode_list,
 		}
 
 		if (!is_recoverable_dnode(page)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			f2fs_put_page(page, 1);
 			break;
 		}
 
-<<<<<<< HEAD
-		entry = get_fsync_inode(head, ino_of_node(page));
-=======
 		entry = get_fsync_inode(inode_list, ino_of_node(page));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!entry)
 			goto next;
 		/*
@@ -1193,23 +814,13 @@ static int recover_data(struct f2fs_sb_info *sbi, struct list_head *inode_list,
 		 * In this case, we can lose the latest inode(x).
 		 * So, call recover_inode for the inode update.
 		 */
-<<<<<<< HEAD
-		if (entry->last_inode == blkaddr)
-			recover_inode(entry->inode, page);
-		if (entry->last_dentry == blkaddr) {
-			err = recover_dentry(entry->inode, page);
-=======
 		if (IS_INODE(page)) {
 			err = recover_inode(entry->inode, page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err) {
 				f2fs_put_page(page, 1);
 				break;
 			}
 		}
-<<<<<<< HEAD
-		err = do_recover_data(sbi, entry->inode, page, blkaddr);
-=======
 		if (entry->last_dentry == blkaddr) {
 			err = recover_dentry(entry->inode, page, dir_list);
 			if (err) {
@@ -1218,56 +829,11 @@ static int recover_data(struct f2fs_sb_info *sbi, struct list_head *inode_list,
 			}
 		}
 		err = do_recover_data(sbi, entry->inode, page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			f2fs_put_page(page, 1);
 			break;
 		}
 
-<<<<<<< HEAD
-		if (entry->blkaddr == blkaddr) {
-			iput(entry->inode);
-			list_del(&entry->list);
-			kmem_cache_free(fsync_entry_slab, entry);
-		}
-next:
-		/* check next segment */
-		blkaddr = next_blkaddr_of_node(page);
-		f2fs_put_page(page, 1);
-	}
-	if (!err)
-		allocate_new_segments(sbi);
-	return err;
-}
-
-int recover_fsync_data(struct f2fs_sb_info *sbi)
-{
-	struct curseg_info *curseg = CURSEG_I(sbi, CURSEG_WARM_NODE);
-	struct list_head inode_list;
-	block_t blkaddr;
-	int err;
-	bool need_writecp = false;
-
-	fsync_entry_slab = f2fs_kmem_cache_create("f2fs_fsync_inode_entry",
-			sizeof(struct fsync_inode_entry));
-	if (!fsync_entry_slab)
-		return -ENOMEM;
-
-	INIT_LIST_HEAD(&inode_list);
-
-	/* prevent checkpoint */
-	mutex_lock(&sbi->cp_mutex);
-
-	blkaddr = NEXT_FREE_BLKADDR(sbi, curseg);
-
-	/* step #1: find fsynced inode numbers */
-	err = find_fsync_dnodes(sbi, &inode_list);
-	if (err)
-		goto out;
-
-	if (list_empty(&inode_list))
-		goto out;
-=======
 		if (entry->blkaddr == blkaddr)
 			list_move_tail(&entry->list, tmp_inode_list);
 next:
@@ -1313,57 +879,10 @@ int f2fs_recover_fsync_data(struct f2fs_sb_info *sbi, bool check_only)
 		ret = 1;
 		goto skip;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	need_writecp = true;
 
 	/* step #2: recover data */
-<<<<<<< HEAD
-	err = recover_data(sbi, &inode_list);
-	if (!err)
-		f2fs_bug_on(sbi, !list_empty(&inode_list));
-out:
-	destroy_fsync_dnodes(&inode_list);
-	kmem_cache_destroy(fsync_entry_slab);
-
-	/* truncate meta pages to be used by the recovery */
-	truncate_inode_pages_range(META_MAPPING(sbi),
-			(loff_t)MAIN_BLKADDR(sbi) << PAGE_CACHE_SHIFT, -1);
-
-	if (err) {
-		truncate_inode_pages(NODE_MAPPING(sbi), 0);
-		truncate_inode_pages(META_MAPPING(sbi), 0);
-	}
-
-	clear_sbi_flag(sbi, SBI_POR_DOING);
-	if (err) {
-		bool invalidate = false;
-
-		if (discard_next_dnode(sbi, blkaddr))
-			invalidate = true;
-
-		/* Flush all the NAT/SIT pages */
-		while (get_pages(sbi, F2FS_DIRTY_META))
-			sync_meta_pages(sbi, META, LONG_MAX);
-
-		/* invalidate temporary meta page */
-		if (invalidate)
-			invalidate_mapping_pages(META_MAPPING(sbi),
-							blkaddr, blkaddr);
-
-		set_ckpt_flags(sbi->ckpt, CP_ERROR_FLAG);
-		mutex_unlock(&sbi->cp_mutex);
-	} else if (need_writecp) {
-		struct cp_control cpc = {
-			.reason = CP_RECOVERY,
-		};
-		mutex_unlock(&sbi->cp_mutex);
-		err = write_checkpoint(sbi, &cpc);
-	} else {
-		mutex_unlock(&sbi->cp_mutex);
-	}
-	return err;
-=======
 	err = recover_data(sbi, &inode_list, &tmp_inode_list, &dir_list);
 	if (!err)
 		f2fs_bug_on(sbi, !list_empty(&inode_list));
@@ -1432,5 +951,4 @@ int __init f2fs_create_recovery_cache(void)
 void f2fs_destroy_recovery_cache(void)
 {
 	kmem_cache_destroy(fsync_entry_slab);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

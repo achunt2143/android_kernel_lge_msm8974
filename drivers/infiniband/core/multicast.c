@@ -42,13 +42,8 @@
 #include <rdma/ib_cache.h>
 #include "sa.h"
 
-<<<<<<< HEAD
-static void mcast_add_one(struct ib_device *device);
-static void mcast_remove_one(struct ib_device *device);
-=======
 static int mcast_add_one(struct ib_device *device);
 static void mcast_remove_one(struct ib_device *device, void *client_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct ib_client mcast_client = {
 	.name   = "ib_multicast",
@@ -66,15 +61,9 @@ struct mcast_port {
 	struct mcast_device	*dev;
 	spinlock_t		lock;
 	struct rb_root		table;
-<<<<<<< HEAD
-	atomic_t		refcount;
-	struct completion	comp;
-	u8			port_num;
-=======
 	refcount_t		refcount;
 	struct completion	comp;
 	u32			port_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mcast_device {
@@ -82,11 +71,7 @@ struct mcast_device {
 	struct ib_event_handler	event_handler;
 	int			start_port;
 	int			end_port;
-<<<<<<< HEAD
-	struct mcast_port	port[0];
-=======
 	struct mcast_port	port[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum mcast_state {
@@ -117,18 +102,10 @@ struct mcast_group {
 	struct list_head	pending_list;
 	struct list_head	active_list;
 	struct mcast_member	*last_join;
-<<<<<<< HEAD
-	int			members[3];
-	atomic_t		refcount;
-	enum mcast_group_state	state;
-	struct ib_sa_query	*query;
-	int			query_id;
-=======
 	int			members[NUM_JOIN_MEMBERSHIP_TYPES];
 	atomic_t		refcount;
 	enum mcast_group_state	state;
 	struct ib_sa_query	*query;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16			pkey_index;
 	u8			leave_state;
 	int			retries;
@@ -140,11 +117,7 @@ struct mcast_member {
 	struct mcast_group	*group;
 	struct list_head	list;
 	enum mcast_state	state;
-<<<<<<< HEAD
-	atomic_t		refcount;
-=======
 	refcount_t		refcount;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct completion	comp;
 };
 
@@ -205,11 +178,7 @@ static struct mcast_group *mcast_insert(struct mcast_port *port,
 
 static void deref_port(struct mcast_port *port)
 {
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&port->refcount))
-=======
 	if (refcount_dec_and_test(&port->refcount))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		complete(&port->comp);
 }
 
@@ -230,11 +199,7 @@ static void release_group(struct mcast_group *group)
 
 static void deref_member(struct mcast_member *member)
 {
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&member->refcount))
-=======
 	if (refcount_dec_and_test(&member->refcount))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		complete(&member->comp);
 }
 
@@ -254,14 +219,9 @@ static void queue_join(struct mcast_member *member)
 }
 
 /*
-<<<<<<< HEAD
- * A multicast group has three types of members: full member, non member, and
- * send only member.  We need to keep track of the number of members of each
-=======
  * A multicast group has four types of members: full member, non member,
  * sendonly non member and sendonly full member.
  * We need to keep track of the number of members of each
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * type based on their join state.  Adjust the number of members the belong to
  * the specified join states.
  */
@@ -269,11 +229,7 @@ static void adjust_membership(struct mcast_group *group, u8 join_state, int inc)
 {
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < 3; i++, join_state >>= 1)
-=======
 	for (i = 0; i < NUM_JOIN_MEMBERSHIP_TYPES; i++, join_state >>= 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (join_state & 0x1)
 			group->members[i] += inc;
 }
@@ -289,11 +245,7 @@ static u8 get_leave_state(struct mcast_group *group)
 	u8 leave_state = 0;
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < 3; i++)
-=======
 	for (i = 0; i < NUM_JOIN_MEMBERSHIP_TYPES; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!group->members[i])
 			leave_state |= (0x1 << i);
 
@@ -387,15 +339,7 @@ static int send_join(struct mcast_group *group, struct mcast_member *member)
 				       member->multicast.comp_mask,
 				       3000, GFP_KERNEL, join_handler, group,
 				       &group->query);
-<<<<<<< HEAD
-	if (ret >= 0) {
-		group->query_id = ret;
-		ret = 0;
-	}
-	return ret;
-=======
 	return (ret > 0) ? 0 : ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int send_leave(struct mcast_group *group, u8 leave_state)
@@ -415,15 +359,7 @@ static int send_leave(struct mcast_group *group, u8 leave_state)
 				       IB_SA_MCMEMBER_REC_JOIN_STATE,
 				       3000, GFP_KERNEL, leave_handler,
 				       group, &group->query);
-<<<<<<< HEAD
-	if (ret >= 0) {
-		group->query_id = ret;
-		ret = 0;
-	}
-	return ret;
-=======
 	return (ret > 0) ? 0 : ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void join_group(struct mcast_group *group, struct mcast_member *member,
@@ -465,11 +401,7 @@ static void process_group_error(struct mcast_group *group)
 	while (!list_empty(&group->active_list)) {
 		member = list_entry(group->active_list.next,
 				    struct mcast_member, list);
-<<<<<<< HEAD
-		atomic_inc(&member->refcount);
-=======
 		refcount_inc(&member->refcount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del_init(&member->list);
 		adjust_membership(group, member->multicast.rec.join_state, -1);
 		member->state = MCAST_ERROR;
@@ -513,11 +445,7 @@ retest:
 				    struct mcast_member, list);
 		multicast = &member->multicast;
 		join_state = multicast->rec.join_state;
-<<<<<<< HEAD
-		atomic_inc(&member->refcount);
-=======
 		refcount_inc(&member->refcount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (join_state == (group->rec.join_state & join_state)) {
 			status = cmp_rec(&group->rec, &multicast->rec,
@@ -569,11 +497,7 @@ static void process_join_error(struct mcast_group *group, int status)
 	member = list_entry(group->pending_list.next,
 			    struct mcast_member, list);
 	if (group->last_join == member) {
-<<<<<<< HEAD
-		atomic_inc(&member->refcount);
-=======
 		refcount_inc(&member->refcount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del_init(&member->list);
 		spin_unlock_irq(&group->lock);
 		ret = member->multicast.callback(status, &member->multicast);
@@ -593,19 +517,6 @@ static void join_handler(int status, struct ib_sa_mcmember_rec *rec,
 	if (status)
 		process_join_error(group, status);
 	else {
-<<<<<<< HEAD
-		ib_find_pkey(group->port->dev->device, group->port->port_num,
-			     be16_to_cpu(rec->pkey), &pkey_index);
-
-		spin_lock_irq(&group->port->lock);
-		group->rec = *rec;
-		if (group->state == MCAST_BUSY &&
-		    group->pkey_index == MCAST_INVALID_PKEY_INDEX)
-			group->pkey_index = pkey_index;
-		if (!memcmp(&mgid0, &group->rec.mgid, sizeof mgid0)) {
-			rb_erase(&group->node, &group->port->table);
-			mcast_insert(group->port, group, 1);
-=======
 		int mgids_changed, is_mgid0;
 
 		if (ib_find_pkey(group->port->dev->device,
@@ -625,7 +536,6 @@ static void join_handler(int status, struct ib_sa_mcmember_rec *rec,
 			is_mgid0 = !memcmp(&mgid0, &group->rec.mgid,
 					   sizeof(mgid0));
 			mcast_insert(group->port, group, is_mgid0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		spin_unlock_irq(&group->port->lock);
 	}
@@ -679,11 +589,7 @@ static struct mcast_group *acquire_group(struct mcast_port *port,
 		kfree(group);
 		group = cur_group;
 	} else
-<<<<<<< HEAD
-		atomic_inc(&port->refcount);
-=======
 		refcount_inc(&port->refcount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 found:
 	atomic_inc(&group->refcount);
 	spin_unlock_irqrestore(&port->lock, flags);
@@ -699,11 +605,7 @@ found:
  */
 struct ib_sa_multicast *
 ib_sa_join_multicast(struct ib_sa_client *client,
-<<<<<<< HEAD
-		     struct ib_device *device, u8 port_num,
-=======
 		     struct ib_device *device, u32 port_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     struct ib_sa_mcmember_rec *rec,
 		     ib_sa_comp_mask comp_mask, gfp_t gfp_mask,
 		     int (*callback)(int status,
@@ -730,11 +632,7 @@ ib_sa_join_multicast(struct ib_sa_client *client,
 	member->multicast.callback = callback;
 	member->multicast.context = context;
 	init_completion(&member->comp);
-<<<<<<< HEAD
-	atomic_set(&member->refcount, 1);
-=======
 	refcount_set(&member->refcount, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	member->state = MCAST_JOINING;
 
 	member->group = acquire_group(&dev->port[port_num - dev->start_port],
@@ -792,11 +690,7 @@ void ib_sa_free_multicast(struct ib_sa_multicast *multicast)
 }
 EXPORT_SYMBOL(ib_sa_free_multicast);
 
-<<<<<<< HEAD
-int ib_sa_get_mcmember_rec(struct ib_device *device, u8 port_num,
-=======
 int ib_sa_get_mcmember_rec(struct ib_device *device, u32 port_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   union ib_gid *mgid, struct ib_sa_mcmember_rec *rec)
 {
 	struct mcast_device *dev;
@@ -822,34 +716,6 @@ int ib_sa_get_mcmember_rec(struct ib_device *device, u32 port_num,
 }
 EXPORT_SYMBOL(ib_sa_get_mcmember_rec);
 
-<<<<<<< HEAD
-int ib_init_ah_from_mcmember(struct ib_device *device, u8 port_num,
-			     struct ib_sa_mcmember_rec *rec,
-			     struct ib_ah_attr *ah_attr)
-{
-	int ret;
-	u16 gid_index;
-	u8 p;
-
-	ret = ib_find_cached_gid(device, &rec->port_gid, &p, &gid_index);
-	if (ret)
-		return ret;
-
-	memset(ah_attr, 0, sizeof *ah_attr);
-	ah_attr->dlid = be16_to_cpu(rec->mlid);
-	ah_attr->sl = rec->sl;
-	ah_attr->port_num = port_num;
-	ah_attr->static_rate = rec->rate;
-
-	ah_attr->ah_flags = IB_AH_GRH;
-	ah_attr->grh.dgid = rec->mgid;
-
-	ah_attr->grh.sgid_index = (u8) gid_index;
-	ah_attr->grh.flow_label = be32_to_cpu(rec->flow_label);
-	ah_attr->grh.hop_limit = rec->hop_limit;
-	ah_attr->grh.traffic_class = rec->traffic_class;
-
-=======
 /**
  * ib_init_ah_from_mcmember - Initialize AH attribute from multicast
  * member record and gid of the device.
@@ -898,7 +764,6 @@ int ib_init_ah_from_mcmember(struct ib_device *device, u32 port_num,
 				be32_to_cpu(rec->flow_label),
 				rec->hop_limit,	rec->traffic_class,
 				sgid_attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(ib_init_ah_from_mcmember);
@@ -932,12 +797,7 @@ static void mcast_event_handler(struct ib_event_handler *handler,
 	int index;
 
 	dev = container_of(handler, struct mcast_device, event_handler);
-<<<<<<< HEAD
-	if (rdma_port_get_link_layer(dev->device, event->element.port_num) !=
-	    IB_LINK_LAYER_INFINIBAND)
-=======
 	if (!rdma_cap_ib_mcast(dev->device, event->element.port_num))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	index = event->element.port_num - dev->start_port;
@@ -945,10 +805,6 @@ static void mcast_event_handler(struct ib_event_handler *handler,
 	switch (event->event) {
 	case IB_EVENT_PORT_ERR:
 	case IB_EVENT_LID_CHANGE:
-<<<<<<< HEAD
-	case IB_EVENT_SM_CHANGE:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IB_EVENT_CLIENT_REREGISTER:
 		mcast_groups_event(&dev->port[index], MCAST_GROUP_ERROR);
 		break;
@@ -960,37 +816,13 @@ static void mcast_event_handler(struct ib_event_handler *handler,
 	}
 }
 
-<<<<<<< HEAD
-static void mcast_add_one(struct ib_device *device)
-=======
 static int mcast_add_one(struct ib_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mcast_device *dev;
 	struct mcast_port *port;
 	int i;
 	int count = 0;
 
-<<<<<<< HEAD
-	if (rdma_node_get_transport(device->node_type) != RDMA_TRANSPORT_IB)
-		return;
-
-	dev = kmalloc(sizeof *dev + device->phys_port_cnt * sizeof *port,
-		      GFP_KERNEL);
-	if (!dev)
-		return;
-
-	if (device->node_type == RDMA_NODE_IB_SWITCH)
-		dev->start_port = dev->end_port = 0;
-	else {
-		dev->start_port = 1;
-		dev->end_port = device->phys_port_cnt;
-	}
-
-	for (i = 0; i <= dev->end_port - dev->start_port; i++) {
-		if (rdma_port_get_link_layer(device, dev->start_port + i) !=
-		    IB_LINK_LAYER_INFINIBAND)
-=======
 	dev = kmalloc(struct_size(dev, port, device->phys_port_cnt),
 		      GFP_KERNEL);
 	if (!dev)
@@ -1001,7 +833,6 @@ static int mcast_add_one(struct ib_device *device)
 
 	for (i = 0; i <= dev->end_port - dev->start_port; i++) {
 		if (!rdma_cap_ib_mcast(device, dev->start_port + i))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		port = &dev->port[i];
 		port->dev = dev;
@@ -1009,21 +840,13 @@ static int mcast_add_one(struct ib_device *device)
 		spin_lock_init(&port->lock);
 		port->table = RB_ROOT;
 		init_completion(&port->comp);
-<<<<<<< HEAD
-		atomic_set(&port->refcount, 1);
-=======
 		refcount_set(&port->refcount, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		++count;
 	}
 
 	if (!count) {
 		kfree(dev);
-<<<<<<< HEAD
-		return;
-=======
 		return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev->device = device;
@@ -1031,20 +854,6 @@ static int mcast_add_one(struct ib_device *device)
 
 	INIT_IB_EVENT_HANDLER(&dev->event_handler, device, mcast_event_handler);
 	ib_register_event_handler(&dev->event_handler);
-<<<<<<< HEAD
-}
-
-static void mcast_remove_one(struct ib_device *device)
-{
-	struct mcast_device *dev;
-	struct mcast_port *port;
-	int i;
-
-	dev = ib_get_client_data(device, &mcast_client);
-	if (!dev)
-		return;
-
-=======
 	return 0;
 }
 
@@ -1054,17 +863,11 @@ static void mcast_remove_one(struct ib_device *device, void *client_data)
 	struct mcast_port *port;
 	int i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ib_unregister_event_handler(&dev->event_handler);
 	flush_workqueue(mcast_wq);
 
 	for (i = 0; i <= dev->end_port - dev->start_port; i++) {
-<<<<<<< HEAD
-		if (rdma_port_get_link_layer(device, dev->start_port + i) ==
-		    IB_LINK_LAYER_INFINIBAND) {
-=======
 		if (rdma_cap_ib_mcast(device, dev->start_port + i)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			port = &dev->port[i];
 			deref_port(port);
 			wait_for_completion(&port->comp);
@@ -1078,11 +881,7 @@ int mcast_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	mcast_wq = create_singlethread_workqueue("ib_mcast");
-=======
 	mcast_wq = alloc_ordered_workqueue("ib_mcast", WQ_MEM_RECLAIM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mcast_wq)
 		return -ENOMEM;
 

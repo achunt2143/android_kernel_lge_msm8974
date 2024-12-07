@@ -1,25 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ARCH_POWERPC_BOOT_LIBFDT_ENV_H
 #define _ARCH_POWERPC_BOOT_LIBFDT_ENV_H
 
 #include <types.h>
 #include <string.h>
 
-<<<<<<< HEAD
-typedef u32 uint32_t;
-typedef u64 uint64_t;
-typedef unsigned long uintptr_t;
-
-#define fdt16_to_cpu(x)		(x)
-#define cpu_to_fdt16(x)		(x)
-#define fdt32_to_cpu(x)		(x)
-#define cpu_to_fdt32(x)		(x)
-#define fdt64_to_cpu(x)		(x)
-#define cpu_to_fdt64(x)		(x)
-=======
 #define INT_MAX			((int)(~0U>>1))
 #define UINT32_MAX		((u32)~0U)
 #define INT32_MAX		((s32)(UINT32_MAX >> 1))
@@ -38,6 +23,5 @@ typedef __be64 fdt64_t;
 #define cpu_to_fdt32(x)		cpu_to_be32(x)
 #define fdt64_to_cpu(x)		be64_to_cpu(x)
 #define cpu_to_fdt64(x)		cpu_to_be64(x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ARCH_POWERPC_BOOT_LIBFDT_ENV_H */

@@ -1,33 +1,17 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) ST-Ericsson AB 2010
- * Authors:	Sjur Brendeland/sjur.brandeland@stericsson.com
- *		Daniel Martensson / Daniel.Martensson@stericsson.com
- * License terms: GNU General Public License (GPL) version 2
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) ST-Ericsson AB 2010
  * Authors:	Sjur Brendeland
  *		Daniel Martensson
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
 
 #include <linux/fs.h>
-<<<<<<< HEAD
-#include <linux/hardirq.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/netdevice.h>
 #include <linux/if_ether.h>
-<<<<<<< HEAD
-#include <linux/moduleparam.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ip.h>
 #include <linux/sched.h>
 #include <linux/sockios.h>
@@ -47,10 +31,7 @@
 /*This list is protected by the rtnl lock. */
 static LIST_HEAD(chnl_net_list);
 
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("ST-Ericsson CAIF modem protocol GPRS network device");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_RTNL_LINK("caif");
 
@@ -63,10 +44,6 @@ enum caif_states {
 
 struct chnl_net {
 	struct cflayer chnl;
-<<<<<<< HEAD
-	struct net_device_stats stats;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct caif_connect_request conn_req;
 	struct list_head list_field;
 	struct net_device *netdev;
@@ -77,23 +54,6 @@ struct chnl_net {
 	enum caif_states state;
 };
 
-<<<<<<< HEAD
-static void robust_list_del(struct list_head *delete_node)
-{
-	struct list_head *list_node;
-	struct list_head *n;
-	ASSERT_RTNL();
-	list_for_each_safe(list_node, n, &chnl_net_list) {
-		if (list_node == delete_node) {
-			list_del(list_node);
-			return;
-		}
-	}
-	WARN_ON(1);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int chnl_recv_cb(struct cflayer *layr, struct cfpkt *pkt)
 {
 	struct sk_buff *skb;
@@ -103,11 +63,6 @@ static int chnl_recv_cb(struct cflayer *layr, struct cfpkt *pkt)
 	u8 buf;
 
 	priv = container_of(layr, struct chnl_net, chnl);
-<<<<<<< HEAD
-	if (!priv)
-		return -EINVAL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = (struct sk_buff *) cfpkt_tonative(pkt);
 
@@ -121,13 +76,10 @@ static int chnl_recv_cb(struct cflayer *layr, struct cfpkt *pkt)
 
 	/* check the version of IP */
 	ip_version = skb_header_pointer(skb, 0, 1, &buf);
-<<<<<<< HEAD
-=======
 	if (!ip_version) {
 		kfree_skb(skb);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (*ip_version >> 4) {
 	case 4:
@@ -148,14 +100,7 @@ static int chnl_recv_cb(struct cflayer *layr, struct cfpkt *pkt)
 	else
 		skb->ip_summed = CHECKSUM_NONE;
 
-<<<<<<< HEAD
-	if (in_interrupt())
-		netif_rx(skb);
-	else
-		netif_rx_ni(skb);
-=======
 	netif_rx(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update statistics. */
 	priv->netdev->stats.rx_packets++;
@@ -201,11 +146,7 @@ static void chnl_put(struct cflayer *lyr)
 }
 
 static void chnl_flowctrl_cb(struct cflayer *layr, enum caif_ctrlcmd flow,
-<<<<<<< HEAD
-				int phyid)
-=======
 			     int phyid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct chnl_net *priv = container_of(layr, struct chnl_net, chnl);
 	pr_debug("NET flowctrl func called flow: %s\n",
@@ -215,11 +156,7 @@ static void chnl_flowctrl_cb(struct cflayer *layr, enum caif_ctrlcmd flow,
 		flow == CAIF_CTRLCMD_DEINIT_RSP ? "CLOSE/DEINIT" :
 		flow == CAIF_CTRLCMD_INIT_FAIL_RSP ? "OPEN_FAIL" :
 		flow == CAIF_CTRLCMD_REMOTE_SHUTDOWN_IND ?
-<<<<<<< HEAD
-		 "REMOTE_SHUTDOWN" : "UKNOWN CTRL COMMAND");
-=======
 		 "REMOTE_SHUTDOWN" : "UNKNOWN CTRL COMMAND");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
@@ -256,12 +193,8 @@ static void chnl_flowctrl_cb(struct cflayer *layr, enum caif_ctrlcmd flow,
 	}
 }
 
-<<<<<<< HEAD
-static int chnl_net_start_xmit(struct sk_buff *skb, struct net_device *dev)
-=======
 static netdev_tx_t chnl_net_start_xmit(struct sk_buff *skb,
 				       struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct chnl_net *priv;
 	struct cfpkt *pkt = NULL;
@@ -332,11 +265,7 @@ static int chnl_net_open(struct net_device *dev)
 				goto error;
 		}
 
-<<<<<<< HEAD
-		lldev = dev_get_by_index(dev_net(dev), llifindex);
-=======
 		lldev = __dev_get_by_index(dev_net(dev), llifindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (lldev == NULL) {
 			pr_debug("no interface?\n");
@@ -358,10 +287,6 @@ static int chnl_net_open(struct net_device *dev)
 		mtu = min_t(int, dev->mtu, lldev->mtu - (headroom + tailroom));
 		mtu = min_t(int, GPRS_PDP_MTU, mtu);
 		dev_set_mtu(dev, mtu);
-<<<<<<< HEAD
-		dev_put(lldev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (mtu < 100) {
 			pr_warn("CAIF Interface MTU too small (%d)\n", mtu);
@@ -386,12 +311,6 @@ static int chnl_net_open(struct net_device *dev)
 
 	if (result == 0) {
 		pr_debug("connect timeout\n");
-<<<<<<< HEAD
-		caif_disconnect_client(dev_net(dev), &priv->chnl);
-		priv->state = CAIF_DISCONNECTED;
-		pr_debug("state disconnected\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = -ETIMEDOUT;
 		goto error;
 	}
@@ -429,10 +348,7 @@ static int chnl_net_init(struct net_device *dev)
 	ASSERT_RTNL();
 	priv = netdev_priv(dev);
 	strncpy(priv->name, dev->name, sizeof(priv->name));
-<<<<<<< HEAD
-=======
 	INIT_LIST_HEAD(&priv->list_field);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -441,11 +357,7 @@ static void chnl_net_uninit(struct net_device *dev)
 	struct chnl_net *priv;
 	ASSERT_RTNL();
 	priv = netdev_priv(dev);
-<<<<<<< HEAD
-	robust_list_del(&priv->list_field);
-=======
 	list_del_init(&priv->list_field);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct net_device_ops netdev_ops = {
@@ -460,22 +372,14 @@ static void chnl_net_destructor(struct net_device *dev)
 {
 	struct chnl_net *priv = netdev_priv(dev);
 	caif_free_client(&priv->chnl);
-<<<<<<< HEAD
-	free_netdev(dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ipcaif_net_setup(struct net_device *dev)
 {
 	struct chnl_net *priv;
 	dev->netdev_ops = &netdev_ops;
-<<<<<<< HEAD
-	dev->destructor = chnl_net_destructor;
-=======
 	dev->needs_free_netdev = true;
 	dev->priv_destructor = chnl_net_destructor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->flags |= IFF_NOARP;
 	dev->flags |= IFF_POINTOPOINT;
 	dev->mtu = GPRS_PDP_MTU;
@@ -501,16 +405,6 @@ static int ipcaif_fill_info(struct sk_buff *skb, const struct net_device *dev)
 	struct chnl_net *priv;
 	u8 loop;
 	priv = netdev_priv(dev);
-<<<<<<< HEAD
-	NLA_PUT_U32(skb, IFLA_CAIF_IPV4_CONNID,
-		    priv->conn_req.sockaddr.u.dgm.connection_id);
-	NLA_PUT_U32(skb, IFLA_CAIF_IPV6_CONNID,
-		    priv->conn_req.sockaddr.u.dgm.connection_id);
-	loop = priv->conn_req.protocol == CAIFPROTO_DATAGRAM_LOOP;
-	NLA_PUT_U8(skb, IFLA_CAIF_LOOPBACK, loop);
-
-
-=======
 	if (nla_put_u32(skb, IFLA_CAIF_IPV4_CONNID,
 			priv->conn_req.sockaddr.u.dgm.connection_id) ||
 	    nla_put_u32(skb, IFLA_CAIF_IPV6_CONNID,
@@ -519,7 +413,6 @@ static int ipcaif_fill_info(struct sk_buff *skb, const struct net_device *dev)
 	loop = priv->conn_req.protocol == CAIFPROTO_DATAGRAM_LOOP;
 	if (nla_put_u8(skb, IFLA_CAIF_LOOPBACK, loop))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 nla_put_failure:
 	return -EMSGSIZE;
@@ -527,11 +420,7 @@ nla_put_failure:
 }
 
 static void caif_netlink_parms(struct nlattr *data[],
-<<<<<<< HEAD
-				struct caif_connect_request *conn_req)
-=======
 			       struct caif_connect_request *conn_req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!data) {
 		pr_warn("no params data found\n");
@@ -552,12 +441,8 @@ static void caif_netlink_parms(struct nlattr *data[],
 }
 
 static int ipcaif_newlink(struct net *src_net, struct net_device *dev,
-<<<<<<< HEAD
-			  struct nlattr *tb[], struct nlattr *data[])
-=======
 			  struct nlattr *tb[], struct nlattr *data[],
 			  struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct chnl_net *caifdev;
@@ -580,12 +465,8 @@ static int ipcaif_newlink(struct net *src_net, struct net_device *dev,
 }
 
 static int ipcaif_changelink(struct net_device *dev, struct nlattr *tb[],
-<<<<<<< HEAD
-				struct nlattr *data[])
-=======
 			     struct nlattr *data[],
 			     struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct chnl_net *caifdev;
 	ASSERT_RTNL();
@@ -641,11 +522,7 @@ static void __exit chnl_exit_module(void)
 	rtnl_lock();
 	list_for_each_safe(list_node, _tmp, &chnl_net_list) {
 		dev = list_entry(list_node, struct chnl_net, list_field);
-<<<<<<< HEAD
-		list_del(list_node);
-=======
 		list_del_init(list_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		delete_device(dev);
 	}
 	rtnl_unlock();

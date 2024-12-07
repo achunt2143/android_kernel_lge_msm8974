@@ -1,33 +1,3 @@
-<<<<<<< HEAD
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <errno.h>
-#include <unistd.h>
-#include <elf.h>
-#include <byteswap.h>
-#define USE_BSD
-#include <endian.h>
-#include <regex.h>
-#include <tools/le_byteshift.h>
-
-static void die(char *fmt, ...);
-
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
-static Elf32_Ehdr ehdr;
-static unsigned long reloc_count, reloc_idx;
-static unsigned long *relocs;
-static unsigned long reloc16_count, reloc16_idx;
-static unsigned long *relocs16;
-
-struct section {
-	Elf32_Shdr     shdr;
-	struct section *link;
-	Elf32_Sym      *symtab;
-	Elf32_Rel      *reltab;
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* This is included from relocs_32/64.c */
 
@@ -71,22 +41,10 @@ struct section {
 	Elf_Sym        *symtab;
 	Elf32_Word     *xsymtab;
 	Elf_Rel        *reltab;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char           *strtab;
 };
 static struct section *secs;
 
-<<<<<<< HEAD
-enum symtype {
-	S_ABS,
-	S_REL,
-	S_SEG,
-	S_LIN,
-	S_NSYMTYPES
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char * const sym_regex_kernel[S_NSYMTYPES] = {
 /*
  * Following symbols have been audited. There values are constant and do
@@ -98,10 +56,7 @@ static const char * const sym_regex_kernel[S_NSYMTYPES] = {
 	"^(xen_irq_disable_direct_reloc$|"
 	"xen_save_fl_direct_reloc$|"
 	"VDSO|"
-<<<<<<< HEAD
-=======
 	"__kcfi_typeid_|"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"__crc_)",
 
 /*
@@ -111,14 +66,6 @@ static const char * const sym_regex_kernel[S_NSYMTYPES] = {
 	[S_REL] =
 	"^(__init_(begin|end)|"
 	"__x86_cpu_dev_(start|end)|"
-<<<<<<< HEAD
-	"(__parainstructions|__alt_instructions)(|_end)|"
-	"(__iommu_table|__apicdrivers|__smp_locks)(|_end)|"
-	"__(start|end)_pci_.*|"
-	"__(start|end)_builtin_fw|"
-	"__(start|stop)___ksymtab(|_gpl|_unused|_unused_gpl|_gpl_future)|"
-	"__(start|stop)___kcrctab(|_gpl|_unused|_unused_gpl|_gpl_future)|"
-=======
 	"__alt_instructions(_end)?|"
 	"(__iommu_table|__apicdrivers|__smp_locks)(_end)?|"
 	"__(start|end)_pci_.*|"
@@ -127,17 +74,12 @@ static const char * const sym_regex_kernel[S_NSYMTYPES] = {
 #endif
 	"__(start|stop)___ksymtab(_gpl)?|"
 	"__(start|stop)___kcrctab(_gpl)?|"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"__(start|stop)___param|"
 	"__(start|stop)___modver|"
 	"__(start|stop)___bug_table|"
 	"__tracedata_(start|end)|"
 	"__(start|stop)_notes|"
 	"__end_rodata|"
-<<<<<<< HEAD
-	"__initramfs_start|"
-	"(jiffies|jiffies_64)|"
-=======
 	"__end_rodata_aligned|"
 	"__initramfs_start|"
 	"(jiffies|jiffies_64)|"
@@ -147,15 +89,12 @@ static const char * const sym_regex_kernel[S_NSYMTYPES] = {
 	"__end_rodata_hpage_align|"
 #endif
 	"__vvar_page|"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"_end)$"
 };
 
 
 static const char * const sym_regex_realmode[S_NSYMTYPES] = {
 /*
-<<<<<<< HEAD
-=======
  * These symbols are known to be relative, even if the linker marks them
  * as absolute (typically defined outside any section in the linker script.)
  */
@@ -163,7 +102,6 @@ static const char * const sym_regex_realmode[S_NSYMTYPES] = {
 	"^pa_",
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * These are 16-bit segment symbols when compiling 16-bit code.
  */
 	[S_SEG] =
@@ -205,28 +143,12 @@ static void regex_init(int use_real_mode)
 			      REG_EXTENDED|REG_NOSUB);
 
 		if (err) {
-<<<<<<< HEAD
-			regerror(err, &sym_regex_c[i], errbuf, sizeof errbuf);
-=======
 			regerror(err, &sym_regex_c[i], errbuf, sizeof(errbuf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			die("%s", errbuf);
 		}
         }
 }
 
-<<<<<<< HEAD
-static void die(char *fmt, ...)
-{
-	va_list ap;
-	va_start(ap, fmt);
-	vfprintf(stderr, fmt, ap);
-	va_end(ap);
-	exit(1);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *sym_type(unsigned type)
 {
 	static const char *type_name[] = {
@@ -284,8 +206,6 @@ static const char *rel_type(unsigned type)
 {
 	static const char *type_name[] = {
 #define REL_TYPE(X) [X] = #X
-<<<<<<< HEAD
-=======
 #if ELF_BITS == 64
 		REL_TYPE(R_X86_64_NONE),
 		REL_TYPE(R_X86_64_64),
@@ -305,7 +225,6 @@ static const char *rel_type(unsigned type)
 		REL_TYPE(R_X86_64_8),
 		REL_TYPE(R_X86_64_PC8),
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		REL_TYPE(R_386_NONE),
 		REL_TYPE(R_386_32),
 		REL_TYPE(R_386_PC32),
@@ -321,10 +240,7 @@ static const char *rel_type(unsigned type)
 		REL_TYPE(R_386_PC8),
 		REL_TYPE(R_386_16),
 		REL_TYPE(R_386_PC16),
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef REL_TYPE
 	};
 	const char *name = "unknown type rel type name";
@@ -338,15 +254,9 @@ static const char *sec_name(unsigned shndx)
 {
 	const char *sec_strtab;
 	const char *name;
-<<<<<<< HEAD
-	sec_strtab = secs[ehdr.e_shstrndx].strtab;
-	name = "<noname>";
-	if (shndx < ehdr.e_shnum) {
-=======
 	sec_strtab = secs[shstrndx].strtab;
 	name = "<noname>";
 	if (shndx < shnum) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		name = sec_strtab + secs[shndx].shdr.sh_name;
 	}
 	else if (shndx == SHN_ABS) {
@@ -358,11 +268,7 @@ static const char *sec_name(unsigned shndx)
 	return name;
 }
 
-<<<<<<< HEAD
-static const char *sym_name(const char *sym_strtab, Elf32_Sym *sym)
-=======
 static const char *sym_name(const char *sym_strtab, Elf_Sym *sym)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *name;
 	name = "<noname>";
@@ -370,18 +276,11 @@ static const char *sym_name(const char *sym_strtab, Elf_Sym *sym)
 		name = sym_strtab + sym->st_name;
 	}
 	else {
-<<<<<<< HEAD
-		name = sec_name(sym->st_shndx);
-=======
 		name = sec_name(sym_index(sym));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return name;
 }
 
-<<<<<<< HEAD
-
-=======
 static Elf_Sym *sym_lookup(const char *symname)
 {
 	int i;
@@ -408,23 +307,16 @@ static Elf_Sym *sym_lookup(const char *symname)
 	}
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 #define le16_to_cpu(val) (val)
 #define le32_to_cpu(val) (val)
-<<<<<<< HEAD
-=======
 #define le64_to_cpu(val) (val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #if BYTE_ORDER == BIG_ENDIAN
 #define le16_to_cpu(val) bswap_16(val)
 #define le32_to_cpu(val) bswap_32(val)
-<<<<<<< HEAD
-=======
 #define le64_to_cpu(val) bswap_64(val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static uint16_t elf16_to_cpu(uint16_t val)
@@ -437,8 +329,6 @@ static uint32_t elf32_to_cpu(uint32_t val)
 	return le32_to_cpu(val);
 }
 
-<<<<<<< HEAD
-=======
 #define elf_half_to_cpu(x)	elf16_to_cpu(x)
 #define elf_word_to_cpu(x)	elf32_to_cpu(x)
 
@@ -473,7 +363,6 @@ static int sym_index(Elf_Sym *sym)
 	return elf32_to_cpu(xsymtab[index]);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void read_ehdr(FILE *fp)
 {
 	if (fread(&ehdr, sizeof(ehdr), 1, fp) != 1) {
@@ -483,13 +372,8 @@ static void read_ehdr(FILE *fp)
 	if (memcmp(ehdr.e_ident, ELFMAG, SELFMAG) != 0) {
 		die("No ELF magic\n");
 	}
-<<<<<<< HEAD
-	if (ehdr.e_ident[EI_CLASS] != ELFCLASS32) {
-		die("Not a 32 bit executable\n");
-=======
 	if (ehdr.e_ident[EI_CLASS] != ELF_CLASS) {
 		die("Not a %d bit executable\n", ELF_BITS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (ehdr.e_ident[EI_DATA] != ELFDATA2LSB) {
 		die("Not a LSB ELF executable\n");
@@ -498,43 +382,6 @@ static void read_ehdr(FILE *fp)
 		die("Unknown ELF version\n");
 	}
 	/* Convert the fields to native endian */
-<<<<<<< HEAD
-	ehdr.e_type      = elf16_to_cpu(ehdr.e_type);
-	ehdr.e_machine   = elf16_to_cpu(ehdr.e_machine);
-	ehdr.e_version   = elf32_to_cpu(ehdr.e_version);
-	ehdr.e_entry     = elf32_to_cpu(ehdr.e_entry);
-	ehdr.e_phoff     = elf32_to_cpu(ehdr.e_phoff);
-	ehdr.e_shoff     = elf32_to_cpu(ehdr.e_shoff);
-	ehdr.e_flags     = elf32_to_cpu(ehdr.e_flags);
-	ehdr.e_ehsize    = elf16_to_cpu(ehdr.e_ehsize);
-	ehdr.e_phentsize = elf16_to_cpu(ehdr.e_phentsize);
-	ehdr.e_phnum     = elf16_to_cpu(ehdr.e_phnum);
-	ehdr.e_shentsize = elf16_to_cpu(ehdr.e_shentsize);
-	ehdr.e_shnum     = elf16_to_cpu(ehdr.e_shnum);
-	ehdr.e_shstrndx  = elf16_to_cpu(ehdr.e_shstrndx);
-
-	if ((ehdr.e_type != ET_EXEC) && (ehdr.e_type != ET_DYN)) {
-		die("Unsupported ELF header type\n");
-	}
-	if (ehdr.e_machine != EM_386) {
-		die("Not for x86\n");
-	}
-	if (ehdr.e_version != EV_CURRENT) {
-		die("Unknown ELF version\n");
-	}
-	if (ehdr.e_ehsize != sizeof(Elf32_Ehdr)) {
-		die("Bad Elf header size\n");
-	}
-	if (ehdr.e_phentsize != sizeof(Elf32_Phdr)) {
-		die("Bad program header entry\n");
-	}
-	if (ehdr.e_shentsize != sizeof(Elf32_Shdr)) {
-		die("Bad section header entry\n");
-	}
-	if (ehdr.e_shstrndx >= ehdr.e_shnum) {
-		die("String table index out of bounds\n");
-	}
-=======
 	ehdr.e_type      = elf_half_to_cpu(ehdr.e_type);
 	ehdr.e_machine   = elf_half_to_cpu(ehdr.e_machine);
 	ehdr.e_version   = elf_word_to_cpu(ehdr.e_version);
@@ -584,41 +431,11 @@ static void read_ehdr(FILE *fp)
 
 	if (shstrndx >= shnum)
 		die("String table index out of bounds\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void read_shdrs(FILE *fp)
 {
 	int i;
-<<<<<<< HEAD
-	Elf32_Shdr shdr;
-
-	secs = calloc(ehdr.e_shnum, sizeof(struct section));
-	if (!secs) {
-		die("Unable to allocate %d section headers\n",
-		    ehdr.e_shnum);
-	}
-	if (fseek(fp, ehdr.e_shoff, SEEK_SET) < 0) {
-		die("Seek to %d failed: %s\n",
-			ehdr.e_shoff, strerror(errno));
-	}
-	for (i = 0; i < ehdr.e_shnum; i++) {
-		struct section *sec = &secs[i];
-		if (fread(&shdr, sizeof shdr, 1, fp) != 1)
-			die("Cannot read ELF section headers %d/%d: %s\n",
-			    i, ehdr.e_shnum, strerror(errno));
-		sec->shdr.sh_name      = elf32_to_cpu(shdr.sh_name);
-		sec->shdr.sh_type      = elf32_to_cpu(shdr.sh_type);
-		sec->shdr.sh_flags     = elf32_to_cpu(shdr.sh_flags);
-		sec->shdr.sh_addr      = elf32_to_cpu(shdr.sh_addr);
-		sec->shdr.sh_offset    = elf32_to_cpu(shdr.sh_offset);
-		sec->shdr.sh_size      = elf32_to_cpu(shdr.sh_size);
-		sec->shdr.sh_link      = elf32_to_cpu(shdr.sh_link);
-		sec->shdr.sh_info      = elf32_to_cpu(shdr.sh_info);
-		sec->shdr.sh_addralign = elf32_to_cpu(shdr.sh_addralign);
-		sec->shdr.sh_entsize   = elf32_to_cpu(shdr.sh_entsize);
-		if (sec->shdr.sh_link < ehdr.e_shnum)
-=======
 	Elf_Shdr shdr;
 
 	secs = calloc(shnum, sizeof(struct section));
@@ -646,7 +463,6 @@ static void read_shdrs(FILE *fp)
 		sec->shdr.sh_addralign = elf_xword_to_cpu(shdr.sh_addralign);
 		sec->shdr.sh_entsize   = elf_xword_to_cpu(shdr.sh_entsize);
 		if (sec->shdr.sh_link < shnum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sec->link = &secs[sec->shdr.sh_link];
 	}
 
@@ -655,32 +471,19 @@ static void read_shdrs(FILE *fp)
 static void read_strtabs(FILE *fp)
 {
 	int i;
-<<<<<<< HEAD
-	for (i = 0; i < ehdr.e_shnum; i++) {
-=======
 	for (i = 0; i < shnum; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct section *sec = &secs[i];
 		if (sec->shdr.sh_type != SHT_STRTAB) {
 			continue;
 		}
 		sec->strtab = malloc(sec->shdr.sh_size);
 		if (!sec->strtab) {
-<<<<<<< HEAD
-			die("malloc of %d bytes for strtab failed\n",
-				sec->shdr.sh_size);
-		}
-		if (fseek(fp, sec->shdr.sh_offset, SEEK_SET) < 0) {
-			die("Seek to %d failed: %s\n",
-				sec->shdr.sh_offset, strerror(errno));
-=======
 			die("malloc of %" FMT " bytes for strtab failed\n",
 			    sec->shdr.sh_size);
 		}
 		if (fseek(fp, sec->shdr.sh_offset, SEEK_SET) < 0) {
 			die("Seek to %" FMT " failed: %s\n",
 			    sec->shdr.sh_offset, strerror(errno));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (fread(sec->strtab, 1, sec->shdr.sh_size, fp)
 		    != sec->shdr.sh_size) {
@@ -693,33 +496,6 @@ static void read_strtabs(FILE *fp)
 static void read_symtabs(FILE *fp)
 {
 	int i,j;
-<<<<<<< HEAD
-	for (i = 0; i < ehdr.e_shnum; i++) {
-		struct section *sec = &secs[i];
-		if (sec->shdr.sh_type != SHT_SYMTAB) {
-			continue;
-		}
-		sec->symtab = malloc(sec->shdr.sh_size);
-		if (!sec->symtab) {
-			die("malloc of %d bytes for symtab failed\n",
-				sec->shdr.sh_size);
-		}
-		if (fseek(fp, sec->shdr.sh_offset, SEEK_SET) < 0) {
-			die("Seek to %d failed: %s\n",
-				sec->shdr.sh_offset, strerror(errno));
-		}
-		if (fread(sec->symtab, 1, sec->shdr.sh_size, fp)
-		    != sec->shdr.sh_size) {
-			die("Cannot read symbol table: %s\n",
-				strerror(errno));
-		}
-		for (j = 0; j < sec->shdr.sh_size/sizeof(Elf32_Sym); j++) {
-			Elf32_Sym *sym = &sec->symtab[j];
-			sym->st_name  = elf32_to_cpu(sym->st_name);
-			sym->st_value = elf32_to_cpu(sym->st_value);
-			sym->st_size  = elf32_to_cpu(sym->st_size);
-			sym->st_shndx = elf16_to_cpu(sym->st_shndx);
-=======
 
 	for (i = 0; i < shnum; i++) {
 		struct section *sec = &secs[i];
@@ -774,7 +550,6 @@ static void read_symtabs(FILE *fp)
 
 		default:
 			continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -783,46 +558,25 @@ static void read_symtabs(FILE *fp)
 static void read_relocs(FILE *fp)
 {
 	int i,j;
-<<<<<<< HEAD
-	for (i = 0; i < ehdr.e_shnum; i++) {
-		struct section *sec = &secs[i];
-		if (sec->shdr.sh_type != SHT_REL) {
-=======
 	for (i = 0; i < shnum; i++) {
 		struct section *sec = &secs[i];
 		if (sec->shdr.sh_type != SHT_REL_TYPE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		sec->reltab = malloc(sec->shdr.sh_size);
 		if (!sec->reltab) {
-<<<<<<< HEAD
-			die("malloc of %d bytes for relocs failed\n",
-				sec->shdr.sh_size);
-		}
-		if (fseek(fp, sec->shdr.sh_offset, SEEK_SET) < 0) {
-			die("Seek to %d failed: %s\n",
-				sec->shdr.sh_offset, strerror(errno));
-=======
 			die("malloc of %" FMT " bytes for relocs failed\n",
 			    sec->shdr.sh_size);
 		}
 		if (fseek(fp, sec->shdr.sh_offset, SEEK_SET) < 0) {
 			die("Seek to %" FMT " failed: %s\n",
 			    sec->shdr.sh_offset, strerror(errno));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (fread(sec->reltab, 1, sec->shdr.sh_size, fp)
 		    != sec->shdr.sh_size) {
 			die("Cannot read symbol table: %s\n",
 				strerror(errno));
 		}
-<<<<<<< HEAD
-		for (j = 0; j < sec->shdr.sh_size/sizeof(Elf32_Rel); j++) {
-			Elf32_Rel *rel = &sec->reltab[j];
-			rel->r_offset = elf32_to_cpu(rel->r_offset);
-			rel->r_info   = elf32_to_cpu(rel->r_info);
-=======
 		for (j = 0; j < sec->shdr.sh_size/sizeof(Elf_Rel); j++) {
 			Elf_Rel *rel = &sec->reltab[j];
 			rel->r_offset = elf_addr_to_cpu(rel->r_offset);
@@ -830,7 +584,6 @@ static void read_relocs(FILE *fp)
 #if (SHT_REL_TYPE == SHT_RELA)
 			rel->r_addend = elf_xword_to_cpu(rel->r_addend);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -839,11 +592,6 @@ static void read_relocs(FILE *fp)
 static void print_absolute_symbols(void)
 {
 	int i;
-<<<<<<< HEAD
-	printf("Absolute symbols\n");
-	printf(" Num:    Value Size  Type       Bind        Visibility  Name\n");
-	for (i = 0; i < ehdr.e_shnum; i++) {
-=======
 	const char *format;
 
 	if (ELF_BITS == 64)
@@ -854,7 +602,6 @@ static void print_absolute_symbols(void)
 	printf("Absolute symbols\n");
 	printf(" Num:    Value Size  Type       Bind        Visibility  Name\n");
 	for (i = 0; i < shnum; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct section *sec = &secs[i];
 		char *sym_strtab;
 		int j;
@@ -863,32 +610,19 @@ static void print_absolute_symbols(void)
 			continue;
 		}
 		sym_strtab = sec->link->strtab;
-<<<<<<< HEAD
-		for (j = 0; j < sec->shdr.sh_size/sizeof(Elf32_Sym); j++) {
-			Elf32_Sym *sym;
-=======
 		for (j = 0; j < sec->shdr.sh_size/sizeof(Elf_Sym); j++) {
 			Elf_Sym *sym;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			const char *name;
 			sym = &sec->symtab[j];
 			name = sym_name(sym_strtab, sym);
 			if (sym->st_shndx != SHN_ABS) {
 				continue;
 			}
-<<<<<<< HEAD
-			printf("%5d %08x %5d %10s %10s %12s %s\n",
-				j, sym->st_value, sym->st_size,
-				sym_type(ELF32_ST_TYPE(sym->st_info)),
-				sym_bind(ELF32_ST_BIND(sym->st_info)),
-				sym_visibility(ELF32_ST_VISIBILITY(sym->st_other)),
-=======
 			printf(format,
 				j, sym->st_value, sym->st_size,
 				sym_type(ELF_ST_TYPE(sym->st_info)),
 				sym_bind(ELF_ST_BIND(sym->st_info)),
 				sym_visibility(ELF_ST_VISIBILITY(sym->st_other)),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				name);
 		}
 	}
@@ -898,16 +632,6 @@ static void print_absolute_symbols(void)
 static void print_absolute_relocs(void)
 {
 	int i, printed = 0;
-<<<<<<< HEAD
-
-	for (i = 0; i < ehdr.e_shnum; i++) {
-		struct section *sec = &secs[i];
-		struct section *sec_applies, *sec_symtab;
-		char *sym_strtab;
-		Elf32_Sym *sh_symtab;
-		int j;
-		if (sec->shdr.sh_type != SHT_REL) {
-=======
 	const char *format;
 
 	if (ELF_BITS == 64)
@@ -922,7 +646,6 @@ static void print_absolute_relocs(void)
 		Elf_Sym *sh_symtab;
 		int j;
 		if (sec->shdr.sh_type != SHT_REL_TYPE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		sec_symtab  = sec->link;
@@ -930,16 +653,6 @@ static void print_absolute_relocs(void)
 		if (!(sec_applies->shdr.sh_flags & SHF_ALLOC)) {
 			continue;
 		}
-<<<<<<< HEAD
-		sh_symtab  = sec_symtab->symtab;
-		sym_strtab = sec_symtab->link->strtab;
-		for (j = 0; j < sec->shdr.sh_size/sizeof(Elf32_Rel); j++) {
-			Elf32_Rel *rel;
-			Elf32_Sym *sym;
-			const char *name;
-			rel = &sec->reltab[j];
-			sym = &sh_symtab[ELF32_R_SYM(rel->r_info)];
-=======
 		/*
 		 * Do not perform relocations in .notes section; any
 		 * values there are meant for pre-boot consumption (e.g.
@@ -956,7 +669,6 @@ static void print_absolute_relocs(void)
 			const char *name;
 			rel = &sec->reltab[j];
 			sym = &sh_symtab[ELF_R_SYM(rel->r_info)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			name = sym_name(sym_strtab, sym);
 			if (sym->st_shndx != SHN_ABS) {
 				continue;
@@ -986,17 +698,10 @@ static void print_absolute_relocs(void)
 				printed = 1;
 			}
 
-<<<<<<< HEAD
-			printf("%08x %08x %10s %08x  %s\n",
-				rel->r_offset,
-				rel->r_info,
-				rel_type(ELF32_R_TYPE(rel->r_info)),
-=======
 			printf(format,
 				rel->r_offset,
 				rel->r_info,
 				rel_type(ELF_R_TYPE(rel->r_info)),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sym->st_value,
 				name);
 		}
@@ -1006,16 +711,6 @@ static void print_absolute_relocs(void)
 		printf("\n");
 }
 
-<<<<<<< HEAD
-static void walk_relocs(void (*visit)(Elf32_Rel *rel, Elf32_Sym *sym),
-			int use_real_mode)
-{
-	int i;
-	/* Walk through the relocations */
-	for (i = 0; i < ehdr.e_shnum; i++) {
-		char *sym_strtab;
-		Elf32_Sym *sh_symtab;
-=======
 static void add_reloc(struct relocs *r, uint32_t offset)
 {
 	if (r->count == r->size) {
@@ -1039,16 +734,11 @@ static void walk_relocs(int (*process)(struct section *sec, Elf_Rel *rel,
 	for (i = 0; i < shnum; i++) {
 		char *sym_strtab;
 		Elf_Sym *sh_symtab;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct section *sec_applies, *sec_symtab;
 		int j;
 		struct section *sec = &secs[i];
 
-<<<<<<< HEAD
-		if (sec->shdr.sh_type != SHT_REL) {
-=======
 		if (sec->shdr.sh_type != SHT_REL_TYPE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		sec_symtab  = sec->link;
@@ -1058,107 +748,16 @@ static void walk_relocs(int (*process)(struct section *sec, Elf_Rel *rel,
 		}
 		sh_symtab = sec_symtab->symtab;
 		sym_strtab = sec_symtab->link->strtab;
-<<<<<<< HEAD
-		for (j = 0; j < sec->shdr.sh_size/sizeof(Elf32_Rel); j++) {
-			Elf32_Rel *rel;
-			Elf32_Sym *sym;
-			unsigned r_type;
-			const char *symname;
-			int shn_abs;
-
-			rel = &sec->reltab[j];
-			sym = &sh_symtab[ELF32_R_SYM(rel->r_info)];
-			r_type = ELF32_R_TYPE(rel->r_info);
-
-			shn_abs = sym->st_shndx == SHN_ABS;
-
-			switch (r_type) {
-			case R_386_NONE:
-			case R_386_PC32:
-			case R_386_PC16:
-			case R_386_PC8:
-				/*
-				 * NONE can be ignored and and PC relative
-				 * relocations don't need to be adjusted.
-				 */
-				break;
-
-			case R_386_16:
-				symname = sym_name(sym_strtab, sym);
-				if (!use_real_mode)
-					goto bad;
-				if (shn_abs) {
-					if (is_reloc(S_ABS, symname))
-						break;
-					else if (!is_reloc(S_SEG, symname))
-						goto bad;
-				} else {
-					if (is_reloc(S_LIN, symname))
-						goto bad;
-					else
-						break;
-				}
-				visit(rel, sym);
-				break;
-
-			case R_386_32:
-				symname = sym_name(sym_strtab, sym);
-				if (shn_abs) {
-					if (is_reloc(S_ABS, symname))
-						break;
-					else if (!is_reloc(S_REL, symname))
-						goto bad;
-				} else {
-					if (use_real_mode &&
-					    !is_reloc(S_LIN, symname))
-						break;
-				}
-				visit(rel, sym);
-				break;
-			default:
-				die("Unsupported relocation type: %s (%d)\n",
-				    rel_type(r_type), r_type);
-				break;
-			bad:
-				symname = sym_name(sym_strtab, sym);
-				die("Invalid %s %s relocation: %s\n",
-				    shn_abs ? "absolute" : "relative",
-				    rel_type(r_type), symname);
-			}
-=======
 		for (j = 0; j < sec->shdr.sh_size/sizeof(Elf_Rel); j++) {
 			Elf_Rel *rel = &sec->reltab[j];
 			Elf_Sym *sym = &sh_symtab[ELF_R_SYM(rel->r_info)];
 			const char *symname = sym_name(sym_strtab, sym);
 
 			process(sec, rel, sym, symname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-static void count_reloc(Elf32_Rel *rel, Elf32_Sym *sym)
-{
-	if (ELF32_R_TYPE(rel->r_info) == R_386_16)
-		reloc16_count++;
-	else
-		reloc_count++;
-}
-
-static void collect_reloc(Elf32_Rel *rel, Elf32_Sym *sym)
-{
-	/* Remember the address that needs to be adjusted. */
-	if (ELF32_R_TYPE(rel->r_info) == R_386_16)
-		relocs16[reloc16_idx++] = rel->r_offset;
-	else
-		relocs[reloc_idx++] = rel->r_offset;
-}
-
-static int cmp_relocs(const void *va, const void *vb)
-{
-	const unsigned long *a, *b;
-=======
 /*
  * The .data..percpu section is a special case for x86_64 SMP kernels.
  * It is used to initialize the actual per_cpu areas and to provide
@@ -1447,21 +1046,16 @@ static int do_reloc_real(struct section *sec, Elf_Rel *rel, Elf_Sym *sym,
 static int cmp_relocs(const void *va, const void *vb)
 {
 	const uint32_t *a, *b;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	a = va; b = vb;
 	return (*a == *b)? 0 : (*a > *b)? 1 : -1;
 }
 
-<<<<<<< HEAD
-static int write32(unsigned int v, FILE *f)
-=======
 static void sort_relocs(struct relocs *r)
 {
 	qsort(r->offset, r->count, sizeof(r->offset[0]), cmp_relocs);
 }
 
 static int write32(uint32_t v, FILE *f)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char buf[4];
 
@@ -1469,35 +1063,6 @@ static int write32(uint32_t v, FILE *f)
 	return fwrite(buf, 1, 4, f) == 4 ? 0 : -1;
 }
 
-<<<<<<< HEAD
-static void emit_relocs(int as_text, int use_real_mode)
-{
-	int i;
-	/* Count how many relocations I have and allocate space for them. */
-	reloc_count = 0;
-	walk_relocs(count_reloc, use_real_mode);
-	relocs = malloc(reloc_count * sizeof(relocs[0]));
-	if (!relocs) {
-		die("malloc of %d entries for relocs failed\n",
-			reloc_count);
-	}
-
-	relocs16 = malloc(reloc16_count * sizeof(relocs[0]));
-	if (!relocs16) {
-		die("malloc of %d entries for relocs16 failed\n",
-			reloc16_count);
-	}
-	/* Collect up the relocations */
-	reloc_idx = 0;
-	walk_relocs(collect_reloc, use_real_mode);
-
-	if (reloc16_count && !use_real_mode)
-		die("Segment relocations found but --realmode not specified\n");
-
-	/* Order the relocations for more efficient processing */
-	qsort(relocs, reloc_count, sizeof(relocs[0]), cmp_relocs);
-	qsort(relocs16, reloc16_count, sizeof(relocs16[0]), cmp_relocs);
-=======
 static int write32_as_text(uint32_t v, FILE *f)
 {
 	return fprintf(f, "\t.long 0x%08"PRIx32"\n", v) > 0 ? 0 : -1;
@@ -1536,7 +1101,6 @@ static void emit_relocs(int as_text, int use_real_mode)
 #else
 	sort_relocs(&relocs16);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Print the relocations */
 	if (as_text) {
@@ -1545,101 +1109,6 @@ static void emit_relocs(int as_text, int use_real_mode)
 		 */
 		printf(".section \".data.reloc\",\"a\"\n");
 		printf(".balign 4\n");
-<<<<<<< HEAD
-		if (use_real_mode) {
-			printf("\t.long %lu\n", reloc16_count);
-			for (i = 0; i < reloc16_count; i++)
-				printf("\t.long 0x%08lx\n", relocs16[i]);
-			printf("\t.long %lu\n", reloc_count);
-			for (i = 0; i < reloc_count; i++) {
-				printf("\t.long 0x%08lx\n", relocs[i]);
-			}
-		} else {
-			/* Print a stop */
-			printf("\t.long 0x%08lx\n", (unsigned long)0);
-			for (i = 0; i < reloc_count; i++) {
-				printf("\t.long 0x%08lx\n", relocs[i]);
-			}
-		}
-
-		printf("\n");
-	}
-	else {
-		if (use_real_mode) {
-			write32(reloc16_count, stdout);
-			for (i = 0; i < reloc16_count; i++)
-				write32(relocs16[i], stdout);
-			write32(reloc_count, stdout);
-
-			/* Now print each relocation */
-			for (i = 0; i < reloc_count; i++)
-				write32(relocs[i], stdout);
-		} else {
-			/* Print a stop */
-			write32(0, stdout);
-
-			/* Now print each relocation */
-			for (i = 0; i < reloc_count; i++) {
-				write32(relocs[i], stdout);
-			}
-		}
-	}
-}
-
-static void usage(void)
-{
-	die("relocs [--abs-syms|--abs-relocs|--text|--realmode] vmlinux\n");
-}
-
-int main(int argc, char **argv)
-{
-	int show_absolute_syms, show_absolute_relocs;
-	int as_text, use_real_mode;
-	const char *fname;
-	FILE *fp;
-	int i;
-
-	show_absolute_syms = 0;
-	show_absolute_relocs = 0;
-	as_text = 0;
-	use_real_mode = 0;
-	fname = NULL;
-	for (i = 1; i < argc; i++) {
-		char *arg = argv[i];
-		if (*arg == '-') {
-			if (strcmp(arg, "--abs-syms") == 0) {
-				show_absolute_syms = 1;
-				continue;
-			}
-			if (strcmp(arg, "--abs-relocs") == 0) {
-				show_absolute_relocs = 1;
-				continue;
-			}
-			if (strcmp(arg, "--text") == 0) {
-				as_text = 1;
-				continue;
-			}
-			if (strcmp(arg, "--realmode") == 0) {
-				use_real_mode = 1;
-				continue;
-			}
-		}
-		else if (!fname) {
-			fname = arg;
-			continue;
-		}
-		usage();
-	}
-	if (!fname) {
-		usage();
-	}
-	regex_init(use_real_mode);
-	fp = fopen(fname, "r");
-	if (!fp) {
-		die("Cannot open %s: %s\n",
-			fname, strerror(errno));
-	}
-=======
 		write_reloc = write32_as_text;
 	}
 
@@ -1711,24 +1180,11 @@ void process(FILE *fp, int use_real_mode, int as_text,
 	     int show_reloc_info)
 {
 	regex_init(use_real_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_ehdr(fp);
 	read_shdrs(fp);
 	read_strtabs(fp);
 	read_symtabs(fp);
 	read_relocs(fp);
-<<<<<<< HEAD
-	if (show_absolute_syms) {
-		print_absolute_symbols();
-		return 0;
-	}
-	if (show_absolute_relocs) {
-		print_absolute_relocs();
-		return 0;
-	}
-	emit_relocs(as_text, use_real_mode);
-	return 0;
-=======
 	if (ELF_BITS == 64)
 		percpu_init();
 	if (show_absolute_syms) {
@@ -1744,5 +1200,4 @@ void process(FILE *fp, int use_real_mode, int as_text,
 		return;
 	}
 	emit_relocs(as_text, use_real_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Mouse driver configuration
 #
@@ -21,11 +18,7 @@ config MOUSE_PS2
 	default y
 	select SERIO
 	select SERIO_LIBPS2
-<<<<<<< HEAD
-	select SERIO_I8042 if X86
-=======
 	select SERIO_I8042 if ARCH_MIGHT_HAVE_PC_SERIO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SERIO_GSCPS2 if GSC
 	help
 	  Say Y here if you have a PS/2 mouse connected to your system. This
@@ -56,8 +49,6 @@ config MOUSE_PS2_ALPS
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-=======
 config MOUSE_PS2_BYD
 	bool "BYD PS/2 mouse protocol extension" if EXPERT
 	default y
@@ -68,17 +59,12 @@ config MOUSE_PS2_BYD
 
 	  If unsure, say Y.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config MOUSE_PS2_LOGIPS2PP
 	bool "Logitech PS/2++ mouse protocol extension" if EXPERT
 	default y
 	depends on MOUSE_PS2
 	help
-<<<<<<< HEAD
-	  Say Y here if you have a Logictech PS/2++ mouse connected to
-=======
 	  Say Y here if you have a Logitech PS/2++ mouse connected to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  your system.
 
 	  If unsure, say Y.
@@ -93,8 +79,6 @@ config MOUSE_PS2_SYNAPTICS
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-=======
 config MOUSE_PS2_SYNAPTICS_SMBUS
 	bool "Synaptics PS/2 SMbus companion" if EXPERT
 	default y
@@ -117,7 +101,6 @@ config MOUSE_PS2_CYPRESS
 
 	  If unsure, say Y.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config MOUSE_PS2_LIFEBOOK
 	bool "Fujitsu Lifebook PS/2 mouse protocol extension" if EXPERT
 	default y
@@ -145,20 +128,6 @@ config MOUSE_PS2_ELANTECH
 	  Say Y here if you have an Elantech PS/2 touchpad connected
 	  to your system.
 
-<<<<<<< HEAD
-	  Note that if you enable this driver you will need an updated
-	  X.org Synaptics driver that does not require ABS_PRESSURE
-	  reports from the touchpad (i.e. post 1.5.0 version). You can
-	  grab a patch for the driver here:
-
-	  http://userweb.kernel.org/~dtor/synaptics-no-abspressure.patch
-
-	  If unsure, say N.
-
-	  This driver exposes some configuration registers via sysfs
-	  entries. For further information,
-	  see <file:Documentation/input/elantech.txt>.
-=======
 	  This driver exposes some configuration registers via sysfs
 	  entries. For further information,
 	  see <file:Documentation/input/devices/elantech.rst>.
@@ -176,7 +145,6 @@ config MOUSE_PS2_ELANTECH_SMBUS
 	  to an SMBus, but enumerated through PS/2.
 
 	  If unsure, say Y.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MOUSE_PS2_SENTELIC
 	bool "Sentelic Finger Sensing Pad PS/2 protocol extension"
@@ -206,8 +174,6 @@ config MOUSE_PS2_OLPC
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-=======
 config MOUSE_PS2_FOCALTECH
 	bool "FocalTech PS/2 mouse protocol extension" if EXPERT
 	default y
@@ -234,7 +200,6 @@ config MOUSE_PS2_SMBUS
 	bool
 	depends on MOUSE_PS2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config MOUSE_SERIAL
 	tristate "Serial mouse"
 	select SERIO
@@ -264,11 +229,7 @@ config MOUSE_APPLETOUCH
 	  scrolling in X11.
 
 	  For further information, see
-<<<<<<< HEAD
-	  <file:Documentation/input/appletouch.txt>.
-=======
 	  <file:Documentation/input/devices/appletouch.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called appletouch.
@@ -291,17 +252,11 @@ config MOUSE_BCM5974
 
 	  The interface is currently identical to the appletouch interface,
 	  for further information, see
-<<<<<<< HEAD
-	  <file:Documentation/input/appletouch.txt>.
-=======
 	  <file:Documentation/input/devices/appletouch.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called bcm5974.
 
-<<<<<<< HEAD
-=======
 config MOUSE_CYAPA
 	tristate "Cypress APA I2C Trackpad support"
 	depends on I2C
@@ -345,7 +300,6 @@ config MOUSE_ELAN_I2C_SMBUS
 
 	   If unsure, say Y.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config MOUSE_INPORT
 	tristate "InPort/MS/ATIXL busmouse"
 	depends on ISA
@@ -418,11 +372,7 @@ config MOUSE_VSXXXAA
 	select SERIO
 	help
 	  Say Y (or M) if you want to use a DEC VSXXX-AA (hockey
-<<<<<<< HEAD
-	  puck) or a VSXXX-GA (rectangular) mouse. Theses mice are
-=======
 	  puck) or a VSXXX-GA (rectangular) mouse. These mice are
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  typically used on DECstations or VAXstations, but can also
 	  be used on any box capable of RS232 (with some adaptor
 	  described in the source file). This driver also works with the
@@ -430,12 +380,7 @@ config MOUSE_VSXXXAA
 
 config MOUSE_GPIO
 	tristate "GPIO mouse"
-<<<<<<< HEAD
-	depends on GENERIC_GPIO
-	select INPUT_POLLDEV
-=======
 	depends on GPIOLIB || COMPILE_TEST
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This driver simulates a mouse on GPIO lines of various CPUs (and some
 	  other chips).
@@ -448,15 +393,6 @@ config MOUSE_GPIO
 	  To compile this driver as a module, choose M here: the
 	  module will be called gpio_mouse.
 
-<<<<<<< HEAD
-config MOUSE_PXA930_TRKBALL
-	tristate "PXA930 Trackball mouse"
-	depends on CPU_PXA930 || CPU_PXA935
-	help
-	  Say Y here to support PXA930 Trackball mouse.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config MOUSE_MAPLE
 	tristate "Maple mouse (for the Dreamcast)"
 	depends on MAPLE
@@ -486,17 +422,6 @@ config MOUSE_SYNAPTICS_I2C
 	  To compile this driver as a module, choose M here: the
 	  module will be called synaptics_i2c.
 
-<<<<<<< HEAD
-config MOUSE_QCITP
-	tristate "Quanta Computer Inc. Touchpad"
-	depends on I2C
-	default n
-	help
-	  Say Y here if you want to use the Quanta touchpad driver for Quanta
-	  smartbook platforms.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config MOUSE_SYNAPTICS_USB
 	tristate "Synaptics USB device support"
 	depends on USB_ARCH_HAS_HCD

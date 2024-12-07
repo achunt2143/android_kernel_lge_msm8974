@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Standard PCI Hot Plug Driver
  *
@@ -12,24 +9,6 @@
  *
  * All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- * NON INFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <greg@kroah.com>,<kristen.c.accardi@intel.com>
  *
  */
@@ -123,11 +102,7 @@
 #define SLOT_REG_RSVDZ_MASK	((1 << 15) | (7 << 21))
 
 /*
-<<<<<<< HEAD
- * SHPC Command Code definitnions
-=======
  * SHPC Command Code definitions
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *     Slot Operation				00h - 3Fh
  *     Set Bus Segment Speed/Mode A		40h - 47h
@@ -199,14 +174,6 @@ static inline u8 shpc_readb(struct controller *ctrl, int reg)
 	return readb(ctrl->creg + reg);
 }
 
-<<<<<<< HEAD
-static inline void shpc_writeb(struct controller *ctrl, int reg, u8 val)
-{
-	writeb(val, ctrl->creg + reg);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u16 shpc_readw(struct controller *ctrl, int reg)
 {
 	return readw(ctrl->creg + reg);
@@ -243,23 +210,13 @@ static inline int shpc_indirect_read(struct controller *ctrl, int index,
 /*
  * This is the interrupt polling timeout function.
  */
-<<<<<<< HEAD
-static void int_poll_timeout(unsigned long data)
-{
-	struct controller *ctrl = (struct controller *)data;
-=======
 static void int_poll_timeout(struct timer_list *t)
 {
 	struct controller *ctrl = from_timer(ctrl, t, poll_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Poll for interrupt events.  regs == NULL => polling */
 	shpc_isr(0, ctrl);
 
-<<<<<<< HEAD
-	init_timer(&ctrl->poll_timer);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!shpchp_poll_time)
 		shpchp_poll_time = 2; /* default polling interval is 2 sec */
 
@@ -275,11 +232,6 @@ static void start_int_poll_timer(struct controller *ctrl, int sec)
 	if ((sec <= 0) || (sec > 60))
 		sec = 2;
 
-<<<<<<< HEAD
-	ctrl->poll_timer.function = &int_poll_timeout;
-	ctrl->poll_timer.data = (unsigned long)ctrl;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctrl->poll_timer.expires = jiffies + sec * HZ;
 	add_timer(&ctrl->poll_timer);
 }
@@ -343,11 +295,7 @@ static int shpc_write_cmd(struct slot *slot, u8 t_slot, u8 cmd)
 	mutex_lock(&slot->ctrl->cmd_lock);
 
 	if (!shpc_poll_ctrl_busy(ctrl)) {
-<<<<<<< HEAD
-		/* After 1 sec and and the controller is still busy */
-=======
 		/* After 1 sec and the controller is still busy */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ctrl_err(ctrl, "Controller is still busy after 1 sec\n");
 		retval = -EBUSY;
 		goto out;
@@ -371,12 +319,7 @@ static int shpc_write_cmd(struct slot *slot, u8 t_slot, u8 cmd)
 
 	cmd_status = hpc_check_cmd_status(slot->ctrl);
 	if (cmd_status) {
-<<<<<<< HEAD
-		ctrl_err(ctrl,
-			 "Failed to issued command 0x%x (error code = %d)\n",
-=======
 		ctrl_err(ctrl, "Failed to issued command 0x%x (error code = %d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 cmd, cmd_status);
 		retval = -EIO;
 	}
@@ -438,11 +381,7 @@ static int hpc_get_attention_status(struct slot *slot, u8 *status)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int hpc_get_power_status(struct slot * slot, u8 *status)
-=======
 static int hpc_get_power_status(struct slot *slot, u8 *status)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct controller *ctrl = slot->ctrl;
 	u32 slot_reg = shpc_readl(ctrl, SLOT_REG(slot->hp_slot));
@@ -505,12 +444,8 @@ static int hpc_get_adapter_speed(struct slot *slot, enum pci_bus_speed *value)
 	u8 m66_cap  = !!(slot_reg & MHZ66_CAP);
 	u8 pi, pcix_cap;
 
-<<<<<<< HEAD
-	if ((retval = hpc_get_prog_int(slot, &pi)))
-=======
 	retval = hpc_get_prog_int(slot, &pi);
 	if (retval)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return retval;
 
 	switch (pi) {
@@ -554,28 +489,7 @@ static int hpc_get_adapter_speed(struct slot *slot, enum pci_bus_speed *value)
 	return retval;
 }
 
-<<<<<<< HEAD
-static int hpc_get_mode1_ECC_cap(struct slot *slot, u8 *mode)
-{
-	int retval = 0;
-	struct controller *ctrl = slot->ctrl;
-	u16 sec_bus_status = shpc_readw(ctrl, SEC_BUS_CONFIG);
-	u8 pi = shpc_readb(ctrl, PROG_INTERFACE);
-
-	if (pi == 2) {
-		*mode = (sec_bus_status & 0x0100) >> 8;
-	} else {
-		retval = -1;
-	}
-
-	ctrl_dbg(ctrl, "Mode 1 ECC cap = %d\n", *mode);
-	return retval;
-}
-
-static int hpc_query_power_fault(struct slot * slot)
-=======
 static int hpc_query_power_fault(struct slot *slot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct controller *ctrl = slot->ctrl;
 	u32 slot_reg = shpc_readl(ctrl, SLOT_REG(slot->hp_slot));
@@ -589,11 +503,7 @@ static int hpc_set_attention_status(struct slot *slot, u8 value)
 	u8 slot_cmd = 0;
 
 	switch (value) {
-<<<<<<< HEAD
-		case 0 :
-=======
 		case 0:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			slot_cmd = SET_ATTN_OFF;	/* OFF */
 			break;
 		case 1:
@@ -665,11 +575,7 @@ static void hpc_release_ctlr(struct controller *ctrl)
 	release_mem_region(ctrl->mmio_base, ctrl->mmio_size);
 }
 
-<<<<<<< HEAD
-static int hpc_power_on_slot(struct slot * slot)
-=======
 static int hpc_power_on_slot(struct slot *slot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 
@@ -680,11 +586,7 @@ static int hpc_power_on_slot(struct slot *slot)
 	return retval;
 }
 
-<<<<<<< HEAD
-static int hpc_slot_enable(struct slot * slot)
-=======
 static int hpc_slot_enable(struct slot *slot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 
@@ -697,11 +599,7 @@ static int hpc_slot_enable(struct slot *slot)
 	return retval;
 }
 
-<<<<<<< HEAD
-static int hpc_slot_disable(struct slot * slot)
-=======
 static int hpc_slot_disable(struct slot *slot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 
@@ -783,11 +681,7 @@ static int shpc_get_cur_bus_speed(struct controller *ctrl)
 }
 
 
-<<<<<<< HEAD
-static int hpc_set_bus_speed_mode(struct slot * slot, enum pci_bus_speed value)
-=======
 static int hpc_set_bus_speed_mode(struct slot *slot, enum pci_bus_speed value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 	struct controller *ctrl = slot->ctrl;
@@ -866,11 +760,7 @@ static irqreturn_t shpc_isr(int irq, void *dev_id)
 
 	ctrl_dbg(ctrl, "%s: intr_loc = %x\n", __func__, intr_loc);
 
-<<<<<<< HEAD
-	if(!shpchp_poll_mode) {
-=======
 	if (!shpchp_poll_mode) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Mask Global Interrupt Mask - see implementation
 		 * note on p. 139 of SHPC spec rev 1.0
@@ -981,11 +871,7 @@ static int shpc_get_max_bus_speed(struct controller *ctrl)
 	return retval;
 }
 
-<<<<<<< HEAD
-static struct hpc_ops shpchp_hpc_ops = {
-=======
 static const struct hpc_ops shpchp_hpc_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.power_on_slot			= hpc_power_on_slot,
 	.slot_enable			= hpc_slot_enable,
 	.slot_disable			= hpc_slot_disable,
@@ -997,10 +883,6 @@ static const struct hpc_ops shpchp_hpc_ops = {
 	.get_adapter_status		= hpc_get_adapter_status,
 
 	.get_adapter_speed		= hpc_get_adapter_speed,
-<<<<<<< HEAD
-	.get_mode1_ECC_cap		= hpc_get_mode1_ECC_cap,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_prog_int			= hpc_get_prog_int,
 
 	.query_power_fault		= hpc_query_power_fault,
@@ -1052,13 +934,8 @@ int shpc_init(struct controller *ctrl, struct pci_dev *pdev)
 		for (i = 0; i < 9 + num_slots; i++) {
 			rc = shpc_indirect_read(ctrl, i, &tempdword);
 			if (rc) {
-<<<<<<< HEAD
-				ctrl_err(ctrl,
-					 "Cannot read creg (index = %d)\n", i);
-=======
 				ctrl_err(ctrl, "Cannot read creg (index = %d)\n",
 					 i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto abort;
 			}
 			ctrl_dbg(ctrl, " offset %d: value %x\n", i, tempdword);
@@ -1137,27 +1014,16 @@ int shpc_init(struct controller *ctrl, struct pci_dev *pdev)
 
 	if (shpchp_poll_mode) {
 		/* Install interrupt polling timer. Start with 10 sec delay */
-<<<<<<< HEAD
-		init_timer(&ctrl->poll_timer);
-=======
 		timer_setup(&ctrl->poll_timer, int_poll_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		start_int_poll_timer(ctrl, 10);
 	} else {
 		/* Installs the interrupt handler */
 		rc = pci_enable_msi(pdev);
 		if (rc) {
-<<<<<<< HEAD
-			ctrl_info(ctrl,
-				  "Can't get msi for the hotplug controller\n");
-			ctrl_info(ctrl,
-				  "Use INTx for the hotplug controller\n");
-=======
 			ctrl_info(ctrl, "Can't get msi for the hotplug controller\n");
 			ctrl_info(ctrl, "Use INTx for the hotplug controller\n");
 		} else {
 			pci_set_master(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		rc = request_irq(ctrl->pci_dev->irq, shpc_isr, IRQF_SHARED,
@@ -1165,13 +1031,8 @@ int shpc_init(struct controller *ctrl, struct pci_dev *pdev)
 		ctrl_dbg(ctrl, "request_irq %d (returns %d)\n",
 			 ctrl->pci_dev->irq, rc);
 		if (rc) {
-<<<<<<< HEAD
-			ctrl_err(ctrl, "Can't get irq %d for the hotplug "
-				 "controller\n", ctrl->pci_dev->irq);
-=======
 			ctrl_err(ctrl, "Can't get irq %d for the hotplug controller\n",
 				 ctrl->pci_dev->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto abort_iounmap;
 		}
 	}

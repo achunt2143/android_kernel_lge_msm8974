@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HID_ROCCAT_PYRA_H
 #define __HID_ROCCAT_PYRA_H
 
@@ -10,37 +7,10 @@
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 
-<<<<<<< HEAD
-struct pyra_b {
-	uint8_t command; /* PYRA_COMMAND_B */
-	uint8_t size; /* always 3 */
-	uint8_t unknown; /* 1 */
-} __attribute__ ((__packed__));
-
-struct pyra_control {
-	uint8_t command; /* PYRA_COMMAND_CONTROL */
-	/*
-	 * value is profile number for request_settings and request_buttons
-	 * 1 if status ok for request_status
-	 */
-	uint8_t value; /* Range 0-4 */
-	uint8_t request;
-} __attribute__ ((__packed__));
-
-enum pyra_control_requests {
-	PYRA_CONTROL_REQUEST_STATUS = 0x00,
-=======
 enum {
 	PYRA_SIZE_CONTROL = 0x03,
 	PYRA_SIZE_INFO = 0x06,
@@ -50,7 +20,6 @@ enum {
 };
 
 enum pyra_control_requests {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PYRA_CONTROL_REQUEST_PROFILE_SETTINGS = 0x10,
 	PYRA_CONTROL_REQUEST_PROFILE_BUTTONS = 0x20
 };
@@ -76,17 +45,6 @@ struct pyra_profile_settings {
 	uint16_t checksum; /* byte sum */
 } __attribute__ ((__packed__));
 
-<<<<<<< HEAD
-struct pyra_profile_buttons {
-	uint8_t command; /* PYRA_COMMAND_PROFILE_BUTTONS */
-	uint8_t size; /* always 0x13 */
-	uint8_t number; /* Range 0-4 */
-	uint8_t buttons[14];
-	uint16_t checksum; /* byte sum */
-} __attribute__ ((__packed__));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pyra_info {
 	uint8_t command; /* PYRA_COMMAND_INFO */
 	uint8_t size; /* always 6 */
@@ -182,20 +140,10 @@ struct pyra_roccat_report {
 struct pyra_device {
 	int actual_profile;
 	int actual_cpi;
-<<<<<<< HEAD
-	int firmware_version;
-	int roccat_claimed;
-	int chrdev_minor;
-	struct mutex pyra_lock;
-	struct pyra_settings settings;
-	struct pyra_profile_settings profile_settings[5];
-	struct pyra_profile_buttons profile_buttons[5];
-=======
 	int roccat_claimed;
 	int chrdev_minor;
 	struct mutex pyra_lock;
 	struct pyra_profile_settings profile_settings[5];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINUX_SSB_REGS_H_
 #define LINUX_SSB_REGS_H_
 
@@ -176,11 +173,8 @@
 #define SSB_SPROMSIZE_WORDS_R4		220
 #define SSB_SPROMSIZE_BYTES_R123	(SSB_SPROMSIZE_WORDS_R123 * sizeof(u16))
 #define SSB_SPROMSIZE_BYTES_R4		(SSB_SPROMSIZE_WORDS_R4 * sizeof(u16))
-<<<<<<< HEAD
-=======
 #define SSB_SPROMSIZE_WORDS_R10		230
 #define SSB_SPROMSIZE_WORDS_R11		234
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SSB_SPROM_BASE1			0x1000
 #define SSB_SPROM_BASE31		0x0800
 #define SSB_SPROM_REVISION		0x007E
@@ -237,10 +231,7 @@
 #define  SSB_SPROM1_AGAIN_BG_SHIFT	0
 #define  SSB_SPROM1_AGAIN_A		0xFF00	/* A-PHY */
 #define  SSB_SPROM1_AGAIN_A_SHIFT	8
-<<<<<<< HEAD
-=======
 #define SSB_SPROM1_CCODE		0x0076
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SPROM Revision 2 (inherits from rev 1) */
 #define SSB_SPROM2_BFLHI		0x0038	/* Boardflags (high 16 bits) */
@@ -280,10 +271,7 @@
 #define  SSB_SPROM3_OFDMGPO		0x107A	/* G-PHY OFDM Power Offset (4 bytes, BigEndian) */
 
 /* SPROM Revision 4 */
-<<<<<<< HEAD
-=======
 #define SSB_SPROM4_BOARDREV		0x0042	/* Board revision */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SSB_SPROM4_BFLLO		0x0044	/* Boardflags (low 16 bits) */
 #define SSB_SPROM4_BFLHI		0x0046  /* Board Flags Hi */
 #define SSB_SPROM4_BFL2LO		0x0048	/* Board flags 2 (low 16 bits) */
@@ -304,19 +292,11 @@
 #define  SSB_SPROM4_ETHPHY_ET1A_SHIFT	5
 #define  SSB_SPROM4_ETHPHY_ET0M		(1<<14)	/* MDIO for enet0 */
 #define  SSB_SPROM4_ETHPHY_ET1M		(1<<15)	/* MDIO for enet1 */
-<<<<<<< HEAD
-#define SSB_SPROM4_ANTAVAIL		0x005D  /* Antenna available bitfields */
-#define  SSB_SPROM4_ANTAVAIL_A		0x00FF	/* A-PHY bitfield */
-#define  SSB_SPROM4_ANTAVAIL_A_SHIFT	0
-#define  SSB_SPROM4_ANTAVAIL_BG		0xFF00	/* B-PHY and G-PHY bitfield */
-#define  SSB_SPROM4_ANTAVAIL_BG_SHIFT	8
-=======
 #define SSB_SPROM4_ANTAVAIL		0x005C  /* Antenna available bitfields */
 #define  SSB_SPROM4_ANTAVAIL_BG		0x00FF	/* B-PHY and G-PHY bitfield */
 #define  SSB_SPROM4_ANTAVAIL_BG_SHIFT	0
 #define  SSB_SPROM4_ANTAVAIL_A		0xFF00	/* A-PHY bitfield */
 #define  SSB_SPROM4_ANTAVAIL_A_SHIFT	8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SSB_SPROM4_AGAIN01		0x005E	/* Antenna Gain (in dBm Q5.2) */
 #define  SSB_SPROM4_AGAIN0		0x00FF	/* Antenna 0 */
 #define  SSB_SPROM4_AGAIN0_SHIFT	0
@@ -367,8 +347,6 @@
 #define  SSB_SPROM4_TXPID5GH2_SHIFT	0
 #define  SSB_SPROM4_TXPID5GH3		0xFF00
 #define  SSB_SPROM4_TXPID5GH3_SHIFT	8
-<<<<<<< HEAD
-=======
 
 /* There are 4 blocks with power info sharing the same layout */
 #define SSB_SPROM4_PWR_INFO_CORE0	0x0080
@@ -406,7 +384,6 @@
 #define SSB_SPROM4_5GH_PA_3		0x24
 
 /* TODO: Make it deprecated */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SSB_SPROM4_MAXP_BG		0x0080  /* Max Power BG in path 1 */
 #define  SSB_SPROM4_MAXP_BG_MASK	0x00FF  /* Mask for Max Power BG */
 #define  SSB_SPROM4_ITSSI_BG		0xFF00	/* Mask for path 1 itssi_bg */
@@ -454,14 +431,11 @@
 #define  SSB_SPROM8_GPIOB_P2		0x00FF	/* Pin 2 */
 #define  SSB_SPROM8_GPIOB_P3		0xFF00	/* Pin 3 */
 #define  SSB_SPROM8_GPIOB_P3_SHIFT	8
-<<<<<<< HEAD
-=======
 #define SSB_SPROM8_LEDDC		0x009A
 #define  SSB_SPROM8_LEDDC_ON		0xFF00	/* oncount */
 #define  SSB_SPROM8_LEDDC_ON_SHIFT	8
 #define  SSB_SPROM8_LEDDC_OFF		0x00FF	/* offcount */
 #define  SSB_SPROM8_LEDDC_OFF_SHIFT	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SSB_SPROM8_ANTAVAIL		0x009C  /* Antenna available bitfields*/
 #define  SSB_SPROM8_ANTAVAIL_A		0xFF00	/* A-PHY bitfield */
 #define  SSB_SPROM8_ANTAVAIL_A_SHIFT	8
@@ -477,8 +451,6 @@
 #define  SSB_SPROM8_AGAIN2_SHIFT	0
 #define  SSB_SPROM8_AGAIN3		0xFF00	/* Antenna 3 */
 #define  SSB_SPROM8_AGAIN3_SHIFT	8
-<<<<<<< HEAD
-=======
 #define SSB_SPROM8_TXRXC		0x00A2
 #define  SSB_SPROM8_TXRXC_TXCHAIN	0x000f
 #define  SSB_SPROM8_TXRXC_TXCHAIN_SHIFT	0
@@ -486,7 +458,6 @@
 #define  SSB_SPROM8_TXRXC_RXCHAIN_SHIFT	4
 #define  SSB_SPROM8_TXRXC_SWITCH	0xff00
 #define  SSB_SPROM8_TXRXC_SWITCH_SHIFT	8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SSB_SPROM8_RSSIPARM2G		0x00A4	/* RSSI params for 2GHz */
 #define  SSB_SPROM8_RSSISMF2G		0x000F
 #define  SSB_SPROM8_RSSISMC2G		0x00F0
@@ -513,10 +484,7 @@
 #define  SSB_SPROM8_TRI5GH_SHIFT	8
 #define SSB_SPROM8_RXPO			0x00AC  /* RX power offsets */
 #define  SSB_SPROM8_RXPO2G		0x00FF	/* 2GHz RX power offset */
-<<<<<<< HEAD
-=======
 #define  SSB_SPROM8_RXPO2G_SHIFT	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define  SSB_SPROM8_RXPO5G		0xFF00	/* 5GHz RX power offset */
 #define  SSB_SPROM8_RXPO5G_SHIFT	8
 #define SSB_SPROM8_FEM2G		0x00AE
@@ -532,12 +500,6 @@
 #define  SSB_SROM8_FEM_ANTSWLUT		0xF800
 #define  SSB_SROM8_FEM_ANTSWLUT_SHIFT	11
 #define SSB_SPROM8_THERMAL		0x00B2
-<<<<<<< HEAD
-#define SSB_SPROM8_MPWR_RAWTS		0x00B4
-#define SSB_SPROM8_TS_SLP_OPT_CORRX	0x00B6
-#define SSB_SPROM8_FOC_HWIQ_IQSWP	0x00B8
-#define SSB_SPROM8_PHYCAL_TEMPDELTA	0x00BA
-=======
 #define  SSB_SPROM8_THERMAL_OFFSET	0x00ff
 #define  SSB_SPROM8_THERMAL_OFFSET_SHIFT	0
 #define  SSB_SPROM8_THERMAL_TRESH	0xff00
@@ -570,7 +532,6 @@
 #define  SSB_SPROM8_TEMPDELTA_PERIOD_SHIFT	8
 #define  SSB_SPROM8_TEMPDELTA_HYSTERESIS	0xf000
 #define  SSB_SPROM8_TEMPDELTA_HYSTERESIS_SHIFT	12
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* There are 4 blocks with power info sharing the same layout */
 #define SSB_SROM8_PWR_INFO_CORE0	0x00C0
@@ -635,8 +596,6 @@
 #define SSB_SPROM8_OFDM5GLPO		0x014A	/* 5.2GHz OFDM power offset */
 #define SSB_SPROM8_OFDM5GHPO		0x014E	/* 5.8GHz OFDM power offset */
 
-<<<<<<< HEAD
-=======
 #define SSB_SPROM8_2G_MCSPO		0x0152
 #define SSB_SPROM8_5G_MCSPO		0x0162
 #define SSB_SPROM8_5GL_MCSPO		0x0172
@@ -647,7 +606,6 @@
 #define SSB_SPROM8_BW40PO		0x0196
 #define SSB_SPROM8_BWDUPPO		0x0198
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Values for boardflags_lo read from SPROM */
 #define SSB_BFL_BTCOEXIST		0x0001	/* implements Bluetooth coexistance */
 #define SSB_BFL_PACTRL			0x0002	/* GPIO 9 controlling the PA */

@@ -1,25 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Instantiate mmio-mapped RTC chips based on device tree information
  *
  * Copyright 2007 David Gibson <dwg@au1.ibm.com>, IBM Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- */
-#include <linux/kernel.h>
-#include <linux/of.h>
-#include <linux/init.h>
-#include <linux/of_platform.h>
-#include <linux/slab.h>
-
-=======
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -30,7 +13,6 @@
 
 #include <asm/prom.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __initdata struct {
 	const char *compatible;
 	char *plat_name;
@@ -54,28 +36,14 @@ void __init of_instantiate_rtc(void)
 			res = kmalloc(sizeof(*res), GFP_KERNEL);
 			if (!res) {
 				printk(KERN_ERR "OF RTC: Out of memory "
-<<<<<<< HEAD
-				       "allocating resource structure for %s\n",
-				       node->full_name);
-=======
 				       "allocating resource structure for %pOF\n",
 				       node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 
 			err = of_address_to_resource(node, 0, res);
 			if (err) {
 				printk(KERN_ERR "OF RTC: Error "
-<<<<<<< HEAD
-				       "translating resources for %s\n",
-				       node->full_name);
-				continue;
-			}
-
-			printk(KERN_INFO "OF_RTC: %s is a %s @ 0x%llx-0x%llx\n",
-			       node->full_name, plat_name,
-=======
 				       "translating resources for %pOF\n",
 				       node);
 				continue;
@@ -83,7 +51,6 @@ void __init of_instantiate_rtc(void)
 
 			printk(KERN_INFO "OF_RTC: %pOF is a %s @ 0x%llx-0x%llx\n",
 			       node, plat_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       (unsigned long long)res->start,
 			       (unsigned long long)res->end);
 			platform_device_register_simple(plat_name, -1, res, 1);

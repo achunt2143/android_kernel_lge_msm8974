@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#ifndef _NF_QUEUE_H
-#define _NF_QUEUE_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _NF_QUEUE_H
 #define _NF_QUEUE_H
@@ -13,21 +8,11 @@
 #include <linux/netfilter.h>
 #include <linux/skbuff.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Each queued (to userspace) skbuff has one of these. */
 struct nf_queue_entry {
 	struct list_head	list;
 	struct sk_buff		*skb;
 	unsigned int		id;
-<<<<<<< HEAD
-
-	struct nf_hook_ops	*elem;
-	u_int8_t		pf;
-	unsigned int		hook;
-	struct net_device	*indev;
-	struct net_device	*outdev;
-	int			(*okfn)(struct sk_buff *);
-=======
 	unsigned int		hook_index;	/* index in hook_entries->hook[] */
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
 	struct net_device	*physin;
@@ -37,26 +22,12 @@ struct nf_queue_entry {
 	u16			size; /* sizeof(entry) + saved route keys */
 
 	/* extra space to store route keys */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define nf_queue_entry_reroute(x) ((void *)x + sizeof(struct nf_queue_entry))
 
 /* Packet queuing */
 struct nf_queue_handler {
-<<<<<<< HEAD
-	int			(*outfn)(struct nf_queue_entry *entry,
-					 unsigned int queuenum);
-	char			*name;
-};
-
-extern int nf_register_queue_handler(u_int8_t pf,
-				     const struct nf_queue_handler *qh);
-extern int nf_unregister_queue_handler(u_int8_t pf,
-				       const struct nf_queue_handler *qh);
-extern void nf_unregister_queue_handlers(const struct nf_queue_handler *qh);
-extern void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict);
-=======
 	int		(*outfn)(struct nf_queue_entry *entry,
 				 unsigned int queuenum);
 	void		(*nf_hook_drop)(struct net *net);
@@ -154,6 +125,5 @@ nfqueue_hash(const struct sk_buff *skb, u16 queue, u16 queues_total, u8 family,
 
 int nf_queue(struct sk_buff *skb, struct nf_hook_state *state,
 	     unsigned int index, unsigned int verdict);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _NF_QUEUE_H */

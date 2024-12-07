@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/slab.h>
-#include <linux/init.h>
-#include <linux/wait.h>
-#include <linux/cpufreq.h>
-
-#include <asm/prom.h>
-
-=======
 #include <linux/pm_qos.h>
 #include <linux/slab.h>
 #include <linux/init.h>
@@ -22,45 +10,12 @@
 #include <linux/cpu.h>
 #include <linux/cpufreq.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "windfarm.h"
 
 #define VERSION "0.3"
 
 static int clamped;
 static struct wf_control *clamp_control;
-<<<<<<< HEAD
-
-static int clamp_notifier_call(struct notifier_block *self,
-			       unsigned long event, void *data)
-{
-	struct cpufreq_policy *p = data;
-	unsigned long max_freq;
-
-	if (event != CPUFREQ_ADJUST)
-		return 0;
-
-	max_freq = clamped ? (p->cpuinfo.min_freq) : (p->cpuinfo.max_freq);
-	cpufreq_verify_within_limits(p, 0, max_freq);
-
-	return 0;
-}
-
-static struct notifier_block clamp_notifier = {
-	.notifier_call = clamp_notifier_call,
-};
-
-static int clamp_set(struct wf_control *ct, s32 value)
-{
-	if (value)
-		printk(KERN_INFO "windfarm: Clamping CPU frequency to "
-		       "minimum !\n");
-	else
-		printk(KERN_INFO "windfarm: CPU frequency unclamped !\n");
-	clamped = value;
-	cpufreq_update_policy(0);
-	return 0;
-=======
 static struct freq_qos_request qos_req;
 static unsigned int min_freq, max_freq;
 
@@ -79,7 +34,6 @@ static int clamp_set(struct wf_control *ct, s32 value)
 	clamped = value;
 
 	return freq_qos_update_request(&qos_req, freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int clamp_get(struct wf_control *ct, s32 *value)
@@ -98,11 +52,7 @@ static s32 clamp_max(struct wf_control *ct)
 	return 1;
 }
 
-<<<<<<< HEAD
-static struct wf_control_ops clamp_ops = {
-=======
 static const struct wf_control_ops clamp_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_value	= clamp_set,
 	.get_value	= clamp_get,
 	.get_min	= clamp_min,
@@ -112,29 +62,6 @@ static const struct wf_control_ops clamp_ops = {
 
 static int __init wf_cpufreq_clamp_init(void)
 {
-<<<<<<< HEAD
-	struct wf_control *clamp;
-
-	/* Don't register on old machines that use therm_pm72 for now */
-	if (of_machine_is_compatible("PowerMac7,2") ||
-	    of_machine_is_compatible("PowerMac7,3") ||
-	    of_machine_is_compatible("RackMac3,1"))
-		return -ENODEV;
-
-	clamp = kmalloc(sizeof(struct wf_control), GFP_KERNEL);
-	if (clamp == NULL)
-		return -ENOMEM;
-	cpufreq_register_notifier(&clamp_notifier, CPUFREQ_POLICY_NOTIFIER);
-	clamp->ops = &clamp_ops;
-	clamp->name = "cpufreq-clamp";
-	if (wf_register_control(clamp))
-		goto fail;
-	clamp_control = clamp;
-	return 0;
- fail:
-	kfree(clamp);
-	return -ENODEV;
-=======
 	struct cpufreq_policy *policy;
 	struct wf_control *clamp;
 	struct device *dev;
@@ -187,20 +114,14 @@ static int __init wf_cpufreq_clamp_init(void)
  fail:
 	freq_qos_remove_request(&qos_req);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit wf_cpufreq_clamp_exit(void)
 {
-<<<<<<< HEAD
-	if (clamp_control)
-		wf_unregister_control(clamp_control);
-=======
 	if (clamp_control) {
 		wf_unregister_control(clamp_control);
 		freq_qos_remove_request(&qos_req);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 

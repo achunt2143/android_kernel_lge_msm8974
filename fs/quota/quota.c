@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Quota code necessary even when VFS quota support is not compiled
  * into the kernel.  The interesting stuff is over in dquot.c, here
@@ -13,27 +10,19 @@
 #include <linux/namei.h>
 #include <linux/slab.h>
 #include <asm/current.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/blkdev.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/security.h>
 #include <linux/syscalls.h>
 #include <linux/capability.h>
 #include <linux/quotaops.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/writeback.h>
-=======
 #include <linux/mount.h>
 #include <linux/writeback.h>
 #include <linux/nospec.h>
 #include "compat.h"
 #include "../internal.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int check_quotactl_permission(struct super_block *sb, int type, int cmd,
 				     qid_t id)
@@ -44,26 +33,16 @@ static int check_quotactl_permission(struct super_block *sb, int type, int cmd,
 	case Q_SYNC:
 	case Q_GETINFO:
 	case Q_XGETQSTAT:
-<<<<<<< HEAD
-=======
 	case Q_XGETQSTATV:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case Q_XQUOTASYNC:
 		break;
 	/* allow to query information for dquots we "own" */
 	case Q_GETQUOTA:
 	case Q_XGETQUOTA:
-<<<<<<< HEAD
-		if ((type == USRQUOTA && current_euid() == id) ||
-		    (type == GRPQUOTA && in_egroup_p(id)))
-			break;
-		/*FALLTHROUGH*/
-=======
 		if ((type == USRQUOTA && uid_eq(current_euid(), make_kuid(current_user_ns(), id))) ||
 		    (type == GRPQUOTA && in_egroup_p(make_kgid(current_user_ns(), id))))
 			break;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		if (!capable(CAP_SYS_ADMIN))
 			return -EPERM;
@@ -74,42 +53,23 @@ static int check_quotactl_permission(struct super_block *sb, int type, int cmd,
 
 static void quota_sync_one(struct super_block *sb, void *arg)
 {
-<<<<<<< HEAD
-	if (sb->s_qcop && sb->s_qcop->quota_sync)
-		sb->s_qcop->quota_sync(sb, *(int *)arg, 1);
-=======
 	int type = *(int *)arg;
 
 	if (sb->s_qcop && sb->s_qcop->quota_sync &&
 	    (sb->s_quota_types & (1 << type)))
 		sb->s_qcop->quota_sync(sb, type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int quota_sync_all(int type)
 {
 	int ret;
 
-<<<<<<< HEAD
-	if (type >= MAXQUOTAS)
-		return -EINVAL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = security_quotactl(Q_SYNC, type, 0, NULL);
 	if (!ret)
 		iterate_supers(quota_sync_one, &type);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int quota_quotaon(struct super_block *sb, int type, int cmd, qid_t id,
-		         struct path *path)
-{
-	if (!sb->s_qcop->quota_on && !sb->s_qcop->quota_on_meta)
-		return -ENOSYS;
-	if (sb->s_qcop->quota_on_meta)
-		return sb->s_qcop->quota_on_meta(sb, type, id);
-=======
 unsigned int qtype_enforce_flag(int type)
 {
 	switch (type) {
@@ -130,14 +90,11 @@ static int quota_quotaon(struct super_block *sb, int type, qid_t id,
 		return -ENOSYS;
 	if (sb->s_qcop->quota_enable)
 		return sb->s_qcop->quota_enable(sb, qtype_enforce_flag(type));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(path))
 		return PTR_ERR(path);
 	return sb->s_qcop->quota_on(sb, type, id, path);
 }
 
-<<<<<<< HEAD
-=======
 static int quota_quotaoff(struct super_block *sb, int type)
 {
 	if (!sb->s_qcop->quota_off && !sb->s_qcop->quota_disable)
@@ -147,24 +104,13 @@ static int quota_quotaoff(struct super_block *sb, int type)
 	return sb->s_qcop->quota_off(sb, type);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int quota_getfmt(struct super_block *sb, int type, void __user *addr)
 {
 	__u32 fmt;
 
-<<<<<<< HEAD
-	down_read(&sb_dqopt(sb)->dqptr_sem);
-	if (!sb_has_quota_active(sb, type)) {
-		up_read(&sb_dqopt(sb)->dqptr_sem);
-		return -ESRCH;
-	}
-	fmt = sb_dqopt(sb)->info[type].dqi_format->qf_fmt_id;
-	up_read(&sb_dqopt(sb)->dqptr_sem);
-=======
 	if (!sb_has_quota_active(sb, type))
 		return -ESRCH;
 	fmt = sb_dqopt(sb)->info[type].dqi_format->qf_fmt_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_to_user(addr, &fmt, sizeof(fmt)))
 		return -EFAULT;
 	return 0;
@@ -172,17 +118,6 @@ static int quota_getfmt(struct super_block *sb, int type, void __user *addr)
 
 static int quota_getinfo(struct super_block *sb, int type, void __user *addr)
 {
-<<<<<<< HEAD
-	struct if_dqinfo info;
-	int ret;
-
-	if (!sb->s_qcop->get_info)
-		return -ENOSYS;
-	ret = sb->s_qcop->get_info(sb, type, &info);
-	if (!ret && copy_to_user(addr, &info, sizeof(info)))
-		return -EFAULT;
-	return ret;
-=======
 	struct qc_state state;
 	struct qc_type_state *tstate;
 	struct if_dqinfo uinfo;
@@ -207,36 +142,17 @@ static int quota_getinfo(struct super_block *sb, int type, void __user *addr)
 	if (copy_to_user(addr, &uinfo, sizeof(uinfo)))
 		return -EFAULT;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int quota_setinfo(struct super_block *sb, int type, void __user *addr)
 {
 	struct if_dqinfo info;
-<<<<<<< HEAD
-=======
 	struct qc_info qinfo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(&info, addr, sizeof(info)))
 		return -EFAULT;
 	if (!sb->s_qcop->set_info)
 		return -ENOSYS;
-<<<<<<< HEAD
-	return sb->s_qcop->set_info(sb, type, &info);
-}
-
-static void copy_to_if_dqblk(struct if_dqblk *dst, struct fs_disk_quota *src)
-{
-	dst->dqb_bhardlimit = src->d_blk_hardlimit;
-	dst->dqb_bsoftlimit = src->d_blk_softlimit;
-	dst->dqb_curspace = src->d_bcount;
-	dst->dqb_ihardlimit = src->d_ino_hardlimit;
-	dst->dqb_isoftlimit = src->d_ino_softlimit;
-	dst->dqb_curinodes = src->d_icount;
-	dst->dqb_btime = src->d_btimer;
-	dst->dqb_itime = src->d_itimer;
-=======
 	if (info.dqi_valid & ~(IIF_FLAGS | IIF_BGRACE | IIF_IGRACE))
 		return -EINVAL;
 	memset(&qinfo, 0, sizeof(qinfo));
@@ -279,30 +195,19 @@ static void copy_to_if_dqblk(struct if_dqblk *dst, struct qc_dqblk *src)
 	dst->dqb_curinodes = src->d_ino_count;
 	dst->dqb_btime = src->d_spc_timer;
 	dst->dqb_itime = src->d_ino_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dst->dqb_valid = QIF_ALL;
 }
 
 static int quota_getquota(struct super_block *sb, int type, qid_t id,
 			  void __user *addr)
 {
-<<<<<<< HEAD
-	struct fs_disk_quota fdq;
-=======
 	struct kqid qid;
 	struct qc_dqblk fdq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct if_dqblk idq;
 	int ret;
 
 	if (!sb->s_qcop->get_dqblk)
 		return -ENOSYS;
-<<<<<<< HEAD
-	ret = sb->s_qcop->get_dqblk(sb, type, id, &fdq);
-	if (ret)
-		return ret;
-	copy_to_if_dqblk(&idq, &fdq);
-=======
 	qid = make_kqid(current_user_ns(), type, id);
 	if (!qid_has_mapping(sb->s_user_ns, qid))
 		return -EINVAL;
@@ -348,38 +253,11 @@ static int quota_getnextquota(struct super_block *sb, int type, qid_t id,
 	/* struct if_nextdqblk is a superset of struct if_dqblk */
 	copy_to_if_dqblk((struct if_dqblk *)&idq, &fdq);
 	idq.dqb_id = from_kqid(current_user_ns(), qid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_to_user(addr, &idq, sizeof(idq)))
 		return -EFAULT;
 	return 0;
 }
 
-<<<<<<< HEAD
-static void copy_from_if_dqblk(struct fs_disk_quota *dst, struct if_dqblk *src)
-{
-	dst->d_blk_hardlimit = src->dqb_bhardlimit;
-	dst->d_blk_softlimit  = src->dqb_bsoftlimit;
-	dst->d_bcount = src->dqb_curspace;
-	dst->d_ino_hardlimit = src->dqb_ihardlimit;
-	dst->d_ino_softlimit = src->dqb_isoftlimit;
-	dst->d_icount = src->dqb_curinodes;
-	dst->d_btimer = src->dqb_btime;
-	dst->d_itimer = src->dqb_itime;
-
-	dst->d_fieldmask = 0;
-	if (src->dqb_valid & QIF_BLIMITS)
-		dst->d_fieldmask |= FS_DQ_BSOFT | FS_DQ_BHARD;
-	if (src->dqb_valid & QIF_SPACE)
-		dst->d_fieldmask |= FS_DQ_BCOUNT;
-	if (src->dqb_valid & QIF_ILIMITS)
-		dst->d_fieldmask |= FS_DQ_ISOFT | FS_DQ_IHARD;
-	if (src->dqb_valid & QIF_INODES)
-		dst->d_fieldmask |= FS_DQ_ICOUNT;
-	if (src->dqb_valid & QIF_BTIME)
-		dst->d_fieldmask |= FS_DQ_BTIMER;
-	if (src->dqb_valid & QIF_ITIME)
-		dst->d_fieldmask |= FS_DQ_ITIMER;
-=======
 static void copy_from_if_dqblk(struct qc_dqblk *dst, struct if_dqblk *src)
 {
 	dst->d_spc_hardlimit = qbtos(src->dqb_bhardlimit);
@@ -404,26 +282,11 @@ static void copy_from_if_dqblk(struct qc_dqblk *dst, struct if_dqblk *src)
 		dst->d_fieldmask |= QC_SPC_TIMER;
 	if (src->dqb_valid & QIF_ITIME)
 		dst->d_fieldmask |= QC_INO_TIMER;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int quota_setquota(struct super_block *sb, int type, qid_t id,
 			  void __user *addr)
 {
-<<<<<<< HEAD
-	struct fs_disk_quota fdq;
-	struct if_dqblk idq;
-
-	if (copy_from_user(&idq, addr, sizeof(idq)))
-		return -EFAULT;
-	if (!sb->s_qcop->set_dqblk)
-		return -ENOSYS;
-	copy_from_if_dqblk(&fdq, &idq);
-	return sb->s_qcop->set_dqblk(sb, type, id, &fdq);
-}
-
-static int quota_setxstate(struct super_block *sb, int cmd, void __user *addr)
-=======
 	struct qc_dqblk fdq;
 	struct if_dqblk idq;
 	struct kqid qid;
@@ -448,20 +311,11 @@ static int quota_setxstate(struct super_block *sb, int cmd, void __user *addr)
 }
 
 static int quota_enable(struct super_block *sb, void __user *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u32 flags;
 
 	if (copy_from_user(&flags, addr, sizeof(flags)))
 		return -EFAULT;
-<<<<<<< HEAD
-	if (!sb->s_qcop->set_xstate)
-		return -ENOSYS;
-	return sb->s_qcop->set_xstate(sb, flags, cmd);
-}
-
-static int quota_getxstate(struct super_block *sb, void __user *addr)
-=======
 	if (!sb->s_qcop->quota_enable)
 		return -ENOSYS;
 	return sb->s_qcop->quota_enable(sb, flags);
@@ -578,16 +432,10 @@ static int compat_copy_fs_quota_stat(struct compat_fs_quota_stat __user *to,
 }
 
 static int quota_getxstate(struct super_block *sb, int type, void __user *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fs_quota_stat fqs;
 	int ret;
 
-<<<<<<< HEAD
-	if (!sb->s_qcop->get_xstate)
-		return -ENOSYS;
-	ret = sb->s_qcop->get_xstate(sb, &fqs);
-=======
 	if (!sb->s_qcop->get_state)
 		return -ENOSYS;
 	ret = quota_getstate(sb, type, &fqs);
@@ -666,14 +514,11 @@ static int quota_getxstatev(struct super_block *sb, int type, void __user *addr)
 		return -EINVAL;
 	}
 	ret = quota_getstatev(sb, type, &fqs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret && copy_to_user(addr, &fqs, sizeof(fqs)))
 		return -EFAULT;
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * XFS defines BBTOB and BTOBB macros inside fs/xfs/ and we cannot move them
  * out of there as xfsprogs rely on definitions being in that header file. So
@@ -776,24 +621,17 @@ static void copy_qcinfo_from_xfs_dqblk(struct qc_info *dst,
 		dst->i_fieldmask |= QC_RT_SPC_TIMER;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int quota_setxquota(struct super_block *sb, int type, qid_t id,
 			   void __user *addr)
 {
 	struct fs_disk_quota fdq;
-<<<<<<< HEAD
-=======
 	struct qc_dqblk qdq;
 	struct kqid qid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(&fdq, addr, sizeof(fdq)))
 		return -EFAULT;
 	if (!sb->s_qcop->set_dqblk)
 		return -ENOSYS;
-<<<<<<< HEAD
-	return sb->s_qcop->set_dqblk(sb, type, id, &fdq);
-=======
 	qid = make_kqid(current_user_ns(), type, id);
 	if (!qid_has_mapping(sb->s_user_ns, qid))
 		return -EINVAL;
@@ -862,26 +700,18 @@ static void copy_to_xfs_dqblk(struct fs_disk_quota *dst, struct qc_dqblk *src,
 	copy_to_xfs_dqblk_ts(dst, &dst->d_rtbtimer, &dst->d_rtbtimer_hi,
 			     src->d_rt_spc_timer);
 	dst->d_rtbwarns = src->d_rt_spc_warns;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int quota_getxquota(struct super_block *sb, int type, qid_t id,
 			   void __user *addr)
 {
 	struct fs_disk_quota fdq;
-<<<<<<< HEAD
-=======
 	struct qc_dqblk qdq;
 	struct kqid qid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (!sb->s_qcop->get_dqblk)
 		return -ENOSYS;
-<<<<<<< HEAD
-	ret = sb->s_qcop->get_dqblk(sb, type, id, &fdq);
-	if (!ret && copy_to_user(addr, &fdq, sizeof(fdq)))
-=======
 	qid = make_kqid(current_user_ns(), type, id);
 	if (!qid_has_mapping(sb->s_user_ns, qid))
 		return -EINVAL;
@@ -890,23 +720,10 @@ static int quota_getxquota(struct super_block *sb, int type, qid_t id,
 		return ret;
 	copy_to_xfs_dqblk(&fdq, &qdq, type, id);
 	if (copy_to_user(addr, &fdq, sizeof(fdq)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	return ret;
 }
 
-<<<<<<< HEAD
-/* Copy parameters and call proper function */
-static int do_quotactl(struct super_block *sb, int type, int cmd, qid_t id,
-		       void __user *addr, struct path *path)
-{
-	int ret;
-
-	if (type >= (XQM_COMMAND(cmd) ? XQM_MAXQUOTAS : MAXQUOTAS))
-		return -EINVAL;
-	if (!sb->s_qcop)
-		return -ENOSYS;
-=======
 /*
  * Return quota for next active quota >= this id, if any exists,
  * otherwise return -ENOENT via ->get_nextdqblk.
@@ -961,7 +778,6 @@ static int do_quotactl(struct super_block *sb, int type, int cmd, qid_t id,
 		return -ENOSYS;
 	if (!(sb->s_quota_types & (1 << type)))
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = check_quotactl_permission(sb, type, cmd, id);
 	if (ret < 0)
@@ -969,17 +785,9 @@ static int do_quotactl(struct super_block *sb, int type, int cmd, qid_t id,
 
 	switch (cmd) {
 	case Q_QUOTAON:
-<<<<<<< HEAD
-		return quota_quotaon(sb, type, cmd, id, path);
-	case Q_QUOTAOFF:
-		if (!sb->s_qcop->quota_off)
-			return -ENOSYS;
-		return sb->s_qcop->quota_off(sb, type);
-=======
 		return quota_quotaon(sb, type, id, path);
 	case Q_QUOTAOFF:
 		return quota_quotaoff(sb, type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case Q_GETFMT:
 		return quota_getfmt(sb, type, addr);
 	case Q_GETINFO:
@@ -988,25 +796,13 @@ static int do_quotactl(struct super_block *sb, int type, int cmd, qid_t id,
 		return quota_setinfo(sb, type, addr);
 	case Q_GETQUOTA:
 		return quota_getquota(sb, type, id, addr);
-<<<<<<< HEAD
-=======
 	case Q_GETNEXTQUOTA:
 		return quota_getnextquota(sb, type, id, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case Q_SETQUOTA:
 		return quota_setquota(sb, type, id, addr);
 	case Q_SYNC:
 		if (!sb->s_qcop->quota_sync)
 			return -ENOSYS;
-<<<<<<< HEAD
-		return sb->s_qcop->quota_sync(sb, type, 1);
-	case Q_XQUOTAON:
-	case Q_XQUOTAOFF:
-	case Q_XQUOTARM:
-		return quota_setxstate(sb, cmd, addr);
-	case Q_XGETQSTAT:
-		return quota_getxstate(sb, addr);
-=======
 		return sb->s_qcop->quota_sync(sb, type);
 	case Q_XQUOTAON:
 		return quota_enable(sb, addr);
@@ -1018,20 +814,14 @@ static int do_quotactl(struct super_block *sb, int type, int cmd, qid_t id,
 		return quota_getxstate(sb, type, addr);
 	case Q_XGETQSTATV:
 		return quota_getxstatev(sb, type, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case Q_XSETQLIM:
 		return quota_setxquota(sb, type, id, addr);
 	case Q_XGETQUOTA:
 		return quota_getxquota(sb, type, id, addr);
-<<<<<<< HEAD
-	case Q_XQUOTASYNC:
-		if (sb->s_flags & MS_RDONLY)
-=======
 	case Q_XGETNEXTQUOTA:
 		return quota_getnextxquota(sb, type, id, addr);
 	case Q_XQUOTASYNC:
 		if (sb_rdonly(sb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EROFS;
 		/* XFS quotas are fully coherent now, making this call a noop */
 		return 0;
@@ -1043,34 +833,25 @@ static int do_quotactl(struct super_block *sb, int type, int cmd, qid_t id,
 /* Return 1 if 'cmd' will block on frozen filesystem */
 static int quotactl_cmd_write(int cmd)
 {
-<<<<<<< HEAD
-=======
 	/*
 	 * We cannot allow Q_GETQUOTA and Q_GETNEXTQUOTA without write access
 	 * as dquot_acquire() may allocate space for new structure and OCFS2
 	 * needs to increment on-disk use count.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case Q_GETFMT:
 	case Q_GETINFO:
 	case Q_SYNC:
 	case Q_XGETQSTAT:
-<<<<<<< HEAD
-	case Q_XGETQUOTA:
-=======
 	case Q_XGETQSTATV:
 	case Q_XGETQUOTA:
 	case Q_XGETNEXTQUOTA:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case Q_XQUOTASYNC:
 		return 0;
 	}
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 /* Return true if quotactl command is manipulating quota on/off state */
 static bool quotactl_cmd_onoff(int cmd)
 {
@@ -1078,7 +859,6 @@ static bool quotactl_cmd_onoff(int cmd)
 		 (cmd == Q_XQUOTAON) || (cmd == Q_XQUOTAOFF);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * look up a superblock on which quota ops will be performed
  * - use the name of a block device to find the superblock thereon
@@ -1086,27 +866,6 @@ static bool quotactl_cmd_onoff(int cmd)
 static struct super_block *quotactl_block(const char __user *special, int cmd)
 {
 #ifdef CONFIG_BLOCK
-<<<<<<< HEAD
-	struct block_device *bdev;
-	struct super_block *sb;
-	struct filename *tmp = getname(special);
-
-	if (IS_ERR(tmp))
-		return ERR_CAST(tmp);
-	bdev = lookup_bdev(tmp->name);
-	putname(tmp);
-	if (IS_ERR(bdev))
-		return ERR_CAST(bdev);
-	if (quotactl_cmd_write(cmd))
-		sb = get_super_thawed(bdev);
-	else
-		sb = get_super(bdev);
-	bdput(bdev);
-	if (!sb)
-		return ERR_PTR(-ENODEV);
-
-	return sb;
-=======
 	struct super_block *sb;
 	struct filename *tmp = getname(special);
 	bool excl = false, thawed = false;
@@ -1144,7 +903,6 @@ retry:
 	}
 	return sb;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	return ERR_PTR(-ENODEV);
 #endif
@@ -1167,12 +925,9 @@ SYSCALL_DEFINE4(quotactl, unsigned int, cmd, const char __user *, special,
 	cmds = cmd >> SUBCMDSHIFT;
 	type = cmd & SUBCMDMASK;
 
-<<<<<<< HEAD
-=======
 	if (type >= MAXQUOTAS)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * As a special case Q_SYNC can be called without a specific device.
 	 * It will iterate all superblocks that have quota enabled and call
@@ -1205,21 +960,15 @@ SYSCALL_DEFINE4(quotactl, unsigned int, cmd, const char __user *, special,
 
 	ret = do_quotactl(sb, type, cmds, id, addr, pathp);
 
-<<<<<<< HEAD
-	drop_super(sb);
-=======
 	if (!quotactl_cmd_onoff(cmds))
 		drop_super(sb);
 	else
 		drop_super_exclusive(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (pathp && !IS_ERR(pathp))
 		path_put(pathp);
 	return ret;
 }
-<<<<<<< HEAD
-=======
 
 SYSCALL_DEFINE4(quotactl_fd, unsigned int, fd, unsigned int, cmd,
 		qid_t, id, void __user *, addr)
@@ -1263,4 +1012,3 @@ out:
 	fdput(f);
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) ST-Ericsson SA 2010
  *
  * Author: Bengt Jonsson <bengt.jonsson@stericsson.com> for ST-Ericsson,
  *	   Jonas Aaberg <jonas.aberg@stericsson.com> for ST-Ericsson
-<<<<<<< HEAD
- *
- * License Terms: GNU General Public License v2
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef DBX500_REGULATOR_H
@@ -22,21 +13,6 @@
 
 /**
  * struct dbx500_regulator_info - dbx500 regulator information
-<<<<<<< HEAD
- * @dev: device pointer
- * @desc: regulator description
- * @rdev: regulator device pointer
- * @is_enabled: status of the regulator
- * @epod_id: id for EPOD (power domain)
- * @is_ramret: RAM retention switch for EPOD (power domain)
- * @operating_point: operating point (only for vape, to be removed)
- *
- */
-struct dbx500_regulator_info {
-	struct device *dev;
-	struct regulator_desc desc;
-	struct regulator_dev *rdev;
-=======
  * @desc: regulator description
  * @is_enabled: status of the regulator
  * @epod_id: id for EPOD (power domain)
@@ -45,15 +21,10 @@ struct dbx500_regulator_info {
  */
 struct dbx500_regulator_info {
 	struct regulator_desc desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool is_enabled;
 	u16 epod_id;
 	bool is_ramret;
 	bool exclude_from_power_state;
-<<<<<<< HEAD
-	unsigned int operating_point;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void power_state_active_enable(void);

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RT Mutexes: blocking mutual exclusion locks with PI support
  *
@@ -16,14 +13,6 @@
 #ifndef __LINUX_RT_MUTEX_H
 #define __LINUX_RT_MUTEX_H
 
-<<<<<<< HEAD
-#include <linux/linkage.h>
-#include <linux/plist.h>
-#include <linux/spinlock_types.h>
-
-extern int max_lock_depth; /* for sysctl */
-
-=======
 #include <linux/compiler.h>
 #include <linux/linkage.h>
 #include <linux/rbtree_types.h>
@@ -57,25 +46,10 @@ static inline bool rt_mutex_base_is_locked(struct rt_mutex_base *lock)
 
 extern void rt_mutex_base_init(struct rt_mutex_base *rtb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * The rt_mutex structure
  *
  * @wait_lock:	spinlock to protect the structure
-<<<<<<< HEAD
- * @wait_list:	pilist head to enqueue waiters in priority order
- * @owner:	the mutex owner
- */
-struct rt_mutex {
-	raw_spinlock_t		wait_lock;
-	struct plist_head	wait_list;
-	struct task_struct	*owner;
-#ifdef CONFIG_DEBUG_RT_MUTEXES
-	int			save_state;
-	const char 		*name, *file;
-	int			line;
-	void			*magic;
-=======
  * @waiters:	rbtree root to enqueue waiters in priority order;
  *              caches top-waiter (leftmost node).
  * @owner:	the mutex owner
@@ -84,7 +58,6 @@ struct rt_mutex {
 	struct rt_mutex_base	rtmutex;
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 	struct lockdep_map	dep_map;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
@@ -92,36 +65,6 @@ struct rt_mutex_waiter;
 struct hrtimer_sleeper;
 
 #ifdef CONFIG_DEBUG_RT_MUTEXES
-<<<<<<< HEAD
- extern int rt_mutex_debug_check_no_locks_freed(const void *from,
-						unsigned long len);
- extern void rt_mutex_debug_check_no_locks_held(struct task_struct *task);
-#else
- static inline int rt_mutex_debug_check_no_locks_freed(const void *from,
-						       unsigned long len)
- {
-	return 0;
- }
-# define rt_mutex_debug_check_no_locks_held(task)	do { } while (0)
-#endif
-
-#ifdef CONFIG_DEBUG_RT_MUTEXES
-# define __DEBUG_RT_MUTEX_INITIALIZER(mutexname) \
-	, .name = #mutexname, .file = __FILE__, .line = __LINE__
-# define rt_mutex_init(mutex)			__rt_mutex_init(mutex, __func__)
- extern void rt_mutex_debug_task_free(struct task_struct *tsk);
-#else
-# define __DEBUG_RT_MUTEX_INITIALIZER(mutexname)
-# define rt_mutex_init(mutex)			__rt_mutex_init(mutex, NULL)
-# define rt_mutex_debug_task_free(t)			do { } while (0)
-#endif
-
-#define __RT_MUTEX_INITIALIZER(mutexname) \
-	{ .wait_lock = __RAW_SPIN_LOCK_UNLOCKED(mutexname.wait_lock) \
-	, .wait_list = PLIST_HEAD_INIT(mutexname.wait_list) \
-	, .owner = NULL \
-	__DEBUG_RT_MUTEX_INITIALIZER(mutexname)}
-=======
 extern void rt_mutex_debug_task_free(struct task_struct *tsk);
 #else
 static inline void rt_mutex_debug_task_free(struct task_struct *tsk) { }
@@ -148,34 +91,10 @@ do { \
 	.rtmutex = __RT_MUTEX_BASE_INITIALIZER(mutexname.rtmutex),	\
 	__DEP_MAP_RT_MUTEX_INITIALIZER(mutexname)			\
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DEFINE_RT_MUTEX(mutexname) \
 	struct rt_mutex mutexname = __RT_MUTEX_INITIALIZER(mutexname)
 
-<<<<<<< HEAD
-/**
- * rt_mutex_is_locked - is the mutex locked
- * @lock: the mutex to be queried
- *
- * Returns 1 if the mutex is locked, 0 if unlocked.
- */
-static inline int rt_mutex_is_locked(struct rt_mutex *lock)
-{
-	return lock->owner != NULL;
-}
-
-extern void __rt_mutex_init(struct rt_mutex *lock, const char *name);
-extern void rt_mutex_destroy(struct rt_mutex *lock);
-
-extern void rt_mutex_lock(struct rt_mutex *lock);
-extern int rt_mutex_lock_interruptible(struct rt_mutex *lock,
-						int detect_deadlock);
-extern int rt_mutex_timed_lock(struct rt_mutex *lock,
-					struct hrtimer_sleeper *timeout,
-					int detect_deadlock);
-
-=======
 extern void __rt_mutex_init(struct rt_mutex *lock, const char *name, struct lock_class_key *key);
 
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
@@ -196,20 +115,8 @@ extern void rt_mutex_lock(struct rt_mutex *lock);
 
 extern int rt_mutex_lock_interruptible(struct rt_mutex *lock);
 extern int rt_mutex_lock_killable(struct rt_mutex *lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int rt_mutex_trylock(struct rt_mutex *lock);
 
 extern void rt_mutex_unlock(struct rt_mutex *lock);
 
-<<<<<<< HEAD
-#ifdef CONFIG_RT_MUTEXES
-# define INIT_RT_MUTEXES(tsk)						\
-	.pi_waiters	= PLIST_HEAD_INIT(tsk.pi_waiters),	\
-	INIT_RT_MUTEX_DEBUG(tsk)
-#else
-# define INIT_RT_MUTEXES(tsk)
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,36 +1,12 @@
-<<<<<<< HEAD
-/*
- * pata_ns87410.c 	- National Semiconductor 87410 PATA for new ATA layer
- *			  (C) 2006 Red Hat Inc
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * pata_ns87410.c 	- National Semiconductor 87410 PATA for new ATA layer
  *			  (C) 2006 Red Hat Inc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -138,11 +114,7 @@ static unsigned int ns87410_qc_issue(struct ata_queued_cmd *qc)
 	return ata_sff_qc_issue(qc);
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template ns87410_sht = {
-=======
 static const struct scsi_host_template ns87410_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_PIO_SHT(DRV_NAME),
 };
 
@@ -176,38 +148,16 @@ static struct pci_driver ns87410_pci_driver = {
 	.id_table	= ns87410,
 	.probe 		= ns87410_init_one,
 	.remove		= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= ata_pci_device_resume,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init ns87410_init(void)
-{
-	return pci_register_driver(&ns87410_pci_driver);
-}
-
-static void __exit ns87410_exit(void)
-{
-	pci_unregister_driver(&ns87410_pci_driver);
-}
-=======
 module_pci_driver(ns87410_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for Nat Semi 87410");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, ns87410);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(ns87410_init);
-module_exit(ns87410_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

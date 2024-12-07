@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
   File: fs/ext4/xattr.h
 
@@ -26,12 +23,9 @@
 #define	EXT4_XATTR_INDEX_LUSTRE			5
 #define EXT4_XATTR_INDEX_SECURITY	        6
 #define EXT4_XATTR_INDEX_SYSTEM			7
-<<<<<<< HEAD
-=======
 #define EXT4_XATTR_INDEX_RICHACL		8
 #define EXT4_XATTR_INDEX_ENCRYPTION		9
 #define EXT4_XATTR_INDEX_HURD			10 /* Reserved for Hurd */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ext4_xattr_header {
 	__le32	h_magic;	/* magic number for identification */
@@ -51,17 +45,10 @@ struct ext4_xattr_entry {
 	__u8	e_name_len;	/* length of name */
 	__u8	e_name_index;	/* attribute name index */
 	__le16	e_value_offs;	/* offset in disk block of value */
-<<<<<<< HEAD
-	__le32	e_value_block;	/* disk block attribute is stored on (n/i) */
-	__le32	e_value_size;	/* size of attribute value */
-	__le32	e_hash;		/* hash value of name and value */
-	char	e_name[0];	/* attribute name */
-=======
 	__le32	e_value_inum;	/* inode in which the value is stored */
 	__le32	e_value_size;	/* size of attribute value */
 	__le32	e_hash;		/* hash value of name and value */
 	char	e_name[];	/* attribute name */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define EXT4_XATTR_PAD_BITS		2
@@ -83,15 +70,6 @@ struct ext4_xattr_entry {
 		EXT4_I(inode)->i_extra_isize))
 #define IFIRST(hdr) ((struct ext4_xattr_entry *)((hdr)+1))
 
-<<<<<<< HEAD
-# ifdef CONFIG_EXT4_FS_XATTR
-
-extern const struct xattr_handler ext4_xattr_user_handler;
-extern const struct xattr_handler ext4_xattr_trusted_handler;
-extern const struct xattr_handler ext4_xattr_acl_access_handler;
-extern const struct xattr_handler ext4_xattr_acl_default_handler;
-extern const struct xattr_handler ext4_xattr_security_handler;
-=======
 /*
  * XATTR_SIZE_MAX is currently 64k, but for the purposes of checking
  * for file system consistency errors, we use a somewhat bigger value.
@@ -194,81 +172,12 @@ static inline void ext4_write_unlock_xattr(struct inode *inode, int *save)
 		ext4_clear_inode_state(inode, EXT4_STATE_NO_EXPAND);
 	up_write(&EXT4_I(inode)->xattr_sem);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern ssize_t ext4_listxattr(struct dentry *, char *, size_t);
 
 extern int ext4_xattr_get(struct inode *, int, const char *, void *, size_t);
 extern int ext4_xattr_set(struct inode *, int, const char *, const void *, size_t, int);
 extern int ext4_xattr_set_handle(handle_t *, struct inode *, int, const char *, const void *, size_t, int);
-<<<<<<< HEAD
-
-extern void ext4_xattr_delete_inode(handle_t *, struct inode *);
-extern void ext4_xattr_put_super(struct super_block *);
-
-extern int ext4_expand_extra_isize_ea(struct inode *inode, int new_extra_isize,
-			    struct ext4_inode *raw_inode, handle_t *handle);
-
-extern int __init ext4_init_xattr(void);
-extern void ext4_exit_xattr(void);
-
-extern const struct xattr_handler *ext4_xattr_handlers[];
-
-# else  /* CONFIG_EXT4_FS_XATTR */
-
-static inline int
-ext4_xattr_get(struct inode *inode, int name_index, const char *name,
-	       void *buffer, size_t size, int flags)
-{
-	return -EOPNOTSUPP;
-}
-
-static inline int
-ext4_xattr_set(struct inode *inode, int name_index, const char *name,
-	       const void *value, size_t size, int flags)
-{
-	return -EOPNOTSUPP;
-}
-
-static inline int
-ext4_xattr_set_handle(handle_t *handle, struct inode *inode, int name_index,
-	       const char *name, const void *value, size_t size, int flags)
-{
-	return -EOPNOTSUPP;
-}
-
-static inline void
-ext4_xattr_delete_inode(handle_t *handle, struct inode *inode)
-{
-}
-
-static inline void
-ext4_xattr_put_super(struct super_block *sb)
-{
-}
-
-static __init inline int
-ext4_init_xattr(void)
-{
-	return 0;
-}
-
-static inline void
-ext4_exit_xattr(void)
-{
-}
-
-static inline int
-ext4_expand_extra_isize_ea(struct inode *inode, int new_extra_isize,
-			    struct ext4_inode *raw_inode, handle_t *handle)
-{
-	return -EOPNOTSUPP;
-}
-
-#define ext4_xattr_handlers	NULL
-
-# endif  /* CONFIG_EXT4_FS_XATTR */
-=======
 extern int ext4_xattr_set_credits(struct inode *inode, size_t value_len,
 				  bool is_create, int *credits);
 extern int __ext4_xattr_set_credits(struct super_block *sb, struct inode *inode,
@@ -297,7 +206,6 @@ extern int ext4_xattr_ibody_set(handle_t *handle, struct inode *inode,
 
 extern struct mb_cache *ext4_xattr_create_cache(void);
 extern void ext4_xattr_destroy_cache(struct mb_cache *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_EXT4_FS_SECURITY
 extern int ext4_init_security(handle_t *handle, struct inode *inode,
@@ -309,8 +217,6 @@ static inline int ext4_init_security(handle_t *handle, struct inode *inode,
 	return 0;
 }
 #endif
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_LOCKDEP
 extern void ext4_xattr_inode_set_class(struct inode *ea_inode);
@@ -319,4 +225,3 @@ static inline void ext4_xattr_inode_set_class(struct inode *ea_inode) { }
 #endif
 
 extern int ext4_get_inode_usage(struct inode *inode, qsize_t *usage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

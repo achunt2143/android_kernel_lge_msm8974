@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-What:           state
-=======
 What:           /sys/devices/system/ibm_rtl/state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:           Sep 2010
 KernelVersion:  2.6.37
 Contact:        Vernon Mauery <vernux@us.ibm.com>
 Description:    The state file allows a means by which to change in and
                 out of Premium Real-Time Mode (PRTM), as well as the
                 ability to query the current state.
-<<<<<<< HEAD
-                    0 => PRTM off
-                    1 => PRTM enabled
-Users:          The ibm-prtm userspace daemon uses this interface.
-
-
-What:           version
-=======
 
                     - 0 => PRTM off
                     - 1 => PRTM enabled
@@ -25,7 +13,6 @@ Users:          The ibm-prtm userspace daemon uses this interface.
 
 
 What:           /sys/devices/system/ibm_rtl/version
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:           Sep 2010
 KernelVersion:  2.6.37
 Contact:        Vernon Mauery <vernux@us.ibm.com>

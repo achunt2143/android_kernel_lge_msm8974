@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * builtin-timechart.c - make an svg timechart of system activity
  *
@@ -9,31 +6,6 @@
  *
  * Authors:
  *     Arjan van de Ven <arjan@linux.intel.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; version 2
- * of the License.
- */
-
-#include "builtin.h"
-
-#include "util/util.h"
-
-#include "util/color.h"
-#include <linux/list.h>
-#include "util/cache.h"
-#include "util/evsel.h"
-#include <linux/rbtree.h>
-#include "util/symbol.h"
-#include "util/callchain.h"
-#include "util/strlist.h"
-
-#include "perf.h"
-#include "util/header.h"
-#include "util/parse-options.h"
-=======
  */
 
 #include <errno.h>
@@ -55,14 +27,11 @@
 #include "util/header.h"
 #include <subcmd/pager.h>
 #include <subcmd/parse-options.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "util/parse-events.h"
 #include "util/event.h"
 #include "util/session.h"
 #include "util/svghelper.h"
 #include "util/tool.h"
-<<<<<<< HEAD
-=======
 #include "util/data.h"
 #include "util/debug.h"
 #include "util/string2.h"
@@ -74,35 +43,10 @@
 #ifdef LACKS_OPEN_MEMSTREAM_PROTOTYPE
 FILE *open_memstream(char **ptr, size_t *sizeloc);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SUPPORT_OLD_POWER_EVENTS 1
 #define PWR_EVENT_EXIT -1
 
-<<<<<<< HEAD
-
-static const char	*input_name;
-static const char	*output_name = "output.svg";
-
-static unsigned int	numcpus;
-static u64		min_freq;	/* Lowest CPU frequency seen */
-static u64		max_freq;	/* Highest CPU frequency seen */
-static u64		turbo_frequency;
-
-static u64		first_time, last_time;
-
-static bool		power_only;
-
-
-struct per_pid;
-struct per_pidcomm;
-
-struct cpu_sample;
-struct power_event;
-struct wake_event;
-
-struct sample_wrapper;
-=======
 struct per_pid;
 struct power_event;
 struct wake_event;
@@ -134,7 +78,6 @@ struct timechart {
 struct per_pidcomm;
 struct cpu_sample;
 struct io_sample;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Datastructure layout:
@@ -155,10 +98,7 @@ struct per_pid {
 	u64		start_time;
 	u64		end_time;
 	u64		total_time;
-<<<<<<< HEAD
-=======
 	u64		total_bytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		display;
 
 	struct per_pidcomm *all;
@@ -172,11 +112,8 @@ struct per_pidcomm {
 	u64		start_time;
 	u64		end_time;
 	u64		total_time;
-<<<<<<< HEAD
-=======
 	u64		max_bytes;
 	u64		total_bytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int		Y;
 	int		display;
@@ -187,21 +124,14 @@ struct per_pidcomm {
 	char		*comm;
 
 	struct cpu_sample *samples;
-<<<<<<< HEAD
-=======
 	struct io_sample  *io_samples;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sample_wrapper {
 	struct sample_wrapper *next;
 
 	u64		timestamp;
-<<<<<<< HEAD
-	unsigned char	data[0];
-=======
 	unsigned char	data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define TYPE_NONE	0
@@ -216,11 +146,6 @@ struct cpu_sample {
 	u64 end_time;
 	int type;
 	int cpu;
-<<<<<<< HEAD
-};
-
-static struct per_pid *all_data;
-=======
 	const char *backtrace;
 };
 
@@ -244,7 +169,6 @@ struct io_sample {
 	int err;
 	int merges;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CSTATE 1
 #define PSTATE 2
@@ -263,18 +187,9 @@ struct wake_event {
 	int waker;
 	int wakee;
 	u64 time;
-<<<<<<< HEAD
-};
-
-static struct power_event    *power_events;
-static struct wake_event     *wake_events;
-
-struct process_filter;
-=======
 	const char *backtrace;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct process_filter {
 	char			*name;
 	int			pid;
@@ -284,37 +199,15 @@ struct process_filter {
 static struct process_filter *process_filter;
 
 
-<<<<<<< HEAD
-static struct per_pid *find_create_pid(int pid)
-{
-	struct per_pid *cursor = all_data;
-=======
 static struct per_pid *find_create_pid(struct timechart *tchart, int pid)
 {
 	struct per_pid *cursor = tchart->all_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (cursor) {
 		if (cursor->pid == pid)
 			return cursor;
 		cursor = cursor->next;
 	}
-<<<<<<< HEAD
-	cursor = malloc(sizeof(struct per_pid));
-	assert(cursor != NULL);
-	memset(cursor, 0, sizeof(struct per_pid));
-	cursor->pid = pid;
-	cursor->next = all_data;
-	all_data = cursor;
-	return cursor;
-}
-
-static void pid_set_comm(int pid, char *comm)
-{
-	struct per_pid *p;
-	struct per_pidcomm *c;
-	p = find_create_pid(pid);
-=======
 	cursor = zalloc(sizeof(*cursor));
 	assert(cursor != NULL);
 	cursor->pid = pid;
@@ -341,7 +234,6 @@ static void pid_set_comm(struct timechart *tchart, int pid, char *comm)
 	struct per_pid *p;
 	struct per_pidcomm *c;
 	p = find_create_pid(tchart, pid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c = p->all;
 	while (c) {
 		if (c->comm && strcmp(c->comm, comm) == 0) {
@@ -355,28 +247,6 @@ static void pid_set_comm(struct timechart *tchart, int pid, char *comm)
 		}
 		c = c->next;
 	}
-<<<<<<< HEAD
-	c = malloc(sizeof(struct per_pidcomm));
-	assert(c != NULL);
-	memset(c, 0, sizeof(struct per_pidcomm));
-	c->comm = strdup(comm);
-	p->current = c;
-	c->next = p->all;
-	p->all = c;
-}
-
-static void pid_fork(int pid, int ppid, u64 timestamp)
-{
-	struct per_pid *p, *pp;
-	p = find_create_pid(pid);
-	pp = find_create_pid(ppid);
-	p->ppid = ppid;
-	if (pp->current && pp->current->comm && !p->current)
-		pid_set_comm(pid, pp->current->comm);
-
-	p->start_time = timestamp;
-	if (p->current) {
-=======
 	c = create_pidcomm(p);
 	assert(c != NULL);
 	c->comm = strdup(comm);
@@ -393,57 +263,28 @@ static void pid_fork(struct timechart *tchart, int pid, int ppid, u64 timestamp)
 
 	p->start_time = timestamp;
 	if (p->current && !p->current->start_time) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p->current->start_time = timestamp;
 		p->current->state_since = timestamp;
 	}
 }
 
-<<<<<<< HEAD
-static void pid_exit(int pid, u64 timestamp)
-{
-	struct per_pid *p;
-	p = find_create_pid(pid);
-=======
 static void pid_exit(struct timechart *tchart, int pid, u64 timestamp)
 {
 	struct per_pid *p;
 	p = find_create_pid(tchart, pid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p->end_time = timestamp;
 	if (p->current)
 		p->current->end_time = timestamp;
 }
 
-<<<<<<< HEAD
-static void
-pid_put_sample(int pid, int type, unsigned int cpu, u64 start, u64 end)
-=======
 static void pid_put_sample(struct timechart *tchart, int pid, int type,
 			   unsigned int cpu, u64 start, u64 end,
 			   const char *backtrace)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct per_pid *p;
 	struct per_pidcomm *c;
 	struct cpu_sample *sample;
 
-<<<<<<< HEAD
-	p = find_create_pid(pid);
-	c = p->current;
-	if (!c) {
-		c = malloc(sizeof(struct per_pidcomm));
-		assert(c != NULL);
-		memset(c, 0, sizeof(struct per_pidcomm));
-		p->current = c;
-		c->next = p->all;
-		p->all = c;
-	}
-
-	sample = malloc(sizeof(struct cpu_sample));
-	assert(sample != NULL);
-	memset(sample, 0, sizeof(struct cpu_sample));
-=======
 	p = find_create_pid(tchart, pid);
 	c = p->current;
 	if (!c) {
@@ -453,16 +294,12 @@ static void pid_put_sample(struct timechart *tchart, int pid, int type,
 
 	sample = zalloc(sizeof(*sample));
 	assert(sample != NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sample->start_time = start;
 	sample->end_time = end;
 	sample->type = type;
 	sample->next = c->samples;
 	sample->cpu = cpu;
-<<<<<<< HEAD
-=======
 	sample->backtrace = backtrace;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->samples = sample;
 
 	if (sample->type == TYPE_RUNNING && end > start && start > 0) {
@@ -478,103 +315,6 @@ static void pid_put_sample(struct timechart *tchart, int pid, int type,
 
 #define MAX_CPUS 4096
 
-<<<<<<< HEAD
-static u64 cpus_cstate_start_times[MAX_CPUS];
-static int cpus_cstate_state[MAX_CPUS];
-static u64 cpus_pstate_start_times[MAX_CPUS];
-static u64 cpus_pstate_state[MAX_CPUS];
-
-static int process_comm_event(struct perf_tool *tool __used,
-			      union perf_event *event,
-			      struct perf_sample *sample __used,
-			      struct machine *machine __used)
-{
-	pid_set_comm(event->comm.tid, event->comm.comm);
-	return 0;
-}
-
-static int process_fork_event(struct perf_tool *tool __used,
-			      union perf_event *event,
-			      struct perf_sample *sample __used,
-			      struct machine *machine __used)
-{
-	pid_fork(event->fork.pid, event->fork.ppid, event->fork.time);
-	return 0;
-}
-
-static int process_exit_event(struct perf_tool *tool __used,
-			      union perf_event *event,
-			      struct perf_sample *sample __used,
-			      struct machine *machine __used)
-{
-	pid_exit(event->fork.pid, event->fork.time);
-	return 0;
-}
-
-struct trace_entry {
-	unsigned short		type;
-	unsigned char		flags;
-	unsigned char		preempt_count;
-	int			pid;
-	int			lock_depth;
-};
-
-#ifdef SUPPORT_OLD_POWER_EVENTS
-static int use_old_power_events;
-struct power_entry_old {
-	struct trace_entry te;
-	u64	type;
-	u64	value;
-	u64	cpu_id;
-};
-#endif
-
-struct power_processor_entry {
-	struct trace_entry te;
-	u32	state;
-	u32	cpu_id;
-};
-
-#define TASK_COMM_LEN 16
-struct wakeup_entry {
-	struct trace_entry te;
-	char comm[TASK_COMM_LEN];
-	int   pid;
-	int   prio;
-	int   success;
-};
-
-/*
- * trace_flag_type is an enumeration that holds different
- * states when a trace occurs. These are:
- *  IRQS_OFF            - interrupts were disabled
- *  IRQS_NOSUPPORT      - arch does not support irqs_disabled_flags
- *  NEED_RESCED         - reschedule is requested
- *  HARDIRQ             - inside an interrupt handler
- *  SOFTIRQ             - inside a softirq handler
- */
-enum trace_flag_type {
-	TRACE_FLAG_IRQS_OFF		= 0x01,
-	TRACE_FLAG_IRQS_NOSUPPORT	= 0x02,
-	TRACE_FLAG_NEED_RESCHED		= 0x04,
-	TRACE_FLAG_HARDIRQ		= 0x08,
-	TRACE_FLAG_SOFTIRQ		= 0x10,
-};
-
-
-
-struct sched_switch {
-	struct trace_entry te;
-	char prev_comm[TASK_COMM_LEN];
-	int  prev_pid;
-	int  prev_prio;
-	long prev_state; /* Arjan weeps. */
-	char next_comm[TASK_COMM_LEN];
-	int  next_pid;
-	int  next_prio;
-};
-
-=======
 static u64 *cpus_cstate_start_times;
 static int *cpus_cstate_state;
 static u64 *cpus_pstate_start_times;
@@ -614,53 +354,24 @@ static int process_exit_event(struct perf_tool *tool,
 static int use_old_power_events;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void c_state_start(int cpu, u64 timestamp, int state)
 {
 	cpus_cstate_start_times[cpu] = timestamp;
 	cpus_cstate_state[cpu] = state;
 }
 
-<<<<<<< HEAD
-static void c_state_end(int cpu, u64 timestamp)
-{
-	struct power_event *pwr;
-	pwr = malloc(sizeof(struct power_event));
-	if (!pwr)
-		return;
-	memset(pwr, 0, sizeof(struct power_event));
-=======
 static void c_state_end(struct timechart *tchart, int cpu, u64 timestamp)
 {
 	struct power_event *pwr = zalloc(sizeof(*pwr));
 
 	if (!pwr)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pwr->state = cpus_cstate_state[cpu];
 	pwr->start_time = cpus_cstate_start_times[cpu];
 	pwr->end_time = timestamp;
 	pwr->cpu = cpu;
 	pwr->type = CSTATE;
-<<<<<<< HEAD
-	pwr->next = power_events;
-
-	power_events = pwr;
-}
-
-static void p_state_change(int cpu, u64 timestamp, u64 new_freq)
-{
-	struct power_event *pwr;
-	pwr = malloc(sizeof(struct power_event));
-
-	if (new_freq > 8000000) /* detect invalid data */
-		return;
-
-	if (!pwr)
-		return;
-	memset(pwr, 0, sizeof(struct power_event));
-=======
 	pwr->next = tchart->power_events;
 
 	tchart->power_events = pwr;
@@ -673,21 +384,12 @@ static struct power_event *p_state_end(struct timechart *tchart, int cpu,
 
 	if (!pwr)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pwr->state = cpus_pstate_state[cpu];
 	pwr->start_time = cpus_pstate_start_times[cpu];
 	pwr->end_time = timestamp;
 	pwr->cpu = cpu;
 	pwr->type = PSTATE;
-<<<<<<< HEAD
-	pwr->next = power_events;
-
-	if (!pwr->start_time)
-		pwr->start_time = first_time;
-
-	power_events = pwr;
-=======
 	pwr->next = tchart->power_events;
 	if (!pwr->start_time)
 		pwr->start_time = tchart->first_time;
@@ -706,45 +408,10 @@ static void p_state_change(struct timechart *tchart, int cpu, u64 timestamp, u64
 	pwr = p_state_end(tchart, cpu, timestamp);
 	if (!pwr)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cpus_pstate_state[cpu] = new_freq;
 	cpus_pstate_start_times[cpu] = timestamp;
 
-<<<<<<< HEAD
-	if ((u64)new_freq > max_freq)
-		max_freq = new_freq;
-
-	if (new_freq < min_freq || min_freq == 0)
-		min_freq = new_freq;
-
-	if (new_freq == max_freq - 1000)
-			turbo_frequency = max_freq;
-}
-
-static void
-sched_wakeup(int cpu, u64 timestamp, int pid, struct trace_entry *te)
-{
-	struct wake_event *we;
-	struct per_pid *p;
-	struct wakeup_entry *wake = (void *)te;
-
-	we = malloc(sizeof(struct wake_event));
-	if (!we)
-		return;
-
-	memset(we, 0, sizeof(struct wake_event));
-	we->time = timestamp;
-	we->waker = pid;
-
-	if ((te->flags & TRACE_FLAG_HARDIRQ) || (te->flags & TRACE_FLAG_SOFTIRQ))
-		we->waker = -1;
-
-	we->wakee = wake->pid;
-	we->next = wake_events;
-	wake_events = we;
-	p = find_create_pid(we->wakee);
-=======
 	if ((u64)new_freq > tchart->max_freq)
 		tchart->max_freq = new_freq;
 
@@ -775,41 +442,19 @@ static void sched_wakeup(struct timechart *tchart, int cpu, u64 timestamp,
 	we->next = tchart->wake_events;
 	tchart->wake_events = we;
 	p = find_create_pid(tchart, we->wakee);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (p && p->current && p->current->state == TYPE_NONE) {
 		p->current->state_since = timestamp;
 		p->current->state = TYPE_WAITING;
 	}
 	if (p && p->current && p->current->state == TYPE_BLOCKED) {
-<<<<<<< HEAD
-		pid_put_sample(p->pid, p->current->state, cpu, p->current->state_since, timestamp);
-=======
 		pid_put_sample(tchart, p->pid, p->current->state, cpu,
 			       p->current->state_since, timestamp, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p->current->state_since = timestamp;
 		p->current->state = TYPE_WAITING;
 	}
 }
 
-<<<<<<< HEAD
-static void sched_switch(int cpu, u64 timestamp, struct trace_entry *te)
-{
-	struct per_pid *p = NULL, *prev_p;
-	struct sched_switch *sw = (void *)te;
-
-
-	prev_p = find_create_pid(sw->prev_pid);
-
-	p = find_create_pid(sw->next_pid);
-
-	if (prev_p->current && prev_p->current->state != TYPE_NONE)
-		pid_put_sample(sw->prev_pid, TYPE_RUNNING, cpu, prev_p->current->state_since, timestamp);
-	if (p && p->current) {
-		if (p->current->state != TYPE_NONE)
-			pid_put_sample(sw->next_pid, p->current->state, cpu, p->current->state_since, timestamp);
-=======
 static void sched_switch(struct timechart *tchart, int cpu, u64 timestamp,
 			 int prev_pid, int next_pid, u64 prev_state,
 			 const char *backtrace)
@@ -829,7 +474,6 @@ static void sched_switch(struct timechart *tchart, int cpu, u64 timestamp,
 			pid_put_sample(tchart, next_pid, p->current->state, cpu,
 				       p->current->state_since, timestamp,
 				       backtrace);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		p->current->state_since = timestamp;
 		p->current->state = TYPE_RUNNING;
@@ -838,100 +482,13 @@ static void sched_switch(struct timechart *tchart, int cpu, u64 timestamp,
 	if (prev_p->current) {
 		prev_p->current->state = TYPE_NONE;
 		prev_p->current->state_since = timestamp;
-<<<<<<< HEAD
-		if (sw->prev_state & 2)
-			prev_p->current->state = TYPE_BLOCKED;
-		if (sw->prev_state == 0)
-=======
 		if (prev_state & 2)
 			prev_p->current->state = TYPE_BLOCKED;
 		if (prev_state == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			prev_p->current->state = TYPE_WAITING;
 	}
 }
 
-<<<<<<< HEAD
-
-static int process_sample_event(struct perf_tool *tool __used,
-				union perf_event *event __used,
-				struct perf_sample *sample,
-				struct perf_evsel *evsel,
-				struct machine *machine __used)
-{
-	struct trace_entry *te;
-
-	if (evsel->attr.sample_type & PERF_SAMPLE_TIME) {
-		if (!first_time || first_time > sample->time)
-			first_time = sample->time;
-		if (last_time < sample->time)
-			last_time = sample->time;
-	}
-
-	te = (void *)sample->raw_data;
-	if ((evsel->attr.sample_type & PERF_SAMPLE_RAW) && sample->raw_size > 0) {
-		char *event_str;
-#ifdef SUPPORT_OLD_POWER_EVENTS
-		struct power_entry_old *peo;
-		peo = (void *)te;
-#endif
-		/*
-		 * FIXME: use evsel, its already mapped from id to perf_evsel,
-		 * remove perf_header__find_event infrastructure bits.
-		 * Mapping all these "power:cpu_idle" strings to the tracepoint
-		 * ID and then just comparing against evsel->attr.config.
-		 *
-		 * e.g.:
-		 *
-		 * if (evsel->attr.config == power_cpu_idle_id)
-		 */
-		event_str = perf_header__find_event(te->type);
-
-		if (!event_str)
-			return 0;
-
-		if (sample->cpu > numcpus)
-			numcpus = sample->cpu;
-
-		if (strcmp(event_str, "power:cpu_idle") == 0) {
-			struct power_processor_entry *ppe = (void *)te;
-			if (ppe->state == (u32)PWR_EVENT_EXIT)
-				c_state_end(ppe->cpu_id, sample->time);
-			else
-				c_state_start(ppe->cpu_id, sample->time,
-					      ppe->state);
-		}
-		else if (strcmp(event_str, "power:cpu_frequency") == 0) {
-			struct power_processor_entry *ppe = (void *)te;
-			p_state_change(ppe->cpu_id, sample->time, ppe->state);
-		}
-
-		else if (strcmp(event_str, "sched:sched_wakeup") == 0)
-			sched_wakeup(sample->cpu, sample->time, sample->pid, te);
-
-		else if (strcmp(event_str, "sched:sched_switch") == 0)
-			sched_switch(sample->cpu, sample->time, te);
-
-#ifdef SUPPORT_OLD_POWER_EVENTS
-		if (use_old_power_events) {
-			if (strcmp(event_str, "power:power_start") == 0)
-				c_state_start(peo->cpu_id, sample->time,
-					      peo->value);
-
-			else if (strcmp(event_str, "power:power_end") == 0)
-				c_state_end(sample->cpu, sample->time);
-
-			else if (strcmp(event_str,
-					"power:power_frequency") == 0)
-				p_state_change(peo->cpu_id, sample->time,
-					       peo->value);
-		}
-#endif
-	}
-	return 0;
-}
-
-=======
 static const char *cat_backtrace(union perf_event *event,
 				 struct perf_sample *sample,
 				 struct machine *machine)
@@ -1134,65 +691,15 @@ process_sample_power_frequency(struct timechart *tchart,
 }
 #endif /* SUPPORT_OLD_POWER_EVENTS */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * After the last sample we need to wrap up the current C/P state
  * and close out each CPU for these.
  */
-<<<<<<< HEAD
-static void end_sample_processing(void)
-=======
 static void end_sample_processing(struct timechart *tchart)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 cpu;
 	struct power_event *pwr;
 
-<<<<<<< HEAD
-	for (cpu = 0; cpu <= numcpus; cpu++) {
-		pwr = malloc(sizeof(struct power_event));
-		if (!pwr)
-			return;
-		memset(pwr, 0, sizeof(struct power_event));
-
-		/* C state */
-#if 0
-		pwr->state = cpus_cstate_state[cpu];
-		pwr->start_time = cpus_cstate_start_times[cpu];
-		pwr->end_time = last_time;
-		pwr->cpu = cpu;
-		pwr->type = CSTATE;
-		pwr->next = power_events;
-
-		power_events = pwr;
-#endif
-		/* P state */
-
-		pwr = malloc(sizeof(struct power_event));
-		if (!pwr)
-			return;
-		memset(pwr, 0, sizeof(struct power_event));
-
-		pwr->state = cpus_pstate_state[cpu];
-		pwr->start_time = cpus_pstate_start_times[cpu];
-		pwr->end_time = last_time;
-		pwr->cpu = cpu;
-		pwr->type = PSTATE;
-		pwr->next = power_events;
-
-		if (!pwr->start_time)
-			pwr->start_time = first_time;
-		if (!pwr->state)
-			pwr->state = min_freq;
-		power_events = pwr;
-	}
-}
-
-/*
- * Sort the pid datastructure
- */
-static void sort_pids(void)
-=======
 	for (cpu = 0; cpu <= tchart->numcpus; cpu++) {
 		/* C state */
 #if 0
@@ -1464,22 +971,15 @@ process_exit_poll(struct timechart *tchart,
  * Sort the pid datastructure
  */
 static void sort_pids(struct timechart *tchart)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct per_pid *new_list, *p, *cursor, *prev;
 	/* sort by ppid first, then by pid, lowest to highest */
 
 	new_list = NULL;
 
-<<<<<<< HEAD
-	while (all_data) {
-		p = all_data;
-		all_data = p->next;
-=======
 	while (tchart->all_data) {
 		p = tchart->all_data;
 		tchart->all_data = p->next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p->next = NULL;
 
 		if (new_list == NULL) {
@@ -1512,16 +1012,6 @@ static void sort_pids(struct timechart *tchart)
 				prev->next = p;
 		}
 	}
-<<<<<<< HEAD
-	all_data = new_list;
-}
-
-
-static void draw_c_p_states(void)
-{
-	struct power_event *pwr;
-	pwr = power_events;
-=======
 	tchart->all_data = new_list;
 }
 
@@ -1530,7 +1020,6 @@ static void draw_c_p_states(struct timechart *tchart)
 {
 	struct power_event *pwr;
 	pwr = tchart->power_events;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * two pass drawing so that the P state bars are on top of the C state blocks
@@ -1541,50 +1030,30 @@ static void draw_c_p_states(struct timechart *tchart)
 		pwr = pwr->next;
 	}
 
-<<<<<<< HEAD
-	pwr = power_events;
-	while (pwr) {
-		if (pwr->type == PSTATE) {
-			if (!pwr->state)
-				pwr->state = min_freq;
-=======
 	pwr = tchart->power_events;
 	while (pwr) {
 		if (pwr->type == PSTATE) {
 			if (!pwr->state)
 				pwr->state = tchart->min_freq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			svg_pstate(pwr->cpu, pwr->start_time, pwr->end_time, pwr->state);
 		}
 		pwr = pwr->next;
 	}
 }
 
-<<<<<<< HEAD
-static void draw_wakeups(void)
-=======
 static void draw_wakeups(struct timechart *tchart)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wake_event *we;
 	struct per_pid *p;
 	struct per_pidcomm *c;
 
-<<<<<<< HEAD
-	we = wake_events;
-=======
 	we = tchart->wake_events;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (we) {
 		int from = 0, to = 0;
 		char *task_from = NULL, *task_to = NULL;
 
 		/* locate the column of the waker and wakee */
-<<<<<<< HEAD
-		p = all_data;
-=======
 		p = tchart->all_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (p) {
 			if (p->pid == we->waker || p->pid == we->wakee) {
 				c = p->all;
@@ -1627,20 +1096,12 @@ static void draw_wakeups(struct timechart *tchart)
 		}
 
 		if (we->waker == -1)
-<<<<<<< HEAD
-			svg_interrupt(we->time, to);
-		else if (from && to && abs(from - to) == 1)
-			svg_wakeline(we->time, from, to);
-		else
-			svg_partial_wakeline(we->time, from, task_from, to, task_to);
-=======
 			svg_interrupt(we->time, to, we->backtrace);
 		else if (from && to && abs(from - to) == 1)
 			svg_wakeline(we->time, from, to, we->backtrace);
 		else
 			svg_partial_wakeline(we->time, from, task_from, to,
 					     task_to, we->backtrace);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		we = we->next;
 
 		free(task_from);
@@ -1648,29 +1109,17 @@ static void draw_wakeups(struct timechart *tchart)
 	}
 }
 
-<<<<<<< HEAD
-static void draw_cpu_usage(void)
-=======
 static void draw_cpu_usage(struct timechart *tchart)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct per_pid *p;
 	struct per_pidcomm *c;
 	struct cpu_sample *sample;
-<<<<<<< HEAD
-	p = all_data;
-=======
 	p = tchart->all_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (p) {
 		c = p->all;
 		while (c) {
 			sample = c->samples;
 			while (sample) {
-<<<<<<< HEAD
-				if (sample->type == TYPE_RUNNING)
-					svg_process(sample->cpu, sample->start_time, sample->end_time, "sample", c->comm);
-=======
 				if (sample->type == TYPE_RUNNING) {
 					svg_process(sample->cpu,
 						    sample->start_time,
@@ -1679,7 +1128,6 @@ static void draw_cpu_usage(struct timechart *tchart)
 						    c->comm,
 						    sample->backtrace);
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				sample = sample->next;
 			}
@@ -1689,9 +1137,6 @@ static void draw_cpu_usage(struct timechart *tchart)
 	}
 }
 
-<<<<<<< HEAD
-static void draw_process_bars(void)
-=======
 static void draw_io_bars(struct timechart *tchart)
 {
 	const char *suf;
@@ -1808,22 +1253,15 @@ static void draw_io_bars(struct timechart *tchart)
 }
 
 static void draw_process_bars(struct timechart *tchart)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct per_pid *p;
 	struct per_pidcomm *c;
 	struct cpu_sample *sample;
 	int Y = 0;
 
-<<<<<<< HEAD
-	Y = 2 * numcpus + 2;
-
-	p = all_data;
-=======
 	Y = 2 * tchart->numcpus + 2;
 
 	p = tchart->all_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (p) {
 		c = p->all;
 		while (c) {
@@ -1837,13 +1275,6 @@ static void draw_process_bars(struct timechart *tchart)
 			sample = c->samples;
 			while (sample) {
 				if (sample->type == TYPE_RUNNING)
-<<<<<<< HEAD
-					svg_sample(Y, sample->cpu, sample->start_time, sample->end_time);
-				if (sample->type == TYPE_BLOCKED)
-					svg_box(Y, sample->start_time, sample->end_time, "blocked");
-				if (sample->type == TYPE_WAITING)
-					svg_waiting(Y, sample->start_time, sample->end_time);
-=======
 					svg_running(Y, sample->cpu,
 						    sample->start_time,
 						    sample->end_time,
@@ -1858,22 +1289,15 @@ static void draw_process_bars(struct timechart *tchart)
 						    sample->start_time,
 						    sample->end_time,
 						    sample->backtrace);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sample = sample->next;
 			}
 
 			if (c->comm) {
 				char comm[256];
 				if (c->total_time > 5000000000) /* 5 seconds */
-<<<<<<< HEAD
-					sprintf(comm, "%s:%i (%2.2fs)", c->comm, p->pid, c->total_time / 1000000000.0);
-				else
-					sprintf(comm, "%s:%i (%3.1fms)", c->comm, p->pid, c->total_time / 1000000.0);
-=======
 					sprintf(comm, "%s:%i (%2.2fs)", c->comm, p->pid, c->total_time / (double)NSEC_PER_SEC);
 				else
 					sprintf(comm, "%s:%i (%3.1fms)", c->comm, p->pid, c->total_time / (double)NSEC_PER_MSEC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				svg_text(Y, c->start_time, comm);
 			}
@@ -1887,17 +1311,9 @@ static void draw_process_bars(struct timechart *tchart)
 
 static void add_process_filter(const char *string)
 {
-<<<<<<< HEAD
-	struct process_filter *filt;
-	int pid;
-
-	pid = strtoull(string, NULL, 10);
-	filt = malloc(sizeof(struct process_filter));
-=======
 	int pid = strtoull(string, NULL, 10);
 	struct process_filter *filt = malloc(sizeof(*filt));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!filt)
 		return;
 
@@ -1925,27 +1341,12 @@ static int passes_filter(struct per_pid *p, struct per_pidcomm *c)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int determine_display_tasks_filtered(void)
-=======
 static int determine_display_tasks_filtered(struct timechart *tchart)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct per_pid *p;
 	struct per_pidcomm *c;
 	int count = 0;
 
-<<<<<<< HEAD
-	p = all_data;
-	while (p) {
-		p->display = 0;
-		if (p->start_time == 1)
-			p->start_time = first_time;
-
-		/* no exit marker, task kept running to the end */
-		if (p->end_time == 0)
-			p->end_time = last_time;
-=======
 	p = tchart->all_data;
 	while (p) {
 		p->display = 0;
@@ -1955,7 +1356,6 @@ static int determine_display_tasks_filtered(struct timechart *tchart)
 		/* no exit marker, task kept running to the end */
 		if (p->end_time == 0)
 			p->end_time = tchart->last_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		c = p->all;
 
@@ -1963,11 +1363,7 @@ static int determine_display_tasks_filtered(struct timechart *tchart)
 			c->display = 0;
 
 			if (c->start_time == 1)
-<<<<<<< HEAD
-				c->start_time = first_time;
-=======
 				c->start_time = tchart->first_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (passes_filter(p, c)) {
 				c->display = 1;
@@ -1976,11 +1372,7 @@ static int determine_display_tasks_filtered(struct timechart *tchart)
 			}
 
 			if (c->end_time == 0)
-<<<<<<< HEAD
-				c->end_time = last_time;
-=======
 				c->end_time = tchart->last_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			c = c->next;
 		}
@@ -1989,31 +1381,12 @@ static int determine_display_tasks_filtered(struct timechart *tchart)
 	return count;
 }
 
-<<<<<<< HEAD
-static int determine_display_tasks(u64 threshold)
-=======
 static int determine_display_tasks(struct timechart *tchart, u64 threshold)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct per_pid *p;
 	struct per_pidcomm *c;
 	int count = 0;
 
-<<<<<<< HEAD
-	if (process_filter)
-		return determine_display_tasks_filtered();
-
-	p = all_data;
-	while (p) {
-		p->display = 0;
-		if (p->start_time == 1)
-			p->start_time = first_time;
-
-		/* no exit marker, task kept running to the end */
-		if (p->end_time == 0)
-			p->end_time = last_time;
-		if (p->total_time >= threshold && !power_only)
-=======
 	p = tchart->all_data;
 	while (p) {
 		p->display = 0;
@@ -2024,7 +1397,6 @@ static int determine_display_tasks(struct timechart *tchart, u64 threshold)
 		if (p->end_time == 0)
 			p->end_time = tchart->last_time;
 		if (p->total_time >= threshold)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			p->display = 1;
 
 		c = p->all;
@@ -2033,25 +1405,15 @@ static int determine_display_tasks(struct timechart *tchart, u64 threshold)
 			c->display = 0;
 
 			if (c->start_time == 1)
-<<<<<<< HEAD
-				c->start_time = first_time;
-
-			if (c->total_time >= threshold && !power_only) {
-=======
 				c->start_time = tchart->first_time;
 
 			if (c->total_time >= threshold) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				c->display = 1;
 				count++;
 			}
 
 			if (c->end_time == 0)
-<<<<<<< HEAD
-				c->end_time = last_time;
-=======
 				c->end_time = tchart->last_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			c = c->next;
 		}
@@ -2060,38 +1422,6 @@ static int determine_display_tasks(struct timechart *tchart, u64 threshold)
 	return count;
 }
 
-<<<<<<< HEAD
-
-
-#define TIME_THRESH 10000000
-
-static void write_svg_file(const char *filename)
-{
-	u64 i;
-	int count;
-
-	numcpus++;
-
-
-	count = determine_display_tasks(TIME_THRESH);
-
-	/* We'd like to show at least 15 tasks; be less picky if we have fewer */
-	if (count < 15)
-		count = determine_display_tasks(TIME_THRESH / 10);
-
-	open_svg(filename, numcpus, count, first_time, last_time);
-
-	svg_time_grid();
-	svg_legenda();
-
-	for (i = 0; i < numcpus; i++)
-		svg_cpu_box(i, max_freq, turbo_frequency);
-
-	draw_cpu_usage();
-	draw_process_bars();
-	draw_c_p_states();
-	draw_wakeups();
-=======
 static int determine_display_io_tasks(struct timechart *timechart, u64 threshold)
 {
 	struct per_pid *p;
@@ -2176,29 +1506,10 @@ static void write_svg_file(struct timechart *tchart, const char *filename)
 		if (tchart->proc_num)
 			draw_wakeups(tchart);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	svg_close();
 }
 
-<<<<<<< HEAD
-static struct perf_tool perf_timechart = {
-	.comm			= process_comm_event,
-	.fork			= process_fork_event,
-	.exit			= process_exit_event,
-	.sample			= process_sample_event,
-	.ordered_samples	= true,
-};
-
-static int __cmd_timechart(void)
-{
-	struct perf_session *session = perf_session__new(input_name, O_RDONLY,
-							 0, false, &perf_timechart);
-	int ret = -EINVAL;
-
-	if (session == NULL)
-		return -ENOMEM;
-=======
 static int process_header(struct perf_file_section *section __maybe_unused,
 			  struct perf_header *ph,
 			  int feat,
@@ -2308,25 +1619,10 @@ static int __cmd_timechart(struct timechart *tchart, const char *output_name)
 					    perf_data__fd(session->data),
 					    tchart,
 					    process_header);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!perf_session__has_traces(session, "timechart record"))
 		goto out_delete;
 
-<<<<<<< HEAD
-	ret = perf_session__process_events(session, &perf_timechart);
-	if (ret)
-		goto out_delete;
-
-	end_sample_processing();
-
-	sort_pids();
-
-	write_svg_file(output_name);
-
-	pr_info("Written %2.1f seconds of trace to %s.\n",
-		(last_time - first_time) / 1000000000.0, output_name);
-=======
 	if (perf_session__set_tracepoints_handlers(session,
 						   power_tracepoints)) {
 		pr_err("Initializing session tracepoint handlers failed\n");
@@ -2345,63 +1641,11 @@ static int __cmd_timechart(struct timechart *tchart, const char *output_name)
 
 	pr_info("Written %2.1f seconds of trace to %s.\n",
 		(tchart->last_time - tchart->first_time) / (double)NSEC_PER_SEC, output_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_delete:
 	perf_session__delete(session);
 	return ret;
 }
 
-<<<<<<< HEAD
-static const char * const timechart_usage[] = {
-	"perf timechart [<options>] {record}",
-	NULL
-};
-
-#ifdef SUPPORT_OLD_POWER_EVENTS
-static const char * const record_old_args[] = {
-	"record",
-	"-a",
-	"-R",
-	"-f",
-	"-c", "1",
-	"-e", "power:power_start",
-	"-e", "power:power_end",
-	"-e", "power:power_frequency",
-	"-e", "sched:sched_wakeup",
-	"-e", "sched:sched_switch",
-};
-#endif
-
-static const char * const record_new_args[] = {
-	"record",
-	"-a",
-	"-R",
-	"-f",
-	"-c", "1",
-	"-e", "power:cpu_frequency",
-	"-e", "power:cpu_idle",
-	"-e", "sched:sched_wakeup",
-	"-e", "sched:sched_switch",
-};
-
-static int __cmd_record(int argc, const char **argv)
-{
-	unsigned int rec_argc, i, j;
-	const char **rec_argv;
-	const char * const *record_args = record_new_args;
-	unsigned int record_elems = ARRAY_SIZE(record_new_args);
-
-#ifdef SUPPORT_OLD_POWER_EVENTS
-	if (!is_valid_tracepoint("power:cpu_idle") &&
-	    is_valid_tracepoint("power:power_start")) {
-		use_old_power_events = 1;
-		record_args = record_old_args;
-		record_elems = ARRAY_SIZE(record_old_args);
-	}
-#endif
-
-	rec_argc = record_elems + argc - 1;
-=======
 static int timechart__io_record(int argc, const char **argv)
 {
 	unsigned int rec_argc, i;
@@ -2482,25 +1726,11 @@ static int timechart__io_record(int argc, const char **argv)
 		net_events_nr * 4 +
 		poll_events_nr * 4 +
 		argc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rec_argv = calloc(rec_argc + 1, sizeof(char *));
 
 	if (rec_argv == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	for (i = 0; i < record_elems; i++)
-		rec_argv[i] = strdup(record_args[i]);
-
-	for (j = 1; j < (unsigned int)argc; j++, i++)
-		rec_argv[i] = argv[j];
-
-	return cmd_record(i, rec_argv, NULL);
-}
-
-static int
-parse_process(const struct option *opt __used, const char *arg, int __used unset)
-=======
 	if (asprintf(&filter, "common_pid != %d", getpid()) < 0) {
 		free(rec_argv);
 		return -ENOMEM;
@@ -2644,48 +1874,12 @@ static int timechart__record(struct timechart *tchart, int argc, const char **ar
 static int
 parse_process(const struct option *opt __maybe_unused, const char *arg,
 	      int __maybe_unused unset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (arg)
 		add_process_filter(arg);
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct option options[] = {
-	OPT_STRING('i', "input", &input_name, "file",
-		    "input file name"),
-	OPT_STRING('o', "output", &output_name, "file",
-		    "output file name"),
-	OPT_INTEGER('w', "width", &svg_page_width,
-		    "page width"),
-	OPT_BOOLEAN('P', "power-only", &power_only,
-		    "output power data only"),
-	OPT_CALLBACK('p', "process", NULL, "process",
-		      "process selector. Pass a pid or process name.",
-		       parse_process),
-	OPT_STRING(0, "symfs", &symbol_conf.symfs, "directory",
-		    "Look for files with symbols relative to this directory"),
-	OPT_END()
-};
-
-
-int cmd_timechart(int argc, const char **argv, const char *prefix __used)
-{
-	argc = parse_options(argc, argv, options, timechart_usage,
-			PARSE_OPT_STOP_AT_NON_OPTION);
-
-	symbol__init();
-
-	if (argc && !strncmp(argv[0], "rec", 3))
-		return __cmd_record(argc, argv);
-	else if (argc)
-		usage_with_options(timechart_usage, options);
-
-	setup_pager();
-
-	return __cmd_timechart();
-=======
 static int
 parse_highlight(const struct option *opt __maybe_unused, const char *arg,
 		int __maybe_unused unset)
@@ -2848,5 +2042,4 @@ out:
 	zfree(&cpus_pstate_start_times);
 	zfree(&cpus_pstate_state);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

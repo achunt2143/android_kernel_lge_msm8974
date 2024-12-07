@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/nfs/pagelist.c
  *
@@ -20,22 +17,6 @@
 #include <linux/nfs.h>
 #include <linux/nfs3.h>
 #include <linux/nfs4.h>
-<<<<<<< HEAD
-#include <linux/nfs_page.h>
-#include <linux/nfs_fs.h>
-#include <linux/nfs_mount.h>
-#include <linux/export.h>
-
-#include "internal.h"
-#include "pnfs.h"
-
-static struct kmem_cache *nfs_page_cachep;
-
-static inline struct nfs_page *
-nfs_page_alloc(void)
-{
-	struct nfs_page	*p = kmem_cache_zalloc(nfs_page_cachep, GFP_KERNEL);
-=======
 #include <linux/nfs_fs.h>
 #include <linux/nfs_page.h>
 #include <linux/nfs_mount.h>
@@ -152,7 +133,6 @@ static inline struct nfs_page *nfs_page_alloc(void)
 {
 	struct nfs_page *p =
 		kmem_cache_zalloc(nfs_page_cachep, nfs_io_gfp_mask());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p)
 		INIT_LIST_HEAD(&p->wb_list);
 	return p;
@@ -165,13 +145,6 @@ nfs_page_free(struct nfs_page *p)
 }
 
 /**
-<<<<<<< HEAD
- * nfs_create_request - Create an NFS read/write request.
- * @ctx: open context to use
- * @inode: inode to which the request is attached
- * @page: page to write
- * @offset: starting offset within the page for the write
-=======
  * nfs_iocounter_wait - wait for i/o to complete
  * @l_ctx: nfs_lock_context with io_counter to use
  *
@@ -549,50 +522,12 @@ static void nfs_page_assign_page(struct nfs_page *req, struct page *page)
  * @page: page to write
  * @pgbase: starting offset within the page for the write
  * @offset: file offset for the write
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @count: number of bytes to read/write
  *
  * The page must be locked by the caller. This makes sure we never
  * create two different requests for the same page.
  * User should ensure it is safe to sleep in this function.
  */
-<<<<<<< HEAD
-struct nfs_page *
-nfs_create_request(struct nfs_open_context *ctx, struct inode *inode,
-		   struct page *page,
-		   unsigned int offset, unsigned int count)
-{
-	struct nfs_page		*req;
-
-	/* try to allocate the request struct */
-	req = nfs_page_alloc();
-	if (req == NULL)
-		return ERR_PTR(-ENOMEM);
-
-	/* get lock context early so we can deal with alloc failures */
-	req->wb_lock_context = nfs_get_lock_context(ctx);
-	if (req->wb_lock_context == NULL) {
-		nfs_page_free(req);
-		return ERR_PTR(-ENOMEM);
-	}
-
-	/* Initialize the request struct. Initially, we assume a
-	 * long write-back delay. This will be adjusted in
-	 * update_nfs_request below if the region is not locked. */
-	req->wb_page    = page;
-	atomic_set(&req->wb_complete, 0);
-	req->wb_index	= page->index;
-	page_cache_get(page);
-	BUG_ON(PagePrivate(page));
-	BUG_ON(!PageLocked(page));
-	BUG_ON(page->mapping->host != inode);
-	req->wb_offset  = offset;
-	req->wb_pgbase	= offset;
-	req->wb_bytes   = count;
-	req->wb_context = get_nfs_open_context(ctx);
-	kref_init(&req->wb_kref);
-	return req;
-=======
 struct nfs_page *nfs_page_create_from_page(struct nfs_open_context *ctx,
 					   struct page *page,
 					   unsigned int pgbase, loff_t offset,
@@ -672,25 +607,10 @@ nfs_create_subreq(struct nfs_page *req,
 		ret->wb_nio = req->wb_nio;
 	}
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * nfs_unlock_request - Unlock request and wake up sleepers.
-<<<<<<< HEAD
- * @req:
- */
-void nfs_unlock_request(struct nfs_page *req)
-{
-	if (!NFS_WBACK_BUSY(req)) {
-		printk(KERN_ERR "NFS: Invalid unlock attempted\n");
-		BUG();
-	}
-	smp_mb__before_clear_bit();
-	clear_bit(PG_BUSY, &req->wb_flags);
-	smp_mb__after_clear_bit();
-	wake_up_bit(&req->wb_flags, PG_BUSY);
-=======
  * @req: pointer to request
  */
 void nfs_unlock_request(struct nfs_page *req)
@@ -709,7 +629,6 @@ void nfs_unlock_request(struct nfs_page *req)
 void nfs_unlock_and_release_request(struct nfs_page *req)
 {
 	nfs_unlock_request(req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nfs_release_request(req);
 }
 
@@ -722,29 +641,6 @@ void nfs_unlock_and_release_request(struct nfs_page *req)
  */
 static void nfs_clear_request(struct nfs_page *req)
 {
-<<<<<<< HEAD
-	struct page *page = req->wb_page;
-	struct nfs_open_context *ctx = req->wb_context;
-	struct nfs_lock_context *l_ctx = req->wb_lock_context;
-
-	if (page != NULL) {
-		page_cache_release(page);
-		req->wb_page = NULL;
-	}
-	if (l_ctx != NULL) {
-		nfs_put_lock_context(l_ctx);
-		req->wb_lock_context = NULL;
-	}
-	if (ctx != NULL) {
-		put_nfs_open_context(ctx);
-		req->wb_context = NULL;
-	}
-}
-
-
-/**
- * nfs_release_request - Release the count on an NFS read/write request
-=======
 	struct folio *folio = nfs_page_to_folio(req);
 	struct page *page = req->wb_page;
 	struct nfs_lock_context *l_ctx = req->wb_lock_context;
@@ -772,16 +668,10 @@ static void nfs_clear_request(struct nfs_page *req)
 
 /**
  * nfs_free_request - Release the count on an NFS read/write request
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @req: request to release
  *
  * Note: Should never be called with the spinlock held!
  */
-<<<<<<< HEAD
-static void nfs_free_request(struct kref *kref)
-{
-	struct nfs_page *req = container_of(kref, struct nfs_page, wb_kref);
-=======
 void nfs_free_request(struct nfs_page *req)
 {
 	WARN_ON_ONCE(req->wb_this_page != req);
@@ -792,7 +682,6 @@ void nfs_free_request(struct nfs_page *req)
 	WARN_ON_ONCE(test_bit(PG_UPTODATE, &req->wb_flags));
 	WARN_ON_ONCE(test_bit(PG_WB_END, &req->wb_flags));
 	WARN_ON_ONCE(test_bit(PG_REMOVE, &req->wb_flags));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Release struct file and open context */
 	nfs_clear_request(req);
@@ -801,20 +690,9 @@ void nfs_free_request(struct nfs_page *req)
 
 void nfs_release_request(struct nfs_page *req)
 {
-<<<<<<< HEAD
-	kref_put(&req->wb_kref, nfs_free_request);
-}
-
-static int nfs_wait_bit_uninterruptible(void *word)
-{
-	io_schedule();
-	return 0;
-}
-=======
 	kref_put(&req->wb_kref, nfs_page_group_destroy);
 }
 EXPORT_SYMBOL_GPL(nfs_release_request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * nfs_wait_on_request - Wait for a request to complete.
@@ -826,29 +704,6 @@ EXPORT_SYMBOL_GPL(nfs_release_request);
 int
 nfs_wait_on_request(struct nfs_page *req)
 {
-<<<<<<< HEAD
-	return wait_on_bit(&req->wb_flags, PG_BUSY,
-			nfs_wait_bit_uninterruptible,
-			TASK_UNINTERRUPTIBLE);
-}
-
-bool nfs_generic_pg_test(struct nfs_pageio_descriptor *desc, struct nfs_page *prev, struct nfs_page *req)
-{
-	/*
-	 * FIXME: ideally we should be able to coalesce all requests
-	 * that are not block boundary aligned, but currently this
-	 * is problematic for the case of bsize < PAGE_CACHE_SIZE,
-	 * since nfs_flush_multi and nfs_pagein_multi assume you
-	 * can have only one struct nfs_page.
-	 */
-	if (desc->pg_bsize < PAGE_SIZE)
-		return 0;
-
-	return desc->pg_count + req->wb_bytes <= desc->pg_bsize;
-}
-EXPORT_SYMBOL_GPL(nfs_generic_pg_test);
-
-=======
 	if (!test_bit(PG_BUSY, &req->wb_flags))
 		return 0;
 	set_bit(PG_CONTENDED2, &req->wb_flags);
@@ -1060,47 +915,19 @@ static void nfs_pageio_mirror_init(struct nfs_pgio_mirror *mirror,
 	mirror->pg_recoalesce = 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * nfs_pageio_init - initialise a page io descriptor
  * @desc: pointer to descriptor
  * @inode: pointer to inode
-<<<<<<< HEAD
- * @doio: pointer to io function
-=======
  * @pg_ops: pointer to pageio operations
  * @compl_ops: pointer to pageio completion operations
  * @rw_ops: pointer to nfs read/write operations
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bsize: io block size
  * @io_flags: extra parameters for the io function
  */
 void nfs_pageio_init(struct nfs_pageio_descriptor *desc,
 		     struct inode *inode,
 		     const struct nfs_pageio_ops *pg_ops,
-<<<<<<< HEAD
-		     size_t bsize,
-		     int io_flags)
-{
-	INIT_LIST_HEAD(&desc->pg_list);
-	desc->pg_bytes_written = 0;
-	desc->pg_count = 0;
-	desc->pg_bsize = bsize;
-	desc->pg_base = 0;
-	desc->pg_moreio = 0;
-	desc->pg_recoalesce = 0;
-	desc->pg_inode = inode;
-	desc->pg_ops = pg_ops;
-	desc->pg_ioflags = io_flags;
-	desc->pg_error = 0;
-	desc->pg_lseg = NULL;
-}
-
-/**
- * nfs_can_coalesce_requests - test two requests for compatibility
- * @prev: pointer to nfs_page
- * @req: pointer to nfs_page
-=======
 		     const struct nfs_pgio_completion_ops *compl_ops,
 		     const struct nfs_rw_ops *rw_ops,
 		     size_t bsize,
@@ -1340,32 +1167,11 @@ static bool nfs_page_is_contiguous(const struct nfs_page *prev,
  * @prev: pointer to nfs_page
  * @req: pointer to nfs_page
  * @pgio: pointer to nfs_pagio_descriptor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The nfs_page structures 'prev' and 'req' are compared to ensure that the
  * page data area they describe is contiguous, and that their RPC
  * credentials, NFSv4 open state, and lockowners are the same.
  *
-<<<<<<< HEAD
- * Return 'true' if this is the case, else return 'false'.
- */
-static bool nfs_can_coalesce_requests(struct nfs_page *prev,
-				      struct nfs_page *req,
-				      struct nfs_pageio_descriptor *pgio)
-{
-	if (req->wb_context->cred != prev->wb_context->cred)
-		return false;
-	if (req->wb_lock_context->lockowner != prev->wb_lock_context->lockowner)
-		return false;
-	if (req->wb_context->state != prev->wb_context->state)
-		return false;
-	if (req->wb_index != (prev->wb_index + 1))
-		return false;
-	if (req->wb_pgbase != 0)
-		return false;
-	if (prev->wb_pgbase + prev->wb_bytes != PAGE_CACHE_SIZE)
-		return false;
-=======
  * Returns size of the request that can be coalesced
  */
 static unsigned int nfs_coalesce_size(struct nfs_page *prev,
@@ -1387,7 +1193,6 @@ static unsigned int nfs_coalesce_size(struct nfs_page *prev,
 		if (!nfs_page_is_contiguous(prev, req))
 			return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pgio->pg_ops->pg_test(pgio, prev, req);
 }
 
@@ -1396,29 +1201,6 @@ static unsigned int nfs_coalesce_size(struct nfs_page *prev,
  * @desc: destination io descriptor
  * @req: request
  *
-<<<<<<< HEAD
- * Returns true if the request 'req' was successfully coalesced into the
- * existing list of pages 'desc'.
- */
-static int nfs_pageio_do_add_request(struct nfs_pageio_descriptor *desc,
-				     struct nfs_page *req)
-{
-	if (desc->pg_count != 0) {
-		struct nfs_page *prev;
-
-		prev = nfs_list_entry(desc->pg_list.prev);
-		if (!nfs_can_coalesce_requests(prev, req, desc))
-			return 0;
-	} else {
-		if (desc->pg_ops->pg_init)
-			desc->pg_ops->pg_init(desc, req);
-		desc->pg_base = req->wb_pgbase;
-	}
-	nfs_list_remove_request(req);
-	nfs_list_add_request(req, &desc->pg_list);
-	desc->pg_count += req->wb_bytes;
-	return 1;
-=======
  * If the request 'req' was successfully coalesced into the existing list
  * of pages 'desc', it returns the size of req.
  */
@@ -1455,7 +1237,6 @@ nfs_pageio_do_add_request(struct nfs_pageio_descriptor *desc,
 	nfs_list_move_request(req, &mirror->pg_list);
 	mirror->pg_count += req->wb_bytes;
 	return req->wb_bytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1463,26 +1244,6 @@ nfs_pageio_do_add_request(struct nfs_pageio_descriptor *desc,
  */
 static void nfs_pageio_doio(struct nfs_pageio_descriptor *desc)
 {
-<<<<<<< HEAD
-	if (!list_empty(&desc->pg_list)) {
-		int error = desc->pg_ops->pg_doio(desc);
-		if (error < 0)
-			desc->pg_error = error;
-		else
-			desc->pg_bytes_written += desc->pg_count;
-	}
-	if (list_empty(&desc->pg_list)) {
-		desc->pg_count = 0;
-		desc->pg_base = 0;
-	}
-}
-
-/**
- * nfs_pageio_add_request - Attempt to coalesce a request into a page list.
- * @desc: destination io descriptor
- * @req: request
- *
-=======
 	struct nfs_pgio_mirror *mirror = nfs_pgio_current_mirror(desc);
 
 	if (!list_empty(&mirror->pg_list)) {
@@ -1513,25 +1274,12 @@ nfs_pageio_cleanup_request(struct nfs_pageio_descriptor *desc,
  * same page group. If so, it will submit @req as the last one, to ensure
  * the pointer to @req is still valid in case of failure.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns true if the request 'req' was successfully coalesced into the
  * existing list of pages 'desc'.
  */
 static int __nfs_pageio_add_request(struct nfs_pageio_descriptor *desc,
 			   struct nfs_page *req)
 {
-<<<<<<< HEAD
-	while (!nfs_pageio_do_add_request(desc, req)) {
-		desc->pg_moreio = 1;
-		nfs_pageio_doio(desc);
-		if (desc->pg_error < 0)
-			return 0;
-		desc->pg_moreio = 0;
-		if (desc->pg_recoalesce)
-			return 0;
-	}
-	return 1;
-=======
 	struct nfs_pgio_mirror *mirror = nfs_pgio_current_mirror(desc);
 	struct nfs_page *subreq;
 	unsigned int size, subreq_size;
@@ -1584,47 +1332,21 @@ err_ptr:
 	desc->pg_error = PTR_ERR(subreq);
 	nfs_page_group_unlock(req);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int nfs_do_recoalesce(struct nfs_pageio_descriptor *desc)
 {
-<<<<<<< HEAD
-	LIST_HEAD(head);
-
-	do {
-		list_splice_init(&desc->pg_list, &head);
-		desc->pg_bytes_written -= desc->pg_count;
-		desc->pg_count = 0;
-		desc->pg_base = 0;
-		desc->pg_recoalesce = 0;
-=======
 	struct nfs_pgio_mirror *mirror = nfs_pgio_current_mirror(desc);
 	LIST_HEAD(head);
 
 	do {
 		list_splice_init(&mirror->pg_list, &head);
 		mirror->pg_recoalesce = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		while (!list_empty(&head)) {
 			struct nfs_page *req;
 
 			req = list_first_entry(&head, struct nfs_page, wb_list);
-<<<<<<< HEAD
-			nfs_list_remove_request(req);
-			if (__nfs_pageio_add_request(desc, req))
-				continue;
-			if (desc->pg_error < 0)
-				return 0;
-			break;
-		}
-	} while (desc->pg_recoalesce);
-	return 1;
-}
-
-int nfs_pageio_add_request(struct nfs_pageio_descriptor *desc,
-=======
 			if (__nfs_pageio_add_request(desc, req))
 				continue;
 			if (desc->pg_error < 0) {
@@ -1639,7 +1361,6 @@ int nfs_pageio_add_request(struct nfs_pageio_descriptor *desc,
 }
 
 static int nfs_pageio_add_request_mirror(struct nfs_pageio_descriptor *desc,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct nfs_page *req)
 {
 	int ret;
@@ -1652,20 +1373,6 @@ static int nfs_pageio_add_request_mirror(struct nfs_pageio_descriptor *desc,
 			break;
 		ret = nfs_do_recoalesce(desc);
 	} while (ret);
-<<<<<<< HEAD
-	return ret;
-}
-
-/**
- * nfs_pageio_complete - Complete I/O on an nfs_pageio_descriptor
- * @desc: pointer to io descriptor
- */
-void nfs_pageio_complete(struct nfs_pageio_descriptor *desc)
-{
-	for (;;) {
-		nfs_pageio_doio(desc);
-		if (!desc->pg_recoalesce)
-=======
 
 	return ret;
 }
@@ -1749,13 +1456,10 @@ static void nfs_pageio_complete_mirror(struct nfs_pageio_descriptor *desc,
 	for (;;) {
 		nfs_pageio_doio(desc);
 		if (desc->pg_error < 0 || !mirror->pg_recoalesce)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		if (!nfs_do_recoalesce(desc))
 			break;
 	}
-<<<<<<< HEAD
-=======
 	nfs_pgio_set_current_mirror(desc, restore_idx);
 }
 
@@ -1811,7 +1515,6 @@ void nfs_pageio_complete(struct nfs_pageio_descriptor *desc)
 	if (desc->pg_ops->pg_cleanup)
 		desc->pg_ops->pg_cleanup(desc);
 	nfs_pageio_cleanup_mirroring(desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1827,15 +1530,6 @@ void nfs_pageio_complete(struct nfs_pageio_descriptor *desc)
  */
 void nfs_pageio_cond_complete(struct nfs_pageio_descriptor *desc, pgoff_t index)
 {
-<<<<<<< HEAD
-	if (!list_empty(&desc->pg_list)) {
-		struct nfs_page *prev = nfs_list_entry(desc->pg_list.prev);
-		if (index != prev->wb_index + 1)
-			nfs_pageio_complete(desc);
-	}
-}
-
-=======
 	struct nfs_pgio_mirror *mirror;
 	struct nfs_page *prev;
 	struct folio *folio;
@@ -1865,7 +1559,6 @@ void nfs_pageio_stop_mirroring(struct nfs_pageio_descriptor *pgio)
 	nfs_pageio_complete(pgio);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init nfs_init_nfspagecache(void)
 {
 	nfs_page_cachep = kmem_cache_create("nfs_page",
@@ -1883,8 +1576,6 @@ void nfs_destroy_nfspagecache(void)
 	kmem_cache_destroy(nfs_page_cachep);
 }
 
-<<<<<<< HEAD
-=======
 static const struct rpc_call_ops nfs_pgio_common_ops = {
 	.rpc_call_prepare = nfs_pgio_prepare,
 	.rpc_call_done = nfs_pgio_result,
@@ -1895,4 +1586,3 @@ const struct nfs_pageio_ops nfs_pgio_rw_ops = {
 	.pg_test = nfs_generic_pg_test,
 	.pg_doio = nfs_generic_pg_pgios,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

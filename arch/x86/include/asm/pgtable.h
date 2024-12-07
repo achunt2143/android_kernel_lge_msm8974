@@ -1,33 +1,14 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_PGTABLE_H
-#define _ASM_X86_PGTABLE_H
-
-#include <asm/page.h>
-#include <asm/e820.h>
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_PGTABLE_H
 #define _ASM_X86_PGTABLE_H
 
 #include <linux/mem_encrypt.h>
 #include <asm/page.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pgtable_types.h>
 
 /*
  * Macro to mark a page protection value as UC-
  */
-<<<<<<< HEAD
-#define pgprot_noncached(prot)					\
-	((boot_cpu_data.x86 > 3)				\
-	 ? (__pgprot(pgprot_val(prot) | _PAGE_CACHE_UC_MINUS))	\
-	 : (prot))
-
-#ifndef __ASSEMBLY__
-
-#include <asm/x86_init.h>
-=======
 #define pgprot_noncached(prot)						\
 	((boot_cpu_data.x86 > 3)					\
 	 ? (__pgprot(pgprot_val(prot) |					\
@@ -65,52 +46,32 @@ void ptdump_walk_user_pgd_level_checkwx(void);
 #else
 #define debug_checkwx_user()	do { } while (0)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ZERO_PAGE is a global shared page that is always zero: used
  * for zero-mapped memory areas etc..
  */
-<<<<<<< HEAD
-extern unsigned long empty_zero_page[PAGE_SIZE / sizeof(unsigned long)];
-#define ZERO_PAGE(vaddr) (virt_to_page(empty_zero_page))
-=======
 extern unsigned long empty_zero_page[PAGE_SIZE / sizeof(unsigned long)]
 	__visible;
 #define ZERO_PAGE(vaddr) ((void)(vaddr),virt_to_page(empty_zero_page))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern spinlock_t pgd_lock;
 extern struct list_head pgd_list;
 
 extern struct mm_struct *pgd_page_get_mm(struct page *page);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PARAVIRT
-#include <asm/paravirt.h>
-#else  /* !CONFIG_PARAVIRT */
-#define set_pte(ptep, pte)		native_set_pte(ptep, pte)
-#define set_pte_at(mm, addr, ptep, pte)	native_set_pte_at(mm, addr, ptep, pte)
-#define set_pmd_at(mm, addr, pmdp, pmd)	native_set_pmd_at(mm, addr, pmdp, pmd)
-=======
 extern pmdval_t early_pmd_flags;
 
 #ifdef CONFIG_PARAVIRT_XXL
 #include <asm/paravirt.h>
 #else  /* !CONFIG_PARAVIRT_XXL */
 #define set_pte(ptep, pte)		native_set_pte(ptep, pte)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define set_pte_atomic(ptep, pte)					\
 	native_set_pte_atomic(ptep, pte)
 
 #define set_pmd(pmdp, pmd)		native_set_pmd(pmdp, pmd)
 
-<<<<<<< HEAD
-#ifndef __PAGETABLE_PUD_FOLDED
-#define set_pgd(pgdp, pgd)		native_set_pgd(pgdp, pgd)
-#define pgd_clear(pgd)			native_pgd_clear(pgd)
-=======
 #ifndef __PAGETABLE_P4D_FOLDED
 #define set_pgd(pgdp, pgd)		native_set_pgd(pgdp, pgd)
 #define pgd_clear(pgd)			(pgtable_l5_enabled() ? native_pgd_clear(pgd) : 0)
@@ -122,34 +83,19 @@ extern pmdval_t early_pmd_flags;
 
 #ifndef __PAGETABLE_PUD_FOLDED
 #define p4d_clear(p4d)			native_p4d_clear(p4d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifndef set_pud
 # define set_pud(pudp, pud)		native_set_pud(pudp, pud)
 #endif
 
-<<<<<<< HEAD
-#ifndef __PAGETABLE_PMD_FOLDED
-=======
 #ifndef __PAGETABLE_PUD_FOLDED
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pud_clear(pud)			native_pud_clear(pud)
 #endif
 
 #define pte_clear(mm, addr, ptep)	native_pte_clear(mm, addr, ptep)
 #define pmd_clear(pmd)			native_pmd_clear(pmd)
 
-<<<<<<< HEAD
-#define pte_update(mm, addr, ptep)              do { } while (0)
-#define pte_update_defer(mm, addr, ptep)        do { } while (0)
-#define pmd_update(mm, addr, ptep)              do { } while (0)
-#define pmd_update_defer(mm, addr, ptep)        do { } while (0)
-
-#define pgd_val(x)	native_pgd_val(x)
-#define __pgd(x)	native_make_pgd(x)
-
-=======
 #define pgd_val(x)	native_pgd_val(x)
 #define __pgd(x)	native_make_pgd(x)
 
@@ -158,7 +104,6 @@ extern pmdval_t early_pmd_flags;
 #define __p4d(x)	native_make_p4d(x)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __PAGETABLE_PUD_FOLDED
 #define pud_val(x)	native_pud_val(x)
 #define __pud(x)	native_make_pud(x)
@@ -173,22 +118,12 @@ extern pmdval_t early_pmd_flags;
 #define __pte(x)	native_make_pte(x)
 
 #define arch_end_context_switch(prev)	do {} while(0)
-<<<<<<< HEAD
-
-#endif	/* CONFIG_PARAVIRT */
-=======
 #endif	/* CONFIG_PARAVIRT_XXL */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The following only work if pte_present() is true.
  * Undefined behaviour if not..
  */
-<<<<<<< HEAD
-static inline int pte_dirty(pte_t pte)
-{
-	return pte_flags(pte) & _PAGE_DIRTY;
-=======
 static inline bool pte_dirty(pte_t pte)
 {
 	return pte_flags(pte) & _PAGE_DIRTY_BITS;
@@ -198,7 +133,6 @@ static inline bool pte_shstk(pte_t pte)
 {
 	return cpu_feature_enabled(X86_FEATURE_SHSTK) &&
 	       (pte_flags(pte) & (_PAGE_RW | _PAGE_DIRTY)) == _PAGE_DIRTY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int pte_young(pte_t pte)
@@ -206,8 +140,6 @@ static inline int pte_young(pte_t pte)
 	return pte_flags(pte) & _PAGE_ACCESSED;
 }
 
-<<<<<<< HEAD
-=======
 #define pmd_dirty pmd_dirty
 static inline bool pmd_dirty(pmd_t pmd)
 {
@@ -222,22 +154,11 @@ static inline bool pmd_shstk(pmd_t pmd)
 }
 
 #define pmd_young pmd_young
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pmd_young(pmd_t pmd)
 {
 	return pmd_flags(pmd) & _PAGE_ACCESSED;
 }
 
-<<<<<<< HEAD
-static inline int pte_write(pte_t pte)
-{
-	return pte_flags(pte) & _PAGE_RW;
-}
-
-static inline int pte_file(pte_t pte)
-{
-	return pte_flags(pte) & _PAGE_FILE;
-=======
 static inline bool pud_dirty(pud_t pud)
 {
 	return pud_flags(pud) & _PAGE_DIRTY_BITS;
@@ -271,7 +192,6 @@ static inline int pmd_write(pmd_t pmd)
 static inline int pud_write(pud_t pud)
 {
 	return pud_flags(pud) & _PAGE_RW;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int pte_huge(pte_t pte)
@@ -294,11 +214,6 @@ static inline int pte_special(pte_t pte)
 	return pte_flags(pte) & _PAGE_SPECIAL;
 }
 
-<<<<<<< HEAD
-static inline unsigned long pte_pfn(pte_t pte)
-{
-	return (pte_val(pte) & PTE_PFN_MASK) >> PAGE_SHIFT;
-=======
 /* Entries that were set to PROT_NONE are inverted */
 
 static inline u64 protnone_mask(u64 val);
@@ -310,25 +225,17 @@ static inline unsigned long pte_pfn(pte_t pte)
 	phys_addr_t pfn = pte_val(pte);
 	pfn ^= protnone_mask(pfn);
 	return (pfn & PTE_PFN_MASK) >> PAGE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned long pmd_pfn(pmd_t pmd)
 {
-<<<<<<< HEAD
-	return (pmd_val(pmd) & PTE_PFN_MASK) >> PAGE_SHIFT;
-=======
 	phys_addr_t pfn = pmd_val(pmd);
 	pfn ^= protnone_mask(pfn);
 	return (pfn & pmd_pfn_mask(pmd)) >> PAGE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned long pud_pfn(pud_t pud)
 {
-<<<<<<< HEAD
-	return (pud_val(pud) & PTE_PFN_MASK) >> PAGE_SHIFT;
-=======
 	phys_addr_t pfn = pud_val(pud);
 	pfn ^= protnone_mask(pfn);
 	return (pfn & pud_pfn_mask(pud)) >> PAGE_SHIFT;
@@ -349,38 +256,17 @@ static inline bool p4d_leaf(p4d_t p4d)
 {
 	/* No 512 GiB pages yet */
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define pte_page(pte)	pfn_to_page(pte_pfn(pte))
 
-<<<<<<< HEAD
-static inline int pmd_large(pmd_t pte)
-=======
 #define pmd_leaf pmd_leaf
 static inline bool pmd_leaf(pmd_t pte)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return pmd_flags(pte) & _PAGE_PSE;
 }
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
-<<<<<<< HEAD
-static inline int pmd_trans_splitting(pmd_t pmd)
-{
-	return pmd_val(pmd) & _PAGE_SPLITTING;
-}
-
-static inline int pmd_trans_huge(pmd_t pmd)
-{
-	return pmd_val(pmd) & _PAGE_PSE;
-}
-
-static inline int has_transparent_hugepage(void)
-{
-	return cpu_has_pse;
-}
-=======
 /* NOTE: when predicate huge page, consider also pmd_devmap, or use pmd_leaf */
 static inline int pmd_trans_huge(pmd_t pmd)
 {
@@ -423,7 +309,6 @@ static inline int pgd_devmap(pgd_t pgd)
 	return 0;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
 
 static inline pte_t pte_set_flags(pte_t pte, pteval_t set)
@@ -440,11 +325,6 @@ static inline pte_t pte_clear_flags(pte_t pte, pteval_t clear)
 	return native_make_pte(v & ~clear);
 }
 
-<<<<<<< HEAD
-static inline pte_t pte_mkclean(pte_t pte)
-{
-	return pte_clear_flags(pte, _PAGE_DIRTY);
-=======
 /*
  * Write protection operations can result in Dirty=1,Write=0 PTEs. But in the
  * case of X86_FEATURE_USER_SHSTK, these PTEs denote shadow stack memory. So
@@ -540,7 +420,6 @@ static inline pte_t pte_clear_uffd_wp(pte_t pte)
 static inline pte_t pte_mkclean(pte_t pte)
 {
 	return pte_clear_flags(pte, _PAGE_DIRTY_BITS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline pte_t pte_mkold(pte_t pte)
@@ -548,14 +427,6 @@ static inline pte_t pte_mkold(pte_t pte)
 	return pte_clear_flags(pte, _PAGE_ACCESSED);
 }
 
-<<<<<<< HEAD
-static inline pte_t pte_wrprotect(pte_t pte)
-{
-	return pte_clear_flags(pte, _PAGE_RW);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline pte_t pte_mkexec(pte_t pte)
 {
 	return pte_clear_flags(pte, _PAGE_NX);
@@ -563,8 +434,6 @@ static inline pte_t pte_mkexec(pte_t pte)
 
 static inline pte_t pte_mkdirty(pte_t pte)
 {
-<<<<<<< HEAD
-=======
 	pte = pte_set_flags(pte, _PAGE_DIRTY | _PAGE_SOFT_DIRTY);
 
 	return pte_mksaveddirty(pte);
@@ -574,7 +443,6 @@ static inline pte_t pte_mkwrite_shstk(pte_t pte)
 {
 	pte = pte_clear_flags(pte, _PAGE_RW);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pte_set_flags(pte, _PAGE_DIRTY);
 }
 
@@ -583,22 +451,15 @@ static inline pte_t pte_mkyoung(pte_t pte)
 	return pte_set_flags(pte, _PAGE_ACCESSED);
 }
 
-<<<<<<< HEAD
-static inline pte_t pte_mkwrite(pte_t pte)
-=======
 static inline pte_t pte_mkwrite_novma(pte_t pte)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return pte_set_flags(pte, _PAGE_RW);
 }
 
-<<<<<<< HEAD
-=======
 struct vm_area_struct;
 pte_t pte_mkwrite(pte_t pte, struct vm_area_struct *vma);
 #define pte_mkwrite pte_mkwrite
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline pte_t pte_mkhuge(pte_t pte)
 {
 	return pte_set_flags(pte, _PAGE_PSE);
@@ -624,34 +485,22 @@ static inline pte_t pte_mkspecial(pte_t pte)
 	return pte_set_flags(pte, _PAGE_SPECIAL);
 }
 
-<<<<<<< HEAD
-=======
 static inline pte_t pte_mkdevmap(pte_t pte)
 {
 	return pte_set_flags(pte, _PAGE_SPECIAL|_PAGE_DEVMAP);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline pmd_t pmd_set_flags(pmd_t pmd, pmdval_t set)
 {
 	pmdval_t v = native_pmd_val(pmd);
 
-<<<<<<< HEAD
-	return __pmd(v | set);
-=======
 	return native_make_pmd(v | set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline pmd_t pmd_clear_flags(pmd_t pmd, pmdval_t clear)
 {
 	pmdval_t v = native_pmd_val(pmd);
 
-<<<<<<< HEAD
-	return __pmd(v & ~clear);
-}
-
-=======
 	return native_make_pmd(v & ~clear);
 }
 
@@ -702,30 +551,18 @@ static inline pmd_t pmd_clear_uffd_wp(pmd_t pmd)
 }
 #endif /* CONFIG_HAVE_ARCH_USERFAULTFD_WP */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline pmd_t pmd_mkold(pmd_t pmd)
 {
 	return pmd_clear_flags(pmd, _PAGE_ACCESSED);
 }
 
-<<<<<<< HEAD
-static inline pmd_t pmd_wrprotect(pmd_t pmd)
-{
-	return pmd_clear_flags(pmd, _PAGE_RW);
-=======
 static inline pmd_t pmd_mkclean(pmd_t pmd)
 {
 	return pmd_clear_flags(pmd, _PAGE_DIRTY_BITS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline pmd_t pmd_mkdirty(pmd_t pmd)
 {
-<<<<<<< HEAD
-	return pmd_set_flags(pmd, _PAGE_DIRTY);
-}
-
-=======
 	pmd = pmd_set_flags(pmd, _PAGE_DIRTY | _PAGE_SOFT_DIRTY);
 
 	return pmd_mksaveddirty(pmd);
@@ -743,7 +580,6 @@ static inline pmd_t pmd_mkdevmap(pmd_t pmd)
 	return pmd_set_flags(pmd, _PAGE_DEVMAP);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline pmd_t pmd_mkhuge(pmd_t pmd)
 {
 	return pmd_set_flags(pmd, _PAGE_PSE);
@@ -754,22 +590,11 @@ static inline pmd_t pmd_mkyoung(pmd_t pmd)
 	return pmd_set_flags(pmd, _PAGE_ACCESSED);
 }
 
-<<<<<<< HEAD
-static inline pmd_t pmd_mkwrite(pmd_t pmd)
-=======
 static inline pmd_t pmd_mkwrite_novma(pmd_t pmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return pmd_set_flags(pmd, _PAGE_RW);
 }
 
-<<<<<<< HEAD
-static inline pmd_t pmd_mknotpresent(pmd_t pmd)
-{
-	return pmd_clear_flags(pmd, _PAGE_PRESENT);
-}
-
-=======
 pmd_t pmd_mkwrite(pmd_t pmd, struct vm_area_struct *vma);
 #define pmd_mkwrite pmd_mkwrite
 
@@ -904,7 +729,6 @@ static inline pud_t pud_clear_soft_dirty(pud_t pud)
 
 #endif /* CONFIG_HAVE_ARCH_SOFT_DIRTY */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Mask out unsupported bits in a present pgprot.  Non-present pgprots
  * can use those bits for other purposes, so leave them be.
@@ -919,12 +743,6 @@ static inline pgprotval_t massage_pgprot(pgprot_t pgprot)
 	return protval;
 }
 
-<<<<<<< HEAD
-static inline pte_t pfn_pte(unsigned long page_nr, pgprot_t pgprot)
-{
-	return __pte(((phys_addr_t)page_nr << PAGE_SHIFT) |
-		     massage_pgprot(pgprot));
-=======
 static inline pgprotval_t check_pgprot(pgprot_t pgprot)
 {
 	pgprotval_t massaged_val = massage_pgprot(pgprot);
@@ -948,20 +766,10 @@ static inline pte_t pfn_pte(unsigned long page_nr, pgprot_t pgprot)
 	pfn ^= protnone_mask(pgprot_val(pgprot));
 	pfn &= PTE_PFN_MASK;
 	return __pte(pfn | check_pgprot(pgprot));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline pmd_t pfn_pmd(unsigned long page_nr, pgprot_t pgprot)
 {
-<<<<<<< HEAD
-	return __pmd(((phys_addr_t)page_nr << PAGE_SHIFT) |
-		     massage_pgprot(pgprot));
-}
-
-static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
-{
-	pteval_t val = pte_val(pte);
-=======
 	phys_addr_t pfn = (phys_addr_t)page_nr << PAGE_SHIFT;
 	pfn ^= protnone_mask(pgprot_val(pgprot));
 	pfn &= PHYSICAL_PMD_PAGE_MASK;
@@ -988,18 +796,12 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
 {
 	pteval_t val = pte_val(pte), oldval = val;
 	pte_t pte_result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Chop off the NX bit (if present), and add the NX portion of
 	 * the newprot (if present):
 	 */
 	val &= _PAGE_CHG_MASK;
-<<<<<<< HEAD
-	val |= massage_pgprot(newprot) & ~_PAGE_CHG_MASK;
-
-	return __pte(val);
-=======
 	val |= check_pgprot(newprot) & ~_PAGE_CHG_MASK;
 	val = flip_protnone_guard(oldval, val, PTE_PFN_MASK);
 
@@ -1021,22 +823,10 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
 		pte_result = pte_clear_saveddirty(pte_result);
 
 	return pte_result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline pmd_t pmd_modify(pmd_t pmd, pgprot_t newprot)
 {
-<<<<<<< HEAD
-	pmdval_t val = pmd_val(pmd);
-
-	val &= _HPAGE_CHG_MASK;
-	val |= massage_pgprot(newprot) & ~_HPAGE_CHG_MASK;
-
-	return __pmd(val);
-}
-
-/* mprotect needs to preserve PAT bits when updating vm_page_prot */
-=======
 	pmdval_t val = pmd_val(pmd), oldval = val;
 	pmd_t pmd_result;
 
@@ -1068,18 +858,10 @@ static inline pmd_t pmd_modify(pmd_t pmd, pgprot_t newprot)
  * mprotect needs to preserve PAT and encryption bits when updating
  * vm_page_prot
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pgprot_modify pgprot_modify
 static inline pgprot_t pgprot_modify(pgprot_t oldprot, pgprot_t newprot)
 {
 	pgprotval_t preservebits = pgprot_val(oldprot) & _PAGE_CHG_MASK;
-<<<<<<< HEAD
-	pgprotval_t addbits = pgprot_val(newprot);
-	return __pgprot(preservebits | addbits);
-}
-
-#define pte_pgprot(x) __pgprot(pte_flags(x) & PTE_FLAGS_MASK)
-=======
 	pgprotval_t addbits = pgprot_val(newprot) & ~_PAGE_CHG_MASK;
 	return __pgprot(preservebits | addbits);
 }
@@ -1088,18 +870,12 @@ static inline pgprot_t pgprot_modify(pgprot_t oldprot, pgprot_t newprot)
 #define pmd_pgprot(x) __pgprot(pmd_flags(x))
 #define pud_pgprot(x) __pgprot(pud_flags(x))
 #define p4d_pgprot(x) __pgprot(p4d_flags(x))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define canon_pgprot(p) __pgprot(massage_pgprot(p))
 
 static inline int is_new_memtype_allowed(u64 paddr, unsigned long size,
-<<<<<<< HEAD
-					 unsigned long flags,
-					 unsigned long new_flags)
-=======
 					 enum page_cache_mode pcm,
 					 enum page_cache_mode new_pcm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * PAT type is always WB for untracked ranges, so no need to check.
@@ -1112,13 +888,6 @@ static inline int is_new_memtype_allowed(u64 paddr, unsigned long size,
 	 * requested memtype:
 	 * - request is uncached, return cannot be write-back
 	 * - request is write-combine, return cannot be write-back
-<<<<<<< HEAD
-	 */
-	if ((flags == _PAGE_CACHE_UC_MINUS &&
-	     new_flags == _PAGE_CACHE_WB) ||
-	    (flags == _PAGE_CACHE_WC &&
-	     new_flags == _PAGE_CACHE_WB)) {
-=======
 	 * - request is write-through, return cannot be write-back
 	 * - request is write-through, return cannot be write-combine
 	 */
@@ -1130,7 +899,6 @@ static inline int is_new_memtype_allowed(u64 paddr, unsigned long size,
 	     new_pcm == _PAGE_CACHE_MODE_WB) ||
 	    (pcm == _PAGE_CACHE_MODE_WT &&
 	     new_pcm == _PAGE_CACHE_MODE_WC)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -1139,14 +907,6 @@ static inline int is_new_memtype_allowed(u64 paddr, unsigned long size,
 
 pmd_t *populate_extra_pmd(unsigned long vaddr);
 pte_t *populate_extra_pte(unsigned long vaddr);
-<<<<<<< HEAD
-#endif	/* __ASSEMBLY__ */
-
-#ifdef CONFIG_X86_32
-# include "pgtable_32.h"
-#else
-# include "pgtable_64.h"
-=======
 
 #ifdef CONFIG_MITIGATION_PAGE_TABLE_ISOLATION
 pgd_t __pti_set_user_pgtbl(pgd_t *pgdp, pgd_t pgd);
@@ -1176,17 +936,10 @@ static inline pgd_t pti_set_user_pgtbl(pgd_t *pgdp, pgd_t pgd)
 # include <asm/pgtable_32.h>
 #else
 # include <asm/pgtable_64.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifndef __ASSEMBLY__
 #include <linux/mm_types.h>
-<<<<<<< HEAD
-
-static inline int pte_none(pte_t pte)
-{
-	return !pte.pte;
-=======
 #include <linux/mmdebug.h>
 #include <linux/log2.h>
 #include <asm/fixmap.h>
@@ -1194,7 +947,6 @@ static inline int pte_none(pte_t pte)
 static inline int pte_none(pte_t pte)
 {
 	return !(pte.pte & ~(_PAGE_KNL_ERRATUM_MASK));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define __HAVE_ARCH_PTE_SAME
@@ -1203,8 +955,6 @@ static inline int pte_same(pte_t a, pte_t b)
 	return a.pte == b.pte;
 }
 
-<<<<<<< HEAD
-=======
 static inline pte_t pte_advance_pfn(pte_t pte, unsigned long nr)
 {
 	if (__pte_needs_invert(pte_val(pte)))
@@ -1213,17 +963,11 @@ static inline pte_t pte_advance_pfn(pte_t pte, unsigned long nr)
 }
 #define pte_advance_pfn	pte_advance_pfn
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pte_present(pte_t a)
 {
 	return pte_flags(a) & (_PAGE_PRESENT | _PAGE_PROTNONE);
 }
 
-<<<<<<< HEAD
-static inline int pte_hidden(pte_t pte)
-{
-	return pte_flags(pte) & _PAGE_HIDDEN;
-=======
 #ifdef CONFIG_ARCH_HAS_PTE_DEVMAP
 static inline int pte_devmap(pte_t a)
 {
@@ -1242,7 +986,6 @@ static inline bool pte_accessible(struct mm_struct *mm, pte_t a)
 		return true;
 
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int pmd_present(pmd_t pmd)
@@ -1256,8 +999,6 @@ static inline int pmd_present(pmd_t pmd)
 	return pmd_flags(pmd) & (_PAGE_PRESENT | _PAGE_PROTNONE | _PAGE_PSE);
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_NUMA_BALANCING
 /*
  * These work without NUMA balancing but the kernel does not care. See the
@@ -1276,48 +1017,24 @@ static inline int pmd_protnone(pmd_t pmd)
 }
 #endif /* CONFIG_NUMA_BALANCING */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pmd_none(pmd_t pmd)
 {
 	/* Only check low word on 32-bit platforms, since it might be
 	   out of sync with upper half. */
-<<<<<<< HEAD
-	return (unsigned long)native_pmd_val(pmd) == 0;
-=======
 	unsigned long val = native_pmd_val(pmd);
 	return (val & ~_PAGE_KNL_ERRATUM_MASK) == 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned long pmd_page_vaddr(pmd_t pmd)
 {
-<<<<<<< HEAD
-	return (unsigned long)__va(pmd_val(pmd) & PTE_PFN_MASK);
-=======
 	return (unsigned long)__va(pmd_val(pmd) & pmd_pfn_mask(pmd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Currently stuck as a macro due to indirect forward reference to
  * linux/mmzone.h's __section_mem_map_addr() definition:
  */
-<<<<<<< HEAD
-#define pmd_page(pmd)	pfn_to_page((pmd_val(pmd) & PTE_PFN_MASK) >> PAGE_SHIFT)
-
-/*
- * the pmd page can be thought of an array like this: pmd_t[PTRS_PER_PMD]
- *
- * this macro returns the index of the entry in the pmd page which would
- * control the given virtual address
- */
-static inline unsigned long pmd_index(unsigned long address)
-{
-	return (address >> PMD_SHIFT) & (PTRS_PER_PMD - 1);
-}
-=======
 #define pmd_page(pmd)	pfn_to_page(pmd_pfn(pmd))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Conversion functions: convert a page and protection to a page entry,
@@ -1326,29 +1043,6 @@ static inline unsigned long pmd_index(unsigned long address)
  * (Currently stuck as a macro because of indirect forward reference
  * to linux/mm.h:page_to_nid())
  */
-<<<<<<< HEAD
-#define mk_pte(page, pgprot)   pfn_pte(page_to_pfn(page), (pgprot))
-
-/*
- * the pte page can be thought of an array like this: pte_t[PTRS_PER_PTE]
- *
- * this function returns the index of the entry in the pte page which would
- * control the given virtual address
- */
-static inline unsigned long pte_index(unsigned long address)
-{
-	return (address >> PAGE_SHIFT) & (PTRS_PER_PTE - 1);
-}
-
-static inline pte_t *pte_offset_kernel(pmd_t *pmd, unsigned long address)
-{
-	return (pte_t *)pmd_page_vaddr(*pmd) + pte_index(address);
-}
-
-static inline int pmd_bad(pmd_t pmd)
-{
-	return (pmd_flags(pmd) & ~_PAGE_USER) != _KERNPG_TABLE;
-=======
 #define mk_pte(page, pgprot)						  \
 ({									  \
 	pgprot_t __pgprot = pgprot;					  \
@@ -1362,7 +1056,6 @@ static inline int pmd_bad(pmd_t pmd)
 {
 	return (pmd_flags(pmd) & ~(_PAGE_USER | _PAGE_ACCESSED)) !=
 	       (_KERNPG_TABLE & ~_PAGE_ACCESSED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned long pages_to_mb(unsigned long npg)
@@ -1370,20 +1063,10 @@ static inline unsigned long pages_to_mb(unsigned long npg)
 	return npg >> (20 - PAGE_SHIFT);
 }
 
-<<<<<<< HEAD
-#define io_remap_pfn_range(vma, vaddr, pfn, size, prot)	\
-	remap_pfn_range(vma, vaddr, pfn, size, prot)
-
-#if PAGETABLE_LEVELS > 2
-static inline int pud_none(pud_t pud)
-{
-	return native_pud_val(pud) == 0;
-=======
 #if CONFIG_PGTABLE_LEVELS > 2
 static inline int pud_none(pud_t pud)
 {
 	return (native_pud_val(pud) & ~(_PAGE_KNL_ERRATUM_MASK)) == 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int pud_present(pud_t pud)
@@ -1391,37 +1074,19 @@ static inline int pud_present(pud_t pud)
 	return pud_flags(pud) & _PAGE_PRESENT;
 }
 
-<<<<<<< HEAD
-static inline unsigned long pud_page_vaddr(pud_t pud)
-{
-	return (unsigned long)__va((unsigned long)pud_val(pud) & PTE_PFN_MASK);
-=======
 static inline pmd_t *pud_pgtable(pud_t pud)
 {
 	return (pmd_t *)__va(pud_val(pud) & pud_pfn_mask(pud));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Currently stuck as a macro due to indirect forward reference to
  * linux/mmzone.h's __section_mem_map_addr() definition:
  */
-<<<<<<< HEAD
-#define pud_page(pud)		pfn_to_page(pud_val(pud) >> PAGE_SHIFT)
-
-/* Find an entry in the second-level page table.. */
-static inline pmd_t *pmd_offset(pud_t *pud, unsigned long address)
-{
-	return (pmd_t *)pud_page_vaddr(*pud) + pmd_index(address);
-}
-
-static inline int pud_large(pud_t pud)
-=======
 #define pud_page(pud)	pfn_to_page(pud_pfn(pud))
 
 #define pud_leaf pud_leaf
 static inline bool pud_leaf(pud_t pud)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (pud_val(pud) & (_PAGE_PSE | _PAGE_PRESENT)) ==
 		(_PAGE_PSE | _PAGE_PRESENT);
@@ -1431,18 +1096,6 @@ static inline int pud_bad(pud_t pud)
 {
 	return (pud_flags(pud) & ~(_KERNPG_TABLE | _PAGE_USER)) != 0;
 }
-<<<<<<< HEAD
-#else
-static inline int pud_large(pud_t pud)
-{
-	return 0;
-}
-#endif	/* PAGETABLE_LEVELS > 2 */
-
-#if PAGETABLE_LEVELS > 3
-static inline int pgd_present(pgd_t pgd)
-{
-=======
 #endif	/* CONFIG_PGTABLE_LEVELS > 2 */
 
 #if CONFIG_PGTABLE_LEVELS > 3
@@ -1488,7 +1141,6 @@ static inline int pgd_present(pgd_t pgd)
 {
 	if (!pgtable_l5_enabled())
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pgd_flags(pgd) & _PAGE_PRESENT;
 }
 
@@ -1501,19 +1153,6 @@ static inline unsigned long pgd_page_vaddr(pgd_t pgd)
  * Currently stuck as a macro due to indirect forward reference to
  * linux/mmzone.h's __section_mem_map_addr() definition:
  */
-<<<<<<< HEAD
-#define pgd_page(pgd)		pfn_to_page(pgd_val(pgd) >> PAGE_SHIFT)
-
-/* to find an entry in a page-table-directory. */
-static inline unsigned long pud_index(unsigned long address)
-{
-	return (address >> PUD_SHIFT) & (PTRS_PER_PUD - 1);
-}
-
-static inline pud_t *pud_offset(pgd_t *pgd, unsigned long address)
-{
-	return (pud_t *)pgd_page_vaddr(*pgd) + pud_index(address);
-=======
 #define pgd_page(pgd)	pfn_to_page(pgd_pfn(pgd))
 
 /* to find an entry in a page-table-directory. */
@@ -1522,14 +1161,10 @@ static inline p4d_t *p4d_offset(pgd_t *pgd, unsigned long address)
 	if (!pgtable_l5_enabled())
 		return (p4d_t *)pgd;
 	return (p4d_t *)pgd_page_vaddr(*pgd) + p4d_index(address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int pgd_bad(pgd_t pgd)
 {
-<<<<<<< HEAD
-	return (pgd_flags(pgd) & ~_PAGE_USER) != _KERNPG_TABLE;
-=======
 	unsigned long ignore_flags = _PAGE_USER;
 
 	if (!pgtable_l5_enabled())
@@ -1539,39 +1174,10 @@ static inline int pgd_bad(pgd_t pgd)
 		ignore_flags |= _PAGE_NX;
 
 	return (pgd_flags(pgd) & ~ignore_flags) != _KERNPG_TABLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int pgd_none(pgd_t pgd)
 {
-<<<<<<< HEAD
-	return !native_pgd_val(pgd);
-}
-#endif	/* PAGETABLE_LEVELS > 3 */
-
-#endif	/* __ASSEMBLY__ */
-
-/*
- * the pgd page can be thought of an array like this: pgd_t[PTRS_PER_PGD]
- *
- * this macro returns the index of the entry in the pgd page which would
- * control the given virtual address
- */
-#define pgd_index(address) (((address) >> PGDIR_SHIFT) & (PTRS_PER_PGD - 1))
-
-/*
- * pgd_offset() returns a (pgd_t *)
- * pgd_index() is used get the offset into the pgd page's array of pgd_t's;
- */
-#define pgd_offset(mm, address) ((mm)->pgd + pgd_index((address)))
-/*
- * a shortcut which implies the use of the kernel's pgd, instead
- * of a process's
- */
-#define pgd_offset_k(address) pgd_offset(&init_mm, (address))
-
-
-=======
 	if (!pgtable_l5_enabled())
 		return 0;
 	/*
@@ -1586,15 +1192,12 @@ static inline int pgd_none(pgd_t pgd)
 
 #endif	/* __ASSEMBLY__ */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KERNEL_PGD_BOUNDARY	pgd_index(PAGE_OFFSET)
 #define KERNEL_PGD_PTRS		(PTRS_PER_PGD - KERNEL_PGD_BOUNDARY)
 
 #ifndef __ASSEMBLY__
 
 extern int direct_gbpages;
-<<<<<<< HEAD
-=======
 void init_mem_mapping(void);
 void early_alloc_pgt_buf(void);
 extern void memblock_find_dma_reserve(void);
@@ -1605,7 +1208,6 @@ unsigned long init_memory_mapping(unsigned long start,
 #ifdef CONFIG_X86_64
 extern pgd_t trampoline_pgd_entry;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* local pte updates need not use xchg for locking */
 static inline pte_t native_local_ptep_get_and_clear(pte_t *ptep)
@@ -1625,37 +1227,6 @@ static inline pmd_t native_local_pmdp_get_and_clear(pmd_t *pmdp)
 	return res;
 }
 
-<<<<<<< HEAD
-static inline void native_set_pte_at(struct mm_struct *mm, unsigned long addr,
-				     pte_t *ptep , pte_t pte)
-{
-	native_set_pte(ptep, pte);
-}
-
-static inline void native_set_pmd_at(struct mm_struct *mm, unsigned long addr,
-				     pmd_t *pmdp , pmd_t pmd)
-{
-	native_set_pmd(pmdp, pmd);
-}
-
-#ifndef CONFIG_PARAVIRT
-/*
- * Rules for using pte_update - it must be called after any PTE update which
- * has not been done using the set_pte / clear_pte interfaces.  It is used by
- * shadow mode hypervisors to resynchronize the shadow page tables.  Kernel PTE
- * updates should either be sets, clears, or set_pte_atomic for P->P
- * transitions, which means this hook should only be called for user PTEs.
- * This hook implies a P->P protection or access change has taken place, which
- * requires a subsequent TLB flush.  The notification can optionally be delayed
- * until the TLB flush event by using the pte_update_defer form of the
- * interface, but care must be taken to assure that the flush happens while
- * still holding the same page table lock so that the shadow and primary pages
- * do not become out of sync on SMP.
- */
-#define pte_update(mm, addr, ptep)		do { } while (0)
-#define pte_update_defer(mm, addr, ptep)	do { } while (0)
-#endif
-=======
 static inline pud_t native_local_pudp_get_and_clear(pud_t *pudp)
 {
 	pud_t res = *pudp;
@@ -1677,7 +1248,6 @@ static inline void set_pud_at(struct mm_struct *mm, unsigned long addr,
 	page_table_check_pud_set(mm, pudp, pud);
 	native_set_pud(pudp, pud);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We only update the dirty/accessed state if we set
@@ -1706,11 +1276,7 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm, unsigned long addr,
 				       pte_t *ptep)
 {
 	pte_t pte = native_ptep_get_and_clear(ptep);
-<<<<<<< HEAD
-	pte_update(mm, addr, ptep);
-=======
 	page_table_check_pte_clear(mm, pte);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pte;
 }
 
@@ -1726,10 +1292,7 @@ static inline pte_t ptep_get_and_clear_full(struct mm_struct *mm,
 		 * care about updates and native needs no locking
 		 */
 		pte = native_local_ptep_get_and_clear(ptep);
-<<<<<<< HEAD
-=======
 		page_table_check_pte_clear(mm, pte);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		pte = ptep_get_and_clear(mm, addr, ptep);
 	}
@@ -1740,13 +1303,6 @@ static inline pte_t ptep_get_and_clear_full(struct mm_struct *mm,
 static inline void ptep_set_wrprotect(struct mm_struct *mm,
 				      unsigned long addr, pte_t *ptep)
 {
-<<<<<<< HEAD
-	clear_bit(_PAGE_BIT_RW, (unsigned long *)&ptep->pte);
-	pte_update(mm, addr, ptep);
-}
-
-#define flush_tlb_fix_spurious_fault(vma, address) do { } while (0)
-=======
 	/*
 	 * Avoid accidentally creating shadow stack PTEs
 	 * (Write=0,Dirty=1).  Use cmpxchg() to prevent races with
@@ -1761,7 +1317,6 @@ static inline void ptep_set_wrprotect(struct mm_struct *mm,
 }
 
 #define flush_tlb_fix_spurious_fault(vma, address, ptep) do { } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define mk_pmd(page, pgprot)   pfn_pmd(page_to_pfn(page), (pgprot))
 
@@ -1769,48 +1324,21 @@ static inline void ptep_set_wrprotect(struct mm_struct *mm,
 extern int pmdp_set_access_flags(struct vm_area_struct *vma,
 				 unsigned long address, pmd_t *pmdp,
 				 pmd_t entry, int dirty);
-<<<<<<< HEAD
-=======
 extern int pudp_set_access_flags(struct vm_area_struct *vma,
 				 unsigned long address, pud_t *pudp,
 				 pud_t entry, int dirty);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __HAVE_ARCH_PMDP_TEST_AND_CLEAR_YOUNG
 extern int pmdp_test_and_clear_young(struct vm_area_struct *vma,
 				     unsigned long addr, pmd_t *pmdp);
-<<<<<<< HEAD
-=======
 extern int pudp_test_and_clear_young(struct vm_area_struct *vma,
 				     unsigned long addr, pud_t *pudp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __HAVE_ARCH_PMDP_CLEAR_YOUNG_FLUSH
 extern int pmdp_clear_flush_young(struct vm_area_struct *vma,
 				  unsigned long address, pmd_t *pmdp);
 
 
-<<<<<<< HEAD
-#define __HAVE_ARCH_PMDP_SPLITTING_FLUSH
-extern void pmdp_splitting_flush(struct vm_area_struct *vma,
-				 unsigned long addr, pmd_t *pmdp);
-
-#define __HAVE_ARCH_PMD_WRITE
-static inline int pmd_write(pmd_t pmd)
-{
-	return pmd_flags(pmd) & _PAGE_RW;
-}
-
-#define __HAVE_ARCH_PMDP_GET_AND_CLEAR
-static inline pmd_t pmdp_get_and_clear(struct mm_struct *mm, unsigned long addr,
-				       pmd_t *pmdp)
-{
-	pmd_t pmd = native_pmdp_get_and_clear(pmdp);
-	pmd_update(mm, addr, pmdp);
-	return pmd;
-}
-
-=======
 #define __HAVE_ARCH_PMDP_HUGE_GET_AND_CLEAR
 static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm, unsigned long addr,
 				       pmd_t *pmdp)
@@ -1833,21 +1361,10 @@ static inline pud_t pudp_huge_get_and_clear(struct mm_struct *mm,
 	return pud;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __HAVE_ARCH_PMDP_SET_WRPROTECT
 static inline void pmdp_set_wrprotect(struct mm_struct *mm,
 				      unsigned long addr, pmd_t *pmdp)
 {
-<<<<<<< HEAD
-	clear_bit(_PAGE_BIT_RW, (unsigned long *)pmdp);
-	pmd_update(mm, addr, pmdp);
-}
-
-/*
- * clone_pgd_range(pgd_t *dst, pgd_t *src, int count);
- *
- *  dst - pointer to pgd range anwhere on a pgd page
-=======
 	/*
 	 * Avoid accidentally creating shadow stack PTEs
 	 * (Write=0,Dirty=1).  Use cmpxchg() to prevent races with
@@ -1951,7 +1468,6 @@ static inline p4d_t *user_to_kernel_p4dp(p4d_t *p4dp)
  * clone_pgd_range(pgd_t *dst, pgd_t *src, int count);
  *
  *  dst - pointer to pgd range anywhere on a pgd page
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  src - ""
  *  count - the number of pgds to copy.
  *
@@ -1960,13 +1476,6 @@ static inline p4d_t *user_to_kernel_p4dp(p4d_t *p4dp)
  */
 static inline void clone_pgd_range(pgd_t *dst, pgd_t *src, int count)
 {
-<<<<<<< HEAD
-       memcpy(dst, src, count * sizeof(pgd_t));
-}
-
-
-#include <asm-generic/pgtable.h>
-=======
 	memcpy(dst, src, count * sizeof(pgd_t));
 #ifdef CONFIG_MITIGATION_PAGE_TABLE_ISOLATION
 	if (!static_cpu_has(X86_FEATURE_PTI))
@@ -2203,7 +1712,6 @@ bool arch_is_platform_page(u64 paddr);
 #define arch_is_platform_page arch_is_platform_page
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* __ASSEMBLY__ */
 
 #endif /* _ASM_X86_PGTABLE_H */

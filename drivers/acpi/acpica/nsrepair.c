@@ -1,66 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: nsrepair - Repair for objects returned by predefined methods
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
 #include "acinterp.h"
 #include "acpredef.h"
-<<<<<<< HEAD
-=======
 #include "amlresrc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_NAMESPACE
 ACPI_MODULE_NAME("nsrepair")
@@ -86,14 +38,11 @@ ACPI_MODULE_NAME("nsrepair")
  * Buffer  -> String
  * Buffer  -> Package of Integers
  * Package -> Package of one Package
-<<<<<<< HEAD
-=======
  *
  * Additional conversions that are available:
  *  Convert a null return or zero return value to an end_tag descriptor
  *  Convert an ASCII string to a Unicode buffer
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * An incorrect standalone object is wrapped with required outer package
  *
  * Additional possible repairs:
@@ -101,25 +50,6 @@ ACPI_MODULE_NAME("nsrepair")
  *
  ******************************************************************************/
 /* Local prototypes */
-<<<<<<< HEAD
-static acpi_status
-acpi_ns_convert_to_integer(union acpi_operand_object *original_object,
-			   union acpi_operand_object **return_object);
-
-static acpi_status
-acpi_ns_convert_to_string(union acpi_operand_object *original_object,
-			  union acpi_operand_object **return_object);
-
-static acpi_status
-acpi_ns_convert_to_buffer(union acpi_operand_object *original_object,
-			  union acpi_operand_object **return_object);
-
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_repair_object
- *
- * PARAMETERS:  Data                - Pointer to validation data structure
-=======
 static const struct acpi_simple_repair_info *acpi_ns_match_simple_repair(struct
 									 acpi_namespace_node
 									 *node,
@@ -172,7 +102,6 @@ static const struct acpi_simple_repair_info acpi_object_repair_info[] = {
  * FUNCTION:    acpi_ns_simple_repair
  *
  * PARAMETERS:  info                - Method execution information block
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              expected_btypes     - Object types expected
  *              package_index       - Index of object within parent package (if
  *                                    applicable - ACPI_NOT_PACKAGE_ELEMENT
@@ -188,22 +117,12 @@ static const struct acpi_simple_repair_info acpi_object_repair_info[] = {
  ******************************************************************************/
 
 acpi_status
-<<<<<<< HEAD
-acpi_ns_repair_object(struct acpi_predefined_data *data,
-=======
 acpi_ns_simple_repair(struct acpi_evaluate_info *info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      u32 expected_btypes,
 		      u32 package_index,
 		      union acpi_operand_object **return_object_ptr)
 {
 	union acpi_operand_object *return_object = *return_object_ptr;
-<<<<<<< HEAD
-	union acpi_operand_object *new_object;
-	acpi_status status;
-
-	ACPI_FUNCTION_NAME(ns_repair_object);
-=======
 	union acpi_operand_object *new_object = NULL;
 	acpi_status status;
 	const struct acpi_simple_repair_info *predefined;
@@ -246,7 +165,6 @@ acpi_ns_simple_repair(struct acpi_evaluate_info *info,
 	if (info->return_btype & expected_btypes) {
 		return (AE_OK);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * At this point, we know that the type of the returned object was not
@@ -254,8 +172,6 @@ acpi_ns_simple_repair(struct acpi_evaluate_info *info,
 	 * repair the object by converting it to one of the expected object
 	 * types for this predefined name.
 	 */
-<<<<<<< HEAD
-=======
 
 	/*
 	 * If there is no return value, check if we require a return value for
@@ -293,7 +209,6 @@ acpi_ns_simple_repair(struct acpi_evaluate_info *info,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (expected_btypes & ACPI_RTYPE_INTEGER) {
 		status = acpi_ns_convert_to_integer(return_object, &new_object);
 		if (ACPI_SUCCESS(status)) {
@@ -322,22 +237,14 @@ acpi_ns_simple_repair(struct acpi_evaluate_info *info,
 		 * for correct contents (expected object type or types).
 		 */
 		status =
-<<<<<<< HEAD
-		    acpi_ns_wrap_with_package(data, return_object, &new_object);
-=======
 		    acpi_ns_wrap_with_package(info, return_object, &new_object);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ACPI_SUCCESS(status)) {
 			/*
 			 * The original object just had its reference count
 			 * incremented for being inserted into the new package.
 			 */
 			*return_object_ptr = new_object;	/* New Package object */
-<<<<<<< HEAD
-			data->flags |= ACPI_OBJECT_REPAIRED;
-=======
 			info->return_flags |= ACPI_OBJECT_REPAIRED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return (AE_OK);
 		}
 	}
@@ -346,60 +253,29 @@ acpi_ns_simple_repair(struct acpi_evaluate_info *info,
 
 	return (AE_AML_OPERAND_TYPE);
 
-<<<<<<< HEAD
-      object_repaired:
-=======
 object_repaired:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Object was successfully repaired */
 
 	if (package_index != ACPI_NOT_PACKAGE_ELEMENT) {
-<<<<<<< HEAD
-		/*
-		 * The original object is a package element. We need to
-		 * decrement the reference count of the original object,
-		 * for removing it from the package.
-		 *
-		 * However, if the original object was just wrapped with a
-		 * package object as part of the repair, we don't need to
-		 * change the reference count.
-		 */
-		if (!(data->flags & ACPI_OBJECT_WRAPPED)) {
-			new_object->common.reference_count =
-			    return_object->common.reference_count;
-
-			if (return_object->common.reference_count > 1) {
-				return_object->common.reference_count--;
-			}
-=======
 
 		/* Update reference count of new object */
 
 		if (!(info->return_flags & ACPI_OBJECT_WRAPPED)) {
 			new_object->common.reference_count =
 			    return_object->common.reference_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		ACPI_DEBUG_PRINT((ACPI_DB_REPAIR,
 				  "%s: Converted %s to expected %s at Package index %u\n",
-<<<<<<< HEAD
-				  data->pathname,
-=======
 				  info->full_pathname,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  acpi_ut_get_object_type_name(return_object),
 				  acpi_ut_get_object_type_name(new_object),
 				  package_index));
 	} else {
 		ACPI_DEBUG_PRINT((ACPI_DB_REPAIR,
 				  "%s: Converted %s to expected %s\n",
-<<<<<<< HEAD
-				  data->pathname,
-=======
 				  info->full_pathname,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  acpi_ut_get_object_type_name(return_object),
 				  acpi_ut_get_object_type_name(new_object)));
 	}
@@ -408,260 +284,6 @@ object_repaired:
 
 	acpi_ut_remove_reference(return_object);
 	*return_object_ptr = new_object;
-<<<<<<< HEAD
-	data->flags |= ACPI_OBJECT_REPAIRED;
-	return (AE_OK);
-}
-
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_convert_to_integer
- *
- * PARAMETERS:  original_object     - Object to be converted
- *              return_object       - Where the new converted object is returned
- *
- * RETURN:      Status. AE_OK if conversion was successful.
- *
- * DESCRIPTION: Attempt to convert a String/Buffer object to an Integer.
- *
- ******************************************************************************/
-
-static acpi_status
-acpi_ns_convert_to_integer(union acpi_operand_object *original_object,
-			   union acpi_operand_object **return_object)
-{
-	union acpi_operand_object *new_object;
-	acpi_status status;
-	u64 value = 0;
-	u32 i;
-
-	switch (original_object->common.type) {
-	case ACPI_TYPE_STRING:
-
-		/* String-to-Integer conversion */
-
-		status = acpi_ut_strtoul64(original_object->string.pointer,
-					   ACPI_ANY_BASE, &value);
-		if (ACPI_FAILURE(status)) {
-			return (status);
-		}
-		break;
-
-	case ACPI_TYPE_BUFFER:
-
-		/* Buffer-to-Integer conversion. Max buffer size is 64 bits. */
-
-		if (original_object->buffer.length > 8) {
-			return (AE_AML_OPERAND_TYPE);
-		}
-
-		/* Extract each buffer byte to create the integer */
-
-		for (i = 0; i < original_object->buffer.length; i++) {
-			value |=
-			    ((u64) original_object->buffer.
-			     pointer[i] << (i * 8));
-		}
-		break;
-
-	default:
-		return (AE_AML_OPERAND_TYPE);
-	}
-
-	new_object = acpi_ut_create_integer_object(value);
-	if (!new_object) {
-		return (AE_NO_MEMORY);
-	}
-
-	*return_object = new_object;
-	return (AE_OK);
-}
-
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_convert_to_string
- *
- * PARAMETERS:  original_object     - Object to be converted
- *              return_object       - Where the new converted object is returned
- *
- * RETURN:      Status. AE_OK if conversion was successful.
- *
- * DESCRIPTION: Attempt to convert a Integer/Buffer object to a String.
- *
- ******************************************************************************/
-
-static acpi_status
-acpi_ns_convert_to_string(union acpi_operand_object *original_object,
-			  union acpi_operand_object **return_object)
-{
-	union acpi_operand_object *new_object;
-	acpi_size length;
-	acpi_status status;
-
-	switch (original_object->common.type) {
-	case ACPI_TYPE_INTEGER:
-		/*
-		 * Integer-to-String conversion. Commonly, convert
-		 * an integer of value 0 to a NULL string. The last element of
-		 * _BIF and _BIX packages occasionally need this fix.
-		 */
-		if (original_object->integer.value == 0) {
-
-			/* Allocate a new NULL string object */
-
-			new_object = acpi_ut_create_string_object(0);
-			if (!new_object) {
-				return (AE_NO_MEMORY);
-			}
-		} else {
-			status =
-			    acpi_ex_convert_to_string(original_object,
-						      &new_object,
-						      ACPI_IMPLICIT_CONVERT_HEX);
-			if (ACPI_FAILURE(status)) {
-				return (status);
-			}
-		}
-		break;
-
-	case ACPI_TYPE_BUFFER:
-		/*
-		 * Buffer-to-String conversion. Use a to_string
-		 * conversion, no transform performed on the buffer data. The best
-		 * example of this is the _BIF method, where the string data from
-		 * the battery is often (incorrectly) returned as buffer object(s).
-		 */
-		length = 0;
-		while ((length < original_object->buffer.length) &&
-		       (original_object->buffer.pointer[length])) {
-			length++;
-		}
-
-		/* Allocate a new string object */
-
-		new_object = acpi_ut_create_string_object(length);
-		if (!new_object) {
-			return (AE_NO_MEMORY);
-		}
-
-		/*
-		 * Copy the raw buffer data with no transform. String is already NULL
-		 * terminated at Length+1.
-		 */
-		ACPI_MEMCPY(new_object->string.pointer,
-			    original_object->buffer.pointer, length);
-		break;
-
-	default:
-		return (AE_AML_OPERAND_TYPE);
-	}
-
-	*return_object = new_object;
-	return (AE_OK);
-}
-
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_convert_to_buffer
- *
- * PARAMETERS:  original_object     - Object to be converted
- *              return_object       - Where the new converted object is returned
- *
- * RETURN:      Status. AE_OK if conversion was successful.
- *
- * DESCRIPTION: Attempt to convert a Integer/String/Package object to a Buffer.
- *
- ******************************************************************************/
-
-static acpi_status
-acpi_ns_convert_to_buffer(union acpi_operand_object *original_object,
-			  union acpi_operand_object **return_object)
-{
-	union acpi_operand_object *new_object;
-	acpi_status status;
-	union acpi_operand_object **elements;
-	u32 *dword_buffer;
-	u32 count;
-	u32 i;
-
-	switch (original_object->common.type) {
-	case ACPI_TYPE_INTEGER:
-		/*
-		 * Integer-to-Buffer conversion.
-		 * Convert the Integer to a packed-byte buffer. _MAT and other
-		 * objects need this sometimes, if a read has been performed on a
-		 * Field object that is less than or equal to the global integer
-		 * size (32 or 64 bits).
-		 */
-		status =
-		    acpi_ex_convert_to_buffer(original_object, &new_object);
-		if (ACPI_FAILURE(status)) {
-			return (status);
-		}
-		break;
-
-	case ACPI_TYPE_STRING:
-
-		/* String-to-Buffer conversion. Simple data copy */
-
-		new_object =
-		    acpi_ut_create_buffer_object(original_object->string.
-						 length);
-		if (!new_object) {
-			return (AE_NO_MEMORY);
-		}
-
-		ACPI_MEMCPY(new_object->buffer.pointer,
-			    original_object->string.pointer,
-			    original_object->string.length);
-		break;
-
-	case ACPI_TYPE_PACKAGE:
-		/*
-		 * This case is often seen for predefined names that must return a
-		 * Buffer object with multiple DWORD integers within. For example,
-		 * _FDE and _GTM. The Package can be converted to a Buffer.
-		 */
-
-		/* All elements of the Package must be integers */
-
-		elements = original_object->package.elements;
-		count = original_object->package.count;
-
-		for (i = 0; i < count; i++) {
-			if ((!*elements) ||
-			    ((*elements)->common.type != ACPI_TYPE_INTEGER)) {
-				return (AE_AML_OPERAND_TYPE);
-			}
-			elements++;
-		}
-
-		/* Create the new buffer object to replace the Package */
-
-		new_object = acpi_ut_create_buffer_object(ACPI_MUL_4(count));
-		if (!new_object) {
-			return (AE_NO_MEMORY);
-		}
-
-		/* Copy the package elements (integers) to the buffer as DWORDs */
-
-		elements = original_object->package.elements;
-		dword_buffer = ACPI_CAST_PTR(u32, new_object->buffer.pointer);
-
-		for (i = 0; i < count; i++) {
-			*dword_buffer = (u32) (*elements)->integer.value;
-			dword_buffer++;
-			elements++;
-		}
-		break;
-
-	default:
-		return (AE_AML_OPERAND_TYPE);
-	}
-
-	*return_object = new_object;
-	return (AE_OK);
-=======
 	info->return_flags |= ACPI_OBJECT_REPAIRED;
 	return (AE_OK);
 }
@@ -714,18 +336,13 @@ static const struct acpi_simple_repair_info *acpi_ns_match_simple_repair(struct
 	}
 
 	return (NULL);		/* Name was not found in the repair table */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ns_repair_null_element
  *
-<<<<<<< HEAD
- * PARAMETERS:  Data                - Pointer to validation data structure
-=======
  * PARAMETERS:  info                - Method execution information block
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              expected_btypes     - Object types expected
  *              package_index       - Index of object within parent package (if
  *                                    applicable - ACPI_NOT_PACKAGE_ELEMENT
@@ -740,11 +357,7 @@ static const struct acpi_simple_repair_info *acpi_ns_match_simple_repair(struct
  ******************************************************************************/
 
 acpi_status
-<<<<<<< HEAD
-acpi_ns_repair_null_element(struct acpi_predefined_data *data,
-=======
 acpi_ns_repair_null_element(struct acpi_evaluate_info *info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    u32 expected_btypes,
 			    u32 package_index,
 			    union acpi_operand_object **return_object_ptr)
@@ -768,29 +381,17 @@ acpi_ns_repair_null_element(struct acpi_evaluate_info *info,
 	 */
 	if (expected_btypes & ACPI_RTYPE_INTEGER) {
 
-<<<<<<< HEAD
-		/* Need an Integer - create a zero-value integer */
-=======
 		/* Need an integer - create a zero-value integer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		new_object = acpi_ut_create_integer_object((u64)0);
 	} else if (expected_btypes & ACPI_RTYPE_STRING) {
 
-<<<<<<< HEAD
-		/* Need a String - create a NULL string */
-=======
 		/* Need a string - create a NULL string */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		new_object = acpi_ut_create_string_object(0);
 	} else if (expected_btypes & ACPI_RTYPE_BUFFER) {
 
-<<<<<<< HEAD
-		/* Need a Buffer - create a zero-length buffer */
-=======
 		/* Need a buffer - create a zero-length buffer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		new_object = acpi_ut_create_buffer_object(0);
 	} else {
@@ -806,28 +407,16 @@ acpi_ns_repair_null_element(struct acpi_evaluate_info *info,
 	/* Set the reference count according to the parent Package object */
 
 	new_object->common.reference_count =
-<<<<<<< HEAD
-	    data->parent_package->common.reference_count;
-
-	ACPI_DEBUG_PRINT((ACPI_DB_REPAIR,
-			  "%s: Converted NULL package element to expected %s at index %u\n",
-			  data->pathname,
-=======
 	    info->parent_package->common.reference_count;
 
 	ACPI_DEBUG_PRINT((ACPI_DB_REPAIR,
 			  "%s: Converted NULL package element to expected %s at index %u\n",
 			  info->full_pathname,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  acpi_ut_get_object_type_name(new_object),
 			  package_index));
 
 	*return_object_ptr = new_object;
-<<<<<<< HEAD
-	data->flags |= ACPI_OBJECT_REPAIRED;
-=======
 	info->return_flags |= ACPI_OBJECT_REPAIRED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (AE_OK);
 }
 
@@ -835,32 +424,20 @@ acpi_ns_repair_null_element(struct acpi_evaluate_info *info,
  *
  * FUNCTION:    acpi_ns_remove_null_elements
  *
-<<<<<<< HEAD
- * PARAMETERS:  Data                - Pointer to validation data structure
-=======
  * PARAMETERS:  info                - Method execution information block
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              package_type        - An acpi_return_package_types value
  *              obj_desc            - A Package object
  *
  * RETURN:      None.
  *
  * DESCRIPTION: Remove all NULL package elements from packages that contain
-<<<<<<< HEAD
- *              a variable number of sub-packages. For these types of
-=======
  *              a variable number of subpackages. For these types of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              packages, NULL elements can be safely removed.
  *
  *****************************************************************************/
 
 void
-<<<<<<< HEAD
-acpi_ns_remove_null_elements(struct acpi_predefined_data *data,
-=======
 acpi_ns_remove_null_elements(struct acpi_evaluate_info *info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     u8 package_type,
 			     union acpi_operand_object *obj_desc)
 {
@@ -875,11 +452,7 @@ acpi_ns_remove_null_elements(struct acpi_evaluate_info *info,
 	/*
 	 * We can safely remove all NULL elements from these package types:
 	 * PTYPE1_VAR packages contain a variable number of simple data types.
-<<<<<<< HEAD
-	 * PTYPE2 packages contain a variable number of sub-packages.
-=======
 	 * PTYPE2 packages contain a variable number of subpackages.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	switch (package_type) {
 	case ACPI_PTYPE1_VAR:
@@ -893,10 +466,7 @@ acpi_ns_remove_null_elements(struct acpi_evaluate_info *info,
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 	case ACPI_PTYPE2_VAR_VAR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ACPI_PTYPE1_FIXED:
 	case ACPI_PTYPE1_OPTION:
 		return;
@@ -917,10 +487,7 @@ acpi_ns_remove_null_elements(struct acpi_evaluate_info *info,
 			*dest = *source;
 			dest++;
 		}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		source++;
 	}
 
@@ -929,11 +496,7 @@ acpi_ns_remove_null_elements(struct acpi_evaluate_info *info,
 	if (new_count < count) {
 		ACPI_DEBUG_PRINT((ACPI_DB_REPAIR,
 				  "%s: Found and removed %u NULL elements\n",
-<<<<<<< HEAD
-				  data->pathname, (count - new_count)));
-=======
 				  info->full_pathname, (count - new_count)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* NULL terminate list and update the package count */
 
@@ -946,11 +509,7 @@ acpi_ns_remove_null_elements(struct acpi_evaluate_info *info,
  *
  * FUNCTION:    acpi_ns_wrap_with_package
  *
-<<<<<<< HEAD
- * PARAMETERS:  Data                - Pointer to validation data structure
-=======
  * PARAMETERS:  info                - Method execution information block
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              original_object     - Pointer to the object to repair.
  *              obj_desc_ptr        - The new package object is returned here
  *
@@ -971,11 +530,7 @@ acpi_ns_remove_null_elements(struct acpi_evaluate_info *info,
  ******************************************************************************/
 
 acpi_status
-<<<<<<< HEAD
-acpi_ns_wrap_with_package(struct acpi_predefined_data *data,
-=======
 acpi_ns_wrap_with_package(struct acpi_evaluate_info *info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  union acpi_operand_object *original_object,
 			  union acpi_operand_object **obj_desc_ptr)
 {
@@ -984,13 +539,8 @@ acpi_ns_wrap_with_package(struct acpi_evaluate_info *info,
 	ACPI_FUNCTION_NAME(ns_wrap_with_package);
 
 	/*
-<<<<<<< HEAD
-	 * Create the new outer package and populate it. The new package will
-	 * have a single element, the lone sub-object.
-=======
 	 * Create the new outer package and populate it. The new
 	 * package will have a single element, the lone sub-object.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	pkg_obj_desc = acpi_ut_create_package_object(1);
 	if (!pkg_obj_desc) {
@@ -1001,20 +551,12 @@ acpi_ns_wrap_with_package(struct acpi_evaluate_info *info,
 
 	ACPI_DEBUG_PRINT((ACPI_DB_REPAIR,
 			  "%s: Wrapped %s with expected Package object\n",
-<<<<<<< HEAD
-			  data->pathname,
-=======
 			  info->full_pathname,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  acpi_ut_get_object_type_name(original_object)));
 
 	/* Return the new object in the object pointer */
 
 	*obj_desc_ptr = pkg_obj_desc;
-<<<<<<< HEAD
-	data->flags |= ACPI_OBJECT_REPAIRED | ACPI_OBJECT_WRAPPED;
-=======
 	info->return_flags |= ACPI_OBJECT_REPAIRED | ACPI_OBJECT_WRAPPED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (AE_OK);
 }

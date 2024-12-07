@@ -9,10 +9,6 @@
  * Copyright (c) 2009 Wind River Systems, Inc.  All Rights Reserved.
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/ctype.h>
 #include <linux/kernel.h>
@@ -33,10 +29,7 @@
 char kdb_prompt_str[CMD_BUFLEN];
 
 int kdb_trap_printk;
-<<<<<<< HEAD
-=======
 int kdb_printf_cpu = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int kgdb_transition_check(char *buffer)
 {
@@ -55,17 +48,6 @@ static int kgdb_transition_check(char *buffer)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int kdb_read_get_key(char *buffer, size_t bufsize)
-{
-#define ESCAPE_UDELAY 1000
-#define ESCAPE_DELAY (2*1000000/ESCAPE_UDELAY) /* 2 seconds worth of udelays */
-	char escape_data[5];	/* longest vt100 escape sequence is 4 bytes */
-	char *ped = escape_data;
-	int escape_delay = 0;
-	get_char_func *f, *f_escape = NULL;
-	int key;
-=======
 /**
  * kdb_handle_escape() - validity check on an accumulated escape sequence.
  * @buf:	Accumulated escape characters to be examined. Note that buf
@@ -150,7 +132,6 @@ char kdb_getchar(void)
 	get_char_func *f, *f_prev = NULL;
 	int key;
 	static bool last_char_was_cr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (f = &kdb_poll_funcs[0]; ; ++f) {
 		if (*f == NULL) {
@@ -158,115 +139,11 @@ char kdb_getchar(void)
 			touch_nmi_watchdog();
 			f = &kdb_poll_funcs[0];
 		}
-<<<<<<< HEAD
-		if (escape_delay == 2) {
-			*ped = '\0';
-			ped = escape_data;
-			--escape_delay;
-		}
-		if (escape_delay == 1) {
-			key = *ped++;
-			if (!*ped)
-				--escape_delay;
-			break;
-		}
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		key = (*f)();
 		if (key == -1) {
 			if (escape_delay) {
 				udelay(ESCAPE_UDELAY);
-<<<<<<< HEAD
-				--escape_delay;
-			}
-			continue;
-		}
-		if (bufsize <= 2) {
-			if (key == '\r')
-				key = '\n';
-			*buffer++ = key;
-			*buffer = '\0';
-			return -1;
-		}
-		if (escape_delay == 0 && key == '\e') {
-			escape_delay = ESCAPE_DELAY;
-			ped = escape_data;
-			f_escape = f;
-		}
-		if (escape_delay) {
-			*ped++ = key;
-			if (f_escape != f) {
-				escape_delay = 2;
-				continue;
-			}
-			if (ped - escape_data == 1) {
-				/* \e */
-				continue;
-			} else if (ped - escape_data == 2) {
-				/* \e<something> */
-				if (key != '[')
-					escape_delay = 2;
-				continue;
-			} else if (ped - escape_data == 3) {
-				/* \e[<something> */
-				int mapkey = 0;
-				switch (key) {
-				case 'A': /* \e[A, up arrow */
-					mapkey = 16;
-					break;
-				case 'B': /* \e[B, down arrow */
-					mapkey = 14;
-					break;
-				case 'C': /* \e[C, right arrow */
-					mapkey = 6;
-					break;
-				case 'D': /* \e[D, left arrow */
-					mapkey = 2;
-					break;
-				case '1': /* dropthrough */
-				case '3': /* dropthrough */
-				/* \e[<1,3,4>], may be home, del, end */
-				case '4':
-					mapkey = -1;
-					break;
-				}
-				if (mapkey != -1) {
-					if (mapkey > 0) {
-						escape_data[0] = mapkey;
-						escape_data[1] = '\0';
-					}
-					escape_delay = 2;
-				}
-				continue;
-			} else if (ped - escape_data == 4) {
-				/* \e[<1,3,4><something> */
-				int mapkey = 0;
-				if (key == '~') {
-					switch (escape_data[2]) {
-					case '1': /* \e[1~, home */
-						mapkey = 1;
-						break;
-					case '3': /* \e[3~, del */
-						mapkey = 4;
-						break;
-					case '4': /* \e[4~, end */
-						mapkey = 5;
-						break;
-					}
-				}
-				if (mapkey > 0) {
-					escape_data[0] = mapkey;
-					escape_data[1] = '\0';
-				}
-				escape_delay = 2;
-				continue;
-			}
-		}
-		break;	/* A key to process */
-	}
-	return key;
-=======
 				if (--escape_delay == 0)
 					return '\e';
 			}
@@ -305,7 +182,6 @@ char kdb_getchar(void)
 	}
 
 	unreachable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -326,21 +202,7 @@ char kdb_getchar(void)
  *	function.  It is not reentrant - it relies on the fact
  *	that while kdb is running on only one "master debug" cpu.
  * Remarks:
-<<<<<<< HEAD
- *
- * The buffer size must be >= 2.  A buffer size of 2 means that the caller only
- * wants a single key.
- *
- * An escape key could be the start of a vt100 control sequence such as \e[D
- * (left arrow) or it could be a character in its own right.  The standard
- * method for detecting the difference is to wait for 2 seconds to see if there
- * are any other characters.  kdb is complicated by the lack of a timer service
- * (interrupts are off), by multiple input sources and by the need to sometimes
- * return after just one key.  Escape sequence processing has to be done as
- * states in the polling loop.
-=======
  *	The buffer size must be >= 2.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static char *kdb_read(char *buffer, size_t bufsize)
@@ -358,13 +220,8 @@ static char *kdb_read(char *buffer, size_t bufsize)
 	int count;
 	int i;
 	int diag, dtab_count;
-<<<<<<< HEAD
-	int key;
-	static int last_crlf;
-=======
 	int key, buf_size, ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	diag = kdbgetintenv("DTABCOUNT", &dtab_count);
 	if (diag)
@@ -380,20 +237,9 @@ static char *kdb_read(char *buffer, size_t bufsize)
 	*cp = '\0';
 	kdb_printf("%s", buffer);
 poll_again:
-<<<<<<< HEAD
-	key = kdb_read_get_key(buffer, bufsize);
-	if (key == -1)
-		return buffer;
-	if (key != 9)
-		tab = 0;
-	if (key != 10 && key != 13)
-		last_crlf = 0;
-
-=======
 	key = kdb_getchar();
 	if (key != 9)
 		tab = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (key) {
 	case 8: /* backspace */
 		if (cp > buffer) {
@@ -411,17 +257,8 @@ poll_again:
 			*cp = tmp;
 		}
 		break;
-<<<<<<< HEAD
-	case 10: /* new line */
-	case 13: /* carriage return */
-		/* handle \n after \r */
-		if (last_crlf && last_crlf != key)
-			break;
-		last_crlf = key;
-=======
 	case 10: /* linefeed */
 	case 13: /* carriage return */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*lastchar++ = '\n';
 		*lastchar++ = '\0';
 		if (!KDB_STATE(KGDB_TRANS)) {
@@ -502,14 +339,8 @@ poll_again:
 		else
 			p_tmp = tmpbuffer;
 		len = strlen(p_tmp);
-<<<<<<< HEAD
-		count = kallsyms_symbol_complete(p_tmp,
-						 sizeof(tmpbuffer) -
-						 (p_tmp - tmpbuffer));
-=======
 		buf_size = sizeof(tmpbuffer) - (p_tmp - tmpbuffer);
 		count = kallsyms_symbol_complete(p_tmp, buf_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tab == 2 && count > 0) {
 			kdb_printf("\n%d symbols are found.", count);
 			if (count > dtab_count) {
@@ -521,11 +352,6 @@ poll_again:
 			}
 			kdb_printf("\n");
 			for (i = 0; i < count; i++) {
-<<<<<<< HEAD
-				if (kallsyms_symbol_next(p_tmp, i) < 0)
-					break;
-				kdb_printf("%s ", p_tmp);
-=======
 				ret = kallsyms_symbol_next(p_tmp, i, buf_size);
 				if (WARN_ON(!ret))
 					break;
@@ -533,7 +359,6 @@ poll_again:
 					kdb_printf("%s ", p_tmp);
 				else
 					kdb_printf("%s... ", p_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				*(p_tmp + len) = '\0';
 			}
 			if (i >= dtab_count)
@@ -621,17 +446,10 @@ poll_again:
  *	substituted for %d, %x or %o in the prompt.
  */
 
-<<<<<<< HEAD
-char *kdb_getstr(char *buffer, size_t bufsize, char *prompt)
-{
-	if (prompt && kdb_prompt_str != prompt)
-		strncpy(kdb_prompt_str, prompt, CMD_BUFLEN);
-=======
 char *kdb_getstr(char *buffer, size_t bufsize, const char *prompt)
 {
 	if (prompt && kdb_prompt_str != prompt)
 		strscpy(kdb_prompt_str, prompt, CMD_BUFLEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kdb_printf(kdb_prompt_str);
 	kdb_nextline = 1;	/* Prompt and input resets line number */
 	return kdb_read(buffer, bufsize);
@@ -737,9 +555,6 @@ static int kdb_search_string(char *searched, char *searchfor)
 	return 0;
 }
 
-<<<<<<< HEAD
-int vkdb_printf(const char *fmt, va_list ap)
-=======
 static void kdb_msg_write(const char *msg, int msg_len)
 {
 	struct console *c;
@@ -795,48 +610,22 @@ static void kdb_msg_write(const char *msg, int msg_len)
 }
 
 int vkdb_printf(enum kdb_msgsrc src, const char *fmt, va_list ap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int diag;
 	int linecount;
 	int colcount;
 	int logging, saved_loglevel = 0;
-<<<<<<< HEAD
-	int saved_trap_printk;
-	int got_printf_lock = 0;
-	int retlen = 0;
-	int fnd, len;
-	char *cp, *cp2, *cphold = NULL, replaced_byte = ' ';
-	char *moreprompt = "more> ";
-	struct console *c = console_drivers;
-	static DEFINE_SPINLOCK(kdb_printf_lock);
-	unsigned long uninitialized_var(flags);
-
-	preempt_disable();
-	saved_trap_printk = kdb_trap_printk;
-	kdb_trap_printk = 0;
-=======
 	int retlen = 0;
 	int fnd, len;
 	int this_cpu, old_cpu;
 	char *cp, *cp2, *cphold = NULL, replaced_byte = ' ';
 	char *moreprompt = "more> ";
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Serialize kdb_printf if multiple cpus try to write at once.
 	 * But if any cpu goes recursive in kdb, just print the output,
 	 * even if it is interleaved with any other text.
 	 */
-<<<<<<< HEAD
-	if (!KDB_STATE(PRINTF_LOCK)) {
-		KDB_STATE_SET(PRINTF_LOCK);
-		spin_lock_irqsave(&kdb_printf_lock, flags);
-		got_printf_lock = 1;
-		atomic_inc(&kdb_event);
-	} else {
-		__acquire(kdb_printf_lock);
-=======
 	local_irq_save(flags);
 	this_cpu = smp_processor_id();
 	for (;;) {
@@ -845,7 +634,6 @@ int vkdb_printf(enum kdb_msgsrc src, const char *fmt, va_list ap)
 			break;
 
 		cpu_relax();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	diag = kdbgetintenv("LINES", &linecount);
@@ -947,8 +735,6 @@ int vkdb_printf(enum kdb_msgsrc src, const char *fmt, va_list ap)
 			size_avail = sizeof(kdb_buffer) - len;
 			goto kdb_print_out;
 		}
-<<<<<<< HEAD
-=======
 		if (kdb_grepping_flag >= KDB_GREPPING_FLAG_SEARCH) {
 			/*
 			 * This was a interactive search (using '/' at more
@@ -959,7 +745,6 @@ int vkdb_printf(enum kdb_msgsrc src, const char *fmt, va_list ap)
 			*cphold = replaced_byte;
 			kdb_grepping_flag = 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * at this point the string is a full line and
 		 * should be printed, up to the null.
@@ -971,29 +756,6 @@ kdb_printit:
 	 * Write to all consoles.
 	 */
 	retlen = strlen(kdb_buffer);
-<<<<<<< HEAD
-	if (!dbg_kdb_mode && kgdb_connected) {
-		gdbstub_msg_write(kdb_buffer, retlen);
-	} else {
-		if (dbg_io_ops && !dbg_io_ops->is_console) {
-			len = retlen;
-			cp = kdb_buffer;
-			while (len--) {
-				dbg_io_ops->write_char(*cp);
-				cp++;
-			}
-		}
-		while (c) {
-			c->write(c, kdb_buffer, retlen);
-			touch_nmi_watchdog();
-			c = c->next;
-		}
-	}
-	if (logging) {
-		saved_loglevel = console_loglevel;
-		console_loglevel = 0;
-		printk(KERN_INFO "%s", kdb_buffer);
-=======
 	cp = (char *) printk_skip_headers(kdb_buffer);
 	if (!dbg_kdb_mode && kgdb_connected)
 		gdbstub_msg_write(cp, retlen - (cp - kdb_buffer));
@@ -1007,7 +769,6 @@ kdb_printit:
 			printk("%s", kdb_buffer);
 		else
 			pr_info("%s", kdb_buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (KDB_STATE(PAGER)) {
@@ -1033,14 +794,7 @@ kdb_printit:
 
 	/* check for having reached the LINES number of printed lines */
 	if (kdb_nextline >= linecount) {
-<<<<<<< HEAD
-		char buf1[16] = "";
-#if defined(CONFIG_SMP)
-		char buf2[32];
-#endif
-=======
 		char ch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Watch out for recursion here.  Any routine that calls
 		 * kdb_printf will come back through here.  And kdb_read
@@ -1055,76 +809,26 @@ kdb_printit:
 		if (moreprompt == NULL)
 			moreprompt = "more> ";
 
-<<<<<<< HEAD
-#if defined(CONFIG_SMP)
-		if (strchr(moreprompt, '%')) {
-			sprintf(buf2, moreprompt, get_cpu());
-			put_cpu();
-			moreprompt = buf2;
-		}
-#endif
-
-		kdb_input_flush();
-		c = console_drivers;
-
-		if (dbg_io_ops && !dbg_io_ops->is_console) {
-			len = strlen(moreprompt);
-			cp = moreprompt;
-			while (len--) {
-				dbg_io_ops->write_char(*cp);
-				cp++;
-			}
-		}
-		while (c) {
-			c->write(c, moreprompt, strlen(moreprompt));
-			touch_nmi_watchdog();
-			c = c->next;
-		}
-=======
 		kdb_input_flush();
 		kdb_msg_write(moreprompt, strlen(moreprompt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (logging)
 			printk("%s", moreprompt);
 
-<<<<<<< HEAD
-		kdb_read(buf1, 2); /* '2' indicates to return
-				    * immediately after getting one key. */
-=======
 		ch = kdb_getchar();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kdb_nextline = 1;	/* Really set output line 1 */
 
 		/* empty and reset the buffer: */
 		kdb_buffer[0] = '\0';
 		next_avail = kdb_buffer;
 		size_avail = sizeof(kdb_buffer);
-<<<<<<< HEAD
-		if ((buf1[0] == 'q') || (buf1[0] == 'Q')) {
-=======
 		if ((ch == 'q') || (ch == 'Q')) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* user hit q or Q */
 			KDB_FLAG_SET(CMD_INTERRUPT); /* command interrupted */
 			KDB_STATE_CLEAR(PAGER);
 			/* end of command output; back to normal mode */
 			kdb_grepping_flag = 0;
 			kdb_printf("\n");
-<<<<<<< HEAD
-		} else if (buf1[0] == ' ') {
-			kdb_printf("\r");
-			suspend_grep = 1; /* for this recursion */
-		} else if (buf1[0] == '\n') {
-			kdb_nextline = linecount - 1;
-			kdb_printf("\r");
-			suspend_grep = 1; /* for this recursion */
-		} else if (buf1[0] && buf1[0] != '\n') {
-			/* user hit something other than enter */
-			suspend_grep = 1; /* for this recursion */
-			kdb_printf("\nOnly 'q' or 'Q' are processed at more "
-				   "prompt, input ignored\n");
-=======
 		} else if (ch == ' ') {
 			kdb_printf("\r");
 			suspend_grep = 1; /* for this recursion */
@@ -1149,7 +853,6 @@ kdb_printit:
 			else
 				kdb_printf("\n'/' cannot be used during | "
 					   "grep filtering, input ignored\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (kdb_grepping_flag) {
 			/* user hit enter */
 			suspend_grep = 1; /* for this recursion */
@@ -1176,22 +879,9 @@ kdb_print_out:
 	suspend_grep = 0; /* end of what may have been a recursive call */
 	if (logging)
 		console_loglevel = saved_loglevel;
-<<<<<<< HEAD
-	if (KDB_STATE(PRINTF_LOCK) && got_printf_lock) {
-		got_printf_lock = 0;
-		spin_unlock_irqrestore(&kdb_printf_lock, flags);
-		KDB_STATE_CLEAR(PRINTF_LOCK);
-		atomic_dec(&kdb_event);
-	} else {
-		__release(kdb_printf_lock);
-	}
-	kdb_trap_printk = saved_trap_printk;
-	preempt_enable();
-=======
 	/* kdb_printf_cpu locked the code above. */
 	smp_store_release(&kdb_printf_cpu, old_cpu);
 	local_irq_restore(flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retlen;
 }
 
@@ -1201,11 +891,7 @@ int kdb_printf(const char *fmt, ...)
 	int r;
 
 	va_start(ap, fmt);
-<<<<<<< HEAD
-	r = vkdb_printf(fmt, ap);
-=======
 	r = vkdb_printf(KDB_MSGSRC_INTERNAL, fmt, ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	va_end(ap);
 
 	return r;

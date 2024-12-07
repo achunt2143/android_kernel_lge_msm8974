@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LEDs driver for Analog Devices ADP5520/ADP5501 MFD PMICs
  *
@@ -9,72 +6,34 @@
  *
  * Loosely derived from leds-da903x:
  * Copyright (C) 2008 Compulab, Ltd.
-<<<<<<< HEAD
- * 	Mike Rapoport <mike@compulab.co.il>
- *
- * Copyright (C) 2006-2008 Marvell International Ltd.
- * 	Eric Miao <eric.miao@marvell.com>
- *
- * Licensed under the GPL-2 or later.
-=======
  *	Mike Rapoport <mike@compulab.co.il>
  *
  * Copyright (C) 2006-2008 Marvell International Ltd.
  *	Eric Miao <eric.miao@marvell.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/leds.h>
-#include <linux/workqueue.h>
-=======
-#include <linux/platform_device.h>
-#include <linux/leds.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mfd/adp5520.h>
 #include <linux/slab.h>
 
 struct adp5520_led {
 	struct led_classdev	cdev;
-<<<<<<< HEAD
-	struct work_struct	work;
 	struct device		*master;
-	enum led_brightness	new_brightness;
-=======
-	struct device		*master;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			id;
 	int			flags;
 };
 
-<<<<<<< HEAD
-static void adp5520_led_work(struct work_struct *work)
-{
-	struct adp5520_led *led = container_of(work, struct adp5520_led, work);
-	adp5520_write(led->master, ADP5520_LED1_CURRENT + led->id - 1,
-			 led->new_brightness >> 2);
-}
-
-static void adp5520_led_set(struct led_classdev *led_cdev,
-=======
 static int adp5520_led_set(struct led_classdev *led_cdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   enum led_brightness value)
 {
 	struct adp5520_led *led;
 
 	led = container_of(led_cdev, struct adp5520_led, cdev);
-<<<<<<< HEAD
-	led->new_brightness = value;
-	schedule_work(&led->work);
-=======
 	return adp5520_write(led->master, ADP5520_LED1_CURRENT + led->id - 1,
 			 value >> 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int adp5520_led_setup(struct adp5520_led *led)
@@ -114,15 +73,9 @@ static int adp5520_led_setup(struct adp5520_led *led)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devinit adp5520_led_prepare(struct platform_device *pdev)
-{
-	struct adp5520_leds_platform_data *pdata = pdev->dev.platform_data;
-=======
 static int adp5520_led_prepare(struct platform_device *pdev)
 {
 	struct adp5520_leds_platform_data *pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *dev = pdev->dev.parent;
 	int ret = 0;
 
@@ -136,15 +89,9 @@ static int adp5520_led_prepare(struct platform_device *pdev)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devinit adp5520_led_probe(struct platform_device *pdev)
-{
-	struct adp5520_leds_platform_data *pdata = pdev->dev.platform_data;
-=======
 static int adp5520_led_probe(struct platform_device *pdev)
 {
 	struct adp5520_leds_platform_data *pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct adp5520_led *led, *led_dat;
 	struct led_info *cur_led;
 	int ret, i;
@@ -160,19 +107,6 @@ static int adp5520_led_probe(struct platform_device *pdev)
 		return -EFAULT;
 	}
 
-<<<<<<< HEAD
-	led = kzalloc(sizeof(*led) * pdata->num_leds, GFP_KERNEL);
-	if (led == NULL) {
-		dev_err(&pdev->dev, "failed to alloc memory\n");
-		return -ENOMEM;
-	}
-
-	ret = adp5520_led_prepare(pdev);
-
-	if (ret) {
-		dev_err(&pdev->dev, "failed to write\n");
-		goto err_free;
-=======
 	led = devm_kcalloc(&pdev->dev, pdata->num_leds, sizeof(*led),
 				GFP_KERNEL);
 	if (!led)
@@ -182,7 +116,6 @@ static int adp5520_led_probe(struct platform_device *pdev)
 	if (ret) {
 		dev_err(&pdev->dev, "failed to write\n");
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < pdata->num_leds; ++i) {
@@ -191,11 +124,7 @@ static int adp5520_led_probe(struct platform_device *pdev)
 
 		led_dat->cdev.name = cur_led->name;
 		led_dat->cdev.default_trigger = cur_led->default_trigger;
-<<<<<<< HEAD
-		led_dat->cdev.brightness_set = adp5520_led_set;
-=======
 		led_dat->cdev.brightness_set_blocking = adp5520_led_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		led_dat->cdev.brightness = LED_OFF;
 
 		if (cur_led->flags & ADP5520_FLAG_LED_MASK)
@@ -206,12 +135,6 @@ static int adp5520_led_probe(struct platform_device *pdev)
 		led_dat->id = led_dat->flags & ADP5520_FLAG_LED_MASK;
 
 		led_dat->master = pdev->dev.parent;
-<<<<<<< HEAD
-		led_dat->new_brightness = LED_OFF;
-
-		INIT_WORK(&led_dat->work, adp5520_led_work);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = led_classdev_register(led_dat->master, &led_dat->cdev);
 		if (ret) {
@@ -233,22 +156,6 @@ static int adp5520_led_probe(struct platform_device *pdev)
 
 err:
 	if (i > 0) {
-<<<<<<< HEAD
-		for (i = i - 1; i >= 0; i--) {
-			led_classdev_unregister(&led[i].cdev);
-			cancel_work_sync(&led[i].work);
-		}
-	}
-
-err_free:
-	kfree(led);
-	return ret;
-}
-
-static int __devexit adp5520_led_remove(struct platform_device *pdev)
-{
-	struct adp5520_leds_platform_data *pdata = pdev->dev.platform_data;
-=======
 		for (i = i - 1; i >= 0; i--)
 			led_classdev_unregister(&led[i].cdev);
 	}
@@ -259,7 +166,6 @@ static int __devexit adp5520_led_remove(struct platform_device *pdev)
 static void adp5520_led_remove(struct platform_device *pdev)
 {
 	struct adp5520_leds_platform_data *pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct adp5520_led *led;
 	int i;
 
@@ -270,30 +176,15 @@ static void adp5520_led_remove(struct platform_device *pdev)
 
 	for (i = 0; i < pdata->num_leds; i++) {
 		led_classdev_unregister(&led[i].cdev);
-<<<<<<< HEAD
-		cancel_work_sync(&led[i].work);
 	}
-
-	kfree(led);
-	return 0;
-=======
-	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver adp5520_led_driver = {
 	.driver	= {
 		.name	= "adp5520-led",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= adp5520_led_probe,
-	.remove		= __devexit_p(adp5520_led_remove),
-=======
 	},
 	.probe		= adp5520_led_probe,
 	.remove_new	= adp5520_led_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(adp5520_led_driver);

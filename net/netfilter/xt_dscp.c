@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/* IP tables module for matching the value of the IPv4/IPv6 DSCP field
- *
- * (C) 2002 by Harald Welte <laforge@netfilter.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* IP tables module for matching the value of the IPv4/IPv6 DSCP field
  *
  * (C) 2002 by Harald Welte <laforge@netfilter.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
@@ -53,15 +43,8 @@ static int dscp_mt_check(const struct xt_mtchk_param *par)
 {
 	const struct xt_dscp_info *info = par->matchinfo;
 
-<<<<<<< HEAD
-	if (info->dscp > XT_DSCP_MAX) {
-		pr_info("dscp %x out of range\n", info->dscp);
-		return -EDOM;
-	}
-=======
 	if (info->dscp > XT_DSCP_MAX)
 		return -EDOM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -70,11 +53,7 @@ static bool tos_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	const struct xt_tos_match_info *info = par->matchinfo;
 
-<<<<<<< HEAD
-	if (par->family == NFPROTO_IPV4)
-=======
 	if (xt_family(par) == NFPROTO_IPV4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ((ip_hdr(skb)->tos & info->tos_mask) ==
 		       info->tos_value) ^ !!info->invert;
 	else

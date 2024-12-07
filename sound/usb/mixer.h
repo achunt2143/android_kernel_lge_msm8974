@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#ifndef __USBMIXER_H
-#define __USBMIXER_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __USBMIXER_H
 #define __USBMIXER_H
@@ -18,7 +13,6 @@ struct usbmix_connector_map {
 	u8 channel;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct usb_mixer_interface {
 	struct snd_usb_audio *chip;
 	struct usb_host_interface *hostif;
@@ -26,21 +20,14 @@ struct usb_mixer_interface {
 	unsigned int ignore_ctl_error;
 	struct urb *urb;
 	/* array[MAX_ID_ELEMS], indexed by unit id */
-<<<<<<< HEAD
-	struct usb_mixer_elem_info **id_elems;
-=======
 	struct usb_mixer_elem_list **id_elems;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* the usb audio specification version this interface complies to */
 	int protocol;
 
-<<<<<<< HEAD
-=======
 	/* optional connector delegation map */
 	const struct usbmix_connector_map *connector_map;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Sound Blaster remote control stuff */
 	const struct rc_config *rc_cfg;
 	u32 rc_code;
@@ -48,13 +35,6 @@ struct usb_mixer_interface {
 	struct urb *rc_urb;
 	struct usb_ctrlrequest *rc_setup_packet;
 	u8 rc_buffer[6];
-<<<<<<< HEAD
-
-	u8 audigy2nx_leds[3];
-	u8 xonar_u1_status;
-
-	bool disconnected;
-=======
 	struct media_mixer_ctl *media_mixer_ctl;
 
 	bool disconnected;
@@ -62,7 +42,6 @@ struct usb_mixer_interface {
 	void *private_data;
 	void (*private_free)(struct usb_mixer_interface *mixer);
 	void (*private_suspend)(struct usb_mixer_interface *mixer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define MAX_CHANNELS	16	/* max logical channels */
@@ -74,17 +53,6 @@ enum {
 	USB_MIXER_U8,
 	USB_MIXER_S16,
 	USB_MIXER_U16,
-<<<<<<< HEAD
-};
-
-struct usb_mixer_elem_info {
-	struct usb_mixer_interface *mixer;
-	struct usb_mixer_elem_info *next_id_elem; /* list of controls with same id */
-	struct snd_ctl_elem_id *elem_id;
-	unsigned int id;
-	unsigned int control;	/* CS or ICN (high byte) */
-	unsigned int cmask; /* channel mask bitmap: 0 = master */
-=======
 	USB_MIXER_S32,
 	USB_MIXER_U32,
 	USB_MIXER_BESPOKEN,	/* non-standard type */
@@ -115,7 +83,6 @@ struct usb_mixer_elem_info {
 	unsigned int control;	/* CS or ICN (high byte) */
 	unsigned int cmask; /* channel mask bitmap: 0 = master */
 	unsigned int idx_off; /* Control index offset */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int ch_readonly;
 	unsigned int master_readonly;
 	int channels;
@@ -125,32 +92,17 @@ struct usb_mixer_elem_info {
 	int cached;
 	int cache_val[MAX_CHANNELS];
 	u8 initialized;
-<<<<<<< HEAD
-};
-
-int snd_usb_create_mixer(struct snd_usb_audio *chip, int ctrlif,
-			 int ignore_error);
-void snd_usb_mixer_disconnect(struct list_head *p);
-=======
 	u8 min_mute;
 	void *private_data;
 };
 
 int snd_usb_create_mixer(struct snd_usb_audio *chip, int ctrlif);
 void snd_usb_mixer_disconnect(struct usb_mixer_interface *mixer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void snd_usb_mixer_notify_id(struct usb_mixer_interface *mixer, int unitid);
 
 int snd_usb_mixer_set_ctl_value(struct usb_mixer_elem_info *cval,
 				int request, int validx, int value_set);
-<<<<<<< HEAD
-void snd_usb_mixer_inactivate(struct usb_mixer_interface *mixer);
-int snd_usb_mixer_activate(struct usb_mixer_interface *mixer);
-
-int snd_usb_mixer_add_control(struct usb_mixer_interface *mixer,
-			      struct snd_kcontrol *kctl);
-=======
 
 int snd_usb_mixer_add_list(struct usb_mixer_elem_list *list,
 			   struct snd_kcontrol *kctl,
@@ -178,6 +130,5 @@ int snd_usb_get_cur_mix_value(struct usb_mixer_elem_info *cval,
 extern void snd_usb_mixer_elem_free(struct snd_kcontrol *kctl);
 
 extern const struct snd_kcontrol_new *snd_usb_feature_unit_ctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __USBMIXER_H */

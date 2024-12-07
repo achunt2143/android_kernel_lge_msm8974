@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * mm/truncate.c - code for taking down pages from address_spaces
  *
@@ -13,10 +10,7 @@
 
 #include <linux/kernel.h>
 #include <linux/backing-dev.h>
-<<<<<<< HEAD
-=======
 #include <linux/dax.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gfp.h>
 #include <linux/mm.h>
 #include <linux/swap.h>
@@ -25,24 +19,6 @@
 #include <linux/highmem.h>
 #include <linux/pagevec.h>
 #include <linux/task_io_accounting_ops.h>
-<<<<<<< HEAD
-#include <linux/buffer_head.h>	/* grr. try_to_release_page,
-				   do_invalidatepage */
-#include <linux/cleancache.h>
-#include <linux/rmap.h>
-#include "internal.h"
-
-
-/**
- * do_invalidatepage - invalidate part or all of a page
- * @page: the page which is affected
- * @offset: the index of the truncation point
- *
- * do_invalidatepage() is called when all or part of the page has become
- * invalidated by a truncate operation.
- *
- * do_invalidatepage() does not have to release all buffers, but it must
-=======
 #include <linux/shmem_fs.h>
 #include <linux/rmap.h>
 #include "internal.h"
@@ -169,62 +145,11 @@ static int invalidate_exceptional_entry2(struct address_space *mapping,
  * invalidated by a truncate operation.
  *
  * folio_invalidate() does not have to release all buffers, but it must
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ensure that no dirty buffer is left outside @offset and that no I/O
  * is underway against any of the blocks which are outside the truncation
  * point.  Because the caller is about to free (and possibly reuse) those
  * blocks on-disk.
  */
-<<<<<<< HEAD
-void do_invalidatepage(struct page *page, unsigned long offset)
-{
-	void (*invalidatepage)(struct page *, unsigned long);
-	invalidatepage = page->mapping->a_ops->invalidatepage;
-#ifdef CONFIG_BLOCK
-	if (!invalidatepage)
-		invalidatepage = block_invalidatepage;
-#endif
-	if (invalidatepage)
-		(*invalidatepage)(page, offset);
-}
-
-static inline void truncate_partial_page(struct page *page, unsigned partial)
-{
-	zero_user_segment(page, partial, PAGE_CACHE_SIZE);
-	cleancache_invalidate_page(page->mapping, page);
-	if (page_has_private(page))
-		do_invalidatepage(page, partial);
-}
-
-/*
- * This cancels just the dirty bit on the kernel page itself, it
- * does NOT actually remove dirty bits on any mmap's that may be
- * around. It also leaves the page tagged dirty, so any sync
- * activity will still find it on the dirty lists, and in particular,
- * clear_page_dirty_for_io() will still look at the dirty bits in
- * the VM.
- *
- * Doing this should *normally* only ever be done when a page
- * is truncated, and is not actually mapped anywhere at all. However,
- * fs/buffer.c does this when it notices that somebody has cleaned
- * out all the buffers on a page without actually doing it through
- * the VM. Can you say "ext3 is horribly ugly"? Tought you could.
- */
-void cancel_dirty_page(struct page *page, unsigned int account_size)
-{
-	if (TestClearPageDirty(page)) {
-		struct address_space *mapping = page->mapping;
-		if (mapping && mapping_cap_account_dirty(mapping)) {
-			dec_zone_page_state(page, NR_FILE_DIRTY);
-			dec_bdi_stat(mapping->backing_dev_info,
-					BDI_RECLAIMABLE);
-			if (account_size)
-				task_io_account_cancelled_write(account_size);
-		}
-	}
-}
-EXPORT_SYMBOL(cancel_dirty_page);
-=======
 void folio_invalidate(struct folio *folio, size_t offset, size_t length)
 {
 	const struct address_space_operations *aops = folio->mapping->a_ops;
@@ -233,38 +158,17 @@ void folio_invalidate(struct folio *folio, size_t offset, size_t length)
 		aops->invalidate_folio(folio, offset, length);
 }
 EXPORT_SYMBOL_GPL(folio_invalidate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * If truncate cannot remove the fs-private metadata from the page, the page
  * becomes orphaned.  It will be left on the LRU and may even be mapped into
  * user pagetables if we're racing with filemap_fault().
  *
-<<<<<<< HEAD
- * We need to bale out if page->mapping is no longer equal to the original
-=======
  * We need to bail out if page->mapping is no longer equal to the original
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * mapping.  This happens a) when the VM reclaimed the page while we waited on
  * its lock, b) when a concurrent invalidate_mapping_pages got there first and
  * c) when tmpfs swizzles a page between a tmpfs inode and swapper_space.
  */
-<<<<<<< HEAD
-static int
-truncate_complete_page(struct address_space *mapping, struct page *page)
-{
-	if (page->mapping != mapping)
-		return -EIO;
-
-	if (page_has_private(page))
-		do_invalidatepage(page, 0);
-
-	cancel_dirty_page(page, PAGE_CACHE_SIZE);
-
-	clear_page_mlock(page);
-	ClearPageMappedToDisk(page);
-	delete_from_page_cache(page);
-=======
 static void truncate_cleanup_folio(struct folio *folio)
 {
 	if (folio_mapped(folio))
@@ -289,45 +193,10 @@ int truncate_inode_folio(struct address_space *mapping, struct folio *folio)
 
 	truncate_cleanup_folio(folio);
 	filemap_remove_folio(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
- * This is for invalidate_mapping_pages().  That function can be called at
- * any time, and is not supposed to throw away dirty pages.  But pages can
- * be marked dirty at any time too, so use remove_mapping which safely
- * discards clean, unused pages.
- *
- * Returns non-zero if the page was successfully invalidated.
- */
-static int
-invalidate_complete_page(struct address_space *mapping, struct page *page)
-{
-	int ret;
-
-	if (page->mapping != mapping)
-		return 0;
-
-	if (page_has_private(page) && !try_to_release_page(page, 0))
-		return 0;
-
-	clear_page_mlock(page);
-	ret = remove_mapping(mapping, page);
-
-	return ret;
-}
-
-int truncate_inode_page(struct address_space *mapping, struct page *page)
-{
-	if (page_mapped(page)) {
-		unmap_mapping_range(mapping,
-				   (loff_t)page->index << PAGE_CACHE_SHIFT,
-				   PAGE_CACHE_SIZE, 0);
-	}
-	return truncate_complete_page(mapping, page);
-=======
  * Handle partial folios.  The folio may be entirely within the
  * range if a split has raced with us.  If not, we zero the part of the
  * folio that's within the [start, end] range, and then split the folio if
@@ -376,18 +245,13 @@ bool truncate_inode_partial_folio(struct folio *folio, loff_t start, loff_t end)
 		return false;
 	truncate_inode_folio(folio->mapping, folio);
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Used to get rid of pages on hardware memory corruption.
  */
-<<<<<<< HEAD
-int generic_error_remove_page(struct address_space *mapping, struct page *page)
-=======
 int generic_error_remove_folio(struct address_space *mapping,
 		struct folio *folio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!mapping)
 		return -EINVAL;
@@ -397,28 +261,6 @@ int generic_error_remove_folio(struct address_space *mapping,
 	 */
 	if (!S_ISREG(mapping->host->i_mode))
 		return -EIO;
-<<<<<<< HEAD
-	return truncate_inode_page(mapping, page);
-}
-EXPORT_SYMBOL(generic_error_remove_page);
-
-/*
- * Safely invalidate one page from its pagecache mapping.
- * It only drops clean, unused pages. The page must be locked.
- *
- * Returns 1 if the page is successfully invalidated, otherwise 0.
- */
-int invalidate_inode_page(struct page *page)
-{
-	struct address_space *mapping = page_mapping(page);
-	if (!mapping)
-		return 0;
-	if (PageDirty(page) || PageWriteback(page))
-		return 0;
-	if (page_mapped(page))
-		return 0;
-	return invalidate_complete_page(mapping, page);
-=======
 	return truncate_inode_folio(mapping, folio);
 }
 EXPORT_SYMBOL(generic_error_remove_folio);
@@ -449,26 +291,17 @@ long mapping_evict_folio(struct address_space *mapping, struct folio *folio)
 		return 0;
 
 	return remove_mapping(mapping, folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * truncate_inode_pages_range - truncate range of pages specified by start & end byte offsets
  * @mapping: mapping to truncate
  * @lstart: offset from which to truncate
-<<<<<<< HEAD
- * @lend: offset to which to truncate
- *
- * Truncate the page cache, removing the pages that are between
- * specified offsets (and zeroing out partial page
- * (if lstart is not page aligned)).
-=======
  * @lend: offset to which to truncate (inclusive)
  *
  * Truncate the page cache, removing the pages that are between
  * specified offsets (and zeroing out partial pages
  * if lstart or lend + 1 is not page aligned).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Truncate takes two passes - the first pass is nonblocking.  It will not
  * block on page locks and it will not block on writeback.  The second pass
@@ -479,69 +312,14 @@ long mapping_evict_folio(struct address_space *mapping, struct folio *folio)
  * We pass down the cache-hot hint to the page freeing code.  Even if the
  * mapping is large, it is probably the case that the final pages are the most
  * recently touched, and freeing happens in ascending file offset order.
-<<<<<<< HEAD
-=======
  *
  * Note that since ->invalidate_folio() accepts range to invalidate
  * truncate_inode_pages_range is able to handle cases where lend + 1 is not
  * page aligned properly.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void truncate_inode_pages_range(struct address_space *mapping,
 				loff_t lstart, loff_t lend)
 {
-<<<<<<< HEAD
-	const pgoff_t start = (lstart + PAGE_CACHE_SIZE-1) >> PAGE_CACHE_SHIFT;
-	const unsigned partial = lstart & (PAGE_CACHE_SIZE - 1);
-	struct pagevec pvec;
-	pgoff_t index;
-	pgoff_t end;
-	int i;
-
-	cleancache_invalidate_inode(mapping);
-	if (mapping->nrpages == 0)
-		return;
-
-	BUG_ON((lend & (PAGE_CACHE_SIZE - 1)) != (PAGE_CACHE_SIZE - 1));
-	end = (lend >> PAGE_CACHE_SHIFT);
-
-	pagevec_init(&pvec, 0);
-	index = start;
-	while (index <= end && pagevec_lookup(&pvec, mapping, index,
-			min(end - index, (pgoff_t)PAGEVEC_SIZE - 1) + 1)) {
-		mem_cgroup_uncharge_start();
-		for (i = 0; i < pagevec_count(&pvec); i++) {
-			struct page *page = pvec.pages[i];
-
-			/* We rely upon deletion not changing page->index */
-			index = page->index;
-			if (index > end)
-				break;
-
-			if (!trylock_page(page))
-				continue;
-			WARN_ON(page->index != index);
-			if (PageWriteback(page)) {
-				unlock_page(page);
-				continue;
-			}
-			truncate_inode_page(mapping, page);
-			unlock_page(page);
-		}
-		pagevec_release(&pvec);
-		mem_cgroup_uncharge_end();
-		cond_resched();
-		index++;
-	}
-
-	if (partial) {
-		struct page *page = find_lock_page(mapping, start - 1);
-		if (page) {
-			wait_on_page_writeback(page);
-			truncate_partial_page(page, partial);
-			unlock_page(page);
-			page_cache_release(page);
-=======
 	pgoff_t		start;		/* inclusive */
 	pgoff_t		end;		/* exclusive */
 	struct folio_batch fbatch;
@@ -607,46 +385,10 @@ void truncate_inode_pages_range(struct address_space *mapping,
 				end = folio->index;
 			folio_unlock(folio);
 			folio_put(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	index = start;
-<<<<<<< HEAD
-	for ( ; ; ) {
-		cond_resched();
-		if (!pagevec_lookup(&pvec, mapping, index,
-			min(end - index, (pgoff_t)PAGEVEC_SIZE - 1) + 1)) {
-			if (index == start)
-				break;
-			index = start;
-			continue;
-		}
-		if (index == start && pvec.pages[0]->index > end) {
-			pagevec_release(&pvec);
-			break;
-		}
-		mem_cgroup_uncharge_start();
-		for (i = 0; i < pagevec_count(&pvec); i++) {
-			struct page *page = pvec.pages[i];
-
-			/* We rely upon deletion not changing page->index */
-			index = page->index;
-			if (index > end)
-				break;
-
-			lock_page(page);
-			WARN_ON(page->index != index);
-			wait_on_page_writeback(page);
-			truncate_inode_page(mapping, page);
-			unlock_page(page);
-		}
-		pagevec_release(&pvec);
-		mem_cgroup_uncharge_end();
-		index++;
-	}
-	cleancache_invalidate_inode(mapping);
-=======
 	while (index < end) {
 		cond_resched();
 		if (!find_get_entries(mapping, &index, end - 1, &fbatch,
@@ -676,7 +418,6 @@ void truncate_inode_pages_range(struct address_space *mapping,
 		truncate_folio_batch_exceptionals(mapping, &fbatch, indices);
 		folio_batch_release(&fbatch);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(truncate_inode_pages_range);
 
@@ -685,18 +426,11 @@ EXPORT_SYMBOL(truncate_inode_pages_range);
  * @mapping: mapping to truncate
  * @lstart: offset from which to truncate
  *
-<<<<<<< HEAD
- * Called under (and serialised by) inode->i_mutex.
- *
- * Note: When this function returns, there can be a page in the process of
- * deletion (inside __delete_from_page_cache()) in the specified range.  Thus
-=======
  * Called under (and serialised by) inode->i_rwsem and
  * mapping->invalidate_lock.
  *
  * Note: When this function returns, there can be a page in the process of
  * deletion (inside __filemap_remove_folio()) in the specified range.  Thus
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * mapping->nrpages can be non-zero when this function returns even after
  * truncation of the whole mapping.
  */
@@ -707,24 +441,6 @@ void truncate_inode_pages(struct address_space *mapping, loff_t lstart)
 EXPORT_SYMBOL(truncate_inode_pages);
 
 /**
-<<<<<<< HEAD
- * invalidate_mapping_pages - Invalidate all the unlocked pages of one inode
- * @mapping: the address_space which holds the pages to invalidate
- * @start: the offset 'from' which to invalidate
- * @end: the offset 'to' which to invalidate (inclusive)
- *
- * This function only removes the unlocked pages, if you want to
- * remove all the pages of one inode, you must call truncate_inode_pages.
- *
- * invalidate_mapping_pages() will not block on IO activity. It will not
- * invalidate pages which are dirty, locked, under writeback or mapped into
- * pagetables.
- */
-unsigned long invalidate_mapping_pages(struct address_space *mapping,
-		pgoff_t start, pgoff_t end)
-{
-	struct pagevec pvec;
-=======
  * truncate_inode_pages_final - truncate *all* pages before inode dies
  * @mapping: mapping to truncate
  *
@@ -774,100 +490,11 @@ unsigned long mapping_try_invalidate(struct address_space *mapping,
 {
 	pgoff_t indices[PAGEVEC_SIZE];
 	struct folio_batch fbatch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pgoff_t index = start;
 	unsigned long ret;
 	unsigned long count = 0;
 	int i;
 
-<<<<<<< HEAD
-	/*
-	 * Note: this function may get called on a shmem/tmpfs mapping:
-	 * pagevec_lookup() might then return 0 prematurely (because it
-	 * got a gangful of swap entries); but it's hardly worth worrying
-	 * about - it can rarely have anything to free from such a mapping
-	 * (most pages are dirty), and already skips over any difficulties.
-	 */
-
-	pagevec_init(&pvec, 0);
-	while (index <= end && pagevec_lookup(&pvec, mapping, index,
-			min(end - index, (pgoff_t)PAGEVEC_SIZE - 1) + 1)) {
-		mem_cgroup_uncharge_start();
-		for (i = 0; i < pagevec_count(&pvec); i++) {
-			struct page *page = pvec.pages[i];
-
-			/* We rely upon deletion not changing page->index */
-			index = page->index;
-			if (index > end)
-				break;
-
-			if (!trylock_page(page))
-				continue;
-			WARN_ON(page->index != index);
-			ret = invalidate_inode_page(page);
-			unlock_page(page);
-			/*
-			 * Invalidation is a hint that the page is no longer
-			 * of interest and try to speed up its reclaim.
-			 */
-			if (!ret)
-				deactivate_page(page);
-			count += ret;
-		}
-		pagevec_release(&pvec);
-		mem_cgroup_uncharge_end();
-		cond_resched();
-		index++;
-	}
-	return count;
-}
-EXPORT_SYMBOL(invalidate_mapping_pages);
-
-/*
- * This is like invalidate_complete_page(), except it ignores the page's
- * refcount.  We do this because invalidate_inode_pages2() needs stronger
- * invalidation guarantees, and cannot afford to leave pages behind because
- * shrink_page_list() has a temp ref on them, or because they're transiently
- * sitting in the lru_cache_add() pagevecs.
- */
-static int
-invalidate_complete_page2(struct address_space *mapping, struct page *page)
-{
-	if (page->mapping != mapping)
-		return 0;
-
-	if (page_has_private(page) && !try_to_release_page(page, GFP_KERNEL))
-		return 0;
-
-	clear_page_mlock(page);
-
-	spin_lock_irq(&mapping->tree_lock);
-	if (PageDirty(page))
-		goto failed;
-
-	BUG_ON(page_has_private(page));
-	__delete_from_page_cache(page);
-	spin_unlock_irq(&mapping->tree_lock);
-	mem_cgroup_uncharge_cache_page(page);
-
-	if (mapping->a_ops->freepage)
-		mapping->a_ops->freepage(page);
-
-	page_cache_release(page);	/* pagecache ref */
-	return 1;
-failed:
-	spin_unlock_irq(&mapping->tree_lock);
-	return 0;
-}
-
-static int do_launder_page(struct address_space *mapping, struct page *page)
-{
-	if (!PageDirty(page))
-		return 0;
-	if (page->mapping != mapping || mapping->a_ops->launder_page == NULL)
-		return 0;
-	return mapping->a_ops->launder_page(page);
-=======
 	folio_batch_init(&fbatch);
 	while (find_lock_entries(mapping, &index, end, &fbatch, indices)) {
 		for (i = 0; i < folio_batch_count(&fbatch); i++) {
@@ -966,7 +593,6 @@ static int folio_launder(struct address_space *mapping, struct folio *folio)
 	if (folio->mapping != mapping || mapping->a_ops->launder_folio == NULL)
 		return 0;
 	return mapping->a_ops->launder_folio(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -978,74 +604,19 @@ static int folio_launder(struct address_space *mapping, struct folio *folio)
  * Any pages which are found to be mapped into pagetables are unmapped prior to
  * invalidation.
  *
-<<<<<<< HEAD
- * Returns -EBUSY if any pages could not be invalidated.
-=======
  * Return: -EBUSY if any pages could not be invalidated.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int invalidate_inode_pages2_range(struct address_space *mapping,
 				  pgoff_t start, pgoff_t end)
 {
-<<<<<<< HEAD
-	struct pagevec pvec;
-=======
 	pgoff_t indices[PAGEVEC_SIZE];
 	struct folio_batch fbatch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pgoff_t index;
 	int i;
 	int ret = 0;
 	int ret2 = 0;
 	int did_range_unmap = 0;
 
-<<<<<<< HEAD
-	cleancache_invalidate_inode(mapping);
-	pagevec_init(&pvec, 0);
-	index = start;
-	while (index <= end && pagevec_lookup(&pvec, mapping, index,
-			min(end - index, (pgoff_t)PAGEVEC_SIZE - 1) + 1)) {
-		mem_cgroup_uncharge_start();
-		for (i = 0; i < pagevec_count(&pvec); i++) {
-			struct page *page = pvec.pages[i];
-
-			/* We rely upon deletion not changing page->index */
-			index = page->index;
-			if (index > end)
-				break;
-
-			lock_page(page);
-			WARN_ON(page->index != index);
-			if (page->mapping != mapping) {
-				unlock_page(page);
-				continue;
-			}
-			wait_on_page_writeback(page);
-			if (page_mapped(page)) {
-				if (!did_range_unmap) {
-					/*
-					 * Zap the rest of the file in one hit.
-					 */
-					unmap_mapping_range(mapping,
-					   (loff_t)index << PAGE_CACHE_SHIFT,
-					   (loff_t)(1 + end - index)
-							 << PAGE_CACHE_SHIFT,
-					    0);
-					did_range_unmap = 1;
-				} else {
-					/*
-					 * Just zap this page
-					 */
-					unmap_mapping_range(mapping,
-					   (loff_t)index << PAGE_CACHE_SHIFT,
-					   PAGE_CACHE_SIZE, 0);
-				}
-			}
-			BUG_ON(page_mapped(page));
-			ret2 = do_launder_page(mapping, page);
-			if (ret2 == 0) {
-				if (!invalidate_complete_page2(mapping, page))
-=======
 	if (mapping_empty(mapping))
 		return 0;
 
@@ -1089,21 +660,10 @@ int invalidate_inode_pages2_range(struct address_space *mapping,
 			ret2 = folio_launder(mapping, folio);
 			if (ret2 == 0) {
 				if (!invalidate_complete_folio2(mapping, folio))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ret2 = -EBUSY;
 			}
 			if (ret2 < 0)
 				ret = ret2;
-<<<<<<< HEAD
-			unlock_page(page);
-		}
-		pagevec_release(&pvec);
-		mem_cgroup_uncharge_end();
-		cond_resched();
-		index++;
-	}
-	cleancache_invalidate_inode(mapping);
-=======
 			folio_unlock(folio);
 		}
 		folio_batch_remove_exceptionals(&fbatch);
@@ -1120,7 +680,6 @@ int invalidate_inode_pages2_range(struct address_space *mapping,
 	if (dax_mapping(mapping)) {
 		unmap_mapping_pages(mapping, start, end - start + 1, false);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(invalidate_inode_pages2_range);
@@ -1132,11 +691,7 @@ EXPORT_SYMBOL_GPL(invalidate_inode_pages2_range);
  * Any pages which are found to be mapped into pagetables are unmapped prior to
  * invalidation.
  *
-<<<<<<< HEAD
- * Returns -EBUSY if any pages could not be invalidated.
-=======
  * Return: -EBUSY if any pages could not be invalidated.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int invalidate_inode_pages2(struct address_space *mapping)
 {
@@ -1147,10 +702,6 @@ EXPORT_SYMBOL_GPL(invalidate_inode_pages2);
 /**
  * truncate_pagecache - unmap and remove pagecache that has been truncated
  * @inode: inode
-<<<<<<< HEAD
- * @oldsize: old file size
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @newsize: new file size
  *
  * inode's new i_size must already be written before truncate_pagecache
@@ -1163,11 +714,7 @@ EXPORT_SYMBOL_GPL(invalidate_inode_pages2);
  * situations such as writepage being called for a page that has already
  * had its underlying blocks deallocated.
  */
-<<<<<<< HEAD
-void truncate_pagecache(struct inode *inode, loff_t oldsize, loff_t newsize)
-=======
 void truncate_pagecache(struct inode *inode, loff_t newsize)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct address_space *mapping = inode->i_mapping;
 	loff_t holebegin = round_up(newsize, PAGE_SIZE);
@@ -1196,31 +743,18 @@ EXPORT_SYMBOL(truncate_pagecache);
  * necessary) to @newsize. It will be typically be called from the filesystem's
  * setattr function when ATTR_SIZE is passed in.
  *
-<<<<<<< HEAD
- * Must be called with inode_mutex held and before all filesystem specific
- * block truncation has been performed.
-=======
  * Must be called with a lock serializing truncates and writes (generally
  * i_rwsem but e.g. xfs uses a different lock) and before all filesystem
  * specific block truncation has been performed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void truncate_setsize(struct inode *inode, loff_t newsize)
 {
 	loff_t oldsize = inode->i_size;
-<<<<<<< HEAD
-	i_size_write(inode, newsize);
-
-	if (newsize > oldsize)
-		pagecache_isize_extended(inode, oldsize, newsize);
-	truncate_pagecache(inode, oldsize, newsize);
-=======
 
 	i_size_write(inode, newsize);
 	if (newsize > oldsize)
 		pagecache_isize_extended(inode, oldsize, newsize);
 	truncate_pagecache(inode, newsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(truncate_setsize);
 
@@ -1239,37 +773,19 @@ EXPORT_SYMBOL(truncate_setsize);
  *
  * The function must be called after i_size is updated so that page fault
  * coming after we unlock the page will already see the new i_size.
-<<<<<<< HEAD
- * The function must be called while we still hold i_mutex - this not only
-=======
  * The function must be called while we still hold i_rwsem - this not only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * makes sure i_size is stable but also that userspace cannot observe new
  * i_size value before we are prepared to store mmap writes at new inode size.
  */
 void pagecache_isize_extended(struct inode *inode, loff_t from, loff_t to)
 {
-<<<<<<< HEAD
-	int bsize = 1 << inode->i_blkbits;
-=======
 	int bsize = i_blocksize(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	loff_t rounded_from;
 	struct page *page;
 	pgoff_t index;
 
 	WARN_ON(to > inode->i_size);
 
-<<<<<<< HEAD
-	if (from >= to || bsize == PAGE_CACHE_SIZE)
-		return;
-	/* Page straddling @from will not have any hole block created? */
-	rounded_from = round_up(from, bsize);
-	if (to <= rounded_from || !(rounded_from & (PAGE_CACHE_SIZE - 1)))
-		return;
-
-	index = from >> PAGE_CACHE_SHIFT;
-=======
 	if (from >= to || bsize == PAGE_SIZE)
 		return;
 	/* Page straddling @from will not have any hole block created? */
@@ -1278,7 +794,6 @@ void pagecache_isize_extended(struct inode *inode, loff_t from, loff_t to)
 		return;
 
 	index = from >> PAGE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	page = find_lock_page(inode->i_mapping, index);
 	/* Page not cached? Nothing to do */
 	if (!page)
@@ -1290,11 +805,7 @@ void pagecache_isize_extended(struct inode *inode, loff_t from, loff_t to)
 	if (page_mkclean(page))
 		set_page_dirty(page);
 	unlock_page(page);
-<<<<<<< HEAD
-	page_cache_release(page);
-=======
 	put_page(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(pagecache_isize_extended);
 
@@ -1302,35 +813,6 @@ EXPORT_SYMBOL(pagecache_isize_extended);
  * truncate_pagecache_range - unmap and remove pagecache that is hole-punched
  * @inode: inode
  * @lstart: offset of beginning of hole
-<<<<<<< HEAD
- * vmtruncate - unmap mappings "freed" by truncate() syscall
- * @inode: inode of the file used
- * @newsize: file offset to start truncating
- *
- * This function is deprecated and truncate_setsize or truncate_pagecache
- * should be used instead, together with filesystem specific block truncation.
- */
-int vmtruncate(struct inode *inode, loff_t newsize)
-{
-	int error;
-
-	error = inode_newsize_ok(inode, newsize);
-	if (error)
-		return error;
-
-	truncate_setsize(inode, newsize);
-	if (inode->i_op->truncate)
-		inode->i_op->truncate(inode);
-	return 0;
-}
-EXPORT_SYMBOL(vmtruncate);
-
-/**
- * truncate_pagecache_range - unmap and remove pagecache that is hole-punched
- * @inode: inode
- * @lstart: offset of beginning of hole
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @lend: offset of last byte of hole
  *
  * This function should typically be called before the filesystem
@@ -1349,15 +831,8 @@ void truncate_pagecache_range(struct inode *inode, loff_t lstart, loff_t lend)
 	 * This rounding is currently just for example: unmap_mapping_range
 	 * expands its hole outwards, whereas we want it to contract the hole
 	 * inwards.  However, existing callers of truncate_pagecache_range are
-<<<<<<< HEAD
-	 * doing their own page rounding first; and truncate_inode_pages_range
-	 * currently BUGs if lend is not pagealigned-1 (it handles partial
-	 * page at start of hole, but not partial page at end of hole).  Note
-	 * unmap_mapping_range allows holelen 0 for all, and we allow lend -1.
-=======
 	 * doing their own page rounding first.  Note that unmap_mapping_range
 	 * allows holelen 0 for all, and we allow lend -1 for end of file.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	/*

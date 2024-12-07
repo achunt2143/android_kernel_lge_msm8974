@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-/*
- * OMFS (as used by RIO Karma) file operations.
- * Copyright (C) 2005 Bob Copeland <me@bobcopeland.com>
- * Released under GPL v2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * OMFS (as used by RIO Karma) file operations.
  * Copyright (C) 2005 Bob Copeland <me@bobcopeland.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -21,11 +14,7 @@ static u32 omfs_max_extents(struct omfs_sb_info *sbi, int offset)
 {
 	return (sbi->s_sys_blocksize - offset -
 		sizeof(struct omfs_extent)) /
-<<<<<<< HEAD
-		sizeof(struct omfs_extent_entry) + 1;
-=======
 		sizeof(struct omfs_extent_entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void omfs_make_empty_table(struct buffer_head *bh, int offset)
@@ -35,13 +24,8 @@ void omfs_make_empty_table(struct buffer_head *bh, int offset)
 	oe->e_next = ~cpu_to_be64(0ULL);
 	oe->e_extent_count = cpu_to_be32(1),
 	oe->e_fill = cpu_to_be32(0x22),
-<<<<<<< HEAD
-	oe->e_entry.e_cluster = ~cpu_to_be64(0ULL);
-	oe->e_entry.e_blocks = ~cpu_to_be64(0ULL);
-=======
 	oe->e_entry[0].e_cluster = ~cpu_to_be64(0ULL);
 	oe->e_entry[0].e_blocks = ~cpu_to_be64(0ULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int omfs_shrink_inode(struct inode *inode)
@@ -84,11 +68,7 @@ int omfs_shrink_inode(struct inode *inode)
 
 		last = next;
 		next = be64_to_cpu(oe->e_next);
-<<<<<<< HEAD
-		entry = &oe->e_entry;
-=======
 		entry = oe->e_entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* ignore last entry as it is the terminator */
 		for (; extent_count > 1; extent_count--) {
@@ -137,11 +117,7 @@ static int omfs_grow_extent(struct inode *inode, struct omfs_extent *oe,
 			u64 *ret_block)
 {
 	struct omfs_extent_entry *terminator;
-<<<<<<< HEAD
-	struct omfs_extent_entry *entry = &oe->e_entry;
-=======
 	struct omfs_extent_entry *entry = oe->e_entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct omfs_sb_info *sbi = OMFS_SB(inode->i_sb);
 	u32 extent_count = be32_to_cpu(oe->e_extent_count);
 	u64 new_block = 0;
@@ -170,12 +146,7 @@ static int omfs_grow_extent(struct inode *inode, struct omfs_extent *oe,
 			be64_to_cpu(entry->e_blocks);
 
 		if (omfs_allocate_block(inode->i_sb, new_block)) {
-<<<<<<< HEAD
-			entry->e_blocks =
-				cpu_to_be64(be64_to_cpu(entry->e_blocks) + 1);
-=======
 			be64_add_cpu(&entry->e_blocks, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			terminator->e_blocks = ~(cpu_to_be64(
 				be64_to_cpu(~terminator->e_blocks) + 1));
 			goto out;
@@ -205,11 +176,7 @@ static int omfs_grow_extent(struct inode *inode, struct omfs_extent *oe,
 		be64_to_cpu(~terminator->e_blocks) + (u64) new_count));
 
 	/* write in new entry */
-<<<<<<< HEAD
-	oe->e_extent_count = cpu_to_be32(1 + be32_to_cpu(oe->e_extent_count));
-=======
 	be32_add_cpu(&oe->e_extent_count, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	*ret_block = new_block;
@@ -253,11 +220,7 @@ static int omfs_get_block(struct inode *inode, sector_t block,
 	struct buffer_head *bh;
 	sector_t next, offset;
 	int ret;
-<<<<<<< HEAD
-	u64 uninitialized_var(new_block);
-=======
 	u64 new_block;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 max_extents;
 	int extent_count;
 	struct omfs_extent *oe;
@@ -282,11 +245,7 @@ static int omfs_get_block(struct inode *inode, sector_t block,
 
 		extent_count = be32_to_cpu(oe->e_extent_count);
 		next = be64_to_cpu(oe->e_next);
-<<<<<<< HEAD
-		entry = &oe->e_entry;
-=======
 		entry = oe->e_entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (extent_count > max_extents)
 			goto out_brelse;
@@ -325,22 +284,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int omfs_readpage(struct file *file, struct page *page)
-{
-	return block_read_full_page(page, omfs_get_block);
-}
-
-static int omfs_readpages(struct file *file, struct address_space *mapping,
-		struct list_head *pages, unsigned nr_pages)
-{
-	return mpage_readpages(mapping, pages, nr_pages, omfs_get_block);
-}
-
-static int omfs_writepage(struct page *page, struct writeback_control *wbc)
-{
-	return block_write_full_page(page, omfs_get_block, wbc);
-=======
 static int omfs_read_folio(struct file *file, struct folio *folio)
 {
 	return block_read_full_folio(folio, omfs_get_block);
@@ -349,7 +292,6 @@ static int omfs_read_folio(struct file *file, struct folio *folio)
 static void omfs_readahead(struct readahead_control *rac)
 {
 	mpage_readahead(rac, omfs_get_block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -358,10 +300,6 @@ omfs_writepages(struct address_space *mapping, struct writeback_control *wbc)
 	return mpage_writepages(mapping, wbc, omfs_get_block);
 }
 
-<<<<<<< HEAD
-static int omfs_write_begin(struct file *file, struct address_space *mapping,
-			loff_t pos, unsigned len, unsigned flags,
-=======
 static void omfs_write_failed(struct address_space *mapping, loff_t to)
 {
 	struct inode *inode = mapping->host;
@@ -374,24 +312,13 @@ static void omfs_write_failed(struct address_space *mapping, loff_t to)
 
 static int omfs_write_begin(struct file *file, struct address_space *mapping,
 			loff_t pos, unsigned len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct page **pagep, void **fsdata)
 {
 	int ret;
 
-<<<<<<< HEAD
-	ret = block_write_begin(mapping, pos, len, flags, pagep,
-				omfs_get_block);
-	if (unlikely(ret)) {
-		loff_t isize = mapping->host->i_size;
-		if (pos + len > isize)
-			vmtruncate(mapping->host, isize);
-	}
-=======
 	ret = block_write_begin(mapping, pos, len, pagep, omfs_get_block);
 	if (unlikely(ret))
 		omfs_write_failed(mapping, pos + len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -403,23 +330,6 @@ static sector_t omfs_bmap(struct address_space *mapping, sector_t block)
 
 const struct file_operations omfs_file_operations = {
 	.llseek = generic_file_llseek,
-<<<<<<< HEAD
-	.read = do_sync_read,
-	.write = do_sync_write,
-	.aio_read = generic_file_aio_read,
-	.aio_write = generic_file_aio_write,
-	.mmap = generic_file_mmap,
-	.fsync = generic_file_fsync,
-	.splice_read = generic_file_splice_read,
-};
-
-static int omfs_setattr(struct dentry *dentry, struct iattr *attr)
-{
-	struct inode *inode = dentry->d_inode;
-	int error;
-
-	error = inode_change_ok(inode, attr);
-=======
 	.read_iter = generic_file_read_iter,
 	.write_iter = generic_file_write_iter,
 	.mmap = generic_file_mmap,
@@ -434,20 +344,11 @@ static int omfs_setattr(struct mnt_idmap *idmap,
 	int error;
 
 	error = setattr_prepare(&nop_mnt_idmap, dentry, attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
 	if ((attr->ia_valid & ATTR_SIZE) &&
 	    attr->ia_size != i_size_read(inode)) {
-<<<<<<< HEAD
-		error = vmtruncate(inode, attr->ia_size);
-		if (error)
-			return error;
-	}
-
-	setattr_copy(inode, attr);
-=======
 		error = inode_newsize_ok(inode, attr->ia_size);
 		if (error)
 			return error;
@@ -456,22 +357,12 @@ static int omfs_setattr(struct mnt_idmap *idmap,
 	}
 
 	setattr_copy(&nop_mnt_idmap, inode, attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 	return 0;
 }
 
 const struct inode_operations omfs_file_inops = {
 	.setattr = omfs_setattr,
-<<<<<<< HEAD
-	.truncate = omfs_truncate
-};
-
-const struct address_space_operations omfs_aops = {
-	.readpage = omfs_readpage,
-	.readpages = omfs_readpages,
-	.writepage = omfs_writepage,
-=======
 };
 
 const struct address_space_operations omfs_aops = {
@@ -479,14 +370,10 @@ const struct address_space_operations omfs_aops = {
 	.invalidate_folio = block_invalidate_folio,
 	.read_folio = omfs_read_folio,
 	.readahead = omfs_readahead,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.writepages = omfs_writepages,
 	.write_begin = omfs_write_begin,
 	.write_end = generic_write_end,
 	.bmap = omfs_bmap,
-<<<<<<< HEAD
-=======
 	.migrate_folio = buffer_migrate_folio,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 

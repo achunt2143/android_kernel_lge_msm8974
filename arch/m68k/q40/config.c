@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/m68k/q40/config.c
  *
@@ -10,18 +7,9 @@
  * originally based on:
  *
  *  linux/bvme/config.c
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file README.legal in the main directory of this archive
- * for more details.
- */
-
-=======
  */
 
 #include <linux/errno.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
@@ -37,34 +25,12 @@
 #include <linux/platform_device.h>
 
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/rtc.h>
 #include <asm/bootinfo.h>
-#include <asm/pgtable.h>
-=======
-#include <asm/bootinfo.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/setup.h>
 #include <asm/irq.h>
 #include <asm/traps.h>
 #include <asm/machdep.h>
 #include <asm/q40_master.h>
-<<<<<<< HEAD
-
-extern void q40_init_IRQ(void);
-static void q40_get_model(char *model);
-extern void q40_sched_init(irq_handler_t handler);
-
-static unsigned long q40_gettimeoffset(void);
-static int q40_hwclk(int, struct rtc_time *);
-static unsigned int q40_get_ss(void);
-static int q40_set_clock_mmss(unsigned long);
-static int q40_get_rtc_pll(struct rtc_pll_info *pll);
-static int q40_set_rtc_pll(struct rtc_pll_info *pll);
-
-extern void q40_mksound(unsigned int /*freq*/, unsigned int /*ticks*/);
-
-=======
 #include <asm/config.h>
 
 #include "q40.h"
@@ -75,7 +41,6 @@ static int q40_hwclk(int, struct rtc_time *);
 static int q40_get_rtc_pll(struct rtc_pll_info *pll);
 static int q40_set_rtc_pll(struct rtc_pll_info *pll);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void q40_mem_console_write(struct console *co, const char *b,
 				  unsigned int count);
 
@@ -111,11 +76,7 @@ static int __init q40_debug_setup(char *arg)
 {
 	/* useful for early debugging stages - writes kernel messages into SRAM */
 	if (MACH_IS_Q40 && !strncmp(arg, "mem", 3)) {
-<<<<<<< HEAD
-		/*printk("using NVRAM debug, q40_mem_cptr=%p\n",q40_mem_cptr);*/
-=======
 		/*pr_info("using NVRAM debug, q40_mem_cptr=%p\n",q40_mem_cptr);*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		_cpleft = 2000 - ((long)q40_mem_cptr-0xff020000) / 4;
 		register_console(&q40_console_driver);
 	}
@@ -155,13 +116,8 @@ static void q40_heartbeat(int on)
 
 static void q40_reset(void)
 {
-<<<<<<< HEAD
-        halted = 1;
-        printk("\n\n*******************************************\n"
-=======
 	halted = 1;
 	pr_info("*******************************************\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Called q40_reset : press the RESET button!!\n"
 		"*******************************************\n");
 	Q40_LED_ON();
@@ -171,17 +127,10 @@ static void q40_reset(void)
 
 static void q40_halt(void)
 {
-<<<<<<< HEAD
-        halted = 1;
-        printk("\n\n*******************\n"
-		   "  Called q40_halt\n"
-		   "*******************\n");
-=======
 	halted = 1;
 	pr_info("*******************\n"
 		"  Called q40_halt\n"
 		"*******************\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Q40_LED_ON();
 	while (1)
 		;
@@ -197,11 +146,7 @@ static unsigned int serports[] =
 	0x3f8,0x2f8,0x3e8,0x2e8,0
 };
 
-<<<<<<< HEAD
-static void q40_disable_irqs(void)
-=======
 static void __init q40_disable_irqs(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned i, j;
 
@@ -217,27 +162,14 @@ void __init config_q40(void)
 	mach_sched_init = q40_sched_init;
 
 	mach_init_IRQ = q40_init_IRQ;
-<<<<<<< HEAD
-	mach_gettimeoffset = q40_gettimeoffset;
-	mach_hwclk = q40_hwclk;
-	mach_get_ss = q40_get_ss;
-	mach_get_rtc_pll = q40_get_rtc_pll;
-	mach_set_rtc_pll = q40_set_rtc_pll;
-	mach_set_clock_mmss = q40_set_clock_mmss;
-=======
 	mach_hwclk = q40_hwclk;
 	mach_get_rtc_pll = q40_get_rtc_pll;
 	mach_set_rtc_pll = q40_set_rtc_pll;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mach_reset = q40_reset;
 	mach_get_model = q40_get_model;
 
-<<<<<<< HEAD
-#if defined(CONFIG_INPUT_M68K_BEEP) || defined(CONFIG_INPUT_M68K_BEEP_MODULE)
-=======
 #if IS_ENABLED(CONFIG_INPUT_M68K_BEEP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mach_beep = q40_mksound;
 #endif
 #ifdef CONFIG_HEARTBEAT
@@ -247,36 +179,14 @@ void __init config_q40(void)
 
 	/* disable a few things that SMSQ might have left enabled */
 	q40_disable_irqs();
-<<<<<<< HEAD
-
-	/* no DMA at all, but ide-scsi requires it.. make sure
-	 * all physical RAM fits into the boundary - otherwise
-	 * allocator may play costly and useless tricks */
-	mach_max_dma_address = 1024*1024*1024;
-}
-
-
-int q40_parse_bootinfo(const struct bi_record *rec)
-=======
 }
 
 
 int __init q40_parse_bootinfo(const struct bi_record *rec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 1;
 }
 
-<<<<<<< HEAD
-
-static unsigned long q40_gettimeoffset(void)
-{
-	return 5000 * (ql_ticks != 0);
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Looks like op is non-zero for setting the clock, and zero for
  * reading the clock.
@@ -329,42 +239,6 @@ static int q40_hwclk(int op, struct rtc_time *t)
 	return 0;
 }
 
-<<<<<<< HEAD
-static unsigned int q40_get_ss(void)
-{
-	return bcd2bin(Q40_RTC_SECS);
-}
-
-/*
- * Set the minutes and seconds from seconds value 'nowtime'.  Fail if
- * clock is out by > 30 minutes.  Logic lifted from atari code.
- */
-
-static int q40_set_clock_mmss(unsigned long nowtime)
-{
-	int retval = 0;
-	short real_seconds = nowtime % 60, real_minutes = (nowtime / 60) % 60;
-
-	int rtc_minutes;
-
-	rtc_minutes = bcd2bin(Q40_RTC_MINS);
-
-	if ((rtc_minutes < real_minutes ?
-	     real_minutes - rtc_minutes :
-	     rtc_minutes - real_minutes) < 30) {
-		Q40_RTC_CTRL |= Q40_RTC_WRITE;
-		Q40_RTC_MINS = bin2bcd(real_minutes);
-		Q40_RTC_SECS = bin2bcd(real_seconds);
-		Q40_RTC_CTRL &= ~(Q40_RTC_WRITE);
-	} else
-		retval = -1;
-
-	return retval;
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* get and set PLL calibration of RTC clock */
 #define Q40_RTC_PLL_MASK ((1<<5)-1)
 #define Q40_RTC_PLL_SIGN (1<<5)
@@ -373,10 +247,7 @@ static int q40_get_rtc_pll(struct rtc_pll_info *pll)
 {
 	int tmp = Q40_RTC_CTRL;
 
-<<<<<<< HEAD
-=======
 	pll->pll_ctrl = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pll->pll_value = tmp & Q40_RTC_PLL_MASK;
 	if (tmp & Q40_RTC_PLL_SIGN)
 		pll->pll_value = -pll->pll_value;
@@ -404,22 +275,6 @@ static int q40_set_rtc_pll(struct rtc_pll_info *pll)
 		return -EINVAL;
 }
 
-<<<<<<< HEAD
-static __init int q40_add_kbd_device(void)
-{
-	struct platform_device *pdev;
-
-	if (!MACH_IS_Q40)
-		return -ENODEV;
-
-	pdev = platform_device_register_simple("q40kbd", -1, NULL, 0);
-	if (IS_ERR(pdev))
-		return PTR_ERR(pdev);
-
-	return 0;
-}
-arch_initcall(q40_add_kbd_device);
-=======
 #define PCIDE_BASE1	0x1f0
 #define PCIDE_BASE2	0x170
 #define PCIDE_CTL	0x206
@@ -456,4 +311,3 @@ static __init int q40_platform_init(void)
 	return 0;
 }
 arch_initcall(q40_platform_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

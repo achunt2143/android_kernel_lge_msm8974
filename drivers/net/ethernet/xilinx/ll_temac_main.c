@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Xilinx TEMAC Ethernet device
  *
@@ -25,10 +22,6 @@
  *
  * TODO:
  * - Factor out locallink DMA code into separate driver
-<<<<<<< HEAD
- * - Fix multicast assignment.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - Fix support for hardware checksumming.
  * - Testing.  Lots and lots of testing.
  *
@@ -36,28 +29,16 @@
 
 #include <linux/delay.h>
 #include <linux/etherdevice.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mii.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
 #include <linux/netdevice.h>
-<<<<<<< HEAD
-#include <linux/of.h>
-#include <linux/of_device.h>
-#include <linux/of_mdio.h>
-#include <linux/of_platform.h>
-#include <linux/of_address.h>
-=======
 #include <linux/if_ether.h>
 #include <linux/of.h>
 #include <linux/of_irq.h>
 #include <linux/of_mdio.h>
 #include <linux/of_net.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/skbuff.h>
 #include <linux/spinlock.h>
 #include <linux/tcp.h>      /* needed for sizeof(tcphdr) */
@@ -68,14 +49,6 @@
 #include <linux/ip.h>
 #include <linux/slab.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/dma-mapping.h>
-
-#include "ll_temac.h"
-
-#define TX_BD_NUM   64
-#define RX_BD_NUM   128
-=======
 #include <linux/workqueue.h>
 #include <linux/dma-mapping.h>
 #include <linux/processor.h>
@@ -88,89 +61,11 @@
 #define RX_BD_NUM_DEFAULT		1024
 #define TX_BD_NUM_MAX			4096
 #define RX_BD_NUM_MAX			4096
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ---------------------------------------------------------------------
  * Low level register access functions
  */
 
-<<<<<<< HEAD
-u32 temac_ior(struct temac_local *lp, int offset)
-{
-	return in_be32((u32 *)(lp->regs + offset));
-}
-
-void temac_iow(struct temac_local *lp, int offset, u32 value)
-{
-	out_be32((u32 *) (lp->regs + offset), value);
-}
-
-int temac_indirect_busywait(struct temac_local *lp)
-{
-	long end = jiffies + 2;
-
-	while (!(temac_ior(lp, XTE_RDY0_OFFSET) & XTE_RDY0_HARD_ACS_RDY_MASK)) {
-		if (end - jiffies <= 0) {
-			WARN_ON(1);
-			return -ETIMEDOUT;
-		}
-		msleep(1);
-	}
-	return 0;
-}
-
-/**
- * temac_indirect_in32
- *
- * lp->indirect_mutex must be held when calling this function
- */
-u32 temac_indirect_in32(struct temac_local *lp, int reg)
-{
-	u32 val;
-
-	if (temac_indirect_busywait(lp))
-		return -ETIMEDOUT;
-	temac_iow(lp, XTE_CTL0_OFFSET, reg);
-	if (temac_indirect_busywait(lp))
-		return -ETIMEDOUT;
-	val = temac_ior(lp, XTE_LSW0_OFFSET);
-
-	return val;
-}
-
-/**
- * temac_indirect_out32
- *
- * lp->indirect_mutex must be held when calling this function
- */
-void temac_indirect_out32(struct temac_local *lp, int reg, u32 value)
-{
-	if (temac_indirect_busywait(lp))
-		return;
-	temac_iow(lp, XTE_LSW0_OFFSET, value);
-	temac_iow(lp, XTE_CTL0_OFFSET, CNTLREG_WRITE_ENABLE_MASK | reg);
-	temac_indirect_busywait(lp);
-}
-
-/**
- * temac_dma_in32 - Memory mapped DMA read, this function expects a
- * register input that is based on DCR word addresses which
- * are then converted to memory mapped byte addresses
- */
-static u32 temac_dma_in32(struct temac_local *lp, int reg)
-{
-	return in_be32((u32 *)(lp->sdma_regs + (reg << 2)));
-}
-
-/**
- * temac_dma_out32 - Memory mapped DMA read, this function expects a
- * register input that is based on DCR word addresses which
- * are then converted to memory mapped byte addresses
- */
-static void temac_dma_out32(struct temac_local *lp, int reg, u32 value)
-{
-	out_be32((u32 *)(lp->sdma_regs + (reg << 2)), value);
-=======
 static u32 _temac_ior_be(struct temac_local *lp, int offset)
 {
 	return ioread32be(lp->regs + offset);
@@ -335,7 +230,6 @@ static void temac_dma_out32_be(struct temac_local *lp, int reg, u32 value)
 static void temac_dma_out32_le(struct temac_local *lp, int reg, u32 value)
 {
 	iowrite32(value, lp->sdma_regs + (reg << 2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* DMA register access functions can be DCR based or memory mapped.
@@ -344,11 +238,7 @@ static void temac_dma_out32_le(struct temac_local *lp, int reg, u32 value)
  */
 #ifdef CONFIG_PPC_DCR
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * temac_dma_dcr_in32 - DCR based DMA read
  */
 static u32 temac_dma_dcr_in(struct temac_local *lp, int reg)
@@ -356,11 +246,7 @@ static u32 temac_dma_dcr_in(struct temac_local *lp, int reg)
 	return dcr_read(lp->sdma_dcrs, reg);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * temac_dma_dcr_out32 - DCR based DMA write
  */
 static void temac_dma_dcr_out(struct temac_local *lp, int reg, u32 value)
@@ -368,20 +254,12 @@ static void temac_dma_dcr_out(struct temac_local *lp, int reg, u32 value)
 	dcr_write(lp->sdma_dcrs, reg, value);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * temac_dcr_setup - If the DMA is DCR based, then setup the address and
  * I/O  functions
  */
 static int temac_dcr_setup(struct temac_local *lp, struct platform_device *op,
-<<<<<<< HEAD
-				struct device_node *np)
-=======
 			   struct device_node *np)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int dcrs;
 
@@ -403,30 +281,18 @@ static int temac_dcr_setup(struct temac_local *lp, struct platform_device *op,
 
 /*
  * temac_dcr_setup - This is a stub for when DCR is not supported,
-<<<<<<< HEAD
- * such as with MicroBlaze
- */
-static int temac_dcr_setup(struct temac_local *lp, struct platform_device *op,
-				struct device_node *np)
-=======
  * such as with MicroBlaze and x86
  */
 static int temac_dcr_setup(struct temac_local *lp, struct platform_device *op,
 			   struct device_node *np)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -1;
 }
 
 #endif
 
-<<<<<<< HEAD
-/**
- *  * temac_dma_bd_release - Release buffer descriptor rings
-=======
 /*
  * temac_dma_bd_release - Release buffer descriptor rings
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void temac_dma_bd_release(struct net_device *ndev)
 {
@@ -436,30 +302,6 @@ static void temac_dma_bd_release(struct net_device *ndev)
 	/* Reset Local Link (DMA) */
 	lp->dma_out(lp, DMA_CONTROL_REG, DMA_CONTROL_RST);
 
-<<<<<<< HEAD
-	for (i = 0; i < RX_BD_NUM; i++) {
-		if (!lp->rx_skb[i])
-			break;
-		else {
-			dma_unmap_single(ndev->dev.parent, lp->rx_bd_v[i].phys,
-					XTE_MAX_JUMBO_FRAME_SIZE, DMA_FROM_DEVICE);
-			dev_kfree_skb(lp->rx_skb[i]);
-		}
-	}
-	if (lp->rx_bd_v)
-		dma_free_coherent(ndev->dev.parent,
-				sizeof(*lp->rx_bd_v) * RX_BD_NUM,
-				lp->rx_bd_v, lp->rx_bd_p);
-	if (lp->tx_bd_v)
-		dma_free_coherent(ndev->dev.parent,
-				sizeof(*lp->tx_bd_v) * TX_BD_NUM,
-				lp->tx_bd_v, lp->tx_bd_p);
-	if (lp->rx_skb)
-		kfree(lp->rx_skb);
-}
-
-/**
-=======
 	for (i = 0; i < lp->rx_bd_num; i++) {
 		if (!lp->rx_skb[i])
 			break;
@@ -478,93 +320,12 @@ static void temac_dma_bd_release(struct net_device *ndev)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * temac_dma_bd_init - Setup buffer descriptor rings
  */
 static int temac_dma_bd_init(struct net_device *ndev)
 {
 	struct temac_local *lp = netdev_priv(ndev);
 	struct sk_buff *skb;
-<<<<<<< HEAD
-	int i;
-
-	lp->rx_skb = kcalloc(RX_BD_NUM, sizeof(*lp->rx_skb), GFP_KERNEL);
-	if (!lp->rx_skb) {
-		dev_err(&ndev->dev,
-				"can't allocate memory for DMA RX buffer\n");
-		goto out;
-	}
-	/* allocate the tx and rx ring buffer descriptors. */
-	/* returns a virtual address and a physical address. */
-	lp->tx_bd_v = dma_alloc_coherent(ndev->dev.parent,
-					 sizeof(*lp->tx_bd_v) * TX_BD_NUM,
-					 &lp->tx_bd_p, GFP_KERNEL);
-	if (!lp->tx_bd_v) {
-		dev_err(&ndev->dev,
-				"unable to allocate DMA TX buffer descriptors");
-		goto out;
-	}
-	lp->rx_bd_v = dma_alloc_coherent(ndev->dev.parent,
-					 sizeof(*lp->rx_bd_v) * RX_BD_NUM,
-					 &lp->rx_bd_p, GFP_KERNEL);
-	if (!lp->rx_bd_v) {
-		dev_err(&ndev->dev,
-				"unable to allocate DMA RX buffer descriptors");
-		goto out;
-	}
-
-	memset(lp->tx_bd_v, 0, sizeof(*lp->tx_bd_v) * TX_BD_NUM);
-	for (i = 0; i < TX_BD_NUM; i++) {
-		lp->tx_bd_v[i].next = lp->tx_bd_p +
-				sizeof(*lp->tx_bd_v) * ((i + 1) % TX_BD_NUM);
-	}
-
-	memset(lp->rx_bd_v, 0, sizeof(*lp->rx_bd_v) * RX_BD_NUM);
-	for (i = 0; i < RX_BD_NUM; i++) {
-		lp->rx_bd_v[i].next = lp->rx_bd_p +
-				sizeof(*lp->rx_bd_v) * ((i + 1) % RX_BD_NUM);
-
-		skb = netdev_alloc_skb_ip_align(ndev,
-						XTE_MAX_JUMBO_FRAME_SIZE);
-
-		if (skb == 0) {
-			dev_err(&ndev->dev, "alloc_skb error %d\n", i);
-			goto out;
-		}
-		lp->rx_skb[i] = skb;
-		/* returns physical address of skb->data */
-		lp->rx_bd_v[i].phys = dma_map_single(ndev->dev.parent,
-						     skb->data,
-						     XTE_MAX_JUMBO_FRAME_SIZE,
-						     DMA_FROM_DEVICE);
-		lp->rx_bd_v[i].len = XTE_MAX_JUMBO_FRAME_SIZE;
-		lp->rx_bd_v[i].app0 = STS_CTRL_APP0_IRQONEND;
-	}
-
-	lp->dma_out(lp, TX_CHNL_CTRL, 0x10220400 |
-					  CHNL_CTRL_IRQ_EN |
-					  CHNL_CTRL_IRQ_DLY_EN |
-					  CHNL_CTRL_IRQ_COAL_EN);
-	/* 0x10220483 */
-	/* 0x00100483 */
-	lp->dma_out(lp, RX_CHNL_CTRL, 0xff070000 |
-					  CHNL_CTRL_IRQ_EN |
-					  CHNL_CTRL_IRQ_DLY_EN |
-					  CHNL_CTRL_IRQ_COAL_EN |
-					  CHNL_CTRL_IRQ_IOE);
-	/* 0xff010283 */
-
-	lp->dma_out(lp, RX_CURDESC_PTR,  lp->rx_bd_p);
-	lp->dma_out(lp, RX_TAILDESC_PTR,
-		       lp->rx_bd_p + (sizeof(*lp->rx_bd_v) * (RX_BD_NUM - 1)));
-	lp->dma_out(lp, TX_CURDESC_PTR, lp->tx_bd_p);
-
-	/* Init descriptor indexes */
-	lp->tx_bd_ci = 0;
-	lp->tx_bd_next = 0;
-	lp->tx_bd_tail = 0;
-	lp->rx_bd_ci = 0;
-=======
 	dma_addr_t skb_dma_addr;
 	int i;
 
@@ -640,7 +401,6 @@ static int temac_dma_bd_init(struct net_device *ndev)
 
 	/* Prepare for TX DMA transfer */
 	lp->dma_out(lp, TX_CURDESC_PTR, lp->tx_bd_p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -653,42 +413,6 @@ out:
  * net_device_ops
  */
 
-<<<<<<< HEAD
-static int temac_set_mac_address(struct net_device *ndev, void *address)
-{
-	struct temac_local *lp = netdev_priv(ndev);
-
-	if (address)
-		memcpy(ndev->dev_addr, address, ETH_ALEN);
-
-	if (!is_valid_ether_addr(ndev->dev_addr))
-		eth_hw_addr_random(ndev);
-	else
-		ndev->addr_assign_type &= ~NET_ADDR_RANDOM;
-
-	/* set up unicast MAC address filter set its mac address */
-	mutex_lock(&lp->indirect_mutex);
-	temac_indirect_out32(lp, XTE_UAW0_OFFSET,
-			     (ndev->dev_addr[0]) |
-			     (ndev->dev_addr[1] << 8) |
-			     (ndev->dev_addr[2] << 16) |
-			     (ndev->dev_addr[3] << 24));
-	/* There are reserved bits in EUAW1
-	 * so don't affect them Set MAC bits [47:32] in EUAW1 */
-	temac_indirect_out32(lp, XTE_UAW1_OFFSET,
-			     (ndev->dev_addr[4] & 0x000000ff) |
-			     (ndev->dev_addr[5] << 8));
-	mutex_unlock(&lp->indirect_mutex);
-
-	return 0;
-}
-
-static int netdev_set_mac_address(struct net_device *ndev, void *p)
-{
-	struct sockaddr *addr = p;
-
-	return temac_set_mac_address(ndev, addr->sa_data);
-=======
 static void temac_do_set_mac_address(struct net_device *ndev)
 {
 	struct temac_local *lp = netdev_priv(ndev);
@@ -728,35 +452,11 @@ static int temac_set_mac_address(struct net_device *ndev, void *p)
 	eth_hw_addr_set(ndev, addr->sa_data);
 	temac_do_set_mac_address(ndev);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void temac_set_multicast_list(struct net_device *ndev)
 {
 	struct temac_local *lp = netdev_priv(ndev);
-<<<<<<< HEAD
-	u32 multi_addr_msw, multi_addr_lsw, val;
-	int i;
-
-	mutex_lock(&lp->indirect_mutex);
-	if (ndev->flags & (IFF_ALLMULTI | IFF_PROMISC) ||
-	    netdev_mc_count(ndev) > MULTICAST_CAM_TABLE_NUM) {
-		/*
-		 *	We must make the kernel realise we had to move
-		 *	into promisc mode or we start all out war on
-		 *	the cable. If it was a promisc request the
-		 *	flag is already set. If not we assert it.
-		 */
-		ndev->flags |= IFF_PROMISC;
-		temac_indirect_out32(lp, XTE_AFM_OFFSET, XTE_AFM_EPPRM_MASK);
-		dev_info(&ndev->dev, "Promiscuous mode enabled.\n");
-	} else if (!netdev_mc_empty(ndev)) {
-		struct netdev_hw_addr *ha;
-
-		i = 0;
-		netdev_for_each_mc_addr(ha, ndev) {
-			if (i >= MULTICAST_CAM_TABLE_NUM)
-=======
 	u32 multi_addr_msw, multi_addr_lsw;
 	int i = 0;
 	unsigned long flags;
@@ -776,34 +476,11 @@ static void temac_set_multicast_list(struct net_device *ndev)
 
 		netdev_for_each_mc_addr(ha, ndev) {
 			if (WARN_ON(i >= MULTICAST_CAM_TABLE_NUM))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			multi_addr_msw = ((ha->addr[3] << 24) |
 					  (ha->addr[2] << 16) |
 					  (ha->addr[1] << 8) |
 					  (ha->addr[0]));
-<<<<<<< HEAD
-			temac_indirect_out32(lp, XTE_MAW0_OFFSET,
-					     multi_addr_msw);
-			multi_addr_lsw = ((ha->addr[5] << 8) |
-					  (ha->addr[4]) | (i << 16));
-			temac_indirect_out32(lp, XTE_MAW1_OFFSET,
-					     multi_addr_lsw);
-			i++;
-		}
-	} else {
-		val = temac_indirect_in32(lp, XTE_AFM_OFFSET);
-		temac_indirect_out32(lp, XTE_AFM_OFFSET,
-				     val & ~XTE_AFM_EPPRM_MASK);
-		temac_indirect_out32(lp, XTE_MAW0_OFFSET, 0);
-		temac_indirect_out32(lp, XTE_MAW1_OFFSET, 0);
-		dev_info(&ndev->dev, "Promiscuous mode disabled.\n");
-	}
-	mutex_unlock(&lp->indirect_mutex);
-}
-
-struct temac_option {
-=======
 			temac_indirect_out32_locked(lp, XTE_MAW0_OFFSET,
 						    multi_addr_msw);
 			multi_addr_lsw = ((ha->addr[5] << 8) |
@@ -835,7 +512,6 @@ struct temac_option {
 }
 
 static struct temac_option {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int flg;
 	u32 opt;
 	u32 reg;
@@ -851,119 +527,71 @@ static struct temac_option {
 	{
 		.opt = XTE_OPTION_JUMBO,
 		.reg = XTE_RXC1_OFFSET,
-<<<<<<< HEAD
-		.m_or =XTE_RXC1_RXJMBO_MASK,
-=======
 		.m_or = XTE_RXC1_RXJMBO_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* Turn on VLAN packet support for both Rx and Tx */
 	{
 		.opt = XTE_OPTION_VLAN,
 		.reg = XTE_TXC_OFFSET,
-<<<<<<< HEAD
-		.m_or =XTE_TXC_TXVLAN_MASK,
-=======
 		.m_or = XTE_TXC_TXVLAN_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.opt = XTE_OPTION_VLAN,
 		.reg = XTE_RXC1_OFFSET,
-<<<<<<< HEAD
-		.m_or =XTE_RXC1_RXVLAN_MASK,
-=======
 		.m_or = XTE_RXC1_RXVLAN_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* Turn on FCS stripping on receive packets */
 	{
 		.opt = XTE_OPTION_FCS_STRIP,
 		.reg = XTE_RXC1_OFFSET,
-<<<<<<< HEAD
-		.m_or =XTE_RXC1_RXFCS_MASK,
-=======
 		.m_or = XTE_RXC1_RXFCS_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* Turn on FCS insertion on transmit packets */
 	{
 		.opt = XTE_OPTION_FCS_INSERT,
 		.reg = XTE_TXC_OFFSET,
-<<<<<<< HEAD
-		.m_or =XTE_TXC_TXFCS_MASK,
-=======
 		.m_or = XTE_TXC_TXFCS_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* Turn on length/type field checking on receive packets */
 	{
 		.opt = XTE_OPTION_LENTYPE_ERR,
 		.reg = XTE_RXC1_OFFSET,
-<<<<<<< HEAD
-		.m_or =XTE_RXC1_RXLT_MASK,
-=======
 		.m_or = XTE_RXC1_RXLT_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* Turn on flow control */
 	{
 		.opt = XTE_OPTION_FLOW_CONTROL,
 		.reg = XTE_FCC_OFFSET,
-<<<<<<< HEAD
-		.m_or =XTE_FCC_RXFLO_MASK,
-=======
 		.m_or = XTE_FCC_RXFLO_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* Turn on flow control */
 	{
 		.opt = XTE_OPTION_FLOW_CONTROL,
 		.reg = XTE_FCC_OFFSET,
-<<<<<<< HEAD
-		.m_or =XTE_FCC_TXFLO_MASK,
-=======
 		.m_or = XTE_FCC_TXFLO_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* Turn on promiscuous frame filtering (all frames are received ) */
 	{
 		.opt = XTE_OPTION_PROMISC,
 		.reg = XTE_AFM_OFFSET,
-<<<<<<< HEAD
-		.m_or =XTE_AFM_EPPRM_MASK,
-=======
 		.m_or = XTE_AFM_EPPRM_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* Enable transmitter if not already enabled */
 	{
 		.opt = XTE_OPTION_TXEN,
 		.reg = XTE_TXC_OFFSET,
-<<<<<<< HEAD
-		.m_or =XTE_TXC_TXEN_MASK,
-=======
 		.m_or = XTE_TXC_TXEN_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* Enable receiver? */
 	{
 		.opt = XTE_OPTION_RXEN,
 		.reg = XTE_RXC1_OFFSET,
-<<<<<<< HEAD
-		.m_or =XTE_RXC1_RXEN_MASK,
-=======
 		.m_or = XTE_RXC1_RXEN_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{}
 };
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * temac_setoptions
  */
 static u32 temac_setoptions(struct net_device *ndev, u32 options)
@@ -971,19 +599,6 @@ static u32 temac_setoptions(struct net_device *ndev, u32 options)
 	struct temac_local *lp = netdev_priv(ndev);
 	struct temac_option *tp = &temac_options[0];
 	int reg;
-<<<<<<< HEAD
-
-	mutex_lock(&lp->indirect_mutex);
-	while (tp->opt) {
-		reg = temac_indirect_in32(lp, tp->reg) & ~tp->m_or;
-		if (options & tp->opt)
-			reg |= tp->m_or;
-		temac_indirect_out32(lp, tp->reg, reg);
-		tp++;
-	}
-	lp->options |= options;
-	mutex_unlock(&lp->indirect_mutex);
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(lp->indirect_lock, flags);
@@ -997,7 +612,6 @@ static u32 temac_setoptions(struct net_device *ndev, u32 options)
 	}
 	spin_unlock_irqrestore(lp->indirect_lock, flags);
 	lp->options |= options;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1008,10 +622,7 @@ static void temac_device_reset(struct net_device *ndev)
 	struct temac_local *lp = netdev_priv(ndev);
 	u32 timeout;
 	u32 val;
-<<<<<<< HEAD
-=======
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Perform a software reset */
 
@@ -1020,10 +631,6 @@ static void temac_device_reset(struct net_device *ndev)
 
 	dev_dbg(&ndev->dev, "%s()\n", __func__);
 
-<<<<<<< HEAD
-	mutex_lock(&lp->indirect_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Reset the receiver and wait for it to finish reset */
 	temac_indirect_out32(lp, XTE_RXC1_OFFSET, XTE_RXC1_RXRST_MASK);
 	timeout = 1000;
@@ -1031,11 +638,7 @@ static void temac_device_reset(struct net_device *ndev)
 		udelay(1);
 		if (--timeout == 0) {
 			dev_err(&ndev->dev,
-<<<<<<< HEAD
-				"temac_device_reset RX reset timeout!!\n");
-=======
 				"%s RX reset timeout!!\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -1047,26 +650,17 @@ static void temac_device_reset(struct net_device *ndev)
 		udelay(1);
 		if (--timeout == 0) {
 			dev_err(&ndev->dev,
-<<<<<<< HEAD
-				"temac_device_reset TX reset timeout!!\n");
-=======
 				"%s TX reset timeout!!\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
 	/* Disable the receiver */
-<<<<<<< HEAD
-	val = temac_indirect_in32(lp, XTE_RXC1_OFFSET);
-	temac_indirect_out32(lp, XTE_RXC1_OFFSET, val & ~XTE_RXC1_RXEN_MASK);
-=======
 	spin_lock_irqsave(lp->indirect_lock, flags);
 	val = temac_indirect_in32_locked(lp, XTE_RXC1_OFFSET);
 	temac_indirect_out32_locked(lp, XTE_RXC1_OFFSET,
 				    val & ~XTE_RXC1_RXEN_MASK);
 	spin_unlock_irqrestore(lp->indirect_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reset Local Link (DMA) */
 	lp->dma_out(lp, DMA_CONTROL_REG, DMA_CONTROL_RST);
@@ -1075,11 +669,7 @@ static void temac_device_reset(struct net_device *ndev)
 		udelay(1);
 		if (--timeout == 0) {
 			dev_err(&ndev->dev,
-<<<<<<< HEAD
-				"temac_device_reset DMA reset timeout!!\n");
-=======
 				"%s DMA reset timeout!!\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -1087,24 +677,6 @@ static void temac_device_reset(struct net_device *ndev)
 
 	if (temac_dma_bd_init(ndev)) {
 		dev_err(&ndev->dev,
-<<<<<<< HEAD
-				"temac_device_reset descriptor allocation failed\n");
-	}
-
-	temac_indirect_out32(lp, XTE_RXC0_OFFSET, 0);
-	temac_indirect_out32(lp, XTE_RXC1_OFFSET, 0);
-	temac_indirect_out32(lp, XTE_TXC_OFFSET, 0);
-	temac_indirect_out32(lp, XTE_FCC_OFFSET, XTE_FCC_RXFLO_MASK);
-
-	mutex_unlock(&lp->indirect_mutex);
-
-	/* Sync default options with HW
-	 * but leave receiver and transmitter disabled.  */
-	temac_setoptions(ndev,
-			 lp->options & ~(XTE_OPTION_TXEN | XTE_OPTION_RXEN));
-
-	temac_set_mac_address(ndev, NULL);
-=======
 			"%s descriptor allocation failed\n", __func__);
 	}
 
@@ -1122,7 +694,6 @@ static void temac_device_reset(struct net_device *ndev)
 			 lp->options & ~(XTE_OPTION_TXEN | XTE_OPTION_RXEN));
 
 	temac_do_set_mac_address(ndev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set address filter table */
 	temac_set_multicast_list(ndev);
@@ -1130,17 +701,6 @@ static void temac_device_reset(struct net_device *ndev)
 		dev_err(&ndev->dev, "Error setting TEMAC options\n");
 
 	/* Init Driver variable */
-<<<<<<< HEAD
-	ndev->trans_start = jiffies; /* prevent tx timeout */
-}
-
-void temac_adjust_link(struct net_device *ndev)
-{
-	struct temac_local *lp = netdev_priv(ndev);
-	struct phy_device *phy = lp->phy_dev;
-	u32 mii_speed;
-	int link_state;
-=======
 	netif_trans_update(ndev); /* prevent tx timeout */
 }
 
@@ -1151,32 +711,10 @@ static void temac_adjust_link(struct net_device *ndev)
 	u32 mii_speed;
 	int link_state;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* hash together the state values to decide if something has changed */
 	link_state = phy->speed | (phy->duplex << 1) | phy->link;
 
-<<<<<<< HEAD
-	mutex_lock(&lp->indirect_mutex);
-	if (lp->last_link != link_state) {
-		mii_speed = temac_indirect_in32(lp, XTE_EMCFG_OFFSET);
-		mii_speed &= ~XTE_EMCFG_LINKSPD_MASK;
-
-		switch (phy->speed) {
-		case SPEED_1000: mii_speed |= XTE_EMCFG_LINKSPD_1000; break;
-		case SPEED_100: mii_speed |= XTE_EMCFG_LINKSPD_100; break;
-		case SPEED_10: mii_speed |= XTE_EMCFG_LINKSPD_10; break;
-		}
-
-		/* Write new speed setting out to TEMAC */
-		temac_indirect_out32(lp, XTE_EMCFG_OFFSET, mii_speed);
-		lp->last_link = link_state;
-		phy_print_status(phy);
-	}
-	mutex_unlock(&lp->indirect_mutex);
-}
-
-=======
 	if (lp->last_link != link_state) {
 		spin_lock_irqsave(lp->indirect_lock, flags);
 		mii_speed = temac_indirect_in32_locked(lp, XTE_EMCFG_OFFSET);
@@ -1230,24 +768,11 @@ static void *ptr_from_txbd(struct cdmac_bd *bd)
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void temac_start_xmit_done(struct net_device *ndev)
 {
 	struct temac_local *lp = netdev_priv(ndev);
 	struct cdmac_bd *cur_p;
 	unsigned int stat = 0;
-<<<<<<< HEAD
-
-	cur_p = &lp->tx_bd_v[lp->tx_bd_ci];
-	stat = cur_p->app0;
-
-	while (stat & STS_CTRL_APP0_CMPLT) {
-		dma_unmap_single(ndev->dev.parent, cur_p->phys, cur_p->len,
-				 DMA_TO_DEVICE);
-		if (cur_p->app4)
-			dev_kfree_skb_irq((struct sk_buff *)cur_p->app4);
-		cur_p->app0 = 0;
-=======
 	struct sk_buff *skb;
 
 	cur_p = &lp->tx_bd_v[lp->tx_bd_ci];
@@ -1263,25 +788,12 @@ static void temac_start_xmit_done(struct net_device *ndev)
 		skb = (struct sk_buff *)ptr_from_txbd(cur_p);
 		if (skb)
 			dev_consume_skb_irq(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cur_p->app1 = 0;
 		cur_p->app2 = 0;
 		cur_p->app3 = 0;
 		cur_p->app4 = 0;
 
 		ndev->stats.tx_packets++;
-<<<<<<< HEAD
-		ndev->stats.tx_bytes += cur_p->len;
-
-		lp->tx_bd_ci++;
-		if (lp->tx_bd_ci >= TX_BD_NUM)
-			lp->tx_bd_ci = 0;
-
-		cur_p = &lp->tx_bd_v[lp->tx_bd_ci];
-		stat = cur_p->app0;
-	}
-
-=======
 		ndev->stats.tx_bytes += be32_to_cpu(cur_p->len);
 
 		/* app0 must be visible last, as it is used to flag
@@ -1301,7 +813,6 @@ static void temac_start_xmit_done(struct net_device *ndev)
 	/* Matches barrier in temac_start_xmit */
 	smp_mb();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue(ndev);
 }
 
@@ -1317,16 +828,11 @@ static inline int temac_check_tx_bd_space(struct temac_local *lp, int num_frag)
 		if (cur_p->app0)
 			return NETDEV_TX_BUSY;
 
-<<<<<<< HEAD
-		tail++;
-		if (tail >= TX_BD_NUM)
-=======
 		/* Make sure to read next bd app0 after this one */
 		rmb();
 
 		tail++;
 		if (tail >= lp->tx_bd_num)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tail = 0;
 
 		cur_p = &lp->tx_bd_v[tail];
@@ -1336,37 +842,18 @@ static inline int temac_check_tx_bd_space(struct temac_local *lp, int num_frag)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-{
-	struct temac_local *lp = netdev_priv(ndev);
-	struct cdmac_bd *cur_p;
-	dma_addr_t start_p, tail_p;
-=======
 static netdev_tx_t
 temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 {
 	struct temac_local *lp = netdev_priv(ndev);
 	struct cdmac_bd *cur_p;
 	dma_addr_t tail_p, skb_dma_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ii;
 	unsigned long num_frag;
 	skb_frag_t *frag;
 
 	num_frag = skb_shinfo(skb)->nr_frags;
 	frag = &skb_shinfo(skb)->frags[0];
-<<<<<<< HEAD
-	start_p = lp->tx_bd_p + sizeof(*lp->tx_bd_v) * lp->tx_bd_tail;
-	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
-
-	if (temac_check_tx_bd_space(lp, num_frag)) {
-		if (!netif_queue_stopped(ndev)) {
-			netif_stop_queue(ndev);
-			return NETDEV_TX_BUSY;
-		}
-		return NETDEV_TX_BUSY;
-=======
 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
 
 	if (temac_check_tx_bd_space(lp, num_frag + 1)) {
@@ -1383,7 +870,6 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 			return NETDEV_TX_BUSY;
 
 		netif_wake_queue(ndev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	cur_p->app0 = 0;
@@ -1391,37 +877,6 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 		unsigned int csum_start_off = skb_checksum_start_offset(skb);
 		unsigned int csum_index_off = csum_start_off + skb->csum_offset;
 
-<<<<<<< HEAD
-		cur_p->app0 |= 1; /* TX Checksum Enabled */
-		cur_p->app1 = (csum_start_off << 16) | csum_index_off;
-		cur_p->app2 = 0;  /* initial checksum seed */
-	}
-
-	cur_p->app0 |= STS_CTRL_APP0_SOP;
-	cur_p->len = skb_headlen(skb);
-	cur_p->phys = dma_map_single(ndev->dev.parent, skb->data, skb->len,
-				     DMA_TO_DEVICE);
-	cur_p->app4 = (unsigned long)skb;
-
-	for (ii = 0; ii < num_frag; ii++) {
-		lp->tx_bd_tail++;
-		if (lp->tx_bd_tail >= TX_BD_NUM)
-			lp->tx_bd_tail = 0;
-
-		cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
-		cur_p->phys = dma_map_single(ndev->dev.parent,
-					     skb_frag_address(frag),
-					     skb_frag_size(frag), DMA_TO_DEVICE);
-		cur_p->len = skb_frag_size(frag);
-		cur_p->app0 = 0;
-		frag++;
-	}
-	cur_p->app0 |= STS_CTRL_APP0_EOP;
-
-	tail_p = lp->tx_bd_p + sizeof(*lp->tx_bd_v) * lp->tx_bd_tail;
-	lp->tx_bd_tail++;
-	if (lp->tx_bd_tail >= TX_BD_NUM)
-=======
 		cur_p->app0 |= cpu_to_be32(0x000001); /* TX Checksum Enabled */
 		cur_p->app1 = cpu_to_be32((csum_start_off << 16)
 					  | csum_index_off);
@@ -1484,19 +939,11 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 	tail_p = lp->tx_bd_p + sizeof(*lp->tx_bd_v) * lp->tx_bd_tail;
 	lp->tx_bd_tail++;
 	if (lp->tx_bd_tail >= lp->tx_bd_num)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lp->tx_bd_tail = 0;
 
 	skb_tx_timestamp(skb);
 
 	/* Kick off the transfer */
-<<<<<<< HEAD
-	lp->dma_out(lp, TX_TAILDESC_PTR, tail_p); /* DMA start */
-
-	return NETDEV_TX_OK;
-}
-
-=======
 	wmb();
 	lp->dma_out(lp, TX_TAILDESC_PTR, tail_p); /* DMA start */
 
@@ -1517,36 +964,10 @@ static int ll_temac_recv_buffers_available(struct temac_local *lp)
 		available += lp->rx_bd_num;
 	return available;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ll_temac_recv(struct net_device *ndev)
 {
 	struct temac_local *lp = netdev_priv(ndev);
-<<<<<<< HEAD
-	struct sk_buff *skb, *new_skb;
-	unsigned int bdstat;
-	struct cdmac_bd *cur_p;
-	dma_addr_t tail_p;
-	int length;
-	unsigned long flags;
-
-	spin_lock_irqsave(&lp->rx_lock, flags);
-
-	tail_p = lp->rx_bd_p + sizeof(*lp->rx_bd_v) * lp->rx_bd_ci;
-	cur_p = &lp->rx_bd_v[lp->rx_bd_ci];
-
-	bdstat = cur_p->app0;
-	while ((bdstat & STS_CTRL_APP0_CMPLT)) {
-
-		skb = lp->rx_skb[lp->rx_bd_ci];
-		length = cur_p->app4 & 0x3FFF;
-
-		dma_unmap_single(ndev->dev.parent, cur_p->phys, length,
-				 DMA_FROM_DEVICE);
-
-		skb_put(skb, length);
-		skb->dev = ndev;
-=======
 	unsigned long flags;
 	int rx_bd;
 	bool update_tail = false;
@@ -1583,18 +1004,11 @@ static void ll_temac_recv(struct net_device *ndev)
 
 		length = be32_to_cpu(bd->app4) & 0x3FFF;
 		skb_put(skb, length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb->protocol = eth_type_trans(skb, ndev);
 		skb_checksum_none_assert(skb);
 
 		/* if we're doing rx csum offload, set it up */
 		if (((lp->temac_features & TEMAC_FEATURE_RX_CSUM) != 0) &&
-<<<<<<< HEAD
-			(skb->protocol == __constant_htons(ETH_P_IP)) &&
-			(skb->len > 64)) {
-
-			skb->csum = cur_p->app3 & 0xFFFF;
-=======
 		    (skb->protocol == htons(ETH_P_IP)) &&
 		    (skb->len > 64)) {
 			/* Convert from device endianness (be32) to cpu
@@ -1603,47 +1017,17 @@ static void ll_temac_recv(struct net_device *ndev)
 			 * (be16).
 			 */
 			skb->csum = htons(be32_to_cpu(bd->app3) & 0xFFFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb->ip_summed = CHECKSUM_COMPLETE;
 		}
 
 		if (!skb_defer_rx_timestamp(skb))
 			netif_rx(skb);
-<<<<<<< HEAD
-=======
 		/* The skb buffer is now owned by network stack above */
 		lp->rx_skb[lp->rx_bd_ci] = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ndev->stats.rx_packets++;
 		ndev->stats.rx_bytes += length;
 
-<<<<<<< HEAD
-		new_skb = netdev_alloc_skb_ip_align(ndev,
-						XTE_MAX_JUMBO_FRAME_SIZE);
-
-		if (new_skb == 0) {
-			dev_err(&ndev->dev, "no memory for new sk_buff\n");
-			spin_unlock_irqrestore(&lp->rx_lock, flags);
-			return;
-		}
-
-		cur_p->app0 = STS_CTRL_APP0_IRQONEND;
-		cur_p->phys = dma_map_single(ndev->dev.parent, new_skb->data,
-					     XTE_MAX_JUMBO_FRAME_SIZE,
-					     DMA_FROM_DEVICE);
-		cur_p->len = XTE_MAX_JUMBO_FRAME_SIZE;
-		lp->rx_skb[lp->rx_bd_ci] = new_skb;
-
-		lp->rx_bd_ci++;
-		if (lp->rx_bd_ci >= RX_BD_NUM)
-			lp->rx_bd_ci = 0;
-
-		cur_p = &lp->rx_bd_v[lp->rx_bd_ci];
-		bdstat = cur_p->app0;
-	}
-	lp->dma_out(lp, RX_TAILDESC_PTR, tail_p);
-=======
 		rx_bd = lp->rx_bd_ci;
 		if (++lp->rx_bd_ci >= lp->rx_bd_num)
 			lp->rx_bd_ci = 0;
@@ -1712,13 +1096,10 @@ static void ll_temac_recv(struct net_device *ndev)
 		lp->dma_out(lp, RX_TAILDESC_PTR,
 			lp->rx_bd_p + sizeof(*lp->rx_bd_v) * lp->rx_bd_tail);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&lp->rx_lock, flags);
 }
 
-<<<<<<< HEAD
-=======
 /* Function scheduled to ensure a restart in case of DMA halt
  * condition caused by running out of buffer descriptors.
  */
@@ -1731,7 +1112,6 @@ static void ll_temac_restart_work_func(struct work_struct *work)
 	ll_temac_recv(ndev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t ll_temac_tx_irq(int irq, void *_ndev)
 {
 	struct net_device *ndev = _ndev;
@@ -1743,15 +1123,10 @@ static irqreturn_t ll_temac_tx_irq(int irq, void *_ndev)
 
 	if (status & (IRQ_COAL | IRQ_DLY))
 		temac_start_xmit_done(lp->ndev);
-<<<<<<< HEAD
-	if (status & 0x080)
-		dev_err(&ndev->dev, "DMA error 0x%x\n", status);
-=======
 	if (status & (IRQ_ERR | IRQ_DMAERR))
 		dev_err_ratelimited(&ndev->dev,
 				    "TX error 0x%x TX_CHNL_STS=0x%08x\n",
 				    status, lp->dma_in(lp, TX_CHNL_STS));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -1768,13 +1143,10 @@ static irqreturn_t ll_temac_rx_irq(int irq, void *_ndev)
 
 	if (status & (IRQ_COAL | IRQ_DLY))
 		ll_temac_recv(lp->ndev);
-<<<<<<< HEAD
-=======
 	if (status & (IRQ_ERR | IRQ_DMAERR))
 		dev_err_ratelimited(&ndev->dev,
 				    "RX error 0x%x RX_CHNL_STS=0x%08x\n",
 				    status, lp->dma_in(lp, RX_CHNL_STS));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -1782,25 +1154,12 @@ static irqreturn_t ll_temac_rx_irq(int irq, void *_ndev)
 static int temac_open(struct net_device *ndev)
 {
 	struct temac_local *lp = netdev_priv(ndev);
-<<<<<<< HEAD
-=======
 	struct phy_device *phydev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	dev_dbg(&ndev->dev, "temac_open()\n");
 
 	if (lp->phy_node) {
-<<<<<<< HEAD
-		lp->phy_dev = of_phy_connect(lp->ndev, lp->phy_node,
-					     temac_adjust_link, 0, 0);
-		if (!lp->phy_dev) {
-			dev_err(lp->dev, "of_phy_connect() failed\n");
-			return -ENODEV;
-		}
-
-		phy_start(lp->phy_dev);
-=======
 		phydev = of_phy_connect(lp->ndev, lp->phy_node,
 					temac_adjust_link, 0, 0);
 		if (!phydev) {
@@ -1816,7 +1175,6 @@ static int temac_open(struct net_device *ndev)
 			return PTR_ERR(phydev);
 		}
 		phy_start(phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	temac_device_reset(ndev);
@@ -1833,14 +1191,8 @@ static int temac_open(struct net_device *ndev)
  err_rx_irq:
 	free_irq(lp->tx_irq, ndev);
  err_tx_irq:
-<<<<<<< HEAD
-	if (lp->phy_dev)
-		phy_disconnect(lp->phy_dev);
-	lp->phy_dev = NULL;
-=======
 	if (phydev)
 		phy_disconnect(phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_err(lp->dev, "request_irq() failed\n");
 	return rc;
 }
@@ -1848,17 +1200,6 @@ static int temac_open(struct net_device *ndev)
 static int temac_stop(struct net_device *ndev)
 {
 	struct temac_local *lp = netdev_priv(ndev);
-<<<<<<< HEAD
-
-	dev_dbg(&ndev->dev, "temac_close()\n");
-
-	free_irq(lp->tx_irq, ndev);
-	free_irq(lp->rx_irq, ndev);
-
-	if (lp->phy_dev)
-		phy_disconnect(lp->phy_dev);
-	lp->phy_dev = NULL;
-=======
 	struct phy_device *phydev = ndev->phydev;
 
 	dev_dbg(&ndev->dev, "temac_close()\n");
@@ -1870,7 +1211,6 @@ static int temac_stop(struct net_device *ndev)
 
 	if (phydev)
 		phy_disconnect(phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	temac_dma_bd_release(ndev);
 
@@ -1894,36 +1234,14 @@ temac_poll_controller(struct net_device *ndev)
 }
 #endif
 
-<<<<<<< HEAD
-static int temac_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
-{
-	struct temac_local *lp = netdev_priv(ndev);
-
-	if (!netif_running(ndev))
-		return -EINVAL;
-
-	if (!lp->phy_dev)
-		return -EINVAL;
-
-	return phy_mii_ioctl(lp->phy_dev, rq, cmd);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops temac_netdev_ops = {
 	.ndo_open = temac_open,
 	.ndo_stop = temac_stop,
 	.ndo_start_xmit = temac_start_xmit,
-<<<<<<< HEAD
-	.ndo_set_mac_address = netdev_set_mac_address,
-	.ndo_validate_addr = eth_validate_addr,
-	.ndo_do_ioctl = temac_ioctl,
-=======
 	.ndo_set_rx_mode = temac_set_multicast_list,
 	.ndo_set_mac_address = temac_set_mac_address,
 	.ndo_validate_addr = eth_validate_addr,
 	.ndo_eth_ioctl = phy_do_ioctl_running,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller = temac_poll_controller,
 #endif
@@ -1958,52 +1276,6 @@ static const struct attribute_group temac_attr_group = {
 	.attrs = temac_device_attrs,
 };
 
-<<<<<<< HEAD
-/* ethtool support */
-static int temac_get_settings(struct net_device *ndev, struct ethtool_cmd *cmd)
-{
-	struct temac_local *lp = netdev_priv(ndev);
-	return phy_ethtool_gset(lp->phy_dev, cmd);
-}
-
-static int temac_set_settings(struct net_device *ndev, struct ethtool_cmd *cmd)
-{
-	struct temac_local *lp = netdev_priv(ndev);
-	return phy_ethtool_sset(lp->phy_dev, cmd);
-}
-
-static int temac_nway_reset(struct net_device *ndev)
-{
-	struct temac_local *lp = netdev_priv(ndev);
-	return phy_start_aneg(lp->phy_dev);
-}
-
-static const struct ethtool_ops temac_ethtool_ops = {
-	.get_settings = temac_get_settings,
-	.set_settings = temac_set_settings,
-	.nway_reset = temac_nway_reset,
-	.get_link = ethtool_op_get_link,
-};
-
-static int __devinit temac_of_probe(struct platform_device *op)
-{
-	struct device_node *np;
-	struct temac_local *lp;
-	struct net_device *ndev;
-	const void *addr;
-	__be32 *p;
-	int size, rc = 0;
-
-	/* Init network device structure */
-	ndev = alloc_etherdev(sizeof(*lp));
-	if (!ndev)
-		return -ENOMEM;
-
-	ether_setup(ndev);
-	dev_set_drvdata(&op->dev, ndev);
-	SET_NETDEV_DEV(ndev, &op->dev);
-	ndev->flags &= ~IFF_MULTICAST;  /* clear multicast */
-=======
 /* ---------------------------------------------------------------------
  * ethtool support
  */
@@ -2126,7 +1398,6 @@ static int temac_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, ndev);
 	SET_NETDEV_DEV(ndev, &pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ndev->features = NETIF_F_SG;
 	ndev->netdev_ops = &temac_netdev_ops;
 	ndev->ethtool_ops = &temac_ethtool_ops;
@@ -2135,15 +1406,9 @@ static int temac_probe(struct platform_device *pdev)
 	ndev->features |= NETIF_F_HW_CSUM; /* Can checksum all the packets. */
 	ndev->features |= NETIF_F_IPV6_CSUM; /* Can checksum IPV6 TCP/UDP */
 	ndev->features |= NETIF_F_HIGHDMA; /* Can DMA to high memory. */
-<<<<<<< HEAD
-	ndev->features |= NETIF_F_HW_VLAN_TX; /* Transmit VLAN hw accel */
-	ndev->features |= NETIF_F_HW_VLAN_RX; /* Receive VLAN hw acceleration */
-	ndev->features |= NETIF_F_HW_VLAN_FILTER; /* Receive VLAN filtering */
-=======
 	ndev->features |= NETIF_F_HW_VLAN_CTAG_TX; /* Transmit VLAN hw accel */
 	ndev->features |= NETIF_F_HW_VLAN_CTAG_RX; /* Receive VLAN hw acceleration */
 	ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER; /* Receive VLAN filtering */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ndev->features |= NETIF_F_VLAN_CHALLENGED; /* cannot handle VLAN pkts */
 	ndev->features |= NETIF_F_GSO; /* Enable software GSO. */
 	ndev->features |= NETIF_F_MULTI_QUEUE; /* Has multiple TX/RX queues */
@@ -2153,18 +1418,6 @@ static int temac_probe(struct platform_device *pdev)
 	/* setup temac private info structure */
 	lp = netdev_priv(ndev);
 	lp->ndev = ndev;
-<<<<<<< HEAD
-	lp->dev = &op->dev;
-	lp->options = XTE_OPTION_DEFAULTS;
-	spin_lock_init(&lp->rx_lock);
-	mutex_init(&lp->indirect_mutex);
-
-	/* map device registers */
-	lp->regs = of_iomap(op->dev.of_node, 0);
-	if (!lp->regs) {
-		dev_err(&op->dev, "could not map temac regs.\n");
-		goto nodev;
-=======
 	lp->dev = &pdev->dev;
 	lp->options = XTE_OPTION_DEFAULTS;
 	lp->rx_bd_num = RX_BD_NUM_DEFAULT;
@@ -2211,74 +1464,10 @@ static int temac_probe(struct platform_device *pdev)
 	} else {
 		lp->temac_ior = _temac_ior_be;
 		lp->temac_iow = _temac_iow_be;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Setup checksum offload, but default to off if not specified */
 	lp->temac_features = 0;
-<<<<<<< HEAD
-	p = (__be32 *)of_get_property(op->dev.of_node, "xlnx,txcsum", NULL);
-	if (p && be32_to_cpu(*p)) {
-		lp->temac_features |= TEMAC_FEATURE_TX_CSUM;
-		/* Can checksum TCP/UDP over IPv4. */
-		ndev->features |= NETIF_F_IP_CSUM;
-	}
-	p = (__be32 *)of_get_property(op->dev.of_node, "xlnx,rxcsum", NULL);
-	if (p && be32_to_cpu(*p))
-		lp->temac_features |= TEMAC_FEATURE_RX_CSUM;
-
-	/* Find the DMA node, map the DMA registers, and decode the DMA IRQs */
-	np = of_parse_phandle(op->dev.of_node, "llink-connected", 0);
-	if (!np) {
-		dev_err(&op->dev, "could not find DMA node\n");
-		goto err_iounmap;
-	}
-
-	/* Setup the DMA register accesses, could be DCR or memory mapped */
-	if (temac_dcr_setup(lp, op, np)) {
-
-		/* no DCR in the device tree, try non-DCR */
-		lp->sdma_regs = of_iomap(np, 0);
-		if (lp->sdma_regs) {
-			lp->dma_in = temac_dma_in32;
-			lp->dma_out = temac_dma_out32;
-			dev_dbg(&op->dev, "MEM base: %p\n", lp->sdma_regs);
-		} else {
-			dev_err(&op->dev, "unable to map DMA registers\n");
-			of_node_put(np);
-			goto err_iounmap;
-		}
-	}
-
-	lp->rx_irq = irq_of_parse_and_map(np, 0);
-	lp->tx_irq = irq_of_parse_and_map(np, 1);
-
-	of_node_put(np); /* Finished with the DMA node; drop the reference */
-
-	if (!lp->rx_irq || !lp->tx_irq) {
-		dev_err(&op->dev, "could not determine irqs\n");
-		rc = -ENOMEM;
-		goto err_iounmap_2;
-	}
-
-
-	/* Retrieve the MAC address */
-	addr = of_get_property(op->dev.of_node, "local-mac-address", &size);
-	if ((!addr) || (size != 6)) {
-		dev_err(&op->dev, "could not find MAC address\n");
-		rc = -ENODEV;
-		goto err_iounmap_2;
-	}
-	temac_set_mac_address(ndev, (void *)addr);
-
-	rc = temac_mdio_setup(lp, op->dev.of_node);
-	if (rc)
-		dev_warn(&op->dev, "error registering MDIO bus\n");
-
-	lp->phy_node = of_parse_phandle(op->dev.of_node, "phy-handle", 0);
-	if (lp->phy_node)
-		dev_dbg(lp->dev, "using PHY node %s (%p)\n", np->full_name, np);
-=======
 	if (temac_np) {
 		p = (__be32 *)of_get_property(temac_np, "xlnx,txcsum", NULL);
 		if (p && be32_to_cpu(*p))
@@ -2412,17 +1601,12 @@ static int temac_probe(struct platform_device *pdev)
 			 PHY_ID_FMT, lp->mii_bus->id, pdata->phy_addr);
 		lp->phy_interface = pdata->phy_interface;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Add the device attributes */
 	rc = sysfs_create_group(&lp->dev->kobj, &temac_attr_group);
 	if (rc) {
 		dev_err(lp->dev, "Error creating sysfs files\n");
-<<<<<<< HEAD
-		goto err_iounmap_2;
-=======
 		goto err_sysfs_create;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rc = register_netdev(lp->ndev);
@@ -2433,27 +1617,6 @@ static int temac_probe(struct platform_device *pdev)
 
 	return 0;
 
-<<<<<<< HEAD
- err_register_ndev:
-	sysfs_remove_group(&lp->dev->kobj, &temac_attr_group);
- err_iounmap_2:
-	if (lp->sdma_regs)
-		iounmap(lp->sdma_regs);
- err_iounmap:
-	iounmap(lp->regs);
- nodev:
-	free_netdev(ndev);
-	ndev = NULL;
-	return rc;
-}
-
-static int __devexit temac_of_remove(struct platform_device *op)
-{
-	struct net_device *ndev = dev_get_drvdata(&op->dev);
-	struct temac_local *lp = netdev_priv(ndev);
-
-	temac_mdio_teardown(lp);
-=======
 err_register_ndev:
 	sysfs_remove_group(&lp->dev->kobj, &temac_attr_group);
 err_sysfs_create:
@@ -2468,28 +1631,14 @@ static void temac_remove(struct platform_device *pdev)
 	struct net_device *ndev = platform_get_drvdata(pdev);
 	struct temac_local *lp = netdev_priv(ndev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_netdev(ndev);
 	sysfs_remove_group(&lp->dev->kobj, &temac_attr_group);
 	if (lp->phy_node)
 		of_node_put(lp->phy_node);
-<<<<<<< HEAD
-	lp->phy_node = NULL;
-	dev_set_drvdata(&op->dev, NULL);
-	iounmap(lp->regs);
-	if (lp->sdma_regs)
-		iounmap(lp->sdma_regs);
-	free_netdev(ndev);
-	return 0;
-}
-
-static struct of_device_id temac_of_match[] __devinitdata = {
-=======
 	temac_mdio_teardown(lp);
 }
 
 static const struct of_device_id temac_of_match[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "xlnx,xps-ll-temac-1.01.b", },
 	{ .compatible = "xlnx,xps-ll-temac-2.00.a", },
 	{ .compatible = "xlnx,xps-ll-temac-2.02.a", },
@@ -2498,28 +1647,16 @@ static const struct of_device_id temac_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, temac_of_match);
 
-<<<<<<< HEAD
-static struct platform_driver temac_of_driver = {
-	.probe = temac_of_probe,
-	.remove = __devexit_p(temac_of_remove),
-	.driver = {
-		.owner = THIS_MODULE,
-=======
 static struct platform_driver temac_driver = {
 	.probe = temac_probe,
 	.remove_new = temac_remove,
 	.driver = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name = "xilinx_temac",
 		.of_match_table = temac_of_match,
 	},
 };
 
-<<<<<<< HEAD
-module_platform_driver(temac_of_driver);
-=======
 module_platform_driver(temac_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Xilinx LL_TEMAC Ethernet driver");
 MODULE_AUTHOR("Yoshio Kashiwagi");

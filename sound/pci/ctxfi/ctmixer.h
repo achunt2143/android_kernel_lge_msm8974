@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/**
- * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
- *
- * This source file is released under GPL v2 license (no other versions).
- * See the COPYING file included in the main directory of this source
- * distribution for the license terms and conditions.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	ctmixer.h
  *
  * @Brief
@@ -19,10 +9,6 @@
  *
  * @Author	Liu Chun
  * @Date 	Mar 28 2008
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef CTMIXER_H
@@ -66,11 +52,7 @@ struct ct_mixer {
 			      enum MIXER_PORT_T type, struct rsc *rsc);
 	int (*set_input_right)(struct ct_mixer *mixer,
 			       enum MIXER_PORT_T type, struct rsc *rsc);
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*resume)(struct ct_mixer *mixer);
 #endif
 };

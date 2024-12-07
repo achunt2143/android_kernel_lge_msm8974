@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * PMC-Sierra SPC 8001 SAS/SATA based host adapters driver
-=======
  * PMC-Sierra 8001/8081/8088/8089 SAS/SATA based host adapters driver
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (c) 2008-2009 USI Co., Ltd.
  * All rights reserved.
@@ -47,11 +43,6 @@
 
 enum chip_flavors {
 	chip_8001,
-<<<<<<< HEAD
-};
-#define USI_MAX_MEMCNT			9
-#define PM8001_MAX_DMA_SG		SG_ALL
-=======
 	chip_8008,
 	chip_8009,
 	chip_8018,
@@ -64,15 +55,11 @@ enum chip_flavors {
 	chip_8072
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum phy_speed {
 	PHY_SPEED_15 = 0x01,
 	PHY_SPEED_30 = 0x02,
 	PHY_SPEED_60 = 0x04,
-<<<<<<< HEAD
-=======
 	PHY_SPEED_120 = 0x08,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum data_direction {
@@ -88,17 +75,6 @@ enum port_type {
 };
 
 /* driver compile-time configuration */
-<<<<<<< HEAD
-#define	PM8001_MAX_CCB		 512	/* max ccbs supported */
-#define	PM8001_MAX_INB_NUM	 1
-#define	PM8001_MAX_OUTB_NUM	 1
-#define	PM8001_CAN_QUEUE	 128	/* SCSI Queue depth */
-
-/* unchangeable hardware details */
-#define	PM8001_MAX_PHYS		 8	/* max. possible phys */
-#define	PM8001_MAX_PORTS	 8	/* max. possible ports */
-#define	PM8001_MAX_DEVICES	 1024	/* max supported device */
-=======
 #define	PM8001_MAX_CCB		 1024	/* max ccbs supported */
 #define PM8001_MPI_QUEUE         1024   /* maximum mpi queue entries */
 #define	PM8001_MAX_INB_NUM	 64
@@ -118,23 +94,10 @@ enum port_type {
 
 #define	CONFIG_SCSI_PM8001_MAX_DMA_SG	528
 #define PM8001_MAX_DMA_SG	CONFIG_SCSI_PM8001_MAX_DMA_SG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum memory_region_num {
 	AAP1 = 0x0, /* application acceleration processor */
 	IOP,	    /* IO processor */
-<<<<<<< HEAD
-	CI,	    /* consumer index */
-	PI,	    /* producer index */
-	IB,	    /* inbound queue */
-	OB,	    /* outbound queue */
-	NVMD,	    /* NVM device */
-	DEV_MEM,    /* memory for devices */
-	CCB_MEM,    /* memory for command control block */
-};
-#define	PM8001_EVENT_LOG_SIZE	 (128 * 1024)
-
-=======
 	NVMD,	    /* NVM device */
 	FW_FLASH,    /* memory for fw flash update */
 	FORENSIC_MEM,  /* memory for fw forensic data */
@@ -148,7 +111,6 @@ enum memory_region_num {
  */
 #define USI_MAX_MEMCNT	(USI_MAX_MEMCNT_BASE + ((2 * PM8001_MAX_INB_NUM) \
 			+ (2 * PM8001_MAX_OUTB_NUM)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*error code*/
 enum mpi_err {
 	MPI_IO_STATUS_SUCCESS = 0x0,
@@ -170,8 +132,6 @@ enum pm8001_hba_info_flags {
 	PM8001F_RUN_TIME	= (1U << 1),
 };
 
-<<<<<<< HEAD
-=======
 /**
  * Phy Status
  */
@@ -180,5 +140,4 @@ enum pm8001_hba_info_flags {
 #define PHY_STATE_LINK_UP_SPCV	0x2
 #define PHY_STATE_LINK_UP_SPC	0x1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

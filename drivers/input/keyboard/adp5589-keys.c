@@ -1,42 +1,24 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Description:  keypad driver for ADP5589, ADP5585
  *		 I2C QWERTY Keypad and IO Expander
  * Bugs: Enter bugs at http://blackfin.uclinux.org/
  *
  * Copyright (C) 2010-2011 Analog Devices Inc.
-<<<<<<< HEAD
- * Licensed under the GPL-2.
- */
-
-#include <linux/module.h>
-#include <linux/init.h>
-=======
  */
 
 #include <linux/bitops.h>
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/workqueue.h>
 #include <linux/errno.h>
 #include <linux/pm.h>
-<<<<<<< HEAD
-#include <linux/platform_device.h>
-#include <linux/input.h>
-#include <linux/i2c.h>
-#include <linux/gpio.h>
-=======
 #include <linux/pm_wakeirq.h>
 #include <linux/platform_device.h>
 #include <linux/input.h>
 #include <linux/i2c.h>
 #include <linux/gpio/driver.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #include <linux/input/adp5589.h>
@@ -173,43 +155,6 @@
 #define ADP5589_5_MAN_ID		0x02
 
 /* GENERAL_CFG Register */
-<<<<<<< HEAD
-#define OSC_EN		(1 << 7)
-#define CORE_CLK(x)	(((x) & 0x3) << 5)
-#define LCK_TRK_LOGIC	(1 << 4)	/* ADP5589 only */
-#define LCK_TRK_GPI	(1 << 3)	/* ADP5589 only */
-#define INT_CFG		(1 << 1)
-#define RST_CFG		(1 << 0)
-
-/* INT_EN Register */
-#define LOGIC2_IEN	(1 << 5)	/* ADP5589 only */
-#define LOGIC1_IEN	(1 << 4)
-#define LOCK_IEN	(1 << 3)	/* ADP5589 only */
-#define OVRFLOW_IEN	(1 << 2)
-#define GPI_IEN		(1 << 1)
-#define EVENT_IEN	(1 << 0)
-
-/* Interrupt Status Register */
-#define LOGIC2_INT	(1 << 5)	/* ADP5589 only */
-#define LOGIC1_INT	(1 << 4)
-#define LOCK_INT	(1 << 3)	/* ADP5589 only */
-#define OVRFLOW_INT	(1 << 2)
-#define GPI_INT		(1 << 1)
-#define EVENT_INT	(1 << 0)
-
-/* STATUS Register */
-#define LOGIC2_STAT	(1 << 7)	/* ADP5589 only */
-#define LOGIC1_STAT	(1 << 6)
-#define LOCK_STAT	(1 << 5)	/* ADP5589 only */
-#define KEC		0xF
-
-/* PIN_CONFIG_D Register */
-#define C4_EXTEND_CFG	(1 << 6)	/* RESET2 */
-#define R4_EXTEND_CFG	(1 << 5)	/* RESET1 */
-
-/* LOCK_CFG */
-#define LOCK_EN		(1 << 0)
-=======
 #define OSC_EN		BIT(7)
 #define CORE_CLK(x)	(((x) & 0x3) << 5)
 #define LCK_TRK_LOGIC	BIT(4)		/* ADP5589 only */
@@ -245,19 +190,13 @@
 
 /* LOCK_CFG */
 #define LOCK_EN		BIT(0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PTIME_MASK	0x3
 #define LTIME_MASK	0x3		/* ADP5589 only */
 
 /* Key Event Register xy */
-<<<<<<< HEAD
-#define KEY_EV_PRESSED		(1 << 7)
-#define KEY_EV_MASK		(0x7F)
-=======
 #define KEY_EV_PRESSED	BIT(7)
 #define KEY_EV_MASK	0x7F
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KEYP_MAX_EVENT		16
 #define ADP5589_MAXGPIO		19
@@ -298,16 +237,9 @@ struct adp5589_kpad {
 	unsigned short gpimapsize;
 	unsigned extend_cfg;
 	bool is_adp5585;
-<<<<<<< HEAD
-	bool adp5585_support_row5;
-#ifdef CONFIG_GPIOLIB
-	unsigned char gpiomap[ADP5589_MAXGPIO];
-	bool export_gpio;
-=======
 	bool support_row5;
 #ifdef CONFIG_GPIOLIB
 	unsigned char gpiomap[ADP5589_MAXGPIO];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gpio_chip gc;
 	struct mutex gpio_lock;	/* Protect cached dir, dat_out */
 	u8 dat_out[3];
@@ -456,11 +388,7 @@ static int adp5589_write(struct i2c_client *client, u8 reg, u8 val)
 #ifdef CONFIG_GPIOLIB
 static int adp5589_gpio_get_value(struct gpio_chip *chip, unsigned off)
 {
-<<<<<<< HEAD
-	struct adp5589_kpad *kpad = container_of(chip, struct adp5589_kpad, gc);
-=======
 	struct adp5589_kpad *kpad = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int bank = kpad->var->bank(kpad->gpiomap[off]);
 	unsigned int bit = kpad->var->bit(kpad->gpiomap[off]);
 
@@ -472,11 +400,7 @@ static int adp5589_gpio_get_value(struct gpio_chip *chip, unsigned off)
 static void adp5589_gpio_set_value(struct gpio_chip *chip,
 				   unsigned off, int val)
 {
-<<<<<<< HEAD
-	struct adp5589_kpad *kpad = container_of(chip, struct adp5589_kpad, gc);
-=======
 	struct adp5589_kpad *kpad = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int bank = kpad->var->bank(kpad->gpiomap[off]);
 	unsigned int bit = kpad->var->bit(kpad->gpiomap[off]);
 
@@ -495,11 +419,7 @@ static void adp5589_gpio_set_value(struct gpio_chip *chip,
 
 static int adp5589_gpio_direction_input(struct gpio_chip *chip, unsigned off)
 {
-<<<<<<< HEAD
-	struct adp5589_kpad *kpad = container_of(chip, struct adp5589_kpad, gc);
-=======
 	struct adp5589_kpad *kpad = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int bank = kpad->var->bank(kpad->gpiomap[off]);
 	unsigned int bit = kpad->var->bit(kpad->gpiomap[off]);
 	int ret;
@@ -519,11 +439,7 @@ static int adp5589_gpio_direction_input(struct gpio_chip *chip, unsigned off)
 static int adp5589_gpio_direction_output(struct gpio_chip *chip,
 					 unsigned off, int val)
 {
-<<<<<<< HEAD
-	struct adp5589_kpad *kpad = container_of(chip, struct adp5589_kpad, gc);
-=======
 	struct adp5589_kpad *kpad = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int bank = kpad->var->bank(kpad->gpiomap[off]);
 	unsigned int bit = kpad->var->bit(kpad->gpiomap[off]);
 	int ret;
@@ -548,11 +464,7 @@ static int adp5589_gpio_direction_output(struct gpio_chip *chip,
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devinit adp5589_build_gpiomap(struct adp5589_kpad *kpad,
-=======
 static int adp5589_build_gpiomap(struct adp5589_kpad *kpad,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				const struct adp5589_kpad_platform_data *pdata)
 {
 	bool pin_used[ADP5589_MAXGPIO];
@@ -562,11 +474,7 @@ static int adp5589_build_gpiomap(struct adp5589_kpad *kpad,
 	memset(pin_used, false, sizeof(pin_used));
 
 	for (i = 0; i < kpad->var->maxgpio; i++)
-<<<<<<< HEAD
-		if (pdata->keypad_en_mask & (1 << i))
-=======
 		if (pdata->keypad_en_mask & BIT(i))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pin_used[i] = true;
 
 	for (i = 0; i < kpad->gpimapsize; i++)
@@ -578,11 +486,7 @@ static int adp5589_build_gpiomap(struct adp5589_kpad *kpad,
 	if (kpad->extend_cfg & C4_EXTEND_CFG)
 		pin_used[kpad->var->c4_extend_cfg] = true;
 
-<<<<<<< HEAD
-	if (!kpad->adp5585_support_row5)
-=======
 	if (!kpad->support_row5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pin_used[5] = true;
 
 	for (i = 0; i < kpad->var->maxgpio; i++)
@@ -592,38 +496,23 @@ static int adp5589_build_gpiomap(struct adp5589_kpad *kpad,
 	return n_unused;
 }
 
-<<<<<<< HEAD
-static int __devinit adp5589_gpio_add(struct adp5589_kpad *kpad)
-{
-	struct device *dev = &kpad->client->dev;
-	const struct adp5589_kpad_platform_data *pdata = dev->platform_data;
-=======
 static int adp5589_gpio_add(struct adp5589_kpad *kpad)
 {
 	struct device *dev = &kpad->client->dev;
 	const struct adp5589_kpad_platform_data *pdata = dev_get_platdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct adp5589_gpio_platform_data *gpio_data = pdata->gpio_data;
 	int i, error;
 
 	if (!gpio_data)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	kpad->gc.parent = dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kpad->gc.ngpio = adp5589_build_gpiomap(kpad, pdata);
 	if (kpad->gc.ngpio == 0) {
 		dev_info(dev, "No unused gpios left to export\n");
 		return 0;
 	}
 
-<<<<<<< HEAD
-	kpad->export_gpio = true;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kpad->gc.direction_input = adp5589_gpio_direction_input;
 	kpad->gc.direction_output = adp5589_gpio_direction_output;
 	kpad->gc.get = adp5589_gpio_get_value;
@@ -636,17 +525,9 @@ static int adp5589_gpio_add(struct adp5589_kpad *kpad)
 
 	mutex_init(&kpad->gpio_lock);
 
-<<<<<<< HEAD
-	error = gpiochip_add(&kpad->gc);
-	if (error) {
-		dev_err(dev, "gpiochip_add failed, err: %d\n", error);
-		return error;
-	}
-=======
 	error = devm_gpiochip_add_data(dev, &kpad->gc, kpad);
 	if (error)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i <= kpad->var->bank(kpad->var->maxgpio); i++) {
 		kpad->dat_out[i] = adp5589_read(kpad->client, kpad->var->reg(
@@ -655,56 +536,13 @@ static int adp5589_gpio_add(struct adp5589_kpad *kpad)
 					    ADP5589_GPIO_DIRECTION_A) + i);
 	}
 
-<<<<<<< HEAD
-	if (gpio_data->setup) {
-		error = gpio_data->setup(kpad->client,
-					 kpad->gc.base, kpad->gc.ngpio,
-					 gpio_data->context);
-		if (error)
-			dev_warn(dev, "setup failed, %d\n", error);
-	}
-
 	return 0;
 }
-
-static void __devexit adp5589_gpio_remove(struct adp5589_kpad *kpad)
-{
-	struct device *dev = &kpad->client->dev;
-	const struct adp5589_kpad_platform_data *pdata = dev->platform_data;
-	const struct adp5589_gpio_platform_data *gpio_data = pdata->gpio_data;
-	int error;
-
-	if (!kpad->export_gpio)
-		return;
-
-	if (gpio_data->teardown) {
-		error = gpio_data->teardown(kpad->client,
-					    kpad->gc.base, kpad->gc.ngpio,
-					    gpio_data->context);
-		if (error)
-			dev_warn(dev, "teardown failed %d\n", error);
-	}
-
-	error = gpiochip_remove(&kpad->gc);
-	if (error)
-		dev_warn(dev, "gpiochip_remove failed %d\n", error);
-}
-=======
-	return 0;
-}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline int adp5589_gpio_add(struct adp5589_kpad *kpad)
 {
 	return 0;
 }
-<<<<<<< HEAD
-
-static inline void adp5589_gpio_remove(struct adp5589_kpad *kpad)
-{
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static void adp5589_report_switches(struct adp5589_kpad *kpad,
@@ -765,12 +603,7 @@ static irqreturn_t adp5589_irq(int irq, void *handle)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit adp5589_get_evcode(struct adp5589_kpad *kpad,
-					unsigned short key)
-=======
 static int adp5589_get_evcode(struct adp5589_kpad *kpad, unsigned short key)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -783,19 +616,11 @@ static int adp5589_get_evcode(struct adp5589_kpad *kpad, unsigned short key)
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static int __devinit adp5589_setup(struct adp5589_kpad *kpad)
-{
-	struct i2c_client *client = kpad->client;
-	const struct adp5589_kpad_platform_data *pdata =
-		client->dev.platform_data;
-=======
 static int adp5589_setup(struct adp5589_kpad *kpad)
 {
 	struct i2c_client *client = kpad->client;
 	const struct adp5589_kpad_platform_data *pdata =
 		dev_get_platdata(&client->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 (*reg) (u8) = kpad->var->reg;
 	unsigned char evt_mode1 = 0, evt_mode2 = 0, evt_mode3 = 0;
 	unsigned char pull_mask = 0;
@@ -828,15 +653,6 @@ static int adp5589_setup(struct adp5589_kpad *kpad)
 		unsigned short pin = pdata->gpimap[i].pin;
 
 		if (pin <= kpad->var->gpi_pin_row_end) {
-<<<<<<< HEAD
-			evt_mode1 |= (1 << (pin - kpad->var->gpi_pin_row_base));
-		} else {
-			evt_mode2 |=
-			    ((1 << (pin - kpad->var->gpi_pin_col_base)) & 0xFF);
-			if (!kpad->is_adp5585)
-				evt_mode3 |= ((1 << (pin -
-					kpad->var->gpi_pin_col_base)) >> 8);
-=======
 			evt_mode1 |= BIT(pin - kpad->var->gpi_pin_row_base);
 		} else {
 			evt_mode2 |=
@@ -844,7 +660,6 @@ static int adp5589_setup(struct adp5589_kpad *kpad)
 			if (!kpad->is_adp5585)
 				evt_mode3 |=
 				    BIT(pin - kpad->var->gpi_pin_col_base) >> 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -864,11 +679,7 @@ static int adp5589_setup(struct adp5589_kpad *kpad)
 		dev_warn(&client->dev, "Conflicting pull resistor config\n");
 
 	for (i = 0; i <= kpad->var->max_row_num; i++) {
-<<<<<<< HEAD
-		unsigned val = 0, bit = (1 << i);
-=======
 		unsigned int val = 0, bit = BIT(i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pdata->pullup_en_300k & bit)
 			val = 0;
 		else if (pdata->pulldown_en_300k & bit)
@@ -880,11 +691,7 @@ static int adp5589_setup(struct adp5589_kpad *kpad)
 
 		pull_mask |= val << (2 * (i & 0x3));
 
-<<<<<<< HEAD
-		if (i == 3 || i == kpad->var->max_row_num) {
-=======
 		if (i % 4 == 3 || i == kpad->var->max_row_num) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret |= adp5589_write(client, reg(ADP5585_RPULL_CONFIG_A)
 					     + (i >> 2), pull_mask);
 			pull_mask = 0;
@@ -892,11 +699,7 @@ static int adp5589_setup(struct adp5589_kpad *kpad)
 	}
 
 	for (i = 0; i <= kpad->var->max_col_num; i++) {
-<<<<<<< HEAD
-		unsigned val = 0, bit = 1 << (i + kpad->var->col_shift);
-=======
 		unsigned int val = 0, bit = BIT(i + kpad->var->col_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pdata->pullup_en_300k & bit)
 			val = 0;
 		else if (pdata->pulldown_en_300k & bit)
@@ -908,11 +711,7 @@ static int adp5589_setup(struct adp5589_kpad *kpad)
 
 		pull_mask |= val << (2 * (i & 0x3));
 
-<<<<<<< HEAD
-		if (i == 3 || i == kpad->var->max_col_num) {
-=======
 		if (i % 4 == 3 || i == kpad->var->max_col_num) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret |= adp5589_write(client,
 					     reg(ADP5585_RPULL_CONFIG_C) +
 					     (i >> 2), pull_mask);
@@ -982,11 +781,7 @@ static int adp5589_setup(struct adp5589_kpad *kpad)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devinit adp5589_report_switch_state(struct adp5589_kpad *kpad)
-=======
 static void adp5589_report_switch_state(struct adp5589_kpad *kpad)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int gpi_stat_tmp, pin_loc;
 	int i;
@@ -1020,56 +815,12 @@ static void adp5589_report_switch_state(struct adp5589_kpad *kpad)
 
 		input_report_switch(kpad->input,
 				    kpad->gpimap[i].sw_evt,
-<<<<<<< HEAD
-				    !(gpi_stat_tmp & (1 << pin_loc)));
-=======
 				    !(gpi_stat_tmp & BIT(pin_loc)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	input_sync(kpad->input);
 }
 
-<<<<<<< HEAD
-static int __devinit adp5589_probe(struct i2c_client *client,
-				   const struct i2c_device_id *id)
-{
-	struct adp5589_kpad *kpad;
-	const struct adp5589_kpad_platform_data *pdata =
-		client->dev.platform_data;
-	struct input_dev *input;
-	unsigned int revid;
-	int ret, i;
-	int error;
-
-	if (!i2c_check_functionality(client->adapter,
-				     I2C_FUNC_SMBUS_BYTE_DATA)) {
-		dev_err(&client->dev, "SMBUS Byte Data not Supported\n");
-		return -EIO;
-	}
-
-	if (!pdata) {
-		dev_err(&client->dev, "no platform data?\n");
-		return -EINVAL;
-	}
-
-	kpad = kzalloc(sizeof(*kpad), GFP_KERNEL);
-	if (!kpad)
-		return -ENOMEM;
-
-	switch (id->driver_data) {
-	case ADP5585_02:
-		kpad->adp5585_support_row5 = true;
-	case ADP5585_01:
-		kpad->is_adp5585 = true;
-		kpad->var = &const_adp5585;
-		break;
-	case ADP5589:
-		kpad->var = &const_adp5589;
-		break;
-	}
-
-=======
 static int adp5589_keypad_add(struct adp5589_kpad *kpad, unsigned int revid)
 {
 	struct i2c_client *client = kpad->client;
@@ -1079,47 +830,26 @@ static int adp5589_keypad_add(struct adp5589_kpad *kpad, unsigned int revid)
 	unsigned int i;
 	int error;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!((pdata->keypad_en_mask & kpad->var->row_mask) &&
 			(pdata->keypad_en_mask >> kpad->var->col_shift)) ||
 			!pdata->keymap) {
 		dev_err(&client->dev, "no rows, cols or keymap from pdata\n");
-<<<<<<< HEAD
-		error = -EINVAL;
-		goto err_free_mem;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pdata->keymapsize != kpad->var->keymapsize) {
 		dev_err(&client->dev, "invalid keymapsize\n");
-<<<<<<< HEAD
-		error = -EINVAL;
-		goto err_free_mem;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!pdata->gpimap && pdata->gpimapsize) {
 		dev_err(&client->dev, "invalid gpimap from pdata\n");
-<<<<<<< HEAD
-		error = -EINVAL;
-		goto err_free_mem;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pdata->gpimapsize > kpad->var->gpimapsize_max) {
 		dev_err(&client->dev, "invalid gpimapsize\n");
-<<<<<<< HEAD
-		error = -EINVAL;
-		goto err_free_mem;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < pdata->gpimapsize; i++) {
@@ -1128,17 +858,6 @@ static int adp5589_keypad_add(struct adp5589_kpad *kpad, unsigned int revid)
 		if (pin < kpad->var->gpi_pin_base ||
 				pin > kpad->var->gpi_pin_end) {
 			dev_err(&client->dev, "invalid gpi pin data\n");
-<<<<<<< HEAD
-			error = -EINVAL;
-			goto err_free_mem;
-		}
-
-		if ((1 << (pin - kpad->var->gpi_pin_row_base)) &
-				pdata->keypad_en_mask) {
-			dev_err(&client->dev, "invalid gpi row/col data\n");
-			error = -EINVAL;
-			goto err_free_mem;
-=======
 			return -EINVAL;
 		}
 
@@ -1146,35 +865,11 @@ static int adp5589_keypad_add(struct adp5589_kpad *kpad, unsigned int revid)
 				pdata->keypad_en_mask) {
 			dev_err(&client->dev, "invalid gpi row/col data\n");
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	if (!client->irq) {
 		dev_err(&client->dev, "no IRQ?\n");
-<<<<<<< HEAD
-		error = -EINVAL;
-		goto err_free_mem;
-	}
-
-	input = input_allocate_device();
-	if (!input) {
-		error = -ENOMEM;
-		goto err_free_mem;
-	}
-
-	kpad->client = client;
-	kpad->input = input;
-
-	ret = adp5589_read(client, ADP5589_5_ID);
-	if (ret < 0) {
-		error = ret;
-		goto err_free_input;
-	}
-
-	revid = (u8) ret & ADP5589_5_DEVICE_ID_MASK;
-
-=======
 		return -EINVAL;
 	}
 
@@ -1184,7 +879,6 @@ static int adp5589_keypad_add(struct adp5589_kpad *kpad, unsigned int revid)
 
 	kpad->input = input;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input->name = client->name;
 	input->phys = "adp5589-keys/input0";
 	input->dev.parent = &client->dev;
@@ -1213,12 +907,8 @@ static int adp5589_keypad_add(struct adp5589_kpad *kpad, unsigned int revid)
 		__set_bit(EV_REP, input->evbit);
 
 	for (i = 0; i < input->keycodemax; i++)
-<<<<<<< HEAD
-		__set_bit(kpad->keycode[i] & KEY_MAX, input->keybit);
-=======
 		if (kpad->keycode[i] <= KEY_MAX)
 			__set_bit(kpad->keycode[i], input->keybit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__clear_bit(KEY_RESERVED, input->keybit);
 
 	if (kpad->gpimapsize)
@@ -1229,17 +919,6 @@ static int adp5589_keypad_add(struct adp5589_kpad *kpad, unsigned int revid)
 	error = input_register_device(input);
 	if (error) {
 		dev_err(&client->dev, "unable to register input device\n");
-<<<<<<< HEAD
-		goto err_free_input;
-	}
-
-	error = request_threaded_irq(client->irq, NULL, adp5589_irq,
-				     IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-				     client->dev.driver->name, kpad);
-	if (error) {
-		dev_err(&client->dev, "irq %d busy?\n", client->irq);
-		goto err_unreg_dev;
-=======
 		return error;
 	}
 
@@ -1318,73 +997,23 @@ static int adp5589_probe(struct i2c_client *client)
 		error = adp5589_keypad_add(kpad, revid);
 		if (error)
 			return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = adp5589_setup(kpad);
 	if (error)
-<<<<<<< HEAD
-		goto err_free_irq;
-=======
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (kpad->gpimapsize)
 		adp5589_report_switch_state(kpad);
 
 	error = adp5589_gpio_add(kpad);
 	if (error)
-<<<<<<< HEAD
-		goto err_free_irq;
-
-	device_init_wakeup(&client->dev, 1);
-=======
 		return error;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_set_clientdata(client, kpad);
 
 	dev_info(&client->dev, "Rev.%d keypad, irq %d\n", revid, client->irq);
 	return 0;
-<<<<<<< HEAD
-
-err_free_irq:
-	free_irq(client->irq, kpad);
-err_unreg_dev:
-	input_unregister_device(input);
-	input = NULL;
-err_free_input:
-	input_free_device(input);
-err_free_mem:
-	kfree(kpad);
-
-	return error;
-}
-
-static int __devexit adp5589_remove(struct i2c_client *client)
-{
-	struct adp5589_kpad *kpad = i2c_get_clientdata(client);
-
-	adp5589_write(client, kpad->var->reg(ADP5589_GENERAL_CFG), 0);
-	free_irq(client->irq, kpad);
-	input_unregister_device(kpad->input);
-	adp5589_gpio_remove(kpad);
-	kfree(kpad);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM_SLEEP
-static int adp5589_suspend(struct device *dev)
-{
-	struct adp5589_kpad *kpad = dev_get_drvdata(dev);
-	struct i2c_client *client = kpad->client;
-
-	disable_irq(client->irq);
-
-	if (device_may_wakeup(&client->dev))
-		enable_irq_wake(client->irq);
-=======
 }
 
 static int adp5589_suspend(struct device *dev)
@@ -1394,28 +1023,12 @@ static int adp5589_suspend(struct device *dev)
 
 	if (kpad->input)
 		disable_irq(client->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int adp5589_resume(struct device *dev)
 {
-<<<<<<< HEAD
-	struct adp5589_kpad *kpad = dev_get_drvdata(dev);
-	struct i2c_client *client = kpad->client;
-
-	if (device_may_wakeup(&client->dev))
-		disable_irq_wake(client->irq);
-
-	enable_irq(client->irq);
-
-	return 0;
-}
-#endif
-
-static SIMPLE_DEV_PM_OPS(adp5589_dev_pm_ops, adp5589_suspend, adp5589_resume);
-=======
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adp5589_kpad *kpad = i2c_get_clientdata(client);
 
@@ -1426,7 +1039,6 @@ static SIMPLE_DEV_PM_OPS(adp5589_dev_pm_ops, adp5589_suspend, adp5589_resume);
 }
 
 static DEFINE_SIMPLE_DEV_PM_OPS(adp5589_dev_pm_ops, adp5589_suspend, adp5589_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id adp5589_id[] = {
 	{"adp5589-keys", ADP5589},
@@ -1440,17 +1052,9 @@ MODULE_DEVICE_TABLE(i2c, adp5589_id);
 static struct i2c_driver adp5589_driver = {
 	.driver = {
 		.name = KBUILD_MODNAME,
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.pm = &adp5589_dev_pm_ops,
-	},
-	.probe = adp5589_probe,
-	.remove = __devexit_p(adp5589_remove),
-=======
 		.pm = pm_sleep_ptr(&adp5589_dev_pm_ops),
 	},
 	.probe = adp5589_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = adp5589_id,
 };
 

@@ -45,11 +45,8 @@
 #define HEADER_LEN			28
 #define SIZE_OFFSET			16
 
-<<<<<<< HEAD
-=======
 #define BIOSOFFSET			56
 #define BIOS_OFFSET_LIMIT		61
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FLASH_OK                        0x000000
 #define FAIL_OPEN_BIOS_FILE             0x000100
@@ -58,8 +55,6 @@
 #define FAIL_OUT_MEMORY                 0x000c00
 #define FLASH_IN_PROGRESS               0x001000
 
-<<<<<<< HEAD
-=======
 #define IB_OB_READ_TIMES                256
 #define SYSFS_OFFSET                    1024
 #define PM80XX_IB_OB_QUEUE_SIZE         (32 * 1024)
@@ -69,6 +64,5 @@ static inline u32 pm8001_ctl_aap1_memmap(u8 *ptr, int idx, int off)
 {
 	return *(u32 *)(ptr + idx * 32 + off);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* PM8001_CTL_H_INCLUDED */
 

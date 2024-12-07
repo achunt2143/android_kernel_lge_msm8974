@@ -1,32 +1,20 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * BIOS32 and PCI BIOS handling.
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/bits.h>
 #include <linux/bitfield.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/uaccess.h>
-<<<<<<< HEAD
-#include <asm/pci_x86.h>
-#include <asm/pci-functions.h>
-#include <asm/cacheflush.h>
-=======
 
 #include <asm/pci_x86.h>
 #include <asm/e820/types.h>
 #include <asm/pci-functions.h>
 #include <asm/set_memory.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* BIOS32 signature: "_32_" */
 #define BIOS32_SIGNATURE	(('_' << 0) + ('3' << 8) + ('2' << 16) + ('_' << 24))
@@ -43,10 +31,6 @@
 #define PCIBIOS_HW_TYPE1_SPEC		0x10
 #define PCIBIOS_HW_TYPE2_SPEC		0x20
 
-<<<<<<< HEAD
-int pcibios_enabled;
-
-=======
 /*
  * Returned in EAX:
  * - AH: return code
@@ -60,7 +44,6 @@ static u8 pcibios_get_return_code(u32 eax)
 	return FIELD_GET(PCIBIOS_RETURN_CODE, eax);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* According to the BIOS specification at:
  * http://members.datafast.net.au/dft0802/specs/bios21.pdf, we could
  * restrict the x zone to some pages and make it ro. But this may be
@@ -77,11 +60,7 @@ static inline void set_bios_x(void)
 	pcibios_enabled = 1;
 	set_memory_x(PAGE_OFFSET + BIOS_BEGIN, (BIOS_END - BIOS_BEGIN) >> PAGE_SHIFT);
 	if (__supported_pte_mask & _PAGE_NX)
-<<<<<<< HEAD
-		printk(KERN_INFO "PCI : PCI BIOS area is rw and x. Use pci=nobios if you want it NX.\n");
-=======
 		printk(KERN_INFO "PCI: PCI BIOS area is rw and x. Use pci=nobios if you want it NX.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -116,21 +95,13 @@ union bios32 {
 static struct {
 	unsigned long address;
 	unsigned short segment;
-<<<<<<< HEAD
-} bios32_indirect = { 0, __KERNEL_CS };
-=======
 } bios32_indirect __initdata = { 0, __KERNEL_CS };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Returns the entry point for the given service, NULL on error
  */
 
-<<<<<<< HEAD
-static unsigned long bios32_service(unsigned long service)
-=======
 static unsigned long __init bios32_service(unsigned long service)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char return_code;	/* %al */
 	unsigned long address;		/* %ebx */
@@ -165,13 +136,6 @@ static unsigned long __init bios32_service(unsigned long service)
 static struct {
 	unsigned long address;
 	unsigned short segment;
-<<<<<<< HEAD
-} pci_indirect = { 0, __KERNEL_CS };
-
-static int pci_bios_present;
-
-static int __devinit check_pcibios(void)
-=======
 } pci_indirect __ro_after_init = {
 	.address = 0,
 	.segment = __KERNEL_CS,
@@ -180,7 +144,6 @@ static int __devinit check_pcibios(void)
 static int pci_bios_present __ro_after_init;
 
 static int __init check_pcibios(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 signature, eax, ebx, ecx;
 	u8 status, major_ver, minor_ver, hw_mech;
@@ -204,11 +167,7 @@ static int __init check_pcibios(void)
 			: "memory");
 		local_irq_restore(flags);
 
-<<<<<<< HEAD
-		status = (eax >> 8) & 0xff;
-=======
 		status = pcibios_get_return_code(eax);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw_mech = eax & 0xff;
 		major_ver = (ebx >> 8) & 0xff;
 		minor_ver = ebx & 0xff;
@@ -240,10 +199,7 @@ static int pci_bios_read(unsigned int seg, unsigned int bus,
 	unsigned long result = 0;
 	unsigned long flags;
 	unsigned long bx = (bus << 8) | devfn;
-<<<<<<< HEAD
-=======
 	u16 number = 0, mask = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WARN_ON(seg);
 	if (!value || (bus > 255) || (devfn > 255) || (reg > 255))
@@ -253,58 +209,6 @@ static int pci_bios_read(unsigned int seg, unsigned int bus,
 
 	switch (len) {
 	case 1:
-<<<<<<< HEAD
-		__asm__("lcall *(%%esi); cld\n\t"
-			"jc 1f\n\t"
-			"xor %%ah, %%ah\n"
-			"1:"
-			: "=c" (*value),
-			  "=a" (result)
-			: "1" (PCIBIOS_READ_CONFIG_BYTE),
-			  "b" (bx),
-			  "D" ((long)reg),
-			  "S" (&pci_indirect));
-		/*
-		 * Zero-extend the result beyond 8 bits, do not trust the
-		 * BIOS having done it:
-		 */
-		*value &= 0xff;
-		break;
-	case 2:
-		__asm__("lcall *(%%esi); cld\n\t"
-			"jc 1f\n\t"
-			"xor %%ah, %%ah\n"
-			"1:"
-			: "=c" (*value),
-			  "=a" (result)
-			: "1" (PCIBIOS_READ_CONFIG_WORD),
-			  "b" (bx),
-			  "D" ((long)reg),
-			  "S" (&pci_indirect));
-		/*
-		 * Zero-extend the result beyond 16 bits, do not trust the
-		 * BIOS having done it:
-		 */
-		*value &= 0xffff;
-		break;
-	case 4:
-		__asm__("lcall *(%%esi); cld\n\t"
-			"jc 1f\n\t"
-			"xor %%ah, %%ah\n"
-			"1:"
-			: "=c" (*value),
-			  "=a" (result)
-			: "1" (PCIBIOS_READ_CONFIG_DWORD),
-			  "b" (bx),
-			  "D" ((long)reg),
-			  "S" (&pci_indirect));
-		break;
-	}
-
-	raw_spin_unlock_irqrestore(&pci_config_lock, flags);
-
-	return (int)((result & 0xff00) >> 8);
-=======
 		number = PCIBIOS_READ_CONFIG_BYTE;
 		mask = 0xff;
 		break;
@@ -337,7 +241,6 @@ static int pci_bios_read(unsigned int seg, unsigned int bus,
 	raw_spin_unlock_irqrestore(&pci_config_lock, flags);
 
 	return pcibios_get_return_code(result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pci_bios_write(unsigned int seg, unsigned int bus,
@@ -346,10 +249,7 @@ static int pci_bios_write(unsigned int seg, unsigned int bus,
 	unsigned long result = 0;
 	unsigned long flags;
 	unsigned long bx = (bus << 8) | devfn;
-<<<<<<< HEAD
-=======
 	u16 number = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WARN_ON(seg);
 	if ((bus > 255) || (devfn > 255) || (reg > 255)) 
@@ -359,48 +259,6 @@ static int pci_bios_write(unsigned int seg, unsigned int bus,
 
 	switch (len) {
 	case 1:
-<<<<<<< HEAD
-		__asm__("lcall *(%%esi); cld\n\t"
-			"jc 1f\n\t"
-			"xor %%ah, %%ah\n"
-			"1:"
-			: "=a" (result)
-			: "0" (PCIBIOS_WRITE_CONFIG_BYTE),
-			  "c" (value),
-			  "b" (bx),
-			  "D" ((long)reg),
-			  "S" (&pci_indirect));
-		break;
-	case 2:
-		__asm__("lcall *(%%esi); cld\n\t"
-			"jc 1f\n\t"
-			"xor %%ah, %%ah\n"
-			"1:"
-			: "=a" (result)
-			: "0" (PCIBIOS_WRITE_CONFIG_WORD),
-			  "c" (value),
-			  "b" (bx),
-			  "D" ((long)reg),
-			  "S" (&pci_indirect));
-		break;
-	case 4:
-		__asm__("lcall *(%%esi); cld\n\t"
-			"jc 1f\n\t"
-			"xor %%ah, %%ah\n"
-			"1:"
-			: "=a" (result)
-			: "0" (PCIBIOS_WRITE_CONFIG_DWORD),
-			  "c" (value),
-			  "b" (bx),
-			  "D" ((long)reg),
-			  "S" (&pci_indirect));
-		break;
-	}
-
-	raw_spin_unlock_irqrestore(&pci_config_lock, flags);
-
-	return (int)((result & 0xff00) >> 8);
-=======
 		number = PCIBIOS_WRITE_CONFIG_BYTE;
 		break;
 	case 2:
@@ -425,7 +283,6 @@ static int pci_bios_write(unsigned int seg, unsigned int bus,
 	raw_spin_unlock_irqrestore(&pci_config_lock, flags);
 
 	return pcibios_get_return_code(result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -442,11 +299,7 @@ static const struct pci_raw_ops pci_bios_access = {
  * Try to find PCI BIOS.
  */
 
-<<<<<<< HEAD
-static const struct pci_raw_ops * __devinit pci_find_bios(void)
-=======
 static const struct pci_raw_ops *__init pci_find_bios(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union bios32 *check;
 	unsigned char sum;
@@ -462,11 +315,7 @@ static const struct pci_raw_ops *__init pci_find_bios(void)
 	     check <= (union bios32 *) __va(0xffff0);
 	     ++check) {
 		long sig;
-<<<<<<< HEAD
-		if (probe_kernel_address(&check->fields.signature, sig))
-=======
 		if (get_kernel_nofault(sig, &check->fields.signature))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		if (check->fields.signature != BIOS32_SIGNATURE)
@@ -549,16 +398,10 @@ struct irq_routing_table * pcibios_get_irq_routing_table(void)
 		  "m" (opt)
 		: "memory");
 	DBG("OK  ret=%d, size=%d, map=%x\n", ret, opt.size, map);
-<<<<<<< HEAD
-	if (ret & 0xff00)
-		printk(KERN_ERR "PCI: Error %02x when fetching IRQ routing table.\n", (ret >> 8) & 0xff);
-	else if (opt.size) {
-=======
 	ret = pcibios_get_return_code(ret);
 	if (ret) {
 		printk(KERN_ERR "PCI: Error %02x when fetching IRQ routing table.\n", ret);
 	} else if (opt.size) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rt = kmalloc(sizeof(struct irq_routing_table) + opt.size, GFP_KERNEL);
 		if (rt) {
 			memset(rt, 0, sizeof(struct irq_routing_table));
@@ -586,11 +429,7 @@ int pcibios_set_irq_routing(struct pci_dev *dev, int pin, int irq)
 		  "b" ((dev->bus->number << 8) | dev->devfn),
 		  "c" ((irq << 8) | (pin + 10)),
 		  "S" (&pci_indirect));
-<<<<<<< HEAD
-	return !(ret & 0xff00);
-=======
 	return pcibios_get_return_code(ret) == PCIBIOS_SUCCESSFUL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(pcibios_set_irq_routing);
 

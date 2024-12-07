@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  The NFC Controller Interface is the communication protocol between an
  *  NFC Controller (NFCC) and a Device Host (DH).
  *
-<<<<<<< HEAD
-=======
  *  Copyright (C) 2014 Marvell International Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Copyright (C) 2011 Texas Instruments, Inc.
  *
  *  Written by Ilan Elias <ilane@ti.com>
@@ -17,23 +11,6 @@
  *  Acknowledgements:
  *  This file is based on hci_event.c, which was written
  *  by Maxim Krasnyansky.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2
- *  as published by the Free Software Foundation
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
@@ -50,8 +27,6 @@
 
 /* Handle NCI Notification packets */
 
-<<<<<<< HEAD
-=======
 static void nci_core_reset_ntf_packet(struct nci_dev *ndev,
 				      const struct sk_buff *skb)
 {
@@ -69,15 +44,11 @@ static void nci_core_reset_ntf_packet(struct nci_dev *ndev,
 	nci_req_complete(ndev, NCI_STATUS_OK);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void nci_core_conn_credits_ntf_packet(struct nci_dev *ndev,
 					     struct sk_buff *skb)
 {
 	struct nci_core_conn_credit_ntf *ntf = (void *) skb->data;
-<<<<<<< HEAD
-=======
 	struct nci_conn_info *conn_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	pr_debug("num_entries %d\n", ntf->num_entries);
@@ -94,13 +65,6 @@ static void nci_core_conn_credits_ntf_packet(struct nci_dev *ndev,
 			 i, ntf->conn_entries[i].conn_id,
 			 ntf->conn_entries[i].credits);
 
-<<<<<<< HEAD
-		if (ntf->conn_entries[i].conn_id == NCI_STATIC_RF_CONN_ID) {
-			/* found static rf connection */
-			atomic_add(ntf->conn_entries[i].credits,
-				   &ndev->credits_cnt);
-		}
-=======
 		conn_info = nci_get_conn_info_by_conn_id(ndev,
 							 ntf->conn_entries[i].conn_id);
 		if (!conn_info)
@@ -108,7 +72,6 @@ static void nci_core_conn_credits_ntf_packet(struct nci_dev *ndev,
 
 		atomic_add(ntf->conn_entries[i].credits,
 			   &conn_info->credits_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* trigger the next tx */
@@ -117,11 +80,7 @@ static void nci_core_conn_credits_ntf_packet(struct nci_dev *ndev,
 }
 
 static void nci_core_generic_error_ntf_packet(struct nci_dev *ndev,
-<<<<<<< HEAD
-					      struct sk_buff *skb)
-=======
 					      const struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u8 status = skb->data[0];
 
@@ -145,16 +104,6 @@ static void nci_core_conn_intf_error_ntf_packet(struct nci_dev *ndev,
 
 	/* complete the data exchange transaction, if exists */
 	if (test_bit(NCI_DATA_EXCHANGE, &ndev->flags))
-<<<<<<< HEAD
-		nci_data_exchange_complete(ndev, NULL, -EIO);
-}
-
-static __u8 *nci_extract_rf_params_nfca_passive_poll(struct nci_dev *ndev,
-			struct rf_tech_specific_params_nfca_poll *nfca_poll,
-						     __u8 *data)
-{
-	nfca_poll->sens_res = __le16_to_cpu(*((__u16 *)data));
-=======
 		nci_data_exchange_complete(ndev, NULL, ntf->conn_id, -EIO);
 }
 
@@ -164,7 +113,6 @@ nci_extract_rf_params_nfca_passive_poll(struct nci_dev *ndev,
 					const __u8 *data)
 {
 	nfca_poll->sens_res = __le16_to_cpu(*((__le16 *)data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data += 2;
 
 	nfca_poll->nfcid1_len = min_t(__u8, *data++, NFC_NFCID1_MAXSIZE);
@@ -187,16 +135,10 @@ nci_extract_rf_params_nfca_passive_poll(struct nci_dev *ndev,
 	return data;
 }
 
-<<<<<<< HEAD
-static __u8 *nci_extract_rf_params_nfcb_passive_poll(struct nci_dev *ndev,
-			struct rf_tech_specific_params_nfcb_poll *nfcb_poll,
-						     __u8 *data)
-=======
 static const __u8 *
 nci_extract_rf_params_nfcb_passive_poll(struct nci_dev *ndev,
 					struct rf_tech_specific_params_nfcb_poll *nfcb_poll,
 					const __u8 *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	nfcb_poll->sensb_res_len = min_t(__u8, *data++, NFC_SENSB_RES_MAXSIZE);
 
@@ -208,16 +150,10 @@ nci_extract_rf_params_nfcb_passive_poll(struct nci_dev *ndev,
 	return data;
 }
 
-<<<<<<< HEAD
-static __u8 *nci_extract_rf_params_nfcf_passive_poll(struct nci_dev *ndev,
-			struct rf_tech_specific_params_nfcf_poll *nfcf_poll,
-						     __u8 *data)
-=======
 static const __u8 *
 nci_extract_rf_params_nfcf_passive_poll(struct nci_dev *ndev,
 					struct rf_tech_specific_params_nfcf_poll *nfcf_poll,
 					const __u8 *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	nfcf_poll->bit_rate = *data++;
 	nfcf_poll->sensf_res_len = min_t(__u8, *data++, NFC_SENSF_RES_MAXSIZE);
@@ -231,8 +167,6 @@ nci_extract_rf_params_nfcf_passive_poll(struct nci_dev *ndev,
 	return data;
 }
 
-<<<<<<< HEAD
-=======
 static const __u8 *
 nci_extract_rf_params_nfcv_passive_poll(struct nci_dev *ndev,
 					struct rf_tech_specific_params_nfcv_poll *nfcv_poll,
@@ -265,28 +199,10 @@ static __u32 nci_get_prop_rf_protocol(struct nci_dev *ndev, __u8 rf_protocol)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nci_add_new_protocol(struct nci_dev *ndev,
 				struct nfc_target *target,
 				__u8 rf_protocol,
 				__u8 rf_tech_and_mode,
-<<<<<<< HEAD
-				void *params)
-{
-	struct rf_tech_specific_params_nfca_poll *nfca_poll;
-	struct rf_tech_specific_params_nfcb_poll *nfcb_poll;
-	struct rf_tech_specific_params_nfcf_poll *nfcf_poll;
-	__u32 protocol;
-
-	if (rf_protocol == NCI_RF_PROTOCOL_T2T)
-		protocol = NFC_PROTO_MIFARE_MASK;
-	else if (rf_protocol == NCI_RF_PROTOCOL_ISO_DEP)
-		protocol = NFC_PROTO_ISO14443_MASK;
-	else if (rf_protocol == NCI_RF_PROTOCOL_T3T)
-		protocol = NFC_PROTO_FELICA_MASK;
-	else
-		protocol = 0;
-=======
 				const void *params)
 {
 	const struct rf_tech_specific_params_nfca_poll *nfca_poll;
@@ -312,7 +228,6 @@ static int nci_add_new_protocol(struct nci_dev *ndev,
 		protocol = NFC_PROTO_ISO15693_MASK;
 	else
 		protocol = nci_get_prop_rf_protocol(ndev, rf_protocol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(protocol & ndev->poll_prots)) {
 		pr_err("the target found does not have the desired protocol\n");
@@ -325,11 +240,8 @@ static int nci_add_new_protocol(struct nci_dev *ndev,
 		target->sens_res = nfca_poll->sens_res;
 		target->sel_res = nfca_poll->sel_res;
 		target->nfcid1_len = nfca_poll->nfcid1_len;
-<<<<<<< HEAD
-=======
 		if (target->nfcid1_len > ARRAY_SIZE(target->nfcid1))
 			return -EPROTO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (target->nfcid1_len > 0) {
 			memcpy(target->nfcid1, nfca_poll->nfcid1,
 			       target->nfcid1_len);
@@ -338,11 +250,8 @@ static int nci_add_new_protocol(struct nci_dev *ndev,
 		nfcb_poll = (struct rf_tech_specific_params_nfcb_poll *)params;
 
 		target->sensb_res_len = nfcb_poll->sensb_res_len;
-<<<<<<< HEAD
-=======
 		if (target->sensb_res_len > ARRAY_SIZE(target->sensb_res))
 			return -EPROTO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (target->sensb_res_len > 0) {
 			memcpy(target->sensb_res, nfcb_poll->sensb_res,
 			       target->sensb_res_len);
@@ -351,24 +260,18 @@ static int nci_add_new_protocol(struct nci_dev *ndev,
 		nfcf_poll = (struct rf_tech_specific_params_nfcf_poll *)params;
 
 		target->sensf_res_len = nfcf_poll->sensf_res_len;
-<<<<<<< HEAD
-=======
 		if (target->sensf_res_len > ARRAY_SIZE(target->sensf_res))
 			return -EPROTO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (target->sensf_res_len > 0) {
 			memcpy(target->sensf_res, nfcf_poll->sensf_res,
 			       target->sensf_res_len);
 		}
-<<<<<<< HEAD
-=======
 	} else if (rf_tech_and_mode == NCI_NFC_V_PASSIVE_POLL_MODE) {
 		nfcv_poll = (struct rf_tech_specific_params_nfcv_poll *)params;
 
 		target->is_iso15693 = 1;
 		target->iso15693_dsfid = nfcv_poll->dsfid;
 		memcpy(target->iso15693_uid, nfcv_poll->uid, NFC_ISO15693_UID_MAXSIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		pr_err("unsupported rf_tech_and_mode 0x%x\n", rf_tech_and_mode);
 		return -EPROTO;
@@ -382,22 +285,14 @@ static int nci_add_new_protocol(struct nci_dev *ndev,
 }
 
 static void nci_add_new_target(struct nci_dev *ndev,
-<<<<<<< HEAD
-			       struct nci_rf_discover_ntf *ntf)
-=======
 			       const struct nci_rf_discover_ntf *ntf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nfc_target *target;
 	int i, rc;
 
 	for (i = 0; i < ndev->n_targets; i++) {
 		target = &ndev->targets[i];
-<<<<<<< HEAD
-		if (target->idx == ntf->rf_discovery_id) {
-=======
 		if (target->logical_idx == ntf->rf_discovery_id) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* This target already exists, add the new protocol */
 			nci_add_new_protocol(ndev, target, ntf->rf_protocol,
 					     ntf->rf_tech_and_mode,
@@ -418,17 +313,10 @@ static void nci_add_new_target(struct nci_dev *ndev,
 				  ntf->rf_tech_and_mode,
 				  &ntf->rf_tech_specific_params);
 	if (!rc) {
-<<<<<<< HEAD
-		target->idx = ntf->rf_discovery_id;
-		ndev->n_targets++;
-
-		pr_debug("target_idx %d, n_targets %d\n", target->idx,
-=======
 		target->logical_idx = ntf->rf_discovery_id;
 		ndev->n_targets++;
 
 		pr_debug("logical idx %d, n_targets %d\n", target->logical_idx,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 ndev->n_targets);
 	}
 }
@@ -442,17 +330,10 @@ void nci_clear_target_list(struct nci_dev *ndev)
 }
 
 static void nci_rf_discover_ntf_packet(struct nci_dev *ndev,
-<<<<<<< HEAD
-				       struct sk_buff *skb)
-{
-	struct nci_rf_discover_ntf ntf;
-	__u8 *data = skb->data;
-=======
 				       const struct sk_buff *skb)
 {
 	struct nci_rf_discover_ntf ntf;
 	const __u8 *data = skb->data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool add_target = true;
 
 	ntf.rf_discovery_id = *data++;
@@ -483,14 +364,11 @@ static void nci_rf_discover_ntf_packet(struct nci_dev *ndev,
 				&(ntf.rf_tech_specific_params.nfcf_poll), data);
 			break;
 
-<<<<<<< HEAD
-=======
 		case NCI_NFC_V_PASSIVE_POLL_MODE:
 			data = nci_extract_rf_params_nfcv_passive_poll(ndev,
 				&(ntf.rf_tech_specific_params.nfcv_poll), data);
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			pr_err("unsupported rf_tech_and_mode 0x%x\n",
 			       ntf.rf_tech_and_mode);
@@ -515,12 +393,8 @@ static void nci_rf_discover_ntf_packet(struct nci_dev *ndev,
 }
 
 static int nci_extract_activation_params_iso_dep(struct nci_dev *ndev,
-<<<<<<< HEAD
-			struct nci_rf_intf_activated_ntf *ntf, __u8 *data)
-=======
 						 struct nci_rf_intf_activated_ntf *ntf,
 						 const __u8 *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct activation_params_nfca_poll_iso_dep *nfca_poll;
 	struct activation_params_nfcb_poll_iso_dep *nfcb_poll;
@@ -555,10 +429,6 @@ static int nci_extract_activation_params_iso_dep(struct nci_dev *ndev,
 	return NCI_STATUS_OK;
 }
 
-<<<<<<< HEAD
-static void nci_target_auto_activated(struct nci_dev *ndev,
-				      struct nci_rf_intf_activated_ntf *ntf)
-=======
 static int nci_extract_activation_params_nfc_dep(struct nci_dev *ndev,
 						 struct nci_rf_intf_activated_ntf *ntf,
 						 const __u8 *data)
@@ -598,7 +468,6 @@ static int nci_extract_activation_params_nfc_dep(struct nci_dev *ndev,
 
 static void nci_target_auto_activated(struct nci_dev *ndev,
 				      const struct nci_rf_intf_activated_ntf *ntf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nfc_target *target;
 	int rc;
@@ -611,29 +480,15 @@ static void nci_target_auto_activated(struct nci_dev *ndev,
 	if (rc)
 		return;
 
-<<<<<<< HEAD
-	target->idx = ntf->rf_discovery_id;
-	ndev->n_targets++;
-
-	pr_debug("target_idx %d, n_targets %d\n", target->idx, ndev->n_targets);
-=======
 	target->logical_idx = ntf->rf_discovery_id;
 	ndev->n_targets++;
 
 	pr_debug("logical idx %d, n_targets %d\n",
 		 target->logical_idx, ndev->n_targets);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nfc_targets_found(ndev->nfc_dev, ndev->targets, ndev->n_targets);
 }
 
-<<<<<<< HEAD
-static void nci_rf_intf_activated_ntf_packet(struct nci_dev *ndev,
-					     struct sk_buff *skb)
-{
-	struct nci_rf_intf_activated_ntf ntf;
-	__u8 *data = skb->data;
-=======
 static int nci_store_general_bytes_nfc_dep(struct nci_dev *ndev,
 					   const struct nci_rf_intf_activated_ntf *ntf)
 {
@@ -682,7 +537,6 @@ static void nci_rf_intf_activated_ntf_packet(struct nci_dev *ndev,
 	struct nci_conn_info *conn_info;
 	struct nci_rf_intf_activated_ntf ntf;
 	const __u8 *data = skb->data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = NCI_STATUS_OK;
 
 	ntf.rf_discovery_id = *data++;
@@ -705,8 +559,6 @@ static void nci_rf_intf_activated_ntf_packet(struct nci_dev *ndev,
 	pr_debug("rf_tech_specific_params_len %d\n",
 		 ntf.rf_tech_specific_params_len);
 
-<<<<<<< HEAD
-=======
 	/* If this contains a value of 0x00 (NFCEE Direct RF
 	 * Interface) then all following parameters SHALL contain a
 	 * value of 0 and SHALL be ignored.
@@ -714,7 +566,6 @@ static void nci_rf_intf_activated_ntf_packet(struct nci_dev *ndev,
 	if (ntf.rf_interface == NCI_RF_INTERFACE_NFCEE_DIRECT)
 		goto listen;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ntf.rf_tech_specific_params_len > 0) {
 		switch (ntf.activation_rf_tech_and_mode) {
 		case NCI_NFC_A_PASSIVE_POLL_MODE:
@@ -732,8 +583,6 @@ static void nci_rf_intf_activated_ntf_packet(struct nci_dev *ndev,
 				&(ntf.rf_tech_specific_params.nfcf_poll), data);
 			break;
 
-<<<<<<< HEAD
-=======
 		case NCI_NFC_V_PASSIVE_POLL_MODE:
 			data = nci_extract_rf_params_nfcv_passive_poll(ndev,
 				&(ntf.rf_tech_specific_params.nfcv_poll), data);
@@ -749,7 +598,6 @@ static void nci_rf_intf_activated_ntf_packet(struct nci_dev *ndev,
 				data);
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			pr_err("unsupported activation_rf_tech_and_mode 0x%x\n",
 			       ntf.activation_rf_tech_and_mode);
@@ -776,14 +624,11 @@ static void nci_rf_intf_activated_ntf_packet(struct nci_dev *ndev,
 								    &ntf, data);
 			break;
 
-<<<<<<< HEAD
-=======
 		case NCI_RF_INTERFACE_NFC_DEP:
 			err = nci_extract_activation_params_nfc_dep(ndev,
 								    &ntf, data);
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case NCI_RF_INTERFACE_FRAME:
 			/* no activation params */
 			break;
@@ -798,24 +643,6 @@ static void nci_rf_intf_activated_ntf_packet(struct nci_dev *ndev,
 
 exit:
 	if (err == NCI_STATUS_OK) {
-<<<<<<< HEAD
-		ndev->max_data_pkt_payload_size = ntf.max_data_pkt_payload_size;
-		ndev->initial_num_credits = ntf.initial_num_credits;
-
-		/* set the available credits to initial value */
-		atomic_set(&ndev->credits_cnt, ndev->initial_num_credits);
-	}
-
-	if (atomic_read(&ndev->state) == NCI_DISCOVERY) {
-		/* A single target was found and activated automatically */
-		atomic_set(&ndev->state, NCI_POLL_ACTIVE);
-		if (err == NCI_STATUS_OK)
-			nci_target_auto_activated(ndev, &ntf);
-	} else {	/* ndev->state == NCI_W4_HOST_SELECT */
-		/* A selected target was activated, so complete the request */
-		atomic_set(&ndev->state, NCI_POLL_ACTIVE);
-		nci_req_complete(ndev, err);
-=======
 		conn_info = ndev->rf_conn_info;
 		if (!conn_info)
 			return;
@@ -863,19 +690,10 @@ listen:
 			if (err != NCI_STATUS_OK)
 				pr_err("error when signaling tm activation\n");
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void nci_rf_deactivate_ntf_packet(struct nci_dev *ndev,
-<<<<<<< HEAD
-					 struct sk_buff *skb)
-{
-	struct nci_rf_deactivate_ntf *ntf = (void *) skb->data;
-
-	pr_debug("entry, type 0x%x, reason 0x%x\n", ntf->type, ntf->reason);
-
-=======
 					 const struct sk_buff *skb)
 {
 	const struct nci_conn_info *conn_info;
@@ -887,31 +705,17 @@ static void nci_rf_deactivate_ntf_packet(struct nci_dev *ndev,
 	if (!conn_info)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* drop tx data queue */
 	skb_queue_purge(&ndev->tx_q);
 
 	/* drop partial rx data packet */
 	if (ndev->rx_data_reassembly) {
 		kfree_skb(ndev->rx_data_reassembly);
-<<<<<<< HEAD
-		ndev->rx_data_reassembly = 0;
-=======
 		ndev->rx_data_reassembly = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* complete the data exchange transaction, if exists */
 	if (test_bit(NCI_DATA_EXCHANGE, &ndev->flags))
-<<<<<<< HEAD
-		nci_data_exchange_complete(ndev, NULL, -EIO);
-
-	nci_clear_target_list(ndev);
-	atomic_set(&ndev->state, NCI_IDLE);
-	nci_req_complete(ndev, NCI_STATUS_OK);
-}
-
-=======
 		nci_data_exchange_complete(ndev, NULL, NCI_STATIC_RF_CONN_ID,
 					   -EIO);
 
@@ -951,7 +755,6 @@ static void nci_nfcee_discover_ntf_packet(struct nci_dev *ndev,
 	nci_req_complete(ndev, status);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void nci_ntf_packet(struct nci_dev *ndev, struct sk_buff *skb)
 {
 	__u16 ntf_opcode = nci_opcode(skb->data);
@@ -965,9 +768,6 @@ void nci_ntf_packet(struct nci_dev *ndev, struct sk_buff *skb)
 	/* strip the nci control header */
 	skb_pull(skb, NCI_CTRL_HDR_SIZE);
 
-<<<<<<< HEAD
-	switch (ntf_opcode) {
-=======
 	if (nci_opcode_gid(ntf_opcode) == NCI_GID_PROPRIETARY) {
 		if (nci_prop_ntf_packet(ndev, ntf_opcode, skb) == -ENOTSUPP) {
 			pr_err("unsupported ntf opcode 0x%x\n",
@@ -982,7 +782,6 @@ void nci_ntf_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		nci_core_reset_ntf_packet(ndev, skb);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NCI_OP_CORE_CONN_CREDITS_NTF:
 		nci_core_conn_credits_ntf_packet(ndev, skb);
 		break;
@@ -1007,8 +806,6 @@ void nci_ntf_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		nci_rf_deactivate_ntf_packet(ndev, skb);
 		break;
 
-<<<<<<< HEAD
-=======
 	case NCI_OP_NFCEE_DISCOVER_NTF:
 		nci_nfcee_discover_ntf_packet(ndev, skb);
 		break;
@@ -1016,16 +813,12 @@ void nci_ntf_packet(struct nci_dev *ndev, struct sk_buff *skb)
 	case NCI_OP_RF_NFCEE_ACTION_NTF:
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		pr_err("unknown ntf opcode 0x%x\n", ntf_opcode);
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 	nci_core_ntf_packet(ndev, ntf_opcode, skb);
 end:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree_skb(skb);
 }

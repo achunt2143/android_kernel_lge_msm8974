@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*---------------------------------------------------------------------------+
  |  round_Xsig.S                                                             |
  |                                                                           |
@@ -26,11 +23,7 @@
 
 
 .text
-<<<<<<< HEAD
-ENTRY(round_Xsig)
-=======
 SYM_FUNC_START(round_Xsig)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl	%ebp
 	movl	%esp,%ebp
 	pushl	%ebx		/* Reserve some space */
@@ -85,21 +78,12 @@ L_exit:
 	popl	%esi
 	popl	%ebx
 	leave
-<<<<<<< HEAD
-	ret
-
-
-
-
-ENTRY(norm_Xsig)
-=======
 	RET
 SYM_FUNC_END(round_Xsig)
 
 
 
 SYM_FUNC_START(norm_Xsig)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl	%ebp
 	movl	%esp,%ebp
 	pushl	%ebx		/* Reserve some space */
@@ -154,10 +138,5 @@ L_n_exit:
 	popl	%esi
 	popl	%ebx
 	leave
-<<<<<<< HEAD
-	ret
-
-=======
 	RET
 SYM_FUNC_END(norm_Xsig)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

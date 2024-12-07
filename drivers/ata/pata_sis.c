@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    pata_sis.c - SiS ATA driver
  *
@@ -30,10 +27,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -121,10 +114,6 @@ static int sis_port_base(struct ata_device *adev)
 /**
  *	sis_133_cable_detect - check for 40/80 pin
  *	@ap: Port
-<<<<<<< HEAD
- *	@deadline: deadline jiffies for the operation
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Perform cable detection for the later UDMA133 capable
  *	SiS chipset.
@@ -531,19 +520,12 @@ static void sis_133_set_dmamode (struct ata_port *ap, struct ata_device *adev)
 /**
  *	sis_133_mode_filter - mode selection filter
  *	@adev: ATA device
-<<<<<<< HEAD
-=======
  *	@mask: received mask to manipulate and pass back
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Block UDMA6 on devices that do not support it.
  */
 
-<<<<<<< HEAD
-static unsigned long sis_133_mode_filter(struct ata_device *adev, unsigned long mask)
-=======
 static unsigned int sis_133_mode_filter(struct ata_device *adev, unsigned int mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_port *ap = adev->link->ap;
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
@@ -557,11 +539,7 @@ static unsigned int sis_133_mode_filter(struct ata_device *adev, unsigned int ma
 	return mask;
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template sis_sht = {
-=======
 static const struct scsi_host_template sis_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -892,17 +870,10 @@ static int sis_init_one (struct pci_dev *pdev, const struct pci_device_id *ent)
 	return ata_pci_bmdma_init_one(pdev, ppi, &sis_sht, chipset, 0);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int sis_reinit_one(struct pci_dev *pdev)
-{
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-=======
 #ifdef CONFIG_PM_SLEEP
 static int sis_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -929,39 +900,16 @@ static struct pci_driver sis_pci_driver = {
 	.id_table		= sis_pci_tbl,
 	.probe			= sis_init_one,
 	.remove			= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= sis_reinit_one,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init sis_init(void)
-{
-	return pci_register_driver(&sis_pci_driver);
-}
-
-static void __exit sis_exit(void)
-{
-	pci_unregister_driver(&sis_pci_driver);
-}
-
-module_init(sis_init);
-module_exit(sis_exit);
-=======
 module_pci_driver(sis_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("SCSI low-level driver for SiS ATA");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, sis_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ext4.h
  *
@@ -20,10 +17,7 @@
 #ifndef _EXT4_H
 #define _EXT4_H
 
-<<<<<<< HEAD
-=======
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/blkdev.h>
 #include <linux/magic.h>
@@ -34,16 +28,6 @@
 #include <linux/seqlock.h>
 #include <linux/mutex.h>
 #include <linux/timer.h>
-<<<<<<< HEAD
-#include <linux/version.h>
-#include <linux/wait.h>
-#include <linux/blockgroup_lock.h>
-#include <linux/percpu_counter.h>
-#include <crypto/hash.h>
-#ifdef __KERNEL__
-#include <linux/compat.h>
-#endif
-=======
 #include <linux/wait.h>
 #include <linux/sched/signal.h>
 #include <linux/blockgroup_lock.h>
@@ -62,15 +46,12 @@
 #include <linux/fsverity.h>
 
 #include <linux/compiler.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The fourth extended filesystem constants/structures
  */
 
 /*
-<<<<<<< HEAD
-=======
  * with AGGRESSIVE_CHECK allocator runs consistency checks over
  * structures. these checks slow things down a lot
  */
@@ -83,7 +64,6 @@
 #define DOUBLE_CHECK__
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Define EXT4FS_DEBUG to produce debug messages
  */
 #undef EXT4FS_DEBUG
@@ -102,16 +82,6 @@
 #define ext4_debug(fmt, ...)	no_printk(fmt, ##__VA_ARGS__)
 #endif
 
-<<<<<<< HEAD
-#define EXT4_ERROR_INODE(inode, fmt, a...) \
-	ext4_error_inode((inode), __func__, __LINE__, 0, (fmt), ## a)
-
-#define EXT4_ERROR_INODE_BLOCK(inode, block, fmt, a...)			\
-	ext4_error_inode((inode), __func__, __LINE__, (block), (fmt), ## a)
-
-#define EXT4_ERROR_FILE(file, block, fmt, a...)				\
-	ext4_error_file((file), __func__, __LINE__, (block), (fmt), ## a)
-=======
  /*
   * Turn on EXT_DEBUG to enable ext4_ext_show_path/leaf/move in extents.c
   */
@@ -139,7 +109,6 @@ do {									\
 		BUG();							\
 	}								\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* data type for block offset of block group */
 typedef int ext4_grpblk_t;
@@ -153,8 +122,6 @@ typedef __u32 ext4_lblk_t;
 /* data type for block group number */
 typedef unsigned int ext4_group_t;
 
-<<<<<<< HEAD
-=======
 enum SHIFT_DIRECTION {
 	SHIFT_LEFT = 0,
 	SHIFT_RIGHT,
@@ -209,7 +176,6 @@ enum criteria {
 	EXT4_MB_NUM_CRS
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Flags used in mballoc's allocation_context flags field.
  *
@@ -243,8 +209,6 @@ enum criteria {
 #define EXT4_MB_STREAM_ALLOC		0x0800
 /* Use reserved root blocks if needed */
 #define EXT4_MB_USE_ROOT_BLOCKS		0x1000
-<<<<<<< HEAD
-=======
 /* Use blocks from reserved pool */
 #define EXT4_MB_USE_RESERVED		0x2000
 /* Do strict check for free blocks while retrying block allocation */
@@ -255,7 +219,6 @@ enum criteria {
 #define EXT4_MB_CR_GOAL_LEN_FAST_OPTIMIZED		0x00010000
 /* Avg fragment size rb tree lookup succeeded at least once for cr = 1.5 */
 #define EXT4_MB_CR_BEST_AVAIL_LEN_OPTIMIZED		0x00020000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ext4_allocation_request {
 	/* target inode for block we're allocating */
@@ -285,24 +248,6 @@ struct ext4_allocation_request {
  * well as to store the information returned by ext4_map_blocks().  It
  * takes less room on the stack than a struct buffer_head.
  */
-<<<<<<< HEAD
-#define EXT4_MAP_NEW		(1 << BH_New)
-#define EXT4_MAP_MAPPED		(1 << BH_Mapped)
-#define EXT4_MAP_UNWRITTEN	(1 << BH_Unwritten)
-#define EXT4_MAP_BOUNDARY	(1 << BH_Boundary)
-#define EXT4_MAP_UNINIT		(1 << BH_Uninit)
-/* Sometimes (in the bigalloc case, from ext4_da_get_block_prep) the caller of
- * ext4_map_blocks wants to know whether or not the underlying cluster has
- * already been accounted for. EXT4_MAP_FROM_CLUSTER conveys to the caller that
- * the requested mapping was from previously mapped (or delayed allocated)
- * cluster. We use BH_AllocFromCluster only for this flag. BH_AllocFromCluster
- * should never appear on buffer_head's state flags.
- */
-#define EXT4_MAP_FROM_CLUSTER	(1 << BH_AllocFromCluster)
-#define EXT4_MAP_FLAGS		(EXT4_MAP_NEW | EXT4_MAP_MAPPED |\
-				 EXT4_MAP_UNWRITTEN | EXT4_MAP_BOUNDARY |\
-				 EXT4_MAP_UNINIT | EXT4_MAP_FROM_CLUSTER)
-=======
 #define EXT4_MAP_NEW		BIT(BH_New)
 #define EXT4_MAP_MAPPED		BIT(BH_Mapped)
 #define EXT4_MAP_UNWRITTEN	BIT(BH_Unwritten)
@@ -311,7 +256,6 @@ struct ext4_allocation_request {
 #define EXT4_MAP_FLAGS		(EXT4_MAP_NEW | EXT4_MAP_MAPPED |\
 				 EXT4_MAP_UNWRITTEN | EXT4_MAP_BOUNDARY |\
 				 EXT4_MAP_DELAYED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ext4_map_blocks {
 	ext4_fsblk_t m_pblk;
@@ -321,72 +265,17 @@ struct ext4_map_blocks {
 };
 
 /*
-<<<<<<< HEAD
- * For delayed allocation tracking
- */
-struct mpage_da_data {
-	struct inode *inode;
-	sector_t b_blocknr;		/* start block number of extent */
-	size_t b_size;			/* size of extent */
-	unsigned long b_state;		/* state of the extent */
-	unsigned long first_page, next_page;	/* extent of pages */
-	struct writeback_control *wbc;
-	int io_done;
-	int pages_written;
-	int retval;
-=======
  * Block validity checking, system zone rbtree.
  */
 struct ext4_system_blocks {
 	struct rb_root root;
 	struct rcu_head rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Flags for ext4_io_end->flags
  */
 #define	EXT4_IO_END_UNWRITTEN	0x0001
-<<<<<<< HEAD
-#define EXT4_IO_END_ERROR	0x0002
-#define EXT4_IO_END_QUEUED	0x0004
-#define EXT4_IO_END_DIRECT	0x0008
-#define EXT4_IO_END_IN_FSYNC	0x0010
-
-struct ext4_io_page {
-	struct page	*p_page;
-	atomic_t	p_count;
-};
-
-#define MAX_IO_PAGES 128
-
-/*
- * For converting uninitialized extents on a work queue.
- *
- * 'page' is only used from the writepage() path; 'pages' is only used for
- * buffered writes; they are used to keep page references until conversion
- * takes place.  For AIO/DIO, neither field is filled in.
- */
-typedef struct ext4_io_end {
-	struct list_head	list;		/* per-file finished IO list */
-	struct inode		*inode;		/* file being written to */
-	unsigned int		flag;		/* unwritten or not */
-	struct page		*page;		/* for writepage() path */
-	loff_t			offset;		/* offset in the file */
-	ssize_t			size;		/* size of the extent */
-	struct work_struct	work;		/* data work queue */
-	struct kiocb		*iocb;		/* iocb struct for AIO */
-	int			result;		/* error value for AIO */
-	int			num_io_pages;   /* for writepages() */
-	struct ext4_io_page	*pages[MAX_IO_PAGES]; /* for writepages() */
-} ext4_io_end_t;
-
-struct ext4_io_submit {
-	int			io_op;
-	struct bio		*io_bio;
-	ext4_io_end_t		*io_end;
-	struct ext4_io_page	*io_page;
-=======
 
 struct ext4_io_end_vec {
 	struct list_head list;		/* list of io_end_vec */
@@ -414,7 +303,6 @@ struct ext4_io_submit {
 	struct writeback_control *io_wbc;
 	struct bio		*io_bio;
 	ext4_io_end_t		*io_end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sector_t		io_next_block;
 };
 
@@ -445,10 +333,7 @@ struct ext4_io_submit {
 #define	EXT4_MAX_BLOCK_SIZE		65536
 #define EXT4_MIN_BLOCK_LOG_SIZE		10
 #define EXT4_MAX_BLOCK_LOG_SIZE		16
-<<<<<<< HEAD
-=======
 #define EXT4_MAX_CLUSTER_LOG_SIZE	30
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __KERNEL__
 # define EXT4_BLOCK_SIZE(s)		((s)->s_blocksize)
 #else
@@ -476,12 +361,9 @@ struct ext4_io_submit {
 				 (s)->s_first_ino)
 #endif
 #define EXT4_BLOCK_ALIGN(size, blkbits)		ALIGN((size), (1 << (blkbits)))
-<<<<<<< HEAD
-=======
 #define EXT4_MAX_BLOCKS(size, offset, blkbits) \
 	((EXT4_BLOCK_ALIGN(size + offset, blkbits) >> blkbits) - (offset >> \
 								  blkbits))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Translate a block number to a cluster number */
 #define EXT4_B2C(sbi, blk)	((blk) >> (sbi)->s_cluster_bits)
@@ -490,8 +372,6 @@ struct ext4_io_submit {
 /* Translate # of blks to # of clusters */
 #define EXT4_NUM_B2C(sbi, blks)	(((blks) + (sbi)->s_cluster_ratio - 1) >> \
 				 (sbi)->s_cluster_bits)
-<<<<<<< HEAD
-=======
 /* Mask out the low bits to get the starting block of the cluster */
 #define EXT4_PBLK_CMASK(s, pblk) ((pblk) &				\
 				  ~((ext4_fsblk_t) (s)->s_cluster_ratio - 1))
@@ -505,7 +385,6 @@ struct ext4_io_submit {
 				 ((ext4_fsblk_t) (s)->s_cluster_ratio - 1))
 #define EXT4_LBLK_COFF(s, lblk) ((lblk) &				\
 				 ((ext4_lblk_t) (s)->s_cluster_ratio - 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Structure of a blocks group descriptor
@@ -601,12 +480,8 @@ struct flex_groups {
 #define EXT4_DIRTY_FL			0x00000100
 #define EXT4_COMPRBLK_FL		0x00000200 /* One or more compressed clusters */
 #define EXT4_NOCOMPR_FL			0x00000400 /* Don't compress */
-<<<<<<< HEAD
-#define EXT4_ECOMPR_FL			0x00000800 /* Compression error */
-=======
 	/* nb: was previously EXT2_ECOMPR_FL */
 #define EXT4_ENCRYPT_FL			0x00000800 /* encrypted file */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* End compression flags --- maybe not all used */
 #define EXT4_INDEX_FL			0x00001000 /* hash-indexed directory */
 #define EXT4_IMAGIC_FL			0x00002000 /* AFS directory */
@@ -616,14 +491,6 @@ struct flex_groups {
 #define EXT4_TOPDIR_FL			0x00020000 /* Top of directory hierarchies*/
 #define EXT4_HUGE_FILE_FL               0x00040000 /* Set to each huge file */
 #define EXT4_EXTENTS_FL			0x00080000 /* Inode uses extents */
-<<<<<<< HEAD
-#define EXT4_EA_INODE_FL	        0x00200000 /* Inode used for large EA */
-#define EXT4_EOFBLOCKS_FL		0x00400000 /* Blocks allocated beyond EOF */
-#define EXT4_RESERVED_FL		0x80000000 /* reserved for ext4 lib */
-
-#define EXT4_FL_USER_VISIBLE		0x004BDFFF /* User visible flags */
-#define EXT4_FL_USER_MODIFIABLE		0x004B80FF /* User modifiable flags */
-=======
 #define EXT4_VERITY_FL			0x00100000 /* Verity protected inode */
 #define EXT4_EA_INODE_FL	        0x00200000 /* Inode used for large EA */
 /* 0x00400000 was formerly EXT4_EOFBLOCKS_FL */
@@ -663,18 +530,11 @@ struct flex_groups {
 					 EXT4_INDEX_FL | \
 					 EXT4_VERITY_FL | \
 					 EXT4_INLINE_DATA_FL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flags that should be inherited by new inodes from their parent. */
 #define EXT4_FL_INHERITED (EXT4_SECRM_FL | EXT4_UNRM_FL | EXT4_COMPR_FL |\
 			   EXT4_SYNC_FL | EXT4_NODUMP_FL | EXT4_NOATIME_FL |\
 			   EXT4_NOCOMPR_FL | EXT4_JOURNAL_DATA_FL |\
-<<<<<<< HEAD
-			   EXT4_NOTAIL_FL | EXT4_DIRSYNC_FL)
-
-/* Flags that are appropriate for regular files (all but dir-specific ones). */
-#define EXT4_REG_FLMASK (~(EXT4_DIRSYNC_FL | EXT4_TOPDIR_FL))
-=======
 			   EXT4_NOTAIL_FL | EXT4_DIRSYNC_FL |\
 			   EXT4_PROJINHERIT_FL | EXT4_CASEFOLD_FL |\
 			   EXT4_DAX_FL)
@@ -682,13 +542,10 @@ struct flex_groups {
 /* Flags that are appropriate for regular files (all but dir-specific ones). */
 #define EXT4_REG_FLMASK (~(EXT4_DIRSYNC_FL | EXT4_TOPDIR_FL | EXT4_CASEFOLD_FL |\
 			   EXT4_PROJINHERIT_FL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flags that are appropriate for non-directories/regular files. */
 #define EXT4_OTHER_FLMASK (EXT4_NODUMP_FL | EXT4_NOATIME_FL)
 
-<<<<<<< HEAD
-=======
 /* The only flags that should be swapped */
 #define EXT4_FL_SHOULD_SWAP (EXT4_HUGE_FILE_FL | EXT4_EXTENTS_FL)
 
@@ -696,7 +553,6 @@ struct flex_groups {
 #define EXT4_DAX_MUT_EXCL (EXT4_VERITY_FL | EXT4_ENCRYPT_FL |\
 			   EXT4_JOURNAL_DATA_FL | EXT4_INLINE_DATA_FL)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Mask out flags that are inappropriate for the given type of inode. */
 static inline __u32 ext4_mask_flags(umode_t mode, __u32 flags)
 {
@@ -724,11 +580,7 @@ enum {
 	EXT4_INODE_DIRTY	= 8,
 	EXT4_INODE_COMPRBLK	= 9,	/* One or more compressed clusters */
 	EXT4_INODE_NOCOMPR	= 10,	/* Don't compress */
-<<<<<<< HEAD
-	EXT4_INODE_ECOMPR	= 11,	/* Compression error */
-=======
 	EXT4_INODE_ENCRYPT	= 11,	/* Encrypted file */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* End compression flags --- maybe not all used */
 	EXT4_INODE_INDEX	= 12,	/* hash-indexed directory */
 	EXT4_INODE_IMAGIC	= 13,	/* AFS directory */
@@ -738,32 +590,6 @@ enum {
 	EXT4_INODE_TOPDIR	= 17,	/* Top of directory hierarchies*/
 	EXT4_INODE_HUGE_FILE	= 18,	/* Set to each huge file */
 	EXT4_INODE_EXTENTS	= 19,	/* Inode uses extents */
-<<<<<<< HEAD
-	EXT4_INODE_EA_INODE	= 21,	/* Inode used for large EA */
-	EXT4_INODE_EOFBLOCKS	= 22,	/* Blocks allocated beyond EOF */
-	EXT4_INODE_RESERVED	= 31,	/* reserved for ext4 lib */
-};
-
-#define TEST_FLAG_VALUE(FLAG) (EXT4_##FLAG##_FL == (1 << EXT4_INODE_##FLAG))
-#define CHECK_FLAG_VALUE(FLAG) if (!TEST_FLAG_VALUE(FLAG)) { \
-	printk(KERN_EMERG "EXT4 flag fail: " #FLAG ": %d %d\n", \
-		EXT4_##FLAG##_FL, EXT4_INODE_##FLAG); BUG_ON(1); }
-
-/*
- * Since it's pretty easy to mix up bit numbers and hex values, and we
- * can't do a compile-time test for ENUM values, we use a run-time
- * test to make sure that EXT4_XXX_FL is consistent with respect to
- * EXT4_INODE_XXX.  If all is well the printk and BUG_ON will all drop
- * out so it won't cost any extra space in the compiled kernel image.
- * But it's important that these values are the same, since we are
- * using EXT4_INODE_XXX to test for the flag values, but EXT4_XX_FL
- * must be consistent with the values of FS_XXX_FL defined in
- * include/linux/fs.h and the on-disk values found in ext2, ext3, and
- * ext4 filesystems, and of course the values defined in e2fsprogs.
- *
- * It's not paranoia if the Murphy's Law really *is* out to get you.  :-)
- */
-=======
 	EXT4_INODE_VERITY	= 20,	/* Verity protected inode */
 	EXT4_INODE_EA_INODE	= 21,	/* Inode used for large EA */
 /* 22 was formerly EXT4_INODE_EOFBLOCKS */
@@ -790,7 +616,6 @@ enum {
 #define TEST_FLAG_VALUE(FLAG) (EXT4_##FLAG##_FL == (1U << EXT4_INODE_##FLAG))
 #define CHECK_FLAG_VALUE(FLAG) BUILD_BUG_ON(!TEST_FLAG_VALUE(FLAG))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ext4_check_flag_values(void)
 {
 	CHECK_FLAG_VALUE(SECRM);
@@ -804,11 +629,7 @@ static inline void ext4_check_flag_values(void)
 	CHECK_FLAG_VALUE(DIRTY);
 	CHECK_FLAG_VALUE(COMPRBLK);
 	CHECK_FLAG_VALUE(NOCOMPR);
-<<<<<<< HEAD
-	CHECK_FLAG_VALUE(ECOMPR);
-=======
 	CHECK_FLAG_VALUE(ENCRYPT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CHECK_FLAG_VALUE(INDEX);
 	CHECK_FLAG_VALUE(IMAGIC);
 	CHECK_FLAG_VALUE(JOURNAL_DATA);
@@ -817,24 +638,6 @@ static inline void ext4_check_flag_values(void)
 	CHECK_FLAG_VALUE(TOPDIR);
 	CHECK_FLAG_VALUE(HUGE_FILE);
 	CHECK_FLAG_VALUE(EXTENTS);
-<<<<<<< HEAD
-	CHECK_FLAG_VALUE(EA_INODE);
-	CHECK_FLAG_VALUE(EOFBLOCKS);
-	CHECK_FLAG_VALUE(RESERVED);
-}
-
-/* Used to pass group descriptor data when online resize is done */
-struct ext4_new_group_input {
-	__u32 group;		/* Group number for this data */
-	__u64 block_bitmap;	/* Absolute block number of block bitmap */
-	__u64 inode_bitmap;	/* Absolute block number of inode bitmap */
-	__u64 inode_table;	/* Absolute block number of inode table start */
-	__u32 blocks_count;	/* Total number of blocks in this group */
-	__u16 reserved_blocks;	/* Number of reserved blocks in this group */
-	__u16 unused;
-};
-
-=======
 	CHECK_FLAG_VALUE(VERITY);
 	CHECK_FLAG_VALUE(EA_INODE);
 	CHECK_FLAG_VALUE(INLINE_DATA);
@@ -843,7 +646,6 @@ struct ext4_new_group_input {
 	CHECK_FLAG_VALUE(RESERVED);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(__KERNEL__) && defined(CONFIG_COMPAT)
 struct compat_ext4_new_group_input {
 	u32 group;
@@ -864,13 +666,8 @@ struct ext4_new_group_data {
 	__u64 inode_table;
 	__u32 blocks_count;
 	__u16 reserved_blocks;
-<<<<<<< HEAD
-	__u16 unused;
-	__u32 free_blocks_count;
-=======
 	__u16 mdata_blocks;
 	__u32 free_clusters_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Indexes used to index group tables in ext4_new_group_data */
@@ -884,21 +681,6 @@ enum {
 /*
  * Flags used by ext4_map_blocks()
  */
-<<<<<<< HEAD
-	/* Allocate any needed blocks and/or convert an unitialized
-	   extent to be an initialized ext4 */
-#define EXT4_GET_BLOCKS_CREATE			0x0001
-	/* Request the creation of an unitialized extent */
-#define EXT4_GET_BLOCKS_UNINIT_EXT		0x0002
-#define EXT4_GET_BLOCKS_CREATE_UNINIT_EXT	(EXT4_GET_BLOCKS_UNINIT_EXT|\
-						 EXT4_GET_BLOCKS_CREATE)
-	/* Caller is from the delayed allocation writeout path,
-	   so set the magic i_delalloc_reserve_flag after taking the
-	   inode allocation semaphore for */
-#define EXT4_GET_BLOCKS_DELALLOC_RESERVE	0x0004
-	/* caller is from the direct IO path, request to creation of an
-	unitialized extents if not allocated, split the uninitialized
-=======
 	/* Allocate any needed blocks and/or convert an unwritten
 	   extent to be an initialized ext4 */
 #define EXT4_GET_BLOCKS_CREATE			0x0001
@@ -911,23 +693,10 @@ enum {
 #define EXT4_GET_BLOCKS_DELALLOC_RESERVE	0x0004
 	/* caller is from the direct IO path, request to creation of an
 	unwritten extents if not allocated, split the unwritten
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	extent if blocks has been preallocated already*/
 #define EXT4_GET_BLOCKS_PRE_IO			0x0008
 #define EXT4_GET_BLOCKS_CONVERT			0x0010
 #define EXT4_GET_BLOCKS_IO_CREATE_EXT		(EXT4_GET_BLOCKS_PRE_IO|\
-<<<<<<< HEAD
-					 EXT4_GET_BLOCKS_CREATE_UNINIT_EXT)
-	/* Convert extent to initialized after IO complete */
-#define EXT4_GET_BLOCKS_IO_CONVERT_EXT		(EXT4_GET_BLOCKS_CONVERT|\
-					 EXT4_GET_BLOCKS_CREATE_UNINIT_EXT)
-	/* Punch out blocks of an extent */
-#define EXT4_GET_BLOCKS_PUNCH_OUT_EXT		0x0020
-	/* Don't normalize allocation size (used for fallocate) */
-#define EXT4_GET_BLOCKS_NO_NORMALIZE		0x0040
-	/* Request will not result in inode size update (user for fallocate) */
-#define EXT4_GET_BLOCKS_KEEP_SIZE		0x0080
-=======
 					 EXT4_GET_BLOCKS_CREATE_UNWRIT_EXT)
 	/* Convert extent to initialized after IO complete */
 #define EXT4_GET_BLOCKS_IO_CONVERT_EXT		(EXT4_GET_BLOCKS_CONVERT|\
@@ -961,44 +730,10 @@ enum {
 #define EXT4_EX_NOCACHE				0x40000000
 #define EXT4_EX_FORCE_CACHE			0x20000000
 #define EXT4_EX_NOFAIL				0x10000000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Flags used by ext4_free_blocks
  */
-<<<<<<< HEAD
-#define EXT4_FREE_BLOCKS_METADATA	0x0001
-#define EXT4_FREE_BLOCKS_FORGET		0x0002
-#define EXT4_FREE_BLOCKS_VALIDATED	0x0004
-#define EXT4_FREE_BLOCKS_NO_QUOT_UPDATE	0x0008
-#define EXT4_FREE_BLOCKS_NOFREE_FIRST_CLUSTER	0x0010
-#define EXT4_FREE_BLOCKS_NOFREE_LAST_CLUSTER	0x0020
-
-/*
- * Flags used by ext4_discard_partial_page_buffers
- */
-#define EXT4_DISCARD_PARTIAL_PG_ZERO_UNMAPPED	0x0001
-
-/*
- * ioctl commands
- */
-#define	EXT4_IOC_GETFLAGS		FS_IOC_GETFLAGS
-#define	EXT4_IOC_SETFLAGS		FS_IOC_SETFLAGS
-#define	EXT4_IOC_GETVERSION		_IOR('f', 3, long)
-#define	EXT4_IOC_SETVERSION		_IOW('f', 4, long)
-#define	EXT4_IOC_GETVERSION_OLD		FS_IOC_GETVERSION
-#define	EXT4_IOC_SETVERSION_OLD		FS_IOC_SETVERSION
-#define EXT4_IOC_GETRSVSZ		_IOR('f', 5, long)
-#define EXT4_IOC_SETRSVSZ		_IOW('f', 6, long)
-#define EXT4_IOC_GROUP_EXTEND		_IOW('f', 7, unsigned long)
-#define EXT4_IOC_GROUP_ADD		_IOW('f', 8, struct ext4_new_group_input)
-#define EXT4_IOC_MIGRATE		_IO('f', 9)
- /* note ioctl 10 reserved for an early version of the FIEMAP ioctl */
- /* note ioctl 11 reserved for filesystem-independent FIEMAP ioctl */
-#define EXT4_IOC_ALLOC_DA_BLKS		_IO('f', 12)
-#define EXT4_IOC_MOVE_EXT		_IOWR('f', 15, struct move_extent)
-#define EXT4_IOC_RESIZE_FS		_IOW('f', 16, __u64)
-=======
 #define EXT4_FREE_BLOCKS_METADATA		0x0001
 #define EXT4_FREE_BLOCKS_FORGET			0x0002
 #define EXT4_FREE_BLOCKS_VALIDATED		0x0004
@@ -1006,17 +741,11 @@ enum {
 #define EXT4_FREE_BLOCKS_NOFREE_FIRST_CLUSTER	0x0010
 #define EXT4_FREE_BLOCKS_NOFREE_LAST_CLUSTER	0x0020
 #define EXT4_FREE_BLOCKS_RERESERVE_CLUSTER      0x0040
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(__KERNEL__) && defined(CONFIG_COMPAT)
 /*
  * ioctl commands in 32 bit emulation
  */
-<<<<<<< HEAD
-#define EXT4_IOC32_GETFLAGS		FS_IOC32_GETFLAGS
-#define EXT4_IOC32_SETFLAGS		FS_IOC32_SETFLAGS
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT4_IOC32_GETVERSION		_IOR('f', 3, int)
 #define EXT4_IOC32_SETVERSION		_IOW('f', 4, int)
 #define EXT4_IOC32_GETRSVSZ		_IOR('f', 5, int)
@@ -1030,12 +759,9 @@ enum {
 /* Max physical block we can address w/o extents */
 #define EXT4_MAX_BLOCK_FILE_PHYS	0xFFFFFFFF
 
-<<<<<<< HEAD
-=======
 /* Max logical block we can support */
 #define EXT4_MAX_LOGICAL_BLOCK		0xFFFFFFFE
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Structure of an inode on the disk
  */
@@ -1097,19 +823,7 @@ struct ext4_inode {
 	__le32  i_crtime;       /* File Creation time */
 	__le32  i_crtime_extra; /* extra FileCreationtime (nsec << 2 | epoch) */
 	__le32  i_version_hi;	/* high 32 bits for 64-bit version */
-<<<<<<< HEAD
-};
-
-struct move_extent {
-	__u32 reserved;		/* should be zero */
-	__u32 donor_fd;		/* donor file descriptor */
-	__u64 orig_start;	/* logical start offset in block for orig */
-	__u64 donor_start;	/* logical start offset in block for donor */
-	__u64 len;		/* block length to be moved */
-	__u64 moved_len;	/* moved block length */
-=======
 	__le32	i_projid;	/* Project ID */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define EXT4_EPOCH_BITS 2
@@ -1153,77 +867,6 @@ struct move_extent {
  * affected filesystem before 2242.
  */
 
-<<<<<<< HEAD
-static inline __le32 ext4_encode_extra_time(struct timespec *time)
-{
-	u32 extra = sizeof(time->tv_sec) > 4 ?
-		((time->tv_sec - (s32)time->tv_sec) >> 32) & EXT4_EPOCH_MASK : 0;
-	return cpu_to_le32(extra | (time->tv_nsec << EXT4_EPOCH_BITS));
-}
-
-static inline void ext4_decode_extra_time(struct timespec *time, __le32 extra)
-{
-	if (unlikely(sizeof(time->tv_sec) > 4 &&
-			(extra & cpu_to_le32(EXT4_EPOCH_MASK)))) {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,20,0)
-		/* Handle legacy encoding of pre-1970 dates with epoch
-		 * bits 1,1.  We assume that by kernel version 4.20,
-		 * everyone will have run fsck over the affected
-		 * filesystems to correct the problem.  (This
-		 * backwards compatibility may be removed before this
-		 * time, at the discretion of the ext4 developers.)
-		 */
-		u64 extra_bits = le32_to_cpu(extra) & EXT4_EPOCH_MASK;
-		if (extra_bits == 3 && ((time->tv_sec) & 0x80000000) != 0)
-			extra_bits = 0;
-		time->tv_sec += extra_bits << 32;
-#else
-		time->tv_sec += (u64)(le32_to_cpu(extra) & EXT4_EPOCH_MASK) << 32;
-#endif
-	}
-	time->tv_nsec = (le32_to_cpu(extra) & EXT4_NSEC_MASK) >> EXT4_EPOCH_BITS;
-}
-
-#define EXT4_INODE_SET_XTIME(xtime, inode, raw_inode)			       \
-do {									       \
-	(raw_inode)->xtime = cpu_to_le32((inode)->xtime.tv_sec);	       \
-	if (EXT4_FITS_IN_INODE(raw_inode, EXT4_I(inode), xtime ## _extra))     \
-		(raw_inode)->xtime ## _extra =				       \
-				ext4_encode_extra_time(&(inode)->xtime);       \
-} while (0)
-
-#define EXT4_EINODE_SET_XTIME(xtime, einode, raw_inode)			       \
-do {									       \
-	if (EXT4_FITS_IN_INODE(raw_inode, einode, xtime))		       \
-		(raw_inode)->xtime = cpu_to_le32((einode)->xtime.tv_sec);      \
-	if (EXT4_FITS_IN_INODE(raw_inode, einode, xtime ## _extra))	       \
-		(raw_inode)->xtime ## _extra =				       \
-				ext4_encode_extra_time(&(einode)->xtime);      \
-} while (0)
-
-#define EXT4_INODE_GET_XTIME(xtime, inode, raw_inode)			       \
-do {									       \
-	(inode)->xtime.tv_sec = (signed)le32_to_cpu((raw_inode)->xtime);       \
-	if (EXT4_FITS_IN_INODE(raw_inode, EXT4_I(inode), xtime ## _extra))     \
-		ext4_decode_extra_time(&(inode)->xtime,			       \
-				       raw_inode->xtime ## _extra);	       \
-	else								       \
-		(inode)->xtime.tv_nsec = 0;				       \
-} while (0)
-
-#define EXT4_EINODE_GET_XTIME(xtime, einode, raw_inode)			       \
-do {									       \
-	if (EXT4_FITS_IN_INODE(raw_inode, einode, xtime))		       \
-		(einode)->xtime.tv_sec = 				       \
-			(signed)le32_to_cpu((raw_inode)->xtime);	       \
-	else								       \
-		(einode)->xtime.tv_sec = 0;				       \
-	if (EXT4_FITS_IN_INODE(raw_inode, einode, xtime ## _extra))	       \
-		ext4_decode_extra_time(&(einode)->xtime,		       \
-				       raw_inode->xtime ## _extra);	       \
-	else								       \
-		(einode)->xtime.tv_nsec = 0;				       \
-=======
 static inline __le32 ext4_encode_extra_time(struct timespec64 ts)
 {
 	u32 extra = ((ts.tv_sec - (s32)ts.tv_sec) >> 32) & EXT4_EPOCH_MASK;
@@ -1298,7 +941,6 @@ do {										\
 						 raw_inode);			\
 	else									\
 		(einode)->xtime = (struct timespec64){0, 0};			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 
 #define i_disk_version osd1.linux1.l_i_version
@@ -1328,19 +970,6 @@ do {										\
 
 #endif /* defined(__KERNEL__) || defined(__linux__) */
 
-<<<<<<< HEAD
-/*
- * storage for cached extent
- * If ec_len == 0, then the cache is invalid.
- * If ec_start == 0, then the cache represents a gap (null mapping)
- */
-struct ext4_ext_cache {
-	ext4_fsblk_t	ec_start;
-	ext4_lblk_t	ec_block;
-	__u32		ec_len; /* must be 32bit to return holes */
-};
-
-=======
 #include "extents_status.h"
 #include "fast_commit.h"
 
@@ -1369,7 +998,6 @@ enum {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fourth extended file system inode data in memory
  */
@@ -1381,11 +1009,7 @@ struct ext4_inode_info {
 	/*
 	 * i_block_group is the number of the block group which contains
 	 * this file's inode.  Constant across the lifetime of the inode,
-<<<<<<< HEAD
-	 * it is ued for making block allocation decisions - we try to
-=======
 	 * it is used for making block allocation decisions - we try to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * place a file's data blocks near its inode block, and new inodes
 	 * near to their parent directory's inode.
 	 */
@@ -1396,26 +1020,14 @@ struct ext4_inode_info {
 #endif
 	unsigned long	i_flags;
 
-<<<<<<< HEAD
-#ifdef CONFIG_EXT4_FS_XATTR
-	/*
-	 * Extended attributes can be read independently of the main file
-	 * data. Taking i_mutex even when reading would cause contention
-=======
 	/*
 	 * Extended attributes can be read independently of the main file
 	 * data. Taking i_rwsem even when reading would cause contention
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * between readers of EAs and writers of regular file data, so
 	 * instead we synchronize on xattr_sem when reading or changing
 	 * EAs.
 	 */
 	struct rw_semaphore xattr_sem;
-<<<<<<< HEAD
-#endif
-
-	struct list_head i_orphan;	/* unlinked but open inodes */
-=======
 
 	/*
 	 * Inodes with EXT4_STATE_ORPHAN_FILE use i_orphan_idx. Otherwise
@@ -1449,7 +1061,6 @@ struct ext4_inode_info {
 
 	/* Protect concurrent accesses on i_fc_lblk_start, i_fc_lblk_len */
 	struct mutex i_fc_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * i_disksize keeps track of what the inode size is ON DISK, not
@@ -1482,18 +1093,6 @@ struct ext4_inode_info {
 	struct inode vfs_inode;
 	struct jbd2_inode *jinode;
 
-<<<<<<< HEAD
-	struct ext4_ext_cache i_cached_extent;
-	/*
-	 * File creation time. Its function is same as that of
-	 * struct timespec i_{a,c,m}time in the generic inode.
-	 */
-	struct timespec i_crtime;
-
-	/* mballoc */
-	struct list_head i_prealloc_list;
-	spinlock_t i_prealloc_lock;
-=======
 	spinlock_t i_raw_lock;	/* protects updates to the raw inode */
 
 	/*
@@ -1516,51 +1115,29 @@ struct ext4_inode_info {
 	ext4_lblk_t i_es_shrink_lblk;	/* Offset where we start searching for
 					   extents to shrink. Protected by
 					   i_es_lock  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ialloc */
 	ext4_group_t	i_last_alloc_group;
 
 	/* allocation reservation info for delalloc */
-<<<<<<< HEAD
-	/* In case of bigalloc, these refer to clusters rather than blocks */
-	unsigned int i_reserved_data_blocks;
-	unsigned int i_reserved_meta_blocks;
-	unsigned int i_allocated_meta_blocks;
-	ext4_lblk_t i_da_metadata_calc_last_lblock;
-	int i_da_metadata_calc_len;
-=======
 	/* In case of bigalloc, this refer to clusters rather than blocks */
 	unsigned int i_reserved_data_blocks;
 
 	/* pending cluster reservations for bigalloc file systems */
 	struct ext4_pending_tree i_pending_tree;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* on-disk additional length */
 	__u16 i_extra_isize;
 
-<<<<<<< HEAD
-=======
 	/* Indicate the inline data space. */
 	u16 i_inline_off;
 	u16 i_inline_size;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_QUOTA
 	/* quota space reservation, managed internally by quota code */
 	qsize_t i_reserved_quota;
 #endif
 
-<<<<<<< HEAD
-	/* completed IOs that might need unwritten extents handling */
-	struct list_head i_completed_io_list;
-	spinlock_t i_completed_io_lock;
-	atomic_t i_ioend_count;	/* Number of outstanding io_end structs */
-	/* current io_end structure for async DIO write*/
-	ext4_io_end_t *cur_aio_dio;
-	atomic_t i_aiodio_unwritten; /* Nr. of inflight conversions pending */
-=======
 	/* Lock protecting lists below */
 	spinlock_t i_completed_io_lock;
 	/*
@@ -1570,7 +1147,6 @@ struct ext4_inode_info {
 	struct list_head i_rsv_conversion_list;
 	struct work_struct i_rsv_conversion_work;
 	atomic_t i_unwritten; /* Nr. of inflight conversions pending */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t i_block_reservation_lock;
 
@@ -1581,10 +1157,6 @@ struct ext4_inode_info {
 	tid_t i_sync_tid;
 	tid_t i_datasync_tid;
 
-<<<<<<< HEAD
-	/* Precomputed uuid+inum+igen checksum for seeding inode checksums */
-	__u32 i_csum_seed;
-=======
 #ifdef CONFIG_QUOTA
 	struct dquot __rcu *i_dquot[MAXQUOTAS];
 #endif
@@ -1593,7 +1165,6 @@ struct ext4_inode_info {
 	__u32 i_csum_seed;
 
 	kprojid_t i_projid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1602,10 +1173,7 @@ struct ext4_inode_info {
 #define	EXT4_VALID_FS			0x0001	/* Unmounted cleanly */
 #define	EXT4_ERROR_FS			0x0002	/* Errors detected */
 #define	EXT4_ORPHAN_FS			0x0004	/* Orphans being recovered */
-<<<<<<< HEAD
-=======
 #define EXT4_FC_REPLAY			0x0020	/* Fast commit replay ongoing */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Misc. filesystem flags
@@ -1615,14 +1183,9 @@ struct ext4_inode_info {
 #define EXT2_FLAGS_TEST_FILESYS		0x0004	/* to test development code */
 
 /*
-<<<<<<< HEAD
- * Mount flags
- */
-=======
  * Mount flags set via mount options or defaults
  */
 #define EXT4_MOUNT_NO_MBCACHE		0x00001 /* Do not use mbcache */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT4_MOUNT_GRPID		0x00004	/* Create files with directory's group */
 #define EXT4_MOUNT_DEBUG		0x00008	/* Some debugging messages */
 #define EXT4_MOUNT_ERRORS_CONT		0x00010	/* Continue on errors */
@@ -1631,14 +1194,11 @@ struct ext4_inode_info {
 #define EXT4_MOUNT_ERRORS_MASK		0x00070
 #define EXT4_MOUNT_MINIX_DF		0x00080	/* Mimics the Minix statfs */
 #define EXT4_MOUNT_NOLOAD		0x00100	/* Don't use existing journal*/
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_FS_DAX
 #define EXT4_MOUNT_DAX_ALWAYS		0x00200	/* Direct Access */
 #else
 #define EXT4_MOUNT_DAX_ALWAYS		0
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT4_MOUNT_DATA_FLAGS		0x00C00	/* Mode for data writes: */
 #define EXT4_MOUNT_JOURNAL_DATA		0x00400	/* Write data to journal */
 #define EXT4_MOUNT_ORDERED_DATA		0x00800	/* Flush data before commit */
@@ -1649,15 +1209,6 @@ struct ext4_inode_info {
 #define EXT4_MOUNT_POSIX_ACL		0x08000	/* POSIX Access Control Lists */
 #define EXT4_MOUNT_NO_AUTO_DA_ALLOC	0x10000	/* No auto delalloc mapping */
 #define EXT4_MOUNT_BARRIER		0x20000 /* Use block barriers */
-<<<<<<< HEAD
-#define EXT4_MOUNT_QUOTA		0x80000 /* Some quota option set */
-#define EXT4_MOUNT_USRQUOTA		0x100000 /* "old" user quota */
-#define EXT4_MOUNT_GRPQUOTA		0x200000 /* "old" group quota */
-#define EXT4_MOUNT_DIOREAD_NOLOCK	0x400000 /* Enable support for dio read nolocking */
-#define EXT4_MOUNT_JOURNAL_CHECKSUM	0x800000 /* Journal checksums */
-#define EXT4_MOUNT_JOURNAL_ASYNC_COMMIT	0x1000000 /* Journal Async Commit */
-#define EXT4_MOUNT_MBLK_IO_SUBMIT	0x4000000 /* multi-block io submits */
-=======
 #define EXT4_MOUNT_QUOTA		0x40000 /* Some quota option set */
 #define EXT4_MOUNT_USRQUOTA		0x80000 /* "old" user quota,
 						 * enable enforcement for hidden
@@ -1672,17 +1223,12 @@ struct ext4_inode_info {
 #define EXT4_MOUNT_JOURNAL_ASYNC_COMMIT	0x1000000 /* Journal Async Commit */
 #define EXT4_MOUNT_WARN_ON_ERROR	0x2000000 /* Trigger WARN_ON on error */
 #define EXT4_MOUNT_NO_PREFETCH_BLOCK_BITMAPS 0x4000000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT4_MOUNT_DELALLOC		0x8000000 /* Delalloc support */
 #define EXT4_MOUNT_DATA_ERR_ABORT	0x10000000 /* Abort on file data write */
 #define EXT4_MOUNT_BLOCK_VALIDITY	0x20000000 /* Block validity checking */
 #define EXT4_MOUNT_DISCARD		0x40000000 /* Issue DISCARD requests */
 #define EXT4_MOUNT_INIT_INODE_TABLE	0x80000000 /* Initialize uninitialized itables */
 
-<<<<<<< HEAD
-#define EXT4_MOUNT2_EXPLICIT_DELALLOC	0x00000001 /* User explicitly
-						      specified delalloc */
-=======
 /*
  * Mount flags set either automatically (could not be set by mount option)
  * based on per file system feature or property or in special cases such as
@@ -1705,7 +1251,6 @@ struct ext4_inode_info {
 						    * scanning in mballoc
 						    */
 #define EXT4_MOUNT2_ABORT		0x00000100 /* Abort filesystem */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define clear_opt(sb, opt)		EXT4_SB(sb)->s_mount_opt &= \
 						~EXT4_MOUNT_##opt
@@ -1723,24 +1268,13 @@ struct ext4_inode_info {
 
 #define ext4_test_and_set_bit		__test_and_set_bit_le
 #define ext4_set_bit			__set_bit_le
-<<<<<<< HEAD
-#define ext4_set_bit_atomic		ext2_set_bit_atomic
 #define ext4_test_and_clear_bit		__test_and_clear_bit_le
 #define ext4_clear_bit			__clear_bit_le
-#define ext4_clear_bit_atomic		ext2_clear_bit_atomic
-=======
-#define ext4_test_and_clear_bit		__test_and_clear_bit_le
-#define ext4_clear_bit			__clear_bit_le
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ext4_test_bit			test_bit_le
 #define ext4_find_next_zero_bit		find_next_zero_bit_le
 #define ext4_find_next_bit		find_next_bit_le
 
-<<<<<<< HEAD
-extern void ext4_set_bits(void *bm, int cur, int len);
-=======
 extern void mb_set_bits(void *bm, int cur, int len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Maximal mount counts between two filesystem checks
@@ -1759,11 +1293,8 @@ extern void mb_set_bits(void *bm, int cur, int len);
 /* Metadata checksum algorithm codes */
 #define EXT4_CRC32C_CHKSUM		1
 
-<<<<<<< HEAD
-=======
 #define EXT4_LABEL_MAX			16
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Structure of the super block
  */
@@ -1813,13 +1344,8 @@ struct ext4_super_block {
 /*60*/	__le32	s_feature_incompat;	/* incompatible feature set */
 	__le32	s_feature_ro_compat;	/* readonly-compatible feature set */
 /*68*/	__u8	s_uuid[16];		/* 128-bit uuid for volume */
-<<<<<<< HEAD
-/*78*/	char	s_volume_name[16];	/* volume name */
-/*88*/	char	s_last_mounted[64];	/* directory where last mounted */
-=======
 /*78*/	char	s_volume_name[EXT4_LABEL_MAX];	/* volume name */
 /*88*/	char	s_last_mounted[64] __nonstring;	/* directory where last mounted */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*C8*/	__le32	s_algorithm_usage_bitmap; /* For compression */
 	/*
 	 * Performance hints.  Directory preallocation should only
@@ -1843,11 +1369,7 @@ struct ext4_super_block {
 	__le32	s_first_meta_bg;	/* First metablock block group */
 	__le32	s_mkfs_time;		/* When the filesystem was created */
 	__le32	s_jnl_blocks[17];	/* Backup of the journal inode */
-<<<<<<< HEAD
-	/* 64bit support valid if EXT4_FEATURE_COMPAT_64BIT */
-=======
 	/* 64bit support valid if EXT4_FEATURE_INCOMPAT_64BIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*150*/	__le32	s_blocks_count_hi;	/* Blocks count */
 	__le32	s_r_blocks_count_hi;	/* Reserved blocks count */
 	__le32	s_free_blocks_count_hi;	/* Free blocks count */
@@ -1860,12 +1382,8 @@ struct ext4_super_block {
 	__le32  s_raid_stripe_width;    /* blocks on all data disks (N*stride)*/
 	__u8	s_log_groups_per_flex;  /* FLEX_BG group size */
 	__u8	s_checksum_type;	/* metadata checksum algorithm used */
-<<<<<<< HEAD
-	__le16  s_reserved_pad;
-=======
 	__u8	s_encryption_level;	/* versioning level for encryption */
 	__u8	s_reserved_pad;		/* Padding to next 32bits */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le64	s_kbytes_written;	/* nr of lifetime kilobytes written */
 	__le32	s_snapshot_inum;	/* Inode number of active snapshot */
 	__le32	s_snapshot_id;		/* sequential ID of active snapshot */
@@ -1878,29 +1396,18 @@ struct ext4_super_block {
 	__le32	s_first_error_time;	/* first time an error happened */
 	__le32	s_first_error_ino;	/* inode involved in first error */
 	__le64	s_first_error_block;	/* block involved of first error */
-<<<<<<< HEAD
-	__u8	s_first_error_func[32];	/* function where the error happened */
-=======
 	__u8	s_first_error_func[32] __nonstring;	/* function where the error happened */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le32	s_first_error_line;	/* line number where error happened */
 	__le32	s_last_error_time;	/* most recent time of an error */
 	__le32	s_last_error_ino;	/* inode involved in last error */
 	__le32	s_last_error_line;	/* line number where error happened */
 	__le64	s_last_error_block;	/* block involved of last error */
-<<<<<<< HEAD
-	__u8	s_last_error_func[32];	/* function where the error happened */
-=======
 	__u8	s_last_error_func[32] __nonstring;	/* function where the error happened */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT4_S_ERR_END offsetof(struct ext4_super_block, s_mount_opts)
 	__u8	s_mount_opts[64];
 	__le32	s_usr_quota_inum;	/* inode for tracking user quota */
 	__le32	s_grp_quota_inum;	/* inode for tracking group quota */
 	__le32	s_overhead_clusters;	/* overhead blocks/clusters in fs */
-<<<<<<< HEAD
-	__le32	s_reserved[108];	/* Padding to the end of the block */
-=======
 	__le32	s_backup_bgs[2];	/* groups with sparse_super2 SBs */
 	__u8	s_encrypt_algos[4];	/* Encryption algorithms in use  */
 	__u8	s_encrypt_pw_salt[16];	/* Salt used for string2key algorithm */
@@ -1919,7 +1426,6 @@ struct ext4_super_block {
 	__le16  s_encoding_flags;	/* Filename charset encoding flags */
 	__le32  s_orphan_file_inum;	/* Inode for tracking orphan inodes */
 	__le32	s_reserved[94];		/* Padding to the end of the block */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le32	s_checksum;		/* crc32c(superblock) */
 };
 
@@ -1927,13 +1433,6 @@ struct ext4_super_block {
 
 #ifdef __KERNEL__
 
-<<<<<<< HEAD
-/*
- * run-time mount flags
- */
-#define EXT4_MF_MNTDIR_SAMPLED	0x0001
-#define EXT4_MF_FS_ABORTED	0x0002	/* Fatal error detected */
-=======
 /* Number of quota types we support */
 #define EXT4_MAXQUOTAS 3
 
@@ -1986,7 +1485,6 @@ struct ext4_orphan_info {
 	struct ext4_orphan_block *of_binfo;	/* Array with info about orphan
 						 * file blocks */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * fourth extended-fs super-block data in memory
@@ -2008,16 +1506,6 @@ struct ext4_sb_info {
 	loff_t s_bitmap_maxbytes;	/* max bytes for bitmap files */
 	struct buffer_head * s_sbh;	/* Buffer containing the super block */
 	struct ext4_super_block *s_es;	/* Pointer to the super block in the buffer */
-<<<<<<< HEAD
-	struct buffer_head **s_group_desc;
-	unsigned int s_mount_opt;
-	unsigned int s_mount_opt2;
-	unsigned int s_mount_flags;
-	unsigned int s_def_mount_opt;
-	ext4_fsblk_t s_sb_block;
-	uid_t s_resuid;
-	gid_t s_resgid;
-=======
 	/* Array of bh's for the block group descriptors */
 	struct buffer_head * __rcu *s_group_desc;
 	unsigned int s_mount_opt;
@@ -2029,7 +1517,6 @@ struct ext4_sb_info {
 	atomic64_t s_resv_clusters;
 	kuid_t s_resuid;
 	kgid_t s_resgid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short s_mount_state;
 	unsigned short s_pad;
 	int s_addr_per_block_bits;
@@ -2038,48 +1525,18 @@ struct ext4_sb_info {
 	int s_first_ino;
 	unsigned int s_inode_readahead_blks;
 	unsigned int s_inode_goal;
-<<<<<<< HEAD
-	spinlock_t s_next_gen_lock;
-	u32 s_next_generation;
-	u32 s_hash_seed[4];
-	int s_def_hash_version;
-	int s_hash_unsigned;	/* 3 if hash should be signed, 0 if not */
-=======
 	u32 s_hash_seed[4];
 	int s_def_hash_version;
 	int s_hash_unsigned;	/* 3 if hash should be unsigned, 0 if not */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct percpu_counter s_freeclusters_counter;
 	struct percpu_counter s_freeinodes_counter;
 	struct percpu_counter s_dirs_counter;
 	struct percpu_counter s_dirtyclusters_counter;
-<<<<<<< HEAD
-=======
 	struct percpu_counter s_sra_exceeded_retry_limit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct blockgroup_lock *s_blockgroup_lock;
 	struct proc_dir_entry *s_proc;
 	struct kobject s_kobj;
 	struct completion s_kobj_unregister;
-<<<<<<< HEAD
-
-	/* Journaling */
-	struct journal_s *s_journal;
-	struct list_head s_orphan;
-	struct mutex s_orphan_lock;
-	unsigned long s_resize_flags;		/* Flags indicating if there
-						   is a resizer */
-	unsigned long s_commit_interval;
-	u32 s_max_batch_time;
-	u32 s_min_batch_time;
-	struct block_device *journal_bdev;
-#ifdef CONFIG_QUOTA
-	char *s_qf_names[MAXQUOTAS];		/* Names of quota files with journalled quota */
-	int s_jquota_fmt;			/* Format of quota to use */
-#endif
-	unsigned int s_want_extra_isize; /* New inodes should reserve # bytes */
-	struct rb_root system_blks;
-=======
 	struct super_block *s_sb;
 	struct buffer_head *s_mmp_bh;
 
@@ -2101,7 +1558,6 @@ struct ext4_sb_info {
 #endif
 	unsigned int s_want_extra_isize; /* New inodes should reserve # bytes */
 	struct ext4_system_blocks __rcu *s_system_blks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef EXTENTS_STATS
 	/* ext4 extents stats */
@@ -2114,20 +1570,11 @@ struct ext4_sb_info {
 #endif
 
 	/* for buddy allocator */
-<<<<<<< HEAD
-	struct ext4_group_info ***s_group_info;
-=======
 	struct ext4_group_info ** __rcu *s_group_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *s_buddy_cache;
 	spinlock_t s_md_lock;
 	unsigned short *s_mb_offsets;
 	unsigned int *s_mb_maxs;
-<<<<<<< HEAD
-
-	/* tunables */
-	unsigned long s_stripe;
-=======
 	unsigned int s_group_info_size;
 	unsigned int s_mb_free_pending;
 	struct list_head s_freed_data_list[2];	/* List of blocks to be freed
@@ -2143,19 +1590,12 @@ struct ext4_sb_info {
 	/* tunables */
 	unsigned long s_stripe;
 	unsigned int s_mb_max_linear_groups;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int s_mb_stream_request;
 	unsigned int s_mb_max_to_scan;
 	unsigned int s_mb_min_to_scan;
 	unsigned int s_mb_stats;
 	unsigned int s_mb_order2_reqs;
 	unsigned int s_mb_group_prealloc;
-<<<<<<< HEAD
-	unsigned int s_max_writeback_mb_bump;
-	/* where last allocation was done - for stream allocation */
-	unsigned long s_mb_last_group;
-	unsigned long s_mb_last_start;
-=======
 	unsigned int s_max_dir_size_kb;
 	/* where last allocation was done - for stream allocation */
 	unsigned long s_mb_last_group;
@@ -2163,21 +1603,12 @@ struct ext4_sb_info {
 	unsigned int s_mb_prefetch;
 	unsigned int s_mb_prefetch_limit;
 	unsigned int s_mb_best_avail_max_trim_order;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* stats for buddy allocator */
 	atomic_t s_bal_reqs;	/* number of reqs with len > 1 */
 	atomic_t s_bal_success;	/* we found long enough chunks */
 	atomic_t s_bal_allocated;	/* in blocks */
 	atomic_t s_bal_ex_scanned;	/* total extents scanned */
-<<<<<<< HEAD
-	atomic_t s_bal_goals;	/* goal hits */
-	atomic_t s_bal_breaks;	/* too long searches */
-	atomic_t s_bal_2orders;	/* 2^order hits */
-	spinlock_t s_bal_lock;
-	unsigned long s_mb_buddies_generated;
-	unsigned long long s_mb_generation_time;
-=======
 	atomic_t s_bal_cX_ex_scanned[EXT4_MB_NUM_CRS];	/* total extents scanned */
 	atomic_t s_bal_groups_scanned;	/* number of groups scanned */
 	atomic_t s_bal_goals;	/* goal hits */
@@ -2192,7 +1623,6 @@ struct ext4_sb_info {
 	atomic64_t s_bal_cX_failed[EXT4_MB_NUM_CRS];		/* cX loop didn't find blocks */
 	atomic_t s_mb_buddies_generated;	/* number of buddies generated */
 	atomic64_t s_mb_generation_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_t s_mb_lost_chunks;
 	atomic_t s_mb_preallocated;
 	atomic_t s_mb_discarded;
@@ -2205,13 +1635,6 @@ struct ext4_sb_info {
 	unsigned long s_sectors_written_start;
 	u64 s_kbytes_written;
 
-<<<<<<< HEAD
-	unsigned int s_log_groups_per_flex;
-	struct flex_groups *s_flex_groups;
-
-	/* workqueue for dio unwritten */
-	struct workqueue_struct *dio_unwritten_wq;
-=======
 	/* the size of zero-out chunk */
 	unsigned int s_extent_max_zeroout_kb;
 
@@ -2221,7 +1644,6 @@ struct ext4_sb_info {
 
 	/* workqueue for reserved extent conversions (buffered io) */
 	struct workqueue_struct *rsv_conversion_wq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* timer for periodic error stats printing */
 	struct timer_list s_err_report;
@@ -2235,19 +1657,13 @@ struct ext4_sb_info {
 	struct task_struct *s_mmp_tsk;
 
 	/* record the last minlen when FITRIM is called. */
-<<<<<<< HEAD
-	atomic_t s_last_trim_minblks;
-=======
 	unsigned long s_last_trim_minblks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reference to checksum algorithm driver via cryptoapi */
 	struct crypto_shash *s_chksum_driver;
 
 	/* Precomputed FS UUID checksum for seeding other checksums */
 	__u32 s_csum_seed;
-<<<<<<< HEAD
-=======
 
 	/* Reclaim extents from extent status tree */
 	struct shrinker *s_es_shrinker;
@@ -2337,7 +1753,6 @@ struct ext4_sb_info {
 	int s_fc_debug_max_replay;
 #endif
 	struct ext4_fc_replay_state s_fc_replay_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct ext4_sb_info *EXT4_SB(struct super_block *sb)
@@ -2349,12 +1764,6 @@ static inline struct ext4_inode_info *EXT4_I(struct inode *inode)
 	return container_of(inode, struct ext4_inode_info, vfs_inode);
 }
 
-<<<<<<< HEAD
-static inline struct timespec ext4_current_time(struct inode *inode)
-{
-	return (inode->i_sb->s_time_gran < NSEC_PER_SEC) ?
-		current_fs_time(inode->i_sb) : CURRENT_TIME_SEC;
-=======
 static inline int ext4_writepages_down_read(struct super_block *sb)
 {
 	percpu_down_read(&EXT4_SB(sb)->s_writepages_rwsem);
@@ -2377,7 +1786,6 @@ static inline void ext4_writepages_up_write(struct super_block *sb, int ctx)
 {
 	memalloc_nofs_restore(ctx);
 	percpu_up_write(&EXT4_SB(sb)->s_writepages_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int ext4_valid_inum(struct super_block *sb, unsigned long ino)
@@ -2387,17 +1795,6 @@ static inline int ext4_valid_inum(struct super_block *sb, unsigned long ino)
 		 ino <= le32_to_cpu(EXT4_SB(sb)->s_es->s_inodes_count));
 }
 
-<<<<<<< HEAD
-static inline void ext4_set_io_unwritten_flag(struct inode *inode,
-					      struct ext4_io_end *io_end)
-{
-	if (!(io_end->flag & EXT4_IO_END_UNWRITTEN)) {
-		io_end->flag |= EXT4_IO_END_UNWRITTEN;
-		atomic_inc(&EXT4_I(inode)->i_aiodio_unwritten);
-	}
-}
-
-=======
 /*
  * Returns: sbi->field[index]
  * Used to access an array element from the following sbi fields which require
@@ -2499,25 +1896,15 @@ static inline void ext4_simulate_fail_bh(struct super_block *sb,
 #define EXT4_ERR_ESHUTDOWN	16
 #define EXT4_ERR_EFAULT		17
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Inode dynamic state flags
  */
 enum {
-<<<<<<< HEAD
-	EXT4_STATE_JDATA,		/* journaled data exists */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	EXT4_STATE_NEW,			/* inode is newly created */
 	EXT4_STATE_XATTR,		/* has in-inode xattrs */
 	EXT4_STATE_NO_EXPAND,		/* No space for expansion */
 	EXT4_STATE_DA_ALLOC_CLOSE,	/* Alloc DA blks on close */
 	EXT4_STATE_EXT_MIGRATE,		/* Inode is migrating */
-<<<<<<< HEAD
-	EXT4_STATE_DIO_UNWRITTEN,	/* need convert on dio done*/
-	EXT4_STATE_NEWENTRY,		/* File just added to dir */
-	EXT4_STATE_DELALLOC_RESERVED,	/* blks already reserved for delalloc */
-=======
 	EXT4_STATE_NEWENTRY,		/* File just added to dir */
 	EXT4_STATE_MAY_INLINE_DATA,	/* may have in-inode data */
 	EXT4_STATE_EXT_PRECACHED,	/* extents have been precached */
@@ -2525,7 +1912,6 @@ enum {
 	EXT4_STATE_VERITY_IN_PROGRESS,	/* building fs-verity Merkle tree */
 	EXT4_STATE_FC_COMMITTING,	/* Fast commit ongoing */
 	EXT4_STATE_ORPHAN_FILE,		/* Inode orphaned in orphan file */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define EXT4_INODE_BIT_FNS(name, field, offset)				\
@@ -2542,9 +1928,6 @@ static inline void ext4_clear_inode_##name(struct inode *inode, int bit) \
 	clear_bit(bit + (offset), &EXT4_I(inode)->i_##field);		\
 }
 
-<<<<<<< HEAD
-EXT4_INODE_BIT_FNS(flag, flags, 0)
-=======
 /* Add these declarations here only so that these functions can be
  * found by name.  Otherwise, they are very hard to locate. */
 static inline int ext4_test_inode_flag(struct inode *inode, int bit);
@@ -2557,7 +1940,6 @@ EXT4_INODE_BIT_FNS(flag, flags, 0)
 static inline int ext4_test_inode_state(struct inode *inode, int bit);
 static inline void ext4_set_inode_state(struct inode *inode, int bit);
 static inline void ext4_clear_inode_state(struct inode *inode, int bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if (BITS_PER_LONG < 64)
 EXT4_INODE_BIT_FNS(state, state_flags, 0)
 
@@ -2580,15 +1962,12 @@ static inline void ext4_clear_state_flags(struct ext4_inode_info *ei)
 #define EXT4_SB(sb)	(sb)
 #endif
 
-<<<<<<< HEAD
-=======
 static inline bool ext4_verity_in_progress(struct inode *inode)
 {
 	return IS_ENABLED(CONFIG_FS_VERITY) &&
 	       ext4_test_inode_state(inode, EXT4_STATE_VERITY_IN_PROGRESS);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NEXT_ORPHAN(inode) EXT4_I(inode)->i_dtime
 
 /*
@@ -2606,55 +1985,24 @@ static inline bool ext4_verity_in_progress(struct inode *inode)
 #define EXT4_GOOD_OLD_REV	0	/* The good old (original) format */
 #define EXT4_DYNAMIC_REV	1	/* V2 format w/ dynamic inode sizes */
 
-<<<<<<< HEAD
-#define EXT4_CURRENT_REV	EXT4_GOOD_OLD_REV
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT4_MAX_SUPP_REV	EXT4_DYNAMIC_REV
 
 #define EXT4_GOOD_OLD_INODE_SIZE 128
 
-<<<<<<< HEAD
-=======
 #define EXT4_EXTRA_TIMESTAMP_MAX	(((s64)1 << 34) - 1  + S32_MIN)
 #define EXT4_NON_EXTRA_TIMESTAMP_MAX	S32_MAX
 #define EXT4_TIMESTAMP_MIN		S32_MIN
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Feature set definitions
  */
 
-<<<<<<< HEAD
-#define EXT4_HAS_COMPAT_FEATURE(sb,mask)			\
-	((EXT4_SB(sb)->s_es->s_feature_compat & cpu_to_le32(mask)) != 0)
-#define EXT4_HAS_RO_COMPAT_FEATURE(sb,mask)			\
-	((EXT4_SB(sb)->s_es->s_feature_ro_compat & cpu_to_le32(mask)) != 0)
-#define EXT4_HAS_INCOMPAT_FEATURE(sb,mask)			\
-	((EXT4_SB(sb)->s_es->s_feature_incompat & cpu_to_le32(mask)) != 0)
-#define EXT4_SET_COMPAT_FEATURE(sb,mask)			\
-	EXT4_SB(sb)->s_es->s_feature_compat |= cpu_to_le32(mask)
-#define EXT4_SET_RO_COMPAT_FEATURE(sb,mask)			\
-	EXT4_SB(sb)->s_es->s_feature_ro_compat |= cpu_to_le32(mask)
-#define EXT4_SET_INCOMPAT_FEATURE(sb,mask)			\
-	EXT4_SB(sb)->s_es->s_feature_incompat |= cpu_to_le32(mask)
-#define EXT4_CLEAR_COMPAT_FEATURE(sb,mask)			\
-	EXT4_SB(sb)->s_es->s_feature_compat &= ~cpu_to_le32(mask)
-#define EXT4_CLEAR_RO_COMPAT_FEATURE(sb,mask)			\
-	EXT4_SB(sb)->s_es->s_feature_ro_compat &= ~cpu_to_le32(mask)
-#define EXT4_CLEAR_INCOMPAT_FEATURE(sb,mask)			\
-	EXT4_SB(sb)->s_es->s_feature_incompat &= ~cpu_to_le32(mask)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT4_FEATURE_COMPAT_DIR_PREALLOC	0x0001
 #define EXT4_FEATURE_COMPAT_IMAGIC_INODES	0x0002
 #define EXT4_FEATURE_COMPAT_HAS_JOURNAL		0x0004
 #define EXT4_FEATURE_COMPAT_EXT_ATTR		0x0008
 #define EXT4_FEATURE_COMPAT_RESIZE_INODE	0x0010
 #define EXT4_FEATURE_COMPAT_DIR_INDEX		0x0020
-<<<<<<< HEAD
-=======
 #define EXT4_FEATURE_COMPAT_SPARSE_SUPER2	0x0200
 /*
  * The reason why "FAST_COMMIT" is a compat feature is that, FS becomes
@@ -2666,7 +2014,6 @@ static inline bool ext4_verity_in_progress(struct inode *inode)
 #define EXT4_FEATURE_COMPAT_FAST_COMMIT		0x0400
 #define EXT4_FEATURE_COMPAT_STABLE_INODES	0x0800
 #define EXT4_FEATURE_COMPAT_ORPHAN_FILE		0x1000	/* Orphan file exists */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EXT4_FEATURE_RO_COMPAT_SPARSE_SUPER	0x0001
 #define EXT4_FEATURE_RO_COMPAT_LARGE_FILE	0x0002
@@ -2684,14 +2031,11 @@ static inline bool ext4_verity_in_progress(struct inode *inode)
  * GDT_CSUM bits are mutually exclusive.
  */
 #define EXT4_FEATURE_RO_COMPAT_METADATA_CSUM	0x0400
-<<<<<<< HEAD
-=======
 #define EXT4_FEATURE_RO_COMPAT_READONLY		0x1000
 #define EXT4_FEATURE_RO_COMPAT_PROJECT		0x2000
 #define EXT4_FEATURE_RO_COMPAT_VERITY		0x8000
 #define EXT4_FEATURE_RO_COMPAT_ORPHAN_PRESENT	0x10000 /* Orphan file may be
 							   non-empty */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EXT4_FEATURE_INCOMPAT_COMPRESSION	0x0001
 #define EXT4_FEATURE_INCOMPAT_FILETYPE		0x0002
@@ -2704,11 +2048,6 @@ static inline bool ext4_verity_in_progress(struct inode *inode)
 #define EXT4_FEATURE_INCOMPAT_FLEX_BG		0x0200
 #define EXT4_FEATURE_INCOMPAT_EA_INODE		0x0400 /* EA in inode */
 #define EXT4_FEATURE_INCOMPAT_DIRDATA		0x1000 /* data in dirent */
-<<<<<<< HEAD
-#define EXT4_FEATURE_INCOMPAT_BG_USE_META_CSUM	0x2000 /* use crc32c for bg */
-#define EXT4_FEATURE_INCOMPAT_LARGEDIR		0x4000 /* >2GB or 3-lvl htree */
-#define EXT4_FEATURE_INCOMPAT_INLINEDATA	0x8000 /* data in inode */
-=======
 #define EXT4_FEATURE_INCOMPAT_CSUM_SEED		0x2000
 #define EXT4_FEATURE_INCOMPAT_LARGEDIR		0x4000 /* >2GB or 3-lvl htree */
 #define EXT4_FEATURE_INCOMPAT_INLINE_DATA	0x8000 /* data in inode */
@@ -2813,7 +2152,6 @@ EXT4_FEATURE_INCOMPAT_FUNCS(largedir,		LARGEDIR)
 EXT4_FEATURE_INCOMPAT_FUNCS(inline_data,	INLINE_DATA)
 EXT4_FEATURE_INCOMPAT_FUNCS(encrypt,		ENCRYPT)
 EXT4_FEATURE_INCOMPAT_FUNCS(casefold,		CASEFOLD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EXT2_FEATURE_COMPAT_SUPP	EXT4_FEATURE_COMPAT_EXT_ATTR
 #define EXT2_FEATURE_INCOMPAT_SUPP	(EXT4_FEATURE_INCOMPAT_FILETYPE| \
@@ -2830,21 +2168,14 @@ EXT4_FEATURE_INCOMPAT_FUNCS(casefold,		CASEFOLD)
 					 EXT4_FEATURE_RO_COMPAT_LARGE_FILE| \
 					 EXT4_FEATURE_RO_COMPAT_BTREE_DIR)
 
-<<<<<<< HEAD
-#define EXT4_FEATURE_COMPAT_SUPP	EXT2_FEATURE_COMPAT_EXT_ATTR
-=======
 #define EXT4_FEATURE_COMPAT_SUPP	(EXT4_FEATURE_COMPAT_EXT_ATTR| \
 					 EXT4_FEATURE_COMPAT_ORPHAN_FILE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT4_FEATURE_INCOMPAT_SUPP	(EXT4_FEATURE_INCOMPAT_FILETYPE| \
 					 EXT4_FEATURE_INCOMPAT_RECOVER| \
 					 EXT4_FEATURE_INCOMPAT_META_BG| \
 					 EXT4_FEATURE_INCOMPAT_EXTENTS| \
 					 EXT4_FEATURE_INCOMPAT_64BIT| \
 					 EXT4_FEATURE_INCOMPAT_FLEX_BG| \
-<<<<<<< HEAD
-					 EXT4_FEATURE_INCOMPAT_MMP)
-=======
 					 EXT4_FEATURE_INCOMPAT_EA_INODE| \
 					 EXT4_FEATURE_INCOMPAT_MMP | \
 					 EXT4_FEATURE_INCOMPAT_INLINE_DATA | \
@@ -2852,7 +2183,6 @@ EXT4_FEATURE_INCOMPAT_FUNCS(casefold,		CASEFOLD)
 					 EXT4_FEATURE_INCOMPAT_CASEFOLD | \
 					 EXT4_FEATURE_INCOMPAT_CSUM_SEED | \
 					 EXT4_FEATURE_INCOMPAT_LARGEDIR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT4_FEATURE_RO_COMPAT_SUPP	(EXT4_FEATURE_RO_COMPAT_SPARSE_SUPER| \
 					 EXT4_FEATURE_RO_COMPAT_LARGE_FILE| \
 					 EXT4_FEATURE_RO_COMPAT_GDT_CSUM| \
@@ -2860,9 +2190,6 @@ EXT4_FEATURE_INCOMPAT_FUNCS(casefold,		CASEFOLD)
 					 EXT4_FEATURE_RO_COMPAT_EXTRA_ISIZE | \
 					 EXT4_FEATURE_RO_COMPAT_BTREE_DIR |\
 					 EXT4_FEATURE_RO_COMPAT_HUGE_FILE |\
-<<<<<<< HEAD
-					 EXT4_FEATURE_RO_COMPAT_BIGALLOC)
-=======
 					 EXT4_FEATURE_RO_COMPAT_BIGALLOC |\
 					 EXT4_FEATURE_RO_COMPAT_METADATA_CSUM|\
 					 EXT4_FEATURE_RO_COMPAT_QUOTA |\
@@ -2917,7 +2244,6 @@ static inline int ext4_forced_shutdown(struct super_block *sb)
 {
 	return test_bit(EXT4_FLAGS_SHUTDOWN, &EXT4_SB(sb)->s_ext4_flags);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Default values for user and/or group using reserved blocks
@@ -2925,14 +2251,11 @@ static inline int ext4_forced_shutdown(struct super_block *sb)
 #define	EXT4_DEF_RESUID		0
 #define	EXT4_DEF_RESGID		0
 
-<<<<<<< HEAD
-=======
 /*
  * Default project ID
  */
 #define	EXT4_DEF_PROJID		0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT4_DEF_INODE_READAHEAD_BLKS	32
 
 /*
@@ -2968,13 +2291,10 @@ static inline int ext4_forced_shutdown(struct super_block *sb)
  * Structure of a directory entry
  */
 #define EXT4_NAME_LEN 255
-<<<<<<< HEAD
-=======
 /*
  * Base length of the ext4 directory entry excluding the name length
  */
 #define EXT4_BASE_DIR_LEN (sizeof(struct ext4_dir_entry_2) - EXT4_NAME_LEN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ext4_dir_entry {
 	__le32	inode;			/* Inode number */
@@ -2983,8 +2303,6 @@ struct ext4_dir_entry {
 	char	name[EXT4_NAME_LEN];	/* File name */
 };
 
-<<<<<<< HEAD
-=======
 
 /*
  * Encrypted Casefolded entries require saving the hash on disk. This structure
@@ -2996,7 +2314,6 @@ struct ext4_dir_entry_hash {
 	__le32 minor_hash;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The new version of the directory entry.  Since EXT4 structures are
  * stored in intel byte order, and the name_len field could never be
@@ -3007,17 +2324,11 @@ struct ext4_dir_entry_2 {
 	__le32	inode;			/* Inode number */
 	__le16	rec_len;		/* Directory entry length */
 	__u8	name_len;		/* Name length */
-<<<<<<< HEAD
-	__u8	file_type;
-=======
 	__u8	file_type;		/* See file type macros EXT4_FT_* below */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char	name[EXT4_NAME_LEN];	/* File name */
 };
 
 /*
-<<<<<<< HEAD
-=======
  * Access the hashes at the end of ext4_dir_entry_2
  */
 #define EXT4_DIRENT_HASHES(entry) \
@@ -3034,7 +2345,6 @@ static inline bool ext4_hash_in_dirent(const struct inode *inode)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This is a bogus directory entry at the end of each leaf block that
  * records checksums.
  */
@@ -3046,14 +2356,11 @@ struct ext4_dir_entry_tail {
 	__le32	det_checksum;		/* crc32c(uuid+inum+dirblock) */
 };
 
-<<<<<<< HEAD
-=======
 #define EXT4_DIRENT_TAIL(block, blocksize) \
 	((struct ext4_dir_entry_tail *)(((void *)(block)) + \
 					((blocksize) - \
 					 sizeof(struct ext4_dir_entry_tail))))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Ext4 directory file types.  Only the low 3 bits are used.  The
  * other bits are reserved for now.
@@ -3078,13 +2385,6 @@ struct ext4_dir_entry_tail {
  */
 #define EXT4_DIR_PAD			4
 #define EXT4_DIR_ROUND			(EXT4_DIR_PAD - 1)
-<<<<<<< HEAD
-#define EXT4_DIR_REC_LEN(name_len)	(((name_len) + 8 + EXT4_DIR_ROUND) & \
-					 ~EXT4_DIR_ROUND)
-#define EXT4_MAX_REC_LEN		((1<<16)-1)
-
-/*
-=======
 #define EXT4_MAX_REC_LEN		((1<<16)-1)
 
 /*
@@ -3104,7 +2404,6 @@ static inline unsigned int ext4_dir_rec_len(__u8 name_len,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * If we ever get support for fs block sizes > page_size, we'll need
  * to remove the #if statements in the next two functions...
  */
@@ -3113,11 +2412,7 @@ ext4_rec_len_from_disk(__le16 dlen, unsigned blocksize)
 {
 	unsigned len = le16_to_cpu(dlen);
 
-<<<<<<< HEAD
-#if (PAGE_CACHE_SIZE >= 65536)
-=======
 #if (PAGE_SIZE >= 65536)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len == EXT4_MAX_REC_LEN || len == 0)
 		return blocksize;
 	return (len & 65532) | ((len & 3) << 16);
@@ -3128,14 +2423,8 @@ ext4_rec_len_from_disk(__le16 dlen, unsigned blocksize)
 
 static inline __le16 ext4_rec_len_to_disk(unsigned len, unsigned blocksize)
 {
-<<<<<<< HEAD
-	if ((len > blocksize) || (blocksize > (1 << 18)) || (len & 3))
-		BUG();
-#if (PAGE_CACHE_SIZE >= 65536)
-=======
 	BUG_ON((len > blocksize) || (blocksize > (1 << 18)) || (len & 3));
 #if (PAGE_SIZE >= 65536)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len < 65536)
 		return cpu_to_le16(len);
 	if (len == blocksize) {
@@ -3155,29 +2444,14 @@ static inline __le16 ext4_rec_len_to_disk(unsigned len, unsigned blocksize)
  * (c) Daniel Phillips, 2001
  */
 
-<<<<<<< HEAD
-#define is_dx(dir) (EXT4_HAS_COMPAT_FEATURE(dir->i_sb, \
-				      EXT4_FEATURE_COMPAT_DIR_INDEX) && \
-		    ext4_test_inode_flag((dir), EXT4_INODE_INDEX))
-#define EXT4_DIR_LINK_MAX(dir) (!is_dx(dir) && (dir)->i_nlink >= EXT4_LINK_MAX)
-=======
 #define is_dx(dir) (ext4_has_feature_dir_index((dir)->i_sb) && \
 		    ext4_test_inode_flag((dir), EXT4_INODE_INDEX))
 #define EXT4_DIR_LINK_MAX(dir) unlikely((dir)->i_nlink >= EXT4_LINK_MAX && \
 		    !(ext4_has_feature_dir_nlink((dir)->i_sb) && is_dx(dir)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT4_DIR_LINK_EMPTY(dir) ((dir)->i_nlink == 2 || (dir)->i_nlink == 1)
 
 /* Legal values for the dx_root hash_version field: */
 
-<<<<<<< HEAD
-#define DX_HASH_LEGACY		0
-#define DX_HASH_HALF_MD4	1
-#define DX_HASH_TEA		2
-#define DX_HASH_LEGACY_UNSIGNED	3
-#define DX_HASH_HALF_MD4_UNSIGNED	4
-#define DX_HASH_TEA_UNSIGNED		5
-=======
 #define DX_HASH_LEGACY			0
 #define DX_HASH_HALF_MD4		1
 #define DX_HASH_TEA			2
@@ -3185,25 +2459,12 @@ static inline __le16 ext4_rec_len_to_disk(unsigned len, unsigned blocksize)
 #define DX_HASH_HALF_MD4_UNSIGNED	4
 #define DX_HASH_TEA_UNSIGNED		5
 #define DX_HASH_SIPHASH			6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u32 ext4_chksum(struct ext4_sb_info *sbi, u32 crc,
 			      const void *address, unsigned int length)
 {
 	struct {
 		struct shash_desc shash;
-<<<<<<< HEAD
-		char ctx[crypto_shash_descsize(sbi->s_chksum_driver)];
-	} desc;
-	int err;
-
-	desc.shash.tfm = sbi->s_chksum_driver;
-	desc.shash.flags = 0;
-	*(u32 *)desc.ctx = crc;
-
-	err = crypto_shash_update(&desc.shash, address, length);
-	BUG_ON(err);
-=======
 		char ctx[4];
 	} desc;
 
@@ -3213,7 +2474,6 @@ static inline u32 ext4_chksum(struct ext4_sb_info *sbi, u32 crc,
 	*(u32 *)desc.ctx = crc;
 
 	BUG_ON(crypto_shash_update(&desc.shash, address, length));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return *(u32 *)desc.ctx;
 }
@@ -3240,8 +2500,6 @@ struct dx_hash_info
  */
 #define HASH_NB_ALWAYS		1
 
-<<<<<<< HEAD
-=======
 struct ext4_filename {
 	const struct qstr *usr_fname;
 	struct fscrypt_str disk_name;
@@ -3257,7 +2515,6 @@ struct ext4_filename {
 #define fname_name(p) ((p)->disk_name.name)
 #define fname_usr_name(p) ((p)->usr_fname->name)
 #define fname_len(p)  ((p)->disk_name.len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Describe an inode's exact location on disk and in memory
@@ -3274,15 +2531,12 @@ static inline struct ext4_inode *ext4_raw_inode(struct ext4_iloc *iloc)
 	return (struct ext4_inode *) (iloc->bh->b_data + iloc->offset);
 }
 
-<<<<<<< HEAD
-=======
 static inline bool ext4_is_quota_file(struct inode *inode)
 {
 	return IS_NOQUOTA(inode) &&
 	       !(EXT4_I(inode)->i_flags & EXT4_EA_INODE_FL);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This structure is stuffed into the struct file's private_data field
  * for directories.  It is where we put information so that we can do
@@ -3311,10 +2565,6 @@ ext4_group_first_block_no(struct super_block *sb, ext4_group_t group_no)
  */
 #define ERR_BAD_DX_DIR	(-(MAX_ERRNO - 1))
 
-<<<<<<< HEAD
-void ext4_get_group_no_and_offset(struct super_block *sb, ext4_fsblk_t blocknr,
-			ext4_group_t *blockgrpp, ext4_grpblk_t *offsetp);
-=======
 /* htree levels for ext4 */
 #define	EXT4_HTREE_LEVEL_COMPAT	2
 #define	EXT4_HTREE_LEVEL	3
@@ -3324,7 +2574,6 @@ static inline int ext4_dir_htree_level(struct super_block *sb)
 	return ext4_has_feature_largedir(sb) ?
 		EXT4_HTREE_LEVEL : EXT4_HTREE_LEVEL_COMPAT;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Timeout and state flag for lazy initialization inode thread.
@@ -3343,11 +2592,6 @@ struct ext4_lazy_init {
 	struct mutex		li_list_mtx;
 };
 
-<<<<<<< HEAD
-struct ext4_li_request {
-	struct super_block	*lr_super;
-	struct ext4_sb_info	*lr_sbi;
-=======
 enum ext4_li_mode {
 	EXT4_LI_MODE_PREFETCH_BBITMAP,
 	EXT4_LI_MODE_ITABLE,
@@ -3357,7 +2601,6 @@ struct ext4_li_request {
 	struct super_block	*lr_super;
 	enum ext4_li_mode	lr_mode;
 	ext4_group_t		lr_first_not_zeroed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_group_t		lr_next_group;
 	struct list_head	lr_request;
 	unsigned long		lr_next_sched;
@@ -3445,18 +2688,6 @@ struct mmpd_data {
 
 /* bitmap.c */
 extern unsigned int ext4_count_free(char *bitmap, unsigned numchars);
-<<<<<<< HEAD
-void ext4_inode_bitmap_csum_set(struct super_block *sb, ext4_group_t group,
-				struct ext4_group_desc *gdp,
-				struct buffer_head *bh, int sz);
-int ext4_inode_bitmap_csum_verify(struct super_block *sb, ext4_group_t group,
-				  struct ext4_group_desc *gdp,
-				  struct buffer_head *bh, int sz);
-void ext4_block_bitmap_csum_set(struct super_block *sb, ext4_group_t group,
-				struct ext4_group_desc *gdp,
-				struct buffer_head *bh);
-int ext4_block_bitmap_csum_verify(struct super_block *sb, ext4_group_t group,
-=======
 void ext4_inode_bitmap_csum_set(struct super_block *sb,
 				struct ext4_group_desc *gdp,
 				struct buffer_head *bh, int sz);
@@ -3467,21 +2698,10 @@ void ext4_block_bitmap_csum_set(struct super_block *sb,
 				struct ext4_group_desc *gdp,
 				struct buffer_head *bh);
 int ext4_block_bitmap_csum_verify(struct super_block *sb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct ext4_group_desc *gdp,
 				  struct buffer_head *bh);
 
 /* balloc.c */
-<<<<<<< HEAD
-extern void ext4_validate_block_bitmap(struct super_block *sb,
-				       struct ext4_group_desc *desc,
-				       unsigned int block_group,
-				       struct buffer_head *bh);
-extern unsigned int ext4_block_group(struct super_block *sb,
-			ext4_fsblk_t blocknr);
-extern ext4_grpblk_t ext4_block_group_offset(struct super_block *sb,
-			ext4_fsblk_t blocknr);
-=======
 extern void ext4_get_group_no_and_offset(struct super_block *sb,
 					 ext4_fsblk_t blocknr,
 					 ext4_group_t *blockgrpp,
@@ -3489,7 +2709,6 @@ extern void ext4_get_group_no_and_offset(struct super_block *sb,
 extern ext4_group_t ext4_get_group_number(struct super_block *sb,
 					  ext4_fsblk_t block);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int ext4_bg_has_super(struct super_block *sb, ext4_group_t group);
 extern unsigned long ext4_bg_num_gdb(struct super_block *sb,
 			ext4_group_t group);
@@ -3501,16 +2720,6 @@ extern ext4_fsblk_t ext4_new_meta_blocks(handle_t *handle, struct inode *inode,
 extern int ext4_claim_free_clusters(struct ext4_sb_info *sbi,
 				    s64 nclusters, unsigned int flags);
 extern ext4_fsblk_t ext4_count_free_clusters(struct super_block *);
-<<<<<<< HEAD
-extern void ext4_check_blocks_bitmap(struct super_block *);
-extern struct ext4_group_desc * ext4_get_group_desc(struct super_block * sb,
-						    ext4_group_t block_group,
-						    struct buffer_head ** bh);
-extern int ext4_should_retry_alloc(struct super_block *sb, int *retries);
-
-extern struct buffer_head *ext4_read_block_bitmap_nowait(struct super_block *sb,
-						ext4_group_t block_group);
-=======
 extern struct ext4_group_desc * ext4_get_group_desc(struct super_block * sb,
 						    ext4_group_t block_group,
 						    struct buffer_head ** bh);
@@ -3521,7 +2730,6 @@ extern int ext4_should_retry_alloc(struct super_block *sb, int *retries);
 extern struct buffer_head *ext4_read_block_bitmap_nowait(struct super_block *sb,
 						ext4_group_t block_group,
 						bool ignore_locked);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int ext4_wait_block_bitmap(struct super_block *sb,
 				  ext4_group_t block_group,
 				  struct buffer_head *bh);
@@ -3530,13 +2738,6 @@ extern struct buffer_head *ext4_read_block_bitmap(struct super_block *sb,
 extern unsigned ext4_free_clusters_after_init(struct super_block *sb,
 					      ext4_group_t block_group,
 					      struct ext4_group_desc *gdp);
-<<<<<<< HEAD
-extern unsigned ext4_num_overhead_clusters(struct super_block *sb,
-					   ext4_group_t block_group,
-					   struct ext4_group_desc *gdp);
-ext4_fsblk_t ext4_inode_to_goal_block(struct inode *);
-
-=======
 ext4_fsblk_t ext4_inode_to_goal_block(struct inode *);
 
 #if IS_ENABLED(CONFIG_UNICODE)
@@ -3599,34 +2800,10 @@ static inline int ext4_ioctl_get_encryption_pwsalt(struct file *filp,
 }
 #endif /* !CONFIG_FS_ENCRYPTION */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* dir.c */
 extern int __ext4_check_dir_entry(const char *, unsigned int, struct inode *,
 				  struct file *,
 				  struct ext4_dir_entry_2 *,
-<<<<<<< HEAD
-				  struct buffer_head *, unsigned int);
-#define ext4_check_dir_entry(dir, filp, de, bh, offset)			\
-	unlikely(__ext4_check_dir_entry(__func__, __LINE__, (dir), (filp), \
-					(de), (bh), (offset)))
-extern int ext4_htree_store_dirent(struct file *dir_file, __u32 hash,
-				    __u32 minor_hash,
-				    struct ext4_dir_entry_2 *dirent);
-extern void ext4_htree_free_dir_info(struct dir_private_info *p);
-
-/* fsync.c */
-extern int ext4_sync_file(struct file *, loff_t, loff_t, int);
-extern int ext4_flush_completed_IO(struct inode *);
-
-/* hash.c */
-extern int ext4fs_dirhash(const char *name, int len, struct
-			  dx_hash_info *hinfo);
-
-/* ialloc.c */
-extern struct inode *ext4_new_inode(handle_t *, struct inode *, umode_t,
-				    const struct qstr *qstr, __u32 goal,
-				    uid_t *owner);
-=======
 				  struct buffer_head *, char *, int,
 				  unsigned int);
 #define ext4_check_dir_entry(dir, filp, de, bh, buf, size, offset) \
@@ -3694,36 +2871,15 @@ extern struct inode *__ext4_new_inode(struct mnt_idmap *, handle_t *,
 			 0, (type), __LINE__, (nblocks))
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void ext4_free_inode(handle_t *, struct inode *);
 extern struct inode * ext4_orphan_get(struct super_block *, unsigned long);
 extern unsigned long ext4_count_free_inodes(struct super_block *);
 extern unsigned long ext4_count_dirs(struct super_block *);
-<<<<<<< HEAD
-extern void ext4_check_inodes_bitmap(struct super_block *);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void ext4_mark_bitmap_end(int start_bit, int end_bit, char *bitmap);
 extern int ext4_init_inode_table(struct super_block *sb,
 				 ext4_group_t group, int barrier);
 extern void ext4_end_bitmap_read(struct buffer_head *bh, int uptodate);
 
-<<<<<<< HEAD
-/* mballoc.c */
-extern long ext4_mb_stats;
-extern long ext4_mb_max_to_scan;
-extern int ext4_mb_init(struct super_block *, int);
-extern int ext4_mb_release(struct super_block *);
-extern ext4_fsblk_t ext4_mb_new_blocks(handle_t *,
-				struct ext4_allocation_request *, int *);
-extern int ext4_mb_reserve_blocks(struct super_block *, int);
-extern void ext4_discard_preallocations(struct inode *);
-extern int __init ext4_init_mballoc(void);
-extern void ext4_exit_mballoc(void);
-extern void ext4_free_blocks(handle_t *handle, struct inode *inode,
-			     struct buffer_head *bh, ext4_fsblk_t block,
-			     unsigned long count, int flags);
-=======
 /* fast_commit.c */
 int ext4_fc_info_show(struct seq_file *seq, void *v);
 void ext4_fc_init(struct super_block *sb, journal_t *journal);
@@ -3775,52 +2931,11 @@ extern void ext4_free_blocks(handle_t *handle, struct inode *inode,
 			     unsigned long count, int flags);
 extern int ext4_mb_alloc_groupinfo(struct super_block *sb,
 				   ext4_group_t ngroups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int ext4_mb_add_groupinfo(struct super_block *sb,
 		ext4_group_t i, struct ext4_group_desc *desc);
 extern int ext4_group_add_blocks(handle_t *handle, struct super_block *sb,
 				ext4_fsblk_t block, unsigned long count);
 extern int ext4_trim_fs(struct super_block *, struct fstrim_range *);
-<<<<<<< HEAD
-
-/* inode.c */
-struct buffer_head *ext4_getblk(handle_t *, struct inode *,
-						ext4_lblk_t, int, int *);
-struct buffer_head *ext4_bread(handle_t *, struct inode *,
-						ext4_lblk_t, int, int *);
-int ext4_get_block(struct inode *inode, sector_t iblock,
-				struct buffer_head *bh_result, int create);
-
-extern struct inode *ext4_iget(struct super_block *, unsigned long);
-extern struct inode *ext4_iget_normal(struct super_block *, unsigned long);
-extern int  ext4_write_inode(struct inode *, struct writeback_control *);
-extern int  ext4_setattr(struct dentry *, struct iattr *);
-extern int  ext4_getattr(struct vfsmount *mnt, struct dentry *dentry,
-				struct kstat *stat);
-extern void ext4_evict_inode(struct inode *);
-extern void ext4_clear_inode(struct inode *);
-extern int  ext4_sync_inode(handle_t *, struct inode *);
-extern void ext4_dirty_inode(struct inode *, int);
-extern int ext4_change_inode_journal_flag(struct inode *, int);
-extern int ext4_get_inode_loc(struct inode *, struct ext4_iloc *);
-extern int ext4_can_truncate(struct inode *inode);
-extern void ext4_truncate(struct inode *);
-extern int ext4_punch_hole(struct file *file, loff_t offset, loff_t length);
-extern int ext4_truncate_restart_trans(handle_t *, struct inode *, int nblocks);
-extern void ext4_set_inode_flags(struct inode *);
-extern void ext4_get_inode_flags(struct ext4_inode_info *);
-extern int ext4_alloc_da_blocks(struct inode *inode);
-extern void ext4_set_aops(struct inode *inode);
-extern int ext4_writepage_trans_blocks(struct inode *);
-extern int ext4_chunk_trans_blocks(struct inode *, int nrblocks);
-extern int ext4_discard_partial_page_buffers(handle_t *handle,
-		struct address_space *mapping, loff_t from,
-		loff_t length, int flags);
-extern int ext4_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf);
-extern qsize_t *ext4_get_reserved_space(struct inode *inode);
-extern void ext4_da_update_reserve_space(struct inode *inode,
-					int used, int quota_claim);
-=======
 extern void ext4_process_freed_data(struct super_block *sb, tid_t commit_tid);
 extern void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
 			    int len, bool state);
@@ -3907,41 +3022,18 @@ extern void ext4_da_update_reserve_space(struct inode *inode,
 					int used, int quota_claim);
 extern int ext4_issue_zeroout(struct inode *inode, ext4_lblk_t lblk,
 			      ext4_fsblk_t pblk, ext4_lblk_t len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* indirect.c */
 extern int ext4_ind_map_blocks(handle_t *handle, struct inode *inode,
 				struct ext4_map_blocks *map, int flags);
-<<<<<<< HEAD
-extern ssize_t ext4_ind_direct_IO(int rw, struct kiocb *iocb,
-				const struct iovec *iov, loff_t offset,
-				unsigned long nr_segs);
-extern int ext4_ind_calc_metadata_amount(struct inode *inode, sector_t lblock);
-extern int ext4_ind_trans_blocks(struct inode *inode, int nrblocks, int chunk);
-extern void ext4_ind_truncate(struct inode *inode);
-=======
 extern int ext4_ind_trans_blocks(struct inode *inode, int nrblocks);
 extern void ext4_ind_truncate(handle_t *, struct inode *inode);
 extern int ext4_ind_remove_space(handle_t *handle, struct inode *inode,
 				 ext4_lblk_t start, ext4_lblk_t end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ioctl.c */
 extern long ext4_ioctl(struct file *, unsigned int, unsigned long);
 extern long ext4_compat_ioctl(struct file *, unsigned int, unsigned long);
-<<<<<<< HEAD
-
-/* migrate.c */
-extern int ext4_ext_migrate(struct inode *);
-
-/* namei.c */
-extern int ext4_orphan_add(handle_t *, struct inode *);
-extern int ext4_orphan_del(handle_t *, struct inode *);
-extern int ext4_htree_fill_tree(struct file *dir_file, __u32 start_hash,
-				__u32 start_minor_hash, __u32 *next_hash);
-
-/* resize.c */
-=======
 int ext4_fileattr_set(struct mnt_idmap *idmap,
 		      struct dentry *dentry, struct fileattr *fa);
 int ext4_fileattr_get(struct dentry *dentry, struct fileattr *fa);
@@ -3977,35 +3069,12 @@ extern bool ext4_empty_dir(struct inode *inode);
 
 /* resize.c */
 extern void ext4_kvfree_array_rcu(void *to_free);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int ext4_group_add(struct super_block *sb,
 				struct ext4_new_group_data *input);
 extern int ext4_group_extend(struct super_block *sb,
 				struct ext4_super_block *es,
 				ext4_fsblk_t n_blocks_count);
 extern int ext4_resize_fs(struct super_block *sb, ext4_fsblk_t n_blocks_count);
-<<<<<<< HEAD
-
-/* super.c */
-extern int ext4_calculate_overhead(struct super_block *sb);
-extern int ext4_superblock_csum_verify(struct super_block *sb,
-				       struct ext4_super_block *es);
-extern void ext4_superblock_csum_set(struct super_block *sb,
-				     struct ext4_super_block *es);
-extern void *ext4_kvmalloc(size_t size, gfp_t flags);
-extern void *ext4_kvzalloc(size_t size, gfp_t flags);
-extern void ext4_kvfree(void *ptr);
-extern __printf(4, 5)
-void __ext4_error(struct super_block *, const char *, unsigned int,
-		  const char *, ...);
-#define ext4_error(sb, message...)	__ext4_error(sb, __func__,	\
-						     __LINE__, ## message)
-extern __printf(5, 6)
-void ext4_error_inode(struct inode *, const char *, unsigned int, ext4_fsblk_t,
-		      const char *, ...);
-extern __printf(5, 6)
-void ext4_error_file(struct file *, const char *, unsigned int, ext4_fsblk_t,
-=======
 extern unsigned int ext4_list_backups(struct super_block *sb,
 				      unsigned int *three, unsigned int *five,
 				      unsigned int *seven);
@@ -4044,28 +3113,10 @@ void __ext4_error_inode(struct inode *, const char *, unsigned int,
 			ext4_fsblk_t, int, const char *, ...);
 extern __printf(5, 6)
 void __ext4_error_file(struct file *, const char *, unsigned int, ext4_fsblk_t,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     const char *, ...);
 extern void __ext4_std_error(struct super_block *, const char *,
 			     unsigned int, int);
 extern __printf(4, 5)
-<<<<<<< HEAD
-void __ext4_abort(struct super_block *, const char *, unsigned int,
-		  const char *, ...);
-#define ext4_abort(sb, message...)	__ext4_abort(sb, __func__, \
-						       __LINE__, ## message)
-extern __printf(4, 5)
-void __ext4_warning(struct super_block *, const char *, unsigned int,
-		    const char *, ...);
-#define ext4_warning(sb, message...)	__ext4_warning(sb, __func__, \
-						       __LINE__, ## message)
-extern __printf(3, 4)
-void ext4_msg(struct super_block *, const char *, const char *, ...);
-extern void __dump_mmp_msg(struct super_block *, struct mmp_struct *mmp,
-			   const char *, unsigned int, const char *);
-#define dump_mmp_msg(sb, mmp, msg)	__dump_mmp_msg(sb, mmp, __func__, \
-						       __LINE__, msg)
-=======
 void __ext4_warning(struct super_block *, const char *, unsigned int,
 		    const char *, ...);
 extern __printf(4, 5)
@@ -4075,23 +3126,11 @@ extern __printf(3, 4)
 void __ext4_msg(struct super_block *, const char *, const char *, ...);
 extern void __dump_mmp_msg(struct super_block *, struct mmp_struct *mmp,
 			   const char *, unsigned int, const char *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern __printf(7, 8)
 void __ext4_grp_locked_error(const char *, unsigned int,
 			     struct super_block *, ext4_group_t,
 			     unsigned long, ext4_fsblk_t,
 			     const char *, ...);
-<<<<<<< HEAD
-#define ext4_grp_locked_error(sb, grp, message...) \
-	__ext4_grp_locked_error(__func__, __LINE__, (sb), (grp), ## message)
-extern void ext4_update_dynamic_rev(struct super_block *sb);
-extern int ext4_update_compat_feature(handle_t *handle, struct super_block *sb,
-					__u32 compat);
-extern int ext4_update_rocompat_feature(handle_t *handle,
-					struct super_block *sb,	__u32 rocompat);
-extern int ext4_update_incompat_feature(handle_t *handle,
-					struct super_block *sb,	__u32 incompat);
-=======
 
 #define EXT4_ERROR_INODE(inode, fmt, a...) \
 	ext4_error_inode((inode), __func__, __LINE__, 0, (fmt), ## a)
@@ -4188,7 +3227,6 @@ do {									\
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern ext4_fsblk_t ext4_block_bitmap(struct super_block *sb,
 				      struct ext4_group_desc *bg);
 extern ext4_fsblk_t ext4_inode_bitmap(struct super_block *sb,
@@ -4222,20 +3260,6 @@ extern int ext4_group_desc_csum_verify(struct super_block *sb, __u32 group,
 				       struct ext4_group_desc *gdp);
 extern void ext4_group_desc_csum_set(struct super_block *sb, __u32 group,
 				     struct ext4_group_desc *gdp);
-<<<<<<< HEAD
-
-static inline int ext4_has_group_desc_csum(struct super_block *sb)
-{
-	return EXT4_HAS_RO_COMPAT_FEATURE(sb,
-					  EXT4_FEATURE_RO_COMPAT_GDT_CSUM |
-					  EXT4_FEATURE_RO_COMPAT_METADATA_CSUM);
-}
-
-static inline ext4_fsblk_t ext4_blocks_count(struct ext4_super_block *es)
-{
-	return ((ext4_fsblk_t)le32_to_cpu(es->s_blocks_count_hi) << 32) |
-		le32_to_cpu(es->s_blocks_count_lo);
-=======
 extern int ext4_register_li_request(struct super_block *sb,
 				    ext4_group_t first_not_zeroed);
 
@@ -4261,27 +3285,16 @@ static inline int ext4_has_group_desc_csum(struct super_block *sb)
 static inline ext4_fsblk_t ext4_blocks_count(struct ext4_super_block *es)
 {
 	return ext4_read_incompat_64bit_val(es, s_blocks_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline ext4_fsblk_t ext4_r_blocks_count(struct ext4_super_block *es)
 {
-<<<<<<< HEAD
-	return ((ext4_fsblk_t)le32_to_cpu(es->s_r_blocks_count_hi) << 32) |
-		le32_to_cpu(es->s_r_blocks_count_lo);
-=======
 	return ext4_read_incompat_64bit_val(es, s_r_blocks_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline ext4_fsblk_t ext4_free_blocks_count(struct ext4_super_block *es)
 {
-<<<<<<< HEAD
-	return ((ext4_fsblk_t)le32_to_cpu(es->s_free_blocks_count_hi) << 32) |
-		le32_to_cpu(es->s_free_blocks_count_lo);
-=======
 	return ext4_read_incompat_64bit_val(es, s_free_blocks_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ext4_blocks_count_set(struct ext4_super_block *es,
@@ -4305,15 +3318,6 @@ static inline void ext4_r_blocks_count_set(struct ext4_super_block *es,
 	es->s_r_blocks_count_hi = cpu_to_le32(blk >> 32);
 }
 
-<<<<<<< HEAD
-static inline loff_t ext4_isize(struct ext4_inode *raw_inode)
-{
-	if (S_ISREG(le16_to_cpu(raw_inode->i_mode)))
-		return ((loff_t)le32_to_cpu(raw_inode->i_size_high) << 32) |
-			le32_to_cpu(raw_inode->i_size_lo);
-	else
-		return (loff_t) le32_to_cpu(raw_inode->i_size_lo);
-=======
 static inline loff_t ext4_isize(struct super_block *sb,
 				struct ext4_inode *raw_inode)
 {
@@ -4323,7 +3327,6 @@ static inline loff_t ext4_isize(struct super_block *sb,
 			le32_to_cpu(raw_inode->i_size_lo);
 
 	return (loff_t) le32_to_cpu(raw_inode->i_size_lo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ext4_isize_set(struct ext4_inode *raw_inode, loff_t i_size)
@@ -4332,21 +3335,6 @@ static inline void ext4_isize_set(struct ext4_inode *raw_inode, loff_t i_size)
 	raw_inode->i_size_high = cpu_to_le32(i_size >> 32);
 }
 
-<<<<<<< HEAD
-static inline
-struct ext4_group_info *ext4_get_group_info(struct super_block *sb,
-					    ext4_group_t group)
-{
-	 struct ext4_group_info ***grp_info;
-	 long indexv, indexh;
-	 grp_info = EXT4_SB(sb)->s_group_info;
-	 indexv = group >> (EXT4_DESC_PER_BLOCK_BITS(sb));
-	 indexh = group & ((EXT4_DESC_PER_BLOCK(sb)) - 1);
-	 return grp_info[indexv][indexh];
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Reading s_groups_count requires using smp_rmb() afterwards.  See
  * the locking protocol documented in the comments of ext4_group_add()
@@ -4387,22 +3375,6 @@ do {								\
 #define EXT4_FREECLUSTERS_WATERMARK 0
 #endif
 
-<<<<<<< HEAD
-static inline void ext4_update_i_disksize(struct inode *inode, loff_t newsize)
-{
-	/*
-	 * XXX: replace with spinlock if seen contended -bzzz
-	 */
-	down_write(&EXT4_I(inode)->i_data_sem);
-	if (newsize > EXT4_I(inode)->i_disksize)
-		EXT4_I(inode)->i_disksize = newsize;
-	up_write(&EXT4_I(inode)->i_data_sem);
-	return ;
-}
-
-struct ext4_group_info {
-	unsigned long   bb_state;
-=======
 /* Update i_disksize. Requires i_rwsem to avoid races with truncate */
 static inline void ext4_update_i_disksize(struct inode *inode, loff_t newsize)
 {
@@ -4438,29 +3410,21 @@ struct ext4_group_info {
 #ifdef AGGRESSIVE_CHECK
 	unsigned long	bb_check_counter;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_root  bb_free_root;
 	ext4_grpblk_t	bb_first_free;	/* first free block */
 	ext4_grpblk_t	bb_free;	/* total free blocks */
 	ext4_grpblk_t	bb_fragments;	/* nr of freespace fragments */
-<<<<<<< HEAD
-	ext4_grpblk_t	bb_largest_free_order;/* order of largest frag in BG */
-=======
 	int		bb_avg_fragment_size_order;	/* order of average
 							   fragment in BG */
 	ext4_grpblk_t	bb_largest_free_order;/* order of largest frag in BG */
 	ext4_group_t	bb_group;	/* Group number */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct          list_head bb_prealloc_list;
 #ifdef DOUBLE_CHECK
 	void            *bb_bitmap;
 #endif
 	struct rw_semaphore alloc_sem;
-<<<<<<< HEAD
-=======
 	struct list_head bb_avg_fragment_size_node;
 	struct list_head bb_largest_free_order_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_grpblk_t	bb_counters[];	/* Nr of free power-of-two-block
 					 * regions, index is order.
 					 * bb_counters[3] = 5 means
@@ -4469,11 +3433,6 @@ struct ext4_group_info {
 
 #define EXT4_GROUP_INFO_NEED_INIT_BIT		0
 #define EXT4_GROUP_INFO_WAS_TRIMMED_BIT		1
-<<<<<<< HEAD
-
-#define EXT4_MB_GRP_NEED_INIT(grp)	\
-	(test_bit(EXT4_GROUP_INFO_NEED_INIT_BIT, &((grp)->bb_state)))
-=======
 #define EXT4_GROUP_INFO_BBITMAP_CORRUPT_BIT	2
 #define EXT4_GROUP_INFO_IBITMAP_CORRUPT_BIT	3
 #define EXT4_GROUP_INFO_BBITMAP_CORRUPT		\
@@ -4488,7 +3447,6 @@ struct ext4_group_info {
 	(test_bit(EXT4_GROUP_INFO_BBITMAP_CORRUPT_BIT, &((grp)->bb_state)))
 #define EXT4_MB_GRP_IBITMAP_CORRUPT(grp)	\
 	(test_bit(EXT4_GROUP_INFO_IBITMAP_CORRUPT_BIT, &((grp)->bb_state)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EXT4_MB_GRP_WAS_TRIMMED(grp)	\
 	(test_bit(EXT4_GROUP_INFO_WAS_TRIMMED_BIT, &((grp)->bb_state)))
@@ -4496,11 +3454,8 @@ struct ext4_group_info {
 	(set_bit(EXT4_GROUP_INFO_WAS_TRIMMED_BIT, &((grp)->bb_state)))
 #define EXT4_MB_GRP_CLEAR_TRIMMED(grp)	\
 	(clear_bit(EXT4_GROUP_INFO_WAS_TRIMMED_BIT, &((grp)->bb_state)))
-<<<<<<< HEAD
-=======
 #define EXT4_MB_GRP_TEST_AND_SET_READ(grp)	\
 	(test_and_set_bit(EXT4_GROUP_INFO_BBITMAP_READ_BIT, &((grp)->bb_state)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EXT4_MAX_CONTENTION		8
 #define EXT4_CONTENTION_THRESHOLD	2
@@ -4546,17 +3501,6 @@ static inline void ext4_unlock_group(struct super_block *sb,
 	spin_unlock(ext4_group_lock_ptr(sb, group));
 }
 
-<<<<<<< HEAD
-static inline void ext4_mark_super_dirty(struct super_block *sb)
-{
-	struct ext4_super_block *es = EXT4_SB(sb)->s_es;
-
-	ext4_superblock_csum_set(sb, es);
-	if (EXT4_SB(sb)->s_journal == NULL)
-		sb->s_dirt =1;
-}
-
-=======
 #ifdef CONFIG_QUOTA
 static inline bool ext4_quota_capable(struct super_block *sb)
 {
@@ -4573,7 +3517,6 @@ static inline bool ext4_is_quota_journalled(struct super_block *sb)
 int ext4_enable_quotas(struct super_block *sb);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Block validity checking
  */
@@ -4599,8 +3542,6 @@ extern const struct inode_operations ext4_file_inode_operations;
 extern const struct file_operations ext4_file_operations;
 extern loff_t ext4_llseek(struct file *file, loff_t offset, int origin);
 
-<<<<<<< HEAD
-=======
 /* inline.c */
 extern int ext4_get_max_inline_size(struct inode *inode);
 extern int ext4_find_inline_data_nolock(struct inode *inode);
@@ -4660,18 +3601,10 @@ static inline int ext4_has_inline_data(struct inode *inode)
 	       EXT4_I(inode)->i_inline_off;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* namei.c */
 extern const struct inode_operations ext4_dir_inode_operations;
 extern const struct inode_operations ext4_special_inode_operations;
 extern struct dentry *ext4_get_parent(struct dentry *child);
-<<<<<<< HEAD
-
-/* symlink.c */
-extern const struct inode_operations ext4_symlink_inode_operations;
-extern const struct inode_operations ext4_fast_symlink_inode_operations;
-
-=======
 extern struct ext4_dir_entry_2 *ext4_init_dot_dotdot(struct inode *inode,
 				 struct ext4_dir_entry_2 *de,
 				 int blocksize, int csum_size,
@@ -4721,30 +3654,11 @@ extern void ext4_unregister_sysfs(struct super_block *sb);
 extern int __init ext4_init_sysfs(void);
 extern void ext4_exit_sysfs(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* block_validity */
 extern void ext4_release_system_zone(struct super_block *sb);
 extern int ext4_setup_system_zone(struct super_block *sb);
 extern int __init ext4_init_system_zone(void);
 extern void ext4_exit_system_zone(void);
-<<<<<<< HEAD
-extern int ext4_data_block_valid(struct ext4_sb_info *sbi,
-				 ext4_fsblk_t start_blk,
-				 unsigned int count);
-extern int ext4_check_blockref(const char *, unsigned int,
-			       struct inode *, __le32 *, unsigned int);
-
-/* extents.c */
-extern int ext4_ext_tree_init(handle_t *handle, struct inode *);
-extern int ext4_ext_writepage_trans_blocks(struct inode *, int);
-extern int ext4_ext_index_trans_blocks(struct inode *inode, int nrblocks,
-				       int chunk);
-extern int ext4_ext_map_blocks(handle_t *handle, struct inode *inode,
-			       struct ext4_map_blocks *map, int flags);
-extern void ext4_ext_truncate(struct inode *);
-extern int ext4_ext_punch_hole(struct file *file, loff_t offset,
-				loff_t length);
-=======
 extern int ext4_inode_block_valid(struct inode *inode,
 				  ext4_fsblk_t start_blk,
 				  unsigned int count);
@@ -4771,20 +3685,10 @@ extern int ext4_ext_map_blocks(handle_t *handle, struct inode *inode,
 extern int ext4_ext_truncate(handle_t *, struct inode *);
 extern int ext4_ext_remove_space(struct inode *inode, ext4_lblk_t start,
 				 ext4_lblk_t end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void ext4_ext_init(struct super_block *);
 extern void ext4_ext_release(struct super_block *);
 extern long ext4_fallocate(struct file *file, int mode, loff_t offset,
 			  loff_t len);
-<<<<<<< HEAD
-extern int ext4_convert_unwritten_extents(struct inode *inode, loff_t offset,
-			  ssize_t len);
-extern int ext4_map_blocks(handle_t *handle, struct inode *inode,
-			   struct ext4_map_blocks *map, int flags);
-extern int ext4_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
-			__u64 start, __u64 len);
-/* move_extent.c */
-=======
 extern int ext4_convert_unwritten_extents(handle_t *handle, struct inode *inode,
 					  loff_t offset, ssize_t len);
 extern int ext4_convert_unwritten_io_end_vec(handle_t *handle,
@@ -4829,7 +3733,6 @@ extern void ext4_double_down_write_data_sem(struct inode *first,
 					    struct inode *second);
 extern void ext4_double_up_write_data_sem(struct inode *orig_inode,
 					  struct inode *donor_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int ext4_move_extents(struct file *o_filp, struct file *d_filp,
 			     __u64 start_orig, __u64 start_donor,
 			     __u64 len, __u64 *moved_len);
@@ -4837,17 +3740,6 @@ extern int ext4_move_extents(struct file *o_filp, struct file *d_filp,
 /* page-io.c */
 extern int __init ext4_init_pageio(void);
 extern void ext4_exit_pageio(void);
-<<<<<<< HEAD
-extern void ext4_ioend_wait(struct inode *);
-extern void ext4_free_io_end(ext4_io_end_t *io);
-extern ext4_io_end_t *ext4_init_io_end(struct inode *inode, gfp_t flags);
-extern int ext4_end_io_nolock(ext4_io_end_t *io);
-extern void ext4_io_submit(struct ext4_io_submit *io);
-extern int ext4_bio_write_page(struct ext4_io_submit *io,
-			       struct page *page,
-			       int len,
-			       struct writeback_control *wbc);
-=======
 extern ext4_io_end_t *ext4_init_io_end(struct inode *inode, gfp_t flags);
 extern ext4_io_end_t *ext4_get_io_end(ext4_io_end_t *io_end);
 extern int ext4_put_io_end(ext4_io_end_t *io_end);
@@ -4860,33 +3752,10 @@ int ext4_bio_write_folio(struct ext4_io_submit *io, struct folio *page,
 		size_t len);
 extern struct ext4_io_end_vec *ext4_alloc_io_end_vec(ext4_io_end_t *io_end);
 extern struct ext4_io_end_vec *ext4_last_io_end_vec(ext4_io_end_t *io_end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* mmp.c */
 extern int ext4_multi_mount_protect(struct super_block *, ext4_fsblk_t);
 
-<<<<<<< HEAD
-/* BH_Uninit flag: blocks are allocated but uninitialized on disk */
-enum ext4_state_bits {
-	BH_Uninit	/* blocks are allocated but uninitialized on disk */
-	  = BH_JBDPrivateStart,
-	BH_AllocFromCluster,	/* allocated blocks were part of already
-				 * allocated cluster. Note that this flag will
-				 * never, ever appear in a buffer_head's state
-				 * flag. See EXT4_MAP_FROM_CLUSTER to see where
-				 * this is used. */
-	BH_Da_Mapped,	/* Delayed allocated block that now has a mapping. This
-			 * flag is set when ext4_map_blocks is called on a
-			 * delayed allocated block to get its real mapping. */
-};
-
-BUFFER_FNS(Uninit, uninit)
-TAS_BUFFER_FNS(Uninit, uninit)
-BUFFER_FNS(Da_Mapped, da_mapped)
-
-/*
- * Add new method to test wether block and inode bitmaps are properly
-=======
 /* mmp.c */
 extern void ext4_stop_mmpd(struct ext4_sb_info *sbi);
 
@@ -4908,7 +3777,6 @@ extern void ext4_orphan_file_block_trigger(
 
 /*
  * Add new method to test whether block and inode bitmaps are properly
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * initialized. With uninit_bg reading the block from disk is not enough
  * to mark the bitmap uptodate. We need to also zero-out the bitmap
  */
@@ -4924,29 +3792,10 @@ static inline void set_bitmap_uptodate(struct buffer_head *bh)
 	set_bit(BH_BITMAP_UPTODATE, &(bh)->b_state);
 }
 
-<<<<<<< HEAD
-#define in_range(b, first, len)	((b) >= (first) && (b) <= (first) + (len) - 1)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* For ioend & aio unwritten conversion wait queues */
 #define EXT4_WQ_HASH_SZ		37
 #define ext4_ioend_wq(v)   (&ext4__ioend_wq[((unsigned long)(v)) %\
 					    EXT4_WQ_HASH_SZ])
-<<<<<<< HEAD
-#define ext4_aio_mutex(v)  (&ext4__aio_mutex[((unsigned long)(v)) %\
-					     EXT4_WQ_HASH_SZ])
-extern wait_queue_head_t ext4__ioend_wq[EXT4_WQ_HASH_SZ];
-extern struct mutex ext4__aio_mutex[EXT4_WQ_HASH_SZ];
-
-#define EXT4_RESIZING	0
-extern int ext4_resize_begin(struct super_block *sb);
-extern void ext4_resize_end(struct super_block *sb);
-
-#endif	/* __KERNEL__ */
-
-#include "ext4_extents.h"
-=======
 extern wait_queue_head_t ext4__ioend_wq[EXT4_WQ_HASH_SZ];
 
 extern int ext4_resize_begin(struct super_block *sb);
@@ -4994,6 +3843,5 @@ static inline int ext4_buffer_uptodate(struct buffer_head *bh)
 
 #define EFSBADCRC	EBADMSG		/* Bad CRC detected */
 #define EFSCORRUPTED	EUCLEAN		/* Filesystem is corrupted */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _EXT4_H */

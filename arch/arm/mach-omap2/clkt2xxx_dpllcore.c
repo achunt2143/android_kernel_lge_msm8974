@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DPLL + CORE_CLK composite clock functions
  *
@@ -15,13 +12,6 @@
  * Based on earlier work by Tuukka Tikkanen, Tony Lindgren,
  * Gordon McNutt and RidgeRun, Inc.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * XXX The DPLL and CORE clocks should be split into two separate clock
  * types.
  */
@@ -30,25 +20,6 @@
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/clk.h>
-<<<<<<< HEAD
-#include <linux/io.h>
-
-#include <plat/clock.h>
-#include <plat/sram.h>
-#include <plat/sdrc.h>
-
-#include "clock.h"
-#include "clock2xxx.h"
-#include "opp2xxx.h"
-#include "cm2xxx_3xxx.h"
-#include "cm-regbits-24xx.h"
-
-/* #define DOWN_VARIABLE_DPLL 1 */		/* Experimental */
-
-/**
- * omap2xxx_clk_get_core_rate - return the CORE_CLK rate
- * @clk: pointer to the combined dpll_ck + core_ck (currently "dpll_ck")
-=======
 #include <linux/clk/ti.h>
 #include <linux/io.h>
 
@@ -71,7 +42,6 @@ static struct clk_hw_omap *dpll_core_ck;
 
 /**
  * omap2xxx_clk_get_core_rate - return the CORE_CLK rate
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns the CORE_CLK rate.  CORE_CLK can have one of three rate
  * sources on OMAP2xxx: the DPLL CLKOUT rate, DPLL CLKOUTX2, or 32KHz
@@ -79,27 +49,16 @@ static struct clk_hw_omap *dpll_core_ck;
  * struct clk *dpll_ck, which is a composite clock of dpll_ck and
  * core_ck.
  */
-<<<<<<< HEAD
-unsigned long omap2xxx_clk_get_core_rate(struct clk *clk)
-=======
 unsigned long omap2xxx_clk_get_core_rate(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long long core_clk;
 	u32 v;
 
-<<<<<<< HEAD
-	core_clk = omap2_get_dpll_rate(clk);
-
-	v = omap2_cm_read_mod_reg(PLL_MOD, CM_CLKSEL2);
-	v &= OMAP24XX_CORE_CLK_SRC_MASK;
-=======
 	WARN_ON(!dpll_core_ck);
 
 	core_clk = omap2_get_dpll_rate(dpll_core_ck);
 
 	v = omap2xxx_cm_get_core_clk_src();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (v == CORE_CLK_SRC_32K)
 		core_clk = 32768;
@@ -117,12 +76,7 @@ static long omap2_dpllcore_round_rate(unsigned long target_rate)
 {
 	u32 high, low, core_clk_src;
 
-<<<<<<< HEAD
-	core_clk_src = omap2_cm_read_mod_reg(PLL_MOD, CM_CLKSEL2);
-	core_clk_src &= OMAP24XX_CORE_CLK_SRC_MASK;
-=======
 	core_clk_src = omap2xxx_cm_get_core_clk_src();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (core_clk_src == CORE_CLK_SRC_DPLL) {	/* DPLL clockout */
 		high = curr_prcm_set->dpll_speed * 2;
@@ -146,15 +100,6 @@ static long omap2_dpllcore_round_rate(unsigned long target_rate)
 
 }
 
-<<<<<<< HEAD
-unsigned long omap2_dpllcore_recalc(struct clk *clk)
-{
-	return omap2xxx_clk_get_core_rate(clk);
-}
-
-int omap2_reprogram_dpllcore(struct clk *clk, unsigned long rate)
-{
-=======
 unsigned long omap2_dpllcore_recalc(struct clk_hw *hw,
 				    unsigned long parent_rate)
 {
@@ -165,20 +110,13 @@ int omap2_reprogram_dpllcore(struct clk_hw *hw, unsigned long rate,
 			     unsigned long parent_rate)
 {
 	struct clk_hw_omap *clk = to_clk_hw_omap(hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 cur_rate, low, mult, div, valid_rate, done_rate;
 	u32 bypass = 0;
 	struct prcm_config tmpset;
 	const struct dpll_data *dd;
 
-<<<<<<< HEAD
-	cur_rate = omap2xxx_clk_get_core_rate(dclk);
-	mult = omap2_cm_read_mod_reg(PLL_MOD, CM_CLKSEL2);
-	mult &= OMAP24XX_CORE_CLK_SRC_MASK;
-=======
 	cur_rate = omap2xxx_clk_get_core_rate();
 	mult = omap2xxx_cm_get_core_clk_src();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((rate == (cur_rate / 2)) && (mult == 2)) {
 		omap2xxx_sdrc_reprogram(CORE_CLK_SRC_DPLL, 1);
@@ -198,20 +136,12 @@ int omap2_reprogram_dpllcore(struct clk_hw *hw, unsigned long rate,
 		if (!dd)
 			return -EINVAL;
 
-<<<<<<< HEAD
-		tmpset.cm_clksel1_pll = __raw_readl(dd->mult_div1_reg);
-		tmpset.cm_clksel1_pll &= ~(dd->mult_mask |
-					   dd->div1_mask);
-		div = ((curr_prcm_set->xtal_speed / 1000000) - 1);
-		tmpset.cm_clksel2_pll = omap2_cm_read_mod_reg(PLL_MOD, CM_CLKSEL2);
-=======
 		tmpset.cm_clksel1_pll =
 			omap_clk_ll_ops.clk_readl(&dd->mult_div1_reg);
 		tmpset.cm_clksel1_pll &= ~(dd->mult_mask |
 					   dd->div1_mask);
 		div = ((curr_prcm_set->xtal_speed / 1000000) - 1);
 		tmpset.cm_clksel2_pll = omap2xxx_cm_get_core_pll_config();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmpset.cm_clksel2_pll &= ~OMAP24XX_CORE_CLK_SRC_MASK;
 		if (rate > low) {
 			tmpset.cm_clksel2_pll |= CORE_CLK_SRC_DPLL_X2;
@@ -246,8 +176,6 @@ int omap2_reprogram_dpllcore(struct clk_hw *hw, unsigned long rate,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * omap2xxx_clkt_dpllcore_init - clk init function for dpll_ck
  * @clk: struct clk *dpll_ck
@@ -264,4 +192,3 @@ void omap2xxx_clkt_dpllcore_init(struct clk_hw *hw)
 	WARN(dpll_core_ck, "dpll_core_ck already set - should never happen");
 	dpll_core_ck = to_clk_hw_omap(hw);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

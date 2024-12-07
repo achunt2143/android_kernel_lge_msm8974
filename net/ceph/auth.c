@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/module.h>
@@ -24,42 +21,16 @@ static u32 supported_protocols[] = {
 	CEPH_AUTH_CEPHX
 };
 
-<<<<<<< HEAD
-static int ceph_auth_init_protocol(struct ceph_auth_client *ac, int protocol)
-{
-	switch (protocol) {
-=======
 static int init_protocol(struct ceph_auth_client *ac, int proto)
 {
 	dout("%s proto %d\n", __func__, proto);
 
 	switch (proto) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CEPH_AUTH_NONE:
 		return ceph_auth_none_init(ac);
 	case CEPH_AUTH_CEPHX:
 		return ceph_x_init(ac);
 	default:
-<<<<<<< HEAD
-		return -ENOENT;
-	}
-}
-
-/*
- * setup, teardown.
- */
-struct ceph_auth_client *ceph_auth_init(const char *name, const struct ceph_crypto_key *key)
-{
-	struct ceph_auth_client *ac;
-	int ret;
-
-	dout("auth_init name '%s'\n", name);
-
-	ret = -ENOMEM;
-	ac = kzalloc(sizeof(*ac), GFP_NOFS);
-	if (!ac)
-		goto out;
-=======
 		pr_err("bad auth protocol %d\n", proto);
 		return -EINVAL;
 	}
@@ -91,7 +62,6 @@ struct ceph_auth_client *ceph_auth_init(const char *name,
 	ac = kzalloc(sizeof(*ac), GFP_NOFS);
 	if (!ac)
 		return ERR_PTR(-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_init(&ac->mutex);
 	ac->negotiating = true;
@@ -99,14 +69,6 @@ struct ceph_auth_client *ceph_auth_init(const char *name,
 		ac->name = name;
 	else
 		ac->name = CEPH_AUTH_NAME_DEFAULT;
-<<<<<<< HEAD
-	dout("auth_init name %s\n", ac->name);
-	ac->key = key;
-	return ac;
-
-out:
-	return ERR_PTR(ret);
-=======
 	ac->key = key;
 	ac->preferred_mode = con_modes[0];
 	ac->fallback_mode = con_modes[1];
@@ -114,7 +76,6 @@ out:
 	dout("%s name '%s' preferred_mode %d fallback_mode %d\n", __func__,
 	     ac->name, ac->preferred_mode, ac->fallback_mode);
 	return ac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ceph_auth_destroy(struct ceph_auth_client *ac)
@@ -138,14 +99,10 @@ void ceph_auth_reset(struct ceph_auth_client *ac)
 	mutex_unlock(&ac->mutex);
 }
 
-<<<<<<< HEAD
-int ceph_entity_name_encode(const char *name, void **p, void *end)
-=======
 /*
  * EntityName, not to be confused with entity_name_t
  */
 int ceph_auth_entity_name_encode(const char *name, void **p, void *end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len = strlen(name);
 
@@ -174,11 +131,7 @@ int ceph_auth_build_hello(struct ceph_auth_client *ac, void *buf, size_t len)
 	monhdr->session_mon = cpu_to_le16(-1);
 	monhdr->session_mon_tid = 0;
 
-<<<<<<< HEAD
-	ceph_encode_32(&p, 0);  /* no protocol, yet */
-=======
 	ceph_encode_32(&p, CEPH_AUTH_UNKNOWN);  /* no protocol, yet */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lenp = p;
 	p += sizeof(u32);
@@ -191,11 +144,7 @@ int ceph_auth_build_hello(struct ceph_auth_client *ac, void *buf, size_t len)
 	for (i = 0; i < num; i++)
 		ceph_encode_32(&p, supported_protocols[i]);
 
-<<<<<<< HEAD
-	ret = ceph_entity_name_encode(ac->name, &p, end);
-=======
 	ret = ceph_auth_entity_name_encode(ac->name, &p, end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto out;
 	ceph_decode_need(&p, end, sizeof(u64), bad);
@@ -212,33 +161,6 @@ bad:
 	goto out;
 }
 
-<<<<<<< HEAD
-static int ceph_build_auth_request(struct ceph_auth_client *ac,
-				   void *msg_buf, size_t msg_len)
-{
-	struct ceph_mon_request_header *monhdr = msg_buf;
-	void *p = monhdr + 1;
-	void *end = msg_buf + msg_len;
-	int ret;
-
-	monhdr->have_version = 0;
-	monhdr->session_mon = cpu_to_le16(-1);
-	monhdr->session_mon_tid = 0;
-
-	ceph_encode_32(&p, ac->protocol);
-
-	ret = ac->ops->build_request(ac, p + sizeof(u32), end);
-	if (ret < 0) {
-		pr_err("error %d building auth method %s request\n", ret,
-		       ac->ops->name);
-		goto out;
-	}
-	dout(" built request %d bytes\n", ret);
-	ceph_encode_32(&p, ret);
-	ret = p + ret - msg_buf;
-out:
-	return ret;
-=======
 static int build_request(struct ceph_auth_client *ac, bool add_header,
 			 void *buf, int buf_len)
 {
@@ -268,7 +190,6 @@ static int build_request(struct ceph_auth_client *ac, bool add_header,
 
 e_range:
 	return -ERANGE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -310,14 +231,6 @@ int ceph_handle_auth_reply(struct ceph_auth_client *ac,
 
 	payload_end = payload + payload_len;
 
-<<<<<<< HEAD
-	if (global_id && ac->global_id != global_id) {
-		dout(" set global_id %lld -> %lld\n", ac->global_id, global_id);
-		ac->global_id = global_id;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ac->negotiating) {
 		/* server does not support our protocols? */
 		if (!protocol && result < 0) {
@@ -331,17 +244,10 @@ int ceph_handle_auth_reply(struct ceph_auth_client *ac,
 			ac->ops = NULL;
 		}
 		if (ac->protocol != protocol) {
-<<<<<<< HEAD
-			ret = ceph_auth_init_protocol(ac, protocol);
-			if (ret) {
-				pr_err("error %d on auth protocol %d init\n",
-				       ret, protocol);
-=======
 			ret = init_protocol(ac, protocol);
 			if (ret) {
 				pr_err("auth protocol '%s' init failed: %d\n",
 				       ceph_auth_proto_name(protocol), ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out;
 			}
 		}
@@ -349,13 +255,6 @@ int ceph_handle_auth_reply(struct ceph_auth_client *ac,
 		ac->negotiating = false;
 	}
 
-<<<<<<< HEAD
-	ret = ac->ops->handle_reply(ac, result, payload, payload_end);
-	if (ret == -EAGAIN) {
-		ret = ceph_build_auth_request(ac, reply_buf, reply_len);
-	} else if (ret) {
-		pr_err("auth method '%s' error %d\n", ac->ops->name, ret);
-=======
 	if (result) {
 		pr_err("auth protocol '%s' mauth authentication failed: %d\n",
 		       ceph_auth_proto_name(ac->protocol), result);
@@ -370,7 +269,6 @@ int ceph_handle_auth_reply(struct ceph_auth_client *ac,
 		goto out;
 	} else if (ret) {
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
@@ -389,15 +287,8 @@ int ceph_build_auth(struct ceph_auth_client *ac,
 	int ret = 0;
 
 	mutex_lock(&ac->mutex);
-<<<<<<< HEAD
-	if (!ac->protocol)
-		ret = ceph_auth_build_hello(ac, msg_buf, msg_len);
-	else if (ac->ops->should_authenticate(ac))
-		ret = ceph_build_auth_request(ac, msg_buf, msg_len);
-=======
 	if (ac->ops->should_authenticate(ac))
 		ret = build_request(ac, true, msg_buf, msg_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ac->mutex);
 	return ret;
 }
@@ -414,35 +305,6 @@ int ceph_auth_is_authenticated(struct ceph_auth_client *ac)
 }
 EXPORT_SYMBOL(ceph_auth_is_authenticated);
 
-<<<<<<< HEAD
-int ceph_auth_create_authorizer(struct ceph_auth_client *ac,
-				int peer_type,
-				struct ceph_auth_handshake *auth)
-{
-	int ret = 0;
-
-	mutex_lock(&ac->mutex);
-	if (ac->ops && ac->ops->create_authorizer)
-		ret = ac->ops->create_authorizer(ac, peer_type, auth);
-	mutex_unlock(&ac->mutex);
-	return ret;
-}
-EXPORT_SYMBOL(ceph_auth_create_authorizer);
-
-void ceph_auth_destroy_authorizer(struct ceph_auth_client *ac,
-				  struct ceph_authorizer *a)
-{
-	mutex_lock(&ac->mutex);
-	if (ac->ops && ac->ops->destroy_authorizer)
-		ac->ops->destroy_authorizer(ac, a);
-	mutex_unlock(&ac->mutex);
-}
-EXPORT_SYMBOL(ceph_auth_destroy_authorizer);
-
-int ceph_auth_update_authorizer(struct ceph_auth_client *ac,
-				int peer_type,
-				struct ceph_auth_handshake *a)
-=======
 int __ceph_auth_get_authorizer(struct ceph_auth_client *ac,
 			       struct ceph_auth_handshake *auth,
 			       int peer_type, bool force_new,
@@ -486,22 +348,10 @@ int ceph_auth_add_authorizer_challenge(struct ceph_auth_client *ac,
 				       struct ceph_authorizer *a,
 				       void *challenge_buf,
 				       int challenge_buf_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 
 	mutex_lock(&ac->mutex);
-<<<<<<< HEAD
-	if (ac->ops && ac->ops->update_authorizer)
-		ret = ac->ops->update_authorizer(ac, peer_type, a);
-	mutex_unlock(&ac->mutex);
-	return ret;
-}
-EXPORT_SYMBOL(ceph_auth_update_authorizer);
-
-int ceph_auth_verify_authorizer_reply(struct ceph_auth_client *ac,
-				      struct ceph_authorizer *a, size_t len)
-=======
 	if (ac->ops && ac->ops->add_authorizer_challenge)
 		ret = ac->ops->add_authorizer_challenge(ac, a, challenge_buf,
 							challenge_buf_len);
@@ -515,19 +365,14 @@ int ceph_auth_verify_authorizer_reply(struct ceph_auth_client *ac,
 				      void *reply, int reply_len,
 				      u8 *session_key, int *session_key_len,
 				      u8 *con_secret, int *con_secret_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 
 	mutex_lock(&ac->mutex);
 	if (ac->ops && ac->ops->verify_authorizer_reply)
-<<<<<<< HEAD
-		ret = ac->ops->verify_authorizer_reply(ac, a, len);
-=======
 		ret = ac->ops->verify_authorizer_reply(ac, a,
 			reply, reply_len, session_key, session_key_len,
 			con_secret, con_secret_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ac->mutex);
 	return ret;
 }
@@ -541,8 +386,6 @@ void ceph_auth_invalidate_authorizer(struct ceph_auth_client *ac, int peer_type)
 	mutex_unlock(&ac->mutex);
 }
 EXPORT_SYMBOL(ceph_auth_invalidate_authorizer);
-<<<<<<< HEAD
-=======
 
 /*
  * msgr2 authentication
@@ -814,4 +657,3 @@ not_allowed:
 	return false;
 }
 EXPORT_SYMBOL(ceph_auth_handle_bad_authorizer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

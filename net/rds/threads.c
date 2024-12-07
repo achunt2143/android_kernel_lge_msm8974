@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2006 Oracle.  All rights reserved.
-=======
  * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -75,27 +71,6 @@
 struct workqueue_struct *rds_wq;
 EXPORT_SYMBOL_GPL(rds_wq);
 
-<<<<<<< HEAD
-void rds_connect_complete(struct rds_connection *conn)
-{
-	if (!rds_conn_transition(conn, RDS_CONN_CONNECTING, RDS_CONN_UP)) {
-		printk(KERN_WARNING "%s: Cannot transition to state UP, "
-				"current state is %d\n",
-				__func__,
-				atomic_read(&conn->c_state));
-		atomic_set(&conn->c_state, RDS_CONN_ERROR);
-		queue_work(rds_wq, &conn->c_down_w);
-		return;
-	}
-
-	rdsdebug("conn %p for %pI4 to %pI4 complete\n",
-	  conn, &conn->c_laddr, &conn->c_faddr);
-
-	conn->c_reconnect_jiffies = 0;
-	set_bit(0, &conn->c_map_queued);
-	queue_delayed_work(rds_wq, &conn->c_send_w, 0);
-	queue_delayed_work(rds_wq, &conn->c_recv_w, 0);
-=======
 void rds_connect_path_complete(struct rds_conn_path *cp, int curr)
 {
 	if (!rds_conn_path_transition(cp, curr, RDS_CONN_UP)) {
@@ -125,7 +100,6 @@ EXPORT_SYMBOL_GPL(rds_connect_path_complete);
 void rds_connect_complete(struct rds_connection *conn)
 {
 	rds_connect_path_complete(&conn->c_path[0], RDS_CONN_CONNECTING);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(rds_connect_complete);
 
@@ -147,20 +121,6 @@ EXPORT_SYMBOL_GPL(rds_connect_complete);
  * We should *always* start with a random backoff; otherwise a broken connection
  * will always take several iterations to be re-established.
  */
-<<<<<<< HEAD
-void rds_queue_reconnect(struct rds_connection *conn)
-{
-	unsigned long rand;
-
-	rdsdebug("conn %p for %pI4 to %pI4 reconnect jiffies %lu\n",
-	  conn, &conn->c_laddr, &conn->c_faddr,
-	  conn->c_reconnect_jiffies);
-
-	set_bit(RDS_RECONNECT_PENDING, &conn->c_flags);
-	if (conn->c_reconnect_jiffies == 0) {
-		conn->c_reconnect_jiffies = rds_sysctl_reconnect_min_jiffies;
-		queue_delayed_work(rds_wq, &conn->c_conn_w, 0);
-=======
 void rds_queue_reconnect(struct rds_conn_path *cp)
 {
 	unsigned long rand;
@@ -182,20 +142,10 @@ void rds_queue_reconnect(struct rds_conn_path *cp)
 		if (!rds_destroy_pending(cp->cp_conn))
 			queue_delayed_work(rds_wq, &cp->cp_conn_w, 0);
 		rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	get_random_bytes(&rand, sizeof(rand));
-<<<<<<< HEAD
-	rdsdebug("%lu delay %lu ceil conn %p for %pI4 -> %pI4\n",
-		 rand % conn->c_reconnect_jiffies, conn->c_reconnect_jiffies,
-		 conn, &conn->c_laddr, &conn->c_faddr);
-	queue_delayed_work(rds_wq, &conn->c_conn_w,
-			   rand % conn->c_reconnect_jiffies);
-
-	conn->c_reconnect_jiffies = min(conn->c_reconnect_jiffies * 2,
-=======
 	rdsdebug("%lu delay %lu ceil conn %p for %pI6c -> %pI6c\n",
 		 rand % cp->cp_reconnect_jiffies, cp->cp_reconnect_jiffies,
 		 conn, &conn->c_laddr, &conn->c_faddr);
@@ -206,28 +156,11 @@ void rds_queue_reconnect(struct rds_conn_path *cp)
 	rcu_read_unlock();
 
 	cp->cp_reconnect_jiffies = min(cp->cp_reconnect_jiffies * 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					rds_sysctl_reconnect_max_jiffies);
 }
 
 void rds_connect_worker(struct work_struct *work)
 {
-<<<<<<< HEAD
-	struct rds_connection *conn = container_of(work, struct rds_connection, c_conn_w.work);
-	int ret;
-
-	clear_bit(RDS_RECONNECT_PENDING, &conn->c_flags);
-	if (rds_conn_transition(conn, RDS_CONN_DOWN, RDS_CONN_CONNECTING)) {
-		ret = conn->c_trans->conn_connect(conn);
-		rdsdebug("conn %p for %pI4 to %pI4 dispatched, ret %d\n",
-			conn, &conn->c_laddr, &conn->c_faddr, ret);
-
-		if (ret) {
-			if (rds_conn_transition(conn, RDS_CONN_CONNECTING, RDS_CONN_DOWN))
-				rds_queue_reconnect(conn);
-			else
-				rds_conn_error(conn, "RDS: connect failed\n");
-=======
 	struct rds_conn_path *cp = container_of(work,
 						struct rds_conn_path,
 						cp_conn_w.work);
@@ -251,29 +184,12 @@ void rds_connect_worker(struct work_struct *work)
 				rds_queue_reconnect(cp);
 			else
 				rds_conn_path_error(cp, "connect failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
 void rds_send_worker(struct work_struct *work)
 {
-<<<<<<< HEAD
-	struct rds_connection *conn = container_of(work, struct rds_connection, c_send_w.work);
-	int ret;
-
-	if (rds_conn_state(conn) == RDS_CONN_UP) {
-		ret = rds_send_xmit(conn);
-		rdsdebug("conn %p ret %d\n", conn, ret);
-		switch (ret) {
-		case -EAGAIN:
-			rds_stats_inc(s_send_immediate_retry);
-			queue_delayed_work(rds_wq, &conn->c_send_w, 0);
-			break;
-		case -ENOMEM:
-			rds_stats_inc(s_send_delayed_retry);
-			queue_delayed_work(rds_wq, &conn->c_send_w, 2);
-=======
 	struct rds_conn_path *cp = container_of(work,
 						struct rds_conn_path,
 						cp_send_w.work);
@@ -293,7 +209,6 @@ void rds_send_worker(struct work_struct *work)
 			rds_stats_inc(s_send_delayed_retry);
 			queue_delayed_work(rds_wq, &cp->cp_send_w, 2);
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			break;
 		}
@@ -302,22 +217,6 @@ void rds_send_worker(struct work_struct *work)
 
 void rds_recv_worker(struct work_struct *work)
 {
-<<<<<<< HEAD
-	struct rds_connection *conn = container_of(work, struct rds_connection, c_recv_w.work);
-	int ret;
-
-	if (rds_conn_state(conn) == RDS_CONN_UP) {
-		ret = conn->c_trans->recv(conn);
-		rdsdebug("conn %p ret %d\n", conn, ret);
-		switch (ret) {
-		case -EAGAIN:
-			rds_stats_inc(s_recv_immediate_retry);
-			queue_delayed_work(rds_wq, &conn->c_recv_w, 0);
-			break;
-		case -ENOMEM:
-			rds_stats_inc(s_recv_delayed_retry);
-			queue_delayed_work(rds_wq, &conn->c_recv_w, 2);
-=======
 	struct rds_conn_path *cp = container_of(work,
 						struct rds_conn_path,
 						cp_recv_w.work);
@@ -335,7 +234,6 @@ void rds_recv_worker(struct work_struct *work)
 			rds_stats_inc(s_recv_delayed_retry);
 			queue_delayed_work(rds_wq, &cp->cp_recv_w, 2);
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			break;
 		}
@@ -344,17 +242,11 @@ void rds_recv_worker(struct work_struct *work)
 
 void rds_shutdown_worker(struct work_struct *work)
 {
-<<<<<<< HEAD
-	struct rds_connection *conn = container_of(work, struct rds_connection, c_down_w);
-
-	rds_conn_shutdown(conn);
-=======
 	struct rds_conn_path *cp = container_of(work,
 						struct rds_conn_path,
 						cp_down_w);
 
 	rds_conn_shutdown(cp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rds_threads_exit(void)
@@ -370,8 +262,6 @@ int rds_threads_init(void)
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 /* Compare two IPv6 addresses.  Return 0 if the two addresses are equal.
  * Return 1 if the first is greater.  Return -1 if the second is greater.
@@ -419,4 +309,3 @@ int rds_addr_cmp(const struct in6_addr *addr1,
 #endif
 }
 EXPORT_SYMBOL_GPL(rds_addr_cmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

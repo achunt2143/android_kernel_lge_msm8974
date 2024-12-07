@@ -11,12 +11,6 @@
 
 #include <linux/pci.h>
 
-<<<<<<< HEAD
-/* Some PCI cards require delays when accessing config space. */
-#define PCI_CONFIG_SPACE_DELAY 10000
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The physical memory base mapped by BAR1.  256MB at the end of the
  * first 4GB.
@@ -25,11 +19,7 @@
 #define CVMX_PCIE_BAR1_PHYS_SIZE (1ull << 28)
 
 /*
-<<<<<<< HEAD
- * The RC base of BAR1.  gen1 has a 39-bit BAR2, gen2 has 41-bit BAR2,
-=======
  * The RC base of BAR1.	 gen1 has a 39-bit BAR2, gen2 has 41-bit BAR2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * place BAR1 so it is the same for both.
  */
 #define CVMX_PCIE_BAR1_RC_BASE (1ull << 41)
@@ -73,8 +63,5 @@ enum octeon_dma_bar_type {
  */
 extern enum octeon_dma_bar_type octeon_dma_bar_type;
 
-<<<<<<< HEAD
-=======
 void octeon_pci_dma_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

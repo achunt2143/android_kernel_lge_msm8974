@@ -12,15 +12,9 @@
 #include <linux/kernel.h>
 
 #if 0
-<<<<<<< HEAD
-#define DEBUGP printk
-#else
-#define DEBUGP(fmt...)
-=======
 #define DEBUGP(fmt, ...) printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
 #else
 #define DEBUGP(fmt, ...) no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_MODULES
@@ -53,21 +47,12 @@ int apply_relocate(Elf32_Shdr *sechdrs,
 			*location += sym->st_value;
 			break;
 		case R_68K_PC32:
-<<<<<<< HEAD
-			/* Add the value, subtract its postition */
-			*location += sym->st_value - (uint32_t)location;
-			break;
-		default:
-			printk(KERN_ERR "module %s: Unknown relocation: %u\n",
-			       me->name, ELF32_R_TYPE(rel[i].r_info));
-=======
 			/* Add the value, subtract its position */
 			*location += sym->st_value - (uint32_t)location;
 			break;
 		default:
 			pr_err("module %s: Unknown relocation: %u\n", me->name,
 			       ELF32_R_TYPE(rel[i].r_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOEXEC;
 		}
 	}
@@ -102,21 +87,12 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
 			*location = rel[i].r_addend + sym->st_value;
 			break;
 		case R_68K_PC32:
-<<<<<<< HEAD
-			/* Add the value, subtract its postition */
-			*location = rel[i].r_addend + sym->st_value - (uint32_t)location;
-			break;
-		default:
-			printk(KERN_ERR "module %s: Unknown relocation: %u\n",
-			       me->name, ELF32_R_TYPE(rel[i].r_info));
-=======
 			/* Add the value, subtract its position */
 			*location = rel[i].r_addend + sym->st_value - (uint32_t)location;
 			break;
 		default:
 			pr_err("module %s: Unknown relocation: %u\n", me->name,
 			       ELF32_R_TYPE(rel[i].r_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOEXEC;
 		}
 	}

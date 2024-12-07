@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/**
- * Copyright (C) 2005 - 2011 Emulex
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.  The full GNU General
- * Public License is included in this distribution in the file called COPYING.
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2017 Broadcom. All Rights Reserved.
@@ -22,7 +5,6 @@
  *
  * Contact Information:
  * linux-drivers@broadcom.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef BEISCSI_CMDS_H
@@ -33,20 +15,6 @@
  * firmware in the BE. These requests are communicated to the processor
  * using Work Request Blocks (WRBs) submitted to the MCC-WRB ring or via one
  * WRB inside a MAILBOX.
-<<<<<<< HEAD
- * The commands are serviced by the ARM processor in the BladeEngine's MPU.
- */
-struct be_sge {
-	u32 pa_lo;
-	u32 pa_hi;
-	u32 len;
-};
-
-#define MCC_WRB_SGE_CNT_SHIFT 3	/* bits 3 - 7 of dword 0 */
-#define MCC_WRB_SGE_CNT_MASK 0x1F	/* bits 3 - 7 of dword 0 */
-struct be_mcc_wrb {
-	u32 embedded;		/* dword 0 */
-=======
  * The commands are serviced by the ARM processor in the OneConnect's MPU.
  */
 struct be_sge {
@@ -65,16 +33,12 @@ struct be_mcc_wrb {
 #define MCC_WRB_EMBEDDED_MASK 1
 #define MCC_WRB_SGE_CNT_SHIFT 3
 #define MCC_WRB_SGE_CNT_MASK 0x1F
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 payload_length;	/* dword 1 */
 	u32 tag0;		/* dword 2 */
 	u32 tag1;		/* dword 3 */
 	u32 rsvd;		/* dword 4 */
 	union {
-<<<<<<< HEAD
-=======
 #define EMBED_MBX_MAX_PAYLOAD_SIZE  220
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8 embedded_payload[236];	/* used by embedded cmds */
 		struct be_sge sgl[19];	/* used by non-embedded cmds */
 	} payload;
@@ -87,13 +51,6 @@ struct be_mcc_wrb {
 
 /* Completion Status */
 #define MCC_STATUS_SUCCESS 0x0
-<<<<<<< HEAD
-
-#define CQE_STATUS_COMPL_MASK 0xFFFF
-#define CQE_STATUS_COMPL_SHIFT 0	/* bits 0 - 15 */
-#define CQE_STATUS_EXTD_MASK 0xFFFF
-#define CQE_STATUS_EXTD_SHIFT 16		/* bits 0 - 15 */
-=======
 #define MCC_STATUS_FAILED 0x1
 #define MCC_STATUS_ILLEGAL_REQUEST 0x2
 #define MCC_STATUS_ILLEGAL_FIELD 0x3
@@ -116,7 +73,6 @@ struct be_mcc_wrb {
 /* MBOX Command VER */
 #define MBX_CMD_VER1	0x01
 #define MBX_CMD_VER2	0x02
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct be_mcc_compl {
 	u32 status;		/* dword 0 */
@@ -140,23 +96,6 @@ struct be_mcc_compl {
 #define MPU_MAILBOX_DB_RDY_MASK	0x1	/* bit 0 */
 #define MPU_MAILBOX_DB_HI_MASK	0x2	/* bit 1 */
 
-<<<<<<< HEAD
-/********** MPU semphore ******************/
-#define MPU_EP_SEMAPHORE_OFFSET 0xac
-#define EP_SEMAPHORE_POST_STAGE_MASK 0x0000FFFF
-#define EP_SEMAPHORE_POST_ERR_MASK 0x1
-#define EP_SEMAPHORE_POST_ERR_SHIFT 31
-
-/********** MCC door bell ************/
-#define DB_MCCQ_OFFSET 0x140
-#define DB_MCCQ_RING_ID_MASK 0x7FF		/* bits 0 - 10 */
-/* Number of entries posted */
-#define DB_MCCQ_NUM_POSTED_SHIFT 16		/* bits 16 - 29 */
-
-/* MPU semphore POST stage values */
-#define POST_STAGE_ARMFW_RDY		0xc000	/* FW is done with POST */
-
-=======
 /********** MPU semphore: used for SH & BE ******************/
 #define SLIPORT_SOFTRESET_OFFSET		0x5c	/* CSR BAR offset */
 #define SLIPORT_SEMAPHORE_OFFSET_BEx		0xac	/* CSR BAR offset */
@@ -181,7 +120,6 @@ struct be_mcc_compl {
 /* Number of entries posted */
 #define DB_MCCQ_NUM_POSTED_SHIFT 16		/* bits 16 - 29 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * When the async bit of mcc_compl is set, the last 4 bytes of
  * mcc_compl is interpreted as follows:
@@ -189,8 +127,6 @@ struct be_mcc_compl {
 #define ASYNC_TRAILER_EVENT_CODE_SHIFT	8	/* bits 8 - 15 */
 #define ASYNC_TRAILER_EVENT_CODE_MASK	0xFF
 #define ASYNC_EVENT_CODE_LINK_STATE	0x1
-<<<<<<< HEAD
-=======
 #define ASYNC_EVENT_CODE_ISCSI		0x4
 #define ASYNC_EVENT_CODE_SLI		0x11
 
@@ -208,18 +144,13 @@ struct be_mcc_compl {
 #define ASYNC_SLI_LINK_EFFECT_SEV(le)		((le >> 1)  & 0x03)
 #define ASYNC_SLI_LINK_EFFECT_STATE(le)		(le & 0x01)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct be_async_event_trailer {
 	u32 code;
 };
 
 enum {
 	ASYNC_EVENT_LINK_DOWN = 0x0,
-<<<<<<< HEAD
-	ASYNC_EVENT_LINK_UP = 0x1
-=======
 	ASYNC_EVENT_LINK_UP = 0x1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -229,15 +160,6 @@ enum {
 struct be_async_event_link_state {
 	u8 physical_port;
 	u8 port_link_status;
-<<<<<<< HEAD
-	u8 port_duplex;
-	u8 port_speed;
-	u8 port_fault;
-	u8 rsvd0[7];
-	struct be_async_event_trailer trailer;
-} __packed;
-
-=======
 /**
  * ASYNC_EVENT_LINK_DOWN		0x0
  * ASYNC_EVENT_LINK_UP			0x1
@@ -271,7 +193,6 @@ struct be_async_event_sli {
 	u32 trailer;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct be_mcc_mailbox {
 	struct be_mcc_wrb wrb;
 	struct be_mcc_compl compl;
@@ -291,12 +212,9 @@ struct be_mcc_mailbox {
 #define OPCODE_COMMON_CQ_CREATE				12
 #define OPCODE_COMMON_EQ_CREATE				13
 #define OPCODE_COMMON_MCC_CREATE			21
-<<<<<<< HEAD
-=======
 #define OPCODE_COMMON_MCC_CREATE_EXT			90
 #define OPCODE_COMMON_ADD_TEMPLATE_HEADER_BUFFERS	24
 #define OPCODE_COMMON_REMOVE_TEMPLATE_HEADER_BUFFERS	25
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OPCODE_COMMON_GET_CNTL_ATTRIBUTES		32
 #define OPCODE_COMMON_GET_FW_VERSION			35
 #define OPCODE_COMMON_MODIFY_EQ_DELAY			41
@@ -306,12 +224,9 @@ struct be_mcc_mailbox {
 #define OPCODE_COMMON_EQ_DESTROY			55
 #define OPCODE_COMMON_QUERY_FIRMWARE_CONFIG		58
 #define OPCODE_COMMON_FUNCTION_RESET			61
-<<<<<<< HEAD
-=======
 #define OPCODE_COMMON_GET_PORT_NAME			77
 #define OPCODE_COMMON_SET_HOST_DATA			93
 #define OPCODE_COMMON_SET_FEATURES			191
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * LIST of opcodes that are common between Initiator and Target
@@ -322,12 +237,8 @@ struct be_mcc_mailbox {
 #define OPCODE_COMMON_ISCSI_CFG_REMOVE_SGL_PAGES        3
 #define OPCODE_COMMON_ISCSI_NTWK_GET_NIC_CONFIG		7
 #define OPCODE_COMMON_ISCSI_NTWK_SET_VLAN		14
-<<<<<<< HEAD
-#define OPCODE_COMMON_ISCSI_NTWK_CONFIGURE_STATELESS_IP_ADDR	17
-=======
 #define OPCODE_COMMON_ISCSI_NTWK_CONFIG_STATELESS_IP_ADDR	17
 #define OPCODE_COMMON_ISCSI_NTWK_REL_STATELESS_IP_ADDR	18
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OPCODE_COMMON_ISCSI_NTWK_MODIFY_IP_ADDR		21
 #define OPCODE_COMMON_ISCSI_NTWK_GET_DEFAULT_GATEWAY	22
 #define OPCODE_COMMON_ISCSI_NTWK_MODIFY_DEFAULT_GATEWAY 23
@@ -346,12 +257,8 @@ struct be_cmd_req_hdr {
 	u8 domain;		/* dword 0 */
 	u32 timeout;		/* dword 1 */
 	u32 request_length;	/* dword 2 */
-<<<<<<< HEAD
-	u32 rsvd0;		/* dword 3 */
-=======
 	u8 version;		/* dword 3 */
 	u8 rsvd0[3];		/* dword 3 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct be_cmd_resp_hdr {
@@ -366,13 +273,10 @@ struct phys_addr {
 	u32 hi;
 };
 
-<<<<<<< HEAD
-=======
 struct virt_addr {
 	u32 lo;
 	u32 hi;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************
  * BE Command definitions *
  **************************/
@@ -420,15 +324,12 @@ struct be_cmd_resp_eq_create {
 	u16 rsvd0;		/* sword */
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct be_set_eqd {
 	u32 eq_id;
 	u32 phase;
 	u32 delay_multiplier;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mgmt_chap_format {
 	u32 flags;
 	u8  intr_chap_name[256];
@@ -447,8 +348,6 @@ struct mgmt_auth_method_format {
 	struct	mgmt_chap_format chap;
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct be_cmd_req_logout_fw_sess {
 	struct be_cmd_req_hdr hdr;	/* dw[4] */
 	uint32_t session_handle;
@@ -460,7 +359,6 @@ struct be_cmd_resp_logout_fw_sess {
 #define BE_SESS_STATUS_CLOSE		0x20
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mgmt_conn_login_options {
 	u8 flags;
 	u8 header_digest;
@@ -473,17 +371,6 @@ struct mgmt_conn_login_options {
 	struct	mgmt_auth_method_format auth_data;
 } __packed;
 
-<<<<<<< HEAD
-struct ip_address_format {
-	u16 size_of_structure;
-	u8 reserved;
-	u8 ip_type;
-	u8 ip_address[16];
-	u32 rsvd0;
-} __packed;
-
-struct	mgmt_conn_info {
-=======
 struct ip_addr_format {
 	u16 size_of_structure;
 	u8 reserved;
@@ -501,7 +388,6 @@ struct ip_addr_format {
 } __packed;
 
 struct mgmt_conn_info {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	connection_handle;
 	u32	connection_status;
 	u16	src_port;
@@ -509,15 +395,9 @@ struct mgmt_conn_info {
 	u16	dest_port_redirected;
 	u16	cid;
 	u32	estimated_throughput;
-<<<<<<< HEAD
-	struct	ip_address_format	src_ipaddr;
-	struct	ip_address_format	dest_ipaddr;
-	struct	ip_address_format	dest_ipaddr_redirected;
-=======
 	struct	ip_addr_format	src_ipaddr;
 	struct	ip_addr_format	dest_ipaddr;
 	struct	ip_addr_format	dest_ipaddr_redirected;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct	mgmt_conn_login_options	negotiated_login_options;
 } __packed;
 
@@ -547,42 +427,17 @@ struct mgmt_session_info {
 	struct	mgmt_conn_info	conn_list[1];
 } __packed;
 
-<<<<<<< HEAD
-struct  be_cmd_req_get_session {
-=======
 struct be_cmd_get_session_req {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_cmd_req_hdr hdr;
 	u32 session_handle;
 } __packed;
 
-<<<<<<< HEAD
-struct  be_cmd_resp_get_session {
-=======
 struct be_cmd_get_session_resp {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_cmd_resp_hdr hdr;
 	struct mgmt_session_info session_info;
 } __packed;
 
 struct mac_addr {
-<<<<<<< HEAD
-	u16 size_of_struct;
-	u8 addr[ETH_ALEN];
-} __packed;
-
-struct be_cmd_req_get_boot_target {
-	struct be_cmd_req_hdr hdr;
-} __packed;
-
-struct be_cmd_resp_get_boot_target {
-	struct be_cmd_resp_hdr hdr;
-	u32  boot_session_count;
-	int  boot_session_handle;
-};
-
-struct be_cmd_req_mac_query {
-=======
 	u16 size_of_structure;
 	u8 addr[ETH_ALEN];
 } __packed;
@@ -620,24 +475,17 @@ struct be_cmd_reopen_session_resp {
 
 
 struct be_cmd_mac_query_req {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_cmd_req_hdr hdr;
 	u8 type;
 	u8 permanent;
 	u16 if_id;
 } __packed;
 
-<<<<<<< HEAD
-struct be_cmd_resp_mac_query {
-=======
 struct be_cmd_get_mac_resp {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_cmd_resp_hdr hdr;
 	struct mac_addr mac;
 };
 
-<<<<<<< HEAD
-=======
 struct be_ip_addr_subnet_format {
 	u16 size_of_structure;
 	u8 ip_type;
@@ -716,7 +564,6 @@ struct be_cmd_set_vlan_req {
 	u32 interface_hndl;
 	u32 vlan_priority;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************** Create CQ ***************************/
 /**
  * Pseudo amap definition in which each bit of the actual structure is defined
@@ -745,12 +592,6 @@ struct amap_cq_context {
 	u8 rsvd5[32];		/* dword 3 */
 } __packed;
 
-<<<<<<< HEAD
-struct be_cmd_req_cq_create {
-	struct be_cmd_req_hdr hdr;
-	u16 num_pages;
-	u16 rsvd0;
-=======
 struct amap_cq_context_v2 {
 	u8 rsvd0[12];   /* dword 0 */
 	u8 coalescwm[2];    /* dword 0 */
@@ -773,7 +614,6 @@ struct be_cmd_req_cq_create {
 	u16 num_pages;
 	u8 page_size;
 	u8 rsvd0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 context[sizeof(struct amap_cq_context) / 8];
 	struct phys_addr pages[4];
 } __packed;
@@ -804,18 +644,11 @@ struct amap_mcc_context {
 	u8 rsvd2[32];
 } __packed;
 
-<<<<<<< HEAD
-struct be_cmd_req_mcc_create {
-	struct be_cmd_req_hdr hdr;
-	u16 num_pages;
-	u16 rsvd0;
-=======
 struct be_cmd_req_mcc_create_ext {
 	struct be_cmd_req_hdr hdr;
 	u16 num_pages;
 	u16 rsvd0;
 	u32 async_evt_bitmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 context[sizeof(struct amap_mcc_context) / 8];
 	struct phys_addr pages[8];
 } __packed;
@@ -868,44 +701,17 @@ static inline struct be_sge *nonembedded_sgl(struct be_mcc_wrb *wrb)
 /******************** Modify EQ Delay *******************/
 struct be_cmd_req_modify_eq_delay {
 	struct be_cmd_req_hdr hdr;
-<<<<<<< HEAD
-	u32 num_eq;
-	struct {
-		u32 eq_id;
-		u32 phase;
-		u32 delay_multiplier;
-	} delay[8];
-=======
 	__le32 num_eq;
 	struct {
 		__le32 eq_id;
 		__le32 phase;
 		__le32 delay_multiplier;
 	} delay[MAX_CPUS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /******************** Get MAC ADDR *******************/
 
-<<<<<<< HEAD
-#define ETH_ALEN	6
-
-struct be_cmd_req_get_mac_addr {
-	struct be_cmd_req_hdr hdr;
-	u32 nic_port_count;
-	u32 speed;
-	u32 max_speed;
-	u32 link_state;
-	u32 max_frame_size;
-	u16 size_of_structure;
-	u8 mac_address[ETH_ALEN];
-	u32 rsvd[23];
-};
-
-struct be_cmd_resp_get_mac_addr {
-=======
 struct be_cmd_get_nic_conf_resp {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_cmd_resp_hdr hdr;
 	u32 nic_port_count;
 	u32 speed;
@@ -913,12 +719,6 @@ struct be_cmd_get_nic_conf_resp {
 	u32 link_state;
 	u32 max_frame_size;
 	u16 size_of_structure;
-<<<<<<< HEAD
-	u8 mac_address[6];
-	u32 rsvd[23];
-};
-
-=======
 	u8 mac_address[ETH_ALEN];
 } __packed;
 
@@ -999,7 +799,6 @@ int beiscsi_detect_ue(struct beiscsi_hba *phba);
 
 int beiscsi_detect_tpe(struct beiscsi_hba *phba);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int beiscsi_cmd_eq_create(struct be_ctrl_info *ctrl,
 			  struct be_queue_info *eq, int eq_delay);
 
@@ -1014,32 +813,6 @@ int beiscsi_cmd_mccq_create(struct beiscsi_hba *phba,
 			struct be_queue_info *mccq,
 			struct be_queue_info *cq);
 
-<<<<<<< HEAD
-int be_poll_mcc(struct be_ctrl_info *ctrl);
-int mgmt_check_supported_fw(struct be_ctrl_info *ctrl,
-				      struct beiscsi_hba *phba);
-unsigned int be_cmd_get_mac_addr(struct beiscsi_hba *phba);
-unsigned int beiscsi_get_boot_target(struct beiscsi_hba *phba);
-unsigned int beiscsi_get_session_info(struct beiscsi_hba *phba,
-				  u32 boot_session_handle,
-				  struct be_dma_mem *nonemb_cmd);
-
-void free_mcc_tag(struct be_ctrl_info *ctrl, unsigned int tag);
-/*ISCSI Functuions */
-int be_cmd_fw_initialize(struct be_ctrl_info *ctrl);
-
-struct be_mcc_wrb *wrb_from_mbox(struct be_dma_mem *mbox_mem);
-struct be_mcc_wrb *wrb_from_mccq(struct beiscsi_hba *phba);
-int be_mcc_notify_wait(struct beiscsi_hba *phba);
-void be_mcc_notify(struct beiscsi_hba *phba);
-unsigned int alloc_mcc_tag(struct beiscsi_hba *phba);
-void beiscsi_async_link_state_process(struct beiscsi_hba *phba,
-		struct be_async_event_link_state *evt);
-int be_mcc_compl_process_isr(struct be_ctrl_info *ctrl,
-				    struct be_mcc_compl *compl);
-
-int be_mbox_notify(struct be_ctrl_info *ctrl);
-=======
 void free_mcc_wrb(struct be_ctrl_info *ctrl, unsigned int tag);
 
 int beiscsi_modify_eq_delay(struct beiscsi_hba *phba, struct be_set_eqd *,
@@ -1060,14 +833,10 @@ void beiscsi_process_async_event(struct beiscsi_hba *phba,
 				struct be_mcc_compl *compl);
 int beiscsi_process_mcc_compl(struct be_ctrl_info *ctrl,
 			      struct be_mcc_compl *compl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int be_cmd_create_default_pdu_queue(struct be_ctrl_info *ctrl,
 				    struct be_queue_info *cq,
 				    struct be_queue_info *dq, int length,
-<<<<<<< HEAD
-				    int entry_size);
-=======
 				    int entry_size, uint8_t is_header,
 				    uint8_t ulp_num);
 
@@ -1075,20 +844,11 @@ int be_cmd_iscsi_post_template_hdr(struct be_ctrl_info *ctrl,
 				    struct be_dma_mem *q_mem);
 
 int be_cmd_iscsi_remove_template_hdr(struct be_ctrl_info *ctrl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int be_cmd_iscsi_post_sgl_pages(struct be_ctrl_info *ctrl,
 				struct be_dma_mem *q_mem, u32 page_offset,
 				u32 num_pages);
 
-<<<<<<< HEAD
-int beiscsi_cmd_reset_function(struct beiscsi_hba *phba);
-
-int be_cmd_wrbq_create(struct be_ctrl_info *ctrl, struct be_dma_mem *q_mem,
-		       struct be_queue_info *wrbq);
-
-bool is_link_state_evt(u32 trailer);
-=======
 int be_cmd_wrbq_create(struct be_ctrl_info *ctrl, struct be_dma_mem *q_mem,
 		       struct be_queue_info *wrbq,
 		       struct hwi_wrb_context *pwrb_context,
@@ -1106,7 +866,6 @@ int beiscsi_get_port_name(struct be_ctrl_info *ctrl, struct beiscsi_hba *phba);
 
 int beiscsi_set_uer_feature(struct beiscsi_hba *phba);
 int beiscsi_set_host_data(struct beiscsi_hba *phba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct be_default_pdu_context {
 	u32 dw[4];
@@ -1130,8 +889,6 @@ struct amap_be_default_pdu_context {
 	u8 rsvd4[32];		/* dword 3 */
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct amap_default_pdu_context_ext {
 	u8 rsvd0[16];   /* dword 0 */
 	u8 ring_size[4];    /* dword 0 */
@@ -1144,18 +901,13 @@ struct amap_default_pdu_context_ext {
 	u8 rsvd3[32];   /* dword 3 */
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct be_defq_create_req {
 	struct be_cmd_req_hdr hdr;
 	u16 num_pages;
 	u8 ulp_num;
-<<<<<<< HEAD
-	u8 rsvd0;
-=======
 #define BEISCSI_DUAL_ULP_AWARE_BIT	0	/* Byte 3 - Bit 0 */
 #define BEISCSI_BIND_Q_TO_ULP_BIT	1	/* Byte 3 - Bit 1 */
 	u8 dua_feature;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_default_pdu_context context;
 	struct phys_addr pages[8];
 } __packed;
@@ -1163,8 +915,6 @@ struct be_defq_create_req {
 struct be_defq_create_resp {
 	struct be_cmd_req_hdr hdr;
 	u16 id;
-<<<<<<< HEAD
-=======
 	u8 rsvd0;
 	u8 ulp_num;
 	u32 doorbell_offset;
@@ -1186,7 +936,6 @@ struct be_post_template_pages_req {
 struct be_remove_template_pages_req {
 	struct be_cmd_req_hdr hdr;
 	u16 type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 rsvd0;
 } __packed;
 
@@ -1203,26 +952,18 @@ struct be_wrbq_create_req {
 	struct be_cmd_req_hdr hdr;
 	u16 num_pages;
 	u8 ulp_num;
-<<<<<<< HEAD
-	u8 rsvd0;
-=======
 	u8 dua_feature;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct phys_addr pages[8];
 } __packed;
 
 struct be_wrbq_create_resp {
 	struct be_cmd_resp_hdr resp_hdr;
 	u16 cid;
-<<<<<<< HEAD
-	u16 rsvd0;
-=======
 	u8 rsvd0;
 	u8 ulp_num;
 	u32 doorbell_offset;
 	u16 register_set;
 	u16 doorbell_format;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define SOL_CID_MASK		0x0000FFC0
@@ -1272,8 +1013,6 @@ struct amap_sol_cqe_ring {
 	u8 valid;		/* dword 3 */
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct amap_sol_cqe_v2 {
 	u8 hw_sts[8];   /* dword 0 */
 	u8 i_sts[8];    /* dword 0 */
@@ -1327,7 +1066,6 @@ struct amap_it_dmsg_cqe_v2 {
 	u8 rsvd2[2];    /* DWORD 3 */
 	u8 valid;   /* DWORD 3 */
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /**
@@ -1335,11 +1073,7 @@ struct amap_it_dmsg_cqe_v2 {
  * stack to notify the
  * controller of a posted Work Request Block
  */
-<<<<<<< HEAD
-#define DB_WRB_POST_CID_MASK		0x3FF	/* bits 0 - 9 */
-=======
 #define DB_WRB_POST_CID_MASK		0xFFFF	/* bits 0 - 16 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DB_DEF_PDU_WRB_INDEX_MASK	0xFF	/* bits 0 - 9 */
 
 #define DB_DEF_PDU_WRB_INDEX_SHIFT	16
@@ -1355,9 +1089,6 @@ struct iscsi_cleanup_req {
 	u16 chute;
 	u8 hdr_ring_id;
 	u8 data_ring_id;
-<<<<<<< HEAD
-
-=======
 } __packed;
 
 struct iscsi_cleanup_req_v1 {
@@ -1368,7 +1099,6 @@ struct iscsi_cleanup_req_v1 {
 	u16 rsvd2;
 	u16 data_ring_id;
 	u16 rsvd3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct eq_delay {
@@ -1385,11 +1115,7 @@ struct be_eq_delay_params_in {
 
 struct tcp_connect_and_offload_in {
 	struct be_cmd_req_hdr hdr;
-<<<<<<< HEAD
-	struct ip_address_format ip_address;
-=======
 	struct ip_addr_format ip_address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 tcp_port;
 	u16 cid;
 	u16 cq_id;
@@ -1401,8 +1127,6 @@ struct tcp_connect_and_offload_in {
 	u8 rsvd0[3];
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct tcp_connect_and_offload_in_v1 {
 	struct be_cmd_req_hdr hdr;
 	struct ip_addr_format ip_address;
@@ -1423,7 +1147,6 @@ struct tcp_connect_and_offload_in_v1 {
 	u8 rsvd2;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct tcp_connect_and_offload_out {
 	struct be_cmd_resp_hdr hdr;
 	u32 connection_handle;
@@ -1432,31 +1155,12 @@ struct tcp_connect_and_offload_out {
 
 } __packed;
 
-<<<<<<< HEAD
-struct be_mcc_wrb_context {
-	struct MCC_WRB *wrb;
-	int *users_final_status;
-} __packed;
-
-#define DB_DEF_PDU_RING_ID_MASK		0x3FF	/* bits 0 - 9 */
-#define DB_DEF_PDU_CQPROC_MASK		0x3FFF	/* bits 0 - 9 */
-=======
 #define DB_DEF_PDU_RING_ID_MASK	0x3FFF	/* bits 0 - 13 */
 #define DB_DEF_PDU_CQPROC_MASK		0x3FFF	/* bits 16 - 29 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DB_DEF_PDU_REARM_SHIFT		14
 #define DB_DEF_PDU_EVENT_SHIFT		15
 #define DB_DEF_PDU_CQPROC_SHIFT		16
 
-<<<<<<< HEAD
-struct dmsg_cqe {
-	u32 dw[4];
-} __packed;
-
-struct tcp_upload_params_in {
-	struct be_cmd_req_hdr hdr;
-	u16 id;
-=======
 struct be_invalidate_connection_params_in {
 	struct be_cmd_req_hdr hdr;
 	u32 session_handle;
@@ -1489,23 +1193,10 @@ struct be_tcp_upload_params_in {
 #define BE_UPLOAD_TYPE_ABORT		3
 /* abortive upload with reset, sequence number by driver */
 #define BE_UPLOAD_TYPE_ABORT_WITH_SEQ	4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 upload_type;
 	u32 reset_seq;
 } __packed;
 
-<<<<<<< HEAD
-struct tcp_upload_params_out {
-	u32 dw[32];
-} __packed;
-
-union tcp_upload_params {
-	struct tcp_upload_params_in request;
-	struct tcp_upload_params_out response;
-} __packed;
-
-struct be_ulp_fw_cfg {
-=======
 struct be_tcp_upload_params_out {
 	u32 dw[32];
 } __packed;
@@ -1517,7 +1208,6 @@ union be_tcp_upload_params {
 
 struct be_ulp_fw_cfg {
 #define BEISCSI_ULP_ISCSI_INI_MODE	0x10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ulp_mode;
 	u32 etx_base;
 	u32 etx_count;
@@ -1533,27 +1223,16 @@ struct be_ulp_fw_cfg {
 	u32 icd_count;
 };
 
-<<<<<<< HEAD
-=======
 struct be_ulp_chain_icd {
 	u32 chain_base;
 	u32 chain_count;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct be_fw_cfg {
 	struct be_cmd_req_hdr hdr;
 	u32 be_config_number;
 	u32 asic_revision;
 	u32 phys_port;
-<<<<<<< HEAD
-	u32 function_mode;
-	struct be_ulp_fw_cfg ulp[2];
-	u32 function_caps;
-} __packed;
-
-struct be_all_if_id {
-=======
 #define BEISCSI_FUNC_ISCSI_INI_MODE	0x10
 #define BEISCSI_FUNC_DUA_MODE	0x800
 	u32 function_mode;
@@ -1567,15 +1246,11 @@ struct be_all_if_id {
 } __packed;
 
 struct be_cmd_get_all_if_id_req {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_cmd_req_hdr hdr;
 	u32 if_count;
 	u32 if_hndl_list[1];
 } __packed;
 
-<<<<<<< HEAD
-#define ISCSI_OPCODE_SCSI_DATA_OUT		5
-=======
 struct be_cmd_get_port_name {
 	union {
 		struct be_cmd_req_hdr req_hdr;
@@ -1593,7 +1268,6 @@ struct be_cmd_get_port_name {
 
 #define ISCSI_OPCODE_SCSI_DATA_OUT		5
 #define OPCODE_COMMON_NTWK_LINK_STATUS_QUERY 5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OPCODE_COMMON_MODIFY_EQ_DELAY		41
 #define OPCODE_COMMON_ISCSI_CLEANUP		59
 #define	OPCODE_COMMON_TCP_UPLOAD		56
@@ -1602,16 +1276,6 @@ struct be_cmd_get_port_name {
 #define OPCODE_ISCSI_INI_CFG_GET_HBA_NAME	6
 #define OPCODE_ISCSI_INI_CFG_SET_HBA_NAME	7
 #define OPCODE_ISCSI_INI_SESSION_GET_A_SESSION  14
-<<<<<<< HEAD
-#define OPCODE_ISCSI_INI_DRIVER_OFFLOAD_SESSION 41
-#define OPCODE_ISCSI_INI_DRIVER_INVALIDATE_CONNECTION 42
-#define OPCODE_ISCSI_INI_BOOT_GET_BOOT_TARGET	52
-
-/* --- CMD_ISCSI_INVALIDATE_CONNECTION_TYPE --- */
-#define CMD_ISCSI_COMMAND_INVALIDATE		1
-#define CMD_ISCSI_CONNECTION_INVALIDATE		0x8001
-#define CMD_ISCSI_CONNECTION_ISSUE_TCP_RST	0x8002
-=======
 #define OPCODE_ISCSI_INI_SESSION_LOGOUT_TARGET	 24
 #define OPCODE_ISCSI_INI_DRIVER_REOPEN_ALL_SESSIONS 36
 #define OPCODE_ISCSI_INI_DRIVER_OFFLOAD_SESSION 41
@@ -1621,7 +1285,6 @@ struct be_cmd_get_port_name {
 #define OPCODE_COMMON_READ_FLASH		97
 
 #define CMD_ISCSI_COMMAND_INVALIDATE		1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define INI_WR_CMD			1	/* Initiator write command */
 #define INI_TMF_CMD			2	/* Initiator TMF command */
@@ -1630,49 +1293,6 @@ struct be_cmd_get_port_name {
 						 * a read command
 						 */
 #define TGT_CTX_UPDT_CMD		7	/* Target context update */
-<<<<<<< HEAD
-#define TGT_STS_CMD			8	/* Target R2T and other BHS
-						 * where only the status number
-						 * need to be updated
-						 */
-#define TGT_DATAIN_CMD			9	/* Target Data-Ins in response
-						 * to read command
-						 */
-#define TGT_SOS_PDU			10	/* Target:standalone status
-						 * response
-						 */
-#define TGT_DM_CMD			11	/* Indicates that the bhs
-						 *  preparedby
-						 * driver should not be touched
-						 */
-/* --- CMD_CHUTE_TYPE --- */
-#define CMD_CONNECTION_CHUTE_0		1
-#define CMD_CONNECTION_CHUTE_1		2
-#define CMD_CONNECTION_CHUTE_2		3
-
-#define EQ_MAJOR_CODE_COMPLETION	0
-
-#define CMD_ISCSI_SESSION_DEL_CFG_FROM_FLASH 0
-#define CMD_ISCSI_SESSION_SAVE_CFG_ON_FLASH 1
-
-/* --- CONNECTION_UPLOAD_PARAMS --- */
-/* These parameters are used to define the type of upload desired.  */
-#define CONNECTION_UPLOAD_GRACEFUL      1	/* Graceful upload  */
-#define CONNECTION_UPLOAD_ABORT_RESET   2	/* Abortive upload with
-						 * reset
-						 */
-#define CONNECTION_UPLOAD_ABORT		3	/* Abortive upload without
-						 * reset
-						 */
-#define CONNECTION_UPLOAD_ABORT_WITH_SEQ 4	/* Abortive upload with reset,
-						 * sequence number by driver  */
-
-/* Returns byte size of given field with a structure. */
-
-/* Returns the number of items in the field array. */
-#define BE_NUMBER_OF_FIELD(_type_, _field_)	\
-	(FIELD_SIZEOF(_type_, _field_)/sizeof((((_type_ *)0)->_field_[0])))\
-=======
 #define TGT_DM_CMD			11	/* Indicates that the bhs
 						 * prepared by driver should not
 						 * be touched.
@@ -1681,7 +1301,6 @@ struct be_cmd_get_port_name {
 /* Returns the number of items in the field array. */
 #define BE_NUMBER_OF_FIELD(_type_, _field_)	\
 	(sizeof_field(_type_, _field_)/sizeof((((_type_ *)0)->_field_[0])))\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Different types of iSCSI completions to host driver for both initiator
@@ -1834,21 +1453,9 @@ struct be_cmd_get_port_name {
 						 * the cxn
 						 */
 
-<<<<<<< HEAD
-int beiscsi_pci_soft_reset(struct beiscsi_hba *phba);
-int be_chk_reset_complete(struct beiscsi_hba *phba);
-
-void be_wrb_hdr_prepare(struct be_mcc_wrb *wrb, int payload_len,
-			bool embedded, u8 sge_cnt);
-
-void be_cmd_hdr_prepare(struct be_cmd_req_hdr *req_hdr,
-			u8 subsystem, u8 opcode, int cmd_len);
-
-=======
 void be_wrb_hdr_prepare(struct be_mcc_wrb *wrb, u32 payload_len,
 			bool embedded, u8 sge_cnt);
 
 void be_cmd_hdr_prepare(struct be_cmd_req_hdr *req_hdr,
 			u8 subsystem, u8 opcode, u32 cmd_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !BEISCSI_CMDS_H */

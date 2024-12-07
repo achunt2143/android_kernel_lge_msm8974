@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright 2002 H. Peter Anvin - All Rights Reserved
  *
-<<<<<<< HEAD
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, Inc., 53 Temple Place Ste 330,
- *   Boston MA 02111-1307, USA; either version 2 of the License, or
- *   (at your option) any later version; incorporated herein by reference.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -23,11 +11,7 @@
  * MMX implementation of RAID-6 syndrome functions
  */
 
-<<<<<<< HEAD
-#if defined(__i386__) && !defined(__arch_um__)
-=======
 #ifdef CONFIG_X86_32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/raid/pq.h>
 #include "x86.h"
@@ -87,10 +71,7 @@ static void raid6_mmx1_gen_syndrome(int disks, size_t bytes, void **ptrs)
 
 const struct raid6_calls raid6_mmxx1 = {
 	raid6_mmx1_gen_syndrome,
-<<<<<<< HEAD
-=======
 	NULL,			/* XOR not yet implemented */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raid6_have_mmx,
 	"mmxx1",
 	0
@@ -149,10 +130,7 @@ static void raid6_mmx2_gen_syndrome(int disks, size_t bytes, void **ptrs)
 
 const struct raid6_calls raid6_mmxx2 = {
 	raid6_mmx2_gen_syndrome,
-<<<<<<< HEAD
-=======
 	NULL,			/* XOR not yet implemented */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raid6_have_mmx,
 	"mmxx2",
 	0

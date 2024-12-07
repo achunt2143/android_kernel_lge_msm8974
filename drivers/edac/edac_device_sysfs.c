@@ -1,11 +1,7 @@
 /*
  * file for managing the edac_device subsystem of devices for EDAC
  *
-<<<<<<< HEAD
- * (C) 2007 SoftwareBitMaker 
-=======
  * (C) 2007 SoftwareBitMaker
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file may be distributed under the terms of the
  * GNU General Public License.
@@ -19,11 +15,7 @@
 #include <linux/slab.h>
 #include <linux/edac.h>
 
-<<<<<<< HEAD
-#include "edac_core.h"
-=======
 #include "edac_device.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "edac_module.h"
 
 #define EDAC_DEVICE_SYMLINK	"device"
@@ -171,15 +163,6 @@ CTL_INFO_ATTR(poll_msec, S_IRUGO | S_IWUSR,
 	edac_device_ctl_poll_msec_show, edac_device_ctl_poll_msec_store);
 
 /* Base Attributes of the EDAC_DEVICE ECC object */
-<<<<<<< HEAD
-static struct ctl_info_attribute *device_ctrl_attr[] = {
-	&attr_ctl_info_panic_on_ue,
-	&attr_ctl_info_log_ue,
-	&attr_ctl_info_log_ce,
-	&attr_ctl_info_poll_msec,
-	NULL,
-};
-=======
 static struct attribute *device_ctrl_attrs[] = {
 	&attr_ctl_info_panic_on_ue.attr,
 	&attr_ctl_info_log_ue.attr,
@@ -188,7 +171,6 @@ static struct attribute *device_ctrl_attrs[] = {
 	NULL,
 };
 ATTRIBUTE_GROUPS(device_ctrl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * edac_device_ctrl_master_release
@@ -221,34 +203,19 @@ static void edac_device_ctrl_master_release(struct kobject *kobj)
 {
 	struct edac_device_ctl_info *edac_dev = to_edacdev(kobj);
 
-<<<<<<< HEAD
-	debugf4("%s() control index=%d\n", __func__, edac_dev->dev_idx);
-=======
 	edac_dbg(4, "control index=%d\n", edac_dev->dev_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* decrement the EDAC CORE module ref count */
 	module_put(edac_dev->owner);
 
-<<<<<<< HEAD
-	/* free the control struct containing the 'main' kobj
-	 * passed in to this routine
-	 */
-	kfree(edac_dev);
-=======
 	__edac_device_free_ctl_info(edac_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ktype for the main (master) kobject */
 static struct kobj_type ktype_device_ctrl = {
 	.release = edac_device_ctrl_master_release,
 	.sysfs_ops = &device_ctl_info_ops,
-<<<<<<< HEAD
-	.default_attrs = (struct attribute **)device_ctrl_attr,
-=======
 	.default_groups = device_ctrl_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -261,20 +228,6 @@ static struct kobj_type ktype_device_ctrl = {
  */
 int edac_device_register_sysfs_main_kobj(struct edac_device_ctl_info *edac_dev)
 {
-<<<<<<< HEAD
-	struct bus_type *edac_subsys;
-	int err;
-
-	debugf1("%s()\n", __func__);
-
-	/* get the /sys/devices/system/edac reference */
-	edac_subsys = edac_get_sysfs_subsys();
-	if (edac_subsys == NULL) {
-		debugf1("%s() no edac_subsys error\n", __func__);
-		err = -ENODEV;
-		goto err_out;
-	}
-=======
 	struct device *dev_root;
 	const struct bus_type *edac_subsys;
 	int err = -ENODEV;
@@ -283,7 +236,6 @@ int edac_device_register_sysfs_main_kobj(struct edac_device_ctl_info *edac_dev)
 
 	/* get the /sys/devices/system/edac reference */
 	edac_subsys = edac_get_sysfs_subsys();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Point to the 'edac_subsys' this instance 'reports' to */
 	edac_dev->edac_subsys = edac_subsys;
@@ -296,20 +248,6 @@ int edac_device_register_sysfs_main_kobj(struct edac_device_ctl_info *edac_dev)
 	 */
 	edac_dev->owner = THIS_MODULE;
 
-<<<<<<< HEAD
-	if (!try_module_get(edac_dev->owner)) {
-		err = -ENODEV;
-		goto err_mod_get;
-	}
-
-	/* register */
-	err = kobject_init_and_add(&edac_dev->kobj, &ktype_device_ctrl,
-				   &edac_subsys->dev_root->kobj,
-				   "%s", edac_dev->name);
-	if (err) {
-		debugf1("%s()Failed to register '.../edac/%s'\n",
-			__func__, edac_dev->name);
-=======
 	if (!try_module_get(edac_dev->owner))
 		goto err_out;
 
@@ -323,7 +261,6 @@ int edac_device_register_sysfs_main_kobj(struct edac_device_ctl_info *edac_dev)
 	if (err) {
 		edac_dbg(1, "Failed to register '.../edac/%s'\n",
 			 edac_dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_kobj_reg;
 	}
 	kobject_uevent(&edac_dev->kobj, KOBJ_ADD);
@@ -332,28 +269,15 @@ int edac_device_register_sysfs_main_kobj(struct edac_device_ctl_info *edac_dev)
 	 * edac_device_unregister_sysfs_main_kobj() must be used
 	 */
 
-<<<<<<< HEAD
-	debugf4("%s() Registered '.../edac/%s' kobject\n",
-		__func__, edac_dev->name);
-=======
 	edac_dbg(4, "Registered '.../edac/%s' kobject\n", edac_dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 	/* Error exit stack */
 err_kobj_reg:
-<<<<<<< HEAD
-	module_put(edac_dev->owner);
-
-err_mod_get:
-	edac_put_sysfs_subsys();
-
-=======
 	kobject_put(&edac_dev->kobj);
 	module_put(edac_dev->owner);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out:
 	return err;
 }
@@ -364,14 +288,8 @@ err_out:
  */
 void edac_device_unregister_sysfs_main_kobj(struct edac_device_ctl_info *dev)
 {
-<<<<<<< HEAD
-	debugf0("%s()\n", __func__);
-	debugf4("%s() name of kobject is: %s\n",
-		__func__, kobject_name(&dev->kobj));
-=======
 	edac_dbg(0, "\n");
 	edac_dbg(4, "name of kobject is: %s\n", kobject_name(&dev->kobj));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Unregister the edac device's kobject and
@@ -381,10 +299,6 @@ void edac_device_unregister_sysfs_main_kobj(struct edac_device_ctl_info *dev)
 	 *   b) 'kfree' the memory
 	 */
 	kobject_put(&dev->kobj);
-<<<<<<< HEAD
-	edac_put_sysfs_subsys();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* edac_dev -> instance information */
@@ -412,11 +326,7 @@ static void edac_device_ctrl_instance_release(struct kobject *kobj)
 {
 	struct edac_device_instance *instance;
 
-<<<<<<< HEAD
-	debugf1("%s()\n", __func__);
-=======
 	edac_dbg(1, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* map from this kobj to the main control struct
 	 * and then dec the main kobj count
@@ -479,30 +389,18 @@ INSTANCE_ATTR(ce_count, S_IRUGO, instance_ce_count_show, NULL);
 INSTANCE_ATTR(ue_count, S_IRUGO, instance_ue_count_show, NULL);
 
 /* list of edac_dev 'instance' attributes */
-<<<<<<< HEAD
-static struct instance_attribute *device_instance_attr[] = {
-	&attr_instance_ce_count,
-	&attr_instance_ue_count,
-	NULL,
-};
-=======
 static struct attribute *device_instance_attrs[] = {
 	&attr_instance_ce_count.attr,
 	&attr_instance_ue_count.attr,
 	NULL,
 };
 ATTRIBUTE_GROUPS(device_instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The 'ktype' for each edac_dev 'instance' */
 static struct kobj_type ktype_instance_ctrl = {
 	.release = edac_device_ctrl_instance_release,
 	.sysfs_ops = &device_instance_ops,
-<<<<<<< HEAD
-	.default_attrs = (struct attribute **)device_instance_attr,
-=======
 	.default_groups = device_instance_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* edac_dev -> instance -> block information */
@@ -535,11 +433,7 @@ static void edac_device_ctrl_block_release(struct kobject *kobj)
 {
 	struct edac_device_block *block;
 
-<<<<<<< HEAD
-	debugf1("%s()\n", __func__);
-=======
 	edac_dbg(1, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get the container of the kobj */
 	block = to_block(kobj);
@@ -594,30 +488,18 @@ BLOCK_ATTR(ce_count, S_IRUGO, block_ce_count_show, NULL);
 BLOCK_ATTR(ue_count, S_IRUGO, block_ue_count_show, NULL);
 
 /* list of edac_dev 'block' attributes */
-<<<<<<< HEAD
-static struct edac_dev_sysfs_block_attribute *device_block_attr[] = {
-	&attr_block_ce_count,
-	&attr_block_ue_count,
-	NULL,
-};
-=======
 static struct attribute *device_block_attrs[] = {
 	&attr_block_ce_count.attr,
 	&attr_block_ue_count.attr,
 	NULL,
 };
 ATTRIBUTE_GROUPS(device_block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The 'ktype' for each edac_dev 'block' */
 static struct kobj_type ktype_block_ctrl = {
 	.release = edac_device_ctrl_block_release,
 	.sysfs_ops = &device_block_ops,
-<<<<<<< HEAD
-	.default_attrs = (struct attribute **)device_block_attr,
-=======
 	.default_groups = device_block_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* block ctor/dtor  code */
@@ -634,17 +516,10 @@ static int edac_device_create_block(struct edac_device_ctl_info *edac_dev,
 	struct edac_dev_sysfs_block_attribute *sysfs_attrib;
 	struct kobject *main_kobj;
 
-<<<<<<< HEAD
-	debugf4("%s() Instance '%s' inst_p=%p  block '%s'  block_p=%p\n",
-		__func__, instance->name, instance, block->name, block);
-	debugf4("%s() block kobj=%p  block kobj->parent=%p\n",
-		__func__, &block->kobj, &block->kobj.parent);
-=======
 	edac_dbg(4, "Instance '%s' inst_p=%p  block '%s'  block_p=%p\n",
 		 instance->name, instance, block->name, block);
 	edac_dbg(4, "block kobj=%p  block kobj->parent=%p\n",
 		 &block->kobj, &block->kobj.parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* init this block's kobject */
 	memset(&block->kobj, 0, sizeof(struct kobject));
@@ -663,12 +538,7 @@ static int edac_device_create_block(struct edac_device_ctl_info *edac_dev,
 				   &instance->kobj,
 				   "%s", block->name);
 	if (err) {
-<<<<<<< HEAD
-		debugf1("%s() Failed to register instance '%s'\n",
-			__func__, block->name);
-=======
 		edac_dbg(1, "Failed to register instance '%s'\n", block->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kobject_put(main_kobj);
 		err = -ENODEV;
 		goto err_out;
@@ -681,17 +551,9 @@ static int edac_device_create_block(struct edac_device_ctl_info *edac_dev,
 	if (sysfs_attrib && block->nr_attribs) {
 		for (i = 0; i < block->nr_attribs; i++, sysfs_attrib++) {
 
-<<<<<<< HEAD
-			debugf4("%s() creating block attrib='%s' "
-				"attrib->%p to kobj=%p\n",
-				__func__,
-				sysfs_attrib->attr.name,
-				sysfs_attrib, &block->kobj);
-=======
 			edac_dbg(4, "creating block attrib='%s' attrib->%p to kobj=%p\n",
 				 sysfs_attrib->attr.name,
 				 sysfs_attrib, &block->kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Create each block_attribute file */
 			err = sysfs_create_file(&block->kobj,
@@ -774,24 +636,14 @@ static int edac_device_create_instance(struct edac_device_ctl_info *edac_dev,
 	err = kobject_init_and_add(&instance->kobj, &ktype_instance_ctrl,
 				   &edac_dev->kobj, "%s", instance->name);
 	if (err != 0) {
-<<<<<<< HEAD
-		debugf2("%s() Failed to register instance '%s'\n",
-			__func__, instance->name);
-=======
 		edac_dbg(2, "Failed to register instance '%s'\n",
 			 instance->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kobject_put(main_kobj);
 		goto err_out;
 	}
 
-<<<<<<< HEAD
-	debugf4("%s() now register '%d' blocks for instance %d\n",
-		__func__, instance->nr_blocks, idx);
-=======
 	edac_dbg(4, "now register '%d' blocks for instance %d\n",
 		 instance->nr_blocks, idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* register all blocks of this instance */
 	for (i = 0; i < instance->nr_blocks; i++) {
@@ -807,13 +659,8 @@ static int edac_device_create_instance(struct edac_device_ctl_info *edac_dev,
 	}
 	kobject_uevent(&instance->kobj, KOBJ_ADD);
 
-<<<<<<< HEAD
-	debugf4("%s() Registered instance %d '%s' kobject\n",
-		__func__, idx, instance->name);
-=======
 	edac_dbg(4, "Registered instance %d '%s' kobject\n",
 		 idx, instance->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -857,11 +704,7 @@ static int edac_device_create_instances(struct edac_device_ctl_info *edac_dev)
 	int i, j;
 	int err;
 
-<<<<<<< HEAD
-	debugf0("%s()\n", __func__);
-=======
 	edac_dbg(0, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* iterate over creation of the instances */
 	for (i = 0; i < edac_dev->nr_instances; i++) {
@@ -963,20 +806,12 @@ int edac_device_create_sysfs(struct edac_device_ctl_info *edac_dev)
 	int err;
 	struct kobject *edac_kobj = &edac_dev->kobj;
 
-<<<<<<< HEAD
-	debugf0("%s() idx=%d\n", __func__, edac_dev->dev_idx);
-=======
 	edac_dbg(0, "idx=%d\n", edac_dev->dev_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*  go create any main attributes callers wants */
 	err = edac_device_add_main_sysfs_attributes(edac_dev);
 	if (err) {
-<<<<<<< HEAD
-		debugf0("%s() failed to add sysfs attribs\n", __func__);
-=======
 		edac_dbg(0, "failed to add sysfs attribs\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out;
 	}
 
@@ -986,12 +821,7 @@ int edac_device_create_sysfs(struct edac_device_ctl_info *edac_dev)
 	err = sysfs_create_link(edac_kobj,
 				&edac_dev->dev->kobj, EDAC_DEVICE_SYMLINK);
 	if (err) {
-<<<<<<< HEAD
-		debugf0("%s() sysfs_create_link() returned err= %d\n",
-			__func__, err);
-=======
 		edac_dbg(0, "sysfs_create_link() returned err= %d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_remove_main_attribs;
 	}
 
@@ -1001,23 +831,13 @@ int edac_device_create_sysfs(struct edac_device_ctl_info *edac_dev)
 	 */
 	err = edac_device_create_instances(edac_dev);
 	if (err) {
-<<<<<<< HEAD
-		debugf0("%s() edac_device_create_instances() "
-			"returned err= %d\n", __func__, err);
-=======
 		edac_dbg(0, "edac_device_create_instances() returned err= %d\n",
 			 err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_remove_link;
 	}
 
 
-<<<<<<< HEAD
-	debugf4("%s() create-instances done, idx=%d\n",
-		__func__, edac_dev->dev_idx);
-=======
 	edac_dbg(4, "create-instances done, idx=%d\n", edac_dev->dev_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -1040,11 +860,7 @@ err_out:
  */
 void edac_device_remove_sysfs(struct edac_device_ctl_info *edac_dev)
 {
-<<<<<<< HEAD
-	debugf0("%s()\n", __func__);
-=======
 	edac_dbg(0, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* remove any main attributes for this device */
 	edac_device_remove_main_sysfs_attributes(edac_dev);

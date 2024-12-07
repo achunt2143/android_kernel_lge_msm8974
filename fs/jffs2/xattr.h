@@ -71,20 +71,13 @@ static inline int is_xattr_ref_dead(struct jffs2_xattr_ref *ref)
 #ifdef CONFIG_JFFS2_FS_XATTR
 
 extern void jffs2_init_xattr_subsystem(struct jffs2_sb_info *c);
-<<<<<<< HEAD
-extern void jffs2_build_xattr_subsystem(struct jffs2_sb_info *c);
-=======
 extern int jffs2_build_xattr_subsystem(struct jffs2_sb_info *c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void jffs2_clear_xattr_subsystem(struct jffs2_sb_info *c);
 
 extern struct jffs2_xattr_datum *jffs2_setup_xattr_datum(struct jffs2_sb_info *c,
 							 uint32_t xid, uint32_t version);
 
-<<<<<<< HEAD
-=======
 extern void jffs2_xattr_do_crccheck_inode(struct jffs2_sb_info *c, struct jffs2_inode_cache *ic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void jffs2_xattr_delete_inode(struct jffs2_sb_info *c, struct jffs2_inode_cache *ic);
 extern void jffs2_xattr_free_inode(struct jffs2_sb_info *c, struct jffs2_inode_cache *ic);
 
@@ -101,47 +94,25 @@ extern int do_jffs2_getxattr(struct inode *inode, int xprefix, const char *xname
 extern int do_jffs2_setxattr(struct inode *inode, int xprefix, const char *xname,
 			     const char *buffer, size_t size, int flags);
 
-<<<<<<< HEAD
-extern const struct xattr_handler *jffs2_xattr_handlers[];
-=======
 extern const struct xattr_handler * const jffs2_xattr_handlers[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct xattr_handler jffs2_user_xattr_handler;
 extern const struct xattr_handler jffs2_trusted_xattr_handler;
 
 extern ssize_t jffs2_listxattr(struct dentry *, char *, size_t);
-<<<<<<< HEAD
-#define jffs2_getxattr		generic_getxattr
-#define jffs2_setxattr		generic_setxattr
-#define jffs2_removexattr	generic_removexattr
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 
 #define jffs2_init_xattr_subsystem(c)
-<<<<<<< HEAD
-#define jffs2_build_xattr_subsystem(c)
-#define jffs2_clear_xattr_subsystem(c)
-
-=======
 #define jffs2_build_xattr_subsystem(c)		(0)
 #define jffs2_clear_xattr_subsystem(c)
 
 #define jffs2_xattr_do_crccheck_inode(c, ic)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define jffs2_xattr_delete_inode(c, ic)
 #define jffs2_xattr_free_inode(c, ic)
 #define jffs2_verify_xattr(c)			(1)
 
 #define jffs2_xattr_handlers	NULL
 #define jffs2_listxattr		NULL
-<<<<<<< HEAD
-#define jffs2_getxattr		NULL
-#define jffs2_setxattr		NULL
-#define jffs2_removexattr	NULL
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_JFFS2_FS_XATTR */
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/fiq.h
  *
@@ -37,30 +34,11 @@ struct fiq_handler {
 	void *dev_id;
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_FIQ
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int claim_fiq(struct fiq_handler *f);
 extern void release_fiq(struct fiq_handler *f);
 extern void set_fiq_handler(void *start, unsigned int length);
 extern void enable_fiq(int fiq);
 extern void disable_fiq(int fiq);
-<<<<<<< HEAD
-extern void fiq_set_type(int fiq, unsigned int type);
-#else
-static inline int claim_fiq(struct fiq_handler *f)
-{
-	return 0;
-}
-static inline void release_fiq(struct fiq_handler *f) { }
-static inline void set_fiq_handler(void *start, unsigned int length) { }
-static inline void enable_fiq(int fiq) { }
-static inline void disable_fiq(int fiq) { }
-static inline void fiq_set_type(int fiq, unsigned int type) { }
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* helpers defined in fiqasm.S: */
 extern void __set_fiq_regs(unsigned long const *regs);

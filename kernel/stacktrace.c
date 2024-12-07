@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kernel/stacktrace.c
  *
@@ -9,36 +6,13 @@
  *
  *  Copyright (C) 2006 Red Hat, Inc., Ingo Molnar <mingo@redhat.com>
  */
-<<<<<<< HEAD
-=======
 #include <linux/sched/task_stack.h>
 #include <linux/sched/debug.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/kallsyms.h>
 #include <linux/stacktrace.h>
-<<<<<<< HEAD
-
-void print_stack_trace(struct stack_trace *trace, int spaces)
-{
-	int i;
-
-	if (WARN_ON(!trace->entries))
-		return;
-
-	for (i = 0; i < trace->nr_entries; i++) {
-		printk("%*c", 1 + spaces, ' ');
-		print_ip_sym(trace->entries[i]);
-	}
-}
-EXPORT_SYMBOL_GPL(print_stack_trace);
-
-/*
- * Architectures that do not implement save_stack_trace_tsk or
- * save_stack_trace_regs get this weak alias and a once-per-bootup warning
-=======
 #include <linux/interrupt.h>
 
 /**
@@ -269,7 +243,6 @@ unsigned int stack_trace_save_user(unsigned long *store, unsigned int size)
 /*
  * Architectures that do not implement save_stack_trace_*()
  * get these weak aliases and once-per-bootup warnings
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (whenever this facility is utilized - for example by procfs):
  */
 __weak void
@@ -283,8 +256,6 @@ save_stack_trace_regs(struct pt_regs *regs, struct stack_trace *trace)
 {
 	WARN_ONCE(1, KERN_INFO "save_stack_trace_regs() not implemented yet.\n");
 }
-<<<<<<< HEAD
-=======
 
 /**
  * stack_trace_save - Save a stack trace into a storage array
@@ -431,4 +402,3 @@ unsigned int filter_irq_stacks(unsigned long *entries, unsigned int nr_entries)
 	return nr_entries;
 }
 EXPORT_SYMBOL_GPL(filter_irq_stacks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

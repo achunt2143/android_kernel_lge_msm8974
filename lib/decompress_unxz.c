@@ -20,17 +20,10 @@
  *
  * The worst case for in-place decompression is that the beginning of
  * the file is compressed extremely well, and the rest of the file is
-<<<<<<< HEAD
- * uncompressible. Thus, we must look for worst-case expansion when the
- * compressor is encoding uncompressible data.
- *
- * The structure of the .xz file in case of a compresed kernel is as follows.
-=======
  * incompressible. Thus, we must look for worst-case expansion when the
  * compressor is encoding incompressible data.
  *
  * The structure of the .xz file in case of a compressed kernel is as follows.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Sizes (as bytes) of the fields are in parenthesis.
  *
  *    Stream Header (12)
@@ -65,11 +58,7 @@
  * uncompressed size of the payload is in practice never less than the
  * payload size itself. The LZMA2 format would allow uncompressed size
  * to be less than the payload size, but no sane compressor creates such
-<<<<<<< HEAD
- * files. LZMA2 supports storing uncompressible data in uncompressed form,
-=======
  * files. LZMA2 supports storing incompressible data in uncompressed form,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * so there's never a need to create payloads whose uncompressed size is
  * smaller than the compressed size.
  *
@@ -113,11 +102,8 @@
  */
 #ifdef STATIC
 #	define XZ_PREBOOT
-<<<<<<< HEAD
-=======
 #else
 #include <linux/decompress/unxz.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifdef __KERNEL__
 #	include <linux/decompress/mm.h>
@@ -147,12 +133,6 @@
 #ifdef CONFIG_ARM
 #	define XZ_DEC_ARM
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_IA64
-#	define XZ_DEC_IA64
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SPARC
 #	define XZ_DEC_SPARC
 #endif
@@ -186,13 +166,8 @@
  * memeq and memzero are not used much and any remotely sane implementation
  * is fast enough. memcpy/memmove speed matters in multi-call mode, but
  * the kernel image is decompressed in single-call mode, in which only
-<<<<<<< HEAD
- * memcpy speed can matter and only if there is a lot of uncompressible data
- * (LZMA2 stores uncompressible chunks in uncompressed form). Thus, the
-=======
  * memmove speed can matter and only if there is a lot of incompressible data
  * (LZMA2 stores incompressible chunks in uncompressed form). Thus, the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * functions below should just be kept small; it's probably not worth
  * optimizing for speed.
  */
@@ -272,17 +247,10 @@ void *memmove(void *dest, const void *src, size_t size)
  * both input and output buffers are available as a single chunk, i.e. when
  * fill() and flush() won't be used.
  */
-<<<<<<< HEAD
-STATIC int INIT unxz(unsigned char *in, int in_size,
-		     int (*fill)(void *dest, unsigned int size),
-		     int (*flush)(void *src, unsigned int size),
-		     unsigned char *out, int *in_used,
-=======
 STATIC int INIT unxz(unsigned char *in, long in_size,
 		     long (*fill)(void *dest, unsigned long size),
 		     long (*flush)(void *src, unsigned long size),
 		     unsigned char *out, long *in_used,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     void (*error)(char *x))
 {
 	struct xz_buf b;
@@ -360,11 +328,7 @@ STATIC int INIT unxz(unsigned char *in, long in_size,
 				 * returned by xz_dec_run(), but probably
 				 * it's not too bad.
 				 */
-<<<<<<< HEAD
-				if (flush(b.out, b.out_pos) != (int)b.out_pos)
-=======
 				if (flush(b.out, b.out_pos) != (long)b.out_pos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ret = XZ_BUF_ERROR;
 
 				b.out_pos = 0;
@@ -429,9 +393,6 @@ error_alloc_state:
  * This macro is used by architecture-specific files to decompress
  * the kernel image.
  */
-<<<<<<< HEAD
-#define decompress unxz
-=======
 #ifdef XZ_PREBOOT
 STATIC int INIT __decompress(unsigned char *buf, long len,
 			   long (*fill)(void*, unsigned long),
@@ -443,4 +404,3 @@ STATIC int INIT __decompress(unsigned char *buf, long len,
 	return unxz(buf, len, fill, flush, out_buf, pos, error);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

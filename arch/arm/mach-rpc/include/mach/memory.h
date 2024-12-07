@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/mach-rpc/include/mach/memory.h
  *
  *  Copyright (C) 1996,1997,1998 Russell King.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Changelog:
  *   20-Oct-1996 RMK	Created
  *   31-Dec-1997 RMK	Fixed definitions to reduce warnings
@@ -26,14 +16,6 @@
 #define __ASM_ARCH_MEMORY_H
 
 /*
-<<<<<<< HEAD
- * Physical DRAM offset.
- */
-#define PLAT_PHYS_OFFSET	UL(0x10000000)
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Cache flushing area - ROM
  */
 #define FLUSH_BASE_PHYS		0x00000000

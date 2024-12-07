@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/kernel/seccomp.c
  *
@@ -16,27 +13,6 @@
  * Mode 2 allows user-defined system call filters in the form
  *        of Berkeley Packet Filters/Linux Socket Filters.
  */
-<<<<<<< HEAD
-
-#include <linux/atomic.h>
-#include <linux/audit.h>
-#include <linux/compat.h>
-#include <linux/sched.h>
-#include <linux/seccomp.h>
-#include <linux/slab.h>
-#include <linux/syscalls.h>
-
-/* #define SECCOMP_DEBUG 1 */
-
-#ifdef CONFIG_SECCOMP_FILTER
-#include <asm/syscall.h>
-#include <linux/filter.h>
-#include <linux/pid.h>
-#include <linux/ptrace.h>
-#include <linux/security.h>
-#include <linux/tracehook.h>
-#include <linux/uaccess.h>
-=======
 #define pr_fmt(fmt) "seccomp: " fmt
 
 #include <linux/refcount.h>
@@ -210,20 +186,10 @@ static inline void seccomp_cache_prepare(struct seccomp_filter *sfilter)
 {
 }
 #endif /* SECCOMP_ARCH_NATIVE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct seccomp_filter - container for seccomp BPF programs
  *
-<<<<<<< HEAD
- * @usage: reference count to manage the object lifetime.
- *         get/put helpers should be used when accessing an instance
- *         outside of a lifetime-guarded section.  In general, this
- *         is only needed for handling filters shared across tasks.
- * @prev: points to a previously installed, or inherited, filter
- * @len: the number of instructions in the program
- * @insns: the BPF program instructions to evaluate
-=======
  * @refs: Reference count to manage the object lifetime.
  *	  A filter's reference count is incremented for each directly
  *	  attached task, once for the dependent filter, and if
@@ -246,7 +212,6 @@ static inline void seccomp_cache_prepare(struct seccomp_filter *sfilter)
  * @notif: the struct that holds all notification related information
  * @notify_lock: A lock for all notification-related accesses.
  * @wqh: A wait queue for poll if a notifier is in use.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * seccomp_filter objects are organized in a tree linked via the @prev
  * pointer.  For any task, it appears to be a singly-linked list starting
@@ -256,15 +221,6 @@ static inline void seccomp_cache_prepare(struct seccomp_filter *sfilter)
  * how namespaces work.
  *
  * seccomp_filter objects should never be modified after being attached
-<<<<<<< HEAD
- * to a task_struct (other than @usage).
- */
-struct seccomp_filter {
-	atomic_t usage;
-	struct seccomp_filter *prev;
-	unsigned short len;  /* Instruction count */
-	struct sock_filter insns[];
-=======
  * to a task_struct (other than @refs).
  */
 struct seccomp_filter {
@@ -278,62 +234,11 @@ struct seccomp_filter {
 	struct notification *notif;
 	struct mutex notify_lock;
 	wait_queue_head_t wqh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Limit any path through the tree to 256KB worth of instructions. */
 #define MAX_INSNS_PER_PATH ((1 << 18) / sizeof(struct sock_filter))
 
-<<<<<<< HEAD
-/**
- * get_u32 - returns a u32 offset into data
- * @data: a unsigned 64 bit value
- * @index: 0 or 1 to return the first or second 32-bits
- *
- * This inline exists to hide the length of unsigned long.  If a 32-bit
- * unsigned long is passed in, it will be extended and the top 32-bits will be
- * 0. If it is a 64-bit unsigned long, then whatever data is resident will be
- * properly returned.
- *
- * Endianness is explicitly ignored and left for BPF program authors to manage
- * as per the specific architecture.
- */
-static inline u32 get_u32(u64 data, int index)
-{
-	return ((u32 *)&data)[index];
-}
-
-/* Helper for bpf_load below. */
-#define BPF_DATA(_name) offsetof(struct seccomp_data, _name)
-/**
- * bpf_load: checks and returns a pointer to the requested offset
- * @off: offset into struct seccomp_data to load from
- *
- * Returns the requested 32-bits of data.
- * seccomp_check_filter() should assure that @off is 32-bit aligned
- * and not out of bounds.  Failure to do so is a BUG.
- */
-u32 seccomp_bpf_load(int off)
-{
-	struct pt_regs *regs = task_pt_regs(current);
-	if (off == BPF_DATA(nr))
-		return syscall_get_nr(current, regs);
-	if (off == BPF_DATA(arch))
-		return syscall_get_arch(current, regs);
-	if (off >= BPF_DATA(args[0]) && off < BPF_DATA(args[6])) {
-		unsigned long value;
-		int arg = (off - BPF_DATA(args[0])) / sizeof(u64);
-		int index = !!(off % sizeof(u64));
-		syscall_get_arguments(current, regs, arg, 1, &value);
-		return get_u32(value, index);
-	}
-	if (off == BPF_DATA(instruction_pointer))
-		return get_u32(KSTK_EIP(current), 0);
-	if (off == BPF_DATA(instruction_pointer) + sizeof(u32))
-		return get_u32(KSTK_EIP(current), 1);
-	/* seccomp_check_filter should make this impossible. */
-	BUG();
-=======
 /*
  * Endianness is explicitly ignored and left for BPF program authors to manage
  * as per the specific architecture.
@@ -358,7 +263,6 @@ static void populate_seccomp_data(struct seccomp_data *sd)
 	sd->args[4] = args[4];
 	sd->args[5] = args[5];
 	sd->instruction_pointer = KSTK_EIP(task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -366,11 +270,7 @@ static void populate_seccomp_data(struct seccomp_data *sd)
  *	@filter: filter to verify
  *	@flen: length of filter
  *
-<<<<<<< HEAD
- * Takes a previously checked filter (by sk_chk_filter) and
-=======
  * Takes a previously checked filter (by bpf_check_classic) and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * redirects all filter code that loads struct sk_buff data
  * and related data through seccomp_bpf_load.  It also
  * enforces length and alignment checking of those loads.
@@ -386,64 +286,12 @@ static int seccomp_check_filter(struct sock_filter *filter, unsigned int flen)
 		u32 k = ftest->k;
 
 		switch (code) {
-<<<<<<< HEAD
-		case BPF_S_LD_W_ABS:
-			ftest->code = BPF_S_ANC_SECCOMP_LD_W;
-=======
 		case BPF_LD | BPF_W | BPF_ABS:
 			ftest->code = BPF_LDX | BPF_W | BPF_ABS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* 32-bit aligned and not out of bounds. */
 			if (k >= sizeof(struct seccomp_data) || k & 3)
 				return -EINVAL;
 			continue;
-<<<<<<< HEAD
-		case BPF_S_LD_W_LEN:
-			ftest->code = BPF_S_LD_IMM;
-			ftest->k = sizeof(struct seccomp_data);
-			continue;
-		case BPF_S_LDX_W_LEN:
-			ftest->code = BPF_S_LDX_IMM;
-			ftest->k = sizeof(struct seccomp_data);
-			continue;
-		/* Explicitly include allowed calls. */
-		case BPF_S_RET_K:
-		case BPF_S_RET_A:
-		case BPF_S_ALU_ADD_K:
-		case BPF_S_ALU_ADD_X:
-		case BPF_S_ALU_SUB_K:
-		case BPF_S_ALU_SUB_X:
-		case BPF_S_ALU_MUL_K:
-		case BPF_S_ALU_MUL_X:
-		case BPF_S_ALU_DIV_X:
-		case BPF_S_ALU_AND_K:
-		case BPF_S_ALU_AND_X:
-		case BPF_S_ALU_OR_K:
-		case BPF_S_ALU_OR_X:
-		case BPF_S_ALU_LSH_K:
-		case BPF_S_ALU_LSH_X:
-		case BPF_S_ALU_RSH_K:
-		case BPF_S_ALU_RSH_X:
-		case BPF_S_ALU_NEG:
-		case BPF_S_LD_IMM:
-		case BPF_S_LDX_IMM:
-		case BPF_S_MISC_TAX:
-		case BPF_S_MISC_TXA:
-		case BPF_S_ALU_DIV_K:
-		case BPF_S_LD_MEM:
-		case BPF_S_LDX_MEM:
-		case BPF_S_ST:
-		case BPF_S_STX:
-		case BPF_S_JMP_JA:
-		case BPF_S_JMP_JEQ_K:
-		case BPF_S_JMP_JEQ_X:
-		case BPF_S_JMP_JGE_K:
-		case BPF_S_JMP_JGE_X:
-		case BPF_S_JMP_JGT_K:
-		case BPF_S_JMP_JGT_X:
-		case BPF_S_JMP_JSET_K:
-		case BPF_S_JMP_JSET_X:
-=======
 		case BPF_LD | BPF_W | BPF_LEN:
 			ftest->code = BPF_LD | BPF_IMM;
 			ftest->k = sizeof(struct seccomp_data);
@@ -491,7 +339,6 @@ static int seccomp_check_filter(struct sock_filter *filter, unsigned int flen)
 		case BPF_JMP | BPF_JGT | BPF_X:
 		case BPF_JMP | BPF_JSET | BPF_K:
 		case BPF_JMP | BPF_JSET | BPF_X:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		default:
 			return -EINVAL;
@@ -500,25 +347,6 @@ static int seccomp_check_filter(struct sock_filter *filter, unsigned int flen)
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * seccomp_run_filters - evaluates all seccomp filters against @syscall
- * @syscall: number of the current system call
- *
- * Returns valid seccomp BPF response codes.
- */
-static u32 seccomp_run_filters(int syscall)
-{
-	struct seccomp_filter *f = ACCESS_ONCE(current->seccomp.filter);
-	u32 ret = SECCOMP_RET_ALLOW;
-
-	/* Ensure unexpected behavior doesn't result in failing open. */
-	if (unlikely(WARN_ON(f == NULL)))
-		return SECCOMP_RET_KILL;
-
-	/* Make sure cross-thread synced filter points somewhere sane. */
-	smp_read_barrier_depends();
-=======
 #ifdef SECCOMP_ARCH_NATIVE
 static inline bool seccomp_cache_check_allow_bitmap(const void *bitmap,
 						    size_t bitmap_size,
@@ -589,26 +417,18 @@ static u32 seccomp_run_filters(const struct seccomp_data *sd,
 
 	if (seccomp_cache_check_allow(f, sd))
 		return SECCOMP_RET_ALLOW;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * All filters in the list are evaluated and the lowest BPF return
 	 * value always takes priority (ignoring the DATA).
 	 */
 	for (; f; f = f->prev) {
-<<<<<<< HEAD
-		u32 cur_ret = sk_run_filter(NULL, f->insns);
-
-		if ((cur_ret & SECCOMP_RET_ACTION) < (ret & SECCOMP_RET_ACTION))
-			ret = cur_ret;
-=======
 		u32 cur_ret = bpf_prog_run_pin_on_cpu(f->prog, sd);
 
 		if (ACTION_ONLY(cur_ret) < ACTION_ONLY(ret)) {
 			ret = cur_ret;
 			*match = f;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
@@ -624,28 +444,16 @@ static inline bool seccomp_may_assign_mode(unsigned long seccomp_mode)
 	return true;
 }
 
-<<<<<<< HEAD
-static inline void seccomp_assign_mode(struct task_struct *task,
-				       unsigned long seccomp_mode)
-=======
 void __weak arch_seccomp_spec_mitigate(struct task_struct *task) { }
 
 static inline void seccomp_assign_mode(struct task_struct *task,
 				       unsigned long seccomp_mode,
 				       unsigned long flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	assert_spin_locked(&task->sighand->siglock);
 
 	task->seccomp.mode = seccomp_mode;
 	/*
-<<<<<<< HEAD
-	 * Make sure TIF_SECCOMP cannot be set before the mode (and
-	 * filter) is set.
-	 */
-	smp_mb();
-	set_tsk_thread_flag(task, TIF_SECCOMP);
-=======
 	 * Make sure SYSCALL_WORK_SECCOMP cannot be set before the mode (and
 	 * filter) is set.
 	 */
@@ -654,7 +462,6 @@ static inline void seccomp_assign_mode(struct task_struct *task,
 	if ((flags & SECCOMP_FILTER_FLAG_SPEC_ALLOW) == 0)
 		arch_seccomp_spec_mitigate(task);
 	set_task_syscall_work(task, SECCOMP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_SECCOMP_FILTER
@@ -677,11 +484,7 @@ static int is_ancestor(struct seccomp_filter *parent,
  * Expects sighand and cred_guard_mutex locks to be held.
  *
  * Returns 0 on success, -ve on error, or the pid of a thread which was
-<<<<<<< HEAD
- * either not in the correct seccomp mode or it did not have an ancestral
-=======
  * either not in the correct seccomp mode or did not have an ancestral
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * seccomp filter.
  */
 static inline pid_t seccomp_can_sync_threads(void)
@@ -709,11 +512,7 @@ static inline pid_t seccomp_can_sync_threads(void)
 		/* Return the first thread that cannot be synchronized. */
 		failed = task_pid_vnr(thread);
 		/* If the pid cannot be resolved, then return -ESRCH */
-<<<<<<< HEAD
-		if (unlikely(WARN_ON(failed == 0)))
-=======
 		if (WARN_ON(failed == 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			failed = -ESRCH;
 		return failed;
 	}
@@ -721,11 +520,6 @@ static inline pid_t seccomp_can_sync_threads(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * seccomp_sync_threads: sets all threads to use current's filter
- *
-=======
 static inline void seccomp_filter_free(struct seccomp_filter *filter)
 {
 	if (filter) {
@@ -789,17 +583,12 @@ void seccomp_filter_release(struct task_struct *tsk)
  *
  * @flags: SECCOMP_FILTER_FLAG_* flags to set during sync.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Expects sighand and cred_guard_mutex locks to be held, and for
  * seccomp_can_sync_threads() to have returned success already
  * without dropping the locks.
  *
  */
-<<<<<<< HEAD
-static inline void seccomp_sync_threads(void)
-=======
 static inline void seccomp_sync_threads(unsigned long flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct task_struct *thread, *caller;
 
@@ -815,20 +604,12 @@ static inline void seccomp_sync_threads(unsigned long flags)
 
 		/* Get a task reference for the new leaf node. */
 		get_seccomp_filter(caller);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Drop the task reference to the shared ancestor since
 		 * current's path will hold a reference.  (This also
 		 * allows a put before the assignment.)
 		 */
-<<<<<<< HEAD
-		put_seccomp_filter(thread);
-		smp_mb();
-		ACCESS_ONCE(thread->seccomp.filter) = caller->seccomp.filter;
-=======
 		__seccomp_filter_release(thread->seccomp.filter);
 
 		/* Make our new filter tree visible. */
@@ -846,31 +627,15 @@ static inline void seccomp_sync_threads(unsigned long flags)
 		if (task_no_new_privs(caller))
 			task_set_no_new_privs(thread);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Opt the other thread into seccomp if needed.
 		 * As threads are considered to be trust-realm
 		 * equivalent (see ptrace_may_access), it is safe to
 		 * allow one thread to transition the other.
 		 */
-<<<<<<< HEAD
-		if (thread->seccomp.mode == SECCOMP_MODE_DISABLED) {
-			/*
-			 * Don't let an unprivileged task work around
-			 * the no_new_privs restriction by creating
-			 * a thread that sets it up, enters seccomp,
-			 * then dies.
-			 */
-			if (task_no_new_privs(caller))
-				task_set_no_new_privs(thread);
-
-			seccomp_assign_mode(thread, SECCOMP_MODE_FILTER);
-		}
-=======
 		if (thread->seccomp.mode == SECCOMP_MODE_DISABLED)
 			seccomp_assign_mode(thread, SECCOMP_MODE_FILTER,
 					    flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -882,24 +647,6 @@ static inline void seccomp_sync_threads(unsigned long flags)
  */
 static struct seccomp_filter *seccomp_prepare_filter(struct sock_fprog *fprog)
 {
-<<<<<<< HEAD
-	struct seccomp_filter *filter;
-	unsigned long fp_size = fprog->len * sizeof(struct sock_filter);
-	unsigned long total_insns = fprog->len;
-	long ret;
-
-	if (fprog->len == 0 || fprog->len > BPF_MAXINSNS)
-		return ERR_PTR(-EINVAL);
-	BUG_ON(INT_MAX / fprog->len < sizeof(struct sock_filter));
-
-	for (filter = current->seccomp.filter; filter; filter = filter->prev)
-		total_insns += filter->len + 4;  /* include a 4 instr penalty */
-	if (total_insns > MAX_INSNS_PER_PATH)
-		return ERR_PTR(-ENOMEM);
-
-	/*
-	 * Installing a seccomp filter requires that the task have
-=======
 	struct seccomp_filter *sfilter;
 	int ret;
 	const bool save_orig =
@@ -916,45 +663,11 @@ static struct seccomp_filter *seccomp_prepare_filter(struct sock_fprog *fprog)
 
 	/*
 	 * Installing a seccomp filter requires that the task has
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * CAP_SYS_ADMIN in its namespace or be running with no_new_privs.
 	 * This avoids scenarios where unprivileged tasks can affect the
 	 * behavior of privileged children.
 	 */
 	if (!task_no_new_privs(current) &&
-<<<<<<< HEAD
-	    security_capable_noaudit(current_cred(), current_user_ns(),
-				     CAP_SYS_ADMIN) != 0)
-		return ERR_PTR(-EACCES);
-
-	/* Allocate a new seccomp_filter */
-	filter = kzalloc(sizeof(struct seccomp_filter) + fp_size,
-			 GFP_KERNEL|__GFP_NOWARN);
-	if (!filter)
-		return ERR_PTR(-ENOMEM);
-	atomic_set(&filter->usage, 1);
-	filter->len = fprog->len;
-
-	/* Copy the instructions from fprog. */
-	ret = -EFAULT;
-	if (copy_from_user(filter->insns, fprog->filter, fp_size))
-		goto fail;
-
-	/* Check and rewrite the fprog via the skb checker */
-	ret = sk_chk_filter(filter->insns, filter->len);
-	if (ret)
-		goto fail;
-
-	/* Check and rewrite the fprog for seccomp use */
-	ret = seccomp_check_filter(filter->insns, filter->len);
-	if (ret)
-		goto fail;
-
-	return filter;
-fail:
-	kfree(filter);
-	return ERR_PTR(ret);
-=======
 			!ns_capable_noaudit(current_user_ns(), CAP_SYS_ADMIN))
 		return ERR_PTR(-EACCES);
 
@@ -976,7 +689,6 @@ fail:
 	init_waitqueue_head(&sfilter->wqh);
 
 	return sfilter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -992,11 +704,7 @@ seccomp_prepare_user_filter(const char __user *user_filter)
 	struct seccomp_filter *filter = ERR_PTR(-EFAULT);
 
 #ifdef CONFIG_COMPAT
-<<<<<<< HEAD
-	if (is_compat_task()) {
-=======
 	if (in_compat_syscall()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct compat_sock_fprog fprog32;
 		if (copy_from_user(&fprog32, user_filter, sizeof(fprog32)))
 			goto out;
@@ -1011,8 +719,6 @@ out:
 	return filter;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef SECCOMP_ARCH_NATIVE
 /**
  * seccomp_is_const_allow - check if filter is constant allow with given data
@@ -1155,7 +861,6 @@ static void seccomp_cache_prepare(struct seccomp_filter *sfilter)
 }
 #endif /* SECCOMP_ARCH_NATIVE */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * seccomp_attach_filter: validate and attach filter
  * @flags:  flags to change filter behavior
@@ -1163,14 +868,10 @@ static void seccomp_cache_prepare(struct seccomp_filter *sfilter)
  *
  * Caller must be holding current->sighand->siglock lock.
  *
-<<<<<<< HEAD
- * Returns 0 on success, -ve on error.
-=======
  * Returns 0 on success, -ve on error, or
  *   - in TSYNC mode: the pid of a thread which was either not in the correct
  *     seccomp mode or did not have an ancestral seccomp filter
  *   - in NEW_LISTENER mode: the fd of the new listener
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static long seccomp_attach_filter(unsigned int flags,
 				  struct seccomp_filter *filter)
@@ -1181,15 +882,9 @@ static long seccomp_attach_filter(unsigned int flags,
 	assert_spin_locked(&current->sighand->siglock);
 
 	/* Validate resulting filter length. */
-<<<<<<< HEAD
-	total_insns = filter->len;
-	for (walker = current->seccomp.filter; walker; walker = walker->prev)
-		total_insns += walker->len + 4;  /* 4 instr penalty */
-=======
 	total_insns = filter->prog->len;
 	for (walker = current->seccomp.filter; walker; walker = walker->prev)
 		total_insns += walker->prog->len + 4;  /* 4 instr penalty */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (total_insns > MAX_INSNS_PER_PATH)
 		return -ENOMEM;
 
@@ -1198,12 +893,6 @@ static long seccomp_attach_filter(unsigned int flags,
 		int ret;
 
 		ret = seccomp_can_sync_threads();
-<<<<<<< HEAD
-		if (ret)
-			return ret;
-	}
-
-=======
 		if (ret) {
 			if (flags & SECCOMP_FILTER_FLAG_TSYNC_ESRCH)
 				return -ESRCH;
@@ -1220,19 +909,11 @@ static long seccomp_attach_filter(unsigned int flags,
 	if (flags & SECCOMP_FILTER_FLAG_WAIT_KILLABLE_RECV)
 		filter->wait_killable_recv = true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If there is an existing filter, make it the prev and don't drop its
 	 * task reference.
 	 */
 	filter->prev = current->seccomp.filter;
-<<<<<<< HEAD
-	current->seccomp.filter = filter;
-
-	/* Now that the new filter is in place, synchronize to all threads. */
-	if (flags & SECCOMP_FILTER_FLAG_TSYNC)
-		seccomp_sync_threads();
-=======
 	seccomp_cache_prepare(filter);
 	current->seccomp.filter = filter;
 	atomic_inc(&current->seccomp.filter_count);
@@ -1240,71 +921,21 @@ static long seccomp_attach_filter(unsigned int flags,
 	/* Now that the new filter is in place, synchronize to all threads. */
 	if (flags & SECCOMP_FILTER_FLAG_TSYNC)
 		seccomp_sync_threads(flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void __get_seccomp_filter(struct seccomp_filter *filter)
 {
 	refcount_inc(&filter->refs);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* get_seccomp_filter - increments the reference count of the filter on @tsk */
 void get_seccomp_filter(struct task_struct *tsk)
 {
 	struct seccomp_filter *orig = tsk->seccomp.filter;
 	if (!orig)
 		return;
-<<<<<<< HEAD
-	/* Reference count is bounded by the number of total processes. */
-	atomic_inc(&orig->usage);
-}
-
-static inline void seccomp_filter_free(struct seccomp_filter *filter)
-{
-	if (filter) {
-		kfree(filter);
-	}
-}
-
-/* put_seccomp_filter - decrements the ref count of tsk->seccomp.filter */
-void put_seccomp_filter(struct task_struct *tsk)
-{
-	struct seccomp_filter *orig = tsk->seccomp.filter;
-	/* Clean up single-reference branches iteratively. */
-	while (orig && atomic_dec_and_test(&orig->usage)) {
-		struct seccomp_filter *freeme = orig;
-		orig = orig->prev;
-		seccomp_filter_free(freeme);
-	}
-}
-
-/**
- * seccomp_send_sigsys - signals the task to allow in-process syscall emulation
- * @syscall: syscall number to send to userland
- * @reason: filter-supplied reason code to send to userland (via si_errno)
- *
- * Forces a SIGSYS with a code of SYS_SECCOMP and related sigsys info.
- */
-static void seccomp_send_sigsys(int syscall, int reason)
-{
-	struct siginfo info;
-	memset(&info, 0, sizeof(info));
-	info.si_signo = SIGSYS;
-	info.si_code = SYS_SECCOMP;
-	info.si_call_addr = (void __user *)KSTK_EIP(current);
-	info.si_errno = reason;
-	info.si_arch = syscall_get_arch(current, task_pt_regs(current));
-	info.si_syscall = syscall;
-	force_sig_info(SIGSYS, &info, current);
-}
-#endif	/* CONFIG_SECCOMP_FILTER */
-
-=======
 	__get_seccomp_filter(orig);
 	refcount_inc(&orig->users);
 }
@@ -1372,102 +1003,11 @@ static inline void seccomp_log(unsigned long syscall, long signr, u32 action,
 	audit_seccomp(syscall, signr, action);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Secure computing mode 1 allows only read/write/exit/sigreturn.
  * To be fully secure this must be combined with rlimit
  * to limit the stack allocations too.
  */
-<<<<<<< HEAD
-static int mode1_syscalls[] = {
-	__NR_seccomp_read, __NR_seccomp_write, __NR_seccomp_exit, __NR_seccomp_sigreturn,
-	0, /* null terminated */
-};
-
-#ifdef CONFIG_COMPAT
-static int mode1_syscalls_32[] = {
-	__NR_seccomp_read_32, __NR_seccomp_write_32, __NR_seccomp_exit_32, __NR_seccomp_sigreturn_32,
-	0, /* null terminated */
-};
-#endif
-
-int __secure_computing(int this_syscall)
-{
-	int exit_sig = 0;
-	int *syscall;
-	u32 ret;
-
-	/*
-	 * Make sure that any changes to mode from another thread have
-	 * been seen after TIF_SECCOMP was seen.
-	 */
-	rmb();
-
-	switch (current->seccomp.mode) {
-	case SECCOMP_MODE_STRICT:
-		syscall = mode1_syscalls;
-#ifdef CONFIG_COMPAT
-		if (is_compat_task())
-			syscall = mode1_syscalls_32;
-#endif
-		do {
-			if (*syscall == this_syscall)
-				return 0;
-		} while (*++syscall);
-		exit_sig = SIGKILL;
-		ret = SECCOMP_RET_KILL;
-		break;
-#ifdef CONFIG_SECCOMP_FILTER
-	case SECCOMP_MODE_FILTER: {
-		int data;
-		ret = seccomp_run_filters(this_syscall);
-		data = ret & SECCOMP_RET_DATA;
-		ret &= SECCOMP_RET_ACTION;
-		switch (ret) {
-		case SECCOMP_RET_ERRNO:
-			/* Set the low-order 16-bits as a errno. */
-			syscall_set_return_value(current, task_pt_regs(current),
-						 -data, 0);
-			goto skip;
-		case SECCOMP_RET_TRAP:
-			/* Show the handler the original registers. */
-			syscall_rollback(current, task_pt_regs(current));
-			/* Let the filter pass back 16 bits of data. */
-			seccomp_send_sigsys(this_syscall, data);
-			goto skip;
-		case SECCOMP_RET_TRACE:
-			/* Skip these calls if there is no tracer. */
-			if (!ptrace_event_enabled(current, PTRACE_EVENT_SECCOMP)) {
-				/* Make sure userspace sees an ENOSYS. */
-				syscall_set_return_value(current,
-					task_pt_regs(current), -ENOSYS, 0);
-				goto skip;
-			}
-			/* Allow the BPF to provide the event message */
-			ptrace_event(PTRACE_EVENT_SECCOMP, data);
-			/*
-			 * The delivery of a fatal signal during event
-			 * notification may silently skip tracer notification.
-			 * Terminating the task now avoids executing a system
-			 * call that may not be intended.
-			 */
-			if (fatal_signal_pending(current))
-				break;
-			return 0;
-		case SECCOMP_RET_ALLOW:
-			return 0;
-		case SECCOMP_RET_KILL:
-		default:
-			break;
-		}
-		exit_sig = SIGSYS;
-		break;
-	}
-#endif
-	default:
-		BUG();
-	}
-=======
 static const int mode1_syscalls[] = {
 	__NR_seccomp_read, __NR_seccomp_write, __NR_seccomp_exit, __NR_seccomp_sigreturn,
 	-1, /* negative terminated */
@@ -1484,22 +1024,10 @@ static void __secure_computing_strict(int this_syscall)
 		if (*allowed_syscalls == this_syscall)
 			return;
 	} while (*++allowed_syscalls != -1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef SECCOMP_DEBUG
 	dump_stack();
 #endif
-<<<<<<< HEAD
-	audit_seccomp(this_syscall, exit_sig, ret);
-	do_exit(exit_sig);
-#ifdef CONFIG_SECCOMP_FILTER
-skip:
-	audit_seccomp(this_syscall, exit_sig, ret);
-#endif
-	return -1;
-}
-
-=======
 	current->seccomp.mode = SECCOMP_MODE_DEAD;
 	seccomp_log(this_syscall, SIGKILL, SECCOMP_RET_KILL_THREAD, true);
 	do_exit(SIGKILL);
@@ -1835,7 +1363,6 @@ int __secure_computing(const struct seccomp_data *sd)
 }
 #endif /* CONFIG_HAVE_ARCH_SECCOMP_FILTER */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 long prctl_get_seccomp(void)
 {
 	return current->seccomp.mode;
@@ -1861,11 +1388,7 @@ static long seccomp_set_mode_strict(void)
 #ifdef TIF_NOTSC
 	disable_TSC();
 #endif
-<<<<<<< HEAD
-	seccomp_assign_mode(current, seccomp_mode);
-=======
 	seccomp_assign_mode(current, seccomp_mode, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = 0;
 
 out:
@@ -1875,8 +1398,6 @@ out:
 }
 
 #ifdef CONFIG_SECCOMP_FILTER
-<<<<<<< HEAD
-=======
 static void seccomp_notify_free(struct seccomp_filter *filter)
 {
 	kfree(filter->notif);
@@ -2364,7 +1885,6 @@ static bool has_duplicate_listener(struct seccomp_filter *new_child)
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * seccomp_set_mode_filter: internal function for setting seccomp filter
  * @flags:  flags to change filter behavior
@@ -2384,18 +1904,13 @@ static long seccomp_set_mode_filter(unsigned int flags,
 	const unsigned long seccomp_mode = SECCOMP_MODE_FILTER;
 	struct seccomp_filter *prepared = NULL;
 	long ret = -EINVAL;
-<<<<<<< HEAD
-=======
 	int listener = -1;
 	struct file *listener_f = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Validate flags. */
 	if (flags & ~SECCOMP_FILTER_FLAG_MASK)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * In the successful case, NEW_LISTENER returns the new listener fd.
 	 * But in the failure case, TSYNC returns the thread that died. If you
@@ -2416,14 +1931,11 @@ static long seccomp_set_mode_filter(unsigned int flags,
 	    ((flags & SECCOMP_FILTER_FLAG_NEW_LISTENER) == 0))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Prepare the new filter before holding any locks. */
 	prepared = seccomp_prepare_user_filter(filter);
 	if (IS_ERR(prepared))
 		return PTR_ERR(prepared);
 
-<<<<<<< HEAD
-=======
 	if (flags & SECCOMP_FILTER_FLAG_NEW_LISTENER) {
 		listener = get_unused_fd_flags(O_CLOEXEC);
 		if (listener < 0) {
@@ -2439,49 +1951,35 @@ static long seccomp_set_mode_filter(unsigned int flags,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Make sure we cannot change seccomp or nnp state via TSYNC
 	 * while another thread is in the middle of calling exec.
 	 */
 	if (flags & SECCOMP_FILTER_FLAG_TSYNC &&
 	    mutex_lock_killable(&current->signal->cred_guard_mutex))
-<<<<<<< HEAD
-		goto out_free;
-=======
 		goto out_put_fd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&current->sighand->siglock);
 
 	if (!seccomp_may_assign_mode(seccomp_mode))
 		goto out;
 
-<<<<<<< HEAD
-=======
 	if (has_duplicate_listener(prepared)) {
 		ret = -EBUSY;
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = seccomp_attach_filter(flags, prepared);
 	if (ret)
 		goto out;
 	/* Do not free the successfully attached filter. */
 	prepared = NULL;
 
-<<<<<<< HEAD
-	seccomp_assign_mode(current, seccomp_mode);
-=======
 	seccomp_assign_mode(current, seccomp_mode, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	spin_unlock_irq(&current->sighand->siglock);
 	if (flags & SECCOMP_FILTER_FLAG_TSYNC)
 		mutex_unlock(&current->signal->cred_guard_mutex);
-<<<<<<< HEAD
-=======
 out_put_fd:
 	if (flags & SECCOMP_FILTER_FLAG_NEW_LISTENER) {
 		if (ret) {
@@ -2494,7 +1992,6 @@ out_put_fd:
 			ret = listener;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_free:
 	seccomp_filter_free(prepared);
 	return ret;
@@ -2507,11 +2004,6 @@ static inline long seccomp_set_mode_filter(unsigned int flags,
 }
 #endif
 
-<<<<<<< HEAD
-/* Common entry point for both prctl and syscall. */
-static long do_seccomp(unsigned int op, unsigned int flags,
-		       const char __user *uargs)
-=======
 static long seccomp_get_action_avail(const char __user *uaction)
 {
 	u32 action;
@@ -2553,7 +2045,6 @@ static long seccomp_get_notif_sizes(void __user *usizes)
 /* Common entry point for both prctl and syscall. */
 static long do_seccomp(unsigned int op, unsigned int flags,
 		       void __user *uargs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (op) {
 	case SECCOMP_SET_MODE_STRICT:
@@ -2562,8 +2053,6 @@ static long do_seccomp(unsigned int op, unsigned int flags,
 		return seccomp_set_mode_strict();
 	case SECCOMP_SET_MODE_FILTER:
 		return seccomp_set_mode_filter(flags, uargs);
-<<<<<<< HEAD
-=======
 	case SECCOMP_GET_ACTION_AVAIL:
 		if (flags != 0)
 			return -EINVAL;
@@ -2574,18 +2063,13 @@ static long do_seccomp(unsigned int op, unsigned int flags,
 			return -EINVAL;
 
 		return seccomp_get_notif_sizes(uargs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EINVAL;
 	}
 }
 
 SYSCALL_DEFINE3(seccomp, unsigned int, op, unsigned int, flags,
-<<<<<<< HEAD
-			 const char __user *, uargs)
-=======
 			 void __user *, uargs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return do_seccomp(op, flags, uargs);
 }
@@ -2597,17 +2081,10 @@ SYSCALL_DEFINE3(seccomp, unsigned int, op, unsigned int, flags,
  *
  * Returns 0 on success or -EINVAL on failure.
  */
-<<<<<<< HEAD
-long prctl_set_seccomp(unsigned long seccomp_mode, char __user *filter)
-{
-	unsigned int op;
-	char __user *uargs;
-=======
 long prctl_set_seccomp(unsigned long seccomp_mode, void __user *filter)
 {
 	unsigned int op;
 	void __user *uargs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (seccomp_mode) {
 	case SECCOMP_MODE_STRICT:
@@ -2630,8 +2107,6 @@ long prctl_set_seccomp(unsigned long seccomp_mode, void __user *filter)
 	/* prctl interface doesn't have flags, so they are always zero. */
 	return do_seccomp(op, 0, uargs);
 }
-<<<<<<< HEAD
-=======
 
 #if defined(CONFIG_SECCOMP_FILTER) && defined(CONFIG_CHECKPOINT_RESTORE)
 static struct seccomp_filter *get_nth_filter(struct task_struct *task,
@@ -3038,4 +2513,3 @@ int proc_pid_seccomp_cache(struct seq_file *m, struct pid_namespace *ns,
 	return 0;
 }
 #endif /* CONFIG_SECCOMP_CACHE_DEBUG */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

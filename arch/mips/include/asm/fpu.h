@@ -1,85 +1,31 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2002 MontaVista Software Inc.
- * Author: Jun Sun, jsun@mvista.com or jsun@junsun.net
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright (C) 2002 MontaVista Software Inc.
  * Author: Jun Sun, jsun@mvista.com or jsun@junsun.net
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASM_FPU_H
 #define _ASM_FPU_H
 
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/task_stack.h>
 #include <linux/ptrace.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/thread_info.h>
 #include <linux/bitops.h>
 
 #include <asm/mipsregs.h>
 #include <asm/cpu.h>
 #include <asm/cpu-features.h>
-<<<<<<< HEAD
-#include <asm/hazards.h>
-#include <asm/processor.h>
-#include <asm/current.h>
-=======
 #include <asm/fpu_emulator.h>
 #include <asm/hazards.h>
 #include <asm/ptrace.h>
 #include <asm/processor.h>
 #include <asm/current.h>
 #include <asm/msa.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_MIPS_MT_FPAFF
 #include <asm/mips_mt.h>
 #endif
 
-<<<<<<< HEAD
-struct sigcontext;
-struct sigcontext32;
-
-extern void fpu_emulator_init_fpu(void);
-extern void _init_fpu(void);
-extern void _save_fp(struct task_struct *);
-extern void _restore_fp(struct task_struct *);
-
-#define __enable_fpu()							\
-do {									\
-        set_c0_status(ST0_CU1);						\
-        enable_fpu_hazard();						\
-} while (0)
-
-#define __disable_fpu()							\
-do {									\
-	clear_c0_status(ST0_CU1);					\
-        disable_fpu_hazard();						\
-} while (0)
-
-#define enable_fpu()							\
-do {									\
-	if (cpu_has_fpu)						\
-		__enable_fpu();						\
-} while (0)
-
-#define disable_fpu()							\
-do {									\
-	if (cpu_has_fpu)						\
-		__disable_fpu();					\
-} while (0)
-
-=======
 /*
  * This enum specifies a mode in which we want the FPU to operate, for cores
  * which implement the Status.FR bit. Note that the bottom bit of the value
@@ -156,7 +102,6 @@ fr_common:
 
 	return SIGFPE;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define clear_fpu_owner()	clear_thread_flag(TIF_USEDFPU)
 
@@ -170,29 +115,6 @@ static inline int is_fpu_owner(void)
 	return cpu_has_fpu && __is_fpu_owner();
 }
 
-<<<<<<< HEAD
-static inline void __own_fpu(void)
-{
-	__enable_fpu();
-	KSTK_STATUS(current) |= ST0_CU1;
-	set_thread_flag(TIF_USEDFPU);
-}
-
-static inline void own_fpu_inatomic(int restore)
-{
-	if (cpu_has_fpu && !__is_fpu_owner()) {
-		__own_fpu();
-		if (restore)
-			_restore_fp(current);
-	}
-}
-
-static inline void own_fpu(int restore)
-{
-	preempt_disable();
-	own_fpu_inatomic(restore);
-	preempt_enable();
-=======
 static inline int __own_fpu(void)
 {
 	enum fpu_mode mode;
@@ -261,34 +183,11 @@ static inline void lose_fpu_inatomic(int save, struct task_struct *tsk)
 	}
 	KSTK_STATUS(tsk) &= ~ST0_CU1;
 	clear_tsk_thread_flag(tsk, TIF_USEDFPU);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void lose_fpu(int save)
 {
 	preempt_disable();
-<<<<<<< HEAD
-	if (is_fpu_owner()) {
-		if (save)
-			_save_fp(current);
-		KSTK_STATUS(current) &= ~ST0_CU1;
-		clear_thread_flag(TIF_USEDFPU);
-		__disable_fpu();
-	}
-	preempt_enable();
-}
-
-static inline void init_fpu(void)
-{
-	preempt_disable();
-	if (cpu_has_fpu) {
-		__own_fpu();
-		_init_fpu();
-	} else {
-		fpu_emulator_init_fpu();
-	}
-	preempt_enable();
-=======
 	lose_fpu_inatomic(save, current);
 	preempt_enable();
 }
@@ -323,7 +222,6 @@ static inline bool init_fp_ctx(struct task_struct *target)
 	set_stopped_child_used_math(target);
 
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void save_fp(struct task_struct *tsk)
@@ -338,11 +236,7 @@ static inline void restore_fp(struct task_struct *tsk)
 		_restore_fp(tsk);
 }
 
-<<<<<<< HEAD
-static inline fpureg_t *get_fpu_regs(struct task_struct *tsk)
-=======
 static inline union fpureg *get_fpu_regs(struct task_struct *tsk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (tsk == current) {
 		preempt_disable();
@@ -354,8 +248,6 @@ static inline union fpureg *get_fpu_regs(struct task_struct *tsk)
 	return tsk->thread.fpu.fpr;
 }
 
-<<<<<<< HEAD
-=======
 #else /* !CONFIG_MIPS_FP_SUPPORT */
 
 /*
@@ -433,5 +325,4 @@ extern union fpureg *get_fpu_regs(struct task_struct *tsk)
 	__compiletime_error("get_fpu_regs() should not be called when CONFIG_MIPS_FP_SUPPORT=n");
 
 #endif /* !CONFIG_MIPS_FP_SUPPORT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_FPU_H */

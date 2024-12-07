@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 
    fp_arith.c: floating-point math routines for the Linux-m68k
@@ -12,12 +9,6 @@
    Somewhat based on the AlphaLinux floating point emulator, by David
    Mosberger-Tang.
 
-<<<<<<< HEAD
-   You may copy, modify, and redistribute this file under the terms of
-   the GNU General Public License, version 2, or any later version, at
-   your convenience.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "fp_emu.h"
@@ -37,12 +28,7 @@ const struct fp_ext fp_Inf =
 
 /* let's start with the easy ones */
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fabs(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fabs(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dprint(PINSTR, "fabs\n");
 
@@ -53,12 +39,7 @@ struct fp_ext *fp_fabs(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fneg(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fneg(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dprint(PINSTR, "fneg\n");
 
@@ -74,12 +55,7 @@ struct fp_ext *fp_fneg(struct fp_ext *dest, struct fp_ext *src)
 /* fp_fadd: Implements the kernel of the FADD, FSADD, FDADD, FSUB,
    FDSUB, and FCMP instructions. */
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fadd(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fadd(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int diff;
 
@@ -138,12 +114,7 @@ struct fp_ext *fp_fadd(struct fp_ext *dest, struct fp_ext *src)
 
    Remember that the arguments are in assembler-syntax order! */
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fsub(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fsub(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dprint(PINSTR, "fsub ");
 
@@ -152,12 +123,7 @@ struct fp_ext *fp_fsub(struct fp_ext *dest, struct fp_ext *src)
 }
 
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fcmp(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fcmp(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dprint(PINSTR, "fcmp ");
 
@@ -166,12 +132,7 @@ struct fp_ext *fp_fcmp(struct fp_ext *dest, struct fp_ext *src)
 	return fp_fadd(&FPDATA->temp[1], src);
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_ftst(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_ftst(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dprint(PINSTR, "ftst\n");
 
@@ -180,12 +141,7 @@ struct fp_ext *fp_ftst(struct fp_ext *dest, struct fp_ext *src)
 	return src;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fmul(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fmul(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union fp_mant128 temp;
 	int exp;
@@ -262,12 +218,7 @@ struct fp_ext *fp_fmul(struct fp_ext *dest, struct fp_ext *src)
    Note that the order of the operands is counter-intuitive: instead
    of src / dest, the result is actually dest / src. */
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fdiv(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fdiv(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union fp_mant128 temp;
 	int exp;
@@ -284,11 +235,7 @@ struct fp_ext *fp_fdiv(struct fp_ext *dest, struct fp_ext *src)
 		/* infinity / infinity = NaN (quiet, as always) */
 		if (IS_INF(src))
 			fp_set_nan(dest);
-<<<<<<< HEAD
-		/* infinity / anything else = infinity (with approprate sign) */
-=======
 		/* infinity / anything else = infinity (with appropriate sign) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return dest;
 	}
 	if (IS_INF(src)) {
@@ -351,12 +298,7 @@ struct fp_ext *fp_fdiv(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fsglmul(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fsglmul(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int exp;
 
@@ -412,12 +354,7 @@ struct fp_ext *fp_fsglmul(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fsgldiv(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fsgldiv(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int exp;
 	unsigned long quot, rem;
@@ -570,11 +507,7 @@ static void fp_roundint(struct fp_ext *dest, int mode)
 				return;
 			break;
 		case 0x401e:
-<<<<<<< HEAD
-			if (!(oldmant.m32[1] >= 0))
-=======
 			if (oldmant.m32[1] & 0x80000000)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return;
 			if (oldmant.m32[0] & 1)
 				break;
@@ -630,13 +563,8 @@ static void fp_roundint(struct fp_ext *dest, int mode)
    (which are exactly the same, except for the rounding used on the
    intermediate value) */
 
-<<<<<<< HEAD
-static struct fp_ext *
-modrem_kernel(struct fp_ext *dest, struct fp_ext *src, int mode)
-=======
 static struct fp_ext *modrem_kernel(struct fp_ext *dest, struct fp_ext *src,
 				    int mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fp_ext tmp;
 
@@ -669,12 +597,7 @@ static struct fp_ext *modrem_kernel(struct fp_ext *dest, struct fp_ext *src,
 
    fmod(src,dest) = (dest - (src * floor(dest / src))) */
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fmod(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fmod(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dprint(PINSTR, "fmod\n");
 	return modrem_kernel(dest, src, FPCR_ROUND_RZ);
@@ -685,23 +608,13 @@ struct fp_ext *fp_fmod(struct fp_ext *dest, struct fp_ext *src)
    frem(src,dest) = (dest - (src * round(dest / src)))
  */
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_frem(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_frem(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dprint(PINSTR, "frem\n");
 	return modrem_kernel(dest, src, FPCR_ROUND_RN);
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fint(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fint(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dprint(PINSTR, "fint\n");
 
@@ -712,12 +625,7 @@ struct fp_ext *fp_fint(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fintrz(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fintrz(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dprint(PINSTR, "fintrz\n");
 
@@ -728,12 +636,7 @@ struct fp_ext *fp_fintrz(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fscale(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fscale(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int scale, oldround;
 

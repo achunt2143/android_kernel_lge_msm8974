@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2005,2006,2007,2008 IBM Corporation
  *
@@ -9,14 +6,6 @@
  * Reiner Sailer <sailer@watson.ibm.com>
  * Mimi Zohar <zohar@us.ibm.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * File: ima.h
  *	internal Integrity Measurement Architecture (IMA) definitions
  */
@@ -26,21 +15,11 @@
 
 #include <linux/types.h>
 #include <linux/crypto.h>
-<<<<<<< HEAD
-=======
 #include <linux/fs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/security.h>
 #include <linux/hash.h>
 #include <linux/tpm.h>
 #include <linux/audit.h>
-<<<<<<< HEAD
-
-#include "../integrity.h"
-
-enum ima_show_type { IMA_SHOW_BINARY, IMA_SHOW_ASCII };
-enum tpm_pcrs { TPM_PCR0 = 0, TPM_PCR8 = 8 };
-=======
 #include <crypto/hash_info.h>
 
 #include "../integrity.h"
@@ -48,33 +27,11 @@ enum tpm_pcrs { TPM_PCR0 = 0, TPM_PCR8 = 8 };
 enum ima_show_type { IMA_SHOW_BINARY, IMA_SHOW_BINARY_NO_FIELD_LEN,
 		     IMA_SHOW_BINARY_OLD_STRING_FMT, IMA_SHOW_ASCII };
 enum tpm_pcrs { TPM_PCR0 = 0, TPM_PCR8 = 8, TPM_PCR10 = 10 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* digest size for IMA, fits SHA1 or MD5 */
 #define IMA_DIGEST_SIZE		SHA1_DIGEST_SIZE
 #define IMA_EVENT_NAME_LEN_MAX	255
 
-<<<<<<< HEAD
-#define IMA_HASH_BITS 9
-#define IMA_MEASURE_HTABLE_SIZE (1 << IMA_HASH_BITS)
-
-/* set during initialization */
-extern int ima_initialized;
-extern int ima_used_chip;
-extern char *ima_hash;
-
-/* IMA inode template definition */
-struct ima_template_data {
-	u8 digest[IMA_DIGEST_SIZE];	/* sha1/md5 measurement hash */
-	char file_name[IMA_EVENT_NAME_LEN_MAX + 1];	/* name + \0 */
-};
-
-struct ima_template_entry {
-	u8 digest[IMA_DIGEST_SIZE];	/* sha1 or md5 measurement hash */
-	const char *template_name;
-	int template_len;
-	struct ima_template_data template;
-=======
 #define IMA_HASH_BITS 10
 #define IMA_MEASURE_HTABLE_SIZE (1 << IMA_HASH_BITS)
 
@@ -144,7 +101,6 @@ struct ima_template_entry {
 	struct ima_template_desc *template_desc; /* template descriptor */
 	u32 template_data_len;
 	struct ima_field_data template_data[];	/* template related data */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ima_queue_entry {
@@ -154,26 +110,6 @@ struct ima_queue_entry {
 };
 extern struct list_head ima_measurements;	/* list of all measurements */
 
-<<<<<<< HEAD
-/* declarations */
-void integrity_audit_msg(int audit_msgno, struct inode *inode,
-			 const unsigned char *fname, const char *op,
-			 const char *cause, int result, int info);
-
-/* Internal IMA function definitions */
-int ima_init(void);
-void ima_cleanup(void);
-int ima_fs_init(void);
-void ima_fs_cleanup(void);
-int ima_inode_alloc(struct inode *inode);
-int ima_add_template_entry(struct ima_template_entry *entry, int violation,
-			   const char *op, struct inode *inode);
-int ima_calc_hash(struct file *file, char *digest);
-int ima_calc_template_hash(int template_len, void *template, char *digest);
-int ima_calc_boot_aggregate(char *digest);
-void ima_add_violation(struct inode *inode, const unsigned char *filename,
-		       const char *op, const char *cause);
-=======
 /* Some details preceding the binary serialized measurement list */
 struct ima_kexec_hdr {
 	u16 version;
@@ -338,7 +274,6 @@ void ima_init_template_list(void);
 int __init ima_init_digests(void);
 int ima_lsm_policy_change(struct notifier_block *nb, unsigned long event,
 			  void *lsm_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * used to protect h_table and sha_table
@@ -352,37 +287,6 @@ struct ima_h_table {
 };
 extern struct ima_h_table ima_htable;
 
-<<<<<<< HEAD
-static inline unsigned long ima_hash_key(u8 *digest)
-{
-	return hash_long(*digest, IMA_HASH_BITS);
-}
-
-/* LIM API function definitions */
-int ima_must_measure(struct inode *inode, int mask, int function);
-int ima_collect_measurement(struct integrity_iint_cache *iint,
-			    struct file *file);
-void ima_store_measurement(struct integrity_iint_cache *iint, struct file *file,
-			   const unsigned char *filename);
-int ima_store_template(struct ima_template_entry *entry, int violation,
-		       struct inode *inode);
-void ima_template_show(struct seq_file *m, void *e, enum ima_show_type show);
-
-/* rbtree tree calls to lookup, insert, delete
- * integrity data associated with an inode.
- */
-struct integrity_iint_cache *integrity_iint_insert(struct inode *inode);
-struct integrity_iint_cache *integrity_iint_find(struct inode *inode);
-
-/* IMA policy related functions */
-enum ima_hooks { FILE_CHECK = 1, FILE_MMAP, BPRM_CHECK };
-
-int ima_match_policy(struct inode *inode, enum ima_hooks func, int mask);
-void ima_init_policy(void);
-void ima_update_policy(void);
-ssize_t ima_parse_add_rule(char *);
-void ima_delete_rules(void);
-=======
 static inline unsigned int ima_hash_key(u8 *digest)
 {
 	/* there is no point in taking a hash of part of a digest */
@@ -625,20 +529,10 @@ static inline void ima_free_modsig(struct modsig *modsig)
 {
 }
 #endif /* CONFIG_IMA_APPRAISE_MODSIG */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* LSM based policy rules require audit */
 #ifdef CONFIG_IMA_LSM_RULES
 
-<<<<<<< HEAD
-#define security_filter_rule_init security_audit_rule_init
-#define security_filter_rule_match security_audit_rule_match
-
-#else
-
-static inline int security_filter_rule_init(u32 field, u32 op, char *rulestr,
-					    void **lsmrule)
-=======
 #define ima_filter_rule_init security_audit_rule_init
 #define ima_filter_rule_free security_audit_rule_free
 #define ima_filter_rule_match security_audit_rule_match
@@ -647,30 +541,20 @@ static inline int security_filter_rule_init(u32 field, u32 op, char *rulestr,
 
 static inline int ima_filter_rule_init(u32 field, u32 op, char *rulestr,
 				       void **lsmrule)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static inline int security_filter_rule_match(u32 secid, u32 field, u32 op,
-					     void *lsmrule,
-					     struct audit_context *actx)
-=======
 static inline void ima_filter_rule_free(void *lsmrule)
 {
 }
 
 static inline int ima_filter_rule_match(u32 secid, u32 field, u32 op,
 					void *lsmrule)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EINVAL;
 }
 #endif /* CONFIG_IMA_LSM_RULES */
-<<<<<<< HEAD
-#endif
-=======
 
 #ifdef	CONFIG_IMA_READ_POLICY
 #define	POLICY_FILE_FLAGS	(S_IWUSR | S_IRUSR)
@@ -679,4 +563,3 @@ static inline int ima_filter_rule_match(u32 secid, u32 field, u32 op,
 #endif /* CONFIG_IMA_READ_POLICY */
 
 #endif /* __LINUX_IMA_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

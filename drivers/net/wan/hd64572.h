@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * hd64572.h	Description of the Hitachi HD64572 (SCA-II), valid for 
  * 		CPU modes 0 & 2.
@@ -10,14 +7,6 @@
  *
  * Copyright:   (c) 2000-2001 Cyclades Corp.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * $Log: hd64572.h,v $
  * Revision 3.1  2001/06/15 12:41:10  regina
  * upping major version number
@@ -27,10 +16,6 @@
  *
  * Revision 1.0 2000/01/25 ivan
  * Initial version.
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __HD64572_H
@@ -228,11 +213,7 @@ typedef struct {
 #define ST_TX_EOM     0x80	/* End of frame */
 #define ST_TX_UNDRRUN 0x08
 #define ST_TX_OWNRSHP 0x02
-<<<<<<< HEAD
-#define ST_TX_EOT     0x01	/* End of transmition */
-=======
 #define ST_TX_EOT     0x01	/* End of transmission */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ST_RX_EOM     0x80	/* End of frame */
 #define ST_RX_SHORT   0x40	/* Short frame */

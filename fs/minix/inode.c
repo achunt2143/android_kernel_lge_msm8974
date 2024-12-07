@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/minix/inode.c
  *
@@ -20,10 +17,7 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/highuid.h>
-<<<<<<< HEAD
-=======
 #include <linux/mpage.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vfs.h>
 #include <linux/writeback.h>
 
@@ -34,21 +28,13 @@ static int minix_remount (struct super_block * sb, int * flags, char * data);
 
 static void minix_evict_inode(struct inode *inode)
 {
-<<<<<<< HEAD
-	truncate_inode_pages(&inode->i_data, 0);
-=======
 	truncate_inode_pages_final(&inode->i_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!inode->i_nlink) {
 		inode->i_size = 0;
 		minix_truncate(inode);
 	}
 	invalidate_inode_buffers(inode);
-<<<<<<< HEAD
-	end_writeback(inode);
-=======
 	clear_inode(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!inode->i_nlink)
 		minix_free_inode(inode);
 }
@@ -58,11 +44,7 @@ static void minix_put_super(struct super_block *sb)
 	int i;
 	struct minix_sb_info *sbi = minix_sb(sb);
 
-<<<<<<< HEAD
-	if (!(sb->s_flags & MS_RDONLY)) {
-=======
 	if (!sb_rdonly(sb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sbi->s_version != MINIX_V3)	 /* s_state is now out from V3 sb */
 			sbi->s_ms->s_state = sbi->s_mount_state;
 		mark_buffer_dirty(sbi->s_sbh);
@@ -82,35 +64,17 @@ static struct kmem_cache * minix_inode_cachep;
 static struct inode *minix_alloc_inode(struct super_block *sb)
 {
 	struct minix_inode_info *ei;
-<<<<<<< HEAD
-	ei = (struct minix_inode_info *)kmem_cache_alloc(minix_inode_cachep, GFP_KERNEL);
-=======
 	ei = alloc_inode_sb(sb, minix_inode_cachep, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ei)
 		return NULL;
 	return &ei->vfs_inode;
 }
 
-<<<<<<< HEAD
-static void minix_i_callback(struct rcu_head *head)
-{
-	struct inode *inode = container_of(head, struct inode, i_rcu);
-	kmem_cache_free(minix_inode_cachep, minix_i(inode));
-}
-
-static void minix_destroy_inode(struct inode *inode)
-{
-	call_rcu(&inode->i_rcu, minix_i_callback);
-}
-
-=======
 static void minix_free_in_core_inode(struct inode *inode)
 {
 	kmem_cache_free(minix_inode_cachep, minix_i(inode));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void init_once(void *foo)
 {
 	struct minix_inode_info *ei = (struct minix_inode_info *) foo;
@@ -118,20 +82,12 @@ static void init_once(void *foo)
 	inode_init_once(&ei->vfs_inode);
 }
 
-<<<<<<< HEAD
-static int init_inodecache(void)
-=======
 static int __init init_inodecache(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	minix_inode_cachep = kmem_cache_create("minix_inode_cache",
 					     sizeof(struct minix_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
-<<<<<<< HEAD
-						SLAB_MEM_SPREAD),
-=======
 						SLAB_ACCOUNT),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     init_once);
 	if (minix_inode_cachep == NULL)
 		return -ENOMEM;
@@ -150,11 +106,7 @@ static void destroy_inodecache(void)
 
 static const struct super_operations minix_sops = {
 	.alloc_inode	= minix_alloc_inode,
-<<<<<<< HEAD
-	.destroy_inode	= minix_destroy_inode,
-=======
 	.free_inode	= minix_free_in_core_inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write_inode	= minix_write_inode,
 	.evict_inode	= minix_evict_inode,
 	.put_super	= minix_put_super,
@@ -167,18 +119,11 @@ static int minix_remount (struct super_block * sb, int * flags, char * data)
 	struct minix_sb_info * sbi = minix_sb(sb);
 	struct minix_super_block * ms;
 
-<<<<<<< HEAD
-	ms = sbi->s_ms;
-	if ((*flags & MS_RDONLY) == (sb->s_flags & MS_RDONLY))
-		return 0;
-	if (*flags & MS_RDONLY) {
-=======
 	sync_filesystem(sb);
 	ms = sbi->s_ms;
 	if ((bool)(*flags & SB_RDONLY) == sb_rdonly(sb))
 		return 0;
 	if (*flags & SB_RDONLY) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ms->s_state & MINIX_VALID_FS ||
 		    !(sbi->s_mount_state & MINIX_VALID_FS))
 			return 0;
@@ -206,8 +151,6 @@ static int minix_remount (struct super_block * sb, int * flags, char * data)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static bool minix_check_superblock(struct super_block *sb)
 {
 	struct minix_sb_info *sbi = minix_sb(sb);
@@ -227,7 +170,6 @@ static bool minix_check_superblock(struct super_block *sb)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int minix_fill_super(struct super_block *s, void *data, int silent)
 {
 	struct buffer_head *bh;
@@ -263,11 +205,7 @@ static int minix_fill_super(struct super_block *s, void *data, int silent)
 	sbi->s_zmap_blocks = ms->s_zmap_blocks;
 	sbi->s_firstdatazone = ms->s_firstdatazone;
 	sbi->s_log_zone_size = ms->s_log_zone_size;
-<<<<<<< HEAD
-	sbi->s_max_size = ms->s_max_size;
-=======
 	s->s_maxbytes = ms->s_max_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s->s_magic = ms->s_magic;
 	if (s->s_magic == MINIX_SUPER_MAGIC) {
 		sbi->s_version = MINIX_V1;
@@ -298,11 +236,7 @@ static int minix_fill_super(struct super_block *s, void *data, int silent)
 		sbi->s_zmap_blocks = m3s->s_zmap_blocks;
 		sbi->s_firstdatazone = m3s->s_firstdatazone;
 		sbi->s_log_zone_size = m3s->s_log_zone_size;
-<<<<<<< HEAD
-		sbi->s_max_size = m3s->s_max_size;
-=======
 		s->s_maxbytes = m3s->s_max_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sbi->s_ninodes = m3s->s_ninodes;
 		sbi->s_nzones = m3s->s_zones;
 		sbi->s_dirsize = 64;
@@ -314,20 +248,12 @@ static int minix_fill_super(struct super_block *s, void *data, int silent)
 	} else
 		goto out_no_fs;
 
-<<<<<<< HEAD
-	/*
-	 * Allocate the buffer map to keep the superblock small.
-	 */
-	if (sbi->s_imap_blocks == 0 || sbi->s_zmap_blocks == 0)
-		goto out_illegal_sb;
-=======
 	if (!minix_check_superblock(s))
 		goto out_illegal_sb;
 
 	/*
 	 * Allocate the buffer map to keep the superblock small.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i = (sbi->s_imap_blocks + sbi->s_zmap_blocks) * sizeof(bh);
 	map = kzalloc(i, GFP_KERNEL);
 	if (!map)
@@ -357,20 +283,12 @@ static int minix_fill_super(struct super_block *s, void *data, int silent)
 	block = minix_blocks_needed(sbi->s_ninodes, s->s_blocksize);
 	if (sbi->s_imap_blocks < block) {
 		printk("MINIX-fs: file system does not have enough "
-<<<<<<< HEAD
-				"imap blocks allocated.  Refusing to mount\n");
-=======
 				"imap blocks allocated.  Refusing to mount.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_no_bitmap;
 	}
 
 	block = minix_blocks_needed(
-<<<<<<< HEAD
-			(sbi->s_nzones - (sbi->s_firstdatazone + 1)),
-=======
 			(sbi->s_nzones - sbi->s_firstdatazone + 1),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			s->s_blocksize);
 	if (sbi->s_zmap_blocks < block) {
 		printk("MINIX-fs: file system does not have enough "
@@ -380,11 +298,8 @@ static int minix_fill_super(struct super_block *s, void *data, int silent)
 
 	/* set up enough so that it can read an inode */
 	s->s_op = &minix_sops;
-<<<<<<< HEAD
-=======
 	s->s_time_min = 0;
 	s->s_time_max = U32_MAX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	root_inode = minix_iget(s, MINIX_ROOT_INO);
 	if (IS_ERR(root_inode)) {
 		ret = PTR_ERR(root_inode);
@@ -396,11 +311,7 @@ static int minix_fill_super(struct super_block *s, void *data, int silent)
 	if (!s->s_root)
 		goto out_no_root;
 
-<<<<<<< HEAD
-	if (!(s->s_flags & MS_RDONLY)) {
-=======
 	if (!sb_rdonly(s)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sbi->s_version != MINIX_V3) /* s_state is now out from V3 sb */
 			ms->s_state &= ~MINIX_VALID_FS;
 		mark_buffer_dirty(bh);
@@ -473,12 +384,7 @@ static int minix_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_files = sbi->s_ninodes;
 	buf->f_ffree = minix_count_free_inodes(sb);
 	buf->f_namelen = sbi->s_namelen;
-<<<<<<< HEAD
-	buf->f_fsid.val[0] = (u32)id;
-	buf->f_fsid.val[1] = (u32)(id >> 32);
-=======
 	buf->f_fsid = u64_to_fsid(id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -492,16 +398,6 @@ static int minix_get_block(struct inode *inode, sector_t block,
 		return V2_minix_get_block(inode, block, bh_result, create);
 }
 
-<<<<<<< HEAD
-static int minix_writepage(struct page *page, struct writeback_control *wbc)
-{
-	return block_write_full_page(page, minix_get_block, wbc);
-}
-
-static int minix_readpage(struct file *file, struct page *page)
-{
-	return block_read_full_page(page,minix_get_block);
-=======
 static int minix_writepages(struct address_space *mapping,
 		struct writeback_control *wbc)
 {
@@ -511,7 +407,6 @@ static int minix_writepages(struct address_space *mapping,
 static int minix_read_folio(struct file *file, struct folio *folio)
 {
 	return block_read_full_folio(folio, minix_get_block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int minix_prepare_chunk(struct page *page, loff_t pos, unsigned len)
@@ -519,10 +414,6 @@ int minix_prepare_chunk(struct page *page, loff_t pos, unsigned len)
 	return __block_write_begin(page, pos, len, minix_get_block);
 }
 
-<<<<<<< HEAD
-static int minix_write_begin(struct file *file, struct address_space *mapping,
-			loff_t pos, unsigned len, unsigned flags,
-=======
 static void minix_write_failed(struct address_space *mapping, loff_t to)
 {
 	struct inode *inode = mapping->host;
@@ -535,24 +426,13 @@ static void minix_write_failed(struct address_space *mapping, loff_t to)
 
 static int minix_write_begin(struct file *file, struct address_space *mapping,
 			loff_t pos, unsigned len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct page **pagep, void **fsdata)
 {
 	int ret;
 
-<<<<<<< HEAD
-	ret = block_write_begin(mapping, pos, len, flags, pagep,
-				minix_get_block);
-	if (unlikely(ret)) {
-		loff_t isize = mapping->host->i_size;
-		if (pos + len > isize)
-			vmtruncate(mapping->host, isize);
-	}
-=======
 	ret = block_write_begin(mapping, pos, len, pagep, minix_get_block);
 	if (unlikely(ret))
 		minix_write_failed(mapping, pos + len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -563,19 +443,6 @@ static sector_t minix_bmap(struct address_space *mapping, sector_t block)
 }
 
 static const struct address_space_operations minix_aops = {
-<<<<<<< HEAD
-	.readpage = minix_readpage,
-	.writepage = minix_writepage,
-	.write_begin = minix_write_begin,
-	.write_end = generic_write_end,
-	.bmap = minix_bmap
-};
-
-static const struct inode_operations minix_symlink_inode_operations = {
-	.readlink	= generic_readlink,
-	.follow_link	= page_follow_link_light,
-	.put_link	= page_put_link,
-=======
 	.dirty_folio	= block_dirty_folio,
 	.invalidate_folio = block_invalidate_folio,
 	.read_folio = minix_read_folio,
@@ -589,7 +456,6 @@ static const struct inode_operations minix_symlink_inode_operations = {
 
 static const struct inode_operations minix_symlink_inode_operations = {
 	.get_link	= page_get_link,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.getattr	= minix_getattr,
 };
 
@@ -605,10 +471,7 @@ void minix_set_inode(struct inode *inode, dev_t rdev)
 		inode->i_mapping->a_ops = &minix_aops;
 	} else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &minix_symlink_inode_operations;
-<<<<<<< HEAD
-=======
 		inode_nohighmem(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode->i_mapping->a_ops = &minix_aops;
 	} else
 		init_special_inode(inode, inode->i_mode, rdev);
@@ -629,17 +492,6 @@ static struct inode *V1_minix_iget(struct inode *inode)
 		iget_failed(inode);
 		return ERR_PTR(-EIO);
 	}
-<<<<<<< HEAD
-	inode->i_mode = raw_inode->i_mode;
-	inode->i_uid = (uid_t)raw_inode->i_uid;
-	inode->i_gid = (gid_t)raw_inode->i_gid;
-	set_nlink(inode, raw_inode->i_nlinks);
-	inode->i_size = raw_inode->i_size;
-	inode->i_mtime.tv_sec = inode->i_atime.tv_sec = inode->i_ctime.tv_sec = raw_inode->i_time;
-	inode->i_mtime.tv_nsec = 0;
-	inode->i_atime.tv_nsec = 0;
-	inode->i_ctime.tv_nsec = 0;
-=======
 	if (raw_inode->i_nlinks == 0) {
 		printk("MINIX-fs: deleted inode referenced: %lu\n",
 		       inode->i_ino);
@@ -654,7 +506,6 @@ static struct inode *V1_minix_iget(struct inode *inode)
 	inode->i_size = raw_inode->i_size;
 	inode_set_mtime_to_ts(inode,
 			      inode_set_atime_to_ts(inode, inode_set_ctime(inode, raw_inode->i_time, 0)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_blocks = 0;
 	for (i = 0; i < 9; i++)
 		minix_inode->u.i1_data[i] = raw_inode->i_zone[i];
@@ -679,19 +530,6 @@ static struct inode *V2_minix_iget(struct inode *inode)
 		iget_failed(inode);
 		return ERR_PTR(-EIO);
 	}
-<<<<<<< HEAD
-	inode->i_mode = raw_inode->i_mode;
-	inode->i_uid = (uid_t)raw_inode->i_uid;
-	inode->i_gid = (gid_t)raw_inode->i_gid;
-	set_nlink(inode, raw_inode->i_nlinks);
-	inode->i_size = raw_inode->i_size;
-	inode->i_mtime.tv_sec = raw_inode->i_mtime;
-	inode->i_atime.tv_sec = raw_inode->i_atime;
-	inode->i_ctime.tv_sec = raw_inode->i_ctime;
-	inode->i_mtime.tv_nsec = 0;
-	inode->i_atime.tv_nsec = 0;
-	inode->i_ctime.tv_nsec = 0;
-=======
 	if (raw_inode->i_nlinks == 0) {
 		printk("MINIX-fs: deleted inode referenced: %lu\n",
 		       inode->i_ino);
@@ -707,7 +545,6 @@ static struct inode *V2_minix_iget(struct inode *inode)
 	inode_set_mtime(inode, raw_inode->i_mtime, 0);
 	inode_set_atime(inode, raw_inode->i_atime, 0);
 	inode_set_ctime(inode, raw_inode->i_ctime, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_blocks = 0;
 	for (i = 0; i < 10; i++)
 		minix_inode->u.i2_data[i] = raw_inode->i_zone[i];
@@ -750,19 +587,11 @@ static struct buffer_head * V1_minix_update_inode(struct inode * inode)
 	if (!raw_inode)
 		return NULL;
 	raw_inode->i_mode = inode->i_mode;
-<<<<<<< HEAD
-	raw_inode->i_uid = fs_high2lowuid(inode->i_uid);
-	raw_inode->i_gid = fs_high2lowgid(inode->i_gid);
-	raw_inode->i_nlinks = inode->i_nlink;
-	raw_inode->i_size = inode->i_size;
-	raw_inode->i_time = inode->i_mtime.tv_sec;
-=======
 	raw_inode->i_uid = fs_high2lowuid(i_uid_read(inode));
 	raw_inode->i_gid = fs_high2lowgid(i_gid_read(inode));
 	raw_inode->i_nlinks = inode->i_nlink;
 	raw_inode->i_size = inode->i_size;
 	raw_inode->i_time = inode_get_mtime_sec(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (S_ISCHR(inode->i_mode) || S_ISBLK(inode->i_mode))
 		raw_inode->i_zone[0] = old_encode_dev(inode->i_rdev);
 	else for (i = 0; i < 9; i++)
@@ -785,15 +614,6 @@ static struct buffer_head * V2_minix_update_inode(struct inode * inode)
 	if (!raw_inode)
 		return NULL;
 	raw_inode->i_mode = inode->i_mode;
-<<<<<<< HEAD
-	raw_inode->i_uid = fs_high2lowuid(inode->i_uid);
-	raw_inode->i_gid = fs_high2lowgid(inode->i_gid);
-	raw_inode->i_nlinks = inode->i_nlink;
-	raw_inode->i_size = inode->i_size;
-	raw_inode->i_mtime = inode->i_mtime.tv_sec;
-	raw_inode->i_atime = inode->i_atime.tv_sec;
-	raw_inode->i_ctime = inode->i_ctime.tv_sec;
-=======
 	raw_inode->i_uid = fs_high2lowuid(i_uid_read(inode));
 	raw_inode->i_gid = fs_high2lowgid(i_gid_read(inode));
 	raw_inode->i_nlinks = inode->i_nlink;
@@ -801,7 +621,6 @@ static struct buffer_head * V2_minix_update_inode(struct inode * inode)
 	raw_inode->i_mtime = inode_get_mtime_sec(inode);
 	raw_inode->i_atime = inode_get_atime_sec(inode);
 	raw_inode->i_ctime = inode_get_ctime_sec(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (S_ISCHR(inode->i_mode) || S_ISBLK(inode->i_mode))
 		raw_inode->i_zone[0] = old_encode_dev(inode->i_rdev);
 	else for (i = 0; i < 10; i++)
@@ -833,13 +652,6 @@ static int minix_write_inode(struct inode *inode, struct writeback_control *wbc)
 	return err;
 }
 
-<<<<<<< HEAD
-int minix_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
-{
-	struct super_block *sb = dentry->d_sb;
-	generic_fillattr(dentry->d_inode, stat);
-	if (INODE_VERSION(dentry->d_inode) == MINIX_V1)
-=======
 int minix_getattr(struct mnt_idmap *idmap, const struct path *path,
 		  struct kstat *stat, u32 request_mask, unsigned int flags)
 {
@@ -848,7 +660,6 @@ int minix_getattr(struct mnt_idmap *idmap, const struct path *path,
 
 	generic_fillattr(&nop_mnt_idmap, request_mask, inode, stat);
 	if (INODE_VERSION(inode) == MINIX_V1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stat->blocks = (BLOCK_SIZE / 512) * V1_minix_blocks(stat->size, sb);
 	else
 		stat->blocks = (sb->s_blocksize / 512) * V2_minix_blocks(stat->size, sb);

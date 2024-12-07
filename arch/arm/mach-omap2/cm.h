@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-/*
- * OMAP2+ Clock Management prototypes
- *
- * Copyright (C) 2007-2009 Texas Instruments, Inc.
- * Copyright (C) 2007-2009 Nokia Corporation
- *
- * Written by Paul Walmsley
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * OMAP2+ Clock Management prototypes
@@ -19,7 +6,6 @@
  * Copyright (C) 2007-2009 Nokia Corporation
  *
  * Written by Paul Walmsley
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ARCH_ASM_MACH_OMAP2_CM_H
 #define __ARCH_ASM_MACH_OMAP2_CM_H
@@ -33,8 +19,6 @@
  */
 #define MAX_MODULE_READY_TIME		2000
 
-<<<<<<< HEAD
-=======
 # ifndef __ASSEMBLER__
 #include <linux/clk/ti.h>
 
@@ -94,5 +78,4 @@ int omap2_cm_base_init(void);
 
 # endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

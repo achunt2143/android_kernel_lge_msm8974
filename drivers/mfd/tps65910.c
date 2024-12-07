@@ -1,43 +1,17 @@
-<<<<<<< HEAD
-/*
- * tps65910.c  --  TI TPS6591x
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * tps65910.c  --  TI TPS6591x chip family multi-function driver
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright 2010 Texas Instruments Inc.
  *
  * Author: Graeme Gregory <gg@slimlogic.co.uk>
  * Author: Jorge Eduardo Candelaria <jedu@slimlogic.co.uk>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify it
- *  under  the terms of the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the License, or (at your
- *  option) any later version.
- *
  */
 
-#include <linux/module.h>
-#include <linux/moduleparam.h>
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-#include <linux/mfd/core.h>
-#include <linux/regmap.h>
-#include <linux/mfd/tps65910.h>
-
-static struct mfd_cell tps65910s[] = {
-=======
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/irqdomain.h>
@@ -59,17 +33,13 @@ static const struct mfd_cell tps65910s[] = {
 	{
 		.name = "tps65910-gpio",
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "tps65910-pmic",
 	},
 	{
 		.name = "tps65910-rtc",
-<<<<<<< HEAD
-=======
 		.num_resources = ARRAY_SIZE(rtc_resources),
 		.resources = &rtc_resources[0],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name = "tps65910-power",
@@ -77,31 +47,6 @@ static const struct mfd_cell tps65910s[] = {
 };
 
 
-<<<<<<< HEAD
-static int tps65910_i2c_read(struct tps65910 *tps65910, u8 reg,
-				  int bytes, void *dest)
-{
-	return regmap_bulk_read(tps65910->regmap, reg, dest, bytes);
-}
-
-static int tps65910_i2c_write(struct tps65910 *tps65910, u8 reg,
-				  int bytes, void *src)
-{
-	return regmap_bulk_write(tps65910->regmap, reg, src, bytes);
-}
-
-int tps65910_set_bits(struct tps65910 *tps65910, u8 reg, u8 mask)
-{
-	return regmap_update_bits(tps65910->regmap, reg, mask, mask);
-}
-EXPORT_SYMBOL_GPL(tps65910_set_bits);
-
-int tps65910_clear_bits(struct tps65910 *tps65910, u8 reg, u8 mask)
-{
-	return regmap_update_bits(tps65910->regmap, reg, mask, 0);
-}
-EXPORT_SYMBOL_GPL(tps65910_clear_bits);
-=======
 static const struct regmap_irq tps65911_irqs[] = {
 	/* INT_STS */
 	[TPS65911_IRQ_PWRHOLD_F] = {
@@ -310,7 +255,6 @@ static int tps65910_irq_init(struct tps65910 *tps65910, int irq,
 	}
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool is_volatile_reg(struct device *dev, unsigned int reg)
 {
@@ -336,84 +280,6 @@ static const struct regmap_config tps65910_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
 	.volatile_reg = is_volatile_reg,
-<<<<<<< HEAD
-	.max_register = TPS65910_MAX_REGISTER,
-	.num_reg_defaults_raw = TPS65910_MAX_REGISTER,
-	.cache_type = REGCACHE_RBTREE,
-};
-
-static int tps65910_i2c_probe(struct i2c_client *i2c,
-			    const struct i2c_device_id *id)
-{
-	struct tps65910 *tps65910;
-	struct tps65910_board *pmic_plat_data;
-	struct tps65910_platform_data *init_data;
-	int ret = 0;
-
-	pmic_plat_data = dev_get_platdata(&i2c->dev);
-	if (!pmic_plat_data)
-		return -EINVAL;
-
-	init_data = kzalloc(sizeof(struct tps65910_platform_data), GFP_KERNEL);
-	if (init_data == NULL)
-		return -ENOMEM;
-
-	tps65910 = kzalloc(sizeof(struct tps65910), GFP_KERNEL);
-	if (tps65910 == NULL) {
-		kfree(init_data);
-		return -ENOMEM;
-	}
-
-	i2c_set_clientdata(i2c, tps65910);
-	tps65910->dev = &i2c->dev;
-	tps65910->i2c_client = i2c;
-	tps65910->id = id->driver_data;
-	tps65910->read = tps65910_i2c_read;
-	tps65910->write = tps65910_i2c_write;
-	mutex_init(&tps65910->io_mutex);
-
-	tps65910->regmap = regmap_init_i2c(i2c, &tps65910_regmap_config);
-	if (IS_ERR(tps65910->regmap)) {
-		ret = PTR_ERR(tps65910->regmap);
-		dev_err(&i2c->dev, "regmap initialization failed: %d\n", ret);
-		goto regmap_err;
-	}
-
-	ret = mfd_add_devices(tps65910->dev, -1,
-			      tps65910s, ARRAY_SIZE(tps65910s),
-			      NULL, 0);
-	if (ret < 0)
-		goto err;
-
-	init_data->irq = pmic_plat_data->irq;
-	init_data->irq_base = pmic_plat_data->irq_base;
-
-	tps65910_gpio_init(tps65910, pmic_plat_data->gpio_base);
-
-	tps65910_irq_init(tps65910, init_data->irq, init_data);
-
-	kfree(init_data);
-	return ret;
-
-err:
-	regmap_exit(tps65910->regmap);
-regmap_err:
-	kfree(tps65910);
-	kfree(init_data);
-	return ret;
-}
-
-static int tps65910_i2c_remove(struct i2c_client *i2c)
-{
-	struct tps65910 *tps65910 = i2c_get_clientdata(i2c);
-
-	tps65910_irq_exit(tps65910);
-	mfd_remove_devices(tps65910->dev);
-	regmap_exit(tps65910->regmap);
-	kfree(tps65910);
-
-	return 0;
-=======
 	.max_register = TPS65910_MAX_REGISTER - 1,
 	.cache_type = REGCACHE_MAPLE,
 };
@@ -649,7 +515,6 @@ static int tps65910_i2c_probe(struct i2c_client *i2c)
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id tps65910_i2c_id[] = {
@@ -657,25 +522,13 @@ static const struct i2c_device_id tps65910_i2c_id[] = {
        { "tps65911", TPS65911 },
        { }
 };
-<<<<<<< HEAD
-MODULE_DEVICE_TABLE(i2c, tps65910_i2c_id);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_driver tps65910_i2c_driver = {
 	.driver = {
 		   .name = "tps65910",
-<<<<<<< HEAD
-		   .owner = THIS_MODULE,
-	},
-	.probe = tps65910_i2c_probe,
-	.remove = tps65910_i2c_remove,
-=======
 		   .of_match_table = of_match_ptr(tps65910_of_match),
 	},
 	.probe = tps65910_i2c_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = tps65910_i2c_id,
 };
 
@@ -685,17 +538,3 @@ static int __init tps65910_i2c_init(void)
 }
 /* init early so consumer devices can complete system boot */
 subsys_initcall(tps65910_i2c_init);
-<<<<<<< HEAD
-
-static void __exit tps65910_i2c_exit(void)
-{
-	i2c_del_driver(&tps65910_i2c_driver);
-}
-module_exit(tps65910_i2c_exit);
-
-MODULE_AUTHOR("Graeme Gregory <gg@slimlogic.co.uk>");
-MODULE_AUTHOR("Jorge Eduardo Candelaria <jedu@slimlogic.co.uk>");
-MODULE_DESCRIPTION("TPS6591x chip family multi-function driver");
-MODULE_LICENSE("GPL");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

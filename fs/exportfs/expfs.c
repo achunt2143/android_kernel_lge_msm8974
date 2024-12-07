@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) Neil Brown 2002
  * Copyright (C) Christoph Hellwig 2007
@@ -10,11 +7,7 @@
  * and for mapping back from file handles to dentries.
  *
  * For details on why we do all the strange and hairy things in here
-<<<<<<< HEAD
- * take a look at Documentation/filesystems/nfs/Exporting.
-=======
  * take a look at Documentation/filesystems/nfs/exporting.rst.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/exportfs.h>
 #include <linux/fs.h>
@@ -23,40 +16,24 @@
 #include <linux/mount.h>
 #include <linux/namei.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-
-#define dprintk(fmt, args...) do{}while(0)
-
-
-static int get_name(struct vfsmount *mnt, struct dentry *dentry, char *name,
-		struct dentry *child);
-=======
 #include <linux/cred.h>
 
 #define dprintk(fmt, args...) pr_debug(fmt, ##args)
 
 
 static int get_name(const struct path *path, char *name, struct dentry *child);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static int exportfs_get_name(struct vfsmount *mnt, struct dentry *dir,
 		char *name, struct dentry *child)
 {
 	const struct export_operations *nop = dir->d_sb->s_export_op;
-<<<<<<< HEAD
-=======
 	struct path path = {.mnt = mnt, .dentry = dir};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (nop->get_name)
 		return nop->get_name(dir, name, child);
 	else
-<<<<<<< HEAD
-		return get_name(mnt, dir, name, child);
-=======
 		return get_name(&path, name, child);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -75,11 +52,7 @@ find_acceptable_alias(struct dentry *result,
 
 	inode = result->d_inode;
 	spin_lock(&inode->i_lock);
-<<<<<<< HEAD
-	list_for_each_entry(dentry, &inode->i_dentry, d_u.d_alias) {
-=======
 	hlist_for_each_entry(dentry, &inode->i_dentry, d_u.d_alias) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dget(dentry);
 		spin_unlock(&inode->i_lock);
 		if (toput)
@@ -98,22 +71,6 @@ find_acceptable_alias(struct dentry *result,
 	return NULL;
 }
 
-<<<<<<< HEAD
-/*
- * Find root of a disconnected subtree and return a reference to it.
- */
-static struct dentry *
-find_disconnected_root(struct dentry *dentry)
-{
-	dget(dentry);
-	while (!IS_ROOT(dentry)) {
-		struct dentry *parent = dget_parent(dentry);
-
-		if (!(parent->d_flags & DCACHE_DISCONNECTED)) {
-			dput(parent);
-			break;
-		}
-=======
 static bool dentry_connected(struct dentry *dentry)
 {
 	dget(dentry);
@@ -142,14 +99,10 @@ static void clear_disconnected(struct dentry *dentry)
 		spin_lock(&dentry->d_lock);
 		dentry->d_flags &= ~DCACHE_DISCONNECTED;
 		spin_unlock(&dentry->d_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dput(dentry);
 		dentry = parent;
 	}
-<<<<<<< HEAD
-	return dentry;
-=======
 	dput(dentry);
 }
 
@@ -236,15 +189,11 @@ out_reconnected:
 	if (!dentry_connected(dentry))
 		return ERR_PTR(-ESTALE);
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Make sure target_dir is fully connected to the dentry tree.
  *
-<<<<<<< HEAD
- * It may already be, as the flag isn't always updated when connection happens.
-=======
  * On successful return, DCACHE_DISCONNECTED will be cleared on
  * target_dir, and target_dir->d_parent->...->d_parent will reach the
  * root of the filesystem.
@@ -258,123 +207,10 @@ out_reconnected:
  * that case reconnect_path may still succeed with target_dir fully
  * connected, but further operations using the filehandle will fail when
  * necessary (due to S_DEAD being set on the directory).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 reconnect_path(struct vfsmount *mnt, struct dentry *target_dir, char *nbuf)
 {
-<<<<<<< HEAD
-	int noprogress = 0;
-	int err = -ESTALE;
-
-	/*
-	 * It is possible that a confused file system might not let us complete
-	 * the path to the root.  For example, if get_parent returns a directory
-	 * in which we cannot find a name for the child.  While this implies a
-	 * very sick filesystem we don't want it to cause knfsd to spin.  Hence
-	 * the noprogress counter.  If we go through the loop 10 times (2 is
-	 * probably enough) without getting anywhere, we just give up
-	 */
-	while (target_dir->d_flags & DCACHE_DISCONNECTED && noprogress++ < 10) {
-		struct dentry *pd = find_disconnected_root(target_dir);
-
-		if (!IS_ROOT(pd)) {
-			/* must have found a connected parent - great */
-			spin_lock(&pd->d_lock);
-			pd->d_flags &= ~DCACHE_DISCONNECTED;
-			spin_unlock(&pd->d_lock);
-			noprogress = 0;
-		} else if (pd == mnt->mnt_sb->s_root) {
-			printk(KERN_ERR "export: Eeek filesystem root is not connected, impossible\n");
-			spin_lock(&pd->d_lock);
-			pd->d_flags &= ~DCACHE_DISCONNECTED;
-			spin_unlock(&pd->d_lock);
-			noprogress = 0;
-		} else {
-			/*
-			 * We have hit the top of a disconnected path, try to
-			 * find parent and connect.
-			 *
-			 * Racing with some other process renaming a directory
-			 * isn't much of a problem here.  If someone renames
-			 * the directory, it will end up properly connected,
-			 * which is what we want
-			 *
-			 * Getting the parent can't be supported generically,
-			 * the locking is too icky.
-			 *
-			 * Instead we just return EACCES.  If server reboots
-			 * or inodes get flushed, you lose
-			 */
-			struct dentry *ppd = ERR_PTR(-EACCES);
-			struct dentry *npd;
-
-			mutex_lock(&pd->d_inode->i_mutex);
-			if (mnt->mnt_sb->s_export_op->get_parent)
-				ppd = mnt->mnt_sb->s_export_op->get_parent(pd);
-			mutex_unlock(&pd->d_inode->i_mutex);
-
-			if (IS_ERR(ppd)) {
-				err = PTR_ERR(ppd);
-				dprintk("%s: get_parent of %ld failed, err %d\n",
-					__func__, pd->d_inode->i_ino, err);
-				dput(pd);
-				break;
-			}
-
-			dprintk("%s: find name of %lu in %lu\n", __func__,
-				pd->d_inode->i_ino, ppd->d_inode->i_ino);
-			err = exportfs_get_name(mnt, ppd, nbuf, pd);
-			if (err) {
-				dput(ppd);
-				dput(pd);
-				if (err == -ENOENT)
-					/* some race between get_parent and
-					 * get_name?  just try again
-					 */
-					continue;
-				break;
-			}
-			dprintk("%s: found name: %s\n", __func__, nbuf);
-			mutex_lock(&ppd->d_inode->i_mutex);
-			npd = lookup_one_len(nbuf, ppd, strlen(nbuf));
-			mutex_unlock(&ppd->d_inode->i_mutex);
-			if (IS_ERR(npd)) {
-				err = PTR_ERR(npd);
-				dprintk("%s: lookup failed: %d\n",
-					__func__, err);
-				dput(ppd);
-				dput(pd);
-				break;
-			}
-			/* we didn't really want npd, we really wanted
-			 * a side-effect of the lookup.
-			 * hopefully, npd == pd, though it isn't really
-			 * a problem if it isn't
-			 */
-			if (npd == pd)
-				noprogress = 0;
-			else
-				printk("%s: npd != pd\n", __func__);
-			dput(npd);
-			dput(ppd);
-			if (IS_ROOT(pd)) {
-				/* something went wrong, we have to give up */
-				dput(pd);
-				break;
-			}
-		}
-		dput(pd);
-	}
-
-	if (target_dir->d_flags & DCACHE_DISCONNECTED) {
-		/* something went wrong - oh-well */
-		if (!err)
-			err = -ESTALE;
-		return err;
-	}
-
-=======
 	struct dentry *dentry, *parent;
 
 	dentry = dget(target_dir);
@@ -396,21 +232,14 @@ reconnect_path(struct vfsmount *mnt, struct dentry *target_dir, char *nbuf)
 	}
 	dput(dentry);
 	clear_disconnected(target_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 struct getdents_callback {
-<<<<<<< HEAD
-	char *name;		/* name that was found. It already points to a
-				   buffer NAME_MAX+1 is size */
-	unsigned long ino;	/* the inum we are looking for */
-=======
 	struct dir_context ctx;
 	char *name;		/* name that was found. It already points to a
 				   buffer NAME_MAX+1 is size */
 	u64 ino;		/* the inum we are looking for */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int found;		/* inode matched? */
 	int sequence;		/* sequence counter */
 };
@@ -419,22 +248,6 @@ struct getdents_callback {
  * A rather strange filldir function to capture
  * the name matching the specified inode number.
  */
-<<<<<<< HEAD
-static int filldir_one(void * __buf, const char * name, int len,
-			loff_t pos, u64 ino, unsigned int d_type)
-{
-	struct getdents_callback *buf = __buf;
-	int result = 0;
-
-	buf->sequence++;
-	if (buf->ino == ino) {
-		memcpy(buf->name, name, len);
-		buf->name[len] = '\0';
-		buf->found = 1;
-		result = -1;
-	}
-	return result;
-=======
 static bool filldir_one(struct dir_context *ctx, const char *name, int len,
 			loff_t pos, u64 ino, unsigned int d_type)
 {
@@ -449,32 +262,17 @@ static bool filldir_one(struct dir_context *ctx, const char *name, int len,
 		return false;	// no more
 	}
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * get_name - default export_operations->get_name function
-<<<<<<< HEAD
- * @dentry: the directory in which to find a name
-=======
  * @path:   the directory in which to find a name
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @name:   a pointer to a %NAME_MAX+1 char buffer to store the name
  * @child:  the dentry for the child directory.
  *
  * calls readdir on the parent until it finds an entry with
  * the same inode number as the child, and returns that.
  */
-<<<<<<< HEAD
-static int get_name(struct vfsmount *mnt, struct dentry *dentry,
-		char *name, struct dentry *child)
-{
-	const struct cred *cred = current_cred();
-	struct inode *dir = dentry->d_inode;
-	int error;
-	struct file *file;
-	struct getdents_callback buffer;
-=======
 static int get_name(const struct path *path, char *name, struct dentry *child)
 {
 	const struct cred *cred = current_cred();
@@ -490,7 +288,6 @@ static int get_name(const struct path *path, char *name, struct dentry *child)
 		.ctx.actor = filldir_one,
 		.name = name,
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = -ENOTDIR;
 	if (!dir || !S_ISDIR(dir->i_mode))
@@ -499,11 +296,6 @@ static int get_name(const struct path *path, char *name, struct dentry *child)
 	if (!dir->i_fop)
 		goto out;
 	/*
-<<<<<<< HEAD
-	 * Open the directory ...
-	 */
-	file = dentry_open(dget(dentry), mntget(mnt), O_RDONLY, cred);
-=======
 	 * inode->i_ino is unsigned long, kstat->ino is u64, so the
 	 * former would be insufficient on 32-bit hosts when the
 	 * filesystem supports 64-bit inode numbers.  So we need to
@@ -518,33 +310,19 @@ static int get_name(const struct path *path, char *name, struct dentry *child)
 	 * Open the directory ...
 	 */
 	file = dentry_open(path, O_RDONLY, cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = PTR_ERR(file);
 	if (IS_ERR(file))
 		goto out;
 
 	error = -EINVAL;
-<<<<<<< HEAD
-	if (!file->f_op->readdir)
-		goto out_close;
-
-	buffer.name = name;
-	buffer.ino = child->d_inode->i_ino;
-	buffer.found = 0;
-=======
 	if (!file->f_op->iterate_shared)
 		goto out_close;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buffer.sequence = 0;
 	while (1) {
 		int old_seq = buffer.sequence;
 
-<<<<<<< HEAD
-		error = vfs_readdir(file, filldir_one, &buffer);
-=======
 		error = iterate_dir(file, &buffer.ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (buffer.found) {
 			error = 0;
 			break;
@@ -564,63 +342,6 @@ out:
 	return error;
 }
 
-<<<<<<< HEAD
-/**
- * export_encode_fh - default export_operations->encode_fh function
- * @dentry:  the dentry to encode
- * @fh:      where to store the file handle fragment
- * @max_len: maximum length to store there
- * @connectable: whether to store parent information
- *
- * This default encode_fh function assumes that the 32 inode number
- * is suitable for locating an inode, and that the generation number
- * can be used to check that it is still valid.  It places them in the
- * filehandle fragment where export_decode_fh expects to find them.
- */
-static int export_encode_fh(struct dentry *dentry, struct fid *fid,
-		int *max_len, int connectable)
-{
-	struct inode * inode = dentry->d_inode;
-	int len = *max_len;
-	int type = FILEID_INO32_GEN;
-
-	if (connectable && (len < 4)) {
-		*max_len = 4;
-		return 255;
-	} else if (len < 2) {
-		*max_len = 2;
-		return 255;
-	}
-
-	len = 2;
-	fid->i32.ino = inode->i_ino;
-	fid->i32.gen = inode->i_generation;
-	if (connectable && !S_ISDIR(inode->i_mode)) {
-		struct inode *parent;
-
-		spin_lock(&dentry->d_lock);
-		parent = dentry->d_parent->d_inode;
-		fid->i32.parent_ino = parent->i_ino;
-		fid->i32.parent_gen = parent->i_generation;
-		spin_unlock(&dentry->d_lock);
-		len = 4;
-		type = FILEID_INO32_GEN_PARENT;
-	}
-	*max_len = len;
-	return type;
-}
-
-int exportfs_encode_fh(struct dentry *dentry, struct fid *fid, int *max_len,
-		int connectable)
-{
-	const struct export_operations *nop = dentry->d_sb->s_export_op;
-	int error;
-
-	if (nop->encode_fh)
-		error = nop->encode_fh(dentry, fid->raw, max_len, connectable);
-	else
-		error = export_encode_fh(dentry, fid, max_len, connectable);
-=======
 #define FILEID_INO64_GEN_LEN 3
 
 /**
@@ -699,23 +420,16 @@ int exportfs_encode_fh(struct dentry *dentry, struct fid *fid, int *max_len,
 
 	error = exportfs_encode_inode_fh(inode, fid, max_len, parent, flags);
 	dput(p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 EXPORT_SYMBOL_GPL(exportfs_encode_fh);
 
-<<<<<<< HEAD
-struct dentry *exportfs_decode_fh(struct vfsmount *mnt, struct fid *fid,
-		int fh_len, int fileid_type,
-		int (*acceptable)(void *, struct dentry *), void *context)
-=======
 struct dentry *
 exportfs_decode_fh_raw(struct vfsmount *mnt, struct fid *fid, int fh_len,
 		       int fileid_type,
 		       int (*acceptable)(void *, struct dentry *),
 		       void *context)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct export_operations *nop = mnt->mnt_sb->s_export_op;
 	struct dentry *result, *alias;
@@ -725,17 +439,6 @@ exportfs_decode_fh_raw(struct vfsmount *mnt, struct fid *fid, int fh_len,
 	/*
 	 * Try to get any dentry for the given file handle from the filesystem.
 	 */
-<<<<<<< HEAD
-	if (!nop || !nop->fh_to_dentry)
-		return ERR_PTR(-ESTALE);
-	result = nop->fh_to_dentry(mnt->mnt_sb, fid, fh_len, fileid_type);
-	if (!result)
-		result = ERR_PTR(-ESTALE);
-	if (IS_ERR(result))
-		return result;
-
-	if (S_ISDIR(result->d_inode->i_mode)) {
-=======
 	if (!exportfs_can_decode_fh(nop))
 		return ERR_PTR(-ESTALE);
 	result = nop->fh_to_dentry(mnt->mnt_sb, fid, fh_len, fileid_type);
@@ -752,7 +455,6 @@ exportfs_decode_fh_raw(struct vfsmount *mnt, struct fid *fid, int fh_len,
 		return result;
 
 	if (d_is_dir(result)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * This request is for a directory.
 		 *
@@ -825,22 +527,6 @@ exportfs_decode_fh_raw(struct vfsmount *mnt, struct fid *fid, int fh_len,
 		 * inode is actually connected to the parent.
 		 */
 		err = exportfs_get_name(mnt, target_dir, nbuf, result);
-<<<<<<< HEAD
-		if (!err) {
-			mutex_lock(&target_dir->d_inode->i_mutex);
-			nresult = lookup_one_len(nbuf, target_dir,
-						 strlen(nbuf));
-			mutex_unlock(&target_dir->d_inode->i_mutex);
-			if (!IS_ERR(nresult)) {
-				if (nresult->d_inode) {
-					dput(result);
-					result = nresult;
-				} else
-					dput(nresult);
-			}
-		}
-
-=======
 		if (err) {
 			dput(target_dir);
 			goto err_result;
@@ -856,15 +542,12 @@ exportfs_decode_fh_raw(struct vfsmount *mnt, struct fid *fid, int fh_len,
 			}
 		}
 		inode_unlock(target_dir->d_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * At this point we are done with the parent, but it's pinned
 		 * by the child dentry anyway.
 		 */
 		dput(target_dir);
 
-<<<<<<< HEAD
-=======
 		if (IS_ERR(nresult)) {
 			err = PTR_ERR(nresult);
 			goto err_result;
@@ -872,7 +555,6 @@ exportfs_decode_fh_raw(struct vfsmount *mnt, struct fid *fid, int fh_len,
 		dput(result);
 		result = nresult;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * And finally make sure the dentry is actually acceptable
 		 * to NFSD.
@@ -890,8 +572,6 @@ exportfs_decode_fh_raw(struct vfsmount *mnt, struct fid *fid, int fh_len,
 	dput(result);
 	return ERR_PTR(err);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(exportfs_decode_fh_raw);
 
 struct dentry *exportfs_decode_fh(struct vfsmount *mnt, struct fid *fid,
@@ -910,7 +590,6 @@ struct dentry *exportfs_decode_fh(struct vfsmount *mnt, struct fid *fid,
 	}
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(exportfs_decode_fh);
 
 MODULE_LICENSE("GPL");

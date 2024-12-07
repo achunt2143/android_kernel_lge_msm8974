@@ -14,22 +14,14 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-#include <linux/interrupt.h>
-=======
 #include <linux/irqdomain.h>
 #include <linux/interrupt.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 
 #include <asm/byteorder.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 
 #include "ge_pic.h"
@@ -101,11 +93,7 @@ static int gef_pic_cascade_irq;
  * should be masked out.
  */
 
-<<<<<<< HEAD
-void gef_pic_cascade(unsigned int irq, struct irq_desc *desc)
-=======
 static void gef_pic_cascade(struct irq_desc *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	unsigned int cascade_irq;
@@ -116,11 +104,7 @@ static void gef_pic_cascade(struct irq_desc *desc)
 	 */
 	cascade_irq = gef_pic_get_irq();
 
-<<<<<<< HEAD
-	if (cascade_irq != NO_IRQ)
-=======
 	if (cascade_irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		generic_handle_irq(cascade_irq);
 
 	chip->irq_eoi(&desc->irq_data);
@@ -168,11 +152,7 @@ static struct irq_chip gef_pic_chip = {
 };
 
 
-<<<<<<< HEAD
-/* When an interrupt is being configured, this call allows some flexibilty
-=======
 /* When an interrupt is being configured, this call allows some flexibility
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * in deciding which irq_chip structure is used
  */
 static int gef_pic_host_map(struct irq_domain *h, unsigned int virq,
@@ -228,11 +208,7 @@ void __init gef_pic_init(struct device_node *np)
 
 	/* Map controller */
 	gef_pic_cascade_irq = irq_of_parse_and_map(np, 0);
-<<<<<<< HEAD
-	if (gef_pic_cascade_irq == NO_IRQ) {
-=======
 	if (!gef_pic_cascade_irq) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "SBC610: failed to map cascade interrupt");
 		return;
 	}
@@ -249,20 +225,12 @@ void __init gef_pic_init(struct device_node *np)
 
 /*
  * This is called when we receive an interrupt with apparently comes from this
-<<<<<<< HEAD
- * chip - check, returning the highest interrupt generated or return NO_IRQ
-=======
  * chip - check, returning the highest interrupt generated or return 0.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 unsigned int gef_pic_get_irq(void)
 {
 	u32 cause, mask, active;
-<<<<<<< HEAD
-	unsigned int virq = NO_IRQ;
-=======
 	unsigned int virq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int hwirq;
 
 	cause = in_be32(gef_pic_irq_reg_base + GEF_PIC_INTR_STATUS);

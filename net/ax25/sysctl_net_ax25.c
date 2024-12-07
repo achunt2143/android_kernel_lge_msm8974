@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 1996 Mike Shaver (shaver@zeroknowledge.com)
  */
@@ -34,22 +26,7 @@ static int min_proto[1],		max_proto[] = { AX25_PROTO_MAX };
 static int min_ds_timeout[1],		max_ds_timeout[] = {65535000};
 #endif
 
-<<<<<<< HEAD
-static struct ctl_table_header *ax25_table_header;
-
-static ctl_table *ax25_table;
-static int ax25_table_size;
-
-static struct ctl_path ax25_path[] = {
-	{ .procname = "net", },
-	{ .procname = "ax25", },
-	{ }
-};
-
-static const ctl_table ax25_param_table[] = {
-=======
 static const struct ctl_table ax25_param_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "ip_default_mode",
 		.maxlen		= sizeof(int),
@@ -168,56 +145,6 @@ static const struct ctl_table ax25_param_table[] = {
 	{ }	/* that's all, folks! */
 };
 
-<<<<<<< HEAD
-void ax25_register_sysctl(void)
-{
-	ax25_dev *ax25_dev;
-	int n, k;
-
-	spin_lock_bh(&ax25_dev_lock);
-	for (ax25_table_size = sizeof(ctl_table), ax25_dev = ax25_dev_list; ax25_dev != NULL; ax25_dev = ax25_dev->next)
-		ax25_table_size += sizeof(ctl_table);
-
-	if ((ax25_table = kzalloc(ax25_table_size, GFP_ATOMIC)) == NULL) {
-		spin_unlock_bh(&ax25_dev_lock);
-		return;
-	}
-
-	for (n = 0, ax25_dev = ax25_dev_list; ax25_dev != NULL; ax25_dev = ax25_dev->next) {
-		struct ctl_table *child = kmemdup(ax25_param_table,
-						  sizeof(ax25_param_table),
-						  GFP_ATOMIC);
-		if (!child) {
-			while (n--)
-				kfree(ax25_table[n].child);
-			kfree(ax25_table);
-			spin_unlock_bh(&ax25_dev_lock);
-			return;
-		}
-		ax25_table[n].child = ax25_dev->systable = child;
-		ax25_table[n].procname     = ax25_dev->dev->name;
-		ax25_table[n].mode         = 0555;
-
-
-		for (k = 0; k < AX25_MAX_VALUES; k++)
-			child[k].data = &ax25_dev->values[k];
-
-		n++;
-	}
-	spin_unlock_bh(&ax25_dev_lock);
-
-	ax25_table_header = register_sysctl_paths(ax25_path, ax25_table);
-}
-
-void ax25_unregister_sysctl(void)
-{
-	ctl_table *p;
-	unregister_sysctl_table(ax25_table_header);
-
-	for (p = ax25_table; p->procname; p++)
-		kfree(p->child);
-	kfree(ax25_table);
-=======
 int ax25_register_dev_sysctl(ax25_dev *ax25_dev)
 {
 	char path[sizeof("net/ax25/") + IFNAMSIZ];
@@ -252,5 +179,4 @@ void ax25_unregister_dev_sysctl(ax25_dev *ax25_dev)
 		unregister_net_sysctl_table(header);
 		kfree(table);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

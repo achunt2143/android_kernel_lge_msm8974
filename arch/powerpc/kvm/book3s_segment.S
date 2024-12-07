@@ -1,21 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright SUSE Linux Products GmbH 2010
  *
@@ -24,20 +8,13 @@
 
 /* Real mode helpers */
 
-<<<<<<< HEAD
-=======
 #include <asm/asm-compat.h>
 #include <asm/feature-fixups.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_PPC_BOOK3S_64)
 
 #define GET_SHADOW_VCPU(reg)    \
 	mr	reg, r13
-<<<<<<< HEAD
-#define MTMSR_EERI(reg)		mtmsrd	(reg),1
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #elif defined(CONFIG_PPC_BOOK3S_32)
 
@@ -45,10 +22,6 @@
 	tophys(reg, r2);       			\
 	lwz     reg, (THREAD + THREAD_KVM_SVCPU)(reg);	\
 	tophys(reg, reg)
-<<<<<<< HEAD
-#define MTMSR_EERI(reg)		mtmsr	(reg)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 
@@ -109,8 +82,6 @@ kvmppc_handler_trampoline_enter:
 	LOAD_GUEST_SEGMENTS
 
 #ifdef CONFIG_PPC_BOOK3S_64
-<<<<<<< HEAD
-=======
 BEGIN_FTR_SECTION
 	/* Save host FSCR */
 	mfspr	r8, SPRN_FSCR
@@ -120,7 +91,6 @@ BEGIN_FTR_SECTION
 	mtspr	SPRN_FSCR, r9
 END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Some guests may need to have dcbz set to 32 byte length.
 	 *
 	 * Usually we ensure that by patching the guest's instructions
@@ -145,11 +115,7 @@ no_dcbz32_on:
 	PPC_LL	r8, SVCPU_CTR(r3)
 	PPC_LL	r9, SVCPU_LR(r3)
 	lwz	r10, SVCPU_CR(r3)
-<<<<<<< HEAD
-	lwz	r11, SVCPU_XER(r3)
-=======
 	PPC_LL	r11, SVCPU_XER(r3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mtctr	r8
 	mtlr	r9
@@ -161,38 +127,18 @@ no_dcbz32_on:
 	/* First clear RI in our current MSR value */
 	li	r0, MSR_RI
 	andc	r6, r6, r0
-<<<<<<< HEAD
-	MTMSR_EERI(r6)
-	mtsrr0	r9
-	mtsrr1	r4
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PPC_LL	r0, SVCPU_R0(r3)
 	PPC_LL	r1, SVCPU_R1(r3)
 	PPC_LL	r2, SVCPU_R2(r3)
-<<<<<<< HEAD
-	PPC_LL	r4, SVCPU_R4(r3)
-	PPC_LL	r5, SVCPU_R5(r3)
-	PPC_LL	r6, SVCPU_R6(r3)
-	PPC_LL	r7, SVCPU_R7(r3)
-	PPC_LL	r8, SVCPU_R8(r3)
-	PPC_LL	r9, SVCPU_R9(r3)
-=======
 	PPC_LL	r5, SVCPU_R5(r3)
 	PPC_LL	r7, SVCPU_R7(r3)
 	PPC_LL	r8, SVCPU_R8(r3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PPC_LL	r10, SVCPU_R10(r3)
 	PPC_LL	r11, SVCPU_R11(r3)
 	PPC_LL	r12, SVCPU_R12(r3)
 	PPC_LL	r13, SVCPU_R13(r3)
 
-<<<<<<< HEAD
-	PPC_LL	r3, (SVCPU_R3)(r3)
-
-	RFI
-=======
 	MTMSR_EERI(r6)
 	mtsrr0	r9
 	mtsrr1	r4
@@ -203,7 +149,6 @@ no_dcbz32_on:
 	PPC_LL	r3, (SVCPU_R3)(r3)
 
 	RFI_TO_GUEST
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 kvmppc_handler_trampoline_enter_end:
 
 
@@ -214,22 +159,6 @@ kvmppc_handler_trampoline_enter_end:
  *                                                                            *
  *****************************************************************************/
 
-<<<<<<< HEAD
-.global kvmppc_handler_trampoline_exit
-kvmppc_handler_trampoline_exit:
-
-.global kvmppc_interrupt
-kvmppc_interrupt:
-
-	/* Register usage at this point:
-	 *
-	 * SPRG_SCRATCH0  = guest R13
-	 * R12            = exit handler id
-	 * R13            = shadow vcpu (32-bit) or PACA (64-bit)
-	 * HSTATE.SCRATCH0 = guest R12
-	 * HSTATE.SCRATCH1 = guest CR
-	 *
-=======
 .global kvmppc_interrupt_pr
 kvmppc_interrupt_pr:
 	/* 64-bit entry. Register usage at this point:
@@ -258,7 +187,6 @@ kvmppc_handler_trampoline_exit:
 	 * R13             = shadow vcpu (32-bit) or PACA (64-bit)
 	 * HSTATE.SCRATCH0 = guest R12
 	 * HSTATE.SCRATCH1 = guest CR
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	/* Save registers */
@@ -315,11 +243,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_HVMODE)
 	mfctr	r8
 	mflr	r9
 
-<<<<<<< HEAD
-	stw	r5, SVCPU_XER(r13)
-=======
 	PPC_STL	r5, SVCPU_XER(r13)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PPC_STL	r6, SVCPU_FAULT_DAR(r13)
 	stw	r7, SVCPU_FAULT_DSISR(r13)
 	PPC_STL	r8, SVCPU_CTR(r13)
@@ -346,13 +270,10 @@ BEGIN_FTR_SECTION
 	cmpwi	r12, BOOK3S_INTERRUPT_H_EMUL_ASSIST
 	beq-	ld_last_inst
 END_FTR_SECTION_IFSET(CPU_FTR_HVMODE)
-<<<<<<< HEAD
-=======
 BEGIN_FTR_SECTION
 	cmpwi	r12, BOOK3S_INTERRUPT_FAC_UNAVAIL
 	beq-	ld_last_inst
 END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	b	no_ld_last_inst
@@ -409,8 +330,6 @@ no_ld_last_inst:
 
 no_dcbz32_off:
 
-<<<<<<< HEAD
-=======
 BEGIN_FTR_SECTION
 	/* Save guest FSCR on a FAC_UNAVAIL interrupt */
 	cmpwi	r12, BOOK3S_INTERRUPT_FAC_UNAVAIL
@@ -423,7 +342,6 @@ no_fscr_save:
 	mtspr	SPRN_FSCR, r8
 END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_PPC_BOOK3S_64 */
 
 	/*
@@ -453,8 +371,6 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
 	 */
 
 	PPC_LL	r6, HSTATE_HOST_MSR(r13)
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
 	/*
 	 * We don't want to change MSR[TS] bits via rfi here.
@@ -468,7 +384,6 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
 	rldicl  r7, r7, 64 - MSR_TS_S_LG, 62
 	rldimi  r6, r7, MSR_TS_S_LG, 63 - MSR_TS_T_LG
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PPC_LL	r8, HSTATE_VMHANDLER(r13)
 
 #ifdef CONFIG_PPC64
@@ -490,13 +405,8 @@ END_FTR_SECTION_IFSET(CPU_FTR_HVMODE)
 	beqa	BOOK3S_INTERRUPT_DECREMENTER
 	cmpwi	r12, BOOK3S_INTERRUPT_PERFMON
 	beqa	BOOK3S_INTERRUPT_PERFMON
-<<<<<<< HEAD
-
-	RFI
-=======
 	cmpwi	r12, BOOK3S_INTERRUPT_DOORBELL
 	beqa	BOOK3S_INTERRUPT_DOORBELL
 
 	RFI_TO_KERNEL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 kvmppc_handler_trampoline_exit_end:

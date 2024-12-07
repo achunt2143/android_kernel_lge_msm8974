@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2006, Intel Corporation.
- *
- * This file is released under the GPLv2.
- *
- * Copyright (C) 2006-2008 Intel Corporation
- * Author: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2006, Intel Corporation.
  *
  * Copyright (C) 2006-2008 Intel Corporation
  * Author: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _IOVA_H_
@@ -25,18 +14,6 @@
 #include <linux/rbtree.h>
 #include <linux/dma-mapping.h>
 
-<<<<<<< HEAD
-/* IO virtual address start page frame number */
-#define IOVA_START_PFN		(1)
-
-/* iova structure */
-struct iova {
-	struct rb_node	node;
-	unsigned long	pfn_hi; /* IOMMU dish out addr hi */
-	unsigned long	pfn_lo; /* IOMMU dish out addr lo */
-};
-
-=======
 /* iova structure */
 struct iova {
 	struct rb_node	node;
@@ -47,19 +24,10 @@ struct iova {
 
 struct iova_rcache;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* holds all the iova translations for a domain */
 struct iova_domain {
 	spinlock_t	iova_rbtree_lock; /* Lock to protect update of rbtree */
 	struct rb_root	rbroot;		/* iova domain rbtree root */
-<<<<<<< HEAD
-	struct rb_node	*cached32_node; /* Save last alloced node */
-	unsigned long	dma_32bit_pfn;
-};
-
-struct iova *alloc_iova_mem(void);
-void free_iova_mem(struct iova *iova);
-=======
 	struct rb_node	*cached_node;	/* Save last alloced node */
 	struct rb_node	*cached32_node; /* Save last 32-bit alloced node */
 	unsigned long	granule;	/* pfn granularity for this domain */
@@ -113,20 +81,11 @@ void iova_cache_put(void);
 
 unsigned long iova_rcache_range(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void free_iova(struct iova_domain *iovad, unsigned long pfn);
 void __free_iova(struct iova_domain *iovad, struct iova *iova);
 struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
 	unsigned long limit_pfn,
 	bool size_aligned);
-<<<<<<< HEAD
-struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
-	unsigned long pfn_hi);
-void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
-void init_iova_domain(struct iova_domain *iovad, unsigned long pfn_32bit);
-struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
-void put_iova_domain(struct iova_domain *iovad);
-=======
 void free_iova_fast(struct iova_domain *iovad, unsigned long pfn,
 		    unsigned long size);
 unsigned long alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
@@ -202,6 +161,5 @@ static inline void put_iova_domain(struct iova_domain *iovad)
 }
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

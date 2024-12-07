@@ -1,22 +1,9 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for caching inode integrity data (iint)
 #
 
 obj-$(CONFIG_INTEGRITY) += integrity.o
-<<<<<<< HEAD
-obj-$(CONFIG_INTEGRITY_SIGNATURE) += digsig.o
-
-integrity-y := iint.o
-
-subdir-$(CONFIG_IMA)			+= ima
-obj-$(CONFIG_IMA)			+= ima/built-in.o
-subdir-$(CONFIG_EVM)			+= evm
-obj-$(CONFIG_EVM)			+= evm/built-in.o
-=======
 
 integrity-y := iint.o
 integrity-$(CONFIG_INTEGRITY_AUDIT) += integrity_audit.o
@@ -34,4 +21,3 @@ integrity-$(CONFIG_LOAD_PPC_KEYS) += platform_certs/efi_parser.o \
 # The relative order of the 'ima' and 'evm' LSMs depends on the order below.
 obj-$(CONFIG_IMA)			+= ima/
 obj-$(CONFIG_EVM)			+= evm/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

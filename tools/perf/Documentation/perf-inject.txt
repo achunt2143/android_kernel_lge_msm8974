@@ -24,17 +24,6 @@ information could make use of this facility.
 OPTIONS
 -------
 -b::
-<<<<<<< HEAD
---build-ids=::
-        Inject build-ids into the output stream
--v::
---verbose::
-	Be more verbose.
-
-SEE ALSO
---------
-linkperf:perf-record[1], linkperf:perf-report[1], linkperf:perf-archive[1]
-=======
 --build-ids::
 	Inject build-ids of DSOs hit by samples into the output stream.
 	This means it needs to process all SAMPLE records to find the DSOs.
@@ -128,4 +117,3 @@ SEE ALSO
 --------
 linkperf:perf-record[1], linkperf:perf-report[1], linkperf:perf-archive[1],
 linkperf:perf-intel-pt[1]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

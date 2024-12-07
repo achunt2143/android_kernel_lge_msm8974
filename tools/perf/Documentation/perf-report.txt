@@ -25,41 +25,19 @@ OPTIONS
 --verbose::
         Be more verbose. (show symbol address, etc)
 
-<<<<<<< HEAD
--d::
---dsos=::
-	Only consider symbols in these dsos. CSV that understands
-	file://filename entries.
-=======
 -q::
 --quiet::
 	Do not show any warnings or messages.  (Suppress -v)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 -n::
 --show-nr-samples::
 	Show the number of samples for each symbol
 
-<<<<<<< HEAD
---showcpuutilization::
-=======
 --show-cpu-utilization::
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         Show sample percentage for different cpu modes.
 
 -T::
 --threads::
-<<<<<<< HEAD
-	Show per-thread event counters
--c::
---comms=::
-	Only consider symbols in these comms. CSV that understands
-	file://filename entries.
--S::
---symbols=::
-	Only consider these symbols. CSV that understands
-	file://filename entries.
-=======
 	Show per-thread event counters.  The input data file should be recorded
 	with -s option.
 -c::
@@ -82,7 +60,6 @@ OPTIONS
 	Only consider these symbols. CSV that understands
 	file://filename entries.  This option will affect the percentage of
 	the overhead column.  See --percentage for more info.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 --symbol-filter=::
 	Only show symbols that match (partially) with this filter.
@@ -93,13 +70,6 @@ OPTIONS
 
 -s::
 --sort=::
-<<<<<<< HEAD
-	Sort by key(s): pid, comm, dso, symbol, parent.
-
--p::
---parent=<regex>::
-        regex filter to identify parent, see: '--sort parent'
-=======
 	Sort histogram entries by given key(s) - multiple keys can be specified
 	in CSV format.  Following sort keys are available:
 	pid, comm, dso, symbol, parent, cpu, socket, srcline, weight,
@@ -243,7 +213,6 @@ OPTIONS
 	function and searched through the callchain, thus it requires callchain
 	information recorded. The pattern is in the extended regex format and
 	defaults to "\^sys_|^do_page_fault", see '--sort parent'.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -x::
 --exclude-other::
@@ -252,18 +221,10 @@ OPTIONS
 -w::
 --column-widths=<width[,width...]>::
 	Force each column width to the provided list, for large terminal
-<<<<<<< HEAD
-	readability.
-
--t::
---field-separator=::
-
-=======
 	readability.  0 means no limit (default behavior).
 
 -t::
 --field-separator=::
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Use a special separator character and don't pad with spaces, replacing
 	all occurrences of this separator in symbol names (and other output)
 	with a '.' character, that thus it's the only non valid separator.
@@ -272,17 +233,6 @@ OPTIONS
 --dump-raw-trace::
         Dump raw trace in ASCII.
 
-<<<<<<< HEAD
--g [type,min[,limit],order]::
---call-graph::
-        Display call chains using type, min percent threshold, optional print
-	limit and order.
-	type can be either:
-	- flat: single column, linear exposure of call chains.
-	- graph: use a graph tree, displaying absolute overhead rates.
-	- fractal: like graph, but displays relative rates. Each branch of
-		 the tree is considered as a new profiled object. +
-=======
 --disable-order::
 	Disable raw trace ordering.
 
@@ -308,15 +258,10 @@ OPTIONS
 	number of call graph entries in a single hist entry.  Note that it needs
 	to be given after threshold (but not necessarily consecutive).
 	Default is 0 (unlimited).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	order can be either:
 	- callee: callee based call graph.
 	- caller: inverted caller based call graph.
-<<<<<<< HEAD
-
-	Default: fractal,0.5,callee.
-=======
 	Default is 'caller' when --children is used, otherwise 'callee'.
 
 	sort_key can be:
@@ -349,27 +294,21 @@ OPTIONS
 	will override this value if the synthesized callchain size is bigger.
 
 	Default: 127
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -G::
 --inverted::
         alias for inverted caller based call graph.
 
-<<<<<<< HEAD
-=======
 --ignore-callees=<regex>::
         Ignore callees of the function(s) matching the given regex.
         This has the effect of collecting the callers of each such
         function into one place in the call-graph tree.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 --pretty=<key>::
         Pretty printing style.  key: normal, raw
 
 --stdio:: Use the stdio interface.
 
-<<<<<<< HEAD
-=======
 --stdio-color::
 	'always', 'never' or 'auto', allowing configuring color output
 	via the command line, in addition to via "color.ui" .perfconfig.
@@ -377,7 +316,6 @@ OPTIONS
 	to a pipe or file. Using just '--stdio-color' is equivalent to
 	using 'always'.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 --tui:: Use the TUI interface, that is integrated with annotate and allows
         zooming into DSOs or threads, among other features. Use of --tui
 	requires a tty, if one is not present, as when piping to other
@@ -389,12 +327,9 @@ OPTIONS
 --vmlinux=<file>::
         vmlinux pathname
 
-<<<<<<< HEAD
-=======
 --ignore-vmlinux::
 	Ignore vmlinux files.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 --kallsyms=<file>::
         kallsyms pathname
 
@@ -405,11 +340,7 @@ OPTIONS
 
 -f::
 --force::
-<<<<<<< HEAD
-        Don't complain, do it.
-=======
         Don't do ownership validation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 --symfs=<directory>::
         Look for files with symbols relative to this directory.
@@ -448,11 +379,6 @@ OPTIONS
 	branch stacks and it will automatically switch to the branch view mode,
 	unless --no-branch-stack is used.
 
-<<<<<<< HEAD
-SEE ALSO
---------
-linkperf:perf-stat[1], linkperf:perf-annotate[1]
-=======
 --branch-history::
 	Add the addresses of sampled taken branches to the callstack.
 	This allows to examine the path the program took to each sample.
@@ -691,4 +617,3 @@ SEE ALSO
 --------
 linkperf:perf-stat[1], linkperf:perf-annotate[1], linkperf:perf-record[1],
 linkperf:perf-intel-pt[1]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

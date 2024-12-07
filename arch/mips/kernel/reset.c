@@ -11,15 +11,11 @@
 #include <linux/pm.h>
 #include <linux/types.h>
 #include <linux/reboot.h>
-<<<<<<< HEAD
-
-=======
 #include <linux/delay.h>
 
 #include <asm/compiler.h>
 #include <asm/idle.h>
 #include <asm/mipsregs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/reboot.h>
 
 /*
@@ -33,8 +29,6 @@ void (*pm_power_off)(void);
 
 EXPORT_SYMBOL(pm_power_off);
 
-<<<<<<< HEAD
-=======
 static void machine_hang(void)
 {
 	/*
@@ -91,13 +85,10 @@ static void machine_hang(void)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void machine_restart(char *command)
 {
 	if (_machine_restart)
 		_machine_restart(command);
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_SMP
 	preempt_disable();
@@ -107,30 +98,22 @@ void machine_restart(char *command)
 	mdelay(1000);
 	pr_emerg("Reboot failed -- System halted\n");
 	machine_hang();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void machine_halt(void)
 {
 	if (_machine_halt)
 		_machine_halt();
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_SMP
 	preempt_disable();
 	smp_send_stop();
 #endif
 	machine_hang();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void machine_power_off(void)
 {
-<<<<<<< HEAD
-	if (pm_power_off)
-		pm_power_off();
-=======
 	do_kernel_power_off();
 
 #ifdef CONFIG_SMP
@@ -138,5 +121,4 @@ void machine_power_off(void)
 	smp_send_stop();
 #endif
 	machine_hang();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

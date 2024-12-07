@@ -1,41 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Written by Paul B Schroeder < pschroeder "at" uplogix "dot" com >
  *  Based on 8250_boca.
  *
  *  Copyright (C) 2005 Russell King.
  *  Data taken from include/asm-i386/serial.h
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/serial_8250.h>
 
-<<<<<<< HEAD
-#define PORT(_base,_irq)				\
-	{						\
-		.iobase		= _base,		\
-		.irq		= _irq,			\
-		.uartclk	= 1843200,		\
-		.iotype		= UPIO_PORT,		\
-		.flags		= UPF_BOOT_AUTOCONF,	\
-	}
-
-static struct plat_serial8250_port exar_data[] = {
-	PORT(0x100, 5),
-	PORT(0x108, 5),
-	PORT(0x110, 5),
-	PORT(0x118, 5),
-=======
 #include "8250.h"
 
 static struct plat_serial8250_port exar_data[] = {
@@ -43,7 +17,6 @@ static struct plat_serial8250_port exar_data[] = {
 	SERIAL8250_PORT(0x108, 5),
 	SERIAL8250_PORT(0x110, 5),
 	SERIAL8250_PORT(0x118, 5),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ },
 };
 

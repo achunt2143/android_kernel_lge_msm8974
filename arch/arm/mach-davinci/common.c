@@ -1,63 +1,27 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Code commons to all DaVinci SoCs.
  *
  * Author: Mark A. Greer <mgreer@mvista.com>
  *
-<<<<<<< HEAD
- * 2009 (c) MontaVista Software, Inc. This file is licensed under
- * the terms of the GNU General Public License version 2. This program
- * is licensed "as is" without any warranty of any kind, whether express
- * or implied.
-=======
  * 2009 (c) MontaVista Software, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/io.h>
 #include <linux/etherdevice.h>
 #include <linux/davinci_emac.h>
 #include <linux/dma-mapping.h>
-<<<<<<< HEAD
-=======
 #include <linux/platform_data/davinci-cpufreq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/tlb.h>
 #include <asm/mach/map.h>
 
-<<<<<<< HEAD
-#include <mach/common.h>
-#include <mach/cputype.h>
-
-#include "clock.h"
-=======
 #include "common.h"
 #include "cputype.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct davinci_soc_info davinci_soc_info;
 EXPORT_SYMBOL(davinci_soc_info);
 
-<<<<<<< HEAD
-void __iomem *davinci_intc_base;
-int davinci_intc_type;
-
-void davinci_get_mac_addr(struct memory_accessor *mem_acc, void *context)
-{
-	char *mac_addr = davinci_soc_info.emac_pdata->mac_addr;
-	off_t offset = (off_t)context;
-
-	/* Read MAC addr from EEPROM */
-	if (mem_acc->read(mem_acc, mac_addr, offset, ETH_ALEN) == ETH_ALEN)
-		pr_info("Read MAC addr from EEPROM: %pM\n", mac_addr);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init davinci_init_id(struct davinci_soc_info *soc_info)
 {
 	int			i;
@@ -92,11 +56,7 @@ static int __init davinci_init_id(struct davinci_soc_info *soc_info)
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-void __init davinci_common_init(struct davinci_soc_info *soc_info)
-=======
 void __init davinci_common_init(const struct davinci_soc_info *soc_info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -111,11 +71,6 @@ void __init davinci_common_init(const struct davinci_soc_info *soc_info)
 		iotable_init(davinci_soc_info.io_desc,
 				davinci_soc_info.io_desc_num);
 
-<<<<<<< HEAD
-	init_consistent_dma_size(14 << 20);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Normally devicemaps_init() would flush caches and tlb after
 	 * mdesc->map_io(), but we must also do it here because of the CPU
@@ -132,26 +87,14 @@ void __init davinci_common_init(const struct davinci_soc_info *soc_info)
 	if (ret < 0)
 		goto err;
 
-<<<<<<< HEAD
-	if (davinci_soc_info.cpu_clks) {
-		ret = davinci_clk_init(davinci_soc_info.cpu_clks);
-
-		if (ret != 0)
-			goto err;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 
 err:
 	panic("davinci_common_init: SoC Initialization failed\n");
 }
-<<<<<<< HEAD
-=======
 
 void __init davinci_init_late(void)
 {
 	davinci_cpufreq_init();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

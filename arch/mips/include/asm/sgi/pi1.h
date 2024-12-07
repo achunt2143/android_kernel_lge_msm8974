@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pi1.h: Definitions for SGI PI1 parallel port
  */
@@ -32,18 +29,6 @@ struct pi1_regs {
 #define PI1_STAT_BUSY		0x80
 	u8 _dmactrl[3];
 	volatile u8 dmactrl;
-<<<<<<< HEAD
-#define PI1_DMACTRL_FIFO_EMPTY	0x01    /* fifo empty R/O */
-#define PI1_DMACTRL_ABORT	0x02    /* reset DMA and internal fifo W/O */
-#define PI1_DMACTRL_STDMODE	0x00    /* bits 2-3 */
-#define PI1_DMACTRL_SGIMODE	0x04    /* bits 2-3 */
-#define PI1_DMACTRL_RICOHMODE	0x08    /* bits 2-3 */
-#define PI1_DMACTRL_HPMODE	0x0c    /* bits 2-3 */
-#define PI1_DMACTRL_BLKMODE	0x10    /* block mode */
-#define PI1_DMACTRL_FIFO_CLEAR	0x20    /* clear fifo W/O */
-#define PI1_DMACTRL_READ	0x40    /* read */
-#define PI1_DMACTRL_RUN		0x80    /* pedal to the metal */
-=======
 #define PI1_DMACTRL_FIFO_EMPTY	0x01	/* fifo empty R/O */
 #define PI1_DMACTRL_ABORT	0x02	/* reset DMA and internal fifo W/O */
 #define PI1_DMACTRL_STDMODE	0x00	/* bits 2-3 */
@@ -54,7 +39,6 @@ struct pi1_regs {
 #define PI1_DMACTRL_FIFO_CLEAR	0x20	/* clear fifo W/O */
 #define PI1_DMACTRL_READ	0x40	/* read */
 #define PI1_DMACTRL_RUN		0x80	/* pedal to the metal */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 _intstat[3];
 	volatile u8 intstat;
 #define PI1_INTSTAT_ACK		0x04

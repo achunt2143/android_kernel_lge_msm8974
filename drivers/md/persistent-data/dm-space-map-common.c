@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Red Hat, Inc.
  *
@@ -10,11 +7,8 @@
 
 #include "dm-space-map-common.h"
 #include "dm-transaction-manager.h"
-<<<<<<< HEAD
-=======
 #include "dm-btree-internal.h"
 #include "dm-persistent-data-internal.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/bitops.h>
 #include <linux/device-mapper.h>
@@ -48,13 +42,8 @@ static int index_check(struct dm_block_validator *v,
 	__le32 csum_disk;
 
 	if (dm_block_location(b) != le64_to_cpu(mi_le->blocknr)) {
-<<<<<<< HEAD
-		DMERR("index_check failed blocknr %llu wanted %llu",
-		      le64_to_cpu(mi_le->blocknr), dm_block_location(b));
-=======
 		DMERR_LIMIT("%s failed: blocknr %llu != wanted %llu", __func__,
 			    le64_to_cpu(mi_le->blocknr), dm_block_location(b));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOTBLK;
 	}
 
@@ -62,13 +51,8 @@ static int index_check(struct dm_block_validator *v,
 					       block_size - sizeof(__le32),
 					       INDEX_CSUM_XOR));
 	if (csum_disk != mi_le->csum) {
-<<<<<<< HEAD
-		DMERR("index_check failed csum %u wanted %u",
-		      le32_to_cpu(csum_disk), le32_to_cpu(mi_le->csum));
-=======
 		DMERR_LIMIT("i%s failed: csum %u != wanted %u", __func__,
 			    le32_to_cpu(csum_disk), le32_to_cpu(mi_le->csum));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EILSEQ;
 	}
 
@@ -88,15 +72,9 @@ static struct dm_block_validator index_validator = {
  */
 #define BITMAP_CSUM_XOR 240779
 
-<<<<<<< HEAD
-static void bitmap_prepare_for_write(struct dm_block_validator *v,
-				     struct dm_block *b,
-				     size_t block_size)
-=======
 static void dm_bitmap_prepare_for_write(struct dm_block_validator *v,
 					struct dm_block *b,
 					size_t block_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct disk_bitmap_header *disk_header = dm_block_data(b);
 
@@ -106,27 +84,16 @@ static void dm_bitmap_prepare_for_write(struct dm_block_validator *v,
 						       BITMAP_CSUM_XOR));
 }
 
-<<<<<<< HEAD
-static int bitmap_check(struct dm_block_validator *v,
-			struct dm_block *b,
-			size_t block_size)
-=======
 static int dm_bitmap_check(struct dm_block_validator *v,
 			   struct dm_block *b,
 			   size_t block_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct disk_bitmap_header *disk_header = dm_block_data(b);
 	__le32 csum_disk;
 
 	if (dm_block_location(b) != le64_to_cpu(disk_header->blocknr)) {
-<<<<<<< HEAD
-		DMERR("bitmap check failed blocknr %llu wanted %llu",
-		      le64_to_cpu(disk_header->blocknr), dm_block_location(b));
-=======
 		DMERR_LIMIT("bitmap check failed: blocknr %llu != wanted %llu",
 			    le64_to_cpu(disk_header->blocknr), dm_block_location(b));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOTBLK;
 	}
 
@@ -134,13 +101,8 @@ static int dm_bitmap_check(struct dm_block_validator *v,
 					       block_size - sizeof(__le32),
 					       BITMAP_CSUM_XOR));
 	if (csum_disk != disk_header->csum) {
-<<<<<<< HEAD
-		DMERR("bitmap check failed csum %u wanted %u",
-		      le32_to_cpu(csum_disk), le32_to_cpu(disk_header->csum));
-=======
 		DMERR_LIMIT("bitmap check failed: csum %u != wanted %u",
 			    le32_to_cpu(csum_disk), le32_to_cpu(disk_header->csum));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EILSEQ;
 	}
 
@@ -149,13 +111,8 @@ static int dm_bitmap_check(struct dm_block_validator *v,
 
 static struct dm_block_validator dm_sm_bitmap_validator = {
 	.name = "sm_bitmap",
-<<<<<<< HEAD
-	.prepare_for_write = bitmap_prepare_for_write,
-	.check = bitmap_check
-=======
 	.prepare_for_write = dm_bitmap_prepare_for_write,
 	.check = dm_bitmap_check,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*----------------------------------------------------------------*/
@@ -170,11 +127,7 @@ static void *dm_bitmap_data(struct dm_block *b)
 
 #define WORD_MASK_HIGH 0xAAAAAAAAAAAAAAAAULL
 
-<<<<<<< HEAD
-static unsigned bitmap_word_used(void *addr, unsigned b)
-=======
 static unsigned int dm_bitmap_word_used(void *addr, unsigned int b)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__le64 *words_le = addr;
 	__le64 *w_le = words_le + (b >> ENTRIES_SHIFT);
@@ -185,19 +138,11 @@ static unsigned int dm_bitmap_word_used(void *addr, unsigned int b)
 	return !(~bits & mask);
 }
 
-<<<<<<< HEAD
-static unsigned sm_lookup_bitmap(void *addr, unsigned b)
-{
-	__le64 *words_le = addr;
-	__le64 *w_le = words_le + (b >> ENTRIES_SHIFT);
-	unsigned hi, lo;
-=======
 static unsigned int sm_lookup_bitmap(void *addr, unsigned int b)
 {
 	__le64 *words_le = addr;
 	__le64 *w_le = words_le + (b >> ENTRIES_SHIFT);
 	unsigned int hi, lo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	b = (b & (ENTRIES_PER_WORD - 1)) << 1;
 	hi = !!test_bit_le(b, (void *) w_le);
@@ -205,11 +150,7 @@ static unsigned int sm_lookup_bitmap(void *addr, unsigned int b)
 	return (hi << 1) | lo;
 }
 
-<<<<<<< HEAD
-static void sm_set_bitmap(void *addr, unsigned b, unsigned val)
-=======
 static void sm_set_bitmap(void *addr, unsigned int b, unsigned int val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__le64 *words_le = addr;
 	__le64 *w_le = words_le + (b >> ENTRIES_SHIFT);
@@ -227,21 +168,12 @@ static void sm_set_bitmap(void *addr, unsigned int b, unsigned int val)
 		__clear_bit_le(b + 1, (void *) w_le);
 }
 
-<<<<<<< HEAD
-static int sm_find_free(void *addr, unsigned begin, unsigned end,
-			unsigned *result)
-{
-	while (begin < end) {
-		if (!(begin & (ENTRIES_PER_WORD - 1)) &&
-		    bitmap_word_used(addr, begin)) {
-=======
 static int sm_find_free(void *addr, unsigned int begin, unsigned int end,
 			unsigned int *result)
 {
 	while (begin < end) {
 		if (!(begin & (ENTRIES_PER_WORD - 1)) &&
 		    dm_bitmap_word_used(addr, begin)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			begin += ENTRIES_PER_WORD;
 			continue;
 		}
@@ -261,11 +193,8 @@ static int sm_find_free(void *addr, unsigned int begin, unsigned int end,
 
 static int sm_ll_init(struct ll_disk *ll, struct dm_transaction_manager *tm)
 {
-<<<<<<< HEAD
-=======
 	memset(ll, 0, sizeof(struct ll_disk));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ll->tm = tm;
 
 	ll->bitmap_info.tm = tm;
@@ -300,10 +229,7 @@ static int sm_ll_init(struct ll_disk *ll, struct dm_transaction_manager *tm)
 	ll->nr_blocks = 0;
 	ll->bitmap_root = 0;
 	ll->ref_count_root = 0;
-<<<<<<< HEAD
-=======
 	ll->bitmap_index_changed = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -312,11 +238,7 @@ int sm_ll_extend(struct ll_disk *ll, dm_block_t extra_blocks)
 {
 	int r;
 	dm_block_t i, nr_blocks, nr_indexes;
-<<<<<<< HEAD
-	unsigned old_blocks, blocks;
-=======
 	unsigned int old_blocks, blocks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nr_blocks = ll->nr_blocks + extra_blocks;
 	old_blocks = dm_sector_div_up(ll->nr_blocks, ll->entries_per_block);
@@ -342,13 +264,7 @@ int sm_ll_extend(struct ll_disk *ll, dm_block_t extra_blocks)
 
 		idx.blocknr = cpu_to_le64(dm_block_location(b));
 
-<<<<<<< HEAD
-		r = dm_tm_unlock(ll->tm, b);
-		if (r < 0)
-			return r;
-=======
 		dm_tm_unlock(ll->tm, b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		idx.nr_free = cpu_to_le32(ll->entries_per_block);
 		idx.none_free_before = 0;
@@ -368,14 +284,11 @@ int sm_ll_lookup_bitmap(struct ll_disk *ll, dm_block_t b, uint32_t *result)
 	struct disk_index_entry ie_disk;
 	struct dm_block *blk;
 
-<<<<<<< HEAD
-=======
 	if (b >= ll->nr_blocks) {
 		DMERR_LIMIT("metadata block out of bounds");
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b = do_div(index, ll->entries_per_block);
 	r = ll->load_ie(ll, index, &ie_disk);
 	if (r < 0)
@@ -388,21 +301,6 @@ int sm_ll_lookup_bitmap(struct ll_disk *ll, dm_block_t b, uint32_t *result)
 
 	*result = sm_lookup_bitmap(dm_bitmap_data(blk), b);
 
-<<<<<<< HEAD
-	return dm_tm_unlock(ll->tm, blk);
-}
-
-int sm_ll_lookup(struct ll_disk *ll, dm_block_t b, uint32_t *result)
-{
-	__le32 le_rc;
-	int r = sm_ll_lookup_bitmap(ll, b, result);
-
-	if (r)
-		return r;
-
-	if (*result != 3)
-		return r;
-=======
 	dm_tm_unlock(ll->tm, blk);
 
 	return 0;
@@ -413,7 +311,6 @@ static int sm_ll_lookup_big_ref_count(struct ll_disk *ll, dm_block_t b,
 {
 	__le32 le_rc;
 	int r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = dm_btree_lookup(&ll->ref_count_info, ll->ref_count_root, &b, &le_rc);
 	if (r < 0)
@@ -424,8 +321,6 @@ static int sm_ll_lookup_big_ref_count(struct ll_disk *ll, dm_block_t b,
 	return r;
 }
 
-<<<<<<< HEAD
-=======
 int sm_ll_lookup(struct ll_disk *ll, dm_block_t b, uint32_t *result)
 {
 	int r = sm_ll_lookup_bitmap(ll, b, result);
@@ -439,7 +334,6 @@ int sm_ll_lookup(struct ll_disk *ll, dm_block_t b, uint32_t *result)
 	return sm_ll_lookup_big_ref_count(ll, b, result);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sm_ll_find_free_block(struct ll_disk *ll, dm_block_t begin,
 			  dm_block_t end, dm_block_t *result)
 {
@@ -453,19 +347,12 @@ int sm_ll_find_free_block(struct ll_disk *ll, dm_block_t begin,
 	 */
 	begin = do_div(index_begin, ll->entries_per_block);
 	end = do_div(end, ll->entries_per_block);
-<<<<<<< HEAD
-
-	for (i = index_begin; i < index_end; i++, begin = 0) {
-		struct dm_block *blk;
-		unsigned position;
-=======
 	if (end == 0)
 		end = ll->entries_per_block;
 
 	for (i = index_begin; i < index_end; i++, begin = 0) {
 		struct dm_block *blk;
 		unsigned int position;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint32_t bit_end;
 
 		r = ll->load_ie(ll, i, &ie_disk);
@@ -483,11 +370,7 @@ int sm_ll_find_free_block(struct ll_disk *ll, dm_block_t begin,
 		bit_end = (i == index_end - 1) ?  end : ll->entries_per_block;
 
 		r = sm_find_free(dm_bitmap_data(blk),
-<<<<<<< HEAD
-				 max_t(unsigned, begin, le32_to_cpu(ie_disk.none_free_before)),
-=======
 				 max_t(unsigned int, begin, le32_to_cpu(ie_disk.none_free_before)),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 bit_end, &position);
 		if (r == -ENOSPC) {
 			/*
@@ -496,21 +379,9 @@ int sm_ll_find_free_block(struct ll_disk *ll, dm_block_t begin,
 			 */
 			dm_tm_unlock(ll->tm, blk);
 			continue;
-<<<<<<< HEAD
-
-		} else if (r < 0) {
-			dm_tm_unlock(ll->tm, blk);
-			return r;
-		}
-
-		r = dm_tm_unlock(ll->tm, blk);
-		if (r < 0)
-			return r;
-=======
 		}
 
 		dm_tm_unlock(ll->tm, blk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*result = i * ll->entries_per_block + (dm_block_t) position;
 		return 0;
@@ -519,10 +390,6 @@ int sm_ll_find_free_block(struct ll_disk *ll, dm_block_t begin,
 	return -ENOSPC;
 }
 
-<<<<<<< HEAD
-int sm_ll_insert(struct ll_disk *ll, dm_block_t b,
-		 uint32_t ref_count, enum allocation_event *ev)
-=======
 int sm_ll_find_common_free_block(struct ll_disk *old_ll, struct ll_disk *new_ll,
 				 dm_block_t begin, dm_block_t end, dm_block_t *b)
 {
@@ -554,7 +421,6 @@ int sm_ll_find_common_free_block(struct ll_disk *old_ll, struct ll_disk *new_ll,
 
 int sm_ll_insert(struct ll_disk *ll, dm_block_t b,
 		 uint32_t ref_count, int32_t *nr_allocations)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	uint32_t bit, old;
@@ -576,18 +442,6 @@ int sm_ll_insert(struct ll_disk *ll, dm_block_t b,
 		return r;
 	}
 	ie_disk.blocknr = cpu_to_le64(dm_block_location(nb));
-<<<<<<< HEAD
-
-	bm_le = dm_bitmap_data(nb);
-	old = sm_lookup_bitmap(bm_le, bit);
-
-	if (ref_count <= 2) {
-		sm_set_bitmap(bm_le, bit, ref_count);
-
-		r = dm_tm_unlock(ll->tm, nb);
-		if (r < 0)
-			return r;
-=======
 	bm_le = dm_bitmap_data(nb);
 
 	old = sm_lookup_bitmap(bm_le, bit);
@@ -607,7 +461,6 @@ int sm_ll_insert(struct ll_disk *ll, dm_block_t b,
 	if (ref_count <= 2) {
 		sm_set_bitmap(bm_le, bit, ref_count);
 		dm_tm_unlock(ll->tm, nb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (old > 2) {
 			r = dm_btree_remove(&ll->ref_count_info,
@@ -621,13 +474,7 @@ int sm_ll_insert(struct ll_disk *ll, dm_block_t b,
 		__le32 le_rc = cpu_to_le32(ref_count);
 
 		sm_set_bitmap(bm_le, bit, 3);
-<<<<<<< HEAD
-		r = dm_tm_unlock(ll->tm, nb);
-		if (r < 0)
-			return r;
-=======
 		dm_tm_unlock(ll->tm, nb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		__dm_bless_for_disk(&le_rc);
 		r = dm_btree_insert(&ll->ref_count_info, ll->ref_count_root,
@@ -639,69 +486,23 @@ int sm_ll_insert(struct ll_disk *ll, dm_block_t b,
 	}
 
 	if (ref_count && !old) {
-<<<<<<< HEAD
-		*ev = SM_ALLOC;
-		ll->nr_allocated++;
-		ie_disk.nr_free = cpu_to_le32(le32_to_cpu(ie_disk.nr_free) - 1);
-=======
 		*nr_allocations = 1;
 		ll->nr_allocated++;
 		le32_add_cpu(&ie_disk.nr_free, -1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (le32_to_cpu(ie_disk.none_free_before) == bit)
 			ie_disk.none_free_before = cpu_to_le32(bit + 1);
 
 	} else if (old && !ref_count) {
-<<<<<<< HEAD
-		*ev = SM_FREE;
-		ll->nr_allocated--;
-		ie_disk.nr_free = cpu_to_le32(le32_to_cpu(ie_disk.nr_free) + 1);
-		ie_disk.none_free_before = cpu_to_le32(min(le32_to_cpu(ie_disk.none_free_before), bit));
-	}
-=======
 		*nr_allocations = -1;
 		ll->nr_allocated--;
 		le32_add_cpu(&ie_disk.nr_free, 1);
 		ie_disk.none_free_before = cpu_to_le32(min(le32_to_cpu(ie_disk.none_free_before), bit));
 	} else
 		*nr_allocations = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ll->save_ie(ll, index, &ie_disk);
 }
 
-<<<<<<< HEAD
-int sm_ll_inc(struct ll_disk *ll, dm_block_t b, enum allocation_event *ev)
-{
-	int r;
-	uint32_t rc;
-
-	r = sm_ll_lookup(ll, b, &rc);
-	if (r)
-		return r;
-
-	return sm_ll_insert(ll, b, rc + 1, ev);
-}
-
-int sm_ll_dec(struct ll_disk *ll, dm_block_t b, enum allocation_event *ev)
-{
-	int r;
-	uint32_t rc;
-
-	r = sm_ll_lookup(ll, b, &rc);
-	if (r)
-		return r;
-
-	if (!rc)
-		return -EINVAL;
-
-	return sm_ll_insert(ll, b, rc - 1, ev);
-}
-
-int sm_ll_commit(struct ll_disk *ll)
-{
-	return ll->commit(ll);
-=======
 /*----------------------------------------------------------------*/
 
 /*
@@ -1151,7 +952,6 @@ int sm_ll_commit(struct ll_disk *ll)
 	}
 
 	return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*----------------------------------------------------------------*/
@@ -1166,10 +966,7 @@ static int metadata_ll_load_ie(struct ll_disk *ll, dm_block_t index,
 static int metadata_ll_save_ie(struct ll_disk *ll, dm_block_t index,
 			       struct disk_index_entry *ie)
 {
-<<<<<<< HEAD
-=======
 	ll->bitmap_index_changed = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(ll->mi_le.index + index, ie, sizeof(*ie));
 	return 0;
 }
@@ -1183,18 +980,11 @@ static int metadata_ll_init_index(struct ll_disk *ll)
 	if (r < 0)
 		return r;
 
-<<<<<<< HEAD
-	memcpy(dm_block_data(b), &ll->mi_le, sizeof(ll->mi_le));
-	ll->bitmap_root = dm_block_location(b);
-
-	return dm_tm_unlock(ll->tm, b);
-=======
 	ll->bitmap_root = dm_block_location(b);
 
 	dm_tm_unlock(ll->tm, b);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int metadata_ll_open(struct ll_disk *ll)
@@ -1208,13 +998,9 @@ static int metadata_ll_open(struct ll_disk *ll)
 		return r;
 
 	memcpy(&ll->mi_le, dm_block_data(block), sizeof(ll->mi_le));
-<<<<<<< HEAD
-	return dm_tm_unlock(ll->tm, block);
-=======
 	dm_tm_unlock(ll->tm, block);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static dm_block_t metadata_ll_max_entries(struct ll_disk *ll)
@@ -1234,13 +1020,9 @@ static int metadata_ll_commit(struct ll_disk *ll)
 	memcpy(dm_block_data(b), &ll->mi_le, sizeof(ll->mi_le));
 	ll->bitmap_root = dm_block_location(b);
 
-<<<<<<< HEAD
-	return dm_tm_unlock(ll->tm, b);
-=======
 	dm_tm_unlock(ll->tm, b);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int sm_ll_new_metadata(struct ll_disk *ll, struct dm_transaction_manager *tm)
@@ -1276,26 +1058,19 @@ int sm_ll_open_metadata(struct ll_disk *ll, struct dm_transaction_manager *tm,
 			void *root_le, size_t len)
 {
 	int r;
-<<<<<<< HEAD
-	struct disk_sm_root *smr = root_le;
-=======
 	struct disk_sm_root smr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len < sizeof(struct disk_sm_root)) {
 		DMERR("sm_metadata root too small");
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * We don't know the alignment of the root_le buffer, so need to
 	 * copy into a new structure.
 	 */
 	memcpy(&smr, root_le, sizeof(smr));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = sm_ll_init(ll, tm);
 	if (r < 0)
 		return r;
@@ -1307,29 +1082,16 @@ int sm_ll_open_metadata(struct ll_disk *ll, struct dm_transaction_manager *tm,
 	ll->max_entries = metadata_ll_max_entries;
 	ll->commit = metadata_ll_commit;
 
-<<<<<<< HEAD
-	ll->nr_blocks = le64_to_cpu(smr->nr_blocks);
-	ll->nr_allocated = le64_to_cpu(smr->nr_allocated);
-	ll->bitmap_root = le64_to_cpu(smr->bitmap_root);
-	ll->ref_count_root = le64_to_cpu(smr->ref_count_root);
-=======
 	ll->nr_blocks = le64_to_cpu(smr.nr_blocks);
 	ll->nr_allocated = le64_to_cpu(smr.nr_allocated);
 	ll->bitmap_root = le64_to_cpu(smr.bitmap_root);
 	ll->ref_count_root = le64_to_cpu(smr.ref_count_root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ll->open_index(ll);
 }
 
 /*----------------------------------------------------------------*/
 
-<<<<<<< HEAD
-static int disk_ll_load_ie(struct ll_disk *ll, dm_block_t index,
-			   struct disk_index_entry *ie)
-{
-	return dm_btree_lookup(&ll->bitmap_info, ll->bitmap_root, &index, ie);
-=======
 static inline int ie_cache_writeback(struct ll_disk *ll, struct ie_cache *iec)
 {
 	iec->dirty = false;
@@ -1372,17 +1134,11 @@ static int disk_ll_load_ie(struct ll_disk *ll, dm_block_t index,
 	}
 
 	return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int disk_ll_save_ie(struct ll_disk *ll, dm_block_t index,
 			   struct disk_index_entry *ie)
 {
-<<<<<<< HEAD
-	__dm_bless_for_disk(ie);
-	return dm_btree_insert(&ll->bitmap_info, ll->bitmap_root,
-			       &index, ie, &ll->bitmap_root);
-=======
 	int r;
 	unsigned int h = hash_index(index);
 	struct ie_cache *iec = ll->ie_cache + h;
@@ -1407,13 +1163,10 @@ static int disk_ll_save_ie(struct ll_disk *ll, dm_block_t index,
 	iec->index = index;
 	memcpy(&iec->ie, ie, sizeof(*ie));
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int disk_ll_init_index(struct ll_disk *ll)
 {
-<<<<<<< HEAD
-=======
 	unsigned int i;
 
 	for (i = 0; i < IE_CACHE_SIZE; i++) {
@@ -1422,16 +1175,11 @@ static int disk_ll_init_index(struct ll_disk *ll)
 		iec->valid = false;
 		iec->dirty = false;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dm_btree_empty(&ll->bitmap_info, &ll->bitmap_root);
 }
 
 static int disk_ll_open(struct ll_disk *ll)
 {
-<<<<<<< HEAD
-	/* nothing to do */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1442,9 +1190,6 @@ static dm_block_t disk_ll_max_entries(struct ll_disk *ll)
 
 static int disk_ll_commit(struct ll_disk *ll)
 {
-<<<<<<< HEAD
-	return 0;
-=======
 	int r = 0;
 	unsigned int i;
 
@@ -1456,7 +1201,6 @@ static int disk_ll_commit(struct ll_disk *ll)
 	}
 
 	return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int sm_ll_new_disk(struct ll_disk *ll, struct dm_transaction_manager *tm)

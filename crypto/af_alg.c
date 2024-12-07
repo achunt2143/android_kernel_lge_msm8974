@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * af_alg: User-space algorithm interface
  *
  * This file provides the user-space API for algorithms.
  *
  * Copyright (c) 2010 Herbert Xu <herbert@gondor.apana.org.au>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/atomic.h>
@@ -24,18 +12,12 @@
 #include <linux/crypto.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-=======
 #include <linux/key.h>
 #include <linux/key-type.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/module.h>
 #include <linux/net.h>
 #include <linux/rwsem.h>
-<<<<<<< HEAD
-#include <linux/security.h>
-=======
 #include <linux/sched.h>
 #include <linux/sched/signal.h>
 #include <linux/security.h>
@@ -43,25 +25,15 @@
 #include <keys/user-type.h>
 #include <keys/trusted-type.h>
 #include <keys/encrypted-type.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct alg_type_list {
 	const struct af_alg_type *type;
 	struct list_head list;
 };
 
-<<<<<<< HEAD
-static atomic_long_t alg_memory_allocated;
-
 static struct proto alg_proto = {
 	.name			= "ALG",
 	.owner			= THIS_MODULE,
-	.memory_allocated	= &alg_memory_allocated,
-=======
-static struct proto alg_proto = {
-	.name			= "ALG",
-	.owner			= THIS_MODULE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.obj_size		= sizeof(struct alg_sock),
 };
 
@@ -104,11 +76,8 @@ int af_alg_register_type(const struct af_alg_type *type)
 		goto unlock;
 
 	type->ops->owner = THIS_MODULE;
-<<<<<<< HEAD
-=======
 	if (type->ops_nokey)
 		type->ops_nokey->owner = THIS_MODULE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	node->type = type;
 	list_add(&node->list, &alg_types);
 	err = 0;
@@ -152,28 +121,14 @@ static void alg_do_release(const struct af_alg_type *type, void *private)
 
 int af_alg_release(struct socket *sock)
 {
-<<<<<<< HEAD
-	if (sock->sk)
-		sock_put(sock->sk);
-=======
 	if (sock->sk) {
 		sock_put(sock->sk);
 		sock->sk = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(af_alg_release);
 
-<<<<<<< HEAD
-static int alg_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
-{
-	struct sock *sk = sock->sk;
-	struct alg_sock *ask = alg_sk(sk);
-	struct sockaddr_alg *sa = (void *)uaddr;
-	const struct af_alg_type *type;
-	void *private;
-=======
 void af_alg_release_parent(struct sock *sk)
 {
 	struct alg_sock *ask = alg_sk(sk);
@@ -199,21 +154,10 @@ static int alg_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 	const struct af_alg_type *type;
 	void *private;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sock->state == SS_CONNECTED)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (addr_len != sizeof(*sa))
-		return -EINVAL;
-
-	sa->salg_type[sizeof(sa->salg_type) - 1] = 0;
-	sa->salg_name[sizeof(sa->salg_name) - 1] = 0;
-
-	type = alg_get_type(sa->salg_type);
-	if (IS_ERR(type) && PTR_ERR(type) == -ENOENT) {
-=======
 	BUILD_BUG_ON(offsetof(struct sockaddr_alg_new, salg_name) !=
 		     offsetof(struct sockaddr_alg, salg_name));
 	BUILD_BUG_ON(offsetof(struct sockaddr_alg, salg_name) != sizeof(*sa));
@@ -230,7 +174,6 @@ static int alg_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 
 	type = alg_get_type(sa->salg_type);
 	if (PTR_ERR(type) == -ENOENT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		request_module("algif-%s", sa->salg_type);
 		type = alg_get_type(sa->salg_type);
 	}
@@ -244,40 +187,25 @@ static int alg_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 		return PTR_ERR(private);
 	}
 
-<<<<<<< HEAD
-	lock_sock(sk);
-=======
 	err = -EBUSY;
 	lock_sock(sk);
 	if (atomic_read(&ask->refcnt))
 		goto unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	swap(ask->type, type);
 	swap(ask->private, private);
 
-<<<<<<< HEAD
-=======
 	err = 0;
 
 unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_sock(sk);
 
 	alg_do_release(type, private);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-static int alg_setkey(struct sock *sk, char __user *ukey,
-		      unsigned int keylen)
-=======
 	return err;
 }
 
 static int alg_setkey(struct sock *sk, sockptr_t ukey, unsigned int keylen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct alg_sock *ask = alg_sk(sk);
 	const struct af_alg_type *type = ask->type;
@@ -289,29 +217,17 @@ static int alg_setkey(struct sock *sk, sockptr_t ukey, unsigned int keylen)
 		return -ENOMEM;
 
 	err = -EFAULT;
-<<<<<<< HEAD
-	if (copy_from_user(key, ukey, keylen))
-=======
 	if (copy_from_sockptr(key, ukey, keylen))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	err = type->setkey(ask->private, key, keylen);
 
 out:
-<<<<<<< HEAD
-	sock_kfree_s(sk, key, keylen);
-=======
 	sock_kzfree_s(sk, key, keylen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-static int alg_setsockopt(struct socket *sock, int level, int optname,
-			  char __user *optval, unsigned int optlen)
-=======
 #ifdef CONFIG_KEYS
 
 static const u8 *key_data_ptr_user(const struct key *key,
@@ -440,18 +356,10 @@ static inline int alg_setkey_by_key_serial(struct alg_sock *ask,
 
 static int alg_setsockopt(struct socket *sock, int level, int optname,
 			  sockptr_t optval, unsigned int optlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct alg_sock *ask = alg_sk(sk);
 	const struct af_alg_type *type;
-<<<<<<< HEAD
-	int err = -ENOPROTOOPT;
-
-	lock_sock(sk);
-	type = ask->type;
-
-=======
 	int err = -EBUSY;
 
 	lock_sock(sk);
@@ -461,24 +369,17 @@ static int alg_setsockopt(struct socket *sock, int level, int optname,
 	type = ask->type;
 
 	err = -ENOPROTOOPT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (level != SOL_ALG || !type)
 		goto unlock;
 
 	switch (optname) {
 	case ALG_SET_KEY:
-<<<<<<< HEAD
-=======
 	case ALG_SET_KEY_BY_KEY_SERIAL:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sock->state == SS_CONNECTED)
 			goto unlock;
 		if (!type->setkey)
 			goto unlock;
 
-<<<<<<< HEAD
-		err = alg_setkey(sk, optval, optlen);
-=======
 		if (optname == ALG_SET_KEY_BY_KEY_SERIAL)
 			err = alg_setkey_by_key_serial(ask, optval, optlen);
 		else
@@ -498,7 +399,6 @@ static int alg_setsockopt(struct socket *sock, int level, int optname,
 			goto unlock;
 
 		err = type->setentropy(ask->private, optval, optlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 unlock:
@@ -507,19 +407,12 @@ unlock:
 	return err;
 }
 
-<<<<<<< HEAD
-int af_alg_accept(struct sock *sk, struct socket *newsock)
-=======
 int af_alg_accept(struct sock *sk, struct socket *newsock, bool kern)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct alg_sock *ask = alg_sk(sk);
 	const struct af_alg_type *type;
 	struct sock *sk2;
-<<<<<<< HEAD
-=======
 	unsigned int nokey;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	lock_sock(sk);
@@ -529,36 +422,12 @@ int af_alg_accept(struct sock *sk, struct socket *newsock, bool kern)
 	if (!type)
 		goto unlock;
 
-<<<<<<< HEAD
-	sk2 = sk_alloc(sock_net(sk), PF_ALG, GFP_KERNEL, &alg_proto);
-=======
 	sk2 = sk_alloc(sock_net(sk), PF_ALG, GFP_KERNEL, &alg_proto, kern);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -ENOMEM;
 	if (!sk2)
 		goto unlock;
 
 	sock_init_data(newsock, sk2);
-<<<<<<< HEAD
-	sock_graft(sk2, newsock);
-	security_sk_clone(sk, sk2);
-
-	err = type->accept(ask->private, sk2);
-	if (err) {
-		sk_free(sk2);
-		goto unlock;
-	}
-
-	sk2->sk_family = PF_ALG;
-
-	sock_hold(sk);
-	alg_sk(sk2)->parent = sk;
-	alg_sk(sk2)->type = type;
-
-	newsock->ops = type->ops;
-	newsock->state = SS_CONNECTED;
-
-=======
 	security_sock_graft(sk2, newsock);
 	security_sk_clone(sk, sk2);
 
@@ -590,7 +459,6 @@ int af_alg_accept(struct sock *sk, struct socket *newsock, bool kern)
 	if (nokey)
 		newsock->ops = type->ops_nokey;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = 0;
 
 unlock:
@@ -600,16 +468,10 @@ unlock:
 }
 EXPORT_SYMBOL_GPL(af_alg_accept);
 
-<<<<<<< HEAD
-static int alg_accept(struct socket *sock, struct socket *newsock, int flags)
-{
-	return af_alg_accept(sock->sk, newsock);
-=======
 static int alg_accept(struct socket *sock, struct socket *newsock, int flags,
 		      bool kern)
 {
 	return af_alg_accept(sock->sk, newsock, kern);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct proto_ops alg_proto_ops = {
@@ -622,18 +484,9 @@ static const struct proto_ops alg_proto_ops = {
 	.ioctl		=	sock_no_ioctl,
 	.listen		=	sock_no_listen,
 	.shutdown	=	sock_no_shutdown,
-<<<<<<< HEAD
-	.getsockopt	=	sock_no_getsockopt,
-	.mmap		=	sock_no_mmap,
-	.sendpage	=	sock_no_sendpage,
-	.sendmsg	=	sock_no_sendmsg,
-	.recvmsg	=	sock_no_recvmsg,
-	.poll		=	sock_no_poll,
-=======
 	.mmap		=	sock_no_mmap,
 	.sendmsg	=	sock_no_sendmsg,
 	.recvmsg	=	sock_no_recvmsg,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.bind		=	alg_bind,
 	.release	=	af_alg_release,
@@ -660,21 +513,13 @@ static int alg_create(struct net *net, struct socket *sock, int protocol,
 		return -EPROTONOSUPPORT;
 
 	err = -ENOMEM;
-<<<<<<< HEAD
-	sk = sk_alloc(net, PF_ALG, GFP_KERNEL, &alg_proto);
-=======
 	sk = sk_alloc(net, PF_ALG, GFP_KERNEL, &alg_proto, kern);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sk)
 		goto out;
 
 	sock->ops = &alg_proto_ops;
 	sock_init_data(sock, sk);
 
-<<<<<<< HEAD
-	sk->sk_family = PF_ALG;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk->sk_destruct = alg_sock_destruct;
 
 	return 0;
@@ -688,79 +533,17 @@ static const struct net_proto_family alg_family = {
 	.owner	=	THIS_MODULE,
 };
 
-<<<<<<< HEAD
-int af_alg_make_sg(struct af_alg_sgl *sgl, void __user *addr, int len,
-		   int write)
-{
-	unsigned long from = (unsigned long)addr;
-	unsigned long npages;
-	unsigned off;
-	int err;
-	int i;
-
-	err = -EFAULT;
-	if (!access_ok(write ? VERIFY_READ : VERIFY_WRITE, addr, len))
-		goto out;
-
-	off = from & ~PAGE_MASK;
-	npages = (off + len + PAGE_SIZE - 1) >> PAGE_SHIFT;
-	if (npages > ALG_MAX_PAGES)
-		npages = ALG_MAX_PAGES;
-
-	err = get_user_pages_fast(from, npages, write, sgl->pages);
-	if (err < 0)
-		goto out;
-
-	npages = err;
-	err = -EINVAL;
-	if (WARN_ON(npages == 0))
-		goto out;
-
-	err = 0;
-
-	sg_init_table(sgl->sg, npages);
-
-	for (i = 0; i < npages; i++) {
-		int plen = min_t(int, len, PAGE_SIZE - off);
-
-		sg_set_page(sgl->sg + i, sgl->pages[i], plen, off);
-
-		off = 0;
-		len -= plen;
-		err += plen;
-	}
-
-out:
-	return err;
-}
-EXPORT_SYMBOL_GPL(af_alg_make_sg);
-=======
 static void af_alg_link_sg(struct af_alg_sgl *sgl_prev,
 			   struct af_alg_sgl *sgl_new)
 {
 	sg_unmark_end(sgl_prev->sgt.sgl + sgl_prev->sgt.nents - 1);
 	sg_chain(sgl_prev->sgt.sgl, sgl_prev->sgt.nents + 1, sgl_new->sgt.sgl);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void af_alg_free_sg(struct af_alg_sgl *sgl)
 {
 	int i;
 
-<<<<<<< HEAD
-	i = 0;
-	do {
-		put_page(sgl->pages[i]);
-	} while (!sg_is_last(sgl->sg + (i++)));
-}
-EXPORT_SYMBOL_GPL(af_alg_free_sg);
-
-int af_alg_cmsg_send(struct msghdr *msg, struct af_alg_control *con)
-{
-	struct cmsghdr *cmsg;
-
-	for (cmsg = CMSG_FIRSTHDR(msg); cmsg; cmsg = CMSG_NXTHDR(msg, cmsg)) {
-=======
 	if (sgl->sgt.sgl) {
 		if (sgl->need_unpin)
 			for (i = 0; i < sgl->sgt.nents; i++)
@@ -777,17 +560,12 @@ static int af_alg_cmsg_send(struct msghdr *msg, struct af_alg_control *con)
 	struct cmsghdr *cmsg;
 
 	for_each_cmsghdr(cmsg, msg) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!CMSG_OK(msg, cmsg))
 			return -EINVAL;
 		if (cmsg->cmsg_level != SOL_ALG)
 			continue;
 
-<<<<<<< HEAD
-		switch(cmsg->cmsg_type) {
-=======
 		switch (cmsg->cmsg_type) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ALG_SET_IV:
 			if (cmsg->cmsg_len < CMSG_LEN(sizeof(*con->iv)))
 				return -EINVAL;
@@ -803,15 +581,12 @@ static int af_alg_cmsg_send(struct msghdr *msg, struct af_alg_control *con)
 			con->op = *(u32 *)CMSG_DATA(cmsg);
 			break;
 
-<<<<<<< HEAD
-=======
 		case ALG_SET_AEAD_ASSOCLEN:
 			if (cmsg->cmsg_len < CMSG_LEN(sizeof(u32)))
 				return -EINVAL;
 			con->aead_assoclen = *(u32 *)CMSG_DATA(cmsg);
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			return -EINVAL;
 		}
@@ -819,36 +594,6 @@ static int af_alg_cmsg_send(struct msghdr *msg, struct af_alg_control *con)
 
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(af_alg_cmsg_send);
-
-int af_alg_wait_for_completion(int err, struct af_alg_completion *completion)
-{
-	switch (err) {
-	case -EINPROGRESS:
-	case -EBUSY:
-		wait_for_completion(&completion->completion);
-		INIT_COMPLETION(completion->completion);
-		err = completion->err;
-		break;
-	};
-
-	return err;
-}
-EXPORT_SYMBOL_GPL(af_alg_wait_for_completion);
-
-void af_alg_complete(struct crypto_async_request *req, int err)
-{
-	struct af_alg_completion *completion = req->data;
-
-	if (err == -EINPROGRESS)
-		return;
-
-	completion->err = err;
-	complete(&completion->completion);
-}
-EXPORT_SYMBOL_GPL(af_alg_complete);
-=======
 
 /**
  * af_alg_alloc_tsgl - allocate the TX SGL
@@ -1543,7 +1288,6 @@ int af_alg_get_rsgl(struct sock *sk, struct msghdr *msg, int flags,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(af_alg_get_rsgl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init af_alg_init(void)
 {

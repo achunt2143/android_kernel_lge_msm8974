@@ -11,13 +11,8 @@ Required properties:
   are made in native endianness.
 - #address-cells, #size-cells : Must be present if the device has sub-nodes
   representing partitions.
-<<<<<<< HEAD
-- gpios : specifies the gpio pins to control the NAND device.  nwp is an
-  optional gpio and may be set to 0 if not present.
-=======
 - gpios : Specifies the GPIO pins to control the NAND device.  The order of
   GPIO references is:  RDY, nCE, ALE, CLE, and nWP. nCE and nWP are optional.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Optional properties:
 - bank-width : Width (in bytes) of the device.  If not present, the width
@@ -31,11 +26,7 @@ Optional properties:
   read to ensure that the GPIO accesses have completed.
 
 The device tree may optionally contain sub-nodes describing partitions of the
-<<<<<<< HEAD
-address space. See partition.txt for more detail.
-=======
 address space. See mtd.yaml for more detail.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Examples:
 
@@ -44,19 +35,11 @@ gpio-nand@1,0 {
 	reg = <1 0x0000 0x2>;
 	#address-cells = <1>;
 	#size-cells = <1>;
-<<<<<<< HEAD
-	gpios = <&banka 1 0	/* rdy */
-		 &banka 2 0 	/* nce */
-		 &banka 3 0 	/* ale */
-		 &banka 4 0 	/* cle */
-		 0		/* nwp */>;
-=======
 	gpios = <&banka 1 0>,	/* RDY */
 		<0>, 		/* nCE */
 		<&banka 3 0>, 	/* ALE */
 		<&banka 4 0>, 	/* CLE */
 		<0>;		/* nWP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	partition@0 {
 	...

@@ -76,13 +76,9 @@ extern u8 dsp_silence;
 #define MAX_SECONDS_JITTER_CHECK 5
 
 extern struct timer_list dsp_spl_tl;
-<<<<<<< HEAD
-extern u32 dsp_spl_jiffies;
-=======
 
 /* the datatype need to match jiffies datatype */
 extern unsigned long dsp_spl_jiffies;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* the structure of conferences:
  *
@@ -251,11 +247,7 @@ extern void dsp_cmx_hardware(struct dsp_conf *conf, struct dsp *dsp);
 extern int dsp_cmx_conf(struct dsp *dsp, u32 conf_id);
 extern void dsp_cmx_receive(struct dsp *dsp, struct sk_buff *skb);
 extern void dsp_cmx_hdlc(struct dsp *dsp, struct sk_buff *skb);
-<<<<<<< HEAD
-extern void dsp_cmx_send(void *arg);
-=======
 extern void dsp_cmx_send(struct timer_list *arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void dsp_cmx_transmit(struct dsp *dsp, struct sk_buff *skb);
 extern int dsp_cmx_del_conf_member(struct dsp *dsp);
 extern int dsp_cmx_del_conf(struct dsp_conf *conf);
@@ -267,11 +259,7 @@ extern u8 *dsp_dtmf_goertzel_decode(struct dsp *dsp, u8 *data, int len,
 
 extern int dsp_tone(struct dsp *dsp, int tone);
 extern void dsp_tone_copy(struct dsp *dsp, u8 *data, int len);
-<<<<<<< HEAD
-extern void dsp_tone_timeout(void *arg);
-=======
 extern void dsp_tone_timeout(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void dsp_bf_encrypt(struct dsp *dsp, u8 *data, int len);
 extern void dsp_bf_decrypt(struct dsp *dsp, u8 *data, int len);

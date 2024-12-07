@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm97xx-core.c  --  Touch screen driver core for Wolfson WM9705, WM9712
  *                    and WM9713 AC97 Codecs.
@@ -12,14 +9,6 @@
  *                   Andrew Zabolotny <zap@homelink.ru>
  *                   Russell King <rmk@arm.linux.org.uk>
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Notes:
  *
  *  Features:
@@ -38,10 +27,6 @@
  *       - codec event notification
  * Todo
  *       - Support for async sampling control for noisy LCDs.
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -54,10 +39,7 @@
 #include <linux/pm.h>
 #include <linux/interrupt.h>
 #include <linux/bitops.h>
-<<<<<<< HEAD
-=======
 #include <linux/mfd/wm97xx.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/workqueue.h>
 #include <linux/wm97xx.h>
 #include <linux/uaccess.h>
@@ -81,16 +63,6 @@
  * The default values correspond to Mainstone II in QVGA mode
  *
  * Please read
-<<<<<<< HEAD
- * Documentation/input/input-programming.txt for more details.
- */
-
-static int abs_x[3] = {350, 3900, 5};
-module_param_array(abs_x, int, NULL, 0);
-MODULE_PARM_DESC(abs_x, "Touchscreen absolute X min, max, fuzz");
-
-static int abs_y[3] = {320, 3750, 40};
-=======
  * Documentation/input/input-programming.rst for more details.
  */
 
@@ -99,7 +71,6 @@ module_param_array(abs_x, int, NULL, 0);
 MODULE_PARM_DESC(abs_x, "Touchscreen absolute X min, max, fuzz");
 
 static int abs_y[3] = {200, 4000, 40};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_array(abs_y, int, NULL, 0);
 MODULE_PARM_DESC(abs_y, "Touchscreen absolute Y min, max, fuzz");
 
@@ -223,11 +194,7 @@ EXPORT_SYMBOL_GPL(wm97xx_get_gpio);
  * wm97xx_set_gpio - Set the status of a codec GPIO.
  * @wm: wm97xx device.
  * @gpio: gpio
-<<<<<<< HEAD
- *
-=======
  * @status: status
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Set the status of a codec GPIO pin
  */
@@ -318,20 +285,12 @@ void wm97xx_set_suspend_mode(struct wm97xx *wm, u16 mode)
 EXPORT_SYMBOL_GPL(wm97xx_set_suspend_mode);
 
 /*
-<<<<<<< HEAD
- * Handle a pen down interrupt.
- */
-static void wm97xx_pen_irq_worker(struct work_struct *work)
-{
-	struct wm97xx *wm = container_of(work, struct wm97xx, pen_event_work);
-=======
  * Codec PENDOWN irq handler
  *
  */
 static irqreturn_t wm97xx_pen_interrupt(int irq, void *dev_id)
 {
 	struct wm97xx *wm = dev_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pen_was_down = wm->pen_is_down;
 
 	/* do we need to enable the touch panel reader */
@@ -385,30 +344,6 @@ static irqreturn_t wm97xx_pen_interrupt(int irq, void *dev_id)
 	if (!wm->pen_is_down && wm->mach_ops->acc_enabled)
 		wm->mach_ops->acc_pen_up(wm);
 
-<<<<<<< HEAD
-	wm->mach_ops->irq_enable(wm, 1);
-}
-
-/*
- * Codec PENDOWN irq handler
- *
- * We have to disable the codec interrupt in the handler because it
- * can take up to 1ms to clear the interrupt source. We schedule a task
- * in a work queue to do the actual interaction with the chip.  The
- * interrupt is then enabled again in the slow handler when the source
- * has been cleared.
- */
-static irqreturn_t wm97xx_pen_interrupt(int irq, void *dev_id)
-{
-	struct wm97xx *wm = dev_id;
-
-	if (!work_pending(&wm->pen_event_work)) {
-		wm->mach_ops->irq_enable(wm, 0);
-		queue_work(wm->ts_workq, &wm->pen_event_work);
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -419,18 +354,9 @@ static int wm97xx_init_pen_irq(struct wm97xx *wm)
 {
 	u16 reg;
 
-<<<<<<< HEAD
-	/* If an interrupt is supplied an IRQ enable operation must also be
-	 * provided. */
-	BUG_ON(!wm->mach_ops->irq_enable);
-
-	if (request_irq(wm->pen_irq, wm97xx_pen_interrupt, IRQF_SHARED,
-			"wm97xx-pen", wm)) {
-=======
 	if (request_threaded_irq(wm->pen_irq, NULL, wm97xx_pen_interrupt,
 				 IRQF_SHARED | IRQF_ONESHOT,
 				 "wm97xx-pen", wm)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(wm->dev,
 			"Failed to register pen down interrupt, polling");
 		wm->pen_irq = 0;
@@ -489,8 +415,6 @@ static int wm97xx_read_samples(struct wm97xx *wm)
 			"pen down: x=%x:%d, y=%x:%d, pressure=%x:%d\n",
 			data.x >> 12, data.x & 0xfff, data.y >> 12,
 			data.y & 0xfff, data.p >> 12, data.p & 0xfff);
-<<<<<<< HEAD
-=======
 
 		if (abs_x[0] > (data.x & 0xfff) ||
 		    abs_x[1] < (data.x & 0xfff) ||
@@ -501,7 +425,6 @@ static int wm97xx_read_samples(struct wm97xx *wm)
 			goto out;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_report_abs(wm->input_dev, ABS_X, data.x & 0xfff);
 		input_report_abs(wm->input_dev, ABS_Y, data.y & 0xfff);
 		input_report_abs(wm->input_dev, ABS_PRESSURE, data.p & 0xfff);
@@ -515,10 +438,7 @@ static int wm97xx_read_samples(struct wm97xx *wm)
 		wm->ts_reader_interval = wm->ts_reader_min_interval;
 	}
 
-<<<<<<< HEAD
-=======
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&wm->codec_mutex);
 	return rc;
 }
@@ -553,11 +473,7 @@ static int wm97xx_ts_input_open(struct input_dev *idev)
 {
 	struct wm97xx *wm = input_get_drvdata(idev);
 
-<<<<<<< HEAD
-	wm->ts_workq = create_singlethread_workqueue("kwm97xx");
-=======
 	wm->ts_workq = alloc_ordered_workqueue("kwm97xx", 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wm->ts_workq == NULL) {
 		dev_err(wm->dev,
 			"Failed to create workqueue\n");
@@ -570,10 +486,6 @@ static int wm97xx_ts_input_open(struct input_dev *idev)
 	wm->codec->dig_enable(wm, 1);
 
 	INIT_DELAYED_WORK(&wm->ts_reader, wm97xx_ts_reader);
-<<<<<<< HEAD
-	INIT_WORK(&wm->pen_event_work, wm97xx_pen_irq_worker);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm->ts_reader_min_interval = HZ >= 100 ? HZ / 100 : 1;
 	if (wm->ts_reader_min_interval < 1)
@@ -624,13 +536,6 @@ static void wm97xx_ts_input_close(struct input_dev *idev)
 
 	wm->pen_is_down = 0;
 
-<<<<<<< HEAD
-	/* Balance out interrupt disables/enables */
-	if (cancel_work_sync(&wm->pen_event_work))
-		wm->mach_ops->irq_enable(wm, 1);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ts_reader rearms itself so we need to explicitly stop it
 	 * before we destroy the workqueue.
 	 */
@@ -644,22 +549,6 @@ static void wm97xx_ts_input_close(struct input_dev *idev)
 		wm->codec->acc_enable(wm, 0);
 }
 
-<<<<<<< HEAD
-static int wm97xx_probe(struct device *dev)
-{
-	struct wm97xx *wm;
-	struct wm97xx_pdata *pdata = dev->platform_data;
-	int ret = 0, id = 0;
-
-	wm = kzalloc(sizeof(struct wm97xx), GFP_KERNEL);
-	if (!wm)
-		return -ENOMEM;
-	mutex_init(&wm->codec_mutex);
-
-	wm->dev = dev;
-	dev_set_drvdata(dev, wm);
-	wm->ac97 = to_ac97_t(dev);
-=======
 static int wm97xx_register_touch(struct wm97xx *wm)
 {
 	struct wm97xx_pdata *pdata = dev_get_platdata(wm->dev);
@@ -726,20 +615,13 @@ static int _wm97xx_probe(struct wm97xx *wm)
 
 	mutex_init(&wm->codec_mutex);
 	dev_set_drvdata(wm->dev, wm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check that we have a supported codec */
 	id = wm97xx_reg_read(wm, AC97_VENDOR_ID1);
 	if (id != WM97XX_ID1) {
-<<<<<<< HEAD
-		dev_err(dev, "Device with vendor %04x is not a wm97xx\n", id);
-		ret = -ENODEV;
-		goto alloc_err;
-=======
 		dev_err(wm->dev,
 			"Device with vendor %04x is not a wm97xx\n", id);
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	wm->id = wm97xx_reg_read(wm, AC97_VENDOR_ID2);
@@ -767,12 +649,7 @@ static int _wm97xx_probe(struct wm97xx *wm)
 	default:
 		dev_err(wm->dev, "Support for wm97%02x not compiled in.\n",
 			wm->id & 0xff);
-<<<<<<< HEAD
-		ret = -ENODEV;
-		goto alloc_err;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* set up physical characteristics */
@@ -786,81 +663,6 @@ static int _wm97xx_probe(struct wm97xx *wm)
 	wm->gpio[4] = wm97xx_reg_read(wm, AC97_GPIO_STATUS);
 	wm->gpio[5] = wm97xx_reg_read(wm, AC97_MISC_AFE);
 
-<<<<<<< HEAD
-	wm->input_dev = input_allocate_device();
-	if (wm->input_dev == NULL) {
-		ret = -ENOMEM;
-		goto alloc_err;
-	}
-
-	/* set up touch configuration */
-	wm->input_dev->name = "wm97xx touchscreen";
-	wm->input_dev->phys = "wm97xx";
-	wm->input_dev->open = wm97xx_ts_input_open;
-	wm->input_dev->close = wm97xx_ts_input_close;
-
-	__set_bit(EV_ABS, wm->input_dev->evbit);
-	__set_bit(EV_KEY, wm->input_dev->evbit);
-	__set_bit(BTN_TOUCH, wm->input_dev->keybit);
-
-	input_set_abs_params(wm->input_dev, ABS_X, abs_x[0], abs_x[1],
-			     abs_x[2], 0);
-	input_set_abs_params(wm->input_dev, ABS_Y, abs_y[0], abs_y[1],
-			     abs_y[2], 0);
-	input_set_abs_params(wm->input_dev, ABS_PRESSURE, abs_p[0], abs_p[1],
-			     abs_p[2], 0);
-
-	input_set_drvdata(wm->input_dev, wm);
-	wm->input_dev->dev.parent = dev;
-
-	ret = input_register_device(wm->input_dev);
-	if (ret < 0)
-		goto dev_alloc_err;
-
-	/* register our battery device */
-	wm->battery_dev = platform_device_alloc("wm97xx-battery", -1);
-	if (!wm->battery_dev) {
-		ret = -ENOMEM;
-		goto batt_err;
-	}
-	platform_set_drvdata(wm->battery_dev, wm);
-	wm->battery_dev->dev.parent = dev;
-	wm->battery_dev->dev.platform_data = pdata;
-	ret = platform_device_add(wm->battery_dev);
-	if (ret < 0)
-		goto batt_reg_err;
-
-	/* register our extended touch device (for machine specific
-	 * extensions) */
-	wm->touch_dev = platform_device_alloc("wm97xx-touch", -1);
-	if (!wm->touch_dev) {
-		ret = -ENOMEM;
-		goto touch_err;
-	}
-	platform_set_drvdata(wm->touch_dev, wm);
-	wm->touch_dev->dev.parent = dev;
-	wm->touch_dev->dev.platform_data = pdata;
-	ret = platform_device_add(wm->touch_dev);
-	if (ret < 0)
-		goto touch_reg_err;
-
-	return ret;
-
- touch_reg_err:
-	platform_device_put(wm->touch_dev);
- touch_err:
-	platform_device_del(wm->battery_dev);
- batt_reg_err:
-	platform_device_put(wm->battery_dev);
- batt_err:
-	input_unregister_device(wm->input_dev);
-	wm->input_dev = NULL;
- dev_alloc_err:
-	input_free_device(wm->input_dev);
- alloc_err:
-	kfree(wm);
-
-=======
 	return wm97xx_register_touch(wm);
 }
 
@@ -913,7 +715,6 @@ static int wm97xx_probe(struct device *dev)
 
 batt_err:
 	wm97xx_unregister_touch(wm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -921,23 +722,12 @@ static int wm97xx_remove(struct device *dev)
 {
 	struct wm97xx *wm = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	platform_device_unregister(wm->battery_dev);
-	platform_device_unregister(wm->touch_dev);
-	input_unregister_device(wm->input_dev);
-	kfree(wm);
-=======
 	wm97xx_remove_battery(wm);
 	wm97xx_unregister_touch(wm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int wm97xx_suspend(struct device *dev, pm_message_t state)
-=======
 static int wm97xx_mfd_probe(struct platform_device *pdev)
 {
 	struct wm97xx *wm;
@@ -972,7 +762,6 @@ static void wm97xx_mfd_remove(struct platform_device *pdev)
 }
 
 static int wm97xx_suspend(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm97xx *wm = dev_get_drvdata(dev);
 	u16 reg;
@@ -983,40 +772,25 @@ static int wm97xx_suspend(struct device *dev)
 	else
 		suspend_mode = 0;
 
-<<<<<<< HEAD
-	if (wm->input_dev->users)
-=======
 	mutex_lock(&wm->input_dev->mutex);
 	if (input_device_enabled(wm->input_dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cancel_delayed_work_sync(&wm->ts_reader);
 
 	/* Power down the digitiser (bypassing the cache for resume) */
 	reg = wm97xx_reg_read(wm, AC97_WM97XX_DIGITISER2);
 	reg &= ~WM97XX_PRP_DET_DIG;
-<<<<<<< HEAD
-	if (wm->input_dev->users)
-=======
 	if (input_device_enabled(wm->input_dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg |= suspend_mode;
 	wm->ac97->bus->ops->write(wm->ac97, AC97_WM97XX_DIGITISER2, reg);
 
 	/* WM9713 has an additional power bit - turn it off if there
 	 * are no users or if suspend mode is zero. */
 	if (wm->id == WM9713_ID2 &&
-<<<<<<< HEAD
-	    (!wm->input_dev->users || !suspend_mode)) {
-		reg = wm97xx_reg_read(wm, AC97_EXTENDED_MID) | 0x8000;
-		wm97xx_reg_write(wm, AC97_EXTENDED_MID, reg);
-	}
-=======
 	    (!input_device_enabled(wm->input_dev) || !suspend_mode)) {
 		reg = wm97xx_reg_read(wm, AC97_EXTENDED_MID) | 0x8000;
 		wm97xx_reg_write(wm, AC97_EXTENDED_MID, reg);
 	}
 	mutex_unlock(&wm->input_dev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1025,19 +799,12 @@ static int wm97xx_resume(struct device *dev)
 {
 	struct wm97xx *wm = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-=======
 	mutex_lock(&wm->input_dev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* restore digitiser and gpios */
 	if (wm->id == WM9713_ID2) {
 		wm97xx_reg_write(wm, AC97_WM9713_DIG1, wm->dig[0]);
 		wm97xx_reg_write(wm, 0x5a, wm->misc);
-<<<<<<< HEAD
-		if (wm->input_dev->users) {
-=======
 		if (input_device_enabled(wm->input_dev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u16 reg;
 			reg = wm97xx_reg_read(wm, AC97_EXTENDED_MID) & 0x7fff;
 			wm97xx_reg_write(wm, AC97_EXTENDED_MID, reg);
@@ -1054,31 +821,17 @@ static int wm97xx_resume(struct device *dev)
 	wm97xx_reg_write(wm, AC97_GPIO_STATUS, wm->gpio[4]);
 	wm97xx_reg_write(wm, AC97_MISC_AFE, wm->gpio[5]);
 
-<<<<<<< HEAD
-	if (wm->input_dev->users && !wm->pen_irq) {
-=======
 	if (input_device_enabled(wm->input_dev) && !wm->pen_irq) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wm->ts_reader_interval = wm->ts_reader_min_interval;
 		queue_delayed_work(wm->ts_workq, &wm->ts_reader,
 				   wm->ts_reader_interval);
 	}
-<<<<<<< HEAD
-=======
 	mutex_unlock(&wm->input_dev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#else
-#define wm97xx_suspend		NULL
-#define wm97xx_resume		NULL
-#endif
-=======
 static DEFINE_SIMPLE_DEV_PM_OPS(wm97xx_pm_ops, wm97xx_suspend, wm97xx_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Machine specific operations
@@ -1108,14 +861,6 @@ EXPORT_SYMBOL_GPL(wm97xx_unregister_mach_ops);
 
 static struct device_driver wm97xx_driver = {
 	.name =		"wm97xx-ts",
-<<<<<<< HEAD
-	.bus =		&ac97_bus_type,
-	.owner =	THIS_MODULE,
-	.probe =	wm97xx_probe,
-	.remove =	wm97xx_remove,
-	.suspend =	wm97xx_suspend,
-	.resume =	wm97xx_resume,
-=======
 #ifdef CONFIG_AC97_BUS
 	.bus =		&ac97_bus_type,
 #endif
@@ -1132,14 +877,10 @@ static struct platform_driver wm97xx_mfd_driver = {
 	},
 	.probe =	wm97xx_mfd_probe,
 	.remove_new =	wm97xx_mfd_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init wm97xx_init(void)
 {
-<<<<<<< HEAD
-	return driver_register(&wm97xx_driver);
-=======
 	int ret;
 
 	ret = platform_driver_register(&wm97xx_mfd_driver);
@@ -1149,18 +890,13 @@ static int __init wm97xx_init(void)
 	if (IS_BUILTIN(CONFIG_AC97_BUS))
 		ret =  driver_register(&wm97xx_driver);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit wm97xx_exit(void)
 {
-<<<<<<< HEAD
-	driver_unregister(&wm97xx_driver);
-=======
 	if (IS_BUILTIN(CONFIG_AC97_BUS))
 		driver_unregister(&wm97xx_driver);
 	platform_driver_unregister(&wm97xx_mfd_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(wm97xx_init);

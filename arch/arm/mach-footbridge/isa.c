@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-footbridge/isa.c
  *
  *  Copyright (C) 2004 Russell King.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/serial_8250.h>
@@ -89,25 +79,12 @@ static int __init footbridge_isa_init(void)
 {
 	int err = 0;
 
-<<<<<<< HEAD
-	if (!footbridge_cfn_mode())
-		return 0;
-
-	/* Personal server doesn't have RTC */
-	if (!machine_is_personal_server()) {
-		isa_rtc_init();
-		err = platform_device_register(&rtc_device);
-		if (err)
-			printk(KERN_ERR "Unable to register RTC device: %d\n", err);
-	}
-=======
 	/* Personal server doesn't have RTC */
 	isa_rtc_init();
 	err = platform_device_register(&rtc_device);
 	if (err)
 		printk(KERN_ERR "Unable to register RTC device: %d\n", err);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = platform_device_register(&serial_device);
 	if (err)
 		printk(KERN_ERR "Unable to register serial device: %d\n", err);

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * speedfax.c	low level stuff for Sedlbauer Speedfax+ cards
  *		based on the ISAR DSP
@@ -10,23 +7,6 @@
  * Author       Karsten Keil <keil@isdn4linux.de>
  *
  * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/interrupt.h>
@@ -101,11 +81,7 @@ _set_debug(struct sfax_hw *card)
 }
 
 static int
-<<<<<<< HEAD
-set_debug(const char *val, struct kernel_param *kp)
-=======
 set_debug(const char *val, const struct kernel_param *kp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct sfax_hw *card;
@@ -235,11 +211,7 @@ channel_ctrl(struct sfax_hw  *sf, struct mISDN_ctrl_req *cq)
 
 	switch (cq->op) {
 	case MISDN_CTRL_GETOP:
-<<<<<<< HEAD
-		cq->op = MISDN_CTRL_LOOP;
-=======
 		cq->op = MISDN_CTRL_LOOP | MISDN_CTRL_L1_TIMER3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MISDN_CTRL_LOOP:
 		/* cq->channel: 0 disable, 1 B1 loop 2 B2 loop, 3 both */
@@ -249,12 +221,9 @@ channel_ctrl(struct sfax_hw  *sf, struct mISDN_ctrl_req *cq)
 		}
 		ret = sf->isac.ctrl(&sf->isac, HW_TESTLOOP, cq->channel);
 		break;
-<<<<<<< HEAD
-=======
 	case MISDN_CTRL_L1_TIMER3:
 		ret = sf->isac.ctrl(&sf->isac, HW_TIMER3_VALUE, cq->p1);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		pr_info("%s: unknown Op %x\n", sf->name, cq->op);
 		ret = -EINVAL;
@@ -300,11 +269,7 @@ sfax_dctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 init_card(struct sfax_hw *sf)
 {
 	int	ret, cnt = 3;
@@ -343,11 +308,7 @@ init_card(struct sfax_hw *sf)
 }
 
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 setup_speedfax(struct sfax_hw *sf)
 {
 	u_long flags;
@@ -397,11 +358,7 @@ release_card(struct sfax_hw *card) {
 	sfax_cnt--;
 }
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 setup_instance(struct sfax_hw *card)
 {
 	const struct firmware *firmware;
@@ -481,11 +438,7 @@ error_fw:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sfaxpci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	int err = -ENOMEM;
@@ -514,11 +467,7 @@ sfaxpci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	return err;
 }
 
-<<<<<<< HEAD
-static void __devexit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sfax_remove_pci(struct pci_dev *pdev)
 {
 	struct sfax_hw	*card = pci_get_drvdata(pdev);
@@ -529,11 +478,7 @@ sfax_remove_pci(struct pci_dev *pdev)
 		pr_debug("%s: drvdata already removed\n", __func__);
 }
 
-<<<<<<< HEAD
-static struct pci_device_id sfaxpci_ids[] __devinitdata = {
-=======
 static struct pci_device_id sfaxpci_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_TIGERJET, PCI_DEVICE_ID_TIGERJET_100,
 	  PCI_SUBVENDOR_SPEEDFAX_PYRAMID, PCI_SUB_ID_SEDLBAUER,
 	  0, 0, (unsigned long) "Pyramid Speedfax + PCI"
@@ -549,11 +494,7 @@ MODULE_DEVICE_TABLE(pci, sfaxpci_ids);
 static struct pci_driver sfaxpci_driver = {
 	.name = "speedfax+ pci",
 	.probe = sfaxpci_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(sfax_remove_pci),
-=======
 	.remove = sfax_remove_pci,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = sfaxpci_ids,
 };
 

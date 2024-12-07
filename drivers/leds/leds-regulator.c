@@ -1,33 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * leds-regulator.c - LED class driver for regulator driven LEDs.
  *
  * Copyright (C) 2009 Antonio Ospite <ospite@studenti.unina.it>
  *
  * Inspired by leds-wm8350 driver.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- */
-
-#include <linux/module.h>
-#include <linux/err.h>
-#include <linux/slab.h>
-#include <linux/workqueue.h>
-=======
  */
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
 #include <linux/err.h>
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/leds.h>
 #include <linux/leds-regulator.h>
 #include <linux/platform_device.h>
@@ -38,15 +21,8 @@
 
 struct regulator_led {
 	struct led_classdev cdev;
-<<<<<<< HEAD
-	enum led_brightness value;
 	int enabled;
 	struct mutex mutex;
-	struct work_struct work;
-=======
-	int enabled;
-	struct mutex mutex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct regulator *vcc;
 };
@@ -112,16 +88,6 @@ static void regulator_led_disable(struct regulator_led *led)
 	led->enabled = 0;
 }
 
-<<<<<<< HEAD
-static void regulator_led_set_value(struct regulator_led *led)
-{
-	int voltage;
-	int ret;
-
-	mutex_lock(&led->mutex);
-
-	if (led->value == LED_OFF) {
-=======
 static int regulator_led_brightness_set(struct led_classdev *led_cdev,
 					 enum led_brightness value)
 {
@@ -132,21 +98,14 @@ static int regulator_led_brightness_set(struct led_classdev *led_cdev,
 	mutex_lock(&led->mutex);
 
 	if (value == LED_OFF) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regulator_led_disable(led);
 		goto out;
 	}
 
 	if (led->cdev.max_brightness > 1) {
-<<<<<<< HEAD
-		voltage = led_regulator_get_voltage(led->vcc, led->value);
-		dev_dbg(led->cdev.dev, "brightness: %d voltage: %d\n",
-				led->value, voltage);
-=======
 		voltage = led_regulator_get_voltage(led->vcc, value);
 		dev_dbg(led->cdev.dev, "brightness: %d voltage: %d\n",
 				value, voltage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = regulator_set_voltage(led->vcc, voltage, voltage);
 		if (ret != 0)
@@ -158,30 +117,6 @@ static int regulator_led_brightness_set(struct led_classdev *led_cdev,
 
 out:
 	mutex_unlock(&led->mutex);
-<<<<<<< HEAD
-}
-
-static void led_work(struct work_struct *work)
-{
-	struct regulator_led *led;
-
-	led = container_of(work, struct regulator_led, work);
-	regulator_led_set_value(led);
-}
-
-static void regulator_led_brightness_set(struct led_classdev *led_cdev,
-			   enum led_brightness value)
-{
-	struct regulator_led *led = to_regulator_led(led_cdev);
-
-	led->value = value;
-	schedule_work(&led->work);
-}
-
-static int __devinit regulator_led_probe(struct platform_device *pdev)
-{
-	struct led_regulator_platform_data *pdata = pdev->dev.platform_data;
-=======
 	return ret;
 }
 
@@ -191,41 +126,10 @@ static int regulator_led_probe(struct platform_device *pdev)
 			dev_get_platdata(&pdev->dev);
 	struct device *dev = &pdev->dev;
 	struct led_init_data init_data = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct regulator_led *led;
 	struct regulator *vcc;
 	int ret = 0;
 
-<<<<<<< HEAD
-	if (pdata == NULL) {
-		dev_err(&pdev->dev, "no platform data\n");
-		return -ENODEV;
-	}
-
-	vcc = regulator_get_exclusive(&pdev->dev, "vled");
-	if (IS_ERR(vcc)) {
-		dev_err(&pdev->dev, "Cannot get vcc for %s\n", pdata->name);
-		return PTR_ERR(vcc);
-	}
-
-	led = kzalloc(sizeof(*led), GFP_KERNEL);
-	if (led == NULL) {
-		ret = -ENOMEM;
-		goto err_vcc;
-	}
-
-	led->cdev.max_brightness = led_regulator_get_max_brightness(vcc);
-	if (pdata->brightness > led->cdev.max_brightness) {
-		dev_err(&pdev->dev, "Invalid default brightness %d\n",
-				pdata->brightness);
-		ret = -EINVAL;
-		goto err_led;
-	}
-	led->value = pdata->brightness;
-
-	led->cdev.brightness_set = regulator_led_brightness_set;
-	led->cdev.name = pdata->name;
-=======
 	vcc = devm_regulator_get_exclusive(dev, "vled");
 	if (IS_ERR(vcc)) {
 		dev_err(dev, "Cannot get vcc\n");
@@ -251,7 +155,6 @@ static int regulator_led_probe(struct platform_device *pdev)
 	}
 
 	led->cdev.brightness_set_blocking = regulator_led_brightness_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led->cdev.flags |= LED_CORE_SUSPENDRESUME;
 	led->vcc = vcc;
 
@@ -260,34 +163,6 @@ static int regulator_led_probe(struct platform_device *pdev)
 		led->enabled = 1;
 
 	mutex_init(&led->mutex);
-<<<<<<< HEAD
-	INIT_WORK(&led->work, led_work);
-
-	platform_set_drvdata(pdev, led);
-
-	ret = led_classdev_register(&pdev->dev, &led->cdev);
-	if (ret < 0) {
-		cancel_work_sync(&led->work);
-		goto err_led;
-	}
-
-	/* to expose the default value to userspace */
-	led->cdev.brightness = led->value;
-
-	/* Set the default led status */
-	regulator_led_set_value(led);
-
-	return 0;
-
-err_led:
-	kfree(led);
-err_vcc:
-	regulator_put(vcc);
-	return ret;
-}
-
-static int __devexit regulator_led_remove(struct platform_device *pdev)
-=======
 
 	platform_set_drvdata(pdev, led);
 
@@ -299,27 +174,10 @@ static int __devexit regulator_led_remove(struct platform_device *pdev)
 }
 
 static void regulator_led_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct regulator_led *led = platform_get_drvdata(pdev);
 
 	led_classdev_unregister(&led->cdev);
-<<<<<<< HEAD
-	cancel_work_sync(&led->work);
-	regulator_led_disable(led);
-	regulator_put(led->vcc);
-	kfree(led);
-	return 0;
-}
-
-static struct platform_driver regulator_led_driver = {
-	.driver = {
-		   .name  = "leds-regulator",
-		   .owner = THIS_MODULE,
-		   },
-	.probe  = regulator_led_probe,
-	.remove = __devexit_p(regulator_led_remove),
-=======
 	regulator_led_disable(led);
 }
 
@@ -336,7 +194,6 @@ static struct platform_driver regulator_led_driver = {
 	},
 	.probe  = regulator_led_probe,
 	.remove_new = regulator_led_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(regulator_led_driver);

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SPARC64_VISASM_H
 #define _SPARC64_VISASM_H
 
@@ -32,20 +29,6 @@
  * Must preserve %o5 between VISEntryHalf and VISExitHalf */
 
 #define VISEntryHalf					\
-<<<<<<< HEAD
-	rd		%fprs, %o5;			\
-	andcc		%o5, FPRS_FEF, %g0;		\
-	be,pt		%icc, 297f;			\
-	 sethi		%hi(298f), %g7;			\
-	sethi		%hi(VISenterhalf), %g1;		\
-	jmpl		%g1 + %lo(VISenterhalf), %g0;	\
-	 or		%g7, %lo(298f), %g7;		\
-	clr		%o5;				\
-297:	wr		%o5, FPRS_FEF, %fprs;		\
-298:
-
-#define VISExitHalf					\
-=======
 	VISEntry
 
 #define VISExitHalf					\
@@ -60,7 +43,6 @@
 297:	wr		%o5, FPRS_FEF, %fprs;
 
 #define VISExitHalfFast					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wr		%o5, 0, %fprs;
 
 #ifndef __ASSEMBLY__
@@ -78,12 +60,8 @@ static inline void save_and_clear_fpu(void) {
 "		" : : "i" (FPRS_FEF|FPRS_DU) :
 		"o5", "g1", "g2", "g3", "g7", "cc");
 }
-<<<<<<< HEAD
-extern int vis_emul(struct pt_regs *, unsigned int);
-=======
 
 int vis_emul(struct pt_regs *, unsigned int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* _SPARC64_ASI_H */

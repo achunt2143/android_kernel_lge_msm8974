@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-/*
- * OMAP4 PRM module functions
- *
- * Copyright (C) 2011 Texas Instruments, Inc.
- * Copyright (C) 2010 Nokia Corporation
- * Benoît Cousson
- * Paul Walmsley
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * OMAP4 PRM module functions
@@ -25,36 +10,19 @@
  */
 
 #include <linux/cpu_pm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/delay.h>
 #include <linux/errno.h>
 #include <linux/err.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-
-#include <plat/cpu.h>
-#include <plat/irqs.h>
-#include <plat/prcm.h>
-
-=======
 #include <linux/of_irq.h>
 #include <linux/of.h>
 
 #include "soc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iomap.h"
 #include "common.h"
 #include "vp.h"
 #include "prm44xx.h"
-<<<<<<< HEAD
-#include "prm-regbits-44xx.h"
-#include "prcm44xx.h"
-#include "prminst44xx.h"
-
-static const struct omap_prcm_irq omap4_prcm_irqs[] = {
-	OMAP_PRCM_IRQ("wkup",   0,      0),
-=======
 #include "prcm43xx.h"
 #include "prm-regbits-44xx.h"
 #include "prcm44xx.h"
@@ -71,30 +39,20 @@ static void omap44xx_prm_restore_irqen(u32 *saved_mask);
 static void omap44xx_prm_reconfigure_io_chain(void);
 
 static const struct omap_prcm_irq omap4_prcm_irqs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OMAP_PRCM_IRQ("io",     9,      1),
 };
 
 static struct omap_prcm_irq_setup omap4_prcm_irq_setup = {
 	.ack			= OMAP4_PRM_IRQSTATUS_MPU_OFFSET,
 	.mask			= OMAP4_PRM_IRQENABLE_MPU_OFFSET,
-<<<<<<< HEAD
-	.nr_regs		= 2,
-	.irqs			= omap4_prcm_irqs,
-	.nr_irqs		= ARRAY_SIZE(omap4_prcm_irqs),
-	.irq			= OMAP44XX_IRQ_PRCM,
-=======
 	.pm_ctrl		= OMAP4_PRM_IO_PMCTRL_OFFSET,
 	.nr_regs		= 2,
 	.irqs			= omap4_prcm_irqs,
 	.nr_irqs		= ARRAY_SIZE(omap4_prcm_irqs),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read_pending_irqs	= &omap44xx_prm_read_pending_irqs,
 	.ocp_barrier		= &omap44xx_prm_ocp_barrier,
 	.save_and_clear_irqen	= &omap44xx_prm_save_and_clear_irqen,
 	.restore_irqen		= &omap44xx_prm_restore_irqen,
-<<<<<<< HEAD
-=======
 	.reconfigure_io_chain	= &omap44xx_prm_reconfigure_io_chain,
 };
 
@@ -130,27 +88,11 @@ static struct prm_reset_src_map omap44xx_prm_reset_src_map[] = {
 	{ OMAP4430_ICEPICK_RST_SHIFT, OMAP_ICEPICK_RST_SRC_ID_SHIFT },
 	{ OMAP4430_C2C_RST_SHIFT, OMAP_C2C_RST_SRC_ID_SHIFT },
 	{ -1, -1 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* PRM low-level functions */
 
 /* Read a register in a CM/PRM instance in the PRM module */
-<<<<<<< HEAD
-u32 omap4_prm_read_inst_reg(s16 inst, u16 reg)
-{
-	return __raw_readl(OMAP44XX_PRM_REGADDR(inst, reg));
-}
-
-/* Write into a register in a CM/PRM instance in the PRM module */
-void omap4_prm_write_inst_reg(u32 val, s16 inst, u16 reg)
-{
-	__raw_writel(val, OMAP44XX_PRM_REGADDR(inst, reg));
-}
-
-/* Read-modify-write a register in a PRM module. Caller must lock */
-u32 omap4_prm_rmw_inst_reg_bits(u32 mask, u32 bits, s16 inst, s16 reg)
-=======
 static u32 omap4_prm_read_inst_reg(s16 inst, u16 reg)
 {
 	return readl_relaxed(prm_base.va + inst + reg);
@@ -164,7 +106,6 @@ static void omap4_prm_write_inst_reg(u32 val, s16 inst, u16 reg)
 
 /* Read-modify-write a register in a PRM module. Caller must lock */
 static u32 omap4_prm_rmw_inst_reg_bits(u32 mask, u32 bits, s16 inst, s16 reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 v;
 
@@ -203,11 +144,7 @@ static struct omap4_vp omap4_vp[] = {
 	},
 };
 
-<<<<<<< HEAD
-u32 omap4_prm_vp_check_txdone(u8 vp_id)
-=======
 static u32 omap4_prm_vp_check_txdone(u8 vp_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct omap4_vp *vp = &omap4_vp[vp_id];
 	u32 irqstatus;
@@ -218,11 +155,7 @@ static u32 omap4_prm_vp_check_txdone(u8 vp_id)
 	return irqstatus & vp->tranxdone_status;
 }
 
-<<<<<<< HEAD
-void omap4_prm_vp_clear_txdone(u8 vp_id)
-=======
 static void omap4_prm_vp_clear_txdone(u8 vp_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct omap4_vp *vp = &omap4_vp[vp_id];
 
@@ -234,10 +167,6 @@ static void omap4_prm_vp_clear_txdone(u8 vp_id)
 
 u32 omap4_prm_vcvp_read(u8 offset)
 {
-<<<<<<< HEAD
-	return omap4_prminst_read_inst_reg(OMAP4430_PRM_PARTITION,
-					   OMAP4430_PRM_DEVICE_INST, offset);
-=======
 	s32 inst = omap4_prmst_get_prm_dev_inst();
 
 	if (inst == PRM_INSTANCE_UNKNOWN)
@@ -245,15 +174,10 @@ u32 omap4_prm_vcvp_read(u8 offset)
 
 	return omap4_prminst_read_inst_reg(OMAP4430_PRM_PARTITION,
 					   inst, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void omap4_prm_vcvp_write(u32 val, u8 offset)
 {
-<<<<<<< HEAD
-	omap4_prminst_write_inst_reg(val, OMAP4430_PRM_PARTITION,
-				     OMAP4430_PRM_DEVICE_INST, offset);
-=======
 	s32 inst = omap4_prmst_get_prm_dev_inst();
 
 	if (inst == PRM_INSTANCE_UNKNOWN)
@@ -261,16 +185,10 @@ void omap4_prm_vcvp_write(u32 val, u8 offset)
 
 	omap4_prminst_write_inst_reg(val, OMAP4430_PRM_PARTITION,
 				     inst, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 omap4_prm_vcvp_rmw(u32 mask, u32 bits, u8 offset)
 {
-<<<<<<< HEAD
-	return omap4_prminst_rmw_inst_reg_bits(mask, bits,
-					       OMAP4430_PRM_PARTITION,
-					       OMAP4430_PRM_DEVICE_INST,
-=======
 	s32 inst = omap4_prmst_get_prm_dev_inst();
 
 	if (inst == PRM_INSTANCE_UNKNOWN)
@@ -279,7 +197,6 @@ u32 omap4_prm_vcvp_rmw(u32 mask, u32 bits, u8 offset)
 	return omap4_prminst_rmw_inst_reg_bits(mask, bits,
 					       OMAP4430_PRM_PARTITION,
 					       inst,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       offset);
 }
 
@@ -303,15 +220,6 @@ static inline u32 _read_pending_irq_reg(u16 irqen_offs, u16 irqst_offs)
  * MPU IRQs, and store the result into the two u32s pointed to by @events.
  * No return value.
  */
-<<<<<<< HEAD
-void omap44xx_prm_read_pending_irqs(unsigned long *events)
-{
-	events[0] = _read_pending_irq_reg(OMAP4_PRM_IRQENABLE_MPU_OFFSET,
-					  OMAP4_PRM_IRQSTATUS_MPU_OFFSET);
-
-	events[1] = _read_pending_irq_reg(OMAP4_PRM_IRQENABLE_MPU_2_OFFSET,
-					  OMAP4_PRM_IRQSTATUS_MPU_2_OFFSET);
-=======
 static void omap44xx_prm_read_pending_irqs(unsigned long *events)
 {
 	int i;
@@ -319,7 +227,6 @@ static void omap44xx_prm_read_pending_irqs(unsigned long *events)
 	for (i = 0; i < omap4_prcm_irq_setup.nr_regs; i++)
 		events[i] = _read_pending_irq_reg(omap4_prcm_irq_setup.mask +
 				i * 4, omap4_prcm_irq_setup.ack + i * 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -330,11 +237,7 @@ static void omap44xx_prm_read_pending_irqs(unsigned long *events)
  * block, to avoid race conditions after acknowledging or clearing IRQ
  * bits.  No return value.
  */
-<<<<<<< HEAD
-void omap44xx_prm_ocp_barrier(void)
-=======
 static void omap44xx_prm_ocp_barrier(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	omap4_prm_read_inst_reg(OMAP4430_PRM_OCP_SOCKET_INST,
 				OMAP4_REVISION_PRM_OFFSET);
@@ -351,21 +254,6 @@ static void omap44xx_prm_ocp_barrier(void)
  * interrupts reaches the PRM before returning; otherwise, spurious
  * interrupts might occur.  No return value.
  */
-<<<<<<< HEAD
-void omap44xx_prm_save_and_clear_irqen(u32 *saved_mask)
-{
-	saved_mask[0] =
-		omap4_prm_read_inst_reg(OMAP4430_PRM_OCP_SOCKET_INST,
-					OMAP4_PRM_IRQSTATUS_MPU_OFFSET);
-	saved_mask[1] =
-		omap4_prm_read_inst_reg(OMAP4430_PRM_OCP_SOCKET_INST,
-					OMAP4_PRM_IRQSTATUS_MPU_2_OFFSET);
-
-	omap4_prm_write_inst_reg(0, OMAP4430_PRM_OCP_SOCKET_INST,
-				 OMAP4_PRM_IRQENABLE_MPU_OFFSET);
-	omap4_prm_write_inst_reg(0, OMAP4430_PRM_OCP_SOCKET_INST,
-				 OMAP4_PRM_IRQENABLE_MPU_2_OFFSET);
-=======
 static void omap44xx_prm_save_and_clear_irqen(u32 *saved_mask)
 {
 	int i;
@@ -379,7 +267,6 @@ static void omap44xx_prm_save_and_clear_irqen(u32 *saved_mask)
 						reg);
 		omap4_prm_write_inst_reg(0, OMAP4430_PRM_OCP_SOCKET_INST, reg);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* OCP barrier */
 	omap4_prm_read_inst_reg(OMAP4430_PRM_OCP_SOCKET_INST,
@@ -396,23 +283,6 @@ static void omap44xx_prm_save_and_clear_irqen(u32 *saved_mask)
  * No OCP barrier should be needed here; any pending PRM interrupts will fire
  * once the writes reach the PRM.  No return value.
  */
-<<<<<<< HEAD
-void omap44xx_prm_restore_irqen(u32 *saved_mask)
-{
-	omap4_prm_write_inst_reg(saved_mask[0], OMAP4430_PRM_OCP_SOCKET_INST,
-				 OMAP4_PRM_IRQENABLE_MPU_OFFSET);
-	omap4_prm_write_inst_reg(saved_mask[1], OMAP4430_PRM_OCP_SOCKET_INST,
-				 OMAP4_PRM_IRQENABLE_MPU_2_OFFSET);
-}
-
-static int __init omap4xxx_prcm_init(void)
-{
-	if (cpu_is_omap44xx())
-		return omap_prcm_register_chain_handler(&omap4_prcm_irq_setup);
-	return 0;
-}
-subsys_initcall(omap4xxx_prcm_init);
-=======
 static void omap44xx_prm_restore_irqen(u32 *saved_mask)
 {
 	int i;
@@ -987,4 +857,3 @@ static void __exit omap44xx_prm_exit(void)
 	prm_unregister(&omap44xx_prm_ll_data);
 }
 __exitcall(omap44xx_prm_exit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

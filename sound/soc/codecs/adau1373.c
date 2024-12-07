@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Analog Devices ADAU1373 Audio Codec drive
  *
  * Copyright 2011 Analog Devices Inc.
  * Author: Lars-Peter Clausen <lars@metafoo.de>
-<<<<<<< HEAD
- *
- * Licensed under the GPL-2 or later.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -20,10 +12,6 @@
 #include <linux/pm.h>
 #include <linux/i2c.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/gcd.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -33,27 +21,17 @@
 #include <sound/adau1373.h>
 
 #include "adau1373.h"
-<<<<<<< HEAD
-=======
 #include "adau-utils.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct adau1373_dai {
 	unsigned int clk_src;
 	unsigned int sysclk;
 	bool enable_src;
-<<<<<<< HEAD
-	bool master;
-};
-
-struct adau1373 {
-=======
 	bool clock_provider;
 };
 
 struct adau1373 {
 	struct regmap *regmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct adau1373_dai dais[3];
 };
 
@@ -95,10 +73,6 @@ struct adau1373 {
 #define ADAU1373_PLL_CTRL4(x)	(0x2c + (x) * 7)
 #define ADAU1373_PLL_CTRL5(x)	(0x2d + (x) * 7)
 #define ADAU1373_PLL_CTRL6(x)	(0x2e + (x) * 7)
-<<<<<<< HEAD
-#define ADAU1373_PLL_CTRL7(x)	(0x2f + (x) * 7)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ADAU1373_HEADDECT	0x36
 #define ADAU1373_ADC_DAC_STATUS	0x37
 #define ADAU1373_ADC_CTRL	0x3c
@@ -158,11 +132,8 @@ struct adau1373 {
 #define ADAU1373_DAI_FORMAT_DSP		0x3
 
 #define ADAU1373_BCLKDIV_SOURCE		BIT(5)
-<<<<<<< HEAD
-=======
 #define ADAU1373_BCLKDIV_SR_MASK	(0x07 << 2)
 #define ADAU1373_BCLKDIV_BCLK_MASK	0x03
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ADAU1373_BCLKDIV_32		0x03
 #define ADAU1373_BCLKDIV_64		0x02
 #define ADAU1373_BCLKDIV_128		0x01
@@ -180,48 +151,6 @@ struct adau1373 {
 #define ADAU1373_EP_CTRL_MICBIAS1_OFFSET 4
 #define ADAU1373_EP_CTRL_MICBIAS2_OFFSET 2
 
-<<<<<<< HEAD
-static const uint8_t adau1373_default_regs[] = {
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 0x00 */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 0x10 */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 0x20 */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, /* 0x30 */
-	0x00, 0x00, 0x00, 0x80, 0x00, 0x01, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x0a, 0x0a, 0x0a, 0x00, /* 0x40 */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x08, 0x08, 0x08, 0x00, 0x00, 0x00, 0x00, /* 0x50 */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 0x60 */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 0x70 */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x78, 0x18, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, /* 0x80 */
-	0x00, 0xc0, 0x88, 0x7a, 0xdf, 0x20, 0x00, 0x00,
-	0x78, 0x18, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, /* 0x90 */
-	0x00, 0xc0, 0x88, 0x7a, 0xdf, 0x20, 0x00, 0x00,
-	0x78, 0x18, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, /* 0xa0 */
-	0x00, 0xc0, 0x88, 0x7a, 0xdf, 0x20, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, /* 0xb0 */
-	0xff, 0xff, 0xff, 0xff, 0xff, 0x1f, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 0xc0 */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 0xd0 */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, /* 0xe0 */
-	0x00, 0x1f, 0x0f, 0x00, 0x00,
-};
-
-static const unsigned int adau1373_out_tlv[] = {
-	TLV_DB_RANGE_HEAD(4),
-	0, 7, TLV_DB_SCALE_ITEM(-7900, 400, 1),
-	8, 15, TLV_DB_SCALE_ITEM(-4700, 300, 0),
-	16, 23, TLV_DB_SCALE_ITEM(-2300, 200, 0),
-	24, 31, TLV_DB_SCALE_ITEM(-700, 100, 0),
-};
-=======
 static const struct reg_default adau1373_reg_defaults[] = {
 	{ ADAU1373_INPUT_MODE,		0x00 },
 	{ ADAU1373_AINL_CTRL(0),	0x00 },
@@ -396,7 +325,6 @@ static const DECLARE_TLV_DB_RANGE(adau1373_out_tlv,
 	16, 23, TLV_DB_SCALE_ITEM(-2300, 200, 0),
 	24, 31, TLV_DB_SCALE_ITEM(-700, 100, 0)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const DECLARE_TLV_DB_MINMAX(adau1373_digital_tlv, -9563, 0);
 static const DECLARE_TLV_DB_SCALE(adau1373_in_pga_tlv, -1300, 100, 1);
@@ -415,17 +343,6 @@ static const char *adau1373_fdsp_sel_text[] = {
 	"Channel 5",
 };
 
-<<<<<<< HEAD
-static const SOC_ENUM_SINGLE_DECL(adau1373_drc1_channel_enum,
-	ADAU1373_FDSP_SEL1, 4, adau1373_fdsp_sel_text);
-static const SOC_ENUM_SINGLE_DECL(adau1373_drc2_channel_enum,
-	ADAU1373_FDSP_SEL1, 0, adau1373_fdsp_sel_text);
-static const SOC_ENUM_SINGLE_DECL(adau1373_drc3_channel_enum,
-	ADAU1373_FDSP_SEL2, 0, adau1373_fdsp_sel_text);
-static const SOC_ENUM_SINGLE_DECL(adau1373_hpf_channel_enum,
-	ADAU1373_FDSP_SEL3, 0, adau1373_fdsp_sel_text);
-static const SOC_ENUM_SINGLE_DECL(adau1373_bass_channel_enum,
-=======
 static SOC_ENUM_SINGLE_DECL(adau1373_drc1_channel_enum,
 	ADAU1373_FDSP_SEL1, 4, adau1373_fdsp_sel_text);
 static SOC_ENUM_SINGLE_DECL(adau1373_drc2_channel_enum,
@@ -435,7 +352,6 @@ static SOC_ENUM_SINGLE_DECL(adau1373_drc3_channel_enum,
 static SOC_ENUM_SINGLE_DECL(adau1373_hpf_channel_enum,
 	ADAU1373_FDSP_SEL3, 0, adau1373_fdsp_sel_text);
 static SOC_ENUM_SINGLE_DECL(adau1373_bass_channel_enum,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ADAU1373_FDSP_SEL4, 4, adau1373_fdsp_sel_text);
 
 static const char *adau1373_hpf_cutoff_text[] = {
@@ -444,11 +360,7 @@ static const char *adau1373_hpf_cutoff_text[] = {
 	"800Hz",
 };
 
-<<<<<<< HEAD
-static const SOC_ENUM_SINGLE_DECL(adau1373_hpf_cutoff_enum,
-=======
 static SOC_ENUM_SINGLE_DECL(adau1373_hpf_cutoff_enum,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ADAU1373_HPF_CTRL, 3, adau1373_hpf_cutoff_text);
 
 static const char *adau1373_bass_lpf_cutoff_text[] = {
@@ -467,23 +379,6 @@ static const char *adau1373_bass_hpf_cutoff_text[] = {
 	"158Hz", "232Hz", "347Hz", "520Hz",
 };
 
-<<<<<<< HEAD
-static const unsigned int adau1373_bass_tlv[] = {
-	TLV_DB_RANGE_HEAD(3),
-	0, 2, TLV_DB_SCALE_ITEM(-600, 600, 1),
-	3, 4, TLV_DB_SCALE_ITEM(950, 250, 0),
-	5, 7, TLV_DB_SCALE_ITEM(1400, 150, 0),
-};
-
-static const SOC_ENUM_SINGLE_DECL(adau1373_bass_lpf_cutoff_enum,
-	ADAU1373_BASS1, 5, adau1373_bass_lpf_cutoff_text);
-
-static const SOC_VALUE_ENUM_SINGLE_DECL(adau1373_bass_clip_level_enum,
-	ADAU1373_BASS1, 2, 7, adau1373_bass_clip_level_text,
-	adau1373_bass_clip_level_values);
-
-static const SOC_ENUM_SINGLE_DECL(adau1373_bass_hpf_cutoff_enum,
-=======
 static const DECLARE_TLV_DB_RANGE(adau1373_bass_tlv,
 	0, 2, TLV_DB_SCALE_ITEM(-600, 600, 1),
 	3, 4, TLV_DB_SCALE_ITEM(950, 250, 0),
@@ -498,7 +393,6 @@ static SOC_VALUE_ENUM_SINGLE_DECL(adau1373_bass_clip_level_enum,
 	adau1373_bass_clip_level_values);
 
 static SOC_ENUM_SINGLE_DECL(adau1373_bass_hpf_cutoff_enum,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ADAU1373_BASS1, 0, adau1373_bass_hpf_cutoff_text);
 
 static const char *adau1373_3d_level_text[] = {
@@ -512,18 +406,6 @@ static const char *adau1373_3d_cutoff_text[] = {
 	"0.16875 fs", "0.27083 fs"
 };
 
-<<<<<<< HEAD
-static const SOC_ENUM_SINGLE_DECL(adau1373_3d_level_enum,
-	ADAU1373_3D_CTRL1, 4, adau1373_3d_level_text);
-static const SOC_ENUM_SINGLE_DECL(adau1373_3d_cutoff_enum,
-	ADAU1373_3D_CTRL1, 0, adau1373_3d_cutoff_text);
-
-static const unsigned int adau1373_3d_tlv[] = {
-	TLV_DB_RANGE_HEAD(2),
-	0, 0, TLV_DB_SCALE_ITEM(0, 0, 0),
-	1, 7, TLV_DB_LINEAR_ITEM(-1800, -120),
-};
-=======
 static SOC_ENUM_SINGLE_DECL(adau1373_3d_level_enum,
 	ADAU1373_3D_CTRL1, 4, adau1373_3d_level_text);
 static SOC_ENUM_SINGLE_DECL(adau1373_3d_cutoff_enum,
@@ -533,7 +415,6 @@ static const DECLARE_TLV_DB_RANGE(adau1373_3d_tlv,
 	0, 0, TLV_DB_SCALE_ITEM(0, 0, 0),
 	1, 7, TLV_DB_LINEAR_ITEM(-1800, -120)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *adau1373_lr_mux_text[] = {
 	"Mute",
@@ -542,19 +423,11 @@ static const char *adau1373_lr_mux_text[] = {
 	"Stereo",
 };
 
-<<<<<<< HEAD
-static const SOC_ENUM_SINGLE_DECL(adau1373_lineout1_lr_mux_enum,
-	ADAU1373_OUTPUT_CTRL, 4, adau1373_lr_mux_text);
-static const SOC_ENUM_SINGLE_DECL(adau1373_lineout2_lr_mux_enum,
-	ADAU1373_OUTPUT_CTRL, 6, adau1373_lr_mux_text);
-static const SOC_ENUM_SINGLE_DECL(adau1373_speaker_lr_mux_enum,
-=======
 static SOC_ENUM_SINGLE_DECL(adau1373_lineout1_lr_mux_enum,
 	ADAU1373_OUTPUT_CTRL, 4, adau1373_lr_mux_text);
 static SOC_ENUM_SINGLE_DECL(adau1373_lineout2_lr_mux_enum,
 	ADAU1373_OUTPUT_CTRL, 6, adau1373_lr_mux_text);
 static SOC_ENUM_SINGLE_DECL(adau1373_speaker_lr_mux_enum,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ADAU1373_LS_CTRL, 4, adau1373_lr_mux_text);
 
 static const struct snd_kcontrol_new adau1373_controls[] = {
@@ -642,12 +515,7 @@ static const struct snd_kcontrol_new adau1373_controls[] = {
 	SOC_ENUM("HPF Channel", adau1373_hpf_channel_enum),
 
 	SOC_ENUM("Bass HPF Cutoff", adau1373_bass_hpf_cutoff_enum),
-<<<<<<< HEAD
-	SOC_VALUE_ENUM("Bass Clip Level Threshold",
-	    adau1373_bass_clip_level_enum),
-=======
 	SOC_ENUM("Bass Clip Level Threshold", adau1373_bass_clip_level_enum),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SOC_ENUM("Bass LPF Cutoff", adau1373_bass_lpf_cutoff_enum),
 	SOC_DOUBLE("Bass Playback Switch", ADAU1373_BASS2, 0, 1, 1, 0),
 	SOC_SINGLE_TLV("Bass Playback Volume", ADAU1373_BASS2, 2, 7, 0,
@@ -679,12 +547,8 @@ static const struct snd_kcontrol_new adau1373_drc_controls[] = {
 static int adau1373_pll_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = w->codec;
-=======
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	struct adau1373 *adau1373 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int pll_id = w->name[3] - '1';
 	unsigned int val;
 
@@ -693,11 +557,7 @@ static int adau1373_pll_event(struct snd_soc_dapm_widget *w,
 	else
 		val = 0;
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, ADAU1373_PLL_CTRL6(pll_id),
-=======
 	regmap_update_bits(adau1373->regmap, ADAU1373_PLL_CTRL6(pll_id),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ADAU1373_PLL_CTRL6_PLL_EN, val);
 
 	if (SND_SOC_DAPM_EVENT_ON(event))
@@ -711,19 +571,11 @@ static const char *adau1373_decimator_text[] = {
 	"DMIC1",
 };
 
-<<<<<<< HEAD
-static const struct soc_enum adau1373_decimator_enum =
-	SOC_ENUM_SINGLE(0, 0, 2, adau1373_decimator_text);
-
-static const struct snd_kcontrol_new adau1373_decimator_mux =
-	SOC_DAPM_ENUM_VIRT("Decimator Mux", adau1373_decimator_enum);
-=======
 static SOC_ENUM_SINGLE_VIRT_DECL(adau1373_decimator_enum,
 	adau1373_decimator_text);
 
 static const struct snd_kcontrol_new adau1373_decimator_mux =
 	SOC_DAPM_ENUM("Decimator Mux", adau1373_decimator_enum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new adau1373_left_adc_mixer_controls[] = {
 	SOC_DAPM_SINGLE("DAC1 Switch", ADAU1373_LADC_MIXER, 4, 1, 0),
@@ -837,11 +689,7 @@ static const struct snd_soc_dapm_widget adau1373_dapm_widgets[] = {
 	SND_SOC_DAPM_ADC("DMIC1", NULL, ADAU1373_DIGMICCTRL, 0, 0),
 	SND_SOC_DAPM_ADC("DMIC2", NULL, ADAU1373_DIGMICCTRL, 2, 0),
 
-<<<<<<< HEAD
-	SND_SOC_DAPM_VIRT_MUX("Decimator Mux", SND_SOC_NOPM, 0, 0,
-=======
 	SND_SOC_DAPM_MUX("Decimator Mux", SND_SOC_NOPM, 0, 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		&adau1373_decimator_mux),
 
 	SND_SOC_DAPM_SUPPLY("MICBIAS2", ADAU1373_PWDN_CTRL1, 5, 0, NULL, 0),
@@ -971,23 +819,14 @@ static const struct snd_soc_dapm_widget adau1373_dapm_widgets[] = {
 static int adau1373_check_aif_clk(struct snd_soc_dapm_widget *source,
 	struct snd_soc_dapm_widget *sink)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = source->codec;
-	struct adau1373 *adau1373 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = snd_soc_dapm_to_component(source->dapm);
 	struct adau1373 *adau1373 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int dai;
 	const char *clk;
 
 	dai = sink->name[3] - '1';
 
-<<<<<<< HEAD
-	if (!adau1373->dais[dai].master)
-=======
 	if (!adau1373->dais[dai].clock_provider)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (adau1373->dais[dai].clk_src == ADAU1373_CLK_SRC_PLL1)
@@ -995,23 +834,14 @@ static int adau1373_check_aif_clk(struct snd_soc_dapm_widget *source,
 	else
 		clk = "SYSCLK2";
 
-<<<<<<< HEAD
-	return strcmp(source->name, clk) == 0;
-=======
 	return snd_soc_dapm_widget_name_cmp(source, clk) == 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int adau1373_check_src(struct snd_soc_dapm_widget *source,
 	struct snd_soc_dapm_widget *sink)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = source->codec;
-	struct adau1373 *adau1373 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = snd_soc_dapm_to_component(source->dapm);
 	struct adau1373 *adau1373 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int dai;
 
 	dai = sink->name[3] - '1';
@@ -1199,13 +1029,8 @@ static const struct snd_soc_dapm_route adau1373_dapm_routes[] = {
 static int adau1373_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-	struct adau1373 *adau1373 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = dai->component;
 	struct adau1373 *adau1373 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct adau1373_dai *adau1373_dai = &adau1373->dais[dai->id];
 	unsigned int div;
 	unsigned int freq;
@@ -1244,22 +1069,6 @@ static int adau1373_hw_params(struct snd_pcm_substream *substream,
 
 	adau1373_dai->enable_src = (div != 0);
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, ADAU1373_BCLKDIV(dai->id),
-		~ADAU1373_BCLKDIV_SOURCE, (div << 2) | ADAU1373_BCLKDIV_64);
-
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-		ctrl = ADAU1373_DAI_WLEN_16;
-		break;
-	case SNDRV_PCM_FORMAT_S20_3LE:
-		ctrl = ADAU1373_DAI_WLEN_20;
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-		ctrl = ADAU1373_DAI_WLEN_24;
-		break;
-	case SNDRV_PCM_FORMAT_S32_LE:
-=======
 	regmap_update_bits(adau1373->regmap, ADAU1373_BCLKDIV(dai->id),
 		ADAU1373_BCLKDIV_SR_MASK | ADAU1373_BCLKDIV_BCLK_MASK,
 		(div << 2) | ADAU1373_BCLKDIV_64);
@@ -1275,38 +1084,18 @@ static int adau1373_hw_params(struct snd_pcm_substream *substream,
 		ctrl = ADAU1373_DAI_WLEN_24;
 		break;
 	case 32:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ctrl = ADAU1373_DAI_WLEN_32;
 		break;
 	default:
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	return snd_soc_update_bits(codec, ADAU1373_DAI(dai->id),
-=======
 	return regmap_update_bits(adau1373->regmap, ADAU1373_DAI(dai->id),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ADAU1373_DAI_WLEN_MASK, ctrl);
 }
 
 static int adau1373_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-	struct adau1373 *adau1373 = snd_soc_codec_get_drvdata(codec);
-	struct adau1373_dai *adau1373_dai = &adau1373->dais[dai->id];
-	unsigned int ctrl;
-
-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-	case SND_SOC_DAIFMT_CBM_CFM:
-		ctrl = ADAU1373_DAI_MASTER;
-		adau1373_dai->master = true;
-		break;
-	case SND_SOC_DAIFMT_CBS_CFS:
-		ctrl = 0;
-		adau1373_dai->master = false;
-=======
 	struct snd_soc_component *component = dai->component;
 	struct adau1373 *adau1373 = snd_soc_component_get_drvdata(component);
 	struct adau1373_dai *adau1373_dai = &adau1373->dais[dai->id];
@@ -1320,7 +1109,6 @@ static int adau1373_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	case SND_SOC_DAIFMT_CBC_CFC:
 		ctrl = 0;
 		adau1373_dai->clock_provider = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -1359,11 +1147,7 @@ static int adau1373_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, ADAU1373_DAI(dai->id),
-=======
 	regmap_update_bits(adau1373->regmap, ADAU1373_DAI(dai->id),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		~ADAU1373_DAI_WLEN_MASK, ctrl);
 
 	return 0;
@@ -1372,11 +1156,7 @@ static int adau1373_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 static int adau1373_set_dai_sysclk(struct snd_soc_dai *dai,
 	int clk_id, unsigned int freq, int dir)
 {
-<<<<<<< HEAD
-	struct adau1373 *adau1373 = snd_soc_codec_get_drvdata(dai->codec);
-=======
 	struct adau1373 *adau1373 = snd_soc_component_get_drvdata(dai->component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct adau1373_dai *adau1373_dai = &adau1373->dais[dai->id];
 
 	switch (clk_id) {
@@ -1390,11 +1170,7 @@ static int adau1373_set_dai_sysclk(struct snd_soc_dai *dai,
 	adau1373_dai->sysclk = freq;
 	adau1373_dai->clk_src = clk_id;
 
-<<<<<<< HEAD
-	snd_soc_update_bits(dai->codec, ADAU1373_BCLKDIV(dai->id),
-=======
 	regmap_update_bits(adau1373->regmap, ADAU1373_BCLKDIV(dai->id),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ADAU1373_BCLKDIV_SOURCE, clk_id << 5);
 
 	return 0;
@@ -1428,11 +1204,7 @@ static struct snd_soc_dai_driver adau1373_dai_driver[] = {
 			.formats = ADAU1373_FORMATS,
 		},
 		.ops = &adau1373_dai_ops,
-<<<<<<< HEAD
-		.symmetric_rates = 1,
-=======
 		.symmetric_rate = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.id = 1,
@@ -1452,11 +1224,7 @@ static struct snd_soc_dai_driver adau1373_dai_driver[] = {
 			.formats = ADAU1373_FORMATS,
 		},
 		.ops = &adau1373_dai_ops,
-<<<<<<< HEAD
-		.symmetric_rates = 1,
-=======
 		.symmetric_rate = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.id = 2,
@@ -1476,17 +1244,6 @@ static struct snd_soc_dai_driver adau1373_dai_driver[] = {
 			.formats = ADAU1373_FORMATS,
 		},
 		.ops = &adau1373_dai_ops,
-<<<<<<< HEAD
-		.symmetric_rates = 1,
-	},
-};
-
-static int adau1373_set_pll(struct snd_soc_codec *codec, int pll_id,
-	int source, unsigned int freq_in, unsigned int freq_out)
-{
-	unsigned int dpll_div = 0;
-	unsigned int x, r, n, m, i, j, mode;
-=======
 		.symmetric_rate = 1,
 	},
 };
@@ -1498,7 +1255,6 @@ static int adau1373_set_pll(struct snd_soc_component *component, int pll_id,
 	unsigned int dpll_div = 0;
 	uint8_t pll_regs[5];
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (pll_id) {
 	case ADAU1373_PLL1:
@@ -1539,64 +1295,20 @@ static int adau1373_set_pll(struct snd_soc_component *component, int pll_id,
 		dpll_div++;
 	}
 
-<<<<<<< HEAD
-	if (freq_out % freq_in != 0) {
-		/* fout = fin * (r + (n/m)) / x */
-		x = DIV_ROUND_UP(freq_in, 13500000);
-		freq_in /= x;
-		r = freq_out / freq_in;
-		i = freq_out % freq_in;
-		j = gcd(i, freq_in);
-		n = i / j;
-		m = freq_in / j;
-		x--;
-		mode = 1;
-	} else {
-		/* fout = fin / r */
-		r = freq_out / freq_in;
-		n = 0;
-		m = 0;
-		x = 0;
-		mode = 0;
-	}
-
-	if (r < 2 || r > 8 || x > 3 || m > 0xffff || n > 0xffff)
-=======
 	ret = adau_calc_pll_cfg(freq_in, freq_out, pll_regs);
 	if (ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (dpll_div) {
 		dpll_div = 11 - dpll_div;
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, ADAU1373_PLL_CTRL6(pll_id),
-			ADAU1373_PLL_CTRL6_DPLL_BYPASS, 0);
-	} else {
-		snd_soc_update_bits(codec, ADAU1373_PLL_CTRL6(pll_id),
-=======
 		regmap_update_bits(adau1373->regmap, ADAU1373_PLL_CTRL6(pll_id),
 			ADAU1373_PLL_CTRL6_DPLL_BYPASS, 0);
 	} else {
 		regmap_update_bits(adau1373->regmap, ADAU1373_PLL_CTRL6(pll_id),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ADAU1373_PLL_CTRL6_DPLL_BYPASS,
 			ADAU1373_PLL_CTRL6_DPLL_BYPASS);
 	}
 
-<<<<<<< HEAD
-	snd_soc_write(codec, ADAU1373_DPLL_CTRL(pll_id),
-		(source << 4) | dpll_div);
-	snd_soc_write(codec, ADAU1373_PLL_CTRL1(pll_id), (m >> 8) & 0xff);
-	snd_soc_write(codec, ADAU1373_PLL_CTRL2(pll_id), m & 0xff);
-	snd_soc_write(codec, ADAU1373_PLL_CTRL3(pll_id), (n >> 8) & 0xff);
-	snd_soc_write(codec, ADAU1373_PLL_CTRL4(pll_id), n & 0xff);
-	snd_soc_write(codec, ADAU1373_PLL_CTRL5(pll_id),
-		(r << 3) | (x << 1) | mode);
-
-	/* Set sysclk to pll_rate / 4 */
-	snd_soc_update_bits(codec, ADAU1373_CLK_SRC_DIV(pll_id), 0x3f, 0x09);
-=======
 	regmap_write(adau1373->regmap, ADAU1373_DPLL_CTRL(pll_id),
 		(source << 4) | dpll_div);
 	regmap_write(adau1373->regmap, ADAU1373_PLL_CTRL1(pll_id), pll_regs[0]);
@@ -1607,26 +1319,17 @@ static int adau1373_set_pll(struct snd_soc_component *component, int pll_id,
 
 	/* Set sysclk to pll_rate / 4 */
 	regmap_update_bits(adau1373->regmap, ADAU1373_CLK_SRC_DIV(pll_id), 0x3f, 0x09);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void adau1373_load_drc_settings(struct snd_soc_codec *codec,
-=======
 static void adau1373_load_drc_settings(struct adau1373 *adau1373,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int nr, uint8_t *drc)
 {
 	unsigned int i;
 
 	for (i = 0; i < ADAU1373_DRC_SIZE; ++i)
-<<<<<<< HEAD
-		snd_soc_write(codec, ADAU1373_DRC(nr) + i, drc[i]);
-=======
 		regmap_write(adau1373->regmap, ADAU1373_DRC(nr) + i, drc[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool adau1373_valid_micbias(enum adau1373_micbias_voltage micbias)
@@ -1643,22 +1346,6 @@ static bool adau1373_valid_micbias(enum adau1373_micbias_voltage micbias)
 	return false;
 }
 
-<<<<<<< HEAD
-static int adau1373_probe(struct snd_soc_codec *codec)
-{
-	struct adau1373_platform_data *pdata = codec->dev->platform_data;
-	bool lineout_differential = false;
-	unsigned int val;
-	int ret;
-	int i;
-
-	ret = snd_soc_codec_set_cache_io(codec, 8, 8, SND_SOC_I2C);
-	if (ret) {
-		dev_err(codec->dev, "failed to set cache I/O: %d\n", ret);
-		return ret;
-	}
-
-=======
 static int adau1373_probe(struct snd_soc_component *component)
 {
 	struct adau1373 *adau1373 = snd_soc_component_get_drvdata(component);
@@ -1667,7 +1354,6 @@ static int adau1373_probe(struct snd_soc_component *component)
 	unsigned int val;
 	int i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdata) {
 		if (pdata->num_drc > ARRAY_SIZE(pdata->drc_setting))
 			return -EINVAL;
@@ -1677,19 +1363,11 @@ static int adau1373_probe(struct snd_soc_component *component)
 			return -EINVAL;
 
 		for (i = 0; i < pdata->num_drc; ++i) {
-<<<<<<< HEAD
-			adau1373_load_drc_settings(codec, i,
-				pdata->drc_setting[i]);
-		}
-
-		snd_soc_add_codec_controls(codec, adau1373_drc_controls,
-=======
 			adau1373_load_drc_settings(adau1373, i,
 				pdata->drc_setting[i]);
 		}
 
 		snd_soc_add_component_controls(component, adau1373_drc_controls,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pdata->num_drc);
 
 		val = 0;
@@ -1697,99 +1375,44 @@ static int adau1373_probe(struct snd_soc_component *component)
 			if (pdata->input_differential[i])
 				val |= BIT(i);
 		}
-<<<<<<< HEAD
-		snd_soc_write(codec, ADAU1373_INPUT_MODE, val);
-=======
 		regmap_write(adau1373->regmap, ADAU1373_INPUT_MODE, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		val = 0;
 		if (pdata->lineout_differential)
 			val |= ADAU1373_OUTPUT_CTRL_LDIFF;
 		if (pdata->lineout_ground_sense)
 			val |= ADAU1373_OUTPUT_CTRL_LNFBEN;
-<<<<<<< HEAD
-		snd_soc_write(codec, ADAU1373_OUTPUT_CTRL, val);
-
-		lineout_differential = pdata->lineout_differential;
-
-		snd_soc_write(codec, ADAU1373_EP_CTRL,
-=======
 		regmap_write(adau1373->regmap, ADAU1373_OUTPUT_CTRL, val);
 
 		lineout_differential = pdata->lineout_differential;
 
 		regmap_write(adau1373->regmap, ADAU1373_EP_CTRL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(pdata->micbias1 << ADAU1373_EP_CTRL_MICBIAS1_OFFSET) |
 			(pdata->micbias2 << ADAU1373_EP_CTRL_MICBIAS2_OFFSET));
 	}
 
 	if (!lineout_differential) {
-<<<<<<< HEAD
-		snd_soc_add_codec_controls(codec, adau1373_lineout2_controls,
-			ARRAY_SIZE(adau1373_lineout2_controls));
-	}
-
-	snd_soc_write(codec, ADAU1373_ADC_CTRL,
-=======
 		snd_soc_add_component_controls(component, adau1373_lineout2_controls,
 			ARRAY_SIZE(adau1373_lineout2_controls));
 	}
 
 	regmap_write(adau1373->regmap, ADAU1373_ADC_CTRL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    ADAU1373_ADC_CTRL_RESET_FORCE | ADAU1373_ADC_CTRL_PEAK_DETECT);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int adau1373_set_bias_level(struct snd_soc_codec *codec,
-	enum snd_soc_bias_level level)
-{
-=======
 static int adau1373_set_bias_level(struct snd_soc_component *component,
 	enum snd_soc_bias_level level)
 {
 	struct adau1373 *adau1373 = snd_soc_component_get_drvdata(component);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 		break;
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, ADAU1373_PWDN_CTRL3,
-			ADAU1373_PWDN_CTRL3_PWR_EN, ADAU1373_PWDN_CTRL3_PWR_EN);
-		break;
-	case SND_SOC_BIAS_OFF:
-		snd_soc_update_bits(codec, ADAU1373_PWDN_CTRL3,
-			ADAU1373_PWDN_CTRL3_PWR_EN, 0);
-		break;
-	}
-	codec->dapm.bias_level = level;
-	return 0;
-}
-
-static int adau1373_remove(struct snd_soc_codec *codec)
-{
-	adau1373_set_bias_level(codec, SND_SOC_BIAS_OFF);
-	return 0;
-}
-
-static int adau1373_suspend(struct snd_soc_codec *codec)
-{
-	return adau1373_set_bias_level(codec, SND_SOC_BIAS_OFF);
-}
-
-static int adau1373_resume(struct snd_soc_codec *codec)
-{
-	adau1373_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-	snd_soc_cache_sync(codec);
-=======
 		regmap_update_bits(adau1373->regmap, ADAU1373_PWDN_CTRL3,
 			ADAU1373_PWDN_CTRL3_PWR_EN, ADAU1373_PWDN_CTRL3_PWR_EN);
 		break;
@@ -1806,36 +1429,10 @@ static int adau1373_resume(struct snd_soc_component *component)
 	struct adau1373 *adau1373 = snd_soc_component_get_drvdata(component);
 
 	regcache_sync(adau1373->regmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_soc_codec_driver adau1373_codec_driver = {
-	.probe =	adau1373_probe,
-	.remove =	adau1373_remove,
-	.suspend =	adau1373_suspend,
-	.resume =	adau1373_resume,
-	.set_bias_level = adau1373_set_bias_level,
-	.idle_bias_off = true,
-	.reg_cache_size = ARRAY_SIZE(adau1373_default_regs),
-	.reg_cache_default = adau1373_default_regs,
-	.reg_word_size = sizeof(uint8_t),
-
-	.set_pll = adau1373_set_pll,
-
-	.controls = adau1373_controls,
-	.num_controls = ARRAY_SIZE(adau1373_controls),
-	.dapm_widgets = adau1373_dapm_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(adau1373_dapm_widgets),
-	.dapm_routes = adau1373_dapm_routes,
-	.num_dapm_routes = ARRAY_SIZE(adau1373_dapm_routes),
-};
-
-static int __devinit adau1373_i2c_probe(struct i2c_client *client,
-	const struct i2c_device_id *id)
-=======
 static bool adau1373_register_volatile(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
@@ -1875,7 +1472,6 @@ static const struct snd_soc_component_driver adau1373_component_driver = {
 };
 
 static int adau1373_i2c_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adau1373 *adau1373;
 	int ret;
@@ -1884,11 +1480,6 @@ static int adau1373_i2c_probe(struct i2c_client *client)
 	if (!adau1373)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	dev_set_drvdata(&client->dev, adau1373);
-
-	ret = snd_soc_register_codec(&client->dev, &adau1373_codec_driver,
-=======
 	adau1373->regmap = devm_regmap_init_i2c(client,
 		&adau1373_regmap_config);
 	if (IS_ERR(adau1373->regmap))
@@ -1900,20 +1491,10 @@ static int adau1373_i2c_probe(struct i2c_client *client)
 
 	ret = devm_snd_soc_register_component(&client->dev,
 			&adau1373_component_driver,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			adau1373_dai_driver, ARRAY_SIZE(adau1373_dai_driver));
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit adau1373_i2c_remove(struct i2c_client *client)
-{
-	snd_soc_unregister_codec(&client->dev);
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id adau1373_i2c_id[] = {
 	{ "adau1373", 0 },
 	{ }
@@ -1923,33 +1504,12 @@ MODULE_DEVICE_TABLE(i2c, adau1373_i2c_id);
 static struct i2c_driver adau1373_i2c_driver = {
 	.driver = {
 		.name = "adau1373",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe = adau1373_i2c_probe,
-	.remove = __devexit_p(adau1373_i2c_remove),
-	.id_table = adau1373_i2c_id,
-};
-
-static int __init adau1373_init(void)
-{
-	return i2c_add_driver(&adau1373_i2c_driver);
-}
-module_init(adau1373_init);
-
-static void __exit adau1373_exit(void)
-{
-	i2c_del_driver(&adau1373_i2c_driver);
-}
-module_exit(adau1373_exit);
-=======
 	},
 	.probe = adau1373_i2c_probe,
 	.id_table = adau1373_i2c_id,
 };
 
 module_i2c_driver(adau1373_i2c_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC ADAU1373 driver");
 MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");

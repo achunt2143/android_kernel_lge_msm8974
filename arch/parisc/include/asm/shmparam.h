@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASMPARISC_SHMPARAM_H
-#define _ASMPARISC_SHMPARAM_H
-
-#define __ARCH_FORCE_SHMLBA 	1
-
-#define SHMLBA 0x00400000   /* attach addr needs to be 4 Mb aligned */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASMPARISC_SHMPARAM_H
 #define _ASMPARISC_SHMPARAM_H
@@ -27,6 +19,5 @@
  */
 #define SHMLBA	   PAGE_SIZE	/* attach addr a multiple of this */
 #define SHM_COLOUR 0x00400000	/* shared mappings colouring */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASMPARISC_SHMPARAM_H */

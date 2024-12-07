@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-/******************************************************************************
-
-    AudioScience HPI driver
-    Copyright (C) 1997-2011  AudioScience Inc. <support@audioscience.com>
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of version 2 of the GNU General Public License as
-    published by the Free Software Foundation;
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /******************************************************************************
 
     AudioScience HPI driver
     Copyright (C) 1997-2014  AudioScience Inc. <support@audioscience.com>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  Hardware Programming Interface (HPI) for AudioScience
  ASI50xx, AS51xx, ASI6xxx, ASI87xx ASI89xx series adapters.
@@ -172,12 +152,9 @@ static u16 create_adapter_obj(struct hpi_adapter_obj *pao,
 
 static void delete_adapter_obj(struct hpi_adapter_obj *pao);
 
-<<<<<<< HEAD
-=======
 static int adapter_irq_query_and_clear(struct hpi_adapter_obj *pao,
 	u32 message);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void outstream_host_buffer_allocate(struct hpi_adapter_obj *pao,
 	struct hpi_message *phm, struct hpi_response *phr);
 
@@ -298,10 +275,6 @@ static void adapter_message(struct hpi_adapter_obj *pao,
 	case HPI_ADAPTER_DELETE:
 		adapter_delete(pao, phm, phr);
 		break;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		hw_message(pao, phm, phr);
 		break;
@@ -457,11 +430,7 @@ void HPI_6205(struct hpi_message *phm, struct hpi_response *phr)
 		pao = hpi_find_adapter(phm->adapter_index);
 	} else {
 		/* subsys messages don't address an adapter */
-<<<<<<< HEAD
-		_HPI_6205(NULL, phm, phr);
-=======
 		phr->error = HPI_ERROR_INVALID_OBJ_INDEX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -476,11 +445,7 @@ void HPI_6205(struct hpi_message *phm, struct hpi_response *phr)
 /* SUBSYSTEM */
 
 /** Create an adapter object and initialise it based on resource information
-<<<<<<< HEAD
- * passed in in the message
-=======
  * passed in the message
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * *** NOTE - you cannot use this function AND the FindAdapters function at the
  * same time, the application must use only one of them to get the adapters ***
  */
@@ -659,10 +624,6 @@ static u16 create_adapter_obj(struct hpi_adapter_obj *pao,
 	{
 		struct hpi_message hm;
 		struct hpi_response hr;
-<<<<<<< HEAD
-		u32 max_streams;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		HPI_DEBUG_LOG(VERBOSE, "init ADAPTER_GET_INFO\n");
 		memset(&hm, 0, sizeof(hm));
@@ -687,13 +648,6 @@ static u16 create_adapter_obj(struct hpi_adapter_obj *pao,
 		pao->type = hr.u.ax.info.adapter_type;
 		pao->index = hr.u.ax.info.adapter_index;
 
-<<<<<<< HEAD
-		max_streams =
-			hr.u.ax.info.num_outstreams +
-			hr.u.ax.info.num_instreams;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		HPI_DEBUG_LOG(VERBOSE,
 			"got adapter info type %x index %d serial %d\n",
 			hr.u.ax.info.adapter_type, hr.u.ax.info.adapter_index,
@@ -705,15 +659,12 @@ static u16 create_adapter_obj(struct hpi_adapter_obj *pao,
 
 	HPI_DEBUG_LOG(INFO, "bootload DSP OK\n");
 
-<<<<<<< HEAD
-=======
 	pao->irq_query_and_clear = adapter_irq_query_and_clear;
 	pao->instream_host_buffer_status =
 		phw->p_interface_buffer->instream_host_buffer_status;
 	pao->outstream_host_buffer_status =
 		phw->p_interface_buffer->outstream_host_buffer_status;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return hpi_add_adapter(pao);
 }
 
@@ -754,8 +705,6 @@ static void delete_adapter_obj(struct hpi_adapter_obj *pao)
 
 /*****************************************************************************/
 /* Adapter functions */
-<<<<<<< HEAD
-=======
 static int adapter_irq_query_and_clear(struct hpi_adapter_obj *pao,
 	u32 message)
 {
@@ -771,7 +720,6 @@ static int adapter_irq_query_and_clear(struct hpi_adapter_obj *pao,
 
 	return HPI_IRQ_NONE;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*****************************************************************************/
 /* OutStream Host buffer functions */
@@ -1390,19 +1338,6 @@ static u16 adapter_boot_load_dsp(struct hpi_adapter_obj *pao,
 	if (boot_code_id[1] != 0) {
 		/* DSP 1 is a C6713 */
 		/* CLKX0 <- '1' release the C6205 bootmode pulldowns */
-<<<<<<< HEAD
-		boot_loader_write_mem32(pao, 0, (0x018C0024L), 0x00002202);
-		hpios_delay_micro_seconds(100);
-		/* Reset the 6713 #1 - revB */
-		boot_loader_write_mem32(pao, 0, C6205_BAR0_TIMER1_CTL, 0);
-
-		/* dummy read every 4 words for 6205 advisory 1.4.4 */
-		boot_loader_read_mem32(pao, 0, 0);
-
-		hpios_delay_micro_seconds(100);
-		/* Release C6713 from reset - revB */
-		boot_loader_write_mem32(pao, 0, C6205_BAR0_TIMER1_CTL, 4);
-=======
 		boot_loader_write_mem32(pao, 0, 0x018C0024, 0x00002202);
 		hpios_delay_micro_seconds(100);
 		/* Reset the 6713 #1 - revB */
@@ -1418,7 +1353,6 @@ static u16 adapter_boot_load_dsp(struct hpi_adapter_obj *pao,
 		if (4 != (boot_loader_read_mem32(pao, 0,
 					(C6205_BAR0_TIMER1_CTL)) & ~8))
 			return HPI6205_ERROR_6205_REG;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hpios_delay_micro_seconds(100);
 	}
 
@@ -2166,11 +2100,7 @@ static u16 message_response_sequence(struct hpi_adapter_obj *pao,
 		return 0;
 	}
 
-<<<<<<< HEAD
-	/* Assume buffer of type struct bus_master_interface
-=======
 	/* Assume buffer of type struct bus_master_interface_62
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   is allocated "noncacheable" */
 
 	if (!wait_dsp_ack(phw, H620_HIF_IDLE, HPI6205_TIMEOUT)) {

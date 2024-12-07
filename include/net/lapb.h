@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-#ifndef _LAPB_H
-#define _LAPB_H 
-#include <linux/lapb.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LAPB_H
 #define _LAPB_H 
 #include <linux/lapb.h>
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	LAPB_HEADER_LEN	20		/* LAPB over Ethernet + a bit more */
 
@@ -98,10 +92,7 @@ struct lapb_cb {
 	unsigned short		n2, n2count;
 	unsigned short		t1, t2;
 	struct timer_list	t1timer, t2timer;
-<<<<<<< HEAD
-=======
 	bool			t1timer_running, t2timer_running;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Internal control information */
 	struct sk_buff_head	write_queue;
@@ -113,46 +104,6 @@ struct lapb_cb {
 	struct lapb_frame	frmr_data;
 	unsigned char		frmr_type;
 
-<<<<<<< HEAD
-	atomic_t		refcnt;
-};
-
-/* lapb_iface.c */
-extern void lapb_connect_confirmation(struct lapb_cb *lapb, int);
-extern void lapb_connect_indication(struct lapb_cb *lapb, int);
-extern void lapb_disconnect_confirmation(struct lapb_cb *lapb, int);
-extern void lapb_disconnect_indication(struct lapb_cb *lapb, int);
-extern int  lapb_data_indication(struct lapb_cb *lapb, struct sk_buff *);
-extern int  lapb_data_transmit(struct lapb_cb *lapb, struct sk_buff *);
-
-/* lapb_in.c */
-extern void lapb_data_input(struct lapb_cb *lapb, struct sk_buff *);
-
-/* lapb_out.c */
-extern void lapb_kick(struct lapb_cb *lapb);
-extern void lapb_transmit_buffer(struct lapb_cb *lapb, struct sk_buff *, int);
-extern void lapb_establish_data_link(struct lapb_cb *lapb);
-extern void lapb_enquiry_response(struct lapb_cb *lapb);
-extern void lapb_timeout_response(struct lapb_cb *lapb);
-extern void lapb_check_iframes_acked(struct lapb_cb *lapb, unsigned short);
-extern void lapb_check_need_response(struct lapb_cb *lapb, int, int);
-
-/* lapb_subr.c */
-extern void lapb_clear_queues(struct lapb_cb *lapb);
-extern void lapb_frames_acked(struct lapb_cb *lapb, unsigned short);
-extern void lapb_requeue_frames(struct lapb_cb *lapb);
-extern int  lapb_validate_nr(struct lapb_cb *lapb, unsigned short);
-extern int lapb_decode(struct lapb_cb *lapb, struct sk_buff *, struct lapb_frame *);
-extern void lapb_send_control(struct lapb_cb *lapb, int, int, int);
-extern void lapb_transmit_frmr(struct lapb_cb *lapb);
-
-/* lapb_timer.c */
-extern void lapb_start_t1timer(struct lapb_cb *lapb);
-extern void lapb_start_t2timer(struct lapb_cb *lapb);
-extern void lapb_stop_t1timer(struct lapb_cb *lapb);
-extern void lapb_stop_t2timer(struct lapb_cb *lapb);
-extern int  lapb_t1timer_running(struct lapb_cb *lapb);
-=======
 	spinlock_t		lock;
 	refcount_t		refcnt;
 };
@@ -192,7 +143,6 @@ void lapb_start_t2timer(struct lapb_cb *lapb);
 void lapb_stop_t1timer(struct lapb_cb *lapb);
 void lapb_stop_t2timer(struct lapb_cb *lapb);
 int lapb_t1timer_running(struct lapb_cb *lapb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Debug levels.
@@ -203,13 +153,10 @@ int lapb_t1timer_running(struct lapb_cb *lapb);
  */
 #define	LAPB_DEBUG	0
 
-<<<<<<< HEAD
-=======
 #define lapb_dbg(level, fmt, ...)			\
 do {							\
 	if (level < LAPB_DEBUG)				\
 		pr_debug(fmt, ##__VA_ARGS__);		\
 } while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,57 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: acrestyp.h - Defines, types, and structures for resource descriptors
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2011, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACRESTYP_H__
 #define __ACRESTYP_H__
 
@@ -59,11 +14,7 @@
  * Definitions for Resource Attributes
  */
 typedef u16 acpi_rs_length;	/* Resource Length field is fixed at 16 bits */
-<<<<<<< HEAD
-typedef u32 acpi_rsdesc_size;	/* Max Resource Descriptor size is (Length+3) = (64_k-1)+3 */
-=======
 typedef u32 acpi_rsdesc_size;	/* Max Resource Descriptor size is (Length+3) = (64K-1)+3 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Memory Attributes
@@ -117,16 +68,11 @@ typedef u32 acpi_rsdesc_size;	/* Max Resource Descriptor size is (Length+3) = (6
 
 #define ACPI_EXCLUSIVE                  (u8) 0x00
 #define ACPI_SHARED                     (u8) 0x01
-<<<<<<< HEAD
-#define ACPI_EXCLUSIVE_AND_WAKE         (u8) 0x02
-#define ACPI_SHARED_AND_WAKE            (u8) 0x03
-=======
 
 /* Wake */
 
 #define ACPI_NOT_WAKE_CAPABLE           (u8) 0x00
 #define ACPI_WAKE_CAPABLE               (u8) 0x01
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * DMA Attributes
@@ -193,11 +139,6 @@ struct acpi_resource_irq {
 	u8 descriptor_length;
 	u8 triggering;
 	u8 polarity;
-<<<<<<< HEAD
-	u8 sharable;
-	u8 interrupt_count;
-	u8 interrupts[1];
-=======
 	u8 shareable;
 	u8 wake_capable;
 	u8 interrupt_count;
@@ -205,7 +146,6 @@ struct acpi_resource_irq {
 		u8 interrupt;
 		 ACPI_FLEX_ARRAY(u8, interrupts);
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct acpi_resource_dma {
@@ -213,14 +153,10 @@ struct acpi_resource_dma {
 	u8 bus_master;
 	u8 transfer;
 	u8 channel_count;
-<<<<<<< HEAD
-	u8 channels[1];
-=======
 	union {
 		u8 channel;
 		 ACPI_FLEX_ARRAY(u8, channels);
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct acpi_resource_start_dependent {
@@ -264,11 +200,7 @@ struct acpi_resource_fixed_dma {
 
 struct acpi_resource_vendor {
 	u16 byte_length;
-<<<<<<< HEAD
-	u8 byte_data[1];
-=======
 	u8 byte_data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Vendor resource with UUID info (introduced in ACPI 3.0) */
@@ -277,11 +209,7 @@ struct acpi_resource_vendor_typed {
 	u16 byte_length;
 	u8 uuid_subtype;
 	u8 uuid[ACPI_UUID_LENGTH];
-<<<<<<< HEAD
-	u8 byte_data[1];
-=======
 	u8 byte_data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct acpi_resource_end_tag {
@@ -333,14 +261,11 @@ union acpi_resource_attribute {
 	u8 type_specific;
 };
 
-<<<<<<< HEAD
-=======
 struct acpi_resource_label {
 	u16 string_length;
 	char *string_ptr;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct acpi_resource_source {
 	u8 index;
 	u16 string_length;
@@ -357,63 +282,28 @@ struct acpi_resource_source {
 	u8                                      max_address_fixed; \
 	union acpi_resource_attribute           info;
 
-<<<<<<< HEAD
-struct acpi_resource_address {
-ACPI_RESOURCE_ADDRESS_COMMON};
-
-struct acpi_resource_address16 {
-	ACPI_RESOURCE_ADDRESS_COMMON u16 granularity;
-=======
 struct acpi_address16_attribute {
 	u16 granularity;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 minimum;
 	u16 maximum;
 	u16 translation_offset;
 	u16 address_length;
-<<<<<<< HEAD
-	struct acpi_resource_source resource_source;
-};
-
-struct acpi_resource_address32 {
-	ACPI_RESOURCE_ADDRESS_COMMON u32 granularity;
-=======
 };
 
 struct acpi_address32_attribute {
 	u32 granularity;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 minimum;
 	u32 maximum;
 	u32 translation_offset;
 	u32 address_length;
-<<<<<<< HEAD
-	struct acpi_resource_source resource_source;
-};
-
-struct acpi_resource_address64 {
-	ACPI_RESOURCE_ADDRESS_COMMON u64 granularity;
-	u64 minimum;
-	u64 maximum;
-	u64 translation_offset;
-	u64 address_length;
-	struct acpi_resource_source resource_source;
-};
-
-struct acpi_resource_extended_address64 {
-	ACPI_RESOURCE_ADDRESS_COMMON u8 revision_iD;
-=======
 };
 
 struct acpi_address64_attribute {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 granularity;
 	u64 minimum;
 	u64 maximum;
 	u64 translation_offset;
 	u64 address_length;
-<<<<<<< HEAD
-=======
 };
 
 struct acpi_resource_address {
@@ -437,7 +327,6 @@ struct acpi_resource_address64 {
 struct acpi_resource_extended_address64 {
 	ACPI_RESOURCE_ADDRESS_COMMON u8 revision_ID;
 	struct acpi_address64_attribute address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 type_specific;
 };
 
@@ -445,12 +334,6 @@ struct acpi_resource_extended_irq {
 	u8 producer_consumer;
 	u8 triggering;
 	u8 polarity;
-<<<<<<< HEAD
-	u8 sharable;
-	u8 interrupt_count;
-	struct acpi_resource_source resource_source;
-	u32 interrupts[1];
-=======
 	u8 shareable;
 	u8 wake_capable;
 	u8 interrupt_count;
@@ -459,7 +342,6 @@ struct acpi_resource_extended_irq {
 		u32 interrupt;
 		 ACPI_FLEX_ARRAY(u32, interrupts);
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct acpi_resource_generic_register {
@@ -475,12 +357,8 @@ struct acpi_resource_gpio {
 	u8 connection_type;
 	u8 producer_consumer;	/* For values, see Producer/Consumer above */
 	u8 pin_config;
-<<<<<<< HEAD
-	u8 sharable;		/* For values, see Interrupt Attributes above */
-=======
 	u8 shareable;		/* For values, see Interrupt Attributes above */
 	u8 wake_capable;	/* For values, see Interrupt Attributes above */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 io_restriction;
 	u8 triggering;		/* For values, see Interrupt Attributes above */
 	u8 polarity;		/* For values, see Interrupt Attributes above */
@@ -512,21 +390,14 @@ struct acpi_resource_gpio {
 #define ACPI_IO_RESTRICT_OUTPUT                 2
 #define ACPI_IO_RESTRICT_NONE_PRESERVE          3
 
-<<<<<<< HEAD
-/* Common structure for I2C, SPI, and UART serial descriptors */
-=======
 /* Common structure for I2C, SPI, UART, CSI2 serial descriptors */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_RESOURCE_SERIAL_COMMON \
 	u8                                      revision_id; \
 	u8                                      type; \
 	u8                                      producer_consumer;   /* For values, see Producer/Consumer above */\
 	u8                                      slave_mode; \
-<<<<<<< HEAD
-=======
 	u8                                      connection_sharing; \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8                                      type_revision_id; \
 	u16                                     type_data_length; \
 	u16                                     vendor_length; \
@@ -541,10 +412,7 @@ ACPI_RESOURCE_SERIAL_COMMON};
 #define ACPI_RESOURCE_SERIAL_TYPE_I2C           1
 #define ACPI_RESOURCE_SERIAL_TYPE_SPI           2
 #define ACPI_RESOURCE_SERIAL_TYPE_UART          3
-<<<<<<< HEAD
-=======
 #define ACPI_RESOURCE_SERIAL_TYPE_CSI2          4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Values for slave_mode field above */
 
@@ -647,8 +515,6 @@ struct acpi_resource_uart_serialbus {
 #define ACPI_UART_CLEAR_TO_SEND                 (1<<6)
 #define ACPI_UART_REQUEST_TO_SEND               (1<<7)
 
-<<<<<<< HEAD
-=======
 struct acpi_resource_csi2_serialbus {
 	ACPI_RESOURCE_SERIAL_COMMON u8 local_port_instance;
 	u8 phy_type;
@@ -738,7 +604,6 @@ struct acpi_resource_pin_group_config {
 	u8 *vendor_data;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ACPI_RESOURCE_TYPEs */
 
 #define ACPI_RESOURCE_TYPE_IRQ                  0
@@ -761,9 +626,6 @@ struct acpi_resource_pin_group_config {
 #define ACPI_RESOURCE_TYPE_GPIO                 17	/* ACPI 5.0 */
 #define ACPI_RESOURCE_TYPE_FIXED_DMA            18	/* ACPI 5.0 */
 #define ACPI_RESOURCE_TYPE_SERIAL_BUS           19	/* ACPI 5.0 */
-<<<<<<< HEAD
-#define ACPI_RESOURCE_TYPE_MAX                  19
-=======
 #define ACPI_RESOURCE_TYPE_PIN_FUNCTION         20	/* ACPI 6.2 */
 #define ACPI_RESOURCE_TYPE_PIN_CONFIG           21	/* ACPI 6.2 */
 #define ACPI_RESOURCE_TYPE_PIN_GROUP            22	/* ACPI 6.2 */
@@ -771,7 +633,6 @@ struct acpi_resource_pin_group_config {
 #define ACPI_RESOURCE_TYPE_PIN_GROUP_CONFIG     24	/* ACPI 6.2 */
 #define ACPI_RESOURCE_TYPE_CLOCK_INPUT          25	/* ACPI 6.5 */
 #define ACPI_RESOURCE_TYPE_MAX                  25
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Master union for resource descriptors */
 
@@ -798,9 +659,6 @@ union acpi_resource_data {
 	struct acpi_resource_i2c_serialbus i2c_serial_bus;
 	struct acpi_resource_spi_serialbus spi_serial_bus;
 	struct acpi_resource_uart_serialbus uart_serial_bus;
-<<<<<<< HEAD
-	struct acpi_resource_common_serialbus common_serial_bus;
-=======
 	struct acpi_resource_csi2_serialbus csi2_serial_bus;
 	struct acpi_resource_common_serialbus common_serial_bus;
 	struct acpi_resource_pin_function pin_function;
@@ -809,7 +667,6 @@ union acpi_resource_data {
 	struct acpi_resource_pin_group_function pin_group_function;
 	struct acpi_resource_pin_group_config pin_group_config;
 	struct acpi_resource_clock_input clock_input;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Common fields */
 
@@ -832,28 +689,20 @@ struct acpi_resource {
 #define ACPI_RS_SIZE_MIN                    (u32) ACPI_ROUND_UP_TO_NATIVE_WORD (12)
 #define ACPI_RS_SIZE(type)                  (u32) (ACPI_RS_SIZE_NO_DATA + sizeof (type))
 
-<<<<<<< HEAD
-#define ACPI_NEXT_RESOURCE(res)             (struct acpi_resource *)((u8 *) res + res->length)
-=======
 /* Macro for walking resource templates with multiple descriptors */
 
 #define ACPI_NEXT_RESOURCE(res) \
 	ACPI_ADD_PTR (struct acpi_resource, (res), (res)->length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct acpi_pci_routing_table {
 	u32 length;
 	u32 pin;
 	u64 address;		/* here for 64-bit alignment */
 	u32 source_index;
-<<<<<<< HEAD
-	char source[4];		/* pad to 64 bits so sizeof() works in all cases */
-=======
 	union {
 		char pad[4];	/* pad to 64 bits so sizeof() works in all cases */
 		 ACPI_FLEX_ARRAY(char, source);
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif				/* __ACRESTYP_H__ */

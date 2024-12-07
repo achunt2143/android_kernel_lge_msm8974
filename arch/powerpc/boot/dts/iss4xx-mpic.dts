@@ -43,11 +43,7 @@
 			d-cache-size = <32768>;
 			dcr-controller;
 			dcr-access-method = "native";
-<<<<<<< HEAD
-			status = "ok";
-=======
 			status = "okay";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		};
 		cpu@1 {
 			device_type = "cpu";
@@ -154,10 +150,6 @@
 	};
 
 	chosen {
-<<<<<<< HEAD
-		linux,stdout-path = "/plb/opb/serial@40000200";
-=======
 		stdout-path = "/plb/opb/serial@40000200";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };

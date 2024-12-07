@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
@@ -9,14 +6,6 @@
  *
  *	See the file "skfddi.c" for further information.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
@@ -30,14 +19,7 @@
 #include "h/smc.h"
 #include "h/supern_2.h"
 #include <linux/bitrev.h>
-<<<<<<< HEAD
-
-#ifndef	lint
-static const char ID_sccs[] = "@(#)fplustm.c	1.32 99/02/23 (C) SK " ;
-#endif
-=======
 #include <linux/etherdevice.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef UNUSED
 #ifdef  lint
@@ -66,22 +48,14 @@ static	char cam_warning [] = "E_SMT_004: CAM still busy\n";
 
 #define	DUMMY_READ()	smc->hw.mc_dummy = (u_short) inp(ADDR(B0_RAP))
 
-<<<<<<< HEAD
-#define	CHECK_NPP() {	unsigned k = 10000 ;\
-=======
 #define	CHECK_NPP() {	unsigned int k = 10000 ;\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			while ((inpw(FM_A(FM_STMCHN)) & FM_SNPPND) && k) k--;\
 			if (!k) { \
 				SMT_PANIC(smc,SMT_E0130, SMT_E0130_MSG) ; \
 			}	\
 		}
 
-<<<<<<< HEAD
-#define	CHECK_CAM() {	unsigned k = 10 ;\
-=======
 #define	CHECK_CAM() {	unsigned int k = 10 ;\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			while (!(inpw(FM_A(FM_AFSTAT)) & FM_DONE) && k) k--;\
 			if (!k) { \
 				SMT_PANIC(smc,SMT_E0131, SMT_E0131_MSG) ; \
@@ -375,35 +349,15 @@ static	void set_formac_addr(struct s_smc *smc)
 	long	t_requ = smc->mib.m[MAC0].fddiMACT_Req ;
 
 	outpw(FM_A(FM_SAID),my_said) ;	/* set short address */
-<<<<<<< HEAD
-	outpw(FM_A(FM_LAIL),(unsigned)((smc->hw.fddi_home_addr.a[4]<<8) +
-					smc->hw.fddi_home_addr.a[5])) ;
-	outpw(FM_A(FM_LAIC),(unsigned)((smc->hw.fddi_home_addr.a[2]<<8) +
-					smc->hw.fddi_home_addr.a[3])) ;
-	outpw(FM_A(FM_LAIM),(unsigned)((smc->hw.fddi_home_addr.a[0]<<8) +
-=======
 	outpw(FM_A(FM_LAIL),(unsigned short)((smc->hw.fddi_home_addr.a[4]<<8) +
 					smc->hw.fddi_home_addr.a[5])) ;
 	outpw(FM_A(FM_LAIC),(unsigned short)((smc->hw.fddi_home_addr.a[2]<<8) +
 					smc->hw.fddi_home_addr.a[3])) ;
 	outpw(FM_A(FM_LAIM),(unsigned short)((smc->hw.fddi_home_addr.a[0]<<8) +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					smc->hw.fddi_home_addr.a[1])) ;
 
 	outpw(FM_A(FM_SAGP),my_sagp) ;	/* set short group address */
 
-<<<<<<< HEAD
-	outpw(FM_A(FM_LAGL),(unsigned)((smc->hw.fp.group_addr.a[4]<<8) +
-					smc->hw.fp.group_addr.a[5])) ;
-	outpw(FM_A(FM_LAGC),(unsigned)((smc->hw.fp.group_addr.a[2]<<8) +
-					smc->hw.fp.group_addr.a[3])) ;
-	outpw(FM_A(FM_LAGM),(unsigned)((smc->hw.fp.group_addr.a[0]<<8) +
-					smc->hw.fp.group_addr.a[1])) ;
-
-	/* set r_request regs. (MSW & LSW of TRT ) */
-	outpw(FM_A(FM_TREQ1),(unsigned)(t_requ>>16)) ;
-	outpw(FM_A(FM_TREQ0),(unsigned)t_requ) ;
-=======
 	outpw(FM_A(FM_LAGL),(unsigned short)((smc->hw.fp.group_addr.a[4]<<8) +
 					smc->hw.fp.group_addr.a[5])) ;
 	outpw(FM_A(FM_LAGC),(unsigned short)((smc->hw.fp.group_addr.a[2]<<8) +
@@ -414,7 +368,6 @@ static	void set_formac_addr(struct s_smc *smc)
 	/* set r_request regs. (MSW & LSW of TRT ) */
 	outpw(FM_A(FM_TREQ1),(unsigned short)(t_requ>>16)) ;
 	outpw(FM_A(FM_TREQ0),(unsigned short)t_requ) ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void set_int(char *p, int l)
@@ -434,17 +387,10 @@ static void set_int(char *p, int l)
  *	append 'end of chain' pointer
  */
 static void copy_tx_mac(struct s_smc *smc, u_long td, struct fddi_mac *mac,
-<<<<<<< HEAD
-			unsigned off, int len)
-/* u_long td;		 transmit descriptor */
-/* struct fddi_mac *mac; mac frame pointer */
-/* unsigned off;	 start address within buffer memory */
-=======
 			unsigned int off, int len)
 /* u_long td;		 transmit descriptor */
 /* struct fddi_mac *mac; mac frame pointer */
 /* unsigned int off;	 start address within buffer memory */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* int len ;		 length of the frame including the FC */
 {
 	int	i ;
@@ -500,11 +446,7 @@ static void directed_beacon(struct s_smc *smc)
 	 */
 	* (char *) a = (char) ((long)DBEACON_INFO<<24L) ;
 	a[1] = 0 ;
-<<<<<<< HEAD
-	memcpy((char *)a+1,(char *) &smc->mib.m[MAC0].fddiMACUpstreamNbr,6) ;
-=======
 	memcpy((char *)a+1, (char *) &smc->mib.m[MAC0].fddiMACUpstreamNbr, ETH_ALEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	CHECK_NPP() ;
 	 /* set memory address reg for writes */
@@ -776,11 +718,7 @@ void mac2_irq(struct s_smc *smc, u_short code_s2u, u_short code_s2l)
 	if (code_s2u & FM_SMYBEC)
 		queue_event(smc,EVENT_RMT,RM_MY_BEACON) ;
 	if (change_s2u & code_s2u & FM_SLOCLM) {
-<<<<<<< HEAD
-		DB_RMTN(2,"RMT : lower claim received\n",0,0) ;
-=======
 		DB_RMTN(2, "RMT : lower claim received");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if ((code_s2u & FM_SMYCLM) && !(code_s2l & FM_SDUPCLM)) {
 		/*
@@ -800,11 +738,7 @@ void mac2_irq(struct s_smc *smc, u_short code_s2u, u_short code_s2l)
 		queue_event(smc,EVENT_RMT,RM_VALID_CLAIM) ;
 	}
 	if (change_s2u & code_s2u & FM_SHICLM) {
-<<<<<<< HEAD
-		DB_RMTN(2,"RMT : higher claim received\n",0,0) ;
-=======
 		DB_RMTN(2, "RMT : higher claim received");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if ( (code_s2l & FM_STRTEXP) ||
 	     (code_s2l & FM_STRTEXR) )
@@ -1141,11 +1075,7 @@ static struct s_fpmc* mac_get_mc_table(struct s_smc *smc,
 				slot = tb ;
 			continue ;
 		}
-<<<<<<< HEAD
-		if (memcmp((char *)&tb->a,(char *)own,6))
-=======
 		if (!ether_addr_equal((char *)&tb->a, (char *)own))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue ;
 		return tb;
 	}
@@ -1384,11 +1314,7 @@ void mac_set_rx_mode(struct s_smc *smc, int mode)
 	o Connect a UPPS ISA or EISA station to the network.
 	o Give the FORMAC of UPPS station the command to send
 	  restricted tokens until the ring becomes instable.
-<<<<<<< HEAD
-	o Now connect your test test client.
-=======
 	o Now connect your test client.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	o The restricted token monitor should detect the restricted token,
 	  and your break point will be reached.
 	o You can ovserve how the station will clean the ring.
@@ -1400,11 +1326,7 @@ void rtm_irq(struct s_smc *smc)
 	outpw(ADDR(B2_RTM_CRTL),TIM_CL_IRQ) ;		/* clear IRQ */
 	if (inpw(ADDR(B2_RTM_CRTL)) & TIM_RES_TOK) {
 		outpw(FM_A(FM_CMDREG1),FM_ICL) ;	/* force claim */
-<<<<<<< HEAD
-		DB_RMT("RMT: fddiPATHT_Rmode expired\n",0,0) ;
-=======
 		DB_RMT("RMT: fddiPATHT_Rmode expired");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AIX_EVENT(smc, (u_long) FDDI_RING_STATUS,
 				(u_long) FDDI_SMT_EVENT,
 				(u_long) FDDI_RTT, smt_get_event_word(smc));
@@ -1423,13 +1345,8 @@ void rtm_set_timer(struct s_smc *smc)
 	/*
 	 * MIB timer and hardware timer have the same resolution of 80nS
 	 */
-<<<<<<< HEAD
-	DB_RMT("RMT: setting new fddiPATHT_Rmode, t = %d ns\n",
-		(int) smc->mib.a[PATH0].fddiPATHT_Rmode,0) ;
-=======
 	DB_RMT("RMT: setting new fddiPATHT_Rmode, t = %d ns",
 	       (int)smc->mib.a[PATH0].fddiPATHT_Rmode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outpd(ADDR(B2_RTM_INI),smc->mib.a[PATH0].fddiPATHT_Rmode) ;
 }
 
@@ -1544,15 +1461,6 @@ static void smt_split_up_fifo(struct s_smc *smc)
 	smc->hw.fp.fifo.rx2_fifo_start = smc->hw.fp.fifo.tx_a0_start +
 		smc->hw.fp.fifo.tx_a0_size ;
 
-<<<<<<< HEAD
-	DB_SMT("FIFO split: mode = %x\n",smc->hw.fp.fifo.fifo_config_mode,0) ;
-	DB_SMT("rbc_ram_start =	%x	 rbc_ram_end = 	%x\n",
-		smc->hw.fp.fifo.rbc_ram_start, smc->hw.fp.fifo.rbc_ram_end) ;
-	DB_SMT("rx1_fifo_start = %x	 tx_s_start = 	%x\n",
-		smc->hw.fp.fifo.rx1_fifo_start, smc->hw.fp.fifo.tx_s_start) ;
-	DB_SMT("tx_a0_start =	%x	 rx2_fifo_start = 	%x\n",
-		smc->hw.fp.fifo.tx_a0_start, smc->hw.fp.fifo.rx2_fifo_start) ;
-=======
 	DB_SMT("FIFO split: mode = %x", smc->hw.fp.fifo.fifo_config_mode);
 	DB_SMT("rbc_ram_start =	%x	 rbc_ram_end = 	%x",
 	       smc->hw.fp.fifo.rbc_ram_start, smc->hw.fp.fifo.rbc_ram_end);
@@ -1560,7 +1468,6 @@ static void smt_split_up_fifo(struct s_smc *smc)
 	       smc->hw.fp.fifo.rx1_fifo_start, smc->hw.fp.fifo.tx_s_start);
 	DB_SMT("tx_a0_start =	%x	 rx2_fifo_start = 	%x",
 	       smc->hw.fp.fifo.tx_a0_start, smc->hw.fp.fifo.rx2_fifo_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void formac_reinit_tx(struct s_smc *smc)

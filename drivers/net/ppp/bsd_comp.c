@@ -406,11 +406,7 @@ static void *bsd_alloc (unsigned char *options, int opt_len, int decomp)
  * Allocate space for the dictionary. This may be more than one page in
  * length.
  */
-<<<<<<< HEAD
-    db->dict = vmalloc(hsize * sizeof(struct bsd_dict));
-=======
     db->dict = vmalloc(array_size(hsize, sizeof(struct bsd_dict)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (!db->dict)
       {
 	bsd_free (db);
@@ -429,11 +425,7 @@ static void *bsd_alloc (unsigned char *options, int opt_len, int decomp)
  */
     else
       {
-<<<<<<< HEAD
-        db->lens = vmalloc((maxmaxcode + 1) * sizeof(db->lens[0]));
-=======
         db->lens = vmalloc(array_size(sizeof(db->lens[0]), (maxmaxcode + 1)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!db->lens)
 	  {
 	    bsd_free (db);
@@ -444,11 +436,7 @@ static void *bsd_alloc (unsigned char *options, int opt_len, int decomp)
  * Initialize the data information for the compression code
  */
     db->totlen     = sizeof (struct bsd_db)   +
-<<<<<<< HEAD
-      		    (sizeof (struct bsd_dict) * hsize);
-=======
 		    (sizeof (struct bsd_dict) * hsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     db->hsize      = hsize;
     db->hshift     = hshift;
@@ -1178,9 +1166,6 @@ static void __exit bsdcomp_cleanup(void)
 
 module_init(bsdcomp_init);
 module_exit(bsdcomp_cleanup);
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("PPP BSD-Compress compression module");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_ALIAS("ppp-compress-" __stringify(CI_BSD_COMPRESS));

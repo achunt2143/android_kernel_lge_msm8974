@@ -1,13 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # ARM CPU Frequency scaling drivers
 #
 
-<<<<<<< HEAD
-=======
 config ARM_ALLWINNER_SUN50I_CPUFREQ_NVMEM
 	tristate "Allwinner nvmem based SUN50I CPUFreq driver"
 	depends on ARCH_SUNXI
@@ -133,34 +128,10 @@ config ARM_MEDIATEK_CPUFREQ_HW
 	  The driver implements the cpufreq interface for this HW engine.
 	  Say Y if you want to support CPUFreq HW.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ARM_OMAP2PLUS_CPUFREQ
 	bool "TI OMAP2+"
 	depends on ARCH_OMAP2PLUS
 	default ARCH_OMAP2PLUS
-<<<<<<< HEAD
-	select CPU_FREQ_TABLE
-
-config ARM_S3C2416_CPUFREQ
-	bool "S3C2416 CPU Frequency scaling support"
-	depends on CPU_S3C2416
-	help
-	  This adds the CPUFreq driver for the Samsung S3C2416 and
-	  S3C2450 SoC. The S3C2416 supports changing the rate of the
-	  armdiv clock source and also entering a so called dynamic
-	  voltage scaling mode in which it is possible to reduce the
-	  core voltage of the cpu.
-
-	  If in doubt, say N.
-
-config ARM_S3C2416_CPUFREQ_VCORESCALE
-	bool "Allow voltage scaling for S3C2416 arm core (EXPERIMENTAL)"
-	depends on ARM_S3C2416_CPUFREQ && REGULATOR && EXPERIMENTAL
-	help
-	  Enable CPU voltage scaling when entering the dvs mode.
-	  It uses information gathered through existing hardware and
-	  tests but not documented in any datasheet.
-=======
 
 config ARM_QCOM_CPUFREQ_NVMEM
 	tristate "Qualcomm nvmem based CPUFreq"
@@ -190,7 +161,6 @@ config ARM_RASPBERRYPI_CPUFREQ
 	depends on CLK_RASPBERRYPI || COMPILE_TEST
 	help
 	  This adds the CPUFreq driver for Raspberry Pi
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If in doubt, say N.
 
@@ -213,35 +183,6 @@ config ARM_S5PV210_CPUFREQ
 
 	  If in doubt, say N.
 
-<<<<<<< HEAD
-config ARM_EXYNOS_CPUFREQ
-	bool "SAMSUNG EXYNOS SoCs"
-	depends on ARCH_EXYNOS
-	default y
-	help
-	  This adds the CPUFreq driver common part for Samsung
-	  EXYNOS SoCs.
-
-	  If in doubt, say N.
-
-config ARM_EXYNOS4210_CPUFREQ
-	def_bool CPU_EXYNOS4210
-	help
-	  This adds the CPUFreq driver for Samsung EXYNOS4210
-	  SoC (S5PV310 or S5PC210).
-
-config ARM_EXYNOS4X12_CPUFREQ
-	def_bool (SOC_EXYNOS4212 || SOC_EXYNOS4412)
-	help
-	  This adds the CPUFreq driver for Samsung EXYNOS4X12
-	  SoC (EXYNOS4212 or EXYNOS4412).
-
-config ARM_EXYNOS5250_CPUFREQ
-	def_bool SOC_EXYNOS5250
-	help
-	  This adds the CPUFreq driver for Samsung EXYNOS5250
-	  SoC.
-=======
 config ARM_SA1110_CPUFREQ
 	bool
 
@@ -319,4 +260,3 @@ config ARM_PXA2xx_CPUFREQ
 	  This add the CPUFreq driver support for Intel PXA2xx SOCs.
 
 	  If in doubt, say N.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

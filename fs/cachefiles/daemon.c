@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-/* Daemon interface
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public Licence
- * as published by the Free Software Foundation; either version
- * 2 of the Licence, or (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* Daemon interface
  *
  * Copyright (C) 2007, 2021 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -39,11 +27,7 @@ static ssize_t cachefiles_daemon_read(struct file *, char __user *, size_t,
 				      loff_t *);
 static ssize_t cachefiles_daemon_write(struct file *, const char __user *,
 				       size_t, loff_t *);
-<<<<<<< HEAD
-static unsigned int cachefiles_daemon_poll(struct file *,
-=======
 static __poll_t cachefiles_daemon_poll(struct file *,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   struct poll_table_struct *);
 static int cachefiles_daemon_frun(struct cachefiles_cache *, char *);
 static int cachefiles_daemon_fcull(struct cachefiles_cache *, char *);
@@ -57,11 +41,8 @@ static int cachefiles_daemon_dir(struct cachefiles_cache *, char *);
 static int cachefiles_daemon_inuse(struct cachefiles_cache *, char *);
 static int cachefiles_daemon_secctx(struct cachefiles_cache *, char *);
 static int cachefiles_daemon_tag(struct cachefiles_cache *, char *);
-<<<<<<< HEAD
-=======
 static int cachefiles_daemon_bind(struct cachefiles_cache *, char *);
 static void cachefiles_daemon_unbind(struct cachefiles_cache *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned long cachefiles_open;
 
@@ -94,23 +75,16 @@ static const struct cachefiles_daemon_cmd cachefiles_daemon_cmds[] = {
 	{ "inuse",	cachefiles_daemon_inuse		},
 	{ "secctx",	cachefiles_daemon_secctx	},
 	{ "tag",	cachefiles_daemon_tag		},
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_CACHEFILES_ONDEMAND
 	{ "copen",	cachefiles_ondemand_copen	},
 	{ "restore",	cachefiles_ondemand_restore	},
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "",		NULL				}
 };
 
 
 /*
-<<<<<<< HEAD
- * do various checks
-=======
  * Prepare a cache for caching.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int cachefiles_daemon_open(struct inode *inode, struct file *file)
 {
@@ -134,11 +108,6 @@ static int cachefiles_daemon_open(struct inode *inode, struct file *file)
 	}
 
 	mutex_init(&cache->daemon_mutex);
-<<<<<<< HEAD
-	cache->active_nodes = RB_ROOT;
-	rwlock_init(&cache->active_lock);
-	init_waitqueue_head(&cache->daemon_pollwq);
-=======
 	init_waitqueue_head(&cache->daemon_pollwq);
 	INIT_LIST_HEAD(&cache->volumes);
 	INIT_LIST_HEAD(&cache->object_list);
@@ -146,7 +115,6 @@ static int cachefiles_daemon_open(struct inode *inode, struct file *file)
 	refcount_set(&cache->unbind_pincount, 1);
 	xa_init_flags(&cache->reqs, XA_FLAGS_ALLOC);
 	xa_init_flags(&cache->ondemand_ids, XA_FLAGS_ALLOC1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set default caching limits
 	 * - limit at 1% free space and/or free files
@@ -165,10 +133,6 @@ static int cachefiles_daemon_open(struct inode *inode, struct file *file)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * release a cache
-=======
 static void cachefiles_flush_reqs(struct cachefiles_cache *cache)
 {
 	struct xarray *xa = &cache->reqs;
@@ -218,7 +182,6 @@ void cachefiles_get_unbind_pincount(struct cachefiles_cache *cache)
 
 /*
  * Release a cache.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int cachefiles_daemon_release(struct inode *inode, struct file *file)
 {
@@ -230,52 +193,19 @@ static int cachefiles_daemon_release(struct inode *inode, struct file *file)
 
 	set_bit(CACHEFILES_DEAD, &cache->flags);
 
-<<<<<<< HEAD
-	cachefiles_daemon_unbind(cache);
-
-	ASSERT(!cache->active_nodes.rb_node);
-=======
 	if (cachefiles_in_ondemand_mode(cache))
 		cachefiles_flush_reqs(cache);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* clean up the control file interface */
 	cache->cachefilesd = NULL;
 	file->private_data = NULL;
-<<<<<<< HEAD
-	cachefiles_open = 0;
-
-	kfree(cache);
-=======
 
 	cachefiles_put_unbind_pincount(cache);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	_leave("");
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * read the cache state
- */
-static ssize_t cachefiles_daemon_read(struct file *file, char __user *_buffer,
-				      size_t buflen, loff_t *pos)
-{
-	struct cachefiles_cache *cache = file->private_data;
-	char buffer[256];
-	int n;
-
-	//_enter(",,%zu,", buflen);
-
-	if (!test_bit(CACHEFILES_READY, &cache->flags))
-		return 0;
-
-	/* check how much space the cache has */
-	cachefiles_has_space(cache, 0, 0);
-
-	/* summarise */
-=======
 static ssize_t cachefiles_do_daemon_read(struct cachefiles_cache *cache,
 					 char __user *_buffer, size_t buflen)
 {
@@ -290,7 +220,6 @@ static ssize_t cachefiles_do_daemon_read(struct cachefiles_cache *cache,
 	/* summarise */
 	f_released = atomic_xchg(&cache->f_released, 0);
 	b_released = atomic_long_xchg(&cache->b_released, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(CACHEFILES_STATE_CHANGED, &cache->flags);
 
 	n = snprintf(buffer, sizeof(buffer),
@@ -300,27 +229,18 @@ static ssize_t cachefiles_do_daemon_read(struct cachefiles_cache *cache,
 		     " fstop=%llx"
 		     " brun=%llx"
 		     " bcull=%llx"
-<<<<<<< HEAD
-		     " bstop=%llx",
-=======
 		     " bstop=%llx"
 		     " freleased=%x"
 		     " breleased=%llx",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     test_bit(CACHEFILES_CULLING, &cache->flags) ? '1' : '0',
 		     (unsigned long long) cache->frun,
 		     (unsigned long long) cache->fcull,
 		     (unsigned long long) cache->fstop,
 		     (unsigned long long) cache->brun,
 		     (unsigned long long) cache->bcull,
-<<<<<<< HEAD
-		     (unsigned long long) cache->bstop
-		     );
-=======
 		     (unsigned long long) cache->bstop,
 		     f_released,
 		     b_released);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (n > buflen)
 		return -EMSGSIZE;
@@ -332,9 +252,6 @@ static ssize_t cachefiles_do_daemon_read(struct cachefiles_cache *cache,
 }
 
 /*
-<<<<<<< HEAD
- * command the cache
-=======
  * Read the cache state.
  */
 static ssize_t cachefiles_daemon_read(struct file *file, char __user *_buffer,
@@ -355,7 +272,6 @@ static ssize_t cachefiles_daemon_read(struct file *file, char __user *_buffer,
 
 /*
  * Take a command from cachefilesd, parse it and act on it.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static ssize_t cachefiles_daemon_write(struct file *file,
 				       const char __user *_data,
@@ -374,21 +290,6 @@ static ssize_t cachefiles_daemon_write(struct file *file,
 	if (test_bit(CACHEFILES_DEAD, &cache->flags))
 		return -EIO;
 
-<<<<<<< HEAD
-	if (datalen < 0 || datalen > PAGE_SIZE - 1)
-		return -EOPNOTSUPP;
-
-	/* drag the command string into the kernel so we can parse it */
-	data = kmalloc(datalen + 1, GFP_KERNEL);
-	if (!data)
-		return -ENOMEM;
-
-	ret = -EFAULT;
-	if (copy_from_user(data, _data, datalen) != 0)
-		goto error;
-
-	data[datalen] = '\0';
-=======
 	if (datalen > PAGE_SIZE - 1)
 		return -EOPNOTSUPP;
 
@@ -396,7 +297,6 @@ static ssize_t cachefiles_daemon_write(struct file *file,
 	data = memdup_user_nul(_data, datalen);
 	if (IS_ERR(data))
 		return PTR_ERR(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = -EINVAL;
 	if (memchr(data, '\0', datalen))
@@ -449,16 +349,6 @@ found_command:
 }
 
 /*
-<<<<<<< HEAD
- * poll for culling state
- * - use POLLOUT to indicate culling state
- */
-static unsigned int cachefiles_daemon_poll(struct file *file,
-					   struct poll_table_struct *poll)
-{
-	struct cachefiles_cache *cache = file->private_data;
-	unsigned int mask;
-=======
  * Poll for culling state
  * - use EPOLLOUT to indicate culling state
  */
@@ -469,18 +359,10 @@ static __poll_t cachefiles_daemon_poll(struct file *file,
 	XA_STATE(xas, &cache->reqs, 0);
 	struct cachefiles_req *req;
 	__poll_t mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	poll_wait(file, &cache->daemon_pollwq, poll);
 	mask = 0;
 
-<<<<<<< HEAD
-	if (test_bit(CACHEFILES_STATE_CHANGED, &cache->flags))
-		mask |= POLLIN;
-
-	if (test_bit(CACHEFILES_CULLING, &cache->flags))
-		mask |= POLLOUT;
-=======
 	if (cachefiles_in_ondemand_mode(cache)) {
 		if (!xa_empty(&cache->reqs)) {
 			rcu_read_lock();
@@ -499,38 +381,24 @@ static __poll_t cachefiles_daemon_poll(struct file *file,
 
 	if (test_bit(CACHEFILES_CULLING, &cache->flags))
 		mask |= EPOLLOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mask;
 }
 
 /*
-<<<<<<< HEAD
- * give a range error for cache space constraints
-=======
  * Give a range error for cache space constraints
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - can be tail-called
  */
 static int cachefiles_daemon_range_error(struct cachefiles_cache *cache,
 					 char *args)
 {
-<<<<<<< HEAD
-	kerror("Free space limits must be in range"
-	       " 0%%<=stop<cull<run<100%%");
-=======
 	pr_err("Free space limits must be in range 0%%<=stop<cull<run<100%%\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -EINVAL;
 }
 
 /*
-<<<<<<< HEAD
- * set the percentage of files at which to stop culling
-=======
  * Set the percentage of files at which to stop culling
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - command: "frun <N>%"
  */
 static int cachefiles_daemon_frun(struct cachefiles_cache *cache, char *args)
@@ -554,11 +422,7 @@ static int cachefiles_daemon_frun(struct cachefiles_cache *cache, char *args)
 }
 
 /*
-<<<<<<< HEAD
- * set the percentage of files at which to start culling
-=======
  * Set the percentage of files at which to start culling
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - command: "fcull <N>%"
  */
 static int cachefiles_daemon_fcull(struct cachefiles_cache *cache, char *args)
@@ -582,11 +446,7 @@ static int cachefiles_daemon_fcull(struct cachefiles_cache *cache, char *args)
 }
 
 /*
-<<<<<<< HEAD
- * set the percentage of files at which to stop allocating
-=======
  * Set the percentage of files at which to stop allocating
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - command: "fstop <N>%"
  */
 static int cachefiles_daemon_fstop(struct cachefiles_cache *cache, char *args)
@@ -602,11 +462,7 @@ static int cachefiles_daemon_fstop(struct cachefiles_cache *cache, char *args)
 	if (args[0] != '%' || args[1] != '\0')
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (fstop < 0 || fstop >= cache->fcull_percent)
-=======
 	if (fstop >= cache->fcull_percent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return cachefiles_daemon_range_error(cache, args);
 
 	cache->fstop_percent = fstop;
@@ -614,11 +470,7 @@ static int cachefiles_daemon_fstop(struct cachefiles_cache *cache, char *args)
 }
 
 /*
-<<<<<<< HEAD
- * set the percentage of blocks at which to stop culling
-=======
  * Set the percentage of blocks at which to stop culling
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - command: "brun <N>%"
  */
 static int cachefiles_daemon_brun(struct cachefiles_cache *cache, char *args)
@@ -642,11 +494,7 @@ static int cachefiles_daemon_brun(struct cachefiles_cache *cache, char *args)
 }
 
 /*
-<<<<<<< HEAD
- * set the percentage of blocks at which to start culling
-=======
  * Set the percentage of blocks at which to start culling
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - command: "bcull <N>%"
  */
 static int cachefiles_daemon_bcull(struct cachefiles_cache *cache, char *args)
@@ -670,11 +518,7 @@ static int cachefiles_daemon_bcull(struct cachefiles_cache *cache, char *args)
 }
 
 /*
-<<<<<<< HEAD
- * set the percentage of blocks at which to stop allocating
-=======
  * Set the percentage of blocks at which to stop allocating
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - command: "bstop <N>%"
  */
 static int cachefiles_daemon_bstop(struct cachefiles_cache *cache, char *args)
@@ -690,11 +534,7 @@ static int cachefiles_daemon_bstop(struct cachefiles_cache *cache, char *args)
 	if (args[0] != '%' || args[1] != '\0')
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (bstop < 0 || bstop >= cache->bcull_percent)
-=======
 	if (bstop >= cache->bcull_percent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return cachefiles_daemon_range_error(cache, args);
 
 	cache->bstop_percent = bstop;
@@ -702,11 +542,7 @@ static int cachefiles_daemon_bstop(struct cachefiles_cache *cache, char *args)
 }
 
 /*
-<<<<<<< HEAD
- * set the cache directory
-=======
  * Set the cache directory
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - command: "dir <name>"
  */
 static int cachefiles_daemon_dir(struct cachefiles_cache *cache, char *args)
@@ -716,20 +552,12 @@ static int cachefiles_daemon_dir(struct cachefiles_cache *cache, char *args)
 	_enter(",%s", args);
 
 	if (!*args) {
-<<<<<<< HEAD
-		kerror("Empty directory specified");
-=======
 		pr_err("Empty directory specified\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (cache->rootdirname) {
-<<<<<<< HEAD
-		kerror("Second cache directory specified");
-=======
 		pr_err("Second cache directory specified\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EEXIST;
 	}
 
@@ -742,11 +570,7 @@ static int cachefiles_daemon_dir(struct cachefiles_cache *cache, char *args)
 }
 
 /*
-<<<<<<< HEAD
- * set the cache security context
-=======
  * Set the cache security context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - command: "secctx <ctx>"
  */
 static int cachefiles_daemon_secctx(struct cachefiles_cache *cache, char *args)
@@ -756,20 +580,12 @@ static int cachefiles_daemon_secctx(struct cachefiles_cache *cache, char *args)
 	_enter(",%s", args);
 
 	if (!*args) {
-<<<<<<< HEAD
-		kerror("Empty security context specified");
-=======
 		pr_err("Empty security context specified\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (cache->secctx) {
-<<<<<<< HEAD
-		kerror("Second security context specified");
-=======
 		pr_err("Second security context specified\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -782,11 +598,7 @@ static int cachefiles_daemon_secctx(struct cachefiles_cache *cache, char *args)
 }
 
 /*
-<<<<<<< HEAD
- * set the cache tag
-=======
  * Set the cache tag
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - command: "tag <name>"
  */
 static int cachefiles_daemon_tag(struct cachefiles_cache *cache, char *args)
@@ -796,11 +608,7 @@ static int cachefiles_daemon_tag(struct cachefiles_cache *cache, char *args)
 	_enter(",%s", args);
 
 	if (!*args) {
-<<<<<<< HEAD
-		kerror("Empty tag specified");
-=======
 		pr_err("Empty tag specified\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -816,11 +624,7 @@ static int cachefiles_daemon_tag(struct cachefiles_cache *cache, char *args)
 }
 
 /*
-<<<<<<< HEAD
- * request a node in the cache be culled from the current working directory
-=======
  * Request a node in the cache be culled from the current working directory
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - command: "cull <name>"
  */
 static int cachefiles_daemon_cull(struct cachefiles_cache *cache, char *args)
@@ -835,25 +639,11 @@ static int cachefiles_daemon_cull(struct cachefiles_cache *cache, char *args)
 		goto inval;
 
 	if (!test_bit(CACHEFILES_READY, &cache->flags)) {
-<<<<<<< HEAD
-		kerror("cull applied to unready cache");
-=======
 		pr_err("cull applied to unready cache\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
 	if (test_bit(CACHEFILES_DEAD, &cache->flags)) {
-<<<<<<< HEAD
-		kerror("cull applied to dead cache");
-		return -EIO;
-	}
-
-	/* extract the directory dentry from the cwd */
-	get_fs_pwd(current->fs, &path);
-
-	if (!S_ISDIR(path.dentry->d_inode->i_mode))
-=======
 		pr_err("cull applied to dead cache\n");
 		return -EIO;
 	}
@@ -861,7 +651,6 @@ static int cachefiles_daemon_cull(struct cachefiles_cache *cache, char *args)
 	get_fs_pwd(current->fs, &path);
 
 	if (!d_can_lookup(path.dentry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto notdir;
 
 	cachefiles_begin_secure(cache, &saved_cred);
@@ -874,28 +663,16 @@ static int cachefiles_daemon_cull(struct cachefiles_cache *cache, char *args)
 
 notdir:
 	path_put(&path);
-<<<<<<< HEAD
-	kerror("cull command requires dirfd to be a directory");
-	return -ENOTDIR;
-
-inval:
-	kerror("cull command requires dirfd and filename");
-=======
 	pr_err("cull command requires dirfd to be a directory\n");
 	return -ENOTDIR;
 
 inval:
 	pr_err("cull command requires dirfd and filename\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
 /*
-<<<<<<< HEAD
- * set debugging mode
-=======
  * Set debugging mode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - command: "debug <mask>"
  */
 static int cachefiles_daemon_debug(struct cachefiles_cache *cache, char *args)
@@ -913,20 +690,12 @@ static int cachefiles_daemon_debug(struct cachefiles_cache *cache, char *args)
 	return 0;
 
 inval:
-<<<<<<< HEAD
-	kerror("debug command requires mask");
-=======
 	pr_err("debug command requires mask\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
 /*
-<<<<<<< HEAD
- * find out whether an object in the current working directory is in use or not
-=======
  * Find out whether an object in the current working directory is in use or not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - command: "inuse <name>"
  */
 static int cachefiles_daemon_inuse(struct cachefiles_cache *cache, char *args)
@@ -941,25 +710,11 @@ static int cachefiles_daemon_inuse(struct cachefiles_cache *cache, char *args)
 		goto inval;
 
 	if (!test_bit(CACHEFILES_READY, &cache->flags)) {
-<<<<<<< HEAD
-		kerror("inuse applied to unready cache");
-=======
 		pr_err("inuse applied to unready cache\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
 	if (test_bit(CACHEFILES_DEAD, &cache->flags)) {
-<<<<<<< HEAD
-		kerror("inuse applied to dead cache");
-		return -EIO;
-	}
-
-	/* extract the directory dentry from the cwd */
-	get_fs_pwd(current->fs, &path);
-
-	if (!S_ISDIR(path.dentry->d_inode->i_mode))
-=======
 		pr_err("inuse applied to dead cache\n");
 		return -EIO;
 	}
@@ -967,7 +722,6 @@ static int cachefiles_daemon_inuse(struct cachefiles_cache *cache, char *args)
 	get_fs_pwd(current->fs, &path);
 
 	if (!d_can_lookup(path.dentry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto notdir;
 
 	cachefiles_begin_secure(cache, &saved_cred);
@@ -980,105 +734,15 @@ static int cachefiles_daemon_inuse(struct cachefiles_cache *cache, char *args)
 
 notdir:
 	path_put(&path);
-<<<<<<< HEAD
-	kerror("inuse command requires dirfd to be a directory");
-	return -ENOTDIR;
-
-inval:
-	kerror("inuse command requires dirfd and filename");
-=======
 	pr_err("inuse command requires dirfd to be a directory\n");
 	return -ENOTDIR;
 
 inval:
 	pr_err("inuse command requires dirfd and filename\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
 /*
-<<<<<<< HEAD
- * see if we have space for a number of pages and/or a number of files in the
- * cache
- */
-int cachefiles_has_space(struct cachefiles_cache *cache,
-			 unsigned fnr, unsigned bnr)
-{
-	struct kstatfs stats;
-	struct path path = {
-		.mnt	= cache->mnt,
-		.dentry	= cache->mnt->mnt_root,
-	};
-	int ret;
-
-	//_enter("{%llu,%llu,%llu,%llu,%llu,%llu},%u,%u",
-	//       (unsigned long long) cache->frun,
-	//       (unsigned long long) cache->fcull,
-	//       (unsigned long long) cache->fstop,
-	//       (unsigned long long) cache->brun,
-	//       (unsigned long long) cache->bcull,
-	//       (unsigned long long) cache->bstop,
-	//       fnr, bnr);
-
-	/* find out how many pages of blockdev are available */
-	memset(&stats, 0, sizeof(stats));
-
-	ret = vfs_statfs(&path, &stats);
-	if (ret < 0) {
-		if (ret == -EIO)
-			cachefiles_io_error(cache, "statfs failed");
-		_leave(" = %d", ret);
-		return ret;
-	}
-
-	stats.f_bavail >>= cache->bshift;
-
-	//_debug("avail %llu,%llu",
-	//       (unsigned long long) stats.f_ffree,
-	//       (unsigned long long) stats.f_bavail);
-
-	/* see if there is sufficient space */
-	if (stats.f_ffree > fnr)
-		stats.f_ffree -= fnr;
-	else
-		stats.f_ffree = 0;
-
-	if (stats.f_bavail > bnr)
-		stats.f_bavail -= bnr;
-	else
-		stats.f_bavail = 0;
-
-	ret = -ENOBUFS;
-	if (stats.f_ffree < cache->fstop ||
-	    stats.f_bavail < cache->bstop)
-		goto begin_cull;
-
-	ret = 0;
-	if (stats.f_ffree < cache->fcull ||
-	    stats.f_bavail < cache->bcull)
-		goto begin_cull;
-
-	if (test_bit(CACHEFILES_CULLING, &cache->flags) &&
-	    stats.f_ffree >= cache->frun &&
-	    stats.f_bavail >= cache->brun &&
-	    test_and_clear_bit(CACHEFILES_CULLING, &cache->flags)
-	    ) {
-		_debug("cease culling");
-		cachefiles_state_changed(cache);
-	}
-
-	//_leave(" = 0");
-	return 0;
-
-begin_cull:
-	if (!test_and_set_bit(CACHEFILES_CULLING, &cache->flags)) {
-		_debug("### CULL CACHE ###");
-		cachefiles_state_changed(cache);
-	}
-
-	_leave(" = %d", ret);
-	return ret;
-=======
  * Bind a directory as a cache
  */
 static int cachefiles_daemon_bind(struct cachefiles_cache *cache, char *args)
@@ -1159,5 +823,4 @@ static void cachefiles_daemon_unbind(struct cachefiles_cache *cache)
 	kfree(cache->tag);
 
 	_leave("");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

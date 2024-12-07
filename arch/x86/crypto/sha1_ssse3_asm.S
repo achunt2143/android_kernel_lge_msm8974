@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is a SIMD SHA-1 implementation. It requires the Intel(R) Supplemental
  * SSE3 instruction set extensions introduced in Intel Core Microarchitecture
@@ -25,21 +22,11 @@
  *
  * Converted to AT&T syntax and adapted for inclusion in the Linux kernel:
  *   Author: Mathias Krause <minipli@googlemail.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-
-=======
  */
 
 #include <linux/linkage.h>
 #include <linux/cfi_types.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CTX	%rdi	// arg1
 #define BUF	%rsi	// arg2
 #define CNT	%rdx	// arg3
@@ -47,11 +34,7 @@
 #define REG_A	%ecx
 #define REG_B	%esi
 #define REG_C	%edi
-<<<<<<< HEAD
-#define REG_D	%ebp
-=======
 #define REG_D	%r12d
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REG_E	%edx
 
 #define REG_T1	%eax
@@ -85,17 +68,6 @@
  * param: function's name
  */
 .macro SHA1_VECTOR_ASM  name
-<<<<<<< HEAD
-	.global	\name
-	.type	\name, @function
-	.align 32
-\name:
-	push	%rbx
-	push	%rbp
-	push	%r12
-
-	mov	%rsp, %r12
-=======
 	SYM_TYPED_FUNC_START(\name)
 
 	push	%rbx
@@ -103,7 +75,6 @@
 	push	%rbp
 	mov	%rsp, %rbp
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sub	$64, %rsp		# allocate workspace
 	and	$~15, %rsp		# align stack
 
@@ -122,19 +93,6 @@
 	# cleanup workspace
 	mov	$8, %ecx
 	mov	%rsp, %rdi
-<<<<<<< HEAD
-	xor	%rax, %rax
-	rep stosq
-
-	mov	%r12, %rsp		# deallocate workspace
-
-	pop	%r12
-	pop	%rbp
-	pop	%rbx
-	ret
-
-	.size	\name, .-\name
-=======
 	xor	%eax, %eax
 	rep stosq
 
@@ -145,7 +103,6 @@
 	RET
 
 	SYM_FUNC_END(\name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .endm
 
 /*
@@ -501,16 +458,6 @@ W_PRECALC_SSSE3
 	movdqu	\a,\b
 .endm
 
-<<<<<<< HEAD
-/* SSSE3 optimized implementation:
- *  extern "C" void sha1_transform_ssse3(u32 *digest, const char *data, u32 *ws,
- *                                       unsigned int rounds);
- */
-SHA1_VECTOR_ASM     sha1_transform_ssse3
-
-#ifdef SHA1_ENABLE_AVX_SUPPORT
-
-=======
 /*
  * SSSE3 optimized implementation:
  *
@@ -521,7 +468,6 @@ SHA1_VECTOR_ASM     sha1_transform_ssse3
  */
 SHA1_VECTOR_ASM     sha1_transform_ssse3
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .macro W_PRECALC_AVX
 
 .purgem W_PRECALC_00_15
@@ -602,16 +548,7 @@ W_PRECALC_AVX
 
 
 /* AVX optimized implementation:
-<<<<<<< HEAD
- *  extern "C" void sha1_transform_avx(u32 *digest, const char *data, u32 *ws,
- *                                     unsigned int rounds);
- */
-SHA1_VECTOR_ASM     sha1_transform_avx
-
-#endif
-=======
  *  extern "C" void sha1_transform_avx(struct sha1_state *state,
  *				       const u8 *data, int blocks);
  */
 SHA1_VECTOR_ASM     sha1_transform_avx
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

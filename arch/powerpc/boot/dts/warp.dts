@@ -238,11 +238,7 @@
 
 				/* This will create 52 and 53 */
 				at24@52 {
-<<<<<<< HEAD
-					compatible = "at,24c04";
-=======
 					compatible = "atmel,24c04";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					reg = <0x52>;
 				};
 			};
@@ -262,23 +258,12 @@
 			};
 
 			power-leds {
-<<<<<<< HEAD
-				compatible = "gpio-leds";
-				green {
-					gpios = <&GPIO1 0 0>;
-					default-state = "keep";
-				};
-				red {
-					gpios = <&GPIO1 1 0>;
-					default-state = "keep";
-=======
 				compatible = "warp-power-leds";
 				green {
 					gpios = <&GPIO1 0 0>;
 				};
 				red {
 					gpios = <&GPIO1 1 0>;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				};
 			};
 
@@ -317,10 +302,6 @@
 	};
 
 	chosen {
-<<<<<<< HEAD
-		linux,stdout-path = "/plb/opb/serial@ef600300";
-=======
 		stdout-path = "/plb/opb/serial@ef600300";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };

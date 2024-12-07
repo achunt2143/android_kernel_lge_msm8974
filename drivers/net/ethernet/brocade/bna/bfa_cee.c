@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-/*
- * Linux network driver for Brocade Converged Network Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- */
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Linux network driver for QLogic BR-series Converged Network Adapter.
@@ -25,7 +7,6 @@
  * Copyright (c) 2014-2015 QLogic Corporation
  * All rights reserved
  * www.qlogic.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "bfa_cee.h"
@@ -64,17 +45,7 @@ bfa_cee_format_lldp_cfg(struct bfa_cee_lldp_cfg *lldp_cfg)
 }
 
 /**
-<<<<<<< HEAD
- * bfa_cee_attr_meminfo()
- *
- * @brief Returns the size of the DMA memory needed by CEE attributes
- *
- * @param[in] void
- *
- * @return Size of DMA region
-=======
  * bfa_cee_attr_meminfo - Returns the size of the DMA memory needed by CEE attributes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static u32
 bfa_cee_attr_meminfo(void)
@@ -82,17 +53,7 @@ bfa_cee_attr_meminfo(void)
 	return roundup(sizeof(struct bfa_cee_attr), BFA_DMA_ALIGN_SZ);
 }
 /**
-<<<<<<< HEAD
- * bfa_cee_stats_meminfo()
- *
- * @brief Returns the size of the DMA memory needed by CEE stats
- *
- * @param[in] void
- *
- * @return Size of DMA region
-=======
  * bfa_cee_stats_meminfo - Returns the size of the DMA memory needed by CEE stats
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static u32
 bfa_cee_stats_meminfo(void)
@@ -101,21 +62,10 @@ bfa_cee_stats_meminfo(void)
 }
 
 /**
-<<<<<<< HEAD
- * bfa_cee_get_attr_isr()
- *
- * @brief CEE ISR for get-attributes responses from f/w
- *
- * @param[in] cee - Pointer to the CEE module
- *            status - Return status from the f/w
- *
- * @return void
-=======
  * bfa_cee_get_attr_isr - CEE ISR for get-attributes responses from f/w
  *
  * @cee: Pointer to the CEE module
  * @status: Return status from the f/w
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void
 bfa_cee_get_attr_isr(struct bfa_cee *cee, enum bfa_status status)
@@ -132,21 +82,10 @@ bfa_cee_get_attr_isr(struct bfa_cee *cee, enum bfa_status status)
 }
 
 /**
-<<<<<<< HEAD
- * bfa_cee_get_attr_isr()
- *
- * @brief CEE ISR for get-stats responses from f/w
- *
- * @param[in] cee - Pointer to the CEE module
- *            status - Return status from the f/w
- *
- * @return void
-=======
  * bfa_cee_get_stats_isr - CEE ISR for get-stats responses from f/w
  *
  * @cee: Pointer to the CEE module
  * @status: Return status from the f/w
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void
 bfa_cee_get_stats_isr(struct bfa_cee *cee, enum bfa_status status)
@@ -163,21 +102,10 @@ bfa_cee_get_stats_isr(struct bfa_cee *cee, enum bfa_status status)
 }
 
 /**
-<<<<<<< HEAD
- * bfa_cee_get_attr_isr()
- *
- * @brief CEE ISR for reset-stats responses from f/w
- *
- * @param[in] cee - Pointer to the CEE module
- *            status - Return status from the f/w
- *
- * @return void
-=======
  * bfa_cee_reset_stats_isr - CEE ISR for reset-stats responses from f/w
  *
  * @cee: Input Pointer to the CEE module
  * @status: Return status from the f/w
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void
 bfa_cee_reset_stats_isr(struct bfa_cee *cee, enum bfa_status status)
@@ -188,17 +116,7 @@ bfa_cee_reset_stats_isr(struct bfa_cee *cee, enum bfa_status status)
 		cee->cbfn.reset_stats_cbfn(cee->cbfn.reset_stats_cbarg, status);
 }
 /**
-<<<<<<< HEAD
- * bfa_nw_cee_meminfo()
- *
- * @brief Returns the size of the DMA memory needed by CEE module
- *
- * @param[in] void
- *
- * @return Size of DMA region
-=======
  * bfa_nw_cee_meminfo - Returns the size of the DMA memory needed by CEE module
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 u32
 bfa_nw_cee_meminfo(void)
@@ -207,23 +125,11 @@ bfa_nw_cee_meminfo(void)
 }
 
 /**
-<<<<<<< HEAD
- * bfa_nw_cee_mem_claim()
- *
- * @brief Initialized CEE DMA Memory
- *
- * @param[in] cee CEE module pointer
- *	      dma_kva Kernel Virtual Address of CEE DMA Memory
- *	      dma_pa  Physical Address of CEE DMA Memory
- *
- * @return void
-=======
  * bfa_nw_cee_mem_claim - Initialized CEE DMA Memory
  *
  * @cee: CEE module pointer
  * @dma_kva: Kernel Virtual Address of CEE DMA Memory
  * @dma_pa:  Physical Address of CEE DMA Memory
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void
 bfa_nw_cee_mem_claim(struct bfa_cee *cee, u8 *dma_kva, u64 dma_pa)
@@ -238,15 +144,6 @@ bfa_nw_cee_mem_claim(struct bfa_cee *cee, u8 *dma_kva, u64 dma_pa)
 }
 
 /**
-<<<<<<< HEAD
- * bfa_cee_get_attr()
- *
- * @brief	Send the request to the f/w to fetch CEE attributes.
- *
- * @param[in]	Pointer to the CEE module data structure.
- *
- * @return	Status
-=======
  * bfa_nw_cee_get_attr - Send the request to the f/w to fetch CEE attributes.
  *
  * @cee: Pointer to the CEE module data structure.
@@ -255,7 +152,6 @@ bfa_nw_cee_mem_claim(struct bfa_cee *cee, u8 *dma_kva, u64 dma_pa)
  * @cbarg: function pointer arguments
  *
  * Return: status
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum bfa_status
 bfa_nw_cee_get_attr(struct bfa_cee *cee, struct bfa_cee_attr *attr,
@@ -284,19 +180,9 @@ bfa_nw_cee_get_attr(struct bfa_cee *cee, struct bfa_cee_attr *attr,
 }
 
 /**
-<<<<<<< HEAD
- * bfa_cee_isrs()
- *
- * @brief Handles Mail-box interrupts for CEE module.
- *
- * @param[in] Pointer to the CEE module data structure.
- *
- * @return void
-=======
  * bfa_cee_isr - Handles Mail-box interrupts for CEE module.
  * @cbarg: argument passed containing pointer to the CEE module data structure.
  * @m: message pointer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static void
@@ -323,21 +209,10 @@ bfa_cee_isr(void *cbarg, struct bfi_mbmsg *m)
 }
 
 /**
-<<<<<<< HEAD
- * bfa_cee_notify()
- *
- * @brief CEE module heart-beat failure handler.
- * @brief CEE module IOC event handler.
- *
- * @param[in] IOC event type
- *
- * @return void
-=======
  * bfa_cee_notify - CEE module heart-beat failure handler.
  *
  * @arg: argument passed containing pointer to the CEE module data structure.
  * @event: IOC event type
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static void
@@ -384,19 +259,6 @@ bfa_cee_notify(void *arg, enum bfa_ioc_event event)
 }
 
 /**
-<<<<<<< HEAD
- * bfa_nw_cee_attach()
- *
- * @brief CEE module-attach API
- *
- * @param[in] cee - Pointer to the CEE module data structure
- *            ioc - Pointer to the ioc module data structure
- *            dev - Pointer to the device driver module data structure
- *                  The device driver specific mbox ISR functions have
- *                  this pointer as one of the parameters.
- *
- * @return void
-=======
  * bfa_nw_cee_attach - CEE module-attach API
  *
  * @cee: Pointer to the CEE module data structure
@@ -404,7 +266,6 @@ bfa_cee_notify(void *arg, enum bfa_ioc_event event)
  * @dev: Pointer to the device driver module data structure.
  *       The device driver specific mbox ISR functions have
  *       this pointer as one of the parameters.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void
 bfa_nw_cee_attach(struct bfa_cee *cee, struct bfa_ioc *ioc,
@@ -415,10 +276,6 @@ bfa_nw_cee_attach(struct bfa_cee *cee, struct bfa_ioc *ioc,
 	cee->ioc = ioc;
 
 	bfa_nw_ioc_mbox_regisr(cee->ioc, BFI_MC_CEE, bfa_cee_isr, cee);
-<<<<<<< HEAD
-	bfa_q_qe_init(&cee->ioc_notify);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_ioc_notify_init(&cee->ioc_notify, bfa_cee_notify, cee);
 	bfa_nw_ioc_notify_register(cee->ioc, &cee->ioc_notify);
 }

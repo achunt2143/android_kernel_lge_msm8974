@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * Code to handle x86 style IRQs plus some generic interrupt stuff.
  *
@@ -10,23 +7,6 @@
  * Copyright (C) 1999 SuSE GmbH (Philipp Rumpf, prumpf@tux.org)
  * Copyright (C) 1999-2000 Grant Grundler
  * Copyright (c) 2005 Matthew Wilcox
-<<<<<<< HEAD
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2, or (at your option)
- *    any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program; if not, write to the Free Software
- *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/bitops.h>
 #include <linux/errno.h>
@@ -34,19 +14,6 @@
 #include <linux/interrupt.h>
 #include <linux/kernel_stat.h>
 #include <linux/seq_file.h>
-<<<<<<< HEAD
-#include <linux/spinlock.h>
-#include <linux/types.h>
-#include <asm/io.h>
-
-#include <asm/smp.h>
-
-#undef PARISC_IRQ_CR16_COUNTS
-
-extern irqreturn_t timer_interrupt(int, void *);
-extern irqreturn_t ipi_interrupt(int, void *);
-
-=======
 #include <linux/types.h>
 #include <linux/sched/task_stack.h>
 #include <asm/io.h>
@@ -57,7 +24,6 @@ extern irqreturn_t ipi_interrupt(int, void *);
 
 #undef PARISC_IRQ_CR16_COUNTS
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EIEM_MASK(irq)       (1UL<<(CPU_IRQ_MAX - irq))
 
 /* Bits in EIEM correlate with cpu_irq_action[].
@@ -136,34 +102,12 @@ int cpu_check_affinity(struct irq_data *d, const struct cpumask *dest)
 	if (irqd_is_per_cpu(d))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	/* whatever mask they set, we just allow one CPU */
-	cpu_dest = first_cpu(*dest);
-
-	return cpu_dest;
-}
-
-static int cpu_set_affinity_irq(struct irq_data *d, const struct cpumask *dest,
-				bool force)
-{
-	int cpu_dest;
-
-	cpu_dest = cpu_check_affinity(d, dest);
-	if (cpu_dest < 0)
-		return -1;
-
-	cpumask_copy(d->affinity, dest);
-
-	return 0;
-}
-=======
 	cpu_dest = cpumask_first_and(dest, cpu_online_mask);
 	if (cpu_dest >= nr_cpu_ids)
 		cpu_dest = cpumask_first(cpu_online_mask);
 
 	return cpu_dest;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static struct irq_chip cpu_interrupt_type = {
@@ -172,20 +116,12 @@ static struct irq_chip cpu_interrupt_type = {
 	.irq_unmask		= cpu_unmask_irq,
 	.irq_ack		= cpu_ack_irq,
 	.irq_eoi		= cpu_eoi_irq,
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-	.irq_set_affinity	= cpu_set_affinity_irq,
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* XXX: Needs to be written.  We managed without it so far, but
 	 * we really ought to write it.
 	 */
 	.irq_retrigger	= NULL,
 };
 
-<<<<<<< HEAD
-=======
 DEFINE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
 #define irq_stats(x)		(&per_cpu(irq_stat, x))
 
@@ -235,7 +171,6 @@ int arch_show_interrupts(struct seq_file *p, int prec)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int show_interrupts(struct seq_file *p, void *v)
 {
 	int i = *(loff_t *) v, j;
@@ -261,18 +196,9 @@ int show_interrupts(struct seq_file *p, void *v)
 		if (!action)
 			goto skip;
 		seq_printf(p, "%3d: ", i);
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-		for_each_online_cpu(j)
-			seq_printf(p, "%10u ", kstat_irqs_cpu(i, j));
-#else
-		seq_printf(p, "%10u ", kstat_irqs(i));
-#endif
-=======
 
 		for_each_online_cpu(j)
 			seq_printf(p, "%10u ", irq_desc_kstat_cpu(desc, j));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		seq_printf(p, " %14s", irq_desc_get_chip(desc)->name);
 #ifndef PARISC_IRQ_CR16_COUNTS
@@ -309,12 +235,9 @@ int show_interrupts(struct seq_file *p, void *v)
 		raw_spin_unlock_irqrestore(&desc->lock, flags);
 	}
 
-<<<<<<< HEAD
-=======
 	if (i == NR_IRQS)
 		arch_show_interrupts(p, 3);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -389,11 +312,7 @@ unsigned long txn_affinity_addr(unsigned int irq, int cpu)
 {
 #ifdef CONFIG_SMP
 	struct irq_data *d = irq_get_irq_data(irq);
-<<<<<<< HEAD
-	cpumask_copy(d->affinity, cpumask_of(cpu));
-=======
 	irq_data_update_affinity(d, cpumask_of(cpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	return per_cpu(cpu_data, cpu).txn_addr;
@@ -430,10 +349,6 @@ static inline int eirr_to_irq(unsigned long eirr)
 	return (BITS_PER_LONG - bit) + TIMER_IRQ;
 }
 
-<<<<<<< HEAD
-/* ONLY called from entry.S:intr_extint() */
-void do_cpu_irq_mask(struct pt_regs *regs)
-=======
 #ifdef CONFIG_IRQSTACKS
 /*
  * IRQ STACK - used for irq handler
@@ -572,42 +487,24 @@ void do_softirq_own_stack(void)
 
 /* ONLY called from entry.S:intr_extint() */
 asmlinkage void do_cpu_irq_mask(struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pt_regs *old_regs;
 	unsigned long eirr_val;
 	int irq, cpu = smp_processor_id();
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-	struct irq_desc *desc;
-=======
 	struct irq_data *irq_data;
 #ifdef CONFIG_SMP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpumask_t dest;
 #endif
 
 	old_regs = set_irq_regs(regs);
 	local_irq_disable();
-<<<<<<< HEAD
-	irq_enter();
-=======
 	irq_enter_rcu();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	eirr_val = mfctl(23) & cpu_eiem & per_cpu(local_ack_eiem, cpu);
 	if (!eirr_val)
 		goto set_out;
 	irq = eirr_to_irq(eirr_val);
 
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-	desc = irq_to_desc(irq);
-	cpumask_copy(&dest, desc->irq_data.affinity);
-	if (irqd_is_per_cpu(&desc->irq_data) &&
-	    !cpu_isset(smp_processor_id(), dest)) {
-		int cpu = first_cpu(dest);
-=======
 	irq_data = irq_get_irq_data(irq);
 
 	/* Filter out spurious interrupts, mostly from serial port at bootup */
@@ -619,7 +516,6 @@ asmlinkage void do_cpu_irq_mask(struct pt_regs *regs)
 	if (irqd_is_per_cpu(irq_data) &&
 	    !cpumask_test_cpu(smp_processor_id(), &dest)) {
 		int cpu = cpumask_first(&dest);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		printk(KERN_DEBUG "redirecting irq %d from CPU %d to %d\n",
 		       irq, smp_processor_id(), cpu);
@@ -628,12 +524,6 @@ asmlinkage void do_cpu_irq_mask(struct pt_regs *regs)
 		goto set_out;
 	}
 #endif
-<<<<<<< HEAD
-	generic_handle_irq(irq);
-
- out:
-	irq_exit();
-=======
 	stack_overflow_check(regs);
 
 #ifdef CONFIG_IRQSTACKS
@@ -644,7 +534,6 @@ asmlinkage void do_cpu_irq_mask(struct pt_regs *regs)
 
  out:
 	irq_exit_rcu();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_irq_regs(old_regs);
 	return;
 
@@ -653,61 +542,17 @@ asmlinkage void do_cpu_irq_mask(struct pt_regs *regs)
 	goto out;
 }
 
-<<<<<<< HEAD
-static struct irqaction timer_action = {
-	.handler = timer_interrupt,
-	.name = "timer",
-	.flags = IRQF_DISABLED | IRQF_TIMER | IRQF_PERCPU | IRQF_IRQPOLL,
-};
-
-#ifdef CONFIG_SMP
-static struct irqaction ipi_action = {
-	.handler = ipi_interrupt,
-	.name = "IPI",
-	.flags = IRQF_DISABLED | IRQF_PERCPU,
-};
-#endif
-
-static void claim_cpu_irqs(void)
-{
-	int i;
-=======
 static void claim_cpu_irqs(void)
 {
 	unsigned long flags = IRQF_TIMER | IRQF_PERCPU | IRQF_IRQPOLL;
 	int i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = CPU_IRQ_BASE; i <= CPU_IRQ_MAX; i++) {
 		irq_set_chip_and_handler(i, &cpu_interrupt_type,
 					 handle_percpu_irq);
 	}
 
 	irq_set_handler(TIMER_IRQ, handle_percpu_irq);
-<<<<<<< HEAD
-	setup_irq(TIMER_IRQ, &timer_action);
-#ifdef CONFIG_SMP
-	irq_set_handler(IPI_IRQ, handle_percpu_irq);
-	setup_irq(IPI_IRQ, &ipi_action);
-#endif
-}
-
-void __init init_IRQ(void)
-{
-	local_irq_disable();	/* PARANOID - should already be disabled */
-	mtctl(~0UL, 23);	/* EIRR : clear all pending external intr */
-	claim_cpu_irqs();
-#ifdef CONFIG_SMP
-	if (!cpu_eiem)
-		cpu_eiem = EIEM_MASK(IPI_IRQ) | EIEM_MASK(TIMER_IRQ);
-#else
-	cpu_eiem = EIEM_MASK(TIMER_IRQ);
-#endif
-        set_eiem(cpu_eiem);	/* EIEM : enable all external intr */
-
-}
-
-=======
 	if (request_irq(TIMER_IRQ, timer_interrupt, flags, "timer", NULL))
 		pr_err("Failed to register timer interrupt\n");
 #ifdef CONFIG_SMP
@@ -732,4 +577,3 @@ void init_IRQ(void)
 #endif
         set_eiem(cpu_eiem);	/* EIEM : enable all external intr */
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

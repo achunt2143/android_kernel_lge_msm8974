@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-#ifndef __USBAUDIO_POWER_H
-#define __USBAUDIO_POWER_H
-
-#ifdef CONFIG_PM
-int snd_usb_autoresume(struct snd_usb_audio *chip);
-void snd_usb_autosuspend(struct snd_usb_audio *chip);
-#else
-static inline int snd_usb_autoresume(struct snd_usb_audio *chip)
-{
-	return 0;
-}
-static inline void snd_usb_autosuspend(struct snd_usb_audio *chip)
-{
-}
-#endif
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __USBAUDIO_POWER_H
 #define __USBAUDIO_POWER_H
@@ -40,6 +23,5 @@ snd_usb_find_power_domain(struct usb_host_interface *ctrl_iface,
 
 int snd_usb_autoresume(struct snd_usb_audio *chip);
 void snd_usb_autosuspend(struct snd_usb_audio *chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __USBAUDIO_POWER_H */

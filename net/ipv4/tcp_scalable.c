@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Tom Kelly's Scalable TCP
  *
  * See http://www.deneholme.net/tom/scalable/
@@ -13,25 +10,6 @@
 #include <net/tcp.h>
 
 /* These factors derived from the recommended values in the aer:
-<<<<<<< HEAD
- * .01 and and 7/8. We use 50 instead of 100 to account for
- * delayed ack.
- */
-#define TCP_SCALABLE_AI_CNT	50U
-#define TCP_SCALABLE_MD_SCALE	3
-
-static void tcp_scalable_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
-{
-	struct tcp_sock *tp = tcp_sk(sk);
-
-	if (!tcp_is_cwnd_limited(sk, in_flight))
-		return;
-
-	if (tp->snd_cwnd <= tp->snd_ssthresh)
-		tcp_slow_start(tp);
-	else
-		tcp_cong_avoid_ai(tp, min(tp->snd_cwnd, TCP_SCALABLE_AI_CNT));
-=======
  * .01 and 7/8.
  */
 #define TCP_SCALABLE_AI_CNT	100U
@@ -51,22 +29,11 @@ static void tcp_scalable_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 	}
 	tcp_cong_avoid_ai(tp, min(tcp_snd_cwnd(tp), TCP_SCALABLE_AI_CNT),
 			  acked);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 tcp_scalable_ssthresh(struct sock *sk)
 {
 	const struct tcp_sock *tp = tcp_sk(sk);
-<<<<<<< HEAD
-	return max(tp->snd_cwnd - (tp->snd_cwnd>>TCP_SCALABLE_MD_SCALE), 2U);
-}
-
-
-static struct tcp_congestion_ops tcp_scalable __read_mostly = {
-	.ssthresh	= tcp_scalable_ssthresh,
-	.cong_avoid	= tcp_scalable_cong_avoid,
-	.min_cwnd	= tcp_reno_min_cwnd,
-=======
 
 	return max(tcp_snd_cwnd(tp) - (tcp_snd_cwnd(tp)>>TCP_SCALABLE_MD_SCALE), 2U);
 }
@@ -75,7 +42,6 @@ static struct tcp_congestion_ops tcp_scalable __read_mostly = {
 	.ssthresh	= tcp_scalable_ssthresh,
 	.undo_cwnd	= tcp_reno_undo_cwnd,
 	.cong_avoid	= tcp_scalable_cong_avoid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.owner		= THIS_MODULE,
 	.name		= "scalable",

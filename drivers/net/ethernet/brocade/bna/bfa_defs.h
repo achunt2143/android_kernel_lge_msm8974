@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-/*
- * Linux network driver for Brocade Converged Network Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- */
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Linux network driver for QLogic BR-series Converged Network Adapter.
@@ -25,7 +7,6 @@
  * Copyright (c) 2014-2015 QLogic Corporation
  * All rights reserved
  * www.qlogic.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BFA_DEFS_H__
@@ -35,24 +16,11 @@
 #include "bfa_defs_status.h"
 #include "bfa_defs_mfg_comm.h"
 
-<<<<<<< HEAD
-#define BFA_STRING_32	32
-#define BFA_VERSION_LEN 64
-
-/**
- * ---------------------- adapter definitions ------------
- */
-
-/**
- * BFA adapter level attributes.
- */
-=======
 #define BFA_VERSION_LEN 64
 
 /* ---------------------- adapter definitions ------------ */
 
 /* BFA adapter level attributes. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	BFA_ADAPTER_SERIAL_NUM_LEN = STRSZ(BFA_MFG_SERIALNUM_SIZE),
 					/*
@@ -78,11 +46,7 @@ struct bfa_adapter_attr {
 	char		optrom_ver[BFA_VERSION_LEN];
 	char		os_type[BFA_ADAPTER_OS_TYPE_LEN];
 	struct bfa_mfg_vpd vpd;
-<<<<<<< HEAD
-	struct mac mac;
-=======
 	u8		mac[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8		nports;
 	u8		max_speed;
@@ -98,26 +62,14 @@ struct bfa_adapter_attr {
 	u8		trunk_capable;
 };
 
-<<<<<<< HEAD
-/**
- * ---------------------- IOC definitions ------------
- */
-=======
 /* ---------------------- IOC definitions ------------ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	BFA_IOC_DRIVER_LEN	= 16,
 	BFA_IOC_CHIP_REV_LEN	= 8,
 };
 
-<<<<<<< HEAD
-/**
- * Driver and firmware versions.
- */
-=======
 /* Driver and firmware versions. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfa_ioc_driver_attr {
 	char		driver[BFA_IOC_DRIVER_LEN];	/*!< driver name */
 	char		driver_ver[BFA_VERSION_LEN];	/*!< driver version */
@@ -127,13 +79,7 @@ struct bfa_ioc_driver_attr {
 	char		ob_ver[BFA_VERSION_LEN];	/*!< openboot version */
 };
 
-<<<<<<< HEAD
-/**
- * IOC PCI device attributes
- */
-=======
 /* IOC PCI device attributes */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfa_ioc_pci_attr {
 	u16	vendor_id;	/*!< PCI vendor ID */
 	u16	device_id;	/*!< PCI device ID */
@@ -144,13 +90,7 @@ struct bfa_ioc_pci_attr {
 	char		chip_rev[BFA_IOC_CHIP_REV_LEN];	 /*!< chip revision */
 };
 
-<<<<<<< HEAD
-/**
- * IOC states
- */
-=======
 /* IOC states */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum bfa_ioc_state {
 	BFA_IOC_UNINIT		= 1,	/*!< IOC is in uninit state */
 	BFA_IOC_RESET		= 2,	/*!< IOC is in reset state */
@@ -167,13 +107,7 @@ enum bfa_ioc_state {
 	BFA_IOC_HWFAIL		= 13,	/*!< PCI mapping doesn't exist */
 };
 
-<<<<<<< HEAD
-/**
- * IOC firmware stats
- */
-=======
 /* IOC firmware stats */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfa_fw_ioc_stats {
 	u32	enable_reqs;
 	u32	disable_reqs;
@@ -183,13 +117,7 @@ struct bfa_fw_ioc_stats {
 	u32	unknown_reqs;
 };
 
-<<<<<<< HEAD
-/**
- * IOC driver stats
- */
-=======
 /* IOC driver stats */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfa_ioc_drv_stats {
 	u32	ioc_isrs;
 	u32	ioc_enables;
@@ -205,13 +133,7 @@ struct bfa_ioc_drv_stats {
 	u32	rsvd;
 };
 
-<<<<<<< HEAD
-/**
- * IOC statistics
- */
-=======
 /* IOC statistics */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfa_ioc_stats {
 	struct bfa_ioc_drv_stats drv_stats; /*!< driver IOC stats */
 	struct bfa_fw_ioc_stats fw_stats;  /*!< firmware IOC stats */
@@ -223,13 +145,7 @@ enum bfa_ioc_type {
 	BFA_IOC_TYPE_LL		= 3,
 };
 
-<<<<<<< HEAD
-/**
- * IOC attributes returned in queries
- */
-=======
 /* IOC attributes returned in queries */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfa_ioc_attr {
 	enum bfa_ioc_type ioc_type;
 	enum bfa_ioc_state		state;		/*!< IOC state      */
@@ -240,39 +156,20 @@ struct bfa_ioc_attr {
 	u8				port_mode;	/*!< enum bfa_mode */
 	u8				cap_bm;		/*!< capability */
 	u8				port_mode_cfg;	/*!< enum bfa_mode */
-<<<<<<< HEAD
-	u8				rsvd[4];	/*!< 64bit align */
-};
-
-/**
- * Adapter capability mask definition
- */
-=======
 	u8				def_fn;		/*!< 1 if default fn */
 	u8				rsvd[3];	/*!< 64bit align */
 };
 
 /* Adapter capability mask definition */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	BFA_CM_HBA	=	0x01,
 	BFA_CM_CNA	=	0x02,
 	BFA_CM_NIC	=	0x04,
 };
 
-<<<<<<< HEAD
-/**
- * ---------------------- mfg definitions ------------
- */
-
-/**
- * Checksum size
- */
-=======
 /* ---------------------- mfg definitions ------------ */
 
 /* Checksum size */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BFA_MFG_CHKSUM_SIZE			16
 
 #define BFA_MFG_PARTNUM_SIZE			14
@@ -281,14 +178,7 @@ enum {
 #define BFA_MFG_SUPPLIER_SERIALNUM_SIZE		20
 #define BFA_MFG_SUPPLIER_REVISION_SIZE		4
 
-<<<<<<< HEAD
-#pragma pack(1)
-
-/**
- * @brief BFA adapter manufacturing block definition.
-=======
 /* BFA adapter manufacturing block definition.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * All numerical fields are in big-endian format.
  */
@@ -310,11 +200,7 @@ struct bfa_mfg_block {
 	char	supplier_partnum[STRSZ(BFA_MFG_SUPPLIER_PARTNUM_SIZE)];
 	char	supplier_serialnum[STRSZ(BFA_MFG_SUPPLIER_SERIALNUM_SIZE)];
 	char	supplier_revision[STRSZ(BFA_MFG_SUPPLIER_REVISION_SIZE)];
-<<<<<<< HEAD
-	mac_t	mfg_mac;	/* base mac address */
-=======
 	u8	mfg_mac[ETH_ALEN]; /* base mac address */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	num_mac;	/* number of mac addresses */
 	u8	rsv2;
 	u32	card_type;	/* card type          */
@@ -330,19 +216,9 @@ struct bfa_mfg_block {
 	char	initial_mode[8]; /* initial mode: hba/cna/nic */
 	u8	rsv4[84];
 	u8	md5_chksum[BFA_MFG_CHKSUM_SIZE]; /* md5 checksum */
-<<<<<<< HEAD
-};
-
-#pragma pack()
-
-/**
- * ---------------------- pci definitions ------------
- */
-=======
 } __packed;
 
 /* ---------------------- pci definitions ------------ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * PCI device ID information
@@ -359,13 +235,7 @@ enum {
 #define bfa_asic_id_ctc(device)			\
 	(bfa_asic_id_ct(device) || bfa_asic_id_ct2(device))
 
-<<<<<<< HEAD
-/**
- * PCI sub-system device and vendor ID information
- */
-=======
 /* PCI sub-system device and vendor ID information */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	BFA_PCI_FCOE_SSDEVICE_ID	= 0x14,
 	BFA_PCI_CT2_SSID_FCoE		= 0x22,

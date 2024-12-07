@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OLPC HGPK (XO-1) touchpad PS/2 mouse driver
  *
@@ -16,13 +13,6 @@
  * Copyright (c) 2003-2005 Peter Osterlund <petero2@telia.com>
  * Copyright (c) 2004 Dmitry Torokhov <dtor@mail.ru>
  * Copyright (c) 2005 Vojtech Pavlik <vojtech@suse.cz>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -248,11 +238,7 @@ static void hgpk_spewing_hack(struct psmouse *psmouse,
 		/* we're not spewing, but this packet might be the start */
 		priv->spew_flag = MAYBE_SPEWING;
 
-<<<<<<< HEAD
-		/* fall-through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case MAYBE_SPEWING:
 		priv->spew_count++;
@@ -263,11 +249,7 @@ static void hgpk_spewing_hack(struct psmouse *psmouse,
 		/* excessive spew detected, request recalibration */
 		priv->spew_flag = SPEW_DETECTED;
 
-<<<<<<< HEAD
-		/* fall-through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case SPEW_DETECTED:
 		/* only recalibrate when the overall delta to the cursor
@@ -349,16 +331,8 @@ static bool hgpk_is_byte_valid(struct psmouse *psmouse, unsigned char *packet)
 
 	if (!valid)
 		psmouse_dbg(psmouse,
-<<<<<<< HEAD
-			    "bad data, mode %d (%d) %02x %02x %02x %02x %02x %02x\n",
-			    priv->mode, pktcnt,
-			    psmouse->packet[0], psmouse->packet[1],
-			    psmouse->packet[2], psmouse->packet[3],
-			    psmouse->packet[4], psmouse->packet[5]);
-=======
 			    "bad data, mode %d (%d) %*ph\n",
 			    priv->mode, pktcnt, 6, psmouse->packet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return valid;
 }
@@ -736,12 +710,7 @@ static int hgpk_toggle_powersave(struct psmouse *psmouse, int enable)
 		 * the upper bound. (in practice, it takes about 3 loops.)
 		 */
 		for (timeo = 20; timeo > 0; timeo--) {
-<<<<<<< HEAD
-			if (!ps2_sendbyte(&psmouse->ps2dev,
-					PSMOUSE_CMD_DISABLE, 20))
-=======
 			if (!ps2_sendbyte(ps2dev, PSMOUSE_CMD_DISABLE, 20))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			msleep(25);
 		}
@@ -767,11 +736,7 @@ static int hgpk_toggle_powersave(struct psmouse *psmouse, int enable)
 		psmouse_set_state(psmouse, PSMOUSE_IGNORE);
 
 		/* probably won't see an ACK, the touchpad will be off */
-<<<<<<< HEAD
-		ps2_sendbyte(&psmouse->ps2dev, 0xec, 20);
-=======
 		ps2_sendbyte(ps2dev, 0xec, 20);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -919,11 +884,7 @@ static ssize_t hgpk_trigger_recal(struct psmouse *psmouse, void *data,
 
 	/*
 	 * We queue work instead of doing recalibration right here
-<<<<<<< HEAD
-	 * to avoid adding locking to to hgpk_force_recalibrate()
-=======
 	 * to avoid adding locking to hgpk_force_recalibrate()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * since workqueue provides serialization.
 	 */
 	psmouse_queue_work(psmouse, &priv->recalib_wq, 0);
@@ -1062,11 +1023,7 @@ static enum hgpk_model_t hgpk_get_model(struct psmouse *psmouse)
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-	psmouse_dbg(psmouse, "ID: %02x %02x %02x\n", param[0], param[1], param[2]);
-=======
 	psmouse_dbg(psmouse, "ID: %*ph\n", 3, param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* HGPK signature: 0x67, 0x00, 0x<model> */
 	if (param[0] != 0x67 || param[1] != 0x00)
@@ -1100,11 +1057,7 @@ void hgpk_module_init(void)
 						strlen(hgpk_mode_name));
 	if (hgpk_default_mode == HGPK_MODE_INVALID) {
 		hgpk_default_mode = HGPK_MODE_MOUSE;
-<<<<<<< HEAD
-		strlcpy(hgpk_mode_name, hgpk_mode_names[HGPK_MODE_MOUSE],
-=======
 		strscpy(hgpk_mode_name, hgpk_mode_names[HGPK_MODE_MOUSE],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(hgpk_mode_name));
 	}
 }

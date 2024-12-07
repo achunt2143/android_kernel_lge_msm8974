@@ -31,11 +31,7 @@ ar9003_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
 	u32 val, ctl12, ctl17;
 	u8 desc_len;
 
-<<<<<<< HEAD
-	desc_len = (AR_SREV_9462(ah) ? 0x18 : 0x17);
-=======
 	desc_len = ((AR_SREV_9462(ah) || AR_SREV_9565(ah)) ? 0x18 : 0x17);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = (ATHEROS_VENDOR_ID << AR_DescId_S) |
 	      (1 << AR_TxRxDesc_S) |
@@ -43,36 +39,6 @@ ar9003_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
 	      (i->qcu << AR_TxQcuNum_S) | desc_len;
 
 	checksum += val;
-<<<<<<< HEAD
-	ACCESS_ONCE(ads->info) = val;
-
-	checksum += i->link;
-	ACCESS_ONCE(ads->link) = i->link;
-
-	checksum += i->buf_addr[0];
-	ACCESS_ONCE(ads->data0) = i->buf_addr[0];
-	checksum += i->buf_addr[1];
-	ACCESS_ONCE(ads->data1) = i->buf_addr[1];
-	checksum += i->buf_addr[2];
-	ACCESS_ONCE(ads->data2) = i->buf_addr[2];
-	checksum += i->buf_addr[3];
-	ACCESS_ONCE(ads->data3) = i->buf_addr[3];
-
-	checksum += (val = (i->buf_len[0] << AR_BufLen_S) & AR_BufLen);
-	ACCESS_ONCE(ads->ctl3) = val;
-	checksum += (val = (i->buf_len[1] << AR_BufLen_S) & AR_BufLen);
-	ACCESS_ONCE(ads->ctl5) = val;
-	checksum += (val = (i->buf_len[2] << AR_BufLen_S) & AR_BufLen);
-	ACCESS_ONCE(ads->ctl7) = val;
-	checksum += (val = (i->buf_len[3] << AR_BufLen_S) & AR_BufLen);
-	ACCESS_ONCE(ads->ctl9) = val;
-
-	checksum = (u16) (((checksum & 0xffff) + (checksum >> 16)) & 0xffff);
-	ACCESS_ONCE(ads->ctl10) = checksum;
-
-	if (i->is_first || i->is_last) {
-		ACCESS_ONCE(ads->ctl13) = set11nTries(i->rates, 0)
-=======
 	WRITE_ONCE(ads->info, val);
 
 	checksum += i->link;
@@ -101,22 +67,10 @@ ar9003_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
 
 	if (i->is_first || i->is_last) {
 		WRITE_ONCE(ads->ctl13, set11nTries(i->rates, 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			| set11nTries(i->rates, 1)
 			| set11nTries(i->rates, 2)
 			| set11nTries(i->rates, 3)
 			| (i->dur_update ? AR_DurUpdateEna : 0)
-<<<<<<< HEAD
-			| SM(0, AR_BurstDur);
-
-		ACCESS_ONCE(ads->ctl14) = set11nRate(i->rates, 0)
-			| set11nRate(i->rates, 1)
-			| set11nRate(i->rates, 2)
-			| set11nRate(i->rates, 3);
-	} else {
-		ACCESS_ONCE(ads->ctl13) = 0;
-		ACCESS_ONCE(ads->ctl14) = 0;
-=======
 			| SM(0, AR_BurstDur));
 
 		WRITE_ONCE(ads->ctl14, set11nRate(i->rates, 0)
@@ -126,7 +80,6 @@ ar9003_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
 	} else {
 		WRITE_ONCE(ads->ctl13, 0);
 		WRITE_ONCE(ads->ctl14, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ads->ctl20 = 0;
@@ -136,21 +89,6 @@ ar9003_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
 
 	ctl17 = SM(i->keytype, AR_EncrType);
 	if (!i->is_first) {
-<<<<<<< HEAD
-		ACCESS_ONCE(ads->ctl11) = 0;
-		ACCESS_ONCE(ads->ctl12) = i->is_last ? 0 : AR_TxMore;
-		ACCESS_ONCE(ads->ctl15) = 0;
-		ACCESS_ONCE(ads->ctl16) = 0;
-		ACCESS_ONCE(ads->ctl17) = ctl17;
-		ACCESS_ONCE(ads->ctl18) = 0;
-		ACCESS_ONCE(ads->ctl19) = 0;
-		return;
-	}
-
-	ACCESS_ONCE(ads->ctl11) = (i->pkt_len & AR_FrameLen)
-		| (i->flags & ATH9K_TXDESC_VMF ? AR_VirtMoreFrag : 0)
-		| SM(i->txpower, AR_XmitPower)
-=======
 		WRITE_ONCE(ads->ctl11, 0);
 		WRITE_ONCE(ads->ctl12, i->is_last ? 0 : AR_TxMore);
 		WRITE_ONCE(ads->ctl15, 0);
@@ -164,17 +102,12 @@ ar9003_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
 	WRITE_ONCE(ads->ctl11, (i->pkt_len & AR_FrameLen)
 		| (i->flags & ATH9K_TXDESC_VMF ? AR_VirtMoreFrag : 0)
 		| SM(i->txpower[0], AR_XmitPower0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		| (i->flags & ATH9K_TXDESC_VEOL ? AR_VEOL : 0)
 		| (i->keyix != ATH9K_TXKEYIX_INVALID ? AR_DestIdxValid : 0)
 		| (i->flags & ATH9K_TXDESC_LOWRXCHAIN ? AR_LowRxChain : 0)
 		| (i->flags & ATH9K_TXDESC_CLRDMASK ? AR_ClrDestMask : 0)
 		| (i->flags & ATH9K_TXDESC_RTSENA ? AR_RTSEnable :
-<<<<<<< HEAD
-		   (i->flags & ATH9K_TXDESC_CTSENA ? AR_CTSEnable : 0));
-=======
 		   (i->flags & ATH9K_TXDESC_CTSENA ? AR_CTSEnable : 0)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctl12 = (i->keyix != ATH9K_TXKEYIX_INVALID ?
 		 SM(i->keyix, AR_DestIdx) : 0)
@@ -187,11 +120,7 @@ ar9003_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
 	switch (i->aggr) {
 	case AGGR_BUF_FIRST:
 		ctl17 |= SM(i->aggr_len, AR_AggrLen);
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case AGGR_BUF_MIDDLE:
 		ctl12 |= AR_IsAggr | AR_MoreAggr;
 		ctl17 |= SM(i->ndelim, AR_PadDelim);
@@ -206,24 +135,6 @@ ar9003_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
 	val = (i->flags & ATH9K_TXDESC_PAPRD) >> ATH9K_TXDESC_PAPRD_S;
 	ctl12 |= SM(val, AR_PAPRDChainMask);
 
-<<<<<<< HEAD
-	ACCESS_ONCE(ads->ctl12) = ctl12;
-	ACCESS_ONCE(ads->ctl17) = ctl17;
-
-	ACCESS_ONCE(ads->ctl15) = set11nPktDurRTSCTS(i->rates, 0)
-		| set11nPktDurRTSCTS(i->rates, 1);
-
-	ACCESS_ONCE(ads->ctl16) = set11nPktDurRTSCTS(i->rates, 2)
-		| set11nPktDurRTSCTS(i->rates, 3);
-
-	ACCESS_ONCE(ads->ctl18) = set11nRateFlags(i->rates, 0)
-		| set11nRateFlags(i->rates, 1)
-		| set11nRateFlags(i->rates, 2)
-		| set11nRateFlags(i->rates, 3)
-		| SM(i->rtscts_rate, AR_RTSCTSRate);
-
-	ACCESS_ONCE(ads->ctl19) = AR_Not_Sounding;
-=======
 	WRITE_ONCE(ads->ctl12, ctl12);
 	WRITE_ONCE(ads->ctl17, ctl17);
 
@@ -245,7 +156,6 @@ ar9003_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
 	WRITE_ONCE(ads->ctl20, SM(i->txpower[1], AR_XmitPower1));
 	WRITE_ONCE(ads->ctl21, SM(i->txpower[2], AR_XmitPower2));
 	WRITE_ONCE(ads->ctl22, SM(i->txpower[3], AR_XmitPower3));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u16 ar9003_calc_ptr_chksum(struct ar9003_txc *ads)
@@ -270,25 +180,13 @@ static void ar9003_hw_set_desc_link(void *ds, u32 ds_link)
 	ads->ctl10 |= ar9003_calc_ptr_chksum(ads);
 }
 
-<<<<<<< HEAD
-static bool ar9003_hw_get_isr(struct ath_hw *ah, enum ath9k_int *masked)
-=======
 static bool ar9003_hw_get_isr(struct ath_hw *ah, enum ath9k_int *masked,
 			      u32 *sync_cause_p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 isr = 0;
 	u32 mask2 = 0;
 	struct ath9k_hw_capabilities *pCap = &ah->caps;
 	struct ath_common *common = ath9k_hw_common(ah);
-<<<<<<< HEAD
-	u32 sync_cause = 0, async_cause;
-
-	async_cause = REG_READ(ah, AR_INTR_ASYNC_CAUSE);
-
-	if (async_cause & (AR_INTR_MAC_IRQ | AR_INTR_ASYNC_MASK_MCI)) {
-		if ((REG_READ(ah, AR_RTC_STATUS) & AR_RTC_STATUS_M)
-=======
 	u32 sync_cause = 0, async_cause, async_mask = AR_INTR_MAC_IRQ;
 	bool fatal_int;
 
@@ -299,17 +197,12 @@ static bool ar9003_hw_get_isr(struct ath_hw *ah, enum ath9k_int *masked,
 
 	if (async_cause & async_mask) {
 		if ((REG_READ(ah, AR_RTC_STATUS(ah)) & AR_RTC_STATUS_M(ah))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				== AR_RTC_STATUS_ON)
 			isr = REG_READ(ah, AR_ISR);
 	}
 
 
-<<<<<<< HEAD
-	sync_cause = REG_READ(ah, AR_INTR_SYNC_CAUSE) & AR_INTR_SYNC_DEFAULT;
-=======
 	sync_cause = REG_READ(ah, AR_INTR_SYNC_CAUSE(ah)) & AR_INTR_SYNC_DEFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*masked = 0;
 
@@ -387,11 +280,7 @@ static bool ar9003_hw_get_isr(struct ath_hw *ah, enum ath9k_int *masked,
 			u32 s5;
 
 			if (pCap->hw_caps & ATH9K_HW_CAP_RAC_SUPPORTED)
-<<<<<<< HEAD
-				s5 = REG_READ(ah, AR_ISR_S5_S);
-=======
 				s5 = REG_READ(ah, AR_ISR_S5_S(ah));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else
 				s5 = REG_READ(ah, AR_ISR_S5);
 
@@ -427,8 +316,6 @@ static bool ar9003_hw_get_isr(struct ath_hw *ah, enum ath9k_int *masked,
 		ar9003_mci_get_isr(ah, masked);
 
 	if (sync_cause) {
-<<<<<<< HEAD
-=======
 		if (sync_cause_p)
 			*sync_cause_p = sync_cause;
 		fatal_int =
@@ -448,7 +335,6 @@ static bool ar9003_hw_get_isr(struct ath_hw *ah, enum ath9k_int *masked,
 			*masked |= ATH9K_INT_FATAL;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sync_cause & AR_INTR_SYNC_RADM_CPL_TIMEOUT) {
 			REG_WRITE(ah, AR_RC, AR_RC_HOSTIF);
 			REG_WRITE(ah, AR_RC, 0);
@@ -459,13 +345,8 @@ static bool ar9003_hw_get_isr(struct ath_hw *ah, enum ath9k_int *masked,
 			ath_dbg(common, INTERRUPT,
 				"AR_INTR_SYNC_LOCAL_TIMEOUT\n");
 
-<<<<<<< HEAD
-		REG_WRITE(ah, AR_INTR_SYNC_CAUSE_CLR, sync_cause);
-		(void) REG_READ(ah, AR_INTR_SYNC_CAUSE_CLR);
-=======
 		REG_WRITE(ah, AR_INTR_SYNC_CAUSE_CLR(ah), sync_cause);
 		(void) REG_READ(ah, AR_INTR_SYNC_CAUSE_CLR(ah));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	}
 	return true;
@@ -479,11 +360,7 @@ static int ar9003_hw_proc_txdesc(struct ath_hw *ah, void *ds,
 
 	ads = &ah->ts_ring[ah->ts_tail];
 
-<<<<<<< HEAD
-	status = ACCESS_ONCE(ads->status8);
-=======
 	status = READ_ONCE(ads->status8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((status & AR_TxDone) == 0)
 		return -EINPROGRESS;
 
@@ -509,11 +386,7 @@ static int ar9003_hw_proc_txdesc(struct ath_hw *ah, void *ds,
 
 	if (status & AR_TxOpExceeded)
 		ts->ts_status |= ATH9K_TXERR_XTXOP;
-<<<<<<< HEAD
-	status = ACCESS_ONCE(ads->status2);
-=======
 	status = READ_ONCE(ads->status2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ts->ts_rssi_ctl0 = MS(status, AR_TxRSSIAnt00);
 	ts->ts_rssi_ctl1 = MS(status, AR_TxRSSIAnt01);
 	ts->ts_rssi_ctl2 = MS(status, AR_TxRSSIAnt02);
@@ -523,11 +396,7 @@ static int ar9003_hw_proc_txdesc(struct ath_hw *ah, void *ds,
 		ts->ba_high = ads->status6;
 	}
 
-<<<<<<< HEAD
-	status = ACCESS_ONCE(ads->status3);
-=======
 	status = READ_ONCE(ads->status3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status & AR_ExcessiveRetries)
 		ts->ts_status |= ATH9K_TXERR_XRETRY;
 	if (status & AR_Filtered)
@@ -552,11 +421,7 @@ static int ar9003_hw_proc_txdesc(struct ath_hw *ah, void *ds,
 	ts->ts_longretry = MS(status, AR_DataFailCnt);
 	ts->ts_virtcol = MS(status, AR_VirtRetryCnt);
 
-<<<<<<< HEAD
-	status = ACCESS_ONCE(ads->status7);
-=======
 	status = READ_ONCE(ads->status7);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ts->ts_rssi = MS(status, AR_TxRSSICombined);
 	ts->ts_rssi_ext0 = MS(status, AR_TxRSSIAnt10);
 	ts->ts_rssi_ext1 = MS(status, AR_TxRSSIAnt11);
@@ -567,8 +432,6 @@ static int ar9003_hw_proc_txdesc(struct ath_hw *ah, void *ds,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int ar9003_hw_get_duration(struct ath_hw *ah, const void *ds, int index)
 {
 	const struct ar9003_txc *adc = ds;
@@ -587,7 +450,6 @@ static int ar9003_hw_get_duration(struct ath_hw *ah, const void *ds, int index)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ar9003_hw_attach_mac_ops(struct ath_hw *hw)
 {
 	struct ath_hw_ops *ops = ath9k_hw_ops(hw);
@@ -597,10 +459,7 @@ void ar9003_hw_attach_mac_ops(struct ath_hw *hw)
 	ops->get_isr = ar9003_hw_get_isr;
 	ops->set_txdesc = ar9003_set_txdesc;
 	ops->proc_txdesc = ar9003_hw_proc_txdesc;
-<<<<<<< HEAD
-=======
 	ops->get_duration = ar9003_hw_get_duration;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ath9k_hw_set_rx_bufsize(struct ath_hw *ah, u16 buf_size)
@@ -622,11 +481,7 @@ EXPORT_SYMBOL(ath9k_hw_addrxbuf_edma);
 int ath9k_hw_process_rxdesc_edma(struct ath_hw *ah, struct ath_rx_status *rxs,
 				 void *buf_addr)
 {
-<<<<<<< HEAD
-	struct ar9003_rxs *rxsp = (struct ar9003_rxs *) buf_addr;
-=======
 	struct ar9003_rxs *rxsp = buf_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int phyerr;
 
 	if ((rxsp->status11 & AR_RxDone) == 0)
@@ -640,32 +495,20 @@ int ath9k_hw_process_rxdesc_edma(struct ath_hw *ah, struct ath_rx_status *rxs,
 
 	rxs->rs_status = 0;
 	rxs->rs_flags =  0;
-<<<<<<< HEAD
-=======
 	rxs->enc_flags = 0;
 	rxs->bw = RATE_INFO_BW_20;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rxs->rs_datalen = rxsp->status2 & AR_DataLen;
 	rxs->rs_tstamp =  rxsp->status3;
 
 	/* XXX: Keycache */
 	rxs->rs_rssi = MS(rxsp->status5, AR_RxRSSICombined);
-<<<<<<< HEAD
-	rxs->rs_rssi_ctl0 = MS(rxsp->status1, AR_RxRSSIAnt00);
-	rxs->rs_rssi_ctl1 = MS(rxsp->status1, AR_RxRSSIAnt01);
-	rxs->rs_rssi_ctl2 = MS(rxsp->status1, AR_RxRSSIAnt02);
-	rxs->rs_rssi_ext0 = MS(rxsp->status5, AR_RxRSSIAnt10);
-	rxs->rs_rssi_ext1 = MS(rxsp->status5, AR_RxRSSIAnt11);
-	rxs->rs_rssi_ext2 = MS(rxsp->status5, AR_RxRSSIAnt12);
-=======
 	rxs->rs_rssi_ctl[0] = MS(rxsp->status1, AR_RxRSSIAnt00);
 	rxs->rs_rssi_ctl[1] = MS(rxsp->status1, AR_RxRSSIAnt01);
 	rxs->rs_rssi_ctl[2] = MS(rxsp->status1, AR_RxRSSIAnt02);
 	rxs->rs_rssi_ext[0] = MS(rxsp->status5, AR_RxRSSIAnt10);
 	rxs->rs_rssi_ext[1] = MS(rxsp->status5, AR_RxRSSIAnt11);
 	rxs->rs_rssi_ext[2] = MS(rxsp->status5, AR_RxRSSIAnt12);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rxsp->status11 & AR_RxKeyIdxValid)
 		rxs->rs_keyix = MS(rxsp->status11, AR_KeyIdx);
@@ -675,13 +518,6 @@ int ath9k_hw_process_rxdesc_edma(struct ath_hw *ah, struct ath_rx_status *rxs,
 	rxs->rs_rate = MS(rxsp->status1, AR_RxRate);
 	rxs->rs_more = (rxsp->status2 & AR_RxMore) ? 1 : 0;
 
-<<<<<<< HEAD
-	rxs->rs_isaggr = (rxsp->status11 & AR_RxAggr) ? 1 : 0;
-	rxs->rs_moreaggr = (rxsp->status11 & AR_RxMoreAggr) ? 1 : 0;
-	rxs->rs_antenna = (MS(rxsp->status4, AR_RxAntenna) & 0x7);
-	rxs->rs_flags  = (rxsp->status4 & AR_GI) ? ATH9K_RX_GI : 0;
-	rxs->rs_flags  |= (rxsp->status4 & AR_2040) ? ATH9K_RX_2040 : 0;
-=======
 	rxs->rs_firstaggr = (rxsp->status11 & AR_RxFirstAggr) ? 1 : 0;
 	rxs->rs_isaggr = (rxsp->status11 & AR_RxAggr) ? 1 : 0;
 	rxs->rs_moreaggr = (rxsp->status11 & AR_RxMoreAggr) ? 1 : 0;
@@ -690,7 +526,6 @@ int ath9k_hw_process_rxdesc_edma(struct ath_hw *ah, struct ath_rx_status *rxs,
 	rxs->enc_flags |=
 		(rxsp->status4 & AR_STBC) ? (1 << RX_ENC_FLAG_STBC_SHIFT) : 0;
 	rxs->bw = (rxsp->status4 & AR_2040) ? RATE_INFO_BW_40 : RATE_INFO_BW_20;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rxs->evm0 = rxsp->status6;
 	rxs->evm1 = rxsp->status7;
@@ -744,11 +579,7 @@ int ath9k_hw_process_rxdesc_edma(struct ath_hw *ah, struct ath_rx_status *rxs,
 				rxs->rs_status |= ATH9K_RXERR_PHY;
 				rxs->rs_phyerr = phyerr;
 			}
-<<<<<<< HEAD
-		};
-=======
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (rxsp->status11 & AR_KeyMiss)
@@ -782,11 +613,7 @@ void ath9k_hw_setup_statusring(struct ath_hw *ah, void *ts_start,
 	ah->ts_paddr_start = ts_paddr_start;
 	ah->ts_paddr_end = ts_paddr_start + (size * sizeof(struct ar9003_txs));
 	ah->ts_size = size;
-<<<<<<< HEAD
-	ah->ts_ring = (struct ar9003_txs *) ts_start;
-=======
 	ah->ts_ring = ts_start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath9k_hw_reset_txstatus_ring(ah);
 }

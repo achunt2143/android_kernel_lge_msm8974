@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  linux/arch/sparc/kernel/process.c
  *
  *  Copyright (C) 1995, 2008 David S. Miller (davem@davemloft.net)
@@ -11,14 +8,6 @@
 /*
  * This file handles the architecture-dependent parts of process handling..
  */
-<<<<<<< HEAD
-
-#include <stdarg.h>
-
-#include <linux/errno.h>
-#include <linux/module.h>
-#include <linux/sched.h>
-=======
 #include <linux/elfcore.h>
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -26,7 +15,6 @@
 #include <linux/sched/debug.h>
 #include <linux/sched/task.h>
 #include <linux/sched/task_stack.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/stddef.h>
@@ -36,17 +24,6 @@
 #include <linux/reboot.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/slab.h>
-
-#include <asm/auxio.h>
-#include <asm/oplib.h>
-#include <asm/uaccess.h>
-#include <asm/page.h>
-#include <asm/pgalloc.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/slab.h>
 #include <linux/cpu.h>
 
@@ -54,7 +31,6 @@
 #include <asm/oplib.h>
 #include <linux/uaccess.h>
 #include <asm/page.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/delay.h>
 #include <asm/processor.h>
 #include <asm/psr.h>
@@ -63,21 +39,13 @@
 #include <asm/unistd.h>
 #include <asm/setup.h>
 
-<<<<<<< HEAD
-=======
 #include "kernel.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * Power management idle function 
  * Set in pm platform drivers (apc.c and pmc.c)
  */
-<<<<<<< HEAD
-void (*pm_idle)(void);
-EXPORT_SYMBOL(pm_idle);
-=======
 void (*sparc_idle)(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 
  * Power-off handler instantiation for pm.h compliance
@@ -98,86 +66,6 @@ extern void fpsave(unsigned long *, unsigned long *, void *, unsigned long *);
 struct task_struct *last_task_used_math = NULL;
 struct thread_info *current_set[NR_CPUS];
 
-<<<<<<< HEAD
-#ifndef CONFIG_SMP
-
-#define SUN4C_FAULT_HIGH 100
-
-/*
- * the idle loop on a Sparc... ;)
- */
-void cpu_idle(void)
-{
-	/* endless idle loop with no priority at all */
-	for (;;) {
-		if (ARCH_SUN4C) {
-			static int count = HZ;
-			static unsigned long last_jiffies;
-			static unsigned long last_faults;
-			static unsigned long fps;
-			unsigned long now;
-			unsigned long faults;
-
-			extern unsigned long sun4c_kernel_faults;
-			extern void sun4c_grow_kernel_ring(void);
-
-			local_irq_disable();
-			now = jiffies;
-			count -= (now - last_jiffies);
-			last_jiffies = now;
-			if (count < 0) {
-				count += HZ;
-				faults = sun4c_kernel_faults;
-				fps = (fps + (faults - last_faults)) >> 1;
-				last_faults = faults;
-#if 0
-				printk("kernel faults / second = %ld\n", fps);
-#endif
-				if (fps >= SUN4C_FAULT_HIGH) {
-					sun4c_grow_kernel_ring();
-				}
-			}
-			local_irq_enable();
-		}
-
-		if (pm_idle) {
-			while (!need_resched())
-				(*pm_idle)();
-		} else {
-			while (!need_resched())
-				cpu_relax();
-		}
-		schedule_preempt_disabled();
-		check_pgt_cache();
-	}
-}
-
-#else
-
-/* This is being executed in task 0 'user space'. */
-void cpu_idle(void)
-{
-        set_thread_flag(TIF_POLLING_NRFLAG);
-	/* endless idle loop with no priority at all */
-	while(1) {
-#ifdef CONFIG_SPARC_LEON
-		if (pm_idle) {
-			while (!need_resched())
-				(*pm_idle)();
-		} else
-#endif
-		{
-			while (!need_resched())
-				cpu_relax();
-		}
-		schedule_preempt_disabled();
-		check_pgt_cache();
-	}
-}
-
-#endif
-
-=======
 /* Idle loop support. */
 void arch_cpu_idle(void)
 {
@@ -185,7 +73,6 @@ void arch_cpu_idle(void)
 		(*sparc_idle)();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* XXX cli/sti -> local_irq_xxx here, check this works once SMP is fixed. */
 void machine_halt(void)
 {
@@ -217,95 +104,6 @@ void machine_restart(char * cmd)
 void machine_power_off(void)
 {
 	if (auxio_power_register &&
-<<<<<<< HEAD
-	    (strcmp(of_console_device->type, "serial") || scons_pwroff))
-		*auxio_power_register |= AUXIO_POWER_OFF;
-	machine_halt();
-}
-
-#if 0
-
-static DEFINE_SPINLOCK(sparc_backtrace_lock);
-
-void __show_backtrace(unsigned long fp)
-{
-	struct reg_window32 *rw;
-	unsigned long flags;
-	int cpu = smp_processor_id();
-
-	spin_lock_irqsave(&sparc_backtrace_lock, flags);
-
-	rw = (struct reg_window32 *)fp;
-        while(rw && (((unsigned long) rw) >= PAGE_OFFSET) &&
-            !(((unsigned long) rw) & 0x7)) {
-		printk("CPU[%d]: ARGS[%08lx,%08lx,%08lx,%08lx,%08lx,%08lx] "
-		       "FP[%08lx] CALLER[%08lx]: ", cpu,
-		       rw->ins[0], rw->ins[1], rw->ins[2], rw->ins[3],
-		       rw->ins[4], rw->ins[5],
-		       rw->ins[6],
-		       rw->ins[7]);
-		printk("%pS\n", (void *) rw->ins[7]);
-		rw = (struct reg_window32 *) rw->ins[6];
-	}
-	spin_unlock_irqrestore(&sparc_backtrace_lock, flags);
-}
-
-#define __SAVE __asm__ __volatile__("save %sp, -0x40, %sp\n\t")
-#define __RESTORE __asm__ __volatile__("restore %g0, %g0, %g0\n\t")
-#define __GET_FP(fp) __asm__ __volatile__("mov %%i6, %0" : "=r" (fp))
-
-void show_backtrace(void)
-{
-	unsigned long fp;
-
-	__SAVE; __SAVE; __SAVE; __SAVE;
-	__SAVE; __SAVE; __SAVE; __SAVE;
-	__RESTORE; __RESTORE; __RESTORE; __RESTORE;
-	__RESTORE; __RESTORE; __RESTORE; __RESTORE;
-
-	__GET_FP(fp);
-
-	__show_backtrace(fp);
-}
-
-#ifdef CONFIG_SMP
-void smp_show_backtrace_all_cpus(void)
-{
-	xc0((smpfunc_t) show_backtrace);
-	show_backtrace();
-}
-#endif
-
-void show_stackframe(struct sparc_stackf *sf)
-{
-	unsigned long size;
-	unsigned long *stk;
-	int i;
-
-	printk("l0: %08lx l1: %08lx l2: %08lx l3: %08lx "
-	       "l4: %08lx l5: %08lx l6: %08lx l7: %08lx\n",
-	       sf->locals[0], sf->locals[1], sf->locals[2], sf->locals[3],
-	       sf->locals[4], sf->locals[5], sf->locals[6], sf->locals[7]);
-	printk("i0: %08lx i1: %08lx i2: %08lx i3: %08lx "
-	       "i4: %08lx i5: %08lx fp: %08lx i7: %08lx\n",
-	       sf->ins[0], sf->ins[1], sf->ins[2], sf->ins[3],
-	       sf->ins[4], sf->ins[5], (unsigned long)sf->fp, sf->callers_pc);
-	printk("sp: %08lx x0: %08lx x1: %08lx x2: %08lx "
-	       "x3: %08lx x4: %08lx x5: %08lx xx: %08lx\n",
-	       (unsigned long)sf->structptr, sf->xargs[0], sf->xargs[1],
-	       sf->xargs[2], sf->xargs[3], sf->xargs[4], sf->xargs[5],
-	       sf->xxargs[0]);
-	size = ((unsigned long)sf->fp) - ((unsigned long)sf);
-	size -= STACKFRAME_SZ;
-	stk = (unsigned long *)((unsigned long)sf + STACKFRAME_SZ);
-	i = 0;
-	do {
-		printk("s%d: %08lx\n", i++, *stk++);
-	} while ((size -= sizeof(unsigned long)));
-}
-#endif
-
-=======
 	    (!of_node_is_type(of_console_device, "serial") || scons_pwroff)) {
 		u8 power_register = sbus_readb(auxio_power_register);
 		power_register |= AUXIO_POWER_OFF;
@@ -315,16 +113,12 @@ void show_stackframe(struct sparc_stackf *sf)
 	machine_halt();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void show_regs(struct pt_regs *r)
 {
 	struct reg_window32 *rw = (struct reg_window32 *) r->u_regs[14];
 
-<<<<<<< HEAD
-=======
 	show_regs_print_info(KERN_DEFAULT);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         printk("PSR: %08lx PC: %08lx NPC: %08lx Y: %08lx    %s\n",
 	       r->psr, r->pc, r->npc, r->y, print_tainted());
 	printk("PC: <%pS>\n", (void *) r->pc);
@@ -345,30 +139,16 @@ void show_regs(struct pt_regs *r)
 }
 
 /*
-<<<<<<< HEAD
- * The show_stack is an external API which we do not use ourselves.
- * The oops is printed in die_if_kernel.
- */
-void show_stack(struct task_struct *tsk, unsigned long *_ksp)
-=======
  * The show_stack() is external API which we do not use ourselves.
  * The oops is printed in die_if_kernel.
  */
 void show_stack(struct task_struct *tsk, unsigned long *_ksp, const char *loglvl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long pc, fp;
 	unsigned long task_base;
 	struct reg_window32 *rw;
 	int count = 0;
 
-<<<<<<< HEAD
-	if (tsk != NULL)
-		task_base = (unsigned long) task_stack_page(tsk);
-	else
-		task_base = (unsigned long) current_thread_info();
-
-=======
 	if (!tsk)
 		tsk = current;
 
@@ -376,7 +156,6 @@ void show_stack(struct task_struct *tsk, unsigned long *_ksp, const char *loglvl
 		__asm__ __volatile__("mov	%%fp, %0" : "=r" (_ksp));
 
 	task_base = (unsigned long) task_stack_page(tsk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fp = (unsigned long) _ksp;
 	do {
 		/* Bogus frame pointer? */
@@ -385,60 +164,16 @@ void show_stack(struct task_struct *tsk, unsigned long *_ksp, const char *loglvl
 			break;
 		rw = (struct reg_window32 *) fp;
 		pc = rw->ins[7];
-<<<<<<< HEAD
-		printk("[%08lx : ", pc);
-		printk("%pS ] ", (void *) pc);
-		fp = rw->ins[6];
-	} while (++count < 16);
-	printk("\n");
-}
-
-void dump_stack(void)
-{
-	unsigned long *ksp;
-
-	__asm__ __volatile__("mov	%%fp, %0"
-			     : "=r" (ksp));
-	show_stack(current, ksp);
-}
-
-EXPORT_SYMBOL(dump_stack);
-
-/*
- * Note: sparc64 has a pretty intricated thread_saved_pc, check it out.
- */
-unsigned long thread_saved_pc(struct task_struct *tsk)
-{
-	return task_thread_info(tsk)->kpc;
-=======
 		printk("%s[%08lx : ", loglvl, pc);
 		printk("%s%pS ] ", loglvl, (void *) pc);
 		fp = rw->ins[6];
 	} while (++count < 16);
 	printk("%s\n", loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Free current thread data structures etc..
  */
-<<<<<<< HEAD
-void exit_thread(void)
-{
-#ifndef CONFIG_SMP
-	if(last_task_used_math == current) {
-#else
-	if (test_thread_flag(TIF_USEDFPU)) {
-#endif
-		/* Keep process from leaving FPU in a bogon state. */
-		put_psr(get_psr() | PSR_EF);
-		fpsave(&current->thread.float_regs[0], &current->thread.fsr,
-		       &current->thread.fpqueue[0], &current->thread.fpqdepth);
-#ifndef CONFIG_SMP
-		last_task_used_math = NULL;
-#else
-		clear_thread_flag(TIF_USEDFPU);
-=======
 void exit_thread(struct task_struct *tsk)
 {
 #ifndef CONFIG_SMP
@@ -454,7 +189,6 @@ void exit_thread(struct task_struct *tsk)
 		last_task_used_math = NULL;
 #else
 		clear_ti_thread_flag(task_thread_info(tsk), TIF_USEDFPU);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	}
 }
@@ -478,19 +212,6 @@ void flush_thread(void)
 		clear_thread_flag(TIF_USEDFPU);
 #endif
 	}
-<<<<<<< HEAD
-
-	/* This task is no longer a kernel thread. */
-	if (current->thread.flags & SPARC_FLAG_KTHREAD) {
-		current->thread.flags &= ~SPARC_FLAG_KTHREAD;
-
-		/* We must fixup kregs as well. */
-		/* XXX This was not fixed for ti for a while, worked. Unused? */
-		current->thread.kregs = (struct pt_regs *)
-		    (task_stack_page(current) + (THREAD_SIZE - TRACEREG_SZ));
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct sparc_stackf __user *
@@ -521,37 +242,6 @@ clone_stackframe(struct sparc_stackf __user *dst,
 	return sp;
 }
 
-<<<<<<< HEAD
-asmlinkage int sparc_do_fork(unsigned long clone_flags,
-                             unsigned long stack_start,
-                             struct pt_regs *regs,
-                             unsigned long stack_size)
-{
-	unsigned long parent_tid_ptr, child_tid_ptr;
-	unsigned long orig_i1 = regs->u_regs[UREG_I1];
-	long ret;
-
-	parent_tid_ptr = regs->u_regs[UREG_I2];
-	child_tid_ptr = regs->u_regs[UREG_I4];
-
-	ret = do_fork(clone_flags, stack_start,
-		      regs, stack_size,
-		      (int __user *) parent_tid_ptr,
-		      (int __user *) child_tid_ptr);
-
-	/* If we get an error and potentially restart the system
-	 * call, we're screwed because copy_thread() clobbered
-	 * the parent's %o1.  So detect that case and restore it
-	 * here.
-	 */
-	if ((unsigned long)ret >= -ERESTART_RESTARTBLOCK)
-		regs->u_regs[UREG_I1] = orig_i1;
-
-	return ret;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Copy a Sparc thread.  The fork() return value conventions
  * under SunOS are nothing short of bletcherous:
  * Parent -->  %o0 == childs  pid, %o1 == 0
@@ -566,15 +256,6 @@ asmlinkage int sparc_do_fork(unsigned long clone_flags,
  * XXX See comment above sys_vfork in sparc64. todo.
  */
 extern void ret_from_fork(void);
-<<<<<<< HEAD
-
-int copy_thread(unsigned long clone_flags, unsigned long sp,
-		unsigned long unused,
-		struct task_struct *p, struct pt_regs *regs)
-{
-	struct thread_info *ti = task_thread_info(p);
-	struct pt_regs *childregs;
-=======
 extern void ret_from_kernel_thread(void);
 
 int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
@@ -584,7 +265,6 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 	unsigned long tls = args->tls;
 	struct thread_info *ti = task_thread_info(p);
 	struct pt_regs *childregs, *regs = current_pt_regs();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *new_stack;
 
 #ifndef CONFIG_SMP
@@ -595,34 +275,6 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 		put_psr(get_psr() | PSR_EF);
 		fpsave(&p->thread.float_regs[0], &p->thread.fsr,
 		       &p->thread.fpqueue[0], &p->thread.fpqdepth);
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-		clear_thread_flag(TIF_USEDFPU);
-#endif
-	}
-
-	/*
-	 *  p->thread_info         new_stack   childregs
-	 *  !                      !           !             {if(PSR_PS) }
-	 *  V                      V (stk.fr.) V  (pt_regs)  { (stk.fr.) }
-	 *  +----- - - - - - ------+===========+============={+==========}+
-	 */
-	new_stack = task_stack_page(p) + THREAD_SIZE;
-	if (regs->psr & PSR_PS)
-		new_stack -= STACKFRAME_SZ;
-	new_stack -= STACKFRAME_SZ + TRACEREG_SZ;
-	memcpy(new_stack, (char *)regs - STACKFRAME_SZ, STACKFRAME_SZ + TRACEREG_SZ);
-	childregs = (struct pt_regs *) (new_stack + STACKFRAME_SZ);
-
-	/*
-	 * A new process must start with interrupts closed in 2.5,
-	 * because this is how Mingo's scheduler works (see schedule_tail
-	 * and finish_arch_switch). If we do not do it, a timer interrupt hits
-	 * before we unlock, attempts to re-take the rq->lock, and then we die.
-	 * Thus, kpsr|=PSR_PIL.
-	 */
-	ti->ksp = (unsigned long) new_stack;
-=======
 	}
 
 	/*
@@ -659,58 +311,10 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 	}
 	memcpy(new_stack, (char *)regs - STACKFRAME_SZ, STACKFRAME_SZ + TRACEREG_SZ);
 	childregs->u_regs[UREG_FP] = sp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ti->kpc = (((unsigned long) ret_from_fork) - 0x8);
 	ti->kpsr = current->thread.fork_kpsr | PSR_PIL;
 	ti->kwim = current->thread.fork_kwim;
 
-<<<<<<< HEAD
-	if(regs->psr & PSR_PS) {
-		extern struct pt_regs fake_swapper_regs;
-
-		p->thread.kregs = &fake_swapper_regs;
-		new_stack += STACKFRAME_SZ + TRACEREG_SZ;
-		childregs->u_regs[UREG_FP] = (unsigned long) new_stack;
-		p->thread.flags |= SPARC_FLAG_KTHREAD;
-		p->thread.current_ds = KERNEL_DS;
-		memcpy(new_stack, (void *)regs->u_regs[UREG_FP], STACKFRAME_SZ);
-		childregs->u_regs[UREG_G6] = (unsigned long) ti;
-	} else {
-		p->thread.kregs = childregs;
-		childregs->u_regs[UREG_FP] = sp;
-		p->thread.flags &= ~SPARC_FLAG_KTHREAD;
-		p->thread.current_ds = USER_DS;
-
-		if (sp != regs->u_regs[UREG_FP]) {
-			struct sparc_stackf __user *childstack;
-			struct sparc_stackf __user *parentstack;
-
-			/*
-			 * This is a clone() call with supplied user stack.
-			 * Set some valid stack frames to give to the child.
-			 */
-			childstack = (struct sparc_stackf __user *)
-				(sp & ~0xfUL);
-			parentstack = (struct sparc_stackf __user *)
-				regs->u_regs[UREG_FP];
-
-#if 0
-			printk("clone: parent stack:\n");
-			show_stackframe(parentstack);
-#endif
-
-			childstack = clone_stackframe(childstack, parentstack);
-			if (!childstack)
-				return -EFAULT;
-
-#if 0
-			printk("clone: child stack:\n");
-			show_stackframe(childstack);
-#endif
-
-			childregs->u_regs[UREG_FP] = (unsigned long)childstack;
-		}
-=======
 	if (sp != regs->u_regs[UREG_FP]) {
 		struct sparc_stackf __user *childstack;
 		struct sparc_stackf __user *parentstack;
@@ -739,16 +343,12 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 #endif
 
 		childregs->u_regs[UREG_FP] = (unsigned long)childstack;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 #ifdef CONFIG_SMP
 	/* FPU must be disabled on SMP. */
 	childregs->psr &= ~PSR_EF;
-<<<<<<< HEAD
-=======
 	clear_tsk_thread_flag(p, TIF_USEDFPU);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* Set the return value for the child. */
@@ -759,132 +359,12 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 	regs->u_regs[UREG_I1] = 0;
 
 	if (clone_flags & CLONE_SETTLS)
-<<<<<<< HEAD
-		childregs->u_regs[UREG_G7] = regs->u_regs[UREG_I3];
-=======
 		childregs->u_regs[UREG_G7] = tls;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * fill in the fpu structure for a core dump.
- */
-int dump_fpu (struct pt_regs * regs, elf_fpregset_t * fpregs)
-{
-	if (used_math()) {
-		memset(fpregs, 0, sizeof(*fpregs));
-		fpregs->pr_q_entrysize = 8;
-		return 1;
-	}
-#ifdef CONFIG_SMP
-	if (test_thread_flag(TIF_USEDFPU)) {
-		put_psr(get_psr() | PSR_EF);
-		fpsave(&current->thread.float_regs[0], &current->thread.fsr,
-		       &current->thread.fpqueue[0], &current->thread.fpqdepth);
-		if (regs != NULL) {
-			regs->psr &= ~(PSR_EF);
-			clear_thread_flag(TIF_USEDFPU);
-		}
-	}
-#else
-	if (current == last_task_used_math) {
-		put_psr(get_psr() | PSR_EF);
-		fpsave(&current->thread.float_regs[0], &current->thread.fsr,
-		       &current->thread.fpqueue[0], &current->thread.fpqdepth);
-		if (regs != NULL) {
-			regs->psr &= ~(PSR_EF);
-			last_task_used_math = NULL;
-		}
-	}
-#endif
-	memcpy(&fpregs->pr_fr.pr_regs[0],
-	       &current->thread.float_regs[0],
-	       (sizeof(unsigned long) * 32));
-	fpregs->pr_fsr = current->thread.fsr;
-	fpregs->pr_qcnt = current->thread.fpqdepth;
-	fpregs->pr_q_entrysize = 8;
-	fpregs->pr_en = 1;
-	if(fpregs->pr_qcnt != 0) {
-		memcpy(&fpregs->pr_q[0],
-		       &current->thread.fpqueue[0],
-		       sizeof(struct fpq) * fpregs->pr_qcnt);
-	}
-	/* Zero out the rest. */
-	memset(&fpregs->pr_q[fpregs->pr_qcnt], 0,
-	       sizeof(struct fpq) * (32 - fpregs->pr_qcnt));
-	return 1;
-}
-
-/*
- * sparc_execve() executes a new program after the asm stub has set
- * things up for us.  This should basically do what I want it to.
- */
-asmlinkage int sparc_execve(struct pt_regs *regs)
-{
-	int error, base = 0;
-	struct filename *filename;
-
-	/* Check for indirect call. */
-	if(regs->u_regs[UREG_G1] == 0)
-		base = 1;
-
-	filename = getname((char __user *)regs->u_regs[base + UREG_I0]);
-	error = PTR_ERR(filename);
-	if(IS_ERR(filename))
-		goto out;
-	error = do_execve(filename->name,
-			  (const char __user *const  __user *)
-			  regs->u_regs[base + UREG_I1],
-			  (const char __user *const  __user *)
-			  regs->u_regs[base + UREG_I2],
-			  regs);
-	putname(filename);
-out:
-	return error;
-}
-
-/*
- * This is the mechanism for creating a new kernel thread.
- *
- * NOTE! Only a kernel-only process(ie the swapper or direct descendants
- * who haven't done an "execve()") should use this: it will work within
- * a system call from a "real" process, but the process memory space will
- * not be freed until both the parent and the child have exited.
- */
-pid_t kernel_thread(int (*fn)(void *), void * arg, unsigned long flags)
-{
-	long retval;
-
-	__asm__ __volatile__("mov %4, %%g2\n\t"    /* Set aside fn ptr... */
-			     "mov %5, %%g3\n\t"    /* and arg. */
-			     "mov %1, %%g1\n\t"
-			     "mov %2, %%o0\n\t"    /* Clone flags. */
-			     "mov 0, %%o1\n\t"     /* usp arg == 0 */
-			     "t 0x10\n\t"          /* Linux/Sparc clone(). */
-			     "cmp %%o1, 0\n\t"
-			     "be 1f\n\t"           /* The parent, just return. */
-			     " nop\n\t"            /* Delay slot. */
-			     "jmpl %%g2, %%o7\n\t" /* Call the function. */
-			     " mov %%g3, %%o0\n\t" /* Get back the arg in delay. */
-			     "mov %3, %%g1\n\t"
-			     "t 0x10\n\t"          /* Linux/Sparc exit(). */
-			     /* Notreached by child. */
-			     "1: mov %%o0, %0\n\t" :
-			     "=r" (retval) :
-			     "i" (__NR_clone), "r" (flags | CLONE_VM | CLONE_UNTRACED),
-			     "i" (__NR_exit),  "r" (fn), "r" (arg) :
-			     "g1", "g2", "g3", "o0", "o1", "memory", "cc");
-	return retval;
-}
-EXPORT_SYMBOL(kernel_thread);
-
-unsigned long get_wchan(struct task_struct *task)
-=======
 unsigned long __get_wchan(struct task_struct *task)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long pc, fp, bias = 0;
 	unsigned long task_base = (unsigned long) task;
@@ -892,13 +372,6 @@ unsigned long __get_wchan(struct task_struct *task)
 	struct reg_window32 *rw;
 	int count = 0;
 
-<<<<<<< HEAD
-	if (!task || task == current ||
-            task->state == TASK_RUNNING)
-		goto out;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fp = task_thread_info(task)->ksp + bias;
 	do {
 		/* Bogus frame pointer? */

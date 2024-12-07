@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/alpha/kernel/osf_sys.c
  *
@@ -15,14 +12,10 @@
  */
 
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/signal.h>
 #include <linux/sched/mm.h>
 #include <linux/sched/task_stack.h>
 #include <linux/sched/cputime.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/smp.h>
@@ -43,10 +36,7 @@
 #include <linux/types.h>
 #include <linux/ipc.h>
 #include <linux/namei.h>
-<<<<<<< HEAD
-=======
 #include <linux/mount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/uio.h>
 #include <linux/vfs.h>
 #include <linux/rcupdate.h>
@@ -54,11 +44,7 @@
 
 #include <asm/fpu.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sysinfo.h>
 #include <asm/thread_info.h>
 #include <asm/hwrpb.h>
@@ -111,32 +97,17 @@ struct osf_dirent {
 	unsigned int d_ino;
 	unsigned short d_reclen;
 	unsigned short d_namlen;
-<<<<<<< HEAD
-	char d_name[1];
-};
-
-struct osf_dirent_callback {
-=======
 	char d_name[];
 };
 
 struct osf_dirent_callback {
 	struct dir_context ctx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct osf_dirent __user *dirent;
 	long __user *basep;
 	unsigned int count;
 	int error;
 };
 
-<<<<<<< HEAD
-static int
-osf_filldir(void *__buf, const char *name, int namlen, loff_t offset,
-	    u64 ino, unsigned int d_type)
-{
-	struct osf_dirent __user *dirent;
-	struct osf_dirent_callback *buf = (struct osf_dirent_callback *) __buf;
-=======
 static bool
 osf_filldir(struct dir_context *ctx, const char *name, int namlen,
 	    loff_t offset, u64 ino, unsigned int d_type)
@@ -144,25 +115,16 @@ osf_filldir(struct dir_context *ctx, const char *name, int namlen,
 	struct osf_dirent __user *dirent;
 	struct osf_dirent_callback *buf =
 		container_of(ctx, struct osf_dirent_callback, ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int reclen = ALIGN(NAME_OFFSET + namlen + 1, sizeof(u32));
 	unsigned int d_ino;
 
 	buf->error = -EINVAL;	/* only used if we fail */
 	if (reclen > buf->count)
-<<<<<<< HEAD
-		return -EINVAL;
-	d_ino = ino;
-	if (sizeof(d_ino) < sizeof(ino) && d_ino != ino) {
-		buf->error = -EOVERFLOW;
-		return -EOVERFLOW;
-=======
 		return false;
 	d_ino = ino;
 	if (sizeof(d_ino) < sizeof(ino) && d_ino != ino) {
 		buf->error = -EOVERFLOW;
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (buf->basep) {
 		if (put_user(offset, buf->basep))
@@ -179,17 +141,10 @@ osf_filldir(struct dir_context *ctx, const char *name, int namlen,
 	dirent = (void __user *)dirent + reclen;
 	buf->dirent = dirent;
 	buf->count -= reclen;
-<<<<<<< HEAD
-	return 0;
-Efault:
-	buf->error = -EFAULT;
-	return -EFAULT;
-=======
 	return true;
 Efault:
 	buf->error = -EFAULT;
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE4(osf_getdirentries, unsigned int, fd,
@@ -197,22 +152,6 @@ SYSCALL_DEFINE4(osf_getdirentries, unsigned int, fd,
 		long __user *, basep)
 {
 	int error;
-<<<<<<< HEAD
-	struct file *file;
-	struct osf_dirent_callback buf;
-
-	error = -EBADF;
-	file = fget(fd);
-	if (!file)
-		goto out;
-
-	buf.dirent = dirent;
-	buf.basep = basep;
-	buf.count = count;
-	buf.error = 0;
-
-	error = vfs_readdir(file, osf_filldir, &buf);
-=======
 	struct fd arg = fdget_pos(fd);
 	struct osf_dirent_callback buf = {
 		.ctx.actor = osf_filldir,
@@ -225,18 +164,12 @@ SYSCALL_DEFINE4(osf_getdirentries, unsigned int, fd,
 		return -EBADF;
 
 	error = iterate_dir(arg.file, &buf.ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error >= 0)
 		error = buf.error;
 	if (count != buf.count)
 		error = count - buf.count;
 
-<<<<<<< HEAD
-	fput(file);
- out:
-=======
 	fdput_pos(arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -257,17 +190,11 @@ SYSCALL_DEFINE6(osf_mmap, unsigned long, addr, unsigned long, len,
 		goto out;
 	if (off & ~PAGE_MASK)
 		goto out;
-<<<<<<< HEAD
-	ret = sys_mmap_pgoff(addr, len, prot, flags, fd, off >> PAGE_SHIFT);
-=======
 	ret = ksys_mmap_pgoff(addr, len, prot, flags, fd, off >> PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 struct osf_stat {
 	int		st_dev;
 	int		st_pad1;
@@ -301,7 +228,6 @@ struct osf_stat {
 	long		st_blksize;
 	long		st_blocks;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The OSF/1 statfs structure is much larger, but this should
@@ -320,8 +246,6 @@ struct osf_statfs {
 	__kernel_fsid_t f_fsid;
 };
 
-<<<<<<< HEAD
-=======
 struct osf_statfs64 {
 	short f_type;
 	short f_flags;
@@ -376,7 +300,6 @@ linux_to_osf_stat(struct kstat *lstat, struct osf_stat __user *osf_stat)
 	return copy_to_user(osf_stat, &tmp, sizeof(tmp)) ? -EFAULT : 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 linux_to_osf_statfs(struct kstatfs *linux_stat, struct osf_statfs __user *osf_stat,
 		    unsigned long bufsiz)
@@ -398,8 +321,6 @@ linux_to_osf_statfs(struct kstatfs *linux_stat, struct osf_statfs __user *osf_st
 	return copy_to_user(osf_stat, &tmp_stat, bufsiz) ? -EFAULT : 0;
 }
 
-<<<<<<< HEAD
-=======
 static int
 linux_to_osf_statfs64(struct kstatfs *linux_stat, struct osf_statfs64 __user *osf_stat,
 		      unsigned long bufsiz)
@@ -420,7 +341,6 @@ linux_to_osf_statfs64(struct kstatfs *linux_stat, struct osf_statfs64 __user *os
 	return copy_to_user(osf_stat, &tmp_stat, bufsiz) ? -EFAULT : 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SYSCALL_DEFINE3(osf_statfs, const char __user *, pathname,
 		struct osf_statfs __user *, buffer, unsigned long, bufsiz)
 {
@@ -431,8 +351,6 @@ SYSCALL_DEFINE3(osf_statfs, const char __user *, pathname,
 	return error;	
 }
 
-<<<<<<< HEAD
-=======
 SYSCALL_DEFINE2(osf_stat, char __user *, name, struct osf_stat __user *, buf)
 {
 	struct kstat stat;
@@ -469,7 +387,6 @@ SYSCALL_DEFINE2(osf_fstat, int, fd, struct osf_stat __user *, buf)
 	return linux_to_osf_stat(&stat, buf);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SYSCALL_DEFINE3(osf_fstatfs, unsigned long, fd,
 		struct osf_statfs __user *, buffer, unsigned long, bufsiz)
 {
@@ -480,8 +397,6 @@ SYSCALL_DEFINE3(osf_fstatfs, unsigned long, fd,
 	return error;
 }
 
-<<<<<<< HEAD
-=======
 SYSCALL_DEFINE3(osf_statfs64, char __user *, pathname,
 		struct osf_statfs64 __user *, buffer, unsigned long, bufsiz)
 {
@@ -502,7 +417,6 @@ SYSCALL_DEFINE3(osf_fstatfs64, unsigned long, fd,
 	return error;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Uhh.. OSF/1 mount parameters aren't exactly obvious..
  *
@@ -538,12 +452,8 @@ struct procfs_args {
  * unhappy with OSF UFS. [CHECKME]
  */
 static int
-<<<<<<< HEAD
-osf_ufs_mount(char *dirname, struct ufs_args __user *args, int flags)
-=======
 osf_ufs_mount(const char __user *dirname,
 	      struct ufs_args __user *args, int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 	struct cdfs_args tmp;
@@ -563,12 +473,8 @@ osf_ufs_mount(const char __user *dirname,
 }
 
 static int
-<<<<<<< HEAD
-osf_cdfs_mount(char *dirname, struct cdfs_args __user *args, int flags)
-=======
 osf_cdfs_mount(const char __user *dirname,
 	       struct cdfs_args __user *args, int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 	struct cdfs_args tmp;
@@ -588,12 +494,8 @@ osf_cdfs_mount(const char __user *dirname,
 }
 
 static int
-<<<<<<< HEAD
-osf_procfs_mount(char *dirname, struct procfs_args __user *args, int flags)
-=======
 osf_procfs_mount(const char __user *dirname,
 		 struct procfs_args __user *args, int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct procfs_args tmp;
 
@@ -607,30 +509,6 @@ SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, const char __user *, path,
 		int, flag, void __user *, data)
 {
 	int retval;
-<<<<<<< HEAD
-	struct filename *name;
-
-	name = getname(path);
-	retval = PTR_ERR(name);
-	if (IS_ERR(name))
-		goto out;
-	switch (typenr) {
-	case 1:
-		retval = osf_ufs_mount(name->name, data, flag);
-		break;
-	case 6:
-		retval = osf_cdfs_mount(name->name, data, flag);
-		break;
-	case 9:
-		retval = osf_procfs_mount(name->name, data, flag);
-		break;
-	default:
-		retval = -EINVAL;
-		printk("osf_mount(%ld, %x)\n", typenr, flag);
-	}
-	putname(name);
- out:
-=======
 
 	switch (typenr) {
 	case 1:
@@ -647,33 +525,11 @@ SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, const char __user *, path,
 		printk_ratelimited("osf_mount(%ld, %x)\n", typenr, flag);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
 SYSCALL_DEFINE1(osf_utsname, char __user *, name)
 {
-<<<<<<< HEAD
-	int error;
-
-	down_read(&uts_sem);
-	error = -EFAULT;
-	if (copy_to_user(name + 0, utsname()->sysname, 32))
-		goto out;
-	if (copy_to_user(name + 32, utsname()->nodename, 32))
-		goto out;
-	if (copy_to_user(name + 64, utsname()->release, 32))
-		goto out;
-	if (copy_to_user(name + 96, utsname()->version, 32))
-		goto out;
-	if (copy_to_user(name + 128, utsname()->machine, 32))
-		goto out;
-
-	error = 0;
- out:
-	up_read(&uts_sem);	
-	return error;
-=======
 	char tmp[5 * 32];
 
 	down_read(&uts_sem);
@@ -687,7 +543,6 @@ SYSCALL_DEFINE1(osf_utsname, char __user *, name)
 	if (copy_to_user(name, tmp, sizeof(tmp)))
 		return -EFAULT;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE0(getpagesize)
@@ -705,26 +560,6 @@ SYSCALL_DEFINE0(getdtablesize)
  */
 SYSCALL_DEFINE2(osf_getdomainname, char __user *, name, int, namelen)
 {
-<<<<<<< HEAD
-	unsigned len;
-	int i;
-
-	if (!access_ok(VERIFY_WRITE, name, namelen))
-		return -EFAULT;
-
-	len = namelen;
-	if (len > 32)
-		len = 32;
-
-	down_read(&uts_sem);
-	for (i = 0; i < len; ++i) {
-		__put_user(utsname()->domainname[i], name + i);
-		if (utsname()->domainname[i] == '\0')
-			break;
-	}
-	up_read(&uts_sem);
-
-=======
 	int len;
 	char *kname;
 	char tmp[32];
@@ -741,7 +576,6 @@ SYSCALL_DEFINE2(osf_getdomainname, char __user *, name, int, namelen)
 
 	if (copy_to_user(name, tmp, len))
 		return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -844,11 +678,7 @@ SYSCALL_DEFINE2(osf_proplist_syscall, enum pl_code, code,
 	default:
 		error = -EOPNOTSUPP;
 		break;
-<<<<<<< HEAD
-	};
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -882,14 +712,8 @@ SYSCALL_DEFINE2(osf_sigstack, struct sigstack __user *, uss,
 
 	if (uoss) {
 		error = -EFAULT;
-<<<<<<< HEAD
-		if (! access_ok(VERIFY_WRITE, uoss, sizeof(*uoss))
-		    || __put_user(oss_sp, &uoss->ss_sp)
-		    || __put_user(oss_os, &uoss->ss_onstack))
-=======
 		if (put_user(oss_sp, &uoss->ss_sp) ||
 		    put_user(oss_os, &uoss->ss_onstack))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 	}
 
@@ -913,22 +737,14 @@ SYSCALL_DEFINE3(osf_sysinfo, int, command, char __user *, buf, long, count)
 	};
 	unsigned long offset;
 	const char *res;
-<<<<<<< HEAD
-	long len, err = -EINVAL;
-=======
 	long len;
 	char tmp[__NEW_UTS_LEN + 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	offset = command-1;
 	if (offset >= ARRAY_SIZE(sysinfo_table)) {
 		/* Digital UNIX has a few unpublished interfaces here */
 		printk("sysinfo(%d)", command);
-<<<<<<< HEAD
-		goto out;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	down_read(&uts_sem);
@@ -936,21 +752,11 @@ SYSCALL_DEFINE3(osf_sysinfo, int, command, char __user *, buf, long, count)
 	len = strlen(res)+1;
 	if ((unsigned long)len > (unsigned long)count)
 		len = count;
-<<<<<<< HEAD
-	if (copy_to_user(buf, res, len))
-		err = -EFAULT;
-	else
-		err = 0;
-	up_read(&uts_sem);
- out:
-	return err;
-=======
 	memcpy(tmp, res, len);
 	up_read(&uts_sem);
 	if (copy_to_user(buf, tmp, len))
 		return -EFAULT;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE5(osf_getsysinfo, unsigned long, op, void __user *, buffer,
@@ -981,12 +787,7 @@ SYSCALL_DEFINE5(osf_getsysinfo, unsigned long, op, void __user *, buffer,
  	case GSI_UACPROC:
 		if (nbytes < sizeof(unsigned int))
 			return -EINVAL;
-<<<<<<< HEAD
-		w = (current_thread_info()->flags >> ALPHA_UAC_SHIFT) &
-			UAC_BITMASK;
-=======
 		w = current_thread_info()->status & UAC_BITMASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (put_user(w, (unsigned int __user *)buffer))
 			return -EFAULT;
  		return 1;
@@ -1034,11 +835,7 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
 			return -EFAULT;
 		state = &current_thread_info()->ieee_state;
 
-<<<<<<< HEAD
-		/* Update softare trap enable bits.  */
-=======
 		/* Update software trap enable bits.  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*state = (*state & ~IEEE_SW_MASK) | (swcr & IEEE_SW_MASK);
 
 		/* Update the real fpcr.  */
@@ -1058,11 +855,7 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
 		state = &current_thread_info()->ieee_state;
 		exc &= IEEE_STATUS_MASK;
 
-<<<<<<< HEAD
-		/* Update softare trap enable bits.  */
-=======
 		/* Update software trap enable bits.  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  		swcr = (*state & IEEE_SW_MASK) | exc;
 		*state |= exc;
 
@@ -1075,12 +868,7 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
 		   send a signal.  Old exceptions are not signaled.  */
 		fex = (exc >> IEEE_STATUS_TO_EXCSUM_SHIFT) & swcr;
  		if (fex) {
-<<<<<<< HEAD
-			siginfo_t info;
-			int si_code = 0;
-=======
 			int si_code = FPE_FLTUNK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (fex & IEEE_TRAP_ENABLE_DNO) si_code = FPE_FLTUND;
 			if (fex & IEEE_TRAP_ENABLE_INE) si_code = FPE_FLTRES;
@@ -1089,17 +877,9 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
 			if (fex & IEEE_TRAP_ENABLE_DZE) si_code = FPE_FLTDIV;
 			if (fex & IEEE_TRAP_ENABLE_INV) si_code = FPE_FLTINV;
 
-<<<<<<< HEAD
-			info.si_signo = SIGFPE;
-			info.si_errno = 0;
-			info.si_code = si_code;
-			info.si_addr = NULL;  /* FIXME */
- 			send_sig_info(SIGFPE, &info, current);
-=======
 			send_sig_fault_trapno(SIGFPE, si_code,
 				       (void __user *)NULL,  /* FIXME */
 				       0, current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  		}
 		return 0;
 	}
@@ -1114,26 +894,6 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
 		break;
 
  	case SSI_NVPAIRS: {
-<<<<<<< HEAD
-		unsigned long v, w, i;
-		unsigned int old, new;
-		
- 		for (i = 0; i < nbytes; ++i) {
-
- 			if (get_user(v, 2*i + (unsigned int __user *)buffer))
- 				return -EFAULT;
- 			if (get_user(w, 2*i + 1 + (unsigned int __user *)buffer))
- 				return -EFAULT;
- 			switch (v) {
- 			case SSIN_UACPROC:
-			again:
-				old = current_thread_info()->flags;
-				new = old & ~(UAC_BITMASK << ALPHA_UAC_SHIFT);
-				new = new | (w & UAC_BITMASK) << ALPHA_UAC_SHIFT;
-				if (cmpxchg(&current_thread_info()->flags,
-					    old, new) != old)
-					goto again;
-=======
 		unsigned __user *p = buffer;
 		unsigned i;
 		
@@ -1148,7 +908,6 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
 				status = current_thread_info()->status;
 				status = (status & ~UAC_BITMASK) | w;
 				current_thread_info()->status = status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  				break;
  
  			default:
@@ -1158,12 +917,9 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
  		return 0;
 	}
  
-<<<<<<< HEAD
-=======
 	case SSI_LMF:
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -1188,41 +944,6 @@ struct itimerval32
 };
 
 static inline long
-<<<<<<< HEAD
-get_tv32(struct timeval *o, struct timeval32 __user *i)
-{
-	return (!access_ok(VERIFY_READ, i, sizeof(*i)) ||
-		(__get_user(o->tv_sec, &i->tv_sec) |
-		 __get_user(o->tv_usec, &i->tv_usec)));
-}
-
-static inline long
-put_tv32(struct timeval32 __user *o, struct timeval *i)
-{
-	return (!access_ok(VERIFY_WRITE, o, sizeof(*o)) ||
-		(__put_user(i->tv_sec, &o->tv_sec) |
-		 __put_user(i->tv_usec, &o->tv_usec)));
-}
-
-static inline long
-get_it32(struct itimerval *o, struct itimerval32 __user *i)
-{
-	return (!access_ok(VERIFY_READ, i, sizeof(*i)) ||
-		(__get_user(o->it_interval.tv_sec, &i->it_interval.tv_sec) |
-		 __get_user(o->it_interval.tv_usec, &i->it_interval.tv_usec) |
-		 __get_user(o->it_value.tv_sec, &i->it_value.tv_sec) |
-		 __get_user(o->it_value.tv_usec, &i->it_value.tv_usec)));
-}
-
-static inline long
-put_it32(struct itimerval32 __user *o, struct itimerval *i)
-{
-	return (!access_ok(VERIFY_WRITE, o, sizeof(*o)) ||
-		(__put_user(i->it_interval.tv_sec, &o->it_interval.tv_sec) |
-		 __put_user(i->it_interval.tv_usec, &o->it_interval.tv_usec) |
-		 __put_user(i->it_value.tv_sec, &o->it_value.tv_sec) |
-		 __put_user(i->it_value.tv_usec, &o->it_value.tv_usec)));
-=======
 get_tv32(struct timespec64 *o, struct timeval32 __user *i)
 {
 	struct timeval32 tv;
@@ -1249,7 +970,6 @@ put_tv_to_tv32(struct timeval32 __user *o, struct __kernel_old_timeval *i)
 				.tv_sec = i->tv_sec,
 				.tv_usec = i->tv_usec},
 			    sizeof(struct timeval32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void
@@ -1263,16 +983,10 @@ SYSCALL_DEFINE2(osf_gettimeofday, struct timeval32 __user *, tv,
 		struct timezone __user *, tz)
 {
 	if (tv) {
-<<<<<<< HEAD
-		struct timeval ktv;
-		do_gettimeofday(&ktv);
-		if (put_tv32(tv, &ktv))
-=======
 		struct timespec64 kts;
 
 		ktime_get_real_ts64(&kts);
 		if (put_tv32(tv, &kts))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 	}
 	if (tz) {
@@ -1285,19 +999,11 @@ SYSCALL_DEFINE2(osf_gettimeofday, struct timeval32 __user *, tv,
 SYSCALL_DEFINE2(osf_settimeofday, struct timeval32 __user *, tv,
 		struct timezone __user *, tz)
 {
-<<<<<<< HEAD
-	struct timespec kts;
-	struct timezone ktz;
-
- 	if (tv) {
-		if (get_tv32((struct timeval *)&kts, tv))
-=======
 	struct timespec64 kts;
 	struct timezone ktz;
 
  	if (tv) {
 		if (get_tv32(&kts, tv))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 	}
 	if (tz) {
@@ -1305,71 +1011,12 @@ SYSCALL_DEFINE2(osf_settimeofday, struct timeval32 __user *, tv,
 			return -EFAULT;
 	}
 
-<<<<<<< HEAD
-	kts.tv_nsec *= 1000;
-
-	return do_sys_settimeofday(tv ? &kts : NULL, tz ? &ktz : NULL);
-}
-
-SYSCALL_DEFINE2(osf_getitimer, int, which, struct itimerval32 __user *, it)
-{
-	struct itimerval kit;
-	int error;
-
-	error = do_getitimer(which, &kit);
-	if (!error && put_it32(it, &kit))
-		error = -EFAULT;
-
-	return error;
-}
-
-SYSCALL_DEFINE3(osf_setitimer, int, which, struct itimerval32 __user *, in,
-		struct itimerval32 __user *, out)
-{
-	struct itimerval kin, kout;
-	int error;
-
-	if (in) {
-		if (get_it32(&kin, in))
-			return -EFAULT;
-	} else
-		memset(&kin, 0, sizeof(kin));
-
-	error = do_setitimer(which, &kin, out ? &kout : NULL);
-	if (error || !out)
-		return error;
-
-	if (put_it32(out, &kout))
-		return -EFAULT;
-
-	return 0;
-
-=======
 	return do_sys_settimeofday64(tv ? &kts : NULL, tz ? &ktz : NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE2(osf_utimes, const char __user *, filename,
 		struct timeval32 __user *, tvs)
 {
-<<<<<<< HEAD
-	struct timespec tv[2];
-
-	if (tvs) {
-		struct timeval ktvs[2];
-		if (get_tv32(&ktvs[0], &tvs[0]) ||
-		    get_tv32(&ktvs[1], &tvs[1]))
-			return -EFAULT;
-
-		if (ktvs[0].tv_usec < 0 || ktvs[0].tv_usec >= 1000000 ||
-		    ktvs[1].tv_usec < 0 || ktvs[1].tv_usec >= 1000000)
-			return -EINVAL;
-
-		tv[0].tv_sec = ktvs[0].tv_sec;
-		tv[0].tv_nsec = 1000 * ktvs[0].tv_usec;
-		tv[1].tv_sec = ktvs[1].tv_sec;
-		tv[1].tv_nsec = 1000 * ktvs[1].tv_usec;
-=======
 	struct timespec64 tv[2];
 
 	if (tvs) {
@@ -1380,7 +1027,6 @@ SYSCALL_DEFINE2(osf_utimes, const char __user *, filename,
 		if (tv[0].tv_nsec < 0 || tv[0].tv_nsec >= 1000000000 ||
 		    tv[1].tv_nsec < 0 || tv[1].tv_nsec >= 1000000000)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return do_utimes(AT_FDCWD, filename, tvs ? tv : NULL, 0);
@@ -1389,24 +1035,6 @@ SYSCALL_DEFINE2(osf_utimes, const char __user *, filename,
 SYSCALL_DEFINE5(osf_select, int, n, fd_set __user *, inp, fd_set __user *, outp,
 		fd_set __user *, exp, struct timeval32 __user *, tvp)
 {
-<<<<<<< HEAD
-	struct timespec end_time, *to = NULL;
-	if (tvp) {
-		time_t sec, usec;
-
-		to = &end_time;
-
-		if (!access_ok(VERIFY_READ, tvp, sizeof(*tvp))
-		    || __get_user(sec, &tvp->tv_sec)
-		    || __get_user(usec, &tvp->tv_usec)) {
-		    	return -EFAULT;
-		}
-
-		if (sec < 0 || usec < 0)
-			return -EINVAL;
-
-		if (poll_select_set_timeout(to, sec, usec * NSEC_PER_USEC))
-=======
 	struct timespec64 end_time, *to = NULL;
 	if (tvp) {
 		struct timespec64 tv;
@@ -1419,7 +1047,6 @@ SYSCALL_DEFINE5(osf_select, int, n, fd_set __user *, inp, fd_set __user *, outp,
 			return -EINVAL;
 
 		if (poll_select_set_timeout(to, tv.tv_sec, tv.tv_nsec))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;		
 
 	}
@@ -1450,11 +1077,8 @@ struct rusage32 {
 SYSCALL_DEFINE2(osf_getrusage, int, who, struct rusage32 __user *, ru)
 {
 	struct rusage32 r;
-<<<<<<< HEAD
-=======
 	u64 utime, stime;
 	unsigned long utime_jiffies, stime_jiffies;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (who != RUSAGE_SELF && who != RUSAGE_CHILDREN)
 		return -EINVAL;
@@ -1462,29 +1086,19 @@ SYSCALL_DEFINE2(osf_getrusage, int, who, struct rusage32 __user *, ru)
 	memset(&r, 0, sizeof(r));
 	switch (who) {
 	case RUSAGE_SELF:
-<<<<<<< HEAD
-		jiffies_to_timeval32(current->utime, &r.ru_utime);
-		jiffies_to_timeval32(current->stime, &r.ru_stime);
-=======
 		task_cputime(current, &utime, &stime);
 		utime_jiffies = nsecs_to_jiffies(utime);
 		stime_jiffies = nsecs_to_jiffies(stime);
 		jiffies_to_timeval32(utime_jiffies, &r.ru_utime);
 		jiffies_to_timeval32(stime_jiffies, &r.ru_stime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r.ru_minflt = current->min_flt;
 		r.ru_majflt = current->maj_flt;
 		break;
 	case RUSAGE_CHILDREN:
-<<<<<<< HEAD
-		jiffies_to_timeval32(current->signal->cutime, &r.ru_utime);
-		jiffies_to_timeval32(current->signal->cstime, &r.ru_stime);
-=======
 		utime_jiffies = nsecs_to_jiffies(current->signal->cutime);
 		stime_jiffies = nsecs_to_jiffies(current->signal->cstime);
 		jiffies_to_timeval32(utime_jiffies, &r.ru_utime);
 		jiffies_to_timeval32(stime_jiffies, &r.ru_stime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r.ru_minflt = current->signal->cmin_flt;
 		r.ru_majflt = current->signal->cmaj_flt;
 		break;
@@ -1497,47 +1111,6 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 		struct rusage32 __user *, ur)
 {
 	struct rusage r;
-<<<<<<< HEAD
-	long ret, err;
-	unsigned int status = 0;
-	mm_segment_t old_fs;
-
-	if (!ur)
-		return sys_wait4(pid, ustatus, options, NULL);
-
-	old_fs = get_fs();
-		
-	set_fs (KERNEL_DS);
-	ret = sys_wait4(pid, (unsigned int __user *) &status, options,
-			(struct rusage __user *) &r);
-	set_fs (old_fs);
-
-	if (!access_ok(VERIFY_WRITE, ur, sizeof(*ur)))
-		return -EFAULT;
-
-	err = 0;
-	err |= put_user(status, ustatus);
-	err |= __put_user(r.ru_utime.tv_sec, &ur->ru_utime.tv_sec);
-	err |= __put_user(r.ru_utime.tv_usec, &ur->ru_utime.tv_usec);
-	err |= __put_user(r.ru_stime.tv_sec, &ur->ru_stime.tv_sec);
-	err |= __put_user(r.ru_stime.tv_usec, &ur->ru_stime.tv_usec);
-	err |= __put_user(r.ru_maxrss, &ur->ru_maxrss);
-	err |= __put_user(r.ru_ixrss, &ur->ru_ixrss);
-	err |= __put_user(r.ru_idrss, &ur->ru_idrss);
-	err |= __put_user(r.ru_isrss, &ur->ru_isrss);
-	err |= __put_user(r.ru_minflt, &ur->ru_minflt);
-	err |= __put_user(r.ru_majflt, &ur->ru_majflt);
-	err |= __put_user(r.ru_nswap, &ur->ru_nswap);
-	err |= __put_user(r.ru_inblock, &ur->ru_inblock);
-	err |= __put_user(r.ru_oublock, &ur->ru_oublock);
-	err |= __put_user(r.ru_msgsnd, &ur->ru_msgsnd);
-	err |= __put_user(r.ru_msgrcv, &ur->ru_msgrcv);
-	err |= __put_user(r.ru_nsignals, &ur->ru_nsignals);
-	err |= __put_user(r.ru_nvcsw, &ur->ru_nvcsw);
-	err |= __put_user(r.ru_nivcsw, &ur->ru_nivcsw);
-
-	return err ? err : ret;
-=======
 	long err = kernel_wait4(pid, ustatus, options, &r);
 	if (err <= 0)
 		return err;
@@ -1551,7 +1124,6 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 	      sizeof(struct rusage32) - offsetof(struct rusage32, ru_maxrss)))
 		return -EFAULT;
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1562,30 +1134,18 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 SYSCALL_DEFINE2(osf_usleep_thread, struct timeval32 __user *, sleep,
 		struct timeval32 __user *, remain)
 {
-<<<<<<< HEAD
-	struct timeval tmp;
-=======
 	struct timespec64 tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long ticks;
 
 	if (get_tv32(&tmp, sleep))
 		goto fault;
 
-<<<<<<< HEAD
-	ticks = timeval_to_jiffies(&tmp);
-=======
 	ticks = timespec64_to_jiffies(&tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ticks = schedule_timeout_interruptible(ticks);
 
 	if (remain) {
-<<<<<<< HEAD
-		jiffies_to_timeval(ticks, &tmp);
-=======
 		jiffies_to_timespec64(ticks, &tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (put_tv32(remain, &tmp))
 			goto fault;
 	}
@@ -1627,21 +1187,13 @@ struct timex32 {
 
 SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
 {
-<<<<<<< HEAD
-        struct timex txc;
-=======
 	struct __kernel_timex txc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/* copy relevant bits of struct timex. */
 	if (copy_from_user(&txc, txc_p, offsetof(struct timex32, time)) ||
 	    copy_from_user(&txc.tick, &txc_p->tick, sizeof(struct timex32) - 
-<<<<<<< HEAD
-			   offsetof(struct timex32, time)))
-=======
 			   offsetof(struct timex32, tick)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  return -EFAULT;
 
 	ret = do_adjtimex(&txc);	
@@ -1652,12 +1204,8 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
 	if (copy_to_user(txc_p, &txc, offsetof(struct timex32, time)) ||
 	    (copy_to_user(&txc_p->tick, &txc.tick, sizeof(struct timex32) - 
 			  offsetof(struct timex32, tick))) ||
-<<<<<<< HEAD
-	    (put_tv32(&txc_p->time, &txc.time)))
-=======
 	    (put_user(txc.time.tv_sec, &txc_p->time.tv_sec)) ||
 	    (put_user(txc.time.tv_usec, &txc_p->time.tv_usec)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  return -EFAULT;
 
 	return ret;
@@ -1670,19 +1218,6 @@ static unsigned long
 arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
 		         unsigned long limit)
 {
-<<<<<<< HEAD
-	struct vm_area_struct *vma = find_vma(current->mm, addr);
-
-	while (1) {
-		/* At this point:  (!vma || addr < vma->vm_end). */
-		if (limit - len < addr)
-			return -ENOMEM;
-		if (!vma || addr + len <= vm_start_gap(vma))
-			return addr;
-		addr = vma->vm_end;
-		vma = vma->vm_next;
-	}
-=======
 	struct vm_unmapped_area_info info;
 
 	info.flags = 0;
@@ -1692,7 +1227,6 @@ arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
 	info.align_mask = 0;
 	info.align_offset = 0;
 	return vm_unmapped_area(&info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 unsigned long
@@ -1742,46 +1276,6 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 	return addr;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_OSF4_COMPAT
-
-/* Clear top 32 bits of iov_len in the user's buffer for
-   compatibility with old versions of OSF/1 where iov_len
-   was defined as int. */
-static int
-osf_fix_iov_len(const struct iovec __user *iov, unsigned long count)
-{
-	unsigned long i;
-
-	for (i = 0 ; i < count ; i++) {
-		int __user *iov_len_high = (int __user *)&iov[i].iov_len + 1;
-
-		if (put_user(0, iov_len_high))
-			return -EFAULT;
-	}
-	return 0;
-}
-
-SYSCALL_DEFINE3(osf_readv, unsigned long, fd,
-		const struct iovec __user *, vector, unsigned long, count)
-{
-	if (unlikely(personality(current->personality) == PER_OSF4))
-		if (osf_fix_iov_len(vector, count))
-			return -EFAULT;
-	return sys_readv(fd, vector, count);
-}
-
-SYSCALL_DEFINE3(osf_writev, unsigned long, fd,
-		const struct iovec __user *, vector, unsigned long, count)
-{
-	if (unlikely(personality(current->personality) == PER_OSF4))
-		if (osf_fix_iov_len(vector, count))
-			return -EFAULT;
-	return sys_writev(fd, vector, count);
-}
-
-#endif
-=======
 SYSCALL_DEFINE2(osf_getpriority, int, which, int, who)
 {
 	int prio = sys_getpriority(which, who);
@@ -1830,4 +1324,3 @@ SYSCALL_DEFINE1(sethae, unsigned long, val)
 	current_pt_regs()->hae = val;
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

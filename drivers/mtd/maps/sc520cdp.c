@@ -1,37 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sc520cdp.c -- MTD map driver for AMD SC520 Customer Development Platform
  *
  * Copyright (C) 2001 Sysgo Real-Time Solutions GmbH
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
- *
- *
- * The SC520CDP is an evaluation board for the Elan SC520 processor available
- * from AMD. It has two banks of 32-bit Flash ROM, each 8 Megabytes in size,
- * and up to 512 KiB of 8-bit DIL Flash ROM.
- * For details see http://www.amd.com/products/epd/desiging/evalboards/18.elansc520/520_cdp_brief/index.html
-=======
  * The SC520CDP is an evaluation board for the Elan SC520 processor available
  * from AMD. It has two banks of 32-bit Flash ROM, each 8 Megabytes in size,
  * and up to 512 KiB of 8-bit DIL Flash ROM.
  * For details see https://www.amd.com/products/epd/desiging/evalboards/18.elansc520/520_cdp_brief/index.html
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -194,22 +169,13 @@ static const struct sc520_par_table par_table[NUM_FLASH_BANKS] =
 
 static void sc520cdp_setup_par(void)
 {
-<<<<<<< HEAD
-	volatile unsigned long __iomem *mmcr;
-=======
 	unsigned long __iomem *mmcr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long mmcr_val;
 	int i, j;
 
 	/* map in SC520's MMCR area */
-<<<<<<< HEAD
-	mmcr = ioremap_nocache(SC520_MMCR_BASE, SC520_MMCR_EXTENT);
-	if(!mmcr) { /* ioremap_nocache failed: skip the PAR reprogramming */
-=======
 	mmcr = ioremap(SC520_MMCR_BASE, SC520_MMCR_EXTENT);
 	if(!mmcr) { /* ioremap failed: skip the PAR reprogramming */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* force physical address fields to BIOS defaults: */
 		for(i = 0; i < NUM_FLASH_BANKS; i++)
 			sc520cdp_map[i].phys = par_table[i].default_address;
@@ -223,19 +189,11 @@ static void sc520cdp_setup_par(void)
 	*/
 	for(i = 0; i < NUM_FLASH_BANKS; i++) {		/* for each par_table entry  */
 		for(j = 0; j < NUM_SC520_PAR; j++) {	/* for each PAR register     */
-<<<<<<< HEAD
-			mmcr_val = mmcr[SC520_PAR(j)];
-			/* if target device field matches, reprogram the PAR */
-			if((mmcr_val & SC520_PAR_TRGDEV) == par_table[i].trgdev)
-			{
-				mmcr[SC520_PAR(j)] = par_table[i].new_par;
-=======
 			mmcr_val = readl(&mmcr[SC520_PAR(j)]);
 			/* if target device field matches, reprogram the PAR */
 			if((mmcr_val & SC520_PAR_TRGDEV) == par_table[i].trgdev)
 			{
 				writel(par_table[i].new_par, &mmcr[SC520_PAR(j)]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
@@ -255,11 +213,7 @@ static void sc520cdp_setup_par(void)
 
 static int __init init_sc520cdp(void)
 {
-<<<<<<< HEAD
-	int i, devices_found = 0;
-=======
 	int i, j, devices_found = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef REPROGRAM_PAR
 	/* reprogram PAR registers so flash appears at the desired addresses */
@@ -271,12 +225,6 @@ static int __init init_sc520cdp(void)
 			(unsigned long long)sc520cdp_map[i].size,
 			(unsigned long long)sc520cdp_map[i].phys);
 
-<<<<<<< HEAD
-		sc520cdp_map[i].virt = ioremap_nocache(sc520cdp_map[i].phys, sc520cdp_map[i].size);
-
-		if (!sc520cdp_map[i].virt) {
-			printk("Failed to ioremap_nocache\n");
-=======
 		sc520cdp_map[i].virt = ioremap(sc520cdp_map[i].phys, sc520cdp_map[i].size);
 
 		if (!sc520cdp_map[i].virt) {
@@ -287,7 +235,6 @@ static int __init init_sc520cdp(void)
 					iounmap(sc520cdp_map[j].virt);
 				}
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 

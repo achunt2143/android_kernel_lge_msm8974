@@ -1,26 +1,3 @@
-<<<<<<< HEAD
-/*
- * Unified UUID/GUID definition
- *
- * Copyright (C) 2009, Intel Corp.
- *	Huang Ying <ying.huang@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation;
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-#include <linux/kernel.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Unified UUID/GUID definition
@@ -32,22 +9,10 @@
 #include <linux/kernel.h>
 #include <linux/ctype.h>
 #include <linux/errno.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/uuid.h>
 #include <linux/random.h>
 
-<<<<<<< HEAD
-static void __uuid_gen_common(__u8 b[16])
-{
-	int i;
-	u32 r;
-
-	for (i = 0; i < 4; i++) {
-		r = random32();
-		memcpy(b + i * 4, &r, 4);
-	}
-=======
 const guid_t guid_null;
 EXPORT_SYMBOL(guid_null);
 const uuid_t uuid_null;
@@ -88,38 +53,24 @@ EXPORT_SYMBOL(generate_random_guid);
 static void __uuid_gen_common(__u8 b[16])
 {
 	get_random_bytes(b, 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* reversion 0b10 */
 	b[8] = (b[8] & 0x3F) | 0x80;
 }
 
-<<<<<<< HEAD
-void uuid_le_gen(uuid_le *lu)
-=======
 void guid_gen(guid_t *lu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__uuid_gen_common(lu->b);
 	/* version 4 : random generation */
 	lu->b[7] = (lu->b[7] & 0x0F) | 0x40;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(uuid_le_gen);
-
-void uuid_be_gen(uuid_be *bu)
-=======
 EXPORT_SYMBOL_GPL(guid_gen);
 
 void uuid_gen(uuid_t *bu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__uuid_gen_common(bu->b);
 	/* version 4 : random generation */
 	bu->b[6] = (bu->b[6] & 0x0F) | 0x40;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(uuid_be_gen);
-=======
 EXPORT_SYMBOL_GPL(uuid_gen);
 
 /**
@@ -180,4 +131,3 @@ int uuid_parse(const char *uuid, uuid_t *u)
 	return __uuid_parse(uuid, u->b, uuid_index);
 }
 EXPORT_SYMBOL(uuid_parse);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

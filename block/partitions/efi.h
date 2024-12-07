@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /************************************************************
  * EFI GUID Partition Table
  * Per Intel EFI Specification v1.02
@@ -9,24 +6,6 @@
  *
  * By Matt Domsch <Matt_Domsch@dell.com>  Fri Sep 22 22:15:56 CDT 2000  
  *   Copyright 2000,2001 Dell Inc.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- * 
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ************************************************************/
 
 #ifndef FS_PART_EFI_H_INCLUDED
@@ -34,29 +13,19 @@
 
 #include <linux/types.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-#include <linux/genhd.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/major.h>
 #include <linux/string.h>
 #include <linux/efi.h>
-<<<<<<< HEAD
-=======
 #include <linux/compiler.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MSDOS_MBR_SIGNATURE 0xaa55
 #define EFI_PMBR_OSTYPE_EFI 0xEF
 #define EFI_PMBR_OSTYPE_EFI_GPT 0xEE
 
-<<<<<<< HEAD
-=======
 #define GPT_MBR_PROTECTIVE  1
 #define GPT_MBR_HYBRID      2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GPT_HEADER_SIGNATURE 0x5452415020494645ULL
 #define GPT_HEADER_REVISION_V1 0x00010000
 #define GPT_PRIMARY_PARTITION_TABLE_LBA 1
@@ -104,21 +73,13 @@ typedef struct _gpt_header {
 	 *
 	 * uint8_t		reserved2[ BlockSize - 92 ];
 	 */
-<<<<<<< HEAD
-} __attribute__ ((packed)) gpt_header;
-=======
 } __packed gpt_header;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct _gpt_entry_attributes {
 	u64 required_to_function:1;
 	u64 reserved:47;
         u64 type_guid_specific:16;
-<<<<<<< HEAD
-} __attribute__ ((packed)) gpt_entry_attributes;
-=======
 } __packed gpt_entry_attributes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct _gpt_entry {
 	efi_guid_t partition_type_guid;
@@ -126,10 +87,6 @@ typedef struct _gpt_entry {
 	__le64 starting_lba;
 	__le64 ending_lba;
 	gpt_entry_attributes attributes;
-<<<<<<< HEAD
-	efi_char16_t partition_name[72 / sizeof (efi_char16_t)];
-} __attribute__ ((packed)) gpt_entry;
-=======
 	__le16 partition_name[72/sizeof(__le16)];
 } __packed gpt_entry;
 
@@ -146,44 +103,13 @@ typedef struct _gpt_mbr_record {
 	__le32	size_in_lba;    /* used by EFI - size of pt in LBA */
 } __packed gpt_mbr_record;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct _legacy_mbr {
 	u8 boot_code[440];
 	__le32 unique_mbr_signature;
 	__le16 unknown;
-<<<<<<< HEAD
-	struct partition partition_record[4];
-	__le16 signature;
-} __attribute__ ((packed)) legacy_mbr;
-
-/* Functions */
-extern int efi_partition(struct parsed_partitions *state);
-
-#endif
-
-/*
- * Overrides for Emacs so that we follow Linus's tabbing style.
- * Emacs will notice this stuff at the end of the file and automatically
- * adjust the settings for this buffer only.  This must remain at the end
- * of the file.
- * --------------------------------------------------------------------------
- * Local variables:
- * c-indent-level: 4 
- * c-brace-imaginary-offset: 0
- * c-brace-offset: -4
- * c-argdecl-indent: 4
- * c-label-offset: -4
- * c-continued-statement-offset: 4
- * c-continued-brace-offset: 0
- * indent-tabs-mode: nil
- * tab-width: 8
- * End:
- */
-=======
 	gpt_mbr_record partition_record[4];
 	__le16 signature;
 } __packed legacy_mbr;
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

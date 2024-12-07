@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) ST-Ericsson AB 2010
- * Author:	Sjur Brendeland/sjur.brandeland@stericsson.com
- * License terms: GNU General Public License (GPL) version 2
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) ST-Ericsson AB 2010
  * Author:	Sjur Brendeland
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
@@ -36,16 +29,12 @@ struct cfserl {
 static int cfserl_receive(struct cflayer *layr, struct cfpkt *pkt);
 static int cfserl_transmit(struct cflayer *layr, struct cfpkt *pkt);
 static void cfserl_ctrlcmd(struct cflayer *layr, enum caif_ctrlcmd ctrl,
-<<<<<<< HEAD
-				int phyid);
-=======
 			   int phyid);
 
 void cfserl_release(struct cflayer *layer)
 {
 	kfree(layer);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cflayer *cfserl_create(int instance, bool use_stx)
 {
@@ -139,10 +128,6 @@ static int cfserl_receive(struct cflayer *l, struct cfpkt *newpkt)
 				if (pkt != NULL)
 					cfpkt_destroy(pkt);
 				layr->incomplete_frm = NULL;
-<<<<<<< HEAD
-				expectlen = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				spin_unlock(&layr->sync);
 				return -EPROTO;
 			}
@@ -201,11 +186,7 @@ static int cfserl_transmit(struct cflayer *layer, struct cfpkt *newpkt)
 }
 
 static void cfserl_ctrlcmd(struct cflayer *layr, enum caif_ctrlcmd ctrl,
-<<<<<<< HEAD
-				int phyid)
-=======
 			   int phyid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	layr->up->ctrlcmd(layr->up, ctrl, phyid);
 }

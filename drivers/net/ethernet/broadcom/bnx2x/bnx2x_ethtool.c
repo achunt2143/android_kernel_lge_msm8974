@@ -1,24 +1,14 @@
-<<<<<<< HEAD
-/* bnx2x_ethtool.c: Broadcom Everest network driver.
- *
- * Copyright (c) 2007-2012 Broadcom Corporation
-=======
 /* bnx2x_ethtool.c: QLogic Everest network driver.
  *
  * Copyright (c) 2007-2013 Broadcom Corporation
  * Copyright (c) 2014 QLogic Corporation
  * All rights reserved
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation.
  *
-<<<<<<< HEAD
- * Maintained by: Eilon Greenstein <eilong@broadcom.com>
-=======
  * Maintained by: Ariel Elior <ariel.elior@qlogic.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Written by: Eliezer Tamir
  * Based on code from Michael Chan's bnx2 driver
  * UDP CSUM errata workaround by Arik Gendelman
@@ -34,19 +24,10 @@
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/crc32.h>
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "bnx2x.h"
 #include "bnx2x_cmn.h"
 #include "bnx2x_dump.h"
 #include "bnx2x_init.h"
-<<<<<<< HEAD
-#include "bnx2x_sp.h"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Note: in the format strings below %s is replaced by the queue-name which is
  * either its index or 'fcoe' for the fcoe queue. Make sure the format string
@@ -71,11 +52,7 @@ static const struct {
 	{ Q_STATS_OFFSET32(rx_skb_alloc_failed),
 					 4, "[%s]: rx_skb_alloc_discard" },
 	{ Q_STATS_OFFSET32(hw_csum_err), 4, "[%s]: rx_csum_offload_errors" },
-<<<<<<< HEAD
-
-=======
 	{ Q_STATS_OFFSET32(driver_xoff), 4, "[%s]: tx_exhaustion_events" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ Q_STATS_OFFSET32(total_bytes_transmitted_hi),	8, "[%s]: tx_bytes" },
 /* 10 */{ Q_STATS_OFFSET32(total_unicast_packets_transmitted_hi),
 						8, "[%s]: tx_ucast_packets" },
@@ -87,13 +64,9 @@ static const struct {
 						8, "[%s]: tpa_aggregations" },
 	{ Q_STATS_OFFSET32(total_tpa_aggregated_frames_hi),
 					8, "[%s]: tpa_aggregated_frames"},
-<<<<<<< HEAD
-	{ Q_STATS_OFFSET32(total_tpa_bytes_hi),	8, "[%s]: tpa_bytes"}
-=======
 	{ Q_STATS_OFFSET32(total_tpa_bytes_hi),	8, "[%s]: tpa_bytes"},
 	{ Q_STATS_OFFSET32(driver_filtered_tx_pkt),
 					4, "[%s]: driver_filtered_tx_pkt" }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define BNX2X_NUM_Q_STATS ARRAY_SIZE(bnx2x_q_stats_arr)
@@ -101,118 +74,6 @@ static const struct {
 static const struct {
 	long offset;
 	int size;
-<<<<<<< HEAD
-	u32 flags;
-#define STATS_FLAGS_PORT		1
-#define STATS_FLAGS_FUNC		2
-#define STATS_FLAGS_BOTH		(STATS_FLAGS_FUNC | STATS_FLAGS_PORT)
-	char string[ETH_GSTRING_LEN];
-} bnx2x_stats_arr[] = {
-/* 1 */	{ STATS_OFFSET32(total_bytes_received_hi),
-				8, STATS_FLAGS_BOTH, "rx_bytes" },
-	{ STATS_OFFSET32(error_bytes_received_hi),
-				8, STATS_FLAGS_BOTH, "rx_error_bytes" },
-	{ STATS_OFFSET32(total_unicast_packets_received_hi),
-				8, STATS_FLAGS_BOTH, "rx_ucast_packets" },
-	{ STATS_OFFSET32(total_multicast_packets_received_hi),
-				8, STATS_FLAGS_BOTH, "rx_mcast_packets" },
-	{ STATS_OFFSET32(total_broadcast_packets_received_hi),
-				8, STATS_FLAGS_BOTH, "rx_bcast_packets" },
-	{ STATS_OFFSET32(rx_stat_dot3statsfcserrors_hi),
-				8, STATS_FLAGS_PORT, "rx_crc_errors" },
-	{ STATS_OFFSET32(rx_stat_dot3statsalignmenterrors_hi),
-				8, STATS_FLAGS_PORT, "rx_align_errors" },
-	{ STATS_OFFSET32(rx_stat_etherstatsundersizepkts_hi),
-				8, STATS_FLAGS_PORT, "rx_undersize_packets" },
-	{ STATS_OFFSET32(etherstatsoverrsizepkts_hi),
-				8, STATS_FLAGS_PORT, "rx_oversize_packets" },
-/* 10 */{ STATS_OFFSET32(rx_stat_etherstatsfragments_hi),
-				8, STATS_FLAGS_PORT, "rx_fragments" },
-	{ STATS_OFFSET32(rx_stat_etherstatsjabbers_hi),
-				8, STATS_FLAGS_PORT, "rx_jabbers" },
-	{ STATS_OFFSET32(no_buff_discard_hi),
-				8, STATS_FLAGS_BOTH, "rx_discards" },
-	{ STATS_OFFSET32(mac_filter_discard),
-				4, STATS_FLAGS_PORT, "rx_filtered_packets" },
-	{ STATS_OFFSET32(mf_tag_discard),
-				4, STATS_FLAGS_PORT, "rx_mf_tag_discard" },
-	{ STATS_OFFSET32(pfc_frames_received_hi),
-				8, STATS_FLAGS_PORT, "pfc_frames_received" },
-	{ STATS_OFFSET32(pfc_frames_sent_hi),
-				8, STATS_FLAGS_PORT, "pfc_frames_sent" },
-	{ STATS_OFFSET32(brb_drop_hi),
-				8, STATS_FLAGS_PORT, "rx_brb_discard" },
-	{ STATS_OFFSET32(brb_truncate_hi),
-				8, STATS_FLAGS_PORT, "rx_brb_truncate" },
-	{ STATS_OFFSET32(pause_frames_received_hi),
-				8, STATS_FLAGS_PORT, "rx_pause_frames" },
-	{ STATS_OFFSET32(rx_stat_maccontrolframesreceived_hi),
-				8, STATS_FLAGS_PORT, "rx_mac_ctrl_frames" },
-	{ STATS_OFFSET32(nig_timer_max),
-			4, STATS_FLAGS_PORT, "rx_constant_pause_events" },
-/* 20 */{ STATS_OFFSET32(rx_err_discard_pkt),
-				4, STATS_FLAGS_BOTH, "rx_phy_ip_err_discards"},
-	{ STATS_OFFSET32(rx_skb_alloc_failed),
-				4, STATS_FLAGS_BOTH, "rx_skb_alloc_discard" },
-	{ STATS_OFFSET32(hw_csum_err),
-				4, STATS_FLAGS_BOTH, "rx_csum_offload_errors" },
-
-	{ STATS_OFFSET32(total_bytes_transmitted_hi),
-				8, STATS_FLAGS_BOTH, "tx_bytes" },
-	{ STATS_OFFSET32(tx_stat_ifhcoutbadoctets_hi),
-				8, STATS_FLAGS_PORT, "tx_error_bytes" },
-	{ STATS_OFFSET32(total_unicast_packets_transmitted_hi),
-				8, STATS_FLAGS_BOTH, "tx_ucast_packets" },
-	{ STATS_OFFSET32(total_multicast_packets_transmitted_hi),
-				8, STATS_FLAGS_BOTH, "tx_mcast_packets" },
-	{ STATS_OFFSET32(total_broadcast_packets_transmitted_hi),
-				8, STATS_FLAGS_BOTH, "tx_bcast_packets" },
-	{ STATS_OFFSET32(tx_stat_dot3statsinternalmactransmiterrors_hi),
-				8, STATS_FLAGS_PORT, "tx_mac_errors" },
-	{ STATS_OFFSET32(rx_stat_dot3statscarriersenseerrors_hi),
-				8, STATS_FLAGS_PORT, "tx_carrier_errors" },
-/* 30 */{ STATS_OFFSET32(tx_stat_dot3statssinglecollisionframes_hi),
-				8, STATS_FLAGS_PORT, "tx_single_collisions" },
-	{ STATS_OFFSET32(tx_stat_dot3statsmultiplecollisionframes_hi),
-				8, STATS_FLAGS_PORT, "tx_multi_collisions" },
-	{ STATS_OFFSET32(tx_stat_dot3statsdeferredtransmissions_hi),
-				8, STATS_FLAGS_PORT, "tx_deferred" },
-	{ STATS_OFFSET32(tx_stat_dot3statsexcessivecollisions_hi),
-				8, STATS_FLAGS_PORT, "tx_excess_collisions" },
-	{ STATS_OFFSET32(tx_stat_dot3statslatecollisions_hi),
-				8, STATS_FLAGS_PORT, "tx_late_collisions" },
-	{ STATS_OFFSET32(tx_stat_etherstatscollisions_hi),
-				8, STATS_FLAGS_PORT, "tx_total_collisions" },
-	{ STATS_OFFSET32(tx_stat_etherstatspkts64octets_hi),
-				8, STATS_FLAGS_PORT, "tx_64_byte_packets" },
-	{ STATS_OFFSET32(tx_stat_etherstatspkts65octetsto127octets_hi),
-			8, STATS_FLAGS_PORT, "tx_65_to_127_byte_packets" },
-	{ STATS_OFFSET32(tx_stat_etherstatspkts128octetsto255octets_hi),
-			8, STATS_FLAGS_PORT, "tx_128_to_255_byte_packets" },
-	{ STATS_OFFSET32(tx_stat_etherstatspkts256octetsto511octets_hi),
-			8, STATS_FLAGS_PORT, "tx_256_to_511_byte_packets" },
-/* 40 */{ STATS_OFFSET32(tx_stat_etherstatspkts512octetsto1023octets_hi),
-			8, STATS_FLAGS_PORT, "tx_512_to_1023_byte_packets" },
-	{ STATS_OFFSET32(etherstatspkts1024octetsto1522octets_hi),
-			8, STATS_FLAGS_PORT, "tx_1024_to_1522_byte_packets" },
-	{ STATS_OFFSET32(etherstatspktsover1522octets_hi),
-			8, STATS_FLAGS_PORT, "tx_1523_to_9022_byte_packets" },
-	{ STATS_OFFSET32(pause_frames_sent_hi),
-				8, STATS_FLAGS_PORT, "tx_pause_frames" },
-	{ STATS_OFFSET32(total_tpa_aggregations_hi),
-			8, STATS_FLAGS_FUNC, "tpa_aggregations" },
-	{ STATS_OFFSET32(total_tpa_aggregated_frames_hi),
-			8, STATS_FLAGS_FUNC, "tpa_aggregated_frames"},
-	{ STATS_OFFSET32(total_tpa_bytes_hi),
-			8, STATS_FLAGS_FUNC, "tpa_bytes"},
-	{ STATS_OFFSET32(recoverable_error),
-			4, STATS_FLAGS_FUNC, "recoverable_errors" },
-	{ STATS_OFFSET32(unrecoverable_error),
-			4, STATS_FLAGS_FUNC, "unrecoverable_errors" },
-};
-
-#define BNX2X_NUM_STATS		ARRAY_SIZE(bnx2x_stats_arr)
-=======
 	bool is_port_stat;
 	char string[ETH_GSTRING_LEN];
 } bnx2x_stats_arr[] = {
@@ -328,18 +189,13 @@ static const struct {
 
 #define BNX2X_NUM_STATS		ARRAY_SIZE(bnx2x_stats_arr)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int bnx2x_get_port_type(struct bnx2x *bp)
 {
 	int port_type;
 	u32 phy_idx = bnx2x_get_cur_phy_idx(bp);
 	switch (bp->link_params.phy[phy_idx].media_type) {
-<<<<<<< HEAD
-	case ETH_PHY_SFP_FIBER:
-=======
 	case ETH_PHY_SFPP_10G_FIBER:
 	case ETH_PHY_SFP_1G_FIBER:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ETH_PHY_XFP_FIBER:
 	case ETH_PHY_KR:
 	case ETH_PHY_CX4:
@@ -362,45 +218,6 @@ static int bnx2x_get_port_type(struct bnx2x *bp)
 	return port_type;
 }
 
-<<<<<<< HEAD
-static int bnx2x_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct bnx2x *bp = netdev_priv(dev);
-	int cfg_idx = bnx2x_get_link_cfg_idx(bp);
-
-	/* Dual Media boards present all available port types */
-	cmd->supported = bp->port.supported[cfg_idx] |
-		(bp->port.supported[cfg_idx ^ 1] &
-		 (SUPPORTED_TP | SUPPORTED_FIBRE));
-	cmd->advertising = bp->port.advertising[cfg_idx];
-
-	if ((bp->state == BNX2X_STATE_OPEN) && (bp->link_vars.link_up)) {
-		if (!(bp->flags & MF_FUNC_DIS)) {
-			ethtool_cmd_speed_set(cmd, bp->link_vars.line_speed);
-			cmd->duplex = bp->link_vars.duplex;
-		} else {
-			ethtool_cmd_speed_set(
-				cmd, bp->link_params.req_line_speed[cfg_idx]);
-			cmd->duplex = bp->link_params.req_duplex[cfg_idx];
-		}
-
-		if (IS_MF(bp) && !BP_NOMCP(bp))
-			ethtool_cmd_speed_set(cmd, bnx2x_get_mf_speed(bp));
-	} else {
-		cmd->duplex = DUPLEX_UNKNOWN;
-		ethtool_cmd_speed_set(cmd, SPEED_UNKNOWN);
-	}
-
-	cmd->port = bnx2x_get_port_type(bp);
-
-	cmd->phy_address = bp->mdio.prtad;
-	cmd->transceiver = XCVR_INTERNAL;
-
-	if (bp->link_params.req_line_speed[cfg_idx] == SPEED_AUTO_NEG)
-		cmd->autoneg = AUTONEG_ENABLE;
-	else
-		cmd->autoneg = AUTONEG_DISABLE;
-=======
 static int bnx2x_get_vf_link_ksettings(struct net_device *dev,
 				       struct ethtool_link_ksettings *cmd)
 {
@@ -484,49 +301,11 @@ static int bnx2x_get_link_ksettings(struct net_device *dev,
 		cmd->base.autoneg = AUTONEG_ENABLE;
 	else
 		cmd->base.autoneg = AUTONEG_DISABLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Publish LP advertised speeds and FC */
 	if (bp->link_vars.link_status & LINK_STATUS_AUTO_NEGOTIATE_COMPLETE) {
 		u32 status = bp->link_vars.link_status;
 
-<<<<<<< HEAD
-		cmd->lp_advertising |= ADVERTISED_Autoneg;
-		if (status & LINK_STATUS_LINK_PARTNER_SYMMETRIC_PAUSE)
-			cmd->lp_advertising |= ADVERTISED_Pause;
-		if (status & LINK_STATUS_LINK_PARTNER_ASYMMETRIC_PAUSE)
-			cmd->lp_advertising |= ADVERTISED_Asym_Pause;
-
-		if (status & LINK_STATUS_LINK_PARTNER_10THD_CAPABLE)
-			cmd->lp_advertising |= ADVERTISED_10baseT_Half;
-		if (status & LINK_STATUS_LINK_PARTNER_10TFD_CAPABLE)
-			cmd->lp_advertising |= ADVERTISED_10baseT_Full;
-		if (status & LINK_STATUS_LINK_PARTNER_100TXHD_CAPABLE)
-			cmd->lp_advertising |= ADVERTISED_100baseT_Half;
-		if (status & LINK_STATUS_LINK_PARTNER_100TXFD_CAPABLE)
-			cmd->lp_advertising |= ADVERTISED_100baseT_Full;
-		if (status & LINK_STATUS_LINK_PARTNER_1000THD_CAPABLE)
-			cmd->lp_advertising |= ADVERTISED_1000baseT_Half;
-		if (status & LINK_STATUS_LINK_PARTNER_1000TFD_CAPABLE)
-			cmd->lp_advertising |= ADVERTISED_1000baseT_Full;
-		if (status & LINK_STATUS_LINK_PARTNER_2500XFD_CAPABLE)
-			cmd->lp_advertising |= ADVERTISED_2500baseX_Full;
-		if (status & LINK_STATUS_LINK_PARTNER_10GXFD_CAPABLE)
-			cmd->lp_advertising |= ADVERTISED_10000baseT_Full;
-	}
-
-	cmd->maxtxpkt = 0;
-	cmd->maxrxpkt = 0;
-
-	DP(BNX2X_MSG_ETHTOOL, "ethtool_cmd: cmd %d\n"
-	   "  supported 0x%x  advertising 0x%x  speed %u\n"
-	   "  duplex %d  port %d  phy_address %d  transceiver %d\n"
-	   "  autoneg %d  maxtxpkt %d  maxrxpkt %d\n",
-	   cmd->cmd, cmd->supported, cmd->advertising,
-	   ethtool_cmd_speed(cmd),
-	   cmd->duplex, cmd->port, cmd->phy_address, cmd->transceiver,
-	   cmd->autoneg, cmd->maxtxpkt, cmd->maxrxpkt);
-=======
 		lp_advertising |= ADVERTISED_Autoneg;
 		if (status & LINK_STATUS_LINK_PARTNER_SYMMETRIC_PAUSE)
 			lp_advertising |= ADVERTISED_Pause;
@@ -582,18 +361,10 @@ static int bnx2x_get_link_ksettings(struct net_device *dev,
 	   cmd->base.speed,
 	   cmd->base.duplex, cmd->base.port, cmd->base.phy_address,
 	   cmd->base.autoneg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int bnx2x_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct bnx2x *bp = netdev_priv(dev);
-	u32 advertising, cfg_idx, old_multi_phy_config, new_multi_phy_config;
-	u32 speed;
-=======
 static int bnx2x_set_link_ksettings(struct net_device *dev,
 				    const struct ethtool_link_ksettings *cmd)
 {
@@ -607,27 +378,12 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 						cmd->link_modes.supported);
 	ethtool_convert_link_mode_to_legacy_u32(&advertising,
 						cmd->link_modes.advertising);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_MF_SD(bp))
 		return 0;
 
 	DP(BNX2X_MSG_ETHTOOL, "ethtool_cmd: cmd %d\n"
 	   "  supported 0x%x  advertising 0x%x  speed %u\n"
-<<<<<<< HEAD
-	   "  duplex %d  port %d  phy_address %d  transceiver %d\n"
-	   "  autoneg %d  maxtxpkt %d  maxrxpkt %d\n",
-	   cmd->cmd, cmd->supported, cmd->advertising,
-	   ethtool_cmd_speed(cmd),
-	   cmd->duplex, cmd->port, cmd->phy_address, cmd->transceiver,
-	   cmd->autoneg, cmd->maxtxpkt, cmd->maxrxpkt);
-
-	speed = ethtool_cmd_speed(cmd);
-
-	/* If recieved a request for an unknown duplex, assume full*/
-	if (cmd->duplex == DUPLEX_UNKNOWN)
-		cmd->duplex = DUPLEX_FULL;
-=======
 	   "  duplex %d  port %d  phy_address %d\n"
 	   "  autoneg %d\n",
 	   cmd->base.cmd, supported, advertising,
@@ -640,7 +396,6 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 	/* If received a request for an unknown duplex, assume full*/
 	if (duplex == DUPLEX_UNKNOWN)
 		duplex = DUPLEX_FULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_MF_SI(bp)) {
 		u32 part;
@@ -676,53 +431,6 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 
 	cfg_idx = bnx2x_get_link_cfg_idx(bp);
 	old_multi_phy_config = bp->link_params.multi_phy_config;
-<<<<<<< HEAD
-	switch (cmd->port) {
-	case PORT_TP:
-		if (bp->port.supported[cfg_idx] & SUPPORTED_TP)
-			break; /* no port change */
-
-		if (!(bp->port.supported[0] & SUPPORTED_TP ||
-		      bp->port.supported[1] & SUPPORTED_TP)) {
-			DP(BNX2X_MSG_ETHTOOL, "Unsupported port type\n");
-			return -EINVAL;
-		}
-		bp->link_params.multi_phy_config &=
-			~PORT_HW_CFG_PHY_SELECTION_MASK;
-		if (bp->link_params.multi_phy_config &
-		    PORT_HW_CFG_PHY_SWAPPED_ENABLED)
-			bp->link_params.multi_phy_config |=
-			PORT_HW_CFG_PHY_SELECTION_SECOND_PHY;
-		else
-			bp->link_params.multi_phy_config |=
-			PORT_HW_CFG_PHY_SELECTION_FIRST_PHY;
-		break;
-	case PORT_FIBRE:
-	case PORT_DA:
-		if (bp->port.supported[cfg_idx] & SUPPORTED_FIBRE)
-			break; /* no port change */
-
-		if (!(bp->port.supported[0] & SUPPORTED_FIBRE ||
-		      bp->port.supported[1] & SUPPORTED_FIBRE)) {
-			DP(BNX2X_MSG_ETHTOOL, "Unsupported port type\n");
-			return -EINVAL;
-		}
-		bp->link_params.multi_phy_config &=
-			~PORT_HW_CFG_PHY_SELECTION_MASK;
-		if (bp->link_params.multi_phy_config &
-		    PORT_HW_CFG_PHY_SWAPPED_ENABLED)
-			bp->link_params.multi_phy_config |=
-			PORT_HW_CFG_PHY_SELECTION_FIRST_PHY;
-		else
-			bp->link_params.multi_phy_config |=
-			PORT_HW_CFG_PHY_SELECTION_SECOND_PHY;
-		break;
-	default:
-		DP(BNX2X_MSG_ETHTOOL, "Unsupported port type\n");
-		return -EINVAL;
-	}
-	/* Save new config in case command complete successully */
-=======
 	if (cmd->base.port != bnx2x_get_port_type(bp)) {
 		switch (cmd->base.port) {
 		case PORT_TP:
@@ -767,7 +475,6 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 		}
 	}
 	/* Save new config in case command complete successfully */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new_multi_phy_config = bp->link_params.multi_phy_config;
 	/* Get the new cfg_idx */
 	cfg_idx = bnx2x_get_link_cfg_idx(bp);
@@ -775,11 +482,7 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 	bp->link_params.multi_phy_config = old_multi_phy_config;
 	DP(BNX2X_MSG_ETHTOOL, "cfg_idx = %x\n", cfg_idx);
 
-<<<<<<< HEAD
-	if (cmd->autoneg == AUTONEG_ENABLE) {
-=======
 	if (cmd->base.autoneg == AUTONEG_ENABLE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 an_supported_speed = bp->port.supported[cfg_idx];
 		if (bp->link_params.phy[EXT_PHY1].type ==
 		    PORT_HW_CFG_XGXS_EXT_PHY_TYPE_BCM84833)
@@ -791,46 +494,13 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 		}
 
 		/* advertise the requested speed and duplex if supported */
-<<<<<<< HEAD
-		if (cmd->advertising & ~an_supported_speed) {
-=======
 		if (advertising & ~an_supported_speed) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DP(BNX2X_MSG_ETHTOOL,
 			   "Advertisement parameters are not supported\n");
 			return -EINVAL;
 		}
 
 		bp->link_params.req_line_speed[cfg_idx] = SPEED_AUTO_NEG;
-<<<<<<< HEAD
-		bp->link_params.req_duplex[cfg_idx] = cmd->duplex;
-		bp->port.advertising[cfg_idx] = (ADVERTISED_Autoneg |
-					 cmd->advertising);
-		if (cmd->advertising) {
-
-			bp->link_params.speed_cap_mask[cfg_idx] = 0;
-			if (cmd->advertising & ADVERTISED_10baseT_Half) {
-				bp->link_params.speed_cap_mask[cfg_idx] |=
-				PORT_HW_CFG_SPEED_CAPABILITY_D0_10M_HALF;
-			}
-			if (cmd->advertising & ADVERTISED_10baseT_Full)
-				bp->link_params.speed_cap_mask[cfg_idx] |=
-				PORT_HW_CFG_SPEED_CAPABILITY_D0_10M_FULL;
-
-			if (cmd->advertising & ADVERTISED_100baseT_Full)
-				bp->link_params.speed_cap_mask[cfg_idx] |=
-				PORT_HW_CFG_SPEED_CAPABILITY_D0_100M_FULL;
-
-			if (cmd->advertising & ADVERTISED_100baseT_Half) {
-				bp->link_params.speed_cap_mask[cfg_idx] |=
-				     PORT_HW_CFG_SPEED_CAPABILITY_D0_100M_HALF;
-			}
-			if (cmd->advertising & ADVERTISED_1000baseT_Half) {
-				bp->link_params.speed_cap_mask[cfg_idx] |=
-					PORT_HW_CFG_SPEED_CAPABILITY_D0_1G;
-			}
-			if (cmd->advertising & (ADVERTISED_1000baseT_Full |
-=======
 		bp->link_params.req_duplex[cfg_idx] = duplex;
 		bp->port.advertising[cfg_idx] = (ADVERTISED_Autoneg |
 					 advertising);
@@ -858,37 +528,25 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 					PORT_HW_CFG_SPEED_CAPABILITY_D0_1G;
 			}
 			if (advertising & (ADVERTISED_1000baseT_Full |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						ADVERTISED_1000baseKX_Full))
 				bp->link_params.speed_cap_mask[cfg_idx] |=
 					PORT_HW_CFG_SPEED_CAPABILITY_D0_1G;
 
-<<<<<<< HEAD
-			if (cmd->advertising & (ADVERTISED_10000baseT_Full |
-=======
 			if (advertising & (ADVERTISED_10000baseT_Full |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						ADVERTISED_10000baseKX4_Full |
 						ADVERTISED_10000baseKR_Full))
 				bp->link_params.speed_cap_mask[cfg_idx] |=
 					PORT_HW_CFG_SPEED_CAPABILITY_D0_10G;
-<<<<<<< HEAD
-=======
 
 			if (advertising & ADVERTISED_20000baseKR2_Full)
 				bp->link_params.speed_cap_mask[cfg_idx] |=
 					PORT_HW_CFG_SPEED_CAPABILITY_D0_20G;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else { /* forced speed */
 		/* advertise the requested speed and duplex if supported */
 		switch (speed) {
 		case SPEED_10:
-<<<<<<< HEAD
-			if (cmd->duplex == DUPLEX_FULL) {
-=======
 			if (duplex == DUPLEX_FULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (!(bp->port.supported[cfg_idx] &
 				      SUPPORTED_10baseT_Full)) {
 					DP(BNX2X_MSG_ETHTOOL,
@@ -912,11 +570,7 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 			break;
 
 		case SPEED_100:
-<<<<<<< HEAD
-			if (cmd->duplex == DUPLEX_FULL) {
-=======
 			if (duplex == DUPLEX_FULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (!(bp->port.supported[cfg_idx] &
 						SUPPORTED_100baseT_Full)) {
 					DP(BNX2X_MSG_ETHTOOL,
@@ -940,20 +594,12 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 			break;
 
 		case SPEED_1000:
-<<<<<<< HEAD
-			if (cmd->duplex != DUPLEX_FULL) {
-=======
 			if (duplex != DUPLEX_FULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DP(BNX2X_MSG_ETHTOOL,
 				   "1G half not supported\n");
 				return -EINVAL;
 			}
 
-<<<<<<< HEAD
-			if (!(bp->port.supported[cfg_idx] &
-			      SUPPORTED_1000baseT_Full)) {
-=======
 			if (bp->port.supported[cfg_idx] &
 			     SUPPORTED_1000baseT_Full) {
 				advertising = (ADVERTISED_1000baseT_Full |
@@ -963,25 +609,15 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 				   SUPPORTED_1000baseKX_Full) {
 				advertising = ADVERTISED_1000baseKX_Full;
 			} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DP(BNX2X_MSG_ETHTOOL,
 				   "1G full not supported\n");
 				return -EINVAL;
 			}
 
-<<<<<<< HEAD
-			advertising = (ADVERTISED_1000baseT_Full |
-				       ADVERTISED_TP);
-			break;
-
-		case SPEED_2500:
-			if (cmd->duplex != DUPLEX_FULL) {
-=======
 			break;
 
 		case SPEED_2500:
 			if (duplex != DUPLEX_FULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DP(BNX2X_MSG_ETHTOOL,
 				   "2.5G half not supported\n");
 				return -EINVAL;
@@ -999,20 +635,11 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 			break;
 
 		case SPEED_10000:
-<<<<<<< HEAD
-			if (cmd->duplex != DUPLEX_FULL) {
-=======
 			if (duplex != DUPLEX_FULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DP(BNX2X_MSG_ETHTOOL,
 				   "10G half not supported\n");
 				return -EINVAL;
 			}
-<<<<<<< HEAD
-
-			if (!(bp->port.supported[cfg_idx]
-			      & SUPPORTED_10000baseT_Full)) {
-=======
 			phy_idx = bnx2x_get_cur_phy_idx(bp);
 			if ((bp->port.supported[cfg_idx] &
 			     SUPPORTED_10000baseT_Full) &&
@@ -1025,17 +652,11 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 				advertising = (ADVERTISED_10000baseKR_Full |
 					       ADVERTISED_FIBRE);
 			} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DP(BNX2X_MSG_ETHTOOL,
 				   "10G full not supported\n");
 				return -EINVAL;
 			}
 
-<<<<<<< HEAD
-			advertising = (ADVERTISED_10000baseT_Full |
-				       ADVERTISED_FIBRE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		default:
@@ -1044,11 +665,7 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 		}
 
 		bp->link_params.req_line_speed[cfg_idx] = speed;
-<<<<<<< HEAD
-		bp->link_params.req_duplex[cfg_idx] = cmd->duplex;
-=======
 		bp->link_params.req_duplex[cfg_idx] = duplex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bp->port.advertising[cfg_idx] = advertising;
 	}
 
@@ -1062,58 +679,13 @@ static int bnx2x_set_link_ksettings(struct net_device *dev,
 	bp->link_params.multi_phy_config = new_multi_phy_config;
 	if (netif_running(dev)) {
 		bnx2x_stats_handle(bp, STATS_EVENT_STOP);
-<<<<<<< HEAD
-=======
 		bnx2x_force_link_reset(bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnx2x_link_set(bp);
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#define IS_E1_ONLINE(info)	(((info) & RI_E1_ONLINE) == RI_E1_ONLINE)
-#define IS_E1H_ONLINE(info)	(((info) & RI_E1H_ONLINE) == RI_E1H_ONLINE)
-#define IS_E2_ONLINE(info)	(((info) & RI_E2_ONLINE) == RI_E2_ONLINE)
-#define IS_E3_ONLINE(info)	(((info) & RI_E3_ONLINE) == RI_E3_ONLINE)
-#define IS_E3B0_ONLINE(info)	(((info) & RI_E3B0_ONLINE) == RI_E3B0_ONLINE)
-
-static inline bool bnx2x_is_reg_online(struct bnx2x *bp,
-				       const struct reg_addr *reg_info)
-{
-	if (CHIP_IS_E1(bp))
-		return IS_E1_ONLINE(reg_info->info);
-	else if (CHIP_IS_E1H(bp))
-		return IS_E1H_ONLINE(reg_info->info);
-	else if (CHIP_IS_E2(bp))
-		return IS_E2_ONLINE(reg_info->info);
-	else if (CHIP_IS_E3A0(bp))
-		return IS_E3_ONLINE(reg_info->info);
-	else if (CHIP_IS_E3B0(bp))
-		return IS_E3B0_ONLINE(reg_info->info);
-	else
-		return false;
-}
-
-/******* Paged registers info selectors ********/
-static inline const u32 *__bnx2x_get_page_addr_ar(struct bnx2x *bp)
-{
-	if (CHIP_IS_E2(bp))
-		return page_vals_e2;
-	else if (CHIP_IS_E3(bp))
-		return page_vals_e3;
-	else
-		return NULL;
-}
-
-static inline u32 __bnx2x_get_page_reg_num(struct bnx2x *bp)
-{
-	if (CHIP_IS_E2(bp))
-		return PAGE_MODE_VALUES_E2;
-	else if (CHIP_IS_E3(bp))
-		return PAGE_MODE_VALUES_E3;
-=======
 #define DUMP_ALL_PRESETS		0x1FFF
 #define DUMP_MAX_PRESETS		13
 
@@ -1129,71 +701,10 @@ static int __bnx2x_get_preset_regs_len(struct bnx2x *bp, u32 preset)
 		return dump_num_registers[3][preset-1];
 	else if (CHIP_IS_E3B0(bp))
 		return dump_num_registers[4][preset-1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return 0;
 }
 
-<<<<<<< HEAD
-static inline const u32 *__bnx2x_get_page_write_ar(struct bnx2x *bp)
-{
-	if (CHIP_IS_E2(bp))
-		return page_write_regs_e2;
-	else if (CHIP_IS_E3(bp))
-		return page_write_regs_e3;
-	else
-		return NULL;
-}
-
-static inline u32 __bnx2x_get_page_write_num(struct bnx2x *bp)
-{
-	if (CHIP_IS_E2(bp))
-		return PAGE_WRITE_REGS_E2;
-	else if (CHIP_IS_E3(bp))
-		return PAGE_WRITE_REGS_E3;
-	else
-		return 0;
-}
-
-static inline const struct reg_addr *__bnx2x_get_page_read_ar(struct bnx2x *bp)
-{
-	if (CHIP_IS_E2(bp))
-		return page_read_regs_e2;
-	else if (CHIP_IS_E3(bp))
-		return page_read_regs_e3;
-	else
-		return NULL;
-}
-
-static inline u32 __bnx2x_get_page_read_num(struct bnx2x *bp)
-{
-	if (CHIP_IS_E2(bp))
-		return PAGE_READ_REGS_E2;
-	else if (CHIP_IS_E3(bp))
-		return PAGE_READ_REGS_E3;
-	else
-		return 0;
-}
-
-static inline int __bnx2x_get_regs_len(struct bnx2x *bp)
-{
-	int num_pages = __bnx2x_get_page_reg_num(bp);
-	int page_write_num = __bnx2x_get_page_write_num(bp);
-	const struct reg_addr *page_read_addr = __bnx2x_get_page_read_ar(bp);
-	int page_read_num = __bnx2x_get_page_read_num(bp);
-	int regdump_len = 0;
-	int i, j, k;
-
-	for (i = 0; i < REGS_COUNT; i++)
-		if (bnx2x_is_reg_online(bp, &reg_addrs[i]))
-			regdump_len += reg_addrs[i].size;
-
-	for (i = 0; i < num_pages; i++)
-		for (j = 0; j < page_write_num; j++)
-			for (k = 0; k < page_read_num; k++)
-				if (bnx2x_is_reg_online(bp, &page_read_addr[k]))
-					regdump_len += page_read_addr[k].size;
-=======
 static int __bnx2x_get_regs_len(struct bnx2x *bp)
 {
 	u32 preset_idx;
@@ -1202,7 +713,6 @@ static int __bnx2x_get_regs_len(struct bnx2x *bp)
 	/* Calculate the total preset regs length */
 	for (preset_idx = 1; preset_idx <= DUMP_MAX_PRESETS; preset_idx++)
 		regdump_len += __bnx2x_get_preset_regs_len(bp, preset_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return regdump_len;
 }
@@ -1212,29 +722,16 @@ static int bnx2x_get_regs_len(struct net_device *dev)
 	struct bnx2x *bp = netdev_priv(dev);
 	int regdump_len = 0;
 
-<<<<<<< HEAD
-	regdump_len = __bnx2x_get_regs_len(bp);
-	regdump_len *= 4;
-	regdump_len += sizeof(struct dump_hdr);
-=======
 	if (IS_VF(bp))
 		return 0;
 
 	regdump_len = __bnx2x_get_regs_len(bp);
 	regdump_len *= 4;
 	regdump_len += sizeof(struct dump_header);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return regdump_len;
 }
 
-<<<<<<< HEAD
-/**
- * bnx2x_read_pages_regs - read "paged" registers
- *
- * @bp		device handle
- * @p		output buffer
-=======
 #define IS_E1_REG(chips)	((chips & DUMP_CHIP_E1) == DUMP_CHIP_E1)
 #define IS_E1H_REG(chips)	((chips & DUMP_CHIP_E1H) == DUMP_CHIP_E1H)
 #define IS_E2_REG(chips)	((chips & DUMP_CHIP_E2) == DUMP_CHIP_E2)
@@ -1345,23 +842,16 @@ static bool bnx2x_is_wreg_in_chip(struct bnx2x *bp,
  * @bp:		device handle
  * @p:		output buffer
  * @preset:	the preset value
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Reads "paged" memories: memories that may only be read by first writing to a
  * specific address ("write address") and then reading from a specific address
  * ("read address"). There may be more than one write address per "page" and
  * more than one read address per write address.
  */
-<<<<<<< HEAD
-static inline void bnx2x_read_pages_regs(struct bnx2x *bp, u32 *p)
-{
-	u32 i, j, k, n;
-=======
 static void bnx2x_read_pages_regs(struct bnx2x *bp, u32 *p, u32 preset)
 {
 	u32 i, j, k, n;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* addresses of the paged registers */
 	const u32 *page_addr = __bnx2x_get_page_addr_ar(bp);
 	/* number of paged registers */
@@ -1374,22 +864,11 @@ static void bnx2x_read_pages_regs(struct bnx2x *bp, u32 *p, u32 preset)
 	const struct reg_addr *read_addr = __bnx2x_get_page_read_ar(bp);
 	/* number of read addresses */
 	int read_num = __bnx2x_get_page_read_num(bp);
-<<<<<<< HEAD
-=======
 	u32 addr, size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < num_pages; i++) {
 		for (j = 0; j < write_num; j++) {
 			REG_WR(bp, write_addr[j], page_addr[i]);
-<<<<<<< HEAD
-			for (k = 0; k < read_num; k++)
-				if (bnx2x_is_reg_online(bp, &read_addr[k]))
-					for (n = 0; n <
-					      read_addr[k].size; n++)
-						*p++ = REG_RD(bp,
-						       read_addr[k].addr + n*4);
-=======
 
 			for (k = 0; k < read_num; k++) {
 				if (IS_REG_IN_PRESET(read_addr[k].presets,
@@ -1401,25 +880,10 @@ static void bnx2x_read_pages_regs(struct bnx2x *bp, u32 *p, u32 preset)
 					}
 				}
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-static inline void __bnx2x_get_regs(struct bnx2x *bp, u32 *p)
-{
-	u32 i, j;
-
-	/* Read the regular registers */
-	for (i = 0; i < REGS_COUNT; i++)
-		if (bnx2x_is_reg_online(bp, &reg_addrs[i]))
-			for (j = 0; j < reg_addrs[i].size; j++)
-				*p++ = REG_RD(bp, reg_addrs[i].addr + j*4);
-
-	/* Read "paged" registes */
-	bnx2x_read_pages_regs(bp, p);
-=======
 static int __bnx2x_get_preset_regs(struct bnx2x *bp, u32 *p, u32 preset)
 {
 	u32 i, j, addr;
@@ -1494,7 +958,6 @@ static void __bnx2x_get_regs(struct bnx2x *bp, u32 *p)
 		__bnx2x_get_preset_regs(bp, p, preset_idx);
 		p += __bnx2x_get_preset_regs_len(bp, preset_idx);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bnx2x_get_regs(struct net_device *dev,
@@ -1502,15 +965,9 @@ static void bnx2x_get_regs(struct net_device *dev,
 {
 	u32 *p = _p;
 	struct bnx2x *bp = netdev_priv(dev);
-<<<<<<< HEAD
-	struct dump_hdr dump_hdr = {0};
-
-	regs->version = 0;
-=======
 	struct dump_header dump_hdr = {0};
 
 	regs->version = 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(p, 0, regs->len);
 
 	if (!netif_running(bp->dev))
@@ -1520,27 +977,6 @@ static void bnx2x_get_regs(struct net_device *dev,
 	 * cause false alarms by reading never written registers. We
 	 * will re-enable parity attentions right after the dump.
 	 */
-<<<<<<< HEAD
-	bnx2x_disable_blocks_parity(bp);
-
-	dump_hdr.hdr_size = (sizeof(struct dump_hdr) / 4) - 1;
-	dump_hdr.dump_sign = dump_sign_all;
-	dump_hdr.xstorm_waitp = REG_RD(bp, XSTORM_WAITP_ADDR);
-	dump_hdr.tstorm_waitp = REG_RD(bp, TSTORM_WAITP_ADDR);
-	dump_hdr.ustorm_waitp = REG_RD(bp, USTORM_WAITP_ADDR);
-	dump_hdr.cstorm_waitp = REG_RD(bp, CSTORM_WAITP_ADDR);
-
-	if (CHIP_IS_E1(bp))
-		dump_hdr.info = RI_E1_ONLINE;
-	else if (CHIP_IS_E1H(bp))
-		dump_hdr.info = RI_E1H_ONLINE;
-	else if (!CHIP_IS_E1x(bp))
-		dump_hdr.info = RI_E2_ONLINE |
-		(BP_PATH(bp) ? RI_PATH1_DUMP : RI_PATH0_DUMP);
-
-	memcpy(p, &dump_hdr, sizeof(struct dump_hdr));
-	p += dump_hdr.hdr_size + 1;
-=======
 
 	bnx2x_disable_blocks_parity(bp);
 
@@ -1571,7 +1007,6 @@ static void bnx2x_get_regs(struct net_device *dev,
 	 * to print the GRC timeouts using this macro, we use the same.
 	 */
 	BNX2X_ERR("Generating register dump. Might trigger harmless GRC timeouts\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Actually read the registers */
 	__bnx2x_get_regs(bp, p);
@@ -1581,8 +1016,6 @@ static void bnx2x_get_regs(struct net_device *dev,
 	bnx2x_enable_blocks_parity(bp);
 }
 
-<<<<<<< HEAD
-=======
 static int bnx2x_get_preset_regs_len(struct net_device *dev, u32 preset)
 {
 	struct bnx2x *bp = netdev_priv(dev);
@@ -1671,33 +1104,10 @@ static int bnx2x_get_dump_data(struct net_device *dev,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bnx2x_get_drvinfo(struct net_device *dev,
 			      struct ethtool_drvinfo *info)
 {
 	struct bnx2x *bp = netdev_priv(dev);
-<<<<<<< HEAD
-	u8 phy_fw_ver[PHY_FW_VER_LEN];
-
-	strlcpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
-	strlcpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
-
-	phy_fw_ver[0] = '\0';
-	bnx2x_get_ext_phy_fw_version(&bp->link_params,
-				     phy_fw_ver, PHY_FW_VER_LEN);
-	strlcpy(info->fw_version, bp->fw_ver, sizeof(info->fw_version));
-	snprintf(info->fw_version + strlen(bp->fw_ver), 32 - strlen(bp->fw_ver),
-		 "bc %d.%d.%d%s%s",
-		 (bp->common.bc_ver & 0xff0000) >> 16,
-		 (bp->common.bc_ver & 0xff00) >> 8,
-		 (bp->common.bc_ver & 0xff),
-		 ((phy_fw_ver[0] != '\0') ? " phy " : ""), phy_fw_ver);
-	strlcpy(info->bus_info, pci_name(bp->pdev), sizeof(info->bus_info));
-	info->n_stats = BNX2X_NUM_STATS;
-	info->testinfo_len = BNX2X_NUM_TESTS;
-	info->eedump_len = bp->common.flash_size;
-	info->regdump_len = bnx2x_get_regs_len(dev);
-=======
 	char version[ETHTOOL_FWVERS_LEN];
 	int ext_dev_info_offset;
 	u32 mbi;
@@ -1726,7 +1136,6 @@ static void bnx2x_get_drvinfo(struct net_device *dev,
 	strlcat(info->fw_version, version, sizeof(info->fw_version));
 
 	strscpy(info->bus_info, pci_name(bp->pdev), sizeof(info->bus_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bnx2x_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
@@ -1751,33 +1160,22 @@ static int bnx2x_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	struct bnx2x *bp = netdev_priv(dev);
 
 	if (wol->wolopts & ~WAKE_MAGIC) {
-<<<<<<< HEAD
-		DP(BNX2X_MSG_ETHTOOL, "WOL not supproted\n");
-=======
 		DP(BNX2X_MSG_ETHTOOL, "WOL not supported\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (wol->wolopts & WAKE_MAGIC) {
 		if (bp->flags & NO_WOL_FLAG) {
-<<<<<<< HEAD
-			DP(BNX2X_MSG_ETHTOOL, "WOL not supproted\n");
-=======
 			DP(BNX2X_MSG_ETHTOOL, "WOL not supported\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		bp->wol = 1;
 	} else
 		bp->wol = 0;
 
-<<<<<<< HEAD
-=======
 	if (SHMEM2_HAS(bp, curr_cfg))
 		SHMEM2_WR(bp, curr_cfg, CURR_CFG_MET_OS);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1794,11 +1192,7 @@ static void bnx2x_set_msglevel(struct net_device *dev, u32 level)
 
 	if (capable(CAP_NET_ADMIN)) {
 		/* dump MCP trace */
-<<<<<<< HEAD
-		if (level & BNX2X_MSG_MCP)
-=======
 		if (IS_PF(bp) && (level & BNX2X_MSG_MCP))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bnx2x_fw_dump_lvl(bp, KERN_INFO);
 		bp->msg_enable = level;
 	}
@@ -1813,10 +1207,7 @@ static int bnx2x_nway_reset(struct net_device *dev)
 
 	if (netif_running(dev)) {
 		bnx2x_stats_handle(bp, STATS_EVENT_STOP);
-<<<<<<< HEAD
-=======
 		bnx2x_force_link_reset(bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnx2x_link_set(bp);
 	}
 
@@ -1830,13 +1221,10 @@ static u32 bnx2x_get_link(struct net_device *dev)
 	if (bp->flags & MF_FUNC_DIS || (bp->state != BNX2X_STATE_OPEN))
 		return 0;
 
-<<<<<<< HEAD
-=======
 	if (IS_VF(bp))
 		return !test_bit(BNX2X_LINK_REPORT_LINK_DOWN,
 				 &bp->vf_link_vars.link_report_flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bp->link_vars.link_up;
 }
 
@@ -1847,13 +1235,8 @@ static int bnx2x_get_eeprom_len(struct net_device *dev)
 	return bp->common.flash_size;
 }
 
-<<<<<<< HEAD
-/* Per pf misc lock must be aquired before the per port mcp lock. Otherwise, had
- * we done things the other way around, if two pfs from the same port would
-=======
 /* Per pf misc lock must be acquired before the per port mcp lock. Otherwise,
  * had we done things the other way around, if two pfs from the same port would
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * attempt to access nvram at the same time, we could run into a scenario such
  * as:
  * pf A takes the port lock.
@@ -1863,11 +1246,7 @@ static int bnx2x_get_eeprom_len(struct net_device *dev)
  * Pf B takes the lock and proceeds to perform it's own access.
  * pf A unlocks the per port lock, while pf B is still working (!).
  * mcp takes the per port lock and corrupts pf B's access (and/or has it's own
-<<<<<<< HEAD
- * acess corrupted by pf B).*
-=======
  * access corrupted by pf B)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int bnx2x_acquire_nvram_lock(struct bnx2x *bp)
 {
@@ -1898,10 +1277,7 @@ static int bnx2x_acquire_nvram_lock(struct bnx2x *bp)
 	if (!(val & (MCPR_NVM_SW_ARB_ARB_ARB1 << port))) {
 		DP(BNX2X_MSG_ETHTOOL | BNX2X_MSG_NVM,
 		   "cannot get access to nvram interface\n");
-<<<<<<< HEAD
-=======
 		bnx2x_release_hw_lock(bp, HW_LOCK_RESOURCE_NVRAM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -2001,12 +1377,8 @@ static int bnx2x_nvram_read_dword(struct bnx2x *bp, u32 offset, __be32 *ret_val,
 			val = REG_RD(bp, MCP_REG_MCPR_NVM_READ);
 			/* we read nvram data in cpu order
 			 * but ethtool sees it as an array of bytes
-<<<<<<< HEAD
-			 * converting to big-endian will do the work */
-=======
 			 * converting to big-endian will do the work
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*ret_val = cpu_to_be32(val);
 			rc = 0;
 			break;
@@ -2018,13 +1390,8 @@ static int bnx2x_nvram_read_dword(struct bnx2x *bp, u32 offset, __be32 *ret_val,
 	return rc;
 }
 
-<<<<<<< HEAD
-static int bnx2x_nvram_read(struct bnx2x *bp, u32 offset, u8 *ret_buf,
-			    int buf_size)
-=======
 int bnx2x_nvram_read(struct bnx2x *bp, u32 offset, u8 *ret_buf,
 		     int buf_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 	u32 cmd_flags;
@@ -2078,8 +1445,6 @@ int bnx2x_nvram_read(struct bnx2x *bp, u32 offset, u8 *ret_buf,
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 static int bnx2x_nvram_read32(struct bnx2x *bp, u32 offset, u32 *buf,
 			      int buf_size)
 {
@@ -2114,19 +1479,12 @@ static bool bnx2x_is_nvm_accessible(struct bnx2x *bp)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int bnx2x_get_eeprom(struct net_device *dev,
 			    struct ethtool_eeprom *eeprom, u8 *eebuf)
 {
 	struct bnx2x *bp = netdev_priv(dev);
-<<<<<<< HEAD
-	int rc;
-
-	if (!netif_running(dev)) {
-=======
 
 	if (!bnx2x_is_nvm_accessible(bp)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DP(BNX2X_MSG_ETHTOOL  | BNX2X_MSG_NVM,
 		   "cannot access eeprom when the interface is down\n");
 		return -EAGAIN;
@@ -2139,13 +1497,6 @@ static int bnx2x_get_eeprom(struct net_device *dev,
 
 	/* parameters already validated in ethtool_get_eeprom */
 
-<<<<<<< HEAD
-	rc = bnx2x_nvram_read(bp, eeprom->offset, eebuf, eeprom->len);
-
-	return rc;
-}
-
-=======
 	return bnx2x_nvram_read(bp, eeprom->offset, eebuf, eeprom->len);
 }
 
@@ -2265,7 +1616,6 @@ static int bnx2x_get_module_info(struct net_device *dev,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int bnx2x_nvram_write_dword(struct bnx2x *bp, u32 offset, u32 val,
 				   u32 cmd_flags)
 {
@@ -2315,14 +1665,8 @@ static int bnx2x_nvram_write1(struct bnx2x *bp, u32 offset, u8 *data_buf,
 			      int buf_size)
 {
 	int rc;
-<<<<<<< HEAD
-	u32 cmd_flags;
-	u32 align_offset;
-	__be32 val;
-=======
 	u32 cmd_flags, align_offset, val;
 	__be32 val_be;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (offset + buf_size > bp->common.flash_size) {
 		DP(BNX2X_MSG_ETHTOOL | BNX2X_MSG_NVM,
@@ -2341,17 +1685,6 @@ static int bnx2x_nvram_write1(struct bnx2x *bp, u32 offset, u8 *data_buf,
 
 	cmd_flags = (MCPR_NVM_COMMAND_FIRST | MCPR_NVM_COMMAND_LAST);
 	align_offset = (offset & ~0x03);
-<<<<<<< HEAD
-	rc = bnx2x_nvram_read_dword(bp, align_offset, &val, cmd_flags);
-
-	if (rc == 0) {
-		val &= ~(0xff << BYTE_OFFSET(offset));
-		val |= (*data_buf << BYTE_OFFSET(offset));
-
-		/* nvram data is returned as an array of bytes
-		 * convert it back to cpu order */
-		val = be32_to_cpu(val);
-=======
 	rc = bnx2x_nvram_read_dword(bp, align_offset, &val_be, cmd_flags);
 
 	if (rc == 0) {
@@ -2364,7 +1697,6 @@ static int bnx2x_nvram_write1(struct bnx2x *bp, u32 offset, u8 *data_buf,
 				    (0xff << BYTE_OFFSET(offset)));
 		val |= le32_to_cpu((__force __le32)
 				   (*data_buf << BYTE_OFFSET(offset)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rc = bnx2x_nvram_write_dword(bp, align_offset, val,
 					     cmd_flags);
@@ -2422,23 +1754,18 @@ static int bnx2x_nvram_write(struct bnx2x *bp, u32 offset, u8 *data_buf,
 
 		memcpy(&val, data_buf, 4);
 
-<<<<<<< HEAD
-=======
 		/* Notice unlike bnx2x_nvram_read_dword() this will not
 		 * change val using be32_to_cpu(), which causes data to flip
 		 * if the eeprom is read and then written back. This is due
 		 * to tools utilizing this functionality that would break
 		 * if this would be resolved.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = bnx2x_nvram_write_dword(bp, offset, val, cmd_flags);
 
 		/* advance to the next dword */
 		offset += sizeof(u32);
 		data_buf += sizeof(u32);
 		written_so_far += sizeof(u32);
-<<<<<<< HEAD
-=======
 
 		/* At end of each 4Kb page, release nvram lock to allow MFW
 		 * chance to take it for its own use.
@@ -2455,7 +1782,6 @@ static int bnx2x_nvram_write(struct bnx2x *bp, u32 offset, u8 *data_buf,
 				return rc;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd_flags = 0;
 	}
 
@@ -2473,12 +1799,8 @@ static int bnx2x_set_eeprom(struct net_device *dev,
 	int port = BP_PORT(bp);
 	int rc = 0;
 	u32 ext_phy_config;
-<<<<<<< HEAD
-	if (!netif_running(dev)) {
-=======
 
 	if (!bnx2x_is_nvm_accessible(bp)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DP(BNX2X_MSG_ETHTOOL | BNX2X_MSG_NVM,
 		   "cannot access eeprom when the interface is down\n");
 		return -EAGAIN;
@@ -2556,13 +1878,9 @@ static int bnx2x_set_eeprom(struct net_device *dev,
 }
 
 static int bnx2x_get_coalesce(struct net_device *dev,
-<<<<<<< HEAD
-			      struct ethtool_coalesce *coal)
-=======
 			      struct ethtool_coalesce *coal,
 			      struct kernel_ethtool_coalesce *kernel_coal,
 			      struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x *bp = netdev_priv(dev);
 
@@ -2575,13 +1893,9 @@ static int bnx2x_get_coalesce(struct net_device *dev,
 }
 
 static int bnx2x_set_coalesce(struct net_device *dev,
-<<<<<<< HEAD
-			      struct ethtool_coalesce *coal)
-=======
 			      struct ethtool_coalesce *coal,
 			      struct kernel_ethtool_coalesce *kernel_coal,
 			      struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x *bp = netdev_priv(dev);
 
@@ -2600,26 +1914,14 @@ static int bnx2x_set_coalesce(struct net_device *dev,
 }
 
 static void bnx2x_get_ringparam(struct net_device *dev,
-<<<<<<< HEAD
-				struct ethtool_ringparam *ering)
-=======
 				struct ethtool_ringparam *ering,
 				struct kernel_ethtool_ringparam *kernel_ering,
 				struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x *bp = netdev_priv(dev);
 
 	ering->rx_max_pending = MAX_RX_AVAIL;
 
-<<<<<<< HEAD
-	if (bp->rx_ring_size)
-		ering->rx_pending = bp->rx_ring_size;
-	else
-		ering->rx_pending = MAX_RX_AVAIL;
-
-	ering->tx_max_pending = MAX_TX_AVAIL;
-=======
 	/* If size isn't already set, we give an estimation of the number
 	 * of buffers we'll have. We're neglecting some possible conditions
 	 * [we couldn't know for certain at this point if number of queues
@@ -2634,17 +1936,10 @@ static void bnx2x_get_ringparam(struct net_device *dev,
 		ering->rx_pending = MAX_RX_AVAIL;
 
 	ering->tx_max_pending = IS_MF_FCOE_AFEX(bp) ? 0 : MAX_TX_AVAIL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ering->tx_pending = bp->tx_ring_size;
 }
 
 static int bnx2x_set_ringparam(struct net_device *dev,
-<<<<<<< HEAD
-			       struct ethtool_ringparam *ering)
-{
-	struct bnx2x *bp = netdev_priv(dev);
-
-=======
 			       struct ethtool_ringparam *ering,
 			       struct kernel_ethtool_ringparam *kernel_ering,
 			       struct netlink_ext_ack *extack)
@@ -2661,7 +1956,6 @@ static int bnx2x_set_ringparam(struct net_device *dev,
 		return -EPERM;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bp->recovery_state != BNX2X_RECOVERY_DONE) {
 		DP(BNX2X_MSG_ETHTOOL,
 		   "Handling parity error recovery. Try again later\n");
@@ -2671,11 +1965,7 @@ static int bnx2x_set_ringparam(struct net_device *dev,
 	if ((ering->rx_pending > MAX_RX_AVAIL) ||
 	    (ering->rx_pending < (bp->disable_tpa ? MIN_RX_SIZE_NONTPA :
 						    MIN_RX_SIZE_TPA)) ||
-<<<<<<< HEAD
-	    (ering->tx_pending > MAX_TX_AVAIL) ||
-=======
 	    (ering->tx_pending > (IS_MF_STORAGE_ONLY(bp) ? 0 : MAX_TX_AVAIL)) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (ering->tx_pending <= MAX_SKB_FRAGS + 4)) {
 		DP(BNX2X_MSG_ETHTOOL, "Command parameters not supported\n");
 		return -EINVAL;
@@ -2745,8 +2035,6 @@ static int bnx2x_set_pauseparam(struct net_device *dev,
 			bp->link_params.req_flow_ctrl[cfg_idx] =
 				BNX2X_FLOW_CTRL_AUTO;
 		}
-<<<<<<< HEAD
-=======
 		bp->link_params.req_fc_auto_adv = 0;
 		if (epause->rx_pause)
 			bp->link_params.req_fc_auto_adv |= BNX2X_FLOW_CTRL_RX;
@@ -2756,7 +2044,6 @@ static int bnx2x_set_pauseparam(struct net_device *dev,
 
 		if (!bp->link_params.req_fc_auto_adv)
 			bp->link_params.req_fc_auto_adv |= BNX2X_FLOW_CTRL_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	DP(BNX2X_MSG_ETHTOOL,
@@ -2764,31 +2051,13 @@ static int bnx2x_set_pauseparam(struct net_device *dev,
 
 	if (netif_running(dev)) {
 		bnx2x_stats_handle(bp, STATS_EVENT_STOP);
-<<<<<<< HEAD
-=======
 		bnx2x_force_link_reset(bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnx2x_link_set(bp);
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct {
-	char string[ETH_GSTRING_LEN];
-} bnx2x_tests_str_arr[BNX2X_NUM_TESTS] = {
-	{ "register_test (offline)" },
-	{ "memory_test (offline)" },
-	{ "loopback_test (offline)" },
-	{ "nvram_test (online)" },
-	{ "interrupt_test (online)" },
-	{ "link_test (online)" },
-	{ "idle check (online)" }
-};
-
-enum {
-=======
 static const char bnx2x_tests_str_arr[BNX2X_NUM_TESTS_SF][ETH_GSTRING_LEN] = {
 	"register_test (offline)    ",
 	"memory_test (offline)      ",
@@ -2941,7 +2210,6 @@ static int bnx2x_set_eee(struct net_device *dev, struct ethtool_keee *edata)
 }
 
 enum {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BNX2X_CHIP_E1_OFST = 0,
 	BNX2X_CHIP_E1H_OFST,
 	BNX2X_CHIP_E2_OFST,
@@ -3050,11 +2318,7 @@ static int bnx2x_test_registers(struct bnx2x *bp)
 		{ BNX2X_CHIP_MASK_ALL, 0xffffffff, 0, 0x00000000 }
 	};
 
-<<<<<<< HEAD
-	if (!netif_running(bp->dev)) {
-=======
 	if (!bnx2x_is_nvm_accessible(bp)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DP(BNX2X_MSG_ETHTOOL | BNX2X_MSG_NVM,
 		   "cannot access eeprom when the interface is down\n");
 		return rc;
@@ -3072,12 +2336,8 @@ static int bnx2x_test_registers(struct bnx2x *bp)
 		hw = BNX2X_CHIP_MASK_E3;
 
 	/* Repeat the test twice:
-<<<<<<< HEAD
-	   First by writing 0x00000000, second by writing 0xffffffff */
-=======
 	 * First by writing 0x00000000, second by writing 0xffffffff
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (idx = 0; idx < 2; idx++) {
 
 		switch (idx) {
@@ -3162,11 +2422,7 @@ static int bnx2x_test_memory(struct bnx2x *bp)
 		{ NULL, 0xffffffff, {0, 0, 0, 0} }
 	};
 
-<<<<<<< HEAD
-	if (!netif_running(bp->dev)) {
-=======
 	if (!bnx2x_is_nvm_accessible(bp)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DP(BNX2X_MSG_ETHTOOL | BNX2X_MSG_NVM,
 		   "cannot access eeprom when the interface is down\n");
 		return rc;
@@ -3222,8 +2478,6 @@ static void bnx2x_wait_for_link(struct bnx2x *bp, u8 link_up, u8 is_serdes)
 
 		if (cnt <= 0 && bnx2x_link_test(bp, is_serdes))
 			DP(BNX2X_MSG_ETHTOOL, "Timeout waiting for link up\n");
-<<<<<<< HEAD
-=======
 
 		cnt = 1400;
 		while (!bp->link_vars.link_up && cnt--)
@@ -3232,7 +2486,6 @@ static void bnx2x_wait_for_link(struct bnx2x *bp, u8 link_up, u8 is_serdes)
 		if (cnt <= 0 && !bp->link_vars.link_up)
 			DP(BNX2X_MSG_ETHTOOL,
 			   "Timeout waiting for link init\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -3243,21 +2496,12 @@ static int bnx2x_run_loopback(struct bnx2x *bp, int loopback_mode)
 	unsigned char *packet;
 	struct bnx2x_fastpath *fp_rx = &bp->fp[0];
 	struct bnx2x_fastpath *fp_tx = &bp->fp[0];
-<<<<<<< HEAD
-	struct bnx2x_fp_txdata *txdata = &fp_tx->txdata[0];
-=======
 	struct bnx2x_fp_txdata *txdata = fp_tx->txdata_ptr[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 tx_start_idx, tx_idx;
 	u16 rx_start_idx, rx_idx;
 	u16 pkt_prod, bd_prod;
 	struct sw_tx_bd *tx_buf;
 	struct eth_tx_start_bd *tx_start_bd;
-<<<<<<< HEAD
-	struct eth_tx_parse_bd_e1x  *pbd_e1x = NULL;
-	struct eth_tx_parse_bd_e2  *pbd_e2 = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t mapping;
 	union eth_rx_cqe *cqe;
 	u8 cqe_fp_flags, cqe_fp_type;
@@ -3265,25 +2509,16 @@ static int bnx2x_run_loopback(struct bnx2x *bp, int loopback_mode)
 	u16 len;
 	int rc = -ENODEV;
 	u8 *data;
-<<<<<<< HEAD
-	struct netdev_queue *txq = netdev_get_tx_queue(bp->dev, txdata->txq_index);
-=======
 	struct netdev_queue *txq = netdev_get_tx_queue(bp->dev,
 						       txdata->txq_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check the loopback mode */
 	switch (loopback_mode) {
 	case BNX2X_PHY_LOOPBACK:
-<<<<<<< HEAD
-		if (bp->link_params.loopback_mode != LOOPBACK_XGXS)
-			return -EINVAL;
-=======
 		if (bp->link_params.loopback_mode != LOOPBACK_XGXS) {
 			DP(BNX2X_MSG_ETHTOOL, "PHY loopback not supported\n");
 			return -EINVAL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case BNX2X_MAC_LOOPBACK:
 		if (CHIP_IS_E3(bp)) {
@@ -3300,8 +2535,6 @@ static int bnx2x_run_loopback(struct bnx2x *bp, int loopback_mode)
 
 		bnx2x_phy_init(&bp->link_params, &bp->link_vars);
 		break;
-<<<<<<< HEAD
-=======
 	case BNX2X_EXT_LOOPBACK:
 		if (bp->link_params.loopback_mode != LOOPBACK_EXT) {
 			DP(BNX2X_MSG_ETHTOOL,
@@ -3309,7 +2542,6 @@ static int bnx2x_run_loopback(struct bnx2x *bp, int loopback_mode)
 			return -EINVAL;
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		DP(BNX2X_MSG_ETHTOOL, "Command parameters not supported\n");
 		return -EINVAL;
@@ -3326,11 +2558,7 @@ static int bnx2x_run_loopback(struct bnx2x *bp, int loopback_mode)
 	}
 	packet = skb_put(skb, pkt_size);
 	memcpy(packet, bp->dev->dev_addr, ETH_ALEN);
-<<<<<<< HEAD
-	memset(packet + ETH_ALEN, 0, ETH_ALEN);
-=======
 	eth_zero_addr(packet + ETH_ALEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(packet + 2*ETH_ALEN, 0x77, (ETH_HLEN - 2*ETH_ALEN));
 	for (i = ETH_HLEN; i < pkt_size; i++)
 		packet[i] = (unsigned char) (i & 0xff);
@@ -3365,38 +2593,15 @@ static int bnx2x_run_loopback(struct bnx2x *bp, int loopback_mode)
 	tx_start_bd->vlan_or_ethertype = cpu_to_le16(pkt_prod);
 	tx_start_bd->bd_flags.as_bitfield = ETH_TX_BD_FLAGS_START_BD;
 	SET_FLAG(tx_start_bd->general_data,
-<<<<<<< HEAD
-		 ETH_TX_START_BD_ETH_ADDR_TYPE,
-		 UNICAST_ADDRESS);
-	SET_FLAG(tx_start_bd->general_data,
-		 ETH_TX_START_BD_HDR_NBDS,
-		 1);
-=======
 		 ETH_TX_START_BD_HDR_NBDS,
 		 1);
 	SET_FLAG(tx_start_bd->general_data,
 		 ETH_TX_START_BD_PARSE_NBDS,
 		 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* turn on parsing and get a BD */
 	bd_prod = TX_BD(NEXT_TX_IDX(bd_prod));
 
-<<<<<<< HEAD
-	pbd_e1x = &txdata->tx_desc_ring[bd_prod].parse_bd_e1x;
-	pbd_e2 = &txdata->tx_desc_ring[bd_prod].parse_bd_e2;
-
-	memset(pbd_e2, 0, sizeof(struct eth_tx_parse_bd_e2));
-	memset(pbd_e1x, 0, sizeof(struct eth_tx_parse_bd_e1x));
-
-	wmb();
-
-	txdata->tx_db.data.prod += 2;
-	barrier();
-	DOORBELL(bp, txdata->cid, txdata->tx_db.raw);
-
-	mmiowb();
-=======
 	if (CHIP_IS_E1x(bp)) {
 		u16 global_data = 0;
 		struct eth_tx_parse_bd_e1x  *pbd_e1x =
@@ -3421,7 +2626,6 @@ static int bnx2x_run_loopback(struct bnx2x *bp, int loopback_mode)
 	wmb();
 	DOORBELL_RELAXED(bp, txdata->cid, txdata->tx_db.raw);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	barrier();
 
 	num_pkts++;
@@ -3520,16 +2724,6 @@ static int bnx2x_test_loopback(struct bnx2x *bp)
 	return rc;
 }
 
-<<<<<<< HEAD
-#define CRC32_RESIDUAL			0xdebb20e3
-
-static int bnx2x_test_nvram(struct bnx2x *bp)
-{
-	static const struct {
-		int offset;
-		int size;
-	} nvram_tbl[] = {
-=======
 static int bnx2x_test_ext_loopback(struct bnx2x *bp)
 {
 	int rc;
@@ -3724,7 +2918,6 @@ static int bnx2x_test_nvram_tbl(struct bnx2x *bp,
 static int bnx2x_test_nvram(struct bnx2x *bp)
 {
 	static const struct crc_pair nvram_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{     0,  0x14 }, /* bootstrap */
 		{  0x14,  0xec }, /* dir */
 		{ 0x100, 0x350 }, /* manuf_info */
@@ -3733,12 +2926,6 @@ static int bnx2x_test_nvram(struct bnx2x *bp)
 		{ 0x708,  0x70 }, /* manuf_key_info */
 		{     0,     0 }
 	};
-<<<<<<< HEAD
-	__be32 *buf;
-	u8 *data;
-	int i, rc;
-	u32 magic, crc;
-=======
 	static const struct crc_pair nvram_tbl2[] = {
 		{ 0x7e8, 0x350 }, /* manuf_info2 */
 		{ 0xb38,  0xf0 }, /* feature_info */
@@ -3748,39 +2935,24 @@ static int bnx2x_test_nvram(struct bnx2x *bp)
 	u8 *buf;
 	int rc;
 	u32 magic;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (BP_NOMCP(bp))
 		return 0;
 
-<<<<<<< HEAD
-	buf = kmalloc(0x350, GFP_KERNEL);
-=======
 	buf = kmalloc(CRC_BUFF_SIZE, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buf) {
 		DP(BNX2X_MSG_ETHTOOL | BNX2X_MSG_NVM, "kmalloc failed\n");
 		rc = -ENOMEM;
 		goto test_nvram_exit;
 	}
-<<<<<<< HEAD
-	data = (u8 *)buf;
-
-	rc = bnx2x_nvram_read(bp, 0, data, 4);
-=======
 
 	rc = bnx2x_nvram_read32(bp, 0, &magic, sizeof(magic));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		DP(BNX2X_MSG_ETHTOOL | BNX2X_MSG_NVM,
 		   "magic value read (rc %d)\n", rc);
 		goto test_nvram_exit;
 	}
 
-<<<<<<< HEAD
-	magic = be32_to_cpu(buf[0]);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (magic != 0x669955aa) {
 		DP(BNX2X_MSG_ETHTOOL | BNX2X_MSG_NVM,
 		   "wrong magic value (0x%08x)\n", magic);
@@ -3788,27 +2960,6 @@ static int bnx2x_test_nvram(struct bnx2x *bp)
 		goto test_nvram_exit;
 	}
 
-<<<<<<< HEAD
-	for (i = 0; nvram_tbl[i].size; i++) {
-
-		rc = bnx2x_nvram_read(bp, nvram_tbl[i].offset, data,
-				      nvram_tbl[i].size);
-		if (rc) {
-			DP(BNX2X_MSG_ETHTOOL | BNX2X_MSG_NVM,
-			   "nvram_tbl[%d] read data (rc %d)\n", i, rc);
-			goto test_nvram_exit;
-		}
-
-		crc = ether_crc_le(nvram_tbl[i].size, data);
-		if (crc != CRC32_RESIDUAL) {
-			DP(BNX2X_MSG_ETHTOOL | BNX2X_MSG_NVM,
-			   "nvram_tbl[%d] wrong crc value (0x%08x)\n", i, crc);
-			rc = -ENODEV;
-			goto test_nvram_exit;
-		}
-	}
-
-=======
 	DP(BNX2X_MSG_ETHTOOL | BNX2X_MSG_NVM, "Port 0 CRC test-set\n");
 	rc = bnx2x_test_nvram_tbl(bp, nvram_tbl, buf);
 	if (rc)
@@ -3829,7 +2980,6 @@ static int bnx2x_test_nvram(struct bnx2x *bp)
 
 	rc = bnx2x_test_nvram_dirs(bp, buf);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 test_nvram_exit:
 	kfree(buf);
 	return rc;
@@ -3846,11 +2996,7 @@ static int bnx2x_test_intr(struct bnx2x *bp)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	params.q_obj = &bp->fp->q_obj;
-=======
 	params.q_obj = &bp->sp_objs->q_obj;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	params.cmd = BNX2X_Q_CMD_EMPTY;
 
 	__set_bit(RAMROD_COMP_WAIT, &params.ramrod_flags);
@@ -3862,9 +3008,6 @@ static void bnx2x_self_test(struct net_device *dev,
 			    struct ethtool_test *etest, u64 *buf)
 {
 	struct bnx2x *bp = netdev_priv(dev);
-<<<<<<< HEAD
-	u8 is_serdes;
-=======
 	u8 is_serdes, link_up;
 	int rc, cnt = 0;
 
@@ -3874,7 +3017,6 @@ static void bnx2x_self_test(struct net_device *dev,
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bp->recovery_state != BNX2X_RECOVERY_DONE) {
 		netdev_err(bp->dev,
 			   "Handling parity error recovery. Try again later\n");
@@ -3882,22 +3024,6 @@ static void bnx2x_self_test(struct net_device *dev,
 		return;
 	}
 
-<<<<<<< HEAD
-	memset(buf, 0, sizeof(u64) * BNX2X_NUM_TESTS);
-
-	if (!netif_running(dev))
-		return;
-
-	/* offline tests are not supported in MF mode */
-	if (IS_MF(bp))
-		etest->flags &= ~ETH_TEST_FL_OFFLINE;
-	is_serdes = (bp->link_vars.link_status & LINK_STATUS_SERDES_LINK) > 0;
-
-	if (etest->flags & ETH_TEST_FL_OFFLINE) {
-		int port = BP_PORT(bp);
-		u32 val;
-		u8 link_up;
-=======
 	DP(BNX2X_MSG_ETHTOOL,
 	   "Self-test command parameters: offline = %d, external_lb = %d\n",
 	   (etest->flags & ETH_TEST_FL_OFFLINE),
@@ -3924,19 +3050,12 @@ static void bnx2x_self_test(struct net_device *dev,
 	if ((etest->flags & ETH_TEST_FL_OFFLINE) && !IS_MF(bp)) {
 		int port = BP_PORT(bp);
 		u32 val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* save current value of input enable for TX port IF */
 		val = REG_RD(bp, NIG_REG_EGRESS_UMP0_IN_EN + port*4);
 		/* disable input for TX port IF */
 		REG_WR(bp, NIG_REG_EGRESS_UMP0_IN_EN + port*4, 0);
 
-<<<<<<< HEAD
-		link_up = bp->link_vars.link_up;
-
-		bnx2x_nic_unload(bp, UNLOAD_NORMAL);
-		bnx2x_nic_load(bp, LOAD_DIAG);
-=======
 		bnx2x_nic_unload(bp, UNLOAD_NORMAL, false);
 		rc = bnx2x_nic_load(bp, LOAD_DIAG);
 		if (rc) {
@@ -3946,7 +3065,6 @@ static void bnx2x_self_test(struct net_device *dev,
 			return;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* wait until link state is restored */
 		bnx2x_wait_for_link(bp, 1, is_serdes);
 
@@ -3959,45 +3077,6 @@ static void bnx2x_self_test(struct net_device *dev,
 			etest->flags |= ETH_TEST_FL_FAILED;
 		}
 
-<<<<<<< HEAD
-		buf[2] = bnx2x_test_loopback(bp);
-		if (buf[2] != 0)
-			etest->flags |= ETH_TEST_FL_FAILED;
-
-		bnx2x_nic_unload(bp, UNLOAD_NORMAL);
-
-		/* restore input for TX port IF */
-		REG_WR(bp, NIG_REG_EGRESS_UMP0_IN_EN + port*4, val);
-
-		bnx2x_nic_load(bp, LOAD_NORMAL);
-		/* wait until link state is restored */
-		bnx2x_wait_for_link(bp, link_up, is_serdes);
-	}
-	if (bnx2x_test_nvram(bp) != 0) {
-		buf[3] = 1;
-		etest->flags |= ETH_TEST_FL_FAILED;
-	}
-	if (bnx2x_test_intr(bp) != 0) {
-		buf[4] = 1;
-		etest->flags |= ETH_TEST_FL_FAILED;
-	}
-
-	if (bnx2x_link_test(bp, is_serdes) != 0) {
-		buf[5] = 1;
-		etest->flags |= ETH_TEST_FL_FAILED;
-	}
-
-#ifdef BNX2X_EXTRA_DEBUG
-	bnx2x_panic_dump(bp);
-#endif
-}
-
-#define IS_PORT_STAT(i) \
-	((bnx2x_stats_arr[i].flags & STATS_FLAGS_BOTH) == STATS_FLAGS_PORT)
-#define IS_FUNC_STAT(i)		(bnx2x_stats_arr[i].flags & STATS_FLAGS_FUNC)
-#define IS_MF_MODE_STAT(bp) \
-			(IS_MF(bp) && !(bp->msg_enable & BNX2X_MSG_STATS))
-=======
 		buf[2] = bnx2x_test_loopback(bp); /* internal LB */
 		if (buf[2] != 0)
 			etest->flags |= ETH_TEST_FL_FAILED;
@@ -4049,16 +3128,11 @@ static void bnx2x_self_test(struct net_device *dev,
 
 #define IS_PORT_STAT(i)		(bnx2x_stats_arr[i].is_port_stat)
 #define HIDE_PORT_STAT(bp)	IS_VF(bp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ethtool statistics are displayed for all regular ethernet queues and the
  * fcoe L2 queue if not disabled
  */
-<<<<<<< HEAD
-static inline int bnx2x_num_stat_queues(struct bnx2x *bp)
-=======
 static int bnx2x_num_stat_queues(struct bnx2x *bp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return BNX2X_NUM_ETH_QUEUES(bp);
 }
@@ -4066,32 +3140,11 @@ static int bnx2x_num_stat_queues(struct bnx2x *bp)
 static int bnx2x_get_sset_count(struct net_device *dev, int stringset)
 {
 	struct bnx2x *bp = netdev_priv(dev);
-<<<<<<< HEAD
-	int i, num_stats;
-=======
 	int i, num_strings = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (stringset) {
 	case ETH_SS_STATS:
 		if (is_multi(bp)) {
-<<<<<<< HEAD
-			num_stats = bnx2x_num_stat_queues(bp) *
-						BNX2X_NUM_Q_STATS;
-		} else
-			num_stats = 0;
-		if (IS_MF_MODE_STAT(bp)) {
-			for (i = 0; i < BNX2X_NUM_STATS; i++)
-				if (IS_FUNC_STAT(i))
-					num_stats++;
-		} else
-			num_stats += BNX2X_NUM_STATS;
-
-		return num_stats;
-
-	case ETH_SS_TEST:
-		return BNX2X_NUM_TESTS;
-=======
 			num_strings = bnx2x_num_stat_queues(bp) *
 				      BNX2X_NUM_Q_STATS;
 		} else
@@ -4110,19 +3163,12 @@ static int bnx2x_get_sset_count(struct net_device *dev, int stringset)
 
 	case ETH_SS_PRIV_FLAGS:
 		return BNX2X_PRI_FLAG_LEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		return -EINVAL;
 	}
 }
 
-<<<<<<< HEAD
-static void bnx2x_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
-{
-	struct bnx2x *bp = netdev_priv(dev);
-	int i, j, k;
-=======
 static u32 bnx2x_get_private_flags(struct net_device *dev)
 {
 	struct bnx2x *bp = netdev_priv(dev);
@@ -4139,7 +3185,6 @@ static void bnx2x_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
 {
 	struct bnx2x *bp = netdev_priv(dev);
 	int i, j, k, start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char queue_name[MAX_QUEUE_NAME_LEN+1];
 
 	switch (stringset) {
@@ -4148,12 +3193,8 @@ static void bnx2x_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
 		if (is_multi(bp)) {
 			for_each_eth_queue(bp, i) {
 				memset(queue_name, 0, sizeof(queue_name));
-<<<<<<< HEAD
-				sprintf(queue_name, "%d", i);
-=======
 				snprintf(queue_name, sizeof(queue_name),
 					 "%d", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				for (j = 0; j < BNX2X_NUM_Q_STATS; j++)
 					snprintf(buf + (k + j)*ETH_GSTRING_LEN,
 						ETH_GSTRING_LEN,
@@ -4163,14 +3204,8 @@ static void bnx2x_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
 			}
 		}
 
-<<<<<<< HEAD
-
-		for (i = 0, j = 0; i < BNX2X_NUM_STATS; i++) {
-			if (IS_MF_MODE_STAT(bp) && IS_PORT_STAT(i))
-=======
 		for (i = 0, j = 0; i < BNX2X_NUM_STATS; i++) {
 			if (HIDE_PORT_STAT(bp) && IS_PORT_STAT(i))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			strcpy(buf + (k + j)*ETH_GSTRING_LEN,
 				   bnx2x_stats_arr[i].string);
@@ -4180,9 +3215,6 @@ static void bnx2x_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
 		break;
 
 	case ETH_SS_TEST:
-<<<<<<< HEAD
-		memcpy(buf, bnx2x_tests_str_arr, sizeof(bnx2x_tests_str_arr));
-=======
 		/* First 4 tests cannot be done in MF mode */
 		if (!IS_MF(bp))
 			start = 0;
@@ -4195,7 +3227,6 @@ static void bnx2x_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
 	case ETH_SS_PRIV_FLAGS:
 		memcpy(buf, bnx2x_private_arr,
 		       ETH_GSTRING_LEN * BNX2X_PRI_FLAG_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -4209,11 +3240,7 @@ static void bnx2x_get_ethtool_stats(struct net_device *dev,
 
 	if (is_multi(bp)) {
 		for_each_eth_queue(bp, i) {
-<<<<<<< HEAD
-			hw_stats = (u32 *)&bp->fp[i].eth_q_stats;
-=======
 			hw_stats = (u32 *)&bp->fp_stats[i].eth_q_stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (j = 0; j < BNX2X_NUM_Q_STATS; j++) {
 				if (bnx2x_q_stats_arr[j].size == 0) {
 					/* skip this counter */
@@ -4236,11 +3263,7 @@ static void bnx2x_get_ethtool_stats(struct net_device *dev,
 
 	hw_stats = (u32 *)&bp->eth_stats;
 	for (i = 0, j = 0; i < BNX2X_NUM_STATS; i++) {
-<<<<<<< HEAD
-		if (IS_MF_MODE_STAT(bp) && IS_PORT_STAT(i))
-=======
 		if (HIDE_PORT_STAT(bp) && IS_PORT_STAT(i))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (bnx2x_stats_arr[i].size == 0) {
 			/* skip this counter */
@@ -4266,45 +3289,17 @@ static int bnx2x_set_phys_id(struct net_device *dev,
 {
 	struct bnx2x *bp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	if (!netif_running(dev)) {
-=======
 	if (!bnx2x_is_nvm_accessible(bp)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DP(BNX2X_MSG_ETHTOOL | BNX2X_MSG_NVM,
 		   "cannot access eeprom when the interface is down\n");
 		return -EAGAIN;
 	}
 
-<<<<<<< HEAD
-	if (!bp->port.pmf) {
-		DP(BNX2X_MSG_ETHTOOL, "Interface is not pmf\n");
-		return -EOPNOTSUPP;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (state) {
 	case ETHTOOL_ID_ACTIVE:
 		return 1;	/* cycle on/off once per second */
 
 	case ETHTOOL_ID_ON:
-<<<<<<< HEAD
-		bnx2x_set_led(&bp->link_params, &bp->link_vars,
-			      LED_MODE_ON, SPEED_1000);
-		break;
-
-	case ETHTOOL_ID_OFF:
-		bnx2x_set_led(&bp->link_params, &bp->link_vars,
-			      LED_MODE_FRONT_PANEL_OFF, 0);
-
-		break;
-
-	case ETHTOOL_ID_INACTIVE:
-		bnx2x_set_led(&bp->link_params, &bp->link_vars,
-			      LED_MODE_OPER,
-			      bp->link_vars.line_speed);
-=======
 		bnx2x_acquire_phy_lock(bp);
 		bnx2x_set_led(&bp->link_params, &bp->link_vars,
 			      LED_MODE_ON, SPEED_1000);
@@ -4358,7 +3353,6 @@ static int bnx2x_get_rss_flags(struct bnx2x *bp, struct ethtool_rxnfc *info)
 	default:
 		info->data = 0;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -4373,9 +3367,6 @@ static int bnx2x_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info,
 	case ETHTOOL_GRXRINGS:
 		info->data = BNX2X_NUM_ETH_QUEUES(bp);
 		return 0;
-<<<<<<< HEAD
-
-=======
 	case ETHTOOL_GRXFH:
 		return bnx2x_get_rss_flags(bp, info);
 	default:
@@ -4482,7 +3473,6 @@ static int bnx2x_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info)
 	switch (info->cmd) {
 	case ETHTOOL_SRXFH:
 		return bnx2x_set_rss_flags(bp, info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		DP(BNX2X_MSG_ETHTOOL, "Command parameters not supported\n");
 		return -EOPNOTSUPP;
@@ -4491,33 +3481,20 @@ static int bnx2x_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info)
 
 static u32 bnx2x_get_rxfh_indir_size(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct bnx2x *bp = netdev_priv(dev);
-
-	return (bp->multi_mode == ETH_RSS_MODE_DISABLED ?
-		0 : T_ETH_INDIRECTION_TABLE_SIZE);
-}
-
-static int bnx2x_get_rxfh_indir(struct net_device *dev, u32 *indir)
-=======
 	return T_ETH_INDIRECTION_TABLE_SIZE;
 }
 
 static int bnx2x_get_rxfh(struct net_device *dev,
 			  struct ethtool_rxfh_param *rxfh)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x *bp = netdev_priv(dev);
 	u8 ind_table[T_ETH_INDIRECTION_TABLE_SIZE] = {0};
 	size_t i;
 
-<<<<<<< HEAD
-=======
 	rxfh->hfunc = ETH_RSS_HASH_TOP;
 	if (!rxfh->indir)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get the current configuration of the RSS indirection table */
 	bnx2x_get_rss_ind_table(&bp->rss_conf_obj, ind_table);
 
@@ -4531,26 +3508,11 @@ static int bnx2x_get_rxfh(struct net_device *dev,
 	 * queue.
 	 */
 	for (i = 0; i < T_ETH_INDIRECTION_TABLE_SIZE; i++)
-<<<<<<< HEAD
-		indir[i] = ind_table[i] - bp->fp->cl_id;
-=======
 		rxfh->indir[i] = ind_table[i] - bp->fp->cl_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int bnx2x_set_rxfh_indir(struct net_device *dev, const u32 *indir)
-{
-	struct bnx2x *bp = netdev_priv(dev);
-	size_t i;
-	u8 ind_table[T_ETH_INDIRECTION_TABLE_SIZE] = {0};
-
-	for (i = 0; i < T_ETH_INDIRECTION_TABLE_SIZE; i++) {
-		/*
-		 * The same as in bnx2x_get_rxfh_indir: we can't use a memcpy()
-=======
 static int bnx2x_set_rxfh(struct net_device *dev,
 			  struct ethtool_rxfh_param *rxfh,
 			  struct netlink_ext_ack *extack)
@@ -4572,7 +3534,6 @@ static int bnx2x_set_rxfh(struct net_device *dev,
 	for (i = 0; i < T_ETH_INDIRECTION_TABLE_SIZE; i++) {
 		/*
 		 * The same as in bnx2x_get_rxfh: we can't use a memcpy()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * as an internal storage of an indirection table is a u8 array
 		 * while indir->ring_index points to an array of u32.
 		 *
@@ -4580,20 +3541,6 @@ static int bnx2x_set_rxfh(struct net_device *dev,
 		 * align the received table to the Client ID of the leading RSS
 		 * queue
 		 */
-<<<<<<< HEAD
-		ind_table[i] = indir[i] + bp->fp->cl_id;
-	}
-
-	return bnx2x_config_rss_pf(bp, ind_table, false);
-}
-
-static const struct ethtool_ops bnx2x_ethtool_ops = {
-	.get_settings		= bnx2x_get_settings,
-	.set_settings		= bnx2x_set_settings,
-	.get_drvinfo		= bnx2x_get_drvinfo,
-	.get_regs_len		= bnx2x_get_regs_len,
-	.get_regs		= bnx2x_get_regs,
-=======
 		bp->rss_conf_obj.ind_table[i] = rxfh->indir[i] + bp->fp->cl_id;
 	}
 
@@ -4725,7 +3672,6 @@ static const struct ethtool_ops bnx2x_ethtool_ops = {
 	.get_dump_flag		= bnx2x_get_dump_flag,
 	.get_dump_data		= bnx2x_get_dump_data,
 	.set_dump		= bnx2x_set_dump,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_wol		= bnx2x_get_wol,
 	.set_wol		= bnx2x_set_wol,
 	.get_msglevel		= bnx2x_get_msglevel,
@@ -4743,24 +3689,11 @@ static const struct ethtool_ops bnx2x_ethtool_ops = {
 	.set_pauseparam		= bnx2x_set_pauseparam,
 	.self_test		= bnx2x_self_test,
 	.get_sset_count		= bnx2x_get_sset_count,
-<<<<<<< HEAD
-=======
 	.get_priv_flags		= bnx2x_get_private_flags,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_strings		= bnx2x_get_strings,
 	.set_phys_id		= bnx2x_set_phys_id,
 	.get_ethtool_stats	= bnx2x_get_ethtool_stats,
 	.get_rxnfc		= bnx2x_get_rxnfc,
-<<<<<<< HEAD
-	.get_rxfh_indir_size	= bnx2x_get_rxfh_indir_size,
-	.get_rxfh_indir		= bnx2x_get_rxfh_indir,
-	.set_rxfh_indir		= bnx2x_set_rxfh_indir,
-};
-
-void bnx2x_set_ethtool_ops(struct net_device *netdev)
-{
-	SET_ETHTOOL_OPS(netdev, &bnx2x_ethtool_ops);
-=======
 	.set_rxnfc		= bnx2x_set_rxnfc,
 	.get_rxfh_indir_size	= bnx2x_get_rxfh_indir_size,
 	.get_rxfh		= bnx2x_get_rxfh,
@@ -4801,5 +3734,4 @@ void bnx2x_set_ethtool_ops(struct bnx2x *bp, struct net_device *netdev)
 {
 	netdev->ethtool_ops = (IS_PF(bp)) ?
 		&bnx2x_ethtool_ops : &bnx2x_vf_ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,27 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright (C) 1991, 1992 Linus Torvalds
  *   Copyright 2007 rPath, Inc. - All Rights Reserved
  *
-<<<<<<< HEAD
- *   This file is part of the Linux kernel, and is made available under
- *   the terms of the GNU General Public License version 2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
  * Very basic string functions
  */
 
-<<<<<<< HEAD
-#include "boot.h"
-=======
 #include <linux/types.h>
 #include <linux/compiler.h>
 #include <linux/errno.h>
@@ -56,23 +44,15 @@ int bcmp(const void *s1, const void *s2, size_t len)
 {
 	return memcmp(s1, s2, len);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int strcmp(const char *str1, const char *str2)
 {
 	const unsigned char *s1 = (const unsigned char *)str1;
 	const unsigned char *s2 = (const unsigned char *)str2;
-<<<<<<< HEAD
-	int delta = 0;
-
-	while (*s1 || *s2) {
-		delta = *s2 - *s1;
-=======
 	int delta;
 
 	while (*s1 || *s2) {
 		delta = *s1 - *s2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (delta)
 			return delta;
 		s1++;
@@ -137,10 +117,6 @@ static unsigned int simple_guess_base(const char *cp)
  * @endp: A pointer to the end of the parsed string will be placed here
  * @base: The number base to use
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned long long simple_strtoull(const char *cp, char **endp, unsigned int base)
 {
 	unsigned long long result = 0;
@@ -166,8 +142,6 @@ unsigned long long simple_strtoull(const char *cp, char **endp, unsigned int bas
 	return result;
 }
 
-<<<<<<< HEAD
-=======
 long simple_strtol(const char *cp, char **endp, unsigned int base)
 {
 	if (*cp == '-')
@@ -176,7 +150,6 @@ long simple_strtol(const char *cp, char **endp, unsigned int base)
 	return simple_strtoull(cp, endp, base);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * strlen - Find the length of a string
  * @s: The string to be sized
@@ -211,8 +184,6 @@ char *strstr(const char *s1, const char *s2)
 	}
 	return NULL;
 }
-<<<<<<< HEAD
-=======
 
 /**
  * strchr - Find the first occurrence of the character c in the string s.
@@ -405,4 +376,3 @@ int boot_kstrtoul(const char *s, unsigned int base, unsigned long *res)
 	else
 		return _kstrtoul(s, base, res);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

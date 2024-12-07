@@ -1,35 +1,3 @@
-<<<<<<< HEAD
-/*
- *  Linux MegaRAID driver for SAS based RAID controllers
- *
- *  Copyright (c) 2009-2011  LSI Corporation.
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- *  FILE: megaraid_sas_fp.c
- *
- *  Authors: LSI Corporation
- *           Sumant Patro
- *           Varad Talamacki
- *           Manoj Jose
- *
- *  Send feedback to: <megaraidlinux@lsi.com>
- *
- *  Mail to: LSI Corporation, 1621 Barber Lane, Milpitas, CA 95035
- *     ATTN: Linuxraid
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Linux MegaRAID driver for SAS based RAID controllers
@@ -48,7 +16,6 @@
  *           Sumit Saxena <sumit.saxena@broadcom.com>
  *
  *  Send feedback to: megaraidlinux.pdl@broadcom.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -66,10 +33,7 @@
 #include <linux/compat.h>
 #include <linux/blkdev.h>
 #include <linux/poll.h>
-<<<<<<< HEAD
-=======
 #include <linux/irq_poll.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
@@ -80,17 +44,6 @@
 #include "megaraid_sas.h"
 #include <asm/div64.h>
 
-<<<<<<< HEAD
-#define ABS_DIFF(a, b)   (((a) > (b)) ? ((a) - (b)) : ((b) - (a)))
-#define MR_LD_STATE_OPTIMAL 3
-#define FALSE 0
-#define TRUE 1
-
-/* Prototypes */
-void
-mr_update_load_balance_params(struct MR_FW_RAID_MAP_ALL *map,
-			      struct LD_LOAD_BALANCE_INFO *lbInfo);
-=======
 #define LB_PENDING_CMDS_DEFAULT 4
 static unsigned int lb_pending_cmds = LB_PENDING_CMDS_DEFAULT;
 module_param(lb_pending_cmds, int, 0444);
@@ -113,7 +66,6 @@ static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
 	struct RAID_CONTEXT *pRAID_Context, struct MR_DRV_RAID_MAP_ALL *map);
 static u64 get_row_from_strip(struct megasas_instance *instance, u32 ld,
 	u64 strip, struct MR_DRV_RAID_MAP_ALL *map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 u32 mega_mod64(u64 dividend, u32 divisor)
 {
@@ -128,17 +80,6 @@ u32 mega_mod64(u64 dividend, u32 divisor)
 }
 
 /**
-<<<<<<< HEAD
- * @param dividend    : Dividend
- * @param divisor    : Divisor
- *
- * @return quotient
- **/
-u64 mega_div64_32(uint64_t dividend, uint32_t divisor)
-{
-	u32 remainder;
-	u64 d;
-=======
  * mega_div64_32 - Do a 64-bit division
  * @dividend:	Dividend
  * @divisor:	Divisor
@@ -148,63 +89,32 @@ u64 mega_div64_32(uint64_t dividend, uint32_t divisor)
 static u64 mega_div64_32(uint64_t dividend, uint32_t divisor)
 {
 	u64 d = dividend;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!divisor)
 		printk(KERN_ERR "megasas : DIVISOR is zero in mod fn\n");
 
-<<<<<<< HEAD
-	d = dividend;
-	remainder = do_div(d, divisor);
-=======
 	do_div(d, divisor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return d;
 }
 
-<<<<<<< HEAD
-struct MR_LD_RAID *MR_LdRaidGet(u32 ld, struct MR_FW_RAID_MAP_ALL *map)
-=======
 struct MR_LD_RAID *MR_LdRaidGet(u32 ld, struct MR_DRV_RAID_MAP_ALL *map)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return &map->raidMap.ldSpanMap[ld].ldRaid;
 }
 
 static struct MR_SPAN_BLOCK_INFO *MR_LdSpanInfoGet(u32 ld,
-<<<<<<< HEAD
-						   struct MR_FW_RAID_MAP_ALL
-=======
 						   struct MR_DRV_RAID_MAP_ALL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   *map)
 {
 	return &map->raidMap.ldSpanMap[ld].spanBlock[0];
 }
 
-<<<<<<< HEAD
-static u8 MR_LdDataArmGet(u32 ld, u32 armIdx, struct MR_FW_RAID_MAP_ALL *map)
-=======
 static u8 MR_LdDataArmGet(u32 ld, u32 armIdx, struct MR_DRV_RAID_MAP_ALL *map)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return map->raidMap.ldSpanMap[ld].dataArmMap[armIdx];
 }
 
-<<<<<<< HEAD
-static u16 MR_ArPdGet(u32 ar, u32 arm, struct MR_FW_RAID_MAP_ALL *map)
-{
-	return map->raidMap.arMapInfo[ar].pd[arm];
-}
-
-static u16 MR_LdSpanArrayGet(u32 ld, u32 span, struct MR_FW_RAID_MAP_ALL *map)
-{
-	return map->raidMap.ldSpanMap[ld].spanBlock[span].span.arrayRef;
-}
-
-static u16 MR_PdDevHandleGet(u32 pd, struct MR_FW_RAID_MAP_ALL *map)
-=======
 u16 MR_ArPdGet(u32 ar, u32 arm, struct MR_DRV_RAID_MAP_ALL *map)
 {
 	return le16_to_cpu(map->raidMap.arMapInfo[ar].pd[arm]);
@@ -216,19 +126,10 @@ u16 MR_LdSpanArrayGet(u32 ld, u32 span, struct MR_DRV_RAID_MAP_ALL *map)
 }
 
 __le16 MR_PdDevHandleGet(u32 pd, struct MR_DRV_RAID_MAP_ALL *map)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return map->raidMap.devHndlInfo[pd].curDevHdl;
 }
 
-<<<<<<< HEAD
-u16 MR_GetLDTgtId(u32 ld, struct MR_FW_RAID_MAP_ALL *map)
-{
-	return map->raidMap.ldSpanMap[ld].ldRaid.targetId;
-}
-
-u16 MR_TargetIdToLdGet(u32 ldTgtId, struct MR_FW_RAID_MAP_ALL *map)
-=======
 static u8 MR_PdInterfaceTypeGet(u32 pd, struct MR_DRV_RAID_MAP_ALL *map)
 {
 	return map->raidMap.devHndlInfo[pd].interfaceType;
@@ -240,46 +141,17 @@ u16 MR_GetLDTgtId(u32 ld, struct MR_DRV_RAID_MAP_ALL *map)
 }
 
 u16 MR_TargetIdToLdGet(u32 ldTgtId, struct MR_DRV_RAID_MAP_ALL *map)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return map->raidMap.ldTgtIdToLd[ldTgtId];
 }
 
 static struct MR_LD_SPAN *MR_LdSpanPtrGet(u32 ld, u32 span,
-<<<<<<< HEAD
-					  struct MR_FW_RAID_MAP_ALL *map)
-=======
 					  struct MR_DRV_RAID_MAP_ALL *map)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return &map->raidMap.ldSpanMap[ld].spanBlock[span].span;
 }
 
 /*
-<<<<<<< HEAD
- * This function will validate Map info data provided by FW
- */
-u8 MR_ValidateMapInfo(struct MR_FW_RAID_MAP_ALL *map,
-		      struct LD_LOAD_BALANCE_INFO *lbInfo)
-{
-	struct MR_FW_RAID_MAP *pFwRaidMap = &map->raidMap;
-
-	if (pFwRaidMap->totalSize !=
-	    (sizeof(struct MR_FW_RAID_MAP) -sizeof(struct MR_LD_SPAN_MAP) +
-	     (sizeof(struct MR_LD_SPAN_MAP) *pFwRaidMap->ldCount))) {
-		printk(KERN_ERR "megasas: map info structure size 0x%x is not matching with ld count\n",
-		       (unsigned int)((sizeof(struct MR_FW_RAID_MAP) -
-				       sizeof(struct MR_LD_SPAN_MAP)) +
-				      (sizeof(struct MR_LD_SPAN_MAP) *
-				       pFwRaidMap->ldCount)));
-		printk(KERN_ERR "megasas: span map %x, pFwRaidMap->totalSize "
-		       ": %x\n", (unsigned int)sizeof(struct MR_LD_SPAN_MAP),
-		       pFwRaidMap->totalSize);
-		return 0;
-	}
-
-	mr_update_load_balance_params(map, lbInfo);
-=======
  * This function will Populate Driver Map using firmware raid map
  */
 static int MR_PopulateDrvRaidMap(struct megasas_instance *instance, u64 map_id)
@@ -494,18 +366,12 @@ u8 MR_ValidateMapInfo(struct megasas_instance *instance, u64 map_id)
 		instance->ld_ids_from_raidmap[i] = i;
 		num_lds--;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
 
-<<<<<<< HEAD
-u32 MR_GetSpanBlock(u32 ld, u64 row, u64 *span_blk,
-		    struct MR_FW_RAID_MAP_ALL *map, int *div_error)
-=======
 static u32 MR_GetSpanBlock(u32 ld, u64 row, u64 *span_blk,
 		    struct MR_DRV_RAID_MAP_ALL *map)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct MR_SPAN_BLOCK_INFO *pSpanBlock = MR_LdSpanInfoGet(ld, map);
 	struct MR_QUAD_ELEMENT    *quad;
@@ -514,27 +380,6 @@ static u32 MR_GetSpanBlock(u32 ld, u64 row, u64 *span_blk,
 
 	for (span = 0; span < raid->spanDepth; span++, pSpanBlock++) {
 
-<<<<<<< HEAD
-		for (j = 0; j < pSpanBlock->block_span_info.noElements; j++) {
-			quad = &pSpanBlock->block_span_info.quad[j];
-
-			if (quad->diff == 0) {
-				*div_error = 1;
-				return span;
-			}
-			if (quad->logStart <= row  &&  row <= quad->logEnd  &&
-			    (mega_mod64(row-quad->logStart, quad->diff)) == 0) {
-				if (span_blk != NULL) {
-					u64  blk, debugBlk;
-					blk =
-						mega_div64_32(
-							(row-quad->logStart),
-							quad->diff);
-					debugBlk = blk;
-
-					blk = (blk + quad->offsetInSpan) <<
-						raid->stripeShift;
-=======
 		for (j = 0; j < le32_to_cpu(pSpanBlock->block_span_info.noElements); j++) {
 			quad = &pSpanBlock->block_span_info.quad[j];
 
@@ -548,16 +393,12 @@ static u32 MR_GetSpanBlock(u32 ld, u64 row, u64 *span_blk,
 					blk =  mega_div64_32((row-le64_to_cpu(quad->logStart)), le32_to_cpu(quad->diff));
 
 					blk = (blk + le64_to_cpu(quad->offsetInSpan)) << raid->stripeShift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					*span_blk = blk;
 				}
 				return span;
 			}
 		}
 	}
-<<<<<<< HEAD
-	return span;
-=======
 	return SPAN_INVALID;
 }
 
@@ -928,7 +769,6 @@ static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
 	}
 	io_info->pd_after_lb = pd;
 	return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -948,19 +788,6 @@ static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
 *    span          - Span number
 *    block         - Absolute Block number in the physical disk
 */
-<<<<<<< HEAD
-u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRow,
-		   u16 stripRef, u64 *pdBlock, u16 *pDevHandle,
-		   struct RAID_CONTEXT *pRAID_Context,
-		   struct MR_FW_RAID_MAP_ALL *map)
-{
-	struct MR_LD_RAID  *raid = MR_LdRaidGet(ld, map);
-	u32         pd, arRef;
-	u8          physArm, span;
-	u64         row;
-	u8	    retval = TRUE;
-	int	    error_code = 0;
-=======
 static u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRow,
 		u16 stripRef, struct IO_REQUEST_INFO *io_info,
 		struct RAID_CONTEXT *pRAID_Context,
@@ -976,7 +803,6 @@ static u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRo
 	u8	    *pPdInterface = &io_info->pd_interface;
 
 	*pDevHandle = cpu_to_le16(MR_DEVHANDLE_INVALID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	row =  mega_div64_32(stripRow, raid->rowDataSize);
 
@@ -986,11 +812,7 @@ static u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRo
 		u32 rowMod, armQ, arm;
 
 		if (raid->rowSize == 0)
-<<<<<<< HEAD
-			return FALSE;
-=======
 			return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* get logical row mod */
 		rowMod = mega_mod64(row, raid->rowSize);
 		armQ = raid->rowSize-1-rowMod; /* index of Q drive */
@@ -1000,11 +822,7 @@ static u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRo
 		physArm = (u8)arm;
 	} else  {
 		if (raid->modFactor == 0)
-<<<<<<< HEAD
-			return FALSE;
-=======
 			return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		physArm = MR_LdDataArmGet(ld,  mega_mod64(stripRow,
 							  raid->modFactor),
 					  map);
@@ -1014,45 +832,15 @@ static u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRo
 		span = 0;
 		*pdBlock = row << raid->stripeShift;
 	} else {
-<<<<<<< HEAD
-		span = (u8)MR_GetSpanBlock(ld, row, pdBlock, map, &error_code);
-		if (error_code == 1)
-			return FALSE;
-=======
 		span = (u8)MR_GetSpanBlock(ld, row, pdBlock, map);
 		if (span == SPAN_INVALID)
 			return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Get the array on which this span is present */
 	arRef       = MR_LdSpanArrayGet(ld, span, map);
 	pd          = MR_ArPdGet(arRef, physArm, map); /* Get the pd */
 
-<<<<<<< HEAD
-	if (pd != MR_PD_INVALID)
-		/* Get dev handle from Pd. */
-		*pDevHandle = MR_PdDevHandleGet(pd, map);
-	else {
-		*pDevHandle = MR_PD_INVALID; /* set dev handle as invalid. */
-		if ((raid->level >= 5) &&
-		    ((instance->pdev->device != PCI_DEVICE_ID_LSI_INVADER) ||
-		     (instance->pdev->device == PCI_DEVICE_ID_LSI_INVADER &&
-		      raid->regTypeReqOnRead != REGION_TYPE_UNUSED)))
-			pRAID_Context->regLockFlags = REGION_TYPE_EXCLUSIVE;
-		else if (raid->level == 1) {
-			/* Get alternate Pd. */
-			pd = MR_ArPdGet(arRef, physArm + 1, map);
-			if (pd != MR_PD_INVALID)
-				/* Get dev handle from Pd */
-				*pDevHandle = MR_PdDevHandleGet(pd, map);
-		}
-	}
-
-	*pdBlock += stripRef + MR_LdSpanPtrGet(ld, span, map)->startBlk;
-	pRAID_Context->spanArm = (span << RAID_CTX_SPANARM_SPAN_SHIFT) |
-		physArm;
-=======
 	if (pd != MR_PD_INVALID) {
 		/* Get dev handle from Pd. */
 		*pDevHandle = MR_PdDevHandleGet(pd, map);
@@ -1096,13 +884,10 @@ static u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRo
 		io_info->span_arm = pRAID_Context->span_arm;
 	}
 	io_info->pd_after_lb = pd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
 /*
-<<<<<<< HEAD
-=======
  * mr_get_phy_params_r56_rmw -  Calculate parameters for R56 CTIO write operation
  * @instance:			Adapter soft state
  * @ld:				LD index
@@ -1174,7 +959,6 @@ static void mr_get_phy_params_r56_rmw(struct megasas_instance *instance,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ******************************************************************************
 *
 * MR_BuildRaidContext function
@@ -1187,18 +971,11 @@ u8
 MR_BuildRaidContext(struct megasas_instance *instance,
 		    struct IO_REQUEST_INFO *io_info,
 		    struct RAID_CONTEXT *pRAID_Context,
-<<<<<<< HEAD
-		    struct MR_FW_RAID_MAP_ALL *map)
-{
-	struct MR_LD_RAID  *raid;
-	u32         ld, stripSize, stripe_mask;
-=======
 		    struct MR_DRV_RAID_MAP_ALL *map, u8 **raidLUN)
 {
 	struct fusion_context *fusion;
 	struct MR_LD_RAID  *raid;
 	u32         stripSize, stripe_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64         endLba, endStrip, endRow, start_row, start_strip;
 	u64         regStart;
 	u32         regSize;
@@ -1208,25 +985,14 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 	u32         numBlocks, ldTgtId;
 	u8          isRead;
 	u8	    retval = 0;
-<<<<<<< HEAD
-=======
 	u8	    startlba_span = SPAN_INVALID;
 	u64 *pdBlock = &io_info->pdBlock;
 	u16	    ld;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ldStartBlock = io_info->ldStartBlock;
 	numBlocks = io_info->numBlocks;
 	ldTgtId = io_info->ldTgtId;
 	isRead = io_info->isRead;
-<<<<<<< HEAD
-
-	ld = MR_TargetIdToLdGet(ldTgtId, map);
-	raid = MR_LdRaidGet(ld, map);
-
-	stripSize = 1 << raid->stripeShift;
-	stripe_mask = stripSize-1;
-=======
 	io_info->IoforUnevenSpan = 0;
 	io_info->start_span	= SPAN_INVALID;
 	fusion = instance->ctrl_context;
@@ -1260,7 +1026,6 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 
 	io_info->data_arms = raid->rowDataSize;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * calculate starting row and stripe, and number of strips and rows
 	 */
@@ -1270,13 +1035,6 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 	ref_in_end_stripe   = (u16)(endLba & stripe_mask);
 	endStrip            = endLba >> raid->stripeShift;
 	num_strips          = (u8)(endStrip - start_strip + 1); /* End strip */
-<<<<<<< HEAD
-	if (raid->rowDataSize == 0)
-		return FALSE;
-	start_row           =  mega_div64_32(start_strip, raid->rowDataSize);
-	endRow              =  mega_div64_32(endStrip, raid->rowDataSize);
-	numRows             = (u8)(endRow - start_row + 1);
-=======
 
 	if (io_info->IoforUnevenSpan) {
 		start_row = get_row_from_strip(instance, ld, start_strip, map);
@@ -1310,7 +1068,6 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 		endRow    = mega_div64_32(endStrip, raid->rowDataSize);
 	}
 	numRows = (u8)(endRow - start_row + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * calculate region info.
@@ -1321,17 +1078,6 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 	/* assume this IO needs the full row - we'll adjust if not true */
 	regSize             = stripSize;
 
-<<<<<<< HEAD
-	/* If IO spans more than 1 strip, fp is not possible
-	   FP is not possible for writes on non-0 raid levels
-	   FP is not possible if LD is not capable */
-	if (num_strips > 1 || (!isRead && raid->level != 0) ||
-	    !raid->capability.fpCapable) {
-		io_info->fpOkForIo = FALSE;
-	} else {
-		io_info->fpOkForIo = TRUE;
-	}
-=======
 	io_info->do_fp_rlbypass = raid->capability.fpBypassRegionLock;
 
 	/* Check if we can send this I/O via FastPath */
@@ -1348,7 +1094,6 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 					       fpWriteAcrossStripe));
 	} else
 		io_info->fpOkForIo = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (numRows == 1) {
 		/* single-strip IOs can always lock only the data needed */
@@ -1357,22 +1102,6 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 			regSize = numBlocks;
 		}
 		/* multi-strip IOs always need to full stripe locked */
-<<<<<<< HEAD
-	} else {
-		if (start_strip == (start_row + 1) * raid->rowDataSize - 1) {
-			/* If the start strip is the last in the start row */
-			regStart += ref_in_start_stripe;
-			regSize = stripSize - ref_in_start_stripe;
-			/* initialize count to sectors from startref to end
-			   of strip */
-		}
-
-		if (numRows > 2)
-			/* Add complete rows in the middle of the transfer */
-			regSize += (numRows-2) << raid->stripeShift;
-
-		/* if IO ends within first strip of last row */
-=======
 	} else if (io_info->IoforUnevenSpan == 0) {
 		/*
 		 * For Even span region lock optimization.
@@ -1390,26 +1119,10 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 			regSize += (numRows-2) << raid->stripeShift;
 
 		/* if IO ends within first strip of last row*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (endStrip == endRow*raid->rowDataSize)
 			regSize += ref_in_end_stripe+1;
 		else
 			regSize += stripSize;
-<<<<<<< HEAD
-	}
-
-	pRAID_Context->timeoutValue     = map->raidMap.fpPdIoTimeoutSec;
-	if (instance->pdev->device == PCI_DEVICE_ID_LSI_INVADER)
-		pRAID_Context->regLockFlags = (isRead) ?
-			raid->regTypeReqOnRead : raid->regTypeReqOnWrite;
-	else
-		pRAID_Context->regLockFlags = (isRead) ?
-			REGION_TYPE_SHARED_READ : raid->regTypeReqOnWrite;
-	pRAID_Context->VirtualDiskTgtId = raid->targetId;
-	pRAID_Context->regLockRowLBA    = regStart;
-	pRAID_Context->regLockLength    = regSize;
-	pRAID_Context->configSeqNum	= raid->seqNum;
-=======
 	} else {
 		/*
 		 * For Uneven span region lock optimization.
@@ -1460,21 +1173,10 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 				       map);
 		return true;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*Get Phy Params only if FP capable, or else leave it to MR firmware
 	  to do the calculation.*/
 	if (io_info->fpOkForIo) {
-<<<<<<< HEAD
-		retval = MR_GetPhyParams(instance, ld, start_strip,
-					 ref_in_start_stripe,
-					 &io_info->pdBlock,
-					 &io_info->devHandle, pRAID_Context,
-					 map);
-		/* If IO on an invalid Pd, then FP i snot possible */
-		if (io_info->devHandle == MR_PD_INVALID)
-			io_info->fpOkForIo = FALSE;
-=======
 		retval = io_info->IoforUnevenSpan ?
 				mr_spanset_get_phy_params(instance, ld,
 					start_strip, ref_in_start_stripe,
@@ -1485,28 +1187,10 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 		/* If IO on an invalid Pd, then FP is not possible.*/
 		if (io_info->devHandle == MR_DEVHANDLE_INVALID)
 			io_info->fpOkForIo = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return retval;
 	} else if (isRead) {
 		uint stripIdx;
 		for (stripIdx = 0; stripIdx < num_strips; stripIdx++) {
-<<<<<<< HEAD
-			if (!MR_GetPhyParams(instance, ld,
-					     start_strip + stripIdx,
-					     ref_in_start_stripe,
-					     &io_info->pdBlock,
-					     &io_info->devHandle,
-					     pRAID_Context, map))
-				return TRUE;
-		}
-	}
-	return TRUE;
-}
-
-void
-mr_update_load_balance_params(struct MR_FW_RAID_MAP_ALL *map,
-			      struct LD_LOAD_BALANCE_INFO *lbInfo)
-=======
 			retval = io_info->IoforUnevenSpan ?
 				mr_spanset_get_phy_params(instance, ld,
 				    start_strip + stripIdx,
@@ -1636,98 +1320,21 @@ void mr_update_span_set(struct MR_DRV_RAID_MAP_ALL *map,
 
 void mr_update_load_balance_params(struct MR_DRV_RAID_MAP_ALL *drv_map,
 	struct LD_LOAD_BALANCE_INFO *lbInfo)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ldCount;
 	u16 ld;
 	struct MR_LD_RAID *raid;
 
-<<<<<<< HEAD
-	for (ldCount = 0; ldCount < MAX_LOGICAL_DRIVES; ldCount++) {
-		ld = MR_TargetIdToLdGet(ldCount, map);
-		if (ld >= MAX_LOGICAL_DRIVES) {
-=======
 	if (lb_pending_cmds > 128 || lb_pending_cmds < 1)
 		lb_pending_cmds = LB_PENDING_CMDS_DEFAULT;
 
 	for (ldCount = 0; ldCount < MAX_LOGICAL_DRIVES_EXT; ldCount++) {
 		ld = MR_TargetIdToLdGet(ldCount, drv_map);
 		if (ld >= MAX_LOGICAL_DRIVES_EXT - 1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lbInfo[ldCount].loadBalanceFlag = 0;
 			continue;
 		}
 
-<<<<<<< HEAD
-		raid = MR_LdRaidGet(ld, map);
-
-		/* Two drive Optimal RAID 1 */
-		if ((raid->level == 1)  &&  (raid->rowSize == 2) &&
-		    (raid->spanDepth == 1) && raid->ldState ==
-		    MR_LD_STATE_OPTIMAL) {
-			u32 pd, arRef;
-
-			lbInfo[ldCount].loadBalanceFlag = 1;
-
-			/* Get the array on which this span is present */
-			arRef = MR_LdSpanArrayGet(ld, 0, map);
-
-			/* Get the Pd */
-			pd = MR_ArPdGet(arRef, 0, map);
-			/* Get dev handle from Pd */
-			lbInfo[ldCount].raid1DevHandle[0] =
-				MR_PdDevHandleGet(pd, map);
-			/* Get the Pd */
-			pd = MR_ArPdGet(arRef, 1, map);
-
-			/* Get the dev handle from Pd */
-			lbInfo[ldCount].raid1DevHandle[1] =
-				MR_PdDevHandleGet(pd, map);
-		} else
-			lbInfo[ldCount].loadBalanceFlag = 0;
-	}
-}
-
-u8 megasas_get_best_arm(struct LD_LOAD_BALANCE_INFO *lbInfo, u8 arm, u64 block,
-			u32 count)
-{
-	u16     pend0, pend1;
-	u64     diff0, diff1;
-	u8      bestArm;
-
-	/* get the pending cmds for the data and mirror arms */
-	pend0 = atomic_read(&lbInfo->scsi_pending_cmds[0]);
-	pend1 = atomic_read(&lbInfo->scsi_pending_cmds[1]);
-
-	/* Determine the disk whose head is nearer to the req. block */
-	diff0 = ABS_DIFF(block, lbInfo->last_accessed_block[0]);
-	diff1 = ABS_DIFF(block, lbInfo->last_accessed_block[1]);
-	bestArm = (diff0 <= diff1 ? 0 : 1);
-
-	if ((bestArm == arm && pend0 > pend1 + 16)  ||
-	    (bestArm != arm && pend1 > pend0 + 16))
-		bestArm ^= 1;
-
-	/* Update the last accessed block on the correct pd */
-	lbInfo->last_accessed_block[bestArm] = block + count - 1;
-
-	return bestArm;
-}
-
-u16 get_updated_dev_handle(struct LD_LOAD_BALANCE_INFO *lbInfo,
-			   struct IO_REQUEST_INFO *io_info)
-{
-	u8 arm, old_arm;
-	u16 devHandle;
-
-	old_arm = lbInfo->raid1DevHandle[0] == io_info->devHandle ? 0 : 1;
-
-	/* get best new arm */
-	arm  = megasas_get_best_arm(lbInfo, old_arm, io_info->ldStartBlock,
-				    io_info->numBlocks);
-	devHandle = lbInfo->raid1DevHandle[arm];
-	atomic_inc(&lbInfo->scsi_pending_cmds[arm]);
-=======
 		raid = MR_LdRaidGet(ld, drv_map);
 		if ((raid->level != 1) ||
 			(raid->ldState != MR_LD_STATE_OPTIMAL)) {
@@ -1813,7 +1420,6 @@ __le16 get_updated_dev_handle(struct megasas_instance *instance,
 	devHandle = MR_PdDevHandleGet(arm_pd, drv_map);
 	io_info->pd_interface = MR_PdInterfaceTypeGet(arm_pd, drv_map);
 	atomic_inc(&lbInfo->scsi_pending_cmds[arm_pd]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return devHandle;
 }

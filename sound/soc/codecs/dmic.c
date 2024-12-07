@@ -1,36 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * dmic.c  --  SoC audio for Generic Digital MICs
  *
  * Author: Liam Girdwood <lrg@slimlogic.co.uk>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA
- *
- */
-
-=======
  */
 
 #include <linux/delay.h>
 #include <linux/gpio.h>
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -39,8 +16,6 @@
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>
 
-<<<<<<< HEAD
-=======
 #define MAX_MODESWITCH_DELAY 70
 static int modeswitch_delay;
 module_param(modeswitch_delay, uint, 0644);
@@ -98,7 +73,6 @@ static int dmic_aif_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct snd_soc_dai_driver dmic_dai = {
 	.name = "dmic-hifi",
 	.capture = {
@@ -108,15 +82,6 @@ static struct snd_soc_dai_driver dmic_dai = {
 		.rates = SNDRV_PCM_RATE_CONTINUOUS,
 		.formats = SNDRV_PCM_FMTBIT_S32_LE
 			| SNDRV_PCM_FMTBIT_S24_LE
-<<<<<<< HEAD
-			| SNDRV_PCM_FMTBIT_S16_LE,
-	},
-};
-
-static const struct snd_soc_dapm_widget dmic_dapm_widgets[] = {
-	SND_SOC_DAPM_AIF_OUT("DMIC AIF", "Capture", 0,
-			     SND_SOC_NOPM, 0, 0),
-=======
 			| SNDRV_PCM_FMTBIT_S16_LE
 			| SNDRV_PCM_FMTBIT_DSD_U8
 			| SNDRV_PCM_FMTBIT_DSD_U16_LE
@@ -159,7 +124,6 @@ static const struct snd_soc_dapm_widget dmic_dapm_widgets[] = {
 	SND_SOC_DAPM_AIF_OUT_E("DMIC AIF", "Capture", 0,
 			       SND_SOC_NOPM, 0, 0, dmic_aif_event,
 			       SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SND_SOC_DAPM_INPUT("DMic"),
 };
 
@@ -167,34 +131,6 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"DMIC AIF", NULL, "DMic"},
 };
 
-<<<<<<< HEAD
-static int dmic_probe(struct snd_soc_codec *codec)
-{
-	struct snd_soc_dapm_context *dapm = &codec->dapm;
-
-	snd_soc_dapm_new_controls(dapm, dmic_dapm_widgets,
-				  ARRAY_SIZE(dmic_dapm_widgets));
-        snd_soc_dapm_add_routes(dapm, intercon, ARRAY_SIZE(intercon));
-	snd_soc_dapm_new_widgets(dapm);
-
-	return 0;
-}
-
-static struct snd_soc_codec_driver soc_dmic = {
-	.probe	= dmic_probe,
-};
-
-static int __devinit dmic_dev_probe(struct platform_device *pdev)
-{
-	return snd_soc_register_codec(&pdev->dev,
-			&soc_dmic, &dmic_dai, 1);
-}
-
-static int __devexit dmic_dev_remove(struct platform_device *pdev)
-{
-	snd_soc_unregister_codec(&pdev->dev);
-	return 0;
-=======
 static const struct snd_soc_component_driver soc_dmic = {
 	.probe			= dmic_component_probe,
 	.dapm_widgets		= dmic_dapm_widgets,
@@ -232,20 +168,10 @@ static int dmic_dev_probe(struct platform_device *pdev)
 
 	return devm_snd_soc_register_component(&pdev->dev,
 			&soc_dmic, dai_drv, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MODULE_ALIAS("platform:dmic-codec");
 
-<<<<<<< HEAD
-static struct platform_driver dmic_driver = {
-	.driver = {
-		.name = "dmic-codec",
-		.owner = THIS_MODULE,
-	},
-	.probe = dmic_dev_probe,
-	.remove = __devexit_p(dmic_dev_remove),
-=======
 static const struct of_device_id dmic_dev_match[] = {
 	{.compatible = "dmic-codec"},
 	{}
@@ -258,7 +184,6 @@ static struct platform_driver dmic_driver = {
 		.of_match_table = dmic_dev_match,
 	},
 	.probe = dmic_dev_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(dmic_driver);

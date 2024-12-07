@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-obj-$(CONFIG_REGMAP) += regmap.o regcache.o
-obj-$(CONFIG_REGMAP) += regcache-rbtree.o regcache-lzo.o
-obj-$(CONFIG_DEBUG_FS) += regmap-debugfs.o
-obj-$(CONFIG_REGMAP_I2C) += regmap-i2c.o
-obj-$(CONFIG_REGMAP_SPI) += regmap-spi.o
-obj-$(CONFIG_REGMAP_IRQ) += regmap-irq.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 # For include/trace/define_trace.h to include trace.h
 CFLAGS_regmap.o := -I$(src)
@@ -30,4 +22,3 @@ obj-$(CONFIG_REGMAP_I3C) += regmap-i3c.o
 obj-$(CONFIG_REGMAP_SPI_AVMM) += regmap-spi-avmm.o
 obj-$(CONFIG_REGMAP_MDIO) += regmap-mdio.o
 obj-$(CONFIG_REGMAP_FSI) += regmap-fsi.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

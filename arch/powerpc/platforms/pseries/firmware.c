@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  pSeries firmware setup code.
  *
@@ -18,29 +15,6 @@
  *    Copyright (C) 2005 Stephen Rothwell, IBM Corporation
  *
  *  Copyright 2006 IBM Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-
-
-#include <asm/firmware.h>
-#include <asm/prom.h>
-#include <asm/udbg.h>
-
-#include "pseries.h"
-
-typedef struct {
-    unsigned long val;
-    char * name;
-} firmware_feature_t;
-
-static __initdata firmware_feature_t
-firmware_features_table[FIRMWARE_MAX_FEATURES] = {
-=======
  */
 
 
@@ -64,7 +38,6 @@ struct hypertas_fw_feature {
  */
 static __initdata struct hypertas_fw_feature
 hypertas_fw_features_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{FW_FEATURE_PFT,		"hcall-pft"},
 	{FW_FEATURE_TCE,		"hcall-tce"},
 	{FW_FEATURE_SPRG0,		"hcall-sprg0"},
@@ -83,11 +56,6 @@ hypertas_fw_features_table[] = {
 	{FW_FEATURE_LLAN,		"hcall-lLAN"},
 	{FW_FEATURE_BULK_REMOVE,	"hcall-bulk"},
 	{FW_FEATURE_XDABR,		"hcall-xdabr"},
-<<<<<<< HEAD
-	{FW_FEATURE_MULTITCE,		"hcall-multi-tce"},
-	{FW_FEATURE_SPLPAR,		"hcall-splpar"},
-	{FW_FEATURE_VPHN,		"hcall-vphn"},
-=======
 	{FW_FEATURE_PUT_TCE_IND | FW_FEATURE_STUFF_TCE,
 					"hcall-multi-tce"},
 	{FW_FEATURE_SPLPAR,		"hcall-splpar"},
@@ -101,32 +69,18 @@ hypertas_fw_features_table[] = {
 	{FW_FEATURE_ENERGY_SCALE_INFO,	"hcall-energy-scale-info"},
 	{FW_FEATURE_WATCHDOG,		"hcall-watchdog"},
 	{FW_FEATURE_PLPKS,		"hcall-pks"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Build up the firmware features bitmask using the contents of
  * device-tree/ibm,hypertas-functions.  Ultimately this functionality may
  * be moved into prom.c prom_init().
  */
-<<<<<<< HEAD
-void __init fw_feature_init(const char *hypertas, unsigned long len)
-=======
 static void __init fw_hypertas_feature_init(const char *hypertas,
 					    unsigned long len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *s;
 	int i;
 
-<<<<<<< HEAD
-	pr_debug(" -> fw_feature_init()\n");
-
-	for (s = hypertas; s < hypertas + len; s += strlen(s) + 1) {
-		for (i = 0; i < FIRMWARE_MAX_FEATURES; i++) {
-			/* check value against table of strings */
-			if (!firmware_features_table[i].name ||
-			    strcmp(firmware_features_table[i].name, s))
-=======
 	pr_debug(" -> fw_hypertas_feature_init()\n");
 
 	for (s = hypertas; s < hypertas + len; s += strlen(s) + 1) {
@@ -143,23 +97,15 @@ static void __init fw_hypertas_feature_init(const char *hypertas,
 				if (strncmp(name, s, size - 1))
 					continue;
 			} else if (strcmp(name, s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 
 			/* we have a match */
 			powerpc_firmware_features |=
-<<<<<<< HEAD
-				firmware_features_table[i].val;
-=======
 				hypertas_fw_features_table[i].val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	pr_debug(" <- fw_feature_init()\n");
-=======
 	if (is_secure_guest() &&
 	    (powerpc_firmware_features & FW_FEATURE_PUT_TCE_IND)) {
 		powerpc_firmware_features &= ~FW_FEATURE_PUT_TCE_IND;
@@ -242,5 +188,4 @@ static int __init probe_fw_features(unsigned long node, const char *uname, int
 void __init pseries_probe_fw_features(void)
 {
 	of_scan_flat_dt(probe_fw_features, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

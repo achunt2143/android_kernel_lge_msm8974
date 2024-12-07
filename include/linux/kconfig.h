@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_KCONFIG_H
 #define __LINUX_KCONFIG_H
 
 #include <generated/autoconf.h>
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_CPU_BIG_ENDIAN
 #define __BIG_ENDIAN 4321
 #else
@@ -30,7 +25,6 @@
 #define ___or(x, y)			____or(__ARG_PLACEHOLDER_##x, y)
 #define ____or(arg1_or_junk, y)		__take_second_arg(arg1_or_junk 1, y)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Helper macros to use CONFIG_ options in C/CPP expressions. Note that
  * these only work with boolean and tristate options.
@@ -44,40 +38,15 @@
  * When CONFIG_BOOGER is not defined, we generate a (... 1, 0) pair, and when
  * the last step cherry picks the 2nd arg, we get a zero.
  */
-<<<<<<< HEAD
-#define __ARG_PLACEHOLDER_1 0,
-#define config_enabled(cfg) _config_enabled(cfg)
-#define _config_enabled(value) __config_enabled(__ARG_PLACEHOLDER_##value)
-#define __config_enabled(arg1_or_junk) ___config_enabled(arg1_or_junk 1, 0)
-#define ___config_enabled(__ignored, val, ...) val
-
-/*
- * IS_ENABLED(CONFIG_FOO) evaluates to 1 if CONFIG_FOO is set to 'y' or 'm',
- * 0 otherwise.
- *
- */
-#define IS_ENABLED(option) \
-	(config_enabled(option) || config_enabled(option##_MODULE))
-=======
 #define __is_defined(x)			___is_defined(x)
 #define ___is_defined(val)		____is_defined(__ARG_PLACEHOLDER_##val)
 #define ____is_defined(arg1_or_junk)	__take_second_arg(arg1_or_junk 1, 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IS_BUILTIN(CONFIG_FOO) evaluates to 1 if CONFIG_FOO is set to 'y', 0
  * otherwise. For boolean options, this is equivalent to
  * IS_ENABLED(CONFIG_FOO).
  */
-<<<<<<< HEAD
-#define IS_BUILTIN(option) config_enabled(option)
-
-/*
- * IS_MODULE(CONFIG_FOO) evaluates to 1 if CONFIG_FOO is set to 'm', 0
- * otherwise.
- */
-#define IS_MODULE(option) config_enabled(option##_MODULE)
-=======
 #define IS_BUILTIN(option) __is_defined(option)
 
 /*
@@ -102,6 +71,5 @@
  * autoconf.h, while CONFIG_FOO=m results in "#define CONFIG_FOO_MODULE 1".
  */
 #define IS_ENABLED(option) __or(IS_BUILTIN(option), IS_MODULE(option))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __LINUX_KCONFIG_H */

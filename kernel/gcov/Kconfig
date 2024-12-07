@@ -1,22 +1,13 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menu "GCOV-based kernel profiling"
 
 config GCOV_KERNEL
 	bool "Enable gcov-based kernel profiling"
 	depends on DEBUG_FS
-<<<<<<< HEAD
-	select CONSTRUCTORS if !UML
-	default n
-	---help---
-=======
 	depends on !ARCH_WANTS_NO_INSTR || CC_HAS_NO_PROFILE_FN_ATTR
 	select CONSTRUCTORS
 	default n
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	This option enables gcov-based code profiling (e.g. for code coverage
 	measurements).
 
@@ -43,14 +34,6 @@ config GCOV_KERNEL
 	Note that the debugfs filesystem has to be mounted to access
 	profiling data.
 
-<<<<<<< HEAD
-config GCOV_PROFILE_ALL
-	bool "Profile entire Kernel"
-	depends on GCOV_KERNEL
-	depends on SUPERH || S390 || X86 || (PPC && EXPERIMENTAL) || MICROBLAZE
-	default n
-	---help---
-=======
 config ARCH_HAS_GCOV_PROFILE_ALL
 	def_bool n
 
@@ -61,7 +44,6 @@ config GCOV_PROFILE_ALL
 	depends on ARCH_HAS_GCOV_PROFILE_ALL
 	default n
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	This options activates profiling for the entire kernel.
 
 	If unsure, say N.

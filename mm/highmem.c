@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * High memory handling common code and variables.
  *
@@ -26,22 +23,11 @@
 #include <linux/bio.h>
 #include <linux/pagemap.h>
 #include <linux/mempool.h>
-<<<<<<< HEAD
-#include <linux/blkdev.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/hash.h>
 #include <linux/highmem.h>
 #include <linux/kgdb.h>
 #include <asm/tlbflush.h>
-<<<<<<< HEAD
-
-
-#if defined(CONFIG_HIGHMEM) || defined(CONFIG_X86_32)
-DEFINE_PER_CPU(int, __kmap_atomic_idx);
-#endif
-=======
 #include <linux/vmalloc.h>
 
 #ifdef CONFIG_KMAP_LOCAL
@@ -54,7 +40,6 @@ static inline int kmap_local_calc_idx(int idx)
 #define arch_kmap_local_map_idx(idx, pfn)	kmap_local_calc_idx(idx)
 #endif
 #endif /* CONFIG_KMAP_LOCAL */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Virtual_count is not a pure "count".
@@ -66,26 +51,6 @@ static inline int kmap_local_calc_idx(int idx)
  */
 #ifdef CONFIG_HIGHMEM
 
-<<<<<<< HEAD
-unsigned long totalhigh_pages __read_mostly;
-EXPORT_SYMBOL(totalhigh_pages);
-
-
-EXPORT_PER_CPU_SYMBOL(__kmap_atomic_idx);
-
-unsigned int nr_free_highpages (void)
-{
-	pg_data_t *pgdat;
-	unsigned int pages = 0;
-
-	for_each_online_pgdat(pgdat) {
-		pages += zone_page_state(&pgdat->node_zones[ZONE_HIGHMEM],
-			NR_FREE_PAGES);
-		if (zone_movable_is_highmem())
-			pages += zone_page_state(
-					&pgdat->node_zones[ZONE_MOVABLE],
-					NR_FREE_PAGES);
-=======
 /*
  * Architecture with aliasing data cache may define the following family of
  * helper functions in its asm/highmem.h to control cache color of virtual
@@ -157,25 +122,15 @@ unsigned int __nr_free_highpages(void)
 	for_each_populated_zone(zone) {
 		if (is_highmem(zone))
 			pages += zone_page_state(zone, NR_FREE_PAGES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return pages;
 }
 
 static int pkmap_count[LAST_PKMAP];
-<<<<<<< HEAD
-static unsigned int last_pkmap_nr;
-static  __cacheline_aligned_in_smp DEFINE_SPINLOCK(kmap_lock);
-
-pte_t * pkmap_page_table;
-
-static DECLARE_WAIT_QUEUE_HEAD(pkmap_map_wait);
-=======
 static  __cacheline_aligned_in_smp DEFINE_SPINLOCK(kmap_lock);
 
 pte_t *pkmap_page_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Most architectures have no use for kmap_high_get(), so let's abstract
@@ -196,20 +151,6 @@ pte_t *pkmap_page_table;
 		do { spin_unlock(&kmap_lock); (void)(flags); } while (0)
 #endif
 
-<<<<<<< HEAD
-struct page *kmap_to_page(void *vaddr)
-{
-	unsigned long addr = (unsigned long)vaddr;
-
-	if (addr >= PKMAP_ADDR(0) && addr < PKMAP_ADDR(LAST_PKMAP)) {
-		int i = (addr - PKMAP_ADDR(0)) >> PAGE_SHIFT;
-		return pte_page(pkmap_page_table[i]);
-	}
-
-	return virt_to_page(addr);
-}
-EXPORT_SYMBOL(kmap_to_page);
-=======
 struct page *__kmap_to_page(void *vaddr)
 {
 	unsigned long base = (unsigned long) vaddr & PAGE_MASK;
@@ -240,7 +181,6 @@ struct page *__kmap_to_page(void *vaddr)
 	return virt_to_page(vaddr);
 }
 EXPORT_SYMBOL(__kmap_to_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void flush_all_zero_pkmaps(void)
 {
@@ -251,10 +191,7 @@ static void flush_all_zero_pkmaps(void)
 
 	for (i = 0; i < LAST_PKMAP; i++) {
 		struct page *page;
-<<<<<<< HEAD
-=======
 		pte_t ptent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * zero means we don't have anything to do,
@@ -267,12 +204,8 @@ static void flush_all_zero_pkmaps(void)
 		pkmap_count[i] = 0;
 
 		/* sanity check */
-<<<<<<< HEAD
-		BUG_ON(pte_none(pkmap_page_table[i]));
-=======
 		ptent = ptep_get(&pkmap_page_table[i]);
 		BUG_ON(pte_none(ptent));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Don't need an atomic fetch-and-clear op here;
@@ -281,14 +214,8 @@ static void flush_all_zero_pkmaps(void)
 		 * getting the kmap_lock (which is held here).
 		 * So no dangers, even with speculative execution.
 		 */
-<<<<<<< HEAD
-		page = pte_page(pkmap_page_table[i]);
-		pte_clear(&init_mm, (unsigned long)page_address(page),
-			  &pkmap_page_table[i]);
-=======
 		page = pte_page(ptent);
 		pte_clear(&init_mm, PKMAP_ADDR(i), &pkmap_page_table[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		set_page_address(page, NULL);
 		need_flush = 1;
@@ -297,14 +224,7 @@ static void flush_all_zero_pkmaps(void)
 		flush_tlb_kernel_range(PKMAP_ADDR(0), PKMAP_ADDR(LAST_PKMAP));
 }
 
-<<<<<<< HEAD
-/**
- * kmap_flush_unused - flush all unused kmap mappings in order to remove stray mappings
- */
-void kmap_flush_unused(void)
-=======
 void __kmap_flush_unused(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	lock_kmap();
 	flush_all_zero_pkmaps();
@@ -315,17 +235,6 @@ static inline unsigned long map_new_virtual(struct page *page)
 {
 	unsigned long vaddr;
 	int count;
-<<<<<<< HEAD
-
-start:
-	count = LAST_PKMAP;
-	/* Find an empty entry */
-	for (;;) {
-		last_pkmap_nr = (last_pkmap_nr + 1) & LAST_PKMAP_MASK;
-		if (!last_pkmap_nr) {
-			flush_all_zero_pkmaps();
-			count = LAST_PKMAP;
-=======
 	unsigned int last_pkmap_nr;
 	unsigned int color = get_pkmap_color(page);
 
@@ -337,7 +246,6 @@ start:
 		if (no_more_pkmaps(last_pkmap_nr, color)) {
 			flush_all_zero_pkmaps();
 			count = get_pkmap_entries_count(color);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (!pkmap_count[last_pkmap_nr])
 			break;	/* Found a usable entry */
@@ -349,14 +257,6 @@ start:
 		 */
 		{
 			DECLARE_WAITQUEUE(wait, current);
-<<<<<<< HEAD
-
-			__set_current_state(TASK_UNINTERRUPTIBLE);
-			add_wait_queue(&pkmap_map_wait, &wait);
-			unlock_kmap();
-			schedule();
-			remove_wait_queue(&pkmap_map_wait, &wait);
-=======
 			wait_queue_head_t *pkmap_map_wait =
 				get_pkmap_wait_queue_head(color);
 
@@ -365,7 +265,6 @@ start:
 			unlock_kmap();
 			schedule();
 			remove_wait_queue(pkmap_map_wait, &wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lock_kmap();
 
 			/* Somebody else might have mapped it while we slept */
@@ -409,14 +308,8 @@ void *kmap_high(struct page *page)
 	pkmap_count[PKMAP_NR(vaddr)]++;
 	BUG_ON(pkmap_count[PKMAP_NR(vaddr)] < 2);
 	unlock_kmap();
-<<<<<<< HEAD
-	return (void*) vaddr;
-}
-
-=======
 	return (void *) vaddr;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(kmap_high);
 
 #ifdef ARCH_NEEDS_KMAP_HIGH_GET
@@ -441,11 +334,7 @@ void *kmap_high_get(struct page *page)
 		pkmap_count[PKMAP_NR(vaddr)]++;
 	}
 	unlock_kmap_any(flags);
-<<<<<<< HEAD
-	return (void*) vaddr;
-=======
 	return (void *) vaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -462,11 +351,8 @@ void kunmap_high(struct page *page)
 	unsigned long nr;
 	unsigned long flags;
 	int need_wakeup;
-<<<<<<< HEAD
-=======
 	unsigned int color = get_pkmap_color(page);
 	wait_queue_head_t *pkmap_map_wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lock_kmap_any(flags);
 	vaddr = (unsigned long)page_address(page);
@@ -492,23 +378,13 @@ void kunmap_high(struct page *page)
 		 * no need for the wait-queue-head's lock.  Simply
 		 * test if the queue is empty.
 		 */
-<<<<<<< HEAD
-		need_wakeup = waitqueue_active(&pkmap_map_wait);
-=======
 		pkmap_map_wait = get_pkmap_wait_queue_head(color);
 		need_wakeup = waitqueue_active(pkmap_map_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	unlock_kmap_any(flags);
 
 	/* do wake-up, if needed, race-free outside of the spin lock */
 	if (need_wakeup)
-<<<<<<< HEAD
-		wake_up(&pkmap_map_wait);
-}
-
-EXPORT_SYMBOL(kunmap_high);
-=======
 		wake_up(pkmap_map_wait);
 }
 EXPORT_SYMBOL(kunmap_high);
@@ -827,7 +703,6 @@ void kmap_local_fork(struct task_struct *tsk)
 		memset(&tsk->kmap_ctrl, 0, sizeof(tsk->kmap_ctrl));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #if defined(HASHED_PAGE_VIRTUAL)
@@ -843,15 +718,7 @@ struct page_address_map {
 	struct list_head list;
 };
 
-<<<<<<< HEAD
-/*
- * page_address_map freelist, allocated from page_address_maps.
- */
-static struct list_head page_address_pool;	/* freelist */
-static spinlock_t pool_lock;			/* protects page_address_pool */
-=======
 static struct page_address_map page_address_maps[LAST_PKMAP];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Hash table bucket
@@ -890,17 +757,6 @@ void *page_address(const struct page *page)
 		list_for_each_entry(pam, &pas->lh, list) {
 			if (pam->page == page) {
 				ret = pam->virtual;
-<<<<<<< HEAD
-				goto done;
-			}
-		}
-	}
-done:
-	spin_unlock_irqrestore(&pas->lock, flags);
-	return ret;
-}
-
-=======
 				break;
 			}
 		}
@@ -909,7 +765,6 @@ done:
 	spin_unlock_irqrestore(&pas->lock, flags);
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(page_address);
 
 /**
@@ -927,18 +782,7 @@ void set_page_address(struct page *page, void *virtual)
 
 	pas = page_slot(page);
 	if (virtual) {		/* Add */
-<<<<<<< HEAD
-		BUG_ON(list_empty(&page_address_pool));
-
-		spin_lock_irqsave(&pool_lock, flags);
-		pam = list_entry(page_address_pool.next,
-				struct page_address_map, list);
-		list_del(&pam->list);
-		spin_unlock_irqrestore(&pool_lock, flags);
-
-=======
 		pam = &page_address_maps[PKMAP_NR((unsigned long)virtual)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pam->page = page;
 		pam->virtual = virtual;
 
@@ -950,51 +794,21 @@ void set_page_address(struct page *page, void *virtual)
 		list_for_each_entry(pam, &pas->lh, list) {
 			if (pam->page == page) {
 				list_del(&pam->list);
-<<<<<<< HEAD
-				spin_unlock_irqrestore(&pas->lock, flags);
-				spin_lock_irqsave(&pool_lock, flags);
-				list_add_tail(&pam->list, &page_address_pool);
-				spin_unlock_irqrestore(&pool_lock, flags);
-				goto done;
-=======
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		spin_unlock_irqrestore(&pas->lock, flags);
 	}
-<<<<<<< HEAD
-done:
-	return;
 }
 
-static struct page_address_map page_address_maps[LAST_PKMAP];
-
-=======
-}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init page_address_init(void)
 {
 	int i;
 
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&page_address_pool);
-	for (i = 0; i < ARRAY_SIZE(page_address_maps); i++)
-		list_add(&page_address_maps[i].list, &page_address_pool);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ARRAY_SIZE(page_address_htable); i++) {
 		INIT_LIST_HEAD(&page_address_htable[i].lh);
 		spin_lock_init(&page_address_htable[i].lock);
 	}
-<<<<<<< HEAD
-	spin_lock_init(&pool_lock);
-}
-
-#endif	/* defined(CONFIG_HIGHMEM) && !defined(WANT_PAGE_VIRTUAL) */
-=======
 }
 
 #endif	/* defined(HASHED_PAGE_VIRTUAL) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

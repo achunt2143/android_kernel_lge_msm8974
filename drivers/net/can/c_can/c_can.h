@@ -22,45 +22,6 @@
 #ifndef C_CAN_H
 #define C_CAN_H
 
-<<<<<<< HEAD
-/* c_can IF registers */
-struct c_can_if_regs {
-	u16 com_req;
-	u16 com_mask;
-	u16 mask1;
-	u16 mask2;
-	u16 arb1;
-	u16 arb2;
-	u16 msg_cntrl;
-	u16 data[4];
-	u16 _reserved[13];
-};
-
-/* c_can hardware registers */
-struct c_can_regs {
-	u16 control;
-	u16 status;
-	u16 err_cnt;
-	u16 btr;
-	u16 interrupt;
-	u16 test;
-	u16 brp_ext;
-	u16 _reserved1;
-	struct c_can_if_regs ifregs[2]; /* [0] = IF1 and [1] = IF2 */
-	u16 _reserved2[8];
-	u16 txrqst1;
-	u16 txrqst2;
-	u16 _reserved3[6];
-	u16 newdat1;
-	u16 newdat2;
-	u16 _reserved4[6];
-	u16 intpnd1;
-	u16 intpnd2;
-	u16 _reserved5[6];
-	u16 msgval1;
-	u16 msgval2;
-	u16 _reserved6[6];
-=======
 enum reg {
 	C_CAN_CTRL_REG = 0,
 	C_CAN_CTRL_EX_REG,
@@ -220,7 +181,6 @@ struct c_can_tx_ring {
 	unsigned int head;
 	unsigned int tail;
 	unsigned int obj_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* c_can private data structure */
@@ -228,22 +188,6 @@ struct c_can_priv {
 	struct can_priv can;	/* must be the first member */
 	struct napi_struct napi;
 	struct net_device *dev;
-<<<<<<< HEAD
-	int tx_object;
-	int current_status;
-	int last_status;
-	u16 (*read_reg) (struct c_can_priv *priv, void *reg);
-	void (*write_reg) (struct c_can_priv *priv, void *reg, u16 val);
-	struct c_can_regs __iomem *regs;
-	unsigned long irq_flags; /* for request_irq() */
-	unsigned int tx_next;
-	unsigned int tx_echo;
-	void *priv;		/* for board-specific data */
-	u16 irqstatus;
-};
-
-struct net_device *alloc_c_can_dev(void);
-=======
 	struct device *device;
 	unsigned int msg_obj_num;
 	unsigned int msg_obj_rx_num;
@@ -270,13 +214,10 @@ struct net_device *alloc_c_can_dev(void);
 };
 
 struct net_device *alloc_c_can_dev(int msg_obj_num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void free_c_can_dev(struct net_device *dev);
 int register_c_can_dev(struct net_device *dev);
 void unregister_c_can_dev(struct net_device *dev);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PM
 int c_can_power_up(struct net_device *dev);
 int c_can_power_down(struct net_device *dev);
@@ -312,5 +253,4 @@ static inline u8 c_can_get_tx_free(const struct c_can_priv *priv,
 	return ring->obj_num - head;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* C_CAN_H */

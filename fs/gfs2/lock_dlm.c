@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright 2004-2011 Red Hat, Inc.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
@@ -17,60 +6,22 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/dlm.h>
 #include <linux/slab.h>
 #include <linux/types.h>
 #include <linux/delay.h>
 #include <linux/gfs2_ondisk.h>
-<<<<<<< HEAD
-
-#include "incore.h"
-#include "glock.h"
-=======
 #include <linux/sched/signal.h>
 
 #include "incore.h"
 #include "glock.h"
 #include "glops.h"
 #include "recovery.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "util.h"
 #include "sys.h"
 #include "trace_gfs2.h"
 
-<<<<<<< HEAD
-extern struct workqueue_struct *gfs2_control_wq;
-
-/**
- * gfs2_update_stats - Update time based stats
- * @mv: Pointer to mean/variance structure to update
- * @sample: New data to include
- *
- * @delta is the difference between the current rtt sample and the
- * running average srtt. We add 1/8 of that to the srtt in order to
- * update the current srtt estimate. The varience estimate is a bit
- * more complicated. We subtract the abs value of the @delta from
- * the current variance estimate and add 1/4 of that to the running
- * total.
- *
- * Note that the index points at the array entry containing the smoothed
- * mean value, and the variance is always in the following entry
- *
- * Reference: TCP/IP Illustrated, vol 2, p. 831,832
- * All times are in units of integer nanoseconds. Unlike the TCP/IP case,
- * they are not scaled fixed point.
- */
-
-static inline void gfs2_update_stats(struct gfs2_lkstats *s, unsigned index,
-				     s64 sample)
-{
-	s64 delta = sample - s->stats[index];
-	s->stats[index] += (delta >> 3);
-	index++;
-	s->stats[index] += ((abs64(delta) - s->stats[index]) >> 2);
-=======
 /**
  * gfs2_update_stats - Update time based stats
  * @s: The stats to update (local or global)
@@ -102,7 +53,6 @@ static inline void gfs2_update_stats(struct gfs2_lkstats *s, unsigned index,
 	s->stats[index] += (delta >> 3);
 	index++;
 	s->stats[index] += (s64)(abs(delta) - s->stats[index]) >> 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -132,11 +82,7 @@ static inline void gfs2_update_reply_times(struct gfs2_glock *gl)
 
 	preempt_disable();
 	rtt = ktime_to_ns(ktime_sub(ktime_get_real(), gl->gl_dstamp));
-<<<<<<< HEAD
-	lks = this_cpu_ptr(gl->gl_sbd->sd_lkstats);
-=======
 	lks = this_cpu_ptr(gl->gl_name.ln_sbd->sd_lkstats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_update_stats(&gl->gl_stats, index, rtt);		/* Local */
 	gfs2_update_stats(&lks->lkstats[gltype], index, rtt);	/* Global */
 	preempt_enable();
@@ -164,11 +110,7 @@ static inline void gfs2_update_request_times(struct gfs2_glock *gl)
 	dstamp = gl->gl_dstamp;
 	gl->gl_dstamp = ktime_get_real();
 	irt = ktime_to_ns(ktime_sub(gl->gl_dstamp, dstamp));
-<<<<<<< HEAD
-	lks = this_cpu_ptr(gl->gl_sbd->sd_lkstats);
-=======
 	lks = this_cpu_ptr(gl->gl_name.ln_sbd->sd_lkstats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_update_stats(&gl->gl_stats, GFS2_LKS_SIRT, irt);		/* Local */
 	gfs2_update_stats(&lks->lkstats[gltype], GFS2_LKS_SIRT, irt);	/* Global */
 	preempt_enable();
@@ -182,13 +124,6 @@ static void gdlm_ast(void *arg)
 	gfs2_update_reply_times(gl);
 	BUG_ON(gl->gl_lksb.sb_flags & DLM_SBF_DEMOTED);
 
-<<<<<<< HEAD
-	if (gl->gl_lksb.sb_flags & DLM_SBF_VALNOTVALID)
-		memset(gl->gl_lvb, 0, GDLM_LVB_SIZE);
-
-	switch (gl->gl_lksb.sb_status) {
-	case -DLM_EUNLOCK: /* Unlocked, so glock can be freed */
-=======
 	if ((gl->gl_lksb.sb_flags & DLM_SBF_VALNOTVALID) && gl->gl_lksb.sb_lvbptr)
 		memset(gl->gl_lksb.sb_lvbptr, 0, GDLM_LVB_SIZE);
 
@@ -196,7 +131,6 @@ static void gdlm_ast(void *arg)
 	case -DLM_EUNLOCK: /* Unlocked, so glock can be freed */
 		if (gl->gl_ops->go_free)
 			gl->gl_ops->go_free(gl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfs2_glock_free(gl);
 		return;
 	case -DLM_ECANCEL: /* Cancel while getting lock */
@@ -248,22 +182,14 @@ static void gdlm_bast(void *arg, int mode)
 		gfs2_glock_cb(gl, LM_ST_SHARED);
 		break;
 	default:
-<<<<<<< HEAD
-		printk(KERN_ERR "unknown bast mode %d", mode);
-=======
 		fs_err(gl->gl_name.ln_sbd, "unknown bast mode %d\n", mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG();
 	}
 }
 
 /* convert gfs lock-state to dlm lock-mode */
 
-<<<<<<< HEAD
-static int make_mode(const unsigned int lmstate)
-=======
 static int make_mode(struct gfs2_sbd *sdp, const unsigned int lmstate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (lmstate) {
 	case LM_ST_UNLOCKED:
@@ -275,11 +201,7 @@ static int make_mode(struct gfs2_sbd *sdp, const unsigned int lmstate)
 	case LM_ST_SHARED:
 		return DLM_LOCK_PR;
 	}
-<<<<<<< HEAD
-	printk(KERN_ERR "unknown LM state %d", lmstate);
-=======
 	fs_err(sdp, "unknown LM state %d\n", lmstate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG();
 	return -1;
 }
@@ -287,15 +209,10 @@ static int make_mode(struct gfs2_sbd *sdp, const unsigned int lmstate)
 static u32 make_flags(struct gfs2_glock *gl, const unsigned int gfs_flags,
 		      const int req)
 {
-<<<<<<< HEAD
-	u32 lkf = DLM_LKF_VALBLK;
-	u32 lkid = gl->gl_lksb.sb_lkid;
-=======
 	u32 lkf = 0;
 
 	if (gl->gl_lksb.sb_lvbptr)
 		lkf |= DLM_LKF_VALBLK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (gfs_flags & LM_FLAG_TRY)
 		lkf |= DLM_LKF_NOQUEUE;
@@ -305,14 +222,6 @@ static u32 make_flags(struct gfs2_glock *gl, const unsigned int gfs_flags,
 		lkf |= DLM_LKF_NOQUEUEBAST;
 	}
 
-<<<<<<< HEAD
-	if (gfs_flags & LM_FLAG_PRIORITY) {
-		lkf |= DLM_LKF_NOORDER;
-		lkf |= DLM_LKF_HEADQUE;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (gfs_flags & LM_FLAG_ANY) {
 		if (req == DLM_LOCK_PR)
 			lkf |= DLM_LKF_ALTCW;
@@ -322,11 +231,7 @@ static u32 make_flags(struct gfs2_glock *gl, const unsigned int gfs_flags,
 			BUG();
 	}
 
-<<<<<<< HEAD
-	if (lkid != 0) {
-=======
 	if (gl->gl_lksb.sb_lkid != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lkf |= DLM_LKF_CONVERT;
 		if (test_bit(GLF_BLOCKING, &gl->gl_flags))
 			lkf |= DLM_LKF_QUECVT;
@@ -337,10 +242,7 @@ static u32 make_flags(struct gfs2_glock *gl, const unsigned int gfs_flags,
 
 static void gfs2_reverse_hex(char *c, u64 value)
 {
-<<<<<<< HEAD
-=======
 	*c = '0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (value) {
 		*c-- = hex_asc[value & 0x0f];
 		value >>= 4;
@@ -350,14 +252,6 @@ static void gfs2_reverse_hex(char *c, u64 value)
 static int gdlm_lock(struct gfs2_glock *gl, unsigned int req_state,
 		     unsigned int flags)
 {
-<<<<<<< HEAD
-	struct lm_lockstruct *ls = &gl->gl_sbd->sd_lockstruct;
-	int req;
-	u32 lkf;
-	char strname[GDLM_STRNAME_BYTES] = "";
-
-	req = make_mode(req_state);
-=======
 	struct lm_lockstruct *ls = &gl->gl_name.ln_sbd->sd_lockstruct;
 	int req;
 	u32 lkf;
@@ -365,7 +259,6 @@ static int gdlm_lock(struct gfs2_glock *gl, unsigned int req_state,
 	int error;
 
 	req = make_mode(gl->gl_name.ln_sbd, req_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lkf = make_flags(gl, flags, req);
 	gfs2_glstats_inc(gl, GFS2_LKS_DCOUNT);
 	gfs2_sbstats_inc(gl, GFS2_LKS_DCOUNT);
@@ -382,10 +275,6 @@ static int gdlm_lock(struct gfs2_glock *gl, unsigned int req_state,
 	 * Submit the actual lock request.
 	 */
 
-<<<<<<< HEAD
-	return dlm_lock(ls->ls_dlm, req, &gl->gl_lksb, lkf, strname,
-			GDLM_STRNAME_BYTES - 1, 0, gdlm_ast, gl, gdlm_bast);
-=======
 again:
 	error = dlm_lock(ls->ls_dlm, req, &gl->gl_lksb, lkf, strname,
 			GDLM_STRNAME_BYTES - 1, 0, gdlm_ast, gl, gdlm_bast);
@@ -394,43 +283,21 @@ again:
 		goto again;
 	}
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gdlm_put_lock(struct gfs2_glock *gl)
 {
-<<<<<<< HEAD
-	struct gfs2_sbd *sdp = gl->gl_sbd;
-	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
-	int error;
-
-	if (gl->gl_lksb.sb_lkid == 0) {
-		gfs2_glock_free(gl);
-		return;
-	}
-=======
 	struct gfs2_sbd *sdp = gl->gl_name.ln_sbd;
 	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
 	int error;
 
 	if (gl->gl_lksb.sb_lkid == 0)
 		goto out_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clear_bit(GLF_BLOCKING, &gl->gl_flags);
 	gfs2_glstats_inc(gl, GFS2_LKS_DCOUNT);
 	gfs2_sbstats_inc(gl, GFS2_LKS_DCOUNT);
 	gfs2_update_request_times(gl);
-<<<<<<< HEAD
-	error = dlm_unlock(ls->ls_dlm, gl->gl_lksb.sb_lkid, DLM_LKF_VALBLK,
-			   NULL, gl);
-	if (error) {
-		printk(KERN_ERR "gdlm_unlock %x,%llx err=%d\n",
-		       gl->gl_name.ln_type,
-		       (unsigned long long)gl->gl_name.ln_number, error);
-		return;
-	}
-=======
 
 	/* don't want to call dlm if we've unmounted the lock protocol */
 	if (test_bit(DFL_UNMOUNT, &ls->ls_recover_flags))
@@ -458,26 +325,18 @@ again:
 
 out_free:
 	gfs2_glock_free(gl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gdlm_cancel(struct gfs2_glock *gl)
 {
-<<<<<<< HEAD
-	struct lm_lockstruct *ls = &gl->gl_sbd->sd_lockstruct;
-=======
 	struct lm_lockstruct *ls = &gl->gl_name.ln_sbd->sd_lockstruct;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_unlock(ls->ls_dlm, gl->gl_lksb.sb_lkid, DLM_LKF_CANCEL, NULL, gl);
 }
 
 /*
  * dlm/gfs2 recovery coordination using dlm_recover callbacks
  *
-<<<<<<< HEAD
-=======
  *  0. gfs2 checks for another cluster node withdraw, needing journal replay
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  1. dlm_controld sees lockspace members change
  *  2. dlm_controld blocks dlm-kernel locking activity
  *  3. dlm_controld within dlm-kernel notifies gfs2 (recover_prep)
@@ -620,47 +479,25 @@ static void gdlm_cancel(struct gfs2_glock *gl)
 static void control_lvb_read(struct lm_lockstruct *ls, uint32_t *lvb_gen,
 			     char *lvb_bits)
 {
-<<<<<<< HEAD
-	uint32_t gen;
-	memcpy(lvb_bits, ls->ls_control_lvb, GDLM_LVB_SIZE);
-	memcpy(&gen, lvb_bits, sizeof(uint32_t));
-=======
 	__le32 gen;
 	memcpy(lvb_bits, ls->ls_control_lvb, GDLM_LVB_SIZE);
 	memcpy(&gen, lvb_bits, sizeof(__le32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*lvb_gen = le32_to_cpu(gen);
 }
 
 static void control_lvb_write(struct lm_lockstruct *ls, uint32_t lvb_gen,
 			      char *lvb_bits)
 {
-<<<<<<< HEAD
-	uint32_t gen;
-	memcpy(ls->ls_control_lvb, lvb_bits, GDLM_LVB_SIZE);
-	gen = cpu_to_le32(lvb_gen);
-	memcpy(ls->ls_control_lvb, &gen, sizeof(uint32_t));
-=======
 	__le32 gen;
 	memcpy(ls->ls_control_lvb, lvb_bits, GDLM_LVB_SIZE);
 	gen = cpu_to_le32(lvb_gen);
 	memcpy(ls->ls_control_lvb, &gen, sizeof(__le32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int all_jid_bits_clear(char *lvb)
 {
-<<<<<<< HEAD
-	int i;
-	for (i = JID_BITMAP_OFFSET; i < GDLM_LVB_SIZE; i++) {
-		if (lvb[i])
-			return 0;
-	}
-	return 1;
-=======
 	return !memchr_inv(lvb + JID_BITMAP_OFFSET, 0,
 			GDLM_LVB_SIZE - JID_BITMAP_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sync_wait_cb(void *arg)
@@ -748,8 +585,6 @@ static int control_lock(struct gfs2_sbd *sdp, int mode, uint32_t flags)
 			 &ls->ls_control_lksb, "control_lock");
 }
 
-<<<<<<< HEAD
-=======
 /**
  * remote_withdraw - react to a node withdrawing from the file system
  * @sdp: The superblock
@@ -772,23 +607,16 @@ static void remote_withdraw(struct gfs2_sbd *sdp)
 	fs_err(sdp, "Journals checked: %d, ret = %d.\n", count, ret);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void gfs2_control_func(struct work_struct *work)
 {
 	struct gfs2_sbd *sdp = container_of(work, struct gfs2_sbd, sd_control_work.work);
 	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
-<<<<<<< HEAD
-	char lvb_bits[GDLM_LVB_SIZE];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t block_gen, start_gen, lvb_gen, flags;
 	int recover_set = 0;
 	int write_lvb = 0;
 	int recover_size;
 	int i, error;
 
-<<<<<<< HEAD
-=======
 	/* First check for other nodes that may have done a withdraw. */
 	if (test_bit(SDF_REMOTE_WITHDRAW, &sdp->sd_flags)) {
 		remote_withdraw(sdp);
@@ -796,7 +624,6 @@ static void gfs2_control_func(struct work_struct *work)
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&ls->ls_recover_spin);
 	/*
 	 * No MOUNT_DONE means we're still mounting; control_mount()
@@ -844,11 +671,7 @@ static void gfs2_control_func(struct work_struct *work)
 		return;
 	}
 
-<<<<<<< HEAD
-	control_lvb_read(ls, &lvb_gen, lvb_bits);
-=======
 	control_lvb_read(ls, &lvb_gen, ls->ls_lvb_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&ls->ls_recover_spin);
 	if (block_gen != ls->ls_recover_block ||
@@ -878,17 +701,10 @@ static void gfs2_control_func(struct work_struct *work)
 
 			ls->ls_recover_result[i] = 0;
 
-<<<<<<< HEAD
-			if (!test_bit_le(i, lvb_bits + JID_BITMAP_OFFSET))
-				continue;
-
-			__clear_bit_le(i, lvb_bits + JID_BITMAP_OFFSET);
-=======
 			if (!test_bit_le(i, ls->ls_lvb_bits + JID_BITMAP_OFFSET))
 				continue;
 
 			__clear_bit_le(i, ls->ls_lvb_bits + JID_BITMAP_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			write_lvb = 1;
 		}
 	}
@@ -912,11 +728,7 @@ static void gfs2_control_func(struct work_struct *work)
 				continue;
 			if (ls->ls_recover_submit[i] < start_gen) {
 				ls->ls_recover_submit[i] = 0;
-<<<<<<< HEAD
-				__set_bit_le(i, lvb_bits + JID_BITMAP_OFFSET);
-=======
 				__set_bit_le(i, ls->ls_lvb_bits + JID_BITMAP_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		/* even if there are no bits to set, we need to write the
@@ -930,11 +742,7 @@ static void gfs2_control_func(struct work_struct *work)
 	spin_unlock(&ls->ls_recover_spin);
 
 	if (write_lvb) {
-<<<<<<< HEAD
-		control_lvb_write(ls, start_gen, lvb_bits);
-=======
 		control_lvb_write(ls, start_gen, ls->ls_lvb_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flags = DLM_LKF_CONVERT | DLM_LKF_VALBLK;
 	} else {
 		flags = DLM_LKF_CONVERT;
@@ -954,11 +762,7 @@ static void gfs2_control_func(struct work_struct *work)
 	 */
 
 	for (i = 0; i < recover_size; i++) {
-<<<<<<< HEAD
-		if (test_bit_le(i, lvb_bits + JID_BITMAP_OFFSET)) {
-=======
 		if (test_bit_le(i, ls->ls_lvb_bits + JID_BITMAP_OFFSET)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fs_info(sdp, "recover generation %u jid %d\n",
 				start_gen, i);
 			gfs2_recover_set(sdp, i);
@@ -991,10 +795,6 @@ static void gfs2_control_func(struct work_struct *work)
 static int control_mount(struct gfs2_sbd *sdp)
 {
 	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
-<<<<<<< HEAD
-	char lvb_bits[GDLM_LVB_SIZE];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t start_gen, block_gen, mount_gen, lvb_gen;
 	int mounted_mode;
 	int retries = 0;
@@ -1062,8 +862,6 @@ restart:
 		goto fail;
 	}
 
-<<<<<<< HEAD
-=======
 	/**
 	 * If we're a spectator, we don't want to take the lock in EX because
 	 * we cannot do the first-mount responsibility it implies: recovery.
@@ -1071,7 +869,6 @@ restart:
 	if (sdp->sd_args.ar_spectator)
 		goto locks_done;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = mounted_lock(sdp, DLM_LOCK_EX, DLM_LKF_CONVERT|DLM_LKF_NOQUEUE);
 	if (!error) {
 		mounted_mode = DLM_LOCK_EX;
@@ -1103,11 +900,7 @@ locks_done:
 	 * lvb_gen will be non-zero.
 	 */
 
-<<<<<<< HEAD
-	control_lvb_read(ls, &lvb_gen, lvb_bits);
-=======
 	control_lvb_read(ls, &lvb_gen, ls->ls_lvb_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lvb_gen == 0xFFFFFFFF) {
 		/* special value to force mount attempts to fail */
@@ -1137,11 +930,7 @@ locks_done:
 	 * and all lvb bits to be clear (no pending journal recoveries.)
 	 */
 
-<<<<<<< HEAD
-	if (!all_jid_bits_clear(lvb_bits)) {
-=======
 	if (!all_jid_bits_clear(ls->ls_lvb_bits)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* journals need recovery, wait until all are clear */
 		fs_info(sdp, "control_mount wait for journal recovery\n");
 		goto restart;
@@ -1155,11 +944,6 @@ locks_done:
 	if (lvb_gen < mount_gen) {
 		/* wait for mounted nodes to update control_lock lvb to our
 		   generation, which might include new recovery bits set */
-<<<<<<< HEAD
-		fs_info(sdp, "control_mount wait1 block %u start %u mount %u "
-			"lvb %u flags %lx\n", block_gen, start_gen, mount_gen,
-			lvb_gen, ls->ls_recover_flags);
-=======
 		if (sdp->sd_args.ar_spectator) {
 			fs_info(sdp, "Recovery is required. Waiting for a "
 				"non-spectator to mount.\n");
@@ -1170,7 +954,6 @@ locks_done:
 				start_gen, mount_gen, lvb_gen,
 				ls->ls_recover_flags);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&ls->ls_recover_spin);
 		goto restart;
 	}
@@ -1207,22 +990,9 @@ fail:
 	return error;
 }
 
-<<<<<<< HEAD
-static int dlm_recovery_wait(void *word)
-{
-	schedule();
-	return 0;
-}
-
 static int control_first_done(struct gfs2_sbd *sdp)
 {
 	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
-	char lvb_bits[GDLM_LVB_SIZE];
-=======
-static int control_first_done(struct gfs2_sbd *sdp)
-{
-	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t start_gen, block_gen;
 	int error;
 
@@ -1254,11 +1024,7 @@ restart:
 		fs_info(sdp, "control_first_done wait gen %u\n", start_gen);
 
 		wait_on_bit(&ls->ls_recover_flags, DFL_DLM_RECOVERY,
-<<<<<<< HEAD
-			    dlm_recovery_wait, TASK_UNINTERRUPTIBLE);
-=======
 			    TASK_UNINTERRUPTIBLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto restart;
 	}
 
@@ -1268,13 +1034,8 @@ restart:
 	memset(ls->ls_recover_result, 0, ls->ls_recover_size*sizeof(uint32_t));
 	spin_unlock(&ls->ls_recover_spin);
 
-<<<<<<< HEAD
-	memset(lvb_bits, 0, sizeof(lvb_bits));
-	control_lvb_write(ls, start_gen, lvb_bits);
-=======
 	memset(ls->ls_lvb_bits, 0, GDLM_LVB_SIZE);
 	control_lvb_write(ls, start_gen, ls->ls_lvb_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = mounted_lock(sdp, DLM_LOCK_PR, DLM_LKF_CONVERT);
 	if (error)
@@ -1289,11 +1050,7 @@ restart:
 
 /*
  * Expand static jid arrays if necessary (by increments of RECOVER_SIZE_INC)
-<<<<<<< HEAD
- * to accomodate the largest slot number.  (NB dlm slot numbers start at 1,
-=======
  * to accommodate the largest slot number.  (NB dlm slot numbers start at 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * gfs2 jids start at 0, so jid = slot - 1)
  */
 
@@ -1308,15 +1065,12 @@ static int set_recover_size(struct gfs2_sbd *sdp, struct dlm_slot *slots,
 	uint32_t old_size, new_size;
 	int i, max_jid;
 
-<<<<<<< HEAD
-=======
 	if (!ls->ls_lvb_bits) {
 		ls->ls_lvb_bits = kzalloc(GDLM_LVB_SIZE, GFP_NOFS);
 		if (!ls->ls_lvb_bits)
 			return -ENOMEM;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max_jid = 0;
 	for (i = 0; i < num_slots; i++) {
 		if (max_jid < slots[i].slot - 1)
@@ -1324,16 +1078,6 @@ static int set_recover_size(struct gfs2_sbd *sdp, struct dlm_slot *slots,
 	}
 
 	old_size = ls->ls_recover_size;
-<<<<<<< HEAD
-
-	if (old_size >= max_jid + 1)
-		return 0;
-
-	new_size = old_size + RECOVER_SIZE_INC;
-
-	submit = kzalloc(new_size * sizeof(uint32_t), GFP_NOFS);
-	result = kzalloc(new_size * sizeof(uint32_t), GFP_NOFS);
-=======
 	new_size = old_size;
 	while (new_size < max_jid + 1)
 		new_size += RECOVER_SIZE_INC;
@@ -1342,7 +1086,6 @@ static int set_recover_size(struct gfs2_sbd *sdp, struct dlm_slot *slots,
 
 	submit = kcalloc(new_size, sizeof(uint32_t), GFP_NOFS);
 	result = kcalloc(new_size, sizeof(uint32_t), GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!submit || !result) {
 		kfree(submit);
 		kfree(result);
@@ -1363,19 +1106,13 @@ static int set_recover_size(struct gfs2_sbd *sdp, struct dlm_slot *slots,
 
 static void free_recover_size(struct lm_lockstruct *ls)
 {
-<<<<<<< HEAD
-=======
 	kfree(ls->ls_lvb_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ls->ls_recover_submit);
 	kfree(ls->ls_recover_result);
 	ls->ls_recover_submit = NULL;
 	ls->ls_recover_result = NULL;
 	ls->ls_recover_size = 0;
-<<<<<<< HEAD
-=======
 	ls->ls_lvb_bits = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* dlm calls before it does lock recovery */
@@ -1385,13 +1122,10 @@ static void gdlm_recover_prep(void *arg)
 	struct gfs2_sbd *sdp = arg;
 	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
 
-<<<<<<< HEAD
-=======
 	if (gfs2_withdrawing_or_withdrawn(sdp)) {
 		fs_err(sdp, "recover_prep ignored due to withdraw.\n");
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&ls->ls_recover_spin);
 	ls->ls_recover_block = ls->ls_recover_start;
 	set_bit(DFL_DLM_RECOVERY, &ls->ls_recover_flags);
@@ -1414,11 +1148,6 @@ static void gdlm_recover_slot(void *arg, struct dlm_slot *slot)
 	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
 	int jid = slot->slot - 1;
 
-<<<<<<< HEAD
-	spin_lock(&ls->ls_recover_spin);
-	if (ls->ls_recover_size < jid + 1) {
-		fs_err(sdp, "recover_slot jid %d gen %u short size %d",
-=======
 	if (gfs2_withdrawing_or_withdrawn(sdp)) {
 		fs_err(sdp, "recover_slot jid %d ignored due to withdraw.\n",
 		       jid);
@@ -1427,18 +1156,13 @@ static void gdlm_recover_slot(void *arg, struct dlm_slot *slot)
 	spin_lock(&ls->ls_recover_spin);
 	if (ls->ls_recover_size < jid + 1) {
 		fs_err(sdp, "recover_slot jid %d gen %u short size %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       jid, ls->ls_recover_block, ls->ls_recover_size);
 		spin_unlock(&ls->ls_recover_spin);
 		return;
 	}
 
 	if (ls->ls_recover_submit[jid]) {
-<<<<<<< HEAD
-		fs_info(sdp, "recover_slot jid %d gen %u prev %u",
-=======
 		fs_info(sdp, "recover_slot jid %d gen %u prev %u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			jid, ls->ls_recover_block, ls->ls_recover_submit[jid]);
 	}
 	ls->ls_recover_submit[jid] = ls->ls_recover_block;
@@ -1453,13 +1177,10 @@ static void gdlm_recover_done(void *arg, struct dlm_slot *slots, int num_slots,
 	struct gfs2_sbd *sdp = arg;
 	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
 
-<<<<<<< HEAD
-=======
 	if (gfs2_withdrawing_or_withdrawn(sdp)) {
 		fs_err(sdp, "recover_done ignored due to withdraw.\n");
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ensure the ls jid arrays are large enough */
 	set_recover_size(sdp, slots, num_slots);
 
@@ -1475,11 +1196,7 @@ static void gdlm_recover_done(void *arg, struct dlm_slot *slots, int num_slots,
 		queue_delayed_work(gfs2_control_wq, &sdp->sd_control_work, 0);
 
 	clear_bit(DFL_DLM_RECOVERY, &ls->ls_recover_flags);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up_bit(&ls->ls_recover_flags, DFL_DLM_RECOVERY);
 	spin_unlock(&ls->ls_recover_spin);
 }
@@ -1491,14 +1208,11 @@ static void gdlm_recovery_result(struct gfs2_sbd *sdp, unsigned int jid,
 {
 	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
 
-<<<<<<< HEAD
-=======
 	if (gfs2_withdrawing_or_withdrawn(sdp)) {
 		fs_err(sdp, "recovery_result jid %d ignored due to withdraw.\n",
 		       jid);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(DFL_NO_DLM_OPS, &ls->ls_recover_flags))
 		return;
 
@@ -1512,11 +1226,7 @@ static void gdlm_recovery_result(struct gfs2_sbd *sdp, unsigned int jid,
 		return;
 	}
 	if (ls->ls_recover_size < jid + 1) {
-<<<<<<< HEAD
-		fs_err(sdp, "recovery_result jid %d short size %d",
-=======
 		fs_err(sdp, "recovery_result jid %d short size %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       jid, ls->ls_recover_size);
 		spin_unlock(&ls->ls_recover_spin);
 		return;
@@ -1537,11 +1247,7 @@ static void gdlm_recovery_result(struct gfs2_sbd *sdp, unsigned int jid,
 	spin_unlock(&ls->ls_recover_spin);
 }
 
-<<<<<<< HEAD
-const struct dlm_lockspace_ops gdlm_lockspace_ops = {
-=======
 static const struct dlm_lockspace_ops gdlm_lockspace_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.recover_prep = gdlm_recover_prep,
 	.recover_slot = gdlm_recover_slot,
 	.recover_done = gdlm_recover_done,
@@ -1568,10 +1274,7 @@ static int gdlm_mount(struct gfs2_sbd *sdp, const char *table)
 	ls->ls_recover_size = 0;
 	ls->ls_recover_submit = NULL;
 	ls->ls_recover_result = NULL;
-<<<<<<< HEAD
-=======
 	ls->ls_lvb_bits = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = set_recover_size(sdp, NULL, 0);
 	if (error)
@@ -1591,13 +1294,7 @@ static int gdlm_mount(struct gfs2_sbd *sdp, const char *table)
 	memcpy(cluster, table, strlen(table) - strlen(fsname));
 	fsname++;
 
-<<<<<<< HEAD
-	flags = DLM_LSFL_FS | DLM_LSFL_NEWEXCL;
-	if (ls->ls_nodir)
-		flags |= DLM_LSFL_NODIR;
-=======
 	flags = DLM_LSFL_NEWEXCL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * create/join lockspace
@@ -1641,11 +1338,7 @@ static int gdlm_mount(struct gfs2_sbd *sdp, const char *table)
 
 	ls->ls_first = !!test_bit(DFL_FIRST_MOUNT, &ls->ls_recover_flags);
 	clear_bit(SDF_NOJOURNALID, &sdp->sd_flags);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up_bit(&sdp->sd_flags, SDF_NOJOURNALID);
 	return 0;
 
@@ -1682,11 +1375,7 @@ static void gdlm_unmount(struct gfs2_sbd *sdp)
 	spin_lock(&ls->ls_recover_spin);
 	set_bit(DFL_UNMOUNT, &ls->ls_recover_flags);
 	spin_unlock(&ls->ls_recover_spin);
-<<<<<<< HEAD
-	flush_delayed_work_sync(&sdp->sd_control_work);
-=======
 	flush_delayed_work(&sdp->sd_control_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* mounted_lock and control_lock will be purged in dlm recovery */
 release:

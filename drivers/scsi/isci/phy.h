@@ -76,16 +76,6 @@
  */
 #define SCIC_SDS_SATA_LINK_TRAINING_TIMEOUT  250
 
-<<<<<<< HEAD
-enum sci_phy_protocol {
-	SCIC_SDS_PHY_PROTOCOL_UNKNOWN,
-	SCIC_SDS_PHY_PROTOCOL_SAS,
-	SCIC_SDS_PHY_PROTOCOL_SATA,
-	SCIC_SDS_MAX_PHY_PROTOCOLS
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * isci_phy - hba local phy infrastructure
  * @sm:
@@ -98,11 +88,7 @@ struct isci_phy {
 	struct sci_base_state_machine sm;
 	struct isci_port *owning_port;
 	enum sas_linkrate max_negotiated_speed;
-<<<<<<< HEAD
-	enum sci_phy_protocol protocol;
-=======
 	enum sas_protocol protocol;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 phy_index;
 	bool bcn_received_while_port_unassigned;
 	bool is_in_link_training;
@@ -461,10 +447,6 @@ void sci_phy_get_attached_sas_address(
 	struct isci_phy *iphy,
 	struct sci_sas_address *sas_address);
 
-<<<<<<< HEAD
-struct sci_phy_proto;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sci_phy_get_protocols(
 	struct isci_phy *iphy,
 	struct sci_phy_proto *protocols);

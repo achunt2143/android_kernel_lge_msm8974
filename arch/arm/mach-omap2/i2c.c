@@ -1,36 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Helper module for board specific I2C bus registration
  *
  * Copyright (C) 2009 Nokia Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA
- *
- */
-
-#include <plat/cpu.h>
-#include <plat/i2c.h>
-#include "common.h"
-#include <plat/omap_hwmod.h>
-
-#include "mux.h"
-=======
  */
 
 #include "soc.h"
@@ -40,33 +12,13 @@
 #include "prm.h"
 #include "common.h"
 #include "i2c.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* In register I2C_CON, Bit 15 is the I2C enable bit */
 #define I2C_EN					BIT(15)
 #define OMAP2_I2C_CON_OFFSET			0x24
 #define OMAP4_I2C_CON_OFFSET			0xA4
 
-<<<<<<< HEAD
-/* Maximum microseconds to wait for OMAP module to softreset */
-#define MAX_MODULE_SOFTRESET_WAIT	10000
-
-void __init omap2_i2c_mux_pins(int bus_id)
-{
-	char mux_name[sizeof("i2c2_scl.i2c2_scl")];
-
-	/* First I2C bus is not muxable */
-	if (bus_id == 1)
-		return;
-
-	sprintf(mux_name, "i2c%i_scl.i2c%i_scl", bus_id, bus_id);
-	omap_mux_init_signal(mux_name, OMAP_PIN_INPUT);
-	sprintf(mux_name, "i2c%i_sda.i2c%i_sda", bus_id, bus_id);
-	omap_mux_init_signal(mux_name, OMAP_PIN_INPUT);
-}
-=======
 #define MAX_OMAP_I2C_HWMOD_NAME_LEN	16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * omap_i2c_reset - reset the omap i2c module.
@@ -87,22 +39,10 @@ int omap_i2c_reset(struct omap_hwmod *oh)
 	u16 i2c_con;
 	int c = 0;
 
-<<<<<<< HEAD
-	if (oh->class->rev == OMAP_I2C_IP_VERSION_2) {
-		i2c_con = OMAP4_I2C_CON_OFFSET;
-	} else if (oh->class->rev == OMAP_I2C_IP_VERSION_1) {
-		i2c_con = OMAP2_I2C_CON_OFFSET;
-	} else {
-		WARN(1, "Cannot reset I2C block %s: unsupported revision\n",
-		     oh->name);
-		return -EINVAL;
-	}
-=======
 	if (soc_is_omap24xx() || soc_is_omap34xx() || soc_is_am35xx())
 		i2c_con = OMAP2_I2C_CON_OFFSET;
 	else
 		i2c_con = OMAP4_I2C_CON_OFFSET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable I2C */
 	v = omap_hwmod_read(oh, i2c_con);
@@ -124,11 +64,7 @@ int omap_i2c_reset(struct omap_hwmod *oh)
 				MAX_MODULE_SOFTRESET_WAIT, c);
 
 	if (c == MAX_MODULE_SOFTRESET_WAIT)
-<<<<<<< HEAD
-		pr_warning("%s: %s: softreset failed (waited %d usec)\n",
-=======
 		pr_warn("%s: %s: softreset failed (waited %d usec)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, oh->name, MAX_MODULE_SOFTRESET_WAIT);
 	else
 		pr_debug("%s: %s: softreset in %d usec\n", __func__,

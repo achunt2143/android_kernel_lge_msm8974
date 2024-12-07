@@ -1,30 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ext4/hash.c
  *
  * Copyright (C) 2002 by Theodore Ts'o
-<<<<<<< HEAD
- *
- * This file is released under the GPL v2.
- *
- * This file may be redistributed under the terms of the GNU Public
- * License.
- */
-
-#include <linux/fs.h>
-#include <linux/jbd2.h>
-#include <linux/cryptohash.h>
-=======
  */
 
 #include <linux/fs.h>
 #include <linux/unicode.h>
 #include <linux/compiler.h>
 #include <linux/bitops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ext4.h"
 
 #define DELTA 0x9E3779B9
@@ -46,8 +30,6 @@ static void TEA_transform(__u32 buf[4], __u32 const in[])
 	buf[1] += b1;
 }
 
-<<<<<<< HEAD
-=======
 /* F, G and H are basic MD4 functions: selection, majority, parity */
 #define F(x, y, z) ((z) ^ ((x) & ((y) ^ (z))))
 #define G(x, y, z) (((x) & (y)) + (((x) ^ (y)) & (z)))
@@ -116,7 +98,6 @@ static __u32 half_md4_transform(__u32 buf[4], __u32 const in[8])
 #undef F
 #undef G
 #undef H
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The old legacy hash */
 static __u32 dx_hack_hash_unsigned(const char *name, int len)
@@ -164,11 +145,6 @@ static void str2hashbuf_signed(const char *msg, int len, __u32 *buf, int num)
 	if (len > num*4)
 		len = num * 4;
 	for (i = 0; i < len; i++) {
-<<<<<<< HEAD
-		if ((i % 4) == 0)
-			val = pad;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = ((int) scp[i]) + (val << 8);
 		if ((i % 4) == 3) {
 			*buf++ = val;
@@ -195,11 +171,6 @@ static void str2hashbuf_unsigned(const char *msg, int len, __u32 *buf, int num)
 	if (len > num*4)
 		len = num * 4;
 	for (i = 0; i < len; i++) {
-<<<<<<< HEAD
-		if ((i % 4) == 0)
-			val = pad;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = ((int) ucp[i]) + (val << 8);
 		if ((i % 4) == 3) {
 			*buf++ = val;
@@ -226,12 +197,8 @@ static void str2hashbuf_unsigned(const char *msg, int len, __u32 *buf, int num)
  * represented, and whether or not the returned hash is 32 bits or 64
  * bits.  32 bit hashes will return 0 for the minor hash.
  */
-<<<<<<< HEAD
-int ext4fs_dirhash(const char *name, int len, struct dx_hash_info *hinfo)
-=======
 static int __ext4fs_dirhash(const struct inode *dir, const char *name, int len,
 			    struct dx_hash_info *hinfo)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u32	hash;
 	__u32	minor_hash = 0;
@@ -250,19 +217,11 @@ static int __ext4fs_dirhash(const struct inode *dir, const char *name, int len,
 	/* Check to see if the seed is all zero's */
 	if (hinfo->seed) {
 		for (i = 0; i < 4; i++) {
-<<<<<<< HEAD
-			if (hinfo->seed[i])
-				break;
-		}
-		if (i < 4)
-			memcpy(buf, hinfo->seed, sizeof(buf));
-=======
 			if (hinfo->seed[i]) {
 				memcpy(buf, hinfo->seed, sizeof(buf));
 				break;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (hinfo->hash_version) {
@@ -274,10 +233,7 @@ static int __ext4fs_dirhash(const struct inode *dir, const char *name, int len,
 		break;
 	case DX_HASH_HALF_MD4_UNSIGNED:
 		str2hashbuf = str2hashbuf_unsigned;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DX_HASH_HALF_MD4:
 		p = name;
 		while (len > 0) {
@@ -291,10 +247,7 @@ static int __ext4fs_dirhash(const struct inode *dir, const char *name, int len,
 		break;
 	case DX_HASH_TEA_UNSIGNED:
 		str2hashbuf = str2hashbuf_unsigned;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DX_HASH_TEA:
 		p = name;
 		while (len > 0) {
@@ -306,11 +259,6 @@ static int __ext4fs_dirhash(const struct inode *dir, const char *name, int len,
 		hash = buf[0];
 		minor_hash = buf[1];
 		break;
-<<<<<<< HEAD
-	default:
-		hinfo->hash = 0;
-		return -1;
-=======
 	case DX_HASH_SIPHASH:
 	{
 		struct qstr qname = QSTR_INIT(name, len);
@@ -334,7 +282,6 @@ static int __ext4fs_dirhash(const struct inode *dir, const char *name, int len,
 			     "invalid/unsupported hash tree version %u",
 			     hinfo->hash_version);
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	hash = hash & ~1;
 	if (hash == (EXT4_HTREE_EOF_32BIT << 1))
@@ -343,8 +290,6 @@ static int __ext4fs_dirhash(const struct inode *dir, const char *name, int len,
 	hinfo->minor_hash = minor_hash;
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 int ext4fs_dirhash(const struct inode *dir, const char *name, int len,
 		   struct dx_hash_info *hinfo)
@@ -376,4 +321,3 @@ opaque_seq:
 #endif
 	return __ext4fs_dirhash(dir, name, len, hinfo);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

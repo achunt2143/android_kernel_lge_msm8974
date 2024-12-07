@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Checksum updating actions
  *
  * Copyright (c) 2010 Gregoire Baron <baronchon@n7mm.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -37,24 +25,6 @@
 #include <net/tcp.h>
 #include <net/udp.h>
 #include <net/ip6_checksum.h>
-<<<<<<< HEAD
-
-#include <net/act_api.h>
-
-#include <linux/tc_act/tc_csum.h>
-#include <net/tc_act/tc_csum.h>
-
-#define CSUM_TAB_MASK 15
-static struct tcf_common *tcf_csum_ht[CSUM_TAB_MASK + 1];
-static u32 csum_idx_gen;
-static DEFINE_RWLOCK(csum_lock);
-
-static struct tcf_hashinfo csum_hash_info = {
-	.htab	= tcf_csum_ht,
-	.hmask	= CSUM_TAB_MASK,
-	.lock	= &csum_lock,
-};
-=======
 #include <net/sctp/checksum.h>
 
 #include <net/act_api.h>
@@ -63,22 +33,11 @@ static struct tcf_hashinfo csum_hash_info = {
 #include <linux/tc_act/tc_csum.h>
 #include <net/tc_act/tc_csum.h>
 #include <net/tc_wrapper.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct nla_policy csum_policy[TCA_CSUM_MAX + 1] = {
 	[TCA_CSUM_PARMS] = { .len = sizeof(struct tc_csum), },
 };
 
-<<<<<<< HEAD
-static int tcf_csum_init(struct nlattr *nla, struct nlattr *est,
-			 struct tc_action *a, int ovr, int bind)
-{
-	struct nlattr *tb[TCA_CSUM_MAX + 1];
-	struct tc_csum *parm;
-	struct tcf_common *pc;
-	struct tcf_csum *p;
-	int ret = 0, err;
-=======
 static struct tc_action_ops act_csum_ops;
 
 static int tcf_csum_init(struct net *net, struct nlattr *nla,
@@ -95,57 +54,18 @@ static int tcf_csum_init(struct net *net, struct nlattr *nla,
 	struct tcf_csum *p;
 	int ret = 0, err;
 	u32 index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (nla == NULL)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	err = nla_parse_nested(tb, TCA_CSUM_MAX, nla, csum_policy);
-=======
 	err = nla_parse_nested_deprecated(tb, TCA_CSUM_MAX, nla, csum_policy,
 					  NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	if (tb[TCA_CSUM_PARMS] == NULL)
 		return -EINVAL;
 	parm = nla_data(tb[TCA_CSUM_PARMS]);
-<<<<<<< HEAD
-
-	pc = tcf_hash_check(parm->index, a, bind, &csum_hash_info);
-	if (!pc) {
-		pc = tcf_hash_create(parm->index, est, a, sizeof(*p), bind,
-				     &csum_idx_gen, &csum_hash_info);
-		if (IS_ERR(pc))
-			return PTR_ERR(pc);
-		p = to_tcf_csum(pc);
-		ret = ACT_P_CREATED;
-	} else {
-		p = to_tcf_csum(pc);
-		if (!ovr) {
-			tcf_hash_release(pc, bind, &csum_hash_info);
-			return -EEXIST;
-		}
-	}
-
-	spin_lock_bh(&p->tcf_lock);
-	p->tcf_action = parm->action;
-	p->update_flags = parm->update_flags;
-	spin_unlock_bh(&p->tcf_lock);
-
-	if (ret == ACT_P_CREATED)
-		tcf_hash_insert(pc, &csum_hash_info);
-
-	return ret;
-}
-
-static int tcf_csum_cleanup(struct tc_action *a, int bind)
-{
-	struct tcf_csum *p = a->priv;
-	return tcf_hash_release(&p->common, bind, &csum_hash_info);
-=======
 	index = parm->index;
 	err = tcf_idr_check_alloc(tn, &index, a, bind);
 	if (!err) {
@@ -198,7 +118,6 @@ put_chain:
 release_idr:
 	tcf_idr_release(*a, bind);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -219,25 +138,14 @@ static void *tcf_csum_skb_nextlayer(struct sk_buff *skb,
 	int hl = ihl + jhl;
 
 	if (!pskb_may_pull(skb, ipl + ntkoff) || (ipl < hl) ||
-<<<<<<< HEAD
-	    (skb_cloned(skb) &&
-	     !skb_clone_writable(skb, hl + ntkoff) &&
-	     pskb_expand_head(skb, 0, 0, GFP_ATOMIC)))
-=======
 	    skb_try_make_writable(skb, hl + ntkoff))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	else
 		return (void *)(skb_network_header(skb) + ihl);
 }
 
-<<<<<<< HEAD
-static int tcf_csum_ipv4_icmp(struct sk_buff *skb,
-			      unsigned int ihl, unsigned int ipl)
-=======
 static int tcf_csum_ipv4_icmp(struct sk_buff *skb, unsigned int ihl,
 			      unsigned int ipl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct icmphdr *icmph;
 
@@ -272,27 +180,17 @@ static int tcf_csum_ipv4_igmp(struct sk_buff *skb,
 	return 1;
 }
 
-<<<<<<< HEAD
-static int tcf_csum_ipv6_icmp(struct sk_buff *skb, struct ipv6hdr *ip6h,
-			      unsigned int ihl, unsigned int ipl)
-{
-	struct icmp6hdr *icmp6h;
-=======
 static int tcf_csum_ipv6_icmp(struct sk_buff *skb, unsigned int ihl,
 			      unsigned int ipl)
 {
 	struct icmp6hdr *icmp6h;
 	const struct ipv6hdr *ip6h;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	icmp6h = tcf_csum_skb_nextlayer(skb, ihl, ipl, sizeof(*icmp6h));
 	if (icmp6h == NULL)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	ip6h = ipv6_hdr(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	icmp6h->icmp6_cksum = 0;
 	skb->csum = csum_partial(icmp6h, ipl - ihl, 0);
 	icmp6h->icmp6_cksum = csum_ipv6_magic(&ip6h->saddr, &ip6h->daddr,
@@ -304,12 +202,6 @@ static int tcf_csum_ipv6_icmp(struct sk_buff *skb, unsigned int ihl,
 	return 1;
 }
 
-<<<<<<< HEAD
-static int tcf_csum_ipv4_tcp(struct sk_buff *skb, struct iphdr *iph,
-			     unsigned int ihl, unsigned int ipl)
-{
-	struct tcphdr *tcph;
-=======
 static int tcf_csum_ipv4_tcp(struct sk_buff *skb, unsigned int ihl,
 			     unsigned int ipl)
 {
@@ -318,16 +210,12 @@ static int tcf_csum_ipv4_tcp(struct sk_buff *skb, unsigned int ihl,
 
 	if (skb_is_gso(skb) && skb_shinfo(skb)->gso_type & SKB_GSO_TCPV4)
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tcph = tcf_csum_skb_nextlayer(skb, ihl, ipl, sizeof(*tcph));
 	if (tcph == NULL)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	iph = ip_hdr(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tcph->check = 0;
 	skb->csum = csum_partial(tcph, ipl - ihl, 0);
 	tcph->check = tcp_v4_check(ipl - ihl,
@@ -338,12 +226,6 @@ static int tcf_csum_ipv4_tcp(struct sk_buff *skb, unsigned int ihl,
 	return 1;
 }
 
-<<<<<<< HEAD
-static int tcf_csum_ipv6_tcp(struct sk_buff *skb, struct ipv6hdr *ip6h,
-			     unsigned int ihl, unsigned int ipl)
-{
-	struct tcphdr *tcph;
-=======
 static int tcf_csum_ipv6_tcp(struct sk_buff *skb, unsigned int ihl,
 			     unsigned int ipl)
 {
@@ -352,16 +234,12 @@ static int tcf_csum_ipv6_tcp(struct sk_buff *skb, unsigned int ihl,
 
 	if (skb_is_gso(skb) && skb_shinfo(skb)->gso_type & SKB_GSO_TCPV6)
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tcph = tcf_csum_skb_nextlayer(skb, ihl, ipl, sizeof(*tcph));
 	if (tcph == NULL)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	ip6h = ipv6_hdr(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tcph->check = 0;
 	skb->csum = csum_partial(tcph, ipl - ihl, 0);
 	tcph->check = csum_ipv6_magic(&ip6h->saddr, &ip6h->daddr,
@@ -373,14 +251,6 @@ static int tcf_csum_ipv6_tcp(struct sk_buff *skb, unsigned int ihl,
 	return 1;
 }
 
-<<<<<<< HEAD
-static int tcf_csum_ipv4_udp(struct sk_buff *skb, struct iphdr *iph,
-			     unsigned int ihl, unsigned int ipl, int udplite)
-{
-	struct udphdr *udph;
-	u16 ul;
-
-=======
 static int tcf_csum_ipv4_udp(struct sk_buff *skb, unsigned int ihl,
 			     unsigned int ipl, int udplite)
 {
@@ -391,7 +261,6 @@ static int tcf_csum_ipv4_udp(struct sk_buff *skb, unsigned int ihl,
 	if (skb_is_gso(skb) && skb_shinfo(skb)->gso_type & SKB_GSO_UDP)
 		return 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Support both UDP and UDPLITE checksum algorithms, Don't use
 	 * udph->len to get the real length without any protocol check,
@@ -403,10 +272,7 @@ static int tcf_csum_ipv4_udp(struct sk_buff *skb, unsigned int ihl,
 	if (udph == NULL)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	iph = ip_hdr(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ul = ntohs(udph->len);
 
 	if (udplite || udph->check) {
@@ -441,14 +307,6 @@ ignore_obscure_skb:
 	return 1;
 }
 
-<<<<<<< HEAD
-static int tcf_csum_ipv6_udp(struct sk_buff *skb, struct ipv6hdr *ip6h,
-			     unsigned int ihl, unsigned int ipl, int udplite)
-{
-	struct udphdr *udph;
-	u16 ul;
-
-=======
 static int tcf_csum_ipv6_udp(struct sk_buff *skb, unsigned int ihl,
 			     unsigned int ipl, int udplite)
 {
@@ -459,7 +317,6 @@ static int tcf_csum_ipv6_udp(struct sk_buff *skb, unsigned int ihl,
 	if (skb_is_gso(skb) && skb_shinfo(skb)->gso_type & SKB_GSO_UDP)
 		return 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Support both UDP and UDPLITE checksum algorithms, Don't use
 	 * udph->len to get the real length without any protocol check,
@@ -471,10 +328,7 @@ static int tcf_csum_ipv6_udp(struct sk_buff *skb, unsigned int ihl,
 	if (udph == NULL)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	ip6h = ipv6_hdr(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ul = ntohs(udph->len);
 
 	udph->check = 0;
@@ -508,11 +362,6 @@ ignore_obscure_skb:
 	return 1;
 }
 
-<<<<<<< HEAD
-static int tcf_csum_ipv4(struct sk_buff *skb, u32 update_flags)
-{
-	struct iphdr *iph;
-=======
 static int tcf_csum_sctp(struct sk_buff *skb, unsigned int ihl,
 			 unsigned int ipl)
 {
@@ -535,7 +384,6 @@ static int tcf_csum_sctp(struct sk_buff *skb, unsigned int ihl,
 static int tcf_csum_ipv4(struct sk_buff *skb, u32 update_flags)
 {
 	const struct iphdr *iph;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ntkoff;
 
 	ntkoff = skb_network_offset(skb);
@@ -560,41 +408,18 @@ static int tcf_csum_ipv4(struct sk_buff *skb, u32 update_flags)
 		break;
 	case IPPROTO_TCP:
 		if (update_flags & TCA_CSUM_UPDATE_FLAG_TCP)
-<<<<<<< HEAD
-			if (!tcf_csum_ipv4_tcp(skb, iph, iph->ihl * 4,
-=======
 			if (!tcf_csum_ipv4_tcp(skb, iph->ihl * 4,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       ntohs(iph->tot_len)))
 				goto fail;
 		break;
 	case IPPROTO_UDP:
 		if (update_flags & TCA_CSUM_UPDATE_FLAG_UDP)
-<<<<<<< HEAD
-			if (!tcf_csum_ipv4_udp(skb, iph, iph->ihl * 4,
-=======
 			if (!tcf_csum_ipv4_udp(skb, iph->ihl * 4,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       ntohs(iph->tot_len), 0))
 				goto fail;
 		break;
 	case IPPROTO_UDPLITE:
 		if (update_flags & TCA_CSUM_UPDATE_FLAG_UDPLITE)
-<<<<<<< HEAD
-			if (!tcf_csum_ipv4_udp(skb, iph, iph->ihl * 4,
-					       ntohs(iph->tot_len), 1))
-				goto fail;
-		break;
-	}
-
-	if (update_flags & TCA_CSUM_UPDATE_FLAG_IPV4HDR) {
-		if (skb_cloned(skb) &&
-		    !skb_clone_writable(skb, sizeof(*iph) + ntkoff) &&
-		    pskb_expand_head(skb, 0, 0, GFP_ATOMIC))
-			goto fail;
-
-		ip_send_check(iph);
-=======
 			if (!tcf_csum_ipv4_udp(skb, iph->ihl * 4,
 					       ntohs(iph->tot_len), 1))
 				goto fail;
@@ -611,7 +436,6 @@ static int tcf_csum_ipv4(struct sk_buff *skb, u32 update_flags)
 			goto fail;
 
 		ip_send_check(ip_hdr(skb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 1;
@@ -620,13 +444,8 @@ fail:
 	return 0;
 }
 
-<<<<<<< HEAD
-static int tcf_csum_ipv6_hopopts(struct ipv6_opt_hdr *ip6xh,
-				 unsigned int ixhl, unsigned int *pl)
-=======
 static int tcf_csum_ipv6_hopopts(struct ipv6_opt_hdr *ip6xh, unsigned int ixhl,
 				 unsigned int *pl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int off, len, optlen;
 	unsigned char *xh = (void *)ip6xh;
@@ -636,11 +455,7 @@ static int tcf_csum_ipv6_hopopts(struct ipv6_opt_hdr *ip6xh, unsigned int ixhl,
 
 	while (len > 1) {
 		switch (xh[off]) {
-<<<<<<< HEAD
-		case IPV6_TLV_PAD0:
-=======
 		case IPV6_TLV_PAD1:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			optlen = 1;
 			break;
 		case IPV6_TLV_JUMBO:
@@ -699,10 +514,7 @@ static int tcf_csum_ipv6(struct sk_buff *skb, u32 update_flags)
 			ixhl = ipv6_optlen(ip6xh);
 			if (!pskb_may_pull(skb, hl + ixhl + ntkoff))
 				goto fail;
-<<<<<<< HEAD
-=======
 			ip6xh = (void *)(skb_network_header(skb) + hl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((nexthdr == NEXTHDR_HOP) &&
 			    !(tcf_csum_ipv6_hopopts(ip6xh, ixhl, &pl)))
 				goto fail;
@@ -711,42 +523,24 @@ static int tcf_csum_ipv6(struct sk_buff *skb, u32 update_flags)
 			break;
 		case IPPROTO_ICMPV6:
 			if (update_flags & TCA_CSUM_UPDATE_FLAG_ICMP)
-<<<<<<< HEAD
-				if (!tcf_csum_ipv6_icmp(skb, ip6h,
-=======
 				if (!tcf_csum_ipv6_icmp(skb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							hl, pl + sizeof(*ip6h)))
 					goto fail;
 			goto done;
 		case IPPROTO_TCP:
 			if (update_flags & TCA_CSUM_UPDATE_FLAG_TCP)
-<<<<<<< HEAD
-				if (!tcf_csum_ipv6_tcp(skb, ip6h,
-=======
 				if (!tcf_csum_ipv6_tcp(skb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						       hl, pl + sizeof(*ip6h)))
 					goto fail;
 			goto done;
 		case IPPROTO_UDP:
 			if (update_flags & TCA_CSUM_UPDATE_FLAG_UDP)
-<<<<<<< HEAD
-				if (!tcf_csum_ipv6_udp(skb, ip6h, hl,
-=======
 				if (!tcf_csum_ipv6_udp(skb, hl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						       pl + sizeof(*ip6h), 0))
 					goto fail;
 			goto done;
 		case IPPROTO_UDPLITE:
 			if (update_flags & TCA_CSUM_UPDATE_FLAG_UDPLITE)
-<<<<<<< HEAD
-				if (!tcf_csum_ipv6_udp(skb, ip6h, hl,
-						       pl + sizeof(*ip6h), 1))
-					goto fail;
-			goto done;
-=======
 				if (!tcf_csum_ipv6_udp(skb, hl,
 						       pl + sizeof(*ip6h), 1))
 					goto fail;
@@ -756,7 +550,6 @@ static int tcf_csum_ipv6(struct sk_buff *skb, u32 update_flags)
 			    !tcf_csum_sctp(skb, hl, pl + sizeof(*ip6h)))
 				goto fail;
 			goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			goto ignore_skb;
 		}
@@ -770,26 +563,6 @@ fail:
 	return 0;
 }
 
-<<<<<<< HEAD
-static int tcf_csum(struct sk_buff *skb,
-		    const struct tc_action *a, struct tcf_result *res)
-{
-	struct tcf_csum *p = a->priv;
-	int action;
-	u32 update_flags;
-
-	spin_lock(&p->tcf_lock);
-	p->tcf_tm.lastuse = jiffies;
-	bstats_update(&p->tcf_bstats, skb);
-	action = p->tcf_action;
-	update_flags = p->update_flags;
-	spin_unlock(&p->tcf_lock);
-
-	if (unlikely(action == TC_ACT_SHOT))
-		goto drop;
-
-	switch (skb->protocol) {
-=======
 TC_INDIRECT_SCOPE int tcf_csum_act(struct sk_buff *skb,
 				   const struct tc_action *a,
 				   struct tcf_result *res)
@@ -815,7 +588,6 @@ TC_INDIRECT_SCOPE int tcf_csum_act(struct sk_buff *skb,
 	protocol = skb_protocol(skb, false);
 again:
 	switch (protocol) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case cpu_to_be16(ETH_P_IP):
 		if (!tcf_csum_ipv4(skb, update_flags))
 			goto drop;
@@ -824,8 +596,6 @@ again:
 		if (!tcf_csum_ipv6(skb, update_flags))
 			goto drop;
 		break;
-<<<<<<< HEAD
-=======
 	case cpu_to_be16(ETH_P_8021AD):
 		fallthrough;
 	case cpu_to_be16(ETH_P_8021Q):
@@ -848,39 +618,11 @@ out:
 	while (vlan_hdr_count--) {
 		skb_push(skb, VLAN_HLEN);
 		skb_reset_network_header(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return action;
 
 drop:
-<<<<<<< HEAD
-	spin_lock(&p->tcf_lock);
-	p->tcf_qstats.drops++;
-	spin_unlock(&p->tcf_lock);
-	return TC_ACT_SHOT;
-}
-
-static int tcf_csum_dump(struct sk_buff *skb,
-			 struct tc_action *a, int bind, int ref)
-{
-	unsigned char *b = skb_tail_pointer(skb);
-	struct tcf_csum *p = a->priv;
-	struct tc_csum opt = {
-		.update_flags = p->update_flags,
-		.index   = p->tcf_index,
-		.action  = p->tcf_action,
-		.refcnt  = p->tcf_refcnt - ref,
-		.bindcnt = p->tcf_bindcnt - bind,
-	};
-	struct tcf_t t;
-
-	NLA_PUT(skb, TCA_CSUM_PARMS, sizeof(opt), &opt);
-	t.install = jiffies_to_clock_t(jiffies - p->tcf_tm.install);
-	t.lastuse = jiffies_to_clock_t(jiffies - p->tcf_tm.lastuse);
-	t.expires = jiffies_to_clock_t(p->tcf_tm.expires);
-	NLA_PUT(skb, TCA_CSUM_TM, sizeof(t), &t);
-=======
 	tcf_action_inc_drop_qstats(&p->common);
 	action = TC_ACT_SHOT;
 	goto out;
@@ -912,33 +654,15 @@ static int tcf_csum_dump(struct sk_buff *skb, struct tc_action *a, int bind,
 	if (nla_put_64bit(skb, TCA_CSUM_TM, sizeof(t), &t, TCA_CSUM_PAD))
 		goto nla_put_failure;
 	spin_unlock_bh(&p->tcf_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return skb->len;
 
 nla_put_failure:
-<<<<<<< HEAD
-=======
 	spin_unlock_bh(&p->tcf_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmsg_trim(skb, b);
 	return -1;
 }
 
-<<<<<<< HEAD
-static struct tc_action_ops act_csum_ops = {
-	.kind		= "csum",
-	.hinfo		= &csum_hash_info,
-	.type		= TCA_ACT_CSUM,
-	.capab		= TCA_CAP_NONE,
-	.owner		= THIS_MODULE,
-	.act		= tcf_csum,
-	.dump		= tcf_csum_dump,
-	.cleanup	= tcf_csum_cleanup,
-	.lookup		= tcf_hash_search,
-	.init		= tcf_csum_init,
-	.walk		= tcf_generic_walker
-=======
 static void tcf_csum_cleanup(struct tc_action *a)
 {
 	struct tcf_csum *p = to_tcf_csum(a);
@@ -1004,7 +728,6 @@ static struct pernet_operations csum_net_ops = {
 	.exit_batch = csum_exit_net,
 	.id   = &act_csum_ops.net_id,
 	.size = sizeof(struct tc_action_net),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 MODULE_DESCRIPTION("Checksum updating actions");
@@ -1012,20 +735,12 @@ MODULE_LICENSE("GPL");
 
 static int __init csum_init_module(void)
 {
-<<<<<<< HEAD
-	return tcf_register_action(&act_csum_ops);
-=======
 	return tcf_register_action(&act_csum_ops, &csum_net_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit csum_cleanup_module(void)
 {
-<<<<<<< HEAD
-	tcf_unregister_action(&act_csum_ops);
-=======
 	tcf_unregister_action(&act_csum_ops, &csum_net_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(csum_init_module);

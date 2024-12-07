@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-/*
- * wm8960.c  --  WM8960 ALSA SoC Audio driver
- *
- * Author: Liam Girdwood
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * wm8960.c  --  WM8960 ALSA SoC Audio driver
@@ -15,7 +5,6 @@
  * Copyright 2007-11 Wolfson Microelectronics, plc
  *
  * Author: Liam Girdwood
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -23,13 +12,9 @@
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
-<<<<<<< HEAD
-#include <linux/i2c.h>
-=======
 #include <linux/clk.h>
 #include <linux/i2c.h>
 #include <linux/acpi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -61,41 +46,16 @@
 #define WM8960_DISOP     0x40
 #define WM8960_DRES_MASK 0x30
 
-<<<<<<< HEAD
-=======
 #define WM8960_DSCH_TOUT	600 /* discharge timeout, ms */
 
 static bool is_pll_freq_available(unsigned int source, unsigned int target);
 static int wm8960_set_pll(struct snd_soc_component *component,
 		unsigned int freq_in, unsigned int freq_out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8960 register cache
  * We can't read the WM8960 register space when we are
  * using 2 wire for device control, so we cache them instead.
  */
-<<<<<<< HEAD
-static const u16 wm8960_reg[WM8960_CACHEREGNUM] = {
-	0x0097, 0x0097, 0x0000, 0x0000,
-	0x0000, 0x0008, 0x0000, 0x000a,
-	0x01c0, 0x0000, 0x00ff, 0x00ff,
-	0x0000, 0x0000, 0x0000, 0x0000,
-	0x0000, 0x007b, 0x0100, 0x0032,
-	0x0000, 0x00c3, 0x00c3, 0x01c0,
-	0x0000, 0x0000, 0x0000, 0x0000,
-	0x0000, 0x0000, 0x0000, 0x0000,
-	0x0100, 0x0100, 0x0050, 0x0050,
-	0x0050, 0x0050, 0x0000, 0x0000,
-	0x0000, 0x0000, 0x0040, 0x0000,
-	0x0000, 0x0050, 0x0050, 0x0000,
-	0x0002, 0x0037, 0x004d, 0x0080,
-	0x0008, 0x0031, 0x0026, 0x00e9,
-};
-
-struct wm8960_priv {
-	enum snd_soc_control_type control_type;
-	int (*set_bias_level)(struct snd_soc_codec *,
-=======
 static const struct reg_default wm8960_reg_defaults[] = {
 	{  0x0, 0x00a7 },
 	{  0x1, 0x00a7 },
@@ -173,18 +133,11 @@ struct wm8960_priv {
 	struct clk *mclk;
 	struct regmap *regmap;
 	int (*set_bias_level)(struct snd_soc_component *,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      enum snd_soc_bias_level level);
 	struct snd_soc_dapm_widget *lout1;
 	struct snd_soc_dapm_widget *rout1;
 	struct snd_soc_dapm_widget *out3;
 	bool deemph;
-<<<<<<< HEAD
-	int playback_fs;
-};
-
-#define wm8960_reset(c)	snd_soc_write(c, WM8960_RESET, 0)
-=======
 	int lrclk;
 	int bclk;
 	int sysclk;
@@ -197,7 +150,6 @@ struct wm8960_priv {
 };
 
 #define wm8960_reset(c)	regmap_write(c, WM8960_RESET, 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* enumerated controls */
 static const char *wm8960_polarity[] = {"No Inversion", "Left Inverted",
@@ -206,8 +158,6 @@ static const char *wm8960_3d_upper_cutoff[] = {"High", "Low"};
 static const char *wm8960_3d_lower_cutoff[] = {"Low", "High"};
 static const char *wm8960_alcfunc[] = {"Off", "Right", "Left", "Stereo"};
 static const char *wm8960_alcmode[] = {"ALC", "Limiter"};
-<<<<<<< HEAD
-=======
 static const char *wm8960_adc_data_output_sel[] = {
 	"Left Data = Left ADC;  Right Data = Right ADC",
 	"Left Data = Left ADC;  Right Data = Left ADC",
@@ -216,7 +166,6 @@ static const char *wm8960_adc_data_output_sel[] = {
 };
 static const char *wm8960_dmonomix[] = {"Stereo", "Mono"};
 static const char *wm8960_dacslope[] = {"Normal", "Sloping"};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct soc_enum wm8960_enum[] = {
 	SOC_ENUM_SINGLE(WM8960_DACCTL1, 5, 4, wm8960_polarity),
@@ -225,25 +174,16 @@ static const struct soc_enum wm8960_enum[] = {
 	SOC_ENUM_SINGLE(WM8960_3D, 5, 2, wm8960_3d_lower_cutoff),
 	SOC_ENUM_SINGLE(WM8960_ALC1, 7, 4, wm8960_alcfunc),
 	SOC_ENUM_SINGLE(WM8960_ALC3, 8, 2, wm8960_alcmode),
-<<<<<<< HEAD
-=======
 	SOC_ENUM_SINGLE(WM8960_ADDCTL1, 2, 4, wm8960_adc_data_output_sel),
 	SOC_ENUM_SINGLE(WM8960_ADDCTL1, 4, 2, wm8960_dmonomix),
 	SOC_ENUM_SINGLE(WM8960_DACCTL2, 1, 2, wm8960_dacslope),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const int deemph_settings[] = { 0, 32000, 44100, 48000 };
 
-<<<<<<< HEAD
-static int wm8960_set_deemph(struct snd_soc_codec *codec)
-{
-	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-=======
 static int wm8960_set_deemph(struct snd_soc_component *component)
 {
 	struct wm8960_priv *wm8960 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int val, i, best;
 
 	/* If we're using deemphasis select the nearest available sample
@@ -252,13 +192,8 @@ static int wm8960_set_deemph(struct snd_soc_component *component)
 	if (wm8960->deemph) {
 		best = 1;
 		for (i = 2; i < ARRAY_SIZE(deemph_settings); i++) {
-<<<<<<< HEAD
-			if (abs(deemph_settings[i] - wm8960->playback_fs) <
-			    abs(deemph_settings[best] - wm8960->playback_fs))
-=======
 			if (abs(deemph_settings[i] - wm8960->lrclk) <
 			    abs(deemph_settings[best] - wm8960->lrclk))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				best = i;
 		}
 
@@ -267,28 +202,17 @@ static int wm8960_set_deemph(struct snd_soc_component *component)
 		val = 0;
 	}
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Set deemphasis %d\n", val);
-
-	return snd_soc_update_bits(codec, WM8960_DACCTL1,
-=======
 	dev_dbg(component->dev, "Set deemphasis %d\n", val);
 
 	return snd_soc_component_update_bits(component, WM8960_DACCTL1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   0x6, val);
 }
 
 static int wm8960_get_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct wm8960_priv *wm8960 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ucontrol->value.integer.value[0] = wm8960->deemph;
 	return 0;
@@ -297,38 +221,15 @@ static int wm8960_get_deemph(struct snd_kcontrol *kcontrol,
 static int wm8960_put_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-	int deemph = ucontrol->value.integer.value[0];
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct wm8960_priv *wm8960 = snd_soc_component_get_drvdata(component);
 	unsigned int deemph = ucontrol->value.integer.value[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (deemph > 1)
 		return -EINVAL;
 
 	wm8960->deemph = deemph;
 
-<<<<<<< HEAD
-	return wm8960_set_deemph(codec);
-}
-
-static const DECLARE_TLV_DB_SCALE(adc_tlv, -9700, 50, 0);
-static const DECLARE_TLV_DB_SCALE(dac_tlv, -12700, 50, 1);
-static const DECLARE_TLV_DB_SCALE(bypass_tlv, -2100, 300, 0);
-static const DECLARE_TLV_DB_SCALE(out_tlv, -12100, 100, 1);
-
-static const struct snd_kcontrol_new wm8960_snd_controls[] = {
-SOC_DOUBLE_R_TLV("Capture Volume", WM8960_LINVOL, WM8960_RINVOL,
-		 0, 63, 0, adc_tlv),
-SOC_DOUBLE_R("Capture Volume ZC Switch", WM8960_LINVOL, WM8960_RINVOL,
-	6, 1, 0),
-SOC_DOUBLE_R("Capture Switch", WM8960_LINVOL, WM8960_RINVOL,
-	7, 1, 0),
-=======
 	return wm8960_set_deemph(component);
 }
 
@@ -363,7 +264,6 @@ SOC_SINGLE_TLV("Right Input Boost Mixer RINPUT1 Volume",
 		WM8960_RINPATH, 4, 3, 0, micboost_tlv),
 SOC_SINGLE_TLV("Left Input Boost Mixer LINPUT1 Volume",
 		WM8960_LINPATH, 4, 3, 0, micboost_tlv),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SOC_DOUBLE_R_TLV("Playback Volume", WM8960_LDAC, WM8960_RDAC,
 		 0, 255, 0, dac_tlv),
@@ -405,13 +305,8 @@ SOC_SINGLE("ALC Attack", WM8960_ALC3, 0, 15, 0),
 SOC_SINGLE("Noise Gate Threshold", WM8960_NOISEG, 3, 31, 0),
 SOC_SINGLE("Noise Gate Switch", WM8960_NOISEG, 0, 1, 0),
 
-<<<<<<< HEAD
-SOC_DOUBLE_R("ADC PCM Capture Volume", WM8960_LINPATH, WM8960_RINPATH,
-	0, 127, 0),
-=======
 SOC_DOUBLE_R_TLV("ADC PCM Capture Volume", WM8960_LADC, WM8960_RADC,
 	0, 255, 0, adc_tlv),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SOC_SINGLE_TLV("Left Output Mixer Boost Bypass Volume",
 	       WM8960_BYPASS1, 4, 7, 1, bypass_tlv),
@@ -421,13 +316,10 @@ SOC_SINGLE_TLV("Right Output Mixer Boost Bypass Volume",
 	       WM8960_BYPASS2, 4, 7, 1, bypass_tlv),
 SOC_SINGLE_TLV("Right Output Mixer RINPUT3 Volume",
 	       WM8960_ROUTMIX, 4, 7, 1, bypass_tlv),
-<<<<<<< HEAD
-=======
 
 SOC_ENUM("ADC Data Output Select", wm8960_enum[6]),
 SOC_ENUM("DAC Mono Mix", wm8960_enum[7]),
 SOC_ENUM("DAC Filter Characteristics", wm8960_enum[8]),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct snd_kcontrol_new wm8960_lin_boost[] = {
@@ -487,13 +379,8 @@ SND_SOC_DAPM_MIXER("Left Input Mixer", WM8960_POWER3, 5, 0,
 SND_SOC_DAPM_MIXER("Right Input Mixer", WM8960_POWER3, 4, 0,
 		   wm8960_rin, ARRAY_SIZE(wm8960_rin)),
 
-<<<<<<< HEAD
-SND_SOC_DAPM_ADC("Left ADC", "Capture", WM8960_POWER2, 3, 0),
-SND_SOC_DAPM_ADC("Right ADC", "Capture", WM8960_POWER2, 2, 0),
-=======
 SND_SOC_DAPM_ADC("Left ADC", "Capture", WM8960_POWER1, 3, 0),
 SND_SOC_DAPM_ADC("Right ADC", "Capture", WM8960_POWER1, 2, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SND_SOC_DAPM_DAC("Left DAC", "Playback", WM8960_POWER2, 8, 0),
 SND_SOC_DAPM_DAC("Right DAC", "Playback", WM8960_POWER2, 7, 0),
@@ -539,13 +426,8 @@ static const struct snd_soc_dapm_route audio_paths[] = {
 	{ "Left Boost Mixer", "LINPUT2 Switch", "LINPUT2" },
 	{ "Left Boost Mixer", "LINPUT3 Switch", "LINPUT3" },
 
-<<<<<<< HEAD
-	{ "Left Input Mixer", "Boost Switch", "Left Boost Mixer", },
-	{ "Left Input Mixer", NULL, "LINPUT1", },  /* Really Boost Switch */
-=======
 	{ "Left Input Mixer", "Boost Switch", "Left Boost Mixer" },
 	{ "Left Input Mixer", "Boost Switch", "LINPUT1" },  /* Really Boost Switch */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "Left Input Mixer", NULL, "LINPUT2" },
 	{ "Left Input Mixer", NULL, "LINPUT3" },
 
@@ -553,13 +435,8 @@ static const struct snd_soc_dapm_route audio_paths[] = {
 	{ "Right Boost Mixer", "RINPUT2 Switch", "RINPUT2" },
 	{ "Right Boost Mixer", "RINPUT3 Switch", "RINPUT3" },
 
-<<<<<<< HEAD
-	{ "Right Input Mixer", "Boost Switch", "Right Boost Mixer", },
-	{ "Right Input Mixer", NULL, "RINPUT1", },  /* Really Boost Switch */
-=======
 	{ "Right Input Mixer", "Boost Switch", "Right Boost Mixer" },
 	{ "Right Input Mixer", "Boost Switch", "RINPUT1" },  /* Really Boost Switch */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "Right Input Mixer", NULL, "RINPUT2" },
 	{ "Right Input Mixer", NULL, "RINPUT3" },
 
@@ -567,19 +444,11 @@ static const struct snd_soc_dapm_route audio_paths[] = {
 	{ "Right ADC", NULL, "Right Input Mixer" },
 
 	{ "Left Output Mixer", "LINPUT3 Switch", "LINPUT3" },
-<<<<<<< HEAD
-	{ "Left Output Mixer", "Boost Bypass Switch", "Left Boost Mixer"} ,
-	{ "Left Output Mixer", "PCM Playback Switch", "Left DAC" },
-
-	{ "Right Output Mixer", "RINPUT3 Switch", "RINPUT3" },
-	{ "Right Output Mixer", "Boost Bypass Switch", "Right Boost Mixer" } ,
-=======
 	{ "Left Output Mixer", "Boost Bypass Switch", "Left Boost Mixer" },
 	{ "Left Output Mixer", "PCM Playback Switch", "Left DAC" },
 
 	{ "Right Output Mixer", "RINPUT3 Switch", "RINPUT3" },
 	{ "Right Output Mixer", "Boost Bypass Switch", "Right Boost Mixer" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "Right Output Mixer", "PCM Playback Switch", "Right DAC" },
 
 	{ "LOUT1 PGA", NULL, "Left Output Mixer" },
@@ -615,19 +484,11 @@ static const struct snd_soc_dapm_route audio_paths_capless[] = {
 	{ "OUT3 VMID", NULL, "Right Output Mixer" },
 };
 
-<<<<<<< HEAD
-static int wm8960_add_widgets(struct snd_soc_codec *codec)
-{
-	struct wm8960_data *pdata = codec->dev->platform_data;
-	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-	struct snd_soc_dapm_context *dapm = &codec->dapm;
-=======
 static int wm8960_add_widgets(struct snd_soc_component *component)
 {
 	struct wm8960_priv *wm8960 = snd_soc_component_get_drvdata(component);
 	struct wm8960_data *pdata = &wm8960->pdata;
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_soc_dapm_widget *w;
 
 	snd_soc_dapm_new_controls(dapm, wm8960_dapm_widgets,
@@ -657,13 +518,8 @@ static int wm8960_add_widgets(struct snd_soc_component *component)
 	 * list each time to find the desired power state do so now
 	 * and save the result.
 	 */
-<<<<<<< HEAD
-	list_for_each_entry(w, &codec->card->widgets, list) {
-		if (w->dapm != &codec->dapm)
-=======
 	list_for_each_entry(w, &component->card->widgets, list) {
 		if (w->dapm != dapm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (strcmp(w->name, "LOUT1 PGA") == 0)
 			wm8960->lout1 = w;
@@ -679,11 +535,7 @@ static int wm8960_add_widgets(struct snd_soc_component *component)
 static int wm8960_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-=======
 	struct snd_soc_component *component = codec_dai->component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 iface = 0;
 
 	/* set master/slave audio interface */
@@ -735,11 +587,7 @@ static int wm8960_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	}
 
 	/* set iface */
-<<<<<<< HEAD
-	snd_soc_write(codec, WM8960_IFACE1, iface);
-=======
 	snd_soc_component_write(component, WM8960_IFACE1, iface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -758,8 +606,6 @@ static struct {
 	{  8000, 5 },
 };
 
-<<<<<<< HEAD
-=======
 /* -1 for reserved value */
 static const int sysclk_divs[] = { 1, -1, 2, -1 };
 
@@ -980,39 +826,10 @@ configure_clock:
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int wm8960_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_codec *codec = rtd->codec;
-	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-	u16 iface = snd_soc_read(codec, WM8960_IFACE1) & 0xfff3;
-	int i;
-
-	/* bit size */
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-		break;
-	case SNDRV_PCM_FORMAT_S20_3LE:
-		iface |= 0x0004;
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-		iface |= 0x0008;
-		break;
-	}
-
-	/* Update filters for the new rate */
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-		wm8960->playback_fs = params_rate(params);
-		wm8960_set_deemph(codec);
-	} else {
-		for (i = 0; i < ARRAY_SIZE(alc_rates); i++)
-			if (alc_rates[i].rate == params_rate(params))
-				snd_soc_update_bits(codec,
-=======
 	struct snd_soc_component *component = dai->component;
 	struct wm8960_priv *wm8960 = snd_soc_component_get_drvdata(component);
 	u16 iface = snd_soc_component_read(component, WM8960_IFACE1) & 0xfff3;
@@ -1054,32 +871,11 @@ static int wm8960_hw_params(struct snd_pcm_substream *substream,
 		for (i = 0; i < ARRAY_SIZE(alc_rates); i++)
 			if (alc_rates[i].rate == params_rate(params))
 				snd_soc_component_update_bits(component,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    WM8960_ADDCTL3, 0x7,
 						    alc_rates[i].val);
 	}
 
 	/* set iface */
-<<<<<<< HEAD
-	snd_soc_write(codec, WM8960_IFACE1, iface);
-	return 0;
-}
-
-static int wm8960_mute(struct snd_soc_dai *dai, int mute)
-{
-	struct snd_soc_codec *codec = dai->codec;
-
-	if (mute)
-		snd_soc_update_bits(codec, WM8960_DACCTL1, 0x8, 0x8);
-	else
-		snd_soc_update_bits(codec, WM8960_DACCTL1, 0x8, 0);
-	return 0;
-}
-
-static int wm8960_set_bias_level_out3(struct snd_soc_codec *codec,
-				      enum snd_soc_bias_level level)
-{
-=======
 	snd_soc_component_write(component, WM8960_IFACE1, iface);
 
 	wm8960->is_stream_in_use[tx] = true;
@@ -1121,24 +917,11 @@ static int wm8960_set_bias_level_out3(struct snd_soc_component *component,
 	int ret;
 	ktime_t tout;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
-<<<<<<< HEAD
-		/* Set VMID to 2x50k */
-		snd_soc_update_bits(codec, WM8960_POWER1, 0x180, 0x80);
-		break;
-
-	case SND_SOC_BIAS_STANDBY:
-		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
-			snd_soc_cache_sync(codec);
-
-			/* Enable anti-pop features */
-			snd_soc_write(codec, WM8960_APOP1,
-=======
 		switch (snd_soc_component_get_bias_level(component)) {
 		case SND_SOC_BIAS_STANDBY:
 			if (!IS_ERR(wm8960->mclk)) {
@@ -1188,26 +971,10 @@ static int wm8960_set_bias_level_out3(struct snd_soc_component *component,
 
 			/* Enable anti-pop features */
 			snd_soc_component_write(component, WM8960_APOP1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      WM8960_POBCTRL | WM8960_SOFT_ST |
 				      WM8960_BUFDCOPEN | WM8960_BUFIOEN);
 
 			/* Enable & ramp VMID at 2x50k */
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM8960_POWER1, 0x80, 0x80);
-			msleep(100);
-
-			/* Enable VREF */
-			snd_soc_update_bits(codec, WM8960_POWER1, WM8960_VREF,
-					    WM8960_VREF);
-
-			/* Disable anti-pop features */
-			snd_soc_write(codec, WM8960_APOP1, WM8960_BUFIOEN);
-		}
-
-		/* Set VMID to 2x250k */
-		snd_soc_update_bits(codec, WM8960_POWER1, 0x180, 0x100);
-=======
 			snd_soc_component_update_bits(component, WM8960_POWER1, 0x80, 0x80);
 			msleep(100);
 
@@ -1221,33 +988,10 @@ static int wm8960_set_bias_level_out3(struct snd_soc_component *component,
 
 		/* Set VMID to 2x250k */
 		snd_soc_component_update_bits(component, WM8960_POWER1, 0x180, 0x100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SND_SOC_BIAS_OFF:
 		/* Enable anti-pop features */
-<<<<<<< HEAD
-		snd_soc_write(codec, WM8960_APOP1,
-			     WM8960_POBCTRL | WM8960_SOFT_ST |
-			     WM8960_BUFDCOPEN | WM8960_BUFIOEN);
-
-		/* Disable VMID and VREF, let them discharge */
-		snd_soc_write(codec, WM8960_POWER1, 0);
-		msleep(600);
-		break;
-	}
-
-	codec->dapm.bias_level = level;
-
-	return 0;
-}
-
-static int wm8960_set_bias_level_capless(struct snd_soc_codec *codec,
-					 enum snd_soc_bias_level level)
-{
-	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-	int reg;
-=======
 		snd_soc_component_write(component, WM8960_APOP1,
 			     WM8960_POBCTRL | WM8960_SOFT_ST |
 			     WM8960_BUFDCOPEN | WM8960_BUFIOEN);
@@ -1267,24 +1011,16 @@ static int wm8960_set_bias_level_capless(struct snd_soc_component *component,
 	struct wm8960_priv *wm8960 = snd_soc_component_get_drvdata(component);
 	u16 pm2 = snd_soc_component_read(component, WM8960_POWER2);
 	int reg, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
-<<<<<<< HEAD
-		switch (codec->dapm.bias_level) {
-		case SND_SOC_BIAS_STANDBY:
-			/* Enable anti pop mode */
-			snd_soc_update_bits(codec, WM8960_APOP1,
-=======
 		switch (snd_soc_component_get_bias_level(component)) {
 		case SND_SOC_BIAS_STANDBY:
 			/* Enable anti pop mode */
 			snd_soc_component_update_bits(component, WM8960_APOP1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8960_POBCTRL | WM8960_SOFT_ST |
 					    WM8960_BUFDCOPEN,
 					    WM8960_POBCTRL | WM8960_SOFT_ST |
@@ -1298,38 +1034,19 @@ static int wm8960_set_bias_level_capless(struct snd_soc_component *component,
 				reg |= WM8960_PWR2_ROUT1;
 			if (wm8960->out3 && wm8960->out3->power)
 				reg |= WM8960_PWR2_OUT3;
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM8960_POWER2,
-=======
 			snd_soc_component_update_bits(component, WM8960_POWER2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8960_PWR2_LOUT1 |
 					    WM8960_PWR2_ROUT1 |
 					    WM8960_PWR2_OUT3, reg);
 
 			/* Enable VMID at 2*50k */
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM8960_POWER1,
-=======
 			snd_soc_component_update_bits(component, WM8960_POWER1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8960_VMID_MASK, 0x80);
 
 			/* Ramp */
 			msleep(100);
 
 			/* Enable VREF */
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM8960_POWER1,
-					    WM8960_VREF, WM8960_VREF);
-
-			msleep(100);
-			break;
-
-		case SND_SOC_BIAS_ON:
-			/* Enable anti-pop mode */
-			snd_soc_update_bits(codec, WM8960_APOP1,
-=======
 			snd_soc_component_update_bits(component, WM8960_POWER1,
 					    WM8960_VREF, WM8960_VREF);
 
@@ -1364,27 +1081,18 @@ static int wm8960_set_bias_level_capless(struct snd_soc_component *component,
 
 			/* Enable anti-pop mode */
 			snd_soc_component_update_bits(component, WM8960_APOP1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8960_POBCTRL | WM8960_SOFT_ST |
 					    WM8960_BUFDCOPEN,
 					    WM8960_POBCTRL | WM8960_SOFT_ST |
 					    WM8960_BUFDCOPEN);
 
 			/* Disable VMID and VREF */
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM8960_POWER1,
-=======
 			snd_soc_component_update_bits(component, WM8960_POWER1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8960_VREF | WM8960_VMID_MASK, 0);
 			break;
 
 		case SND_SOC_BIAS_OFF:
-<<<<<<< HEAD
-			snd_soc_cache_sync(codec);
-=======
 			regcache_sync(wm8960->regmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			break;
@@ -1392,26 +1100,15 @@ static int wm8960_set_bias_level_capless(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
-<<<<<<< HEAD
-		switch (codec->dapm.bias_level) {
-		case SND_SOC_BIAS_PREPARE:
-			/* Disable HP discharge */
-			snd_soc_update_bits(codec, WM8960_APOP2,
-=======
 		switch (snd_soc_component_get_bias_level(component)) {
 		case SND_SOC_BIAS_PREPARE:
 			/* Disable HP discharge */
 			snd_soc_component_update_bits(component, WM8960_APOP2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8960_DISOP | WM8960_DRES_MASK,
 					    0);
 
 			/* Disable anti-pop features */
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM8960_APOP1,
-=======
 			snd_soc_component_update_bits(component, WM8960_APOP1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8960_POBCTRL | WM8960_SOFT_ST |
 					    WM8960_BUFDCOPEN,
 					    WM8960_POBCTRL | WM8960_SOFT_ST |
@@ -1427,11 +1124,6 @@ static int wm8960_set_bias_level_capless(struct snd_soc_component *component,
 		break;
 	}
 
-<<<<<<< HEAD
-	codec->dapm.bias_level = level;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1442,8 +1134,6 @@ struct _pll_div {
 	u32 k:24;
 };
 
-<<<<<<< HEAD
-=======
 static bool is_pll_freq_available(unsigned int source, unsigned int target)
 {
 	unsigned int Ndiv;
@@ -1466,7 +1156,6 @@ static bool is_pll_freq_available(unsigned int source, unsigned int target)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The size in bits of the pll divide multiplied by 10
  * to allow rounding later */
 #define FIXED_PLL_SIZE ((1 << 24) * 10)
@@ -1518,16 +1207,9 @@ static int pll_factors(unsigned int source, unsigned int target,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wm8960_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
-		int source, unsigned int freq_in, unsigned int freq_out)
-{
-	struct snd_soc_codec *codec = codec_dai->codec;
-=======
 static int wm8960_set_pll(struct snd_soc_component *component,
 		unsigned int freq_in, unsigned int freq_out)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 reg;
 	static struct _pll_div pll_div;
 	int ret;
@@ -1540,40 +1222,19 @@ static int wm8960_set_pll(struct snd_soc_component *component,
 
 	/* Disable the PLL: even if we are changing the frequency the
 	 * PLL needs to be disabled while we do so. */
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM8960_CLOCK1, 0x1, 0);
-	snd_soc_update_bits(codec, WM8960_POWER2, 0x1, 0);
-=======
 	snd_soc_component_update_bits(component, WM8960_CLOCK1, 0x1, 0);
 	snd_soc_component_update_bits(component, WM8960_POWER2, 0x1, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!freq_in || !freq_out)
 		return 0;
 
-<<<<<<< HEAD
-	reg = snd_soc_read(codec, WM8960_PLL1) & ~0x3f;
-=======
 	reg = snd_soc_component_read(component, WM8960_PLL1) & ~0x3f;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg |= pll_div.pre_div << 4;
 	reg |= pll_div.n;
 
 	if (pll_div.k) {
 		reg |= 0x20;
 
-<<<<<<< HEAD
-		snd_soc_write(codec, WM8960_PLL2, (pll_div.k >> 16) & 0xff);
-		snd_soc_write(codec, WM8960_PLL3, (pll_div.k >> 8) & 0xff);
-		snd_soc_write(codec, WM8960_PLL4, pll_div.k & 0xff);
-	}
-	snd_soc_write(codec, WM8960_PLL1, reg);
-
-	/* Turn it on */
-	snd_soc_update_bits(codec, WM8960_POWER2, 0x1, 0x1);
-	msleep(250);
-	snd_soc_update_bits(codec, WM8960_CLOCK1, 0x1, 0x1);
-=======
 		snd_soc_component_write(component, WM8960_PLL2, (pll_div.k >> 16) & 0xff);
 		snd_soc_component_write(component, WM8960_PLL3, (pll_div.k >> 8) & 0xff);
 		snd_soc_component_write(component, WM8960_PLL4, pll_div.k & 0xff);
@@ -1584,17 +1245,10 @@ static int wm8960_set_pll(struct snd_soc_component *component,
 	snd_soc_component_update_bits(component, WM8960_POWER2, 0x1, 0x1);
 	msleep(250);
 	snd_soc_component_update_bits(component, WM8960_CLOCK1, 0x1, 0x1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wm8960_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
-		int div_id, int div)
-{
-	struct snd_soc_codec *codec = codec_dai->codec;
-=======
 static int wm8960_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 		int source, unsigned int freq_in, unsigned int freq_out)
 {
@@ -1613,31 +1267,10 @@ static int wm8960_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 		int div_id, int div)
 {
 	struct snd_soc_component *component = codec_dai->component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 reg;
 
 	switch (div_id) {
 	case WM8960_SYSCLKDIV:
-<<<<<<< HEAD
-		reg = snd_soc_read(codec, WM8960_CLOCK1) & 0x1f9;
-		snd_soc_write(codec, WM8960_CLOCK1, reg | div);
-		break;
-	case WM8960_DACDIV:
-		reg = snd_soc_read(codec, WM8960_CLOCK1) & 0x1c7;
-		snd_soc_write(codec, WM8960_CLOCK1, reg | div);
-		break;
-	case WM8960_OPCLKDIV:
-		reg = snd_soc_read(codec, WM8960_PLL1) & 0x03f;
-		snd_soc_write(codec, WM8960_PLL1, reg | div);
-		break;
-	case WM8960_DCLKDIV:
-		reg = snd_soc_read(codec, WM8960_CLOCK2) & 0x03f;
-		snd_soc_write(codec, WM8960_CLOCK2, reg | div);
-		break;
-	case WM8960_TOCLKSEL:
-		reg = snd_soc_read(codec, WM8960_ADDCTL1) & 0x1fd;
-		snd_soc_write(codec, WM8960_ADDCTL1, reg | div);
-=======
 		reg = snd_soc_component_read(component, WM8960_CLOCK1) & 0x1f9;
 		snd_soc_component_write(component, WM8960_CLOCK1, reg | div);
 		break;
@@ -1656,7 +1289,6 @@ static int wm8960_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 	case WM8960_TOCLKSEL:
 		reg = snd_soc_component_read(component, WM8960_ADDCTL1) & 0x1fd;
 		snd_soc_component_write(component, WM8960_ADDCTL1, reg | div);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -1665,14 +1297,6 @@ static int wm8960_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wm8960_set_bias_level(struct snd_soc_codec *codec,
-				 enum snd_soc_bias_level level)
-{
-	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-
-	return wm8960->set_bias_level(codec, level);
-=======
 static int wm8960_set_bias_level(struct snd_soc_component *component,
 				 enum snd_soc_bias_level level)
 {
@@ -1706,23 +1330,12 @@ static int wm8960_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
 	wm8960->clk_id = clk_id;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define WM8960_RATES SNDRV_PCM_RATE_8000_48000
 
 #define WM8960_FORMATS \
 	(SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE | \
-<<<<<<< HEAD
-	SNDRV_PCM_FMTBIT_S24_LE)
-
-static const struct snd_soc_dai_ops wm8960_dai_ops = {
-	.hw_params = wm8960_hw_params,
-	.digital_mute = wm8960_mute,
-	.set_fmt = wm8960_set_dai_fmt,
-	.set_clkdiv = wm8960_set_dai_clkdiv,
-	.set_pll = wm8960_set_dai_pll,
-=======
 	SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
 
 static const struct snd_soc_dai_ops wm8960_dai_ops = {
@@ -1734,7 +1347,6 @@ static const struct snd_soc_dai_ops wm8960_dai_ops = {
 	.set_pll = wm8960_set_dai_pll,
 	.set_sysclk = wm8960_set_dai_sysclk,
 	.no_capture_mute = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver wm8960_dai = {
@@ -1752,76 +1364,6 @@ static struct snd_soc_dai_driver wm8960_dai = {
 		.rates = WM8960_RATES,
 		.formats = WM8960_FORMATS,},
 	.ops = &wm8960_dai_ops,
-<<<<<<< HEAD
-	.symmetric_rates = 1,
-};
-
-static int wm8960_suspend(struct snd_soc_codec *codec)
-{
-	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-
-	wm8960->set_bias_level(codec, SND_SOC_BIAS_OFF);
-	return 0;
-}
-
-static int wm8960_resume(struct snd_soc_codec *codec)
-{
-	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-
-	wm8960->set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-	return 0;
-}
-
-static int wm8960_probe(struct snd_soc_codec *codec)
-{
-	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-	struct wm8960_data *pdata = dev_get_platdata(codec->dev);
-	int ret;
-
-	wm8960->set_bias_level = wm8960_set_bias_level_out3;
-
-	if (!pdata) {
-		dev_warn(codec->dev, "No platform data supplied\n");
-	} else {
-		if (pdata->dres > WM8960_DRES_MAX) {
-			dev_err(codec->dev, "Invalid DRES: %d\n", pdata->dres);
-			pdata->dres = 0;
-		}
-
-		if (pdata->capless)
-			wm8960->set_bias_level = wm8960_set_bias_level_capless;
-	}
-
-	ret = snd_soc_codec_set_cache_io(codec, 7, 9, wm8960->control_type);
-	if (ret < 0) {
-		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
-		return ret;
-	}
-
-	ret = wm8960_reset(codec);
-	if (ret < 0) {
-		dev_err(codec->dev, "Failed to issue reset\n");
-		return ret;
-	}
-
-	wm8960->set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-
-	/* Latch the update bits */
-	snd_soc_update_bits(codec, WM8960_LINVOL, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8960_RINVOL, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8960_LADC, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8960_RADC, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8960_LDAC, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8960_RDAC, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8960_LOUT1, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8960_ROUT1, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8960_LOUT2, 0x100, 0x100);
-	snd_soc_update_bits(codec, WM8960_ROUT2, 0x100, 0x100);
-
-	snd_soc_add_codec_controls(codec, wm8960_snd_controls,
-				     ARRAY_SIZE(wm8960_snd_controls));
-	wm8960_add_widgets(codec);
-=======
 	.symmetric_rate = 1,
 };
 
@@ -1838,38 +1380,10 @@ static int wm8960_probe(struct snd_soc_component *component)
 	snd_soc_add_component_controls(component, wm8960_snd_controls,
 				     ARRAY_SIZE(wm8960_snd_controls));
 	wm8960_add_widgets(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* power down chip */
-static int wm8960_remove(struct snd_soc_codec *codec)
-{
-	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-
-	wm8960->set_bias_level(codec, SND_SOC_BIAS_OFF);
-	return 0;
-}
-
-static struct snd_soc_codec_driver soc_codec_dev_wm8960 = {
-	.probe =	wm8960_probe,
-	.remove =	wm8960_remove,
-	.suspend =	wm8960_suspend,
-	.resume =	wm8960_resume,
-	.set_bias_level = wm8960_set_bias_level,
-	.reg_cache_size = ARRAY_SIZE(wm8960_reg),
-	.reg_word_size = sizeof(u16),
-	.reg_cache_default = wm8960_reg,
-};
-
-static __devinit int wm8960_i2c_probe(struct i2c_client *i2c,
-				      const struct i2c_device_id *id)
-{
-	struct wm8960_priv *wm8960;
-	int ret;
-=======
 static const struct snd_soc_component_driver soc_component_dev_wm8960 = {
 	.probe			= wm8960_probe,
 	.set_bias_level		= wm8960_set_bias_level,
@@ -1916,28 +1430,12 @@ static int wm8960_i2c_probe(struct i2c_client *i2c)
 	unsigned int i;
 	int ret;
 	u8 val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm8960 = devm_kzalloc(&i2c->dev, sizeof(struct wm8960_priv),
 			      GFP_KERNEL);
 	if (wm8960 == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	i2c_set_clientdata(i2c, wm8960);
-	wm8960->control_type = SND_SOC_I2C;
-
-	ret = snd_soc_register_codec(&i2c->dev,
-			&soc_codec_dev_wm8960, &wm8960_dai, 1);
-
-	return ret;
-}
-
-static __devexit int wm8960_i2c_remove(struct i2c_client *client)
-{
-	snd_soc_unregister_codec(&client->dev);
-	return 0;
-=======
 	wm8960->mclk = devm_clk_get(&i2c->dev, "mclk");
 	if (IS_ERR(wm8960->mclk)) {
 		if (PTR_ERR(wm8960->mclk) == -EPROBE_DEFER)
@@ -2048,7 +1546,6 @@ static void wm8960_i2c_remove(struct i2c_client *client)
 	struct wm8960_priv *wm8960 = i2c_get_clientdata(client);
 
 	regulator_bulk_disable(ARRAY_SIZE(wm8960->supplies), wm8960->supplies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id wm8960_i2c_id[] = {
@@ -2057,35 +1554,6 @@ static const struct i2c_device_id wm8960_i2c_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, wm8960_i2c_id);
 
-<<<<<<< HEAD
-static struct i2c_driver wm8960_i2c_driver = {
-	.driver = {
-		.name = "wm8960",
-		.owner = THIS_MODULE,
-	},
-	.probe =    wm8960_i2c_probe,
-	.remove =   __devexit_p(wm8960_i2c_remove),
-	.id_table = wm8960_i2c_id,
-};
-
-static int __init wm8960_modinit(void)
-{
-	int ret = 0;
-	ret = i2c_add_driver(&wm8960_i2c_driver);
-	if (ret != 0) {
-		printk(KERN_ERR "Failed to register WM8960 I2C driver: %d\n",
-		       ret);
-	}
-	return ret;
-}
-module_init(wm8960_modinit);
-
-static void __exit wm8960_exit(void)
-{
-	i2c_del_driver(&wm8960_i2c_driver);
-}
-module_exit(wm8960_exit);
-=======
 #if defined(CONFIG_OF)
 static const struct of_device_id wm8960_of_match[] = {
        { .compatible = "wlf,wm8960", },
@@ -2115,7 +1583,6 @@ static struct i2c_driver wm8960_i2c_driver = {
 };
 
 module_i2c_driver(wm8960_i2c_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC WM8960 driver");
 MODULE_AUTHOR("Liam Girdwood");

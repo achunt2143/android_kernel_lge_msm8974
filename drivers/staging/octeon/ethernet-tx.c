@@ -1,35 +1,3 @@
-<<<<<<< HEAD
-/*********************************************************************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2010 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
-*********************************************************************/
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/netdevice.h>
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * This file is based on code from OCTEON SDK by Cavium Networks.
@@ -40,7 +8,6 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/etherdevice.h>
 #include <linux/ip.h>
 #include <linux/ratelimit.h>
@@ -53,24 +20,6 @@
 #endif /* CONFIG_XFRM */
 
 #include <linux/atomic.h>
-<<<<<<< HEAD
-
-#include <asm/octeon/octeon.h>
-
-#include "ethernet-defines.h"
-#include "octeon-ethernet.h"
-#include "ethernet-tx.h"
-#include "ethernet-util.h"
-
-#include <asm/octeon/cvmx-wqe.h>
-#include <asm/octeon/cvmx-fau.h>
-#include <asm/octeon/cvmx-pip.h>
-#include <asm/octeon/cvmx-pko.h>
-#include <asm/octeon/cvmx-helper.h>
-
-#include <asm/octeon/cvmx-gmxx-defs.h>
-
-=======
 #include <net/sch_generic.h>
 
 #include "octeon-ethernet.h"
@@ -78,18 +27,13 @@
 #include "ethernet-tx.h"
 #include "ethernet-util.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CVM_OCT_SKB_CB(skb)	((u64 *)((skb)->cb))
 
 /*
  * You can define GET_SKBUFF_QOS() to override how the skbuff output
  * function determines which output queue is used. The default
  * implementation always uses the base queue for the port. If, for
-<<<<<<< HEAD
- * example, you wanted to use the skb->priority fieid, define
-=======
  * example, you wanted to use the skb->priority field, define
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * GET_SKBUFF_QOS as: #define GET_SKBUFF_QOS(skb) ((skb)->priority)
  */
 #ifndef GET_SKBUFF_QOS
@@ -97,24 +41,11 @@
 #endif
 
 static void cvm_oct_tx_do_cleanup(unsigned long arg);
-<<<<<<< HEAD
-static DECLARE_TASKLET(cvm_oct_tx_cleanup_tasklet, cvm_oct_tx_do_cleanup, 0);
-=======
 static DECLARE_TASKLET_OLD(cvm_oct_tx_cleanup_tasklet, cvm_oct_tx_do_cleanup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Maximum number of SKBs to try to free per xmit packet. */
 #define MAX_SKB_TO_FREE (MAX_OUT_QUEUE_DEPTH * 2)
 
-<<<<<<< HEAD
-static inline int32_t cvm_oct_adjust_skb_to_free(int32_t skb_to_free, int fau)
-{
-	int32_t undo;
-	undo = skb_to_free > 0 ? MAX_SKB_TO_FREE : skb_to_free + MAX_SKB_TO_FREE;
-	if (undo > 0)
-		cvmx_fau_atomic_add32(fau, -undo);
-	skb_to_free = -skb_to_free > MAX_SKB_TO_FREE ? MAX_SKB_TO_FREE : -skb_to_free;
-=======
 static inline int cvm_oct_adjust_skb_to_free(int skb_to_free, int fau)
 {
 	int undo;
@@ -125,35 +56,23 @@ static inline int cvm_oct_adjust_skb_to_free(int skb_to_free, int fau)
 		cvmx_fau_atomic_add32(fau, -undo);
 	skb_to_free = -skb_to_free > MAX_SKB_TO_FREE ? MAX_SKB_TO_FREE :
 						       -skb_to_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return skb_to_free;
 }
 
 static void cvm_oct_kick_tx_poll_watchdog(void)
 {
 	union cvmx_ciu_timx ciu_timx;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ciu_timx.u64 = 0;
 	ciu_timx.s.one_shot = 1;
 	ciu_timx.s.len = cvm_oct_tx_poll_interval;
 	cvmx_write_csr(CVMX_CIU_TIMX(1), ciu_timx.u64);
 }
 
-<<<<<<< HEAD
-void cvm_oct_free_tx_skbs(struct net_device *dev)
-{
-	int32_t skb_to_free;
-	int qos, queues_per_port;
-	int total_freed = 0;
-=======
 static void cvm_oct_free_tx_skbs(struct net_device *dev)
 {
 	int skb_to_free;
 	int qos, queues_per_port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int total_remaining = 0;
 	unsigned long flags;
 	struct octeon_ethernet *priv = netdev_priv(dev);
@@ -163,18 +82,6 @@ static void cvm_oct_free_tx_skbs(struct net_device *dev)
 	for (qos = 0; qos < queues_per_port; qos++) {
 		if (skb_queue_len(&priv->tx_free_list[qos]) == 0)
 			continue;
-<<<<<<< HEAD
-		skb_to_free = cvmx_fau_fetch_and_add32(priv->fau+qos*4, MAX_SKB_TO_FREE);
-		skb_to_free = cvm_oct_adjust_skb_to_free(skb_to_free, priv->fau+qos*4);
-
-
-		total_freed += skb_to_free;
-		if (skb_to_free > 0) {
-			struct sk_buff *to_free_list = NULL;
-			spin_lock_irqsave(&priv->tx_free_list[qos].lock, flags);
-			while (skb_to_free > 0) {
-				struct sk_buff *t = __skb_dequeue(&priv->tx_free_list[qos]);
-=======
 		skb_to_free = cvmx_fau_fetch_and_add32(priv->fau + qos * 4,
 						       MAX_SKB_TO_FREE);
 		skb_to_free = cvm_oct_adjust_skb_to_free(skb_to_free,
@@ -187,35 +94,23 @@ static void cvm_oct_free_tx_skbs(struct net_device *dev)
 				struct sk_buff *t;
 
 				t = __skb_dequeue(&priv->tx_free_list[qos]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				t->next = to_free_list;
 				to_free_list = t;
 				skb_to_free--;
 			}
-<<<<<<< HEAD
-			spin_unlock_irqrestore(&priv->tx_free_list[qos].lock, flags);
-			/* Do the actual freeing outside of the lock. */
-			while (to_free_list) {
-				struct sk_buff *t = to_free_list;
-=======
 			spin_unlock_irqrestore(&priv->tx_free_list[qos].lock,
 					       flags);
 			/* Do the actual freeing outside of the lock. */
 			while (to_free_list) {
 				struct sk_buff *t = to_free_list;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				to_free_list = to_free_list->next;
 				dev_kfree_skb_any(t);
 			}
 		}
 		total_remaining += skb_queue_len(&priv->tx_free_list[qos]);
 	}
-<<<<<<< HEAD
-	if (total_freed >= 0 && netif_queue_stopped(dev))
-=======
 	if (total_remaining < MAX_OUT_QUEUE_DEPTH && netif_queue_stopped(dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_wake_queue(dev);
 	if (total_remaining)
 		cvm_oct_kick_tx_poll_watchdog();
@@ -228,33 +123,19 @@ static void cvm_oct_free_tx_skbs(struct net_device *dev)
  *
  * Returns Always returns NETDEV_TX_OK
  */
-<<<<<<< HEAD
-int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
-{
-	cvmx_pko_command_word0_t pko_command;
-	union cvmx_buf_ptr hw_buffer;
-	uint64_t old_scratch;
-	uint64_t old_scratch2;
-=======
 netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	union cvmx_pko_command_word0 pko_command;
 	union cvmx_buf_ptr hw_buffer;
 	u64 old_scratch;
 	u64 old_scratch2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int qos;
 	int i;
 	enum {QUEUE_CORE, QUEUE_HW, QUEUE_DROP} queue_type;
 	struct octeon_ethernet *priv = netdev_priv(dev);
 	struct sk_buff *to_free_list;
-<<<<<<< HEAD
-	int32_t skb_to_free;
-	int32_t buffers_to_free;
-=======
 	int skb_to_free;
 	int buffers_to_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 total_to_clean;
 	unsigned long flags;
 #if REUSE_SKBUFFS_WITHOUT_FREE
@@ -262,13 +143,8 @@ netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 #endif
 
 	/*
-<<<<<<< HEAD
-	 * Prefetch the private data structure.  It is larger that one
-	 * cache line.
-=======
 	 * Prefetch the private data structure.  It is larger than the
 	 * one cache line.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	prefetch(priv);
 
@@ -284,14 +160,9 @@ netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 			qos = 0;
 		else if (qos >= cvmx_pko_get_num_queues(priv->port))
 			qos = 0;
-<<<<<<< HEAD
-	} else
-		qos = 0;
-=======
 	} else {
 		qos = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (USE_ASYNC_IOBDMA) {
 		/* Save scratch in case userspace is using it */
@@ -319,17 +190,6 @@ netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 		if (unlikely(__skb_linearize(skb))) {
 			queue_type = QUEUE_DROP;
 			if (USE_ASYNC_IOBDMA) {
-<<<<<<< HEAD
-				/* Get the number of skbuffs in use by the hardware */
-				CVMX_SYNCIOBDMA;
-				skb_to_free = cvmx_scratch_read64(CVMX_SCR_SCRATCH);
-			} else {
-				/* Get the number of skbuffs in use by the hardware */
-				skb_to_free = cvmx_fau_fetch_and_add32(priv->fau + qos * 4,
-								       MAX_SKB_TO_FREE);
-			}
-			skb_to_free = cvm_oct_adjust_skb_to_free(skb_to_free, priv->fau + qos * 4);
-=======
 				/*
 				 * Get the number of skbuffs in use
 				 * by the hardware
@@ -350,7 +210,6 @@ netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 			skb_to_free = cvm_oct_adjust_skb_to_free(skb_to_free,
 								 priv->fau +
 								 qos * 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_lock_irqsave(&priv->tx_free_list[qos].lock, flags);
 			goto skip_xmit;
 		}
@@ -376,29 +235,19 @@ netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 			    cvmx_read_csr(CVMX_GMXX_PRTX_CFG(index, interface));
 			if (gmx_prt_cfg.s.duplex == 0) {
 				int add_bytes = 64 - skb->len;
-<<<<<<< HEAD
-				if ((skb_tail_pointer(skb) + add_bytes) <=
-				    skb_end_pointer(skb))
-					memset(__skb_put(skb, add_bytes), 0,
-					       add_bytes);
-=======
 
 				if ((skb_tail_pointer(skb) + add_bytes) <=
 				    skb_end_pointer(skb))
 					__skb_put_zero(skb, add_bytes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 
 	/* Build the PKO command */
 	pko_command.u64 = 0;
-<<<<<<< HEAD
-=======
 #ifdef __LITTLE_ENDIAN
 	pko_command.s.le = 1;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pko_command.s.n2 = 1;	/* Don't pollute L2 with the outgoing packet */
 	pko_command.s.segs = 1;
 	pko_command.s.total_bytes = skb->len;
@@ -410,31 +259,15 @@ netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 	/* Build the PKO buffer pointer */
 	hw_buffer.u64 = 0;
 	if (skb_shinfo(skb)->nr_frags == 0) {
-<<<<<<< HEAD
-		hw_buffer.s.addr = XKPHYS_TO_PHYS((u64)skb->data);
-		hw_buffer.s.pool = 0;
-		hw_buffer.s.size = skb->len;
-	} else {
-		hw_buffer.s.addr = XKPHYS_TO_PHYS((u64)skb->data);
-=======
 		hw_buffer.s.addr = XKPHYS_TO_PHYS((uintptr_t)skb->data);
 		hw_buffer.s.pool = 0;
 		hw_buffer.s.size = skb->len;
 	} else {
 		hw_buffer.s.addr = XKPHYS_TO_PHYS((uintptr_t)skb->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw_buffer.s.pool = 0;
 		hw_buffer.s.size = skb_headlen(skb);
 		CVM_OCT_SKB_CB(skb)[0] = hw_buffer.u64;
 		for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
-<<<<<<< HEAD
-			struct skb_frag_struct *fs = skb_shinfo(skb)->frags + i;
-			hw_buffer.s.addr = XKPHYS_TO_PHYS((u64)(page_address(fs->page.p) + fs->page_offset));
-			hw_buffer.s.size = fs->size;
-			CVM_OCT_SKB_CB(skb)[i + 1] = hw_buffer.u64;
-		}
-		hw_buffer.s.addr = XKPHYS_TO_PHYS((u64)CVM_OCT_SKB_CB(skb));
-=======
 			skb_frag_t *fs = skb_shinfo(skb)->frags + i;
 
 			hw_buffer.s.addr =
@@ -444,7 +277,6 @@ netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 		}
 		hw_buffer.s.addr =
 			XKPHYS_TO_PHYS((uintptr_t)CVM_OCT_SKB_CB(skb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw_buffer.s.size = skb_shinfo(skb)->nr_frags + 1;
 		pko_command.s.segs = skb_shinfo(skb)->nr_frags + 1;
 		pko_command.s.gather = 1;
@@ -455,13 +287,8 @@ netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 	 * See if we can put this skb in the FPA pool. Any strange
 	 * behavior from the Linux networking stack will most likely
 	 * be caused by a bug in the following code. If some field is
-<<<<<<< HEAD
-	 * in use by the network stack and get carried over when a
-	 * buffer is reused, bad thing may happen.  If in doubt and
-=======
 	 * in use by the network stack and gets carried over when a
 	 * buffer is reused, bad things may happen.  If in doubt and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * you dont need the absolute best performance, disable the
 	 * define REUSE_SKBUFFS_WITHOUT_FREE. The reuse of buffers has
 	 * shown a 25% increase in performance under some loads.
@@ -469,53 +296,11 @@ netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 #if REUSE_SKBUFFS_WITHOUT_FREE
 	fpa_head = skb->head + 256 - ((unsigned long)skb->head & 0x7f);
 	if (unlikely(skb->data < fpa_head)) {
-<<<<<<< HEAD
-		/*
-		 * printk("TX buffer beginning can't meet FPA
-		 * alignment constraints\n");
-		 */
-=======
 		/* TX buffer beginning can't meet FPA alignment constraints */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto dont_put_skbuff_in_hw;
 	}
 	if (unlikely
 	    ((skb_end_pointer(skb) - fpa_head) < CVMX_FPA_PACKET_POOL_SIZE)) {
-<<<<<<< HEAD
-		/*
-		   printk("TX buffer isn't large enough for the FPA\n");
-		 */
-		goto dont_put_skbuff_in_hw;
-	}
-	if (unlikely(skb_shared(skb))) {
-		/*
-		   printk("TX buffer sharing data with someone else\n");
-		 */
-		goto dont_put_skbuff_in_hw;
-	}
-	if (unlikely(skb_cloned(skb))) {
-		/*
-		   printk("TX buffer has been cloned\n");
-		 */
-		goto dont_put_skbuff_in_hw;
-	}
-	if (unlikely(skb_header_cloned(skb))) {
-		/*
-		   printk("TX buffer header has been cloned\n");
-		 */
-		goto dont_put_skbuff_in_hw;
-	}
-	if (unlikely(skb->destructor)) {
-		/*
-		   printk("TX buffer has a destructor\n");
-		 */
-		goto dont_put_skbuff_in_hw;
-	}
-	if (unlikely(skb_shinfo(skb)->nr_frags)) {
-		/*
-		   printk("TX buffer has fragments\n");
-		 */
-=======
 		/* TX buffer isn't large enough for the FPA */
 		goto dont_put_skbuff_in_hw;
 	}
@@ -537,19 +322,12 @@ netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 	if (unlikely(skb_shinfo(skb)->nr_frags)) {
 		/* TX buffer has fragments */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto dont_put_skbuff_in_hw;
 	}
 	if (unlikely
 	    (skb->truesize !=
 	     sizeof(*skb) + skb_end_offset(skb))) {
-<<<<<<< HEAD
-		/*
-		   printk("TX buffer truesize has been changed\n");
-		 */
-=======
 		/* TX buffer truesize has been changed */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto dont_put_skbuff_in_hw;
 	}
 
@@ -559,13 +337,9 @@ netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 	 */
 	pko_command.s.dontfree = 0;
 
-<<<<<<< HEAD
-	hw_buffer.s.back = ((unsigned long)skb->data >> 7) - ((unsigned long)fpa_head >> 7);
-=======
 	hw_buffer.s.back = ((unsigned long)skb->data >> 7) -
 			   ((unsigned long)fpa_head >> 7);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*(struct sk_buff **)(fpa_head - sizeof(void *)) = skb;
 
 	/*
@@ -574,41 +348,18 @@ netdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 	 */
 	dst_release(skb_dst(skb));
 	skb_dst_set(skb, NULL);
-<<<<<<< HEAD
-#ifdef CONFIG_XFRM
-	secpath_put(skb->sp);
-	skb->sp = NULL;
-#endif
-	nf_reset(skb);
-
-#ifdef CONFIG_NET_SCHED
-	skb->tc_index = 0;
-#ifdef CONFIG_NET_CLS_ACT
-	skb->tc_verd = 0;
-#endif /* CONFIG_NET_CLS_ACT */
-=======
 	skb_ext_reset(skb);
 	nf_reset_ct(skb);
 	skb_reset_redirect(skb);
 
 #ifdef CONFIG_NET_SCHED
 	skb->tc_index = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_NET_SCHED */
 #endif /* REUSE_SKBUFFS_WITHOUT_FREE */
 
 dont_put_skbuff_in_hw:
 
 	/* Check if we can use the hardware checksumming */
-<<<<<<< HEAD
-	if (USE_HW_TCPUDP_CHECKSUM && (skb->protocol == htons(ETH_P_IP)) &&
-	    (ip_hdr(skb)->version == 4) && (ip_hdr(skb)->ihl == 5) &&
-	    ((ip_hdr(skb)->frag_off == 0) || (ip_hdr(skb)->frag_off == 1 << 14))
-	    && ((ip_hdr(skb)->protocol == IPPROTO_TCP)
-		|| (ip_hdr(skb)->protocol == IPPROTO_UDP))) {
-		/* Use hardware checksum calc */
-		pko_command.s.ipoffp1 = sizeof(struct ethhdr) + 1;
-=======
 	if ((skb->protocol == htons(ETH_P_IP)) &&
 	    (ip_hdr(skb)->version == 4) &&
 	    (ip_hdr(skb)->ihl == 5) &&
@@ -618,7 +369,6 @@ dont_put_skbuff_in_hw:
 	     (ip_hdr(skb)->protocol == IPPROTO_UDP))) {
 		/* Use hardware checksum calc */
 		pko_command.s.ipoffp1 = skb_network_offset(skb) + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (USE_ASYNC_IOBDMA) {
@@ -634,12 +384,8 @@ dont_put_skbuff_in_hw:
 		    cvmx_fau_fetch_and_add32(FAU_NUM_PACKET_BUFFERS_TO_FREE, 0);
 	}
 
-<<<<<<< HEAD
-	skb_to_free = cvm_oct_adjust_skb_to_free(skb_to_free, priv->fau+qos*4);
-=======
 	skb_to_free = cvm_oct_adjust_skb_to_free(skb_to_free,
 						 priv->fau + qos * 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we're sending faster than the receive can free them then
@@ -650,33 +396,17 @@ dont_put_skbuff_in_hw:
 
 	if (pko_command.s.dontfree) {
 		queue_type = QUEUE_CORE;
-<<<<<<< HEAD
-		pko_command.s.reg0 = priv->fau+qos*4;
-=======
 		pko_command.s.reg0 = priv->fau + qos * 4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		queue_type = QUEUE_HW;
 	}
 	if (USE_ASYNC_IOBDMA)
-<<<<<<< HEAD
-		cvmx_fau_async_fetch_and_add32(CVMX_SCR_SCRATCH, FAU_TOTAL_TX_TO_CLEAN, 1);
-=======
 		cvmx_fau_async_fetch_and_add32(CVMX_SCR_SCRATCH,
 					       FAU_TOTAL_TX_TO_CLEAN, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&priv->tx_free_list[qos].lock, flags);
 
 	/* Drop this packet if we have too many already queued to the HW */
-<<<<<<< HEAD
-	if (unlikely(skb_queue_len(&priv->tx_free_list[qos]) >= MAX_OUT_QUEUE_DEPTH)) {
-		if (dev->tx_queue_len != 0) {
-			/* Drop the lock when notifying the core.  */
-			spin_unlock_irqrestore(&priv->tx_free_list[qos].lock, flags);
-			netif_stop_queue(dev);
-			spin_lock_irqsave(&priv->tx_free_list[qos].lock, flags);
-=======
 	if (unlikely(skb_queue_len(&priv->tx_free_list[qos]) >=
 		     MAX_OUT_QUEUE_DEPTH)) {
 		if (dev->tx_queue_len != 0) {
@@ -686,7 +416,6 @@ dont_put_skbuff_in_hw:
 			netif_stop_queue(dev);
 			spin_lock_irqsave(&priv->tx_free_list[qos].lock,
 					  flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* If not using normal queueing.  */
 			queue_type = QUEUE_DROP;
@@ -702,12 +431,8 @@ dont_put_skbuff_in_hw:
 						 priv->queue + qos,
 						 pko_command, hw_buffer,
 						 CVMX_PKO_LOCK_NONE))) {
-<<<<<<< HEAD
-		printk_ratelimited("%s: Failed to send the packet\n", dev->name);
-=======
 		printk_ratelimited("%s: Failed to send the packet\n",
 				   dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		queue_type = QUEUE_DROP;
 	}
 skip_xmit:
@@ -717,11 +442,7 @@ skip_xmit:
 	case QUEUE_DROP:
 		skb->next = to_free_list;
 		to_free_list = skb;
-<<<<<<< HEAD
-		priv->stats.tx_dropped++;
-=======
 		dev->stats.tx_dropped++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case QUEUE_HW:
 		cvmx_fau_atomic_add32(FAU_NUM_PACKET_BUFFERS_TO_FREE, -1);
@@ -735,10 +456,7 @@ skip_xmit:
 
 	while (skb_to_free > 0) {
 		struct sk_buff *t = __skb_dequeue(&priv->tx_free_list[qos]);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		t->next = to_free_list;
 		to_free_list = t;
 		skb_to_free--;
@@ -749,10 +467,7 @@ skip_xmit:
 	/* Do the actual freeing outside of the lock. */
 	while (to_free_list) {
 		struct sk_buff *t = to_free_list;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		to_free_list = to_free_list->next;
 		dev_kfree_skb_any(t);
 	}
@@ -764,12 +479,8 @@ skip_xmit:
 		cvmx_scratch_write64(CVMX_SCR_SCRATCH, old_scratch);
 		cvmx_scratch_write64(CVMX_SCR_SCRATCH + 8, old_scratch2);
 	} else {
-<<<<<<< HEAD
-		total_to_clean = cvmx_fau_fetch_and_add32(FAU_TOTAL_TX_TO_CLEAN, 1);
-=======
 		total_to_clean =
 			cvmx_fau_fetch_and_add32(FAU_TOTAL_TX_TO_CLEAN, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (total_to_clean & 0x3ff) {
@@ -791,30 +502,15 @@ skip_xmit:
  * cvm_oct_xmit_pow - transmit a packet to the POW
  * @skb:    Packet to send
  * @dev:    Device info structure
-<<<<<<< HEAD
-
- * Returns Always returns zero
- */
-int cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
-=======
  * Returns Always returns zero
  */
 netdev_tx_t cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct octeon_ethernet *priv = netdev_priv(dev);
 	void *packet_buffer;
 	void *copy_location;
 
 	/* Get a work queue entry */
-<<<<<<< HEAD
-	cvmx_wqe_t *work = cvmx_fpa_alloc(CVMX_FPA_WQE_POOL);
-	if (unlikely(work == NULL)) {
-		printk_ratelimited("%s: Failed to allocate a work "
-				   "queue entry\n", dev->name);
-		priv->stats.tx_dropped++;
-		dev_kfree_skb(skb);
-=======
 	struct cvmx_wqe *work = cvmx_fpa_alloc(CVMX_FPA_WQE_POOL);
 
 	if (unlikely(!work)) {
@@ -822,27 +518,17 @@ netdev_tx_t cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 				   dev->name);
 		dev->stats.tx_dropped++;
 		dev_kfree_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	/* Get a packet buffer */
 	packet_buffer = cvmx_fpa_alloc(CVMX_FPA_PACKET_POOL);
-<<<<<<< HEAD
-	if (unlikely(packet_buffer == NULL)) {
-		printk_ratelimited("%s: Failed to allocate a packet buffer\n",
-				   dev->name);
-		cvmx_fpa_free(work, CVMX_FPA_WQE_POOL, DONT_WRITEBACK(1));
-		priv->stats.tx_dropped++;
-		dev_kfree_skb(skb);
-=======
 	if (unlikely(!packet_buffer)) {
 		printk_ratelimited("%s: Failed to allocate a packet buffer\n",
 				   dev->name);
 		cvmx_fpa_free(work, CVMX_FPA_WQE_POOL, 1);
 		dev->stats.tx_dropped++;
 		dev_kfree_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -854,11 +540,7 @@ netdev_tx_t cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 	 * calculation may add a little extra, but that doesn't
 	 * hurt.
 	 */
-<<<<<<< HEAD
-	copy_location = packet_buffer + sizeof(uint64_t);
-=======
 	copy_location = packet_buffer + sizeof(u64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	copy_location += ((CVMX_HELPER_FIRST_MBUFF_SKIP + 7) & 0xfff8) + 6;
 
 	/*
@@ -873,15 +555,6 @@ netdev_tx_t cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 	 * Fill in some of the work queue fields. We may need to add
 	 * more if the software at the other end needs them.
 	 */
-<<<<<<< HEAD
-	work->hw_chksum = skb->csum;
-	work->len = skb->len;
-	work->ipprt = priv->port;
-	work->qos = priv->port & 0x7;
-	work->grp = pow_send_group;
-	work->tag_type = CVMX_HELPER_INPUT_TAG_TYPE;
-	work->tag = pow_send_group;	/* FIXME */
-=======
 	if (!OCTEON_IS_MODEL(OCTEON_CN68XX))
 		work->word0.pip.cn38xx.hw_chksum = skb->csum;
 	work->word1.len = skb->len;
@@ -890,7 +563,6 @@ netdev_tx_t cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 	cvmx_wqe_set_grp(work, pow_send_group);
 	work->word1.tag_type = CVMX_HELPER_INPUT_TAG_TYPE;
 	work->word1.tag = pow_send_group;	/* FIXME */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Default to zero. Sets of zero later are commented out */
 	work->word2.u64 = 0;
 	work->word2.s.bufs = 1;
@@ -909,13 +581,8 @@ netdev_tx_t cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 		work->word2.s.dec_ipcomp = 0;	/* FIXME */
 #endif
 		work->word2.s.tcp_or_udp =
-<<<<<<< HEAD
-		    (ip_hdr(skb)->protocol == IPPROTO_TCP)
-		    || (ip_hdr(skb)->protocol == IPPROTO_UDP);
-=======
 		    (ip_hdr(skb)->protocol == IPPROTO_TCP) ||
 		    (ip_hdr(skb)->protocol == IPPROTO_UDP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if 0
 		/* FIXME */
 		work->word2.s.dec_ipsec = 0;
@@ -926,15 +593,9 @@ netdev_tx_t cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 		/* No error, packet is internal */
 		work->word2.s.L4_error = 0;
 #endif
-<<<<<<< HEAD
-		work->word2.s.is_frag = !((ip_hdr(skb)->frag_off == 0)
-					  || (ip_hdr(skb)->frag_off ==
-					      1 << 14));
-=======
 		work->word2.s.is_frag = !((ip_hdr(skb)->frag_off == 0) ||
 					  (ip_hdr(skb)->frag_off ==
 					      cpu_to_be16(1 << 14)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if 0
 		/* Assume Linux is sending a good packet */
 		work->word2.s.IP_exc = 0;
@@ -981,19 +642,11 @@ netdev_tx_t cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	/* Submit the packet to the POW */
-<<<<<<< HEAD
-	cvmx_pow_work_submit(work, work->tag, work->tag_type, work->qos,
-			     work->grp);
-	priv->stats.tx_packets++;
-	priv->stats.tx_bytes += skb->len;
-	dev_kfree_skb(skb);
-=======
 	cvmx_pow_work_submit(work, work->word1.tag, work->word1.tag_type,
 			     cvmx_wqe_get_qos(work), cvmx_wqe_get_grp(work));
 	dev->stats.tx_packets++;
 	dev->stats.tx_bytes += skb->len;
 	dev_consume_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1024,10 +677,7 @@ static void cvm_oct_tx_do_cleanup(unsigned long arg)
 	for (port = 0; port < TOTAL_NUMBER_OF_PORTS; port++) {
 		if (cvm_oct_device[port]) {
 			struct net_device *dev = cvm_oct_device[port];
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cvm_oct_free_tx_skbs(dev);
 		}
 	}
@@ -1048,11 +698,7 @@ void cvm_oct_tx_initialize(void)
 
 	/* Disable the interrupt.  */
 	cvmx_write_csr(CVMX_CIU_TIMX(1), 0);
-<<<<<<< HEAD
-	/* Register an IRQ hander for to receive CIU_TIMX(1) interrupts */
-=======
 	/* Register an IRQ handler to receive CIU_TIMX(1) interrupts */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i = request_irq(OCTEON_IRQ_TIMER1,
 			cvm_oct_tx_cleanup_watchdog, 0,
 			"Ethernet", cvm_oct_device);

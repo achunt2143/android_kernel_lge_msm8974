@@ -11,13 +11,10 @@
  *
  * See the GNU General Public License for more details.
  */
-<<<<<<< HEAD
-=======
 
 struct llc_sap;
 struct sk_buff;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SAP component actions */
 #define SAP_ACT_UNITDATA_IND	1
 #define SAP_ACT_SEND_UI		2
@@ -32,19 +29,6 @@ struct sk_buff;
 /* All action functions must look like this */
 typedef int (*llc_sap_action_t)(struct llc_sap *sap, struct sk_buff *skb);
 
-<<<<<<< HEAD
-extern int llc_sap_action_unitdata_ind(struct llc_sap *sap,
-				       struct sk_buff *skb);
-extern int llc_sap_action_send_ui(struct llc_sap *sap, struct sk_buff *skb);
-extern int llc_sap_action_send_xid_c(struct llc_sap *sap, struct sk_buff *skb);
-extern int llc_sap_action_send_xid_r(struct llc_sap *sap, struct sk_buff *skb);
-extern int llc_sap_action_send_test_c(struct llc_sap *sap, struct sk_buff *skb);
-extern int llc_sap_action_send_test_r(struct llc_sap *sap, struct sk_buff *skb);
-extern int llc_sap_action_report_status(struct llc_sap *sap,
-					struct sk_buff *skb);
-extern int llc_sap_action_xid_ind(struct llc_sap *sap, struct sk_buff *skb);
-extern int llc_sap_action_test_ind(struct llc_sap *sap, struct sk_buff *skb);
-=======
 int llc_sap_action_unitdata_ind(struct llc_sap *sap, struct sk_buff *skb);
 int llc_sap_action_send_ui(struct llc_sap *sap, struct sk_buff *skb);
 int llc_sap_action_send_xid_c(struct llc_sap *sap, struct sk_buff *skb);
@@ -54,5 +38,4 @@ int llc_sap_action_send_test_r(struct llc_sap *sap, struct sk_buff *skb);
 int llc_sap_action_report_status(struct llc_sap *sap, struct sk_buff *skb);
 int llc_sap_action_xid_ind(struct llc_sap *sap, struct sk_buff *skb);
 int llc_sap_action_test_ind(struct llc_sap *sap, struct sk_buff *skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LLC_S_AC_H */

@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) International Business Machines Corp., 2006
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines Corp., 2006
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Artem Bityutskiy (Битюцкий Артём)
  */
 
@@ -30,11 +10,7 @@
 #include "ubi.h"
 
 /**
-<<<<<<< HEAD
- * calc_data_len - calculate how much real data is stored in a buffer.
-=======
  * ubi_calc_data_len - calculate how much real data is stored in a buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ubi: UBI device description object
  * @buf: a buffer with the contents of the physical eraseblock
  * @length: the buffer length
@@ -105,9 +81,6 @@ int ubi_check_volume(struct ubi_device *ubi, int vol_id)
 }
 
 /**
-<<<<<<< HEAD
- * ubi_calculate_rsvd_pool - calculate how many PEBs must be reserved for bad
-=======
  * ubi_update_reserved - update bad eraseblock handling accounting data.
  * @ubi: UBI device description object
  *
@@ -132,18 +105,11 @@ void ubi_update_reserved(struct ubi_device *ubi)
 
 /**
  * ubi_calculate_reserved - calculate how many PEBs must be reserved for bad
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * eraseblock handling.
  * @ubi: UBI device description object
  */
 void ubi_calculate_reserved(struct ubi_device *ubi)
 {
-<<<<<<< HEAD
-	ubi->beb_rsvd_level = ubi->good_peb_count/100;
-	ubi->beb_rsvd_level *= CONFIG_MTD_UBI_BEB_RESERVE;
-	if (ubi->beb_rsvd_level < MIN_RESEVED_PEBS)
-		ubi->beb_rsvd_level = MIN_RESEVED_PEBS;
-=======
 	/*
 	 * Calculate the actual number of PEBs currently needed to be reserved
 	 * for future bad eraseblock handling.
@@ -154,7 +120,6 @@ void ubi_calculate_reserved(struct ubi_device *ubi)
 		ubi_warn(ubi, "number of bad PEBs (%d) is above the expected limit (%d), not reserving any PEBs for bad PEB handling, will use available PEBs (if any)",
 			 ubi->bad_peb_count, ubi->bad_peb_limit);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -175,8 +140,6 @@ int ubi_check_pattern(const void *buf, uint8_t patt, int size)
 			return 0;
 	return 1;
 }
-<<<<<<< HEAD
-=======
 
 /* Normal UBI messages */
 void ubi_msg(const struct ubi_device *ubi, const char *fmt, ...)
@@ -226,4 +189,3 @@ void ubi_err(const struct ubi_device *ubi, const char *fmt, ...)
 	       ubi->ubi_num, __builtin_return_address(0), &vaf);
 	va_end(args);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

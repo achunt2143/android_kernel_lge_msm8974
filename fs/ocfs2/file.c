@@ -1,34 +1,10 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * file.c
  *
  * File open, close, extend, truncate
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/capability.h>
@@ -45,10 +21,7 @@
 #include <linux/falloc.h>
 #include <linux/quotaops.h>
 #include <linux/blkdev.h>
-<<<<<<< HEAD
-=======
 #include <linux/backing-dev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <cluster/masklog.h>
 
@@ -112,14 +85,6 @@ static int ocfs2_file_open(struct inode *inode, struct file *file)
 	struct ocfs2_inode_info *oi = OCFS2_I(inode);
 
 	trace_ocfs2_file_open(inode, file, file->f_path.dentry,
-<<<<<<< HEAD
-			      (unsigned long long)OCFS2_I(inode)->ip_blkno,
-			      file->f_path.dentry->d_name.len,
-			      file->f_path.dentry->d_name.name, mode);
-
-	if (file->f_mode & FMODE_WRITE)
-		dquot_initialize(inode);
-=======
 			      (unsigned long long)oi->ip_blkno,
 			      file->f_path.dentry->d_name.len,
 			      file->f_path.dentry->d_name.name, mode);
@@ -129,18 +94,13 @@ static int ocfs2_file_open(struct inode *inode, struct file *file)
 		if (status)
 			goto leave;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&oi->ip_lock);
 
 	/* Check that the inode hasn't been wiped from disk by another
 	 * node. If it hasn't then we're safe as long as we hold the
 	 * spin lock until our increment of open count. */
-<<<<<<< HEAD
-	if (OCFS2_I(inode)->ip_flags & OCFS2_INODE_DELETED) {
-=======
 	if (oi->ip_flags & OCFS2_INODE_DELETED) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&oi->ip_lock);
 
 		status = -ENOENT;
@@ -164,11 +124,8 @@ static int ocfs2_file_open(struct inode *inode, struct file *file)
 		spin_unlock(&oi->ip_lock);
 	}
 
-<<<<<<< HEAD
-=======
 	file->f_mode |= FMODE_NOWAIT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 leave:
 	return status;
 }
@@ -208,14 +165,6 @@ static int ocfs2_sync_file(struct file *file, loff_t start, loff_t end,
 			   int datasync)
 {
 	int err = 0;
-<<<<<<< HEAD
-	journal_t *journal;
-	struct inode *inode = file->f_mapping->host;
-	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
-
-	trace_ocfs2_sync_file(inode, file, file->f_path.dentry,
-			      OCFS2_I(inode)->ip_blkno,
-=======
 	struct inode *inode = file->f_mapping->host;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	struct ocfs2_inode_info *oi = OCFS2_I(inode);
@@ -226,40 +175,10 @@ static int ocfs2_sync_file(struct file *file, loff_t start, loff_t end,
 
 	trace_ocfs2_sync_file(inode, file, file->f_path.dentry,
 			      oi->ip_blkno,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      file->f_path.dentry->d_name.len,
 			      file->f_path.dentry->d_name.name,
 			      (unsigned long long)datasync);
 
-<<<<<<< HEAD
-	err = filemap_write_and_wait_range(inode->i_mapping, start, end);
-	if (err)
-		return err;
-
-	/*
-	 * Probably don't need the i_mutex at all in here, just putting it here
-	 * to be consistent with how fsync used to be called, someone more
-	 * familiar with the fs could possibly remove it.
-	 */
-	mutex_lock(&inode->i_mutex);
-	if (datasync && !(inode->i_state & I_DIRTY_DATASYNC)) {
-		/*
-		 * We still have to flush drive's caches to get data to the
-		 * platter
-		 */
-		if (osb->s_mount_opt & OCFS2_MOUNT_BARRIER)
-			blkdev_issue_flush(inode->i_sb->s_bdev, GFP_KERNEL, NULL);
-		goto bail;
-	}
-
-	journal = osb->journal->j_journal;
-	err = jbd2_journal_force_commit(journal);
-
-bail:
-	if (err)
-		mlog_errno(err);
-	mutex_unlock(&inode->i_mutex);
-=======
 	if (ocfs2_is_hard_readonly(osb) || ocfs2_is_soft_readonly(osb))
 		return -EROFS;
 
@@ -280,7 +199,6 @@ bail:
 
 	if (err)
 		mlog_errno(err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (err < 0) ? -EIO : 0;
 }
@@ -288,22 +206,14 @@ bail:
 int ocfs2_should_update_atime(struct inode *inode,
 			      struct vfsmount *vfsmnt)
 {
-<<<<<<< HEAD
-	struct timespec now;
-=======
 	struct timespec64 now;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
 	if (ocfs2_is_hard_readonly(osb) || ocfs2_is_soft_readonly(osb))
 		return 0;
 
 	if ((inode->i_flags & S_NOATIME) ||
-<<<<<<< HEAD
-	    ((inode->i_sb->s_flags & MS_NODIRATIME) && S_ISDIR(inode->i_mode)))
-=======
 	    ((inode->i_sb->s_flags & SB_NODIRATIME) && S_ISDIR(inode->i_mode)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/*
@@ -322,29 +232,19 @@ int ocfs2_should_update_atime(struct inode *inode,
 		return 0;
 
 	if (vfsmnt->mnt_flags & MNT_RELATIME) {
-<<<<<<< HEAD
-		if ((timespec_compare(&inode->i_atime, &inode->i_mtime) <= 0) ||
-		    (timespec_compare(&inode->i_atime, &inode->i_ctime) <= 0))
-=======
 		struct timespec64 ctime = inode_get_ctime(inode);
 		struct timespec64 atime = inode_get_atime(inode);
 		struct timespec64 mtime = inode_get_mtime(inode);
 
 		if ((timespec64_compare(&atime, &mtime) <= 0) ||
 		    (timespec64_compare(&atime, &ctime) <= 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 
 		return 0;
 	}
 
-<<<<<<< HEAD
-	now = CURRENT_TIME;
-	if ((now.tv_sec - inode->i_atime.tv_sec <= osb->s_atime_quantum))
-=======
 	now = current_time(inode);
 	if ((now.tv_sec - inode_get_atime_sec(inode) <= osb->s_atime_quantum))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	else
 		return 1;
@@ -374,18 +274,6 @@ int ocfs2_update_inode_atime(struct inode *inode,
 
 	/*
 	 * Don't use ocfs2_mark_inode_dirty() here as we don't always
-<<<<<<< HEAD
-	 * have i_mutex to guard against concurrent changes to other
-	 * inode fields.
-	 */
-	inode->i_atime = CURRENT_TIME;
-	di->i_atime = cpu_to_le64(inode->i_atime.tv_sec);
-	di->i_atime_nsec = cpu_to_le32(inode->i_atime.tv_nsec);
-	ocfs2_journal_dirty(handle, bh);
-
-out_commit:
-	ocfs2_commit_trans(OCFS2_SB(inode->i_sb), handle);
-=======
 	 * have i_rwsem to guard against concurrent changes to other
 	 * inode fields.
 	 */
@@ -397,16 +285,11 @@ out_commit:
 
 out_commit:
 	ocfs2_commit_trans(osb, handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int ocfs2_set_inode_size(handle_t *handle,
-=======
 int ocfs2_set_inode_size(handle_t *handle,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct inode *inode,
 				struct buffer_head *fe_bh,
 				u64 new_i_size)
@@ -415,11 +298,7 @@ int ocfs2_set_inode_size(handle_t *handle,
 
 	i_size_write(inode, new_i_size);
 	inode->i_blocks = ocfs2_inode_sector_count(inode);
-<<<<<<< HEAD
-	inode->i_ctime = inode->i_mtime = CURRENT_TIME;
-=======
 	inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = ocfs2_mark_inode_dirty(handle, inode, fe_bh);
 	if (status < 0) {
@@ -451,10 +330,7 @@ int ocfs2_simple_size_update(struct inode *inode,
 	if (ret < 0)
 		mlog_errno(ret);
 
-<<<<<<< HEAD
-=======
 	ocfs2_update_inode_fsync_trans(handle, inode, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_commit_trans(osb, handle);
 out:
 	return ret;
@@ -487,11 +363,7 @@ static int ocfs2_cow_file_pos(struct inode *inode,
 	if (!(ext_flags & OCFS2_EXT_REFCOUNTED))
 		goto out;
 
-<<<<<<< HEAD
-	return ocfs2_refcount_cow(inode, NULL, fe_bh, cpos, 1, cpos+1);
-=======
 	return ocfs2_refcount_cow(inode, fe_bh, cpos, 1, cpos+1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return status;
@@ -547,14 +419,6 @@ static int ocfs2_orphan_for_truncate(struct ocfs2_super *osb,
 	}
 
 	i_size_write(inode, new_i_size);
-<<<<<<< HEAD
-	inode->i_ctime = inode->i_mtime = CURRENT_TIME;
-
-	di = (struct ocfs2_dinode *) fe_bh->b_data;
-	di->i_size = cpu_to_le64(new_i_size);
-	di->i_ctime = di->i_mtime = cpu_to_le64(inode->i_ctime.tv_sec);
-	di->i_ctime_nsec = di->i_mtime_nsec = cpu_to_le32(inode->i_ctime.tv_nsec);
-=======
 	inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
 
 	di = (struct ocfs2_dinode *) fe_bh->b_data;
@@ -562,7 +426,6 @@ static int ocfs2_orphan_for_truncate(struct ocfs2_super *osb,
 	di->i_ctime = di->i_mtime = cpu_to_le64(inode_get_ctime_sec(inode));
 	di->i_ctime_nsec = di->i_mtime_nsec = cpu_to_le32(inode_get_ctime_nsec(inode));
 	ocfs2_update_inode_fsync_trans(handle, inode, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_journal_dirty(handle, fe_bh);
 
@@ -572,11 +435,7 @@ out:
 	return status;
 }
 
-<<<<<<< HEAD
-static int ocfs2_truncate_file(struct inode *inode,
-=======
 int ocfs2_truncate_file(struct inode *inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct buffer_head *di_bh,
 			       u64 new_i_size)
 {
@@ -609,14 +468,6 @@ int ocfs2_truncate_file(struct inode *inode,
 		goto bail;
 	}
 
-<<<<<<< HEAD
-	/* lets handle the simple truncate cases before doing any more
-	 * cluster locking. */
-	if (new_i_size == le64_to_cpu(fe->i_size))
-		goto bail;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	down_write(&OCFS2_I(inode)->ip_alloc_sem);
 
 	ocfs2_resv_discard(&osb->osb_la_resmap,
@@ -629,18 +480,11 @@ int ocfs2_truncate_file(struct inode *inode,
 	 * greater than page size, so we have to truncate them
 	 * anyway.
 	 */
-<<<<<<< HEAD
-	unmap_mapping_range(inode->i_mapping, new_i_size + PAGE_SIZE - 1, 0, 1);
-	truncate_inode_pages(inode->i_mapping, new_i_size);
-
-	if (OCFS2_I(inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL) {
-=======
 
 	if (OCFS2_I(inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL) {
 		unmap_mapping_range(inode->i_mapping,
 				    new_i_size + PAGE_SIZE - 1, 0, 1);
 		truncate_inode_pages(inode->i_mapping, new_i_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = ocfs2_truncate_inline(inode, di_bh, new_i_size,
 					       i_size_read(inode), 1);
 		if (status)
@@ -659,12 +503,9 @@ int ocfs2_truncate_file(struct inode *inode,
 		goto bail_unlock_sem;
 	}
 
-<<<<<<< HEAD
-=======
 	unmap_mapping_range(inode->i_mapping, new_i_size + PAGE_SIZE - 1, 0, 1);
 	truncate_inode_pages(inode->i_mapping, new_i_size);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = ocfs2_commit_truncate(osb, inode, di_bh);
 	if (status < 0) {
 		mlog_errno(status);
@@ -703,21 +544,6 @@ int ocfs2_add_inode_data(struct ocfs2_super *osb,
 			 struct ocfs2_alloc_context *meta_ac,
 			 enum ocfs2_alloc_restarted *reason_ret)
 {
-<<<<<<< HEAD
-	int ret;
-	struct ocfs2_extent_tree et;
-
-	ocfs2_init_dinode_extent_tree(&et, INODE_CACHE(inode), fe_bh);
-	ret = ocfs2_add_clusters_in_btree(handle, &et, logical_offset,
-					  clusters_to_add, mark_unwritten,
-					  data_ac, meta_ac, reason_ret);
-
-	return ret;
-}
-
-static int __ocfs2_extend_allocation(struct inode *inode, u32 logical_start,
-				     u32 clusters_to_add, int mark_unwritten)
-=======
 	struct ocfs2_extent_tree et;
 
 	ocfs2_init_dinode_extent_tree(&et, INODE_CACHE(inode), fe_bh);
@@ -728,7 +554,6 @@ static int __ocfs2_extend_allocation(struct inode *inode, u32 logical_start,
 
 static int ocfs2_extend_allocation(struct inode *inode, u32 logical_start,
 				   u32 clusters_to_add, int mark_unwritten)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = 0;
 	int restart_func = 0;
@@ -739,21 +564,13 @@ static int ocfs2_extend_allocation(struct inode *inode, u32 logical_start,
 	handle_t *handle = NULL;
 	struct ocfs2_alloc_context *data_ac = NULL;
 	struct ocfs2_alloc_context *meta_ac = NULL;
-<<<<<<< HEAD
-	enum ocfs2_alloc_restarted why;
-=======
 	enum ocfs2_alloc_restarted why = RESTART_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	struct ocfs2_extent_tree et;
 	int did_quota = 0;
 
 	/*
-<<<<<<< HEAD
-	 * This function only exists for file systems which don't
-=======
 	 * Unwritten extent only exists for file systems which
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * support holes.
 	 */
 	BUG_ON(mark_unwritten && !ocfs2_sparse_alloc(osb));
@@ -776,12 +593,7 @@ restart_all:
 		goto leave;
 	}
 
-<<<<<<< HEAD
-	credits = ocfs2_calc_extend_credits(osb->sb, &fe->id2.i_list,
-					    clusters_to_add);
-=======
 	credits = ocfs2_calc_extend_credits(osb->sb, &fe->id2.i_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	handle = ocfs2_start_trans(osb, credits);
 	if (IS_ERR(handle)) {
 		status = PTR_ERR(handle);
@@ -830,11 +642,7 @@ restarted_transaction:
 			mlog_errno(status);
 		goto leave;
 	}
-<<<<<<< HEAD
-
-=======
 	ocfs2_update_inode_fsync_trans(handle, inode, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_journal_dirty(handle, bh);
 
 	spin_lock(&OCFS2_I(inode)->ip_lock);
@@ -852,15 +660,7 @@ restarted_transaction:
 		} else {
 			BUG_ON(why != RESTART_TRANS);
 
-<<<<<<< HEAD
-			/* TODO: This can be more intelligent. */
-			credits = ocfs2_calc_extend_credits(osb->sb,
-							    &fe->id2.i_list,
-							    clusters_to_add);
-			status = ocfs2_extend_trans(handle, credits);
-=======
 			status = ocfs2_allocate_extend_trans(handle, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (status < 0) {
 				/* handle still has to be committed at
 				 * this point. */
@@ -908,14 +708,10 @@ leave:
  * While a write will already be ordering the data, a truncate will not.
  * Thus, we need to explicitly order the zeroed pages.
  */
-<<<<<<< HEAD
-static handle_t *ocfs2_zero_start_ordered_transaction(struct inode *inode)
-=======
 static handle_t *ocfs2_zero_start_ordered_transaction(struct inode *inode,
 						      struct buffer_head *di_bh,
 						      loff_t start_byte,
 						      loff_t length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	handle_t *handle = NULL;
@@ -931,11 +727,6 @@ static handle_t *ocfs2_zero_start_ordered_transaction(struct inode *inode,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ret = ocfs2_jbd2_file_inode(handle, inode);
-	if (ret < 0)
-		mlog_errno(ret);
-=======
 	ret = ocfs2_jbd2_inode_add_write(handle, inode, start_byte, length);
 	if (ret < 0) {
 		mlog_errno(ret);
@@ -947,7 +738,6 @@ static handle_t *ocfs2_zero_start_ordered_transaction(struct inode *inode,
 	if (ret)
 		mlog_errno(ret);
 	ocfs2_update_inode_fsync_trans(handle, inode, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	if (ret) {
@@ -962,21 +752,6 @@ out:
  * to be too fragile to do exactly what we need without us having to
  * worry about recursive locking in ->write_begin() and ->write_end(). */
 static int ocfs2_write_zero_page(struct inode *inode, u64 abs_from,
-<<<<<<< HEAD
-				 u64 abs_to)
-{
-	struct address_space *mapping = inode->i_mapping;
-	struct page *page;
-	unsigned long index = abs_from >> PAGE_CACHE_SHIFT;
-	handle_t *handle = NULL;
-	int ret = 0;
-	unsigned zero_from, zero_to, block_start, block_end;
-
-	BUG_ON(abs_from >= abs_to);
-	BUG_ON(abs_to > (((u64)index + 1) << PAGE_CACHE_SHIFT));
-	BUG_ON(abs_from & (inode->i_blkbits - 1));
-
-=======
 				 u64 abs_to, struct buffer_head *di_bh)
 {
 	struct address_space *mapping = inode->i_mapping;
@@ -999,21 +774,10 @@ static int ocfs2_write_zero_page(struct inode *inode, u64 abs_from,
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	page = find_or_create_page(mapping, index, GFP_NOFS);
 	if (!page) {
 		ret = -ENOMEM;
 		mlog_errno(ret);
-<<<<<<< HEAD
-		goto out;
-	}
-
-	/* Get the offsets within the page that we want to zero */
-	zero_from = abs_from & (PAGE_CACHE_SIZE - 1);
-	zero_to = abs_to & (PAGE_CACHE_SIZE - 1);
-	if (!zero_to)
-		zero_to = PAGE_CACHE_SIZE;
-=======
 		goto out_commit_trans;
 	}
 
@@ -1022,7 +786,6 @@ static int ocfs2_write_zero_page(struct inode *inode, u64 abs_from,
 	zero_to = abs_to & (PAGE_SIZE - 1);
 	if (!zero_to)
 		zero_to = PAGE_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_write_zero_page(
 			(unsigned long long)OCFS2_I(inode)->ip_blkno,
@@ -1033,11 +796,7 @@ static int ocfs2_write_zero_page(struct inode *inode, u64 abs_from,
 	/* We know that zero_from is block aligned */
 	for (block_start = zero_from; block_start < zero_to;
 	     block_start = block_end) {
-<<<<<<< HEAD
-		block_end = block_start + (1 << inode->i_blkbits);
-=======
 		block_end = block_start + i_blocksize(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * block_start is block-aligned.  Bump it by one to force
@@ -1051,32 +810,6 @@ static int ocfs2_write_zero_page(struct inode *inode, u64 abs_from,
 			goto out_unlock;
 		}
 
-<<<<<<< HEAD
-		if (!handle) {
-			handle = ocfs2_zero_start_ordered_transaction(inode);
-			if (IS_ERR(handle)) {
-				ret = PTR_ERR(handle);
-				handle = NULL;
-				break;
-			}
-		}
-
-		/* must not update i_size! */
-		ret = block_commit_write(page, block_start + 1,
-					 block_start + 1);
-		if (ret < 0)
-			mlog_errno(ret);
-		else
-			ret = 0;
-	}
-
-	if (handle)
-		ocfs2_commit_trans(OCFS2_SB(inode->i_sb), handle);
-
-out_unlock:
-	unlock_page(page);
-	page_cache_release(page);
-=======
 
 		/* must not update i_size! */
 		block_commit_write(page, block_start + 1, block_start + 1);
@@ -1105,7 +838,6 @@ out_unlock:
 out_commit_trans:
 	if (handle)
 		ocfs2_commit_trans(OCFS2_SB(inode->i_sb), handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
@@ -1176,11 +908,7 @@ static int ocfs2_zero_extend_get_range(struct inode *inode,
 		zero_clusters = last_cpos - zero_cpos;
 
 	if (needs_cow) {
-<<<<<<< HEAD
-		rc = ocfs2_refcount_cow(inode, NULL, di_bh, zero_cpos,
-=======
 		rc = ocfs2_refcount_cow(inode, di_bh, zero_cpos,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					zero_clusters, UINT_MAX);
 		if (rc) {
 			mlog_errno(rc);
@@ -1201,11 +929,7 @@ out:
  * has made sure that the entire range needs zeroing.
  */
 static int ocfs2_zero_extend_range(struct inode *inode, u64 range_start,
-<<<<<<< HEAD
-				   u64 range_end)
-=======
 				   u64 range_end, struct buffer_head *di_bh)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = 0;
 	u64 next_pos;
@@ -1218,17 +942,10 @@ static int ocfs2_zero_extend_range(struct inode *inode, u64 range_start,
 	BUG_ON(range_start >= range_end);
 
 	while (zero_pos < range_end) {
-<<<<<<< HEAD
-		next_pos = (zero_pos & PAGE_CACHE_MASK) + PAGE_CACHE_SIZE;
-		if (next_pos > range_end)
-			next_pos = range_end;
-		rc = ocfs2_write_zero_page(inode, zero_pos, next_pos);
-=======
 		next_pos = (zero_pos & PAGE_MASK) + PAGE_SIZE;
 		if (next_pos > range_end)
 			next_pos = range_end;
 		rc = ocfs2_write_zero_page(inode, zero_pos, next_pos, di_bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc < 0) {
 			mlog_errno(rc);
 			break;
@@ -1274,11 +991,7 @@ int ocfs2_zero_extend(struct inode *inode, struct buffer_head *di_bh,
 			range_end = zero_to_size;
 
 		ret = ocfs2_zero_extend_range(inode, range_start,
-<<<<<<< HEAD
-					      range_end);
-=======
 					      range_end, di_bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			mlog_errno(ret);
 			break;
@@ -1300,11 +1013,7 @@ int ocfs2_extend_no_holes(struct inode *inode, struct buffer_head *di_bh,
 	 * Only quota files call this without a bh, and they can't be
 	 * refcounted.
 	 */
-<<<<<<< HEAD
-	BUG_ON(!di_bh && (oi->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL));
-=======
 	BUG_ON(!di_bh && ocfs2_is_refcount_inode(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(!di_bh && !(oi->ip_flags & OCFS2_INODE_SYSTEM_FILE));
 
 	clusters_to_add = ocfs2_clusters_for_bytes(inode->i_sb, new_i_size);
@@ -1314,13 +1023,8 @@ int ocfs2_extend_no_holes(struct inode *inode, struct buffer_head *di_bh,
 		clusters_to_add -= oi->ip_clusters;
 
 	if (clusters_to_add) {
-<<<<<<< HEAD
-		ret = __ocfs2_extend_allocation(inode, oi->ip_clusters,
-						clusters_to_add, 0);
-=======
 		ret = ocfs2_extend_allocation(inode, oi->ip_clusters,
 					      clusters_to_add, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			mlog_errno(ret);
 			goto out;
@@ -1360,11 +1064,7 @@ static int ocfs2_extend_file(struct inode *inode,
 	/*
 	 * The alloc sem blocks people in read/write from reading our
 	 * allocation until we're done changing it. We depend on
-<<<<<<< HEAD
-	 * i_mutex to block other extend/truncate calls while we're
-=======
 	 * i_rwsem to block other extend/truncate calls while we're
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * here.  We even have to hold it for sparse files because there
 	 * might be some tail zeroing.
 	 */
@@ -1410,41 +1110,27 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-int ocfs2_setattr(struct dentry *dentry, struct iattr *attr)
-{
-	int status = 0, size_change;
-	struct inode *inode = dentry->d_inode;
-=======
 int ocfs2_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		  struct iattr *attr)
 {
 	int status = 0, size_change;
 	int inode_locked = 0;
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct super_block *sb = inode->i_sb;
 	struct ocfs2_super *osb = OCFS2_SB(sb);
 	struct buffer_head *bh = NULL;
 	handle_t *handle = NULL;
 	struct dquot *transfer_to[MAXQUOTAS] = { };
 	int qtype;
-<<<<<<< HEAD
-=======
 	int had_lock;
 	struct ocfs2_lock_holder oh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_setattr(inode, dentry,
 			    (unsigned long long)OCFS2_I(inode)->ip_blkno,
 			    dentry->d_name.len, dentry->d_name.name,
 			    attr->ia_valid, attr->ia_mode,
-<<<<<<< HEAD
-			    attr->ia_uid, attr->ia_gid);
-=======
 			    from_kuid(&init_user_ns, attr->ia_uid),
 			    from_kgid(&init_user_ns, attr->ia_gid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ensuring we don't even attempt to truncate a symlink */
 	if (S_ISLNK(inode->i_mode))
@@ -1455,16 +1141,6 @@ int ocfs2_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	if (!(attr->ia_valid & OCFS2_VALID_ATTRS))
 		return 0;
 
-<<<<<<< HEAD
-	status = inode_change_ok(inode, attr);
-	if (status)
-		return status;
-
-	if (is_quota_modification(inode, attr))
-		dquot_initialize(inode);
-	size_change = S_ISREG(inode->i_mode) && attr->ia_valid & ATTR_SIZE;
-	if (size_change) {
-=======
 	status = setattr_prepare(&nop_mnt_idmap, dentry, attr);
 	if (status)
 		return status;
@@ -1483,7 +1159,6 @@ int ocfs2_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		 */
 		inode_dio_wait(inode);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = ocfs2_rw_lock(inode, 1);
 		if (status < 0) {
 			mlog_errno(status);
@@ -1491,16 +1166,6 @@ int ocfs2_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		}
 	}
 
-<<<<<<< HEAD
-	status = ocfs2_inode_lock(inode, &bh, 1);
-	if (status < 0) {
-		if (status != -ENOENT)
-			mlog_errno(status);
-		goto bail_unlock_rw;
-	}
-
-	if (size_change && attr->ia_size != i_size_read(inode)) {
-=======
 	had_lock = ocfs2_inode_lock_tracker(inode, &bh, 1, &oh);
 	if (had_lock < 0) {
 		status = had_lock;
@@ -1529,18 +1194,11 @@ int ocfs2_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	inode_locked = 1;
 
 	if (size_change) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = inode_newsize_ok(inode, attr->ia_size);
 		if (status)
 			goto bail_unlock;
 
-<<<<<<< HEAD
-		inode_dio_wait(inode);
-
-		if (i_size_read(inode) > attr->ia_size) {
-=======
 		if (i_size_read(inode) >= attr->ia_size) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ocfs2_should_order_data(inode)) {
 				status = ocfs2_begin_ordered_truncate(inode,
 								      attr->ia_size);
@@ -1558,40 +1216,13 @@ int ocfs2_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		}
 	}
 
-<<<<<<< HEAD
-	if ((attr->ia_valid & ATTR_UID && attr->ia_uid != inode->i_uid) ||
-	    (attr->ia_valid & ATTR_GID && attr->ia_gid != inode->i_gid)) {
-=======
 	if ((attr->ia_valid & ATTR_UID && !uid_eq(attr->ia_uid, inode->i_uid)) ||
 	    (attr->ia_valid & ATTR_GID && !gid_eq(attr->ia_gid, inode->i_gid))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Gather pointers to quota structures so that allocation /
 		 * freeing of quota structures happens here and not inside
 		 * dquot_transfer() where we have problems with lock ordering
 		 */
-<<<<<<< HEAD
-		if (attr->ia_valid & ATTR_UID && attr->ia_uid != inode->i_uid
-		    && OCFS2_HAS_RO_COMPAT_FEATURE(sb,
-		    OCFS2_FEATURE_RO_COMPAT_USRQUOTA)) {
-			transfer_to[USRQUOTA] = dqget(sb, attr->ia_uid,
-						      USRQUOTA);
-			if (!transfer_to[USRQUOTA]) {
-				status = -ESRCH;
-				goto bail_unlock;
-			}
-		}
-		if (attr->ia_valid & ATTR_GID && attr->ia_gid != inode->i_gid
-		    && OCFS2_HAS_RO_COMPAT_FEATURE(sb,
-		    OCFS2_FEATURE_RO_COMPAT_GRPQUOTA)) {
-			transfer_to[GRPQUOTA] = dqget(sb, attr->ia_gid,
-						      GRPQUOTA);
-			if (!transfer_to[GRPQUOTA]) {
-				status = -ESRCH;
-				goto bail_unlock;
-			}
-		}
-=======
 		if (attr->ia_valid & ATTR_UID && !uid_eq(attr->ia_uid, inode->i_uid)
 		    && OCFS2_HAS_RO_COMPAT_FEATURE(sb,
 		    OCFS2_FEATURE_RO_COMPAT_USRQUOTA)) {
@@ -1613,61 +1244,27 @@ int ocfs2_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 			}
 		}
 		down_write(&OCFS2_I(inode)->ip_alloc_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		handle = ocfs2_start_trans(osb, OCFS2_INODE_UPDATE_CREDITS +
 					   2 * ocfs2_quota_trans_credits(sb));
 		if (IS_ERR(handle)) {
 			status = PTR_ERR(handle);
 			mlog_errno(status);
-<<<<<<< HEAD
-			goto bail_unlock;
-=======
 			goto bail_unlock_alloc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		status = __dquot_transfer(inode, transfer_to);
 		if (status < 0)
 			goto bail_commit;
 	} else {
-<<<<<<< HEAD
-=======
 		down_write(&OCFS2_I(inode)->ip_alloc_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		handle = ocfs2_start_trans(osb, OCFS2_INODE_UPDATE_CREDITS);
 		if (IS_ERR(handle)) {
 			status = PTR_ERR(handle);
 			mlog_errno(status);
-<<<<<<< HEAD
-			goto bail_unlock;
-		}
-	}
-
-	/*
-	 * This will intentionally not wind up calling truncate_setsize(),
-	 * since all the work for a size change has been done above.
-	 * Otherwise, we could get into problems with truncate as
-	 * ip_alloc_sem is used there to protect against i_size
-	 * changes.
-	 *
-	 * XXX: this means the conditional below can probably be removed.
-	 */
-	if ((attr->ia_valid & ATTR_SIZE) &&
-	    attr->ia_size != i_size_read(inode)) {
-		status = vmtruncate(inode, attr->ia_size);
-		if (status) {
-			mlog_errno(status);
-			goto bail_commit;
-		}
-	}
-
-	setattr_copy(inode, attr);
-=======
 			goto bail_unlock_alloc;
 		}
 	}
 
 	setattr_copy(&nop_mnt_idmap, inode, attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 
 	status = ocfs2_mark_inode_dirty(handle, inode, bh);
@@ -1676,10 +1273,6 @@ int ocfs2_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 
 bail_commit:
 	ocfs2_commit_trans(osb, handle);
-<<<<<<< HEAD
-bail_unlock:
-	ocfs2_inode_unlock(inode, 1);
-=======
 bail_unlock_alloc:
 	up_write(&OCFS2_I(inode)->ip_alloc_sem);
 bail_unlock:
@@ -1687,38 +1280,10 @@ bail_unlock:
 		ocfs2_inode_unlock_tracker(inode, 1, &oh, had_lock);
 		inode_locked = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bail_unlock_rw:
 	if (size_change)
 		ocfs2_rw_unlock(inode, 1);
 bail:
-<<<<<<< HEAD
-	brelse(bh);
-
-	/* Release quota pointers in case we acquired them */
-	for (qtype = 0; qtype < MAXQUOTAS; qtype++)
-		dqput(transfer_to[qtype]);
-
-	if (!status && attr->ia_valid & ATTR_MODE) {
-		status = ocfs2_acl_chmod(inode);
-		if (status < 0)
-			mlog_errno(status);
-	}
-
-	return status;
-}
-
-int ocfs2_getattr(struct vfsmount *mnt,
-		  struct dentry *dentry,
-		  struct kstat *stat)
-{
-	struct inode *inode = dentry->d_inode;
-	struct super_block *sb = dentry->d_inode->i_sb;
-	struct ocfs2_super *osb = sb->s_fs_info;
-	int err;
-
-	err = ocfs2_inode_revalidate(dentry);
-=======
 
 	/* Release quota pointers in case we acquired them */
 	for (qtype = 0; qtype < OCFS2_MAXQUOTAS; qtype++)
@@ -1745,16 +1310,12 @@ int ocfs2_getattr(struct mnt_idmap *idmap, const struct path *path,
 	int err;
 
 	err = ocfs2_inode_revalidate(path->dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		if (err != -ENOENT)
 			mlog_errno(err);
 		goto bail;
 	}
 
-<<<<<<< HEAD
-	generic_fillattr(inode, stat);
-=======
 	generic_fillattr(&nop_mnt_idmap, request_mask, inode, stat);
 	/*
 	 * If there is inline data in the inode, the inode will normally not
@@ -1764,7 +1325,6 @@ int ocfs2_getattr(struct mnt_idmap *idmap, const struct path *path,
 	 */
 	if (unlikely(OCFS2_I(inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL))
 		stat->blocks += (stat->size + 511)>>9;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We set the blksize from the cluster size for performance */
 	stat->blksize = osb->s_clustersize;
@@ -1773,33 +1333,15 @@ bail:
 	return err;
 }
 
-<<<<<<< HEAD
-int ocfs2_permission(struct inode *inode, int mask)
-{
-	int ret;
-=======
 int ocfs2_permission(struct mnt_idmap *idmap, struct inode *inode,
 		     int mask)
 {
 	int ret, had_lock;
 	struct ocfs2_lock_holder oh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mask & MAY_NOT_BLOCK)
 		return -ECHILD;
 
-<<<<<<< HEAD
-	ret = ocfs2_inode_lock(inode, NULL, 0);
-	if (ret) {
-		if (ret != -ENOENT)
-			mlog_errno(ret);
-		goto out;
-	}
-
-	ret = generic_permission(inode, mask);
-
-	ocfs2_inode_unlock(inode, 0);
-=======
 	had_lock = ocfs2_inode_lock_tracker(inode, NULL, 0, &oh);
 	if (had_lock < 0) {
 		ret = had_lock;
@@ -1820,7 +1362,6 @@ int ocfs2_permission(struct mnt_idmap *idmap, struct inode *inode,
 	ret = generic_permission(&nop_mnt_idmap, inode, mask);
 
 	ocfs2_inode_unlock_tracker(inode, 0, &oh, had_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
@@ -1857,10 +1398,7 @@ static int __ocfs2_write_remove_suid(struct inode *inode,
 
 	di = (struct ocfs2_dinode *) bh->b_data;
 	di->i_mode = cpu_to_le16(inode->i_mode);
-<<<<<<< HEAD
-=======
 	ocfs2_update_inode_fsync_trans(handle, inode, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_journal_dirty(handle, bh);
 
@@ -1870,47 +1408,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-/*
- * Will look for holes and unwritten extents in the range starting at
- * pos for count bytes (inclusive).
- */
-static int ocfs2_check_range_for_holes(struct inode *inode, loff_t pos,
-				       size_t count)
-{
-	int ret = 0;
-	unsigned int extent_flags;
-	u32 cpos, clusters, extent_len, phys_cpos;
-	struct super_block *sb = inode->i_sb;
-
-	cpos = pos >> OCFS2_SB(sb)->s_clustersize_bits;
-	clusters = ocfs2_clusters_for_bytes(sb, pos + count) - cpos;
-
-	while (clusters) {
-		ret = ocfs2_get_clusters(inode, cpos, &phys_cpos, &extent_len,
-					 &extent_flags);
-		if (ret < 0) {
-			mlog_errno(ret);
-			goto out;
-		}
-
-		if (phys_cpos == 0 || (extent_flags & OCFS2_EXT_UNWRITTEN)) {
-			ret = 1;
-			break;
-		}
-
-		if (extent_len > clusters)
-			extent_len = clusters;
-
-		clusters -= extent_len;
-		cpos += extent_len;
-	}
-out:
-	return ret;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ocfs2_write_remove_suid(struct inode *inode)
 {
 	int ret;
@@ -1992,11 +1489,7 @@ static int ocfs2_allocate_unwritten_extents(struct inode *inode,
 			goto next;
 		}
 
-<<<<<<< HEAD
-		ret = __ocfs2_extend_allocation(inode, cpos, alloc_size, 1);
-=======
 		ret = ocfs2_extend_allocation(inode, cpos, alloc_size, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			if (ret != -ENOSPC)
 				mlog_errno(ret);
@@ -2036,8 +1529,6 @@ static void ocfs2_truncate_cluster_pages(struct inode *inode, u64 byte_start,
 	}
 }
 
-<<<<<<< HEAD
-=======
 /*
  * zero out partial blocks of one cluster.
  *
@@ -2077,24 +1568,16 @@ static int ocfs2_zeroout_partial_cluster(struct inode *inode,
 	return sb_issue_zeroout(sb, p_block, nr_blocks, GFP_NOFS);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ocfs2_zero_partial_clusters(struct inode *inode,
 				       u64 start, u64 len)
 {
 	int ret = 0;
-<<<<<<< HEAD
-	u64 tmpend, end = start + len;
-	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
-	unsigned int csize = osb->s_clustersize;
-	handle_t *handle;
-=======
 	u64 tmpend = 0;
 	u64 end = start + len;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	unsigned int csize = osb->s_clustersize;
 	handle_t *handle;
 	loff_t isize = i_size_read(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The "start" and "end" values are NOT necessarily part of
@@ -2115,8 +1598,6 @@ static int ocfs2_zero_partial_clusters(struct inode *inode,
 	if ((start & (csize - 1)) == 0 && (end & (csize - 1)) == 0)
 		goto out;
 
-<<<<<<< HEAD
-=======
 	/* No page cache for EOF blocks, issue zero out to disk. */
 	if (end > isize) {
 		/*
@@ -2137,7 +1618,6 @@ static int ocfs2_zero_partial_clusters(struct inode *inode,
 			goto out;
 		end = isize;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	handle = ocfs2_start_trans(osb, OCFS2_INODE_UPDATE_CREDITS);
 	if (IS_ERR(handle)) {
 		ret = PTR_ERR(handle);
@@ -2146,20 +1626,6 @@ static int ocfs2_zero_partial_clusters(struct inode *inode,
 	}
 
 	/*
-<<<<<<< HEAD
-	 * We want to get the byte offset of the end of the 1st cluster.
-	 */
-	tmpend = (u64)osb->s_clustersize + (start & ~(osb->s_clustersize - 1));
-	if (tmpend > end)
-		tmpend = end;
-
-	trace_ocfs2_zero_partial_clusters_range1((unsigned long long)start,
-						 (unsigned long long)tmpend);
-
-	ret = ocfs2_zero_range_for_truncate(inode, handle, start, tmpend);
-	if (ret)
-		mlog_errno(ret);
-=======
 	 * If start is on a cluster boundary and end is somewhere in another
 	 * cluster, we have not COWed the cluster starting at start, unless
 	 * end is also within the same cluster. So, in this case, we skip this
@@ -2185,7 +1651,6 @@ static int ocfs2_zero_partial_clusters(struct inode *inode,
 		if (ret)
 			mlog_errno(ret);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tmpend < end) {
 		/*
@@ -2202,10 +1667,7 @@ static int ocfs2_zero_partial_clusters(struct inode *inode,
 		if (ret)
 			mlog_errno(ret);
 	}
-<<<<<<< HEAD
-=======
 	ocfs2_update_inode_fsync_trans(handle, inode, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_commit_trans(osb, handle);
 out:
@@ -2292,15 +1754,9 @@ static void ocfs2_calc_trunc_pos(struct inode *inode,
 	*done = ret;
 }
 
-<<<<<<< HEAD
-static int ocfs2_remove_inode_range(struct inode *inode,
-				    struct buffer_head *di_bh, u64 byte_start,
-				    u64 byte_len)
-=======
 int ocfs2_remove_inode_range(struct inode *inode,
 			     struct buffer_head *di_bh, u64 byte_start,
 			     u64 byte_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0, flags = 0, done = 0, i;
 	u32 trunc_start, trunc_len, trunc_end, trunc_cpos, phys_cpos;
@@ -2350,12 +1806,7 @@ int ocfs2_remove_inode_range(struct inode *inode,
 	 * within one cluster(means is not exactly aligned to clustersize).
 	 */
 
-<<<<<<< HEAD
-	if (OCFS2_I(inode)->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL) {
-
-=======
 	if (ocfs2_is_refcount_inode(inode)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ocfs2_cow_file_pos(inode, di_bh, byte_start);
 		if (ret) {
 			mlog_errno(ret);
@@ -2443,11 +1894,7 @@ int ocfs2_remove_inode_range(struct inode *inode,
 
 		ret = ocfs2_remove_btree_range(inode, &et, trunc_cpos,
 					       phys_cpos, trunc_len, flags,
-<<<<<<< HEAD
-					       &dealloc, refcount_loc);
-=======
 					       &dealloc, refcount_loc, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0) {
 			mlog_errno(ret);
 			goto out;
@@ -2461,10 +1908,7 @@ int ocfs2_remove_inode_range(struct inode *inode,
 	ocfs2_truncate_cluster_pages(inode, byte_start, byte_len);
 
 out:
-<<<<<<< HEAD
-=======
 	ocfs2_free_path(path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_schedule_truncate_log_flush(osb, 1);
 	ocfs2_run_deallocs(osb, &dealloc);
 
@@ -2481,11 +1925,7 @@ static int __ocfs2_change_file_space(struct file *file, struct inode *inode,
 {
 	int ret;
 	s64 llen;
-<<<<<<< HEAD
-	loff_t size;
-=======
 	loff_t size, orig_isize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	struct buffer_head *di_bh = NULL;
 	handle_t *handle;
@@ -2494,11 +1934,7 @@ static int __ocfs2_change_file_space(struct file *file, struct inode *inode,
 	if (ocfs2_is_hard_readonly(osb) || ocfs2_is_soft_readonly(osb))
 		return -EROFS;
 
-<<<<<<< HEAD
-	mutex_lock(&inode->i_mutex);
-=======
 	inode_lock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This prevents concurrent writes on other nodes
@@ -2546,23 +1982,15 @@ static int __ocfs2_change_file_space(struct file *file, struct inode *inode,
 	}
 	size = sr->l_start + sr->l_len;
 
-<<<<<<< HEAD
-	if (cmd == OCFS2_IOC_RESVSP || cmd == OCFS2_IOC_RESVSP64) {
-=======
 	if (cmd == OCFS2_IOC_RESVSP || cmd == OCFS2_IOC_RESVSP64 ||
 	    cmd == OCFS2_IOC_UNRESVSP || cmd == OCFS2_IOC_UNRESVSP64) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sr->l_len <= 0) {
 			ret = -EINVAL;
 			goto out_inode_unlock;
 		}
 	}
 
-<<<<<<< HEAD
-	if (file && should_remove_suid(file->f_path.dentry)) {
-=======
 	if (file && setattr_should_drop_suidgid(&nop_mnt_idmap, file_inode(file))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = __ocfs2_write_remove_suid(inode, di_bh);
 		if (ret) {
 			mlog_errno(ret);
@@ -2589,8 +2017,6 @@ static int __ocfs2_change_file_space(struct file *file, struct inode *inode,
 	default:
 		ret = -EINVAL;
 	}
-<<<<<<< HEAD
-=======
 
 	orig_isize = i_size_read(inode);
 	/* zeroout eof blocks in the cluster. */
@@ -2600,7 +2026,6 @@ static int __ocfs2_change_file_space(struct file *file, struct inode *inode,
 		if (!ret)
 			i_size_write(inode, size);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_write(&OCFS2_I(inode)->ip_alloc_sem);
 	if (ret) {
 		mlog_errno(ret);
@@ -2617,14 +2042,7 @@ static int __ocfs2_change_file_space(struct file *file, struct inode *inode,
 		goto out_inode_unlock;
 	}
 
-<<<<<<< HEAD
-	if (change_size && i_size_read(inode) < size)
-		i_size_write(inode, size);
-
-	inode->i_ctime = inode->i_mtime = CURRENT_TIME;
-=======
 	inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ocfs2_mark_inode_dirty(handle, inode, di_bh);
 	if (ret < 0)
 		mlog_errno(ret);
@@ -2641,25 +2059,16 @@ out_rw_unlock:
 	ocfs2_rw_unlock(inode, 1);
 
 out:
-<<<<<<< HEAD
-	mutex_unlock(&inode->i_mutex);
-=======
 	inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 int ocfs2_change_file_space(struct file *file, unsigned int cmd,
 			    struct ocfs2_space_resv *sr)
 {
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
-=======
 	struct inode *inode = file_inode(file);
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((cmd == OCFS2_IOC_RESVSP || cmd == OCFS2_IOC_RESVSP64) &&
 	    !ocfs2_writes_unwritten_extents(osb))
@@ -2674,44 +2083,29 @@ int ocfs2_change_file_space(struct file *file, unsigned int cmd,
 	if (!(file->f_mode & FMODE_WRITE))
 		return -EBADF;
 
-<<<<<<< HEAD
-	return __ocfs2_change_file_space(file, inode, file->f_pos, cmd, sr, 0);
-=======
 	ret = mnt_want_write_file(file);
 	if (ret)
 		return ret;
 	ret = __ocfs2_change_file_space(file, inode, file->f_pos, cmd, sr, 0);
 	mnt_drop_write_file(file);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static long ocfs2_fallocate(struct file *file, int mode, loff_t offset,
 			    loff_t len)
 {
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-=======
 	struct inode *inode = file_inode(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	struct ocfs2_space_resv sr;
 	int change_size = 1;
 	int cmd = OCFS2_IOC_RESVSP64;
-<<<<<<< HEAD
-=======
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mode & ~(FALLOC_FL_KEEP_SIZE | FALLOC_FL_PUNCH_HOLE))
 		return -EOPNOTSUPP;
 	if (!ocfs2_writes_unwritten_extents(osb))
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	if (mode & FALLOC_FL_KEEP_SIZE)
-		change_size = 0;
-=======
 	if (mode & FALLOC_FL_KEEP_SIZE) {
 		change_size = 0;
 	} else {
@@ -2719,7 +2113,6 @@ static long ocfs2_fallocate(struct file *file, int mode, loff_t offset,
 		if (ret)
 			return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mode & FALLOC_FL_PUNCH_HOLE)
 		cmd = OCFS2_IOC_UNRESVSP64;
@@ -2741,11 +2134,7 @@ int ocfs2_check_range_for_refcount(struct inode *inode, loff_t pos,
 	struct super_block *sb = inode->i_sb;
 
 	if (!ocfs2_refcount_tree(OCFS2_SB(inode->i_sb)) ||
-<<<<<<< HEAD
-	    !(OCFS2_I(inode)->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL) ||
-=======
 	    !ocfs2_is_refcount_inode(inode) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    OCFS2_I(inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL)
 		return 0;
 
@@ -2775,16 +2164,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void ocfs2_aiodio_wait(struct inode *inode)
-{
-	wait_queue_head_t *wq = ocfs2_ioend_wq(inode);
-
-	wait_event(*wq, (atomic_read(&OCFS2_I(inode)->ip_unaligned_aio) == 0));
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ocfs2_is_io_unaligned(struct inode *inode, size_t count, loff_t pos)
 {
 	int blockmask = inode->i_sb->s_blocksize - 1;
@@ -2795,46 +2174,6 @@ static int ocfs2_is_io_unaligned(struct inode *inode, size_t count, loff_t pos)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ocfs2_prepare_inode_for_refcount(struct inode *inode,
-					    struct file *file,
-					    loff_t pos, size_t count,
-					    int *meta_level)
-{
-	int ret;
-	struct buffer_head *di_bh = NULL;
-	u32 cpos = pos >> OCFS2_SB(inode->i_sb)->s_clustersize_bits;
-	u32 clusters =
-		ocfs2_clusters_for_bytes(inode->i_sb, pos + count) - cpos;
-
-	ret = ocfs2_inode_lock(inode, &di_bh, 1);
-	if (ret) {
-		mlog_errno(ret);
-		goto out;
-	}
-
-	*meta_level = 1;
-
-	ret = ocfs2_refcount_cow(inode, file, di_bh, cpos, clusters, UINT_MAX);
-	if (ret)
-		mlog_errno(ret);
-out:
-	brelse(di_bh);
-	return ret;
-}
-
-static int ocfs2_prepare_inode_for_write(struct file *file,
-					 loff_t *ppos,
-					 size_t count,
-					 int appending,
-					 int *direct_io,
-					 int *has_refcount)
-{
-	int ret = 0, meta_level = 0;
-	struct dentry *dentry = file->f_path.dentry;
-	struct inode *inode = dentry->d_inode;
-	loff_t saved_pos = 0, end;
-=======
 static int ocfs2_inode_lock_for_extent_tree(struct inode *inode,
 					    struct buffer_head **di_bh,
 					    int meta_level,
@@ -2904,22 +2243,12 @@ static int ocfs2_prepare_inode_for_write(struct file *file,
 	struct buffer_head *di_bh = NULL;
 	u32 cpos;
 	u32 clusters;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We start with a read level meta lock and only jump to an ex
 	 * if we need to make modifications here.
 	 */
 	for(;;) {
-<<<<<<< HEAD
-		ret = ocfs2_inode_lock(inode, NULL, meta_level);
-		if (ret < 0) {
-			meta_level = -1;
-			mlog_errno(ret);
-			goto out;
-		}
-
-=======
 		ret = ocfs2_inode_lock_for_extent_tree(inode,
 						       &di_bh,
 						       meta_level,
@@ -2946,7 +2275,6 @@ static int ocfs2_prepare_inode_for_write(struct file *file,
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Clear suid / sgid if necessary. We do this here
 		 * instead of later in the write path because
 		 * remove_suid() calls ->setattr without any hint that
@@ -2956,18 +2284,12 @@ static int ocfs2_prepare_inode_for_write(struct file *file,
 		 * inode. There's also the dinode i_size state which
 		 * can be lost via setattr during extending writes (we
 		 * set inode->i_size at the end of a write. */
-<<<<<<< HEAD
-		if (should_remove_suid(dentry)) {
-			if (meta_level == 0) {
-				ocfs2_inode_unlock(inode, meta_level);
-=======
 		if (setattr_should_drop_suidgid(&nop_mnt_idmap, inode)) {
 			if (meta_level == 0) {
 				ocfs2_inode_unlock_for_extent_tree(inode,
 								   &di_bh,
 								   meta_level,
 								   write_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				meta_level = 1;
 				continue;
 			}
@@ -2979,90 +2301,6 @@ static int ocfs2_prepare_inode_for_write(struct file *file,
 			}
 		}
 
-<<<<<<< HEAD
-		/* work on a copy of ppos until we're sure that we won't have
-		 * to recalculate it due to relocking. */
-		if (appending)
-			saved_pos = i_size_read(inode);
-		else
-			saved_pos = *ppos;
-
-		end = saved_pos + count;
-
-		ret = ocfs2_check_range_for_refcount(inode, saved_pos, count);
-		if (ret == 1) {
-			ocfs2_inode_unlock(inode, meta_level);
-			meta_level = -1;
-
-			ret = ocfs2_prepare_inode_for_refcount(inode,
-							       file,
-							       saved_pos,
-							       count,
-							       &meta_level);
-			if (has_refcount)
-				*has_refcount = 1;
-			if (direct_io)
-				*direct_io = 0;
-		}
-
-		if (ret < 0) {
-			mlog_errno(ret);
-			goto out_unlock;
-		}
-
-		/*
-		 * Skip the O_DIRECT checks if we don't need
-		 * them.
-		 */
-		if (!direct_io || !(*direct_io))
-			break;
-
-		/*
-		 * There's no sane way to do direct writes to an inode
-		 * with inline data.
-		 */
-		if (OCFS2_I(inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL) {
-			*direct_io = 0;
-			break;
-		}
-
-		/*
-		 * Allowing concurrent direct writes means
-		 * i_size changes wouldn't be synchronized, so
-		 * one node could wind up truncating another
-		 * nodes writes.
-		 */
-		if (end > i_size_read(inode)) {
-			*direct_io = 0;
-			break;
-		}
-
-		/*
-		 * We don't fill holes during direct io, so
-		 * check for them here. If any are found, the
-		 * caller will have to retake some cluster
-		 * locks and initiate the io as buffered.
-		 */
-		ret = ocfs2_check_range_for_holes(inode, saved_pos, count);
-		if (ret == 1) {
-			*direct_io = 0;
-			ret = 0;
-		} else if (ret < 0)
-			mlog_errno(ret);
-		break;
-	}
-
-	if (appending)
-		*ppos = saved_pos;
-
-out_unlock:
-	trace_ocfs2_prepare_inode_for_write(OCFS2_I(inode)->ip_blkno,
-					    saved_pos, appending, count,
-					    direct_io, has_refcount);
-
-	if (meta_level >= 0)
-		ocfs2_inode_unlock(inode, meta_level);
-=======
 		ret = ocfs2_check_range_for_refcount(inode, pos, count);
 		if (ret == 1) {
 			ocfs2_inode_unlock_for_extent_tree(inode,
@@ -3105,58 +2343,11 @@ out_unlock:
 					   &di_bh,
 					   meta_level,
 					   write_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static ssize_t ocfs2_file_aio_write(struct kiocb *iocb,
-				    const struct iovec *iov,
-				    unsigned long nr_segs,
-				    loff_t pos)
-{
-	int ret, direct_io, appending, rw_level, have_alloc_sem  = 0;
-	int can_do_direct, has_refcount = 0;
-	ssize_t written = 0;
-	size_t ocount;		/* original count */
-	size_t count;		/* after file limit checks */
-	loff_t old_size, *ppos = &iocb->ki_pos;
-	u32 old_clusters;
-	struct file *file = iocb->ki_filp;
-	struct inode *inode = file->f_path.dentry->d_inode;
-	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
-	int full_coherency = !(osb->s_mount_opt &
-			       OCFS2_MOUNT_COHERENCY_BUFFERED);
-	int unaligned_dio = 0;
-
-	trace_ocfs2_file_aio_write(inode, file, file->f_path.dentry,
-		(unsigned long long)OCFS2_I(inode)->ip_blkno,
-		file->f_path.dentry->d_name.len,
-		file->f_path.dentry->d_name.name,
-		(unsigned int)nr_segs);
-
-	if (iocb->ki_left == 0)
-		return 0;
-
-	vfs_check_frozen(inode->i_sb, SB_FREEZE_WRITE);
-
-	appending = file->f_flags & O_APPEND ? 1 : 0;
-	direct_io = file->f_flags & O_DIRECT ? 1 : 0;
-
-	mutex_lock(&inode->i_mutex);
-
-	ocfs2_iocb_clear_sem_locked(iocb);
-
-relock:
-	/* to match setattr's i_mutex -> rw_lock ordering */
-	if (direct_io) {
-		have_alloc_sem = 1;
-		/* communicate with ocfs2_dio_end_io */
-		ocfs2_iocb_set_sem_locked(iocb);
-	}
-=======
 static ssize_t ocfs2_file_write_iter(struct kiocb *iocb,
 				    struct iov_iter *from)
 {
@@ -3192,20 +2383,10 @@ static ssize_t ocfs2_file_write_iter(struct kiocb *iocb,
 			return -EAGAIN;
 	} else
 		inode_lock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Concurrent O_DIRECT writes are allowed with
 	 * mount_option "coherency=buffered".
-<<<<<<< HEAD
-	 */
-	rw_level = (!direct_io || full_coherency);
-
-	ret = ocfs2_rw_lock(inode, rw_level);
-	if (ret < 0) {
-		mlog_errno(ret);
-		goto out_sems;
-=======
 	 * For append write, we must take rw EX.
 	 */
 	rw_level = (!direct_io || full_coherency || append_write);
@@ -3218,7 +2399,6 @@ static ssize_t ocfs2_file_write_iter(struct kiocb *iocb,
 		if (ret != -EAGAIN)
 			mlog_errno(ret);
 		goto out_mutex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -3231,12 +2411,6 @@ static ssize_t ocfs2_file_write_iter(struct kiocb *iocb,
 		 * other nodes to drop their caches.  Buffered I/O
 		 * already does this in write_begin().
 		 */
-<<<<<<< HEAD
-		ret = ocfs2_inode_lock(inode, NULL, 1);
-		if (ret < 0) {
-			mlog_errno(ret);
-			goto out_sems;
-=======
 		if (nowait)
 			ret = ocfs2_try_inode_lock(inode, NULL, 1);
 		else
@@ -3245,97 +2419,11 @@ static ssize_t ocfs2_file_write_iter(struct kiocb *iocb,
 			if (ret != -EAGAIN)
 				mlog_errno(ret);
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		ocfs2_inode_unlock(inode, 1);
 	}
 
-<<<<<<< HEAD
-	can_do_direct = direct_io;
-	ret = ocfs2_prepare_inode_for_write(file, ppos,
-					    iocb->ki_left, appending,
-					    &can_do_direct, &has_refcount);
-	if (ret < 0) {
-		mlog_errno(ret);
-		goto out;
-	}
-
-	if (direct_io && !is_sync_kiocb(iocb))
-		unaligned_dio = ocfs2_is_io_unaligned(inode, iocb->ki_left,
-						      *ppos);
-
-	/*
-	 * We can't complete the direct I/O as requested, fall back to
-	 * buffered I/O.
-	 */
-	if (direct_io && !can_do_direct) {
-		ocfs2_rw_unlock(inode, rw_level);
-
-		have_alloc_sem = 0;
-		rw_level = -1;
-
-		direct_io = 0;
-		goto relock;
-	}
-
-	if (unaligned_dio) {
-		/*
-		 * Wait on previous unaligned aio to complete before
-		 * proceeding.
-		 */
-		ocfs2_aiodio_wait(inode);
-
-		/* Mark the iocb as needing a decrement in ocfs2_dio_end_io */
-		atomic_inc(&OCFS2_I(inode)->ip_unaligned_aio);
-		ocfs2_iocb_set_unaligned_aio(iocb);
-	}
-
-	/*
-	 * To later detect whether a journal commit for sync writes is
-	 * necessary, we sample i_size, and cluster count here.
-	 */
-	old_size = i_size_read(inode);
-	old_clusters = OCFS2_I(inode)->ip_clusters;
-
-	/* communicate with ocfs2_dio_end_io */
-	ocfs2_iocb_set_rw_locked(iocb, rw_level);
-
-	ret = generic_segment_checks(iov, &nr_segs, &ocount,
-				     VERIFY_READ);
-	if (ret)
-		goto out_dio;
-
-	count = ocount;
-	ret = generic_write_checks(file, ppos, &count,
-				   S_ISBLK(inode->i_mode));
-	if (ret)
-		goto out_dio;
-
-	if (direct_io) {
-		written = generic_file_direct_write(iocb, iov, &nr_segs, *ppos,
-						    ppos, count, ocount);
-		if (written < 0) {
-			ret = written;
-			goto out_dio;
-		}
-	} else {
-		current->backing_dev_info = file->f_mapping->backing_dev_info;
-		written = generic_file_buffered_write(iocb, iov, nr_segs, *ppos,
-						      ppos, count, 0);
-		current->backing_dev_info = NULL;
-	}
-
-out_dio:
-	/* buffered aio wouldn't have proper lock coverage today */
-	BUG_ON(ret == -EIOCBQUEUED && !(file->f_flags & O_DIRECT));
-
-	if (unlikely(written <= 0))
-		goto no_sync;
-
-	if (((file->f_flags & O_DSYNC) && !direct_io) || IS_SYNC(inode) ||
-	    ((file->f_flags & O_DIRECT) && !direct_io)) {
-=======
 	ret = generic_write_checks(iocb, from);
 	if (ret <= 0) {
 		if (ret)
@@ -3384,20 +2472,13 @@ out_dio:
 
 	if (((file->f_flags & O_DSYNC) && !direct_io) ||
 	    IS_SYNC(inode)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = filemap_fdatawrite_range(file->f_mapping,
 					       iocb->ki_pos - written,
 					       iocb->ki_pos - 1);
 		if (ret < 0)
 			written = ret;
 
-<<<<<<< HEAD
-		if (!ret && ((old_size != i_size_read(inode)) ||
-			     (old_clusters != OCFS2_I(inode)->ip_clusters) ||
-			     has_refcount)) {
-=======
 		if (!ret) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = jbd2_journal_force_commit(osb->journal->j_journal);
 			if (ret < 0)
 				written = ret;
@@ -3409,38 +2490,6 @@ out_dio:
 						      iocb->ki_pos - 1);
 	}
 
-<<<<<<< HEAD
-no_sync:
-	/*
-	 * deep in g_f_a_w_n()->ocfs2_direct_IO we pass in a ocfs2_dio_end_io
-	 * function pointer which is called when o_direct io completes so that
-	 * it can unlock our rw lock.
-	 * Unfortunately there are error cases which call end_io and others
-	 * that don't.  so we don't have to unlock the rw_lock if either an
-	 * async dio is going to do it in the future or an end_io after an
-	 * error has already done it.
-	 */
-	if ((ret == -EIOCBQUEUED) || (!ocfs2_iocb_is_rw_locked(iocb))) {
-		rw_level = -1;
-		have_alloc_sem = 0;
-		unaligned_dio = 0;
-	}
-
-	if (unaligned_dio) {
-		ocfs2_iocb_clear_unaligned_aio(iocb);
-		atomic_dec(&OCFS2_I(inode)->ip_unaligned_aio);
-	}
-
-out:
-	if (rw_level != -1)
-		ocfs2_rw_unlock(inode, rw_level);
-
-out_sems:
-	if (have_alloc_sem)
-		ocfs2_iocb_clear_sem_locked(iocb);
-
-	mutex_unlock(&inode->i_mutex);
-=======
 out:
 	if (saved_ki_complete)
 		xchg(&iocb->ki_complete, saved_ki_complete);
@@ -3450,145 +2499,12 @@ out:
 
 out_mutex:
 	inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (written)
 		ret = written;
 	return ret;
 }
 
-<<<<<<< HEAD
-static int ocfs2_splice_to_file(struct pipe_inode_info *pipe,
-				struct file *out,
-				struct splice_desc *sd)
-{
-	int ret;
-
-	ret = ocfs2_prepare_inode_for_write(out, &sd->pos,
-					    sd->total_len, 0, NULL, NULL);
-	if (ret < 0) {
-		mlog_errno(ret);
-		return ret;
-	}
-
-	return splice_from_pipe_feed(pipe, sd, pipe_to_file);
-}
-
-static ssize_t ocfs2_file_splice_write(struct pipe_inode_info *pipe,
-				       struct file *out,
-				       loff_t *ppos,
-				       size_t len,
-				       unsigned int flags)
-{
-	int ret;
-	struct address_space *mapping = out->f_mapping;
-	struct inode *inode = mapping->host;
-	struct splice_desc sd = {
-		.flags = flags,
-		.u.file = out,
-	};
-
-
-	trace_ocfs2_file_splice_write(inode, out, out->f_path.dentry,
-			(unsigned long long)OCFS2_I(inode)->ip_blkno,
-			out->f_path.dentry->d_name.len,
-			out->f_path.dentry->d_name.name, len);
-
-	ret = generic_write_checks(out, ppos, &len, 0);
-	if (ret)
-		return ret;
-	sd.total_len = len;
-	sd.pos = *ppos;
-
-	if (pipe->inode)
-		mutex_lock_nested(&pipe->inode->i_mutex, I_MUTEX_PARENT);
-
-	splice_from_pipe_begin(&sd);
-	do {
-		ret = splice_from_pipe_next(pipe, &sd);
-		if (ret <= 0)
-			break;
-
-		mutex_lock_nested(&inode->i_mutex, I_MUTEX_CHILD);
-		ret = ocfs2_rw_lock(inode, 1);
-		if (ret < 0)
-			mlog_errno(ret);
-		else {
-			ret = ocfs2_splice_to_file(pipe, out, &sd);
-			ocfs2_rw_unlock(inode, 1);
-		}
-		mutex_unlock(&inode->i_mutex);
-	} while (ret > 0);
-	splice_from_pipe_end(pipe, &sd);
-
-	if (pipe->inode)
-		mutex_unlock(&pipe->inode->i_mutex);
-
-	if (sd.num_spliced)
-		ret = sd.num_spliced;
-
-	if (ret > 0) {
-		unsigned long nr_pages;
-		int err;
-
-		nr_pages = (ret + PAGE_CACHE_SIZE - 1) >> PAGE_CACHE_SHIFT;
-
-		err = generic_write_sync(out, *ppos, ret);
-		if (err)
-			ret = err;
-		else
-			*ppos += ret;
-
-		balance_dirty_pages_ratelimited_nr(mapping, nr_pages);
-	}
-
-	return ret;
-}
-
-static ssize_t ocfs2_file_splice_read(struct file *in,
-				      loff_t *ppos,
-				      struct pipe_inode_info *pipe,
-				      size_t len,
-				      unsigned int flags)
-{
-	int ret = 0, lock_level = 0;
-	struct inode *inode = in->f_path.dentry->d_inode;
-
-	trace_ocfs2_file_splice_read(inode, in, in->f_path.dentry,
-			(unsigned long long)OCFS2_I(inode)->ip_blkno,
-			in->f_path.dentry->d_name.len,
-			in->f_path.dentry->d_name.name, len);
-
-	/*
-	 * See the comment in ocfs2_file_aio_read()
-	 */
-	ret = ocfs2_inode_lock_atime(inode, in->f_vfsmnt, &lock_level);
-	if (ret < 0) {
-		mlog_errno(ret);
-		goto bail;
-	}
-	ocfs2_inode_unlock(inode, lock_level);
-
-	ret = generic_file_splice_read(in, ppos, pipe, len, flags);
-
-bail:
-	return ret;
-}
-
-static ssize_t ocfs2_file_aio_read(struct kiocb *iocb,
-				   const struct iovec *iov,
-				   unsigned long nr_segs,
-				   loff_t pos)
-{
-	int ret = 0, rw_level = -1, have_alloc_sem = 0, lock_level = 0;
-	struct file *filp = iocb->ki_filp;
-	struct inode *inode = filp->f_path.dentry->d_inode;
-
-	trace_ocfs2_file_aio_read(inode, filp, filp->f_path.dentry,
-			(unsigned long long)OCFS2_I(inode)->ip_blkno,
-			filp->f_path.dentry->d_name.len,
-			filp->f_path.dentry->d_name.name, nr_segs);
-=======
 static ssize_t ocfs2_file_read_iter(struct kiocb *iocb,
 				   struct iov_iter *to)
 {
@@ -3603,7 +2519,6 @@ static ssize_t ocfs2_file_read_iter(struct kiocb *iocb,
 			filp->f_path.dentry->d_name.len,
 			filp->f_path.dentry->d_name.name,
 			to->nr_segs);	/* GRRRRR */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	if (!inode) {
@@ -3612,21 +2527,6 @@ static ssize_t ocfs2_file_read_iter(struct kiocb *iocb,
 		goto bail;
 	}
 
-<<<<<<< HEAD
-	ocfs2_iocb_clear_sem_locked(iocb);
-
-	/*
-	 * buffered reads protect themselves in ->readpage().  O_DIRECT reads
-	 * need locks to protect pending reads from racing with truncate.
-	 */
-	if (filp->f_flags & O_DIRECT) {
-		have_alloc_sem = 1;
-		ocfs2_iocb_set_sem_locked(iocb);
-
-		ret = ocfs2_rw_lock(inode, 0);
-		if (ret < 0) {
-			mlog_errno(ret);
-=======
 	if (!direct_io && nowait)
 		return -EOPNOTSUPP;
 
@@ -3643,7 +2543,6 @@ static ssize_t ocfs2_file_read_iter(struct kiocb *iocb,
 		if (ret < 0) {
 			if (ret != -EAGAIN)
 				mlog_errno(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto bail;
 		}
 		rw_level = 0;
@@ -3658,13 +2557,6 @@ static ssize_t ocfs2_file_read_iter(struct kiocb *iocb,
 	 *
 	 * Take and drop the meta data lock to update inode fields
 	 * like i_size. This allows the checks down below
-<<<<<<< HEAD
-	 * generic_file_aio_read() a chance of actually working.
-	 */
-	ret = ocfs2_inode_lock_atime(inode, filp->f_vfsmnt, &lock_level);
-	if (ret < 0) {
-		mlog_errno(ret);
-=======
 	 * copy_splice_read() a chance of actually working.
 	 */
 	ret = ocfs2_inode_lock_atime(inode, filp->f_path.mnt, &lock_level,
@@ -3672,29 +2564,10 @@ static ssize_t ocfs2_file_read_iter(struct kiocb *iocb,
 	if (ret < 0) {
 		if (ret != -EAGAIN)
 			mlog_errno(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 	ocfs2_inode_unlock(inode, lock_level);
 
-<<<<<<< HEAD
-	ret = generic_file_aio_read(iocb, iov, nr_segs, iocb->ki_pos);
-	trace_generic_file_aio_read_ret(ret);
-
-	/* buffered aio wouldn't have proper lock coverage today */
-	BUG_ON(ret == -EIOCBQUEUED && !(filp->f_flags & O_DIRECT));
-
-	/* see ocfs2_file_aio_write */
-	if (ret == -EIOCBQUEUED || !ocfs2_iocb_is_rw_locked(iocb)) {
-		rw_level = -1;
-		have_alloc_sem = 0;
-	}
-
-bail:
-	if (have_alloc_sem)
-		ocfs2_iocb_clear_sem_locked(iocb);
-
-=======
 	ret = generic_file_read_iter(iocb, to);
 	trace_generic_file_read_iter_ret(ret);
 
@@ -3707,17 +2580,12 @@ bail:
 	}
 
 bail:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rw_level != -1)
 		ocfs2_rw_unlock(inode, rw_level);
 
 	return ret;
 }
 
-<<<<<<< HEAD
-/* Refer generic_file_llseek_unlocked() */
-static loff_t ocfs2_file_llseek(struct file *file, loff_t offset, int origin)
-=======
 static ssize_t ocfs2_file_splice_read(struct file *in, loff_t *ppos,
 				      struct pipe_inode_info *pipe,
 				      size_t len, unsigned int flags)
@@ -3757,20 +2625,10 @@ bail:
 
 /* Refer generic_file_llseek_unlocked() */
 static loff_t ocfs2_file_llseek(struct file *file, loff_t offset, int whence)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode = file->f_mapping->host;
 	int ret = 0;
 
-<<<<<<< HEAD
-	mutex_lock(&inode->i_mutex);
-
-	switch (origin) {
-	case SEEK_SET:
-		break;
-	case SEEK_END:
-		offset += inode->i_size;
-=======
 	inode_lock(inode);
 
 	switch (whence) {
@@ -3787,7 +2645,6 @@ static loff_t ocfs2_file_llseek(struct file *file, loff_t offset, int whence)
 		}
 		offset += i_size_read(inode);
 		ocfs2_inode_unlock(inode, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SEEK_CUR:
 		if (offset == 0) {
@@ -3798,11 +2655,7 @@ static loff_t ocfs2_file_llseek(struct file *file, loff_t offset, int whence)
 		break;
 	case SEEK_DATA:
 	case SEEK_HOLE:
-<<<<<<< HEAD
-		ret = ocfs2_seek_data_hole_offset(file, &offset, origin);
-=======
 		ret = ocfs2_seek_data_hole_offset(file, &offset, whence);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			goto out;
 		break;
@@ -3811,34 +2664,15 @@ static loff_t ocfs2_file_llseek(struct file *file, loff_t offset, int whence)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	if (offset < 0 && !(file->f_mode & FMODE_UNSIGNED_OFFSET))
-		ret = -EINVAL;
-	if (!ret && offset > inode->i_sb->s_maxbytes)
-		ret = -EINVAL;
-	if (ret)
-		goto out;
-
-	if (offset != file->f_pos) {
-		file->f_pos = offset;
-		file->f_version = 0;
-	}
-
-out:
-	mutex_unlock(&inode->i_mutex);
-=======
 	offset = vfs_setpos(file, offset, inode->i_sb->s_maxbytes);
 
 out:
 	inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 	return offset;
 }
 
-<<<<<<< HEAD
-=======
 static loff_t ocfs2_remap_file_range(struct file *file_in, loff_t pos_in,
 				     struct file *file_out, loff_t pos_out,
 				     loff_t len, unsigned int remap_flags)
@@ -3914,40 +2748,25 @@ out_unlock:
 	return remapped > 0 ? remapped : ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct inode_operations ocfs2_file_iops = {
 	.setattr	= ocfs2_setattr,
 	.getattr	= ocfs2_getattr,
 	.permission	= ocfs2_permission,
-<<<<<<< HEAD
-	.setxattr	= generic_setxattr,
-	.getxattr	= generic_getxattr,
-	.listxattr	= ocfs2_listxattr,
-	.removexattr	= generic_removexattr,
-	.fiemap		= ocfs2_fiemap,
-	.get_acl	= ocfs2_iop_get_acl,
-=======
 	.listxattr	= ocfs2_listxattr,
 	.fiemap		= ocfs2_fiemap,
 	.get_inode_acl	= ocfs2_iop_get_acl,
 	.set_acl	= ocfs2_iop_set_acl,
 	.fileattr_get	= ocfs2_fileattr_get,
 	.fileattr_set	= ocfs2_fileattr_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct inode_operations ocfs2_special_file_iops = {
 	.setattr	= ocfs2_setattr,
 	.getattr	= ocfs2_getattr,
-<<<<<<< HEAD
-	.permission	= ocfs2_permission,
-	.get_acl	= ocfs2_iop_get_acl,
-=======
 	.listxattr	= ocfs2_listxattr,
 	.permission	= ocfs2_permission,
 	.get_inode_acl	= ocfs2_iop_get_acl,
 	.set_acl	= ocfs2_iop_set_acl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -3956,22 +2775,12 @@ const struct inode_operations ocfs2_special_file_iops = {
  */
 const struct file_operations ocfs2_fops = {
 	.llseek		= ocfs2_file_llseek,
-<<<<<<< HEAD
-	.read		= do_sync_read,
-	.write		= do_sync_write,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mmap		= ocfs2_mmap,
 	.fsync		= ocfs2_sync_file,
 	.release	= ocfs2_file_release,
 	.open		= ocfs2_file_open,
-<<<<<<< HEAD
-	.aio_read	= ocfs2_file_aio_read,
-	.aio_write	= ocfs2_file_aio_write,
-=======
 	.read_iter	= ocfs2_file_read_iter,
 	.write_iter	= ocfs2_file_write_iter,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.unlocked_ioctl	= ocfs2_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl   = ocfs2_compat_ioctl,
@@ -3979,16 +2788,6 @@ const struct file_operations ocfs2_fops = {
 	.lock		= ocfs2_lock,
 	.flock		= ocfs2_flock,
 	.splice_read	= ocfs2_file_splice_read,
-<<<<<<< HEAD
-	.splice_write	= ocfs2_file_splice_write,
-	.fallocate	= ocfs2_fallocate,
-};
-
-const struct file_operations ocfs2_dops = {
-	.llseek		= generic_file_llseek,
-	.read		= generic_read_dir,
-	.readdir	= ocfs2_readdir,
-=======
 	.splice_write	= iter_file_splice_write,
 	.fallocate	= ocfs2_fallocate,
 	.remap_file_range = ocfs2_remap_file_range,
@@ -3999,7 +2798,6 @@ const struct file_operations ocfs2_dops = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
 	.iterate_shared	= shared_ocfs2_readdir,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fsync		= ocfs2_sync_file,
 	.release	= ocfs2_dir_release,
 	.open		= ocfs2_dir_open,
@@ -4025,47 +2823,27 @@ const struct file_operations ocfs2_dops = {
  */
 const struct file_operations ocfs2_fops_no_plocks = {
 	.llseek		= ocfs2_file_llseek,
-<<<<<<< HEAD
-	.read		= do_sync_read,
-	.write		= do_sync_write,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mmap		= ocfs2_mmap,
 	.fsync		= ocfs2_sync_file,
 	.release	= ocfs2_file_release,
 	.open		= ocfs2_file_open,
-<<<<<<< HEAD
-	.aio_read	= ocfs2_file_aio_read,
-	.aio_write	= ocfs2_file_aio_write,
-=======
 	.read_iter	= ocfs2_file_read_iter,
 	.write_iter	= ocfs2_file_write_iter,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.unlocked_ioctl	= ocfs2_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl   = ocfs2_compat_ioctl,
 #endif
 	.flock		= ocfs2_flock,
-<<<<<<< HEAD
-	.splice_read	= ocfs2_file_splice_read,
-	.splice_write	= ocfs2_file_splice_write,
-	.fallocate	= ocfs2_fallocate,
-=======
 	.splice_read	= filemap_splice_read,
 	.splice_write	= iter_file_splice_write,
 	.fallocate	= ocfs2_fallocate,
 	.remap_file_range = ocfs2_remap_file_range,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct file_operations ocfs2_dops_no_plocks = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
-<<<<<<< HEAD
-	.readdir	= ocfs2_readdir,
-=======
 	.iterate_shared	= shared_ocfs2_readdir,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fsync		= ocfs2_sync_file,
 	.release	= ocfs2_dir_release,
 	.open		= ocfs2_dir_open,

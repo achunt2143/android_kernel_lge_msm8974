@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-config BE2NET
-	tristate "ServerEngines' 10Gbps NIC - BladeEngine"
-	depends on PCI && INET
-	---help---
-	  This driver implements the NIC functionality for ServerEngines'
-	  10Gbps network adapter - BladeEngine.
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config BE2NET
 	tristate "ServerEngines' 10Gbps NIC - BladeEngine"
@@ -58,4 +50,3 @@ config BE2NET_SKYHAWK
 comment "WARNING: be2net is useless without any enabled chip"
 	depends on BE2NET_BE2=n && BE2NET_BE3=n && BE2NET_LANCER=n && \
 		BE2NET_SKYHAWK=n && BE2NET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

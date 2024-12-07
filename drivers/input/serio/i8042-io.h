@@ -1,18 +1,7 @@
-<<<<<<< HEAD
-#ifndef _I8042_IO_H
-#define _I8042_IO_H
-
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef _I8042_IO_H
 #define _I8042_IO_H
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Names.
@@ -32,11 +21,6 @@
 #elif defined(__arm__)
 /* defined in include/asm-arm/arch-xxx/irqs.h */
 #include <asm/irq.h>
-<<<<<<< HEAD
-#elif defined(CONFIG_SH_CAYMAN)
-#include <asm/irq.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #elif defined(CONFIG_PPC)
 extern int of_i8042_kbd_irq;
 extern int of_i8042_aux_irq;
@@ -86,20 +70,12 @@ static inline int i8042_platform_init(void)
 	if (check_legacy_ioport(I8042_DATA_REG))
 		return -ENODEV;
 #endif
-<<<<<<< HEAD
-#if !defined(__sh__) && !defined(__alpha__) && !defined(__mips__)
-=======
 #if !defined(__sh__) && !defined(__alpha__)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!request_region(I8042_DATA_REG, 16, "i8042"))
 		return -EBUSY;
 #endif
 
-<<<<<<< HEAD
-	i8042_reset = 1;
-=======
 	i8042_reset = I8042_RESET_ALWAYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

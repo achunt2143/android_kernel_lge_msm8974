@@ -1,44 +1,22 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Analogue & Micro Adder MPC875 board support
  *
  * Author: Scott Wood <scottwood@freescale.com>
  *
  * Copyright (c) 2007 Freescale Semiconductor, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
  */
 
 #include <linux/init.h>
-#include <linux/fs_enet_pd.h>
-=======
- */
-
-#include <linux/init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_platform.h>
 
 #include <asm/time.h>
 #include <asm/machdep.h>
 #include <asm/cpm1.h>
-<<<<<<< HEAD
-#include <asm/fs_pd.h>
-#include <asm/udbg.h>
-#include <asm/prom.h>
-
-#include "mpc8xx.h"
-=======
 #include <asm/8xx_immap.h>
 #include <asm/udbg.h>
 
 #include "mpc8xx.h"
 #include "pic.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cpm_pin {
 	int port, pin, flags;
@@ -104,17 +82,7 @@ static void __init adder875_setup(void)
 	init_ioports();
 }
 
-<<<<<<< HEAD
-static int __init adder875_probe(void)
-{
-	unsigned long root = of_get_flat_dt_root();
-	return of_flat_dt_is_compatible(root, "analogue-and-micro,adder875");
-}
-
-static __initdata struct of_device_id of_bus_ids[] = {
-=======
 static const struct of_device_id of_bus_ids[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "simple-bus", },
 	{},
 };
@@ -128,21 +96,10 @@ machine_device_initcall(adder875, declare_of_platform_devices);
 
 define_machine(adder875) {
 	.name = "Adder MPC875",
-<<<<<<< HEAD
-	.probe = adder875_probe,
-	.setup_arch = adder875_setup,
-	.init_IRQ = mpc8xx_pics_init,
-	.get_irq = mpc8xx_get_irq,
-	.restart = mpc8xx_restart,
-	.calibrate_decr = generic_calibrate_decr,
-	.set_rtc_time = mpc8xx_set_rtc_time,
-	.get_rtc_time = mpc8xx_get_rtc_time,
-=======
 	.compatible = "analogue-and-micro,adder875",
 	.setup_arch = adder875_setup,
 	.init_IRQ = mpc8xx_pic_init,
 	.get_irq = mpc8xx_get_irq,
 	.restart = mpc8xx_restart,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress = udbg_progress,
 };

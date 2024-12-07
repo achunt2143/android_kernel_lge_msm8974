@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fs/nfs_common/nfsacl.c
  *
@@ -34,24 +31,13 @@
 
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(nfsacl_encode);
-EXPORT_SYMBOL_GPL(nfsacl_decode);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nfsacl_encode_desc {
 	struct xdr_array2_desc desc;
 	unsigned int count;
 	struct posix_acl *acl;
 	int typeflag;
-<<<<<<< HEAD
-	uid_t uid;
-	gid_t gid;
-=======
 	kuid_t uid;
 	kgid_t gid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfsacl_simple_acl {
@@ -72,16 +58,6 @@ xdr_nfsace_encode(struct xdr_array2_desc *desc, void *elem)
 	*p++ = htonl(entry->e_tag | nfsacl_desc->typeflag);
 	switch(entry->e_tag) {
 		case ACL_USER_OBJ:
-<<<<<<< HEAD
-			*p++ = htonl(nfsacl_desc->uid);
-			break;
-		case ACL_GROUP_OBJ:
-			*p++ = htonl(nfsacl_desc->gid);
-			break;
-		case ACL_USER:
-		case ACL_GROUP:
-			*p++ = htonl(entry->e_id);
-=======
 			*p++ = htonl(from_kuid(&init_user_ns, nfsacl_desc->uid));
 			break;
 		case ACL_GROUP_OBJ:
@@ -92,7 +68,6 @@ xdr_nfsace_encode(struct xdr_array2_desc *desc, void *elem)
 			break;
 		case ACL_GROUP:
 			*p++ = htonl(from_kgid(&init_user_ns, entry->e_gid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:  /* Solaris depends on that! */
 			*p++ = 0;
@@ -159,8 +134,6 @@ int nfsacl_encode(struct xdr_buf *buf, unsigned int base, struct inode *inode,
 			  nfsacl_desc.desc.array_len;
 	return err;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(nfsacl_encode);
 
 /**
@@ -233,7 +206,6 @@ bool nfs_stream_encode_acl(struct xdr_stream *xdr, struct inode *inode,
 }
 EXPORT_SYMBOL_GPL(nfs_stream_encode_acl);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nfsacl_decode_desc {
 	struct xdr_array2_desc desc;
@@ -248,10 +220,7 @@ xdr_nfsace_decode(struct xdr_array2_desc *desc, void *elem)
 		(struct nfsacl_decode_desc *) desc;
 	__be32 *p = elem;
 	struct posix_acl_entry *entry;
-<<<<<<< HEAD
-=======
 	unsigned int id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!nfsacl_desc->acl) {
 		if (desc->array_len > NFS_ACL_MAX_ENTRIES)
@@ -264,16 +233,6 @@ xdr_nfsace_decode(struct xdr_array2_desc *desc, void *elem)
 
 	entry = &nfsacl_desc->acl->a_entries[nfsacl_desc->count++];
 	entry->e_tag = ntohl(*p++) & ~NFS_ACL_DEFAULT;
-<<<<<<< HEAD
-	entry->e_id = ntohl(*p++);
-	entry->e_perm = ntohl(*p++);
-
-	switch(entry->e_tag) {
-		case ACL_USER_OBJ:
-		case ACL_USER:
-		case ACL_GROUP_OBJ:
-		case ACL_GROUP:
-=======
 	id = ntohl(*p++);
 	entry->e_perm = ntohl(*p++);
 
@@ -290,7 +249,6 @@ xdr_nfsace_decode(struct xdr_array2_desc *desc, void *elem)
 			break;
 		case ACL_USER_OBJ:
 		case ACL_GROUP_OBJ:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ACL_OTHER:
 			if (entry->e_perm & ~S_IRWXO)
 				return -EINVAL;
@@ -313,11 +271,6 @@ cmp_acl_entry(const void *x, const void *y)
 
 	if (a->e_tag != b->e_tag)
 		return a->e_tag - b->e_tag;
-<<<<<<< HEAD
-	else if (a->e_id > b->e_id)
-		return 1;
-	else if (a->e_id < b->e_id)
-=======
 	else if ((a->e_tag == ACL_USER) && uid_gt(a->e_uid, b->e_uid))
 		return 1;
 	else if ((a->e_tag == ACL_USER) && uid_lt(a->e_uid, b->e_uid))
@@ -325,7 +278,6 @@ cmp_acl_entry(const void *x, const void *y)
 	else if ((a->e_tag == ACL_GROUP) && gid_gt(a->e_gid, b->e_gid))
 		return 1;
 	else if ((a->e_tag == ACL_GROUP) && gid_lt(a->e_gid, b->e_gid))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	else
 		return 0;
@@ -346,36 +298,18 @@ posix_acl_from_nfsacl(struct posix_acl *acl)
 	sort(acl->a_entries, acl->a_count, sizeof(struct posix_acl_entry),
 	     cmp_acl_entry, NULL);
 
-<<<<<<< HEAD
-	/* Clear undefined identifier fields and find the ACL_GROUP_OBJ
-	   and ACL_MASK entries. */
-	FOREACH_ACL_ENTRY(pa, acl, pe) {
-		switch(pa->e_tag) {
-			case ACL_USER_OBJ:
-				pa->e_id = ACL_UNDEFINED_ID;
-				break;
-			case ACL_GROUP_OBJ:
-				pa->e_id = ACL_UNDEFINED_ID;
-=======
 	/* Find the ACL_GROUP_OBJ and ACL_MASK entries. */
 	FOREACH_ACL_ENTRY(pa, acl, pe) {
 		switch(pa->e_tag) {
 			case ACL_USER_OBJ:
 				break;
 			case ACL_GROUP_OBJ:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				group_obj = pa;
 				break;
 			case ACL_MASK:
 				mask = pa;
-<<<<<<< HEAD
-				/* fall through */
-			case ACL_OTHER:
-				pa->e_id = ACL_UNDEFINED_ID;
-=======
 				fallthrough;
 			case ACL_OTHER:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 		}
 	}
@@ -431,8 +365,6 @@ int nfsacl_decode(struct xdr_buf *buf, unsigned int base, unsigned int *aclcnt,
 	return 8 + nfsacl_desc.desc.elem_size *
 		   nfsacl_desc.desc.array_len;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(nfsacl_decode);
 
 /**
@@ -486,4 +418,3 @@ bool nfs_stream_decode_acl(struct xdr_stream *xdr, unsigned int *aclcnt,
 	return true;
 }
 EXPORT_SYMBOL_GPL(nfs_stream_decode_acl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Atheros AR71XX/AR724X/AR913X specific kernel entry setup
  *
  *  Copyright (C) 2009 Gabor Juhos <juhosg@openwrt.org>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License version 2 as published
- *  by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_MACH_ATH79_KERNEL_ENTRY_H
 #define __ASM_MACH_ATH79_KERNEL_ENTRY_H

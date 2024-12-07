@@ -1,39 +1,19 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pm_domain.h - Definitions and headers related to device power domains.
  *
  * Copyright (C) 2011 Rafael J. Wysocki <rjw@sisk.pl>, Renesas Electronics Corp.
-<<<<<<< HEAD
- *
- * This file is released under the GPLv2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_PM_DOMAIN_H
 #define _LINUX_PM_DOMAIN_H
 
 #include <linux/device.h>
-<<<<<<< HEAD
-=======
 #include <linux/ktime.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mutex.h>
 #include <linux/pm.h>
 #include <linux/err.h>
 #include <linux/of.h>
-<<<<<<< HEAD
-
-enum gpd_status {
-	GPD_STATE_ACTIVE = 0,	/* PM domain is active */
-	GPD_STATE_WAIT_MASTER,	/* PM domain's master is being waited for */
-	GPD_STATE_BUSY,		/* Something is happening to the PM domain */
-	GPD_STATE_REPEAT,	/* Power off in progress, to be repeated */
-	GPD_STATE_POWER_OFF,	/* PM domain is off */
-=======
 #include <linux/notifier.h>
 #include <linux/spinlock.h>
 #include <linux/cpumask.h>
@@ -132,66 +112,16 @@ enum genpd_notication {
 	GENPD_NOTIFY_OFF,
 	GENPD_NOTIFY_PRE_ON,
 	GENPD_NOTIFY_ON,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dev_power_governor {
 	bool (*power_down_ok)(struct dev_pm_domain *domain);
-<<<<<<< HEAD
-	bool (*stop_ok)(struct device *dev);
-=======
 	bool (*suspend_ok)(struct device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct gpd_dev_ops {
 	int (*start)(struct device *dev);
 	int (*stop)(struct device *dev);
-<<<<<<< HEAD
-	int (*save_state)(struct device *dev);
-	int (*restore_state)(struct device *dev);
-	int (*suspend)(struct device *dev);
-	int (*suspend_late)(struct device *dev);
-	int (*resume_early)(struct device *dev);
-	int (*resume)(struct device *dev);
-	int (*freeze)(struct device *dev);
-	int (*freeze_late)(struct device *dev);
-	int (*thaw_early)(struct device *dev);
-	int (*thaw)(struct device *dev);
-	bool (*active_wakeup)(struct device *dev);
-};
-
-struct generic_pm_domain {
-	struct dev_pm_domain domain;	/* PM domain operations */
-	struct list_head gpd_list_node;	/* Node in the global PM domains list */
-	struct list_head master_links;	/* Links with PM domain as a master */
-	struct list_head slave_links;	/* Links with PM domain as a slave */
-	struct list_head dev_list;	/* List of devices */
-	struct mutex lock;
-	struct dev_power_governor *gov;
-	struct work_struct power_off_work;
-	char *name;
-	unsigned int in_progress;	/* Number of devices being suspended now */
-	atomic_t sd_count;	/* Number of subdomains with power "on" */
-	enum gpd_status status;	/* Current state of the domain */
-	wait_queue_head_t status_wait_queue;
-	struct task_struct *poweroff_task;	/* Powering off task */
-	unsigned int resume_count;	/* Number of devices being resumed */
-	unsigned int device_count;	/* Number of devices */
-	unsigned int suspended_count;	/* System suspend device counter */
-	unsigned int prepared_count;	/* Suspend counter of prepared devices */
-	bool suspend_power_off;	/* Power status before system suspend */
-	bool dev_irq_safe;	/* Device callbacks are IRQ-safe */
-	int (*power_off)(struct generic_pm_domain *domain);
-	s64 power_off_latency_ns;
-	int (*power_on)(struct generic_pm_domain *domain);
-	s64 power_on_latency_ns;
-	struct gpd_dev_ops dev_ops;
-	s64 break_even_ns;	/* Power break even for the entire domain. */
-	s64 max_off_time_ns;	/* Maximum allowed "suspended" time. */
-	ktime_t power_off_time;
-	struct device_node *of_node; /* Node in device tree */
-=======
 };
 
 struct genpd_governor_data {
@@ -266,7 +196,6 @@ struct generic_pm_domain {
 		};
 	};
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct generic_pm_domain *pd_to_genpd(struct dev_pm_domain *pd)
@@ -275,20 +204,6 @@ static inline struct generic_pm_domain *pd_to_genpd(struct dev_pm_domain *pd)
 }
 
 struct gpd_link {
-<<<<<<< HEAD
-	struct generic_pm_domain *master;
-	struct list_head master_node;
-	struct generic_pm_domain *slave;
-	struct list_head slave_node;
-};
-
-struct gpd_timing_data {
-	s64 stop_latency_ns;
-	s64 start_latency_ns;
-	s64 save_state_latency_ns;
-	s64 restore_state_latency_ns;
-	s64 break_even_ns;
-=======
 	struct generic_pm_domain *parent;
 	struct list_head parent_node;
 	struct generic_pm_domain *child;
@@ -311,17 +226,10 @@ struct gpd_timing_data {
 struct pm_domain_data {
 	struct list_head list_node;
 	struct device *dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct generic_pm_domain_data {
 	struct pm_domain_data base;
-<<<<<<< HEAD
-	struct gpd_dev_ops ops;
-	struct gpd_timing_data td;
-	bool need_restore;
-	bool always_on;
-=======
 	struct gpd_timing_data *td;
 	struct notifier_block nb;
 	struct notifier_block *power_nb;
@@ -330,7 +238,6 @@ struct generic_pm_domain_data {
 	unsigned int default_pstate;
 	unsigned int rpm_pstate;
 	void *data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_PM_GENERIC_DOMAINS
@@ -344,50 +251,6 @@ static inline struct generic_pm_domain_data *dev_gpd_data(struct device *dev)
 	return to_gpd_data(dev->power.subsys_data->domain_data);
 }
 
-<<<<<<< HEAD
-extern struct dev_power_governor simple_qos_governor;
-
-extern struct generic_pm_domain *dev_to_genpd(struct device *dev);
-extern int __pm_genpd_add_device(struct generic_pm_domain *genpd,
-				 struct device *dev,
-				 struct gpd_timing_data *td);
-
-extern int __pm_genpd_of_add_device(struct device_node *genpd_node,
-				    struct device *dev,
-				    struct gpd_timing_data *td);
-
-static inline int pm_genpd_add_device(struct generic_pm_domain *genpd,
-				      struct device *dev)
-{
-	return __pm_genpd_add_device(genpd, dev, NULL);
-}
-
-static inline int pm_genpd_of_add_device(struct device_node *genpd_node,
-					 struct device *dev)
-{
-	return __pm_genpd_of_add_device(genpd_node, dev, NULL);
-}
-
-extern int pm_genpd_remove_device(struct generic_pm_domain *genpd,
-				  struct device *dev);
-extern void pm_genpd_dev_always_on(struct device *dev, bool val);
-extern int pm_genpd_add_subdomain(struct generic_pm_domain *genpd,
-				  struct generic_pm_domain *new_subdomain);
-extern int pm_genpd_remove_subdomain(struct generic_pm_domain *genpd,
-				     struct generic_pm_domain *target);
-extern int pm_genpd_add_callbacks(struct device *dev,
-				  struct gpd_dev_ops *ops,
-				  struct gpd_timing_data *td);
-extern int __pm_genpd_remove_callbacks(struct device *dev, bool clear_td);
-extern void pm_genpd_init(struct generic_pm_domain *genpd,
-			  struct dev_power_governor *gov, bool is_off);
-
-extern int pm_genpd_poweron(struct generic_pm_domain *genpd);
-
-extern bool default_stop_ok(struct device *dev);
-
-extern struct dev_power_governor pm_domain_always_on_gov;
-=======
 int pm_genpd_add_device(struct generic_pm_domain *genpd, struct device *dev);
 int pm_genpd_remove_device(struct device *dev);
 int pm_genpd_add_subdomain(struct generic_pm_domain *genpd,
@@ -409,95 +272,27 @@ extern struct dev_power_governor pm_domain_always_on_gov;
 #ifdef CONFIG_CPU_IDLE
 extern struct dev_power_governor pm_domain_cpu_gov;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 
 static inline struct generic_pm_domain_data *dev_gpd_data(struct device *dev)
 {
 	return ERR_PTR(-ENOSYS);
 }
-<<<<<<< HEAD
-static inline struct generic_pm_domain *dev_to_genpd(struct device *dev)
-{
-	return ERR_PTR(-ENOSYS);
-}
-static inline int __pm_genpd_add_device(struct generic_pm_domain *genpd,
-					struct device *dev,
-					struct gpd_timing_data *td)
-{
-	return -ENOSYS;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_genpd_add_device(struct generic_pm_domain *genpd,
 				      struct device *dev)
 {
 	return -ENOSYS;
 }
-<<<<<<< HEAD
-static inline int pm_genpd_remove_device(struct generic_pm_domain *genpd,
-					 struct device *dev)
-{
-	return -ENOSYS;
-}
-static inline void pm_genpd_dev_always_on(struct device *dev, bool val) {}
-static inline int pm_genpd_add_subdomain(struct generic_pm_domain *genpd,
-					 struct generic_pm_domain *new_sd)
-=======
 static inline int pm_genpd_remove_device(struct device *dev)
 {
 	return -ENOSYS;
 }
 static inline int pm_genpd_add_subdomain(struct generic_pm_domain *genpd,
 					 struct generic_pm_domain *subdomain)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOSYS;
 }
 static inline int pm_genpd_remove_subdomain(struct generic_pm_domain *genpd,
-<<<<<<< HEAD
-					    struct generic_pm_domain *target)
-{
-	return -ENOSYS;
-}
-static inline int pm_genpd_add_callbacks(struct device *dev,
-					 struct gpd_dev_ops *ops,
-					 struct gpd_timing_data *td)
-{
-	return -ENOSYS;
-}
-static inline int __pm_genpd_remove_callbacks(struct device *dev, bool clear_td)
-{
-	return -ENOSYS;
-}
-static inline void pm_genpd_init(struct generic_pm_domain *genpd,
-				 struct dev_power_governor *gov, bool is_off)
-{
-}
-static inline int pm_genpd_poweron(struct generic_pm_domain *genpd)
-{
-	return -ENOSYS;
-}
-static inline bool default_stop_ok(struct device *dev)
-{
-	return false;
-}
-#define simple_qos_governor NULL
-#define pm_domain_always_on_gov NULL
-#endif
-
-static inline int pm_genpd_remove_callbacks(struct device *dev)
-{
-	return __pm_genpd_remove_callbacks(dev, true);
-}
-
-#ifdef CONFIG_PM_GENERIC_DOMAINS_RUNTIME
-extern void genpd_queue_power_off_work(struct generic_pm_domain *genpd);
-extern void pm_genpd_poweroff_unused(void);
-#else
-static inline void genpd_queue_power_off_work(struct generic_pm_domain *gpd) {}
-static inline void pm_genpd_poweroff_unused(void) {}
-=======
 					    struct generic_pm_domain *subdomain)
 {
 	return -ENOSYS;
@@ -694,7 +489,6 @@ static inline int dev_pm_domain_set_performance_state(struct device *dev,
 {
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* _LINUX_PM_DOMAIN_H */

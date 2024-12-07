@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/sys_miata.c
  *
@@ -25,10 +22,6 @@
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_cia.h>
 #include <asm/tlbflush.h>
 
@@ -87,15 +80,10 @@ miata_init_irq(void)
 	init_pyxis_irqs(0x63b0000);
 
 	common_init_isa_dma();
-<<<<<<< HEAD
-	setup_irq(16+2, &halt_switch_irqaction);	/* SRM only? */
-	setup_irq(16+6, &timer_cascade_irqaction);
-=======
 	if (request_irq(16 + 2, no_action, 0, "halt-switch", NULL))
 		pr_err("Failed to register halt-switch interrupt\n");
 	if (request_irq(16 + 6, no_action, 0, "timer-cascade", NULL))
 		pr_err("Failed to register timer-cascade interrupt\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -163,17 +151,10 @@ miata_init_irq(void)
  * comes in on.  This makes interrupt processing much easier.
  */
 
-<<<<<<< HEAD
-static int __init
-miata_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-        static char irq_tab[18][5] __initdata = {
-=======
 static int
 miata_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
         static char irq_tab[18][5] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		{16+ 8, 16+ 8, 16+ 8, 16+ 8, 16+ 8},  /* IdSel 14,  DC21142 */
 		{   -1,    -1,    -1,    -1,    -1},  /* IdSel 15,  EIDE    */
@@ -202,18 +183,6 @@ miata_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
            the 2nd 8259 controller. So we have to check for it first. */
 
 	if((slot == 7) && (PCI_FUNC(dev->devfn) == 3)) {
-<<<<<<< HEAD
-		u8 irq=0;
-		struct pci_dev *pdev = pci_get_slot(dev->bus, dev->devfn & ~7);
-		if(pdev == NULL || pci_read_config_byte(pdev, 0x40,&irq) != PCIBIOS_SUCCESSFUL) {
-			pci_dev_put(pdev);
-			return -1;
-		}
-		else	{
-			pci_dev_put(pdev);
-			return irq;
-		}
-=======
 		struct pci_dev *pdev = pci_get_slot(dev->bus, dev->devfn & ~7);
 		u8 irq = 0;
 		int ret;
@@ -225,17 +194,12 @@ miata_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 		pci_dev_put(pdev);
 
 		return ret == PCIBIOS_SUCCESSFUL ? irq : -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return COMMON_TABLE_LOOKUP;
 }
 
-<<<<<<< HEAD
-static u8 __init
-=======
 static u8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 miata_swizzle(struct pci_dev *dev, u8 *pinp)
 {
 	int slot, pin = *pinp;

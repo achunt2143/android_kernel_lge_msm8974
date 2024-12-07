@@ -1,43 +1,9 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel 10 Gigabit PCI Express Linux driver
-  Copyright(c) 1999 - 2012 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-
-#include <linux/pci.h>
-#include <linux/delay.h>
-#include "ixgbe_type.h"
-#include "ixgbe_common.h"
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright(c) 1999 - 2018 Intel Corporation. */
 
 #include <linux/pci.h>
 #include <linux/delay.h>
 #include "ixgbe.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ixgbe_mbx.h"
 
 /**
@@ -49,32 +15,18 @@
  *
  *  returns SUCCESS if it successfully read message from buffer
  **/
-<<<<<<< HEAD
-s32 ixgbe_read_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size, u16 mbx_id)
-{
-	struct ixgbe_mbx_info *mbx = &hw->mbx;
-	s32 ret_val = IXGBE_ERR_MBX;
-=======
 int ixgbe_read_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size, u16 mbx_id)
 {
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* limit read to size of mailbox */
 	if (size > mbx->size)
 		size = mbx->size;
 
-<<<<<<< HEAD
-	if (mbx->ops.read)
-		ret_val = mbx->ops.read(hw, msg, size, mbx_id);
-
-	return ret_val;
-=======
 	if (!mbx->ops)
 		return -EIO;
 
 	return mbx->ops->read(hw, msg, size, mbx_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -86,20 +38,6 @@ int ixgbe_read_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size, u16 mbx_id)
  *
  *  returns SUCCESS if it successfully copied message into the buffer
  **/
-<<<<<<< HEAD
-s32 ixgbe_write_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size, u16 mbx_id)
-{
-	struct ixgbe_mbx_info *mbx = &hw->mbx;
-	s32 ret_val = 0;
-
-	if (size > mbx->size)
-		ret_val = IXGBE_ERR_MBX;
-
-	else if (mbx->ops.write)
-		ret_val = mbx->ops.write(hw, msg, size, mbx_id);
-
-	return ret_val;
-=======
 int ixgbe_write_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size, u16 mbx_id)
 {
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
@@ -111,7 +49,6 @@ int ixgbe_write_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size, u16 mbx_id)
 		return -EIO;
 
 	return mbx->ops->write(hw, msg, size, mbx_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -121,17 +58,6 @@ int ixgbe_write_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size, u16 mbx_id)
  *
  *  returns SUCCESS if the Status bit was found or else ERR_MBX
  **/
-<<<<<<< HEAD
-s32 ixgbe_check_for_msg(struct ixgbe_hw *hw, u16 mbx_id)
-{
-	struct ixgbe_mbx_info *mbx = &hw->mbx;
-	s32 ret_val = IXGBE_ERR_MBX;
-
-	if (mbx->ops.check_for_msg)
-		ret_val = mbx->ops.check_for_msg(hw, mbx_id);
-
-	return ret_val;
-=======
 int ixgbe_check_for_msg(struct ixgbe_hw *hw, u16 mbx_id)
 {
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
@@ -140,7 +66,6 @@ int ixgbe_check_for_msg(struct ixgbe_hw *hw, u16 mbx_id)
 		return -EIO;
 
 	return mbx->ops->check_for_msg(hw, mbx_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -150,17 +75,6 @@ int ixgbe_check_for_msg(struct ixgbe_hw *hw, u16 mbx_id)
  *
  *  returns SUCCESS if the Status bit was found or else ERR_MBX
  **/
-<<<<<<< HEAD
-s32 ixgbe_check_for_ack(struct ixgbe_hw *hw, u16 mbx_id)
-{
-	struct ixgbe_mbx_info *mbx = &hw->mbx;
-	s32 ret_val = IXGBE_ERR_MBX;
-
-	if (mbx->ops.check_for_ack)
-		ret_val = mbx->ops.check_for_ack(hw, mbx_id);
-
-	return ret_val;
-=======
 int ixgbe_check_for_ack(struct ixgbe_hw *hw, u16 mbx_id)
 {
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
@@ -169,7 +83,6 @@ int ixgbe_check_for_ack(struct ixgbe_hw *hw, u16 mbx_id)
 		return -EIO;
 
 	return mbx->ops->check_for_ack(hw, mbx_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -179,17 +92,6 @@ int ixgbe_check_for_ack(struct ixgbe_hw *hw, u16 mbx_id)
  *
  *  returns SUCCESS if the Status bit was found or else ERR_MBX
  **/
-<<<<<<< HEAD
-s32 ixgbe_check_for_rst(struct ixgbe_hw *hw, u16 mbx_id)
-{
-	struct ixgbe_mbx_info *mbx = &hw->mbx;
-	s32 ret_val = IXGBE_ERR_MBX;
-
-	if (mbx->ops.check_for_rst)
-		ret_val = mbx->ops.check_for_rst(hw, mbx_id);
-
-	return ret_val;
-=======
 int ixgbe_check_for_rst(struct ixgbe_hw *hw, u16 mbx_id)
 {
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
@@ -198,7 +100,6 @@ int ixgbe_check_for_rst(struct ixgbe_hw *hw, u16 mbx_id)
 		return -EIO;
 
 	return mbx->ops->check_for_rst(hw, mbx_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -208,29 +109,11 @@ int ixgbe_check_for_rst(struct ixgbe_hw *hw, u16 mbx_id)
  *
  *  returns SUCCESS if it successfully received a message notification
  **/
-<<<<<<< HEAD
-static s32 ixgbe_poll_for_msg(struct ixgbe_hw *hw, u16 mbx_id)
-=======
 static int ixgbe_poll_for_msg(struct ixgbe_hw *hw, u16 mbx_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 	int countdown = mbx->timeout;
 
-<<<<<<< HEAD
-	if (!countdown || !mbx->ops.check_for_msg)
-		goto out;
-
-	while (countdown && mbx->ops.check_for_msg(hw, mbx_id)) {
-		countdown--;
-		if (!countdown)
-			break;
-		udelay(mbx->usec_delay);
-	}
-
-out:
-	return countdown ? 0 : IXGBE_ERR_MBX;
-=======
 	if (!countdown || !mbx->ops)
 		return -EIO;
 
@@ -242,7 +125,6 @@ out:
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -252,29 +134,11 @@ out:
  *
  *  returns SUCCESS if it successfully received a message acknowledgement
  **/
-<<<<<<< HEAD
-static s32 ixgbe_poll_for_ack(struct ixgbe_hw *hw, u16 mbx_id)
-=======
 static int ixgbe_poll_for_ack(struct ixgbe_hw *hw, u16 mbx_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 	int countdown = mbx->timeout;
 
-<<<<<<< HEAD
-	if (!countdown || !mbx->ops.check_for_ack)
-		goto out;
-
-	while (countdown && mbx->ops.check_for_ack(hw, mbx_id)) {
-		countdown--;
-		if (!countdown)
-			break;
-		udelay(mbx->usec_delay);
-	}
-
-out:
-	return countdown ? 0 : IXGBE_ERR_MBX;
-=======
 	if (!countdown || !mbx->ops)
 		return -EIO;
 
@@ -286,7 +150,6 @@ out:
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -299,24 +162,6 @@ out:
  *  returns SUCCESS if it successfully received a message notification and
  *  copied it into the receive buffer.
  **/
-<<<<<<< HEAD
-static s32 ixgbe_read_posted_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size,
-				 u16 mbx_id)
-{
-	struct ixgbe_mbx_info *mbx = &hw->mbx;
-	s32 ret_val = IXGBE_ERR_MBX;
-
-	if (!mbx->ops.read)
-		goto out;
-
-	ret_val = ixgbe_poll_for_msg(hw, mbx_id);
-
-	/* if ack received read message, otherwise we timed out */
-	if (!ret_val)
-		ret_val = mbx->ops.read(hw, msg, size, mbx_id);
-out:
-	return ret_val;
-=======
 static int ixgbe_read_posted_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size,
 				 u16 mbx_id)
 {
@@ -332,7 +177,6 @@ static int ixgbe_read_posted_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size,
 
 	/* if ack received read message */
 	return mbx->ops->read(hw, msg, size, mbx_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -345,39 +189,6 @@ static int ixgbe_read_posted_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size,
  *  returns SUCCESS if it successfully copied message into the buffer and
  *  received an ack to that message within delay * timeout period
  **/
-<<<<<<< HEAD
-static s32 ixgbe_write_posted_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size,
-                           u16 mbx_id)
-{
-	struct ixgbe_mbx_info *mbx = &hw->mbx;
-	s32 ret_val = IXGBE_ERR_MBX;
-
-	/* exit if either we can't write or there isn't a defined timeout */
-	if (!mbx->ops.write || !mbx->timeout)
-		goto out;
-
-	/* send msg */
-	ret_val = mbx->ops.write(hw, msg, size, mbx_id);
-
-	/* if msg sent wait until we receive an ack */
-	if (!ret_val)
-		ret_val = ixgbe_poll_for_ack(hw, mbx_id);
-out:
-	return ret_val;
-}
-
-static s32 ixgbe_check_for_bit_pf(struct ixgbe_hw *hw, u32 mask, s32 index)
-{
-	u32 mbvficr = IXGBE_READ_REG(hw, IXGBE_MBVFICR(index));
-	s32 ret_val = IXGBE_ERR_MBX;
-
-	if (mbvficr & mask) {
-		ret_val = 0;
-		IXGBE_WRITE_REG(hw, IXGBE_MBVFICR(index), mask);
-	}
-
-	return ret_val;
-=======
 static int ixgbe_write_posted_mbx(struct ixgbe_hw *hw, u32 *msg, u16 size,
 				  u16 mbx_id)
 {
@@ -407,7 +218,6 @@ static int ixgbe_check_for_bit_pf(struct ixgbe_hw *hw, u32 mask, s32 index)
 	}
 
 	return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -417,21 +227,6 @@ static int ixgbe_check_for_bit_pf(struct ixgbe_hw *hw, u32 mask, s32 index)
  *
  *  returns SUCCESS if the VF has set the Status bit or else ERR_MBX
  **/
-<<<<<<< HEAD
-static s32 ixgbe_check_for_msg_pf(struct ixgbe_hw *hw, u16 vf_number)
-{
-	s32 ret_val = IXGBE_ERR_MBX;
-	s32 index = IXGBE_MBVFICR_INDEX(vf_number);
-	u32 vf_bit = vf_number % 16;
-
-	if (!ixgbe_check_for_bit_pf(hw, IXGBE_MBVFICR_VFREQ_VF1 << vf_bit,
-	                            index)) {
-		ret_val = 0;
-		hw->mbx.stats.reqs++;
-	}
-
-	return ret_val;
-=======
 static int ixgbe_check_for_msg_pf(struct ixgbe_hw *hw, u16 vf_number)
 {
 	int index = IXGBE_MBVFICR_INDEX(vf_number);
@@ -444,7 +239,6 @@ static int ixgbe_check_for_msg_pf(struct ixgbe_hw *hw, u16 vf_number)
 	}
 
 	return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -454,21 +248,6 @@ static int ixgbe_check_for_msg_pf(struct ixgbe_hw *hw, u16 vf_number)
  *
  *  returns SUCCESS if the VF has set the Status bit or else ERR_MBX
  **/
-<<<<<<< HEAD
-static s32 ixgbe_check_for_ack_pf(struct ixgbe_hw *hw, u16 vf_number)
-{
-	s32 ret_val = IXGBE_ERR_MBX;
-	s32 index = IXGBE_MBVFICR_INDEX(vf_number);
-	u32 vf_bit = vf_number % 16;
-
-	if (!ixgbe_check_for_bit_pf(hw, IXGBE_MBVFICR_VFACK_VF1 << vf_bit,
-	                            index)) {
-		ret_val = 0;
-		hw->mbx.stats.acks++;
-	}
-
-	return ret_val;
-=======
 static int ixgbe_check_for_ack_pf(struct ixgbe_hw *hw, u16 vf_number)
 {
 	int index = IXGBE_MBVFICR_INDEX(vf_number);
@@ -481,7 +260,6 @@ static int ixgbe_check_for_ack_pf(struct ixgbe_hw *hw, u16 vf_number)
 	}
 
 	return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -491,46 +269,26 @@ static int ixgbe_check_for_ack_pf(struct ixgbe_hw *hw, u16 vf_number)
  *
  *  returns SUCCESS if the VF has set the Status bit or else ERR_MBX
  **/
-<<<<<<< HEAD
-static s32 ixgbe_check_for_rst_pf(struct ixgbe_hw *hw, u16 vf_number)
-=======
 static int ixgbe_check_for_rst_pf(struct ixgbe_hw *hw, u16 vf_number)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 reg_offset = (vf_number < 32) ? 0 : 1;
 	u32 vf_shift = vf_number % 32;
 	u32 vflre = 0;
-<<<<<<< HEAD
-	s32 ret_val = IXGBE_ERR_MBX;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hw->mac.type) {
 	case ixgbe_mac_82599EB:
 		vflre = IXGBE_READ_REG(hw, IXGBE_VFLRE(reg_offset));
 		break;
 	case ixgbe_mac_X540:
-<<<<<<< HEAD
-=======
 	case ixgbe_mac_X550:
 	case ixgbe_mac_X550EM_x:
 	case ixgbe_mac_x550em_a:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vflre = IXGBE_READ_REG(hw, IXGBE_VFLREC(reg_offset));
 		break;
 	default:
 		break;
 	}
 
-<<<<<<< HEAD
-	if (vflre & (1 << vf_shift)) {
-		ret_val = 0;
-		IXGBE_WRITE_REG(hw, IXGBE_VFLREC(reg_offset), (1 << vf_shift));
-		hw->mbx.stats.rsts++;
-	}
-
-	return ret_val;
-=======
 	if (vflre & BIT(vf_shift)) {
 		IXGBE_WRITE_REG(hw, IXGBE_VFLREC(reg_offset), BIT(vf_shift));
 		hw->mbx.stats.rsts++;
@@ -538,7 +296,6 @@ static int ixgbe_check_for_rst_pf(struct ixgbe_hw *hw, u16 vf_number)
 	}
 
 	return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -548,14 +305,8 @@ static int ixgbe_check_for_rst_pf(struct ixgbe_hw *hw, u16 vf_number)
  *
  *  return SUCCESS if we obtained the mailbox lock
  **/
-<<<<<<< HEAD
-static s32 ixgbe_obtain_mbx_lock_pf(struct ixgbe_hw *hw, u16 vf_number)
-{
-	s32 ret_val = IXGBE_ERR_MBX;
-=======
 static int ixgbe_obtain_mbx_lock_pf(struct ixgbe_hw *hw, u16 vf_number)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 p2v_mailbox;
 
 	/* Take ownership of the buffer */
@@ -564,15 +315,9 @@ static int ixgbe_obtain_mbx_lock_pf(struct ixgbe_hw *hw, u16 vf_number)
 	/* reserve mailbox for vf use */
 	p2v_mailbox = IXGBE_READ_REG(hw, IXGBE_PFMAILBOX(vf_number));
 	if (p2v_mailbox & IXGBE_PFMAILBOX_PFU)
-<<<<<<< HEAD
-		ret_val = 0;
-
-	return ret_val;
-=======
 		return 0;
 
 	return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -584,27 +329,16 @@ static int ixgbe_obtain_mbx_lock_pf(struct ixgbe_hw *hw, u16 vf_number)
  *
  *  returns SUCCESS if it successfully copied message into the buffer
  **/
-<<<<<<< HEAD
-static s32 ixgbe_write_mbx_pf(struct ixgbe_hw *hw, u32 *msg, u16 size,
-                              u16 vf_number)
-{
-	s32 ret_val;
-=======
 static int ixgbe_write_mbx_pf(struct ixgbe_hw *hw, u32 *msg, u16 size,
 			      u16 vf_number)
 {
 	int ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 i;
 
 	/* lock the mailbox to prevent pf/vf race condition */
 	ret_val = ixgbe_obtain_mbx_lock_pf(hw, vf_number);
 	if (ret_val)
-<<<<<<< HEAD
-		goto out_no_write;
-=======
 		return ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* flush msg and acks as we are overwriting the message buffer */
 	ixgbe_check_for_msg_pf(hw, vf_number);
@@ -620,13 +354,7 @@ static int ixgbe_write_mbx_pf(struct ixgbe_hw *hw, u32 *msg, u16 size,
 	/* update stats */
 	hw->mbx.stats.msgs_tx++;
 
-<<<<<<< HEAD
-out_no_write:
-	return ret_val;
-
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -640,27 +368,16 @@ out_no_write:
  *  memory buffer.  The presumption is that the caller knows that there was
  *  a message due to a VF request so no polling for message is needed.
  **/
-<<<<<<< HEAD
-static s32 ixgbe_read_mbx_pf(struct ixgbe_hw *hw, u32 *msg, u16 size,
-                             u16 vf_number)
-{
-	s32 ret_val;
-=======
 static int ixgbe_read_mbx_pf(struct ixgbe_hw *hw, u32 *msg, u16 size,
 			     u16 vf_number)
 {
 	int ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 i;
 
 	/* lock the mailbox to prevent pf/vf race condition */
 	ret_val = ixgbe_obtain_mbx_lock_pf(hw, vf_number);
 	if (ret_val)
-<<<<<<< HEAD
-		goto out_no_read;
-=======
 		return ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* copy the message to the mailbox memory buffer */
 	for (i = 0; i < size; i++)
@@ -672,12 +389,7 @@ static int ixgbe_read_mbx_pf(struct ixgbe_hw *hw, u32 *msg, u16 size,
 	/* update stats */
 	hw->mbx.stats.msgs_rx++;
 
-<<<<<<< HEAD
-out_no_read:
-	return ret_val;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PCI_IOV
@@ -692,12 +404,9 @@ void ixgbe_init_mbx_params_pf(struct ixgbe_hw *hw)
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 
 	if (hw->mac.type != ixgbe_mac_82599EB &&
-<<<<<<< HEAD
-=======
 	    hw->mac.type != ixgbe_mac_X550 &&
 	    hw->mac.type != ixgbe_mac_X550EM_x &&
 	    hw->mac.type != ixgbe_mac_x550em_a &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    hw->mac.type != ixgbe_mac_X540)
 		return;
 
@@ -714,11 +423,7 @@ void ixgbe_init_mbx_params_pf(struct ixgbe_hw *hw)
 }
 #endif /* CONFIG_PCI_IOV */
 
-<<<<<<< HEAD
-struct ixgbe_mbx_operations mbx_ops_generic = {
-=======
 const struct ixgbe_mbx_operations mbx_ops_generic = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read                   = ixgbe_read_mbx_pf,
 	.write                  = ixgbe_write_mbx_pf,
 	.read_posted            = ixgbe_read_posted_mbx,

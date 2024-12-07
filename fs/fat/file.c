@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/fat/file.c
  *
@@ -14,17 +11,6 @@
 #include <linux/module.h>
 #include <linux/compat.h>
 #include <linux/mount.h>
-<<<<<<< HEAD
-#include <linux/time.h>
-#include <linux/buffer_head.h>
-#include <linux/writeback.h>
-#include <linux/backing-dev.h>
-#include <linux/blkdev.h>
-#include <linux/fsnotify.h>
-#include <linux/security.h>
-#include "fat.h"
-
-=======
 #include <linux/blkdev.h>
 #include <linux/backing-dev.h>
 #include <linux/fsnotify.h>
@@ -35,31 +21,20 @@
 static long fat_fallocate(struct file *file, int mode,
 			  loff_t offset, loff_t len);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int fat_ioctl_get_attributes(struct inode *inode, u32 __user *user_attr)
 {
 	u32 attr;
 
-<<<<<<< HEAD
-	mutex_lock(&inode->i_mutex);
-	attr = fat_make_attrs(inode);
-	mutex_unlock(&inode->i_mutex);
-=======
 	inode_lock_shared(inode);
 	attr = fat_make_attrs(inode);
 	inode_unlock_shared(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return put_user(attr, user_attr);
 }
 
 static int fat_ioctl_set_attributes(struct file *file, u32 __user *user_attr)
 {
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-=======
 	struct inode *inode = file_inode(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct msdos_sb_info *sbi = MSDOS_SB(inode->i_sb);
 	int is_dir = S_ISDIR(inode->i_mode);
 	u32 attr, oldattr;
@@ -70,17 +45,10 @@ static int fat_ioctl_set_attributes(struct file *file, u32 __user *user_attr)
 	if (err)
 		goto out;
 
-<<<<<<< HEAD
-	mutex_lock(&inode->i_mutex);
-	err = mnt_want_write_file(file);
-	if (err)
-		goto out_unlock_inode;
-=======
 	err = mnt_want_write_file(file);
 	if (err)
 		goto out;
 	inode_lock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * ATTR_VOLUME and ATTR_DIR cannot be changed; this also
@@ -96,11 +64,7 @@ static int fat_ioctl_set_attributes(struct file *file, u32 __user *user_attr)
 
 	/* Equivalent to a chmod() */
 	ia.ia_valid = ATTR_MODE | ATTR_CTIME;
-<<<<<<< HEAD
-	ia.ia_ctime = current_fs_time(inode->i_sb);
-=======
 	ia.ia_ctime = current_time(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (is_dir)
 		ia.ia_mode = fat_make_mode(sbi, attr, S_IRWXUGO);
 	else {
@@ -111,22 +75,14 @@ static int fat_ioctl_set_attributes(struct file *file, u32 __user *user_attr)
 	/* The root directory has no attributes */
 	if (inode->i_ino == MSDOS_ROOT_INO && attr != ATTR_DIR) {
 		err = -EINVAL;
-<<<<<<< HEAD
-		goto out_drop_write;
-=======
 		goto out_unlock_inode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (sbi->options.sys_immutable &&
 	    ((attr | oldattr) & ATTR_SYS) &&
 	    !capable(CAP_LINUX_IMMUTABLE)) {
 		err = -EPERM;
-<<<<<<< HEAD
-		goto out_drop_write;
-=======
 		goto out_unlock_inode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -134,16 +90,6 @@ static int fat_ioctl_set_attributes(struct file *file, u32 __user *user_attr)
 	 * out the RO attribute for checking by the security
 	 * module, just because it maps to a file mode.
 	 */
-<<<<<<< HEAD
-	err = security_inode_setattr(file->f_path.dentry, &ia);
-	if (err)
-		goto out_drop_write;
-
-	/* This MUST be done before doing anything irreversible... */
-	err = fat_setattr(file->f_path.dentry, &ia);
-	if (err)
-		goto out_drop_write;
-=======
 	err = security_inode_setattr(file_mnt_idmap(file),
 				     file->f_path.dentry, &ia);
 	if (err)
@@ -153,7 +99,6 @@ static int fat_ioctl_set_attributes(struct file *file, u32 __user *user_attr)
 	err = fat_setattr(file_mnt_idmap(file), file->f_path.dentry, &ia);
 	if (err)
 		goto out_unlock_inode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fsnotify_change(file->f_path.dentry, ia.ia_valid);
 	if (sbi->options.sys_immutable) {
@@ -165,25 +110,13 @@ static int fat_ioctl_set_attributes(struct file *file, u32 __user *user_attr)
 
 	fat_save_attrs(inode, attr);
 	mark_inode_dirty(inode);
-<<<<<<< HEAD
-out_drop_write:
-	mnt_drop_write_file(file);
-out_unlock_inode:
-	mutex_unlock(&inode->i_mutex);
-=======
 out_unlock_inode:
 	inode_unlock(inode);
 	mnt_drop_write_file(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return err;
 }
 
-<<<<<<< HEAD
-long fat_generic_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
-{
-	struct inode *inode = filp->f_path.dentry->d_inode;
-=======
 static int fat_ioctl_get_volume_id(struct inode *inode, u32 __user *user_attr)
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(inode->i_sb);
@@ -223,7 +156,6 @@ static int fat_ioctl_fitrim(struct inode *inode, unsigned long arg)
 long fat_generic_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	struct inode *inode = file_inode(filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 __user *user_attr = (u32 __user *)arg;
 
 	switch (cmd) {
@@ -231,35 +163,15 @@ long fat_generic_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		return fat_ioctl_get_attributes(inode, user_attr);
 	case FAT_IOCTL_SET_ATTRIBUTES:
 		return fat_ioctl_set_attributes(filp, user_attr);
-<<<<<<< HEAD
-=======
 	case FAT_IOCTL_GET_VOLUME_ID:
 		return fat_ioctl_get_volume_id(inode, user_attr);
 	case FITRIM:
 		return fat_ioctl_fitrim(inode, arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -ENOTTY;	/* Inappropriate ioctl for device */
 	}
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-static long fat_generic_compat_ioctl(struct file *filp, unsigned int cmd,
-				      unsigned long arg)
-
-{
-	return fat_generic_ioctl(filp, cmd, (unsigned long)compat_ptr(arg));
-}
-#endif
-
-static int fat_file_release(struct inode *inode, struct file *filp)
-{
-	if ((filp->f_mode & FMODE_WRITE) &&
-	     MSDOS_SB(inode->i_sb)->options.flush) {
-		fat_flush_inodes(inode->i_sb, inode, NULL);
-		congestion_wait(BLK_RW_ASYNC, HZ/10);
-=======
 static int fat_file_release(struct inode *inode, struct file *filp)
 {
 	if ((filp->f_mode & FMODE_WRITE) &&
@@ -267,7 +179,6 @@ static int fat_file_release(struct inode *inode, struct file *filp)
 		fat_flush_inodes(inode->i_sb, inode, NULL);
 		set_current_state(TASK_UNINTERRUPTIBLE);
 		io_schedule_timeout(HZ/10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -275,14 +186,6 @@ static int fat_file_release(struct inode *inode, struct file *filp)
 int fat_file_fsync(struct file *filp, loff_t start, loff_t end, int datasync)
 {
 	struct inode *inode = filp->f_mapping->host;
-<<<<<<< HEAD
-	int res, err;
-
-	res = generic_file_fsync(filp, start, end, datasync);
-	err = sync_mapping_buffers(MSDOS_SB(inode->i_sb)->fat_inode->i_mapping);
-
-	return res ? res : err;
-=======
 	int err;
 
 	err = __generic_file_fsync(filp, start, end, datasync);
@@ -294,26 +197,11 @@ int fat_file_fsync(struct file *filp, loff_t start, loff_t end, int datasync)
 		return err;
 
 	return blkdev_issue_flush(inode->i_sb->s_bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 const struct file_operations fat_file_operations = {
 	.llseek		= generic_file_llseek,
-<<<<<<< HEAD
-	.read		= do_sync_read,
-	.write		= do_sync_write,
-	.aio_read	= generic_file_aio_read,
-	.aio_write	= generic_file_aio_write,
-	.mmap		= generic_file_mmap,
-	.release	= fat_file_release,
-	.unlocked_ioctl	= fat_generic_ioctl,
-#ifdef CONFIG_COMPAT
-	.compat_ioctl	= fat_generic_compat_ioctl,
-#endif
-	.fsync		= fat_file_fsync,
-	.splice_read	= generic_file_splice_read,
-=======
 	.read_iter	= generic_file_read_iter,
 	.write_iter	= generic_file_write_iter,
 	.mmap		= generic_file_mmap,
@@ -324,7 +212,6 @@ const struct file_operations fat_file_operations = {
 	.splice_read	= filemap_splice_read,
 	.splice_write	= iter_file_splice_write,
 	.fallocate	= fat_fallocate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int fat_cont_expand(struct inode *inode, loff_t size)
@@ -337,11 +224,7 @@ static int fat_cont_expand(struct inode *inode, loff_t size)
 	if (err)
 		goto out;
 
-<<<<<<< HEAD
-	inode->i_ctime = inode->i_mtime = CURRENT_TIME_SEC;
-=======
 	fat_truncate_time(inode, NULL, S_CTIME|S_MTIME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 	if (IS_SYNC(inode)) {
 		int err2;
@@ -367,8 +250,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Preallocate space for a file. This implements fat's fallocate file
  * operation, which gets called from sys_fallocate system call. User
@@ -425,7 +306,6 @@ error:
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Free all clusters after the skip'th cluster. */
 static int fat_free(struct inode *inode, int skip)
 {
@@ -447,11 +327,7 @@ static int fat_free(struct inode *inode, int skip)
 		MSDOS_I(inode)->i_logstart = 0;
 	}
 	MSDOS_I(inode)->i_attrs |= ATTR_ARCH;
-<<<<<<< HEAD
-	inode->i_ctime = inode->i_mtime = CURRENT_TIME_SEC;
-=======
 	fat_truncate_time(inode, NULL, S_CTIME|S_MTIME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wait) {
 		err = fat_sync_inode(inode);
 		if (err) {
@@ -519,13 +395,6 @@ void fat_truncate_blocks(struct inode *inode, loff_t offset)
 	fat_flush_inodes(inode->i_sb, inode, NULL);
 }
 
-<<<<<<< HEAD
-int fat_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
-{
-	struct inode *inode = dentry->d_inode;
-	generic_fillattr(inode, stat);
-	stat->blksize = MSDOS_SB(inode->i_sb)->cluster_size;
-=======
 int fat_getattr(struct mnt_idmap *idmap, const struct path *path,
 		struct kstat *stat, u32 request_mask, unsigned int flags)
 {
@@ -545,7 +414,6 @@ int fat_getattr(struct mnt_idmap *idmap, const struct path *path,
 		stat->btime = MSDOS_I(inode)->i_crtime;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(fat_getattr);
@@ -588,14 +456,6 @@ static int fat_sanitize_mode(const struct msdos_sb_info *sbi,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int fat_allow_set_time(struct msdos_sb_info *sbi, struct inode *inode)
-{
-	umode_t allow_utime = sbi->options.allow_utime;
-
-	if (current_fsuid() != inode->i_uid) {
-		if (in_group_p(inode->i_gid))
-=======
 static int fat_allow_set_time(struct mnt_idmap *idmap,
 			      struct msdos_sb_info *sbi, struct inode *inode)
 {
@@ -604,7 +464,6 @@ static int fat_allow_set_time(struct mnt_idmap *idmap,
 	if (!vfsuid_eq_kuid(i_uid_into_vfsuid(idmap, inode),
 			    current_fsuid())) {
 		if (vfsgid_in_group_p(i_gid_into_vfsgid(idmap, inode)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			allow_utime >>= 3;
 		if (allow_utime & MAY_WRITE)
 			return 1;
@@ -618,37 +477,22 @@ static int fat_allow_set_time(struct mnt_idmap *idmap,
 /* valid file mode bits */
 #define FAT_VALID_MODE	(S_IFREG | S_IFDIR | S_IRWXUGO)
 
-<<<<<<< HEAD
-int fat_setattr(struct dentry *dentry, struct iattr *attr)
-{
-	struct msdos_sb_info *sbi = MSDOS_SB(dentry->d_sb);
-	struct inode *inode = dentry->d_inode;
-=======
 int fat_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		struct iattr *attr)
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(dentry->d_sb);
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int ia_valid;
 	int error;
 
 	/* Check for setting the inode time. */
 	ia_valid = attr->ia_valid;
 	if (ia_valid & TIMES_SET_FLAGS) {
-<<<<<<< HEAD
-		if (fat_allow_set_time(sbi, inode))
-			attr->ia_valid &= ~TIMES_SET_FLAGS;
-	}
-
-	error = inode_change_ok(inode, attr);
-=======
 		if (fat_allow_set_time(idmap, sbi, inode))
 			attr->ia_valid &= ~TIMES_SET_FLAGS;
 	}
 
 	error = setattr_prepare(idmap, dentry, attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	attr->ia_valid = ia_valid;
 	if (error) {
 		if (sbi->options.quiet)
@@ -674,17 +518,11 @@ int fat_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	}
 
 	if (((attr->ia_valid & ATTR_UID) &&
-<<<<<<< HEAD
-	     (attr->ia_uid != sbi->options.fs_uid)) ||
-	    ((attr->ia_valid & ATTR_GID) &&
-	     (attr->ia_gid != sbi->options.fs_gid)) ||
-=======
 	     (!uid_eq(from_vfsuid(idmap, i_user_ns(inode), attr->ia_vfsuid),
 		      sbi->options.fs_uid))) ||
 	    ((attr->ia_valid & ATTR_GID) &&
 	     (!gid_eq(from_vfsgid(idmap, i_user_ns(inode), attr->ia_vfsgid),
 		      sbi->options.fs_gid))) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    ((attr->ia_valid & ATTR_MODE) &&
 	     (attr->ia_mode & ~FAT_VALID_MODE)))
 		error = -EPERM;
@@ -705,21 +543,15 @@ int fat_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	}
 
 	if (attr->ia_valid & ATTR_SIZE) {
-<<<<<<< HEAD
-=======
 		error = fat_block_truncate_page(inode, attr->ia_size);
 		if (error)
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		down_write(&MSDOS_I(inode)->truncate_lock);
 		truncate_setsize(inode, attr->ia_size);
 		fat_truncate_blocks(inode, attr->ia_size);
 		up_write(&MSDOS_I(inode)->truncate_lock);
 	}
 
-<<<<<<< HEAD
-	setattr_copy(inode, attr);
-=======
 	/*
 	 * setattr_copy can't truncate these appropriately, so we'll
 	 * copy them ourselves
@@ -733,7 +565,6 @@ int fat_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	attr->ia_valid &= ~(ATTR_ATIME|ATTR_CTIME|ATTR_MTIME);
 
 	setattr_copy(idmap, inode, attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 out:
 	return error;
@@ -743,8 +574,5 @@ EXPORT_SYMBOL_GPL(fat_setattr);
 const struct inode_operations fat_file_inode_operations = {
 	.setattr	= fat_setattr,
 	.getattr	= fat_getattr,
-<<<<<<< HEAD
-=======
 	.update_time	= fat_update_time,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

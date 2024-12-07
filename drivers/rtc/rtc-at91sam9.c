@@ -1,35 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * "RTT as Real Time Clock" driver for AT91SAM9 SoC family
  *
  * (C) 2007 Michel Benoit
  *
  * Based on rtc-at91rm9200.c by Rick Bronson
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/platform_device.h>
-#include <linux/time.h>
-#include <linux/rtc.h>
-#include <linux/interrupt.h>
-#include <linux/ioctl.h>
-#include <linux/slab.h>
-
-#include <mach/board.h>
-#include <mach/at91_rtt.h>
-#include <mach/cpu.h>
-
-=======
  */
 
 #include <linux/clk.h>
@@ -46,7 +21,6 @@
 #include <linux/slab.h>
 #include <linux/suspend.h>
 #include <linux/time.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This driver uses two configurable hardware resources that live in the
@@ -69,8 +43,6 @@
  * registers available, likewise usable for more than "RTC" support.
  */
 
-<<<<<<< HEAD
-=======
 #define AT91_RTT_MR		0x00		/* Real-time Mode Register */
 #define AT91_RTT_RTPRES		(0xffff << 0)	/* Timer Prescaler Value */
 #define AT91_RTT_ALMIEN		BIT(16)		/* Alarm Interrupt Enable */
@@ -87,35 +59,16 @@
 #define AT91_RTT_ALMS		BIT(0)		/* Alarm Status */
 #define AT91_RTT_RTTINC		BIT(1)		/* Timer Increment */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We store ALARM_DISABLED in ALMV to record that no alarm is set.
  * It's also the reset value for that field.
  */
 #define ALARM_DISABLED	((u32)~0)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sam9_rtc {
 	void __iomem		*rtt;
 	struct rtc_device	*rtcdev;
 	u32			imr;
-<<<<<<< HEAD
-	void __iomem		*gpbr;
-};
-
-#define rtt_readl(rtc, field) \
-	__raw_readl((rtc)->rtt + AT91_RTT_ ## field)
-#define rtt_writel(rtc, field, val) \
-	__raw_writel((val), (rtc)->rtt + AT91_RTT_ ## field)
-
-#define gpbr_readl(rtc) \
-	__raw_readl((rtc)->gpbr)
-#define gpbr_writel(rtc, val) \
-	__raw_writel((val), (rtc)->gpbr)
-=======
 	struct regmap		*gpbr;
 	unsigned int		gpbr_offset;
 	int			irq;
@@ -143,7 +96,6 @@ static inline void gpbr_writel(struct sam9_rtc *rtc, unsigned int val)
 {
 	regmap_write(rtc->gpbr, rtc->gpbr_offset, val);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Read current time and date in RTC
@@ -165,17 +117,9 @@ static int at91_rtc_readtime(struct device *dev, struct rtc_time *tm)
 	if (secs != secs2)
 		secs = rtt_readl(rtc, VR);
 
-<<<<<<< HEAD
-	rtc_time_to_tm(offset + secs, tm);
-
-	dev_dbg(dev, "%s: %4d-%02d-%02d %02d:%02d:%02d\n", "readtime",
-		1900 + tm->tm_year, tm->tm_mon, tm->tm_mday,
-		tm->tm_hour, tm->tm_min, tm->tm_sec);
-=======
 	rtc_time64_to_tm(offset + secs, tm);
 
 	dev_dbg(dev, "%s: %ptR\n", __func__, tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -186,26 +130,12 @@ static int at91_rtc_readtime(struct device *dev, struct rtc_time *tm)
 static int at91_rtc_settime(struct device *dev, struct rtc_time *tm)
 {
 	struct sam9_rtc *rtc = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	int err;
-	u32 offset, alarm, mr;
-	unsigned long secs;
-
-	dev_dbg(dev, "%s: %4d-%02d-%02d %02d:%02d:%02d\n", "settime",
-		1900 + tm->tm_year, tm->tm_mon, tm->tm_mday,
-		tm->tm_hour, tm->tm_min, tm->tm_sec);
-
-	err = rtc_tm_to_time(tm, &secs);
-	if (err != 0)
-		return err;
-=======
 	u32 offset, alarm, mr;
 	unsigned long secs;
 
 	dev_dbg(dev, "%s: %ptR\n", __func__, tm);
 
 	secs = rtc_tm_to_time64(tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mr = rtt_readl(rtc, MR);
 
@@ -254,19 +184,10 @@ static int at91_rtc_readalarm(struct device *dev, struct rtc_wkalrm *alrm)
 		return -EILSEQ;
 
 	memset(alrm, 0, sizeof(*alrm));
-<<<<<<< HEAD
-	if (alarm != ALARM_DISABLED && offset != 0) {
-		rtc_time_to_tm(offset + alarm, tm);
-
-		dev_dbg(dev, "%s: %4d-%02d-%02d %02d:%02d:%02d\n", "readalarm",
-			1900 + tm->tm_year, tm->tm_mon, tm->tm_mday,
-			tm->tm_hour, tm->tm_min, tm->tm_sec);
-=======
 	if (alarm != ALARM_DISABLED) {
 		rtc_time64_to_tm(offset + alarm, tm);
 
 		dev_dbg(dev, "%s: %ptR\n", __func__, tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (rtt_readl(rtc, MR) & AT91_RTT_ALMIEN)
 			alrm->enabled = 1;
@@ -282,16 +203,8 @@ static int at91_rtc_setalarm(struct device *dev, struct rtc_wkalrm *alrm)
 	unsigned long secs;
 	u32 offset;
 	u32 mr;
-<<<<<<< HEAD
-	int err;
-
-	err = rtc_tm_to_time(tm, &secs);
-	if (err != 0)
-		return err;
-=======
 
 	secs = rtc_tm_to_time64(tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	offset = gpbr_readl(rtc);
 	if (offset == 0) {
@@ -312,13 +225,7 @@ static int at91_rtc_setalarm(struct device *dev, struct rtc_wkalrm *alrm)
 	if (alrm->enabled)
 		rtt_writel(rtc, MR, mr | AT91_RTT_ALMIEN);
 
-<<<<<<< HEAD
-	dev_dbg(dev, "%s: %4d-%02d-%02d %02d:%02d:%02d\n", "setalarm",
-		tm->tm_year, tm->tm_mon, tm->tm_mday, tm->tm_hour,
-		tm->tm_min, tm->tm_sec);
-=======
 	dev_dbg(dev, "%s: %ptR\n", __func__, tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -342,23 +249,6 @@ static int at91_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 static int at91_rtc_proc(struct device *dev, struct seq_file *seq)
 {
 	struct sam9_rtc *rtc = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	u32 mr = mr = rtt_readl(rtc, MR);
-
-	seq_printf(seq, "update_IRQ\t: %s\n",
-			(mr & AT91_RTT_RTTINCIEN) ? "yes" : "no");
-	return 0;
-}
-
-/*
- * IRQ handler for the RTC
- */
-static irqreturn_t at91_rtc_interrupt(int irq, void *_rtc)
-{
-	struct sam9_rtc *rtc = _rtc;
-	u32 sr, mr;
-	unsigned long events = 0;
-=======
 	u32 mr = rtt_readl(rtc, MR);
 
 	seq_printf(seq, "update_IRQ\t: %s\n",
@@ -369,7 +259,6 @@ static irqreturn_t at91_rtc_interrupt(int irq, void *_rtc)
 static irqreturn_t at91_rtc_cache_events(struct sam9_rtc *rtc)
 {
 	u32 sr, mr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Shared interrupt may be for another device.  Note: reading
 	 * SR clears it, so we must only read it in this irq handler!
@@ -381,30 +270,15 @@ static irqreturn_t at91_rtc_cache_events(struct sam9_rtc *rtc)
 
 	/* alarm status */
 	if (sr & AT91_RTT_ALMS)
-<<<<<<< HEAD
-		events |= (RTC_AF | RTC_IRQF);
-
-	/* timer update/increment */
-	if (sr & AT91_RTT_RTTINC)
-		events |= (RTC_UF | RTC_IRQF);
-
-	rtc_update_irq(rtc->rtcdev, 1, events);
-
-	pr_debug("%s: num=%ld, events=0x%02lx\n", __func__,
-		events >> 8, events & 0x000000FF);
-=======
 		rtc->events |= (RTC_AF | RTC_IRQF);
 
 	/* timer update/increment */
 	if (sr & AT91_RTT_RTTINC)
 		rtc->events |= (RTC_UF | RTC_IRQF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-=======
 static void at91_rtc_flush_events(struct sam9_rtc *rtc)
 {
 	if (!rtc->events)
@@ -446,7 +320,6 @@ static irqreturn_t at91_rtc_interrupt(int irq, void *_rtc)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct rtc_class_ops at91_rtc_ops = {
 	.read_time	= at91_rtc_readtime,
 	.set_time	= at91_rtc_settime,
@@ -459,26 +332,6 @@ static const struct rtc_class_ops at91_rtc_ops = {
 /*
  * Initialize and install RTC driver
  */
-<<<<<<< HEAD
-static int __devinit at91_rtc_probe(struct platform_device *pdev)
-{
-	struct resource	*r, *r_gpbr;
-	struct sam9_rtc	*rtc;
-	int		ret;
-	u32		mr;
-
-	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	r_gpbr = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-	if (!r || !r_gpbr) {
-		dev_err(&pdev->dev, "need 2 ressources\n");
-		return -ENODEV;
-	}
-
-	rtc = kzalloc(sizeof *rtc, GFP_KERNEL);
-	if (!rtc)
-		return -ENOMEM;
-
-=======
 static int at91_rtc_probe(struct platform_device *pdev)
 {
 	struct sam9_rtc	*rtc;
@@ -498,26 +351,11 @@ static int at91_rtc_probe(struct platform_device *pdev)
 	spin_lock_init(&rtc->lock);
 	rtc->irq = irq;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* platform setup code should have handled this; sigh */
 	if (!device_can_wakeup(&pdev->dev))
 		device_init_wakeup(&pdev->dev, 1);
 
 	platform_set_drvdata(pdev, rtc);
-<<<<<<< HEAD
-	rtc->rtt = ioremap(r->start, resource_size(r));
-	if (!rtc->rtt) {
-		dev_err(&pdev->dev, "failed to map registers, aborting.\n");
-		ret = -ENOMEM;
-		goto fail;
-	}
-
-	rtc->gpbr = ioremap(r_gpbr->start, resource_size(r_gpbr));
-	if (!rtc->gpbr) {
-		dev_err(&pdev->dev, "failed to map gpbr registers, aborting.\n");
-		ret = -ENOMEM;
-		goto fail_gpbr;
-=======
 
 	rtc->rtt = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(rtc->rtt))
@@ -551,19 +389,13 @@ static int at91_rtc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Invalid slow clock rate\n");
 		ret = -EINVAL;
 		goto err_clk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mr = rtt_readl(rtc, MR);
 
 	/* unless RTT is counting at 1 Hz, re-initialize it */
-<<<<<<< HEAD
-	if ((mr & AT91_RTT_RTPRES) != AT91_SLOW_CLOCK) {
-		mr = AT91_RTT_RTTRST | (AT91_SLOW_CLOCK & AT91_RTT_RTPRES);
-=======
 	if ((mr & AT91_RTT_RTPRES) != sclk_rate) {
 		mr = AT91_RTT_RTTRST | (sclk_rate & AT91_RTT_RTPRES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gpbr_writel(rtc, 0);
 	}
 
@@ -571,23 +403,6 @@ static int at91_rtc_probe(struct platform_device *pdev)
 	mr &= ~(AT91_RTT_ALMIEN | AT91_RTT_RTTINCIEN);
 	rtt_writel(rtc, MR, mr);
 
-<<<<<<< HEAD
-	rtc->rtcdev = rtc_device_register(pdev->name, &pdev->dev,
-				&at91_rtc_ops, THIS_MODULE);
-	if (IS_ERR(rtc->rtcdev)) {
-		ret = PTR_ERR(rtc->rtcdev);
-		goto fail_register;
-	}
-
-	/* register irq handler after we know what name we'll use */
-	ret = request_irq(AT91_ID_SYS, at91_rtc_interrupt,
-				IRQF_SHARED,
-				dev_name(&rtc->rtcdev->dev), rtc);
-	if (ret) {
-		dev_dbg(&pdev->dev, "can't share IRQ %d?\n", AT91_ID_SYS);
-		rtc_device_unregister(rtc->rtcdev);
-		goto fail_register;
-=======
 	rtc->rtcdev = devm_rtc_allocate_device(&pdev->dev);
 	if (IS_ERR(rtc->rtcdev)) {
 		ret = PTR_ERR(rtc->rtcdev);
@@ -604,7 +419,6 @@ static int at91_rtc_probe(struct platform_device *pdev)
 	if (ret) {
 		dev_dbg(&pdev->dev, "can't share IRQ %d?\n", rtc->irq);
 		goto err_clk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* NOTE:  sam9260 rev A silicon has a ROM bug which resets the
@@ -615,19 +429,6 @@ static int at91_rtc_probe(struct platform_device *pdev)
 
 	if (gpbr_readl(rtc) == 0)
 		dev_warn(&pdev->dev, "%s: SET TIME!\n",
-<<<<<<< HEAD
-				dev_name(&rtc->rtcdev->dev));
-
-	return 0;
-
-fail_register:
-	iounmap(rtc->gpbr);
-fail_gpbr:
-	iounmap(rtc->rtt);
-fail:
-	platform_set_drvdata(pdev, NULL);
-	kfree(rtc);
-=======
 			 dev_name(&rtc->rtcdev->dev));
 
 	return devm_rtc_register_device(rtc->rtcdev);
@@ -635,38 +436,21 @@ fail:
 err_clk:
 	clk_disable_unprepare(rtc->sclk);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /*
  * Disable and remove the RTC driver
  */
-<<<<<<< HEAD
-static int __devexit at91_rtc_remove(struct platform_device *pdev)
-=======
 static void at91_rtc_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sam9_rtc	*rtc = platform_get_drvdata(pdev);
 	u32		mr = rtt_readl(rtc, MR);
 
 	/* disable all interrupts */
 	rtt_writel(rtc, MR, mr & ~(AT91_RTT_ALMIEN | AT91_RTT_RTTINCIEN));
-<<<<<<< HEAD
-	free_irq(AT91_ID_SYS, rtc);
-
-	rtc_device_unregister(rtc->rtcdev);
-
-	iounmap(rtc->gpbr);
-	iounmap(rtc->rtt);
-	platform_set_drvdata(pdev, NULL);
-	kfree(rtc);
-	return 0;
-=======
 
 	clk_disable_unprepare(rtc->sclk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void at91_rtc_shutdown(struct platform_device *pdev)
@@ -678,16 +462,6 @@ static void at91_rtc_shutdown(struct platform_device *pdev)
 	rtt_writel(rtc, MR, mr & ~rtc->imr);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-
-/* AT91SAM9 RTC Power management control */
-
-static int at91_rtc_suspend(struct platform_device *pdev,
-					pm_message_t state)
-{
-	struct sam9_rtc	*rtc = platform_get_drvdata(pdev);
-=======
 #ifdef CONFIG_PM_SLEEP
 
 /* AT91SAM9 RTC Power management control */
@@ -695,7 +469,6 @@ static int at91_rtc_suspend(struct platform_device *pdev,
 static int at91_rtc_suspend(struct device *dev)
 {
 	struct sam9_rtc	*rtc = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		mr = rtt_readl(rtc, MR);
 
 	/*
@@ -704,15 +477,6 @@ static int at91_rtc_suspend(struct device *dev)
 	 */
 	rtc->imr = mr & (AT91_RTT_ALMIEN | AT91_RTT_RTTINCIEN);
 	if (rtc->imr) {
-<<<<<<< HEAD
-		if (device_may_wakeup(&pdev->dev) && (mr & AT91_RTT_ALMIEN)) {
-			enable_irq_wake(AT91_ID_SYS);
-			/* don't let RTTINC cause wakeups */
-			if (mr & AT91_RTT_RTTINCIEN)
-				rtt_writel(rtc, MR, mr & ~AT91_RTT_RTTINCIEN);
-		} else
-			rtt_writel(rtc, MR, mr & ~rtc->imr);
-=======
 		if (device_may_wakeup(dev) && (mr & AT91_RTT_ALMIEN)) {
 			unsigned long flags;
 
@@ -726,24 +490,11 @@ static int at91_rtc_suspend(struct device *dev)
 		} else {
 			rtt_writel(rtc, MR, mr & ~rtc->imr);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int at91_rtc_resume(struct platform_device *pdev)
-{
-	struct sam9_rtc	*rtc = platform_get_drvdata(pdev);
-	u32		mr;
-
-	if (rtc->imr) {
-		if (device_may_wakeup(&pdev->dev))
-			disable_irq_wake(AT91_ID_SYS);
-		mr = rtt_readl(rtc, MR);
-		rtt_writel(rtc, MR, mr | rtc->imr);
-=======
 static int at91_rtc_resume(struct device *dev)
 {
 	struct sam9_rtc	*rtc = dev_get_drvdata(dev);
@@ -762,42 +513,10 @@ static int at91_rtc_resume(struct device *dev)
 		at91_rtc_cache_events(rtc);
 		at91_rtc_flush_events(rtc);
 		spin_unlock_irqrestore(&rtc->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
-<<<<<<< HEAD
-#else
-#define at91_rtc_suspend	NULL
-#define at91_rtc_resume		NULL
-#endif
-
-static struct platform_driver at91_rtc_driver = {
-	.probe		= at91_rtc_probe,
-	.remove		= __devexit_p(at91_rtc_remove),
-	.shutdown	= at91_rtc_shutdown,
-	.suspend	= at91_rtc_suspend,
-	.resume		= at91_rtc_resume,
-	.driver		= {
-		.name	= "rtc-at91sam9",
-		.owner	= THIS_MODULE,
-	},
-};
-
-static int __init at91_rtc_init(void)
-{
-	return platform_driver_register(&at91_rtc_driver);
-}
-module_init(at91_rtc_init);
-
-static void __exit at91_rtc_exit(void)
-{
-	platform_driver_unregister(&at91_rtc_driver);
-}
-module_exit(at91_rtc_exit);
-
-=======
 #endif
 
 static SIMPLE_DEV_PM_OPS(at91_rtc_pm_ops, at91_rtc_suspend, at91_rtc_resume);
@@ -820,7 +539,6 @@ static struct platform_driver at91_rtc_driver = {
 };
 
 module_platform_driver(at91_rtc_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Michel Benoit");
 MODULE_DESCRIPTION("RTC driver for Atmel AT91SAM9x");

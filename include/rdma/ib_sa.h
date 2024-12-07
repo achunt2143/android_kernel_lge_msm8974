@@ -1,42 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2004 Topspin Communications.  All rights reserved.
  * Copyright (c) 2005 Voltaire, Inc.  All rights reserved.
  * Copyright (c) 2006 Intel Corporation.  All rights reserved.
-<<<<<<< HEAD
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef IB_SA_H
@@ -46,18 +12,12 @@
 #include <linux/compiler.h>
 
 #include <linux/atomic.h>
-<<<<<<< HEAD
-
-#include <rdma/ib_verbs.h>
-#include <rdma/ib_mad.h>
-=======
 #include <linux/netdevice.h>
 
 #include <rdma/ib_verbs.h>
 #include <rdma/ib_mad.h>
 #include <rdma/ib_addr.h>
 #include <rdma/opa_addr.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	IB_SA_CLASS_VERSION		= 2,	/* IB spec version 1.1/1.2 */
@@ -71,10 +31,7 @@ enum {
 	IB_SA_METHOD_GET_TRACE_TBL	= 0x13
 };
 
-<<<<<<< HEAD
-=======
 #define OPA_SA_CLASS_VERSION	0x80
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	IB_SA_ATTR_CLASS_PORTINFO    = 0x01,
 	IB_SA_ATTR_NOTICE	     = 0x02,
@@ -114,8 +71,6 @@ enum ib_sa_selector {
 };
 
 /*
-<<<<<<< HEAD
-=======
  * There are 4 types of join states:
  * FullMember, NonMember, SendOnlyNonMember, SendOnlyFullMember.
  * The order corresponds to JoinState bits in MCMemberRecord.
@@ -131,7 +86,6 @@ enum ib_sa_mc_join_states {
 #define IB_SA_CAP_MASK2_SENDONLY_FULL_MEM_SUPPORT	BIT(12)
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Structures for SA records are named "struct ib_sa_xxx_rec."  No
  * attempt is made to pack structures to match the physical layout of
  * SA records in SA MADs; all packing and unpacking is handled by the
@@ -169,15 +123,6 @@ enum ib_sa_mc_join_states {
 #define IB_SA_PATH_REC_PACKET_LIFE_TIME			IB_SA_COMP_MASK(21)
 #define IB_SA_PATH_REC_PREFERENCE			IB_SA_COMP_MASK(22)
 
-<<<<<<< HEAD
-struct ib_sa_path_rec {
-	__be64       service_id;
-	union ib_gid dgid;
-	union ib_gid sgid;
-	__be16       dlid;
-	__be16       slid;
-	int          raw_traffic;
-=======
 enum sa_path_rec_type {
 	SA_PATH_REC_TYPE_IB,
 	SA_PATH_REC_TYPE_ROCE_V1,
@@ -219,16 +164,11 @@ struct sa_path_rec {
 	union ib_gid dgid;
 	union ib_gid sgid;
 	__be64       service_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* reserved */
 	__be32       flow_label;
 	u8           hop_limit;
 	u8           traffic_class;
-<<<<<<< HEAD
-	int          reversible;
-=======
 	u8           reversible;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8           numb_path;
 	__be16       pkey;
 	__be16       qos_class;
@@ -240,10 +180,6 @@ struct sa_path_rec {
 	u8           packet_life_time_selector;
 	u8           packet_life_time;
 	u8           preference;
-<<<<<<< HEAD
-};
-
-=======
 	union {
 		struct sa_path_rec_ib ib;
 		struct sa_path_rec_roce roce;
@@ -350,7 +286,6 @@ static inline void sa_convert_path_ib_to_opa(struct sa_path_rec *dest,
 	path_conv_ib_to_opa(dest, src);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IB_SA_MCMEMBER_REC_MGID				IB_SA_COMP_MASK( 0)
 #define IB_SA_MCMEMBER_REC_PORT_GID			IB_SA_COMP_MASK( 1)
 #define IB_SA_MCMEMBER_REC_QKEY				IB_SA_COMP_MASK( 2)
@@ -388,11 +323,7 @@ struct ib_sa_mcmember_rec {
 	u8           hop_limit;
 	u8           scope;
 	u8           join_state;
-<<<<<<< HEAD
-	int          proxy_join;
-=======
 	u8           proxy_join;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Service Record Component Mask Sec 15.2.5.14 Ver 1.1	*/
@@ -436,20 +367,6 @@ struct ib_sa_mcmember_rec {
 
 #define IB_DEFAULT_SERVICE_LEASE 	0xFFFFFFFF
 
-<<<<<<< HEAD
-struct ib_sa_service_rec {
-	u64		id;
-	union ib_gid	gid;
-	__be16 		pkey;
-	/* reserved */
-	u32		lease;
-	u8		key[16];
-	u8		name[64];
-	u8		data8[16];
-	u16		data16[8];
-	u32		data32[4];
-	u64		data64[2];
-=======
 #define IB_SA_GUIDINFO_REC_LID		IB_SA_COMP_MASK(0)
 #define IB_SA_GUIDINFO_REC_BLOCK_NUM	IB_SA_COMP_MASK(1)
 #define IB_SA_GUIDINFO_REC_RES1		IB_SA_COMP_MASK(2)
@@ -470,7 +387,6 @@ struct ib_sa_guidinfo_rec {
 	u8	res1;
 	__be32	res2;
 	u8	guid_info_list[64];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ib_sa_client {
@@ -493,30 +409,6 @@ struct ib_sa_query;
 
 void ib_sa_cancel_query(int id, struct ib_sa_query *query);
 
-<<<<<<< HEAD
-int ib_sa_path_rec_get(struct ib_sa_client *client,
-		       struct ib_device *device, u8 port_num,
-		       struct ib_sa_path_rec *rec,
-		       ib_sa_comp_mask comp_mask,
-		       int timeout_ms, gfp_t gfp_mask,
-		       void (*callback)(int status,
-					struct ib_sa_path_rec *resp,
-					void *context),
-		       void *context,
-		       struct ib_sa_query **query);
-
-int ib_sa_service_rec_query(struct ib_sa_client *client,
-			 struct ib_device *device, u8 port_num,
-			 u8 method,
-			 struct ib_sa_service_rec *rec,
-			 ib_sa_comp_mask comp_mask,
-			 int timeout_ms, gfp_t gfp_mask,
-			 void (*callback)(int status,
-					  struct ib_sa_service_rec *resp,
-					  void *context),
-			 void *context,
-			 struct ib_sa_query **sa_query);
-=======
 int ib_sa_path_rec_get(struct ib_sa_client *client, struct ib_device *device,
 		       u32 port_num, struct sa_path_rec *rec,
 		       ib_sa_comp_mask comp_mask, unsigned long timeout_ms,
@@ -524,7 +416,6 @@ int ib_sa_path_rec_get(struct ib_sa_client *client, struct ib_device *device,
 		       void (*callback)(int status, struct sa_path_rec *resp,
 					unsigned int num_prs, void *context),
 		       void *context, struct ib_sa_query **query);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ib_sa_multicast {
 	struct ib_sa_mcmember_rec rec;
@@ -563,12 +454,8 @@ struct ib_sa_multicast {
  *   group, and the user must rejoin the group to continue using it.
  */
 struct ib_sa_multicast *ib_sa_join_multicast(struct ib_sa_client *client,
-<<<<<<< HEAD
-					     struct ib_device *device, u8 port_num,
-=======
 					     struct ib_device *device,
 					     u32 port_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     struct ib_sa_mcmember_rec *rec,
 					     ib_sa_comp_mask comp_mask, gfp_t gfp_mask,
 					     int (*callback)(int status,
@@ -597,30 +484,13 @@ void ib_sa_free_multicast(struct ib_sa_multicast *multicast);
  * @mgid: MGID of multicast group.
  * @rec: Location to copy SA multicast member record.
  */
-<<<<<<< HEAD
-int ib_sa_get_mcmember_rec(struct ib_device *device, u8 port_num,
-=======
 int ib_sa_get_mcmember_rec(struct ib_device *device, u32 port_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   union ib_gid *mgid, struct ib_sa_mcmember_rec *rec);
 
 /**
  * ib_init_ah_from_mcmember - Initialize address handle attributes based on
  * an SA multicast member record.
  */
-<<<<<<< HEAD
-int ib_init_ah_from_mcmember(struct ib_device *device, u8 port_num,
-			     struct ib_sa_mcmember_rec *rec,
-			     struct ib_ah_attr *ah_attr);
-
-/**
- * ib_init_ah_from_path - Initialize address handle attributes based on an SA
- *   path record.
- */
-int ib_init_ah_from_path(struct ib_device *device, u8 port_num,
-			 struct ib_sa_path_rec *rec,
-			 struct ib_ah_attr *ah_attr);
-=======
 int ib_init_ah_from_mcmember(struct ib_device *device, u32 port_num,
 			     struct ib_sa_mcmember_rec *rec,
 			     struct net_device *ndev,
@@ -637,16 +507,11 @@ int ib_init_ah_attr_from_path(struct ib_device *device, u32 port_num,
  * to IB MAD wire format.
  */
 void ib_sa_pack_path(struct sa_path_rec *rec, void *attribute);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ib_sa_unpack_path - Convert a path record from MAD format to struct
  * ib_sa_path_rec.
  */
-<<<<<<< HEAD
-void ib_sa_unpack_path(void *attribute, struct ib_sa_path_rec *rec);
-
-=======
 void ib_sa_unpack_path(void *attribute, struct sa_path_rec *rec);
 
 /* Support GuidInfoRecord */
@@ -741,5 +606,4 @@ static inline u8 *sa_path_get_dmac(struct sa_path_rec *rec)
 		return rec->roce.dmac;
 	return NULL;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* IB_SA_H */

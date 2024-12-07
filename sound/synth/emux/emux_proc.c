@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 2000 Takashi Iwai <tiwai@suse.de>
  *
  *  Proc interface for Emu8k/Emu10k1 WaveTable synth
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/wait.h>
@@ -31,11 +11,6 @@
 #include <sound/info.h>
 #include "emux_voice.h"
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 snd_emux_proc_info_read(struct snd_info_entry *entry, 
 			struct snd_info_buffer *buf)
@@ -127,13 +102,6 @@ void snd_emux_proc_init(struct snd_emux *emu, struct snd_card *card, int device)
 	entry->content = SNDRV_INFO_CONTENT_TEXT;
 	entry->private_data = emu;
 	entry->c.text.read = snd_emux_proc_info_read;
-<<<<<<< HEAD
-	if (snd_info_register(entry) < 0)
-		snd_info_free_entry(entry);
-	else
-		emu->proc = entry;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void snd_emux_proc_free(struct snd_emux *emu)
@@ -141,8 +109,3 @@ void snd_emux_proc_free(struct snd_emux *emu)
 	snd_info_free_entry(emu->proc);
 	emu->proc = NULL;
 }
-<<<<<<< HEAD
-
-#endif /* CONFIG_PROC_FS */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_MSR_INDEX_H
-#define _ASM_X86_MSR_INDEX_H
-
-/* CPU model specific register (MSR) numbers */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_MSR_INDEX_H
 #define _ASM_X86_MSR_INDEX_H
@@ -11,7 +5,6 @@
 #include <linux/bits.h>
 
 /* CPU model specific register (MSR) numbers. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* x86-64 specific MSRs */
 #define MSR_EFER		0xc0000080 /* extended feature register */
@@ -32,10 +25,7 @@
 #define _EFER_SVME		12 /* Enable virtualization */
 #define _EFER_LMSLE		13 /* Long Mode Segment Limit Enable */
 #define _EFER_FFXSR		14 /* Enable Fast FXSAVE/FXRSTOR */
-<<<<<<< HEAD
-=======
 #define _EFER_AUTOIBRS		21 /* Enable Automatic IBRS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EFER_SCE		(1<<_EFER_SCE)
 #define EFER_LME		(1<<_EFER_LME)
@@ -44,23 +34,6 @@
 #define EFER_SVME		(1<<_EFER_SVME)
 #define EFER_LMSLE		(1<<_EFER_LMSLE)
 #define EFER_FFXSR		(1<<_EFER_FFXSR)
-<<<<<<< HEAD
-
-/* Intel MSRs. Some also available on other CPUs */
-#define MSR_IA32_PERFCTR0		0x000000c1
-#define MSR_IA32_PERFCTR1		0x000000c2
-#define MSR_FSB_FREQ			0x000000cd
-
-#define MSR_NHM_SNB_PKG_CST_CFG_CTL	0x000000e2
-#define NHM_C3_AUTO_DEMOTE		(1UL << 25)
-#define NHM_C1_AUTO_DEMOTE		(1UL << 26)
-#define ATM_LNC_C6_AUTO_DEMOTE		(1UL << 25)
-
-#define MSR_MTRRcap			0x000000fe
-#define MSR_IA32_BBL_CR_CTL		0x00000119
-#define MSR_IA32_BBL_CR_CTL3		0x0000011e
-
-=======
 #define EFER_AUTOIBRS		(1<<_EFER_AUTOIBRS)
 
 /* FRED MSRs */
@@ -244,7 +217,6 @@
 #define GDS_MITG_DIS			BIT(4)	/* Disable GDS mitigation */
 #define GDS_MITG_LOCKED			BIT(5)	/* GDS mitigation locked */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_IA32_SYSENTER_CS		0x00000174
 #define MSR_IA32_SYSENTER_ESP		0x00000175
 #define MSR_IA32_SYSENTER_EIP		0x00000176
@@ -252,14 +224,6 @@
 #define MSR_IA32_MCG_CAP		0x00000179
 #define MSR_IA32_MCG_STATUS		0x0000017a
 #define MSR_IA32_MCG_CTL		0x0000017b
-<<<<<<< HEAD
-
-#define MSR_OFFCORE_RSP_0		0x000001a6
-#define MSR_OFFCORE_RSP_1		0x000001a7
-
-#define MSR_LBR_SELECT			0x000001c8
-#define MSR_LBR_TOS			0x000001c9
-=======
 #define MSR_ERROR_CONTROL		0x0000017f
 #define MSR_IA32_MCG_EXT_CTL		0x000004d0
 
@@ -286,17 +250,11 @@
 #define MSR_INTEGRITY_CAPS_PERIODIC_BIST	BIT(MSR_INTEGRITY_CAPS_PERIODIC_BIST_BIT)
 #define MSR_INTEGRITY_CAPS_SAF_GEN_MASK	GENMASK_ULL(10, 9)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_LBR_NHM_FROM		0x00000680
 #define MSR_LBR_NHM_TO			0x000006c0
 #define MSR_LBR_CORE_FROM		0x00000040
 #define MSR_LBR_CORE_TO			0x00000060
 
-<<<<<<< HEAD
-#define MSR_IA32_PEBS_ENABLE		0x000003f1
-#define MSR_IA32_DS_AREA		0x00000600
-#define MSR_IA32_PERF_CAPABILITIES	0x00000345
-=======
 #define MSR_LBR_INFO_0			0x00000dc0 /* ... 0xddf for _31 */
 #define LBR_INFO_MISPRED		BIT_ULL(63)
 #define LBR_INFO_IN_TX			BIT_ULL(62)
@@ -390,7 +348,6 @@
 #define MSR_IA32_RTIT_CR3_MATCH		0x00000572
 #define MSR_IA32_RTIT_OUTPUT_BASE	0x00000560
 #define MSR_IA32_RTIT_OUTPUT_MASK	0x00000561
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MSR_MTRRfix64K_00000		0x00000250
 #define MSR_MTRRfix16K_80000		0x00000258
@@ -413,11 +370,6 @@
 #define MSR_IA32_LASTINTFROMIP		0x000001dd
 #define MSR_IA32_LASTINTTOIP		0x000001de
 
-<<<<<<< HEAD
-/* DEBUGCTLMSR bits (others vary by model): */
-#define DEBUGCTLMSR_LBR			(1UL <<  0) /* last branch recording */
-#define DEBUGCTLMSR_BTF			(1UL <<  1) /* single-step on branches */
-=======
 #define MSR_IA32_PASID			0x00000d93
 #define MSR_IA32_PASID_VALID		BIT_ULL(31)
 
@@ -426,29 +378,23 @@
 #define DEBUGCTLMSR_BTF_SHIFT		1
 #define DEBUGCTLMSR_BTF			(1UL <<  1) /* single-step on branches */
 #define DEBUGCTLMSR_BUS_LOCK_DETECT	(1UL <<  2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEBUGCTLMSR_TR			(1UL <<  6)
 #define DEBUGCTLMSR_BTS			(1UL <<  7)
 #define DEBUGCTLMSR_BTINT		(1UL <<  8)
 #define DEBUGCTLMSR_BTS_OFF_OS		(1UL <<  9)
 #define DEBUGCTLMSR_BTS_OFF_USR		(1UL << 10)
 #define DEBUGCTLMSR_FREEZE_LBRS_ON_PMI	(1UL << 11)
-<<<<<<< HEAD
-=======
 #define DEBUGCTLMSR_FREEZE_PERFMON_ON_PMI	(1UL << 12)
 #define DEBUGCTLMSR_FREEZE_IN_SMM_BIT	14
 #define DEBUGCTLMSR_FREEZE_IN_SMM	(1UL << DEBUGCTLMSR_FREEZE_IN_SMM_BIT)
 
 #define MSR_PEBS_FRONTEND		0x000003f7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MSR_IA32_MC0_CTL		0x00000400
 #define MSR_IA32_MC0_STATUS		0x00000401
 #define MSR_IA32_MC0_ADDR		0x00000402
 #define MSR_IA32_MC0_MISC		0x00000403
 
-<<<<<<< HEAD
-=======
 /* C-state Residency Counters */
 #define MSR_PKG_C3_RESIDENCY		0x000003f8
 #define MSR_PKG_C6_RESIDENCY		0x000003f9
@@ -591,7 +537,6 @@
 #define HWP_CHANGE_TO_GUARANTEED_INT(x)	(x & 0x1)
 #define HWP_EXCURSION_TO_MINIMUM_INT(x)	(x & 0x2)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_AMD64_MC0_MASK		0xc0010044
 
 #define MSR_IA32_MCx_CTL(x)		(MSR_IA32_MC0_CTL + 4*(x))
@@ -610,11 +555,6 @@
 #define MSR_P6_EVNTSEL0			0x00000186
 #define MSR_P6_EVNTSEL1			0x00000187
 
-<<<<<<< HEAD
-/* AMD64 MSRs. Not complete. See the architecture manual for a more
-   complete list. */
-
-=======
 #define MSR_KNC_PERFCTR0               0x00000020
 #define MSR_KNC_PERFCTR1               0x00000021
 #define MSR_KNC_EVNTSEL0               0x00000028
@@ -634,20 +574,10 @@
  * AMD64 MSRs. Not complete. See the architecture manual for a more
  * complete list.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_AMD64_PATCH_LEVEL		0x0000008b
 #define MSR_AMD64_TSC_RATIO		0xc0000104
 #define MSR_AMD64_NB_CFG		0xc001001f
 #define MSR_AMD64_PATCH_LOADER		0xc0010020
-<<<<<<< HEAD
-#define MSR_AMD64_OSVW_ID_LENGTH	0xc0010140
-#define MSR_AMD64_OSVW_STATUS		0xc0010141
-#define MSR_AMD64_LS_CFG		0xc0011020
-#define MSR_AMD64_DC_CFG		0xc0011022
-#define MSR_AMD64_IBSFETCHCTL		0xc0011030
-#define MSR_AMD64_IBSFETCHLINAD		0xc0011031
-#define MSR_AMD64_IBSFETCHPHYSAD	0xc0011032
-=======
 #define MSR_AMD_PERF_CTL		0xc0010062
 #define MSR_AMD_PERF_STATUS		0xc0010063
 #define MSR_AMD_PSTATE_DEF_BASE		0xc0010064
@@ -671,7 +601,6 @@
 #define MSR_AMD64_IBSFETCHPHYSAD	0xc0011032
 #define MSR_AMD64_IBSFETCH_REG_COUNT	3
 #define MSR_AMD64_IBSFETCH_REG_MASK	((1UL<<MSR_AMD64_IBSFETCH_REG_COUNT)-1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_AMD64_IBSOPCTL		0xc0011033
 #define MSR_AMD64_IBSOPRIP		0xc0011034
 #define MSR_AMD64_IBSOPDATA		0xc0011035
@@ -679,14 +608,6 @@
 #define MSR_AMD64_IBSOPDATA3		0xc0011037
 #define MSR_AMD64_IBSDCLINAD		0xc0011038
 #define MSR_AMD64_IBSDCPHYSAD		0xc0011039
-<<<<<<< HEAD
-#define MSR_AMD64_IBSCTL		0xc001103a
-#define MSR_AMD64_IBSBRTARGET		0xc001103b
-
-/* Fam 15h MSRs */
-#define MSR_F15H_PERF_CTL		0xc0010200
-#define MSR_F15H_PERF_CTR		0xc0010201
-=======
 #define MSR_AMD64_IBSOP_REG_COUNT	7
 #define MSR_AMD64_IBSOP_REG_MASK	((1UL<<MSR_AMD64_IBSOP_REG_COUNT)-1)
 #define MSR_AMD64_IBSCTL		0xc001103a
@@ -812,7 +733,6 @@
 #define MSR_F15H_PTSC			0xc0010280
 #define MSR_F15H_IC_CFG			0xc0011021
 #define MSR_F15H_EX_CFG			0xc001102c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Fam 10h MSRs */
 #define MSR_FAM10H_MMIO_CONF_BASE	0xc0010058
@@ -826,9 +746,6 @@
 /* K8 MSRs */
 #define MSR_K8_TOP_MEM1			0xc001001a
 #define MSR_K8_TOP_MEM2			0xc001001d
-<<<<<<< HEAD
-#define MSR_K8_SYSCFG			0xc0010010
-=======
 #define MSR_AMD64_SYSCFG		0xc0010010
 #define MSR_AMD64_SYSCFG_MEM_ENCRYPT_BIT 23
 #define MSR_AMD64_SYSCFG_MEM_ENCRYPT	BIT_ULL(MSR_AMD64_SYSCFG_MEM_ENCRYPT_BIT)
@@ -839,7 +756,6 @@
 #define MSR_AMD64_SYSCFG_MFDM_BIT	19
 #define MSR_AMD64_SYSCFG_MFDM		BIT_ULL(MSR_AMD64_SYSCFG_MFDM_BIT)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_K8_INT_PENDING_MSG		0xc0010055
 /* C1E active bits in int pending message */
 #define K8_INTP_C1E_ACTIVE_MASK		0x18000000
@@ -860,13 +776,10 @@
 #define MSR_K7_PERFCTR3			0xc0010007
 #define MSR_K7_CLK_CTL			0xc001001b
 #define MSR_K7_HWCR			0xc0010015
-<<<<<<< HEAD
-=======
 #define MSR_K7_HWCR_SMMLOCK_BIT		0
 #define MSR_K7_HWCR_SMMLOCK		BIT_ULL(MSR_K7_HWCR_SMMLOCK_BIT)
 #define MSR_K7_HWCR_IRPERF_EN_BIT	30
 #define MSR_K7_HWCR_IRPERF_EN		BIT_ULL(MSR_K7_HWCR_IRPERF_EN_BIT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_K7_FID_VID_CTL		0xc0010041
 #define MSR_K7_FID_VID_STATUS		0xc0010042
 
@@ -912,13 +825,6 @@
 #define MSR_IA32_PLATFORM_ID		0x00000017
 #define MSR_IA32_EBL_CR_POWERON		0x0000002a
 #define MSR_EBC_FREQUENCY_ID		0x0000002c
-<<<<<<< HEAD
-#define MSR_IA32_FEATURE_CONTROL        0x0000003a
-
-#define FEATURE_CONTROL_LOCKED				(1<<0)
-#define FEATURE_CONTROL_VMXON_ENABLED_INSIDE_SMX	(1<<1)
-#define FEATURE_CONTROL_VMXON_ENABLED_OUTSIDE_SMX	(1<<2)
-=======
 #define MSR_SMI_COUNT			0x00000034
 
 /* Referred to as IA32_FEATURE_CONTROL in Intel's SDM. */
@@ -938,22 +844,12 @@
 #define MSR_IA32_XFD			0x000001c4
 #define MSR_IA32_XFD_ERR		0x000001c5
 #define MSR_IA32_XSS			0x00000da0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MSR_IA32_APICBASE		0x0000001b
 #define MSR_IA32_APICBASE_BSP		(1<<8)
 #define MSR_IA32_APICBASE_ENABLE	(1<<11)
 #define MSR_IA32_APICBASE_BASE		(0xfffff<<12)
 
-<<<<<<< HEAD
-#define MSR_IA32_TSCDEADLINE		0x000006e0
-
-#define MSR_IA32_UCODE_WRITE		0x00000079
-#define MSR_IA32_UCODE_REV		0x0000008b
-
-#define MSR_IA32_PERF_STATUS		0x00000198
-#define MSR_IA32_PERF_CTL		0x00000199
-=======
 #define MSR_IA32_UCODE_WRITE		0x00000079
 #define MSR_IA32_UCODE_REV		0x0000008b
 
@@ -975,7 +871,6 @@
 #define MSR_AMD_SAMP_BR_FROM		0xc0010300
 
 #define DBG_EXTN_CFG_LBRV2EN		BIT_ULL(6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MSR_IA32_MPERF			0x000000e7
 #define MSR_IA32_APERF			0x000000e8
@@ -1000,12 +895,6 @@
 
 #define MSR_IA32_TEMPERATURE_TARGET	0x000001a2
 
-<<<<<<< HEAD
-#define MSR_IA32_ENERGY_PERF_BIAS	0x000001b0
-#define ENERGY_PERF_BIAS_PERFORMANCE	0
-#define ENERGY_PERF_BIAS_NORMAL		6
-#define ENERGY_PERF_BIAS_POWERSAVE	15
-=======
 #define MSR_MISC_FEATURE_CONTROL	0x000001a4
 #define MSR_MISC_PWR_MGMT		0x000001aa
 
@@ -1016,26 +905,19 @@
 #define ENERGY_PERF_BIAS_NORMAL_POWERSAVE	7
 #define ENERGY_PERF_BIAS_BALANCE_POWERSAVE	8
 #define ENERGY_PERF_BIAS_POWERSAVE		15
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MSR_IA32_PACKAGE_THERM_STATUS		0x000001b1
 
 #define PACKAGE_THERM_STATUS_PROCHOT		(1 << 0)
 #define PACKAGE_THERM_STATUS_POWER_LIMIT	(1 << 10)
-<<<<<<< HEAD
-=======
 #define PACKAGE_THERM_STATUS_HFI_UPDATED	(1 << 26)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MSR_IA32_PACKAGE_THERM_INTERRUPT	0x000001b2
 
 #define PACKAGE_THERM_INT_HIGH_ENABLE		(1 << 0)
 #define PACKAGE_THERM_INT_LOW_ENABLE		(1 << 1)
 #define PACKAGE_THERM_INT_PLN_ENABLE		(1 << 24)
-<<<<<<< HEAD
-=======
 #define PACKAGE_THERM_INT_HFI_ENABLE		(1 << 25)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Thermal Thresholds Support */
 #define THERM_INT_THRESHOLD0_ENABLE    (1 << 15)
@@ -1050,35 +932,6 @@
 #define THERM_LOG_THRESHOLD1           (1 << 9)
 
 /* MISC_ENABLE bits: architectural */
-<<<<<<< HEAD
-#define MSR_IA32_MISC_ENABLE_FAST_STRING	(1ULL << 0)
-#define MSR_IA32_MISC_ENABLE_TCC		(1ULL << 1)
-#define MSR_IA32_MISC_ENABLE_EMON		(1ULL << 7)
-#define MSR_IA32_MISC_ENABLE_BTS_UNAVAIL	(1ULL << 11)
-#define MSR_IA32_MISC_ENABLE_PEBS_UNAVAIL	(1ULL << 12)
-#define MSR_IA32_MISC_ENABLE_ENHANCED_SPEEDSTEP	(1ULL << 16)
-#define MSR_IA32_MISC_ENABLE_MWAIT		(1ULL << 18)
-#define MSR_IA32_MISC_ENABLE_LIMIT_CPUID	(1ULL << 22)
-#define MSR_IA32_MISC_ENABLE_XTPR_DISABLE	(1ULL << 23)
-#define MSR_IA32_MISC_ENABLE_XD_DISABLE		(1ULL << 34)
-
-/* MISC_ENABLE bits: model-specific, meaning may vary from core to core */
-#define MSR_IA32_MISC_ENABLE_X87_COMPAT		(1ULL << 2)
-#define MSR_IA32_MISC_ENABLE_TM1		(1ULL << 3)
-#define MSR_IA32_MISC_ENABLE_SPLIT_LOCK_DISABLE	(1ULL << 4)
-#define MSR_IA32_MISC_ENABLE_L3CACHE_DISABLE	(1ULL << 6)
-#define MSR_IA32_MISC_ENABLE_SUPPRESS_LOCK	(1ULL << 8)
-#define MSR_IA32_MISC_ENABLE_PREFETCH_DISABLE	(1ULL << 9)
-#define MSR_IA32_MISC_ENABLE_FERR		(1ULL << 10)
-#define MSR_IA32_MISC_ENABLE_FERR_MULTIPLEX	(1ULL << 10)
-#define MSR_IA32_MISC_ENABLE_TM2		(1ULL << 13)
-#define MSR_IA32_MISC_ENABLE_ADJ_PREF_DISABLE	(1ULL << 19)
-#define MSR_IA32_MISC_ENABLE_SPEEDSTEP_LOCK	(1ULL << 20)
-#define MSR_IA32_MISC_ENABLE_L1D_CONTEXT	(1ULL << 24)
-#define MSR_IA32_MISC_ENABLE_DCU_PREF_DISABLE	(1ULL << 37)
-#define MSR_IA32_MISC_ENABLE_TURBO_DISABLE	(1ULL << 38)
-#define MSR_IA32_MISC_ENABLE_IP_PREF_DISABLE	(1ULL << 39)
-=======
 #define MSR_IA32_MISC_ENABLE_FAST_STRING_BIT		0
 #define MSR_IA32_MISC_ENABLE_FAST_STRING		(1ULL << MSR_IA32_MISC_ENABLE_FAST_STRING_BIT)
 #define MSR_IA32_MISC_ENABLE_TCC_BIT			1
@@ -1150,7 +1003,6 @@
 #define MSR_TFA_TSX_CPUID_CLEAR		BIT_ULL(MSR_TFA_TSX_CPUID_CLEAR_BIT)
 #define MSR_TFA_SDV_ENABLE_RTM_BIT	2
 #define MSR_TFA_SDV_ENABLE_RTM		BIT_ULL(MSR_TFA_SDV_ENABLE_RTM_BIT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* P4/Xeon+ specific */
 #define MSR_IA32_MCG_EAX		0x00000180
@@ -1256,17 +1108,12 @@
 #define MSR_CORE_PERF_FIXED_CTR0	0x00000309
 #define MSR_CORE_PERF_FIXED_CTR1	0x0000030a
 #define MSR_CORE_PERF_FIXED_CTR2	0x0000030b
-<<<<<<< HEAD
-=======
 #define MSR_CORE_PERF_FIXED_CTR3	0x0000030c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_CORE_PERF_FIXED_CTR_CTRL	0x0000038d
 #define MSR_CORE_PERF_GLOBAL_STATUS	0x0000038e
 #define MSR_CORE_PERF_GLOBAL_CTRL	0x0000038f
 #define MSR_CORE_PERF_GLOBAL_OVF_CTRL	0x00000390
 
-<<<<<<< HEAD
-=======
 #define MSR_PERF_METRICS		0x00000329
 
 /* PERF_GLOBAL_OVF_CTL bits */
@@ -1277,7 +1124,6 @@
 #define MSR_CORE_PERF_GLOBAL_OVF_CTRL_COND_CHGD_BIT		63
 #define MSR_CORE_PERF_GLOBAL_OVF_CTRL_COND_CHGD			(1ULL << MSR_CORE_PERF_GLOBAL_OVF_CTRL_COND_CHGD_BIT)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Geode defined MSRs */
 #define MSR_GEODE_BUSCONT_CONF0		0x00001900
 
@@ -1299,28 +1145,18 @@
 #define MSR_IA32_VMX_TRUE_PROCBASED_CTLS 0x0000048e
 #define MSR_IA32_VMX_TRUE_EXIT_CTLS      0x0000048f
 #define MSR_IA32_VMX_TRUE_ENTRY_CTLS     0x00000490
-<<<<<<< HEAD
-
-/* VMX_BASIC bits and bitmasks */
-#define VMX_BASIC_VMCS_SIZE_SHIFT	32
-=======
 #define MSR_IA32_VMX_VMFUNC             0x00000491
 #define MSR_IA32_VMX_PROCBASED_CTLS3	0x00000492
 
 /* VMX_BASIC bits and bitmasks */
 #define VMX_BASIC_VMCS_SIZE_SHIFT	32
 #define VMX_BASIC_TRUE_CTLS		(1ULL << 55)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VMX_BASIC_64		0x0001000000000000LLU
 #define VMX_BASIC_MEM_TYPE_SHIFT	50
 #define VMX_BASIC_MEM_TYPE_MASK	0x003c000000000000LLU
 #define VMX_BASIC_MEM_TYPE_WB	6LLU
 #define VMX_BASIC_INOUT		0x0040000000000000LLU
 
-<<<<<<< HEAD
-/* AMD-V MSRs */
-
-=======
 /* Resctrl MSRs: */
 /* - Intel: */
 #define MSR_IA32_L3_QOS_CFG		0xc81
@@ -1343,13 +1179,10 @@
 #define MSR_IA32_VMX_MISC_PREEMPTION_TIMER_SCALE   0x1F
 
 /* AMD-V MSRs */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_VM_CR                       0xc0010114
 #define MSR_VM_IGNNE                    0xc0010115
 #define MSR_VM_HSAVE_PA                 0xc0010117
 
-<<<<<<< HEAD
-=======
 #define SVM_VM_CR_VALID_MASK		0x001fULL
 #define SVM_VM_CR_SVM_LOCK_MASK		0x0008ULL
 #define SVM_VM_CR_SVM_DIS_MASK		0x0010ULL
@@ -1366,5 +1199,4 @@
 						* a #GP
 						*/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_MSR_INDEX_H */

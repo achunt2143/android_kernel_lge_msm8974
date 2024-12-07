@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Maintained by Jaroslav Kysela <perex@perex.cz>
  *  Originated by audio@tridentmicro.com
@@ -13,24 +10,6 @@
  *  TODO:
  *    ---
  *
-<<<<<<< HEAD
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  SiS7018 S/PDIF support by Thomas Winischhofer <thomas@winischhofer.net>
  */
 
@@ -43,26 +22,15 @@
 #include <linux/gameport.h>
 #include <linux/dma-mapping.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/info.h>
 #include <sound/control.h>
 #include <sound/tlv.h>
-<<<<<<< HEAD
-#include <sound/trident.h>
-#include <sound/asoundef.h>
-
-#include <asm/io.h>
-
-=======
 #include "trident.h"
 #include <sound/asoundef.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_trident_pcm_mixer_build(struct snd_trident *trident,
 				       struct snd_trident_voice * voice,
 				       struct snd_pcm_substream *substream);
@@ -74,11 +42,7 @@ static int snd_trident_sis_reset(struct snd_trident *trident);
 
 static void snd_trident_clear_voices(struct snd_trident * trident,
 				     unsigned short v_min, unsigned short v_max);
-<<<<<<< HEAD
-static int snd_trident_free(struct snd_trident *trident);
-=======
 static void snd_trident_free(struct snd_card *card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  common I/O routines
@@ -90,26 +54,6 @@ static void snd_trident_print_voice_regs(struct snd_trident *trident, int voice)
 {
 	unsigned int val, tmp;
 
-<<<<<<< HEAD
-	printk(KERN_DEBUG "Trident voice %i:\n", voice);
-	outb(voice, TRID_REG(trident, T4D_LFO_GC_CIR));
-	val = inl(TRID_REG(trident, CH_LBA));
-	printk(KERN_DEBUG "LBA: 0x%x\n", val);
-	val = inl(TRID_REG(trident, CH_GVSEL_PAN_VOL_CTRL_EC));
-	printk(KERN_DEBUG "GVSel: %i\n", val >> 31);
-	printk(KERN_DEBUG "Pan: 0x%x\n", (val >> 24) & 0x7f);
-	printk(KERN_DEBUG "Vol: 0x%x\n", (val >> 16) & 0xff);
-	printk(KERN_DEBUG "CTRL: 0x%x\n", (val >> 12) & 0x0f);
-	printk(KERN_DEBUG "EC: 0x%x\n", val & 0x0fff);
-	if (trident->device != TRIDENT_DEVICE_ID_NX) {
-		val = inl(TRID_REG(trident, CH_DX_CSO_ALPHA_FMS));
-		printk(KERN_DEBUG "CSO: 0x%x\n", val >> 16);
-		printk("Alpha: 0x%x\n", (val >> 4) & 0x0fff);
-		printk(KERN_DEBUG "FMS: 0x%x\n", val & 0x0f);
-		val = inl(TRID_REG(trident, CH_DX_ESO_DELTA));
-		printk(KERN_DEBUG "ESO: 0x%x\n", val >> 16);
-		printk(KERN_DEBUG "Delta: 0x%x\n", val & 0xffff);
-=======
 	dev_dbg(trident->card->dev, "Trident voice %i:\n", voice);
 	outb(voice, TRID_REG(trident, T4D_LFO_GC_CIR));
 	val = inl(TRID_REG(trident, CH_LBA));
@@ -128,25 +72,10 @@ static void snd_trident_print_voice_regs(struct snd_trident *trident, int voice)
 		val = inl(TRID_REG(trident, CH_DX_ESO_DELTA));
 		dev_dbg(trident->card->dev, "ESO: 0x%x\n", val >> 16);
 		dev_dbg(trident->card->dev, "Delta: 0x%x\n", val & 0xffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = inl(TRID_REG(trident, CH_DX_FMC_RVOL_CVOL));
 	} else {		// TRIDENT_DEVICE_ID_NX
 		val = inl(TRID_REG(trident, CH_NX_DELTA_CSO));
 		tmp = (val >> 24) & 0xff;
-<<<<<<< HEAD
-		printk(KERN_DEBUG "CSO: 0x%x\n", val & 0x00ffffff);
-		val = inl(TRID_REG(trident, CH_NX_DELTA_ESO));
-		tmp |= (val >> 16) & 0xff00;
-		printk(KERN_DEBUG "Delta: 0x%x\n", tmp);
-		printk(KERN_DEBUG "ESO: 0x%x\n", val & 0x00ffffff);
-		val = inl(TRID_REG(trident, CH_NX_ALPHA_FMS_FMC_RVOL_CVOL));
-		printk(KERN_DEBUG "Alpha: 0x%x\n", val >> 20);
-		printk(KERN_DEBUG "FMS: 0x%x\n", (val >> 16) & 0x0f);
-	}
-	printk(KERN_DEBUG "FMC: 0x%x\n", (val >> 14) & 3);
-	printk(KERN_DEBUG "RVol: 0x%x\n", (val >> 7) & 0x7f);
-	printk(KERN_DEBUG "CVol: 0x%x\n", val & 0x7f);
-=======
 		dev_dbg(trident->card->dev, "CSO: 0x%x\n", val & 0x00ffffff);
 		val = inl(TRID_REG(trident, CH_NX_DELTA_ESO));
 		tmp |= (val >> 16) & 0xff00;
@@ -159,7 +88,6 @@ static void snd_trident_print_voice_regs(struct snd_trident *trident, int voice)
 	dev_dbg(trident->card->dev, "FMC: 0x%x\n", (val >> 14) & 3);
 	dev_dbg(trident->card->dev, "RVol: 0x%x\n", (val >> 7) & 0x7f);
 	dev_dbg(trident->card->dev, "CVol: 0x%x\n", val & 0x7f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -213,12 +141,8 @@ static unsigned short snd_trident_codec_read(struct snd_ac97 *ac97, unsigned sho
 	}
 
 	if (count == 0 && !trident->ac97_detect) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "ac97 codec read TIMEOUT [0x%x/0x%x]!!!\n",
-=======
 		dev_err(trident->card->dev,
 			"ac97 codec read TIMEOUT [0x%x/0x%x]!!!\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   reg, data);
 		data = 0;
 	}
@@ -559,18 +483,6 @@ void snd_trident_write_voice_regs(struct snd_trident * trident,
 	outl(regs[4], TRID_REG(trident, CH_START + 16));
 
 #if 0
-<<<<<<< HEAD
-	printk(KERN_DEBUG "written %i channel:\n", voice->number);
-	printk(KERN_DEBUG "  regs[0] = 0x%x/0x%x\n",
-	       regs[0], inl(TRID_REG(trident, CH_START + 0)));
-	printk(KERN_DEBUG "  regs[1] = 0x%x/0x%x\n",
-	       regs[1], inl(TRID_REG(trident, CH_START + 4)));
-	printk(KERN_DEBUG "  regs[2] = 0x%x/0x%x\n",
-	       regs[2], inl(TRID_REG(trident, CH_START + 8)));
-	printk(KERN_DEBUG "  regs[3] = 0x%x/0x%x\n",
-	       regs[3], inl(TRID_REG(trident, CH_START + 12)));
-	printk(KERN_DEBUG "  regs[4] = 0x%x/0x%x\n",
-=======
 	dev_dbg(trident->card->dev, "written %i channel:\n", voice->number);
 	dev_dbg(trident->card->dev, "  regs[0] = 0x%x/0x%x\n",
 	       regs[0], inl(TRID_REG(trident, CH_START + 0)));
@@ -581,7 +493,6 @@ void snd_trident_write_voice_regs(struct snd_trident * trident,
 	dev_dbg(trident->card->dev, "  regs[3] = 0x%x/0x%x\n",
 	       regs[3], inl(TRID_REG(trident, CH_START + 12)));
 	dev_dbg(trident->card->dev, "  regs[4] = 0x%x/0x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       regs[4], inl(TRID_REG(trident, CH_START + 16)));
 #endif
 }
@@ -664,11 +575,7 @@ static void snd_trident_write_vol_reg(struct snd_trident * trident,
 		outb(voice->Vol >> 2, TRID_REG(trident, CH_GVSEL_PAN_VOL_CTRL_EC + 2));
 		break;
 	case TRIDENT_DEVICE_ID_SI7018:
-<<<<<<< HEAD
-		/* printk(KERN_DEBUG "voice->Vol = 0x%x\n", voice->Vol); */
-=======
 		/* dev_dbg(trident->card->dev, "voice->Vol = 0x%x\n", voice->Vol); */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		outw((voice->CTRL << 12) | voice->Vol,
 		     TRID_REG(trident, CH_GVSEL_PAN_VOL_CTRL_EC));
 		break;
@@ -771,11 +678,7 @@ static unsigned int snd_trident_convert_rate(unsigned int rate)
 	else if (rate == 48000)
 		delta = 0x1000;
 	else
-<<<<<<< HEAD
-		delta = (((rate << 12) + 24000) / 48000) & 0x0000ffff;
-=======
 		delta = DIV_ROUND_CLOSEST(rate << 12, 48000) & 0x0000ffff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return delta;
 }
 
@@ -865,32 +768,6 @@ static unsigned int snd_trident_control_mode(struct snd_pcm_substream *substream
  */
 
 /*---------------------------------------------------------------------------
-<<<<<<< HEAD
-   snd_trident_ioctl
-  
-   Description: Device I/O control handler for playback/capture parameters.
-  
-   Parameters:   substream  - PCM substream class
-                cmd     - what ioctl message to process
-                arg     - additional message infoarg     
-  
-   Returns:     Error status
-  
-  ---------------------------------------------------------------------------*/
-
-static int snd_trident_ioctl(struct snd_pcm_substream *substream,
-			     unsigned int cmd,
-			     void *arg)
-{
-	/* FIXME: it seems that with small periods the behaviour of
-	          trident hardware is unpredictable and interrupt generator
-	          is broken */
-	return snd_pcm_lib_ioctl(substream, cmd, arg);
-}
-
-/*---------------------------------------------------------------------------
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
    snd_trident_allocate_pcm_mem
   
    Description: Allocate PCM ring buffer for given substream
@@ -908,18 +785,9 @@ static int snd_trident_allocate_pcm_mem(struct snd_pcm_substream *substream,
 	struct snd_trident *trident = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_trident_voice *voice = runtime->private_data;
-<<<<<<< HEAD
-	int err;
-
-	if ((err = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params))) < 0)
-		return err;
-	if (trident->tlb.entries) {
-		if (err > 0) { /* change */
-=======
 
 	if (trident->tlb.entries) {
 		if (runtime->buffer_changed) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (voice->memblk)
 				snd_trident_free_pages(trident, voice->memblk);
 			voice->memblk = snd_trident_alloc_pages(trident, substream);
@@ -1017,10 +885,6 @@ static int snd_trident_hw_free(struct snd_pcm_substream *substream)
 			voice->memblk = NULL;
 		}
 	}
-<<<<<<< HEAD
-	snd_pcm_lib_free_pages(substream);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (evoice != NULL) {
 		snd_trident_free_voice(trident, evoice);
 		voice->extra = NULL;
@@ -1170,11 +1034,7 @@ static int snd_trident_capture_prepare(struct snd_pcm_substream *substream)
 	ESO_bytes++;
 
 	// Set channel sample rate, 4.12 format
-<<<<<<< HEAD
-	val = (((unsigned int) 48000L << 12) + (runtime->rate/2)) / runtime->rate;
-=======
 	val = DIV_ROUND_CLOSEST(48000U << 12, runtime->rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outw(val, TRID_REG(trident, T4D_SBDELTA_DELTA_R));
 
 	// Set channel interrupt blk length
@@ -1241,14 +1101,6 @@ static int snd_trident_capture_prepare(struct snd_pcm_substream *substream)
 static int snd_trident_si7018_capture_hw_params(struct snd_pcm_substream *substream,
 						struct snd_pcm_hw_params *hw_params)
 {
-<<<<<<< HEAD
-	int err;
-
-	if ((err = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params))) < 0)
-		return err;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return snd_trident_allocate_evoice(substream, hw_params);
 }
 
@@ -1270,10 +1122,6 @@ static int snd_trident_si7018_capture_hw_free(struct snd_pcm_substream *substrea
 	struct snd_trident_voice *voice = runtime->private_data;
 	struct snd_trident_voice *evoice = voice ? voice->extra : NULL;
 
-<<<<<<< HEAD
-	snd_pcm_lib_free_pages(substream);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (evoice != NULL) {
 		snd_trident_free_voice(trident, evoice);
 		voice->extra = NULL;
@@ -1832,11 +1680,7 @@ static snd_pcm_uframes_t snd_trident_spdif_pointer(struct snd_pcm_substream *sub
  *  Playback support device description
  */
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_trident_playback =
-=======
 static const struct snd_pcm_hardware snd_trident_playback =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -1861,11 +1705,7 @@ static const struct snd_pcm_hardware snd_trident_playback =
  *  Capture support device description
  */
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_trident_capture =
-=======
 static const struct snd_pcm_hardware snd_trident_capture =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -1890,11 +1730,7 @@ static const struct snd_pcm_hardware snd_trident_capture =
  *  Foldback capture support device description
  */
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_trident_foldback =
-=======
 static const struct snd_pcm_hardware snd_trident_foldback =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -1918,11 +1754,7 @@ static const struct snd_pcm_hardware snd_trident_foldback =
  *  SPDIF playback support device description
  */
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_trident_spdif =
-=======
 static const struct snd_pcm_hardware snd_trident_spdif =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -1943,11 +1775,7 @@ static const struct snd_pcm_hardware snd_trident_spdif =
 	.fifo_size =		0,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_trident_spdif_7018 =
-=======
 static const struct snd_pcm_hardware snd_trident_spdif_7018 =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -2195,16 +2023,9 @@ static int snd_trident_foldback_close(struct snd_pcm_substream *substream)
    PCM operations
   ---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_trident_playback_ops = {
-	.open =		snd_trident_playback_open,
-	.close =	snd_trident_playback_close,
-	.ioctl =	snd_trident_ioctl,
-=======
 static const struct snd_pcm_ops snd_trident_playback_ops = {
 	.open =		snd_trident_playback_open,
 	.close =	snd_trident_playback_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_trident_hw_params,
 	.hw_free =	snd_trident_hw_free,
 	.prepare =	snd_trident_playback_prepare,
@@ -2212,36 +2033,19 @@ static const struct snd_pcm_ops snd_trident_playback_ops = {
 	.pointer =	snd_trident_playback_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_trident_nx_playback_ops = {
-	.open =		snd_trident_playback_open,
-	.close =	snd_trident_playback_close,
-	.ioctl =	snd_trident_ioctl,
-=======
 static const struct snd_pcm_ops snd_trident_nx_playback_ops = {
 	.open =		snd_trident_playback_open,
 	.close =	snd_trident_playback_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_trident_hw_params,
 	.hw_free =	snd_trident_hw_free,
 	.prepare =	snd_trident_playback_prepare,
 	.trigger =	snd_trident_trigger,
 	.pointer =	snd_trident_playback_pointer,
-<<<<<<< HEAD
-	.page =		snd_pcm_sgbuf_ops_page,
-};
-
-static struct snd_pcm_ops snd_trident_capture_ops = {
-	.open =		snd_trident_capture_open,
-	.close =	snd_trident_capture_close,
-	.ioctl =	snd_trident_ioctl,
-=======
 };
 
 static const struct snd_pcm_ops snd_trident_capture_ops = {
 	.open =		snd_trident_capture_open,
 	.close =	snd_trident_capture_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_trident_capture_hw_params,
 	.hw_free =	snd_trident_hw_free,
 	.prepare =	snd_trident_capture_prepare,
@@ -2249,16 +2053,9 @@ static const struct snd_pcm_ops snd_trident_capture_ops = {
 	.pointer =	snd_trident_capture_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_trident_si7018_capture_ops = {
-	.open =		snd_trident_capture_open,
-	.close =	snd_trident_capture_close,
-	.ioctl =	snd_trident_ioctl,
-=======
 static const struct snd_pcm_ops snd_trident_si7018_capture_ops = {
 	.open =		snd_trident_capture_open,
 	.close =	snd_trident_capture_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_trident_si7018_capture_hw_params,
 	.hw_free =	snd_trident_si7018_capture_hw_free,
 	.prepare =	snd_trident_si7018_capture_prepare,
@@ -2266,16 +2063,9 @@ static const struct snd_pcm_ops snd_trident_si7018_capture_ops = {
 	.pointer =	snd_trident_playback_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_trident_foldback_ops = {
-	.open =		snd_trident_foldback_open,
-	.close =	snd_trident_foldback_close,
-	.ioctl =	snd_trident_ioctl,
-=======
 static const struct snd_pcm_ops snd_trident_foldback_ops = {
 	.open =		snd_trident_foldback_open,
 	.close =	snd_trident_foldback_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_trident_hw_params,
 	.hw_free =	snd_trident_hw_free,
 	.prepare =	snd_trident_foldback_prepare,
@@ -2283,36 +2073,19 @@ static const struct snd_pcm_ops snd_trident_foldback_ops = {
 	.pointer =	snd_trident_playback_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_trident_nx_foldback_ops = {
-	.open =		snd_trident_foldback_open,
-	.close =	snd_trident_foldback_close,
-	.ioctl =	snd_trident_ioctl,
-=======
 static const struct snd_pcm_ops snd_trident_nx_foldback_ops = {
 	.open =		snd_trident_foldback_open,
 	.close =	snd_trident_foldback_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_trident_hw_params,
 	.hw_free =	snd_trident_hw_free,
 	.prepare =	snd_trident_foldback_prepare,
 	.trigger =	snd_trident_trigger,
 	.pointer =	snd_trident_playback_pointer,
-<<<<<<< HEAD
-	.page =		snd_pcm_sgbuf_ops_page,
-};
-
-static struct snd_pcm_ops snd_trident_spdif_ops = {
-	.open =		snd_trident_spdif_open,
-	.close =	snd_trident_spdif_close,
-	.ioctl =	snd_trident_ioctl,
-=======
 };
 
 static const struct snd_pcm_ops snd_trident_spdif_ops = {
 	.open =		snd_trident_spdif_open,
 	.close =	snd_trident_spdif_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_trident_spdif_hw_params,
 	.hw_free =	snd_trident_hw_free,
 	.prepare =	snd_trident_spdif_prepare,
@@ -2320,16 +2093,9 @@ static const struct snd_pcm_ops snd_trident_spdif_ops = {
 	.pointer =	snd_trident_spdif_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_trident_spdif_7018_ops = {
-	.open =		snd_trident_spdif_open,
-	.close =	snd_trident_spdif_close,
-	.ioctl =	snd_trident_ioctl,
-=======
 static const struct snd_pcm_ops snd_trident_spdif_7018_ops = {
 	.open =		snd_trident_spdif_open,
 	.close =	snd_trident_spdif_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_trident_spdif_hw_params,
 	.hw_free =	snd_trident_hw_free,
 	.prepare =	snd_trident_spdif_prepare,
@@ -2348,24 +2114,13 @@ static const struct snd_pcm_ops snd_trident_spdif_7018_ops = {
   
   ---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-int __devinit snd_trident_pcm(struct snd_trident * trident,
-			      int device, struct snd_pcm ** rpcm)
-=======
 int snd_trident_pcm(struct snd_trident *trident, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
 
-<<<<<<< HEAD
-	if (rpcm)
-		*rpcm = NULL;
-	if ((err = snd_pcm_new(trident->card, "trident_dx_nx", device, trident->ChanPCM, 1, &pcm)) < 0)
-=======
 	err = snd_pcm_new(trident->card, "trident_dx_nx", device, trident->ChanPCM, 1, &pcm);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	pcm->private_data = trident;
@@ -2388,21 +2143,6 @@ int snd_trident_pcm(struct snd_trident *trident, int device)
 	if (trident->tlb.entries) {
 		struct snd_pcm_substream *substream;
 		for (substream = pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].substream; substream; substream = substream->next)
-<<<<<<< HEAD
-			snd_pcm_lib_preallocate_pages(substream, SNDRV_DMA_TYPE_DEV_SG,
-						      snd_dma_pci_data(trident->pci),
-						      64*1024, 128*1024);
-		snd_pcm_lib_preallocate_pages(pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream,
-					      SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(trident->pci),
-					      64*1024, 128*1024);
-	} else {
-		snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
-						      snd_dma_pci_data(trident->pci), 64*1024, 128*1024);
-	}
-
-	if (rpcm)
-		*rpcm = pcm;
-=======
 			snd_pcm_set_managed_buffer(substream, SNDRV_DMA_TYPE_DEV_SG,
 						   &trident->pci->dev,
 						   64*1024, 128*1024);
@@ -2416,7 +2156,6 @@ int snd_trident_pcm(struct snd_trident *trident, int device)
 					       64*1024, 128*1024);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2431,30 +2170,17 @@ int snd_trident_pcm(struct snd_trident *trident, int device)
   
   ---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-int __devinit snd_trident_foldback_pcm(struct snd_trident * trident,
-				       int device, struct snd_pcm ** rpcm)
-=======
 int snd_trident_foldback_pcm(struct snd_trident *trident, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *foldback;
 	int err;
 	int num_chan = 3;
 	struct snd_pcm_substream *substream;
 
-<<<<<<< HEAD
-	if (rpcm)
-		*rpcm = NULL;
-	if (trident->device == TRIDENT_DEVICE_ID_NX)
-		num_chan = 4;
-	if ((err = snd_pcm_new(trident->card, "trident_dx_nx", device, 0, num_chan, &foldback)) < 0)
-=======
 	if (trident->device == TRIDENT_DEVICE_ID_NX)
 		num_chan = 4;
 	err = snd_pcm_new(trident->card, "trident_dx_nx", device, 0, num_chan, &foldback);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	foldback->private_data = trident;
@@ -2477,16 +2203,6 @@ int snd_trident_foldback_pcm(struct snd_trident *trident, int device)
 	trident->foldback = foldback;
 
 	if (trident->tlb.entries)
-<<<<<<< HEAD
-		snd_pcm_lib_preallocate_pages_for_all(foldback, SNDRV_DMA_TYPE_DEV_SG,
-						      snd_dma_pci_data(trident->pci), 0, 128*1024);
-	else
-		snd_pcm_lib_preallocate_pages_for_all(foldback, SNDRV_DMA_TYPE_DEV,
-						      snd_dma_pci_data(trident->pci), 64*1024, 128*1024);
-
-	if (rpcm)
-		*rpcm = foldback;
-=======
 		snd_pcm_set_managed_buffer_all(foldback, SNDRV_DMA_TYPE_DEV_SG,
 					       &trident->pci->dev,
 					       0, 128*1024);
@@ -2495,7 +2211,6 @@ int snd_trident_foldback_pcm(struct snd_trident *trident, int device)
 					       &trident->pci->dev,
 					       64*1024, 128*1024);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2510,24 +2225,13 @@ int snd_trident_foldback_pcm(struct snd_trident *trident, int device)
   
   ---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-int __devinit snd_trident_spdif_pcm(struct snd_trident * trident,
-				    int device, struct snd_pcm ** rpcm)
-=======
 int snd_trident_spdif_pcm(struct snd_trident *trident, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *spdif;
 	int err;
 
-<<<<<<< HEAD
-	if (rpcm)
-		*rpcm = NULL;
-	if ((err = snd_pcm_new(trident->card, "trident_dx_nx IEC958", device, 1, 0, &spdif)) < 0)
-=======
 	err = snd_pcm_new(trident->card, "trident_dx_nx IEC958", device, 1, 0, &spdif);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	spdif->private_data = trident;
@@ -2540,16 +2244,9 @@ int snd_trident_spdif_pcm(struct snd_trident *trident, int device)
 	strcpy(spdif->name, "Trident 4DWave IEC958");
 	trident->spdif = spdif;
 
-<<<<<<< HEAD
-	snd_pcm_lib_preallocate_pages_for_all(spdif, SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(trident->pci), 64*1024, 128*1024);
-
-	if (rpcm)
-		*rpcm = spdif;
-=======
 	snd_pcm_set_managed_buffer_all(spdif, SNDRV_DMA_TYPE_DEV,
 				       &trident->pci->dev, 64*1024, 128*1024);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2610,11 +2307,7 @@ static int snd_trident_spdif_control_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_trident_spdif_control __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_trident_spdif_control =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =         SNDRV_CTL_NAME_IEC958("",PLAYBACK,SWITCH),
@@ -2677,11 +2370,7 @@ static int snd_trident_spdif_default_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_trident_spdif_default __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_trident_spdif_default =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
 	.name =         SNDRV_CTL_NAME_IEC958("",PLAYBACK,DEFAULT),
@@ -2714,11 +2403,7 @@ static int snd_trident_spdif_mask_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_trident_spdif_mask __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_trident_spdif_mask =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ,
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
@@ -2780,11 +2465,7 @@ static int snd_trident_spdif_stream_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_trident_spdif_stream __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_trident_spdif_stream =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_INACTIVE,
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
@@ -2834,11 +2515,7 @@ static int snd_trident_ac97_control_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_trident_ac97_rear_control __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_trident_ac97_rear_control =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =         "Rear Path",
@@ -2896,11 +2573,7 @@ static int snd_trident_vol_control_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_trident_vol_music_control __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_trident_vol_music_control =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =         "Music Playback Volume",
@@ -2911,11 +2584,7 @@ static const struct snd_kcontrol_new snd_trident_vol_music_control =
 	.tlv = { .p = db_scale_gvol },
 };
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_trident_vol_wave_control __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_trident_vol_wave_control =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =         "Wave Playback Volume",
@@ -2982,11 +2651,7 @@ static int snd_trident_pcm_vol_control_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_trident_pcm_vol_control __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_trident_pcm_vol_control =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =         "PCM Front Playback Volume",
@@ -3050,11 +2715,7 @@ static int snd_trident_pcm_pan_control_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_trident_pcm_pan_control __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_trident_pcm_pan_control =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =         "PCM Pan Playback Control",
@@ -3111,11 +2772,7 @@ static int snd_trident_pcm_rvol_control_put(struct snd_kcontrol *kcontrol,
 
 static const DECLARE_TLV_DB_SCALE(db_scale_crvol, -3175, 25, 1);
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_trident_pcm_rvol_control __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_trident_pcm_rvol_control =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =         "PCM Reverb Playback Volume",
@@ -3171,11 +2828,7 @@ static int snd_trident_pcm_cvol_control_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_trident_pcm_cvol_control __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_trident_pcm_cvol_control =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =         "PCM Chorus Playback Volume",
@@ -3255,22 +2908,14 @@ static int snd_trident_pcm_mixer_free(struct snd_trident *trident, struct snd_tr
   
   ---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-static int __devinit snd_trident_mixer(struct snd_trident * trident, int pcm_spdif_device)
-=======
 static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_ac97_template _ac97;
 	struct snd_card *card = trident->card;
 	struct snd_kcontrol *kctl;
 	struct snd_ctl_elem_value *uctl;
 	int idx, err, retries = 2;
-<<<<<<< HEAD
-	static struct snd_ac97_bus_ops ops = {
-=======
 	static const struct snd_ac97_bus_ops ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = snd_trident_codec_write,
 		.read = snd_trident_codec_read,
 	};
@@ -3279,12 +2924,8 @@ static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
 	if (!uctl)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	if ((err = snd_ac97_bus(trident->card, 0, &ops, NULL, &trident->ac97_bus)) < 0)
-=======
 	err = snd_ac97_bus(trident->card, 0, &ops, NULL, &trident->ac97_bus);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto __out;
 
 	memset(&_ac97, 0, sizeof(_ac97));
@@ -3292,17 +2933,11 @@ static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
 	trident->ac97_detect = 1;
 
       __again:
-<<<<<<< HEAD
-	if ((err = snd_ac97_mixer(trident->ac97_bus, &_ac97, &trident->ac97)) < 0) {
-		if (trident->device == TRIDENT_DEVICE_ID_SI7018) {
-			if ((err = snd_trident_sis_reset(trident)) < 0)
-=======
 	err = snd_ac97_mixer(trident->ac97_bus, &_ac97, &trident->ac97);
 	if (err < 0) {
 		if (trident->device == TRIDENT_DEVICE_ID_SI7018) {
 			err = snd_trident_sis_reset(trident);
 			if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto __out;
 			if (retries-- > 0)
 				goto __again;
@@ -3317,23 +2952,15 @@ static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
 		_ac97.num = 1;
 		err = snd_ac97_mixer(trident->ac97_bus, &_ac97, &trident->ac97_sec);
 		if (err < 0)
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "SI7018: the secondary codec - invalid access\n");
-=======
 			dev_err(trident->card->dev,
 				"SI7018: the secondary codec - invalid access\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if 0	// only for my testing purpose --jk
 		{
 			struct snd_ac97 *mc97;
 			err = snd_ac97_modem(trident->card, &_ac97, &mc97);
 			if (err < 0)
-<<<<<<< HEAD
-				snd_printk(KERN_ERR "snd_ac97_modem returned error %i\n", err);
-=======
 				dev_err(trident->card->dev,
 					"snd_ac97_modem returned error %i\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 #endif
 	}
@@ -3341,12 +2968,6 @@ static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
 	trident->ac97_detect = 0;
 
 	if (trident->device != TRIDENT_DEVICE_ID_SI7018) {
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_trident_vol_wave_control, trident))) < 0)
-			goto __out;
-		kctl->put(kctl, uctl);
-		if ((err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_trident_vol_music_control, trident))) < 0)
-=======
 		kctl = snd_ctl_new1(&snd_trident_vol_wave_control, trident);
 		err = snd_ctl_add(card, kctl);
 		if (err < 0)
@@ -3355,7 +2976,6 @@ static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
 		kctl = snd_ctl_new1(&snd_trident_vol_music_control, trident);
 		err = snd_ctl_add(card, kctl);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto __out;
 		kctl->put(kctl, uctl);
 		outl(trident->musicvol_wavevol = 0x00000000, TRID_REG(trident, T4D_MUSICVOL_WAVEVOL));
@@ -3369,30 +2989,6 @@ static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
 		tmix = &trident->pcm_mixer[idx];
 		tmix->voice = NULL;
 	}
-<<<<<<< HEAD
-	if ((trident->ctl_vol = snd_ctl_new1(&snd_trident_pcm_vol_control, trident)) == NULL)
-		goto __nomem;
-	if ((err = snd_ctl_add(card, trident->ctl_vol)))
-		goto __out;
-		
-	if ((trident->ctl_pan = snd_ctl_new1(&snd_trident_pcm_pan_control, trident)) == NULL)
-		goto __nomem;
-	if ((err = snd_ctl_add(card, trident->ctl_pan)))
-		goto __out;
-
-	if ((trident->ctl_rvol = snd_ctl_new1(&snd_trident_pcm_rvol_control, trident)) == NULL)
-		goto __nomem;
-	if ((err = snd_ctl_add(card, trident->ctl_rvol)))
-		goto __out;
-
-	if ((trident->ctl_cvol = snd_ctl_new1(&snd_trident_pcm_cvol_control, trident)) == NULL)
-		goto __nomem;
-	if ((err = snd_ctl_add(card, trident->ctl_cvol)))
-		goto __out;
-
-	if (trident->device == TRIDENT_DEVICE_ID_NX) {
-		if ((err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_trident_ac97_rear_control, trident))) < 0)
-=======
 	trident->ctl_vol = snd_ctl_new1(&snd_trident_pcm_vol_control, trident);
 	if (!trident->ctl_vol)
 		goto __nomem;
@@ -3425,7 +3021,6 @@ static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
 		kctl = snd_ctl_new1(&snd_trident_ac97_rear_control, trident);
 		err = snd_ctl_add(card, kctl);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto __out;
 		kctl->put(kctl, uctl);
 	}
@@ -3441,12 +3036,8 @@ static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
 		if (trident->ac97_sec && (trident->ac97_sec->ext_id & AC97_EI_SPDIF))
 			kctl->id.index++;
 		idx = kctl->id.index;
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(card, kctl)) < 0)
-=======
 		err = snd_ctl_add(card, kctl);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto __out;
 		kctl->put(kctl, uctl);
 
@@ -3457,12 +3048,8 @@ static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
 		}
 		kctl->id.index = idx;
 		kctl->id.device = pcm_spdif_device;
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(card, kctl)) < 0)
-=======
 		err = snd_ctl_add(card, kctl);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto __out;
 
 		kctl = snd_ctl_new1(&snd_trident_spdif_mask, trident);
@@ -3472,12 +3059,8 @@ static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
 		}
 		kctl->id.index = idx;
 		kctl->id.device = pcm_spdif_device;
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(card, kctl)) < 0)
-=======
 		err = snd_ctl_add(card, kctl);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto __out;
 
 		kctl = snd_ctl_new1(&snd_trident_spdif_stream, trident);
@@ -3487,12 +3070,8 @@ static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
 		}
 		kctl->id.index = idx;
 		kctl->id.device = pcm_spdif_device;
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(card, kctl)) < 0)
-=======
 		err = snd_ctl_add(card, kctl);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto __out;
 		trident->spdif_pcm_ctl = kctl;
 	}
@@ -3513,11 +3092,7 @@ static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device)
  * gameport interface
  */
 
-<<<<<<< HEAD
-#if defined(CONFIG_GAMEPORT) || (defined(MODULE) && defined(CONFIG_GAMEPORT_MODULE))
-=======
 #if IS_REACHABLE(CONFIG_GAMEPORT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned char snd_trident_gameport_read(struct gameport *gameport)
 {
@@ -3575,22 +3150,14 @@ static int snd_trident_gameport_open(struct gameport *gameport, int mode)
 	}
 }
 
-<<<<<<< HEAD
-int __devinit snd_trident_create_gameport(struct snd_trident *chip)
-=======
 int snd_trident_create_gameport(struct snd_trident *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport *gp;
 
 	chip->gameport = gp = gameport_allocate_port();
 	if (!gp) {
-<<<<<<< HEAD
-		printk(KERN_ERR "trident: cannot allocate memory for gameport\n");
-=======
 		dev_err(chip->card->dev,
 			"cannot allocate memory for gameport\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -3618,11 +3185,7 @@ static inline void snd_trident_free_gameport(struct snd_trident *chip)
 	}
 }
 #else
-<<<<<<< HEAD
-int __devinit snd_trident_create_gameport(struct snd_trident *chip) { return -ENOSYS; }
-=======
 int snd_trident_create_gameport(struct snd_trident *chip) { return -ENOSYS; }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void snd_trident_free_gameport(struct snd_trident *chip) { }
 #endif /* CONFIG_GAMEPORT */
 
@@ -3667,12 +3230,8 @@ static int snd_trident_sis_reset(struct snd_trident *trident)
 			goto __si7018_ok;
 		do_delay(trident);
 	} while (time_after_eq(end_time, jiffies));
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "AC'97 codec ready error [0x%x]\n", inl(TRID_REG(trident, SI_SERIAL_INTF_CTRL)));
-=======
 	dev_err(trident->card->dev, "AC'97 codec ready error [0x%x]\n",
 		inl(TRID_REG(trident, SI_SERIAL_INTF_CTRL)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r-- > 0) {
 		end_time = jiffies + HZ;
 		do {
@@ -3731,30 +3290,13 @@ static void snd_trident_proc_read(struct snd_info_entry *entry,
 	}
 }
 
-<<<<<<< HEAD
-static void __devinit snd_trident_proc_init(struct snd_trident * trident)
-{
-	struct snd_info_entry *entry;
-=======
 static void snd_trident_proc_init(struct snd_trident *trident)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *s = "trident";
 	
 	if (trident->device == TRIDENT_DEVICE_ID_SI7018)
 		s = "sis7018";
-<<<<<<< HEAD
-	if (! snd_card_proc_new(trident->card, s, &entry))
-		snd_info_set_text_ops(entry, trident, snd_trident_proc_read);
-}
-
-static int snd_trident_dev_free(struct snd_device *device)
-{
-	struct snd_trident *trident = device->device_data;
-	return snd_trident_free(trident);
-=======
 	snd_card_ro_proc_new(trident->card, s, trident, snd_trident_proc_read);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*---------------------------------------------------------------------------
@@ -3769,43 +3311,13 @@ static int snd_trident_dev_free(struct snd_device *device)
   
   ---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-static int __devinit snd_trident_tlb_alloc(struct snd_trident *trident)
-=======
 static int snd_trident_tlb_alloc(struct snd_trident *trident)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	/* TLB array must be aligned to 16kB !!! so we allocate
 	   32kB region and correct offset when necessary */
 
-<<<<<<< HEAD
-	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(trident->pci),
-				2 * SNDRV_TRIDENT_MAX_PAGES * 4, &trident->tlb.buffer) < 0) {
-		snd_printk(KERN_ERR "trident: unable to allocate TLB buffer\n");
-		return -ENOMEM;
-	}
-	trident->tlb.entries = (unsigned int*)ALIGN((unsigned long)trident->tlb.buffer.area, SNDRV_TRIDENT_MAX_PAGES * 4);
-	trident->tlb.entries_dmaaddr = ALIGN(trident->tlb.buffer.addr, SNDRV_TRIDENT_MAX_PAGES * 4);
-	/* allocate shadow TLB page table (virtual addresses) */
-	trident->tlb.shadow_entries = vmalloc(SNDRV_TRIDENT_MAX_PAGES*sizeof(unsigned long));
-	if (trident->tlb.shadow_entries == NULL) {
-		snd_printk(KERN_ERR "trident: unable to allocate shadow TLB entries\n");
-		return -ENOMEM;
-	}
-	/* allocate and setup silent page and initialise TLB entries */
-	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(trident->pci),
-				SNDRV_TRIDENT_PAGE_SIZE, &trident->tlb.silent_page) < 0) {
-		snd_printk(KERN_ERR "trident: unable to allocate silent page\n");
-		return -ENOMEM;
-	}
-	memset(trident->tlb.silent_page.area, 0, SNDRV_TRIDENT_PAGE_SIZE);
-	for (i = 0; i < SNDRV_TRIDENT_MAX_PAGES; i++) {
-		trident->tlb.entries[i] = cpu_to_le32(trident->tlb.silent_page.addr & ~(SNDRV_TRIDENT_PAGE_SIZE-1));
-		trident->tlb.shadow_entries[i] = (unsigned long)trident->tlb.silent_page.area;
-	}
-=======
 	trident->tlb.buffer =
 		snd_devm_alloc_pages(&trident->pci->dev, SNDRV_DMA_TYPE_DEV,
 				     2 * SNDRV_TRIDENT_MAX_PAGES * 4);
@@ -3827,7 +3339,6 @@ static int snd_trident_tlb_alloc(struct snd_trident *trident)
 	memset(trident->tlb.silent_page->area, 0, SNDRV_TRIDENT_PAGE_SIZE);
 	for (i = 0; i < SNDRV_TRIDENT_MAX_PAGES; i++)
 		trident->tlb.entries[i] = cpu_to_le32(trident->tlb.silent_page->addr & ~(SNDRV_TRIDENT_PAGE_SIZE-1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* use emu memory block manager code to manage tlb page allocation */
 	trident->tlb.memhdr = snd_util_memhdr_new(SNDRV_TRIDENT_PAGE_SIZE * SNDRV_TRIDENT_MAX_PAGES);
@@ -3878,11 +3389,7 @@ static int snd_trident_4d_dx_init(struct snd_trident *trident)
 			goto __dx_ok;
 		do_delay(trident);
 	} while (time_after_eq(end_time, jiffies));
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "AC'97 codec ready error\n");
-=======
 	dev_err(trident->card->dev, "AC'97 codec ready error\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 
  __dx_ok:
@@ -3920,12 +3427,8 @@ static int snd_trident_4d_nx_init(struct snd_trident *trident)
 			goto __nx_ok;
 		do_delay(trident);
 	} while (time_after_eq(end_time, jiffies));
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "AC'97 codec ready error [0x%x]\n", inl(TRID_REG(trident, NX_ACR0_AC97_COM_STAT)));
-=======
 	dev_err(trident->card->dev, "AC'97 codec ready error [0x%x]\n",
 		inl(TRID_REG(trident, NX_ACR0_AC97_COM_STAT)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 
  __nx_ok:
@@ -3960,12 +3463,8 @@ static int snd_trident_sis_init(struct snd_trident *trident)
 {
 	int err;
 
-<<<<<<< HEAD
-	if ((err = snd_trident_sis_reset(trident)) < 0)
-=======
 	err = snd_trident_sis_reset(trident);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	snd_trident_stop_all_voices(trident);
@@ -3992,41 +3491,6 @@ static int snd_trident_sis_init(struct snd_trident *trident)
   
   ---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-int __devinit snd_trident_create(struct snd_card *card,
-		       struct pci_dev *pci,
-		       int pcm_streams,
-		       int pcm_spdif_device,
-		       int max_wavetable_size,
-		       struct snd_trident ** rtrident)
-{
-	struct snd_trident *trident;
-	int i, err;
-	struct snd_trident_voice *voice;
-	struct snd_trident_pcm_mixer *tmix;
-	static struct snd_device_ops ops = {
-		.dev_free =	snd_trident_dev_free,
-	};
-
-	*rtrident = NULL;
-
-	/* enable PCI device */
-	if ((err = pci_enable_device(pci)) < 0)
-		return err;
-	/* check, if we can restrict PCI DMA transfers to 30 bits */
-	if (pci_set_dma_mask(pci, DMA_BIT_MASK(30)) < 0 ||
-	    pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(30)) < 0) {
-		snd_printk(KERN_ERR "architecture does not support 30bit PCI busmaster DMA\n");
-		pci_disable_device(pci);
-		return -ENXIO;
-	}
-	
-	trident = kzalloc(sizeof(*trident), GFP_KERNEL);
-	if (trident == NULL) {
-		pci_disable_device(pci);
-		return -ENOMEM;
-	}
-=======
 int snd_trident_create(struct snd_card *card,
 		       struct pci_dev *pci,
 		       int pcm_streams,
@@ -4049,7 +3513,6 @@ int snd_trident_create(struct snd_card *card,
 		return -ENXIO;
 	}
 	
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trident->device = (pci->vendor << 16) | pci->device;
 	trident->card = card;
 	trident->pci = pci;
@@ -4065,39 +3528,11 @@ int snd_trident_create(struct snd_card *card,
 		max_wavetable_size = 0;
 	trident->synth.max_size = max_wavetable_size * 1024;
 	trident->irq = -1;
-<<<<<<< HEAD
-=======
 	card->private_free = snd_trident_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trident->midi_port = TRID_REG(trident, T4D_MPU401_BASE);
 	pci_set_master(pci);
 
-<<<<<<< HEAD
-	if ((err = pci_request_regions(pci, "Trident Audio")) < 0) {
-		kfree(trident);
-		pci_disable_device(pci);
-		return err;
-	}
-	trident->port = pci_resource_start(pci, 0);
-
-	if (request_irq(pci->irq, snd_trident_interrupt, IRQF_SHARED,
-			KBUILD_MODNAME, trident)) {
-		snd_printk(KERN_ERR "unable to grab IRQ %d\n", pci->irq);
-		snd_trident_free(trident);
-		return -EBUSY;
-	}
-	trident->irq = pci->irq;
-
-	/* allocate 16k-aligned TLB for NX cards */
-	trident->tlb.entries = NULL;
-	trident->tlb.buffer.area = NULL;
-	if (trident->device == TRIDENT_DEVICE_ID_NX) {
-		if ((err = snd_trident_tlb_alloc(trident)) < 0) {
-			snd_trident_free(trident);
-			return err;
-		}
-=======
 	err = pci_request_regions(pci, "Trident Audio");
 	if (err < 0)
 		return err;
@@ -4117,7 +3552,6 @@ int snd_trident_create(struct snd_card *card,
 		err = snd_trident_tlb_alloc(trident);
 		if (err < 0)
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	trident->spdif_bits = trident->spdif_pcm_bits = SNDRV_PCM_DEFAULT_CON_SPDIF;
@@ -4137,25 +3571,11 @@ int snd_trident_create(struct snd_card *card,
 		snd_BUG();
 		break;
 	}
-<<<<<<< HEAD
-	if (err < 0) {
-		snd_trident_free(trident);
-		return err;
-	}
-
-	if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, trident, &ops)) < 0) {
-		snd_trident_free(trident);
-		return err;
-	}
-
-	if ((err = snd_trident_mixer(trident, pcm_spdif_device)) < 0)
-=======
 	if (err < 0)
 		return err;
 
 	err = snd_trident_mixer(trident, pcm_spdif_device);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	
 	/* initialise synth voices */
@@ -4176,11 +3596,6 @@ int snd_trident_create(struct snd_card *card,
 	snd_trident_enable_eso(trident);
 
 	snd_trident_proc_init(trident);
-<<<<<<< HEAD
-	snd_card_set_dev(card, &pci->dev);
-	*rtrident = trident;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4190,25 +3605,16 @@ int snd_trident_create(struct snd_card *card,
    Description: This routine will free the device specific class for
                 the 4DWave card. 
                 
-<<<<<<< HEAD
-   Parameters:  trident  - device specific private data for 4DWave card
-=======
    Parameters:  card - card to release
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    Returns:     None.
   
   ---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-static int snd_trident_free(struct snd_trident *trident)
-{
-=======
 static void snd_trident_free(struct snd_card *card)
 {
 	struct snd_trident *trident = card->private_data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_trident_free_gameport(trident);
 	snd_trident_disable_eso(trident);
 	// Disable S/PDIF out
@@ -4217,28 +3623,10 @@ static void snd_trident_free(struct snd_card *card)
 	else if (trident->device == TRIDENT_DEVICE_ID_SI7018) {
 		outl(0, TRID_REG(trident, SI_SERIAL_INTF_CTRL));
 	}
-<<<<<<< HEAD
-	if (trident->irq >= 0)
-		free_irq(trident->irq, trident);
-	if (trident->tlb.buffer.area) {
-		outl(0, TRID_REG(trident, NX_TLBC));
-		if (trident->tlb.memhdr)
-			snd_util_memhdr_free(trident->tlb.memhdr);
-		if (trident->tlb.silent_page.area)
-			snd_dma_free_pages(&trident->tlb.silent_page);
-		vfree(trident->tlb.shadow_entries);
-		snd_dma_free_pages(&trident->tlb.buffer);
-	}
-	pci_release_regions(trident->pci);
-	pci_disable_device(trident->pci);
-	kfree(trident);
-	return 0;
-=======
 	if (trident->tlb.buffer) {
 		outl(0, TRID_REG(trident, NX_TLBC));
 		snd_util_memhdr_free(trident->tlb.memhdr);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*---------------------------------------------------------------------------
@@ -4406,20 +3794,12 @@ void snd_trident_free_voice(struct snd_trident * trident, struct snd_trident_voi
 {
 	unsigned long flags;
 	void (*private_free)(struct snd_trident_voice *);
-<<<<<<< HEAD
-	void *private_data;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (voice == NULL || !voice->use)
 		return;
 	snd_trident_clear_voices(trident, voice->number, voice->number);
 	spin_lock_irqsave(&trident->voice_alloc, flags);
 	private_free = voice->private_free;
-<<<<<<< HEAD
-	private_data = voice->private_data;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	voice->private_free = NULL;
 	voice->private_data = NULL;
 	if (voice->pcm)
@@ -4458,51 +3838,14 @@ static void snd_trident_clear_voices(struct snd_trident * trident, unsigned shor
 	}
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-int snd_trident_suspend(struct pci_dev *pci, pm_message_t state)
-{
-	struct snd_card *card = pci_get_drvdata(pci);
-=======
 #ifdef CONFIG_PM_SLEEP
 static int snd_trident_suspend(struct device *dev)
 {
 	struct snd_card *card = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_trident *trident = card->private_data;
 
 	trident->in_suspend = 1;
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
-<<<<<<< HEAD
-	snd_pcm_suspend_all(trident->pcm);
-	snd_pcm_suspend_all(trident->foldback);
-	snd_pcm_suspend_all(trident->spdif);
-
-	snd_ac97_suspend(trident->ac97);
-	snd_ac97_suspend(trident->ac97_sec);
-
-	pci_disable_device(pci);
-	pci_save_state(pci);
-	pci_set_power_state(pci, pci_choose_state(pci, state));
-	return 0;
-}
-
-int snd_trident_resume(struct pci_dev *pci)
-{
-	struct snd_card *card = pci_get_drvdata(pci);
-	struct snd_trident *trident = card->private_data;
-
-	pci_set_power_state(pci, PCI_D0);
-	pci_restore_state(pci);
-	if (pci_enable_device(pci) < 0) {
-		printk(KERN_ERR "trident: pci_enable_device failed, "
-		       "disabling device\n");
-		snd_card_disconnect(card);
-		return -EIO;
-	}
-	pci_set_master(pci);
-
-=======
 	snd_ac97_suspend(trident->ac97);
 	snd_ac97_suspend(trident->ac97_sec);
 	return 0;
@@ -4513,7 +3856,6 @@ static int snd_trident_resume(struct device *dev)
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_trident *trident = card->private_data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (trident->device) {
 	case TRIDENT_DEVICE_ID_DX:
 		snd_trident_4d_dx_init(trident);
@@ -4538,10 +3880,6 @@ static int snd_trident_resume(struct device *dev)
 	trident->in_suspend = 0;
 	return 0;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_PM */
-=======
 
 SIMPLE_DEV_PM_OPS(snd_trident_pm, snd_trident_suspend, snd_trident_resume);
 #endif /* CONFIG_PM_SLEEP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

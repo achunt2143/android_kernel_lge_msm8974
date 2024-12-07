@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kgdbts is a test suite for kgdb for the sole purpose of validating
  * that key pieces of the kgdb internals are working properly such as
@@ -10,22 +7,6 @@
  * Created by: Jason Wessel <jason.wessel@windriver.com>
  *
  * Copyright (c) 2008 Wind River Systems, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /* Information about the kgdb test suite.
  * -------------------------------------
@@ -52,28 +33,16 @@
  * You can also specify optional tests:
  * N## = Go to sleep with interrupts of for ## seconds
  *       to test the HW NMI watchdog
-<<<<<<< HEAD
- * F## = Break at do_fork for ## iterations
- * S## = Break at sys_open for ## iterations
- * I## = Run the single step test ## iterations
- *
- * NOTE: that the do_fork and sys_open tests are mutually exclusive.
-=======
  * F## = Break at kernel_clone for ## iterations
  * S## = Break at sys_open for ## iterations
  * I## = Run the single step test ## iterations
  *
  * NOTE: that the kernel_clone and sys_open tests are mutually exclusive.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * To invoke the kgdb test suite from boot you use a kernel start
  * argument as follows:
  * 	kgdbts=V1 kgdbwait
-<<<<<<< HEAD
- * Or if you wanted to perform the NMI test for 6 seconds and do_fork
-=======
  * Or if you wanted to perform the NMI test for 6 seconds and kernel_clone
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * test for 100 forks, you could use:
  * 	kgdbts=V1N6F100 kgdbwait
  *
@@ -105,11 +74,7 @@
  * echo kgdbts=V1S10000 > /sys/module/kgdbts/parameters/kgdbts
  * fg # and hit control-c
  * fg # and hit control-c
-<<<<<<< HEAD
- * ## This tests break points on do_fork
-=======
  * ## This tests break points on kernel_clone
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * while [ 1 ] ; do date > /dev/null ; done &
  * while [ 1 ] ; do date > /dev/null ; done &
  * echo kgdbts=V1F1000 > /sys/module/kgdbts/parameters/kgdbts
@@ -126,22 +91,6 @@
 #include <linux/delay.h>
 #include <linux/kthread.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-
-#define v1printk(a...) do { \
-	if (verbose) \
-		printk(KERN_INFO a); \
-	} while (0)
-#define v2printk(a...) do { \
-	if (verbose > 1) \
-		printk(KERN_INFO a); \
-		touch_nmi_watchdog();	\
-	} while (0)
-#define eprintk(a...) do { \
-		printk(KERN_ERR a); \
-		WARN_ON(1); \
-	} while (0)
-=======
 #include <linux/sched/task.h>
 #include <linux/kallsyms.h>
 
@@ -161,7 +110,6 @@
 	printk(KERN_ERR a);		\
 	WARN_ON(1);			\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_CONFIG_LEN		40
 
 static struct kgdb_io kgdbts_io_ops;
@@ -254,22 +202,6 @@ static noinline void kgdbts_break_test(void)
 	v2printk("kgdbts: breakpoint complete\n");
 }
 
-<<<<<<< HEAD
-/* Lookup symbol info in the kernel */
-static unsigned long lookup_addr(char *arg)
-{
-	unsigned long addr = 0;
-
-	if (!strcmp(arg, "kgdbts_break_test"))
-		addr = (unsigned long)kgdbts_break_test;
-	else if (!strcmp(arg, "sys_open"))
-		addr = (unsigned long)do_sys_open;
-	else if (!strcmp(arg, "do_fork"))
-		addr = (unsigned long)do_fork;
-	else if (!strcmp(arg, "hw_break_val"))
-		addr = (unsigned long)&hw_break_val;
-	return addr;
-=======
 /*
  * This is a cached wrapper for kallsyms_lookup_name().
  *
@@ -294,7 +226,6 @@ static unsigned long lookup_addr(char *arg)
 
 	return (unsigned long)dereference_function_descriptor(
 			(void *)cached_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void break_helper(char *bp_type, char *arg, unsigned long vaddr)
@@ -390,11 +321,7 @@ static int check_and_rewind_pc(char *put_str, char *arg)
 
 	if (arch_needs_sstep_emulation && sstep_addr &&
 	    ip + offset == sstep_addr &&
-<<<<<<< HEAD
-	    ((!strcmp(arg, "sys_open") || !strcmp(arg, "do_fork")))) {
-=======
 	    ((!strcmp(arg, "do_sys_openat2") || !strcmp(arg, "kernel_clone")))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* This is special case for emulated single step */
 		v2printk("Emul: rewind hit single step bp\n");
 		restart_from_top_after_write = 1;
@@ -472,12 +399,6 @@ static void skip_back_repeat_test(char *arg)
 	int go_back = simple_strtol(arg, NULL, 10);
 
 	repeat_test--;
-<<<<<<< HEAD
-	if (repeat_test <= 0)
-		ts.idx++;
-	else
-		ts.idx -= go_back;
-=======
 	if (repeat_test <= 0) {
 		ts.idx++;
 	} else {
@@ -486,7 +407,6 @@ static void skip_back_repeat_test(char *arg)
 
 		ts.idx -= go_back;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fill_get_buf(ts.tst[ts.idx].get);
 }
 
@@ -687,21 +607,6 @@ static struct test_struct singlestep_break_test[] = {
 };
 
 /*
-<<<<<<< HEAD
- * Test for hitting a breakpoint at do_fork for what ever the number
- * of iterations required by the variable repeat_test.
- */
-static struct test_struct do_fork_test[] = {
-	{ "?", "S0*" }, /* Clear break points */
-	{ "do_fork", "OK", sw_break, }, /* set sw breakpoint */
-	{ "c", "T0*", NULL, get_thread_id_continue }, /* Continue */
-	{ "do_fork", "OK", sw_rem_break }, /*remove breakpoint */
-	{ "g", "do_fork", NULL, check_and_rewind_pc }, /* check location */
-	{ "write", "OK", write_regs, emul_reset }, /* Write registers */
-	{ "s", "T0*", emul_sstep_get, emul_sstep_put }, /* Single step */
-	{ "g", "do_fork", NULL, check_single_step },
-	{ "do_fork", "OK", sw_break, }, /* set sw breakpoint */
-=======
  * Test for hitting a breakpoint at kernel_clone for what ever the number
  * of iterations required by the variable repeat_test.
  */
@@ -715,7 +620,6 @@ static struct test_struct do_kernel_clone_test[] = {
 	{ "s", "T0*", emul_sstep_get, emul_sstep_put }, /* Single step */
 	{ "g", "kernel_clone", NULL, check_single_step },
 	{ "kernel_clone", "OK", sw_break, }, /* set sw breakpoint */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "7", "T0*", skip_back_repeat_test }, /* Loop based on repeat_test */
 	{ "D", "OK", NULL, final_ack_set }, /* detach and unregister I/O */
 	{ "", "", get_cont_catch, put_cont_catch },
@@ -726,16 +630,6 @@ static struct test_struct do_kernel_clone_test[] = {
  */
 static struct test_struct sys_open_test[] = {
 	{ "?", "S0*" }, /* Clear break points */
-<<<<<<< HEAD
-	{ "sys_open", "OK", sw_break, }, /* set sw breakpoint */
-	{ "c", "T0*", NULL, get_thread_id_continue }, /* Continue */
-	{ "sys_open", "OK", sw_rem_break }, /*remove breakpoint */
-	{ "g", "sys_open", NULL, check_and_rewind_pc }, /* check location */
-	{ "write", "OK", write_regs, emul_reset }, /* Write registers */
-	{ "s", "T0*", emul_sstep_get, emul_sstep_put }, /* Single step */
-	{ "g", "sys_open", NULL, check_single_step },
-	{ "sys_open", "OK", sw_break, }, /* set sw breakpoint */
-=======
 	{ "do_sys_openat2", "OK", sw_break, }, /* set sw breakpoint */
 	{ "c", "T0*", NULL, get_thread_id_continue }, /* Continue */
 	{ "do_sys_openat2", "OK", sw_rem_break }, /*remove breakpoint */
@@ -744,7 +638,6 @@ static struct test_struct sys_open_test[] = {
 	{ "s", "T0*", emul_sstep_get, emul_sstep_put }, /* Single step */
 	{ "g", "do_sys_openat2", NULL, check_single_step },
 	{ "do_sys_openat2", "OK", sw_break, }, /* set sw breakpoint */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "7", "T0*", skip_back_repeat_test }, /* Loop based on repeat_test */
 	{ "D", "OK", NULL, final_ack_set }, /* detach and unregister I/O */
 	{ "", "", get_cont_catch, put_cont_catch },
@@ -946,11 +839,7 @@ static void run_plant_and_detach_test(int is_early)
 	char before[BREAK_INSTR_SIZE];
 	char after[BREAK_INSTR_SIZE];
 
-<<<<<<< HEAD
-	probe_kernel_read(before, (char *)kgdbts_break_test,
-=======
 	copy_from_kernel_nofault(before, (char *)kgdbts_break_test,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  BREAK_INSTR_SIZE);
 	init_simple_test();
 	ts.tst = plant_and_detach_test;
@@ -958,13 +847,8 @@ static void run_plant_and_detach_test(int is_early)
 	/* Activate test with initial breakpoint */
 	if (!is_early)
 		kgdb_breakpoint();
-<<<<<<< HEAD
-	probe_kernel_read(after, (char *)kgdbts_break_test,
-	  BREAK_INSTR_SIZE);
-=======
 	copy_from_kernel_nofault(after, (char *)kgdbts_break_test,
 			BREAK_INSTR_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (memcmp(before, after, BREAK_INSTR_SIZE)) {
 		printk(KERN_CRIT "kgdbts: ERROR kgdb corrupted memory\n");
 		panic("kgdb memory corruption");
@@ -1062,19 +946,11 @@ static void run_bad_read_test(void)
 	kgdb_breakpoint();
 }
 
-<<<<<<< HEAD
-static void run_do_fork_test(void)
-{
-	init_simple_test();
-	ts.tst = do_fork_test;
-	ts.name = "do_fork_test";
-=======
 static void run_kernel_clone_test(void)
 {
 	init_simple_test();
 	ts.tst = do_kernel_clone_test;
 	ts.name = "do_kernel_clone_test";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Activate test with initial breakpoint */
 	kgdb_breakpoint();
 }
@@ -1102,21 +978,12 @@ static void run_singlestep_break_test(void)
 static void kgdbts_run_tests(void)
 {
 	char *ptr;
-<<<<<<< HEAD
-	int fork_test = 0;
-=======
 	int clone_test = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int do_sys_open_test = 0;
 	int sstep_test = 1000;
 	int nmi_sleep = 0;
 	int i;
 
-<<<<<<< HEAD
-	ptr = strchr(config, 'F');
-	if (ptr)
-		fork_test = simple_strtol(ptr + 1, NULL, 10);
-=======
 	verbose = 0;
 	if (strstr(config, "V1"))
 		verbose = 1;
@@ -1126,7 +993,6 @@ static void kgdbts_run_tests(void)
 	ptr = strchr(config, 'F');
 	if (ptr)
 		clone_test = simple_strtol(ptr + 1, NULL, 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ptr = strchr(config, 'S');
 	if (ptr)
 		do_sys_open_test = simple_strtol(ptr + 1, NULL, 10);
@@ -1170,18 +1036,6 @@ static void kgdbts_run_tests(void)
 		run_nmi_sleep_test(nmi_sleep);
 	}
 
-<<<<<<< HEAD
-	/* If the do_fork test is run it will be the last test that is
-	 * executed because a kernel thread will be spawned at the very
-	 * end to unregister the debug hooks.
-	 */
-	if (fork_test) {
-		repeat_test = fork_test;
-		printk(KERN_INFO "kgdbts:RUN do_fork for %i breakpoints\n",
-			repeat_test);
-		kthread_run(kgdbts_unreg_thread, NULL, "kgdbts_unreg");
-		run_do_fork_test();
-=======
 	/* If the kernel_clone test is run it will be the last test that is
 	 * executed because a kernel thread will be spawned at the very
 	 * end to unregister the debug hooks.
@@ -1192,7 +1046,6 @@ static void kgdbts_run_tests(void)
 			repeat_test);
 		kthread_run(kgdbts_unreg_thread, NULL, "kgdbts_unreg");
 		run_kernel_clone_test();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1217,24 +1070,10 @@ static int kgdbts_option_setup(char *opt)
 {
 	if (strlen(opt) >= MAX_CONFIG_LEN) {
 		printk(KERN_ERR "kgdbts: config string too long\n");
-<<<<<<< HEAD
-		return -ENOSPC;
-	}
-	strcpy(config, opt);
-
-	verbose = 0;
-	if (strstr(config, "V1"))
-		verbose = 1;
-	if (strstr(config, "V2"))
-		verbose = 2;
-
-	return 0;
-=======
 		return 1;
 	}
 	strcpy(config, opt);
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __setup("kgdbts=", kgdbts_option_setup);
@@ -1245,12 +1084,6 @@ static int configure_kgdbts(void)
 
 	if (!strlen(config) || isspace(config[0]))
 		goto noconfig;
-<<<<<<< HEAD
-	err = kgdbts_option_setup(config);
-	if (err)
-		goto noconfig;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	final_ack = 0;
 	run_plant_and_detach_test(1);
@@ -1280,10 +1113,7 @@ static int __init init_kgdbts(void)
 
 	return configure_kgdbts();
 }
-<<<<<<< HEAD
-=======
 device_initcall(init_kgdbts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int kgdbts_get_char(void)
 {
@@ -1301,16 +1131,10 @@ static void kgdbts_put_char(u8 chr)
 		ts.run_test(0, chr);
 }
 
-<<<<<<< HEAD
-static int param_set_kgdbts_var(const char *kmessage, struct kernel_param *kp)
-{
-	int len = strlen(kmessage);
-=======
 static int param_set_kgdbts_var(const char *kmessage,
 				const struct kernel_param *kp)
 {
 	size_t len = strlen(kmessage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len >= MAX_CONFIG_LEN) {
 		printk(KERN_ERR "kgdbts: config string too long\n");
@@ -1330,11 +1154,7 @@ static int param_set_kgdbts_var(const char *kmessage,
 
 	strcpy(config, kmessage);
 	/* Chop out \n char as a result of echo */
-<<<<<<< HEAD
-	if (config[len - 1] == '\n')
-=======
 	if (len && config[len - 1] == '\n')
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		config[len - 1] = '\0';
 
 	/* Go and configure with the new params. */
@@ -1363,19 +1183,9 @@ static struct kgdb_io kgdbts_io_ops = {
 	.post_exception		= kgdbts_post_exp_handler,
 };
 
-<<<<<<< HEAD
-module_init(init_kgdbts);
-module_param_call(kgdbts, param_set_kgdbts_var, param_get_string, &kps, 0644);
-MODULE_PARM_DESC(kgdbts, "<A|V1|V2>[F#|S#][N#]");
-MODULE_DESCRIPTION("KGDB Test Suite");
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Wind River Systems, Inc.");
-
-=======
 /*
  * not really modular, but the easiest way to keep compat with existing
  * bootargs behaviour is to continue using module_param here.
  */
 module_param_call(kgdbts, param_set_kgdbts_var, param_get_string, &kps, 0644);
 MODULE_PARM_DESC(kgdbts, "<A|V1|V2>[F#|S#][N#]");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

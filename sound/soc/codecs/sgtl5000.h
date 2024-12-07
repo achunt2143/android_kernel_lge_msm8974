@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sgtl5000.h - SGTL5000 audio codec interface
  *
  * Copyright 2010-2011 Freescale Semiconductor, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _SGTL5000_H
 #define _SGTL5000_H
 
 /*
-<<<<<<< HEAD
- * Register values.
-=======
  * Registers addresses
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define SGTL5000_CHIP_ID			0x0000
 #define SGTL5000_CHIP_DIG_POWER			0x0002
@@ -94,10 +80,7 @@
 /*
  * SGTL5000_CHIP_DIG_POWER
  */
-<<<<<<< HEAD
-=======
 #define SGTL5000_DIG_POWER_DEFAULT		0x0000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SGTL5000_ADC_EN				0x0040
 #define SGTL5000_DAC_EN				0x0020
 #define SGTL5000_DAP_POWERUP			0x0010
@@ -107,10 +90,7 @@
 /*
  * SGTL5000_CHIP_CLK_CTRL
  */
-<<<<<<< HEAD
-=======
 #define SGTL5000_CHIP_CLK_CTRL_DEFAULT		0x0008
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SGTL5000_RATE_MODE_MASK			0x0030
 #define SGTL5000_RATE_MODE_SHIFT		4
 #define SGTL5000_RATE_MODE_WIDTH		2
@@ -254,10 +234,7 @@
 /*
  * SGTL5000_CHIP_ANA_CTRL
  */
-<<<<<<< HEAD
-=======
 #define SGTL5000_CHIP_ANA_CTRL_DEFAULT		0x0133
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SGTL5000_LINE_OUT_MUTE			0x0100
 #define SGTL5000_HP_SEL_MASK			0x0040
 #define SGTL5000_HP_SEL_SHIFT			6
@@ -298,11 +275,7 @@
 #define SGTL5000_BIAS_CTRL_MASK			0x000e
 #define SGTL5000_BIAS_CTRL_SHIFT		1
 #define SGTL5000_BIAS_CTRL_WIDTH		3
-<<<<<<< HEAD
-#define SGTL5000_SMALL_POP			0
-=======
 #define SGTL5000_SMALL_POP			0x0001
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * SGTL5000_CHIP_MIC_CTRL
@@ -352,10 +325,7 @@
 /*
  * SGTL5000_CHIP_ANA_POWER
  */
-<<<<<<< HEAD
-=======
 #define SGTL5000_ANA_POWER_DEFAULT		0x7060
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SGTL5000_DAC_STEREO			0x4000
 #define SGTL5000_LINREG_SIMPLE_POWERUP		0x2000
 #define SGTL5000_STARTUP_POWERUP		0x1000
@@ -428,8 +398,6 @@
 #define SGTL5000_SYSCLK				0x00
 #define SGTL5000_LRCLK				0x01
 
-<<<<<<< HEAD
-=======
 /*
  * SGTL5000_DAP_AUDIO_EQ
  */
@@ -437,5 +405,4 @@
 #define SGTL5000_DAP_SEL_TONE_CTRL		2
 #define SGTL5000_DAP_SEL_GEQ			3
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

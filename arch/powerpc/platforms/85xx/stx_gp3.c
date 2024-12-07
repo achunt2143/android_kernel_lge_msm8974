@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Based on MPC8560 ADS and arch/ppc stx_gp3 ports
  *
@@ -17,14 +14,6 @@
  *
  * Ported to 2.6, Matt Porter <mporter@kernel.crashing.org>
  * Copyright 2004-2005 MontaVista Software, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
@@ -33,20 +22,12 @@
 #include <linux/kdev_t.h>
 #include <linux/delay.h>
 #include <linux/seq_file.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/time.h>
 #include <asm/machdep.h>
 #include <asm/pci-bridge.h>
 #include <asm/mpic.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mm/mmu_decl.h>
 #include <asm/udbg.h>
 
@@ -74,23 +55,6 @@ static void __init stx_gp3_pic_init(void)
  */
 static void __init stx_gp3_setup_arch(void)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_PCI
-	struct device_node *np;
-#endif
-
-	if (ppc_md.progress)
-		ppc_md.progress("stx_gp3_setup_arch()", 0);
-
-#ifdef CONFIG_CPM2
-	cpm2_reset();
-#endif
-
-#ifdef CONFIG_PCI
-	for_each_compatible_node(np, "pci", "fsl,mpc8540-pci")
-		fsl_add_bridge(np, 1);
-#endif
-=======
 	if (ppc_md.progress)
 		ppc_md.progress("stx_gp3_setup_arch()", 0);
 
@@ -99,7 +63,6 @@ static void __init stx_gp3_setup_arch(void)
 #ifdef CONFIG_CPM2
 	cpm2_reset();
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void stx_gp3_show_cpuinfo(struct seq_file *m)
@@ -118,37 +81,14 @@ static void stx_gp3_show_cpuinfo(struct seq_file *m)
 	seq_printf(m, "PLL setting\t: 0x%x\n", ((phid1 >> 24) & 0x3f));
 }
 
-<<<<<<< HEAD
-machine_device_initcall(stx_gp3, mpc85xx_common_publish_devices);
-
-/*
- * Called very early, device-tree isn't unflattened
- */
-static int __init stx_gp3_probe(void)
-{
-	unsigned long root = of_get_flat_dt_root();
-
-	return of_flat_dt_is_compatible(root, "stx,gp3-8560");
-}
-
-define_machine(stx_gp3) {
-	.name			= "STX GP3",
-	.probe			= stx_gp3_probe,
-=======
 machine_arch_initcall(stx_gp3, mpc85xx_common_publish_devices);
 
 define_machine(stx_gp3) {
 	.name			= "STX GP3",
 	.compatible		= "stx,gp3-8560",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup_arch		= stx_gp3_setup_arch,
 	.init_IRQ		= stx_gp3_pic_init,
 	.show_cpuinfo		= stx_gp3_show_cpuinfo,
 	.get_irq		= mpic_get_irq,
-<<<<<<< HEAD
-	.restart		= fsl_rstcr_restart,
-	.calibrate_decr		= generic_calibrate_decr,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= udbg_progress,
 };

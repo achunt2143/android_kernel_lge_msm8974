@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # TPM device configuration
 #
@@ -9,15 +6,10 @@
 menuconfig TCG_TPM
 	tristate "TPM Hardware Support"
 	depends on HAS_IOMEM
-<<<<<<< HEAD
-	select SECURITYFS
-	---help---
-=======
 	imply SECURITYFS
 	select CRYPTO
 	select CRYPTO_HASH_INFO
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you have a TPM security chip in your system, which
 	  implements the Trusted Computing Group's specification,
 	  say Yes and it will be accessible from within Linux.  For
@@ -35,16 +27,6 @@ menuconfig TCG_TPM
 
 if TCG_TPM
 
-<<<<<<< HEAD
-config TCG_TIS
-	tristate "TPM Interface Specification 1.2 Interface"
-	depends on X86
-	---help---
-	  If you have a TPM security chip that is compliant with the
-	  TCG TIS 1.2 TPM specification say Yes and it will be accessible
-	  from within Linux.  To compile this driver as a module, choose
-	  M here; the module will be called tpm_tis.
-=======
 config HW_RANDOM_TPM
 	bool "TPM HW Random Number Generator support"
 	depends on TCG_TPM && HW_RANDOM && !(TCG_TPM=y && HW_RANDOM=m)
@@ -154,16 +136,11 @@ config TCG_TIS_I2C_NUVOTON
 	  from within Linux.
 	  To compile this driver as a module, choose M here; the module
 	  will be called tpm_i2c_nuvoton.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config TCG_NSC
 	tristate "National Semiconductor TPM Interface"
 	depends on X86
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you have a TPM security chip from National Semiconductor 
 	  say Yes and it will be accessible from within Linux.  To 
 	  compile this driver as a module, choose M here; the module 
@@ -171,13 +148,8 @@ config TCG_NSC
 
 config TCG_ATMEL
 	tristate "Atmel TPM Interface"
-<<<<<<< HEAD
-	depends on PPC64 || HAS_IOPORT
-	---help---
-=======
 	depends on PPC64 || HAS_IOPORT_MAP
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you have a TPM security chip from Atmel say Yes and it 
 	  will be accessible from within Linux.  To compile this driver 
 	  as a module, choose M here; the module will be called tpm_atmel.
@@ -185,11 +157,7 @@ config TCG_ATMEL
 config TCG_INFINEON
 	tristate "Infineon Technologies TPM Interface"
 	depends on PNP
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you have a TPM security chip from Infineon Technologies
 	  (either SLD 9630 TT 1.1 or SLB 9635 TT 1.2) say Yes and it
 	  will be accessible from within Linux.
@@ -198,22 +166,6 @@ config TCG_INFINEON
 	  Further information on this driver and the supported hardware
 	  can be found at http://www.trust.rub.de/projects/linux-device-driver-infineon-tpm/ 
 
-<<<<<<< HEAD
-config TCG_ST_I2C
-	tristate "ST Micro ST19NP18-TPM-I2C TPM interface"
-	depends on I2C
-	default n
-	---help---
-	  If you have a ST19NP18-TPM-I2C TPM security chip from ST Micro
-	  say Yes and it will be accessible from Linux.
-
-config TCG_TPMD_DEV
-	tristate "tpmd_dev TPM Emulator driver"
-	default n
-	---help---
-	  Enables the TPM emulator driver
-
-=======
 config TCG_IBMVTPM
 	tristate "IBM VTPM Interface"
 	depends on PPC_PSERIES
@@ -259,5 +211,4 @@ config TCG_FTPM_TEE
 	  This driver proxies for firmware TPM running in TEE.
 
 source "drivers/char/tpm/st33zp24/Kconfig"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # TCG_TPM

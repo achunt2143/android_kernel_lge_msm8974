@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-#include <linux/types.h>
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/console.h>
@@ -14,17 +9,10 @@
 
 static int hvsi_send_packet(struct hvsi_priv *pv, struct hvsi_header *packet)
 {
-<<<<<<< HEAD
-	packet->seqno = atomic_inc_return(&pv->seqno);
-
-	/* Assumes that always succeeds, works in practice */
-	return pv->put_chars(pv->termno, (char *)packet, packet->len);
-=======
 	packet->seqno = cpu_to_be16(atomic_inc_return(&pv->seqno));
 
 	/* Assumes that always succeeds, works in practice */
 	return pv->put_chars(pv->termno, (u8 *)packet, packet->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hvsi_start_handshake(struct hvsi_priv *pv)
@@ -40,11 +28,7 @@ static void hvsi_start_handshake(struct hvsi_priv *pv)
 	/* Send version query */
 	q.hdr.type = VS_QUERY_PACKET_HEADER;
 	q.hdr.len = sizeof(struct hvsi_query);
-<<<<<<< HEAD
-	q.verb = VSV_SEND_VERSION_NUMBER;
-=======
 	q.verb = cpu_to_be16(VSV_SEND_VERSION_NUMBER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hvsi_send_packet(pv, &q.hdr);
 }
 
@@ -56,11 +40,7 @@ static int hvsi_send_close(struct hvsi_priv *pv)
 
 	ctrl.hdr.type = VS_CONTROL_PACKET_HEADER;
 	ctrl.hdr.len = sizeof(struct hvsi_control);
-<<<<<<< HEAD
-	ctrl.verb = VSV_CLOSE_PROTOCOL;
-=======
 	ctrl.verb = cpu_to_be16(VSV_CLOSE_PROTOCOL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return hvsi_send_packet(pv, &ctrl.hdr);
 }
 
@@ -89,22 +69,14 @@ static void hvsi_got_control(struct hvsi_priv *pv)
 {
 	struct hvsi_control *pkt = (struct hvsi_control *)pv->inbuf;
 
-<<<<<<< HEAD
-	switch (pkt->verb) {
-=======
 	switch (be16_to_cpu(pkt->verb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case VSV_CLOSE_PROTOCOL:
 		/* We restart the handshaking */
 		hvsi_start_handshake(pv);
 		break;
 	case VSV_MODEM_CTL_UPDATE:
 		/* Transition of carrier detect */
-<<<<<<< HEAD
-		hvsi_cd_change(pv, pkt->word & HVSI_TSCD);
-=======
 		hvsi_cd_change(pv, be32_to_cpu(pkt->word) & HVSI_TSCD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -115,11 +87,7 @@ static void hvsi_got_query(struct hvsi_priv *pv)
 	struct hvsi_query_response r;
 
 	/* We only handle version queries */
-<<<<<<< HEAD
-	if (pkt->verb != VSV_SEND_VERSION_NUMBER)
-=======
 	if (be16_to_cpu(pkt->verb) != VSV_SEND_VERSION_NUMBER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	pr_devel("HVSI@%x: Got version query, sending response...\n",
@@ -128,11 +96,7 @@ static void hvsi_got_query(struct hvsi_priv *pv)
 	/* Send version response */
 	r.hdr.type = VS_QUERY_RESPONSE_PACKET_HEADER;
 	r.hdr.len = sizeof(struct hvsi_query_response);
-<<<<<<< HEAD
-	r.verb = VSV_SEND_VERSION_NUMBER;
-=======
 	r.verb = cpu_to_be16(VSV_SEND_VERSION_NUMBER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r.u.version = HVSI_VERSION;
 	r.query_seqno = pkt->hdr.seqno;
 	hvsi_send_packet(pv, &r.hdr);
@@ -148,11 +112,7 @@ static void hvsi_got_response(struct hvsi_priv *pv)
 
 	switch(r->verb) {
 	case VSV_SEND_MODEM_CTL_STATUS:
-<<<<<<< HEAD
-		hvsi_cd_change(pv, r->u.mctrl_word & HVSI_TSCD);
-=======
 		hvsi_cd_change(pv, be32_to_cpu(r->u.mctrl_word) & HVSI_TSCD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pv->mctrl_update = 1;
 		break;
 	}
@@ -218,16 +178,10 @@ static int hvsi_get_packet(struct hvsi_priv *pv)
 	return 0;
 }
 
-<<<<<<< HEAD
-int hvsilib_get_chars(struct hvsi_priv *pv, char *buf, int count)
-{
-	unsigned int tries, read = 0;
-=======
 ssize_t hvsilib_get_chars(struct hvsi_priv *pv, u8 *buf, size_t count)
 {
 	unsigned int tries;
 	size_t read = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (WARN_ON(!pv))
 		return -ENXIO;
@@ -246,11 +200,7 @@ ssize_t hvsilib_get_chars(struct hvsi_priv *pv, u8 *buf, size_t count)
 	for (tries = 1; count && tries < 2; tries++) {
 		/* Consume existing data packet */
 		if (pv->inbuf_pktlen) {
-<<<<<<< HEAD
-			unsigned int l = min(count, (int)pv->inbuf_pktlen);
-=======
 			size_t l = min(count, pv->inbuf_pktlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(&buf[read], &pv->inbuf[pv->inbuf_cur], l);
 			pv->inbuf_cur += l;
 			pv->inbuf_pktlen -= l;
@@ -279,18 +229,11 @@ ssize_t hvsilib_get_chars(struct hvsi_priv *pv, u8 *buf, size_t count)
 	return read;
 }
 
-<<<<<<< HEAD
-int hvsilib_put_chars(struct hvsi_priv *pv, const char *buf, int count)
-{
-	struct hvsi_data dp;
-	int rc, adjcount = min(count, HVSI_MAX_OUTGOING_DATA);
-=======
 ssize_t hvsilib_put_chars(struct hvsi_priv *pv, const u8 *buf, size_t count)
 {
 	struct hvsi_data dp;
 	size_t adjcount = min_t(size_t, count, HVSI_MAX_OUTGOING_DATA);
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (WARN_ON(!pv))
 		return -ENODEV;
@@ -324,12 +267,7 @@ int hvsilib_read_mctrl(struct hvsi_priv *pv)
 	pv->mctrl_update = 0;
 	q.hdr.type = VS_QUERY_PACKET_HEADER;
 	q.hdr.len = sizeof(struct hvsi_query);
-<<<<<<< HEAD
-	q.hdr.seqno = atomic_inc_return(&pv->seqno);
-	q.verb = VSV_SEND_MODEM_CTL_STATUS;
-=======
 	q.verb = cpu_to_be16(VSV_SEND_MODEM_CTL_STATUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = hvsi_send_packet(pv, &q.hdr);
 	if (rc <= 0) {
 		pr_devel("HVSI@%x: Error %d...\n", pv->termno, rc);
@@ -367,15 +305,9 @@ int hvsilib_write_mctrl(struct hvsi_priv *pv, int dtr)
 
 	ctrl.hdr.type = VS_CONTROL_PACKET_HEADER,
 	ctrl.hdr.len = sizeof(struct hvsi_control);
-<<<<<<< HEAD
-	ctrl.verb = VSV_SET_MODEM_CTL;
-	ctrl.mask = HVSI_TSDTR;
-	ctrl.word = dtr ? HVSI_TSDTR : 0;
-=======
 	ctrl.verb = cpu_to_be16(VSV_SET_MODEM_CTL);
 	ctrl.mask = cpu_to_be32(HVSI_TSDTR);
 	ctrl.word = cpu_to_be32(dtr ? HVSI_TSDTR : 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return hvsi_send_packet(pv, &ctrl.hdr);
 }
 
@@ -446,11 +378,7 @@ int hvsilib_open(struct hvsi_priv *pv, struct hvc_struct *hp)
 	pr_devel("HVSI@%x: open !\n", pv->termno);
 
 	/* Keep track of the tty data structure */
-<<<<<<< HEAD
-	pv->tty = tty_kref_get(hp->tty);
-=======
 	pv->tty = tty_port_tty_get(&hp->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hvsilib_establish(pv);
 
@@ -473,36 +401,21 @@ void hvsilib_close(struct hvsi_priv *pv, struct hvc_struct *hp)
 		spin_unlock_irqrestore(&hp->lock, flags);
 
 		/* Clear our own DTR */
-<<<<<<< HEAD
-		if (!pv->tty || (pv->tty->termios->c_cflag & HUPCL))
-=======
 		if (!pv->tty || (pv->tty->termios.c_cflag & HUPCL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hvsilib_write_mctrl(pv, 0);
 
 		/* Tear down the connection */
 		hvsi_send_close(pv);
 	}
 
-<<<<<<< HEAD
-	if (pv->tty)
-		tty_kref_put(pv->tty);
-=======
 	tty_kref_put(pv->tty);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pv->tty = NULL;
 }
 
 void hvsilib_init(struct hvsi_priv *pv,
-<<<<<<< HEAD
-		  int (*get_chars)(uint32_t termno, char *buf, int count),
-		  int (*put_chars)(uint32_t termno, const char *buf,
-				   int count),
-=======
 		  ssize_t (*get_chars)(uint32_t termno, u8 *buf, size_t count),
 		  ssize_t (*put_chars)(uint32_t termno, const u8 *buf,
 				       size_t count),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  int termno, int is_console)
 {
 	memset(pv, 0, sizeof(*pv));

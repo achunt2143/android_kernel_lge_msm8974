@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1998-2001 Vojtech Pavlik
  */
@@ -10,37 +7,10 @@
  * Genius Flight 2000 joystick driver for Linux
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * Should you need to contact me, the author, you can do so either by
- * e-mail - mail your message to <vojtech@ucw.cz>, or by paper mail:
- * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input.h>
 #include <linux/gameport.h>
 #include <linux/jiffies.h>
@@ -383,19 +353,4 @@ static struct gameport_driver gf2k_drv = {
 	.disconnect	= gf2k_disconnect,
 };
 
-<<<<<<< HEAD
-static int __init gf2k_init(void)
-{
-	return gameport_register_driver(&gf2k_drv);
-}
-
-static void __exit gf2k_exit(void)
-{
-	gameport_unregister_driver(&gf2k_drv);
-}
-
-module_init(gf2k_init);
-module_exit(gf2k_exit);
-=======
 module_gameport_driver(gf2k_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

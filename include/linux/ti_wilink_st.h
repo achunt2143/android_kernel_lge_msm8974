@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Shared Transport Header file
  *	To be included by the protocol stack drivers for
@@ -10,33 +7,13 @@
  *
  *  Copyright (C) 2009-2010 Texas Instruments
  *  Author: Pavan Savoy <pavan_savoy@ti.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef TI_WILINK_ST_H
 #define TI_WILINK_ST_H
 
-<<<<<<< HEAD
-=======
 #include <linux/skbuff.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * enum proto-type - The protocol on WiLink chips which share a
  *	common physical interface like UART.
@@ -81,11 +58,7 @@ struct st_proto_s {
 	enum proto_type type;
 	long (*recv) (void *, struct sk_buff *);
 	unsigned char (*match_packet) (const unsigned char *data);
-<<<<<<< HEAD
-	void (*reg_complete_cb) (void *, char data);
-=======
 	void (*reg_complete_cb) (void *, int data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long (*write) (struct sk_buff *skb);
 	void *priv_data;
 
@@ -172,10 +145,7 @@ struct st_data_s {
 	unsigned long ll_state;
 	void *kim_data;
 	struct tty_struct *tty;
-<<<<<<< HEAD
-=======
 	struct work_struct work_write_wakeup;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -279,26 +249,16 @@ struct kim_data_s {
 	struct completion kim_rcvd, ldisc_installed;
 	char resp_buffer[30];
 	const struct firmware *fw_entry;
-<<<<<<< HEAD
-	long nshutdown;
-=======
 	unsigned nshutdown;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long rx_state;
 	unsigned long rx_count;
 	struct sk_buff *rx_skb;
 	struct st_data_s *core_data;
 	struct chip_version version;
 	unsigned char ldisc_install;
-<<<<<<< HEAD
-	unsigned char dev_name[UART_DEV_NAME_LEN];
-	unsigned char flow_cntrl;
-	unsigned long baud_rate;
-=======
 	unsigned char dev_name[UART_DEV_NAME_LEN + 1];
 	unsigned flow_cntrl;
 	unsigned baud_rate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -309,16 +269,10 @@ struct kim_data_s {
 long st_kim_start(void *);
 long st_kim_stop(void *);
 
-<<<<<<< HEAD
-void st_kim_recv(void *, const unsigned char *, long count);
-void st_kim_complete(void *);
-void kim_st_list_protocols(struct st_data_s *, void *);
-=======
 void st_kim_complete(void *);
 void kim_st_list_protocols(struct st_data_s *, void *);
 void st_kim_recv(void *disc_data, const u8 *data, size_t count);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * BTS headers
@@ -341,11 +295,7 @@ struct bts_header {
 	u32 magic;
 	u32 version;
 	u8 future[24];
-<<<<<<< HEAD
-	u8 actions[0];
-=======
 	u8 actions[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 /**
@@ -355,11 +305,7 @@ struct bts_header {
 struct bts_action {
 	u16 type;
 	u16 size;
-<<<<<<< HEAD
-	u8 data[0];
-=======
 	u8 data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 struct bts_action_send {
@@ -369,11 +315,7 @@ struct bts_action_send {
 struct bts_action_wait {
 	u32 msec;
 	u32 size;
-<<<<<<< HEAD
-	u8 data[0];
-=======
 	u8 data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 struct bts_action_delay {
@@ -482,17 +424,10 @@ struct gps_event_hdr {
  *
  */
 struct ti_st_plat_data {
-<<<<<<< HEAD
-	long nshutdown_gpio;
-	unsigned char dev_name[UART_DEV_NAME_LEN]; /* uart name */
-	unsigned char flow_cntrl; /* flow control flag */
-	unsigned long baud_rate;
-=======
 	u32 nshutdown_gpio;
 	unsigned char dev_name[UART_DEV_NAME_LEN]; /* uart name */
 	u32 flow_cntrl; /* flow control flag */
 	u32 baud_rate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*suspend)(struct platform_device *, pm_message_t);
 	int (*resume)(struct platform_device *);
 	int (*chip_enable) (struct kim_data_s *);

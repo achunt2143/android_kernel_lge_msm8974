@@ -1,41 +1,3 @@
-<<<<<<< HEAD
-/**
- * core.h - DesignWare USB3 DRD Core Header
- *
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - http://www.ti.com
- *
- * Authors: Felipe Balbi <balbi@ti.com>,
- *	    Sebastian Andrzej Siewior <bigeasy@linutronix.de>
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. The names of the above-listed copyright holders may not be used
- *    to endorse or promote products derived from this software without
- *    specific prior written permission.
- *
- * ALTERNATIVELY, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2, as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
- * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * core.h - DesignWare USB3 DRD Core Header
@@ -44,7 +6,6 @@
  *
  * Authors: Felipe Balbi <balbi@ti.com>,
  *	    Sebastian Andrzej Siewior <bigeasy@linutronix.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __DRIVERS_USB_DWC3_CORE_H
@@ -52,25 +13,6 @@
 
 #include <linux/device.h>
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-#include <linux/ioport.h>
-#include <linux/list.h>
-#include <linux/dma-mapping.h>
-#include <linux/mm.h>
-#include <linux/debugfs.h>
-
-#include <linux/usb/ch9.h>
-#include <linux/usb/gadget.h>
-
-#include "dwc3_otg.h"
-
-/* Global constants */
-#define DWC3_EP0_BOUNCE_SIZE	512
-#define DWC3_ENDPOINTS_NUM	32
-#define DWC3_XHCI_RESOURCES_NUM	2
-
-#define DWC3_EVENT_BUFFERS_SIZE	(2 * PAGE_SIZE)
-=======
 #include <linux/mutex.h>
 #include <linux/ioport.h>
 #include <linux/list.h>
@@ -103,7 +45,6 @@
 
 #define DWC3_SCRATCHBUF_SIZE	4096	/* each buffer is assumed to be 4KiB */
 #define DWC3_EVENT_BUFFERS_SIZE	4096
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DWC3_EVENT_TYPE_MASK	0xfe
 
 #define DWC3_EVENT_TYPE_DEV	0
@@ -116,22 +57,11 @@
 #define DWC3_DEVICE_EVENT_LINK_STATUS_CHANGE	3
 #define DWC3_DEVICE_EVENT_WAKEUP		4
 #define DWC3_DEVICE_EVENT_HIBER_REQ		5
-<<<<<<< HEAD
-#define DWC3_DEVICE_EVENT_EOPF			6
-=======
 #define DWC3_DEVICE_EVENT_SUSPEND		6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DWC3_DEVICE_EVENT_SOF			7
 #define DWC3_DEVICE_EVENT_ERRATIC_ERROR		9
 #define DWC3_DEVICE_EVENT_CMD_CMPL		10
 #define DWC3_DEVICE_EVENT_OVERFLOW		11
-<<<<<<< HEAD
-#define DWC3_DEVICE_EVENT_VENDOR_DEV_TEST_LMP	12
-
-#define DWC3_GEVNTCOUNT_MASK	0xfffc
-#define DWC3_GSNPSID_MASK	0xffff0000
-#define DWC3_GSNPSREV_MASK	0xffff
-=======
 
 /* Controller's role while using the OTG block */
 #define DWC3_OTG_ROLE_IDLE	0
@@ -143,7 +73,6 @@
 #define DWC3_GSNPSID_MASK	0xffff0000
 #define DWC3_GSNPSREV_MASK	0xffff
 #define DWC3_GSNPS_ID(p)	(((p) & DWC3_GSNPSID_MASK) >> 16)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* DWC3 registers memory space boundries */
 #define DWC3_XHCI_REGS_START		0x0
@@ -155,11 +84,8 @@
 #define DWC3_OTG_REGS_START		0xcc00
 #define DWC3_OTG_REGS_END		0xccff
 
-<<<<<<< HEAD
-=======
 #define DWC3_RTK_RTD_GLOBALS_REGS_START	0x8100
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Global Registers */
 #define DWC3_GSBUSCFG0		0xc100
 #define DWC3_GSBUSCFG1		0xc104
@@ -168,10 +94,7 @@
 #define DWC3_GCTL		0xc110
 #define DWC3_GEVTEN		0xc114
 #define DWC3_GSTS		0xc118
-<<<<<<< HEAD
-=======
 #define DWC3_GUCTL1		0xc11c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DWC3_GSNPSID		0xc120
 #define DWC3_GGPIO		0xc124
 #define DWC3_GUID		0xc128
@@ -190,38 +113,15 @@
 #define DWC3_GHWPARAMS7		0xc15c
 #define DWC3_GDBGFIFOSPACE	0xc160
 #define DWC3_GDBGLTSSM		0xc164
-<<<<<<< HEAD
-=======
 #define DWC3_GDBGBMU		0xc16c
 #define DWC3_GDBGLSPMUX		0xc170
 #define DWC3_GDBGLSP		0xc174
 #define DWC3_GDBGEPINFO0	0xc178
 #define DWC3_GDBGEPINFO1	0xc17c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DWC3_GPRTBIMAP_HS0	0xc180
 #define DWC3_GPRTBIMAP_HS1	0xc184
 #define DWC3_GPRTBIMAP_FS0	0xc188
 #define DWC3_GPRTBIMAP_FS1	0xc18c
-<<<<<<< HEAD
-
-#define DWC3_GUSB2PHYCFG(n)	(0xc200 + (n * 0x04))
-#define DWC3_GUSB2I2CCTL(n)	(0xc240 + (n * 0x04))
-
-#define DWC3_GUSB2PHYACC(n)	(0xc280 + (n * 0x04))
-
-#define DWC3_GUSB3PIPECTL(n)	(0xc2c0 + (n * 0x04))
-
-#define DWC3_GTXFIFOSIZ(n)	(0xc300 + (n * 0x04))
-#define DWC3_GRXFIFOSIZ(n)	(0xc380 + (n * 0x04))
-
-#define DWC3_GEVNTADRLO(n)	(0xc400 + (n * 0x10))
-#define DWC3_GEVNTADRHI(n)	(0xc404 + (n * 0x10))
-#define DWC3_GEVNTSIZ(n)	(0xc408 + (n * 0x10))
-#define DWC3_GEVNTCOUNT(n)	(0xc40c + (n * 0x10))
-
-#define DWC3_GHWPARAMS8		0xc600
-#define DWC3_GFLADJ		0xc630
-=======
 #define DWC3_GUCTL2		0xc19c
 
 #define DWC3_VER_NUMBER		0xc1a0
@@ -246,7 +146,6 @@
 #define DWC3_GUCTL3		0xc60c
 #define DWC3_GFLADJ		0xc630
 #define DWC3_GHWPARAMS9		0xc6e0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Device Registers */
 #define DWC3_DCFG		0xc700
@@ -256,12 +155,6 @@
 #define DWC3_DGCMDPAR		0xc710
 #define DWC3_DGCMD		0xc714
 #define DWC3_DALEPENA		0xc720
-<<<<<<< HEAD
-#define DWC3_DEPCMDPAR2(n)	(0xc800 + (n * 0x10))
-#define DWC3_DEPCMDPAR1(n)	(0xc804 + (n * 0x10))
-#define DWC3_DEPCMDPAR0(n)	(0xc808 + (n * 0x10))
-#define DWC3_DEPCMD(n)		(0xc80c + (n * 0x10))
-=======
 #define DWC3_DCFG1		0xc740 /* DWC_usb32 only */
 
 #define DWC3_DEP_BASE(n)	(0xc800 + ((n) * 0x10))
@@ -271,25 +164,11 @@
 #define DWC3_DEPCMD		0x0c
 
 #define DWC3_DEV_IMOD(n)	(0xca00 + ((n) * 0x4))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* OTG Registers */
 #define DWC3_OCFG		0xcc00
 #define DWC3_OCTL		0xcc04
 #define DWC3_OEVT		0xcc08
-<<<<<<< HEAD
-#define DWC3_OEVTEN		0xcc0c
-#define DWC3_OSTS		0xcc10
-
-/* Bit fields */
-
-/* Global Configuration Register */
-#define DWC3_GCTL_PWRDNSCALE(n)	((n) << 19)
-#define DWC3_GCTL_PWRDNSCALEMASK (0xFFF80000)
-#define DWC3_GCTL_U2RSTECN	(1 << 16)
-#define DWC3_GCTL_SOFITPSYNC	(1 << 10)
-#define DWC3_GCTL_U2EXIT_LFPS	(1 << 2)
-=======
 #define DWC3_OEVTEN		0xcc0C
 #define DWC3_OSTS		0xcc10
 
@@ -363,7 +242,6 @@
 #define DWC3_GCTL_PWRDNSCALE(n)	((n) << 19)
 #define DWC3_GCTL_PWRDNSCALE_MASK	GENMASK(31, 19)
 #define DWC3_GCTL_U2RSTECN	BIT(16)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DWC3_GCTL_RAMCLKSEL(x)	(((x) & DWC3_GCTL_CLK_MASK) << 6)
 #define DWC3_GCTL_CLK_BUS	(0)
 #define DWC3_GCTL_CLK_PIPE	(1)
@@ -376,33 +254,6 @@
 #define DWC3_GCTL_PRTCAP_DEVICE	2
 #define DWC3_GCTL_PRTCAP_OTG	3
 
-<<<<<<< HEAD
-#define DWC3_GCTL_CORESOFTRESET		(1 << 11)
-#define DWC3_GCTL_SCALEDOWN(n)		((n) << 4)
-#define DWC3_GCTL_SCALEDOWN_MASK	DWC3_GCTL_SCALEDOWN(3)
-#define DWC3_GCTL_DISSCRAMBLE		(1 << 3)
-#define DWC3_GCTL_GBLHIBERNATIONEN	(1 << 1)
-#define DWC3_GCTL_DSBLCLKGTNG		(1 << 0)
-
-/* Global User Control Register */
-#define DWC3_GUCTL_REFCLKPER (0x3FF << 22)
-
-/* Global USB2 PHY Configuration Register */
-#define DWC3_GUSB2PHYCFG_PHYSOFTRST	(1 << 31)
-#define DWC3_GUSB2PHYCFG_SUSPHY		(1 << 6)
-
-/* Global USB3 PIPE Control Register */
-#define DWC3_GUSB3PIPECTL_PHYSOFTRST	(1 << 31)
-#define DWC3_GUSB3PIPECTL_SUSPHY	(1 << 17)
-#define DWC3_GUSB3PIPECTL_DELAY_P1P2P3	(7 << 19)
-#define DWC3_GUSB3PIPECTL_DIS_RXDET_U3_RXDET	(1 << 22)
-#define DWC3_GUSB3PIPECTL_ELASTIC_BUF_MODE	(1 << 0)
-
-/* Global TX Fifo Size Register */
-#define DWC3_GTXFIFOSIZ_TXFDEF(n)	((n) & 0xffff)
-#define DWC3_GTXFIFOSIZ_TXFSTADDR(n)	((n) & 0xffff0000)
-
-=======
 #define DWC3_GCTL_CORESOFTRESET		BIT(11)
 #define DWC3_GCTL_SOFITPSYNC		BIT(10)
 #define DWC3_GCTL_SCALEDOWN(n)		((n) << 4)
@@ -499,7 +350,6 @@
 #define DWC3_GHWPARAMS0_SDWIDTH(n)	(((n) >> 16) & 0xff)
 #define DWC3_GHWPARAMS0_AWIDTH(n)	(((n) >> 24) & 0xff)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Global HWPARAMS1 Register */
 #define DWC3_GHWPARAMS1_EN_PWROPT(n)	(((n) & (3 << 24)) >> 24)
 #define DWC3_GHWPARAMS1_EN_PWROPT_NO	0
@@ -507,8 +357,6 @@
 #define DWC3_GHWPARAMS1_EN_PWROPT_HIB	2
 #define DWC3_GHWPARAMS1_PWROPT(n)	((n) << 24)
 #define DWC3_GHWPARAMS1_PWROPT_MASK	DWC3_GHWPARAMS1_PWROPT(3)
-<<<<<<< HEAD
-=======
 #define DWC3_GHWPARAMS1_ENDBC		BIT(31)
 
 /* Global HWPARAMS3 Register */
@@ -524,25 +372,12 @@
 #define DWC3_GHWPARAMS3_FSPHY_IFC(n)		(((n) & (3 << 4)) >> 4)
 #define DWC3_GHWPARAMS3_FSPHY_IFC_DIS		0
 #define DWC3_GHWPARAMS3_FSPHY_IFC_ENA		1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Global HWPARAMS4 Register */
 #define DWC3_GHWPARAMS4_HIBER_SCRATCHBUFS(n)	(((n) & (0x0f << 13)) >> 13)
 #define DWC3_MAX_HIBER_SCRATCHBUFS		15
 
 /* Global HWPARAMS6 Register */
-<<<<<<< HEAD
-#define DWC3_GHWPARAMS6_SRP_SUPPORT	(1 << 10)
-
-/* Global Frame Length Adjustment Register */
-#define DWC3_GFLADJ_REFCLK_240MHZDECR_PLS1	(1 << 31)
-#define DWC3_GFLADJ_REFCLK_240MHZ_DECR		(0x7F << 24)
-#define DWC3_GFLADJ_REFCLK_LPM_SEL		(1 << 23)
-#define DWC3_GFLADJ_REFCLK_FLADJ		(0x3FFF << 8)
-
-/* Device Configuration Register */
-#define DWC3_DCFG_LPM_CAP	(1 << 22)
-=======
 #define DWC3_GHWPARAMS6_BCSUPPORT		BIT(14)
 #define DWC3_GHWPARAMS6_OTG3SUPPORT		BIT(13)
 #define DWC3_GHWPARAMS6_ADPSUPPORT		BIT(12)
@@ -582,25 +417,10 @@
 /* Device Configuration Register */
 #define DWC3_DCFG_NUMLANES(n)	(((n) & 0x3) << 30) /* DWC_usb32 only */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DWC3_DCFG_DEVADDR(addr)	((addr) << 3)
 #define DWC3_DCFG_DEVADDR_MASK	DWC3_DCFG_DEVADDR(0x7f)
 
 #define DWC3_DCFG_SPEED_MASK	(7 << 0)
-<<<<<<< HEAD
-#define DWC3_DCFG_SUPERSPEED	(4 << 0)
-#define DWC3_DCFG_HIGHSPEED	(0 << 0)
-#define DWC3_DCFG_FULLSPEED2	(1 << 0)
-#define DWC3_DCFG_LOWSPEED	(2 << 0)
-#define DWC3_DCFG_FULLSPEED1	(3 << 0)
-
-#define DWC3_DCFG_LPM_CAP	(1 << 22)
-
-/* Device Control Register */
-#define DWC3_DCTL_RUN_STOP	(1 << 31)
-#define DWC3_DCTL_CSFTRST	(1 << 30)
-#define DWC3_DCTL_LSFTRST	(1 << 29)
-=======
 #define DWC3_DCFG_SUPERSPEED_PLUS (5 << 0)  /* DWC_usb31 only */
 #define DWC3_DCFG_SUPERSPEED	(4 << 0)
 #define DWC3_DCFG_HIGHSPEED	(0 << 0)
@@ -616,16 +436,11 @@
 #define DWC3_DCTL_RUN_STOP	BIT(31)
 #define DWC3_DCTL_CSFTRST	BIT(30)
 #define DWC3_DCTL_LSFTRST	BIT(29)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DWC3_DCTL_HIRD_THRES_MASK	(0x1f << 24)
 #define DWC3_DCTL_HIRD_THRES(n)	((n) << 24)
 
-<<<<<<< HEAD
-#define DWC3_DCTL_APPL1RES	(1 << 23)
-=======
 #define DWC3_DCTL_APPL1RES	BIT(23)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* These apply for core versions 1.87a and earlier */
 #define DWC3_DCTL_TRGTULST_MASK		(0x0f << 17)
@@ -637,18 +452,6 @@
 #define DWC3_DCTL_TRGTULST_SS_INACT	(DWC3_DCTL_TRGTULST(6))
 
 /* These apply for core versions 1.94a and later */
-<<<<<<< HEAD
-#define DWC3_DCTL_KEEP_CONNECT	(1 << 19)
-#define DWC3_DCTL_L1_HIBER_EN	(1 << 18)
-#define DWC3_DCTL_CRS		(1 << 17)
-#define DWC3_DCTL_CSS		(1 << 16)
-
-#define DWC3_DCTL_INITU2ENA	(1 << 12)
-#define DWC3_DCTL_ACCEPTU2ENA	(1 << 11)
-#define DWC3_DCTL_INITU1ENA	(1 << 10)
-#define DWC3_DCTL_ACCEPTU1ENA	(1 << 9)
-#define DWC3_DCTL_TSTCTRL_MASK	(0xf << 1)
-=======
 #define DWC3_DCTL_NYET_THRES(n)		(((n) & 0xf) << 20)
 
 #define DWC3_DCTL_KEEP_CONNECT		BIT(19)
@@ -661,7 +464,6 @@
 #define DWC3_DCTL_INITU1ENA		BIT(10)
 #define DWC3_DCTL_ACCEPTU1ENA		BIT(9)
 #define DWC3_DCTL_TSTCTRL_MASK		(0xf << 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DWC3_DCTL_ULSTCHNGREQ_MASK	(0x0f << 5)
 #define DWC3_DCTL_ULSTCHNGREQ(n) (((n) << 5) & DWC3_DCTL_ULSTCHNGREQ_MASK)
@@ -675,33 +477,6 @@
 #define DWC3_DCTL_ULSTCHNG_LOOPBACK	(DWC3_DCTL_ULSTCHNGREQ(11))
 
 /* Device Event Enable Register */
-<<<<<<< HEAD
-#define DWC3_DEVTEN_VNDRDEVTSTRCVEDEN	(1 << 12)
-#define DWC3_DEVTEN_EVNTOVERFLOWEN	(1 << 11)
-#define DWC3_DEVTEN_CMDCMPLTEN		(1 << 10)
-#define DWC3_DEVTEN_ERRTICERREN		(1 << 9)
-#define DWC3_DEVTEN_SOFEN		(1 << 7)
-#define DWC3_DEVTEN_EOPFEN		(1 << 6)
-#define DWC3_DEVTEN_HIBERNATIONREQEVTEN	(1 << 5)
-#define DWC3_DEVTEN_WKUPEVTEN		(1 << 4)
-#define DWC3_DEVTEN_ULSTCNGEN		(1 << 3)
-#define DWC3_DEVTEN_CONNECTDONEEN	(1 << 2)
-#define DWC3_DEVTEN_USBRSTEN		(1 << 1)
-#define DWC3_DEVTEN_DISCONNEVTEN	(1 << 0)
-
-/* Device Status Register */
-#define DWC3_DSTS_DCNRD			(1 << 29)
-
-/* This applies for core versions 1.87a and earlier */
-#define DWC3_DSTS_PWRUPREQ		(1 << 24)
-
-/* These apply for core versions 1.94a and later */
-#define DWC3_DSTS_RSS			(1 << 25)
-#define DWC3_DSTS_SSS			(1 << 24)
-
-#define DWC3_DSTS_COREIDLE		(1 << 23)
-#define DWC3_DSTS_DEVCTRLHLT		(1 << 22)
-=======
 #define DWC3_DEVTEN_VNDRDEVTSTRCVEDEN	BIT(12)
 #define DWC3_DEVTEN_EVNTOVERFLOWEN	BIT(11)
 #define DWC3_DEVTEN_CMDCMPLTEN		BIT(10)
@@ -729,34 +504,21 @@
 
 #define DWC3_DSTS_COREIDLE		BIT(23)
 #define DWC3_DSTS_DEVCTRLHLT		BIT(22)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DWC3_DSTS_USBLNKST_MASK		(0x0f << 18)
 #define DWC3_DSTS_USBLNKST(n)		(((n) & DWC3_DSTS_USBLNKST_MASK) >> 18)
 
-<<<<<<< HEAD
-#define DWC3_DSTS_RXFIFOEMPTY		(1 << 17)
-=======
 #define DWC3_DSTS_RXFIFOEMPTY		BIT(17)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DWC3_DSTS_SOFFN_MASK		(0x3fff << 3)
 #define DWC3_DSTS_SOFFN(n)		(((n) & DWC3_DSTS_SOFFN_MASK) >> 3)
 
 #define DWC3_DSTS_CONNECTSPD		(7 << 0)
 
-<<<<<<< HEAD
-#define DWC3_DSTS_SUPERSPEED		(4 << 0)
-#define DWC3_DSTS_HIGHSPEED		(0 << 0)
-#define DWC3_DSTS_FULLSPEED2		(1 << 0)
-#define DWC3_DSTS_LOWSPEED		(2 << 0)
-#define DWC3_DSTS_FULLSPEED1		(3 << 0)
-=======
 #define DWC3_DSTS_SUPERSPEED_PLUS	(5 << 0) /* DWC_usb31 only */
 #define DWC3_DSTS_SUPERSPEED		(4 << 0)
 #define DWC3_DSTS_HIGHSPEED		(0 << 0)
 #define DWC3_DSTS_FULLSPEED		BIT(0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Device Generic Command Register */
 #define DWC3_DGCMD_SET_LMP		0x01
@@ -770,21 +532,6 @@
 #define DWC3_DGCMD_SELECTED_FIFO_FLUSH	0x09
 #define DWC3_DGCMD_ALL_FIFO_FLUSH	0x0a
 #define DWC3_DGCMD_SET_ENDPOINT_NRDY	0x0c
-<<<<<<< HEAD
-#define DWC3_DGCMD_RUN_SOC_BUS_LOOPBACK	0x10
-
-#define DWC3_DGCMD_STATUS(n)		(((n) >> 15) & 1)
-#define DWC3_DGCMD_CMDACT		(1 << 10)
-#define DWC3_DGCMD_CMDIOC		(1 << 8)
-
-/* Device Generic Command Parameter Register */
-#define DWC3_DGCMDPAR_FORCE_LINKPM_ACCEPT	(1 << 0)
-#define DWC3_DGCMDPAR_FIFO_NUM(n)		((n) << 0)
-#define DWC3_DGCMDPAR_RX_FIFO			(0 << 5)
-#define DWC3_DGCMDPAR_TX_FIFO			(1 << 5)
-#define DWC3_DGCMDPAR_LOOPBACK_DIS		(0 << 0)
-#define DWC3_DGCMDPAR_LOOPBACK_ENA		(1 << 0)
-=======
 #define DWC3_DGCMD_SET_ENDPOINT_PRIME	0x0d
 #define DWC3_DGCMD_RUN_SOC_BUS_LOOPBACK	0x10
 #define DWC3_DGCMD_DEV_NOTIFICATION	0x07
@@ -802,25 +549,16 @@
 #define DWC3_DGCMDPAR_LOOPBACK_ENA		BIT(0)
 #define DWC3_DGCMDPAR_DN_FUNC_WAKE		BIT(0)
 #define DWC3_DGCMDPAR_INTF_SEL(n)		((n) << 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Device Endpoint Command Register */
 #define DWC3_DEPCMD_PARAM_SHIFT		16
 #define DWC3_DEPCMD_PARAM(x)		((x) << DWC3_DEPCMD_PARAM_SHIFT)
-<<<<<<< HEAD
-#define DWC3_DEPCMD_GET_RSC_IDX(x)     (((x) >> DWC3_DEPCMD_PARAM_SHIFT) & 0x7f)
-#define DWC3_DEPCMD_STATUS(x)		(((x) >> 15) & 1)
-#define DWC3_DEPCMD_HIPRI_FORCERM	(1 << 11)
-#define DWC3_DEPCMD_CMDACT		(1 << 10)
-#define DWC3_DEPCMD_CMDIOC		(1 << 8)
-=======
 #define DWC3_DEPCMD_GET_RSC_IDX(x)	(((x) >> DWC3_DEPCMD_PARAM_SHIFT) & 0x7f)
 #define DWC3_DEPCMD_STATUS(x)		(((x) >> 12) & 0x0F)
 #define DWC3_DEPCMD_HIPRI_FORCERM	BIT(11)
 #define DWC3_DEPCMD_CLEARPENDIN		BIT(11)
 #define DWC3_DEPCMD_CMDACT		BIT(10)
 #define DWC3_DEPCMD_CMDIOC		BIT(8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DWC3_DEPCMD_DEPSTARTCFG		(0x09 << 0)
 #define DWC3_DEPCMD_ENDTRANSFER		(0x08 << 0)
@@ -835,10 +573,6 @@
 #define DWC3_DEPCMD_SETTRANSFRESOURCE	(0x02 << 0)
 #define DWC3_DEPCMD_SETEPCONFIG		(0x01 << 0)
 
-<<<<<<< HEAD
-/* The EP number goes 0..31 so ep0 is always out and ep1 is always in */
-#define DWC3_DALEPENA_EP(n)		(1 << n)
-=======
 #define DWC3_DEPCMD_CMD(x)		((x) & 0xf)
 
 /* The EP number goes 0..31 so ep0 is always out and ep1 is always in */
@@ -846,45 +580,12 @@
 
 /* DWC_usb32 DCFG1 config */
 #define DWC3_DCFG1_DIS_MST_ENH		BIT(1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DWC3_DEPCMD_TYPE_CONTROL	0
 #define DWC3_DEPCMD_TYPE_ISOC		1
 #define DWC3_DEPCMD_TYPE_BULK		2
 #define DWC3_DEPCMD_TYPE_INTR		3
 
-<<<<<<< HEAD
-/* OTG Events Register */
-#define DWC3_OEVT_DEVICEMODE			(1 << 31)
-#define DWC3_OEVTEN_OTGCONIDSTSCHNGEVNT		(1 << 24)
-#define DWC3_OEVTEN_OTGADEVBHOSTENDEVNT		(1 << 20)
-#define DWC3_OEVTEN_OTGADEVHOSTEVNT		(1 << 19)
-#define DWC3_OEVTEN_OTGADEVHNPCHNGEVNT		(1 << 18)
-#define DWC3_OEVTEN_OTGADEVSRPDETEVNT		(1 << 17)
-#define DWC3_OEVTEN_OTGADEVSESSENDDETEVNT	(1 << 16)
-#define DWC3_OEVTEN_OTGBDEVBHOSTENDEVNT		(1 << 11)
-#define DWC3_OEVTEN_OTGBDEVHNPCHNGEVNT		(1 << 10)
-#define DWC3_OEVTEN_OTGBDEVSESSVLDDETEVNT	(1 << 9)
-#define DWC3_OEVTEN_OTGBDEVVBUSCHNGEVNT		(1 << 8)
-
-/* OTG OSTS register */
-#define DWC3_OTG_OSTS_OTGSTATE_SHIFT	(8)
-#define DWC3_OTG_OSTS_OTGSTATE		(0xF << DWC3_OTG_OSTS_OTGSTATE_SHIFT)
-#define DWC3_OTG_OSTS_PERIPHERALSTATE	(1 << 4)
-#define DWC3_OTG_OSTS_XHCIPRTPOWER	(1 << 3)
-#define DWC3_OTG_OSTS_BSESVALID		(1 << 2)
-#define DWC3_OTG_OSTS_VBUSVALID		(1 << 1)
-#define DWC3_OTG_OSTS_CONIDSTS		(1 << 0)
-
-/* OTG OSTS register */
-#define DWC3_OTG_OCTL_PERIMODE		(1 << 6)
-#define DWC3_OTG_OCTL_PRTPWRCTL		(1 << 5)
-#define DWC3_OTG_OCTL_HNPREQ		(1 << 4)
-#define DWC3_OTG_OCTL_SESREQ		(1 << 3)
-#define DWC3_OTG_OCTL_TERMSELDLPULSE	(1 << 2)
-#define DWC3_OTG_OCTL_DEVSETHNPEN	(1 << 1)
-#define DWC3_OTG_OCTL_HSTSETHNPEN	(1 << 0)
-=======
 #define DWC3_DEV_IMOD_COUNT_SHIFT	16
 #define DWC3_DEV_IMOD_COUNT_MASK	(0xffff << 16)
 #define DWC3_DEV_IMOD_INTERVAL_SHIFT	0
@@ -960,7 +661,6 @@
 
 /* Force Gen1 speed on Gen2 link */
 #define DWC3_LLUCTL_FORCE_GEN1		BIT(10)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Structures */
 
@@ -968,27 +668,17 @@ struct dwc3_trb;
 
 /**
  * struct dwc3_event_buffer - Software event buffer representation
-<<<<<<< HEAD
- * @list: a list of event buffers
- * @buf: _THE_ buffer
- * @length: size of this buffer
-=======
  * @buf: _THE_ buffer
  * @cache: The buffer cache used in the threaded interrupt
  * @length: size of this buffer
  * @lpos: event offset
  * @count: cache of last read event count register
  * @flags: flags related to this event buffer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dma: dma_addr_t
  * @dwc: pointer to DWC controller
  */
 struct dwc3_event_buffer {
 	void			*buf;
-<<<<<<< HEAD
-	unsigned		length;
-	unsigned int		lpos;
-=======
 	void			*cache;
 	unsigned int		length;
 	unsigned int		lpos;
@@ -996,79 +686,23 @@ struct dwc3_event_buffer {
 	unsigned int		flags;
 
 #define DWC3_EVENT_PENDING	BIT(0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dma_addr_t		dma;
 
 	struct dwc3		*dwc;
 };
 
-<<<<<<< HEAD
-#define DWC3_EP_FLAG_STALLED	(1 << 0)
-#define DWC3_EP_FLAG_WEDGED	(1 << 1)
-=======
 #define DWC3_EP_FLAG_STALLED	BIT(0)
 #define DWC3_EP_FLAG_WEDGED	BIT(1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DWC3_EP_DIRECTION_TX	true
 #define DWC3_EP_DIRECTION_RX	false
 
-<<<<<<< HEAD
-#define DWC3_TRB_NUM		32
-#define DWC3_TRB_MASK		(DWC3_TRB_NUM - 1)
-=======
 #define DWC3_TRB_NUM		256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct dwc3_ep - device side endpoint representation
  * @endpoint: usb endpoint
-<<<<<<< HEAD
- * @request_list: list of requests for this endpoint
- * @req_queued: list of requests on this ep which have TRBs setup
- * @trb_pool: array of transaction buffers
- * @trb_pool_dma: dma address of @trb_pool
- * @free_slot: next slot which is going to be used
- * @busy_slot: first slot which is owned by HW
- * @desc: usb_endpoint_descriptor pointer
- * @dwc: pointer to DWC controller
- * @flags: endpoint flags (wedged, stalled, ...)
- * @current_trb: index of current used trb
- * @number: endpoint number (1 - 15)
- * @type: set to bmAttributes & USB_ENDPOINT_XFERTYPE_MASK
- * @resource_index: Resource transfer index
- * @current_uf: Current uf received through last event parameter
- * @interval: the intervall on which the ISOC transfer is started
- * @name: a human readable name e.g. ep1out-bulk
- * @direction: true for TX, false for RX
- * @stream_capable: true when streams are enabled
- */
-struct dwc3_ep {
-	struct usb_ep		endpoint;
-	struct list_head	request_list;
-	struct list_head	req_queued;
-
-	struct dwc3_trb		*trb_pool;
-	dma_addr_t		trb_pool_dma;
-	u32			free_slot;
-	u32			busy_slot;
-	const struct usb_ss_ep_comp_descriptor *comp_desc;
-	struct dwc3		*dwc;
-
-	unsigned		flags;
-#define DWC3_EP_ENABLED		(1 << 0)
-#define DWC3_EP_STALL		(1 << 1)
-#define DWC3_EP_WEDGE		(1 << 2)
-#define DWC3_EP_BUSY		(1 << 4)
-#define DWC3_EP_PENDING_REQUEST	(1 << 5)
-#define DWC3_EP_MISSED_ISOC	(1 << 6)
-
-	/* This last one is specific to EP0 */
-#define DWC3_EP0_DIR_IN		(1 << 31)
-
-	unsigned		current_trb;
-=======
  * @cancelled_list: list of cancelled requests for this endpoint
  * @pending_list: list of pending requests for this endpoint
  * @started_list: list of started requests on this endpoint
@@ -1137,29 +771,21 @@ struct dwc3_ep {
 	 */
 	u8			trb_enqueue;
 	u8			trb_dequeue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8			number;
 	u8			type;
 	u8			resource_index;
-<<<<<<< HEAD
-	u16			current_uf;
-=======
 	u32			frame_number;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			interval;
 
 	char			name[20];
 
 	unsigned		direction:1;
 	unsigned		stream_capable:1;
-<<<<<<< HEAD
-=======
 
 	/* For isochronous START TRANSFER workaround only */
 	u8			combo_num;
 	int			start_cmd_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum dwc3_phy {
@@ -1201,15 +827,6 @@ enum dwc3_link_state {
 	DWC3_LINK_STATE_MASK		= 0x0f,
 };
 
-<<<<<<< HEAD
-enum dwc3_device_state {
-	DWC3_DEFAULT_STATE,
-	DWC3_ADDRESS_STATE,
-	DWC3_CONFIGURED_STATE,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* TRB Length, PCM and Status */
 #define DWC3_TRB_SIZE_MASK	(0x00ffffff)
 #define DWC3_TRB_SIZE_LENGTH(n)	((n) & DWC3_TRB_SIZE_MASK)
@@ -1222,17 +839,6 @@ enum dwc3_device_state {
 #define DWC3_TRB_STS_XFER_IN_PROG	4
 
 /* TRB Control */
-<<<<<<< HEAD
-#define DWC3_TRB_CTRL_HWO		(1 << 0)
-#define DWC3_TRB_CTRL_LST		(1 << 1)
-#define DWC3_TRB_CTRL_CHN		(1 << 2)
-#define DWC3_TRB_CTRL_CSP		(1 << 3)
-#define DWC3_TRB_CTRL_TRBCTL(n)		(((n) & 0x3f) << 4)
-#define DWC3_TRB_CTRL_ISP_IMI		(1 << 10)
-#define DWC3_TRB_CTRL_IOC		(1 << 11)
-#define DWC3_TRB_CTRL_SID_SOFN(n)	(((n) & 0xffff) << 14)
-
-=======
 #define DWC3_TRB_CTRL_HWO		BIT(0)
 #define DWC3_TRB_CTRL_LST		BIT(1)
 #define DWC3_TRB_CTRL_CHN		BIT(2)
@@ -1244,7 +850,6 @@ enum dwc3_device_state {
 #define DWC3_TRB_CTRL_GET_SID_SOFN(n)	(((n) & (0xffff << 14)) >> 14)
 
 #define DWC3_TRBCTL_TYPE(n)		((n) & (0x3f << 4))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DWC3_TRBCTL_NORMAL		DWC3_TRB_CTRL_TRBCTL(1)
 #define DWC3_TRBCTL_CONTROL_SETUP	DWC3_TRB_CTRL_TRBCTL(2)
 #define DWC3_TRBCTL_CONTROL_STATUS2	DWC3_TRB_CTRL_TRBCTL(3)
@@ -1259,11 +864,7 @@ enum dwc3_device_state {
  * @bpl: DW0-3
  * @bph: DW4-7
  * @size: DW8-B
-<<<<<<< HEAD
- * @trl: DWC-F
-=======
  * @ctrl: DWC-F
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct dwc3_trb {
 	u32		bpl;
@@ -1273,18 +874,6 @@ struct dwc3_trb {
 } __packed;
 
 /**
-<<<<<<< HEAD
- * dwc3_hwparams - copy of HWPARAMS registers
- * @hwparams0 - GHWPARAMS0
- * @hwparams1 - GHWPARAMS1
- * @hwparams2 - GHWPARAMS2
- * @hwparams3 - GHWPARAMS3
- * @hwparams4 - GHWPARAMS4
- * @hwparams5 - GHWPARAMS5
- * @hwparams6 - GHWPARAMS6
- * @hwparams7 - GHWPARAMS7
- * @hwparams8 - GHWPARAMS8
-=======
  * struct dwc3_hwparams - copy of HWPARAMS registers
  * @hwparams0: GHWPARAMS0
  * @hwparams1: GHWPARAMS1
@@ -1296,7 +885,6 @@ struct dwc3_trb {
  * @hwparams7: GHWPARAMS7
  * @hwparams8: GHWPARAMS8
  * @hwparams9: GHWPARAMS9
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct dwc3_hwparams {
 	u32	hwparams0;
@@ -1308,25 +896,12 @@ struct dwc3_hwparams {
 	u32	hwparams6;
 	u32	hwparams7;
 	u32	hwparams8;
-<<<<<<< HEAD
-=======
 	u32	hwparams9;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* HWPARAMS0 */
 #define DWC3_MODE(n)		((n) & 0x7)
 
-<<<<<<< HEAD
-#define DWC3_MODE_DEVICE	0
-#define DWC3_MODE_HOST		1
-#define DWC3_MODE_DRD		2
-#define DWC3_MODE_HUB		3
-
-#define DWC3_MDWIDTH(n)		(((n) & 0xff00) >> 8)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* HWPARAMS1 */
 #define DWC3_NUM_INT(n)		(((n) & (0x3f << 15)) >> 15)
 
@@ -1341,8 +916,6 @@ struct dwc3_hwparams {
 /* HWPARAMS7 */
 #define DWC3_RAM1_DEPTH(n)	((n) & 0xffff)
 
-<<<<<<< HEAD
-=======
 /* HWPARAMS9 */
 #define DWC3_MST_CAPABLE(p)	(!!((p)->hwparams9 &		\
 			DWC3_GHWPARAMS9_DEV_MST))
@@ -1367,22 +940,10 @@ struct dwc3_hwparams {
  * @direction: IN or OUT direction flag
  * @mapped: true when request has been dma-mapped
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dwc3_request {
 	struct usb_request	request;
 	struct list_head	list;
 	struct dwc3_ep		*dep;
-<<<<<<< HEAD
-
-	u8			epnum;
-	struct dwc3_trb		*trb;
-	struct dwc3_trb		*ztrb;
-	dma_addr_t		trb_dma;
-
-	unsigned		direction:1;
-	unsigned		mapped:1;
-	unsigned		queued:1;
-=======
 	struct scatterlist	*sg;
 	struct scatterlist	*start_sg;
 
@@ -1408,7 +969,6 @@ struct dwc3_request {
 	unsigned int		needs_extra_trb:1;
 	unsigned int		direction:1;
 	unsigned int		mapped:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1419,45 +979,6 @@ struct dwc3_scratchpad_array {
 	__le64	dma_adr[DWC3_MAX_HIBER_SCRATCHBUFS];
 };
 
-<<<<<<< HEAD
-#define DWC3_CONTROLLER_ERROR_EVENT			0
-#define DWC3_CONTROLLER_RESET_EVENT			1
-#define DWC3_CONTROLLER_POST_RESET_EVENT		2
-#define DWC3_CONTROLLER_POST_INITIALIZATION_EVENT	3
-/**
- * struct dwc3 - representation of our controller
- * @ctrl_req: usb control request which is used for ep0
- * @ep0_trb: trb which is used for the ctrl_req
- * @ep0_bounce: bounce buffer for ep0
- * @setup_buf: used while precessing STD USB requests
- * @ctrl_req_addr: dma address of ctrl_req
- * @ep0_trb: dma address of ep0_trb
- * @ep0_usb_req: dummy req used while handling STD USB requests
- * @ep0_bounce_addr: dma address of ep0_bounce
- * @lock: for synchronizing
- * @dev: pointer to our struct device
- * @xhci: pointer to our xHCI child
- * @event_buffer_list: a list of event buffers
- * @gadget: device side representation of the peripheral controller
- * @gadget_driver: pointer to the gadget driver
- * @regs: base address for our registers
- * @regs_size: address space size
- * @irq: IRQ number
- * @num_event_buffers: calculated number of event buffers
- * @u1u2: only used on revisions <1.83a for workaround
- * @maximum_speed: maximum speed requested (mainly for testing purposes)
- * @revision: revision register contents
- * @mode: mode of operation
- * @is_selfpowered: true when we are selfpowered
- * @three_stage_setup: set if we perform a three phase setup
- * @ep0_bounced: true when we used bounce buffer
- * @ep0_expect_in: true when we expect a DATA IN transfer
- * @start_config_issued: true when StartConfig command has been issued
- * @setup_packet_pending: true when there's a Setup Packet in FIFO. Workaround
- * @needs_fifo_resize: not all users might want fifo resizing, flag it
- * @resize_fifos: tells us it's ok to reconfigure our TxFIFO sizes.
- * @isoch_delay: wValue from Set Isochronous Delay request;
-=======
 /**
  * struct dwc3 - representation of our controller
  * @drd_work: workqueue used for role swapping
@@ -1521,39 +1042,15 @@ struct dwc3_scratchpad_array {
  * @phys_ready: flag to indicate that PHYs are ready
  * @ulpi: pointer to ulpi interface
  * @ulpi_ready: flag to indicate that ULPI is initialized
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @u2sel: parameter from Set SEL request.
  * @u2pel: parameter from Set SEL request.
  * @u1sel: parameter from Set SEL request.
  * @u1pel: parameter from Set SEL request.
-<<<<<<< HEAD
- * @num_out_eps: number of out endpoints
- * @num_in_eps: number of in endpoints
-=======
  * @num_eps: number of endpoints
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ep0_next_event: hold the next expected event
  * @ep0state: state of endpoint zero
  * @link_state: link state
  * @speed: device speed (super, high, full, low)
-<<<<<<< HEAD
- * @mem: points to start of memory which is used for this struct.
- * @hwparams: copy of hwparams registers
- * @root: debugfs root folder pointer
- * @tx_fifo_size: Available RAM size for TX fifo allocation
- * @err_evt_seen: previous event in queue was erratic error
- * @irq_cnt: total irq count
- */
-struct dwc3 {
-	struct usb_ctrlrequest	*ctrl_req;
-	struct dwc3_trb		*ep0_trb;
-	void			*ep0_bounce;
-	u8			*setup_buf;
-	dma_addr_t		ctrl_req_addr;
-	dma_addr_t		ep0_trb_addr;
-	dma_addr_t		ep0_bounce_addr;
-	struct dwc3_request	ep0_usb_req;
-=======
  * @hwparams: copy of hwparams registers
  * @regset: debugfs pointer to regdump file
  * @dbg_lsp_select: current debug lsp mux register selection
@@ -1657,34 +1154,10 @@ struct dwc3 {
 	dma_addr_t		bounce_addr;
 	struct dwc3_request	ep0_usb_req;
 	struct completion	ep0_in_setup;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* device lock */
 	spinlock_t		lock;
 
-<<<<<<< HEAD
-	struct device		*dev;
-
-	struct dwc3_otg		*dotg;
-	struct platform_device	*xhci;
-	struct resource		xhci_resources[DWC3_XHCI_RESOURCES_NUM];
-
-	struct dwc3_event_buffer **ev_buffs;
-	struct dwc3_ep		*eps[DWC3_ENDPOINTS_NUM];
-
-	struct usb_gadget	gadget;
-	struct usb_gadget_driver *gadget_driver;
-
-	void __iomem		*regs;
-	size_t			regs_size;
-
-	u32			num_event_buffers;
-	u32			u1u2;
-	u32			maximum_speed;
-	u32			revision;
-	u32			mode;
-
-=======
 	/* mode switching lock */
 	struct mutex		mutex;
 
@@ -1755,7 +1228,6 @@ struct dwc3 {
 	u32			revision;
 
 #define DWC3_REVISION_ANY	0x0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DWC3_REVISION_173A	0x5533173a
 #define DWC3_REVISION_175A	0x5533175a
 #define DWC3_REVISION_180A	0x5533180a
@@ -1770,18 +1242,6 @@ struct dwc3 {
 #define DWC3_REVISION_210A	0x5533210a
 #define DWC3_REVISION_220A	0x5533220a
 #define DWC3_REVISION_230A	0x5533230a
-<<<<<<< HEAD
-#define DWC3_REVISION_250A	0x5533250a
-
-	unsigned		is_selfpowered:1;
-	unsigned		three_stage_setup:1;
-	unsigned		ep0_bounced:1;
-	unsigned		ep0_expect_in:1;
-	unsigned		setup_packet_pending:1;
-	unsigned		delayed_status:1;
-	unsigned		needs_fifo_resize:1;
-	unsigned		resize_fifos:1;
-=======
 #define DWC3_REVISION_240A	0x5533240a
 #define DWC3_REVISION_250A	0x5533250a
 #define DWC3_REVISION_260A	0x5533260a
@@ -1813,18 +1273,11 @@ struct dwc3 {
 #define DWC31_VERSIONTYPE_EA04		0x65613034
 #define DWC31_VERSIONTYPE_EA05		0x65613035
 #define DWC31_VERSIONTYPE_EA06		0x65613036
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enum dwc3_ep0_next	ep0_next_event;
 	enum dwc3_ep0_state	ep0state;
 	enum dwc3_link_state	link_state;
-<<<<<<< HEAD
-	enum dwc3_device_state	dev_state;
 
-	u16			isoch_delay;
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16			u2sel;
 	u16			u2pel;
 	u8			u1sel;
@@ -1832,32 +1285,6 @@ struct dwc3 {
 
 	u8			speed;
 
-<<<<<<< HEAD
-	u8			num_out_eps;
-	u8			num_in_eps;
-
-	void			*mem;
-
-	struct dwc3_hwparams	hwparams;
-	struct dentry		*root;
-
-	u8			test_mode;
-	u8			test_mode_nr;
-
-	/* Indicate if the gadget was powered by the otg driver */
-	bool			vbus_active;
-
-	/* Indicate if software connect was issued by the usb_gadget_driver */
-	bool			softconnect;
-	void (*notify_event) (struct dwc3 *, unsigned);
-	int			tx_fifo_size;
-	bool			tx_fifo_reduced;
-	bool			err_evt_seen;
-	unsigned long		irq_cnt;
-};
-
-/* -------------------------------------------------------------------------- */
-=======
 	u8			num_eps;
 
 	struct dwc3_hwparams	hwparams;
@@ -1947,7 +1374,6 @@ struct dwc3 {
 #define INCRX_UNDEF_LENGTH_BURST_MODE 1
 
 #define work_to_dwc(w)		(container_of((w), struct dwc3, drd_work))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* -------------------------------------------------------------------------- */
 
@@ -1965,11 +1391,7 @@ struct dwc3_event_type {
 #define DWC3_DEPEVT_EPCMDCMPLT		0x07
 
 /**
-<<<<<<< HEAD
- * struct dwc3_event_depvt - Device Endpoint Events
-=======
  * struct dwc3_event_depevt - Device Endpoint Events
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @one_bit: indicates this is an endpoint event (not used)
  * @endpoint_number: number of the endpoint
  * @endpoint_event: The event we have:
@@ -1995,15 +1417,6 @@ struct dwc3_event_depevt {
 	u32	status:4;
 
 /* Within XferNotReady */
-<<<<<<< HEAD
-#define DEPEVT_STATUS_TRANSFER_ACTIVE	(1 << 3)
-
-/* Within XferComplete */
-#define DEPEVT_STATUS_BUSERR	(1 << 0)
-#define DEPEVT_STATUS_SHORT	(1 << 1)
-#define DEPEVT_STATUS_IOC	(1 << 2)
-#define DEPEVT_STATUS_LST	(1 << 3)
-=======
 #define DEPEVT_STATUS_TRANSFER_ACTIVE	BIT(3)
 
 /* Within XferComplete or XferInProgress */
@@ -2012,19 +1425,11 @@ struct dwc3_event_depevt {
 #define DEPEVT_STATUS_IOC	BIT(2)
 #define DEPEVT_STATUS_LST	BIT(3) /* XferComplete */
 #define DEPEVT_STATUS_MISSED_ISOC BIT(3) /* XferInProgress */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Stream event only */
 #define DEPEVT_STREAMEVT_FOUND		1
 #define DEPEVT_STREAMEVT_NOTFOUND	2
 
-<<<<<<< HEAD
-/* Control-only Status */
-#define DEPEVT_STATUS_CONTROL_DATA	1
-#define DEPEVT_STATUS_CONTROL_STATUS	2
-
-	u32	parameters:16;
-=======
 /* Stream event parameter */
 #define DEPEVT_STREAM_PRIME		0xfffe
 #define DEPEVT_STREAM_NOSTREAM		0x0
@@ -2042,7 +1447,6 @@ struct dwc3_event_depevt {
 
 /* For Command Complete Events */
 #define DEPEVT_PARAMETER_CMD(n)	(((n) & (0xf << 8)) >> 8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /**
@@ -2056,11 +1460,7 @@ struct dwc3_event_depevt {
  *	3	- ULStChng
  *	4	- WkUpEvt
  *	5	- Reserved
-<<<<<<< HEAD
- *	6	- EOPF
-=======
  *	6	- Suspend (EOPF on revisions 2.10a and prior)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	7	- SOF
  *	8	- Reserved
  *	9	- ErrticErr
@@ -2110,8 +1510,6 @@ union dwc3_event {
 	struct dwc3_event_gevt		gevt;
 };
 
-<<<<<<< HEAD
-=======
 /**
  * struct dwc3_gadget_ep_cmd_params - representation of endpoint command
  * parameters
@@ -2125,7 +1523,6 @@ struct dwc3_gadget_ep_cmd_params {
 	u32	param0;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DWC3 Features to be used as Driver Data
  */
@@ -2135,29 +1532,6 @@ struct dwc3_gadget_ep_cmd_params {
 #define DWC3_HAS_OTG			BIT(3)
 
 /* prototypes */
-<<<<<<< HEAD
-void dwc3_set_mode(struct dwc3 *dwc, u32 mode);
-int dwc3_gadget_resize_tx_fifos(struct dwc3 *dwc);
-
-int dwc3_otg_init(struct dwc3 *dwc);
-void dwc3_otg_exit(struct dwc3 *dwc);
-
-int dwc3_host_init(struct dwc3 *dwc);
-void dwc3_host_exit(struct dwc3 *dwc);
-
-int dwc3_gadget_init(struct dwc3 *dwc);
-void dwc3_gadget_exit(struct dwc3 *dwc);
-
-void dwc3_gadget_restart(struct dwc3 *dwc);
-void dwc3_post_host_reset_core_init(struct dwc3 *dwc);
-int dwc3_event_buffers_setup(struct dwc3 *dwc);
-
-extern void dwc3_set_notifier(
-		void (*notify) (struct dwc3 *dwc3, unsigned event));
-extern int dwc3_notify_event(struct dwc3 *dwc3, unsigned event);
-extern int dwc3_get_device_id(void);
-extern void dwc3_put_device_id(int id);
-=======
 void dwc3_set_prtcap(struct dwc3 *dwc, u32 mode);
 void dwc3_set_mode(struct dwc3 *dwc, u32 mode);
 u32 dwc3_core_fifo_space(struct dwc3_ep *dep, u8 type);
@@ -2305,6 +1679,5 @@ static inline int dwc3_ulpi_init(struct dwc3 *dwc)
 static inline void dwc3_ulpi_exit(struct dwc3 *dwc)
 { }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __DRIVERS_USB_DWC3_CORE_H */

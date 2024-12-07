@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP3 powerdomain definitions
  *
@@ -9,30 +6,15 @@
  * Copyright (C) 2007-2011 Nokia Corporation
  *
  * Paul Walmsley, Jouni Högander
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/bug.h>
 
-<<<<<<< HEAD
-#include <plat/cpu.h>
-
-#include "powerdomain.h"
-#include "powerdomains2xxx_3xxx_data.h"
-
-=======
 #include "soc.h"
 #include "powerdomain.h"
 #include "powerdomains2xxx_3xxx_data.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "prcm-common.h"
 #include "prm2xxx_3xxx.h"
 #include "prm-regbits-34xx.h"
@@ -65,11 +47,7 @@ static struct powerdomain iva2_pwrdm = {
 		[2] = PWRSTS_OFF_ON,
 		[3] = PWRSTS_ON,
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "mpu_iva" },
-=======
 	.voltdm		  = { .name = "mpu_iva" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain mpu_3xxx_pwrdm = {
@@ -85,9 +63,6 @@ static struct powerdomain mpu_3xxx_pwrdm = {
 	.pwrsts_mem_on	  = {
 		[0] = PWRSTS_OFF_ON,
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "mpu_iva" },
-=======
 	.voltdm		  = { .name = "mpu_iva" },
 };
 
@@ -105,7 +80,6 @@ static struct powerdomain mpu_am35x_pwrdm = {
 		[0] = PWRSTS_ON,
 	},
 	.voltdm		  = { .name = "mpu_iva" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -132,11 +106,7 @@ static struct powerdomain core_3xxx_pre_es3_1_pwrdm = {
 		[0] = PWRSTS_OFF_RET_ON, /* MEM1ONSTATE */
 		[1] = PWRSTS_OFF_RET_ON, /* MEM2ONSTATE */
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain core_3xxx_es3_1_pwrdm = {
@@ -158,9 +128,6 @@ static struct powerdomain core_3xxx_es3_1_pwrdm = {
 		[0] = PWRSTS_OFF_RET_ON, /* MEM1ONSTATE */
 		[1] = PWRSTS_OFF_RET_ON, /* MEM2ONSTATE */
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
 };
 
@@ -179,7 +146,6 @@ static struct powerdomain core_am35x_pwrdm = {
 		[1] = PWRSTS_ON, /* MEM2ONSTATE */
 	},
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain dss_pwrdm = {
@@ -194,9 +160,6 @@ static struct powerdomain dss_pwrdm = {
 	.pwrsts_mem_on	  = {
 		[0] = PWRSTS_ON,  /* MEMONSTATE */
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
 };
 
@@ -213,7 +176,6 @@ static struct powerdomain dss_am35x_pwrdm = {
 		[0] = PWRSTS_ON,  /* MEMONSTATE */
 	},
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -234,9 +196,6 @@ static struct powerdomain sgx_pwrdm = {
 	.pwrsts_mem_on	  = {
 		[0] = PWRSTS_ON,  /* MEMONSTATE */
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
 };
 
@@ -253,7 +212,6 @@ static struct powerdomain sgx_am35x_pwrdm = {
 		[0] = PWRSTS_ON,  /* MEMONSTATE */
 	},
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain cam_pwrdm = {
@@ -268,11 +226,7 @@ static struct powerdomain cam_pwrdm = {
 	.pwrsts_mem_on	  = {
 		[0] = PWRSTS_ON,  /* MEMONSTATE */
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain per_pwrdm = {
@@ -287,9 +241,6 @@ static struct powerdomain per_pwrdm = {
 	.pwrsts_mem_on	  = {
 		[0] = PWRSTS_ON,  /* MEMONSTATE */
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
 };
 
@@ -306,17 +257,12 @@ static struct powerdomain per_am35x_pwrdm = {
 		[0] = PWRSTS_ON,  /* MEMONSTATE */
 	},
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain emu_pwrdm = {
 	.name		= "emu_pwrdm",
 	.prcm_offs	= OMAP3430_EMU_MOD,
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain neon_pwrdm = {
@@ -324,9 +270,6 @@ static struct powerdomain neon_pwrdm = {
 	.prcm_offs	  = OMAP3430_NEON_MOD,
 	.pwrsts		  = PWRSTS_OFF_RET_ON,
 	.pwrsts_logic_ret = PWRSTS_RET,
-<<<<<<< HEAD
-	.voltdm           = { .name = "mpu_iva" },
-=======
 	.voltdm		  = { .name = "mpu_iva" },
 };
 
@@ -336,7 +279,6 @@ static struct powerdomain neon_am35x_pwrdm = {
 	.pwrsts		  = PWRSTS_ON,
 	.pwrsts_logic_ret = PWRSTS_ON,
 	.voltdm		  = { .name = "mpu_iva" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain usbhost_pwrdm = {
@@ -358,59 +300,36 @@ static struct powerdomain usbhost_pwrdm = {
 	.pwrsts_mem_on	  = {
 		[0] = PWRSTS_ON,  /* MEMONSTATE */
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain dpll1_pwrdm = {
 	.name		= "dpll1_pwrdm",
 	.prcm_offs	= MPU_MOD,
-<<<<<<< HEAD
-	.voltdm           = { .name = "mpu_iva" },
-=======
 	.voltdm		  = { .name = "mpu_iva" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain dpll2_pwrdm = {
 	.name		= "dpll2_pwrdm",
 	.prcm_offs	= OMAP3430_IVA2_MOD,
-<<<<<<< HEAD
-	.voltdm           = { .name = "mpu_iva" },
-=======
 	.voltdm		  = { .name = "mpu_iva" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain dpll3_pwrdm = {
 	.name		= "dpll3_pwrdm",
 	.prcm_offs	= PLL_MOD,
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain dpll4_pwrdm = {
 	.name		= "dpll4_pwrdm",
 	.prcm_offs	= PLL_MOD,
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain dpll5_pwrdm = {
 	.name		= "dpll5_pwrdm",
 	.prcm_offs	= PLL_MOD,
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
 };
 
@@ -502,7 +421,6 @@ static struct powerdomain sgx_816x_pwrdm = {
 	.prcm_offs	  = TI816X_PRM_SGX_MOD,
 	.pwrsts		  = PWRSTS_OFF_ON,
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* As powerdomains are added or removed above, this list must also be changed */
@@ -546,8 +464,6 @@ static struct powerdomain *powerdomains_omap3430es3_1plus[] __initdata = {
 	NULL
 };
 
-<<<<<<< HEAD
-=======
 static struct powerdomain *powerdomains_am35x[] __initdata = {
 	&wkup_omap2_pwrdm,
 	&mpu_am35x_pwrdm,
@@ -656,32 +572,10 @@ static struct pwrdm_ops ti81xx_pwrdm_operations = {
 	.pwrdm_wait_transition	= ti81xx_pwrdm_wait_transition,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init omap3xxx_powerdomains_init(void)
 {
 	unsigned int rev;
 
-<<<<<<< HEAD
-	if (!cpu_is_omap34xx())
-		return;
-
-	pwrdm_register_platform_funcs(&omap3_pwrdm_operations);
-	pwrdm_register_pwrdms(powerdomains_omap3430_common);
-
-	rev = omap_rev();
-
-	if (rev == OMAP3430_REV_ES1_0)
-		pwrdm_register_pwrdms(powerdomains_omap3430es1);
-	else if (rev == OMAP3430_REV_ES2_0 || rev == OMAP3430_REV_ES2_1 ||
-		 rev == OMAP3430_REV_ES3_0 || rev == OMAP3630_REV_ES1_0)
-		pwrdm_register_pwrdms(powerdomains_omap3430es2_es3_0);
-	else if (rev == OMAP3430_REV_ES3_1 || rev == OMAP3430_REV_ES3_1_2 ||
-		 rev == OMAP3517_REV_ES1_0 || rev == OMAP3517_REV_ES1_1 ||
-		 rev == OMAP3630_REV_ES1_1 || rev == OMAP3630_REV_ES1_2)
-		pwrdm_register_pwrdms(powerdomains_omap3430es3_1plus);
-	else
-		WARN(1, "OMAP3 powerdomain init: unknown chip type\n");
-=======
 	if (!cpu_is_omap34xx() && !cpu_is_ti81xx())
 		return;
 
@@ -724,7 +618,6 @@ void __init omap3xxx_powerdomains_init(void)
 			WARN(1, "OMAP3 powerdomain init: unknown chip type\n");
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pwrdm_complete_init();
 }

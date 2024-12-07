@@ -42,45 +42,6 @@ struct rds_page_remainder {
 	unsigned long	r_offset;
 };
 
-<<<<<<< HEAD
-static DEFINE_PER_CPU_SHARED_ALIGNED(struct rds_page_remainder,
-				     rds_page_remainders);
-
-/*
- * returns 0 on success or -errno on failure.
- *
- * We don't have to worry about flush_dcache_page() as this only works
- * with private pages.  If, say, we were to do directed receive to pinned
- * user pages we'd have to worry more about cache coherence.  (Though
- * the flush_dcache_page() in get_user_pages() would probably be enough).
- */
-int rds_page_copy_user(struct page *page, unsigned long offset,
-		       void __user *ptr, unsigned long bytes,
-		       int to_user)
-{
-	unsigned long ret;
-	void *addr;
-
-	addr = kmap(page);
-	if (to_user) {
-		rds_stats_add(s_copy_to_user, bytes);
-		ret = copy_to_user(ptr, addr + offset, bytes);
-	} else {
-		rds_stats_add(s_copy_from_user, bytes);
-		ret = copy_from_user(addr + offset, ptr, bytes);
-	}
-	kunmap(page);
-
-	return ret ? -EFAULT : 0;
-}
-EXPORT_SYMBOL_GPL(rds_page_copy_user);
-
-/*
- * Message allocation uses this to build up regions of a message.
- *
- * @bytes - the number of bytes needed.
- * @gfp - the waiting behaviour of the allocation
-=======
 static
 DEFINE_PER_CPU_SHARED_ALIGNED(struct rds_page_remainder, rds_page_remainders);
 
@@ -90,7 +51,6 @@ DEFINE_PER_CPU_SHARED_ALIGNED(struct rds_page_remainder, rds_page_remainders);
  * @scat: Scatter list for message
  * @bytes: the number of bytes needed.
  * @gfp: the waiting behaviour of the allocation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @gfp is always ored with __GFP_HIGHMEM.  Callers must be prepared to
  * kmap the pages, etc.
@@ -146,13 +106,8 @@ int rds_page_remainder_alloc(struct scatterlist *scat, unsigned long bytes,
 			if (rem->r_offset != 0)
 				rds_stats_inc(s_page_remainder_hit);
 
-<<<<<<< HEAD
-			rem->r_offset += bytes;
-			if (rem->r_offset == PAGE_SIZE) {
-=======
 			rem->r_offset += ALIGN(bytes, 8);
 			if (rem->r_offset >= PAGE_SIZE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__free_page(rem->r_page);
 				rem->r_page = NULL;
 			}
@@ -195,41 +150,6 @@ out:
 }
 EXPORT_SYMBOL_GPL(rds_page_remainder_alloc);
 
-<<<<<<< HEAD
-static int rds_page_remainder_cpu_notify(struct notifier_block *self,
-					 unsigned long action, void *hcpu)
-{
-	struct rds_page_remainder *rem;
-	long cpu = (long)hcpu;
-
-	rem = &per_cpu(rds_page_remainders, cpu);
-
-	rdsdebug("cpu %ld action 0x%lx\n", cpu, action);
-
-	switch (action) {
-	case CPU_DEAD:
-		if (rem->r_page)
-			__free_page(rem->r_page);
-		rem->r_page = NULL;
-		break;
-	}
-
-	return 0;
-}
-
-static struct notifier_block rds_page_remainder_nb = {
-	.notifier_call = rds_page_remainder_cpu_notify,
-};
-
-void rds_page_exit(void)
-{
-	int i;
-
-	for_each_possible_cpu(i)
-		rds_page_remainder_cpu_notify(&rds_page_remainder_nb,
-					      (unsigned long)CPU_DEAD,
-					      (void *)(long)i);
-=======
 void rds_page_exit(void)
 {
 	unsigned int cpu;
@@ -244,5 +164,4 @@ void rds_page_exit(void)
 			__free_page(rem->r_page);
 		rem->r_page = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

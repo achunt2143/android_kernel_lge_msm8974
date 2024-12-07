@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/linux/mfd/wm831x/pdata.h -- Platform data for WM831x
  *
  * Copyright 2009 Wolfson Microelectronics PLC.
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MFD_WM831X_PDATA_H__
@@ -33,11 +21,7 @@ struct wm831x_backlight_pdata {
 struct wm831x_backup_pdata {
 	int charger_enable;
 	int no_constant_voltage;  /** Disable constant voltage charging */
-<<<<<<< HEAD
-	int vlim;   /** Voltage limit in milivolts */
-=======
 	int vlim;   /** Voltage limit in millivolts */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ilim;   /** Current limit in microamps */
 };
 
@@ -63,10 +47,6 @@ struct wm831x_battery_pdata {
  * I2C or SPI buses.
  */
 struct wm831x_buckv_pdata {
-<<<<<<< HEAD
-	int dvs_gpio;        /** CPU GPIO to use for DVS switching */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dvs_control_src; /** Hardware DVS source to use (1 or 2) */
 	int dvs_init_state;  /** DVS state to expect on startup */
 	int dvs_state_gpio;  /** CPU GPIO to use for monitoring status */
@@ -109,10 +89,6 @@ enum wm831x_watchdog_action {
 
 struct wm831x_watchdog_pdata {
 	enum wm831x_watchdog_action primary, secondary;
-<<<<<<< HEAD
-	int update_gpio;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int software:1;
 };
 

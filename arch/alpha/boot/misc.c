@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * misc.c
  * 
@@ -25,11 +22,7 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define memzero(s,n)	memset ((s),0,(n))
 #define puts		srm_printk
@@ -37,11 +30,7 @@ extern long srm_printk(const char *, ...)
      __attribute__ ((format (printf, 1, 2)));
 
 /*
-<<<<<<< HEAD
- * gzip delarations
-=======
  * gzip declarations
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define OF(args)  args
 #define STATIC static
@@ -100,11 +89,6 @@ static ulg output_ptr;
 static ulg bytes_out;
 
 static void error(char *m);
-<<<<<<< HEAD
-static void gzip_mark(void **);
-static void gzip_release(void **);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int end;
 static ulg free_mem_ptr;

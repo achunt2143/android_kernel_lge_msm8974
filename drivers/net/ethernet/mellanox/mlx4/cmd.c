@@ -39,25 +39,18 @@
 #include <linux/errno.h>
 
 #include <linux/mlx4/cmd.h>
-<<<<<<< HEAD
-#include <linux/semaphore.h>
-=======
 #include <linux/mlx4/device.h>
 #include <linux/semaphore.h>
 #include <rdma/ib_smi.h>
 #include <linux/delay.h>
 #include <linux/etherdevice.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 
 #include "mlx4.h"
 #include "fw.h"
-<<<<<<< HEAD
-=======
 #include "fw_qos.h"
 #include "mlx4_stats.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CMD_POLL_TOKEN 0xffff
 #define INBOX_MASK	0xffffffffffffff00ULL
@@ -123,8 +116,6 @@ enum {
 	GO_BIT_TIMEOUT_MSECS	= 10000
 };
 
-<<<<<<< HEAD
-=======
 enum mlx4_vlan_transition {
 	MLX4_VLAN_TRANSITION_VST_VST = 0,
 	MLX4_VLAN_TRANSITION_VST_VGT = 1,
@@ -133,7 +124,6 @@ enum mlx4_vlan_transition {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mlx4_cmd_context {
 	struct completion	done;
 	int			result;
@@ -196,8 +186,6 @@ static u8 mlx4_errno_to_status(int errno)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static int mlx4_internal_err_ret_value(struct mlx4_dev *dev, u16 op,
 				       u8 op_modifier)
 {
@@ -264,7 +252,6 @@ static int mlx4_cmd_reset_flow(struct mlx4_dev *dev, u16 op, u8 op_modifier,
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int comm_pending(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
@@ -273,17 +260,11 @@ static int comm_pending(struct mlx4_dev *dev)
 	return (swab32(status) >> 31) != priv->cmd.comm_toggle;
 }
 
-<<<<<<< HEAD
-static void mlx4_comm_cmd_post(struct mlx4_dev *dev, u8 cmd, u16 param)
-=======
 static int mlx4_comm_cmd_post(struct mlx4_dev *dev, u8 cmd, u16 param)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	u32 val;
 
-<<<<<<< HEAD
-=======
 	/* To avoid writing to unknown addresses after the device state was
 	 * changed to internal error and the function was rest,
 	 * check the INTERNAL_ERROR flag which is updated under
@@ -296,17 +277,12 @@ static int mlx4_comm_cmd_post(struct mlx4_dev *dev, u8 cmd, u16 param)
 		return -EIO;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->cmd.comm_toggle ^= 1;
 	val = param | (cmd << 16) | (priv->cmd.comm_toggle << 31);
 	__raw_writel((__force u32) cpu_to_be32(val),
 		     &priv->mfunc.comm->slave_write);
-<<<<<<< HEAD
-	mmiowb();
-=======
 	mutex_unlock(&dev->persist->device_state_mutex);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mlx4_comm_cmd_poll(struct mlx4_dev *dev, u8 cmd, u16 param,
@@ -319,21 +295,13 @@ static int mlx4_comm_cmd_poll(struct mlx4_dev *dev, u8 cmd, u16 param,
 
 	/* First, verify that the master reports correct status */
 	if (comm_pending(dev)) {
-<<<<<<< HEAD
-		mlx4_warn(dev, "Communication channel is not idle."
-			  "my toggle is %d (cmd:0x%x)\n",
-=======
 		mlx4_warn(dev, "Communication channel is not idle - my toggle is %d (cmd:0x%x)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  priv->cmd.comm_toggle, cmd);
 		return -EAGAIN;
 	}
 
 	/* Write command */
 	down(&priv->cmd.poll_sem);
-<<<<<<< HEAD
-	mlx4_comm_cmd_post(dev, cmd, param);
-=======
 	if (mlx4_comm_cmd_post(dev, cmd, param)) {
 		/* Only in case the device state is INTERNAL_ERROR,
 		 * mlx4_comm_cmd_post returns with an error
@@ -341,7 +309,6 @@ static int mlx4_comm_cmd_poll(struct mlx4_dev *dev, u8 cmd, u16 param,
 		err = mlx4_status_to_errno(CMD_STAT_INTERNAL_ERR);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	end = msecs_to_jiffies(timeout) + jiffies;
 	while (comm_pending(dev) && time_before(jiffies, end))
@@ -352,17 +319,6 @@ static int mlx4_comm_cmd_poll(struct mlx4_dev *dev, u8 cmd, u16 param,
 		 * FLR process. The only non-zero result in the RESET command
 		 * is MLX4_DELAY_RESET_SLAVE*/
 		if ((MLX4_COMM_CMD_RESET == cmd)) {
-<<<<<<< HEAD
-			mlx4_warn(dev, "Got slave FLRed from Communication"
-				  " channel (ret:0x%x)\n", ret_from_pending);
-			err = MLX4_DELAY_RESET_SLAVE;
-		} else {
-			mlx4_warn(dev, "Communication channel timed out\n");
-			err = -ETIMEDOUT;
-		}
-	}
-
-=======
 			err = MLX4_DELAY_RESET_SLAVE;
 			goto out;
 		} else {
@@ -375,18 +331,12 @@ static int mlx4_comm_cmd_poll(struct mlx4_dev *dev, u8 cmd, u16 param,
 	if (err)
 		mlx4_enter_error_state(dev->persist);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up(&priv->cmd.poll_sem);
 	return err;
 }
 
-<<<<<<< HEAD
-static int mlx4_comm_cmd_wait(struct mlx4_dev *dev, u8 op,
-			      u16 param, unsigned long timeout)
-=======
 static int mlx4_comm_cmd_wait(struct mlx4_dev *dev, u8 vhcr_cmd,
 			      u16 param, u16 op, unsigned long timeout)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_cmd *cmd = &mlx4_priv(dev)->cmd;
 	struct mlx4_cmd_context *context;
@@ -402,16 +352,6 @@ static int mlx4_comm_cmd_wait(struct mlx4_dev *dev, u8 vhcr_cmd,
 	cmd->free_head = context->next;
 	spin_unlock(&cmd->context_lock);
 
-<<<<<<< HEAD
-	init_completion(&context->done);
-
-	mlx4_comm_cmd_post(dev, op, param);
-
-	if (!wait_for_completion_timeout(&context->done,
-					 msecs_to_jiffies(timeout))) {
-		err = -EBUSY;
-		goto out;
-=======
 	reinit_completion(&context->done);
 
 	if (mlx4_comm_cmd_post(dev, vhcr_cmd, param)) {
@@ -427,27 +367,11 @@ static int mlx4_comm_cmd_wait(struct mlx4_dev *dev, u8 vhcr_cmd,
 		mlx4_warn(dev, "communication channel command 0x%x (op=0x%x) timed out\n",
 			  vhcr_cmd, op);
 		goto out_reset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = context->result;
 	if (err && context->fw_status != CMD_STAT_MULTI_FUNC_REQ) {
 		mlx4_err(dev, "command 0x%x failed: fw status = 0x%x\n",
-<<<<<<< HEAD
-			 op, context->fw_status);
-		goto out;
-	}
-
-out:
-	/* wait for comm channel ready
-	 * this is necessary for prevention the race
-	 * when switching between event to polling mode
-	 */
-	end = msecs_to_jiffies(timeout) + jiffies;
-	while (comm_pending(dev) && time_before(jiffies, end))
-		cond_resched();
-
-=======
 			 vhcr_cmd, context->fw_status);
 		if (mlx4_closing_cmd_fatal_error(op, context->fw_status))
 			goto out_reset;
@@ -471,7 +395,6 @@ out_reset:
 	err = mlx4_status_to_errno(CMD_STAT_INTERNAL_ERR);
 	mlx4_enter_error_state(dev->persist);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&cmd->context_lock);
 	context->next = cmd->free_head;
 	cmd->free_head = context - cmd->context;
@@ -482,12 +405,6 @@ out:
 }
 
 int mlx4_comm_cmd(struct mlx4_dev *dev, u8 cmd, u16 param,
-<<<<<<< HEAD
-		  unsigned long timeout)
-{
-	if (mlx4_priv(dev)->cmd.use_events)
-		return mlx4_comm_cmd_wait(dev, cmd, param, timeout);
-=======
 		  u16 op, unsigned long timeout)
 {
 	if (dev->persist->state & MLX4_DEVICE_STATE_INTERNAL_ERROR)
@@ -495,22 +412,17 @@ int mlx4_comm_cmd(struct mlx4_dev *dev, u8 cmd, u16 param,
 
 	if (mlx4_priv(dev)->cmd.use_events)
 		return mlx4_comm_cmd_wait(dev, cmd, param, op, timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mlx4_comm_cmd_poll(dev, cmd, param, timeout);
 }
 
 static int cmd_pending(struct mlx4_dev *dev)
 {
-<<<<<<< HEAD
-	u32 status = readl(mlx4_priv(dev)->cmd.hcr + HCR_STATUS_OFFSET);
-=======
 	u32 status;
 
 	if (pci_channel_offline(dev->persist->pdev))
 		return -EIO;
 
 	status = readl(mlx4_priv(dev)->cmd.hcr + HCR_STATUS_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (status & swab32(1 << HCR_GO_BIT)) ||
 		(mlx4_priv(dev)->cmd.toggle ==
@@ -523,12 +435,6 @@ static int mlx4_cmd_post(struct mlx4_dev *dev, u64 in_param, u64 out_param,
 {
 	struct mlx4_cmd *cmd = &mlx4_priv(dev)->cmd;
 	u32 __iomem *hcr = cmd->hcr;
-<<<<<<< HEAD
-	int ret = -EAGAIN;
-	unsigned long end;
-
-	mutex_lock(&cmd->hcr_mutex);
-=======
 	int ret = -EIO;
 	unsigned long end;
 
@@ -546,15 +452,12 @@ static int mlx4_cmd_post(struct mlx4_dev *dev, u64 in_param, u64 out_param,
 		 */
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	end = jiffies;
 	if (event)
 		end += msecs_to_jiffies(GO_BIT_TIMEOUT_MSECS);
 
 	while (cmd_pending(dev)) {
-<<<<<<< HEAD
-=======
 		if (pci_channel_offline(dev->persist->pdev)) {
 			/*
 			 * Device is going through error recovery
@@ -563,7 +466,6 @@ static int mlx4_cmd_post(struct mlx4_dev *dev, u64 in_param, u64 out_param,
 			goto out;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (time_after_eq(jiffies, end)) {
 			mlx4_err(dev, "%s:cmd_pending failed\n", __func__);
 			goto out;
@@ -593,29 +495,16 @@ static int mlx4_cmd_post(struct mlx4_dev *dev, u64 in_param, u64 out_param,
 					       (op_modifier << HCR_OPMOD_SHIFT) |
 					       op), hcr + 6);
 
-<<<<<<< HEAD
-	/*
-	 * Make sure that our HCR writes don't get mixed in with
-	 * writes from another CPU starting a FW command.
-	 */
-	mmiowb();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd->toggle = cmd->toggle ^ 1;
 
 	ret = 0;
 
 out:
-<<<<<<< HEAD
-	mutex_unlock(&cmd->hcr_mutex);
-=======
 	if (ret)
 		mlx4_warn(dev, "Could not post command 0x%x: ret=%d, in_param=0x%llx, in_mod=0x%x, op_mod=0x%x\n",
 			  op, ret, in_param, in_modifier, op_modifier);
 	mutex_unlock(&dev->persist->device_state_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -627,12 +516,8 @@ static int mlx4_slave_cmd(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 	struct mlx4_vhcr_cmd *vhcr = priv->mfunc.vhcr;
 	int ret;
 
-<<<<<<< HEAD
-	down(&priv->cmd.slave_sem);
-=======
 	mutex_lock(&priv->cmd.slave_cmd_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vhcr->in_param = cpu_to_be64(in_param);
 	vhcr->out_param = out_param ? cpu_to_be64(*out_param) : 0;
 	vhcr->in_modifier = cpu_to_be32(in_modifier);
@@ -640,10 +525,7 @@ static int mlx4_slave_cmd(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 	vhcr->token = cpu_to_be16(CMD_POLL_TOKEN);
 	vhcr->status = 0;
 	vhcr->flags = !!(priv->cmd.use_events) << 6;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mlx4_is_master(dev)) {
 		ret = mlx4_master_process_vhcr(dev, dev->caps.function, vhcr);
 		if (!ret) {
@@ -652,29 +534,18 @@ static int mlx4_slave_cmd(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 					*out_param =
 						be64_to_cpu(vhcr->out_param);
 				else {
-<<<<<<< HEAD
-					mlx4_err(dev, "response expected while"
-						 "output mailbox is NULL for "
-						 "command 0x%x\n", op);
-=======
 					mlx4_err(dev, "response expected while output mailbox is NULL for command 0x%x\n",
 						 op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					vhcr->status = CMD_STAT_BAD_PARAM;
 				}
 			}
 			ret = mlx4_status_to_errno(vhcr->status);
 		}
-<<<<<<< HEAD
-	} else {
-		ret = mlx4_comm_cmd(dev, MLX4_COMM_CMD_VHCR_POST, 0,
-=======
 		if (ret &&
 		    dev->persist->state & MLX4_DEVICE_STATE_INTERNAL_ERROR)
 			ret = mlx4_internal_err_ret_value(dev, op, op_modifier);
 	} else {
 		ret = mlx4_comm_cmd(dev, MLX4_COMM_CMD_VHCR_POST, 0, op,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    MLX4_COMM_TIME + timeout);
 		if (!ret) {
 			if (out_is_imm) {
@@ -682,25 +553,12 @@ static int mlx4_slave_cmd(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 					*out_param =
 						be64_to_cpu(vhcr->out_param);
 				else {
-<<<<<<< HEAD
-					mlx4_err(dev, "response expected while"
-						 "output mailbox is NULL for "
-						 "command 0x%x\n", op);
-=======
 					mlx4_err(dev, "response expected while output mailbox is NULL for command 0x%x\n",
 						 op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					vhcr->status = CMD_STAT_BAD_PARAM;
 				}
 			}
 			ret = mlx4_status_to_errno(vhcr->status);
-<<<<<<< HEAD
-		} else
-			mlx4_err(dev, "failed execution of VHCR_POST command"
-				 "opcode 0x%x\n", op);
-	}
-	up(&priv->cmd.slave_sem);
-=======
 		} else {
 			if (dev->persist->state &
 			    MLX4_DEVICE_STATE_INTERNAL_ERROR)
@@ -712,7 +570,6 @@ static int mlx4_slave_cmd(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 	}
 
 	mutex_unlock(&priv->cmd.slave_cmd_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -728,20 +585,6 @@ static int mlx4_cmd_poll(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 
 	down(&priv->cmd.poll_sem);
 
-<<<<<<< HEAD
-	err = mlx4_cmd_post(dev, in_param, out_param ? *out_param : 0,
-			    in_modifier, op_modifier, op, CMD_POLL_TOKEN, 0);
-	if (err)
-		goto out;
-
-	end = msecs_to_jiffies(timeout) + jiffies;
-	while (cmd_pending(dev) && time_before(jiffies, end))
-		cond_resched();
-
-	if (cmd_pending(dev)) {
-		err = -ETIMEDOUT;
-		goto out;
-=======
 	if (dev->persist->state & MLX4_DEVICE_STATE_INTERNAL_ERROR) {
 		/*
 		 * Device is going through error recovery
@@ -787,7 +630,6 @@ static int mlx4_cmd_poll(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 			  op);
 		err = -EIO;
 		goto out_reset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (out_is_imm)
@@ -799,12 +641,6 @@ static int mlx4_cmd_poll(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 	stat = be32_to_cpu((__force __be32)
 			   __raw_readl(hcr + HCR_STATUS_OFFSET)) >> 24;
 	err = mlx4_status_to_errno(stat);
-<<<<<<< HEAD
-	if (err)
-		mlx4_err(dev, "command 0x%x failed: fw status = 0x%x\n",
-			 op, stat);
-
-=======
 	if (err) {
 		mlx4_err(dev, "command 0x%x failed: fw status = 0x%x\n",
 			 op, stat);
@@ -816,7 +652,6 @@ static int mlx4_cmd_poll(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 out_reset:
 	if (err)
 		err = mlx4_cmd_reset_flow(dev, op, op_modifier, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	up(&priv->cmd.poll_sem);
 	return err;
@@ -845,10 +680,7 @@ static int mlx4_cmd_wait(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 {
 	struct mlx4_cmd *cmd = &mlx4_priv(dev)->cmd;
 	struct mlx4_cmd_context *context;
-<<<<<<< HEAD
-=======
 	long ret_wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	down(&cmd->event_sem);
@@ -860,23 +692,6 @@ static int mlx4_cmd_wait(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 	cmd->free_head = context->next;
 	spin_unlock(&cmd->context_lock);
 
-<<<<<<< HEAD
-	init_completion(&context->done);
-
-	mlx4_cmd_post(dev, in_param, out_param ? *out_param : 0,
-		      in_modifier, op_modifier, op, context->token, 1);
-
-	if (!wait_for_completion_timeout(&context->done,
-					 msecs_to_jiffies(timeout))) {
-		err = -EBUSY;
-		goto out;
-	}
-
-	err = context->result;
-	if (err) {
-		mlx4_err(dev, "command 0x%x failed: fw status = 0x%x\n",
-			 op, context->fw_status);
-=======
 	if (out_is_imm && !out_param) {
 		mlx4_err(dev, "response expected while output mailbox is NULL for command 0x%x\n",
 			 op);
@@ -937,19 +752,15 @@ static int mlx4_cmd_wait(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 		else if (mlx4_closing_cmd_fatal_error(op, context->fw_status))
 			goto out_reset;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	if (out_is_imm)
 		*out_param = context->out_param;
 
-<<<<<<< HEAD
-=======
 out_reset:
 	if (err)
 		err = mlx4_cmd_reset_flow(dev, op, op_modifier, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	spin_lock(&cmd->context_lock);
 	context->next = cmd->free_head;
@@ -964,17 +775,6 @@ int __mlx4_cmd(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 	       int out_is_imm, u32 in_modifier, u8 op_modifier,
 	       u16 op, unsigned long timeout, int native)
 {
-<<<<<<< HEAD
-	if (!mlx4_is_mfunc(dev) || (native && mlx4_is_master(dev))) {
-		if (mlx4_priv(dev)->cmd.use_events)
-			return mlx4_cmd_wait(dev, in_param, out_param,
-					     out_is_imm, in_modifier,
-					     op_modifier, op, timeout);
-		else
-			return mlx4_cmd_poll(dev, in_param, out_param,
-					     out_is_imm, in_modifier,
-					     op_modifier, op, timeout);
-=======
 	if (pci_channel_offline(dev->persist->pdev))
 		return mlx4_cmd_reset_flow(dev, op, op_modifier, -EIO);
 
@@ -996,7 +796,6 @@ int __mlx4_cmd(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 
 		up_read(&mlx4_priv(dev)->cmd.switch_sem);
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return mlx4_slave_cmd(dev, in_param, out_param, out_is_imm,
 			      in_modifier, op_modifier, op, timeout);
@@ -1004,11 +803,7 @@ int __mlx4_cmd(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 EXPORT_SYMBOL_GPL(__mlx4_cmd);
 
 
-<<<<<<< HEAD
-static int mlx4_ARM_COMM_CHANNEL(struct mlx4_dev *dev)
-=======
 int mlx4_ARM_COMM_CHANNEL(struct mlx4_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return mlx4_cmd(dev, 0, 0, 0, MLX4_CMD_ARM_COMM_CHANNEL,
 			MLX4_CMD_TIME_CLASS_B, MLX4_CMD_NATIVE);
@@ -1023,14 +818,8 @@ static int mlx4_ACCESS_MEM(struct mlx4_dev *dev, u64 master_addr,
 
 	if ((slave_addr & 0xfff) | (master_addr & 0xfff) |
 	    (slave & ~0x7f) | (size & 0xff)) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Bad access mem params - slave_addr:0x%llx "
-			      "master_addr:0x%llx slave_id:%d size:%d\n",
-			      slave_addr, master_addr, slave, size);
-=======
 		mlx4_err(dev, "Bad access mem params - slave_addr:0x%llx master_addr:0x%llx slave_id:%d size:%d\n",
 			 slave_addr, master_addr, slave, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1047,8 +836,6 @@ static int mlx4_ACCESS_MEM(struct mlx4_dev *dev, u64 master_addr,
 			    MLX4_CMD_TIME_CLASS_A, MLX4_CMD_NATIVE);
 }
 
-<<<<<<< HEAD
-=======
 static int query_pkey_block(struct mlx4_dev *dev, u8 port, u16 index, u16 *pkey,
 			       struct mlx4_cmd_mailbox *inbox,
 			       struct mlx4_cmd_mailbox *outbox)
@@ -1244,7 +1031,6 @@ static int mlx4_CMD_EPERM_wrapper(struct mlx4_dev *dev, int slave,
 	return -EPERM;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_DMA_wrapper(struct mlx4_dev *dev, int slave,
 		     struct mlx4_vhcr *vhcr,
 		     struct mlx4_cmd_mailbox *inbox,
@@ -1280,11 +1066,7 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.out_is_imm = false,
 		.encode_slave_id = false,
 		.verify = NULL,
-<<<<<<< HEAD
-		.wrapper = NULL
-=======
 		.wrapper = mlx4_QUERY_FW_wrapper
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.opcode = MLX4_CMD_QUERY_HCA,
@@ -1302,11 +1084,7 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.out_is_imm = false,
 		.encode_slave_id = false,
 		.verify = NULL,
-<<<<<<< HEAD
-		.wrapper = NULL
-=======
 		.wrapper = mlx4_QUERY_DEV_CAP_wrapper
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.opcode = MLX4_CMD_QUERY_FUNC_CAP,
@@ -1399,8 +1177,6 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.wrapper = NULL
 	},
 	{
-<<<<<<< HEAD
-=======
 		.opcode = MLX4_CMD_CONFIG_DEV,
 		.has_inbox = false,
 		.has_outbox = true,
@@ -1410,7 +1186,6 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.wrapper = mlx4_CONFIG_DEV_wrapper
 	},
 	{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.opcode = MLX4_CMD_ALLOC_RES,
 		.has_inbox = false,
 		.has_outbox = false,
@@ -1485,11 +1260,7 @@ static struct mlx4_cmd_info cmd_info[] = {
 	{
 		.opcode = MLX4_CMD_HW2SW_EQ,
 		.has_inbox = false,
-<<<<<<< HEAD
-		.has_outbox = true,
-=======
 		.has_outbox = false,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.out_is_imm = false,
 		.encode_slave_id = true,
 		.verify = NULL,
@@ -1592,11 +1363,7 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.out_is_imm = false,
 		.encode_slave_id = false,
 		.verify = NULL,
-<<<<<<< HEAD
-		.wrapper = mlx4_GEN_QP_wrapper
-=======
 		.wrapper = mlx4_INIT2INIT_QP_wrapper
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.opcode = MLX4_CMD_INIT2RTR_QP,
@@ -1614,11 +1381,7 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.out_is_imm = false,
 		.encode_slave_id = false,
 		.verify = NULL,
-<<<<<<< HEAD
-		.wrapper = mlx4_GEN_QP_wrapper
-=======
 		.wrapper = mlx4_RTR2RTS_QP_wrapper
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.opcode = MLX4_CMD_RTS2RTS_QP,
@@ -1627,11 +1390,7 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.out_is_imm = false,
 		.encode_slave_id = false,
 		.verify = NULL,
-<<<<<<< HEAD
-		.wrapper = mlx4_GEN_QP_wrapper
-=======
 		.wrapper = mlx4_RTS2RTS_QP_wrapper
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.opcode = MLX4_CMD_SQERR2RTS_QP,
@@ -1640,11 +1399,7 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.out_is_imm = false,
 		.encode_slave_id = false,
 		.verify = NULL,
-<<<<<<< HEAD
-		.wrapper = mlx4_GEN_QP_wrapper
-=======
 		.wrapper = mlx4_SQERR2RTS_QP_wrapper
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.opcode = MLX4_CMD_2ERR_QP,
@@ -1671,11 +1426,7 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.out_is_imm = false,
 		.encode_slave_id = false,
 		.verify = NULL,
-<<<<<<< HEAD
-		.wrapper = mlx4_GEN_QP_wrapper
-=======
 		.wrapper = mlx4_SQD2SQD_QP_wrapper
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.opcode = MLX4_CMD_SQD2RTS_QP,
@@ -1684,11 +1435,7 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.out_is_imm = false,
 		.encode_slave_id = false,
 		.verify = NULL,
-<<<<<<< HEAD
-		.wrapper = mlx4_GEN_QP_wrapper
-=======
 		.wrapper = mlx4_SQD2RTS_QP_wrapper
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.opcode = MLX4_CMD_2RST_QP,
@@ -1727,8 +1474,6 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.wrapper = mlx4_GEN_QP_wrapper
 	},
 	{
-<<<<<<< HEAD
-=======
 		.opcode = MLX4_CMD_UPDATE_QP,
 		.has_inbox = true,
 		.has_outbox = false,
@@ -1792,7 +1537,6 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.wrapper = mlx4_CMD_EPERM_wrapper
 	},
 	{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.opcode = MLX4_CMD_QUERY_IF_STAT,
 		.has_inbox = false,
 		.has_outbox = true,
@@ -1801,8 +1545,6 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.verify = NULL,
 		.wrapper = mlx4_QUERY_IF_STAT_wrapper
 	},
-<<<<<<< HEAD
-=======
 	{
 		.opcode = MLX4_CMD_ACCESS_REG,
 		.has_inbox = true,
@@ -1821,7 +1563,6 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.verify = NULL,
 		.wrapper = mlx4_CMD_EPERM_wrapper,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Native multicast commands are not available for guests */
 	{
 		.opcode = MLX4_CMD_QP_ATTACH,
@@ -1878,8 +1619,6 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.verify = NULL,
 		.wrapper = NULL
 	},
-<<<<<<< HEAD
-=======
 	/* flow steering commands */
 	{
 		.opcode = MLX4_QP_FLOW_STEERING_ATTACH,
@@ -1917,7 +1656,6 @@ static struct mlx4_cmd_info cmd_info[] = {
 		.verify = NULL,
 		.wrapper = mlx4_CMD_EPERM_wrapper
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int mlx4_master_process_vhcr(struct mlx4_dev *dev, int slave,
@@ -1947,15 +1685,10 @@ static int mlx4_master_process_vhcr(struct mlx4_dev *dev, int slave,
 				      ALIGN(sizeof(struct mlx4_vhcr_cmd),
 					    MLX4_ACCESS_MEM_ALIGN), 1);
 		if (ret) {
-<<<<<<< HEAD
-			mlx4_err(dev, "%s:Failed reading vhcr"
-				 "ret: 0x%x\n", __func__, ret);
-=======
 			if (!(dev->persist->state &
 			    MLX4_DEVICE_STATE_INTERNAL_ERROR))
 				mlx4_err(dev, "%s: Failed reading vhcr ret: 0x%x\n",
 					 __func__, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(vhcr);
 			return ret;
 		}
@@ -1994,13 +1727,6 @@ static int mlx4_master_process_vhcr(struct mlx4_dev *dev, int slave,
 			goto out_status;
 		}
 
-<<<<<<< HEAD
-		if (mlx4_ACCESS_MEM(dev, inbox->dma, slave,
-				    vhcr->in_param,
-				    MLX4_MAILBOX_SIZE, 1)) {
-			mlx4_err(dev, "%s: Failed reading inbox (cmd:0x%x)\n",
-				 __func__, cmd->opcode);
-=======
 		ret = mlx4_ACCESS_MEM(dev, inbox->dma, slave,
 				      vhcr->in_param,
 				      MLX4_MAILBOX_SIZE, 1);
@@ -2009,7 +1735,6 @@ static int mlx4_master_process_vhcr(struct mlx4_dev *dev, int slave,
 			    MLX4_DEVICE_STATE_INTERNAL_ERROR))
 				mlx4_err(dev, "%s: Failed reading inbox (cmd:0x%x)\n",
 					 __func__, cmd->opcode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vhcr_cmd->status = CMD_STAT_INTERNAL_ERR;
 			goto out_status;
 		}
@@ -2017,14 +1742,8 @@ static int mlx4_master_process_vhcr(struct mlx4_dev *dev, int slave,
 
 	/* Apply permission and bound checks if applicable */
 	if (cmd->verify && cmd->verify(dev, slave, vhcr, inbox)) {
-<<<<<<< HEAD
-		mlx4_warn(dev, "Command:0x%x from slave: %d failed protection "
-			  "checks for resource_id:%d\n", vhcr->op, slave,
-			  vhcr->in_modifier);
-=======
 		mlx4_warn(dev, "Command:0x%x from slave: %d failed protection checks for resource_id:%d\n",
 			  vhcr->op, slave, vhcr->in_modifier);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vhcr_cmd->status = CMD_STAT_BAD_OP;
 		goto out_status;
 	}
@@ -2063,11 +1782,6 @@ static int mlx4_master_process_vhcr(struct mlx4_dev *dev, int slave,
 	}
 
 	if (err) {
-<<<<<<< HEAD
-		mlx4_warn(dev, "vhcr command:0x%x slave:%d failed with"
-			  " error:%d, status %d\n",
-			  vhcr->op, slave, vhcr->errno, err);
-=======
 		if (!(dev->persist->state & MLX4_DEVICE_STATE_INTERNAL_ERROR)) {
 			if (vhcr->op == MLX4_CMD_ALLOC_RES &&
 			    (vhcr->in_modifier & 0xff) == RES_COUNTER &&
@@ -2079,7 +1793,6 @@ static int mlx4_master_process_vhcr(struct mlx4_dev *dev, int slave,
 				mlx4_warn(dev, "vhcr command:0x%x slave:%d failed with error:%d, status %d\n",
 					  vhcr->op, slave, vhcr->errno, err);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vhcr_cmd->status = mlx4_errno_to_status(err);
 		goto out_status;
 	}
@@ -2094,13 +1807,9 @@ static int mlx4_master_process_vhcr(struct mlx4_dev *dev, int slave,
 			/* If we failed to write back the outbox after the
 			 *command was successfully executed, we must fail this
 			 * slave, as it is now in undefined state */
-<<<<<<< HEAD
-			mlx4_err(dev, "%s:Failed writing outbox\n", __func__);
-=======
 			if (!(dev->persist->state &
 			    MLX4_DEVICE_STATE_INTERNAL_ERROR))
 				mlx4_err(dev, "%s:Failed writing outbox\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
@@ -2118,13 +1827,8 @@ out_status:
 				 __func__);
 		else if (vhcr->e_bit &&
 			 mlx4_GEN_EQE(dev, slave, &priv->mfunc.master.cmd_eqe))
-<<<<<<< HEAD
-				mlx4_warn(dev, "Failed to generate command completion "
-					  "eqe for slave %d\n", slave);
-=======
 				mlx4_warn(dev, "Failed to generate command completion eqe for slave %d\n",
 					  slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
@@ -2134,8 +1838,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int mlx4_master_immediate_activate_vlan_qos(struct mlx4_priv *priv,
 					    int slave, int port)
 {
@@ -2379,61 +2081,39 @@ static void mlx4_master_deactivate_admin_state(struct mlx4_priv *priv, int slave
 	return;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mlx4_master_do_cmd(struct mlx4_dev *dev, int slave, u8 cmd,
 			       u16 param, u8 toggle)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	struct mlx4_slave_state *slave_state = priv->mfunc.master.slave_state;
 	u32 reply;
-<<<<<<< HEAD
-	u32 slave_status = 0;
-	u8 is_going_down = 0;
-	int i;
-=======
 	u8 is_going_down = 0;
 	int i;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	slave_state[slave].comm_toggle ^= 1;
 	reply = (u32) slave_state[slave].comm_toggle << 31;
 	if (toggle != slave_state[slave].comm_toggle) {
-<<<<<<< HEAD
-		mlx4_warn(dev, "Incorrect toggle %d from slave %d. *** MASTER"
-			  "STATE COMPROMISIED ***\n", toggle, slave);
-=======
 		mlx4_warn(dev, "Incorrect toggle %d from slave %d. *** MASTER STATE COMPROMISED ***\n",
 			  toggle, slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto reset_slave;
 	}
 	if (cmd == MLX4_COMM_CMD_RESET) {
 		mlx4_warn(dev, "Received reset from slave:%d\n", slave);
 		slave_state[slave].active = false;
-<<<<<<< HEAD
-=======
 		slave_state[slave].old_vlan_api = false;
 		slave_state[slave].vst_qinq_supported = false;
 		mlx4_master_deactivate_admin_state(priv, slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < MLX4_EVENT_TYPES_NUM; ++i) {
 				slave_state[slave].event_eq[i].eqn = -1;
 				slave_state[slave].event_eq[i].token = 0;
 		}
 		/*check if we are in the middle of FLR process,
 		if so return "retry" status to the slave*/
-<<<<<<< HEAD
-		if (MLX4_COMM_CMD_FLR == slave_state[slave].last_cmd) {
-			slave_status = MLX4_DELAY_RESET_SLAVE;
-			goto inform_slave_state;
-		}
-=======
 		if (MLX4_COMM_CMD_FLR == slave_state[slave].last_cmd)
 			goto inform_slave_state;
 
 		mlx4_dispatch_event(dev, MLX4_DEV_EVENT_SLAVE_SHUTDOWN, &slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* write the version in the event field */
 		reply |= mlx4_comm_get_version();
@@ -2443,13 +2123,8 @@ static void mlx4_master_do_cmd(struct mlx4_dev *dev, int slave, u8 cmd,
 	/*command from slave in the middle of FLR*/
 	if (cmd != MLX4_COMM_CMD_RESET &&
 	    MLX4_COMM_CMD_FLR == slave_state[slave].last_cmd) {
-<<<<<<< HEAD
-		mlx4_warn(dev, "slave:%d is Trying to run cmd(0x%x) "
-			  "in the middle of FLR\n", slave, cmd);
-=======
 		mlx4_warn(dev, "slave:%d is Trying to run cmd(0x%x) in the middle of FLR\n",
 			  slave, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -2459,10 +2134,6 @@ static void mlx4_master_do_cmd(struct mlx4_dev *dev, int slave, u8 cmd,
 			goto reset_slave;
 		slave_state[slave].vhcr_dma = ((u64) param) << 48;
 		priv->mfunc.master.slave_state[slave].cookie = 0;
-<<<<<<< HEAD
-		mutex_init(&priv->mfunc.master.gen_eqe_mutex[slave]);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MLX4_COMM_CMD_VHCR1:
 		if (slave_state[slave].last_cmd != MLX4_COMM_CMD_VHCR0)
@@ -2478,22 +2149,6 @@ static void mlx4_master_do_cmd(struct mlx4_dev *dev, int slave, u8 cmd,
 		if (slave_state[slave].last_cmd != MLX4_COMM_CMD_VHCR2)
 			goto reset_slave;
 		slave_state[slave].vhcr_dma |= param;
-<<<<<<< HEAD
-		slave_state[slave].active = true;
-		break;
-	case MLX4_COMM_CMD_VHCR_POST:
-		if ((slave_state[slave].last_cmd != MLX4_COMM_CMD_VHCR_EN) &&
-		    (slave_state[slave].last_cmd != MLX4_COMM_CMD_VHCR_POST))
-			goto reset_slave;
-		down(&priv->cmd.slave_sem);
-		if (mlx4_master_process_vhcr(dev, slave, NULL)) {
-			mlx4_err(dev, "Failed processing vhcr for slave:%d,"
-				 " resetting slave.\n", slave);
-			up(&priv->cmd.slave_sem);
-			goto reset_slave;
-		}
-		up(&priv->cmd.slave_sem);
-=======
 		if (mlx4_master_activate_admin_state(priv, slave))
 				goto reset_slave;
 		slave_state[slave].active = true;
@@ -2515,52 +2170,29 @@ static void mlx4_master_do_cmd(struct mlx4_dev *dev, int slave, u8 cmd,
 			goto reset_slave;
 		}
 		mutex_unlock(&priv->cmd.slave_cmd_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		mlx4_warn(dev, "Bad comm cmd:%d from slave:%d\n", cmd, slave);
 		goto reset_slave;
 	}
-<<<<<<< HEAD
-	spin_lock(&priv->mfunc.master.slave_state_lock);
-=======
 	spin_lock_irqsave(&priv->mfunc.master.slave_state_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!slave_state[slave].is_slave_going_down)
 		slave_state[slave].last_cmd = cmd;
 	else
 		is_going_down = 1;
-<<<<<<< HEAD
-	spin_unlock(&priv->mfunc.master.slave_state_lock);
-	if (is_going_down) {
-		mlx4_warn(dev, "Slave is going down aborting command(%d)"
-			  " executing from slave:%d\n",
-=======
 	spin_unlock_irqrestore(&priv->mfunc.master.slave_state_lock, flags);
 	if (is_going_down) {
 		mlx4_warn(dev, "Slave is going down aborting command(%d) executing from slave:%d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  cmd, slave);
 		return;
 	}
 	__raw_writel((__force u32) cpu_to_be32(reply),
 		     &priv->mfunc.comm[slave].slave_read);
-<<<<<<< HEAD
-	mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 
 reset_slave:
 	/* cleanup any slave resources */
-<<<<<<< HEAD
-	mlx4_delete_all_resources_for_slave(dev, slave);
-	spin_lock(&priv->mfunc.master.slave_state_lock);
-	if (!slave_state[slave].is_slave_going_down)
-		slave_state[slave].last_cmd = MLX4_COMM_CMD_RESET;
-	spin_unlock(&priv->mfunc.master.slave_state_lock);
-=======
 	if (dev->persist->interface_state & MLX4_INTERFACE_STATE_UP)
 		mlx4_delete_all_resources_for_slave(dev, slave);
 
@@ -2578,7 +2210,6 @@ reset_slave:
 	if (!slave_state[slave].is_slave_going_down)
 		slave_state[slave].last_cmd = MLX4_COMM_CMD_RESET;
 	spin_unlock_irqrestore(&priv->mfunc.master.slave_state_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*with slave in the middle of flr, no need to clean resources again.*/
 inform_slave_state:
 	memset(&slave_state[slave].event_eq, 0,
@@ -2600,60 +2231,16 @@ void mlx4_master_comm_channel(struct work_struct *work)
 	struct mlx4_priv *priv =
 		container_of(mfunc, struct mlx4_priv, mfunc);
 	struct mlx4_dev *dev = &priv->dev;
-<<<<<<< HEAD
-	__be32 *bit_vec;
-	u32 comm_cmd;
-	u32 vec;
-	int i, j, slave;
-	int toggle;
-=======
 	u32 lbit_vec[COMM_CHANNEL_BIT_ARRAY_SIZE];
 	u32 nmbr_bits;
 	u32 comm_cmd;
 	int i, slave;
 	int toggle;
 	bool first = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int served = 0;
 	int reported = 0;
 	u32 slt;
 
-<<<<<<< HEAD
-	bit_vec = master->comm_arm_bit_vector;
-	for (i = 0; i < COMM_CHANNEL_BIT_ARRAY_SIZE; i++) {
-		vec = be32_to_cpu(bit_vec[i]);
-		for (j = 0; j < 32; j++) {
-			if (!(vec & (1 << j)))
-				continue;
-			++reported;
-			slave = (i * 32) + j;
-			comm_cmd = swab32(readl(
-					  &mfunc->comm[slave].slave_write));
-			slt = swab32(readl(&mfunc->comm[slave].slave_read))
-				     >> 31;
-			toggle = comm_cmd >> 31;
-			if (toggle != slt) {
-				if (master->slave_state[slave].comm_toggle
-				    != slt) {
-					printk(KERN_INFO "slave %d out of sync."
-					       " read toggle %d, state toggle %d. "
-					       "Resynching.\n", slave, slt,
-					       master->slave_state[slave].comm_toggle);
-					master->slave_state[slave].comm_toggle =
-						slt;
-				}
-				mlx4_master_do_cmd(dev, slave,
-						   comm_cmd >> 16 & 0xff,
-						   comm_cmd & 0xffff, toggle);
-				++served;
-			}
-		}
-	}
-
-	if (reported && reported != served)
-		mlx4_warn(dev, "Got command event with bitmask from %d slaves"
-			  " but %d were served\n",
-=======
 	for (i = 0; i < COMM_CHANNEL_BIT_ARRAY_SIZE; i++)
 		lbit_vec[i] = be32_to_cpu(master->comm_arm_bit_vector[i]);
 	nmbr_bits = dev->persist->num_vfs + 1;
@@ -2694,7 +2281,6 @@ void mlx4_master_comm_channel(struct work_struct *work)
 
 	if (reported && reported != served)
 		mlx4_warn(dev, "Got command event with bitmask from %d slaves but %d were served\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  reported, served);
 
 	if (mlx4_ARM_COMM_CHANNEL(dev))
@@ -2704,19 +2290,6 @@ void mlx4_master_comm_channel(struct work_struct *work)
 static int sync_toggles(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
-<<<<<<< HEAD
-	int wr_toggle;
-	int rd_toggle;
-	unsigned long end;
-
-	wr_toggle = swab32(readl(&priv->mfunc.comm->slave_write)) >> 31;
-	end = jiffies + msecs_to_jiffies(5000);
-
-	while (time_before(jiffies, end)) {
-		rd_toggle = swab32(readl(&priv->mfunc.comm->slave_read)) >> 31;
-		if (rd_toggle == wr_toggle) {
-			priv->cmd.comm_toggle = rd_toggle;
-=======
 	u32 wr_toggle;
 	u32 rd_toggle;
 	unsigned long end;
@@ -2750,7 +2323,6 @@ static int sync_toggles(struct mlx4_dev *dev)
 
 		if (rd_toggle >> 31 == wr_toggle >> 31) {
 			priv->cmd.comm_toggle = rd_toggle >> 31;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 
@@ -2777,26 +2349,6 @@ int mlx4_multi_func_init(struct mlx4_dev *dev)
 	struct mlx4_slave_state *s_state;
 	int i, j, err, port;
 
-<<<<<<< HEAD
-	priv->mfunc.vhcr = dma_alloc_coherent(&(dev->pdev->dev), PAGE_SIZE,
-					    &priv->mfunc.vhcr_dma,
-					    GFP_KERNEL);
-	if (!priv->mfunc.vhcr) {
-		mlx4_err(dev, "Couldn't allocate vhcr.\n");
-		return -ENOMEM;
-	}
-
-	if (mlx4_is_master(dev))
-		priv->mfunc.comm =
-		ioremap(pci_resource_start(dev->pdev, priv->fw.comm_bar) +
-			priv->fw.comm_base, MLX4_COMM_PAGESIZE);
-	else
-		priv->mfunc.comm =
-		ioremap(pci_resource_start(dev->pdev, 2) +
-			MLX4_SLAVE_COMM_BASE, MLX4_COMM_PAGESIZE);
-	if (!priv->mfunc.comm) {
-		mlx4_err(dev, "Couldn't map communication vector.\n");
-=======
 	if (mlx4_is_master(dev))
 		priv->mfunc.comm =
 		ioremap(pci_resource_start(dev->persist->pdev,
@@ -2808,22 +2360,10 @@ int mlx4_multi_func_init(struct mlx4_dev *dev)
 			MLX4_SLAVE_COMM_BASE, MLX4_COMM_PAGESIZE);
 	if (!priv->mfunc.comm) {
 		mlx4_err(dev, "Couldn't map communication vector\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_vhcr;
 	}
 
 	if (mlx4_is_master(dev)) {
-<<<<<<< HEAD
-		priv->mfunc.master.slave_state =
-			kzalloc(dev->num_slaves *
-				sizeof(struct mlx4_slave_state), GFP_KERNEL);
-		if (!priv->mfunc.master.slave_state)
-			goto err_comm;
-
-		for (i = 0; i < dev->num_slaves; ++i) {
-			s_state = &priv->mfunc.master.slave_state[i];
-			s_state->last_cmd = MLX4_COMM_CMD_RESET;
-=======
 		struct mlx4_vf_oper_state *vf_oper;
 		struct mlx4_vf_admin_state *vf_admin;
 
@@ -2857,22 +2397,16 @@ int mlx4_multi_func_init(struct mlx4_dev *dev)
 			s_state->last_cmd = MLX4_COMM_CMD_RESET;
 			s_state->vst_qinq_supported = false;
 			mutex_init(&priv->mfunc.master.gen_eqe_mutex[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (j = 0; j < MLX4_EVENT_TYPES_NUM; ++j)
 				s_state->event_eq[j].eqn = -1;
 			__raw_writel((__force u32) 0,
 				     &priv->mfunc.comm[i].slave_write);
 			__raw_writel((__force u32) 0,
 				     &priv->mfunc.comm[i].slave_read);
-<<<<<<< HEAD
-			mmiowb();
-			for (port = 1; port <= MLX4_MAX_PORTS; port++) {
-=======
 			for (port = 1; port <= MLX4_MAX_PORTS; port++) {
 				struct mlx4_vport_state *admin_vport;
 				struct mlx4_vport_state *oper_vport;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				s_state->vlan_filter[port] =
 					kzalloc(sizeof(struct mlx4_vlan_fltr),
 						GFP_KERNEL);
@@ -2881,9 +2415,6 @@ int mlx4_multi_func_init(struct mlx4_dev *dev)
 						kfree(s_state->vlan_filter[port]);
 					goto err_slaves;
 				}
-<<<<<<< HEAD
-				INIT_LIST_HEAD(&s_state->mcast_filters[port]);
-=======
 
 				admin_vport = &vf_admin->vport[port];
 				oper_vport = &vf_oper->vport[port].state;
@@ -2898,13 +2429,10 @@ int mlx4_multi_func_init(struct mlx4_dev *dev)
 				vf_oper->vport[port].vlan_idx = NO_INDX;
 				vf_oper->vport[port].mac_idx = NO_INDX;
 				mlx4_set_random_admin_guid(dev, i, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			spin_lock_init(&s_state->lock);
 		}
 
-<<<<<<< HEAD
-=======
 		if (dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_QOS_VPP) {
 			for (port = 1; port <= dev->caps.num_ports; port++) {
 				if (mlx4_is_eth(dev, port)) {
@@ -2914,7 +2442,6 @@ int mlx4_multi_func_init(struct mlx4_dev *dev)
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(&priv->mfunc.master.cmd_eqe, 0, sizeof(struct mlx4_eqe));
 		priv->mfunc.master.cmd_eqe.type = MLX4_EVENT_TYPE_CMD;
 		INIT_WORK(&priv->mfunc.master.comm_work,
@@ -2924,10 +2451,7 @@ int mlx4_multi_func_init(struct mlx4_dev *dev)
 		INIT_WORK(&priv->mfunc.master.slave_flr_event_work,
 			  mlx4_master_handle_slave_flr);
 		spin_lock_init(&priv->mfunc.master.slave_state_lock);
-<<<<<<< HEAD
-=======
 		spin_lock_init(&priv->mfunc.master.slave_eq.event_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->mfunc.master.comm_wq =
 			create_singlethread_workqueue("mlx4_comm");
 		if (!priv->mfunc.master.comm_wq)
@@ -2936,47 +2460,12 @@ int mlx4_multi_func_init(struct mlx4_dev *dev)
 		if (mlx4_init_resource_tracker(dev))
 			goto err_thread;
 
-<<<<<<< HEAD
-		sema_init(&priv->cmd.slave_sem, 1);
-		err = mlx4_ARM_COMM_CHANNEL(dev);
-		if (err) {
-			mlx4_err(dev, " Failed to arm comm channel eq: %x\n",
-				 err);
-			goto err_resource;
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		err = sync_toggles(dev);
 		if (err) {
 			mlx4_err(dev, "Couldn't sync toggles\n");
 			goto err_comm;
 		}
-<<<<<<< HEAD
-
-		sema_init(&priv->cmd.slave_sem, 1);
-	}
-	return 0;
-
-err_resource:
-	mlx4_free_resource_tracker(dev);
-err_thread:
-	flush_workqueue(priv->mfunc.master.comm_wq);
-	destroy_workqueue(priv->mfunc.master.comm_wq);
-err_slaves:
-	while (--i) {
-		for (port = 1; port <= MLX4_MAX_PORTS; port++)
-			kfree(priv->mfunc.master.slave_state[i].vlan_filter[port]);
-	}
-	kfree(priv->mfunc.master.slave_state);
-err_comm:
-	iounmap(priv->mfunc.comm);
-err_vhcr:
-	dma_free_coherent(&(dev->pdev->dev), PAGE_SIZE,
-					     priv->mfunc.vhcr,
-					     priv->mfunc.vhcr_dma);
-=======
 	}
 	return 0;
 
@@ -2999,7 +2488,6 @@ err_vhcr:
 	dma_free_coherent(&dev->persist->pdev->dev, PAGE_SIZE,
 			  priv->mfunc.vhcr,
 			  priv->mfunc.vhcr_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->mfunc.vhcr = NULL;
 	return -ENOMEM;
 }
@@ -3007,40 +2495,6 @@ err_vhcr:
 int mlx4_cmd_init(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
-<<<<<<< HEAD
-
-	mutex_init(&priv->cmd.hcr_mutex);
-	sema_init(&priv->cmd.poll_sem, 1);
-	priv->cmd.use_events = 0;
-	priv->cmd.toggle     = 1;
-
-	priv->cmd.hcr = NULL;
-	priv->mfunc.vhcr = NULL;
-
-	if (!mlx4_is_slave(dev)) {
-		priv->cmd.hcr = ioremap(pci_resource_start(dev->pdev, 0) +
-					MLX4_HCR_BASE, MLX4_HCR_SIZE);
-		if (!priv->cmd.hcr) {
-			mlx4_err(dev, "Couldn't map command register.\n");
-			return -ENOMEM;
-		}
-	}
-
-	priv->cmd.pool = pci_pool_create("mlx4_cmd", dev->pdev,
-					 MLX4_MAILBOX_SIZE,
-					 MLX4_MAILBOX_SIZE, 0);
-	if (!priv->cmd.pool)
-		goto err_hcr;
-
-	return 0;
-
-err_hcr:
-	if (!mlx4_is_slave(dev))
-		iounmap(priv->cmd.hcr);
-	return -ENOMEM;
-}
-
-=======
 	int flags = 0;
 
 	if (!priv->cmd.initialized) {
@@ -3116,41 +2570,18 @@ void mlx4_report_internal_err_comm_event(struct mlx4_dev *dev)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mlx4_multi_func_cleanup(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	int i, port;
 
 	if (mlx4_is_master(dev)) {
-<<<<<<< HEAD
-		flush_workqueue(priv->mfunc.master.comm_wq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		destroy_workqueue(priv->mfunc.master.comm_wq);
 		for (i = 0; i < dev->num_slaves; i++) {
 			for (port = 1; port <= MLX4_MAX_PORTS; port++)
 				kfree(priv->mfunc.master.slave_state[i].vlan_filter[port]);
 		}
 		kfree(priv->mfunc.master.slave_state);
-<<<<<<< HEAD
-	}
-
-	iounmap(priv->mfunc.comm);
-	dma_free_coherent(&(dev->pdev->dev), PAGE_SIZE,
-		     priv->mfunc.vhcr, priv->mfunc.vhcr_dma);
-	priv->mfunc.vhcr = NULL;
-}
-
-void mlx4_cmd_cleanup(struct mlx4_dev *dev)
-{
-	struct mlx4_priv *priv = mlx4_priv(dev);
-
-	pci_pool_destroy(priv->cmd.pool);
-
-	if (!mlx4_is_slave(dev))
-		iounmap(priv->cmd.hcr);
-=======
 		kfree(priv->mfunc.master.vf_admin);
 		kfree(priv->mfunc.master.vf_oper);
 		dev->num_slaves = 0;
@@ -3182,7 +2613,6 @@ void mlx4_cmd_cleanup(struct mlx4_dev *dev, int cleanup_mask)
 	}
 	if (priv->cmd.initialized && (cleanup_mask & MLX4_CMD_CLEANUP_STRUCT))
 		priv->cmd.initialized = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3195,17 +2625,6 @@ int mlx4_cmd_use_events(struct mlx4_dev *dev)
 	int i;
 	int err = 0;
 
-<<<<<<< HEAD
-	priv->cmd.context = kmalloc(priv->cmd.max_cmds *
-				   sizeof (struct mlx4_cmd_context),
-				   GFP_KERNEL);
-	if (!priv->cmd.context)
-		return -ENOMEM;
-
-	for (i = 0; i < priv->cmd.max_cmds; ++i) {
-		priv->cmd.context[i].token = i;
-		priv->cmd.context[i].next  = i + 1;
-=======
 	priv->cmd.context = kmalloc_array(priv->cmd.max_cmds,
 					  sizeof(struct mlx4_cmd_context),
 					  GFP_KERNEL);
@@ -3223,17 +2642,12 @@ int mlx4_cmd_use_events(struct mlx4_dev *dev)
 		 * with complete() at any time.
 		 */
 		init_completion(&priv->cmd.context[i].done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	priv->cmd.context[priv->cmd.max_cmds - 1].next = -1;
 	priv->cmd.free_head = 0;
 
 	sema_init(&priv->cmd.event_sem, priv->cmd.max_cmds);
-<<<<<<< HEAD
-	spin_lock_init(&priv->cmd.context_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (priv->cmd.token_mask = 1;
 	     priv->cmd.token_mask < priv->cmd.max_cmds;
@@ -3243,12 +2657,9 @@ int mlx4_cmd_use_events(struct mlx4_dev *dev)
 
 	down(&priv->cmd.poll_sem);
 	priv->cmd.use_events = 1;
-<<<<<<< HEAD
-=======
 	up_write(&priv->cmd.switch_sem);
 	if (mlx4_is_mfunc(dev))
 		mutex_unlock(&priv->cmd.slave_cmd_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -3261,50 +2672,33 @@ void mlx4_cmd_use_polling(struct mlx4_dev *dev)
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	int i;
 
-<<<<<<< HEAD
-=======
 	if (mlx4_is_mfunc(dev))
 		mutex_lock(&priv->cmd.slave_cmd_mutex);
 	down_write(&priv->cmd.switch_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->cmd.use_events = 0;
 
 	for (i = 0; i < priv->cmd.max_cmds; ++i)
 		down(&priv->cmd.event_sem);
 
 	kfree(priv->cmd.context);
-<<<<<<< HEAD
-
-	up(&priv->cmd.poll_sem);
-=======
 	priv->cmd.context = NULL;
 
 	up(&priv->cmd.poll_sem);
 	up_write(&priv->cmd.switch_sem);
 	if (mlx4_is_mfunc(dev))
 		mutex_unlock(&priv->cmd.slave_cmd_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct mlx4_cmd_mailbox *mlx4_alloc_cmd_mailbox(struct mlx4_dev *dev)
 {
 	struct mlx4_cmd_mailbox *mailbox;
 
-<<<<<<< HEAD
-	mailbox = kmalloc(sizeof *mailbox, GFP_KERNEL);
-	if (!mailbox)
-		return ERR_PTR(-ENOMEM);
-
-	mailbox->buf = pci_pool_alloc(mlx4_priv(dev)->cmd.pool, GFP_KERNEL,
-				      &mailbox->dma);
-=======
 	mailbox = kmalloc(sizeof(*mailbox), GFP_KERNEL);
 	if (!mailbox)
 		return ERR_PTR(-ENOMEM);
 
 	mailbox->buf = dma_pool_zalloc(mlx4_priv(dev)->cmd.pool, GFP_KERNEL,
 				       &mailbox->dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mailbox->buf) {
 		kfree(mailbox);
 		return ERR_PTR(-ENOMEM);
@@ -3320,11 +2714,7 @@ void mlx4_free_cmd_mailbox(struct mlx4_dev *dev,
 	if (!mailbox)
 		return;
 
-<<<<<<< HEAD
-	pci_pool_free(mlx4_priv(dev)->cmd.pool, mailbox->buf, mailbox->dma);
-=======
 	dma_pool_free(mlx4_priv(dev)->cmd.pool, mailbox->buf, mailbox->dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(mailbox);
 }
 EXPORT_SYMBOL_GPL(mlx4_free_cmd_mailbox);
@@ -3333,8 +2723,6 @@ u32 mlx4_comm_get_version(void)
 {
 	 return ((u32) CMD_CHAN_IF_REV << 8) | (u32) CMD_CHAN_VER;
 }
-<<<<<<< HEAD
-=======
 
 static int mlx4_get_slave_indx(struct mlx4_dev *dev, int vf)
 {
@@ -4039,4 +3427,3 @@ int mlx4_vf_set_enable_smi_admin(struct mlx4_dev *dev, int slave, int port,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(mlx4_vf_set_enable_smi_admin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

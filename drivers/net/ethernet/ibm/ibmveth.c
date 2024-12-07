@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * IBM Power Virtual Ethernet Device Driver
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * IBM Power Virtual Ethernet Device Driver
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) IBM Corporation, 2003, 2010
  *
  * Authors: Dave Larson <larson1@us.ibm.com>
@@ -32,10 +12,6 @@
  */
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/moduleparam.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/dma-mapping.h>
@@ -57,11 +33,8 @@
 #include <asm/vio.h>
 #include <asm/iommu.h>
 #include <asm/firmware.h>
-<<<<<<< HEAD
-=======
 #include <net/tcp.h>
 #include <net/ip6_checksum.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ibmveth.h"
 
@@ -74,11 +47,7 @@ static struct kobj_type ktype_veth_pool;
 
 static const char ibmveth_driver_name[] = "ibmveth";
 static const char ibmveth_driver_string[] = "IBM Power Virtual Ethernet Driver";
-<<<<<<< HEAD
-#define ibmveth_driver_version "1.04"
-=======
 #define ibmveth_driver_version "1.06"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Santiago Leon <santil@linux.vnet.ibm.com>");
 MODULE_DESCRIPTION("IBM Power Virtual Ethernet Driver");
@@ -99,14 +68,11 @@ static unsigned int rx_flush __read_mostly = 0;
 module_param(rx_flush, uint, 0644);
 MODULE_PARM_DESC(rx_flush, "Flush receive buffers before use");
 
-<<<<<<< HEAD
-=======
 static bool old_large_send __read_mostly;
 module_param(old_large_send, bool, 0444);
 MODULE_PARM_DESC(old_large_send,
 	"Use old large send method on firmware that supports the new method");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ibmveth_stat {
 	char name[ETH_GSTRING_LEN];
 	int offset;
@@ -115,11 +81,7 @@ struct ibmveth_stat {
 #define IBMVETH_STAT_OFF(stat) offsetof(struct ibmveth_adapter, stat)
 #define IBMVETH_GET_STAT(a, off) *((u64 *)(((unsigned long)(a)) + off))
 
-<<<<<<< HEAD
-struct ibmveth_stat ibmveth_stats[] = {
-=======
 static struct ibmveth_stat ibmveth_stats[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "replenish_task_cycles", IBMVETH_STAT_OFF(replenish_task_cycles) },
 	{ "replenish_no_mem", IBMVETH_STAT_OFF(replenish_no_mem) },
 	{ "replenish_add_buff_failure",
@@ -132,22 +94,15 @@ static struct ibmveth_stat ibmveth_stats[] = {
 	{ "tx_send_failed", IBMVETH_STAT_OFF(tx_send_failed) },
 	{ "fw_enabled_ipv4_csum", IBMVETH_STAT_OFF(fw_ipv4_csum_support) },
 	{ "fw_enabled_ipv6_csum", IBMVETH_STAT_OFF(fw_ipv6_csum_support) },
-<<<<<<< HEAD
-=======
 	{ "tx_large_packets", IBMVETH_STAT_OFF(tx_large_packets) },
 	{ "rx_large_packets", IBMVETH_STAT_OFF(rx_large_packets) },
 	{ "fw_enabled_large_send", IBMVETH_STAT_OFF(fw_large_send_support) }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* simple methods of getting data from the current rxq entry */
 static inline u32 ibmveth_rxq_flags(struct ibmveth_adapter *adapter)
 {
-<<<<<<< HEAD
-	return adapter->rx_queue.queue_addr[adapter->rx_queue.index].flags_off;
-=======
 	return be32_to_cpu(adapter->rx_queue.queue_addr[adapter->rx_queue.index].flags_off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int ibmveth_rxq_toggle(struct ibmveth_adapter *adapter)
@@ -171,11 +126,6 @@ static inline int ibmveth_rxq_frame_offset(struct ibmveth_adapter *adapter)
 	return ibmveth_rxq_flags(adapter) & IBMVETH_RXQ_OFF_MASK;
 }
 
-<<<<<<< HEAD
-static inline int ibmveth_rxq_frame_length(struct ibmveth_adapter *adapter)
-{
-	return adapter->rx_queue.queue_addr[adapter->rx_queue.index].length;
-=======
 static inline int ibmveth_rxq_large_packet(struct ibmveth_adapter *adapter)
 {
 	return ibmveth_rxq_flags(adapter) & IBMVETH_RXQ_LRG_PKT;
@@ -184,7 +134,6 @@ static inline int ibmveth_rxq_large_packet(struct ibmveth_adapter *adapter)
 static inline int ibmveth_rxq_frame_length(struct ibmveth_adapter *adapter)
 {
 	return be32_to_cpu(adapter->rx_queue.queue_addr[adapter->rx_queue.index].length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int ibmveth_rxq_csum_good(struct ibmveth_adapter *adapter)
@@ -192,8 +141,6 @@ static inline int ibmveth_rxq_csum_good(struct ibmveth_adapter *adapter)
 	return ibmveth_rxq_flags(adapter) & IBMVETH_RXQ_CSUM_GOOD;
 }
 
-<<<<<<< HEAD
-=======
 static unsigned int ibmveth_real_max_tx_queues(void)
 {
 	unsigned int n_cpu = num_online_cpus();
@@ -201,7 +148,6 @@ static unsigned int ibmveth_real_max_tx_queues(void)
 	return min(n_cpu, IBMVETH_MAX_QUEUES);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* setup the initial settings for a buffer pool */
 static void ibmveth_init_buffer_pool(struct ibmveth_buff_pool *pool,
 				     u32 pool_index, u32 pool_size,
@@ -219,20 +165,12 @@ static int ibmveth_alloc_buffer_pool(struct ibmveth_buff_pool *pool)
 {
 	int i;
 
-<<<<<<< HEAD
-	pool->free_map = kmalloc(sizeof(u16) * pool->size, GFP_KERNEL);
-=======
 	pool->free_map = kmalloc_array(pool->size, sizeof(u16), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pool->free_map)
 		return -1;
 
-<<<<<<< HEAD
-	pool->dma_addr = kmalloc(sizeof(dma_addr_t) * pool->size, GFP_KERNEL);
-=======
 	pool->dma_addr = kcalloc(pool->size, sizeof(dma_addr_t), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pool->dma_addr) {
 		kfree(pool->free_map);
 		pool->free_map = NULL;
@@ -250,11 +188,6 @@ static int ibmveth_alloc_buffer_pool(struct ibmveth_buff_pool *pool)
 		return -1;
 	}
 
-<<<<<<< HEAD
-	memset(pool->dma_addr, 0, sizeof(dma_addr_t) * pool->size);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < pool->size; ++i)
 		pool->free_map[i] = i;
 
@@ -270,11 +203,7 @@ static inline void ibmveth_flush_buffer(void *addr, unsigned long length)
 	unsigned long offset;
 
 	for (offset = 0; offset < length; offset += SMP_CACHE_BYTES)
-<<<<<<< HEAD
-		asm("dcbfl %0,%1" :: "b" (addr), "r" (offset));
-=======
 		asm("dcbf %0,%1,1" :: "b" (addr), "r" (offset));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* replenish the buffers for a pool.  note that we don't need to
@@ -534,56 +463,6 @@ static void ibmveth_rxq_harvest_buffer(struct ibmveth_adapter *adapter)
 	}
 }
 
-<<<<<<< HEAD
-static void ibmveth_cleanup(struct ibmveth_adapter *adapter)
-{
-	int i;
-	struct device *dev = &adapter->vdev->dev;
-
-	if (adapter->buffer_list_addr != NULL) {
-		if (!dma_mapping_error(dev, adapter->buffer_list_dma)) {
-			dma_unmap_single(dev, adapter->buffer_list_dma, 4096,
-					DMA_BIDIRECTIONAL);
-			adapter->buffer_list_dma = DMA_ERROR_CODE;
-		}
-		free_page((unsigned long)adapter->buffer_list_addr);
-		adapter->buffer_list_addr = NULL;
-	}
-
-	if (adapter->filter_list_addr != NULL) {
-		if (!dma_mapping_error(dev, adapter->filter_list_dma)) {
-			dma_unmap_single(dev, adapter->filter_list_dma, 4096,
-					DMA_BIDIRECTIONAL);
-			adapter->filter_list_dma = DMA_ERROR_CODE;
-		}
-		free_page((unsigned long)adapter->filter_list_addr);
-		adapter->filter_list_addr = NULL;
-	}
-
-	if (adapter->rx_queue.queue_addr != NULL) {
-		dma_free_coherent(dev, adapter->rx_queue.queue_len,
-				  adapter->rx_queue.queue_addr,
-				  adapter->rx_queue.queue_dma);
-		adapter->rx_queue.queue_addr = NULL;
-	}
-
-	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++)
-		if (adapter->rx_buff_pool[i].active)
-			ibmveth_free_buffer_pool(adapter,
-						 &adapter->rx_buff_pool[i]);
-
-	if (adapter->bounce_buffer != NULL) {
-		if (!dma_mapping_error(dev, adapter->bounce_buffer_dma)) {
-			dma_unmap_single(&adapter->vdev->dev,
-					adapter->bounce_buffer_dma,
-					adapter->netdev->mtu + IBMVETH_BUFF_OH,
-					DMA_BIDIRECTIONAL);
-			adapter->bounce_buffer_dma = DMA_ERROR_CODE;
-		}
-		kfree(adapter->bounce_buffer);
-		adapter->bounce_buffer = NULL;
-	}
-=======
 static void ibmveth_free_tx_ltb(struct ibmveth_adapter *adapter, int idx)
 {
 	dma_unmap_single(&adapter->vdev->dev, adapter->tx_ltb_dma[idx],
@@ -614,7 +493,6 @@ static int ibmveth_allocate_tx_ltb(struct ibmveth_adapter *adapter, int idx)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ibmveth_register_logical_lan(struct ibmveth_adapter *adapter,
@@ -647,11 +525,7 @@ retry:
 static int ibmveth_open(struct net_device *netdev)
 {
 	struct ibmveth_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	u64 mac_address = 0;
-=======
 	u64 mac_address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rxq_entries = 1;
 	unsigned long lpar_rc;
 	int rc;
@@ -666,16 +540,6 @@ static int ibmveth_open(struct net_device *netdev)
 	for(i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++)
 		rxq_entries += adapter->rx_buff_pool[i].size;
 
-<<<<<<< HEAD
-	adapter->buffer_list_addr = (void*) get_zeroed_page(GFP_KERNEL);
-	adapter->filter_list_addr = (void*) get_zeroed_page(GFP_KERNEL);
-
-	if (!adapter->buffer_list_addr || !adapter->filter_list_addr) {
-		netdev_err(netdev, "unable to allocate filter or buffer list "
-			   "pages\n");
-		rc = -ENOMEM;
-		goto err_out;
-=======
 	rc = -ENOMEM;
 	adapter->buffer_list_addr = (void*) get_zeroed_page(GFP_KERNEL);
 	if (!adapter->buffer_list_addr) {
@@ -687,7 +551,6 @@ static int ibmveth_open(struct net_device *netdev)
 	if (!adapter->filter_list_addr) {
 		netdev_err(netdev, "unable to allocate filter pages\n");
 		goto out_free_buffer_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev = &adapter->vdev->dev;
@@ -695,28 +558,6 @@ static int ibmveth_open(struct net_device *netdev)
 	adapter->rx_queue.queue_len = sizeof(struct ibmveth_rx_q_entry) *
 						rxq_entries;
 	adapter->rx_queue.queue_addr =
-<<<<<<< HEAD
-	    dma_alloc_coherent(dev, adapter->rx_queue.queue_len,
-			       &adapter->rx_queue.queue_dma, GFP_KERNEL);
-
-	if (!adapter->rx_queue.queue_addr) {
-		netdev_err(netdev, "unable to allocate rx queue pages\n");
-		rc = -ENOMEM;
-		goto err_out;
-	}
-
-	adapter->buffer_list_dma = dma_map_single(dev,
-			adapter->buffer_list_addr, 4096, DMA_BIDIRECTIONAL);
-	adapter->filter_list_dma = dma_map_single(dev,
-			adapter->filter_list_addr, 4096, DMA_BIDIRECTIONAL);
-
-	if ((dma_mapping_error(dev, adapter->buffer_list_dma)) ||
-	    (dma_mapping_error(dev, adapter->filter_list_dma))) {
-		netdev_err(netdev, "unable to map filter or buffer list "
-			   "pages\n");
-		rc = -ENOMEM;
-		goto err_out;
-=======
 		dma_alloc_coherent(dev, adapter->rx_queue.queue_len,
 				   &adapter->rx_queue.queue_dma, GFP_KERNEL);
 	if (!adapter->rx_queue.queue_addr)
@@ -739,19 +580,13 @@ static int ibmveth_open(struct net_device *netdev)
 	for (i = 0; i < netdev->real_num_tx_queues; i++) {
 		if (ibmveth_allocate_tx_ltb(adapter, i))
 			goto out_free_tx_ltb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	adapter->rx_queue.index = 0;
 	adapter->rx_queue.num_slots = rxq_entries;
 	adapter->rx_queue.toggle = 1;
 
-<<<<<<< HEAD
-	memcpy(&mac_address, netdev->dev_addr, netdev->addr_len);
-	mac_address = mac_address >> 16;
-=======
 	mac_address = ether_addr_to_u64(netdev->dev_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rxq_desc.fields.flags_len = IBMVETH_BUF_VALID |
 					adapter->rx_queue.queue_len;
@@ -775,11 +610,7 @@ static int ibmveth_open(struct net_device *netdev)
 				     rxq_desc.desc,
 				     mac_address);
 		rc = -ENONET;
-<<<<<<< HEAD
-		goto err_out;
-=======
 		goto out_unmap_filter_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++) {
@@ -789,11 +620,7 @@ static int ibmveth_open(struct net_device *netdev)
 			netdev_err(netdev, "unable to alloc pool\n");
 			adapter->rx_buff_pool[i].active = 0;
 			rc = -ENOMEM;
-<<<<<<< HEAD
-			goto err_out;
-=======
 			goto out_free_buffer_pools;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -807,51 +634,20 @@ static int ibmveth_open(struct net_device *netdev)
 			lpar_rc = h_free_logical_lan(adapter->vdev->unit_address);
 		} while (H_IS_LONG_BUSY(lpar_rc) || (lpar_rc == H_BUSY));
 
-<<<<<<< HEAD
-		goto err_out;
-	}
-
-	adapter->bounce_buffer =
-	    kmalloc(netdev->mtu + IBMVETH_BUFF_OH, GFP_KERNEL);
-	if (!adapter->bounce_buffer) {
-		netdev_err(netdev, "unable to allocate bounce buffer\n");
-		rc = -ENOMEM;
-		goto err_out_free_irq;
-	}
-	adapter->bounce_buffer_dma =
-	    dma_map_single(&adapter->vdev->dev, adapter->bounce_buffer,
-			   netdev->mtu + IBMVETH_BUFF_OH, DMA_BIDIRECTIONAL);
-	if (dma_mapping_error(dev, adapter->bounce_buffer_dma)) {
-		netdev_err(netdev, "unable to map bounce buffer\n");
-		rc = -ENOMEM;
-		goto err_out_free_irq;
-	}
-=======
 		goto out_free_buffer_pools;
 	}
 
 	rc = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev_dbg(netdev, "initial replenish cycle\n");
 	ibmveth_interrupt(netdev->irq, netdev);
 
-<<<<<<< HEAD
-	netif_start_queue(netdev);
-=======
 	netif_tx_start_all_queues(netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev_dbg(netdev, "open complete\n");
 
 	return 0;
 
-<<<<<<< HEAD
-err_out_free_irq:
-	free_irq(netdev->irq, netdev);
-err_out:
-	ibmveth_cleanup(adapter);
-=======
 out_free_buffer_pools:
 	while (--i >= 0) {
 		if (adapter->rx_buff_pool[i].active)
@@ -879,7 +675,6 @@ out_free_filter_list:
 out_free_buffer_list:
 	free_page((unsigned long)adapter->buffer_list_addr);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	napi_disable(&adapter->napi);
 	return rc;
 }
@@ -887,24 +682,15 @@ out:
 static int ibmveth_close(struct net_device *netdev)
 {
 	struct ibmveth_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	long lpar_rc;
-=======
 	struct device *dev = &adapter->vdev->dev;
 	long lpar_rc;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev_dbg(netdev, "close starting\n");
 
 	napi_disable(&adapter->napi);
 
-<<<<<<< HEAD
-	if (!adapter->pool_config)
-		netif_stop_queue(netdev);
-=======
 	netif_tx_stop_all_queues(netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	h_vio_signal(adapter->vdev->unit_address, VIO_IRQ_DISABLE);
 
@@ -921,9 +707,6 @@ static int ibmveth_close(struct net_device *netdev)
 
 	ibmveth_update_rx_no_buffer(adapter);
 
-<<<<<<< HEAD
-	ibmveth_cleanup(adapter);
-=======
 	dma_unmap_single(dev, adapter->buffer_list_dma, 4096,
 			 DMA_BIDIRECTIONAL);
 	free_page((unsigned long)adapter->buffer_list_addr);
@@ -943,38 +726,12 @@ static int ibmveth_close(struct net_device *netdev)
 
 	for (i = 0; i < netdev->real_num_tx_queues; i++)
 		ibmveth_free_tx_ltb(adapter, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev_dbg(netdev, "close complete\n");
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int netdev_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	cmd->supported = (SUPPORTED_1000baseT_Full | SUPPORTED_Autoneg |
-				SUPPORTED_FIBRE);
-	cmd->advertising = (ADVERTISED_1000baseT_Full | ADVERTISED_Autoneg |
-				ADVERTISED_FIBRE);
-	ethtool_cmd_speed_set(cmd, SPEED_1000);
-	cmd->duplex = DUPLEX_FULL;
-	cmd->port = PORT_FIBRE;
-	cmd->phy_address = 0;
-	cmd->transceiver = XCVR_INTERNAL;
-	cmd->autoneg = AUTONEG_ENABLE;
-	cmd->maxtxpkt = 0;
-	cmd->maxrxpkt = 1;
-	return 0;
-}
-
-static void netdev_get_drvinfo(struct net_device *dev,
-			       struct ethtool_drvinfo *info)
-{
-	strncpy(info->driver, ibmveth_driver_name, sizeof(info->driver) - 1);
-	strncpy(info->version, ibmveth_driver_version,
-		sizeof(info->version) - 1);
-=======
 static int ibmveth_set_link_ksettings(struct net_device *dev,
 				      const struct ethtool_link_ksettings *cmd)
 {
@@ -1010,7 +767,6 @@ static void netdev_get_drvinfo(struct net_device *dev,
 {
 	strscpy(info->driver, ibmveth_driver_name, sizeof(info->driver));
 	strscpy(info->version, ibmveth_driver_version, sizeof(info->version));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static netdev_features_t ibmveth_fix_features(struct net_device *dev,
@@ -1026,11 +782,7 @@ static netdev_features_t ibmveth_fix_features(struct net_device *dev,
 	 */
 
 	if (!(features & NETIF_F_RXCSUM))
-<<<<<<< HEAD
-		features &= ~NETIF_F_ALL_CSUM;
-=======
 		features &= ~NETIF_F_CSUM_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return features;
 }
@@ -1046,13 +798,7 @@ static int ibmveth_set_csum_offload(struct net_device *dev, u32 data)
 
 	if (netif_running(dev)) {
 		restart = 1;
-<<<<<<< HEAD
-		adapter->pool_config = 1;
 		ibmveth_close(dev);
-		adapter->pool_config = 0;
-=======
-		ibmveth_close(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	set_attr = 0;
@@ -1070,12 +816,7 @@ static int ibmveth_set_csum_offload(struct net_device *dev, u32 data)
 
 	ret = h_illan_attributes(adapter->vdev->unit_address, 0, 0, &ret_attr);
 
-<<<<<<< HEAD
-	if (ret == H_SUCCESS && !(ret_attr & IBMVETH_ILLAN_ACTIVE_TRUNK) &&
-	    !(ret_attr & IBMVETH_ILLAN_TRUNK_PRI_MASK) &&
-=======
 	if (ret == H_SUCCESS &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (ret_attr & IBMVETH_ILLAN_PADDED_PKT_CSUM)) {
 		ret4 = h_illan_attributes(adapter->vdev->unit_address, clr_attr,
 					 set_attr, &ret_attr);
@@ -1129,8 +870,6 @@ static int ibmveth_set_csum_offload(struct net_device *dev, u32 data)
 	return rc1 ? rc1 : rc2;
 }
 
-<<<<<<< HEAD
-=======
 static int ibmveth_set_tso(struct net_device *dev, u32 data)
 {
 	struct ibmveth_adapter *adapter = netdev_priv(dev);
@@ -1191,24 +930,11 @@ static int ibmveth_set_tso(struct net_device *dev, u32 data)
 	return rc1 ? rc1 : rc2;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ibmveth_set_features(struct net_device *dev,
 	netdev_features_t features)
 {
 	struct ibmveth_adapter *adapter = netdev_priv(dev);
 	int rx_csum = !!(features & NETIF_F_RXCSUM);
-<<<<<<< HEAD
-	int rc;
-
-	if (rx_csum == adapter->rx_csum)
-		return 0;
-
-	rc = ibmveth_set_csum_offload(dev, rx_csum);
-	if (rc && !adapter->rx_csum)
-		dev->features = features & ~(NETIF_F_ALL_CSUM | NETIF_F_RXCSUM);
-
-	return rc;
-=======
 	int large_send = !!(features & (NETIF_F_TSO | NETIF_F_TSO6));
 	int rc1 = 0, rc2 = 0;
 
@@ -1228,7 +954,6 @@ static int ibmveth_set_features(struct net_device *dev,
 	}
 
 	return rc1 ? rc1 : rc2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ibmveth_get_strings(struct net_device *dev, u32 stringset, u8 *data)
@@ -1262,15 +987,6 @@ static void ibmveth_get_ethtool_stats(struct net_device *dev,
 		data[i] = IBMVETH_GET_STAT(adapter, ibmveth_stats[i].offset);
 }
 
-<<<<<<< HEAD
-static const struct ethtool_ops netdev_ethtool_ops = {
-	.get_drvinfo		= netdev_get_drvinfo,
-	.get_settings		= netdev_get_settings,
-	.get_link		= ethtool_op_get_link,
-	.get_strings		= ibmveth_get_strings,
-	.get_sset_count		= ibmveth_get_sset_count,
-	.get_ethtool_stats	= ibmveth_get_ethtool_stats,
-=======
 static void ibmveth_get_channels(struct net_device *netdev,
 				 struct ethtool_channels *channels)
 {
@@ -1344,7 +1060,6 @@ static const struct ethtool_ops netdev_ethtool_ops = {
 	.set_link_ksettings              = ibmveth_set_link_ksettings,
 	.get_channels			 = ibmveth_get_channels,
 	.set_channels			 = ibmveth_set_channels
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int ibmveth_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
@@ -1352,15 +1067,8 @@ static int ibmveth_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	return -EOPNOTSUPP;
 }
 
-<<<<<<< HEAD
-#define page_offset(v) ((unsigned long)(v) & ((1 << 12) - 1))
-
-static int ibmveth_send(struct ibmveth_adapter *adapter,
-			union ibmveth_buf_desc *descs)
-=======
 static int ibmveth_send(struct ibmveth_adapter *adapter,
 			unsigned long desc, unsigned long mss)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long correlator;
 	unsigned int retry_count;
@@ -1373,17 +1081,9 @@ static int ibmveth_send(struct ibmveth_adapter *adapter,
 	retry_count = 1024;
 	correlator = 0;
 	do {
-<<<<<<< HEAD
-		ret = h_send_logical_lan(adapter->vdev->unit_address,
-					     descs[0].desc, descs[1].desc,
-					     descs[2].desc, descs[3].desc,
-					     descs[4].desc, descs[5].desc,
-					     correlator, &correlator);
-=======
 		ret = h_send_logical_lan(adapter->vdev->unit_address, desc,
 					 correlator, &correlator, mss,
 					 adapter->fw_large_send_support);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while ((ret == H_BUSY) && (retry_count--));
 
 	if (ret != H_SUCCESS && ret != H_DROPPED) {
@@ -1395,8 +1095,6 @@ static int ibmveth_send(struct ibmveth_adapter *adapter,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int ibmveth_is_packet_unsupported(struct sk_buff *skb,
 					 struct net_device *netdev)
 {
@@ -1414,28 +1112,10 @@ static int ibmveth_is_packet_unsupported(struct sk_buff *skb,
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
 				      struct net_device *netdev)
 {
 	struct ibmveth_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	unsigned int desc_flags;
-	union ibmveth_buf_desc descs[6];
-	int last, i;
-	int force_bounce = 0;
-	dma_addr_t dma_addr;
-
-	/*
-	 * veth handles a maximum of 6 segments including the header, so
-	 * we have to linearize the skb if there are more than this.
-	 */
-	if (skb_shinfo(skb)->nr_frags > 5 && __skb_linearize(skb)) {
-		netdev->stats.tx_dropped++;
-		goto out;
-	}
-
-=======
 	unsigned int desc_flags, total_bytes;
 	union ibmveth_buf_desc desc;
 	int i, queue_num = skb_get_queue_mapping(skb);
@@ -1443,7 +1123,6 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
 
 	if (ibmveth_is_packet_unsupported(skb, netdev))
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* veth can't checksum offload UDP */
 	if (skb->ip_summed == CHECKSUM_PARTIAL &&
 	    ((skb->protocol == htons(ETH_P_IP) &&
@@ -1468,61 +1147,6 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
 		/* Need to zero out the checksum */
 		buf[0] = 0;
 		buf[1] = 0;
-<<<<<<< HEAD
-	}
-
-retry_bounce:
-	memset(descs, 0, sizeof(descs));
-
-	/*
-	 * If a linear packet is below the rx threshold then
-	 * copy it into the static bounce buffer. This avoids the
-	 * cost of a TCE insert and remove.
-	 */
-	if (force_bounce || (!skb_is_nonlinear(skb) &&
-				(skb->len < tx_copybreak))) {
-		skb_copy_from_linear_data(skb, adapter->bounce_buffer,
-					  skb->len);
-
-		descs[0].fields.flags_len = desc_flags | skb->len;
-		descs[0].fields.address = adapter->bounce_buffer_dma;
-
-		if (ibmveth_send(adapter, descs)) {
-			adapter->tx_send_failed++;
-			netdev->stats.tx_dropped++;
-		} else {
-			netdev->stats.tx_packets++;
-			netdev->stats.tx_bytes += skb->len;
-		}
-
-		goto out;
-	}
-
-	/* Map the header */
-	dma_addr = dma_map_single(&adapter->vdev->dev, skb->data,
-				  skb_headlen(skb), DMA_TO_DEVICE);
-	if (dma_mapping_error(&adapter->vdev->dev, dma_addr))
-		goto map_failed;
-
-	descs[0].fields.flags_len = desc_flags | skb_headlen(skb);
-	descs[0].fields.address = dma_addr;
-
-	/* Map the frags */
-	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
-		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
-
-		dma_addr = skb_frag_dma_map(&adapter->vdev->dev, frag, 0,
-					    skb_frag_size(frag), DMA_TO_DEVICE);
-
-		if (dma_mapping_error(&adapter->vdev->dev, dma_addr))
-			goto map_failed_frags;
-
-		descs[i+1].fields.flags_len = desc_flags | skb_frag_size(frag);
-		descs[i+1].fields.address = dma_addr;
-	}
-
-	if (ibmveth_send(adapter, descs)) {
-=======
 
 		if (skb_is_gso(skb) && adapter->fw_large_send_support)
 			desc_flags |= IBMVETH_BUF_LRG_SND;
@@ -1574,7 +1198,6 @@ retry_bounce:
 	dma_wmb();
 
 	if (ibmveth_send(adapter, desc.desc, mss)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adapter->tx_send_failed++;
 		netdev->stats.tx_dropped++;
 	} else {
@@ -1582,36 +1205,6 @@ retry_bounce:
 		netdev->stats.tx_bytes += skb->len;
 	}
 
-<<<<<<< HEAD
-	dma_unmap_single(&adapter->vdev->dev,
-			 descs[0].fields.address,
-			 descs[0].fields.flags_len & IBMVETH_BUF_LEN_MASK,
-			 DMA_TO_DEVICE);
-
-	for (i = 1; i < skb_shinfo(skb)->nr_frags + 1; i++)
-		dma_unmap_page(&adapter->vdev->dev, descs[i].fields.address,
-			       descs[i].fields.flags_len & IBMVETH_BUF_LEN_MASK,
-			       DMA_TO_DEVICE);
-
-out:
-	dev_kfree_skb(skb);
-	return NETDEV_TX_OK;
-
-map_failed_frags:
-	last = i+1;
-	for (i = 0; i < last; i++)
-		dma_unmap_page(&adapter->vdev->dev, descs[i].fields.address,
-			       descs[i].fields.flags_len & IBMVETH_BUF_LEN_MASK,
-			       DMA_TO_DEVICE);
-
-map_failed:
-	if (!firmware_has_feature(FW_FEATURE_CMO))
-		netdev_err(netdev, "tx: unable to map xmit buffer\n");
-	adapter->tx_map_failed++;
-	skb_linearize(skb);
-	force_bounce = 1;
-	goto retry_bounce;
-=======
 out:
 	dev_consume_skb_any(skb);
 	return NETDEV_TX_OK;
@@ -1733,7 +1326,6 @@ static void ibmveth_rx_csum_helper(struct sk_buff *skb,
 			skb_reset_network_header(skb);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ibmveth_poll(struct napi_struct *napi, int budget)
@@ -1743,15 +1335,9 @@ static int ibmveth_poll(struct napi_struct *napi, int budget)
 	struct net_device *netdev = adapter->netdev;
 	int frames_processed = 0;
 	unsigned long lpar_rc;
-<<<<<<< HEAD
-
-restart_poll:
-	do {
-=======
 	u16 mss = 0;
 
 	while (frames_processed < budget) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ibmveth_rxq_pending_buffer(adapter))
 			break;
 
@@ -1766,11 +1352,6 @@ restart_poll:
 			int length = ibmveth_rxq_frame_length(adapter);
 			int offset = ibmveth_rxq_frame_offset(adapter);
 			int csum_good = ibmveth_rxq_csum_good(adapter);
-<<<<<<< HEAD
-
-			skb = ibmveth_rxq_get_buffer(adapter);
-
-=======
 			int lrg_pkt = ibmveth_rxq_large_packet(adapter);
 			__sum16 iph_check = 0;
 
@@ -1787,7 +1368,6 @@ restart_poll:
 				mss = (u16)be64_to_cpu(*rxmss);
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			new_skb = NULL;
 			if (length < rx_copybreak)
 				new_skb = netdev_alloc_skb(netdev, length);
@@ -1810,12 +1390,6 @@ restart_poll:
 			skb_put(skb, length);
 			skb->protocol = eth_type_trans(skb, netdev);
 
-<<<<<<< HEAD
-			if (csum_good)
-				skb->ip_summed = CHECKSUM_UNNECESSARY;
-
-			netif_receive_skb(skb);	/* send it up */
-=======
 			/* PHYP without PLSO support places a -1 in the ip
 			 * checksum for large send frames.
 			 */
@@ -1837,26 +1411,18 @@ restart_poll:
 			}
 
 			napi_gro_receive(napi, skb);	/* send it up */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			netdev->stats.rx_packets++;
 			netdev->stats.rx_bytes += length;
 			frames_processed++;
 		}
-<<<<<<< HEAD
-	} while (frames_processed < budget);
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ibmveth_replenish_task(adapter);
 
 	if (frames_processed < budget) {
-<<<<<<< HEAD
-=======
 		napi_complete_done(napi, frames_processed);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* We think we are done - reenable interrupts,
 		 * then check once more to make sure we are done.
 		 */
@@ -1865,20 +1431,10 @@ restart_poll:
 
 		BUG_ON(lpar_rc != H_SUCCESS);
 
-<<<<<<< HEAD
-		napi_complete(napi);
-
-		if (ibmveth_rxq_pending_buffer(adapter) &&
-		    napi_reschedule(napi)) {
-			lpar_rc = h_vio_signal(adapter->vdev->unit_address,
-					       VIO_IRQ_DISABLE);
-			goto restart_poll;
-=======
 		if (ibmveth_rxq_pending_buffer(adapter) &&
 		    napi_schedule(napi)) {
 			lpar_rc = h_vio_signal(adapter->vdev->unit_address,
 					       VIO_IRQ_DISABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1931,13 +1487,8 @@ static void ibmveth_set_multicast_list(struct net_device *netdev)
 		/* add the addresses to the filter table */
 		netdev_for_each_mc_addr(ha, netdev) {
 			/* add the multicast address to the filter table */
-<<<<<<< HEAD
-			unsigned long mcast_addr = 0;
-			memcpy(((char *)&mcast_addr)+2, ha->addr, 6);
-=======
 			u64 mcast_addr;
 			mcast_addr = ether_addr_to_u64(ha->addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lpar_rc = h_multicast_ctrl(adapter->vdev->unit_address,
 						   IbmVethMcastAddFilter,
 						   mcast_addr);
@@ -1967,16 +1518,8 @@ static int ibmveth_change_mtu(struct net_device *dev, int new_mtu)
 	int i, rc;
 	int need_restart = 0;
 
-<<<<<<< HEAD
-	if (new_mtu < IBMVETH_MIN_MTU)
-		return -EINVAL;
-
-	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++)
-		if (new_mtu_oh < adapter->rx_buff_pool[i].buff_size)
-=======
 	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++)
 		if (new_mtu_oh <= adapter->rx_buff_pool[i].buff_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 	if (i == IBMVETH_NUM_BUFF_POOLS)
@@ -1986,24 +1529,14 @@ static int ibmveth_change_mtu(struct net_device *dev, int new_mtu)
 	   only the buffer pools necessary to hold the new MTU */
 	if (netif_running(adapter->netdev)) {
 		need_restart = 1;
-<<<<<<< HEAD
-		adapter->pool_config = 1;
 		ibmveth_close(adapter->netdev);
-		adapter->pool_config = 0;
-=======
-		ibmveth_close(adapter->netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Look for an active buffer pool that can hold the new MTU */
 	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++) {
 		adapter->rx_buff_pool[i].active = 1;
 
-<<<<<<< HEAD
-		if (new_mtu_oh < adapter->rx_buff_pool[i].buff_size) {
-=======
 		if (new_mtu_oh <= adapter->rx_buff_pool[i].buff_size) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->mtu = new_mtu;
 			vio_cmo_set_dev_desired(viodev,
 						ibmveth_get_desired_dma
@@ -2041,36 +1574,23 @@ static unsigned long ibmveth_get_desired_dma(struct vio_dev *vdev)
 {
 	struct net_device *netdev = dev_get_drvdata(&vdev->dev);
 	struct ibmveth_adapter *adapter;
-<<<<<<< HEAD
-=======
 	struct iommu_table *tbl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long ret;
 	int i;
 	int rxqentries = 1;
 
-<<<<<<< HEAD
-	/* netdev inits at probe time along with the structures we need below*/
-	if (netdev == NULL)
-		return IOMMU_PAGE_ALIGN(IBMVETH_IO_ENTITLEMENT_DEFAULT);
-=======
 	tbl = get_iommu_table_base(&vdev->dev);
 
 	/* netdev inits at probe time along with the structures we need below*/
 	if (netdev == NULL)
 		return IOMMU_PAGE_ALIGN(IBMVETH_IO_ENTITLEMENT_DEFAULT, tbl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	adapter = netdev_priv(netdev);
 
 	ret = IBMVETH_BUFF_LIST_SIZE + IBMVETH_FILT_LIST_SIZE;
-<<<<<<< HEAD
-	ret += IOMMU_PAGE_ALIGN(netdev->mtu);
-=======
 	ret += IOMMU_PAGE_ALIGN(netdev->mtu, tbl);
 	/* add size of mapped tx buffers */
 	ret += IOMMU_PAGE_ALIGN(IBMVETH_MAX_TX_BUF_SIZE, tbl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++) {
 		/* add the size of the active receive buffers */
@@ -2078,26 +1598,16 @@ static unsigned long ibmveth_get_desired_dma(struct vio_dev *vdev)
 			ret +=
 			    adapter->rx_buff_pool[i].size *
 			    IOMMU_PAGE_ALIGN(adapter->rx_buff_pool[i].
-<<<<<<< HEAD
-			            buff_size);
-		rxqentries += adapter->rx_buff_pool[i].size;
-	}
-	/* add the size of the receive queue entries */
-	ret += IOMMU_PAGE_ALIGN(rxqentries * sizeof(struct ibmveth_rx_q_entry));
-=======
 					     buff_size, tbl);
 		rxqentries += adapter->rx_buff_pool[i].size;
 	}
 	/* add the size of the receive queue entries */
 	ret += IOMMU_PAGE_ALIGN(
 		rxqentries * sizeof(struct ibmveth_rx_q_entry), tbl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int ibmveth_set_mac_addr(struct net_device *dev, void *p)
 {
 	struct ibmveth_adapter *adapter = netdev_priv(dev);
@@ -2120,49 +1630,31 @@ static int ibmveth_set_mac_addr(struct net_device *dev, void *p)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops ibmveth_netdev_ops = {
 	.ndo_open		= ibmveth_open,
 	.ndo_stop		= ibmveth_close,
 	.ndo_start_xmit		= ibmveth_start_xmit,
 	.ndo_set_rx_mode	= ibmveth_set_multicast_list,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= ibmveth_ioctl,
-=======
 	.ndo_eth_ioctl		= ibmveth_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_change_mtu		= ibmveth_change_mtu,
 	.ndo_fix_features	= ibmveth_fix_features,
 	.ndo_set_features	= ibmveth_set_features,
 	.ndo_validate_addr	= eth_validate_addr,
-<<<<<<< HEAD
-	.ndo_set_mac_address	= eth_mac_addr,
-=======
 	.ndo_set_mac_address    = ibmveth_set_mac_addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= ibmveth_poll_controller,
 #endif
 };
 
-<<<<<<< HEAD
-static int __devinit ibmveth_probe(struct vio_dev *dev,
-				   const struct vio_device_id *id)
-=======
 static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc, i, mac_len;
 	struct net_device *netdev;
 	struct ibmveth_adapter *adapter;
 	unsigned char *mac_addr_p;
-<<<<<<< HEAD
-	unsigned int *mcastFilterSize_p;
-=======
 	__be32 *mcastFilterSize_p;
 	long ret;
 	unsigned long ret_attr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&dev->dev, "entering ibmveth_probe for UA 0x%x\n",
 		dev->unit_address);
@@ -2182,26 +1674,16 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	mcastFilterSize_p = (unsigned int *)vio_get_attribute(dev,
-						VETH_MCAST_FILTER_SIZE, NULL);
-=======
 	mcastFilterSize_p = (__be32 *)vio_get_attribute(dev,
 							VETH_MCAST_FILTER_SIZE,
 							NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mcastFilterSize_p) {
 		dev_err(&dev->dev, "Can't find VETH_MCAST_FILTER_SIZE "
 			"attribute\n");
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	netdev = alloc_etherdev(sizeof(struct ibmveth_adapter));
-
-=======
 	netdev = alloc_etherdev_mqs(sizeof(struct ibmveth_adapter), IBMVETH_MAX_QUEUES, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!netdev)
 		return -ENOMEM;
 
@@ -2210,32 +1692,15 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
 
 	adapter->vdev = dev;
 	adapter->netdev = netdev;
-<<<<<<< HEAD
-	adapter->mcastFilterSize = *mcastFilterSize_p;
-	adapter->pool_config = 0;
-
-	netif_napi_add(netdev, &adapter->napi, ibmveth_poll, 16);
-
-	adapter->mac_addr = 0;
-	memcpy(&adapter->mac_addr, mac_addr_p, 6);
-=======
 	adapter->mcastFilterSize = be32_to_cpu(*mcastFilterSize_p);
 	ibmveth_init_link_settings(netdev);
 
 	netif_napi_add_weight(netdev, &adapter->napi, ibmveth_poll, 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev->irq = dev->irq;
 	netdev->netdev_ops = &ibmveth_netdev_ops;
 	netdev->ethtool_ops = &netdev_ethtool_ops;
 	SET_NETDEV_DEV(netdev, &dev->dev);
-<<<<<<< HEAD
-	netdev->hw_features = NETIF_F_SG | NETIF_F_RXCSUM |
-		NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
-	netdev->features |= netdev->hw_features;
-
-	memcpy(netdev->dev_addr, &adapter->mac_addr, netdev->addr_len);
-=======
 	netdev->hw_features = NETIF_F_SG;
 	if (vio_get_attribute(dev, "ibm,illan-options", NULL) != NULL) {
 		netdev->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
@@ -2269,7 +1734,6 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
 
 	if (firmware_has_feature(FW_FEATURE_CMO))
 		memcpy(pool_count, pool_count_cmo, sizeof(pool_count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++) {
 		struct kobject *kobj = &adapter->rx_buff_pool[i].kobj;
@@ -2284,14 +1748,6 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
 			kobject_uevent(kobj, KOBJ_ADD);
 	}
 
-<<<<<<< HEAD
-	netdev_dbg(netdev, "adapter @ 0x%p\n", adapter);
-
-	adapter->buffer_list_dma = DMA_ERROR_CODE;
-	adapter->filter_list_dma = DMA_ERROR_CODE;
-	adapter->rx_queue.queue_dma = DMA_ERROR_CODE;
-
-=======
 	rc = netif_set_real_num_tx_queues(netdev, min(num_online_cpus(),
 						      IBMVETH_DEFAULT_QUEUES));
 	if (rc) {
@@ -2305,7 +1761,6 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
 		adapter->tx_ltb_ptr[i] = NULL;
 
 	netdev_dbg(netdev, "adapter @ 0x%p\n", adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netdev_dbg(netdev, "registering netdev...\n");
 
 	ibmveth_set_features(netdev, netdev->features);
@@ -2323,11 +1778,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit ibmveth_remove(struct vio_dev *dev)
-=======
 static void ibmveth_remove(struct vio_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = dev_get_drvdata(&dev->dev);
 	struct ibmveth_adapter *adapter = netdev_priv(netdev);
@@ -2340,11 +1791,6 @@ static void ibmveth_remove(struct vio_dev *dev)
 
 	free_netdev(netdev);
 	dev_set_drvdata(&dev->dev, NULL);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct attribute veth_active_attr;
@@ -2373,12 +1819,7 @@ static ssize_t veth_pool_store(struct kobject *kobj, struct attribute *attr,
 	struct ibmveth_buff_pool *pool = container_of(kobj,
 						      struct ibmveth_buff_pool,
 						      kobj);
-<<<<<<< HEAD
-	struct net_device *netdev = dev_get_drvdata(
-	    container_of(kobj->parent, struct device, kobj));
-=======
 	struct net_device *netdev = dev_get_drvdata(kobj_to_dev(kobj->parent));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ibmveth_adapter *adapter = netdev_priv(netdev);
 	long value = simple_strtol(buf, NULL, 10);
 	long rc;
@@ -2392,13 +1833,7 @@ static ssize_t veth_pool_store(struct kobject *kobj, struct attribute *attr,
 					return -ENOMEM;
 				}
 				pool->active = 1;
-<<<<<<< HEAD
-				adapter->pool_config = 1;
 				ibmveth_close(netdev);
-				adapter->pool_config = 0;
-=======
-				ibmveth_close(netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if ((rc = ibmveth_open(netdev)))
 					return rc;
 			} else {
@@ -2424,15 +1859,8 @@ static ssize_t veth_pool_store(struct kobject *kobj, struct attribute *attr,
 			}
 
 			if (netif_running(netdev)) {
-<<<<<<< HEAD
-				adapter->pool_config = 1;
 				ibmveth_close(netdev);
 				pool->active = 0;
-				adapter->pool_config = 0;
-=======
-				ibmveth_close(netdev);
-				pool->active = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if ((rc = ibmveth_open(netdev)))
 					return rc;
 			}
@@ -2443,13 +1871,7 @@ static ssize_t veth_pool_store(struct kobject *kobj, struct attribute *attr,
 			return -EINVAL;
 		} else {
 			if (netif_running(netdev)) {
-<<<<<<< HEAD
-				adapter->pool_config = 1;
 				ibmveth_close(netdev);
-				adapter->pool_config = 0;
-=======
-				ibmveth_close(netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pool->size = value;
 				if ((rc = ibmveth_open(netdev)))
 					return rc;
@@ -2462,13 +1884,7 @@ static ssize_t veth_pool_store(struct kobject *kobj, struct attribute *attr,
 			return -EINVAL;
 		} else {
 			if (netif_running(netdev)) {
-<<<<<<< HEAD
-				adapter->pool_config = 1;
 				ibmveth_close(netdev);
-				adapter->pool_config = 0;
-=======
-				ibmveth_close(netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pool->buff_size = value;
 				if ((rc = ibmveth_open(netdev)))
 					return rc;
@@ -2499,10 +1915,7 @@ static struct attribute *veth_pool_attrs[] = {
 	&veth_size_attr,
 	NULL,
 };
-<<<<<<< HEAD
-=======
 ATTRIBUTE_GROUPS(veth_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct sysfs_ops veth_pool_ops = {
 	.show   = veth_pool_show,
@@ -2512,11 +1925,7 @@ static const struct sysfs_ops veth_pool_ops = {
 static struct kobj_type ktype_veth_pool = {
 	.release        = NULL,
 	.sysfs_ops      = &veth_pool_ops,
-<<<<<<< HEAD
-	.default_attrs  = veth_pool_attrs,
-=======
 	.default_groups = veth_pool_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int ibmveth_resume(struct device *dev)
@@ -2526,21 +1935,13 @@ static int ibmveth_resume(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct vio_device_id ibmveth_device_table[] __devinitdata = {
-=======
 static const struct vio_device_id ibmveth_device_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "network", "IBM,l-lan"},
 	{ "", "" }
 };
 MODULE_DEVICE_TABLE(vio, ibmveth_device_table);
 
-<<<<<<< HEAD
-static struct dev_pm_ops ibmveth_pm_ops = {
-=======
 static const struct dev_pm_ops ibmveth_pm_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.resume = ibmveth_resume
 };
 

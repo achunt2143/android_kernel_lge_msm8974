@@ -5,12 +5,8 @@
  *
  * SGI UV architectural definitions
  *
-<<<<<<< HEAD
- * Copyright (C) 2007-2010 Silicon Graphics, Inc. All rights reserved.
-=======
  * (C) Copyright 2020 Hewlett Packard Enterprise Development LP
  * Copyright (C) 2007-2014 Silicon Graphics, Inc. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_X86_UV_UV_HUB_H
@@ -21,18 +17,12 @@
 #include <linux/percpu.h>
 #include <linux/timer.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-#include <asm/types.h>
-#include <asm/percpu.h>
-#include <asm/uv/uv_mmrs.h>
-=======
 #include <linux/topology.h>
 #include <asm/types.h>
 #include <asm/percpu.h>
 #include <asm/uv/uv.h>
 #include <asm/uv/uv_mmrs.h>
 #include <asm/uv/bios.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq_vectors.h>
 #include <asm/io_apic.h>
 
@@ -117,10 +107,6 @@
  *	      processor APICID register.
  */
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Maximum number of bricks in all partitions and in all coherency domains.
  * This is the total number of bricks accessible in the numalink fabric. It
@@ -144,43 +130,16 @@
  */
 #define UV_MAX_NASID_VALUE	(UV_MAX_NUMALINK_BLADES * 2)
 
-<<<<<<< HEAD
-struct uv_scir_s {
-	struct timer_list timer;
-	unsigned long	offset;
-	unsigned long	last;
-	unsigned long	idle_on;
-	unsigned long	idle_off;
-	unsigned char	state;
-	unsigned char	enabled;
-=======
 /* GAM (globally addressed memory) range table */
 struct uv_gam_range_s {
 	u32	limit;		/* PA bits 56:26 (GAM_RANGE_SHFT) */
 	u16	nasid;		/* node's global physical address */
 	s8	base;		/* entry index of node's base addr */
 	u8	reserved;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * The following defines attributes of the HUB chip. These attributes are
-<<<<<<< HEAD
- * frequently referenced and are kept in the per-cpu data areas of each cpu.
- * They are kept together in a struct to minimize cache misses.
- */
-struct uv_hub_info_s {
-	unsigned long		global_mmr_base;
-	unsigned long		gpa_mask;
-	unsigned int		gnode_extra;
-	unsigned char		hub_revision;
-	unsigned char		apic_pnode_shift;
-	unsigned char		m_shift;
-	unsigned char		n_lshift;
-	unsigned long		gnode_upper;
-	unsigned long		lowmem_remap_top;
-	unsigned long		lowmem_remap_base;
-=======
  * frequently referenced and are kept in a common per hub struct.
  * After setup, the struct is read only, so it should be readily
  * available in the L3 cache on the cpu socket for the node.
@@ -211,51 +170,10 @@ struct uv_hub_info_s {
 	unsigned long		lowmem_remap_base;
 	unsigned long		global_gru_base;
 	unsigned long		global_gru_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short		pnode;
 	unsigned short		pnode_mask;
 	unsigned short		coherency_domain_number;
 	unsigned short		numa_blade_id;
-<<<<<<< HEAD
-	unsigned char		blade_processor_id;
-	unsigned char		m_val;
-	unsigned char		n_val;
-	struct uv_scir_s	scir;
-};
-
-DECLARE_PER_CPU(struct uv_hub_info_s, __uv_hub_info);
-#define uv_hub_info		(&__get_cpu_var(__uv_hub_info))
-#define uv_cpu_hub_info(cpu)	(&per_cpu(__uv_hub_info, cpu))
-
-/*
- * Hub revisions less than UV2_HUB_REVISION_BASE are UV1 hubs. All UV2
- * hubs have revision numbers greater than or equal to UV2_HUB_REVISION_BASE.
- * This is a software convention - NOT the hardware revision numbers in
- * the hub chip.
- */
-#define UV1_HUB_REVISION_BASE		1
-#define UV2_HUB_REVISION_BASE		3
-
-static inline int is_uv1_hub(void)
-{
-	return uv_hub_info->hub_revision < UV2_HUB_REVISION_BASE;
-}
-
-static inline int is_uv2_hub(void)
-{
-	return uv_hub_info->hub_revision >= UV2_HUB_REVISION_BASE;
-}
-
-static inline int is_uv2_1_hub(void)
-{
-	return uv_hub_info->hub_revision == UV2_HUB_REVISION_BASE;
-}
-
-static inline int is_uv2_2_hub(void)
-{
-	return uv_hub_info->hub_revision == UV2_HUB_REVISION_BASE + 1;
-}
-=======
 	unsigned short		nr_possible_cpus;
 	unsigned short		nr_online_cpus;
 	short			memory_nid;
@@ -336,7 +254,6 @@ static inline int is_uvy_hub(void) { return is_uv(UVY); }
 
 /* Any UV Hubbed System */
 static inline int is_uv_hub(void) { return is_uv(UV_ANY); }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 union uvh_apicid {
     unsigned long       v;
@@ -358,38 +275,17 @@ union uvh_apicid {
  *		g -  GNODE (full 15-bit global nasid, right shifted 1)
  *		p -  PNODE (local part of nsids, right shifted 1)
  */
-<<<<<<< HEAD
-#define UV_NASID_TO_PNODE(n)		(((n) >> 1) & uv_hub_info->pnode_mask)
-#define UV_PNODE_TO_GNODE(p)		((p) |uv_hub_info->gnode_extra)
-#define UV_PNODE_TO_NASID(p)		(UV_PNODE_TO_GNODE(p) << 1)
-
-#define UV1_LOCAL_MMR_BASE		0xf4000000UL
-#define UV1_GLOBAL_MMR32_BASE		0xf8000000UL
-#define UV1_LOCAL_MMR_SIZE		(64UL * 1024 * 1024)
-#define UV1_GLOBAL_MMR32_SIZE		(64UL * 1024 * 1024)
-=======
 #define UV_NASID_TO_PNODE(n)		\
 		(((n) >> uv_hub_info->nasid_shift) & uv_hub_info->pnode_mask)
 #define UV_PNODE_TO_GNODE(p)		((p) |uv_hub_info->gnode_extra)
 #define UV_PNODE_TO_NASID(p)		\
 		(UV_PNODE_TO_GNODE(p) << uv_hub_info->nasid_shift)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define UV2_LOCAL_MMR_BASE		0xfa000000UL
 #define UV2_GLOBAL_MMR32_BASE		0xfc000000UL
 #define UV2_LOCAL_MMR_SIZE		(32UL * 1024 * 1024)
 #define UV2_GLOBAL_MMR32_SIZE		(32UL * 1024 * 1024)
 
-<<<<<<< HEAD
-#define UV_LOCAL_MMR_BASE		(is_uv1_hub() ? UV1_LOCAL_MMR_BASE     \
-						: UV2_LOCAL_MMR_BASE)
-#define UV_GLOBAL_MMR32_BASE		(is_uv1_hub() ? UV1_GLOBAL_MMR32_BASE  \
-						: UV2_GLOBAL_MMR32_BASE)
-#define UV_LOCAL_MMR_SIZE		(is_uv1_hub() ? UV1_LOCAL_MMR_SIZE :   \
-						UV2_LOCAL_MMR_SIZE)
-#define UV_GLOBAL_MMR32_SIZE		(is_uv1_hub() ? UV1_GLOBAL_MMR32_SIZE :\
-						UV2_GLOBAL_MMR32_SIZE)
-=======
 #define UV3_LOCAL_MMR_BASE		0xfa000000UL
 #define UV3_GLOBAL_MMR32_BASE		0xfc000000UL
 #define UV3_LOCAL_MMR_SIZE		(32UL * 1024 * 1024)
@@ -433,18 +329,13 @@ union uvh_apicid {
 					is_uv(UV5) ? UV5_GLOBAL_MMR32_SIZE : \
 					0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define UV_GLOBAL_MMR64_BASE		(uv_hub_info->global_mmr_base)
 
 #define UV_GLOBAL_GRU_MMR_BASE		0x4000000
 
 #define UV_GLOBAL_MMR32_PNODE_SHIFT	15
-<<<<<<< HEAD
-#define UV_GLOBAL_MMR64_PNODE_SHIFT	26
-=======
 #define _UV_GLOBAL_MMR64_PNODE_SHIFT	26
 #define UV_GLOBAL_MMR64_PNODE_SHIFT	(uv_hub_info->global_mmr_shift)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define UV_GLOBAL_MMR32_PNODE_BITS(p)	((p) << (UV_GLOBAL_MMR32_PNODE_SHIFT))
 
@@ -454,11 +345,6 @@ union uvh_apicid {
 #define UVH_APICID		0x002D0E00L
 #define UV_APIC_PNODE_SHIFT	6
 
-<<<<<<< HEAD
-#define UV_APICID_HIBIT_MASK	0xffff0000
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Local Bus from cpu's perspective */
 #define LOCAL_BUS_BASE		0x1c00000
 #define LOCAL_BUS_SIZE		(4 * 1024 * 1024)
@@ -468,11 +354,7 @@ union uvh_apicid {
  *
  * Note there are NO leds on a UV system.  This register is only
  * used by the system controller to monitor system-wide operation.
-<<<<<<< HEAD
- * There are 64 regs per node.  With Nahelem cpus (2 cores per node,
-=======
  * There are 64 regs per node.  With Nehalem cpus (2 cores per node,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 8 cpus per core, 2 threads per cpu) there are 32 cpu threads on
  * a node.
  *
@@ -498,20 +380,6 @@ union uvh_apicid {
  *	      between socket virtual and socket physical addresses.
  */
 
-<<<<<<< HEAD
-/* socket phys RAM --> UV global physical address */
-static inline unsigned long uv_soc_phys_ram_to_gpa(unsigned long paddr)
-{
-	if (paddr < uv_hub_info->lowmem_remap_top)
-		paddr |= uv_hub_info->lowmem_remap_base;
-	paddr |= uv_hub_info->gnode_upper;
-	paddr = ((paddr << uv_hub_info->m_shift) >> uv_hub_info->m_shift) |
-		((paddr >> uv_hub_info->m_val) << uv_hub_info->n_lshift);
-	return paddr;
-}
-
-
-=======
 /* global bits offset - number of local address bits in gpa for this UV arch */
 static inline unsigned int uv_gpa_shift(void)
 {
@@ -582,7 +450,6 @@ static inline unsigned long uv_soc_phys_ram_to_gpa(unsigned long paddr)
 	return paddr;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* socket virtual --> UV global physical address */
 static inline unsigned long uv_gpa(void *v)
 {
@@ -602,31 +469,18 @@ static inline unsigned long uv_gpa_to_soc_phys_ram(unsigned long gpa)
 	unsigned long paddr;
 	unsigned long remap_base = uv_hub_info->lowmem_remap_base;
 	unsigned long remap_top =  uv_hub_info->lowmem_remap_top;
-<<<<<<< HEAD
-
-	gpa = ((gpa << uv_hub_info->m_shift) >> uv_hub_info->m_shift) |
-		((gpa >> uv_hub_info->n_lshift) << uv_hub_info->m_val);
-=======
 	unsigned int m_val = uv_hub_info->m_val;
 
 	if (m_val)
 		gpa = ((gpa << uv_hub_info->m_shift) >> uv_hub_info->m_shift) |
 			((gpa >> uv_hub_info->n_lshift) << uv_hub_info->m_val);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	paddr = gpa & uv_hub_info->gpa_mask;
 	if (paddr >= remap_base && paddr < remap_base + remap_top)
 		paddr -= remap_base;
 	return paddr;
 }
 
-<<<<<<< HEAD
-
-/* gpa -> pnode */
-static inline unsigned long uv_gpa_to_gnode(unsigned long gpa)
-{
-	return gpa >> uv_hub_info->n_lshift;
-=======
 /* gpa -> gnode */
 static inline unsigned long uv_gpa_to_gnode(unsigned long gpa)
 {
@@ -636,23 +490,11 @@ static inline unsigned long uv_gpa_to_gnode(unsigned long gpa)
 		return gpa >> n_lshift;
 
 	return uv_gam_range(gpa)->nasid >> 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* gpa -> pnode */
 static inline int uv_gpa_to_pnode(unsigned long gpa)
 {
-<<<<<<< HEAD
-	unsigned long n_mask = (1UL << uv_hub_info->n_val) - 1;
-
-	return uv_gpa_to_gnode(gpa) & n_mask;
-}
-
-/* gpa -> node offset*/
-static inline unsigned long uv_gpa_to_offset(unsigned long gpa)
-{
-	return (gpa << uv_hub_info->m_shift) >> uv_hub_info->m_shift;
-=======
 	return uv_gpa_to_gnode(gpa) & uv_hub_info->pnode_mask;
 }
 
@@ -683,35 +525,11 @@ static inline int uv_pnode_to_socket(int pnode)
 	unsigned short *p2s = uv_hub_info->pnode_to_socket;
 
 	return p2s ? p2s[pnode - uv_hub_info->min_pnode] : pnode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* pnode, offset --> socket virtual */
 static inline void *uv_pnode_offset_to_vaddr(int pnode, unsigned long offset)
 {
-<<<<<<< HEAD
-	return __va(((unsigned long)pnode << uv_hub_info->m_val) | offset);
-}
-
-
-/*
- * Extract a PNODE from an APICID (full apicid, not processor subset)
- */
-static inline int uv_apicid_to_pnode(int apicid)
-{
-	return (apicid >> uv_hub_info->apic_pnode_shift);
-}
-
-/*
- * Convert an apicid to the socket number on the blade
- */
-static inline int uv_apicid_to_socket(int apicid)
-{
-	if (is_uv1_hub())
-		return (apicid >> (uv_hub_info->apic_pnode_shift - 1)) & 1;
-	else
-		return 0;
-=======
 	unsigned int m_val = uv_hub_info->m_val;
 	unsigned long base;
 	unsigned short sockid;
@@ -736,7 +554,6 @@ static inline int uv_apicid_to_pnode(int apicid)
 	unsigned short *s2pn = uv_hub_info->socket_to_pnode;
 
 	return s2pn ? s2pn[pnode - uv_hub_info->min_socket] : pnode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -779,19 +596,6 @@ static inline unsigned long uv_read_global_mmr64(int pnode, unsigned long offset
 	return readq(uv_global_mmr64_address(pnode, offset));
 }
 
-<<<<<<< HEAD
-/*
- * Global MMR space addresses when referenced by the GRU. (GRU does
- * NOT use socket addressing).
- */
-static inline unsigned long uv_global_gru_mmr_address(int pnode, unsigned long offset)
-{
-	return UV_GLOBAL_GRU_MMR_BASE | offset |
-		((unsigned long)pnode << uv_hub_info->m_val);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void uv_write_global_mmr8(int pnode, unsigned long offset, unsigned char val)
 {
 	writeb(val, uv_global_mmr64_address(pnode, offset));
@@ -831,32 +635,6 @@ static inline void uv_write_local_mmr8(unsigned long offset, unsigned char val)
 	writeb(val, uv_local_mmr_address(offset));
 }
 
-<<<<<<< HEAD
-/*
- * Structures and definitions for converting between cpu, node, pnode, and blade
- * numbers.
- */
-struct uv_blade_info {
-	unsigned short	nr_possible_cpus;
-	unsigned short	nr_online_cpus;
-	unsigned short	pnode;
-	short		memory_nid;
-	spinlock_t	nmi_lock;
-	unsigned long	nmi_count;
-};
-extern struct uv_blade_info *uv_blade_info;
-extern short *uv_node_to_blade;
-extern short *uv_cpu_to_blade;
-extern short uv_possible_blades;
-
-/* Blade-local cpu number of current cpu. Numbered 0 .. <# cpus on the blade> */
-static inline int uv_blade_processor_id(void)
-{
-	return uv_hub_info->blade_processor_id;
-}
-
-/* Blade number of current cpu. Numnbered 0 .. <#blades -1> */
-=======
 /* Blade-local cpu number of current cpu. Numbered 0 .. <# cpus on the blade> */
 static inline int uv_blade_processor_id(void)
 {
@@ -876,24 +654,11 @@ static inline int uv_blade_to_node(int blade)
 }
 
 /* Blade number of current cpu. Numbered 0 .. <#blades -1> */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int uv_numa_blade_id(void)
 {
 	return uv_hub_info->numa_blade_id;
 }
 
-<<<<<<< HEAD
-/* Convert a cpu number to the the UV blade number */
-static inline int uv_cpu_to_blade_id(int cpu)
-{
-	return uv_cpu_to_blade[cpu];
-}
-
-/* Convert linux node number to the UV blade number */
-static inline int uv_node_to_blade_id(int nid)
-{
-	return uv_node_to_blade[nid];
-=======
 /*
  * Convert linux node number to the UV blade number.
  * .. Currently for UV2 thru UV4 the node and the blade are identical.
@@ -910,133 +675,53 @@ static inline int uv_node_to_blade_id(int nid)
 static inline int uv_cpu_to_blade_id(int cpu)
 {
 	return uv_cpu_hub_info(cpu)->numa_blade_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Convert a blade id to the PNODE of the blade */
 static inline int uv_blade_to_pnode(int bid)
 {
-<<<<<<< HEAD
-	return uv_blade_info[bid].pnode;
-=======
 	unsigned short *s2p = uv_hub_info->socket_to_pnode;
 
 	return s2p ? s2p[bid] : bid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Nid of memory node on blade. -1 if no blade-local memory */
 static inline int uv_blade_to_memory_nid(int bid)
 {
-<<<<<<< HEAD
-	return uv_blade_info[bid].memory_nid;
-=======
 	return uv_hub_info_list(uv_blade_to_node(bid))->memory_nid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Determine the number of possible cpus on a blade */
 static inline int uv_blade_nr_possible_cpus(int bid)
 {
-<<<<<<< HEAD
-	return uv_blade_info[bid].nr_possible_cpus;
-=======
 	return uv_hub_info_list(uv_blade_to_node(bid))->nr_possible_cpus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Determine the number of online cpus on a blade */
 static inline int uv_blade_nr_online_cpus(int bid)
 {
-<<<<<<< HEAD
-	return uv_blade_info[bid].nr_online_cpus;
-=======
 	return uv_hub_info_list(uv_blade_to_node(bid))->nr_online_cpus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Convert a cpu id to the PNODE of the blade containing the cpu */
 static inline int uv_cpu_to_pnode(int cpu)
 {
-<<<<<<< HEAD
-	return uv_blade_info[uv_cpu_to_blade_id(cpu)].pnode;
-=======
 	return uv_cpu_hub_info(cpu)->pnode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Convert a linux node number to the PNODE of the blade */
 static inline int uv_node_to_pnode(int nid)
 {
-<<<<<<< HEAD
-	return uv_blade_info[uv_node_to_blade_id(nid)].pnode;
-}
-
-/* Maximum possible number of blades */
-=======
 	return uv_hub_info_list(nid)->pnode;
 }
 
 /* Maximum possible number of blades */
 extern short uv_possible_blades;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int uv_num_possible_blades(void)
 {
 	return uv_possible_blades;
 }
 
-<<<<<<< HEAD
-/* Update SCIR state */
-static inline void uv_set_scir_bits(unsigned char value)
-{
-	if (uv_hub_info->scir.state != value) {
-		uv_hub_info->scir.state = value;
-		uv_write_local_mmr8(uv_hub_info->scir.offset, value);
-	}
-}
-
-static inline unsigned long uv_scir_offset(int apicid)
-{
-	return SCIR_LOCAL_MMR_BASE | (apicid & 0x3f);
-}
-
-static inline void uv_set_cpu_scir_bits(int cpu, unsigned char value)
-{
-	if (uv_cpu_hub_info(cpu)->scir.state != value) {
-		uv_write_global_mmr8(uv_cpu_to_pnode(cpu),
-				uv_cpu_hub_info(cpu)->scir.offset, value);
-		uv_cpu_hub_info(cpu)->scir.state = value;
-	}
-}
-
-extern unsigned int uv_apicid_hibits;
-static unsigned long uv_hub_ipi_value(int apicid, int vector, int mode)
-{
-	apicid |= uv_apicid_hibits;
-	return (1UL << UVH_IPI_INT_SEND_SHFT) |
-			((apicid) << UVH_IPI_INT_APIC_ID_SHFT) |
-			(mode << UVH_IPI_INT_DELIVERY_MODE_SHFT) |
-			(vector << UVH_IPI_INT_VECTOR_SHFT);
-}
-
-static inline void uv_hub_send_ipi(int pnode, int apicid, int vector)
-{
-	unsigned long val;
-	unsigned long dmode = dest_Fixed;
-
-	if (vector == NMI_VECTOR)
-		dmode = dest_NMI;
-
-	val = uv_hub_ipi_value(apicid, vector, dmode);
-	uv_write_global_mmr64(pnode, UVH_IPI_INT, val);
-}
-
-/*
- * Get the minimum revision number of the hub chips within the partition.
- *     1 - UV1 rev 1.0 initial silicon
- *     2 - UV1 rev 2.0 production silicon
- *     3 - UV2 rev 1.0 initial silicon
-=======
 /* Per Hub NMI support */
 extern void uv_nmi_setup(void);
 extern void uv_nmi_setup_hubless(void);
@@ -1094,7 +779,6 @@ DECLARE_PER_CPU(struct uv_cpu_nmi_s, uv_cpu_nmi);
 /*
  * Get the minimum revision number of the hub chips within the partition.
  * (See UVx_HUB_REVISION_BASE above for specific values.)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int uv_get_min_hub_revision_id(void)
 {

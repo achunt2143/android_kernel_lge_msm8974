@@ -23,11 +23,7 @@
 #include <net/llc.h>
 
 LIST_HEAD(llc_sap_list);
-<<<<<<< HEAD
-DEFINE_SPINLOCK(llc_sap_list_lock);
-=======
 static DEFINE_SPINLOCK(llc_sap_list_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	llc_sap_alloc - allocates and initializes sap.
@@ -45,22 +41,14 @@ static struct llc_sap *llc_sap_alloc(void)
 		spin_lock_init(&sap->sk_lock);
 		for (i = 0; i < LLC_SK_LADDR_HASH_ENTRIES; i++)
 			INIT_HLIST_NULLS_HEAD(&sap->sk_laddr_hash[i], i);
-<<<<<<< HEAD
-		atomic_set(&sap->refcnt, 1);
-=======
 		refcount_set(&sap->refcnt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return sap;
 }
 
 static struct llc_sap *__llc_sap_find(unsigned char sap_value)
 {
-<<<<<<< HEAD
-	struct llc_sap* sap;
-=======
 	struct llc_sap *sap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(sap, &llc_sap_list, node)
 		if (sap->laddr.lsap == sap_value)
@@ -71,17 +59,10 @@ out:
 }
 
 /**
-<<<<<<< HEAD
- *	llc_sap_find - searchs a SAP in station
- *	@sap_value: sap to be found
- *
- *	Searchs for a sap in the sap list of the LLC's station upon the sap ID.
-=======
  *	llc_sap_find - searches a SAP in station
  *	@sap_value: sap to be found
  *
  *	Searches for a sap in the sap list of the LLC's station upon the sap ID.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	If the sap is found it will be refcounted and the user will have to do
  *	a llc_sap_put after use.
  *	Returns the sap or %NULL if not found.
@@ -92,13 +73,8 @@ struct llc_sap *llc_sap_find(unsigned char sap_value)
 
 	rcu_read_lock_bh();
 	sap = __llc_sap_find(sap_value);
-<<<<<<< HEAD
-	if (sap)
-		llc_sap_hold(sap);
-=======
 	if (!sap || !llc_sap_hold_safe(sap))
 		sap = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock_bh();
 	return sap;
 }
@@ -151,13 +127,7 @@ void llc_sap_close(struct llc_sap *sap)
 	list_del_rcu(&sap->node);
 	spin_unlock_bh(&llc_sap_list_lock);
 
-<<<<<<< HEAD
-	synchronize_rcu();
-
-	kfree(sap);
-=======
 	kfree_rcu(sap, rcu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct packet_type llc_packet_type __read_mostly = {
@@ -165,41 +135,21 @@ static struct packet_type llc_packet_type __read_mostly = {
 	.func = llc_rcv,
 };
 
-<<<<<<< HEAD
-static struct packet_type llc_tr_packet_type __read_mostly = {
-	.type = cpu_to_be16(ETH_P_TR_802_2),
-	.func = llc_rcv,
-};
-
 static int __init llc_init(void)
 {
 	dev_add_pack(&llc_packet_type);
-	dev_add_pack(&llc_tr_packet_type);
-=======
-static int __init llc_init(void)
-{
-	dev_add_pack(&llc_packet_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void __exit llc_exit(void)
 {
 	dev_remove_pack(&llc_packet_type);
-<<<<<<< HEAD
-	dev_remove_pack(&llc_tr_packet_type);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(llc_init);
 module_exit(llc_exit);
 
 EXPORT_SYMBOL(llc_sap_list);
-<<<<<<< HEAD
-EXPORT_SYMBOL(llc_sap_list_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(llc_sap_find);
 EXPORT_SYMBOL(llc_sap_open);
 EXPORT_SYMBOL(llc_sap_close);

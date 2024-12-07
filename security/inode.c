@@ -1,67 +1,30 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  inode.c - securityfs
  *
  *  Copyright (C) 2005 Greg Kroah-Hartman <gregkh@suse.de>
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License version
- *	2 as published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Based on fs/debugfs/inode.c which had the following copyright notice:
  *    Copyright (C) 2004 Greg Kroah-Hartman <greg@kroah.com>
  *    Copyright (C) 2004 IBM Inc.
  */
 
 /* #define DEBUG */
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/fs.h>
-=======
 #include <linux/sysfs.h>
 #include <linux/kobject.h>
 #include <linux/fs.h>
 #include <linux/fs_context.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mount.h>
 #include <linux/pagemap.h>
 #include <linux/init.h>
 #include <linux/namei.h>
 #include <linux/security.h>
-<<<<<<< HEAD
-=======
 #include <linux/lsm_hooks.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/magic.h>
 
 static struct vfsmount *mount;
 static int mount_count;
 
-<<<<<<< HEAD
-static inline int positive(struct dentry *dentry)
-{
-	return dentry->d_inode && !d_unhashed(dentry);
-}
-
-static int fill_super(struct super_block *sb, void *data, int silent)
-{
-	static struct tree_descr files[] = {{""}};
-
-	return simple_fill_super(sb, SECURITYFS_MAGIC, files);
-}
-
-static struct dentry *get_sb(struct file_system_type *fs_type,
-		  int flags, const char *dev_name,
-		  void *data)
-{
-	return mount_single(fs_type, flags, data, fill_super);
-=======
 static void securityfs_free_inode(struct inode *inode)
 {
 	if (S_ISLNK(inode->i_mode))
@@ -101,23 +64,16 @@ static int securityfs_init_fs_context(struct fs_context *fc)
 {
 	fc->ops = &securityfs_context_ops;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct file_system_type fs_type = {
 	.owner =	THIS_MODULE,
 	.name =		"securityfs",
-<<<<<<< HEAD
-	.mount =	get_sb,
-=======
 	.init_fs_context = securityfs_init_fs_context,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.kill_sb =	kill_litter_super,
 };
 
 /**
-<<<<<<< HEAD
-=======
  * securityfs_create_dentry - create a dentry in the securityfs filesystem
  *
  * @name: a pointer to a string containing the name of the file to create.
@@ -217,7 +173,6 @@ out:
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * securityfs_create_file - create a file in the securityfs filesystem
  *
  * @name: a pointer to a string containing the name of the file to create.
@@ -231,100 +186,22 @@ out:
  * @fops: a pointer to a struct file_operations that should be used for
  *        this file.
  *
-<<<<<<< HEAD
- * This is the basic "create a file" function for securityfs.  It allows for a
- * wide range of flexibility in creating a file, or a directory (if you
- * want to create a directory, the securityfs_create_dir() function is
- * recommended to be used instead).
-=======
  * This function creates a file in securityfs with the given @name.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function returns a pointer to a dentry if it succeeds.  This
  * pointer must be passed to the securityfs_remove() function when the file is
  * to be removed (no automatic cleanup happens if your module is unloaded,
  * you are responsible here).  If an error occurs, the function will return
-<<<<<<< HEAD
- * the erorr value (via ERR_PTR).
-=======
  * the error value (via ERR_PTR).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If securityfs is not enabled in the kernel, the value %-ENODEV is
  * returned.
  */
 struct dentry *securityfs_create_file(const char *name, umode_t mode,
-<<<<<<< HEAD
-				   struct dentry *parent, void *data,
-				   const struct file_operations *fops)
-{
-	struct dentry *dentry;
-	int is_dir = S_ISDIR(mode);
-	struct inode *dir, *inode;
-	int error;
-
-	if (!is_dir) {
-		BUG_ON(!fops);
-		mode = (mode & S_IALLUGO) | S_IFREG;
-	}
-
-	pr_debug("securityfs: creating file '%s'\n",name);
-
-	error = simple_pin_fs(&fs_type, &mount, &mount_count);
-	if (error)
-		return ERR_PTR(error);
-
-	if (!parent)
-		parent = mount->mnt_root;
-
-	dir = parent->d_inode;
-
-	mutex_lock(&dir->i_mutex);
-	dentry = lookup_one_len2(name, mount, parent, strlen(name));
-	if (IS_ERR(dentry))
-		goto out;
-
-	if (dentry->d_inode) {
-		error = -EEXIST;
-		goto out1;
-	}
-
-	inode = new_inode(dir->i_sb);
-	if (!inode) {
-		error = -ENOMEM;
-		goto out1;
-	}
-
-	inode->i_ino = get_next_ino();
-	inode->i_mode = mode;
-	inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
-	inode->i_private = data;
-	if (is_dir) {
-		inode->i_op = &simple_dir_inode_operations;
-		inode->i_fop = &simple_dir_operations;
-		inc_nlink(inode);
-		inc_nlink(dir);
-	} else {
-		inode->i_fop = fops;
-	}
-	d_instantiate(dentry, inode);
-	dget(dentry);
-	mutex_unlock(&dir->i_mutex);
-	return dentry;
-
-out1:
-	dput(dentry);
-	dentry = ERR_PTR(error);
-out:
-	mutex_unlock(&dir->i_mutex);
-	simple_release_fs(&mount, &mount_count);
-	return dentry;
-=======
 				      struct dentry *parent, void *data,
 				      const struct file_operations *fops)
 {
 	return securityfs_create_dentry(name, mode, parent, data, fops, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(securityfs_create_file);
 
@@ -342,20 +219,6 @@ EXPORT_SYMBOL_GPL(securityfs_create_file);
  * This function returns a pointer to a dentry if it succeeds.  This
  * pointer must be passed to the securityfs_remove() function when the file is
  * to be removed (no automatic cleanup happens if your module is unloaded,
-<<<<<<< HEAD
- * you are responsible here).  If an error occurs, %NULL will be returned.
- *
- * If securityfs is not enabled in the kernel, the value %-ENODEV is
- * returned.  It is not wise to check for this value, but rather, check for
- * %NULL or !%NULL instead as to eliminate the need for #ifdef in the calling
- * code.
- */
-struct dentry *securityfs_create_dir(const char *name, struct dentry *parent)
-{
-	return securityfs_create_file(name,
-				      S_IFDIR | S_IRWXU | S_IRUGO | S_IXUGO,
-				      parent, NULL, NULL);
-=======
  * you are responsible here).  If an error occurs, the function will return
  * the error value (via ERR_PTR).
  *
@@ -365,13 +228,10 @@ struct dentry *securityfs_create_dir(const char *name, struct dentry *parent)
 struct dentry *securityfs_create_dir(const char *name, struct dentry *parent)
 {
 	return securityfs_create_file(name, S_IFDIR | 0755, parent, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(securityfs_create_dir);
 
 /**
-<<<<<<< HEAD
-=======
  * securityfs_create_symlink - create a symlink in the securityfs filesystem
  *
  * @name: a pointer to a string containing the name of the symlink to
@@ -420,7 +280,6 @@ struct dentry *securityfs_create_symlink(const char *name,
 EXPORT_SYMBOL_GPL(securityfs_create_symlink);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * securityfs_remove - removes a file or directory from the securityfs filesystem
  *
  * @dentry: a pointer to a the dentry of the file or directory to be removed.
@@ -435,32 +294,11 @@ EXPORT_SYMBOL_GPL(securityfs_create_symlink);
  */
 void securityfs_remove(struct dentry *dentry)
 {
-<<<<<<< HEAD
-	struct dentry *parent;
-=======
 	struct inode *dir;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dentry || IS_ERR(dentry))
 		return;
 
-<<<<<<< HEAD
-	parent = dentry->d_parent;
-	if (!parent || !parent->d_inode)
-		return;
-
-	mutex_lock(&parent->d_inode->i_mutex);
-	if (positive(dentry)) {
-		if (dentry->d_inode) {
-			if (S_ISDIR(dentry->d_inode->i_mode))
-				simple_rmdir(parent->d_inode, dentry);
-			else
-				simple_unlink(parent->d_inode, dentry);
-			dput(dentry);
-		}
-	}
-	mutex_unlock(&parent->d_inode->i_mutex);
-=======
 	dir = d_inode(dentry->d_parent);
 	inode_lock(dir);
 	if (simple_positive(dentry)) {
@@ -471,14 +309,10 @@ void securityfs_remove(struct dentry *dentry)
 		dput(dentry);
 	}
 	inode_unlock(dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	simple_release_fs(&mount, &mount_count);
 }
 EXPORT_SYMBOL_GPL(securityfs_remove);
 
-<<<<<<< HEAD
-static struct kobject *security_kobj;
-=======
 #ifdef CONFIG_SECURITY
 static struct dentry *lsm_dentry;
 static ssize_t lsm_read(struct file *filp, char __user *buf, size_t count,
@@ -493,27 +327,11 @@ static const struct file_operations lsm_ops = {
 	.llseek = generic_file_llseek,
 };
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init securityfs_init(void)
 {
 	int retval;
 
-<<<<<<< HEAD
-	security_kobj = kobject_create_and_add("security", kernel_kobj);
-	if (!security_kobj)
-		return -EINVAL;
-
-	retval = register_filesystem(&fs_type);
-	if (retval)
-		kobject_put(security_kobj);
-	return retval;
-}
-
-core_initcall(securityfs_init);
-MODULE_LICENSE("GPL");
-
-=======
 	retval = sysfs_create_mount_point(kernel_kobj, "security");
 	if (retval)
 		return retval;
@@ -530,4 +348,3 @@ MODULE_LICENSE("GPL");
 	return 0;
 }
 core_initcall(securityfs_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

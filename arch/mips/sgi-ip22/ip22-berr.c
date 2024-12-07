@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ip22-berr.c: Bus error handling.
  *
@@ -10,11 +7,7 @@
 
 #include <linux/init.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/addrspace.h>
 #include <asm/traps.h>
@@ -105,11 +98,7 @@ void ip22_be_interrupt(int irq)
 	       field, regs->cp0_epc, field, regs->regs[31]);
 	/* Assume it would be too dangerous to continue ... */
 	die_if_kernel("Oops", regs);
-<<<<<<< HEAD
-	force_sig(SIGBUS, current);
-=======
 	force_sig(SIGBUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ip22_be_handler(struct pt_regs *regs, int is_fixup)
@@ -123,9 +112,5 @@ static int ip22_be_handler(struct pt_regs *regs, int is_fixup)
 
 void __init ip22_be_init(void)
 {
-<<<<<<< HEAD
-	board_be_handler = ip22_be_handler;
-=======
 	mips_set_be_handler(ip22_be_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

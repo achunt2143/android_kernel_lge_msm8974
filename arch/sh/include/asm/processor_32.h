@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/asm-sh/processor.h
  *
@@ -11,10 +8,6 @@
 
 #ifndef __ASM_SH_PROCESSOR_32_H
 #define __ASM_SH_PROCESSOR_32_H
-<<<<<<< HEAD
-#ifdef __KERNEL__
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/compiler.h>
 #include <linux/linkage.h>
@@ -22,15 +15,6 @@
 #include <asm/types.h>
 #include <asm/hw_breakpoint.h>
 
-<<<<<<< HEAD
-/*
- * Default implementation of macro that returns current
- * instruction pointer ("program counter").
- */
-#define current_text_addr() ({ void *pc; __asm__("mova	1f, %0\n.align 2\n1:":"=z" (pc)); pc; })
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Core Processor Version Register */
 #define CCN_PVR		0xff000030
 #define CCN_CVR		0xff000040
@@ -49,11 +33,7 @@
 /* This decides where the kernel will search for a free chunk of vm
  * space during mmap's.
  */
-<<<<<<< HEAD
-#define TASK_UNMAPPED_BASE	(TASK_SIZE / 3)
-=======
 #define TASK_UNMAPPED_BASE	PAGE_ALIGN(TASK_SIZE / 3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Bit of SR register
@@ -70,10 +50,7 @@
 #define SR_FD		0x00008000
 #define SR_MD		0x40000000
 
-<<<<<<< HEAD
-=======
 #define SR_USER_MASK	0x00000303	// M, Q, S, T bits
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DSP structure and data
  */
@@ -129,8 +106,6 @@ struct thread_struct {
 
 	/* Extended processor state */
 	union thread_xstate *xstate;
-<<<<<<< HEAD
-=======
 
 	/*
 	 * fpu_counter contains the number of consecutive context switches
@@ -141,7 +116,6 @@ struct thread_struct {
 	 * a short time
 	 */
 	unsigned char fpu_counter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define INIT_THREAD  {						\
@@ -154,24 +128,6 @@ struct task_struct;
 
 extern void start_thread(struct pt_regs *regs, unsigned long new_pc, unsigned long new_sp);
 
-<<<<<<< HEAD
-/* Free all resources held by a thread. */
-extern void release_thread(struct task_struct *);
-
-/* Prepare to copy thread state - unlazy all lazy status */
-void prepare_to_copy(struct task_struct *tsk);
-
-/*
- * create a kernel thread without removing it from tasklists
- */
-extern int kernel_thread(int (*fn)(void *), void * arg, unsigned long flags);
-
-/* Copy and release all segment info associated with a VM */
-#define copy_segments(p, mm)	do { } while(0)
-#define release_segments(mm)	do { } while(0)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * FPU lazy state save handling.
  */
@@ -212,11 +168,7 @@ static __inline__ void enable_fpu(void)
 #define thread_saved_pc(tsk)	(tsk->thread.pc)
 
 void show_trace(struct task_struct *tsk, unsigned long *sp,
-<<<<<<< HEAD
-		struct pt_regs *regs);
-=======
 		struct pt_regs *regs, const char *loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_DUMP_CODE
 void show_code(struct pt_regs *regs);
@@ -226,11 +178,7 @@ static inline void show_code(struct pt_regs *regs)
 }
 #endif
 
-<<<<<<< HEAD
-extern unsigned long get_wchan(struct task_struct *p);
-=======
 extern unsigned long __get_wchan(struct task_struct *p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KSTK_EIP(tsk)  (task_pt_regs(tsk)->pc)
 #define KSTK_ESP(tsk)  (task_pt_regs(tsk)->regs[15])
@@ -252,8 +200,4 @@ static inline void prefetchw(const void *x)
 }
 #endif
 
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_PROCESSOR_32_H */

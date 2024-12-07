@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-orion5x/net2big-setup.c
  *
  * LaCie 2Big Network NAS setup
  *
  * Copyright (C) 2009 Simon Guinot <sguinot@lacie.com>
-<<<<<<< HEAD
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -31,16 +21,10 @@
 #include <linux/delay.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
-<<<<<<< HEAD
-#include <mach/orion5x.h>
-#include "common.h"
-#include "mpp.h"
-=======
 #include <plat/orion-gpio.h>
 #include "common.h"
 #include "mpp.h"
 #include "orion5x.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*****************************************************************************
  * LaCie 2Big Network Info
@@ -410,15 +394,10 @@ static void __init net2big_init(void)
 	net2big_sata_power_init();
 	orion5x_sata_init(&net2big_sata_data);
 
-<<<<<<< HEAD
-	orion5x_setup_dev_boot_win(NET2BIG_NOR_BOOT_BASE,
-				   NET2BIG_NOR_BOOT_SIZE);
-=======
 	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_BOOT_TARGET,
 				    ORION_MBUS_DEVBUS_BOOT_ATTR,
 				    NET2BIG_NOR_BOOT_BASE,
 				    NET2BIG_NOR_BOOT_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_device_register(&net2big_nor_flash);
 
 	platform_device_register(&net2big_gpio_buttons);
@@ -441,23 +420,12 @@ static void __init net2big_init(void)
 /* Warning: LaCie use a wrong mach-type (0x20e=526) in their bootloader. */
 MACHINE_START(NET2BIG, "LaCie 2Big Network")
 	.atag_offset	= 0x100,
-<<<<<<< HEAD
-=======
 	.nr_irqs	= ORION5X_NR_IRQS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_machine	= net2big_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,
 	.init_irq	= orion5x_init_irq,
-<<<<<<< HEAD
-	.timer		= &orion5x_timer,
-	.fixup		= tag_fixup_mem32,
-	.restart	= orion5x_restart,
-MACHINE_END
-
-=======
 	.init_time	= orion5x_timer_init,
 	.fixup		= tag_fixup_mem32,
 	.restart	= orion5x_restart,
 MACHINE_END
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,18 +1,12 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Block layer core configuration
 #
 menuconfig BLOCK
        bool "Enable the block layer" if EXPERT
        default y
-<<<<<<< HEAD
-=======
        select FS_IOMAP
        select SBITMAP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
        help
 	 Provide block layer support for the kernel.
 
@@ -32,54 +26,6 @@ menuconfig BLOCK
 
 if BLOCK
 
-<<<<<<< HEAD
-config LBDAF
-	bool "Support for large (2TB+) block devices and files"
-	depends on !64BIT
-	default y
-	help
-	  Enable block devices or files of size 2TB and larger.
-
-	  This option is required to support the full capacity of large
-	  (2TB+) block devices, including RAID, disk, Network Block Device,
-	  Logical Volume Manager (LVM) and loopback.
-	
-	  This option also enables support for single files larger than
-	  2TB.
-
-	  The ext4 filesystem requires that this feature be enabled in
-	  order to support filesystems that have the huge_file feature
-	  enabled.  Otherwise, it will refuse to mount in the read-write
-	  mode any filesystems that use the huge_file feature, which is
-	  enabled by default by mke2fs.ext4.
-
-	  The GFS2 filesystem also requires this feature.
-
-	  If unsure, say Y.
-
-config BLK_DEV_BSG
-	bool "Block layer SG support v4"
-	default y
-	help
-	  Saying Y here will enable generic SG (SCSI generic) v4 support
-	  for any block device.
-
-	  Unlike SG v3 (aka block/scsi_ioctl.c drivers/scsi/sg.c), SG v4
-	  can handle complicated SCSI commands: tagged variable length cdbs
-	  with bidirectional data transfers and generic request/response
-	  protocols (e.g. Task Management Functions and SMP in Serial
-	  Attached SCSI).
-
-	  This option is required by recent UDEV versions to properly
-	  access device serial numbers, etc.
-
-	  If unsure, say Y.
-
-config BLK_DEV_BSGLIB
-	bool "Block layer SG support v4 helper lib"
-	default n
-	select BLK_DEV_BSG
-=======
 config BLOCK_LEGACY_AUTOLOAD
 	bool "Legacy autoloading support"
 	default y
@@ -108,7 +54,6 @@ config BLK_ICQ
 config BLK_DEV_BSGLIB
 	bool "Block layer SG support v4 helper lib"
 	select BLK_DEV_BSG_COMMON
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Subsystems will normally enable this if needed. Users will not
 	  normally need to manually enable this.
@@ -117,11 +62,7 @@ config BLK_DEV_BSGLIB
 
 config BLK_DEV_INTEGRITY
 	bool "Block layer data integrity support"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Some storage devices allow extra information to be
 	stored/retrieved to help protect the data.  The block layer
 	data integrity option provides hooks which can be used by
@@ -131,13 +72,6 @@ config BLK_DEV_INTEGRITY
 	T10/SCSI Data Integrity Field or the T13/ATA External Path
 	Protection.  If in doubt, say N.
 
-<<<<<<< HEAD
-config BLK_DEV_THROTTLING
-	bool "Block layer bio throttling support"
-	depends on BLK_CGROUP=y && EXPERIMENTAL
-	default n
-	---help---
-=======
 config BLK_DEV_INTEGRITY_T10
 	tristate
 	depends on BLK_DEV_INTEGRITY
@@ -179,30 +113,11 @@ config BLK_DEV_THROTTLING
 	depends on BLK_CGROUP
 	select BLK_CGROUP_RWSTAT
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Block layer bio throttling support. It can be used to limit
 	the IO rate to a device. IO rate policies are per cgroup and
 	one needs to mount and use blkio cgroup controller for creating
 	cgroups and specifying per device IO rate policies.
 
-<<<<<<< HEAD
-	See Documentation/cgroups/blkio-controller.txt for more information.
-
-menu "Partition Types"
-
-source "block/partitions/Kconfig"
-
-endmenu
-
-endif # BLOCK
-
-config BLOCK_COMPAT
-	bool
-	depends on BLOCK && COMPAT
-	default y
-
-source block/Kconfig.iosched
-=======
 	See Documentation/admin-guide/cgroup-v1/blkio-controller.rst for more information.
 
 config BLK_DEV_THROTTLING_LOW
@@ -337,4 +252,3 @@ config BLK_MQ_STACKING
 source "block/Kconfig.iosched"
 
 endif # BLOCK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

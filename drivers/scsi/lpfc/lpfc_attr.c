@@ -1,17 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
-<<<<<<< HEAD
- * Copyright (C) 2004-2012 Emulex.  All rights reserved.           *
- * EMULEX and SLI are trademarks of Emulex.                        *
- * www.emulex.com                                                  *
-=======
  * Copyright (C) 2017-2024 Broadcom. All Rights Reserved. The term *
  * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.  *
  * Copyright (C) 2004-2016 Emulex.  All rights reserved.           *
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.broadcom.com                                                *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Portions Copyright (C) 2004-2005 Christoph Hellwig              *
  *                                                                 *
  * This program is free software; you can redistribute it and/or   *
@@ -49,26 +43,14 @@
 #include "lpfc_sli4.h"
 #include "lpfc_nl.h"
 #include "lpfc_disc.h"
-<<<<<<< HEAD
-#include "lpfc_scsi.h"
-#include "lpfc.h"
-=======
 #include "lpfc.h"
 #include "lpfc_scsi.h"
 #include "lpfc_nvme.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "lpfc_logmsg.h"
 #include "lpfc_version.h"
 #include "lpfc_compat.h"
 #include "lpfc_crtn.h"
 #include "lpfc_vport.h"
-<<<<<<< HEAD
-
-#define LPFC_DEF_DEVLOSS_TMO 30
-#define LPFC_MIN_DEVLOSS_TMO 1
-#define LPFC_MAX_DEVLOSS_TMO 255
-
-=======
 #include "lpfc_attr.h"
 
 #define LPFC_DEF_DEVLOSS_TMO	30
@@ -77,7 +59,6 @@
 
 #define LPFC_MAX_INFO_TMP_LEN	100
 #define LPFC_INFO_MORE_STR	"\nCould be more info...\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Write key size should be multiple of 4. If write key is changed
  * make sure that library write key is also changed.
@@ -85,8 +66,6 @@
 #define LPFC_REG_WRITE_KEY_SIZE	4
 #define LPFC_REG_WRITE_KEY	"EMLX"
 
-<<<<<<< HEAD
-=======
 const char *const trunk_errmsg[] = {	/* map errcode */
 	"",	/* There is no such error code at index 0*/
 	"link negotiated speed does not match existing"
@@ -104,7 +83,6 @@ const char *const trunk_errmsg[] = {	/* map errcode */
 	"Trunk peer device mismatch",
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_jedec_to_ascii - Hex to ascii convertor according to JEDEC rules
  * @incr: integer to convert.
@@ -136,8 +114,6 @@ lpfc_jedec_to_ascii(int incr, char hdw[])
 	return;
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t
 lpfc_cmf_info_show(struct device *dev, struct device_attribute *attr,
 		   char *buf)
@@ -315,7 +291,6 @@ buffer_done:
 	return len;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_drvr_version_show - Return the Emulex driver string with version number
  * @dev: class unused variable.
@@ -328,11 +303,7 @@ static ssize_t
 lpfc_drvr_version_show(struct device *dev, struct device_attribute *attr,
 		       char *buf)
 {
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, LPFC_MODULE_DESC "\n");
-=======
 	return scnprintf(buf, PAGE_SIZE, LPFC_MODULE_DESC "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -352,11 +323,6 @@ lpfc_enable_fip_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_hba   *phba = vport->phba;
 
 	if (phba->hba_flag & HBA_FIP_SUPPORT)
-<<<<<<< HEAD
-		return snprintf(buf, PAGE_SIZE, "1\n");
-	else
-		return snprintf(buf, PAGE_SIZE, "0\n");
-=======
 		return scnprintf(buf, PAGE_SIZE, "1\n");
 	else
 		return scnprintf(buf, PAGE_SIZE, "0\n");
@@ -783,7 +749,6 @@ buffer_done:
 	len = strnlen(buf, PAGE_SIZE);
 
 	return len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -794,16 +759,6 @@ lpfc_bg_info_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	if (phba->cfg_enable_bg)
-		if (phba->sli3_options & LPFC_SLI3_BG_ENABLED)
-			return snprintf(buf, PAGE_SIZE, "BlockGuard Enabled\n");
-		else
-			return snprintf(buf, PAGE_SIZE,
-					"BlockGuard Not Supported\n");
-	else
-			return snprintf(buf, PAGE_SIZE,
-=======
 	if (phba->cfg_enable_bg) {
 		if (phba->sli3_options & LPFC_SLI3_BG_ENABLED)
 			return scnprintf(buf, PAGE_SIZE,
@@ -813,7 +768,6 @@ lpfc_bg_info_show(struct device *dev, struct device_attribute *attr,
 					"BlockGuard Not Supported\n");
 	} else
 		return scnprintf(buf, PAGE_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"BlockGuard Disabled\n");
 }
 
@@ -825,11 +779,7 @@ lpfc_bg_guard_err_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%llu\n",
-=======
 	return scnprintf(buf, PAGE_SIZE, "%llu\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(unsigned long long)phba->bg_guard_err_cnt);
 }
 
@@ -841,11 +791,7 @@ lpfc_bg_apptag_err_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%llu\n",
-=======
 	return scnprintf(buf, PAGE_SIZE, "%llu\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(unsigned long long)phba->bg_apptag_err_cnt);
 }
 
@@ -857,11 +803,7 @@ lpfc_bg_reftag_err_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%llu\n",
-=======
 	return scnprintf(buf, PAGE_SIZE, "%llu\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(unsigned long long)phba->bg_reftag_err_cnt);
 }
 
@@ -879,11 +821,7 @@ lpfc_info_show(struct device *dev, struct device_attribute *attr,
 {
 	struct Scsi_Host *host = class_to_shost(dev);
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%s\n",lpfc_info(host));
-=======
 	return scnprintf(buf, PAGE_SIZE, "%s\n", lpfc_info(host));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -902,11 +840,7 @@ lpfc_serialnum_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%s\n",phba->SerialNumber);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%s\n", phba->SerialNumber);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -928,11 +862,7 @@ lpfc_temp_sensor_show(struct device *dev, struct device_attribute *attr,
 	struct Scsi_Host *shost = class_to_shost(dev);
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n",phba->temp_sensor_support);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%d\n", phba->temp_sensor_support);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -951,11 +881,7 @@ lpfc_modeldesc_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%s\n",phba->ModelDesc);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%s\n", phba->ModelDesc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -974,11 +900,7 @@ lpfc_modelname_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%s\n",phba->ModelName);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%s\n", phba->ModelName);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -997,30 +919,7 @@ lpfc_programtype_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%s\n",phba->ProgramType);
-}
-
-/**
- * lpfc_mlomgmt_show - Return the Menlo Maintenance sli flag
- * @dev: class converted to a Scsi_host structure.
- * @attr: device attribute, not used.
- * @buf: on return contains the Menlo Maintenance sli flag.
- *
- * Returns: size of formatted string.
- **/
-static ssize_t
-lpfc_mlomgmt_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	struct Scsi_Host  *shost = class_to_shost(dev);
-	struct lpfc_vport *vport = (struct lpfc_vport *)shost->hostdata;
-	struct lpfc_hba   *phba = vport->phba;
-
-	return snprintf(buf, PAGE_SIZE, "%d\n",
-		(phba->sli.sli_flag & LPFC_MENLO_MAINT));
-=======
 	return scnprintf(buf, PAGE_SIZE, "%s\n", phba->ProgramType);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1039,11 +938,7 @@ lpfc_vportnum_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%s\n",phba->Port);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%s\n", phba->Port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1071,17 +966,10 @@ lpfc_fwrev_show(struct device *dev, struct device_attribute *attr,
 	sli_family = phba->sli4_hba.pc_sli4_params.sli_family;
 
 	if (phba->sli_rev < LPFC_SLI_REV4)
-<<<<<<< HEAD
-		len = snprintf(buf, PAGE_SIZE, "%s, sli-%d\n",
-			       fwrev, phba->sli_rev);
-	else
-		len = snprintf(buf, PAGE_SIZE, "%s, sli-%d:%d:%x\n",
-=======
 		len = scnprintf(buf, PAGE_SIZE, "%s, sli-%d\n",
 			       fwrev, phba->sli_rev);
 	else
 		len = scnprintf(buf, PAGE_SIZE, "%s, sli-%d:%d:%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       fwrev, phba->sli_rev, if_type, sli_family);
 
 	return len;
@@ -1105,12 +993,8 @@ lpfc_hdw_show(struct device *dev, struct device_attribute *attr, char *buf)
 	lpfc_vpd_t *vp = &phba->vpd;
 
 	lpfc_jedec_to_ascii(vp->rev.biuRev, hdw);
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%s\n", hdw);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%s %08x %08x\n", hdw,
 			 vp->rev.smRev, vp->rev.smFwRev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1128,14 +1012,6 @@ lpfc_option_rom_version_show(struct device *dev, struct device_attribute *attr,
 	struct Scsi_Host  *shost = class_to_shost(dev);
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
-<<<<<<< HEAD
-
-	return snprintf(buf, PAGE_SIZE, "%s\n", phba->OptionROMVersion);
-}
-
-/**
- * lpfc_state_show - Return the link state of the port
-=======
 	char fwrev[FW_REV_STR_SIZE];
 
 	if (phba->sli_rev < LPFC_SLI_REV4)
@@ -1148,7 +1024,6 @@ lpfc_option_rom_version_show(struct device *dev, struct device_attribute *attr,
 
 /**
  * lpfc_link_state_show - Return the link state of the port
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: class converted to a Scsi_host structure.
  * @attr: device attribute, not used.
  * @buf: on return contains text describing the state of the link.
@@ -1175,35 +1050,20 @@ lpfc_link_state_show(struct device *dev, struct device_attribute *attr,
 	case LPFC_LINK_DOWN:
 	case LPFC_HBA_ERROR:
 		if (phba->hba_flag & LINK_DISABLED)
-<<<<<<< HEAD
-			len += snprintf(buf + len, PAGE_SIZE-len,
-				"Link Down - User disabled\n");
-		else
-			len += snprintf(buf + len, PAGE_SIZE-len,
-=======
 			len += scnprintf(buf + len, PAGE_SIZE-len,
 				"Link Down - User disabled\n");
 		else
 			len += scnprintf(buf + len, PAGE_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Link Down\n");
 		break;
 	case LPFC_LINK_UP:
 	case LPFC_CLEAR_LA:
 	case LPFC_HBA_READY:
-<<<<<<< HEAD
-		len += snprintf(buf + len, PAGE_SIZE-len, "Link Up - ");
-
-		switch (vport->port_state) {
-		case LPFC_LOCAL_CFG_LINK:
-			len += snprintf(buf + len, PAGE_SIZE-len,
-=======
 		len += scnprintf(buf + len, PAGE_SIZE-len, "Link Up - ");
 
 		switch (vport->port_state) {
 		case LPFC_LOCAL_CFG_LINK:
 			len += scnprintf(buf + len, PAGE_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"Configuring Link\n");
 			break;
 		case LPFC_FDISC:
@@ -1213,44 +1073,6 @@ lpfc_link_state_show(struct device *dev, struct device_attribute *attr,
 		case LPFC_NS_QRY:
 		case LPFC_BUILD_DISC_LIST:
 		case LPFC_DISC_AUTH:
-<<<<<<< HEAD
-			len += snprintf(buf + len, PAGE_SIZE - len,
-					"Discovery\n");
-			break;
-		case LPFC_VPORT_READY:
-			len += snprintf(buf + len, PAGE_SIZE - len, "Ready\n");
-			break;
-
-		case LPFC_VPORT_FAILED:
-			len += snprintf(buf + len, PAGE_SIZE - len, "Failed\n");
-			break;
-
-		case LPFC_VPORT_UNKNOWN:
-			len += snprintf(buf + len, PAGE_SIZE - len,
-					"Unknown\n");
-			break;
-		}
-		if (phba->sli.sli_flag & LPFC_MENLO_MAINT)
-			len += snprintf(buf + len, PAGE_SIZE-len,
-					"   Menlo Maint Mode\n");
-		else if (phba->fc_topology == LPFC_TOPOLOGY_LOOP) {
-			if (vport->fc_flag & FC_PUBLIC_LOOP)
-				len += snprintf(buf + len, PAGE_SIZE-len,
-						"   Public Loop\n");
-			else
-				len += snprintf(buf + len, PAGE_SIZE-len,
-						"   Private Loop\n");
-		} else {
-			if (vport->fc_flag & FC_FABRIC)
-				len += snprintf(buf + len, PAGE_SIZE-len,
-						"   Fabric\n");
-			else
-				len += snprintf(buf + len, PAGE_SIZE-len,
-						"   Point-2-Point\n");
-		}
-	}
-
-=======
 			len += scnprintf(buf + len, PAGE_SIZE - len,
 					"Discovery\n");
 			break;
@@ -1332,7 +1154,6 @@ lpfc_link_state_show(struct device *dev, struct device_attribute *attr,
 
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
@@ -1353,17 +1174,6 @@ lpfc_sli4_protocol_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_hba *phba = vport->phba;
 
 	if (phba->sli_rev < LPFC_SLI_REV4)
-<<<<<<< HEAD
-		return snprintf(buf, PAGE_SIZE, "fc\n");
-
-	if (phba->sli4_hba.lnk_info.lnk_dv == LPFC_LNK_DAT_VAL) {
-		if (phba->sli4_hba.lnk_info.lnk_tp == LPFC_LNK_TYPE_GE)
-			return snprintf(buf, PAGE_SIZE, "fcoe\n");
-		if (phba->sli4_hba.lnk_info.lnk_tp == LPFC_LNK_TYPE_FC)
-			return snprintf(buf, PAGE_SIZE, "fc\n");
-	}
-	return snprintf(buf, PAGE_SIZE, "unknown\n");
-=======
 		return scnprintf(buf, PAGE_SIZE, "fc\n");
 
 	if (phba->sli4_hba.lnk_info.lnk_dv == LPFC_LNK_DAT_VAL) {
@@ -1394,7 +1204,6 @@ lpfc_oas_supported_show(struct device *dev, struct device_attribute *attr,
 
 	return scnprintf(buf, PAGE_SIZE, "%d\n",
 			phba->sli4_hba.pc_sli4_params.oas_supported);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1451,14 +1260,9 @@ lpfc_num_discovered_ports_show(struct device *dev,
 	struct Scsi_Host  *shost = class_to_shost(dev);
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n",
-			vport->fc_map_cnt + vport->fc_unmap_cnt);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%d\n",
 			 atomic_read(&vport->fc_map_cnt) +
 			 atomic_read(&vport->fc_unmap_cnt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1483,16 +1287,12 @@ lpfc_issue_lip(struct Scsi_Host *shost)
 	LPFC_MBOXQ_t *pmboxq;
 	int mbxstatus = MBXERR_ERROR;
 
-<<<<<<< HEAD
-	if ((vport->fc_flag & FC_OFFLINE_MODE) ||
-=======
 	/*
 	 * If the link is offline, disabled or BLOCK_MGMT_IO
 	 * it doesn't make any sense to allow issue_lip
 	 */
 	if (test_bit(FC_OFFLINE_MODE, &vport->fc_flag) ||
 	    (phba->hba_flag & LINK_DISABLED) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (phba->sli.sli_flag & LPFC_BLOCK_MGMT_IO))
 		return -EPERM;
 
@@ -1505,12 +1305,9 @@ lpfc_issue_lip(struct Scsi_Host *shost)
 	pmboxq->u.mb.mbxCommand = MBX_DOWN_LINK;
 	pmboxq->u.mb.mbxOwner = OWN_HOST;
 
-<<<<<<< HEAD
-=======
 	if (test_bit(FC_PT2PT, &vport->fc_flag))
 		clear_bit(FC_PT2PT_NO_NVME, &vport->fc_flag);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mbxstatus = lpfc_sli_issue_mbox_wait(phba, pmboxq, LPFC_MBOX_TMO * 2);
 
 	if ((mbxstatus == MBX_SUCCESS) &&
@@ -1538,8 +1335,6 @@ lpfc_issue_lip(struct Scsi_Host *shost)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 int
 lpfc_emptyq_wait(struct lpfc_hba *phba, struct list_head *q, spinlock_t *lock)
 {
@@ -1561,7 +1356,6 @@ lpfc_emptyq_wait(struct lpfc_hba *phba, struct list_head *q, spinlock_t *lock)
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_do_offline - Issues a mailbox command to bring the link down
  * @phba: lpfc_hba pointer.
@@ -1581,17 +1375,10 @@ static int
 lpfc_do_offline(struct lpfc_hba *phba, uint32_t type)
 {
 	struct completion online_compl;
-<<<<<<< HEAD
-	struct lpfc_sli_ring *pring;
-	struct lpfc_sli *psli;
-	int status = 0;
-	int cnt = 0;
-=======
 	struct lpfc_queue *qp = NULL;
 	struct lpfc_sli_ring *pring;
 	struct lpfc_sli *psli;
 	int status = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	int rc;
 
@@ -1608,25 +1395,6 @@ lpfc_do_offline(struct lpfc_hba *phba, uint32_t type)
 
 	psli = &phba->sli;
 
-<<<<<<< HEAD
-	/* Wait a little for things to settle down, but not
-	 * long enough for dev loss timeout to expire.
-	 */
-	for (i = 0; i < psli->num_rings; i++) {
-		pring = &psli->ring[i];
-		while (pring->txcmplq_cnt) {
-			msleep(10);
-			if (cnt++ > 500) {  /* 5 secs */
-				lpfc_printf_log(phba,
-					KERN_WARNING, LOG_INIT,
-					"0466 Outstanding IO when "
-					"bringing Adapter offline\n");
-				break;
-			}
-		}
-	}
-
-=======
 	/*
 	 * If freeing the queues have already started, don't access them.
 	 * Otherwise set FREE_WAIT to indicate that queues are being used
@@ -1667,7 +1435,6 @@ out:
 	spin_unlock_irq(&phba->hbalock);
 
 skip_wait:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_completion(&online_compl);
 	rc = lpfc_workq_post_event(phba, &status, &online_compl, type);
 	if (rc == 0)
@@ -1682,8 +1449,6 @@ skip_wait:
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_reset_pci_bus - resets PCI bridge controller's secondary bus of an HBA
  * @phba: lpfc_hba pointer.
  *
@@ -1761,7 +1526,6 @@ lpfc_reset_pci_bus(struct lpfc_hba *phba)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_selective_reset - Offline then onlines the port
  * @phba: lpfc_hba pointer.
  *
@@ -1788,19 +1552,12 @@ lpfc_selective_reset(struct lpfc_hba *phba)
 	if (!phba->cfg_enable_hba_reset)
 		return -EACCES;
 
-<<<<<<< HEAD
-	status = lpfc_do_offline(phba, LPFC_EVT_OFFLINE);
-
-	if (status != 0)
-		return status;
-=======
 	if (!test_bit(FC_OFFLINE_MODE, &phba->pport->fc_flag)) {
 		status = lpfc_do_offline(phba, LPFC_EVT_OFFLINE);
 
 		if (status != 0)
 			return status;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_completion(&online_compl);
 	rc = lpfc_workq_post_event(phba, &status, &online_compl,
@@ -1867,11 +1624,7 @@ lpfc_issue_reset(struct device *dev, struct device_attribute *attr,
  * the readyness after performing a firmware reset.
  *
  * Returns:
-<<<<<<< HEAD
- * zero for success, -EPERM when port does not have privilage to perform the
-=======
  * zero for success, -EPERM when port does not have privilege to perform the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * reset, -EIO when port timeout from recovering from the reset.
  *
  * Note:
@@ -1885,29 +1638,15 @@ lpfc_sli4_pdev_status_reg_wait(struct lpfc_hba *phba)
 	int i;
 
 	msleep(100);
-<<<<<<< HEAD
-	lpfc_readl(phba->sli4_hba.u.if_type2.STATUSregaddr,
-		   &portstat_reg.word0);
-
-	/* verify if privilaged for the request operation */
-=======
 	if (lpfc_readl(phba->sli4_hba.u.if_type2.STATUSregaddr,
 		       &portstat_reg.word0))
 		return -EIO;
 
 	/* verify if privileged for the request operation */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!bf_get(lpfc_sliport_status_rn, &portstat_reg) &&
 	    !bf_get(lpfc_sliport_status_err, &portstat_reg))
 		return -EPERM;
 
-<<<<<<< HEAD
-	/* wait for the SLI port firmware ready after firmware reset */
-	for (i = 0; i < LPFC_FW_RESET_MAXIMUM_WAIT_10MS_CNT; i++) {
-		msleep(10);
-		lpfc_readl(phba->sli4_hba.u.if_type2.STATUSregaddr,
-			   &portstat_reg.word0);
-=======
 	/* There is no point to wait if the port is in an unrecoverable
 	 * state.
 	 */
@@ -1920,7 +1659,6 @@ lpfc_sli4_pdev_status_reg_wait(struct lpfc_hba *phba)
 		if (lpfc_readl(phba->sli4_hba.u.if_type2.STATUSregaddr,
 			       &portstat_reg.word0))
 			continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!bf_get(lpfc_sliport_status_err, &portstat_reg))
 			continue;
 		if (!bf_get(lpfc_sliport_status_rn, &portstat_reg))
@@ -1939,10 +1677,7 @@ lpfc_sli4_pdev_status_reg_wait(struct lpfc_hba *phba)
 /**
  * lpfc_sli4_pdev_reg_request - Request physical dev to perform a register acc
  * @phba: lpfc_hba pointer.
-<<<<<<< HEAD
-=======
  * @opcode: The sli4 config command opcode.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  * Request SLI4 interface type-2 device to perform a physical register set
@@ -1956,11 +1691,7 @@ lpfc_sli4_pdev_reg_request(struct lpfc_hba *phba, uint32_t opcode)
 {
 	struct completion online_compl;
 	struct pci_dev *pdev = phba->pcidev;
-<<<<<<< HEAD
-	uint32_t before_fc_flag;
-=======
 	unsigned long before_fc_flag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t sriov_nr_virtfn;
 	uint32_t reg_val;
 	int status = 0, rc = 0;
@@ -1970,11 +1701,7 @@ lpfc_sli4_pdev_reg_request(struct lpfc_hba *phba, uint32_t opcode)
 		return -EACCES;
 
 	if ((phba->sli_rev < LPFC_SLI_REV4) ||
-<<<<<<< HEAD
-	    (bf_get(lpfc_sli_intf_if_type, &phba->sli4_hba.sli_intf) !=
-=======
 	    (bf_get(lpfc_sli_intf_if_type, &phba->sli4_hba.sli_intf) <
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     LPFC_SLI_INTF_IF_TYPE_2))
 		return -EPERM;
 
@@ -1982,20 +1709,6 @@ lpfc_sli4_pdev_reg_request(struct lpfc_hba *phba, uint32_t opcode)
 	before_fc_flag = phba->pport->fc_flag;
 	sriov_nr_virtfn = phba->cfg_sriov_nr_virtfn;
 
-<<<<<<< HEAD
-	/* Disable SR-IOV virtual functions if enabled */
-	if (phba->cfg_sriov_nr_virtfn) {
-		pci_disable_sriov(pdev);
-		phba->cfg_sriov_nr_virtfn = 0;
-	}
-	status = lpfc_do_offline(phba, LPFC_EVT_OFFLINE);
-
-	if (status != 0)
-		return status;
-
-	/* wait for the device to be quiesced before firmware reset */
-	msleep(100);
-=======
 	if (opcode == LPFC_FW_DUMP) {
 		init_completion(&online_compl);
 		phba->fw_dump_cmpl = &online_compl;
@@ -2014,7 +1727,6 @@ lpfc_sli4_pdev_reg_request(struct lpfc_hba *phba, uint32_t opcode)
 		/* wait for the device to be quiesced before firmware reset */
 		msleep(100);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	reg_val = readl(phba->sli4_hba.conf_regs_memmap_p +
 			LPFC_CTL_PDEV_CTL_OFFSET);
@@ -2035,46 +1747,21 @@ lpfc_sli4_pdev_reg_request(struct lpfc_hba *phba, uint32_t opcode)
 	rc = lpfc_sli4_pdev_status_reg_wait(phba);
 
 	if (rc == -EPERM) {
-<<<<<<< HEAD
-		/* no privilage for reset */
-		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
-				"3150 No privilage to perform the requested "
-=======
 		/* no privilege for reset */
 		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
 				"3150 No privilege to perform the requested "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"access: x%x\n", reg_val);
 	} else if (rc == -EIO) {
 		/* reset failed, there is nothing more we can do */
 		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
 				"3153 Fail to perform the requested "
 				"access: x%x\n", reg_val);
-<<<<<<< HEAD
-=======
 		if (phba->fw_dump_cmpl)
 			phba->fw_dump_cmpl = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 
 	/* keep the original port state */
-<<<<<<< HEAD
-	if (before_fc_flag & FC_OFFLINE_MODE)
-		goto out;
-
-	init_completion(&online_compl);
-	job_posted = lpfc_workq_post_event(phba, &status, &online_compl,
-					   LPFC_EVT_ONLINE);
-	if (!job_posted)
-		goto out;
-
-	wait_for_completion(&online_compl);
-
-out:
-	/* in any case, restore the virtual functions enabled as before */
-	if (sriov_nr_virtfn) {
-=======
 	if (test_bit(FC_OFFLINE_MODE, &before_fc_flag)) {
 		if (phba->fw_dump_cmpl)
 			phba->fw_dump_cmpl = NULL;
@@ -2105,7 +1792,6 @@ out:
 			phba->cfg_sriov_nr_virtfn = 0;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sriov_err =
 			lpfc_sli_probe_sriov_nr_virtfn(phba, sriov_nr_virtfn);
 		if (!sriov_err)
@@ -2138,9 +1824,6 @@ lpfc_nport_evt_cnt_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", phba->nport_event_cnt);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%d\n", phba->nport_event_cnt);
 }
 
@@ -2304,7 +1987,6 @@ lpfc_xcvr_data_show(struct device *dev, struct device_attribute *attr,
 out_free_rdp:
 	kfree(rdp_context);
 	return len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2333,11 +2015,7 @@ lpfc_board_mode_show(struct device *dev, struct device_attribute *attr,
 	else
 		state = "online";
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%s\n", state);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%s\n", state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2383,11 +2061,8 @@ lpfc_board_mode_store(struct device *dev, struct device_attribute *attr,
 			goto board_mode_out;
 		}
 		wait_for_completion(&online_compl);
-<<<<<<< HEAD
-=======
 		if (status)
 			status = -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (strncmp(buf, "offline", sizeof("offline") - 1) == 0)
 		status = lpfc_do_offline(phba, LPFC_EVT_OFFLINE);
 	else if (strncmp(buf, "warm", sizeof("warm") - 1) == 0)
@@ -2406,8 +2081,6 @@ lpfc_board_mode_store(struct device *dev, struct device_attribute *attr,
 		status = lpfc_sli4_pdev_reg_request(phba, LPFC_FW_RESET);
 	else if (strncmp(buf, "dv_reset", sizeof("dv_reset") - 1) == 0)
 		status = lpfc_sli4_pdev_reg_request(phba, LPFC_DV_RESET);
-<<<<<<< HEAD
-=======
 	else if (strncmp(buf, "pci_bus_reset", sizeof("pci_bus_reset") - 1)
 		 == 0)
 		status = lpfc_reset_pci_bus(phba);
@@ -2415,7 +2088,6 @@ lpfc_board_mode_store(struct device *dev, struct device_attribute *attr,
 		lpfc_issue_hb_tmo(phba);
 	else if (strncmp(buf, "trunk", sizeof("trunk") - 1) == 0)
 		status = lpfc_set_trunking(phba, (char *)buf + sizeof("trunk"));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		status = -EINVAL;
 
@@ -2428,11 +2100,7 @@ board_mode_out:
 			*board_mode_str = '\0';
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
 				 "3097 Failed \"%s\", status(%d), "
-<<<<<<< HEAD
-				 "fc_flag(x%x)\n",
-=======
 				 "fc_flag(x%lx)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 buf, status, phba->pport->fc_flag);
 		return status;
 	}
@@ -2462,20 +2130,12 @@ lpfc_get_hba_info(struct lpfc_hba *phba,
 		  uint32_t *mrpi, uint32_t *arpi,
 		  uint32_t *mvpi, uint32_t *avpi)
 {
-<<<<<<< HEAD
-	struct lpfc_mbx_read_config *rd_config;
-	LPFC_MBOXQ_t *pmboxq;
-	MAILBOX_t *pmb;
-	int rc = 0;
-	uint32_t max_vpi;
-=======
 	LPFC_MBOXQ_t *pmboxq;
 	MAILBOX_t *pmb;
 	int rc = 0;
 	struct lpfc_sli4_hba *sli4_hba;
 	struct lpfc_max_cfg_param *max_cfg_param;
 	u16 rsrc_ext_cnt, rsrc_ext_size, max_vpi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * prevent udev from issuing mailbox commands until the port is
@@ -2497,15 +2157,9 @@ lpfc_get_hba_info(struct lpfc_hba *phba,
 	pmb = &pmboxq->u.mb;
 	pmb->mbxCommand = MBX_READ_CONFIG;
 	pmb->mbxOwner = OWN_HOST;
-<<<<<<< HEAD
-	pmboxq->context1 = NULL;
-
-	if (phba->pport->fc_flag & FC_OFFLINE_MODE)
-=======
 	pmboxq->ctx_buf = NULL;
 
 	if (test_bit(FC_OFFLINE_MODE, &phba->pport->fc_flag))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = MBX_NOT_FINISHED;
 	else
 		rc = lpfc_sli_issue_mbox_wait(phba, pmboxq, phba->fc_ratov * 2);
@@ -2517,30 +2171,6 @@ lpfc_get_hba_info(struct lpfc_hba *phba,
 	}
 
 	if (phba->sli_rev == LPFC_SLI_REV4) {
-<<<<<<< HEAD
-		rd_config = &pmboxq->u.mqe.un.rd_config;
-		if (mrpi)
-			*mrpi = bf_get(lpfc_mbx_rd_conf_rpi_count, rd_config);
-		if (arpi)
-			*arpi = bf_get(lpfc_mbx_rd_conf_rpi_count, rd_config) -
-					phba->sli4_hba.max_cfg_param.rpi_used;
-		if (mxri)
-			*mxri = bf_get(lpfc_mbx_rd_conf_xri_count, rd_config);
-		if (axri)
-			*axri = bf_get(lpfc_mbx_rd_conf_xri_count, rd_config) -
-					phba->sli4_hba.max_cfg_param.xri_used;
-
-		/* Account for differences with SLI-3.  Get vpi count from
-		 * mailbox data and subtract one for max vpi value.
-		 */
-		max_vpi = (bf_get(lpfc_mbx_rd_conf_vpi_count, rd_config) > 0) ?
-			(bf_get(lpfc_mbx_rd_conf_vpi_count, rd_config) - 1) : 0;
-
-		if (mvpi)
-			*mvpi = max_vpi;
-		if (avpi)
-			*avpi = max_vpi - phba->sli4_hba.max_cfg_param.vpi_used;
-=======
 		sli4_hba = &phba->sli4_hba;
 		max_cfg_param = &sli4_hba->max_cfg_param;
 
@@ -2600,7 +2230,6 @@ lpfc_get_hba_info(struct lpfc_hba *phba,
 				*mvpi = max_vpi;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (mrpi)
 			*mrpi = pmb->un.varRdConfig.max_rpi;
@@ -2612,14 +2241,6 @@ lpfc_get_hba_info(struct lpfc_hba *phba,
 			*axri = pmb->un.varRdConfig.avail_xri;
 		if (mvpi)
 			*mvpi = pmb->un.varRdConfig.max_vpi;
-<<<<<<< HEAD
-		if (avpi)
-			*avpi = pmb->un.varRdConfig.avail_vpi;
-	}
-
-	mempool_free(pmboxq, phba->mbox_mem_pool);
-	return 1;
-=======
 		if (avpi) {
 			/* avail_vpi is only valid if link is up and ready */
 			if (phba->link_state == LPFC_HBA_READY)
@@ -2635,7 +2256,6 @@ lpfc_get_hba_info(struct lpfc_hba *phba,
 free_pmboxq:
 	mempool_free(pmboxq, phba->mbox_mem_pool);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2662,13 +2282,8 @@ lpfc_max_rpi_show(struct device *dev, struct device_attribute *attr,
 	uint32_t cnt;
 
 	if (lpfc_get_hba_info(phba, NULL, NULL, &cnt, NULL, NULL, NULL))
-<<<<<<< HEAD
-		return snprintf(buf, PAGE_SIZE, "%d\n", cnt);
-	return snprintf(buf, PAGE_SIZE, "Unknown\n");
-=======
 		return scnprintf(buf, PAGE_SIZE, "%d\n", cnt);
 	return scnprintf(buf, PAGE_SIZE, "Unknown\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2692,13 +2307,6 @@ lpfc_used_rpi_show(struct device *dev, struct device_attribute *attr,
 	struct Scsi_Host  *shost = class_to_shost(dev);
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
-<<<<<<< HEAD
-	uint32_t cnt, acnt;
-
-	if (lpfc_get_hba_info(phba, NULL, NULL, &cnt, &acnt, NULL, NULL))
-		return snprintf(buf, PAGE_SIZE, "%d\n", (cnt - acnt));
-	return snprintf(buf, PAGE_SIZE, "Unknown\n");
-=======
 	struct lpfc_sli4_hba *sli4_hba;
 	struct lpfc_max_cfg_param *max_cfg_param;
 	u32 cnt = 0, acnt = 0;
@@ -2713,7 +2321,6 @@ lpfc_used_rpi_show(struct device *dev, struct device_attribute *attr,
 			return scnprintf(buf, PAGE_SIZE, "%d\n", (cnt - acnt));
 	}
 	return scnprintf(buf, PAGE_SIZE, "Unknown\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2740,13 +2347,8 @@ lpfc_max_xri_show(struct device *dev, struct device_attribute *attr,
 	uint32_t cnt;
 
 	if (lpfc_get_hba_info(phba, &cnt, NULL, NULL, NULL, NULL, NULL))
-<<<<<<< HEAD
-		return snprintf(buf, PAGE_SIZE, "%d\n", cnt);
-	return snprintf(buf, PAGE_SIZE, "Unknown\n");
-=======
 		return scnprintf(buf, PAGE_SIZE, "%d\n", cnt);
 	return scnprintf(buf, PAGE_SIZE, "Unknown\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2770,13 +2372,6 @@ lpfc_used_xri_show(struct device *dev, struct device_attribute *attr,
 	struct Scsi_Host  *shost = class_to_shost(dev);
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
-<<<<<<< HEAD
-	uint32_t cnt, acnt;
-
-	if (lpfc_get_hba_info(phba, &cnt, &acnt, NULL, NULL, NULL, NULL))
-		return snprintf(buf, PAGE_SIZE, "%d\n", (cnt - acnt));
-	return snprintf(buf, PAGE_SIZE, "Unknown\n");
-=======
 	struct lpfc_sli4_hba *sli4_hba;
 	struct lpfc_max_cfg_param *max_cfg_param;
 	u32 cnt = 0, acnt = 0;
@@ -2791,7 +2386,6 @@ lpfc_used_xri_show(struct device *dev, struct device_attribute *attr,
 			return scnprintf(buf, PAGE_SIZE, "%d\n", (cnt - acnt));
 	}
 	return scnprintf(buf, PAGE_SIZE, "Unknown\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2818,13 +2412,8 @@ lpfc_max_vpi_show(struct device *dev, struct device_attribute *attr,
 	uint32_t cnt;
 
 	if (lpfc_get_hba_info(phba, NULL, NULL, NULL, NULL, &cnt, NULL))
-<<<<<<< HEAD
-		return snprintf(buf, PAGE_SIZE, "%d\n", cnt);
-	return snprintf(buf, PAGE_SIZE, "Unknown\n");
-=======
 		return scnprintf(buf, PAGE_SIZE, "%d\n", cnt);
 	return scnprintf(buf, PAGE_SIZE, "Unknown\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2848,13 +2437,6 @@ lpfc_used_vpi_show(struct device *dev, struct device_attribute *attr,
 	struct Scsi_Host  *shost = class_to_shost(dev);
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
-<<<<<<< HEAD
-	uint32_t cnt, acnt;
-
-	if (lpfc_get_hba_info(phba, NULL, NULL, NULL, NULL, &cnt, &acnt))
-		return snprintf(buf, PAGE_SIZE, "%d\n", (cnt - acnt));
-	return snprintf(buf, PAGE_SIZE, "Unknown\n");
-=======
 	struct lpfc_sli4_hba *sli4_hba;
 	struct lpfc_max_cfg_param *max_cfg_param;
 	u32 cnt = 0, acnt = 0;
@@ -2869,7 +2451,6 @@ lpfc_used_vpi_show(struct device *dev, struct device_attribute *attr,
 			return scnprintf(buf, PAGE_SIZE, "%d\n", (cnt - acnt));
 	}
 	return scnprintf(buf, PAGE_SIZE, "Unknown\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2894,17 +2475,10 @@ lpfc_npiv_info_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_hba   *phba = vport->phba;
 
 	if (!(phba->max_vpi))
-<<<<<<< HEAD
-		return snprintf(buf, PAGE_SIZE, "NPIV Not Supported\n");
-	if (vport->port_type == LPFC_PHYSICAL_PORT)
-		return snprintf(buf, PAGE_SIZE, "NPIV Physical\n");
-	return snprintf(buf, PAGE_SIZE, "NPIV Virtual (VPI %d)\n", vport->vpi);
-=======
 		return scnprintf(buf, PAGE_SIZE, "NPIV Not Supported\n");
 	if (vport->port_type == LPFC_PHYSICAL_PORT)
 		return scnprintf(buf, PAGE_SIZE, "NPIV Physical\n");
 	return scnprintf(buf, PAGE_SIZE, "NPIV Virtual (VPI %d)\n", vport->vpi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2926,11 +2500,7 @@ lpfc_poll_show(struct device *dev, struct device_attribute *attr,
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%#x\n", phba->cfg_poll);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%#x\n", phba->cfg_poll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3019,69 +2589,6 @@ lpfc_poll_store(struct device *dev, struct device_attribute *attr,
 }
 
 /**
-<<<<<<< HEAD
- * lpfc_fips_level_show - Return the current FIPS level for the HBA
- * @dev: class unused variable.
- * @attr: device attribute, not used.
- * @buf: on return contains the module description text.
- *
- * Returns: size of formatted string.
- **/
-static ssize_t
-lpfc_fips_level_show(struct device *dev,  struct device_attribute *attr,
-		     char *buf)
-{
-	struct Scsi_Host  *shost = class_to_shost(dev);
-	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
-	struct lpfc_hba   *phba = vport->phba;
-
-	return snprintf(buf, PAGE_SIZE, "%d\n", phba->fips_level);
-}
-
-/**
- * lpfc_fips_rev_show - Return the FIPS Spec revision for the HBA
- * @dev: class unused variable.
- * @attr: device attribute, not used.
- * @buf: on return contains the module description text.
- *
- * Returns: size of formatted string.
- **/
-static ssize_t
-lpfc_fips_rev_show(struct device *dev,  struct device_attribute *attr,
-		   char *buf)
-{
-	struct Scsi_Host  *shost = class_to_shost(dev);
-	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
-	struct lpfc_hba   *phba = vport->phba;
-
-	return snprintf(buf, PAGE_SIZE, "%d\n", phba->fips_spec_rev);
-}
-
-/**
- * lpfc_dss_show - Return the current state of dss and the configured state
- * @dev: class converted to a Scsi_host structure.
- * @attr: device attribute, not used.
- * @buf: on return contains the formatted text.
- *
- * Returns: size of formatted string.
- **/
-static ssize_t
-lpfc_dss_show(struct device *dev, struct device_attribute *attr,
-	      char *buf)
-{
-	struct Scsi_Host *shost = class_to_shost(dev);
-	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
-	struct lpfc_hba   *phba = vport->phba;
-
-	return snprintf(buf, PAGE_SIZE, "%s - %sOperational\n",
-			(phba->cfg_enable_dss) ? "Enabled" : "Disabled",
-			(phba->sli3_options & LPFC_SLI3_DSS_ENABLED) ?
-				"" : "Not ");
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_sriov_hw_max_virtfn_show - Return maximum number of virtual functions
  * @dev: class converted to a Scsi_host structure.
  * @attr: device attribute, not used.
@@ -3104,12 +2611,6 @@ lpfc_sriov_hw_max_virtfn_show(struct device *dev,
 	uint16_t max_nr_virtfn;
 
 	max_nr_virtfn = lpfc_sli_sriov_nr_virtfn_get(phba);
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", max_nr_virtfn);
-}
-
-/**
-=======
 	return scnprintf(buf, PAGE_SIZE, "%d\n", max_nr_virtfn);
 }
 
@@ -3144,7 +2645,6 @@ lpfc_enable_bbcr_set(struct lpfc_hba *phba, uint val)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_param_show - Return a cfg attribute value in decimal
  *
  * Description:
@@ -3166,21 +2666,11 @@ lpfc_##attr##_show(struct device *dev, struct device_attribute *attr, \
 	struct Scsi_Host  *shost = class_to_shost(dev);\
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;\
 	struct lpfc_hba   *phba = vport->phba;\
-<<<<<<< HEAD
-	uint val = 0;\
-	val = phba->cfg_##attr;\
-	return snprintf(buf, PAGE_SIZE, "%d\n",\
-			phba->cfg_##attr);\
-}
-
-/**
-=======
 	return scnprintf(buf, PAGE_SIZE, "%d\n",\
 			phba->cfg_##attr);\
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_param_hex_show - Return a cfg attribute value in hex
  *
  * Description:
@@ -3204,19 +2694,11 @@ lpfc_##attr##_show(struct device *dev, struct device_attribute *attr, \
 	struct lpfc_hba   *phba = vport->phba;\
 	uint val = 0;\
 	val = phba->cfg_##attr;\
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%#x\n",\
-			phba->cfg_##attr);\
-}
-
-/**
-=======
 	return scnprintf(buf, PAGE_SIZE, "%#x\n",\
 			phba->cfg_##attr);\
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_param_init - Initializes a cfg attribute
  *
  * Description:
@@ -3225,11 +2707,7 @@ lpfc_##attr##_show(struct device *dev, struct device_attribute *attr, \
  * takes a default argument, a minimum and maximum argument.
  *
  * lpfc_##attr##_init: Initializes an attribute.
-<<<<<<< HEAD
- * @phba: pointer the the adapter structure.
-=======
  * @phba: pointer to the adapter structure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @val: integer attribute value.
  *
  * Validates the min and max values then sets the adapter config field
@@ -3243,11 +2721,7 @@ lpfc_##attr##_show(struct device *dev, struct device_attribute *attr, \
 static int \
 lpfc_##attr##_init(struct lpfc_hba *phba, uint val) \
 { \
-<<<<<<< HEAD
-	if (val >= minval && val <= maxval) {\
-=======
 	if (lpfc_rangecheck(val, minval, maxval)) {\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phba->cfg_##attr = val;\
 		return 0;\
 	}\
@@ -3258,11 +2732,7 @@ lpfc_##attr##_init(struct lpfc_hba *phba, uint val) \
 	return -EINVAL;\
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_param_set - Set a cfg attribute value
  *
  * Description:
@@ -3270,11 +2740,7 @@ lpfc_##attr##_init(struct lpfc_hba *phba, uint val) \
  * into a function with the name lpfc_hba_queue_depth_set
  *
  * lpfc_##attr##_set: Sets an attribute value.
-<<<<<<< HEAD
- * @phba: pointer the the adapter structure.
-=======
  * @phba: pointer to the adapter structure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @val: integer attribute value.
  *
  * Description:
@@ -3290,11 +2756,7 @@ lpfc_##attr##_init(struct lpfc_hba *phba, uint val) \
 static int \
 lpfc_##attr##_set(struct lpfc_hba *phba, uint val) \
 { \
-<<<<<<< HEAD
-	if (val >= minval && val <= maxval) {\
-=======
 	if (lpfc_rangecheck(val, minval, maxval)) {\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_printf_log(phba, KERN_ERR, LOG_INIT, \
 			"3052 lpfc_" #attr " changed from %d to %d\n", \
 			phba->cfg_##attr, val); \
@@ -3307,11 +2769,7 @@ lpfc_##attr##_set(struct lpfc_hba *phba, uint val) \
 	return -EINVAL;\
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_param_store - Set a vport attribute value
  *
  * Description:
@@ -3351,11 +2809,7 @@ lpfc_##attr##_store(struct device *dev, struct device_attribute *attr, \
 		return -EINVAL;\
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_vport_param_show - Return decimal formatted cfg attribute value
  *
  * Description:
@@ -3376,19 +2830,10 @@ lpfc_##attr##_show(struct device *dev, struct device_attribute *attr, \
 { \
 	struct Scsi_Host  *shost = class_to_shost(dev);\
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;\
-<<<<<<< HEAD
-	uint val = 0;\
-	val = vport->cfg_##attr;\
-	return snprintf(buf, PAGE_SIZE, "%d\n", vport->cfg_##attr);\
-}
-
-/**
-=======
 	return scnprintf(buf, PAGE_SIZE, "%d\n", vport->cfg_##attr);\
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_vport_param_hex_show - Return hex formatted attribute value
  *
  * Description:
@@ -3410,19 +2855,10 @@ lpfc_##attr##_show(struct device *dev, struct device_attribute *attr, \
 { \
 	struct Scsi_Host  *shost = class_to_shost(dev);\
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;\
-<<<<<<< HEAD
-	uint val = 0;\
-	val = vport->cfg_##attr;\
-	return snprintf(buf, PAGE_SIZE, "%#x\n", vport->cfg_##attr);\
-}
-
-/**
-=======
 	return scnprintf(buf, PAGE_SIZE, "%#x\n", vport->cfg_##attr);\
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_vport_param_init - Initialize a vport cfg attribute
  *
  * Description:
@@ -3433,11 +2869,7 @@ lpfc_##attr##_show(struct device *dev, struct device_attribute *attr, \
  * lpfc_##attr##_init: validates the min and max values then sets the
  * adapter config field accordingly, or uses the default if out of range
  * and prints an error message.
-<<<<<<< HEAD
- * @phba: pointer the the adapter structure.
-=======
  * @phba: pointer to the adapter structure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @val: integer attribute value.
  *
  * Returns:
@@ -3448,11 +2880,7 @@ lpfc_##attr##_show(struct device *dev, struct device_attribute *attr, \
 static int \
 lpfc_##attr##_init(struct lpfc_vport *vport, uint val) \
 { \
-<<<<<<< HEAD
-	if (val >= minval && val <= maxval) {\
-=======
 	if (lpfc_rangecheck(val, minval, maxval)) {\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vport->cfg_##attr = val;\
 		return 0;\
 	}\
@@ -3463,11 +2891,7 @@ lpfc_##attr##_init(struct lpfc_vport *vport, uint val) \
 	return -EINVAL;\
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_vport_param_set - Set a vport cfg attribute
  *
  * Description:
@@ -3477,11 +2901,7 @@ lpfc_##attr##_init(struct lpfc_vport *vport, uint val) \
  * lpfc_##attr##_set: validates the min and max values then sets the
  * adapter config field if in the valid range. prints error message
  * and does not set the parameter if invalid.
-<<<<<<< HEAD
- * @phba: pointer the the adapter structure.
-=======
  * @phba: pointer to the adapter structure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @val:	integer attribute value.
  *
  * Returns:
@@ -3492,19 +2912,12 @@ lpfc_##attr##_init(struct lpfc_vport *vport, uint val) \
 static int \
 lpfc_##attr##_set(struct lpfc_vport *vport, uint val) \
 { \
-<<<<<<< HEAD
-	if (val >= minval && val <= maxval) {\
-		lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT, \
-			"3053 lpfc_" #attr " changed from %d to %d\n", \
-			vport->cfg_##attr, val); \
-=======
 	if (lpfc_rangecheck(val, minval, maxval)) {\
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT, \
 			"3053 lpfc_" #attr \
 			" changed from %d (x%x) to %d (x%x)\n", \
 			vport->cfg_##attr, vport->cfg_##attr, \
 			val, val); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vport->cfg_##attr = val;\
 		return 0;\
 	}\
@@ -3514,11 +2927,7 @@ lpfc_##attr##_set(struct lpfc_vport *vport, uint val) \
 	return -EINVAL;\
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_vport_param_store - Set a vport attribute
  *
  * Description:
@@ -3554,99 +2963,8 @@ lpfc_##attr##_store(struct device *dev, struct device_attribute *attr, \
 }
 
 
-<<<<<<< HEAD
-#define LPFC_ATTR(name, defval, minval, maxval, desc) \
-static uint lpfc_##name = defval;\
-module_param(lpfc_##name, uint, S_IRUGO);\
-MODULE_PARM_DESC(lpfc_##name, desc);\
-lpfc_param_init(name, defval, minval, maxval)
-
-#define LPFC_ATTR_R(name, defval, minval, maxval, desc) \
-static uint lpfc_##name = defval;\
-module_param(lpfc_##name, uint, S_IRUGO);\
-MODULE_PARM_DESC(lpfc_##name, desc);\
-lpfc_param_show(name)\
-lpfc_param_init(name, defval, minval, maxval)\
-static DEVICE_ATTR(lpfc_##name, S_IRUGO , lpfc_##name##_show, NULL)
-
-#define LPFC_ATTR_RW(name, defval, minval, maxval, desc) \
-static uint lpfc_##name = defval;\
-module_param(lpfc_##name, uint, S_IRUGO);\
-MODULE_PARM_DESC(lpfc_##name, desc);\
-lpfc_param_show(name)\
-lpfc_param_init(name, defval, minval, maxval)\
-lpfc_param_set(name, defval, minval, maxval)\
-lpfc_param_store(name)\
-static DEVICE_ATTR(lpfc_##name, S_IRUGO | S_IWUSR,\
-		   lpfc_##name##_show, lpfc_##name##_store)
-
-#define LPFC_ATTR_HEX_R(name, defval, minval, maxval, desc) \
-static uint lpfc_##name = defval;\
-module_param(lpfc_##name, uint, S_IRUGO);\
-MODULE_PARM_DESC(lpfc_##name, desc);\
-lpfc_param_hex_show(name)\
-lpfc_param_init(name, defval, minval, maxval)\
-static DEVICE_ATTR(lpfc_##name, S_IRUGO , lpfc_##name##_show, NULL)
-
-#define LPFC_ATTR_HEX_RW(name, defval, minval, maxval, desc) \
-static uint lpfc_##name = defval;\
-module_param(lpfc_##name, uint, S_IRUGO);\
-MODULE_PARM_DESC(lpfc_##name, desc);\
-lpfc_param_hex_show(name)\
-lpfc_param_init(name, defval, minval, maxval)\
-lpfc_param_set(name, defval, minval, maxval)\
-lpfc_param_store(name)\
-static DEVICE_ATTR(lpfc_##name, S_IRUGO | S_IWUSR,\
-		   lpfc_##name##_show, lpfc_##name##_store)
-
-#define LPFC_VPORT_ATTR(name, defval, minval, maxval, desc) \
-static uint lpfc_##name = defval;\
-module_param(lpfc_##name, uint, S_IRUGO);\
-MODULE_PARM_DESC(lpfc_##name, desc);\
-lpfc_vport_param_init(name, defval, minval, maxval)
-
-#define LPFC_VPORT_ATTR_R(name, defval, minval, maxval, desc) \
-static uint lpfc_##name = defval;\
-module_param(lpfc_##name, uint, S_IRUGO);\
-MODULE_PARM_DESC(lpfc_##name, desc);\
-lpfc_vport_param_show(name)\
-lpfc_vport_param_init(name, defval, minval, maxval)\
-static DEVICE_ATTR(lpfc_##name, S_IRUGO , lpfc_##name##_show, NULL)
-
-#define LPFC_VPORT_ATTR_RW(name, defval, minval, maxval, desc) \
-static uint lpfc_##name = defval;\
-module_param(lpfc_##name, uint, S_IRUGO);\
-MODULE_PARM_DESC(lpfc_##name, desc);\
-lpfc_vport_param_show(name)\
-lpfc_vport_param_init(name, defval, minval, maxval)\
-lpfc_vport_param_set(name, defval, minval, maxval)\
-lpfc_vport_param_store(name)\
-static DEVICE_ATTR(lpfc_##name, S_IRUGO | S_IWUSR,\
-		   lpfc_##name##_show, lpfc_##name##_store)
-
-#define LPFC_VPORT_ATTR_HEX_R(name, defval, minval, maxval, desc) \
-static uint lpfc_##name = defval;\
-module_param(lpfc_##name, uint, S_IRUGO);\
-MODULE_PARM_DESC(lpfc_##name, desc);\
-lpfc_vport_param_hex_show(name)\
-lpfc_vport_param_init(name, defval, minval, maxval)\
-static DEVICE_ATTR(lpfc_##name, S_IRUGO , lpfc_##name##_show, NULL)
-
-#define LPFC_VPORT_ATTR_HEX_RW(name, defval, minval, maxval, desc) \
-static uint lpfc_##name = defval;\
-module_param(lpfc_##name, uint, S_IRUGO);\
-MODULE_PARM_DESC(lpfc_##name, desc);\
-lpfc_vport_param_hex_show(name)\
-lpfc_vport_param_init(name, defval, minval, maxval)\
-lpfc_vport_param_set(name, defval, minval, maxval)\
-lpfc_vport_param_store(name)\
-static DEVICE_ATTR(lpfc_##name, S_IRUGO | S_IWUSR,\
-		   lpfc_##name##_show, lpfc_##name##_store)
-
-=======
 static DEVICE_ATTR(nvme_info, 0444, lpfc_nvme_info_show, NULL);
 static DEVICE_ATTR(scsi_stat, 0444, lpfc_scsi_stat_show, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEVICE_ATTR(bg_info, S_IRUGO, lpfc_bg_info_show, NULL);
 static DEVICE_ATTR(bg_guard_err, S_IRUGO, lpfc_bg_guard_err_show, NULL);
 static DEVICE_ATTR(bg_apptag_err, S_IRUGO, lpfc_bg_apptag_err_show, NULL);
@@ -3665,21 +2983,12 @@ static DEVICE_ATTR(option_rom_version, S_IRUGO,
 		   lpfc_option_rom_version_show, NULL);
 static DEVICE_ATTR(num_discovered_ports, S_IRUGO,
 		   lpfc_num_discovered_ports_show, NULL);
-<<<<<<< HEAD
-static DEVICE_ATTR(menlo_mgmt_mode, S_IRUGO, lpfc_mlomgmt_show, NULL);
-static DEVICE_ATTR(nport_evt_cnt, S_IRUGO, lpfc_nport_evt_cnt_show, NULL);
-static DEVICE_ATTR(lpfc_drvr_version, S_IRUGO, lpfc_drvr_version_show, NULL);
-static DEVICE_ATTR(lpfc_enable_fip, S_IRUGO, lpfc_enable_fip_show, NULL);
-static DEVICE_ATTR(board_mode, S_IRUGO | S_IWUSR,
-		   lpfc_board_mode_show, lpfc_board_mode_store);
-=======
 static DEVICE_ATTR(nport_evt_cnt, S_IRUGO, lpfc_nport_evt_cnt_show, NULL);
 static DEVICE_ATTR_RO(lpfc_drvr_version);
 static DEVICE_ATTR_RO(lpfc_enable_fip);
 static DEVICE_ATTR(board_mode, S_IRUGO | S_IWUSR,
 		   lpfc_board_mode_show, lpfc_board_mode_store);
 static DEVICE_ATTR_RO(lpfc_xcvr_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEVICE_ATTR(issue_reset, S_IWUSR, NULL, lpfc_issue_reset);
 static DEVICE_ATTR(max_vpi, S_IRUGO, lpfc_max_vpi_show, NULL);
 static DEVICE_ATTR(used_vpi, S_IRUGO, lpfc_used_vpi_show, NULL);
@@ -3688,119 +2997,6 @@ static DEVICE_ATTR(used_rpi, S_IRUGO, lpfc_used_rpi_show, NULL);
 static DEVICE_ATTR(max_xri, S_IRUGO, lpfc_max_xri_show, NULL);
 static DEVICE_ATTR(used_xri, S_IRUGO, lpfc_used_xri_show, NULL);
 static DEVICE_ATTR(npiv_info, S_IRUGO, lpfc_npiv_info_show, NULL);
-<<<<<<< HEAD
-static DEVICE_ATTR(lpfc_temp_sensor, S_IRUGO, lpfc_temp_sensor_show, NULL);
-static DEVICE_ATTR(lpfc_fips_level, S_IRUGO, lpfc_fips_level_show, NULL);
-static DEVICE_ATTR(lpfc_fips_rev, S_IRUGO, lpfc_fips_rev_show, NULL);
-static DEVICE_ATTR(lpfc_dss, S_IRUGO, lpfc_dss_show, NULL);
-static DEVICE_ATTR(lpfc_sriov_hw_max_virtfn, S_IRUGO,
-		   lpfc_sriov_hw_max_virtfn_show, NULL);
-static DEVICE_ATTR(protocol, S_IRUGO, lpfc_sli4_protocol_show, NULL);
-
-static char *lpfc_soft_wwn_key = "C99G71SL8032A";
-
-/**
- * lpfc_soft_wwn_enable_store - Allows setting of the wwn if the key is valid
- * @dev: class device that is converted into a Scsi_host.
- * @attr: device attribute, not used.
- * @buf: containing the string lpfc_soft_wwn_key.
- * @count: must be size of lpfc_soft_wwn_key.
- *
- * Returns:
- * -EINVAL if the buffer does not contain lpfc_soft_wwn_key
- * length of buf indicates success
- **/
-static ssize_t
-lpfc_soft_wwn_enable_store(struct device *dev, struct device_attribute *attr,
-			   const char *buf, size_t count)
-{
-	struct Scsi_Host  *shost = class_to_shost(dev);
-	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
-	struct lpfc_hba   *phba = vport->phba;
-	unsigned int cnt = count;
-
-	/*
-	 * We're doing a simple sanity check for soft_wwpn setting.
-	 * We require that the user write a specific key to enable
-	 * the soft_wwpn attribute to be settable. Once the attribute
-	 * is written, the enable key resets. If further updates are
-	 * desired, the key must be written again to re-enable the
-	 * attribute.
-	 *
-	 * The "key" is not secret - it is a hardcoded string shown
-	 * here. The intent is to protect against the random user or
-	 * application that is just writing attributes.
-	 */
-
-	/* count may include a LF at end of string */
-	if (buf[cnt-1] == '\n')
-		cnt--;
-
-	if ((cnt != strlen(lpfc_soft_wwn_key)) ||
-	    (strncmp(buf, lpfc_soft_wwn_key, strlen(lpfc_soft_wwn_key)) != 0))
-		return -EINVAL;
-
-	phba->soft_wwn_enable = 1;
-	return count;
-}
-static DEVICE_ATTR(lpfc_soft_wwn_enable, S_IWUSR, NULL,
-		   lpfc_soft_wwn_enable_store);
-
-/**
- * lpfc_soft_wwpn_show - Return the cfg soft ww port name of the adapter
- * @dev: class device that is converted into a Scsi_host.
- * @attr: device attribute, not used.
- * @buf: on return contains the wwpn in hexadecimal.
- *
- * Returns: size of formatted string.
- **/
-static ssize_t
-lpfc_soft_wwpn_show(struct device *dev, struct device_attribute *attr,
-		    char *buf)
-{
-	struct Scsi_Host  *shost = class_to_shost(dev);
-	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
-	struct lpfc_hba   *phba = vport->phba;
-
-	return snprintf(buf, PAGE_SIZE, "0x%llx\n",
-			(unsigned long long)phba->cfg_soft_wwpn);
-}
-
-/**
- * lpfc_soft_wwpn_store - Set the ww port name of the adapter
- * @dev class device that is converted into a Scsi_host.
- * @attr: device attribute, not used.
- * @buf: contains the wwpn in hexadecimal.
- * @count: number of wwpn bytes in buf
- *
- * Returns:
- * -EACCES hba reset not enabled, adapter over temp
- * -EINVAL soft wwn not enabled, count is invalid, invalid wwpn byte invalid
- * -EIO error taking adapter offline or online
- * value of count on success
- **/
-static ssize_t
-lpfc_soft_wwpn_store(struct device *dev, struct device_attribute *attr,
-		     const char *buf, size_t count)
-{
-	struct Scsi_Host  *shost = class_to_shost(dev);
-	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
-	struct lpfc_hba   *phba = vport->phba;
-	struct completion online_compl;
-	int stat1=0, stat2=0;
-	unsigned int i, j, cnt=count;
-	u8 wwpn[8];
-	int rc;
-
-	if (!phba->cfg_enable_hba_reset)
-		return -EACCES;
-	spin_lock_irq(&phba->hbalock);
-	if (phba->over_temp_state == HBA_OVER_TEMP) {
-		spin_unlock_irq(&phba->hbalock);
-		return -EACCES;
-	}
-	spin_unlock_irq(&phba->hbalock);
-=======
 static DEVICE_ATTR_RO(lpfc_temp_sensor);
 static DEVICE_ATTR_RO(lpfc_sriov_hw_max_virtfn);
 static DEVICE_ATTR(protocol, S_IRUGO, lpfc_sli4_protocol_show, NULL);
@@ -3900,101 +3096,10 @@ lpfc_oas_tgt_store(struct device *dev, struct device_attribute *attr,
 	if (!phba->cfg_fof)
 		return -EPERM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* count may include a LF at end of string */
 	if (buf[cnt-1] == '\n')
 		cnt--;
 
-<<<<<<< HEAD
-	if (!phba->soft_wwn_enable || (cnt < 16) || (cnt > 18) ||
-	    ((cnt == 17) && (*buf++ != 'x')) ||
-	    ((cnt == 18) && ((*buf++ != '0') || (*buf++ != 'x'))))
-		return -EINVAL;
-
-	phba->soft_wwn_enable = 0;
-
-	memset(wwpn, 0, sizeof(wwpn));
-
-	/* Validate and store the new name */
-	for (i=0, j=0; i < 16; i++) {
-		int value;
-
-		value = hex_to_bin(*buf++);
-		if (value >= 0)
-			j = (j << 4) | value;
-		else
-			return -EINVAL;
-		if (i % 2) {
-			wwpn[i/2] = j & 0xff;
-			j = 0;
-		}
-	}
-	phba->cfg_soft_wwpn = wwn_to_u64(wwpn);
-	fc_host_port_name(shost) = phba->cfg_soft_wwpn;
-	if (phba->cfg_soft_wwnn)
-		fc_host_node_name(shost) = phba->cfg_soft_wwnn;
-
-	dev_printk(KERN_NOTICE, &phba->pcidev->dev,
-		   "lpfc%d: Reinitializing to use soft_wwpn\n", phba->brd_no);
-
-	stat1 = lpfc_do_offline(phba, LPFC_EVT_OFFLINE);
-	if (stat1)
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-				"0463 lpfc_soft_wwpn attribute set failed to "
-				"reinit adapter - %d\n", stat1);
-	init_completion(&online_compl);
-	rc = lpfc_workq_post_event(phba, &stat2, &online_compl,
-				   LPFC_EVT_ONLINE);
-	if (rc == 0)
-		return -ENOMEM;
-
-	wait_for_completion(&online_compl);
-	if (stat2)
-		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-				"0464 lpfc_soft_wwpn attribute set failed to "
-				"reinit adapter - %d\n", stat2);
-	return (stat1 || stat2) ? -EIO : count;
-}
-static DEVICE_ATTR(lpfc_soft_wwpn, S_IRUGO | S_IWUSR,\
-		   lpfc_soft_wwpn_show, lpfc_soft_wwpn_store);
-
-/**
- * lpfc_soft_wwnn_show - Return the cfg soft ww node name for the adapter
- * @dev: class device that is converted into a Scsi_host.
- * @attr: device attribute, not used.
- * @buf: on return contains the wwnn in hexadecimal.
- *
- * Returns: size of formatted string.
- **/
-static ssize_t
-lpfc_soft_wwnn_show(struct device *dev, struct device_attribute *attr,
-		    char *buf)
-{
-	struct Scsi_Host *shost = class_to_shost(dev);
-	struct lpfc_hba *phba = ((struct lpfc_vport *)shost->hostdata)->phba;
-	return snprintf(buf, PAGE_SIZE, "0x%llx\n",
-			(unsigned long long)phba->cfg_soft_wwnn);
-}
-
-/**
- * lpfc_soft_wwnn_store - sets the ww node name of the adapter
- * @cdev: class device that is converted into a Scsi_host.
- * @buf: contains the ww node name in hexadecimal.
- * @count: number of wwnn bytes in buf.
- *
- * Returns:
- * -EINVAL soft wwn not enabled, count is invalid, invalid wwnn byte invalid
- * value of count on success
- **/
-static ssize_t
-lpfc_soft_wwnn_store(struct device *dev, struct device_attribute *attr,
-		     const char *buf, size_t count)
-{
-	struct Scsi_Host *shost = class_to_shost(dev);
-	struct lpfc_hba *phba = ((struct lpfc_vport *)shost->hostdata)->phba;
-	unsigned int i, j, cnt=count;
-	u8 wwnn[8];
-=======
 	rc = lpfc_wwn_set(buf, cnt, wwpn);
 	if (rc)
 		return rc;
@@ -4057,51 +3162,11 @@ lpfc_oas_priority_store(struct device *dev, struct device_attribute *attr,
 
 	if (!phba->cfg_fof)
 		return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* count may include a LF at end of string */
 	if (buf[cnt-1] == '\n')
 		cnt--;
 
-<<<<<<< HEAD
-	if (!phba->soft_wwn_enable || (cnt < 16) || (cnt > 18) ||
-	    ((cnt == 17) && (*buf++ != 'x')) ||
-	    ((cnt == 18) && ((*buf++ != '0') || (*buf++ != 'x'))))
-		return -EINVAL;
-
-	/*
-	 * Allow wwnn to be set many times, as long as the enable is set.
-	 * However, once the wwpn is set, everything locks.
-	 */
-
-	memset(wwnn, 0, sizeof(wwnn));
-
-	/* Validate and store the new name */
-	for (i=0, j=0; i < 16; i++) {
-		int value;
-
-		value = hex_to_bin(*buf++);
-		if (value >= 0)
-			j = (j << 4) | value;
-		else
-			return -EINVAL;
-		if (i % 2) {
-			wwnn[i/2] = j & 0xff;
-			j = 0;
-		}
-	}
-	phba->cfg_soft_wwnn = wwn_to_u64(wwnn);
-
-	dev_printk(KERN_NOTICE, &phba->pcidev->dev,
-		   "lpfc%d: soft_wwnn set. Value will take effect upon "
-		   "setting of the soft_wwpn\n", phba->brd_no);
-
-	return count;
-}
-static DEVICE_ATTR(lpfc_soft_wwnn, S_IRUGO | S_IWUSR,\
-		   lpfc_soft_wwnn_show, lpfc_soft_wwnn_store);
-
-=======
 	ret = kstrtoul(buf, 0, &val);
 	if (ret || (val > 0x7f))
 		return -EINVAL;
@@ -4497,7 +3562,6 @@ unsigned long long lpfc_enable_nvmet[LPFC_NVMET_MAX_PORTS] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 module_param_array(lpfc_enable_nvmet, ullong, &lpfc_enable_nvmet_cnt, 0444);
 MODULE_PARM_DESC(lpfc_enable_nvmet, "Enable HBA port(s) WWPN as a NVME Target");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int lpfc_poll = 0;
 module_param(lpfc_poll, int, S_IRUGO);
@@ -4506,24 +3570,6 @@ MODULE_PARM_DESC(lpfc_poll, "FCP ring polling mode control:"
 		 " 1 - poll with interrupts enabled"
 		 " 3 - poll and disable FCP ring interrupts");
 
-<<<<<<< HEAD
-static DEVICE_ATTR(lpfc_poll, S_IRUGO | S_IWUSR,
-		   lpfc_poll_show, lpfc_poll_store);
-
-int  lpfc_sli_mode = 0;
-module_param(lpfc_sli_mode, int, S_IRUGO);
-MODULE_PARM_DESC(lpfc_sli_mode, "SLI mode selector:"
-		 " 0 - auto (SLI-3 if supported),"
-		 " 2 - select SLI-2 even on SLI-3 capable HBAs,"
-		 " 3 - select SLI-3");
-
-int lpfc_enable_npiv = 1;
-module_param(lpfc_enable_npiv, int, S_IRUGO);
-MODULE_PARM_DESC(lpfc_enable_npiv, "Enable NPIV functionality");
-lpfc_param_show(enable_npiv);
-lpfc_param_init(enable_npiv, 1, 0, 1);
-static DEVICE_ATTR(lpfc_enable_npiv, S_IRUGO, lpfc_enable_npiv_show, NULL);
-=======
 static DEVICE_ATTR_RW(lpfc_poll);
 
 int lpfc_no_hba_reset_cnt;
@@ -4537,19 +3583,10 @@ LPFC_ATTR(sli_mode, 3, 3, 3,
 
 LPFC_ATTR_R(enable_npiv, 1, 0, 1,
 	"Enable NPIV functionality");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 LPFC_ATTR_R(fcf_failover_policy, 1, 1, 2,
 	"FCF Fast failover=1 Priority failover=2");
 
-<<<<<<< HEAD
-int lpfc_enable_rrq;
-module_param(lpfc_enable_rrq, int, S_IRUGO);
-MODULE_PARM_DESC(lpfc_enable_rrq, "Enable RRQ functionality");
-lpfc_param_show(enable_rrq);
-lpfc_param_init(enable_rrq, 0, 0, 1);
-static DEVICE_ATTR(lpfc_enable_rrq, S_IRUGO, lpfc_enable_rrq_show, NULL);
-=======
 /*
  * lpfc_fcp_wait_abts_rsp: Modifies criteria for reporting completion of
  * aborted IO.
@@ -4567,7 +3604,6 @@ LPFC_ATTR_R(fcp_wait_abts_rsp, 0, 0, 1, "Wait for FCP ABTS completion");
 */
 LPFC_ATTR_R(enable_rrq, 2, 0, 2,
 	"Enable RRQ functionality");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 # lpfc_suppress_link_up:  Bring link up at initialization
@@ -4579,8 +3615,6 @@ LPFC_ATTR_R(enable_rrq, 2, 0, 2,
 LPFC_ATTR_R(suppress_link_up, LPFC_INITIALIZE_LINK, LPFC_INITIALIZE_LINK,
 		LPFC_DELAY_INIT_LINK_INDEFINITELY,
 		"Suppress Link Up at initialization");
-<<<<<<< HEAD
-=======
 
 static ssize_t
 lpfc_pls_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -4606,7 +3640,6 @@ lpfc_pt_show(struct device *dev, struct device_attribute *attr, char *buf)
 static DEVICE_ATTR(pt, 0444,
 			 lpfc_pt_show, NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 # lpfc_cnt: Number of IOCBs allocated for ELS, CT, and ABTS
 #       1 - (1024)
@@ -4621,11 +3654,7 @@ lpfc_iocb_hw_show(struct device *dev, struct device_attribute *attr, char *buf)
 	struct Scsi_Host  *shost = class_to_shost(dev);
 	struct lpfc_hba   *phba = ((struct lpfc_vport *) shost->hostdata)->phba;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", phba->iocb_max);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%d\n", phba->iocb_max);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(iocb_hw, S_IRUGO,
@@ -4635,16 +3664,10 @@ lpfc_txq_hw_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	struct Scsi_Host  *shost = class_to_shost(dev);
 	struct lpfc_hba   *phba = ((struct lpfc_vport *) shost->hostdata)->phba;
-<<<<<<< HEAD
-
-	return snprintf(buf, PAGE_SIZE, "%d\n",
-		phba->sli.ring[LPFC_ELS_RING].txq_max);
-=======
 	struct lpfc_sli_ring *pring = lpfc_phba_elsring(phba);
 
 	return scnprintf(buf, PAGE_SIZE, "%d\n",
 			pring ? pring->txq_max : 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(txq_hw, S_IRUGO,
@@ -4655,33 +3678,15 @@ lpfc_txcmplq_hw_show(struct device *dev, struct device_attribute *attr,
 {
 	struct Scsi_Host  *shost = class_to_shost(dev);
 	struct lpfc_hba   *phba = ((struct lpfc_vport *) shost->hostdata)->phba;
-<<<<<<< HEAD
-
-	return snprintf(buf, PAGE_SIZE, "%d\n",
-		phba->sli.ring[LPFC_ELS_RING].txcmplq_max);
-=======
 	struct lpfc_sli_ring *pring = lpfc_phba_elsring(phba);
 
 	return scnprintf(buf, PAGE_SIZE, "%d\n",
 			pring ? pring->txcmplq_max : 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(txcmplq_hw, S_IRUGO,
 			 lpfc_txcmplq_hw_show, NULL);
 
-<<<<<<< HEAD
-int lpfc_iocb_cnt = 2;
-module_param(lpfc_iocb_cnt, int, S_IRUGO);
-MODULE_PARM_DESC(lpfc_iocb_cnt,
-	"Number of IOCBs alloc for ELS, CT, and ABTS: 1k to 5k IOCBs");
-lpfc_param_show(iocb_cnt);
-lpfc_param_init(iocb_cnt, 2, 1, 5);
-static DEVICE_ATTR(lpfc_iocb_cnt, S_IRUGO,
-			 lpfc_iocb_cnt_show, NULL);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 # lpfc_nodev_tmo: If set, it will hold all I/O errors on devices that disappear
 # until the timer expires. Value range is [0,255]. Default value is 30.
@@ -4708,11 +3713,7 @@ lpfc_nodev_tmo_show(struct device *dev, struct device_attribute *attr,
 	struct Scsi_Host  *shost = class_to_shost(dev);
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n",	vport->cfg_devloss_tmo);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%d\n",	vport->cfg_devloss_tmo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -4737,15 +3738,9 @@ lpfc_nodev_tmo_init(struct lpfc_vport *vport, int val)
 		vport->cfg_nodev_tmo = vport->cfg_devloss_tmo;
 		if (val != LPFC_DEF_DEVLOSS_TMO)
 			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-<<<<<<< HEAD
-					 "0407 Ignoring nodev_tmo module "
-					 "parameter because devloss_tmo is "
-					 "set.\n");
-=======
 					 "0407 Ignoring lpfc_nodev_tmo module "
 					 "parameter because lpfc_devloss_tmo "
 					 "is set.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -4772,17 +3767,6 @@ lpfc_nodev_tmo_init(struct lpfc_vport *vport, int val)
 static void
 lpfc_update_rport_devloss_tmo(struct lpfc_vport *vport)
 {
-<<<<<<< HEAD
-	struct Scsi_Host  *shost;
-	struct lpfc_nodelist  *ndlp;
-
-	shost = lpfc_shost_from_vport(vport);
-	spin_lock_irq(shost->host_lock);
-	list_for_each_entry(ndlp, &vport->fc_nodes, nlp_listp)
-		if (NLP_CHK_NODE_ACT(ndlp) && ndlp->rport)
-			ndlp->rport->dev_loss_tmo = vport->cfg_devloss_tmo;
-	spin_unlock_irq(shost->host_lock);
-=======
 	struct lpfc_nodelist  *ndlp;
 	unsigned long iflags;
 #if (IS_ENABLED(CONFIG_NVME_FC))
@@ -4806,7 +3790,6 @@ lpfc_update_rport_devloss_tmo(struct lpfc_vport *vport)
 #endif
 	}
 	spin_unlock_irqrestore(&vport->fc_nodes_list_lock, iflags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -4830,13 +3813,8 @@ lpfc_nodev_tmo_set(struct lpfc_vport *vport, int val)
 	if (vport->dev_loss_tmo_changed ||
 	    (lpfc_devloss_tmo != LPFC_DEF_DEVLOSS_TMO)) {
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-<<<<<<< HEAD
-				 "0401 Ignoring change to nodev_tmo "
-				 "because devloss_tmo is set.\n");
-=======
 				 "0401 Ignoring change to lpfc_nodev_tmo "
 				 "because lpfc_devloss_tmo is set.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	if (val >= LPFC_MIN_DEVLOSS_TMO && val <= LPFC_MAX_DEVLOSS_TMO) {
@@ -4851,11 +3829,7 @@ lpfc_nodev_tmo_set(struct lpfc_vport *vport, int val)
 		return 0;
 	}
 	lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-<<<<<<< HEAD
-			 "0403 lpfc_nodev_tmo attribute cannot be set to"
-=======
 			 "0403 lpfc_nodev_tmo attribute cannot be set to "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 "%d, allowed range is [%d, %d]\n",
 			 val, LPFC_MIN_DEVLOSS_TMO, LPFC_MAX_DEVLOSS_TMO);
 	return -EINVAL;
@@ -4863,12 +3837,7 @@ lpfc_nodev_tmo_set(struct lpfc_vport *vport, int val)
 
 lpfc_vport_param_store(nodev_tmo)
 
-<<<<<<< HEAD
-static DEVICE_ATTR(lpfc_nodev_tmo, S_IRUGO | S_IWUSR,
-		   lpfc_nodev_tmo_show, lpfc_nodev_tmo_store);
-=======
 static DEVICE_ATTR_RW(lpfc_nodev_tmo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 # lpfc_devloss_tmo: If set, it will hold all I/O errors on devices that
@@ -4910,22 +3879,13 @@ lpfc_devloss_tmo_set(struct lpfc_vport *vport, int val)
 	}
 
 	lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-<<<<<<< HEAD
-			 "0404 lpfc_devloss_tmo attribute cannot be set to"
-			 " %d, allowed range is [%d, %d]\n",
-=======
 			 "0404 lpfc_devloss_tmo attribute cannot be set to "
 			 "%d, allowed range is [%d, %d]\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 val, LPFC_MIN_DEVLOSS_TMO, LPFC_MAX_DEVLOSS_TMO);
 	return -EINVAL;
 }
 
 lpfc_vport_param_store(devloss_tmo)
-<<<<<<< HEAD
-static DEVICE_ATTR(lpfc_devloss_tmo, S_IRUGO | S_IWUSR,
-		   lpfc_devloss_tmo_show, lpfc_devloss_tmo_store);
-=======
 static DEVICE_ATTR_RW(lpfc_devloss_tmo);
 
 /*
@@ -4966,7 +3926,6 @@ LPFC_ATTR_R(nvmet_mrq_post,
 LPFC_ATTR_R(enable_fc4_type, LPFC_DEF_ENBL_FC4_TYPE,
 	    LPFC_ENABLE_FCP, LPFC_MAX_ENBL_FC4_TYPE,
 	    "Enable FC4 Protocol support - FCP / NVME");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 # lpfc_log_verbose: Only turn this flag on if you are willing to risk being
@@ -4986,25 +3945,15 @@ LPFC_VPORT_ATTR_R(enable_da_id, 1, 0, 1,
 
 /*
 # lun_queue_depth:  This parameter is used to limit the number of outstanding
-<<<<<<< HEAD
-# commands per FCP LUN. Value range is [1,128]. Default value is 30.
-*/
-LPFC_VPORT_ATTR_R(lun_queue_depth, 30, 1, 128,
-=======
 # commands per FCP LUN.
 */
 LPFC_VPORT_ATTR_R(lun_queue_depth, 64, 1, 512,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  "Max number of FCP commands we can queue to a specific LUN");
 
 /*
 # tgt_queue_depth:  This parameter is used to limit the number of outstanding
 # commands per target port. Value range is [10,65535]. Default value is 65535.
 */
-<<<<<<< HEAD
-LPFC_VPORT_ATTR_R(tgt_queue_depth, 65535, 10, 65535,
-	"Max number of FCP commands we can queue to a specific target port");
-=======
 static uint lpfc_tgt_queue_depth = LPFC_MAX_TGT_QDEPTH;
 module_param(lpfc_tgt_queue_depth, uint, 0444);
 MODULE_PARM_DESC(lpfc_tgt_queue_depth, "Set max Target queue depth");
@@ -5047,7 +3996,6 @@ lpfc_tgt_queue_depth_set(struct lpfc_vport *vport, uint val)
 
 lpfc_vport_param_store(tgt_queue_depth);
 static DEVICE_ATTR_RW(lpfc_tgt_queue_depth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 # hba_queue_depth:  This parameter is used to limit the number of outstanding
@@ -5161,12 +4109,7 @@ lpfc_restrict_login_set(struct lpfc_vport *vport, int val)
 	return 0;
 }
 lpfc_vport_param_store(restrict_login);
-<<<<<<< HEAD
-static DEVICE_ATTR(lpfc_restrict_login, S_IRUGO | S_IWUSR,
-		   lpfc_restrict_login_show, lpfc_restrict_login_store);
-=======
 static DEVICE_ATTR_RW(lpfc_restrict_login);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 # Some disk devices have a "select ID" or "select Target" capability.
@@ -5199,13 +4142,6 @@ LPFC_VPORT_ATTR_R(scan_down, 1, 0, 1,
 # Set loop mode if you want to run as an NL_Port. Value range is [0,0x6].
 # Default value is 0.
 */
-<<<<<<< HEAD
-
-/**
- * lpfc_topology_set - Set the adapters topology field
- * @phba: lpfc_hba pointer.
- * @val: topology value.
-=======
 LPFC_ATTR(topology, 0, 0, 6,
 	"Select Fibre Channel topology");
 
@@ -5215,7 +4151,6 @@ LPFC_ATTR(topology, 0, 0, 6,
  * @attr:device attribute, not used.
  * @buf: buffer for passing information.
  * @count: size of the data buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  * If val is in a valid range then set the adapter's topology field and
@@ -5240,10 +4175,7 @@ lpfc_topology_store(struct device *dev, struct device_attribute *attr,
 	const char *val_buf = buf;
 	int err;
 	uint32_t prev_val;
-<<<<<<< HEAD
-=======
 	u8 sli_family, if_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!strncmp(buf, "nolip ", strlen("nolip "))) {
 		nolip = 1;
@@ -5257,20 +4189,10 @@ lpfc_topology_store(struct device *dev, struct device_attribute *attr,
 
 	if (val >= 0 && val <= 6) {
 		prev_val = phba->cfg_topology;
-<<<<<<< HEAD
-		phba->cfg_topology = val;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (phba->cfg_link_speed == LPFC_USER_LINK_SPEED_16G &&
 			val == 4) {
 			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
 				"3113 Loop mode not supported at speed %d\n",
-<<<<<<< HEAD
-				phba->cfg_link_speed);
-			phba->cfg_topology = prev_val;
-			return -EINVAL;
-		}
-=======
 				val);
 			return -EINVAL;
 		}
@@ -5293,18 +4215,14 @@ lpfc_topology_store(struct device *dev, struct device_attribute *attr,
 			return -EINVAL;
 		}
 		phba->cfg_topology = val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (nolip)
 			return strlen(buf);
 
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
 			"3054 lpfc_topology changed from %d to %d\n",
 			prev_val, val);
-<<<<<<< HEAD
-=======
 		if (prev_val != val && phba->sli_rev == LPFC_SLI_REV4)
 			phba->fc_topology_changed = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = lpfc_issue_lip(lpfc_shost_from_vport(phba->pport));
 		if (err) {
 			phba->cfg_topology = prev_val;
@@ -5318,19 +4236,9 @@ lpfc_topology_store(struct device *dev, struct device_attribute *attr,
 		phba->brd_no, val);
 	return -EINVAL;
 }
-<<<<<<< HEAD
-static int lpfc_topology = 0;
-module_param(lpfc_topology, int, S_IRUGO);
-MODULE_PARM_DESC(lpfc_topology, "Select Fibre Channel topology");
-lpfc_param_show(topology)
-lpfc_param_init(topology, 0, 0, 6)
-static DEVICE_ATTR(lpfc_topology, S_IRUGO | S_IWUSR,
-		lpfc_topology_show, lpfc_topology_store);
-=======
 
 lpfc_param_show(topology)
 static DEVICE_ATTR_RW(lpfc_topology);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * lpfc_static_vport_show: Read callback function for
@@ -5360,338 +4268,7 @@ lpfc_static_vport_show(struct device *dev, struct device_attribute *attr,
 /*
  * Sysfs attribute to control the statistical data collection.
  */
-<<<<<<< HEAD
-static DEVICE_ATTR(lpfc_static_vport, S_IRUGO,
-		   lpfc_static_vport_show, NULL);
-
-/**
- * lpfc_stat_data_ctrl_store - write call back for lpfc_stat_data_ctrl sysfs file
- * @dev: Pointer to class device.
- * @buf: Data buffer.
- * @count: Size of the data buffer.
- *
- * This function get called when an user write to the lpfc_stat_data_ctrl
- * sysfs file. This function parse the command written to the sysfs file
- * and take appropriate action. These commands are used for controlling
- * driver statistical data collection.
- * Following are the command this function handles.
- *
- *    setbucket <bucket_type> <base> <step>
- *			       = Set the latency buckets.
- *    destroybucket            = destroy all the buckets.
- *    start                    = start data collection
- *    stop                     = stop data collection
- *    reset                    = reset the collected data
- **/
-static ssize_t
-lpfc_stat_data_ctrl_store(struct device *dev, struct device_attribute *attr,
-			  const char *buf, size_t count)
-{
-	struct Scsi_Host  *shost = class_to_shost(dev);
-	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
-	struct lpfc_hba   *phba = vport->phba;
-#define LPFC_MAX_DATA_CTRL_LEN 1024
-	static char bucket_data[LPFC_MAX_DATA_CTRL_LEN];
-	unsigned long i;
-	char *str_ptr, *token;
-	struct lpfc_vport **vports;
-	struct Scsi_Host *v_shost;
-	char *bucket_type_str, *base_str, *step_str;
-	unsigned long base, step, bucket_type;
-
-	if (!strncmp(buf, "setbucket", strlen("setbucket"))) {
-		if (strlen(buf) > (LPFC_MAX_DATA_CTRL_LEN - 1))
-			return -EINVAL;
-
-		strcpy(bucket_data, buf);
-		str_ptr = &bucket_data[0];
-		/* Ignore this token - this is command token */
-		token = strsep(&str_ptr, "\t ");
-		if (!token)
-			return -EINVAL;
-
-		bucket_type_str = strsep(&str_ptr, "\t ");
-		if (!bucket_type_str)
-			return -EINVAL;
-
-		if (!strncmp(bucket_type_str, "linear", strlen("linear")))
-			bucket_type = LPFC_LINEAR_BUCKET;
-		else if (!strncmp(bucket_type_str, "power2", strlen("power2")))
-			bucket_type = LPFC_POWER2_BUCKET;
-		else
-			return -EINVAL;
-
-		base_str = strsep(&str_ptr, "\t ");
-		if (!base_str)
-			return -EINVAL;
-		base = simple_strtoul(base_str, NULL, 0);
-
-		step_str = strsep(&str_ptr, "\t ");
-		if (!step_str)
-			return -EINVAL;
-		step = simple_strtoul(step_str, NULL, 0);
-		if (!step)
-			return -EINVAL;
-
-		/* Block the data collection for every vport */
-		vports = lpfc_create_vport_work_array(phba);
-		if (vports == NULL)
-			return -ENOMEM;
-
-		for (i = 0; i <= phba->max_vports && vports[i] != NULL; i++) {
-			v_shost = lpfc_shost_from_vport(vports[i]);
-			spin_lock_irq(v_shost->host_lock);
-			/* Block and reset data collection */
-			vports[i]->stat_data_blocked = 1;
-			if (vports[i]->stat_data_enabled)
-				lpfc_vport_reset_stat_data(vports[i]);
-			spin_unlock_irq(v_shost->host_lock);
-		}
-
-		/* Set the bucket attributes */
-		phba->bucket_type = bucket_type;
-		phba->bucket_base = base;
-		phba->bucket_step = step;
-
-		for (i = 0; i <= phba->max_vports && vports[i] != NULL; i++) {
-			v_shost = lpfc_shost_from_vport(vports[i]);
-
-			/* Unblock data collection */
-			spin_lock_irq(v_shost->host_lock);
-			vports[i]->stat_data_blocked = 0;
-			spin_unlock_irq(v_shost->host_lock);
-		}
-		lpfc_destroy_vport_work_array(phba, vports);
-		return strlen(buf);
-	}
-
-	if (!strncmp(buf, "destroybucket", strlen("destroybucket"))) {
-		vports = lpfc_create_vport_work_array(phba);
-		if (vports == NULL)
-			return -ENOMEM;
-
-		for (i = 0; i <= phba->max_vports && vports[i] != NULL; i++) {
-			v_shost = lpfc_shost_from_vport(vports[i]);
-			spin_lock_irq(shost->host_lock);
-			vports[i]->stat_data_blocked = 1;
-			lpfc_free_bucket(vport);
-			vport->stat_data_enabled = 0;
-			vports[i]->stat_data_blocked = 0;
-			spin_unlock_irq(shost->host_lock);
-		}
-		lpfc_destroy_vport_work_array(phba, vports);
-		phba->bucket_type = LPFC_NO_BUCKET;
-		phba->bucket_base = 0;
-		phba->bucket_step = 0;
-		return strlen(buf);
-	}
-
-	if (!strncmp(buf, "start", strlen("start"))) {
-		/* If no buckets configured return error */
-		if (phba->bucket_type == LPFC_NO_BUCKET)
-			return -EINVAL;
-		spin_lock_irq(shost->host_lock);
-		if (vport->stat_data_enabled) {
-			spin_unlock_irq(shost->host_lock);
-			return strlen(buf);
-		}
-		lpfc_alloc_bucket(vport);
-		vport->stat_data_enabled = 1;
-		spin_unlock_irq(shost->host_lock);
-		return strlen(buf);
-	}
-
-	if (!strncmp(buf, "stop", strlen("stop"))) {
-		spin_lock_irq(shost->host_lock);
-		if (vport->stat_data_enabled == 0) {
-			spin_unlock_irq(shost->host_lock);
-			return strlen(buf);
-		}
-		lpfc_free_bucket(vport);
-		vport->stat_data_enabled = 0;
-		spin_unlock_irq(shost->host_lock);
-		return strlen(buf);
-	}
-
-	if (!strncmp(buf, "reset", strlen("reset"))) {
-		if ((phba->bucket_type == LPFC_NO_BUCKET)
-			|| !vport->stat_data_enabled)
-			return strlen(buf);
-		spin_lock_irq(shost->host_lock);
-		vport->stat_data_blocked = 1;
-		lpfc_vport_reset_stat_data(vport);
-		vport->stat_data_blocked = 0;
-		spin_unlock_irq(shost->host_lock);
-		return strlen(buf);
-	}
-	return -EINVAL;
-}
-
-
-/**
- * lpfc_stat_data_ctrl_show - Read function for lpfc_stat_data_ctrl sysfs file
- * @dev: Pointer to class device object.
- * @buf: Data buffer.
- *
- * This function is the read call back function for
- * lpfc_stat_data_ctrl sysfs file. This function report the
- * current statistical data collection state.
- **/
-static ssize_t
-lpfc_stat_data_ctrl_show(struct device *dev, struct device_attribute *attr,
-			 char *buf)
-{
-	struct Scsi_Host  *shost = class_to_shost(dev);
-	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
-	struct lpfc_hba   *phba = vport->phba;
-	int index = 0;
-	int i;
-	char *bucket_type;
-	unsigned long bucket_value;
-
-	switch (phba->bucket_type) {
-	case LPFC_LINEAR_BUCKET:
-		bucket_type = "linear";
-		break;
-	case LPFC_POWER2_BUCKET:
-		bucket_type = "power2";
-		break;
-	default:
-		bucket_type = "No Bucket";
-		break;
-	}
-
-	sprintf(&buf[index], "Statistical Data enabled :%d, "
-		"blocked :%d, Bucket type :%s, Bucket base :%d,"
-		" Bucket step :%d\nLatency Ranges :",
-		vport->stat_data_enabled, vport->stat_data_blocked,
-		bucket_type, phba->bucket_base, phba->bucket_step);
-	index = strlen(buf);
-	if (phba->bucket_type != LPFC_NO_BUCKET) {
-		for (i = 0; i < LPFC_MAX_BUCKET_COUNT; i++) {
-			if (phba->bucket_type == LPFC_LINEAR_BUCKET)
-				bucket_value = phba->bucket_base +
-					phba->bucket_step * i;
-			else
-				bucket_value = phba->bucket_base +
-				(1 << i) * phba->bucket_step;
-
-			if (index + 10 > PAGE_SIZE)
-				break;
-			sprintf(&buf[index], "%08ld ", bucket_value);
-			index = strlen(buf);
-		}
-	}
-	sprintf(&buf[index], "\n");
-	return strlen(buf);
-}
-
-/*
- * Sysfs attribute to control the statistical data collection.
- */
-static DEVICE_ATTR(lpfc_stat_data_ctrl, S_IRUGO | S_IWUSR,
-		   lpfc_stat_data_ctrl_show, lpfc_stat_data_ctrl_store);
-
-/*
- * lpfc_drvr_stat_data: sysfs attr to get driver statistical data.
- */
-
-/*
- * Each Bucket takes 11 characters and 1 new line + 17 bytes WWN
- * for each target.
- */
-#define STAT_DATA_SIZE_PER_TARGET(NUM_BUCKETS) ((NUM_BUCKETS) * 11 + 18)
-#define MAX_STAT_DATA_SIZE_PER_TARGET \
-	STAT_DATA_SIZE_PER_TARGET(LPFC_MAX_BUCKET_COUNT)
-
-
-/**
- * sysfs_drvr_stat_data_read - Read function for lpfc_drvr_stat_data attribute
- * @filp: sysfs file
- * @kobj: Pointer to the kernel object
- * @bin_attr: Attribute object
- * @buff: Buffer pointer
- * @off: File offset
- * @count: Buffer size
- *
- * This function is the read call back function for lpfc_drvr_stat_data
- * sysfs file. This function export the statistical data to user
- * applications.
- **/
-static ssize_t
-sysfs_drvr_stat_data_read(struct file *filp, struct kobject *kobj,
-		struct bin_attribute *bin_attr,
-		char *buf, loff_t off, size_t count)
-{
-	struct device *dev = container_of(kobj, struct device,
-		kobj);
-	struct Scsi_Host  *shost = class_to_shost(dev);
-	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
-	struct lpfc_hba   *phba = vport->phba;
-	int i = 0, index = 0;
-	unsigned long nport_index;
-	struct lpfc_nodelist *ndlp = NULL;
-	nport_index = (unsigned long)off /
-		MAX_STAT_DATA_SIZE_PER_TARGET;
-
-	if (!vport->stat_data_enabled || vport->stat_data_blocked
-		|| (phba->bucket_type == LPFC_NO_BUCKET))
-		return 0;
-
-	spin_lock_irq(shost->host_lock);
-	list_for_each_entry(ndlp, &vport->fc_nodes, nlp_listp) {
-		if (!NLP_CHK_NODE_ACT(ndlp) || !ndlp->lat_data)
-			continue;
-
-		if (nport_index > 0) {
-			nport_index--;
-			continue;
-		}
-
-		if ((index + MAX_STAT_DATA_SIZE_PER_TARGET)
-			> count)
-			break;
-
-		if (!ndlp->lat_data)
-			continue;
-
-		/* Print the WWN */
-		sprintf(&buf[index], "%02x%02x%02x%02x%02x%02x%02x%02x:",
-			ndlp->nlp_portname.u.wwn[0],
-			ndlp->nlp_portname.u.wwn[1],
-			ndlp->nlp_portname.u.wwn[2],
-			ndlp->nlp_portname.u.wwn[3],
-			ndlp->nlp_portname.u.wwn[4],
-			ndlp->nlp_portname.u.wwn[5],
-			ndlp->nlp_portname.u.wwn[6],
-			ndlp->nlp_portname.u.wwn[7]);
-
-		index = strlen(buf);
-
-		for (i = 0; i < LPFC_MAX_BUCKET_COUNT; i++) {
-			sprintf(&buf[index], "%010u,",
-				ndlp->lat_data[i].cmd_count);
-			index = strlen(buf);
-		}
-		sprintf(&buf[index], "\n");
-		index = strlen(buf);
-	}
-	spin_unlock_irq(shost->host_lock);
-	return index;
-}
-
-static struct bin_attribute sysfs_drvr_stat_data_attr = {
-	.attr = {
-		.name = "lpfc_drvr_stat_data",
-		.mode = S_IRUSR,
-	},
-	.size = LPFC_MAX_TARGET * MAX_STAT_DATA_SIZE_PER_TARGET,
-	.read = sysfs_drvr_stat_data_read,
-	.write = NULL,
-};
-=======
 static DEVICE_ATTR_RO(lpfc_static_vport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 # lpfc_link_speed: Link speed selection for initializing the Fibre Channel
@@ -5699,17 +4276,11 @@ static DEVICE_ATTR_RO(lpfc_static_vport);
 # Value range is [0,16]. Default value is 0.
 */
 /**
-<<<<<<< HEAD
- * lpfc_link_speed_set - Set the adapters link speed
- * @phba: lpfc_hba pointer.
- * @val: link speed value.
-=======
  * lpfc_link_speed_store - Set the adapters link speed
  * @dev: Pointer to class device.
  * @attr: Unused.
  * @buf: Data buffer.
  * @count: Size of the data buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  * If val is in a valid range then set the adapter's link speed field and
@@ -5734,16 +4305,12 @@ lpfc_link_speed_store(struct device *dev, struct device_attribute *attr,
 	int nolip = 0;
 	const char *val_buf = buf;
 	int err;
-<<<<<<< HEAD
-	uint32_t prev_val;
-=======
 	uint32_t prev_val, if_type;
 
 	if_type = bf_get(lpfc_sli_intf_if_type, &phba->sli4_hba.sli_intf);
 	if (if_type >= LPFC_SLI_INTF_IF_TYPE_2 &&
 	    phba->hba_flag & HBA_FORCED_LINK_SPEED)
 		return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!strncmp(buf, "nolip ", strlen("nolip "))) {
 		nolip = 1;
@@ -5764,36 +4331,23 @@ lpfc_link_speed_store(struct device *dev, struct device_attribute *attr,
 	    ((val == LPFC_USER_LINK_SPEED_4G) && !(phba->lmt & LMT_4Gb)) ||
 	    ((val == LPFC_USER_LINK_SPEED_8G) && !(phba->lmt & LMT_8Gb)) ||
 	    ((val == LPFC_USER_LINK_SPEED_10G) && !(phba->lmt & LMT_10Gb)) ||
-<<<<<<< HEAD
-	    ((val == LPFC_USER_LINK_SPEED_16G) && !(phba->lmt & LMT_16Gb))) {
-=======
 	    ((val == LPFC_USER_LINK_SPEED_16G) && !(phba->lmt & LMT_16Gb)) ||
 	    ((val == LPFC_USER_LINK_SPEED_32G) && !(phba->lmt & LMT_32Gb)) ||
 	    ((val == LPFC_USER_LINK_SPEED_64G) && !(phba->lmt & LMT_64Gb))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
 				"2879 lpfc_link_speed attribute cannot be set "
 				"to %d. Speed is not supported by this port.\n",
 				val);
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	if (val == LPFC_USER_LINK_SPEED_16G &&
-		 phba->fc_topology == LPFC_TOPOLOGY_LOOP) {
-=======
 	if (val >= LPFC_USER_LINK_SPEED_16G &&
 	    phba->fc_topology == LPFC_TOPOLOGY_LOOP) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
 				"3112 lpfc_link_speed attribute cannot be set "
 				"to %d. Speed is not supported in loop mode.\n",
 				val);
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	if ((val >= 0) && (val <= LPFC_USER_LINK_SPEED_MAX) &&
-	    (LPFC_USER_LINK_SPEED_BITMAP & (1 << val))) {
-=======
 
 	switch (val) {
 	case LPFC_USER_LINK_SPEED_AUTO:
@@ -5804,7 +4358,6 @@ lpfc_link_speed_store(struct device *dev, struct device_attribute *attr,
 	case LPFC_USER_LINK_SPEED_16G:
 	case LPFC_USER_LINK_SPEED_32G:
 	case LPFC_USER_LINK_SPEED_64G:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		prev_val = phba->cfg_link_speed;
 		phba->cfg_link_speed = val;
 		if (nolip)
@@ -5814,15 +4367,6 @@ lpfc_link_speed_store(struct device *dev, struct device_attribute *attr,
 		if (err) {
 			phba->cfg_link_speed = prev_val;
 			return -EINVAL;
-<<<<<<< HEAD
-		} else
-			return strlen(buf);
-	}
-	lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-		"0469 lpfc_link_speed attribute cannot be set to %d, "
-		"allowed values are ["LPFC_LINK_SPEED_STRING"]\n", val);
-	return -EINVAL;
-=======
 		}
 		return strlen(buf);
 	default:
@@ -5835,7 +4379,6 @@ lpfc_link_speed_store(struct device *dev, struct device_attribute *attr,
 			val, LPFC_LINK_SPEED_STRING);
 	return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int lpfc_link_speed = 0;
@@ -5862,41 +4405,13 @@ lpfc_param_show(link_speed)
 static int
 lpfc_link_speed_init(struct lpfc_hba *phba, int val)
 {
-<<<<<<< HEAD
-	if (val == LPFC_USER_LINK_SPEED_16G && phba->cfg_topology == 4) {
-=======
 	if (val >= LPFC_USER_LINK_SPEED_16G && phba->cfg_topology == 4) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
 			"3111 lpfc_link_speed of %d cannot "
 			"support loop mode, setting topology to default.\n",
 			 val);
 		phba->cfg_topology = 0;
 	}
-<<<<<<< HEAD
-	if ((val >= 0) && (val <= LPFC_USER_LINK_SPEED_MAX) &&
-	    (LPFC_USER_LINK_SPEED_BITMAP & (1 << val))) {
-		phba->cfg_link_speed = val;
-		return 0;
-	}
-	lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-			"0405 lpfc_link_speed attribute cannot "
-			"be set to %d, allowed values are "
-			"["LPFC_LINK_SPEED_STRING"]\n", val);
-	phba->cfg_link_speed = LPFC_USER_LINK_SPEED_AUTO;
-	return -EINVAL;
-}
-
-static DEVICE_ATTR(lpfc_link_speed, S_IRUGO | S_IWUSR,
-		   lpfc_link_speed_show, lpfc_link_speed_store);
-
-/*
-# lpfc_aer_support: Support PCIe device Advanced Error Reporting (AER)
-#       0  = aer disabled or not supported
-#       1  = aer supported and enabled (default)
-# Value range is [0,1]. Default value is 1.
-*/
-=======
 
 	switch (val) {
 	case LPFC_USER_LINK_SPEED_AUTO:
@@ -5939,7 +4454,6 @@ lpfc_aer_support_show(struct device *dev, struct device_attribute *attr,
 {
 	return scnprintf(buf, PAGE_SIZE, "%d\n", lpfc_aer_support);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * lpfc_aer_support_store - Set the adapter for aer support
@@ -5950,25 +4464,6 @@ lpfc_aer_support_show(struct device *dev, struct device_attribute *attr,
  * @count: unused variable.
  *
  * Description:
-<<<<<<< HEAD
- * If the val is 1 and currently the device's AER capability was not
- * enabled, invoke the kernel's enable AER helper routine, trying to
- * enable the device's AER capability. If the helper routine enabling
- * AER returns success, update the device's cfg_aer_support flag to
- * indicate AER is supported by the device; otherwise, if the device
- * AER capability is already enabled to support AER, then do nothing.
- *
- * If the val is 0 and currently the device's AER support was enabled,
- * invoke the kernel's disable AER helper routine. After that, update
- * the device's cfg_aer_support flag to indicate AER is not supported
- * by the device; otherwise, if the device AER capability is already
- * disabled from supporting AER, then do nothing.
- *
- * Returns:
- * length of the buf on success if val is in range the intended mode
- * is supported.
- * -EINVAL if val out of range or intended mode is not supported.
-=======
  * PCIe error reporting is enabled by the PCI core, so drivers don't need
  * to do anything.  Retain this interface for backwards compatibility,
  * but do nothing.
@@ -5976,116 +4471,23 @@ lpfc_aer_support_show(struct device *dev, struct device_attribute *attr,
  * Returns:
  * length of the buf on success
  * -EINVAL if val out of range
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static ssize_t
 lpfc_aer_support_store(struct device *dev, struct device_attribute *attr,
 		       const char *buf, size_t count)
 {
-<<<<<<< HEAD
-	struct Scsi_Host *shost = class_to_shost(dev);
-	struct lpfc_vport *vport = (struct lpfc_vport *)shost->hostdata;
-	struct lpfc_hba *phba = vport->phba;
-	int val = 0, rc = -EINVAL;
-=======
 	int val = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!isdigit(buf[0]))
 		return -EINVAL;
 	if (sscanf(buf, "%i", &val) != 1)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	switch (val) {
-	case 0:
-		if (phba->hba_flag & HBA_AER_ENABLED) {
-			rc = pci_disable_pcie_error_reporting(phba->pcidev);
-			if (!rc) {
-				spin_lock_irq(&phba->hbalock);
-				phba->hba_flag &= ~HBA_AER_ENABLED;
-				spin_unlock_irq(&phba->hbalock);
-				phba->cfg_aer_support = 0;
-				rc = strlen(buf);
-			} else
-				rc = -EPERM;
-		} else {
-			phba->cfg_aer_support = 0;
-			rc = strlen(buf);
-		}
-		break;
-	case 1:
-		if (!(phba->hba_flag & HBA_AER_ENABLED)) {
-			rc = pci_enable_pcie_error_reporting(phba->pcidev);
-			if (!rc) {
-				spin_lock_irq(&phba->hbalock);
-				phba->hba_flag |= HBA_AER_ENABLED;
-				spin_unlock_irq(&phba->hbalock);
-				phba->cfg_aer_support = 1;
-				rc = strlen(buf);
-			} else
-				 rc = -EPERM;
-		} else {
-			phba->cfg_aer_support = 1;
-			rc = strlen(buf);
-		}
-		break;
-	default:
-		rc = -EINVAL;
-		break;
-	}
-	return rc;
-}
-
-static int lpfc_aer_support = 1;
-module_param(lpfc_aer_support, int, S_IRUGO);
-MODULE_PARM_DESC(lpfc_aer_support, "Enable PCIe device AER support");
-lpfc_param_show(aer_support)
-
-/**
- * lpfc_aer_support_init - Set the initial adapters aer support flag
- * @phba: lpfc_hba pointer.
- * @val: enable aer or disable aer flag.
- *
- * Description:
- * If val is in a valid range [0,1], then set the adapter's initial
- * cfg_aer_support field. It will be up to the driver's probe_one
- * routine to determine whether the device's AER support can be set
- * or not.
- *
- * Notes:
- * If the value is not in range log a kernel error message, and
- * choose the default value of setting AER support and return.
- *
- * Returns:
- * zero if val saved.
- * -EINVAL val out of range
- **/
-static int
-lpfc_aer_support_init(struct lpfc_hba *phba, int val)
-{
-	if (val == 0 || val == 1) {
-		phba->cfg_aer_support = val;
-		return 0;
-	}
-	lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-			"2712 lpfc_aer_support attribute value %d out "
-			"of range, allowed values are 0|1, setting it "
-			"to default value of 1\n", val);
-	/* By default, try to enable AER on a device */
-	phba->cfg_aer_support = 1;
-	return -EINVAL;
-}
-
-static DEVICE_ATTR(lpfc_aer_support, S_IRUGO | S_IWUSR,
-		   lpfc_aer_support_show, lpfc_aer_support_store);
-=======
 	dev_info_once(dev, "PCIe error reporting automatically enabled by the PCI core; sysfs write ignored\n");
 	return strlen(buf);
 }
 
 static DEVICE_ATTR_RW(lpfc_aer_support);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * lpfc_aer_cleanup_state - Clean up aer state to the aer enabled device
@@ -6095,27 +4497,16 @@ static DEVICE_ATTR_RW(lpfc_aer_support);
  * @count: unused variable.
  *
  * Description:
-<<<<<<< HEAD
- * If the @buf contains 1 and the device currently has the AER support
- * enabled, then invokes the kernel AER helper routine
- * pci_cleanup_aer_uncorrect_error_status to clean up the uncorrectable
-=======
  * If the @buf contains 1, invokes the kernel AER helper routine
  * pci_aer_clear_nonfatal_status() to clean up the uncorrectable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * error status register.
  *
  * Notes:
  *
  * Returns:
-<<<<<<< HEAD
- * -EINVAL if the buf does not contain the 1 or the device is not currently
- * enabled with the AER support.
-=======
  * -EINVAL if the buf does not contain 1
  * -EPERM if the OS cannot clear AER error status, i.e., when platform
  * firmware owns the AER Capability
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static ssize_t
 lpfc_aer_cleanup_state(struct device *dev, struct device_attribute *attr,
@@ -6133,12 +4524,7 @@ lpfc_aer_cleanup_state(struct device *dev, struct device_attribute *attr,
 	if (val != 1)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (phba->hba_flag & HBA_AER_ENABLED)
-		rc = pci_cleanup_aer_uncorrect_error_status(phba->pcidev);
-=======
 	rc = pci_aer_clear_nonfatal_status(phba->pcidev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rc == 0)
 		return strlen(buf);
@@ -6243,23 +4629,6 @@ lpfc_sriov_nr_virtfn_store(struct device *dev, struct device_attribute *attr,
 	return rc;
 }
 
-<<<<<<< HEAD
-static int lpfc_sriov_nr_virtfn = LPFC_DEF_VFN_PER_PFN;
-module_param(lpfc_sriov_nr_virtfn, int, S_IRUGO|S_IWUSR);
-MODULE_PARM_DESC(lpfc_sriov_nr_virtfn, "Enable PCIe device SR-IOV virtual fn");
-lpfc_param_show(sriov_nr_virtfn)
-
-/**
- * lpfc_sriov_nr_virtfn_init - Set the initial sr-iov virtual function enable
- * @phba: lpfc_hba pointer.
- * @val: link speed value.
- *
- * Description:
- * If val is in a valid range [0,255], then set the adapter's initial
- * cfg_sriov_nr_virtfn field. If it's greater than the maximum, the maximum
- * number shall be used instead. It will be up to the driver's probe_one
- * routine to determine whether the device's SR-IOV is supported or not.
-=======
 LPFC_ATTR(sriov_nr_virtfn, LPFC_DEF_VFN_PER_PFN, 0, LPFC_MAX_VFN_PER_PFN,
 	"Enable PCIe device SR-IOV virtual fn");
 
@@ -6319,19 +4688,12 @@ lpfc_param_show(request_firmware_upgrade)
  *
  * Description:
  * Set the initial Linux generic firmware upgrade enable or disable flag.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns:
  * zero if val saved.
  * -EINVAL val out of range
  **/
 static int
-<<<<<<< HEAD
-lpfc_sriov_nr_virtfn_init(struct lpfc_hba *phba, int val)
-{
-	if (val >= 0 && val <= LPFC_MAX_VFN_PER_PFN) {
-		phba->cfg_sriov_nr_virtfn = val;
-=======
 lpfc_request_firmware_upgrade_init(struct lpfc_hba *phba, int val)
 {
 	if (val >= 0 && val <= 1) {
@@ -6509,19 +4871,10 @@ lpfc_fcp_imax_init(struct lpfc_hba *phba, int val)
 	if ((val >= LPFC_MIN_IMAX && val <= LPFC_MAX_IMAX) ||
 	    (val == 0)) {
 		phba->cfg_fcp_imax = val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
-<<<<<<< HEAD
-			"3017 Enabling %d virtual functions is not "
-			"allowed.\n", val);
-	return -EINVAL;
-}
-static DEVICE_ATTR(lpfc_sriov_nr_virtfn, S_IRUGO | S_IWUSR,
-		   lpfc_sriov_nr_virtfn_show, lpfc_sriov_nr_virtfn_store);
-=======
 			"3016 lpfc_fcp_imax: %d out of range, using default\n",
 			val);
 	phba->cfg_fcp_imax = LPFC_DEF_IMAX;
@@ -6822,7 +5175,6 @@ lpfc_fcp_cpu_map_init(struct lpfc_hba *phba, int val)
 }
 
 static DEVICE_ATTR_RW(lpfc_fcp_cpu_map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 # lpfc_fcp_class:  Determines FC class to use for the FCP protocol.
@@ -6833,14 +5185,6 @@ LPFC_VPORT_ATTR_R(fcp_class, 3, 2, 3,
 
 /*
 # lpfc_use_adisc: Use ADISC for FCP rediscovery instead of PLOGI. Value range
-<<<<<<< HEAD
-# is [0,1]. Default value is 0.
-*/
-LPFC_VPORT_ATTR_RW(use_adisc, 0, 0, 1,
-		   "Use ADISC on rediscovery to authenticate FCP devices");
-
-/*
-=======
 # is [0,1]. Default value is 1.
 */
 LPFC_VPORT_ATTR_RW(use_adisc, 1, 0, 1,
@@ -6878,7 +5222,6 @@ LPFC_ATTR_RW(nvme_enable_fb, 0, 0, 1,
 	     "Enable First Burst feature for NVME Initiator.");
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # lpfc_max_scsicmpl_time: Use scsi command completion time to control I/O queue
 # depth. Default value is 0. When the value of this parameter is zero the
 # SCSI command completion time is not used for controlling I/O queue depth. When
@@ -6886,19 +5229,6 @@ LPFC_ATTR_RW(nvme_enable_fb, 0, 0, 1,
 # to limit the I/O completion time to the parameter value.
 # The value is set in milliseconds.
 */
-<<<<<<< HEAD
-static int lpfc_max_scsicmpl_time;
-module_param(lpfc_max_scsicmpl_time, int, S_IRUGO);
-MODULE_PARM_DESC(lpfc_max_scsicmpl_time,
-	"Use command completion time to control queue depth");
-lpfc_vport_param_show(max_scsicmpl_time);
-lpfc_vport_param_init(max_scsicmpl_time, 0, 0, 60000);
-static int
-lpfc_max_scsicmpl_time_set(struct lpfc_vport *vport, int val)
-{
-	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
-	struct lpfc_nodelist *ndlp, *next_ndlp;
-=======
 LPFC_VPORT_ATTR(max_scsicmpl_time, 0, 0, 60000,
 	"Use command completion time to control queue depth");
 
@@ -6908,7 +5238,6 @@ lpfc_max_scsicmpl_time_set(struct lpfc_vport *vport, int val)
 {
 	struct lpfc_nodelist *ndlp, *next_ndlp;
 	unsigned long iflags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (val == vport->cfg_max_scsicmpl_time)
 		return 0;
@@ -6916,34 +5245,17 @@ lpfc_max_scsicmpl_time_set(struct lpfc_vport *vport, int val)
 		return -EINVAL;
 	vport->cfg_max_scsicmpl_time = val;
 
-<<<<<<< HEAD
-	spin_lock_irq(shost->host_lock);
-	list_for_each_entry_safe(ndlp, next_ndlp, &vport->fc_nodes, nlp_listp) {
-		if (!NLP_CHK_NODE_ACT(ndlp))
-			continue;
-=======
 	spin_lock_irqsave(&vport->fc_nodes_list_lock, iflags);
 	list_for_each_entry_safe(ndlp, next_ndlp, &vport->fc_nodes, nlp_listp) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ndlp->nlp_state == NLP_STE_UNUSED_NODE)
 			continue;
 		ndlp->cmd_qdepth = vport->cfg_tgt_queue_depth;
 	}
-<<<<<<< HEAD
-	spin_unlock_irq(shost->host_lock);
-	return 0;
-}
-lpfc_vport_param_store(max_scsicmpl_time);
-static DEVICE_ATTR(lpfc_max_scsicmpl_time, S_IRUGO | S_IWUSR,
-		   lpfc_max_scsicmpl_time_show,
-		   lpfc_max_scsicmpl_time_store);
-=======
 	spin_unlock_irqrestore(&vport->fc_nodes_list_lock, iflags);
 	return 0;
 }
 lpfc_vport_param_store(max_scsicmpl_time);
 static DEVICE_ATTR_RW(lpfc_max_scsicmpl_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 # lpfc_ack0: Use ACK0, instead of ACK1 for class 2 acknowledgement. Value
@@ -6952,8 +5264,6 @@ static DEVICE_ATTR_RW(lpfc_max_scsicmpl_time);
 LPFC_ATTR_R(ack0, 0, 0, 1, "Enable ACK0 support");
 
 /*
-<<<<<<< HEAD
-=======
 # lpfc_xri_rebalancing: enable or disable XRI rebalancing feature
 # range is [0,1]. Default value is 1.
 */
@@ -7004,7 +5314,6 @@ LPFC_ATTR_RW(fcp2_no_tgt_reset, 0, 0, 1, "Determine bus reset behavior for "
 
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # lpfc_cr_delay & lpfc_cr_count: Default values for I/O colaesing
 # cr_delay (msec) or cr_count outstanding commands. cr_delay can take
 # value [0,63]. cr_count can take value [1,255]. Default value of cr_delay
@@ -7042,15 +5351,6 @@ LPFC_ATTR_R(multi_ring_type, FC_TYPE_IP, 1,
 	     255, "Identifies TYPE for additional ring configuration");
 
 /*
-<<<<<<< HEAD
-# lpfc_fdmi_on: controls FDMI support.
-#       0 = no FDMI support
-#       1 = support FDMI without attribute of hostname
-#       2 = support FDMI with attribute of hostname
-# Value range [0,2]. Default value is 0.
-*/
-LPFC_VPORT_ATTR_RW(fdmi_on, 0, 0, 2, "Enable FDMI support");
-=======
 # lpfc_enable_SmartSAN: Sets up FDMI support for SmartSAN
 #       0  = SmartSAN functionality disabled (default)
 #       1  = SmartSAN functionality enabled
@@ -7071,7 +5371,6 @@ LPFC_ATTR_R(enable_SmartSAN, 0, 0, 1, "Enable SmartSAN functionality");
 # Value range [0,1]. Default value is 1.
 */
 LPFC_ATTR_R(fdmi_on, 1, 0, 1, "Enable FDMI support");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 # Specifies the maximum number of ELS cmds we can have outstanding (for
@@ -7081,13 +5380,6 @@ LPFC_VPORT_ATTR(discovery_threads, 32, 1, 64, "Maximum number of ELS commands "
 		 "during discovery");
 
 /*
-<<<<<<< HEAD
-# lpfc_max_luns: maximum allowed LUN.
-# Value range is [0,65535]. Default value is 255.
-# NOTE: The SCSI layer might probe all allowed LUN on some old targets.
-*/
-LPFC_VPORT_ATTR_R(max_luns, 255, 0, 65535, "Maximum allowed LUN");
-=======
 # lpfc_max_luns: maximum allowed LUN ID. This is the highest LUN ID that
 #    will be scanned by the SCSI midlayer when sequential scanning is
 #    used; and is also the highest LUN ID allowed when the SCSI midlayer
@@ -7110,7 +5402,6 @@ LPFC_VPORT_ATTR_R(max_luns, 255, 0, 65535, "Maximum allowed LUN");
 # NOTE: The SCSI layer might probe all allowed LUN on some old targets.
 */
 LPFC_VPORT_ULL_ATTR_R(max_luns, 255, 0, 65535, "Maximum allowed LUN ID");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 # lpfc_poll_tmo: .Milliseconds driver will wait between polling FCP ring.
@@ -7120,15 +5411,12 @@ LPFC_ATTR_RW(poll_tmo, 10, 1, 255,
 	     "Milliseconds driver will wait between polling FCP ring");
 
 /*
-<<<<<<< HEAD
-=======
 # lpfc_task_mgmt_tmo: Maximum time to wait for task management commands
 # to complete in seconds. Value range is [5,180], default value is 60.
 */
 LPFC_ATTR_RW(task_mgmt_tmo, 60, 5, 180,
 	     "Maximum time to wait for task management commands to complete");
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # lpfc_use_msi: Use MSI (Message Signaled Interrupts) in systems that
 #		support this feature
 #       0  = MSI disabled
@@ -7140,30 +5428,6 @@ LPFC_ATTR_R(use_msi, 2, 0, 2, "Use Message Signaled Interrupts (1) or "
 	    "MSI-X (2), if possible");
 
 /*
-<<<<<<< HEAD
-# lpfc_fcp_imax: Set the maximum number of fast-path FCP interrupts per second
-#
-# Value range is [636,651042]. Default value is 10000.
-*/
-LPFC_ATTR_R(fcp_imax, LPFC_FP_DEF_IMAX, LPFC_MIM_IMAX, LPFC_DMULT_CONST,
-	    "Set the maximum number of fast-path FCP interrupts per second");
-
-/*
-# lpfc_fcp_wq_count: Set the number of fast-path FCP work queues
-#
-# Value range is [1,31]. Default value is 4.
-*/
-LPFC_ATTR_R(fcp_wq_count, LPFC_FP_WQN_DEF, LPFC_FP_WQN_MIN, LPFC_FP_WQN_MAX,
-	    "Set the number of fast-path FCP work queues, if possible");
-
-/*
-# lpfc_fcp_eq_count: Set the number of fast-path FCP event queues
-#
-# Value range is [1,7]. Default value is 1.
-*/
-LPFC_ATTR_R(fcp_eq_count, LPFC_FP_EQN_DEF, LPFC_FP_EQN_MIN, LPFC_FP_EQN_MAX,
-	    "Set the number of fast-path FCP event queues, if possible");
-=======
  * lpfc_nvme_oas: Use the oas bit when sending NVME/NVMET IOs
  *
  *      0  = NVME OAS disabled
@@ -7402,22 +5666,15 @@ lpfc_irq_chann_show(struct device *dev, struct device_attribute *attr,
 }
 
 static DEVICE_ATTR_RO(lpfc_irq_chann);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 # lpfc_enable_hba_reset: Allow or prevent HBA resets to the hardware.
 #       0  = HBA resets disabled
 #       1  = HBA resets enabled (default)
-<<<<<<< HEAD
-# Value range is [0,1]. Default value is 1.
-*/
-LPFC_ATTR_R(enable_hba_reset, 1, 0, 1, "Enable HBA resets from the driver.");
-=======
 #       2  = HBA reset via PCI bus reset enabled
 # Value range is [0,2]. Default value is 1.
 */
 LPFC_ATTR_RW(enable_hba_reset, 1, 0, 2, "Enable HBA resets from the driver.");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 # lpfc_enable_hba_heartbeat: Disable HBA heartbeat timer..
@@ -7428,8 +5685,6 @@ LPFC_ATTR_RW(enable_hba_reset, 1, 0, 2, "Enable HBA resets from the driver.");
 LPFC_ATTR_R(enable_hba_heartbeat, 0, 0, 1, "Enable HBA Heartbeat.");
 
 /*
-<<<<<<< HEAD
-=======
 # lpfc_EnableXLane: Enable Express Lane Feature
 #      0x0   Express Lane Feature disabled
 #      0x1   Express Lane Feature enabled
@@ -7445,7 +5700,6 @@ LPFC_ATTR_R(EnableXLane, 0, 0, 1, "Enable Express Lane Feature.");
 LPFC_ATTR_RW(XLanePriority, 0, 0x0, 0x7f, "CS_CTL for Express Lane Feature.");
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # lpfc_enable_bg: Enable BlockGuard (Emulex's Implementation of T10-DIF)
 #       0  = BlockGuard disabled (default)
 #       1  = BlockGuard enabled
@@ -7454,31 +5708,12 @@ LPFC_ATTR_RW(XLanePriority, 0, 0x0, 0x7f, "CS_CTL for Express Lane Feature.");
 LPFC_ATTR_R(enable_bg, 0, 0, 1, "Enable BlockGuard Support");
 
 /*
-<<<<<<< HEAD
-# lpfc_prot_mask: i
-=======
 # lpfc_prot_mask:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #	- Bit mask of host protection capabilities used to register with the
 #	  SCSI mid-layer
 # 	- Only meaningful if BG is turned on (lpfc_enable_bg=1).
 #	- Allows you to ultimately specify which profiles to use
 #	- Default will result in registering capabilities for all profiles.
-<<<<<<< HEAD
-#
-*/
-unsigned int lpfc_prot_mask = SHOST_DIF_TYPE1_PROTECTION |
-			      SHOST_DIX_TYPE0_PROTECTION |
-			      SHOST_DIX_TYPE1_PROTECTION;
-
-module_param(lpfc_prot_mask, uint, S_IRUGO);
-MODULE_PARM_DESC(lpfc_prot_mask, "host protection mask");
-
-/*
-# lpfc_prot_guard: i
-#	- Bit mask of protection guard types to register with the SCSI mid-layer
-# 	- Guard types are currently either 1) IP checksum 2) T10-DIF CRC
-=======
 #	- SHOST_DIF_TYPE1_PROTECTION	1
 #		HBA supports T10 DIF Type 1: HBA to Target Type 1 Protection
 #	- SHOST_DIX_TYPE0_PROTECTION	8
@@ -7501,20 +5736,13 @@ LPFC_ATTR(prot_mask,
 # lpfc_prot_guard:
 #	- Bit mask of protection guard types to register with the SCSI mid-layer
 #	- Guard types are currently either 1) T10-DIF CRC 2) IP checksum
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #	- Allows you to ultimately specify which profiles to use
 #	- Default will result in registering capabilities for all guard types
 #
 */
-<<<<<<< HEAD
-unsigned char lpfc_prot_guard = SHOST_DIX_GUARD_IP;
-module_param(lpfc_prot_guard, byte, S_IRUGO);
-MODULE_PARM_DESC(lpfc_prot_guard, "host protection guard type");
-=======
 LPFC_ATTR(prot_guard,
 	SHOST_DIX_GUARD_IP, SHOST_DIX_GUARD_CRC, SHOST_DIX_GUARD_IP,
 	"T10-DIF host protection guard type");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Delay initial NPort discovery when Clean Address bit is cleared in
@@ -7530,140 +5758,6 @@ LPFC_ATTR(prot_guard,
  * accept and FCID/Fabric name/Fabric portname is changed.
  * Default value is 0.
  */
-<<<<<<< HEAD
-int lpfc_delay_discovery;
-module_param(lpfc_delay_discovery, int, S_IRUGO);
-MODULE_PARM_DESC(lpfc_delay_discovery,
-	"Delay NPort discovery when Clean Address bit is cleared. "
-	"Allowed values: 0,1.");
-
-/*
- * lpfc_sg_seg_cnt - Initial Maximum DMA Segment Count
- * This value can be set to values between 64 and 256. The default value is
- * 64, but may be increased to allow for larger Max I/O sizes. The scsi layer
- * will be allowed to request I/Os of sizes up to (MAX_SEG_COUNT * SEG_SIZE).
- */
-LPFC_ATTR_R(sg_seg_cnt, LPFC_DEFAULT_SG_SEG_CNT, LPFC_DEFAULT_SG_SEG_CNT,
-	    LPFC_MAX_SG_SEG_CNT, "Max Scatter Gather Segment Count");
-
-LPFC_ATTR_R(prot_sg_seg_cnt, LPFC_DEFAULT_PROT_SG_SEG_CNT,
-		LPFC_DEFAULT_PROT_SG_SEG_CNT, LPFC_MAX_PROT_SG_SEG_CNT,
-		"Max Protection Scatter Gather Segment Count");
-
-struct device_attribute *lpfc_hba_attrs[] = {
-	&dev_attr_bg_info,
-	&dev_attr_bg_guard_err,
-	&dev_attr_bg_apptag_err,
-	&dev_attr_bg_reftag_err,
-	&dev_attr_info,
-	&dev_attr_serialnum,
-	&dev_attr_modeldesc,
-	&dev_attr_modelname,
-	&dev_attr_programtype,
-	&dev_attr_portnum,
-	&dev_attr_fwrev,
-	&dev_attr_hdw,
-	&dev_attr_option_rom_version,
-	&dev_attr_link_state,
-	&dev_attr_num_discovered_ports,
-	&dev_attr_menlo_mgmt_mode,
-	&dev_attr_lpfc_drvr_version,
-	&dev_attr_lpfc_enable_fip,
-	&dev_attr_lpfc_temp_sensor,
-	&dev_attr_lpfc_log_verbose,
-	&dev_attr_lpfc_lun_queue_depth,
-	&dev_attr_lpfc_tgt_queue_depth,
-	&dev_attr_lpfc_hba_queue_depth,
-	&dev_attr_lpfc_peer_port_login,
-	&dev_attr_lpfc_nodev_tmo,
-	&dev_attr_lpfc_devloss_tmo,
-	&dev_attr_lpfc_fcp_class,
-	&dev_attr_lpfc_use_adisc,
-	&dev_attr_lpfc_ack0,
-	&dev_attr_lpfc_topology,
-	&dev_attr_lpfc_scan_down,
-	&dev_attr_lpfc_link_speed,
-	&dev_attr_lpfc_cr_delay,
-	&dev_attr_lpfc_cr_count,
-	&dev_attr_lpfc_multi_ring_support,
-	&dev_attr_lpfc_multi_ring_rctl,
-	&dev_attr_lpfc_multi_ring_type,
-	&dev_attr_lpfc_fdmi_on,
-	&dev_attr_lpfc_max_luns,
-	&dev_attr_lpfc_enable_npiv,
-	&dev_attr_lpfc_fcf_failover_policy,
-	&dev_attr_lpfc_enable_rrq,
-	&dev_attr_nport_evt_cnt,
-	&dev_attr_board_mode,
-	&dev_attr_max_vpi,
-	&dev_attr_used_vpi,
-	&dev_attr_max_rpi,
-	&dev_attr_used_rpi,
-	&dev_attr_max_xri,
-	&dev_attr_used_xri,
-	&dev_attr_npiv_info,
-	&dev_attr_issue_reset,
-	&dev_attr_lpfc_poll,
-	&dev_attr_lpfc_poll_tmo,
-	&dev_attr_lpfc_use_msi,
-	&dev_attr_lpfc_fcp_imax,
-	&dev_attr_lpfc_fcp_wq_count,
-	&dev_attr_lpfc_fcp_eq_count,
-	&dev_attr_lpfc_enable_bg,
-	&dev_attr_lpfc_soft_wwnn,
-	&dev_attr_lpfc_soft_wwpn,
-	&dev_attr_lpfc_soft_wwn_enable,
-	&dev_attr_lpfc_enable_hba_reset,
-	&dev_attr_lpfc_enable_hba_heartbeat,
-	&dev_attr_lpfc_sg_seg_cnt,
-	&dev_attr_lpfc_max_scsicmpl_time,
-	&dev_attr_lpfc_stat_data_ctrl,
-	&dev_attr_lpfc_prot_sg_seg_cnt,
-	&dev_attr_lpfc_aer_support,
-	&dev_attr_lpfc_aer_state_cleanup,
-	&dev_attr_lpfc_sriov_nr_virtfn,
-	&dev_attr_lpfc_suppress_link_up,
-	&dev_attr_lpfc_iocb_cnt,
-	&dev_attr_iocb_hw,
-	&dev_attr_txq_hw,
-	&dev_attr_txcmplq_hw,
-	&dev_attr_lpfc_fips_level,
-	&dev_attr_lpfc_fips_rev,
-	&dev_attr_lpfc_dss,
-	&dev_attr_lpfc_sriov_hw_max_virtfn,
-	&dev_attr_protocol,
-	NULL,
-};
-
-struct device_attribute *lpfc_vport_attrs[] = {
-	&dev_attr_info,
-	&dev_attr_link_state,
-	&dev_attr_num_discovered_ports,
-	&dev_attr_lpfc_drvr_version,
-	&dev_attr_lpfc_log_verbose,
-	&dev_attr_lpfc_lun_queue_depth,
-	&dev_attr_lpfc_tgt_queue_depth,
-	&dev_attr_lpfc_nodev_tmo,
-	&dev_attr_lpfc_devloss_tmo,
-	&dev_attr_lpfc_hba_queue_depth,
-	&dev_attr_lpfc_peer_port_login,
-	&dev_attr_lpfc_restrict_login,
-	&dev_attr_lpfc_fcp_class,
-	&dev_attr_lpfc_use_adisc,
-	&dev_attr_lpfc_fdmi_on,
-	&dev_attr_lpfc_max_luns,
-	&dev_attr_nport_evt_cnt,
-	&dev_attr_npiv_info,
-	&dev_attr_lpfc_enable_da_id,
-	&dev_attr_lpfc_max_scsicmpl_time,
-	&dev_attr_lpfc_stat_data_ctrl,
-	&dev_attr_lpfc_static_vport,
-	&dev_attr_lpfc_fips_level,
-	&dev_attr_lpfc_fips_rev,
-	NULL,
-};
-
-=======
 LPFC_ATTR(delay_discovery, 0, 0, 1,
 	"Delay NPort discovery when Clean Address bit is cleared.");
 
@@ -8061,7 +6155,6 @@ const struct attribute_group *lpfc_vport_groups[] = {
 	NULL
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * sysfs_ctlreg_write - Write method for writing to ctlreg
  * @filp: open sysfs file
@@ -8108,11 +6201,7 @@ sysfs_ctlreg_write(struct file *filp, struct kobject *kobj,
 	if (memcmp(buf, LPFC_REG_WRITE_KEY, LPFC_REG_WRITE_KEY_SIZE))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (!(vport->fc_flag & FC_OFFLINE_MODE))
-=======
 	if (!test_bit(FC_OFFLINE_MODE, &vport->fc_flag))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 
 	spin_lock_irq(&phba->hbalock);
@@ -8264,27 +6353,14 @@ lpfc_alloc_sysfs_attr(struct lpfc_vport *vport)
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 	int error;
 
-<<<<<<< HEAD
-	error = sysfs_create_bin_file(&shost->shost_dev.kobj,
-				      &sysfs_drvr_stat_data_attr);
-
-	/* Virtual ports do not need ctrl_reg and mbox */
-	if (error || vport->port_type == LPFC_NPIV_PORT)
-		goto out;
-=======
 	/* Virtual ports do not need ctrl_reg and mbox */
 	if (vport->port_type == LPFC_NPIV_PORT)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = sysfs_create_bin_file(&shost->shost_dev.kobj,
 				      &sysfs_ctlreg_attr);
 	if (error)
-<<<<<<< HEAD
-		goto out_remove_stat_attr;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = sysfs_create_bin_file(&shost->shost_dev.kobj,
 				      &sysfs_mbox_attr);
@@ -8294,12 +6370,6 @@ lpfc_alloc_sysfs_attr(struct lpfc_vport *vport)
 	return 0;
 out_remove_ctlreg_attr:
 	sysfs_remove_bin_file(&shost->shost_dev.kobj, &sysfs_ctlreg_attr);
-<<<<<<< HEAD
-out_remove_stat_attr:
-	sysfs_remove_bin_file(&shost->shost_dev.kobj,
-			&sysfs_drvr_stat_data_attr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return error;
 }
@@ -8312,12 +6382,7 @@ void
 lpfc_free_sysfs_attr(struct lpfc_vport *vport)
 {
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
-<<<<<<< HEAD
-	sysfs_remove_bin_file(&shost->shost_dev.kobj,
-		&sysfs_drvr_stat_data_attr);
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Virtual ports do not need ctrl_reg and mbox */
 	if (vport->port_type == LPFC_NPIV_PORT)
 		return;
@@ -8325,17 +6390,11 @@ lpfc_free_sysfs_attr(struct lpfc_vport *vport)
 	sysfs_remove_bin_file(&shost->shost_dev.kobj, &sysfs_ctlreg_attr);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Dynamic FC Host Attributes Support
  */
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_get_host_symbolic_name - Copy symbolic name into the scsi host
  * @shost: kernel scsi host pointer.
  **/
@@ -8349,7 +6408,6 @@ lpfc_get_host_symbolic_name(struct Scsi_Host *shost)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_get_host_port_id - Copy the vport DID into the scsi host port id
  * @shost: kernel scsi host pointer.
  **/
@@ -8372,40 +6430,22 @@ lpfc_get_host_port_type(struct Scsi_Host *shost)
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	spin_lock_irq(shost->host_lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vport->port_type == LPFC_NPIV_PORT) {
 		fc_host_port_type(shost) = FC_PORTTYPE_NPIV;
 	} else if (lpfc_is_link_up(phba)) {
 		if (phba->fc_topology == LPFC_TOPOLOGY_LOOP) {
-<<<<<<< HEAD
-			if (vport->fc_flag & FC_PUBLIC_LOOP)
-=======
 			if (test_bit(FC_PUBLIC_LOOP, &vport->fc_flag))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				fc_host_port_type(shost) = FC_PORTTYPE_NLPORT;
 			else
 				fc_host_port_type(shost) = FC_PORTTYPE_LPORT;
 		} else {
-<<<<<<< HEAD
-			if (vport->fc_flag & FC_FABRIC)
-=======
 			if (test_bit(FC_FABRIC, &vport->fc_flag))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				fc_host_port_type(shost) = FC_PORTTYPE_NPORT;
 			else
 				fc_host_port_type(shost) = FC_PORTTYPE_PTP;
 		}
 	} else
 		fc_host_port_type(shost) = FC_PORTTYPE_UNKNOWN;
-<<<<<<< HEAD
-
-	spin_unlock_irq(shost->host_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -8418,13 +6458,7 @@ lpfc_get_host_port_state(struct Scsi_Host *shost)
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	spin_lock_irq(shost->host_lock);
-
-	if (vport->fc_flag & FC_OFFLINE_MODE)
-=======
 	if (test_bit(FC_OFFLINE_MODE, &vport->fc_flag))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_host_port_state(shost) = FC_PORTSTATE_OFFLINE;
 	else {
 		switch (phba->link_state) {
@@ -8451,11 +6485,6 @@ lpfc_get_host_port_state(struct Scsi_Host *shost)
 			break;
 		}
 	}
-<<<<<<< HEAD
-
-	spin_unlock_irq(shost->host_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -8468,13 +6497,7 @@ lpfc_get_host_speed(struct Scsi_Host *shost)
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	spin_lock_irq(shost->host_lock);
-
-	if (lpfc_is_link_up(phba)) {
-=======
 	if ((lpfc_is_link_up(phba)) && (!(phba->hba_flag & HBA_FCOE_MODE))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch(phba->fc_linkspeed) {
 		case LPFC_LINK_SPEED_1GHZ:
 			fc_host_speed(shost) = FC_PORTSPEED_1GBIT;
@@ -8494,8 +6517,6 @@ lpfc_get_host_speed(struct Scsi_Host *shost)
 		case LPFC_LINK_SPEED_16GHZ:
 			fc_host_speed(shost) = FC_PORTSPEED_16GBIT;
 			break;
-<<<<<<< HEAD
-=======
 		case LPFC_LINK_SPEED_32GHZ:
 			fc_host_speed(shost) = FC_PORTSPEED_32GBIT;
 			break;
@@ -8532,18 +6553,12 @@ lpfc_get_host_speed(struct Scsi_Host *shost)
 		case LPFC_ASYNC_LINK_SPEED_100GBPS:
 			fc_host_speed(shost) = FC_PORTSPEED_100GBIT;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			fc_host_speed(shost) = FC_PORTSPEED_UNKNOWN;
 			break;
 		}
 	} else
 		fc_host_speed(shost) = FC_PORTSPEED_UNKNOWN;
-<<<<<<< HEAD
-
-	spin_unlock_irq(shost->host_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -8557,29 +6572,15 @@ lpfc_get_host_fabric_name (struct Scsi_Host *shost)
 	struct lpfc_hba   *phba = vport->phba;
 	u64 node_name;
 
-<<<<<<< HEAD
-	spin_lock_irq(shost->host_lock);
-
-	if ((vport->port_state > LPFC_FLOGI) &&
-	    ((vport->fc_flag & FC_FABRIC) ||
-	     ((phba->fc_topology == LPFC_TOPOLOGY_LOOP) &&
-	      (vport->fc_flag & FC_PUBLIC_LOOP))))
-=======
 	if (vport->port_state > LPFC_FLOGI &&
 	    (test_bit(FC_FABRIC, &vport->fc_flag) ||
 	     (phba->fc_topology == LPFC_TOPOLOGY_LOOP &&
 	      test_bit(FC_PUBLIC_LOOP, &vport->fc_flag))))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		node_name = wwn_to_u64(phba->fc_fabparam.nodeName.u.wwn);
 	else
 		/* fabric is local port if there is no F/FL_Port */
 		node_name = 0;
 
-<<<<<<< HEAD
-	spin_unlock_irq(shost->host_lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_host_fabric_name(shost) = node_name;
 }
 
@@ -8605,10 +6606,6 @@ lpfc_get_stats(struct Scsi_Host *shost)
 	struct lpfc_lnk_stat * lso = &psli->lnk_stat_offsets;
 	LPFC_MBOXQ_t *pmboxq;
 	MAILBOX_t *pmb;
-<<<<<<< HEAD
-	unsigned long seconds;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	/*
@@ -8631,20 +6628,6 @@ lpfc_get_stats(struct Scsi_Host *shost)
 	pmb = &pmboxq->u.mb;
 	pmb->mbxCommand = MBX_READ_STATUS;
 	pmb->mbxOwner = OWN_HOST;
-<<<<<<< HEAD
-	pmboxq->context1 = NULL;
-	pmboxq->vport = vport;
-
-	if (vport->fc_flag & FC_OFFLINE_MODE)
-		rc = lpfc_sli_issue_mbox(phba, pmboxq, MBX_POLL);
-	else
-		rc = lpfc_sli_issue_mbox_wait(phba, pmboxq, phba->fc_ratov * 2);
-
-	if (rc != MBX_SUCCESS) {
-		if (rc != MBX_TIMEOUT)
-			mempool_free(pmboxq, phba->mbox_mem_pool);
-		return NULL;
-=======
 	pmboxq->ctx_buf = NULL;
 	pmboxq->vport = vport;
 
@@ -8661,25 +6644,11 @@ lpfc_get_stats(struct Scsi_Host *shost)
 				mempool_free(pmboxq, phba->mbox_mem_pool);
 			return NULL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	memset(hs, 0, sizeof (struct fc_host_statistics));
 
 	hs->tx_frames = pmb->un.varRdStatus.xmitFrameCnt;
-<<<<<<< HEAD
-	/*
-	 * The MBX_READ_STATUS returns tx_k_bytes which has to
-	 * converted to words
-	 */
-	hs->tx_words = (uint64_t)
-			((uint64_t)pmb->un.varRdStatus.xmitByteCnt
-			* (uint64_t)256);
-	hs->rx_frames = pmb->un.varRdStatus.rcvFrameCnt;
-	hs->rx_words = (uint64_t)
-			((uint64_t)pmb->un.varRdStatus.rcvByteCnt
-			 * (uint64_t)256);
-=======
 	hs->rx_frames = pmb->un.varRdStatus.rcvFrameCnt;
 
 	/*
@@ -8708,25 +6677,10 @@ lpfc_get_stats(struct Scsi_Host *shost)
 				((uint64_t)pmb->un.varRdStatus.rcvByteCnt
 				 * (uint64_t)256);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(pmboxq, 0, sizeof (LPFC_MBOXQ_t));
 	pmb->mbxCommand = MBX_READ_LNK_STAT;
 	pmb->mbxOwner = OWN_HOST;
-<<<<<<< HEAD
-	pmboxq->context1 = NULL;
-	pmboxq->vport = vport;
-
-	if (vport->fc_flag & FC_OFFLINE_MODE)
-		rc = lpfc_sli_issue_mbox(phba, pmboxq, MBX_POLL);
-	else
-		rc = lpfc_sli_issue_mbox_wait(phba, pmboxq, phba->fc_ratov * 2);
-
-	if (rc != MBX_SUCCESS) {
-		if (rc != MBX_TIMEOUT)
-			mempool_free(pmboxq, phba->mbox_mem_pool);
-		return NULL;
-=======
 	pmboxq->ctx_buf = NULL;
 	pmboxq->vport = vport;
 
@@ -8743,7 +6697,6 @@ lpfc_get_stats(struct Scsi_Host *shost)
 				mempool_free(pmboxq, phba->mbox_mem_pool);
 			return NULL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hs->link_failure_count = pmb->un.varRdLnk.linkFailureCnt;
@@ -8754,12 +6707,9 @@ lpfc_get_stats(struct Scsi_Host *shost)
 	hs->invalid_crc_count = pmb->un.varRdLnk.crcCnt;
 	hs->error_frames = pmb->un.varRdLnk.crcCnt;
 
-<<<<<<< HEAD
-=======
 	hs->cn_sig_warn = atomic64_read(&phba->cgn_acqe_stat.warn);
 	hs->cn_sig_alarm = atomic64_read(&phba->cgn_acqe_stat.alarm);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hs->link_failure_count -= lso->link_failure_count;
 	hs->loss_of_sync_count -= lso->loss_of_sync_count;
 	hs->loss_of_signal_count -= lso->loss_of_signal_count;
@@ -8784,16 +6734,7 @@ lpfc_get_stats(struct Scsi_Host *shost)
 
 	hs->dumped_frames = -1;
 
-<<<<<<< HEAD
-	seconds = get_seconds();
-	if (seconds < psli->stats_start)
-		hs->seconds_since_last_reset = seconds +
-				((unsigned long)-1 - psli->stats_start);
-	else
-		hs->seconds_since_last_reset = seconds - psli->stats_start;
-=======
 	hs->seconds_since_last_reset = ktime_get_seconds() - psli->stats_start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mempool_free(pmboxq, phba->mbox_mem_pool);
 
@@ -8827,21 +6768,6 @@ lpfc_reset_stats(struct Scsi_Host *shost)
 	pmb->mbxCommand = MBX_READ_STATUS;
 	pmb->mbxOwner = OWN_HOST;
 	pmb->un.varWords[0] = 0x1; /* reset request */
-<<<<<<< HEAD
-	pmboxq->context1 = NULL;
-	pmboxq->vport = vport;
-
-	if ((vport->fc_flag & FC_OFFLINE_MODE) ||
-		(!(psli->sli_flag & LPFC_SLI_ACTIVE)))
-		rc = lpfc_sli_issue_mbox(phba, pmboxq, MBX_POLL);
-	else
-		rc = lpfc_sli_issue_mbox_wait(phba, pmboxq, phba->fc_ratov * 2);
-
-	if (rc != MBX_SUCCESS) {
-		if (rc != MBX_TIMEOUT)
-			mempool_free(pmboxq, phba->mbox_mem_pool);
-		return;
-=======
 	pmboxq->ctx_buf = NULL;
 	pmboxq->vport = vport;
 
@@ -8859,27 +6785,11 @@ lpfc_reset_stats(struct Scsi_Host *shost)
 				mempool_free(pmboxq, phba->mbox_mem_pool);
 			return;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	memset(pmboxq, 0, sizeof(LPFC_MBOXQ_t));
 	pmb->mbxCommand = MBX_READ_LNK_STAT;
 	pmb->mbxOwner = OWN_HOST;
-<<<<<<< HEAD
-	pmboxq->context1 = NULL;
-	pmboxq->vport = vport;
-
-	if ((vport->fc_flag & FC_OFFLINE_MODE) ||
-	    (!(psli->sli_flag & LPFC_SLI_ACTIVE)))
-		rc = lpfc_sli_issue_mbox(phba, pmboxq, MBX_POLL);
-	else
-		rc = lpfc_sli_issue_mbox_wait(phba, pmboxq, phba->fc_ratov * 2);
-
-	if (rc != MBX_SUCCESS) {
-		if (rc != MBX_TIMEOUT)
-			mempool_free( pmboxq, phba->mbox_mem_pool);
-		return;
-=======
 	pmboxq->ctx_buf = NULL;
 	pmboxq->vport = vport;
 
@@ -8897,7 +6807,6 @@ lpfc_reset_stats(struct Scsi_Host *shost)
 				mempool_free(pmboxq, phba->mbox_mem_pool);
 			return;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	lso->link_failure_count = pmb->un.varRdLnk.linkFailureCnt;
@@ -8912,9 +6821,6 @@ lpfc_reset_stats(struct Scsi_Host *shost)
 	else
 		lso->link_events = (phba->fc_eventTag >> 1);
 
-<<<<<<< HEAD
-	psli->stats_start = get_seconds();
-=======
 	atomic64_set(&phba->cgn_acqe_stat.warn, 0);
 	atomic64_set(&phba->cgn_acqe_stat.alarm, 0);
 
@@ -8922,7 +6828,6 @@ lpfc_reset_stats(struct Scsi_Host *shost)
 	       sizeof(shost_to_fc_host(shost)->fpin_stats));
 
 	psli->stats_start = ktime_get_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mempool_free(pmboxq, phba->mbox_mem_pool);
 
@@ -8948,20 +6853,6 @@ lpfc_get_node_by_target(struct scsi_target *starget)
 	struct Scsi_Host  *shost = dev_to_shost(starget->dev.parent);
 	struct lpfc_vport *vport = (struct lpfc_vport *) shost->hostdata;
 	struct lpfc_nodelist *ndlp;
-<<<<<<< HEAD
-
-	spin_lock_irq(shost->host_lock);
-	/* Search for this, mapped, target ID */
-	list_for_each_entry(ndlp, &vport->fc_nodes, nlp_listp) {
-		if (NLP_CHK_NODE_ACT(ndlp) &&
-		    ndlp->nlp_state == NLP_STE_MAPPED_NODE &&
-		    starget->id == ndlp->nlp_sid) {
-			spin_unlock_irq(shost->host_lock);
-			return ndlp;
-		}
-	}
-	spin_unlock_irq(shost->host_lock);
-=======
 	unsigned long iflags;
 
 	spin_lock_irqsave(&vport->fc_nodes_list_lock, iflags);
@@ -8975,7 +6866,6 @@ lpfc_get_node_by_target(struct scsi_target *starget)
 		}
 	}
 	spin_unlock_irqrestore(&vport->fc_nodes_list_lock, iflags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -9033,24 +6923,16 @@ lpfc_get_starget_port_name(struct scsi_target *starget)
 static void
 lpfc_set_rport_loss_tmo(struct fc_rport *rport, uint32_t timeout)
 {
-<<<<<<< HEAD
-=======
 	struct lpfc_rport_data *rdata = rport->dd_data;
 	struct lpfc_nodelist *ndlp = rdata->pnode;
 #if (IS_ENABLED(CONFIG_NVME_FC))
 	struct lpfc_nvme_rport *nrport = NULL;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (timeout)
 		rport->dev_loss_tmo = timeout;
 	else
 		rport->dev_loss_tmo = 1;
-<<<<<<< HEAD
-}
-
-/**
-=======
 
 	if (!ndlp) {
 		dev_info(&rport->dev, "Cannot find remote node to "
@@ -9069,7 +6951,6 @@ lpfc_set_rport_loss_tmo(struct fc_rport *rport, uint32_t timeout)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_rport_show_function - Return rport target information
  *
  * Description:
@@ -9089,11 +6970,7 @@ lpfc_show_rport_##field (struct device *dev,				\
 {									\
 	struct fc_rport *rport = transport_class_to_rport(dev);		\
 	struct lpfc_rport_data *rdata = rport->hostdata;		\
-<<<<<<< HEAD
-	return snprintf(buf, sz, format_string,				\
-=======
 	return scnprintf(buf, sz, format_string,			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(rdata->target) ? cast rdata->target->field : 0);	\
 }
 
@@ -9122,10 +6999,7 @@ lpfc_set_vport_symbolic_name(struct fc_vport *fc_vport)
 /**
  * lpfc_hba_log_verbose_init - Set hba's log verbose level
  * @phba: Pointer to lpfc_hba struct.
-<<<<<<< HEAD
-=======
  * @verbose: Verbose level to set.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is called by the lpfc_get_cfgparam() routine to set the
  * module lpfc_log_verbose into the @phba cfg_log_verbose for use with
@@ -9146,11 +7020,8 @@ struct fc_function_template lpfc_transport_functions = {
 	.show_host_supported_fc4s = 1,
 	.show_host_supported_speeds = 1,
 	.show_host_maxframe_size = 1,
-<<<<<<< HEAD
-=======
 
 	.get_host_symbolic_name = lpfc_get_host_symbolic_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.show_host_symbolic_name = 1,
 
 	/* dynamic attributes the driver supports */
@@ -9218,11 +7089,8 @@ struct fc_function_template lpfc_vport_transport_functions = {
 	.show_host_supported_fc4s = 1,
 	.show_host_supported_speeds = 1,
 	.show_host_maxframe_size = 1,
-<<<<<<< HEAD
-=======
 
 	.get_host_symbolic_name = lpfc_get_host_symbolic_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.show_host_symbolic_name = 1,
 
 	/* dynamic attributes the driver supports */
@@ -9277,8 +7145,6 @@ struct fc_function_template lpfc_vport_transport_functions = {
 };
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_get_hba_function_mode - Used to determine the HBA function in FCoE
  * Mode
  * @phba: lpfc_hba pointer.
@@ -9304,56 +7170,22 @@ lpfc_get_hba_function_mode(struct lpfc_hba *phba)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_get_cfgparam - Used during probe_one to init the adapter structure
  * @phba: lpfc_hba pointer.
  **/
 void
 lpfc_get_cfgparam(struct lpfc_hba *phba)
 {
-<<<<<<< HEAD
-=======
 	lpfc_hba_log_verbose_init(phba, lpfc_log_verbose);
 	lpfc_fcp_io_sched_init(phba, lpfc_fcp_io_sched);
 	lpfc_ns_query_init(phba, lpfc_ns_query);
 	lpfc_fcp2_no_tgt_reset_init(phba, lpfc_fcp2_no_tgt_reset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpfc_cr_delay_init(phba, lpfc_cr_delay);
 	lpfc_cr_count_init(phba, lpfc_cr_count);
 	lpfc_multi_ring_support_init(phba, lpfc_multi_ring_support);
 	lpfc_multi_ring_rctl_init(phba, lpfc_multi_ring_rctl);
 	lpfc_multi_ring_type_init(phba, lpfc_multi_ring_type);
 	lpfc_ack0_init(phba, lpfc_ack0);
-<<<<<<< HEAD
-	lpfc_topology_init(phba, lpfc_topology);
-	lpfc_link_speed_init(phba, lpfc_link_speed);
-	lpfc_poll_tmo_init(phba, lpfc_poll_tmo);
-	lpfc_enable_npiv_init(phba, lpfc_enable_npiv);
-	lpfc_fcf_failover_policy_init(phba, lpfc_fcf_failover_policy);
-	lpfc_enable_rrq_init(phba, lpfc_enable_rrq);
-	lpfc_use_msi_init(phba, lpfc_use_msi);
-	lpfc_fcp_imax_init(phba, lpfc_fcp_imax);
-	lpfc_fcp_wq_count_init(phba, lpfc_fcp_wq_count);
-	lpfc_fcp_eq_count_init(phba, lpfc_fcp_eq_count);
-	lpfc_enable_hba_reset_init(phba, lpfc_enable_hba_reset);
-	lpfc_enable_hba_heartbeat_init(phba, lpfc_enable_hba_heartbeat);
-	lpfc_enable_bg_init(phba, lpfc_enable_bg);
-	if (phba->sli_rev == LPFC_SLI_REV4)
-		phba->cfg_poll = 0;
-	else
-	phba->cfg_poll = lpfc_poll;
-	phba->cfg_soft_wwnn = 0L;
-	phba->cfg_soft_wwpn = 0L;
-	lpfc_sg_seg_cnt_init(phba, lpfc_sg_seg_cnt);
-	lpfc_prot_sg_seg_cnt_init(phba, lpfc_prot_sg_seg_cnt);
-	lpfc_hba_queue_depth_init(phba, lpfc_hba_queue_depth);
-	lpfc_hba_log_verbose_init(phba, lpfc_log_verbose);
-	lpfc_aer_support_init(phba, lpfc_aer_support);
-	lpfc_sriov_nr_virtfn_init(phba, lpfc_sriov_nr_virtfn);
-	lpfc_suppress_link_up_init(phba, lpfc_suppress_link_up);
-	lpfc_iocb_cnt_init(phba, lpfc_iocb_cnt);
-	phba->cfg_enable_dss = 1;
-=======
 	lpfc_xri_rebalancing_init(phba, lpfc_xri_rebalancing);
 	lpfc_topology_init(phba, lpfc_topology);
 	lpfc_link_speed_init(phba, lpfc_link_speed);
@@ -9473,13 +7305,10 @@ lpfc_get_cfgparam(struct lpfc_hba *phba)
 	lpfc_ras_fwlog_level_init(phba, lpfc_ras_fwlog_level);
 	lpfc_ras_fwlog_func_init(phba, lpfc_ras_fwlog_func);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_nvme_mod_param_dep - Adjust module parameter value based on
  * dependencies between protocols and roles.
  * @phba: lpfc_hba pointer.
@@ -9548,7 +7377,6 @@ lpfc_nvme_mod_param_dep(struct lpfc_hba *phba)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_get_vport_cfgparam - Used during port create, init the vport structure
  * @vport: lpfc_vport pointer.
  **/
@@ -9564,13 +7392,8 @@ lpfc_get_vport_cfgparam(struct lpfc_vport *vport)
 	lpfc_restrict_login_init(vport, lpfc_restrict_login);
 	lpfc_fcp_class_init(vport, lpfc_fcp_class);
 	lpfc_use_adisc_init(vport, lpfc_use_adisc);
-<<<<<<< HEAD
-	lpfc_max_scsicmpl_time_init(vport, lpfc_max_scsicmpl_time);
-	lpfc_fdmi_on_init(vport, lpfc_fdmi_on);
-=======
 	lpfc_first_burst_size_init(vport, lpfc_first_burst_size);
 	lpfc_max_scsicmpl_time_init(vport, lpfc_max_scsicmpl_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpfc_discovery_threads_init(vport, lpfc_discovery_threads);
 	lpfc_max_luns_init(vport, lpfc_max_luns);
 	lpfc_scan_down_init(vport, lpfc_scan_down);

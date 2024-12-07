@@ -1,25 +1,13 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (C) 2015 Anton Ivanov (aivanov@{brocade.com,kot-begemot.co.uk})
  * Copyright (C) 2015 Thomas Meyer (thomas@m3y3r.de)
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __OS_H__
 #define __OS_H__
 
-<<<<<<< HEAD
-#include <stdarg.h>
-#include "irq_user.h"
-#include "longjmp.h"
-#include "mm_id.h"
-=======
 #include <irq_user.h>
 #include <longjmp.h>
 #include <mm_id.h>
@@ -29,7 +17,6 @@
 #else
 #include <sys/types.h>
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CATCH_EINTR(expr) while ((errno = 0, ((expr) < 0)) && (errno == EINTR))
 
@@ -54,11 +41,8 @@
 #define OS_LIB_PATH	"/usr/lib/"
 #endif
 
-<<<<<<< HEAD
-=======
 #define OS_SENDMSG_MAX_FDS 8
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * types taken from stat_file() in hostfs_user.c
  * (if they are wrong here, they are wrong there...).
@@ -161,25 +145,17 @@ extern int os_ioctl_generic(int fd, unsigned int cmd, unsigned long arg);
 extern int os_get_ifname(int fd, char *namebuf);
 extern int os_set_slip(int fd);
 extern int os_mode_fd(int fd, int mode);
-<<<<<<< HEAD
-=======
 extern int os_fsync_file(int fd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int os_seek_file(int fd, unsigned long long offset);
 extern int os_open_file(const char *file, struct openflags flags, int mode);
 extern int os_read_file(int fd, void *buf, int len);
 extern int os_write_file(int fd, const void *buf, int count);
-<<<<<<< HEAD
-extern int os_file_size(const char *file, unsigned long long *size_out);
-extern int os_file_modtime(const char *file, unsigned long *modtime);
-=======
 extern int os_sync_file(int fd);
 extern int os_file_size(const char *file, unsigned long long *size_out);
 extern int os_pread_file(int fd, void *buf, int len, unsigned long long offset);
 extern int os_pwrite_file(int fd, const void *buf, int count, unsigned long long offset);
 extern int os_file_modtime(const char *file, long long *modtime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int os_pipe(int *fd, int stream, int close_on_exec);
 extern int os_set_fd_async(int fd);
 extern int os_clear_fd_async(int fd);
@@ -189,34 +165,11 @@ extern int os_create_unix_socket(const char *file, int len, int close_on_exec);
 extern int os_shutdown_socket(int fd, int r, int w);
 extern void os_close_file(int fd);
 extern int os_rcv_fd(int fd, int *helper_pid_out);
-<<<<<<< HEAD
-extern int create_unix_socket(char *file, int len, int close_on_exec);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int os_connect_socket(const char *name);
 extern int os_file_type(char *file);
 extern int os_file_mode(const char *file, struct openflags *mode_out);
 extern int os_lock_file(int fd, int excl);
 extern void os_flush_stdout(void);
-<<<<<<< HEAD
-extern int os_stat_filesystem(char *path, long *bsize_out,
-			      long long *blocks_out, long long *bfree_out,
-			      long long *bavail_out, long long *files_out,
-			      long long *ffree_out, void *fsid_out,
-			      int fsid_size, long *namelen_out,
-			      long *spare_out);
-extern int os_change_dir(char *dir);
-extern int os_fchange_dir(int fd);
-extern unsigned os_major(unsigned long long dev);
-extern unsigned os_minor(unsigned long long dev);
-extern unsigned long long os_makedev(unsigned major, unsigned minor);
-
-/* start_up.c */
-extern void os_early_checks(void);
-extern void can_do_skas(void);
-extern void os_check_bugs(void);
-extern void check_host_supports_tls(int *supports_tls, int *tls_min);
-=======
 extern unsigned os_major(unsigned long long dev);
 extern unsigned os_minor(unsigned long long dev);
 extern unsigned long long os_makedev(unsigned major, unsigned minor);
@@ -234,7 +187,6 @@ extern void check_host_supports_tls(int *supports_tls, int *tls_min);
 extern void get_host_cpu_features(
 	void (*flags_helper_func)(char *line),
 	void (*cache_helper_func)(char *line));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* mem.c */
 extern int create_mem_file(unsigned long long len);
@@ -242,26 +194,15 @@ extern int create_mem_file(unsigned long long len);
 /* process.c */
 extern unsigned long os_process_pc(int pid);
 extern int os_process_parent(int pid);
-<<<<<<< HEAD
-extern void os_stop_process(int pid);
-extern void os_kill_process(int pid, int reap_child);
-extern void os_kill_ptraced_process(int pid, int reap_child);
-extern long os_ptrace_ldt(long pid, long addr, long data);
-=======
 extern void os_alarm_process(int pid);
 extern void os_stop_process(int pid);
 extern void os_kill_process(int pid, int reap_child);
 extern void os_kill_ptraced_process(int pid, int reap_child);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int os_getpid(void);
 extern int os_getpgrp(void);
 
 extern void init_new_thread_signals(void);
-<<<<<<< HEAD
-extern int run_kernel_thread(int (*fn)(void *), void *arg, jmp_buf **jmp_ptr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int os_map_memory(void *virt, int fd, unsigned long long off,
 			 unsigned long len, int r, int w, int x);
@@ -270,11 +211,7 @@ extern int os_protect_memory(void *addr, unsigned long len,
 extern int os_unmap_memory(void *addr, int len);
 extern int os_drop_memory(void *addr, int length);
 extern int can_drop_memory(void);
-<<<<<<< HEAD
-extern void os_flush_stdout(void);
-=======
 extern int os_mincore(void *addr, unsigned long len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* execvp.c */
 extern int execvp_noalloc(char *buf, const char *file, char *const argv[]);
@@ -291,17 +228,6 @@ extern int set_umid(char *name);
 extern char *get_umid(void);
 
 /* signal.c */
-<<<<<<< HEAD
-extern void timer_init(void);
-extern void set_sigstack(void *sig_stack, int size);
-extern void remove_sigstack(void);
-extern void set_handler(int sig);
-extern int change_sig(int signal, int on);
-extern void block_signals(void);
-extern void unblock_signals(void);
-extern int get_signals(void);
-extern int set_signals(int enable);
-=======
 extern void timer_set_signal_handler(void);
 extern void set_sigstack(void *sig_stack, int size);
 extern void set_handler(int sig);
@@ -317,24 +243,12 @@ extern void register_pm_wake_signal(void);
 extern void block_signals_hard(void);
 extern void unblock_signals_hard(void);
 extern void mark_sigio_pending(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* util.c */
 extern void stack_protections(unsigned long address);
 extern int raw(int fd);
 extern void setup_machinename(char *machine_out);
 extern void setup_hostinfo(char *buf, int len);
-<<<<<<< HEAD
-extern void os_dump_core(void) __attribute__ ((noreturn));
-extern void um_early_printk(const char *s, unsigned int n);
-
-/* time.c */
-extern void idle_sleep(unsigned long long nsecs);
-extern int set_interval(void);
-extern int timer_one_shot(int ticks);
-extern long long disable_timer(void);
-extern void uml_idle_timer(void);
-=======
 extern ssize_t os_getrandom(void *buf, size_t len, unsigned int flags);
 extern void os_dump_core(void) __attribute__ ((noreturn));
 extern void um_early_printk(const char *s, unsigned int n);
@@ -351,7 +265,6 @@ extern int os_timer_set_interval(unsigned long long nsecs);
 extern int os_timer_one_shot(unsigned long long nsecs);
 extern void os_timer_disable(void);
 extern long long os_persistent_clock_emulation(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern long long os_nsecs(void);
 
 /* skas/mem.c */
@@ -373,13 +286,7 @@ extern int protect(struct mm_id * mm_idp, unsigned long addr,
 extern int is_skas_winch(int pid, int fd, void *data);
 extern int start_userspace(unsigned long stub_stack);
 extern int copy_context_skas0(unsigned long stack, int pid);
-<<<<<<< HEAD
-extern void userspace(struct uml_pt_regs *regs);
-extern int map_stub_pages(int fd, unsigned long code, unsigned long data,
-			  unsigned long stack);
-=======
 extern void userspace(struct uml_pt_regs *regs, unsigned long *aux_fp_regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void new_thread(void *stack, jmp_buf *buf, void (*handler)(void));
 extern void switch_threads(jmp_buf *me, jmp_buf *you);
 extern int start_idle_thread(void *stack, jmp_buf *switch_buf);
@@ -389,17 +296,6 @@ extern void halt_skas(void);
 extern void reboot_skas(void);
 
 /* irq.c */
-<<<<<<< HEAD
-extern int os_waiting_for_events(struct irq_fd *active_fds);
-extern int os_create_pollfd(int fd, int events, void *tmp_pfd, int size_tmpfds);
-extern void os_free_irq_by_cb(int (*test)(struct irq_fd *, void *), void *arg,
-		struct irq_fd *active_fds, struct irq_fd ***last_irq_ptr2);
-extern void os_free_irq_later(struct irq_fd *active_fds,
-		int irq, void *dev_id);
-extern int os_get_pollfd(int i);
-extern void os_set_pollfd(int i, int fd);
-extern void os_set_ioignore(void);
-=======
 extern int os_waiting_for_events_epoll(void);
 extern void *os_epoll_get_data_pointer(int index);
 extern int os_epoll_triggered(int index, int events);
@@ -412,18 +308,10 @@ extern void os_set_ioignore(void);
 extern void os_close_epoll_fd(void);
 extern void um_irqs_suspend(void);
 extern void um_irqs_resume(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sigio.c */
 extern int add_sigio_fd(int fd);
 extern int ignore_sigio_fd(int fd);
-<<<<<<< HEAD
-extern void maybe_sigio_broken(int fd, int read);
-extern void sigio_broken(int fd, int read);
-
-/* sys-x86_64/prctl.c */
-extern int os_arch_prctl(int pid, int code, unsigned long *addr);
-=======
 extern void maybe_sigio_broken(int fd);
 extern void sigio_broken(int fd);
 /*
@@ -434,7 +322,6 @@ extern void sigio_broken(int fd);
  */
 extern int __add_sigio_fd(int fd);
 extern int __ignore_sigio_fd(int fd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* tty.c */
 extern int get_pty(void);
@@ -442,8 +329,6 @@ extern int get_pty(void);
 /* sys-$ARCH/task_size.c */
 extern unsigned long os_get_top_address(void);
 
-<<<<<<< HEAD
-=======
 long syscall(long number, ...);
 
 /* irqflags tracing */
@@ -455,5 +340,4 @@ extern void um_trace_signals_off(void);
 /* time-travel */
 extern void deliver_time_travel_irqs(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

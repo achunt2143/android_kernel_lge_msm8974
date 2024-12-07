@@ -1,27 +1,10 @@
-<<<<<<< HEAD
-/*
- *  HID driver for some sony "special" devices
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  HID driver for Sony / PS2 / PS3 / PS4 BD devices.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Copyright (c) 1999 Andreas Gal
  *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
  *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
-<<<<<<< HEAD
- *  Copyright (c) 2007 Paul Walmsley
- *  Copyright (c) 2008 Jiri Slaby
- *  Copyright (c) 2006-2008 Jiri Kosina
- */
-
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
  *  Copyright (c) 2008 Jiri Slaby
  *  Copyright (c) 2012 David Dillow <dave@thedillows.org>
  *  Copyright (c) 2006-2013 Jiri Kosina
@@ -42,35 +25,12 @@
  * for about 7 seconds with the Bluetooth Host Controller in discovering mode.
  *
  * There will be no PIN request from the device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
 #include <linux/hid.h>
 #include <linux/module.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/usb.h>
-
-#include "hid-ids.h"
-
-#define VAIO_RDESC_CONSTANT     (1 << 0)
-#define SIXAXIS_CONTROLLER_USB  (1 << 1)
-#define SIXAXIS_CONTROLLER_BT   (1 << 2)
-
-static const u8 sixaxis_rdesc_fixup[] = {
-	0x95, 0x13, 0x09, 0x01, 0x81, 0x02, 0x95, 0x0C,
-	0x81, 0x01, 0x75, 0x10, 0x95, 0x04, 0x26, 0xFF,
-	0x03, 0x46, 0xFF, 0x03, 0x09, 0x01, 0x81, 0x02
-};
-
-struct sony_sc {
-	unsigned long quirks;
-};
-
-/* Sony Vaio VGX has wrongly mouse pointer declared as constant */
-static __u8 *sony_report_fixup(struct hid_device *hdev, __u8 *rdesc,
-=======
 #include <linux/leds.h>
 #include <linux/power_supply.h>
 #include <linux/spinlock.h>
@@ -784,17 +744,13 @@ static int sixaxis_mapping(struct hid_device *hdev, struct hid_input *hi,
 }
 
 static u8 *sony_report_fixup(struct hid_device *hdev, u8 *rdesc,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int *rsize)
 {
 	struct sony_sc *sc = hid_get_drvdata(hdev);
 
-<<<<<<< HEAD
-=======
 	if (sc->quirks & (SINO_LITE_CONTROLLER | FUTUREMAX_DANCE_MAT))
 		return rdesc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Some Sony RF receivers wrongly declare the mouse pointer as a
 	 * a constant non-data variable.
@@ -811,29 +767,6 @@ static u8 *sony_report_fixup(struct hid_device *hdev, u8 *rdesc,
 		rdesc[55] = 0x06;
 	}
 
-<<<<<<< HEAD
-	/* The HID descriptor exposed over BT has a trailing zero byte */
-	if ((((sc->quirks & SIXAXIS_CONTROLLER_USB) && *rsize == 148) ||
-			((sc->quirks & SIXAXIS_CONTROLLER_BT) && *rsize == 149)) &&
-			rdesc[83] == 0x75) {
-		hid_info(hdev, "Fixing up Sony Sixaxis report descriptor\n");
-		memcpy((void *)&rdesc[83], (void *)&sixaxis_rdesc_fixup,
-			sizeof(sixaxis_rdesc_fixup));
-	}
-	return rdesc;
-}
-
-static int sony_raw_event(struct hid_device *hdev, struct hid_report *report,
-		__u8 *rd, int size)
-{
-	struct sony_sc *sc = hid_get_drvdata(hdev);
-
-	/* Sixaxis HID report has acclerometers/gyro with MSByte first, this
-	 * has to be BYTE_SWAPPED before passing up to joystick interface
-	 */
-	if ((sc->quirks & (SIXAXIS_CONTROLLER_USB | SIXAXIS_CONTROLLER_BT)) &&
-			rd[0] == 0x01 && size == 49) {
-=======
 	if (sc->quirks & MOTION_CONTROLLER)
 		return motion_fixup(hdev, rdesc, rsize);
 
@@ -1003,13 +936,10 @@ static int sony_raw_event(struct hid_device *hdev, struct hid_report *report,
 		if (rd[1] == 0xff)
 			return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		swap(rd[41], rd[42]);
 		swap(rd[43], rd[44]);
 		swap(rd[45], rd[46]);
 		swap(rd[47], rd[48]);
-<<<<<<< HEAD
-=======
 
 		sixaxis_parse_report(sc, rd, size);
 	} else if ((sc->quirks & MOTION_CONTROLLER_BT) && rd[0] == 0x01 && size == 49) {
@@ -1025,51 +955,11 @@ static int sony_raw_event(struct hid_device *hdev, struct hid_report *report,
 	if (sc->defer_initialization) {
 		sc->defer_initialization = 0;
 		sony_schedule_work(sc, SONY_WORKER_STATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * The Sony Sixaxis does not handle HID Output Reports on the Interrupt EP
- * like it should according to usbhid/hid-core.c::usbhid_output_raw_report()
- * so we need to override that forcing HID Output Reports on the Control EP.
- *
- * There is also another issue about HID Output Reports via USB, the Sixaxis
- * does not want the report_id as part of the data packet, so we have to
- * discard buf[0] when sending the actual control message, even for numbered
- * reports, humpf!
- */
-static int sixaxis_usb_output_raw_report(struct hid_device *hid, __u8 *buf,
-		size_t count, unsigned char report_type)
-{
-	struct usb_interface *intf = to_usb_interface(hid->dev.parent);
-	struct usb_device *dev = interface_to_usbdev(intf);
-	struct usb_host_interface *interface = intf->cur_altsetting;
-	int report_id = buf[0];
-	int ret;
-
-	if (report_type == HID_OUTPUT_REPORT) {
-		/* Don't send the Report ID */
-		buf++;
-		count--;
-	}
-
-	ret = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
-		HID_REQ_SET_REPORT,
-		USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-		((report_type + 1) << 8) | report_id,
-		interface->desc.bInterfaceNumber, buf, count,
-		USB_CTRL_SET_TIMEOUT);
-
-	/* Count also the Report ID, in case of an Output report. */
-	if (ret > 0 && report_type == HID_OUTPUT_REPORT)
-		ret++;
-
-	return ret;
-=======
 static int sony_mapping(struct hid_device *hdev, struct hid_input *hi,
 			struct hid_field *field, struct hid_usage *usage,
 			unsigned long **bit, int *max)
@@ -1233,7 +1123,6 @@ static int sony_register_sensors(struct sony_sc *sc)
 		return ret;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1243,26 +1132,6 @@ static int sony_register_sensors(struct sony_sc *sc)
  */
 static int sixaxis_set_operational_usb(struct hid_device *hdev)
 {
-<<<<<<< HEAD
-	struct usb_interface *intf = to_usb_interface(hdev->dev.parent);
-	struct usb_device *dev = interface_to_usbdev(intf);
-	__u16 ifnum = intf->cur_altsetting->desc.bInterfaceNumber;
-	int ret;
-	char *buf = kmalloc(18, GFP_KERNEL);
-
-	if (!buf)
-		return -ENOMEM;
-
-	ret = usb_control_msg(dev, usb_rcvctrlpipe(dev, 0),
-				 HID_REQ_GET_REPORT,
-				 USB_DIR_IN | USB_TYPE_CLASS |
-				 USB_RECIP_INTERFACE,
-				 (3 << 8) | 0xf2, ifnum, buf, 17,
-				 USB_CTRL_GET_TIMEOUT);
-	if (ret < 0)
-		hid_err(hdev, "can't set operational mode\n");
-
-=======
 	struct sony_sc *sc = hid_get_drvdata(hdev);
 	const int buf_size =
 		max(SIXAXIS_REPORT_0xF2_SIZE, SIXAXIS_REPORT_0xF5_SIZE);
@@ -1305,7 +1174,6 @@ static int sixaxis_set_operational_usb(struct hid_device *hdev)
 	}
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(buf);
 
 	return ret;
@@ -1313,10 +1181,6 @@ out:
 
 static int sixaxis_set_operational_bt(struct hid_device *hdev)
 {
-<<<<<<< HEAD
-	unsigned char buf[] = { 0xf4,  0x42, 0x03, 0x00, 0x00 };
-	return hdev->hid_output_raw_report(hdev, buf, sizeof(buf), HID_FEATURE_REPORT);
-=======
 	static const u8 report[] = { 0xf4, 0x42, 0x03, 0x00, 0x00 };
 	u8 *buf;
 	int ret;
@@ -2189,7 +2053,6 @@ err_stop:
 	sony_remove_dev_list(sc);
 	sony_release_device_id(sc);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sony_probe(struct hid_device *hdev, const struct hid_device_id *id)
@@ -2197,10 +2060,6 @@ static int sony_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	int ret;
 	unsigned long quirks = id->driver_data;
 	struct sony_sc *sc;
-<<<<<<< HEAD
-
-	sc = kzalloc(sizeof(*sc), GFP_KERNEL);
-=======
 	struct usb_device *usbdev;
 	unsigned int connect_mask = HID_CONNECT_DEFAULT;
 
@@ -2212,55 +2071,20 @@ static int sony_probe(struct hid_device *hdev, const struct hid_device_id *id)
 		quirks |= SHANWAN_GAMEPAD;
 
 	sc = devm_kzalloc(&hdev->dev, sizeof(*sc), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sc == NULL) {
 		hid_err(hdev, "can't alloc sony descriptor\n");
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	sc->quirks = quirks;
-	hid_set_drvdata(hdev, sc);
-=======
 	spin_lock_init(&sc->lock);
 
 	sc->quirks = quirks;
 	hid_set_drvdata(hdev, sc);
 	sc->hdev = hdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = hid_parse(hdev);
 	if (ret) {
 		hid_err(hdev, "parse failed\n");
-<<<<<<< HEAD
-		goto err_free;
-	}
-
-	ret = hid_hw_start(hdev, HID_CONNECT_DEFAULT |
-			HID_CONNECT_HIDDEV_FORCE);
-	if (ret) {
-		hid_err(hdev, "hw start failed\n");
-		goto err_free;
-	}
-
-	if (sc->quirks & SIXAXIS_CONTROLLER_USB) {
-		hdev->hid_output_raw_report = sixaxis_usb_output_raw_report;
-		ret = sixaxis_set_operational_usb(hdev);
-	}
-	else if (sc->quirks & SIXAXIS_CONTROLLER_BT)
-		ret = sixaxis_set_operational_bt(hdev);
-	else
-		ret = 0;
-
-	if (ret < 0)
-		goto err_stop;
-
-	return 0;
-err_stop:
-	hid_hw_stop(hdev);
-err_free:
-	kfree(sc);
-=======
 		return ret;
 	}
 
@@ -2334,18 +2158,11 @@ err:
 	usb_free_urb(sc->ghl_urb);
 
 	hid_hw_stop(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static void sony_remove(struct hid_device *hdev)
 {
-<<<<<<< HEAD
-	hid_hw_stop(hdev);
-	kfree(hid_get_drvdata(hdev));
-}
-
-=======
 	struct sony_sc *sc = hid_get_drvdata(hdev);
 
 	if (sc->quirks & (GHL_GUITAR_PS3WIIU | GHL_GUITAR_PS4)) {
@@ -2401,14 +2218,10 @@ static int sony_resume(struct hid_device *hdev)
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct hid_device_id sony_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_PS3_CONTROLLER),
 		.driver_data = SIXAXIS_CONTROLLER_USB },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_NAVIGATION_CONTROLLER),
-<<<<<<< HEAD
-		.driver_data = SIXAXIS_CONTROLLER_USB },
-=======
 		.driver_data = NAVIGATION_CONTROLLER_USB },
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_NAVIGATION_CONTROLLER),
 		.driver_data = NAVIGATION_CONTROLLER_BT },
@@ -2416,15 +2229,12 @@ static const struct hid_device_id sony_devices[] = {
 		.driver_data = MOTION_CONTROLLER_USB },
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_MOTION_CONTROLLER),
 		.driver_data = MOTION_CONTROLLER_BT },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_PS3_CONTROLLER),
 		.driver_data = SIXAXIS_CONTROLLER_BT },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_VAIO_VGX_MOUSE),
 		.driver_data = VAIO_RDESC_CONSTANT },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_VAIO_VGP_MOUSE),
 		.driver_data = VAIO_RDESC_CONSTANT },
-<<<<<<< HEAD
-=======
 	/*
 	 * Wired Buzz Controller. Reported as Sony Hub from its USB ID and as
 	 * Logitech joystick from the device descriptor.
@@ -2463,20 +2273,11 @@ static const struct hid_device_id sony_devices[] = {
 	/* Guitar Hero Live PS4 guitar dongles */
 	{ HID_USB_DEVICE(USB_VENDOR_ID_REDOCTANE, USB_DEVICE_ID_REDOCTANE_PS4_GHLIVE_DONGLE),
 		.driver_data = GHL_GUITAR_PS4 | GH_GUITAR_CONTROLLER },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(hid, sony_devices);
 
 static struct hid_driver sony_driver = {
-<<<<<<< HEAD
-	.name = "sony",
-	.id_table = sony_devices,
-	.probe = sony_probe,
-	.remove = sony_remove,
-	.report_fixup = sony_report_fixup,
-	.raw_event = sony_raw_event
-=======
 	.name             = "sony",
 	.id_table         = sony_devices,
 	.input_mapping    = sony_mapping,
@@ -2491,28 +2292,17 @@ static struct hid_driver sony_driver = {
 	.resume	          = sony_resume,
 	.reset_resume     = sony_resume,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init sony_init(void)
 {
-<<<<<<< HEAD
-=======
 	dbg_hid("Sony:%s\n", __func__);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return hid_register_driver(&sony_driver);
 }
 
 static void __exit sony_exit(void)
 {
-<<<<<<< HEAD
-	hid_unregister_driver(&sony_driver);
-}
-
-module_init(sony_init);
-module_exit(sony_exit);
-=======
 	dbg_hid("Sony:%s\n", __func__);
 
 	hid_unregister_driver(&sony_driver);
@@ -2521,5 +2311,4 @@ module_exit(sony_exit);
 module_init(sony_init);
 module_exit(sony_exit);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

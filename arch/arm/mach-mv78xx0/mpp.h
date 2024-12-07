@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-/*
- * linux/arch/arm/mach-mv78xx0/mpp.h -- Multi Purpose Pins
- *
- *
- * sebastien requiem <sebastien@requiem.fr>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * linux/arch/arm/mach-mv78xx0/mpp.h -- Multi Purpose Pins
  *
  * sebastien requiem <sebastien@requiem.fr>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MV78X00_MPP_H

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/ev6-memcpy.S
  * 21264 version by Rick Gorton <rick.gorton@alpha-processor.com>
@@ -23,11 +20,7 @@
  * Temp usage notes:
  *	$1,$2,		- scratch
  */
-<<<<<<< HEAD
-
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set noreorder
 	.set noat
 
@@ -250,10 +243,7 @@ $nomoredata:
 	nop				# E :
 
 	.end memcpy
-<<<<<<< HEAD
-=======
 	EXPORT_SYMBOL(memcpy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* For backwards module compatibility.  */
 __memcpy = memcpy

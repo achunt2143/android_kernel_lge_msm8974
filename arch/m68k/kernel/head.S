@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-/* -*- mode: asm -*-
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later
 ** -*- mode: asm -*-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 ** head.S -- This file contains the initial boot code for the
 **	     Linux/68k kernel.
@@ -28,18 +24,8 @@
 ** 98/04/25 Phil Blundell: added HP300 support
 ** 1998/08/30 David Kilzer: Added support for font_desc structures
 **            for linux-2.1.115
-<<<<<<< HEAD
-** 9/02/11  Richard Zidlicky: added Q40 support (initial vesion 99/01/01)
-** 2004/05/13 Kars de Jong: Finalised HP300 support
-**
-** This file is subject to the terms and conditions of the GNU General Public
-** License. See the file README.legal in the main directory of this archive
-** for more details.
-**
-=======
 ** 1999/02/11  Richard Zidlicky: added Q40 support (initial version 99/01/01)
 ** 2004/05/13 Kars de Jong: Finalised HP300 support
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 /*
@@ -67,11 +53,7 @@
  * Of course, readability is a subjective issue, so it will never be
  * argued that that goal was accomplished.  It was merely a goal.
  * A key way to help make code more readable is to give good
-<<<<<<< HEAD
- * documentation.  So, the first thing you will find is exaustive
-=======
  * documentation.  So, the first thing you will find is exhaustive
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * write-ups on the structure of the file, and the features of the
  * functional subroutines.
  *
@@ -167,11 +149,7 @@
  * ------------
  *	The console is also able to be turned off.  The console in head.S
  * is specifically for debugging and can be very useful.  It is surrounded by
-<<<<<<< HEAD
- * #ifdef CONSOLE/#endif clauses so it doesn't have to ship in known-good
-=======
  * #ifdef / #endif clauses so it doesn't have to ship in known-good
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * kernels.  It's basic algorithm is to determine the size of the screen
  * (in height/width and bit depth) and then use that information for
  * displaying an 8x8 font or an 8x16 (widthxheight).  I prefer the 8x8 for
@@ -216,14 +194,8 @@
  * CONFIG_xxx:	These are the obvious machine configuration defines created
  * during configuration.  These are defined in autoconf.h.
  *
-<<<<<<< HEAD
- * CONSOLE:	There is support for head.S console in this file.  This
- * console can talk to a Mac frame buffer, but could easily be extrapolated
- * to extend it to support other platforms.
-=======
  * CONSOLE_DEBUG:  Only supports a Mac frame buffer but could easily be
  * extended to support other platforms.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * TEST_MMU:	This is a test harness for running on any given machine but
  * getting an MMU dump for another class of machine.  The classes of machines
@@ -245,11 +217,7 @@
  * MMU_PRINT:	There is a routine built into head.S that can display the
  * MMU data structures.  It outputs its result through the serial_putc
  * interface.  So where ever that winds up driving data, that's where the
-<<<<<<< HEAD
- * mmu struct will appear.  On the Macintosh that's typically the console.
-=======
  * mmu struct will appear.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * SERIAL_DEBUG:	There are a series of putc() macro statements
  * scattered through out the code to give progress of status to the
@@ -277,47 +245,12 @@
  * USE_MFP:	Use the ST-MFP port (Modem1) for serial debug.
  *
  * Macintosh constants:
-<<<<<<< HEAD
- * MAC_USE_SCC_A: Use SCC port A (modem) for serial debug and early console.
- * MAC_USE_SCC_B: Use SCC port B (printer) for serial debug and early console.
-=======
  * MAC_USE_SCC_A: Use SCC port A (modem) for serial debug.
  * MAC_USE_SCC_B: Use SCC port B (printer) for serial debug.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/linkage.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <asm/bootinfo.h>
-#include <asm/setup.h>
-#include <asm/entry.h>
-#include <asm/pgtable.h>
-#include <asm/page.h>
-#include <asm/asm-offsets.h>
-
-#ifdef CONFIG_MAC
-
-#include <asm/machw.h>
-
-#ifdef CONFIG_FRAMEBUFFER_CONSOLE
-#define CONSOLE
-#define CONSOLE_PENGUIN
-#endif
-
-#ifdef CONFIG_EARLY_PRINTK
-#define SERIAL_DEBUG
-#else
-#undef SERIAL_DEBUG
-#endif
-
-#else /* !CONFIG_MAC */
-
-#define SERIAL_DEBUG
-
-#endif /* !CONFIG_MAC */
-
-=======
 #include <linux/pgtable.h>
 #include <asm/bootinfo.h>
 #include <asm/bootinfo-amiga.h>
@@ -342,7 +275,6 @@
 #  endif
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef MMU_PRINT
 #undef MMU_NOCACHE_KERNEL
 #undef DEBUG
@@ -357,10 +289,7 @@
 
 .globl kernel_pg_dir
 .globl availmem
-<<<<<<< HEAD
-=======
 .globl m68k_init_mapped_size
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .globl m68k_pgtable_cachemode
 .globl m68k_supervisor_cachemode
 #ifdef CONFIG_MVME16x
@@ -538,36 +467,21 @@ func_define	serial_putc,1
 func_define	console_putc,1
 
 func_define	console_init
-<<<<<<< HEAD
-func_define	console_put_stats
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 func_define	console_put_penguin
 func_define	console_plot_pixel,3
 func_define	console_scroll
 
 .macro	putc	ch
-<<<<<<< HEAD
-#if defined(CONSOLE) || defined(SERIAL_DEBUG)
-	pea	\ch
-#endif
-#ifdef CONSOLE
-=======
 #if defined(CONSOLE_DEBUG) || defined(SERIAL_DEBUG)
 	pea	\ch
 #endif
 #ifdef CONSOLE_DEBUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	func_call	console_putc
 #endif
 #ifdef SERIAL_DEBUG
 	func_call	serial_putc
 #endif
-<<<<<<< HEAD
-#if defined(CONSOLE) || defined(SERIAL_DEBUG)
-=======
 #if defined(CONSOLE_DEBUG) || defined(SERIAL_DEBUG)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addql	#4,%sp
 #endif
 .endm
@@ -587,11 +501,7 @@ func_define	putn,1
 .endm
 
 .macro	puts		string
-<<<<<<< HEAD
-#if defined(CONSOLE) || defined(SERIAL_DEBUG)
-=======
 #if defined(CONSOLE_DEBUG) || defined(SERIAL_DEBUG)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__INITDATA
 .Lstr\@:
 	.string	"\string"
@@ -621,10 +531,7 @@ func_define	putn,1
 #define is_not_apollo(lab) cmpl &MACH_APOLLO,%pc@(m68k_machtype); jne lab
 #define is_not_q40(lab) cmpl &MACH_Q40,%pc@(m68k_machtype); jne lab
 #define is_not_sun3x(lab) cmpl &MACH_SUN3X,%pc@(m68k_machtype); jne lab
-<<<<<<< HEAD
-=======
 #define is_not_virt(lab) cmpl &MACH_VIRT,%pc@(m68k_machtype); jne lab
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define hasnt_leds(lab) cmpl &MACH_HP300,%pc@(m68k_machtype); \
 			jeq 42f; \
@@ -731,44 +638,13 @@ ENTRY(__start)
 	lea	%pc@(L(mac_rowbytes)),%a1
 	movel	%a0@,%a1@
 
-<<<<<<< HEAD
-#ifdef SERIAL_DEBUG
 	get_bi_record	BI_MAC_SCCBASE
 	lea	%pc@(L(mac_sccbase)),%a1
 	movel	%a0@,%a1@
-#endif
-
-#if 0
-	/*
-	 * Clear the screen
-	 */
-	lea	%pc@(L(mac_videobase)),%a0
-	movel	%a0@,%a1
-	lea	%pc@(L(mac_dimensions)),%a0
-	movel	%a0@,%d1
-	swap	%d1		/* #rows is high bytes */
-	andl	#0xFFFF,%d1	/* rows */
-	subl	#10,%d1
-	lea	%pc@(L(mac_rowbytes)),%a0
-loopy2:
-	movel	%a0@,%d0
-	subql	#1,%d0
-loopx2:
-	moveb	#0x55, %a1@+
-	dbra	%d0,loopx2
-	dbra	%d1,loopy2
-#endif
-=======
-	get_bi_record	BI_MAC_SCCBASE
-	lea	%pc@(L(mac_sccbase)),%a1
-	movel	%a0@,%a1@
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 L(test_notmac):
 #endif /* CONFIG_MAC */
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_VIRT
 	is_not_virt(L(test_notvirt))
 
@@ -777,7 +653,6 @@ L(test_notmac):
 	movel	%a0@,%a1@
 L(test_notvirt):
 #endif /* CONFIG_VIRT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * There are ultimately two pieces of information we want for all kinds of
@@ -1003,17 +878,6 @@ L(nothp):
  */
 #ifdef CONFIG_MAC
 	is_not_mac(L(nocon))
-<<<<<<< HEAD
-#ifdef CONSOLE
-	console_init
-#ifdef CONSOLE_PENGUIN
-	console_put_penguin
-#endif	/* CONSOLE_PENGUIN */
-	console_put_stats
-#endif	/* CONSOLE */
-L(nocon):
-#endif	/* CONFIG_MAC */
-=======
 #  ifdef CONSOLE_DEBUG
 	console_init
 #    ifdef CONFIG_LOGO
@@ -1022,7 +886,6 @@ L(nocon):
 #  endif /* CONSOLE_DEBUG */
 L(nocon):
 #endif /* CONFIG_MAC */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	putc	'\n'
@@ -1051,12 +914,6 @@ L(nocon):
  *
  *	This block of code does what's necessary to map in the various kinds
  *	of machines for execution of Linux.
-<<<<<<< HEAD
- *	First map the first 4 MB of kernel code & data
- */
-
-	mmu_map	#PAGE_OFFSET,%pc@(L(phys_kernel_start)),#4*1024*1024,\
-=======
  *	First map the first 4, 8, or 16 MB of kernel code & data
  */
 
@@ -1073,7 +930,6 @@ L(nocon):
 	lea	%pc@(m68k_init_mapped_size),%a0
 	movel	%d1,%a0@
 	mmu_map	#PAGE_OFFSET,%pc@(L(phys_kernel_start)),%d1,\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		%pc@(m68k_supervisor_cachemode)
 
 	putc	'C'
@@ -1387,8 +1243,6 @@ L(mmu_init_not_mac):
 L(notsun3x):
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_VIRT
 	is_not_virt(L(novirt))
 	mmu_map_tt	#1,#0xFF000000,#0x01000000,#_PAGE_NOCACHE_S
@@ -1396,7 +1250,6 @@ L(notsun3x):
 L(novirt):
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_APOLLO
 	is_not_apollo(L(notapollo))
 
@@ -1464,11 +1317,7 @@ L(mmu_fixup_done):
  * mmu_engage
  *
  * This chunk of code performs the gruesome task of engaging the MMU.
-<<<<<<< HEAD
- * The reason its gruesome is because when the MMU becomes engaged it
-=======
  * The reason it's gruesome is because when the MMU becomes engaged it
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * maps logical addresses to physical addresses.  The Program Counter
  * register is then passed through the MMU before the next instruction
  * is fetched (the instruction following the engage MMU instruction).
@@ -1533,11 +1382,7 @@ L(mmu_fixup_done):
 /*
  * After this point no new memory is allocated and
  * the start of available memory is stored in availmem.
-<<<<<<< HEAD
- * (The bootmem allocator requires now the physicall address.)
-=======
  * (The bootmem allocator requires now the physical address.)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 	movel	L(memory_start),availmem
@@ -1562,23 +1407,13 @@ L(mmu_fixup_done):
 	andl	L(mac_videobase),%d0
 	addl	#VIDEOMEMBASE,%d0
 	movel	%d0,L(mac_videobase)
-<<<<<<< HEAD
-#if defined(CONSOLE)
-=======
 #ifdef CONSOLE_DEBUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movel	%pc@(L(phys_kernel_start)),%d0
 	subl	#PAGE_OFFSET,%d0
 	subl	%d0,L(console_font)
 	subl	%d0,L(console_font_data)
 #endif
-<<<<<<< HEAD
-#ifdef SERIAL_DEBUG
 	orl	#0x50000000,L(mac_sccbase)
-#endif
-=======
-	orl	#0x50000000,L(mac_sccbase)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:
 #endif
 
@@ -1690,11 +1525,7 @@ L(cache_done):
 
 /*
  * Find a tag record in the bootinfo structure
-<<<<<<< HEAD
- * The bootinfo structure is located right after the kernel bss
-=======
  * The bootinfo structure is located right after the kernel
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns: d0: size (-1 if not found)
  *          a0: data pointer (end-of-records if not found)
  */
@@ -1729,11 +1560,7 @@ func_return	get_bi_record
  *	seven bits of the logical address (LA) are used as an
  *	index into the "root table."  Each entry in the root
  *	table has a bit which specifies if it's a valid pointer to a
-<<<<<<< HEAD
- *	pointer table.  Each entry defines a 32KMeg range of memory.
-=======
  *	pointer table.  Each entry defines a 32Meg range of memory.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	If an entry is invalid then that logical range of 32M is
  *	invalid and references to that range of memory (when the MMU
  *	is enabled) will fault.  If the entry is valid, then it does
@@ -1770,11 +1597,7 @@ func_return	get_bi_record
  *		bits 17..12 - index into the Page Table
  *		bits 11..0  - offset into a particular 4K page
  *
-<<<<<<< HEAD
- *	The algorithms which follows do one thing: they abstract
-=======
  *	The algorithms which follow do one thing: they abstract
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	the MMU hardware.  For example, there are three kinds of
  *	cache settings that are relevant.  Either, memory is
  *	being mapped in which case it is either Kernel Code (or
@@ -2272,11 +2095,7 @@ func_return	mmu_map_tt
  *	mmu_map
  *
  *	This routine will map a range of memory using a pointer
-<<<<<<< HEAD
- *	table and allocating the pages on the fly from the kernel.
-=======
  *	table and allocate the pages on the fly from the kernel.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The pointer table does not have to be already linked into
  *	the root table, this routine will do that if necessary.
  *
@@ -2722,11 +2541,7 @@ func_start	mmu_get_root_table_entry,%d0/%a1
 
 	/* Find the start of free memory, get_bi_record does this for us,
 	 * as the bootinfo structure is located directly behind the kernel
-<<<<<<< HEAD
-	 * and and we simply search for the last entry.
-=======
 	 * we simply search for the last entry.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	get_bi_record	BI_LAST
 	addw	#PAGESIZE-1,%a0
@@ -2852,11 +2667,7 @@ func_start	mmu_get_page_table_entry,%d0/%a1
 	jne	2f
 
 	/* If the page table entry doesn't exist, we allocate a complete new
-<<<<<<< HEAD
-	 * page and use it as one continues big page table which can cover
-=======
 	 * page and use it as one continuous big page table which can cover
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * 4MB of memory, nearly almost all mappings have that alignment.
 	 */
 	get_new_page
@@ -2932,16 +2743,12 @@ func_return	get_new_page
  */
 
 #ifdef CONFIG_MAC
-<<<<<<< HEAD
-
-=======
 /* You may define either or both of these. */
 #define MAC_USE_SCC_A /* Modem port */
 #define MAC_USE_SCC_B /* Printer port */
 
 #if defined(MAC_USE_SCC_A) || defined(MAC_USE_SCC_B)
 /* Initialisation table for SCC with 3.6864 MHz PCLK */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 L(scc_initable_mac):
 	.byte	4,0x44		/* x16, 1 stopbit, no parity */
 	.byte	3,0xc0		/* receiver: 8 bpc */
@@ -2955,10 +2762,7 @@ L(scc_initable_mac):
 	.byte	-1
 	.even
 #endif
-<<<<<<< HEAD
-=======
 #endif /* CONFIG_MAC */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_ATARI
 /* #define USE_PRINTER */
@@ -2967,23 +2771,12 @@ L(scc_initable_mac):
 #define USE_MFP
 
 #if defined(USE_SCC_A) || defined(USE_SCC_B)
-<<<<<<< HEAD
-#define USE_SCC
-/* Initialisation table for SCC */
-L(scc_initable):
-	.byte	9,12		/* Reset */
-	.byte	4,0x44		/* x16, 1 stopbit, no parity */
-	.byte	3,0xc0		/* receiver: 8 bpc */
-	.byte	5,0xe2		/* transmitter: 8 bpc, assert dtr/rts */
-	.byte	9,0		/* no interrupts */
-=======
 /* Initialisation table for SCC with 7.9872 MHz PCLK */
 /* PCLK == 8.0539 gives baud == 9680.1 */
 L(scc_initable_atari):
 	.byte	4,0x44		/* x16, 1 stopbit, no parity */
 	.byte	3,0xc0		/* receiver: 8 bpc */
 	.byte	5,0xe2		/* transmitter: 8 bpc, assert dtr/rts */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.byte	10,0		/* NRZ */
 	.byte	11,0x50		/* use baud rate generator */
 	.byte	12,24,13,0	/* 9600 baud */
@@ -3032,11 +2825,7 @@ LMFP_UDR     = 0xfffa2f
  */
 
 /*
-<<<<<<< HEAD
- * Initialize serial port hardware for 9600/8/1
-=======
  * Initialize serial port hardware
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 func_start	serial_init,%d0/%d1/%a0/%a1
 	/*
@@ -3046,11 +2835,7 @@ func_start	serial_init,%d0/%d1/%a0/%a1
 	 *		d0 = boot info offset
 	 *	CONFIG_ATARI
 	 *		a0 = address of SCC
-<<<<<<< HEAD
-	 *		a1 = Liobase address/address of scc_initable
-=======
 	 *		a1 = Liobase address/address of scc_initable_atari
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *		d0 = init data for serial port
 	 *	CONFIG_MAC
 	 *		a0 = address of SCC
@@ -3071,10 +2856,7 @@ func_start	serial_init,%d0/%d1/%a0/%a1
 |	movew	#61,CUSTOMBASE+C_SERPER-ZTWOBASE
 1:
 #endif
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ATARI
 	is_not_atari(4f)
 	movel	%pc@(L(iobase)),%a1
@@ -3089,11 +2871,6 @@ func_start	serial_init,%d0/%d1/%a0/%a1
 	moveb	%a1@(LPSG_READ),%d0
 	bset	#5,%d0
 	moveb	%d0,%a1@(LPSG_WRITE)
-<<<<<<< HEAD
-#elif defined(USE_SCC)
-	lea	%a1@(LSCC_CTRL),%a0
-	lea	%pc@(L(scc_initable)),%a1
-=======
 #elif defined(USE_SCC_A) || defined(USE_SCC_B)
 	lea	%a1@(LSCC_CTRL),%a0
 	/* Reset SCC register pointer */
@@ -3109,7 +2886,6 @@ func_start	serial_init,%d0/%d1/%a0/%a1
 	jne	2b
 	/* Initialize channel */
 	lea	%pc@(L(scc_initable_atari)),%a1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 2:	moveb	%a1@+,%d0
 	jmi	3f
 	moveb	%d0,%a0@
@@ -3127,37 +2903,18 @@ func_start	serial_init,%d0/%d1/%a0/%a1
 	jra	L(serial_init_done)
 4:
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_MAC
-	is_not_mac(L(serial_init_not_mac))
-
-#ifdef SERIAL_DEBUG
-
-/* You may define either or both of these. */
-#define MAC_USE_SCC_A /* Modem port */
-#define MAC_USE_SCC_B /* Printer port */
-
-=======
 
 #ifdef CONFIG_MAC
 	is_not_mac(L(serial_init_not_mac))
 #if defined(MAC_USE_SCC_A) || defined(MAC_USE_SCC_B)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define mac_scc_cha_b_ctrl_offset	0x0
 #define mac_scc_cha_a_ctrl_offset	0x2
 #define mac_scc_cha_b_data_offset	0x4
 #define mac_scc_cha_a_data_offset	0x6
-<<<<<<< HEAD
-
-#if defined(MAC_USE_SCC_A) || defined(MAC_USE_SCC_B)
-	movel	%pc@(L(mac_sccbase)),%a0
-	/* Reset SCC device */
-=======
 	movel	%pc@(L(mac_sccbase)),%a0
 	/* Reset SCC register pointer */
 	moveb	%a0@(mac_scc_cha_a_ctrl_offset),%d0
 	/* Reset SCC device: write register pointer then register value */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	moveb	#9,%a0@(mac_scc_cha_a_ctrl_offset)
 	moveb	#0xc0,%a0@(mac_scc_cha_a_ctrl_offset)
 	/* Wait for 5 PCLK cycles, which is about 68 CPU cycles */
@@ -3167,10 +2924,6 @@ func_start	serial_init,%d0/%d1/%a0/%a1
 	subq	#1,%d0
 	jne	5b
 #endif
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef MAC_USE_SCC_A
 	/* Initialize channel A */
 	lea	%pc@(L(scc_initable_mac)),%a1
@@ -3181,10 +2934,6 @@ func_start	serial_init,%d0/%d1/%a0/%a1
 	jra	5b
 6:
 #endif	/* MAC_USE_SCC_A */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef MAC_USE_SCC_B
 	/* Initialize channel B */
 	lea	%pc@(L(scc_initable_mac)),%a1
@@ -3195,12 +2944,6 @@ func_start	serial_init,%d0/%d1/%a0/%a1
 	jra	7b
 8:
 #endif	/* MAC_USE_SCC_B */
-<<<<<<< HEAD
-
-#endif	/* SERIAL_DEBUG */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jra	L(serial_init_done)
 L(serial_init_not_mac):
 #endif	/* CONFIG_MAC */
@@ -3230,8 +2973,6 @@ L(serial_init_not_mac):
 2:
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MVME16x
 	is_not_mvme16x(L(serial_init_not_mvme16x))
 	moveb	#0x10,M167_PCSCCMICR
@@ -3241,7 +2982,6 @@ L(serial_init_not_mac):
 L(serial_init_not_mvme16x):
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_APOLLO
 /* We count on the PROM initializing SIO1 */
 #endif
@@ -3281,39 +3021,19 @@ func_start	serial_putc,%d0/%d1/%a0/%a1
 
 #ifdef CONFIG_MAC
 	is_not_mac(5f)
-<<<<<<< HEAD
-
-#ifdef SERIAL_DEBUG
-
 #if defined(MAC_USE_SCC_A) || defined(MAC_USE_SCC_B)
 	movel	%pc@(L(mac_sccbase)),%a1
 #endif
-
-=======
-#if defined(MAC_USE_SCC_A) || defined(MAC_USE_SCC_B)
-	movel	%pc@(L(mac_sccbase)),%a1
-#endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef MAC_USE_SCC_A
 3:	btst	#2,%a1@(mac_scc_cha_a_ctrl_offset)
 	jeq	3b
 	moveb	%d0,%a1@(mac_scc_cha_a_data_offset)
 #endif	/* MAC_USE_SCC_A */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef MAC_USE_SCC_B
 4:	btst	#2,%a1@(mac_scc_cha_b_ctrl_offset)
 	jeq	4b
 	moveb	%d0,%a1@(mac_scc_cha_b_data_offset)
 #endif	/* MAC_USE_SCC_B */
-<<<<<<< HEAD
-
-#endif	/* SERIAL_DEBUG */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jra	L(serial_putc_done)
 5:
 #endif	/* CONFIG_MAC */
@@ -3334,11 +3054,7 @@ func_start	serial_putc,%d0/%d1/%a0/%a1
 	nop
 	bset	#5,%d0
 	moveb	%d0,%a1@(LPSG_WRITE)
-<<<<<<< HEAD
-#elif defined(USE_SCC)
-=======
 #elif defined(USE_SCC_A) || defined(USE_SCC_B)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 3:	btst	#2,%a1@(LSCC_CTRL)
 	jeq	3b
 	moveb	%d0,%a1@(LSCC_DATA)
@@ -3483,8 +3199,6 @@ func_start	serial_putc,%d0/%d1/%a0/%a1
 3:
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_VIRT
 	is_not_virt(1f)
 
@@ -3493,7 +3207,6 @@ func_start	serial_putc,%d0/%d1/%a0/%a1
 1:
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 L(serial_putc_done):
 func_return	serial_putc
 
@@ -3505,11 +3218,7 @@ func_start	puts,%d0/%a0
 	movel	ARG1,%a0
 	jra	2f
 1:
-<<<<<<< HEAD
-#ifdef CONSOLE
-=======
 #ifdef CONSOLE_DEBUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	console_putc	%d0
 #endif
 #ifdef SERIAL_DEBUG
@@ -3538,11 +3247,7 @@ func_start	putn,%d0-%d2
 	jls	2f
 	addb	#'A'-('9'+1),%d2
 2:
-<<<<<<< HEAD
-#ifdef CONSOLE
-=======
 #ifdef CONSOLE_DEBUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	console_putc	%d2
 #endif
 #ifdef SERIAL_DEBUG
@@ -3552,34 +3257,19 @@ func_start	putn,%d0-%d2
 
 func_return	putn
 
-<<<<<<< HEAD
-#ifdef CONFIG_MAC
-/*
- *	mac_early_print
- *
-=======
 #ifdef CONFIG_EARLY_PRINTK
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	This routine takes its parameters on the stack.  It then
  *	turns around and calls the internal routines.  This routine
  *	is used by the boot console.
  *
  *	The calling parameters are:
-<<<<<<< HEAD
- *		void mac_early_print(const char *str, unsigned length);
-=======
  *		void debug_cons_nputs(const char *str, unsigned length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	This routine does NOT understand variable arguments only
  *	simple strings!
  */
-<<<<<<< HEAD
-ENTRY(mac_early_print)
-=======
 ENTRY(debug_cons_nputs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	moveml	%d0/%d1/%a0,%sp@-
 	movew	%sr,%sp@-
 	ori	#0x0700,%sr
@@ -3587,11 +3277,7 @@ ENTRY(debug_cons_nputs)
 	movel	%sp@(22),%d1		/* fetch parameter */
 	jra	2f
 1:
-<<<<<<< HEAD
-#ifdef CONSOLE
-=======
 #ifdef CONSOLE_DEBUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	console_putc	%d0
 #endif
 #ifdef SERIAL_DEBUG
@@ -3605,11 +3291,7 @@ ENTRY(debug_cons_nputs)
 	movew	%sp@+,%sr
 	moveml	%sp@+,%d0/%d1/%a0
 	rts
-<<<<<<< HEAD
-#endif /* CONFIG_MAC */
-=======
 #endif /* CONFIG_EARLY_PRINTK */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_HP300) || defined(CONFIG_APOLLO)
 func_start	set_leds,%d0/%a0
@@ -3631,11 +3313,7 @@ func_start	set_leds,%d0/%a0
 func_return	set_leds
 #endif
 
-<<<<<<< HEAD
-#ifdef CONSOLE
-=======
 #ifdef CONSOLE_DEBUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	For continuity, see the data alignment
  *	to which this structure is tied.
@@ -3645,21 +3323,13 @@ func_return	set_leds
 #define Lconsole_struct_num_columns	8
 #define Lconsole_struct_num_rows	12
 #define Lconsole_struct_left_edge	16
-<<<<<<< HEAD
-#define Lconsole_struct_penguin_putc	20
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 func_start	console_init,%a0-%a4/%d0-%d7
 	/*
 	 *	Some of the register usage that follows
 	 *		a0 = pointer to boot_info
 	 *		a1 = pointer to screen
-<<<<<<< HEAD
-	 *		a2 = pointer to Lconsole_globals
-=======
 	 *		a2 = pointer to console_globals
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *		d3 = pixel width of screen
 	 *		d4 = pixel height of screen
 	 *		(d3,d4) ~= (x,y) of a point just below
@@ -3747,48 +3417,7 @@ L(console_clear_loop):
 1:
 func_return	console_init
 
-<<<<<<< HEAD
-func_start	console_put_stats,%a0/%d7
-	/*
-	 *	Some of the register usage that follows
-	 *		a0 = pointer to boot_info
-	 *		d7 = value of boot_info fields
-	 */
-	puts	"\nMacLinux\n"
-
-#ifdef SERIAL_DEBUG
-	puts	"\n vidaddr:"
-	putn	%pc@(L(mac_videobase))		/* video addr. */
-
-	puts	"\n  _stext:"
-	lea	%pc@(_stext),%a0
-	putn	%a0
-
-	puts	"\nbootinfo:"
-	lea	%pc@(_end),%a0
-	putn	%a0
-
-	puts	"\n   cpuid:"
-	putn	%pc@(L(cputype))
-
-#  ifdef CONFIG_MAC
-	puts	"\n sccbase:"
-	putn	%pc@(L(mac_sccbase))
-#  endif
-#  ifdef MMU_PRINT
-	putc	'\n'
-	jbsr	mmu_print_machine_cpu_types
-#  endif
-#endif /* SERIAL_DEBUG */
-
-	putc	'\n'
-
-func_return	console_put_stats
-
-#ifdef CONSOLE_PENGUIN
-=======
 #ifdef CONFIG_LOGO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 func_start	console_put_penguin,%a0-%a1/%d0-%d7
 	/*
 	 *	Get 'that_penguin' onto the screen in the upper right corner
@@ -4129,55 +3758,15 @@ L(white_16):
 
 L(console_plot_pixel_exit):
 func_return	console_plot_pixel
-<<<<<<< HEAD
-#endif /* CONSOLE */
-
-#if 0
-/*
- * This is some old code lying around.  I don't believe
- * it's used or important anymore.  My guess is it contributed
- * to getting to this point, but it's done for now.
- * It was still in the 2.1.77 head.S, so it's still here.
- * (And still not used!)
- */
-L(showtest):
-	moveml	%a0/%d7,%sp@-
-	puts	"A="
-	putn	%a1
-
-	.long	0xf0119f15		| ptestr	#5,%a1@,#7,%a0
-
-	puts	"DA="
-	putn	%a0
-
-	puts	"D="
-	putn	%a0@
-
-	puts	"S="
-	lea	%pc@(L(mmu)),%a0
-	.long	0xf0106200		| pmove		%psr,%a0@
-	clrl	%d7
-	movew	%a0@,%d7
-	putn	%d7
-
-	putc	'\n'
-	moveml	%sp@+,%a0/%d7
-	rts
-#endif	/* 0 */
-=======
 #endif /* CONSOLE_DEBUG */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 __INITDATA
 	.align	4
 
-<<<<<<< HEAD
-=======
 m68k_init_mapped_size:
 	.long	0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_ATARI) || defined(CONFIG_AMIGA) || \
     defined(CONFIG_HP300) || defined(CONFIG_APOLLO)
 L(custom):
@@ -4185,30 +3774,18 @@ L(iobase):
 	.long 0
 #endif
 
-<<<<<<< HEAD
-#if defined(CONSOLE)
-=======
 #ifdef CONSOLE_DEBUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 L(console_globals):
 	.long	0		/* cursor column */
 	.long	0		/* cursor row */
 	.long	0		/* max num columns */
 	.long	0		/* max num rows */
 	.long	0		/* left edge */
-<<<<<<< HEAD
-	.long	0		/* mac putc */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 L(console_font):
 	.long	0		/* pointer to console font (struct font_desc) */
 L(console_font_data):
 	.long	0		/* pointer to console font data */
-<<<<<<< HEAD
-#endif /* CONSOLE */
-=======
 #endif /* CONSOLE_DEBUG */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(MMU_PRINT)
 L(mmu_print_data):
@@ -4248,13 +3825,9 @@ M167_CYIER = 0xfff45011
 M167_CYLICR = 0xfff45026
 M167_CYTEOIR = 0xfff45085
 M167_CYTDR = 0xfff450f8
-<<<<<<< HEAD
-M167_PCSCCTICR = 0xfff4201e
-=======
 M167_PCSCCMICR = 0xfff4201d
 M167_PCSCCTICR = 0xfff4201e
 M167_PCSCCRICR = 0xfff4201f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 M167_PCTPIACKR = 0xfff42025
 #endif
 
@@ -4264,11 +3837,6 @@ BVME_SCC_DATA_A	= 0xffb0000f
 #endif
 
 #if defined(CONFIG_MAC)
-<<<<<<< HEAD
-L(mac_booter_data):
-	.long	0
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 L(mac_videobase):
 	.long	0
 L(mac_videodepth):
@@ -4277,15 +3845,8 @@ L(mac_dimensions):
 	.long	0
 L(mac_rowbytes):
 	.long	0
-<<<<<<< HEAD
-#ifdef SERIAL_DEBUG
 L(mac_sccbase):
 	.long	0
-#endif
-=======
-L(mac_sccbase):
-	.long	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_MAC */
 
 #if defined (CONFIG_APOLLO)
@@ -4325,12 +3886,9 @@ q40_mem_cptr:
 L(q40_do_debug):
 	.long	0
 #endif
-<<<<<<< HEAD
-=======
 
 #if defined(CONFIG_VIRT)
 GF_PUT_CHAR = 0x00
 L(virt_gf_tty_base):
 	.long 0
 #endif /* CONFIG_VIRT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

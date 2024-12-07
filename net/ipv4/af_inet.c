@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -62,14 +59,6 @@
  *					Some other random speedups.
  *		Cyrus Durgin	:	Cleaned up file for kmod hacks.
  *		Andi Kleen	:	Fix inet_stream_connect TCP race.
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) "IPv4: " fmt
@@ -80,11 +69,7 @@
 #include <linux/socket.h>
 #include <linux/in.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/kmod.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/timer.h>
 #include <linux/string.h>
@@ -101,11 +86,7 @@
 #include <linux/random.h>
 #include <linux/slab.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/inet.h>
 #include <linux/igmp.h>
@@ -118,11 +99,8 @@
 #include <net/route.h>
 #include <net/ip_fib.h>
 #include <net/inet_connection_sock.h>
-<<<<<<< HEAD
-=======
 #include <net/gro.h>
 #include <net/gso.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/tcp.h>
 #include <net/udp.h>
 #include <net/udplite.h>
@@ -131,29 +109,6 @@
 #include <net/sock.h>
 #include <net/raw.h>
 #include <net/icmp.h>
-<<<<<<< HEAD
-#include <net/ipip.h>
-#include <net/inet_common.h>
-#include <net/xfrm.h>
-#include <net/net_namespace.h>
-#ifdef CONFIG_IP_MROUTE
-#include <linux/mroute.h>
-#endif
-
-#ifdef CONFIG_ANDROID_PARANOID_NETWORK
-#include <linux/android_aid.h>
-
-static inline int current_has_network(void)
-{
-	return in_egroup_p(AID_INET) || capable(CAP_NET_RAW);
-}
-#else
-static inline int current_has_network(void)
-{
-	return 1;
-}
-#endif
-=======
 #include <net/inet_common.h>
 #include <net/ip_tunnels.h>
 #include <net/xfrm.h>
@@ -167,7 +122,6 @@ static inline int current_has_network(void)
 #include <net/rps.h>
 
 #include <trace/events/sock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The inetsw table contains everything that inet_create needs to
  * build a new socket.
@@ -175,12 +129,6 @@ static inline int current_has_network(void)
 static struct list_head inetsw[SOCK_MAX];
 static DEFINE_SPINLOCK(inetsw_lock);
 
-<<<<<<< HEAD
-struct ipv4_config ipv4_config;
-EXPORT_SYMBOL(ipv4_config);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* New destruction routine */
 
 void inet_sock_destruct(struct sock *sk)
@@ -190,35 +138,14 @@ void inet_sock_destruct(struct sock *sk)
 	__skb_queue_purge(&sk->sk_receive_queue);
 	__skb_queue_purge(&sk->sk_error_queue);
 
-<<<<<<< HEAD
-	sk_mem_reclaim(sk);
-
-	if (sk->sk_type == SOCK_STREAM && sk->sk_state != TCP_CLOSE) {
-		WARN(1, "Attempt to release TCP socket in state %d %p\n",
-=======
 	sk_mem_reclaim_final(sk);
 
 	if (sk->sk_type == SOCK_STREAM && sk->sk_state != TCP_CLOSE) {
 		pr_err("Attempt to release TCP socket in state %d %p\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       sk->sk_state, sk);
 		return;
 	}
 	if (!sock_flag(sk, SOCK_DEAD)) {
-<<<<<<< HEAD
-		WARN(1, "Attempt to release alive inet socket %p\n", sk);
-		return;
-	}
-
-	WARN_ON(atomic_read(&sk->sk_rmem_alloc));
-	WARN_ON(atomic_read(&sk->sk_wmem_alloc));
-	WARN_ON(sk->sk_wmem_queued);
-	WARN_ON(sk->sk_forward_alloc);
-
-	kfree(rcu_dereference_protected(inet->inet_opt, 1));
-	dst_release(rcu_dereference_check(sk->sk_dst_cache, 1));
-	sk_refcnt_debug_dec(sk);
-=======
 		pr_err("Attempt to release alive inet socket %p\n", sk);
 		return;
 	}
@@ -231,7 +158,6 @@ void inet_sock_destruct(struct sock *sk)
 	kfree(rcu_dereference_protected(inet->inet_opt, 1));
 	dst_release(rcu_dereference_protected(sk->sk_dst_cache, 1));
 	dst_release(rcu_dereference_protected(sk->sk_rx_dst, 1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(inet_sock_destruct);
 
@@ -262,8 +188,6 @@ static int inet_autobind(struct sock *sk)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 int __inet_listen_sk(struct sock *sk, int backlog)
 {
 	unsigned char old_state = sk->sk_state;
@@ -300,38 +224,12 @@ int __inet_listen_sk(struct sock *sk, int backlog)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Move a socket into listening state.
  */
 int inet_listen(struct socket *sock, int backlog)
 {
 	struct sock *sk = sock->sk;
-<<<<<<< HEAD
-	unsigned char old_state;
-	int err;
-
-	lock_sock(sk);
-
-	err = -EINVAL;
-	if (sock->state != SS_UNCONNECTED || sock->type != SOCK_STREAM)
-		goto out;
-
-	old_state = sk->sk_state;
-	if (!((1 << old_state) & (TCPF_CLOSE | TCPF_LISTEN)))
-		goto out;
-
-	/* Really, if the socket is already in listen state
-	 * we can only allow the backlog to be adjusted.
-	 */
-	if (old_state != TCP_LISTEN) {
-		err = inet_csk_listen_start(sk, backlog);
-		if (err)
-			goto out;
-	}
-	sk->sk_max_ack_backlog = backlog;
-	err = 0;
-=======
 	int err = -EINVAL;
 
 	lock_sock(sk);
@@ -340,7 +238,6 @@ int inet_listen(struct socket *sock, int backlog)
 		goto out;
 
 	err = __inet_listen_sk(sk, backlog);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	release_sock(sk);
@@ -348,50 +245,6 @@ out:
 }
 EXPORT_SYMBOL(inet_listen);
 
-<<<<<<< HEAD
-u32 inet_ehash_secret __read_mostly;
-EXPORT_SYMBOL(inet_ehash_secret);
-
-u32 ipv6_hash_secret __read_mostly;
-EXPORT_SYMBOL(ipv6_hash_secret);
-
-/*
- * inet_ehash_secret must be set exactly once, and to a non nul value
- * ipv6_hash_secret must be set exactly once.
- */
-void build_ehash_secret(void)
-{
-	u32 rnd;
-
-	do {
-		get_random_bytes(&rnd, sizeof(rnd));
-	} while (rnd == 0);
-
-	if (cmpxchg(&inet_ehash_secret, 0, rnd) == 0)
-		get_random_bytes(&ipv6_hash_secret, sizeof(ipv6_hash_secret));
-}
-EXPORT_SYMBOL(build_ehash_secret);
-
-static inline int inet_netns_ok(struct net *net, int protocol)
-{
-	int hash;
-	const struct net_protocol *ipprot;
-
-	if (net_eq(net, &init_net))
-		return 1;
-
-	hash = protocol & (MAX_INET_PROTOS - 1);
-	ipprot = rcu_dereference(inet_protos[hash]);
-
-	if (ipprot == NULL)
-		/* raw IP is OK */
-		return 1;
-	return ipprot->netns_ok;
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Create an inet socket.
  */
@@ -404,29 +257,12 @@ static int inet_create(struct net *net, struct socket *sock, int protocol,
 	struct inet_sock *inet;
 	struct proto *answer_prot;
 	unsigned char answer_flags;
-<<<<<<< HEAD
-	char answer_no_check;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int try_loading_module = 0;
 	int err;
 
 	if (protocol < 0 || protocol >= IPPROTO_MAX)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (!current_has_network())
-		return -EACCES;
-
-	if (unlikely(!inet_ehash_secret))
-		if (sock->type != SOCK_RAW && sock->type != SOCK_DGRAM)
-			build_ehash_secret();
-
-	if (protocol < 0 || protocol >= IPPROTO_MAX)
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sock->state = SS_UNCONNECTED;
 
 	/* Look for the requested type/protocol pair. */
@@ -479,34 +315,6 @@ lookup_protocol:
 	    !ns_capable(net->user_ns, CAP_NET_RAW))
 		goto out_rcu_unlock;
 
-<<<<<<< HEAD
-	err = -EAFNOSUPPORT;
-	if (!inet_netns_ok(net, protocol))
-		goto out_rcu_unlock;
-
-	sock->ops = answer->ops;
-	answer_prot = answer->prot;
-	answer_no_check = answer->no_check;
-	answer_flags = answer->flags;
-	rcu_read_unlock();
-
-	WARN_ON(answer_prot->slab == NULL);
-
-	err = -ENOBUFS;
-	sk = sk_alloc(net, PF_INET, GFP_KERNEL, answer_prot);
-	if (sk == NULL)
-		goto out;
-
-	err = 0;
-	sk->sk_no_check = answer_no_check;
-	if (INET_PROTOSW_REUSE & answer_flags)
-		sk->sk_reuse = 1;
-
-	inet = inet_sk(sk);
-	inet->is_icsk = (INET_PROTOSW_ICSK & answer_flags) != 0;
-
-	inet->nodefrag = 0;
-=======
 	sock->ops = answer->ops;
 	answer_prot = answer->prot;
 	answer_flags = answer->flags;
@@ -530,60 +338,35 @@ lookup_protocol:
 	inet_assign_bit(IS_ICSK, sk, INET_PROTOSW_ICSK & answer_flags);
 
 	inet_clear_bit(NODEFRAG, sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (SOCK_RAW == sock->type) {
 		inet->inet_num = protocol;
 		if (IPPROTO_RAW == protocol)
-<<<<<<< HEAD
-			inet->hdrincl = 1;
-	}
-
-	if (ipv4_config.no_pmtu_disc)
-=======
 			inet_set_bit(HDRINCL, sk);
 	}
 
 	if (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inet->pmtudisc = IP_PMTUDISC_DONT;
 	else
 		inet->pmtudisc = IP_PMTUDISC_WANT;
 
-<<<<<<< HEAD
-	inet->inet_id = 0;
-=======
 	atomic_set(&inet->inet_id, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sock_init_data(sock, sk);
 
 	sk->sk_destruct	   = inet_sock_destruct;
 	sk->sk_protocol	   = protocol;
 	sk->sk_backlog_rcv = sk->sk_prot->backlog_rcv;
-<<<<<<< HEAD
-
-	inet->uc_ttl	= -1;
-	inet->mc_loop	= 1;
-	inet->mc_ttl	= 1;
-	inet->mc_all	= 1;
-=======
 	sk->sk_txrehash = READ_ONCE(net->core.sysctl_txrehash);
 
 	inet->uc_ttl	= -1;
 	inet_set_bit(MC_LOOP, sk);
 	inet->mc_ttl	= 1;
 	inet_set_bit(MC_ALL, sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inet->mc_index	= 0;
 	inet->mc_list	= NULL;
 	inet->rcv_tos	= 0;
 
-<<<<<<< HEAD
-	sk_refcnt_debug_inc(sk);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (inet->inet_num) {
 		/* It assumes that any protocol which allows
 		 * the user to assign a number at socket
@@ -592,23 +375,15 @@ lookup_protocol:
 		 */
 		inet->inet_sport = htons(inet->inet_num);
 		/* Add to protocol hash chains. */
-<<<<<<< HEAD
-		sk->sk_prot->hash(sk);
-=======
 		err = sk->sk_prot->hash(sk);
 		if (err) {
 			sk_common_release(sk);
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (sk->sk_prot->init) {
 		err = sk->sk_prot->init(sk);
-<<<<<<< HEAD
-		if (err)
-			sk_common_release(sk);
-=======
 		if (err) {
 			sk_common_release(sk);
 			goto out;
@@ -621,7 +396,6 @@ lookup_protocol:
 			sk_common_release(sk);
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	return err;
@@ -643,12 +417,8 @@ int inet_release(struct socket *sock)
 	if (sk) {
 		long timeout;
 
-<<<<<<< HEAD
-		sock_rps_reset_flow(sk);
-=======
 		if (!sk->sk_kern_sock)
 			BPF_CGROUP_RUN_PROG_INET_SOCK_RELEASE(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Applications forget to leave groups before exiting */
 		ip_mc_drop_socket(sk);
@@ -664,47 +434,20 @@ int inet_release(struct socket *sock)
 		if (sock_flag(sk, SOCK_LINGER) &&
 		    !(current->flags & PF_EXITING))
 			timeout = sk->sk_lingertime;
-<<<<<<< HEAD
-		sock->sk = NULL;
-		sk->sk_prot->close(sk, timeout);
-=======
 		sk->sk_prot->close(sk, timeout);
 		sock->sk = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 EXPORT_SYMBOL(inet_release);
 
-<<<<<<< HEAD
-/* It is off by default, see below. */
-int sysctl_ip_nonlocal_bind __read_mostly;
-EXPORT_SYMBOL(sysctl_ip_nonlocal_bind);
-
-int inet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
-{
-	struct sockaddr_in *addr = (struct sockaddr_in *)uaddr;
-	struct sock *sk = sock->sk;
-	struct inet_sock *inet = inet_sk(sk);
-	unsigned short snum;
-	int chk_addr_ret;
-=======
 int inet_bind_sk(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 {
 	u32 flags = BIND_WITH_LOCK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	/* If the socket has its own bind function then use it. (RAW) */
 	if (sk->sk_prot->bind) {
-<<<<<<< HEAD
-		err = sk->sk_prot->bind(sk, uaddr, addr_len);
-		goto out;
-	}
-	err = -EINVAL;
-	if (addr_len < sizeof(struct sockaddr_in))
-		goto out;
-=======
 		return sk->sk_prot->bind(sk, uaddr, addr_len);
 	}
 	if (addr_len < sizeof(struct sockaddr_in))
@@ -737,7 +480,6 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
 	int chk_addr_ret;
 	u32 tb_id = RT_TABLE_LOCAL;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (addr->sin_family != AF_INET) {
 		/* Compatibility games : accept AF_UNSPEC (mapped to AF_INET)
@@ -749,12 +491,8 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
 			goto out;
 	}
 
-<<<<<<< HEAD
-	chk_addr_ret = inet_addr_type(sock_net(sk), addr->sin_addr.s_addr);
-=======
 	tb_id = l3mdev_fib_table_by_index(net, sk->sk_bound_dev_if) ? : tb_id;
 	chk_addr_ret = inet_addr_type_table(net, addr->sin_addr.s_addr, tb_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Not specified by any standard per-se, however it breaks too
 	 * many applications when removed.  It is unfortunate since
@@ -764,28 +502,15 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
 	 *  is temporarily down)
 	 */
 	err = -EADDRNOTAVAIL;
-<<<<<<< HEAD
-	if (!sysctl_ip_nonlocal_bind &&
-	    !(inet->freebind || inet->transparent) &&
-	    addr->sin_addr.s_addr != htonl(INADDR_ANY) &&
-	    chk_addr_ret != RTN_LOCAL &&
-	    chk_addr_ret != RTN_MULTICAST &&
-	    chk_addr_ret != RTN_BROADCAST)
-=======
 	if (!inet_addr_valid_or_nonlocal(net, inet, addr->sin_addr.s_addr,
 	                                 chk_addr_ret))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	snum = ntohs(addr->sin_port);
 	err = -EACCES;
-<<<<<<< HEAD
-	if (snum && snum < PROT_SOCK && !capable(CAP_NET_BIND_SERVICE))
-=======
 	if (!(flags & BIND_NO_CAP_NET_BIND_SERVICE) &&
 	    snum && inet_port_requires_bind_service(net, snum) &&
 	    !ns_capable(net->user_ns, CAP_NET_BIND_SERVICE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	/*      We keep a pair of addresses. rcv_saddr is the one
@@ -795,12 +520,8 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
 	 *      would be illegal to use them (multicast/broadcast) in
 	 *      which case the sending device address is used.
 	 */
-<<<<<<< HEAD
-	lock_sock(sk);
-=======
 	if (flags & BIND_WITH_LOCK)
 		lock_sock(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check these errors (active socket, double bind). */
 	err = -EINVAL;
@@ -812,12 +533,6 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
 		inet->inet_saddr = 0;  /* Use device */
 
 	/* Make sure we are allowed to bind here. */
-<<<<<<< HEAD
-	if (sk->sk_prot->get_port(sk, snum)) {
-		inet->inet_saddr = inet->inet_rcv_saddr = 0;
-		err = -EADDRINUSE;
-		goto out_release_sock;
-=======
 	if (snum || !(inet_test_bit(BIND_ADDRESS_NO_PORT, sk) ||
 		      (flags & BIND_FORCE_ADDRESS_NO_PORT))) {
 		err = sk->sk_prot->get_port(sk, snum);
@@ -834,7 +549,6 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
 				goto out_release_sock;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (inet->inet_rcv_saddr)
@@ -847,35 +561,6 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
 	sk_dst_reset(sk);
 	err = 0;
 out_release_sock:
-<<<<<<< HEAD
-	release_sock(sk);
-out:
-	return err;
-}
-EXPORT_SYMBOL(inet_bind);
-
-int inet_dgram_connect(struct socket *sock, struct sockaddr * uaddr,
-		       int addr_len, int flags)
-{
-	struct sock *sk = sock->sk;
-
-	if (addr_len < sizeof(uaddr->sa_family))
-		return -EINVAL;
-	if (uaddr->sa_family == AF_UNSPEC)
-		return sk->sk_prot->disconnect(sk, flags);
-
-	if (!inet_sk(sk)->inet_num && inet_autobind(sk))
-		return -EAGAIN;
-	return sk->sk_prot->connect(sk, (struct sockaddr *)uaddr, addr_len);
-}
-EXPORT_SYMBOL(inet_dgram_connect);
-
-static long inet_wait_for_connect(struct sock *sk, long timeo)
-{
-	DEFINE_WAIT(wait);
-
-	prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
-=======
 	if (flags & BIND_WITH_LOCK)
 		release_sock(sk);
 out:
@@ -916,7 +601,6 @@ static long inet_wait_for_connect(struct sock *sk, long timeo, int writebias)
 
 	add_wait_queue(sk_sleep(sk), &wait);
 	sk->sk_write_pending += writebias;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Basic assumption: if someone sets sk->sk_err, he _must_
 	 * change state of the socket from TCP_SYN_*.
@@ -925,15 +609,6 @@ static long inet_wait_for_connect(struct sock *sk, long timeo, int writebias)
 	 */
 	while ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV)) {
 		release_sock(sk);
-<<<<<<< HEAD
-		timeo = schedule_timeout(timeo);
-		lock_sock(sk);
-		if (signal_pending(current) || !timeo)
-			break;
-		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
-	}
-	finish_wait(sk_sleep(sk), &wait);
-=======
 		timeo = wait_woken(&wait, TASK_INTERRUPTIBLE, timeo);
 		lock_sock(sk);
 		if (signal_pending(current) || !timeo)
@@ -941,7 +616,6 @@ static long inet_wait_for_connect(struct sock *sk, long timeo, int writebias)
 	}
 	remove_wait_queue(sk_sleep(sk), &wait);
 	sk->sk_write_pending -= writebias;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return timeo;
 }
 
@@ -949,29 +623,13 @@ static long inet_wait_for_connect(struct sock *sk, long timeo, int writebias)
  *	Connect to a remote host. There is regrettably still a little
  *	TCP 'magic' in here.
  */
-<<<<<<< HEAD
-int inet_stream_connect(struct socket *sock, struct sockaddr *uaddr,
-			int addr_len, int flags)
-=======
 int __inet_stream_connect(struct socket *sock, struct sockaddr *uaddr,
 			  int addr_len, int flags, int is_sendmsg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	int err;
 	long timeo;
 
-<<<<<<< HEAD
-	if (addr_len < sizeof(uaddr->sa_family))
-		return -EINVAL;
-
-	lock_sock(sk);
-
-	if (uaddr->sa_family == AF_UNSPEC) {
-		err = sk->sk_prot->disconnect(sk, flags);
-		sock->state = err ? SS_DISCONNECTING : SS_UNCONNECTED;
-		goto out;
-=======
 	/*
 	 * uaddr can be NULL and addr_len can be 0 if:
 	 * sk is a TCP fastopen active socket and
@@ -991,7 +649,6 @@ int __inet_stream_connect(struct socket *sock, struct sockaddr *uaddr,
 			sock->state = err ? SS_DISCONNECTING : SS_UNCONNECTED;
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (sock->state) {
@@ -1002,14 +659,10 @@ int __inet_stream_connect(struct socket *sock, struct sockaddr *uaddr,
 		err = -EISCONN;
 		goto out;
 	case SS_CONNECTING:
-<<<<<<< HEAD
-		err = -EALREADY;
-=======
 		if (inet_test_bit(DEFER_CONNECT, sk))
 			err = is_sendmsg ? -EINPROGRESS : -EISCONN;
 		else
 			err = -EALREADY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Fall out of switch with err, set for this state */
 		break;
 	case SS_UNCONNECTED:
@@ -1017,27 +670,21 @@ int __inet_stream_connect(struct socket *sock, struct sockaddr *uaddr,
 		if (sk->sk_state != TCP_CLOSE)
 			goto out;
 
-<<<<<<< HEAD
-=======
 		if (BPF_CGROUP_PRE_CONNECT_ENABLED(sk)) {
 			err = sk->sk_prot->pre_connect(sk, uaddr, addr_len);
 			if (err)
 				goto out;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = sk->sk_prot->connect(sk, uaddr, addr_len);
 		if (err < 0)
 			goto out;
 
 		sock->state = SS_CONNECTING;
 
-<<<<<<< HEAD
-=======
 		if (!err && inet_test_bit(DEFER_CONNECT, sk))
 			goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Just entered SS_CONNECTING state; the only
 		 * difference is that return value in non-blocking
 		 * case is EINPROGRESS, rather than EALREADY.
@@ -1049,10 +696,6 @@ int __inet_stream_connect(struct socket *sock, struct sockaddr *uaddr,
 	timeo = sock_sndtimeo(sk, flags & O_NONBLOCK);
 
 	if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV)) {
-<<<<<<< HEAD
-		/* Error code is set above */
-		if (!timeo || !inet_wait_for_connect(sk, timeo))
-=======
 		int writebias = (sk->sk_protocol == IPPROTO_TCP) &&
 				tcp_sk(sk)->fastopen_req &&
 				tcp_sk(sk)->fastopen_req->data ? 1 : 0;
@@ -1060,20 +703,16 @@ int __inet_stream_connect(struct socket *sock, struct sockaddr *uaddr,
 
 		/* Error code is set above */
 		if (!timeo || !inet_wait_for_connect(sk, timeo, writebias))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 
 		err = sock_intr_errno(timeo);
 		if (signal_pending(current))
 			goto out;
-<<<<<<< HEAD
-=======
 
 		if (dis != sk->sk_disconnects) {
 			err = -EPIPE;
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Connection was closed by RST, timeout, ICMP error
@@ -1090,27 +729,16 @@ int __inet_stream_connect(struct socket *sock, struct sockaddr *uaddr,
 	sock->state = SS_CONNECTED;
 	err = 0;
 out:
-<<<<<<< HEAD
-	release_sock(sk);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 
 sock_error:
 	err = sock_error(sk) ? : -ECONNABORTED;
 	sock->state = SS_UNCONNECTED;
-<<<<<<< HEAD
-=======
 	sk->sk_disconnects++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sk->sk_prot->disconnect(sk, flags))
 		sock->state = SS_DISCONNECTING;
 	goto out;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(inet_stream_connect);
-
-=======
 EXPORT_SYMBOL(__inet_stream_connect);
 
 int inet_stream_connect(struct socket *sock, struct sockaddr *uaddr,
@@ -1139,39 +767,10 @@ void __inet_accept(struct socket *sock, struct socket *newsock, struct sock *new
 	newsock->state = SS_CONNECTED;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Accept a pending connection. The TCP layer now gives BSD semantics.
  */
 
-<<<<<<< HEAD
-int inet_accept(struct socket *sock, struct socket *newsock, int flags)
-{
-	struct sock *sk1 = sock->sk;
-	int err = -EINVAL;
-	struct sock *sk2 = sk1->sk_prot->accept(sk1, flags, &err);
-
-	if (!sk2)
-		goto do_err;
-
-	lock_sock(sk2);
-
-	sock_rps_record_flow(sk2);
-	WARN_ON(!((1 << sk2->sk_state) &
-		  (TCPF_ESTABLISHED | TCPF_CLOSE_WAIT | TCPF_CLOSE)));
-
-	sock_graft(sk2, newsock);
-
-	newsock->state = SS_CONNECTED;
-	err = 0;
-	release_sock(sk2);
-do_err:
-	return err;
-}
-EXPORT_SYMBOL(inet_accept);
-
-
-=======
 int inet_accept(struct socket *sock, struct socket *newsock, int flags,
 		bool kern)
 {
@@ -1190,31 +789,15 @@ int inet_accept(struct socket *sock, struct socket *newsock, int flags,
 }
 EXPORT_SYMBOL(inet_accept);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	This does both peername and sockname.
  */
 int inet_getname(struct socket *sock, struct sockaddr *uaddr,
-<<<<<<< HEAD
-			int *uaddr_len, int peer)
-=======
 		 int peer)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk		= sock->sk;
 	struct inet_sock *inet	= inet_sk(sk);
 	DECLARE_SOCKADDR(struct sockaddr_in *, sin, uaddr);
-<<<<<<< HEAD
-
-	sin->sin_family = AF_INET;
-	if (peer) {
-		if (!inet->inet_dport ||
-		    (((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_SYN_SENT)) &&
-		     peer == 1))
-			return -ENOTCONN;
-		sin->sin_port = inet->inet_dport;
-		sin->sin_addr.s_addr = inet->inet_daddr;
-=======
 	int sin_addr_len = sizeof(*sin);
 
 	sin->sin_family = AF_INET;
@@ -1230,58 +813,12 @@ int inet_getname(struct socket *sock, struct sockaddr *uaddr,
 		sin->sin_addr.s_addr = inet->inet_daddr;
 		BPF_CGROUP_RUN_SA_PROG(sk, (struct sockaddr *)sin, &sin_addr_len,
 				       CGROUP_INET4_GETPEERNAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		__be32 addr = inet->inet_rcv_saddr;
 		if (!addr)
 			addr = inet->inet_saddr;
 		sin->sin_port = inet->inet_sport;
 		sin->sin_addr.s_addr = addr;
-<<<<<<< HEAD
-	}
-	memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
-	*uaddr_len = sizeof(*sin);
-	return 0;
-}
-EXPORT_SYMBOL(inet_getname);
-
-int inet_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
-		 size_t size)
-{
-	struct sock *sk = sock->sk;
-
-	sock_rps_record_flow(sk);
-
-	/* We may need to bind the socket. */
-	if (!inet_sk(sk)->inet_num && !sk->sk_prot->no_autobind &&
-	    inet_autobind(sk))
-		return -EAGAIN;
-
-	return sk->sk_prot->sendmsg(iocb, sk, msg, size);
-}
-EXPORT_SYMBOL(inet_sendmsg);
-
-ssize_t inet_sendpage(struct socket *sock, struct page *page, int offset,
-		      size_t size, int flags)
-{
-	struct sock *sk = sock->sk;
-
-	sock_rps_record_flow(sk);
-
-	/* We may need to bind the socket. */
-	if (!inet_sk(sk)->inet_num && !sk->sk_prot->no_autobind &&
-	    inet_autobind(sk))
-		return -EAGAIN;
-
-	if (sk->sk_prot->sendpage)
-		return sk->sk_prot->sendpage(sk, page, offset, size, flags);
-	return sock_no_sendpage(sock, page, offset, size, flags);
-}
-EXPORT_SYMBOL(inet_sendpage);
-
-int inet_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
-		 size_t size, int flags)
-=======
 		BPF_CGROUP_RUN_SA_PROG(sk, (struct sockaddr *)sin, &sin_addr_len,
 				       CGROUP_INET4_GETSOCKNAME);
 	}
@@ -1335,24 +872,16 @@ INDIRECT_CALLABLE_DECLARE(int udp_recvmsg(struct sock *, struct msghdr *,
 					  size_t, int, int *));
 int inet_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 		 int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	int addr_len = 0;
 	int err;
 
-<<<<<<< HEAD
-	sock_rps_record_flow(sk);
-
-	err = sk->sk_prot->recvmsg(iocb, sk, msg, size, flags & MSG_DONTWAIT,
-				   flags & ~MSG_DONTWAIT, &addr_len);
-=======
 	if (likely(!(flags & MSG_ERRQUEUE)))
 		sock_rps_record_flow(sk);
 
 	err = INDIRECT_CALL_2(sk->sk_prot->recvmsg, tcp_recvmsg, udp_recvmsg,
 			      sk, msg, size, flags, &addr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err >= 0)
 		msg->msg_namelen = addr_len;
 	return err;
@@ -1386,16 +915,10 @@ int inet_shutdown(struct socket *sock, int how)
 	case TCP_CLOSE:
 		err = -ENOTCONN;
 		/* Hack to wake up other listeners, who can poll for
-<<<<<<< HEAD
-		   POLLHUP, even on eg. unconnected UDP sockets -- RR */
-	default:
-		sk->sk_shutdown |= how;
-=======
 		   EPOLLHUP, even on eg. unconnected UDP sockets -- RR */
 		fallthrough;
 	default:
 		WRITE_ONCE(sk->sk_shutdown, sk->sk_shutdown | how);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sk->sk_prot->shutdown)
 			sk->sk_prot->shutdown(sk, how);
 		break;
@@ -1407,11 +930,7 @@ int inet_shutdown(struct socket *sock, int how)
 	case TCP_LISTEN:
 		if (!(how & RCV_SHUTDOWN))
 			break;
-<<<<<<< HEAD
-		/* Fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case TCP_SYN_SENT:
 		err = sk->sk_prot->disconnect(sk, O_NONBLOCK);
 		sock->state = err ? SS_DISCONNECTING : SS_UNCONNECTED;
@@ -1440,20 +959,6 @@ int inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 	struct sock *sk = sock->sk;
 	int err = 0;
 	struct net *net = sock_net(sk);
-<<<<<<< HEAD
-
-	switch (cmd) {
-	case SIOCGSTAMP:
-		err = sock_get_timestamp(sk, (struct timeval __user *)arg);
-		break;
-	case SIOCGSTAMPNS:
-		err = sock_get_timestampns(sk, (struct timespec __user *)arg);
-		break;
-	case SIOCADDRT:
-	case SIOCDELRT:
-	case SIOCRTMSG:
-		err = ip_rt_ioctl(net, cmd, (void __user *)arg);
-=======
 	void __user *p = (void __user *)arg;
 	struct ifreq ifr;
 	struct rtentry rt;
@@ -1467,7 +972,6 @@ int inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		break;
 	case SIOCRTMSG:
 		err = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SIOCDARP:
 	case SIOCGARP:
@@ -1475,24 +979,6 @@ int inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		err = arp_ioctl(net, cmd, (void __user *)arg);
 		break;
 	case SIOCGIFADDR:
-<<<<<<< HEAD
-	case SIOCSIFADDR:
-	case SIOCGIFBRDADDR:
-	case SIOCSIFBRDADDR:
-	case SIOCGIFNETMASK:
-	case SIOCSIFNETMASK:
-	case SIOCGIFDSTADDR:
-	case SIOCSIFDSTADDR:
-	case SIOCSIFPFLAGS:
-	case SIOCGIFPFLAGS:
-	case SIOCSIFFLAGS:
-	case SIOCKILLADDR:
-		err = devinet_ioctl(net, cmd, (void __user *)arg);
-		break;
-	default:
-		if (sk->sk_prot->ioctl)
-			err = sk->sk_prot->ioctl(sk, cmd, arg);
-=======
 	case SIOCGIFBRDADDR:
 	case SIOCGIFNETMASK:
 	case SIOCGIFDSTADDR:
@@ -1517,7 +1003,6 @@ int inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 	default:
 		if (sk->sk_prot->ioctl)
 			err = sk_ioctl(sk, cmd, (void __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			err = -ENOIOCTLCMD;
 		break;
@@ -1527,19 +1012,6 @@ int inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 EXPORT_SYMBOL(inet_ioctl);
 
 #ifdef CONFIG_COMPAT
-<<<<<<< HEAD
-static int inet_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
-{
-	struct sock *sk = sock->sk;
-	int err = -ENOIOCTLCMD;
-
-	if (sk->sk_prot->compat_ioctl)
-		err = sk->sk_prot->compat_ioctl(sk, cmd, arg);
-
-	return err;
-}
-#endif
-=======
 static int inet_compat_routing_ioctl(struct sock *sk, unsigned int cmd,
 		struct compat_rtentry __user *ur)
 {
@@ -1576,7 +1048,6 @@ static int inet_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned lon
 	}
 }
 #endif /* CONFIG_COMPAT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const struct proto_ops inet_stream_ops = {
 	.family		   = PF_INET,
@@ -1589,26 +1060,13 @@ const struct proto_ops inet_stream_ops = {
 	.getname	   = inet_getname,
 	.poll		   = tcp_poll,
 	.ioctl		   = inet_ioctl,
-<<<<<<< HEAD
-=======
 	.gettstamp	   = sock_gettstamp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.listen		   = inet_listen,
 	.shutdown	   = inet_shutdown,
 	.setsockopt	   = sock_common_setsockopt,
 	.getsockopt	   = sock_common_getsockopt,
 	.sendmsg	   = inet_sendmsg,
 	.recvmsg	   = inet_recvmsg,
-<<<<<<< HEAD
-	.mmap		   = sock_no_mmap,
-	.sendpage	   = inet_sendpage,
-	.splice_read	   = tcp_splice_read,
-#ifdef CONFIG_COMPAT
-	.compat_setsockopt = compat_sock_common_setsockopt,
-	.compat_getsockopt = compat_sock_common_getsockopt,
-	.compat_ioctl	   = inet_compat_ioctl,
-#endif
-=======
 #ifdef CONFIG_MMU
 	.mmap		   = tcp_mmap,
 #endif
@@ -1622,7 +1080,6 @@ const struct proto_ops inet_stream_ops = {
 	.compat_ioctl	   = inet_compat_ioctl,
 #endif
 	.set_rcvlowat	   = tcp_set_rcvlowat,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 EXPORT_SYMBOL(inet_stream_ops);
 
@@ -1637,30 +1094,18 @@ const struct proto_ops inet_dgram_ops = {
 	.getname	   = inet_getname,
 	.poll		   = udp_poll,
 	.ioctl		   = inet_ioctl,
-<<<<<<< HEAD
-=======
 	.gettstamp	   = sock_gettstamp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.listen		   = sock_no_listen,
 	.shutdown	   = inet_shutdown,
 	.setsockopt	   = sock_common_setsockopt,
 	.getsockopt	   = sock_common_getsockopt,
 	.sendmsg	   = inet_sendmsg,
-<<<<<<< HEAD
-	.recvmsg	   = inet_recvmsg,
-	.mmap		   = sock_no_mmap,
-	.sendpage	   = inet_sendpage,
-#ifdef CONFIG_COMPAT
-	.compat_setsockopt = compat_sock_common_setsockopt,
-	.compat_getsockopt = compat_sock_common_getsockopt,
-=======
 	.read_skb	   = udp_read_skb,
 	.recvmsg	   = inet_recvmsg,
 	.mmap		   = sock_no_mmap,
 	.splice_eof	   = inet_splice_eof,
 	.set_peek_off	   = udp_set_peek_off,
 #ifdef CONFIG_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.compat_ioctl	   = inet_compat_ioctl,
 #endif
 };
@@ -1681,10 +1126,7 @@ static const struct proto_ops inet_sockraw_ops = {
 	.getname	   = inet_getname,
 	.poll		   = datagram_poll,
 	.ioctl		   = inet_ioctl,
-<<<<<<< HEAD
-=======
 	.gettstamp	   = sock_gettstamp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.listen		   = sock_no_listen,
 	.shutdown	   = inet_shutdown,
 	.setsockopt	   = sock_common_setsockopt,
@@ -1692,15 +1134,8 @@ static const struct proto_ops inet_sockraw_ops = {
 	.sendmsg	   = inet_sendmsg,
 	.recvmsg	   = inet_recvmsg,
 	.mmap		   = sock_no_mmap,
-<<<<<<< HEAD
-	.sendpage	   = inet_sendpage,
-#ifdef CONFIG_COMPAT
-	.compat_setsockopt = compat_sock_common_setsockopt,
-	.compat_getsockopt = compat_sock_common_getsockopt,
-=======
 	.splice_eof	   = inet_splice_eof,
 #ifdef CONFIG_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.compat_ioctl	   = inet_compat_ioctl,
 #endif
 };
@@ -1721,10 +1156,6 @@ static struct inet_protosw inetsw_array[] =
 		.protocol =   IPPROTO_TCP,
 		.prot =       &tcp_prot,
 		.ops =        &inet_stream_ops,
-<<<<<<< HEAD
-		.no_check =   0,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags =      INET_PROTOSW_PERMANENT |
 			      INET_PROTOSW_ICSK,
 	},
@@ -1734,10 +1165,6 @@ static struct inet_protosw inetsw_array[] =
 		.protocol =   IPPROTO_UDP,
 		.prot =       &udp_prot,
 		.ops =        &inet_dgram_ops,
-<<<<<<< HEAD
-		.no_check =   UDP_CSUM_DEFAULT,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags =      INET_PROTOSW_PERMANENT,
        },
 
@@ -1745,12 +1172,7 @@ static struct inet_protosw inetsw_array[] =
 		.type =       SOCK_DGRAM,
 		.protocol =   IPPROTO_ICMP,
 		.prot =       &ping_prot,
-<<<<<<< HEAD
-		.ops =        &inet_dgram_ops,
-		.no_check =   UDP_CSUM_DEFAULT,
-=======
 		.ops =        &inet_sockraw_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags =      INET_PROTOSW_REUSE,
        },
 
@@ -1759,10 +1181,6 @@ static struct inet_protosw inetsw_array[] =
 	       .protocol =   IPPROTO_IP,	/* wild card */
 	       .prot =       &raw_prot,
 	       .ops =        &inet_sockraw_ops,
-<<<<<<< HEAD
-	       .no_check =   UDP_CSUM_DEFAULT,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       .flags =      INET_PROTOSW_REUSE,
        }
 };
@@ -1782,24 +1200,6 @@ void inet_register_protosw(struct inet_protosw *p)
 		goto out_illegal;
 
 	/* If we are trying to override a permanent protocol, bail. */
-<<<<<<< HEAD
-	answer = NULL;
-	last_perm = &inetsw[p->type];
-	list_for_each(lh, &inetsw[p->type]) {
-		answer = list_entry(lh, struct inet_protosw, list);
-
-		/* Check only the non-wild match. */
-		if (INET_PROTOSW_PERMANENT & answer->flags) {
-			if (protocol == answer->protocol)
-				break;
-			last_perm = lh;
-		}
-
-		answer = NULL;
-	}
-	if (answer)
-		goto out_permanent;
-=======
 	last_perm = &inetsw[p->type];
 	list_for_each(lh, &inetsw[p->type]) {
 		answer = list_entry(lh, struct inet_protosw, list);
@@ -1810,7 +1210,6 @@ void inet_register_protosw(struct inet_protosw *p)
 			goto out_permanent;
 		last_perm = lh;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Add the new entry after the last permanent entry if any, so that
 	 * the new entry does not override a permanent entry when matched with
@@ -1850,15 +1249,6 @@ void inet_unregister_protosw(struct inet_protosw *p)
 }
 EXPORT_SYMBOL(inet_unregister_protosw);
 
-<<<<<<< HEAD
-/*
- *      Shall we try to damage output packets if routing dev changes?
- */
-
-int sysctl_ip_dynaddr __read_mostly;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int inet_sk_reselect_saddr(struct sock *sk)
 {
 	struct inet_sock *inet = inet_sk(sk);
@@ -1868,37 +1258,15 @@ static int inet_sk_reselect_saddr(struct sock *sk)
 	struct rtable *rt;
 	__be32 new_saddr;
 	struct ip_options_rcu *inet_opt;
-<<<<<<< HEAD
-
-	inet_opt = rcu_dereference_protected(inet->inet_opt,
-					     sock_owned_by_user(sk));
-=======
 	int err;
 
 	inet_opt = rcu_dereference_protected(inet->inet_opt,
 					     lockdep_sock_is_held(sk));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (inet_opt && inet_opt->opt.srr)
 		daddr = inet_opt->opt.faddr;
 
 	/* Query new route. */
 	fl4 = &inet->cork.fl.u.ip4;
-<<<<<<< HEAD
-	rt = ip_route_connect(fl4, daddr, 0, RT_CONN_FLAGS(sk),
-			      sk->sk_bound_dev_if, sk->sk_protocol,
-			      inet->inet_sport, inet->inet_dport, sk, false);
-	if (IS_ERR(rt))
-		return PTR_ERR(rt);
-
-	sk_setup_caps(sk, &rt->dst);
-
-	new_saddr = fl4->saddr;
-
-	if (new_saddr == old_saddr)
-		return 0;
-
-	if (sysctl_ip_dynaddr > 1) {
-=======
 	rt = ip_route_connect(fl4, daddr, 0, sk->sk_bound_dev_if,
 			      sk->sk_protocol, inet->inet_sport,
 			      inet->inet_dport, sk);
@@ -1921,16 +1289,10 @@ static int inet_sk_reselect_saddr(struct sock *sk)
 	sk_setup_caps(sk, &rt->dst);
 
 	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_ip_dynaddr) > 1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_info("%s(): shifting inet->saddr from %pI4 to %pI4\n",
 			__func__, &old_saddr, &new_saddr);
 	}
 
-<<<<<<< HEAD
-	inet->inet_saddr = inet->inet_rcv_saddr = new_saddr;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * XXX The only one ugly spot where we need to
 	 * XXX really change the sockets identity after
@@ -1939,12 +1301,7 @@ static int inet_sk_reselect_saddr(struct sock *sk)
 	 * Besides that, it does not check for connection
 	 * uniqueness. Wait for troubles.
 	 */
-<<<<<<< HEAD
-	__sk_prot_rehash(sk);
-	return 0;
-=======
 	return __sk_prot_rehash(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int inet_sk_rebuild_header(struct sock *sk)
@@ -1970,11 +1327,7 @@ int inet_sk_rebuild_header(struct sock *sk)
 	fl4 = &inet->cork.fl.u.ip4;
 	rt = ip_route_output_ports(sock_net(sk), fl4, sk, daddr, inet->inet_saddr,
 				   inet->inet_dport, inet->inet_sport,
-<<<<<<< HEAD
-				   sk->sk_protocol, RT_CONN_FLAGS(sk),
-=======
 				   sk->sk_protocol, ip_sock_rt_tos(sk),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   sk->sk_bound_dev_if);
 	if (!IS_ERR(rt)) {
 		err = 0;
@@ -1988,84 +1341,17 @@ int inet_sk_rebuild_header(struct sock *sk)
 		 * Other protocols have to map its equivalent state to TCP_SYN_SENT.
 		 * DCCP maps its DCCP_REQUESTING state to TCP_SYN_SENT. -acme
 		 */
-<<<<<<< HEAD
-		if (!sysctl_ip_dynaddr ||
-		    sk->sk_state != TCP_SYN_SENT ||
-		    (sk->sk_userlocks & SOCK_BINDADDR_LOCK) ||
-		    (err = inet_sk_reselect_saddr(sk)) != 0)
-			sk->sk_err_soft = -err;
-=======
 		if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_ip_dynaddr) ||
 		    sk->sk_state != TCP_SYN_SENT ||
 		    (sk->sk_userlocks & SOCK_BINDADDR_LOCK) ||
 		    (err = inet_sk_reselect_saddr(sk)) != 0)
 			WRITE_ONCE(sk->sk_err_soft, -err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
 EXPORT_SYMBOL(inet_sk_rebuild_header);
 
-<<<<<<< HEAD
-static int inet_gso_send_check(struct sk_buff *skb)
-{
-	const struct iphdr *iph;
-	const struct net_protocol *ops;
-	int proto;
-	int ihl;
-	int err = -EINVAL;
-
-	if (unlikely(!pskb_may_pull(skb, sizeof(*iph))))
-		goto out;
-
-	iph = ip_hdr(skb);
-	ihl = iph->ihl * 4;
-	if (ihl < sizeof(*iph))
-		goto out;
-
-	if (unlikely(!pskb_may_pull(skb, ihl)))
-		goto out;
-
-	__skb_pull(skb, ihl);
-	skb_reset_transport_header(skb);
-	iph = ip_hdr(skb);
-	proto = iph->protocol & (MAX_INET_PROTOS - 1);
-	err = -EPROTONOSUPPORT;
-
-	rcu_read_lock();
-	ops = rcu_dereference(inet_protos[proto]);
-	if (likely(ops && ops->gso_send_check))
-		err = ops->gso_send_check(skb);
-	rcu_read_unlock();
-
-out:
-	return err;
-}
-
-static struct sk_buff *inet_gso_segment(struct sk_buff *skb,
-	netdev_features_t features)
-{
-	struct sk_buff *segs = ERR_PTR(-EINVAL);
-	struct iphdr *iph;
-	const struct net_protocol *ops;
-	int proto;
-	int ihl;
-	int id;
-	unsigned int offset = 0;
-
-	if (!(features & NETIF_F_V4_CSUM))
-		features &= ~NETIF_F_SG;
-
-	if (unlikely(skb_shinfo(skb)->gso_type &
-		     ~(SKB_GSO_TCPV4 |
-		       SKB_GSO_UDP |
-		       SKB_GSO_DODGY |
-		       SKB_GSO_TCP_ECN |
-		       0)))
-		goto out;
-
-=======
 void inet_sk_set_state(struct sock *sk, int state)
 {
 	trace_inet_sock_set_state(sk, sk->sk_state, state);
@@ -2094,7 +1380,6 @@ struct sk_buff *inet_gso_segment(struct sk_buff *skb,
 
 	skb_reset_network_header(skb);
 	nhoff = skb_network_header(skb) - skb_mac_header(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!pskb_may_pull(skb, sizeof(*iph))))
 		goto out;
 
@@ -2103,41 +1388,6 @@ struct sk_buff *inet_gso_segment(struct sk_buff *skb,
 	if (ihl < sizeof(*iph))
 		goto out;
 
-<<<<<<< HEAD
-	if (unlikely(!pskb_may_pull(skb, ihl)))
-		goto out;
-
-	__skb_pull(skb, ihl);
-	skb_reset_transport_header(skb);
-	iph = ip_hdr(skb);
-	id = ntohs(iph->id);
-	proto = iph->protocol & (MAX_INET_PROTOS - 1);
-	segs = ERR_PTR(-EPROTONOSUPPORT);
-
-	rcu_read_lock();
-	ops = rcu_dereference(inet_protos[proto]);
-	if (likely(ops && ops->gso_segment))
-		segs = ops->gso_segment(skb, features);
-	rcu_read_unlock();
-
-	if (!segs || IS_ERR(segs))
-		goto out;
-
-	skb = segs;
-	do {
-		iph = ip_hdr(skb);
-		if (proto == IPPROTO_UDP) {
-			iph->id = htons(id);
-			iph->frag_off = htons(offset >> 3);
-			if (skb->next != NULL)
-				iph->frag_off |= htons(IP_MF);
-			offset += (skb->len - skb->mac_len - iph->ihl * 4);
-		} else
-			iph->id = htons(id++);
-		iph->tot_len = htons(skb->len - skb->mac_len);
-		iph->check = 0;
-		iph->check = ip_fast_csum(skb_network_header(skb), iph->ihl);
-=======
 	id = ntohs(iph->id);
 	proto = iph->protocol;
 
@@ -2208,22 +1458,12 @@ struct sk_buff *inet_gso_segment(struct sk_buff *skb,
 			skb_reset_inner_headers(skb);
 		skb->network_header = (u8 *)iph - skb->head;
 		skb_reset_mac_len(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while ((skb = skb->next));
 
 out:
 	return segs;
 }
 
-<<<<<<< HEAD
-static struct sk_buff **inet_gro_receive(struct sk_buff **head,
-					 struct sk_buff *skb)
-{
-	const struct net_protocol *ops;
-	struct sk_buff **pp = NULL;
-	struct sk_buff *p;
-	const struct iphdr *iph;
-=======
 static struct sk_buff *ipip_gso_segment(struct sk_buff *skb,
 					netdev_features_t features)
 {
@@ -2239,7 +1479,6 @@ struct sk_buff *inet_gro_receive(struct list_head *head, struct sk_buff *skb)
 	struct sk_buff *pp = NULL;
 	const struct iphdr *iph;
 	struct sk_buff *p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int hlen;
 	unsigned int off;
 	unsigned int id;
@@ -2248,34 +1487,6 @@ struct sk_buff *inet_gro_receive(struct list_head *head, struct sk_buff *skb)
 
 	off = skb_gro_offset(skb);
 	hlen = off + sizeof(*iph);
-<<<<<<< HEAD
-	iph = skb_gro_header_fast(skb, off);
-	if (skb_gro_header_hard(skb, hlen)) {
-		iph = skb_gro_header_slow(skb, hlen, off);
-		if (unlikely(!iph))
-			goto out;
-	}
-
-	proto = iph->protocol & (MAX_INET_PROTOS - 1);
-
-	rcu_read_lock();
-	ops = rcu_dereference(inet_protos[proto]);
-	if (!ops || !ops->gro_receive)
-		goto out_unlock;
-
-	if (*(u8 *)iph != 0x45)
-		goto out_unlock;
-
-	if (unlikely(ip_fast_csum((u8 *)iph, iph->ihl)))
-		goto out_unlock;
-
-	id = ntohl(*(__be32 *)&iph->id);
-	flush = (u16)((ntohl(*(__be32 *)iph) ^ skb_gro_len(skb)) | (id ^ IP_DF));
-	id >>= 16;
-
-	for (p = *head; p; p = p->next) {
-		struct iphdr *iph2;
-=======
 	iph = skb_gro_header(skb, hlen, off);
 	if (unlikely(!iph))
 		goto out;
@@ -2303,17 +1514,10 @@ struct sk_buff *inet_gro_receive(struct list_head *head, struct sk_buff *skb)
 	list_for_each_entry(p, head, list) {
 		struct iphdr *iph2;
 		u16 flush_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!NAPI_GRO_CB(p)->same_flow)
 			continue;
 
-<<<<<<< HEAD
-		iph2 = ip_hdr(p);
-
-		if ((iph->protocol ^ iph2->protocol) |
-		    (iph->tos ^ iph2->tos) |
-=======
 		iph2 = (struct iphdr *)(p->data + off);
 		/* The above works because, with the exception of the top
 		 * (inner most) layer, we only aggregate pkts with the same
@@ -2321,7 +1525,6 @@ struct sk_buff *inet_gro_receive(struct list_head *head, struct sk_buff *skb)
 		 * at the same offset.
 		 */
 		if ((iph->protocol ^ iph2->protocol) |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    ((__force u32)iph->saddr ^ (__force u32)iph2->saddr) |
 		    ((__force u32)iph->daddr ^ (__force u32)iph2->daddr)) {
 			NAPI_GRO_CB(p)->same_flow = 0;
@@ -2331,24 +1534,6 @@ struct sk_buff *inet_gro_receive(struct list_head *head, struct sk_buff *skb)
 		/* All fields must match except length and checksum. */
 		NAPI_GRO_CB(p)->flush |=
 			(iph->ttl ^ iph2->ttl) |
-<<<<<<< HEAD
-			((u16)(ntohs(iph2->id) + NAPI_GRO_CB(p)->count) ^ id);
-
-		NAPI_GRO_CB(p)->flush |= flush;
-	}
-
-	NAPI_GRO_CB(skb)->flush |= flush;
-	skb_gro_pull(skb, sizeof(*iph));
-	skb_set_transport_header(skb, skb_gro_offset(skb));
-
-	pp = ops->gro_receive(head, skb);
-
-out_unlock:
-	rcu_read_unlock();
-
-out:
-	NAPI_GRO_CB(skb)->flush |= flush;
-=======
 			(iph->tos ^ iph2->tos) |
 			((iph->frag_off ^ iph2->frag_off) & htons(IP_DF));
 
@@ -2400,37 +1585,10 @@ out:
 
 out:
 	skb_gro_flush_final(skb, pp, flush);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pp;
 }
 
-<<<<<<< HEAD
-static int inet_gro_complete(struct sk_buff *skb)
-{
-	const struct net_protocol *ops;
-	struct iphdr *iph = ip_hdr(skb);
-	int proto = iph->protocol & (MAX_INET_PROTOS - 1);
-	int err = -ENOSYS;
-	__be16 newlen = htons(skb->len - skb_network_offset(skb));
-
-	csum_replace2(&iph->check, iph->tot_len, newlen);
-	iph->tot_len = newlen;
-
-	rcu_read_lock();
-	ops = rcu_dereference(inet_protos[proto]);
-	if (WARN_ON(!ops || !ops->gro_complete))
-		goto out_unlock;
-
-	err = ops->gro_complete(skb);
-
-out_unlock:
-	rcu_read_unlock();
-
-	return err;
-}
-
-=======
 static struct sk_buff *ipip_gro_receive(struct list_head *head,
 					struct sk_buff *skb)
 {
@@ -2523,51 +1681,27 @@ static int ipip_gro_complete(struct sk_buff *skb, int nhoff)
 	return inet_gro_complete(skb, nhoff);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int inet_ctl_sock_create(struct sock **sk, unsigned short family,
 			 unsigned short type, unsigned char protocol,
 			 struct net *net)
 {
 	struct socket *sock;
-<<<<<<< HEAD
-	int rc = sock_create_kern(family, type, protocol, &sock);
-=======
 	int rc = sock_create_kern(net, family, type, protocol, &sock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rc == 0) {
 		*sk = sock->sk;
 		(*sk)->sk_allocation = GFP_ATOMIC;
-<<<<<<< HEAD
-=======
 		(*sk)->sk_use_task_frag = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Unhash it so that IP input processing does not even see it,
 		 * we do not wish this socket to see incoming packets.
 		 */
 		(*sk)->sk_prot->unhash(*sk);
-<<<<<<< HEAD
-
-		sk_change_net(*sk, net);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rc;
 }
 EXPORT_SYMBOL_GPL(inet_ctl_sock_create);
 
-<<<<<<< HEAD
-unsigned long snmp_fold_field(void __percpu *mib[], int offt)
-{
-	unsigned long res = 0;
-	int i, j;
-
-	for_each_possible_cpu(i) {
-		for (j = 0; j < SNMP_ARRAY_SZ; j++)
-			res += *(((unsigned long *) per_cpu_ptr(mib[j], i)) + offt);
-	}
-=======
 unsigned long snmp_fold_field(void __percpu *mib, int offt)
 {
 	unsigned long res = 0;
@@ -2575,16 +1709,12 @@ unsigned long snmp_fold_field(void __percpu *mib, int offt)
 
 	for_each_possible_cpu(i)
 		res += snmp_get_cpu_field(mib, i, offt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 EXPORT_SYMBOL_GPL(snmp_fold_field);
 
 #if BITS_PER_LONG==32
 
-<<<<<<< HEAD
-u64 snmp_fold_field64(void __percpu *mib[], int offt, size_t syncp_offset)
-=======
 u64 snmp_get_cpu_field64(void __percpu *mib, int cpu, int offt,
 			 size_t syncp_offset)
 {
@@ -2605,100 +1735,18 @@ u64 snmp_get_cpu_field64(void __percpu *mib, int cpu, int offt,
 EXPORT_SYMBOL_GPL(snmp_get_cpu_field64);
 
 u64 snmp_fold_field64(void __percpu *mib, int offt, size_t syncp_offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 res = 0;
 	int cpu;
 
 	for_each_possible_cpu(cpu) {
-<<<<<<< HEAD
-		void *bhptr;
-		struct u64_stats_sync *syncp;
-		u64 v;
-		unsigned int start;
-
-		bhptr = per_cpu_ptr(mib[0], cpu);
-		syncp = (struct u64_stats_sync *)(bhptr + syncp_offset);
-		do {
-			start = u64_stats_fetch_begin_irq(syncp);
-			v = *(((u64 *) bhptr) + offt);
-		} while (u64_stats_fetch_retry_irq(syncp, start));
-
-		res += v;
-=======
 		res += snmp_get_cpu_field64(mib, cpu, offt, syncp_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return res;
 }
 EXPORT_SYMBOL_GPL(snmp_fold_field64);
 #endif
 
-<<<<<<< HEAD
-int snmp_mib_init(void __percpu *ptr[2], size_t mibsize, size_t align)
-{
-	BUG_ON(ptr == NULL);
-	ptr[0] = __alloc_percpu(mibsize, align);
-	if (!ptr[0])
-		return -ENOMEM;
-
-#if SNMP_ARRAY_SZ == 2
-	ptr[1] = __alloc_percpu(mibsize, align);
-	if (!ptr[1]) {
-		free_percpu(ptr[0]);
-		ptr[0] = NULL;
-		return -ENOMEM;
-	}
-#endif
-	return 0;
-}
-EXPORT_SYMBOL_GPL(snmp_mib_init);
-
-void snmp_mib_free(void __percpu *ptr[SNMP_ARRAY_SZ])
-{
-	int i;
-
-	BUG_ON(ptr == NULL);
-	for (i = 0; i < SNMP_ARRAY_SZ; i++) {
-		free_percpu(ptr[i]);
-		ptr[i] = NULL;
-	}
-}
-EXPORT_SYMBOL_GPL(snmp_mib_free);
-
-#ifdef CONFIG_IP_MULTICAST
-static const struct net_protocol igmp_protocol = {
-	.handler =	igmp_rcv,
-	.netns_ok =	1,
-};
-#endif
-
-static const struct net_protocol tcp_protocol = {
-	.handler =	tcp_v4_rcv,
-	.err_handler =	tcp_v4_err,
-	.gso_send_check = tcp_v4_gso_send_check,
-	.gso_segment =	tcp_tso_segment,
-	.gro_receive =	tcp4_gro_receive,
-	.gro_complete =	tcp4_gro_complete,
-	.no_policy =	1,
-	.netns_ok =	1,
-};
-
-static const struct net_protocol udp_protocol = {
-	.handler =	udp_rcv,
-	.err_handler =	udp_err,
-	.gso_send_check = udp4_ufo_send_check,
-	.gso_segment = udp4_ufo_fragment,
-	.no_policy =	1,
-	.netns_ok =	1,
-};
-
-static const struct net_protocol icmp_protocol = {
-	.handler =	icmp_rcv,
-	.err_handler =	ping_v4_err,
-	.no_policy =	1,
-	.netns_ok =	1,
-=======
 #ifdef CONFIG_IP_MULTICAST
 static const struct net_protocol igmp_protocol = {
 	.handler =	igmp_rcv,
@@ -2709,57 +1757,21 @@ static const struct net_protocol icmp_protocol = {
 	.handler =	icmp_rcv,
 	.err_handler =	icmp_err,
 	.no_policy =	1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static __net_init int ipv4_mib_init_net(struct net *net)
 {
 	int i;
 
-<<<<<<< HEAD
-	if (snmp_mib_init((void __percpu **)net->mib.tcp_statistics,
-			  sizeof(struct tcp_mib),
-			  __alignof__(struct tcp_mib)) < 0)
-		goto err_tcp_mib;
-	if (snmp_mib_init((void __percpu **)net->mib.ip_statistics,
-			  sizeof(struct ipstats_mib),
-			  __alignof__(struct ipstats_mib)) < 0)
-=======
 	net->mib.tcp_statistics = alloc_percpu(struct tcp_mib);
 	if (!net->mib.tcp_statistics)
 		goto err_tcp_mib;
 	net->mib.ip_statistics = alloc_percpu(struct ipstats_mib);
 	if (!net->mib.ip_statistics)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_ip_mib;
 
 	for_each_possible_cpu(i) {
 		struct ipstats_mib *af_inet_stats;
-<<<<<<< HEAD
-		af_inet_stats = per_cpu_ptr(net->mib.ip_statistics[0], i);
-		u64_stats_init(&af_inet_stats->syncp);
-#if SNMP_ARRAY_SZ == 2
-		af_inet_stats = per_cpu_ptr(net->mib.ip_statistics[1], i);
-		u64_stats_init(&af_inet_stats->syncp);
-#endif
-	}
-
-	if (snmp_mib_init((void __percpu **)net->mib.net_statistics,
-			  sizeof(struct linux_mib),
-			  __alignof__(struct linux_mib)) < 0)
-		goto err_net_mib;
-	if (snmp_mib_init((void __percpu **)net->mib.udp_statistics,
-			  sizeof(struct udp_mib),
-			  __alignof__(struct udp_mib)) < 0)
-		goto err_udp_mib;
-	if (snmp_mib_init((void __percpu **)net->mib.udplite_statistics,
-			  sizeof(struct udp_mib),
-			  __alignof__(struct udp_mib)) < 0)
-		goto err_udplite_mib;
-	if (snmp_mib_init((void __percpu **)net->mib.icmp_statistics,
-			  sizeof(struct icmp_mib),
-			  __alignof__(struct icmp_mib)) < 0)
-=======
 		af_inet_stats = per_cpu_ptr(net->mib.ip_statistics, i);
 		u64_stats_init(&af_inet_stats->syncp);
 	}
@@ -2775,7 +1787,6 @@ static __net_init int ipv4_mib_init_net(struct net *net)
 		goto err_udplite_mib;
 	net->mib.icmp_statistics = alloc_percpu(struct icmp_mib);
 	if (!net->mib.icmp_statistics)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_icmp_mib;
 	net->mib.icmpmsg_statistics = kzalloc(sizeof(struct icmpmsg_mib),
 					      GFP_KERNEL);
@@ -2786,19 +1797,6 @@ static __net_init int ipv4_mib_init_net(struct net *net)
 	return 0;
 
 err_icmpmsg_mib:
-<<<<<<< HEAD
-	snmp_mib_free((void __percpu **)net->mib.icmp_statistics);
-err_icmp_mib:
-	snmp_mib_free((void __percpu **)net->mib.udplite_statistics);
-err_udplite_mib:
-	snmp_mib_free((void __percpu **)net->mib.udp_statistics);
-err_udp_mib:
-	snmp_mib_free((void __percpu **)net->mib.net_statistics);
-err_net_mib:
-	snmp_mib_free((void __percpu **)net->mib.ip_statistics);
-err_ip_mib:
-	snmp_mib_free((void __percpu **)net->mib.tcp_statistics);
-=======
 	free_percpu(net->mib.icmp_statistics);
 err_icmp_mib:
 	free_percpu(net->mib.udplite_statistics);
@@ -2810,7 +1808,6 @@ err_net_mib:
 	free_percpu(net->mib.ip_statistics);
 err_ip_mib:
 	free_percpu(net->mib.tcp_statistics);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_tcp_mib:
 	return -ENOMEM;
 }
@@ -2818,14 +1815,6 @@ err_tcp_mib:
 static __net_exit void ipv4_mib_exit_net(struct net *net)
 {
 	kfree(net->mib.icmpmsg_statistics);
-<<<<<<< HEAD
-	snmp_mib_free((void __percpu **)net->mib.icmp_statistics);
-	snmp_mib_free((void __percpu **)net->mib.udplite_statistics);
-	snmp_mib_free((void __percpu **)net->mib.udp_statistics);
-	snmp_mib_free((void __percpu **)net->mib.net_statistics);
-	snmp_mib_free((void __percpu **)net->mib.ip_statistics);
-	snmp_mib_free((void __percpu **)net->mib.tcp_statistics);
-=======
 	free_percpu(net->mib.icmp_statistics);
 	free_percpu(net->mib.udplite_statistics);
 	free_percpu(net->mib.udp_statistics);
@@ -2836,7 +1825,6 @@ static __net_exit void ipv4_mib_exit_net(struct net *net)
 	/* allocated on demand, see mptcp_init_sock() */
 	free_percpu(net->mib.mptcp_statistics);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __net_initdata struct pernet_operations ipv4_mib_ops = {
@@ -2849,8 +1837,6 @@ static int __init init_ipv4_mibs(void)
 	return register_pernet_subsys(&ipv4_mib_ops);
 }
 
-<<<<<<< HEAD
-=======
 static __net_init int inet_init_net(struct net *net)
 {
 	/*
@@ -2901,22 +1887,12 @@ static int __init init_inet_pernet_ops(void)
 	return register_pernet_subsys(&af_inet_ops);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ipv4_proc_init(void);
 
 /*
  *	IP protocol layer initialiser
  */
 
-<<<<<<< HEAD
-static struct packet_type ip_packet_type __read_mostly = {
-	.type = cpu_to_be16(ETH_P_IP),
-	.func = ip_rcv,
-	.gso_send_check = inet_gso_send_check,
-	.gso_segment = inet_gso_segment,
-	.gro_receive = inet_gro_receive,
-	.gro_complete = inet_gro_complete,
-=======
 
 static const struct net_offload ipip_offload = {
 	.callbacks = {
@@ -2961,27 +1937,10 @@ static struct packet_type ip_packet_type __read_mostly = {
 	.type = cpu_to_be16(ETH_P_IP),
 	.func = ip_rcv,
 	.list_func = ip_list_rcv,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init inet_init(void)
 {
-<<<<<<< HEAD
-	struct sk_buff *dummy_skb;
-	struct inet_protosw *q;
-	struct list_head *r;
-	int rc = -EINVAL;
-
-	BUILD_BUG_ON(sizeof(struct inet_skb_parm) > sizeof(dummy_skb->cb));
-
-	sysctl_local_reserved_ports = kzalloc(65536 / 8, GFP_KERNEL);
-	if (!sysctl_local_reserved_ports)
-		goto out;
-
-	rc = proto_register(&tcp_prot, 1);
-	if (rc)
-		goto out_free_reserved_ports;
-=======
 	struct inet_protosw *q;
 	struct list_head *r;
 	int rc;
@@ -2993,7 +1952,6 @@ static int __init inet_init(void)
 	rc = proto_register(&tcp_prot, 1);
 	if (rc)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = proto_register(&udp_prot, 1);
 	if (rc)
@@ -3017,22 +1975,12 @@ static int __init inet_init(void)
 	ip_static_sysctl_init();
 #endif
 
-<<<<<<< HEAD
-	tcp_prot.sysctl_mem = init_net.ipv4.sysctl_tcp_mem;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	Add all the base protocols.
 	 */
 
 	if (inet_add_protocol(&icmp_protocol, IPPROTO_ICMP) < 0)
 		pr_crit("%s: Cannot add ICMP protocol\n", __func__);
-<<<<<<< HEAD
-	if (inet_add_protocol(&udp_protocol, IPPROTO_UDP) < 0)
-		pr_crit("%s: Cannot add UDP protocol\n", __func__);
-	if (inet_add_protocol(&tcp_protocol, IPPROTO_TCP) < 0)
-=======
 
 	net_hotdata.udp_protocol = (struct net_protocol) {
 		.handler =	udp_rcv,
@@ -3049,7 +1997,6 @@ static int __init inet_init(void)
 		.icmp_strict_tag_validation = 1,
 	};
 	if (inet_add_protocol(&net_hotdata.tcp_protocol, IPPROTO_TCP) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_crit("%s: Cannot add TCP protocol\n", __func__);
 #ifdef CONFIG_IP_MULTICAST
 	if (inet_add_protocol(&igmp_protocol, IPPROTO_IGMP) < 0)
@@ -3075,13 +2022,9 @@ static int __init inet_init(void)
 
 	ip_init();
 
-<<<<<<< HEAD
-	tcp_v4_init();
-=======
 	/* Initialise per-cpu ipv4 mibs */
 	if (init_ipv4_mibs())
 		panic("%s: Cannot init ipv4 mibs\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup TCP slab cache for open requests. */
 	tcp_init();
@@ -3092,11 +2035,8 @@ static int __init inet_init(void)
 	/* Add UDP-Lite (RFC 3828) */
 	udplite4_register();
 
-<<<<<<< HEAD
-=======
 	raw_init();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ping_init();
 
 	/*
@@ -3113,18 +2053,9 @@ static int __init inet_init(void)
 	if (ip_mr_init())
 		pr_crit("%s: Cannot init ipv4 mroute\n", __func__);
 #endif
-<<<<<<< HEAD
-	/*
-	 *	Initialise per-cpu ipv4 mibs
-	 */
-
-	if (init_ipv4_mibs())
-		pr_crit("%s: Cannot init ipv4 mibs\n", __func__);
-=======
 
 	if (init_inet_pernet_ops())
 		pr_crit("%s: Cannot init ipv4 inet pernet ops\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ipv4_proc_init();
 
@@ -3132,11 +2063,8 @@ static int __init inet_init(void)
 
 	dev_add_pack(&ip_packet_type);
 
-<<<<<<< HEAD
-=======
 	ip_tunnel_core_init();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = 0;
 out:
 	return rc;
@@ -3146,11 +2074,6 @@ out_unregister_udp_proto:
 	proto_unregister(&udp_prot);
 out_unregister_tcp_proto:
 	proto_unregister(&tcp_prot);
-<<<<<<< HEAD
-out_free_reserved_ports:
-	kfree(sysctl_local_reserved_ports);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out;
 }
 
@@ -3194,9 +2117,3 @@ static int __init ipv4_proc_init(void)
 	return 0;
 }
 #endif /* CONFIG_PROC_FS */
-<<<<<<< HEAD
-
-MODULE_ALIAS_NETPROTO(PF_INET);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

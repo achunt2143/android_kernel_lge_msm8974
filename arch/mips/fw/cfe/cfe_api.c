@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000, 2001, 2002 Broadcom Corporation
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2000, 2001, 2002 Broadcom Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -32,12 +13,6 @@
  *
  * Authors:  Mitch Lichtenberg, Chris Demetriou
  */
-<<<<<<< HEAD
-
-#include <asm/fw/cfe/cfe_api.h>
-#include "cfe_api_int.h"
-
-=======
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/printk.h>
@@ -47,7 +22,6 @@
 
 unsigned long __initdata cfe_seal;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Cast from a native pointer to a cfe_xptr_t and back.	 */
 #define XPTR_FROM_NATIVE(n)	((cfe_xptr_t) (intptr_t) (n))
 #define NATIVE_FROM_XPTR(x)	((void *) (intptr_t) (x))
@@ -274,14 +248,6 @@ int cfe_getfwinfo(cfe_fwinfo_t * info)
 	info->fwi_bootarea_pa = xiocb.plist.xiocb_fwinfo.fwi_bootarea_pa;
 	info->fwi_bootarea_size =
 	    xiocb.plist.xiocb_fwinfo.fwi_bootarea_size;
-<<<<<<< HEAD
-#if 0
-	info->fwi_reserved1 = xiocb.plist.xiocb_fwinfo.fwi_reserved1;
-	info->fwi_reserved2 = xiocb.plist.xiocb_fwinfo.fwi_reserved2;
-	info->fwi_reserved3 = xiocb.plist.xiocb_fwinfo.fwi_reserved3;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -427,20 +393,12 @@ int cfe_setenv(char *name, char *val)
 	return xiocb.xiocb_status;
 }
 
-<<<<<<< HEAD
-int cfe_write(int handle, unsigned char *buffer, int length)
-=======
 int cfe_write(int handle, const char *buffer, int length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return cfe_writeblk(handle, 0, buffer, length);
 }
 
-<<<<<<< HEAD
-int cfe_writeblk(int handle, s64 offset, unsigned char *buffer, int length)
-=======
 int cfe_writeblk(int handle, s64 offset, const char *buffer, int length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cfe_xiocb xiocb;
 
@@ -459,8 +417,6 @@ int cfe_writeblk(int handle, s64 offset, const char *buffer, int length)
 		return xiocb.xiocb_status;
 	return xiocb.plist.xiocb_buffer.buf_retlen;
 }
-<<<<<<< HEAD
-=======
 
 void __init cfe_die(char *fmt, ...)
 {
@@ -522,4 +478,3 @@ no_cfe:
 
 	va_end(ap);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

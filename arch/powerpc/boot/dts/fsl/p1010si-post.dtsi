@@ -41,11 +41,7 @@
 
 /* controller at 0x9000 */
 &pci0 {
-<<<<<<< HEAD
-	compatible = "fsl,p1010-pcie", "fsl,qoriq-pcie-v2.3", "fsl,qoriq-pcie-v2.2";
-=======
 	compatible = "fsl,p1010-pcie", "fsl,qoriq-pcie-v2.3";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_type = "pci";
 	#size-cells = <2>;
 	#address-cells = <3>;
@@ -73,11 +69,7 @@
 
 /* controller at 0xa000 */
 &pci1 {
-<<<<<<< HEAD
-	compatible = "fsl,p1010-pcie", "fsl,qoriq-pcie-v2.3", "fsl,qoriq-pcie-v2.2";
-=======
 	compatible = "fsl,p1010-pcie", "fsl,qoriq-pcie-v2.3";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_type = "pci";
 	#size-cells = <2>;
 	#address-cells = <3>;
@@ -130,9 +122,6 @@
 	};
 
 /include/ "pq3-i2c-0.dtsi"
-<<<<<<< HEAD
-/include/ "pq3-i2c-1.dtsi"
-=======
 	i2c@3000 {
 		fsl,i2c-erratum-a004447;
 	};
@@ -142,7 +131,6 @@
 		fsl,i2c-erratum-a004447;
 	};
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /include/ "pq3-duart-0.dtsi"
 /include/ "pq3-espi-0.dtsi"
 	spi0: spi@7000 {
@@ -157,20 +145,14 @@
 		compatible = "fsl,p1010-flexcan";
 		reg = <0x1c000 0x1000>;
 		interrupts = <48 0x2 0 0>;
-<<<<<<< HEAD
-=======
 		big-endian;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	can1: can@1d000 {
 		compatible = "fsl,p1010-flexcan";
 		reg = <0x1d000 0x1000>;
 		interrupts = <61 0x2 0 0>;
-<<<<<<< HEAD
-=======
 		big-endian;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	L2: l2-cache-controller@20000 {
@@ -198,34 +180,8 @@
 /include/ "pq3-mpic-timer-B.dtsi"
 
 /include/ "pq3-etsec2-0.dtsi"
-<<<<<<< HEAD
-	enet0: ethernet@b0000 {
-		queue-group@b0000 {
-			fsl,rx-bit-map = <0xff>;
-			fsl,tx-bit-map = <0xff>;
-		};
-	};
-
-/include/ "pq3-etsec2-1.dtsi"
-	enet1: ethernet@b1000 {
-		queue-group@b1000 {
-			fsl,rx-bit-map = <0xff>;
-			fsl,tx-bit-map = <0xff>;
-		};
-	};
-
-/include/ "pq3-etsec2-2.dtsi"
-	enet2: ethernet@b2000 {
-		queue-group@b2000 {
-			fsl,rx-bit-map = <0xff>;
-			fsl,tx-bit-map = <0xff>;
-		};
-
-	};
-=======
 /include/ "pq3-etsec2-1.dtsi"
 /include/ "pq3-etsec2-2.dtsi"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	global-utilities@e0000 {
 		compatible = "fsl,p1010-guts";

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/m68k/kernel/time.c
  *
@@ -15,15 +12,10 @@
  */
 
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/sched.h>
-=======
 #include <linux/export.h>
 #include <linux/module.h>
 #include <linux/sched.h>
 #include <linux/sched/loadavg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/param.h>
 #include <linux/string.h>
@@ -39,19 +31,6 @@
 #include <linux/timex.h>
 #include <linux/profile.h>
 
-<<<<<<< HEAD
-/*
- * timer_interrupt() needs to keep up the real-time clock,
- * as well as call the "xtime_update()" routine every clocktick
- */
-static irqreturn_t timer_interrupt(int irq, void *dummy)
-{
-	xtime_update(1);
-	update_process_times(user_mode(get_irq_regs()));
-	profile_tick(CPU_PROFILING);
-
-#ifdef CONFIG_HEARTBEAT
-=======
 
 unsigned long (*mach_random_get_entropy)(void);
 EXPORT_SYMBOL_GPL(mach_random_get_entropy);
@@ -59,7 +38,6 @@ EXPORT_SYMBOL_GPL(mach_random_get_entropy);
 #ifdef CONFIG_HEARTBEAT
 void timer_heartbeat(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* use power LED as a heartbeat instead -- much more useful
 	   for debugging -- based on the version for PReP by Cort */
 	/* acts like an actual heart beat -- ie thump-thump-pause... */
@@ -81,39 +59,6 @@ void timer_heartbeat(void)
 		dist = period / 4;
 	    }
 	}
-<<<<<<< HEAD
-#endif /* CONFIG_HEARTBEAT */
-	return IRQ_HANDLED;
-}
-
-void read_persistent_clock(struct timespec *ts)
-{
-	struct rtc_time time;
-	ts->tv_sec = 0;
-	ts->tv_nsec = 0;
-
-	if (mach_hwclk) {
-		mach_hwclk(0, &time);
-
-		if ((time.tm_year += 1900) < 1970)
-			time.tm_year += 100;
-		ts->tv_sec = mktime(time.tm_year, time.tm_mon, time.tm_mday,
-				      time.tm_hour, time.tm_min, time.tm_sec);
-	}
-}
-
-void __init time_init(void)
-{
-	mach_sched_init(timer_interrupt);
-}
-
-#ifdef CONFIG_M68KCLASSIC
-
-u32 arch_gettimeoffset(void)
-{
-	return mach_gettimeoffset() * 1000;
-}
-=======
 }
 #endif /* CONFIG_HEARTBEAT */
 
@@ -188,7 +133,6 @@ static const struct rtc_class_ops generic_rtc_ops = {
 	.read_time = rtc_generic_get_time,
 	.set_time = rtc_generic_set_time,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init rtc_init(void)
 {
@@ -197,18 +141,6 @@ static int __init rtc_init(void)
 	if (!mach_hwclk)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	pdev = platform_device_register_simple("rtc-generic", -1, NULL, 0);
-	if (IS_ERR(pdev))
-		return PTR_ERR(pdev);
-
-	return 0;
-}
-
-module_init(rtc_init);
-
-#endif /* CONFIG_M68KCLASSIC */
-=======
 	pdev = platform_device_register_data(NULL, "rtc-generic", -1,
 					     &generic_rtc_ops,
 					     sizeof(generic_rtc_ops));
@@ -223,4 +155,3 @@ void __init time_init(void)
 {
 	mach_sched_init();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

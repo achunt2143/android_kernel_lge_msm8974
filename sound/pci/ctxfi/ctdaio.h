@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/**
- * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
- *
- * This source file is released under GPL v2 license (no other versions).
- * See the COPYING file included in the main directory of this source
- * distribution for the license terms and conditions.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	ctdaio.h
  *
  * @Brief
@@ -20,10 +10,6 @@
  *
  * @Author	Liu Chun
  * @Date 	May 23 2008
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef CTDAIO_H
@@ -33,10 +19,7 @@
 #include "ctimap.h"
 #include <linux/spinlock.h>
 #include <linux/list.h>
-<<<<<<< HEAD
-=======
 #include <sound/core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Define the descriptor of a daio resource */
 enum DAIOTYP {
@@ -64,29 +47,17 @@ struct daio {
 
 struct dao {
 	struct daio daio;
-<<<<<<< HEAD
-	struct dao_rsc_ops *ops;	/* DAO specific operations */
-	struct imapper **imappers;
-	struct daio_mgr *mgr;
-	void *hw;
-=======
 	const struct dao_rsc_ops *ops;	/* DAO specific operations */
 	struct imapper **imappers;
 	struct daio_mgr *mgr;
 	struct hw *hw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *ctrl_blk;
 };
 
 struct dai {
 	struct daio daio;
-<<<<<<< HEAD
-	struct dai_rsc_ops *ops;	/* DAI specific operations */
-	void *hw;
-=======
 	const struct dai_rsc_ops *ops;	/* DAI specific operations */
 	struct hw *hw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *ctrl_blk;
 };
 
@@ -124,10 +95,7 @@ struct daio_desc {
 
 struct daio_mgr {
 	struct rsc_mgr mgr;	/* Basic resource manager info */
-<<<<<<< HEAD
-=======
 	struct snd_card *card;	/* pointer to this card */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t mgr_lock;
 	spinlock_t imap_lock;
 	struct list_head imappers;
@@ -147,12 +115,7 @@ struct daio_mgr {
 };
 
 /* Constructor and destructor of daio resource manager */
-<<<<<<< HEAD
-int daio_mgr_create(void *hw, struct daio_mgr **rdaio_mgr);
-int daio_mgr_destroy(struct daio_mgr *daio_mgr);
-=======
 int daio_mgr_create(struct hw *hw, void **ptr);
 int daio_mgr_destroy(void *ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CTDAIO_H */

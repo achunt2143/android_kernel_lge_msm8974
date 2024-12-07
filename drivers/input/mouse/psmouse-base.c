@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PS/2 mouse driver
  *
@@ -9,22 +6,11 @@
  * Copyright (c) 2003-2004 Dmitry Torokhov
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pr_fmt(fmt)		KBUILD_MODNAME ": " fmt
 #define psmouse_fmt(fmt)	fmt
 
-<<<<<<< HEAD
-=======
 #include <linux/bitops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -34,10 +20,7 @@
 #include <linux/init.h>
 #include <linux/libps2.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-=======
 #include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "psmouse.h"
 #include "synaptics.h"
@@ -49,13 +32,10 @@
 #include "touchkit_ps2.h"
 #include "elantech.h"
 #include "sentelic.h"
-<<<<<<< HEAD
-=======
 #include "cypress_ps2.h"
 #include "focaltech.h"
 #include "vmmouse.h"
 #include "byd.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"PS/2 mouse driver"
 
@@ -66,11 +46,7 @@ MODULE_LICENSE("GPL");
 static unsigned int psmouse_max_proto = PSMOUSE_AUTO;
 static int psmouse_set_maxproto(const char *val, const struct kernel_param *);
 static int psmouse_get_maxproto(char *buffer, const struct kernel_param *kp);
-<<<<<<< HEAD
-static struct kernel_param_ops param_ops_proto_abbrev = {
-=======
 static const struct kernel_param_ops param_ops_proto_abbrev = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = psmouse_set_maxproto,
 	.get = psmouse_get_maxproto,
 };
@@ -86,12 +62,6 @@ static unsigned int psmouse_rate = 100;
 module_param_named(rate, psmouse_rate, uint, 0644);
 MODULE_PARM_DESC(rate, "Report rate, in reports per second.");
 
-<<<<<<< HEAD
-static bool psmouse_smartscroll = 1;
-module_param_named(smartscroll, psmouse_smartscroll, bool, 0644);
-MODULE_PARM_DESC(smartscroll, "Logitech Smartscroll autorepeat, 1 = enabled (default), 0 = disabled.");
-
-=======
 static bool psmouse_smartscroll = true;
 module_param_named(smartscroll, psmouse_smartscroll, bool, 0644);
 MODULE_PARM_DESC(smartscroll, "Logitech Smartscroll autorepeat, 1 = enabled (default), 0 = disabled.");
@@ -100,7 +70,6 @@ static bool psmouse_a4tech_2wheels;
 module_param_named(a4tech_workaround, psmouse_a4tech_2wheels, bool, 0644);
 MODULE_PARM_DESC(a4tech_workaround, "A4Tech second scroll wheel workaround, 1 = enabled, 0 = disabled (default).");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int psmouse_resetafter = 5;
 module_param_named(resetafter, psmouse_resetafter, uint, 0644);
 MODULE_PARM_DESC(resetafter, "Reset device after so many bad packets (0 = never).");
@@ -125,11 +94,7 @@ PSMOUSE_DEFINE_ATTR(resync_time, S_IWUSR | S_IRUGO,
 			(void *) offsetof(struct psmouse, resync_time),
 			psmouse_show_int_attr, psmouse_set_int_attr);
 
-<<<<<<< HEAD
-static struct attribute *psmouse_attributes[] = {
-=======
 static struct attribute *psmouse_dev_attrs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&psmouse_attr_protocol.dattr.attr,
 	&psmouse_attr_rate.dattr.attr,
 	&psmouse_attr_resolution.dattr.attr,
@@ -138,13 +103,7 @@ static struct attribute *psmouse_dev_attrs[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group psmouse_attribute_group = {
-	.attrs	= psmouse_attributes,
-};
-=======
 ATTRIBUTE_GROUPS(psmouse_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * psmouse_mutex protects all operations changing state of mouse
@@ -157,17 +116,6 @@ static DEFINE_MUTEX(psmouse_mutex);
 
 static struct workqueue_struct *kpsmoused_wq;
 
-<<<<<<< HEAD
-struct psmouse_protocol {
-	enum psmouse_type type;
-	bool maxproto;
-	bool ignore_parity; /* Protocol should ignore parity errors from KBC */
-	const char *name;
-	const char *alias;
-	int (*detect)(struct psmouse *, bool);
-	int (*init)(struct psmouse *);
-};
-=======
 struct psmouse *psmouse_from_serio(struct serio *serio)
 {
 	struct ps2dev *ps2dev = serio_get_drvdata(serio);
@@ -198,100 +146,20 @@ void psmouse_report_standard_packet(struct input_dev *dev, u8 *packet)
 	psmouse_report_standard_buttons(dev, packet[0]);
 	psmouse_report_standard_motion(dev, packet);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * psmouse_process_byte() analyzes the PS/2 data stream and reports
  * relevant events to the input module once full packet has arrived.
  */
-<<<<<<< HEAD
-
-psmouse_ret_t psmouse_process_byte(struct psmouse *psmouse)
-{
-	struct input_dev *dev = psmouse->dev;
-	unsigned char *packet = psmouse->packet;
-=======
 psmouse_ret_t psmouse_process_byte(struct psmouse *psmouse)
 {
 	struct input_dev *dev = psmouse->dev;
 	u8 *packet = psmouse->packet;
 	int wheel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (psmouse->pktcnt < psmouse->pktsize)
 		return PSMOUSE_GOOD_DATA;
 
-<<<<<<< HEAD
-/*
- * Full packet accumulated, process it
- */
-
-/*
- * Scroll wheel on IntelliMice, scroll buttons on NetMice
- */
-
-	if (psmouse->type == PSMOUSE_IMPS || psmouse->type == PSMOUSE_GENPS)
-		input_report_rel(dev, REL_WHEEL, -(signed char) packet[3]);
-
-/*
- * Scroll wheel and buttons on IntelliMouse Explorer
- */
-
-	if (psmouse->type == PSMOUSE_IMEX) {
-		switch (packet[3] & 0xC0) {
-		case 0x80: /* vertical scroll on IntelliMouse Explorer 4.0 */
-			input_report_rel(dev, REL_WHEEL, (int) (packet[3] & 32) - (int) (packet[3] & 31));
-			break;
-		case 0x40: /* horizontal scroll on IntelliMouse Explorer 4.0 */
-			input_report_rel(dev, REL_HWHEEL, (int) (packet[3] & 32) - (int) (packet[3] & 31));
-			break;
-		case 0x00:
-		case 0xC0:
-			input_report_rel(dev, REL_WHEEL, (int) (packet[3] & 8) - (int) (packet[3] & 7));
-			input_report_key(dev, BTN_SIDE, (packet[3] >> 4) & 1);
-			input_report_key(dev, BTN_EXTRA, (packet[3] >> 5) & 1);
-			break;
-		}
-	}
-
-/*
- * Extra buttons on Genius NewNet 3D
- */
-
-	if (psmouse->type == PSMOUSE_GENPS) {
-		input_report_key(dev, BTN_SIDE, (packet[0] >> 6) & 1);
-		input_report_key(dev, BTN_EXTRA, (packet[0] >> 7) & 1);
-	}
-
-/*
- * Extra button on ThinkingMouse
- */
-	if (psmouse->type == PSMOUSE_THINKPS) {
-		input_report_key(dev, BTN_EXTRA, (packet[0] >> 3) & 1);
-		/* Without this bit of weirdness moving up gives wildly high Y changes. */
-		packet[1] |= (packet[0] & 0x40) << 1;
-	}
-
-/*
- * Cortron PS2 Trackball reports SIDE button on the 4th bit of the first
- * byte.
- */
-	if (psmouse->type == PSMOUSE_CORTRON) {
-		input_report_key(dev, BTN_SIDE, (packet[0] >> 3) & 1);
-		packet[0] |= 0x08;
-	}
-
-/*
- * Generic PS/2 Mouse
- */
-
-	input_report_key(dev, BTN_LEFT,    packet[0]       & 1);
-	input_report_key(dev, BTN_MIDDLE, (packet[0] >> 2) & 1);
-	input_report_key(dev, BTN_RIGHT,  (packet[0] >> 1) & 1);
-
-	input_report_rel(dev, REL_X, packet[1] ? (int) packet[1] - (int) ((packet[0] << 4) & 0x100) : 0);
-	input_report_rel(dev, REL_Y, packet[2] ? (int) ((packet[0] << 3) & 0x100) - (int) packet[2] : 0);
-=======
 	/* Full packet accumulated, process it */
 
 	switch (psmouse->protocol->type) {
@@ -367,7 +235,6 @@ psmouse_ret_t psmouse_process_byte(struct psmouse *psmouse)
 	/* Generic PS/2 Mouse */
 	packet[0] |= psmouse->extra_buttons;
 	psmouse_report_standard_packet(dev, packet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_sync(dev);
 
@@ -383,10 +250,6 @@ void psmouse_queue_work(struct psmouse *psmouse, struct delayed_work *work,
 /*
  * __psmouse_set_state() sets new psmouse state and resets all flags.
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void __psmouse_set_state(struct psmouse *psmouse, enum psmouse_state new_state)
 {
 	psmouse->state = new_state;
@@ -395,19 +258,11 @@ static inline void __psmouse_set_state(struct psmouse *psmouse, enum psmouse_sta
 	psmouse->last = jiffies;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * psmouse_set_state() sets new psmouse state and resets all flags and
  * counters while holding serio lock so fighting with interrupt handler
  * is not a concern.
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void psmouse_set_state(struct psmouse *psmouse, enum psmouse_state new_state)
 {
 	serio_pause_rx(psmouse->ps2dev.serio);
@@ -419,10 +274,6 @@ void psmouse_set_state(struct psmouse *psmouse, enum psmouse_state new_state)
  * psmouse_handle_byte() processes one byte of the input data stream
  * by calling corresponding protocol handler.
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int psmouse_handle_byte(struct psmouse *psmouse)
 {
 	psmouse_ret_t rc = psmouse->protocol_handler(psmouse);
@@ -439,11 +290,7 @@ static int psmouse_handle_byte(struct psmouse *psmouse)
 				psmouse_notice(psmouse,
 						"issuing reconnect request\n");
 				serio_reconnect(psmouse->ps2dev.serio);
-<<<<<<< HEAD
-				return -1;
-=======
 				return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		psmouse->pktcnt = 0;
@@ -465,23 +312,6 @@ static int psmouse_handle_byte(struct psmouse *psmouse)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * psmouse_interrupt() handles incoming characters, either passing them
- * for normal processing or gathering them as command response.
- */
-
-static irqreturn_t psmouse_interrupt(struct serio *serio,
-		unsigned char data, unsigned int flags)
-{
-	struct psmouse *psmouse = serio_get_drvdata(serio);
-
-	if (psmouse->state == PSMOUSE_IGNORE)
-		goto out;
-
-	if (unlikely((flags & SERIO_TIMEOUT) ||
-		     ((flags & SERIO_PARITY) && !psmouse->ignore_parity))) {
-=======
 static void psmouse_handle_oob_data(struct psmouse *psmouse, u8 data)
 {
 	switch (psmouse->oob_data_type) {
@@ -518,29 +348,12 @@ static enum ps2_disposition psmouse_pre_receive_byte(struct ps2dev *ps2dev,
 	if (unlikely((flags & SERIO_TIMEOUT) ||
 		     ((flags & SERIO_PARITY) &&
 		      !psmouse->protocol->ignore_parity))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (psmouse->state == PSMOUSE_ACTIVATED)
 			psmouse_warn(psmouse,
 				     "bad data from KBC -%s%s\n",
 				     flags & SERIO_TIMEOUT ? " timeout" : "",
 				     flags & SERIO_PARITY ? " bad parity" : "");
-<<<<<<< HEAD
-		ps2_cmd_aborted(&psmouse->ps2dev);
-		goto out;
-	}
-
-	if (unlikely(psmouse->ps2dev.flags & PS2_FLAG_ACK))
-		if  (ps2_handle_ack(&psmouse->ps2dev, data))
-			goto out;
-
-	if (unlikely(psmouse->ps2dev.flags & PS2_FLAG_CMD))
-		if  (ps2_handle_response(&psmouse->ps2dev, data))
-			goto out;
-
-	if (psmouse->state <= PSMOUSE_RESYNCING)
-		goto out;
-=======
 		return PS2_ERROR;
 	}
 
@@ -560,7 +373,6 @@ static void psmouse_receive_byte(struct ps2dev *ps2dev, u8 data)
 
 	if (psmouse->state <= PSMOUSE_RESYNCING)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (psmouse->state == PSMOUSE_ACTIVATED &&
 	    psmouse->pktcnt && time_after(jiffies, psmouse->last + HZ/2)) {
@@ -569,34 +381,6 @@ static void psmouse_receive_byte(struct ps2dev *ps2dev, u8 data)
 		psmouse->badbyte = psmouse->packet[0];
 		__psmouse_set_state(psmouse, PSMOUSE_RESYNCING);
 		psmouse_queue_work(psmouse, &psmouse->resync_work, 0);
-<<<<<<< HEAD
-		goto out;
-	}
-
-	psmouse->packet[psmouse->pktcnt++] = data;
-/*
- * Check if this is a new device announcement (0xAA 0x00)
- */
-	if (unlikely(psmouse->packet[0] == PSMOUSE_RET_BAT && psmouse->pktcnt <= 2)) {
-		if (psmouse->pktcnt == 1) {
-			psmouse->last = jiffies;
-			goto out;
-		}
-
-		if (psmouse->packet[1] == PSMOUSE_RET_ID ||
-		    (psmouse->type == PSMOUSE_HGPK &&
-		     psmouse->packet[1] == PSMOUSE_RET_BAT)) {
-			__psmouse_set_state(psmouse, PSMOUSE_IGNORE);
-			serio_reconnect(serio);
-			goto out;
-		}
-/*
- * Not a new device, try processing first byte normally
- */
-		psmouse->pktcnt = 1;
-		if (psmouse_handle_byte(psmouse))
-			goto out;
-=======
 		return;
 	}
 
@@ -621,85 +405,32 @@ static void psmouse_receive_byte(struct ps2dev *ps2dev, u8 data)
 		psmouse->pktcnt = 1;
 		if (psmouse_handle_byte(psmouse))
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		psmouse->packet[psmouse->pktcnt++] = data;
 	}
 
-<<<<<<< HEAD
-/*
- * See if we need to force resync because mouse was idle for too long
- */
-=======
 	/*
 	 * See if we need to force resync because mouse was idle for
 	 * too long.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (psmouse->state == PSMOUSE_ACTIVATED &&
 	    psmouse->pktcnt == 1 && psmouse->resync_time &&
 	    time_after(jiffies, psmouse->last + psmouse->resync_time * HZ)) {
 		psmouse->badbyte = psmouse->packet[0];
 		__psmouse_set_state(psmouse, PSMOUSE_RESYNCING);
 		psmouse_queue_work(psmouse, &psmouse->resync_work, 0);
-<<<<<<< HEAD
-		goto out;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	psmouse->last = jiffies;
 	psmouse_handle_byte(psmouse);
-<<<<<<< HEAD
-
- out:
-	return IRQ_HANDLED;
 }
 
-
-/*
- * psmouse_sliced_command() sends an extended PS/2 command to the mouse
- * using sliced syntax, understood by advanced devices, such as Logitech
- * or Synaptics touchpads. The command is encoded as:
- * 0xE6 0xE8 rr 0xE8 ss 0xE8 tt 0xE8 uu where (rr*64)+(ss*16)+(tt*4)+uu
- * is the command.
- */
-int psmouse_sliced_command(struct psmouse *psmouse, unsigned char command)
-{
-	int i;
-
-	if (ps2_command(&psmouse->ps2dev, NULL, PSMOUSE_CMD_SETSCALE11))
-		return -1;
-
-	for (i = 6; i >= 0; i -= 2) {
-		unsigned char d = (command >> i) & 3;
-		if (ps2_command(&psmouse->ps2dev, &d, PSMOUSE_CMD_SETRES))
-			return -1;
-	}
-
-	return 0;
-}
-
-
-=======
-}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * psmouse_reset() resets the mouse into power-on state.
  */
 int psmouse_reset(struct psmouse *psmouse)
 {
-<<<<<<< HEAD
-	unsigned char param[2];
-
-	if (ps2_command(&psmouse->ps2dev, param, PSMOUSE_CMD_RESET_BAT))
-		return -1;
-
-	if (param[0] != PSMOUSE_RET_BAT && param[1] != PSMOUSE_RET_ID)
-		return -1;
-=======
 	u8 param[2];
 	int error;
 
@@ -709,7 +440,6 @@ int psmouse_reset(struct psmouse *psmouse)
 
 	if (param[0] != PSMOUSE_RET_BAT && param[1] != PSMOUSE_RET_ID)
 		return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -717,18 +447,10 @@ int psmouse_reset(struct psmouse *psmouse)
 /*
  * Here we set the mouse resolution.
  */
-<<<<<<< HEAD
-
-void psmouse_set_resolution(struct psmouse *psmouse, unsigned int resolution)
-{
-	static const unsigned char params[] = { 0, 1, 2, 2, 3 };
-	unsigned char p;
-=======
 void psmouse_set_resolution(struct psmouse *psmouse, unsigned int resolution)
 {
 	static const u8 params[] = { 0, 1, 2, 2, 3 };
 	u8 p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (resolution == 0 || resolution > 200)
 		resolution = 200;
@@ -741,16 +463,6 @@ void psmouse_set_resolution(struct psmouse *psmouse, unsigned int resolution)
 /*
  * Here we set the mouse report rate.
  */
-<<<<<<< HEAD
-
-static void psmouse_set_rate(struct psmouse *psmouse, unsigned int rate)
-{
-	static const unsigned char rates[] = { 200, 100, 80, 60, 40, 20, 10, 0 };
-	unsigned char r;
-	int i = 0;
-
-	while (rates[i] > rate) i++;
-=======
 static void psmouse_set_rate(struct psmouse *psmouse, unsigned int rate)
 {
 	static const u8 rates[] = { 200, 100, 80, 60, 40, 20, 10, 0 };
@@ -759,18 +471,12 @@ static void psmouse_set_rate(struct psmouse *psmouse, unsigned int rate)
 
 	while (rates[i] > rate)
 		i++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = rates[i];
 	ps2_command(&psmouse->ps2dev, &r, PSMOUSE_CMD_SETRATE);
 	psmouse->rate = r;
 }
 
 /*
-<<<<<<< HEAD
- * psmouse_poll() - default poll handler. Everyone except for ALPS uses it.
- */
-
-=======
  * Here we set the mouse scaling.
  */
 static void psmouse_set_scale(struct psmouse *psmouse, enum psmouse_scale scale)
@@ -783,15 +489,12 @@ static void psmouse_set_scale(struct psmouse *psmouse, enum psmouse_scale scale)
 /*
  * psmouse_poll() - default poll handler. Everyone except for ALPS uses it.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int psmouse_poll(struct psmouse *psmouse)
 {
 	return ps2_command(&psmouse->ps2dev, psmouse->packet,
 			   PSMOUSE_CMD_POLL | (psmouse->pktsize << 8));
 }
 
-<<<<<<< HEAD
-=======
 static bool psmouse_check_pnp_id(const char *id, const char * const ids[])
 {
 	int i;
@@ -832,7 +535,6 @@ bool psmouse_matches_pnp_id(struct psmouse *psmouse, const char * const ids[])
 	kfree(save_ptr);
 	return found;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Genius NetMouse magic init.
@@ -840,11 +542,7 @@ bool psmouse_matches_pnp_id(struct psmouse *psmouse, const char * const ids[])
 static int genius_detect(struct psmouse *psmouse, bool set_properties)
 {
 	struct ps2dev *ps2dev = &psmouse->ps2dev;
-<<<<<<< HEAD
-	unsigned char param[4];
-=======
 	u8 param[4];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	param[0] = 3;
 	ps2_command(ps2dev, param, PSMOUSE_CMD_SETRES);
@@ -854,11 +552,7 @@ static int genius_detect(struct psmouse *psmouse, bool set_properties)
 	ps2_command(ps2dev, param, PSMOUSE_CMD_GETINFO);
 
 	if (param[0] != 0x00 || param[1] != 0x33 || param[2] != 0x55)
-<<<<<<< HEAD
-		return -1;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (set_properties) {
 		__set_bit(BTN_MIDDLE, psmouse->dev->keybit);
@@ -880,11 +574,7 @@ static int genius_detect(struct psmouse *psmouse, bool set_properties)
 static int intellimouse_detect(struct psmouse *psmouse, bool set_properties)
 {
 	struct ps2dev *ps2dev = &psmouse->ps2dev;
-<<<<<<< HEAD
-	unsigned char param[2];
-=======
 	u8 param[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	param[0] = 200;
 	ps2_command(ps2dev, param, PSMOUSE_CMD_SETRATE);
@@ -895,11 +585,7 @@ static int intellimouse_detect(struct psmouse *psmouse, bool set_properties)
 	ps2_command(ps2dev, param, PSMOUSE_CMD_GETID);
 
 	if (param[0] != 3)
-<<<<<<< HEAD
-		return -1;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (set_properties) {
 		__set_bit(BTN_MIDDLE, psmouse->dev->keybit);
@@ -921,11 +607,7 @@ static int intellimouse_detect(struct psmouse *psmouse, bool set_properties)
 static int im_explorer_detect(struct psmouse *psmouse, bool set_properties)
 {
 	struct ps2dev *ps2dev = &psmouse->ps2dev;
-<<<<<<< HEAD
-	unsigned char param[2];
-=======
 	u8 param[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	intellimouse_detect(psmouse, 0);
 
@@ -938,15 +620,9 @@ static int im_explorer_detect(struct psmouse *psmouse, bool set_properties)
 	ps2_command(ps2dev, param, PSMOUSE_CMD_GETID);
 
 	if (param[0] != 4)
-<<<<<<< HEAD
-		return -1;
-
-/* Magic to enable horizontal scrolling on IntelliMouse 4.0 */
-=======
 		return -ENODEV;
 
 	/* Magic to enable horizontal scrolling on IntelliMouse 4.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	param[0] = 200;
 	ps2_command(ps2dev, param, PSMOUSE_CMD_SETRATE);
 	param[0] =  80;
@@ -977,13 +653,8 @@ static int im_explorer_detect(struct psmouse *psmouse, bool set_properties)
 static int thinking_detect(struct psmouse *psmouse, bool set_properties)
 {
 	struct ps2dev *ps2dev = &psmouse->ps2dev;
-<<<<<<< HEAD
-	unsigned char param[2];
-	static const unsigned char seq[] = { 20, 60, 40, 20, 20, 60, 40, 20, 20 };
-=======
 	u8 param[2];
 	static const u8 seq[] = { 20, 60, 40, 20, 20, 60, 40, 20, 20 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	param[0] = 10;
@@ -997,11 +668,7 @@ static int thinking_detect(struct psmouse *psmouse, bool set_properties)
 	ps2_command(ps2dev, param, PSMOUSE_CMD_GETID);
 
 	if (param[0] != 2)
-<<<<<<< HEAD
-		return -1;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (set_properties) {
 		__set_bit(BTN_MIDDLE, psmouse->dev->keybit);
@@ -1025,19 +692,11 @@ static int ps2bare_detect(struct psmouse *psmouse, bool set_properties)
 		if (!psmouse->name)
 			psmouse->name = "Mouse";
 
-<<<<<<< HEAD
-/*
- * We have no way of figuring true number of buttons so let's
- * assume that the device has 3.
- */
-		__set_bit(BTN_MIDDLE, psmouse->dev->keybit);
-=======
 		/*
 		 * We have no way of figuring true number of buttons so let's
 		 * assume that the device has 3.
 		 */
 		input_set_capability(psmouse->dev, EV_KEY, BTN_MIDDLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1060,237 +719,6 @@ static int cortron_detect(struct psmouse *psmouse, bool set_properties)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * Apply default settings to the psmouse structure. Most of them will
- * be overridden by individual protocol initialization routines.
- */
-
-static void psmouse_apply_defaults(struct psmouse *psmouse)
-{
-	struct input_dev *input_dev = psmouse->dev;
-
-	memset(input_dev->evbit, 0, sizeof(input_dev->evbit));
-	memset(input_dev->keybit, 0, sizeof(input_dev->keybit));
-	memset(input_dev->relbit, 0, sizeof(input_dev->relbit));
-	memset(input_dev->absbit, 0, sizeof(input_dev->absbit));
-	memset(input_dev->mscbit, 0, sizeof(input_dev->mscbit));
-
-	__set_bit(EV_KEY, input_dev->evbit);
-	__set_bit(EV_REL, input_dev->evbit);
-
-	__set_bit(BTN_LEFT, input_dev->keybit);
-	__set_bit(BTN_RIGHT, input_dev->keybit);
-
-	__set_bit(REL_X, input_dev->relbit);
-	__set_bit(REL_Y, input_dev->relbit);
-
-	psmouse->set_rate = psmouse_set_rate;
-	psmouse->set_resolution = psmouse_set_resolution;
-	psmouse->poll = psmouse_poll;
-	psmouse->protocol_handler = psmouse_process_byte;
-	psmouse->pktsize = 3;
-	psmouse->reconnect = NULL;
-	psmouse->disconnect = NULL;
-	psmouse->cleanup = NULL;
-	psmouse->pt_activate = NULL;
-	psmouse->pt_deactivate = NULL;
-}
-
-/*
- * Apply default settings to the psmouse structure and call specified
- * protocol detection or initialization routine.
- */
-static int psmouse_do_detect(int (*detect)(struct psmouse *psmouse,
-					   bool set_properties),
-			     struct psmouse *psmouse, bool set_properties)
-{
-	if (set_properties)
-		psmouse_apply_defaults(psmouse);
-
-	return detect(psmouse, set_properties);
-}
-
-/*
- * psmouse_extensions() probes for any extensions to the basic PS/2 protocol
- * the mouse may have.
- */
-
-static int psmouse_extensions(struct psmouse *psmouse,
-			      unsigned int max_proto, bool set_properties)
-{
-	bool synaptics_hardware = false;
-
-/*
- * We always check for lifebook because it does not disturb mouse
- * (it only checks DMI information).
- */
-	if (psmouse_do_detect(lifebook_detect, psmouse, set_properties) == 0) {
-		if (max_proto > PSMOUSE_IMEX) {
-			if (!set_properties || lifebook_init(psmouse) == 0)
-				return PSMOUSE_LIFEBOOK;
-		}
-	}
-
-/*
- * Try Kensington ThinkingMouse (we try first, because synaptics probe
- * upsets the thinkingmouse).
- */
-
-	if (max_proto > PSMOUSE_IMEX &&
-	    psmouse_do_detect(thinking_detect, psmouse, set_properties) == 0) {
-		return PSMOUSE_THINKPS;
-	}
-
-/*
- * Try Synaptics TouchPad. Note that probing is done even if Synaptics protocol
- * support is disabled in config - we need to know if it is synaptics so we
- * can reset it properly after probing for intellimouse.
- */
-	if (max_proto > PSMOUSE_PS2 &&
-	    psmouse_do_detect(synaptics_detect, psmouse, set_properties) == 0) {
-		synaptics_hardware = true;
-
-		if (max_proto > PSMOUSE_IMEX) {
-/*
- * Try activating protocol, but check if support is enabled first, since
- * we try detecting Synaptics even when protocol is disabled.
- */
-			if (synaptics_supported() &&
-			    (!set_properties || synaptics_init(psmouse) == 0)) {
-				return PSMOUSE_SYNAPTICS;
-			}
-
-/*
- * Some Synaptics touchpads can emulate extended protocols (like IMPS/2).
- * Unfortunately Logitech/Genius probes confuse some firmware versions so
- * we'll have to skip them.
- */
-			max_proto = PSMOUSE_IMEX;
-		}
-/*
- * Make sure that touchpad is in relative mode, gestures (taps) are enabled
- */
-		synaptics_reset(psmouse);
-	}
-
-/*
- * Try ALPS TouchPad
- */
-	if (max_proto > PSMOUSE_IMEX) {
-		ps2_command(&psmouse->ps2dev, NULL, PSMOUSE_CMD_RESET_DIS);
-		if (psmouse_do_detect(alps_detect,
-				      psmouse, set_properties) == 0) {
-			if (!set_properties || alps_init(psmouse) == 0)
-				return PSMOUSE_ALPS;
-/*
- * Init failed, try basic relative protocols
- */
-			max_proto = PSMOUSE_IMEX;
-		}
-	}
-
-/*
- * Try OLPC HGPK touchpad.
- */
-	if (max_proto > PSMOUSE_IMEX &&
-	    psmouse_do_detect(hgpk_detect, psmouse, set_properties) == 0) {
-		if (!set_properties || hgpk_init(psmouse) == 0)
-			return PSMOUSE_HGPK;
-/*
- * Init failed, try basic relative protocols
- */
-		max_proto = PSMOUSE_IMEX;
-	}
-
-/*
- * Try Elantech touchpad.
- */
-	if (max_proto > PSMOUSE_IMEX &&
-	    psmouse_do_detect(elantech_detect, psmouse, set_properties) == 0) {
-		if (!set_properties || elantech_init(psmouse) == 0)
-			return PSMOUSE_ELANTECH;
-/*
- * Init failed, try basic relative protocols
- */
-		max_proto = PSMOUSE_IMEX;
-	}
-
-	if (max_proto > PSMOUSE_IMEX) {
-		if (psmouse_do_detect(genius_detect,
-				      psmouse, set_properties) == 0)
-			return PSMOUSE_GENPS;
-
-		if (psmouse_do_detect(ps2pp_init,
-				      psmouse, set_properties) == 0)
-			return PSMOUSE_PS2PP;
-
-		if (psmouse_do_detect(trackpoint_detect,
-				      psmouse, set_properties) == 0)
-			return PSMOUSE_TRACKPOINT;
-
-		if (psmouse_do_detect(touchkit_ps2_detect,
-				      psmouse, set_properties) == 0)
-			return PSMOUSE_TOUCHKIT_PS2;
-	}
-
-/*
- * Try Finger Sensing Pad. We do it here because its probe upsets
- * Trackpoint devices (causing TP_READ_ID command to time out).
- */
-	if (max_proto > PSMOUSE_IMEX) {
-		if (psmouse_do_detect(fsp_detect,
-				      psmouse, set_properties) == 0) {
-			if (!set_properties || fsp_init(psmouse) == 0)
-				return PSMOUSE_FSP;
-/*
- * Init failed, try basic relative protocols
- */
-			max_proto = PSMOUSE_IMEX;
-		}
-	}
-
-/*
- * Reset to defaults in case the device got confused by extended
- * protocol probes. Note that we follow up with full reset because
- * some mice put themselves to sleep when they see PSMOUSE_RESET_DIS.
- */
-	ps2_command(&psmouse->ps2dev, NULL, PSMOUSE_CMD_RESET_DIS);
-	psmouse_reset(psmouse);
-
-	if (max_proto >= PSMOUSE_IMEX &&
-	    psmouse_do_detect(im_explorer_detect,
-			      psmouse, set_properties) == 0) {
-		return PSMOUSE_IMEX;
-	}
-
-	if (max_proto >= PSMOUSE_IMPS &&
-	    psmouse_do_detect(intellimouse_detect,
-			      psmouse, set_properties) == 0) {
-		return PSMOUSE_IMPS;
-	}
-
-/*
- * Okay, all failed, we have a standard mouse here. The number of the buttons
- * is still a question, though. We assume 3.
- */
-	psmouse_do_detect(ps2bare_detect, psmouse, set_properties);
-
-	if (synaptics_hardware) {
-/*
- * We detected Synaptics hardware but it did not respond to IMPS/2 probes.
- * We need to reset the touchpad because if there is a track point on the
- * pass through port it could get disabled while probing for protocol
- * extensions.
- */
-		psmouse_reset(psmouse);
-	}
-
-	return PSMOUSE_PS2;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct psmouse_protocol psmouse_protocols[] = {
 	{
 		.type		= PSMOUSE_PS2,
@@ -1299,21 +727,14 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.maxproto	= true,
 		.ignore_parity	= true,
 		.detect		= ps2bare_detect,
-<<<<<<< HEAD
-=======
 		.try_passthru	= true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 #ifdef CONFIG_MOUSE_PS2_LOGIPS2PP
 	{
 		.type		= PSMOUSE_PS2PP,
 		.name		= "PS2++",
 		.alias		= "logitech",
-<<<<<<< HEAD
-		.detect		= ps2pp_init,
-=======
 		.detect		= ps2pp_detect,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 #endif
 	{
@@ -1322,8 +743,6 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.alias		= "thinkps",
 		.detect		= thinking_detect,
 	},
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MOUSE_PS2_CYPRESS
 	{
 		.type		= PSMOUSE_CYPRESS,
@@ -1333,7 +752,6 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.init		= cypress_init,
 	},
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type		= PSMOUSE_GENPS,
 		.name		= "GenPS/2",
@@ -1347,10 +765,7 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.maxproto	= true,
 		.ignore_parity	= true,
 		.detect		= intellimouse_detect,
-<<<<<<< HEAD
-=======
 		.try_passthru	= true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.type		= PSMOUSE_IMEX,
@@ -1359,10 +774,7 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.maxproto	= true,
 		.ignore_parity	= true,
 		.detect		= im_explorer_detect,
-<<<<<<< HEAD
-=======
 		.try_passthru	= true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 #ifdef CONFIG_MOUSE_PS2_SYNAPTICS
 	{
@@ -1370,11 +782,7 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.name		= "SynPS/2",
 		.alias		= "synaptics",
 		.detect		= synaptics_detect,
-<<<<<<< HEAD
-		.init		= synaptics_init,
-=======
 		.init		= synaptics_init_absolute,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.type		= PSMOUSE_SYNAPTICS_RELATIVE,
@@ -1384,8 +792,6 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.init		= synaptics_init_relative,
 	},
 #endif
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MOUSE_PS2_SYNAPTICS_SMBUS
 	{
 		.type		= PSMOUSE_SYNAPTICS_SMBUS,
@@ -1396,7 +802,6 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.smbus_companion = true,
 	},
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_MOUSE_PS2_ALPS
 	{
 		.type		= PSMOUSE_ALPS,
@@ -1411,10 +816,7 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.type		= PSMOUSE_LIFEBOOK,
 		.name		= "LBPS/2",
 		.alias		= "lifebook",
-<<<<<<< HEAD
-=======
 		.detect		= lifebook_detect,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.init		= lifebook_init,
 	},
 #endif
@@ -1424,10 +826,7 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.name		= "TPPS/2",
 		.alias		= "trackpoint",
 		.detect		= trackpoint_detect,
-<<<<<<< HEAD
-=======
 		.try_passthru	= true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 #endif
 #ifdef CONFIG_MOUSE_PS2_TOUCHKIT
@@ -1452,9 +851,6 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.name		= "ETPS/2",
 		.alias		= "elantech",
 		.detect		= elantech_detect,
-<<<<<<< HEAD
-		.init		= elantech_init,
-=======
 		.init		= elantech_init_ps2,
 	},
 #endif
@@ -1466,7 +862,6 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.detect		= elantech_detect,
 		.init		= elantech_init_smbus,
 		.smbus_companion = true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 #endif
 #ifdef CONFIG_MOUSE_PS2_SENTELIC
@@ -1484,8 +879,6 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.alias		= "cortps",
 		.detect		= cortron_detect,
 	},
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MOUSE_PS2_FOCALTECH
 	{
 		.type		= PSMOUSE_FOCALTECH,
@@ -1513,7 +906,6 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 		.init		= byd_init,
 	},
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type		= PSMOUSE_AUTO,
 		.name		= "auto",
@@ -1522,11 +914,7 @@ static const struct psmouse_protocol psmouse_protocols[] = {
 	},
 };
 
-<<<<<<< HEAD
-static const struct psmouse_protocol *psmouse_protocol_by_type(enum psmouse_type type)
-=======
 static const struct psmouse_protocol *__psmouse_protocol_by_type(enum psmouse_type type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -1534,8 +922,6 @@ static const struct psmouse_protocol *__psmouse_protocol_by_type(enum psmouse_ty
 		if (psmouse_protocols[i].type == type)
 			return &psmouse_protocols[i];
 
-<<<<<<< HEAD
-=======
 	return NULL;
 }
 
@@ -1547,7 +933,6 @@ static const struct psmouse_protocol *psmouse_protocol_by_type(enum psmouse_type
 	if (proto)
 		return proto;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON(1);
 	return &psmouse_protocols[0];
 }
@@ -1568,8 +953,6 @@ static const struct psmouse_protocol *psmouse_protocol_by_name(const char *name,
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Apply default settings to the psmouse structure. Most of them will
  * be overridden by individual protocol initialization routines.
@@ -1856,41 +1239,10 @@ static int psmouse_extensions(struct psmouse *psmouse,
 
 	return PSMOUSE_PS2;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * psmouse_probe() probes for a PS/2 mouse.
  */
-<<<<<<< HEAD
-
-static int psmouse_probe(struct psmouse *psmouse)
-{
-	struct ps2dev *ps2dev = &psmouse->ps2dev;
-	unsigned char param[2];
-
-/*
- * First, we check if it's a mouse. It should send 0x00 or 0x03
- * in case of an IntelliMouse in 4-byte mode or 0x04 for IM Explorer.
- * Sunrex K8561 IR Keyboard/Mouse reports 0xff on second and subsequent
- * ID queries, probably due to a firmware bug.
- */
-
-	param[0] = 0xa5;
-	if (ps2_command(ps2dev, param, PSMOUSE_CMD_GETID))
-		return -1;
-
-	if (param[0] != 0x00 && param[0] != 0x03 &&
-	    param[0] != 0x04 && param[0] != 0xff)
-		return -1;
-
-/*
- * Then we reset and disable the mouse so that it doesn't generate events.
- */
-
-	if (ps2_command(ps2dev, NULL, PSMOUSE_CMD_RESET_DIS))
-		psmouse_warn(psmouse, "Failed to reset mouse on %s\n",
-			     ps2dev->serio->phys);
-=======
 static int psmouse_probe(struct psmouse *psmouse)
 {
 	struct ps2dev *ps2dev = &psmouse->ps2dev;
@@ -1920,7 +1272,6 @@ static int psmouse_probe(struct psmouse *psmouse)
 	if (error)
 		psmouse_warn(psmouse, "Failed to reset mouse on %s: %d\n",
 			     ps2dev->serio->phys, error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1928,19 +1279,6 @@ static int psmouse_probe(struct psmouse *psmouse)
 /*
  * psmouse_initialize() initializes the mouse to a sane state.
  */
-<<<<<<< HEAD
-
-static void psmouse_initialize(struct psmouse *psmouse)
-{
-/*
- * We set the mouse report rate, resolution and scaling.
- */
-
-	if (psmouse_max_proto != PSMOUSE_PS2) {
-		psmouse->set_rate(psmouse, psmouse->rate);
-		psmouse->set_resolution(psmouse, psmouse->resolution);
-		ps2_command(&psmouse->ps2dev, NULL, PSMOUSE_CMD_SETSCALE11);
-=======
 static void psmouse_initialize(struct psmouse *psmouse)
 {
 	/*
@@ -1950,17 +1288,12 @@ static void psmouse_initialize(struct psmouse *psmouse)
 		psmouse->set_rate(psmouse, psmouse->rate);
 		psmouse->set_resolution(psmouse, psmouse->resolution);
 		psmouse->set_scale(psmouse, PSMOUSE_SCALE11);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /*
  * psmouse_activate() enables the mouse so that we get motion reports from it.
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int psmouse_activate(struct psmouse *psmouse)
 {
 	if (ps2_command(&psmouse->ps2dev, NULL, PSMOUSE_CMD_ENABLE)) {
@@ -1974,18 +1307,6 @@ int psmouse_activate(struct psmouse *psmouse)
 }
 
 /*
-<<<<<<< HEAD
- * psmouse_deactivate() puts the mouse into poll mode so that we don't get motion
- * reports from it unless we explicitly request it.
- */
-
-int psmouse_deactivate(struct psmouse *psmouse)
-{
-	if (ps2_command(&psmouse->ps2dev, NULL, PSMOUSE_CMD_DISABLE)) {
-		psmouse_warn(psmouse, "Failed to deactivate mouse on %s\n",
-			     psmouse->ps2dev.serio->phys);
-		return -1;
-=======
  * psmouse_deactivate() puts the mouse into poll mode so that we don't get
  * motion reports from it unless we explicitly request it.
  */
@@ -1998,24 +1319,15 @@ int psmouse_deactivate(struct psmouse *psmouse)
 		psmouse_warn(psmouse, "Failed to deactivate mouse on %s: %d\n",
 			     psmouse->ps2dev.serio->phys, error);
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	psmouse_set_state(psmouse, PSMOUSE_CMD_MODE);
 	return 0;
 }
 
-<<<<<<< HEAD
-
 /*
  * psmouse_resync() attempts to re-validate current protocol.
  */
-
-=======
-/*
- * psmouse_resync() attempts to re-validate current protocol.
- */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void psmouse_resync(struct work_struct *work)
 {
 	struct psmouse *parent = NULL, *psmouse =
@@ -2031,22 +1343,6 @@ static void psmouse_resync(struct work_struct *work)
 		goto out;
 
 	if (serio->parent && serio->id.type == SERIO_PS_PSTHRU) {
-<<<<<<< HEAD
-		parent = serio_get_drvdata(serio->parent);
-		psmouse_deactivate(parent);
-	}
-
-/*
- * Some mice don't ACK commands sent while they are in the middle of
- * transmitting motion packet. To avoid delay we use ps2_sendbyte()
- * instead of ps2_command() which would wait for 200ms for an ACK
- * that may never come.
- * As an additional quirk ALPS touchpads may not only forget to ACK
- * disable command but will stop reporting taps, so if we see that
- * mouse at least once ACKs disable we will do full reconnect if ACK
- * is missing.
- */
-=======
 		parent = psmouse_from_serio(serio->parent);
 		psmouse_deactivate(parent);
 	}
@@ -2061,7 +1357,6 @@ static void psmouse_resync(struct work_struct *work)
 	 * mouse at least once ACKs disable we will do full reconnect if ACK
 	 * is missing.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	psmouse->num_resyncs++;
 
 	if (ps2_sendbyte(&psmouse->ps2dev, PSMOUSE_CMD_DISABLE, 20)) {
@@ -2070,15 +1365,6 @@ static void psmouse_resync(struct work_struct *work)
 	} else
 		psmouse->acks_disable_command = true;
 
-<<<<<<< HEAD
-/*
- * Poll the mouse. If it was reset the packet will be shorter than
- * psmouse->pktsize and ps2_command will fail. We do not expect and
- * do not handle scenario when mouse "upgrades" its protocol while
- * disconnected since it would require additional delay. If we ever
- * see a mouse that does it we'll adjust the code.
- */
-=======
 	/*
 	 * Poll the mouse. If it was reset the packet will be shorter than
 	 * psmouse->pktsize and ps2_command will fail. We do not expect and
@@ -2086,7 +1372,6 @@ static void psmouse_resync(struct work_struct *work)
 	 * disconnected since it would require additional delay. If we ever
 	 * see a mouse that does it we'll adjust the code.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!failed) {
 		if (psmouse->poll(psmouse))
 			failed = true;
@@ -2103,20 +1388,12 @@ static void psmouse_resync(struct work_struct *work)
 			psmouse_set_state(psmouse, PSMOUSE_RESYNCING);
 		}
 	}
-<<<<<<< HEAD
-/*
- * Now try to enable mouse. We try to do that even if poll failed and also
- * repeat our attempts 5 times, otherwise we may be left out with disabled
- * mouse.
- */
-=======
 
 	/*
 	 * Now try to enable mouse. We try to do that even if poll failed
 	 * and also repeat our attempts 5 times, otherwise we may be left
 	 * out with disabled mouse.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 5; i++) {
 		if (!ps2_command(&psmouse->ps2dev, NULL, PSMOUSE_CMD_ENABLE)) {
 			enabled = true;
@@ -2148,26 +1425,15 @@ static void psmouse_resync(struct work_struct *work)
 /*
  * psmouse_cleanup() resets the mouse into power-on state.
  */
-<<<<<<< HEAD
-
-static void psmouse_cleanup(struct serio *serio)
-{
-	struct psmouse *psmouse = serio_get_drvdata(serio);
-=======
 static void psmouse_cleanup(struct serio *serio)
 {
 	struct psmouse *psmouse = psmouse_from_serio(serio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psmouse *parent = NULL;
 
 	mutex_lock(&psmouse_mutex);
 
 	if (serio->parent && serio->id.type == SERIO_PS_PSTHRU) {
-<<<<<<< HEAD
-		parent = serio_get_drvdata(serio->parent);
-=======
 		parent = psmouse_from_serio(serio->parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psmouse_deactivate(parent);
 	}
 
@@ -2183,17 +1449,6 @@ static void psmouse_cleanup(struct serio *serio)
 	if (psmouse->cleanup)
 		psmouse->cleanup(psmouse);
 
-<<<<<<< HEAD
-/*
- * Reset the mouse to defaults (bare PS/2 protocol).
- */
-	ps2_command(&psmouse->ps2dev, NULL, PSMOUSE_CMD_RESET_DIS);
-
-/*
- * Some boxes, such as HP nx7400, get terribly confused if mouse
- * is not fully enabled before suspending/shutting down.
- */
-=======
 	/*
 	 * Reset the mouse to defaults (bare PS/2 protocol).
 	 */
@@ -2203,7 +1458,6 @@ static void psmouse_cleanup(struct serio *serio)
 	 * Some boxes, such as HP nx7400, get terribly confused if mouse
 	 * is not fully enabled before suspending/shutting down.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ps2_command(&psmouse->ps2dev, NULL, PSMOUSE_CMD_ENABLE);
 
 	if (parent) {
@@ -2219,21 +1473,10 @@ static void psmouse_cleanup(struct serio *serio)
 /*
  * psmouse_disconnect() closes and frees.
  */
-<<<<<<< HEAD
-
-static void psmouse_disconnect(struct serio *serio)
-{
-	struct psmouse *psmouse, *parent = NULL;
-
-	psmouse = serio_get_drvdata(serio);
-
-	sysfs_remove_group(&serio->dev.kobj, &psmouse_attribute_group);
-=======
 static void psmouse_disconnect(struct serio *serio)
 {
 	struct psmouse *psmouse = psmouse_from_serio(serio);
 	struct psmouse *parent = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&psmouse_mutex);
 
@@ -2245,11 +1488,7 @@ static void psmouse_disconnect(struct serio *serio)
 	mutex_lock(&psmouse_mutex);
 
 	if (serio->parent && serio->id.type == SERIO_PS_PSTHRU) {
-<<<<<<< HEAD
-		parent = serio_get_drvdata(serio->parent);
-=======
 		parent = psmouse_from_serio(serio->parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psmouse_deactivate(parent);
 	}
 
@@ -2263,14 +1502,10 @@ static void psmouse_disconnect(struct serio *serio)
 
 	serio_close(serio);
 	serio_set_drvdata(serio, NULL);
-<<<<<<< HEAD
-	input_unregister_device(psmouse->dev);
-=======
 
 	if (psmouse->dev)
 		input_unregister_device(psmouse->dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(psmouse);
 
 	if (parent)
@@ -2284,10 +1519,7 @@ static int psmouse_switch_protocol(struct psmouse *psmouse,
 {
 	const struct psmouse_protocol *selected_proto;
 	struct input_dev *input_dev = psmouse->dev;
-<<<<<<< HEAD
-=======
 	enum psmouse_type type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_dev->dev.parent = &psmouse->ps2dev.serio->dev;
 
@@ -2300,17 +1532,6 @@ static int psmouse_switch_protocol(struct psmouse *psmouse,
 		if (proto->init && proto->init(psmouse) < 0)
 			return -1;
 
-<<<<<<< HEAD
-		psmouse->type = proto->type;
-		selected_proto = proto;
-	} else {
-		psmouse->type = psmouse_extensions(psmouse,
-						   psmouse_max_proto, true);
-		selected_proto = psmouse_protocol_by_type(psmouse->type);
-	}
-
-	psmouse->ignore_parity = selected_proto->ignore_parity;
-=======
 		selected_proto = proto;
 	} else {
 		type = psmouse_extensions(psmouse, psmouse_max_proto, true);
@@ -2318,7 +1539,6 @@ static int psmouse_switch_protocol(struct psmouse *psmouse,
 	}
 
 	psmouse->protocol = selected_proto;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If mouse's packet size is 3 there is no point in polling the
@@ -2344,11 +1564,7 @@ static int psmouse_switch_protocol(struct psmouse *psmouse,
 	input_dev->phys = psmouse->phys;
 	input_dev->id.bustype = BUS_I8042;
 	input_dev->id.vendor = 0x0002;
-<<<<<<< HEAD
-	input_dev->id.product = psmouse->type;
-=======
 	input_dev->id.product = psmouse->protocol->type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_dev->id.version = psmouse->model;
 
 	return 0;
@@ -2371,11 +1587,7 @@ static int psmouse_connect(struct serio *serio, struct serio_driver *drv)
 	 * connected to this port can be successfully identified
 	 */
 	if (serio->parent && serio->id.type == SERIO_PS_PSTHRU) {
-<<<<<<< HEAD
-		parent = serio_get_drvdata(serio->parent);
-=======
 		parent = psmouse_from_serio(serio->parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psmouse_deactivate(parent);
 	}
 
@@ -2384,34 +1596,22 @@ static int psmouse_connect(struct serio *serio, struct serio_driver *drv)
 	if (!psmouse || !input_dev)
 		goto err_free;
 
-<<<<<<< HEAD
-	ps2_init(&psmouse->ps2dev, serio);
-=======
 	ps2_init(&psmouse->ps2dev, serio,
 		 psmouse_pre_receive_byte, psmouse_receive_byte);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_DELAYED_WORK(&psmouse->resync_work, psmouse_resync);
 	psmouse->dev = input_dev;
 	snprintf(psmouse->phys, sizeof(psmouse->phys), "%s/input0", serio->phys);
 
 	psmouse_set_state(psmouse, PSMOUSE_INITIALIZING);
 
-<<<<<<< HEAD
-	serio_set_drvdata(serio, psmouse);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = serio_open(serio, drv);
 	if (error)
 		goto err_clear_drvdata;
 
-<<<<<<< HEAD
-=======
 	/* give PT device some time to settle down before probing */
 	if (serio->id.type == SERIO_PS_PSTHRU)
 		usleep_range(10000, 15000);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (psmouse_probe(psmouse) < 0) {
 		error = -ENODEV;
 		goto err_close_serio;
@@ -2425,14 +1625,6 @@ static int psmouse_connect(struct serio *serio, struct serio_driver *drv)
 
 	psmouse_switch_protocol(psmouse, NULL);
 
-<<<<<<< HEAD
-	psmouse_set_state(psmouse, PSMOUSE_CMD_MODE);
-	psmouse_initialize(psmouse);
-
-	error = input_register_device(psmouse->dev);
-	if (error)
-		goto err_protocol_disconnect;
-=======
 	if (!psmouse->protocol->smbus_companion) {
 		psmouse_set_state(psmouse, PSMOUSE_CMD_MODE);
 		psmouse_initialize(psmouse);
@@ -2445,25 +1637,16 @@ static int psmouse_connect(struct serio *serio, struct serio_driver *drv)
 		input_free_device(input_dev);
 		psmouse->dev = input_dev = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (parent && parent->pt_activate)
 		parent->pt_activate(parent);
 
-<<<<<<< HEAD
-	error = sysfs_create_group(&serio->dev.kobj, &psmouse_attribute_group);
-	if (error)
-		goto err_pt_deactivate;
-
-	psmouse_activate(psmouse);
-=======
 	/*
 	 * PS/2 devices having SMBus companions should stay disabled
 	 * on PS/2 side, in order to have SMBus part operable.
 	 */
 	if (!psmouse->protocol->smbus_companion)
 		psmouse_activate(psmouse);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  out:
 	/* If this is a pass-through port the parent needs to be re-activated */
@@ -2473,14 +1656,6 @@ static int psmouse_connect(struct serio *serio, struct serio_driver *drv)
 	mutex_unlock(&psmouse_mutex);
 	return retval;
 
-<<<<<<< HEAD
- err_pt_deactivate:
-	if (parent && parent->pt_deactivate)
-		parent->pt_deactivate(parent);
-	input_unregister_device(psmouse->dev);
-	input_dev = NULL; /* so we don't try to free it below */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_protocol_disconnect:
 	if (psmouse->disconnect)
 		psmouse->disconnect(psmouse);
@@ -2497,27 +1672,6 @@ static int psmouse_connect(struct serio *serio, struct serio_driver *drv)
 	goto out;
 }
 
-<<<<<<< HEAD
-
-static int psmouse_reconnect(struct serio *serio)
-{
-	struct psmouse *psmouse = serio_get_drvdata(serio);
-	struct psmouse *parent = NULL;
-	struct serio_driver *drv = serio->drv;
-	unsigned char type;
-	int rc = -1;
-
-	if (!drv || !psmouse) {
-		psmouse_dbg(psmouse,
-			    "reconnect request, but serio is disconnected, ignoring...\n");
-		return -1;
-	}
-
-	mutex_lock(&psmouse_mutex);
-
-	if (serio->parent && serio->id.type == SERIO_PS_PSTHRU) {
-		parent = serio_get_drvdata(serio->parent);
-=======
 static int __psmouse_reconnect(struct serio *serio, bool fast_reconnect)
 {
 	struct psmouse *psmouse = psmouse_from_serio(serio);
@@ -2540,19 +1694,13 @@ static int __psmouse_reconnect(struct serio *serio, bool fast_reconnect)
 
 	if (serio->parent && serio->id.type == SERIO_PS_PSTHRU) {
 		parent = psmouse_from_serio(serio->parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psmouse_deactivate(parent);
 	}
 
 	psmouse_set_state(psmouse, PSMOUSE_INITIALIZING);
 
-<<<<<<< HEAD
-	if (psmouse->reconnect) {
-		if (psmouse->reconnect(psmouse))
-=======
 	if (reconnect_handler) {
 		if (reconnect_handler(psmouse))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 	} else {
 		psmouse_reset(psmouse);
@@ -2561,11 +1709,7 @@ static int __psmouse_reconnect(struct serio *serio, bool fast_reconnect)
 			goto out;
 
 		type = psmouse_extensions(psmouse, psmouse_max_proto, false);
-<<<<<<< HEAD
-		if (psmouse->type != type)
-=======
 		if (psmouse->protocol->type != type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 	}
 
@@ -2573,23 +1717,14 @@ static int __psmouse_reconnect(struct serio *serio, bool fast_reconnect)
 	 * OK, the device type (and capabilities) match the old one,
 	 * we can continue using it, complete initialization
 	 */
-<<<<<<< HEAD
-	psmouse_set_state(psmouse, PSMOUSE_CMD_MODE);
-
-	psmouse_initialize(psmouse);
-=======
 	if (!psmouse->protocol->smbus_companion) {
 		psmouse_set_state(psmouse, PSMOUSE_CMD_MODE);
 		psmouse_initialize(psmouse);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (parent && parent->pt_activate)
 		parent->pt_activate(parent);
 
-<<<<<<< HEAD
-	psmouse_activate(psmouse);
-=======
 	/*
 	 * PS/2 devices having SMBus companions should stay disabled
 	 * on PS/2 side, in order to have SMBus part operable.
@@ -2597,7 +1732,6 @@ static int __psmouse_reconnect(struct serio *serio, bool fast_reconnect)
 	if (!psmouse->protocol->smbus_companion)
 		psmouse_activate(psmouse);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = 0;
 
 out:
@@ -2605,16 +1739,11 @@ out:
 	if (parent)
 		psmouse_activate(parent);
 
-<<<<<<< HEAD
-=======
 out_unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&psmouse_mutex);
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 static int psmouse_reconnect(struct serio *serio)
 {
 	return __psmouse_reconnect(serio, false);
@@ -2625,7 +1754,6 @@ static int psmouse_fast_reconnect(struct serio *serio)
 	return __psmouse_reconnect(serio, true);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct serio_device_id psmouse_serio_ids[] = {
 	{
 		.type	= SERIO_8042,
@@ -2646,15 +1774,6 @@ MODULE_DEVICE_TABLE(serio, psmouse_serio_ids);
 
 static struct serio_driver psmouse_drv = {
 	.driver		= {
-<<<<<<< HEAD
-		.name	= "psmouse",
-	},
-	.description	= DRIVER_DESC,
-	.id_table	= psmouse_serio_ids,
-	.interrupt	= psmouse_interrupt,
-	.connect	= psmouse_connect,
-	.reconnect	= psmouse_reconnect,
-=======
 		.name		= "psmouse",
 		.dev_groups	= psmouse_dev_groups,
 	},
@@ -2664,7 +1783,6 @@ static struct serio_driver psmouse_drv = {
 	.connect	= psmouse_connect,
 	.reconnect	= psmouse_reconnect,
 	.fast_reconnect	= psmouse_fast_reconnect,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.disconnect	= psmouse_disconnect,
 	.cleanup	= psmouse_cleanup,
 };
@@ -2674,17 +1792,11 @@ ssize_t psmouse_attr_show_helper(struct device *dev, struct device_attribute *de
 {
 	struct serio *serio = to_serio_port(dev);
 	struct psmouse_attribute *attr = to_psmouse_attr(devattr);
-<<<<<<< HEAD
-	struct psmouse *psmouse;
-
-	psmouse = serio_get_drvdata(serio);
-=======
 	struct psmouse *psmouse = psmouse_from_serio(serio);
 
 	if (psmouse->protocol->smbus_companion &&
 			devattr != &psmouse_attr_protocol.dattr)
 		return -ENOENT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return attr->show(psmouse, attr->data, buf);
 }
@@ -2701,9 +1813,6 @@ ssize_t psmouse_attr_set_helper(struct device *dev, struct device_attribute *dev
 	if (retval)
 		goto out;
 
-<<<<<<< HEAD
-	psmouse = serio_get_drvdata(serio);
-=======
 	psmouse = psmouse_from_serio(serio);
 
 	if (psmouse->protocol->smbus_companion &&
@@ -2711,7 +1820,6 @@ ssize_t psmouse_attr_set_helper(struct device *dev, struct device_attribute *dev
 		retval = -ENOENT;
 		goto out_unlock;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (attr->protect) {
 		if (psmouse->state == PSMOUSE_IGNORE) {
@@ -2720,30 +1828,18 @@ ssize_t psmouse_attr_set_helper(struct device *dev, struct device_attribute *dev
 		}
 
 		if (serio->parent && serio->id.type == SERIO_PS_PSTHRU) {
-<<<<<<< HEAD
-			parent = serio_get_drvdata(serio->parent);
-			psmouse_deactivate(parent);
-		}
-
-		psmouse_deactivate(psmouse);
-=======
 			parent = psmouse_from_serio(serio->parent);
 			psmouse_deactivate(parent);
 		}
 
 		if (!psmouse->protocol->smbus_companion)
 			psmouse_deactivate(psmouse);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	retval = attr->set(psmouse, attr->data, buf, count);
 
 	if (attr->protect) {
-<<<<<<< HEAD
-		if (retval != -ENODEV)
-=======
 		if (retval != -ENODEV && !psmouse->protocol->smbus_companion)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			psmouse_activate(psmouse);
 
 		if (parent)
@@ -2780,11 +1876,7 @@ static ssize_t psmouse_set_int_attr(struct psmouse *psmouse, void *offset, const
 
 static ssize_t psmouse_attr_show_protocol(struct psmouse *psmouse, void *data, char *buf)
 {
-<<<<<<< HEAD
-	return sprintf(buf, "%s\n", psmouse_protocol_by_type(psmouse->type)->name);
-=======
 	return sprintf(buf, "%s\n", psmouse->protocol->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t psmouse_attr_set_protocol(struct psmouse *psmouse, void *data, const char *buf, size_t count)
@@ -2800,11 +1892,7 @@ static ssize_t psmouse_attr_set_protocol(struct psmouse *psmouse, void *data, co
 	if (!proto)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (psmouse->type == proto->type)
-=======
 	if (psmouse->protocol == proto)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return count;
 
 	new_dev = input_allocate_device();
@@ -2828,32 +1916,20 @@ static ssize_t psmouse_attr_set_protocol(struct psmouse *psmouse, void *data, co
 			return -ENODEV;
 		}
 
-<<<<<<< HEAD
-		if (psmouse->type == proto->type) {
-=======
 		if (psmouse->protocol == proto) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			input_free_device(new_dev);
 			return count; /* switched by other thread */
 		}
 	}
 
 	if (serio->parent && serio->id.type == SERIO_PS_PSTHRU) {
-<<<<<<< HEAD
-		parent = serio_get_drvdata(serio->parent);
-=======
 		parent = psmouse_from_serio(serio->parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (parent->pt_deactivate)
 			parent->pt_deactivate(parent);
 	}
 
 	old_dev = psmouse->dev;
-<<<<<<< HEAD
-	old_proto = psmouse_protocol_by_type(psmouse->type);
-=======
 	old_proto = psmouse->protocol;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (psmouse->disconnect)
 		psmouse->disconnect(psmouse);
@@ -2872,25 +1948,6 @@ static ssize_t psmouse_attr_set_protocol(struct psmouse *psmouse, void *data, co
 	psmouse_initialize(psmouse);
 	psmouse_set_state(psmouse, PSMOUSE_CMD_MODE);
 
-<<<<<<< HEAD
-	error = input_register_device(psmouse->dev);
-	if (error) {
-		if (psmouse->disconnect)
-			psmouse->disconnect(psmouse);
-
-		psmouse_set_state(psmouse, PSMOUSE_IGNORE);
-		input_free_device(new_dev);
-		psmouse->dev = old_dev;
-		psmouse_set_state(psmouse, PSMOUSE_INITIALIZING);
-		psmouse_switch_protocol(psmouse, old_proto);
-		psmouse_initialize(psmouse);
-		psmouse_set_state(psmouse, PSMOUSE_CMD_MODE);
-
-		return error;
-	}
-
-	input_unregister_device(old_dev);
-=======
 	if (psmouse->protocol->smbus_companion) {
 		input_free_device(psmouse->dev);
 		psmouse->dev = NULL;
@@ -2914,7 +1971,6 @@ static ssize_t psmouse_attr_set_protocol(struct psmouse *psmouse, void *data, co
 
 	if (old_dev)
 		input_unregister_device(old_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (parent && parent->pt_activate)
 		parent->pt_activate(parent);
@@ -2970,11 +2026,7 @@ static int psmouse_get_maxproto(char *buffer, const struct kernel_param *kp)
 {
 	int type = *((unsigned int *)kp->arg);
 
-<<<<<<< HEAD
-	return sprintf(buffer, "%s", psmouse_protocol_by_type(type)->name);
-=======
 	return sprintf(buffer, "%s\n", psmouse_protocol_by_type(type)->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init psmouse_init(void)
@@ -2985,12 +2037,6 @@ static int __init psmouse_init(void)
 	synaptics_module_init();
 	hgpk_module_init();
 
-<<<<<<< HEAD
-	kpsmoused_wq = create_singlethread_workqueue("kpsmoused");
-	if (!kpsmoused_wq) {
-		pr_err("failed to create kpsmoused workqueue\n");
-		return -ENOMEM;
-=======
 	err = psmouse_smbus_module_init();
 	if (err)
 		return err;
@@ -3000,15 +2046,10 @@ static int __init psmouse_init(void)
 		pr_err("failed to create kpsmoused workqueue\n");
 		err = -ENOMEM;
 		goto err_smbus_exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = serio_register_driver(&psmouse_drv);
 	if (err)
-<<<<<<< HEAD
-		destroy_workqueue(kpsmoused_wq);
-
-=======
 		goto err_destroy_wq;
 
 	return 0;
@@ -3017,7 +2058,6 @@ err_destroy_wq:
 	destroy_workqueue(kpsmoused_wq);
 err_smbus_exit:
 	psmouse_smbus_module_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -3025,10 +2065,7 @@ static void __exit psmouse_exit(void)
 {
 	serio_unregister_driver(&psmouse_drv);
 	destroy_workqueue(kpsmoused_wq);
-<<<<<<< HEAD
-=======
 	psmouse_smbus_module_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(psmouse_init);

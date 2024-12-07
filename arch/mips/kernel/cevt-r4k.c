@@ -8,35 +8,16 @@
  */
 #include <linux/clockchips.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-=======
 #include <linux/cpufreq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/percpu.h>
 #include <linux/smp.h>
 #include <linux/irq.h>
 
-<<<<<<< HEAD
-#include <asm/smtc_ipi.h>
-#include <asm/time.h>
-#include <asm/cevt-r4k.h>
-
-/*
- * The SMTC Kernel for the 34K, 1004K, et. al. replaces several
- * of these routines with SMTC-specific variants.
- */
-
-#ifndef CONFIG_MIPS_MT_SMTC
-
-static int mips_next_event(unsigned long delta,
-                           struct clock_event_device *evt)
-=======
 #include <asm/time.h>
 #include <asm/cevt-r4k.h>
 
 static int mips_next_event(unsigned long delta,
 			   struct clock_event_device *evt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cnt;
 	int res;
@@ -48,14 +29,6 @@ static int mips_next_event(unsigned long delta,
 	return res;
 }
 
-<<<<<<< HEAD
-#endif /* CONFIG_MIPS_MT_SMTC */
-
-void mips_set_clock_mode(enum clock_event_mode mode,
-				struct clock_event_device *evt)
-{
-	/* Nothing to do ...  */
-=======
 /**
  * calculate_min_delta() - Calculate a good minimum delta for mips_next_event().
  *
@@ -131,19 +104,11 @@ static unsigned int calculate_min_delta(void)
 	pr_debug("%s: median 75th percentile=%#x, min_delta=%#x\n",
 		 __func__, buf2[ARRAY_SIZE(buf2) - 1], min_delta);
 	return min_delta;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 DEFINE_PER_CPU(struct clock_event_device, mips_clockevent_device);
 int cp0_timer_irq_installed;
 
-<<<<<<< HEAD
-#ifndef CONFIG_MIPS_MT_SMTC
-
-irqreturn_t c0_compare_interrupt(int irq, void *dev_id)
-{
-	const int r2 = cpu_has_mips_r2;
-=======
 /*
  * Possibly handle a performance counter interrupt.
  * Return true if the timer interrupt should not be checked
@@ -165,7 +130,6 @@ static inline int handle_perf_irq(int r2)
 irqreturn_t c0_compare_interrupt(int irq, void *dev_id)
 {
 	const int r2 = cpu_has_mips_r2_r6;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct clock_event_device *cd;
 	int cpu = smp_processor_id();
 
@@ -176,16 +140,6 @@ irqreturn_t c0_compare_interrupt(int irq, void *dev_id)
 	 * the performance counter interrupt handler anyway.
 	 */
 	if (handle_perf_irq(r2))
-<<<<<<< HEAD
-		goto out;
-
-	/*
-	 * The same applies to performance counter interrupts.  But with the
-	 * above we now know that the reason we got here must be a timer
-	 * interrupt.  Being the paranoiacs we are we check anyway.
-	 */
-	if (!r2 || (read_c0_cause() & (1 << 30))) {
-=======
 		return IRQ_HANDLED;
 
 	/*
@@ -194,24 +148,10 @@ irqreturn_t c0_compare_interrupt(int irq, void *dev_id)
 	 * interrupt.  Being the paranoiacs we are we check anyway.
 	 */
 	if (!r2 || (read_c0_cause() & CAUSEF_TI)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Clear Count/Compare Interrupt */
 		write_c0_compare(read_c0_compare());
 		cd = &per_cpu(mips_clockevent_device, cpu);
 		cd->event_handler(cd);
-<<<<<<< HEAD
-	}
-
-out:
-	return IRQ_HANDLED;
-}
-
-#endif /* Not CONFIG_MIPS_MT_SMTC */
-
-struct irqaction c0_compare_irqaction = {
-	.handler = c0_compare_interrupt,
-	.flags = IRQF_PERCPU | IRQF_TIMER,
-=======
 
 		return IRQ_HANDLED;
 	}
@@ -226,7 +166,6 @@ struct irqaction c0_compare_irqaction = {
 	 * such as perf counter and FDC interrupts.
 	 */
 	.flags = IRQF_PERCPU | IRQF_TIMER | IRQF_SHARED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "timer",
 };
 
@@ -240,10 +179,7 @@ void mips_event_handler(struct clock_event_device *dev)
  */
 static int c0_compare_int_pending(void)
 {
-<<<<<<< HEAD
-=======
 	/* When cpu_has_mips_r2, this checks Cause.TI instead of Cause.IP7 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (read_c0_cause() >> cp0_compare_irq_shift) & (1ul << CAUSEB_IP);
 }
 
@@ -260,19 +196,11 @@ int c0_compare_int_usable(void)
 	unsigned int cnt;
 
 	/*
-<<<<<<< HEAD
-	 * IP7 already pending?  Try to clear it by acking the timer.
-	 */
-	if (c0_compare_int_pending()) {
-		cnt = read_c0_count();
-		write_c0_compare(cnt);
-=======
 	 * IP7 already pending?	 Try to clear it by acking the timer.
 	 */
 	if (c0_compare_int_pending()) {
 		cnt = read_c0_count();
 		write_c0_compare(cnt - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		back_to_back_c0_hazard();
 		while (read_c0_count() < (cnt  + COMPARE_INT_SEEN_TICKS))
 			if (!c0_compare_int_pending())
@@ -300,11 +228,7 @@ int c0_compare_int_usable(void)
 	if (!c0_compare_int_pending())
 		return 0;
 	cnt = read_c0_count();
-<<<<<<< HEAD
-	write_c0_compare(cnt);
-=======
 	write_c0_compare(cnt - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	back_to_back_c0_hazard();
 	while (read_c0_count() < (cnt + COMPARE_INT_SEEN_TICKS))
 		if (!c0_compare_int_pending())
@@ -318,15 +242,6 @@ int c0_compare_int_usable(void)
 	return 1;
 }
 
-<<<<<<< HEAD
-#ifndef CONFIG_MIPS_MT_SMTC
-
-int __cpuinit r4k_clockevent_init(void)
-{
-	unsigned int cpu = smp_processor_id();
-	struct clock_event_device *cd;
-	unsigned int irq;
-=======
 unsigned int __weak get_c0_compare_int(void)
 {
 	return MIPS_CPU_IRQ_BASE + cp0_compare_irq;
@@ -381,7 +296,6 @@ int r4k_clockevent_init(void)
 	unsigned int cpu = smp_processor_id();
 	struct clock_event_device *cd;
 	unsigned int irq, min_delta;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!cpu_has_counter || !mips_hpt_frequency)
 		return -ENXIO;
@@ -392,69 +306,36 @@ int r4k_clockevent_init(void)
 	/*
 	 * With vectored interrupts things are getting platform specific.
 	 * get_c0_compare_int is a hook to allow a platform to return the
-<<<<<<< HEAD
-	 * interrupt number of it's liking.
-	 */
-	irq = MIPS_CPU_IRQ_BASE + cp0_compare_irq;
-	if (get_c0_compare_int)
-		irq = get_c0_compare_int();
-=======
 	 * interrupt number of its liking.
 	 */
 	irq = get_c0_compare_int();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cd = &per_cpu(mips_clockevent_device, cpu);
 
 	cd->name		= "MIPS";
-<<<<<<< HEAD
-	cd->features		= CLOCK_EVT_FEAT_ONESHOT;
-
-	clockevent_set_clock(cd, mips_hpt_frequency);
-
-	/* Calculate the min / max delta */
-	cd->max_delta_ns	= clockevent_delta2ns(0x7fffffff, cd);
-	cd->min_delta_ns	= clockevent_delta2ns(0x300, cd);
-=======
 	cd->features		= CLOCK_EVT_FEAT_ONESHOT |
 				  CLOCK_EVT_FEAT_C3STOP |
 				  CLOCK_EVT_FEAT_PERCPU;
 
 	min_delta		= calculate_min_delta();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cd->rating		= 300;
 	cd->irq			= irq;
 	cd->cpumask		= cpumask_of(cpu);
 	cd->set_next_event	= mips_next_event;
-<<<<<<< HEAD
-	cd->set_mode		= mips_set_clock_mode;
-	cd->event_handler	= mips_event_handler;
-
-	clockevents_register_device(cd);
-=======
 	cd->event_handler	= mips_event_handler;
 
 	clockevents_config_and_register(cd, mips_hpt_frequency, min_delta, 0x7fffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cp0_timer_irq_installed)
 		return 0;
 
 	cp0_timer_irq_installed = 1;
 
-<<<<<<< HEAD
-	setup_irq(irq, &c0_compare_irqaction);
-=======
 	if (request_irq(irq, c0_compare_interrupt, flags, "timer",
 			c0_compare_interrupt))
 		pr_err("Failed to request irq %d (timer)\n", irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#endif /* Not CONFIG_MIPS_MT_SMTC */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

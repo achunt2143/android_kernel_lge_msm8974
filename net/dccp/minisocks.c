@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  net/dccp/minisocks.c
  *
  *  An implementation of the DCCP protocol
  *  Arnaldo Carvalho de Melo <acme@conectiva.com.br>
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/dccp.h>
@@ -33,81 +22,34 @@
 #include "feat.h"
 
 struct inet_timewait_death_row dccp_death_row = {
-<<<<<<< HEAD
-	.sysctl_max_tw_buckets = NR_FILE * 2,
-	.period		= DCCP_TIMEWAIT_LEN / INET_TWDR_TWKILL_SLOTS,
-	.death_lock	= __SPIN_LOCK_UNLOCKED(dccp_death_row.death_lock),
-	.hashinfo	= &dccp_hashinfo,
-	.tw_timer	= TIMER_INITIALIZER(inet_twdr_hangman, 0,
-					    (unsigned long)&dccp_death_row),
-	.twkill_work	= __WORK_INITIALIZER(dccp_death_row.twkill_work,
-					     inet_twdr_twkill_work),
-/* Short-time timewait calendar */
-
-	.twcal_hand	= -1,
-	.twcal_timer	= TIMER_INITIALIZER(inet_twdr_twcal_tick, 0,
-					    (unsigned long)&dccp_death_row),
-=======
 	.tw_refcount = REFCOUNT_INIT(1),
 	.sysctl_max_tw_buckets = NR_FILE * 2,
 	.hashinfo	= &dccp_hashinfo,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 EXPORT_SYMBOL_GPL(dccp_death_row);
 
 void dccp_time_wait(struct sock *sk, int state, int timeo)
 {
-<<<<<<< HEAD
-	struct inet_timewait_sock *tw = NULL;
-
-	if (dccp_death_row.tw_count < dccp_death_row.sysctl_max_tw_buckets)
-		tw = inet_twsk_alloc(sk, state);
-=======
 	struct inet_timewait_sock *tw;
 
 	tw = inet_twsk_alloc(sk, &dccp_death_row, state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tw != NULL) {
 		const struct inet_connection_sock *icsk = inet_csk(sk);
 		const int rto = (icsk->icsk_rto << 2) - (icsk->icsk_rto >> 1);
 #if IS_ENABLED(CONFIG_IPV6)
 		if (tw->tw_family == PF_INET6) {
-<<<<<<< HEAD
-			const struct ipv6_pinfo *np = inet6_sk(sk);
-			struct inet6_timewait_sock *tw6;
-
-			tw->tw_ipv6_offset = inet6_tw_offset(sk->sk_prot);
-			tw6 = inet6_twsk((struct sock *)tw);
-			tw6->tw_v6_daddr = np->daddr;
-			tw6->tw_v6_rcv_saddr = np->rcv_saddr;
-			tw->tw_ipv6only = np->ipv6only;
-		}
-#endif
-		/* Linkage updates. */
-		__inet_twsk_hashdance(tw, sk, &dccp_hashinfo);
-=======
 			tw->tw_v6_daddr = sk->sk_v6_daddr;
 			tw->tw_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
 			tw->tw_ipv6only = sk->sk_ipv6only;
 		}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Get the TIME_WAIT timeout firing. */
 		if (timeo < rto)
 			timeo = rto;
 
-<<<<<<< HEAD
-		tw->tw_timeout = DCCP_TIMEWAIT_LEN;
-		if (state == DCCP_TIME_WAIT)
-			timeo = DCCP_TIMEWAIT_LEN;
-
-		inet_twsk_schedule(tw, &dccp_death_row, timeo,
-				   DCCP_TIMEWAIT_LEN);
-		inet_twsk_put(tw);
-=======
 		if (state == DCCP_TIME_WAIT)
 			timeo = DCCP_TIMEWAIT_LEN;
 
@@ -122,7 +64,6 @@ void dccp_time_wait(struct sock *sk, int state, int timeo)
 		 */
 		inet_twsk_hashdance(tw, sk, &dccp_hashinfo);
 		local_bh_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Sorry, if we're out of memory, just CLOSE this
 		 * socket up.  We've got bigger problems than
@@ -134,11 +75,7 @@ void dccp_time_wait(struct sock *sk, int state, int timeo)
 	dccp_done(sk);
 }
 
-<<<<<<< HEAD
-struct sock *dccp_create_openreq_child(struct sock *sk,
-=======
 struct sock *dccp_create_openreq_child(const struct sock *sk,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       const struct request_sock *req,
 				       const struct sk_buff *skb)
 {
@@ -158,11 +95,8 @@ struct sock *dccp_create_openreq_child(const struct sock *sk,
 		newdp->dccps_role	    = DCCP_ROLE_SERVER;
 		newdp->dccps_hc_rx_ackvec   = NULL;
 		newdp->dccps_service_list   = NULL;
-<<<<<<< HEAD
-=======
 		newdp->dccps_hc_rx_ccid     = NULL;
 		newdp->dccps_hc_tx_ccid     = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		newdp->dccps_service	    = dreq->dreq_service;
 		newdp->dccps_timestamp_echo = dreq->dreq_timestamp_echo;
 		newdp->dccps_timestamp_time = dreq->dreq_timestamp_time;
@@ -190,23 +124,12 @@ struct sock *dccp_create_openreq_child(const struct sock *sk,
 		 * Activate features: initialise CCIDs, sequence windows etc.
 		 */
 		if (dccp_feat_activate_values(newsk, &dreq->dreq_featneg)) {
-<<<<<<< HEAD
-			/* It is still raw copy of parent, so invalidate
-			 * destructor and make plain sk_free() */
-			newsk->sk_destruct = NULL;
-			sk_free(newsk);
-=======
 			sk_free_unlock_clone(newsk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NULL;
 		}
 		dccp_init_xmit_timers(newsk);
 
-<<<<<<< HEAD
-		DCCP_INC_STATS_BH(DCCP_MIB_PASSIVEOPENS);
-=======
 		__DCCP_INC_STATS(DCCP_MIB_PASSIVEOPENS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return newsk;
 }
@@ -218,13 +141,6 @@ EXPORT_SYMBOL_GPL(dccp_create_openreq_child);
  * as an request_sock.
  */
 struct sock *dccp_check_req(struct sock *sk, struct sk_buff *skb,
-<<<<<<< HEAD
-			    struct request_sock *req,
-			    struct request_sock **prev)
-{
-	struct sock *child = NULL;
-	struct dccp_request_sock *dreq = dccp_rsk(req);
-=======
 			    struct request_sock *req)
 {
 	struct sock *child = NULL;
@@ -237,7 +153,6 @@ struct sock *dccp_check_req(struct sock *sk, struct sk_buff *skb,
 	 * by the parent (listener) lock.
 	 */
 	spin_lock_bh(&dreq->dreq_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check for retransmitted REQUEST */
 	if (dccp_hdr(skb)->dccph_type == DCCP_PKT_REQUEST) {
@@ -250,18 +165,10 @@ struct sock *dccp_check_req(struct sock *sk, struct sk_buff *skb,
 			 * To protect against Request floods, increment retrans
 			 * counter (backoff, monitored by dccp_response_timer).
 			 */
-<<<<<<< HEAD
-			req->retrans++;
-			req->rsk_ops->rtx_syn_ack(sk, req, NULL);
-		}
-		/* Network Duplicate, discard packet */
-		return NULL;
-=======
 			inet_rtx_syn_ack(sk, req);
 		}
 		/* Network Duplicate, discard packet */
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	DCCP_SKB_CB(skb)->dccpd_reset_code = DCCP_RESET_CODE_PACKET_ERROR;
@@ -285,19 +192,6 @@ struct sock *dccp_check_req(struct sock *sk, struct sk_buff *skb,
 	if (dccp_parse_options(sk, dreq, skb))
 		 goto drop;
 
-<<<<<<< HEAD
-	child = inet_csk(sk)->icsk_af_ops->syn_recv_sock(sk, skb, req, NULL);
-	if (child == NULL)
-		goto listen_overflow;
-
-	inet_csk_reqsk_queue_unlink(sk, req, prev);
-	inet_csk_reqsk_queue_removed(sk, req);
-	inet_csk_reqsk_queue_add(sk, req, child);
-out:
-	return child;
-listen_overflow:
-	dccp_pr_debug("listen_overflow!\n");
-=======
 	child = inet_csk(sk)->icsk_af_ops->syn_recv_sock(sk, skb, req, NULL,
 							 req, &own_req);
 	if (child) {
@@ -305,21 +199,15 @@ listen_overflow:
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DCCP_SKB_CB(skb)->dccpd_reset_code = DCCP_RESET_CODE_TOO_BUSY;
 drop:
 	if (dccp_hdr(skb)->dccph_type != DCCP_PKT_RESET)
 		req->rsk_ops->send_reset(sk, skb);
 
-<<<<<<< HEAD
-	inet_csk_reqsk_queue_drop(sk, req, prev);
-	goto out;
-=======
 	inet_csk_reqsk_queue_drop(sk, req);
 out:
 	spin_unlock_bh(&dreq->dreq_lock);
 	return child;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL_GPL(dccp_check_req);
@@ -331,10 +219,7 @@ EXPORT_SYMBOL_GPL(dccp_check_req);
  */
 int dccp_child_process(struct sock *parent, struct sock *child,
 		       struct sk_buff *skb)
-<<<<<<< HEAD
-=======
 	__releases(child)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	const int state = child->sk_state;
@@ -345,11 +230,7 @@ int dccp_child_process(struct sock *parent, struct sock *child,
 
 		/* Wakeup parent, send SIGIO */
 		if (state == DCCP_RESPOND && child->sk_state != state)
-<<<<<<< HEAD
-			parent->sk_data_ready(parent, 0);
-=======
 			parent->sk_data_ready(parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Alas, it is possible again, because we do lookup
 		 * in main socket hash table and lock on listening
@@ -365,11 +246,7 @@ int dccp_child_process(struct sock *parent, struct sock *child,
 
 EXPORT_SYMBOL_GPL(dccp_child_process);
 
-<<<<<<< HEAD
-void dccp_reqsk_send_ack(struct sock *sk, struct sk_buff *skb,
-=======
 void dccp_reqsk_send_ack(const struct sock *sk, struct sk_buff *skb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 struct request_sock *rsk)
 {
 	DCCP_BUG("DCCP-ACK packets are never sent in LISTEN/RESPOND state");
@@ -382,18 +259,11 @@ int dccp_reqsk_init(struct request_sock *req,
 {
 	struct dccp_request_sock *dreq = dccp_rsk(req);
 
-<<<<<<< HEAD
-	inet_rsk(req)->rmt_port	  = dccp_hdr(skb)->dccph_sport;
-	inet_rsk(req)->loc_port	  = dccp_hdr(skb)->dccph_dport;
-	inet_rsk(req)->acked	  = 0;
-	dreq->dreq_timestamp_echo = 0;
-=======
 	spin_lock_init(&dreq->dreq_lock);
 	inet_rsk(req)->ir_rmt_port = dccp_hdr(skb)->dccph_sport;
 	inet_rsk(req)->ir_num	   = ntohs(dccp_hdr(skb)->dccph_dport);
 	inet_rsk(req)->acked	   = 0;
 	dreq->dreq_timestamp_echo  = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* inherit feature negotiation options from listening socket */
 	return dccp_feat_clone_list(&dp->dccps_featneg, &dreq->dreq_featneg);

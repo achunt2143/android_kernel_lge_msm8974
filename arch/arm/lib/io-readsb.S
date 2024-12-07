@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/io-readsb.S
  *
  *  Copyright (C) 1995-2000 Russell King
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/linkage.h>
 #include <asm/assembler.h>
@@ -23,27 +13,16 @@
 		cmp	ip, #2
 		ldrb	r3, [r0]
 		strb	r3, [r1], #1
-<<<<<<< HEAD
-		ldrgeb	r3, [r0]
-		strgeb	r3, [r1], #1
-		ldrgtb	r3, [r0]
-		strgtb	r3, [r1], #1
-=======
 		ldrbge	r3, [r0]
 		strbge	r3, [r1], #1
 		ldrbgt	r3, [r0]
 		strbgt	r3, [r1], #1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		subs	r2, r2, ip
 		bne	.Linsb_aligned
 
 ENTRY(__raw_readsb)
 		teq	r2, #0		@ do we have to check for the zero len?
-<<<<<<< HEAD
-		moveq	pc, lr
-=======
 		reteq	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ands	ip, r1, #3
 		bne	.Linsb_align
 
@@ -90,11 +69,7 @@ ENTRY(__raw_readsb)
 		bpl	.Linsb_16_lp
 
 		tst	r2, #15
-<<<<<<< HEAD
-		ldmeqfd	sp!, {r4 - r6, pc}
-=======
 		ldmfdeq	sp!, {r4 - r6, pc}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .Linsb_no_16:	tst	r2, #8
 		beq	.Linsb_no_8
@@ -131,26 +106,15 @@ ENTRY(__raw_readsb)
 		str	r3, [r1], #4
 
 .Linsb_no_4:	ands	r2, r2, #3
-<<<<<<< HEAD
-		ldmeqfd	sp!, {r4 - r6, pc}
-=======
 		ldmfdeq	sp!, {r4 - r6, pc}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cmp	r2, #2
 		ldrb	r3, [r0]
 		strb	r3, [r1], #1
-<<<<<<< HEAD
-		ldrgeb	r3, [r0]
-		strgeb	r3, [r1], #1
-		ldrgtb	r3, [r0]
-		strgtb	r3, [r1]
-=======
 		ldrbge	r3, [r0]
 		strbge	r3, [r1], #1
 		ldrbgt	r3, [r0]
 		strbgt	r3, [r1]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ldmfd	sp!, {r4 - r6, pc}
 ENDPROC(__raw_readsb)

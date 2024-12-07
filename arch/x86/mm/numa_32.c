@@ -22,64 +22,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-#include <linux/memblock.h>
-#include <linux/module.h>
-
-#include "numa_internal.h"
-
-#ifdef CONFIG_DISCONTIGMEM
-/*
- * 4) physnode_map     - the mapping between a pfn and owning node
- * physnode_map keeps track of the physical memory layout of a generic
- * numa node on a 64Mb break (each element of the array will
- * represent 64Mb of memory and will be marked by the node id.  so,
- * if the first gig is on node 0, and the second gig is on node 1
- * physnode_map will contain:
- *
- *     physnode_map[0-15] = 0;
- *     physnode_map[16-31] = 1;
- *     physnode_map[32- ] = -1;
- */
-s8 physnode_map[MAX_SECTIONS] __read_mostly = { [0 ... (MAX_SECTIONS - 1)] = -1};
-EXPORT_SYMBOL(physnode_map);
-
-void memory_present(int nid, unsigned long start, unsigned long end)
-{
-	unsigned long pfn;
-
-	printk(KERN_INFO "Node: %d, start_pfn: %lx, end_pfn: %lx\n",
-			nid, start, end);
-	printk(KERN_DEBUG "  Setting physnode_map array to node %d for pfns:\n", nid);
-	printk(KERN_DEBUG "  ");
-	for (pfn = start; pfn < end; pfn += PAGES_PER_SECTION) {
-		physnode_map[pfn / PAGES_PER_SECTION] = nid;
-		printk(KERN_CONT "%lx ", pfn);
-	}
-	printk(KERN_CONT "\n");
-}
-
-unsigned long node_memmap_size_bytes(int nid, unsigned long start_pfn,
-					      unsigned long end_pfn)
-{
-	unsigned long nr_pages = end_pfn - start_pfn;
-
-	if (!nr_pages)
-		return 0;
-
-	return (nr_pages + 1) * sizeof(struct page);
-}
-#endif
-
-=======
 #include <linux/memblock.h>
 #include <linux/init.h>
 #include <asm/pgtable_areas.h>
 
 #include "numa_internal.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned long highend_pfn, highstart_pfn;
 
 void __init initmem_init(void)
@@ -92,15 +40,8 @@ void __init initmem_init(void)
 		highstart_pfn = max_low_pfn;
 	printk(KERN_NOTICE "%ldMB HIGHMEM available.\n",
 	       pages_to_mb(highend_pfn - highstart_pfn));
-<<<<<<< HEAD
-	num_physpages = highend_pfn;
 	high_memory = (void *) __va(highstart_pfn * PAGE_SIZE - 1) + 1;
 #else
-	num_physpages = max_low_pfn;
-=======
-	high_memory = (void *) __va(highstart_pfn * PAGE_SIZE - 1) + 1;
-#else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE - 1) + 1;
 #endif
 	printk(KERN_NOTICE "%ldMB LOWMEM available.\n",
@@ -114,9 +55,6 @@ void __init initmem_init(void)
 	printk(KERN_DEBUG "High memory starts at vaddr %08lx\n",
 			(ulong) pfn_to_kaddr(highstart_pfn));
 
-<<<<<<< HEAD
-=======
 	__vmalloc_start_set = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	setup_bootmem_allocator();
 }

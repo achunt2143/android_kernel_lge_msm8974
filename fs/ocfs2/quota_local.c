@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Implementation of operations over local quota file
  */
@@ -77,15 +74,6 @@ static loff_t ol_dqblk_off(struct super_block *sb, int c, int off)
 	       ol_dqblk_block_off(sb, c, off);
 }
 
-<<<<<<< HEAD
-/* Compute block number from given offset */
-static inline unsigned int ol_dqblk_file_block(struct super_block *sb, loff_t off)
-{
-	return off >> sb->s_blocksize_bits;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int ol_dqblk_block_offset(struct super_block *sb, loff_t off)
 {
 	return off & ((1 << sb->s_blocksize_bits) - 1);
@@ -149,17 +137,6 @@ static int ocfs2_read_quota_block(struct inode *inode, u64 v_block,
 	int rc = 0;
 	struct buffer_head *tmp = *bh;
 
-<<<<<<< HEAD
-	if (i_size_read(inode) >> inode->i_sb->s_blocksize_bits <= v_block) {
-		ocfs2_error(inode->i_sb,
-			    "Quota file %llu is probably corrupted! Requested "
-			    "to read block %Lu but file has size only %Lu\n",
-			    (unsigned long long)OCFS2_I(inode)->ip_blkno,
-			    (unsigned long long)v_block,
-			    (unsigned long long)i_size_read(inode));
-		return -EIO;
-	}
-=======
 	if (i_size_read(inode) >> inode->i_sb->s_blocksize_bits <= v_block)
 		return ocfs2_error(inode->i_sb,
 				"Quota file %llu is probably corrupted! Requested to read block %Lu but file has size only %Lu\n",
@@ -167,7 +144,6 @@ static int ocfs2_read_quota_block(struct inode *inode, u64 v_block,
 				(unsigned long long)v_block,
 				(unsigned long long)i_size_read(inode));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ocfs2_read_virt_blocks(inode, v_block, 1, &tmp, 0,
 				    ocfs2_validate_quota_block);
 	if (rc)
@@ -183,21 +159,12 @@ static int ocfs2_read_quota_block(struct inode *inode, u64 v_block,
 /* Check whether we understand format of quota files */
 static int ocfs2_local_check_quota_file(struct super_block *sb, int type)
 {
-<<<<<<< HEAD
-	unsigned int lmagics[MAXQUOTAS] = OCFS2_LOCAL_QMAGICS;
-	unsigned int lversions[MAXQUOTAS] = OCFS2_LOCAL_QVERSIONS;
-	unsigned int gmagics[MAXQUOTAS] = OCFS2_GLOBAL_QMAGICS;
-	unsigned int gversions[MAXQUOTAS] = OCFS2_GLOBAL_QVERSIONS;
-	unsigned int ino[MAXQUOTAS] = { USER_QUOTA_SYSTEM_INODE,
-					GROUP_QUOTA_SYSTEM_INODE };
-=======
 	unsigned int lmagics[OCFS2_MAXQUOTAS] = OCFS2_LOCAL_QMAGICS;
 	unsigned int lversions[OCFS2_MAXQUOTAS] = OCFS2_LOCAL_QVERSIONS;
 	unsigned int gmagics[OCFS2_MAXQUOTAS] = OCFS2_GLOBAL_QMAGICS;
 	unsigned int gversions[OCFS2_MAXQUOTAS] = OCFS2_GLOBAL_QVERSIONS;
 	unsigned int ino[OCFS2_MAXQUOTAS] = { USER_QUOTA_SYSTEM_INODE,
 					      GROUP_QUOTA_SYSTEM_INODE };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *bh = NULL;
 	struct inode *linode = sb_dqopt(sb)->files[type];
 	struct inode *ginode = NULL;
@@ -318,11 +285,7 @@ static void olq_update_info(struct buffer_head *bh, void *private)
 	ldinfo = (struct ocfs2_local_disk_dqinfo *)(bh->b_data +
 						OCFS2_LOCAL_INFO_OFF);
 	spin_lock(&dq_data_lock);
-<<<<<<< HEAD
-	ldinfo->dqi_flags = cpu_to_le32(info->dqi_flags & DQF_MASK);
-=======
 	ldinfo->dqi_flags = cpu_to_le32(oinfo->dqi_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldinfo->dqi_chunks = cpu_to_le32(oinfo->dqi_chunks);
 	ldinfo->dqi_blocks = cpu_to_le32(oinfo->dqi_blocks);
 	spin_unlock(&dq_data_lock);
@@ -366,11 +329,7 @@ void ocfs2_free_quota_recovery(struct ocfs2_quota_recovery *rec)
 {
 	int type;
 
-<<<<<<< HEAD
-	for (type = 0; type < MAXQUOTAS; type++)
-=======
 	for (type = 0; type < OCFS2_MAXQUOTAS; type++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_recovery_list(&(rec->r_list[type]));
 	kfree(rec);
 }
@@ -416,11 +375,7 @@ static struct ocfs2_quota_recovery *ocfs2_alloc_quota_recovery(void)
 	rec = kmalloc(sizeof(struct ocfs2_quota_recovery), GFP_NOFS);
 	if (!rec)
 		return NULL;
-<<<<<<< HEAD
-	for (type = 0; type < MAXQUOTAS; type++)
-=======
 	for (type = 0; type < OCFS2_MAXQUOTAS; type++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		INIT_LIST_HEAD(&(rec->r_list[type]));
 	return rec;
 }
@@ -430,18 +385,11 @@ struct ocfs2_quota_recovery *ocfs2_begin_quota_recovery(
 						struct ocfs2_super *osb,
 						int slot_num)
 {
-<<<<<<< HEAD
-	unsigned int feature[MAXQUOTAS] = { OCFS2_FEATURE_RO_COMPAT_USRQUOTA,
-					    OCFS2_FEATURE_RO_COMPAT_GRPQUOTA};
-	unsigned int ino[MAXQUOTAS] = { LOCAL_USER_QUOTA_SYSTEM_INODE,
-					LOCAL_GROUP_QUOTA_SYSTEM_INODE };
-=======
 	unsigned int feature[OCFS2_MAXQUOTAS] = {
 					OCFS2_FEATURE_RO_COMPAT_USRQUOTA,
 					OCFS2_FEATURE_RO_COMPAT_GRPQUOTA};
 	unsigned int ino[OCFS2_MAXQUOTAS] = { LOCAL_USER_QUOTA_SYSTEM_INODE,
 					      LOCAL_GROUP_QUOTA_SYSTEM_INODE };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct super_block *sb = osb->sb;
 	struct ocfs2_local_disk_dqinfo *ldinfo;
 	struct inode *lqinode;
@@ -458,11 +406,7 @@ struct ocfs2_quota_recovery *ocfs2_begin_quota_recovery(
 		return ERR_PTR(-ENOMEM);
 	/* First init... */
 
-<<<<<<< HEAD
-	for (type = 0; type < MAXQUOTAS; type++) {
-=======
 	for (type = 0; type < OCFS2_MAXQUOTAS; type++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!OCFS2_HAS_RO_COMPAT_FEATURE(sb, feature[type]))
 			continue;
 		/* At this point, journal of the slot is already replayed so
@@ -510,11 +454,7 @@ out:
 /* Sync changes in local quota file into global quota file and
  * reinitialize local quota file.
  * The function expects local quota file to be already locked and
-<<<<<<< HEAD
- * dqonoff_mutex locked. */
-=======
  * s_umount locked in shared mode. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ocfs2_recover_local_quota_file(struct inode *lqinode,
 					  int type,
 					  struct ocfs2_quota_recovery *rec)
@@ -530,10 +470,7 @@ static int ocfs2_recover_local_quota_file(struct inode *lqinode,
 	int bit, chunk;
 	struct ocfs2_recovery_chunk *rchunk, *next;
 	qsize_t spacechange, inodechange;
-<<<<<<< HEAD
-=======
 	unsigned int memalloc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_recover_local_quota_file((unsigned long)lqinode->i_ino, type);
 
@@ -559,17 +496,11 @@ static int ocfs2_recover_local_quota_file(struct inode *lqinode,
 			}
 			dqblk = (struct ocfs2_local_disk_dqblk *)(qbh->b_data +
 				ol_dqblk_block_off(sb, chunk, bit));
-<<<<<<< HEAD
-			dquot = dqget(sb, le64_to_cpu(dqblk->dqb_id), type);
-			if (!dquot) {
-				status = -EIO;
-=======
 			dquot = dqget(sb,
 				      make_kqid(&init_user_ns, type,
 						le64_to_cpu(dqblk->dqb_id)));
 			if (IS_ERR(dquot)) {
 				status = PTR_ERR(dquot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mlog(ML_ERROR, "Failed to get quota structure "
 				     "for id %u, type %d. Cannot finish quota "
 				     "file recovery.\n",
@@ -590,14 +521,9 @@ static int ocfs2_recover_local_quota_file(struct inode *lqinode,
 				mlog_errno(status);
 				goto out_drop_lock;
 			}
-<<<<<<< HEAD
-			mutex_lock(&sb_dqopt(sb)->dqio_mutex);
-			spin_lock(&dq_data_lock);
-=======
 			down_write(&sb_dqopt(sb)->dqio_sem);
 			memalloc = memalloc_nofs_save();
 			spin_lock(&dquot->dq_dqb_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Add usage from quota entry into quota changes
 			 * of our node. Auxiliary variables are important
 			 * due to signedness */
@@ -605,11 +531,7 @@ static int ocfs2_recover_local_quota_file(struct inode *lqinode,
 			inodechange = le64_to_cpu(dqblk->dqb_inodemod);
 			dquot->dq_dqb.dqb_curspace += spacechange;
 			dquot->dq_dqb.dqb_curinodes += inodechange;
-<<<<<<< HEAD
-			spin_unlock(&dq_data_lock);
-=======
 			spin_unlock(&dquot->dq_dqb_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* We want to drop reference held by the crashed
 			 * node. Since we have our own reference we know
 			 * global structure actually won't be freed. */
@@ -633,12 +555,8 @@ static int ocfs2_recover_local_quota_file(struct inode *lqinode,
 			unlock_buffer(qbh);
 			ocfs2_journal_dirty(handle, qbh);
 out_commit:
-<<<<<<< HEAD
-			mutex_unlock(&sb_dqopt(sb)->dqio_mutex);
-=======
 			memalloc_nofs_restore(memalloc);
 			up_write(&sb_dqopt(sb)->dqio_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ocfs2_commit_trans(OCFS2_SB(sb), handle);
 out_drop_lock:
 			ocfs2_unlock_global_qf(oinfo, 1);
@@ -668,13 +586,8 @@ int ocfs2_finish_quota_recovery(struct ocfs2_super *osb,
 				struct ocfs2_quota_recovery *rec,
 				int slot_num)
 {
-<<<<<<< HEAD
-	unsigned int ino[MAXQUOTAS] = { LOCAL_USER_QUOTA_SYSTEM_INODE,
-					LOCAL_GROUP_QUOTA_SYSTEM_INODE };
-=======
 	unsigned int ino[OCFS2_MAXQUOTAS] = { LOCAL_USER_QUOTA_SYSTEM_INODE,
 					      LOCAL_GROUP_QUOTA_SYSTEM_INODE };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct super_block *sb = osb->sb;
 	struct ocfs2_local_disk_dqinfo *ldinfo;
 	struct buffer_head *bh;
@@ -687,13 +600,8 @@ int ocfs2_finish_quota_recovery(struct ocfs2_super *osb,
 	printk(KERN_NOTICE "ocfs2: Finishing quota recovery on device (%s) for "
 	       "slot %u\n", osb->dev_str, slot_num);
 
-<<<<<<< HEAD
-	mutex_lock(&sb_dqopt(sb)->dqonoff_mutex);
-	for (type = 0; type < MAXQUOTAS; type++) {
-=======
 	down_read(&sb->s_umount);
 	for (type = 0; type < OCFS2_MAXQUOTAS; type++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (list_empty(&(rec->r_list[type])))
 			continue;
 		trace_ocfs2_finish_quota_recovery(slot_num);
@@ -769,11 +677,7 @@ out_put:
 			break;
 	}
 out:
-<<<<<<< HEAD
-	mutex_unlock(&sb_dqopt(sb)->dqonoff_mutex);
-=======
 	up_read(&sb->s_umount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(rec);
 	return status;
 }
@@ -790,16 +694,8 @@ static int ocfs2_local_read_info(struct super_block *sb, int type)
 	struct ocfs2_quota_recovery *rec;
 	int locked = 0;
 
-<<<<<<< HEAD
-	/* We don't need the lock and we have to acquire quota file locks
-	 * which will later depend on this lock */
-	mutex_unlock(&sb_dqopt(sb)->dqio_mutex);
-	info->dqi_maxblimit = 0x7fffffffffffffffLL;
-	info->dqi_maxilimit = 0x7fffffffffffffffLL;
-=======
 	info->dqi_max_spc_limit = 0x7fffffffffffffffLL;
 	info->dqi_max_ino_limit = 0x7fffffffffffffffLL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oinfo = kmalloc(sizeof(struct ocfs2_mem_dqinfo), GFP_NOFS);
 	if (!oinfo) {
 		mlog(ML_ERROR, "failed to allocate memory for ocfs2 quota"
@@ -834,21 +730,13 @@ static int ocfs2_local_read_info(struct super_block *sb, int type)
 	}
 	ldinfo = (struct ocfs2_local_disk_dqinfo *)(bh->b_data +
 						OCFS2_LOCAL_INFO_OFF);
-<<<<<<< HEAD
-	info->dqi_flags = le32_to_cpu(ldinfo->dqi_flags);
-=======
 	oinfo->dqi_flags = le32_to_cpu(ldinfo->dqi_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oinfo->dqi_chunks = le32_to_cpu(ldinfo->dqi_chunks);
 	oinfo->dqi_blocks = le32_to_cpu(ldinfo->dqi_blocks);
 	oinfo->dqi_libh = bh;
 
 	/* We crashed when using local quota file? */
-<<<<<<< HEAD
-	if (!(info->dqi_flags & OLQF_CLEAN)) {
-=======
 	if (!(oinfo->dqi_flags & OLQF_CLEAN)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rec = OCFS2_SB(sb)->quota_rec;
 		if (!rec) {
 			rec = ocfs2_alloc_quota_recovery();
@@ -877,21 +765,13 @@ static int ocfs2_local_read_info(struct super_block *sb, int type)
 	}
 
 	/* Now mark quota file as used */
-<<<<<<< HEAD
-	info->dqi_flags &= ~OLQF_CLEAN;
-=======
 	oinfo->dqi_flags &= ~OLQF_CLEAN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = ocfs2_modify_bh(lqinode, bh, olq_update_info, info);
 	if (status < 0) {
 		mlog_errno(status);
 		goto out_err;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&sb_dqopt(sb)->dqio_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out_err:
 	if (oinfo) {
@@ -905,10 +785,6 @@ out_err:
 		kfree(oinfo);
 	}
 	brelse(bh);
-<<<<<<< HEAD
-	mutex_lock(&sb_dqopt(sb)->dqio_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 
@@ -938,11 +814,7 @@ static int ocfs2_local_free_info(struct super_block *sb, int type)
 	struct ocfs2_quota_chunk *chunk;
 	struct ocfs2_local_disk_chunk *dchunk;
 	int mark_clean = 1, len;
-<<<<<<< HEAD
-	int status;
-=======
 	int status = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iput(oinfo->dqi_gqinode);
 	ocfs2_simple_drop_lockres(OCFS2_SB(sb), &oinfo->dqi_gqlock);
@@ -966,14 +838,10 @@ static int ocfs2_local_free_info(struct super_block *sb, int type)
 	}
 	ocfs2_release_local_quota_bitmaps(&oinfo->dqi_chunk);
 
-<<<<<<< HEAD
-	/* dqonoff_mutex protects us against racing with recovery thread... */
-=======
 	/*
 	 * s_umount held in exclusive mode protects us against racing with
 	 * recovery thread...
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (oinfo->dqi_rec) {
 		ocfs2_free_quota_recovery(oinfo->dqi_rec);
 		mark_clean = 0;
@@ -983,35 +851,19 @@ static int ocfs2_local_free_info(struct super_block *sb, int type)
 		goto out;
 
 	/* Mark local file as clean */
-<<<<<<< HEAD
-	info->dqi_flags |= OLQF_CLEAN;
-=======
 	oinfo->dqi_flags |= OLQF_CLEAN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = ocfs2_modify_bh(sb_dqopt(sb)->files[type],
 				 oinfo->dqi_libh,
 				 olq_update_info,
 				 info);
-<<<<<<< HEAD
-	if (status < 0) {
-		mlog_errno(status);
-		goto out;
-	}
-
-=======
 	if (status < 0)
 		mlog_errno(status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	ocfs2_inode_unlock(sb_dqopt(sb)->files[type], 1);
 	brelse(oinfo->dqi_libh);
 	brelse(oinfo->dqi_lqi_bh);
 	kfree(oinfo);
-<<<<<<< HEAD
-	return 0;
-=======
 	return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void olq_set_dquot(struct buffer_head *bh, void *private)
@@ -1023,31 +875,18 @@ static void olq_set_dquot(struct buffer_head *bh, void *private)
 	dqblk = (struct ocfs2_local_disk_dqblk *)(bh->b_data
 		+ ol_dqblk_block_offset(sb, od->dq_local_off));
 
-<<<<<<< HEAD
-	dqblk->dqb_id = cpu_to_le64(od->dq_dquot.dq_id);
-	spin_lock(&dq_data_lock);
-=======
 	dqblk->dqb_id = cpu_to_le64(from_kqid(&init_user_ns,
 					      od->dq_dquot.dq_id));
 	spin_lock(&od->dq_dquot.dq_dqb_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dqblk->dqb_spacemod = cpu_to_le64(od->dq_dquot.dq_dqb.dqb_curspace -
 					  od->dq_origspace);
 	dqblk->dqb_inodemod = cpu_to_le64(od->dq_dquot.dq_dqb.dqb_curinodes -
 					  od->dq_originodes);
-<<<<<<< HEAD
-	spin_unlock(&dq_data_lock);
-	trace_olq_set_dquot(
-		(unsigned long long)le64_to_cpu(dqblk->dqb_spacemod),
-		(unsigned long long)le64_to_cpu(dqblk->dqb_inodemod),
-		od->dq_dquot.dq_id);
-=======
 	spin_unlock(&od->dq_dquot.dq_dqb_lock);
 	trace_olq_set_dquot(
 		(unsigned long long)le64_to_cpu(dqblk->dqb_spacemod),
 		(unsigned long long)le64_to_cpu(dqblk->dqb_inodemod),
 		from_kqid(&init_user_ns, od->dq_dquot.dq_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Write dquot to local quota file */
@@ -1056,11 +895,7 @@ int ocfs2_local_write_dquot(struct dquot *dquot)
 	struct super_block *sb = dquot->dq_sb;
 	struct ocfs2_dquot *od = OCFS2_DQUOT(dquot);
 	struct buffer_head *bh;
-<<<<<<< HEAD
-	struct inode *lqinode = sb_dqopt(sb)->files[dquot->dq_type];
-=======
 	struct inode *lqinode = sb_dqopt(sb)->files[dquot->dq_id.type];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 
 	status = ocfs2_read_quota_phys_block(lqinode, od->dq_local_phys_blk,
@@ -1086,21 +921,6 @@ static struct ocfs2_quota_chunk *ocfs2_find_free_entry(struct super_block *sb,
 {
 	struct mem_dqinfo *info = sb_dqinfo(sb, type);
 	struct ocfs2_mem_dqinfo *oinfo = info->dqi_priv;
-<<<<<<< HEAD
-	struct ocfs2_quota_chunk *chunk;
-	struct ocfs2_local_disk_chunk *dchunk;
-	int found = 0, len;
-
-	list_for_each_entry(chunk, &oinfo->dqi_chunk, qc_chunk) {
-		dchunk = (struct ocfs2_local_disk_chunk *)
-						chunk->qc_headerbh->b_data;
-		if (le32_to_cpu(dchunk->dqc_free) > 0) {
-			found = 1;
-			break;
-		}
-	}
-	if (!found)
-=======
 	struct ocfs2_quota_chunk *chunk = NULL, *iter;
 	struct ocfs2_local_disk_chunk *dchunk;
 	int found = 0, len;
@@ -1114,7 +934,6 @@ static struct ocfs2_quota_chunk *ocfs2_find_free_entry(struct super_block *sb,
 		}
 	}
 	if (!chunk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	if (chunk->qc_num < oinfo->dqi_chunks - 1) {
@@ -1155,23 +974,14 @@ static struct ocfs2_quota_chunk *ocfs2_local_quota_add_chunk(
 
 	/* We are protected by dqio_sem so no locking needed */
 	status = ocfs2_extend_no_holes(lqinode, NULL,
-<<<<<<< HEAD
-				       lqinode->i_size + 2 * sb->s_blocksize,
-				       lqinode->i_size);
-=======
 				       i_size_read(lqinode) + 2 * sb->s_blocksize,
 				       i_size_read(lqinode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		mlog_errno(status);
 		goto out;
 	}
 	status = ocfs2_simple_size_update(lqinode, oinfo->dqi_lqi_bh,
-<<<<<<< HEAD
-					  lqinode->i_size + 2 * sb->s_blocksize);
-=======
 					  i_size_read(lqinode) + 2 * sb->s_blocksize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		mlog_errno(status);
 		goto out;
@@ -1307,23 +1117,14 @@ static struct ocfs2_quota_chunk *ocfs2_extend_local_quota_file(
 
 	/* We are protected by dqio_sem so no locking needed */
 	status = ocfs2_extend_no_holes(lqinode, NULL,
-<<<<<<< HEAD
-				       lqinode->i_size + sb->s_blocksize,
-				       lqinode->i_size);
-=======
 				       i_size_read(lqinode) + sb->s_blocksize,
 				       i_size_read(lqinode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		mlog_errno(status);
 		goto out;
 	}
 	status = ocfs2_simple_size_update(lqinode, oinfo->dqi_lqi_bh,
-<<<<<<< HEAD
-					  lqinode->i_size + sb->s_blocksize);
-=======
 					  i_size_read(lqinode) + sb->s_blocksize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		mlog_errno(status);
 		goto out;
@@ -1415,11 +1216,7 @@ static void olq_alloc_dquot(struct buffer_head *bh, void *private)
 int ocfs2_create_local_dquot(struct dquot *dquot)
 {
 	struct super_block *sb = dquot->dq_sb;
-<<<<<<< HEAD
-	int type = dquot->dq_type;
-=======
 	int type = dquot->dq_id.type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *lqinode = sb_dqopt(sb)->files[type];
 	struct ocfs2_quota_chunk *chunk;
 	struct ocfs2_dquot *od = OCFS2_DQUOT(dquot);
@@ -1446,13 +1243,10 @@ int ocfs2_create_local_dquot(struct dquot *dquot)
 				     &od->dq_local_phys_blk,
 				     &pcount,
 				     NULL);
-<<<<<<< HEAD
-=======
 	if (status < 0) {
 		mlog_errno(status);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize dquot structure on disk */
 	status = ocfs2_local_write_dquot(dquot);
@@ -1480,11 +1274,7 @@ out:
 int ocfs2_local_release_dquot(handle_t *handle, struct dquot *dquot)
 {
 	int status;
-<<<<<<< HEAD
-	int type = dquot->dq_type;
-=======
 	int type = dquot->dq_id.type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_dquot *od = OCFS2_DQUOT(dquot);
 	struct super_block *sb = dquot->dq_sb;
 	struct ocfs2_local_disk_chunk *dchunk;

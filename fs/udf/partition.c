@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * partition.c
  *
@@ -9,14 +6,6 @@
  *      Partition handling routines for the OSTA-UDF(tm) filesystem.
  *
  * COPYRIGHT
-<<<<<<< HEAD
- *      This file is distributed under the terms of the GNU General Public
- *      License (GPL). Copies of the GPL can be obtained from:
- *              ftp://prep.ai.mit.edu/pub/gnu/GPL
- *      Each contributing author retains all rights to their own work.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  (C) 1998-2001 Ben Fennema
  *
  * HISTORY
@@ -31,10 +20,6 @@
 
 #include <linux/fs.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/buffer_head.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mutex.h>
 
 uint32_t udf_get_pblock(struct super_block *sb, uint32_t block,
@@ -43,11 +28,7 @@ uint32_t udf_get_pblock(struct super_block *sb, uint32_t block,
 	struct udf_sb_info *sbi = UDF_SB(sb);
 	struct udf_part_map *map;
 	if (partition >= sbi->s_partitions) {
-<<<<<<< HEAD
-		udf_debug("block=%d, partition=%d, offset=%d: invalid partition\n",
-=======
 		udf_debug("block=%u, partition=%u, offset=%u: invalid partition\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  block, partition, offset);
 		return 0xFFFFFFFF;
 	}
@@ -69,30 +50,19 @@ uint32_t udf_get_pblock_virt15(struct super_block *sb, uint32_t block,
 	struct udf_part_map *map;
 	struct udf_virtual_data *vdata;
 	struct udf_inode_info *iinfo = UDF_I(sbi->s_vat_inode);
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	map = &sbi->s_partmaps[partition];
 	vdata = &map->s_type_specific.s_virtual;
 
 	if (block > vdata->s_num_entries) {
-<<<<<<< HEAD
-		udf_debug("Trying to access block beyond end of VAT (%d max %d)\n",
-=======
 		udf_debug("Trying to access block beyond end of VAT (%u max %u)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  block, vdata->s_num_entries);
 		return 0xFFFFFFFF;
 	}
 
 	if (iinfo->i_alloc_type == ICBTAG_FLAG_AD_IN_ICB) {
-<<<<<<< HEAD
-		loc = le32_to_cpu(((__le32 *)(iinfo->i_ext.i_data +
-=======
 		loc = le32_to_cpu(((__le32 *)(iinfo->i_data +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vdata->s_start_offset))[block]);
 		goto translate;
 	}
@@ -106,19 +76,10 @@ uint32_t udf_get_pblock_virt15(struct super_block *sb, uint32_t block,
 		index = vdata->s_start_offset / sizeof(uint32_t) + block;
 	}
 
-<<<<<<< HEAD
-	loc = udf_block_map(sbi->s_vat_inode, newblock);
-
-	bh = sb_bread(sb, loc);
-	if (!bh) {
-		udf_debug("get_pblock(UDF_VIRTUAL_MAP:%p,%d,%d) VAT: %d[%d]\n",
-			  sb, block, partition, loc, index);
-=======
 	bh = udf_bread(sbi->s_vat_inode, newblock, 0, &err);
 	if (!bh) {
 		udf_debug("get_pblock(UDF_VIRTUAL_MAP:%p,%u,%u)\n",
 			  sb, block, partition);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0xFFFFFFFF;
 	}
 
@@ -329,12 +290,8 @@ static uint32_t udf_try_read_meta(struct inode *inode, uint32_t block,
 		map = &UDF_SB(sb)->s_partmaps[partition];
 		/* map to sparable/physical partition desc */
 		phyblock = udf_get_pblock(sb, eloc.logicalBlockNum,
-<<<<<<< HEAD
-			map->s_partition_num, ext_offset + offset);
-=======
 			map->s_type_specific.s_metadata.s_phys_partition_ref,
 			ext_offset + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	brelse(epos.bh);
@@ -356,27 +313,18 @@ uint32_t udf_get_pblock_meta25(struct super_block *sb, uint32_t block,
 	mdata = &map->s_type_specific.s_metadata;
 	inode = mdata->s_metadata_fe ? : mdata->s_mirror_fe;
 
-<<<<<<< HEAD
-	/* We shouldn't mount such media... */
-	BUG_ON(!inode);
-=======
 	if (!inode)
 		return 0xFFFFFFFF;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retblk = udf_try_read_meta(inode, block, partition, offset);
 	if (retblk == 0xFFFFFFFF && mdata->s_metadata_fe) {
 		udf_warn(sb, "error reading from METADATA, trying to read from MIRROR\n");
 		if (!(mdata->s_flags & MF_MIRROR_FE_LOADED)) {
 			mdata->s_mirror_fe = udf_find_metadata_inode_efe(sb,
-<<<<<<< HEAD
-				mdata->s_mirror_file_loc, map->s_partition_num);
-=======
 				mdata->s_mirror_file_loc,
 				mdata->s_phys_partition_ref);
 			if (IS_ERR(mdata->s_mirror_fe))
 				mdata->s_mirror_fe = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mdata->s_flags |= MF_MIRROR_FE_LOADED;
 		}
 

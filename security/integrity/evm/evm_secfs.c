@@ -1,32 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2010 IBM Corporation
  *
  * Authors:
  * Mimi Zohar <zohar@us.ibm.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * File: evm_secfs.c
  *	- Used to signal when key is on keyring
  *	- Get the key and enable EVM
  */
 
-<<<<<<< HEAD
-#include <linux/uaccess.h>
-#include <linux/module.h>
-#include "evm.h"
-
-static struct dentry *evm_init_tpm;
-=======
 #include <linux/audit.h>
 #include <linux/uaccess.h>
 #include <linux/init.h>
@@ -42,7 +25,6 @@ static struct dentry *evm_xattrs;
 static DEFINE_MUTEX(xattr_list_mutex);
 static int evm_xattrs_locked;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * evm_read_key - read() for <securityfs>/evm
@@ -63,11 +45,7 @@ static ssize_t evm_read_key(struct file *filp, char __user *buf,
 	if (*ppos != 0)
 		return 0;
 
-<<<<<<< HEAD
-	sprintf(temp, "%d", evm_initialized);
-=======
 	sprintf(temp, "%d", (evm_initialized & ~EVM_SETUP_COMPLETE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = simple_read_from_buffer(buf, count, ppos, temp, strlen(temp));
 
 	return rc;
@@ -88,31 +66,6 @@ static ssize_t evm_read_key(struct file *filp, char __user *buf,
 static ssize_t evm_write_key(struct file *file, const char __user *buf,
 			     size_t count, loff_t *ppos)
 {
-<<<<<<< HEAD
-	char temp[80];
-	int i, error;
-
-	if (!capable(CAP_SYS_ADMIN) || evm_initialized)
-		return -EPERM;
-
-	if (count >= sizeof(temp) || count == 0)
-		return -EINVAL;
-
-	if (copy_from_user(temp, buf, count) != 0)
-		return -EFAULT;
-
-	temp[count] = '\0';
-
-	if ((sscanf(temp, "%d", &i) != 1) || (i != 1))
-		return -EINVAL;
-
-	error = evm_init_key();
-	if (!error) {
-		evm_initialized = 1;
-		pr_info("EVM: initialized\n");
-	} else
-		pr_err("EVM: initialization failed\n");
-=======
 	unsigned int i;
 	int ret;
 
@@ -152,7 +105,6 @@ static ssize_t evm_write_key(struct file *file, const char __user *buf,
 	if (evm_initialized & EVM_INIT_HMAC)
 		evm_initialized &= ~(EVM_ALLOW_METADATA_WRITES);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return count;
 }
 
@@ -161,8 +113,6 @@ static const struct file_operations evm_key_ops = {
 	.write		= evm_write_key,
 };
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_EVM_ADD_XATTRS
 /**
  * evm_read_xattrs - read() for <securityfs>/evm_xattrs
@@ -348,25 +298,10 @@ static int evm_init_xattrs(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init evm_init_secfs(void)
 {
 	int error = 0;
 
-<<<<<<< HEAD
-	evm_init_tpm = securityfs_create_file("evm", S_IRUSR | S_IRGRP,
-					      NULL, NULL, &evm_key_ops);
-	if (!evm_init_tpm || IS_ERR(evm_init_tpm))
-		error = -EFAULT;
-	return error;
-}
-
-void __exit evm_cleanup_secfs(void)
-{
-	if (evm_init_tpm)
-		securityfs_remove(evm_init_tpm);
-}
-=======
 	evm_dir = securityfs_create_dir("evm", integrity_dir);
 	if (!evm_dir || IS_ERR(evm_dir))
 		return -EFAULT;
@@ -397,4 +332,3 @@ out:
 	securityfs_remove(evm_dir);
 	return error;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

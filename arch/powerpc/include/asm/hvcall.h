@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_HVCALL_H
 #define _ASM_POWERPC_HVCALL_H
 #ifdef __KERNEL__
@@ -81,10 +78,6 @@
 #define H_MR_CONDITION  -43
 #define H_NOT_ENOUGH_RESOURCES -44
 #define H_R_STATE       -45
-<<<<<<< HEAD
-#define H_RESCINDEND    -46
-#define H_MULTI_THREADS_ACTIVE -9005
-=======
 #define H_RESCINDED     -46
 #define H_ABORTED	-54
 #define H_P2		-55
@@ -123,7 +116,6 @@
 #define H_UNSUPPORTED_FLAG_END		-511
 #define H_MULTI_THREADS_ACTIVE	-9005
 #define H_OUTSTANDING_COP_OPS	-9006
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* Long Busy is a condition that can be returned by the firmware
@@ -159,8 +151,6 @@
 #define H_PP1			(1UL<<(63-62))
 #define H_PP2			(1UL<<(63-63))
 
-<<<<<<< HEAD
-=======
 /* Flags for H_REGISTER_VPA subfunction field */
 #define H_VPA_FUNC_SHIFT	(63-18)	/* Bit posn of subfunction code */
 #define H_VPA_FUNC_MASK		7UL
@@ -171,7 +161,6 @@
 #define H_VPA_DEREG_DTL		6UL	/* Deregister Dispatch Trace Log */
 #define H_VPA_DEREG_SLB		7UL	/* Deregister SLB shadow buffer */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* VASI States */
 #define H_VASI_INVALID          0
 #define H_VASI_ENABLED          1
@@ -181,12 +170,6 @@
 #define H_VASI_RESUMED          5
 #define H_VASI_COMPLETED        6
 
-<<<<<<< HEAD
-/* DABRX flags */
-#define H_DABRX_HYPERVISOR	(1UL<<(63-61))
-#define H_DABRX_KERNEL		(1UL<<(63-62))
-#define H_DABRX_USER		(1UL<<(63-63))
-=======
 /* VASI signal codes. Only the Cancel code is valid for H_VASI_SIGNAL. */
 #define H_VASI_SIGNAL_CANCEL    1
 #define H_VASI_SIGNAL_ABORT     2
@@ -194,7 +177,6 @@
 #define H_VASI_SIGNAL_COMPLETE  4
 #define H_VASI_SIGNAL_ENABLE    5
 #define H_VASI_SIGNAL_FAILOVER  6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Each control block has to be on a 4K boundary */
 #define H_CB_ALIGNMENT          4096
@@ -278,19 +260,12 @@
 #define H_CREATE_RPT            0x1A4
 #define H_REMOVE_RPT            0x1A8
 #define H_REGISTER_RPAGES       0x1AC
-<<<<<<< HEAD
-#define H_DISABLE_AND_GETC      0x1B0
-=======
 #define H_DISABLE_AND_GET       0x1B0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define H_ERROR_DATA            0x1B4
 #define H_GET_HCA_INFO          0x1B8
 #define H_GET_PERF_COUNT        0x1BC
 #define H_MANAGE_TRACE          0x1C0
-<<<<<<< HEAD
-=======
 #define H_GET_CPU_CHARACTERISTICS 0x1C8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define H_FREE_LOGICAL_LAN_BUFFER 0x1D4
 #define H_QUERY_INT_STATE       0x1E4
 #define H_POLL_PENDING		0x1D8
@@ -309,25 +284,13 @@
 #define H_ADD_CONN		0x284
 #define H_DEL_CONN		0x288
 #define H_JOIN			0x298
-<<<<<<< HEAD
-#define H_VASI_STATE            0x2A4
-=======
 #define H_VASI_SIGNAL           0x2A0
 #define H_VASI_STATE            0x2A4
 #define H_VIOCTL		0x2A8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define H_ENABLE_CRQ		0x2B0
 #define H_GET_EM_PARMS		0x2B8
 #define H_SET_MPP		0x2D0
 #define H_GET_MPP		0x2D4
-<<<<<<< HEAD
-#define H_HOME_NODE_ASSOCIATIVITY 0x2EC
-#define H_BEST_ENERGY		0x2F4
-#define H_GET_MPP_X		0x314
-#define MAX_HCALL_OPCODE	H_GET_MPP_X
-
-#ifndef __ASSEMBLY__
-=======
 #define H_REG_SUB_CRQ		0x2DC
 #define H_HOME_NODE_ASSOCIATIVITY 0x2EC
 #define H_FREE_SUB_CRQ		0x2E0
@@ -536,7 +499,6 @@
 
 #ifndef __ASSEMBLY__
 #include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * plpar_hcall_norets: - Make a pseries hypervisor call with no return arguments
@@ -548,12 +510,9 @@
  */
 long plpar_hcall_norets(unsigned long opcode, ...);
 
-<<<<<<< HEAD
-=======
 /* Variant which does not do hcall tracing */
 long plpar_hcall_norets_notrace(unsigned long opcode, ...);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * plpar_hcall: - Make a pseries hypervisor call
  * @opcode: The hypervisor call to make.
@@ -593,22 +552,10 @@ long plpar_hcall_raw(unsigned long opcode, unsigned long *retbuf, ...);
 long plpar_hcall9(unsigned long opcode, unsigned long *retbuf, ...);
 long plpar_hcall9_raw(unsigned long opcode, unsigned long *retbuf, ...);
 
-<<<<<<< HEAD
-/* For hcall instrumentation.  One structure per-hcall, per-CPU */
-struct hcall_stats {
-	unsigned long	num_calls;	/* number of calls (on this CPU) */
-	unsigned long	tb_total;	/* total wall time (mftb) of calls. */
-	unsigned long	purr_total;	/* total cpu time (PURR) of calls. */
-	unsigned long	tb_start;
-	unsigned long	purr_start;
-};
-#define HCALL_STAT_ARRAY_SIZE	((MAX_HCALL_OPCODE >> 2) + 1)
-=======
 /* pseries hcall tracing */
 extern struct static_key hcall_tracepoint_key;
 void __trace_hcall_entry(unsigned long opcode, unsigned long *args);
 void __trace_hcall_exit(long opcode, long retval, unsigned long *retbuf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hvcall_mpp_data {
 	unsigned long entitled_mem;
@@ -635,28 +582,6 @@ struct hvcall_mpp_x_data {
 
 int h_get_mpp_x(struct hvcall_mpp_x_data *mpp_x_data);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PPC_PSERIES
-extern int CMO_PrPSP;
-extern int CMO_SecPSP;
-extern unsigned long CMO_PageSize;
-
-static inline int cmo_get_primary_psp(void)
-{
-	return CMO_PrPSP;
-}
-
-static inline int cmo_get_secondary_psp(void)
-{
-	return CMO_SecPSP;
-}
-
-static inline unsigned long cmo_get_page_size(void)
-{
-	return CMO_PageSize;
-}
-#endif /* CONFIG_PPC_PSERIES */
-=======
 static inline unsigned int get_longbusy_msecs(int longbusy_rc)
 {
 	switch (longbusy_rc) {
@@ -772,7 +697,6 @@ struct hv_gpci_request_buffer {
 	struct hv_get_perf_counter_info_params params;
 	uint8_t bytes[HGPCI_MAX_DATA_BYTES];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASSEMBLY__ */
 #endif /* __KERNEL__ */

@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic HDLC support routines for Linux
  * X.25 support
  *
  * Copyright (C) 1999 - 2006 Krzysztof Halasa <khc@pm.waw.pl>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License
- * as published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -31,9 +21,6 @@
 #include <linux/skbuff.h>
 #include <net/x25device.h>
 
-<<<<<<< HEAD
-static int x25_ioctl(struct net_device *dev, struct ifreq *ifr);
-=======
 struct x25_state {
 	x25_hdlc_proto settings;
 	bool up;
@@ -59,21 +46,11 @@ static void x25_rx_queue_kick(struct tasklet_struct *t)
 		skb = skb_dequeue(&x25st->rx_queue);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* These functions are callbacks called by LAPB layer */
 
 static void x25_connect_disconnect(struct net_device *dev, int reason, int code)
 {
-<<<<<<< HEAD
-	struct sk_buff *skb;
-	unsigned char *ptr;
-
-	if ((skb = dev_alloc_skb(1)) == NULL) {
-		netdev_err(dev, "out of memory\n");
-		return;
-	}
-=======
 	struct x25_state *x25st = state(dev_to_hdlc(dev));
 	struct sk_buff *skb;
 	unsigned char *ptr;
@@ -81,52 +58,26 @@ static void x25_connect_disconnect(struct net_device *dev, int reason, int code)
 	skb = __dev_alloc_skb(1, GFP_ATOMIC | __GFP_NOMEMALLOC);
 	if (!skb)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ptr = skb_put(skb, 1);
 	*ptr = code;
 
 	skb->protocol = x25_type_trans(skb, dev);
-<<<<<<< HEAD
-	netif_rx(skb);
-}
-
-
-
-=======
 
 	skb_queue_tail(&x25st->rx_queue, skb);
 	tasklet_schedule(&x25st->rx_tasklet);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void x25_connected(struct net_device *dev, int reason)
 {
 	x25_connect_disconnect(dev, reason, X25_IFACE_CONNECT);
 }
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void x25_disconnected(struct net_device *dev, int reason)
 {
 	x25_connect_disconnect(dev, reason, X25_IFACE_DISCONNECT);
 }
 
-<<<<<<< HEAD
-
-
-static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
-{
-	unsigned char *ptr;
-
-	skb_push(skb, 1);
-
-	if (skb_cow(skb, 1))
-		return NET_RX_DROP;
-=======
 static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
 {
 	struct x25_state *x25st = state(dev_to_hdlc(dev));
@@ -138,42 +89,11 @@ static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
 	}
 
 	skb_push(skb, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ptr  = skb->data;
 	*ptr = X25_IFACE_DATA;
 
 	skb->protocol = x25_type_trans(skb, dev);
-<<<<<<< HEAD
-	return netif_rx(skb);
-}
-
-
-
-static void x25_data_transmit(struct net_device *dev, struct sk_buff *skb)
-{
-	hdlc_device *hdlc = dev_to_hdlc(dev);
-	hdlc->xmit(skb, dev); /* Ignore return value :-( */
-}
-
-
-
-static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
-{
-	int result;
-
-
-	/* X.25 to LAPB */
-	switch (skb->data[0]) {
-	case X25_IFACE_DATA:	/* Data to be transmitted */
-		skb_pull(skb, 1);
-		if ((result = lapb_data_request(dev, skb)) != LAPB_OK)
-			dev_kfree_skb(skb);
-		return NETDEV_TX_OK;
-
-	case X25_IFACE_CONNECT:
-		if ((result = lapb_connect_request(dev))!= LAPB_OK) {
-=======
 
 	skb_queue_tail(&x25st->rx_queue, skb);
 	tasklet_schedule(&x25st->rx_tasklet);
@@ -226,7 +146,6 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
 	case X25_IFACE_CONNECT:
 		result = lapb_connect_request(dev);
 		if (result != LAPB_OK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (result == LAPB_CONNECTED)
 				/* Send connect confirm. msg to level 3 */
 				x25_connected(dev, 0);
@@ -237,12 +156,8 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
 		break;
 
 	case X25_IFACE_DISCONNECT:
-<<<<<<< HEAD
-		if ((result = lapb_disconnect_request(dev)) != LAPB_OK) {
-=======
 		result = lapb_disconnect_request(dev);
 		if (result != LAPB_OK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (result == LAPB_NOTCONNECTED)
 				/* Send disconnect confirm. msg to level 3 */
 				x25_disconnected(dev, 0);
@@ -256,24 +171,13 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 	spin_unlock_bh(&x25st->up_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_kfree_skb(skb);
 	return NETDEV_TX_OK;
 }
 
-<<<<<<< HEAD
-
-
 static int x25_open(struct net_device *dev)
 {
-	int result;
-=======
-static int x25_open(struct net_device *dev)
-{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static const struct lapb_register_struct cb = {
 		.connect_confirmation = x25_connected,
 		.connect_indication = x25_connected,
@@ -282,29 +186,6 @@ static int x25_open(struct net_device *dev)
 		.data_indication = x25_data_indication,
 		.data_transmit = x25_data_transmit,
 	};
-<<<<<<< HEAD
-
-	result = lapb_register(dev, &cb);
-	if (result != LAPB_OK)
-		return result;
-	return 0;
-}
-
-
-
-static void x25_close(struct net_device *dev)
-{
-	lapb_unregister(dev);
-}
-
-
-
-static int x25_rx(struct sk_buff *skb)
-{
-	struct net_device *dev = skb->dev;
-
-	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL) {
-=======
 	hdlc_device *hdlc = dev_to_hdlc(dev);
 	struct x25_state *x25st = state(hdlc);
 	struct lapb_parms_struct params;
@@ -361,16 +242,10 @@ static int x25_rx(struct sk_buff *skb)
 
 	skb = skb_share_check(skb, GFP_ATOMIC);
 	if (!skb) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->stats.rx_dropped++;
 		return NET_RX_DROP;
 	}
 
-<<<<<<< HEAD
-	if (lapb_data_received(dev, skb) == LAPB_OK)
-		return NET_RX_SUCCESS;
-
-=======
 	spin_lock_bh(&x25st->up_lock);
 	if (!x25st->up) {
 		spin_unlock_bh(&x25st->up_lock);
@@ -385,16 +260,11 @@ static int x25_rx(struct sk_buff *skb)
 	}
 
 	spin_unlock_bh(&x25st->up_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->stats.rx_errors++;
 	dev_kfree_skb_any(skb);
 	return NET_RX_DROP;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct hdlc_proto proto = {
 	.open		= x25_open,
 	.close		= x25_close,
@@ -404,20 +274,6 @@ static struct hdlc_proto proto = {
 	.module		= THIS_MODULE,
 };
 
-<<<<<<< HEAD
-
-static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
-{
-	hdlc_device *hdlc = dev_to_hdlc(dev);
-	int result;
-
-	switch (ifr->ifr_settings.type) {
-	case IF_GET_PROTO:
-		if (dev_to_hdlc(dev)->proto != &proto)
-			return -EINVAL;
-		ifr->ifr_settings.type = IF_PROTO_X25;
-		return 0; /* return protocol only, no settable parameters */
-=======
 static int x25_ioctl(struct net_device *dev, struct if_settings *ifs)
 {
 	x25_hdlc_proto __user *x25_s = ifs->ifs_ifsu.x25;
@@ -438,7 +294,6 @@ static int x25_ioctl(struct net_device *dev, struct if_settings *ifs)
 		if (copy_to_user(x25_s, &state(hdlc)->settings, size))
 			return -EFAULT;
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case IF_PROTO_X25:
 		if (!capable(CAP_NET_ADMIN))
@@ -447,15 +302,6 @@ static int x25_ioctl(struct net_device *dev, struct if_settings *ifs)
 		if (dev->flags & IFF_UP)
 			return -EBUSY;
 
-<<<<<<< HEAD
-		result=hdlc->attach(dev, ENCODING_NRZ,PARITY_CRC16_PR1_CCITT);
-		if (result)
-			return result;
-
-		if ((result = attach_hdlc_protocol(dev, &proto, 0)))
-			return result;
-		dev->type = ARPHRD_X25;
-=======
 		/* backward compatibility */
 		if (ifs->size == 0) {
 			new_settings.dce = 0;
@@ -512,7 +358,6 @@ static int x25_ioctl(struct net_device *dev, struct if_settings *ifs)
 
 		dev->type = ARPHRD_X25;
 		call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_dormant_off(dev);
 		return 0;
 	}
@@ -520,36 +365,19 @@ static int x25_ioctl(struct net_device *dev, struct if_settings *ifs)
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-
-static int __init mod_init(void)
-=======
 static int __init hdlc_x25_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	register_hdlc_protocol(&proto);
 	return 0;
 }
 
-<<<<<<< HEAD
-
-
-static void __exit mod_exit(void)
-=======
 static void __exit hdlc_x25_exit(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unregister_hdlc_protocol(&proto);
 }
 
-<<<<<<< HEAD
-
-module_init(mod_init);
-module_exit(mod_exit);
-=======
 module_init(hdlc_x25_init);
 module_exit(hdlc_x25_exit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Krzysztof Halasa <khc@pm.waw.pl>");
 MODULE_DESCRIPTION("X.25 protocol support for generic HDLC");

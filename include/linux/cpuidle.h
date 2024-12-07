@@ -13,18 +13,10 @@
 
 #include <linux/percpu.h>
 #include <linux/list.h>
-<<<<<<< HEAD
-#include <linux/kobject.h>
-#include <linux/completion.h>
-#include <linux/hrtimer.h>
-
-#define CPUIDLE_STATE_MAX	8
-=======
 #include <linux/hrtimer.h>
 #include <linux/context_tracking.h>
 
 #define CPUIDLE_STATE_MAX	10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CPUIDLE_NAME_LEN	16
 #define CPUIDLE_DESC_LEN	32
 
@@ -38,13 +30,6 @@ struct cpuidle_driver;
  * CPUIDLE DEVICE INTERFACE *
  ****************************/
 
-<<<<<<< HEAD
-struct cpuidle_state_usage {
-	void		*driver_data;
-
-	unsigned long long	usage;
-	unsigned long long	time; /* in US */
-=======
 #define CPUIDLE_STATE_DISABLED_BY_USER		BIT(0)
 #define CPUIDLE_STATE_DISABLED_BY_DRIVER	BIT(1)
 
@@ -59,68 +44,24 @@ struct cpuidle_state_usage {
 	unsigned long long	s2idle_usage;
 	unsigned long long	s2idle_time; /* in US */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct cpuidle_state {
 	char		name[CPUIDLE_NAME_LEN];
 	char		desc[CPUIDLE_DESC_LEN];
 
-<<<<<<< HEAD
-=======
 	s64		exit_latency_ns;
 	s64		target_residency_ns;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int	flags;
 	unsigned int	exit_latency; /* in US */
 	int		power_usage; /* in mW */
 	unsigned int	target_residency; /* in US */
-<<<<<<< HEAD
-	unsigned int    disable;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int (*enter)	(struct cpuidle_device *dev,
 			struct cpuidle_driver *drv,
 			int index);
 
 	int (*enter_dead) (struct cpuidle_device *dev, int index);
-<<<<<<< HEAD
-};
-
-/* Idle State Flags */
-#define CPUIDLE_FLAG_TIME_VALID	(0x01) /* is residency time measurable? */
-#define CPUIDLE_FLAG_COUPLED	(0x02) /* state applies to multiple cpus */
-
-#define CPUIDLE_DRIVER_FLAGS_MASK (0xFFFF0000)
-
-/**
- * cpuidle_get_statedata - retrieves private driver state data
- * @st_usage: the state usage statistics
- */
-static inline void *cpuidle_get_statedata(struct cpuidle_state_usage *st_usage)
-{
-	return st_usage->driver_data;
-}
-
-/**
- * cpuidle_set_statedata - stores private driver state data
- * @st_usage: the state usage statistics
- * @data: the private data
- */
-static inline void
-cpuidle_set_statedata(struct cpuidle_state_usage *st_usage, void *data)
-{
-	st_usage->driver_data = data;
-}
-
-struct cpuidle_state_kobj {
-	struct cpuidle_state *state;
-	struct cpuidle_state_usage *state_usage;
-	struct completion kobj_unregister;
-	struct kobject kobj;
-};
-=======
 
 	/*
 	 * CPUs execute ->enter_s2idle with the local tick or entire timekeeping
@@ -148,26 +89,10 @@ struct cpuidle_state_kobj {
 struct cpuidle_device_kobj;
 struct cpuidle_state_kobj;
 struct cpuidle_driver_kobj;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cpuidle_device {
 	unsigned int		registered:1;
 	unsigned int		enabled:1;
-<<<<<<< HEAD
-	unsigned int		cpu;
-
-	int			last_residency;
-	int			state_count;
-	struct cpuidle_state_usage	states_usage[CPUIDLE_STATE_MAX];
-	struct cpuidle_state_kobj *kobjs[CPUIDLE_STATE_MAX];
-
-	struct list_head 	device_list;
-	struct kobject		kobj;
-	struct completion	kobj_unregister;
-
-#ifdef CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED
-	int			safe_state_index;
-=======
 	unsigned int		poll_time_limit:1;
 	unsigned int		cpu;
 	ktime_t			next_hrtimer;
@@ -183,27 +108,12 @@ struct cpuidle_device {
 	struct list_head 	device_list;
 
 #ifdef CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpumask_t		coupled_cpus;
 	struct cpuidle_coupled	*coupled;
 #endif
 };
 
 DECLARE_PER_CPU(struct cpuidle_device *, cpuidle_devices);
-<<<<<<< HEAD
-
-/**
- * cpuidle_get_last_residency - retrieves the last state's residency time
- * @dev: the target CPU
- *
- * NOTE: this value is invalid if CPUIDLE_FLAG_TIME_VALID isn't set
- */
-static inline int cpuidle_get_last_residency(struct cpuidle_device *dev)
-{
-	return dev->last_residency;
-}
-
-=======
 DECLARE_PER_CPU(struct cpuidle_device, cpuidle_dev);
 
 static __always_inline void ct_cpuidle_enter(void)
@@ -234,7 +144,6 @@ static __always_inline void ct_cpuidle_exit(void)
 	ct_idle_exit();
 	instrumentation_begin();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /****************************
  * CPUIDLE DRIVER INTERFACE *
@@ -244,14 +153,6 @@ struct cpuidle_driver {
 	const char		*name;
 	struct module 		*owner;
 
-<<<<<<< HEAD
-	unsigned int		power_specified:1;
-	/* set to 1 to use the core cpuidle time keeping (for all states). */
-	unsigned int		en_core_tk_irqen:1;
-	struct cpuidle_state	states[CPUIDLE_STATE_MAX];
-	int			state_count;
-	int			safe_state_index;
-=======
         /* used by the cpuidle framework to setup the broadcast timer */
 	unsigned int            bctimer:1;
 	/* states array must be ordered in decreasing power consumption */
@@ -264,16 +165,10 @@ struct cpuidle_driver {
 
 	/* preferred governor to switch at register time */
 	const char		*governor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_CPU_IDLE
 extern void disable_cpuidle(void);
-<<<<<<< HEAD
-extern int cpuidle_idle_call(void);
-extern int cpuidle_register_driver(struct cpuidle_driver *drv);
-struct cpuidle_driver *cpuidle_get_driver(void);
-=======
 extern bool cpuidle_not_available(struct cpuidle_driver *drv,
 				  struct cpuidle_device *dev);
 
@@ -290,7 +185,6 @@ extern int cpuidle_register_driver(struct cpuidle_driver *drv);
 extern struct cpuidle_driver *cpuidle_get_driver(void);
 extern void cpuidle_driver_state_disabled(struct cpuidle_driver *drv, int idx,
 					bool disable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void cpuidle_unregister_driver(struct cpuidle_driver *drv);
 extern int cpuidle_register_device(struct cpuidle_device *dev);
 extern void cpuidle_unregister_device(struct cpuidle_device *dev);
@@ -299,22 +193,6 @@ extern int cpuidle_register(struct cpuidle_driver *drv,
 extern void cpuidle_unregister(struct cpuidle_driver *drv);
 extern void cpuidle_pause_and_lock(void);
 extern void cpuidle_resume_and_unlock(void);
-<<<<<<< HEAD
-extern int cpuidle_enable_device(struct cpuidle_device *dev);
-extern void cpuidle_disable_device(struct cpuidle_device *dev);
-extern int cpuidle_wrap_enter(struct cpuidle_device *dev,
-				struct cpuidle_driver *drv, int index,
-				int (*enter)(struct cpuidle_device *dev,
-					struct cpuidle_driver *drv, int index));
-extern int cpuidle_play_dead(void);
-
-#else
-static inline void disable_cpuidle(void) { }
-static inline int cpuidle_idle_call(void) { return -ENODEV; }
-static inline int cpuidle_register_driver(struct cpuidle_driver *drv)
-{return -ENODEV; }
-static inline struct cpuidle_driver *cpuidle_get_driver(void) {return NULL; }
-=======
 extern void cpuidle_pause(void);
 extern void cpuidle_resume(void);
 extern int cpuidle_enable_device(struct cpuidle_device *dev);
@@ -344,7 +222,6 @@ static inline int cpuidle_register_driver(struct cpuidle_driver *drv)
 static inline struct cpuidle_driver *cpuidle_get_driver(void) {return NULL; }
 static inline void cpuidle_driver_state_disabled(struct cpuidle_driver *drv,
 					       int idx, bool disable) { }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void cpuidle_unregister_driver(struct cpuidle_driver *drv) { }
 static inline int cpuidle_register_device(struct cpuidle_device *dev)
 {return -ENODEV; }
@@ -355,22 +232,6 @@ static inline int cpuidle_register(struct cpuidle_driver *drv,
 static inline void cpuidle_unregister(struct cpuidle_driver *drv) { }
 static inline void cpuidle_pause_and_lock(void) { }
 static inline void cpuidle_resume_and_unlock(void) { }
-<<<<<<< HEAD
-static inline int cpuidle_enable_device(struct cpuidle_device *dev)
-{return -ENODEV; }
-static inline void cpuidle_disable_device(struct cpuidle_device *dev) { }
-static inline int cpuidle_wrap_enter(struct cpuidle_device *dev,
-				struct cpuidle_driver *drv, int index,
-				int (*enter)(struct cpuidle_device *dev,
-					struct cpuidle_driver *drv, int index))
-{ return -ENODEV; }
-static inline int cpuidle_play_dead(void) {return -ENODEV; }
-
-#endif
-
-#ifdef CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED
-void cpuidle_coupled_parallel_barrier(struct cpuidle_device *dev, atomic_t *a);
-=======
 static inline void cpuidle_pause(void) { }
 static inline void cpuidle_resume(void) { }
 static inline int cpuidle_enable_device(struct cpuidle_device *dev)
@@ -418,7 +279,6 @@ static inline void cpuidle_coupled_parallel_barrier(struct cpuidle_device *dev, 
 void cpuidle_poll_state_init(struct cpuidle_driver *drv);
 #else
 static inline void cpuidle_poll_state_init(struct cpuidle_driver *drv) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /******************************
@@ -436,39 +296,6 @@ struct cpuidle_governor {
 					struct cpuidle_device *dev);
 
 	int  (*select)		(struct cpuidle_driver *drv,
-<<<<<<< HEAD
-					struct cpuidle_device *dev);
-	void (*reflect)		(struct cpuidle_device *dev, int index);
-
-	struct module 		*owner;
-};
-
-#ifdef CONFIG_CPU_IDLE
-
-extern int cpuidle_register_governor(struct cpuidle_governor *gov);
-extern void cpuidle_unregister_governor(struct cpuidle_governor *gov);
-
-#ifdef CONFIG_INTEL_IDLE
-extern int intel_idle_cpu_init(int cpu);
-#else
-static inline int intel_idle_cpu_init(int cpu) { return -1; }
-#endif
-
-#else
-static inline int intel_idle_cpu_init(int cpu) { return -1; }
-
-static inline int cpuidle_register_governor(struct cpuidle_governor *gov)
-{return 0;}
-static inline void cpuidle_unregister_governor(struct cpuidle_governor *gov) { }
-
-#endif
-
-#ifdef CONFIG_ARCH_HAS_CPU_RELAX
-#define CPUIDLE_DRIVER_STATE_START	1
-#else
-#define CPUIDLE_DRIVER_STATE_START	0
-#endif
-=======
 					struct cpuidle_device *dev,
 					bool *stop_tick);
 	void (*reflect)		(struct cpuidle_device *dev, int index);
@@ -521,6 +348,5 @@ extern s64 cpuidle_governor_latency_req(unsigned int cpu);
 
 #define CPU_PM_CPU_IDLE_ENTER_RETENTION_PARAM_RCU(low_level_idle_enter, idx, state)	\
 	__CPU_PM_CPU_IDLE_ENTER(low_level_idle_enter, idx, state, 1, 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_CPUIDLE_H */

@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   Driver for the Korg 1212 IO PCI card
  *
  *	Copyright (c) 2001 Haroldo Gamal <gamal@alternex.com.br>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -35,10 +14,7 @@
 #include <linux/module.h>
 #include <linux/mutex.h>
 #include <linux/firmware.h>
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/info.h>
@@ -47,11 +23,6 @@
 #include <sound/pcm_params.h>
 #include <sound/initval.h>
 
-<<<<<<< HEAD
-#include <asm/io.h>
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 // ----------------------------------------------------------------------------
 // Debug Stuff
 // ----------------------------------------------------------------------------
@@ -59,11 +30,7 @@
 #if K1212_DEBUG_LEVEL > 0
 #define K1212_DEBUG_PRINTK(fmt,args...)	printk(KERN_DEBUG fmt,##args)
 #else
-<<<<<<< HEAD
-#define K1212_DEBUG_PRINTK(fmt,...)
-=======
 #define K1212_DEBUG_PRINTK(fmt,...)	do { } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #if K1212_DEBUG_LEVEL > 1
 #define K1212_DEBUG_PRINTK_VERBOSE(fmt,args...)	printk(KERN_DEBUG fmt,##args)
@@ -214,13 +181,8 @@ enum MonitorModeSelector {
 #define K1212_ADAT_BUF_SIZE	(K1212_ADAT_CHANNELS * 2 * kPlayBufferFrames * kNumBuffers)
 #define K1212_MAX_BUF_SIZE	(K1212_ANALOG_BUF_SIZE + K1212_ADAT_BUF_SIZE)
 
-<<<<<<< HEAD
-#define k1212MinADCSens     0x7f
-#define k1212MaxADCSens     0x00
-=======
 #define k1212MinADCSens     0x00
 #define k1212MaxADCSens     0x7f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define k1212MaxVolume      0x7fff
 #define k1212MaxWaveVolume  0xffff
 #define k1212MinVolume      0x0000
@@ -358,17 +320,10 @@ struct snd_korg1212 {
         unsigned long inIRQ;
         void __iomem *iobase;
 
-<<<<<<< HEAD
-	struct snd_dma_buffer dma_dsp;
-        struct snd_dma_buffer dma_play;
-        struct snd_dma_buffer dma_rec;
-	struct snd_dma_buffer dma_shared;
-=======
 	struct snd_dma_buffer *dma_dsp;
 	struct snd_dma_buffer *dma_play;
 	struct snd_dma_buffer *dma_rec;
 	struct snd_dma_buffer *dma_shared;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32 DataBufsSize;
 
@@ -433,10 +388,6 @@ struct snd_korg1212 {
 
 MODULE_DESCRIPTION("korg1212");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{KORG,korg1212}}");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_FIRMWARE("korg/k1212.dsp");
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;     /* Index 0-MAX */
@@ -451,11 +402,7 @@ module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable Korg 1212 soundcard.");
 MODULE_AUTHOR("Haroldo Gamal <gamal@alternex.com.br>");
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(snd_korg1212_ids) = {
-=======
 static const struct pci_device_id snd_korg1212_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.vendor	   = 0x10b5,
 		.device	   = 0x906d,
@@ -467,11 +414,7 @@ static const struct pci_device_id snd_korg1212_ids[] = {
 
 MODULE_DEVICE_TABLE(pci, snd_korg1212_ids);
 
-<<<<<<< HEAD
-static char *stateName[] = {
-=======
 static const char * const stateName[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Non-existent",
 	"Uninitialized",
 	"DSP download in process",
@@ -485,15 +428,9 @@ static const char * const stateName[] = {
 	"Invalid"
 };
 
-<<<<<<< HEAD
-static char *clockSourceTypeName[] = { "ADAT", "S/PDIF", "local" };
-
-static char *clockSourceName[] = {
-=======
 static const char * const clockSourceTypeName[] = { "ADAT", "S/PDIF", "local" };
 
 static const char * const clockSourceName[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"ADAT at 44.1 kHz",
 	"ADAT at 48 kHz",
 	"S/PDIF at 44.1 kHz",
@@ -502,11 +439,7 @@ static const char * const clockSourceName[] = {
 	"local clock at 48 kHz"
 };
 
-<<<<<<< HEAD
-static char *channelName[] = {
-=======
 static const char * const channelName[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"ADAT-1",
 	"ADAT-2",
 	"ADAT-3",
@@ -521,11 +454,7 @@ static const char * const channelName[] = {
 	"SPDIF-R",
 };
 
-<<<<<<< HEAD
-static u16 ClockSourceSelector[] = {
-=======
 static const u16 ClockSourceSelector[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x8000,   // selects source as ADAT at 44.1 kHz
 	0x0000,   // selects source as ADAT at 48 kHz
 	0x8001,   // selects source as S/PDIF at 44.1 kHz
@@ -640,12 +569,7 @@ static void snd_korg1212_SendStop(struct snd_korg1212 *korg1212)
 		korg1212->sharedBufferPtr->cardCommand = 0xffffffff;
 		/* program the timer */
 		korg1212->stop_pending_cnt = HZ;
-<<<<<<< HEAD
-		korg1212->timer.expires = jiffies + 1;
-		add_timer(&korg1212->timer);
-=======
 		mod_timer(&korg1212->timer, jiffies + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -660,15 +584,9 @@ static void snd_korg1212_SendStopAndWait(struct snd_korg1212 *korg1212)
 }
 
 /* timer callback for checking the ack of stop request */
-<<<<<<< HEAD
-static void snd_korg1212_timer_func(unsigned long data)
-{
-        struct snd_korg1212 *korg1212 = (struct snd_korg1212 *) data;
-=======
 static void snd_korg1212_timer_func(struct timer_list *t)
 {
 	struct snd_korg1212 *korg1212 = from_timer(korg1212, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	
 	spin_lock_irqsave(&korg1212->lock, flags);
@@ -682,12 +600,7 @@ static void snd_korg1212_timer_func(struct timer_list *t)
 	} else {
 		if (--korg1212->stop_pending_cnt > 0) {
 			/* reprogram timer */
-<<<<<<< HEAD
-			korg1212->timer.expires = jiffies + 1;
-			add_timer(&korg1212->timer);
-=======
 			mod_timer(&korg1212->timer, jiffies + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			snd_printd("korg1212_timer_func timeout\n");
 			korg1212->sharedBufferPtr->cardCommand = 0;
@@ -899,20 +812,12 @@ static inline int snd_korg1212_use_is_exclusive(struct snd_korg1212 *korg1212)
 
 static int snd_korg1212_SetRate(struct snd_korg1212 *korg1212, int rate)
 {
-<<<<<<< HEAD
-        static enum ClockSourceIndex s44[] = {
-=======
 	static const enum ClockSourceIndex s44[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		K1212_CLKIDX_AdatAt44_1K,
 		K1212_CLKIDX_WordAt44_1K,
 		K1212_CLKIDX_LocalAt44_1K
 	};
-<<<<<<< HEAD
-        static enum ClockSourceIndex s48[] = {
-=======
 	static const enum ClockSourceIndex s48[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		K1212_CLKIDX_AdatAt48K,
 		K1212_CLKIDX_WordAt48K,
 		K1212_CLKIDX_LocalAt48K
@@ -1295,13 +1200,8 @@ static int snd_korg1212_downloadDSPCode(struct snd_korg1212 *korg1212)
         snd_korg1212_setCardState(korg1212, K1212_STATE_DSP_IN_PROCESS);
 
         rc = snd_korg1212_Send1212Command(korg1212, K1212_DB_StartDSPDownload,
-<<<<<<< HEAD
-                                     UpperWordSwap(korg1212->dma_dsp.addr),
-                                     0, 0, 0);
-=======
 					  UpperWordSwap(korg1212->dma_dsp->addr),
 					  0, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		K1212_DEBUG_PRINTK("K1212_DEBUG: Start DSP Download RC = %d [%s]\n",
 				   rc, stateName[korg1212->cardState]);
@@ -1316,11 +1216,7 @@ static int snd_korg1212_downloadDSPCode(struct snd_korg1212 *korg1212)
         return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_korg1212_playback_info =
-=======
 static const struct snd_pcm_hardware snd_korg1212_playback_info =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =              (SNDRV_PCM_INFO_MMAP |
                               SNDRV_PCM_INFO_MMAP_VALID |
@@ -1341,11 +1237,7 @@ static const struct snd_pcm_hardware snd_korg1212_playback_info =
         .fifo_size =          0,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_korg1212_capture_info =
-=======
 static const struct snd_pcm_hardware snd_korg1212_capture_info =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         .info =              (SNDRV_PCM_INFO_MMAP |
                               SNDRV_PCM_INFO_MMAP_VALID |
@@ -1392,15 +1284,6 @@ static int snd_korg1212_silence(struct snd_korg1212 *korg1212, int pos, int coun
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_korg1212_copy_to(struct snd_korg1212 *korg1212, void __user *dst, int pos, int count, int offset, int size)
-{
-	struct KorgAudioFrame * src =  korg1212->recordDataBufsPtr[0].bufferData + pos;
-	int i, rc;
-
-	K1212_DEBUG_PRINTK_VERBOSE("K1212_DEBUG: snd_korg1212_copy_to pos=%d offset=%d size=%d\n",
-				   pos, offset, size);
-=======
 static int snd_korg1212_copy_to(struct snd_pcm_substream *substream,
 				struct iov_iter *dst, int pos, int count)
 {
@@ -1415,7 +1298,6 @@ static int snd_korg1212_copy_to(struct snd_pcm_substream *substream,
 	src = korg1212->recordDataBufsPtr[0].bufferData + pos;
 	K1212_DEBUG_PRINTK_VERBOSE("K1212_DEBUG: snd_korg1212_copy_to pos=%d size=%d count=%d\n",
 				   pos, size, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (snd_BUG_ON(pos + count > K1212_MAX_SAMPLES))
 		return -EINVAL;
 
@@ -1423,19 +1305,6 @@ static int snd_korg1212_copy_to(struct snd_pcm_substream *substream,
 #if K1212_DEBUG_LEVEL > 0
 		if ( (void *) src < (void *) korg1212->recordDataBufsPtr ||
 		     (void *) src > (void *) korg1212->recordDataBufsPtr[8].bufferData ) {
-<<<<<<< HEAD
-			printk(KERN_DEBUG "K1212_DEBUG: snd_korg1212_copy_to KERNEL EFAULT, src=%p dst=%p iter=%d\n", src, dst, i);
-			return -EFAULT;
-		}
-#endif
-		rc = copy_to_user(dst + offset, src, size);
-		if (rc) {
-			K1212_DEBUG_PRINTK("K1212_DEBUG: snd_korg1212_copy_to USER EFAULT src=%p dst=%p iter=%d\n", src, dst, i);
-			return -EFAULT;
-		}
-		src++;
-		dst += size;
-=======
 			printk(KERN_DEBUG "K1212_DEBUG: snd_korg1212_copy_to KERNEL EFAULT, src=%p dst=%p iter=%d\n", src, dst->kvec.iov_base, i);
 			return -EFAULT;
 		}
@@ -1443,21 +1312,11 @@ static int snd_korg1212_copy_to(struct snd_pcm_substream *substream,
 		if (copy_to_iter(src, size, dst) != size)
 			return -EFAULT;
 		src++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_korg1212_copy_from(struct snd_korg1212 *korg1212, void __user *src, int pos, int count, int offset, int size)
-{
-	struct KorgAudioFrame * dst =  korg1212->playDataBufsPtr[0].bufferData + pos;
-	int i, rc;
-
-	K1212_DEBUG_PRINTK_VERBOSE("K1212_DEBUG: snd_korg1212_copy_from pos=%d offset=%d size=%d count=%d\n",
-				   pos, offset, size, count);
-=======
 static int snd_korg1212_copy_from(struct snd_pcm_substream *substream,
 				  struct iov_iter *src, int pos, int count)
 {
@@ -1473,7 +1332,6 @@ static int snd_korg1212_copy_from(struct snd_pcm_substream *substream,
 
 	K1212_DEBUG_PRINTK_VERBOSE("K1212_DEBUG: snd_korg1212_copy_from pos=%d size=%d count=%d\n",
 				   pos, size, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (snd_BUG_ON(pos + count > K1212_MAX_SAMPLES))
 		return -EINVAL;
@@ -1482,19 +1340,6 @@ static int snd_korg1212_copy_from(struct snd_pcm_substream *substream,
 #if K1212_DEBUG_LEVEL > 0
 		if ( (void *) dst < (void *) korg1212->playDataBufsPtr ||
 		     (void *) dst > (void *) korg1212->playDataBufsPtr[8].bufferData ) {
-<<<<<<< HEAD
-			printk(KERN_DEBUG "K1212_DEBUG: snd_korg1212_copy_from KERNEL EFAULT, src=%p dst=%p iter=%d\n", src, dst, i);
-			return -EFAULT;
-		}
-#endif
-		rc = copy_from_user((void*) dst + offset, src, size);
-		if (rc) {
-			K1212_DEBUG_PRINTK("K1212_DEBUG: snd_korg1212_copy_from USER EFAULT src=%p dst=%p iter=%d\n", src, dst, i);
-			return -EFAULT;
-		}
-		dst++;
-		src += size;
-=======
 			printk(KERN_DEBUG "K1212_DEBUG: snd_korg1212_copy_from KERNEL EFAULT, src=%p dst=%p iter=%d\n", src->kvec.iov_base, dst, i);
 			return -EFAULT;
 		}
@@ -1502,7 +1347,6 @@ static int snd_korg1212_copy_from(struct snd_pcm_substream *substream,
 		if (copy_from_iter(dst, size, src) != size)
 			return -EFAULT;
 		dst++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1530,11 +1374,7 @@ static int snd_korg1212_playback_open(struct snd_pcm_substream *substream)
 	snd_korg1212_OpenCard(korg1212);
 
         runtime->hw = snd_korg1212_playback_info;
-<<<<<<< HEAD
-	snd_pcm_set_runtime_buffer(substream, &korg1212->dma_play);
-=======
 	snd_pcm_set_runtime_buffer(substream, korg1212->dma_play);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         spin_lock_irqsave(&korg1212->lock, flags);
 
@@ -1546,13 +1386,9 @@ static int snd_korg1212_playback_open(struct snd_pcm_substream *substream)
 
         spin_unlock_irqrestore(&korg1212->lock, flags);
 
-<<<<<<< HEAD
-        snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_PERIOD_SIZE, kPlayBufferFrames, kPlayBufferFrames);
-=======
 	snd_pcm_hw_constraint_single(runtime, SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
 				     kPlayBufferFrames);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         return 0;
 }
 
@@ -1569,11 +1405,7 @@ static int snd_korg1212_capture_open(struct snd_pcm_substream *substream)
 	snd_korg1212_OpenCard(korg1212);
 
         runtime->hw = snd_korg1212_capture_info;
-<<<<<<< HEAD
-	snd_pcm_set_runtime_buffer(substream, &korg1212->dma_rec);
-=======
 	snd_pcm_set_runtime_buffer(substream, korg1212->dma_rec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         spin_lock_irqsave(&korg1212->lock, flags);
 
@@ -1584,13 +1416,8 @@ static int snd_korg1212_capture_open(struct snd_pcm_substream *substream)
 
         spin_unlock_irqrestore(&korg1212->lock, flags);
 
-<<<<<<< HEAD
-        snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
-				     kPlayBufferFrames, kPlayBufferFrames);
-=======
 	snd_pcm_hw_constraint_single(runtime, SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
 				     kPlayBufferFrames);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         return 0;
 }
 
@@ -1692,12 +1519,8 @@ static int snd_korg1212_hw_params(struct snd_pcm_substream *substream,
 	        return 0;
 	}
 
-<<<<<<< HEAD
-        if ((err = snd_korg1212_SetRate(korg1212, params_rate(params))) < 0) {
-=======
 	err = snd_korg1212_SetRate(korg1212, params_rate(params));
 	if (err < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 spin_unlock_irqrestore(&korg1212->lock, flags);
                 return err;
         }
@@ -1810,57 +1633,14 @@ static snd_pcm_uframes_t snd_korg1212_capture_pointer(struct snd_pcm_substream *
 }
 
 static int snd_korg1212_playback_copy(struct snd_pcm_substream *substream,
-<<<<<<< HEAD
-                        int channel, /* not used (interleaved data) */
-                        snd_pcm_uframes_t pos,
-                        void __user *src,
-                        snd_pcm_uframes_t count)
-{
-        struct snd_korg1212 *korg1212 = snd_pcm_substream_chip(substream);
-
-	K1212_DEBUG_PRINTK_VERBOSE("K1212_DEBUG: snd_korg1212_playback_copy [%s] %ld %ld\n",
-				   stateName[korg1212->cardState], pos, count);
- 
-	return snd_korg1212_copy_from(korg1212, src, pos, count, 0, korg1212->channels * 2);
-
-=======
 				      int channel, unsigned long pos,
 				      struct iov_iter *src, unsigned long count)
 {
 	return snd_korg1212_copy_from(substream, src, pos, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_korg1212_playback_silence(struct snd_pcm_substream *substream,
                            int channel, /* not used (interleaved data) */
-<<<<<<< HEAD
-                           snd_pcm_uframes_t pos,
-                           snd_pcm_uframes_t count)
-{
-        struct snd_korg1212 *korg1212 = snd_pcm_substream_chip(substream);
-
-	K1212_DEBUG_PRINTK_VERBOSE("K1212_DEBUG: snd_korg1212_playback_silence [%s]\n",
-				   stateName[korg1212->cardState]);
-
-	return snd_korg1212_silence(korg1212, pos, count, 0, korg1212->channels * 2);
-}
-
-static int snd_korg1212_capture_copy(struct snd_pcm_substream *substream,
-                        int channel, /* not used (interleaved data) */
-                        snd_pcm_uframes_t pos,
-                        void __user *dst,
-                        snd_pcm_uframes_t count)
-{
-        struct snd_korg1212 *korg1212 = snd_pcm_substream_chip(substream);
-
-	K1212_DEBUG_PRINTK_VERBOSE("K1212_DEBUG: snd_korg1212_capture_copy [%s] %ld %ld\n",
-				   stateName[korg1212->cardState], pos, count);
-
-	return snd_korg1212_copy_to(korg1212, dst, pos, count, 0, korg1212->channels * 2);
-}
-
-static struct snd_pcm_ops snd_korg1212_playback_ops = {
-=======
                            unsigned long pos,
                            unsigned long count)
 {
@@ -1880,7 +1660,6 @@ static int snd_korg1212_capture_copy(struct snd_pcm_substream *substream,
 }
 
 static const struct snd_pcm_ops snd_korg1212_playback_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         .open =		snd_korg1212_playback_open,
         .close =	snd_korg1212_playback_close,
         .ioctl =	snd_korg1212_ioctl,
@@ -1888,19 +1667,11 @@ static const struct snd_pcm_ops snd_korg1212_playback_ops = {
         .prepare =	snd_korg1212_prepare,
         .trigger =	snd_korg1212_trigger,
         .pointer =	snd_korg1212_playback_pointer,
-<<<<<<< HEAD
-        .copy =		snd_korg1212_playback_copy,
-        .silence =	snd_korg1212_playback_silence,
-};
-
-static struct snd_pcm_ops snd_korg1212_capture_ops = {
-=======
 	.copy =		snd_korg1212_playback_copy,
 	.fill_silence =	snd_korg1212_playback_silence,
 };
 
 static const struct snd_pcm_ops snd_korg1212_capture_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =		snd_korg1212_capture_open,
 	.close =	snd_korg1212_capture_close,
 	.ioctl =	snd_korg1212_ioctl,
@@ -2050,20 +1821,9 @@ static int snd_korg1212_control_volume_put(struct snd_kcontrol *kcontrol,
 static int snd_korg1212_control_route_info(struct snd_kcontrol *kcontrol,
 					   struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = (kcontrol->private_value >= 8) ? 2 : 1;
-	uinfo->value.enumerated.items = kAudioChannels;
-	if (uinfo->value.enumerated.item > kAudioChannels-1) {
-		uinfo->value.enumerated.item = kAudioChannels-1;
-	}
-	strcpy(uinfo->value.enumerated.name, channelName[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	return snd_ctl_enum_info(uinfo,
 				 (kcontrol->private_value >= 8) ? 2 : 1,
 				 kAudioChannels, channelName);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_korg1212_control_route_get(struct snd_kcontrol *kcontrol,
@@ -2173,18 +1933,7 @@ static int snd_korg1212_control_put(struct snd_kcontrol *kcontrol,
 static int snd_korg1212_control_sync_info(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-	if (uinfo->value.enumerated.item > 2) {
-		uinfo->value.enumerated.item = 2;
-	}
-	strcpy(uinfo->value.enumerated.name, clockSourceTypeName[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	return snd_ctl_enum_info(uinfo, 1, 3, clockSourceTypeName);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_korg1212_control_sync_get(struct snd_kcontrol *kcontrol,
@@ -2244,11 +1993,7 @@ static int snd_korg1212_control_sync_put(struct snd_kcontrol *kcontrol,
 		.private_value = ord,								\
         }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_korg1212_controls[] = {
-=======
 static const struct snd_kcontrol_new snd_korg1212_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         MON_MIXER(8, "Analog"),
 	MON_MIXER(10, "SPDIF"), 
         MON_MIXER(0, "ADAT-1"), MON_MIXER(1, "ADAT-2"), MON_MIXER(2, "ADAT-3"), MON_MIXER(3, "ADAT-4"),
@@ -2284,11 +2029,7 @@ static void snd_korg1212_proc_read(struct snd_info_entry *entry,
 	snd_iprintf(buffer, korg1212->card->longname);
 	snd_iprintf(buffer, " (index #%d)\n", korg1212->card->number + 1);
 	snd_iprintf(buffer, "\nGeneral settings\n");
-<<<<<<< HEAD
-	snd_iprintf(buffer, "    period size: %Zd bytes\n", K1212_PERIOD_BYTES);
-=======
 	snd_iprintf(buffer, "    period size: %zd bytes\n", K1212_PERIOD_BYTES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "     clock mode: %s\n", clockSourceName[korg1212->clkSrcRate] );
 	snd_iprintf(buffer, "  left ADC Sens: %d\n", korg1212->leftADCInSens );
 	snd_iprintf(buffer, " right ADC Sens: %d\n", korg1212->rightADCInSens );
@@ -2307,81 +2048,6 @@ static void snd_korg1212_proc_read(struct snd_info_entry *entry,
         snd_iprintf(buffer, "    Error count: %ld\n", korg1212->totalerrorcnt);
 }
 
-<<<<<<< HEAD
-static void __devinit snd_korg1212_proc_init(struct snd_korg1212 *korg1212)
-{
-	struct snd_info_entry *entry;
-
-	if (! snd_card_proc_new(korg1212->card, "korg1212", &entry))
-		snd_info_set_text_ops(entry, korg1212, snd_korg1212_proc_read);
-}
-
-static int
-snd_korg1212_free(struct snd_korg1212 *korg1212)
-{
-        snd_korg1212_TurnOffIdleMonitor(korg1212);
-
-        if (korg1212->irq >= 0) {
-                snd_korg1212_DisableCardInterrupts(korg1212);
-                free_irq(korg1212->irq, korg1212);
-                korg1212->irq = -1;
-        }
-        
-        if (korg1212->iobase != NULL) {
-                iounmap(korg1212->iobase);
-                korg1212->iobase = NULL;
-        }
-        
-	pci_release_regions(korg1212->pci);
-
-        // ----------------------------------------------------
-        // free up memory resources used for the DSP download.
-        // ----------------------------------------------------
-        if (korg1212->dma_dsp.area) {
-        	snd_dma_free_pages(&korg1212->dma_dsp);
-        	korg1212->dma_dsp.area = NULL;
-        }
-
-#ifndef K1212_LARGEALLOC
-
-        // ------------------------------------------------------
-        // free up memory resources used for the Play/Rec Buffers
-        // ------------------------------------------------------
-	if (korg1212->dma_play.area) {
-		snd_dma_free_pages(&korg1212->dma_play);
-		korg1212->dma_play.area = NULL;
-        }
-
-	if (korg1212->dma_rec.area) {
-		snd_dma_free_pages(&korg1212->dma_rec);
-		korg1212->dma_rec.area = NULL;
-        }
-
-#endif
-
-        // ----------------------------------------------------
-        // free up memory resources used for the Shared Buffers
-        // ----------------------------------------------------
-	if (korg1212->dma_shared.area) {
-		snd_dma_free_pages(&korg1212->dma_shared);
-		korg1212->dma_shared.area = NULL;
-        }
-        
-	pci_disable_device(korg1212->pci);
-        kfree(korg1212);
-        return 0;
-}
-
-static int snd_korg1212_dev_free(struct snd_device *device)
-{
-        struct snd_korg1212 *korg1212 = device->device_data;
-        K1212_DEBUG_PRINTK("K1212_DEBUG: Freeing device\n");
-	return snd_korg1212_free(korg1212);
-}
-
-static int __devinit snd_korg1212_create(struct snd_card *card, struct pci_dev *pci,
-                                         struct snd_korg1212 ** rchip)
-=======
 static void snd_korg1212_proc_init(struct snd_korg1212 *korg1212)
 {
 	snd_card_ro_proc_new(korg1212->card, "korg1212", korg1212,
@@ -2398,31 +2064,10 @@ snd_korg1212_free(struct snd_card *card)
 }
 
 static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 {
         int err, rc;
         unsigned int i;
-<<<<<<< HEAD
-	unsigned ioport_size, iomem_size, iomem2_size;
-        struct snd_korg1212 * korg1212;
-	const struct firmware *dsp_code;
-
-        static struct snd_device_ops ops = {
-                .dev_free = snd_korg1212_dev_free,
-        };
-
-        * rchip = NULL;
-        if ((err = pci_enable_device(pci)) < 0)
-                return err;
-
-        korg1212 = kzalloc(sizeof(*korg1212), GFP_KERNEL);
-        if (korg1212 == NULL) {
-		pci_disable_device(pci);
-                return -ENOMEM;
-	}
-
-=======
 	__maybe_unused unsigned iomem_size;
 	__maybe_unused unsigned ioport_size;
 	__maybe_unused unsigned iomem2_size;
@@ -2433,20 +2078,13 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
 	if (err < 0)
                 return err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	korg1212->card = card;
 	korg1212->pci = pci;
 
         init_waitqueue_head(&korg1212->wait);
         spin_lock_init(&korg1212->lock);
 	mutex_init(&korg1212->open_mutex);
-<<<<<<< HEAD
-	init_timer(&korg1212->timer);
-	korg1212->timer.function = snd_korg1212_timer_func;
-	korg1212->timer.data = (unsigned long)korg1212;
-=======
 	timer_setup(&korg1212->timer, snd_korg1212_timer_func, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         korg1212->irq = -1;
         korg1212->clkSource = K1212_CLKIDX_Local;
@@ -2468,17 +2106,9 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
         for (i=0; i<kAudioChannels; i++)
                 korg1212->volumePhase[i] = 0;
 
-<<<<<<< HEAD
-	if ((err = pci_request_regions(pci, "korg1212")) < 0) {
-		kfree(korg1212);
-		pci_disable_device(pci);
-		return err;
-	}
-=======
 	err = pcim_iomap_regions_request_all(pci, 1 << 0, "korg1212");
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         korg1212->iomem = pci_resource_start(korg1212->pci, 0);
         korg1212->ioport = pci_resource_start(korg1212->pci, 1);
@@ -2498,38 +2128,20 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
 		   korg1212->iomem2, iomem2_size,
 		   stateName[korg1212->cardState]);
 
-<<<<<<< HEAD
-        if ((korg1212->iobase = ioremap(korg1212->iomem, iomem_size)) == NULL) {
-		snd_printk(KERN_ERR "korg1212: unable to remap memory region 0x%lx-0x%lx\n", korg1212->iomem,
-                           korg1212->iomem + iomem_size - 1);
-                snd_korg1212_free(korg1212);
-                return -EBUSY;
-        }
-
-        err = request_irq(pci->irq, snd_korg1212_interrupt,
-=======
 	korg1212->iobase = pcim_iomap_table(pci)[0];
 
 	err = devm_request_irq(&pci->dev, pci->irq, snd_korg1212_interrupt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                           IRQF_SHARED,
                           KBUILD_MODNAME, korg1212);
 
         if (err) {
 		snd_printk(KERN_ERR "korg1212: unable to grab IRQ %d\n", pci->irq);
-<<<<<<< HEAD
-                snd_korg1212_free(korg1212);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 return -EBUSY;
         }
 
         korg1212->irq = pci->irq;
-<<<<<<< HEAD
-=======
 	card->sync_irq = korg1212->irq;
 	card->private_free = snd_korg1212_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_master(korg1212->pci);
 
@@ -2568,16 +2180,6 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
                    korg1212->idRegPtr,
 		   stateName[korg1212->cardState]);
 
-<<<<<<< HEAD
-	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(pci),
-				sizeof(struct KorgSharedBuffer), &korg1212->dma_shared) < 0) {
-		snd_printk(KERN_ERR "korg1212: can not allocate shared buffer memory (%Zd bytes)\n", sizeof(struct KorgSharedBuffer));
-                snd_korg1212_free(korg1212);
-                return -ENOMEM;
-        }
-        korg1212->sharedBufferPtr = (struct KorgSharedBuffer *)korg1212->dma_shared.area;
-        korg1212->sharedBufferPhy = korg1212->dma_shared.addr;
-=======
 	korg1212->dma_shared = snd_devm_alloc_pages(&pci->dev,
 						    SNDRV_DMA_TYPE_DEV,
 						    sizeof(struct KorgSharedBuffer));
@@ -2585,24 +2187,10 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
 		return -ENOMEM;
 	korg1212->sharedBufferPtr = (struct KorgSharedBuffer *)korg1212->dma_shared->area;
 	korg1212->sharedBufferPhy = korg1212->dma_shared->addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         K1212_DEBUG_PRINTK("K1212_DEBUG: Shared Buffer Area = 0x%p (0x%08lx), %d bytes\n", korg1212->sharedBufferPtr, korg1212->sharedBufferPhy, sizeof(struct KorgSharedBuffer));
 
 #ifndef K1212_LARGEALLOC
-<<<<<<< HEAD
-
-        korg1212->DataBufsSize = sizeof(struct KorgAudioBuffer) * kNumBuffers;
-
-	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(pci),
-				korg1212->DataBufsSize, &korg1212->dma_play) < 0) {
-		snd_printk(KERN_ERR "korg1212: can not allocate play data buffer memory (%d bytes)\n", korg1212->DataBufsSize);
-                snd_korg1212_free(korg1212);
-                return -ENOMEM;
-        }
-	korg1212->playDataBufsPtr = (struct KorgAudioBuffer *)korg1212->dma_play.area;
-	korg1212->PlayDataPhy = korg1212->dma_play.addr;
-=======
         korg1212->DataBufsSize = sizeof(struct KorgAudioBuffer) * kNumBuffers;
 	korg1212->dma_play = snd_devm_alloc_pages(&pci->dev, SNDRV_DMA_TYPE_DEV,
 						  korg1212->DataBufsSize);
@@ -2611,21 +2199,10 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
 
 	korg1212->playDataBufsPtr = (struct KorgAudioBuffer *)korg1212->dma_play->area;
 	korg1212->PlayDataPhy = korg1212->dma_play->addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         K1212_DEBUG_PRINTK("K1212_DEBUG: Play Data Area = 0x%p (0x%08x), %d bytes\n",
 		korg1212->playDataBufsPtr, korg1212->PlayDataPhy, korg1212->DataBufsSize);
 
-<<<<<<< HEAD
-	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(pci),
-				korg1212->DataBufsSize, &korg1212->dma_rec) < 0) {
-		snd_printk(KERN_ERR "korg1212: can not allocate record data buffer memory (%d bytes)\n", korg1212->DataBufsSize);
-                snd_korg1212_free(korg1212);
-                return -ENOMEM;
-        }
-        korg1212->recordDataBufsPtr = (struct KorgAudioBuffer *)korg1212->dma_rec.area;
-        korg1212->RecDataPhy = korg1212->dma_rec.addr;
-=======
 	korg1212->dma_rec = snd_devm_alloc_pages(&pci->dev, SNDRV_DMA_TYPE_DEV,
 						 korg1212->DataBufsSize);
 	if (!korg1212->dma_rec)
@@ -2633,7 +2210,6 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
 
 	korg1212->recordDataBufsPtr = (struct KorgAudioBuffer *)korg1212->dma_rec->area;
 	korg1212->RecDataPhy = korg1212->dma_rec->addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         K1212_DEBUG_PRINTK("K1212_DEBUG: Record Data Area = 0x%p (0x%08x), %d bytes\n",
 		korg1212->recordDataBufsPtr, korg1212->RecDataPhy, korg1212->DataBufsSize);
@@ -2656,27 +2232,6 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
 
 	err = request_firmware(&dsp_code, "korg/k1212.dsp", &pci->dev);
 	if (err < 0) {
-<<<<<<< HEAD
-		release_firmware(dsp_code);
-		snd_printk(KERN_ERR "firmware not available\n");
-		snd_korg1212_free(korg1212);
-		return err;
-	}
-
-	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(pci),
-				dsp_code->size, &korg1212->dma_dsp) < 0) {
-		snd_printk(KERN_ERR "korg1212: cannot allocate dsp code memory (%zd bytes)\n", dsp_code->size);
-                snd_korg1212_free(korg1212);
-		release_firmware(dsp_code);
-                return -ENOMEM;
-        }
-
-        K1212_DEBUG_PRINTK("K1212_DEBUG: DSP Code area = 0x%p (0x%08x) %d bytes [%s]\n",
-		   korg1212->dma_dsp.area, korg1212->dma_dsp.addr, dsp_code->size,
-		   stateName[korg1212->cardState]);
-
-	memcpy(korg1212->dma_dsp.area, dsp_code->data, dsp_code->size);
-=======
 		snd_printk(KERN_ERR "firmware not available\n");
 		return err;
 	}
@@ -2693,7 +2248,6 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
 		   stateName[korg1212->cardState]);
 
 	memcpy(korg1212->dma_dsp->area, dsp_code->data, dsp_code->size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	release_firmware(dsp_code);
 
@@ -2702,14 +2256,6 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
 	if (rc)
 		K1212_DEBUG_PRINTK("K1212_DEBUG: Reboot Card - RC = %d [%s]\n", rc, stateName[korg1212->cardState]);
 
-<<<<<<< HEAD
-        if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, korg1212, &ops)) < 0) {
-                snd_korg1212_free(korg1212);
-                return err;
-        }
-        
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_korg1212_EnableCardInterrupts(korg1212);
 
 	mdelay(CARD_BOOT_DELAY_IN_MS);
@@ -2730,12 +2276,8 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
                korg1212->RoutingTablePhy, LowerWordSwap(korg1212->RoutingTablePhy),
                korg1212->AdatTimeCodePhy, LowerWordSwap(korg1212->AdatTimeCodePhy));
 
-<<<<<<< HEAD
-        if ((err = snd_pcm_new(korg1212->card, "korg1212", 0, 1, 1, &korg1212->pcm)) < 0)
-=======
 	err = snd_pcm_new(korg1212->card, "korg1212", 0, 1, 1, &korg1212->pcm);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 return err;
 
 	korg1212->pcm->private_data = korg1212;
@@ -2755,28 +2297,15 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
         }
 
         snd_korg1212_proc_init(korg1212);
-<<<<<<< HEAD
-        
-	snd_card_set_dev(card, &pci->dev);
-
-        * rchip = korg1212;
-	return 0;
-
-=======
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Card initialisation
  */
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_korg1212_probe(struct pci_dev *pci,
 		const struct pci_device_id *pci_id)
 {
@@ -2792,16 +2321,6 @@ snd_korg1212_probe(struct pci_dev *pci,
 		dev++;
 		return -ENOENT;
 	}
-<<<<<<< HEAD
-	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
-	if (err < 0)
-		return err;
-
-        if ((err = snd_korg1212_create(card, pci, &korg1212)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-=======
 	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
 				sizeof(*korg1212), &card);
 	if (err < 0)
@@ -2811,7 +2330,6 @@ snd_korg1212_probe(struct pci_dev *pci,
 	err = snd_korg1212_create(card, pci);
 	if (err < 0)
 		goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, "korg1212");
 	strcpy(card->shortname, "korg1212");
@@ -2820,42 +2338,6 @@ snd_korg1212_probe(struct pci_dev *pci,
 
         K1212_DEBUG_PRINTK("K1212_DEBUG: %s\n", card->longname);
 
-<<<<<<< HEAD
-	if ((err = snd_card_register(card)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-	pci_set_drvdata(pci, card);
-	dev++;
-	return 0;
-}
-
-static void __devexit snd_korg1212_remove(struct pci_dev *pci)
-{
-	snd_card_free(pci_get_drvdata(pci));
-	pci_set_drvdata(pci, NULL);
-}
-
-static struct pci_driver driver = {
-	.name = KBUILD_MODNAME,
-	.id_table = snd_korg1212_ids,
-	.probe = snd_korg1212_probe,
-	.remove = __devexit_p(snd_korg1212_remove),
-};
-
-static int __init alsa_card_korg1212_init(void)
-{
-	return pci_register_driver(&driver);
-}
-
-static void __exit alsa_card_korg1212_exit(void)
-{
-	pci_unregister_driver(&driver);
-}
-
-module_init(alsa_card_korg1212_init)
-module_exit(alsa_card_korg1212_exit)
-=======
 	err = snd_card_register(card);
 	if (err < 0)
 		goto error;
@@ -2875,4 +2357,3 @@ static struct pci_driver korg1212_driver = {
 };
 
 module_pci_driver(korg1212_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

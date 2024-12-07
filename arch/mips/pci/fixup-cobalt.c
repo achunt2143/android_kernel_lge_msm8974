@@ -13,10 +13,6 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 
-<<<<<<< HEAD
-#include <asm/pci.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/gt64120.h>
 
@@ -40,8 +36,6 @@
 #define VIA_COBALT_BRD_ID_REG  0x94
 #define VIA_COBALT_BRD_REG_to_ID(reg)	((unsigned char)(reg) >> 4)
 
-<<<<<<< HEAD
-=======
 /*
  * Default value of PCI Class Code on GT64111 is PCI_CLASS_MEMORY_OTHER (0x0580)
  * instead of PCI_CLASS_BRIDGE_HOST (0x0600). Galileo explained this choice in
@@ -57,7 +51,6 @@
  * https://lore.kernel.org/r/20211102154831.xtrlgrmrizl5eidl@pali/
  * https://lore.kernel.org/r/20211102150201.GA11675@alpha.franken.de/
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void qube_raq_galileo_early_fixup(struct pci_dev *dev)
 {
 	if (dev->devfn == PCI_DEVFN(0, 0) &&
@@ -115,22 +108,14 @@ static void qube_raq_galileo_fixup(struct pci_dev *dev)
 	 * --x--x--x--x--x--x--x--x--x--x--x--x--x--x--x--x--x--x--x--x--
 	 *
 	 * On all machines prior to Q2, we had the STOP line disconnected
-<<<<<<< HEAD
-	 * from Galileo to VIA on PCI.  The new Galileo does not function
-=======
 	 * from Galileo to VIA on PCI.	The new Galileo does not function
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * correctly unless we have it connected.
 	 *
 	 * Therefore we must set the disconnect/retry cycle values to
 	 * something sensible when using the new Galileo.
 	 */
 
-<<<<<<< HEAD
- 	printk(KERN_INFO "Galileo: revision %u\n", dev->revision);
-=======
 	printk(KERN_INFO "Galileo: revision %u\n", dev->revision);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if 0
 	if (dev->revision >= 0x10) {
@@ -177,36 +162,6 @@ static void qube_raq_via_board_id_fixup(struct pci_dev *dev)
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_0,
 	 qube_raq_via_board_id_fixup);
 
-<<<<<<< HEAD
-static char irq_tab_qube1[] __initdata = {
-  [COBALT_PCICONF_CPU]     = 0,
-  [COBALT_PCICONF_ETH0]    = QUBE1_ETH0_IRQ,
-  [COBALT_PCICONF_RAQSCSI] = SCSI_IRQ,
-  [COBALT_PCICONF_VIA]     = 0,
-  [COBALT_PCICONF_PCISLOT] = PCISLOT_IRQ,
-  [COBALT_PCICONF_ETH1]    = 0
-};
-
-static char irq_tab_cobalt[] __initdata = {
-  [COBALT_PCICONF_CPU]     = 0,
-  [COBALT_PCICONF_ETH0]    = ETH0_IRQ,
-  [COBALT_PCICONF_RAQSCSI] = SCSI_IRQ,
-  [COBALT_PCICONF_VIA]     = 0,
-  [COBALT_PCICONF_PCISLOT] = PCISLOT_IRQ,
-  [COBALT_PCICONF_ETH1]    = ETH1_IRQ
-};
-
-static char irq_tab_raq2[] __initdata = {
-  [COBALT_PCICONF_CPU]     = 0,
-  [COBALT_PCICONF_ETH0]    = ETH0_IRQ,
-  [COBALT_PCICONF_RAQSCSI] = RAQ2_SCSI_IRQ,
-  [COBALT_PCICONF_VIA]     = 0,
-  [COBALT_PCICONF_PCISLOT] = PCISLOT_IRQ,
-  [COBALT_PCICONF_ETH1]    = ETH1_IRQ
-};
-
-int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-=======
 static char irq_tab_qube1[] = {
   [COBALT_PCICONF_CPU]	   = 0,
   [COBALT_PCICONF_ETH0]	   = QUBE1_ETH0_IRQ,
@@ -235,7 +190,6 @@ static char irq_tab_raq2[] = {
 };
 
 int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (cobalt_board_id <= COBALT_BRD_ID_QUBE1)
 		return irq_tab_qube1[slot];

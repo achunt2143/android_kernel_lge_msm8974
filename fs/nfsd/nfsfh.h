@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-/* Copyright (C) 1995, 1996, 1997 Olaf Kirch <okir@monad.swb.de> */
-
-#ifndef _LINUX_NFSD_FH_INT_H
-#define _LINUX_NFSD_FH_INT_H
-
-#include <linux/nfsd/nfsfh.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (C) 1995, 1996, 1997 Olaf Kirch <okir@monad.swb.de>
@@ -117,7 +109,6 @@ typedef struct svc_fh {
 #define NFSD4_FH_FOREIGN (1<<0)
 #define SET_FH_FLAG(c, f) ((c)->fh_flags |= (f))
 #define HAS_FH_FLAG(c, f) ((c)->fh_flags & (f))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum nfsd_fsid {
 	FSID_DEV = 0,
@@ -135,13 +126,6 @@ enum fsid_source {
 	FSIDSOURCE_FSID,
 	FSIDSOURCE_UUID,
 };
-<<<<<<< HEAD
-extern enum fsid_source fsid_source(struct svc_fh *fhp);
-
-
-/* This might look a little large to "inline" but in all calls except
- * one, 'vers' is constant so moste of the function disappears.
-=======
 extern enum fsid_source fsid_source(const struct svc_fh *fhp);
 
 
@@ -154,7 +138,6 @@ extern enum fsid_source fsid_source(const struct svc_fh *fhp);
  * callers don't know which it will be. So we must use __force to keep
  * sparse from complaining. Since these values are opaque to the
  * client, that shouldn't be a problem.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void mk_fsid(int vers, u32 *fsidv, dev_t dev, ino_t ino,
 			   u32 fsid, unsigned char *uuid)
@@ -162,11 +145,7 @@ static inline void mk_fsid(int vers, u32 *fsidv, dev_t dev, ino_t ino,
 	u32 *up;
 	switch(vers) {
 	case FSID_DEV:
-<<<<<<< HEAD
-		fsidv[0] = htonl((MAJOR(dev)<<16) |
-=======
 		fsidv[0] = (__force __u32)htonl((MAJOR(dev)<<16) |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 MINOR(dev));
 		fsidv[1] = ino_t_to_u32(ino);
 		break;
@@ -174,13 +153,8 @@ static inline void mk_fsid(int vers, u32 *fsidv, dev_t dev, ino_t ino,
 		fsidv[0] = fsid;
 		break;
 	case FSID_MAJOR_MINOR:
-<<<<<<< HEAD
-		fsidv[0] = htonl(MAJOR(dev));
-		fsidv[1] = htonl(MINOR(dev));
-=======
 		fsidv[0] = (__force __u32)htonl(MAJOR(dev));
 		fsidv[1] = (__force __u32)htonl(MINOR(dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fsidv[2] = ino_t_to_u32(ino);
 		break;
 
@@ -246,33 +220,19 @@ __be32	fh_update(struct svc_fh *);
 void	fh_put(struct svc_fh *);
 
 static __inline__ struct svc_fh *
-<<<<<<< HEAD
-fh_copy(struct svc_fh *dst, struct svc_fh *src)
-{
-	WARN_ON(src->fh_dentry || src->fh_locked);
-			
-=======
 fh_copy(struct svc_fh *dst, const struct svc_fh *src)
 {
 	WARN_ON(src->fh_dentry);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*dst = *src;
 	return dst;
 }
 
 static inline void
-<<<<<<< HEAD
-fh_copy_shallow(struct knfsd_fh *dst, struct knfsd_fh *src)
-{
-	dst->fh_size = src->fh_size;
-	memcpy(&dst->fh_base, &src->fh_base, src->fh_size);
-=======
 fh_copy_shallow(struct knfsd_fh *dst, const struct knfsd_fh *src)
 {
 	dst->fh_size = src->fh_size;
 	memcpy(&dst->fh_raw, &src->fh_raw, src->fh_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __inline__ struct svc_fh *
@@ -283,81 +243,6 @@ fh_init(struct svc_fh *fhp, int maxsize)
 	return fhp;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_NFSD_V3
-/*
- * Fill in the pre_op attr for the wcc data
- */
-static inline void
-fill_pre_wcc(struct svc_fh *fhp)
-{
-	struct inode    *inode;
-
-	inode = fhp->fh_dentry->d_inode;
-	if (!fhp->fh_pre_saved) {
-		fhp->fh_pre_mtime = inode->i_mtime;
-		fhp->fh_pre_ctime = inode->i_ctime;
-		fhp->fh_pre_size  = inode->i_size;
-		fhp->fh_pre_change = inode->i_version;
-		fhp->fh_pre_saved = 1;
-	}
-}
-
-extern void fill_post_wcc(struct svc_fh *);
-#else
-#define	fill_pre_wcc(ignored)
-#define fill_post_wcc(notused)
-#endif /* CONFIG_NFSD_V3 */
-
-
-/*
- * Lock a file handle/inode
- * NOTE: both fh_lock and fh_unlock are done "by hand" in
- * vfs.c:nfsd_rename as it needs to grab 2 i_mutex's at once
- * so, any changes here should be reflected there.
- */
-
-static inline void
-fh_lock_nested(struct svc_fh *fhp, unsigned int subclass)
-{
-	struct dentry	*dentry = fhp->fh_dentry;
-	struct inode	*inode;
-
-	BUG_ON(!dentry);
-
-	if (fhp->fh_locked) {
-		printk(KERN_WARNING "fh_lock: %s/%s already locked!\n",
-			dentry->d_parent->d_name.name, dentry->d_name.name);
-		return;
-	}
-
-	inode = dentry->d_inode;
-	mutex_lock_nested(&inode->i_mutex, subclass);
-	fill_pre_wcc(fhp);
-	fhp->fh_locked = 1;
-}
-
-static inline void
-fh_lock(struct svc_fh *fhp)
-{
-	fh_lock_nested(fhp, I_MUTEX_NORMAL);
-}
-
-/*
- * Unlock a file handle/inode
- */
-static inline void
-fh_unlock(struct svc_fh *fhp)
-{
-	if (fhp->fh_locked) {
-		fill_post_wcc(fhp);
-		mutex_unlock(&fhp->fh_dentry->d_inode->i_mutex);
-		fhp->fh_locked = 0;
-	}
-}
-
-#endif /* _LINUX_NFSD_FH_INT_H */
-=======
 static inline bool fh_match(const struct knfsd_fh *fh1,
 			    const struct knfsd_fh *fh2)
 {
@@ -414,4 +299,3 @@ __be32 __must_check fh_fill_pre_attrs(struct svc_fh *fhp);
 __be32 fh_fill_post_attrs(struct svc_fh *fhp);
 __be32 __must_check fh_fill_both_attrs(struct svc_fh *fhp);
 #endif /* _LINUX_NFSD_NFSFH_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -9,46 +9,26 @@
 #define __ASM_MACH_JAZZ_FLOPPY_H
 
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/linkage.h>
 #include <linux/types.h>
 #include <linux/mm.h>
 #include <asm/addrspace.h>
 #include <asm/jazz.h>
 #include <asm/jazzdma.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-
-static inline unsigned char fd_inb(unsigned int port)
-{
-	unsigned char c;
-
-	c = *(volatile unsigned char *) port;
-=======
 
 static inline unsigned char fd_inb(unsigned int base, unsigned int reg)
 {
 	unsigned char c;
 
 	c = *(volatile unsigned char *) (base + reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udelay(1);
 
 	return c;
 }
 
-<<<<<<< HEAD
-static inline void fd_outb(unsigned char value, unsigned int port)
-{
-	*(volatile unsigned char *) port = value;
-=======
 static inline void fd_outb(unsigned char value, unsigned int base, unsigned int reg)
 {
 	*(volatile unsigned char *) (base + reg) = value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -108,11 +88,7 @@ static inline void fd_disable_irq(void)
 static inline int fd_request_irq(void)
 {
 	return request_irq(FLOPPY_IRQ, floppy_interrupt,
-<<<<<<< HEAD
-	                   0, "floppy", NULL);
-=======
 			   0, "floppy", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void fd_free_irq(void)

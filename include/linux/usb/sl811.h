@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * board initialization should put one of these into dev->platform_data
  * and place the sl811hs onto platform_bus named "sl811-hcd".

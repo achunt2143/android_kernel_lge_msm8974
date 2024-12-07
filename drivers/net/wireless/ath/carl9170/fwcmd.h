@@ -56,10 +56,7 @@ enum carl9170_cmd_oids {
 	CARL9170_CMD_RX_FILTER		= 0x07,
 	CARL9170_CMD_WOL		= 0x08,
 	CARL9170_CMD_TALLY		= 0x09,
-<<<<<<< HEAD
-=======
 	CARL9170_CMD_WREGB		= 0x0a,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* CAM */
 	CARL9170_CMD_EKEY		= 0x10,
@@ -121,12 +118,6 @@ struct carl9170_reg_list {
 } __packed;
 
 struct carl9170_write_reg {
-<<<<<<< HEAD
-	struct {
-		__le32		addr;
-		__le32		val;
-	} regs[0] __packed;
-=======
 	DECLARE_FLEX_ARRAY(struct {
 		__le32		addr;
 		__le32		val;
@@ -137,7 +128,6 @@ struct carl9170_write_reg_byte {
 	__le32	addr;
 	__le32  count;
 	u8	val[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define	CARL9170FW_PHY_HT_ENABLE		0x4
@@ -173,8 +163,6 @@ struct carl9170_psm {
 } __packed;
 #define CARL9170_PSM_SIZE		4
 
-<<<<<<< HEAD
-=======
 /*
  * Note: If a bit in rx_filter is set, then it
  * means that the particular frames which matches
@@ -183,7 +171,6 @@ struct carl9170_psm {
  * because someone people think it's the exact
  * opposite way, so watch out!)
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct carl9170_rx_filter_cmd {
 	__le32		rx_filter;
 } __packed;
@@ -246,21 +233,14 @@ struct carl9170_cmd {
 		struct carl9170_u32_list	echo;
 		struct carl9170_reg_list	rreg;
 		struct carl9170_write_reg	wreg;
-<<<<<<< HEAD
-=======
 		struct carl9170_write_reg_byte	wregb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct carl9170_rf_init		rf_init;
 		struct carl9170_psm		psm;
 		struct carl9170_wol_cmd		wol;
 		struct carl9170_bcn_ctrl_cmd	bcn_ctrl;
 		struct carl9170_rx_filter_cmd	rx_filter;
 		u8 data[CARL9170_MAX_CMD_PAYLOAD_LEN];
-<<<<<<< HEAD
-	} __packed;
-=======
 	} __packed __aligned(4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed __aligned(4);
 
 #define	CARL9170_TX_STATUS_QUEUE	3
@@ -340,15 +320,9 @@ struct carl9170_rsp {
 		struct carl9170_u32_list	rreg_res;
 		struct carl9170_u32_list	echo;
 #ifdef __CARL9170FW__
-<<<<<<< HEAD
-		struct carl9170_tx_status	tx_status[0];
-#endif /* __CARL9170FW__ */
-		struct _carl9170_tx_status	_tx_status[0];
-=======
 		DECLARE_FLEX_ARRAY(struct carl9170_tx_status, tx_status);
 #endif /* __CARL9170FW__ */
 		DECLARE_FLEX_ARRAY(struct _carl9170_tx_status, _tx_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct carl9170_gpio		gpio;
 		struct carl9170_tsf_rsp		tsf;
 		struct carl9170_psm		psm;

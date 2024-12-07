@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _PPC_BOOT_DCR_H_
 #define _PPC_BOOT_DCR_H_
 
@@ -19,13 +16,10 @@
 		asm volatile("mfdcrx %0,%1" : "=r"(rval) : "r"(rn)); \
 		rval; \
 	})
-<<<<<<< HEAD
-=======
 #define mtdcrx(rn, val) \
 	({	\
 		asm volatile("mtdcrx %0,%1" : : "r"(rn), "r" (val)); \
 	})
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 440GP/440GX SDRAM controller DCRs */
 #define DCRN_SDRAM0_CFGADDR				0x010

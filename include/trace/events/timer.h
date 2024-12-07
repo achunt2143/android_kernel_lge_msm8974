@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM timer
 
@@ -40,12 +37,6 @@ DEFINE_EVENT(timer_class, timer_init,
 	TP_ARGS(timer)
 );
 
-<<<<<<< HEAD
-/**
- * timer_start - called when the timer is started
- * @timer:	pointer to struct timer_list
- * @expires:	the timers expiry time
-=======
 #define decode_timer_flags(flags)			\
 	__print_flags(flags, "|",			\
 		{  TIMER_MIGRATING,	"M" },		\
@@ -57,48 +48,26 @@ DEFINE_EVENT(timer_class, timer_init,
  * timer_start - called when the timer is started
  * @timer:		pointer to struct timer_list
  * @bucket_expiry:	the bucket expiry time
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 TRACE_EVENT(timer_start,
 
 	TP_PROTO(struct timer_list *timer,
-<<<<<<< HEAD
-		 unsigned long expires, char deferrable),
-
-	TP_ARGS(timer, expires, deferrable),
-=======
 		unsigned long bucket_expiry),
 
 	TP_ARGS(timer, bucket_expiry),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field( void *,	timer		)
 		__field( void *,	function	)
 		__field( unsigned long,	expires		)
-<<<<<<< HEAD
-		__field( unsigned long,	now		)
-		__field(char,	deferrable)
-=======
 		__field( unsigned long,	bucket_expiry	)
 		__field( unsigned long,	now		)
 		__field( unsigned int,	flags		)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->timer		= timer;
 		__entry->function	= timer->function;
-<<<<<<< HEAD
-		__entry->expires	= expires;
-		__entry->now		= jiffies;
-		__entry->deferrable     = deferrable;
-	),
-
-	TP_printk("timer=%p function=%pf expires=%lu [timeout=%ld] defer=%c",
-		  __entry->timer, __entry->function, __entry->expires,
-		  (long)__entry->expires - __entry->now, __entry->deferrable)
-=======
 		__entry->expires	= timer->expires;
 		__entry->bucket_expiry	= bucket_expiry;
 		__entry->now		= jiffies;
@@ -111,57 +80,38 @@ TRACE_EVENT(timer_start,
 		  __entry->bucket_expiry, __entry->flags & TIMER_CPUMASK,
 		  __entry->flags >> TIMER_ARRAYSHIFT,
 		  decode_timer_flags(__entry->flags & TIMER_TRACE_FLAGMASK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /**
  * timer_expire_entry - called immediately before the timer callback
  * @timer:	pointer to struct timer_list
-<<<<<<< HEAD
-=======
  * @baseclk:	value of timer_base::clk when timer expires
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Allows to determine the timer latency.
  */
 TRACE_EVENT(timer_expire_entry,
 
-<<<<<<< HEAD
-	TP_PROTO(struct timer_list *timer),
-
-	TP_ARGS(timer),
-=======
 	TP_PROTO(struct timer_list *timer, unsigned long baseclk),
 
 	TP_ARGS(timer, baseclk),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field( void *,	timer	)
 		__field( unsigned long,	now	)
 		__field( void *,	function)
-<<<<<<< HEAD
-=======
 		__field( unsigned long,	baseclk	)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->timer		= timer;
 		__entry->now		= jiffies;
 		__entry->function	= timer->function;
-<<<<<<< HEAD
-	),
-
-	TP_printk("timer=%p function=%pf now=%lu", __entry->timer, __entry->function,__entry->now)
-=======
 		__entry->baseclk	= baseclk;
 	),
 
 	TP_printk("timer=%p function=%ps now=%lu baseclk=%lu",
 		  __entry->timer, __entry->function, __entry->now,
 		  __entry->baseclk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /**
@@ -171,11 +121,7 @@ TRACE_EVENT(timer_expire_entry,
  * When used in combination with the timer_expire_entry tracepoint we can
  * determine the runtime of the timer callback function.
  *
-<<<<<<< HEAD
- * NOTE: Do NOT derefernce timer in TP_fast_assign. The pointer might
-=======
  * NOTE: Do NOT dereference timer in TP_fast_assign. The pointer might
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * be invalid. We solely track the pointer.
  */
 DEFINE_EVENT(timer_class, timer_expire_exit,
@@ -196,11 +142,6 @@ DEFINE_EVENT(timer_class, timer_cancel,
 	TP_ARGS(timer)
 );
 
-<<<<<<< HEAD
-/**
- * hrtimer_init - called when the hrtimer is initialized
- * @timer:	pointer to struct hrtimer
-=======
 TRACE_EVENT(timer_base_idle,
 
 	TP_PROTO(bool is_idle, unsigned int cpu),
@@ -246,7 +187,6 @@ TRACE_EVENT(timer_base_idle,
 /**
  * hrtimer_init - called when the hrtimer is initialized
  * @hrtimer:	pointer to struct hrtimer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @clockid:	the hrtimers clock
  * @mode:	the hrtimers mode
  */
@@ -270,28 +210,12 @@ TRACE_EVENT(hrtimer_init,
 	),
 
 	TP_printk("hrtimer=%p clockid=%s mode=%s", __entry->hrtimer,
-<<<<<<< HEAD
-		  __entry->clockid == CLOCK_REALTIME ?
-			"CLOCK_REALTIME" : "CLOCK_MONOTONIC",
-		  __entry->mode == HRTIMER_MODE_ABS ?
-			"HRTIMER_MODE_ABS" : "HRTIMER_MODE_REL")
-=======
 		  decode_clockid(__entry->clockid),
 		  decode_hrtimer_mode(__entry->mode))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /**
  * hrtimer_start - called when the hrtimer is started
-<<<<<<< HEAD
- * @timer: pointer to struct hrtimer
- */
-TRACE_EVENT(hrtimer_start,
-
-	TP_PROTO(struct hrtimer *hrtimer),
-
-	TP_ARGS(hrtimer),
-=======
  * @hrtimer:	pointer to struct hrtimer
  * @mode:	the hrtimers mode
  */
@@ -300,39 +224,18 @@ TRACE_EVENT(hrtimer_start,
 	TP_PROTO(struct hrtimer *hrtimer, enum hrtimer_mode mode),
 
 	TP_ARGS(hrtimer, mode),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field( void *,	hrtimer		)
 		__field( void *,	function	)
 		__field( s64,		expires		)
 		__field( s64,		softexpires	)
-<<<<<<< HEAD
-=======
 		__field( enum hrtimer_mode,	mode	)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->hrtimer	= hrtimer;
 		__entry->function	= hrtimer->function;
-<<<<<<< HEAD
-		__entry->expires	= hrtimer_get_expires(hrtimer).tv64;
-		__entry->softexpires	= hrtimer_get_softexpires(hrtimer).tv64;
-	),
-
-	TP_printk("hrtimer=%p function=%pf expires=%llu softexpires=%llu",
-		  __entry->hrtimer, __entry->function,
-		  (unsigned long long)ktime_to_ns((ktime_t) {
-				  .tv64 = __entry->expires }),
-		  (unsigned long long)ktime_to_ns((ktime_t) {
-				  .tv64 = __entry->softexpires }))
-);
-
-/**
- * htimmer_expire_entry - called immediately before the hrtimer callback
- * @timer:	pointer to struct hrtimer
-=======
 		__entry->expires	= hrtimer_get_expires(hrtimer);
 		__entry->softexpires	= hrtimer_get_softexpires(hrtimer);
 		__entry->mode		= mode;
@@ -348,7 +251,6 @@ TRACE_EVENT(hrtimer_start,
 /**
  * hrtimer_expire_entry - called immediately before the hrtimer callback
  * @hrtimer:	pointer to struct hrtimer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @now:	pointer to variable which contains current time of the
  *		timers base.
  *
@@ -368,15 +270,6 @@ TRACE_EVENT(hrtimer_expire_entry,
 
 	TP_fast_assign(
 		__entry->hrtimer	= hrtimer;
-<<<<<<< HEAD
-		__entry->now		= now->tv64;
-		__entry->function	= hrtimer->function;
-	),
-
-	TP_printk("hrtimer=%p function=%pf now=%llu", __entry->hrtimer, __entry->function,
-		  (unsigned long long)ktime_to_ns((ktime_t) { .tv64 = __entry->now }))
- );
-=======
 		__entry->now		= *now;
 		__entry->function	= hrtimer->function;
 	),
@@ -385,7 +278,6 @@ TRACE_EVENT(hrtimer_expire_entry,
 		  __entry->hrtimer, __entry->function,
 		  (unsigned long long) __entry->now)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DECLARE_EVENT_CLASS(hrtimer_class,
 
@@ -406,11 +298,7 @@ DECLARE_EVENT_CLASS(hrtimer_class,
 
 /**
  * hrtimer_expire_exit - called immediately after the hrtimer callback returns
-<<<<<<< HEAD
- * @timer:	pointer to struct hrtimer
-=======
  * @hrtimer:	pointer to struct hrtimer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * When used in combination with the hrtimer_expire_entry tracepoint we can
  * determine the runtime of the callback function.
@@ -442,49 +330,24 @@ DEFINE_EVENT(hrtimer_class, hrtimer_cancel,
  */
 TRACE_EVENT(itimer_state,
 
-<<<<<<< HEAD
-	TP_PROTO(int which, const struct itimerval *const value,
-		 cputime_t expires),
-=======
 	TP_PROTO(int which, const struct itimerspec64 *const value,
 		 unsigned long long expires),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(which, value, expires),
 
 	TP_STRUCT__entry(
-<<<<<<< HEAD
-		__field(	int,		which		)
-		__field(	cputime_t,	expires		)
-		__field(	long,		value_sec	)
-		__field(	long,		value_usec	)
-		__field(	long,		interval_sec	)
-		__field(	long,		interval_usec	)
-=======
 		__field(	int,			which		)
 		__field(	unsigned long long,	expires		)
 		__field(	long,			value_sec	)
 		__field(	long,			value_nsec	)
 		__field(	long,			interval_sec	)
 		__field(	long,			interval_nsec	)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->which		= which;
 		__entry->expires	= expires;
 		__entry->value_sec	= value->it_value.tv_sec;
-<<<<<<< HEAD
-		__entry->value_usec	= value->it_value.tv_usec;
-		__entry->interval_sec	= value->it_interval.tv_sec;
-		__entry->interval_usec	= value->it_interval.tv_usec;
-	),
-
-	TP_printk("which=%d expires=%llu it_value=%ld.%ld it_interval=%ld.%ld",
-		  __entry->which, (unsigned long long)__entry->expires,
-		  __entry->value_sec, __entry->value_usec,
-		  __entry->interval_sec, __entry->interval_usec)
-=======
 		__entry->value_nsec	= value->it_value.tv_nsec;
 		__entry->interval_sec	= value->it_interval.tv_sec;
 		__entry->interval_nsec	= value->it_interval.tv_nsec;
@@ -494,7 +357,6 @@ TRACE_EVENT(itimer_state,
 		  __entry->which, __entry->expires,
 		  __entry->value_sec, __entry->value_nsec / NSEC_PER_USEC,
 		  __entry->interval_sec, __entry->interval_nsec / NSEC_PER_USEC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /**
@@ -505,24 +367,14 @@ TRACE_EVENT(itimer_state,
  */
 TRACE_EVENT(itimer_expire,
 
-<<<<<<< HEAD
-	TP_PROTO(int which, struct pid *pid, cputime_t now),
-=======
 	TP_PROTO(int which, struct pid *pid, unsigned long long now),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(which, pid, now),
 
 	TP_STRUCT__entry(
-<<<<<<< HEAD
-		__field( int ,		which	)
-		__field( pid_t,		pid	)
-		__field( cputime_t,	now	)
-=======
 		__field( int ,			which	)
 		__field( pid_t,			pid	)
 		__field( unsigned long long,	now	)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
@@ -532,11 +384,6 @@ TRACE_EVENT(itimer_expire,
 	),
 
 	TP_printk("which=%d pid=%d now=%llu", __entry->which,
-<<<<<<< HEAD
-		  (int) __entry->pid, (unsigned long long)__entry->now)
-);
-
-=======
 		  (int) __entry->pid, __entry->now)
 );
 
@@ -597,7 +444,6 @@ TRACE_EVENT(tick_stop,
 );
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /*  _TRACE_TIMER_H */
 
 /* This part must be outside protection */

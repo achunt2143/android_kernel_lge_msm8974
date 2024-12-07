@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#ifndef __CEPH_DECODE_H
-#define __CEPH_DECODE_H
-
-#include <linux/bug.h>
-#include <linux/time.h>
-#include <asm/unaligned.h>
-
-#include "types.h"
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __CEPH_DECODE_H
 #define __CEPH_DECODE_H
@@ -19,7 +9,6 @@
 #include <asm/unaligned.h>
 
 #include <linux/ceph/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * in all cases,
@@ -60,12 +49,6 @@ static inline void ceph_decode_copy(void **p, void *pv, size_t n)
 /*
  * bounds check input.
  */
-<<<<<<< HEAD
-#define ceph_decode_need(p, end, n, bad)		\
-	do {						\
-		if (unlikely(*(p) + (n) > (end))) 	\
-			goto bad;			\
-=======
 static inline bool ceph_has_room(void **p, void *end, size_t n)
 {
 	return end >= *p && n <= end - *p;
@@ -75,7 +58,6 @@ static inline bool ceph_has_room(void **p, void *end, size_t n)
 	do {							\
 		if (!likely(ceph_has_room(p, end, n)))		\
 			goto bad;				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 #define ceph_decode_64_safe(p, end, v, bad)			\
@@ -106,21 +88,6 @@ static inline bool ceph_has_room(void **p, void *end, size_t n)
 	} while (0)
 
 /*
-<<<<<<< HEAD
- * struct ceph_timespec <-> struct timespec
- */
-static inline void ceph_decode_timespec(struct timespec *ts,
-					const struct ceph_timespec *tv)
-{
-	ts->tv_sec = le32_to_cpu(tv->tv_sec);
-	ts->tv_nsec = le32_to_cpu(tv->tv_nsec);
-}
-static inline void ceph_encode_timespec(struct ceph_timespec *tv,
-					const struct timespec *ts)
-{
-	tv->tv_sec = cpu_to_le32(ts->tv_sec);
-	tv->tv_nsec = cpu_to_le32(ts->tv_nsec);
-=======
  * Allocate a buffer big enough to hold the wire-encoded string, and
  * decode the string into it.  The resulting string will always be
  * terminated with '\0'.  If successful, *p will be advanced
@@ -246,20 +213,11 @@ static inline void ceph_encode_timespec64(struct ceph_timespec *tv,
 {
 	tv->tv_sec = cpu_to_le32((u32)ts->tv_sec);
 	tv->tv_nsec = cpu_to_le32((u32)ts->tv_nsec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * sockaddr_storage <-> ceph_sockaddr
  */
-<<<<<<< HEAD
-static inline void ceph_encode_addr(struct ceph_entity_addr *a)
-{
-	__be16 ss_family = htons(a->in_addr.ss_family);
-	a->in_addr.ss_family = *(__u16 *)&ss_family;
-}
-static inline void ceph_decode_addr(struct ceph_entity_addr *a)
-=======
 #define CEPH_ENTITY_ADDR_TYPE_NONE	0
 #define CEPH_ENTITY_ADDR_TYPE_LEGACY	__cpu_to_le32(1)
 #define CEPH_ENTITY_ADDR_TYPE_MSGR2	__cpu_to_le32(2)
@@ -274,15 +232,10 @@ static inline void ceph_encode_banner_addr(struct ceph_entity_addr *a)
 	a->type = CEPH_ENTITY_ADDR_TYPE_NONE;
 }
 static inline void ceph_decode_banner_addr(struct ceph_entity_addr *a)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be16 ss_family = *(__be16 *)&a->in_addr.ss_family;
 	a->in_addr.ss_family = ntohs(ss_family);
 	WARN_ON(a->in_addr.ss_family == 512);
-<<<<<<< HEAD
-}
-
-=======
 	a->type = CEPH_ENTITY_ADDR_TYPE_LEGACY;
 }
 
@@ -294,7 +247,6 @@ int ceph_decode_entity_addrvec(void **p, void *end, bool msgr2,
 int ceph_entity_addr_encoding_len(const struct ceph_entity_addr *addr);
 void ceph_encode_entity_addr(void **p, const struct ceph_entity_addr *addr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * encoders
  */
@@ -331,11 +283,7 @@ static inline void ceph_encode_filepath(void **p, void *end,
 					u64 ino, const char *path)
 {
 	u32 len = path ? strlen(path) : 0;
-<<<<<<< HEAD
-	BUG_ON(*p + sizeof(ino) + sizeof(len) + len > end);
-=======
 	BUG_ON(*p + 1 + sizeof(ino) + sizeof(len) + len > end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ceph_encode_8(p, 1);
 	ceph_encode_64(p, ino);
 	ceph_encode_32(p, len);
@@ -354,12 +302,6 @@ static inline void ceph_encode_string(void **p, void *end,
 	*p += len;
 }
 
-<<<<<<< HEAD
-#define ceph_encode_need(p, end, n, bad)		\
-	do {						\
-		if (unlikely(*(p) + (n) > (end))) 	\
-			goto bad;			\
-=======
 /*
  * version and length starting block encoders/decoders
  */
@@ -418,7 +360,6 @@ bad:
 	do {							\
 		if (!likely(ceph_has_room(p, end, n)))		\
 			goto bad;				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 #define ceph_encode_64_safe(p, end, v, bad)			\
@@ -429,25 +370,17 @@ bad:
 #define ceph_encode_32_safe(p, end, v, bad)			\
 	do {							\
 		ceph_encode_need(p, end, sizeof(u32), bad);	\
-<<<<<<< HEAD
-		ceph_encode_32(p, v);			\
-=======
 		ceph_encode_32(p, v);				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 #define ceph_encode_16_safe(p, end, v, bad)			\
 	do {							\
 		ceph_encode_need(p, end, sizeof(u16), bad);	\
-<<<<<<< HEAD
-		ceph_encode_16(p, v);			\
-=======
 		ceph_encode_16(p, v);				\
 	} while (0)
 #define ceph_encode_8_safe(p, end, v, bad)			\
 	do {							\
 		ceph_encode_need(p, end, sizeof(u8), bad);	\
 		ceph_encode_8(p, v);				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 #define ceph_encode_copy_safe(p, end, pv, n, bad)		\

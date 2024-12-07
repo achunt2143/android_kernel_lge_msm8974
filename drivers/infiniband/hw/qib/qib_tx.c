@@ -82,10 +82,6 @@ int qib_disarm_piobufs_ifneeded(struct qib_ctxtdata *rcd)
 	struct qib_devdata *dd = rcd->dd;
 	unsigned i;
 	unsigned last;
-<<<<<<< HEAD
-	unsigned n = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	last = rcd->pio_base + rcd->piocnt;
 	/*
@@ -105,15 +101,8 @@ int qib_disarm_piobufs_ifneeded(struct qib_ctxtdata *rcd)
 	}
 	spin_lock_irq(&dd->pioavail_lock);
 	for (i = rcd->pio_base; i < last; i++) {
-<<<<<<< HEAD
-		if (__test_and_clear_bit(i, dd->pio_need_disarm)) {
-			n++;
-			dd->f_sendctrl(rcd->ppd, QIB_SENDCTRL_DISARM_BUF(i));
-		}
-=======
 		if (__test_and_clear_bit(i, dd->pio_need_disarm))
 			dd->f_sendctrl(rcd->ppd, QIB_SENDCTRL_DISARM_BUF(i));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irq(&dd->pioavail_lock);
 	return 0;
@@ -187,10 +176,6 @@ void qib_disarm_piobufs_set(struct qib_devdata *dd, unsigned long *mask,
 		pppd[i] = NULL;
 
 	for (i = 0; i < cnt; i++) {
-<<<<<<< HEAD
-		int which;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!test_bit(i, mask))
 			continue;
 		/*
@@ -211,13 +196,7 @@ void qib_disarm_piobufs_set(struct qib_devdata *dd, unsigned long *mask,
 		    (!test_bit(i << 1, dd->pioavailkernel) &&
 		     find_ctxt(dd, i))) {
 			__set_bit(i, dd->pio_need_disarm);
-<<<<<<< HEAD
-			which = 0;
 		} else {
-			which = 1;
-=======
-		} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dd->f_sendctrl(dd->pport, QIB_SENDCTRL_DISARM_BUF(i));
 		}
 		spin_unlock_irqrestore(&dd->pioavail_lock, flags);
@@ -310,10 +289,7 @@ u32 __iomem *qib_getsendbuf_range(struct qib_devdata *dd, u32 *pbufnum,
 
 	nbufs = last - first + 1; /* number in range to check */
 	if (dd->upd_pio_shadow) {
-<<<<<<< HEAD
-=======
 update_shadow:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Minor optimization.  If we had no buffers on last call,
 		 * start out by doing the update; continue and do scan even
@@ -323,21 +299,12 @@ update_shadow:
 		updated++;
 	}
 	i = first;
-<<<<<<< HEAD
-rescan:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * While test_and_set_bit() is atomic, we do that and then the
 	 * change_bit(), and the pair is not.  See if this is the cause
 	 * of the remaining armlaunch errors.
 	 */
 	spin_lock_irqsave(&dd->pioavail_lock, flags);
-<<<<<<< HEAD
-	for (j = 0; j < nbufs; j++, i++) {
-		if (i > last)
-			i = first;
-=======
 	if (dd->last_pio >= first && dd->last_pio <= last)
 		i = dd->last_pio + 1;
 	if (!first)
@@ -346,41 +313,25 @@ rescan:
 	for (j = 0; j < nbufs; j++, i++) {
 		if (i > last)
 			i = !first ? dd->min_kernel_pio : first;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (__test_and_set_bit((2 * i) + 1, shadow))
 			continue;
 		/* flip generation bit */
 		__change_bit(2 * i, shadow);
 		/* remember that the buffer can be written to now */
 		__set_bit(i, dd->pio_writing);
-<<<<<<< HEAD
-=======
 		if (!first && first != last) /* first == last on VL15, avoid */
 			dd->last_pio = i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	spin_unlock_irqrestore(&dd->pioavail_lock, flags);
 
 	if (j == nbufs) {
-<<<<<<< HEAD
-		if (!updated) {
-=======
 		if (!updated)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * First time through; shadow exhausted, but may be
 			 * buffers available, try an update and then rescan.
 			 */
-<<<<<<< HEAD
-			update_send_bufs(dd);
-			updated++;
-			i = first;
-			goto rescan;
-		}
-=======
 			goto update_shadow;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		no_send_bufs(dd);
 		buf = NULL;
 	} else {
@@ -423,10 +374,7 @@ void qib_sendbuf_done(struct qib_devdata *dd, unsigned n)
  * @start: the starting send buffer number
  * @len: the number of send buffers
  * @avail: true if the buffers are available for kernel use, false otherwise
-<<<<<<< HEAD
-=======
  * @rcd: the context pointer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void qib_chg_pioavailkernel(struct qib_devdata *dd, unsigned start,
 	unsigned len, u32 avail, struct qib_ctxtdata *rcd)
@@ -472,29 +420,20 @@ void qib_chg_pioavailkernel(struct qib_devdata *dd, unsigned start,
 				__clear_bit(QLOGIC_IB_SENDPIOAVAIL_CHECK_SHIFT
 					    + start, dd->pioavailshadow);
 			__set_bit(start, dd->pioavailkernel);
-<<<<<<< HEAD
-=======
 			if ((start >> 1) < dd->min_kernel_pio)
 				dd->min_kernel_pio = start >> 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			__set_bit(start + QLOGIC_IB_SENDPIOAVAIL_BUSY_SHIFT,
 				  dd->pioavailshadow);
 			__clear_bit(start, dd->pioavailkernel);
-<<<<<<< HEAD
-=======
 			if ((start >> 1) > dd->min_kernel_pio)
 				dd->min_kernel_pio = start >> 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		start += 2;
 	}
 
-<<<<<<< HEAD
-=======
 	if (dd->min_kernel_pio > 0 && dd->last_pio < dd->min_kernel_pio - 1)
 		dd->last_pio = dd->min_kernel_pio - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&dd->pioavail_lock, flags);
 
 	dd->f_txchk_change(dd, ostart, len, avail, rcd);
@@ -607,15 +546,9 @@ void qib_hol_up(struct qib_pportdata *ppd)
 /*
  * This is only called via the timer.
  */
-<<<<<<< HEAD
-void qib_hol_event(unsigned long opaque)
-{
-	struct qib_pportdata *ppd = (struct qib_pportdata *)opaque;
-=======
 void qib_hol_event(struct timer_list *t)
 {
 	struct qib_pportdata *ppd = from_timer(ppd, t, hol_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If hardware error, etc, skip. */
 	if (!(ppd->dd->flags & QIB_INITTED))

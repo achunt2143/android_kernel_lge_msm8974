@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/
 
 /*
@@ -23,11 +20,7 @@
  *	in any case new boards come along from time to time that have yet
  *	another different clocking frequency.
  */
-<<<<<<< HEAD
-#ifdef CONFIG_CLOCK_SET
-=======
 #ifdef CONFIG_CLOCK_FREQ
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	MCF_CLK		CONFIG_CLOCK_FREQ
 #else
 #error "Don't know what your ColdFire CPU clock frequency is??"

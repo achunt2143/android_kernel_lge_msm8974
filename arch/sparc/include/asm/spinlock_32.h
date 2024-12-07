@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* spinlock.h: 32-bit Sparc spinlock support.
  *
  * Copyright (C) 1997 David S. Miller (davem@caip.rutgers.edu)
@@ -13,20 +10,11 @@
 #ifndef __ASSEMBLY__
 
 #include <asm/psr.h>
-<<<<<<< HEAD
-=======
 #include <asm/barrier.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h> /* for cpu_relax */
 
 #define arch_spin_is_locked(lock) (*((volatile unsigned char *)(lock)) != 0)
 
-<<<<<<< HEAD
-#define arch_spin_unlock_wait(lock) \
-	do { while (arch_spin_is_locked(lock)) cpu_relax(); } while (0)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void arch_spin_lock(arch_spinlock_t *lock)
 {
 	__asm__ __volatile__(
@@ -142,11 +130,7 @@ static inline void arch_write_lock(arch_rwlock_t *rw)
 	*(volatile __u32 *)&lp->lock = ~0U;
 }
 
-<<<<<<< HEAD
-static void inline arch_write_unlock(arch_rwlock_t *lock)
-=======
 static inline void arch_write_unlock(arch_rwlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__asm__ __volatile__(
 "	st		%%g0, [%0]"
@@ -199,20 +183,6 @@ static inline int __arch_read_trylock(arch_rwlock_t *rw)
 	res; \
 })
 
-<<<<<<< HEAD
-#define arch_spin_lock_flags(lock, flags) arch_spin_lock(lock)
-#define arch_read_lock_flags(rw, flags)   arch_read_lock(rw)
-#define arch_write_lock_flags(rw, flags)  arch_write_lock(rw)
-
-#define arch_spin_relax(lock)	cpu_relax()
-#define arch_read_relax(lock)	cpu_relax()
-#define arch_write_relax(lock)	cpu_relax()
-
-#define arch_read_can_lock(rw) (!((rw)->lock & 0xff))
-#define arch_write_can_lock(rw) (!(rw)->lock)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(__ASSEMBLY__) */
 
 #endif /* __SPARC_SPINLOCK_H */

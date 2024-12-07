@@ -48,11 +48,7 @@ int carl9170_set_dyn_sifs_ack(struct ar9170 *ar)
 	if (conf_is_ht40(&ar->hw->conf))
 		val = 0x010a;
 	else {
-<<<<<<< HEAD
-		if (ar->hw->conf.channel->band == IEEE80211_BAND_2GHZ)
-=======
 		if (ar->hw->conf.chandef.chan->band == NL80211_BAND_2GHZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			val = 0x105;
 		else
 			val = 0x104;
@@ -70,11 +66,7 @@ int carl9170_set_rts_cts_rate(struct ar9170 *ar)
 		rts_rate = 0x1da;
 		cts_rate = 0x10a;
 	} else {
-<<<<<<< HEAD
-		if (ar->hw->conf.channel->band == IEEE80211_BAND_2GHZ) {
-=======
 		if (ar->hw->conf.chandef.chan->band == NL80211_BAND_2GHZ) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* 11 mbit CCK */
 			rts_rate = 033;
 			cts_rate = 003;
@@ -101,11 +93,7 @@ int carl9170_set_slot_time(struct ar9170 *ar)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	if ((ar->hw->conf.channel->band == IEEE80211_BAND_5GHZ) ||
-=======
 	if ((ar->hw->conf.chandef.chan->band == NL80211_BAND_5GHZ) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    vif->bss_conf.use_short_slot)
 		slottime = 9;
 
@@ -132,11 +120,7 @@ int carl9170_set_mac_rates(struct ar9170 *ar)
 	basic |= (vif->bss_conf.basic_rates & 0xff0) << 4;
 	rcu_read_unlock();
 
-<<<<<<< HEAD
-	if (ar->hw->conf.channel->band == IEEE80211_BAND_5GHZ)
-=======
 	if (ar->hw->conf.chandef.chan->band == NL80211_BAND_5GHZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mandatory = 0xff00; /* OFDM 6/9/12/18/24/36/48/54 */
 	else
 		mandatory = 0xff0f; /* OFDM (6/9../54) + CCK (1/2/5.5/11) */
@@ -320,12 +304,8 @@ int carl9170_set_operating_mode(struct ar9170 *ar)
 	struct ath_common *common = &ar->common;
 	u8 *mac_addr, *bssid;
 	u32 cam_mode = AR9170_MAC_CAM_DEFAULTS;
-<<<<<<< HEAD
-	u32 enc_mode = AR9170_MAC_ENCRYPTION_DEFAULTS;
-=======
 	u32 enc_mode = AR9170_MAC_ENCRYPTION_DEFAULTS |
 		AR9170_MAC_ENCRYPTION_MGMT_RX_SOFTWARE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 rx_ctrl = AR9170_MAC_RX_CTRL_DEAGG |
 		      AR9170_MAC_RX_CTRL_SHORT_FILTER;
 	u32 sniffer = AR9170_MAC_SNIFFER_DEFAULTS;
@@ -339,30 +319,16 @@ int carl9170_set_operating_mode(struct ar9170 *ar)
 		bssid = common->curbssid;
 
 		switch (vif->type) {
-<<<<<<< HEAD
-		case NL80211_IFTYPE_MESH_POINT:
-		case NL80211_IFTYPE_ADHOC:
-			cam_mode |= AR9170_MAC_CAM_IBSS;
-			break;
-=======
 		case NL80211_IFTYPE_ADHOC:
 			cam_mode |= AR9170_MAC_CAM_IBSS;
 			break;
 		case NL80211_IFTYPE_MESH_POINT:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case NL80211_IFTYPE_AP:
 			cam_mode |= AR9170_MAC_CAM_AP;
 
 			/* iwlagn 802.11n STA Workaround */
 			rx_ctrl |= AR9170_MAC_RX_CTRL_PASS_TO_HOST;
 			break;
-<<<<<<< HEAD
-		case NL80211_IFTYPE_WDS:
-			cam_mode |= AR9170_MAC_CAM_AP_WDS;
-			rx_ctrl |= AR9170_MAC_RX_CTRL_PASS_TO_HOST;
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case NL80211_IFTYPE_STATION:
 			cam_mode |= AR9170_MAC_CAM_STA;
 			rx_ctrl |= AR9170_MAC_RX_CTRL_PASS_TO_HOST;
@@ -373,9 +339,6 @@ int carl9170_set_operating_mode(struct ar9170 *ar)
 			break;
 		}
 	} else {
-<<<<<<< HEAD
-		mac_addr = NULL;
-=======
 		/*
 		 * Enable monitor mode
 		 *
@@ -394,7 +357,6 @@ int carl9170_set_operating_mode(struct ar9170 *ar)
 		cam_mode |= AR9170_MAC_CAM_STA;
 		rx_ctrl |= AR9170_MAC_RX_CTRL_PASS_TO_HOST;
 		mac_addr = common->macaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bssid = NULL;
 	}
 	rcu_read_unlock();
@@ -406,11 +368,6 @@ int carl9170_set_operating_mode(struct ar9170 *ar)
 		enc_mode |= AR9170_MAC_ENCRYPTION_RX_SOFTWARE;
 
 	if (ar->sniffer_enabled) {
-<<<<<<< HEAD
-		rx_ctrl |= AR9170_MAC_RX_CTRL_ACK_IN_SNIFFER;
-		sniffer |= AR9170_MAC_SNIFFER_ENABLE_PROMISC;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		enc_mode |= AR9170_MAC_ENCRYPTION_RX_SOFTWARE;
 	}
 
@@ -551,16 +508,6 @@ int carl9170_set_mac_tpc(struct ar9170 *ar, struct ieee80211_channel *channel)
 		chains = AR9170_TX_PHY_TXCHAIN_1;
 
 	switch (channel->band) {
-<<<<<<< HEAD
-	case IEEE80211_BAND_2GHZ:
-		power = ar->power_2G_ofdm[0] & 0x3f;
-		break;
-	case IEEE80211_BAND_5GHZ:
-		power = ar->power_5G_leg[0] & 0x3f;
-		break;
-	default:
-		BUG_ON(1);
-=======
 	case NL80211_BAND_2GHZ:
 		power = ar->power_2G_ofdm[0] & 0x3f;
 		break;
@@ -569,7 +516,6 @@ int carl9170_set_mac_tpc(struct ar9170 *ar, struct ieee80211_channel *channel)
 		break;
 	default:
 		BUG();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	power = min_t(unsigned int, power, ar->hw->conf.power_level * 2);

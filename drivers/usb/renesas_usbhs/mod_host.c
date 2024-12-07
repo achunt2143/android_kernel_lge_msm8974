@@ -1,25 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-1.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas USB driver
  *
  * Copyright (C) 2011 Renesas Solutions Corp.
  * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-<<<<<<< HEAD
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/io.h>
 #include <linux/list.h>
@@ -92,10 +76,7 @@ struct usbhsh_ep {
 	struct usbhsh_device	*udev;   /* attached udev */
 	struct usb_host_endpoint *ep;
 	struct list_head	ep_list; /* list to usbhsh_device */
-<<<<<<< HEAD
-=======
 	unsigned int		counter; /* pipe attach counter */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define USBHSH_DEVICE_MAX	10 /* see DEVADDn / DCPMAXP / PIPEMAXP */
@@ -121,15 +102,9 @@ static const char usbhsh_hcd_name[] = "renesas_usbhs host";
 	container_of(usbhs_mod_get(priv, USBHS_HOST), struct usbhsh_hpriv, mod)
 
 #define __usbhsh_for_each_udev(start, pos, h, i)	\
-<<<<<<< HEAD
-	for (i = start, pos = (h)->udev + i;		\
-	     i < USBHSH_DEVICE_MAX;			\
-	     i++, pos = (h)->udev + i)
-=======
 	for ((i) = start;						\
 	     ((i) < USBHSH_DEVICE_MAX) && ((pos) = (h)->udev + (i));	\
 	     (i)++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define usbhsh_for_each_udev(pos, hpriv, i)	\
 	__usbhsh_for_each_udev(1, pos, hpriv, i)
@@ -182,21 +157,10 @@ static struct usbhsh_request *usbhsh_ureq_alloc(struct usbhsh_hpriv *hpriv,
 					       gfp_t mem_flags)
 {
 	struct usbhsh_request *ureq;
-<<<<<<< HEAD
-	struct usbhs_priv *priv = usbhsh_hpriv_to_priv(hpriv);
-	struct device *dev = usbhs_priv_to_dev(priv);
-
-	ureq = kzalloc(sizeof(struct usbhsh_request), mem_flags);
-	if (!ureq) {
-		dev_err(dev, "ureq alloc fail\n");
-		return NULL;
-	}
-=======
 
 	ureq = kzalloc(sizeof(struct usbhsh_request), mem_flags);
 	if (!ureq)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usbhs_pkt_init(&ureq->pkt);
 	ureq->urb = urb;
@@ -295,17 +259,12 @@ static int usbhsh_pipe_attach(struct usbhsh_hpriv *hpriv,
 	/********************  spin lock ********************/
 	usbhs_lock(priv, flags);
 
-<<<<<<< HEAD
-	if (unlikely(usbhsh_uep_to_pipe(uep))) {
-		dev_err(dev, "uep already has pipe\n");
-=======
 	/*
 	 * if uep has been attached to pipe,
 	 * reuse it
 	 */
 	if (usbhsh_uep_to_pipe(uep)) {
 		ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto usbhsh_pipe_attach_done;
 	}
 
@@ -353,12 +312,9 @@ static int usbhsh_pipe_attach(struct usbhsh_hpriv *hpriv,
 	}
 
 usbhsh_pipe_attach_done:
-<<<<<<< HEAD
-=======
 	if (0 == ret)
 		uep->counter++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usbhs_unlock(priv, flags);
 	/********************  spin unlock ******************/
 
@@ -373,27 +329,19 @@ static void usbhsh_pipe_detach(struct usbhsh_hpriv *hpriv,
 	struct device *dev = usbhs_priv_to_dev(priv);
 	unsigned long flags;
 
-<<<<<<< HEAD
-=======
 	if (unlikely(!uep)) {
 		dev_err(dev, "no uep\n");
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/********************  spin lock ********************/
 	usbhs_lock(priv, flags);
 
 	pipe = usbhsh_uep_to_pipe(uep);
 
 	if (unlikely(!pipe)) {
-<<<<<<< HEAD
-		dev_err(dev, "uep doens't have pipe\n");
-	} else {
-=======
 		dev_err(dev, "uep doesn't have pipe\n");
 	} else if (1 == uep->counter--) { /* last user */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct usb_host_endpoint *ep = usbhsh_uep_to_ep(uep);
 		struct usbhsh_device *udev = usbhsh_uep_to_udev(uep);
 
@@ -427,15 +375,8 @@ static int usbhsh_endpoint_attach(struct usbhsh_hpriv *hpriv,
 	unsigned long flags;
 
 	uep = kzalloc(sizeof(struct usbhsh_ep), mem_flags);
-<<<<<<< HEAD
-	if (!uep) {
-		dev_err(dev, "usbhsh_ep alloc fail\n");
-		return -ENOMEM;
-	}
-=======
 	if (!uep)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/********************  spin lock ********************/
 	usbhs_lock(priv, flags);
@@ -443,10 +384,7 @@ static int usbhsh_endpoint_attach(struct usbhsh_hpriv *hpriv,
 	/*
 	 * init endpoint
 	 */
-<<<<<<< HEAD
-=======
 	uep->counter = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&uep->ep_list);
 	list_add_tail(&uep->ep_list, &udev->ep_list_head);
 
@@ -630,11 +568,7 @@ static struct usbhsh_device *usbhsh_device_attach(struct usbhsh_hpriv *hpriv,
 		upphub	= usbhsh_device_number(hpriv, parent);
 		hubport	= usbhsh_device_hubport(udev);
 
-<<<<<<< HEAD
-		dev_dbg(dev, "%s connecte to Hub [%d:%d](%p)\n", __func__,
-=======
 		dev_dbg(dev, "%s connected to Hub [%d:%d](%p)\n", __func__,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			upphub, hubport, parent);
 	}
 
@@ -712,16 +646,10 @@ static void usbhsh_queue_done(struct usbhs_priv *priv, struct usbhs_pkt *pkt)
 		status = -ESHUTDOWN;
 
 	urb->actual_length = pkt->actual;
-<<<<<<< HEAD
-	usbhsh_ureq_free(hpriv, ureq);
-
-	usbhsh_endpoint_sequence_save(hpriv, urb, pkt);
-=======
 
 	usbhsh_endpoint_sequence_save(hpriv, urb, pkt);
 	usbhsh_ureq_free(hpriv, ureq);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usbhsh_pipe_detach(hpriv, usbhsh_ep_to_uep(urb->ep));
 
 	usb_hcd_unlink_urb_from_ep(hcd, urb);
@@ -753,15 +681,9 @@ static int usbhsh_queue_push(struct usb_hcd *hcd,
 	}
 
 	if (usb_pipein(urb->pipe))
-<<<<<<< HEAD
-		pipe->handler = &usbhs_fifo_pio_pop_handler;
-	else
-		pipe->handler = &usbhs_fifo_pio_push_handler;
-=======
 		pipe->handler = &usbhs_fifo_dma_pop_handler;
 	else
 		pipe->handler = &usbhs_fifo_dma_push_handler;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf = (void *)(urb->transfer_buffer + urb->actual_length);
 	len = urb->transfer_buffer_length - urb->actual_length;
@@ -992,10 +914,6 @@ static int usbhsh_dcp_queue_push(struct usb_hcd *hcd,
 /*
  *		dma map functions
  */
-<<<<<<< HEAD
-static int usbhsh_dma_map_ctrl(struct usbhs_pkt *pkt, int map)
-{
-=======
 static int usbhsh_dma_map_ctrl(struct device *dma_dev, struct usbhs_pkt *pkt,
 			       int map)
 {
@@ -1012,7 +930,6 @@ static int usbhsh_dma_map_ctrl(struct device *dma_dev, struct usbhs_pkt *pkt,
 			return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1038,10 +955,6 @@ static int usbhsh_urb_enqueue(struct usb_hcd *hcd,
 	struct usb_host_endpoint *ep = urb->ep;
 	struct usbhsh_device *new_udev = NULL;
 	int is_dir_in = usb_pipein(urb->pipe);
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	dev_dbg(dev, "%s (%s)\n", __func__, is_dir_in ? "in" : "out");
@@ -1087,17 +1000,7 @@ static int usbhsh_urb_enqueue(struct usb_hcd *hcd,
 	 * attach pipe to endpoint
 	 * see [image of mod_host]
 	 */
-<<<<<<< HEAD
-	for (i = 0; i < 1024; i++) {
-		ret = usbhsh_pipe_attach(hpriv, urb);
-		if (ret < 0)
-			msleep(100);
-		else
-			break;
-	}
-=======
 	ret = usbhsh_pipe_attach(hpriv, urb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		dev_err(dev, "pipe attach failed\n");
 		goto usbhsh_urb_enqueue_error_free_endpoint;
@@ -1171,11 +1074,6 @@ static void usbhsh_endpoint_disable(struct usb_hcd *hcd,
 static int usbhsh_hub_status_data(struct usb_hcd *hcd, char *buf)
 {
 	struct usbhsh_hpriv *hpriv = usbhsh_hcd_to_hpriv(hcd);
-<<<<<<< HEAD
-	struct usbhs_priv *priv = usbhsh_hpriv_to_priv(hpriv);
-	struct device *dev = usbhs_priv_to_dev(priv);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int roothub_id = 1; /* only 1 root hub */
 
 	/*
@@ -1187,11 +1085,6 @@ static int usbhsh_hub_status_data(struct usb_hcd *hcd, char *buf)
 	else
 		*buf = 0;
 
-<<<<<<< HEAD
-	dev_dbg(dev, "%s (%02x)\n", __func__, *buf);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return !!(*buf);
 }
 
@@ -1322,21 +1215,13 @@ static int __usbhsh_hub_get_status(struct usbhsh_hpriv *hpriv,
 		break;
 
 	case GetHubDescriptor:
-<<<<<<< HEAD
-		desc->bDescriptorType		= 0x29;
-=======
 		desc->bDescriptorType		= USB_DT_HUB;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc->bHubContrCurrent		= 0;
 		desc->bNbrPorts			= roothub_id;
 		desc->bDescLength		= 9;
 		desc->bPwrOn2PwrGood		= 0;
-<<<<<<< HEAD
-		desc->wHubCharacteristics	= cpu_to_le16(0x0011);
-=======
 		desc->wHubCharacteristics	=
 			cpu_to_le16(HUB_CHAR_INDV_PORT_LPSM | HUB_CHAR_NO_OCPM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc->u.hs.DeviceRemovable[0]	= (roothub_id << 1);
 		desc->u.hs.DeviceRemovable[1]	= ~0;
 		dev_dbg(dev, "%s :: GetHubDescriptor\n", __func__);
@@ -1385,9 +1270,6 @@ static int usbhsh_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct hc_driver usbhsh_driver = {
-=======
 static int usbhsh_bus_nop(struct usb_hcd *hcd)
 {
 	/* nothing to do */
@@ -1395,18 +1277,13 @@ static int usbhsh_bus_nop(struct usb_hcd *hcd)
 }
 
 static const struct hc_driver usbhsh_driver = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.description =		usbhsh_hcd_name,
 	.hcd_priv_size =	sizeof(struct usbhsh_hpriv),
 
 	/*
 	 * generic hardware linkage
 	 */
-<<<<<<< HEAD
-	.flags =		HCD_USB2,
-=======
 	.flags =		HCD_DMA | HCD_USB2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.start =		usbhsh_host_start,
 	.stop =			usbhsh_host_stop,
@@ -1423,11 +1300,8 @@ static const struct hc_driver usbhsh_driver = {
 	 */
 	.hub_status_data =	usbhsh_hub_status_data,
 	.hub_control =		usbhsh_hub_control,
-<<<<<<< HEAD
-=======
 	.bus_suspend =		usbhsh_bus_nop,
 	.bus_resume =		usbhsh_bus_nop,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1526,12 +1400,8 @@ static void usbhsh_pipe_init_for_host(struct usbhs_priv *priv)
 {
 	struct usbhsh_hpriv *hpriv = usbhsh_priv_to_hpriv(priv);
 	struct usbhs_pipe *pipe;
-<<<<<<< HEAD
-	u32 *pipe_type = usbhs_get_dparam(priv, pipe_type);
-=======
 	struct renesas_usbhs_driver_pipe_config *pipe_configs =
 					usbhs_get_dparam(priv, pipe_configs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pipe_size = usbhs_get_dparam(priv, pipe_size);
 	int old_type, dir_in, i;
 
@@ -1559,26 +1429,15 @@ static void usbhsh_pipe_init_for_host(struct usbhs_priv *priv)
 		 * USB_ENDPOINT_XFER_BULK -> dir in
 		 * ...
 		 */
-<<<<<<< HEAD
-		dir_in = (pipe_type[i] == old_type);
-		old_type = pipe_type[i];
-
-		if (USB_ENDPOINT_XFER_CONTROL == pipe_type[i]) {
-=======
 		dir_in = (pipe_configs[i].type == old_type);
 		old_type = pipe_configs[i].type;
 
 		if (USB_ENDPOINT_XFER_CONTROL == pipe_configs[i].type) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pipe = usbhs_dcp_malloc(priv);
 			usbhsh_hpriv_to_dcp(hpriv) = pipe;
 		} else {
 			pipe = usbhs_pipe_malloc(priv,
-<<<<<<< HEAD
-						 pipe_type[i],
-=======
 						 pipe_configs[i].type,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 dir_in);
 		}
 
@@ -1598,23 +1457,14 @@ static int usbhsh_start(struct usbhs_priv *priv)
 	ret = usb_add_hcd(hcd, 0, 0);
 	if (ret < 0)
 		return 0;
-<<<<<<< HEAD
-=======
 	device_wakeup_enable(hcd->self.controller);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * pipe initialize and enable DCP
 	 */
-<<<<<<< HEAD
-	usbhs_pipe_init(priv,
-			usbhsh_dma_map_ctrl);
-	usbhs_fifo_init(priv);
-=======
 	usbhs_fifo_init(priv);
 	usbhs_pipe_init(priv,
 			usbhsh_dma_map_ctrl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usbhsh_pipe_init_for_host(priv);
 
 	/*

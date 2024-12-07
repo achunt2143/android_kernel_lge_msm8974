@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for ALSA
 # Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>
@@ -9,12 +6,8 @@
 
 snd-emu10k1-objs := emu10k1.o emu10k1_main.o \
 		    irq.o memory.o voice.o emumpu401.o emupcm.o io.o \
-<<<<<<< HEAD
-		    emuproc.o emumixer.o emufx.o timer.o p16v.o
-=======
 		    emumixer.o emufx.o timer.o p16v.o
 snd-emu10k1-$(CONFIG_SND_PROC_FS) += emuproc.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd-emu10k1-synth-objs := emu10k1_synth.o emu10k1_callback.o emu10k1_patch.o
 snd-emu10k1x-objs := emu10k1x.o
 

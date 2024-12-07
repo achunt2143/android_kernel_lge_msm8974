@@ -1,40 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     Copyright (c) 1998 - 2002 Frodo Looijaard <frodol@dds.nl> and
     Philip Edelbrock <phil@netroedge.com>
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 /*
    Supports:
 	Intel PIIX4, 440MX
 	Serverworks OSB4, CSB5, CSB6, HT-1000, HT-1100
-<<<<<<< HEAD
-	ATI IXP200, IXP300, IXP400, SB600, SB700, SB800
-	AMD Hudson-2, CZ
-	SMSC Victory66
-
-   Note: we assume there can only be one device, with one SMBus interface.
-=======
 	ATI IXP200, IXP300, IXP400, SB600, SB700/SP5100, SB800
 	AMD Hudson-2, ML, CZ
 	Hygon CZ
@@ -45,7 +19,6 @@
    The device can register multiple i2c_adapters (up to PIIX4_MAX_ADAPTERS).
    For devices supporting multiple ports the i2c_adapter should provide
    an i2c_algorithm to access them.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/module.h>
@@ -56,11 +29,7 @@
 #include <linux/stddef.h>
 #include <linux/ioport.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dmi.h>
 #include <linux/acpi.h>
 #include <linux/io.h>
@@ -81,11 +50,7 @@
 #define SMBSLVDAT	(0xC + piix4_smba)
 
 /* count for request_region */
-<<<<<<< HEAD
-#define SMBIOSIZE	8
-=======
 #define SMBIOSIZE	9
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PCI Address Constants */
 #define SMBBA		0x090
@@ -106,8 +71,6 @@
 #define PIIX4_WORD_DATA		0x0C
 #define PIIX4_BLOCK_DATA	0x14
 
-<<<<<<< HEAD
-=======
 /* Multi-port constants */
 #define PIIX4_MAX_ADAPTERS	4
 #define HUDSON2_MAIN_PORTS	2 /* HUDSON2, KERNCZ reserves ports 3, 4 */
@@ -138,7 +101,6 @@
 #define SB800_PIIX4_FCH_PM_ADDR			0xFED80300
 #define SB800_PIIX4_FCH_PM_SIZE			8
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* insmod parameters */
 
 /* If force is set to anything different from 0, we forcibly enable the
@@ -150,28 +112,15 @@ MODULE_PARM_DESC(force, "Forcibly enable the PIIX4. DANGEROUS!");
 /* If force_addr is set to anything different from 0, we forcibly enable
    the PIIX4 at the given address. VERY DANGEROUS! */
 static int force_addr;
-<<<<<<< HEAD
-module_param (force_addr, int, 0);
-=======
 module_param_hw(force_addr, int, ioport, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(force_addr,
 		 "Forcibly enable the PIIX4 at the given address. "
 		 "EXTREMELY DANGEROUS!");
 
-<<<<<<< HEAD
-static unsigned short piix4_smba;
-static int srvrworks_csb5_delay;
-static struct pci_driver piix4_driver;
-static struct i2c_adapter piix4_adapter;
-
-static struct dmi_system_id __devinitdata piix4_dmi_blacklist[] = {
-=======
 static int srvrworks_csb5_delay;
 static struct pci_driver piix4_driver;
 
 static const struct dmi_system_id piix4_dmi_blacklist[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "Sapphire AM2RD790",
 		.matches = {
@@ -191,11 +140,7 @@ static const struct dmi_system_id piix4_dmi_blacklist[] = {
 
 /* The IBM entry is in a separate table because we only check it
    on Intel-based systems */
-<<<<<<< HEAD
-static struct dmi_system_id __devinitdata piix4_dmi_ibm[] = {
-=======
 static const struct dmi_system_id piix4_dmi_ibm[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "IBM",
 		.matches = { DMI_MATCH(DMI_SYS_VENDOR, "IBM"), },
@@ -203,12 +148,6 @@ static const struct dmi_system_id piix4_dmi_ibm[] = {
 	{ },
 };
 
-<<<<<<< HEAD
-static int __devinit piix4_setup(struct pci_dev *PIIX4_dev,
-				const struct pci_device_id *id)
-{
-	unsigned char temp;
-=======
 /*
  * SB800 globals
  */
@@ -305,7 +244,6 @@ static int piix4_setup(struct pci_dev *PIIX4_dev,
 {
 	unsigned char temp;
 	unsigned short piix4_smba;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((PIIX4_dev->vendor == PCI_VENDOR_ID_SERVERWORKS) &&
 	    (PIIX4_dev->device == PCI_DEVICE_ID_SERVERWORKS_CSB5))
@@ -374,37 +312,20 @@ static int piix4_setup(struct pci_dev *PIIX4_dev,
 			 */
 			pci_write_config_byte(PIIX4_dev, SMBHSTCFG,
 					      temp | 1);
-<<<<<<< HEAD
-			dev_printk(KERN_NOTICE, &PIIX4_dev->dev,
-				"WARNING: SMBus interface has been "
-				"FORCEFULLY ENABLED!\n");
-		} else {
-			dev_err(&PIIX4_dev->dev,
-				"Host SMBus controller not enabled!\n");
-			release_region(piix4_smba, SMBIOSIZE);
-			piix4_smba = 0;
-=======
 			dev_notice(&PIIX4_dev->dev,
 				   "WARNING: SMBus interface has been FORCEFULLY ENABLED!\n");
 		} else {
 			dev_err(&PIIX4_dev->dev,
 				"SMBus Host Controller not enabled!\n");
 			release_region(piix4_smba, SMBIOSIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 		}
 	}
 
 	if (((temp & 0x0E) == 8) || ((temp & 0x0E) == 2))
-<<<<<<< HEAD
-		dev_dbg(&PIIX4_dev->dev, "Using Interrupt 9 for SMBus.\n");
-	else if ((temp & 0x0E) == 0)
-		dev_dbg(&PIIX4_dev->dev, "Using Interrupt SMI# for SMBus.\n");
-=======
 		dev_dbg(&PIIX4_dev->dev, "Using IRQ for SMBus\n");
 	else if ((temp & 0x0E) == 0)
 		dev_dbg(&PIIX4_dev->dev, "Using SMI# for SMBus\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		dev_err(&PIIX4_dev->dev, "Illegal Interrupt configuration "
 			"(or code out of date)!\n");
@@ -414,16 +335,6 @@ static int piix4_setup(struct pci_dev *PIIX4_dev,
 		 "SMBus Host Controller at 0x%x, revision %d\n",
 		 piix4_smba, temp);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-static int __devinit piix4_setup_sb800(struct pci_dev *PIIX4_dev,
-				const struct pci_device_id *id)
-{
-	unsigned short smba_idx = 0xcd6;
-	u8 smba_en_lo, smba_en_hi, i2ccfg, i2ccfg_offset = 0x10, smb_en = 0x2c;
-=======
 	return piix4_smba;
 }
 
@@ -482,7 +393,6 @@ static int piix4_setup_sb800(struct pci_dev *PIIX4_dev,
 	u8 i2ccfg, i2ccfg_offset = 0x10;
 	struct sb800_mmio_cfg mmio_cfg;
 	int retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SB800 and later SMBus does not support forcing address */
 	if (force || force_addr) {
@@ -492,26 +402,6 @@ static int piix4_setup_sb800(struct pci_dev *PIIX4_dev,
 	}
 
 	/* Determine the address of the SMBus areas */
-<<<<<<< HEAD
-	if (!request_region(smba_idx, 2, "smba_idx")) {
-		dev_err(&PIIX4_dev->dev, "SMBus base address index region "
-			"0x%x already in use!\n", smba_idx);
-		return -EBUSY;
-	}
-	outb_p(smb_en, smba_idx);
-	smba_en_lo = inb_p(smba_idx + 1);
-	outb_p(smb_en + 1, smba_idx);
-	smba_en_hi = inb_p(smba_idx + 1);
-	release_region(smba_idx, 2);
-
-	if ((smba_en_lo & 1) == 0) {
-		dev_err(&PIIX4_dev->dev,
-			"Host SMBus controller not enabled!\n");
-		return -ENODEV;
-	}
-
-	piix4_smba = ((smba_en_hi << 8) | smba_en_lo) & 0xffe0;
-=======
 	if ((PIIX4_dev->vendor == PCI_VENDOR_ID_AMD &&
 	     PIIX4_dev->device == PCI_DEVICE_ID_AMD_HUDSON2_SMBUS &&
 	     PIIX4_dev->revision >= 0x41) ||
@@ -530,7 +420,6 @@ static int piix4_setup_sb800(struct pci_dev *PIIX4_dev,
 	if (retval)
 		return retval;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (acpi_check_region(piix4_smba, SMBIOSIZE, piix4_driver.name))
 		return -ENODEV;
 
@@ -540,8 +429,6 @@ static int piix4_setup_sb800(struct pci_dev *PIIX4_dev,
 		return -EBUSY;
 	}
 
-<<<<<<< HEAD
-=======
 	/* Aux SMBus does not support IRQ information */
 	if (aux) {
 		dev_info(&PIIX4_dev->dev,
@@ -550,43 +437,25 @@ static int piix4_setup_sb800(struct pci_dev *PIIX4_dev,
 		return piix4_smba;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Request the SMBus I2C bus config region */
 	if (!request_region(piix4_smba + i2ccfg_offset, 1, "i2ccfg")) {
 		dev_err(&PIIX4_dev->dev, "SMBus I2C bus config region "
 			"0x%x already in use!\n", piix4_smba + i2ccfg_offset);
 		release_region(piix4_smba, SMBIOSIZE);
-<<<<<<< HEAD
-		piix4_smba = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 	i2ccfg = inb_p(piix4_smba + i2ccfg_offset);
 	release_region(piix4_smba + i2ccfg_offset, 1);
 
 	if (i2ccfg & 1)
-<<<<<<< HEAD
-		dev_dbg(&PIIX4_dev->dev, "Using IRQ for SMBus.\n");
-	else
-		dev_dbg(&PIIX4_dev->dev, "Using SMI# for SMBus.\n");
-=======
 		dev_dbg(&PIIX4_dev->dev, "Using IRQ for SMBus\n");
 	else
 		dev_dbg(&PIIX4_dev->dev, "Using SMI# for SMBus\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(&PIIX4_dev->dev,
 		 "SMBus Host Controller at 0x%x, revision %d\n",
 		 piix4_smba, i2ccfg >> 4);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-static int piix4_transaction(void)
-{
-=======
 	/* Find which register is used for port selection */
 	if (PIIX4_dev->vendor == PCI_VENDOR_ID_AMD ||
 	    PIIX4_dev->vendor == PCI_VENDOR_ID_HYGON) {
@@ -670,32 +539,17 @@ static int piix4_transaction(struct i2c_adapter *piix4_adapter)
 {
 	struct i2c_piix4_adapdata *adapdata = i2c_get_adapdata(piix4_adapter);
 	unsigned short piix4_smba = adapdata->smba;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int temp;
 	int result = 0;
 	int timeout = 0;
 
-<<<<<<< HEAD
-	dev_dbg(&piix4_adapter.dev, "Transaction (pre): CNT=%02x, CMD=%02x, "
-=======
 	dev_dbg(&piix4_adapter->dev, "Transaction (pre): CNT=%02x, CMD=%02x, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"ADD=%02x, DAT0=%02x, DAT1=%02x\n", inb_p(SMBHSTCNT),
 		inb_p(SMBHSTCMD), inb_p(SMBHSTADD), inb_p(SMBHSTDAT0),
 		inb_p(SMBHSTDAT1));
 
 	/* Make sure the SMBus host is ready to start transmitting */
 	if ((temp = inb_p(SMBHSTSTS)) != 0x00) {
-<<<<<<< HEAD
-		dev_dbg(&piix4_adapter.dev, "SMBus busy (%02x). "
-			"Resetting...\n", temp);
-		outb_p(temp, SMBHSTSTS);
-		if ((temp = inb_p(SMBHSTSTS)) != 0x00) {
-			dev_err(&piix4_adapter.dev, "Failed! (%02x)\n", temp);
-			return -EBUSY;
-		} else {
-			dev_dbg(&piix4_adapter.dev, "Successful!\n");
-=======
 		dev_dbg(&piix4_adapter->dev, "SMBus busy (%02x). "
 			"Resetting...\n", temp);
 		outb_p(temp, SMBHSTSTS);
@@ -704,7 +558,6 @@ static int piix4_transaction(struct i2c_adapter *piix4_adapter)
 			return -EBUSY;
 		} else {
 			dev_dbg(&piix4_adapter->dev, "Successful!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -713,19 +566,6 @@ static int piix4_transaction(struct i2c_adapter *piix4_adapter)
 
 	/* We will always wait for a fraction of a second! (See PIIX4 docs errata) */
 	if (srvrworks_csb5_delay) /* Extra delay for SERVERWORKS_CSB5 */
-<<<<<<< HEAD
-		msleep(2);
-	else
-		msleep(1);
-
-	while ((++timeout < MAX_TIMEOUT) &&
-	       ((temp = inb_p(SMBHSTSTS)) & 0x01))
-		msleep(1);
-
-	/* If the SMBus is still busy, we give up */
-	if (timeout == MAX_TIMEOUT) {
-		dev_err(&piix4_adapter.dev, "SMBus Timeout!\n");
-=======
 		usleep_range(2000, 2100);
 	else
 		usleep_range(250, 500);
@@ -737,54 +577,34 @@ static int piix4_transaction(struct i2c_adapter *piix4_adapter)
 	/* If the SMBus is still busy, we give up */
 	if (timeout == MAX_TIMEOUT) {
 		dev_err(&piix4_adapter->dev, "SMBus Timeout!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = -ETIMEDOUT;
 	}
 
 	if (temp & 0x10) {
 		result = -EIO;
-<<<<<<< HEAD
-		dev_err(&piix4_adapter.dev, "Error: Failed bus transaction\n");
-=======
 		dev_err(&piix4_adapter->dev, "Error: Failed bus transaction\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (temp & 0x08) {
 		result = -EIO;
-<<<<<<< HEAD
-		dev_dbg(&piix4_adapter.dev, "Bus collision! SMBus may be "
-=======
 		dev_dbg(&piix4_adapter->dev, "Bus collision! SMBus may be "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"locked until next hard reset. (sorry!)\n");
 		/* Clock stops and slave is stuck in mid-transmission */
 	}
 
 	if (temp & 0x04) {
 		result = -ENXIO;
-<<<<<<< HEAD
-		dev_dbg(&piix4_adapter.dev, "Error: no response!\n");
-=======
 		dev_dbg(&piix4_adapter->dev, "Error: no response!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (inb_p(SMBHSTSTS) != 0x00)
 		outb_p(inb(SMBHSTSTS), SMBHSTSTS);
 
 	if ((temp = inb_p(SMBHSTSTS)) != 0x00) {
-<<<<<<< HEAD
-		dev_err(&piix4_adapter.dev, "Failed reset at end of "
-			"transaction (%02x)\n", temp);
-	}
-	dev_dbg(&piix4_adapter.dev, "Transaction (post): CNT=%02x, CMD=%02x, "
-=======
 		dev_err(&piix4_adapter->dev, "Failed reset at end of "
 			"transaction (%02x)\n", temp);
 	}
 	dev_dbg(&piix4_adapter->dev, "Transaction (post): CNT=%02x, CMD=%02x, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"ADD=%02x, DAT0=%02x, DAT1=%02x\n", inb_p(SMBHSTCNT),
 		inb_p(SMBHSTCMD), inb_p(SMBHSTADD), inb_p(SMBHSTDAT0),
 		inb_p(SMBHSTDAT1));
@@ -796,11 +616,8 @@ static s32 piix4_access(struct i2c_adapter * adap, u16 addr,
 		 unsigned short flags, char read_write,
 		 u8 command, int size, union i2c_smbus_data * data)
 {
-<<<<<<< HEAD
-=======
 	struct i2c_piix4_adapdata *adapdata = i2c_get_adapdata(adap);
 	unsigned short piix4_smba = adapdata->smba;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, len;
 	int status;
 
@@ -844,11 +661,7 @@ static s32 piix4_access(struct i2c_adapter * adap, u16 addr,
 			if (len == 0 || len > I2C_SMBUS_BLOCK_MAX)
 				return -EINVAL;
 			outb_p(len, SMBHSTDAT0);
-<<<<<<< HEAD
-			i = inb_p(SMBHSTCNT);	/* Reset SMBBLKDAT */
-=======
 			inb_p(SMBHSTCNT);	/* Reset SMBBLKDAT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (i = 1; i <= len; i++)
 				outb_p(data->block[i], SMBBLKDAT);
 		}
@@ -861,11 +674,7 @@ static s32 piix4_access(struct i2c_adapter * adap, u16 addr,
 
 	outb_p((size & 0x1C) + (ENABLE_INT9 & 1), SMBHSTCNT);
 
-<<<<<<< HEAD
-	status = piix4_transaction();
-=======
 	status = piix4_transaction(adap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status)
 		return status;
 
@@ -885,11 +694,7 @@ static s32 piix4_access(struct i2c_adapter * adap, u16 addr,
 		data->block[0] = inb_p(SMBHSTDAT0);
 		if (data->block[0] == 0 || data->block[0] > I2C_SMBUS_BLOCK_MAX)
 			return -EPROTO;
-<<<<<<< HEAD
-		i = inb_p(SMBHSTCNT);	/* Reset SMBBLKDAT */
-=======
 		inb_p(SMBHSTCNT);	/* Reset SMBBLKDAT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 1; i <= data->block[0]; i++)
 			data->block[i] = inb_p(SMBBLKDAT);
 		break;
@@ -897,8 +702,6 @@ static s32 piix4_access(struct i2c_adapter * adap, u16 addr,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static uint8_t piix4_imc_read(uint8_t idx)
 {
 	outb_p(idx, KERNCZ_IMC_IDX);
@@ -1077,7 +880,6 @@ release:
 	return retval;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 piix4_func(struct i2c_adapter *adapter)
 {
 	return I2C_FUNC_SMBUS_QUICK | I2C_FUNC_SMBUS_BYTE |
@@ -1090,22 +892,12 @@ static const struct i2c_algorithm smbus_algorithm = {
 	.functionality	= piix4_func,
 };
 
-<<<<<<< HEAD
-static struct i2c_adapter piix4_adapter = {
-	.owner		= THIS_MODULE,
-	.class		= I2C_CLASS_HWMON | I2C_CLASS_SPD,
-	.algo		= &smbus_algorithm,
-};
-
-static DEFINE_PCI_DEVICE_TABLE(piix4_ids) = {
-=======
 static const struct i2c_algorithm piix4_smbus_algorithm_sb800 = {
 	.smbus_xfer	= piix4_access_sb800,
 	.functionality	= piix4_func,
 };
 
 static const struct pci_device_id piix4_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371AB_3) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82443MX_3) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_EFAR, PCI_DEVICE_ID_EFAR_SLC90E66_3) },
@@ -1114,12 +906,8 @@ static const struct pci_device_id piix4_ids[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_IXP400_SMBUS) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SBX00_SMBUS) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_HUDSON2_SMBUS) },
-<<<<<<< HEAD
-	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, 0x790b) },
-=======
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_KERNCZ_SMBUS) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_HYGON, PCI_DEVICE_ID_AMD_KERNCZ_SMBUS) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_SERVERWORKS,
 		     PCI_DEVICE_ID_SERVERWORKS_OSB4) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_SERVERWORKS,
@@ -1135,35 +923,6 @@ static const struct pci_device_id piix4_ids[] = {
 
 MODULE_DEVICE_TABLE (pci, piix4_ids);
 
-<<<<<<< HEAD
-static int __devinit piix4_probe(struct pci_dev *dev,
-				const struct pci_device_id *id)
-{
-	int retval;
-
-	if ((dev->vendor == PCI_VENDOR_ID_ATI &&
-	     dev->device == PCI_DEVICE_ID_ATI_SBX00_SMBUS &&
-	     dev->revision >= 0x40) ||
-	    dev->vendor == PCI_VENDOR_ID_AMD)
-		/* base address location etc changed in SB800 */
-		retval = piix4_setup_sb800(dev, id);
-	else
-		retval = piix4_setup(dev, id);
-
-	if (retval)
-		return retval;
-
-	/* set up the sysfs linkage to our parent device */
-	piix4_adapter.dev.parent = &dev->dev;
-
-	snprintf(piix4_adapter.name, sizeof(piix4_adapter.name),
-		"SMBus PIIX4 adapter at %04x", piix4_smba);
-
-	if ((retval = i2c_add_adapter(&piix4_adapter))) {
-		dev_err(&dev->dev, "Couldn't register adapter!\n");
-		release_region(piix4_smba, SMBIOSIZE);
-		piix4_smba = 0;
-=======
 static struct i2c_adapter *piix4_main_adapters[PIIX4_MAX_ADAPTERS];
 static struct i2c_adapter *piix4_aux_adapter;
 static int piix4_adapter_count;
@@ -1266,20 +1025,11 @@ error:
 			kfree(piix4_main_adapters[port]);
 			piix4_main_adapters[port] = NULL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return retval;
 }
 
-<<<<<<< HEAD
-static void __devexit piix4_remove(struct pci_dev *dev)
-{
-	if (piix4_smba) {
-		i2c_del_adapter(&piix4_adapter);
-		release_region(piix4_smba, SMBIOSIZE);
-		piix4_smba = 0;
-=======
 static int piix4_probe(struct pci_dev *dev, const struct pci_device_id *id)
 {
 	int retval;
@@ -1390,7 +1140,6 @@ static void piix4_remove(struct pci_dev *dev)
 	if (piix4_aux_adapter) {
 		piix4_adap_remove(piix4_aux_adapter);
 		piix4_aux_adapter = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1398,28 +1147,6 @@ static struct pci_driver piix4_driver = {
 	.name		= "piix4_smbus",
 	.id_table	= piix4_ids,
 	.probe		= piix4_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(piix4_remove),
-};
-
-static int __init i2c_piix4_init(void)
-{
-	return pci_register_driver(&piix4_driver);
-}
-
-static void __exit i2c_piix4_exit(void)
-{
-	pci_unregister_driver(&piix4_driver);
-}
-
-MODULE_AUTHOR("Frodo Looijaard <frodol@dds.nl> and "
-		"Philip Edelbrock <phil@netroedge.com>");
-MODULE_DESCRIPTION("PIIX4 SMBus driver");
-MODULE_LICENSE("GPL");
-
-module_init(i2c_piix4_init);
-module_exit(i2c_piix4_exit);
-=======
 	.remove		= piix4_remove,
 };
 
@@ -1429,4 +1156,3 @@ MODULE_AUTHOR("Frodo Looijaard <frodol@dds.nl>");
 MODULE_AUTHOR("Philip Edelbrock <phil@netroedge.com>");
 MODULE_DESCRIPTION("PIIX4 SMBus driver");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -46,19 +46,11 @@
 MODULE_AUTHOR("Liran Liss, Yevgeny Petrilin");
 MODULE_DESCRIPTION("Mellanox ConnectX HCA Ethernet driver");
 MODULE_LICENSE("Dual BSD/GPL");
-<<<<<<< HEAD
-MODULE_VERSION(DRV_VERSION " ("DRV_RELDATE")");
-
-static const char mlx4_en_version[] =
-	DRV_NAME ": Mellanox ConnectX HCA Ethernet driver v"
-	DRV_VERSION " (" DRV_RELDATE ")\n";
-=======
 MODULE_VERSION(DRV_VERSION);
 
 static const char mlx4_en_version[] =
 	DRV_NAME ": Mellanox ConnectX HCA Ethernet driver v"
 	DRV_VERSION "\n";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MLX4_EN_PARM_INT(X, def_val, desc) \
 	static unsigned int X = def_val;\
@@ -72,11 +64,7 @@ static const char mlx4_en_version[] =
 
 /* Enable RSS UDP traffic */
 MLX4_EN_PARM_INT(udp_rss, 1,
-<<<<<<< HEAD
-		 "Enable RSS for incomming UDP traffic or disabled (0)");
-=======
 		 "Enable RSS for incoming UDP traffic or disabled (0)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Priority pausing */
 MLX4_EN_PARM_INT(pfctx, 0, "Priority based Flow Control policy on TX[7:0]."
@@ -84,14 +72,6 @@ MLX4_EN_PARM_INT(pfctx, 0, "Priority based Flow Control policy on TX[7:0]."
 MLX4_EN_PARM_INT(pfcrx, 0, "Priority based Flow Control policy on RX[7:0]."
 			   " Per priority bit mask");
 
-<<<<<<< HEAD
-int en_print(const char *level, const struct mlx4_en_priv *priv,
-	     const char *format, ...)
-{
-	va_list args;
-	struct va_format vaf;
-	int i;
-=======
 MLX4_EN_PARM_INT(inline_thold, MAX_INLINE,
 		 "Threshold for using inline data (range: 17-104, default: 104)");
 
@@ -103,27 +83,12 @@ void en_print(const char *level, const struct mlx4_en_priv *priv,
 {
 	va_list args;
 	struct va_format vaf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	va_start(args, format);
 
 	vaf.fmt = format;
 	vaf.va = &args;
 	if (priv->registered)
-<<<<<<< HEAD
-		i = printk("%s%s: %s: %pV",
-			   level, DRV_NAME, priv->dev->name, &vaf);
-	else
-		i = printk("%s%s: %s: Port %d: %pV",
-			   level, DRV_NAME, dev_name(&priv->mdev->pdev->dev),
-			   priv->port, &vaf);
-	va_end(args);
-
-	return i;
-}
-
-static int mlx4_en_get_profile(struct mlx4_en_dev *mdev)
-=======
 		printk("%s%s: %s: %pV",
 		       level, DRV_NAME, priv->dev->name, &vaf);
 	else
@@ -183,54 +148,11 @@ void mlx4_en_update_loopback_state(struct net_device *dev,
 }
 
 static void mlx4_en_get_profile(struct mlx4_en_dev *mdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_en_profile *params = &mdev->profile;
 	int i;
 
 	params->udp_rss = udp_rss;
-<<<<<<< HEAD
-	if (params->udp_rss && !(mdev->dev->caps.flags
-					& MLX4_DEV_CAP_FLAG_UDP_RSS)) {
-		mlx4_warn(mdev, "UDP RSS is not supported on this device.\n");
-		params->udp_rss = 0;
-	}
-	for (i = 1; i <= MLX4_MAX_PORTS; i++) {
-		params->prof[i].rx_pause = 1;
-		params->prof[i].rx_ppp = pfcrx;
-		params->prof[i].tx_pause = 1;
-		params->prof[i].tx_ppp = pfctx;
-		params->prof[i].tx_ring_size = MLX4_EN_DEF_TX_RING_SIZE;
-		params->prof[i].rx_ring_size = MLX4_EN_DEF_RX_RING_SIZE;
-		params->prof[i].tx_ring_num = MLX4_EN_NUM_TX_RINGS +
-			(!!pfcrx) * MLX4_EN_NUM_PPP_RINGS;
-		params->prof[i].rss_rings = 0;
-	}
-
-	return 0;
-}
-
-static void *mlx4_en_get_netdev(struct mlx4_dev *dev, void *ctx, u8 port)
-{
-	struct mlx4_en_dev *endev = ctx;
-
-	return endev->pndev[port];
-}
-
-static void mlx4_en_event(struct mlx4_dev *dev, void *endev_ptr,
-			  enum mlx4_dev_event event, int port)
-{
-	struct mlx4_en_dev *mdev = (struct mlx4_en_dev *) endev_ptr;
-	struct mlx4_en_priv *priv;
-
-	if (!mdev->pndev[port])
-		return;
-
-	priv = netdev_priv(mdev->pndev[port]);
-	switch (event) {
-	case MLX4_DEV_EVENT_PORT_UP:
-	case MLX4_DEV_EVENT_PORT_DOWN:
-=======
 	params->max_num_tx_rings_p_up = mlx4_low_memory_profile() ?
 		MLX4_EN_MIN_TX_RING_P_UP :
 		min_t(int, num_online_cpus(), MLX4_EN_MAX_TX_RING_P_UP);
@@ -287,7 +209,6 @@ static int mlx4_en_event(struct notifier_block *this, unsigned long event,
 		if (!mdev->pndev[port])
 			return NOTIFY_DONE;
 		priv = netdev_priv(mdev->pndev[port]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* To prevent races, we poll the link state in a separate
 		  task rather than changing it here */
 		priv->link_state = event;
@@ -298,18 +219,6 @@ static int mlx4_en_event(struct notifier_block *this, unsigned long event,
 		mlx4_err(mdev, "Internal error detected, restarting device\n");
 		break;
 
-<<<<<<< HEAD
-	default:
-		mlx4_warn(mdev, "Unhandled event: %d\n", event);
-	}
-}
-
-static void mlx4_en_remove(struct mlx4_dev *dev, void *endev_ptr)
-{
-	struct mlx4_en_dev *mdev = endev_ptr;
-	int i;
-
-=======
 	case MLX4_DEV_EVENT_PORT_MGMT_CHANGE:
 	case MLX4_DEV_EVENT_SLAVE_INIT:
 	case MLX4_DEV_EVENT_SLAVE_SHUTDOWN:
@@ -334,7 +243,6 @@ static void mlx4_en_remove(struct auxiliary_device *adev)
 
 	mlx4_unregister_event_notifier(dev, &mdev->mlx_nb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&mdev->state_lock);
 	mdev->device_up = false;
 	mutex_unlock(&mdev->state_lock);
@@ -343,29 +251,6 @@ static void mlx4_en_remove(struct auxiliary_device *adev)
 		if (mdev->pndev[i])
 			mlx4_en_destroy_netdev(mdev->pndev[i]);
 
-<<<<<<< HEAD
-	flush_workqueue(mdev->workqueue);
-	destroy_workqueue(mdev->workqueue);
-	mlx4_mr_free(dev, &mdev->mr);
-	iounmap(mdev->uar_map);
-	mlx4_uar_free(dev, &mdev->priv_uar);
-	mlx4_pd_free(dev, mdev->priv_pdn);
-	kfree(mdev);
-}
-
-static void *mlx4_en_add(struct mlx4_dev *dev)
-{
-	struct mlx4_en_dev *mdev;
-	int i;
-	int err;
-
-	printk_once(KERN_INFO "%s", mlx4_en_version);
-
-	mdev = kzalloc(sizeof *mdev, GFP_KERNEL);
-	if (!mdev) {
-		dev_err(&dev->pdev->dev, "Device struct alloc failed, "
-			"aborting.\n");
-=======
 	destroy_workqueue(mdev->workqueue);
 	(void) mlx4_mr_free(dev, &mdev->mr);
 	iounmap(mdev->uar_map);
@@ -388,37 +273,20 @@ static int mlx4_en_probe(struct auxiliary_device *adev,
 
 	mdev = kzalloc(sizeof(*mdev), GFP_KERNEL);
 	if (!mdev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto err_free_res;
 	}
 
-<<<<<<< HEAD
-	if (mlx4_pd_alloc(dev, &mdev->priv_pdn))
-		goto err_free_dev;
-
-	if (mlx4_uar_alloc(dev, &mdev->priv_uar))
-=======
 	err = mlx4_pd_alloc(dev, &mdev->priv_pdn);
 	if (err)
 		goto err_free_dev;
 
 	err = mlx4_uar_alloc(dev, &mdev->priv_uar);
 	if (err)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_pd;
 
 	mdev->uar_map = ioremap((phys_addr_t) mdev->priv_uar.pfn << PAGE_SHIFT,
 				PAGE_SIZE);
-<<<<<<< HEAD
-	if (!mdev->uar_map)
-		goto err_uar;
-	spin_lock_init(&mdev->uar_lock);
-
-	mdev->dev = dev;
-	mdev->dma_device = &(dev->pdev->dev);
-	mdev->pdev = dev->pdev;
-=======
 	if (!mdev->uar_map) {
 		err = -ENOMEM;
 		goto err_uar;
@@ -428,23 +296,10 @@ static int mlx4_en_probe(struct auxiliary_device *adev,
 	mdev->dev = dev;
 	mdev->dma_device = &dev->persist->pdev->dev;
 	mdev->pdev = dev->persist->pdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mdev->device_up = false;
 
 	mdev->LSO_support = !!(dev->caps.flags & (1 << 15));
 	if (!mdev->LSO_support)
-<<<<<<< HEAD
-		mlx4_warn(mdev, "LSO not supported, please upgrade to later "
-				"FW version to enable LSO\n");
-
-	if (mlx4_mr_alloc(mdev->dev, mdev->priv_pdn, 0, ~0ull,
-			 MLX4_PERM_LOCAL_WRITE |  MLX4_PERM_LOCAL_READ,
-			 0, 0, &mdev->mr)) {
-		mlx4_err(mdev, "Failed allocating memory region\n");
-		goto err_map;
-	}
-	if (mlx4_mr_enable(mdev->dev, &mdev->mr)) {
-=======
 		mlx4_warn(mdev, "LSO not supported, please upgrade to later FW version to enable LSO\n");
 
 	err = mlx4_mr_alloc(mdev->dev, mdev->priv_pdn, 0, ~0ull,
@@ -456,45 +311,20 @@ static int mlx4_en_probe(struct auxiliary_device *adev,
 	}
 	err = mlx4_mr_enable(mdev->dev, &mdev->mr);
 	if (err) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlx4_err(mdev, "Failed enabling memory region\n");
 		goto err_mr;
 	}
 
 	/* Build device profile according to supplied module parameters */
-<<<<<<< HEAD
-	err = mlx4_en_get_profile(mdev);
-	if (err) {
-		mlx4_err(mdev, "Bad module parameters, aborting.\n");
-		goto err_mr;
-	}
-=======
 	mlx4_en_get_profile(mdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Configure which ports to start according to module parameters */
 	mdev->port_cnt = 0;
 	mlx4_foreach_port(i, dev, MLX4_PORT_TYPE_ETH)
 		mdev->port_cnt++;
 
-<<<<<<< HEAD
-	mlx4_foreach_port(i, dev, MLX4_PORT_TYPE_ETH) {
-		if (!dev->caps.comp_pool) {
-			mdev->profile.prof[i].rx_ring_num =
-				rounddown_pow_of_two(max_t(int, MIN_RX_RINGS,
-							   min_t(int,
-								 dev->caps.num_comp_vectors,
-								 MAX_RX_RINGS)));
-		} else {
-			mdev->profile.prof[i].rx_ring_num = rounddown_pow_of_two(
-				min_t(int, dev->caps.comp_pool/
-				      dev->caps.num_ports - 1 , MAX_MSIX_P_PORT - 1));
-		}
-	}
-=======
 	/* Set default number of RX rings*/
 	mlx4_en_set_num_rx_rings(mdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create our own workqueue for reset/multicast tasks
 	 * Note: we cannot use the shared workqueue because of deadlocks caused
@@ -510,14 +340,11 @@ static int mlx4_en_probe(struct auxiliary_device *adev,
 	mutex_init(&mdev->state_lock);
 	mdev->device_up = true;
 
-<<<<<<< HEAD
-=======
 	/* register mlx4 core notifier */
 	mdev->mlx_nb.notifier_call = mlx4_en_event;
 	err = mlx4_register_event_notifier(dev, &mdev->mlx_nb);
 	WARN(err, "failed to register mlx4 event notifier (%d)", err);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Setup ports */
 
 	/* Create a netdev for each port */
@@ -526,14 +353,6 @@ static int mlx4_en_probe(struct auxiliary_device *adev,
 		if (mlx4_en_init_netdev(mdev, i, &mdev->profile.prof[i]))
 			mdev->pndev[i] = NULL;
 	}
-<<<<<<< HEAD
-	return mdev;
-
-err_mr:
-	mlx4_mr_free(dev, &mdev->mr);
-err_map:
-	if (!mdev->uar_map)
-=======
 
 	/* register netdev notifier */
 	mdev->netdev_nb.notifier_call = mlx4_en_netdev_event;
@@ -549,7 +368,6 @@ err_mr:
 	(void) mlx4_mr_free(dev, &mdev->mr);
 err_map:
 	if (mdev->uar_map)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iounmap(mdev->uar_map);
 err_uar:
 	mlx4_uar_free(dev, &mdev->priv_uar);
@@ -558,22 +376,6 @@ err_pd:
 err_free_dev:
 	kfree(mdev);
 err_free_res:
-<<<<<<< HEAD
-	return NULL;
-}
-
-static struct mlx4_interface mlx4_en_interface = {
-	.add		= mlx4_en_add,
-	.remove		= mlx4_en_remove,
-	.event		= mlx4_en_event,
-	.get_dev	= mlx4_en_get_netdev,
-	.protocol	= MLX4_PROT_ETH,
-};
-
-static int __init mlx4_en_init(void)
-{
-	return mlx4_register_interface(&mlx4_en_interface);
-=======
 	return err;
 }
 
@@ -621,16 +423,11 @@ static int __init mlx4_en_init(void)
 	mlx4_en_init_ptys2ethtool_map();
 
 	return mlx4_register_auxiliary_driver(&mlx4_en_adrv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit mlx4_en_cleanup(void)
 {
-<<<<<<< HEAD
-	mlx4_unregister_interface(&mlx4_en_interface);
-=======
 	mlx4_unregister_auxiliary_driver(&mlx4_en_adrv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(mlx4_en_init);

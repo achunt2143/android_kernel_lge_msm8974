@@ -19,20 +19,12 @@
  *
  */
 
-<<<<<<< HEAD
-=======
 #include <inttypes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-<<<<<<< HEAD
-
-#include "../../perf.h"
-#include "../util.h"
-=======
 #include <linux/bitmap.h>
 #include <linux/time64.h>
 #include <traceevent/event-parse.h>
@@ -48,18 +40,11 @@
 #include "../machine.h"
 #include "../map.h"
 #include "../symbol.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "../thread.h"
 #include "../event.h"
 #include "../trace-event.h"
 #include "../evsel.h"
-<<<<<<< HEAD
-
-#include <EXTERN.h>
-#include <perl.h>
-=======
 #include "../debug.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void boot_Perf__Trace__Context(pTHX_ CV *cv);
 void boot_DynaLoader(pTHX_ CV *cv);
@@ -79,17 +64,9 @@ void xs_init(pTHX)
 
 INTERP my_perl;
 
-<<<<<<< HEAD
-#define FTRACE_MAX_EVENT				\
-	((1 << (sizeof(unsigned short) * 8)) - 1)
-
-struct event *events[FTRACE_MAX_EVENT];
-
-=======
 #define TRACE_EVENT_TYPE_MAX				\
 	((1 << (sizeof(unsigned short) * 8)) - 1)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct scripting_context *scripting_context;
 
 static char *cur_field_name;
@@ -123,11 +100,7 @@ static void define_symbolic_value(const char *ev_name,
 	LEAVE;
 }
 
-<<<<<<< HEAD
-static void define_symbolic_values(struct print_flag_sym *field,
-=======
 static void define_symbolic_values(struct tep_print_flag_sym *field,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   const char *ev_name,
 				   const char *field_name)
 {
@@ -185,11 +158,7 @@ static void define_flag_value(const char *ev_name,
 	LEAVE;
 }
 
-<<<<<<< HEAD
-static void define_flag_values(struct print_flag_sym *field,
-=======
 static void define_flag_values(struct tep_print_flag_sym *field,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       const char *ev_name,
 			       const char *field_name)
 {
@@ -221,16 +190,6 @@ static void define_flag_field(const char *ev_name,
 	LEAVE;
 }
 
-<<<<<<< HEAD
-static void define_event_symbols(struct event *event,
-				 const char *ev_name,
-				 struct print_arg *args)
-{
-	switch (args->type) {
-	case PRINT_NULL:
-		break;
-	case PRINT_ATOM:
-=======
 static void define_event_symbols(struct tep_event *event,
 				 const char *ev_name,
 				 struct tep_print_arg *args)
@@ -242,47 +201,25 @@ static void define_event_symbols(struct tep_event *event,
 	case TEP_PRINT_NULL:
 		break;
 	case TEP_PRINT_ATOM:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		define_flag_value(ev_name, cur_field_name, "0",
 				  args->atom.atom);
 		zero_flag_atom = 0;
 		break;
-<<<<<<< HEAD
-	case PRINT_FIELD:
-		if (cur_field_name)
-			free(cur_field_name);
-		cur_field_name = strdup(args->field.name);
-		break;
-	case PRINT_FLAGS:
-=======
 	case TEP_PRINT_FIELD:
 		free(cur_field_name);
 		cur_field_name = strdup(args->field.name);
 		break;
 	case TEP_PRINT_FLAGS:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		define_event_symbols(event, ev_name, args->flags.field);
 		define_flag_field(ev_name, cur_field_name, args->flags.delim);
 		define_flag_values(args->flags.flags, ev_name, cur_field_name);
 		break;
-<<<<<<< HEAD
-	case PRINT_SYMBOL:
-=======
 	case TEP_PRINT_SYMBOL:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		define_event_symbols(event, ev_name, args->symbol.field);
 		define_symbolic_field(ev_name, cur_field_name);
 		define_symbolic_values(args->symbol.symbols, ev_name,
 				       cur_field_name);
 		break;
-<<<<<<< HEAD
-	case PRINT_STRING:
-		break;
-	case PRINT_TYPE:
-		define_event_symbols(event, ev_name, args->typecast.item);
-		break;
-	case PRINT_OP:
-=======
 	case TEP_PRINT_HEX:
 	case TEP_PRINT_HEX_STR:
 		define_event_symbols(event, ev_name, args->hex.field);
@@ -303,19 +240,14 @@ static void define_event_symbols(struct tep_event *event,
 		define_event_symbols(event, ev_name, args->typecast.item);
 		break;
 	case TEP_PRINT_OP:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (strcmp(args->op.op, ":") == 0)
 			zero_flag_atom = 1;
 		define_event_symbols(event, ev_name, args->op.left);
 		define_event_symbols(event, ev_name, args->op.right);
 		break;
-<<<<<<< HEAD
-	default:
-=======
 	case TEP_PRINT_FUNC:
 	default:
 		pr_err("Unsupported print arg type\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* we should warn... */
 		return;
 	}
@@ -324,39 +256,6 @@ static void define_event_symbols(struct tep_event *event,
 		define_event_symbols(event, ev_name, args->next);
 }
 
-<<<<<<< HEAD
-static inline struct event *find_cache_event(int type)
-{
-	static char ev_name[256];
-	struct event *event;
-
-	if (events[type])
-		return events[type];
-
-	events[type] = event = trace_find_event(type);
-	if (!event)
-		return NULL;
-
-	sprintf(ev_name, "%s::%s", event->system, event->name);
-
-	define_event_symbols(event, ev_name, event->print_fmt.args);
-
-	return event;
-}
-
-static void perl_process_tracepoint(union perf_event *pevent __unused,
-				    struct perf_sample *sample,
-				    struct perf_evsel *evsel,
-				    struct machine *machine __unused,
-				    struct thread *thread)
-{
-	struct format_field *field;
-	static char handler[256];
-	unsigned long long val;
-	unsigned long s, ns;
-	struct event *event;
-	int type;
-=======
 static SV *perl_process_callchain(struct perf_sample *sample,
 				  struct evsel *evsel,
 				  struct addr_location *al)
@@ -450,34 +349,10 @@ static void perl_process_tracepoint(struct perf_sample *sample,
 	static char handler[256];
 	unsigned long long val;
 	unsigned long s, ns;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pid;
 	int cpu = sample->cpu;
 	void *data = sample->raw_data;
 	unsigned long long nsecs = sample->time;
-<<<<<<< HEAD
-	char *comm = thread->comm;
-
-	dSP;
-
-	if (evsel->attr.type != PERF_TYPE_TRACEPOINT)
-		return;
-
-	type = trace_parse_common_type(data);
-
-	event = find_cache_event(type);
-	if (!event)
-		die("ug! no event found for type %d", type);
-
-	pid = trace_parse_common_pid(data);
-
-	sprintf(handler, "%s::%s", event->system, event->name);
-
-	s = nsecs / NSECS_PER_SEC;
-	ns = nsecs - s * NSECS_PER_SEC;
-
-	scripting_context->event_data = data;
-=======
 	const char *comm = thread__comm_str(thread);
 	DECLARE_BITMAP(events_defined, TRACE_EVENT_TYPE_MAX);
 
@@ -501,7 +376,6 @@ static void perl_process_tracepoint(struct perf_sample *sample,
 
 	s = nsecs / NSEC_PER_SEC;
 	ns = nsecs - s * NSEC_PER_SEC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ENTER;
 	SAVETMPS;
@@ -514,21 +388,11 @@ static void perl_process_tracepoint(struct perf_sample *sample,
 	XPUSHs(sv_2mortal(newSVuv(ns)));
 	XPUSHs(sv_2mortal(newSViv(pid)));
 	XPUSHs(sv_2mortal(newSVpv(comm, 0)));
-<<<<<<< HEAD
-=======
 	XPUSHs(sv_2mortal(perl_process_callchain(sample, evsel, al)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* common fields other than pid can be accessed via xsub fns */
 
 	for (field = event->format.fields; field; field = field->next) {
-<<<<<<< HEAD
-		if (field->flags & FIELD_IS_STRING) {
-			int offset;
-			if (field->flags & FIELD_IS_DYNAMIC) {
-				offset = *(int *)(data + field->offset);
-				offset &= 0xffff;
-=======
 		if (field->flags & TEP_FIELD_IS_STRING) {
 			int offset;
 			if (field->flags & TEP_FIELD_IS_DYNAMIC) {
@@ -536,19 +400,13 @@ static void perl_process_tracepoint(struct perf_sample *sample,
 				offset &= 0xffff;
 				if (tep_field_is_relative(field->flags))
 					offset += field->offset + field->size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else
 				offset = field->offset;
 			XPUSHs(sv_2mortal(newSVpv((char *)data + offset, 0)));
 		} else { /* FIELD_IS_NUMERIC */
-<<<<<<< HEAD
-			val = read_size(data + field->offset, field->size);
-			if (field->flags & FIELD_IS_SIGNED) {
-=======
 			val = read_size(event, data + field->offset,
 					field->size);
 			if (field->flags & TEP_FIELD_IS_SIGNED) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				XPUSHs(sv_2mortal(newSViv(val)));
 			} else {
 				XPUSHs(sv_2mortal(newSVuv(val)));
@@ -567,10 +425,7 @@ static void perl_process_tracepoint(struct perf_sample *sample,
 		XPUSHs(sv_2mortal(newSVuv(nsecs)));
 		XPUSHs(sv_2mortal(newSViv(pid)));
 		XPUSHs(sv_2mortal(newSVpv(comm, 0)));
-<<<<<<< HEAD
-=======
 		XPUSHs(sv_2mortal(perl_process_callchain(sample, evsel, al)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		call_pv("main::trace_unhandled", G_SCALAR);
 	}
 	SPAGAIN;
@@ -579,17 +434,9 @@ static void perl_process_tracepoint(struct perf_sample *sample,
 	LEAVE;
 }
 
-<<<<<<< HEAD
-static void perl_process_event_generic(union perf_event *pevent __unused,
-				       struct perf_sample *sample,
-				       struct perf_evsel *evsel __unused,
-				       struct machine *machine __unused,
-				       struct thread *thread __unused)
-=======
 static void perl_process_event_generic(union perf_event *event,
 				       struct perf_sample *sample,
 				       struct evsel *evsel)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dSP;
 
@@ -599,13 +446,8 @@ static void perl_process_event_generic(union perf_event *event,
 	ENTER;
 	SAVETMPS;
 	PUSHMARK(SP);
-<<<<<<< HEAD
-	XPUSHs(sv_2mortal(newSVpvn((const char *)pevent, pevent->header.size)));
-	XPUSHs(sv_2mortal(newSVpvn((const char *)&evsel->attr, sizeof(evsel->attr))));
-=======
 	XPUSHs(sv_2mortal(newSVpvn((const char *)event, event->header.size)));
 	XPUSHs(sv_2mortal(newSVpvn((const char *)&evsel->core.attr, sizeof(evsel->core.attr))));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	XPUSHs(sv_2mortal(newSVpvn((const char *)sample, sizeof(*sample))));
 	XPUSHs(sv_2mortal(newSVpvn((const char *)sample->raw_data, sample->raw_size)));
 	PUTBACK;
@@ -616,16 +458,6 @@ static void perl_process_event_generic(union perf_event *event,
 	LEAVE;
 }
 
-<<<<<<< HEAD
-static void perl_process_event(union perf_event *pevent,
-			       struct perf_sample *sample,
-			       struct perf_evsel *evsel,
-			       struct machine *machine,
-			       struct thread *thread)
-{
-	perl_process_tracepoint(pevent, sample, evsel, machine, thread);
-	perl_process_event_generic(pevent, sample, evsel, machine, thread);
-=======
 static void perl_process_event(union perf_event *event,
 			       struct perf_sample *sample,
 			       struct evsel *evsel,
@@ -635,7 +467,6 @@ static void perl_process_event(union perf_event *event,
 	scripting_context__update(scripting_context, event, sample, evsel, al, addr_al);
 	perl_process_tracepoint(sample, evsel, al);
 	perl_process_event_generic(event, sample, evsel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void run_start_sub(void)
@@ -650,26 +481,18 @@ static void run_start_sub(void)
 /*
  * Start trace script
  */
-<<<<<<< HEAD
-static int perl_start_script(const char *script, int argc, const char **argv)
-=======
 static int perl_start_script(const char *script, int argc, const char **argv,
 			     struct perf_session *session)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char **command_line;
 	int i, err = 0;
 
-<<<<<<< HEAD
-	command_line = malloc((argc + 2) * sizeof(const char *));
-=======
 	scripting_context->session = session;
 
 	command_line = malloc((argc + 2) * sizeof(const char *));
 	if (!command_line)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	command_line[0] = "";
 	command_line[1] = script;
 	for (i = 2; i < argc + 2; i++)
@@ -705,14 +528,11 @@ error:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int perl_flush_script(void)
 {
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Stop trace script
  */
@@ -730,14 +550,6 @@ static int perl_stop_script(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int perl_generate_script(const char *outfile)
-{
-	struct event *event = NULL;
-	struct format_field *f;
-	char fname[PATH_MAX];
-	int not_first, count;
-=======
 static int perl_generate_script(struct tep_handle *pevent, const char *outfile)
 {
 	int i, not_first, count, nr_events;
@@ -745,7 +557,6 @@ static int perl_generate_script(struct tep_handle *pevent, const char *outfile)
 	struct tep_event *event = NULL;
 	struct tep_format_field *f;
 	char fname[PATH_MAX];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FILE *ofp;
 
 	sprintf(fname, "%s.pl", outfile);
@@ -785,11 +596,6 @@ static int perl_generate_script(struct tep_handle *pevent, const char *outfile)
 	fprintf(ofp, "use Perf::Trace::Util;\n\n");
 
 	fprintf(ofp, "sub trace_begin\n{\n\t# optional\n}\n\n");
-<<<<<<< HEAD
-	fprintf(ofp, "sub trace_end\n{\n\t# optional\n}\n\n");
-
-	while ((event = trace_find_next_event(event))) {
-=======
 	fprintf(ofp, "sub trace_end\n{\n\t# optional\n}\n");
 
 
@@ -816,7 +622,6 @@ sub print_backtrace\n\
 
 	for (i = 0; all_events && i < nr_events; i++) {
 		event = all_events[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fprintf(ofp, "sub %s::%s\n{\n", event->system, event->name);
 		fprintf(ofp, "\tmy (");
 
@@ -826,12 +631,8 @@ sub print_backtrace\n\
 		fprintf(ofp, "$common_secs, ");
 		fprintf(ofp, "$common_nsecs,\n");
 		fprintf(ofp, "\t    $common_pid, ");
-<<<<<<< HEAD
-		fprintf(ofp, "$common_comm,\n\t    ");
-=======
 		fprintf(ofp, "$common_comm, ");
 		fprintf(ofp, "$common_callchain,\n\t    ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		not_first = 0;
 		count = 0;
@@ -848,11 +649,7 @@ sub print_backtrace\n\
 
 		fprintf(ofp, "\tprint_header($event_name, $common_cpu, "
 			"$common_secs, $common_nsecs,\n\t             "
-<<<<<<< HEAD
-			"$common_pid, $common_comm);\n\n");
-=======
 			"$common_pid, $common_comm, $common_callchain);\n\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		fprintf(ofp, "\tprintf(\"");
 
@@ -868,19 +665,11 @@ sub print_backtrace\n\
 			count++;
 
 			fprintf(ofp, "%s=", f->name);
-<<<<<<< HEAD
-			if (f->flags & FIELD_IS_STRING ||
-			    f->flags & FIELD_IS_FLAG ||
-			    f->flags & FIELD_IS_SYMBOLIC)
-				fprintf(ofp, "%%s");
-			else if (f->flags & FIELD_IS_SIGNED)
-=======
 			if (f->flags & TEP_FIELD_IS_STRING ||
 			    f->flags & TEP_FIELD_IS_FLAG ||
 			    f->flags & TEP_FIELD_IS_SYMBOLIC)
 				fprintf(ofp, "%%s");
 			else if (f->flags & TEP_FIELD_IS_SIGNED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				fprintf(ofp, "%%d");
 			else
 				fprintf(ofp, "%%u");
@@ -898,11 +687,7 @@ sub print_backtrace\n\
 			if (++count % 5 == 0)
 				fprintf(ofp, "\n\t       ");
 
-<<<<<<< HEAD
-			if (f->flags & FIELD_IS_FLAG) {
-=======
 			if (f->flags & TEP_FIELD_IS_FLAG) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if ((count - 1) % 5 != 0) {
 					fprintf(ofp, "\n\t       ");
 					count = 4;
@@ -912,11 +697,7 @@ sub print_backtrace\n\
 					event->name);
 				fprintf(ofp, "\"%s\", $%s)", f->name,
 					f->name);
-<<<<<<< HEAD
-			} else if (f->flags & FIELD_IS_SYMBOLIC) {
-=======
 			} else if (f->flags & TEP_FIELD_IS_SYMBOLIC) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if ((count - 1) % 5 != 0) {
 					fprintf(ofp, "\n\t       ");
 					count = 4;
@@ -930,26 +711,15 @@ sub print_backtrace\n\
 				fprintf(ofp, "$%s", f->name);
 		}
 
-<<<<<<< HEAD
-		fprintf(ofp, ");\n");
-=======
 		fprintf(ofp, ");\n\n");
 
 		fprintf(ofp, "\tprint_backtrace($common_callchain);\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fprintf(ofp, "}\n\n");
 	}
 
 	fprintf(ofp, "sub trace_unhandled\n{\n\tmy ($event_name, $context, "
 		"$common_cpu, $common_secs, $common_nsecs,\n\t    "
-<<<<<<< HEAD
-		"$common_pid, $common_comm) = @_;\n\n");
-
-	fprintf(ofp, "\tprint_header($event_name, $common_cpu, "
-		"$common_secs, $common_nsecs,\n\t             $common_pid, "
-		"$common_comm);\n}\n\n");
-=======
 		"$common_pid, $common_comm, $common_callchain) = @_;\n\n");
 
 	fprintf(ofp, "\tprint_header($event_name, $common_cpu, "
@@ -957,7 +727,6 @@ sub print_backtrace\n\
 		"$common_comm, $common_callchain);\n");
 	fprintf(ofp, "\tprint_backtrace($common_callchain);\n");
 	fprintf(ofp, "}\n\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fprintf(ofp, "sub print_header\n{\n"
 		"\tmy ($event_name, $cpu, $secs, $nsecs, $pid, $comm) = @_;\n\n"
@@ -994,13 +763,9 @@ sub print_backtrace\n\
 
 struct scripting_ops perl_scripting_ops = {
 	.name = "Perl",
-<<<<<<< HEAD
-	.start_script = perl_start_script,
-=======
 	.dirname = "perl",
 	.start_script = perl_start_script,
 	.flush_script = perl_flush_script,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.stop_script = perl_stop_script,
 	.process_event = perl_process_event,
 	.generate_script = perl_generate_script,

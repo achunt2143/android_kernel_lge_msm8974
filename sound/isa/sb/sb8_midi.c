@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Routines for control of SoundBlaster cards - MIDI interface
  *
-<<<<<<< HEAD
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * --
  *
  * Sun May  9 22:54:38 BST 1999 George David Morrison <gdm@gedamo.demon.co.uk>
@@ -33,11 +13,7 @@
  *   Added full duplex UART mode for DSP version 2.0 and later.
  */
 
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/time.h>
 #include <sound/core.h>
 #include <sound/sb.h>
@@ -149,10 +125,7 @@ static int snd_sb8dsp_midi_output_close(struct snd_rawmidi_substream *substream)
 	struct snd_sb *chip;
 
 	chip = substream->rmidi->private_data;
-<<<<<<< HEAD
-=======
 	del_timer_sync(&chip->midi_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&chip->open_lock, flags);
 	chip->open &= ~(SB_OPEN_MIDI_OUTPUT | SB_OPEN_MIDI_OUTPUT_TRIGGER);
 	chip->midi_substream_output = NULL;
@@ -224,17 +197,6 @@ static void snd_sb8dsp_midi_output_write(struct snd_rawmidi_substream *substream
 	}
 }
 
-<<<<<<< HEAD
-static void snd_sb8dsp_midi_output_timer(unsigned long data)
-{
-	struct snd_rawmidi_substream *substream = (struct snd_rawmidi_substream *) data;
-	struct snd_sb * chip = substream->rmidi->private_data;
-	unsigned long flags;
-
-	spin_lock_irqsave(&chip->open_lock, flags);
-	chip->midi_timer.expires = 1 + jiffies;
-	add_timer(&chip->midi_timer);
-=======
 static void snd_sb8dsp_midi_output_timer(struct timer_list *t)
 {
 	struct snd_sb *chip = from_timer(chip, t, midi_timer);
@@ -243,7 +205,6 @@ static void snd_sb8dsp_midi_output_timer(struct timer_list *t)
 
 	spin_lock_irqsave(&chip->open_lock, flags);
 	mod_timer(&chip->midi_timer, 1 + jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&chip->open_lock, flags);	
 	snd_sb8dsp_midi_output_write(substream);
 }
@@ -257,15 +218,7 @@ static void snd_sb8dsp_midi_output_trigger(struct snd_rawmidi_substream *substre
 	spin_lock_irqsave(&chip->open_lock, flags);
 	if (up) {
 		if (!(chip->open & SB_OPEN_MIDI_OUTPUT_TRIGGER)) {
-<<<<<<< HEAD
-			init_timer(&chip->midi_timer);
-			chip->midi_timer.function = snd_sb8dsp_midi_output_timer;
-			chip->midi_timer.data = (unsigned long) substream;
-			chip->midi_timer.expires = 1 + jiffies;
-			add_timer(&chip->midi_timer);
-=======
 			mod_timer(&chip->midi_timer, 1 + jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			chip->open |= SB_OPEN_MIDI_OUTPUT_TRIGGER;
 		}
 	} else {
@@ -279,45 +232,27 @@ static void snd_sb8dsp_midi_output_trigger(struct snd_rawmidi_substream *substre
 		snd_sb8dsp_midi_output_write(substream);
 }
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_sb8dsp_midi_output =
-=======
 static const struct snd_rawmidi_ops snd_sb8dsp_midi_output =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_sb8dsp_midi_output_open,
 	.close =	snd_sb8dsp_midi_output_close,
 	.trigger =	snd_sb8dsp_midi_output_trigger,
 };
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_sb8dsp_midi_input =
-=======
 static const struct snd_rawmidi_ops snd_sb8dsp_midi_input =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_sb8dsp_midi_input_open,
 	.close =	snd_sb8dsp_midi_input_close,
 	.trigger =	snd_sb8dsp_midi_input_trigger,
 };
 
-<<<<<<< HEAD
-int snd_sb8dsp_midi(struct snd_sb *chip, int device, struct snd_rawmidi ** rrawmidi)
-=======
 int snd_sb8dsp_midi(struct snd_sb *chip, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_rawmidi *rmidi;
 	int err;
 
-<<<<<<< HEAD
-	if (rrawmidi)
-		*rrawmidi = NULL;
-	if ((err = snd_rawmidi_new(chip->card, "SB8 MIDI", device, 1, 1, &rmidi)) < 0)
-=======
 	err = snd_rawmidi_new(chip->card, "SB8 MIDI", device, 1, 1, &rmidi);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	strcpy(rmidi->name, "SB8 MIDI");
 	snd_rawmidi_set_ops(rmidi, SNDRV_RAWMIDI_STREAM_OUTPUT, &snd_sb8dsp_midi_output);
@@ -326,13 +261,7 @@ int snd_sb8dsp_midi(struct snd_sb *chip, int device)
 	if (chip->hardware >= SB_HW_20)
 		rmidi->info_flags |= SNDRV_RAWMIDI_INFO_DUPLEX;
 	rmidi->private_data = chip;
-<<<<<<< HEAD
-	chip->rmidi = rmidi;
-	if (rrawmidi)
-		*rrawmidi = rmidi;
-=======
 	timer_setup(&chip->midi_timer, snd_sb8dsp_midi_output_timer, 0);
 	chip->rmidi = rmidi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-obj-$(CONFIG_ATMEL_TCB_CLKSRC)	+= tcb_clksrc.o
-obj-$(CONFIG_X86_CYCLONE_TIMER)	+= cyclone.o
-obj-$(CONFIG_X86_PM_TIMER)	+= acpi_pm.o
-obj-$(CONFIG_SCx200HR_TIMER)	+= scx200_hrt.o
-obj-$(CONFIG_CS5535_CLOCK_EVENT_SRC)	+= cs5535-clockevt.o
-obj-$(CONFIG_SH_TIMER_CMT)	+= sh_cmt.o
-obj-$(CONFIG_SH_TIMER_MTU2)	+= sh_mtu2.o
-obj-$(CONFIG_SH_TIMER_TMU)	+= sh_tmu.o
-obj-$(CONFIG_CLKBLD_I8253)	+= i8253.o
-obj-$(CONFIG_CLKSRC_MMIO)	+= mmio.o
-obj-$(CONFIG_DW_APB_TIMER)	+= dw_apb_timer.o
-obj-$(CONFIG_CLKSRC_DBX500_PRCMU)	+= clksrc-dbx500-prcmu.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 obj-$(CONFIG_TIMER_OF)		+= timer-of.o
 obj-$(CONFIG_TIMER_PROBE)	+= timer-probe.o
@@ -104,4 +90,3 @@ obj-$(CONFIG_GOLDFISH_TIMER)		+= timer-goldfish.o
 obj-$(CONFIG_GXP_TIMER)			+= timer-gxp.o
 obj-$(CONFIG_CLKSRC_LOONGSON1_PWM)	+= timer-loongson1-pwm.o
 obj-$(CONFIG_EP93XX_TIMER)		+= timer-ep93xx.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

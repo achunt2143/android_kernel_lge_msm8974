@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-tegra/io.c
  *
@@ -10,31 +7,6 @@
  * Author:
  *	Colin Cross <ccross@google.com>
  *	Erik Gilling <konkers@google.com>
-<<<<<<< HEAD
- *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- */
-
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/mm.h>
-#include <linux/io.h>
-
-#include <asm/page.h>
-#include <asm/mach/map.h>
-#include <mach/iomap.h>
-
-#include "board.h"
-=======
  */
 
 #include <linux/init.h>
@@ -48,7 +20,6 @@
 
 #include "board.h"
 #include "iomap.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct map_desc tegra_io_desc[] __initdata = {
 	{
@@ -79,9 +50,6 @@ static struct map_desc tegra_io_desc[] __initdata = {
 
 void __init tegra_map_common_io(void)
 {
-<<<<<<< HEAD
-=======
 	debug_ll_io_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iotable_init(tegra_io_desc, ARRAY_SIZE(tegra_io_desc));
 }

@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/pgd.c
  *
  *  Copyright (C) 1998-2005 Russell King
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/mm.h>
 #include <linux/gfp.h>
@@ -27,11 +17,7 @@
 #include "mm.h"
 
 #ifdef CONFIG_ARM_LPAE
-<<<<<<< HEAD
-#define __pgd_alloc()	kmalloc(PTRS_PER_PGD * sizeof(pgd_t), GFP_KERNEL)
-=======
 #define __pgd_alloc()	kmalloc_array(PTRS_PER_PGD, sizeof(pgd_t), GFP_KERNEL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __pgd_free(pgd)	kfree(pgd)
 #else
 #define __pgd_alloc()	(pgd_t *)__get_free_pages(GFP_KERNEL, 2)
@@ -44,10 +30,7 @@
 pgd_t *pgd_alloc(struct mm_struct *mm)
 {
 	pgd_t *new_pgd, *init_pgd;
-<<<<<<< HEAD
-=======
 	p4d_t *new_p4d, *init_p4d;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pud_t *new_pud, *init_pud;
 	pmd_t *new_pmd, *init_pmd;
 	pte_t *new_pte, *init_pte;
@@ -71,26 +54,18 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
 	/*
 	 * Allocate PMD table for modules and pkmap mappings.
 	 */
-<<<<<<< HEAD
-	new_pud = pud_alloc(mm, new_pgd + pgd_index(MODULES_VADDR),
-			    MODULES_VADDR);
-=======
 	new_p4d = p4d_alloc(mm, new_pgd + pgd_index(MODULES_VADDR),
 			    MODULES_VADDR);
 	if (!new_p4d)
 		goto no_p4d;
 
 	new_pud = pud_alloc(mm, new_p4d, MODULES_VADDR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!new_pud)
 		goto no_pud;
 
 	new_pmd = pmd_alloc(mm, new_pud, 0);
 	if (!new_pmd)
 		goto no_pmd;
-<<<<<<< HEAD
-#endif
-=======
 #ifdef CONFIG_KASAN
 	/*
 	 * Copy PMD table for KASAN shadow mappings.
@@ -106,7 +81,6 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
 	clean_dcache_area(new_pmd, PTRS_PER_PMD * sizeof(pmd_t));
 #endif /* CONFIG_KASAN */
 #endif /* CONFIG_LPAE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!vectors_high()) {
 		/*
@@ -114,15 +88,11 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
 		 * contains the machine vectors. The vectors are always high
 		 * with LPAE.
 		 */
-<<<<<<< HEAD
-		new_pud = pud_alloc(mm, new_pgd, 0);
-=======
 		new_p4d = p4d_alloc(mm, new_pgd, 0);
 		if (!new_p4d)
 			goto no_p4d;
 
 		new_pud = pud_alloc(mm, new_p4d, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!new_pud)
 			goto no_pud;
 
@@ -130,16 +100,6 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
 		if (!new_pmd)
 			goto no_pmd;
 
-<<<<<<< HEAD
-		new_pte = pte_alloc_map(mm, NULL, new_pmd, 0);
-		if (!new_pte)
-			goto no_pte;
-
-		init_pud = pud_offset(init_pgd, 0);
-		init_pmd = pmd_offset(init_pud, 0);
-		init_pte = pte_offset_map(init_pmd, 0);
-		set_pte_ext(new_pte, *init_pte, 0);
-=======
 		new_pte = pte_alloc_map(mm, new_pmd, 0);
 		if (!new_pte)
 			goto no_pte;
@@ -160,7 +120,6 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
 		init_pte = pte_offset_map(init_pmd, 0);
 		set_pte_ext(new_pte + 0, init_pte[0], 0);
 		set_pte_ext(new_pte + 1, init_pte[1], 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pte_unmap(init_pte);
 		pte_unmap(new_pte);
 	}
@@ -169,18 +128,12 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
 
 no_pte:
 	pmd_free(mm, new_pmd);
-<<<<<<< HEAD
-no_pmd:
-	pud_free(mm, new_pud);
-no_pud:
-=======
 	mm_dec_nr_pmds(mm);
 no_pmd:
 	pud_free(mm, new_pud);
 no_pud:
 	p4d_free(mm, new_p4d);
 no_p4d:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__pgd_free(new_pgd);
 no_pgd:
 	return NULL;
@@ -189,10 +142,7 @@ no_pgd:
 void pgd_free(struct mm_struct *mm, pgd_t *pgd_base)
 {
 	pgd_t *pgd;
-<<<<<<< HEAD
-=======
 	p4d_t *p4d;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pud_t *pud;
 	pmd_t *pmd;
 	pgtable_t pte;
@@ -204,15 +154,11 @@ void pgd_free(struct mm_struct *mm, pgd_t *pgd_base)
 	if (pgd_none_or_clear_bad(pgd))
 		goto no_pgd;
 
-<<<<<<< HEAD
-	pud = pud_offset(pgd, 0);
-=======
 	p4d = p4d_offset(pgd, 0);
 	if (p4d_none_or_clear_bad(p4d))
 		goto no_p4d;
 
 	pud = pud_offset(p4d, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pud_none_or_clear_bad(pud))
 		goto no_pud;
 
@@ -223,14 +169,6 @@ void pgd_free(struct mm_struct *mm, pgd_t *pgd_base)
 	pte = pmd_pgtable(*pmd);
 	pmd_clear(pmd);
 	pte_free(mm, pte);
-<<<<<<< HEAD
-no_pmd:
-	pud_clear(pud);
-	pmd_free(mm, pmd);
-no_pud:
-	pgd_clear(pgd);
-	pud_free(mm, pud);
-=======
 	mm_dec_nr_ptes(mm);
 no_pmd:
 	pud_clear(pud);
@@ -242,7 +180,6 @@ no_pud:
 no_p4d:
 	pgd_clear(pgd);
 	p4d_free(mm, p4d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 no_pgd:
 #ifdef CONFIG_ARM_LPAE
 	/*
@@ -253,30 +190,21 @@ no_pgd:
 			continue;
 		if (pgd_val(*pgd) & L_PGD_SWAPPER)
 			continue;
-<<<<<<< HEAD
-		pud = pud_offset(pgd, 0);
-=======
 		p4d = p4d_offset(pgd, 0);
 		if (p4d_none_or_clear_bad(p4d))
 			continue;
 		pud = pud_offset(p4d, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pud_none_or_clear_bad(pud))
 			continue;
 		pmd = pmd_offset(pud, 0);
 		pud_clear(pud);
 		pmd_free(mm, pmd);
-<<<<<<< HEAD
-		pgd_clear(pgd);
-		pud_free(mm, pud);
-=======
 		mm_dec_nr_pmds(mm);
 		p4d_clear(p4d);
 		pud_free(mm, pud);
 		mm_dec_nr_puds(mm);
 		pgd_clear(pgd);
 		p4d_free(mm, p4d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	__pgd_free(pgd_base);

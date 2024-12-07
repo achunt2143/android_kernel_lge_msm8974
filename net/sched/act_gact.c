@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-/*
- * net/sched/gact.c	Generic actions
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
- * copyright 	Jamal Hadi Salim (2002-4)
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * net/sched/act_gact.c		Generic actions
  *
  * copyright 	Jamal Hadi Salim (2002-4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -28,52 +15,28 @@
 #include <linux/init.h>
 #include <net/netlink.h>
 #include <net/pkt_sched.h>
-<<<<<<< HEAD
-#include <linux/tc_act/tc_gact.h>
-#include <net/tc_act/tc_gact.h>
-
-#define GACT_TAB_MASK	15
-static struct tcf_common *tcf_gact_ht[GACT_TAB_MASK + 1];
-static u32 gact_idx_gen;
-static DEFINE_RWLOCK(gact_lock);
-
-static struct tcf_hashinfo gact_hash_info = {
-	.htab	=	tcf_gact_ht,
-	.hmask	=	GACT_TAB_MASK,
-	.lock	=	&gact_lock,
-};
-=======
 #include <net/pkt_cls.h>
 #include <linux/tc_act/tc_gact.h>
 #include <net/tc_act/tc_gact.h>
 #include <net/tc_wrapper.h>
 
 static struct tc_action_ops act_gact_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_GACT_PROB
 static int gact_net_rand(struct tcf_gact *gact)
 {
-<<<<<<< HEAD
-	if (!gact->tcfg_pval || net_random() % gact->tcfg_pval)
-=======
 	smp_rmb(); /* coupled with smp_wmb() in tcf_gact_init() */
 	if (get_random_u32_below(gact->tcfg_pval))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return gact->tcf_action;
 	return gact->tcfg_paction;
 }
 
 static int gact_determ(struct tcf_gact *gact)
 {
-<<<<<<< HEAD
-	if (!gact->tcfg_pval || gact->tcf_bstats.packets % gact->tcfg_pval)
-=======
 	u32 pack = atomic_inc_return(&gact->packets);
 
 	smp_rmb(); /* coupled with smp_wmb() in tcf_gact_init() */
 	if (pack % gact->tcfg_pval)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return gact->tcf_action;
 	return gact->tcfg_paction;
 }
@@ -87,16 +50,6 @@ static const struct nla_policy gact_policy[TCA_GACT_MAX + 1] = {
 	[TCA_GACT_PROB]		= { .len = sizeof(struct tc_gact_p) },
 };
 
-<<<<<<< HEAD
-static int tcf_gact_init(struct nlattr *nla, struct nlattr *est,
-			 struct tc_action *a, int ovr, int bind)
-{
-	struct nlattr *tb[TCA_GACT_MAX + 1];
-	struct tc_gact *parm;
-	struct tcf_gact *gact;
-	struct tcf_common *pc;
-	int ret = 0;
-=======
 static int tcf_gact_init(struct net *net, struct nlattr *nla,
 			 struct nlattr *est, struct tc_action **a,
 			 struct tcf_proto *tp, u32 flags,
@@ -110,7 +63,6 @@ static int tcf_gact_init(struct net *net, struct nlattr *nla,
 	struct tcf_gact *gact;
 	int ret = 0;
 	u32 index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 #ifdef CONFIG_GACT_PROB
 	struct tc_gact_p *p_parm = NULL;
@@ -119,22 +71,15 @@ static int tcf_gact_init(struct net *net, struct nlattr *nla,
 	if (nla == NULL)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	err = nla_parse_nested(tb, TCA_GACT_MAX, nla, gact_policy);
-=======
 	err = nla_parse_nested_deprecated(tb, TCA_GACT_MAX, nla, gact_policy,
 					  NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	if (tb[TCA_GACT_PARMS] == NULL)
 		return -EINVAL;
 	parm = nla_data(tb[TCA_GACT_PARMS]);
-<<<<<<< HEAD
-=======
 	index = parm->index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CONFIG_GACT_PROB
 	if (tb[TCA_GACT_PROB] != NULL)
@@ -144,33 +89,6 @@ static int tcf_gact_init(struct net *net, struct nlattr *nla,
 		p_parm = nla_data(tb[TCA_GACT_PROB]);
 		if (p_parm->ptype >= MAX_RAND)
 			return -EINVAL;
-<<<<<<< HEAD
-	}
-#endif
-
-	pc = tcf_hash_check(parm->index, a, bind, &gact_hash_info);
-	if (!pc) {
-		pc = tcf_hash_create(parm->index, est, a, sizeof(*gact),
-				     bind, &gact_idx_gen, &gact_hash_info);
-		if (IS_ERR(pc))
-			return PTR_ERR(pc);
-		ret = ACT_P_CREATED;
-	} else {
-		if (!ovr) {
-			tcf_hash_release(pc, bind, &gact_hash_info);
-			return -EEXIST;
-		}
-	}
-
-	gact = to_gact(pc);
-
-	spin_lock_bh(&gact->tcf_lock);
-	gact->tcf_action = parm->action;
-#ifdef CONFIG_GACT_PROB
-	if (p_parm) {
-		gact->tcfg_paction = p_parm->paction;
-		gact->tcfg_pval    = p_parm->pval;
-=======
 		if (TC_ACT_EXT_CMP(p_parm->paction, TC_ACT_GOTO_CHAIN)) {
 			NL_SET_ERR_MSG(extack,
 				       "goto chain not allowed on fallback");
@@ -214,48 +132,10 @@ static int tcf_gact_init(struct net *net, struct nlattr *nla,
 		 * coupled with smp_rmb() in gact_net_rand() & gact_determ()
 		 */
 		smp_wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gact->tcfg_ptype   = p_parm->ptype;
 	}
 #endif
 	spin_unlock_bh(&gact->tcf_lock);
-<<<<<<< HEAD
-	if (ret == ACT_P_CREATED)
-		tcf_hash_insert(pc, &gact_hash_info);
-	return ret;
-}
-
-static int tcf_gact_cleanup(struct tc_action *a, int bind)
-{
-	struct tcf_gact *gact = a->priv;
-
-	if (gact)
-		return tcf_hash_release(&gact->common, bind, &gact_hash_info);
-	return 0;
-}
-
-static int tcf_gact(struct sk_buff *skb, const struct tc_action *a,
-		    struct tcf_result *res)
-{
-	struct tcf_gact *gact = a->priv;
-	int action = TC_ACT_SHOT;
-
-	spin_lock(&gact->tcf_lock);
-#ifdef CONFIG_GACT_PROB
-	if (gact->tcfg_ptype)
-		action = gact_rand[gact->tcfg_ptype](gact);
-	else
-		action = gact->tcf_action;
-#else
-	action = gact->tcf_action;
-#endif
-	gact->tcf_bstats.bytes += qdisc_pkt_len(skb);
-	gact->tcf_bstats.packets++;
-	if (action == TC_ACT_SHOT)
-		gact->tcf_qstats.drops++;
-	gact->tcf_tm.lastuse = jiffies;
-	spin_unlock(&gact->tcf_lock);
-=======
 
 	if (goto_ch)
 		tcf_chain_put_by_act(goto_ch);
@@ -286,26 +166,10 @@ TC_INDIRECT_SCOPE int tcf_gact_act(struct sk_buff *skb,
 		tcf_action_inc_drop_qstats(&gact->common);
 
 	tcf_lastuse_update(&gact->tcf_tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return action;
 }
 
-<<<<<<< HEAD
-static int tcf_gact_dump(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
-{
-	unsigned char *b = skb_tail_pointer(skb);
-	struct tcf_gact *gact = a->priv;
-	struct tc_gact opt = {
-		.index   = gact->tcf_index,
-		.refcnt  = gact->tcf_refcnt - ref,
-		.bindcnt = gact->tcf_bindcnt - bind,
-		.action  = gact->tcf_action,
-	};
-	struct tcf_t t;
-
-	NLA_PUT(skb, TCA_GACT_PARMS, sizeof(opt), &opt);
-=======
 static void tcf_gact_stats_update(struct tc_action *a, u64 bytes, u64 packets,
 				  u64 drops, u64 lastuse, bool hw)
 {
@@ -334,7 +198,6 @@ static int tcf_gact_dump(struct sk_buff *skb, struct tc_action *a,
 	opt.action = gact->tcf_action;
 	if (nla_put(skb, TCA_GACT_PARMS, sizeof(opt), &opt))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_GACT_PROB
 	if (gact->tcfg_ptype) {
 		struct tc_gact_p p_opt = {
@@ -343,18 +206,6 @@ static int tcf_gact_dump(struct sk_buff *skb, struct tc_action *a,
 			.ptype   = gact->tcfg_ptype,
 		};
 
-<<<<<<< HEAD
-		NLA_PUT(skb, TCA_GACT_PROB, sizeof(p_opt), &p_opt);
-	}
-#endif
-	t.install = jiffies_to_clock_t(jiffies - gact->tcf_tm.install);
-	t.lastuse = jiffies_to_clock_t(jiffies - gact->tcf_tm.lastuse);
-	t.expires = jiffies_to_clock_t(gact->tcf_tm.expires);
-	NLA_PUT(skb, TCA_GACT_TM, sizeof(t), &t);
-	return skb->len;
-
-nla_put_failure:
-=======
 		if (nla_put(skb, TCA_GACT_PROB, sizeof(p_opt), &p_opt))
 			goto nla_put_failure;
 	}
@@ -368,25 +219,10 @@ nla_put_failure:
 
 nla_put_failure:
 	spin_unlock_bh(&gact->tcf_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmsg_trim(skb, b);
 	return -1;
 }
 
-<<<<<<< HEAD
-static struct tc_action_ops act_gact_ops = {
-	.kind		=	"gact",
-	.hinfo		=	&gact_hash_info,
-	.type		=	TCA_ACT_GACT,
-	.capab		=	TCA_CAP_NONE,
-	.owner		=	THIS_MODULE,
-	.act		=	tcf_gact,
-	.dump		=	tcf_gact_dump,
-	.cleanup	=	tcf_gact_cleanup,
-	.lookup		=	tcf_hash_search,
-	.init		=	tcf_gact_init,
-	.walk		=	tcf_generic_walker
-=======
 static size_t tcf_gact_get_fill_size(const struct tc_action *act)
 {
 	size_t sz = nla_total_size(sizeof(struct tc_gact)); /* TCA_GACT_PARMS */
@@ -479,7 +315,6 @@ static struct pernet_operations gact_net_ops = {
 	.exit_batch = gact_exit_net,
 	.id   = &act_gact_ops.net_id,
 	.size = sizeof(struct tc_action_net),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 MODULE_AUTHOR("Jamal Hadi Salim(2002-4)");
@@ -493,21 +328,13 @@ static int __init gact_init_module(void)
 #else
 	pr_info("GACT probability NOT on\n");
 #endif
-<<<<<<< HEAD
-	return tcf_register_action(&act_gact_ops);
-=======
 
 	return tcf_register_action(&act_gact_ops, &gact_net_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit gact_cleanup_module(void)
 {
-<<<<<<< HEAD
-	tcf_unregister_action(&act_gact_ops);
-=======
 	tcf_unregister_action(&act_gact_ops, &gact_net_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(gact_init_module);

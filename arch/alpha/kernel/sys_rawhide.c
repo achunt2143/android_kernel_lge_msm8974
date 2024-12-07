@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/sys_rawhide.c
  *
@@ -24,10 +21,6 @@
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_mcpcia.h>
 #include <asm/tlbflush.h>
 
@@ -228,17 +221,10 @@ rawhide_init_irq(void)
  * 
  */
 
-<<<<<<< HEAD
-static int __init
-rawhide_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	static char irq_tab[5][5] __initdata = {
-=======
 static int
 rawhide_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[5][5] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		{ 16+16, 16+16, 16+16, 16+16, 16+16}, /* IdSel 1 SCSI PCI 1 */
 		{ 16+ 0, 16+ 0, 16+ 1, 16+ 2, 16+ 3}, /* IdSel 2 slot 2 */

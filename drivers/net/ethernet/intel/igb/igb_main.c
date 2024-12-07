@@ -1,34 +1,5 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel(R) Gigabit Ethernet Linux driver
-  Copyright(c) 2007-2012 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright(c) 2007 - 2018 Intel Corporation. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -43,47 +14,20 @@
 #include <linux/slab.h>
 #include <net/checksum.h>
 #include <net/ip6_checksum.h>
-<<<<<<< HEAD
-=======
 #include <net/pkt_sched.h>
 #include <net/pkt_cls.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/net_tstamp.h>
 #include <linux/mii.h>
 #include <linux/ethtool.h>
 #include <linux/if.h>
 #include <linux/if_vlan.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/pci-aspm.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/ip.h>
 #include <linux/tcp.h>
 #include <linux/sctp.h>
 #include <linux/if_ether.h>
-<<<<<<< HEAD
-#include <linux/aer.h>
-#include <linux/prefetch.h>
-#include <linux/pm_runtime.h>
-#ifdef CONFIG_IGB_DCA
-#include <linux/dca.h>
-#endif
-#include "igb.h"
-
-#define MAJ 3
-#define MIN 2
-#define BUILD 10
-#define DRV_VERSION __stringify(MAJ) "." __stringify(MIN) "." \
-__stringify(BUILD) "-k"
-char igb_driver_name[] = "igb";
-char igb_driver_version[] = DRV_VERSION;
-static const char igb_driver_string[] =
-				"Intel(R) Gigabit Ethernet Network Driver";
-static const char igb_copyright[] = "Copyright (c) 2007-2012 Intel Corporation.";
-=======
 #include <linux/prefetch.h>
 #include <linux/bpf.h>
 #include <linux/bpf_trace.h>
@@ -110,15 +54,11 @@ static const char igb_driver_string[] =
 				"Intel(R) Gigabit Ethernet Network Driver";
 static const char igb_copyright[] =
 				"Copyright (c) 2007-2014 Intel Corporation.";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct e1000_info *igb_info_tbl[] = {
 	[board_82575] = &e1000_82575_info,
 };
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(igb_pci_tbl) = {
-=======
 static const struct pci_device_id igb_pci_tbl[] = {
 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_I354_BACKPLANE_1GBPS) },
 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_I354_SGMII) },
@@ -130,7 +70,6 @@ static const struct pci_device_id igb_pci_tbl[] = {
 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_I210_SGMII), board_82575 },
 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_I210_COPPER_FLASHLESS), board_82575 },
 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_I210_SERDES_FLASHLESS), board_82575 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_I350_COPPER), board_82575 },
 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_I350_FIBER), board_82575 },
 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_I350_SERDES), board_82575 },
@@ -162,30 +101,18 @@ static const struct pci_device_id igb_pci_tbl[] = {
 
 MODULE_DEVICE_TABLE(pci, igb_pci_tbl);
 
-<<<<<<< HEAD
-void igb_reset(struct igb_adapter *);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int igb_setup_all_tx_resources(struct igb_adapter *);
 static int igb_setup_all_rx_resources(struct igb_adapter *);
 static void igb_free_all_tx_resources(struct igb_adapter *);
 static void igb_free_all_rx_resources(struct igb_adapter *);
 static void igb_setup_mrqc(struct igb_adapter *);
 static int igb_probe(struct pci_dev *, const struct pci_device_id *);
-<<<<<<< HEAD
-static void __devexit igb_remove(struct pci_dev *pdev);
-static void igb_init_hw_timer(struct igb_adapter *adapter);
-static int igb_sw_init(struct igb_adapter *);
-static int igb_open(struct net_device *);
-static int igb_close(struct net_device *);
-=======
 static void igb_remove(struct pci_dev *pdev);
 static void igb_init_queue_configuration(struct igb_adapter *adapter);
 static int igb_sw_init(struct igb_adapter *);
 int igb_open(struct net_device *);
 int igb_close(struct net_device *);
 static void igb_configure(struct igb_adapter *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void igb_configure_tx(struct igb_adapter *);
 static void igb_configure_rx(struct igb_adapter *);
 static void igb_clean_all_tx_rings(struct igb_adapter *);
@@ -193,17 +120,6 @@ static void igb_clean_all_rx_rings(struct igb_adapter *);
 static void igb_clean_tx_ring(struct igb_ring *);
 static void igb_clean_rx_ring(struct igb_ring *);
 static void igb_set_rx_mode(struct net_device *);
-<<<<<<< HEAD
-static void igb_update_phy_info(unsigned long);
-static void igb_watchdog(unsigned long);
-static void igb_watchdog_task(struct work_struct *);
-static netdev_tx_t igb_xmit_frame(struct sk_buff *skb, struct net_device *);
-static struct rtnl_link_stats64 *igb_get_stats64(struct net_device *dev,
-						 struct rtnl_link_stats64 *stats);
-static int igb_change_mtu(struct net_device *, int);
-static int igb_set_mac(struct net_device *, void *);
-static void igb_set_uta(struct igb_adapter *adapter);
-=======
 static void igb_update_phy_info(struct timer_list *);
 static void igb_watchdog(struct timer_list *);
 static void igb_watchdog_task(struct work_struct *);
@@ -213,7 +129,6 @@ static void igb_get_stats64(struct net_device *dev,
 static int igb_change_mtu(struct net_device *, int);
 static int igb_set_mac(struct net_device *, void *);
 static void igb_set_uta(struct igb_adapter *adapter, bool set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t igb_intr(int irq, void *);
 static irqreturn_t igb_intr_msi(int irq, void *);
 static irqreturn_t igb_msix_other(int irq, void *);
@@ -223,18 +138,6 @@ static void igb_update_dca(struct igb_q_vector *);
 static void igb_setup_dca(struct igb_adapter *);
 #endif /* CONFIG_IGB_DCA */
 static int igb_poll(struct napi_struct *, int);
-<<<<<<< HEAD
-static bool igb_clean_tx_irq(struct igb_q_vector *);
-static bool igb_clean_rx_irq(struct igb_q_vector *, int);
-static int igb_ioctl(struct net_device *, struct ifreq *, int cmd);
-static void igb_tx_timeout(struct net_device *);
-static void igb_reset_task(struct work_struct *);
-static void igb_vlan_mode(struct net_device *netdev, netdev_features_t features);
-static int igb_vlan_rx_add_vid(struct net_device *, u16);
-static int igb_vlan_rx_kill_vid(struct net_device *, u16);
-static void igb_restore_vlan(struct igb_adapter *);
-static void igb_rar_set_qsel(struct igb_adapter *, u8 *, u32 , u8);
-=======
 static bool igb_clean_tx_irq(struct igb_q_vector *, int);
 static int igb_clean_rx_irq(struct igb_q_vector *, int);
 static int igb_ioctl(struct net_device *, struct ifreq *, int cmd);
@@ -246,38 +149,10 @@ static int igb_vlan_rx_add_vid(struct net_device *, __be16, u16);
 static int igb_vlan_rx_kill_vid(struct net_device *, __be16, u16);
 static void igb_restore_vlan(struct igb_adapter *);
 static void igb_rar_set_index(struct igb_adapter *, u32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void igb_ping_all_vfs(struct igb_adapter *);
 static void igb_msg_task(struct igb_adapter *);
 static void igb_vmm_control(struct igb_adapter *);
 static int igb_set_vf_mac(struct igb_adapter *, int, unsigned char *);
-<<<<<<< HEAD
-static void igb_restore_vf_multicasts(struct igb_adapter *adapter);
-static int igb_ndo_set_vf_mac(struct net_device *netdev, int vf, u8 *mac);
-static int igb_ndo_set_vf_vlan(struct net_device *netdev,
-			       int vf, u16 vlan, u8 qos);
-static int igb_ndo_set_vf_bw(struct net_device *netdev, int vf, int tx_rate);
-static int igb_ndo_get_vf_config(struct net_device *netdev, int vf,
-				 struct ifla_vf_info *ivi);
-static void igb_check_vf_rate_limit(struct igb_adapter *);
-
-#ifdef CONFIG_PCI_IOV
-static int igb_vf_configure(struct igb_adapter *adapter, int vf);
-static int igb_find_enabled_vfs(struct igb_adapter *adapter);
-static int igb_check_vf_assignment(struct igb_adapter *adapter);
-#endif
-
-#ifdef CONFIG_PM
-#ifdef CONFIG_PM_SLEEP
-static int igb_suspend(struct device *);
-#endif
-static int igb_resume(struct device *);
-#ifdef CONFIG_PM_RUNTIME
-static int igb_runtime_suspend(struct device *dev);
-static int igb_runtime_resume(struct device *dev);
-static int igb_runtime_idle(struct device *dev);
-#endif
-=======
 static void igb_flush_mac_table(struct igb_adapter *);
 static int igb_available_rars(struct igb_adapter *, u8);
 static void igb_set_default_mac_filter(struct igb_adapter *);
@@ -309,7 +184,6 @@ static int igb_runtime_suspend(struct device *dev);
 static int igb_runtime_resume(struct device *dev);
 static int igb_runtime_idle(struct device *dev);
 #ifdef CONFIG_PM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct dev_pm_ops igb_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(igb_suspend, igb_resume)
 	SET_RUNTIME_PM_OPS(igb_runtime_suspend, igb_runtime_resume,
@@ -317,10 +191,7 @@ static const struct dev_pm_ops igb_pm_ops = {
 };
 #endif
 static void igb_shutdown(struct pci_dev *);
-<<<<<<< HEAD
-=======
 static int igb_pci_sriov_configure(struct pci_dev *dev, int num_vfs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_IGB_DCA
 static int igb_notify_dca(struct notifier_block *, unsigned long, void *);
 static struct notifier_block dca_notifier = {
@@ -329,22 +200,10 @@ static struct notifier_block dca_notifier = {
 	.priority	= 0
 };
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_NET_POLL_CONTROLLER
-/* for netdump / net console */
-static void igb_netpoll(struct net_device *);
-#endif
-#ifdef CONFIG_PCI_IOV
-static unsigned int max_vfs = 0;
-module_param(max_vfs, uint, 0);
-MODULE_PARM_DESC(max_vfs, "Maximum number of virtual functions to allocate "
-                 "per physical function");
-=======
 #ifdef CONFIG_PCI_IOV
 static unsigned int max_vfs;
 module_param(max_vfs, uint, 0444);
 MODULE_PARM_DESC(max_vfs, "Maximum number of virtual functions to allocate per physical function");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_PCI_IOV */
 
 static pci_ers_result_t igb_io_error_detected(struct pci_dev *,
@@ -352,11 +211,7 @@ static pci_ers_result_t igb_io_error_detected(struct pci_dev *,
 static pci_ers_result_t igb_io_slot_reset(struct pci_dev *);
 static void igb_io_resume(struct pci_dev *);
 
-<<<<<<< HEAD
-static struct pci_error_handlers igb_err_handler = {
-=======
 static const struct pci_error_handlers igb_err_handler = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.error_detected = igb_io_error_detected,
 	.slot_reset = igb_io_slot_reset,
 	.resume = igb_io_resume,
@@ -368,30 +223,18 @@ static struct pci_driver igb_driver = {
 	.name     = igb_driver_name,
 	.id_table = igb_pci_tbl,
 	.probe    = igb_probe,
-<<<<<<< HEAD
-	.remove   = __devexit_p(igb_remove),
-=======
 	.remove   = igb_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.driver.pm = &igb_pm_ops,
 #endif
 	.shutdown = igb_shutdown,
-<<<<<<< HEAD
-=======
 	.sriov_configure = igb_pci_sriov_configure,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.err_handler = &igb_err_handler
 };
 
 MODULE_AUTHOR("Intel Corporation, <e1000-devel@lists.sourceforge.net>");
 MODULE_DESCRIPTION("Intel(R) Gigabit Ethernet Network Driver");
-<<<<<<< HEAD
-MODULE_LICENSE("GPL");
-MODULE_VERSION(DRV_VERSION);
-=======
 MODULE_LICENSE("GPL v2");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DEFAULT_MSG_ENABLE (NETIF_MSG_DRV|NETIF_MSG_PROBE|NETIF_MSG_LINK)
 static int debug = -1;
@@ -439,13 +282,7 @@ static const struct igb_reg_info igb_reg_info_tbl[] = {
 	{}
 };
 
-<<<<<<< HEAD
-/*
- * igb_regdump - register printout routine
- */
-=======
 /* igb_regdump - register printout routine */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void igb_regdump(struct e1000_hw *hw, struct igb_reg_info *reginfo)
 {
 	int n = 0;
@@ -479,11 +316,7 @@ static void igb_regdump(struct e1000_hw *hw, struct igb_reg_info *reginfo)
 		break;
 	case E1000_TDBAL(0):
 		for (n = 0; n < 4; n++)
-<<<<<<< HEAD
-			regs[n] = rd32(E1000_RDBAL(n));
-=======
 			regs[n] = rd32(E1000_TDBAL(n));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case E1000_TDBAH(0):
 		for (n = 0; n < 4; n++)
@@ -515,13 +348,7 @@ static void igb_regdump(struct e1000_hw *hw, struct igb_reg_info *reginfo)
 		regs[2], regs[3]);
 }
 
-<<<<<<< HEAD
-/*
- * igb_dump - Print registers, tx-rings and rx-rings
- */
-=======
 /* igb_dump - Print registers, Tx-rings and Rx-rings */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void igb_dump(struct igb_adapter *adapter)
 {
 	struct net_device *netdev = adapter->netdev;
@@ -529,11 +356,7 @@ static void igb_dump(struct igb_adapter *adapter)
 	struct igb_reg_info *reginfo;
 	struct igb_ring *tx_ring;
 	union e1000_adv_tx_desc *tx_desc;
-<<<<<<< HEAD
-	struct my_u0 { u64 a; u64 b; } *u0;
-=======
 	struct my_u0 { __le64 a; __le64 b; } *u0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct igb_ring *rx_ring;
 	union e1000_adv_rx_desc *rx_desc;
 	u32 staterr;
@@ -545,16 +368,9 @@ static void igb_dump(struct igb_adapter *adapter)
 	/* Print netdevice Info */
 	if (netdev) {
 		dev_info(&adapter->pdev->dev, "Net device Info\n");
-<<<<<<< HEAD
-		pr_info("Device Name     state            trans_start      "
-			"last_rx\n");
-		pr_info("%-15s %016lX %016lX %016lX\n", netdev->name,
-			netdev->state, netdev->trans_start, netdev->last_rx);
-=======
 		pr_info("Device Name     state            trans_start\n");
 		pr_info("%-15s %016lX %016lX\n", netdev->name,
 			netdev->state, dev_trans_start(netdev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Print Registers */
@@ -577,13 +393,8 @@ static void igb_dump(struct igb_adapter *adapter)
 		buffer_info = &tx_ring->tx_buffer_info[tx_ring->next_to_clean];
 		pr_info(" %5d %5X %5X %016llX %04X %p %016llX\n",
 			n, tx_ring->next_to_use, tx_ring->next_to_clean,
-<<<<<<< HEAD
-			(u64)buffer_info->dma,
-			buffer_info->length,
-=======
 			(u64)dma_unmap_addr(buffer_info, dma),
 			dma_unmap_len(buffer_info, len),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			buffer_info->next_to_watch,
 			(u64)buffer_info->time_stamp);
 	}
@@ -610,13 +421,7 @@ static void igb_dump(struct igb_adapter *adapter)
 		pr_info("------------------------------------\n");
 		pr_info("TX QUEUE INDEX = %d\n", tx_ring->queue_index);
 		pr_info("------------------------------------\n");
-<<<<<<< HEAD
-		pr_info("T [desc]     [address 63:0  ] [PlPOCIStDDM Ln] "
-			"[bi->dma       ] leng  ntw timestamp        "
-			"bi->skb\n");
-=======
 		pr_info("T [desc]     [address 63:0  ] [PlPOCIStDDM Ln] [bi->dma       ] leng  ntw timestamp        bi->skb\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (i = 0; tx_ring->desc && (i < tx_ring->count); i++) {
 			const char *next_desc;
@@ -634,38 +439,21 @@ static void igb_dump(struct igb_adapter *adapter)
 			else
 				next_desc = "";
 
-<<<<<<< HEAD
-			pr_info("T [0x%03X]    %016llX %016llX %016llX"
-				" %04X  %p %016llX %p%s\n", i,
-				le64_to_cpu(u0->a),
-				le64_to_cpu(u0->b),
-				(u64)buffer_info->dma,
-				buffer_info->length,
-=======
 			pr_info("T [0x%03X]    %016llX %016llX %016llX %04X  %p %016llX %p%s\n",
 				i, le64_to_cpu(u0->a),
 				le64_to_cpu(u0->b),
 				(u64)dma_unmap_addr(buffer_info, dma),
 				dma_unmap_len(buffer_info, len),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				buffer_info->next_to_watch,
 				(u64)buffer_info->time_stamp,
 				buffer_info->skb, next_desc);
 
-<<<<<<< HEAD
-			if (netif_msg_pktdata(adapter) && buffer_info->dma != 0)
-				print_hex_dump(KERN_INFO, "",
-					DUMP_PREFIX_ADDRESS,
-					16, 1, phys_to_virt(buffer_info->dma),
-					buffer_info->length, true);
-=======
 			if (netif_msg_pktdata(adapter) && buffer_info->skb)
 				print_hex_dump(KERN_INFO, "",
 					DUMP_PREFIX_ADDRESS,
 					16, 1, buffer_info->skb->data,
 					dma_unmap_len(buffer_info, len),
 					true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -711,15 +499,8 @@ rx_ring_summary:
 		pr_info("------------------------------------\n");
 		pr_info("RX QUEUE INDEX = %d\n", rx_ring->queue_index);
 		pr_info("------------------------------------\n");
-<<<<<<< HEAD
-		pr_info("R  [desc]      [ PktBuf     A0] [  HeadBuf   DD] "
-			"[bi->dma       ] [bi->skb] <-- Adv Rx Read format\n");
-		pr_info("RWB[desc]      [PcsmIpSHl PtRs] [vl er S cks ln] -----"
-			"----------- [bi->skb] <-- Adv Rx Write-Back format\n");
-=======
 		pr_info("R  [desc]      [ PktBuf     A0] [  HeadBuf   DD] [bi->dma       ] [bi->skb] <-- Adv Rx Read format\n");
 		pr_info("RWB[desc]      [PcsmIpSHl PtRs] [vl er S cks ln] ---------------- [bi->skb] <-- Adv Rx Write-Back format\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (i = 0; i < rx_ring->count; i++) {
 			const char *next_desc;
@@ -738,34 +519,6 @@ rx_ring_summary:
 
 			if (staterr & E1000_RXD_STAT_DD) {
 				/* Descriptor Done */
-<<<<<<< HEAD
-				pr_info("%s[0x%03X]     %016llX %016llX -------"
-					"--------- %p%s\n", "RWB", i,
-					le64_to_cpu(u0->a),
-					le64_to_cpu(u0->b),
-					buffer_info->skb, next_desc);
-			} else {
-				pr_info("%s[0x%03X]     %016llX %016llX %016llX"
-					" %p%s\n", "R  ", i,
-					le64_to_cpu(u0->a),
-					le64_to_cpu(u0->b),
-					(u64)buffer_info->dma,
-					buffer_info->skb, next_desc);
-
-				if (netif_msg_pktdata(adapter)) {
-					print_hex_dump(KERN_INFO, "",
-						DUMP_PREFIX_ADDRESS,
-						16, 1,
-						phys_to_virt(buffer_info->dma),
-						IGB_RX_HDR_LEN, true);
-					print_hex_dump(KERN_INFO, "",
-					  DUMP_PREFIX_ADDRESS,
-					  16, 1,
-					  phys_to_virt(
-					    buffer_info->page_dma +
-					    buffer_info->page_offset),
-					  PAGE_SIZE/2, true);
-=======
 				pr_info("%s[0x%03X]     %016llX %016llX ---------------- %s\n",
 					"RWB", i,
 					le64_to_cpu(u0->a),
@@ -787,7 +540,6 @@ rx_ring_summary:
 					  page_address(buffer_info->page) +
 						      buffer_info->page_offset,
 					  igb_rx_bufsz(rx_ring), true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 		}
@@ -797,38 +549,6 @@ exit:
 	return;
 }
 
-<<<<<<< HEAD
-
-/**
- * igb_read_clock - read raw cycle counter (to be used by time counter)
- */
-static cycle_t igb_read_clock(const struct cyclecounter *tc)
-{
-	struct igb_adapter *adapter =
-		container_of(tc, struct igb_adapter, cycles);
-	struct e1000_hw *hw = &adapter->hw;
-	u64 stamp = 0;
-	int shift = 0;
-
-	/*
-	 * The timestamp latches on lowest register read. For the 82580
-	 * the lowest register is SYSTIMR instead of SYSTIML.  However we never
-	 * adjusted TIMINCA so SYSTIMR will just read as all 0s so ignore it.
-	 */
-	if (hw->mac.type >= e1000_82580) {
-		stamp = rd32(E1000_SYSTIMR) >> 8;
-		shift = IGB_82580_TSYNC_SHIFT;
-	}
-
-	stamp |= (u64)rd32(E1000_SYSTIML) << shift;
-	stamp |= (u64)rd32(E1000_SYSTIMH) << (shift + 32);
-	return stamp;
-}
-
-/**
- * igb_get_hw_dev - return device
- * used by hardware layer to print debugging information
-=======
 /**
  *  igb_get_i2c_data - Reads the I2C SDA data bit
  *  @data: opaque pointer to adapter struct
@@ -920,7 +640,6 @@ static const struct i2c_algo_bit_data igb_i2c_algo = {
  *  @hw: pointer to hardware structure
  *
  *  used by hardware layer to print debugging information
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 struct net_device *igb_get_hw_dev(struct e1000_hw *hw)
 {
@@ -929,29 +648,16 @@ struct net_device *igb_get_hw_dev(struct e1000_hw *hw)
 }
 
 /**
-<<<<<<< HEAD
- * igb_init_module - Driver Registration Routine
- *
- * igb_init_module is the first routine called when the driver is
- * loaded. All it does is register with the PCI subsystem.
-=======
  *  igb_init_module - Driver Registration Routine
  *
  *  igb_init_module is the first routine called when the driver is
  *  loaded. All it does is register with the PCI subsystem.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int __init igb_init_module(void)
 {
 	int ret;
-<<<<<<< HEAD
-	pr_info("%s - version %s\n",
-	       igb_driver_string, igb_driver_version);
-
-=======
 
 	pr_info("%s\n", igb_driver_string);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_info("%s\n", igb_copyright);
 
 #ifdef CONFIG_IGB_DCA
@@ -964,17 +670,10 @@ static int __init igb_init_module(void)
 module_init(igb_init_module);
 
 /**
-<<<<<<< HEAD
- * igb_exit_module - Driver Exit Cleanup Routine
- *
- * igb_exit_module is called just before the driver is removed
- * from memory.
-=======
  *  igb_exit_module - Driver Exit Cleanup Routine
  *
  *  igb_exit_module is called just before the driver is removed
  *  from memory.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void __exit igb_exit_module(void)
 {
@@ -988,19 +687,11 @@ module_exit(igb_exit_module);
 
 #define Q_IDX_82576(i) (((i & 0x1) << 3) + (i >> 1))
 /**
-<<<<<<< HEAD
- * igb_cache_ring_register - Descriptor ring to register mapping
- * @adapter: board private structure to initialize
- *
- * Once we know the feature-set enabled for the device, we'll cache
- * the register offset the descriptor ring is assigned to.
-=======
  *  igb_cache_ring_register - Descriptor ring to register mapping
  *  @adapter: board private structure to initialize
  *
  *  Once we know the feature-set enabled for the device, we'll cache
  *  the register offset the descriptor ring is assigned to.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_cache_ring_register(struct igb_adapter *adapter)
 {
@@ -1017,13 +708,6 @@ static void igb_cache_ring_register(struct igb_adapter *adapter)
 		if (adapter->vfs_allocated_count) {
 			for (; i < adapter->rss_queues; i++)
 				adapter->rx_ring[i]->reg_idx = rbase_offset +
-<<<<<<< HEAD
-				                               Q_IDX_82576(i);
-		}
-	case e1000_82575:
-	case e1000_82580:
-	case e1000_i350:
-=======
 							       Q_IDX_82576(i);
 		}
 		fallthrough;
@@ -1033,7 +717,6 @@ static void igb_cache_ring_register(struct igb_adapter *adapter)
 	case e1000_i354:
 	case e1000_i210:
 	case e1000_i211:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		for (; i < adapter->num_rx_queues; i++)
 			adapter->rx_ring[i]->reg_idx = rbase_offset + i;
@@ -1043,107 +726,6 @@ static void igb_cache_ring_register(struct igb_adapter *adapter)
 	}
 }
 
-<<<<<<< HEAD
-static void igb_free_queues(struct igb_adapter *adapter)
-{
-	int i;
-
-	for (i = 0; i < adapter->num_tx_queues; i++) {
-		kfree(adapter->tx_ring[i]);
-		adapter->tx_ring[i] = NULL;
-	}
-	for (i = 0; i < adapter->num_rx_queues; i++) {
-		kfree(adapter->rx_ring[i]);
-		adapter->rx_ring[i] = NULL;
-	}
-	adapter->num_rx_queues = 0;
-	adapter->num_tx_queues = 0;
-}
-
-/**
- * igb_alloc_queues - Allocate memory for all rings
- * @adapter: board private structure to initialize
- *
- * We allocate one ring per queue at run-time since we don't know the
- * number of queues at compile-time.
- **/
-static int igb_alloc_queues(struct igb_adapter *adapter)
-{
-	struct igb_ring *ring;
-	int i;
-	int orig_node = adapter->node;
-
-	for (i = 0; i < adapter->num_tx_queues; i++) {
-		if (orig_node == -1) {
-			int cur_node = next_online_node(adapter->node);
-			if (cur_node == MAX_NUMNODES)
-				cur_node = first_online_node;
-			adapter->node = cur_node;
-		}
-		ring = kzalloc_node(sizeof(struct igb_ring), GFP_KERNEL,
-				    adapter->node);
-		if (!ring)
-			ring = kzalloc(sizeof(struct igb_ring), GFP_KERNEL);
-		if (!ring)
-			goto err;
-		ring->count = adapter->tx_ring_count;
-		ring->queue_index = i;
-		ring->dev = &adapter->pdev->dev;
-		ring->netdev = adapter->netdev;
-		ring->numa_node = adapter->node;
-		/* For 82575, context index must be unique per ring. */
-		if (adapter->hw.mac.type == e1000_82575)
-			set_bit(IGB_RING_FLAG_TX_CTX_IDX, &ring->flags);
-		u64_stats_init(&ring->tx_syncp);
-		u64_stats_init(&ring->tx_syncp2);
-		adapter->tx_ring[i] = ring;
-	}
-	/* Restore the adapter's original node */
-	adapter->node = orig_node;
-
-	for (i = 0; i < adapter->num_rx_queues; i++) {
-		if (orig_node == -1) {
-			int cur_node = next_online_node(adapter->node);
-			if (cur_node == MAX_NUMNODES)
-				cur_node = first_online_node;
-			adapter->node = cur_node;
-		}
-		ring = kzalloc_node(sizeof(struct igb_ring), GFP_KERNEL,
-				    adapter->node);
-		if (!ring)
-			ring = kzalloc(sizeof(struct igb_ring), GFP_KERNEL);
-		if (!ring)
-			goto err;
-		ring->count = adapter->rx_ring_count;
-		ring->queue_index = i;
-		ring->dev = &adapter->pdev->dev;
-		ring->netdev = adapter->netdev;
-		ring->numa_node = adapter->node;
-		/* set flag indicating ring supports SCTP checksum offload */
-		if (adapter->hw.mac.type >= e1000_82576)
-			set_bit(IGB_RING_FLAG_RX_SCTP_CSUM, &ring->flags);
-
-		/* On i350, loopback VLAN packets have the tag byte-swapped. */
-		if (adapter->hw.mac.type == e1000_i350)
-			set_bit(IGB_RING_FLAG_RX_LB_VLAN_BSWAP, &ring->flags);
-
-		u64_stats_init(&ring->rx_syncp);
-		adapter->rx_ring[i] = ring;
-	}
-	/* Restore the adapter's original node */
-	adapter->node = orig_node;
-
-	igb_cache_ring_register(adapter);
-
-	return 0;
-
-err:
-	/* Restore the adapter's original node */
-	adapter->node = orig_node;
-	igb_free_queues(adapter);
-
-	return -ENOMEM;
-=======
 u32 igb_rd32(struct e1000_hw *hw, u32 reg)
 {
 	struct igb_adapter *igb = container_of(hw, struct igb_adapter, hw);
@@ -1165,7 +747,6 @@ u32 igb_rd32(struct e1000_hw *hw, u32 reg)
 	}
 
 	return value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1211,36 +792,21 @@ static void igb_assign_vector(struct igb_q_vector *q_vector, int msix_vector)
 	switch (hw->mac.type) {
 	case e1000_82575:
 		/* The 82575 assigns vectors using a bitmask, which matches the
-<<<<<<< HEAD
-		   bitmask for the EICR/EIMS/EIMC registers.  To assign one
-		   or more queues to a vector, we write the appropriate bits
-		   into the MSIXBM register for that vector. */
-=======
 		 * bitmask for the EICR/EIMS/EIMC registers.  To assign one
 		 * or more queues to a vector, we write the appropriate bits
 		 * into the MSIXBM register for that vector.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rx_queue > IGB_N0_QUEUE)
 			msixbm = E1000_EICR_RX_QUEUE0 << rx_queue;
 		if (tx_queue > IGB_N0_QUEUE)
 			msixbm |= E1000_EICR_TX_QUEUE0 << tx_queue;
-<<<<<<< HEAD
-		if (!adapter->msix_entries && msix_vector == 0)
-=======
 		if (!(adapter->flags & IGB_FLAG_HAS_MSIX) && msix_vector == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msixbm |= E1000_EIMS_OTHER;
 		array_wr32(E1000_MSIXBM(0), msix_vector, msixbm);
 		q_vector->eims_value = msixbm;
 		break;
 	case e1000_82576:
-<<<<<<< HEAD
-		/*
-		 * 82576 uses a table that essentially consists of 2 columns
-=======
 		/* 82576 uses a table that essentially consists of 2 columns
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * with 8 rows.  The ordering is column-major so we use the
 		 * lower 3 bits as the row index, and the 4th bit as the
 		 * column offset.
@@ -1253,14 +819,6 @@ static void igb_assign_vector(struct igb_q_vector *q_vector, int msix_vector)
 			igb_write_ivar(hw, msix_vector,
 				       tx_queue & 0x7,
 				       ((tx_queue & 0x8) << 1) + 8);
-<<<<<<< HEAD
-		q_vector->eims_value = 1 << msix_vector;
-		break;
-	case e1000_82580:
-	case e1000_i350:
-		/*
-		 * On 82580 and newer adapters the scheme is similar to 82576
-=======
 		q_vector->eims_value = BIT(msix_vector);
 		break;
 	case e1000_82580:
@@ -1269,7 +827,6 @@ static void igb_assign_vector(struct igb_q_vector *q_vector, int msix_vector)
 	case e1000_i210:
 	case e1000_i211:
 		/* On 82580 and newer adapters the scheme is similar to 82576
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * however instead of ordering column-major we have things
 		 * ordered row-major.  So we traverse the table by using
 		 * bit 0 as the column offset, and the remaining bits as the
@@ -1283,11 +840,7 @@ static void igb_assign_vector(struct igb_q_vector *q_vector, int msix_vector)
 			igb_write_ivar(hw, msix_vector,
 				       tx_queue >> 1,
 				       ((tx_queue & 0x1) << 4) + 8);
-<<<<<<< HEAD
-		q_vector->eims_value = 1 << msix_vector;
-=======
 		q_vector->eims_value = BIT(msix_vector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		BUG();
@@ -1302,18 +855,11 @@ static void igb_assign_vector(struct igb_q_vector *q_vector, int msix_vector)
 }
 
 /**
-<<<<<<< HEAD
- * igb_configure_msix - Configure MSI-X hardware
- *
- * igb_configure_msix sets up the hardware to properly
- * generate MSI-X interrupts.
-=======
  *  igb_configure_msix - Configure MSI-X hardware
  *  @adapter: board private structure to initialize
  *
  *  igb_configure_msix sets up the hardware to properly
  *  generate MSI-X interrupts.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_configure_msix(struct igb_adapter *adapter)
 {
@@ -1337,12 +883,7 @@ static void igb_configure_msix(struct igb_adapter *adapter)
 		wr32(E1000_CTRL_EXT, tmp);
 
 		/* enable msix_other interrupt */
-<<<<<<< HEAD
-		array_wr32(E1000_MSIXBM(0), vector++,
-		                      E1000_EIMS_OTHER);
-=======
 		array_wr32(E1000_MSIXBM(0), vector++, E1000_EIMS_OTHER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adapter->eims_other = E1000_EIMS_OTHER;
 
 		break;
@@ -1350,16 +891,6 @@ static void igb_configure_msix(struct igb_adapter *adapter)
 	case e1000_82576:
 	case e1000_82580:
 	case e1000_i350:
-<<<<<<< HEAD
-		/* Turn on MSI-X capability first, or our settings
-		 * won't stick.  And it will take days to debug. */
-		wr32(E1000_GPIE, E1000_GPIE_MSIX_MODE |
-		                E1000_GPIE_PBA | E1000_GPIE_EIAME |
-		                E1000_GPIE_NSICR);
-
-		/* enable msix_other interrupt */
-		adapter->eims_other = 1 << vector;
-=======
 	case e1000_i354:
 	case e1000_i210:
 	case e1000_i211:
@@ -1372,7 +903,6 @@ static void igb_configure_msix(struct igb_adapter *adapter)
 
 		/* enable msix_other interrupt */
 		adapter->eims_other = BIT(vector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp = (vector++ | E1000_IVAR_VALID) << 8;
 
 		wr32(E1000_IVAR_MISC, tmp);
@@ -1391,25 +921,6 @@ static void igb_configure_msix(struct igb_adapter *adapter)
 }
 
 /**
-<<<<<<< HEAD
- * igb_request_msix - Initialize MSI-X interrupts
- *
- * igb_request_msix allocates MSI-X vectors and requests interrupts from the
- * kernel.
- **/
-static int igb_request_msix(struct igb_adapter *adapter)
-{
-	struct net_device *netdev = adapter->netdev;
-	struct e1000_hw *hw = &adapter->hw;
-	int i, err = 0, vector = 0, free_vector = 0;
-
-	err = request_irq(adapter->msix_entries[vector].vector,
-	                  igb_msix_other, 0, netdev->name, adapter);
-	if (err)
-		goto err_out;
-
-	for (i = 0; i < adapter->num_q_vectors; i++) {
-=======
  *  igb_request_msix - Initialize MSI-X interrupts
  *  @adapter: board private structure to initialize
  *
@@ -1434,16 +945,11 @@ static int igb_request_msix(struct igb_adapter *adapter)
 			 adapter->num_q_vectors, MAX_Q_VECTORS);
 	}
 	for (i = 0; i < num_q_vectors; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct igb_q_vector *q_vector = adapter->q_vector[i];
 
 		vector++;
 
-<<<<<<< HEAD
-		q_vector->itr_register = hw->hw_addr + E1000_EITR(vector);
-=======
 		q_vector->itr_register = adapter->io_addr + E1000_EITR(vector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (q_vector->rx.ring && q_vector->tx.ring)
 			sprintf(q_vector->name, "%s-TxRx-%u", netdev->name,
@@ -1458,13 +964,8 @@ static int igb_request_msix(struct igb_adapter *adapter)
 			sprintf(q_vector->name, "%s-unused", netdev->name);
 
 		err = request_irq(adapter->msix_entries[vector].vector,
-<<<<<<< HEAD
-		                  igb_msix_ring, 0, q_vector->name,
-		                  q_vector);
-=======
 				  igb_msix_ring, 0, q_vector->name,
 				  q_vector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto err_free;
 	}
@@ -1485,51 +986,6 @@ err_out:
 	return err;
 }
 
-<<<<<<< HEAD
-static void igb_reset_interrupt_capability(struct igb_adapter *adapter)
-{
-	if (adapter->msix_entries) {
-		pci_disable_msix(adapter->pdev);
-		kfree(adapter->msix_entries);
-		adapter->msix_entries = NULL;
-	} else if (adapter->flags & IGB_FLAG_HAS_MSI) {
-		pci_disable_msi(adapter->pdev);
-	}
-}
-
-/**
- * igb_free_q_vectors - Free memory allocated for interrupt vectors
- * @adapter: board private structure to initialize
- *
- * This function frees the memory allocated to the q_vectors.  In addition if
- * NAPI is enabled it will delete any references to the NAPI struct prior
- * to freeing the q_vector.
- **/
-static void igb_free_q_vectors(struct igb_adapter *adapter)
-{
-	int v_idx;
-
-	for (v_idx = 0; v_idx < adapter->num_q_vectors; v_idx++) {
-		struct igb_q_vector *q_vector = adapter->q_vector[v_idx];
-		adapter->q_vector[v_idx] = NULL;
-		if (!q_vector)
-			continue;
-		netif_napi_del(&q_vector->napi);
-		kfree(q_vector);
-	}
-	adapter->num_q_vectors = 0;
-}
-
-/**
- * igb_clear_interrupt_scheme - reset the device to a state of no interrupts
- *
- * This function resets the device so that it has 0 rx queues, tx queues, and
- * MSI-X interrupts allocated.
- */
-static void igb_clear_interrupt_scheme(struct igb_adapter *adapter)
-{
-	igb_free_queues(adapter);
-=======
 /**
  *  igb_free_q_vector - Free memory allocated for specific interrupt vector
  *  @adapter: board private structure to initialize
@@ -1622,20 +1078,11 @@ static void igb_free_q_vectors(struct igb_adapter *adapter)
  */
 static void igb_clear_interrupt_scheme(struct igb_adapter *adapter)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	igb_free_q_vectors(adapter);
 	igb_reset_interrupt_capability(adapter);
 }
 
 /**
-<<<<<<< HEAD
- * igb_set_interrupt_capability - set MSI or MSI-X if supported
- *
- * Attempt to configure interrupts using the best available
- * capabilities of the hardware and kernel.
- **/
-static int igb_set_interrupt_capability(struct igb_adapter *adapter)
-=======
  *  igb_set_interrupt_capability - set MSI or MSI-X if supported
  *  @adapter: board private structure to initialize
  *  @msix: boolean value of MSIX capability
@@ -1644,18 +1091,14 @@ static int igb_set_interrupt_capability(struct igb_adapter *adapter)
  *  capabilities of the hardware and kernel.
  **/
 static void igb_set_interrupt_capability(struct igb_adapter *adapter, bool msix)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	int numvecs, i;
 
-<<<<<<< HEAD
-=======
 	if (!msix)
 		goto msi_only;
 	adapter->flags |= IGB_FLAG_HAS_MSIX;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Number of supported queues. */
 	adapter->num_rx_queues = adapter->rss_queues;
 	if (adapter->vfs_allocated_count)
@@ -1663,17 +1106,10 @@ static void igb_set_interrupt_capability(struct igb_adapter *adapter, bool msix)
 	else
 		adapter->num_tx_queues = adapter->rss_queues;
 
-<<<<<<< HEAD
-	/* start with one vector for every rx queue */
-	numvecs = adapter->num_rx_queues;
-
-	/* if tx handler is separate add 1 for every tx queue */
-=======
 	/* start with one vector for every Rx queue */
 	numvecs = adapter->num_rx_queues;
 
 	/* if Tx handler is separate add 1 for every Tx queue */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(adapter->flags & IGB_FLAG_QUEUE_PAIRS))
 		numvecs += adapter->num_tx_queues;
 
@@ -1682,21 +1118,6 @@ static void igb_set_interrupt_capability(struct igb_adapter *adapter, bool msix)
 
 	/* add 1 vector for link status interrupts */
 	numvecs++;
-<<<<<<< HEAD
-	adapter->msix_entries = kcalloc(numvecs, sizeof(struct msix_entry),
-					GFP_KERNEL);
-	if (!adapter->msix_entries)
-		goto msi_only;
-
-	for (i = 0; i < numvecs; i++)
-		adapter->msix_entries[i].entry = i;
-
-	err = pci_enable_msix(adapter->pdev,
-			      adapter->msix_entries,
-			      numvecs);
-	if (err == 0)
-		goto out;
-=======
 	for (i = 0; i < numvecs; i++)
 		adapter->msix_entries[i].entry = i;
 
@@ -1706,16 +1127,12 @@ static void igb_set_interrupt_capability(struct igb_adapter *adapter, bool msix)
 				    numvecs);
 	if (err > 0)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	igb_reset_interrupt_capability(adapter);
 
 	/* If we can't do MSI-X, try MSI */
 msi_only:
-<<<<<<< HEAD
-=======
 	adapter->flags &= ~IGB_FLAG_HAS_MSIX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PCI_IOV
 	/* disable SR-IOV for non MSI-X configurations */
 	if (adapter->vf_data) {
@@ -1724,11 +1141,8 @@ msi_only:
 		pci_disable_sriov(adapter->pdev);
 		msleep(500);
 
-<<<<<<< HEAD
-=======
 		kfree(adapter->vf_mac_list);
 		adapter->vf_mac_list = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(adapter->vf_data);
 		adapter->vf_data = NULL;
 		wr32(E1000_IOVCTL, E1000_IOVCTL_REUSE_VFQ);
@@ -1745,58 +1159,6 @@ msi_only:
 	adapter->num_q_vectors = 1;
 	if (!pci_enable_msi(adapter->pdev))
 		adapter->flags |= IGB_FLAG_HAS_MSI;
-<<<<<<< HEAD
-out:
-	/* Notify the stack of the (possibly) reduced queue counts. */
-	rtnl_lock();
-	netif_set_real_num_tx_queues(adapter->netdev, adapter->num_tx_queues);
-	err = netif_set_real_num_rx_queues(adapter->netdev,
-		adapter->num_rx_queues);
-	rtnl_unlock();
-	return err;
-}
-
-/**
- * igb_alloc_q_vectors - Allocate memory for interrupt vectors
- * @adapter: board private structure to initialize
- *
- * We allocate one q_vector per queue interrupt.  If allocation fails we
- * return -ENOMEM.
- **/
-static int igb_alloc_q_vectors(struct igb_adapter *adapter)
-{
-	struct igb_q_vector *q_vector;
-	struct e1000_hw *hw = &adapter->hw;
-	int v_idx;
-	int orig_node = adapter->node;
-
-	for (v_idx = 0; v_idx < adapter->num_q_vectors; v_idx++) {
-		if ((adapter->num_q_vectors == (adapter->num_rx_queues +
-						adapter->num_tx_queues)) &&
-		    (adapter->num_rx_queues == v_idx))
-			adapter->node = orig_node;
-		if (orig_node == -1) {
-			int cur_node = next_online_node(adapter->node);
-			if (cur_node == MAX_NUMNODES)
-				cur_node = first_online_node;
-			adapter->node = cur_node;
-		}
-		q_vector = kzalloc_node(sizeof(struct igb_q_vector), GFP_KERNEL,
-					adapter->node);
-		if (!q_vector)
-			q_vector = kzalloc(sizeof(struct igb_q_vector),
-					   GFP_KERNEL);
-		if (!q_vector)
-			goto err_out;
-		q_vector->adapter = adapter;
-		q_vector->itr_register = hw->hw_addr + E1000_EITR(0);
-		q_vector->itr_val = IGB_START_ITR;
-		netif_napi_add(adapter->netdev, &q_vector->napi, igb_poll, 64);
-		adapter->q_vector[v_idx] = q_vector;
-	}
-	/* Restore the adapter's original node */
-	adapter->node = orig_node;
-=======
 }
 
 static void igb_add_ring(struct igb_ring *ring,
@@ -1995,84 +1357,10 @@ static int igb_alloc_q_vectors(struct igb_adapter *adapter)
 		rxr_idx++;
 		txr_idx++;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 err_out:
-<<<<<<< HEAD
-	/* Restore the adapter's original node */
-	adapter->node = orig_node;
-	igb_free_q_vectors(adapter);
-	return -ENOMEM;
-}
-
-static void igb_map_rx_ring_to_vector(struct igb_adapter *adapter,
-                                      int ring_idx, int v_idx)
-{
-	struct igb_q_vector *q_vector = adapter->q_vector[v_idx];
-
-	q_vector->rx.ring = adapter->rx_ring[ring_idx];
-	q_vector->rx.ring->q_vector = q_vector;
-	q_vector->rx.count++;
-	q_vector->itr_val = adapter->rx_itr_setting;
-	if (q_vector->itr_val && q_vector->itr_val <= 3)
-		q_vector->itr_val = IGB_START_ITR;
-}
-
-static void igb_map_tx_ring_to_vector(struct igb_adapter *adapter,
-                                      int ring_idx, int v_idx)
-{
-	struct igb_q_vector *q_vector = adapter->q_vector[v_idx];
-
-	q_vector->tx.ring = adapter->tx_ring[ring_idx];
-	q_vector->tx.ring->q_vector = q_vector;
-	q_vector->tx.count++;
-	q_vector->itr_val = adapter->tx_itr_setting;
-	q_vector->tx.work_limit = adapter->tx_work_limit;
-	if (q_vector->itr_val && q_vector->itr_val <= 3)
-		q_vector->itr_val = IGB_START_ITR;
-}
-
-/**
- * igb_map_ring_to_vector - maps allocated queues to vectors
- *
- * This function maps the recently allocated queues to vectors.
- **/
-static int igb_map_ring_to_vector(struct igb_adapter *adapter)
-{
-	int i;
-	int v_idx = 0;
-
-	if ((adapter->num_q_vectors < adapter->num_rx_queues) ||
-	    (adapter->num_q_vectors < adapter->num_tx_queues))
-		return -ENOMEM;
-
-	if (adapter->num_q_vectors >=
-	    (adapter->num_rx_queues + adapter->num_tx_queues)) {
-		for (i = 0; i < adapter->num_rx_queues; i++)
-			igb_map_rx_ring_to_vector(adapter, i, v_idx++);
-		for (i = 0; i < adapter->num_tx_queues; i++)
-			igb_map_tx_ring_to_vector(adapter, i, v_idx++);
-	} else {
-		for (i = 0; i < adapter->num_rx_queues; i++) {
-			if (i < adapter->num_tx_queues)
-				igb_map_tx_ring_to_vector(adapter, i, v_idx);
-			igb_map_rx_ring_to_vector(adapter, i, v_idx++);
-		}
-		for (; i < adapter->num_tx_queues; i++)
-			igb_map_tx_ring_to_vector(adapter, i, v_idx++);
-	}
-	return 0;
-}
-
-/**
- * igb_init_interrupt_scheme - initialize interrupts, allocate queues/vectors
- *
- * This function initializes the interrupts and allocates all of the queues.
- **/
-static int igb_init_interrupt_scheme(struct igb_adapter *adapter)
-=======
 	adapter->num_tx_queues = 0;
 	adapter->num_rx_queues = 0;
 	adapter->num_q_vectors = 0;
@@ -2091,18 +1379,11 @@ static int igb_init_interrupt_scheme(struct igb_adapter *adapter)
  *  This function initializes the interrupts and allocates all of the queues.
  **/
 static int igb_init_interrupt_scheme(struct igb_adapter *adapter, bool msix)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = adapter->pdev;
 	int err;
 
-<<<<<<< HEAD
-	err = igb_set_interrupt_capability(adapter);
-	if (err)
-		return err;
-=======
 	igb_set_interrupt_capability(adapter, msix);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = igb_alloc_q_vectors(adapter);
 	if (err) {
@@ -2110,49 +1391,21 @@ static int igb_init_interrupt_scheme(struct igb_adapter *adapter, bool msix)
 		goto err_alloc_q_vectors;
 	}
 
-<<<<<<< HEAD
-	err = igb_alloc_queues(adapter);
-	if (err) {
-		dev_err(&pdev->dev, "Unable to allocate memory for queues\n");
-		goto err_alloc_queues;
-	}
-
-	err = igb_map_ring_to_vector(adapter);
-	if (err) {
-		dev_err(&pdev->dev, "Invalid q_vector to ring mapping\n");
-		goto err_map_queues;
-	}
-
-
-	return 0;
-err_map_queues:
-	igb_free_queues(adapter);
-err_alloc_queues:
-	igb_free_q_vectors(adapter);
-=======
 	igb_cache_ring_register(adapter);
 
 	return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_alloc_q_vectors:
 	igb_reset_interrupt_capability(adapter);
 	return err;
 }
 
 /**
-<<<<<<< HEAD
- * igb_request_irq - initialize interrupts
- *
- * Attempts to configure interrupts using the best available
- * capabilities of the hardware and kernel.
-=======
  *  igb_request_irq - initialize interrupts
  *  @adapter: board private structure to initialize
  *
  *  Attempts to configure interrupts using the best available
  *  capabilities of the hardware and kernel.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int igb_request_irq(struct igb_adapter *adapter)
 {
@@ -2160,40 +1413,11 @@ static int igb_request_irq(struct igb_adapter *adapter)
 	struct pci_dev *pdev = adapter->pdev;
 	int err = 0;
 
-<<<<<<< HEAD
-	if (adapter->msix_entries) {
-=======
 	if (adapter->flags & IGB_FLAG_HAS_MSIX) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = igb_request_msix(adapter);
 		if (!err)
 			goto request_done;
 		/* fall back to MSI */
-<<<<<<< HEAD
-		igb_clear_interrupt_scheme(adapter);
-		if (!pci_enable_msi(pdev))
-			adapter->flags |= IGB_FLAG_HAS_MSI;
-		igb_free_all_tx_resources(adapter);
-		igb_free_all_rx_resources(adapter);
-		adapter->num_tx_queues = 1;
-		adapter->num_rx_queues = 1;
-		adapter->num_q_vectors = 1;
-		err = igb_alloc_q_vectors(adapter);
-		if (err) {
-			dev_err(&pdev->dev,
-			        "Unable to allocate memory for vectors\n");
-			goto request_done;
-		}
-		err = igb_alloc_queues(adapter);
-		if (err) {
-			dev_err(&pdev->dev,
-			        "Unable to allocate memory for queues\n");
-			igb_free_q_vectors(adapter);
-			goto request_done;
-		}
-		igb_setup_all_tx_resources(adapter);
-		igb_setup_all_rx_resources(adapter);
-=======
 		igb_free_all_tx_resources(adapter);
 		igb_free_all_rx_resources(adapter);
 
@@ -2205,7 +1429,6 @@ static int igb_request_irq(struct igb_adapter *adapter)
 		igb_setup_all_tx_resources(adapter);
 		igb_setup_all_rx_resources(adapter);
 		igb_configure(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	igb_assign_vector(adapter->q_vector[0], 0);
@@ -2234,11 +1457,7 @@ request_done:
 
 static void igb_free_irq(struct igb_adapter *adapter)
 {
-<<<<<<< HEAD
-	if (adapter->msix_entries) {
-=======
 	if (adapter->flags & IGB_FLAG_HAS_MSIX) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int vector = 0, i;
 
 		free_irq(adapter->msix_entries[vector++].vector, adapter);
@@ -2252,27 +1471,13 @@ static void igb_free_irq(struct igb_adapter *adapter)
 }
 
 /**
-<<<<<<< HEAD
- * igb_irq_disable - Mask off interrupt generation on the NIC
- * @adapter: board private structure
-=======
  *  igb_irq_disable - Mask off interrupt generation on the NIC
  *  @adapter: board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_irq_disable(struct igb_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
 
-<<<<<<< HEAD
-	/*
-	 * we need to be careful when disabling interrupts.  The VFs are also
-	 * mapped into these registers and so clearing the bits can cause
-	 * issues on the VF drivers so we only need to clear what we set
-	 */
-	if (adapter->msix_entries) {
-		u32 regval = rd32(E1000_EIAM);
-=======
 	/* we need to be careful when disabling interrupts.  The VFs are also
 	 * mapped into these registers and so clearing the bits can cause
 	 * issues on the VF drivers so we only need to clear what we set
@@ -2280,7 +1485,6 @@ static void igb_irq_disable(struct igb_adapter *adapter)
 	if (adapter->flags & IGB_FLAG_HAS_MSIX) {
 		u32 regval = rd32(E1000_EIAM);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wr32(E1000_EIAM, regval & ~adapter->eims_enable_mask);
 		wr32(E1000_EIMC, adapter->eims_enable_mask);
 		regval = rd32(E1000_EIAC);
@@ -2290,14 +1494,9 @@ static void igb_irq_disable(struct igb_adapter *adapter)
 	wr32(E1000_IAM, 0);
 	wr32(E1000_IMC, ~0);
 	wrfl();
-<<<<<<< HEAD
-	if (adapter->msix_entries) {
-		int i;
-=======
 	if (adapter->flags & IGB_FLAG_HAS_MSIX) {
 		int i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < adapter->num_q_vectors; i++)
 			synchronize_irq(adapter->msix_entries[i].vector);
 	} else {
@@ -2306,28 +1505,17 @@ static void igb_irq_disable(struct igb_adapter *adapter)
 }
 
 /**
-<<<<<<< HEAD
- * igb_irq_enable - Enable default interrupt generation settings
- * @adapter: board private structure
-=======
  *  igb_irq_enable - Enable default interrupt generation settings
  *  @adapter: board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_irq_enable(struct igb_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
 
-<<<<<<< HEAD
-	if (adapter->msix_entries) {
-		u32 ims = E1000_IMS_LSC | E1000_IMS_DOUTSYNC | E1000_IMS_DRSTA;
-		u32 regval = rd32(E1000_EIAC);
-=======
 	if (adapter->flags & IGB_FLAG_HAS_MSIX) {
 		u32 ims = E1000_IMS_LSC | E1000_IMS_DOUTSYNC | E1000_IMS_DRSTA;
 		u32 regval = rd32(E1000_EIAC);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wr32(E1000_EIAC, regval | adapter->eims_enable_mask);
 		regval = rd32(E1000_EIAM);
 		wr32(E1000_EIAM, regval | adapter->eims_enable_mask);
@@ -2348,20 +1536,13 @@ static void igb_irq_enable(struct igb_adapter *adapter)
 static void igb_update_mng_vlan(struct igb_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
-<<<<<<< HEAD
-=======
 	u16 pf_id = adapter->vfs_allocated_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 vid = adapter->hw.mng_cookie.vlan_id;
 	u16 old_vid = adapter->mng_vlan_id;
 
 	if (hw->mng_cookie.status & E1000_MNG_DHCP_COOKIE_STATUS_VLAN) {
 		/* add VID to filter table */
-<<<<<<< HEAD
-		igb_vfta_set(hw, vid, true);
-=======
 		igb_vfta_set(hw, vid, pf_id, true, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adapter->mng_vlan_id = vid;
 	} else {
 		adapter->mng_vlan_id = IGB_MNG_VLAN_NONE;
@@ -2371,31 +1552,17 @@ static void igb_update_mng_vlan(struct igb_adapter *adapter)
 	    (vid != old_vid) &&
 	    !test_bit(old_vid, adapter->active_vlans)) {
 		/* remove VID from filter table */
-<<<<<<< HEAD
-		igb_vfta_set(hw, old_vid, false);
-=======
 		igb_vfta_set(hw, vid, pf_id, false, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /**
-<<<<<<< HEAD
- * igb_release_hw_control - release control of the h/w to f/w
- * @adapter: address of board private structure
- *
- * igb_release_hw_control resets CTRL_EXT:DRV_LOAD bit.
- * For ASF and Pass Through versions of f/w this means that the
- * driver is no longer loaded.
- *
-=======
  *  igb_release_hw_control - release control of the h/w to f/w
  *  @adapter: address of board private structure
  *
  *  igb_release_hw_control resets CTRL_EXT:DRV_LOAD bit.
  *  For ASF and Pass Through versions of f/w this means that the
  *  driver is no longer loaded.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_release_hw_control(struct igb_adapter *adapter)
 {
@@ -2409,22 +1576,12 @@ static void igb_release_hw_control(struct igb_adapter *adapter)
 }
 
 /**
-<<<<<<< HEAD
- * igb_get_hw_control - get control of the h/w from f/w
- * @adapter: address of board private structure
- *
- * igb_get_hw_control sets CTRL_EXT:DRV_LOAD bit.
- * For ASF and Pass Through versions of f/w this means that
- * the driver is loaded.
- *
-=======
  *  igb_get_hw_control - get control of the h/w from f/w
  *  @adapter: address of board private structure
  *
  *  igb_get_hw_control sets CTRL_EXT:DRV_LOAD bit.
  *  For ASF and Pass Through versions of f/w this means that
  *  the driver is loaded.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_get_hw_control(struct igb_adapter *adapter)
 {
@@ -2437,11 +1594,6 @@ static void igb_get_hw_control(struct igb_adapter *adapter)
 			ctrl_ext | E1000_CTRL_EXT_DRV_LOAD);
 }
 
-<<<<<<< HEAD
-/**
- * igb_configure - configure the hardware for RX and TX
- * @adapter: private board structure
-=======
 static void enable_fqtss(struct igb_adapter *adapter, bool enable)
 {
 	struct net_device *netdev = adapter->netdev;
@@ -2833,7 +1985,6 @@ static void igb_setup_tx_mode(struct igb_adapter *adapter)
 /**
  *  igb_configure - configure the hardware for RX and TX
  *  @adapter: private board structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_configure(struct igb_adapter *adapter)
 {
@@ -2842,10 +1993,7 @@ static void igb_configure(struct igb_adapter *adapter)
 
 	igb_get_hw_control(adapter);
 	igb_set_rx_mode(netdev);
-<<<<<<< HEAD
-=======
 	igb_setup_tx_mode(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	igb_restore_vlan(adapter);
 
@@ -2853,10 +2001,7 @@ static void igb_configure(struct igb_adapter *adapter)
 	igb_setup_mrqc(adapter);
 	igb_setup_rctl(adapter);
 
-<<<<<<< HEAD
-=======
 	igb_nfc_filter_restore(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	igb_configure_tx(adapter);
 	igb_configure_rx(adapter);
 
@@ -2864,12 +2009,8 @@ static void igb_configure(struct igb_adapter *adapter)
 
 	/* call igb_desc_unused which always leaves
 	 * at least 1 descriptor unused to make sure
-<<<<<<< HEAD
-	 * next_to_use != next_to_clean */
-=======
 	 * next_to_use != next_to_clean
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < adapter->num_rx_queues; i++) {
 		struct igb_ring *ring = adapter->rx_ring[i];
 		igb_alloc_rx_buffers(ring, igb_desc_unused(ring));
@@ -2877,13 +2018,6 @@ static void igb_configure(struct igb_adapter *adapter)
 }
 
 /**
-<<<<<<< HEAD
- * igb_power_up_link - Power up the phy/serdes link
- * @adapter: address of board private structure
- **/
-void igb_power_up_link(struct igb_adapter *adapter)
-{
-=======
  *  igb_power_up_link - Power up the phy/serdes link
  *  @adapter: address of board private structure
  **/
@@ -2891,19 +2025,10 @@ void igb_power_up_link(struct igb_adapter *adapter)
 {
 	igb_reset_phy(&adapter->hw);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (adapter->hw.phy.media_type == e1000_media_type_copper)
 		igb_power_up_phy_copper(&adapter->hw);
 	else
 		igb_power_up_serdes_link_82575(&adapter->hw);
-<<<<<<< HEAD
-	igb_reset_phy(&adapter->hw);
-}
-
-/**
- * igb_power_down_link - Power down the phy/serdes link
- * @adapter: address of board private structure
-=======
 
 	igb_setup_link(&adapter->hw);
 }
@@ -2911,7 +2036,6 @@ void igb_power_up_link(struct igb_adapter *adapter)
 /**
  *  igb_power_down_link - Power down the phy/serdes link
  *  @adapter: address of board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void igb_power_down_link(struct igb_adapter *adapter)
 {
@@ -2922,10 +2046,6 @@ static void igb_power_down_link(struct igb_adapter *adapter)
 }
 
 /**
-<<<<<<< HEAD
- * igb_up - Open the interface and prepare it to handle traffic
- * @adapter: board private structure
-=======
  * igb_check_swap_media -  Detect and switch function for Media Auto Sense
  * @adapter: address of the board private structure
  **/
@@ -2996,7 +2116,6 @@ static void igb_check_swap_media(struct igb_adapter *adapter)
 /**
  *  igb_up - Open the interface and prepare it to handle traffic
  *  @adapter: board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 int igb_up(struct igb_adapter *adapter)
 {
@@ -3011,30 +2130,20 @@ int igb_up(struct igb_adapter *adapter)
 	for (i = 0; i < adapter->num_q_vectors; i++)
 		napi_enable(&(adapter->q_vector[i]->napi));
 
-<<<<<<< HEAD
-	if (adapter->msix_entries)
-=======
 	if (adapter->flags & IGB_FLAG_HAS_MSIX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		igb_configure_msix(adapter);
 	else
 		igb_assign_vector(adapter->q_vector[0], 0);
 
 	/* Clear any pending interrupts. */
-<<<<<<< HEAD
-=======
 	rd32(E1000_TSICR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rd32(E1000_ICR);
 	igb_irq_enable(adapter);
 
 	/* notify VFs that reset has been completed */
 	if (adapter->vfs_allocated_count) {
 		u32 reg_data = rd32(E1000_CTRL_EXT);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg_data |= E1000_CTRL_EXT_PFRSTD;
 		wr32(E1000_CTRL_EXT, reg_data);
 	}
@@ -3045,13 +2154,10 @@ int igb_up(struct igb_adapter *adapter)
 	hw->mac.get_link_status = 1;
 	schedule_work(&adapter->watchdog_task);
 
-<<<<<<< HEAD
-=======
 	if ((adapter->flags & IGB_FLAG_EEE) &&
 	    (!hw->dev_spec._82575.eee_disable))
 		adapter->eee_advert = MDIO_EEE_100TX | MDIO_EEE_1000T;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3063,12 +2169,8 @@ void igb_down(struct igb_adapter *adapter)
 	int i;
 
 	/* signal that we're down so the interrupt handler does not
-<<<<<<< HEAD
-	 * reschedule our watchdog timer */
-=======
 	 * reschedule our watchdog timer
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(__IGB_DOWN, &adapter->state);
 
 	/* disable receives in the hardware */
@@ -3076,12 +2178,9 @@ void igb_down(struct igb_adapter *adapter)
 	wr32(E1000_RCTL, rctl & ~E1000_RCTL_EN);
 	/* flush and sleep below */
 
-<<<<<<< HEAD
-=======
 	igb_nfc_filter_exit(adapter);
 
 	netif_carrier_off(netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_tx_stop_all_queues(netdev);
 
 	/* disable transmits in the hardware */
@@ -3090,23 +2189,6 @@ void igb_down(struct igb_adapter *adapter)
 	wr32(E1000_TCTL, tctl);
 	/* flush both disables and wait for them to finish */
 	wrfl();
-<<<<<<< HEAD
-	msleep(10);
-
-	for (i = 0; i < adapter->num_q_vectors; i++)
-		napi_disable(&(adapter->q_vector[i]->napi));
-
-	igb_irq_disable(adapter);
-
-	del_timer_sync(&adapter->watchdog_timer);
-	del_timer_sync(&adapter->phy_info_timer);
-
-	netif_carrier_off(netdev);
-
-	/* record the stats before reset*/
-	spin_lock(&adapter->stats64_lock);
-	igb_update_stats(adapter, &adapter->stats64);
-=======
 	usleep_range(10000, 11000);
 
 	igb_irq_disable(adapter);
@@ -3126,7 +2208,6 @@ void igb_down(struct igb_adapter *adapter)
 	/* record the stats before reset*/
 	spin_lock(&adapter->stats64_lock);
 	igb_update_stats(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&adapter->stats64_lock);
 
 	adapter->link_speed = 0;
@@ -3134,13 +2215,10 @@ void igb_down(struct igb_adapter *adapter)
 
 	if (!pci_channel_offline(adapter->pdev))
 		igb_reset(adapter);
-<<<<<<< HEAD
-=======
 
 	/* clear VLAN promisc flag so VFTA will be updated if necessary */
 	adapter->flags &= ~IGB_FLAG_VLAN_PROMISC;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	igb_clean_all_tx_rings(adapter);
 	igb_clean_all_rx_rings(adapter);
 #ifdef CONFIG_IGB_DCA
@@ -3152,21 +2230,13 @@ void igb_down(struct igb_adapter *adapter)
 
 void igb_reinit_locked(struct igb_adapter *adapter)
 {
-<<<<<<< HEAD
-	WARN_ON(in_interrupt());
-	while (test_and_set_bit(__IGB_RESETTING, &adapter->state))
-		msleep(1);
-=======
 	while (test_and_set_bit(__IGB_RESETTING, &adapter->state))
 		usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	igb_down(adapter);
 	igb_up(adapter);
 	clear_bit(__IGB_RESETTING, &adapter->state);
 }
 
-<<<<<<< HEAD
-=======
 /** igb_enable_mas - Media Autosense re-enable after swap
  *
  * @adapter: adapter struct
@@ -3210,29 +2280,20 @@ static void igb_set_i2c_bb(struct e1000_hw *hw)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void igb_reset(struct igb_adapter *adapter)
 {
 	struct pci_dev *pdev = adapter->pdev;
 	struct e1000_hw *hw = &adapter->hw;
 	struct e1000_mac_info *mac = &hw->mac;
 	struct e1000_fc_info *fc = &hw->fc;
-<<<<<<< HEAD
-	u32 pba = 0, tx_space, min_tx_space, min_rx_space;
-	u16 hwm;
-=======
 	u32 pba, hwm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Repartition Pba for greater than 9k mtu
 	 * To take effect CTRL.RST is required.
 	 */
 	switch (mac->type) {
 	case e1000_i350:
-<<<<<<< HEAD
-=======
 	case e1000_i354:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case e1000_82580:
 		pba = rd32(E1000_RXPBS);
 		pba = igb_rxpbs_adjust_82580(pba);
@@ -3242,26 +2303,17 @@ void igb_reset(struct igb_adapter *adapter)
 		pba &= E1000_RXPBS_SIZE_MASK_82576;
 		break;
 	case e1000_82575:
-<<<<<<< HEAD
-=======
 	case e1000_i210:
 	case e1000_i211:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		pba = E1000_PBA_34K;
 		break;
 	}
 
-<<<<<<< HEAD
-	if ((adapter->max_frame_size > ETH_FRAME_LEN + ETH_FCS_LEN) &&
-	    (mac->type < e1000_82576)) {
-		/* adjust PBA for jumbo frames */
-=======
 	if (mac->type == e1000_82575) {
 		u32 min_rx_space, min_tx_space, needed_tx_space;
 
 		/* write Rx PBA so that hardware can report correct Tx PBA */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wr32(E1000_PBA, pba);
 
 		/* To maintain wire speed transmits, the Tx FIFO should be
@@ -3269,51 +2321,6 @@ void igb_reset(struct igb_adapter *adapter)
 		 * rounded up to the next 1KB and expressed in KB.  Likewise,
 		 * the Rx FIFO should be large enough to accommodate at least
 		 * one full receive packet and is similarly rounded up and
-<<<<<<< HEAD
-		 * expressed in KB. */
-		pba = rd32(E1000_PBA);
-		/* upper 16 bits has Tx packet buffer allocation size in KB */
-		tx_space = pba >> 16;
-		/* lower 16 bits has Rx packet buffer allocation size in KB */
-		pba &= 0xffff;
-		/* the tx fifo also stores 16 bytes of information about the tx
-		 * but don't include ethernet FCS because hardware appends it */
-		min_tx_space = (adapter->max_frame_size +
-				sizeof(union e1000_adv_tx_desc) -
-				ETH_FCS_LEN) * 2;
-		min_tx_space = ALIGN(min_tx_space, 1024);
-		min_tx_space >>= 10;
-		/* software strips receive CRC, so leave room for it */
-		min_rx_space = adapter->max_frame_size;
-		min_rx_space = ALIGN(min_rx_space, 1024);
-		min_rx_space >>= 10;
-
-		/* If current Tx allocation is less than the min Tx FIFO size,
-		 * and the min Tx FIFO size is less than the current Rx FIFO
-		 * allocation, take space away from current Rx allocation */
-		if (tx_space < min_tx_space &&
-		    ((min_tx_space - tx_space) < pba)) {
-			pba = pba - (min_tx_space - tx_space);
-
-			/* if short on rx space, rx wins and must trump tx
-			 * adjustment */
-			if (pba < min_rx_space)
-				pba = min_rx_space;
-		}
-		wr32(E1000_PBA, pba);
-	}
-
-	/* flow control settings */
-	/* The high water mark must be low enough to fit one full frame
-	 * (or the size used for early receive) above it in the Rx FIFO.
-	 * Set it to the lower of:
-	 * - 90% of the Rx FIFO size, or
-	 * - the full Rx FIFO size minus one full frame */
-	hwm = min(((pba << 10) * 9 / 10),
-			((pba << 10) - 2 * adapter->max_frame_size));
-
-	fc->high_water = hwm & 0xFFF0;	/* 16-byte granularity */
-=======
 		 * expressed in KB.
 		 */
 		min_rx_space = DIV_ROUND_UP(MAX_JUMBO_FRAME_SIZE, 1024);
@@ -3359,7 +2366,6 @@ void igb_reset(struct igb_adapter *adapter)
 	hwm = (pba << 10) - (adapter->max_frame_size + MAX_JUMBO_FRAME_SIZE);
 
 	fc->high_water = hwm & 0xFFFFFFF0;	/* 16-byte granularity */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc->low_water = fc->high_water - 16;
 	fc->pause_time = 0xFFFF;
 	fc->send_xon = 1;
@@ -3368,10 +2374,7 @@ void igb_reset(struct igb_adapter *adapter)
 	/* disable receive for all VFs and wait one second */
 	if (adapter->vfs_allocated_count) {
 		int i;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0 ; i < adapter->vfs_allocated_count; i++)
 			adapter->vf_data[i].flags &= IGB_VF_FLAG_PF_SET_MAC;
 
@@ -3387,12 +2390,6 @@ void igb_reset(struct igb_adapter *adapter)
 	hw->mac.ops.reset_hw(hw);
 	wr32(E1000_WUC, 0);
 
-<<<<<<< HEAD
-	if (hw->mac.ops.init_hw(hw))
-		dev_err(&pdev->dev, "Hardware Error\n");
-
-	igb_init_dmac(adapter, pba);
-=======
 	if (adapter->flags & IGB_FLAG_MEDIA_RESET) {
 		/* need to resetup here after media swap */
 		adapter->ei.get_invariants(hw);
@@ -3447,7 +2444,6 @@ void igb_reset(struct igb_adapter *adapter)
 			break;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!netif_running(adapter->netdev))
 		igb_power_down_link(adapter);
 
@@ -3456,29 +2452,16 @@ void igb_reset(struct igb_adapter *adapter)
 	/* Enable h/w to recognize an 802.1Q VLAN Ethernet packet */
 	wr32(E1000_VET, ETHERNET_IEEE_VLAN_TYPE);
 
-<<<<<<< HEAD
-=======
 	/* Re-enable PTP, where applicable. */
 	if (adapter->ptp_flags & IGB_PTP_ENABLED)
 		igb_ptp_reset(adapter);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	igb_get_phy_info(hw);
 }
 
 static netdev_features_t igb_fix_features(struct net_device *netdev,
 	netdev_features_t features)
 {
-<<<<<<< HEAD
-	/*
-	 * Since there is no support for separate rx/tx vlan accel
-	 * enable/disable make sure tx flag is always in same state as rx.
-	 */
-	if (features & NETIF_F_HW_VLAN_RX)
-		features |= NETIF_F_HW_VLAN_TX;
-	else
-		features &= ~NETIF_F_HW_VLAN_TX;
-=======
 	/* Since there is no support for separate Rx/Tx vlan accel
 	 * enable/disable make sure Tx flag is always in same state as Rx.
 	 */
@@ -3486,7 +2469,6 @@ static netdev_features_t igb_fix_features(struct net_device *netdev,
 		features |= NETIF_F_HW_VLAN_CTAG_TX;
 	else
 		features &= ~NETIF_F_HW_VLAN_CTAG_TX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return features;
 }
@@ -3497,14 +2479,6 @@ static int igb_set_features(struct net_device *netdev,
 	netdev_features_t changed = netdev->features ^ features;
 	struct igb_adapter *adapter = netdev_priv(netdev);
 
-<<<<<<< HEAD
-	if (changed & NETIF_F_HW_VLAN_RX)
-		igb_vlan_mode(netdev, features);
-
-	if (!(changed & NETIF_F_RXALL))
-		return 0;
-
-=======
 	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
 		igb_vlan_mode(netdev, features);
 
@@ -3526,7 +2500,6 @@ static int igb_set_features(struct net_device *netdev,
 		adapter->nfc_filter_count = 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netdev->features = features;
 
 	if (netif_running(netdev))
@@ -3534,11 +2507,6 @@ static int igb_set_features(struct net_device *netdev,
 	else
 		igb_reset(adapter);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-=======
 	return 1;
 }
 
@@ -4065,7 +3033,6 @@ static int igb_xdp_xmit(struct net_device *dev, int n,
 	return nxmit;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops igb_netdev_ops = {
 	.ndo_open		= igb_open,
 	.ndo_stop		= igb_close,
@@ -4074,41 +3041,13 @@ static const struct net_device_ops igb_netdev_ops = {
 	.ndo_set_rx_mode	= igb_set_rx_mode,
 	.ndo_set_mac_address	= igb_set_mac,
 	.ndo_change_mtu		= igb_change_mtu,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= igb_ioctl,
-=======
 	.ndo_eth_ioctl		= igb_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout		= igb_tx_timeout,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_vlan_rx_add_vid	= igb_vlan_rx_add_vid,
 	.ndo_vlan_rx_kill_vid	= igb_vlan_rx_kill_vid,
 	.ndo_set_vf_mac		= igb_ndo_set_vf_mac,
 	.ndo_set_vf_vlan	= igb_ndo_set_vf_vlan,
-<<<<<<< HEAD
-	.ndo_set_vf_tx_rate	= igb_ndo_set_vf_bw,
-	.ndo_get_vf_config	= igb_ndo_get_vf_config,
-#ifdef CONFIG_NET_POLL_CONTROLLER
-	.ndo_poll_controller	= igb_netpoll,
-#endif
-	.ndo_fix_features	= igb_fix_features,
-	.ndo_set_features	= igb_set_features,
-};
-
-/**
- * igb_probe - Device Initialization Routine
- * @pdev: PCI device information struct
- * @ent: entry in igb_pci_tbl
- *
- * Returns 0 on success, negative on failure
- *
- * igb_probe initializes an adapter identified by a pci_dev structure.
- * The OS initialization, configuring of the adapter private structure,
- * and a hardware reset occur.
- **/
-static int __devinit igb_probe(struct pci_dev *pdev,
-			       const struct pci_device_id *ent)
-=======
 	.ndo_set_vf_rate	= igb_ndo_set_vf_bw,
 	.ndo_set_vf_spoofchk	= igb_ndo_set_vf_spoofchk,
 	.ndo_set_vf_trust	= igb_ndo_set_vf_trust,
@@ -4260,7 +3199,6 @@ static s32 igb_init_i2c(struct igb_adapter *adapter)
  *  and a hardware reset occur.
  **/
 static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev;
 	struct igb_adapter *adapter;
@@ -4269,27 +3207,15 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	s32 ret_val;
 	static int global_quad_port_a; /* global quad port a indication */
 	const struct e1000_info *ei = igb_info_tbl[ent->driver_data];
-<<<<<<< HEAD
-	unsigned long mmio_start, mmio_len;
-	int err, pci_using_dac;
-	u16 eeprom_apme_mask = IGB_EEPROM_APME;
-	u8 part_str[E1000_PBANUM_LENGTH];
-=======
 	u8 part_str[E1000_PBANUM_LENGTH];
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Catch broken hardware that put the wrong VF device ID in
 	 * the PCIe SR-IOV capability.
 	 */
 	if (pdev->is_virtfn) {
-<<<<<<< HEAD
-		WARN(1, KERN_ERR "%s (%hx:%hx) should not be a VF!\n",
-		     pci_name(pdev), pdev->vendor, pdev->device);
-=======
 		WARN(1, KERN_ERR "%s (%x:%x) should not be a VF!\n",
 			pci_name(pdev), pdev->vendor, pdev->device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -4297,34 +3223,6 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	pci_using_dac = 0;
-	err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
-	if (!err) {
-		err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
-		if (!err)
-			pci_using_dac = 1;
-	} else {
-		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
-		if (err) {
-			err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
-			if (err) {
-				dev_err(&pdev->dev, "No usable DMA "
-					"configuration, aborting\n");
-				goto err_dma;
-			}
-		}
-	}
-
-	err = pci_request_selected_regions(pdev, pci_select_bars(pdev,
-	                                   IORESOURCE_MEM),
-	                                   igb_driver_name);
-	if (err)
-		goto err_pci_reg;
-
-	pci_enable_pcie_error_reporting(pdev);
-
-=======
 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (err) {
 		dev_err(&pdev->dev,
@@ -4336,7 +3234,6 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (err)
 		goto err_pci_reg;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_master(pdev);
 	pci_save_state(pdev);
 
@@ -4356,38 +3253,21 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	hw->back = adapter;
 	adapter->msg_enable = netif_msg_init(debug, DEFAULT_MSG_ENABLE);
 
-<<<<<<< HEAD
-	mmio_start = pci_resource_start(pdev, 0);
-	mmio_len = pci_resource_len(pdev, 0);
-
-	err = -EIO;
-	hw->hw_addr = ioremap(mmio_start, mmio_len);
-	if (!hw->hw_addr)
-		goto err_ioremap;
-=======
 	err = -EIO;
 	adapter->io_addr = pci_iomap(pdev, 0, 0);
 	if (!adapter->io_addr)
 		goto err_ioremap;
 	/* hw->hw_addr can be altered, we'll use adapter->io_addr for unmap */
 	hw->hw_addr = adapter->io_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev->netdev_ops = &igb_netdev_ops;
 	igb_set_ethtool_ops(netdev);
 	netdev->watchdog_timeo = 5 * HZ;
 
-<<<<<<< HEAD
-	strncpy(netdev->name, pci_name(pdev), sizeof(netdev->name) - 1);
-
-	netdev->mem_start = mmio_start;
-	netdev->mem_end = mmio_start + mmio_len;
-=======
 	strscpy(netdev->name, pci_name(pdev), sizeof(netdev->name));
 
 	netdev->mem_start = pci_resource_start(pdev, 0);
 	netdev->mem_end = pci_resource_end(pdev, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PCI config space info */
 	hw->vendor_id = pdev->vendor;
@@ -4425,56 +3305,15 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		dev_info(&pdev->dev,
 			"PHY reset is blocked due to SOL/IDER session.\n");
 
-<<<<<<< HEAD
-	/*
-	 * features is initialized to 0 in allocation, it might have bits
-=======
 	/* features is initialized to 0 in allocation, it might have bits
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * set by igb_sw_init so we should use an or instead of an
 	 * assignment.
 	 */
 	netdev->features |= NETIF_F_SG |
-<<<<<<< HEAD
-			    NETIF_F_IP_CSUM |
-			    NETIF_F_IPV6_CSUM |
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    NETIF_F_TSO |
 			    NETIF_F_TSO6 |
 			    NETIF_F_RXHASH |
 			    NETIF_F_RXCSUM |
-<<<<<<< HEAD
-			    NETIF_F_HW_VLAN_RX |
-			    NETIF_F_HW_VLAN_TX;
-
-	/* copy netdev features into list of user selectable features */
-	netdev->hw_features |= netdev->features;
-	netdev->hw_features |= NETIF_F_RXALL;
-
-	/* set this bit last since it cannot be part of hw_features */
-	netdev->features |= NETIF_F_HW_VLAN_FILTER;
-
-	netdev->vlan_features |= NETIF_F_TSO |
-				 NETIF_F_TSO6 |
-				 NETIF_F_IP_CSUM |
-				 NETIF_F_IPV6_CSUM |
-				 NETIF_F_SG;
-
-	netdev->priv_flags |= IFF_SUPP_NOFCS;
-
-	if (pci_using_dac) {
-		netdev->features |= NETIF_F_HIGHDMA;
-		netdev->vlan_features |= NETIF_F_HIGHDMA;
-	}
-
-	if (hw->mac.type >= e1000_82576) {
-		netdev->hw_features |= NETIF_F_SCTP_CSUM;
-		netdev->features |= NETIF_F_SCTP_CSUM;
-	}
-
-	netdev->priv_flags |= IFF_UNICAST_FLT;
-=======
 			    NETIF_F_HW_CSUM;
 
 	if (hw->mac.type >= e1000_82576)
@@ -4521,31 +3360,10 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	/* MTU range: 68 - 9216 */
 	netdev->min_mtu = ETH_MIN_MTU;
 	netdev->max_mtu = MAX_STD_JUMBO_FRAME_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	adapter->en_mng_pt = igb_enable_mng_pass_thru(hw);
 
 	/* before reading the NVM, reset the controller to put the device in a
-<<<<<<< HEAD
-	 * known good starting state */
-	hw->mac.ops.reset_hw(hw);
-
-	/* make sure the NVM is good */
-	if (hw->nvm.ops.validate(hw) < 0) {
-		dev_err(&pdev->dev, "The NVM Checksum Is Not Valid\n");
-		err = -EIO;
-		goto err_eeprom;
-	}
-
-	/* copy the MAC address out of the NVM */
-	if (hw->mac.ops.read_mac_addr(hw))
-		dev_err(&pdev->dev, "NVM Read Error\n");
-
-	memcpy(netdev->dev_addr, hw->mac.addr, netdev->addr_len);
-	memcpy(netdev->perm_addr, hw->mac.addr, netdev->addr_len);
-
-	if (!is_valid_ether_addr(netdev->perm_addr)) {
-=======
 	 * known good starting state
 	 */
 	hw->mac.ops.reset_hw(hw);
@@ -4583,18 +3401,11 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	eth_hw_addr_set(netdev, hw->mac.addr);
 
 	if (!is_valid_ether_addr(netdev->dev_addr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "Invalid MAC Address\n");
 		err = -EIO;
 		goto err_eeprom;
 	}
 
-<<<<<<< HEAD
-	setup_timer(&adapter->watchdog_timer, igb_watchdog,
-	            (unsigned long) adapter);
-	setup_timer(&adapter->phy_info_timer, igb_update_phy_info,
-	            (unsigned long) adapter);
-=======
 	igb_set_default_mac_filter(adapter);
 
 	/* get firmware version for ethtool -i */
@@ -4608,7 +3419,6 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	timer_setup(&adapter->watchdog_timer, igb_watchdog, 0);
 	timer_setup(&adapter->phy_info_timer, igb_update_phy_info, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_WORK(&adapter->reset_task, igb_reset_task);
 	INIT_WORK(&adapter->watchdog_task, igb_watchdog_task);
@@ -4623,30 +3433,6 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	igb_validate_mdi_setting(hw);
 
-<<<<<<< HEAD
-	/* Initial Wake on LAN setting If APM wake is enabled in the EEPROM,
-	 * enable the ACPI Magic Packet filter
-	 */
-
-	if (hw->bus.func == 0)
-		hw->nvm.ops.read(hw, NVM_INIT_CONTROL3_PORT_A, 1, &eeprom_data);
-	else if (hw->mac.type >= e1000_82580)
-		hw->nvm.ops.read(hw, NVM_INIT_CONTROL3_PORT_A +
-		                 NVM_82580_LAN_FUNC_OFFSET(hw->bus.func), 1,
-		                 &eeprom_data);
-	else if (hw->bus.func == 1)
-		hw->nvm.ops.read(hw, NVM_INIT_CONTROL3_PORT_B, 1, &eeprom_data);
-
-	if (eeprom_data & eeprom_apme_mask)
-		adapter->eeprom_wol |= E1000_WUFC_MAG;
-
-	/* now that we have the eeprom settings, apply the special cases where
-	 * the eeprom may be wrong or the board simply won't support wake on
-	 * lan on a particular port */
-	switch (pdev->device) {
-	case E1000_DEV_ID_82575GB_QUAD_COPPER:
-		adapter->eeprom_wol = 0;
-=======
 	/* By default, support wake on port A */
 	if (hw->bus.func == 0)
 		adapter->flags |= IGB_FLAG_WOL_SUPPORTED;
@@ -4669,45 +3455,27 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	switch (pdev->device) {
 	case E1000_DEV_ID_82575GB_QUAD_COPPER:
 		adapter->flags &= ~IGB_FLAG_WOL_SUPPORTED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case E1000_DEV_ID_82575EB_FIBER_SERDES:
 	case E1000_DEV_ID_82576_FIBER:
 	case E1000_DEV_ID_82576_SERDES:
 		/* Wake events only supported on port A for dual fiber
-<<<<<<< HEAD
-		 * regardless of eeprom setting */
-		if (rd32(E1000_STATUS) & E1000_STATUS_FUNC_1)
-			adapter->eeprom_wol = 0;
-=======
 		 * regardless of eeprom setting
 		 */
 		if (rd32(E1000_STATUS) & E1000_STATUS_FUNC_1)
 			adapter->flags &= ~IGB_FLAG_WOL_SUPPORTED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case E1000_DEV_ID_82576_QUAD_COPPER:
 	case E1000_DEV_ID_82576_QUAD_COPPER_ET2:
 		/* if quad port adapter, disable WoL on all but port A */
 		if (global_quad_port_a != 0)
-<<<<<<< HEAD
-			adapter->eeprom_wol = 0;
-=======
 			adapter->flags &= ~IGB_FLAG_WOL_SUPPORTED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			adapter->flags |= IGB_FLAG_QUAD_PORT_A;
 		/* Reset for multiple quad port adapters */
 		if (++global_quad_port_a == 4)
 			global_quad_port_a = 0;
 		break;
-<<<<<<< HEAD
-	}
-
-	/* initialize the wol settings based on the eeprom settings */
-	adapter->wol = adapter->eeprom_wol;
-	device_set_wakeup_enable(&adapter->pdev->dev, adapter->wol);
-=======
 	default:
 		/* If the device can't wake, don't set software support */
 		if (!device_can_wakeup(&adapter->pdev->dev))
@@ -4747,15 +3515,10 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	device_set_wakeup_enable(&adapter->pdev->dev,
 				 adapter->flags & IGB_FLAG_WOL_SUPPORTED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* reset the hardware with the new settings */
 	igb_reset(adapter);
 
-<<<<<<< HEAD
-	/* let the f/w know that the h/w is now under the control of the
-	 * driver. */
-=======
 	/* Init the I2C interface */
 	err = igb_init_i2c(adapter);
 	if (err) {
@@ -4766,7 +3529,6 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	/* let the f/w know that the h/w is now under the control of the
 	 * driver.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	igb_get_hw_control(adapter);
 
 	strcpy(netdev->name, "eth%d");
@@ -4785,25 +3547,6 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 #endif
-<<<<<<< HEAD
-	/* do hw tstamp init after resetting */
-	igb_init_hw_timer(adapter);
-
-	dev_info(&pdev->dev, "Intel(R) Gigabit Ethernet Network Connection\n");
-	/* print bus type/speed/width info */
-	dev_info(&pdev->dev, "%s: (PCIe:%s:%s) %pM\n",
-		 netdev->name,
-		 ((hw->bus.speed == e1000_bus_speed_2500) ? "2.5Gb/s" :
-		  (hw->bus.speed == e1000_bus_speed_5000) ? "5.0Gb/s" :
-		                                            "unknown"),
-		 ((hw->bus.width == e1000_bus_width_pcie_x4) ? "Width x4" :
-		  (hw->bus.width == e1000_bus_width_pcie_x2) ? "Width x2" :
-		  (hw->bus.width == e1000_bus_width_pcie_x1) ? "Width x1" :
-		   "unknown"),
-		 netdev->dev_addr);
-
-	ret_val = igb_read_part_string(hw, part_str, E1000_PBANUM_LENGTH);
-=======
 #ifdef CONFIG_IGB_HWMON
 	/* Initialize the thermal sensor on i350 devices. */
 	if (hw->mac.type == e1000_i350 && hw->bus.func == 0) {
@@ -4864,25 +3607,11 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		ret_val = -E1000_ERR_INVM_VALUE_NOT_FOUND;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		strcpy(part_str, "Unknown");
 	dev_info(&pdev->dev, "%s: PBA No: %s\n", netdev->name, part_str);
 	dev_info(&pdev->dev,
 		"Using %s interrupts. %d rx queue(s), %d tx queue(s)\n",
-<<<<<<< HEAD
-		adapter->msix_entries ? "MSI-X" :
-		(adapter->flags & IGB_FLAG_HAS_MSI) ? "MSI" : "legacy",
-		adapter->num_rx_queues, adapter->num_tx_queues);
-	switch (hw->mac.type) {
-	case e1000_i350:
-		igb_set_eee_i350(hw);
-		break;
-	default:
-		break;
-	}
-
-=======
 		(adapter->flags & IGB_FLAG_HAS_MSIX) ? "MSI-X" :
 		(adapter->flags & IGB_FLAG_HAS_MSI) ? "MSI" : "legacy",
 		adapter->num_rx_queues, adapter->num_tx_queues);
@@ -4919,16 +3648,12 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_NO_DIRECT_COMPLETE);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm_runtime_put_noidle(&pdev->dev);
 	return 0;
 
 err_register:
 	igb_release_hw_control(adapter);
-<<<<<<< HEAD
-=======
 	memset(&adapter->i2c_adap, 0, sizeof(adapter->i2c_adap));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_eeprom:
 	if (!igb_check_reset_block(hw))
 		igb_reset_phy(hw);
@@ -4936,15 +3661,6 @@ err_eeprom:
 	if (hw->flash_address)
 		iounmap(hw->flash_address);
 err_sw_init:
-<<<<<<< HEAD
-	igb_clear_interrupt_scheme(adapter);
-	iounmap(hw->hw_addr);
-err_ioremap:
-	free_netdev(netdev);
-err_alloc_etherdev:
-	pci_release_selected_regions(pdev,
-	                             pci_select_bars(pdev, IORESOURCE_MEM));
-=======
 	kfree(adapter->mac_table);
 	kfree(adapter->shadow_vfta);
 	igb_clear_interrupt_scheme(adapter);
@@ -4956,25 +3672,12 @@ err_ioremap:
 	free_netdev(netdev);
 err_alloc_etherdev:
 	pci_release_mem_regions(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_pci_reg:
 err_dma:
 	pci_disable_device(pdev);
 	return err;
 }
 
-<<<<<<< HEAD
-/**
- * igb_remove - Device Removal Routine
- * @pdev: PCI device information struct
- *
- * igb_remove is called by the PCI subsystem to alert the driver
- * that it should release a PCI device.  The could be caused by a
- * Hot-Plug event, or because the driver is going to be removed from
- * memory.
- **/
-static void __devexit igb_remove(struct pci_dev *pdev)
-=======
 #ifdef CONFIG_PCI_IOV
 static int igb_sriov_reinit(struct pci_dev *dev)
 {
@@ -5163,25 +3866,18 @@ static void igb_remove_i2c(struct igb_adapter *adapter)
  *  memory.
  **/
 static void igb_remove(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct igb_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
 
 	pm_runtime_get_noresume(&pdev->dev);
-<<<<<<< HEAD
-
-	/*
-	 * The watchdog timer may be rescheduled, so explicitly
-=======
 #ifdef CONFIG_IGB_HWMON
 	igb_sysfs_exit(adapter);
 #endif
 	igb_remove_i2c(adapter);
 	igb_ptp_stop(adapter);
 	/* The watchdog timer may be rescheduled, so explicitly
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * disable watchdog from being rescheduled.
 	 */
 	set_bit(__IGB_DOWN, &adapter->state);
@@ -5201,11 +3897,6 @@ static void igb_remove(struct pci_dev *pdev)
 #endif
 
 	/* Release control of h/w to f/w.  If f/w is AMT enabled, this
-<<<<<<< HEAD
-	 * would have already happened in close and is redundant. */
-	igb_release_hw_control(adapter);
-
-=======
 	 * would have already happened in close and is redundant.
 	 */
 	igb_release_hw_control(adapter);
@@ -5214,44 +3905,10 @@ static void igb_remove(struct pci_dev *pdev)
 	igb_disable_sriov(pdev, false);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_netdev(netdev);
 
 	igb_clear_interrupt_scheme(adapter);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PCI_IOV
-	/* reclaim resources allocated to VFs */
-	if (adapter->vf_data) {
-		/* disable iov and allow time for transactions to clear */
-		if (!igb_check_vf_assignment(adapter)) {
-			pci_disable_sriov(pdev);
-			msleep(500);
-		} else {
-			dev_info(&pdev->dev, "VF(s) assigned to guests!\n");
-		}
-
-		kfree(adapter->vf_data);
-		adapter->vf_data = NULL;
-		wr32(E1000_IOVCTL, E1000_IOVCTL_REUSE_VFQ);
-		wrfl();
-		msleep(100);
-		dev_info(&pdev->dev, "IOV Disabled\n");
-	}
-#endif
-
-	iounmap(hw->hw_addr);
-	if (hw->flash_address)
-		iounmap(hw->flash_address);
-	pci_release_selected_regions(pdev,
-	                             pci_select_bars(pdev, IORESOURCE_MEM));
-
-	kfree(adapter->shadow_vfta);
-	free_netdev(netdev);
-
-	pci_disable_pcie_error_reporting(pdev);
-
-=======
 	pci_iounmap(pdev, adapter->io_addr);
 	if (hw->flash_address)
 		iounmap(hw->flash_address);
@@ -5261,183 +3918,10 @@ static void igb_remove(struct pci_dev *pdev)
 	kfree(adapter->shadow_vfta);
 	free_netdev(netdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_disable_device(pdev);
 }
 
 /**
-<<<<<<< HEAD
- * igb_probe_vfs - Initialize vf data storage and add VFs to pci config space
- * @adapter: board private structure to initialize
- *
- * This function initializes the vf specific data storage and then attempts to
- * allocate the VFs.  The reason for ordering it this way is because it is much
- * mor expensive time wise to disable SR-IOV than it is to allocate and free
- * the memory for the VFs.
- **/
-static void __devinit igb_probe_vfs(struct igb_adapter * adapter)
-{
-#ifdef CONFIG_PCI_IOV
-	struct pci_dev *pdev = adapter->pdev;
-	int old_vfs = igb_find_enabled_vfs(adapter);
-	int i;
-
-	if (old_vfs) {
-		dev_info(&pdev->dev, "%d pre-allocated VFs found - override "
-			 "max_vfs setting of %d\n", old_vfs, max_vfs);
-		adapter->vfs_allocated_count = old_vfs;
-	}
-
-	if (!adapter->vfs_allocated_count)
-		return;
-
-	adapter->vf_data = kcalloc(adapter->vfs_allocated_count,
-				sizeof(struct vf_data_storage), GFP_KERNEL);
-	/* if allocation failed then we do not support SR-IOV */
-	if (!adapter->vf_data) {
-		adapter->vfs_allocated_count = 0;
-		dev_err(&pdev->dev, "Unable to allocate memory for VF "
-			"Data Storage\n");
-		goto out;
-	}
-
-	if (!old_vfs) {
-		if (pci_enable_sriov(pdev, adapter->vfs_allocated_count))
-			goto err_out;
-	}
-	dev_info(&pdev->dev, "%d VFs allocated\n",
-		 adapter->vfs_allocated_count);
-	for (i = 0; i < adapter->vfs_allocated_count; i++)
-		igb_vf_configure(adapter, i);
-
-	/* DMA Coalescing is not supported in IOV mode. */
-	adapter->flags &= ~IGB_FLAG_DMAC;
-	goto out;
-err_out:
-	kfree(adapter->vf_data);
-	adapter->vf_data = NULL;
-	adapter->vfs_allocated_count = 0;
-out:
-	return;
-#endif /* CONFIG_PCI_IOV */
-}
-
-/**
- * igb_init_hw_timer - Initialize hardware timer used with IEEE 1588 timestamp
- * @adapter: board private structure to initialize
- *
- * igb_init_hw_timer initializes the function pointer and values for the hw
- * timer found in hardware.
- **/
-static void igb_init_hw_timer(struct igb_adapter *adapter)
-{
-	struct e1000_hw *hw = &adapter->hw;
-
-	switch (hw->mac.type) {
-	case e1000_i350:
-	case e1000_82580:
-		memset(&adapter->cycles, 0, sizeof(adapter->cycles));
-		adapter->cycles.read = igb_read_clock;
-		adapter->cycles.mask = CLOCKSOURCE_MASK(64);
-		adapter->cycles.mult = 1;
-		/*
-		 * The 82580 timesync updates the system timer every 8ns by 8ns
-		 * and the value cannot be shifted.  Instead we need to shift
-		 * the registers to generate a 64bit timer value.  As a result
-		 * SYSTIMR/L/H, TXSTMPL/H, RXSTMPL/H all have to be shifted by
-		 * 24 in order to generate a larger value for synchronization.
-		 */
-		adapter->cycles.shift = IGB_82580_TSYNC_SHIFT;
-		/* disable system timer temporarily by setting bit 31 */
-		wr32(E1000_TSAUXC, 0x80000000);
-		wrfl();
-
-		/* Set registers so that rollover occurs soon to test this. */
-		wr32(E1000_SYSTIMR, 0x00000000);
-		wr32(E1000_SYSTIML, 0x80000000);
-		wr32(E1000_SYSTIMH, 0x000000FF);
-		wrfl();
-
-		/* enable system timer by clearing bit 31 */
-		wr32(E1000_TSAUXC, 0x0);
-		wrfl();
-
-		timecounter_init(&adapter->clock,
-				 &adapter->cycles,
-				 ktime_to_ns(ktime_get_real()));
-		/*
-		 * Synchronize our NIC clock against system wall clock. NIC
-		 * time stamp reading requires ~3us per sample, each sample
-		 * was pretty stable even under load => only require 10
-		 * samples for each offset comparison.
-		 */
-		memset(&adapter->compare, 0, sizeof(adapter->compare));
-		adapter->compare.source = &adapter->clock;
-		adapter->compare.target = ktime_get_real;
-		adapter->compare.num_samples = 10;
-		timecompare_update(&adapter->compare, 0);
-		break;
-	case e1000_82576:
-		/*
-		 * Initialize hardware timer: we keep it running just in case
-		 * that some program needs it later on.
-		 */
-		memset(&adapter->cycles, 0, sizeof(adapter->cycles));
-		adapter->cycles.read = igb_read_clock;
-		adapter->cycles.mask = CLOCKSOURCE_MASK(64);
-		adapter->cycles.mult = 1;
-		/**
-		 * Scale the NIC clock cycle by a large factor so that
-		 * relatively small clock corrections can be added or
-		 * subtracted at each clock tick. The drawbacks of a large
-		 * factor are a) that the clock register overflows more quickly
-		 * (not such a big deal) and b) that the increment per tick has
-		 * to fit into 24 bits.  As a result we need to use a shift of
-		 * 19 so we can fit a value of 16 into the TIMINCA register.
-		 */
-		adapter->cycles.shift = IGB_82576_TSYNC_SHIFT;
-		wr32(E1000_TIMINCA,
-		                (1 << E1000_TIMINCA_16NS_SHIFT) |
-		                (16 << IGB_82576_TSYNC_SHIFT));
-
-		/* Set registers so that rollover occurs soon to test this. */
-		wr32(E1000_SYSTIML, 0x00000000);
-		wr32(E1000_SYSTIMH, 0xFF800000);
-		wrfl();
-
-		timecounter_init(&adapter->clock,
-				 &adapter->cycles,
-				 ktime_to_ns(ktime_get_real()));
-		/*
-		 * Synchronize our NIC clock against system wall clock. NIC
-		 * time stamp reading requires ~3us per sample, each sample
-		 * was pretty stable even under load => only require 10
-		 * samples for each offset comparison.
-		 */
-		memset(&adapter->compare, 0, sizeof(adapter->compare));
-		adapter->compare.source = &adapter->clock;
-		adapter->compare.target = ktime_get_real;
-		adapter->compare.num_samples = 10;
-		timecompare_update(&adapter->compare, 0);
-		break;
-	case e1000_82575:
-		/* 82575 does not support timesync */
-	default:
-		break;
-	}
-
-}
-
-/**
- * igb_sw_init - Initialize general software structures (struct igb_adapter)
- * @adapter: board private structure to initialize
- *
- * igb_sw_init initializes the Adapter private data structure.
- * Fields are initialized based on PCI device information and
- * OS network device settings (MTU size).
- **/
-static int __devinit igb_sw_init(struct igb_adapter *adapter)
-=======
  *  igb_probe_vfs - Initialize vf data storage and add VFs to pci config space
  *  @adapter: board private structure to initialize
  *
@@ -5554,7 +4038,6 @@ void igb_set_flag_queue_pairs(struct igb_adapter *adapter,
  *  OS network device settings (MTU size).
  **/
 static int igb_sw_init(struct igb_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_hw *hw = &adapter->hw;
 	struct net_device *netdev = adapter->netdev;
@@ -5573,15 +4056,6 @@ static int igb_sw_init(struct igb_adapter *adapter)
 	/* set default work limits */
 	adapter->tx_work_limit = IGB_DEFAULT_TX_WORK;
 
-<<<<<<< HEAD
-	adapter->max_frame_size = netdev->mtu + ETH_HLEN + ETH_FCS_LEN +
-				  VLAN_HLEN;
-	adapter->min_frame_size = ETH_ZLEN + ETH_FCS_LEN;
-
-	adapter->node = -1;
-
-	spin_lock_init(&adapter->stats64_lock);
-=======
 	adapter->max_frame_size = netdev->mtu + IGB_ETH_PKT_HDR_PAD;
 	adapter->min_frame_size = ETH_ZLEN + ETH_FCS_LEN;
 
@@ -5590,7 +4064,6 @@ static int igb_sw_init(struct igb_adapter *adapter)
 
 	/* init spinlock to avoid concurrency of VF resources */
 	spin_lock_init(&adapter->vfs_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PCI_IOV
 	switch (hw->mac.type) {
 	case e1000_82576:
@@ -5598,46 +4071,17 @@ static int igb_sw_init(struct igb_adapter *adapter)
 		if (max_vfs > 7) {
 			dev_warn(&pdev->dev,
 				 "Maximum of 7 VFs per PF, using max\n");
-<<<<<<< HEAD
-			adapter->vfs_allocated_count = 7;
-		} else
-			adapter->vfs_allocated_count = max_vfs;
-=======
 			max_vfs = adapter->vfs_allocated_count = 7;
 		} else
 			adapter->vfs_allocated_count = max_vfs;
 		if (adapter->vfs_allocated_count)
 			dev_warn(&pdev->dev,
 				 "Enabling SR-IOV VFs using the module parameter is deprecated - please use the pci sysfs interface.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
 	}
 #endif /* CONFIG_PCI_IOV */
-<<<<<<< HEAD
-	adapter->rss_queues = min_t(u32, IGB_MAX_RX_QUEUES, num_online_cpus());
-	/* i350 cannot do RSS and SR-IOV at the same time */
-	if (hw->mac.type == e1000_i350 && adapter->vfs_allocated_count)
-		adapter->rss_queues = 1;
-
-	/*
-	 * if rss_queues > 4 or vfs are going to be allocated with rss_queues
-	 * then we should combine the queues into a queue pair in order to
-	 * conserve interrupts due to limited supply
-	 */
-	if ((adapter->rss_queues > 4) ||
-	    ((adapter->rss_queues > 1) && (adapter->vfs_allocated_count > 6)))
-		adapter->flags |= IGB_FLAG_QUEUE_PAIRS;
-
-	/* Setup and initialize a copy of the hw vlan table array */
-	adapter->shadow_vfta = kzalloc(sizeof(u32) *
-				E1000_VLAN_FILTER_TBL_SIZE,
-				GFP_ATOMIC);
-
-	/* This call may decrease the number of queues */
-	if (igb_init_interrupt_scheme(adapter)) {
-=======
 
 	/* Assume MSI-X interrupts, will be checked during IRQ allocation */
 	adapter->flags |= IGB_FLAG_HAS_MSIX;
@@ -5660,24 +4104,14 @@ static int igb_sw_init(struct igb_adapter *adapter)
 
 	/* This call may decrease the number of queues */
 	if (igb_init_interrupt_scheme(adapter, true)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "Unable to allocate memory for queues\n");
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	igb_probe_vfs(adapter);
-
-	/* Explicitly disable IRQ since the NIC can be in any state. */
-	igb_irq_disable(adapter);
-
-	if (hw->mac.type == e1000_i350)
-=======
 	/* Explicitly disable IRQ since the NIC can be in any state. */
 	igb_irq_disable(adapter);
 
 	if (hw->mac.type >= e1000_i350)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adapter->flags &= ~IGB_FLAG_DMAC;
 
 	set_bit(__IGB_DOWN, &adapter->state);
@@ -5685,18 +4119,6 @@ static int igb_sw_init(struct igb_adapter *adapter)
 }
 
 /**
-<<<<<<< HEAD
- * igb_open - Called when a network interface is made active
- * @netdev: network interface device structure
- *
- * Returns 0 on success, negative value on failure
- *
- * The open entry point is called when a network interface is made
- * active by the system (IFF_UP).  At this point all resources needed
- * for transmit and receive operations are allocated, the interrupt
- * handler is registered with the OS, the watchdog timer is started,
- * and the stack is notified that the interface is ready.
-=======
  *  __igb_open - Called when a network interface is made active
  *  @netdev: network interface device structure
  *  @resuming: indicates whether we are in a resume call
@@ -5708,7 +4130,6 @@ static int igb_sw_init(struct igb_adapter *adapter)
  *  for transmit and receive operations are allocated, the interrupt
  *  handler is registered with the OS, the watchdog timer is started,
  *  and the stack is notified that the interface is ready.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int __igb_open(struct net_device *netdev, bool resuming)
 {
@@ -5744,20 +4165,14 @@ static int __igb_open(struct net_device *netdev, bool resuming)
 	/* before we allocate an interrupt, we must be ready to handle it.
 	 * Setting DEBUG_SHIRQ in the kernel makes it fire an interrupt
 	 * as soon as we call pci_request_irq, so we have to setup our
-<<<<<<< HEAD
-	 * clean_rx handler before we do so.  */
-=======
 	 * clean_rx handler before we do so.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	igb_configure(adapter);
 
 	err = igb_request_irq(adapter);
 	if (err)
 		goto err_req_irq;
 
-<<<<<<< HEAD
-=======
 	/* Notify the stack of the actual queue counts. */
 	err = netif_set_real_num_tx_queues(adapter->netdev,
 					   adapter->num_tx_queues);
@@ -5769,7 +4184,6 @@ static int __igb_open(struct net_device *netdev, bool resuming)
 	if (err)
 		goto err_set_queues;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* From here on the code is the same as igb_up() */
 	clear_bit(__IGB_DOWN, &adapter->state);
 
@@ -5777,10 +4191,7 @@ static int __igb_open(struct net_device *netdev, bool resuming)
 		napi_enable(&(adapter->q_vector[i]->napi));
 
 	/* Clear any pending interrupts. */
-<<<<<<< HEAD
-=======
 	rd32(E1000_TSICR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rd32(E1000_ICR);
 
 	igb_irq_enable(adapter);
@@ -5788,10 +4199,7 @@ static int __igb_open(struct net_device *netdev, bool resuming)
 	/* notify VFs that reset has been completed */
 	if (adapter->vfs_allocated_count) {
 		u32 reg_data = rd32(E1000_CTRL_EXT);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg_data |= E1000_CTRL_EXT_PFRSTD;
 		wr32(E1000_CTRL_EXT, reg_data);
 	}
@@ -5807,11 +4215,8 @@ static int __igb_open(struct net_device *netdev, bool resuming)
 
 	return 0;
 
-<<<<<<< HEAD
-=======
 err_set_queues:
 	igb_free_irq(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_req_irq:
 	igb_release_hw_control(adapter);
 	igb_power_down_link(adapter);
@@ -5826,27 +4231,12 @@ err_setup_tx:
 	return err;
 }
 
-<<<<<<< HEAD
-static int igb_open(struct net_device *netdev)
-=======
 int igb_open(struct net_device *netdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __igb_open(netdev, false);
 }
 
 /**
-<<<<<<< HEAD
- * igb_close - Disables a network interface
- * @netdev: network interface device structure
- *
- * Returns 0, this is not allowed to fail
- *
- * The close entry point is called when an interface is de-activated
- * by the OS.  The hardware is still under the driver's control, but
- * needs to be disabled.  A global MAC reset is issued to stop the
- * hardware, and all transmit and receive resources are freed.
-=======
  *  __igb_close - Disables a network interface
  *  @netdev: network interface device structure
  *  @suspending: indicates we are in a suspend call
@@ -5857,7 +4247,6 @@ int igb_open(struct net_device *netdev)
  *  by the OS.  The hardware is still under the driver's control, but
  *  needs to be disabled.  A global MAC reset is issued to stop the
  *  hardware, and all transmit and receive resources are freed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int __igb_close(struct net_device *netdev, bool suspending)
 {
@@ -5880,18 +4269,6 @@ static int __igb_close(struct net_device *netdev, bool suspending)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int igb_close(struct net_device *netdev)
-{
-	return __igb_close(netdev, false);
-}
-
-/**
- * igb_setup_tx_resources - allocate Tx resources (Descriptors)
- * @tx_ring: tx descriptor ring (for a specific queue) to setup
- *
- * Return 0 on success, negative on failure
-=======
 int igb_close(struct net_device *netdev)
 {
 	if (netif_device_present(netdev) || netdev->dismantle)
@@ -5904,26 +4281,15 @@ int igb_close(struct net_device *netdev)
  *  @tx_ring: tx descriptor ring (for a specific queue) to setup
  *
  *  Return 0 on success, negative on failure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 int igb_setup_tx_resources(struct igb_ring *tx_ring)
 {
 	struct device *dev = tx_ring->dev;
-<<<<<<< HEAD
-	int orig_node = dev_to_node(dev);
-	int size;
-
-	size = sizeof(struct igb_tx_buffer) * tx_ring->count;
-	tx_ring->tx_buffer_info = vzalloc_node(size, tx_ring->numa_node);
-	if (!tx_ring->tx_buffer_info)
-		tx_ring->tx_buffer_info = vzalloc(size);
-=======
 	int size;
 
 	size = sizeof(struct igb_tx_buffer) * tx_ring->count;
 
 	tx_ring->tx_buffer_info = vmalloc(size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tx_ring->tx_buffer_info)
 		goto err;
 
@@ -5931,23 +4297,8 @@ int igb_setup_tx_resources(struct igb_ring *tx_ring)
 	tx_ring->size = tx_ring->count * sizeof(union e1000_adv_tx_desc);
 	tx_ring->size = ALIGN(tx_ring->size, 4096);
 
-<<<<<<< HEAD
-	set_dev_node(dev, tx_ring->numa_node);
-	tx_ring->desc = dma_alloc_coherent(dev,
-					   tx_ring->size,
-					   &tx_ring->dma,
-					   GFP_KERNEL);
-	set_dev_node(dev, orig_node);
-	if (!tx_ring->desc)
-		tx_ring->desc = dma_alloc_coherent(dev,
-						   tx_ring->size,
-						   &tx_ring->dma,
-						   GFP_KERNEL);
-
-=======
 	tx_ring->desc = dma_alloc_coherent(dev, tx_ring->size,
 					   &tx_ring->dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tx_ring->desc)
 		goto err;
 
@@ -5958,30 +4309,17 @@ int igb_setup_tx_resources(struct igb_ring *tx_ring)
 
 err:
 	vfree(tx_ring->tx_buffer_info);
-<<<<<<< HEAD
-	dev_err(dev,
-		"Unable to allocate memory for the transmit descriptor ring\n");
-=======
 	tx_ring->tx_buffer_info = NULL;
 	dev_err(dev, "Unable to allocate memory for the Tx descriptor ring\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
 /**
-<<<<<<< HEAD
- * igb_setup_all_tx_resources - wrapper to allocate Tx resources
- *				  (Descriptors) for all queues
- * @adapter: board private structure
- *
- * Return 0 on success, negative on failure
-=======
  *  igb_setup_all_tx_resources - wrapper to allocate Tx resources
  *				 (Descriptors) for all queues
  *  @adapter: board private structure
  *
  *  Return 0 on success, negative on failure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int igb_setup_all_tx_resources(struct igb_adapter *adapter)
 {
@@ -6003,13 +4341,8 @@ static int igb_setup_all_tx_resources(struct igb_adapter *adapter)
 }
 
 /**
-<<<<<<< HEAD
- * igb_setup_tctl - configure the transmit control registers
- * @adapter: Board private structure
-=======
  *  igb_setup_tctl - configure the transmit control registers
  *  @adapter: Board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 void igb_setup_tctl(struct igb_adapter *adapter)
 {
@@ -6034,16 +4367,6 @@ void igb_setup_tctl(struct igb_adapter *adapter)
 }
 
 /**
-<<<<<<< HEAD
- * igb_configure_tx_ring - Configure transmit ring after Reset
- * @adapter: board private structure
- * @ring: tx ring to configure
- *
- * Configure a transmit ring after a reset.
- **/
-void igb_configure_tx_ring(struct igb_adapter *adapter,
-                           struct igb_ring *ring)
-=======
  *  igb_configure_tx_ring - Configure transmit ring after Reset
  *  @adapter: board private structure
  *  @ring: tx ring to configure
@@ -6052,27 +4375,12 @@ void igb_configure_tx_ring(struct igb_adapter *adapter,
  **/
 void igb_configure_tx_ring(struct igb_adapter *adapter,
 			   struct igb_ring *ring)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_hw *hw = &adapter->hw;
 	u32 txdctl = 0;
 	u64 tdba = ring->dma;
 	int reg_idx = ring->reg_idx;
 
-<<<<<<< HEAD
-	/* disable the queue */
-	wr32(E1000_TXDCTL(reg_idx), 0);
-	wrfl();
-	mdelay(10);
-
-	wr32(E1000_TDLEN(reg_idx),
-	                ring->count * sizeof(union e1000_adv_tx_desc));
-	wr32(E1000_TDBAL(reg_idx),
-	                tdba & 0x00000000ffffffffULL);
-	wr32(E1000_TDBAH(reg_idx), tdba >> 32);
-
-	ring->tail = hw->hw_addr + E1000_TDT(reg_idx);
-=======
 	wr32(E1000_TDLEN(reg_idx),
 	     ring->count * sizeof(union e1000_adv_tx_desc));
 	wr32(E1000_TDBAL(reg_idx),
@@ -6080,7 +4388,6 @@ void igb_configure_tx_ring(struct igb_adapter *adapter,
 	wr32(E1000_TDBAH(reg_idx), tdba >> 32);
 
 	ring->tail = adapter->io_addr + E1000_TDT(reg_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wr32(E1000_TDH(reg_idx), 0);
 	writel(0, ring->tail);
 
@@ -6088,29 +4395,15 @@ void igb_configure_tx_ring(struct igb_adapter *adapter,
 	txdctl |= IGB_TX_HTHRESH << 8;
 	txdctl |= IGB_TX_WTHRESH << 16;
 
-<<<<<<< HEAD
-=======
 	/* reinitialize tx_buffer_info */
 	memset(ring->tx_buffer_info, 0,
 	       sizeof(struct igb_tx_buffer) * ring->count);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	txdctl |= E1000_TXDCTL_QUEUE_ENABLE;
 	wr32(E1000_TXDCTL(reg_idx), txdctl);
 }
 
 /**
-<<<<<<< HEAD
- * igb_configure_tx - Configure transmit Unit after Reset
- * @adapter: board private structure
- *
- * Configure the Tx unit of the MAC after a reset.
- **/
-static void igb_configure_tx(struct igb_adapter *adapter)
-{
-	int i;
-
-=======
  *  igb_configure_tx - Configure transmit Unit after Reset
  *  @adapter: board private structure
  *
@@ -6128,63 +4421,11 @@ static void igb_configure_tx(struct igb_adapter *adapter)
 	wrfl();
 	usleep_range(10000, 20000);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < adapter->num_tx_queues; i++)
 		igb_configure_tx_ring(adapter, adapter->tx_ring[i]);
 }
 
 /**
-<<<<<<< HEAD
- * igb_setup_rx_resources - allocate Rx resources (Descriptors)
- * @rx_ring:    rx descriptor ring (for a specific queue) to setup
- *
- * Returns 0 on success, negative on failure
- **/
-int igb_setup_rx_resources(struct igb_ring *rx_ring)
-{
-	struct device *dev = rx_ring->dev;
-	int orig_node = dev_to_node(dev);
-	int size, desc_len;
-
-	size = sizeof(struct igb_rx_buffer) * rx_ring->count;
-	rx_ring->rx_buffer_info = vzalloc_node(size, rx_ring->numa_node);
-	if (!rx_ring->rx_buffer_info)
-		rx_ring->rx_buffer_info = vzalloc(size);
-	if (!rx_ring->rx_buffer_info)
-		goto err;
-
-	desc_len = sizeof(union e1000_adv_rx_desc);
-
-	/* Round up to nearest 4K */
-	rx_ring->size = rx_ring->count * desc_len;
-	rx_ring->size = ALIGN(rx_ring->size, 4096);
-
-	set_dev_node(dev, rx_ring->numa_node);
-	rx_ring->desc = dma_alloc_coherent(dev,
-					   rx_ring->size,
-					   &rx_ring->dma,
-					   GFP_KERNEL);
-	set_dev_node(dev, orig_node);
-	if (!rx_ring->desc)
-		rx_ring->desc = dma_alloc_coherent(dev,
-						   rx_ring->size,
-						   &rx_ring->dma,
-						   GFP_KERNEL);
-
-	if (!rx_ring->desc)
-		goto err;
-
-	rx_ring->next_to_clean = 0;
-	rx_ring->next_to_use = 0;
-
-	return 0;
-
-err:
-	vfree(rx_ring->rx_buffer_info);
-	rx_ring->rx_buffer_info = NULL;
-	dev_err(dev, "Unable to allocate memory for the receive descriptor"
-		" ring\n");
-=======
  *  igb_setup_rx_resources - allocate Rx resources (Descriptors)
  *  @rx_ring: Rx descriptor ring (for a specific queue) to setup
  *
@@ -6235,24 +4476,15 @@ err:
 	vfree(rx_ring->rx_buffer_info);
 	rx_ring->rx_buffer_info = NULL;
 	dev_err(dev, "Unable to allocate memory for the Rx descriptor ring\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
 /**
-<<<<<<< HEAD
- * igb_setup_all_rx_resources - wrapper to allocate Rx resources
- *				  (Descriptors) for all queues
- * @adapter: board private structure
- *
- * Return 0 on success, negative on failure
-=======
  *  igb_setup_all_rx_resources - wrapper to allocate Rx resources
  *				 (Descriptors) for all queues
  *  @adapter: board private structure
  *
  *  Return 0 on success, negative on failure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int igb_setup_all_rx_resources(struct igb_adapter *adapter)
 {
@@ -6274,75 +4506,13 @@ static int igb_setup_all_rx_resources(struct igb_adapter *adapter)
 }
 
 /**
-<<<<<<< HEAD
- * igb_setup_mrqc - configure the multiple receive queue control registers
- * @adapter: Board private structure
-=======
  *  igb_setup_mrqc - configure the multiple receive queue control registers
  *  @adapter: Board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_setup_mrqc(struct igb_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
 	u32 mrqc, rxcsum;
-<<<<<<< HEAD
-	u32 j, num_rx_queues, shift = 0, shift2 = 0;
-	union e1000_reta {
-		u32 dword;
-		u8  bytes[4];
-	} reta;
-	static const u8 rsshash[40] = {
-		0x6d, 0x5a, 0x56, 0xda, 0x25, 0x5b, 0x0e, 0xc2, 0x41, 0x67,
-		0x25, 0x3d, 0x43, 0xa3, 0x8f, 0xb0, 0xd0, 0xca, 0x2b, 0xcb,
-		0xae, 0x7b, 0x30, 0xb4,	0x77, 0xcb, 0x2d, 0xa3, 0x80, 0x30,
-		0xf2, 0x0c, 0x6a, 0x42, 0xb7, 0x3b, 0xbe, 0xac, 0x01, 0xfa };
-
-	/* Fill out hash function seeds */
-	for (j = 0; j < 10; j++) {
-		u32 rsskey = rsshash[(j * 4)];
-		rsskey |= rsshash[(j * 4) + 1] << 8;
-		rsskey |= rsshash[(j * 4) + 2] << 16;
-		rsskey |= rsshash[(j * 4) + 3] << 24;
-		array_wr32(E1000_RSSRK(0), j, rsskey);
-	}
-
-	num_rx_queues = adapter->rss_queues;
-
-	if (adapter->vfs_allocated_count) {
-		/* 82575 and 82576 supports 2 RSS queues for VMDq */
-		switch (hw->mac.type) {
-		case e1000_i350:
-		case e1000_82580:
-			num_rx_queues = 1;
-			shift = 0;
-			break;
-		case e1000_82576:
-			shift = 3;
-			num_rx_queues = 2;
-			break;
-		case e1000_82575:
-			shift = 2;
-			shift2 = 6;
-		default:
-			break;
-		}
-	} else {
-		if (hw->mac.type == e1000_82575)
-			shift = 6;
-	}
-
-	for (j = 0; j < (32 * 4); j++) {
-		reta.bytes[j & 3] = (j % num_rx_queues) << shift;
-		if (shift2)
-			reta.bytes[j & 3] |= num_rx_queues << shift2;
-		if ((j & 3) == 3)
-			wr32(E1000_RETA(j >> 2), reta.dword);
-	}
-
-	/*
-	 * Disable raw packet checksumming so that RSS hash is placed in
-=======
 	u32 j, num_rx_queues;
 	u32 rss_key[10];
 
@@ -6371,7 +4541,6 @@ static void igb_setup_mrqc(struct igb_adapter *adapter)
 	igb_write_rss_indir_tbl(adapter);
 
 	/* Disable raw packet checksumming so that RSS hash is placed in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * descriptor on writeback.  No need to enable TCP/UDP/IP checksum
 	 * offloads as they are enabled by default
 	 */
@@ -6385,11 +4554,6 @@ static void igb_setup_mrqc(struct igb_adapter *adapter)
 	/* Don't need to set TUOFL or IPOFL, they default to 1 */
 	wr32(E1000_RXCSUM, rxcsum);
 
-<<<<<<< HEAD
-	/* If VMDq is enabled then we set the appropriate mode for that, else
-	 * we default to RSS so that an RSS hash is calculated per packet even
-	 * if we are only using one queue */
-=======
 	/* Generate RSS hash based on packet types, TCP/UDP
 	 * port numbers and/or IPv4/v6 src and dst addresses
 	 */
@@ -6408,15 +4572,11 @@ static void igb_setup_mrqc(struct igb_adapter *adapter)
 	 * we default to RSS so that an RSS hash is calculated per packet even
 	 * if we are only using one queue
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (adapter->vfs_allocated_count) {
 		if (hw->mac.type > e1000_82575) {
 			/* Set the default pool for the PF's first queue */
 			u32 vtctl = rd32(E1000_VT_CTL);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vtctl &= ~(E1000_VT_CTL_DEFAULT_POOL_MASK |
 				   E1000_VT_CTL_DISABLE_DEF_POOL);
 			vtctl |= adapter->vfs_allocated_count <<
@@ -6424,27 +4584,6 @@ static void igb_setup_mrqc(struct igb_adapter *adapter)
 			wr32(E1000_VT_CTL, vtctl);
 		}
 		if (adapter->rss_queues > 1)
-<<<<<<< HEAD
-			mrqc = E1000_MRQC_ENABLE_VMDQ_RSS_2Q;
-		else
-			mrqc = E1000_MRQC_ENABLE_VMDQ;
-	} else {
-		mrqc = E1000_MRQC_ENABLE_RSS_4Q;
-	}
-	igb_vmm_control(adapter);
-
-	/*
-	 * Generate RSS hash based on TCP port numbers and/or
-	 * IPv4/v6 src and dst addresses since UDP cannot be
-	 * hashed reliably due to IP fragmentation
-	 */
-	mrqc |= E1000_MRQC_RSS_FIELD_IPV4 |
-		E1000_MRQC_RSS_FIELD_IPV4_TCP |
-		E1000_MRQC_RSS_FIELD_IPV6 |
-		E1000_MRQC_RSS_FIELD_IPV6_TCP |
-		E1000_MRQC_RSS_FIELD_IPV6_TCP_EX;
-
-=======
 			mrqc |= E1000_MRQC_ENABLE_VMDQ_RSS_MQ;
 		else
 			mrqc |= E1000_MRQC_ENABLE_VMDQ;
@@ -6453,18 +4592,12 @@ static void igb_setup_mrqc(struct igb_adapter *adapter)
 	}
 	igb_vmm_control(adapter);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wr32(E1000_MRQC, mrqc);
 }
 
 /**
-<<<<<<< HEAD
- * igb_setup_rctl - configure the receive control registers
- * @adapter: Board private structure
-=======
  *  igb_setup_rctl - configure the receive control registers
  *  @adapter: Board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 void igb_setup_rctl(struct igb_adapter *adapter)
 {
@@ -6479,12 +4612,7 @@ void igb_setup_rctl(struct igb_adapter *adapter)
 	rctl |= E1000_RCTL_EN | E1000_RCTL_BAM | E1000_RCTL_RDMTS_HALF |
 		(hw->mac.mc_filter_type << E1000_RCTL_MO_SHIFT);
 
-<<<<<<< HEAD
-	/*
-	 * enable stripping of CRC. It's unlikely this will break BMC
-=======
 	/* enable stripping of CRC. It's unlikely this will break BMC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * redirection as it did with e1000. Newer features require
 	 * that the HW strips the CRC.
 	 */
@@ -6493,11 +4621,7 @@ void igb_setup_rctl(struct igb_adapter *adapter)
 	/* disable store bad packets and clear size bits. */
 	rctl &= ~(E1000_RCTL_SBP | E1000_RCTL_SZ_256);
 
-<<<<<<< HEAD
-	/* enable LPE to prevent packets larger than max_frame_size */
-=======
 	/* enable LPE to allow for reception of jumbo frames */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rctl |= E1000_RCTL_LPE;
 
 	/* disable queue 0 to prevent tail write w/o re-config */
@@ -6515,22 +4639,13 @@ void igb_setup_rctl(struct igb_adapter *adapter)
 	/* This is useful for sniffing bad packets. */
 	if (adapter->netdev->features & NETIF_F_RXALL) {
 		/* UPE and MPE will be handled by normal PROMISC logic
-<<<<<<< HEAD
-		 * in e1000e_set_rx_mode */
-=======
 		 * in e1000e_set_rx_mode
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rctl |= (E1000_RCTL_SBP | /* Receive bad packets */
 			 E1000_RCTL_BAM | /* RX All Bcast Pkts */
 			 E1000_RCTL_PMCF); /* RX All MAC Ctrl Pkts */
 
-<<<<<<< HEAD
-		rctl &= ~(E1000_RCTL_VFE | /* Disable VLAN filter */
-			  E1000_RCTL_DPF | /* Allow filtered pause */
-=======
 		rctl &= ~(E1000_RCTL_DPF | /* Allow filtered pause */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  E1000_RCTL_CFIEN); /* Dis VLAN CFIEN Filter */
 		/* Do not mess with E1000_CTRL_VME, it affects transmit as well,
 		 * and that breaks VLANs.
@@ -6541,25 +4656,13 @@ void igb_setup_rctl(struct igb_adapter *adapter)
 }
 
 static inline int igb_set_vf_rlpml(struct igb_adapter *adapter, int size,
-<<<<<<< HEAD
-                                   int vfn)
-=======
 				   int vfn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_hw *hw = &adapter->hw;
 	u32 vmolr;
 
-<<<<<<< HEAD
-	/* if it isn't the PF check to see if VFs are enabled and
-	 * increase the size to support vlan tags */
-	if (vfn < adapter->vfs_allocated_count &&
-	    adapter->vf_data[vfn].vlans_enabled)
-		size += VLAN_TAG_SIZE;
-=======
 	if (size > MAX_JUMBO_FRAME_SIZE)
 		size = MAX_JUMBO_FRAME_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vmolr = rd32(E1000_VMOLR(vfn));
 	vmolr &= ~E1000_VMOLR_RLPML_MASK;
@@ -6569,33 +4672,6 @@ static inline int igb_set_vf_rlpml(struct igb_adapter *adapter, int size,
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * igb_rlpml_set - set maximum receive packet size
- * @adapter: board private structure
- *
- * Configure maximum receivable packet size.
- **/
-static void igb_rlpml_set(struct igb_adapter *adapter)
-{
-	u32 max_frame_size = adapter->max_frame_size;
-	struct e1000_hw *hw = &adapter->hw;
-	u16 pf_id = adapter->vfs_allocated_count;
-
-	if (pf_id) {
-		igb_set_vf_rlpml(adapter, max_frame_size, pf_id);
-		/*
-		 * If we're in VMDQ or SR-IOV mode, then set global RLPML
-		 * to our max jumbo frame size, in case we need to enable
-		 * jumbo frames on one of the rings later.
-		 * This will not pass over-length frames into the default
-		 * queue because it's gated by the VMOLR.RLPML.
-		 */
-		max_frame_size = MAX_JUMBO_FRAME_SIZE;
-	}
-
-	wr32(E1000_RLPML, max_frame_size);
-=======
 static inline void igb_set_vf_vlan_strip(struct igb_adapter *adapter,
 					 int vfn, bool enable)
 {
@@ -6616,7 +4692,6 @@ static inline void igb_set_vf_vlan_strip(struct igb_adapter *adapter,
 	else
 		val &= ~(E1000_VMOLR_STRVLAN);
 	wr32(reg, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void igb_set_vmolr(struct igb_adapter *adapter,
@@ -6625,26 +4700,15 @@ static inline void igb_set_vmolr(struct igb_adapter *adapter,
 	struct e1000_hw *hw = &adapter->hw;
 	u32 vmolr;
 
-<<<<<<< HEAD
-	/*
-	 * This register exists only on 82576 and newer so if we are older then
-=======
 	/* This register exists only on 82576 and newer so if we are older then
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * we should exit and do nothing
 	 */
 	if (hw->mac.type < e1000_82576)
 		return;
 
 	vmolr = rd32(E1000_VMOLR(vfn));
-<<<<<<< HEAD
-	vmolr |= E1000_VMOLR_STRVLAN;      /* Strip vlan tags */
-	if (aupe)
-		vmolr |= E1000_VMOLR_AUPE;        /* Accept untagged packets */
-=======
 	if (aupe)
 		vmolr |= E1000_VMOLR_AUPE; /* Accept untagged packets */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		vmolr &= ~(E1000_VMOLR_AUPE); /* Tagged packets ONLY */
 
@@ -6653,40 +4717,16 @@ static inline void igb_set_vmolr(struct igb_adapter *adapter,
 
 	if (adapter->rss_queues > 1 && vfn == adapter->vfs_allocated_count)
 		vmolr |= E1000_VMOLR_RSSE; /* enable RSS */
-<<<<<<< HEAD
-	/*
-	 * for VMDq only allow the VFs and pool 0 to accept broadcast and
-	 * multicast packets
-	 */
-	if (vfn <= adapter->vfs_allocated_count)
-		vmolr |= E1000_VMOLR_BAM;	   /* Accept broadcast */
-=======
 	/* for VMDq only allow the VFs and pool 0 to accept broadcast and
 	 * multicast packets
 	 */
 	if (vfn <= adapter->vfs_allocated_count)
 		vmolr |= E1000_VMOLR_BAM; /* Accept broadcast */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wr32(E1000_VMOLR(vfn), vmolr);
 }
 
 /**
-<<<<<<< HEAD
- * igb_configure_rx_ring - Configure a receive ring after Reset
- * @adapter: board private structure
- * @ring: receive ring to be configured
- *
- * Configure the Rx unit of the MAC after a reset.
- **/
-void igb_configure_rx_ring(struct igb_adapter *adapter,
-                           struct igb_ring *ring)
-{
-	struct e1000_hw *hw = &adapter->hw;
-	u64 rdba = ring->dma;
-	int reg_idx = ring->reg_idx;
-	u32 srrctl = 0, rxdctl = 0;
-=======
  *  igb_setup_srrctl - configure the split and replication receive control
  *                     registers
  *  @adapter: Board private structure
@@ -6736,7 +4776,6 @@ void igb_configure_rx_ring(struct igb_adapter *adapter,
 	xdp_rxq_info_unreg_mem_model(&ring->xdp_rxq);
 	WARN_ON(xdp_rxq_info_reg_mem_model(&ring->xdp_rxq,
 					   MEM_TYPE_PAGE_SHARED, NULL));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable the queue */
 	wr32(E1000_RXDCTL(reg_idx), 0);
@@ -6746,39 +4785,15 @@ void igb_configure_rx_ring(struct igb_adapter *adapter,
 	     rdba & 0x00000000ffffffffULL);
 	wr32(E1000_RDBAH(reg_idx), rdba >> 32);
 	wr32(E1000_RDLEN(reg_idx),
-<<<<<<< HEAD
-	               ring->count * sizeof(union e1000_adv_rx_desc));
-
-	/* initialize head and tail */
-	ring->tail = hw->hw_addr + E1000_RDT(reg_idx);
-=======
 	     ring->count * sizeof(union e1000_adv_rx_desc));
 
 	/* initialize head and tail */
 	ring->tail = adapter->io_addr + E1000_RDT(reg_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wr32(E1000_RDH(reg_idx), 0);
 	writel(0, ring->tail);
 
 	/* set descriptor configuration */
-<<<<<<< HEAD
-	srrctl = IGB_RX_HDR_LEN << E1000_SRRCTL_BSIZEHDRSIZE_SHIFT;
-#if (PAGE_SIZE / 2) > IGB_RXBUFFER_16384
-	srrctl |= IGB_RXBUFFER_16384 >> E1000_SRRCTL_BSIZEPKT_SHIFT;
-#else
-	srrctl |= (PAGE_SIZE / 2) >> E1000_SRRCTL_BSIZEPKT_SHIFT;
-#endif
-	srrctl |= E1000_SRRCTL_DESCTYPE_HDR_SPLIT_ALWAYS;
-	if (hw->mac.type >= e1000_82580)
-		srrctl |= E1000_SRRCTL_TIMESTAMP;
-	/* Only set Drop Enable if we are supporting multiple queues */
-	if (adapter->vfs_allocated_count || adapter->num_rx_queues > 1)
-		srrctl |= E1000_SRRCTL_DROP_EN;
-
-	wr32(E1000_SRRCTL(reg_idx), srrctl);
-=======
 	igb_setup_srrctl(adapter, ring);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set filtering for VMDQ pools */
 	igb_set_vmolr(adapter, reg_idx & 0x7, true);
@@ -6787,8 +4802,6 @@ void igb_configure_rx_ring(struct igb_adapter *adapter,
 	rxdctl |= IGB_RX_HTHRESH << 8;
 	rxdctl |= IGB_RX_WTHRESH << 16;
 
-<<<<<<< HEAD
-=======
 	/* initialize rx_buffer_info */
 	memset(ring->rx_buffer_info, 0,
 	       sizeof(struct igb_rx_buffer) * ring->count);
@@ -6797,19 +4810,11 @@ void igb_configure_rx_ring(struct igb_adapter *adapter,
 	rx_desc = IGB_RX_DESC(ring, 0);
 	rx_desc->wb.upper.length = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable receive descriptor fetching */
 	rxdctl |= E1000_RXDCTL_QUEUE_ENABLE;
 	wr32(E1000_RXDCTL(reg_idx), rxdctl);
 }
 
-<<<<<<< HEAD
-/**
- * igb_configure_rx - Configure receive Unit after Reset
- * @adapter: board private structure
- *
- * Configure the Rx unit of the MAC after a reset.
-=======
 static void igb_set_rx_buffer_len(struct igb_adapter *adapter,
 				  struct igb_ring *rx_ring)
 {
@@ -6838,32 +4843,11 @@ static void igb_set_rx_buffer_len(struct igb_adapter *adapter,
  *  @adapter: board private structure
  *
  *  Configure the Rx unit of the MAC after a reset.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_configure_rx(struct igb_adapter *adapter)
 {
 	int i;
 
-<<<<<<< HEAD
-	/* set UTA to appropriate mode */
-	igb_set_uta(adapter);
-
-	/* set the correct pool for the PF default MAC address in entry 0 */
-	igb_rar_set_qsel(adapter, adapter->hw.mac.addr, 0,
-	                 adapter->vfs_allocated_count);
-
-	/* Setup the HW Rx Head and Tail Descriptor Pointers and
-	 * the Base and Length of the Rx Descriptor Ring */
-	for (i = 0; i < adapter->num_rx_queues; i++)
-		igb_configure_rx_ring(adapter, adapter->rx_ring[i]);
-}
-
-/**
- * igb_free_tx_resources - Free Tx Resources per Queue
- * @tx_ring: Tx descriptor ring for a specific queue
- *
- * Free all transmit software resources
-=======
 	/* set the correct pool for the PF default MAC address in entry 0 */
 	igb_set_default_mac_filter(adapter);
 
@@ -6883,7 +4867,6 @@ static void igb_configure_rx(struct igb_adapter *adapter)
  *  @tx_ring: Tx descriptor ring for a specific queue
  *
  *  Free all transmit software resources
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 void igb_free_tx_resources(struct igb_ring *tx_ring)
 {
@@ -6903,77 +4886,16 @@ void igb_free_tx_resources(struct igb_ring *tx_ring)
 }
 
 /**
-<<<<<<< HEAD
- * igb_free_all_tx_resources - Free Tx Resources for All Queues
- * @adapter: board private structure
- *
- * Free all transmit software resources
-=======
  *  igb_free_all_tx_resources - Free Tx Resources for All Queues
  *  @adapter: board private structure
  *
  *  Free all transmit software resources
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_free_all_tx_resources(struct igb_adapter *adapter)
 {
 	int i;
 
 	for (i = 0; i < adapter->num_tx_queues; i++)
-<<<<<<< HEAD
-		igb_free_tx_resources(adapter->tx_ring[i]);
-}
-
-void igb_unmap_and_free_tx_resource(struct igb_ring *ring,
-				    struct igb_tx_buffer *tx_buffer)
-{
-	if (tx_buffer->skb) {
-		dev_kfree_skb_any(tx_buffer->skb);
-		if (tx_buffer->dma)
-			dma_unmap_single(ring->dev,
-					 tx_buffer->dma,
-					 tx_buffer->length,
-					 DMA_TO_DEVICE);
-	} else if (tx_buffer->dma) {
-		dma_unmap_page(ring->dev,
-			       tx_buffer->dma,
-			       tx_buffer->length,
-			       DMA_TO_DEVICE);
-	}
-	tx_buffer->next_to_watch = NULL;
-	tx_buffer->skb = NULL;
-	tx_buffer->dma = 0;
-	/* buffer_info must be completely set up in the transmit path */
-}
-
-/**
- * igb_clean_tx_ring - Free Tx Buffers
- * @tx_ring: ring to be cleaned
- **/
-static void igb_clean_tx_ring(struct igb_ring *tx_ring)
-{
-	struct igb_tx_buffer *buffer_info;
-	unsigned long size;
-	u16 i;
-
-	if (!tx_ring->tx_buffer_info)
-		return;
-	/* Free all the Tx ring sk_buffs */
-
-	for (i = 0; i < tx_ring->count; i++) {
-		buffer_info = &tx_ring->tx_buffer_info[i];
-		igb_unmap_and_free_tx_resource(tx_ring, buffer_info);
-	}
-
-	netdev_tx_reset_queue(txring_txq(tx_ring));
-
-	size = sizeof(struct igb_tx_buffer) * tx_ring->count;
-	memset(tx_ring->tx_buffer_info, 0, size);
-
-	/* Zero out the descriptor ring */
-	memset(tx_ring->desc, 0, tx_ring->size);
-
-=======
 		if (adapter->tx_ring[i])
 			igb_free_tx_resources(adapter->tx_ring[i]);
 }
@@ -7040,35 +4962,19 @@ static void igb_clean_tx_ring(struct igb_ring *tx_ring)
 	netdev_tx_reset_queue(txring_txq(tx_ring));
 
 	/* reset next_to_use and next_to_clean */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tx_ring->next_to_use = 0;
 	tx_ring->next_to_clean = 0;
 }
 
 /**
-<<<<<<< HEAD
- * igb_clean_all_tx_rings - Free Tx Buffers for all queues
- * @adapter: board private structure
-=======
  *  igb_clean_all_tx_rings - Free Tx Buffers for all queues
  *  @adapter: board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_clean_all_tx_rings(struct igb_adapter *adapter)
 {
 	int i;
 
 	for (i = 0; i < adapter->num_tx_queues; i++)
-<<<<<<< HEAD
-		igb_clean_tx_ring(adapter->tx_ring[i]);
-}
-
-/**
- * igb_free_rx_resources - Free Rx Resources
- * @rx_ring: ring to clean the resources from
- *
- * Free all receive software resources
-=======
 		if (adapter->tx_ring[i])
 			igb_clean_tx_ring(adapter->tx_ring[i]);
 }
@@ -7078,17 +4984,13 @@ static void igb_clean_all_tx_rings(struct igb_adapter *adapter)
  *  @rx_ring: ring to clean the resources from
  *
  *  Free all receive software resources
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 void igb_free_rx_resources(struct igb_ring *rx_ring)
 {
 	igb_clean_rx_ring(rx_ring);
 
-<<<<<<< HEAD
-=======
 	rx_ring->xdp_prog = NULL;
 	xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vfree(rx_ring->rx_buffer_info);
 	rx_ring->rx_buffer_info = NULL;
 
@@ -7103,75 +5005,16 @@ void igb_free_rx_resources(struct igb_ring *rx_ring)
 }
 
 /**
-<<<<<<< HEAD
- * igb_free_all_rx_resources - Free Rx Resources for All Queues
- * @adapter: board private structure
- *
- * Free all receive software resources
-=======
  *  igb_free_all_rx_resources - Free Rx Resources for All Queues
  *  @adapter: board private structure
  *
  *  Free all receive software resources
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_free_all_rx_resources(struct igb_adapter *adapter)
 {
 	int i;
 
 	for (i = 0; i < adapter->num_rx_queues; i++)
-<<<<<<< HEAD
-		igb_free_rx_resources(adapter->rx_ring[i]);
-}
-
-/**
- * igb_clean_rx_ring - Free Rx Buffers per Queue
- * @rx_ring: ring to free buffers from
- **/
-static void igb_clean_rx_ring(struct igb_ring *rx_ring)
-{
-	unsigned long size;
-	u16 i;
-
-	if (!rx_ring->rx_buffer_info)
-		return;
-
-	/* Free all the Rx ring sk_buffs */
-	for (i = 0; i < rx_ring->count; i++) {
-		struct igb_rx_buffer *buffer_info = &rx_ring->rx_buffer_info[i];
-		if (buffer_info->dma) {
-			dma_unmap_single(rx_ring->dev,
-			                 buffer_info->dma,
-					 IGB_RX_HDR_LEN,
-					 DMA_FROM_DEVICE);
-			buffer_info->dma = 0;
-		}
-
-		if (buffer_info->skb) {
-			dev_kfree_skb(buffer_info->skb);
-			buffer_info->skb = NULL;
-		}
-		if (buffer_info->page_dma) {
-			dma_unmap_page(rx_ring->dev,
-			               buffer_info->page_dma,
-				       PAGE_SIZE / 2,
-				       DMA_FROM_DEVICE);
-			buffer_info->page_dma = 0;
-		}
-		if (buffer_info->page) {
-			put_page(buffer_info->page);
-			buffer_info->page = NULL;
-			buffer_info->page_offset = 0;
-		}
-	}
-
-	size = sizeof(struct igb_rx_buffer) * rx_ring->count;
-	memset(rx_ring->rx_buffer_info, 0, size);
-
-	/* Zero out the descriptor ring */
-	memset(rx_ring->desc, 0, rx_ring->size);
-
-=======
 		if (adapter->rx_ring[i])
 			igb_free_rx_resources(adapter->rx_ring[i]);
 }
@@ -7215,36 +5058,19 @@ static void igb_clean_rx_ring(struct igb_ring *rx_ring)
 	}
 
 	rx_ring->next_to_alloc = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rx_ring->next_to_clean = 0;
 	rx_ring->next_to_use = 0;
 }
 
 /**
-<<<<<<< HEAD
- * igb_clean_all_rx_rings - Free Rx Buffers for all queues
- * @adapter: board private structure
-=======
  *  igb_clean_all_rx_rings - Free Rx Buffers for all queues
  *  @adapter: board private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_clean_all_rx_rings(struct igb_adapter *adapter)
 {
 	int i;
 
 	for (i = 0; i < adapter->num_rx_queues; i++)
-<<<<<<< HEAD
-		igb_clean_rx_ring(adapter->rx_ring[i]);
-}
-
-/**
- * igb_set_mac - Change the Ethernet Address of the NIC
- * @netdev: network interface device structure
- * @p: pointer to an address structure
- *
- * Returns 0 on success, negative on failure
-=======
 		if (adapter->rx_ring[i])
 			igb_clean_rx_ring(adapter->rx_ring[i]);
 }
@@ -7255,7 +5081,6 @@ static void igb_clean_all_rx_rings(struct igb_adapter *adapter)
  *  @p: pointer to an address structure
  *
  *  Returns 0 on success, negative on failure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int igb_set_mac(struct net_device *netdev, void *p)
 {
@@ -7266,34 +5091,16 @@ static int igb_set_mac(struct net_device *netdev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
-<<<<<<< HEAD
-	memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
-	memcpy(hw->mac.addr, addr->sa_data, netdev->addr_len);
-
-	/* set the correct pool for the new PF MAC address in entry 0 */
-	igb_rar_set_qsel(adapter, hw->mac.addr, 0,
-	                 adapter->vfs_allocated_count);
-=======
 	eth_hw_addr_set(netdev, addr->sa_data);
 	memcpy(hw->mac.addr, addr->sa_data, netdev->addr_len);
 
 	/* set the correct pool for the new PF MAC address in entry 0 */
 	igb_set_default_mac_filter(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- * igb_write_mc_addr_list - write multicast addresses to MTA
- * @netdev: network interface device structure
- *
- * Writes multicast address list to the MTA hash table.
- * Returns: -ENOMEM on failure
- *                0 on no addresses written
- *                X on writing X addresses to MTA
-=======
  *  igb_write_mc_addr_list - write multicast addresses to MTA
  *  @netdev: network interface device structure
  *
@@ -7301,7 +5108,6 @@ static int igb_set_mac(struct net_device *netdev, void *p)
  *  Returns: -ENOMEM on failure
  *           0 on no addresses written
  *           X on writing X addresses to MTA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int igb_write_mc_addr_list(struct net_device *netdev)
 {
@@ -7318,11 +5124,7 @@ static int igb_write_mc_addr_list(struct net_device *netdev)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	mta_list = kzalloc(netdev_mc_count(netdev) * 6, GFP_ATOMIC);
-=======
 	mta_list = kcalloc(netdev_mc_count(netdev), 6, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mta_list)
 		return -ENOMEM;
 
@@ -7337,59 +5139,6 @@ static int igb_write_mc_addr_list(struct net_device *netdev)
 	return netdev_mc_count(netdev);
 }
 
-<<<<<<< HEAD
-/**
- * igb_write_uc_addr_list - write unicast addresses to RAR table
- * @netdev: network interface device structure
- *
- * Writes unicast address list to the RAR table.
- * Returns: -ENOMEM on failure/insufficient address space
- *                0 on no addresses written
- *                X on writing X addresses to the RAR table
- **/
-static int igb_write_uc_addr_list(struct net_device *netdev)
-{
-	struct igb_adapter *adapter = netdev_priv(netdev);
-	struct e1000_hw *hw = &adapter->hw;
-	unsigned int vfn = adapter->vfs_allocated_count;
-	unsigned int rar_entries = hw->mac.rar_entry_count - (vfn + 1);
-	int count = 0;
-
-	/* return ENOMEM indicating insufficient memory for addresses */
-	if (netdev_uc_count(netdev) > rar_entries)
-		return -ENOMEM;
-
-	if (!netdev_uc_empty(netdev) && rar_entries) {
-		struct netdev_hw_addr *ha;
-
-		netdev_for_each_uc_addr(ha, netdev) {
-			if (!rar_entries)
-				break;
-			igb_rar_set_qsel(adapter, ha->addr,
-			                 rar_entries--,
-			                 vfn);
-			count++;
-		}
-	}
-	/* write the addresses in reverse order to avoid write combining */
-	for (; rar_entries > 0 ; rar_entries--) {
-		wr32(E1000_RAH(rar_entries), 0);
-		wr32(E1000_RAL(rar_entries), 0);
-	}
-	wrfl();
-
-	return count;
-}
-
-/**
- * igb_set_rx_mode - Secondary Unicast, Multicast and Promiscuous mode set
- * @netdev: network interface device structure
- *
- * The set_rx_mode entry point is called whenever the unicast or multicast
- * address lists or the network interface flags are updated.  This routine is
- * responsible for configuring the hardware for proper unicast, multicast,
- * promiscuous mode, and all-multi behavior.
-=======
 static int igb_vlan_promisc_enable(struct igb_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
@@ -7522,27 +5271,12 @@ static void igb_vlan_promisc_disable(struct igb_adapter *adapter)
  *  address lists or the network interface flags are updated.  This routine is
  *  responsible for configuring the hardware for proper unicast, multicast,
  *  promiscuous mode, and all-multi behavior.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_set_rx_mode(struct net_device *netdev)
 {
 	struct igb_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
 	unsigned int vfn = adapter->vfs_allocated_count;
-<<<<<<< HEAD
-	u32 rctl, vmolr = 0;
-	int count;
-
-	/* Check for Promiscuous and All Multicast modes */
-	rctl = rd32(E1000_RCTL);
-
-	/* clear the effected bits */
-	rctl &= ~(E1000_RCTL_UPE | E1000_RCTL_MPE | E1000_RCTL_VFE);
-
-	if (netdev->flags & IFF_PROMISC) {
-		rctl |= (E1000_RCTL_UPE | E1000_RCTL_MPE);
-		vmolr |= (E1000_VMOLR_ROPE | E1000_VMOLR_MPME);
-=======
 	u32 rctl = 0, vmolr = 0, rlpml = MAX_JUMBO_FRAME_SIZE;
 	int count;
 
@@ -7554,18 +5288,12 @@ static void igb_set_rx_mode(struct net_device *netdev)
 		/* enable use of UTA filter to force packets to default pool */
 		if (hw->mac.type == e1000_82576)
 			vmolr |= E1000_VMOLR_ROPE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (netdev->flags & IFF_ALLMULTI) {
 			rctl |= E1000_RCTL_MPE;
 			vmolr |= E1000_VMOLR_MPME;
 		} else {
-<<<<<<< HEAD
-			/*
-			 * Write addresses to the MTA, if the attempt fails
-=======
 			/* Write addresses to the MTA, if the attempt fails
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * then we should just turn on promiscuous mode so
 			 * that we can at least receive multicast traffic
 			 */
@@ -7577,24 +5305,6 @@ static void igb_set_rx_mode(struct net_device *netdev)
 				vmolr |= E1000_VMOLR_ROMPE;
 			}
 		}
-<<<<<<< HEAD
-		/*
-		 * Write addresses to available RAR registers, if there is not
-		 * sufficient space to store all the addresses then enable
-		 * unicast promiscuous mode
-		 */
-		count = igb_write_uc_addr_list(netdev);
-		if (count < 0) {
-			rctl |= E1000_RCTL_UPE;
-			vmolr |= E1000_VMOLR_ROPE;
-		}
-		rctl |= E1000_RCTL_VFE;
-	}
-	wr32(E1000_RCTL, rctl);
-
-	/*
-	 * In order to support SR-IOV and eventually VMDq it is necessary to set
-=======
 	}
 
 	/* Write addresses to available RAR registers, if there is not
@@ -7633,19 +5343,10 @@ static void igb_set_rx_mode(struct net_device *netdev)
 	wr32(E1000_RLPML, rlpml);
 
 	/* In order to support SR-IOV and eventually VMDq it is necessary to set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the VMOLR to enable the appropriate modes.  Without this workaround
 	 * we will have issues with VLAN tag stripping not being done for frames
 	 * that are only arriving because we are the default pool
 	 */
-<<<<<<< HEAD
-	if (hw->mac.type < e1000_82576)
-		return;
-
-	vmolr |= rd32(E1000_VMOLR(vfn)) &
-	         ~(E1000_VMOLR_ROPE | E1000_VMOLR_MPME | E1000_VMOLR_ROMPE);
-	wr32(E1000_VMOLR(vfn), vmolr);
-=======
 	if ((hw->mac.type < e1000_82576) || (hw->mac.type > e1000_i350))
 		return;
 
@@ -7667,7 +5368,6 @@ static void igb_set_rx_mode(struct net_device *netdev)
 
 	wr32(E1000_VMOLR(vfn), vmolr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	igb_restore_vf_multicasts(adapter);
 }
 
@@ -7679,12 +5379,8 @@ static void igb_check_wvbr(struct igb_adapter *adapter)
 	switch (hw->mac.type) {
 	case e1000_82576:
 	case e1000_i350:
-<<<<<<< HEAD
-		if (!(wvbr = rd32(E1000_WVBR)))
-=======
 		wvbr = rd32(E1000_WVBR);
 		if (!wvbr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		break;
 	default:
@@ -7703,16 +5399,6 @@ static void igb_spoof_check(struct igb_adapter *adapter)
 	if (!adapter->wvbr)
 		return;
 
-<<<<<<< HEAD
-	for(j = 0; j < adapter->vfs_allocated_count; j++) {
-		if (adapter->wvbr & (1 << j) ||
-		    adapter->wvbr & (1 << (j + IGB_STAGGERED_QUEUE_OFFSET))) {
-			dev_warn(&adapter->pdev->dev,
-				"Spoof event(s) detected on VF %d\n", j);
-			adapter->wvbr &=
-				~((1 << j) |
-				  (1 << (j + IGB_STAGGERED_QUEUE_OFFSET)));
-=======
 	for (j = 0; j < adapter->vfs_allocated_count; j++) {
 		if (adapter->wvbr & BIT(j) ||
 		    adapter->wvbr & BIT(j + IGB_STAGGERED_QUEUE_OFFSET)) {
@@ -7721,44 +5407,27 @@ static void igb_spoof_check(struct igb_adapter *adapter)
 			adapter->wvbr &=
 				~(BIT(j) |
 				  BIT(j + IGB_STAGGERED_QUEUE_OFFSET));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
 /* Need to wait a few seconds after link up to get diagnostic information from
-<<<<<<< HEAD
- * the phy */
-static void igb_update_phy_info(unsigned long data)
-{
-	struct igb_adapter *adapter = (struct igb_adapter *) data;
-=======
  * the phy
  */
 static void igb_update_phy_info(struct timer_list *t)
 {
 	struct igb_adapter *adapter = from_timer(adapter, t, phy_info_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	igb_get_phy_info(&adapter->hw);
 }
 
 /**
-<<<<<<< HEAD
- * igb_has_link - check shared code for link and determine up/down
- * @adapter: pointer to driver private info
-=======
  *  igb_has_link - check shared code for link and determine up/down
  *  @adapter: pointer to driver private info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 bool igb_has_link(struct igb_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
 	bool link_active = false;
-<<<<<<< HEAD
-	s32 ret_val = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get_link_status is set on LSC (link status) interrupt or
 	 * rx sequence error interrupt.  get_link_status will stay
@@ -7767,33 +5436,18 @@ bool igb_has_link(struct igb_adapter *adapter)
 	 */
 	switch (hw->phy.media_type) {
 	case e1000_media_type_copper:
-<<<<<<< HEAD
-		if (hw->mac.get_link_status) {
-			ret_val = hw->mac.ops.check_for_link(hw);
-			link_active = !hw->mac.get_link_status;
-		} else {
-			link_active = true;
-		}
-		break;
-	case e1000_media_type_internal_serdes:
-		ret_val = hw->mac.ops.check_for_link(hw);
-		link_active = hw->mac.serdes_has_link;
-=======
 		if (!hw->mac.get_link_status)
 			return true;
 		fallthrough;
 	case e1000_media_type_internal_serdes:
 		hw->mac.ops.check_for_link(hw);
 		link_active = !hw->mac.get_link_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 	case e1000_media_type_unknown:
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 	if (((hw->mac.type == e1000_i210) ||
 	     (hw->mac.type == e1000_i211)) &&
 	     (hw->phy.id == I210_I_PHY_ID)) {
@@ -7805,7 +5459,6 @@ bool igb_has_link(struct igb_adapter *adapter)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return link_active;
 }
 
@@ -7814,38 +5467,20 @@ static bool igb_thermal_sensor_event(struct e1000_hw *hw, u32 event)
 	bool ret = false;
 	u32 ctrl_ext, thstat;
 
-<<<<<<< HEAD
-	/* check for thermal sensor event on i350, copper only */
-=======
 	/* check for thermal sensor event on i350 copper only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->mac.type == e1000_i350) {
 		thstat = rd32(E1000_THSTAT);
 		ctrl_ext = rd32(E1000_CTRL_EXT);
 
 		if ((hw->phy.media_type == e1000_media_type_copper) &&
-<<<<<<< HEAD
-		    !(ctrl_ext & E1000_CTRL_EXT_LINK_MODE_SGMII)) {
-			ret = !!(thstat & event);
-		}
-=======
 		    !(ctrl_ext & E1000_CTRL_EXT_LINK_MODE_SGMII))
 			ret = !!(thstat & event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 }
 
 /**
-<<<<<<< HEAD
- * igb_watchdog - Timer Call-back
- * @data: pointer to adapter cast into an unsigned long
- **/
-static void igb_watchdog(unsigned long data)
-{
-	struct igb_adapter *adapter = (struct igb_adapter *)data;
-=======
  *  igb_check_lvmmc - check for malformed packets received
  *  and indicated in LVMMC register
  *  @adapter: pointer to adapter
@@ -7872,7 +5507,6 @@ static void igb_check_lvmmc(struct igb_adapter *adapter)
 static void igb_watchdog(struct timer_list *t)
 {
 	struct igb_adapter *adapter = from_timer(adapter, t, watchdog_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Do the rest outside of interrupt context */
 	schedule_work(&adapter->watchdog_task);
 }
@@ -7880,17 +5514,6 @@ static void igb_watchdog(struct timer_list *t)
 static void igb_watchdog_task(struct work_struct *work)
 {
 	struct igb_adapter *adapter = container_of(work,
-<<<<<<< HEAD
-	                                           struct igb_adapter,
-                                                   watchdog_task);
-	struct e1000_hw *hw = &adapter->hw;
-	struct net_device *netdev = adapter->netdev;
-	u32 link;
-	int i;
-
-	link = igb_has_link(adapter);
-	if (link) {
-=======
 						   struct igb_adapter,
 						   watchdog_task);
 	struct e1000_hw *hw = &adapter->hw;
@@ -7925,22 +5548,11 @@ static void igb_watchdog_task(struct work_struct *work)
 			adapter->flags |= IGB_FLAG_MEDIA_RESET;
 			igb_reset(adapter);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Cancel scheduled suspend requests. */
 		pm_runtime_resume(netdev->dev.parent);
 
 		if (!netif_carrier_ok(netdev)) {
 			u32 ctrl;
-<<<<<<< HEAD
-			hw->mac.ops.get_speed_and_duplex(hw,
-			                                 &adapter->link_speed,
-			                                 &adapter->link_duplex);
-
-			ctrl = rd32(E1000_CTRL);
-			/* Links status message must follow this format */
-			printk(KERN_INFO "igb: %s NIC Link is Up %d Mbps %s "
-			       "Duplex, Flow Control: %s\n",
-=======
 
 			hw->mac.ops.get_speed_and_duplex(hw,
 							 &adapter->link_speed,
@@ -7950,7 +5562,6 @@ static void igb_watchdog_task(struct work_struct *work)
 			/* Links status message must follow this format */
 			netdev_info(netdev,
 			       "igb: %s NIC Link is Up %d Mbps %s Duplex, Flow Control: %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       netdev->name,
 			       adapter->link_speed,
 			       adapter->link_duplex == FULL_DUPLEX ?
@@ -7960,15 +5571,6 @@ static void igb_watchdog_task(struct work_struct *work)
 			       (ctrl & E1000_CTRL_RFCE) ?  "RX" :
 			       (ctrl & E1000_CTRL_TFCE) ?  "TX" : "None");
 
-<<<<<<< HEAD
-			/* check for thermal sensor event */
-			if (igb_thermal_sensor_event(hw,
-			    E1000_THSTAT_LINK_THROTTLE)) {
-				netdev_info(netdev, "The network adapter link "
-					    "speed was downshifted because it "
-					    "overheated\n");
-			}
-=======
 			/* disable EEE if enabled */
 			if ((adapter->flags & IGB_FLAG_EEE) &&
 				(adapter->link_duplex == HALF_DUPLEX)) {
@@ -7987,7 +5589,6 @@ static void igb_watchdog_task(struct work_struct *work)
 			if (igb_thermal_sensor_event(hw,
 			    E1000_THSTAT_LINK_THROTTLE))
 				netdev_info(netdev, "The network adapter link speed was downshifted because it overheated\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* adjust timeout factor according to speed/duplex */
 			adapter->tx_timeout_factor = 1;
@@ -8000,8 +5601,6 @@ static void igb_watchdog_task(struct work_struct *work)
 				break;
 			}
 
-<<<<<<< HEAD
-=======
 			if (adapter->link_speed != SPEED_1000 ||
 			    !hw->phy.ops.read_reg)
 				goto no_wait;
@@ -8022,7 +5621,6 @@ retry_read_status:
 				dev_err(&adapter->pdev->dev, "read 1000Base-T Status Reg\n");
 			}
 no_wait:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netif_carrier_on(netdev);
 
 			igb_ping_all_vfs(adapter);
@@ -8041,20 +5639,11 @@ no_wait:
 			/* check for thermal sensor event */
 			if (igb_thermal_sensor_event(hw,
 			    E1000_THSTAT_PWR_DOWN)) {
-<<<<<<< HEAD
-				netdev_err(netdev, "The network adapter was "
-					   "stopped because it overheated\n");
-			}
-
-			/* Links status message must follow this format */
-			printk(KERN_INFO "igb: %s NIC Link is Down\n",
-=======
 				netdev_err(netdev, "The network adapter was stopped because it overheated\n");
 			}
 
 			/* Links status message must follow this format */
 			netdev_info(netdev, "igb: %s NIC Link is Down\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       netdev->name);
 			netif_carrier_off(netdev);
 
@@ -8065,10 +5654,6 @@ no_wait:
 				mod_timer(&adapter->phy_info_timer,
 					  round_jiffies(jiffies + 2 * HZ));
 
-<<<<<<< HEAD
-			pm_schedule_suspend(netdev->dev.parent,
-					    MSEC_PER_SEC * 5);
-=======
 			/* link is down, time to check for alternate media */
 			if (adapter->flags & IGB_FLAG_MAS_ENABLE) {
 				igb_check_swap_media(adapter);
@@ -8090,16 +5675,11 @@ no_wait:
 				/* return immediately */
 				return;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	spin_lock(&adapter->stats64_lock);
-<<<<<<< HEAD
-	igb_update_stats(adapter, &adapter->stats64);
-=======
 	igb_update_stats(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&adapter->stats64_lock);
 
 	for (i = 0; i < adapter->num_tx_queues; i++) {
@@ -8108,12 +5688,8 @@ no_wait:
 			/* We've lost link, so the controller stops DMA,
 			 * but we've got queued Tx work that's never going
 			 * to get done, so reset controller to flush Tx.
-<<<<<<< HEAD
-			 * (Do the reset outside of interrupt context). */
-=======
 			 * (Do the reset outside of interrupt context).
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (igb_desc_unused(tx_ring) + 1 < tx_ring->count) {
 				adapter->tx_timeout_count++;
 				schedule_work(&adapter->reset_task);
@@ -8126,16 +5702,10 @@ no_wait:
 		set_bit(IGB_RING_FLAG_TX_DETECT_HANG, &tx_ring->flags);
 	}
 
-<<<<<<< HEAD
-	/* Cause software interrupt to ensure rx ring is cleaned */
-	if (adapter->msix_entries) {
-		u32 eics = 0;
-=======
 	/* Cause software interrupt to ensure Rx ring is cleaned */
 	if (adapter->flags & IGB_FLAG_HAS_MSIX) {
 		u32 eics = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < adapter->num_q_vectors; i++)
 			eics |= adapter->q_vector[i]->eims_value;
 		wr32(E1000_EICS, eics);
@@ -8144,13 +5714,6 @@ no_wait:
 	}
 
 	igb_spoof_check(adapter);
-<<<<<<< HEAD
-
-	/* Reset the timer */
-	if (!test_bit(__IGB_DOWN, &adapter->state))
-		mod_timer(&adapter->watchdog_timer,
-			  round_jiffies(jiffies + 2 * HZ));
-=======
 	igb_ptp_rx_hang(adapter);
 	igb_ptp_tx_hang(adapter);
 
@@ -8168,7 +5731,6 @@ no_wait:
 			mod_timer(&adapter->watchdog_timer,
 				  round_jiffies(jiffies + 2 * HZ));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 enum latency_range {
@@ -8179,22 +5741,6 @@ enum latency_range {
 };
 
 /**
-<<<<<<< HEAD
- * igb_update_ring_itr - update the dynamic ITR value based on packet size
- *
- *      Stores a new ITR value based on strictly on packet size.  This
- *      algorithm is less sophisticated than that used in igb_update_itr,
- *      due to the difficulty of synchronizing statistics across multiple
- *      receive rings.  The divisors and thresholds used by this function
- *      were determined based on theoretical maximum wire speed and testing
- *      data, in order to minimize response time while increasing bulk
- *      throughput.
- *      This functionality is controlled by the InterruptThrottleRate module
- *      parameter (see igb_param.c)
- *      NOTE:  This function is called only when operating in a multiqueue
- *             receive environment.
- * @q_vector: pointer to q_vector
-=======
  *  igb_update_ring_itr - update the dynamic ITR value based on packet size
  *  @q_vector: pointer to q_vector
  *
@@ -8208,7 +5754,6 @@ enum latency_range {
  *  This functionality is controlled by ethtool's coalescing settings.
  *  NOTE:  This function is called only when operating in a multiqueue
  *         receive environment.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_update_ring_itr(struct igb_q_vector *q_vector)
 {
@@ -8269,22 +5814,6 @@ clear_counts:
 }
 
 /**
-<<<<<<< HEAD
- * igb_update_itr - update the dynamic ITR value based on statistics
- *      Stores a new ITR value based on packets and byte
- *      counts during the last interrupt.  The advantage of per interrupt
- *      computation is faster updates and more accurate ITR for the current
- *      traffic pattern.  Constants in this function were computed
- *      based on theoretical maximum wire speed and thresholds were set based
- *      on testing data as well as attempting to minimize response time
- *      while increasing bulk throughput.
- *      this functionality is controlled by the InterruptThrottleRate module
- *      parameter (see igb_param.c)
- *      NOTE:  These calculations are only valid when operating in a single-
- *             queue environment.
- * @q_vector: pointer to q_vector
- * @ring_container: ring info to update the itr for
-=======
  *  igb_update_itr - update the dynamic ITR value based on statistics
  *  @q_vector: pointer to q_vector
  *  @ring_container: ring info to update the itr for
@@ -8299,7 +5828,6 @@ clear_counts:
  *  This functionality is controlled by ethtool's coalescing settings.
  *  NOTE:  These calculations are only valid when operating in a single-
  *         queue environment.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void igb_update_itr(struct igb_q_vector *q_vector,
 			   struct igb_ring_container *ring_container)
@@ -8323,22 +5851,12 @@ static void igb_update_itr(struct igb_q_vector *q_vector,
 	case low_latency:  /* 50 usec aka 20000 ints/s */
 		if (bytes > 10000) {
 			/* this if handles the TSO accounting */
-<<<<<<< HEAD
-			if (bytes/packets > 8000) {
-				itrval = bulk_latency;
-			} else if ((packets < 10) || ((bytes/packets) > 1200)) {
-				itrval = bulk_latency;
-			} else if ((packets > 35)) {
-				itrval = lowest_latency;
-			}
-=======
 			if (bytes/packets > 8000)
 				itrval = bulk_latency;
 			else if ((packets < 10) || ((bytes/packets) > 1200))
 				itrval = bulk_latency;
 			else if ((packets > 35))
 				itrval = lowest_latency;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (bytes/packets > 2000) {
 			itrval = bulk_latency;
 		} else if (packets <= 2 && bytes < 512) {
@@ -8406,21 +5924,12 @@ set_itr_now:
 	if (new_itr != q_vector->itr_val) {
 		/* this attempts to bias the interrupt rate towards Bulk
 		 * by adding intermediate steps when interrupt rate is
-<<<<<<< HEAD
-		 * increasing */
-		new_itr = new_itr > q_vector->itr_val ?
-		             max((new_itr * q_vector->itr_val) /
-		                 (new_itr + (q_vector->itr_val >> 2)),
-				 new_itr) :
-			     new_itr;
-=======
 		 * increasing
 		 */
 		new_itr = new_itr > q_vector->itr_val ?
 			  max((new_itr * q_vector->itr_val) /
 			  (new_itr + (q_vector->itr_val >> 2)),
 			  new_itr) : new_itr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Don't write the value here; it resets the adapter's
 		 * internal timer, and causes us to delay far longer than
 		 * we should between interrupts.  Instead, we write the ITR
@@ -8432,13 +5941,6 @@ set_itr_now:
 	}
 }
 
-<<<<<<< HEAD
-static void igb_tx_ctxtdesc(struct igb_ring *tx_ring, u32 vlan_macip_lens,
-			    u32 type_tucmd, u32 mss_l4len_idx)
-{
-	struct e1000_adv_tx_context_desc *context_desc;
-	u16 i = tx_ring->next_to_use;
-=======
 static void igb_tx_ctxtdesc(struct igb_ring *tx_ring,
 			    struct igb_tx_buffer *first,
 			    u32 vlan_macip_lens, u32 type_tucmd,
@@ -8447,7 +5949,6 @@ static void igb_tx_ctxtdesc(struct igb_ring *tx_ring,
 	struct e1000_adv_tx_context_desc *context_desc;
 	u16 i = tx_ring->next_to_use;
 	struct timespec64 ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	context_desc = IGB_TX_CTXTDESC(tx_ring, i);
 
@@ -8462,11 +5963,6 @@ static void igb_tx_ctxtdesc(struct igb_ring *tx_ring,
 		mss_l4len_idx |= tx_ring->reg_idx << 4;
 
 	context_desc->vlan_macip_lens	= cpu_to_le32(vlan_macip_lens);
-<<<<<<< HEAD
-	context_desc->seqnum_seed	= 0;
-	context_desc->type_tucmd_mlhl	= cpu_to_le32(type_tucmd);
-	context_desc->mss_l4len_idx	= cpu_to_le32(mss_l4len_idx);
-=======
 	context_desc->type_tucmd_mlhl	= cpu_to_le32(type_tucmd);
 	context_desc->mss_l4len_idx	= cpu_to_le32(mss_l4len_idx);
 
@@ -8480,18 +5976,12 @@ static void igb_tx_ctxtdesc(struct igb_ring *tx_ring,
 	} else {
 		context_desc->seqnum_seed = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int igb_tso(struct igb_ring *tx_ring,
 		   struct igb_tx_buffer *first,
 		   u8 *hdr_len)
 {
-<<<<<<< HEAD
-	struct sk_buff *skb = first->skb;
-	u32 vlan_macip_lens, type_tucmd;
-	u32 mss_l4len_idx, l4len;
-=======
 	u32 vlan_macip_lens, type_tucmd, mss_l4len_idx;
 	struct sk_buff *skb = first->skb;
 	union {
@@ -8509,39 +5999,10 @@ static int igb_tso(struct igb_ring *tx_ring,
 
 	if (skb->ip_summed != CHECKSUM_PARTIAL)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!skb_is_gso(skb))
 		return 0;
 
-<<<<<<< HEAD
-	if (skb_header_cloned(skb)) {
-		int err = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
-		if (err)
-			return err;
-	}
-
-	/* ADV DTYP TUCMD MKRLOC/ISCSIHEDLEN */
-	type_tucmd = E1000_ADVTXD_TUCMD_L4T_TCP;
-
-	if (first->protocol == __constant_htons(ETH_P_IP)) {
-		struct iphdr *iph = ip_hdr(skb);
-		iph->tot_len = 0;
-		iph->check = 0;
-		tcp_hdr(skb)->check = ~csum_tcpudp_magic(iph->saddr,
-							 iph->daddr, 0,
-							 IPPROTO_TCP,
-							 0);
-		type_tucmd |= E1000_ADVTXD_TUCMD_IPV4;
-		first->tx_flags |= IGB_TX_FLAGS_TSO |
-				   IGB_TX_FLAGS_CSUM |
-				   IGB_TX_FLAGS_IPV4;
-	} else if (skb_is_gso_v6(skb)) {
-		ipv6_hdr(skb)->payload_len = 0;
-		tcp_hdr(skb)->check = ~csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
-						       &ipv6_hdr(skb)->daddr,
-						       0, IPPROTO_TCP, 0);
-=======
 	err = skb_cow_head(skb, 0);
 	if (err < 0)
 		return err;
@@ -8572,16 +6033,10 @@ static int igb_tso(struct igb_ring *tx_ring,
 				   IGB_TX_FLAGS_IPV4;
 	} else {
 		ip.v6->payload_len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		first->tx_flags |= IGB_TX_FLAGS_TSO |
 				   IGB_TX_FLAGS_CSUM;
 	}
 
-<<<<<<< HEAD
-	/* compute header lengths */
-	l4len = tcp_hdrlen(skb);
-	*hdr_len = skb_transport_offset(skb) + l4len;
-=======
 	/* determine offset of inner transport header */
 	l4_offset = l4.hdr - skb->data;
 
@@ -8598,24 +6053,12 @@ static int igb_tso(struct igb_ring *tx_ring,
 		csum_replace_by_diff(&l4.udp->check,
 				     (__force __wsum)htonl(paylen));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* update gso size and bytecount with header size */
 	first->gso_segs = skb_shinfo(skb)->gso_segs;
 	first->bytecount += (first->gso_segs - 1) * *hdr_len;
 
 	/* MSS L4LEN IDX */
-<<<<<<< HEAD
-	mss_l4len_idx = l4len << E1000_ADVTXD_L4LEN_SHIFT;
-	mss_l4len_idx |= skb_shinfo(skb)->gso_size << E1000_ADVTXD_MSS_SHIFT;
-
-	/* VLAN MACLEN IPLEN */
-	vlan_macip_lens = skb_network_header_len(skb);
-	vlan_macip_lens |= skb_network_offset(skb) << E1000_ADVTXD_MACLEN_SHIFT;
-	vlan_macip_lens |= first->tx_flags & IGB_TX_FLAGS_VLAN_MASK;
-
-	igb_tx_ctxtdesc(tx_ring, vlan_macip_lens, type_tucmd, mss_l4len_idx);
-=======
 	mss_l4len_idx = (*hdr_len - l4_offset) << E1000_ADVTXD_L4LEN_SHIFT;
 	mss_l4len_idx |= skb_shinfo(skb)->gso_size << E1000_ADVTXD_MSS_SHIFT;
 
@@ -8626,7 +6069,6 @@ static int igb_tso(struct igb_ring *tx_ring,
 
 	igb_tx_ctxtdesc(tx_ring, first, vlan_macip_lens,
 			type_tucmd, mss_l4len_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -8635,87 +6077,6 @@ static void igb_tx_csum(struct igb_ring *tx_ring, struct igb_tx_buffer *first)
 {
 	struct sk_buff *skb = first->skb;
 	u32 vlan_macip_lens = 0;
-<<<<<<< HEAD
-	u32 mss_l4len_idx = 0;
-	u32 type_tucmd = 0;
-
-	if (skb->ip_summed != CHECKSUM_PARTIAL) {
-		if (!(first->tx_flags & IGB_TX_FLAGS_VLAN))
-			return;
-	} else {
-		u8 l4_hdr = 0;
-		switch (first->protocol) {
-		case __constant_htons(ETH_P_IP):
-			vlan_macip_lens |= skb_network_header_len(skb);
-			type_tucmd |= E1000_ADVTXD_TUCMD_IPV4;
-			l4_hdr = ip_hdr(skb)->protocol;
-			break;
-		case __constant_htons(ETH_P_IPV6):
-			vlan_macip_lens |= skb_network_header_len(skb);
-			l4_hdr = ipv6_hdr(skb)->nexthdr;
-			break;
-		default:
-			if (unlikely(net_ratelimit())) {
-				dev_warn(tx_ring->dev,
-				 "partial checksum but proto=%x!\n",
-				 first->protocol);
-			}
-			break;
-		}
-
-		switch (l4_hdr) {
-		case IPPROTO_TCP:
-			type_tucmd |= E1000_ADVTXD_TUCMD_L4T_TCP;
-			mss_l4len_idx = tcp_hdrlen(skb) <<
-					E1000_ADVTXD_L4LEN_SHIFT;
-			break;
-		case IPPROTO_SCTP:
-			type_tucmd |= E1000_ADVTXD_TUCMD_L4T_SCTP;
-			mss_l4len_idx = sizeof(struct sctphdr) <<
-					E1000_ADVTXD_L4LEN_SHIFT;
-			break;
-		case IPPROTO_UDP:
-			mss_l4len_idx = sizeof(struct udphdr) <<
-					E1000_ADVTXD_L4LEN_SHIFT;
-			break;
-		default:
-			if (unlikely(net_ratelimit())) {
-				dev_warn(tx_ring->dev,
-				 "partial checksum but l4 proto=%x!\n",
-				 l4_hdr);
-			}
-			break;
-		}
-
-		/* update TX checksum flag */
-		first->tx_flags |= IGB_TX_FLAGS_CSUM;
-	}
-
-	vlan_macip_lens |= skb_network_offset(skb) << E1000_ADVTXD_MACLEN_SHIFT;
-	vlan_macip_lens |= first->tx_flags & IGB_TX_FLAGS_VLAN_MASK;
-
-	igb_tx_ctxtdesc(tx_ring, vlan_macip_lens, type_tucmd, mss_l4len_idx);
-}
-
-static __le32 igb_tx_cmd_type(u32 tx_flags)
-{
-	/* set type for advanced descriptor with frame checksum insertion */
-	__le32 cmd_type = cpu_to_le32(E1000_ADVTXD_DTYP_DATA |
-				      E1000_ADVTXD_DCMD_IFCS |
-				      E1000_ADVTXD_DCMD_DEXT);
-
-	/* set HW vlan bit if vlan is present */
-	if (tx_flags & IGB_TX_FLAGS_VLAN)
-		cmd_type |= cpu_to_le32(E1000_ADVTXD_DCMD_VLE);
-
-	/* set timestamp bit if present */
-	if (tx_flags & IGB_TX_FLAGS_TSTAMP)
-		cmd_type |= cpu_to_le32(E1000_ADVTXD_MAC_TSTAMP);
-
-	/* set segmentation bits for TSO */
-	if (tx_flags & IGB_TX_FLAGS_TSO)
-		cmd_type |= cpu_to_le32(E1000_ADVTXD_DCMD_TSE);
-=======
 	u32 type_tucmd = 0;
 
 	if (skb->ip_summed != CHECKSUM_PARTIAL) {
@@ -8781,7 +6142,6 @@ static u32 igb_tx_cmd_type(struct sk_buff *skb, u32 tx_flags)
 
 	/* insert frame checksum */
 	cmd_type ^= IGB_SET_FLAG(skb->no_fcs, 1, E1000_ADVTXD_DCMD_IFCS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return cmd_type;
 }
@@ -8792,21 +6152,6 @@ static void igb_tx_olinfo_status(struct igb_ring *tx_ring,
 {
 	u32 olinfo_status = paylen << E1000_ADVTXD_PAYLEN_SHIFT;
 
-<<<<<<< HEAD
-	/* 82575 requires a unique index per ring if any offload is enabled */
-	if ((tx_flags & (IGB_TX_FLAGS_CSUM | IGB_TX_FLAGS_VLAN)) &&
-	    test_bit(IGB_RING_FLAG_TX_CTX_IDX, &tx_ring->flags))
-		olinfo_status |= tx_ring->reg_idx << 4;
-
-	/* insert L4 checksum */
-	if (tx_flags & IGB_TX_FLAGS_CSUM) {
-		olinfo_status |= E1000_TXD_POPTS_TXSM << 8;
-
-		/* insert IPv4 checksum */
-		if (tx_flags & IGB_TX_FLAGS_IPV4)
-			olinfo_status |= E1000_TXD_POPTS_IXSM << 8;
-	}
-=======
 	/* 82575 requires a unique index per ring */
 	if (test_bit(IGB_RING_FLAG_TX_CTX_IDX, &tx_ring->flags))
 		olinfo_status |= tx_ring->reg_idx << 4;
@@ -8820,155 +6165,10 @@ static void igb_tx_olinfo_status(struct igb_ring *tx_ring,
 	olinfo_status |= IGB_SET_FLAG(tx_flags,
 				      IGB_TX_FLAGS_IPV4,
 				      (E1000_TXD_POPTS_IXSM << 8));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tx_desc->read.olinfo_status = cpu_to_le32(olinfo_status);
 }
 
-<<<<<<< HEAD
-/*
- * The largest size we can write to the descriptor is 65535.  In order to
- * maintain a power of two alignment we have to limit ourselves to 32K.
- */
-#define IGB_MAX_TXD_PWR	15
-#define IGB_MAX_DATA_PER_TXD	(1<<IGB_MAX_TXD_PWR)
-
-static void igb_tx_map(struct igb_ring *tx_ring,
-		       struct igb_tx_buffer *first,
-		       const u8 hdr_len)
-{
-	struct sk_buff *skb = first->skb;
-	struct igb_tx_buffer *tx_buffer_info;
-	union e1000_adv_tx_desc *tx_desc;
-	dma_addr_t dma;
-	struct skb_frag_struct *frag = &skb_shinfo(skb)->frags[0];
-	unsigned int data_len = skb->data_len;
-	unsigned int size = skb_headlen(skb);
-	unsigned int paylen = skb->len - hdr_len;
-	__le32 cmd_type;
-	u32 tx_flags = first->tx_flags;
-	u16 i = tx_ring->next_to_use;
-
-	tx_desc = IGB_TX_DESC(tx_ring, i);
-
-	igb_tx_olinfo_status(tx_ring, tx_desc, tx_flags, paylen);
-	cmd_type = igb_tx_cmd_type(tx_flags);
-
-	dma = dma_map_single(tx_ring->dev, skb->data, size, DMA_TO_DEVICE);
-	if (dma_mapping_error(tx_ring->dev, dma))
-		goto dma_error;
-
-	/* record length, and DMA address */
-	first->length = size;
-	first->dma = dma;
-	tx_desc->read.buffer_addr = cpu_to_le64(dma);
-
-	for (;;) {
-		while (unlikely(size > IGB_MAX_DATA_PER_TXD)) {
-			tx_desc->read.cmd_type_len =
-				cmd_type | cpu_to_le32(IGB_MAX_DATA_PER_TXD);
-
-			i++;
-			tx_desc++;
-			if (i == tx_ring->count) {
-				tx_desc = IGB_TX_DESC(tx_ring, 0);
-				i = 0;
-			}
-
-			dma += IGB_MAX_DATA_PER_TXD;
-			size -= IGB_MAX_DATA_PER_TXD;
-
-			tx_desc->read.olinfo_status = 0;
-			tx_desc->read.buffer_addr = cpu_to_le64(dma);
-		}
-
-		if (likely(!data_len))
-			break;
-
-		tx_desc->read.cmd_type_len = cmd_type | cpu_to_le32(size);
-
-		i++;
-		tx_desc++;
-		if (i == tx_ring->count) {
-			tx_desc = IGB_TX_DESC(tx_ring, 0);
-			i = 0;
-		}
-
-		size = skb_frag_size(frag);
-		data_len -= size;
-
-		dma = skb_frag_dma_map(tx_ring->dev, frag, 0,
-				   size, DMA_TO_DEVICE);
-		if (dma_mapping_error(tx_ring->dev, dma))
-			goto dma_error;
-
-		tx_buffer_info = &tx_ring->tx_buffer_info[i];
-		tx_buffer_info->length = size;
-		tx_buffer_info->dma = dma;
-
-		tx_desc->read.olinfo_status = 0;
-		tx_desc->read.buffer_addr = cpu_to_le64(dma);
-
-		frag++;
-	}
-
-	netdev_tx_sent_queue(txring_txq(tx_ring), first->bytecount);
-
-	/* write last descriptor with RS and EOP bits */
-	cmd_type |= cpu_to_le32(size) | cpu_to_le32(IGB_TXD_DCMD);
-	if (unlikely(skb->no_fcs))
-		cmd_type &= ~(cpu_to_le32(E1000_ADVTXD_DCMD_IFCS));
-	tx_desc->read.cmd_type_len = cmd_type;
-
-	/* set the timestamp */
-	first->time_stamp = jiffies;
-
-	/*
-	 * Force memory writes to complete before letting h/w know there
-	 * are new descriptors to fetch.  (Only applicable for weak-ordered
-	 * memory model archs, such as IA-64).
-	 *
-	 * We also need this memory barrier to make certain all of the
-	 * status bits have been updated before next_to_watch is written.
-	 */
-	wmb();
-
-	/* set next_to_watch value indicating a packet is present */
-	first->next_to_watch = tx_desc;
-
-	i++;
-	if (i == tx_ring->count)
-		i = 0;
-
-	tx_ring->next_to_use = i;
-
-	writel(i, tx_ring->tail);
-
-	/* we need this if more than one processor can write to our tail
-	 * at a time, it syncronizes IO on IA64/Altix systems */
-	mmiowb();
-
-	return;
-
-dma_error:
-	dev_err(tx_ring->dev, "TX DMA map failed\n");
-
-	/* clear dma mappings for failed tx_buffer_info map */
-	for (;;) {
-		tx_buffer_info = &tx_ring->tx_buffer_info[i];
-		igb_unmap_and_free_tx_resource(tx_ring, tx_buffer_info);
-		if (tx_buffer_info == first)
-			break;
-		if (i == 0)
-			i = tx_ring->count;
-		i--;
-	}
-
-	tx_ring->next_to_use = i;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __igb_maybe_stop_tx(struct igb_ring *tx_ring, const u16 size)
 {
 	struct net_device *netdev = tx_ring->netdev;
@@ -8977,13 +6177,6 @@ static int __igb_maybe_stop_tx(struct igb_ring *tx_ring, const u16 size)
 
 	/* Herbert's original patch had:
 	 *  smp_mb__after_netif_stop_queue();
-<<<<<<< HEAD
-	 * but since that doesn't exist yet, just open code it. */
-	smp_mb();
-
-	/* We need to check again in a case another CPU has just
-	 * made room available. */
-=======
 	 * but since that doesn't exist yet, just open code it.
 	 */
 	smp_mb();
@@ -8991,7 +6184,6 @@ static int __igb_maybe_stop_tx(struct igb_ring *tx_ring, const u16 size)
 	/* We need to check again in a case another CPU has just
 	 * made room available.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (igb_desc_unused(tx_ring) < size)
 		return -EBUSY;
 
@@ -9012,8 +6204,6 @@ static inline int igb_maybe_stop_tx(struct igb_ring *tx_ring, const u16 size)
 	return __igb_maybe_stop_tx(tx_ring, size);
 }
 
-<<<<<<< HEAD
-=======
 static int igb_tx_map(struct igb_ring *tx_ring,
 		      struct igb_tx_buffer *first,
 		      const u8 hdr_len)
@@ -9267,24 +6457,12 @@ unmap:
 	return IGB_XDP_CONSUMED;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 netdev_tx_t igb_xmit_frame_ring(struct sk_buff *skb,
 				struct igb_ring *tx_ring)
 {
 	struct igb_tx_buffer *first;
 	int tso;
 	u32 tx_flags = 0;
-<<<<<<< HEAD
-	__be16 protocol = vlan_get_protocol(skb);
-	u8 hdr_len = 0;
-
-	/* need: 1 descriptor per page,
-	 *       + 2 desc gap to keep tail from touching head,
-	 *       + 1 desc for skb->data,
-	 *       + 1 desc for context descriptor,
-	 * otherwise try next time */
-	if (igb_maybe_stop_tx(tx_ring, skb_shinfo(skb)->nr_frags + 4)) {
-=======
 	unsigned short f;
 	u16 count = TXD_USE_COUNT(skb_headlen(skb));
 	__be16 protocol = vlan_get_protocol(skb);
@@ -9301,31 +6479,18 @@ netdev_tx_t igb_xmit_frame_ring(struct sk_buff *skb,
 						&skb_shinfo(skb)->frags[f]));
 
 	if (igb_maybe_stop_tx(tx_ring, count + 3)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* this is a hard error */
 		return NETDEV_TX_BUSY;
 	}
 
 	/* record the location of the first descriptor for this packet */
 	first = &tx_ring->tx_buffer_info[tx_ring->next_to_use];
-<<<<<<< HEAD
-=======
 	first->type = IGB_TYPE_SKB;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	first->skb = skb;
 	first->bytecount = skb->len;
 	first->gso_segs = 1;
 
 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
-<<<<<<< HEAD
-		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
-		tx_flags |= IGB_TX_FLAGS_TSTAMP;
-	}
-
-	if (vlan_tx_tag_present(skb)) {
-		tx_flags |= IGB_TX_FLAGS_VLAN;
-		tx_flags |= (vlan_tx_tag_get(skb) << IGB_TX_FLAGS_VLAN_SHIFT);
-=======
 		struct igb_adapter *adapter = netdev_priv(tx_ring->netdev);
 
 		if (adapter->tstamp_config.tx_type == HWTSTAMP_TX_ON &&
@@ -9346,7 +6511,6 @@ netdev_tx_t igb_xmit_frame_ring(struct sk_buff *skb,
 	if (skb_vlan_tag_present(skb)) {
 		tx_flags |= IGB_TX_FLAGS_VLAN;
 		tx_flags |= (skb_vlan_tag_get(skb) << IGB_TX_FLAGS_VLAN_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* record initial flags and protocol */
@@ -9359,22 +6523,12 @@ netdev_tx_t igb_xmit_frame_ring(struct sk_buff *skb,
 	else if (!tso)
 		igb_tx_csum(tx_ring, first);
 
-<<<<<<< HEAD
-	igb_tx_map(tx_ring, first, hdr_len);
-
-	/* Make sure there is space in the ring for the next send. */
-	igb_maybe_stop_tx(tx_ring, MAX_SKB_FRAGS + 4);
-=======
 	if (igb_tx_map(tx_ring, first, hdr_len))
 		goto cleanup_tx_tstamp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NETDEV_TX_OK;
 
 out_drop:
-<<<<<<< HEAD
-	igb_unmap_and_free_tx_resource(tx_ring, first);
-=======
 	dev_kfree_skb_any(first->skb);
 	first->skb = NULL;
 cleanup_tx_tstamp:
@@ -9387,7 +6541,6 @@ cleanup_tx_tstamp:
 			cancel_work_sync(&adapter->ptp_tx_work);
 		clear_bit_unlock(__IGB_PTP_TX_IN_PROGRESS, &adapter->state);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NETDEV_TX_OK;
 }
@@ -9408,50 +6561,21 @@ static netdev_tx_t igb_xmit_frame(struct sk_buff *skb,
 {
 	struct igb_adapter *adapter = netdev_priv(netdev);
 
-<<<<<<< HEAD
-	if (test_bit(__IGB_DOWN, &adapter->state)) {
-		dev_kfree_skb_any(skb);
-		return NETDEV_TX_OK;
-	}
-
-	if (skb->len <= 0) {
-		dev_kfree_skb_any(skb);
-		return NETDEV_TX_OK;
-	}
-
-	/*
-	 * The minimum packet size with TCTL.PSP set is 17 so pad the skb
-	 * in order to meet this minimum size requirement.
-	 */
-	if (skb->len < 17) {
-		if (skb_padto(skb, 17))
-			return NETDEV_TX_OK;
-		skb->len = 17;
-	}
-=======
 	/* The minimum packet size with TCTL.PSP set is 17 so pad the skb
 	 * in order to meet this minimum size requirement.
 	 */
 	if (skb_put_padto(skb, 17))
 		return NETDEV_TX_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return igb_xmit_frame_ring(skb, igb_tx_queue_mapping(adapter, skb));
 }
 
 /**
-<<<<<<< HEAD
- * igb_tx_timeout - Respond to a Tx Hang
- * @netdev: network interface device structure
- **/
-static void igb_tx_timeout(struct net_device *netdev)
-=======
  *  igb_tx_timeout - Respond to a Tx Hang
  *  @netdev: network interface device structure
  *  @txqueue: number of the Tx queue that hung (unused)
  **/
 static void igb_tx_timeout(struct net_device *netdev, unsigned int __always_unused txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igb_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
@@ -9472,21 +6596,6 @@ static void igb_reset_task(struct work_struct *work)
 	struct igb_adapter *adapter;
 	adapter = container_of(work, struct igb_adapter, reset_task);
 
-<<<<<<< HEAD
-	igb_dump(adapter);
-	netdev_err(adapter->netdev, "Reset adapter\n");
-	igb_reinit_locked(adapter);
-}
-
-/**
- * igb_get_stats64 - Get System Network Statistics
- * @netdev: network interface device structure
- * @stats: rtnl_link_stats64 pointer
- *
- **/
-static struct rtnl_link_stats64 *igb_get_stats64(struct net_device *netdev,
-						 struct rtnl_link_stats64 *stats)
-=======
 	rtnl_lock();
 	/* If we're already down or resetting, just bail */
 	if (test_bit(__IGB_DOWN, &adapter->state) ||
@@ -9508,26 +6617,10 @@ static struct rtnl_link_stats64 *igb_get_stats64(struct net_device *netdev,
  **/
 static void igb_get_stats64(struct net_device *netdev,
 			    struct rtnl_link_stats64 *stats)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igb_adapter *adapter = netdev_priv(netdev);
 
 	spin_lock(&adapter->stats64_lock);
-<<<<<<< HEAD
-	igb_update_stats(adapter, &adapter->stats64);
-	memcpy(stats, &adapter->stats64, sizeof(*stats));
-	spin_unlock(&adapter->stats64_lock);
-
-	return stats;
-}
-
-/**
- * igb_change_mtu - Change the Maximum Transfer Unit
- * @netdev: network interface device structure
- * @new_mtu: new value for maximum frame size
- *
- * Returns 0 on success, negative on failure
-=======
 	igb_update_stats(adapter);
 	memcpy(stats, &adapter->stats64, sizeof(*stats));
 	spin_unlock(&adapter->stats64_lock);
@@ -9539,29 +6632,10 @@ static void igb_get_stats64(struct net_device *netdev,
  *  @new_mtu: new value for maximum frame size
  *
  *  Returns 0 on success, negative on failure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int igb_change_mtu(struct net_device *netdev, int new_mtu)
 {
 	struct igb_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	struct pci_dev *pdev = adapter->pdev;
-	int max_frame = new_mtu + ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN;
-
-	if ((new_mtu < 68) || (max_frame > MAX_JUMBO_FRAME_SIZE)) {
-		dev_err(&pdev->dev, "Invalid MTU setting\n");
-		return -EINVAL;
-	}
-
-#define MAX_STD_JUMBO_FRAME_SIZE 9238
-	if (max_frame > MAX_STD_JUMBO_FRAME_SIZE) {
-		dev_err(&pdev->dev, "MTU > 9216 not supported.\n");
-		return -EINVAL;
-	}
-
-	while (test_and_set_bit(__IGB_RESETTING, &adapter->state))
-		msleep(1);
-=======
 	int max_frame = new_mtu + IGB_ETH_PKT_HDR_PAD;
 
 	if (adapter->xdp_prog) {
@@ -9585,7 +6659,6 @@ static int igb_change_mtu(struct net_device *netdev, int new_mtu)
 
 	while (test_and_set_bit(__IGB_RESETTING, &adapter->state))
 		usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* igb_down has a dependency on max_frame_size */
 	adapter->max_frame_size = max_frame;
@@ -9593,13 +6666,8 @@ static int igb_change_mtu(struct net_device *netdev, int new_mtu)
 	if (netif_running(netdev))
 		igb_down(adapter);
 
-<<<<<<< HEAD
-	dev_info(&pdev->dev, "changing MTU from %d to %d\n",
-		 netdev->mtu, new_mtu);
-=======
 	netdev_dbg(netdev, "changing MTU from %d to %d\n",
 		   netdev->mtu, new_mtu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netdev->mtu = new_mtu;
 
 	if (netif_running(netdev))
@@ -9613,19 +6681,6 @@ static int igb_change_mtu(struct net_device *netdev, int new_mtu)
 }
 
 /**
-<<<<<<< HEAD
- * igb_update_stats - Update the board statistics counters
- * @adapter: board private structure
- **/
-
-void igb_update_stats(struct igb_adapter *adapter,
-		      struct rtnl_link_stats64 *net_stats)
-{
-	struct e1000_hw *hw = &adapter->hw;
-	struct pci_dev *pdev = adapter->pdev;
-	u32 reg, mpc;
-	u16 phy_tmp;
-=======
  *  igb_update_stats - Update the board statistics counters
  *  @adapter: board private structure
  **/
@@ -9635,20 +6690,12 @@ void igb_update_stats(struct igb_adapter *adapter)
 	struct e1000_hw *hw = &adapter->hw;
 	struct pci_dev *pdev = adapter->pdev;
 	u32 reg, mpc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	u64 bytes, packets;
 	unsigned int start;
 	u64 _bytes, _packets;
 
-<<<<<<< HEAD
-#define PHY_IDLE_ERROR_COUNT_MASK 0x00FF
-
-	/*
-	 * Prevent stats update while adapter is being reset, or if the pci
-=======
 	/* Prevent stats update while adapter is being reset, or if the pci
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * connection is down.
 	 */
 	if (adapter->link_speed == 0)
@@ -9658,11 +6705,6 @@ void igb_update_stats(struct igb_adapter *adapter)
 
 	bytes = 0;
 	packets = 0;
-<<<<<<< HEAD
-	for (i = 0; i < adapter->num_rx_queues; i++) {
-		u32 rqdpc = rd32(E1000_RQDPC(i));
-		struct igb_ring *ring = adapter->rx_ring[i];
-=======
 
 	rcu_read_lock();
 	for (i = 0; i < adapter->num_rx_queues; i++) {
@@ -9670,7 +6712,6 @@ void igb_update_stats(struct igb_adapter *adapter)
 		u32 rqdpc = rd32(E1000_RQDPC(i));
 		if (hw->mac.type >= e1000_i210)
 			wr32(E1000_RQDPC(i), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (rqdpc) {
 			ring->rx_stats.drops += rqdpc;
@@ -9678,17 +6719,10 @@ void igb_update_stats(struct igb_adapter *adapter)
 		}
 
 		do {
-<<<<<<< HEAD
-			start = u64_stats_fetch_begin_irq(&ring->rx_syncp);
-			_bytes = ring->rx_stats.bytes;
-			_packets = ring->rx_stats.packets;
-		} while (u64_stats_fetch_retry_irq(&ring->rx_syncp, start));
-=======
 			start = u64_stats_fetch_begin(&ring->rx_syncp);
 			_bytes = ring->rx_stats.bytes;
 			_packets = ring->rx_stats.packets;
 		} while (u64_stats_fetch_retry(&ring->rx_syncp, start));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bytes += _bytes;
 		packets += _packets;
 	}
@@ -9701,26 +6735,16 @@ void igb_update_stats(struct igb_adapter *adapter)
 	for (i = 0; i < adapter->num_tx_queues; i++) {
 		struct igb_ring *ring = adapter->tx_ring[i];
 		do {
-<<<<<<< HEAD
-			start = u64_stats_fetch_begin_irq(&ring->tx_syncp);
-			_bytes = ring->tx_stats.bytes;
-			_packets = ring->tx_stats.packets;
-		} while (u64_stats_fetch_retry_irq(&ring->tx_syncp, start));
-=======
 			start = u64_stats_fetch_begin(&ring->tx_syncp);
 			_bytes = ring->tx_stats.bytes;
 			_packets = ring->tx_stats.packets;
 		} while (u64_stats_fetch_retry(&ring->tx_syncp, start));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bytes += _bytes;
 		packets += _packets;
 	}
 	net_stats->tx_bytes = bytes;
 	net_stats->tx_packets = packets;
-<<<<<<< HEAD
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* read stats registers */
 	adapter->stats.crcerrs += rd32(E1000_CRCERRS);
@@ -9783,15 +6807,11 @@ void igb_update_stats(struct igb_adapter *adapter)
 	reg = rd32(E1000_CTRL_EXT);
 	if (!(reg & E1000_CTRL_EXT_LINK_MODE_MASK)) {
 		adapter->stats.rxerrc += rd32(E1000_RXERRC);
-<<<<<<< HEAD
-		adapter->stats.tncrs += rd32(E1000_TNCRS);
-=======
 
 		/* this stat has invalid values on i210/i211 */
 		if ((hw->mac.type != e1000_i210) &&
 		    (hw->mac.type != e1000_i211))
 			adapter->stats.tncrs += rd32(E1000_TNCRS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	adapter->stats.tsctc += rd32(E1000_TSCTC);
@@ -9814,12 +6834,8 @@ void igb_update_stats(struct igb_adapter *adapter)
 	/* Rx Errors */
 
 	/* RLEC on some newer hardware can be incorrect so build
-<<<<<<< HEAD
-	 * our own version based on RUC and ROC */
-=======
 	 * our own version based on RUC and ROC
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	net_stats->rx_errors = adapter->stats.rxerrc +
 		adapter->stats.crcerrs + adapter->stats.algnerrc +
 		adapter->stats.ruc + adapter->stats.roc +
@@ -9839,18 +6855,6 @@ void igb_update_stats(struct igb_adapter *adapter)
 
 	/* Tx Dropped needs to be maintained elsewhere */
 
-<<<<<<< HEAD
-	/* Phy Stats */
-	if (hw->phy.media_type == e1000_media_type_copper) {
-		if ((adapter->link_speed == SPEED_1000) &&
-		   (!igb_read_phy_reg(hw, PHY_1000T_STATUS, &phy_tmp))) {
-			phy_tmp &= PHY_IDLE_ERROR_COUNT_MASK;
-			adapter->phy_stats.idle_errors += phy_tmp;
-		}
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Management Stats */
 	adapter->stats.mgptc += rd32(E1000_MGTPTC);
 	adapter->stats.mgprc += rd32(E1000_MGTPRC);
@@ -9866,8 +6870,6 @@ void igb_update_stats(struct igb_adapter *adapter)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void igb_perout(struct igb_adapter *adapter, int tsintr_tt)
 {
 	int pin = ptp_find_pin(adapter->ptp_clock, PTP_PF_PEROUT, tsintr_tt);
@@ -10010,7 +7012,6 @@ static void igb_tsync_interrupt(struct igb_adapter *adapter)
 		igb_extts(adapter, 1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t igb_msix_other(int irq, void *data)
 {
 	struct igb_adapter *adapter = data;
@@ -10026,12 +7027,8 @@ static irqreturn_t igb_msix_other(int irq, void *data)
 		adapter->stats.doosync++;
 		/* The DMA Out of Sync is also indication of a spoof event
 		 * in IOV mode. Check the Wrong VM Behavior register to
-<<<<<<< HEAD
-		 * see if it is really a spoof event. */
-=======
 		 * see if it is really a spoof event.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		igb_check_wvbr(adapter);
 	}
 
@@ -10046,12 +7043,9 @@ static irqreturn_t igb_msix_other(int irq, void *data)
 			mod_timer(&adapter->watchdog_timer, jiffies + 1);
 	}
 
-<<<<<<< HEAD
-=======
 	if (icr & E1000_ICR_TS)
 		igb_tsync_interrupt(adapter);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wr32(E1000_EIMS, adapter->eims_other);
 
 	return IRQ_HANDLED;
@@ -10090,12 +7084,6 @@ static irqreturn_t igb_msix_ring(int irq, void *data)
 }
 
 #ifdef CONFIG_IGB_DCA
-<<<<<<< HEAD
-static void igb_update_dca(struct igb_q_vector *q_vector)
-{
-	struct igb_adapter *adapter = q_vector->adapter;
-	struct e1000_hw *hw = &adapter->hw;
-=======
 static void igb_update_tx_dca(struct igb_adapter *adapter,
 			      struct igb_ring *tx_ring,
 			      int cpu)
@@ -10140,51 +7128,17 @@ static void igb_update_rx_dca(struct igb_adapter *adapter,
 static void igb_update_dca(struct igb_q_vector *q_vector)
 {
 	struct igb_adapter *adapter = q_vector->adapter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cpu = get_cpu();
 
 	if (q_vector->cpu == cpu)
 		goto out_no_update;
 
-<<<<<<< HEAD
-	if (q_vector->tx.ring) {
-		int q = q_vector->tx.ring->reg_idx;
-		u32 dca_txctrl = rd32(E1000_DCA_TXCTRL(q));
-		if (hw->mac.type == e1000_82575) {
-			dca_txctrl &= ~E1000_DCA_TXCTRL_CPUID_MASK;
-			dca_txctrl |= dca3_get_tag(&adapter->pdev->dev, cpu);
-		} else {
-			dca_txctrl &= ~E1000_DCA_TXCTRL_CPUID_MASK_82576;
-			dca_txctrl |= dca3_get_tag(&adapter->pdev->dev, cpu) <<
-			              E1000_DCA_TXCTRL_CPUID_SHIFT;
-		}
-		dca_txctrl |= E1000_DCA_TXCTRL_DESC_DCA_EN;
-		wr32(E1000_DCA_TXCTRL(q), dca_txctrl);
-	}
-	if (q_vector->rx.ring) {
-		int q = q_vector->rx.ring->reg_idx;
-		u32 dca_rxctrl = rd32(E1000_DCA_RXCTRL(q));
-		if (hw->mac.type == e1000_82575) {
-			dca_rxctrl &= ~E1000_DCA_RXCTRL_CPUID_MASK;
-			dca_rxctrl |= dca3_get_tag(&adapter->pdev->dev, cpu);
-		} else {
-			dca_rxctrl &= ~E1000_DCA_RXCTRL_CPUID_MASK_82576;
-			dca_rxctrl |= dca3_get_tag(&adapter->pdev->dev, cpu) <<
-			              E1000_DCA_RXCTRL_CPUID_SHIFT;
-		}
-		dca_rxctrl |= E1000_DCA_RXCTRL_DESC_DCA_EN;
-		dca_rxctrl |= E1000_DCA_RXCTRL_HEAD_DCA_EN;
-		dca_rxctrl |= E1000_DCA_RXCTRL_DATA_DCA_EN;
-		wr32(E1000_DCA_RXCTRL(q), dca_rxctrl);
-	}
-=======
 	if (q_vector->tx.ring)
 		igb_update_tx_dca(adapter, q_vector->tx.ring, cpu);
 
 	if (q_vector->rx.ring)
 		igb_update_rx_dca(adapter, q_vector->rx.ring, cpu);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	q_vector->cpu = cpu;
 out_no_update:
 	put_cpu();
@@ -10226,20 +7180,12 @@ static int __igb_notify_dca(struct device *dev, void *data)
 			igb_setup_dca(adapter);
 			break;
 		}
-<<<<<<< HEAD
-		/* Fall Through since DCA is disabled. */
-	case DCA_PROVIDER_REMOVE:
-		if (adapter->flags & IGB_FLAG_DCA_ENABLED) {
-			/* without this a class_device is left
-			 * hanging around in the sysfs model */
-=======
 		fallthrough; /* since DCA is disabled. */
 	case DCA_PROVIDER_REMOVE:
 		if (adapter->flags & IGB_FLAG_DCA_ENABLED) {
 			/* without this a class_device is left
 			 * hanging around in the sysfs model
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dca_remove_requester(dev);
 			dev_info(&pdev->dev, "DCA disabled\n");
 			adapter->flags &= ~IGB_FLAG_DCA_ENABLED;
@@ -10252,20 +7198,12 @@ static int __igb_notify_dca(struct device *dev, void *data)
 }
 
 static int igb_notify_dca(struct notifier_block *nb, unsigned long event,
-<<<<<<< HEAD
-                          void *p)
-=======
 			  void *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret_val;
 
 	ret_val = driver_for_each_device(&igb_driver.driver, NULL, &event,
-<<<<<<< HEAD
-	                                 __igb_notify_dca);
-=======
 					 __igb_notify_dca);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret_val ? NOTIFY_BAD : NOTIFY_DONE;
 }
@@ -10275,105 +7213,6 @@ static int igb_notify_dca(struct notifier_block *nb, unsigned long event,
 static int igb_vf_configure(struct igb_adapter *adapter, int vf)
 {
 	unsigned char mac_addr[ETH_ALEN];
-<<<<<<< HEAD
-	struct pci_dev *pdev = adapter->pdev;
-	struct e1000_hw *hw = &adapter->hw;
-	struct pci_dev *pvfdev;
-	unsigned int device_id;
-	u16 thisvf_devfn;
-
-	random_ether_addr(mac_addr);
-	igb_set_vf_mac(adapter, vf, mac_addr);
-
-	switch (adapter->hw.mac.type) {
-	case e1000_82576:
-		device_id = IGB_82576_VF_DEV_ID;
-		/* VF Stride for 82576 is 2 */
-		thisvf_devfn = (pdev->devfn + 0x80 + (vf << 1)) |
-			(pdev->devfn & 1);
-		break;
-	case e1000_i350:
-		device_id = IGB_I350_VF_DEV_ID;
-		/* VF Stride for I350 is 4 */
-		thisvf_devfn = (pdev->devfn + 0x80 + (vf << 2)) |
-				(pdev->devfn & 3);
-		break;
-	default:
-		device_id = 0;
-		thisvf_devfn = 0;
-		break;
-	}
-
-	pvfdev = pci_get_device(hw->vendor_id, device_id, NULL);
-	while (pvfdev) {
-		if (pvfdev->devfn == thisvf_devfn)
-			break;
-		pvfdev = pci_get_device(hw->vendor_id,
-					device_id, pvfdev);
-	}
-
-	if (pvfdev)
-		adapter->vf_data[vf].vfdev = pvfdev;
-	else
-		dev_err(&pdev->dev,
-			"Couldn't find pci dev ptr for VF %4.4x\n",
-			thisvf_devfn);
-	return pvfdev != NULL;
-}
-
-static int igb_find_enabled_vfs(struct igb_adapter *adapter)
-{
-	struct e1000_hw *hw = &adapter->hw;
-	struct pci_dev *pdev = adapter->pdev;
-	struct pci_dev *pvfdev;
-	u16 vf_devfn = 0;
-	u16 vf_stride;
-	unsigned int device_id;
-	int vfs_found = 0;
-
-	switch (adapter->hw.mac.type) {
-	case e1000_82576:
-		device_id = IGB_82576_VF_DEV_ID;
-		/* VF Stride for 82576 is 2 */
-		vf_stride = 2;
-		break;
-	case e1000_i350:
-		device_id = IGB_I350_VF_DEV_ID;
-		/* VF Stride for I350 is 4 */
-		vf_stride = 4;
-		break;
-	default:
-		device_id = 0;
-		vf_stride = 0;
-		break;
-	}
-
-	vf_devfn = pdev->devfn + 0x80;
-	pvfdev = pci_get_device(hw->vendor_id, device_id, NULL);
-	while (pvfdev) {
-		if (pvfdev->devfn == vf_devfn &&
-		    (pvfdev->bus->number >= pdev->bus->number))
-			vfs_found++;
-		vf_devfn += vf_stride;
-		pvfdev = pci_get_device(hw->vendor_id,
-					device_id, pvfdev);
-	}
-
-	return vfs_found;
-}
-
-static int igb_check_vf_assignment(struct igb_adapter *adapter)
-{
-	int i;
-	for (i = 0; i < adapter->vfs_allocated_count; i++) {
-		if (adapter->vf_data[i].vfdev) {
-			if (adapter->vf_data[i].vfdev->dev_flags &
-			    PCI_DEV_FLAGS_ASSIGNED)
-				return true;
-		}
-	}
-	return false;
-=======
 
 	eth_zero_addr(mac_addr);
 	igb_set_vf_mac(adapter, vf, mac_addr);
@@ -10385,7 +7224,6 @@ static int igb_check_vf_assignment(struct igb_adapter *adapter)
 	adapter->vf_data[vf].trusted = false;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif
@@ -10410,11 +7248,7 @@ static int igb_set_vf_promisc(struct igb_adapter *adapter, u32 *msgbuf, u32 vf)
 	struct vf_data_storage *vf_data = &adapter->vf_data[vf];
 
 	vf_data->flags &= ~(IGB_VF_FLAG_UNI_PROMISC |
-<<<<<<< HEAD
-	                    IGB_VF_FLAG_MULTI_PROMISC);
-=======
 			    IGB_VF_FLAG_MULTI_PROMISC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vmolr &= ~(E1000_VMOLR_ROPE | E1000_VMOLR_ROMPE | E1000_VMOLR_MPME);
 
 	if (*msgbuf & E1000_VF_SET_PROMISC_MULTICAST) {
@@ -10422,12 +7256,7 @@ static int igb_set_vf_promisc(struct igb_adapter *adapter, u32 *msgbuf, u32 vf)
 		vf_data->flags |= IGB_VF_FLAG_MULTI_PROMISC;
 		*msgbuf &= ~E1000_VF_SET_PROMISC_MULTICAST;
 	} else {
-<<<<<<< HEAD
-		/*
-		 * if we have hashes and we are clearing a multicast promisc
-=======
 		/* if we have hashes and we are clearing a multicast promisc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * flag we need to write the hashes to the MTA as this step
 		 * was previously skipped
 		 */
@@ -10435,10 +7264,7 @@ static int igb_set_vf_promisc(struct igb_adapter *adapter, u32 *msgbuf, u32 vf)
 			vmolr |= E1000_VMOLR_MPME;
 		} else if (vf_data->num_vf_mc_hashes) {
 			int j;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vmolr |= E1000_VMOLR_ROMPE;
 			for (j = 0; j < vf_data->num_vf_mc_hashes; j++)
 				igb_mta_set(hw, vf_data->vf_mc_hashes[j]);
@@ -10452,20 +7278,12 @@ static int igb_set_vf_promisc(struct igb_adapter *adapter, u32 *msgbuf, u32 vf)
 		return -EINVAL;
 
 	return 0;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int igb_set_vf_multicasts(struct igb_adapter *adapter,
 				  u32 *msgbuf, u32 vf)
 {
-<<<<<<< HEAD
-	int n = (msgbuf[0] & E1000_VT_MSGINFO_MASK) >> E1000_VT_MSGINFO_SHIFT;
-=======
 	int n = FIELD_GET(E1000_VT_MSGINFO_MASK, msgbuf[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 *hash_list = (u16 *)&msgbuf[1];
 	struct vf_data_storage *vf_data = &adapter->vf_data[vf];
 	int i;
@@ -10498,10 +7316,7 @@ static void igb_restore_vf_multicasts(struct igb_adapter *adapter)
 
 	for (i = 0; i < adapter->vfs_allocated_count; i++) {
 		u32 vmolr = rd32(E1000_VMOLR(i));
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vmolr &= ~(E1000_VMOLR_ROMPE | E1000_VMOLR_MPME);
 
 		vf_data = &adapter->vf_data[i];
@@ -10521,125 +7336,6 @@ static void igb_restore_vf_multicasts(struct igb_adapter *adapter)
 static void igb_clear_vf_vfta(struct igb_adapter *adapter, u32 vf)
 {
 	struct e1000_hw *hw = &adapter->hw;
-<<<<<<< HEAD
-	u32 pool_mask, reg, vid;
-	int i;
-
-	pool_mask = 1 << (E1000_VLVF_POOLSEL_SHIFT + vf);
-
-	/* Find the vlan filter for this id */
-	for (i = 0; i < E1000_VLVF_ARRAY_SIZE; i++) {
-		reg = rd32(E1000_VLVF(i));
-
-		/* remove the vf from the pool */
-		reg &= ~pool_mask;
-
-		/* if pool is empty then remove entry from vfta */
-		if (!(reg & E1000_VLVF_POOLSEL_MASK) &&
-		    (reg & E1000_VLVF_VLANID_ENABLE)) {
-			reg = 0;
-			vid = reg & E1000_VLVF_VLANID_MASK;
-			igb_vfta_set(hw, vid, false);
-		}
-
-		wr32(E1000_VLVF(i), reg);
-	}
-
-	adapter->vf_data[vf].vlans_enabled = 0;
-}
-
-static s32 igb_vlvf_set(struct igb_adapter *adapter, u32 vid, bool add, u32 vf)
-{
-	struct e1000_hw *hw = &adapter->hw;
-	u32 reg, i;
-
-	/* The vlvf table only exists on 82576 hardware and newer */
-	if (hw->mac.type < e1000_82576)
-		return -1;
-
-	/* we only need to do this if VMDq is enabled */
-	if (!adapter->vfs_allocated_count)
-		return -1;
-
-	/* Find the vlan filter for this id */
-	for (i = 0; i < E1000_VLVF_ARRAY_SIZE; i++) {
-		reg = rd32(E1000_VLVF(i));
-		if ((reg & E1000_VLVF_VLANID_ENABLE) &&
-		    vid == (reg & E1000_VLVF_VLANID_MASK))
-			break;
-	}
-
-	if (add) {
-		if (i == E1000_VLVF_ARRAY_SIZE) {
-			/* Did not find a matching VLAN ID entry that was
-			 * enabled.  Search for a free filter entry, i.e.
-			 * one without the enable bit set
-			 */
-			for (i = 0; i < E1000_VLVF_ARRAY_SIZE; i++) {
-				reg = rd32(E1000_VLVF(i));
-				if (!(reg & E1000_VLVF_VLANID_ENABLE))
-					break;
-			}
-		}
-		if (i < E1000_VLVF_ARRAY_SIZE) {
-			/* Found an enabled/available entry */
-			reg |= 1 << (E1000_VLVF_POOLSEL_SHIFT + vf);
-
-			/* if !enabled we need to set this up in vfta */
-			if (!(reg & E1000_VLVF_VLANID_ENABLE)) {
-				/* add VID to filter table */
-				igb_vfta_set(hw, vid, true);
-				reg |= E1000_VLVF_VLANID_ENABLE;
-			}
-			reg &= ~E1000_VLVF_VLANID_MASK;
-			reg |= vid;
-			wr32(E1000_VLVF(i), reg);
-
-			/* do not modify RLPML for PF devices */
-			if (vf >= adapter->vfs_allocated_count)
-				return 0;
-
-			if (!adapter->vf_data[vf].vlans_enabled) {
-				u32 size;
-				reg = rd32(E1000_VMOLR(vf));
-				size = reg & E1000_VMOLR_RLPML_MASK;
-				size += 4;
-				reg &= ~E1000_VMOLR_RLPML_MASK;
-				reg |= size;
-				wr32(E1000_VMOLR(vf), reg);
-			}
-
-			adapter->vf_data[vf].vlans_enabled++;
-		}
-	} else {
-		if (i < E1000_VLVF_ARRAY_SIZE) {
-			/* remove vf from the pool */
-			reg &= ~(1 << (E1000_VLVF_POOLSEL_SHIFT + vf));
-			/* if pool is empty then remove entry from vfta */
-			if (!(reg & E1000_VLVF_POOLSEL_MASK)) {
-				reg = 0;
-				igb_vfta_set(hw, vid, false);
-			}
-			wr32(E1000_VLVF(i), reg);
-
-			/* do not modify RLPML for PF devices */
-			if (vf >= adapter->vfs_allocated_count)
-				return 0;
-
-			adapter->vf_data[vf].vlans_enabled--;
-			if (!adapter->vf_data[vf].vlans_enabled) {
-				u32 size;
-				reg = rd32(E1000_VMOLR(vf));
-				size = reg & E1000_VMOLR_RLPML_MASK;
-				size -= 4;
-				reg &= ~E1000_VMOLR_RLPML_MASK;
-				reg |= size;
-				wr32(E1000_VMOLR(vf), reg);
-			}
-		}
-	}
-	return 0;
-=======
 	u32 pool_mask, vlvf_mask, i;
 
 	/* create mask for VF and other pools */
@@ -10766,7 +7462,6 @@ static s32 igb_set_vf_vlan(struct igb_adapter *adapter, u32 vid,
 		igb_update_pf_vlvf(adapter, vid);
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void igb_set_vmvir(struct igb_adapter *adapter, u32 vid, u32 vf)
@@ -10779,12 +7474,6 @@ static void igb_set_vmvir(struct igb_adapter *adapter, u32 vid, u32 vf)
 		wr32(E1000_VMVIR(vf), 0);
 }
 
-<<<<<<< HEAD
-static int igb_ndo_set_vf_vlan(struct net_device *netdev,
-			       int vf, u16 vlan, u8 qos)
-{
-	int err = 0;
-=======
 static int igb_enable_port_vlan(struct igb_adapter *adapter, int vf,
 				u16 vlan, u8 qos)
 {
@@ -10840,49 +7529,10 @@ static int igb_disable_port_vlan(struct igb_adapter *adapter, int vf)
 static int igb_ndo_set_vf_vlan(struct net_device *netdev, int vf,
 			       u16 vlan, u8 qos, __be16 vlan_proto)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct igb_adapter *adapter = netdev_priv(netdev);
 
 	if ((vf >= adapter->vfs_allocated_count) || (vlan > 4095) || (qos > 7))
 		return -EINVAL;
-<<<<<<< HEAD
-	if (vlan || qos) {
-		err = igb_vlvf_set(adapter, vlan, !!vlan, vf);
-		if (err)
-			goto out;
-		igb_set_vmvir(adapter, vlan | (qos << VLAN_PRIO_SHIFT), vf);
-		igb_set_vmolr(adapter, vf, !vlan);
-		adapter->vf_data[vf].pf_vlan = vlan;
-		adapter->vf_data[vf].pf_qos = qos;
-		dev_info(&adapter->pdev->dev,
-			 "Setting VLAN %d, QOS 0x%x on VF %d\n", vlan, qos, vf);
-		if (test_bit(__IGB_DOWN, &adapter->state)) {
-			dev_warn(&adapter->pdev->dev,
-				 "The VF VLAN has been set,"
-				 " but the PF device is not up.\n");
-			dev_warn(&adapter->pdev->dev,
-				 "Bring the PF device up before"
-				 " attempting to use the VF device.\n");
-		}
-	} else {
-		igb_vlvf_set(adapter, adapter->vf_data[vf].pf_vlan,
-				   false, vf);
-		igb_set_vmvir(adapter, vlan, vf);
-		igb_set_vmolr(adapter, vf, true);
-		adapter->vf_data[vf].pf_vlan = 0;
-		adapter->vf_data[vf].pf_qos = 0;
-       }
-out:
-       return err;
-}
-
-static int igb_set_vf_vlan(struct igb_adapter *adapter, u32 *msgbuf, u32 vf)
-{
-	int add = (msgbuf[0] & E1000_VT_MSGINFO_MASK) >> E1000_VT_MSGINFO_SHIFT;
-	int vid = (msgbuf[1] & E1000_VLVF_VLANID_MASK);
-
-	return igb_vlvf_set(adapter, vid, add, vf);
-=======
 
 	if (vlan_proto != htons(ETH_P_8021Q))
 		return -EPROTONOSUPPORT;
@@ -10908,28 +7558,10 @@ static int igb_set_vf_vlan_msg(struct igb_adapter *adapter, u32 *msgbuf, u32 vf)
 	if (!ret)
 		igb_set_vf_vlan_strip(adapter, vf, !!vid);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void igb_vf_reset(struct igb_adapter *adapter, u32 vf)
 {
-<<<<<<< HEAD
-	/* clear flags - except flag that indicates PF has set the MAC */
-	adapter->vf_data[vf].flags &= IGB_VF_FLAG_PF_SET_MAC;
-	adapter->vf_data[vf].last_nack = jiffies;
-
-	/* reset offloads to defaults */
-	igb_set_vmolr(adapter, vf, true);
-
-	/* reset vlans for device */
-	igb_clear_vf_vfta(adapter, vf);
-	if (adapter->vf_data[vf].pf_vlan)
-		igb_ndo_set_vf_vlan(adapter->netdev, vf,
-				    adapter->vf_data[vf].pf_vlan,
-				    adapter->vf_data[vf].pf_qos);
-	else
-		igb_clear_vf_vfta(adapter, vf);
-=======
 	struct vf_data_storage *vf_data = &adapter->vf_data[vf];
 
 	/* clear flags - except flag that indicates PF has set the MAC */
@@ -10943,7 +7575,6 @@ static inline void igb_vf_reset(struct igb_adapter *adapter, u32 vf)
 			       (vf_data->pf_qos << VLAN_PRIO_SHIFT), vf);
 	igb_set_vmolr(adapter, vf, !vf_data->pf_vlan);
 	igb_set_vf_vlan_strip(adapter, vf, !!(vf_data->pf_vlan));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* reset multicast table array for vf */
 	adapter->vf_data[vf].num_vf_mc_hashes = 0;
@@ -10956,15 +7587,9 @@ static void igb_vf_reset_event(struct igb_adapter *adapter, u32 vf)
 {
 	unsigned char *vf_mac = adapter->vf_data[vf].vf_mac_addresses;
 
-<<<<<<< HEAD
-	/* generate a new mac address as we were hotplug removed/added */
-	if (!(adapter->vf_data[vf].flags & IGB_VF_FLAG_PF_SET_MAC))
-		random_ether_addr(vf_mac);
-=======
 	/* clear mac address as we were hotplug removed/added */
 	if (!(adapter->vf_data[vf].flags & IGB_VF_FLAG_PF_SET_MAC))
 		eth_zero_addr(vf_mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* process remaining reset events */
 	igb_vf_reset(adapter, vf);
@@ -10974,27 +7599,13 @@ static void igb_vf_reset_msg(struct igb_adapter *adapter, u32 vf)
 {
 	struct e1000_hw *hw = &adapter->hw;
 	unsigned char *vf_mac = adapter->vf_data[vf].vf_mac_addresses;
-<<<<<<< HEAD
-	int rar_entry = hw->mac.rar_entry_count - (vf + 1);
-	u32 reg, msgbuf[3];
-=======
 	u32 reg, msgbuf[3] = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *addr = (u8 *)(&msgbuf[1]);
 
 	/* process all the same items cleared in a function level reset */
 	igb_vf_reset(adapter, vf);
 
 	/* set vf mac address */
-<<<<<<< HEAD
-	igb_rar_set_qsel(adapter, vf_mac, rar_entry, vf);
-
-	/* enable transmit and receive for vf */
-	reg = rd32(E1000_VFTE);
-	wr32(E1000_VFTE, reg | (1 << vf));
-	reg = rd32(E1000_VFRE);
-	wr32(E1000_VFRE, reg | (1 << vf));
-=======
 	igb_set_vf_mac(adapter, vf, vf_mac);
 
 	/* enable transmit and receive for vf */
@@ -11002,31 +7613,10 @@ static void igb_vf_reset_msg(struct igb_adapter *adapter, u32 vf)
 	wr32(E1000_VFTE, reg | BIT(vf));
 	reg = rd32(E1000_VFRE);
 	wr32(E1000_VFRE, reg | BIT(vf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	adapter->vf_data[vf].flags |= IGB_VF_FLAG_CTS;
 
 	/* reply to reset with ack and vf mac address */
-<<<<<<< HEAD
-	msgbuf[0] = E1000_VF_RESET | E1000_VT_MSGTYPE_ACK;
-	memcpy(addr, vf_mac, 6);
-	igb_write_mbx(hw, msgbuf, 3, vf);
-}
-
-static int igb_set_vf_mac_addr(struct igb_adapter *adapter, u32 *msg, int vf)
-{
-	/*
-	 * The VF MAC Address is stored in a packed array of bytes
-	 * starting at the second 32 bit word of the msg array
-	 */
-	unsigned char *addr = (char *)&msg[1];
-	int err = -1;
-
-	if (is_valid_ether_addr(addr))
-		err = igb_set_vf_mac(adapter, vf, addr);
-
-	return err;
-=======
 	if (!is_zero_ether_addr(vf_mac)) {
 		msgbuf[0] = E1000_VF_RESET | E1000_VT_MSGTYPE_ACK;
 		memcpy(addr, vf_mac, ETH_ALEN);
@@ -11350,7 +7940,6 @@ static int igb_set_vf_mac_addr(struct igb_adapter *adapter, u32 *msg, int vf)
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void igb_rcv_ack_from_vf(struct igb_adapter *adapter, u32 vf)
@@ -11375,37 +7964,19 @@ static void igb_rcv_msg_from_vf(struct igb_adapter *adapter, u32 vf)
 	struct vf_data_storage *vf_data = &adapter->vf_data[vf];
 	s32 retval;
 
-<<<<<<< HEAD
-	retval = igb_read_mbx(hw, msgbuf, E1000_VFMAILBOX_SIZE, vf);
-=======
 	retval = igb_read_mbx(hw, msgbuf, E1000_VFMAILBOX_SIZE, vf, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (retval) {
 		/* if receive failed revoke VF CTS stats and restart init */
 		dev_err(&pdev->dev, "Error receiving message from VF\n");
 		vf_data->flags &= ~IGB_VF_FLAG_CTS;
 		if (!time_after(jiffies, vf_data->last_nack + (2 * HZ)))
-<<<<<<< HEAD
-			return;
-=======
 			goto unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	/* this is a message we already processed, do nothing */
 	if (msgbuf[0] & (E1000_VT_MSGTYPE_ACK | E1000_VT_MSGTYPE_NACK))
-<<<<<<< HEAD
-		return;
-
-	/*
-	 * until the vf completes a reset it should not be
-	 * allowed to start any configuration.
-	 */
-
-	if (msgbuf[0] == E1000_VF_RESET) {
-=======
 		goto unlock;
 
 	/* until the vf completes a reset it should not be
@@ -11413,36 +7984,20 @@ static void igb_rcv_msg_from_vf(struct igb_adapter *adapter, u32 vf)
 	 */
 	if (msgbuf[0] == E1000_VF_RESET) {
 		/* unlocks mailbox */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		igb_vf_reset_msg(adapter, vf);
 		return;
 	}
 
 	if (!(vf_data->flags & IGB_VF_FLAG_CTS)) {
 		if (!time_after(jiffies, vf_data->last_nack + (2 * HZ)))
-<<<<<<< HEAD
-			return;
-=======
 			goto unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -1;
 		goto out;
 	}
 
 	switch ((msgbuf[0] & 0xFFFF)) {
 	case E1000_VF_SET_MAC_ADDR:
-<<<<<<< HEAD
-		retval = -EINVAL;
-		if (!(vf_data->flags & IGB_VF_FLAG_PF_SET_MAC))
-			retval = igb_set_vf_mac_addr(adapter, msgbuf, vf);
-		else
-			dev_warn(&pdev->dev,
-				 "VF %d attempted to override administratively "
-				 "set MAC address\nReload the VF driver to "
-				 "resume operations\n", vf);
-=======
 		retval = igb_set_vf_mac_addr(adapter, msgbuf, vf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case E1000_VF_SET_PROMISC:
 		retval = igb_set_vf_promisc(adapter, msgbuf, vf);
@@ -11457,18 +8012,10 @@ static void igb_rcv_msg_from_vf(struct igb_adapter *adapter, u32 vf)
 		retval = -1;
 		if (vf_data->pf_vlan)
 			dev_warn(&pdev->dev,
-<<<<<<< HEAD
-				 "VF %d attempted to override administratively "
-				 "set VLAN tag\nReload the VF driver to "
-				 "resume operations\n", vf);
-		else
-			retval = igb_set_vf_vlan(adapter, msgbuf, vf);
-=======
 				 "VF %d attempted to override administratively set VLAN tag\nReload the VF driver to resume operations\n",
 				 vf);
 		else
 			retval = igb_set_vf_vlan_msg(adapter, msgbuf, vf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		dev_err(&pdev->dev, "Unhandled Msg %08x\n", msgbuf[0]);
@@ -11484,30 +8031,21 @@ out:
 	else
 		msgbuf[0] |= E1000_VT_MSGTYPE_ACK;
 
-<<<<<<< HEAD
-	igb_write_mbx(hw, msgbuf, 1, vf);
-=======
 	/* unlocks mailbox */
 	igb_write_mbx(hw, msgbuf, 1, vf);
 	return;
 
 unlock:
 	igb_unlock_mbx(hw, vf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void igb_msg_task(struct igb_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
-<<<<<<< HEAD
-	u32 vf;
-
-=======
 	unsigned long flags;
 	u32 vf;
 
 	spin_lock_irqsave(&adapter->vfs_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (vf = 0; vf < adapter->vfs_allocated_count; vf++) {
 		/* process any reset requests */
 		if (!igb_check_for_rst(hw, vf))
@@ -11521,19 +8059,13 @@ static void igb_msg_task(struct igb_adapter *adapter)
 		if (!igb_check_for_ack(hw, vf))
 			igb_rcv_ack_from_vf(adapter, vf);
 	}
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  *  igb_set_uta - Set unicast filter table address
  *  @adapter: board private structure
-<<<<<<< HEAD
-=======
  *  @set: boolean indicating if we are setting or clearing bits
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  The unicast table address is a register array of 32-bit registers.
  *  The table is meant to be used in a way similar to how the MTA is used
@@ -11541,38 +8073,16 @@ static void igb_msg_task(struct igb_adapter *adapter)
  *  set all the hash bits to 1 and use the VMOLR ROPE bit as a promiscuous
  *  enable bit to allow vlan tag stripping when promiscuous mode is enabled
  **/
-<<<<<<< HEAD
-static void igb_set_uta(struct igb_adapter *adapter)
-{
-	struct e1000_hw *hw = &adapter->hw;
-	int i;
-
-	/* The UTA table only exists on 82576 hardware and newer */
-	if (hw->mac.type < e1000_82576)
-		return;
-
-=======
 static void igb_set_uta(struct igb_adapter *adapter, bool set)
 {
 	struct e1000_hw *hw = &adapter->hw;
 	u32 uta = set ? ~0 : 0;
 	int i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* we only need to do this if VMDq is enabled */
 	if (!adapter->vfs_allocated_count)
 		return;
 
-<<<<<<< HEAD
-	for (i = 0; i < hw->mac.uta_reg_count; i++)
-		array_wr32(E1000_UTA, i, ~0);
-}
-
-/**
- * igb_intr_msi - Interrupt Handler
- * @irq: interrupt number
- * @data: pointer to a network interface device structure
-=======
 	for (i = hw->mac.uta_reg_count; i--;)
 		array_wr32(E1000_UTA, i, uta);
 }
@@ -11581,7 +8091,6 @@ static void igb_set_uta(struct igb_adapter *adapter, bool set)
  *  igb_intr_msi - Interrupt Handler
  *  @irq: interrupt number
  *  @data: pointer to a network interface device structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static irqreturn_t igb_intr_msi(int irq, void *data)
 {
@@ -11607,27 +8116,18 @@ static irqreturn_t igb_intr_msi(int irq, void *data)
 			mod_timer(&adapter->watchdog_timer, jiffies + 1);
 	}
 
-<<<<<<< HEAD
-=======
 	if (icr & E1000_ICR_TS)
 		igb_tsync_interrupt(adapter);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	napi_schedule(&q_vector->napi);
 
 	return IRQ_HANDLED;
 }
 
 /**
-<<<<<<< HEAD
- * igb_intr - Legacy Interrupt Handler
- * @irq: interrupt number
- * @data: pointer to a network interface device structure
-=======
  *  igb_intr - Legacy Interrupt Handler
  *  @irq: interrupt number
  *  @data: pointer to a network interface device structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static irqreturn_t igb_intr(int irq, void *data)
 {
@@ -11635,13 +8135,6 @@ static irqreturn_t igb_intr(int irq, void *data)
 	struct igb_q_vector *q_vector = adapter->q_vector[0];
 	struct e1000_hw *hw = &adapter->hw;
 	/* Interrupt Auto-Mask...upon reading ICR, interrupts are masked.  No
-<<<<<<< HEAD
-	 * need for the IMC write */
-	u32 icr = rd32(E1000_ICR);
-
-	/* IMS will not auto-mask if INT_ASSERTED is not set, and if it is
-	 * not set, then the adapter didn't send an interrupt */
-=======
 	 * need for the IMC write
 	 */
 	u32 icr = rd32(E1000_ICR);
@@ -11649,7 +8142,6 @@ static irqreturn_t igb_intr(int irq, void *data)
 	/* IMS will not auto-mask if INT_ASSERTED is not set, and if it is
 	 * not set, then the adapter didn't send an interrupt
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(icr & E1000_ICR_INT_ASSERTED))
 		return IRQ_NONE;
 
@@ -11670,12 +8162,9 @@ static irqreturn_t igb_intr(int irq, void *data)
 			mod_timer(&adapter->watchdog_timer, jiffies + 1);
 	}
 
-<<<<<<< HEAD
-=======
 	if (icr & E1000_ICR_TS)
 		igb_tsync_interrupt(adapter);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	napi_schedule(&q_vector->napi);
 
 	return IRQ_HANDLED;
@@ -11695,11 +8184,7 @@ static void igb_ring_irq_enable(struct igb_q_vector *q_vector)
 	}
 
 	if (!test_bit(__IGB_DOWN, &adapter->state)) {
-<<<<<<< HEAD
-		if (adapter->msix_entries)
-=======
 		if (adapter->flags & IGB_FLAG_HAS_MSIX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wr32(E1000_EIMS, q_vector->eims_value);
 		else
 			igb_irq_enable(adapter);
@@ -11707,41 +8192,23 @@ static void igb_ring_irq_enable(struct igb_q_vector *q_vector)
 }
 
 /**
-<<<<<<< HEAD
- * igb_poll - NAPI Rx polling callback
- * @napi: napi polling structure
- * @budget: count of how many packets we should handle
-=======
  *  igb_poll - NAPI Rx polling callback
  *  @napi: napi polling structure
  *  @budget: count of how many packets we should handle
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int igb_poll(struct napi_struct *napi, int budget)
 {
 	struct igb_q_vector *q_vector = container_of(napi,
-<<<<<<< HEAD
-	                                             struct igb_q_vector,
-	                                             napi);
-	bool clean_complete = true;
-=======
 						     struct igb_q_vector,
 						     napi);
 	bool clean_complete = true;
 	int work_done = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_IGB_DCA
 	if (q_vector->adapter->flags & IGB_FLAG_DCA_ENABLED)
 		igb_update_dca(q_vector);
 #endif
 	if (q_vector->tx.ring)
-<<<<<<< HEAD
-		clean_complete = igb_clean_tx_irq(q_vector);
-
-	if (q_vector->rx.ring)
-		clean_complete &= igb_clean_rx_irq(q_vector, budget);
-=======
 		clean_complete = igb_clean_tx_irq(q_vector, budget);
 
 	if (q_vector->rx.ring) {
@@ -11751,85 +8218,11 @@ static int igb_poll(struct napi_struct *napi, int budget)
 		if (cleaned >= budget)
 			clean_complete = false;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If all work not completed, return budget and keep polling */
 	if (!clean_complete)
 		return budget;
 
-<<<<<<< HEAD
-	/* If not enough Rx work done, exit the polling mode */
-	napi_complete(napi);
-	igb_ring_irq_enable(q_vector);
-
-	return 0;
-}
-
-/**
- * igb_systim_to_hwtstamp - convert system time value to hw timestamp
- * @adapter: board private structure
- * @shhwtstamps: timestamp structure to update
- * @regval: unsigned 64bit system time value.
- *
- * We need to convert the system time value stored in the RX/TXSTMP registers
- * into a hwtstamp which can be used by the upper level timestamping functions
- */
-static void igb_systim_to_hwtstamp(struct igb_adapter *adapter,
-                                   struct skb_shared_hwtstamps *shhwtstamps,
-                                   u64 regval)
-{
-	u64 ns;
-
-	/*
-	 * The 82580 starts with 1ns at bit 0 in RX/TXSTMPL, shift this up to
-	 * 24 to match clock shift we setup earlier.
-	 */
-	if (adapter->hw.mac.type >= e1000_82580)
-		regval <<= IGB_82580_TSYNC_SHIFT;
-
-	ns = timecounter_cyc2time(&adapter->clock, regval);
-	timecompare_update(&adapter->compare, ns);
-	memset(shhwtstamps, 0, sizeof(struct skb_shared_hwtstamps));
-	shhwtstamps->hwtstamp = ns_to_ktime(ns);
-	shhwtstamps->syststamp = timecompare_transform(&adapter->compare, ns);
-}
-
-/**
- * igb_tx_hwtstamp - utility function which checks for TX time stamp
- * @q_vector: pointer to q_vector containing needed info
- * @buffer: pointer to igb_tx_buffer structure
- *
- * If we were asked to do hardware stamping and such a time stamp is
- * available, then it must have been for this skb here because we only
- * allow only one such packet into the queue.
- */
-static void igb_tx_hwtstamp(struct igb_q_vector *q_vector,
-			    struct igb_tx_buffer *buffer_info)
-{
-	struct igb_adapter *adapter = q_vector->adapter;
-	struct e1000_hw *hw = &adapter->hw;
-	struct skb_shared_hwtstamps shhwtstamps;
-	u64 regval;
-
-	/* if skb does not support hw timestamp or TX stamp not valid exit */
-	if (likely(!(buffer_info->tx_flags & IGB_TX_FLAGS_TSTAMP)) ||
-	    !(rd32(E1000_TSYNCTXCTL) & E1000_TSYNCTXCTL_VALID))
-		return;
-
-	regval = rd32(E1000_TXSTMPL);
-	regval |= (u64)rd32(E1000_TXSTMPH) << 32;
-
-	igb_systim_to_hwtstamp(adapter, &shhwtstamps, regval);
-	skb_tstamp_tx(buffer_info->skb, &shhwtstamps);
-}
-
-/**
- * igb_clean_tx_irq - Reclaim resources after transmit completes
- * @q_vector: pointer to q_vector containing needed info
- * returns true if ring is completely cleaned
- **/
-static bool igb_clean_tx_irq(struct igb_q_vector *q_vector)
-=======
 	/* Exit the polling mode, but don't re-enable interrupts if stack might
 	 * poll us due to busy-polling
 	 */
@@ -11847,16 +8240,11 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector)
  *  returns true if ring is completely cleaned
  **/
 static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igb_adapter *adapter = q_vector->adapter;
 	struct igb_ring *tx_ring = q_vector->tx.ring;
 	struct igb_tx_buffer *tx_buffer;
-<<<<<<< HEAD
-	union e1000_adv_tx_desc *tx_desc, *eop_desc;
-=======
 	union e1000_adv_tx_desc *tx_desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int total_bytes = 0, total_packets = 0;
 	unsigned int budget = q_vector->tx.work_limit;
 	unsigned int i = tx_ring->next_to_clean;
@@ -11868,27 +8256,16 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
 	tx_desc = IGB_TX_DESC(tx_ring, i);
 	i -= tx_ring->count;
 
-<<<<<<< HEAD
-	for (; budget; budget--) {
-		eop_desc = tx_buffer->next_to_watch;
-
-		/* prevent any other reads prior to eop_desc */
-		rmb();
-=======
 	do {
 		union e1000_adv_tx_desc *eop_desc = tx_buffer->next_to_watch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* if next_to_watch is not set then there is no work pending */
 		if (!eop_desc)
 			break;
 
-<<<<<<< HEAD
-=======
 		/* prevent any other reads prior to eop_desc */
 		smp_rmb();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* if DD is not set pending work has not been completed */
 		if (!(eop_desc->wb.status & cpu_to_le32(E1000_TXD_STAT_DD)))
 			break;
@@ -11900,25 +8277,6 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
 		total_bytes += tx_buffer->bytecount;
 		total_packets += tx_buffer->gso_segs;
 
-<<<<<<< HEAD
-		/* retrieve hardware timestamp */
-		igb_tx_hwtstamp(q_vector, tx_buffer);
-
-		/* free the skb */
-		dev_kfree_skb_any(tx_buffer->skb);
-		tx_buffer->skb = NULL;
-
-		/* unmap skb header data */
-		dma_unmap_single(tx_ring->dev,
-				 tx_buffer->dma,
-				 tx_buffer->length,
-				 DMA_TO_DEVICE);
-
-		/* clear last DMA location and unmap remaining buffers */
-		while (tx_desc != eop_desc) {
-			tx_buffer->dma = 0;
-
-=======
 		/* free the skb */
 		if (tx_buffer->type == IGB_TYPE_SKB)
 			napi_consume_skb(tx_buffer->skb, napi_budget);
@@ -11936,7 +8294,6 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
 
 		/* clear last DMA location and unmap remaining buffers */
 		while (tx_desc != eop_desc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tx_buffer++;
 			tx_desc++;
 			i++;
@@ -11947,19 +8304,6 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
 			}
 
 			/* unmap any remaining paged data */
-<<<<<<< HEAD
-			if (tx_buffer->dma) {
-				dma_unmap_page(tx_ring->dev,
-					       tx_buffer->dma,
-					       tx_buffer->length,
-					       DMA_TO_DEVICE);
-			}
-		}
-
-		/* clear last DMA location */
-		tx_buffer->dma = 0;
-
-=======
 			if (dma_unmap_len(tx_buffer, len)) {
 				dma_unmap_page(tx_ring->dev,
 					       dma_unmap_addr(tx_buffer, dma),
@@ -11969,7 +8313,6 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* move us one more past the eop_desc for start of next pkt */
 		tx_buffer++;
 		tx_desc++;
@@ -11979,9 +8322,6 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
 			tx_buffer = tx_ring->tx_buffer_info;
 			tx_desc = IGB_TX_DESC(tx_ring, 0);
 		}
-<<<<<<< HEAD
-	}
-=======
 
 		/* issue prefetch for next Tx descriptor */
 		prefetch(tx_desc);
@@ -11989,7 +8329,6 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
 		/* update budget accounting */
 		budget--;
 	} while (likely(budget));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev_tx_completed_queue(txring_txq(tx_ring),
 				  total_packets, total_bytes);
@@ -12005,20 +8344,11 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
 	if (test_bit(IGB_RING_FLAG_TX_DETECT_HANG, &tx_ring->flags)) {
 		struct e1000_hw *hw = &adapter->hw;
 
-<<<<<<< HEAD
-		eop_desc = tx_buffer->next_to_watch;
-
-		/* Detect a transmit hang in hardware, this serializes the
-		 * check with the clearing of time_stamp and movement of i */
-		clear_bit(IGB_RING_FLAG_TX_DETECT_HANG, &tx_ring->flags);
-		if (eop_desc &&
-=======
 		/* Detect a transmit hang in hardware, this serializes the
 		 * check with the clearing of time_stamp and movement of i
 		 */
 		clear_bit(IGB_RING_FLAG_TX_DETECT_HANG, &tx_ring->flags);
 		if (tx_buffer->next_to_watch &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    time_after(jiffies, tx_buffer->time_stamp +
 			       (adapter->tx_timeout_factor * HZ)) &&
 		    !(rd32(E1000_STATUS) & E1000_STATUS_TXOFF)) {
@@ -12042,15 +8372,9 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
 				tx_ring->next_to_use,
 				tx_ring->next_to_clean,
 				tx_buffer->time_stamp,
-<<<<<<< HEAD
-				eop_desc,
-				jiffies,
-				eop_desc->wb.status);
-=======
 				tx_buffer->next_to_watch,
 				jiffies,
 				tx_buffer->next_to_watch->wb.status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netif_stop_subqueue(tx_ring->netdev,
 					    tx_ring->queue_index);
 
@@ -12059,16 +8383,10 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
 		}
 	}
 
-<<<<<<< HEAD
-	if (unlikely(total_packets &&
-		     netif_carrier_ok(tx_ring->netdev) &&
-		     igb_desc_unused(tx_ring) >= IGB_TX_QUEUE_WAKE)) {
-=======
 #define TX_WAKE_THRESHOLD (DESC_NEEDED * 2)
 	if (unlikely(total_packets &&
 	    netif_carrier_ok(tx_ring->netdev) &&
 	    igb_desc_unused(tx_ring) >= TX_WAKE_THRESHOLD)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Make sure that anybody stopping the queue after this
 		 * sees the new next_to_clean.
 		 */
@@ -12088,8 +8406,6 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
 	return !!budget;
 }
 
-<<<<<<< HEAD
-=======
 /**
  *  igb_reuse_rx_page - page flip buffer and store it back on the ring
  *  @rx_ring: rx descriptor ring to store buffers on
@@ -12351,7 +8667,6 @@ static void igb_rx_buffer_flip(struct igb_ring *rx_ring,
 #endif
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void igb_rx_checksum(struct igb_ring *ring,
 				   union e1000_adv_rx_desc *rx_desc,
 				   struct sk_buff *skb)
@@ -12370,12 +8685,7 @@ static inline void igb_rx_checksum(struct igb_ring *ring,
 	if (igb_test_staterr(rx_desc,
 			     E1000_RXDEXT_STATERR_TCPE |
 			     E1000_RXDEXT_STATERR_IPE)) {
-<<<<<<< HEAD
-		/*
-		 * work around errata with sctp packets where the TCPE aka
-=======
 		/* work around errata with sctp packets where the TCPE aka
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * L4E bit is set incorrectly on 64 byte (60 byte w/o crc)
 		 * packets, (aka let the stack check the crc32c)
 		 */
@@ -12402,178 +8712,6 @@ static inline void igb_rx_hash(struct igb_ring *ring,
 			       struct sk_buff *skb)
 {
 	if (ring->netdev->features & NETIF_F_RXHASH)
-<<<<<<< HEAD
-		skb->rxhash = le32_to_cpu(rx_desc->wb.lower.hi_dword.rss);
-}
-
-static void igb_rx_hwtstamp(struct igb_q_vector *q_vector,
-			    union e1000_adv_rx_desc *rx_desc,
-			    struct sk_buff *skb)
-{
-	struct igb_adapter *adapter = q_vector->adapter;
-	struct e1000_hw *hw = &adapter->hw;
-	u64 regval;
-
-	if (!igb_test_staterr(rx_desc, E1000_RXDADV_STAT_TSIP |
-				       E1000_RXDADV_STAT_TS))
-		return;
-
-	/*
-	 * If this bit is set, then the RX registers contain the time stamp. No
-	 * other packet will be time stamped until we read these registers, so
-	 * read the registers to make them available again. Because only one
-	 * packet can be time stamped at a time, we know that the register
-	 * values must belong to this one here and therefore we don't need to
-	 * compare any of the additional attributes stored for it.
-	 *
-	 * If nothing went wrong, then it should have a shared tx_flags that we
-	 * can turn into a skb_shared_hwtstamps.
-	 */
-	if (igb_test_staterr(rx_desc, E1000_RXDADV_STAT_TSIP)) {
-		u32 *stamp = (u32 *)skb->data;
-		regval = le32_to_cpu(*(stamp + 2));
-		regval |= (u64)le32_to_cpu(*(stamp + 3)) << 32;
-		skb_pull(skb, IGB_TS_HDR_LEN);
-	} else {
-		if(!(rd32(E1000_TSYNCRXCTL) & E1000_TSYNCRXCTL_VALID))
-			return;
-
-		regval = rd32(E1000_RXSTMPL);
-		regval |= (u64)rd32(E1000_RXSTMPH) << 32;
-	}
-
-	igb_systim_to_hwtstamp(adapter, skb_hwtstamps(skb), regval);
-}
-
-static void igb_rx_vlan(struct igb_ring *ring,
-			union e1000_adv_rx_desc *rx_desc,
-			struct sk_buff *skb)
-{
-	if (igb_test_staterr(rx_desc, E1000_RXD_STAT_VP)) {
-		u16 vid;
-		if (igb_test_staterr(rx_desc, E1000_RXDEXT_STATERR_LB) &&
-		    test_bit(IGB_RING_FLAG_RX_LB_VLAN_BSWAP, &ring->flags))
-			vid = be16_to_cpu(rx_desc->wb.upper.vlan);
-		else
-			vid = le16_to_cpu(rx_desc->wb.upper.vlan);
-
-		__vlan_hwaccel_put_tag(skb, vid);
-	}
-}
-
-static inline u16 igb_get_hlen(union e1000_adv_rx_desc *rx_desc)
-{
-	/* HW will not DMA in data larger than the given buffer, even if it
-	 * parses the (NFS, of course) header to be larger.  In that case, it
-	 * fills the header buffer and spills the rest into the page.
-	 */
-	u16 hlen = (le16_to_cpu(rx_desc->wb.lower.lo_dword.hdr_info) &
-	           E1000_RXDADV_HDRBUFLEN_MASK) >> E1000_RXDADV_HDRBUFLEN_SHIFT;
-	if (hlen > IGB_RX_HDR_LEN)
-		hlen = IGB_RX_HDR_LEN;
-	return hlen;
-}
-
-static bool igb_clean_rx_irq(struct igb_q_vector *q_vector, int budget)
-{
-	struct igb_ring *rx_ring = q_vector->rx.ring;
-	union e1000_adv_rx_desc *rx_desc;
-	const int current_node = numa_node_id();
-	unsigned int total_bytes = 0, total_packets = 0;
-	u16 cleaned_count = igb_desc_unused(rx_ring);
-	u16 i = rx_ring->next_to_clean;
-
-	rx_desc = IGB_RX_DESC(rx_ring, i);
-
-	while (igb_test_staterr(rx_desc, E1000_RXD_STAT_DD)) {
-		struct igb_rx_buffer *buffer_info = &rx_ring->rx_buffer_info[i];
-		struct sk_buff *skb = buffer_info->skb;
-		union e1000_adv_rx_desc *next_rxd;
-
-		buffer_info->skb = NULL;
-		prefetch(skb->data);
-
-		i++;
-		if (i == rx_ring->count)
-			i = 0;
-
-		next_rxd = IGB_RX_DESC(rx_ring, i);
-		prefetch(next_rxd);
-
-		/*
-		 * This memory barrier is needed to keep us from reading
-		 * any other fields out of the rx_desc until we know the
-		 * RXD_STAT_DD bit is set
-		 */
-		rmb();
-
-		if (!skb_is_nonlinear(skb)) {
-			__skb_put(skb, igb_get_hlen(rx_desc));
-			dma_unmap_single(rx_ring->dev, buffer_info->dma,
-					 IGB_RX_HDR_LEN,
-					 DMA_FROM_DEVICE);
-			buffer_info->dma = 0;
-		}
-
-		if (rx_desc->wb.upper.length) {
-			u16 length = le16_to_cpu(rx_desc->wb.upper.length);
-
-			skb_fill_page_desc(skb, skb_shinfo(skb)->nr_frags,
-						buffer_info->page,
-						buffer_info->page_offset,
-						length);
-
-			skb->len += length;
-			skb->data_len += length;
-			skb->truesize += PAGE_SIZE / 2;
-
-			if ((page_count(buffer_info->page) != 1) ||
-			    (page_to_nid(buffer_info->page) != current_node))
-				buffer_info->page = NULL;
-			else
-				get_page(buffer_info->page);
-
-			dma_unmap_page(rx_ring->dev, buffer_info->page_dma,
-				       PAGE_SIZE / 2, DMA_FROM_DEVICE);
-			buffer_info->page_dma = 0;
-		}
-
-		if (!igb_test_staterr(rx_desc, E1000_RXD_STAT_EOP)) {
-			struct igb_rx_buffer *next_buffer;
-			next_buffer = &rx_ring->rx_buffer_info[i];
-			buffer_info->skb = next_buffer->skb;
-			buffer_info->dma = next_buffer->dma;
-			next_buffer->skb = skb;
-			next_buffer->dma = 0;
-			goto next_desc;
-		}
-
-		if (unlikely((igb_test_staterr(rx_desc,
-					       E1000_RXDEXT_ERR_FRAME_ERR_MASK))
-			     && !(rx_ring->netdev->features & NETIF_F_RXALL))) {
-			dev_kfree_skb_any(skb);
-			goto next_desc;
-		}
-
-		igb_rx_hwtstamp(q_vector, rx_desc, skb);
-		igb_rx_hash(rx_ring, rx_desc, skb);
-		igb_rx_checksum(rx_ring, rx_desc, skb);
-		igb_rx_vlan(rx_ring, rx_desc, skb);
-
-		total_bytes += skb->len;
-		total_packets++;
-
-		skb->protocol = eth_type_trans(skb, rx_ring->netdev);
-
-		napi_gro_receive(&q_vector->napi, skb);
-
-		budget--;
-next_desc:
-		if (!budget)
-			break;
-
-		cleaned_count++;
-=======
 		skb_set_hash(skb,
 			     le32_to_cpu(rx_desc->wb.lower.hi_dword.rss),
 			     PKT_HASH_TYPE_L3);
@@ -12764,20 +8902,12 @@ static int igb_clean_rx_irq(struct igb_q_vector *q_vector, const int budget)
 		unsigned int size;
 		void *pktbuf;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* return some buffers to hardware, one at a time is too slow */
 		if (cleaned_count >= IGB_RX_BUFFER_WRITE) {
 			igb_alloc_rx_buffers(rx_ring, cleaned_count);
 			cleaned_count = 0;
 		}
 
-<<<<<<< HEAD
-		/* use prefetched values */
-		rx_desc = next_rxd;
-	}
-
-	rx_ring->next_to_clean = i;
-=======
 		rx_desc = IGB_RX_DESC(rx_ring, rx_ring->next_to_clean);
 		size = le16_to_cpu(rx_desc->wb.upper.length);
 		if (!size)
@@ -12884,7 +9014,6 @@ static int igb_clean_rx_irq(struct igb_q_vector *q_vector, const int budget)
 		igb_xdp_ring_update_tail(tx_ring);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64_stats_update_begin(&rx_ring->rx_syncp);
 	rx_ring->rx_stats.packets += total_packets;
 	rx_ring->rx_stats.bytes += total_bytes;
@@ -12895,73 +9024,13 @@ static int igb_clean_rx_irq(struct igb_q_vector *q_vector, const int budget)
 	if (cleaned_count)
 		igb_alloc_rx_buffers(rx_ring, cleaned_count);
 
-<<<<<<< HEAD
-	return !!budget;
-}
-
-static bool igb_alloc_mapped_skb(struct igb_ring *rx_ring,
-				 struct igb_rx_buffer *bi)
-{
-	struct sk_buff *skb = bi->skb;
-	dma_addr_t dma = bi->dma;
-
-	if (dma)
-		return true;
-
-	if (likely(!skb)) {
-		skb = netdev_alloc_skb_ip_align(rx_ring->netdev,
-						IGB_RX_HDR_LEN);
-		bi->skb = skb;
-		if (!skb) {
-			rx_ring->rx_stats.alloc_failed++;
-			return false;
-		}
-
-		/* initialize skb for ring */
-		skb_record_rx_queue(skb, rx_ring->queue_index);
-	}
-
-	dma = dma_map_single(rx_ring->dev, skb->data,
-			     IGB_RX_HDR_LEN, DMA_FROM_DEVICE);
-
-	if (dma_mapping_error(rx_ring->dev, dma)) {
-		rx_ring->rx_stats.alloc_failed++;
-		return false;
-	}
-
-	bi->dma = dma;
-	return true;
-=======
 	return total_packets;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool igb_alloc_mapped_page(struct igb_ring *rx_ring,
 				  struct igb_rx_buffer *bi)
 {
 	struct page *page = bi->page;
-<<<<<<< HEAD
-	dma_addr_t page_dma = bi->page_dma;
-	unsigned int page_offset = bi->page_offset ^ (PAGE_SIZE / 2);
-
-	if (page_dma)
-		return true;
-
-	if (!page) {
-		page = alloc_page(GFP_ATOMIC | __GFP_COLD);
-		bi->page = page;
-		if (unlikely(!page)) {
-			rx_ring->rx_stats.alloc_failed++;
-			return false;
-		}
-	}
-
-	page_dma = dma_map_page(rx_ring->dev, page,
-				page_offset, PAGE_SIZE / 2,
-				DMA_FROM_DEVICE);
-
-	if (dma_mapping_error(rx_ring->dev, page_dma)) {
-=======
 	dma_addr_t dma;
 
 	/* since we are recycling buffers we should seldom need to alloc */
@@ -12971,15 +9040,10 @@ static bool igb_alloc_mapped_page(struct igb_ring *rx_ring,
 	/* alloc new page for storage */
 	page = dev_alloc_pages(igb_rx_pg_order(rx_ring));
 	if (unlikely(!page)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rx_ring->rx_stats.alloc_failed++;
 		return false;
 	}
 
-<<<<<<< HEAD
-	bi->page_dma = page_dma;
-	bi->page_offset = page_offset;
-=======
 	/* map page for use */
 	dma = dma_map_page_attrs(rx_ring->dev, page, 0,
 				 igb_rx_pg_size(rx_ring),
@@ -13002,52 +9066,29 @@ static bool igb_alloc_mapped_page(struct igb_ring *rx_ring,
 	page_ref_add(page, USHRT_MAX - 1);
 	bi->pagecnt_bias = USHRT_MAX;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
 /**
-<<<<<<< HEAD
- * igb_alloc_rx_buffers - Replace used receive buffers; packet split
- * @adapter: address of board private structure
-=======
  *  igb_alloc_rx_buffers - Replace used receive buffers
  *  @rx_ring: rx descriptor ring to allocate new receive buffers
  *  @cleaned_count: count of buffers to allocate
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 void igb_alloc_rx_buffers(struct igb_ring *rx_ring, u16 cleaned_count)
 {
 	union e1000_adv_rx_desc *rx_desc;
 	struct igb_rx_buffer *bi;
 	u16 i = rx_ring->next_to_use;
-<<<<<<< HEAD
-=======
 	u16 bufsz;
 
 	/* nothing to do */
 	if (!cleaned_count)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rx_desc = IGB_RX_DESC(rx_ring, i);
 	bi = &rx_ring->rx_buffer_info[i];
 	i -= rx_ring->count;
 
-<<<<<<< HEAD
-	while (cleaned_count--) {
-		if (!igb_alloc_mapped_skb(rx_ring, bi))
-			break;
-
-		/* Refresh the desc even if buffer_addrs didn't change
-		 * because each write-back erases this info. */
-		rx_desc->read.hdr_addr = cpu_to_le64(bi->dma);
-
-		if (!igb_alloc_mapped_page(rx_ring, bi))
-			break;
-
-		rx_desc->read.pkt_addr = cpu_to_le64(bi->page_dma);
-=======
 	bufsz = igb_rx_bufsz(rx_ring);
 
 	do {
@@ -13063,7 +9104,6 @@ void igb_alloc_rx_buffers(struct igb_ring *rx_ring, u16 cleaned_count)
 		 * because each write-back erases this info.
 		 */
 		rx_desc->read.pkt_addr = cpu_to_le64(bi->dma + bi->page_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rx_desc++;
 		bi++;
@@ -13074,30 +9114,15 @@ void igb_alloc_rx_buffers(struct igb_ring *rx_ring, u16 cleaned_count)
 			i -= rx_ring->count;
 		}
 
-<<<<<<< HEAD
-		/* clear the hdr_addr for the next_to_use descriptor */
-		rx_desc->read.hdr_addr = 0;
-	}
-=======
 		/* clear the length for the next_to_use descriptor */
 		rx_desc->wb.upper.length = 0;
 
 		cleaned_count--;
 	} while (cleaned_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i += rx_ring->count;
 
 	if (rx_ring->next_to_use != i) {
-<<<<<<< HEAD
-		rx_ring->next_to_use = i;
-
-		/* Force memory writes to complete before letting h/w
-		 * know there are new descriptors to fetch.  (Only
-		 * applicable for weak-ordered memory model archs,
-		 * such as IA-64). */
-		wmb();
-=======
 		/* record the next descriptor to use */
 		rx_ring->next_to_use = i;
 
@@ -13110,22 +9135,15 @@ void igb_alloc_rx_buffers(struct igb_ring *rx_ring, u16 cleaned_count)
 		 * such as IA-64).
 		 */
 		dma_wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(i, rx_ring->tail);
 	}
 }
 
 /**
  * igb_mii_ioctl -
-<<<<<<< HEAD
- * @netdev:
- * @ifreq:
- * @cmd:
-=======
  * @netdev: pointer to netdev struct
  * @ifr: interface structure
  * @cmd: ioctl command to execute
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int igb_mii_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 {
@@ -13141,11 +9159,7 @@ static int igb_mii_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 		break;
 	case SIOCGMIIREG:
 		if (igb_read_phy_reg(&adapter->hw, data->reg_num & 0x1F,
-<<<<<<< HEAD
-		                     &data->val_out))
-=======
 				     &data->val_out))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		break;
 	case SIOCSMIIREG:
@@ -13156,192 +9170,10 @@ static int igb_mii_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 }
 
 /**
-<<<<<<< HEAD
- * igb_hwtstamp_ioctl - control hardware time stamping
- * @netdev:
- * @ifreq:
- * @cmd:
- *
- * Outgoing time stamping can be enabled and disabled. Play nice and
- * disable it when requested, although it shouldn't case any overhead
- * when no packet needs it. At most one packet in the queue may be
- * marked for time stamping, otherwise it would be impossible to tell
- * for sure to which packet the hardware time stamp belongs.
- *
- * Incoming time stamping has to be configured via the hardware
- * filters. Not all combinations are supported, in particular event
- * type has to be specified. Matching the kind of event packet is
- * not supported, with the exception of "all V2 events regardless of
- * level 2 or 4".
- *
- **/
-static int igb_hwtstamp_ioctl(struct net_device *netdev,
-			      struct ifreq *ifr, int cmd)
-{
-	struct igb_adapter *adapter = netdev_priv(netdev);
-	struct e1000_hw *hw = &adapter->hw;
-	struct hwtstamp_config config;
-	u32 tsync_tx_ctl = E1000_TSYNCTXCTL_ENABLED;
-	u32 tsync_rx_ctl = E1000_TSYNCRXCTL_ENABLED;
-	u32 tsync_rx_cfg = 0;
-	bool is_l4 = false;
-	bool is_l2 = false;
-	u32 regval;
-
-	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
-		return -EFAULT;
-
-	/* reserved for future extensions */
-	if (config.flags)
-		return -EINVAL;
-
-	switch (config.tx_type) {
-	case HWTSTAMP_TX_OFF:
-		tsync_tx_ctl = 0;
-	case HWTSTAMP_TX_ON:
-		break;
-	default:
-		return -ERANGE;
-	}
-
-	switch (config.rx_filter) {
-	case HWTSTAMP_FILTER_NONE:
-		tsync_rx_ctl = 0;
-		break;
-	case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
-	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
-	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-	case HWTSTAMP_FILTER_ALL:
-		/*
-		 * register TSYNCRXCFG must be set, therefore it is not
-		 * possible to time stamp both Sync and Delay_Req messages
-		 * => fall back to time stamping all packets
-		 */
-		tsync_rx_ctl |= E1000_TSYNCRXCTL_TYPE_ALL;
-		config.rx_filter = HWTSTAMP_FILTER_ALL;
-		break;
-	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
-		tsync_rx_ctl |= E1000_TSYNCRXCTL_TYPE_L4_V1;
-		tsync_rx_cfg = E1000_TSYNCRXCFG_PTP_V1_SYNC_MESSAGE;
-		is_l4 = true;
-		break;
-	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
-		tsync_rx_ctl |= E1000_TSYNCRXCTL_TYPE_L4_V1;
-		tsync_rx_cfg = E1000_TSYNCRXCFG_PTP_V1_DELAY_REQ_MESSAGE;
-		is_l4 = true;
-		break;
-	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
-		tsync_rx_ctl |= E1000_TSYNCRXCTL_TYPE_L2_L4_V2;
-		tsync_rx_cfg = E1000_TSYNCRXCFG_PTP_V2_SYNC_MESSAGE;
-		is_l2 = true;
-		is_l4 = true;
-		config.rx_filter = HWTSTAMP_FILTER_SOME;
-		break;
-	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
-		tsync_rx_ctl |= E1000_TSYNCRXCTL_TYPE_L2_L4_V2;
-		tsync_rx_cfg = E1000_TSYNCRXCFG_PTP_V2_DELAY_REQ_MESSAGE;
-		is_l2 = true;
-		is_l4 = true;
-		config.rx_filter = HWTSTAMP_FILTER_SOME;
-		break;
-	case HWTSTAMP_FILTER_PTP_V2_EVENT:
-	case HWTSTAMP_FILTER_PTP_V2_SYNC:
-	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-		tsync_rx_ctl |= E1000_TSYNCRXCTL_TYPE_EVENT_V2;
-		config.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
-		is_l2 = true;
-		is_l4 = true;
-		break;
-	default:
-		return -ERANGE;
-	}
-
-	if (hw->mac.type == e1000_82575) {
-		if (tsync_rx_ctl | tsync_tx_ctl)
-			return -EINVAL;
-		return 0;
-	}
-
-	/*
-	 * Per-packet timestamping only works if all packets are
-	 * timestamped, so enable timestamping in all packets as
-	 * long as one rx filter was configured.
-	 */
-	if ((hw->mac.type >= e1000_82580) && tsync_rx_ctl) {
-		tsync_rx_ctl = E1000_TSYNCRXCTL_ENABLED;
-		tsync_rx_ctl |= E1000_TSYNCRXCTL_TYPE_ALL;
-	}
-
-	/* enable/disable TX */
-	regval = rd32(E1000_TSYNCTXCTL);
-	regval &= ~E1000_TSYNCTXCTL_ENABLED;
-	regval |= tsync_tx_ctl;
-	wr32(E1000_TSYNCTXCTL, regval);
-
-	/* enable/disable RX */
-	regval = rd32(E1000_TSYNCRXCTL);
-	regval &= ~(E1000_TSYNCRXCTL_ENABLED | E1000_TSYNCRXCTL_TYPE_MASK);
-	regval |= tsync_rx_ctl;
-	wr32(E1000_TSYNCRXCTL, regval);
-
-	/* define which PTP packets are time stamped */
-	wr32(E1000_TSYNCRXCFG, tsync_rx_cfg);
-
-	/* define ethertype filter for timestamped packets */
-	if (is_l2)
-		wr32(E1000_ETQF(3),
-		                (E1000_ETQF_FILTER_ENABLE | /* enable filter */
-		                 E1000_ETQF_1588 | /* enable timestamping */
-		                 ETH_P_1588));     /* 1588 eth protocol type */
-	else
-		wr32(E1000_ETQF(3), 0);
-
-#define PTP_PORT 319
-	/* L4 Queue Filter[3]: filter by destination port and protocol */
-	if (is_l4) {
-		u32 ftqf = (IPPROTO_UDP /* UDP */
-			| E1000_FTQF_VF_BP /* VF not compared */
-			| E1000_FTQF_1588_TIME_STAMP /* Enable Timestamping */
-			| E1000_FTQF_MASK); /* mask all inputs */
-		ftqf &= ~E1000_FTQF_MASK_PROTO_BP; /* enable protocol check */
-
-		wr32(E1000_IMIR(3), htons(PTP_PORT));
-		wr32(E1000_IMIREXT(3),
-		     (E1000_IMIREXT_SIZE_BP | E1000_IMIREXT_CTRL_BP));
-		if (hw->mac.type == e1000_82576) {
-			/* enable source port check */
-			wr32(E1000_SPQF(3), htons(PTP_PORT));
-			ftqf &= ~E1000_FTQF_MASK_SOURCE_PORT_BP;
-		}
-		wr32(E1000_FTQF(3), ftqf);
-	} else {
-		wr32(E1000_FTQF(3), E1000_FTQF_MASK);
-	}
-	wrfl();
-
-	adapter->hwtstamp_config = config;
-
-	/* clear TX/RX time stamp registers, just to be sure */
-	regval = rd32(E1000_TXSTMPH);
-	regval = rd32(E1000_RXSTMPH);
-
-	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ?
-		-EFAULT : 0;
-}
-
-/**
- * igb_ioctl -
- * @netdev:
- * @ifreq:
- * @cmd:
-=======
  * igb_ioctl -
  * @netdev: pointer to netdev struct
  * @ifr: interface structure
  * @cmd: ioctl command to execute
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int igb_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 {
@@ -13350,33 +9182,15 @@ static int igb_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 	case SIOCGMIIREG:
 	case SIOCSMIIREG:
 		return igb_mii_ioctl(netdev, ifr, cmd);
-<<<<<<< HEAD
-	case SIOCSHWTSTAMP:
-		return igb_hwtstamp_ioctl(netdev, ifr, cmd);
-=======
 	case SIOCGHWTSTAMP:
 		return igb_ptp_get_ts_config(netdev, ifr);
 	case SIOCSHWTSTAMP:
 		return igb_ptp_set_ts_config(netdev, ifr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EOPNOTSUPP;
 	}
 }
 
-<<<<<<< HEAD
-s32 igb_read_pcie_cap_reg(struct e1000_hw *hw, u32 reg, u16 *value)
-{
-	struct igb_adapter *adapter = hw->back;
-	u16 cap_offset;
-
-	cap_offset = adapter->pdev->pcie_cap;
-	if (!cap_offset)
-		return -E1000_ERR_CONFIG;
-
-	pci_read_config_word(adapter->pdev, cap_offset + reg, value);
-
-=======
 void igb_read_pci_cfg(struct e1000_hw *hw, u32 reg, u16 *value)
 {
 	struct igb_adapter *adapter = hw->back;
@@ -13398,28 +9212,16 @@ s32 igb_read_pcie_cap_reg(struct e1000_hw *hw, u32 reg, u16 *value)
 	if (pcie_capability_read_word(adapter->pdev, reg, value))
 		return -E1000_ERR_CONFIG;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 s32 igb_write_pcie_cap_reg(struct e1000_hw *hw, u32 reg, u16 *value)
 {
 	struct igb_adapter *adapter = hw->back;
-<<<<<<< HEAD
-	u16 cap_offset;
-
-	cap_offset = adapter->pdev->pcie_cap;
-	if (!cap_offset)
-		return -E1000_ERR_CONFIG;
-
-	pci_write_config_word(adapter->pdev, cap_offset + reg, *value);
-
-=======
 
 	if (pcie_capability_write_word(adapter->pdev, reg, *value))
 		return -E1000_ERR_CONFIG;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -13428,11 +9230,7 @@ static void igb_vlan_mode(struct net_device *netdev, netdev_features_t features)
 	struct igb_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
 	u32 ctrl, rctl;
-<<<<<<< HEAD
-	bool enable = !!(features & NETIF_F_HW_VLAN_RX);
-=======
 	bool enable = !!(features & NETIF_F_HW_VLAN_CTAG_RX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (enable) {
 		/* enable VLAN tag insert/strip */
@@ -13451,55 +9249,25 @@ static void igb_vlan_mode(struct net_device *netdev, netdev_features_t features)
 		wr32(E1000_CTRL, ctrl);
 	}
 
-<<<<<<< HEAD
-	igb_rlpml_set(adapter);
-}
-
-static int igb_vlan_rx_add_vid(struct net_device *netdev, u16 vid)
-=======
 	igb_set_vf_vlan_strip(adapter, adapter->vfs_allocated_count, enable);
 }
 
 static int igb_vlan_rx_add_vid(struct net_device *netdev,
 			       __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igb_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
 	int pf_id = adapter->vfs_allocated_count;
 
-<<<<<<< HEAD
-	/* attempt to add filter to vlvf array */
-	igb_vlvf_set(adapter, vid, true, pf_id);
-
-	/* add the filter since PF can receive vlans w/o entry in vlvf */
-	igb_vfta_set(hw, vid, true);
-=======
 	/* add the filter since PF can receive vlans w/o entry in vlvf */
 	if (!vid || !(adapter->flags & IGB_FLAG_VLAN_PROMISC))
 		igb_vfta_set(hw, vid, pf_id, true, !!vid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_bit(vid, adapter->active_vlans);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int igb_vlan_rx_kill_vid(struct net_device *netdev, u16 vid)
-{
-	struct igb_adapter *adapter = netdev_priv(netdev);
-	struct e1000_hw *hw = &adapter->hw;
-	int pf_id = adapter->vfs_allocated_count;
-	s32 err;
-
-	/* remove vlan from VLVF table array */
-	err = igb_vlvf_set(adapter, vid, false, pf_id);
-
-	/* if vid was not present in VLVF just remove it from table */
-	if (err)
-		igb_vfta_set(hw, vid, false);
-=======
 static int igb_vlan_rx_kill_vid(struct net_device *netdev,
 				__be16 proto, u16 vid)
 {
@@ -13510,7 +9278,6 @@ static int igb_vlan_rx_kill_vid(struct net_device *netdev,
 	/* remove VID from filter table */
 	if (vid && !(adapter->flags & IGB_FLAG_VLAN_PROMISC))
 		igb_vfta_set(hw, vid, pf_id, false, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clear_bit(vid, adapter->active_vlans);
 
@@ -13519,14 +9286,6 @@ static int igb_vlan_rx_kill_vid(struct net_device *netdev,
 
 static void igb_restore_vlan(struct igb_adapter *adapter)
 {
-<<<<<<< HEAD
-	u16 vid;
-
-	igb_vlan_mode(adapter->netdev, adapter->netdev->features);
-
-	for_each_set_bit(vid, adapter->active_vlans, VLAN_N_VID)
-		igb_vlan_rx_add_vid(adapter->netdev, vid);
-=======
 	u16 vid = 1;
 
 	igb_vlan_mode(adapter->netdev, adapter->netdev->features);
@@ -13534,7 +9293,6 @@ static void igb_restore_vlan(struct igb_adapter *adapter)
 
 	for_each_set_bit_from(vid, adapter->active_vlans, VLAN_N_VID)
 		igb_vlan_rx_add_vid(adapter->netdev, htons(ETH_P_8021Q), vid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int igb_set_spd_dplx(struct igb_adapter *adapter, u32 spd, u8 dplx)
@@ -13545,17 +9303,6 @@ int igb_set_spd_dplx(struct igb_adapter *adapter, u32 spd, u8 dplx)
 	mac->autoneg = 0;
 
 	/* Make sure dplx is at most 1 bit and lsb of speed is not set
-<<<<<<< HEAD
-	 * for the switch() below to work */
-	if ((spd & 1) || (dplx & ~1))
-		goto err_inval;
-
-	/* Fiber NIC's only allow 1000 Gbps Full duplex */
-	if ((adapter->hw.phy.media_type == e1000_media_type_internal_serdes) &&
-	    spd != SPEED_1000 &&
-	    dplx != DUPLEX_FULL)
-		goto err_inval;
-=======
 	 * for the switch() below to work
 	 */
 	if ((spd & 1) || (dplx & ~1))
@@ -13574,7 +9321,6 @@ int igb_set_spd_dplx(struct igb_adapter *adapter, u32 spd, u8 dplx)
 			break;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (spd + dplx) {
 	case SPEED_10 + DUPLEX_HALF:
@@ -13597,13 +9343,10 @@ int igb_set_spd_dplx(struct igb_adapter *adapter, u32 spd, u8 dplx)
 	default:
 		goto err_inval;
 	}
-<<<<<<< HEAD
-=======
 
 	/* clear MDI, MDI(-X) override is only allowed when autoneg enabled */
 	adapter->hw.phy.mdix = AUTO_ALL_MODES;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_inval:
@@ -13619,35 +9362,18 @@ static int __igb_shutdown(struct pci_dev *pdev, bool *enable_wake,
 	struct e1000_hw *hw = &adapter->hw;
 	u32 ctrl, rctl, status;
 	u32 wufc = runtime ? E1000_WUFC_LNKC : adapter->wol;
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-	int retval = 0;
-#endif
-
-=======
 	bool wake;
 
 	rtnl_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_device_detach(netdev);
 
 	if (netif_running(netdev))
 		__igb_close(netdev, true);
 
-<<<<<<< HEAD
-	igb_clear_interrupt_scheme(adapter);
-
-#ifdef CONFIG_PM
-	retval = pci_save_state(pdev);
-	if (retval)
-		return retval;
-#endif
-=======
 	igb_ptp_suspend(adapter);
 
 	igb_clear_interrupt_scheme(adapter);
 	rtnl_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = rd32(E1000_STATUS);
 	if (status & E1000_STATUS_LU)
@@ -13665,13 +9391,6 @@ static int __igb_shutdown(struct pci_dev *pdev, bool *enable_wake,
 		}
 
 		ctrl = rd32(E1000_CTRL);
-<<<<<<< HEAD
-		/* advertise wake from D3Cold */
-		#define E1000_CTRL_ADVD3WUC 0x00100000
-		/* phy power management enable */
-		#define E1000_CTRL_EN_PHY_PWR_MGMT 0x00200000
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ctrl |= E1000_CTRL_ADVD3WUC;
 		wr32(E1000_CTRL, ctrl);
 
@@ -13685,28 +9404,18 @@ static int __igb_shutdown(struct pci_dev *pdev, bool *enable_wake,
 		wr32(E1000_WUFC, 0);
 	}
 
-<<<<<<< HEAD
-	*enable_wake = wufc || adapter->en_mng_pt;
-	if (!*enable_wake)
-=======
 	wake = wufc || adapter->en_mng_pt;
 	if (!wake)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		igb_power_down_link(adapter);
 	else
 		igb_power_up_link(adapter);
 
-<<<<<<< HEAD
-	/* Release control of h/w to f/w.  If f/w is AMT enabled, this
-	 * would have already happened in close and is redundant. */
-=======
 	if (enable_wake)
 		*enable_wake = wake;
 
 	/* Release control of h/w to f/w.  If f/w is AMT enabled, this
 	 * would have already happened in close and is redundant.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	igb_release_hw_control(adapter);
 
 	pci_disable_device(pdev);
@@ -13714,32 +9423,6 @@ static int __igb_shutdown(struct pci_dev *pdev, bool *enable_wake,
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-#ifdef CONFIG_PM_SLEEP
-static int igb_suspend(struct device *dev)
-{
-	int retval;
-	bool wake;
-	struct pci_dev *pdev = to_pci_dev(dev);
-
-	retval = __igb_shutdown(pdev, &wake, 0);
-	if (retval)
-		return retval;
-
-	if (wake) {
-		pci_prepare_to_sleep(pdev);
-	} else {
-		pci_wake_from_d3(pdev, false);
-		pci_set_power_state(pdev, PCI_D3hot);
-	}
-
-	return 0;
-}
-#endif /* CONFIG_PM_SLEEP */
-
-static int igb_resume(struct device *dev)
-=======
 static void igb_deliver_wake_packet(struct net_device *netdev)
 {
 	struct igb_adapter *adapter = netdev_priv(netdev);
@@ -13776,27 +9459,19 @@ static int __maybe_unused igb_suspend(struct device *dev)
 }
 
 static int __maybe_unused __igb_resume(struct device *dev, bool rpm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct igb_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
-<<<<<<< HEAD
-	u32 err;
-=======
 	u32 err, val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_power_state(pdev, PCI_D0);
 	pci_restore_state(pdev);
 	pci_save_state(pdev);
 
-<<<<<<< HEAD
-=======
 	if (!pci_device_is_present(pdev))
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = pci_enable_device_mem(pdev);
 	if (err) {
 		dev_err(&pdev->dev,
@@ -13808,11 +9483,7 @@ static int __maybe_unused __igb_resume(struct device *dev, bool rpm)
 	pci_enable_wake(pdev, PCI_D3hot, 0);
 	pci_enable_wake(pdev, PCI_D3cold, 0);
 
-<<<<<<< HEAD
-	if (igb_init_interrupt_scheme(adapter)) {
-=======
 	if (igb_init_interrupt_scheme(adapter, true)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "Unable to allocate memory for queues\n");
 		return -ENOMEM;
 	}
@@ -13820,28 +9491,6 @@ static int __maybe_unused __igb_resume(struct device *dev, bool rpm)
 	igb_reset(adapter);
 
 	/* let the f/w know that the h/w is now under the control of the
-<<<<<<< HEAD
-	 * driver. */
-	igb_get_hw_control(adapter);
-
-	wr32(E1000_WUS, ~0);
-
-	if (netdev->flags & IFF_UP) {
-		err = __igb_open(netdev, true);
-		if (err)
-			return err;
-	}
-
-	netif_device_attach(netdev);
-	return 0;
-}
-
-#ifdef CONFIG_PM_RUNTIME
-static int igb_runtime_idle(struct device *dev)
-{
-	struct pci_dev *pdev = to_pci_dev(dev);
-	struct net_device *netdev = pci_get_drvdata(pdev);
-=======
 	 * driver.
 	 */
 	igb_get_hw_control(adapter);
@@ -13873,7 +9522,6 @@ static int __maybe_unused igb_resume(struct device *dev)
 static int __maybe_unused igb_runtime_idle(struct device *dev)
 {
 	struct net_device *netdev = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct igb_adapter *adapter = netdev_priv(netdev);
 
 	if (!igb_has_link(adapter))
@@ -13882,34 +9530,6 @@ static int __maybe_unused igb_runtime_idle(struct device *dev)
 	return -EBUSY;
 }
 
-<<<<<<< HEAD
-static int igb_runtime_suspend(struct device *dev)
-{
-	struct pci_dev *pdev = to_pci_dev(dev);
-	int retval;
-	bool wake;
-
-	retval = __igb_shutdown(pdev, &wake, 1);
-	if (retval)
-		return retval;
-
-	if (wake) {
-		pci_prepare_to_sleep(pdev);
-	} else {
-		pci_wake_from_d3(pdev, false);
-		pci_set_power_state(pdev, PCI_D3hot);
-	}
-
-	return 0;
-}
-
-static int igb_runtime_resume(struct device *dev)
-{
-	return igb_resume(dev);
-}
-#endif /* CONFIG_PM_RUNTIME */
-#endif
-=======
 static int __maybe_unused igb_runtime_suspend(struct device *dev)
 {
 	return __igb_shutdown(to_pci_dev(dev), NULL, 1);
@@ -13919,7 +9539,6 @@ static int __maybe_unused igb_runtime_resume(struct device *dev)
 {
 	return __igb_resume(dev, true);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void igb_shutdown(struct pci_dev *pdev)
 {
@@ -13933,40 +9552,6 @@ static void igb_shutdown(struct pci_dev *pdev)
 	}
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_NET_POLL_CONTROLLER
-/*
- * Polling 'interrupt' - used by things like netconsole to send skbs
- * without having to re-enable interrupts. It's not called while
- * the interrupt routine is executing.
- */
-static void igb_netpoll(struct net_device *netdev)
-{
-	struct igb_adapter *adapter = netdev_priv(netdev);
-	struct e1000_hw *hw = &adapter->hw;
-	struct igb_q_vector *q_vector;
-	int i;
-
-	for (i = 0; i < adapter->num_q_vectors; i++) {
-		q_vector = adapter->q_vector[i];
-		if (adapter->msix_entries)
-			wr32(E1000_EIMC, q_vector->eims_value);
-		else
-			igb_irq_disable(adapter);
-		napi_schedule(&q_vector->napi);
-	}
-}
-#endif /* CONFIG_NET_POLL_CONTROLLER */
-
-/**
- * igb_io_error_detected - called when PCI error is detected
- * @pdev: Pointer to PCI device
- * @state: The current pci connection state
- *
- * This function is called after a PCI bus error affecting
- * this device has been detected.
- */
-=======
 static int igb_pci_sriov_configure(struct pci_dev *dev, int num_vfs)
 {
 #ifdef CONFIG_PCI_IOV
@@ -13990,21 +9575,17 @@ static int igb_pci_sriov_configure(struct pci_dev *dev, int num_vfs)
  *  This function is called after a PCI bus error affecting
  *  this device has been detected.
  **/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static pci_ers_result_t igb_io_error_detected(struct pci_dev *pdev,
 					      pci_channel_state_t state)
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct igb_adapter *adapter = netdev_priv(netdev);
 
-<<<<<<< HEAD
-=======
 	if (state == pci_channel_io_normal) {
 		dev_warn(&pdev->dev, "Non-correctable non-fatal error reported.\n");
 		return PCI_ERS_RESULT_CAN_RECOVER;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_device_detach(netdev);
 
 	if (state == pci_channel_io_perm_failure)
@@ -14014,40 +9595,23 @@ static pci_ers_result_t igb_io_error_detected(struct pci_dev *pdev,
 		igb_down(adapter);
 	pci_disable_device(pdev);
 
-<<<<<<< HEAD
-	/* Request a slot slot reset. */
-=======
 	/* Request a slot reset. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return PCI_ERS_RESULT_NEED_RESET;
 }
 
 /**
-<<<<<<< HEAD
- * igb_io_slot_reset - called after the pci bus has been reset.
- * @pdev: Pointer to PCI device
- *
- * Restart the card from scratch, as if from a cold-boot. Implementation
- * resembles the first-half of the igb_resume routine.
- */
-=======
  *  igb_io_slot_reset - called after the pci bus has been reset.
  *  @pdev: Pointer to PCI device
  *
  *  Restart the card from scratch, as if from a cold-boot. Implementation
  *  resembles the first-half of the __igb_resume routine.
  **/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static pci_ers_result_t igb_io_slot_reset(struct pci_dev *pdev)
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct igb_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
 	pci_ers_result_t result;
-<<<<<<< HEAD
-	int err;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_enable_device_mem(pdev)) {
 		dev_err(&pdev->dev,
@@ -14061,48 +9625,26 @@ static pci_ers_result_t igb_io_slot_reset(struct pci_dev *pdev)
 		pci_enable_wake(pdev, PCI_D3hot, 0);
 		pci_enable_wake(pdev, PCI_D3cold, 0);
 
-<<<<<<< HEAD
-=======
 		/* In case of PCI error, adapter lose its HW address
 		 * so we should re-assign it here.
 		 */
 		hw->hw_addr = adapter->io_addr;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		igb_reset(adapter);
 		wr32(E1000_WUS, ~0);
 		result = PCI_ERS_RESULT_RECOVERED;
 	}
 
-<<<<<<< HEAD
-	err = pci_cleanup_aer_uncorrect_error_status(pdev);
-	if (err) {
-		dev_err(&pdev->dev, "pci_cleanup_aer_uncorrect_error_status "
-		        "failed 0x%0x\n", err);
-		/* non-fatal, continue */
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
 /**
-<<<<<<< HEAD
- * igb_io_resume - called when traffic can start flowing again.
- * @pdev: Pointer to PCI device
- *
- * This callback is called when the error recovery driver tells us that
- * its OK to resume normal operation. Implementation resembles the
- * second-half of the igb_resume routine.
-=======
  *  igb_io_resume - called when traffic can start flowing again.
  *  @pdev: Pointer to PCI device
  *
  *  This callback is called when the error recovery driver tells us that
  *  its OK to resume normal operation. Implementation resembles the
  *  second-half of the __igb_resume routine.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void igb_io_resume(struct pci_dev *pdev)
 {
@@ -14119,32 +9661,6 @@ static void igb_io_resume(struct pci_dev *pdev)
 	netif_device_attach(netdev);
 
 	/* let the f/w know that the h/w is now under the control of the
-<<<<<<< HEAD
-	 * driver. */
-	igb_get_hw_control(adapter);
-}
-
-static void igb_rar_set_qsel(struct igb_adapter *adapter, u8 *addr, u32 index,
-                             u8 qsel)
-{
-	u32 rar_low, rar_high;
-	struct e1000_hw *hw = &adapter->hw;
-
-	/* HW expects these in little endian so we reverse the byte order
-	 * from network order (big endian) to little endian
-	 */
-	rar_low = ((u32) addr[0] | ((u32) addr[1] << 8) |
-	          ((u32) addr[2] << 16) | ((u32) addr[3] << 24));
-	rar_high = ((u32) addr[4] | ((u32) addr[5] << 8));
-
-	/* Indicate to hardware the Address is Valid. */
-	rar_high |= E1000_RAH_AV;
-
-	if (hw->mac.type == e1000_82575)
-		rar_high |= E1000_RAH_POOL_1 * qsel;
-	else
-		rar_high |= E1000_RAH_POOL_1 << qsel;
-=======
 	 * driver.
 	 */
 	igb_get_hw_control(adapter);
@@ -14193,7 +9709,6 @@ static void igb_rar_set_index(struct igb_adapter *adapter, u32 index)
 			break;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wr32(E1000_RAL(index), rar_low);
 	wrfl();
@@ -14202,18 +9717,6 @@ static void igb_rar_set_index(struct igb_adapter *adapter, u32 index)
 }
 
 static int igb_set_vf_mac(struct igb_adapter *adapter,
-<<<<<<< HEAD
-                          int vf, unsigned char *mac_addr)
-{
-	struct e1000_hw *hw = &adapter->hw;
-	/* VF MAC addresses start at end of receive addresses and moves
-	 * torwards the first, as a result a collision should not be possible */
-	int rar_entry = hw->mac.rar_entry_count - (vf + 1);
-
-	memcpy(adapter->vf_data[vf].vf_mac_addresses, mac_addr, ETH_ALEN);
-
-	igb_rar_set_qsel(adapter, mac_addr, rar_entry, vf);
-=======
 			  int vf, unsigned char *mac_addr)
 {
 	struct e1000_hw *hw = &adapter->hw;
@@ -14228,7 +9731,6 @@ static int igb_set_vf_mac(struct igb_adapter *adapter,
 	adapter->mac_table[rar_entry].queue = vf;
 	adapter->mac_table[rar_entry].state |= IGB_MAC_STATE_IN_USE;
 	igb_rar_set_index(adapter, rar_entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -14236,19 +9738,6 @@ static int igb_set_vf_mac(struct igb_adapter *adapter,
 static int igb_ndo_set_vf_mac(struct net_device *netdev, int vf, u8 *mac)
 {
 	struct igb_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	if (!is_valid_ether_addr(mac) || (vf >= adapter->vfs_allocated_count))
-		return -EINVAL;
-	adapter->vf_data[vf].flags |= IGB_VF_FLAG_PF_SET_MAC;
-	dev_info(&adapter->pdev->dev, "setting MAC %pM on VF %d\n", mac, vf);
-	dev_info(&adapter->pdev->dev, "Reload the VF driver to make this"
-				      " change effective.");
-	if (test_bit(__IGB_DOWN, &adapter->state)) {
-		dev_warn(&adapter->pdev->dev, "The VF MAC address has been set,"
-			 " but the PF device is not up.\n");
-		dev_warn(&adapter->pdev->dev, "Bring the PF device up before"
-			 " attempting to use the VF device.\n");
-=======
 
 	if (vf >= adapter->vfs_allocated_count)
 		return -EINVAL;
@@ -14279,7 +9768,6 @@ static int igb_ndo_set_vf_mac(struct net_device *netdev, int vf, u8 *mac)
 		}
 	} else {
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return igb_set_vf_mac(adapter, vf, mac);
 }
@@ -14306,32 +9794,21 @@ static void igb_set_vf_rate_limit(struct e1000_hw *hw, int vf, int tx_rate,
 		/* Calculate the rate factor values to set */
 		rf_int = link_speed / tx_rate;
 		rf_dec = (link_speed - (rf_int * tx_rate));
-<<<<<<< HEAD
-		rf_dec = (rf_dec * (1<<E1000_RTTBCNRC_RF_INT_SHIFT)) / tx_rate;
-
-		bcnrc_val = E1000_RTTBCNRC_RS_ENA;
-		bcnrc_val |= ((rf_int<<E1000_RTTBCNRC_RF_INT_SHIFT) &
-		               E1000_RTTBCNRC_RF_INT_MASK);
-=======
 		rf_dec = (rf_dec * BIT(E1000_RTTBCNRC_RF_INT_SHIFT)) /
 			 tx_rate;
 
 		bcnrc_val = E1000_RTTBCNRC_RS_ENA;
 		bcnrc_val |= FIELD_PREP(E1000_RTTBCNRC_RF_INT_MASK, rf_int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bcnrc_val |= (rf_dec & E1000_RTTBCNRC_RF_DEC_MASK);
 	} else {
 		bcnrc_val = 0;
 	}
 
 	wr32(E1000_RTTDQSEL, vf); /* vf X uses queue X */
-<<<<<<< HEAD
-=======
 	/* Set global transmit compensation time to the MMW_SIZE in RTTBCNRM
 	 * register. MMW_SIZE=0x014 if 9728-byte jumbo is supported.
 	 */
 	wr32(E1000_RTTBCNRM, 0x14);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wr32(E1000_RTTBCNRC, bcnrc_val);
 }
 
@@ -14350,12 +9827,7 @@ static void igb_check_vf_rate_limit(struct igb_adapter *adapter)
 		reset_rate = true;
 		adapter->vf_rate_link_speed = 0;
 		dev_info(&adapter->pdev->dev,
-<<<<<<< HEAD
-		         "Link speed has been changed. VF Transmit "
-		         "rate is disabled\n");
-=======
 			 "Link speed has been changed. VF Transmit rate is disabled\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < adapter->vfs_allocated_count; i++) {
@@ -14363,14 +9835,6 @@ static void igb_check_vf_rate_limit(struct igb_adapter *adapter)
 			adapter->vf_data[i].tx_rate = 0;
 
 		igb_set_vf_rate_limit(&adapter->hw, i,
-<<<<<<< HEAD
-		                      adapter->vf_data[i].tx_rate,
-		                      actual_link_speed);
-	}
-}
-
-static int igb_ndo_set_vf_bw(struct net_device *netdev, int vf, int tx_rate)
-=======
 				      adapter->vf_data[i].tx_rate,
 				      actual_link_speed);
 	}
@@ -14378,7 +9842,6 @@ static int igb_ndo_set_vf_bw(struct net_device *netdev, int vf, int tx_rate)
 
 static int igb_ndo_set_vf_bw(struct net_device *netdev, int vf,
 			     int min_tx_rate, int max_tx_rate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igb_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
@@ -14387,17 +9850,6 @@ static int igb_ndo_set_vf_bw(struct net_device *netdev, int vf,
 	if (hw->mac.type != e1000_82576)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	actual_link_speed = igb_link_mbps(adapter->link_speed);
-	if ((vf >= adapter->vfs_allocated_count) ||
-	    (!(rd32(E1000_STATUS) & E1000_STATUS_LU)) ||
-	    (tx_rate < 0) || (tx_rate > actual_link_speed))
-		return -EINVAL;
-
-	adapter->vf_rate_link_speed = actual_link_speed;
-	adapter->vf_data[vf].tx_rate = (u16)tx_rate;
-	igb_set_vf_rate_limit(hw, vf, tx_rate, actual_link_speed);
-=======
 	if (min_tx_rate)
 		return -EINVAL;
 
@@ -14411,13 +9863,10 @@ static int igb_ndo_set_vf_bw(struct net_device *netdev, int vf,
 	adapter->vf_rate_link_speed = actual_link_speed;
 	adapter->vf_data[vf].tx_rate = (u16)max_tx_rate;
 	igb_set_vf_rate_limit(hw, vf, max_tx_rate, actual_link_speed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int igb_ndo_set_vf_spoofchk(struct net_device *netdev, int vf,
 				   bool setting)
 {
@@ -14461,7 +9910,6 @@ static int igb_ndo_set_vf_trust(struct net_device *netdev, int vf, bool setting)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int igb_ndo_get_vf_config(struct net_device *netdev,
 				 int vf, struct ifla_vf_info *ivi)
 {
@@ -14470,18 +9918,12 @@ static int igb_ndo_get_vf_config(struct net_device *netdev,
 		return -EINVAL;
 	ivi->vf = vf;
 	memcpy(&ivi->mac, adapter->vf_data[vf].vf_mac_addresses, ETH_ALEN);
-<<<<<<< HEAD
-	ivi->tx_rate = adapter->vf_data[vf].tx_rate;
-	ivi->vlan = adapter->vf_data[vf].pf_vlan;
-	ivi->qos = adapter->vf_data[vf].pf_qos;
-=======
 	ivi->max_tx_rate = adapter->vf_data[vf].tx_rate;
 	ivi->min_tx_rate = 0;
 	ivi->vlan = adapter->vf_data[vf].pf_vlan;
 	ivi->qos = adapter->vf_data[vf].pf_qos;
 	ivi->spoofchk = adapter->vf_data[vf].spoofchk_enabled;
 	ivi->trusted = adapter->vf_data[vf].trusted;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -14492,12 +9934,9 @@ static void igb_vmm_control(struct igb_adapter *adapter)
 
 	switch (hw->mac.type) {
 	case e1000_82575:
-<<<<<<< HEAD
-=======
 	case e1000_i210:
 	case e1000_i211:
 	case e1000_i354:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		/* replication is not supported for 82575 */
 		return;
@@ -14506,19 +9945,13 @@ static void igb_vmm_control(struct igb_adapter *adapter)
 		reg = rd32(E1000_DTXCTL);
 		reg |= E1000_DTXCTL_VLAN_ADDED;
 		wr32(E1000_DTXCTL, reg);
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case e1000_82580:
 		/* enable replication vlan tag stripping */
 		reg = rd32(E1000_RPLOLR);
 		reg |= E1000_RPLOLR_STRVLAN;
 		wr32(E1000_RPLOLR, reg);
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case e1000_i350:
 		/* none of the above registers are supported by i350 */
 		break;
@@ -14528,11 +9961,7 @@ static void igb_vmm_control(struct igb_adapter *adapter)
 		igb_vmdq_set_loopback_pf(hw, true);
 		igb_vmdq_set_replication_pf(hw, true);
 		igb_vmdq_set_anti_spoofing_pf(hw, true,
-<<<<<<< HEAD
-						adapter->vfs_allocated_count);
-=======
 					      adapter->vfs_allocated_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		igb_vmdq_set_loopback_pf(hw, false);
 		igb_vmdq_set_replication_pf(hw, false);
@@ -14544,41 +9973,6 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
 	struct e1000_hw *hw = &adapter->hw;
 	u32 dmac_thr;
 	u16 hwm;
-<<<<<<< HEAD
-
-	if (hw->mac.type > e1000_82580) {
-		if (adapter->flags & IGB_FLAG_DMAC) {
-			u32 reg;
-
-			/* force threshold to 0. */
-			wr32(E1000_DMCTXTH, 0);
-
-			/*
-			 * DMA Coalescing high water mark needs to be greater
-			 * than the Rx threshold. Set hwm to PBA - max frame
-			 * size in 16B units, capping it at PBA - 6KB.
-			 */
-			hwm = 64 * pba - adapter->max_frame_size / 16;
-			if (hwm < 64 * (pba - 6))
-				hwm = 64 * (pba - 6);
-			reg = rd32(E1000_FCRTC);
-			reg &= ~E1000_FCRTC_RTH_COAL_MASK;
-			reg |= ((hwm << E1000_FCRTC_RTH_COAL_SHIFT)
-				& E1000_FCRTC_RTH_COAL_MASK);
-			wr32(E1000_FCRTC, reg);
-
-			/*
-			 * Set the DMA Coalescing Rx threshold to PBA - 2 * max
-			 * frame size, capping it at PBA - 10KB.
-			 */
-			dmac_thr = pba - adapter->max_frame_size / 512;
-			if (dmac_thr < pba - 10)
-				dmac_thr = pba - 10;
-			reg = rd32(E1000_DMACR);
-			reg &= ~E1000_DMACR_DMACTHR_MASK;
-			reg |= ((dmac_thr << E1000_DMACR_DMACTHR_SHIFT)
-				& E1000_DMACR_DMACTHR_MASK);
-=======
 	u32 reg;
 
 	if (hw->mac.type > e1000_82580) {
@@ -14603,19 +9997,12 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
 			reg = rd32(E1000_DMACR);
 			reg &= ~E1000_DMACR_DMACTHR_MASK;
 			reg |= FIELD_PREP(E1000_DMACR_DMACTHR_MASK, dmac_thr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* transition to L0x or L1 if available..*/
 			reg |= (E1000_DMACR_DMAC_EN | E1000_DMACR_DMAC_LX_MASK);
 
 			/* watchdog timer= +-1000 usec in 32usec intervals */
 			reg |= (1000 >> 5);
-<<<<<<< HEAD
-			wr32(E1000_DMACR, reg);
-
-			/*
-			 * no lower threshold to disable
-=======
 
 			/* Disable BMC-to-OS Watchdog Enable */
 			if (hw->mac.type != e1000_i354)
@@ -14623,7 +10010,6 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
 			wr32(E1000_DMACR, reg);
 
 			/* no lower threshold to disable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * coalescing(smart fifb)-UTRESH=0
 			 */
 			wr32(E1000_DMCRTRH, 0);
@@ -14632,47 +10018,27 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
 
 			wr32(E1000_DMCTLX, reg);
 
-<<<<<<< HEAD
-			/*
-			 * free space in tx packet buffer to wake from
-=======
 			/* free space in tx packet buffer to wake from
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * DMA coal
 			 */
 			wr32(E1000_DMCTXTH, (IGB_MIN_TXPBSIZE -
 			     (IGB_TX_BUF_4096 + adapter->max_frame_size)) >> 6);
-<<<<<<< HEAD
-
-			/*
-			 * make low power state decision controlled
-			 * by DMA coal
-			 */
-			reg = rd32(E1000_PCIEMISC);
-			reg &= ~E1000_PCIEMISC_LX_DECISION;
-=======
 		}
 
 		if (hw->mac.type >= e1000_i210 ||
 		    (adapter->flags & IGB_FLAG_DMAC)) {
 			reg = rd32(E1000_PCIEMISC);
 			reg |= E1000_PCIEMISC_LX_DECISION;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wr32(E1000_PCIEMISC, reg);
 		} /* endif adapter->dmac is not disabled */
 	} else if (hw->mac.type == e1000_82580) {
 		u32 reg = rd32(E1000_PCIEMISC);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wr32(E1000_PCIEMISC, reg & ~E1000_PCIEMISC_LX_DECISION);
 		wr32(E1000_DMACR, 0);
 	}
 }
 
-<<<<<<< HEAD
-=======
 /**
  *  igb_read_i2c_byte - Reads 8 bit word over I2C
  *  @hw: pointer to hardware structure
@@ -14791,5 +10157,4 @@ static void igb_nfc_filter_restore(struct igb_adapter *adapter)
 
 	spin_unlock(&adapter->nfc_lock);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* igb_main.c */

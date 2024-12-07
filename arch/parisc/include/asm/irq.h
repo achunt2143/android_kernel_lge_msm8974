@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/asm-parisc/irq.h
  *
@@ -50,10 +47,4 @@ extern unsigned long txn_affinity_addr(unsigned int irq, int cpu);
 extern int cpu_claim_irq(unsigned int irq, struct irq_chip *, void *);
 extern int cpu_check_affinity(struct irq_data *d, const struct cpumask *dest);
 
-<<<<<<< HEAD
-/* soft power switch support (power.c) */
-extern struct tasklet_struct power_tasklet;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _ASM_PARISC_IRQ_H */

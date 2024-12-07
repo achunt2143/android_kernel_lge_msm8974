@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Date: 2005/10/24 23:18:13 $ $RCSfile: mv88e1xxx.c,v $ $Revision: 1.49 $ */
 #include "common.h"
 #include "mv88e1xxx.h"
@@ -341,11 +338,7 @@ static void mv88e1xxx_destroy(struct cphy *cphy)
 	kfree(cphy);
 }
 
-<<<<<<< HEAD
-static struct cphy_ops mv88e1xxx_ops = {
-=======
 static const struct cphy_ops mv88e1xxx_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.destroy              = mv88e1xxx_destroy,
 	.reset                = mv88e1xxx_reset,
 	.interrupt_enable     = mv88e1xxx_interrupt_enable,

@@ -1,29 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/net/ethernet/ethoc.c
  *
  * Copyright (C) 2007-2008 Avionic Design Development GmbH
  * Copyright (C) 2008-2009 Avionic Design GmbH
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Written by Thierry Reding <thierry.reding@avionic-design.de>
  */
 
 #include <linux/dma-mapping.h>
 #include <linux/etherdevice.h>
-<<<<<<< HEAD
-=======
 #include <linux/clk.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crc32.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -33,10 +20,7 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/of.h>
-<<<<<<< HEAD
-=======
 #include <linux/of_net.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <net/ethoc.h>
 
@@ -66,10 +50,7 @@ MODULE_PARM_DESC(buffer_size, "DMA buffer allocation size");
 #define	ETH_HASH0	0x48
 #define	ETH_HASH1	0x4c
 #define	ETH_TXCTRL	0x50
-<<<<<<< HEAD
-=======
 #define	ETH_END		0x54
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* mode register */
 #define	MODER_RXEN	(1 <<  0) /* receive enable */
@@ -196,13 +177,8 @@ MODULE_PARM_DESC(buffer_size, "DMA buffer allocation size");
  * struct ethoc - driver-private device structure
  * @iobase:	pointer to I/O memory region
  * @membase:	pointer to buffer memory region
-<<<<<<< HEAD
- * @dma_alloc:	dma allocated buffer size
- * @io_region_size:	I/O memory region size
-=======
  * @big_endian: just big or little (endian)
  * @num_bd:	number of buffer descriptors
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @num_tx:	number of send buffers
  * @cur_tx:	last send buffer written
  * @dty_tx:	last buffer actually sent
@@ -213,30 +189,18 @@ MODULE_PARM_DESC(buffer_size, "DMA buffer allocation size");
  * @napi:	NAPI structure
  * @msg_enable:	device state flags
  * @lock:	device lock
-<<<<<<< HEAD
- * @phy:	attached PHY
- * @mdio:	MDIO bus for PHY access
- * @phy_id:	address of attached PHY
-=======
  * @mdio:	MDIO bus for PHY access
  * @clk:	clock
  * @phy_id:	address of attached PHY
  * @old_link:	previous link info
  * @old_duplex: previous duplex info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ethoc {
 	void __iomem *iobase;
 	void __iomem *membase;
-<<<<<<< HEAD
-	int dma_alloc;
-	resource_size_t io_region_size;
-
-=======
 	bool big_endian;
 
 	unsigned int num_bd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int num_tx;
 	unsigned int cur_tx;
 	unsigned int dty_tx;
@@ -244,11 +208,7 @@ struct ethoc {
 	unsigned int num_rx;
 	unsigned int cur_rx;
 
-<<<<<<< HEAD
-	void** vma;
-=======
 	void **vma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct net_device *netdev;
 	struct napi_struct napi;
@@ -256,18 +216,12 @@ struct ethoc {
 
 	spinlock_t lock;
 
-<<<<<<< HEAD
-	struct phy_device *phy;
-	struct mii_bus *mdio;
-	s8 phy_id;
-=======
 	struct mii_bus *mdio;
 	struct clk *clk;
 	s8 phy_id;
 
 	int old_link;
 	int old_duplex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -282,26 +236,18 @@ struct ethoc_bd {
 
 static inline u32 ethoc_read(struct ethoc *dev, loff_t offset)
 {
-<<<<<<< HEAD
-	return ioread32(dev->iobase + offset);
-=======
 	if (dev->big_endian)
 		return ioread32be(dev->iobase + offset);
 	else
 		return ioread32(dev->iobase + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ethoc_write(struct ethoc *dev, loff_t offset, u32 data)
 {
-<<<<<<< HEAD
-	iowrite32(data, dev->iobase + offset);
-=======
 	if (dev->big_endian)
 		iowrite32be(data, dev->iobase + offset);
 	else
 		iowrite32(data, dev->iobase + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ethoc_read_bd(struct ethoc *dev, int index,
@@ -357,11 +303,7 @@ static int ethoc_init_ring(struct ethoc *dev, unsigned long mem_start)
 {
 	struct ethoc_bd bd;
 	int i;
-<<<<<<< HEAD
-	void* vma;
-=======
 	void *vma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->cur_tx = 0;
 	dev->dty_tx = 0;
@@ -516,13 +458,8 @@ static int ethoc_rx(struct net_device *dev, int limit)
 				netif_receive_skb(skb);
 			} else {
 				if (net_ratelimit())
-<<<<<<< HEAD
-					dev_warn(&dev->dev, "low on memory - "
-							"packet dropped\n");
-=======
 					dev_warn(&dev->dev,
 					    "low on memory - packet dropped\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				dev->stats.rx_dropped++;
 				break;
@@ -629,24 +566,14 @@ static irqreturn_t ethoc_interrupt(int irq, void *dev_id)
 	pending = ethoc_read(priv, INT_SOURCE);
 	pending &= mask;
 
-<<<<<<< HEAD
-	if (unlikely(pending == 0)) {
-		return IRQ_NONE;
-	}
-=======
 	if (unlikely(pending == 0))
 		return IRQ_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ethoc_ack_irq(priv, pending);
 
 	/* We always handle the dropped packet interrupt */
 	if (pending & INT_MASK_BUSY) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "packet dropped\n");
-=======
 		dev_dbg(&dev->dev, "packet dropped\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->stats.rx_dropped++;
 	}
 
@@ -688,11 +615,7 @@ static int ethoc_poll(struct napi_struct *napi, int budget)
 	tx_work_done = ethoc_tx(priv->netdev, budget);
 
 	if (rx_work_done < budget && tx_work_done < budget) {
-<<<<<<< HEAD
-		napi_complete(napi);
-=======
 		napi_complete_done(napi, rx_work_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ethoc_enable_irq(priv, INT_MASK_TX | INT_MASK_RX);
 	}
 
@@ -707,11 +630,7 @@ static int ethoc_mdio_read(struct mii_bus *bus, int phy, int reg)
 	ethoc_write(priv, MIIADDRESS, MIIADDRESS_ADDR(phy, reg));
 	ethoc_write(priv, MIICOMMAND, MIICOMMAND_READ);
 
-<<<<<<< HEAD
-	for (i=0; i < 5; i++) {
-=======
 	for (i = 0; i < 5; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 status = ethoc_read(priv, MIISTATUS);
 		if (!(status & MIISTATUS_BUSY)) {
 			u32 data = ethoc_read(priv, MIIRX_DATA);
@@ -719,11 +638,7 @@ static int ethoc_mdio_read(struct mii_bus *bus, int phy, int reg)
 			ethoc_write(priv, MIICOMMAND, 0);
 			return data;
 		}
-<<<<<<< HEAD
-		usleep_range(100,200);
-=======
 		usleep_range(100, 200);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -EBUSY;
@@ -738,39 +653,19 @@ static int ethoc_mdio_write(struct mii_bus *bus, int phy, int reg, u16 val)
 	ethoc_write(priv, MIITX_DATA, val);
 	ethoc_write(priv, MIICOMMAND, MIICOMMAND_WRITE);
 
-<<<<<<< HEAD
-	for (i=0; i < 5; i++) {
-=======
 	for (i = 0; i < 5; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 stat = ethoc_read(priv, MIISTATUS);
 		if (!(stat & MIISTATUS_BUSY)) {
 			/* reset MII command register */
 			ethoc_write(priv, MIICOMMAND, 0);
 			return 0;
 		}
-<<<<<<< HEAD
-		usleep_range(100,200);
-=======
 		usleep_range(100, 200);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -EBUSY;
 }
 
-<<<<<<< HEAD
-static int ethoc_mdio_reset(struct mii_bus *bus)
-{
-	return 0;
-}
-
-static void ethoc_mdio_poll(struct net_device *dev)
-{
-}
-
-static int __devinit ethoc_mdio_probe(struct net_device *dev)
-=======
 static void ethoc_mdio_poll(struct net_device *dev)
 {
 	struct ethoc *priv = netdev_priv(dev);
@@ -802,33 +697,11 @@ static void ethoc_mdio_poll(struct net_device *dev)
 }
 
 static int ethoc_mdio_probe(struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ethoc *priv = netdev_priv(dev);
 	struct phy_device *phy;
 	int err;
 
-<<<<<<< HEAD
-	if (priv->phy_id != -1) {
-		phy = priv->mdio->phy_map[priv->phy_id];
-	} else {
-		phy = phy_find_first(priv->mdio);
-	}
-
-	if (!phy) {
-		dev_err(&dev->dev, "no PHY found\n");
-		return -ENXIO;
-	}
-
-	err = phy_connect_direct(dev, phy, ethoc_mdio_poll, 0,
-			PHY_INTERFACE_MODE_GMII);
-	if (err) {
-		dev_err(&dev->dev, "could not attach to PHY\n");
-		return err;
-	}
-
-	priv->phy = phy;
-=======
 	if (priv->phy_id != -1)
 		phy = mdiobus_get_phy(priv->mdio, priv->phy_id);
 	else
@@ -847,7 +720,6 @@ static int ethoc_mdio_probe(struct net_device *dev)
 
 	phy_set_max_speed(phy, SPEED_100);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -861,11 +733,8 @@ static int ethoc_open(struct net_device *dev)
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-=======
 	napi_enable(&priv->napi);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ethoc_init_ring(priv, dev->mem_start);
 	ethoc_reset(priv);
 
@@ -877,15 +746,10 @@ static int ethoc_open(struct net_device *dev)
 		netif_start_queue(dev);
 	}
 
-<<<<<<< HEAD
-	phy_start(priv->phy);
-	napi_enable(&priv->napi);
-=======
 	priv->old_link = -1;
 	priv->old_duplex = -1;
 
 	phy_start(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_msg_ifup(priv)) {
 		dev_info(&dev->dev, "I/O: %08lx Memory: %08lx-%08lx\n",
@@ -901,13 +765,8 @@ static int ethoc_stop(struct net_device *dev)
 
 	napi_disable(&priv->napi);
 
-<<<<<<< HEAD
-	if (priv->phy)
-		phy_stop(priv->phy);
-=======
 	if (dev->phydev)
 		phy_stop(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ethoc_disable_rx_and_tx(priv);
 	free_irq(dev->irq, dev);
@@ -931,53 +790,24 @@ static int ethoc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 		if (mdio->phy_id >= PHY_MAX_ADDR)
 			return -ERANGE;
 
-<<<<<<< HEAD
-		phy = priv->mdio->phy_map[mdio->phy_id];
-		if (!phy)
-			return -ENODEV;
-	} else {
-		phy = priv->phy;
-=======
 		phy = mdiobus_get_phy(priv->mdio, mdio->phy_id);
 		if (!phy)
 			return -ENODEV;
 	} else {
 		phy = dev->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return phy_mii_ioctl(phy, ifr, cmd);
 }
 
-<<<<<<< HEAD
-static int ethoc_config(struct net_device *dev, struct ifmap *map)
-{
-	return -ENOSYS;
-}
-
-static int ethoc_set_mac_address(struct net_device *dev, void *addr)
-{
-	struct ethoc *priv = netdev_priv(dev);
-	u8 *mac = (u8 *)addr;
-
-	if (!is_valid_ether_addr(mac))
-		return -EADDRNOTAVAIL;
-=======
 static void ethoc_do_set_mac_address(struct net_device *dev)
 {
 	const unsigned char *mac = dev->dev_addr;
 	struct ethoc *priv = netdev_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ethoc_write(priv, MAC_ADDR0, (mac[2] << 24) | (mac[3] << 16) |
 				     (mac[4] <<  8) | (mac[5] <<  0));
 	ethoc_write(priv, MAC_ADDR1, (mac[0] <<  8) | (mac[1] <<  0));
-<<<<<<< HEAD
-
-	memcpy(dev->dev_addr, mac, ETH_ALEN);
-	dev->addr_assign_type &= ~NET_ADDR_RANDOM;
-
-=======
 }
 
 static int ethoc_set_mac_address(struct net_device *dev, void *p)
@@ -988,7 +818,6 @@ static int ethoc_set_mac_address(struct net_device *dev, void *p)
 		return -EADDRNOTAVAIL;
 	eth_hw_addr_set(dev, addr->sa_data);
 	ethoc_do_set_mac_address(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1040,11 +869,7 @@ static int ethoc_change_mtu(struct net_device *dev, int new_mtu)
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-static void ethoc_tx_timeout(struct net_device *dev)
-=======
 static void ethoc_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ethoc *priv = netdev_priv(dev);
 	u32 pending = ethoc_read(priv, INT_SOURCE);
@@ -1059,14 +884,11 @@ static netdev_tx_t ethoc_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	unsigned int entry;
 	void *dest;
 
-<<<<<<< HEAD
-=======
 	if (skb_put_padto(skb, ETHOC_ZLEN)) {
 		dev->stats.tx_errors++;
 		goto out_no_free;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(skb->len > ETHOC_BUFSIZ)) {
 		dev->stats.tx_errors++;
 		goto out;
@@ -1101,16 +923,6 @@ static netdev_tx_t ethoc_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	skb_tx_timestamp(skb);
 out:
 	dev_kfree_skb(skb);
-<<<<<<< HEAD
-	return NETDEV_TX_OK;
-}
-
-static const struct net_device_ops ethoc_netdev_ops = {
-	.ndo_open = ethoc_open,
-	.ndo_stop = ethoc_stop,
-	.ndo_do_ioctl = ethoc_ioctl,
-	.ndo_set_config = ethoc_config,
-=======
 out_no_free:
 	return NETDEV_TX_OK;
 }
@@ -1198,7 +1010,6 @@ static const struct net_device_ops ethoc_netdev_ops = {
 	.ndo_open = ethoc_open,
 	.ndo_stop = ethoc_stop,
 	.ndo_eth_ioctl = ethoc_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address = ethoc_set_mac_address,
 	.ndo_set_rx_mode = ethoc_set_multicast_list,
 	.ndo_change_mtu = ethoc_change_mtu,
@@ -1207,34 +1018,20 @@ static const struct net_device_ops ethoc_netdev_ops = {
 };
 
 /**
-<<<<<<< HEAD
- * ethoc_probe() - initialize OpenCores ethernet MAC
- * pdev:	platform device
- */
-static int __devinit ethoc_probe(struct platform_device *pdev)
-=======
  * ethoc_probe - initialize OpenCores ethernet MAC
  * @pdev:	platform device
  */
 static int ethoc_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = NULL;
 	struct resource *res = NULL;
 	struct resource *mmio = NULL;
 	struct resource *mem = NULL;
 	struct ethoc *priv = NULL;
-<<<<<<< HEAD
-	unsigned int phy;
-	int num_bd;
-	int ret = 0;
-	bool random_mac = false;
-=======
 	int num_bd;
 	int ret = 0;
 	struct ethoc_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	u32 eth_clkfreq = pdata ? pdata->eth_clkfreq : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocate networking device */
 	netdev = alloc_etherdev(sizeof(struct ethoc));
@@ -1281,61 +1078,31 @@ static int ethoc_probe(struct platform_device *pdev)
 
 
 	/* obtain device IRQ number */
-<<<<<<< HEAD
-	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-	if (!res) {
-		dev_err(&pdev->dev, "cannot obtain IRQ\n");
-		ret = -ENXIO;
-		goto free;
-	}
-
-	netdev->irq = res->start;
-=======
 	ret = platform_get_irq(pdev, 0);
 	if (ret < 0)
 		goto free;
 
 	netdev->irq = ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* setup driver-private data */
 	priv = netdev_priv(netdev);
 	priv->netdev = netdev;
-<<<<<<< HEAD
-	priv->dma_alloc = 0;
-	priv->io_region_size = resource_size(mmio);
-
-	priv->iobase = devm_ioremap_nocache(&pdev->dev, netdev->base_addr,
-=======
 
 	priv->iobase = devm_ioremap(&pdev->dev, netdev->base_addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			resource_size(mmio));
 	if (!priv->iobase) {
 		dev_err(&pdev->dev, "cannot remap I/O memory space\n");
 		ret = -ENXIO;
-<<<<<<< HEAD
-		goto error;
-	}
-
-	if (netdev->mem_end) {
-		priv->membase = devm_ioremap_nocache(&pdev->dev,
-=======
 		goto free;
 	}
 
 	if (netdev->mem_end) {
 		priv->membase = devm_ioremap(&pdev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netdev->mem_start, resource_size(mem));
 		if (!priv->membase) {
 			dev_err(&pdev->dev, "cannot remap memory space\n");
 			ret = -ENXIO;
-<<<<<<< HEAD
-			goto error;
-=======
 			goto free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		/* Allocate buffer memory */
@@ -1346,14 +1113,6 @@ static int ethoc_probe(struct platform_device *pdev)
 			dev_err(&pdev->dev, "cannot allocate %dB buffer\n",
 				buffer_size);
 			ret = -ENOMEM;
-<<<<<<< HEAD
-			goto error;
-		}
-		netdev->mem_end = netdev->mem_start + buffer_size;
-		priv->dma_alloc = buffer_size;
-	}
-
-=======
 			goto free;
 		}
 		netdev->mem_end = netdev->mem_start + buffer_size;
@@ -1362,20 +1121,14 @@ static int ethoc_probe(struct platform_device *pdev)
 	priv->big_endian = pdata ? pdata->big_endian :
 		of_device_is_big_endian(pdev->dev.of_node);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* calculate the number of TX/RX buffers, maximum 128 supported */
 	num_bd = min_t(unsigned int,
 		128, (netdev->mem_end - netdev->mem_start + 1) / ETHOC_BUFSIZ);
 	if (num_bd < 4) {
 		ret = -ENODEV;
-<<<<<<< HEAD
-		goto error;
-	}
-=======
 		goto free;
 	}
 	priv->num_bd = num_bd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* num_tx must be a power of two */
 	priv->num_tx = rounddown_pow_of_two(num_bd >> 1);
 	priv->num_rx = num_bd - priv->num_tx;
@@ -1383,55 +1136,6 @@ static int ethoc_probe(struct platform_device *pdev)
 	dev_dbg(&pdev->dev, "ethoc: num_tx: %d num_rx: %d\n",
 		priv->num_tx, priv->num_rx);
 
-<<<<<<< HEAD
-	priv->vma = devm_kzalloc(&pdev->dev, num_bd*sizeof(void*), GFP_KERNEL);
-	if (!priv->vma) {
-		ret = -ENOMEM;
-		goto error;
-	}
-
-	/* Allow the platform setup code to pass in a MAC address. */
-	if (pdev->dev.platform_data) {
-		struct ethoc_platform_data *pdata = pdev->dev.platform_data;
-		memcpy(netdev->dev_addr, pdata->hwaddr, IFHWADDRLEN);
-		priv->phy_id = pdata->phy_id;
-	} else {
-		priv->phy_id = -1;
-
-#ifdef CONFIG_OF
-		{
-		const uint8_t* mac;
-
-		mac = of_get_property(pdev->dev.of_node,
-				      "local-mac-address",
-				      NULL);
-		if (mac)
-			memcpy(netdev->dev_addr, mac, IFHWADDRLEN);
-		}
-#endif
-	}
-
-	/* Check that the given MAC address is valid. If it isn't, read the
-	 * current MAC from the controller. */
-	if (!is_valid_ether_addr(netdev->dev_addr))
-		ethoc_get_mac_address(netdev, netdev->dev_addr);
-
-	/* Check the MAC again for validity, if it still isn't choose and
-	 * program a random one. */
-	if (!is_valid_ether_addr(netdev->dev_addr)) {
-		random_ether_addr(netdev->dev_addr);
-		random_mac = true;
-	}
-
-	ret = ethoc_set_mac_address(netdev, netdev->dev_addr);
-	if (ret) {
-		dev_err(&netdev->dev, "failed to set MAC address\n");
-		goto error;
-	}
-
-	if (random_mac)
-		netdev->addr_assign_type |= NET_ADDR_RANDOM;
-=======
 	priv->vma = devm_kcalloc(&pdev->dev, num_bd, sizeof(void *),
 				 GFP_KERNEL);
 	if (!priv->vma) {
@@ -1486,17 +1190,12 @@ static int ethoc_probe(struct platform_device *pdev)
 			    (ethoc_read(priv, MIIMODER) & MIIMODER_NOPRE) |
 			    clkdiv);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* register MII bus */
 	priv->mdio = mdiobus_alloc();
 	if (!priv->mdio) {
 		ret = -ENOMEM;
-<<<<<<< HEAD
-		goto free;
-=======
 		goto free2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	priv->mdio->name = "ethoc-mdio";
@@ -1504,31 +1203,12 @@ static int ethoc_probe(struct platform_device *pdev)
 			priv->mdio->name, pdev->id);
 	priv->mdio->read = ethoc_mdio_read;
 	priv->mdio->write = ethoc_mdio_write;
-<<<<<<< HEAD
-	priv->mdio->reset = ethoc_mdio_reset;
-	priv->mdio->priv = priv;
-
-	priv->mdio->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
-	if (!priv->mdio->irq) {
-		ret = -ENOMEM;
-		goto free_mdio;
-	}
-
-	for (phy = 0; phy < PHY_MAX_ADDR; phy++)
-		priv->mdio->irq[phy] = PHY_POLL;
-
-	ret = mdiobus_register(priv->mdio);
-	if (ret) {
-		dev_err(&netdev->dev, "failed to register MDIO bus\n");
-		goto free_mdio;
-=======
 	priv->mdio->priv = priv;
 
 	ret = mdiobus_register(priv->mdio);
 	if (ret) {
 		dev_err(&netdev->dev, "failed to register MDIO bus\n");
 		goto free3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = ethoc_mdio_probe(netdev);
@@ -1537,25 +1217,14 @@ static int ethoc_probe(struct platform_device *pdev)
 		goto error;
 	}
 
-<<<<<<< HEAD
-	ether_setup(netdev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* setup the net_device structure */
 	netdev->netdev_ops = &ethoc_netdev_ops;
 	netdev->watchdog_timeo = ETHOC_TIMEOUT;
 	netdev->features |= 0;
-<<<<<<< HEAD
-
-	/* setup NAPI */
-	netif_napi_add(netdev, &priv->napi, ethoc_poll, 64);
-=======
 	netdev->ethtool_ops = &ethoc_ethtool_ops;
 
 	/* setup NAPI */
 	netif_napi_add(netdev, &priv->napi, ethoc_poll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&priv->lock);
 
@@ -1571,16 +1240,10 @@ error2:
 	netif_napi_del(&priv->napi);
 error:
 	mdiobus_unregister(priv->mdio);
-<<<<<<< HEAD
-free_mdio:
-	kfree(priv->mdio->irq);
-	mdiobus_free(priv->mdio);
-=======
 free3:
 	mdiobus_free(priv->mdio);
 free2:
 	clk_disable_unprepare(priv->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free:
 	free_netdev(netdev);
 out:
@@ -1588,40 +1251,14 @@ out:
 }
 
 /**
-<<<<<<< HEAD
- * ethoc_remove() - shutdown OpenCores ethernet MAC
- * @pdev:	platform device
- */
-static int __devexit ethoc_remove(struct platform_device *pdev)
-=======
  * ethoc_remove - shutdown OpenCores ethernet MAC
  * @pdev:	platform device
  */
 static void ethoc_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = platform_get_drvdata(pdev);
 	struct ethoc *priv = netdev_priv(netdev);
 
-<<<<<<< HEAD
-	platform_set_drvdata(pdev, NULL);
-
-	if (netdev) {
-		netif_napi_del(&priv->napi);
-		phy_disconnect(priv->phy);
-		priv->phy = NULL;
-
-		if (priv->mdio) {
-			mdiobus_unregister(priv->mdio);
-			kfree(priv->mdio->irq);
-			mdiobus_free(priv->mdio);
-		}
-		unregister_netdev(netdev);
-		free_netdev(netdev);
-	}
-
-	return 0;
-=======
 	if (netdev) {
 		netif_napi_del(&priv->napi);
 		phy_disconnect(netdev->phydev);
@@ -1634,7 +1271,6 @@ static void ethoc_remove(struct platform_device *pdev)
 		unregister_netdev(netdev);
 		free_netdev(netdev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -1652,11 +1288,7 @@ static int ethoc_resume(struct platform_device *pdev)
 # define ethoc_resume  NULL
 #endif
 
-<<<<<<< HEAD
-static struct of_device_id ethoc_match[] = {
-=======
 static const struct of_device_id ethoc_match[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "opencores,ethoc", },
 	{},
 };
@@ -1664,19 +1296,11 @@ MODULE_DEVICE_TABLE(of, ethoc_match);
 
 static struct platform_driver ethoc_driver = {
 	.probe   = ethoc_probe,
-<<<<<<< HEAD
-	.remove  = __devexit_p(ethoc_remove),
-=======
 	.remove_new = ethoc_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend = ethoc_suspend,
 	.resume  = ethoc_resume,
 	.driver  = {
 		.name = "ethoc",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = ethoc_match,
 	},
 };

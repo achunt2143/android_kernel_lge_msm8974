@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * driver for the i2c-tiny-usb adapter - 1.0
  * http://www.harbaum.org/till/i2c_tiny_usb
  *
  * Copyright (C) 2006-2007 Till Harbaum (Till@Harbaum.org)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -61,14 +50,6 @@ static int usb_write(struct i2c_adapter *adapter, int cmd,
 
 static int usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs, int num)
 {
-<<<<<<< HEAD
-	unsigned char status;
-	struct i2c_msg *pmsg;
-	int i;
-
-	dev_dbg(&adapter->dev, "master xfer %d messages:\n", num);
-
-=======
 	unsigned char *pstatus;
 	struct i2c_msg *pmsg;
 	int i, ret;
@@ -79,7 +60,6 @@ static int usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs, int num)
 	if (!pstatus)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0 ; i < num ; i++) {
 		int cmd = CMD_I2C_IO;
 
@@ -104,12 +84,8 @@ static int usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs, int num)
 				     pmsg->buf, pmsg->len) != pmsg->len) {
 				dev_err(&adapter->dev,
 					"failure reading data\n");
-<<<<<<< HEAD
-				return -EREMOTEIO;
-=======
 				ret = -EIO;
 				goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			/* write data */
@@ -118,29 +94,12 @@ static int usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs, int num)
 				      pmsg->buf, pmsg->len) != pmsg->len) {
 				dev_err(&adapter->dev,
 					"failure writing data\n");
-<<<<<<< HEAD
-				return -EREMOTEIO;
-=======
 				ret = -EIO;
 				goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
 		/* read status */
-<<<<<<< HEAD
-		if (usb_read(adapter, CMD_GET_STATUS, 0, 0, &status, 1) != 1) {
-			dev_err(&adapter->dev, "failure reading status\n");
-			return -EREMOTEIO;
-		}
-
-		dev_dbg(&adapter->dev, "  status = %d\n", status);
-		if (status == STATUS_ADDRESS_NAK)
-			return -EREMOTEIO;
-	}
-
-	return i;
-=======
 		if (usb_read(adapter, CMD_GET_STATUS, 0, 0, pstatus, 1) != 1) {
 			dev_err(&adapter->dev, "failure reading status\n");
 			ret = -EIO;
@@ -158,23 +117,10 @@ static int usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs, int num)
 out:
 	kfree(pstatus);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 usb_func(struct i2c_adapter *adapter)
 {
-<<<<<<< HEAD
-	__le32 func;
-
-	/* get functionality from adapter */
-	if (usb_read(adapter, CMD_GET_FUNC, 0, 0, &func, sizeof(func)) !=
-	    sizeof(func)) {
-		dev_err(&adapter->dev, "failure reading functionality\n");
-		return 0;
-	}
-
-	return le32_to_cpu(func);
-=======
 	__le32 *pfunc;
 	u32 ret;
 
@@ -192,7 +138,6 @@ static u32 usb_func(struct i2c_adapter *adapter)
 out:
 	kfree(pfunc);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This is the actual algorithm we define */
@@ -229,13 +174,6 @@ static int usb_read(struct i2c_adapter *adapter, int cmd,
 		    int value, int index, void *data, int len)
 {
 	struct i2c_tiny_usb *dev = (struct i2c_tiny_usb *)adapter->algo_data;
-<<<<<<< HEAD
-
-	/* do control transfer */
-	return usb_control_msg(dev->usb_dev, usb_rcvctrlpipe(dev->usb_dev, 0),
-			       cmd, USB_TYPE_VENDOR | USB_RECIP_INTERFACE |
-			       USB_DIR_IN, value, index, data, len, 2000);
-=======
 	void *dmadata = kmalloc(len, GFP_KERNEL);
 	int ret;
 
@@ -250,20 +188,12 @@ static int usb_read(struct i2c_adapter *adapter, int cmd,
 	memcpy(data, dmadata, len);
 	kfree(dmadata);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int usb_write(struct i2c_adapter *adapter, int cmd,
 		     int value, int index, void *data, int len)
 {
 	struct i2c_tiny_usb *dev = (struct i2c_tiny_usb *)adapter->algo_data;
-<<<<<<< HEAD
-
-	/* do control transfer */
-	return usb_control_msg(dev->usb_dev, usb_sndctrlpipe(dev->usb_dev, 0),
-			       cmd, USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
-			       value, index, data, len, 2000);
-=======
 	void *dmadata = kmemdup(data, len, GFP_KERNEL);
 	int ret;
 
@@ -277,7 +207,6 @@ static int usb_write(struct i2c_adapter *adapter, int cmd,
 
 	kfree(dmadata);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void i2c_tiny_usb_free(struct i2c_tiny_usb *dev)
@@ -293,26 +222,16 @@ static int i2c_tiny_usb_probe(struct usb_interface *interface,
 	int retval = -ENOMEM;
 	u16 version;
 
-<<<<<<< HEAD
-=======
 	if (interface->intf_assoc &&
 	    interface->intf_assoc->bFunctionClass != USB_CLASS_VENDOR_SPEC)
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(&interface->dev, "probing usb device\n");
 
 	/* allocate memory for our device state and initialize it */
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-<<<<<<< HEAD
-	if (dev == NULL) {
-		dev_err(&interface->dev, "Out of memory\n");
-		goto error;
-	}
-=======
 	if (!dev)
 		goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->usb_dev = usb_get_dev(interface_to_usbdev(interface));
 	dev->interface = interface;

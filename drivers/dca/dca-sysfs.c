@@ -1,28 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright(c) 2007 - 2009 Intel Corporation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * The full GNU General Public License is included in this distribution in the
- * file called COPYING.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright(c) 2007 - 2009 Intel Corporation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -46,13 +24,7 @@ int dca_sysfs_add_req(struct dca_provider *dca, struct device *dev, int slot)
 
 	cd = device_create(dca_class, dca->cd, MKDEV(0, slot + 1), NULL,
 			   "requester%d", req_count++);
-<<<<<<< HEAD
-	if (IS_ERR(cd))
-		return PTR_ERR(cd);
-	return 0;
-=======
 	return PTR_ERR_OR_ZERO(cd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void dca_sysfs_remove_req(struct dca_provider *dca, int slot)
@@ -63,24 +35,6 @@ void dca_sysfs_remove_req(struct dca_provider *dca, int slot)
 int dca_sysfs_add_provider(struct dca_provider *dca, struct device *dev)
 {
 	struct device *cd;
-<<<<<<< HEAD
-	int err = 0;
-
-idr_try_again:
-	if (!idr_pre_get(&dca_idr, GFP_KERNEL))
-		return -ENOMEM;
-	spin_lock(&dca_idr_lock);
-	err = idr_get_new(&dca_idr, dca, &dca->id);
-	spin_unlock(&dca_idr_lock);
-	switch (err) {
-	case 0:
-		break;
-	case -EAGAIN:
-		goto idr_try_again;
-	default:
-		return err;
-	}
-=======
 	int ret;
 
 	idr_preload(GFP_KERNEL);
@@ -94,7 +48,6 @@ idr_try_again:
 	idr_preload_end();
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cd = device_create(dca_class, dev, MKDEV(0, 0), NULL, "dca%d", dca->id);
 	if (IS_ERR(cd)) {
@@ -121,11 +74,7 @@ int __init dca_sysfs_init(void)
 	idr_init(&dca_idr);
 	spin_lock_init(&dca_idr_lock);
 
-<<<<<<< HEAD
-	dca_class = class_create(THIS_MODULE, "dca");
-=======
 	dca_class = class_create("dca");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(dca_class)) {
 		idr_destroy(&dca_idr);
 		return PTR_ERR(dca_class);

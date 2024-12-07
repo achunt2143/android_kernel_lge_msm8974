@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_STACKTRACE_H
 #define _ASM_STACKTRACE_H
 
 #include <asm/ptrace.h>
-<<<<<<< HEAD
-=======
 #include <asm/asm.h>
 #include <linux/stringify.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_KALLSYMS
 extern int raw_show_trace;
@@ -29,8 +23,6 @@ static inline unsigned long unwind_stack(struct task_struct *task,
 }
 #endif
 
-<<<<<<< HEAD
-=======
 #define STR_PTR_LA    __stringify(PTR_LA)
 #define STR_LONG_S    __stringify(LONG_S)
 #define STR_LONG_L    __stringify(LONG_L)
@@ -39,7 +31,6 @@ static inline unsigned long unwind_stack(struct task_struct *task,
 #define STORE_ONE_REG(r) \
     STR_LONG_S   " $" __stringify(r)",("STR_LONGSIZE"*"__stringify(r)")(%1)\n\t"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __always_inline void prepare_frametrace(struct pt_regs *regs)
 {
 #ifndef CONFIG_KALLSYMS
@@ -52,23 +43,6 @@ static __always_inline void prepare_frametrace(struct pt_regs *regs)
 	__asm__ __volatile__(
 		".set push\n\t"
 		".set noat\n\t"
-<<<<<<< HEAD
-#ifdef CONFIG_64BIT
-		"1: dla $1, 1b\n\t"
-		"sd $1, %0\n\t"
-		"sd $29, %1\n\t"
-		"sd $31, %2\n\t"
-#else
-		"1: la $1, 1b\n\t"
-		"sw $1, %0\n\t"
-		"sw $29, %1\n\t"
-		"sw $31, %2\n\t"
-#endif
-		".set pop\n\t"
-		: "=m" (regs->cp0_epc),
-		"=m" (regs->regs[29]), "=m" (regs->regs[31])
-		: : "memory");
-=======
 		/* Store $1 so we can use it */
 		STR_LONG_S " $1,"STR_LONGSIZE"(%1)\n\t"
 		/* Store the PC */
@@ -110,7 +84,6 @@ static __always_inline void prepare_frametrace(struct pt_regs *regs)
 		: "=m" (regs->cp0_epc)
 		: "r" (regs->regs)
 		: "memory");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* _ASM_STACKTRACE_H */

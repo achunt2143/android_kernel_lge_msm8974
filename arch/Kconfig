@@ -1,44 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # General architecture dependent options
 #
 
-<<<<<<< HEAD
-config OPROFILE
-	tristate "OProfile system profiling"
-	depends on PROFILING
-	depends on HAVE_OPROFILE
-	select RING_BUFFER
-	select RING_BUFFER_ALLOW_SWAP
-	help
-	  OProfile is a profiling system capable of profiling the
-	  whole system, include the kernel, kernel modules, libraries,
-	  and applications.
-
-	  If unsure, say N.
-
-config OPROFILE_EVENT_MULTIPLEX
-	bool "OProfile multiplexing support (EXPERIMENTAL)"
-	default n
-	depends on OPROFILE && X86
-	help
-	  The number of hardware counters is limited. The multiplexing
-	  feature enables OProfile to gather more events than counters
-	  are provided by the hardware. This is realized by switching
-	  between events at an user specified time interval.
-
-	  If unsure, say N.
-
-config HAVE_OPROFILE
-	bool
-
-config OPROFILE_NMI_TIMER
-	def_bool y
-	depends on PERF_EVENTS && HAVE_PERF_EVENTS_NMI
-=======
 #
 # Note: arch/$(SRCARCH)/Kconfig needs to be included first so that it can
 # override the default values in this file.
@@ -93,17 +57,13 @@ config HOTPLUG_PARALLEL
 
 config GENERIC_ENTRY
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config KPROBES
 	bool "Kprobes"
 	depends on MODULES
 	depends on HAVE_KPROBES
 	select KALLSYMS
-<<<<<<< HEAD
-=======
 	select TASKS_RCU if PREEMPTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Kprobes allows you to trap at almost any kernel address and
 	  execute a callback function.  register_kprobe() establishes
@@ -112,31 +72,6 @@ config KPROBES
 	  If in doubt, say "N".
 
 config JUMP_LABEL
-<<<<<<< HEAD
-       bool "Optimize very unlikely/likely branches"
-       depends on HAVE_ARCH_JUMP_LABEL
-       help
-         This option enables a transparent branch optimization that
-	 makes certain almost-always-true or almost-always-false branch
-	 conditions even cheaper to execute within the kernel.
-
-	 Certain performance-sensitive kernel code, such as trace points,
-	 scheduler functionality, networking code and KVM have such
-	 branches and include support for this optimization technique.
-
-         If it is detected that the compiler has support for "asm goto",
-	 the kernel will compile such branches with just a nop
-	 instruction. When the condition flag is toggled to true, the
-	 nop will be converted to a jump instruction to execute the
-	 conditional block of instructions.
-
-	 This technique lowers overhead and stress on the branch prediction
-	 of the processor and generally makes the kernel faster. The update
-	 of the condition is slower, but those are always very rare.
-
-	 ( On 32-bit x86, the necessary options added to the compiler
-	   flags may increase the size of the kernel slightly. )
-=======
 	bool "Optimize very unlikely/likely branches"
 	depends on HAVE_ARCH_JUMP_LABEL
 	select OBJTOOL if HAVE_JUMP_LABEL_HACK
@@ -173,14 +108,10 @@ config STATIC_CALL_SELFTEST
 	depends on HAVE_STATIC_CALL
 	help
 	  Boot time self-test of the call patching code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config OPTPROBES
 	def_bool y
 	depends on KPROBES && HAVE_OPTPROBES
-<<<<<<< HEAD
-	depends on !PREEMPT
-=======
 	select TASKS_RCU if PREEMPTION
 
 config KPROBES_ON_FTRACE
@@ -221,7 +152,6 @@ config HAVE_64BIT_ALIGNED_ACCESS
 
 	  See Documentation/core-api/unaligned-memory-access.rst for
 	  more information on the topic of unaligned memory accesses.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HAVE_EFFICIENT_UNALIGNED_ACCESS
 	bool
@@ -239,17 +169,6 @@ config HAVE_EFFICIENT_UNALIGNED_ACCESS
 	  problems with received packets if doing so would not help
 	  much.
 
-<<<<<<< HEAD
-	  See Documentation/unaligned-memory-access.txt for more
-	  information on the topic of unaligned memory accesses.
-
-config HAVE_SYSCALL_WRAPPERS
-	bool
-
-config KRETPROBES
-	def_bool y
-	depends on KPROBES && HAVE_KRETPROBES
-=======
 	  See Documentation/core-api/unaligned-memory-access.rst for more
 	  information on the topic of unaligned memory accesses.
 
@@ -281,7 +200,6 @@ config KRETPROBE_ON_RETHOOK
 	depends on HAVE_RETHOOK
 	depends on KRETPROBES
 	select RETHOOK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config USER_RETURN_NOTIFIER
 	bool
@@ -302,10 +220,6 @@ config HAVE_KRETPROBES
 config HAVE_OPTPROBES
 	bool
 
-<<<<<<< HEAD
-config HAVE_NMI_WATCHDOG
-	bool
-=======
 config HAVE_KPROBES_ON_FTRACE
 	bool
 
@@ -332,7 +246,6 @@ config TRACE_IRQFLAGS_SUPPORT
 config TRACE_IRQFLAGS_NMI_SUPPORT
 	bool
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # An arch should select this if it provides all these things:
 #
@@ -342,33 +255,12 @@ config TRACE_IRQFLAGS_NMI_SUPPORT
 #	asm/syscall.h		supplying asm-generic/syscall.h interface
 #	linux/regset.h		user_regset interfaces
 #	CORE_DUMP_USE_REGSET	#define'd in linux/elf.h
-<<<<<<< HEAD
-#	TIF_SYSCALL_TRACE	calls tracehook_report_syscall_{entry,exit}
-#	TIF_NOTIFY_RESUME	calls tracehook_notify_resume()
-#	signal delivery		calls tracehook_signal_handler()
-=======
 #	TIF_SYSCALL_TRACE	calls ptrace_report_syscall_{entry,exit}
 #	TIF_NOTIFY_RESUME	calls resume_user_mode_work()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 config HAVE_ARCH_TRACEHOOK
 	bool
 
-<<<<<<< HEAD
-config HAVE_DMA_ATTRS
-	bool
-
-config HAVE_DMA_CONTIGUOUS
-	bool
-
-config USE_GENERIC_SMP_HELPERS
-	bool
-
-config HAVE_REGS_AND_STACK_ACCESS_API
-	bool
-	help
-	  This symbol should be selected by an architecure if it supports
-=======
 config HAVE_DMA_CONTIGUOUS
 	bool
 
@@ -468,21 +360,10 @@ config HAVE_REGS_AND_STACK_ACCESS_API
 	bool
 	help
 	  This symbol should be selected by an architecture if it supports
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  the API needed to access registers and stack entries from pt_regs,
 	  declared in asm/ptrace.h
 	  For example the kprobes-based event tracer needs this API.
 
-<<<<<<< HEAD
-config HAVE_CLK
-	bool
-	help
-	  The <linux/clk.h> calls support software clock gating and
-	  thus are a key power management tool on many systems.
-
-config HAVE_DMA_API_DEBUG
-	bool
-=======
 config HAVE_RSEQ
 	bool
 	depends on HAVE_REGS_AND_STACK_ACCESS_API
@@ -502,7 +383,6 @@ config HAVE_FUNCTION_ARG_ACCESS_API
 	  This symbol should be selected by an architecture if it supports
 	  the API needed to access function arguments from pt_regs,
 	  declared in asm/ptrace.h
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HAVE_HW_BREAKPOINT
 	bool
@@ -529,15 +409,6 @@ config HAVE_PERF_EVENTS_NMI
 	  subsystem.  Also has support for calculating CPU cycle events
 	  to determine how many clock cycles in a given period.
 
-<<<<<<< HEAD
-config HAVE_ARCH_JUMP_LABEL
-	bool
-
-config HAVE_ARCH_MUTEX_CPU_RELAX
-	bool
-
-config HAVE_RCU_TABLE_FREE
-=======
 config HAVE_HARDLOCKUP_DETECTOR_PERF
 	bool
 	depends on HAVE_PERF_EVENTS_NMI
@@ -634,18 +505,14 @@ config MMU_LAZY_TLB_REFCOUNT
 #   at least all possible CPUs in which the mm is lazy.
 # - It must meet the requirements for MMU_LAZY_TLB_REFCOUNT=n (see above).
 config MMU_LAZY_TLB_SHOOTDOWN
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool
 
 config ARCH_HAVE_NMI_SAFE_CMPXCHG
 	bool
 
-<<<<<<< HEAD
-=======
 config ARCH_HAS_NMI_SAFE_THIS_CPU_OPS
 	bool
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config HAVE_ALIGNED_STRUCT_PAGE
 	bool
 	help
@@ -660,11 +527,6 @@ config HAVE_CMPXCHG_LOCAL
 config HAVE_CMPXCHG_DOUBLE
 	bool
 
-<<<<<<< HEAD
-config ARCH_WANT_OLD_COMPAT_IPC
-	bool
-
-=======
 config ARCH_WEAK_RELEASE_ACQUIRE
 	bool
 
@@ -1144,7 +1006,6 @@ config ARCH_HAS_ELF_RANDOMIZE
 	  - arch_mmap_rnd()
 	  - arch_randomize_brk()
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config HAVE_ARCH_MMAP_RND_BITS
 	bool
 	help
@@ -1154,14 +1015,11 @@ config HAVE_ARCH_MMAP_RND_BITS
 	  - ARCH_MMAP_RND_BITS_MIN
 	  - ARCH_MMAP_RND_BITS_MAX
 
-<<<<<<< HEAD
-=======
 config HAVE_EXIT_THREAD
 	bool
 	help
 	  An architecture implements exit_thread.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ARCH_MMAP_RND_BITS_MIN
 	int
 
@@ -1221,33 +1079,6 @@ config ARCH_MMAP_RND_COMPAT_BITS
 	  This value can be changed after boot using the
 	  /proc/sys/vm/mmap_rnd_compat_bits tunable
 
-<<<<<<< HEAD
-config HAVE_ARCH_SECCOMP_FILTER
-	bool
-	help
-	  An arch should select this symbol if it provides all of these things:
-	  - syscall_get_arch()
-	  - syscall_get_arguments()
-	  - syscall_rollback()
-	  - syscall_set_return_value()
-	  - SIGSYS siginfo_t support
-	  - secure_computing is called from a ptrace_event()-safe context
-	  - secure_computing return value is checked and a return value of -1
-	    results in the system call being skipped immediately.
-	  - seccomp syscall wired up
-
-config SECCOMP_FILTER
-	def_bool y
-	depends on HAVE_ARCH_SECCOMP_FILTER && SECCOMP && NET
-	help
-	  Enable tasks to build secure computing environments defined
-	  in terms of Berkeley Packet Filter programs which implement
-	  task-defined system call filtering polices.
-
-	  See Documentation/prctl/seccomp_filter.txt for details.
-
-source "kernel/gcov/Kconfig"
-=======
 config HAVE_ARCH_COMPAT_MMAP_BASES
 	bool
 	help
@@ -1787,4 +1618,3 @@ config CC_HAS_SANE_FUNCTION_ALIGNMENT
 	def_bool CC_HAS_MIN_FUNCTION_ALIGNMENT || CC_IS_CLANG
 
 endmenu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

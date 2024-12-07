@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000-2008 LSI Corporation.
  *
@@ -451,11 +448,7 @@ typedef struct _MSG_EVENT_NOTIFY_REPLY
      U32                    IOCLogInfo;                 /* 10h */
      U32                    Event;                      /* 14h */
      U32                    EventContext;               /* 18h */
-<<<<<<< HEAD
-     U32                    Data[1];                    /* 1Ch */
-=======
      U32                    Data[];			/* 1Ch */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } MSG_EVENT_NOTIFY_REPLY, MPI_POINTER PTR_MSG_EVENT_NOTIFY_REPLY,
   EventNotificationReply_t, MPI_POINTER pEventNotificationReply_t;
 

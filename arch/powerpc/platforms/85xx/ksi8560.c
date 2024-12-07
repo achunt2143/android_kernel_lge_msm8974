@@ -18,12 +18,8 @@
 #include <linux/kdev_t.h>
 #include <linux/delay.h>
 #include <linux/seq_file.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-=======
 #include <linux/of.h>
 #include <linux/of_address.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/time.h>
 #include <asm/machdep.h>
@@ -31,10 +27,6 @@
 #include <asm/mpic.h>
 #include <mm/mmu_decl.h>
 #include <asm/udbg.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sysdev/fsl_soc.h>
 #include <sysdev/fsl_pci.h>
@@ -52,11 +44,7 @@
 
 static void __iomem *cpld_base = NULL;
 
-<<<<<<< HEAD
-static void machine_restart(char *cmd)
-=======
 static void __noreturn machine_restart(char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (cpld_base)
 		out_8(cpld_base + KSI8560_CPLD_RCR1, KSI8560_CPLD_RCR1_CPUHR);
@@ -146,11 +134,8 @@ static void __init ksi8560_setup_arch(void)
 	else
 		printk(KERN_ERR "Can't find CPLD in device tree\n");
 
-<<<<<<< HEAD
-=======
 	of_node_put(cpld);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ppc_md.progress)
 		ppc_md.progress("ksi8560_setup_arch()", 0);
 
@@ -188,32 +173,12 @@ static void ksi8560_show_cpuinfo(struct seq_file *m)
 
 machine_device_initcall(ksi8560, mpc85xx_common_publish_devices);
 
-<<<<<<< HEAD
-/*
- * Called very early, device-tree isn't unflattened
- */
-static int __init ksi8560_probe(void)
-{
-	unsigned long root = of_get_flat_dt_root();
-
-	return of_flat_dt_is_compatible(root, "emerson,KSI8560");
-}
-
-define_machine(ksi8560) {
-	.name			= "KSI8560",
-	.probe			= ksi8560_probe,
-=======
 define_machine(ksi8560) {
 	.name			= "KSI8560",
 	.compatible		= "emerson,KSI8560",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup_arch		= ksi8560_setup_arch,
 	.init_IRQ		= ksi8560_pic_init,
 	.show_cpuinfo		= ksi8560_show_cpuinfo,
 	.get_irq		= mpic_get_irq,
 	.restart		= machine_restart,
-<<<<<<< HEAD
-	.calibrate_decr		= generic_calibrate_decr,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

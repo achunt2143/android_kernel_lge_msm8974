@@ -21,11 +21,7 @@ If there is no debug info in the object, then annotated assembly is displayed.
 OPTIONS
 -------
 -i::
-<<<<<<< HEAD
---input=::
-=======
 --input=<file>::
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         Input file name. (default: perf.data unless stdin is a fifo)
 
 -d::
@@ -37,18 +33,12 @@ OPTIONS
 
 -f::
 --force::
-<<<<<<< HEAD
-        Don't complain, do it.
-=======
         Don't do ownership validation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -v::
 --verbose::
         Be more verbose. (Show symbol address, etc)
 
-<<<<<<< HEAD
-=======
 -q::
 --quiet::
 	Do not show any warnings or messages.  (Suppress -v)
@@ -57,7 +47,6 @@ OPTIONS
 --show-nr-samples::
 	Show the number of samples for each symbol
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 -D::
 --dump-raw-trace::
         Dump raw trace in ASCII.
@@ -66,8 +55,6 @@ OPTIONS
 --vmlinux=<file>::
         vmlinux pathname.
 
-<<<<<<< HEAD
-=======
 --ignore-vmlinux::
 	Ignore vmlinux files.
 
@@ -78,7 +65,6 @@ include::itrace.txt[]
 
 	To disable decoding entirely, use --no-itrace.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 -m::
 --modules::
         Load module symbols. WARNING: use only with -k and LIVE kernel.
@@ -93,9 +79,6 @@ include::itrace.txt[]
 
 --stdio:: Use the stdio interface.
 
-<<<<<<< HEAD
---tui:: Use the TUI interface Use of --tui requires a tty, if one is not
-=======
 --stdio2:: Use the stdio2 interface, non-interactive, uses the TUI formatting.
 
 --stdio-color=<mode>::
@@ -106,20 +89,14 @@ include::itrace.txt[]
 	using 'always'.
 
 --tui:: Use the TUI interface. Use of --tui requires a tty, if one is not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	present, as when piping to other commands, the stdio interface is
 	used. This interfaces starts by centering on the line with more
 	samples, TAB/UNTAB cycles through the lines with more samples.
 
-<<<<<<< HEAD
--C::
---cpu:: Only report samples for the list of CPUs provided. Multiple CPUs can
-=======
 --gtk:: Use the GTK interface.
 
 -C::
 --cpu=<cpu>:: Only report samples for the list of CPUs provided. Multiple CPUs can
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	be provided as a comma-separated list with no space: 0,1. Ranges of
 	CPUs are specified with -: 0-2. Default is to report samples on all
 	CPUs.
@@ -127,11 +104,8 @@ include::itrace.txt[]
 --asm-raw::
 	Show raw instruction encoding of assembly instructions.
 
-<<<<<<< HEAD
-=======
 --show-total-period:: Show a column with the sum of periods.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 --source::
 	Interleave source code with assembly code. Enabled by default,
 	disable with --no-source.
@@ -142,8 +116,6 @@ include::itrace.txt[]
 -M::
 --disassembler-style=:: Set disassembler style for objdump.
 
-<<<<<<< HEAD
-=======
 --addr2line=<path>::
         Path to addr2line binary.
 
@@ -194,7 +166,6 @@ include::itrace.txt[]
 	Show stats for the data type annotation.
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SEE ALSO
 --------
 linkperf:perf-record[1], linkperf:perf-report[1]

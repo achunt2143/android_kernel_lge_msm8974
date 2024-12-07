@@ -1,56 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm9705.c  --  ALSA Soc WM9705 codec support
  *
  * Copyright 2008 Ian Molton <spyro@f2s.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation; Version 2 of the  License only.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/device.h>
-#include <sound/core.h>
-#include <sound/pcm.h>
-#include <sound/ac97_codec.h>
-#include <sound/initval.h>
-#include <sound/soc.h>
-
-#include "wm9705.h"
-
-/*
- * WM9705 register cache
- */
-static const u16 wm9705_reg[] = {
-	0x6150, 0x8000, 0x8000, 0x8000, /* 0x0  */
-	0x0000, 0x8000, 0x8008, 0x8008, /* 0x8  */
-	0x8808, 0x8808, 0x8808, 0x8808, /* 0x10 */
-	0x8808, 0x0000, 0x8000, 0x0000, /* 0x18 */
-	0x0000, 0x0000, 0x0000, 0x000f, /* 0x20 */
-	0x0605, 0x0000, 0xbb80, 0x0000, /* 0x28 */
-	0x0000, 0xbb80, 0x0000, 0x0000, /* 0x30 */
-	0x0000, 0x2000, 0x0000, 0x0000, /* 0x38 */
-	0x0000, 0x0000, 0x0000, 0x0000, /* 0x40 */
-	0x0000, 0x0000, 0x0000, 0x0000, /* 0x48 */
-	0x0000, 0x0000, 0x0000, 0x0000, /* 0x50 */
-	0x0000, 0x0000, 0x0000, 0x0000, /* 0x58 */
-	0x0000, 0x0000, 0x0000, 0x0000, /* 0x60 */
-	0x0000, 0x0000, 0x0000, 0x0000, /* 0x68 */
-	0x0000, 0x0808, 0x0000, 0x0006, /* 0x70 */
-	0x0000, 0x0000, 0x574d, 0x4c05, /* 0x78 */
-=======
 #include <linux/mfd/wm97xx.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -114,7 +70,6 @@ static const struct regmap_config wm9705_regmap_config = {
 
 	.reg_defaults = wm9705_reg_defaults,
 	.num_reg_defaults = ARRAY_SIZE(wm9705_reg_defaults),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct snd_kcontrol_new wm9705_snd_ac97_controls[] = {
@@ -140,21 +95,12 @@ static const char *wm9705_mic[] = {"Mic 1", "Mic 2"};
 static const char *wm9705_rec_sel[] = {"Mic", "CD", "NC", "NC",
 	"Line", "Stereo Mix", "Mono Mix", "Phone"};
 
-<<<<<<< HEAD
-static const struct soc_enum wm9705_enum_mic =
-	SOC_ENUM_SINGLE(AC97_GENERAL_PURPOSE, 8, 2, wm9705_mic);
-static const struct soc_enum wm9705_enum_rec_l =
-	SOC_ENUM_SINGLE(AC97_REC_SEL, 8, 8, wm9705_rec_sel);
-static const struct soc_enum wm9705_enum_rec_r =
-	SOC_ENUM_SINGLE(AC97_REC_SEL, 0, 8, wm9705_rec_sel);
-=======
 static SOC_ENUM_SINGLE_DECL(wm9705_enum_mic,
 			    AC97_GENERAL_PURPOSE, 8, wm9705_mic);
 static SOC_ENUM_SINGLE_DECL(wm9705_enum_rec_l,
 			    AC97_REC_SEL, 8, wm9705_rec_sel);
 static SOC_ENUM_SINGLE_DECL(wm9705_enum_rec_r,
 			    AC97_REC_SEL, 0, wm9705_rec_sel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Headphone Mixer */
 static const struct snd_kcontrol_new wm9705_hp_mixer_controls[] = {
@@ -282,52 +228,6 @@ static const struct snd_soc_dapm_route wm9705_audio_map[] = {
 	{"Right ADC", NULL, "ADC PGA"},
 };
 
-<<<<<<< HEAD
-/* We use a register cache to enhance read performance. */
-static unsigned int ac97_read(struct snd_soc_codec *codec, unsigned int reg)
-{
-	u16 *cache = codec->reg_cache;
-
-	switch (reg) {
-	case AC97_RESET:
-	case AC97_VENDOR_ID1:
-	case AC97_VENDOR_ID2:
-		return soc_ac97_ops.read(codec->ac97, reg);
-	default:
-		reg = reg >> 1;
-
-		if (reg >= (ARRAY_SIZE(wm9705_reg)))
-			return -EIO;
-
-		return cache[reg];
-	}
-}
-
-static int ac97_write(struct snd_soc_codec *codec, unsigned int reg,
-	unsigned int val)
-{
-	u16 *cache = codec->reg_cache;
-
-	soc_ac97_ops.write(codec->ac97, reg, val);
-	reg = reg >> 1;
-	if (reg < (ARRAY_SIZE(wm9705_reg)))
-		cache[reg] = val;
-
-	return 0;
-}
-
-static int ac97_prepare(struct snd_pcm_substream *substream,
-			struct snd_soc_dai *dai)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_codec *codec = rtd->codec;
-	int reg;
-	u16 vra;
-
-	vra = ac97_read(codec, AC97_EXTENDED_STATUS);
-	ac97_write(codec, AC97_EXTENDED_STATUS, vra | 0x1);
-=======
 static int ac97_prepare(struct snd_pcm_substream *substream,
 			struct snd_soc_dai *dai)
 {
@@ -335,18 +235,13 @@ static int ac97_prepare(struct snd_pcm_substream *substream,
 	int reg;
 
 	snd_soc_component_update_bits(component, AC97_EXTENDED_STATUS, 0x1, 0x1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		reg = AC97_PCM_FRONT_DAC_RATE;
 	else
 		reg = AC97_PCM_LR_ADC_RATE;
 
-<<<<<<< HEAD
-	return ac97_write(codec, reg, runtime->rate);
-=======
 	return snd_soc_component_write(component, reg, substream->runtime->rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define WM9705_AC97_RATES (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_11025 | \
@@ -361,10 +256,6 @@ static const struct snd_soc_dai_ops wm9705_dai_ops = {
 static struct snd_soc_dai_driver wm9705_dai[] = {
 	{
 		.name = "wm9705-hifi",
-<<<<<<< HEAD
-		.ac97_control = 1,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.playback = {
 			.stream_name = "HiFi Playback",
 			.channels_min = 1,
@@ -393,50 +284,16 @@ static struct snd_soc_dai_driver wm9705_dai[] = {
 	}
 };
 
-<<<<<<< HEAD
-static int wm9705_reset(struct snd_soc_codec *codec)
-{
-	if (soc_ac97_ops.reset) {
-		soc_ac97_ops.reset(codec->ac97);
-		if (ac97_read(codec, 0) == wm9705_reg[0])
-			return 0; /* Success */
-	}
-
-	return -EIO;
-}
-
-#ifdef CONFIG_PM
-static int wm9705_soc_suspend(struct snd_soc_codec *codec)
-{
-	soc_ac97_ops.write(codec->ac97, AC97_POWERDOWN, 0xffff);
-=======
 #ifdef CONFIG_PM
 static int wm9705_soc_suspend(struct snd_soc_component *component)
 {
 	regcache_cache_bypass(component->regmap, true);
 	snd_soc_component_write(component, AC97_POWERDOWN, 0xffff);
 	regcache_cache_bypass(component->regmap, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wm9705_soc_resume(struct snd_soc_codec *codec)
-{
-	int i, ret;
-	u16 *cache = codec->reg_cache;
-
-	ret = wm9705_reset(codec);
-	if (ret < 0) {
-		printk(KERN_ERR "could not reset AC97 codec\n");
-		return ret;
-	}
-
-	for (i = 2; i < ARRAY_SIZE(wm9705_reg) << 1; i += 2) {
-		soc_ac97_ops.write(codec->ac97, i, cache[i>>1]);
-	}
-=======
 static int wm9705_soc_resume(struct snd_soc_component *component)
 {
 	struct wm9705_priv *wm9705 = snd_soc_component_get_drvdata(component);
@@ -448,7 +305,6 @@ static int wm9705_soc_resume(struct snd_soc_component *component)
 		return ret;
 
 	snd_soc_component_cache_sync(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -457,67 +313,6 @@ static int wm9705_soc_resume(struct snd_soc_component *component)
 #define wm9705_soc_resume NULL
 #endif
 
-<<<<<<< HEAD
-static int wm9705_soc_probe(struct snd_soc_codec *codec)
-{
-	int ret = 0;
-
-	printk(KERN_INFO "WM9705 SoC Audio Codec\n");
-
-	ret = snd_soc_new_ac97_codec(codec, &soc_ac97_ops, 0);
-	if (ret < 0) {
-		printk(KERN_ERR "wm9705: failed to register AC97 codec\n");
-		return ret;
-	}
-
-	ret = wm9705_reset(codec);
-	if (ret)
-		goto reset_err;
-
-	snd_soc_add_codec_controls(codec, wm9705_snd_ac97_controls,
-				ARRAY_SIZE(wm9705_snd_ac97_controls));
-
-	return 0;
-
-reset_err:
-	snd_soc_free_ac97_codec(codec);
-	return ret;
-}
-
-static int wm9705_soc_remove(struct snd_soc_codec *codec)
-{
-	snd_soc_free_ac97_codec(codec);
-	return 0;
-}
-
-static struct snd_soc_codec_driver soc_codec_dev_wm9705 = {
-	.probe = 	wm9705_soc_probe,
-	.remove = 	wm9705_soc_remove,
-	.suspend =	wm9705_soc_suspend,
-	.resume =	wm9705_soc_resume,
-	.read = ac97_read,
-	.write = ac97_write,
-	.reg_cache_size = ARRAY_SIZE(wm9705_reg),
-	.reg_word_size = sizeof(u16),
-	.reg_cache_step = 2,
-	.reg_cache_default = wm9705_reg,
-	.dapm_widgets = wm9705_dapm_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(wm9705_dapm_widgets),
-	.dapm_routes = wm9705_audio_map,
-	.num_dapm_routes = ARRAY_SIZE(wm9705_audio_map),
-};
-
-static __devinit int wm9705_probe(struct platform_device *pdev)
-{
-	return snd_soc_register_codec(&pdev->dev,
-			&soc_codec_dev_wm9705, wm9705_dai, ARRAY_SIZE(wm9705_dai));
-}
-
-static int __devexit wm9705_remove(struct platform_device *pdev)
-{
-	snd_soc_unregister_codec(&pdev->dev);
-	return 0;
-=======
 static int wm9705_soc_probe(struct snd_soc_component *component)
 {
 	struct wm9705_priv *wm9705 = snd_soc_component_get_drvdata(component);
@@ -588,23 +383,14 @@ static int wm9705_probe(struct platform_device *pdev)
 
 	return devm_snd_soc_register_component(&pdev->dev,
 			&soc_component_dev_wm9705, wm9705_dai, ARRAY_SIZE(wm9705_dai));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver wm9705_codec_driver = {
 	.driver = {
 			.name = "wm9705-codec",
-<<<<<<< HEAD
-			.owner = THIS_MODULE,
 	},
 
 	.probe = wm9705_probe,
-	.remove = __devexit_p(wm9705_remove),
-=======
-	},
-
-	.probe = wm9705_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(wm9705_codec_driver);

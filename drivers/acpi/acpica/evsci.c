@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: evsci - System Control Interrupt configuration and
@@ -9,46 +6,6 @@
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acevents.h"
@@ -61,11 +18,6 @@ static u32 ACPI_SYSTEM_XFACE acpi_ev_sci_xrupt_handler(void *context);
 
 /*******************************************************************************
  *
-<<<<<<< HEAD
- * FUNCTION:    acpi_ev_sci_xrupt_handler
- *
- * PARAMETERS:  Context   - Calling Context
-=======
  * FUNCTION:    acpi_ev_sci_dispatch
  *
  * PARAMETERS:  None
@@ -113,7 +65,6 @@ u32 acpi_ev_sci_dispatch(void)
  * FUNCTION:    acpi_ev_sci_xrupt_handler
  *
  * PARAMETERS:  context   - Calling Context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status code indicates whether interrupt was handled.
  *
@@ -130,11 +81,7 @@ static u32 ACPI_SYSTEM_XFACE acpi_ev_sci_xrupt_handler(void *context)
 	ACPI_FUNCTION_TRACE(ev_sci_xrupt_handler);
 
 	/*
-<<<<<<< HEAD
-	 * We are guaranteed by the ACPI CA initialization/shutdown code that
-=======
 	 * We are guaranteed by the ACPICA initialization/shutdown code that
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * if this interrupt handler is installed, ACPI is enabled.
 	 */
 
@@ -150,14 +97,11 @@ static u32 ACPI_SYSTEM_XFACE acpi_ev_sci_xrupt_handler(void *context)
 	 */
 	interrupt_handled |= acpi_ev_gpe_detect(gpe_xrupt_list);
 
-<<<<<<< HEAD
-=======
 	/* Invoke all host-installed SCI handlers */
 
 	interrupt_handled |= acpi_ev_sci_dispatch();
 
 	acpi_sci_count++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_UINT32(interrupt_handled);
 }
 
@@ -165,11 +109,7 @@ static u32 ACPI_SYSTEM_XFACE acpi_ev_sci_xrupt_handler(void *context)
  *
  * FUNCTION:    acpi_ev_gpe_xrupt_handler
  *
-<<<<<<< HEAD
- * PARAMETERS:  Context   - Calling Context
-=======
  * PARAMETERS:  context   - Calling Context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status code indicates whether interrupt was handled.
  *
@@ -185,21 +125,13 @@ u32 ACPI_SYSTEM_XFACE acpi_ev_gpe_xrupt_handler(void *context)
 	ACPI_FUNCTION_TRACE(ev_gpe_xrupt_handler);
 
 	/*
-<<<<<<< HEAD
-	 * We are guaranteed by the ACPI CA initialization/shutdown code that
-=======
 	 * We are guaranteed by the ACPICA initialization/shutdown code that
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * if this interrupt handler is installed, ACPI is enabled.
 	 */
 
 	/* GPEs: Check for and dispatch any GPEs that have occurred */
 
 	interrupt_handled |= acpi_ev_gpe_detect(gpe_xrupt_list);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_UINT32(interrupt_handled);
 }
 
@@ -230,17 +162,6 @@ u32 acpi_ev_install_sci_handler(void)
 
 /******************************************************************************
  *
-<<<<<<< HEAD
- * FUNCTION:    acpi_ev_remove_sci_handler
- *
- * PARAMETERS:  none
- *
- * RETURN:      E_OK if handler uninstalled OK, E_ERROR if handler was not
- *              installed to begin with
- *
- * DESCRIPTION: Remove the SCI interrupt handler. No further SCIs will be
- *              taken.
-=======
  * FUNCTION:    acpi_ev_remove_all_sci_handlers
  *
  * PARAMETERS:  none
@@ -250,7 +171,6 @@ u32 acpi_ev_install_sci_handler(void)
  *
  * DESCRIPTION: Remove the SCI interrupt handler. No further SCIs will be
  *              taken. Remove all host-installed SCI handlers.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note:  It doesn't seem important to disable all events or set the event
  *        enable registers to their original values. The OS should disable
@@ -259,13 +179,6 @@ u32 acpi_ev_install_sci_handler(void)
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-acpi_status acpi_ev_remove_sci_handler(void)
-{
-	acpi_status status;
-
-	ACPI_FUNCTION_TRACE(ev_remove_sci_handler);
-=======
 acpi_status acpi_ev_remove_all_sci_handlers(void)
 {
 	struct acpi_sci_handler_info *sci_handler;
@@ -273,7 +186,6 @@ acpi_status acpi_ev_remove_all_sci_handlers(void)
 	acpi_status status;
 
 	ACPI_FUNCTION_TRACE(ev_remove_all_sci_handlers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Just let the OS remove the handler and disable the level */
 
@@ -281,8 +193,6 @@ acpi_status acpi_ev_remove_all_sci_handlers(void)
 	    acpi_os_remove_interrupt_handler((u32) acpi_gbl_FADT.sci_interrupt,
 					     acpi_ev_sci_xrupt_handler);
 
-<<<<<<< HEAD
-=======
 	if (!acpi_gbl_sci_handler_list) {
 		return (status);
 	}
@@ -298,7 +208,6 @@ acpi_status acpi_ev_remove_all_sci_handlers(void)
 	}
 
 	acpi_os_release_lock(acpi_gbl_gpe_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 

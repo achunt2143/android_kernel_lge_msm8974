@@ -34,10 +34,7 @@
 
 crypto: crypto@300000 {
 	compatible = "fsl,sec-v4.0";
-<<<<<<< HEAD
-=======
 	fsl,sec-era = <1>;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	#address-cells = <1>;
 	#size-cells = <1>;
 	reg = <0x300000 0x10000>;

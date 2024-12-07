@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hfsplus/extents.c
  *
@@ -87,11 +84,7 @@ static u32 hfsplus_ext_lastblock(struct hfsplus_extent *ext)
 	return be32_to_cpu(ext->start_block) + be32_to_cpu(ext->block_count);
 }
 
-<<<<<<< HEAD
-static void __hfsplus_ext_write_extent(struct inode *inode,
-=======
 static int __hfsplus_ext_write_extent(struct inode *inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct hfs_find_data *fd)
 {
 	struct hfsplus_inode_info *hip = HFSPLUS_I(inode);
@@ -103,12 +96,6 @@ static int __hfsplus_ext_write_extent(struct inode *inode,
 			      HFSPLUS_IS_RSRC(inode) ?
 				HFSPLUS_TYPE_RSRC : HFSPLUS_TYPE_DATA);
 
-<<<<<<< HEAD
-	res = hfs_brec_find(fd);
-	if (hip->extent_state & HFSPLUS_EXT_NEW) {
-		if (res != -ENOENT)
-			return;
-=======
 	res = hfs_brec_find(fd, hfs_find_rec_by_key);
 	if (hip->extent_state & HFSPLUS_EXT_NEW) {
 		if (res != -ENOENT)
@@ -117,17 +104,12 @@ static int __hfsplus_ext_write_extent(struct inode *inode,
 		res = hfs_bmap_reserve(fd->tree, fd->tree->depth + 1);
 		if (res)
 			return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hfs_brec_insert(fd, hip->cached_extents,
 				sizeof(hfsplus_extent_rec));
 		hip->extent_state &= ~(HFSPLUS_EXT_DIRTY | HFSPLUS_EXT_NEW);
 	} else {
 		if (res)
-<<<<<<< HEAD
-			return;
-=======
 			return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hfs_bnode_write(fd->bnode, hip->cached_extents,
 				fd->entryoffset, fd->entrylength);
 		hip->extent_state &= ~HFSPLUS_EXT_DIRTY;
@@ -140,20 +122,13 @@ static int __hfsplus_ext_write_extent(struct inode *inode,
 	 * to explicily mark the inode dirty, too.
 	 */
 	set_bit(HFSPLUS_I_EXT_DIRTY, &hip->flags);
-<<<<<<< HEAD
-=======
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hfsplus_ext_write_extent_locked(struct inode *inode)
 {
-<<<<<<< HEAD
-	int res;
-=======
 	int res = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (HFSPLUS_I(inode)->extent_state & HFSPLUS_EXT_DIRTY) {
 		struct hfs_find_data fd;
@@ -161,17 +136,10 @@ static int hfsplus_ext_write_extent_locked(struct inode *inode)
 		res = hfs_find_init(HFSPLUS_SB(inode->i_sb)->ext_tree, &fd);
 		if (res)
 			return res;
-<<<<<<< HEAD
-		__hfsplus_ext_write_extent(inode, &fd);
-		hfs_find_exit(&fd);
-	}
-	return 0;
-=======
 		res = __hfsplus_ext_write_extent(inode, &fd);
 		hfs_find_exit(&fd);
 	}
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int hfsplus_ext_write_extent(struct inode *inode)
@@ -193,11 +161,7 @@ static inline int __hfsplus_ext_read_extent(struct hfs_find_data *fd,
 
 	hfsplus_ext_build_key(fd->search_key, cnid, block, type);
 	fd->key->ext.cnid = 0;
-<<<<<<< HEAD
-	res = hfs_brec_find(fd);
-=======
 	res = hfs_brec_find(fd, hfs_find_rec_by_key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res && res != -ENOENT)
 		return res;
 	if (fd->key->ext.cnid != fd->search_key->ext.cnid ||
@@ -218,16 +182,11 @@ static inline int __hfsplus_ext_cache_extent(struct hfs_find_data *fd,
 
 	WARN_ON(!mutex_is_locked(&hip->extents_lock));
 
-<<<<<<< HEAD
-	if (hip->extent_state & HFSPLUS_EXT_DIRTY)
-		__hfsplus_ext_write_extent(inode, fd);
-=======
 	if (hip->extent_state & HFSPLUS_EXT_DIRTY) {
 		res = __hfsplus_ext_write_extent(inode, fd);
 		if (res)
 			return res;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = __hfsplus_ext_read_extent(fd, hip->cached_extents, inode->i_ino,
 					block, HFSPLUS_IS_RSRC(inode) ?
@@ -273,19 +232,6 @@ int hfsplus_get_block(struct inode *inode, sector_t iblock,
 	u32 ablock, dblock, mask;
 	sector_t sector;
 	int was_dirty = 0;
-<<<<<<< HEAD
-	int shift;
-
-	/* Convert inode block to disk allocation block */
-	shift = sbi->alloc_blksz_shift - sb->s_blocksize_bits;
-	ablock = iblock >> sbi->fs_shift;
-
-	if (iblock >= hip->fs_blocks) {
-		if (iblock > hip->fs_blocks || !create)
-			return -EIO;
-		if (ablock >= hip->alloc_blocks) {
-			res = hfsplus_file_extend(inode);
-=======
 
 	/* Convert inode block to disk allocation block */
 	ablock = iblock >> sbi->fs_shift;
@@ -297,7 +243,6 @@ int hfsplus_get_block(struct inode *inode, sector_t iblock,
 			return -EIO;
 		if (ablock >= hip->alloc_blocks) {
 			res = hfsplus_file_extend(inode, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (res)
 				return res;
 		}
@@ -330,11 +275,7 @@ int hfsplus_get_block(struct inode *inode, sector_t iblock,
 	mutex_unlock(&hip->extents_lock);
 
 done:
-<<<<<<< HEAD
-	dprint(DBG_EXTENT, "get_block(%lu): %llu - %u\n",
-=======
 	hfs_dbg(EXTENT, "get_block(%lu): %llu - %u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode->i_ino, (long long)iblock, dblock);
 
 	mask = (1 << sbi->fs_shift) - 1;
@@ -357,20 +298,12 @@ static void hfsplus_dump_extent(struct hfsplus_extent *extent)
 {
 	int i;
 
-<<<<<<< HEAD
-	dprint(DBG_EXTENT, "   ");
-	for (i = 0; i < 8; i++)
-		dprint(DBG_EXTENT, " %u:%u", be32_to_cpu(extent[i].start_block),
-				 be32_to_cpu(extent[i].block_count));
-	dprint(DBG_EXTENT, "\n");
-=======
 	hfs_dbg(EXTENT, "   ");
 	for (i = 0; i < 8; i++)
 		hfs_dbg_cont(EXTENT, " %u:%u",
 			     be32_to_cpu(extent[i].start_block),
 			     be32_to_cpu(extent[i].block_count));
 	hfs_dbg_cont(EXTENT, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hfsplus_add_extent(struct hfsplus_extent *extent, u32 offset,
@@ -407,13 +340,10 @@ static int hfsplus_free_extents(struct super_block *sb,
 {
 	u32 count, start;
 	int i;
-<<<<<<< HEAD
-=======
 	int err = 0;
 
 	/* Mapping the allocation file may lock the extent tree */
 	WARN_ON(mutex_is_locked(&HFSPLUS_SB(sb)->ext_tree->tree_lock));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hfsplus_dump_extent(extent);
 	for (i = 0; i < 8; extent++, i++) {
@@ -430,29 +360,17 @@ found:
 	for (;;) {
 		start = be32_to_cpu(extent->start_block);
 		if (count <= block_nr) {
-<<<<<<< HEAD
-			hfsplus_block_free(sb, start, count);
-=======
 			err = hfsplus_block_free(sb, start, count);
 			if (err) {
 				pr_err("can't free extent\n");
 				hfs_dbg(EXTENT, " start: %u count: %u\n",
 					start, count);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			extent->block_count = 0;
 			extent->start_block = 0;
 			block_nr -= count;
 		} else {
 			count -= block_nr;
-<<<<<<< HEAD
-			hfsplus_block_free(sb, start + count, block_nr);
-			extent->block_count = cpu_to_be32(count);
-			block_nr = 0;
-		}
-		if (!block_nr || !i)
-			return 0;
-=======
 			err = hfsplus_block_free(sb, start + count, block_nr);
 			if (err) {
 				pr_err("can't free extent\n");
@@ -469,7 +387,6 @@ found:
 			 */
 			return err;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i--;
 		extent--;
 		count = be32_to_cpu(extent->block_count);
@@ -507,13 +424,6 @@ int hfsplus_free_fork(struct super_block *sb, u32 cnid,
 		if (res)
 			break;
 		start = be32_to_cpu(fd.key->ext.start_block);
-<<<<<<< HEAD
-		hfsplus_free_extents(sb, ext_entry,
-				     total_blocks - start,
-				     total_blocks);
-		hfs_brec_remove(&fd);
-		total_blocks = start;
-=======
 		hfs_brec_remove(&fd);
 
 		mutex_unlock(&fd.tree->tree_lock);
@@ -521,18 +431,13 @@ int hfsplus_free_fork(struct super_block *sb, u32 cnid,
 				     total_blocks);
 		total_blocks = start;
 		mutex_lock(&fd.tree->tree_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (total_blocks > blocks);
 	hfs_find_exit(&fd);
 
 	return res;
 }
 
-<<<<<<< HEAD
-int hfsplus_file_extend(struct inode *inode)
-=======
 int hfsplus_file_extend(struct inode *inode, bool zeroout)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *sb = inode->i_sb;
 	struct hfsplus_sb_info *sbi = HFSPLUS_SB(sb);
@@ -543,16 +448,9 @@ int hfsplus_file_extend(struct inode *inode, bool zeroout)
 	if (sbi->alloc_file->i_size * 8 <
 	    sbi->total_blocks - sbi->free_blocks + 8) {
 		/* extend alloc file */
-<<<<<<< HEAD
-		printk(KERN_ERR "hfs: extend alloc file! "
-				"(%llu,%u,%u)\n",
-			sbi->alloc_file->i_size * 8,
-			sbi->total_blocks, sbi->free_blocks);
-=======
 		pr_err_ratelimited("extend alloc file! (%llu,%u,%u)\n",
 				   sbi->alloc_file->i_size * 8,
 				   sbi->total_blocks, sbi->free_blocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSPC;
 	}
 
@@ -576,13 +474,6 @@ int hfsplus_file_extend(struct inode *inode, bool zeroout)
 		}
 	}
 
-<<<<<<< HEAD
-	dprint(DBG_EXTENT, "extend %lu: %u,%u\n", inode->i_ino, start, len);
-
-	if (hip->alloc_blocks <= hip->first_blocks) {
-		if (!hip->first_blocks) {
-			dprint(DBG_EXTENT, "first extents\n");
-=======
 	if (zeroout) {
 		res = sb_issue_zeroout(sb, start, len, GFP_NOFS);
 		if (res)
@@ -594,7 +485,6 @@ int hfsplus_file_extend(struct inode *inode, bool zeroout)
 	if (hip->alloc_blocks <= hip->first_blocks) {
 		if (!hip->first_blocks) {
 			hfs_dbg(EXTENT, "first extents\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* no extents yet */
 			hip->first_extents[0].start_block = cpu_to_be32(start);
 			hip->first_extents[0].block_count = cpu_to_be32(len);
@@ -623,17 +513,6 @@ int hfsplus_file_extend(struct inode *inode, bool zeroout)
 			goto insert_extent;
 	}
 out:
-<<<<<<< HEAD
-	mutex_unlock(&hip->extents_lock);
-	if (!res) {
-		hip->alloc_blocks += len;
-		hfsplus_mark_inode_dirty(inode, HFSPLUS_I_ALLOC_DIRTY);
-	}
-	return res;
-
-insert_extent:
-	dprint(DBG_EXTENT, "insert new extent\n");
-=======
 	if (!res) {
 		hip->alloc_blocks += len;
 		mutex_unlock(&hip->extents_lock);
@@ -645,7 +524,6 @@ insert_extent:
 
 insert_extent:
 	hfs_dbg(EXTENT, "insert new extent\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = hfsplus_ext_write_extent_locked(inode);
 	if (res)
 		goto out;
@@ -670,30 +548,12 @@ void hfsplus_file_truncate(struct inode *inode)
 	u32 alloc_cnt, blk_cnt, start;
 	int res;
 
-<<<<<<< HEAD
-	dprint(DBG_INODE, "truncate: %lu, %llu -> %llu\n",
-		inode->i_ino, (long long)hip->phys_size,
-		inode->i_size);
-=======
 	hfs_dbg(INODE, "truncate: %lu, %llu -> %llu\n",
 		inode->i_ino, (long long)hip->phys_size, inode->i_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (inode->i_size > hip->phys_size) {
 		struct address_space *mapping = inode->i_mapping;
 		struct page *page;
-<<<<<<< HEAD
-		void *fsdata;
-		loff_t size = inode->i_size;
-
-		res = pagecache_write_begin(NULL, mapping, size, 0,
-						AOP_FLAG_UNINTERRUPTIBLE,
-						&page, &fsdata);
-		if (res)
-			return;
-		res = pagecache_write_end(NULL, mapping, size,
-			0, 0, page, fsdata);
-=======
 		void *fsdata = NULL;
 		loff_t size = inode->i_size;
 
@@ -703,7 +563,6 @@ void hfsplus_file_truncate(struct inode *inode)
 			return;
 		res = generic_write_end(NULL, mapping, size, 0, 0,
 					page, fsdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res < 0)
 			return;
 		mark_inode_dirty(inode);
@@ -713,13 +572,6 @@ void hfsplus_file_truncate(struct inode *inode)
 
 	blk_cnt = (inode->i_size + HFSPLUS_SB(sb)->alloc_blksz - 1) >>
 			HFSPLUS_SB(sb)->alloc_blksz_shift;
-<<<<<<< HEAD
-	alloc_cnt = hip->alloc_blocks;
-	if (blk_cnt == alloc_cnt)
-		goto out;
-
-	mutex_lock(&hip->extents_lock);
-=======
 
 	mutex_lock(&hip->extents_lock);
 
@@ -727,7 +579,6 @@ void hfsplus_file_truncate(struct inode *inode)
 	if (blk_cnt == alloc_cnt)
 		goto out_unlock;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = hfs_find_init(HFSPLUS_SB(sb)->ext_tree, &fd);
 	if (res) {
 		mutex_unlock(&hip->extents_lock);
@@ -736,29 +587,17 @@ void hfsplus_file_truncate(struct inode *inode)
 	}
 	while (1) {
 		if (alloc_cnt == hip->first_blocks) {
-<<<<<<< HEAD
-=======
 			mutex_unlock(&fd.tree->tree_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hfsplus_free_extents(sb, hip->first_extents,
 					     alloc_cnt, alloc_cnt - blk_cnt);
 			hfsplus_dump_extent(hip->first_extents);
 			hip->first_blocks = blk_cnt;
-<<<<<<< HEAD
-=======
 			mutex_lock(&fd.tree->tree_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		res = __hfsplus_ext_cache_extent(&fd, inode, alloc_cnt);
 		if (res)
 			break;
-<<<<<<< HEAD
-		start = hip->cached_start;
-		hfsplus_free_extents(sb, hip->cached_extents,
-				     alloc_cnt - start, alloc_cnt - blk_cnt);
-		hfsplus_dump_extent(hip->cached_extents);
-=======
 
 		start = hip->cached_start;
 		if (blk_cnt <= start)
@@ -768,7 +607,6 @@ void hfsplus_file_truncate(struct inode *inode)
 				     alloc_cnt - start, alloc_cnt - blk_cnt);
 		hfsplus_dump_extent(hip->cached_extents);
 		mutex_lock(&fd.tree->tree_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (blk_cnt > start) {
 			hip->extent_state |= HFSPLUS_EXT_DIRTY;
 			break;
@@ -776,22 +614,12 @@ void hfsplus_file_truncate(struct inode *inode)
 		alloc_cnt = start;
 		hip->cached_start = hip->cached_blocks = 0;
 		hip->extent_state &= ~(HFSPLUS_EXT_DIRTY | HFSPLUS_EXT_NEW);
-<<<<<<< HEAD
-		hfs_brec_remove(&fd);
-	}
-	hfs_find_exit(&fd);
-	mutex_unlock(&hip->extents_lock);
-
-	hip->alloc_blocks = blk_cnt;
-out:
-=======
 	}
 	hfs_find_exit(&fd);
 
 	hip->alloc_blocks = blk_cnt;
 out_unlock:
 	mutex_unlock(&hip->extents_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hip->phys_size = inode->i_size;
 	hip->fs_blocks = (inode->i_size + sb->s_blocksize - 1) >>
 		sb->s_blocksize_bits;

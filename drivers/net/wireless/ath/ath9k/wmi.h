@@ -39,11 +39,7 @@ struct wmi_fw_version {
 struct wmi_event_swba {
 	__be64 tsf;
 	u8 beacon_pending;
-<<<<<<< HEAD
-};
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 64 - HTC header - WMI header - 1 / txstatus
@@ -116,10 +112,7 @@ enum wmi_cmd_id {
 	WMI_TX_STATS_CMDID,
 	WMI_RX_STATS_CMDID,
 	WMI_BITRATE_MASK_CMDID,
-<<<<<<< HEAD
-=======
 	WMI_REG_RMW_CMDID,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum wmi_event_id {
@@ -133,25 +126,19 @@ enum wmi_event_id {
 };
 
 #define MAX_CMD_NUMBER 62
-<<<<<<< HEAD
-=======
 #define MAX_RMW_CMD_NUMBER 15
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct register_write {
 	__be32 reg;
 	__be32 val;
 };
 
-<<<<<<< HEAD
-=======
 struct register_rmw {
 	__be32 reg;
 	__be32 set;
 	__be32 clr;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ath9k_htc_tx_event {
 	int count;
 	struct __wmi_event_txstatus txs;
@@ -164,11 +151,7 @@ struct wmi {
 	enum htc_endpoint_id ctrl_epid;
 	struct mutex op_mutex;
 	struct completion cmd_wait;
-<<<<<<< HEAD
-	enum wmi_cmd_id last_cmd_id;
-=======
 	u16 last_seq_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff_head wmi_event_queue;
 	struct tasklet_struct wmi_event_tasklet;
 	u16 tx_seq_id;
@@ -181,20 +164,11 @@ struct wmi {
 
 	spinlock_t wmi_lock;
 
-<<<<<<< HEAD
-=======
 	/* multi write section */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_t mwrite_cnt;
 	struct register_write multi_write[MAX_CMD_NUMBER];
 	u32 multi_write_idx;
 	struct mutex multi_write_mutex;
-<<<<<<< HEAD
-};
-
-struct wmi *ath9k_init_wmi(struct ath9k_htc_priv *priv);
-void ath9k_deinit_wmi(struct ath9k_htc_priv *priv);
-=======
 
 	/* multi rmw section */
 	atomic_t m_rmw_cnt;
@@ -205,24 +179,17 @@ void ath9k_deinit_wmi(struct ath9k_htc_priv *priv);
 };
 
 struct wmi *ath9k_init_wmi(struct ath9k_htc_priv *priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ath9k_wmi_connect(struct htc_target *htc, struct wmi *wmi,
 		      enum htc_endpoint_id *wmi_ctrl_epid);
 int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
 		  u8 *cmd_buf, u32 cmd_len,
 		  u8 *rsp_buf, u32 rsp_len,
 		  u32 timeout);
-<<<<<<< HEAD
-void ath9k_wmi_event_tasklet(unsigned long data);
-void ath9k_fatal_work(struct work_struct *work);
-void ath9k_wmi_event_drain(struct ath9k_htc_priv *priv);
-=======
 void ath9k_wmi_event_tasklet(struct tasklet_struct *t);
 void ath9k_fatal_work(struct work_struct *work);
 void ath9k_wmi_event_drain(struct ath9k_htc_priv *priv);
 void ath9k_stop_wmi(struct ath9k_htc_priv *priv);
 void ath9k_destroy_wmi(struct ath9k_htc_priv *priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WMI_CMD(_wmi_cmd)						\
 	do {								\

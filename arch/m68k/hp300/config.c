@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/m68k/hp300/config.c
  *
@@ -13,13 +10,6 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/string.h>
-#include <linux/kernel.h>
-#include <linux/console.h>
-
-#include <asm/bootinfo.h>
-=======
 #include <linux/serial_8250.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
@@ -29,16 +19,11 @@
 #include <asm/bootinfo.h>
 #include <asm/bootinfo-hp300.h>
 #include <asm/byteorder.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/blinken.h>
 #include <asm/io.h>                               /* readb() and writeb() */
 #include <asm/hp300hw.h>
-<<<<<<< HEAD
-#include <asm/rtc.h>
-=======
 #include <asm/config.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "time.h"
 
@@ -83,27 +68,10 @@ static char *hp300_models[] __initdata = {
 static char hp300_model_name[13] = "HP9000/";
 
 extern void hp300_reset(void);
-<<<<<<< HEAD
-#ifdef CONFIG_SERIAL_8250_CONSOLE
-extern int hp300_setup_serial_console(void) __init;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int __init hp300_parse_bootinfo(const struct bi_record *record)
 {
 	int unknown = 0;
-<<<<<<< HEAD
-	const unsigned long *data = record->data;
-
-	switch (record->tag) {
-	case BI_HP300_MODEL:
-		hp300_model = *data;
-		break;
-
-	case BI_HP300_UART_SCODE:
-		hp300_uart_scode = *data;
-=======
 	const void *data = record->data;
 
 	switch (be16_to_cpu(record->tag)) {
@@ -113,18 +81,13 @@ int __init hp300_parse_bootinfo(const struct bi_record *record)
 
 	case BI_HP300_UART_SCODE:
 		hp300_uart_scode = be32_to_cpup(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BI_HP300_UART_ADDR:
 		/* serial port address: ignored here */
 		break;
 
-<<<<<<< HEAD
-        default:
-=======
 	default:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unknown = 1;
 	}
 
@@ -275,15 +238,6 @@ static int hp300_hwclk(int op, struct rtc_time *t)
 	return 0;
 }
 
-<<<<<<< HEAD
-static unsigned int hp300_get_ss(void)
-{
-	return hp300_rtc_read(RTC_REG_SEC1) * 10 +
-		hp300_rtc_read(RTC_REG_SEC2);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init hp300_init_IRQ(void)
 {
 }
@@ -293,31 +247,11 @@ void __init config_hp300(void)
 	mach_sched_init      = hp300_sched_init;
 	mach_init_IRQ        = hp300_init_IRQ;
 	mach_get_model       = hp300_get_model;
-<<<<<<< HEAD
-	mach_gettimeoffset   = hp300_gettimeoffset;
 	mach_hwclk	     = hp300_hwclk;
-	mach_get_ss	     = hp300_get_ss;
-=======
-	mach_hwclk	     = hp300_hwclk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mach_reset           = hp300_reset;
 #ifdef CONFIG_HEARTBEAT
 	mach_heartbeat       = hp300_pulse;
 #endif
-<<<<<<< HEAD
-	mach_max_dma_address = 0xffffffff;
-
-	if (hp300_model >= HP_330 && hp300_model <= HP_433S && hp300_model != HP_350) {
-		printk(KERN_INFO "Detected HP9000 model %s\n", hp300_models[hp300_model-HP_320]);
-		strcat(hp300_model_name, hp300_models[hp300_model-HP_320]);
-	}
-	else {
-		panic("Unknown HP9000 Model");
-	}
-#ifdef CONFIG_SERIAL_8250_CONSOLE
-	hp300_setup_serial_console();
-#endif
-=======
 
 	if (hp300_model >= HP_330 && hp300_model <= HP_433S &&
 	    hp300_model != HP_350) {
@@ -328,5 +262,4 @@ void __init config_hp300(void)
 		panic("Unknown HP9000 Model");
 	}
 	hp300_setup_serial_console();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

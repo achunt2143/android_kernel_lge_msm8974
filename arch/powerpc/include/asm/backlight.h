@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Routines for handling backlight control on PowerBooks
  *
@@ -13,25 +10,14 @@
 #define __ASM_POWERPC_BACKLIGHT_H
 #ifdef __KERNEL__
 
-<<<<<<< HEAD
-#include <linux/fb.h>
-#include <linux/mutex.h>
-
-=======
 #include <linux/mutex.h>
 
 struct backlight_device;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* For locking instructions, see the implementation file */
 extern struct backlight_device *pmac_backlight;
 extern struct mutex pmac_backlight_mutex;
 
-<<<<<<< HEAD
-extern int pmac_backlight_curve_lookup(struct fb_info *info, int value);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int pmac_has_backlight_type(const char *type);
 
 extern void pmac_backlight_key(int direction);

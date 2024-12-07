@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kirkwood.h
  *
  * (c) 2010 Arnaud Patard <apatard@mandriva.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _KIRKWOOD_AUDIO_H
 #define _KIRKWOOD_AUDIO_H
 
-<<<<<<< HEAD
-=======
 #define DRV_NAME	"mvebu-audio"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KIRKWOOD_RECORD_WIN			0
 #define KIRKWOOD_PLAYBACK_WIN			1
 #define KIRKWOOD_MAX_AUDIO_WIN			2
@@ -50,12 +36,9 @@
 #define KIRKWOOD_RECCTL_SIZE_24		(1<<0)
 #define KIRKWOOD_RECCTL_SIZE_32		(0<<0)
 
-<<<<<<< HEAD
-=======
 #define KIRKWOOD_RECCTL_ENABLE_MASK		(KIRKWOOD_RECCTL_SPDIF_EN | \
 						 KIRKWOOD_RECCTL_I2S_EN)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KIRKWOOD_REC_BUF_ADDR			0x1004
 #define KIRKWOOD_REC_BUF_SIZE			0x1008
 #define KIRKWOOD_REC_BYTE_COUNT			0x100C
@@ -72,11 +55,7 @@
 #define KIRKWOOD_PLAYCTL_MONO_OFF		(0<<5)
 #define KIRKWOOD_PLAYCTL_I2S_MUTE		(1<<7)
 #define KIRKWOOD_PLAYCTL_SPDIF_EN		(1<<4)
-<<<<<<< HEAD
-#define KIRKWOOD_PLAYCTL_I2S_EN		(1<<3)
-=======
 #define KIRKWOOD_PLAYCTL_I2S_EN			(1<<3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KIRKWOOD_PLAYCTL_SIZE_MASK		(7<<0)
 #define KIRKWOOD_PLAYCTL_SIZE_16		(7<<0)
 #define KIRKWOOD_PLAYCTL_SIZE_16_C		(3<<0)
@@ -84,12 +63,9 @@
 #define KIRKWOOD_PLAYCTL_SIZE_24		(1<<0)
 #define KIRKWOOD_PLAYCTL_SIZE_32		(0<<0)
 
-<<<<<<< HEAD
-=======
 #define KIRKWOOD_PLAYCTL_ENABLE_MASK		(KIRKWOOD_PLAYCTL_SPDIF_EN | \
 						 KIRKWOOD_PLAYCTL_I2S_EN)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KIRKWOOD_PLAY_BUF_ADDR			0x1104
 #define KIRKWOOD_PLAY_BUF_SIZE			0x1108
 #define KIRKWOOD_PLAY_BYTE_COUNT		0x110C
@@ -105,14 +81,11 @@
 #define KIRKWOOD_DCO_SPCR_STATUS		0x120c
 #define KIRKWOOD_DCO_SPCR_STATUS_DCO_LOCK	(1<<16)
 
-<<<<<<< HEAD
-=======
 #define KIRKWOOD_CLOCKS_CTRL			0x1230
 #define KIRKWOOD_MCLK_SOURCE_MASK		(3<<0)
 #define KIRKWOOD_MCLK_SOURCE_DCO		(0<<0)
 #define KIRKWOOD_MCLK_SOURCE_EXTCLK		(3<<0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KIRKWOOD_ERR_CAUSE			0x1300
 #define KIRKWOOD_ERR_MASK			0x1304
 
@@ -149,16 +122,6 @@
 
 /* Theses values come from the marvell alsa driver */
 /* need to find where they come from               */
-<<<<<<< HEAD
-#define KIRKWOOD_SND_MIN_PERIODS		8
-#define KIRKWOOD_SND_MAX_PERIODS		16
-#define KIRKWOOD_SND_MIN_PERIOD_BYTES		0x4000
-#define KIRKWOOD_SND_MAX_PERIOD_BYTES		0x4000
-
-struct kirkwood_dma_data {
-	struct resource *mem;
-	void __iomem *io;
-=======
 #define KIRKWOOD_SND_MIN_PERIODS		2
 #define KIRKWOOD_SND_MAX_PERIODS		16
 #define KIRKWOOD_SND_MIN_PERIOD_BYTES		256
@@ -176,14 +139,10 @@ struct kirkwood_dma_data {
 	uint32_t ctl_rec;
 	struct snd_pcm_substream *substream_play;
 	struct snd_pcm_substream *substream_rec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int irq;
 	int burst;
 };
 
-<<<<<<< HEAD
-=======
 extern const struct snd_soc_component_driver kirkwood_soc_component;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

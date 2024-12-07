@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2006 Oracle.  All rights reserved.
-=======
  * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -43,20 +39,6 @@
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-
-#include "rds.h"
-#include "ib.h"
-
-static unsigned int fmr_pool_size = RDS_FMR_POOL_SIZE;
-unsigned int fmr_message_size = RDS_FMR_SIZE + 1; /* +1 allows for unaligned MRs */
-unsigned int rds_ib_retry_count = RDS_IB_DEFAULT_RETRY_COUNT;
-
-module_param(fmr_pool_size, int, 0444);
-MODULE_PARM_DESC(fmr_pool_size, " Max number of fmr per HCA");
-module_param(fmr_message_size, int, 0444);
-MODULE_PARM_DESC(fmr_message_size, " Max size of a RDMA transfer");
-=======
 #include <net/addrconf.h>
 
 #include "rds_single_path.h"
@@ -73,7 +55,6 @@ module_param(rds_ib_mr_1m_pool_size, int, 0444);
 MODULE_PARM_DESC(rds_ib_mr_1m_pool_size, " Max number of 1M mr per HCA");
 module_param(rds_ib_mr_8k_pool_size, int, 0444);
 MODULE_PARM_DESC(rds_ib_mr_8k_pool_size, " Max number of 8K mr per HCA");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(rds_ib_retry_count, int, 0444);
 MODULE_PARM_DESC(rds_ib_retry_count, " Number of hw retries before reporting an error");
 
@@ -106,11 +87,7 @@ static void rds_ib_dev_shutdown(struct rds_ib_device *rds_ibdev)
 
 	spin_lock_irqsave(&rds_ibdev->spinlock, flags);
 	list_for_each_entry(ic, &rds_ibdev->conn_list, ib_node)
-<<<<<<< HEAD
-		rds_conn_drop(ic->conn);
-=======
 		rds_conn_path_drop(&ic->conn->c_path[0], true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&rds_ibdev->spinlock, flags);
 }
 
@@ -124,17 +101,10 @@ static void rds_ib_dev_free(struct work_struct *work)
 	struct rds_ib_device *rds_ibdev = container_of(work,
 					struct rds_ib_device, free_work);
 
-<<<<<<< HEAD
-	if (rds_ibdev->mr_pool)
-		rds_ib_destroy_mr_pool(rds_ibdev->mr_pool);
-	if (rds_ibdev->mr)
-		ib_dereg_mr(rds_ibdev->mr);
-=======
 	if (rds_ibdev->mr_8k_pool)
 		rds_ib_destroy_mr_pool(rds_ibdev->mr_8k_pool);
 	if (rds_ibdev->mr_1m_pool)
 		rds_ib_destroy_mr_pool(rds_ibdev->mr_1m_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rds_ibdev->pd)
 		ib_dealloc_pd(rds_ibdev->pd);
 
@@ -143,40 +113,13 @@ static void rds_ib_dev_free(struct work_struct *work)
 		kfree(i_ipaddr);
 	}
 
-<<<<<<< HEAD
-=======
 	kfree(rds_ibdev->vector_load);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(rds_ibdev);
 }
 
 void rds_ib_dev_put(struct rds_ib_device *rds_ibdev)
 {
-<<<<<<< HEAD
-	BUG_ON(atomic_read(&rds_ibdev->refcount) <= 0);
-	if (atomic_dec_and_test(&rds_ibdev->refcount))
-		queue_work(rds_wq, &rds_ibdev->free_work);
-}
-
-static void rds_ib_add_one(struct ib_device *device)
-{
-	struct rds_ib_device *rds_ibdev;
-	struct ib_device_attr *dev_attr;
-
-	/* Only handle IB (no iWARP) devices */
-	if (device->node_type != RDMA_NODE_IB_CA)
-		return;
-
-	dev_attr = kmalloc(sizeof *dev_attr, GFP_KERNEL);
-	if (!dev_attr)
-		return;
-
-	if (ib_query_device(device, dev_attr)) {
-		rdsdebug("Query device failed for %s\n", device->name);
-		goto free_attr;
-	}
-=======
 	BUG_ON(refcount_read(&rds_ibdev->refcount) == 0);
 	if (refcount_dec_and_test(&rds_ibdev->refcount))
 		queue_work(rds_wq, &rds_ibdev->free_work);
@@ -194,66 +137,10 @@ static int rds_ib_add_one(struct ib_device *device)
 	/* Device must support FRWR */
 	if (!(device->attrs.device_cap_flags & IB_DEVICE_MEM_MGT_EXTENSIONS))
 		return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rds_ibdev = kzalloc_node(sizeof(struct rds_ib_device), GFP_KERNEL,
 				 ibdev_to_node(device));
 	if (!rds_ibdev)
-<<<<<<< HEAD
-		goto free_attr;
-
-	spin_lock_init(&rds_ibdev->spinlock);
-	atomic_set(&rds_ibdev->refcount, 1);
-	INIT_WORK(&rds_ibdev->free_work, rds_ib_dev_free);
-
-	rds_ibdev->max_wrs = dev_attr->max_qp_wr;
-	rds_ibdev->max_sge = min(dev_attr->max_sge, RDS_IB_MAX_SGE);
-
-	rds_ibdev->fmr_max_remaps = dev_attr->max_map_per_fmr?: 32;
-	rds_ibdev->max_fmrs = dev_attr->max_fmr ?
-			min_t(unsigned int, dev_attr->max_fmr, fmr_pool_size) :
-			fmr_pool_size;
-
-	rds_ibdev->max_initiator_depth = dev_attr->max_qp_init_rd_atom;
-	rds_ibdev->max_responder_resources = dev_attr->max_qp_rd_atom;
-
-	rds_ibdev->dev = device;
-	rds_ibdev->pd = ib_alloc_pd(device);
-	if (IS_ERR(rds_ibdev->pd)) {
-		rds_ibdev->pd = NULL;
-		goto put_dev;
-	}
-
-	rds_ibdev->mr = ib_get_dma_mr(rds_ibdev->pd, IB_ACCESS_LOCAL_WRITE);
-	if (IS_ERR(rds_ibdev->mr)) {
-		rds_ibdev->mr = NULL;
-		goto put_dev;
-	}
-
-	rds_ibdev->mr_pool = rds_ib_create_mr_pool(rds_ibdev);
-	if (IS_ERR(rds_ibdev->mr_pool)) {
-		rds_ibdev->mr_pool = NULL;
-		goto put_dev;
-	}
-
-	INIT_LIST_HEAD(&rds_ibdev->ipaddr_list);
-	INIT_LIST_HEAD(&rds_ibdev->conn_list);
-
-	down_write(&rds_ib_devices_lock);
-	list_add_tail_rcu(&rds_ibdev->list, &rds_ib_devices);
-	up_write(&rds_ib_devices_lock);
-	atomic_inc(&rds_ibdev->refcount);
-
-	ib_set_client_data(device, &rds_ib_client, rds_ibdev);
-	atomic_inc(&rds_ibdev->refcount);
-
-	rds_ib_nodev_connect();
-
-put_dev:
-	rds_ib_dev_put(rds_ibdev);
-free_attr:
-	kfree(dev_attr);
-=======
 		return -ENOMEM;
 
 	spin_lock_init(&rds_ibdev->spinlock);
@@ -338,7 +225,6 @@ free_attr:
 put_dev:
 	rds_ib_dev_put(rds_ibdev);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -364,11 +250,7 @@ struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device)
 	rcu_read_lock();
 	rds_ibdev = ib_get_client_data(device, &rds_ib_client);
 	if (rds_ibdev)
-<<<<<<< HEAD
-		atomic_inc(&rds_ibdev->refcount);
-=======
 		refcount_inc(&rds_ibdev->refcount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 	return rds_ibdev;
 }
@@ -380,19 +262,9 @@ struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device)
  *
  * This can be called at any time and can be racing with any other RDS path.
  */
-<<<<<<< HEAD
-static void rds_ib_remove_one(struct ib_device *device)
-{
-	struct rds_ib_device *rds_ibdev;
-
-	rds_ibdev = ib_get_client_data(device, &rds_ib_client);
-	if (!rds_ibdev)
-		return;
-=======
 static void rds_ib_remove_one(struct ib_device *device, void *client_data)
 {
 	struct rds_ib_device *rds_ibdev = client_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rds_ib_dev_shutdown(rds_ibdev);
 
@@ -423,20 +295,11 @@ static int rds_ib_conn_info_visitor(struct rds_connection *conn,
 				    void *buffer)
 {
 	struct rds_info_rdma_connection *iinfo = buffer;
-<<<<<<< HEAD
-	struct rds_ib_connection *ic;
-=======
 	struct rds_ib_connection *ic = conn->c_transport_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We will only ever look at IB transports */
 	if (conn->c_trans != &rds_ib_transport)
 		return 0;
-<<<<<<< HEAD
-
-	iinfo->src_addr = conn->c_laddr;
-	iinfo->dst_addr = conn->c_faddr;
-=======
 	if (conn->c_isv6)
 		return 0;
 
@@ -446,41 +309,25 @@ static int rds_ib_conn_info_visitor(struct rds_connection *conn,
 		iinfo->tos = conn->c_tos;
 		iinfo->sl = ic->i_sl;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&iinfo->src_gid, 0, sizeof(iinfo->src_gid));
 	memset(&iinfo->dst_gid, 0, sizeof(iinfo->dst_gid));
 	if (rds_conn_state(conn) == RDS_CONN_UP) {
 		struct rds_ib_device *rds_ibdev;
-<<<<<<< HEAD
-		struct rdma_dev_addr *dev_addr;
-
-		ic = conn->c_transport_data;
-		dev_addr = &ic->i_cm_id->route.addr.dev_addr;
-
-		rdma_addr_get_sgid(dev_addr, (union ib_gid *) &iinfo->src_gid);
-		rdma_addr_get_dgid(dev_addr, (union ib_gid *) &iinfo->dst_gid);
-=======
 
 		rdma_read_gids(ic->i_cm_id, (union ib_gid *)&iinfo->src_gid,
 			       (union ib_gid *)&iinfo->dst_gid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rds_ibdev = ic->rds_ibdev;
 		iinfo->max_send_wr = ic->i_send_ring.w_nr;
 		iinfo->max_recv_wr = ic->i_recv_ring.w_nr;
 		iinfo->max_send_sge = rds_ibdev->max_sge;
 		rds_ib_get_mr_info(rds_ibdev, iinfo);
-<<<<<<< HEAD
-=======
 		iinfo->cache_allocs = atomic_read(&ic->i_cache_allocs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 /* IPv6 version of rds_ib_conn_info_visitor(). */
 static int rds6_ib_conn_info_visitor(struct rds_connection *conn,
@@ -519,18 +366,10 @@ static int rds6_ib_conn_info_visitor(struct rds_connection *conn,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rds_ib_ic_info(struct socket *sock, unsigned int len,
 			   struct rds_info_iterator *iter,
 			   struct rds_info_lengths *lens)
 {
-<<<<<<< HEAD
-	rds_for_each_conn_info(sock, len, iter, lens,
-				rds_ib_conn_info_visitor,
-				sizeof(struct rds_info_rdma_connection));
-}
-
-=======
 	u64 buffer[(sizeof(struct rds_info_rdma_connection) + 7) / 8];
 
 	rds_for_each_conn_info(sock, len, iter, lens,
@@ -553,7 +392,6 @@ static void rds6_ib_ic_info(struct socket *sock, unsigned int len,
 			       sizeof(struct rds6_info_rdma_connection));
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Early RDS/IB was built to only bind to an address if there is an IPoIB
@@ -565,27 +403,6 @@ static void rds6_ib_ic_info(struct socket *sock, unsigned int len,
  * allowed to influence which paths have priority.  We could call userspace
  * asserting this policy "routing".
  */
-<<<<<<< HEAD
-static int rds_ib_laddr_check(__be32 addr)
-{
-	int ret;
-	struct rdma_cm_id *cm_id;
-	struct sockaddr_in sin;
-
-	/* Create a CMA ID and try to bind it. This catches both
-	 * IB and iWARP capable NICs.
-	 */
-	cm_id = rdma_create_id(NULL, NULL, RDMA_PS_TCP, IB_QPT_RC);
-	if (IS_ERR(cm_id))
-		return PTR_ERR(cm_id);
-
-	memset(&sin, 0, sizeof(sin));
-	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = addr;
-
-	/* rdma_bind_addr will only succeed for IB & iWARP devices */
-	ret = rdma_bind_addr(cm_id, (struct sockaddr *)&sin);
-=======
 static int rds_ib_laddr_check(struct net *net, const struct in6_addr *addr,
 			      __u32 scope_id)
 {
@@ -656,25 +473,17 @@ static int rds_ib_laddr_check(struct net *net, const struct in6_addr *addr,
 
 	/* rdma_bind_addr will only succeed for IB & iWARP devices */
 	ret = rdma_bind_addr(cm_id, sa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* due to this, we will claim to support iWARP devices unless we
 	   check node_type. */
 	if (ret || !cm_id->device ||
 	    cm_id->device->node_type != RDMA_NODE_IB_CA)
 		ret = -EADDRNOTAVAIL;
 
-<<<<<<< HEAD
-	rdsdebug("addr %pI4 ret %d node type %d\n",
-		&addr, ret,
-		cm_id->device ? cm_id->device->node_type : -1);
-
-=======
 	rdsdebug("addr %pI6c%%%u ret %d node type %d\n",
 		 addr, scope_id, ret,
 		 cm_id->device ? cm_id->device->node_type : -1);
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdma_destroy_id(cm_id);
 
 	return ret;
@@ -687,11 +496,6 @@ static void rds_ib_unregister_client(void)
 	flush_workqueue(rds_wq);
 }
 
-<<<<<<< HEAD
-void rds_ib_exit(void)
-{
-	rds_info_deregister_func(RDS_INFO_IB_CONNECTIONS, rds_ib_ic_info);
-=======
 static void rds_ib_set_unloading(void)
 {
 	atomic_set(&rds_ib_unloading, 1);
@@ -713,14 +517,11 @@ void rds_ib_exit(void)
 #if IS_ENABLED(CONFIG_IPV6)
 	rds_info_deregister_func(RDS6_INFO_IB_CONNECTIONS, rds6_ib_ic_info);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rds_ib_unregister_client();
 	rds_ib_destroy_nodev_conns();
 	rds_ib_sysctl_exit();
 	rds_ib_recv_exit();
 	rds_trans_unregister(&rds_ib_transport);
-<<<<<<< HEAD
-=======
 	rds_ib_mr_exit();
 }
 
@@ -731,22 +532,10 @@ static u8 rds_ib_get_tos_map(u8 tos)
 	 * user configurable map.
 	 */
 	return tos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct rds_transport rds_ib_transport = {
 	.laddr_check		= rds_ib_laddr_check,
-<<<<<<< HEAD
-	.xmit_complete		= rds_ib_xmit_complete,
-	.xmit			= rds_ib_xmit,
-	.xmit_rdma		= rds_ib_xmit_rdma,
-	.xmit_atomic		= rds_ib_xmit_atomic,
-	.recv			= rds_ib_recv,
-	.conn_alloc		= rds_ib_conn_alloc,
-	.conn_free		= rds_ib_conn_free,
-	.conn_connect		= rds_ib_conn_connect,
-	.conn_shutdown		= rds_ib_conn_shutdown,
-=======
 	.xmit_path_complete	= rds_ib_xmit_path_complete,
 	.xmit			= rds_ib_xmit,
 	.xmit_rdma		= rds_ib_xmit_rdma,
@@ -756,7 +545,6 @@ struct rds_transport rds_ib_transport = {
 	.conn_free		= rds_ib_conn_free,
 	.conn_path_connect	= rds_ib_conn_path_connect,
 	.conn_path_shutdown	= rds_ib_conn_path_shutdown,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.inc_copy_to_user	= rds_ib_inc_copy_to_user,
 	.inc_free		= rds_ib_inc_free,
 	.cm_initiate_connect	= rds_ib_cm_initiate_connect,
@@ -768,15 +556,10 @@ struct rds_transport rds_ib_transport = {
 	.sync_mr		= rds_ib_sync_mr,
 	.free_mr		= rds_ib_free_mr,
 	.flush_mrs		= rds_ib_flush_mrs,
-<<<<<<< HEAD
-	.t_owner		= THIS_MODULE,
-	.t_name			= "infiniband",
-=======
 	.get_tos_map		= rds_ib_get_tos_map,
 	.t_owner		= THIS_MODULE,
 	.t_name			= "infiniband",
 	.t_unloading		= rds_ib_is_unloading,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.t_type			= RDS_TRANS_IB
 };
 
@@ -786,12 +569,6 @@ int rds_ib_init(void)
 
 	INIT_LIST_HEAD(&rds_ib_devices);
 
-<<<<<<< HEAD
-	ret = ib_register_client(&rds_ib_client);
-	if (ret)
-		goto out;
-
-=======
 	ret = rds_ib_mr_init();
 	if (ret)
 		goto out;
@@ -800,7 +577,6 @@ int rds_ib_init(void)
 	if (ret)
 		goto out_mr_exit;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = rds_ib_sysctl_init();
 	if (ret)
 		goto out_ibreg;
@@ -809,18 +585,6 @@ int rds_ib_init(void)
 	if (ret)
 		goto out_sysctl;
 
-<<<<<<< HEAD
-	ret = rds_trans_register(&rds_ib_transport);
-	if (ret)
-		goto out_recv;
-
-	rds_info_register_func(RDS_INFO_IB_CONNECTIONS, rds_ib_ic_info);
-
-	goto out;
-
-out_recv:
-	rds_ib_recv_exit();
-=======
 	rds_trans_register(&rds_ib_transport);
 
 	rds_info_register_func(RDS_INFO_IB_CONNECTIONS, rds_ib_ic_info);
@@ -830,22 +594,14 @@ out_recv:
 
 	goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_sysctl:
 	rds_ib_sysctl_exit();
 out_ibreg:
 	rds_ib_unregister_client();
-<<<<<<< HEAD
-=======
 out_mr_exit:
 	rds_ib_mr_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

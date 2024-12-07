@@ -1,31 +1,16 @@
-<<<<<<< HEAD
-/*
- *  include/asm-s390/ebcdic.h
- *    EBCDIC -> ASCII, ASCII -> EBCDIC conversion routines.
- *
- *  S390 version
- *    Copyright (C) 1999 IBM Deutschland Entwicklung GmbH, IBM Corporation
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *    EBCDIC -> ASCII, ASCII -> EBCDIC conversion routines.
  *
  *  S390 version
  *    Copyright IBM Corp. 1999
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Martin Schwidefsky <schwidefsky@de.ibm.com>
  */
 
 #ifndef _EBCDIC_H
 #define _EBCDIC_H
 
-<<<<<<< HEAD
-#ifndef _S390_TYPES_H
-#include <types.h>
-#endif
-=======
 #include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern __u8 _ascebc_500[256];   /* ASCII -> EBCDIC 500 conversion table */
 extern __u8 _ebcasc_500[256];   /* EBCDIC 500 -> ASCII conversion table */
@@ -35,11 +20,7 @@ extern __u8 _ebc_tolower[256]; /* EBCDIC -> lowercase */
 extern __u8 _ebc_toupper[256]; /* EBCDIC -> uppercase */
 
 static inline void
-<<<<<<< HEAD
-codepage_convert(const __u8 *codepage, volatile __u8 * addr, unsigned long nr)
-=======
 codepage_convert(const __u8 *codepage, volatile char *addr, unsigned long nr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (nr-- <= 0)
 		return;

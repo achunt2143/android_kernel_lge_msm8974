@@ -1,31 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for 93xx46 EEPROMs
  *
  * (C) 2011 DENX Software Engineering, Anatolij Gustschin <agust@denx.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
 #include <linux/device.h>
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/mutex.h>
-#include <linux/slab.h>
-#include <linux/spi/spi.h>
-#include <linux/sysfs.h>
-=======
 #include <linux/gpio/consumer.h>
 #include <linux/kernel.h>
 #include <linux/log2.h>
@@ -36,7 +17,6 @@
 #include <linux/slab.h>
 #include <linux/spi/spi.h>
 #include <linux/nvmem-provider.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/eeprom_93xx46.h>
 
 #define OP_START	0x4
@@ -46,64 +26,6 @@
 #define ADDR_ERAL	0x20
 #define ADDR_EWEN	0x30
 
-<<<<<<< HEAD
-struct eeprom_93xx46_dev {
-	struct spi_device *spi;
-	struct eeprom_93xx46_platform_data *pdata;
-	struct bin_attribute bin;
-	struct mutex lock;
-	int addrlen;
-};
-
-static ssize_t
-eeprom_93xx46_bin_read(struct file *filp, struct kobject *kobj,
-		       struct bin_attribute *bin_attr,
-		       char *buf, loff_t off, size_t count)
-{
-	struct eeprom_93xx46_dev *edev;
-	struct device *dev;
-	struct spi_message m;
-	struct spi_transfer t[2];
-	int bits, ret;
-	u16 cmd_addr;
-
-	dev = container_of(kobj, struct device, kobj);
-	edev = dev_get_drvdata(dev);
-
-	if (unlikely(off >= edev->bin.size))
-		return 0;
-	if ((off + count) > edev->bin.size)
-		count = edev->bin.size - off;
-	if (unlikely(!count))
-		return count;
-
-	cmd_addr = OP_READ << edev->addrlen;
-
-	if (edev->addrlen == 7) {
-		cmd_addr |= off & 0x7f;
-		bits = 10;
-	} else {
-		cmd_addr |= off & 0x3f;
-		bits = 9;
-	}
-
-	dev_dbg(&edev->spi->dev, "read cmd 0x%x, %d Hz\n",
-		cmd_addr, edev->spi->max_speed_hz);
-
-	spi_message_init(&m);
-	memset(t, 0, sizeof(t));
-
-	t[0].tx_buf = (char *)&cmd_addr;
-	t[0].len = 2;
-	t[0].bits_per_word = bits;
-	spi_message_add_tail(&t[0], &m);
-
-	t[1].rx_buf = buf;
-	t[1].len = count;
-	t[1].bits_per_word = 8;
-	spi_message_add_tail(&t[1], &m);
-
-=======
 struct eeprom_93xx46_devtype_data {
 	unsigned int quirks;
 	unsigned char flags;
@@ -172,20 +94,11 @@ static int eeprom_93xx46_read(void *priv, unsigned int off,
 	if (unlikely(!count))
 		return count;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&edev->lock);
 
 	if (edev->pdata->prepare)
 		edev->pdata->prepare(edev);
 
-<<<<<<< HEAD
-	ret = spi_sync(edev->spi, &m);
-	/* have to wait at least Tcsl ns */
-	ndelay(250);
-	if (ret) {
-		dev_err(&edev->spi->dev, "read %zu bytes at %d: err. %d\n",
-			count, (int)off, ret);
-=======
 	/* The opcode in front of the address is three bits. */
 	bits = edev->addrlen + 3;
 
@@ -238,19 +151,14 @@ static int eeprom_93xx46_read(void *priv, unsigned int off,
 		buf += nbytes;
 		off += nbytes;
 		count -= nbytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (edev->pdata->finish)
 		edev->pdata->finish(edev);
 
 	mutex_unlock(&edev->lock);
-<<<<<<< HEAD
-	return ret ? : count;
-=======
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int eeprom_93xx46_ew(struct eeprom_93xx46_dev *edev, int is_on)
@@ -260,18 +168,6 @@ static int eeprom_93xx46_ew(struct eeprom_93xx46_dev *edev, int is_on)
 	int bits, ret;
 	u16 cmd_addr;
 
-<<<<<<< HEAD
-	cmd_addr = OP_START << edev->addrlen;
-	if (edev->addrlen == 7) {
-		cmd_addr |= (is_on ? ADDR_EWEN : ADDR_EWDS) << 1;
-		bits = 10;
-	} else {
-		cmd_addr |= (is_on ? ADDR_EWEN : ADDR_EWDS);
-		bits = 9;
-	}
-
-	dev_dbg(&edev->spi->dev, "ew cmd 0x%04x\n", cmd_addr);
-=======
 	/* The opcode in front of the address is three bits. */
 	bits = edev->addrlen + 3;
 
@@ -288,7 +184,6 @@ static int eeprom_93xx46_ew(struct eeprom_93xx46_dev *edev, int is_on)
 
 	dev_dbg(&edev->spi->dev, "ew%s cmd 0x%04x, %d bits\n",
 			is_on ? "en" : "ds", cmd_addr, bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spi_message_init(&m);
 	memset(&t, 0, sizeof(t));
@@ -326,17 +221,6 @@ eeprom_93xx46_write_word(struct eeprom_93xx46_dev *edev,
 	int bits, data_len, ret;
 	u16 cmd_addr;
 
-<<<<<<< HEAD
-	cmd_addr = OP_WRITE << edev->addrlen;
-
-	if (edev->addrlen == 7) {
-		cmd_addr |= off & 0x7f;
-		bits = 10;
-		data_len = 1;
-	} else {
-		cmd_addr |= off & 0x3f;
-		bits = 9;
-=======
 	if (unlikely(off >= edev->size))
 		return -EINVAL;
 
@@ -350,7 +234,6 @@ eeprom_93xx46_write_word(struct eeprom_93xx46_dev *edev,
 		data_len = 1;
 	} else {
 		cmd_addr |= (off >> 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data_len = 2;
 	}
 
@@ -375,24 +258,6 @@ eeprom_93xx46_write_word(struct eeprom_93xx46_dev *edev,
 	return ret;
 }
 
-<<<<<<< HEAD
-static ssize_t
-eeprom_93xx46_bin_write(struct file *filp, struct kobject *kobj,
-			struct bin_attribute *bin_attr,
-			char *buf, loff_t off, size_t count)
-{
-	struct eeprom_93xx46_dev *edev;
-	struct device *dev;
-	int i, ret, step = 1;
-
-	dev = container_of(kobj, struct device, kobj);
-	edev = dev_get_drvdata(dev);
-
-	if (unlikely(off >= edev->bin.size))
-		return 0;
-	if ((off + count) > edev->bin.size)
-		count = edev->bin.size - off;
-=======
 static int eeprom_93xx46_write(void *priv, unsigned int off,
 				   void *val, size_t count)
 {
@@ -404,16 +269,11 @@ static int eeprom_93xx46_write(void *priv, unsigned int off,
 		return -EFBIG;
 	if ((off + count) > edev->size)
 		count = edev->size - off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!count))
 		return count;
 
 	/* only write even number of bytes on 16-bit devices */
-<<<<<<< HEAD
-	if (edev->addrlen == 6) {
-=======
 	if (edev->pdata->flags & EE_ADDR16) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		step = 2;
 		count &= ~1;
 	}
@@ -444,11 +304,7 @@ static int eeprom_93xx46_write(void *priv, unsigned int off,
 
 	/* erase/write disable */
 	eeprom_93xx46_ew(edev, 0);
-<<<<<<< HEAD
-	return ret ? : count;
-=======
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int eeprom_93xx46_eral(struct eeprom_93xx46_dev *edev)
@@ -459,17 +315,6 @@ static int eeprom_93xx46_eral(struct eeprom_93xx46_dev *edev)
 	int bits, ret;
 	u16 cmd_addr;
 
-<<<<<<< HEAD
-	cmd_addr = OP_START << edev->addrlen;
-	if (edev->addrlen == 7) {
-		cmd_addr |= ADDR_ERAL << 1;
-		bits = 10;
-	} else {
-		cmd_addr |= ADDR_ERAL;
-		bits = 9;
-	}
-
-=======
 	/* The opcode in front of the address is three bits. */
 	bits = edev->addrlen + 3;
 
@@ -486,7 +331,6 @@ static int eeprom_93xx46_eral(struct eeprom_93xx46_dev *edev)
 
 	dev_dbg(&edev->spi->dev, "eral cmd 0x%04x, %d bits\n", cmd_addr, bits);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spi_message_init(&m);
 	memset(&t, 0, sizeof(t));
 
@@ -536,9 +380,6 @@ static ssize_t eeprom_93xx46_store_erase(struct device *dev,
 }
 static DEVICE_ATTR(erase, S_IWUSR, NULL, eeprom_93xx46_store_erase);
 
-<<<<<<< HEAD
-static int __devinit eeprom_93xx46_probe(struct spi_device *spi)
-=======
 static void select_assert(void *context)
 {
 	struct eeprom_93xx46_dev *edev = context;
@@ -634,41 +475,23 @@ static int eeprom_93xx46_probe_dt(struct spi_device *spi)
 }
 
 static int eeprom_93xx46_probe(struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct eeprom_93xx46_platform_data *pd;
 	struct eeprom_93xx46_dev *edev;
 	int err;
 
-<<<<<<< HEAD
-=======
 	if (spi->dev.of_node) {
 		err = eeprom_93xx46_probe_dt(spi);
 		if (err < 0)
 			return err;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pd = spi->dev.platform_data;
 	if (!pd) {
 		dev_err(&spi->dev, "missing platform data\n");
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	edev = kzalloc(sizeof(*edev), GFP_KERNEL);
-	if (!edev)
-		return -ENOMEM;
-
-	if (pd->flags & EE_ADDR8)
-		edev->addrlen = 7;
-	else if (pd->flags & EE_ADDR16)
-		edev->addrlen = 6;
-	else {
-		dev_err(&spi->dev, "unspecified address type\n");
-		err = -EINVAL;
-		goto fail;
-=======
 	edev = devm_kzalloc(&spi->dev, sizeof(*edev), GFP_KERNEL);
 	if (!edev)
 		return -ENOMEM;
@@ -691,32 +514,10 @@ static int eeprom_93xx46_probe(struct spi_device *spi)
 	else {
 		dev_err(&spi->dev, "unspecified address type\n");
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_init(&edev->lock);
 
-<<<<<<< HEAD
-	edev->spi = spi_dev_get(spi);
-	edev->pdata = pd;
-
-	sysfs_bin_attr_init(&edev->bin);
-	edev->bin.attr.name = "eeprom";
-	edev->bin.attr.mode = S_IRUSR;
-	edev->bin.read = eeprom_93xx46_bin_read;
-	edev->bin.size = 128;
-	if (!(pd->flags & EE_READONLY)) {
-		edev->bin.write = eeprom_93xx46_bin_write;
-		edev->bin.attr.mode |= S_IWUSR;
-	}
-
-	err = sysfs_create_bin_file(&spi->dev.kobj, &edev->bin);
-	if (err)
-		goto fail;
-
-	dev_info(&spi->dev, "%d-bit eeprom %s\n",
-		(pd->flags & EE_ADDR8) ? 8 : 16,
-=======
 	edev->spi = spi;
 	edev->pdata = pd;
 
@@ -742,7 +543,6 @@ static int eeprom_93xx46_probe(struct spi_device *spi)
 	dev_info(&spi->dev, "%d-bit eeprom containing %d bytes %s\n",
 		(pd->flags & EE_ADDR8) ? 8 : 16,
 		edev->size,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(pd->flags & EE_READONLY) ? "(readonly)" : "");
 
 	if (!(pd->flags & EE_READONLY)) {
@@ -750,26 +550,6 @@ static int eeprom_93xx46_probe(struct spi_device *spi)
 			dev_err(&spi->dev, "can't create erase interface\n");
 	}
 
-<<<<<<< HEAD
-	dev_set_drvdata(&spi->dev, edev);
-	return 0;
-fail:
-	kfree(edev);
-	return err;
-}
-
-static int __devexit eeprom_93xx46_remove(struct spi_device *spi)
-{
-	struct eeprom_93xx46_dev *edev = dev_get_drvdata(&spi->dev);
-
-	if (!(edev->pdata->flags & EE_READONLY))
-		device_remove_file(&spi->dev, &dev_attr_erase);
-
-	sysfs_remove_bin_file(&spi->dev.kobj, &edev->bin);
-	dev_set_drvdata(&spi->dev, NULL);
-	kfree(edev);
-	return 0;
-=======
 	spi_set_drvdata(spi, edev);
 	return 0;
 }
@@ -780,24 +560,16 @@ static void eeprom_93xx46_remove(struct spi_device *spi)
 
 	if (!(edev->pdata->flags & EE_READONLY))
 		device_remove_file(&spi->dev, &dev_attr_erase);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver eeprom_93xx46_driver = {
 	.driver = {
 		.name	= "93xx46",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= eeprom_93xx46_probe,
-	.remove		= __devexit_p(eeprom_93xx46_remove),
-=======
 		.of_match_table = of_match_ptr(eeprom_93xx46_of_table),
 	},
 	.probe		= eeprom_93xx46_probe,
 	.remove		= eeprom_93xx46_remove,
 	.id_table	= eeprom_93xx46_spi_ids,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(eeprom_93xx46_driver);
@@ -806,8 +578,5 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Driver for 93xx46 EEPROMs");
 MODULE_AUTHOR("Anatolij Gustschin <agust@denx.de>");
 MODULE_ALIAS("spi:93xx46");
-<<<<<<< HEAD
-=======
 MODULE_ALIAS("spi:eeprom-93xx46");
 MODULE_ALIAS("spi:93lc46b");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

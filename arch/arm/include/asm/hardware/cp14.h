@@ -1,18 +1,5 @@
-<<<<<<< HEAD
-/* Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_HARDWARE_CP14_H
@@ -29,11 +16,7 @@
 /* MRC14 and MCR14 */
 #define MRC14(op1, crn, crm, op2)					\
 ({									\
-<<<<<<< HEAD
-uint32_t val;								\
-=======
 u32 val;								\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 asm volatile("mrc p14, "#op1", %0, "#crn", "#crm", "#op2 : "=r" (val));	\
 val;									\
 })
@@ -43,12 +26,8 @@ val;									\
 asm volatile("mcr p14, "#op1", %0, "#crn", "#crm", "#op2 : : "r" (val));\
 })
 
-<<<<<<< HEAD
-/* Debug Registers
-=======
 /*
  * Debug Registers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Available only in DBGv7
  * DBGECR, DBGDSCCR, DBGDSMCR, DBGDRCR
@@ -268,12 +247,8 @@ asm volatile("mcr p14, "#op1", %0, "#crn", "#crm", "#op2 : : "r" (val));\
 #define WCP14_DBGCLAIMSET(val)		MCR14(val, 0, c7, c8, 6)
 #define WCP14_DBGCLAIMCLR(val)		MCR14(val, 0, c7, c9, 6)
 
-<<<<<<< HEAD
-/* ETM Registers
-=======
 /*
  * ETM Registers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Available only in ETMv3.3, 3.4, 3.5
  * ETMASICCR, ETMTECR2, ETMFFRR, ETMVDEVR, ETMVDCR1, ETMVDCR2, ETMVDCR3,
@@ -410,11 +385,7 @@ asm volatile("mcr p14, "#op1", %0, "#crn", "#crm", "#op2 : : "r" (val));\
 #define RCP14_ETMIDR2()			MRC14(1, c1, c2, 0)
 #define RCP14_ETMVMIDCVR()		MRC14(1, c1, c0, 1)
 #define RCP14_ETMOSLSR()		MRC14(1, c1, c1, 4)
-<<<<<<< HEAD
-/* not available in PFTv1.1 */
-=======
 /* Not available in PFTv1.1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RCP14_ETMOSSRR()		MRC14(1, c1, c2, 4)
 #define RCP14_ETMPDCR()			MRC14(1, c1, c4, 4)
 #define RCP14_ETMPDSR()			MRC14(1, c1, c5, 4)
@@ -539,11 +510,7 @@ asm volatile("mcr p14, "#op1", %0, "#crn", "#crm", "#op2 : : "r" (val));\
 #define WCP14_ETMIMPSPEC5(val)		MCR14(val, 1, c0, c5, 7)
 #define WCP14_ETMIMPSPEC6(val)		MCR14(val, 1, c0, c6, 7)
 #define WCP14_ETMIMPSPEC7(val)		MCR14(val, 1, c0, c7, 7)
-<<<<<<< HEAD
-/* can be read only in ETMv3.4, ETMv3.5 */
-=======
 /* Can be read only in ETMv3.4, ETMv3.5 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WCP14_ETMSYNCFR(val)		MCR14(val, 1, c0, c8, 7)
 #define WCP14_ETMEXTINSELR(val)		MCR14(val, 1, c0, c11, 7)
 #define WCP14_ETMTESSEICR(val)		MCR14(val, 1, c0, c12, 7)
@@ -554,22 +521,14 @@ asm volatile("mcr p14, "#op1", %0, "#crn", "#crm", "#op2 : : "r" (val));\
 #define WCP14_ETMIDR2(val)		MCR14(val, 1, c1, c2, 0)
 #define WCP14_ETMVMIDCVR(val)		MCR14(val, 1, c1, c0, 1)
 #define WCP14_ETMOSLAR(val)		MCR14(val, 1, c1, c0, 4)
-<<<<<<< HEAD
-/* not available in PFTv1.1 */
-=======
 /* Not available in PFTv1.1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WCP14_ETMOSSRR(val)		MCR14(val, 1, c1, c2, 4)
 #define WCP14_ETMPDCR(val)		MCR14(val, 1, c1, c4, 4)
 #define WCP14_ETMPDSR(val)		MCR14(val, 1, c1, c5, 4)
 #define WCP14_ETMITCTRL(val)		MCR14(val, 1, c7, c0, 4)
 #define WCP14_ETMCLAIMSET(val)		MCR14(val, 1, c7, c8, 6)
 #define WCP14_ETMCLAIMCLR(val)		MCR14(val, 1, c7, c9, 6)
-<<<<<<< HEAD
-/* writes to this from CP14 interface are ignored */
-=======
 /* Writes to this from CP14 interface are ignored */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WCP14_ETMLAR(val)		MCR14(val, 1, c7, c12, 6)
 
 #endif

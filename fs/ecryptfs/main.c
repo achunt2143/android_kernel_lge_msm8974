@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-/**
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * eCryptfs: Linux filesystem encryption layer
  *
  * Copyright (C) 1997-2003 Erez Zadok
@@ -11,26 +7,7 @@
  * Copyright (C) 2004-2007 International Business Machines Corp.
  *   Author(s): Michael A. Halcrow <mahalcro@us.ibm.com>
  *              Michael C. Thompson <mcthomps@us.ibm.com>
-<<<<<<< HEAD
- *              Tyler Hicks <tyhicks@ou.edu>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
-=======
  *              Tyler Hicks <code@tyhicks.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/dcache.h>
@@ -38,10 +15,6 @@
 #include <linux/module.h>
 #include <linux/namei.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-#include <linux/crypto.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mount.h>
 #include <linux/pagemap.h>
 #include <linux/key.h>
@@ -51,11 +24,7 @@
 #include <linux/magic.h>
 #include "ecryptfs_kernel.h"
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Module parameter that defines the ecryptfs_verbosity level.
  */
 int ecryptfs_verbosity = 0;
@@ -65,11 +34,7 @@ MODULE_PARM_DESC(ecryptfs_verbosity,
 		 "Initial verbosity level (0 or 1; defaults to "
 		 "0, which is Quiet)");
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Module parameter that defines the number of message buffer elements
  */
 unsigned int ecryptfs_message_buf_len = ECRYPTFS_DEFAULT_MSG_CTX_ELEMS;
@@ -78,11 +43,7 @@ module_param(ecryptfs_message_buf_len, uint, 0);
 MODULE_PARM_DESC(ecryptfs_message_buf_len,
 		 "Number of message buffer elements");
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Module parameter that defines the maximum guaranteed amount of time to wait
  * for a response from ecryptfsd.  The actual sleep time will be, more than
  * likely, a small amount greater than this specified value, but only less if
@@ -96,11 +57,7 @@ MODULE_PARM_DESC(ecryptfs_message_wait_timeout,
 		 "sleep while waiting for a message response from "
 		 "userspace");
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Module parameter that is an estimate of the maximum number of users
  * that will be concurrently using eCryptfs. Set this to the right
  * value to balance performance and memory use.
@@ -123,11 +80,7 @@ void __ecryptfs_printk(const char *fmt, ...)
 	va_end(args);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ecryptfs_init_lower_file
  * @ecryptfs_dentry: Fully initialized eCryptfs dentry object, with
  *                   the lower dentry and the lower mount set
@@ -152,27 +105,15 @@ static int ecryptfs_init_lower_file(struct dentry *dentry,
 				    struct file **lower_file)
 {
 	const struct cred *cred = current_cred();
-<<<<<<< HEAD
-	struct dentry *lower_dentry = ecryptfs_dentry_to_lower(dentry);
-	struct vfsmount *lower_mnt = ecryptfs_dentry_to_lower_mnt(dentry);
-	int rc;
-
-	rc = ecryptfs_privileged_open(lower_file, lower_dentry, lower_mnt,
-=======
 	const struct path *path = ecryptfs_dentry_to_lower_path(dentry);
 	int rc;
 
 	rc = ecryptfs_privileged_open(lower_file, path->dentry, path->mnt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      cred);
 	if (rc) {
 		printk(KERN_ERR "Error opening lower file "
 		       "for lower_dentry [0x%p] and lower_mnt [0x%p]; "
-<<<<<<< HEAD
-		       "rc = [%d]\n", lower_dentry, lower_mnt, rc);
-=======
 		       "rc = [%d]\n", path->dentry, path->mnt, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(*lower_file) = NULL;
 	}
 	return rc;
@@ -220,10 +161,6 @@ enum { ecryptfs_opt_sig, ecryptfs_opt_ecryptfs_sig,
        ecryptfs_opt_fn_cipher, ecryptfs_opt_fn_cipher_key_bytes,
        ecryptfs_opt_unlink_sigs, ecryptfs_opt_mount_auth_tok_only,
        ecryptfs_opt_check_dev_ruid,
-<<<<<<< HEAD
-       ecryptfs_opt_decryption_only, // FEATURE_SDCARD_ENCRYPTION
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
        ecryptfs_opt_err };
 
 static const match_table_t tokens = {
@@ -241,10 +178,6 @@ static const match_table_t tokens = {
 	{ecryptfs_opt_unlink_sigs, "ecryptfs_unlink_sigs"},
 	{ecryptfs_opt_mount_auth_tok_only, "ecryptfs_mount_auth_tok_only"},
 	{ecryptfs_opt_check_dev_ruid, "ecryptfs_check_dev_ruid"},
-<<<<<<< HEAD
-	{ecryptfs_opt_decryption_only, "decryption_only"}, // FEATURE_SDCARD_ENCRYPTION
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ecryptfs_opt_err, NULL}
 };
 
@@ -288,11 +221,7 @@ static void ecryptfs_init_mount_crypt_stat(
 
 /**
  * ecryptfs_parse_options
-<<<<<<< HEAD
- * @sb: The ecryptfs super block
-=======
  * @sbi: The ecryptfs super block
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @options: The options passed to the kernel
  * @check_ruid: set to 1 if device uid should be checked against the ruid
  *
@@ -443,12 +372,6 @@ static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options,
 			mount_crypt_stat->flags |=
 				ECRYPTFS_GLOBAL_MOUNT_AUTH_TOK_ONLY;
 			break;
-<<<<<<< HEAD
-		case ecryptfs_opt_decryption_only: // FEATURE_SDCARD_ENCRYPTION
-			mount_crypt_stat->flags |= ECRYPTFS_DECRYPTION_ONLY;
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ecryptfs_opt_check_dev_ruid:
 			*check_ruid = 1;
 			break;
@@ -469,11 +392,7 @@ static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options,
 	if (!cipher_name_set) {
 		int cipher_name_len = strlen(ECRYPTFS_DEFAULT_CIPHER);
 
-<<<<<<< HEAD
-		BUG_ON(cipher_name_len >= ECRYPTFS_MAX_CIPHER_NAME_SIZE);
-=======
 		BUG_ON(cipher_name_len > ECRYPTFS_MAX_CIPHER_NAME_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		strcpy(mount_crypt_stat->global_default_cipher_name,
 		       ECRYPTFS_DEFAULT_CIPHER);
 	}
@@ -493,11 +412,7 @@ static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options,
 		mount_crypt_stat->global_default_cipher_key_size);
 	if (!cipher_code) {
 		ecryptfs_printk(KERN_ERR,
-<<<<<<< HEAD
-				"eCryptfs doesn't support cipher: %s",
-=======
 				"eCryptfs doesn't support cipher: %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mount_crypt_stat->global_default_cipher_name);
 		rc = -EINVAL;
 		goto out;
@@ -551,17 +466,10 @@ out:
 struct kmem_cache *ecryptfs_sb_info_cache;
 static struct file_system_type ecryptfs_fs_type;
 
-<<<<<<< HEAD
-/**
- * ecryptfs_get_sb
- * @fs_type
- * @flags
-=======
 /*
  * ecryptfs_mount
  * @fs_type: The filesystem type that the superblock should belong to
  * @flags: The flags associated with the mount
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev_name: The path to mount over
  * @raw_data: The options passed into the kernel
  */
@@ -584,15 +492,12 @@ static struct dentry *ecryptfs_mount(struct file_system_type *fs_type, int flags
 		goto out;
 	}
 
-<<<<<<< HEAD
-=======
 	if (!dev_name) {
 		rc = -EINVAL;
 		err = "Device name cannot be null";
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ecryptfs_parse_options(sbi, raw_data, &check_ruid);
 	if (rc) {
 		err = "Error parsing options";
@@ -600,37 +505,22 @@ static struct dentry *ecryptfs_mount(struct file_system_type *fs_type, int flags
 	}
 	mount_crypt_stat = &sbi->mount_crypt_stat;
 
-<<<<<<< HEAD
-	s = sget(fs_type, NULL, set_anon_super, NULL);
-=======
 	s = sget(fs_type, NULL, set_anon_super, flags, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(s)) {
 		rc = PTR_ERR(s);
 		goto out;
 	}
 
-<<<<<<< HEAD
-	rc = bdi_setup_and_register(&sbi->bdi, "ecryptfs", BDI_CAP_MAP_COPY);
-=======
 	rc = super_setup_bdi(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto out1;
 
 	ecryptfs_set_superblock_private(s, sbi);
-<<<<<<< HEAD
-	s->s_bdi = &sbi->bdi;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ->kill_sb() will take care of sbi after that point */
 	sbi = NULL;
 	s->s_op = &ecryptfs_sops;
-<<<<<<< HEAD
-=======
 	s->s_xattr = ecryptfs_xattr_handlers;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s->s_d_op = &ecryptfs_dops;
 
 	err = "Reading sb failed";
@@ -647,13 +537,6 @@ static struct dentry *ecryptfs_mount(struct file_system_type *fs_type, int flags
 		goto out_free;
 	}
 
-<<<<<<< HEAD
-	if (check_ruid && path.dentry->d_inode->i_uid != current_uid()) {
-		rc = -EPERM;
-		printk(KERN_ERR "Mount of device (uid: %d) not owned by "
-		       "requested user (uid: %d)\n",
-		       path.dentry->d_inode->i_uid, current_uid());
-=======
 	if (is_idmapped_mnt(path.mnt)) {
 		rc = -EINVAL;
 		printk(KERN_ERR "Mounting on idmapped mounts currently disallowed\n");
@@ -666,7 +549,6 @@ static struct dentry *ecryptfs_mount(struct file_system_type *fs_type, int flags
 		       "requested user (uid: %d)\n",
 			i_uid_read(d_inode(path.dentry)),
 			from_kuid(&init_user_ns, current_uid()));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free;
 	}
 
@@ -676,27 +558,16 @@ static struct dentry *ecryptfs_mount(struct file_system_type *fs_type, int flags
 	 * Set the POSIX ACL flag based on whether they're enabled in the lower
 	 * mount.
 	 */
-<<<<<<< HEAD
-	s->s_flags = flags & ~MS_POSIXACL;
-	s->s_flags |= path.dentry->d_sb->s_flags & MS_POSIXACL;
-=======
 	s->s_flags = flags & ~SB_POSIXACL;
 	s->s_flags |= path.dentry->d_sb->s_flags & SB_POSIXACL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/**
 	 * Force a read-only eCryptfs mount when:
 	 *   1) The lower mount is ro
 	 *   2) The ecryptfs_encrypted_view mount option is specified
 	 */
-<<<<<<< HEAD
-	if (path.dentry->d_sb->s_flags & MS_RDONLY ||
-	    mount_crypt_stat->flags & ECRYPTFS_ENCRYPTED_VIEW_ENABLED)
-		s->s_flags |= MS_RDONLY;
-=======
 	if (sb_rdonly(path.dentry->d_sb) || mount_crypt_stat->flags & ECRYPTFS_ENCRYPTED_VIEW_ENABLED)
 		s->s_flags |= SB_RDONLY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	s->s_maxbytes = path.dentry->d_sb->s_maxbytes;
 	s->s_blocksize = path.dentry->d_sb->s_blocksize;
@@ -709,11 +580,7 @@ static struct dentry *ecryptfs_mount(struct file_system_type *fs_type, int flags
 		goto out_free;
 	}
 
-<<<<<<< HEAD
-	inode = ecryptfs_get_inode(path.dentry->d_inode, s);
-=======
 	inode = ecryptfs_get_inode(d_inode(path.dentry), s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = PTR_ERR(inode);
 	if (IS_ERR(inode))
 		goto out_free;
@@ -731,16 +598,9 @@ static struct dentry *ecryptfs_mount(struct file_system_type *fs_type, int flags
 
 	/* ->kill_sb() will take care of root_info */
 	ecryptfs_set_dentry_private(s->s_root, root_info);
-<<<<<<< HEAD
-	ecryptfs_set_dentry_lower(s->s_root, path.dentry);
-	ecryptfs_set_dentry_lower_mnt(s->s_root, path.mnt);
-
-	s->s_flags |= MS_ACTIVE;
-=======
 	root_info->lower_path = path;
 
 	s->s_flags |= SB_ACTIVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dget(s->s_root);
 
 out_free:
@@ -769,10 +629,6 @@ static void ecryptfs_kill_block_super(struct super_block *sb)
 	if (!sb_info)
 		return;
 	ecryptfs_destroy_mount_crypt_stat(&sb_info->mount_crypt_stat);
-<<<<<<< HEAD
-	bdi_destroy(&sb_info->bdi);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_free(ecryptfs_sb_info_cache, sb_info);
 }
 
@@ -785,11 +641,7 @@ static struct file_system_type ecryptfs_fs_type = {
 };
 MODULE_ALIAS_FS("ecryptfs");
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * inode_info_init_once
  *
  * Initializes the ecryptfs_inode_info_cache when it is created
@@ -806,10 +658,7 @@ static struct ecryptfs_cache_info {
 	struct kmem_cache **cache;
 	const char *name;
 	size_t size;
-<<<<<<< HEAD
-=======
 	slab_flags_t flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*ctor)(void *obj);
 } ecryptfs_cache_infos[] = {
 	{
@@ -831,10 +680,7 @@ static struct ecryptfs_cache_info {
 		.cache = &ecryptfs_inode_info_cache,
 		.name = "ecryptfs_inode_cache",
 		.size = sizeof(struct ecryptfs_inode_info),
-<<<<<<< HEAD
-=======
 		.flags = SLAB_ACCOUNT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.ctor = inode_info_init_once,
 	},
 	{
@@ -845,20 +691,12 @@ static struct ecryptfs_cache_info {
 	{
 		.cache = &ecryptfs_header_cache,
 		.name = "ecryptfs_headers",
-<<<<<<< HEAD
-		.size = PAGE_CACHE_SIZE,
-=======
 		.size = PAGE_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.cache = &ecryptfs_xattr_cache,
 		.name = "ecryptfs_xattr_cache",
-<<<<<<< HEAD
-		.size = PAGE_CACHE_SIZE,
-=======
 		.size = PAGE_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.cache = &ecryptfs_key_record_cache,
@@ -880,26 +718,6 @@ static struct ecryptfs_cache_info {
 		.name = "ecryptfs_key_tfm_cache",
 		.size = sizeof(struct ecryptfs_key_tfm),
 	},
-<<<<<<< HEAD
-	{
-		.cache = &ecryptfs_open_req_cache,
-		.name = "ecryptfs_open_req_cache",
-		.size = sizeof(struct ecryptfs_open_req),
-	},
-#ifdef CONFIG_CRYPTO_DEV_KFIPS
-	{
-		.cache = &ecryptfs_page_crypt_req_cache,
-		.name = "ecryptfs_page_crypt_req_cache",
-		.size = sizeof(struct ecryptfs_page_crypt_req),
-	},
-	{
-		.cache = &ecryptfs_extent_crypt_req_cache,
-		.name = "ecryptfs_extent_crypt_req_cache",
-		.size = sizeof(struct ecryptfs_extent_crypt_req),
-	},
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void ecryptfs_free_kmem_caches(void)
@@ -916,12 +734,7 @@ static void ecryptfs_free_kmem_caches(void)
 		struct ecryptfs_cache_info *info;
 
 		info = &ecryptfs_cache_infos[i];
-<<<<<<< HEAD
-		if (*(info->cache))
-			kmem_cache_destroy(*(info->cache));
-=======
 		kmem_cache_destroy(*(info->cache));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -938,13 +751,8 @@ static int ecryptfs_init_kmem_caches(void)
 		struct ecryptfs_cache_info *info;
 
 		info = &ecryptfs_cache_infos[i];
-<<<<<<< HEAD
-		*(info->cache) = kmem_cache_create(info->name, info->size,
-				0, SLAB_HWCACHE_ALIGN, info->ctor);
-=======
 		*(info->cache) = kmem_cache_create(info->name, info->size, 0,
 				SLAB_HWCACHE_ALIGN | info->flags, info->ctor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!*(info->cache)) {
 			ecryptfs_free_kmem_caches();
 			ecryptfs_printk(KERN_WARNING, "%s: "
@@ -971,11 +779,7 @@ static struct attribute *attributes[] = {
 	NULL,
 };
 
-<<<<<<< HEAD
-static struct attribute_group attr_group = {
-=======
 static const struct attribute_group attr_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = attributes,
 };
 
@@ -1009,11 +813,7 @@ static int __init ecryptfs_init(void)
 {
 	int rc;
 
-<<<<<<< HEAD
-	if (ECRYPTFS_DEFAULT_EXTENT_SIZE > PAGE_CACHE_SIZE) {
-=======
 	if (ECRYPTFS_DEFAULT_EXTENT_SIZE > PAGE_SIZE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EINVAL;
 		ecryptfs_printk(KERN_ERR, "The eCryptfs extent size is "
 				"larger than the host's page size, and so "
@@ -1021,11 +821,7 @@ static int __init ecryptfs_init(void)
 				"default eCryptfs extent size is [%u] bytes; "
 				"the page size is [%lu] bytes.\n",
 				ECRYPTFS_DEFAULT_EXTENT_SIZE,
-<<<<<<< HEAD
-				(unsigned long)PAGE_CACHE_SIZE);
-=======
 				(unsigned long)PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	rc = ecryptfs_init_kmem_caches();

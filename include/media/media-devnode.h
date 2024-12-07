@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Media device node
  *
@@ -10,22 +7,6 @@
  * Contacts: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
  *	     Sakari Ailus <sakari.ailus@iki.fi>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * --
  *
  * Common functions for media-related drivers to register and unregister media
@@ -40,11 +21,8 @@
 #include <linux/device.h>
 #include <linux/cdev.h>
 
-<<<<<<< HEAD
-=======
 struct media_device;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Flag to mark the media_devnode struct as registered. Drivers must not touch
  * this flag directly, it will be set and cleared by media_devnode_register and
@@ -52,8 +30,6 @@ struct media_device;
  */
 #define MEDIA_FLAG_REGISTERED	0
 
-<<<<<<< HEAD
-=======
 /**
  * struct media_file_operations - Media device file operations
  *
@@ -68,30 +44,19 @@ struct media_device;
  * @release: pointer to the function that will release the resources allocated
  *	by the @open function.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct media_file_operations {
 	struct module *owner;
 	ssize_t (*read) (struct file *, char __user *, size_t, loff_t *);
 	ssize_t (*write) (struct file *, const char __user *, size_t, loff_t *);
-<<<<<<< HEAD
-	unsigned int (*poll) (struct file *, struct poll_table_struct *);
-	long (*ioctl) (struct file *, unsigned int, unsigned long);
-=======
 	__poll_t (*poll) (struct file *, struct poll_table_struct *);
 	long (*ioctl) (struct file *, unsigned int, unsigned long);
 	long (*compat_ioctl) (struct file *, unsigned int, unsigned long);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*open) (struct file *);
 	int (*release) (struct file *);
 };
 
 /**
  * struct media_devnode - Media device node
-<<<<<<< HEAD
- * @parent:	parent device
- * @minor:	device node minor number
- * @flags:	flags, combination of the MEDIA_FLAG_* constants
-=======
  * @media_dev:	pointer to struct &media_device
  * @fops:	pointer to struct &media_file_operations with media device ops
  * @dev:	pointer to struct &device containing the media controller device
@@ -101,7 +66,6 @@ struct media_file_operations {
  * @flags:	flags, combination of the ``MEDIA_FLAG_*`` constants
  * @release:	release callback called at the end of ``media_devnode_release()``
  *		routine at media-device.c.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This structure represents a media-related device node.
  *
@@ -109,11 +73,8 @@ struct media_file_operations {
  * before registering the node.
  */
 struct media_devnode {
-<<<<<<< HEAD
-=======
 	struct media_device *media_dev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* device ops */
 	const struct media_file_operations *fops;
 
@@ -127,21 +88,12 @@ struct media_devnode {
 	unsigned long flags;		/* Use bitops to access flags */
 
 	/* callbacks */
-<<<<<<< HEAD
-	void (*release)(struct media_devnode *mdev);
-=======
 	void (*release)(struct media_devnode *devnode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* dev to media_devnode */
 #define to_media_devnode(cd) container_of(cd, struct media_devnode, dev)
 
-<<<<<<< HEAD
-int __must_check media_devnode_register(struct media_devnode *mdev);
-void media_devnode_unregister(struct media_devnode *mdev);
-
-=======
 /**
  * media_devnode_register - register a media device node
  *
@@ -192,17 +144,11 @@ void media_devnode_unregister(struct media_devnode *devnode);
  *
  * @filp: pointer to struct &file
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct media_devnode *media_devnode_data(struct file *filp)
 {
 	return filp->private_data;
 }
 
-<<<<<<< HEAD
-static inline int media_devnode_is_registered(struct media_devnode *mdev)
-{
-	return test_bit(MEDIA_FLAG_REGISTERED, &mdev->flags);
-=======
 /**
  * media_devnode_is_registered - returns true if &media_devnode is registered;
  *	false otherwise.
@@ -217,7 +163,6 @@ static inline int media_devnode_is_registered(struct media_devnode *devnode)
 		return false;
 
 	return test_bit(MEDIA_FLAG_REGISTERED, &devnode->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* _MEDIA_DEVNODE_H */

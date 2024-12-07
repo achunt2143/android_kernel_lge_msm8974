@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- *	drivers/s390/net/ctcm_dbug.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Copyright IBM Corp. 2001, 2007
  *	Authors:	Peter Tiedemann (ptiedem@de.ibm.com)
  *
@@ -73,17 +67,10 @@ void ctcm_dbf_longtext(enum ctcm_dbf_names dbf_nix, int level, char *fmt, ...)
 	char dbf_txt_buf[64];
 	va_list args;
 
-<<<<<<< HEAD
-	if (level > (ctcm_dbf[dbf_nix].id)->level)
-		return;
-	va_start(args, fmt);
-	vsnprintf(dbf_txt_buf, sizeof(dbf_txt_buf), fmt, args);
-=======
 	if (!debug_level_enabled(ctcm_dbf[dbf_nix].id, level))
 		return;
 	va_start(args, fmt);
 	vscnprintf(dbf_txt_buf, sizeof(dbf_txt_buf), fmt, args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	va_end(args);
 
 	debug_text_event(ctcm_dbf[dbf_nix].id, level, dbf_txt_buf);

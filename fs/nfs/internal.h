@@ -1,49 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NFS internal definitions
  */
 
 #include "nfs4_fs.h"
-<<<<<<< HEAD
-#include <linux/mount.h>
-#include <linux/security.h>
-
-#define NFS_MS_MASK (MS_RDONLY|MS_NOSUID|MS_NODEV|MS_NOEXEC|MS_SYNCHRONOUS)
-
-struct nfs_string;
-
-/* Maximum number of readahead requests
- * FIXME: this should really be a sysctl so that users may tune it to suit
- *        their needs. People that do NFS over a slow network, might for
- *        instance want to reduce it to something closer to 1 for improved
- *        interactive response.
- */
-#define NFS_MAX_READAHEAD	(RPC_DEF_SLOT_TABLE - 1)
-
-/*
- * Determine if sessions are in use.
- */
-static inline int nfs4_has_session(const struct nfs_client *clp)
-{
-#ifdef CONFIG_NFS_V4_1
-	if (clp->cl_session)
-		return 1;
-#endif /* CONFIG_NFS_V4_1 */
-	return 0;
-}
-
-static inline int nfs4_has_persistent_session(const struct nfs_client *clp)
-{
-#ifdef CONFIG_NFS_V4_1
-	if (nfs4_has_session(clp))
-		return (clp->cl_session->flags & SESSION4_PERSIST);
-#endif /* CONFIG_NFS_V4_1 */
-	return 0;
-}
-=======
 #include <linux/fs_context.h>
 #include <linux/security.h>
 #include <linux/crc32.h>
@@ -57,7 +17,6 @@ extern const struct export_operations nfs_export_ops;
 
 struct nfs_string;
 struct nfs_pageio_descriptor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void nfs_attr_check_mountpoint(struct super_block *parent, struct nfs_fattr *fattr)
 {
@@ -71,24 +30,6 @@ static inline int nfs_attr_use_mounted_on_fileid(struct nfs_fattr *fattr)
 	    (((fattr->valid & NFS_ATTR_FATTR_MOUNTPOINT) == 0) &&
 	     ((fattr->valid & NFS_ATTR_FATTR_V4_REFERRAL) == 0)))
 		return 0;
-<<<<<<< HEAD
-
-	fattr->fileid = fattr->mounted_on_fileid;
-	return 1;
-}
-
-struct nfs_clone_mount {
-	const struct super_block *sb;
-	const struct dentry *dentry;
-	struct nfs_fh *fh;
-	struct nfs_fattr *fattr;
-	char *hostname;
-	char *mnt_path;
-	struct sockaddr *addr;
-	size_t addrlen;
-	rpc_authflavor_t authflavor;
-};
-=======
 	return 1;
 }
 
@@ -110,7 +51,6 @@ static inline fmode_t flags_to_mode(int flags)
 		res |= FMODE_WRITE;
 	return res;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Note: RFC 1813 doesn't limit the number of auth flavors that
@@ -123,13 +63,6 @@ static inline fmode_t flags_to_mode(int flags)
  */
 #define NFS_UNSPEC_PORT		(-1)
 
-<<<<<<< HEAD
-/*
- * Maximum number of pages that readdir can use for creating
- * a vmapped array of pages.
- */
-#define NFS_MAX_READDIR_PAGES 8
-=======
 #define NFS_UNSPEC_RETRANS	(UINT_MAX)
 #define NFS_UNSPEC_TIMEO	(UINT_MAX)
 
@@ -152,24 +85,10 @@ struct nfs_client_initdata {
 	unsigned long connect_timeout;
 	unsigned long reconnect_timeout;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * In-kernel mount arguments
  */
-<<<<<<< HEAD
-struct nfs_parsed_mount_data {
-	int			flags;
-	int			rsize, wsize;
-	int			timeo, retrans;
-	int			acregmin, acregmax,
-				acdirmin, acdirmax;
-	int			namlen;
-	unsigned int		options;
-	unsigned int		bsize;
-	unsigned int		auth_flavor_len;
-	rpc_authflavor_t	auth_flavors[1];
-=======
 struct nfs_fs_context {
 	bool			internal;
 	bool			skip_reconfig_option_check;
@@ -186,16 +105,10 @@ struct nfs_fs_context {
 	struct nfs_auth_info	auth_info;
 	rpc_authflavor_t	selected_flavor;
 	struct xprtsec_parms	xprtsec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char			*client_address;
 	unsigned int		version;
 	unsigned int		minorversion;
 	char			*fscache_uniq;
-<<<<<<< HEAD
-
-	struct {
-		struct sockaddr_storage	address;
-=======
 	unsigned short		protofamily;
 	unsigned short		mountfamily;
 	bool			has_sec_mnt_opts;
@@ -205,7 +118,6 @@ struct nfs_fs_context {
 			struct sockaddr	address;
 			struct sockaddr_storage	_address;
 		};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		size_t			addrlen;
 		char			*hostname;
 		u32			version;
@@ -214,30 +126,15 @@ struct nfs_fs_context {
 	} mount_server;
 
 	struct {
-<<<<<<< HEAD
-		struct sockaddr_storage	address;
-=======
 		union {
 			struct sockaddr	address;
 			struct sockaddr_storage	_address;
 		};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		size_t			addrlen;
 		char			*hostname;
 		char			*export_path;
 		int			port;
 		unsigned short		protocol;
-<<<<<<< HEAD
-	} nfs_server;
-
-	struct security_mnt_opts lsm_opts;
-	struct net		*net;
-};
-
-/* mount_clnt.c */
-struct nfs_mount_request {
-	struct sockaddr		*sap;
-=======
 		unsigned short		nconnect;
 		unsigned short		max_connect;
 		unsigned short		export_path_len;
@@ -288,7 +185,6 @@ static inline struct nfs_fs_context *nfs_fc2context(const struct fs_context *fc)
 /* mount_clnt.c */
 struct nfs_mount_request {
 	struct sockaddr_storage	*sap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t			salen;
 	char			*hostname;
 	char			*dirpath;
@@ -301,33 +197,12 @@ struct nfs_mount_request {
 	struct net		*net;
 };
 
-<<<<<<< HEAD
-extern int nfs_mount(struct nfs_mount_request *info);
-=======
 extern int nfs_mount(struct nfs_mount_request *info, int timeo, int retrans);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void nfs_umount(const struct nfs_mount_request *info);
 
 /* client.c */
 extern const struct rpc_program nfs_program;
 extern void nfs_clients_init(struct net *net);
-<<<<<<< HEAD
-
-extern void nfs_cleanup_cb_ident_idr(struct net *);
-extern void nfs_put_client(struct nfs_client *);
-extern struct nfs_client *nfs4_find_client_ident(struct net *, int);
-extern struct nfs_client *
-nfs4_find_client_sessionid(struct net *, const struct sockaddr *,
-				struct nfs4_sessionid *);
-extern struct nfs_server *nfs_create_server(
-					const struct nfs_parsed_mount_data *,
-					struct nfs_fh *);
-extern struct nfs_server *nfs4_create_server(
-					const struct nfs_parsed_mount_data *,
-					struct nfs_fh *);
-extern struct nfs_server *nfs4_create_referral_server(struct nfs_clone_mount *,
-						      struct nfs_fh *);
-=======
 extern void nfs_clients_exit(struct net *net);
 extern struct nfs_client *nfs_alloc_client(const struct nfs_client_initdata *);
 int nfs_create_rpc_client(struct nfs_client *, const struct nfs_client_initdata *, rpc_authflavor_t);
@@ -354,23 +229,11 @@ extern struct nfs_server *nfs4_create_referral_server(struct fs_context *);
 extern int nfs4_update_server(struct nfs_server *server, const char *hostname,
 					struct sockaddr_storage *sap, size_t salen,
 					struct net *net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void nfs_free_server(struct nfs_server *server);
 extern struct nfs_server *nfs_clone_server(struct nfs_server *,
 					   struct nfs_fh *,
 					   struct nfs_fattr *,
 					   rpc_authflavor_t);
-<<<<<<< HEAD
-extern void nfs_mark_client_ready(struct nfs_client *clp, int state);
-extern int nfs4_check_client_ready(struct nfs_client *clp);
-extern struct nfs_client *nfs4_set_ds_client(struct nfs_client* mds_clp,
-					     const struct sockaddr *ds_addr,
-					     int ds_addrlen, int ds_proto);
-#ifdef CONFIG_PROC_FS
-extern int __init nfs_fs_proc_init(void);
-extern void nfs_fs_proc_exit(void);
-#else
-=======
 extern bool nfs_client_init_is_complete(const struct nfs_client *clp);
 extern int nfs_client_init_status(const struct nfs_client *clp);
 extern int nfs_wait_client_init_complete(const struct nfs_client *clp);
@@ -400,7 +263,6 @@ static inline int nfs_fs_proc_net_init(struct net *net)
 static inline void nfs_fs_proc_net_exit(struct net *net)
 {
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int nfs_fs_proc_init(void)
 {
 	return 0;
@@ -410,29 +272,12 @@ static inline void nfs_fs_proc_exit(void)
 }
 #endif
 
-<<<<<<< HEAD
-/* nfs4namespace.c */
-#ifdef CONFIG_NFS_V4
-extern struct vfsmount *nfs_do_refmount(struct rpc_clnt *client, struct dentry *dentry);
-#else
-static inline
-struct vfsmount *nfs_do_refmount(struct rpc_clnt *client, struct dentry *dentry)
-{
-	return ERR_PTR(-ENOENT);
-}
-#endif
-
-/* callback_xdr.c */
-extern struct svc_version nfs4_callback_version1;
-extern struct svc_version nfs4_callback_version4;
-=======
 /* callback_xdr.c */
 extern const struct svc_version nfs4_callback_version1;
 extern const struct svc_version nfs4_callback_version4;
 
 /* fs_context.c */
 extern struct file_system_type nfs_fs_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* pagelist.c */
 extern int __init nfs_init_nfspagecache(void);
@@ -444,24 +289,6 @@ extern void nfs_destroy_writepagecache(void);
 
 extern int __init nfs_init_directcache(void);
 extern void nfs_destroy_directcache(void);
-<<<<<<< HEAD
-
-/* nfs2xdr.c */
-extern int nfs_stat_to_errno(enum nfs_stat);
-extern struct rpc_procinfo nfs_procedures[];
-extern int nfs2_decode_dirent(struct xdr_stream *,
-				struct nfs_entry *, int);
-
-/* nfs3xdr.c */
-extern struct rpc_procinfo nfs3_procedures[];
-extern int nfs3_decode_dirent(struct xdr_stream *,
-				struct nfs_entry *, int);
-
-/* nfs4xdr.c */
-#ifdef CONFIG_NFS_V4
-extern int nfs4_decode_dirent(struct xdr_stream *,
-				struct nfs_entry *, int);
-=======
 extern void nfs_pgheader_init(struct nfs_pageio_descriptor *desc,
 			      struct nfs_pgio_header *hdr,
 			      void (*release)(struct nfs_pgio_header *hdr));
@@ -499,32 +326,10 @@ extern int nfs3_decode_dirent(struct xdr_stream *,
 #if IS_ENABLED(CONFIG_NFS_V4)
 extern int nfs4_decode_dirent(struct xdr_stream *,
 				struct nfs_entry *, bool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifdef CONFIG_NFS_V4_1
 extern const u32 nfs41_maxread_overhead;
 extern const u32 nfs41_maxwrite_overhead;
-<<<<<<< HEAD
-#endif
-
-/* nfs4proc.c */
-#ifdef CONFIG_NFS_V4
-extern struct rpc_procinfo nfs4_procedures[];
-#endif
-
-extern int nfs4_init_ds_session(struct nfs_client *clp);
-
-/* proc.c */
-void nfs_close_context(struct nfs_open_context *ctx, int is_sync);
-extern int nfs_init_client(struct nfs_client *clp,
-			   const struct rpc_timeout *timeparms,
-			   const char *ip_addr, rpc_authflavor_t authflavour,
-			   int noresvport);
-
-/* dir.c */
-extern int nfs_access_cache_shrinker(struct shrinker *shrink,
-					struct shrink_control *sc);
-=======
 extern const u32 nfs41_maxgetdevinfo_overhead;
 #endif
 
@@ -623,35 +428,10 @@ int nfs_file_release(struct inode *, struct file *);
 int nfs_lock(struct file *, int, struct file_lock *);
 int nfs_flock(struct file *, int, struct file_lock *);
 int nfs_check_flags(int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* inode.c */
 extern struct workqueue_struct *nfsiod_workqueue;
 extern struct inode *nfs_alloc_inode(struct super_block *sb);
-<<<<<<< HEAD
-extern void nfs_destroy_inode(struct inode *);
-extern int nfs_write_inode(struct inode *, struct writeback_control *);
-extern void nfs_evict_inode(struct inode *);
-#ifdef CONFIG_NFS_V4
-extern void nfs4_evict_inode(struct inode *);
-#endif
-void nfs_zap_acl_cache(struct inode *inode);
-extern int nfs_wait_bit_killable(void *word);
-
-/* super.c */
-extern struct file_system_type nfs_xdev_fs_type;
-#ifdef CONFIG_NFS_V4
-extern struct file_system_type nfs4_xdev_fs_type;
-extern struct file_system_type nfs4_referral_fs_type;
-#endif
-
-extern struct rpc_stat nfs_rpcstat;
-
-extern int __init register_nfs_fs(void);
-extern void __exit unregister_nfs_fs(void);
-extern void nfs_sb_active(struct super_block *sb);
-extern void nfs_sb_deactive(struct super_block *sb);
-=======
 extern void nfs_free_inode(struct inode *);
 extern int nfs_write_inode(struct inode *, struct writeback_control *);
 extern int nfs_drop_inode(struct inode *);
@@ -692,98 +472,12 @@ static inline bool nfs_file_io_is_buffered(struct nfs_inode *nfsi)
 {
 	return test_bit(NFS_INO_ODIRECT, &nfsi->flags) == 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* namespace.c */
 #define NFS_PATH_CANONICAL 1
 extern char *nfs_path(char **p, struct dentry *dentry,
 		      char *buffer, ssize_t buflen, unsigned flags);
 extern struct vfsmount *nfs_d_automount(struct path *path);
-<<<<<<< HEAD
-#ifdef CONFIG_NFS_V4
-rpc_authflavor_t nfs_find_best_sec(struct nfs4_secinfo_flavors *);
-#endif
-
-/* getroot.c */
-extern struct dentry *nfs_get_root(struct super_block *, struct nfs_fh *,
-				   const char *);
-#ifdef CONFIG_NFS_V4
-extern struct dentry *nfs4_get_root(struct super_block *, struct nfs_fh *,
-				    const char *);
-
-extern int nfs4_get_rootfh(struct nfs_server *server, struct nfs_fh *mntfh);
-#endif
-
-struct nfs_pageio_descriptor;
-/* read.c */
-extern int nfs_initiate_read(struct nfs_read_data *data, struct rpc_clnt *clnt,
-			     const struct rpc_call_ops *call_ops);
-extern void nfs_read_prepare(struct rpc_task *task, void *calldata);
-extern int nfs_generic_pagein(struct nfs_pageio_descriptor *desc,
-		struct list_head *head);
-
-extern void nfs_pageio_init_read_mds(struct nfs_pageio_descriptor *pgio,
-		struct inode *inode);
-extern void nfs_pageio_reset_read_mds(struct nfs_pageio_descriptor *pgio);
-extern void nfs_readdata_release(struct nfs_read_data *rdata);
-
-/* write.c */
-extern int nfs_generic_flush(struct nfs_pageio_descriptor *desc,
-		struct list_head *head);
-extern void nfs_pageio_init_write_mds(struct nfs_pageio_descriptor *pgio,
-				  struct inode *inode, int ioflags);
-extern void nfs_pageio_reset_write_mds(struct nfs_pageio_descriptor *pgio);
-extern void nfs_writedata_release(struct nfs_write_data *wdata);
-extern void nfs_commit_free(struct nfs_write_data *p);
-extern int nfs_initiate_write(struct nfs_write_data *data,
-			      struct rpc_clnt *clnt,
-			      const struct rpc_call_ops *call_ops,
-			      int how);
-extern void nfs_write_prepare(struct rpc_task *task, void *calldata);
-extern int nfs_initiate_commit(struct nfs_write_data *data,
-			       struct rpc_clnt *clnt,
-			       const struct rpc_call_ops *call_ops,
-			       int how);
-extern void nfs_init_commit(struct nfs_write_data *data,
-			    struct list_head *head,
-			    struct pnfs_layout_segment *lseg);
-void nfs_retry_commit(struct list_head *page_list,
-		      struct pnfs_layout_segment *lseg);
-void nfs_commit_clear_lock(struct nfs_inode *nfsi);
-void nfs_commitdata_release(void *data);
-void nfs_commit_release_pages(struct nfs_write_data *data);
-void nfs_request_add_commit_list(struct nfs_page *req, struct list_head *head);
-void nfs_request_remove_commit_list(struct nfs_page *req);
-
-#ifdef CONFIG_MIGRATION
-extern int nfs_migrate_page(struct address_space *,
-		struct page *, struct page *, enum migrate_mode);
-#else
-#define nfs_migrate_page NULL
-#endif
-
-/* nfs4proc.c */
-extern void __nfs4_read_done_cb(struct nfs_read_data *);
-extern void nfs4_reset_read(struct rpc_task *task, struct nfs_read_data *data);
-extern int nfs4_init_client(struct nfs_client *clp,
-			    const struct rpc_timeout *timeparms,
-			    const char *ip_addr,
-			    rpc_authflavor_t authflavour,
-			    int noresvport);
-extern void nfs4_reset_write(struct rpc_task *task, struct nfs_write_data *data);
-extern int _nfs4_call_sync(struct rpc_clnt *clnt,
-			   struct nfs_server *server,
-			   struct rpc_message *msg,
-			   struct nfs4_sequence_args *args,
-			   struct nfs4_sequence_res *res,
-			   int cache_reply);
-extern int _nfs4_call_sync_session(struct rpc_clnt *clnt,
-				   struct nfs_server *server,
-				   struct rpc_message *msg,
-				   struct nfs4_sequence_args *args,
-				   struct nfs4_sequence_res *res,
-				   int cache_reply);
-=======
 int nfs_submount(struct fs_context *, struct nfs_server *);
 int nfs_do_submount(struct fs_context *);
 
@@ -995,7 +689,6 @@ static inline void nfs_iput_and_deactive(struct inode *inode)
 		nfs_sb_deactive(sb);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Determine the device name as a string
@@ -1051,8 +744,6 @@ unsigned long nfs_block_size(unsigned long bsize, unsigned char *nrbitsp)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Compute and set NFS server rsize / wsize
  */
 static inline
@@ -1069,7 +760,6 @@ unsigned long nfs_io_size(unsigned long iosize, enum xprt_transports proto)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Determine the maximum file size for a superblock
  */
 static inline
@@ -1081,8 +771,6 @@ void nfs_super_set_maxbytes(struct super_block *sb, __u64 maxfilesize)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Record the page as unstable (an extra writeback period) and mark its
  * inode as dirty.
  */
@@ -1103,22 +791,11 @@ static inline void nfs_folio_mark_unstable(struct folio *folio,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Determine the number of bytes of data the page contains
  */
 static inline
 unsigned int nfs_page_length(struct page *page)
 {
-<<<<<<< HEAD
-	loff_t i_size = i_size_read(page->mapping->host);
-
-	if (i_size > 0) {
-		pgoff_t end_index = (i_size - 1) >> PAGE_CACHE_SHIFT;
-		if (page->index < end_index)
-			return PAGE_CACHE_SIZE;
-		if (page->index == end_index)
-			return ((i_size - 1) & ~PAGE_CACHE_MASK) + 1;
-=======
 	loff_t i_size = i_size_read(page_file_mapping(page)->host);
 
 	if (i_size > 0) {
@@ -1146,7 +823,6 @@ static inline size_t nfs_folio_length(struct folio *folio)
 			return folio_size(folio);
 		if (index == end_index)
 			return offset_in_folio(folio, i_size - 1) + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1164,15 +840,6 @@ unsigned char nfs_umode_to_dtype(umode_t mode)
  * Determine the number of pages in an array of length 'len' and
  * with a base offset of 'base'
  */
-<<<<<<< HEAD
-static inline
-unsigned int nfs_page_array_len(unsigned int base, size_t len)
-{
-	return ((unsigned long)len + (unsigned long)base +
-		PAGE_SIZE - 1) >> PAGE_SHIFT;
-}
-
-=======
 static inline unsigned int nfs_page_array_len(unsigned int base, size_t len)
 {
 	return ((unsigned long)len + (unsigned long)base + PAGE_SIZE - 1) >>
@@ -1282,4 +949,3 @@ struct nfs_direct_req {
 #define NFS_ODIRECT_SHOULD_DIRTY	(3)	/* dirty user-space page after read */
 #define NFS_ODIRECT_DONE		INT_MAX	/* write verification failed */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

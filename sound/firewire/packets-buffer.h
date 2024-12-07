@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef SOUND_FIREWIRE_PACKETS_BUFFER_H_INCLUDED
 #define SOUND_FIREWIRE_PACKETS_BUFFER_H_INCLUDED
 

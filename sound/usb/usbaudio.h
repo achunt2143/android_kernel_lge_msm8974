@@ -1,39 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __USBAUDIO_H
 #define __USBAUDIO_H
 /*
  *   (Tentative) USB Audio Driver for ALSA
  *
  *   Copyright (c) 2002 by Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- */
-
-/* handling of USB vendor/product ID pairs as 32-bit numbers */
-#define USB_ID(vendor, product) (((vendor) << 16) | (product))
-=======
  */
 
 /* handling of USB vendor/product ID pairs as 32-bit numbers */
 #define USB_ID(vendor, product) (((unsigned int)(vendor) << 16) | (product))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define USB_ID_VENDOR(id) ((id) >> 16)
 #define USB_ID_PRODUCT(id) ((u16)(id))
 
@@ -41,35 +16,15 @@
  *
  */
 
-<<<<<<< HEAD
-=======
 struct media_device;
 struct media_intf_devnode;
 
 #define MAX_CARD_INTERFACES	16
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct snd_usb_audio {
 	int index;
 	struct usb_device *dev;
 	struct snd_card *card;
-<<<<<<< HEAD
-	struct usb_interface *pm_intf;
-	u32 usb_id;
-	struct rw_semaphore shutdown_rwsem;
-	unsigned int shutdown:1;
-	unsigned int probing:1;
-	unsigned int autosuspended:1;	
-	unsigned int txfr_quirk:1; /* Subframe boundaries on transfers */
-	
-	int num_interfaces;
-	int num_suspended_intf;
-
-	struct list_head pcm_list;	/* list of pcm streams */
-	int pcm_devs;
-
-	struct list_head midi_list;	/* list of midi interfaces */
-=======
 	struct usb_interface *intf[MAX_CARD_INTERFACES];
 	u32 usb_id;
 	uint16_t quirk_type;
@@ -97,19 +52,10 @@ struct snd_usb_audio {
 	unsigned int num_rawmidis;	/* number of created rawmidi devices */
 	struct list_head midi_list;	/* list of midi interfaces */
 	struct list_head midi_v2_list;	/* list of MIDI 2 interfaces */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct list_head mixer_list;	/* list of mixer interfaces */
 
 	int setup;			/* from the 'device_setup' module param */
-<<<<<<< HEAD
-	int nrpacks;			/* from the 'nrpacks' module param */
-	int async_unlink;		/* from the 'async_unlink' module param */
-
-	struct usb_host_interface *ctrl_intf;	/* the audio control interface */
-};
-
-=======
 	bool generic_implicit_fb;	/* from the 'implicit_fb' module param */
 	bool autoclock;			/* from the 'autoclock' module param */
 
@@ -132,33 +78,23 @@ struct snd_usb_audio {
 #define usb_audio_dbg(chip, fmt, args...) \
 	dev_dbg(&(chip)->dev->dev, fmt, ##args)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Information about devices with broken descriptors
  */
 
 /* special values for .ifnum */
-<<<<<<< HEAD
-=======
 #define QUIRK_NODEV_INTERFACE		-3	/* return -ENODEV */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QUIRK_NO_INTERFACE		-2
 #define QUIRK_ANY_INTERFACE		-1
 
 enum quirk_type {
 	QUIRK_IGNORE_INTERFACE,
 	QUIRK_COMPOSITE,
-<<<<<<< HEAD
-	QUIRK_MIDI_STANDARD_INTERFACE,
-	QUIRK_MIDI_FIXED_ENDPOINT,
-	QUIRK_MIDI_YAMAHA,
-=======
 	QUIRK_AUTODETECT,
 	QUIRK_MIDI_STANDARD_INTERFACE,
 	QUIRK_MIDI_FIXED_ENDPOINT,
 	QUIRK_MIDI_YAMAHA,
 	QUIRK_MIDI_ROLAND,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	QUIRK_MIDI_MIDIMAN,
 	QUIRK_MIDI_NOVATION,
 	QUIRK_MIDI_RAW_BYTES,
@@ -171,10 +107,6 @@ enum quirk_type {
 	QUIRK_AUDIO_STANDARD_INTERFACE,
 	QUIRK_AUDIO_FIXED_ENDPOINT,
 	QUIRK_AUDIO_EDIROL_UAXX,
-<<<<<<< HEAD
-	QUIRK_AUDIO_ALIGN_TRANSFER,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	QUIRK_AUDIO_STANDARD_MIXER,
 
 	QUIRK_TYPE_COUNT
@@ -192,8 +124,6 @@ struct snd_usb_audio_quirk {
 #define combine_triple(s)  (combine_word(s) | ((unsigned int)(s)[2] << 16))
 #define combine_quad(s)    (combine_triple(s) | ((unsigned int)(s)[3] << 24))
 
-<<<<<<< HEAD
-=======
 int snd_usb_lock_shutdown(struct snd_usb_audio *chip);
 void snd_usb_unlock_shutdown(struct snd_usb_audio *chip);
 
@@ -277,5 +207,4 @@ extern bool snd_usb_skip_validation;
 #define QUIRK_FLAG_FORCE_IFACE_RESET	(1U << 20)
 #define QUIRK_FLAG_FIXED_RATE		(1U << 21)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __USBAUDIO_H */

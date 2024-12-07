@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # ALSA PCMCIA drivers
 
 menuconfig SND_PCMCIA
 	bool "PCMCIA sound devices"
 	depends on PCMCIA
-<<<<<<< HEAD
-=======
 	depends on HAS_IOPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	help
 	  Support for sound devices connected via the PCMCIA bus.

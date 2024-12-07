@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1995  Linus Torvalds
  *  Adapted from 'alpha' version by Gary Thomas
@@ -35,18 +32,11 @@
 #include <linux/root_dev.h>
 #include <linux/initrd.h>
 #include <linux/timer.h>
-<<<<<<< HEAD
-
-#include <asm/io.h>
-#include <asm/pgtable.h>
-#include <asm/prom.h>
-=======
 #include <linux/of_address.h>
 #include <linux/of_fdt.h>
 #include <linux/of_irq.h>
 
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pci-bridge.h>
 #include <asm/dma.h>
 #include <asm/machdep.h>
@@ -105,11 +95,7 @@ static const char *chrp_names[] = {
 	"Total Impact Briq"
 };
 
-<<<<<<< HEAD
-void chrp_show_cpuinfo(struct seq_file *m)
-=======
 static void chrp_show_cpuinfo(struct seq_file *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, sdramen;
 	unsigned int t;
@@ -255,11 +241,7 @@ out:
 	of_node_put(np);
 }
 
-<<<<<<< HEAD
-static void briq_restart(char *cmd)
-=======
 static void __noreturn briq_restart(char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	local_irq_disable();
 	if (briq_SPOR)
@@ -271,24 +253,14 @@ static void __noreturn briq_restart(char *cmd)
  * Per default, input/output-device points to the keyboard/screen
  * If no card is installed, the built-in serial port is used as a fallback.
  * But unfortunately, the firmware does not connect /chosen/{stdin,stdout}
-<<<<<<< HEAD
- * the the built-in serial node. Instead, a /failsafe node is created.
- */
-static void chrp_init_early(void)
-=======
  * to the built-in serial node. Instead, a /failsafe node is created.
  */
 static __init void chrp_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *node;
 	const char *property;
 
-<<<<<<< HEAD
-	if (strstr(cmd_line, "console="))
-=======
 	if (strstr(boot_command_line, "console="))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	/* find the boot console from /chosen/stdout */
 	if (!of_chosen)
@@ -309,38 +281,20 @@ static __init void chrp_init(void)
 	node = of_find_node_by_path(property);
 	if (!node)
 		return;
-<<<<<<< HEAD
-	property = of_get_property(node, "device_type", NULL);
-	if (!property)
-		goto out_put;
-	if (strcmp(property, "serial"))
-=======
 	if (!of_node_is_type(node, "serial"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_put;
 	/*
 	 * The 9pin connector is either /failsafe
 	 * or /pci@80000000/isa@C/serial@i2F8
 	 * The optional graphics card has also type 'serial' in VGA mode.
 	 */
-<<<<<<< HEAD
-	property = of_get_property(node, "name", NULL);
-	if (!property)
-		goto out_put;
-	if (!strcmp(property, "failsafe") || !strcmp(property, "serial"))
-=======
 	if (of_node_name_eq(node, "failsafe") || of_node_name_eq(node, "serial"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add_preferred_console("ttyS", 0, NULL);
 out_put:
 	of_node_put(node);
 }
 
-<<<<<<< HEAD
-void __init chrp_setup_arch(void)
-=======
 static void __init chrp_setup_arch(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *root = of_find_node_by_path("/");
 	const char *machine = NULL;
@@ -369,19 +323,11 @@ static void __init chrp_setup_arch(void)
 	printk("chrp type = %x [%s]\n", _chrp_type, chrp_names[_chrp_type]);
 
 	rtas_initialize();
-<<<<<<< HEAD
-	if (rtas_token("display-character") >= 0)
-		ppc_md.progress = rtas_progress;
-
-	/* use RTAS time-of-day routines if available */
-	if (rtas_token("get-time-of-day") != RTAS_UNKNOWN_SERVICE) {
-=======
 	if (rtas_function_token(RTAS_FN_DISPLAY_CHARACTER) >= 0)
 		ppc_md.progress = rtas_progress;
 
 	/* use RTAS time-of-day routines if available */
 	if (rtas_function_token(RTAS_FN_GET_TIME_OF_DAY) != RTAS_UNKNOWN_SERVICE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ppc_md.get_boot_time	= rtas_get_boot_time;
 		ppc_md.get_rtc_time	= rtas_get_rtc_time;
 		ppc_md.set_rtc_time	= rtas_set_rtc_time;
@@ -390,28 +336,11 @@ static void __init chrp_setup_arch(void)
 	/* On pegasos, enable the L2 cache if not already done by OF */
 	pegasos_set_l2cr();
 
-<<<<<<< HEAD
-	/* Lookup PCI host bridges */
-	chrp_find_bridges();
-
-	/*
-	 *  Temporary fixes for PCI devices.
-	 *  -- Geert
-	 */
-	hydra_init();		/* Mac I/O */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *  Fix the Super I/O configuration
 	 */
 	sio_init();
 
-<<<<<<< HEAD
-	pci_create_OF_bus_map();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Print the banner, then scroll down so boot progress
 	 * can be printed.  -- Cort
@@ -419,20 +348,12 @@ static void __init chrp_setup_arch(void)
 	if (ppc_md.progress) ppc_md.progress("Linux/PPC "UTS_RELEASE"\n", 0x0);
 }
 
-<<<<<<< HEAD
-static void chrp_8259_cascade(unsigned int irq, struct irq_desc *desc)
-=======
 static void chrp_8259_cascade(struct irq_desc *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	unsigned int cascade_irq = i8259_irq();
 
-<<<<<<< HEAD
-	if (cascade_irq != NO_IRQ)
-=======
 	if (cascade_irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		generic_handle_irq(cascade_irq);
 
 	chip->irq_eoi(&desc->irq_data);
@@ -445,11 +366,7 @@ static void __init chrp_find_openpic(void)
 {
 	struct device_node *np, *root;
 	int len, i, j;
-<<<<<<< HEAD
-	int isu_size, idu_size;
-=======
 	int isu_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const unsigned int *iranges, *opprop = NULL;
 	int oplen = 0;
 	unsigned long opaddr;
@@ -494,17 +411,9 @@ static void __init chrp_find_openpic(void)
 	}
 
 	isu_size = 0;
-<<<<<<< HEAD
-	idu_size = 0;
 	if (len > 0 && iranges[1] != 0) {
 		printk(KERN_INFO "OpenPIC irqs %d..%d in IDU\n",
 		       iranges[0], iranges[0] + iranges[1] - 1);
-		idu_size = iranges[1];
-=======
-	if (len > 0 && iranges[1] != 0) {
-		printk(KERN_INFO "OpenPIC irqs %d..%d in IDU\n",
-		       iranges[0], iranges[0] + iranges[1] - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (len > 1)
 		isu_size = iranges[3];
@@ -532,16 +441,6 @@ static void __init chrp_find_openpic(void)
 	of_node_put(np);
 }
 
-<<<<<<< HEAD
-#if defined(CONFIG_VT) && defined(CONFIG_INPUT_ADBHID) && defined(CONFIG_XMON)
-static struct irqaction xmon_irqaction = {
-	.handler = xmon_irq,
-	.name = "XMON break",
-};
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init chrp_find_8259(void)
 {
 	struct device_node *np, *pic = NULL;
@@ -591,11 +490,7 @@ static void __init chrp_find_8259(void)
 	}
 	if (chrp_mpic != NULL) {
 		cascade_irq = irq_of_parse_and_map(pic, 0);
-<<<<<<< HEAD
-		if (cascade_irq == NO_IRQ)
-=======
 		if (!cascade_irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_ERR "i8259: failed to map cascade irq\n");
 		else
 			irq_set_chained_handler(cascade_irq,
@@ -603,11 +498,7 @@ static void __init chrp_find_8259(void)
 	}
 }
 
-<<<<<<< HEAD
-void __init chrp_init_IRQ(void)
-=======
 static void __init chrp_init_IRQ(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #if defined(CONFIG_VT) && defined(CONFIG_INPUT_ADBHID) && defined(CONFIG_XMON)
 	struct device_node *kbd;
@@ -630,21 +521,6 @@ static void __init chrp_init_IRQ(void)
 	/* see if there is a keyboard in the device tree
 	   with a parent of type "adb" */
 	for_each_node_by_name(kbd, "keyboard")
-<<<<<<< HEAD
-		if (kbd->parent && kbd->parent->type
-		    && strcmp(kbd->parent->type, "adb") == 0)
-			break;
-	of_node_put(kbd);
-	if (kbd)
-		setup_irq(HYDRA_INT_ADB_NMI, &xmon_irqaction);
-#endif
-}
-
-void __init
-chrp_init2(void)
-{
-#ifdef CONFIG_NVRAM
-=======
 		if (of_node_is_type(kbd->parent, "adb"))
 			break;
 	of_node_put(kbd);
@@ -660,7 +536,6 @@ static void __init
 chrp_init2(void)
 {
 #if IS_ENABLED(CONFIG_NVRAM)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chrp_nvram_init();
 #endif
 
@@ -677,24 +552,13 @@ chrp_init2(void)
 
 static int __init chrp_probe(void)
 {
-<<<<<<< HEAD
- 	char *dtype = of_get_flat_dt_prop(of_get_flat_dt_root(),
- 					  "device_type", NULL);
-=======
 	const char *dtype = of_get_flat_dt_prop(of_get_flat_dt_root(),
 						"device_type", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  	if (dtype == NULL)
  		return 0;
  	if (strcmp(dtype, "chrp"))
 		return 0;
 
-<<<<<<< HEAD
-	ISA_DMA_THRESHOLD = ~0L;
-	DMA_MODE_READ = 0x44;
-	DMA_MODE_WRITE = 0x48;
-
-=======
 	DMA_MODE_READ = 0x44;
 	DMA_MODE_WRITE = 0x48;
 
@@ -702,7 +566,6 @@ static int __init chrp_probe(void)
 
 	chrp_init();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -710,27 +573,14 @@ define_machine(chrp) {
 	.name			= "CHRP",
 	.probe			= chrp_probe,
 	.setup_arch		= chrp_setup_arch,
-<<<<<<< HEAD
-	.init			= chrp_init2,
-	.init_early		= chrp_init_early,
-	.show_cpuinfo		= chrp_show_cpuinfo,
-	.init_IRQ		= chrp_init_IRQ,
-	.restart		= rtas_restart,
-	.power_off		= rtas_power_off,
-=======
 	.discover_phbs		= chrp_find_bridges,
 	.init			= chrp_init2,
 	.show_cpuinfo		= chrp_show_cpuinfo,
 	.init_IRQ		= chrp_init_IRQ,
 	.restart		= rtas_restart,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.halt			= rtas_halt,
 	.time_init		= chrp_time_init,
 	.set_rtc_time		= chrp_set_rtc_time,
 	.get_rtc_time		= chrp_get_rtc_time,
-<<<<<<< HEAD
-	.calibrate_decr		= generic_calibrate_decr,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.phys_mem_access_prot	= pci_phys_mem_access_prot,
 };

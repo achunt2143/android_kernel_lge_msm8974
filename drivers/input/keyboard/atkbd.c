@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AT and PS/2 keyboard driver
  *
  * Copyright (c) 1999-2002 Vojtech Pavlik
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This driver can handle standard AT keyboards and PS/2 keyboards in
@@ -30,19 +19,13 @@
 #include <linux/interrupt.h>
 #include <linux/init.h>
 #include <linux/input.h>
-<<<<<<< HEAD
-=======
 #include <linux/input/vivaldi-fmap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serio.h>
 #include <linux/workqueue.h>
 #include <linux/libps2.h>
 #include <linux/mutex.h>
 #include <linux/dmi.h>
-<<<<<<< HEAD
-=======
 #include <linux/property.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"AT and PS/2 keyboard driver"
 
@@ -82,12 +65,9 @@ static bool atkbd_terminal;
 module_param_named(terminal, atkbd_terminal, bool, 0);
 MODULE_PARM_DESC(terminal, "Enable break codes on an IBM Terminal keyboard connected via AT/PS2");
 
-<<<<<<< HEAD
-=======
 #define SCANCODE(keymap)	((keymap >> 16) & 0xFFFF)
 #define KEYCODE(keymap)		(keymap & 0xFFFF)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Scancode to keycode tables. These are just the default setting, and
  * are loadable via a userland utility.
@@ -255,11 +235,8 @@ struct atkbd {
 
 	/* Serializes reconnect(), attr->set() and event work */
 	struct mutex mutex;
-<<<<<<< HEAD
-=======
 
 	struct vivaldi_data vdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -269,15 +246,12 @@ static void (*atkbd_platform_fixup)(struct atkbd *, const void *data);
 static void *atkbd_platform_fixup_data;
 static unsigned int (*atkbd_platform_scancode_fixup)(struct atkbd *, unsigned int);
 
-<<<<<<< HEAD
-=======
 /*
  * Certain keyboards to not like ATKBD_CMD_RESET_DIS and stop responding
  * to many commands until full reset (ATKBD_CMD_RESET_BAT) is performed.
  */
 static bool atkbd_skip_deactivate;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t atkbd_attr_show_helper(struct device *dev, char *buf,
 				ssize_t (*handler)(struct atkbd *, char *));
 static ssize_t atkbd_attr_set_helper(struct device *dev, const char *buf, size_t count,
@@ -316,10 +290,7 @@ static struct device_attribute atkbd_attr_##_name =				\
 	__ATTR(_name, S_IRUGO, atkbd_do_show_##_name, NULL);
 
 ATKBD_DEFINE_RO_ATTR(err_count);
-<<<<<<< HEAD
-=======
 ATKBD_DEFINE_RO_ATTR(function_row_physmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *atkbd_attributes[] = {
 	&atkbd_attr_extra.attr,
@@ -329,15 +300,6 @@ static struct attribute *atkbd_attributes[] = {
 	&atkbd_attr_softrepeat.attr,
 	&atkbd_attr_softraw.attr,
 	&atkbd_attr_err_count.attr,
-<<<<<<< HEAD
-	NULL
-};
-
-static struct attribute_group atkbd_attribute_group = {
-	.attrs	= atkbd_attributes,
-};
-
-=======
 	&atkbd_attr_function_row_physmap.attr,
 	NULL
 };
@@ -375,7 +337,6 @@ static const struct attribute_group atkbd_attribute_group = {
 
 __ATTRIBUTE_GROUPS(atkbd_attribute);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const unsigned int xl_table[] = {
 	ATKBD_RET_BAT, ATKBD_RET_ERR, ATKBD_RET_ACK,
 	ATKBD_RET_NAK, ATKBD_RET_HANJA, ATKBD_RET_HANGEUL,
@@ -438,16 +399,6 @@ static unsigned int atkbd_compat_scancode(struct atkbd *atkbd, unsigned int code
 }
 
 /*
-<<<<<<< HEAD
- * atkbd_interrupt(). Here takes place processing of data received from
- * the keyboard into events.
- */
-
-static irqreturn_t atkbd_interrupt(struct serio *serio, unsigned char data,
-				   unsigned int flags)
-{
-	struct atkbd *atkbd = serio_get_drvdata(serio);
-=======
  * Tries to handle frame or parity error by requesting the keyboard controller
  * to resend the last byte. This historically not done on x86 as controllers
  * there typically do not implement this command.
@@ -492,44 +443,16 @@ static void atkbd_receive_byte(struct ps2dev *ps2dev, u8 data)
 {
 	struct serio *serio = ps2dev->serio;
 	struct atkbd *atkbd = container_of(ps2dev, struct atkbd, ps2dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_dev *dev = atkbd->dev;
 	unsigned int code = data;
 	int scroll = 0, hscroll = 0, click = -1;
 	int value;
 	unsigned short keycode;
 
-<<<<<<< HEAD
-	dev_dbg(&serio->dev, "Received %02x flags %02x\n", data, flags);
-
-#if !defined(__i386__) && !defined (__x86_64__)
-	if ((flags & (SERIO_FRAME | SERIO_PARITY)) && (~flags & SERIO_TIMEOUT) && !atkbd->resend && atkbd->write) {
-		dev_warn(&serio->dev, "Frame/parity error: %02x\n", flags);
-		serio_write(serio, ATKBD_CMD_RESEND);
-		atkbd->resend = true;
-		goto out;
-	}
-
-	if (!flags && data == ATKBD_RET_ACK)
-		atkbd->resend = false;
-#endif
-
-	if (unlikely(atkbd->ps2dev.flags & PS2_FLAG_ACK))
-		if  (ps2_handle_ack(&atkbd->ps2dev, data))
-			goto out;
-
-	if (unlikely(atkbd->ps2dev.flags & PS2_FLAG_CMD))
-		if  (ps2_handle_response(&atkbd->ps2dev, data))
-			goto out;
-
-	if (!atkbd->enabled)
-		goto out;
-=======
 	pm_wakeup_event(&serio->dev, 0);
 
 	if (!atkbd->enabled)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_event(dev, EV_MSC, MSC_RAW, code);
 
@@ -551,18 +474,6 @@ static void atkbd_receive_byte(struct ps2dev *ps2dev, u8 data)
 	case ATKBD_RET_BAT:
 		atkbd->enabled = false;
 		serio_reconnect(atkbd->ps2dev.serio);
-<<<<<<< HEAD
-		goto out;
-	case ATKBD_RET_EMUL0:
-		atkbd->emul = 1;
-		goto out;
-	case ATKBD_RET_EMUL1:
-		atkbd->emul = 2;
-		goto out;
-	case ATKBD_RET_RELEASE:
-		atkbd->release = true;
-		goto out;
-=======
 		return;
 	case ATKBD_RET_EMUL0:
 		atkbd->emul = 1;
@@ -573,43 +484,24 @@ static void atkbd_receive_byte(struct ps2dev *ps2dev, u8 data)
 	case ATKBD_RET_RELEASE:
 		atkbd->release = true;
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATKBD_RET_ACK:
 	case ATKBD_RET_NAK:
 		if (printk_ratelimit())
 			dev_warn(&serio->dev,
 				 "Spurious %s on %s. "
-<<<<<<< HEAD
-				 "Some program might be trying access hardware directly.\n",
-				 data == ATKBD_RET_ACK ? "ACK" : "NAK", serio->phys);
-		goto out;
-=======
 				 "Some program might be trying to access hardware directly.\n",
 				 data == ATKBD_RET_ACK ? "ACK" : "NAK", serio->phys);
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATKBD_RET_ERR:
 		atkbd->err_count++;
 		dev_dbg(&serio->dev, "Keyboard on %s reports too many keys pressed.\n",
 			serio->phys);
-<<<<<<< HEAD
-		goto out;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	code = atkbd_compat_scancode(atkbd, code);
 
 	if (atkbd->emul && --atkbd->emul)
-<<<<<<< HEAD
-		goto out;
-
-	keycode = atkbd->keycode[code];
-
-	if (keycode != ATKBD_KEY_NULL)
-		input_event(dev, EV_MSC, MSC_SCAN, code);
-=======
 		return;
 
 	keycode = atkbd->keycode[code];
@@ -617,7 +509,6 @@ static void atkbd_receive_byte(struct ps2dev *ps2dev, u8 data)
 	if (!(atkbd->release && test_bit(code, atkbd->force_release_mask)))
 		if (keycode != ATKBD_KEY_NULL)
 			input_event(dev, EV_MSC, MSC_SCAN, code);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (keycode) {
 	case ATKBD_KEY_NULL:
@@ -671,10 +562,7 @@ static void atkbd_receive_byte(struct ps2dev *ps2dev, u8 data)
 		input_sync(dev);
 
 		if (value && test_bit(code, atkbd->force_release_mask)) {
-<<<<<<< HEAD
-=======
 			input_event(dev, EV_MSC, MSC_SCAN, code);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			input_report_key(dev, keycode, 0);
 			input_sync(dev);
 		}
@@ -690,11 +578,6 @@ static void atkbd_receive_byte(struct ps2dev *ps2dev, u8 data)
 	}
 
 	atkbd->release = false;
-<<<<<<< HEAD
-out:
-	return IRQ_HANDLED;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int atkbd_set_repeat_rate(struct atkbd *atkbd)
@@ -849,8 +732,6 @@ static inline void atkbd_disable(struct atkbd *atkbd)
 	serio_continue_rx(atkbd->ps2dev.serio);
 }
 
-<<<<<<< HEAD
-=======
 static int atkbd_activate(struct atkbd *atkbd)
 {
 	struct ps2dev *ps2dev = &atkbd->ps2dev;
@@ -922,7 +803,6 @@ static bool atkbd_skip_getid(struct atkbd *atkbd)
 static inline bool atkbd_skip_getid(struct atkbd *atkbd) { return false; }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * atkbd_probe() probes for an AT keyboard on a serio port.
  */
@@ -944,14 +824,11 @@ static int atkbd_probe(struct atkbd *atkbd)
 				 "keyboard reset failed on %s\n",
 				 ps2dev->serio->phys);
 
-<<<<<<< HEAD
-=======
 	if (atkbd_skip_getid(atkbd)) {
 		atkbd->id = 0xab83;
 		goto deactivate_kbd;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Then we check the keyboard ID. We should get 0xab83 under normal conditions.
  * Some keyboards report different values, but the first byte is always 0xab or
@@ -963,15 +840,9 @@ static int atkbd_probe(struct atkbd *atkbd)
 	if (ps2_command(ps2dev, param, ATKBD_CMD_GETID)) {
 
 /*
-<<<<<<< HEAD
- * If the get ID command failed, we check if we can at least set the LEDs on
- * the keyboard. This should work on every keyboard out there. It also turns
- * the LEDs off, which we want anyway.
-=======
  * If the get ID command failed, we check if we can at least set
  * the LEDs on the keyboard. This should work on every keyboard out there.
  * It also turns the LEDs off, which we want anyway.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 		param[0] = 0;
 		if (ps2_command(ps2dev, param, ATKBD_CMD_SETLEDS))
@@ -987,17 +858,11 @@ static int atkbd_probe(struct atkbd *atkbd)
 
 	if (atkbd->id == 0xaca1 && atkbd->translated) {
 		dev_err(&ps2dev->serio->dev,
-<<<<<<< HEAD
-			"NCD terminal keyboards are only supported on non-translating controlelrs. "
-=======
 			"NCD terminal keyboards are only supported on non-translating controllers. "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Use i8042.direct=1 to disable translation.\n");
 		return -1;
 	}
 
-<<<<<<< HEAD
-=======
 deactivate_kbd:
 /*
  * Make sure nothing is coming from the keyboard and disturbs our
@@ -1006,7 +871,6 @@ deactivate_kbd:
 	if (!atkbd_skip_deactivate)
 		atkbd_deactivate(atkbd);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1069,11 +933,7 @@ static int atkbd_select_set(struct atkbd *atkbd, int target_set, int allow_extra
 	if (param[0] != 3) {
 		param[0] = 2;
 		if (ps2_command(ps2dev, param, ATKBD_CMD_SSCANSET))
-<<<<<<< HEAD
-		return 2;
-=======
 			return 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ps2_command(ps2dev, param, ATKBD_CMD_SETALL_MBR);
@@ -1105,27 +965,6 @@ static int atkbd_reset_state(struct atkbd *atkbd)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int atkbd_activate(struct atkbd *atkbd)
-{
-	struct ps2dev *ps2dev = &atkbd->ps2dev;
-
-/*
- * Enable the keyboard to receive keystrokes.
- */
-
-	if (ps2_command(ps2dev, NULL, ATKBD_CMD_ENABLE)) {
-		dev_err(&ps2dev->serio->dev,
-			"Failed to enable keyboard on %s\n",
-			ps2dev->serio->phys);
-		return -1;
-	}
-
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * atkbd_cleanup() restores the keyboard state so that BIOS is happy after a
  * reboot.
@@ -1133,11 +972,7 @@ static int atkbd_activate(struct atkbd *atkbd)
 
 static void atkbd_cleanup(struct serio *serio)
 {
-<<<<<<< HEAD
-	struct atkbd *atkbd = serio_get_drvdata(serio);
-=======
 	struct atkbd *atkbd = atkbd_from_serio(serio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atkbd_disable(atkbd);
 	ps2_command(&atkbd->ps2dev, NULL, ATKBD_CMD_RESET_DEF);
@@ -1150,13 +985,7 @@ static void atkbd_cleanup(struct serio *serio)
 
 static void atkbd_disconnect(struct serio *serio)
 {
-<<<<<<< HEAD
-	struct atkbd *atkbd = serio_get_drvdata(serio);
-
-	sysfs_remove_group(&serio->dev.kobj, &atkbd_attribute_group);
-=======
 	struct atkbd *atkbd = atkbd_from_serio(serio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atkbd_disable(atkbd);
 
@@ -1257,8 +1086,6 @@ static unsigned int atkbd_oqo_01plus_scancode_fixup(struct atkbd *atkbd,
 	return code;
 }
 
-<<<<<<< HEAD
-=======
 static int atkbd_get_keymap_from_fwnode(struct atkbd *atkbd)
 {
 	struct device *dev = &atkbd->ps2dev.serio->dev;
@@ -1292,7 +1119,6 @@ static int atkbd_get_keymap_from_fwnode(struct atkbd *atkbd)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * atkbd_set_keycode_table() initializes keyboard's keycode table
  * according to the selected scancode set
@@ -1300,23 +1126,16 @@ static int atkbd_get_keymap_from_fwnode(struct atkbd *atkbd)
 
 static void atkbd_set_keycode_table(struct atkbd *atkbd)
 {
-<<<<<<< HEAD
-=======
 	struct device *dev = &atkbd->ps2dev.serio->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int scancode;
 	int i, j;
 
 	memset(atkbd->keycode, 0, sizeof(atkbd->keycode));
 	bitmap_zero(atkbd->force_release_mask, ATKBD_KEYMAP_SIZE);
 
-<<<<<<< HEAD
-	if (atkbd->translated) {
-=======
 	if (!atkbd_get_keymap_from_fwnode(atkbd)) {
 		dev_dbg(dev, "Using FW keymap\n");
 	} else if (atkbd->translated) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < 128; i++) {
 			scancode = atkbd_unxlate_table[i];
 			atkbd->keycode[i] = atkbd_set2_keycode[scancode];
@@ -1430,8 +1249,6 @@ static void atkbd_set_device_attrs(struct atkbd *atkbd)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void atkbd_parse_fwnode_data(struct serio *serio)
 {
 	struct atkbd *atkbd = atkbd_from_serio(serio);
@@ -1449,7 +1266,6 @@ static void atkbd_parse_fwnode_data(struct serio *serio)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * atkbd_connect() is called when the serio module finds an interface
  * that isn't handled yet by an appropriate device driver. We check if
@@ -1469,12 +1285,8 @@ static int atkbd_connect(struct serio *serio, struct serio_driver *drv)
 		goto fail1;
 
 	atkbd->dev = dev;
-<<<<<<< HEAD
-	ps2_init(&atkbd->ps2dev, serio);
-=======
 	ps2_init(&atkbd->ps2dev, serio,
 		 atkbd_pre_receive_byte, atkbd_receive_byte);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_DELAYED_WORK(&atkbd->event_work, atkbd_event_work);
 	mutex_init(&atkbd->mutex);
 
@@ -1482,11 +1294,7 @@ static int atkbd_connect(struct serio *serio, struct serio_driver *drv)
 
 	case SERIO_8042_XL:
 		atkbd->translated = true;
-<<<<<<< HEAD
-		/* Fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case SERIO_8042:
 		if (serio->write)
@@ -1516,34 +1324,12 @@ static int atkbd_connect(struct serio *serio, struct serio_driver *drv)
 
 		atkbd->set = atkbd_select_set(atkbd, atkbd_set, atkbd_extra);
 		atkbd_reset_state(atkbd);
-<<<<<<< HEAD
-		atkbd_activate(atkbd);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else {
 		atkbd->set = 2;
 		atkbd->id = 0xab00;
 	}
 
-<<<<<<< HEAD
-	atkbd_set_keycode_table(atkbd);
-	atkbd_set_device_attrs(atkbd);
-
-	err = sysfs_create_group(&serio->dev.kobj, &atkbd_attribute_group);
-	if (err)
-		goto fail3;
-
-	atkbd_enable(atkbd);
-
-	err = input_register_device(atkbd->dev);
-	if (err)
-		goto fail4;
-
-	return 0;
-
- fail4: sysfs_remove_group(&serio->dev.kobj, &atkbd_attribute_group);
-=======
 	atkbd_parse_fwnode_data(serio);
 
 	atkbd_set_keycode_table(atkbd);
@@ -1559,7 +1345,6 @@ static int atkbd_connect(struct serio *serio, struct serio_driver *drv)
 
 	return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  fail3:	serio_close(serio);
  fail2:	serio_set_drvdata(serio, NULL);
  fail1:	input_free_device(dev);
@@ -1574,11 +1359,7 @@ static int atkbd_connect(struct serio *serio, struct serio_driver *drv)
 
 static int atkbd_reconnect(struct serio *serio)
 {
-<<<<<<< HEAD
-	struct atkbd *atkbd = serio_get_drvdata(serio);
-=======
 	struct atkbd *atkbd = atkbd_from_serio(serio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct serio_driver *drv = serio->drv;
 	int retval = -1;
 
@@ -1599,11 +1380,6 @@ static int atkbd_reconnect(struct serio *serio)
 		if (atkbd->set != atkbd_select_set(atkbd, atkbd->set, atkbd->extra))
 			goto out;
 
-<<<<<<< HEAD
-		atkbd_activate(atkbd);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Restore LED state and repeat rate. While input core
 		 * will do this for us at resume time reconnect may happen
@@ -1617,9 +1393,6 @@ static int atkbd_reconnect(struct serio *serio)
 
 	}
 
-<<<<<<< HEAD
-	atkbd_enable(atkbd);
-=======
 	/*
 	 * Reset our state machine in case reconnect happened in the middle
 	 * of multi-byte scancode.
@@ -1631,7 +1404,6 @@ static int atkbd_reconnect(struct serio *serio)
 	if (atkbd->write)
 		atkbd_activate(atkbd);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = 0;
 
  out:
@@ -1639,11 +1411,7 @@ static int atkbd_reconnect(struct serio *serio)
 	return retval;
 }
 
-<<<<<<< HEAD
-static struct serio_device_id atkbd_serio_ids[] = {
-=======
 static const struct serio_device_id atkbd_serio_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_8042,
 		.proto	= SERIO_ANY,
@@ -1669,20 +1437,12 @@ MODULE_DEVICE_TABLE(serio, atkbd_serio_ids);
 
 static struct serio_driver atkbd_drv = {
 	.driver		= {
-<<<<<<< HEAD
-		.name	= "atkbd",
-	},
-	.description	= DRIVER_DESC,
-	.id_table	= atkbd_serio_ids,
-	.interrupt	= atkbd_interrupt,
-=======
 		.name		= "atkbd",
 		.dev_groups	= atkbd_attribute_groups,
 	},
 	.description	= DRIVER_DESC,
 	.id_table	= atkbd_serio_ids,
 	.interrupt	= ps2_interrupt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.connect	= atkbd_connect,
 	.reconnect	= atkbd_reconnect,
 	.disconnect	= atkbd_disconnect,
@@ -1693,11 +1453,7 @@ static ssize_t atkbd_attr_show_helper(struct device *dev, char *buf,
 				ssize_t (*handler)(struct atkbd *, char *))
 {
 	struct serio *serio = to_serio_port(dev);
-<<<<<<< HEAD
-	struct atkbd *atkbd = serio_get_drvdata(serio);
-=======
 	struct atkbd *atkbd = atkbd_from_serio(serio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return handler(atkbd, buf);
 }
@@ -1706,11 +1462,7 @@ static ssize_t atkbd_attr_set_helper(struct device *dev, const char *buf, size_t
 				ssize_t (*handler)(struct atkbd *, const char *, size_t))
 {
 	struct serio *serio = to_serio_port(dev);
-<<<<<<< HEAD
-	struct atkbd *atkbd = serio_get_drvdata(serio);
-=======
 	struct atkbd *atkbd = atkbd_from_serio(serio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 
 	retval = mutex_lock_interruptible(&atkbd->mutex);
@@ -1789,13 +1541,8 @@ static ssize_t atkbd_set_extra(struct atkbd *atkbd, const char *buf, size_t coun
 
 static ssize_t atkbd_show_force_release(struct atkbd *atkbd, char *buf)
 {
-<<<<<<< HEAD
-	size_t len = bitmap_scnlistprintf(buf, PAGE_SIZE - 2,
-			atkbd->force_release_mask, ATKBD_KEYMAP_SIZE);
-=======
 	size_t len = scnprintf(buf, PAGE_SIZE - 1, "%*pbl",
 			       ATKBD_KEYMAP_SIZE, atkbd->force_release_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf[len++] = '\n';
 	buf[len] = '\0';
@@ -2042,8 +1789,6 @@ static int __init atkbd_setup_scancode_fixup(const struct dmi_system_id *id)
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 static int __init atkbd_deactivate_fixup(const struct dmi_system_id *id)
 {
 	atkbd_skip_deactivate = true;
@@ -2056,7 +1801,6 @@ static int __init atkbd_deactivate_fixup(const struct dmi_system_id *id)
  * by the driver is now delegated to userspace tools, such as udev, so
  * submit such quirks there.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct dmi_system_id atkbd_dmi_quirk_table[] __initconst = {
 	{
 		.matches = {
@@ -2194,15 +1938,12 @@ static const struct dmi_system_id atkbd_dmi_quirk_table[] __initconst = {
 		.callback = atkbd_setup_scancode_fixup,
 		.driver_data = atkbd_oqo_01plus_scancode_fixup,
 	},
-<<<<<<< HEAD
-=======
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LG Electronics"),
 		},
 		.callback = atkbd_deactivate_fixup,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 

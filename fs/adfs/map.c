@@ -1,23 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/adfs/map.c
  *
  *  Copyright (C) 1997-2002 Russell King
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#include <linux/buffer_head.h>
-=======
  */
 #include <linux/slab.h>
 #include <linux/statfs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unaligned.h>
 #include "adfs.h"
 
@@ -77,44 +65,6 @@ static DEFINE_RWLOCK(adfs_map_lock);
  * output of:
  *  gcc -D__KERNEL__ -O2 -I../../include -o - -S map.c
  */
-<<<<<<< HEAD
-static int
-lookup_zone(const struct adfs_discmap *dm, const unsigned int idlen,
-	    const unsigned int frag_id, unsigned int *offset)
-{
-	const unsigned int mapsize = dm->dm_endbit;
-	const u32 idmask = (1 << idlen) - 1;
-	unsigned char *map = dm->dm_bh->b_data + 4;
-	unsigned int start = dm->dm_startbit;
-	unsigned int mapptr;
-	u32 frag;
-
-	do {
-		frag = GET_FRAG_ID(map, start, idmask);
-		mapptr = start + idlen;
-
-		/*
-		 * find end of fragment
-		 */
-		{
-			__le32 *_map = (__le32 *)map;
-			u32 v = le32_to_cpu(_map[mapptr >> 5]) >> (mapptr & 31);
-			while (v == 0) {
-				mapptr = (mapptr & ~31) + 32;
-				if (mapptr >= mapsize)
-					goto error;
-				v = le32_to_cpu(_map[mapptr >> 5]);
-			}
-
-			mapptr += 1 + ffz(~v);
-		}
-
-		if (frag == frag_id)
-			goto found;
-again:
-		start = mapptr;
-	} while (mapptr < mapsize);
-=======
 static int lookup_zone(const struct adfs_discmap *dm, const unsigned int idlen,
 		       const u32 frag_id, unsigned int *offset)
 {
@@ -147,28 +97,12 @@ static int lookup_zone(const struct adfs_discmap *dm, const unsigned int idlen,
 
 		start = fragend + 1;
 	} while (start < endbit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 
 error:
 	printk(KERN_ERR "adfs: oversized fragment 0x%x at 0x%x-0x%x\n",
-<<<<<<< HEAD
-		frag, start, mapptr);
-	return -1;
-
-found:
-	{
-		int length = mapptr - start;
-		if (*offset >= length) {
-			*offset -= length;
-			goto again;
-		}
-	}
-	return start + *offset;
-=======
 		frag, start, fragend);
 	return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -180,20 +114,12 @@ found:
 static unsigned int
 scan_free_map(struct adfs_sb_info *asb, struct adfs_discmap *dm)
 {
-<<<<<<< HEAD
-	const unsigned int mapsize = dm->dm_endbit + 32;
-=======
 	const unsigned int endbit = dm->dm_endbit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const unsigned int idlen  = asb->s_idlen;
 	const unsigned int frag_idlen = idlen <= 15 ? idlen : 15;
 	const u32 idmask = (1 << frag_idlen) - 1;
 	unsigned char *map = dm->dm_bh->b_data;
-<<<<<<< HEAD
-	unsigned int start = 8, mapptr;
-=======
 	unsigned int start = 8, fragend;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 frag;
 	unsigned long total = 0;
 
@@ -212,31 +138,6 @@ scan_free_map(struct adfs_sb_info *asb, struct adfs_discmap *dm)
 	do {
 		start += frag;
 
-<<<<<<< HEAD
-		/*
-		 * get fragment id
-		 */
-		frag = GET_FRAG_ID(map, start, idmask);
-		mapptr = start + idlen;
-
-		/*
-		 * find end of fragment
-		 */
-		{
-			__le32 *_map = (__le32 *)map;
-			u32 v = le32_to_cpu(_map[mapptr >> 5]) >> (mapptr & 31);
-			while (v == 0) {
-				mapptr = (mapptr & ~31) + 32;
-				if (mapptr >= mapsize)
-					goto error;
-				v = le32_to_cpu(_map[mapptr >> 5]);
-			}
-
-			mapptr += 1 + ffz(~v);
-		}
-
-		total += mapptr - start;
-=======
 		frag = GET_FRAG_ID(map, start, idmask);
 
 		fragend = find_next_bit_le(map, endbit, start + idlen);
@@ -244,7 +145,6 @@ scan_free_map(struct adfs_sb_info *asb, struct adfs_discmap *dm)
 			goto error;
 
 		total += fragend + 1 - start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (frag >= idlen + 1);
 
 	if (frag != 0)
@@ -256,14 +156,8 @@ error:
 	return 0;
 }
 
-<<<<<<< HEAD
-static int
-scan_map(struct adfs_sb_info *asb, unsigned int zone,
-	 const unsigned int frag_id, unsigned int mapoff)
-=======
 static int scan_map(struct adfs_sb_info *asb, unsigned int zone,
 		    const u32 frag_id, unsigned int mapoff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const unsigned int idlen = asb->s_idlen;
 	struct adfs_discmap *dm, *dm_end;
@@ -299,17 +193,10 @@ found:
  *  total_free = E(free_in_zone_n)
  *              nzones
  */
-<<<<<<< HEAD
-unsigned int
-adfs_map_free(struct super_block *sb)
-{
-	struct adfs_sb_info *asb = ADFS_SB(sb);
-=======
 void adfs_map_statfs(struct super_block *sb, struct kstatfs *buf)
 {
 	struct adfs_sb_info *asb = ADFS_SB(sb);
 	struct adfs_discrecord *dr = adfs_map_discrecord(asb->s_map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct adfs_discmap *dm;
 	unsigned int total = 0;
 	unsigned int zone;
@@ -321,14 +208,6 @@ void adfs_map_statfs(struct super_block *sb, struct kstatfs *buf)
 		total += scan_free_map(asb, dm++);
 	} while (--zone > 0);
 
-<<<<<<< HEAD
-	return signed_asl(total, asb->s_map2blk);
-}
-
-int
-adfs_map_lookup(struct super_block *sb, unsigned int frag_id,
-		unsigned int offset)
-=======
 	buf->f_blocks  = adfs_disc_size(dr) >> sb->s_blocksize_bits;
 	buf->f_files   = asb->s_ids_per_zone * asb->s_map_size;
 	buf->f_bavail  =
@@ -336,7 +215,6 @@ adfs_map_lookup(struct super_block *sb, unsigned int frag_id,
 }
 
 int adfs_map_lookup(struct super_block *sb, u32 frag_id, unsigned int offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adfs_sb_info *asb = ADFS_SB(sb);
 	unsigned int zone, mapoff;
@@ -378,8 +256,6 @@ bad_fragment:
 		   frag_id, zone, asb->s_map_size);
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 static unsigned char adfs_calczonecheck(struct super_block *sb, unsigned char *map)
 {
@@ -529,4 +405,3 @@ void adfs_free_map(struct super_block *sb)
 	adfs_map_relse(asb->s_map, asb->s_map_size);
 	kfree(asb->s_map);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

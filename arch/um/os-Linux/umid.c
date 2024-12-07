@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdio.h>
@@ -18,13 +12,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
-<<<<<<< HEAD
-#include "init.h"
-#include "os.h"
-=======
 #include <init.h>
 #include <os.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define UML_DIR "~/.uml/"
 
@@ -46,20 +35,12 @@ static int __init make_uml_dir(void)
 
 		err = -ENOENT;
 		if (home == NULL) {
-<<<<<<< HEAD
-			printk(UM_KERN_ERR "make_uml_dir : no value in "
-			       "environment for $HOME\n");
-			goto err;
-		}
-		strlcpy(dir, home, sizeof(dir));
-=======
 			printk(UM_KERN_ERR
 				"%s: no value in environment for $HOME\n",
 				__func__);
 			goto err;
 		}
 		strscpy(dir, home);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uml_dir++;
 	}
 	strlcat(dir, uml_dir, sizeof(dir));
@@ -70,23 +51,15 @@ static int __init make_uml_dir(void)
 	err = -ENOMEM;
 	uml_dir = malloc(strlen(dir) + 1);
 	if (uml_dir == NULL) {
-<<<<<<< HEAD
-		printf("make_uml_dir : malloc failed, errno = %d\n", errno);
-=======
 		printk(UM_KERN_ERR "%s : malloc failed, errno = %d\n",
 			__func__, errno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 	strcpy(uml_dir, dir);
 
 	if ((mkdir(uml_dir, 0777) < 0) && (errno != EEXIST)) {
-<<<<<<< HEAD
-	        printf("Failed to mkdir '%s': %s\n", uml_dir, strerror(errno));
-=======
 		printk(UM_KERN_ERR "Failed to mkdir '%s': %s\n",
 			uml_dir, strerror(errno));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -errno;
 		goto err_free;
 	}
@@ -124,11 +97,7 @@ static int remove_files_and_dir(char *dir)
 	while ((ent = readdir(directory)) != NULL) {
 		if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
 			continue;
-<<<<<<< HEAD
-		len = strlen(dir) + sizeof("/") + strlen(ent->d_name) + 1;
-=======
 		len = strlen(dir) + strlen("/") + strlen(ent->d_name) + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (len > sizeof(file)) {
 			ret = -E2BIG;
 			goto out;
@@ -166,20 +135,6 @@ out:
  */
 static inline int is_umdir_used(char *dir)
 {
-<<<<<<< HEAD
-	char file[strlen(uml_dir) + UMID_LEN + sizeof("/pid\0")];
-	char pid[sizeof("nnnnn\0")], *end;
-	int dead, fd, p, n, err;
-
-	n = snprintf(file, sizeof(file), "%s/pid", dir);
-	if (n >= sizeof(file)) {
-		printk(UM_KERN_ERR "is_umdir_used - pid filename too long\n");
-		err = -E2BIG;
-		goto out;
-	}
-
-	dead = 0;
-=======
 	char pid[sizeof("nnnnnnnnn")], *end, *file;
 	int fd, p, n, err;
 	size_t filelen = strlen(dir) + sizeof("/pid") + 1;
@@ -190,7 +145,6 @@ static inline int is_umdir_used(char *dir)
 
 	snprintf(file, filelen, "%s/pid", dir);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fd = open(file, O_RDONLY);
 	if (fd < 0) {
 		fd = -errno;
@@ -229,10 +183,7 @@ static inline int is_umdir_used(char *dir)
 out_close:
 	close(fd);
 out:
-<<<<<<< HEAD
-=======
 	free(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -258,15 +209,6 @@ static int umdir_take_if_dead(char *dir)
 
 static void __init create_pid_file(void)
 {
-<<<<<<< HEAD
-	char file[strlen(uml_dir) + UMID_LEN + sizeof("/pid\0")];
-	char pid[sizeof("nnnnn\0")];
-	int fd, n;
-
-	if (umid_file_name("pid", file, sizeof(file)))
-		return;
-
-=======
 	char pid[sizeof("nnnnnnnnn")], *file;
 	int fd, n;
 
@@ -278,16 +220,11 @@ static void __init create_pid_file(void)
 	if (umid_file_name("pid", file, n))
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fd = open(file, O_RDWR | O_CREAT | O_EXCL, 0644);
 	if (fd < 0) {
 		printk(UM_KERN_ERR "Open of machine pid file \"%s\" failed: "
 		       "%s\n", file, strerror(errno));
-<<<<<<< HEAD
-		return;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	snprintf(pid, sizeof(pid), "%d\n", getpid());
@@ -297,11 +234,8 @@ static void __init create_pid_file(void)
 		       errno);
 
 	close(fd);
-<<<<<<< HEAD
-=======
 out:
 	free(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __init set_umid(char *name)
@@ -309,11 +243,7 @@ int __init set_umid(char *name)
 	if (strlen(name) > UMID_LEN - 1)
 		return -E2BIG;
 
-<<<<<<< HEAD
-	strlcpy(umid, name, sizeof(umid));
-=======
 	strscpy(umid, name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -332,11 +262,7 @@ static int __init make_umid(void)
 	make_uml_dir();
 
 	if (*umid == '\0') {
-<<<<<<< HEAD
-		strlcpy(tmp, uml_dir, sizeof(tmp));
-=======
 		strscpy(tmp, uml_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		strlcat(tmp, "XXXXXX", sizeof(tmp));
 		fd = mkstemp(tmp);
 		if (fd < 0) {
@@ -433,11 +359,7 @@ char *get_umid(void)
 static int __init set_uml_dir(char *name, int *add)
 {
 	if (*name == '\0') {
-<<<<<<< HEAD
-		printf("uml_dir can't be an empty string\n");
-=======
 		os_warn("uml_dir can't be an empty string\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -448,11 +370,7 @@ static int __init set_uml_dir(char *name, int *add)
 
 	uml_dir = malloc(strlen(name) + 2);
 	if (uml_dir == NULL) {
-<<<<<<< HEAD
-		printf("Failed to malloc uml_dir - error = %d\n", errno);
-=======
 		os_warn("Failed to malloc uml_dir - error = %d\n", errno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Return 0 here because do_initcalls doesn't look at
@@ -472,28 +390,19 @@ __uml_setup("uml_dir=", set_uml_dir,
 
 static void remove_umid_dir(void)
 {
-<<<<<<< HEAD
-	char dir[strlen(uml_dir) + UMID_LEN + 1], err;
-=======
 	char *dir, err;
 
 	dir = malloc(strlen(uml_dir) + UMID_LEN + 1);
 	if (!dir)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sprintf(dir, "%s%s", uml_dir, umid);
 	err = remove_files_and_dir(dir);
 	if (err)
-<<<<<<< HEAD
-		printf("remove_umid_dir - remove_files_and_dir failed with "
-		       "err = %d\n", err);
-=======
 		os_warn("%s - remove_files_and_dir failed with err = %d\n",
 			__func__, err);
 
 	free(dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __uml_exitcall(remove_umid_dir);

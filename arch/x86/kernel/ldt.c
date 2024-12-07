@@ -1,21 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1992 Krishna Balasubramanian and Linus Torvalds
  * Copyright (C) 1999 Ingo Molnar <mingo@redhat.com>
  * Copyright (C) 2002 Andi Kleen
  *
  * This handles calls from both 32bit and 64bit mode.
-<<<<<<< HEAD
-=======
  *
  * Lock order:
  *	context.ldt_usr_sem
  *	  mmap_lock
  *	    context.lock
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -24,43 +18,12 @@
 #include <linux/string.h>
 #include <linux/mm.h>
 #include <linux/smp.h>
-<<<<<<< HEAD
-=======
 #include <linux/syscalls.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
 #include <linux/uaccess.h>
 
 #include <asm/ldt.h>
-<<<<<<< HEAD
-#include <asm/desc.h>
-#include <asm/mmu_context.h>
-#include <asm/syscalls.h>
-
-/* context.lock is held for us, so we don't need any locking. */
-static void flush_ldt(void *current_mm)
-{
-	mm_context_t *pc;
-
-	if (current->active_mm != current_mm)
-		return;
-
-	pc = &current->active_mm->context;
-	set_ldt(pc->ldt->entries, pc->ldt->size);
-}
-
-/* The caller must call finalize_ldt_struct on the result. LDT starts zeroed. */
-static struct ldt_struct *alloc_ldt_struct(int size)
-{
-	struct ldt_struct *new_ldt;
-	int alloc_size;
-
-	if (size > LDT_ENTRIES)
-		return NULL;
-
-	new_ldt = kmalloc(sizeof(struct ldt_struct), GFP_KERNEL);
-=======
 #include <asm/tlb.h>
 #include <asm/desc.h>
 #include <asm/mmu_context.h>
@@ -192,16 +155,11 @@ static struct ldt_struct *alloc_ldt_struct(unsigned int num_entries)
 		return NULL;
 
 	new_ldt = kmalloc(sizeof(struct ldt_struct), GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!new_ldt)
 		return NULL;
 
 	BUILD_BUG_ON(LDT_ENTRY_SIZE != sizeof(struct desc_struct));
-<<<<<<< HEAD
-	alloc_size = size * LDT_ENTRY_SIZE;
-=======
 	alloc_size = num_entries * LDT_ENTRY_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Xen is very picky: it requires a page-aligned LDT that has no
@@ -210,47 +168,15 @@ static struct ldt_struct *alloc_ldt_struct(unsigned int num_entries)
 	 * than PAGE_SIZE.
 	 */
 	if (alloc_size > PAGE_SIZE)
-<<<<<<< HEAD
-		new_ldt->entries = vzalloc(alloc_size);
-	else
-		new_ldt->entries = kzalloc(PAGE_SIZE, GFP_KERNEL);
-=======
 		new_ldt->entries = __vmalloc(alloc_size, GFP_KERNEL_ACCOUNT | __GFP_ZERO);
 	else
 		new_ldt->entries = (void *)get_zeroed_page(GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!new_ldt->entries) {
 		kfree(new_ldt);
 		return NULL;
 	}
 
-<<<<<<< HEAD
-	new_ldt->size = size;
-	return new_ldt;
-}
-
-/* After calling this, the LDT is immutable. */
-static void finalize_ldt_struct(struct ldt_struct *ldt)
-{
-	paravirt_alloc_ldt(ldt->entries, ldt->size);
-}
-
-/* context.lock is held */
-static void install_ldt(struct mm_struct *current_mm,
-			struct ldt_struct *ldt)
-{
-	/* Synchronizes with smp_read_barrier_depends in load_mm_ldt. */
-        barrier();
-        ACCESS_ONCE(current_mm->context.ldt) = ldt;
-
-	/* Activate the LDT for all CPUs using current_mm. */
-	smp_call_function_many(mm_cpumask(current_mm), flush_ldt, current_mm,
-			       true);
-	local_irq_disable();
-	flush_ldt(current_mm);
-	local_irq_enable();
-=======
 	/* The new LDT isn't aliased for PTI yet. */
 	new_ldt->slot = -1;
 
@@ -503,7 +429,6 @@ static void install_ldt(struct mm_struct *mm, struct ldt_struct *ldt)
 	on_each_cpu_mask(mm_cpumask(mm), flush_ldt, mm, true);
 
 	mutex_unlock(&mm->context.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void free_ldt_struct(struct ldt_struct *ldt)
@@ -511,48 +436,15 @@ static void free_ldt_struct(struct ldt_struct *ldt)
 	if (likely(!ldt))
 		return;
 
-<<<<<<< HEAD
-	paravirt_free_ldt(ldt->entries, ldt->size);
-	if (ldt->size * LDT_ENTRY_SIZE > PAGE_SIZE)
-		vfree(ldt->entries);
-	else
-		kfree(ldt->entries);
-=======
 	paravirt_free_ldt(ldt->entries, ldt->nr_entries);
 	if (ldt->nr_entries * LDT_ENTRY_SIZE > PAGE_SIZE)
 		vfree_atomic(ldt->entries);
 	else
 		free_page((unsigned long)ldt->entries);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ldt);
 }
 
 /*
-<<<<<<< HEAD
- * we do not have to muck with descriptors here, that is
- * done in switch_mm() as needed.
- */
-int init_new_context(struct task_struct *tsk, struct mm_struct *mm)
-{
-	struct ldt_struct *new_ldt;
-	struct mm_struct *old_mm;
-	int retval = 0;
-
-	mutex_init(&mm->context.lock);
-	old_mm = current->mm;
-	if (!old_mm) {
-		mm->context.ldt = NULL;
-		return 0;
-	}
-
-	mutex_lock(&old_mm->context.lock);
-	if (!old_mm->context.ldt) {
-		mm->context.ldt = NULL;
-		goto out_unlock;
-	}
-
-	new_ldt = alloc_ldt_struct(old_mm->context.ldt->size);
-=======
  * Called on fork from arch_dup_mmap(). Just copy the current LDT state,
  * the new task is not running, so nothing can be installed.
  */
@@ -569,18 +461,12 @@ int ldt_dup_context(struct mm_struct *old_mm, struct mm_struct *mm)
 		goto out_unlock;
 
 	new_ldt = alloc_ldt_struct(old_mm->context.ldt->nr_entries);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!new_ldt) {
 		retval = -ENOMEM;
 		goto out_unlock;
 	}
 
 	memcpy(new_ldt->entries, old_mm->context.ldt->entries,
-<<<<<<< HEAD
-	       new_ldt->size * LDT_ENTRY_SIZE);
-	finalize_ldt_struct(new_ldt);
-
-=======
 	       new_ldt->nr_entries * LDT_ENTRY_SIZE);
 	finalize_ldt_struct(new_ldt);
 
@@ -590,7 +476,6 @@ int ldt_dup_context(struct mm_struct *old_mm, struct mm_struct *mm)
 		free_ldt_struct(new_ldt);
 		goto out_unlock;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mm->context.ldt = new_ldt;
 
 out_unlock:
@@ -603,25 +488,12 @@ out_unlock:
  *
  * 64bit: Don't touch the LDT register - we're already in the next thread.
  */
-<<<<<<< HEAD
-void destroy_context(struct mm_struct *mm)
-=======
 void destroy_context_ldt(struct mm_struct *mm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	free_ldt_struct(mm->context.ldt);
 	mm->context.ldt = NULL;
 }
 
-<<<<<<< HEAD
-static int read_ldt(void __user *ptr, unsigned long bytecount)
-{
-	int retval;
-	unsigned long size;
-	struct mm_struct *mm = current->mm;
-
-	mutex_lock(&mm->context.lock);
-=======
 void ldt_arch_exit_mmap(struct mm_struct *mm)
 {
 	free_ldt_pgtables(mm);
@@ -634,7 +506,6 @@ static int read_ldt(void __user *ptr, unsigned long bytecount)
 	int retval;
 
 	down_read(&mm->context.ldt_usr_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!mm->context.ldt) {
 		retval = 0;
@@ -644,32 +515,18 @@ static int read_ldt(void __user *ptr, unsigned long bytecount)
 	if (bytecount > LDT_ENTRY_SIZE * LDT_ENTRIES)
 		bytecount = LDT_ENTRY_SIZE * LDT_ENTRIES;
 
-<<<<<<< HEAD
-	size = mm->context.ldt->size * LDT_ENTRY_SIZE;
-	if (size > bytecount)
-		size = bytecount;
-
-	if (copy_to_user(ptr, mm->context.ldt->entries, size)) {
-=======
 	entries_size = mm->context.ldt->nr_entries * LDT_ENTRY_SIZE;
 	if (entries_size > bytecount)
 		entries_size = bytecount;
 
 	if (copy_to_user(ptr, mm->context.ldt->entries, entries_size)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EFAULT;
 		goto out_unlock;
 	}
 
-<<<<<<< HEAD
-	if (size != bytecount) {
-		/* Zero-fill the rest and pretend we read bytecount bytes. */
-		if (clear_user(ptr + size, bytecount - size)) {
-=======
 	if (entries_size != bytecount) {
 		/* Zero-fill the rest and pretend we read bytecount bytes. */
 		if (clear_user(ptr + entries_size, bytecount - entries_size)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval = -EFAULT;
 			goto out_unlock;
 		}
@@ -677,11 +534,7 @@ static int read_ldt(void __user *ptr, unsigned long bytecount)
 	retval = bytecount;
 
 out_unlock:
-<<<<<<< HEAD
-	mutex_unlock(&mm->context.lock);
-=======
 	up_read(&mm->context.ldt_usr_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -700,16 +553,6 @@ static int read_default_ldt(void __user *ptr, unsigned long bytecount)
 	return bytecount;
 }
 
-<<<<<<< HEAD
-static int write_ldt(void __user *ptr, unsigned long bytecount, int oldmode)
-{
-	struct mm_struct *mm = current->mm;
-	struct desc_struct ldt;
-	int error;
-	struct user_desc ldt_info;
-	int oldsize, newsize;
-	struct ldt_struct *new_ldt, *old_ldt;
-=======
 static bool allow_16bit_segments(void)
 {
 	if (!IS_ENABLED(CONFIG_X86_16BIT))
@@ -740,7 +583,6 @@ static int write_ldt(void __user *ptr, unsigned long bytecount, int oldmode)
 	struct user_desc ldt_info;
 	struct desc_struct ldt;
 	int error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = -EINVAL;
 	if (bytecount != sizeof(ldt_info))
@@ -764,11 +606,7 @@ static int write_ldt(void __user *ptr, unsigned long bytecount, int oldmode)
 		/* The user wants to clear the entry. */
 		memset(&ldt, 0, sizeof(ldt));
 	} else {
-<<<<<<< HEAD
-		if (!IS_ENABLED(CONFIG_X86_16BIT) && !ldt_info.seg_32bit) {
-=======
 		if (!ldt_info.seg_32bit && !allow_16bit_segments()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = -EINVAL;
 			goto out;
 		}
@@ -778,16 +616,6 @@ static int write_ldt(void __user *ptr, unsigned long bytecount, int oldmode)
 			ldt.avl = 0;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&mm->context.lock);
-
-	old_ldt = mm->context.ldt;
-	oldsize = old_ldt ? old_ldt->size : 0;
-	newsize = max((int)(ldt_info.entry_number + 1), oldsize);
-
-	error = -ENOMEM;
-	new_ldt = alloc_ldt_struct(newsize);
-=======
 	if (down_write_killable(&mm->context.ldt_usr_sem))
 		return -EINTR;
 
@@ -797,18 +625,10 @@ static int write_ldt(void __user *ptr, unsigned long bytecount, int oldmode)
 
 	error = -ENOMEM;
 	new_ldt = alloc_ldt_struct(new_nr_entries);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!new_ldt)
 		goto out_unlock;
 
 	if (old_ldt)
-<<<<<<< HEAD
-		memcpy(new_ldt->entries, old_ldt->entries, oldsize * LDT_ENTRY_SIZE);
-	new_ldt->entries[ldt_info.entry_number] = ldt;
-	finalize_ldt_struct(new_ldt);
-
-	install_ldt(mm, new_ldt);
-=======
 		memcpy(new_ldt->entries, old_ldt->entries, old_nr_entries * LDT_ENTRY_SIZE);
 
 	new_ldt->entries[ldt_info.entry_number] = ldt;
@@ -835,27 +655,17 @@ static int write_ldt(void __user *ptr, unsigned long bytecount, int oldmode)
 
 	install_ldt(mm, new_ldt);
 	unmap_ldt_struct(mm, old_ldt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_ldt_struct(old_ldt);
 	error = 0;
 
 out_unlock:
-<<<<<<< HEAD
-	mutex_unlock(&mm->context.lock);
-=======
 	up_write(&mm->context.ldt_usr_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return error;
 }
 
-<<<<<<< HEAD
-asmlinkage int sys_modify_ldt(int func, void __user *ptr,
-			      unsigned long bytecount)
-=======
 SYSCALL_DEFINE3(modify_ldt, int , func , void __user * , ptr ,
 		unsigned long , bytecount)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = -ENOSYS;
 
@@ -873,9 +683,6 @@ SYSCALL_DEFINE3(modify_ldt, int , func , void __user * , ptr ,
 		ret = write_ldt(ptr, bytecount, 0);
 		break;
 	}
-<<<<<<< HEAD
-	return ret;
-=======
 	/*
 	 * The SYSCALL_DEFINE() macros give us an 'unsigned long'
 	 * return type, but the ABI for sys_modify_ldt() expects
@@ -886,5 +693,4 @@ SYSCALL_DEFINE3(modify_ldt, int , func , void __user * , ptr ,
 	 * taking the value from int->long.
 	 */
 	return (unsigned int)ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

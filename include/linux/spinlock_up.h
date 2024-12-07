@@ -1,19 +1,12 @@
 #ifndef __LINUX_SPINLOCK_UP_H
 #define __LINUX_SPINLOCK_UP_H
 
-<<<<<<< HEAD
-#ifndef __LINUX_SPINLOCK_H
-=======
 #ifndef __LINUX_INSIDE_SPINLOCK_H
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # error "please don't include this file directly"
 #endif
 
 #include <asm/processor.h>	/* for cpu_relax() */
-<<<<<<< HEAD
-=======
 #include <asm/barrier.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * include/linux/spinlock_up.h - UP-debug version of spinlocks.
@@ -39,17 +32,6 @@ static inline void arch_spin_lock(arch_spinlock_t *lock)
 	barrier();
 }
 
-<<<<<<< HEAD
-static inline void
-arch_spin_lock_flags(arch_spinlock_t *lock, unsigned long flags)
-{
-	local_irq_save(flags);
-	lock->slock = 0;
-	barrier();
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int arch_spin_trylock(arch_spinlock_t *lock)
 {
 	char oldval = lock->slock;
@@ -78,27 +60,12 @@ static inline void arch_spin_unlock(arch_spinlock_t *lock)
 
 #else /* DEBUG_SPINLOCK */
 #define arch_spin_is_locked(lock)	((void)(lock), 0)
-<<<<<<< HEAD
-/* for sched.c and kernel_lock.c: */
-# define arch_spin_lock(lock)		do { barrier(); (void)(lock); } while (0)
-# define arch_spin_lock_flags(lock, flags)	do { barrier(); (void)(lock); } while (0)
-=======
 /* for sched/core.c and kernel_lock.c: */
 # define arch_spin_lock(lock)		do { barrier(); (void)(lock); } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define arch_spin_unlock(lock)	do { barrier(); (void)(lock); } while (0)
 # define arch_spin_trylock(lock)	({ barrier(); (void)(lock); 1; })
 #endif /* DEBUG_SPINLOCK */
 
 #define arch_spin_is_contended(lock)	(((void)(lock), 0))
 
-<<<<<<< HEAD
-#define arch_read_can_lock(lock)	(((void)(lock), 1))
-#define arch_write_can_lock(lock)	(((void)(lock), 1))
-
-#define arch_spin_unlock_wait(lock) \
-		do { cpu_relax(); } while (arch_spin_is_locked(lock))
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_SPINLOCK_UP_H */

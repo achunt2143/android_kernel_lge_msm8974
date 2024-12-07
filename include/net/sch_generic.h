@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __NET_SCHED_GENERIC_H
 #define __NET_SCHED_GENERIC_H
 
@@ -10,10 +7,6 @@
 #include <linux/rcupdate.h>
 #include <linux/pkt_sched.h>
 #include <linux/pkt_cls.h>
-<<<<<<< HEAD
-#include <net/gen_stats.h>
-#include <net/rtnetlink.h>
-=======
 #include <linux/percpu.h>
 #include <linux/dynamic_queue_limits.h>
 #include <linux/list.h>
@@ -27,16 +20,12 @@
 #include <net/rtnetlink.h>
 #include <net/flow_offload.h>
 #include <linux/xarray.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct Qdisc_ops;
 struct qdisc_walker;
 struct tcf_walker;
 struct module;
-<<<<<<< HEAD
-=======
 struct bpf_flow_keys;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct qdisc_rate_table {
 	struct tc_ratespec rate;
@@ -48,18 +37,6 @@ struct qdisc_rate_table {
 enum qdisc_state_t {
 	__QDISC_STATE_SCHED,
 	__QDISC_STATE_DEACTIVATED,
-<<<<<<< HEAD
-	__QDISC_STATE_THROTTLED,
-};
-
-/*
- * following bits are only changed while qdisc lock is held
- */
-enum qdisc___state_t {
-	__QDISC___STATE_RUNNING = 1,
-};
-
-=======
 	__QDISC_STATE_MISSED,
 	__QDISC_STATE_DRAINING,
 };
@@ -77,7 +54,6 @@ enum qdisc_state2_t {
 #define QDISC_STATE_NON_EMPTY	(QDISC_STATE_MISSED | \
 					QDISC_STATE_DRAINING)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct qdisc_size_table {
 	struct rcu_head		rcu;
 	struct list_head	list;
@@ -86,11 +62,6 @@ struct qdisc_size_table {
 	u16			data[];
 };
 
-<<<<<<< HEAD
-struct Qdisc {
-	int 			(*enqueue)(struct sk_buff *skb, struct Qdisc *dev);
-	struct sk_buff *	(*dequeue)(struct Qdisc *dev);
-=======
 /* similar to sk_buff_head, but skb->prev pointer is undefined. */
 struct qdisc_skb_head {
 	struct sk_buff	*head;
@@ -104,60 +75,11 @@ struct Qdisc {
 					   struct Qdisc *sch,
 					   struct sk_buff **to_free);
 	struct sk_buff *	(*dequeue)(struct Qdisc *sch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		flags;
 #define TCQ_F_BUILTIN		1
 #define TCQ_F_INGRESS		2
 #define TCQ_F_CAN_BYPASS	4
 #define TCQ_F_MQROOT		8
-<<<<<<< HEAD
-#define TCQ_F_WARN_NONWC	(1 << 16)
-	int			padded;
-	const struct Qdisc_ops	*ops;
-	struct qdisc_size_table	__rcu *stab;
-	struct list_head	list;
-	u32			handle;
-	u32			parent;
-	atomic_t		refcnt;
-	struct gnet_stats_rate_est	rate_est;
-	int			(*reshape_fail)(struct sk_buff *skb,
-					struct Qdisc *q);
-
-	void			*u32_node;
-
-	/* This field is deprecated, but it is still used by CBQ
-	 * and it will live until better solution will be invented.
-	 */
-	struct Qdisc		*__parent;
-	struct netdev_queue	*dev_queue;
-	struct Qdisc		*next_sched;
-
-	struct sk_buff		*gso_skb;
-	/*
-	 * For performance sake on SMP, we put highly modified fields at the end
-	 */
-	unsigned long		state;
-	struct sk_buff_head	q;
-	struct gnet_stats_basic_packed bstats;
-	unsigned int		__state;
-	struct gnet_stats_queue	qstats;
-	struct rcu_head		rcu_head;
-	spinlock_t		busylock;
-	u32			limit;
-};
-
-static inline bool qdisc_is_running(const struct Qdisc *qdisc)
-{
-	return (qdisc->__state & __QDISC___STATE_RUNNING) ? true : false;
-}
-
-static inline bool qdisc_run_begin(struct Qdisc *qdisc)
-{
-	if (qdisc_is_running(qdisc))
-		return false;
-	qdisc->__state |= __QDISC___STATE_RUNNING;
-	return true;
-=======
 #define TCQ_F_ONETXQUEUE	0x10 /* dequeue_skb() can assume all skbs are for
 				      * q->dev_queue : It can test
 				      * netif_xmit_frozen_or_stopped() before
@@ -289,36 +211,10 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
 		return spin_trylock(&qdisc->seqlock);
 	}
 	return !__test_and_set_bit(__QDISC_STATE2_RUNNING, &qdisc->state2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void qdisc_run_end(struct Qdisc *qdisc)
 {
-<<<<<<< HEAD
-	qdisc->__state &= ~__QDISC___STATE_RUNNING;
-}
-
-static inline bool qdisc_is_throttled(const struct Qdisc *qdisc)
-{
-	return test_bit(__QDISC_STATE_THROTTLED, &qdisc->state) ? true : false;
-}
-
-static inline void qdisc_throttled(struct Qdisc *qdisc)
-{
-	set_bit(__QDISC_STATE_THROTTLED, &qdisc->state);
-}
-
-static inline void qdisc_unthrottled(struct Qdisc *qdisc)
-{
-	clear_bit(__QDISC_STATE_THROTTLED, &qdisc->state);
-}
-
-struct Qdisc_class_ops {
-	/* Child qdisc manipulation */
-	struct netdev_queue *	(*select_queue)(struct Qdisc *, struct tcmsg *);
-	int			(*graft)(struct Qdisc *, unsigned long cl,
-					struct Qdisc *, struct Qdisc **);
-=======
 	if (qdisc->flags & TCQ_F_NOLOCK) {
 		spin_unlock(&qdisc->seqlock);
 
@@ -353,22 +249,10 @@ struct Qdisc_class_ops {
 	int			(*graft)(struct Qdisc *, unsigned long cl,
 					struct Qdisc *, struct Qdisc **,
 					struct netlink_ext_ack *extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Qdisc *		(*leaf)(struct Qdisc *, unsigned long cl);
 	void			(*qlen_notify)(struct Qdisc *, unsigned long);
 
 	/* Class manipulation routines */
-<<<<<<< HEAD
-	unsigned long		(*get)(struct Qdisc *, u32 classid);
-	void			(*put)(struct Qdisc *, unsigned long);
-	int			(*change)(struct Qdisc *, u32, u32,
-					struct nlattr **, unsigned long *);
-	int			(*delete)(struct Qdisc *, unsigned long);
-	void			(*walk)(struct Qdisc *, struct qdisc_walker * arg);
-
-	/* Filter manipulation */
-	struct tcf_proto **	(*tcf_chain)(struct Qdisc *, unsigned long);
-=======
 	unsigned long		(*find)(struct Qdisc *, u32 classid);
 	int			(*change)(struct Qdisc *, u32, u32,
 					struct nlattr **, unsigned long *,
@@ -381,7 +265,6 @@ struct Qdisc_class_ops {
 	struct tcf_block *	(*tcf_block)(struct Qdisc *sch,
 					     unsigned long arg,
 					     struct netlink_ext_ack *extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		(*bind_tcf)(struct Qdisc *, unsigned long,
 					u32 classid);
 	void			(*unbind_tcf)(struct Qdisc *, unsigned long);
@@ -393,8 +276,6 @@ struct Qdisc_class_ops {
 					struct gnet_dump *);
 };
 
-<<<<<<< HEAD
-=======
 /* Qdisc_class_ops flag values */
 
 /* Implements API that doesn't require rtnl lock */
@@ -402,25 +283,11 @@ enum qdisc_class_ops_flags {
 	QDISC_CLASS_OPS_DOIT_UNLOCKED = 1,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct Qdisc_ops {
 	struct Qdisc_ops	*next;
 	const struct Qdisc_class_ops	*cl_ops;
 	char			id[IFNAMSIZ];
 	int			priv_size;
-<<<<<<< HEAD
-
-	int 			(*enqueue)(struct sk_buff *, struct Qdisc *);
-	struct sk_buff *	(*dequeue)(struct Qdisc *);
-	struct sk_buff *	(*peek)(struct Qdisc *);
-	unsigned int		(*drop)(struct Qdisc *);
-
-	int			(*init)(struct Qdisc *, struct nlattr *arg);
-	void			(*reset)(struct Qdisc *);
-	void			(*destroy)(struct Qdisc *);
-	int			(*change)(struct Qdisc *, struct nlattr *arg);
-	void			(*attach)(struct Qdisc *);
-=======
 	unsigned int		static_flags;
 
 	int 			(*enqueue)(struct sk_buff *skb,
@@ -440,24 +307,10 @@ struct Qdisc_ops {
 	int			(*change_tx_queue_len)(struct Qdisc *, unsigned int);
 	void			(*change_real_num_tx)(struct Qdisc *sch,
 						      unsigned int new_real_tx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int			(*dump)(struct Qdisc *, struct sk_buff *);
 	int			(*dump_stats)(struct Qdisc *, struct gnet_dump *);
 
-<<<<<<< HEAD
-	struct module		*owner;
-};
-
-
-struct tcf_result {
-	unsigned long	class;
-	u32		classid;
-};
-
-struct tcf_proto_ops {
-	struct tcf_proto_ops	*next;
-=======
 	void			(*ingress_block_set)(struct Qdisc *sch,
 						     u32 block_index);
 	void			(*egress_block_set)(struct Qdisc *sch,
@@ -482,30 +335,12 @@ struct tcf_chain;
 
 struct tcf_proto_ops {
 	struct list_head	head;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char			kind[IFNAMSIZ];
 
 	int			(*classify)(struct sk_buff *,
 					    const struct tcf_proto *,
 					    struct tcf_result *);
 	int			(*init)(struct tcf_proto*);
-<<<<<<< HEAD
-	void			(*destroy)(struct tcf_proto*);
-
-	unsigned long		(*get)(struct tcf_proto*, u32 handle);
-	void			(*put)(struct tcf_proto*, unsigned long);
-	int			(*change)(struct tcf_proto*, unsigned long,
-					u32 handle, struct nlattr **,
-					unsigned long *);
-	int			(*delete)(struct tcf_proto*, unsigned long);
-	void			(*walk)(struct tcf_proto*, struct tcf_walker *arg);
-
-	/* rtnetlink specific */
-	int			(*dump)(struct tcf_proto*, unsigned long,
-					struct sk_buff *skb, struct tcmsg*);
-
-	struct module		*owner;
-=======
 	void			(*destroy)(struct tcf_proto *tp, bool rtnl_held,
 					   struct netlink_ext_ack *extack);
 
@@ -565,20 +400,14 @@ struct tcf_proto_ops {
  */
 enum tcf_proto_ops_flags {
 	TCF_PROTO_OPS_DOIT_UNLOCKED = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct tcf_proto {
 	/* Fast access part */
-<<<<<<< HEAD
-	struct tcf_proto	*next;
-	void			*root;
-=======
 	struct tcf_proto __rcu	*next;
 	void __rcu		*root;
 
 	/* called under RCU BH lock*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			(*classify)(struct sk_buff *,
 					    const struct tcf_proto *,
 					    struct tcf_result *);
@@ -586,21 +415,6 @@ struct tcf_proto {
 
 	/* All the rest */
 	u32			prio;
-<<<<<<< HEAD
-	u32			classid;
-	struct Qdisc		*q;
-	void			*data;
-	const struct tcf_proto_ops	*ops;
-};
-
-struct qdisc_skb_cb {
-	unsigned int		pkt_len;
-	u16			bond_queue_mapping;
-	u16			_pad;
-	unsigned char		data[20];
-};
-
-=======
 	void			*data;
 	const struct tcf_proto_ops	*ops;
 	struct tcf_chain	*chain;
@@ -688,16 +502,11 @@ static inline bool lockdep_tcf_proto_is_locked(struct tcf_proto *tp)
 #define tcf_proto_dereference(p, tp)					\
 	rcu_dereference_protected(p, lockdep_tcf_proto_is_locked(tp))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void qdisc_cb_private_validate(const struct sk_buff *skb, int sz)
 {
 	struct qdisc_skb_cb *qcb;
 
-<<<<<<< HEAD
-	BUILD_BUG_ON(sizeof(skb->cb) < offsetof(struct qdisc_skb_cb, data) + sz);
-=======
 	BUILD_BUG_ON(sizeof(skb->cb) < sizeof(*qcb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUILD_BUG_ON(sizeof(qcb->data) < sz);
 }
 
@@ -706,8 +515,6 @@ static inline int qdisc_qlen(const struct Qdisc *q)
 	return q->q.qlen;
 }
 
-<<<<<<< HEAD
-=======
 static inline int qdisc_qlen_sum(const struct Qdisc *q)
 {
 	__u32 qlen = q->qstats.qlen;
@@ -723,7 +530,6 @@ static inline int qdisc_qlen_sum(const struct Qdisc *q)
 	return qlen;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct qdisc_skb_cb *qdisc_skb_cb(const struct sk_buff *skb)
 {
 	return (struct qdisc_skb_cb *)skb->cb;
@@ -736,9 +542,6 @@ static inline spinlock_t *qdisc_lock(struct Qdisc *qdisc)
 
 static inline struct Qdisc *qdisc_root(const struct Qdisc *qdisc)
 {
-<<<<<<< HEAD
-	return qdisc->dev_queue->qdisc;
-=======
 	struct Qdisc *q = rcu_dereference_rtnl(qdisc->dev_queue->qdisc);
 
 	return q;
@@ -747,35 +550,11 @@ static inline struct Qdisc *qdisc_root(const struct Qdisc *qdisc)
 static inline struct Qdisc *qdisc_root_bh(const struct Qdisc *qdisc)
 {
 	return rcu_dereference_bh(qdisc->dev_queue->qdisc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct Qdisc *qdisc_root_sleeping(const struct Qdisc *qdisc)
 {
-<<<<<<< HEAD
-	return qdisc->dev_queue->qdisc_sleeping;
-}
-
-/* The qdisc root lock is a mechanism by which to top level
- * of a qdisc tree can be locked from any qdisc node in the
- * forest.  This allows changing the configuration of some
- * aspect of the qdisc tree while blocking out asynchronous
- * qdisc access in the packet processing paths.
- *
- * It is only legal to do this when the root will not change
- * on us.  Otherwise we'll potentially lock the wrong qdisc
- * root.  This is enforced by holding the RTNL semaphore, which
- * all users of this lock accessor must do.
- */
-static inline spinlock_t *qdisc_root_lock(const struct Qdisc *qdisc)
-{
-	struct Qdisc *root = qdisc_root(qdisc);
-
-	ASSERT_RTNL();
-	return qdisc_lock(root);
-=======
 	return rcu_dereference_rtnl(qdisc->dev_queue->qdisc_sleeping);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline spinlock_t *qdisc_root_sleeping_lock(const struct Qdisc *qdisc)
@@ -791,28 +570,6 @@ static inline struct net_device *qdisc_dev(const struct Qdisc *qdisc)
 	return qdisc->dev_queue->dev;
 }
 
-<<<<<<< HEAD
-static inline void sch_tree_lock(const struct Qdisc *q)
-{
-	spin_lock_bh(qdisc_root_sleeping_lock(q));
-}
-
-static inline void sch_tree_unlock(const struct Qdisc *q)
-{
-	spin_unlock_bh(qdisc_root_sleeping_lock(q));
-}
-
-#define tcf_tree_lock(tp)	sch_tree_lock((tp)->q)
-#define tcf_tree_unlock(tp)	sch_tree_unlock((tp)->q)
-
-extern struct Qdisc noop_qdisc;
-extern struct Qdisc_ops noop_qdisc_ops;
-extern struct Qdisc_ops pfifo_fast_ops;
-extern struct Qdisc_ops mq_qdisc_ops;
-
-struct Qdisc_class_common {
-	u32			classid;
-=======
 static inline void sch_tree_lock(struct Qdisc *q)
 {
 	if (q->flags & TCQ_F_MQROOT)
@@ -846,7 +603,6 @@ get_default_qdisc_ops(const struct net_device *dev, int ntx)
 struct Qdisc_class_common {
 	u32			classid;
 	unsigned int		filter_cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hlist_node	hnode;
 };
 
@@ -868,13 +624,6 @@ static inline struct Qdisc_class_common *
 qdisc_class_find(const struct Qdisc_class_hash *hash, u32 id)
 {
 	struct Qdisc_class_common *cl;
-<<<<<<< HEAD
-	struct hlist_node *n;
-	unsigned int h;
-
-	h = qdisc_class_hash(id, hash->hashmask);
-	hlist_for_each_entry(cl, n, &hash->hash[h], hnode) {
-=======
 	unsigned int h;
 
 	if (!id)
@@ -882,41 +631,12 @@ qdisc_class_find(const struct Qdisc_class_hash *hash, u32 id)
 
 	h = qdisc_class_hash(id, hash->hashmask);
 	hlist_for_each_entry(cl, &hash->hash[h], hnode) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cl->classid == id)
 			return cl;
 	}
 	return NULL;
 }
 
-<<<<<<< HEAD
-extern int qdisc_class_hash_init(struct Qdisc_class_hash *);
-extern void qdisc_class_hash_insert(struct Qdisc_class_hash *, struct Qdisc_class_common *);
-extern void qdisc_class_hash_remove(struct Qdisc_class_hash *, struct Qdisc_class_common *);
-extern void qdisc_class_hash_grow(struct Qdisc *, struct Qdisc_class_hash *);
-extern void qdisc_class_hash_destroy(struct Qdisc_class_hash *);
-
-extern void dev_init_scheduler(struct net_device *dev);
-extern void dev_shutdown(struct net_device *dev);
-extern void dev_activate(struct net_device *dev);
-extern void dev_deactivate(struct net_device *dev);
-extern void dev_deactivate_many(struct list_head *head);
-extern struct Qdisc *dev_graft_qdisc(struct netdev_queue *dev_queue,
-				     struct Qdisc *qdisc);
-extern void qdisc_reset(struct Qdisc *qdisc);
-extern void qdisc_destroy(struct Qdisc *qdisc);
-extern void qdisc_tree_decrease_qlen(struct Qdisc *qdisc, unsigned int n);
-extern struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
-				 struct Qdisc_ops *ops);
-extern struct Qdisc *qdisc_create_dflt(struct netdev_queue *dev_queue,
-				       struct Qdisc_ops *ops, u32 parentid);
-extern void __qdisc_calculate_pkt_len(struct sk_buff *skb,
-				      const struct qdisc_size_table *stab);
-extern void tcf_destroy(struct tcf_proto *tp);
-extern void tcf_destroy_chain(struct tcf_proto **fl);
-
-/* Reset all TX qdiscs greater then index of a device.  */
-=======
 static inline bool qdisc_class_in_use(const struct Qdisc_class_common *cl)
 {
 	return cl->filter_cnt > 0;
@@ -1031,17 +751,12 @@ static inline bool skb_skip_tc_classify(struct sk_buff *skb)
 }
 
 /* Reset all TX qdiscs greater than index of a device.  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void qdisc_reset_all_tx_gt(struct net_device *dev, unsigned int i)
 {
 	struct Qdisc *qdisc;
 
 	for (; i < dev->num_tx_queues; i++) {
-<<<<<<< HEAD
-		qdisc = netdev_get_tx_queue(dev, i)->qdisc;
-=======
 		qdisc = rtnl_dereference(netdev_get_tx_queue(dev, i)->qdisc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (qdisc) {
 			spin_lock_bh(qdisc_lock(qdisc));
 			qdisc_reset(qdisc);
@@ -1050,27 +765,10 @@ static inline void qdisc_reset_all_tx_gt(struct net_device *dev, unsigned int i)
 	}
 }
 
-<<<<<<< HEAD
-static inline void qdisc_reset_all_tx(struct net_device *dev)
-{
-	qdisc_reset_all_tx_gt(dev, 0);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Are all TX queues of the device empty?  */
 static inline bool qdisc_all_tx_empty(const struct net_device *dev)
 {
 	unsigned int i;
-<<<<<<< HEAD
-	for (i = 0; i < dev->num_tx_queues; i++) {
-		struct netdev_queue *txq = netdev_get_tx_queue(dev, i);
-		const struct Qdisc *q = txq->qdisc;
-
-		if (q->q.qlen)
-			return false;
-	}
-=======
 
 	rcu_read_lock();
 	for (i = 0; i < dev->num_tx_queues; i++) {
@@ -1083,7 +781,6 @@ static inline bool qdisc_all_tx_empty(const struct net_device *dev)
 		}
 	}
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
@@ -1091,18 +788,12 @@ static inline bool qdisc_all_tx_empty(const struct net_device *dev)
 static inline bool qdisc_tx_changing(const struct net_device *dev)
 {
 	unsigned int i;
-<<<<<<< HEAD
-	for (i = 0; i < dev->num_tx_queues; i++) {
-		struct netdev_queue *txq = netdev_get_tx_queue(dev, i);
-		if (txq->qdisc != txq->qdisc_sleeping)
-=======
 
 	for (i = 0; i < dev->num_tx_queues; i++) {
 		struct netdev_queue *txq = netdev_get_tx_queue(dev, i);
 
 		if (rcu_access_pointer(txq->qdisc) !=
 		    rcu_access_pointer(txq->qdisc_sleeping))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return true;
 	}
 	return false;
@@ -1112,16 +803,10 @@ static inline bool qdisc_tx_changing(const struct net_device *dev)
 static inline bool qdisc_tx_is_noop(const struct net_device *dev)
 {
 	unsigned int i;
-<<<<<<< HEAD
-	for (i = 0; i < dev->num_tx_queues; i++) {
-		struct netdev_queue *txq = netdev_get_tx_queue(dev, i);
-		if (txq->qdisc != &noop_qdisc)
-=======
 
 	for (i = 0; i < dev->num_tx_queues; i++) {
 		struct netdev_queue *txq = netdev_get_tx_queue(dev, i);
 		if (rcu_access_pointer(txq->qdisc) != &noop_qdisc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return false;
 	}
 	return true;
@@ -1155,26 +840,6 @@ static inline void qdisc_calculate_pkt_len(struct sk_buff *skb,
 #endif
 }
 
-<<<<<<< HEAD
-static inline int qdisc_enqueue(struct sk_buff *skb, struct Qdisc *sch)
-{
-	qdisc_calculate_pkt_len(skb, sch);
-	return sch->enqueue(skb, sch);
-}
-
-static inline int qdisc_enqueue_root(struct sk_buff *skb, struct Qdisc *sch)
-{
-	qdisc_skb_cb(skb)->pkt_len = skb->len;
-	return qdisc_enqueue(skb, sch) & NET_XMIT_MASK;
-}
-
-
-static inline void bstats_update(struct gnet_stats_basic_packed *bstats,
-				 const struct sk_buff *skb)
-{
-	bstats->bytes += qdisc_pkt_len(skb);
-	bstats->packets += skb_is_gso(skb) ? skb_shinfo(skb)->gso_segs : 1;
-=======
 static inline int qdisc_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 				struct sk_buff **to_free)
 {
@@ -1203,7 +868,6 @@ static inline void qdisc_bstats_cpu_update(struct Qdisc *sch,
 					   const struct sk_buff *skb)
 {
 	bstats_update(this_cpu_ptr(sch->cpu_bstats), skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void qdisc_bstats_update(struct Qdisc *sch,
@@ -1212,15 +876,6 @@ static inline void qdisc_bstats_update(struct Qdisc *sch,
 	bstats_update(&sch->bstats, skb);
 }
 
-<<<<<<< HEAD
-static inline int __qdisc_enqueue_tail(struct sk_buff *skb, struct Qdisc *sch,
-				       struct sk_buff_head *list)
-{
-	__skb_queue_tail(list, skb);
-	sch->qstats.backlog += qdisc_pkt_len(skb);
-
-	return NET_XMIT_SUCCESS;
-=======
 static inline void qdisc_qstats_backlog_dec(struct Qdisc *sch,
 					    const struct sk_buff *skb)
 {
@@ -1338,24 +993,10 @@ static inline void __qdisc_enqueue_tail(struct sk_buff *skb,
 		qh->head = skb;
 	}
 	qh->qlen++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int qdisc_enqueue_tail(struct sk_buff *skb, struct Qdisc *sch)
 {
-<<<<<<< HEAD
-	return __qdisc_enqueue_tail(skb, sch, &sch->q);
-}
-
-static inline struct sk_buff *__qdisc_dequeue_head(struct Qdisc *sch,
-						   struct sk_buff_head *list)
-{
-	struct sk_buff *skb = __skb_dequeue(list);
-
-	if (likely(skb != NULL)) {
-		sch->qstats.backlog -= qdisc_pkt_len(skb);
-		qdisc_bstats_update(sch, skb);
-=======
 	__qdisc_enqueue_tail(skb, &sch->q);
 	qdisc_qstats_backlog_inc(sch, skb);
 	return NET_XMIT_SUCCESS;
@@ -1382,7 +1023,6 @@ static inline struct sk_buff *__qdisc_dequeue_head(struct qdisc_skb_head *qh)
 		if (qh->head == NULL)
 			qh->tail = NULL;
 		skb->next = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return skb;
@@ -1390,20 +1030,6 @@ static inline struct sk_buff *__qdisc_dequeue_head(struct qdisc_skb_head *qh)
 
 static inline struct sk_buff *qdisc_dequeue_head(struct Qdisc *sch)
 {
-<<<<<<< HEAD
-	return __qdisc_dequeue_head(sch, &sch->q);
-}
-
-static inline unsigned int __qdisc_queue_drop_head(struct Qdisc *sch,
-					      struct sk_buff_head *list)
-{
-	struct sk_buff *skb = __skb_dequeue(list);
-
-	if (likely(skb != NULL)) {
-		unsigned int len = qdisc_pkt_len(skb);
-		sch->qstats.backlog -= len;
-		kfree_skb(skb);
-=======
 	struct sk_buff *skb = __qdisc_dequeue_head(&sch->q);
 
 	if (likely(skb != NULL)) {
@@ -1475,61 +1101,22 @@ static inline unsigned int __qdisc_queue_drop_head(struct Qdisc *sch,
 
 		qdisc_qstats_backlog_dec(sch, skb);
 		__qdisc_drop(skb, to_free);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return len;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline unsigned int qdisc_queue_drop_head(struct Qdisc *sch)
-{
-	return __qdisc_queue_drop_head(sch, &sch->q);
-}
-
-static inline struct sk_buff *__qdisc_dequeue_tail(struct Qdisc *sch,
-						   struct sk_buff_head *list)
-{
-	struct sk_buff *skb = __skb_dequeue_tail(list);
-
-	if (likely(skb != NULL))
-		sch->qstats.backlog -= qdisc_pkt_len(skb);
-
-	return skb;
-}
-
-static inline struct sk_buff *qdisc_dequeue_tail(struct Qdisc *sch)
-{
-	return __qdisc_dequeue_tail(sch, &sch->q);
-}
-
-static inline struct sk_buff *qdisc_peek_head(struct Qdisc *sch)
-{
-	return skb_peek(&sch->q);
-=======
 static inline struct sk_buff *qdisc_peek_head(struct Qdisc *sch)
 {
 	const struct qdisc_skb_head *qh = &sch->q;
 
 	return qh->head;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* generic pseudo peek method for non-work-conserving qdisc */
 static inline struct sk_buff *qdisc_peek_dequeued(struct Qdisc *sch)
 {
-<<<<<<< HEAD
-	/* we can reuse ->gso_skb because peek isn't called for root qdiscs */
-	if (!sch->gso_skb) {
-		sch->gso_skb = sch->dequeue(sch);
-		if (sch->gso_skb)
-			/* it's still part of the queue */
-			sch->q.qlen++;
-	}
-
-	return sch->gso_skb;
-=======
 	struct sk_buff *skb = skb_peek(&sch->gso_skb);
 
 	/* we can reuse ->gso_skb because peek isn't called for root qdiscs */
@@ -1571,19 +1158,11 @@ static inline void qdisc_update_stats_at_enqueue(struct Qdisc *sch,
 		sch->qstats.backlog += pkt_len;
 		sch->q.qlen++;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* use instead of qdisc->dequeue() for all qdiscs queried with ->peek() */
 static inline struct sk_buff *qdisc_dequeue_peeked(struct Qdisc *sch)
 {
-<<<<<<< HEAD
-	struct sk_buff *skb = sch->gso_skb;
-
-	if (skb) {
-		sch->gso_skb = NULL;
-		sch->q.qlen--;
-=======
 	struct sk_buff *skb = skb_peek(&sch->gso_skb);
 
 	if (skb) {
@@ -1595,7 +1174,6 @@ static inline struct sk_buff *qdisc_dequeue_peeked(struct Qdisc *sch)
 			qdisc_qstats_backlog_dec(sch, skb);
 			sch->q.qlen--;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		skb = sch->dequeue(sch);
 	}
@@ -1603,20 +1181,12 @@ static inline struct sk_buff *qdisc_dequeue_peeked(struct Qdisc *sch)
 	return skb;
 }
 
-<<<<<<< HEAD
-static inline void __qdisc_reset_queue(struct Qdisc *sch,
-				       struct sk_buff_head *list)
-=======
 static inline void __qdisc_reset_queue(struct qdisc_skb_head *qh)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * We do not know the backlog in bytes of this list, it
 	 * is up to the caller to correct it
 	 */
-<<<<<<< HEAD
-	__skb_queue_purge(list);
-=======
 	ASSERT_RTNL();
 	if (qh->qlen) {
 		rtnl_kfree_skbs(qh->head, qh->tail);
@@ -1625,40 +1195,10 @@ static inline void __qdisc_reset_queue(struct qdisc_skb_head *qh)
 		qh->tail = NULL;
 		qh->qlen = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void qdisc_reset_queue(struct Qdisc *sch)
 {
-<<<<<<< HEAD
-	__qdisc_reset_queue(sch, &sch->q);
-	sch->qstats.backlog = 0;
-}
-
-static inline unsigned int __qdisc_queue_drop(struct Qdisc *sch,
-					      struct sk_buff_head *list)
-{
-	struct sk_buff *skb = __qdisc_dequeue_tail(sch, list);
-
-	if (likely(skb != NULL)) {
-		unsigned int len = qdisc_pkt_len(skb);
-		kfree_skb(skb);
-		return len;
-	}
-
-	return 0;
-}
-
-static inline unsigned int qdisc_queue_drop(struct Qdisc *sch)
-{
-	return __qdisc_queue_drop(sch, &sch->q);
-}
-
-static inline int qdisc_drop(struct sk_buff *skb, struct Qdisc *sch)
-{
-	kfree_skb(skb);
-	sch->qstats.drops++;
-=======
 	__qdisc_reset_queue(&sch->q);
 }
 
@@ -1688,59 +1228,10 @@ static inline int qdisc_drop_cpu(struct sk_buff *skb, struct Qdisc *sch,
 {
 	__qdisc_drop(skb, to_free);
 	qdisc_qstats_cpu_drop(sch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NET_XMIT_DROP;
 }
 
-<<<<<<< HEAD
-static inline int qdisc_reshape_fail(struct sk_buff *skb, struct Qdisc *sch)
-{
-	sch->qstats.drops++;
-
-#ifdef CONFIG_NET_CLS_ACT
-	if (sch->reshape_fail == NULL || sch->reshape_fail(skb, sch))
-		goto drop;
-
-	return NET_XMIT_SUCCESS;
-
-drop:
-#endif
-	kfree_skb(skb);
-	return NET_XMIT_DROP;
-}
-
-/* Length to Time (L2T) lookup in a qdisc_rate_table, to determine how
-   long it will take to send a packet given its size.
- */
-static inline u32 qdisc_l2t(struct qdisc_rate_table* rtab, unsigned int pktlen)
-{
-	int slot = pktlen + rtab->rate.cell_align + rtab->rate.overhead;
-	if (slot < 0)
-		slot = 0;
-	slot >>= rtab->rate.cell_log;
-	if (slot > 255)
-		return rtab->data[255]*(slot >> 8) + rtab->data[slot & 0xFF];
-	return rtab->data[slot];
-}
-
-#ifdef CONFIG_NET_CLS_ACT
-static inline struct sk_buff *skb_act_clone(struct sk_buff *skb, gfp_t gfp_mask,
-					    int action)
-{
-	struct sk_buff *n;
-
-	n = skb_clone(skb, gfp_mask);
-
-	if (n) {
-		n->tc_verd = SET_TC_VERD(n->tc_verd, 0);
-		n->tc_verd = CLR_TC_OK2MUNGE(n->tc_verd);
-		n->tc_verd = CLR_TC_MUNGED(n->tc_verd);
-	}
-	return n;
-}
-#endif
-=======
 static inline int qdisc_drop(struct sk_buff *skb, struct Qdisc *sch,
 			     struct sk_buff **to_free)
 {
@@ -1861,6 +1352,5 @@ static inline void qdisc_synchronize(const struct Qdisc *q)
 	while (test_bit(__QDISC_STATE_SCHED, &q->state))
 		msleep(1);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

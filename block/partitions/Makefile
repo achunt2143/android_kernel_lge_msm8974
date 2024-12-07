@@ -1,25 +1,14 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux kernel.
 #
 
-<<<<<<< HEAD
-obj-$(CONFIG_BLOCK) := check.o
-
-obj-$(CONFIG_ACORN_PARTITION) += acorn.o
-obj-$(CONFIG_AMIGA_PARTITION) += amiga.o
-obj-$(CONFIG_ATARI_PARTITION) += atari.o
-=======
 obj-$(CONFIG_BLOCK) += core.o
 obj-$(CONFIG_ACORN_PARTITION) += acorn.o
 obj-$(CONFIG_AMIGA_PARTITION) += amiga.o
 obj-$(CONFIG_ATARI_PARTITION) += atari.o
 obj-$(CONFIG_AIX_PARTITION) += aix.o
 obj-$(CONFIG_CMDLINE_PARTITION) += cmdline.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_MAC_PARTITION) += mac.o
 obj-$(CONFIG_LDM_PARTITION) += ldm.o
 obj-$(CONFIG_MSDOS_PARTITION) += msdos.o

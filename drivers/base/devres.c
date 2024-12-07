@@ -1,54 +1,30 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/base/devres.c - device resource management
  *
  * Copyright (c) 2006  SUSE Linux Products GmbH
  * Copyright (c) 2006  Tejun Heo <teheo@suse.de>
-<<<<<<< HEAD
- *
- * This file is released under the GPLv2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include "base.h"
-=======
 #include <linux/percpu.h>
 
 #include <asm/sections.h>
 
 #include "base.h"
 #include "trace.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct devres_node {
 	struct list_head		entry;
 	dr_release_t			release;
-<<<<<<< HEAD
-#ifdef CONFIG_DEBUG_DEVRES
 	const char			*name;
 	size_t				size;
-#endif
-=======
-	const char			*name;
-	size_t				size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct devres {
 	struct devres_node		node;
-<<<<<<< HEAD
-	/* -- 3 pointers */
-	unsigned long long		data[];	/* guarantee ull alignment */
-=======
 	/*
 	 * Some archs want to perform DMA into kmalloc caches
 	 * and need a guaranteed alignment larger than
@@ -57,7 +33,6 @@ struct devres {
 	 * alignment for struct devres when allocated by kmalloc().
 	 */
 	u8 __aligned(ARCH_DMA_MINALIGN) data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct devres_group {
@@ -67,13 +42,6 @@ struct devres_group {
 	/* -- 8 pointers */
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_DEBUG_DEVRES
-static int log_devres = 0;
-module_param_named(log, log_devres, int, S_IRUGO | S_IWUSR);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void set_node_dbginfo(struct devres_node *node, const char *name,
 			     size_t size)
 {
@@ -81,20 +49,6 @@ static void set_node_dbginfo(struct devres_node *node, const char *name,
 	node->size = size;
 }
 
-<<<<<<< HEAD
-static void devres_log(struct device *dev, struct devres_node *node,
-		       const char *op)
-{
-	if (unlikely(log_devres))
-		dev_printk(KERN_ERR, dev, "DEVRES %3s %p %s (%lu bytes)\n",
-			   op, node, node->name, (unsigned long)node->size);
-}
-#else /* CONFIG_DEBUG_DEVRES */
-#define set_node_dbginfo(node, n, s)	do {} while (0)
-#define devres_log(dev, node, op)	do {} while (0)
-#endif /* CONFIG_DEBUG_DEVRES */
-
-=======
 #ifdef CONFIG_DEBUG_DEVRES
 static int log_devres = 0;
 module_param_named(log, log_devres, int, S_IRUGO | S_IWUSR);
@@ -117,7 +71,6 @@ static void devres_log(struct device *dev, struct devres_node *node,
 	devres_dbg(dev, node, op);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Release functions for devres group.  These callbacks are used only
  * for identification.
@@ -141,19 +94,6 @@ static struct devres_group * node_to_group(struct devres_node *node)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static __always_inline struct devres * alloc_dr(dr_release_t release,
-						size_t size, gfp_t gfp)
-{
-	size_t tot_size = sizeof(struct devres) + size;
-	struct devres *dr;
-
-	dr = kmalloc_track_caller(tot_size, gfp);
-	if (unlikely(!dr))
-		return NULL;
-
-	memset(dr, 0, tot_size);
-=======
 static bool check_dr_size(size_t size, size_t *tot_size)
 {
 	/* We must catch any near-SIZE_MAX cases that could overflow. */
@@ -184,7 +124,6 @@ static __always_inline struct devres * alloc_dr(dr_release_t release,
 	if (!(gfp & __GFP_ZERO))
 		memset(dr, 0, offsetof(struct devres, data));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&dr->node.entry);
 	dr->node.release = release;
 	return dr;
@@ -197,27 +136,6 @@ static void add_dr(struct device *dev, struct devres_node *node)
 	list_add_tail(&node->entry, &dev->devres_head);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_DEBUG_DEVRES
-void * __devres_alloc(dr_release_t release, size_t size, gfp_t gfp,
-		      const char *name)
-{
-	struct devres *dr;
-
-	dr = alloc_dr(release, size, gfp);
-	if (unlikely(!dr))
-		return NULL;
-	set_node_dbginfo(&dr->node, name, size);
-	return dr->data;
-}
-EXPORT_SYMBOL_GPL(__devres_alloc);
-#else
-/**
- * devres_alloc - Allocate device resource data
- * @release: Release function devres will be associated with
- * @size: Allocation size
- * @gfp: Allocation flags
-=======
 static void replace_dr(struct device *dev,
 		       struct devres_node *old, struct devres_node *new)
 {
@@ -233,7 +151,6 @@ static void replace_dr(struct device *dev,
  * @gfp: Allocation flags
  * @nid: NUMA node
  * @name: Name of the resource
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Allocate devres of @size bytes.  The allocated area is zeroed, then
  * associated with @release.  The returned pointer can be passed to
@@ -242,19 +159,6 @@ static void replace_dr(struct device *dev,
  * RETURNS:
  * Pointer to allocated devres on success, NULL on failure.
  */
-<<<<<<< HEAD
-void * devres_alloc(dr_release_t release, size_t size, gfp_t gfp)
-{
-	struct devres *dr;
-
-	dr = alloc_dr(release, size, gfp);
-	if (unlikely(!dr))
-		return NULL;
-	return dr->data;
-}
-EXPORT_SYMBOL_GPL(devres_alloc);
-#endif
-=======
 void *__devres_alloc_node(dr_release_t release, size_t size, gfp_t gfp, int nid,
 			  const char *name)
 {
@@ -309,7 +213,6 @@ void devres_for_each_res(struct device *dev, dr_release_t release,
 	spin_unlock_irqrestore(&dev->devres_lock, flags);
 }
 EXPORT_SYMBOL_GPL(devres_for_each_res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * devres_free - Free device resource data
@@ -477,13 +380,10 @@ EXPORT_SYMBOL_GPL(devres_remove);
  * which @match returns 1.  If @match is NULL, it's considered to
  * match all.  If found, the resource is removed atomically and freed.
  *
-<<<<<<< HEAD
-=======
  * Note that the release function for the resource will not be called,
  * only the devres-allocated data will be freed.  The caller becomes
  * responsible for freeing any other data.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * RETURNS:
  * 0 if devres is found and freed, -ENOENT if not found.
  */
@@ -501,8 +401,6 @@ int devres_destroy(struct device *dev, dr_release_t release,
 }
 EXPORT_SYMBOL_GPL(devres_destroy);
 
-<<<<<<< HEAD
-=======
 
 /**
  * devres_release - Find a device resource and destroy it, calling release
@@ -534,37 +432,20 @@ int devres_release(struct device *dev, dr_release_t release,
 }
 EXPORT_SYMBOL_GPL(devres_release);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int remove_nodes(struct device *dev,
 			struct list_head *first, struct list_head *end,
 			struct list_head *todo)
 {
-<<<<<<< HEAD
-	int cnt = 0, nr_groups = 0;
-	struct list_head *cur;
-=======
 	struct devres_node *node, *n;
 	int cnt = 0, nr_groups = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First pass - move normal devres entries to @todo and clear
 	 * devres_group colors.
 	 */
-<<<<<<< HEAD
-	cur = first;
-	while (cur != end) {
-		struct devres_node *node;
-		struct devres_group *grp;
-
-		node = list_entry(cur, struct devres_node, entry);
-		cur = cur->next;
-
-=======
 	node = list_entry(first, struct devres_node, entry);
 	list_for_each_entry_safe_from(node, n, end, entry) {
 		struct devres_group *grp;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		grp = node_to_group(node);
 		if (grp) {
 			/* clear color of group markers in the first pass */
@@ -584,20 +465,6 @@ static int remove_nodes(struct device *dev,
 
 	/* Second pass - Scan groups and color them.  A group gets
 	 * color value of two iff the group is wholly contained in
-<<<<<<< HEAD
-	 * [cur, end).  That is, for a closed group, both opening and
-	 * closing markers should be in the range, while just the
-	 * opening marker is enough for an open group.
-	 */
-	cur = first;
-	while (cur != end) {
-		struct devres_node *node;
-		struct devres_group *grp;
-
-		node = list_entry(cur, struct devres_node, entry);
-		cur = cur->next;
-
-=======
 	 * [current node, end). That is, for a closed group, both opening
 	 * and closing markers should be in the range, while just the
 	 * opening marker is enough for an open group.
@@ -606,7 +473,6 @@ static int remove_nodes(struct device *dev,
 	list_for_each_entry_safe_from(node, n, end, entry) {
 		struct devres_group *grp;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		grp = node_to_group(node);
 		BUG_ON(!grp || list_empty(&grp->node[0].entry));
 
@@ -616,11 +482,7 @@ static int remove_nodes(struct device *dev,
 
 		BUG_ON(grp->color <= 0 || grp->color > 2);
 		if (grp->color == 2) {
-<<<<<<< HEAD
-			/* No need to update cur or end.  The removed
-=======
 			/* No need to update current node or end. The removed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * nodes are always before both.
 			 */
 			list_move_tail(&grp->node[0].entry, todo);
@@ -631,24 +493,6 @@ static int remove_nodes(struct device *dev,
 	return cnt;
 }
 
-<<<<<<< HEAD
-static int release_nodes(struct device *dev, struct list_head *first,
-			 struct list_head *end, unsigned long flags)
-	__releases(&dev->devres_lock)
-{
-	LIST_HEAD(todo);
-	int cnt;
-	struct devres *dr, *tmp;
-
-	cnt = remove_nodes(dev, first, end, &todo);
-
-	spin_unlock_irqrestore(&dev->devres_lock, flags);
-
-	/* Release.  Note that both devres and devres_group are
-	 * handled as devres in the following loop.  This is safe.
-	 */
-	list_for_each_entry_safe_reverse(dr, tmp, &todo, node.entry) {
-=======
 static void release_nodes(struct device *dev, struct list_head *todo)
 {
 	struct devres *dr, *tmp;
@@ -657,16 +501,10 @@ static void release_nodes(struct device *dev, struct list_head *todo)
 	 * handled as devres in the following loop.  This is safe.
 	 */
 	list_for_each_entry_safe_reverse(dr, tmp, todo, node.entry) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		devres_log(dev, &dr->node, "REL");
 		dr->node.release(dev, dr->data);
 		kfree(dr);
 	}
-<<<<<<< HEAD
-
-	return cnt;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -679,20 +517,12 @@ static void release_nodes(struct device *dev, struct list_head *todo)
 int devres_release_all(struct device *dev)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 	LIST_HEAD(todo);
 	int cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Looks like an uninitialized device structure */
 	if (WARN_ON(dev->devres_head.next == NULL))
 		return -ENODEV;
-<<<<<<< HEAD
-	spin_lock_irqsave(&dev->devres_lock, flags);
-	return release_nodes(dev, dev->devres_head.next, &dev->devres_head,
-			     flags);
-=======
 
 	/* Nothing to release if list is empty */
 	if (list_empty(&dev->devres_head))
@@ -704,7 +534,6 @@ int devres_release_all(struct device *dev)
 
 	release_nodes(dev, &todo);
 	return cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -840,10 +669,7 @@ int devres_release_group(struct device *dev, void *id)
 {
 	struct devres_group *grp;
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 	LIST_HEAD(todo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cnt = 0;
 
 	spin_lock_irqsave(&dev->devres_lock, flags);
@@ -856,14 +682,10 @@ int devres_release_group(struct device *dev, void *id)
 		if (!list_empty(&grp->node[1].entry))
 			end = grp->node[1].entry.next;
 
-<<<<<<< HEAD
-		cnt = release_nodes(dev, first, end, flags);
-=======
 		cnt = remove_nodes(dev, first, end, &todo);
 		spin_unlock_irqrestore(&dev->devres_lock, flags);
 
 		release_nodes(dev, &todo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		WARN_ON(1);
 		spin_unlock_irqrestore(&dev->devres_lock, flags);
@@ -874,11 +696,6 @@ int devres_release_group(struct device *dev, void *id)
 EXPORT_SYMBOL_GPL(devres_release_group);
 
 /*
-<<<<<<< HEAD
- * Managed kzalloc/kfree
- */
-static void devm_kzalloc_release(struct device *dev, void *res)
-=======
  * Custom devres actions allow inserting a simple function call
  * into the teardown sequence.
  */
@@ -979,52 +796,28 @@ EXPORT_SYMBOL_GPL(devm_release_action);
  * Managed kmalloc/kfree
  */
 static void devm_kmalloc_release(struct device *dev, void *res)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* noop */
 }
 
-<<<<<<< HEAD
-static int devm_kzalloc_match(struct device *dev, void *res, void *data)
-=======
 static int devm_kmalloc_match(struct device *dev, void *res, void *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return res == data;
 }
 
 /**
-<<<<<<< HEAD
- * devm_kzalloc - Resource-managed kzalloc
-=======
  * devm_kmalloc - Resource-managed kmalloc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: Device to allocate memory for
  * @size: Allocation size
  * @gfp: Allocation gfp flags
  *
-<<<<<<< HEAD
- * Managed kzalloc.  Memory allocated with this function is
-=======
  * Managed kmalloc.  Memory allocated with this function is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * automatically freed on driver detach.  Like all other devres
  * resources, guaranteed alignment is unsigned long long.
  *
  * RETURNS:
  * Pointer to allocated memory on success, NULL on failure.
  */
-<<<<<<< HEAD
-void * devm_kzalloc(struct device *dev, size_t size, gfp_t gfp)
-{
-	struct devres *dr;
-
-	/* use raw alloc_dr for kmalloc caller tracing */
-	dr = alloc_dr(devm_kzalloc_release, size, gfp);
-	if (unlikely(!dr))
-		return NULL;
-
-=======
 void *devm_kmalloc(struct device *dev, size_t size, gfp_t gfp)
 {
 	struct devres *dr;
@@ -1041,14 +834,10 @@ void *devm_kmalloc(struct device *dev, size_t size, gfp_t gfp)
 	 * This is named devm_kzalloc_release for historical reasons
 	 * The initial implementation did not support kmalloc, only kzalloc
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_node_dbginfo(&dr->node, "devm_kzalloc_release", size);
 	devres_add(dev, dr->data);
 	return dr->data;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(devm_kzalloc);
-=======
 EXPORT_SYMBOL_GPL(devm_kmalloc);
 
 /**
@@ -1251,25 +1040,12 @@ char *devm_kasprintf(struct device *dev, gfp_t gfp, const char *fmt, ...)
 	return p;
 }
 EXPORT_SYMBOL_GPL(devm_kasprintf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * devm_kfree - Resource-managed kfree
  * @dev: Device this memory belongs to
  * @p: Memory to free
  *
-<<<<<<< HEAD
- * Free memory allocated with devm_kzalloc().
- */
-void devm_kfree(struct device *dev, void *p)
-{
-	int rc;
-
-	rc = devres_destroy(dev, devm_kzalloc_release, devm_kzalloc_match, p);
-	WARN_ON(rc);
-}
-EXPORT_SYMBOL_GPL(devm_kfree);
-=======
  * Free memory allocated with devm_kmalloc().
  */
 void devm_kfree(struct device *dev, const void *p)
@@ -1450,4 +1226,3 @@ void devm_free_percpu(struct device *dev, void __percpu *pdata)
 			       (__force void *)pdata));
 }
 EXPORT_SYMBOL_GPL(devm_free_percpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

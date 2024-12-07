@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ALPHA_IRQ_H
 #define _ALPHA_IRQ_H
 
@@ -59,24 +56,15 @@
 
 #elif defined(CONFIG_ALPHA_DP264) || \
       defined(CONFIG_ALPHA_LYNX)  || \
-<<<<<<< HEAD
-      defined(CONFIG_ALPHA_SHARK) || \
-      defined(CONFIG_ALPHA_EIGER)
-=======
       defined(CONFIG_ALPHA_SHARK)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define NR_IRQS	64
 
 #elif defined(CONFIG_ALPHA_TITAN)
 #define NR_IRQS		80
 
 #elif defined(CONFIG_ALPHA_RAWHIDE) || \
-<<<<<<< HEAD
-	defined(CONFIG_ALPHA_TAKARA)
-=======
       defined(CONFIG_ALPHA_TAKARA) || \
       defined(CONFIG_ALPHA_EIGER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define NR_IRQS	128
 
 #elif defined(CONFIG_ALPHA_WILDFIRE)

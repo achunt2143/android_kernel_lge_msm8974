@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-/*
- * Arch related setup for Hexagon
- *
- * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- */
-
-#include <linux/init.h>
-#include <linux/bootmem.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Arch related setup for Hexagon
@@ -32,7 +8,6 @@
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mmzone.h>
 #include <linux/mm.h>
 #include <linux/seq_file.h>
@@ -45,23 +20,13 @@
 #include <asm/hexagon_vm.h>
 #include <asm/vm_mmu.h>
 #include <asm/time.h>
-<<<<<<< HEAD
-#ifdef CONFIG_OF
-#include <asm/prom.h>
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 char cmd_line[COMMAND_LINE_SIZE];
 static char default_command_line[COMMAND_LINE_SIZE] __initdata = CONFIG_CMDLINE;
 
 int on_simulator;
 
-<<<<<<< HEAD
-void __cpuinit calibrate_delay(void)
-=======
 void calibrate_delay(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	loops_per_jiffy = thread_freq_mhz * 1000000 / HZ;
 }
@@ -88,11 +53,8 @@ void __init setup_arch(char **cmdline_p)
 	 */
 	__vmsetvec(_K_VM_event_vector);
 
-<<<<<<< HEAD
-=======
 	printk(KERN_INFO "PHYS_OFFSET=0x%08lx\n", PHYS_OFFSET);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Simulator has a few differences from the hardware.
 	 * For now, check uninitialized-but-mapped memory
@@ -104,15 +66,9 @@ void __init setup_arch(char **cmdline_p)
 		on_simulator = 0;
 
 	if (p[0] != '\0')
-<<<<<<< HEAD
-		strlcpy(boot_command_line, p, COMMAND_LINE_SIZE);
-	else
-		strlcpy(boot_command_line, default_command_line,
-=======
 		strscpy(boot_command_line, p, COMMAND_LINE_SIZE);
 	else
 		strscpy(boot_command_line, default_command_line,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			COMMAND_LINE_SIZE);
 
 	/*
@@ -120,11 +76,7 @@ void __init setup_arch(char **cmdline_p)
 	 * are both picked up by the init code. If no reason to
 	 * make them different, pass the same pointer back.
 	 */
-<<<<<<< HEAD
-	strlcpy(cmd_line, boot_command_line, COMMAND_LINE_SIZE);
-=======
 	strscpy(cmd_line, boot_command_line, COMMAND_LINE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*cmdline_p = cmd_line;
 
 	parse_early_param();
@@ -163,14 +115,11 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 {
 	int cpu = (unsigned long) v - 1;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SMP
 	if (!cpu_online(cpu))
 		return 0;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(m, "processor\t: %d\n", cpu);
 	seq_printf(m, "model name\t: Hexagon Virtual Machine\n");
 	seq_printf(m, "BogoMips\t: %lu.%02lu\n",

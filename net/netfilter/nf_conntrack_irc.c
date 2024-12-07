@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-/* IRC extension for IP connection tracking, Version 1.21
- * (C) 2000-2002 by Harald Welte <laforge@gnumonks.org>
- * based on RR's ip_conntrack_ftp.c
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* IRC extension for IP connection tracking, Version 1.21
  * (C) 2000-2002 by Harald Welte <laforge@gnumonks.org>
@@ -19,7 +7,6 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/skbuff.h>
@@ -51,21 +38,14 @@ unsigned int (*nf_nat_irc_hook)(struct sk_buff *skb,
 				struct nf_conntrack_expect *exp) __read_mostly;
 EXPORT_SYMBOL_GPL(nf_nat_irc_hook);
 
-<<<<<<< HEAD
-=======
 #define HELPER_NAME "irc"
 #define MAX_SEARCH_SIZE	4095
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Harald Welte <laforge@netfilter.org>");
 MODULE_DESCRIPTION("IRC (DCC) connection tracking helper");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ip_conntrack_irc");
-<<<<<<< HEAD
-MODULE_ALIAS_NFCT_HELPER("irc");
-=======
 MODULE_ALIAS_NFCT_HELPER(HELPER_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_array(ports, ushort, &ports_c, 0400);
 MODULE_PARM_DESC(ports, "port numbers of IRC servers");
@@ -142,10 +122,7 @@ static int help(struct sk_buff *skb, unsigned int protoff,
 	int i, ret = NF_ACCEPT;
 	char *addr_beg_p, *addr_end_p;
 	typeof(nf_nat_irc_hook) nf_nat_irc;
-<<<<<<< HEAD
-=======
 	unsigned int datalen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If packet is coming from IRC server */
 	if (dir == IP_CT_DIR_REPLY)
@@ -165,25 +142,6 @@ static int help(struct sk_buff *skb, unsigned int protoff,
 	if (dataoff >= skb->len)
 		return NF_ACCEPT;
 
-<<<<<<< HEAD
-	spin_lock_bh(&irc_buffer_lock);
-	ib_ptr = skb_header_pointer(skb, dataoff, skb->len - dataoff,
-				    irc_buffer);
-	BUG_ON(ib_ptr == NULL);
-
-	data = ib_ptr;
-	data_limit = ib_ptr + skb->len - dataoff;
-
-	/* strlen("\1DCC SENT t AAAAAAAA P\1\n")=24
-	 * 5+MINMATCHLEN+strlen("t AAAAAAAA P\1\n")=14 */
-	while (data < data_limit - (19 + MINMATCHLEN)) {
-		if (memcmp(data, "\1DCC ", 5)) {
-			data++;
-			continue;
-		}
-		data += 5;
-		/* we have at least (19+MINMATCHLEN)-5 bytes valid data left */
-=======
 	datalen = skb->len - dataoff;
 	if (datalen > MAX_SEARCH_SIZE)
 		datalen = MAX_SEARCH_SIZE;
@@ -230,7 +188,6 @@ static int help(struct sk_buff *skb, unsigned int protoff,
 			goto out;
 		data += 5;
 		/* we have at least (21+MINMATCHLEN)-(2+5) bytes valid data left */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		iph = ip_hdr(skb);
 		pr_debug("DCC found in master %pI4:%u %pI4:%u\n",
@@ -246,11 +203,7 @@ static int help(struct sk_buff *skb, unsigned int protoff,
 			pr_debug("DCC %s detected\n", dccprotos[i]);
 
 			/* we have at least
-<<<<<<< HEAD
-			 * (19+MINMATCHLEN)-5-dccprotos[i].matchlen bytes valid
-=======
 			 * (21+MINMATCHLEN)-7-dccprotos[i].matchlen bytes valid
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * data left (== 14/13 bytes) */
 			if (parse_dcc(data, data_limit, &dcc_ip,
 				       &dcc_port, &addr_beg_p, &addr_end_p)) {
@@ -263,32 +216,19 @@ static int help(struct sk_buff *skb, unsigned int protoff,
 
 			/* dcc_ip can be the internal OR external (NAT'ed) IP */
 			tuple = &ct->tuplehash[dir].tuple;
-<<<<<<< HEAD
-			if (tuple->src.u3.ip != dcc_ip &&
-			    tuple->dst.u3.ip != dcc_ip) {
-				if (net_ratelimit())
-					printk(KERN_WARNING
-						"Forged DCC command from %pI4: %pI4:%u\n",
-						&tuple->src.u3.ip,
-						&dcc_ip, dcc_port);
-=======
 			if ((tuple->src.u3.ip != dcc_ip &&
 			     ct->tuplehash[!dir].tuple.dst.u3.ip != dcc_ip) ||
 			    dcc_port == 0) {
 				net_warn_ratelimited("Forged DCC command from %pI4: %pI4:%u\n",
 						     &tuple->src.u3.ip,
 						     &dcc_ip, dcc_port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 
 			exp = nf_ct_expect_alloc(ct);
 			if (exp == NULL) {
-<<<<<<< HEAD
-=======
 				nf_ct_helper_log(skb, ct,
 						 "cannot alloc expectation");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = NF_DROP;
 				goto out;
 			}
@@ -305,16 +245,11 @@ static int help(struct sk_buff *skb, unsigned int protoff,
 						 addr_beg_p - ib_ptr,
 						 addr_end_p - addr_beg_p,
 						 exp);
-<<<<<<< HEAD
-			else if (nf_ct_expect_related(exp) != 0)
-				ret = NF_DROP;
-=======
 			else if (nf_ct_expect_related(exp, 0) != 0) {
 				nf_ct_helper_log(skb, ct,
 						 "cannot add expectation");
 				ret = NF_DROP;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nf_ct_expect_put(exp);
 			goto out;
 		}
@@ -327,19 +262,11 @@ static int help(struct sk_buff *skb, unsigned int protoff,
 static struct nf_conntrack_helper irc[MAX_PORTS] __read_mostly;
 static struct nf_conntrack_expect_policy irc_exp_policy;
 
-<<<<<<< HEAD
-static void nf_conntrack_irc_fini(void);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init nf_conntrack_irc_init(void)
 {
 	int i, ret;
 
 	if (max_dcc_channels < 1) {
-<<<<<<< HEAD
-		printk(KERN_ERR "nf_ct_irc: max_dcc_channels must not be zero\n");
-=======
 		pr_err("max_dcc_channels must not be zero\n");
 		return -EINVAL;
 	}
@@ -347,18 +274,13 @@ static int __init nf_conntrack_irc_init(void)
 	if (max_dcc_channels > NF_CT_EXPECT_MAX_CNT) {
 		pr_err("max_dcc_channels must not be more than %u\n",
 		       NF_CT_EXPECT_MAX_CNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	irc_exp_policy.max_expected = max_dcc_channels;
 	irc_exp_policy.timeout = dcc_timeout;
 
-<<<<<<< HEAD
-	irc_buffer = kmalloc(65536, GFP_KERNEL);
-=======
 	irc_buffer = kmalloc(MAX_SEARCH_SIZE + 1, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!irc_buffer)
 		return -ENOMEM;
 
@@ -367,40 +289,6 @@ static int __init nf_conntrack_irc_init(void)
 		ports[ports_c++] = IRC_PORT;
 
 	for (i = 0; i < ports_c; i++) {
-<<<<<<< HEAD
-		irc[i].tuple.src.l3num = AF_INET;
-		irc[i].tuple.src.u.tcp.port = htons(ports[i]);
-		irc[i].tuple.dst.protonum = IPPROTO_TCP;
-		irc[i].expect_policy = &irc_exp_policy;
-		irc[i].me = THIS_MODULE;
-		irc[i].help = help;
-
-		if (ports[i] == IRC_PORT)
-			sprintf(irc[i].name, "irc");
-		else
-			sprintf(irc[i].name, "irc-%u", i);
-
-		ret = nf_conntrack_helper_register(&irc[i]);
-		if (ret) {
-			printk(KERN_ERR "nf_ct_irc: failed to register helper "
-			       "for pf: %u port: %u\n",
-			       irc[i].tuple.src.l3num, ports[i]);
-			nf_conntrack_irc_fini();
-			return ret;
-		}
-	}
-	return 0;
-}
-
-/* This function is intentionally _NOT_ defined as __exit, because
- * it is needed by the init function */
-static void nf_conntrack_irc_fini(void)
-{
-	int i;
-
-	for (i = 0; i < ports_c; i++)
-		nf_conntrack_helper_unregister(&irc[i]);
-=======
 		nf_ct_helper_init(&irc[i], AF_INET, IPPROTO_TCP, HELPER_NAME,
 				  IRC_PORT, ports[i], i, &irc_exp_policy,
 				  0, help, NULL, THIS_MODULE);
@@ -419,7 +307,6 @@ static void nf_conntrack_irc_fini(void)
 static void __exit nf_conntrack_irc_fini(void)
 {
 	nf_conntrack_helpers_unregister(irc, ports_c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(irc_buffer);
 }
 

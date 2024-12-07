@@ -67,13 +67,10 @@
 #define PDC_PAT_CHASSIS_READ_LOG     	1L /* Read  Log Entry */
 
 
-<<<<<<< HEAD
-=======
 /* PDC PAT COMPLEX */
 
 #define PDC_PAT_COMPLEX			66L
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PDC PAT CPU  -- CPU configuration within the protection domain */
 
 #define PDC_PAT_CPU                	67L
@@ -86,10 +83,7 @@
 #define PDC_PAT_CPU_RENDEZVOUS      	6L /* Rendezvous CPU */
 #define PDC_PAT_CPU_GET_CLOCK_INFO  	7L /* Return CPU Clock info */
 #define PDC_PAT_CPU_GET_RENDEZVOUS_STATE 8L /* Return Rendezvous State */
-<<<<<<< HEAD
-=======
 #define PDC_PAT_CPU_GET_PDC_ENTRYPOINT	11L /* Return PDC Entry point */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PDC_PAT_CPU_PLUNGE_FABRIC 	128L /* Plunge Fabric */
 #define PDC_PAT_CPU_UPDATE_CACHE_CLEANSING 129L /* Manipulate Cache 
                                                  * Cleansing Mode */
@@ -158,17 +152,10 @@
 #define PDC_PAT_MEM_CELL_CLEAR  	6L /* Clear PDT For Cell           */
 #define PDC_PAT_MEM_CELL_READ   	7L /* Read PDT entries For Cell    */
 #define PDC_PAT_MEM_CELL_RESET  	8L /* Reset clear bit For Cell     */
-<<<<<<< HEAD
-#define PDC_PAT_MEM_SETGM	  	9L /* Set Golden Memory value      */
-#define PDC_PAT_MEM_ADD_PAGE    	10L /* ADDs a page to the cell      */
-#define PDC_PAT_MEM_ADDRESS     	11L /* Get Physical Location From   */
-                                    		 /* Memory Address               */
-=======
 #define PDC_PAT_MEM_SETGM		9L /* Set Good Memory value        */
 #define PDC_PAT_MEM_ADD_PAGE		10L /* ADDs a page to the cell      */
 #define PDC_PAT_MEM_ADDRESS		11L /* Get Physical Location From   */
 					    /* Memory Address               */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PDC_PAT_MEM_GET_TXT_SIZE   	12L /* Get Formatted Text Size   */
 #define PDC_PAT_MEM_GET_PD_TXT     	13L /* Get PD Formatted Text     */
 #define PDC_PAT_MEM_GET_CELL_TXT   	14L /* Get Cell Formatted Text   */
@@ -191,8 +178,6 @@
 /* PDC PAT PD */
 #define PDC_PAT_PD		74L         /* Protection Domain Info   */
 #define PDC_PAT_PD_GET_ADDR_MAP		0L  /* Get Address Map          */
-<<<<<<< HEAD
-=======
 #define PDC_PAT_PD_GET_PDC_INTERF_REV	1L  /* Get PDC Interface Revisions */
 
 #define PDC_PAT_CAPABILITY_BIT_PDC_SERIALIZE	(1UL << 0)
@@ -203,7 +188,6 @@
 #define PDC_PAT_CAPABILITY_BIT_PDC_IODC_64	(1UL << 5)
 #define PDC_PAT_CAPABILITY_BIT_PDC_HPMC_RENDEZ	(1UL << 6)
 #define PDC_PAT_CAPABILITY_BIT_SIMULTANEOUS_PTLB (1UL << 7)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PDC_PAT_PD_GET_ADDR_MAP entry types */
 #define PAT_MEMORY_DESCRIPTOR		1   
@@ -217,8 +201,6 @@
 #define PAT_MEMUSE_GI			128
 #define PAT_MEMUSE_GNI			129
 
-<<<<<<< HEAD
-=======
 /* PDC PAT REGISTER TOC */
 #define PDC_PAT_REGISTER_TOC	75L
 #define PDC_PAT_TOC_REGISTER_VECTOR	0L /* Register TOC Vector */
@@ -227,7 +209,6 @@
 /* PDC PAT SYSTEM_INFO */
 #define PDC_PAT_SYSTEM_INFO	76L
 /* PDC_PAT_SYSTEM_INFO uses the same options as PDC_SYSTEM_INFO function. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 #include <linux/types.h>
@@ -254,8 +235,6 @@ struct pdc_pat_cpu_num {
 	unsigned long cpu_loc;
 };
 
-<<<<<<< HEAD
-=======
 struct pdc_pat_mem_retinfo { /* PDC_PAT_MEM/PDC_PAT_MEM_PD_INFO (return info) */
 	unsigned int ke;	/* bit 0: memory inside good memory? */
 	unsigned int current_pdt_entries:16;
@@ -296,7 +275,6 @@ struct pdc_pat_mem_phys_mem_location { /* PDC_PAT_MEM/PDC_PAT_MEM_ADDRESS */
 	u64 source_detail:4; /* for mem: always 0x04 (SIMM or DIMM) */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pdc_pat_pd_addr_map_entry {
 	unsigned char entry_type;       /* 1 = Memory Descriptor Entry Type */
 	unsigned char reserve1[5];
@@ -342,20 +320,6 @@ struct pdc_pat_pd_addr_map_entry {
 ** PDC_PAT_CELL_GET_INFO return block
 */
 typedef struct pdc_pat_cell_info_rtn_block {
-<<<<<<< HEAD
-	unsigned long cpu_info;
-	unsigned long cell_info;
-	unsigned long cell_location;
-	unsigned long reo_location;
-	unsigned long mem_size;
-	unsigned long dimm_status;
-	unsigned long pdc_rev;
-	unsigned long fabric_info0;
-	unsigned long fabric_info1;
-	unsigned long fabric_info2;
-	unsigned long fabric_info3;
-	unsigned long reserved[21];
-=======
 	unsigned long pdc_rev;
 	unsigned long capabilities; /* see PDC_PAT_CAPABILITY_BIT_* */
 	unsigned long reserved0[2];
@@ -379,7 +343,6 @@ typedef struct pdc_pat_cell_info_rtn_block {
 		unsigned long fabric_info_xbc_port;
 		unsigned long rc_attached_to_xbc;
 	} xbc[8*4];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } pdc_pat_cell_info_rtn_block_t;
 
 
@@ -394,18 +357,6 @@ struct pdc_pat_cell_mod_maddr_block {	/* PDC_PAT_CELL_MODULE */
 
 typedef struct pdc_pat_cell_mod_maddr_block pdc_pat_cell_mod_maddr_block_t;
 
-<<<<<<< HEAD
-
-extern int pdc_pat_chassis_send_log(unsigned long status, unsigned long data);
-extern int pdc_pat_cell_get_number(struct pdc_pat_cell_num *cell_info);
-extern int pdc_pat_cell_module(unsigned long *actcnt, unsigned long ploc, unsigned long mod, unsigned long view_type, void *mem_addr);
-extern int pdc_pat_cell_num_to_loc(void *, unsigned long);
-
-extern int pdc_pat_cpu_get_number(struct pdc_pat_cpu_num *cpu_info, void *hpa);
-
-extern int pdc_pat_pd_get_addr_map(unsigned long *actual_len, void *mem_addr, unsigned long count, unsigned long offset);
-
-=======
 extern int pdc_pat_get_PDC_entrypoint(unsigned long *pdc_entry);
 extern int pdc_pat_chassis_send_log(unsigned long status, unsigned long data);
 extern int pdc_pat_cell_get_number(struct pdc_pat_cell_num *cell_info);
@@ -422,18 +373,10 @@ extern int pdc_pat_pd_get_addr_map(unsigned long *actual_len, void *mem_addr,
 		unsigned long count, unsigned long offset);
 extern int pdc_pat_pd_get_pdc_revisions(unsigned long *legacy_rev,
 		unsigned long *pat_rev, unsigned long *pdc_cap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int pdc_pat_io_pci_cfg_read(unsigned long pci_addr, int pci_size, u32 *val); 
 extern int pdc_pat_io_pci_cfg_write(unsigned long pci_addr, int pci_size, u32 val); 
 
-<<<<<<< HEAD
-
-/* Flag to indicate this is a PAT box...don't use this unless you
-** really have to...it might go away some day.
-*/
-extern int pdc_pat;     /* arch/parisc/kernel/inventory.c */
-=======
 extern int pdc_pat_mem_pdt_info(struct pdc_pat_mem_retinfo *rinfo);
 extern int pdc_pat_mem_pdt_cell_info(struct pdc_pat_mem_cell_pdt_retinfo *rinfo,
 		unsigned long cell);
@@ -445,7 +388,6 @@ extern int pdc_pat_mem_read_pd_pdt(struct pdc_pat_mem_read_pd_retinfo *pret,
 extern int pdc_pat_mem_get_dimm_phys_location(
                 struct pdc_pat_mem_phys_mem_location *pret,
                 unsigned long phys_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASSEMBLY__ */
 

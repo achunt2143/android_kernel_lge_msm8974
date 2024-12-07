@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
-    Copyright (c) 2003 Mark M. Hoffman <mhoffman@lightlink.com>
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
     Copyright (c) 2003 Mark M. Hoffman <mhoffman@lightlink.com>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 /*
@@ -43,10 +24,6 @@
 #include <linux/stddef.h>
 #include <linux/ioport.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/acpi.h>
 #include <linux/io.h>
 
@@ -251,30 +228,18 @@ static const struct i2c_algorithm smbus_algorithm = {
 
 static struct i2c_adapter sis96x_adapter = {
 	.owner		= THIS_MODULE,
-<<<<<<< HEAD
-	.class		= I2C_CLASS_HWMON | I2C_CLASS_SPD,
-	.algo		= &smbus_algorithm,
-};
-
-static DEFINE_PCI_DEVICE_TABLE(sis96x_ids) = {
-=======
 	.class		= I2C_CLASS_HWMON,
 	.algo		= &smbus_algorithm,
 };
 
 static const struct pci_device_id sis96x_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_SMBUS) },
 	{ 0, }
 };
 
 MODULE_DEVICE_TABLE (pci, sis96x_ids);
 
-<<<<<<< HEAD
-static int __devinit sis96x_probe(struct pci_dev *dev,
-=======
 static int sis96x_probe(struct pci_dev *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				const struct pci_device_id *id)
 {
 	u16 ww = 0;
@@ -330,11 +295,7 @@ static int sis96x_probe(struct pci_dev *dev,
 	return retval;
 }
 
-<<<<<<< HEAD
-static void __devexit sis96x_remove(struct pci_dev *dev)
-=======
 static void sis96x_remove(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (sis96x_smbus_base) {
 		i2c_del_adapter(&sis96x_adapter);
@@ -347,34 +308,11 @@ static struct pci_driver sis96x_driver = {
 	.name		= "sis96x_smbus",
 	.id_table	= sis96x_ids,
 	.probe		= sis96x_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(sis96x_remove),
-};
-
-static int __init i2c_sis96x_init(void)
-{
-	return pci_register_driver(&sis96x_driver);
-}
-
-static void __exit i2c_sis96x_exit(void)
-{
-	pci_unregister_driver(&sis96x_driver);
-}
-=======
 	.remove		= sis96x_remove,
 };
 
 module_pci_driver(sis96x_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Mark M. Hoffman <mhoffman@lightlink.com>");
 MODULE_DESCRIPTION("SiS96x SMBus driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-
-/* Register initialization functions using helper macros */
-module_init(i2c_sis96x_init);
-module_exit(i2c_sis96x_exit);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

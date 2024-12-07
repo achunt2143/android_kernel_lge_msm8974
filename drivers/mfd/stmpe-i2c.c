@@ -1,21 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ST Microelectronics MFD: stmpe's i2c client specific driver
  *
  * Copyright (C) ST-Ericsson SA 2010
  * Copyright (C) ST Microelectronics SA 2011
  *
-<<<<<<< HEAD
- * License Terms: GNU General Public License, version 2
- * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
- * Author: Viresh Kumar <viresh.kumar@st.com> for ST Microelectronics
-=======
  * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
  * Author: Viresh Kumar <vireshk@kernel.org> for ST Microelectronics
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/i2c.h>
@@ -23,10 +14,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-=======
 #include <linux/of_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "stmpe.h"
 
 static int i2c_reg_read(struct stmpe *stmpe, u8 reg)
@@ -65,11 +53,6 @@ static struct stmpe_client_info i2c_ci = {
 	.write_block = i2c_block_write,
 };
 
-<<<<<<< HEAD
-static int __devinit
-stmpe_i2c_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
-{
-=======
 static const struct of_device_id stmpe_of_match[] = {
 	{ .compatible = "st,stmpe610", .data = (void *)STMPE610, },
 	{ .compatible = "st,stmpe801", .data = (void *)STMPE801, },
@@ -90,22 +73,11 @@ stmpe_i2c_probe(struct i2c_client *i2c)
 	enum stmpe_partnum partnum;
 	const struct of_device_id *of_id;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_ci.data = (void *)id;
 	i2c_ci.irq = i2c->irq;
 	i2c_ci.client = i2c;
 	i2c_ci.dev = &i2c->dev;
 
-<<<<<<< HEAD
-	return stmpe_probe(&i2c_ci, id->driver_data);
-}
-
-static int __devexit stmpe_i2c_remove(struct i2c_client *i2c)
-{
-	struct stmpe *stmpe = dev_get_drvdata(&i2c->dev);
-
-	return stmpe_remove(stmpe);
-=======
 	of_id = of_match_device(stmpe_of_match, &i2c->dev);
 	if (!of_id) {
 		/*
@@ -125,36 +97,19 @@ static void stmpe_i2c_remove(struct i2c_client *i2c)
 	struct stmpe *stmpe = dev_get_drvdata(&i2c->dev);
 
 	stmpe_remove(stmpe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id stmpe_i2c_id[] = {
 	{ "stmpe610", STMPE610 },
 	{ "stmpe801", STMPE801 },
 	{ "stmpe811", STMPE811 },
-<<<<<<< HEAD
-	{ "stmpe1601", STMPE1601 },
-=======
 	{ "stmpe1600", STMPE1600 },
 	{ "stmpe1601", STMPE1601 },
 	{ "stmpe1801", STMPE1801 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "stmpe2401", STMPE2401 },
 	{ "stmpe2403", STMPE2403 },
 	{ }
 };
-<<<<<<< HEAD
-MODULE_DEVICE_TABLE(i2c, stmpe_id);
-
-static struct i2c_driver stmpe_i2c_driver = {
-	.driver.name	= "stmpe-i2c",
-	.driver.owner	= THIS_MODULE,
-#ifdef CONFIG_PM
-	.driver.pm	= &stmpe_dev_pm_ops,
-#endif
-	.probe		= stmpe_i2c_probe,
-	.remove		= __devexit_p(stmpe_i2c_remove),
-=======
 MODULE_DEVICE_TABLE(i2c, stmpe_i2c_id);
 
 static struct i2c_driver stmpe_i2c_driver = {
@@ -165,7 +120,6 @@ static struct i2c_driver stmpe_i2c_driver = {
 	},
 	.probe		= stmpe_i2c_probe,
 	.remove		= stmpe_i2c_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= stmpe_i2c_id,
 };
 
@@ -181,9 +135,5 @@ static void __exit stmpe_exit(void)
 }
 module_exit(stmpe_exit);
 
-<<<<<<< HEAD
-MODULE_LICENSE("GPL v2");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("STMPE MFD I2C Interface Driver");
 MODULE_AUTHOR("Rabin Vincent <rabin.vincent@stericsson.com>");

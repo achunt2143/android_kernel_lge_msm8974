@@ -234,15 +234,9 @@ static irqreturn_t pd6729_interrupt(int irq, void *dev)
 
 /* socket functions */
 
-<<<<<<< HEAD
-static void pd6729_interrupt_wrapper(unsigned long data)
-{
-	struct pd6729_socket *socket = (struct pd6729_socket *) data;
-=======
 static void pd6729_interrupt_wrapper(struct timer_list *t)
 {
 	struct pd6729_socket *socket = from_timer(socket, t, poll_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pd6729_interrupt(0, (void *)socket);
 	mod_timer(&socket->poll_timer, jiffies + HZ);
@@ -595,11 +589,7 @@ static int pd6729_check_irq(int irq)
 	return 0;
 }
 
-<<<<<<< HEAD
-static u_int __devinit pd6729_isa_scan(void)
-=======
 static u_int pd6729_isa_scan(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u_int mask0, mask = 0;
 	int i;
@@ -630,11 +620,7 @@ static u_int pd6729_isa_scan(void)
 	return mask;
 }
 
-<<<<<<< HEAD
-static int __devinit pd6729_pci_probe(struct pci_dev *dev,
-=======
 static int pd6729_pci_probe(struct pci_dev *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      const struct pci_device_id *id)
 {
 	int i, j, ret;
@@ -642,11 +628,7 @@ static int pd6729_pci_probe(struct pci_dev *dev,
 	char configbyte;
 	struct pd6729_socket *socket;
 
-<<<<<<< HEAD
-	socket = kzalloc(sizeof(struct pd6729_socket) * MAX_SOCKETS,
-=======
 	socket = kcalloc(MAX_SOCKETS, sizeof(struct pd6729_socket),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 GFP_KERNEL);
 	if (!socket) {
 		dev_warn(&dev->dev, "failed to kzalloc socket.\n");
@@ -662,10 +644,7 @@ static int pd6729_pci_probe(struct pci_dev *dev,
 	if (!pci_resource_start(dev, 0)) {
 		dev_warn(&dev->dev, "refusing to load the driver as the "
 			"io_base is NULL.\n");
-<<<<<<< HEAD
-=======
 		ret = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_disable;
 	}
 
@@ -695,10 +674,7 @@ static int pd6729_pci_probe(struct pci_dev *dev,
 	mask = pd6729_isa_scan();
 	if (irq_mode == 0 && mask == 0) {
 		dev_warn(&dev->dev, "no ISA interrupt is available.\n");
-<<<<<<< HEAD
-=======
 		ret = -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_free_res;
 	}
 
@@ -731,16 +707,8 @@ static int pd6729_pci_probe(struct pci_dev *dev,
 		}
 	} else {
 		/* poll Card status change */
-<<<<<<< HEAD
-		init_timer(&socket->poll_timer);
-		socket->poll_timer.function = pd6729_interrupt_wrapper;
-		socket->poll_timer.data = (unsigned long)socket;
-		socket->poll_timer.expires = jiffies + HZ;
-		add_timer(&socket->poll_timer);
-=======
 		timer_setup(&socket->poll_timer, pd6729_interrupt_wrapper, 0);
 		mod_timer(&socket->poll_timer, jiffies + HZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < MAX_SOCKETS; i++) {
@@ -759,11 +727,7 @@ err_out_free_res2:
 	if (irq_mode == 1)
 		free_irq(dev->irq, socket);
 	else
-<<<<<<< HEAD
-		del_timer_sync(&socket->poll_timer);
-=======
 		timer_shutdown_sync(&socket->poll_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_free_res:
 	pci_release_regions(dev);
 err_out_disable:
@@ -774,11 +738,7 @@ err_out_free_mem:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __devexit pd6729_pci_remove(struct pci_dev *dev)
-=======
 static void pd6729_pci_remove(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct pd6729_socket *socket = pci_get_drvdata(dev);
@@ -794,22 +754,14 @@ static void pd6729_pci_remove(struct pci_dev *dev)
 	if (irq_mode == 1)
 		free_irq(dev->irq, socket);
 	else
-<<<<<<< HEAD
-		del_timer_sync(&socket->poll_timer);
-=======
 		timer_shutdown_sync(&socket->poll_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_release_regions(dev);
 	pci_disable_device(dev);
 
 	kfree(socket);
 }
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(pd6729_pci_ids) = {
-=======
 static const struct pci_device_id pd6729_pci_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_CIRRUS, PCI_DEVICE_ID_CIRRUS_6729) },
 	{ }
 };
@@ -819,25 +771,7 @@ static struct pci_driver pd6729_pci_driver = {
 	.name		= "pd6729",
 	.id_table	= pd6729_pci_ids,
 	.probe		= pd6729_pci_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(pd6729_pci_remove),
-};
-
-static int pd6729_module_init(void)
-{
-	return pci_register_driver(&pd6729_pci_driver);
-}
-
-static void pd6729_module_exit(void)
-{
-	pci_unregister_driver(&pd6729_pci_driver);
-}
-
-module_init(pd6729_module_init);
-module_exit(pd6729_module_exit);
-=======
 	.remove		= pd6729_pci_remove,
 };
 
 module_pci_driver(pd6729_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -71,18 +71,6 @@ u32 mlx4_bitmap_alloc(struct mlx4_bitmap *bitmap)
 	return obj;
 }
 
-<<<<<<< HEAD
-void mlx4_bitmap_free(struct mlx4_bitmap *bitmap, u32 obj)
-{
-	mlx4_bitmap_free_range(bitmap, obj, 1);
-}
-
-u32 mlx4_bitmap_alloc_range(struct mlx4_bitmap *bitmap, int cnt, int align)
-{
-	u32 obj;
-
-	if (likely(cnt == 1 && align == 1))
-=======
 void mlx4_bitmap_free(struct mlx4_bitmap *bitmap, u32 obj, int use_rr)
 {
 	mlx4_bitmap_free_range(bitmap, obj, 1, use_rr);
@@ -124,20 +112,10 @@ u32 mlx4_bitmap_alloc_range(struct mlx4_bitmap *bitmap, int cnt,
 	u32 obj;
 
 	if (likely(cnt == 1 && align == 1 && !skip_mask))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return mlx4_bitmap_alloc(bitmap);
 
 	spin_lock(&bitmap->lock);
 
-<<<<<<< HEAD
-	obj = bitmap_find_next_zero_area(bitmap->table, bitmap->max,
-				bitmap->last, cnt, align - 1);
-	if (obj >= bitmap->max) {
-		bitmap->top = (bitmap->top + bitmap->max + bitmap->reserved_top)
-				& bitmap->mask;
-		obj = bitmap_find_next_zero_area(bitmap->table, bitmap->max,
-						0, cnt, align - 1);
-=======
 	obj = find_aligned_range(bitmap->table, bitmap->last,
 				 bitmap->max, cnt, align, skip_mask);
 	if (obj >= bitmap->max) {
@@ -145,7 +123,6 @@ u32 mlx4_bitmap_alloc_range(struct mlx4_bitmap *bitmap, int cnt,
 				& bitmap->mask;
 		obj = find_aligned_range(bitmap->table, 0, bitmap->max,
 					 cnt, align, skip_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (obj < bitmap->max) {
@@ -172,9 +149,6 @@ u32 mlx4_bitmap_avail(struct mlx4_bitmap *bitmap)
 	return bitmap->avail;
 }
 
-<<<<<<< HEAD
-void mlx4_bitmap_free_range(struct mlx4_bitmap *bitmap, u32 obj, int cnt)
-=======
 static u32 mlx4_bitmap_masked_value(struct mlx4_bitmap *bitmap, u32 obj)
 {
 	return obj & (bitmap->max + bitmap->reserved_top - 1);
@@ -182,24 +156,16 @@ static u32 mlx4_bitmap_masked_value(struct mlx4_bitmap *bitmap, u32 obj)
 
 void mlx4_bitmap_free_range(struct mlx4_bitmap *bitmap, u32 obj, int cnt,
 			    int use_rr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	obj &= bitmap->max + bitmap->reserved_top - 1;
 
 	spin_lock(&bitmap->lock);
-<<<<<<< HEAD
-	bitmap_clear(bitmap->table, obj, cnt);
-	bitmap->last = min(bitmap->last, obj);
-	bitmap->top = (bitmap->top + bitmap->max + bitmap->reserved_top)
-			& bitmap->mask;
-=======
 	if (!use_rr) {
 		bitmap->last = min(bitmap->last, obj);
 		bitmap->top = (bitmap->top + bitmap->max + bitmap->reserved_top)
 				& bitmap->mask;
 	}
 	bitmap_clear(bitmap->table, obj, cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bitmap->avail += cnt;
 	spin_unlock(&bitmap->lock);
 }
@@ -217,15 +183,9 @@ int mlx4_bitmap_init(struct mlx4_bitmap *bitmap, u32 num, u32 mask,
 	bitmap->mask = mask;
 	bitmap->reserved_top = reserved_top;
 	bitmap->avail = num - reserved_top - reserved_bot;
-<<<<<<< HEAD
-	spin_lock_init(&bitmap->lock);
-	bitmap->table = kzalloc(BITS_TO_LONGS(bitmap->max) *
-				sizeof (long), GFP_KERNEL);
-=======
 	bitmap->effective_len = bitmap->avail;
 	spin_lock_init(&bitmap->lock);
 	bitmap->table = bitmap_zalloc(bitmap->max, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!bitmap->table)
 		return -ENOMEM;
 
@@ -236,46 +196,6 @@ int mlx4_bitmap_init(struct mlx4_bitmap *bitmap, u32 num, u32 mask,
 
 void mlx4_bitmap_cleanup(struct mlx4_bitmap *bitmap)
 {
-<<<<<<< HEAD
-	kfree(bitmap->table);
-}
-
-/*
- * Handling for queue buffers -- we allocate a bunch of memory and
- * register it in a memory region at HCA virtual address 0.  If the
- * requested size is > max_direct, we split the allocation into
- * multiple pages, so we don't require too much contiguous memory.
- */
-
-int mlx4_buf_alloc(struct mlx4_dev *dev, int size, int max_direct,
-		   struct mlx4_buf *buf)
-{
-	dma_addr_t t;
-
-	if (size <= max_direct) {
-		buf->nbufs        = 1;
-		buf->npages       = 1;
-		buf->page_shift   = get_order(size) + PAGE_SHIFT;
-		buf->direct.buf   = dma_alloc_coherent(&dev->pdev->dev,
-						       size, &t, GFP_KERNEL);
-		if (!buf->direct.buf)
-			return -ENOMEM;
-
-		buf->direct.map = t;
-
-		while (t & ((1 << buf->page_shift) - 1)) {
-			--buf->page_shift;
-			buf->npages *= 2;
-		}
-
-		memset(buf->direct.buf, 0, size);
-	} else {
-		int i;
-
-		buf->direct.buf  = NULL;
-		buf->nbufs       = (size + PAGE_SIZE - 1) / PAGE_SIZE;
-		buf->npages      = buf->nbufs;
-=======
 	bitmap_free(bitmap->table);
 }
 
@@ -695,7 +615,6 @@ int mlx4_buf_alloc(struct mlx4_dev *dev, int size, int max_direct,
 		buf->direct.buf = NULL;
 		buf->nbufs      = DIV_ROUND_UP(size, PAGE_SIZE);
 		buf->npages	= buf->nbufs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		buf->page_shift  = PAGE_SHIFT;
 		buf->page_list   = kcalloc(buf->nbufs, sizeof(*buf->page_list),
 					   GFP_KERNEL);
@@ -704,35 +623,12 @@ int mlx4_buf_alloc(struct mlx4_dev *dev, int size, int max_direct,
 
 		for (i = 0; i < buf->nbufs; ++i) {
 			buf->page_list[i].buf =
-<<<<<<< HEAD
-				dma_alloc_coherent(&dev->pdev->dev, PAGE_SIZE,
-						   &t, GFP_KERNEL);
-=======
 				dma_alloc_coherent(&dev->persist->pdev->dev,
 						   PAGE_SIZE, &t, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!buf->page_list[i].buf)
 				goto err_free;
 
 			buf->page_list[i].map = t;
-<<<<<<< HEAD
-
-			memset(buf->page_list[i].buf, 0, PAGE_SIZE);
-		}
-
-		if (BITS_PER_LONG == 64) {
-			struct page **pages;
-			pages = kmalloc(sizeof *pages * buf->nbufs, GFP_KERNEL);
-			if (!pages)
-				goto err_free;
-			for (i = 0; i < buf->nbufs; ++i)
-				pages[i] = virt_to_page(buf->page_list[i].buf);
-			buf->direct.buf = vmap(pages, buf->nbufs, VM_MAP, PAGE_KERNEL);
-			kfree(pages);
-			if (!buf->direct.buf)
-				goto err_free;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -747,20 +643,6 @@ EXPORT_SYMBOL_GPL(mlx4_buf_alloc);
 
 void mlx4_buf_free(struct mlx4_dev *dev, int size, struct mlx4_buf *buf)
 {
-<<<<<<< HEAD
-	int i;
-
-	if (buf->nbufs == 1)
-		dma_free_coherent(&dev->pdev->dev, size, buf->direct.buf,
-				  buf->direct.map);
-	else {
-		if (BITS_PER_LONG == 64 && buf->direct.buf)
-			vunmap(buf->direct.buf);
-
-		for (i = 0; i < buf->nbufs; ++i)
-			if (buf->page_list[i].buf)
-				dma_free_coherent(&dev->pdev->dev, PAGE_SIZE,
-=======
 	if (buf->nbufs == 1) {
 		dma_free_coherent(&dev->persist->pdev->dev, size,
 				  buf->direct.buf, buf->direct.map);
@@ -771,7 +653,6 @@ void mlx4_buf_free(struct mlx4_dev *dev, int size, struct mlx4_buf *buf)
 			if (buf->page_list[i].buf)
 				dma_free_coherent(&dev->persist->pdev->dev,
 						  PAGE_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  buf->page_list[i].buf,
 						  buf->page_list[i].map);
 		kfree(buf->page_list);
@@ -783,11 +664,7 @@ static struct mlx4_db_pgdir *mlx4_alloc_db_pgdir(struct device *dma_device)
 {
 	struct mlx4_db_pgdir *pgdir;
 
-<<<<<<< HEAD
-	pgdir = kzalloc(sizeof *pgdir, GFP_KERNEL);
-=======
 	pgdir = kzalloc(sizeof(*pgdir), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pgdir)
 		return NULL;
 
@@ -847,11 +724,7 @@ int mlx4_db_alloc(struct mlx4_dev *dev, struct mlx4_db *db, int order)
 		if (!mlx4_alloc_db_from_pgdir(pgdir, db, order))
 			goto out;
 
-<<<<<<< HEAD
-	pgdir = mlx4_alloc_db_pgdir(&(dev->pdev->dev));
-=======
 	pgdir = mlx4_alloc_db_pgdir(&dev->persist->pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pgdir) {
 		ret = -ENOMEM;
 		goto out;
@@ -888,11 +761,7 @@ void mlx4_db_free(struct mlx4_dev *dev, struct mlx4_db *db)
 	set_bit(i, db->u.pgdir->bits[o]);
 
 	if (bitmap_full(db->u.pgdir->order1, MLX4_DB_PER_PAGE / 2)) {
-<<<<<<< HEAD
-		dma_free_coherent(&(dev->pdev->dev), PAGE_SIZE,
-=======
 		dma_free_coherent(&dev->persist->pdev->dev, PAGE_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  db->u.pgdir->db_page, db->u.pgdir->db_dma);
 		list_del(&db->u.pgdir->list);
 		kfree(db->u.pgdir);
@@ -903,11 +772,7 @@ void mlx4_db_free(struct mlx4_dev *dev, struct mlx4_db *db)
 EXPORT_SYMBOL_GPL(mlx4_db_free);
 
 int mlx4_alloc_hwq_res(struct mlx4_dev *dev, struct mlx4_hwq_resources *wqres,
-<<<<<<< HEAD
-		       int size, int max_direct)
-=======
 		       int size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -917,11 +782,7 @@ int mlx4_alloc_hwq_res(struct mlx4_dev *dev, struct mlx4_hwq_resources *wqres,
 
 	*wqres->db.db = 0;
 
-<<<<<<< HEAD
-	err = mlx4_buf_alloc(dev, size, max_direct, &wqres->buf);
-=======
 	err = mlx4_buf_direct_alloc(dev, size, &wqres->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto err_db;
 

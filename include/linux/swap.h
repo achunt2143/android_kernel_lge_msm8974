@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_SWAP_H
 #define _LINUX_SWAP_H
 
@@ -12,31 +9,17 @@
 #include <linux/memcontrol.h>
 #include <linux/sched.h>
 #include <linux/node.h>
-<<<<<<< HEAD
-
-#include <linux/atomic.h>
-=======
 #include <linux/fs.h>
 #include <linux/pagemap.h>
 #include <linux/atomic.h>
 #include <linux/page-flags.h>
 #include <uapi/linux/mempolicy.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 
 struct notifier_block;
 
 struct bio;
 
-<<<<<<< HEAD
-#define SWAP_FLAG_PREFER	0x8000	/* set if swap priority specified */
-#define SWAP_FLAG_PRIO_MASK	0x7fff
-#define SWAP_FLAG_PRIO_SHIFT	0
-#define SWAP_FLAG_DISCARD	0x10000 /* discard swap cluster after use */
-
-#define SWAP_FLAGS_VALID	(SWAP_FLAG_PRIO_MASK | SWAP_FLAG_PREFER | \
-				 SWAP_FLAG_DISCARD)
-=======
 struct pagevec;
 
 #define SWAP_FLAG_PREFER	0x8000	/* set if swap priority specified */
@@ -50,7 +33,6 @@ struct pagevec;
 				 SWAP_FLAG_DISCARD | SWAP_FLAG_DISCARD_ONCE | \
 				 SWAP_FLAG_DISCARD_PAGES)
 #define SWAP_BATCH 64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int current_is_kswapd(void)
 {
@@ -74,14 +56,6 @@ static inline int current_is_kswapd(void)
  */
 
 /*
-<<<<<<< HEAD
- * NUMA node memory migration support
- */
-#ifdef CONFIG_MIGRATION
-#define SWP_MIGRATION_NUM 2
-#define SWP_MIGRATION_READ	(MAX_SWAPFILES + SWP_HWPOISON_NUM)
-#define SWP_MIGRATION_WRITE	(MAX_SWAPFILES + SWP_HWPOISON_NUM + 1)
-=======
  * PTE markers are used to persist information onto PTEs that otherwise
  * should be a none pte.  As its name "PTE" hints, it should only be
  * applied to the leaves of pgtables.
@@ -126,7 +100,6 @@ static inline int current_is_kswapd(void)
 #define SWP_MIGRATION_READ (MAX_SWAPFILES + SWP_HWPOISON_NUM)
 #define SWP_MIGRATION_READ_EXCLUSIVE (MAX_SWAPFILES + SWP_HWPOISON_NUM + 1)
 #define SWP_MIGRATION_WRITE (MAX_SWAPFILES + SWP_HWPOISON_NUM + 2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define SWP_MIGRATION_NUM 0
 #endif
@@ -142,13 +115,9 @@ static inline int current_is_kswapd(void)
 #endif
 
 #define MAX_SWAPFILES \
-<<<<<<< HEAD
-	((1 << MAX_SWAPFILES_SHIFT) - SWP_MIGRATION_NUM - SWP_HWPOISON_NUM)
-=======
 	((1 << MAX_SWAPFILES_SHIFT) - SWP_DEVICE_NUM - \
 	SWP_MIGRATION_NUM - SWP_HWPOISON_NUM - \
 	SWP_PTE_MARKER_NUM)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Magic header for a swap area. The first part of the union is
@@ -179,27 +148,11 @@ union swap_header {
 	} info;
 };
 
-<<<<<<< HEAD
- /* A swap entry has to fit into a "unsigned long", as
-  * the entry is hidden in the "index" field of the
-  * swapper address space.
-  */
-typedef struct {
-	unsigned long val;
-} swp_entry_t;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * current->reclaim_state points to one of these when a task is running
  * memory reclaim
  */
 struct reclaim_state {
-<<<<<<< HEAD
-	unsigned long reclaimed_slab;
-};
-
-=======
 	/* pages reclaimed outside of LRU-based reclaim */
 	unsigned long reclaimed;
 #ifdef CONFIG_LRU_GEN
@@ -222,7 +175,6 @@ static inline void mm_account_reclaimed_pages(unsigned long pages)
 		current->reclaim_state->reclaimed += pages;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __KERNEL__
 
 struct address_space;
@@ -232,23 +184,14 @@ struct zone;
 
 /*
  * A swap extent maps a range of a swapfile's PAGE_SIZE pages onto a range of
-<<<<<<< HEAD
- * disk blocks.  A list of swap extents maps the entire swapfile.  (Where the
- * term `swapfile' refers to either a blockdevice or an IS_REG file.  Apart
-=======
  * disk blocks.  A rbtree of swap extents maps the entire swapfile (Where the
  * term `swapfile' refers to either a blockdevice or an IS_REG file). Apart
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * from setup, they're handled identically.
  *
  * We always assume that blocks are of size PAGE_SIZE.
  */
 struct swap_extent {
-<<<<<<< HEAD
-	struct list_head list;
-=======
 	struct rb_node rb_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pgoff_t start_page;
 	pgoff_t nr_pages;
 	sector_t start_block;
@@ -257,53 +200,18 @@ struct swap_extent {
 /*
  * Max bad pages in the new format..
  */
-<<<<<<< HEAD
-#define __swapoffset(x) ((unsigned long)&((union swap_header *)0)->x)
-#define MAX_SWAP_BADPAGES \
-	((__swapoffset(magic.magic) - __swapoffset(info.badpages)) / sizeof(int))
-=======
 #define MAX_SWAP_BADPAGES \
 	((offsetof(union swap_header, magic.magic) - \
 	  offsetof(union swap_header, info.badpages)) / sizeof(int))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	SWP_USED	= (1 << 0),	/* is slot in swap_info[] used? */
 	SWP_WRITEOK	= (1 << 1),	/* ok to write to this swap?	*/
-<<<<<<< HEAD
-	SWP_DISCARDABLE = (1 << 2),	/* swapon+blkdev support discard */
-=======
 	SWP_DISCARDABLE = (1 << 2),	/* blkdev support discard */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SWP_DISCARDING	= (1 << 3),	/* now discarding a free cluster */
 	SWP_SOLIDSTATE	= (1 << 4),	/* blkdev seeks are cheap */
 	SWP_CONTINUED	= (1 << 5),	/* swap_map has count continuation */
 	SWP_BLKDEV	= (1 << 6),	/* its a block device */
-<<<<<<< HEAD
-					/* add others here before... */
-	SWP_FAST	= (1 << 10),	/* blkdev access is fast and cheap */
-	SWP_SCANNING	= (1 << 11),	/* refcount in scan_swap_map */
-};
-
-#define SWAP_CLUSTER_MAX 32
-#define COMPACT_CLUSTER_MAX SWAP_CLUSTER_MAX
-
-/*
- * Ratio between the present memory in the zone and the "gap" that
- * we're allowing kswapd to shrink in addition to the per-zone high
- * wmark, even for zones that already have the high wmark satisfied,
- * in order to provide better per-zone lru behavior. We are ok to
- * spend not more than 1% of the memory for this zone balancing "gap".
- */
-#define KSWAPD_ZONE_BALANCE_GAP_RATIO 100
-
-#define SWAP_MAP_MAX	0x3e	/* Max duplication count, in first swap_map */
-#define SWAP_MAP_BAD	0x3f	/* Note pageblock is bad, in first swap_map */
-#define SWAP_HAS_CACHE	0x40	/* Flag page is cached, in first swap_map */
-#define SWAP_CONT_MAX	0x7f	/* Max count, in each swap_map continuation */
-#define COUNT_CONTINUED	0x80	/* See swap_map continuation for full count */
-#define SWAP_MAP_SHMEM	0xbf	/* Owned by shmem/tmpfs, in first swap_map */
-=======
 	SWP_ACTIVATED	= (1 << 7),	/* set after swap_activate success */
 	SWP_FS_OPS	= (1 << 8),	/* swapfile operations go through fs */
 	SWP_AREA_DISCARD = (1 << 9),	/* single-time swap area discards */
@@ -367,20 +275,11 @@ struct swap_cluster_list {
 	struct swap_cluster_info head;
 	struct swap_cluster_info tail;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The in-memory structure used to track swap areas.
  */
 struct swap_info_struct {
-<<<<<<< HEAD
-	unsigned long	flags;		/* SWP_USED etc: see above */
-	signed short	prio;		/* swap priority of this type */
-	signed char	type;		/* strange name for an index */
-	signed char	next;		/* next type on the swap list */
-	unsigned int	max;		/* extent of the swap_map */
-	unsigned char *swap_map;	/* vmalloc'ed array of usage counts */
-=======
 	struct percpu_ref users;	/* indicate and keep swap device valid. */
 	unsigned long	flags;		/* SWP_USED etc: see above */
 	signed short	prio;		/* swap priority of this type */
@@ -390,22 +289,12 @@ struct swap_info_struct {
 	unsigned char *swap_map;	/* vmalloc'ed array of usage counts */
 	struct swap_cluster_info *cluster_info; /* cluster info. Only for SSD */
 	struct swap_cluster_list free_clusters; /* free clusters list */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int lowest_bit;	/* index of first free in swap_map */
 	unsigned int highest_bit;	/* index of last free in swap_map */
 	unsigned int pages;		/* total of usable pages of swap */
 	unsigned int inuse_pages;	/* number of those currently in use */
 	unsigned int cluster_next;	/* likely index for next allocation */
 	unsigned int cluster_nr;	/* countdown to next cluster search */
-<<<<<<< HEAD
-	unsigned int lowest_alloc;	/* while preparing discard cluster */
-	unsigned int highest_alloc;	/* while preparing discard cluster */
-	struct swap_extent *curr_swap_extent;
-	struct swap_extent first_swap_extent;
-	struct block_device *bdev;	/* swap device or bdev of swap file */
-	struct file *swap_file;		/* seldom referenced */
-	unsigned int old_block_size;	/* seldom referenced */
-=======
 	unsigned int __percpu *cluster_next_cpu; /*percpu index for next allocation */
 	struct percpu_cluster __percpu *percpu_cluster; /* per cpu's swap location */
 	struct rb_root swap_extent_root;/* root of the swap extent rbtree */
@@ -414,170 +303,10 @@ struct swap_info_struct {
 	struct file *swap_file;		/* seldom referenced */
 	unsigned int old_block_size;	/* seldom referenced */
 	struct completion comp;		/* seldom referenced */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t lock;		/*
 					 * protect map scan related fields like
 					 * swap_map, lowest_bit, highest_bit,
 					 * inuse_pages, cluster_next,
-<<<<<<< HEAD
-					 * cluster_nr, lowest_alloc and
-					 * highest_alloc. other fields are only
-					 * changed at swapon/swapoff, so are
-					 * protected by swap_lock. changing
-					 * flags need hold this lock and
-					 * swap_lock. If both locks need hold,
-					 * hold swap_lock first.
-					 */
-};
-
-struct swap_list_t {
-	int head;	/* head of priority-ordered swapfile list */
-	int next;	/* swapfile to be used next */
-};
-
-/* linux/mm/page_alloc.c */
-extern unsigned long totalram_pages;
-extern unsigned long totalreserve_pages;
-extern unsigned long dirty_balance_reserve;
-extern unsigned int nr_free_buffer_pages(void);
-extern unsigned int nr_free_pagecache_pages(void);
-
-/* Definition of global_page_state not available yet */
-#define nr_free_pages() global_page_state(NR_FREE_PAGES)
-
-
-/* linux/mm/swap.c */
-extern void __lru_cache_add(struct page *, enum lru_list lru);
-extern void lru_cache_add_lru(struct page *, enum lru_list lru);
-extern void lru_add_page_tail(struct zone* zone,
-			      struct page *page, struct page *page_tail);
-extern void activate_page(struct page *);
-extern void mark_page_accessed(struct page *);
-extern void lru_add_drain(void);
-extern void lru_add_drain_cpu(int cpu);
-extern int lru_add_drain_all(void);
-extern void rotate_reclaimable_page(struct page *page);
-extern void deactivate_page(struct page *page);
-extern void swap_setup(void);
-
-extern void add_page_to_unevictable_list(struct page *page);
-
-/**
- * lru_cache_add: add a page to the page lists
- * @page: the page to add
- */
-static inline void lru_cache_add_anon(struct page *page)
-{
-	__lru_cache_add(page, LRU_INACTIVE_ANON);
-}
-
-static inline void lru_cache_add_file(struct page *page)
-{
-	__lru_cache_add(page, LRU_INACTIVE_FILE);
-}
-
-/* linux/mm/vmscan.c */
-extern unsigned long try_to_free_pages(struct zonelist *zonelist, int order,
-					gfp_t gfp_mask, nodemask_t *mask);
-extern int __isolate_lru_page(struct page *page, isolate_mode_t mode);
-extern unsigned long try_to_free_mem_cgroup_pages(struct mem_cgroup *mem,
-						  gfp_t gfp_mask, bool noswap);
-extern unsigned long mem_cgroup_shrink_node_zone(struct mem_cgroup *mem,
-						gfp_t gfp_mask, bool noswap,
-						struct zone *zone,
-						unsigned long *nr_scanned);
-extern unsigned long shrink_all_memory(unsigned long nr_pages);
-extern int vm_swappiness;
-extern int remove_mapping(struct address_space *mapping, struct page *page);
-extern long vm_total_pages;
-
-#ifdef CONFIG_NUMA
-extern int zone_reclaim_mode;
-extern int sysctl_min_unmapped_ratio;
-extern int sysctl_min_slab_ratio;
-extern int zone_reclaim(struct zone *, gfp_t, unsigned int);
-#else
-#define zone_reclaim_mode 0
-static inline int zone_reclaim(struct zone *z, gfp_t mask, unsigned int order)
-{
-	return 0;
-}
-#endif
-
-extern int page_evictable(struct page *page, struct vm_area_struct *vma);
-extern void check_move_unevictable_pages(struct page **, int nr_pages);
-
-extern unsigned long scan_unevictable_pages;
-extern int scan_unevictable_handler(struct ctl_table *, int,
-					void __user *, size_t *, loff_t *);
-#ifdef CONFIG_NUMA
-extern int scan_unevictable_register_node(struct node *node);
-extern void scan_unevictable_unregister_node(struct node *node);
-#else
-static inline int scan_unevictable_register_node(struct node *node)
-{
-	return 0;
-}
-static inline void scan_unevictable_unregister_node(struct node *node)
-{
-}
-#endif
-
-extern int kswapd_run(int nid);
-extern void kswapd_stop(int nid);
-#ifdef CONFIG_CGROUP_MEM_RES_CTLR
-extern int mem_cgroup_swappiness(struct mem_cgroup *mem);
-#else
-static inline int mem_cgroup_swappiness(struct mem_cgroup *mem)
-{
-	return vm_swappiness;
-}
-#endif
-#ifdef CONFIG_CGROUP_MEM_RES_CTLR_SWAP
-extern void mem_cgroup_uncharge_swap(swp_entry_t ent);
-#else
-static inline void mem_cgroup_uncharge_swap(swp_entry_t ent)
-{
-}
-#endif
-#ifdef CONFIG_SWAP
-/* linux/mm/page_io.c */
-extern int swap_readpage(struct page *);
-extern int swap_writepage(struct page *page, struct writeback_control *wbc);
-extern void end_swap_bio_read(struct bio *bio, int err);
-
-/* linux/mm/swap_state.c */
-extern struct address_space swapper_space;
-#define total_swapcache_pages  swapper_space.nrpages
-extern void show_swap_cache_info(void);
-extern int add_to_swap(struct page *);
-extern int add_to_swap_cache(struct page *, swp_entry_t, gfp_t);
-extern void __delete_from_swap_cache(struct page *);
-extern void delete_from_swap_cache(struct page *);
-extern void free_page_and_swap_cache(struct page *);
-extern void free_pages_and_swap_cache(struct page **, int);
-extern struct page *lookup_swap_cache(swp_entry_t);
-extern struct page *read_swap_cache_async(swp_entry_t, gfp_t,
-			struct vm_area_struct *vma, unsigned long addr);
-extern struct page *swapin_readahead(swp_entry_t, gfp_t,
-			struct vm_area_struct *vma, unsigned long addr);
-
-/* linux/mm/swapfile.c */
-extern atomic_long_t nr_swap_pages;
-extern long total_swap_pages;
-extern bool is_swap_fast(swp_entry_t entry);
-
-/* Swap 50% full? Release swapcache more aggressively.. */
-static inline bool vm_swap_full(struct swap_info_struct *si)
-{
-	/*
-	 * If the swap device is fast, return true
-	 * not to delay swap free.
-	 */
-	if (si->flags & SWP_FAST)
-		return true;
-
-=======
 					 * cluster_nr, lowest_alloc,
 					 * highest_alloc, free/discard cluster
 					 * list. other fields are only changed
@@ -720,7 +449,6 @@ extern bool has_usable_swap(void);
 /* Swap 50% full? Release swapcache more aggressively.. */
 static inline bool vm_swap_full(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return atomic_long_read(&nr_swap_pages) * 2 < total_swap_pages;
 }
 
@@ -730,52 +458,16 @@ static inline long get_nr_swap_pages(void)
 }
 
 extern void si_swapinfo(struct sysinfo *);
-<<<<<<< HEAD
-extern swp_entry_t get_swap_page(void);
-extern swp_entry_t get_swap_page_of_type(int);
-=======
 swp_entry_t folio_alloc_swap(struct folio *folio);
 bool folio_free_swap(struct folio *folio);
 void put_swap_folio(struct folio *folio, swp_entry_t entry);
 extern swp_entry_t get_swap_page_of_type(int);
 extern int get_swap_pages(int n, swp_entry_t swp_entries[], int entry_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int add_swap_count_continuation(swp_entry_t, gfp_t);
 extern void swap_shmem_alloc(swp_entry_t);
 extern int swap_duplicate(swp_entry_t);
 extern int swapcache_prepare(swp_entry_t);
 extern void swap_free(swp_entry_t);
-<<<<<<< HEAD
-extern void swapcache_free(swp_entry_t, struct page *page);
-extern int free_swap_and_cache(swp_entry_t);
-extern int swap_type_of(dev_t, sector_t, struct block_device **);
-extern unsigned int count_swap_pages(int, int);
-extern sector_t map_swap_page(struct page *, struct block_device **);
-extern sector_t swapdev_block(int, pgoff_t);
-extern int page_swapcount(struct page *);
-extern struct swap_info_struct *page_swap_info(struct page *);
-extern int reuse_swap_page(struct page *);
-extern int try_to_free_swap(struct page *);
-struct backing_dev_info;
-
-#ifdef CONFIG_CGROUP_MEM_RES_CTLR
-extern void
-mem_cgroup_uncharge_swapcache(struct page *page, swp_entry_t ent, bool swapout);
-extern int mem_cgroup_count_swap_user(swp_entry_t ent, struct page **pagep);
-#else
-static inline void
-mem_cgroup_uncharge_swapcache(struct page *page, swp_entry_t ent, bool swapout)
-{
-}
-#endif
-
-#else /* CONFIG_SWAP */
-
-#define get_nr_swap_pages()			0L
-#define total_swap_pages			0L
-#define total_swapcache_pages			0UL
-#define vm_swap_full(si)			0
-=======
 extern void swapcache_free_entries(swp_entry_t *entries, int n);
 extern int free_swap_and_cache(swp_entry_t);
 int swap_type_of(dev_t device, sector_t offset);
@@ -816,26 +508,10 @@ static inline void put_swap_device(struct swap_info_struct *si)
 #define total_swap_pages			0L
 #define total_swapcache_pages()			0UL
 #define vm_swap_full()				0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define si_swapinfo(val) \
 	do { (val)->freeswap = (val)->totalswap = 0; } while (0)
 /* only sparc can not include linux/pagemap.h in this file
-<<<<<<< HEAD
- * so leave page_cache_release and release_pages undeclared... */
-#define free_page_and_swap_cache(page) \
-	page_cache_release(page)
-#define free_pages_and_swap_cache(pages, nr) \
-	release_pages((pages), (nr), 0);
-
-static inline void show_swap_cache_info(void)
-{
-}
-
-#define free_swap_and_cache(swp)	is_migration_entry(swp)
-#define swapcache_prepare(swp)		is_migration_entry(swp)
-
-=======
  * so leave put_page and release_pages undeclared... */
 #define free_page_and_swap_cache(page) \
 	put_page(page)
@@ -849,7 +525,6 @@ static inline void free_swap_cache(struct folio *folio)
 {
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int add_swap_count_continuation(swp_entry_t swp, gfp_t gfp_mask)
 {
 	return 0;
@@ -864,101 +539,41 @@ static inline int swap_duplicate(swp_entry_t swp)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline int swapcache_prepare(swp_entry_t swp)
 {
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void swap_free(swp_entry_t swp)
 {
 }
 
-<<<<<<< HEAD
-static inline void swapcache_free(swp_entry_t swp, struct page *page)
-{
-}
-
-static inline struct page *swapin_readahead(swp_entry_t swp, gfp_t gfp_mask,
-			struct vm_area_struct *vma, unsigned long addr)
-{
-	return NULL;
-}
-
-static inline int swap_writepage(struct page *p, struct writeback_control *wbc)
-=======
 static inline void put_swap_folio(struct folio *folio, swp_entry_t swp)
 {
 }
 
 static inline int __swap_count(swp_entry_t entry)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline struct page *lookup_swap_cache(swp_entry_t swp)
-{
-	return NULL;
-}
-
-static inline int add_to_swap(struct page *page)
-=======
 static inline int swap_swapcount(struct swap_info_struct *si, swp_entry_t entry)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int add_to_swap_cache(struct page *page, swp_entry_t entry,
-							gfp_t gfp_mask)
-{
-	return -1;
-}
-
-static inline void __delete_from_swap_cache(struct page *page)
-{
-}
-
-static inline void delete_from_swap_cache(struct page *page)
-{
-}
-
-#define reuse_swap_page(page)	(page_mapcount(page) == 1)
-
-static inline int try_to_free_swap(struct page *page)
-=======
 static inline int swp_swapcount(swp_entry_t entry)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline swp_entry_t get_swap_page(void)
-=======
 static inline swp_entry_t folio_alloc_swap(struct folio *folio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	swp_entry_t entry;
 	entry.val = 0;
 	return entry;
 }
 
-<<<<<<< HEAD
-static inline void
-mem_cgroup_uncharge_swapcache(struct page *page, swp_entry_t ent)
-{
-}
-
-#ifdef CONFIG_CGROUP_MEM_RES_CTLR
-static inline int
-mem_cgroup_count_swap_user(swp_entry_t ent, struct page **pagep)
-=======
 static inline bool folio_free_swap(struct folio *folio)
 {
 	return false;
@@ -976,15 +591,11 @@ static inline int add_swap_extent(struct swap_info_struct *sis,
 extern int split_swap_cluster(swp_entry_t entry);
 #else
 static inline int split_swap_cluster(swp_entry_t entry)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 #endif
 
-<<<<<<< HEAD
-#endif /* CONFIG_SWAP */
-=======
 #ifdef CONFIG_MEMCG
 static inline int mem_cgroup_swappiness(struct mem_cgroup *memcg)
 {
@@ -1067,6 +678,5 @@ static inline bool mem_cgroup_swap_full(struct folio *folio)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KERNEL__*/
 #endif /* _LINUX_SWAP_H */

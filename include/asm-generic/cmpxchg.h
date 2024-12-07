@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic UP xchg and cmpxchg using interrupt disablement.  Does not
  * support SMP.
@@ -17,26 +14,14 @@
 #include <linux/types.h>
 #include <linux/irqflags.h>
 
-<<<<<<< HEAD
-#ifndef xchg
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This function doesn't exist, so you'll get a linker error if
  * something tries to do an invalidly-sized xchg().
  */
-<<<<<<< HEAD
-extern void __xchg_called_with_bad_pointer(void);
-
-static inline
-unsigned long __xchg(unsigned long x, volatile void *ptr, int size)
-=======
 extern void __generic_xchg_called_with_bad_pointer(void);
 
 static inline
 unsigned long __generic_xchg(unsigned long x, volatile void *ptr, int size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long ret, flags;
 
@@ -47,11 +32,7 @@ unsigned long __generic_xchg(unsigned long x, volatile void *ptr, int size)
 #else
 		local_irq_save(flags);
 		ret = *(volatile u8 *)ptr;
-<<<<<<< HEAD
-		*(volatile u8 *)ptr = x;
-=======
 		*(volatile u8 *)ptr = (x & 0xffu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local_irq_restore(flags);
 		return ret;
 #endif /* __xchg_u8 */
@@ -62,11 +43,7 @@ unsigned long __generic_xchg(unsigned long x, volatile void *ptr, int size)
 #else
 		local_irq_save(flags);
 		ret = *(volatile u16 *)ptr;
-<<<<<<< HEAD
-		*(volatile u16 *)ptr = x;
-=======
 		*(volatile u16 *)ptr = (x & 0xffffu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local_irq_restore(flags);
 		return ret;
 #endif /* __xchg_u16 */
@@ -77,11 +54,7 @@ unsigned long __generic_xchg(unsigned long x, volatile void *ptr, int size)
 #else
 		local_irq_save(flags);
 		ret = *(volatile u32 *)ptr;
-<<<<<<< HEAD
-		*(volatile u32 *)ptr = x;
-=======
 		*(volatile u32 *)ptr = (x & 0xffffffffu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local_irq_restore(flags);
 		return ret;
 #endif /* __xchg_u32 */
@@ -100,32 +73,11 @@ unsigned long __generic_xchg(unsigned long x, volatile void *ptr, int size)
 #endif /* CONFIG_64BIT */
 
 	default:
-<<<<<<< HEAD
-		__xchg_called_with_bad_pointer();
-=======
 		__generic_xchg_called_with_bad_pointer();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return x;
 	}
 }
 
-<<<<<<< HEAD
-#define xchg(ptr, x) \
-	((__typeof__(*(ptr))) __xchg((unsigned long)(x), (ptr), sizeof(*(ptr))))
-
-#endif /* xchg */
-
-/*
- * Atomic compare and exchange.
- *
- * Do not define __HAVE_ARCH_CMPXCHG because we want to use it to check whether
- * a cmpxchg primitive faster than repeated local irq save/restore exists.
- */
-#include <asm-generic/cmpxchg-local.h>
-
-#define cmpxchg(ptr, o, n)	cmpxchg_local((ptr), (o), (n))
-#define cmpxchg64(ptr, o, n)	cmpxchg64_local((ptr), (o), (n))
-=======
 #define generic_xchg(ptr, x) ({							\
 	((__typeof__(*(ptr)))							\
 		__generic_xchg((unsigned long)(x), (ptr), sizeof(*(ptr))));	\
@@ -159,6 +111,5 @@ unsigned long __generic_xchg(unsigned long x, volatile void *ptr, int size)
 
 #define arch_cmpxchg		arch_cmpxchg_local
 #define arch_cmpxchg64		arch_cmpxchg64_local
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_GENERIC_CMPXCHG_H */

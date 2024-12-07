@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-/**************************************************************************
- *
- * Copyright © 2009 VMware, Inc., Palo Alto, CA., USA
- * All Rights Reserved.
-=======
 /* SPDX-License-Identifier: GPL-2.0 OR MIT */
 /**************************************************************************
  *
  * Copyright 2009-2023 VMware, Inc., Palo Alto, CA., USA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -35,12 +28,6 @@
 #ifndef VMWGFX_KMS_H_
 #define VMWGFX_KMS_H_
 
-<<<<<<< HEAD
-#include "drmP.h"
-#include "drm_crtc_helper.h"
-#include "vmwgfx_drv.h"
-
-=======
 #include <drm/drm_encoder.h>
 #include <drm/drm_framebuffer.h>
 #include <drm/drm_probe_helper.h>
@@ -211,19 +198,15 @@ struct vmw_kms_dirty {
 	s32 unit_y2;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VMWGFX_NUM_DISPLAY_UNITS 8
 
 
 #define vmw_framebuffer_to_vfb(x) \
 	container_of(x, struct vmw_framebuffer, base)
-<<<<<<< HEAD
-=======
 #define vmw_framebuffer_to_vfbs(x) \
 	container_of(x, struct vmw_framebuffer_surface, base.base)
 #define vmw_framebuffer_to_vfbd(x) \
 	container_of(x, struct vmw_framebuffer_bo, base.base)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Base class for framebuffers
@@ -233,32 +216,6 @@ struct vmw_kms_dirty {
  */
 struct vmw_framebuffer {
 	struct drm_framebuffer base;
-<<<<<<< HEAD
-	int (*pin)(struct vmw_framebuffer *fb);
-	int (*unpin)(struct vmw_framebuffer *fb);
-	bool dmabuf;
-	struct ttm_base_object *user_obj;
-	uint32_t user_handle;
-};
-
-
-#define vmw_crtc_to_du(x) \
-	container_of(x, struct vmw_display_unit, crtc)
-
-/*
- * Basic cursor manipulation
- */
-int vmw_cursor_update_image(struct vmw_private *dev_priv,
-			    u32 *image, u32 width, u32 height,
-			    u32 hotspotX, u32 hotspotY);
-int vmw_cursor_update_dmabuf(struct vmw_private *dev_priv,
-			     struct vmw_dma_buffer *dmabuf,
-			     u32 width, u32 height,
-			     u32 hotspotX, u32 hotspotY);
-void vmw_cursor_update_position(struct vmw_private *dev_priv,
-				bool show, int x, int y);
-
-=======
 	bool bo;
 	uint32_t user_handle;
 };
@@ -386,7 +343,6 @@ struct vmw_cursor_plane {
 
 	struct vmw_bo *cursor_mobs[3];
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Base class display unit.
@@ -399,17 +355,11 @@ struct vmw_display_unit {
 	struct drm_crtc crtc;
 	struct drm_encoder encoder;
 	struct drm_connector connector;
-<<<<<<< HEAD
-
-	struct vmw_surface *cursor_surface;
-	struct vmw_dma_buffer *cursor_dmabuf;
-=======
 	struct drm_plane primary;
 	struct vmw_cursor_plane cursor;
 
 	struct vmw_surface *cursor_surface;
 	struct vmw_bo *cursor_bo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t cursor_age;
 
 	int cursor_x;
@@ -417,11 +367,8 @@ struct vmw_display_unit {
 
 	int hotspot_x;
 	int hotspot_y;
-<<<<<<< HEAD
-=======
 	s32 core_hotspot_x;
 	s32 core_hotspot_y;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned unit;
 
@@ -431,10 +378,6 @@ struct vmw_display_unit {
 	unsigned pref_width;
 	unsigned pref_height;
 	bool pref_active;
-<<<<<<< HEAD
-	struct drm_display_mode *pref_mode;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Gui positioning
@@ -442,8 +385,6 @@ struct vmw_display_unit {
 	int gui_x;
 	int gui_y;
 	bool is_implicit;
-<<<<<<< HEAD
-=======
 	int set_gui_x;
 	int set_gui_y;
 };
@@ -451,7 +392,6 @@ struct vmw_display_unit {
 struct vmw_validation_ctx {
 	struct vmw_resource *res;
 	struct vmw_bo *buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define vmw_crtc_to_du(x) \
@@ -463,21 +403,6 @@ struct vmw_validation_ctx {
 /*
  * Shared display unit functions - vmwgfx_kms.c
  */
-<<<<<<< HEAD
-void vmw_display_unit_cleanup(struct vmw_display_unit *du);
-int vmw_du_page_flip(struct drm_crtc *crtc,
-		     struct drm_framebuffer *fb,
-		     struct drm_pending_vblank_event *event);
-void vmw_du_crtc_save(struct drm_crtc *crtc);
-void vmw_du_crtc_restore(struct drm_crtc *crtc);
-void vmw_du_crtc_gamma_set(struct drm_crtc *crtc,
-			   u16 *r, u16 *g, u16 *b,
-			   uint32_t start, uint32_t size);
-int vmw_du_crtc_cursor_set(struct drm_crtc *crtc, struct drm_file *file_priv,
-			   uint32_t handle, uint32_t width, uint32_t height);
-int vmw_du_crtc_cursor_move(struct drm_crtc *crtc, int x, int y);
-void vmw_du_connector_dpms(struct drm_connector *connector, int mode);
-=======
 void vmw_du_cleanup(struct vmw_display_unit *du);
 void vmw_du_crtc_save(struct drm_crtc *crtc);
 void vmw_du_crtc_restore(struct drm_crtc *crtc);
@@ -498,19 +423,10 @@ vmw_du_connector_atomic_get_property(struct drm_connector *connector,
 				     struct drm_property *property,
 				     uint64_t *val);
 int vmw_du_connector_dpms(struct drm_connector *connector, int mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void vmw_du_connector_save(struct drm_connector *connector);
 void vmw_du_connector_restore(struct drm_connector *connector);
 enum drm_connector_status
 vmw_du_connector_detect(struct drm_connector *connector, bool force);
-<<<<<<< HEAD
-int vmw_du_connector_fill_modes(struct drm_connector *connector,
-				uint32_t max_width, uint32_t max_height);
-int vmw_du_connector_set_property(struct drm_connector *connector,
-				  struct drm_property *property,
-				  uint64_t val);
-
-=======
 int vmw_kms_helper_dirty(struct vmw_private *dev_priv,
 			 struct vmw_framebuffer *framebuffer,
 			 const struct drm_clip_rect *clips,
@@ -585,37 +501,20 @@ vmw_du_connector_duplicate_state(struct drm_connector *connector);
 
 void vmw_du_connector_destroy_state(struct drm_connector *connector,
 				    struct drm_connector_state *state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Legacy display unit functions - vmwgfx_ldu.c
  */
-<<<<<<< HEAD
-int vmw_kms_init_legacy_display_system(struct vmw_private *dev_priv);
-int vmw_kms_close_legacy_display_system(struct vmw_private *dev_priv);
-=======
 int vmw_kms_ldu_init_display(struct vmw_private *dev_priv);
 int vmw_kms_ldu_close_display(struct vmw_private *dev_priv);
 int vmw_kms_update_proxy(struct vmw_resource *res,
 			 const struct drm_clip_rect *clips,
 			 unsigned num_clips,
 			 int increment);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Screen Objects display functions - vmwgfx_scrn.c
  */
-<<<<<<< HEAD
-int vmw_kms_init_screen_object_display(struct vmw_private *dev_priv);
-int vmw_kms_close_screen_object_display(struct vmw_private *dev_priv);
-int vmw_kms_sou_update_layout(struct vmw_private *dev_priv, unsigned num,
-			      struct drm_vmw_rect *rects);
-bool vmw_kms_screen_object_flippable(struct vmw_private *dev_priv,
-				     struct drm_crtc *crtc);
-void vmw_kms_screen_object_update_implicit_fb(struct vmw_private *dev_priv,
-					      struct drm_crtc *crtc);
-
-=======
 int vmw_kms_sou_init_display(struct vmw_private *dev_priv);
 int vmw_kms_sou_do_surface_dirty(struct vmw_private *dev_priv,
 				 struct vmw_framebuffer *framebuffer,
@@ -682,6 +581,5 @@ static inline void vmw_du_translate_to_crtc(struct drm_plane_state *state,
 
 	drm_rect_translate(r, translate_crtc_x, translate_crtc_y);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* linux/include/linux/mtd/plat-ram.h
  *
  * (c) 2004 Simtec Electronics
@@ -9,14 +6,6 @@
  *	Ben Dooks <ben@simtec.co.uk>
  *
  * Generic platform device based RAM map
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MTD_PLATRAM_H
@@ -27,13 +16,8 @@
 
 struct platdata_mtd_ram {
 	const char		*mapname;
-<<<<<<< HEAD
-	const char		**map_probes;
-	const char		**probes;
-=======
 	const char * const      *map_probes;
 	const char * const      *probes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mtd_partition	*partitions;
 	int			 nr_partitions;
 	int			 bankwidth;

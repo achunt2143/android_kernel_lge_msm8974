@@ -1,32 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Hardware monitoring driver for UCD90xxx Sequencer and System Health
  * Controller series
  *
  * Copyright (C) 2011 Ericsson AB.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
-#include <linux/kernel.h>
-#include <linux/module.h>
-=======
  */
 
 #include <linux/debugfs.h>
@@ -34,17 +11,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <linux/i2c/pmbus.h>
-#include "pmbus.h"
-
-enum chips { ucd9000, ucd90120, ucd90124, ucd9090, ucd90910 };
-=======
 #include <linux/pmbus.h>
 #include <linux/gpio/driver.h>
 #include <linux/timekeeping.h>
@@ -52,18 +22,11 @@ enum chips { ucd9000, ucd90120, ucd90124, ucd9090, ucd90910 };
 
 enum chips { ucd9000, ucd90120, ucd90124, ucd90160, ucd90320, ucd9090,
 	     ucd90910 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define UCD9000_MONITOR_CONFIG		0xd5
 #define UCD9000_NUM_PAGES		0xd6
 #define UCD9000_FAN_CONFIG_INDEX	0xe7
 #define UCD9000_FAN_CONFIG		0xe8
-<<<<<<< HEAD
-#define UCD9000_DEVICE_ID		0xfd
-
-#define UCD9000_MON_TYPE(x)	(((x) >> 5) & 0x07)
-#define UCD9000_MON_PAGE(x)	((x) & 0x0f)
-=======
 #define UCD9000_MFR_STATUS		0xf3
 #define UCD9000_GPIO_SELECT		0xfa
 #define UCD9000_GPIO_CONFIG		0xfb
@@ -79,7 +42,6 @@ enum chips { ucd9000, ucd90120, ucd90124, ucd90160, ucd90320, ucd9090,
 
 #define UCD9000_MON_TYPE(x)	(((x) >> 5) & 0x07)
 #define UCD9000_MON_PAGE(x)	((x) & 0x1f)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define UCD9000_MON_VOLTAGE	1
 #define UCD9000_MON_TEMPERATURE	2
@@ -88,14 +50,6 @@ enum chips { ucd9000, ucd90120, ucd90124, ucd90160, ucd90320, ucd9090,
 
 #define UCD9000_NUM_FAN		4
 
-<<<<<<< HEAD
-struct ucd9000_data {
-	u8 fan_data[UCD9000_NUM_FAN][I2C_SMBUS_BLOCK_MAX];
-	struct pmbus_driver_info info;
-};
-#define to_ucd9000_data(_info) container_of(_info, struct ucd9000_data, info)
-
-=======
 #define UCD9000_GPIO_NAME_LEN	16
 #define UCD9090_NUM_GPIOS	23
 #define UCD901XX_NUM_GPIOS	26
@@ -189,7 +143,6 @@ static int ucd90320_write_byte(struct i2c_client *client, int page, u8 value)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ucd9000_get_fan_config(struct i2c_client *client, int fan)
 {
 	int fan_config = 0;
@@ -250,21 +203,14 @@ static const struct i2c_device_id ucd9000_id[] = {
 	{"ucd9000", ucd9000},
 	{"ucd90120", ucd90120},
 	{"ucd90124", ucd90124},
-<<<<<<< HEAD
-=======
 	{"ucd90160", ucd90160},
 	{"ucd90320", ucd90320},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"ucd9090", ucd9090},
 	{"ucd90910", ucd90910},
 	{}
 };
 MODULE_DEVICE_TABLE(i2c, ucd9000_id);
 
-<<<<<<< HEAD
-static int ucd9000_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id)
-=======
 static const struct of_device_id __maybe_unused ucd9000_of_match[] = {
 	{
 		.compatible = "ti,ucd9000",
@@ -610,16 +556,12 @@ static int ucd9000_init_debugfs(struct i2c_client *client,
 #endif /* CONFIG_DEBUG_FS */
 
 static int ucd9000_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 block_buffer[I2C_SMBUS_BLOCK_MAX + 1];
 	struct ucd9000_data *data;
 	struct pmbus_driver_info *info;
 	const struct i2c_device_id *mid;
-<<<<<<< HEAD
-=======
 	enum chips chip;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, ret;
 
 	if (!i2c_check_functionality(client->adapter,
@@ -645,12 +587,6 @@ static int ucd9000_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	if (id->driver_data != ucd9000 && id->driver_data != mid->driver_data)
-		dev_notice(&client->dev,
-			   "Device mismatch: Configured %s, detected %s\n",
-			   id->name, mid->name);
-=======
 	if (client->dev.of_node)
 		chip = (uintptr_t)of_device_get_match_data(&client->dev);
 	else
@@ -660,7 +596,6 @@ static int ucd9000_probe(struct i2c_client *client)
 		dev_notice(&client->dev,
 			   "Device mismatch: Configured %s, detected %s\n",
 			   client->name, mid->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data = devm_kzalloc(&client->dev, sizeof(struct ucd9000_data),
 			    GFP_KERNEL);
@@ -731,11 +666,6 @@ static int ucd9000_probe(struct i2c_client *client)
 		info->read_byte_data = ucd9000_read_byte_data;
 		info->func[0] |= PMBUS_HAVE_FAN12 | PMBUS_HAVE_STATUS_FAN12
 		  | PMBUS_HAVE_FAN34 | PMBUS_HAVE_STATUS_FAN34;
-<<<<<<< HEAD
-	}
-
-	return pmbus_do_probe(client, mid, info);
-=======
 	} else if (mid->driver_data == ucd90320) {
 		info->read_byte_data = ucd90320_read_byte_data;
 		info->read_word_data = ucd90320_read_word_data;
@@ -755,22 +685,15 @@ static int ucd9000_probe(struct i2c_client *client)
 			 ret);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This is the driver that will be inserted */
 static struct i2c_driver ucd9000_driver = {
 	.driver = {
 		.name = "ucd9000",
-<<<<<<< HEAD
-	},
-	.probe = ucd9000_probe,
-	.remove = pmbus_do_remove,
-=======
 		.of_match_table = of_match_ptr(ucd9000_of_match),
 	},
 	.probe = ucd9000_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = ucd9000_id,
 };
 
@@ -779,7 +702,4 @@ module_i2c_driver(ucd9000_driver);
 MODULE_AUTHOR("Guenter Roeck");
 MODULE_DESCRIPTION("PMBus driver for TI UCD90xxx");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_IMPORT_NS(PMBUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux driver for NAND Flash Translation Layer
  *
  * Copyright © 1999 Machine Vision Holdings, Inc.
  * Copyright © 1999-2010 David Woodhouse <dwmw2@infradead.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define PRERELEASE
@@ -32,11 +12,7 @@
 #include <linux/module.h>
 #include <asm/errno.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/init.h>
@@ -45,11 +21,7 @@
 
 #include <linux/kmod.h>
 #include <linux/mtd/mtd.h>
-<<<<<<< HEAD
-#include <linux/mtd/nand.h>
-=======
 #include <linux/mtd/rawnand.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mtd/nftl.h>
 #include <linux/mtd/blktrans.h>
 
@@ -65,11 +37,7 @@ static void nftl_add_mtd(struct mtd_blktrans_ops *tr, struct mtd_info *mtd)
 	struct NFTLrecord *nftl;
 	unsigned long temp;
 
-<<<<<<< HEAD
-	if (mtd->type != MTD_NANDFLASH || mtd->size > UINT_MAX)
-=======
 	if (!mtd_type_is_nand(mtd) || mtd->size > UINT_MAX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	/* OK, this is moderately ugly.  But probably safe.  Alternatives? */
 	if (memcmp(mtd->name, "DiskOnChip", 10))
@@ -156,11 +124,7 @@ int nftl_read_oob(struct mtd_info *mtd, loff_t offs, size_t len,
 		  size_t *retlen, uint8_t *buf)
 {
 	loff_t mask = mtd->writesize - 1;
-<<<<<<< HEAD
-	struct mtd_oob_ops ops;
-=======
 	struct mtd_oob_ops ops = { };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	ops.mode = MTD_OPS_PLACE_OOB;
@@ -181,11 +145,7 @@ int nftl_write_oob(struct mtd_info *mtd, loff_t offs, size_t len,
 		   size_t *retlen, uint8_t *buf)
 {
 	loff_t mask = mtd->writesize - 1;
-<<<<<<< HEAD
-	struct mtd_oob_ops ops;
-=======
 	struct mtd_oob_ops ops = { };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	ops.mode = MTD_OPS_PLACE_OOB;
@@ -208,11 +168,7 @@ static int nftl_write(struct mtd_info *mtd, loff_t offs, size_t len,
 		      size_t *retlen, uint8_t *buf, uint8_t *oob)
 {
 	loff_t mask = mtd->writesize - 1;
-<<<<<<< HEAD
-	struct mtd_oob_ops ops;
-=======
 	struct mtd_oob_ops ops = { };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	ops.mode = MTD_OPS_PLACE_OOB;
@@ -663,10 +619,6 @@ static inline u16 NFTL_findwriteunit(struct NFTLrecord *nftl, unsigned block)
 				return BLOCK_NIL;
 			}
 			//printk("Restarting scan\n");
-<<<<<<< HEAD
-			lastEUN = BLOCK_NIL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -844,22 +796,7 @@ static struct mtd_blktrans_ops nftl_tr = {
 	.owner		= THIS_MODULE,
 };
 
-<<<<<<< HEAD
-static int __init init_nftl(void)
-{
-	return register_mtd_blktrans(&nftl_tr);
-}
-
-static void __exit cleanup_nftl(void)
-{
-	deregister_mtd_blktrans(&nftl_tr);
-}
-
-module_init(init_nftl);
-module_exit(cleanup_nftl);
-=======
 module_mtd_blktrans(nftl_tr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("David Woodhouse <dwmw2@infradead.org>, Fabrice Bellard <fabrice.bellard@netgem.com> et al.");

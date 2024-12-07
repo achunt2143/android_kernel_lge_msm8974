@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2006 Oracle.  All rights reserved.
-=======
  * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -39,27 +35,12 @@
 #include <linux/kernel.h>
 #include <linux/gfp.h>
 #include <linux/in.h>
-<<<<<<< HEAD
-=======
 #include <linux/ipv6.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/poll.h>
 #include <net/sock.h>
 
 #include "rds.h"
 
-<<<<<<< HEAD
-char *rds_str_array(char **array, size_t elements, size_t index)
-{
-	if ((index < elements) && array[index])
-		return array[index];
-	else
-		return "unknown";
-}
-EXPORT_SYMBOL(rds_str_array);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* this is just used for stats gathering :/ */
 static DEFINE_SPINLOCK(rds_sock_lock);
 static unsigned long rds_sock_count;
@@ -92,25 +73,12 @@ static int rds_release(struct socket *sock)
 	rds_clear_recv_queue(rs);
 	rds_cong_remove_socket(rs);
 
-<<<<<<< HEAD
-	/*
-	 * the binding lookup hash uses rcu, we need to
-	 * make sure we sychronize_rcu before we free our
-	 * entry
-	 */
 	rds_remove_bound(rs);
-	synchronize_rcu();
-=======
-	rds_remove_bound(rs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rds_send_drop_to(rs, NULL);
 	rds_rdma_drop_keys(rs);
 	rds_notify_queue_get(rs, NULL);
-<<<<<<< HEAD
-=======
 	rds_notify_msg_zcopy_purge(&rs->rs_zcookie_queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&rds_sock_lock);
 	list_del_init(&rs->rs_item);
@@ -144,31 +112,6 @@ void rds_wake_sk_sleep(struct rds_sock *rs)
 }
 
 static int rds_getname(struct socket *sock, struct sockaddr *uaddr,
-<<<<<<< HEAD
-		       int *uaddr_len, int peer)
-{
-	struct sockaddr_in *sin = (struct sockaddr_in *)uaddr;
-	struct rds_sock *rs = rds_sk_to_rs(sock->sk);
-
-	memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
-
-	/* racey, don't care */
-	if (peer) {
-		if (!rs->rs_conn_addr)
-			return -ENOTCONN;
-
-		sin->sin_port = rs->rs_conn_port;
-		sin->sin_addr.s_addr = rs->rs_conn_addr;
-	} else {
-		sin->sin_port = rs->rs_bound_port;
-		sin->sin_addr.s_addr = rs->rs_bound_addr;
-	}
-
-	sin->sin_family = AF_INET;
-
-	*uaddr_len = sizeof(*sin);
-	return 0;
-=======
 		       int peer)
 {
 	struct rds_sock *rs = rds_sk_to_rs(sock->sk);
@@ -247,53 +190,31 @@ static int rds_getname(struct socket *sock, struct sockaddr *uaddr,
 	}
 
 	return uaddr_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * RDS' poll is without a doubt the least intuitive part of the interface,
-<<<<<<< HEAD
- * as POLLIN and POLLOUT do not behave entirely as you would expect from
- * a network protocol.
- *
- * POLLIN is asserted if
-=======
  * as EPOLLIN and EPOLLOUT do not behave entirely as you would expect from
  * a network protocol.
  *
  * EPOLLIN is asserted if
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  -	there is data on the receive queue.
  *  -	to signal that a previously congested destination may have become
  *	uncongested
  *  -	A notification has been queued to the socket (this can be a congestion
-<<<<<<< HEAD
- *	update, or a RDMA completion).
- *
- * POLLOUT is asserted if there is room on the send queue. This does not mean
-=======
  *	update, or a RDMA completion, or a MSG_ZEROCOPY completion).
  *
  * EPOLLOUT is asserted if there is room on the send queue. This does not mean
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * however, that the next sendmsg() call will succeed. If the application tries
  * to send to a congested destination, the system call may still fail (and
  * return ENOBUFS).
  */
-<<<<<<< HEAD
-static unsigned int rds_poll(struct file *file, struct socket *sock,
-=======
 static __poll_t rds_poll(struct file *file, struct socket *sock,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     poll_table *wait)
 {
 	struct sock *sk = sock->sk;
 	struct rds_sock *rs = rds_sk_to_rs(sk);
-<<<<<<< HEAD
-	unsigned int mask = 0;
-=======
 	__poll_t mask = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	poll_wait(file, sk_sleep(sk), wait);
@@ -303,24 +224,6 @@ static __poll_t rds_poll(struct file *file, struct socket *sock,
 
 	read_lock_irqsave(&rs->rs_recv_lock, flags);
 	if (!rs->rs_cong_monitor) {
-<<<<<<< HEAD
-		/* When a congestion map was updated, we signal POLLIN for
-		 * "historical" reasons. Applications can also poll for
-		 * WRBAND instead. */
-		if (rds_cong_updated_since(&rs->rs_cong_track))
-			mask |= (POLLIN | POLLRDNORM | POLLWRBAND);
-	} else {
-		spin_lock(&rs->rs_lock);
-		if (rs->rs_cong_notify)
-			mask |= (POLLIN | POLLRDNORM);
-		spin_unlock(&rs->rs_lock);
-	}
-	if (!list_empty(&rs->rs_recv_queue) ||
-	    !list_empty(&rs->rs_notify_queue))
-		mask |= (POLLIN | POLLRDNORM);
-	if (rs->rs_snd_bytes < rds_sk_sndbuf(rs))
-		mask |= (POLLOUT | POLLWRNORM);
-=======
 		/* When a congestion map was updated, we signal EPOLLIN for
 		 * "historical" reasons. Applications can also poll for
 		 * WRBAND instead. */
@@ -340,7 +243,6 @@ static __poll_t rds_poll(struct file *file, struct socket *sock,
 		mask |= (EPOLLOUT | EPOLLWRNORM);
 	if (sk->sk_err || !skb_queue_empty(&sk->sk_error_queue))
 		mask |= POLLERR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_unlock_irqrestore(&rs->rs_recv_lock, flags);
 
 	/* clear state any time we wake a seen-congested socket */
@@ -352,14 +254,6 @@ static __poll_t rds_poll(struct file *file, struct socket *sock,
 
 static int rds_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 {
-<<<<<<< HEAD
-	return -ENOIOCTLCMD;
-}
-
-static int rds_cancel_sent_to(struct rds_sock *rs, char __user *optval,
-			      int len)
-{
-=======
 	struct rds_sock *rs = rds_sk_to_rs(sock->sk);
 	rds_tos_t utos, tos = 0;
 
@@ -399,16 +293,11 @@ static int rds_cancel_sent_to(struct rds_sock *rs, char __user *optval,
 static int rds_cancel_sent_to(struct rds_sock *rs, sockptr_t optval, int len)
 {
 	struct sockaddr_in6 sin6;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sockaddr_in sin;
 	int ret = 0;
 
 	/* racing with another thread binding seems ok here */
-<<<<<<< HEAD
-	if (rs->rs_bound_addr == 0) {
-=======
 	if (ipv6_addr_any(&rs->rs_bound_addr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOTCONN; /* XXX not a great errno */
 		goto out;
 	}
@@ -416,16 +305,6 @@ static int rds_cancel_sent_to(struct rds_sock *rs, sockptr_t optval, int len)
 	if (len < sizeof(struct sockaddr_in)) {
 		ret = -EINVAL;
 		goto out;
-<<<<<<< HEAD
-	}
-
-	if (copy_from_user(&sin, optval, sizeof(sin))) {
-		ret = -EFAULT;
-		goto out;
-	}
-
-	rds_send_drop_to(rs, &sin);
-=======
 	} else if (len < sizeof(struct sockaddr_in6)) {
 		/* Assume IPv4 */
 		if (copy_from_sockptr(&sin, optval,
@@ -444,38 +323,24 @@ static int rds_cancel_sent_to(struct rds_sock *rs, sockptr_t optval, int len)
 	}
 
 	rds_send_drop_to(rs, &sin6);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int rds_set_bool_option(unsigned char *optvar, char __user *optval,
-=======
 static int rds_set_bool_option(unsigned char *optvar, sockptr_t optval,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       int optlen)
 {
 	int value;
 
 	if (optlen < sizeof(int))
 		return -EINVAL;
-<<<<<<< HEAD
-	if (get_user(value, (int __user *) optval))
-=======
 	if (copy_from_sockptr(&value, optval, sizeof(int)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	*optvar = !!value;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int rds_cong_monitor(struct rds_sock *rs, char __user *optval,
-			    int optlen)
-=======
 static int rds_cong_monitor(struct rds_sock *rs, sockptr_t optval, int optlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -492,10 +357,6 @@ static int rds_cong_monitor(struct rds_sock *rs, sockptr_t optval, int optlen)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int rds_setsockopt(struct socket *sock, int level, int optname,
-			  char __user *optval, unsigned int optlen)
-=======
 static int rds_set_transport(struct rds_sock *rs, sockptr_t optval, int optlen)
 {
 	int t_type;
@@ -570,7 +431,6 @@ static int rds_recv_track_latency(struct rds_sock *rs, sockptr_t optval,
 
 static int rds_setsockopt(struct socket *sock, int level, int optname,
 			  sockptr_t optval, unsigned int optlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rds_sock *rs = rds_sk_to_rs(sock->sk);
 	int ret;
@@ -599,8 +459,6 @@ static int rds_setsockopt(struct socket *sock, int level, int optname,
 	case RDS_CONG_MONITOR:
 		ret = rds_cong_monitor(rs, optval, optlen);
 		break;
-<<<<<<< HEAD
-=======
 	case SO_RDS_TRANSPORT:
 		lock_sock(sock->sk);
 		ret = rds_set_transport(rs, optval, optlen);
@@ -615,7 +473,6 @@ static int rds_setsockopt(struct socket *sock, int level, int optname,
 	case SO_RDS_MSG_RXPATH_LATENCY:
 		ret = rds_recv_track_latency(rs, optval, optlen);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		ret = -ENOPROTOOPT;
 	}
@@ -628,10 +485,7 @@ static int rds_getsockopt(struct socket *sock, int level, int optname,
 {
 	struct rds_sock *rs = rds_sk_to_rs(sock->sk);
 	int ret = -ENOPROTOOPT, len;
-<<<<<<< HEAD
-=======
 	int trans;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (level != SOL_RDS)
 		goto out;
@@ -657,8 +511,6 @@ static int rds_getsockopt(struct socket *sock, int level, int optname,
 		else
 			ret = 0;
 		break;
-<<<<<<< HEAD
-=======
 	case SO_RDS_TRANSPORT:
 		if (len < sizeof(int)) {
 			ret = -EINVAL;
@@ -672,7 +524,6 @@ static int rds_getsockopt(struct socket *sock, int level, int optname,
 		else
 			ret = 0;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -686,33 +537,6 @@ static int rds_connect(struct socket *sock, struct sockaddr *uaddr,
 		       int addr_len, int flags)
 {
 	struct sock *sk = sock->sk;
-<<<<<<< HEAD
-	struct sockaddr_in *sin = (struct sockaddr_in *)uaddr;
-	struct rds_sock *rs = rds_sk_to_rs(sk);
-	int ret = 0;
-
-	lock_sock(sk);
-
-	if (addr_len != sizeof(struct sockaddr_in)) {
-		ret = -EINVAL;
-		goto out;
-	}
-
-	if (sin->sin_family != AF_INET) {
-		ret = -EAFNOSUPPORT;
-		goto out;
-	}
-
-	if (sin->sin_addr.s_addr == htonl(INADDR_ANY)) {
-		ret = -EDESTADDRREQ;
-		goto out;
-	}
-
-	rs->rs_conn_addr = sin->sin_addr.s_addr;
-	rs->rs_conn_port = sin->sin_port;
-
-out:
-=======
 	struct sockaddr_in *sin;
 	struct rds_sock *rs = rds_sk_to_rs(sk);
 	int ret = 0;
@@ -801,7 +625,6 @@ out:
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_sock(sk);
 	return ret;
 }
@@ -830,11 +653,6 @@ static const struct proto_ops rds_proto_ops = {
 	.sendmsg =	rds_sendmsg,
 	.recvmsg =	rds_recvmsg,
 	.mmap =		sock_no_mmap,
-<<<<<<< HEAD
-	.sendpage =	sock_no_sendpage,
-};
-
-=======
 };
 
 static void rds_sock_destruct(struct sock *sk)
@@ -845,7 +663,6 @@ static void rds_sock_destruct(struct sock *sk)
 		 &rs->rs_item != rs->rs_item.prev));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __rds_create(struct socket *sock, struct sock *sk, int protocol)
 {
 	struct rds_sock *rs;
@@ -853,10 +670,7 @@ static int __rds_create(struct socket *sock, struct sock *sk, int protocol)
 	sock_init_data(sock, sk);
 	sock->ops		= &rds_proto_ops;
 	sk->sk_protocol		= protocol;
-<<<<<<< HEAD
-=======
 	sk->sk_destruct		= rds_sock_destruct;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rs = rds_sk_to_rs(sk);
 	spin_lock_init(&rs->rs_lock);
@@ -865,17 +679,12 @@ static int __rds_create(struct socket *sock, struct sock *sk, int protocol)
 	INIT_LIST_HEAD(&rs->rs_recv_queue);
 	INIT_LIST_HEAD(&rs->rs_notify_queue);
 	INIT_LIST_HEAD(&rs->rs_cong_list);
-<<<<<<< HEAD
-	spin_lock_init(&rs->rs_rdma_lock);
-	rs->rs_rdma_keys = RB_ROOT;
-=======
 	rds_message_zcopy_queue_init(&rs->rs_zcookie_queue);
 	spin_lock_init(&rs->rs_rdma_lock);
 	rs->rs_rdma_keys = RB_ROOT;
 	rs->rs_rx_traces = 0;
 	rs->rs_tos = 0;
 	rs->rs_conn = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&rds_sock_lock);
 	list_add_tail(&rs->rs_item, &rds_sock_list);
@@ -893,11 +702,7 @@ static int rds_create(struct net *net, struct socket *sock, int protocol,
 	if (sock->type != SOCK_SEQPACKET || protocol)
 		return -ESOCKTNOSUPPORT;
 
-<<<<<<< HEAD
-	sk = sk_alloc(net, AF_RDS, GFP_ATOMIC, &rds_proto);
-=======
 	sk = sk_alloc(net, AF_RDS, GFP_KERNEL, &rds_proto, kern);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sk)
 		return -ENOMEM;
 
@@ -933,28 +738,20 @@ static void rds_sock_inc_info(struct socket *sock, unsigned int len,
 	spin_lock_bh(&rds_sock_lock);
 
 	list_for_each_entry(rs, &rds_sock_list, rs_item) {
-<<<<<<< HEAD
-=======
 		/* This option only supports IPv4 sockets. */
 		if (!ipv6_addr_v4mapped(&rs->rs_bound_addr))
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		read_lock(&rs->rs_recv_lock);
 
 		/* XXX too lazy to maintain counts.. */
 		list_for_each_entry(inc, &rs->rs_recv_queue, i_item) {
 			total++;
 			if (total <= len)
-<<<<<<< HEAD
-				rds_inc_info_copy(inc, iter, inc->i_saddr,
-						  rs->rs_bound_addr, 1);
-=======
 				rds_inc_info_copy(inc, iter,
 						  inc->i_saddr.s6_addr32[3],
 						  rs->rs_bound_addr_v4,
 						  1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		read_unlock(&rs->rs_recv_lock);
@@ -966,8 +763,6 @@ static void rds_sock_inc_info(struct socket *sock, unsigned int len,
 	lens->each = sizeof(struct rds_info_message);
 }
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 static void rds6_sock_inc_info(struct socket *sock, unsigned int len,
 			       struct rds_info_iterator *iter,
@@ -1001,24 +796,18 @@ static void rds6_sock_inc_info(struct socket *sock, unsigned int len,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rds_sock_info(struct socket *sock, unsigned int len,
 			  struct rds_info_iterator *iter,
 			  struct rds_info_lengths *lens)
 {
 	struct rds_info_socket sinfo;
-<<<<<<< HEAD
-=======
 	unsigned int cnt = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rds_sock *rs;
 
 	len /= sizeof(struct rds_info_socket);
 
 	spin_lock_bh(&rds_sock_lock);
 
-<<<<<<< HEAD
-=======
 	if (len < rds_sock_count) {
 		cnt = rds_sock_count;
 		goto out;
@@ -1059,30 +848,10 @@ static void rds6_sock_info(struct socket *sock, unsigned int len,
 
 	spin_lock_bh(&rds_sock_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len < rds_sock_count)
 		goto out;
 
 	list_for_each_entry(rs, &rds_sock_list, rs_item) {
-<<<<<<< HEAD
-		sinfo.sndbuf = rds_sk_sndbuf(rs);
-		sinfo.rcvbuf = rds_sk_rcvbuf(rs);
-		sinfo.bound_addr = rs->rs_bound_addr;
-		sinfo.connected_addr = rs->rs_conn_addr;
-		sinfo.bound_port = rs->rs_bound_port;
-		sinfo.connected_port = rs->rs_conn_port;
-		sinfo.inum = sock_i_ino(rds_rs_to_sk(rs));
-
-		rds_info_copy(iter, &sinfo, sizeof(sinfo));
-	}
-
-out:
-	lens->nr = rds_sock_count;
-	lens->each = sizeof(struct rds_info_socket);
-
-	spin_unlock_bh(&rds_sock_lock);
-}
-=======
 		sinfo6.sndbuf = rds_sk_sndbuf(rs);
 		sinfo6.rcvbuf = rds_sk_rcvbuf(rs);
 		sinfo6.bound_addr = rs->rs_bound_addr;
@@ -1101,7 +870,6 @@ out:
 	spin_unlock_bh(&rds_sock_lock);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void rds_exit(void)
 {
@@ -1113,20 +881,6 @@ static void rds_exit(void)
 	rds_threads_exit();
 	rds_stats_exit();
 	rds_page_exit();
-<<<<<<< HEAD
-	rds_info_deregister_func(RDS_INFO_SOCKETS, rds_sock_info);
-	rds_info_deregister_func(RDS_INFO_RECV_MESSAGES, rds_sock_inc_info);
-}
-module_exit(rds_exit);
-
-static int rds_init(void)
-{
-	int ret;
-
-	ret = rds_conn_init();
-	if (ret)
-		goto out;
-=======
 	rds_bind_lock_destroy();
 	rds_info_deregister_func(RDS_INFO_SOCKETS, rds_sock_info);
 	rds_info_deregister_func(RDS_INFO_RECV_MESSAGES, rds_sock_inc_info);
@@ -1153,7 +907,6 @@ static int __init rds_init(void)
 	if (ret)
 		goto out_bind;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = rds_threads_init();
 	if (ret)
 		goto out_conn;
@@ -1172,13 +925,10 @@ static int __init rds_init(void)
 
 	rds_info_register_func(RDS_INFO_SOCKETS, rds_sock_info);
 	rds_info_register_func(RDS_INFO_RECV_MESSAGES, rds_sock_inc_info);
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 	rds_info_register_func(RDS6_INFO_SOCKETS, rds6_sock_info);
 	rds_info_register_func(RDS6_INFO_RECV_MESSAGES, rds6_sock_inc_info);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	goto out;
 
@@ -1194,11 +944,8 @@ out_conn:
 	rds_conn_exit();
 	rds_cong_exit();
 	rds_page_exit();
-<<<<<<< HEAD
-=======
 out_bind:
 	rds_bind_lock_destroy();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }

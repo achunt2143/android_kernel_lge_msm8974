@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2004 Paul Mackerras <paulus@au.ibm.com>, IBM
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright (C) 2004 Paul Mackerras <paulus@au.ibm.com>, IBM
  */
 #include <asm/inst.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pt_regs;
 
@@ -24,17 +13,6 @@ struct pt_regs;
  * we don't allow putting a breakpoint on an mtmsrd instruction.
  * Similarly we don't allow breakpoints on rfid instructions.
  * These macros tell us if an instruction is a mtmsrd or rfid.
-<<<<<<< HEAD
- * Note that IS_MTMSRD returns true for both an mtmsr (32-bit)
- * and an mtmsrd (64-bit).
- */
-#define IS_MTMSRD(instr)	(((instr) & 0xfc0007be) == 0x7c000124)
-#define IS_RFID(instr)		(((instr) & 0xfc0007fe) == 0x4c000024)
-#define IS_RFI(instr)		(((instr) & 0xfc0007fe) == 0x4c000064)
-
-/* Emulate instructions that cause a transfer of control. */
-extern int emulate_step(struct pt_regs *regs, unsigned int instr);
-=======
  * Note that these return true for both mtmsr/rfi (32-bit)
  * and mtmsrd/rfid (64-bit).
  */
@@ -201,4 +179,3 @@ extern void emulate_vsx_store(struct instruction_op *op,
 			      const union vsx_reg *reg, void *mem,
 			      bool cross_endian);
 extern int emulate_dcbz(unsigned long ea, struct pt_regs *regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SPARC_VADDRS_H
 #define _SPARC_VADDRS_H
 
@@ -34,8 +31,6 @@
  */
 #define SRMMU_NOCACHE_ALCRATIO	64	/* 256 pages per 64MB of system RAM */
 
-<<<<<<< HEAD
-=======
 #ifndef __ASSEMBLY__
 #include <asm/kmap_size.h>
 
@@ -58,30 +53,10 @@ enum fixed_addresses {
 
 #define __fix_to_virt(x)        (FIXADDR_TOP - ((x) << PAGE_SHIFT))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUN4M_IOBASE_VADDR	0xfd000000 /* Base for mapping pages */
 #define IOBASE_VADDR		0xfe000000
 #define IOBASE_END		0xfe600000
 
-<<<<<<< HEAD
-/*
- * On the sun4/4c we need a place
- * to reliably map locked down kernel data.  This includes the
- * task_struct and kernel stack pages of each process plus the
- * scsi buffers during dvma IO transfers, also the floppy buffers
- * during pseudo dma which runs with traps off (no faults allowed).
- * Some quick calculations yield:
- *       NR_TASKS <512> * (3 * PAGE_SIZE) == 0x600000
- * Subtract this from 0xc00000 and you get 0x927C0 of vm left
- * over to map SCSI dvma + floppy pseudo-dma buffers.  So be
- * careful if you change NR_TASKS or else there won't be enough
- * room for it all.
- */
-#define SUN4C_LOCK_VADDR	0xff000000
-#define SUN4C_LOCK_END		0xffc00000
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KADB_DEBUGGER_BEGVM	0xffc00000 /* Where kern debugger is in virt-mem */
 #define KADB_DEBUGGER_ENDVM	0xffd00000
 #define DEBUG_FIRSTVADDR	KADB_DEBUGGER_BEGVM

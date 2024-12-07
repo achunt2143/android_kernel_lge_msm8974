@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config PROC_FS
 	bool "/proc file system support" if EXPERT
 	default y
@@ -26,11 +23,7 @@ config PROC_FS
 	  /proc" or the equivalent line in /etc/fstab does the job.
 
 	  The /proc file system is explained in the file
-<<<<<<< HEAD
-	  <file:Documentation/filesystems/proc.txt> and on the proc(5) manpage
-=======
 	  <file:Documentation/filesystems/proc.rst> and on the proc(5) manpage
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  ("man 5 proc").
 
 	  This option will enlarge your kernel by about 67 KB. Several
@@ -39,23 +32,16 @@ config PROC_FS
 config PROC_KCORE
 	bool "/proc/kcore support" if !ARM
 	depends on PROC_FS && MMU
-<<<<<<< HEAD
-=======
 	select VMCORE_INFO
 	help
 	  Provides a virtual ELF core file of the live kernel.  This can
 	  be read with gdb and other ELF tools.  No modifications can be
 	  made using this mechanism.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PROC_VMCORE
 	bool "/proc/vmcore support"
 	depends on PROC_FS && CRASH_DUMP
 	default y
-<<<<<<< HEAD
-        help
-        Exports the dump image of crashed kernel in ELF format.
-=======
 	help
 	  Exports the dump image of crashed kernel in ELF format.
 
@@ -74,30 +60,20 @@ config PROC_VMCORE_DEVICE_DUMP
 	  If you say Y here, the collected device dumps will be added
 	  as ELF notes to /proc/vmcore. You can still disable device
 	  dump using the kernel command line option 'novmcoredd'.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PROC_SYSCTL
 	bool "Sysctl support (/proc/sys)" if EXPERT
 	depends on PROC_FS
 	select SYSCTL
 	default y
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  The sysctl interface provides a means of dynamically changing
 	  certain kernel parameters and variables on the fly without requiring
 	  a recompile of the kernel or reboot of the system.  The primary
 	  interface is through /proc/sys.  If you say Y here a tree of
 	  modifiable sysctl entries will be generated beneath the
-<<<<<<< HEAD
-          /proc/sys directory. They are explained in the files
-	  in <file:Documentation/sysctl/>.  Note that enabling this
-=======
 	  /proc/sys directory. They are explained in the files
 	  in <file:Documentation/admin-guide/sysctl/>.  Note that enabling this
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  option will enlarge the kernel by at least 8 KB.
 
 	  As it is generally a good thing, you should say Y here unless
@@ -112,9 +88,6 @@ config PROC_PAGE_MONITOR
 	  Various /proc files exist to monitor process memory utilization:
 	  /proc/pid/smaps, /proc/pid/clear_refs, /proc/pid/pagemap,
 	  /proc/kpagecount, and /proc/kpageflags. Disabling these
-<<<<<<< HEAD
-          interfaces will reduce the size of the kernel by approximately 4kb.
-=======
 	  interfaces will reduce the size of the kernel by approximately 4kb.
 
 config PROC_CHILDREN
@@ -135,4 +108,3 @@ config PROC_PID_ARCH_STATUS
 config PROC_CPU_RESCTRL
 	def_bool n
 	depends on PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

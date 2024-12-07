@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/module.h>
@@ -10,10 +7,7 @@
 #include <linux/random.h>
 #include <linux/sched.h>
 
-<<<<<<< HEAD
-=======
 #include <linux/ceph/ceph_features.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ceph/mon_client.h>
 #include <linux/ceph/libceph.h>
 #include <linux/ceph/debugfs.h>
@@ -42,57 +36,6 @@ static const struct ceph_connection_operations mon_con_ops;
 
 static int __validate_auth(struct ceph_mon_client *monc);
 
-<<<<<<< HEAD
-/*
- * Decode a monmap blob (e.g., during mount).
- */
-struct ceph_monmap *ceph_monmap_decode(void *p, void *end)
-{
-	struct ceph_monmap *m = NULL;
-	int i, err = -EINVAL;
-	struct ceph_fsid fsid;
-	u32 epoch, num_mon;
-	u16 version;
-	u32 len;
-
-	ceph_decode_32_safe(&p, end, len, bad);
-	ceph_decode_need(&p, end, len, bad);
-
-	dout("monmap_decode %p %p len %d\n", p, end, (int)(end-p));
-
-	ceph_decode_16_safe(&p, end, version, bad);
-
-	ceph_decode_need(&p, end, sizeof(fsid) + 2*sizeof(u32), bad);
-	ceph_decode_copy(&p, &fsid, sizeof(fsid));
-	epoch = ceph_decode_32(&p);
-
-	num_mon = ceph_decode_32(&p);
-	ceph_decode_need(&p, end, num_mon*sizeof(m->mon_inst[0]), bad);
-
-	if (num_mon >= CEPH_MAX_MON)
-		goto bad;
-	m = kmalloc(sizeof(*m) + sizeof(m->mon_inst[0])*num_mon, GFP_NOFS);
-	if (m == NULL)
-		return ERR_PTR(-ENOMEM);
-	m->fsid = fsid;
-	m->epoch = epoch;
-	m->num_mon = num_mon;
-	ceph_decode_copy(&p, m->mon_inst, num_mon*sizeof(m->mon_inst[0]));
-	for (i = 0; i < num_mon; i++)
-		ceph_decode_addr(&m->mon_inst[i].addr);
-
-	dout("monmap_decode epoch %d, num_mon %d\n", m->epoch,
-	     m->num_mon);
-	for (i = 0; i < m->num_mon; i++)
-		dout("monmap_decode  mon%d is %s\n", i,
-		     ceph_pr_addr(&m->mon_inst[i].addr.in_addr));
-	return m;
-
-bad:
-	dout("monmap_decode failed with %d\n", err);
-	kfree(m);
-	return ERR_PTR(err);
-=======
 static int decode_mon_info(void **p, void *end, bool msgr2,
 			   struct ceph_entity_addr *addr)
 {
@@ -209,7 +152,6 @@ e_inval:
 fail:
 	kfree(monmap);
 	return ERR_PTR(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -219,17 +161,11 @@ int ceph_monmap_contains(struct ceph_monmap *m, struct ceph_entity_addr *addr)
 {
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < m->num_mon; i++)
-		if (memcmp(addr, &m->mon_inst[i].addr, sizeof(*addr)) == 0)
-			return 1;
-=======
 	for (i = 0; i < m->num_mon; i++) {
 		if (ceph_addr_equal_no_type(addr, &m->mon_inst[i].addr))
 			return 1;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -257,53 +193,12 @@ static void __close_session(struct ceph_mon_client *monc)
 	ceph_msg_revoke(monc->m_subscribe);
 	ceph_msg_revoke_incoming(monc->m_subscribe_ack);
 	ceph_con_close(&monc->con);
-<<<<<<< HEAD
-	monc->cur_mon = -1;
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	monc->pending_auth = 0;
 	ceph_auth_reset(monc->auth);
 }
 
 /*
-<<<<<<< HEAD
- * Open a session with a (new) monitor.
- */
-static int __open_session(struct ceph_mon_client *monc)
-{
-	char r;
-	int ret;
-
-	if (monc->cur_mon < 0) {
-		get_random_bytes(&r, 1);
-		monc->cur_mon = r % monc->monmap->num_mon;
-		dout("open_session num=%d r=%d -> mon%d\n",
-		     monc->monmap->num_mon, r, monc->cur_mon);
-		monc->sub_sent = 0;
-		monc->sub_renew_after = jiffies;  /* i.e., expired */
-		monc->want_next_osdmap = !!monc->want_next_osdmap;
-
-		dout("open_session mon%d opening\n", monc->cur_mon);
-		ceph_con_open(&monc->con,
-			      CEPH_ENTITY_TYPE_MON, monc->cur_mon,
-			      &monc->monmap->mon_inst[monc->cur_mon].addr);
-
-		/* initiatiate authentication handshake */
-		ret = ceph_auth_build_hello(monc->auth,
-					    monc->m_auth->front.iov_base,
-					    monc->m_auth->front_max);
-		__send_prepared_auth_request(monc, ret);
-	} else {
-		dout("open_session mon%d already open\n", monc->cur_mon);
-	}
-	return 0;
-}
-
-static bool __sub_expired(struct ceph_mon_client *monc)
-{
-	return time_after_eq(jiffies, monc->sub_renew_after);
-=======
  * Pick a new monitor at random and set cur_mon.  If we are repicking
  * (i.e. cur_mon is already set), be sure to pick a different one.
  */
@@ -404,7 +299,6 @@ static void un_backoff(struct ceph_mon_client *monc)
 	if (monc->hunt_mult < 1)
 		monc->hunt_mult = 1;
 	dout("%s hunt_mult now %d\n", __func__, monc->hunt_mult);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -412,71 +306,6 @@ static void un_backoff(struct ceph_mon_client *monc)
  */
 static void __schedule_delayed(struct ceph_mon_client *monc)
 {
-<<<<<<< HEAD
-	unsigned delay;
-
-	if (monc->cur_mon < 0 || __sub_expired(monc))
-		delay = 10 * HZ;
-	else
-		delay = 20 * HZ;
-	dout("__schedule_delayed after %u\n", delay);
-	schedule_delayed_work(&monc->delayed_work, delay);
-}
-
-/*
- * Send subscribe request for mdsmap and/or osdmap.
- */
-static void __send_subscribe(struct ceph_mon_client *monc)
-{
-	dout("__send_subscribe sub_sent=%u exp=%u want_osd=%d\n",
-	     (unsigned)monc->sub_sent, __sub_expired(monc),
-	     monc->want_next_osdmap);
-	if ((__sub_expired(monc) && !monc->sub_sent) ||
-	    monc->want_next_osdmap == 1) {
-		struct ceph_msg *msg = monc->m_subscribe;
-		struct ceph_mon_subscribe_item *i;
-		void *p, *end;
-		int num;
-
-		p = msg->front.iov_base;
-		end = p + msg->front_max;
-
-		num = 1 + !!monc->want_next_osdmap + !!monc->want_mdsmap;
-		ceph_encode_32(&p, num);
-
-		if (monc->want_next_osdmap) {
-			dout("__send_subscribe to 'osdmap' %u\n",
-			     (unsigned)monc->have_osdmap);
-			ceph_encode_string(&p, end, "osdmap", 6);
-			i = p;
-			i->have = cpu_to_le64(monc->have_osdmap);
-			i->onetime = 1;
-			p += sizeof(*i);
-			monc->want_next_osdmap = 2;  /* requested */
-		}
-		if (monc->want_mdsmap) {
-			dout("__send_subscribe to 'mdsmap' %u+\n",
-			     (unsigned)monc->have_mdsmap);
-			ceph_encode_string(&p, end, "mdsmap", 6);
-			i = p;
-			i->have = cpu_to_le64(monc->have_mdsmap);
-			i->onetime = 0;
-			p += sizeof(*i);
-		}
-		ceph_encode_string(&p, end, "monmap", 6);
-		i = p;
-		i->have = 0;
-		i->onetime = 0;
-		p += sizeof(*i);
-
-		msg->front.iov_len = p - msg->front.iov_base;
-		msg->hdr.front_len = cpu_to_le32(msg->front.iov_len);
-		ceph_msg_revoke(msg);
-		ceph_con_send(&monc->con, ceph_msg_get(msg));
-
-		monc->sub_sent = jiffies | 1;  /* never 0 */
-	}
-=======
 	unsigned long delay;
 
 	if (monc->hunting)
@@ -548,17 +377,12 @@ static void __send_subscribe(struct ceph_mon_client *monc)
 	msg->hdr.front_len = cpu_to_le32(msg->front.iov_len);
 	ceph_msg_revoke(msg);
 	ceph_con_send(&monc->con, ceph_msg_get(msg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void handle_subscribe_ack(struct ceph_mon_client *monc,
 				 struct ceph_msg *msg)
 {
-<<<<<<< HEAD
-	unsigned seconds;
-=======
 	unsigned int seconds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ceph_mon_subscribe_ack *h = msg->front.iov_base;
 
 	if (msg->front.iov_len < sizeof(*h))
@@ -566,17 +390,6 @@ static void handle_subscribe_ack(struct ceph_mon_client *monc,
 	seconds = le32_to_cpu(h->duration);
 
 	mutex_lock(&monc->mutex);
-<<<<<<< HEAD
-	if (monc->hunting) {
-		pr_info("mon%d %s session established\n",
-			monc->cur_mon,
-			ceph_pr_addr(&monc->con.peer_addr.in_addr));
-		monc->hunting = false;
-	}
-	dout("handle_subscribe_ack after %d seconds\n", seconds);
-	monc->sub_renew_after = monc->sub_sent + (seconds >> 1)*HZ - 1;
-	monc->sub_sent = 0;
-=======
 	if (monc->sub_renew_sent) {
 		/*
 		 * This is only needed for legacy (infernalis or older)
@@ -591,7 +404,6 @@ static void handle_subscribe_ack(struct ceph_mon_client *monc,
 		dout("%s sent %lu renew after %lu, ignoring\n", __func__,
 		     monc->sub_renew_sent, monc->sub_renew_after);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&monc->mutex);
 	return;
 bad:
@@ -600,44 +412,6 @@ bad:
 }
 
 /*
-<<<<<<< HEAD
- * Keep track of which maps we have
- */
-int ceph_monc_got_mdsmap(struct ceph_mon_client *monc, u32 got)
-{
-	mutex_lock(&monc->mutex);
-	monc->have_mdsmap = got;
-	mutex_unlock(&monc->mutex);
-	return 0;
-}
-EXPORT_SYMBOL(ceph_monc_got_mdsmap);
-
-int ceph_monc_got_osdmap(struct ceph_mon_client *monc, u32 got)
-{
-	mutex_lock(&monc->mutex);
-	monc->have_osdmap = got;
-	monc->want_next_osdmap = 0;
-	mutex_unlock(&monc->mutex);
-	return 0;
-}
-
-/*
- * Register interest in the next osdmap
- */
-void ceph_monc_request_next_osdmap(struct ceph_mon_client *monc)
-{
-	dout("request_next_osdmap have %u\n", monc->have_osdmap);
-	mutex_lock(&monc->mutex);
-	if (!monc->want_next_osdmap)
-		monc->want_next_osdmap = 1;
-	if (monc->want_next_osdmap < 2)
-		__send_subscribe(monc);
-	mutex_unlock(&monc->mutex);
-}
-
-/*
- *
-=======
  * Register interest in a map
  *
  * @sub: one of CEPH_SUB_*
@@ -749,16 +523,12 @@ EXPORT_SYMBOL(ceph_monc_wait_osdmap);
 /*
  * Open a session with a random monitor.  Request monmap and osdmap,
  * which are waited upon in __ceph_open_session().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int ceph_monc_open_session(struct ceph_mon_client *monc)
 {
 	mutex_lock(&monc->mutex);
-<<<<<<< HEAD
-=======
 	__ceph_monc_want_map(monc, CEPH_SUB_MONMAP, 0, true);
 	__ceph_monc_want_map(monc, CEPH_SUB_OSDMAP, 0, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__open_session(monc);
 	__schedule_delayed(monc);
 	mutex_unlock(&monc->mutex);
@@ -766,58 +536,19 @@ int ceph_monc_open_session(struct ceph_mon_client *monc)
 }
 EXPORT_SYMBOL(ceph_monc_open_session);
 
-<<<<<<< HEAD
-/*
- * We require the fsid and global_id in order to initialize our
- * debugfs dir.
- */
-static bool have_debugfs_info(struct ceph_mon_client *monc)
-{
-	dout("have_debugfs_info fsid %d globalid %lld\n",
-	     (int)monc->client->have_fsid, monc->auth->global_id);
-	return monc->client->have_fsid && monc->auth->global_id > 0;
-}
-
-/*
- * The monitor responds with mount ack indicate mount success.  The
- * included client ticket allows the client to talk to MDSs and OSDs.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ceph_monc_handle_map(struct ceph_mon_client *monc,
 				 struct ceph_msg *msg)
 {
 	struct ceph_client *client = monc->client;
-<<<<<<< HEAD
-	struct ceph_monmap *monmap = NULL, *old = monc->monmap;
-	void *p, *end;
-	int had_debugfs_info, init_debugfs = 0;
-
-	mutex_lock(&monc->mutex);
-
-	had_debugfs_info = have_debugfs_info(monc);
-
-=======
 	struct ceph_monmap *monmap;
 	void *p, *end;
 
 	mutex_lock(&monc->mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dout("handle_monmap\n");
 	p = msg->front.iov_base;
 	end = p + msg->front.iov_len;
 
-<<<<<<< HEAD
-	monmap = ceph_monmap_decode(p, end);
-	if (IS_ERR(monmap)) {
-		pr_err("problem decoding monmap, %d\n",
-		       (int)PTR_ERR(monmap));
-		goto out;
-	}
-
-	if (ceph_check_fsid(monc->client, &monmap->fsid) < 0) {
-=======
 	monmap = ceph_monmap_decode(&p, end, ceph_msgr2(client));
 	if (IS_ERR(monmap)) {
 		pr_err("problem decoding monmap, %d\n",
@@ -827,39 +558,10 @@ static void ceph_monc_handle_map(struct ceph_mon_client *monc,
 	}
 
 	if (ceph_check_fsid(client, &monmap->fsid) < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(monmap);
 		goto out;
 	}
 
-<<<<<<< HEAD
-	client->monc.monmap = monmap;
-	kfree(old);
-
-	if (!client->have_fsid) {
-		client->have_fsid = true;
-		if (!had_debugfs_info && have_debugfs_info(monc)) {
-			pr_info("client%lld fsid %pU\n",
-				ceph_client_id(monc->client),
-				&monc->client->fsid);
-			init_debugfs = 1;
-		}
-		mutex_unlock(&monc->mutex);
-
-		if (init_debugfs) {
-			/*
-			 * do debugfs initialization without mutex to avoid
-			 * creating a locking dependency
-			 */
-			ceph_debugfs_client_init(monc->client);
-		}
-
-		goto out_unlocked;
-	}
-out:
-	mutex_unlock(&monc->mutex);
-out_unlocked:
-=======
 	kfree(monc->monmap);
 	monc->monmap = monmap;
 
@@ -868,71 +570,23 @@ out_unlocked:
 
 out:
 	mutex_unlock(&monc->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up_all(&client->auth_wq);
 }
 
 /*
-<<<<<<< HEAD
- * generic requests (e.g., statfs, poolop)
- */
-static struct ceph_mon_generic_request *__lookup_generic_req(
-	struct ceph_mon_client *monc, u64 tid)
-{
-	struct ceph_mon_generic_request *req;
-	struct rb_node *n = monc->generic_request_tree.rb_node;
-
-	while (n) {
-		req = rb_entry(n, struct ceph_mon_generic_request, node);
-		if (tid < req->tid)
-			n = n->rb_left;
-		else if (tid > req->tid)
-			n = n->rb_right;
-		else
-			return req;
-	}
-	return NULL;
-}
-
-static void __insert_generic_request(struct ceph_mon_client *monc,
-			    struct ceph_mon_generic_request *new)
-{
-	struct rb_node **p = &monc->generic_request_tree.rb_node;
-	struct rb_node *parent = NULL;
-	struct ceph_mon_generic_request *req = NULL;
-
-	while (*p) {
-		parent = *p;
-		req = rb_entry(parent, struct ceph_mon_generic_request, node);
-		if (new->tid < req->tid)
-			p = &(*p)->rb_left;
-		else if (new->tid > req->tid)
-			p = &(*p)->rb_right;
-		else
-			BUG();
-	}
-
-	rb_link_node(&new->node, parent, p);
-	rb_insert_color(&new->node, &monc->generic_request_tree);
-}
-=======
  * generic requests (currently statfs, mon_get_version)
  */
 DEFINE_RB_FUNCS(generic_request, struct ceph_mon_generic_request, tid, node)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void release_generic_request(struct kref *kref)
 {
 	struct ceph_mon_generic_request *req =
 		container_of(kref, struct ceph_mon_generic_request, kref);
 
-<<<<<<< HEAD
-=======
 	dout("%s greq %p request %p reply %p\n", __func__, req, req->request,
 	     req->reply);
 	WARN_ON(!RB_EMPTY_NODE(&req->node));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (req->reply)
 		ceph_msg_put(req->reply);
 	if (req->request)
@@ -943,12 +597,8 @@ static void release_generic_request(struct kref *kref)
 
 static void put_generic_request(struct ceph_mon_generic_request *req)
 {
-<<<<<<< HEAD
-	kref_put(&req->kref, release_generic_request);
-=======
 	if (req)
 		kref_put(&req->kref, release_generic_request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void get_generic_request(struct ceph_mon_generic_request *req)
@@ -956,8 +606,6 @@ static void get_generic_request(struct ceph_mon_generic_request *req)
 	kref_get(&req->kref);
 }
 
-<<<<<<< HEAD
-=======
 static struct ceph_mon_generic_request *
 alloc_generic_request(struct ceph_mon_client *monc, gfp_t gfp)
 {
@@ -1055,7 +703,6 @@ static int wait_generic_request(struct ceph_mon_generic_request *req)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ceph_msg *get_generic_reply(struct ceph_connection *con,
 					 struct ceph_msg_header *hdr,
 					 int *skip)
@@ -1066,11 +713,7 @@ static struct ceph_msg *get_generic_reply(struct ceph_connection *con,
 	struct ceph_msg *m;
 
 	mutex_lock(&monc->mutex);
-<<<<<<< HEAD
-	req = __lookup_generic_req(monc, tid);
-=======
 	req = lookup_generic_request(&monc->generic_request_tree, tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!req) {
 		dout("get_generic_reply %lld dne\n", tid);
 		*skip = 1;
@@ -1089,35 +732,6 @@ static struct ceph_msg *get_generic_reply(struct ceph_connection *con,
 	return m;
 }
 
-<<<<<<< HEAD
-static int do_generic_request(struct ceph_mon_client *monc,
-			      struct ceph_mon_generic_request *req)
-{
-	int err;
-
-	/* register request */
-	mutex_lock(&monc->mutex);
-	req->tid = ++monc->last_tid;
-	req->request->hdr.tid = cpu_to_le64(req->tid);
-	__insert_generic_request(monc, req);
-	monc->num_generic_requests++;
-	ceph_con_send(&monc->con, ceph_msg_get(req->request));
-	mutex_unlock(&monc->mutex);
-
-	err = wait_for_completion_interruptible(&req->completion);
-
-	mutex_lock(&monc->mutex);
-	rb_erase(&req->node, &monc->generic_request_tree);
-	monc->num_generic_requests--;
-	mutex_unlock(&monc->mutex);
-
-	if (!err)
-		err = req->result;
-	return err;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * statfs
  */
@@ -1128,28 +742,6 @@ static void handle_statfs_reply(struct ceph_mon_client *monc,
 	struct ceph_mon_statfs_reply *reply = msg->front.iov_base;
 	u64 tid = le64_to_cpu(msg->hdr.tid);
 
-<<<<<<< HEAD
-	if (msg->front.iov_len != sizeof(*reply))
-		goto bad;
-	dout("handle_statfs_reply %p tid %llu\n", msg, tid);
-
-	mutex_lock(&monc->mutex);
-	req = __lookup_generic_req(monc, tid);
-	if (req) {
-		*(struct ceph_statfs *)req->buf = reply->st;
-		req->result = 0;
-		get_generic_request(req);
-	}
-	mutex_unlock(&monc->mutex);
-	if (req) {
-		complete_all(&req->completion);
-		put_generic_request(req);
-	}
-	return;
-
-bad:
-	pr_err("corrupt generic reply, tid %llu\n", tid);
-=======
 	dout("%s msg %p tid %llu\n", __func__, msg, tid);
 
 	if (msg->front.iov_len != sizeof(*reply))
@@ -1172,31 +764,12 @@ bad:
 
 bad:
 	pr_err("corrupt statfs reply, tid %llu\n", tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ceph_msg_dump(msg);
 }
 
 /*
  * Do a synchronous statfs().
  */
-<<<<<<< HEAD
-int ceph_monc_do_statfs(struct ceph_mon_client *monc, struct ceph_statfs *buf)
-{
-	struct ceph_mon_generic_request *req;
-	struct ceph_mon_statfs *h;
-	int err;
-
-	req = kzalloc(sizeof(*req), GFP_NOFS);
-	if (!req)
-		return -ENOMEM;
-
-	kref_init(&req->kref);
-	req->buf = buf;
-	req->buf_len = sizeof(*buf);
-	init_completion(&req->completion);
-
-	err = -ENOMEM;
-=======
 int ceph_monc_do_statfs(struct ceph_mon_client *monc, u64 data_pool,
 			struct ceph_statfs *buf)
 {
@@ -1208,18 +781,10 @@ int ceph_monc_do_statfs(struct ceph_mon_client *monc, u64 data_pool,
 	if (!req)
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->request = ceph_msg_new(CEPH_MSG_STATFS, sizeof(*h), GFP_NOFS,
 				    true);
 	if (!req->request)
 		goto out;
-<<<<<<< HEAD
-	req->reply = ceph_msg_new(CEPH_MSG_STATFS_REPLY, 1024, GFP_NOFS,
-				  true);
-	if (!req->reply)
-		goto out;
-
-=======
 
 	req->reply = ceph_msg_new(CEPH_MSG_STATFS_REPLY, 64, GFP_NOFS, true);
 	if (!req->reply)
@@ -1230,105 +795,12 @@ int ceph_monc_do_statfs(struct ceph_mon_client *monc, u64 data_pool,
 
 	mutex_lock(&monc->mutex);
 	register_generic_request(req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* fill out request */
 	h = req->request->front.iov_base;
 	h->monhdr.have_version = 0;
 	h->monhdr.session_mon = cpu_to_le16(-1);
 	h->monhdr.session_mon_tid = 0;
 	h->fsid = monc->monmap->fsid;
-<<<<<<< HEAD
-
-	err = do_generic_request(monc, req);
-
-out:
-	kref_put(&req->kref, release_generic_request);
-	return err;
-}
-EXPORT_SYMBOL(ceph_monc_do_statfs);
-
-/*
- * pool ops
- */
-static int get_poolop_reply_buf(const char *src, size_t src_len,
-				char *dst, size_t dst_len)
-{
-	u32 buf_len;
-
-	if (src_len != sizeof(u32) + dst_len)
-		return -EINVAL;
-
-	buf_len = le32_to_cpu(*(u32 *)src);
-	if (buf_len != dst_len)
-		return -EINVAL;
-
-	memcpy(dst, src + sizeof(u32), dst_len);
-	return 0;
-}
-
-static void handle_poolop_reply(struct ceph_mon_client *monc,
-				struct ceph_msg *msg)
-{
-	struct ceph_mon_generic_request *req;
-	struct ceph_mon_poolop_reply *reply = msg->front.iov_base;
-	u64 tid = le64_to_cpu(msg->hdr.tid);
-
-	if (msg->front.iov_len < sizeof(*reply))
-		goto bad;
-	dout("handle_poolop_reply %p tid %llu\n", msg, tid);
-
-	mutex_lock(&monc->mutex);
-	req = __lookup_generic_req(monc, tid);
-	if (req) {
-		if (req->buf_len &&
-		    get_poolop_reply_buf(msg->front.iov_base + sizeof(*reply),
-				     msg->front.iov_len - sizeof(*reply),
-				     req->buf, req->buf_len) < 0) {
-			mutex_unlock(&monc->mutex);
-			goto bad;
-		}
-		req->result = le32_to_cpu(reply->reply_code);
-		get_generic_request(req);
-	}
-	mutex_unlock(&monc->mutex);
-	if (req) {
-		complete(&req->completion);
-		put_generic_request(req);
-	}
-	return;
-
-bad:
-	pr_err("corrupt generic reply, tid %llu\n", tid);
-	ceph_msg_dump(msg);
-}
-
-/*
- * Do a synchronous pool op.
- */
-int ceph_monc_do_poolop(struct ceph_mon_client *monc, u32 op,
-			u32 pool, u64 snapid,
-			char *buf, int len)
-{
-	struct ceph_mon_generic_request *req;
-	struct ceph_mon_poolop *h;
-	int err;
-
-	req = kzalloc(sizeof(*req), GFP_NOFS);
-	if (!req)
-		return -ENOMEM;
-
-	kref_init(&req->kref);
-	req->buf = buf;
-	req->buf_len = len;
-	init_completion(&req->completion);
-
-	err = -ENOMEM;
-	req->request = ceph_msg_new(CEPH_MSG_POOLOP, sizeof(*h), GFP_NOFS,
-				    true);
-	if (!req->request)
-		goto out;
-	req->reply = ceph_msg_new(CEPH_MSG_POOLOP_REPLY, 1024, GFP_NOFS,
-=======
 	h->contains_data_pool = (data_pool != CEPH_NOPOOL);
 	h->data_pool = cpu_to_le64(data_pool);
 	send_generic_request(monc, req);
@@ -1515,54 +987,17 @@ int do_mon_command_vargs(struct ceph_mon_client *monc, const char *fmt,
 		goto out;
 
 	req->reply = ceph_msg_new(CEPH_MSG_MON_COMMAND_ACK, 512, GFP_NOIO,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  true);
 	if (!req->reply)
 		goto out;
 
-<<<<<<< HEAD
-	/* fill out request */
-	req->request->hdr.version = cpu_to_le16(2);
-=======
 	mutex_lock(&monc->mutex);
 	register_generic_request(req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h = req->request->front.iov_base;
 	h->monhdr.have_version = 0;
 	h->monhdr.session_mon = cpu_to_le16(-1);
 	h->monhdr.session_mon_tid = 0;
 	h->fsid = monc->monmap->fsid;
-<<<<<<< HEAD
-	h->pool = cpu_to_le32(pool);
-	h->op = cpu_to_le32(op);
-	h->auid = 0;
-	h->snapid = cpu_to_le64(snapid);
-	h->name_len = 0;
-
-	err = do_generic_request(monc, req);
-
-out:
-	kref_put(&req->kref, release_generic_request);
-	return err;
-}
-
-int ceph_monc_create_snapid(struct ceph_mon_client *monc,
-			    u32 pool, u64 *snapid)
-{
-	return ceph_monc_do_poolop(monc,  POOL_OP_CREATE_UNMANAGED_SNAP,
-				   pool, 0, (char *)snapid, sizeof(*snapid));
-
-}
-EXPORT_SYMBOL(ceph_monc_create_snapid);
-
-int ceph_monc_delete_snapid(struct ceph_mon_client *monc,
-			    u32 pool, u64 snapid)
-{
-	return ceph_monc_do_poolop(monc,  POOL_OP_CREATE_UNMANAGED_SNAP,
-				   pool, snapid, 0, 0);
-
-}
-=======
 	h->num_strs = cpu_to_le32(1);
 	len = vsprintf(h->str, fmt, ap);
 	h->str_len = cpu_to_le32(len);
@@ -1623,7 +1058,6 @@ int ceph_monc_blocklist_add(struct ceph_mon_client *monc,
 	return ceph_wait_for_latest_osdmap(monc->client, 0);
 }
 EXPORT_SYMBOL(ceph_monc_blocklist_add);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Resend pending generic requests.
@@ -1654,17 +1088,6 @@ static void delayed_work(struct work_struct *work)
 	dout("monc delayed_work\n");
 	mutex_lock(&monc->mutex);
 	if (monc->hunting) {
-<<<<<<< HEAD
-		__close_session(monc);
-		__open_session(monc);  /* continue hunting */
-	} else {
-		ceph_con_keepalive(&monc->con);
-
-		__validate_auth(monc);
-
-		if (ceph_auth_is_authenticated(monc->auth))
-			__send_subscribe(monc);
-=======
 		dout("%s continuing hunt\n", __func__);
 		reopen_session(monc);
 	} else {
@@ -1691,7 +1114,6 @@ static void delayed_work(struct work_struct *work)
 			if (time_after_eq(now, monc->sub_renew_after))
 				__send_subscribe(monc);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	__schedule_delayed(monc);
 	mutex_unlock(&monc->mutex);
@@ -1703,34 +1125,13 @@ static void delayed_work(struct work_struct *work)
  */
 static int build_initial_monmap(struct ceph_mon_client *monc)
 {
-<<<<<<< HEAD
-	struct ceph_options *opt = monc->client->options;
-	struct ceph_entity_addr *mon_addr = opt->mon_addr;
-=======
 	__le32 my_type = ceph_msgr2(monc->client) ?
 		CEPH_ENTITY_ADDR_TYPE_MSGR2 : CEPH_ENTITY_ADDR_TYPE_LEGACY;
 	struct ceph_options *opt = monc->client->options;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int num_mon = opt->num_mon;
 	int i;
 
 	/* build initial monmap */
-<<<<<<< HEAD
-	monc->monmap = kzalloc(sizeof(*monc->monmap) +
-			       num_mon*sizeof(monc->monmap->mon_inst[0]),
-			       GFP_KERNEL);
-	if (!monc->monmap)
-		return -ENOMEM;
-	for (i = 0; i < num_mon; i++) {
-		monc->monmap->mon_inst[i].addr = mon_addr[i];
-		monc->monmap->mon_inst[i].addr.nonce = 0;
-		monc->monmap->mon_inst[i].name.type =
-			CEPH_ENTITY_TYPE_MON;
-		monc->monmap->mon_inst[i].name.num = cpu_to_le64(i);
-	}
-	monc->monmap->num_mon = num_mon;
-	monc->have_fsid = false;
-=======
 	monc->monmap = kzalloc(struct_size(monc->monmap, mon_inst, num_mon),
 			       GFP_KERNEL);
 	if (!monc->monmap)
@@ -1747,25 +1148,16 @@ static int build_initial_monmap(struct ceph_mon_client *monc)
 		inst->name.type = CEPH_ENTITY_TYPE_MON;
 		inst->name.num = cpu_to_le64(i);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl)
 {
-<<<<<<< HEAD
-	int err = 0;
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dout("init\n");
 	memset(monc, 0, sizeof(*monc));
 	monc->client = cl;
-<<<<<<< HEAD
-	monc->monmap = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&monc->mutex);
 
 	err = build_initial_monmap(monc);
@@ -1774,13 +1166,8 @@ int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl)
 
 	/* connection */
 	/* authentication */
-<<<<<<< HEAD
-	monc->auth = ceph_auth_init(cl->options->name,
-				    cl->options->key);
-=======
 	monc->auth = ceph_auth_init(cl->options->name, cl->options->key,
 				    cl->options->con_modes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(monc->auth)) {
 		err = PTR_ERR(monc->auth);
 		goto out_monmap;
@@ -1793,23 +1180,6 @@ int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl)
 	err = -ENOMEM;
 	monc->m_subscribe_ack = ceph_msg_new(CEPH_MSG_MON_SUBSCRIBE_ACK,
 				     sizeof(struct ceph_mon_subscribe_ack),
-<<<<<<< HEAD
-				     GFP_NOFS, true);
-	if (!monc->m_subscribe_ack)
-		goto out_auth;
-
-	monc->m_subscribe = ceph_msg_new(CEPH_MSG_MON_SUBSCRIBE, 96, GFP_NOFS,
-					 true);
-	if (!monc->m_subscribe)
-		goto out_subscribe_ack;
-
-	monc->m_auth_reply = ceph_msg_new(CEPH_MSG_AUTH_REPLY, 4096, GFP_NOFS,
-					  true);
-	if (!monc->m_auth_reply)
-		goto out_subscribe;
-
-	monc->m_auth = ceph_msg_new(CEPH_MSG_AUTH, 4096, GFP_NOFS, true);
-=======
 				     GFP_KERNEL, true);
 	if (!monc->m_subscribe_ack)
 		goto out_auth;
@@ -1825,7 +1195,6 @@ int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl)
 		goto out_subscribe;
 
 	monc->m_auth = ceph_msg_new(CEPH_MSG_AUTH, 4096, GFP_KERNEL, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	monc->pending_auth = 0;
 	if (!monc->m_auth)
 		goto out_auth_reply;
@@ -1834,20 +1203,6 @@ int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl)
 		      &monc->client->msgr);
 
 	monc->cur_mon = -1;
-<<<<<<< HEAD
-	monc->hunting = true;
-	monc->sub_renew_after = jiffies;
-	monc->sub_sent = 0;
-
-	INIT_DELAYED_WORK(&monc->delayed_work, delayed_work);
-	monc->generic_request_tree = RB_ROOT;
-	monc->num_generic_requests = 0;
-	monc->last_tid = 0;
-
-	monc->have_mdsmap = 0;
-	monc->have_osdmap = 0;
-	monc->want_next_osdmap = 1;
-=======
 	monc->had_a_connection = false;
 	monc->hunt_mult = 1;
 
@@ -1857,7 +1212,6 @@ int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl)
 
 	monc->fs_cluster_id = CEPH_FS_CLUSTER_ID_NONE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 out_auth_reply:
@@ -1882,11 +1236,7 @@ void ceph_monc_stop(struct ceph_mon_client *monc)
 
 	mutex_lock(&monc->mutex);
 	__close_session(monc);
-<<<<<<< HEAD
-
-=======
 	monc->cur_mon = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&monc->mutex);
 
 	/*
@@ -1899,11 +1249,8 @@ void ceph_monc_stop(struct ceph_mon_client *monc)
 
 	ceph_auth_destroy(monc->auth);
 
-<<<<<<< HEAD
-=======
 	WARN_ON(!RB_EMPTY_ROOT(&monc->generic_request_tree));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ceph_msg_put(monc->m_auth);
 	ceph_msg_put(monc->m_auth_reply);
 	ceph_msg_put(monc->m_subscribe);
@@ -1913,30 +1260,6 @@ void ceph_monc_stop(struct ceph_mon_client *monc)
 }
 EXPORT_SYMBOL(ceph_monc_stop);
 
-<<<<<<< HEAD
-static void handle_auth_reply(struct ceph_mon_client *monc,
-			      struct ceph_msg *msg)
-{
-	int ret;
-	int was_auth = 0;
-	int had_debugfs_info, init_debugfs = 0;
-
-	mutex_lock(&monc->mutex);
-	had_debugfs_info = have_debugfs_info(monc);
-	was_auth = ceph_auth_is_authenticated(monc->auth);
-	monc->pending_auth = 0;
-	ret = ceph_handle_auth_reply(monc->auth, msg->front.iov_base,
-				     msg->front.iov_len,
-				     monc->m_auth->front.iov_base,
-				     monc->m_auth->front_max);
-	if (ret < 0) {
-		monc->client->auth_err = ret;
-		wake_up_all(&monc->client->auth_wq);
-	} else if (ret > 0) {
-		__send_prepared_auth_request(monc, ret);
-	} else if (!was_auth && ceph_auth_is_authenticated(monc->auth)) {
-		dout("authenticated, starting session\n");
-=======
 static void finish_hunting(struct ceph_mon_client *monc)
 {
 	if (monc->hunting) {
@@ -1964,7 +1287,6 @@ static void finish_auth(struct ceph_mon_client *monc, int auth_err,
 	if (!was_authed && ceph_auth_is_authenticated(monc->auth)) {
 		dout("%s authenticated, starting session global_id %llu\n",
 		     __func__, monc->auth->global_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		monc->client->msgr.inst.name.type = CEPH_ENTITY_TYPE_CLIENT;
 		monc->client->msgr.inst.name.num =
@@ -1972,25 +1294,6 @@ static void finish_auth(struct ceph_mon_client *monc, int auth_err,
 
 		__send_subscribe(monc);
 		__resend_generic_request(monc);
-<<<<<<< HEAD
-	}
-
-	if (!had_debugfs_info && have_debugfs_info(monc)) {
-		pr_info("client%lld fsid %pU\n",
-			ceph_client_id(monc->client),
-			&monc->client->fsid);
-		init_debugfs = 1;
-	}
-	mutex_unlock(&monc->mutex);
-
-	if (init_debugfs) {
-		/*
-		 * do debugfs initialization without mutex to avoid
-		 * creating a locking dependency
-		 */
-		ceph_debugfs_client_init(monc->client);
-	}
-=======
 
 		pr_info("mon%d %s session established\n", monc->cur_mon,
 			ceph_pr_addr(&monc->con.peer_addr));
@@ -2016,7 +1319,6 @@ static void handle_auth_reply(struct ceph_mon_client *monc,
 		finish_hunting(monc);
 	}
 	mutex_unlock(&monc->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __validate_auth(struct ceph_mon_client *monc)
@@ -2027,11 +1329,7 @@ static int __validate_auth(struct ceph_mon_client *monc)
 		return 0;
 
 	ret = ceph_build_auth(monc->auth, monc->m_auth->front.iov_base,
-<<<<<<< HEAD
-			      monc->m_auth->front_max);
-=======
 			      monc->m_auth->front_alloc_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret <= 0)
 		return ret; /* either an error, or no need to authenticate */
 	__send_prepared_auth_request(monc, ret);
@@ -2049,12 +1347,6 @@ int ceph_monc_validate_auth(struct ceph_mon_client *monc)
 }
 EXPORT_SYMBOL(ceph_monc_validate_auth);
 
-<<<<<<< HEAD
-/*
- * handle incoming message
- */
-static void dispatch(struct ceph_connection *con, struct ceph_msg *msg)
-=======
 static int mon_get_auth_request(struct ceph_connection *con,
 				void *buf, int *buf_len,
 				void **authorizer, int *authorizer_len)
@@ -2141,17 +1433,10 @@ static int mon_handle_auth_bad_method(struct ceph_connection *con,
  * handle incoming message
  */
 static void mon_dispatch(struct ceph_connection *con, struct ceph_msg *msg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ceph_mon_client *monc = con->private;
 	int type = le16_to_cpu(msg->hdr.type);
 
-<<<<<<< HEAD
-	if (!monc)
-		return;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (type) {
 	case CEPH_MSG_AUTH_REPLY:
 		handle_auth_reply(monc, msg);
@@ -2165,17 +1450,12 @@ static void mon_dispatch(struct ceph_connection *con, struct ceph_msg *msg)
 		handle_statfs_reply(monc, msg);
 		break;
 
-<<<<<<< HEAD
-	case CEPH_MSG_POOLOP_REPLY:
-		handle_poolop_reply(monc, msg);
-=======
 	case CEPH_MSG_MON_GET_VERSION_REPLY:
 		handle_get_version_reply(monc, msg);
 		break;
 
 	case CEPH_MSG_MON_COMMAND_ACK:
 		handle_command_ack(monc, msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case CEPH_MSG_MON_MAP:
@@ -2191,11 +1471,7 @@ static void mon_dispatch(struct ceph_connection *con, struct ceph_msg *msg)
 		if (monc->client->extra_mon_dispatch &&
 		    monc->client->extra_mon_dispatch(monc->client, msg) == 0)
 			break;
-<<<<<<< HEAD
-			
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("received unknown message type %d %s\n", type,
 		       ceph_msg_type_name(type));
 	}
@@ -2220,22 +1496,12 @@ static struct ceph_msg *mon_alloc_msg(struct ceph_connection *con,
 	case CEPH_MSG_MON_SUBSCRIBE_ACK:
 		m = ceph_msg_get(monc->m_subscribe_ack);
 		break;
-<<<<<<< HEAD
-	case CEPH_MSG_POOLOP_REPLY:
-	case CEPH_MSG_STATFS_REPLY:
-=======
 	case CEPH_MSG_STATFS_REPLY:
 	case CEPH_MSG_MON_COMMAND_ACK:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return get_generic_reply(con, hdr, skip);
 	case CEPH_MSG_AUTH_REPLY:
 		m = ceph_msg_get(monc->m_auth_reply);
 		break;
-<<<<<<< HEAD
-	case CEPH_MSG_MON_MAP:
-	case CEPH_MSG_MDS_MAP:
-	case CEPH_MSG_OSD_MAP:
-=======
 	case CEPH_MSG_MON_GET_VERSION_REPLY:
 		if (le64_to_cpu(hdr->tid) != 0)
 			return get_generic_reply(con, hdr, skip);
@@ -2250,7 +1516,6 @@ static struct ceph_msg *mon_alloc_msg(struct ceph_connection *con,
 	case CEPH_MSG_MDS_MAP:
 	case CEPH_MSG_OSD_MAP:
 	case CEPH_MSG_FS_MAP_USER:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		m = ceph_msg_new(type, front_len, GFP_NOFS, false);
 		if (!m)
 			return NULL;	/* ENOMEM--return skip == 0 */
@@ -2260,19 +1525,11 @@ static struct ceph_msg *mon_alloc_msg(struct ceph_connection *con,
 	if (!m) {
 		pr_info("alloc_msg unknown type %d\n", type);
 		*skip = 1;
-<<<<<<< HEAD
-	} else if (front_len > m->front_max) {
-		pr_warning("mon_alloc_msg front %d > prealloc %d (%u#%llu)\n",
-			   front_len, m->front_max,
-			   (unsigned int)con->peer_name.type,
-			   le64_to_cpu(con->peer_name.num));
-=======
 	} else if (front_len > m->front_alloc_len) {
 		pr_warn("mon_alloc_msg front %d > prealloc %d (%u#%llu)\n",
 			front_len, m->front_alloc_len,
 			(unsigned int)con->peer_name.type,
 			le64_to_cpu(con->peer_name.num));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ceph_msg_put(m);
 		m = ceph_msg_new(type, front_len, GFP_NOFS, false);
 	}
@@ -2288,31 +1545,6 @@ static void mon_fault(struct ceph_connection *con)
 {
 	struct ceph_mon_client *monc = con->private;
 
-<<<<<<< HEAD
-	if (!monc)
-		return;
-
-	dout("mon_fault\n");
-	mutex_lock(&monc->mutex);
-	if (!con->private)
-		goto out;
-
-	if (!monc->hunting)
-		pr_info("mon%d %s session lost, "
-			"hunting for new mon\n", monc->cur_mon,
-			ceph_pr_addr(&monc->con.peer_addr.in_addr));
-
-	__close_session(monc);
-	if (!monc->hunting) {
-		/* start hunting */
-		monc->hunting = true;
-		__open_session(monc);
-	} else {
-		/* already hunting, let's wait a bit */
-		__schedule_delayed(monc);
-	}
-out:
-=======
 	mutex_lock(&monc->mutex);
 	dout("%s mon%d\n", __func__, monc->cur_mon);
 	if (monc->cur_mon >= 0) {
@@ -2324,7 +1556,6 @@ out:
 			dout("%s already hunting\n", __func__);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&monc->mutex);
 }
 
@@ -2333,31 +1564,16 @@ out:
  * will come from the messenger workqueue, which is drained prior to
  * mon_client destruction.
  */
-<<<<<<< HEAD
-static struct ceph_connection *con_get(struct ceph_connection *con)
-=======
 static struct ceph_connection *mon_get_con(struct ceph_connection *con)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return con;
 }
 
-<<<<<<< HEAD
-static void con_put(struct ceph_connection *con)
-=======
 static void mon_put_con(struct ceph_connection *con)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
 static const struct ceph_connection_operations mon_con_ops = {
-<<<<<<< HEAD
-	.get = con_get,
-	.put = con_put,
-	.dispatch = dispatch,
-	.fault = mon_fault,
-	.alloc_msg = mon_alloc_msg,
-=======
 	.get = mon_get_con,
 	.put = mon_put_con,
 	.alloc_msg = mon_alloc_msg,
@@ -2367,5 +1583,4 @@ static const struct ceph_connection_operations mon_con_ops = {
 	.handle_auth_reply_more = mon_handle_auth_reply_more,
 	.handle_auth_done = mon_handle_auth_done,
 	.handle_auth_bad_method = mon_handle_auth_bad_method,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#ifndef __ASM_STACKTRACE_H
-#define __ASM_STACKTRACE_H
-
-struct stackframe {
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_STACKTRACE_H
 #define __ASM_STACKTRACE_H
@@ -16,18 +10,10 @@ struct stackframe {
 	 * FP member should hold R7 when CONFIG_THUMB2_KERNEL is enabled
 	 * and R11 otherwise.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long fp;
 	unsigned long sp;
 	unsigned long lr;
 	unsigned long pc;
-<<<<<<< HEAD
-};
-
-extern int unwind_frame(struct stackframe *frame);
-extern void walk_stackframe(struct stackframe *frame,
-			    int (*fn)(struct stackframe *, void *), void *data);
-=======
 
 	/* address of the LR value on the stack */
 	unsigned long *lr_addr;
@@ -63,6 +49,5 @@ extern void dump_mem(const char *lvl, const char *str, unsigned long bottom,
 		     unsigned long top);
 extern void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
 			   const char *loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __ASM_STACKTRACE_H */

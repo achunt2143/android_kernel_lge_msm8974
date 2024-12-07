@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SPARC64_TSB_H
 #define _SPARC64_TSB_H
 
@@ -137,11 +134,6 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	sub	TSB, 0x8, TSB;   \
 	TSB_STORE(TSB, TAG);
 
-<<<<<<< HEAD
-	/* Do a kernel page table walk.  Leaves physical PTE pointer in
-	 * REG1.  Jumps to FAIL_LABEL on early page table walk termination.
-	 * VADDR will not be clobbered, but REG2 will.
-=======
 	/* Do a kernel page table walk.  Leaves valid PTE value in
 	 * REG1.  Jumps to FAIL_LABEL on early page table walk
 	 * termination.  VADDR will not be clobbered, but REG2 will.
@@ -160,34 +152,12 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	 * 4MB huge page.  For huge PUDs (which fall on bit 33, for
 	 * 8GB per PUD), we have to accommodate 256MB and 2GB huge
 	 * pages.  So for those we propagate bits 32 to 28.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 #define KERN_PGTABLE_WALK(VADDR, REG1, REG2, FAIL_LABEL)	\
 	sethi		%hi(swapper_pg_dir), REG1; \
 	or		REG1, %lo(swapper_pg_dir), REG1; \
 	sllx		VADDR, 64 - (PGDIR_SHIFT + PGDIR_BITS), REG2; \
 	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
-<<<<<<< HEAD
-	andn		REG2, 0x3, REG2; \
-	lduw		[REG1 + REG2], REG1; \
-	brz,pn		REG1, FAIL_LABEL; \
-	 sllx		VADDR, 64 - (PMD_SHIFT + PMD_BITS), REG2; \
-	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
-	sllx		REG1, 11, REG1; \
-	andn		REG2, 0x3, REG2; \
-	lduwa		[REG1 + REG2] ASI_PHYS_USE_EC, REG1; \
-	brz,pn		REG1, FAIL_LABEL; \
-	 sllx		VADDR, 64 - PMD_SHIFT, REG2; \
-	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
-	sllx		REG1, 11, REG1; \
-	andn		REG2, 0x7, REG2; \
-	add		REG1, REG2, REG1;
-
-	/* Do a user page table walk in MMU globals.  Leaves physical PTE
-	 * pointer in REG1.  Jumps to FAIL_LABEL on early page table walk
-	 * termination.  Physical base of page tables is in PHYS_PGD which
-	 * will not be modified.
-=======
 	andn		REG2, 0x7, REG2; \
 	ldx		[REG1 + REG2], REG1; \
 	brz,pn		REG1, FAIL_LABEL; \
@@ -295,29 +265,12 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	 *
 	 * Physical base of page tables is in PHYS_PGD which will not
 	 * be modified.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * VADDR will not be clobbered, but REG1 and REG2 will.
 	 */
 #define USER_PGTABLE_WALK_TL1(VADDR, PHYS_PGD, REG1, REG2, FAIL_LABEL)	\
 	sllx		VADDR, 64 - (PGDIR_SHIFT + PGDIR_BITS), REG2; \
 	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
-<<<<<<< HEAD
-	andn		REG2, 0x3, REG2; \
-	lduwa		[PHYS_PGD + REG2] ASI_PHYS_USE_EC, REG1; \
-	brz,pn		REG1, FAIL_LABEL; \
-	 sllx		VADDR, 64 - (PMD_SHIFT + PMD_BITS), REG2; \
-	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
-	sllx		REG1, 11, REG1; \
-	andn		REG2, 0x3, REG2; \
-	lduwa		[REG1 + REG2] ASI_PHYS_USE_EC, REG1; \
-	brz,pn		REG1, FAIL_LABEL; \
-	 sllx		VADDR, 64 - PMD_SHIFT, REG2; \
-	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
-	sllx		REG1, 11, REG1; \
-	andn		REG2, 0x7, REG2; \
-	add		REG1, REG2, REG1;
-=======
 	andn		REG2, 0x7, REG2; \
 	ldxa		[PHYS_PGD + REG2] ASI_PHYS_USE_EC, REG1; \
 	brz,pn		REG1, FAIL_LABEL; \
@@ -340,7 +293,6 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	brgez,pn	REG1, FAIL_LABEL; \
 	 nop; \
 800:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Lookup a OBP mapping on VADDR in the prom_trans[] table at TL>0.
  * If no entry is found, FAIL_LABEL will be branched to.  On success
@@ -376,11 +328,6 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	(KERNEL_TSB_SIZE_BYTES / 16)
 #define KERNEL_TSB4M_NENTRIES	4096
 
-<<<<<<< HEAD
-#define KTSB_PHYS_SHIFT		15
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Do a kernel TSB lookup at tl>0 on VADDR+TAG, branch to OK_LABEL
 	 * on TSB hit.  REG1, REG2, REG3, and REG4 are used as temporaries
 	 * and the found TTE will be left in REG1.  REG3 and REG4 must
@@ -389,19 +336,6 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	 * VADDR and TAG will be preserved and not clobbered by this macro.
 	 */
 #define KERN_TSB_LOOKUP_TL1(VADDR, TAG, REG1, REG2, REG3, REG4, OK_LABEL) \
-<<<<<<< HEAD
-661:	sethi		%hi(swapper_tsb), REG1;			\
-	or		REG1, %lo(swapper_tsb), REG1; \
-	.section	.swapper_tsb_phys_patch, "ax"; \
-	.word		661b; \
-	.previous; \
-661:	nop; \
-	.section	.tsb_ldquad_phys_patch, "ax"; \
-	.word		661b; \
-	sllx		REG1, KTSB_PHYS_SHIFT, REG1; \
-	sllx		REG1, KTSB_PHYS_SHIFT, REG1; \
-	.previous; \
-=======
 661:	sethi		%uhi(swapper_tsb), REG1; \
 	sethi		%hi(swapper_tsb), REG2; \
 	or		REG1, %ulo(swapper_tsb), REG1; \
@@ -411,7 +345,6 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	.previous; \
 	sllx		REG1, 32, REG1; \
 	or		REG1, REG2, REG1; \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srlx		VADDR, PAGE_SHIFT, REG2; \
 	and		REG2, (KERNEL_TSB_NENTRIES - 1), REG2; \
 	sllx		REG2, 4, REG2; \
@@ -426,19 +359,6 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	 * we can make use of that for the index computation.
 	 */
 #define KERN_TSB4M_LOOKUP_TL1(TAG, REG1, REG2, REG3, REG4, OK_LABEL) \
-<<<<<<< HEAD
-661:	sethi		%hi(swapper_4m_tsb), REG1;	     \
-	or		REG1, %lo(swapper_4m_tsb), REG1; \
-	.section	.swapper_4m_tsb_phys_patch, "ax"; \
-	.word		661b; \
-	.previous; \
-661:	nop; \
-	.section	.tsb_ldquad_phys_patch, "ax"; \
-	.word		661b; \
-	sllx		REG1, KTSB_PHYS_SHIFT, REG1; \
-	sllx		REG1, KTSB_PHYS_SHIFT, REG1; \
-	.previous; \
-=======
 661:	sethi		%uhi(swapper_4m_tsb), REG1; \
 	sethi		%hi(swapper_4m_tsb), REG2; \
 	or		REG1, %ulo(swapper_4m_tsb), REG1; \
@@ -448,7 +368,6 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	.previous; \
 	sllx		REG1, 32, REG1; \
 	or		REG1, REG2, REG1; \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	and		TAG, (KERNEL_TSB4M_NENTRIES - 1), REG2; \
 	sllx		REG2, 4, REG2; \
 	add		REG1, REG2, REG2; \

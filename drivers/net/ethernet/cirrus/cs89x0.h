@@ -459,10 +459,3 @@
 #define PNP_CNF_INT 0x70
 #define PNP_CNF_DMA 0x74
 #define PNP_CNF_MEM 0x48
-<<<<<<< HEAD
-
-#define BIT0 1
-#define BIT15 0x8000
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

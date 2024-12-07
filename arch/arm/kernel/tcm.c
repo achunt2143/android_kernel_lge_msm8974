@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2008-2009 ST-Ericsson AB
- * License terms: GNU General Public License (GPL) version 2
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2008-2009 ST-Ericsson AB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TCM memory handling for ARM systems
  *
  * Author: Linus Walleij <linus.walleij@stericsson.com>
@@ -21,18 +15,12 @@
 #include <linux/string.h> /* memcpy */
 #include <asm/cputype.h>
 #include <asm/mach/map.h>
-<<<<<<< HEAD
-#include <asm/memory.h>
-#include <asm/system_info.h>
-#include "tcm.h"
-=======
 #include <asm/page.h>
 #include <asm/system_info.h>
 #include <asm/traps.h>
 #include <asm/tcm.h>
 
 #define TCMTR_FORMAT_MASK	0xe0000000U
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct gen_pool *tcm_pool;
 static bool dtcm_present;
@@ -43,13 +31,8 @@ extern char __itcm_start, __sitcm_text, __eitcm_text;
 extern char __dtcm_start, __sdtcm_data, __edtcm_data;
 
 /* These will be increased as we run */
-<<<<<<< HEAD
-u32 dtcm_end = DTCM_OFFSET;
-u32 itcm_end = ITCM_OFFSET;
-=======
 static u32 dtcm_end = DTCM_OFFSET;
 static u32 itcm_end = ITCM_OFFSET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * TCM memory resources
@@ -73,11 +56,7 @@ static struct map_desc dtcm_iomap[] __initdata = {
 		.virtual	= DTCM_OFFSET,
 		.pfn		= __phys_to_pfn(DTCM_OFFSET),
 		.length		= 0,
-<<<<<<< HEAD
-		.type		= MT_MEMORY_DTCM
-=======
 		.type		= MT_MEMORY_RW_DTCM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -86,11 +65,7 @@ static struct map_desc itcm_iomap[] __initdata = {
 		.virtual	= ITCM_OFFSET,
 		.pfn		= __phys_to_pfn(ITCM_OFFSET),
 		.length		= 0,
-<<<<<<< HEAD
-		.type		= MT_MEMORY_ITCM
-=======
 		.type		= MT_MEMORY_RWX_ITCM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -205,8 +180,6 @@ static int __init setup_tcm_bank(u8 type, u8 bank, u8 banks,
 }
 
 /*
-<<<<<<< HEAD
-=======
  * When we are running in the non-secure world and the secure world
  * has not explicitly given us access to the TCM we will get an
  * undefined error when reading the TCM region register in the
@@ -278,7 +251,6 @@ static struct undef_hook tcm_hook __initdata = {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This initializes the TCM memory
  */
 void __init tcm_init(void)
@@ -307,11 +279,6 @@ void __init tcm_init(void)
 	}
 
 	tcm_status = read_cpuid_tcmstatus();
-<<<<<<< HEAD
-	dtcm_banks = (tcm_status >> 16) & 0x03;
-	itcm_banks = (tcm_status & 0x03);
-
-=======
 
 	/*
 	 * This code only supports v6-compatible TCMTR implementations.
@@ -324,7 +291,6 @@ void __init tcm_init(void)
 
 	register_undef_hook(&tcm_hook);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Values greater than 2 for D/ITCM banks are "reserved" */
 	if (dtcm_banks > 2)
 		dtcm_banks = 0;
@@ -336,11 +302,7 @@ void __init tcm_init(void)
 		for (i = 0; i < dtcm_banks; i++) {
 			ret = setup_tcm_bank(0, i, dtcm_banks, &dtcm_end);
 			if (ret)
-<<<<<<< HEAD
-				return;
-=======
 				goto unregister;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* This means you compiled more code than fits into DTCM */
 		if (dtcm_code_sz > (dtcm_end - DTCM_OFFSET)) {
@@ -349,15 +311,12 @@ void __init tcm_init(void)
 				dtcm_code_sz, (dtcm_end - DTCM_OFFSET));
 			goto no_dtcm;
 		}
-<<<<<<< HEAD
-=======
 		/*
 		 * This means that the DTCM sizes were 0 or the DTCM banks
 		 * were inaccessible due to TrustZone configuration.
 		 */
 		if (!(dtcm_end - DTCM_OFFSET))
 			goto no_dtcm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dtcm_res.end = dtcm_end - 1;
 		request_resource(&iomem_resource, &dtcm_res);
 		dtcm_iomap[0].length = dtcm_end - DTCM_OFFSET;
@@ -381,21 +340,13 @@ no_dtcm:
 		for (i = 0; i < itcm_banks; i++) {
 			ret = setup_tcm_bank(1, i, itcm_banks, &itcm_end);
 			if (ret)
-<<<<<<< HEAD
-				return;
-=======
 				goto unregister;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* This means you compiled more code than fits into ITCM */
 		if (itcm_code_sz > (itcm_end - ITCM_OFFSET)) {
 			pr_info("CPU ITCM: %u bytes of code compiled to "
 				"ITCM but only %lu bytes of ITCM present\n",
 				itcm_code_sz, (itcm_end - ITCM_OFFSET));
-<<<<<<< HEAD
-			return;
-		}
-=======
 			goto unregister;
 		}
 		/*
@@ -404,7 +355,6 @@ no_dtcm:
 		 */
 		if (!(itcm_end - ITCM_OFFSET))
 			goto unregister;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		itcm_res.end = itcm_end - 1;
 		request_resource(&iomem_resource, &itcm_res);
 		itcm_iomap[0].length = itcm_end - ITCM_OFFSET;
@@ -421,12 +371,9 @@ no_dtcm:
 		pr_info("CPU ITCM: %u bytes of code compiled to ITCM but no "
 			"ITCM banks present in CPU\n", itcm_code_sz);
 	}
-<<<<<<< HEAD
-=======
 
 unregister:
 	unregister_undef_hook(&tcm_hook);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*

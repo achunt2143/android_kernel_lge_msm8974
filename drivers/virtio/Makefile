@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-obj-$(CONFIG_VIRTIO) += virtio.o
-obj-$(CONFIG_VIRTIO_RING) += virtio_ring.o
-obj-$(CONFIG_VIRTIO_MMIO) += virtio_mmio.o
-obj-$(CONFIG_VIRTIO_PCI) += virtio_pci.o
-obj-$(CONFIG_VIRTIO_BALLOON) += virtio_balloon.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 obj-$(CONFIG_VIRTIO) += virtio.o virtio_ring.o
 obj-$(CONFIG_VIRTIO_ANCHOR) += virtio_anchor.o
@@ -20,4 +13,3 @@ obj-$(CONFIG_VIRTIO_INPUT) += virtio_input.o
 obj-$(CONFIG_VIRTIO_VDPA) += virtio_vdpa.o
 obj-$(CONFIG_VIRTIO_MEM) += virtio_mem.o
 obj-$(CONFIG_VIRTIO_DMA_SHARED_BUFFER) += virtio_dma_buf.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

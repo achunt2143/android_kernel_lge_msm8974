@@ -15,20 +15,13 @@
 #include <linux/module.h>
 #include <linux/ioport.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/mii.h>
 #include <linux/platform_device.h>
 #include <linux/mdio-bitbang.h>
-<<<<<<< HEAD
-=======
 #include <linux/of_address.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_mdio.h>
 #include <linux/of_platform.h>
 
@@ -36,13 +29,8 @@
 
 struct bb_info {
 	struct mdiobb_ctrl ctrl;
-<<<<<<< HEAD
-	__be32 __iomem *dir;
-	__be32 __iomem *dat;
-=======
 	u32 __iomem *dir;
 	u32 __iomem *dat;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mdio_msk;
 	u32 mdc_msk;
 };
@@ -112,11 +100,7 @@ static inline void mdc(struct mdiobb_ctrl *ctrl, int what)
 	in_be32(bitbang->dat);
 }
 
-<<<<<<< HEAD
-static struct mdiobb_ops bb_ops = {
-=======
 static const struct mdiobb_ops bb_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner = THIS_MODULE,
 	.set_mdc = mdc,
 	.set_mdio_dir = mdio_dir,
@@ -124,12 +108,7 @@ static const struct mdiobb_ops bb_ops = {
 	.get_mdio_data = mdio_read,
 };
 
-<<<<<<< HEAD
-static int __devinit fs_mii_bitbang_init(struct mii_bus *bus,
-                                         struct device_node *np)
-=======
 static int fs_mii_bitbang_init(struct mii_bus *bus, struct device_node *np)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource res;
 	const u32 *data;
@@ -170,11 +149,7 @@ static int fs_mii_bitbang_init(struct mii_bus *bus, struct device_node *np)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit fs_enet_mdio_probe(struct platform_device *ofdev)
-=======
 static int fs_enet_mdio_probe(struct platform_device *ofdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mii_bus *new_bus;
 	struct bb_info *bitbang;
@@ -197,24 +172,6 @@ static int fs_enet_mdio_probe(struct platform_device *ofdev)
 		goto out_free_bus;
 
 	new_bus->phy_mask = ~0;
-<<<<<<< HEAD
-	new_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
-	if (!new_bus->irq)
-		goto out_unmap_regs;
-
-	new_bus->parent = &ofdev->dev;
-	dev_set_drvdata(&ofdev->dev, new_bus);
-
-	ret = of_mdiobus_register(new_bus, ofdev->dev.of_node);
-	if (ret)
-		goto out_free_irqs;
-
-	return 0;
-
-out_free_irqs:
-	dev_set_drvdata(&ofdev->dev, NULL);
-	kfree(new_bus->irq);
-=======
 
 	new_bus->parent = &ofdev->dev;
 	platform_set_drvdata(ofdev, new_bus);
@@ -225,7 +182,6 @@ out_free_irqs:
 
 	return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_unmap_regs:
 	iounmap(bitbang->dir);
 out_free_bus:
@@ -236,24 +192,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int fs_enet_mdio_remove(struct platform_device *ofdev)
-{
-	struct mii_bus *bus = dev_get_drvdata(&ofdev->dev);
-	struct bb_info *bitbang = bus->priv;
-
-	mdiobus_unregister(bus);
-	dev_set_drvdata(&ofdev->dev, NULL);
-	kfree(bus->irq);
-	free_mdio_bitbang(bus);
-	iounmap(bitbang->dir);
-	kfree(bitbang);
-
-	return 0;
-}
-
-static struct of_device_id fs_enet_mdio_bb_match[] = {
-=======
 static void fs_enet_mdio_remove(struct platform_device *ofdev)
 {
 	struct mii_bus *bus = platform_get_drvdata(ofdev);
@@ -266,7 +204,6 @@ static void fs_enet_mdio_remove(struct platform_device *ofdev)
 }
 
 static const struct of_device_id fs_enet_mdio_bb_match[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.compatible = "fsl,cpm2-mdio-bitbang",
 	},
@@ -277,16 +214,6 @@ MODULE_DEVICE_TABLE(of, fs_enet_mdio_bb_match);
 static struct platform_driver fs_enet_bb_mdio_driver = {
 	.driver = {
 		.name = "fsl-bb-mdio",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = fs_enet_mdio_bb_match,
-	},
-	.probe = fs_enet_mdio_probe,
-	.remove = fs_enet_mdio_remove,
-};
-
-module_platform_driver(fs_enet_bb_mdio_driver);
-=======
 		.of_match_table = fs_enet_mdio_bb_match,
 	},
 	.probe = fs_enet_mdio_probe,
@@ -295,4 +222,3 @@ module_platform_driver(fs_enet_bb_mdio_driver);
 
 module_platform_driver(fs_enet_bb_mdio_driver);
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

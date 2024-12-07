@@ -1,38 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) International Business Machines Corp., 2006
  * Copyright (c) Nokia Corporation, 2006, 2007
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Artem Bityutskiy (Битюцкий Артём)
  */
 
 #ifndef __UBI_UBI_H__
 #define __UBI_UBI_H__
 
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/list.h>
 #include <linux/rbtree.h>
@@ -50,16 +26,9 @@
 #include <linux/notifier.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/ubi.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-
-#include "ubi-media.h"
-#include "scan.h"
-=======
 #include <linux/pgtable.h>
 
 #include "ubi-media.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Maximum number of supported UBI devices */
 #define UBI_MAX_DEVICES 32
@@ -67,19 +36,6 @@
 /* UBI name used for character devices, sysfs, etc */
 #define UBI_NAME_STR "ubi"
 
-<<<<<<< HEAD
-/* Normal UBI messages */
-#define ubi_msg(fmt, ...) printk(KERN_NOTICE "UBI: " fmt "\n", ##__VA_ARGS__)
-/* UBI warning messages */
-#define ubi_warn(fmt, ...) printk(KERN_WARNING "UBI warning: %s: " fmt "\n", \
-				  __func__, ##__VA_ARGS__)
-/* UBI error messages */
-#define ubi_err(fmt, ...) printk(KERN_ERR "UBI error: %s: " fmt "\n", \
-				 __func__, ##__VA_ARGS__)
-
-/* Lowest number PEBs reserved for bad PEB handling */
-#define MIN_RESEVED_PEBS 2
-=======
 struct ubi_device;
 
 /* Normal UBI messages */
@@ -93,19 +49,14 @@ void ubi_warn(const struct ubi_device *ubi, const char *fmt, ...);
 /* UBI error messages */
 __printf(2, 3)
 void ubi_err(const struct ubi_device *ubi, const char *fmt, ...);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Background thread name pattern */
 #define UBI_BGT_NAME_PATTERN "ubi_bgt%dd"
 
-<<<<<<< HEAD
-/* This marker in the EBA table means that the LEB is um-mapped */
-=======
 /*
  * This marker in the EBA table means that the LEB is um-mapped.
  * NOTE! It has to have the same value as %UBI_ALL.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define UBI_LEB_UNMAPPED -1
 
 /*
@@ -121,8 +72,6 @@ void ubi_err(const struct ubi_device *ubi, const char *fmt, ...);
  */
 #define UBI_PROT_QUEUE_LEN 10
 
-<<<<<<< HEAD
-=======
 /* The volume ID/LEB number/erase counter is unknown */
 #define UBI_UNKNOWN -1
 
@@ -136,16 +85,11 @@ void ubi_err(const struct ubi_device *ubi, const char *fmt, ...);
 /* Number of physical eraseblocks reserved for atomic LEB change operation */
 #define EBA_RESERVED_PEBS 1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Error codes returned by the I/O sub-system.
  *
  * UBI_IO_FF: the read region of flash contains only 0xFFs
-<<<<<<< HEAD
- * UBI_IO_FF_BITFLIPS: the same as %UBI_IO_FF, but also also there was a data
-=======
  * UBI_IO_FF_BITFLIPS: the same as %UBI_IO_FF, but also there was a data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                     integrity error reported by the MTD driver
  *                     (uncorrectable ECC error in case of NAND)
  * UBI_IO_BAD_HDR: the EC or VID header is corrupted (bad magic or CRC)
@@ -190,8 +134,6 @@ enum {
 	MOVE_RETRY,
 };
 
-<<<<<<< HEAD
-=======
 /*
  * Return codes of the fastmap sub-system
  *
@@ -214,7 +156,6 @@ struct ubi_vid_io_buf {
 	void *buffer;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct ubi_wl_entry - wear-leveling entry.
  * @u.rb: link in the corresponding (free/used) RB-tree
@@ -281,10 +222,6 @@ struct ubi_rename_entry {
 struct ubi_volume_desc;
 
 /**
-<<<<<<< HEAD
- * struct ubi_volume - UBI volume description data structure.
- * @dev: device object to make use of the the Linux device model
-=======
  * struct ubi_fastmap_layout - in-memory fastmap data structure.
  * @e: PEBs used by the current fastmap
  * @to_be_tortured: if non-zero tortured this PEB
@@ -337,7 +274,6 @@ struct ubi_eba_leb_desc {
 /**
  * struct ubi_volume - UBI volume description data structure.
  * @dev: device object to make use of the Linux device model
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cdev: character device object to create character device
  * @ubi: reference to the UBI device description object
  * @vol_id: volume ID
@@ -345,10 +281,7 @@ struct ubi_eba_leb_desc {
  * @readers: number of users holding this volume in read-only mode
  * @writers: number of users holding this volume in read-write mode
  * @exclusive: whether somebody holds this volume in exclusive mode
-<<<<<<< HEAD
-=======
  * @metaonly: whether somebody is altering only meta data of this volume
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @reserved_pebs: how many physical eraseblocks are reserved for this volume
  * @vol_type: volume type (%UBI_DYNAMIC_VOLUME or %UBI_STATIC_VOLUME)
@@ -365,11 +298,6 @@ struct ubi_eba_leb_desc {
  * @upd_ebs: how many eraseblocks are expected to be updated
  * @ch_lnum: LEB number which is being changing by the atomic LEB change
  *           operation
-<<<<<<< HEAD
- * @ch_dtype: data persistency type which is being changing by the atomic LEB
- *            change operation
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @upd_bytes: how many bytes are expected to be received for volume update or
  *             atomic LEB change
  * @upd_received: how many bytes were already received for volume update or
@@ -378,12 +306,9 @@ struct ubi_eba_leb_desc {
  *           atomic LEB change
  *
  * @eba_tbl: EBA table of this volume (LEB->PEB mapping)
-<<<<<<< HEAD
-=======
  * @skip_check: %1 if CRC check of this static volume should be skipped.
  *		Directly reflects the presence of the
  *		%UBI_VTBL_SKIP_CRC_CHECK_FLG flag in the vtbl entry
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @checked: %1 if this static volume was checked
  * @corrupted: %1 if the volume is corrupted (static volumes only)
  * @upd_marker: %1 if the update marker is set for this volume
@@ -391,12 +316,9 @@ struct ubi_eba_leb_desc {
  * @changing_leb: %1 if the atomic LEB change ioctl command is in progress
  * @direct_writes: %1 if direct writes are enabled for this volume
  *
-<<<<<<< HEAD
-=======
  * @checkmap: bitmap to remember which PEB->LEB mappings got checked,
  *            protected by UBI LEB lock tree.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The @corrupted field indicates that the volume's contents is corrupted.
  * Since UBI protects only static volumes, this field is not relevant to
  * dynamic volumes - it is user's responsibility to assure their data
@@ -414,11 +336,8 @@ struct ubi_volume {
 	int readers;
 	int writers;
 	int exclusive;
-<<<<<<< HEAD
-=======
 	int metaonly;
 	bool is_dead;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int reserved_pebs;
 	int vol_type;
@@ -433,57 +352,35 @@ struct ubi_volume {
 
 	int upd_ebs;
 	int ch_lnum;
-<<<<<<< HEAD
-	int ch_dtype;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long long upd_bytes;
 	long long upd_received;
 	void *upd_buf;
 
-<<<<<<< HEAD
-	int *eba_tbl;
-=======
 	struct ubi_eba_table *eba_tbl;
 	unsigned int skip_check:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int checked:1;
 	unsigned int corrupted:1;
 	unsigned int upd_marker:1;
 	unsigned int updating:1;
 	unsigned int changing_leb:1;
 	unsigned int direct_writes:1;
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_MTD_UBI_FASTMAP
 	unsigned long *checkmap;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct ubi_volume_desc - UBI volume descriptor returned when it is opened.
  * @vol: reference to the corresponding volume description object
-<<<<<<< HEAD
- * @mode: open mode (%UBI_READONLY, %UBI_READWRITE, or %UBI_EXCLUSIVE)
-=======
  * @mode: open mode (%UBI_READONLY, %UBI_READWRITE, %UBI_EXCLUSIVE
  * or %UBI_METAONLY)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ubi_volume_desc {
 	struct ubi_volume *vol;
 	int mode;
 };
 
-<<<<<<< HEAD
-struct ubi_wl_entry;
-
-/**
- * struct ubi_device - UBI device description structure
- * @dev: UBI device object to use the the Linux device model
-=======
 /**
  * struct ubi_debug_info - debugging information for an UBI device.
  *
@@ -540,7 +437,6 @@ struct ubi_debug_info {
 /**
  * struct ubi_device - UBI device description structure
  * @dev: UBI device object to use the Linux device model
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cdev: character device object to create character device
  * @ubi_num: UBI device number
  * @ubi_name: UBI device name
@@ -549,12 +445,8 @@ struct ubi_debug_info {
  * @volumes_lock: protects @volumes, @rsvd_pebs, @avail_pebs, beb_rsvd_pebs,
  *                @beb_rsvd_level, @bad_peb_count, @good_peb_count, @vol_count,
  *                @vol->readers, @vol->writers, @vol->exclusive,
-<<<<<<< HEAD
- *                @vol->ref_count, @vol->mapping and @vol->eba_tbl.
-=======
  *                @vol->metaonly, @vol->ref_count, @vol->mapping and
  *                @vol->eba_tbl.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ref_count: count of references on the UBI device
  * @image_seq: image sequence number recorded on EC headers
  *
@@ -581,11 +473,6 @@ struct ubi_debug_info {
  * @ltree: the lock tree
  * @alc_mutex: serializes "atomic LEB change" operations
  *
-<<<<<<< HEAD
- * @used: RB-tree of used physical eraseblocks
- * @erroneous: RB-tree of erroneous used physical eraseblocks
- * @free: RB-tree of free physical eraseblocks
-=======
  * @fm_disabled: non-zero if fastmap is disabled (default)
  * @fm: in-memory data structure of the currently used fastmap
  * @fm_pool: in-memory data structure of the fastmap pool
@@ -607,24 +494,17 @@ struct ubi_debug_info {
  * @erroneous: RB-tree of erroneous used physical eraseblocks
  * @free: RB-tree of free physical eraseblocks
  * @free_count: Contains the number of elements in @free
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @scrub: RB-tree of physical eraseblocks which need scrubbing
  * @pq: protection queue (contain physical eraseblocks which are temporarily
  *      protected from the wear-leveling worker)
  * @pq_head: protection queue head
  * @wl_lock: protects the @used, @free, @pq, @pq_head, @lookuptbl, @move_from,
  *	     @move_to, @move_to_put @erase_pending, @wl_scheduled, @works,
-<<<<<<< HEAD
- *	     @erroneous, and @erroneous_peb_count fields
- * @move_mutex: serializes eraseblock moves
- * @work_sem: synchronizes the WL worker with use tasks
-=======
  *	     @erroneous, @erroneous_peb_count, @fm_work_scheduled, @fm_pool,
  *	     and @fm_wl_pool fields
  * @move_mutex: serializes eraseblock moves
  * @work_sem: used to wait for all the scheduled works to finish and prevent
  * new works from being submitted
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @wl_scheduled: non-zero if the wear-leveling was scheduled
  * @lookuptbl: a table to quickly find a &struct ubi_wl_entry object for any
  *             physical eraseblock
@@ -640,10 +520,7 @@ struct ubi_debug_info {
  * @flash_size: underlying MTD device size (in bytes)
  * @peb_count: count of physical eraseblocks on the MTD device
  * @peb_size: physical eraseblock size
-<<<<<<< HEAD
-=======
  * @bad_peb_limit: top limit of expected bad physical eraseblocks
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bad_peb_count: count of bad physical eraseblocks
  * @good_peb_count: count of good physical eraseblocks
  * @corr_peb_count: count of corrupted physical eraseblocks (preserved and not
@@ -661,16 +538,9 @@ struct ubi_debug_info {
  * @vid_hdr_offset: starting offset of the volume identifier header (might be
  *                  unaligned)
  * @vid_hdr_aloffset: starting offset of the VID header aligned to
-<<<<<<< HEAD
- * @hdrs_min_io_size
- * @vid_hdr_shift: contains @vid_hdr_offset - @vid_hdr_aloffset
- * @bad_allowed: whether the MTD device admits of bad physical eraseblocks or
- *               not
-=======
  *                    @hdrs_min_io_size
  * @vid_hdr_shift: contains @vid_hdr_offset - @vid_hdr_aloffset
  * @bad_allowed: whether the MTD device admits bad physical eraseblocks or not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @nor_flash: non-zero if working on top of NOR flash
  * @max_write_size: maximum amount of bytes the underlying flash can write at a
  *                  time (MTD write buffer size)
@@ -692,19 +562,13 @@ struct ubi_device {
 	spinlock_t volumes_lock;
 	int ref_count;
 	int image_seq;
-<<<<<<< HEAD
-=======
 	bool is_dead;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int rsvd_pebs;
 	int avail_pebs;
 	int beb_rsvd_pebs;
 	int beb_rsvd_level;
-<<<<<<< HEAD
-=======
 	int bad_peb_limit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int autoresize_vol_id;
 	int vtbl_slots;
@@ -722,8 +586,6 @@ struct ubi_device {
 	struct rb_root ltree;
 	struct mutex alc_mutex;
 
-<<<<<<< HEAD
-=======
 	/* Fastmap stuff */
 	int fm_disabled;
 	struct ubi_fastmap_layout *fm;
@@ -740,15 +602,11 @@ struct ubi_device {
 	int fm_do_produce_anchor;
 	int fm_pool_rsv_cnt;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Wear-leveling sub-system's stuff */
 	struct rb_root used;
 	struct rb_root erroneous;
 	struct rb_root free;
-<<<<<<< HEAD
-=======
 	int free_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_root scrub;
 	struct list_head pq[UBI_PROT_QUEUE_LEN];
 	int pq_head;
@@ -794,9 +652,6 @@ struct ubi_device {
 	struct mutex buf_mutex;
 	struct mutex ckvol_mutex;
 
-<<<<<<< HEAD
-	struct ubi_debug_info *dbg;
-=======
 	struct ubi_debug_info dbg;
 };
 
@@ -951,7 +806,6 @@ struct ubi_work {
 	int vol_id;
 	int lnum;
 	int torture;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #include "debug.h"
@@ -960,12 +814,6 @@ extern struct kmem_cache *ubi_wl_entry_slab;
 extern const struct file_operations ubi_ctrl_cdev_operations;
 extern const struct file_operations ubi_cdev_operations;
 extern const struct file_operations ubi_vol_cdev_operations;
-<<<<<<< HEAD
-extern struct class *ubi_class;
-extern struct mutex ubi_devices_mutex;
-extern struct blocking_notifier_head ubi_notifiers;
-
-=======
 extern struct class ubi_class;
 extern struct mutex ubi_devices_mutex;
 extern struct blocking_notifier_head ubi_notifiers;
@@ -985,17 +833,12 @@ struct ubi_ainf_peb *ubi_early_get_peb(struct ubi_device *ubi,
 int ubi_attach(struct ubi_device *ubi, int force_scan);
 void ubi_destroy_ai(struct ubi_attach_info *ai);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* vtbl.c */
 int ubi_change_vtbl_record(struct ubi_device *ubi, int idx,
 			   struct ubi_vtbl_record *vtbl_rec);
 int ubi_vtbl_rename_volumes(struct ubi_device *ubi,
 			    struct list_head *rename_list);
-<<<<<<< HEAD
-int ubi_read_volume_table(struct ubi_device *ubi, struct ubi_scan_info *si);
-=======
 int ubi_read_volume_table(struct ubi_device *ubi, struct ubi_attach_info *ai);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* vmt.c */
 int ubi_create_volume(struct ubi_device *ubi, struct ubi_mkvol_req *req);
@@ -1019,12 +862,6 @@ int ubi_more_leb_change_data(struct ubi_device *ubi, struct ubi_volume *vol,
 int ubi_calc_data_len(const struct ubi_device *ubi, const void *buf,
 		      int length);
 int ubi_check_volume(struct ubi_device *ubi, int vol_id);
-<<<<<<< HEAD
-void ubi_calculate_reserved(struct ubi_device *ubi);
-int ubi_check_pattern(const void *buf, uint8_t patt, int size);
-
-/* eba.c */
-=======
 void ubi_update_reserved(struct ubi_device *ubi);
 void ubi_calculate_reserved(struct ubi_device *ubi);
 int ubi_check_pattern(const void *buf, uint8_t patt, int size);
@@ -1044,32 +881,10 @@ void ubi_eba_replace_table(struct ubi_volume *vol, struct ubi_eba_table *tbl);
 void ubi_eba_get_ldesc(struct ubi_volume *vol, int lnum,
 		       struct ubi_eba_leb_desc *ldesc);
 bool ubi_eba_is_mapped(struct ubi_volume *vol, int lnum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ubi_eba_unmap_leb(struct ubi_device *ubi, struct ubi_volume *vol,
 		      int lnum);
 int ubi_eba_read_leb(struct ubi_device *ubi, struct ubi_volume *vol, int lnum,
 		     void *buf, int offset, int len, int check);
-<<<<<<< HEAD
-int ubi_eba_write_leb(struct ubi_device *ubi, struct ubi_volume *vol, int lnum,
-		      const void *buf, int offset, int len, int dtype);
-int ubi_eba_write_leb_st(struct ubi_device *ubi, struct ubi_volume *vol,
-			 int lnum, const void *buf, int len, int dtype,
-			 int used_ebs);
-int ubi_eba_atomic_leb_change(struct ubi_device *ubi, struct ubi_volume *vol,
-			      int lnum, const void *buf, int len, int dtype);
-int ubi_eba_copy_leb(struct ubi_device *ubi, int from, int to,
-		     struct ubi_vid_hdr *vid_hdr);
-int ubi_eba_init_scan(struct ubi_device *ubi, struct ubi_scan_info *si);
-
-/* wl.c */
-int ubi_wl_get_peb(struct ubi_device *ubi, int dtype);
-int ubi_wl_put_peb(struct ubi_device *ubi, int pnum, int torture);
-int ubi_wl_flush(struct ubi_device *ubi);
-int ubi_wl_scrub_peb(struct ubi_device *ubi, int pnum);
-int ubi_wl_init_scan(struct ubi_device *ubi, struct ubi_scan_info *si);
-void ubi_wl_close(struct ubi_device *ubi);
-int ubi_thread(void *u);
-=======
 int ubi_eba_read_leb_sg(struct ubi_device *ubi, struct ubi_volume *vol,
 			struct ubi_sgl *sgl, int lnum, int offset, int len,
 			int check);
@@ -1103,7 +918,6 @@ int ubi_is_erase_work(struct ubi_work *wrk);
 void ubi_refill_pools_and_lock(struct ubi_device *ubi);
 int ubi_ensure_anchor_pebs(struct ubi_device *ubi);
 int ubi_bitflip_check(struct ubi_device *ubi, int pnum, int force_scrub);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* io.c */
 int ubi_io_read(const struct ubi_device *ubi, void *buf, int pnum, int offset,
@@ -1118,14 +932,6 @@ int ubi_io_read_ec_hdr(struct ubi_device *ubi, int pnum,
 int ubi_io_write_ec_hdr(struct ubi_device *ubi, int pnum,
 			struct ubi_ec_hdr *ec_hdr);
 int ubi_io_read_vid_hdr(struct ubi_device *ubi, int pnum,
-<<<<<<< HEAD
-			struct ubi_vid_hdr *vid_hdr, int verbose);
-int ubi_io_write_vid_hdr(struct ubi_device *ubi, int pnum,
-			 struct ubi_vid_hdr *vid_hdr);
-
-/* build.c */
-int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num, int vid_hdr_offset);
-=======
 			struct ubi_vid_io_buf *vidb, int verbose);
 int ubi_io_write_vid_hdr(struct ubi_device *ubi, int pnum,
 			 struct ubi_vid_io_buf *vidb);
@@ -1134,7 +940,6 @@ int ubi_io_write_vid_hdr(struct ubi_device *ubi, int pnum,
 int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 		       int vid_hdr_offset, int max_beb_per1024,
 		       bool disable_fm, bool need_resv_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ubi_detach_mtd_dev(int ubi_num, int anyway);
 struct ubi_device *ubi_get_device(int ubi_num);
 void ubi_put_device(struct ubi_device *ubi);
@@ -1145,18 +950,13 @@ int ubi_volume_notify(struct ubi_device *ubi, struct ubi_volume *vol,
 int ubi_notify_all(struct ubi_device *ubi, int ntype,
 		   struct notifier_block *nb);
 int ubi_enumerate_volumes(struct notifier_block *nb);
-<<<<<<< HEAD
-=======
 void ubi_free_all_volumes(struct ubi_device *ubi);
 void ubi_free_internal_volumes(struct ubi_device *ubi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* kapi.c */
 void ubi_do_get_device_info(struct ubi_device *ubi, struct ubi_device_info *di);
 void ubi_do_get_volume_info(struct ubi_device *ubi, struct ubi_volume *vol,
 			    struct ubi_volume_info *vi);
-<<<<<<< HEAD
-=======
 int ubi_get_num_by_path(const char *pathname, int *ubi_num, int *vol_id);
 /* scan.c */
 int ubi_compare_lebs(struct ubi_device *ubi, const struct ubi_ainf_peb *aeb,
@@ -1231,7 +1031,6 @@ static inline int ubiblock_remove(struct ubi_volume_info *vi)
 #define ubi_for_each_protected_peb(ubi, i, e)	\
 	for ((i) = 0; (i) < UBI_PROT_QUEUE_LEN; (i)++)	\
 		list_for_each_entry((e), &(ubi->pq[(i)]), u.list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ubi_rb_for_each_entry - walk an RB-tree.
@@ -1247,47 +1046,6 @@ static inline int ubiblock_remove(struct ubi_volume_info *vi)
 	     rb = rb_next(rb),                                               \
 	     pos = (rb ? container_of(rb, typeof(*pos), member) : NULL))
 
-<<<<<<< HEAD
-/**
- * ubi_zalloc_vid_hdr - allocate a volume identifier header object.
- * @ubi: UBI device description object
- * @gfp_flags: GFP flags to allocate with
- *
- * This function returns a pointer to the newly allocated and zero-filled
- * volume identifier header object in case of success and %NULL in case of
- * failure.
- */
-static inline struct ubi_vid_hdr *
-ubi_zalloc_vid_hdr(const struct ubi_device *ubi, gfp_t gfp_flags)
-{
-	void *vid_hdr;
-
-	vid_hdr = kzalloc(ubi->vid_hdr_alsize, gfp_flags);
-	if (!vid_hdr)
-		return NULL;
-
-	/*
-	 * VID headers may be stored at un-aligned flash offsets, so we shift
-	 * the pointer.
-	 */
-	return vid_hdr + ubi->vid_hdr_shift;
-}
-
-/**
- * ubi_free_vid_hdr - free a volume identifier header object.
- * @ubi: UBI device description object
- * @vid_hdr: the object to free
- */
-static inline void ubi_free_vid_hdr(const struct ubi_device *ubi,
-				    struct ubi_vid_hdr *vid_hdr)
-{
-	void *p = vid_hdr;
-
-	if (!p)
-		return;
-
-	kfree(p - ubi->vid_hdr_shift);
-=======
 /*
  * ubi_move_aeb_to_list - move a PEB from the volume tree to a list.
  *
@@ -1379,7 +1137,6 @@ static inline void ubi_ro_mode(struct ubi_device *ubi)
 		ubi_warn(ubi, "switch to read-only mode");
 		dump_stack();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1403,22 +1160,6 @@ static inline int ubi_io_write_data(struct ubi_device *ubi, const void *buf,
 				    int pnum, int offset, int len)
 {
 	ubi_assert(offset >= 0);
-<<<<<<< HEAD
-	return ubi_io_write(ubi, buf, pnum, offset + ubi->leb_start, len);
-}
-
-/**
- * ubi_ro_mode - switch to read-only mode.
- * @ubi: UBI device description object
- */
-static inline void ubi_ro_mode(struct ubi_device *ubi)
-{
-	if (!ubi->ro_mode) {
-		ubi->ro_mode = 1;
-		ubi_warn("switch to read-only mode");
-		ubi_dbg_dump_stack();
-	}
-=======
 
 	if (ubi_dbg_power_cut(ubi, MASK_POWER_CUT_DATA)) {
 		ubi_warn(ubi, "XXXXX emulating a power cut when writing data XXXXX");
@@ -1426,7 +1167,6 @@ static inline void ubi_ro_mode(struct ubi_device *ubi)
 		return -EROFS;
 	}
 	return ubi_io_write(ubi, buf, pnum, offset + ubi->leb_start, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1455,8 +1195,6 @@ static inline int idx2vol_id(const struct ubi_device *ubi, int idx)
 		return idx;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * ubi_is_fm_vol - check whether a volume ID is a Fastmap volume.
  * @vol_id: volume ID
@@ -1495,5 +1233,4 @@ static inline struct ubi_wl_entry *ubi_find_fm_block(const struct ubi_device *ub
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !__UBI_UBI_H__ */

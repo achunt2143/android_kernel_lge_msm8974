@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef BTREE_H
 #define BTREE_H
 
@@ -13,11 +10,7 @@
  *
  * A B+Tree is a data structure for looking up arbitrary (currently allowing
  * unsigned long, u32, u64 and 2 * u64) keys into pointers. The data structure
-<<<<<<< HEAD
- * is described at http://en.wikipedia.org/wiki/B-tree, we currently do not
-=======
  * is described at https://en.wikipedia.org/wiki/B-tree, we currently do not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * use binary search to find the key on lookups.
  *
  * Each B+Tree consists of a head, that contains bookkeeping information and

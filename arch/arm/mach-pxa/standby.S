@@ -1,32 +1,16 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PXA27x standby mode
  *
  * Author: David Burrage
  *
-<<<<<<< HEAD
- * 2005 (c) MontaVista Software, Inc. This file is licensed under
- * the terms of the GNU General Public License version 2. This program
- * is licensed "as is" without any warranty of any kind, whether express
- * or implied.
-=======
  * 2005 (c) MontaVista Software, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/linkage.h>
 #include <asm/assembler.h>
-<<<<<<< HEAD
-#include <mach/hardware.h>
-
-#include <mach/pxa2xx-regs.h>
-=======
 
 #include "pxa2xx-regs.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		.text
 
@@ -42,11 +26,7 @@ ENTRY(pxa_cpu_standby)
 	.align	5
 1:	mcr	p14, 0, r2, c7, c0, 0	@ put the system into Standby
 	str	r1, [r0]		@ make sure PSSR_PH/STS are clear
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 
@@ -125,11 +105,7 @@ ENTRY(pm_enter_standby_start)
 	bic	r0, r0, #0x20000000
 	str	r0, [r1, #PXA3_DMCIER]
 
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENTRY(pm_enter_standby_end)
 
 #endif

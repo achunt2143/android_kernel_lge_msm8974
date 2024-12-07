@@ -1,24 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __NR_chmod
 __NR_chmod,
 #endif
 __NR_fchmod,
 #ifdef __NR_chown
 __NR_chown,
-<<<<<<< HEAD
-__NR_fchown,
-__NR_lchown,
-#endif
-=======
 __NR_lchown,
 #endif
 #ifdef __NR_fchown
 __NR_fchown,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __NR_setxattr,
 __NR_lsetxattr,
 __NR_fsetxattr,

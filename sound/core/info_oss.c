@@ -1,29 +1,7 @@
-<<<<<<< HEAD
-/*
- *  Information interface for ALSA driver
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Information interface for ALSA driver
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -33,28 +11,15 @@
 #include <sound/core.h>
 #include <sound/minors.h>
 #include <sound/info.h>
-<<<<<<< HEAD
-#include <sound/version.h>
 #include <linux/utsname.h>
 #include <linux/mutex.h>
 
-#if defined(CONFIG_SND_OSSEMUL) && defined(CONFIG_PROC_FS)
-
-=======
-#include <linux/utsname.h>
-#include <linux/mutex.h>
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  OSS compatible part
  */
 
 static DEFINE_MUTEX(strings);
 static char *snd_sndstat_strings[SNDRV_CARDS][SNDRV_OSS_INFO_DEV_COUNT];
-<<<<<<< HEAD
-static struct snd_info_entry *snd_sndstat_proc_entry;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int snd_oss_info_register(int dev, int num, char *string)
 {
@@ -64,26 +29,6 @@ int snd_oss_info_register(int dev, int num, char *string)
 		return -ENXIO;
 	if (snd_BUG_ON(num < 0 || num >= SNDRV_CARDS))
 		return -ENXIO;
-<<<<<<< HEAD
-	mutex_lock(&strings);
-	if (string == NULL) {
-		if ((x = snd_sndstat_strings[num][dev]) != NULL) {
-			kfree(x);
-			x = NULL;
-		}
-	} else {
-		x = kstrdup(string, GFP_KERNEL);
-		if (x == NULL) {
-			mutex_unlock(&strings);
-			return -ENOMEM;
-		}
-	}
-	snd_sndstat_strings[num][dev] = x;
-	mutex_unlock(&strings);
-	return 0;
-}
-
-=======
 	guard(mutex)(&strings);
 	if (string == NULL) {
 		x = snd_sndstat_strings[num][dev];
@@ -97,7 +42,6 @@ int snd_oss_info_register(int dev, int num, char *string)
 	snd_sndstat_strings[num][dev] = x;
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_oss_info_register);
 
 static int snd_sndstat_show_strings(struct snd_info_buffer *buf, char *id, int dev)
@@ -106,11 +50,7 @@ static int snd_sndstat_show_strings(struct snd_info_buffer *buf, char *id, int d
 	char *str;
 
 	snd_iprintf(buf, "\n%s:", id);
-<<<<<<< HEAD
-	mutex_lock(&strings);
-=======
 	guard(mutex)(&strings);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (idx = 0; idx < SNDRV_CARDS; idx++) {
 		str = snd_sndstat_strings[idx][dev];
 		if (str) {
@@ -121,10 +61,6 @@ static int snd_sndstat_show_strings(struct snd_info_buffer *buf, char *id, int d
 			snd_iprintf(buf, "%i: %s\n", idx, str);
 		}
 	}
-<<<<<<< HEAD
-	mutex_unlock(&strings);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ok < 0)
 		snd_iprintf(buf, " NOT ENABLED IN CONFIG\n");
 	return ok;
@@ -133,11 +69,7 @@ static int snd_sndstat_show_strings(struct snd_info_buffer *buf, char *id, int d
 static void snd_sndstat_proc_read(struct snd_info_entry *entry,
 				  struct snd_info_buffer *buffer)
 {
-<<<<<<< HEAD
-	snd_iprintf(buffer, "Sound Driver:3.8.1a-980706 (ALSA v" CONFIG_SND_VERSION " emulation code)\n");
-=======
 	snd_iprintf(buffer, "Sound Driver:3.8.1a-980706 (ALSA emulation code)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "Kernel: %s %s %s %s %s\n",
 		    init_utsname()->sysname,
 		    init_utsname()->nodename,
@@ -156,36 +88,11 @@ static void snd_sndstat_proc_read(struct snd_info_entry *entry,
 	snd_sndstat_show_strings(buffer, "Mixers", SNDRV_OSS_INFO_DEV_MIXERS);
 }
 
-<<<<<<< HEAD
-int snd_info_minor_register(void)
-=======
 int __init snd_info_minor_register(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_info_entry *entry;
 
 	memset(snd_sndstat_strings, 0, sizeof(snd_sndstat_strings));
-<<<<<<< HEAD
-	if ((entry = snd_info_create_module_entry(THIS_MODULE, "sndstat", snd_oss_root)) != NULL) {
-		entry->c.text.read = snd_sndstat_proc_read;
-		if (snd_info_register(entry) < 0) {
-			snd_info_free_entry(entry);
-			entry = NULL;
-		}
-	}
-	snd_sndstat_proc_entry = entry;
-	return 0;
-}
-
-int snd_info_minor_unregister(void)
-{
-	snd_info_free_entry(snd_sndstat_proc_entry);
-	snd_sndstat_proc_entry = NULL;
-	return 0;
-}
-
-#endif /* CONFIG_SND_OSSEMUL */
-=======
 	entry = snd_info_create_module_entry(THIS_MODULE, "sndstat",
 					     snd_oss_root);
 	if (!entry)
@@ -193,4 +100,3 @@ int snd_info_minor_unregister(void)
 	entry->c.text.read = snd_sndstat_proc_read;
 	return snd_info_register(entry); /* freed in error path */
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

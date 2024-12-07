@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_atiixp.c 	- ATI PATA for new ATA layer
  *			  (C) 2005 Red Hat Inc
@@ -19,18 +16,11 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
 #include <linux/libata.h>
-<<<<<<< HEAD
-=======
 #include <linux/dmi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_NAME "pata_atiixp"
 #define DRV_VERSION "0.4.6"
@@ -44,8 +34,6 @@ enum {
 	ATIIXP_IDE_UDMA_MODE 	= 0x56
 };
 
-<<<<<<< HEAD
-=======
 static const struct dmi_system_id attixp_cable_override_dmi_table[] = {
 	{
 		/* Board has onboard PATA<->SATA converters */
@@ -58,18 +46,14 @@ static const struct dmi_system_id attixp_cable_override_dmi_table[] = {
 	{ }
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int atiixp_cable_detect(struct ata_port *ap)
 {
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
 	u8 udma;
 
-<<<<<<< HEAD
-=======
 	if (dmi_check_system(attixp_cable_override_dmi_table))
 		return ATA_CBL_PATA40_SHORT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Hack from drivers/ide/pci. Really we want to know how to do the
 	   raw detection not play follow the bios mode guess */
 	pci_read_config_byte(pdev, ATIIXP_IDE_UDMA_MODE + ap->port_no, &udma);
@@ -109,10 +93,7 @@ static int atiixp_prereset(struct ata_link *link, unsigned long deadline)
  *	atiixp_set_pio_timing	-	set initial PIO mode data
  *	@ap: ATA interface
  *	@adev: ATA device
-<<<<<<< HEAD
-=======
  *	@pio: Requested PIO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Called by both the pio and dma setup functions to set the controller
  *	timings for PIO transfers. We must load both the mode number and
@@ -121,11 +102,7 @@ static int atiixp_prereset(struct ata_link *link, unsigned long deadline)
 
 static void atiixp_set_pio_timing(struct ata_port *ap, struct ata_device *adev, int pio)
 {
-<<<<<<< HEAD
-	static u8 pio_timings[5] = { 0x5D, 0x47, 0x34, 0x22, 0x20 };
-=======
 	static const u8 pio_timings[5] = { 0x5D, 0x47, 0x34, 0x22, 0x20 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
 	int dn = 2 * ap->port_no + adev->devno;
@@ -172,11 +149,7 @@ static void atiixp_set_piomode(struct ata_port *ap, struct ata_device *adev)
 
 static void atiixp_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 {
-<<<<<<< HEAD
-	static u8 mwdma_timings[5] = { 0x77, 0x21, 0x20 };
-=======
 	static const u8 mwdma_timings[5] = { 0x77, 0x21, 0x20 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
 	int dma = adev->dma_mode;
@@ -212,13 +185,8 @@ static void atiixp_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 	 *	We must now look at the PIO mode situation. We may need to
 	 *	adjust the PIO mode to keep the timings acceptable
 	 */
-<<<<<<< HEAD
-	 if (adev->dma_mode >= XFER_MW_DMA_2)
-	 	wanted_pio = 4;
-=======
 	if (adev->dma_mode >= XFER_MW_DMA_2)
 		wanted_pio = 4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (adev->dma_mode == XFER_MW_DMA_1)
 		wanted_pio = 3;
 	else if (adev->dma_mode == XFER_MW_DMA_0)
@@ -260,11 +228,7 @@ static void atiixp_bmdma_start(struct ata_queued_cmd *qc)
 }
 
 /**
-<<<<<<< HEAD
- *	atiixp_dma_stop	-	DMA stop callback
-=======
  *	atiixp_bmdma_stop	-	DMA stop callback
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@qc: Command in progress
  *
  *	DMA has completed. Clear the UDMA flag as the next operations will
@@ -287,16 +251,10 @@ static void atiixp_bmdma_stop(struct ata_queued_cmd *qc)
 	ata_bmdma_stop(qc);
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template atiixp_sht = {
-	ATA_BMDMA_SHT(DRV_NAME),
-	.sg_tablesize		= LIBATA_DUMB_MAX_PRD,
-=======
 static const struct scsi_host_template atiixp_sht = {
 	ATA_BASE_SHT(DRV_NAME),
 	.sg_tablesize		= LIBATA_DUMB_MAX_PRD,
 	.dma_boundary		= ATA_DMA_BOUNDARY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ata_port_operations atiixp_port_ops = {
@@ -323,13 +281,10 @@ static int atiixp_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	};
 	const struct ata_port_info *ppi[] = { &info, &info };
 
-<<<<<<< HEAD
-=======
 	/* SB600 doesn't have secondary port wired */
 	if (pdev->device == PCI_DEVICE_ID_ATI_IXP600_IDE)
 		ppi[1] = &ata_dummy_port_info;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ata_pci_bmdma_init_one(pdev, ppi, &atiixp_sht, NULL,
 				      ATA_HOST_PARALLEL_SCAN);
 }
@@ -350,39 +305,16 @@ static struct pci_driver atiixp_pci_driver = {
 	.id_table	= atiixp,
 	.probe 		= atiixp_init_one,
 	.remove		= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.resume		= ata_pci_device_resume,
 	.suspend	= ata_pci_device_suspend,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init atiixp_init(void)
-{
-	return pci_register_driver(&atiixp_pci_driver);
-}
-
-
-static void __exit atiixp_exit(void)
-{
-	pci_unregister_driver(&atiixp_pci_driver);
-}
-=======
 module_pci_driver(atiixp_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for ATI IXP200/300/400");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, atiixp);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(atiixp_init);
-module_exit(atiixp_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

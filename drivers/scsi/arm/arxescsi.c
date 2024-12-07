@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/scsi/arm/arxescsi.c
  *
@@ -38,17 +35,12 @@
 #include <asm/io.h>
 #include <asm/ecard.h>
 
-<<<<<<< HEAD
-#include "../scsi.h"
-#include <scsi/scsi_host.h>
-=======
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_eh.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_tcq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "fas216.h"
 
 struct arxescsi_info {
@@ -233,49 +225,6 @@ static const char *arxescsi_info(struct Scsi_Host *host)
 	return string;
 }
 
-<<<<<<< HEAD
-/*
- * Function: int arxescsi_proc_info(char *buffer, char **start, off_t offset,
- *					 int length, int host_no, int inout)
- * Purpose : Return information about the driver to a user process accessing
- *	     the /proc filesystem.
- * Params  : buffer - a buffer to write information to
- *	     start  - a pointer into this buffer set by this routine to the start
- *		      of the required information.
- *	     offset - offset into information that we have read up to.
- *	     length - length of buffer
- *	     host_no - host number to return information for
- *	     inout  - 0 for reading, 1 for writing.
- * Returns : length of data written to buffer.
- */
-static int
-arxescsi_proc_info(struct Scsi_Host *host, char *buffer, char **start, off_t offset, int length,
-		   int inout)
-{
-	struct arxescsi_info *info;
-	char *p = buffer;
-	int pos;
-
-	info = (struct arxescsi_info *)host->hostdata;
-	if (inout == 1)
-		return -EINVAL;
-
-	p += sprintf(p, "ARXE 16-bit SCSI driver v%s\n", VERSION);
-	p += fas216_print_host(&info->info, p);
-	p += fas216_print_stats(&info->info, p);
-	p += fas216_print_devices(&info->info, p);
-
-	*start = buffer + offset;
-	pos = p - buffer - offset;
-	if (pos > length)
-		pos = length;
-
-	return pos;
-}
-
-static struct scsi_host_template arxescsi_template = {
-	.proc_info			= arxescsi_proc_info,
-=======
 static int
 arxescsi_show_info(struct seq_file *m, struct Scsi_Host *host)
 {
@@ -291,7 +240,6 @@ arxescsi_show_info(struct seq_file *m, struct Scsi_Host *host)
 
 static const struct scsi_host_template arxescsi_template = {
 	.show_info			= arxescsi_show_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name				= "ARXE SCSI card",
 	.info				= arxescsi_info,
 	.queuecommand			= fas216_noqueue_command,
@@ -299,18 +247,6 @@ static const struct scsi_host_template arxescsi_template = {
 	.eh_bus_reset_handler		= fas216_eh_bus_reset,
 	.eh_device_reset_handler	= fas216_eh_device_reset,
 	.eh_abort_handler		= fas216_eh_abort,
-<<<<<<< HEAD
-	.can_queue			= 0,
-	.this_id			= 7,
-	.sg_tablesize			= SG_ALL,
-	.cmd_per_lun			= 1,
-	.use_clustering			= DISABLE_CLUSTERING,
-	.proc_name			= "arxescsi",
-};
-
-static int __devinit
-arxescsi_probe(struct expansion_card *ec, const struct ecard_id *id)
-=======
 	.cmd_size			= sizeof(struct fas216_cmd_priv),
 	.can_queue			= 0,
 	.this_id			= 7,
@@ -320,7 +256,6 @@ arxescsi_probe(struct expansion_card *ec, const struct ecard_id *id)
 };
 
 static int arxescsi_probe(struct expansion_card *ec, const struct ecard_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host;
 	struct arxescsi_info *info;
@@ -383,11 +318,7 @@ static int arxescsi_probe(struct expansion_card *ec, const struct ecard_id *id)
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __devexit arxescsi_remove(struct expansion_card *ec)
-=======
 static void arxescsi_remove(struct expansion_card *ec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host = ecard_get_drvdata(ec);
 
@@ -406,11 +337,7 @@ static const struct ecard_id arxescsi_cids[] = {
 
 static struct ecard_driver arxescsi_driver = {
 	.probe		= arxescsi_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(arxescsi_remove),
-=======
 	.remove		= arxescsi_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= arxescsi_cids,
 	.drv = {
 		.name		= "arxescsi",

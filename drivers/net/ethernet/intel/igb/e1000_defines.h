@@ -1,34 +1,5 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel(R) Gigabit Ethernet Linux driver
-  Copyright(c) 2007-2012 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /* Copyright(c) 2007 - 2018 Intel Corporation. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _E1000_DEFINES_H_
 #define _E1000_DEFINES_H_
@@ -48,19 +19,6 @@
 #define E1000_WUFC_MC   0x00000008 /* Directed Multicast Wakeup Enable */
 #define E1000_WUFC_BC   0x00000010 /* Broadcast Wakeup Enable */
 
-<<<<<<< HEAD
-/* Extended Device Control */
-#define E1000_CTRL_EXT_SDP3_DATA 0x00000080 /* Value of SW Defineable Pin 3 */
-/* Physical Func Reset Done Indication */
-#define E1000_CTRL_EXT_PFRSTD    0x00004000
-#define E1000_CTRL_EXT_LINK_MODE_MASK 0x00C00000
-#define E1000_CTRL_EXT_LINK_MODE_PCIE_SERDES  0x00C00000
-#define E1000_CTRL_EXT_LINK_MODE_1000BASE_KX  0x00400000
-#define E1000_CTRL_EXT_LINK_MODE_SGMII   0x00800000
-#define E1000_CTRL_EXT_LINK_MODE_GMII   0x00000000
-#define E1000_CTRL_EXT_EIAME          0x01000000
-#define E1000_CTRL_EXT_IRCA           0x00000001
-=======
 /* Wake Up Status */
 #define E1000_WUS_EX	0x00000004 /* Directed Exact */
 #define E1000_WUS_ARPD	0x00000020 /* Directed ARP Request */
@@ -98,7 +56,6 @@
 #define E1000_CTRL_EXT_LINK_MODE_GMII	0x00000000
 #define E1000_CTRL_EXT_EIAME	0x01000000
 #define E1000_CTRL_EXT_IRCA		0x00000001
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Interrupt delay cancellation */
 /* Driver loaded bit for FW */
 #define E1000_CTRL_EXT_DRV_LOAD       0x10000000
@@ -106,22 +63,6 @@
 /* Clear Interrupt timers after IMS clear */
 /* packet buffer parity error detection enabled */
 /* descriptor FIFO parity error detection enable */
-<<<<<<< HEAD
-#define E1000_CTRL_EXT_PBA_CLR        0x80000000 /* PBA Clear */
-#define E1000_I2CCMD_REG_ADDR_SHIFT   16
-#define E1000_I2CCMD_PHY_ADDR_SHIFT   24
-#define E1000_I2CCMD_OPCODE_READ      0x08000000
-#define E1000_I2CCMD_OPCODE_WRITE     0x00000000
-#define E1000_I2CCMD_READY            0x20000000
-#define E1000_I2CCMD_ERROR            0x80000000
-#define E1000_MAX_SGMII_PHY_REG_ADDR  255
-#define E1000_I2CCMD_PHY_TIMEOUT      200
-#define E1000_IVAR_VALID              0x80
-#define E1000_GPIE_NSICR              0x00000001
-#define E1000_GPIE_MSIX_MODE          0x00000010
-#define E1000_GPIE_EIAME              0x40000000
-#define E1000_GPIE_PBA                0x80000000
-=======
 #define E1000_CTRL_EXT_PBA_CLR		0x80000000 /* PBA Clear */
 #define E1000_CTRL_EXT_PHYPDEN		0x00100000
 #define E1000_I2CCMD_REG_ADDR_SHIFT	16
@@ -139,7 +80,6 @@
 #define E1000_GPIE_MSIX_MODE		0x00000010
 #define E1000_GPIE_EIAME		0x40000000
 #define E1000_GPIE_PBA			0x80000000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Receive Descriptor bit definitions */
 #define E1000_RXD_STAT_DD       0x01    /* Descriptor Done */
@@ -161,19 +101,11 @@
 
 /* Same mask, but for extended and packet split descriptors */
 #define E1000_RXDEXT_ERR_FRAME_ERR_MASK ( \
-<<<<<<< HEAD
-    E1000_RXDEXT_STATERR_CE  |            \
-    E1000_RXDEXT_STATERR_SE  |            \
-    E1000_RXDEXT_STATERR_SEQ |            \
-    E1000_RXDEXT_STATERR_CXE |            \
-    E1000_RXDEXT_STATERR_RXE)
-=======
 	E1000_RXDEXT_STATERR_CE  |            \
 	E1000_RXDEXT_STATERR_SE  |            \
 	E1000_RXDEXT_STATERR_SEQ |            \
 	E1000_RXDEXT_STATERR_CXE |            \
 	E1000_RXDEXT_STATERR_RXE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define E1000_MRQC_RSS_FIELD_IPV4_TCP          0x00010000
 #define E1000_MRQC_RSS_FIELD_IPV4              0x00020000
@@ -211,12 +143,7 @@
 #define E1000_RCTL_PMCF           0x00800000    /* pass MAC control frames */
 #define E1000_RCTL_SECRC          0x04000000    /* Strip Ethernet CRC */
 
-<<<<<<< HEAD
-/*
- * Use byte values for the following shift parameters
-=======
 /* Use byte values for the following shift parameters
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Usage:
  *     psrctl |= (((ROUNDUP(value0, 128) >> E1000_PSRCTL_BSIZE0_SHIFT) &
  *                  E1000_PSRCTL_BSIZE0_MASK) |
@@ -267,14 +194,10 @@
 /* enable link status from external LINK_0 and LINK_1 pins */
 #define E1000_CTRL_SWDPIN0  0x00040000  /* SWDPIN 0 value */
 #define E1000_CTRL_SWDPIN1  0x00080000  /* SWDPIN 1 value */
-<<<<<<< HEAD
-#define E1000_CTRL_SWDPIO0  0x00400000  /* SWDPIN 0 Input or output */
-=======
 #define E1000_CTRL_ADVD3WUC 0x00100000  /* D3 WUC */
 #define E1000_CTRL_EN_PHY_PWR_MGMT 0x00200000 /* PHY PM enable */
 #define E1000_CTRL_SDP0_DIR 0x00400000  /* SDP0 Data direction */
 #define E1000_CTRL_SDP1_DIR 0x00800000  /* SDP1 Data direction */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define E1000_CTRL_RST      0x04000000  /* Global reset */
 #define E1000_CTRL_RFCE     0x08000000  /* Receive Flow Control enable */
 #define E1000_CTRL_TFCE     0x10000000  /* Transmit flow control enable */
@@ -288,14 +211,11 @@
  */
 
 #define E1000_CONNSW_ENRGSRC             0x4
-<<<<<<< HEAD
-=======
 #define E1000_CONNSW_PHYSD		0x400
 #define E1000_CONNSW_PHY_PDN		0x800
 #define E1000_CONNSW_SERDESD		0x200
 #define E1000_CONNSW_AUTOSENSE_CONF	0x2
 #define E1000_CONNSW_AUTOSENSE_EN	0x1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define E1000_PCS_CFG_PCS_EN             8
 #define E1000_PCS_LCTL_FLV_LINK_UP       1
 #define E1000_PCS_LCTL_FSV_100           2
@@ -329,20 +249,14 @@
 #define E1000_STATUS_GIO_MASTER_ENABLE 0x00080000
 /* BMC external code execution disabled */
 
-<<<<<<< HEAD
-=======
 #define E1000_STATUS_2P5_SKU		0x00001000 /* Val of 2.5GBE SKU strap */
 #define E1000_STATUS_2P5_SKU_OVER	0x00002000 /* Val of 2.5GBE SKU Over */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Constants used to intrepret the masked PCI-X bus speed. */
 
 #define SPEED_10    10
 #define SPEED_100   100
 #define SPEED_1000  1000
-<<<<<<< HEAD
-=======
 #define SPEED_2500  2500
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HALF_DUPLEX 1
 #define FULL_DUPLEX 2
 
@@ -369,15 +283,10 @@
 #define AUTONEG_ADVERTISE_SPEED_DEFAULT   E1000_ALL_SPEED_DUPLEX
 
 /* LED Control */
-<<<<<<< HEAD
-#define E1000_LEDCTL_LED0_MODE_SHIFT      0
-#define E1000_LEDCTL_LED0_BLINK           0x00000080
-=======
 #define E1000_LEDCTL_LED0_MODE_SHIFT	0
 #define E1000_LEDCTL_LED0_BLINK		0x00000080
 #define E1000_LEDCTL_LED0_MODE_MASK	0x0000000F
 #define E1000_LEDCTL_LED0_IVRT		0x00000040
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define E1000_LEDCTL_MODE_LED_ON        0xE
 #define E1000_LEDCTL_MODE_LED_OFF       0xF
@@ -400,36 +309,6 @@
 #define E1000_TCTL_RTLC   0x01000000    /* Re-transmit on late collision */
 
 /* DMA Coalescing register fields */
-<<<<<<< HEAD
-#define E1000_DMACR_DMACWT_MASK         0x00003FFF /* DMA Coalescing
-							* Watchdog Timer */
-#define E1000_DMACR_DMACTHR_MASK        0x00FF0000 /* DMA Coalescing Receive
-							* Threshold */
-#define E1000_DMACR_DMACTHR_SHIFT       16
-#define E1000_DMACR_DMAC_LX_MASK        0x30000000 /* Lx when no PCIe
-							* transactions */
-#define E1000_DMACR_DMAC_LX_SHIFT       28
-#define E1000_DMACR_DMAC_EN             0x80000000 /* Enable DMA Coalescing */
-
-#define E1000_DMCTXTH_DMCTTHR_MASK      0x00000FFF /* DMA Coalescing Transmit
-							* Threshold */
-
-#define E1000_DMCTLX_TTLX_MASK          0x00000FFF /* Time to LX request */
-
-#define E1000_DMCRTRH_UTRESH_MASK       0x0007FFFF /* Receive Traffic Rate
-							* Threshold */
-#define E1000_DMCRTRH_LRPRCW            0x80000000 /* Rcv packet rate in
-							* current window */
-
-#define E1000_DMCCNT_CCOUNT_MASK        0x01FFFFFF /* DMA Coal Rcv Traffic
-							* Current Cnt */
-
-#define E1000_FCRTC_RTH_COAL_MASK       0x0003FFF0 /* Flow ctrl Rcv Threshold
-							* High val */
-#define E1000_FCRTC_RTH_COAL_SHIFT      4
-#define E1000_PCIEMISC_LX_DECISION      0x00000080 /* Lx power decision */
-
-=======
 #define E1000_DMACR_DMACWT_MASK         0x00003FFF /* DMA Coal Watchdog Timer */
 #define E1000_DMACR_DMACTHR_MASK        0x00FF0000 /* DMA Coal Rx Threshold */
 #define E1000_DMACR_DMACTHR_SHIFT       16
@@ -470,7 +349,6 @@
 
 #define I210_SR_QUEUES_NUM		2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SerDes Control */
 #define E1000_SCTL_DISABLE_SERDES_LOOPBACK 0x0400
 
@@ -481,12 +359,8 @@
 #define E1000_RXCSUM_PCSD      0x00002000   /* packet checksum disabled */
 
 /* Header split receive */
-<<<<<<< HEAD
-#define E1000_RFCTL_LEF        0x00040000
-=======
 #define E1000_RFCTL_IPV6_EX_DIS         0x00010000
 #define E1000_RFCTL_LEF                 0x00040000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Collision related configuration parameters */
 #define E1000_COLLISION_THRESHOLD       15
@@ -497,13 +371,9 @@
 /* Ethertype field values */
 #define ETHERNET_IEEE_VLAN_TYPE 0x8100  /* 802.3ac packet */
 
-<<<<<<< HEAD
-#define MAX_JUMBO_FRAME_SIZE    0x3F00
-=======
 /* As per the EAS the maximum supported size is 9.5KB (9728 bytes) */
 #define MAX_JUMBO_FRAME_SIZE		0x2600
 #define MAX_STD_JUMBO_FRAME_SIZE	9216
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PBA constants */
 #define E1000_PBA_34K 0x0022
@@ -520,10 +390,7 @@
 #define E1000_ICR_RXDMT0        0x00000010 /* rx desc min. threshold (0) */
 #define E1000_ICR_RXT0          0x00000080 /* rx timer intr (ring 0) */
 #define E1000_ICR_VMMB          0x00000100 /* VM MB event */
-<<<<<<< HEAD
-=======
 #define E1000_ICR_TS            0x00080000 /* Time Sync Interrupt */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define E1000_ICR_DRSTA         0x40000000 /* Device Reset Asserted */
 /* If this bit asserted, the driver should claim the interrupt */
 #define E1000_ICR_INT_ASSERTED  0x80000000
@@ -542,12 +409,7 @@
 #define E1000_EICR_OTHER        0x80000000 /* Interrupt Cause Active */
 /* TCP Timer */
 
-<<<<<<< HEAD
-/*
- * This defines the bits that are set in the Interrupt Mask
-=======
 /* This defines the bits that are set in the Interrupt Mask
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Set/Read Register.  Each bit is documented below:
  *   o RXT0   = Receiver Timer Interrupt (ring 0)
  *   o TXDW   = Transmit Descriptor Written Back
@@ -556,30 +418,18 @@
  *   o LSC    = Link Status Change
  */
 #define IMS_ENABLE_MASK ( \
-<<<<<<< HEAD
-    E1000_IMS_RXT0   |    \
-    E1000_IMS_TXDW   |    \
-    E1000_IMS_RXDMT0 |    \
-    E1000_IMS_RXSEQ  |    \
-    E1000_IMS_LSC    |    \
-    E1000_IMS_DOUTSYNC)
-=======
 	E1000_IMS_RXT0   |    \
 	E1000_IMS_TXDW   |    \
 	E1000_IMS_RXDMT0 |    \
 	E1000_IMS_RXSEQ  |    \
 	E1000_IMS_LSC    |    \
 	E1000_IMS_DOUTSYNC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Interrupt Mask Set */
 #define E1000_IMS_TXDW      E1000_ICR_TXDW      /* Transmit desc written back */
 #define E1000_IMS_LSC       E1000_ICR_LSC       /* Link Status Change */
 #define E1000_IMS_VMMB      E1000_ICR_VMMB      /* Mail box activity */
-<<<<<<< HEAD
-=======
 #define E1000_IMS_TS        E1000_ICR_TS        /* Time Sync Interrupt */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define E1000_IMS_RXSEQ     E1000_ICR_RXSEQ     /* rx sequence error */
 #define E1000_IMS_RXDMT0    E1000_ICR_RXDMT0    /* rx desc min. threshold */
 #define E1000_IMS_RXT0      E1000_ICR_RXT0      /* rx timer intr */
@@ -607,45 +457,30 @@
 #define FLOW_CONTROL_ADDRESS_HIGH 0x00000100
 #define FLOW_CONTROL_TYPE         0x8808
 
-<<<<<<< HEAD
-=======
 /* Transmit Config Word */
 #define E1000_TXCW_ASM_DIR	0x00000100 /* TXCW astm pause direction */
 #define E1000_TXCW_PAUSE	0x00000080 /* TXCW sym pause request */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 802.1q VLAN Packet Size */
 #define VLAN_TAG_SIZE              4    /* 802.3ac tag (not DMA'd) */
 #define E1000_VLAN_FILTER_TBL_SIZE 128  /* VLAN Filter Table (4096 bits) */
 
 /* Receive Address */
-<<<<<<< HEAD
-/*
- * Number of high/low register pairs in the RAR. The RAR (Receive Address
-=======
 /* Number of high/low register pairs in the RAR. The RAR (Receive Address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Registers) holds the directed and multicast addresses that we monitor.
  * Technically, we have 16 spots.  However, we reserve one of these spots
  * (RAR[15]) for our directed address used by controllers with
  * manageability enabled, allowing us room for 15 multicast addresses.
  */
 #define E1000_RAH_AV  0x80000000        /* Receive descriptor valid */
-<<<<<<< HEAD
-=======
 #define E1000_RAH_ASEL_SRC_ADDR 0x00010000
 #define E1000_RAH_QSEL_ENABLE 0x10000000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define E1000_RAL_MAC_ADDR_LEN 4
 #define E1000_RAH_MAC_ADDR_LEN 2
 #define E1000_RAH_POOL_MASK 0x03FC0000
 #define E1000_RAH_POOL_1 0x00040000
 
 /* Error Codes */
-<<<<<<< HEAD
-#define E1000_SUCCESS      0
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define E1000_ERR_NVM      1
 #define E1000_ERR_PHY      2
 #define E1000_ERR_CONFIG   3
@@ -660,11 +495,8 @@
 #define E1000_ERR_INVALID_ARGUMENT  16
 #define E1000_ERR_NO_SPACE          17
 #define E1000_ERR_NVM_PBA_SECTION   18
-<<<<<<< HEAD
-=======
 #define E1000_ERR_INVM_VALUE_NOT_FOUND	19
 #define E1000_ERR_I2C               20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Loop limit on how long we wait for auto-negotiation to complete */
 #define COPPER_LINK_UP_LIMIT              10
@@ -714,8 +546,6 @@
 
 #define E1000_TIMINCA_16NS_SHIFT 24
 
-<<<<<<< HEAD
-=======
 /* Time Sync Interrupt Cause/Mask Register Bits */
 
 #define TSINTR_SYS_WRAP  BIT(0) /* SYSTIM Wrap around. */
@@ -778,14 +608,11 @@
 #define TS_SDP3_SEL_FC1  (3u << 15) /* Freq clock  1 is output on SDP3. */
 #define TS_SDP3_EN       (1u << 17) /* SDP3 is assigned to Tsync. */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define E1000_MDICNFG_EXT_MDIO    0x80000000      /* MDI ext/int destination */
 #define E1000_MDICNFG_COM_MDIO    0x40000000      /* MDI shared w/ lan 0 */
 #define E1000_MDICNFG_PHY_MASK    0x03E00000
 #define E1000_MDICNFG_PHY_SHIFT   21
 
-<<<<<<< HEAD
-=======
 #define E1000_MEDIA_PORT_COPPER			1
 #define E1000_MEDIA_PORT_OTHER			2
 #define E1000_M88E1112_AUTO_COPPER_SGMII	0x2
@@ -801,7 +628,6 @@
 #define E1000_M88E1512_CFG_REG_3		0x0007
 #define E1000_M88E1512_MODE			0x0014
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PCI Express Control */
 #define E1000_GCR_CMPL_TMOUT_MASK       0x0000F000
 #define E1000_GCR_CMPL_TMOUT_10ms       0x00001000
@@ -818,12 +644,9 @@
 /* mPHY Near End Digital Loopback Override Bit */
 #define E1000_MPHY_PCS_CLK_REG_DIGINELBEN 0x10
 
-<<<<<<< HEAD
-=======
 #define E1000_PCS_LCTL_FORCE_FCTRL	0x80
 #define E1000_PCS_LSTS_AN_COMPLETE	0x10000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PHY Control Register */
 #define MII_CR_FULL_DUPLEX      0x0100  /* FDX =1, half duplex =0 */
 #define MII_CR_RESTART_AUTO_NEG 0x0200  /* Restart auto negotiation */
@@ -891,8 +714,6 @@
 #define E1000_EECD_AUTO_RD          0x00000200  /* NVM Auto Read done */
 #define E1000_EECD_SIZE_EX_MASK     0x00007800  /* NVM Size */
 #define E1000_EECD_SIZE_EX_SHIFT     11
-<<<<<<< HEAD
-=======
 #define E1000_EECD_FLUPD_I210		0x00800000 /* Update FLASH */
 #define E1000_EECD_FLUDONE_I210		0x04000000 /* Update FLASH done*/
 #define E1000_EECD_FLASH_DETECTED_I210	0x00080000 /* FLASH detected */
@@ -918,7 +739,6 @@
 #define E1000_I210_FIFO_SEL_BMC2OS_TX	0x06
 #define E1000_I210_FIFO_SEL_BMC2OS_RX	0x01
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Offset to data in NVM read/write registers */
 #define E1000_NVM_RW_REG_DATA   16
@@ -930,10 +750,7 @@
 /* NVM Word Offsets */
 #define NVM_COMPAT                 0x0003
 #define NVM_ID_LED_SETTINGS        0x0004 /* SERDES output amplitude */
-<<<<<<< HEAD
-=======
 #define NVM_VERSION                0x0005
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NVM_INIT_CONTROL2_REG      0x000F
 #define NVM_INIT_CONTROL3_PORT_B   0x0014
 #define NVM_INIT_CONTROL3_PORT_A   0x0024
@@ -941,8 +758,6 @@
 #define NVM_CHECKSUM_REG           0x003F
 #define NVM_COMPATIBILITY_REG_3    0x0003
 #define NVM_COMPATIBILITY_BIT_MASK 0x8000
-<<<<<<< HEAD
-=======
 #define NVM_MAC_ADDR               0x0000
 #define NVM_SUB_DEV_ID             0x000B
 #define NVM_SUB_VEN_ID             0x000C
@@ -984,7 +799,6 @@
 #define NVM_ETS_DATA_INDEX_MASK		0x0300
 #define NVM_ETS_DATA_INDEX_SHIFT	8
 #define NVM_ETS_DATA_HTHRESH_MASK	0x00FF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define E1000_NVM_CFG_DONE_PORT_0  0x040000 /* MNG config cycle done */
 #define E1000_NVM_CFG_DONE_PORT_1  0x080000 /* ...for second port */
@@ -1011,10 +825,7 @@
 
 #define NVM_PBA_OFFSET_0           8
 #define NVM_PBA_OFFSET_1           9
-<<<<<<< HEAD
-=======
 #define NVM_RESERVED_WORD		0xFFFF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NVM_PBA_PTR_GUARD          0xFAFA
 #define NVM_WORD_SIZE_BASE_SHIFT   6
 
@@ -1061,12 +872,7 @@
 #define MAX_PHY_MULTI_PAGE_REG 0xF
 
 /* Bit definitions for valid PHY IDs. */
-<<<<<<< HEAD
-/*
- * I = Integrated
-=======
 /* I = Integrated
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * E = External
  */
 #define M88E1111_I_PHY_ID    0x01410CC0
@@ -1076,13 +882,10 @@
 #define I82580_I_PHY_ID      0x015403A0
 #define I350_I_PHY_ID        0x015403B0
 #define M88_VENDOR           0x0141
-<<<<<<< HEAD
-=======
 #define I210_I_PHY_ID        0x01410C00
 #define M88E1543_E_PHY_ID    0x01410EA0
 #define M88E1512_E_PHY_ID    0x01410DD0
 #define BCM54616_E_PHY_ID    0x03625D10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* M88E1000 Specific Registers */
 #define M88E1000_PHY_SPEC_CTRL     0x10  /* PHY Specific Control Register */
@@ -1102,12 +905,7 @@
 #define M88E1000_PSCR_AUTO_X_1000T     0x0040
 /* Auto crossover enabled all speeds */
 #define M88E1000_PSCR_AUTO_X_MODE      0x0060
-<<<<<<< HEAD
-/*
- * 1=Enable Extended 10BASE-T distance (Lower 10BASE-T Rx Threshold
-=======
 /* 1=Enable Extended 10BASE-T distance (Lower 10BASE-T Rx Threshold
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 0=Normal 10BASE-T Rx Threshold
  */
 /* 1=5-bit interface in 100BASE-TX, 0=MII interface in 100BASE-TX */
@@ -1117,12 +915,7 @@
 #define M88E1000_PSSR_REV_POLARITY       0x0002 /* 1=Polarity reversed */
 #define M88E1000_PSSR_DOWNSHIFT          0x0020 /* 1=Downshifted */
 #define M88E1000_PSSR_MDIX               0x0040 /* 1=MDIX; 0=MDI */
-<<<<<<< HEAD
-/*
- * 0 = <50M
-=======
 /* 0 = <50M
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 1 = 50-80M
  * 2 = 80-110M
  * 3 = 110-140M
@@ -1135,32 +928,17 @@
 #define M88E1000_PSSR_CABLE_LENGTH_SHIFT 7
 
 /* M88E1000 Extended PHY Specific Control Register */
-<<<<<<< HEAD
-/*
- * 1 = Lost lock detect enabled.
-=======
 /* 1 = Lost lock detect enabled.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Will assert lost lock and bring
  * link down if idle not seen
  * within 1ms in 1000BASE-T
  */
-<<<<<<< HEAD
-/*
- * Number of times we will attempt to autonegotiate before downshifting if we
-=======
 /* Number of times we will attempt to autonegotiate before downshifting if we
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * are the master
  */
 #define M88E1000_EPSCR_MASTER_DOWNSHIFT_MASK 0x0C00
 #define M88E1000_EPSCR_MASTER_DOWNSHIFT_1X   0x0000
-<<<<<<< HEAD
-/*
- * Number of times we will attempt to autonegotiate before downshifting if we
-=======
 /* Number of times we will attempt to autonegotiate before downshifting if we
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * are the slave
  */
 #define M88E1000_EPSCR_SLAVE_DOWNSHIFT_MASK  0x0300
@@ -1169,25 +947,16 @@
 
 /* Intel i347-AT4 Registers */
 
-<<<<<<< HEAD
-#define I347AT4_PCDL                   0x10 /* PHY Cable Diagnostics Length */
-=======
 #define I347AT4_PCDL0                  0x10 /* Pair 0 PHY Cable Diagnostics Length */
 #define I347AT4_PCDL1                  0x11 /* Pair 1 PHY Cable Diagnostics Length */
 #define I347AT4_PCDL2                  0x12 /* Pair 2 PHY Cable Diagnostics Length */
 #define I347AT4_PCDL3                  0x13 /* Pair 3 PHY Cable Diagnostics Length */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define I347AT4_PCDC                   0x15 /* PHY Cable Diagnostics Control */
 #define I347AT4_PAGE_SELECT            0x16
 
 /* i347-AT4 Extended PHY Specific Control Register */
 
-<<<<<<< HEAD
-/*
- *  Number of times we will attempt to autonegotiate before downshifting if we
-=======
 /*  Number of times we will attempt to autonegotiate before downshifting if we
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  are the master
  */
 #define I347AT4_PSCR_DOWNSHIFT_ENABLE 0x0800
@@ -1233,9 +1002,6 @@
 #define E1000_IPCNFG_EEE_100M_AN     0x00000004  /* EEE Enable 100M AN */
 #define E1000_EEER_TX_LPI_EN         0x00010000  /* EEE Tx LPI Enable */
 #define E1000_EEER_RX_LPI_EN         0x00020000  /* EEE Rx LPI Enable */
-<<<<<<< HEAD
-#define E1000_EEER_LPI_FC            0x00040000  /* EEE Enable on FC */
-=======
 #define E1000_EEER_FRC_AN            0x10000000  /* Enable EEE in loopback */
 #define E1000_EEER_LPI_FC            0x00040000  /* EEE Enable on FC */
 #define E1000_EEE_SU_LPI_CLK_STP     0X00800000  /* EEE LPI Clock Stop */
@@ -1257,7 +1023,6 @@
 #define E1000_PCS_STATUS_TX_LPI_IND	0x0200     /* Tx in LPI state */
 #define E1000_PCS_STATUS_RX_LPI_RCVD	0x0400
 #define E1000_PCS_STATUS_TX_LPI_RCVD	0x0800
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SerDes Control */
 #define E1000_GEN_CTL_READY             0x80000000
@@ -1268,13 +1033,6 @@
 #define E1000_VFTA_ENTRY_MASK                0x7F
 #define E1000_VFTA_ENTRY_BIT_SHIFT_MASK      0x1F
 
-<<<<<<< HEAD
-/* DMA Coalescing register fields */
-#define E1000_PCIEMISC_LX_DECISION      0x00000080 /* Lx power decision based
-                                                      on DMA coal */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Tx Rate-Scheduler Config fields */
 #define E1000_RTTBCNRC_RS_ENA		0x80000000
 #define E1000_RTTBCNRC_RF_DEC_MASK	0x00003FFF
@@ -1282,8 +1040,6 @@
 #define E1000_RTTBCNRC_RF_INT_MASK	\
 	(E1000_RTTBCNRC_RF_DEC_MASK << E1000_RTTBCNRC_RF_INT_SHIFT)
 
-<<<<<<< HEAD
-=======
 #define E1000_VLAPQF_QUEUE_SEL(_n, q_idx) (q_idx << ((_n) * 4))
 #define E1000_VLAPQF_P_VALID(_n)	(0x1 << (3 + (_n) * 4))
 #define E1000_VLAPQF_QUEUE_MASK	0x03
@@ -1316,5 +1072,4 @@
 /* Transmit Descriptor Control fields */
 #define E1000_TXDCTL_PRIORITY		BIT(27)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -21,11 +21,7 @@
  *
  * Copyright 2002 MontaVista Software Inc.
  * Author: MontaVista Software, Inc.
-<<<<<<< HEAD
- *              stevel@mvista.com or source@mvista.com
-=======
  *		stevel@mvista.com or source@mvista.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bitops.h>
@@ -33,10 +29,6 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/kernel_stat.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/signal.h>
 #include <linux/sched.h>
 #include <linux/types.h>
@@ -58,11 +50,7 @@ struct intr_group {
 	volatile u32 *base_addr;
 };
 
-<<<<<<< HEAD
-#define RC32434_NR_IRQS  (GROUP4_IRQ_BASE + 32)
-=======
 #define RC32434_NR_IRQS	 (GROUP4_IRQ_BASE + 32)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if (NR_IRQS < RC32434_NR_IRQS)
 #error Too little irqs defined. Did you override <asm/irq.h> ?

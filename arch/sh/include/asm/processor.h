@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_PROCESSOR_H
 #define __ASM_SH_PROCESSOR_H
 
 #include <asm/cpu-features.h>
-<<<<<<< HEAD
-#include <asm/segment.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cache.h>
 
 #ifndef __ASSEMBLY__
@@ -22,18 +15,11 @@
  */
 enum cpu_type {
 	/* SH-2 types */
-<<<<<<< HEAD
-	CPU_SH7619,
-
-	/* SH-2A types */
-	CPU_SH7201, CPU_SH7203, CPU_SH7206, CPU_SH7263, CPU_MXG,
-=======
 	CPU_SH7619, CPU_J2,
 
 	/* SH-2A types */
 	CPU_SH7201, CPU_SH7203, CPU_SH7206, CPU_SH7263, CPU_SH7264, CPU_SH7269,
 	CPU_MXG,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SH-3 types */
 	CPU_SH7705, CPU_SH7706, CPU_SH7707,
@@ -47,21 +33,11 @@ enum cpu_type {
 
 	/* SH-4A types */
 	CPU_SH7763, CPU_SH7770, CPU_SH7780, CPU_SH7781, CPU_SH7785, CPU_SH7786,
-<<<<<<< HEAD
-	CPU_SH7723, CPU_SH7724, CPU_SH7757, CPU_SHX3,
-=======
 	CPU_SH7723, CPU_SH7724, CPU_SH7757, CPU_SH7734, CPU_SHX3,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SH4AL-DSP types */
 	CPU_SH7343, CPU_SH7722, CPU_SH7366, CPU_SH7372,
 
-<<<<<<< HEAD
-	/* SH-5 types */
-        CPU_SH5_101, CPU_SH5_103,
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Unknown subtype */
 	CPU_SH_NONE
 };
@@ -73,10 +49,6 @@ enum cpu_family {
 	CPU_FAMILY_SH4,
 	CPU_FAMILY_SH4A,
 	CPU_FAMILY_SH4AL_DSP,
-<<<<<<< HEAD
-	CPU_FAMILY_SH5,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CPU_FAMILY_UNKNOWN,
 };
 
@@ -110,13 +82,6 @@ struct sh_cpuinfo {
 	struct tlb_info itlb;
 	struct tlb_info dtlb;
 
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-	struct task_struct *idle;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int phys_bits;
 	unsigned long flags;
 } __attribute__ ((aligned(L1_CACHE_BYTES)));
@@ -130,10 +95,6 @@ extern struct sh_cpuinfo cpu_data[];
 #define cpu_relax()	barrier()
 
 void default_idle(void);
-<<<<<<< HEAD
-void cpu_idle_wait(void);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void stop_this_cpu(void *);
 
 /* Forward decl */
@@ -201,21 +162,6 @@ int vsyscall_init(void);
  */
 #ifdef CONFIG_CPU_SH2A
 extern unsigned int instruction_size(unsigned int insn);
-<<<<<<< HEAD
-#elif defined(CONFIG_SUPERH32)
-#define instruction_size(insn)	(2)
-#else
-#define instruction_size(insn)	(4)
-#endif
-
-#endif /* __ASSEMBLY__ */
-
-#ifdef CONFIG_SUPERH32
-# include "processor_32.h"
-#else
-# include "processor_64.h"
-#endif
-=======
 #else
 #define instruction_size(insn)	(2)
 #endif
@@ -225,6 +171,5 @@ void select_idle_routine(void);
 #endif /* __ASSEMBLY__ */
 
 #include <asm/processor_32.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_SH_PROCESSOR_H */

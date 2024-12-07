@@ -15,21 +15,6 @@
  * binaries.
  */
 #include <linux/compiler.h>
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/sched.h>
-#include <linux/mm.h>
-#include <linux/errno.h>
-#include <linux/ptrace.h>
-#include <linux/smp.h>
-#include <linux/user.h>
-#include <linux/security.h>
-#include <linux/audit.h>
-#include <linux/seccomp.h>
-
-#include <asm/byteorder.h>
-#include <asm/cpu.h>
-=======
 #include <linux/context_tracking.h>
 #include <linux/elf.h>
 #include <linux/kernel.h>
@@ -50,19 +35,10 @@
 #include <asm/byteorder.h>
 #include <asm/cpu.h>
 #include <asm/cpu-info.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dsp.h>
 #include <asm/fpu.h>
 #include <asm/mipsregs.h>
 #include <asm/mipsmtregs.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/page.h>
-#include <asm/uaccess.h>
-#include <asm/bootinfo.h>
-#include <asm/reg.h>
-
-=======
 #include <asm/page.h>
 #include <asm/processor.h>
 #include <asm/syscall.h>
@@ -79,7 +55,6 @@ unsigned long exception_ip(struct pt_regs *regs)
 }
 EXPORT_SYMBOL(exception_ip);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Called by kernel/ptrace.c when detaching..
  *
@@ -92,42 +67,21 @@ void ptrace_disable(struct task_struct *child)
 }
 
 /*
-<<<<<<< HEAD
- * Read a general register set.  We always use the 64-bit format, even
- * for 32-bit kernels and for 32-bit processes on a 64-bit kernel.
- * Registers are sign extended to fill the available space.
- */
-int ptrace_getregs(struct task_struct *child, __s64 __user *data)
-=======
  * Read a general register set.	 We always use the 64-bit format, even
  * for 32-bit kernels and for 32-bit processes on a 64-bit kernel.
  * Registers are sign extended to fill the available space.
  */
 int ptrace_getregs(struct task_struct *child, struct user_pt_regs __user *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pt_regs *regs;
 	int i;
 
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_WRITE, data, 38 * 8))
-=======
 	if (!access_ok(data, 38 * 8))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 
 	regs = task_pt_regs(child);
 
 	for (i = 0; i < 32; i++)
-<<<<<<< HEAD
-		__put_user((long)regs->regs[i], data + i);
-	__put_user((long)regs->lo, data + EF_LO - EF_R0);
-	__put_user((long)regs->hi, data + EF_HI - EF_R0);
-	__put_user((long)regs->cp0_epc, data + EF_CP0_EPC - EF_R0);
-	__put_user((long)regs->cp0_badvaddr, data + EF_CP0_BADVADDR - EF_R0);
-	__put_user((long)regs->cp0_status, data + EF_CP0_STATUS - EF_R0);
-	__put_user((long)regs->cp0_cause, data + EF_CP0_CAUSE - EF_R0);
-=======
 		__put_user((long)regs->regs[i], (__s64 __user *)&data->regs[i]);
 	__put_user((long)regs->lo, (__s64 __user *)&data->lo);
 	__put_user((long)regs->hi, (__s64 __user *)&data->hi);
@@ -135,7 +89,6 @@ int ptrace_getregs(struct task_struct *child, struct user_pt_regs __user *data)
 	__put_user((long)regs->cp0_badvaddr, (__s64 __user *)&data->cp0_badvaddr);
 	__put_user((long)regs->cp0_status, (__s64 __user *)&data->cp0_status);
 	__put_user((long)regs->cp0_cause, (__s64 __user *)&data->cp0_cause);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -145,98 +98,17 @@ int ptrace_getregs(struct task_struct *child, struct user_pt_regs __user *data)
  * the 64-bit format.  On a 32-bit kernel only the lower order half
  * (according to endianness) will be used.
  */
-<<<<<<< HEAD
-int ptrace_setregs(struct task_struct *child, __s64 __user *data)
-=======
 int ptrace_setregs(struct task_struct *child, struct user_pt_regs __user *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pt_regs *regs;
 	int i;
 
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_READ, data, 38 * 8))
-=======
 	if (!access_ok(data, 38 * 8))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 
 	regs = task_pt_regs(child);
 
 	for (i = 0; i < 32; i++)
-<<<<<<< HEAD
-		__get_user(regs->regs[i], data + i);
-	__get_user(regs->lo, data + EF_LO - EF_R0);
-	__get_user(regs->hi, data + EF_HI - EF_R0);
-	__get_user(regs->cp0_epc, data + EF_CP0_EPC - EF_R0);
-
-	/* badvaddr, status, and cause may not be written.  */
-
-	return 0;
-}
-
-int ptrace_getfpregs(struct task_struct *child, __u32 __user *data)
-{
-	int i;
-	unsigned int tmp;
-
-	if (!access_ok(VERIFY_WRITE, data, 33 * 8))
-		return -EIO;
-
-	if (tsk_used_math(child)) {
-		fpureg_t *fregs = get_fpu_regs(child);
-		for (i = 0; i < 32; i++)
-			__put_user(fregs[i], i + (__u64 __user *) data);
-	} else {
-		for (i = 0; i < 32; i++)
-			__put_user((__u64) -1, i + (__u64 __user *) data);
-	}
-
-	__put_user(child->thread.fpu.fcr31, data + 64);
-
-	preempt_disable();
-	if (cpu_has_fpu) {
-		unsigned int flags;
-
-		if (cpu_has_mipsmt) {
-			unsigned int vpflags = dvpe();
-			flags = read_c0_status();
-			__enable_fpu();
-			__asm__ __volatile__("cfc1\t%0,$0" : "=r" (tmp));
-			write_c0_status(flags);
-			evpe(vpflags);
-		} else {
-			flags = read_c0_status();
-			__enable_fpu();
-			__asm__ __volatile__("cfc1\t%0,$0" : "=r" (tmp));
-			write_c0_status(flags);
-		}
-	} else {
-		tmp = 0;
-	}
-	preempt_enable();
-	__put_user(tmp, data + 65);
-
-	return 0;
-}
-
-int ptrace_setfpregs(struct task_struct *child, __u32 __user *data)
-{
-	fpureg_t *fregs;
-	int i;
-
-	if (!access_ok(VERIFY_READ, data, 33 * 8))
-		return -EIO;
-
-	fregs = get_fpu_regs(child);
-
-	for (i = 0; i < 32; i++)
-		__get_user(fregs[i], i + (__u64 __user *) data);
-
-	__get_user(child->thread.fpu.fcr31, data + 64);
-
-	/* FIR may not be written.  */
-=======
 		__get_user(regs->regs[i], (__s64 __user *)&data->regs[i]);
 	__get_user(regs->lo, (__s64 __user *)&data->lo);
 	__get_user(regs->hi, (__s64 __user *)&data->hi);
@@ -246,7 +118,6 @@ int ptrace_setfpregs(struct task_struct *child, __u32 __user *data)
 
 	/* System call number may have been changed */
 	mips_syscall_update_nr(child, regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -257,15 +128,9 @@ int ptrace_get_watch_regs(struct task_struct *child,
 	enum pt_watch_style style;
 	int i;
 
-<<<<<<< HEAD
-	if (!cpu_has_watch || current_cpu_data.watch_reg_use_cnt == 0)
-		return -EIO;
-	if (!access_ok(VERIFY_WRITE, addr, sizeof(struct pt_watch_regs)))
-=======
 	if (!cpu_has_watch || boot_cpu_data.watch_reg_use_cnt == 0)
 		return -EIO;
 	if (!access_ok(addr, sizeof(struct pt_watch_regs)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 
 #ifdef CONFIG_32BIT
@@ -277,16 +142,6 @@ int ptrace_get_watch_regs(struct task_struct *child,
 #endif
 
 	__put_user(style, &addr->style);
-<<<<<<< HEAD
-	__put_user(current_cpu_data.watch_reg_use_cnt,
-		   &addr->WATCH_STYLE.num_valid);
-	for (i = 0; i < current_cpu_data.watch_reg_use_cnt; i++) {
-		__put_user(child->thread.watch.mips3264.watchlo[i],
-			   &addr->WATCH_STYLE.watchlo[i]);
-		__put_user(child->thread.watch.mips3264.watchhi[i] & 0xfff,
-			   &addr->WATCH_STYLE.watchhi[i]);
-		__put_user(current_cpu_data.watch_reg_masks[i],
-=======
 	__put_user(boot_cpu_data.watch_reg_use_cnt,
 		   &addr->WATCH_STYLE.num_valid);
 	for (i = 0; i < boot_cpu_data.watch_reg_use_cnt; i++) {
@@ -296,7 +151,6 @@ int ptrace_get_watch_regs(struct task_struct *child,
 				(MIPS_WATCHHI_MASK | MIPS_WATCHHI_IRW),
 			   &addr->WATCH_STYLE.watchhi[i]);
 		__put_user(boot_cpu_data.watch_reg_masks[i],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   &addr->WATCH_STYLE.watch_masks[i]);
 	}
 	for (; i < 8; i++) {
@@ -316,21 +170,12 @@ int ptrace_set_watch_regs(struct task_struct *child,
 	unsigned long lt[NUM_WATCH_REGS];
 	u16 ht[NUM_WATCH_REGS];
 
-<<<<<<< HEAD
-	if (!cpu_has_watch || current_cpu_data.watch_reg_use_cnt == 0)
-		return -EIO;
-	if (!access_ok(VERIFY_READ, addr, sizeof(struct pt_watch_regs)))
-		return -EIO;
-	/* Check the values. */
-	for (i = 0; i < current_cpu_data.watch_reg_use_cnt; i++) {
-=======
 	if (!cpu_has_watch || boot_cpu_data.watch_reg_use_cnt == 0)
 		return -EIO;
 	if (!access_ok(addr, sizeof(struct pt_watch_regs)))
 		return -EIO;
 	/* Check the values. */
 	for (i = 0; i < boot_cpu_data.watch_reg_use_cnt; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__get_user(lt[i], &addr->WATCH_STYLE.watchlo[i]);
 #ifdef CONFIG_32BIT
 		if (lt[i] & __UA_LIMIT)
@@ -345,21 +190,12 @@ int ptrace_set_watch_regs(struct task_struct *child,
 		}
 #endif
 		__get_user(ht[i], &addr->WATCH_STYLE.watchhi[i]);
-<<<<<<< HEAD
-		if (ht[i] & ~0xff8)
-			return -EINVAL;
-	}
-	/* Install them. */
-	for (i = 0; i < current_cpu_data.watch_reg_use_cnt; i++) {
-		if (lt[i] & 7)
-=======
 		if (ht[i] & ~MIPS_WATCHHI_MASK)
 			return -EINVAL;
 	}
 	/* Install them. */
 	for (i = 0; i < boot_cpu_data.watch_reg_use_cnt; i++) {
 		if (lt[i] & MIPS_WATCHLO_IRW)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			watch_active = 1;
 		child->thread.watch.mips3264.watchlo[i] = lt[i];
 		/* Set the G bit. */
@@ -374,8 +210,6 @@ int ptrace_set_watch_regs(struct task_struct *child,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /* regset get/set implementations */
 
 #if defined(CONFIG_32BIT) || defined(CONFIG_MIPS32_O32)
@@ -1245,7 +1079,6 @@ const struct user_regset_view *task_user_regset_view(struct task_struct *task)
 #endif
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 long arch_ptrace(struct task_struct *child, long request,
 		 unsigned long addr, unsigned long data)
 {
@@ -1273,30 +1106,6 @@ long arch_ptrace(struct task_struct *child, long request,
 		case 0 ... 31:
 			tmp = regs->regs[addr];
 			break;
-<<<<<<< HEAD
-		case FPR_BASE ... FPR_BASE + 31:
-			if (tsk_used_math(child)) {
-				fpureg_t *fregs = get_fpu_regs(child);
-
-#ifdef CONFIG_32BIT
-				/*
-				 * The odd registers are actually the high
-				 * order bits of the values stored in the even
-				 * registers - unless we're using r2k_switch.S.
-				 */
-				if (addr & 1)
-					tmp = (unsigned long) (fregs[((addr & ~1) - 32)] >> 32);
-				else
-					tmp = (unsigned long) (fregs[(addr - 32)] & 0xffffffff);
-#endif
-#ifdef CONFIG_64BIT
-				tmp = fregs[addr - FPR_BASE];
-#endif
-			} else {
-				tmp = -1;	/* FP not yet used  */
-			}
-			break;
-=======
 #ifdef CONFIG_MIPS_FP_SUPPORT
 		case FPR_BASE ... FPR_BASE + 31: {
 			union fpureg *fregs;
@@ -1331,7 +1140,6 @@ long arch_ptrace(struct task_struct *child, long request,
 			tmp = boot_cpu_data.fpu_id;
 			break;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case PC:
 			tmp = regs->cp0_epc;
 			break;
@@ -1352,50 +1160,6 @@ long arch_ptrace(struct task_struct *child, long request,
 			tmp = regs->acx;
 			break;
 #endif
-<<<<<<< HEAD
-		case FPC_CSR:
-			tmp = child->thread.fpu.fcr31;
-			break;
-		case FPC_EIR: {	/* implementation / version register */
-			unsigned int flags;
-#ifdef CONFIG_MIPS_MT_SMTC
-			unsigned long irqflags;
-			unsigned int mtflags;
-#endif /* CONFIG_MIPS_MT_SMTC */
-
-			preempt_disable();
-			if (!cpu_has_fpu) {
-				preempt_enable();
-				break;
-			}
-
-#ifdef CONFIG_MIPS_MT_SMTC
-			/* Read-modify-write of Status must be atomic */
-			local_irq_save(irqflags);
-			mtflags = dmt();
-#endif /* CONFIG_MIPS_MT_SMTC */
-			if (cpu_has_mipsmt) {
-				unsigned int vpflags = dvpe();
-				flags = read_c0_status();
-				__enable_fpu();
-				__asm__ __volatile__("cfc1\t%0,$0": "=r" (tmp));
-				write_c0_status(flags);
-				evpe(vpflags);
-			} else {
-				flags = read_c0_status();
-				__enable_fpu();
-				__asm__ __volatile__("cfc1\t%0,$0": "=r" (tmp));
-				write_c0_status(flags);
-			}
-#ifdef CONFIG_MIPS_MT_SMTC
-			emt(mtflags);
-			local_irq_restore(irqflags);
-#endif /* CONFIG_MIPS_MT_SMTC */
-			preempt_enable();
-			break;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case DSP_BASE ... DSP_BASE + 5: {
 			dspreg_t *dregs;
 
@@ -1405,11 +1169,7 @@ long arch_ptrace(struct task_struct *child, long request,
 				goto out;
 			}
 			dregs = __get_dsp_regs(child);
-<<<<<<< HEAD
-			tmp = (unsigned long) (dregs[addr - DSP_BASE]);
-=======
 			tmp = dregs[addr - DSP_BASE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		case DSP_CONTROL:
@@ -1443,37 +1203,6 @@ long arch_ptrace(struct task_struct *child, long request,
 		switch (addr) {
 		case 0 ... 31:
 			regs->regs[addr] = data;
-<<<<<<< HEAD
-			break;
-		case FPR_BASE ... FPR_BASE + 31: {
-			fpureg_t *fregs = get_fpu_regs(child);
-
-			if (!tsk_used_math(child)) {
-				/* FP not yet used  */
-				memset(&child->thread.fpu, ~0,
-				       sizeof(child->thread.fpu));
-				child->thread.fpu.fcr31 = 0;
-			}
-#ifdef CONFIG_32BIT
-			/*
-			 * The odd registers are actually the high order bits
-			 * of the values stored in the even registers - unless
-			 * we're using r2k_switch.S.
-			 */
-			if (addr & 1) {
-				fregs[(addr & ~1) - FPR_BASE] &= 0xffffffff;
-				fregs[(addr & ~1) - FPR_BASE] |= ((unsigned long long) data) << 32;
-			} else {
-				fregs[addr - FPR_BASE] &= ~0xffffffffLL;
-				fregs[addr - FPR_BASE] |= data;
-			}
-#endif
-#ifdef CONFIG_64BIT
-			fregs[addr - FPR_BASE] = data;
-#endif
-			break;
-		}
-=======
 			/* System call number may have been changed */
 			if (addr == 2)
 				mips_syscall_update_nr(child, regs);
@@ -1506,7 +1235,6 @@ long arch_ptrace(struct task_struct *child, long request,
 			ptrace_setfcr31(child, data);
 			break;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case PC:
 			regs->cp0_epc = data;
 			break;
@@ -1521,12 +1249,6 @@ long arch_ptrace(struct task_struct *child, long request,
 			regs->acx = data;
 			break;
 #endif
-<<<<<<< HEAD
-		case FPC_CSR:
-			child->thread.fpu.fcr31 = data;
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case DSP_BASE ... DSP_BASE + 5: {
 			dspreg_t *dregs;
 
@@ -1562,10 +1284,7 @@ long arch_ptrace(struct task_struct *child, long request,
 		ret = ptrace_setregs(child, datavp);
 		break;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MIPS_FP_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PTRACE_GETFPREGS:
 		ret = ptrace_getfpregs(child, datavp);
 		break;
@@ -1573,11 +1292,7 @@ long arch_ptrace(struct task_struct *child, long request,
 	case PTRACE_SETFPREGS:
 		ret = ptrace_setfpregs(child, datavp);
 		break;
-<<<<<<< HEAD
-
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PTRACE_GET_THREAD_AREA:
 		ret = put_user(task_thread_info(child)->tp_value, datalp);
 		break;
@@ -1598,57 +1313,10 @@ long arch_ptrace(struct task_struct *child, long request,
 	return ret;
 }
 
-<<<<<<< HEAD
-static inline int audit_arch(void)
-{
-	int arch = EM_MIPS;
-#ifdef CONFIG_64BIT
-	arch |=  __AUDIT_ARCH_64BIT;
-#endif
-#if defined(__LITTLE_ENDIAN)
-	arch |=  __AUDIT_ARCH_LE;
-#endif
-	return arch;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Notification of system call entry/exit
  * - triggered by current->work.syscall_trace
  */
-<<<<<<< HEAD
-asmlinkage void syscall_trace_enter(struct pt_regs *regs)
-{
-	/* do the secure computing check first */
-	secure_computing_strict(regs->regs[2]);
-
-	if (!(current->ptrace & PT_PTRACED))
-		goto out;
-
-	if (!test_thread_flag(TIF_SYSCALL_TRACE))
-		goto out;
-
-	/* The 0x80 provides a way for the tracing parent to distinguish
-	   between a syscall stop and SIGTRAP delivery */
-	ptrace_notify(SIGTRAP | ((current->ptrace & PT_TRACESYSGOOD) ?
-	                         0x80 : 0));
-
-	/*
-	 * this isn't the same as continuing with a signal, but it will do
-	 * for normal use.  strace only continues with a signal if the
-	 * stopping signal is not SIGTRAP.  -brl
-	 */
-	if (current->exit_code) {
-		send_sig(current->exit_code, current, 1);
-		current->exit_code = 0;
-	}
-
-out:
-	audit_syscall_entry(audit_arch(), regs->regs[2],
-			    regs->regs[4], regs->regs[5],
-			    regs->regs[6], regs->regs[7]);
-=======
 asmlinkage long syscall_trace_enter(struct pt_regs *regs)
 {
 	user_exit();
@@ -1691,7 +1359,6 @@ asmlinkage long syscall_trace_enter(struct pt_regs *regs)
 	if (current_thread_info()->syscall < 0)
 		syscall_set_return_value(current, regs, -ENOSYS, 0);
 	return current_thread_info()->syscall;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1700,30 +1367,6 @@ asmlinkage long syscall_trace_enter(struct pt_regs *regs)
  */
 asmlinkage void syscall_trace_leave(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	audit_syscall_exit(regs);
-
-	if (!(current->ptrace & PT_PTRACED))
-		return;
-
-	if (!test_thread_flag(TIF_SYSCALL_TRACE))
-		return;
-
-	/* The 0x80 provides a way for the tracing parent to distinguish
-	   between a syscall stop and SIGTRAP delivery */
-	ptrace_notify(SIGTRAP | ((current->ptrace & PT_TRACESYSGOOD) ?
-	                         0x80 : 0));
-
-	/*
-	 * this isn't the same as continuing with a signal, but it will do
-	 * for normal use.  strace only continues with a signal if the
-	 * stopping signal is not SIGTRAP.  -brl
-	 */
-	if (current->exit_code) {
-		send_sig(current->exit_code, current, 1);
-		current->exit_code = 0;
-	}
-=======
         /*
 	 * We may come here right after calling schedule_user()
 	 * or do_notify_resume(), in which case we can be in RCU
@@ -1740,5 +1383,4 @@ asmlinkage void syscall_trace_leave(struct pt_regs *regs)
 		ptrace_report_syscall_exit(regs, 0);
 
 	user_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

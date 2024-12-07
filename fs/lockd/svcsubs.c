@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/lockd/svcsubs.c
  *
@@ -17,21 +14,12 @@
 #include <linux/slab.h>
 #include <linux/mutex.h>
 #include <linux/sunrpc/svc.h>
-<<<<<<< HEAD
-#include <linux/sunrpc/clnt.h>
-#include <linux/nfsd/nfsfh.h>
-#include <linux/nfsd/export.h>
-=======
 #include <linux/sunrpc/addr.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/lockd/lockd.h>
 #include <linux/lockd/share.h>
 #include <linux/module.h>
 #include <linux/mount.h>
-<<<<<<< HEAD
-=======
 #include <uapi/linux/nfs2.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NLMDBG_FACILITY		NLMDBG_SVCSUBS
 
@@ -44,11 +32,7 @@
 static struct hlist_head	nlm_files[FILE_NRHASH];
 static DEFINE_MUTEX(nlm_file_mutex);
 
-<<<<<<< HEAD
-#ifdef NFSD_DEBUG
-=======
 #ifdef CONFIG_SUNRPC_DEBUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void nlm_debug_print_fh(char *msg, struct nfs_fh *f)
 {
 	u32 *fhp = (u32*)f->data;
@@ -61,11 +45,7 @@ static inline void nlm_debug_print_fh(char *msg, struct nfs_fh *f)
 
 static inline void nlm_debug_print_file(char *msg, struct nlm_file *file)
 {
-<<<<<<< HEAD
-	struct inode *inode = file->f_file->f_path.dentry->d_inode;
-=======
 	struct inode *inode = nlmsvc_file_inode(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("lockd: %s %s/%ld\n",
 		msg, inode->i_sb->s_id, inode->i_ino);
@@ -91,29 +71,6 @@ static inline unsigned int file_hash(struct nfs_fh *f)
 	return tmp & (FILE_NRHASH - 1);
 }
 
-<<<<<<< HEAD
-/*
- * Lookup file info. If it doesn't exist, create a file info struct
- * and open a (VFS) file for the given inode.
- *
- * FIXME:
- * Note that we open the file O_RDONLY even when creating write locks.
- * This is not quite right, but for now, we assume the client performs
- * the proper R/W checking.
- */
-__be32
-nlm_lookup_file(struct svc_rqst *rqstp, struct nlm_file **result,
-					struct nfs_fh *f)
-{
-	struct hlist_node *pos;
-	struct nlm_file	*file;
-	unsigned int	hash;
-	__be32		nfserr;
-
-	nlm_debug_print_fh("nlm_lookup_file", f);
-
-	hash = file_hash(f);
-=======
 int lock_to_openmode(struct file_lock *lock)
 {
 	return lock_is_write(lock) ? O_WRONLY : O_RDONLY;
@@ -157,18 +114,10 @@ nlm_lookup_file(struct svc_rqst *rqstp, struct nlm_file **result,
 
 	hash = file_hash(&lock->fh);
 	mode = lock_to_openmode(&lock->fl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Lock file table */
 	mutex_lock(&nlm_file_mutex);
 
-<<<<<<< HEAD
-	hlist_for_each_entry(file, pos, &nlm_files[hash], f_list)
-		if (!nfs_compare_fh(&file->f_handle, f))
-			goto found;
-
-	nlm_debug_print_fh("creating file for", f);
-=======
 	hlist_for_each_entry(file, &nlm_files[hash], f_list)
 		if (!nfs_compare_fh(&file->f_handle, &lock->fh)) {
 			mutex_lock(&file->f_mutex);
@@ -177,40 +126,20 @@ nlm_lookup_file(struct svc_rqst *rqstp, struct nlm_file **result,
 			goto found;
 		}
 	nlm_debug_print_fh("creating file for", &lock->fh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nfserr = nlm_lck_denied_nolocks;
 	file = kzalloc(sizeof(*file), GFP_KERNEL);
 	if (!file)
-<<<<<<< HEAD
-		goto out_unlock;
-
-	memcpy(&file->f_handle, f, sizeof(struct nfs_fh));
-=======
 		goto out_free;
 
 	memcpy(&file->f_handle, &lock->fh, sizeof(struct nfs_fh));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&file->f_mutex);
 	INIT_HLIST_NODE(&file->f_list);
 	INIT_LIST_HEAD(&file->f_blocks);
 
-<<<<<<< HEAD
-	/* Open the file. Note that this must not sleep for too long, else
-	 * we would lock up lockd:-) So no NFS re-exports, folks.
-	 *
-	 * We have to make sure we have the right credential to open
-	 * the file.
-	 */
-	if ((nfserr = nlmsvc_ops->fopen(rqstp, f, &file->f_file)) != 0) {
-		dprintk("lockd: open failed (error %d)\n", nfserr);
-		goto out_free;
-	}
-=======
 	nfserr = nlm_do_fopen(rqstp, file, mode);
 	if (nfserr)
 		goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hlist_add_head(&file->f_list, &nlm_files[hash]);
 
@@ -218,10 +147,6 @@ found:
 	dprintk("lockd: found file %p (count %d)\n", file, file->f_count);
 	*result = file;
 	file->f_count++;
-<<<<<<< HEAD
-	nfserr = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_unlock:
 	mutex_unlock(&nlm_file_mutex);
@@ -241,22 +166,16 @@ nlm_delete_file(struct nlm_file *file)
 	nlm_debug_print_file("closing file", file);
 	if (!hlist_unhashed(&file->f_list)) {
 		hlist_del(&file->f_list);
-<<<<<<< HEAD
-		nlmsvc_ops->fclose(file->f_file);
-=======
 		if (file->f_file[O_RDONLY])
 			nlmsvc_ops->fclose(file->f_file[O_RDONLY]);
 		if (file->f_file[O_WRONLY])
 			nlmsvc_ops->fclose(file->f_file[O_WRONLY]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(file);
 	} else {
 		printk(KERN_WARNING "lockd: attempt to release unknown file!\n");
 	}
 }
 
-<<<<<<< HEAD
-=======
 static int nlm_unlock_files(struct nlm_file *file, const struct file_lock *fl)
 {
 	struct file_lock lock;
@@ -281,7 +200,6 @@ out_err:
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Loop over all locks on the given file and perform the specified
  * action.
@@ -292,14 +210,6 @@ nlm_traverse_locks(struct nlm_host *host, struct nlm_file *file,
 {
 	struct inode	 *inode = nlmsvc_file_inode(file);
 	struct file_lock *fl;
-<<<<<<< HEAD
-	struct nlm_host	 *lockhost;
-
-again:
-	file->f_locks = 0;
-	lock_flocks(); /* protects i_flock list */
-	for (fl = inode->i_flock; fl; fl = fl->fl_next) {
-=======
 	struct file_lock_context *flctx = locks_inode_context(inode);
 	struct nlm_host	 *lockhost;
 
@@ -309,32 +219,12 @@ again:
 	file->f_locks = 0;
 	spin_lock(&flctx->flc_lock);
 	for_each_file_lock(fl, &flctx->flc_posix) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fl->fl_lmops != &nlmsvc_lock_operations)
 			continue;
 
 		/* update current lock count */
 		file->f_locks++;
 
-<<<<<<< HEAD
-		lockhost = (struct nlm_host *) fl->fl_owner;
-		if (match(lockhost, host)) {
-			struct file_lock lock = *fl;
-
-			unlock_flocks();
-			lock.fl_type  = F_UNLCK;
-			lock.fl_start = 0;
-			lock.fl_end   = OFFSET_MAX;
-			if (vfs_lock_file(file->f_file, F_SETLK, &lock, NULL) < 0) {
-				printk("lockd: unlock failure in %s:%d\n",
-						__FILE__, __LINE__);
-				return 1;
-			}
-			goto again;
-		}
-	}
-	unlock_flocks();
-=======
 		lockhost = ((struct nlm_lockowner *) fl->c.flc_owner)->host;
 		if (match(lockhost, host)) {
 
@@ -345,7 +235,6 @@ again:
 		}
 	}
 	spin_unlock(&flctx->flc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -376,24 +265,11 @@ nlm_file_inuse(struct nlm_file *file)
 {
 	struct inode	 *inode = nlmsvc_file_inode(file);
 	struct file_lock *fl;
-<<<<<<< HEAD
-=======
 	struct file_lock_context *flctx = locks_inode_context(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (file->f_count || !list_empty(&file->f_blocks) || file->f_shares)
 		return 1;
 
-<<<<<<< HEAD
-	lock_flocks();
-	for (fl = inode->i_flock; fl; fl = fl->fl_next) {
-		if (fl->fl_lmops == &nlmsvc_lock_operations) {
-			unlock_flocks();
-			return 1;
-		}
-	}
-	unlock_flocks();
-=======
 	if (flctx && !list_empty_careful(&flctx->flc_posix)) {
 		spin_lock(&flctx->flc_lock);
 		for_each_file_lock(fl, &flctx->flc_posix) {
@@ -404,13 +280,10 @@ nlm_file_inuse(struct nlm_file *file)
 		}
 		spin_unlock(&flctx->flc_lock);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	file->f_locks = 0;
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void nlm_close_files(struct nlm_file *file)
 {
 	if (file->f_file[O_RDONLY])
@@ -419,7 +292,6 @@ static void nlm_close_files(struct nlm_file *file)
 		nlmsvc_ops->fclose(file->f_file[O_WRONLY]);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Loop over all files in the file table.
  */
@@ -427,21 +299,13 @@ static int
 nlm_traverse_files(void *data, nlm_host_match_fn_t match,
 		int (*is_failover_file)(void *data, struct nlm_file *file))
 {
-<<<<<<< HEAD
-	struct hlist_node *pos, *next;
-=======
 	struct hlist_node *next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlm_file	*file;
 	int i, ret = 0;
 
 	mutex_lock(&nlm_file_mutex);
 	for (i = 0; i < FILE_NRHASH; i++) {
-<<<<<<< HEAD
-		hlist_for_each_entry_safe(file, pos, next, &nlm_files[i], f_list) {
-=======
 		hlist_for_each_entry_safe(file, next, &nlm_files[i], f_list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (is_failover_file && !is_failover_file(data, file))
 				continue;
 			file->f_count++;
@@ -458,11 +322,7 @@ nlm_traverse_files(void *data, nlm_host_match_fn_t match,
 			if (list_empty(&file->f_blocks) && !file->f_locks
 			 && !file->f_shares && !file->f_count) {
 				hlist_del(&file->f_list);
-<<<<<<< HEAD
-				nlmsvc_ops->fclose(file->f_file);
-=======
 				nlm_close_files(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(file);
 			}
 		}
@@ -500,12 +360,8 @@ nlm_release_file(struct nlm_file *file)
  * Helpers function for resource traversal
  *
  * nlmsvc_mark_host:
-<<<<<<< HEAD
- *	used by the garbage collector; simply sets h_inuse.
-=======
  *	used by the garbage collector; simply sets h_inuse only for those
  *	hosts, which passed network check.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Always returns 0.
  *
  * nlmsvc_same_host:
@@ -516,14 +372,6 @@ nlm_release_file(struct nlm_file *file)
  *	returns 1 iff the host is a client.
  *	Used by nlmsvc_invalidate_all
  */
-<<<<<<< HEAD
-static int
-nlmsvc_mark_host(void *data, struct nlm_host *dummy)
-{
-	struct nlm_host *host = data;
-
-	host->h_inuse = 1;
-=======
 
 static int
 nlmsvc_mark_host(void *data, struct nlm_host *hint)
@@ -533,7 +381,6 @@ nlmsvc_mark_host(void *data, struct nlm_host *hint)
 	if ((hint->net == NULL) ||
 	    (host->net == hint->net))
 		host->h_inuse = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -566,12 +413,6 @@ nlmsvc_is_client(void *data, struct nlm_host *dummy)
  * Mark all hosts that still hold resources
  */
 void
-<<<<<<< HEAD
-nlmsvc_mark_resources(void)
-{
-	dprintk("lockd: nlmsvc_mark_resources\n");
-	nlm_traverse_files(NULL, nlmsvc_mark_host, NULL);
-=======
 nlmsvc_mark_resources(struct net *net)
 {
 	struct nlm_host hint;
@@ -579,7 +420,6 @@ nlmsvc_mark_resources(struct net *net)
 	dprintk("lockd: %s for net %x\n", __func__, net ? net->ns.inum : 0);
 	hint.net = net;
 	nlm_traverse_files(&hint, nlmsvc_mark_host, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -616,20 +456,13 @@ nlmsvc_invalidate_all(void)
 	nlm_traverse_files(NULL, nlmsvc_is_client, NULL);
 }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 nlmsvc_match_sb(void *datap, struct nlm_file *file)
 {
 	struct super_block *sb = datap;
 
-<<<<<<< HEAD
-	return sb == file->f_file->f_path.dentry->d_sb;
-=======
 	return sb == nlmsvc_file_inode(file)->i_sb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**

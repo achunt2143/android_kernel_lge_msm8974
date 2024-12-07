@@ -13,15 +13,6 @@
  */
 
 /* #define DEBUG 1 */
-<<<<<<< HEAD
-#include <linux/kallsyms.h>
-#include <linux/kernel.h>
-#include <linux/sched.h>
-#include <linux/stacktrace.h>
-#include <linux/types.h>
-#include <linux/errno.h>
-#include <linux/module.h>
-=======
 #include <linux/export.h>
 #include <linux/kallsyms.h>
 #include <linux/kernel.h>
@@ -30,7 +21,6 @@
 #include <linux/stacktrace.h>
 #include <linux/types.h>
 #include <linux/errno.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <asm/sections.h>
 #include <asm/exceptions.h>
@@ -70,11 +60,7 @@ struct stack_trace;
  *
  * Return - Number of stack bytes the instruction reserves or reclaims
  */
-<<<<<<< HEAD
-inline long get_frame_size(unsigned long instr)
-=======
 static inline long get_frame_size(unsigned long instr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return abs((s16)(instr & 0xFFFF));
 }
@@ -168,40 +154,19 @@ static int lookup_prev_stack_frame(unsigned long fp, unsigned long pc,
 static void microblaze_unwind_inner(struct task_struct *task,
 				    unsigned long pc, unsigned long fp,
 				    unsigned long leaf_return,
-<<<<<<< HEAD
-				    struct stack_trace *trace);
-=======
 				    struct stack_trace *trace,
 				    const char *loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * unwind_trap - Unwind through a system trap, that stored previous state
  *		 on the stack.
  */
-<<<<<<< HEAD
-#ifdef CONFIG_MMU
-static inline void unwind_trap(struct task_struct *task, unsigned long pc,
-				unsigned long fp, struct stack_trace *trace)
-{
-	/* To be implemented */
-}
-#else
-static inline void unwind_trap(struct task_struct *task, unsigned long pc,
-				unsigned long fp, struct stack_trace *trace)
-{
-	const struct pt_regs *regs = (const struct pt_regs *) fp;
-	microblaze_unwind_inner(task, regs->pc, regs->r1, regs->r15, trace);
-}
-#endif
-=======
 static inline void unwind_trap(struct task_struct *task, unsigned long pc,
 				unsigned long fp, struct stack_trace *trace,
 				const char *loglvl)
 {
 	/* To be implemented */
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * microblaze_unwind_inner - Unwind the stack from the specified point
@@ -212,20 +177,13 @@ static inline void unwind_trap(struct task_struct *task, unsigned long pc,
  *				  the caller's return address.
  * @trace : Where to store stack backtrace (PC values).
  *	    NULL == print backtrace to kernel log
-<<<<<<< HEAD
-=======
  * @loglvl : Used for printk log level if (trace == NULL).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void microblaze_unwind_inner(struct task_struct *task,
 			     unsigned long pc, unsigned long fp,
 			     unsigned long leaf_return,
-<<<<<<< HEAD
-			     struct stack_trace *trace)
-=======
 			     struct stack_trace *trace,
 			     const char *loglvl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ofs = 0;
 
@@ -247,20 +205,7 @@ static void microblaze_unwind_inner(struct task_struct *task,
 			 * HW exception handler doesn't save all registers,
 			 * so we open-code a special case of unwind_trap()
 			 */
-<<<<<<< HEAD
-#ifndef CONFIG_MMU
-			const struct pt_regs *regs =
-				(const struct pt_regs *) fp;
-#endif
-			pr_info("HW EXCEPTION\n");
-#ifndef CONFIG_MMU
-			microblaze_unwind_inner(task, regs->r17 - 4,
-						fp + EX_HANDLER_STACK_SIZ,
-						regs->r15, trace);
-#endif
-=======
 			printk("%sHW EXCEPTION\n", loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 
@@ -269,13 +214,8 @@ static void microblaze_unwind_inner(struct task_struct *task,
 			if ((return_to >= handler->start_addr)
 			    && (return_to <= handler->end_addr)) {
 				if (!trace)
-<<<<<<< HEAD
-					pr_info("%s\n", handler->trap_name);
-				unwind_trap(task, pc, fp, trace);
-=======
 					printk("%s%s\n", loglvl, handler->trap_name);
 				unwind_trap(task, pc, fp, trace, loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return;
 			}
 		}
@@ -294,22 +234,13 @@ static void microblaze_unwind_inner(struct task_struct *task,
 		} else {
 			/* Have we reached userland? */
 			if (unlikely(pc == task_pt_regs(task)->pc)) {
-<<<<<<< HEAD
-				pr_info("[<%p>] PID %lu [%s]\n",
-					(void *) pc,
-=======
 				printk("%s[<%p>] PID %lu [%s]\n",
 					loglvl, (void *) pc,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					(unsigned long) task->pid,
 					task->comm);
 				break;
 			} else
-<<<<<<< HEAD
-				print_ip_sym(pc);
-=======
 				print_ip_sym(loglvl, pc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Stop when we reach anything not part of the kernel */
@@ -337,25 +268,16 @@ static void microblaze_unwind_inner(struct task_struct *task,
  * @task  : Task whose stack we are to unwind (NULL == current)
  * @trace : Where to store stack backtrace (PC values).
  *	    NULL == print backtrace to kernel log
-<<<<<<< HEAD
- */
-void microblaze_unwind(struct task_struct *task, struct stack_trace *trace)
-=======
  * @loglvl : Used for printk log level if (trace == NULL).
  */
 void microblaze_unwind(struct task_struct *task, struct stack_trace *trace,
 		       const char *loglvl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (task) {
 		if (task == current) {
 			const struct pt_regs *regs = task_pt_regs(task);
 			microblaze_unwind_inner(task, regs->pc, regs->r1,
-<<<<<<< HEAD
-						regs->r15, trace);
-=======
 						regs->r15, trace, loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			struct thread_info *thread_info =
 				(struct thread_info *)(task->stack);
@@ -365,12 +287,8 @@ void microblaze_unwind(struct task_struct *task, struct stack_trace *trace,
 			microblaze_unwind_inner(task,
 						(unsigned long) &_switch_to,
 						cpu_context->r1,
-<<<<<<< HEAD
-						cpu_context->r15, trace);
-=======
 						cpu_context->r15,
 						trace, loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		unsigned long pc, fp;
@@ -385,11 +303,7 @@ void microblaze_unwind(struct task_struct *task, struct stack_trace *trace,
 		);
 
 		/* Since we are not a leaf function, use leaf_return = 0 */
-<<<<<<< HEAD
-		microblaze_unwind_inner(current, pc, fp, 0, trace);
-=======
 		microblaze_unwind_inner(current, pc, fp, 0, trace, loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 

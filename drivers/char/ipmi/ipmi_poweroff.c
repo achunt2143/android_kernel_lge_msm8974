@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ipmi_poweroff.c
  *
@@ -13,35 +10,10 @@
  *         source@mvista.com
  *
  * Copyright 2002,2004 MontaVista Software Inc.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation; either version 2 of the License, or (at your
- *  option) any later version.
- *
- *
- *  THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
- *  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- *  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- *  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
- *  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- *  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- *  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  675 Mass Ave, Cambridge, MA 02139, USA.
- */
-=======
  */
 
 #define pr_fmt(fmt) "IPMI poweroff: " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/proc_fs.h>
@@ -52,11 +24,6 @@
 #include <linux/ipmi.h>
 #include <linux/ipmi_smi.h>
 
-<<<<<<< HEAD
-#define PFX "IPMI poweroff: "
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ipmi_po_smi_gone(int if_num);
 static void ipmi_po_new_smi(int if_num, struct device *device);
 
@@ -73,24 +40,14 @@ static int ifnum_to_use = -1;
 
 /* Our local state. */
 static int ready;
-<<<<<<< HEAD
-static ipmi_user_t ipmi_user;
-static int ipmi_ifnum;
-static void (*specific_poweroff_func)(ipmi_user_t user);
-=======
 static struct ipmi_user *ipmi_user;
 static int ipmi_ifnum;
 static void (*specific_poweroff_func)(struct ipmi_user *user);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Holds the old poweroff function so we can restore it on removal. */
 static void (*old_poweroff_func)(void);
 
-<<<<<<< HEAD
-static int set_param_ifnum(const char *val, struct kernel_param *kp)
-=======
 static int set_param_ifnum(const char *val, const struct kernel_param *kp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rv = param_set_int(val, kp);
 	if (rv)
@@ -137,17 +94,8 @@ static void dummy_recv_free(struct ipmi_recv_msg *msg)
 {
 	atomic_dec(&dummy_count);
 }
-<<<<<<< HEAD
-static struct ipmi_smi_msg halt_smi_msg = {
-	.done = dummy_smi_free
-};
-static struct ipmi_recv_msg halt_recv_msg = {
-	.done = dummy_recv_free
-};
-=======
 static struct ipmi_smi_msg halt_smi_msg = INIT_IPMI_SMI_MSG(dummy_smi_free);
 static struct ipmi_recv_msg halt_recv_msg = INIT_IPMI_RECV_MSG(dummy_recv_free);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -162,20 +110,12 @@ static void receive_handler(struct ipmi_recv_msg *recv_msg, void *handler_data)
 		complete(comp);
 }
 
-<<<<<<< HEAD
-static struct ipmi_user_hndl ipmi_poweroff_handler = {
-=======
 static const struct ipmi_user_hndl ipmi_poweroff_handler = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ipmi_recv_hndl = receive_handler
 };
 
 
-<<<<<<< HEAD
-static int ipmi_request_wait_for_response(ipmi_user_t            user,
-=======
 static int ipmi_request_wait_for_response(struct ipmi_user       *user,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  struct ipmi_addr       *addr,
 					  struct kernel_ipmi_msg *send_msg)
 {
@@ -195,11 +135,7 @@ static int ipmi_request_wait_for_response(struct ipmi_user       *user,
 }
 
 /* Wait for message to complete, spinning. */
-<<<<<<< HEAD
-static int ipmi_request_in_rc_mode(ipmi_user_t            user,
-=======
 static int ipmi_request_in_rc_mode(struct ipmi_user       *user,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   struct ipmi_addr       *addr,
 				   struct kernel_ipmi_msg *send_msg)
 {
@@ -239,15 +175,9 @@ static int ipmi_request_in_rc_mode(struct ipmi_user       *user,
 #define IPMI_MOTOROLA_MANUFACTURER_ID		0x0000A1
 #define IPMI_MOTOROLA_PPS_IPMC_PRODUCT_ID	0x0051
 
-<<<<<<< HEAD
-static void (*atca_oem_poweroff_hook)(ipmi_user_t user);
-
-static void pps_poweroff_atca(ipmi_user_t user)
-=======
 static void (*atca_oem_poweroff_hook)(struct ipmi_user *user);
 
 static void pps_poweroff_atca(struct ipmi_user *user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipmi_system_interface_addr smi_addr;
 	struct kernel_ipmi_msg            send_msg;
@@ -259,11 +189,7 @@ static void pps_poweroff_atca(struct ipmi_user *user)
 	smi_addr.channel = IPMI_BMC_CHANNEL;
 	smi_addr.lun = 0;
 
-<<<<<<< HEAD
-	printk(KERN_INFO PFX "PPS powerdown hook used");
-=======
 	pr_info("PPS powerdown hook used\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	send_msg.netfn = IPMI_NETFN_OEM;
 	send_msg.cmd = IPMI_ATCA_PPS_GRACEFUL_RESTART;
@@ -272,16 +198,6 @@ static void pps_poweroff_atca(struct ipmi_user *user)
 	rv = ipmi_request_in_rc_mode(user,
 				     (struct ipmi_addr *) &smi_addr,
 				     &send_msg);
-<<<<<<< HEAD
-	if (rv && rv != IPMI_UNKNOWN_ERR_COMPLETION_CODE) {
-		printk(KERN_ERR PFX "Unable to send ATCA ,"
-		       " IPMI error 0x%x\n", rv);
-	}
-	return;
-}
-
-static int ipmi_atca_detect(ipmi_user_t user)
-=======
 	if (rv && rv != IPMI_UNKNOWN_ERR_COMPLETION_CODE)
 		pr_err("Unable to send ATCA, IPMI error 0x%x\n", rv);
 
@@ -289,7 +205,6 @@ static int ipmi_atca_detect(ipmi_user_t user)
 }
 
 static int ipmi_atca_detect(struct ipmi_user *user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipmi_system_interface_addr smi_addr;
 	struct kernel_ipmi_msg            send_msg;
@@ -315,29 +230,16 @@ static int ipmi_atca_detect(struct ipmi_user *user)
 					    (struct ipmi_addr *) &smi_addr,
 					    &send_msg);
 
-<<<<<<< HEAD
-	printk(KERN_INFO PFX "ATCA Detect mfg 0x%X prod 0x%X\n",
-	       mfg_id, prod_id);
-	if ((mfg_id == IPMI_MOTOROLA_MANUFACTURER_ID)
-	    && (prod_id == IPMI_MOTOROLA_PPS_IPMC_PRODUCT_ID)) {
-		printk(KERN_INFO PFX
-		       "Installing Pigeon Point Systems Poweroff Hook\n");
-=======
 	pr_info("ATCA Detect mfg 0x%X prod 0x%X\n", mfg_id, prod_id);
 	if ((mfg_id == IPMI_MOTOROLA_MANUFACTURER_ID)
 	    && (prod_id == IPMI_MOTOROLA_PPS_IPMC_PRODUCT_ID)) {
 		pr_info("Installing Pigeon Point Systems Poweroff Hook\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atca_oem_poweroff_hook = pps_poweroff_atca;
 	}
 	return !rv;
 }
 
-<<<<<<< HEAD
-static void ipmi_poweroff_atca(ipmi_user_t user)
-=======
 static void ipmi_poweroff_atca(struct ipmi_user *user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipmi_system_interface_addr smi_addr;
 	struct kernel_ipmi_msg            send_msg;
@@ -351,11 +253,7 @@ static void ipmi_poweroff_atca(struct ipmi_user *user)
 	smi_addr.channel = IPMI_BMC_CHANNEL;
 	smi_addr.lun = 0;
 
-<<<<<<< HEAD
-	printk(KERN_INFO PFX "Powering down via ATCA power command\n");
-=======
 	pr_info("Powering down via ATCA power command\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Power down
@@ -378,13 +276,8 @@ static void ipmi_poweroff_atca(struct ipmi_user *user)
 	 * return code
 	 */
 	if (rv && rv != IPMI_UNKNOWN_ERR_COMPLETION_CODE) {
-<<<<<<< HEAD
-		printk(KERN_ERR PFX "Unable to send ATCA powerdown message,"
-		       " IPMI error 0x%x\n", rv);
-=======
 		pr_err("Unable to send ATCA powerdown message, IPMI error 0x%x\n",
 		       rv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -410,21 +303,13 @@ static void ipmi_poweroff_atca(struct ipmi_user *user)
 #define IPMI_CPI1_PRODUCT_ID		0x000157
 #define IPMI_CPI1_MANUFACTURER_ID	0x0108
 
-<<<<<<< HEAD
-static int ipmi_cpi1_detect(ipmi_user_t user)
-=======
 static int ipmi_cpi1_detect(struct ipmi_user *user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ((mfg_id == IPMI_CPI1_MANUFACTURER_ID)
 		&& (prod_id == IPMI_CPI1_PRODUCT_ID));
 }
 
-<<<<<<< HEAD
-static void ipmi_poweroff_cpi1(ipmi_user_t user)
-=======
 static void ipmi_poweroff_cpi1(struct ipmi_user *user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipmi_system_interface_addr smi_addr;
 	struct ipmi_ipmb_addr             ipmb_addr;
@@ -443,11 +328,7 @@ static void ipmi_poweroff_cpi1(struct ipmi_user *user)
 	smi_addr.channel = IPMI_BMC_CHANNEL;
 	smi_addr.lun = 0;
 
-<<<<<<< HEAD
-	printk(KERN_INFO PFX "Powering down via CPI1 power command\n");
-=======
 	pr_info("Powering down via CPI1 power command\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Get IPMI ipmb address
@@ -537,11 +418,7 @@ static void ipmi_poweroff_cpi1(struct ipmi_user *user)
  */
 
 #define DELL_IANA_MFR_ID {0xA2, 0x02, 0x00}
-<<<<<<< HEAD
-static int ipmi_dell_chassis_detect(ipmi_user_t user)
-=======
 static int ipmi_dell_chassis_detect(struct ipmi_user *user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char ipmi_version_major = ipmi_version & 0xF;
 	const char ipmi_version_minor = (ipmi_version >> 4) & 0xF;
@@ -554,8 +431,6 @@ static int ipmi_dell_chassis_detect(struct ipmi_user *user)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * ipmi_hp_chassis_detect()
  * HP PA-RISC servers rp3410/rp3440, the C8000 workstation and the rx2600 and
  * zx6000 machines support IPMI vers 1 and don't set the chassis capability bit
@@ -574,28 +449,19 @@ static int ipmi_hp_chassis_detect(struct ipmi_user *user)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Standard chassis support
  */
 
 #define IPMI_NETFN_CHASSIS_REQUEST	0
 #define IPMI_CHASSIS_CONTROL_CMD	0x02
 
-<<<<<<< HEAD
-static int ipmi_chassis_detect(ipmi_user_t user)
-=======
 static int ipmi_chassis_detect(struct ipmi_user *user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Chassis support, use it. */
 	return (capabilities & 0x80);
 }
 
-<<<<<<< HEAD
-static void ipmi_poweroff_chassis(ipmi_user_t user)
-=======
 static void ipmi_poweroff_chassis(struct ipmi_user *user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipmi_system_interface_addr smi_addr;
 	struct kernel_ipmi_msg            send_msg;
@@ -610,11 +476,7 @@ static void ipmi_poweroff_chassis(struct ipmi_user *user)
 	smi_addr.lun = 0;
 
  powercyclefailed:
-<<<<<<< HEAD
-	printk(KERN_INFO PFX "Powering %s via IPMI chassis control command\n",
-=======
 	pr_info("Powering %s via IPMI chassis control command\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(poweroff_powercycle ? "cycle" : "down"));
 
 	/*
@@ -634,24 +496,14 @@ static void ipmi_poweroff_chassis(struct ipmi_user *user)
 	if (rv) {
 		if (poweroff_powercycle) {
 			/* power cycle failed, default to power down */
-<<<<<<< HEAD
-			printk(KERN_ERR PFX "Unable to send chassis power " \
-			       "cycle message, IPMI error 0x%x\n", rv);
-=======
 			pr_err("Unable to send chassis power cycle message, IPMI error 0x%x\n",
 			       rv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			poweroff_powercycle = 0;
 			goto powercyclefailed;
 		}
 
-<<<<<<< HEAD
-		printk(KERN_ERR PFX "Unable to send chassis power " \
-		       "down message, IPMI error 0x%x\n", rv);
-=======
 		pr_err("Unable to send chassis power down message, IPMI error 0x%x\n",
 		       rv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -659,13 +511,8 @@ static void ipmi_poweroff_chassis(struct ipmi_user *user)
 /* Table of possible power off functions. */
 struct poweroff_function {
 	char *platform_type;
-<<<<<<< HEAD
-	int  (*detect)(ipmi_user_t user);
-	void (*poweroff_func)(ipmi_user_t user);
-=======
 	int  (*detect)(struct ipmi_user *user);
 	void (*poweroff_func)(struct ipmi_user *user);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct poweroff_function poweroff_functions[] = {
@@ -678,24 +525,16 @@ static struct poweroff_function poweroff_functions[] = {
 	{ .platform_type	= "chassis",
 	  .detect		= ipmi_dell_chassis_detect,
 	  .poweroff_func	= ipmi_poweroff_chassis },
-<<<<<<< HEAD
-=======
 	{ .platform_type	= "chassis",
 	  .detect		= ipmi_hp_chassis_detect,
 	  .poweroff_func	= ipmi_poweroff_chassis },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Chassis should generally be last, other things should override
 	   it. */
 	{ .platform_type	= "chassis",
 	  .detect		= ipmi_chassis_detect,
 	  .poweroff_func	= ipmi_poweroff_chassis },
 };
-<<<<<<< HEAD
-#define NUM_PO_FUNCS (sizeof(poweroff_functions) \
-		      / sizeof(struct poweroff_function))
-=======
 #define NUM_PO_FUNCS ARRAY_SIZE(poweroff_functions)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* Called on a powerdown request. */
@@ -726,12 +565,7 @@ static void ipmi_po_new_smi(int if_num, struct device *device)
 	rv = ipmi_create_user(if_num, &ipmi_poweroff_handler, NULL,
 			      &ipmi_user);
 	if (rv) {
-<<<<<<< HEAD
-		printk(KERN_ERR PFX "could not create IPMI user, error %d\n",
-		       rv);
-=======
 		pr_err("could not create IPMI user, error %d\n", rv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -753,23 +587,13 @@ static void ipmi_po_new_smi(int if_num, struct device *device)
 					    (struct ipmi_addr *) &smi_addr,
 					    &send_msg);
 	if (rv) {
-<<<<<<< HEAD
-		printk(KERN_ERR PFX "Unable to send IPMI get device id info,"
-		       " IPMI error 0x%x\n", rv);
-=======
 		pr_err("Unable to send IPMI get device id info, IPMI error 0x%x\n",
 		       rv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_err;
 	}
 
 	if (halt_recv_msg.msg.data_len < 12) {
-<<<<<<< HEAD
-		printk(KERN_ERR PFX "(chassis) IPMI get device id info too,"
-		       " short, was %d bytes, needed %d bytes\n",
-=======
 		pr_err("(chassis) IPMI get device id info too short, was %d bytes, needed %d bytes\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       halt_recv_msg.msg.data_len, 12);
 		goto out_err;
 	}
@@ -790,23 +614,13 @@ static void ipmi_po_new_smi(int if_num, struct device *device)
 	}
 
  out_err:
-<<<<<<< HEAD
-	printk(KERN_ERR PFX "Unable to find a poweroff function that"
-	       " will work, giving up\n");
-=======
 	pr_err("Unable to find a poweroff function that will work, giving up\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipmi_destroy_user(ipmi_user);
 	return;
 
  found:
-<<<<<<< HEAD
-	printk(KERN_INFO PFX "Found a %s style poweroff function\n",
-	       poweroff_functions[i].platform_type);
-=======
 	pr_info("Found a %s style poweroff function\n",
 		poweroff_functions[i].platform_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	specific_poweroff_func = poweroff_functions[i].poweroff_func;
 	old_poweroff_func = pm_power_off;
 	pm_power_off = ipmi_poweroff_function;
@@ -836,34 +650,12 @@ static struct ipmi_smi_watcher smi_watcher = {
 #ifdef CONFIG_PROC_FS
 #include <linux/sysctl.h>
 
-<<<<<<< HEAD
-static ctl_table ipmi_table[] = {
-=======
 static struct ctl_table ipmi_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .procname	= "poweroff_powercycle",
 	  .data		= &poweroff_powercycle,
 	  .maxlen	= sizeof(poweroff_powercycle),
 	  .mode		= 0644,
 	  .proc_handler	= proc_dointvec },
-<<<<<<< HEAD
-	{ }
-};
-
-static ctl_table ipmi_dir_table[] = {
-	{ .procname	= "ipmi",
-	  .mode		= 0555,
-	  .child	= ipmi_table },
-	{ }
-};
-
-static ctl_table ipmi_root_table[] = {
-	{ .procname	= "dev",
-	  .mode		= 0555,
-	  .child	= ipmi_dir_table },
-	{ }
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ctl_table_header *ipmi_table_header;
@@ -876,18 +668,6 @@ static int __init ipmi_poweroff_init(void)
 {
 	int rv;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "Copyright (C) 2004 MontaVista Software -"
-	       " IPMI Powerdown via sys_reboot.\n");
-
-	if (poweroff_powercycle)
-		printk(KERN_INFO PFX "Power cycle is enabled.\n");
-
-#ifdef CONFIG_PROC_FS
-	ipmi_table_header = register_sysctl_table(ipmi_root_table);
-	if (!ipmi_table_header) {
-		printk(KERN_ERR PFX "Unable to register powercycle sysctl\n");
-=======
 	pr_info("Copyright (C) 2004 MontaVista Software - IPMI Powerdown via sys_reboot\n");
 
 	if (poweroff_powercycle)
@@ -897,7 +677,6 @@ static int __init ipmi_poweroff_init(void)
 	ipmi_table_header = register_sysctl("dev/ipmi", ipmi_table);
 	if (!ipmi_table_header) {
 		pr_err("Unable to register powercycle sysctl\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rv = -ENOMEM;
 		goto out_err;
 	}
@@ -908,11 +687,7 @@ static int __init ipmi_poweroff_init(void)
 #ifdef CONFIG_PROC_FS
 	if (rv) {
 		unregister_sysctl_table(ipmi_table_header);
-<<<<<<< HEAD
-		printk(KERN_ERR PFX "Unable to register SMI watcher: %d\n", rv);
-=======
 		pr_err("Unable to register SMI watcher: %d\n", rv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_err;
 	}
 
@@ -935,12 +710,7 @@ static void __exit ipmi_poweroff_cleanup(void)
 	if (ready) {
 		rv = ipmi_destroy_user(ipmi_user);
 		if (rv)
-<<<<<<< HEAD
-			printk(KERN_ERR PFX "could not cleanup the IPMI"
-			       " user: 0x%x\n", rv);
-=======
 			pr_err("could not cleanup the IPMI user: 0x%x\n", rv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pm_power_off = old_poweroff_func;
 	}
 }

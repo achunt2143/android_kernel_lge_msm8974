@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
   This is the driver for the GMAC on-chip Ethernet controller for ST SoCs.
   DWC Ether MAC 10/100/1000 Universal version 3.41a  has been used for
@@ -11,43 +8,12 @@
 
   Copyright (C) 2007-2009  STMicroelectronics Ltd
 
-<<<<<<< HEAD
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
 *******************************************************************************/
 
 #include <linux/crc32.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-#include "dwmac1000.h"
-
-static void dwmac1000_core_init(void __iomem *ioaddr)
-{
-	u32 value = readl(ioaddr + GMAC_CONTROL);
-	value |= GMAC_CORE_INIT;
-	writel(value, ioaddr + GMAC_CONTROL);
-
-	/* Mask GMAC interrupts */
-	writel(0x207, ioaddr + GMAC_INT_MASK);
-=======
 #include <linux/ethtool.h>
 #include <asm/io.h>
 #include "stmmac.h"
@@ -95,7 +61,6 @@ static void dwmac1000_core_init(struct mac_device_info *hw,
 		value &= ~GMAC_INT_DISABLE_PCS;
 
 	writel(value, ioaddr + GMAC_INT_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef STMMAC_VLAN_TAG_USED
 	/* Tag detection without filtering */
@@ -103,13 +68,6 @@ static void dwmac1000_core_init(struct mac_device_info *hw,
 #endif
 }
 
-<<<<<<< HEAD
-static int dwmac1000_rx_coe_supported(void __iomem *ioaddr)
-{
-	u32 value = readl(ioaddr + GMAC_CONTROL);
-
-	value |= GMAC_CONTROL_IPC;
-=======
 static int dwmac1000_rx_ipc_enable(struct mac_device_info *hw)
 {
 	void __iomem *ioaddr = hw->pcsr;
@@ -120,7 +78,6 @@ static int dwmac1000_rx_ipc_enable(struct mac_device_info *hw)
 	else
 		value &= ~GMAC_CONTROL_IPC;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(value, ioaddr + GMAC_CONTROL);
 
 	value = readl(ioaddr + GMAC_CONTROL);
@@ -128,51 +85,6 @@ static int dwmac1000_rx_ipc_enable(struct mac_device_info *hw)
 	return !!(value & GMAC_CONTROL_IPC);
 }
 
-<<<<<<< HEAD
-static void dwmac1000_dump_regs(void __iomem *ioaddr)
-{
-	int i;
-	pr_info("\tDWMAC1000 regs (base addr = 0x%p)\n", ioaddr);
-
-	for (i = 0; i < 55; i++) {
-		int offset = i * 4;
-		pr_info("\tReg No. %d (offset 0x%x): 0x%08x\n", i,
-			offset, readl(ioaddr + offset));
-	}
-}
-
-static void dwmac1000_set_umac_addr(void __iomem *ioaddr, unsigned char *addr,
-				unsigned int reg_n)
-{
-	stmmac_set_mac_addr(ioaddr, addr, GMAC_ADDR_HIGH(reg_n),
-				GMAC_ADDR_LOW(reg_n));
-}
-
-static void dwmac1000_get_umac_addr(void __iomem *ioaddr, unsigned char *addr,
-				unsigned int reg_n)
-{
-	stmmac_get_mac_addr(ioaddr, addr, GMAC_ADDR_HIGH(reg_n),
-				GMAC_ADDR_LOW(reg_n));
-}
-
-static void dwmac1000_set_filter(struct net_device *dev)
-{
-	void __iomem *ioaddr = (void __iomem *) dev->base_addr;
-	unsigned int value = 0;
-
-	CHIP_DBG(KERN_INFO "%s: # mcasts %d, # unicast %d\n",
-		 __func__, netdev_mc_count(dev), netdev_uc_count(dev));
-
-	if (dev->flags & IFF_PROMISC)
-		value = GMAC_FRAME_FILTER_PR;
-	else if ((netdev_mc_count(dev) > HASH_TABLE_SIZE)
-		   || (dev->flags & IFF_ALLMULTI)) {
-		value = GMAC_FRAME_FILTER_PM;	/* pass all multi */
-		writel(0xffffffff, ioaddr + GMAC_HASH_HIGH);
-		writel(0xffffffff, ioaddr + GMAC_HASH_LOW);
-	} else if (!netdev_mc_empty(dev)) {
-		u32 mc_filter[2];
-=======
 static void dwmac1000_dump_regs(struct mac_device_info *hw, u32 *reg_space)
 {
 	void __iomem *ioaddr = hw->pcsr;
@@ -247,33 +159,11 @@ static void dwmac1000_set_filter(struct mac_device_info *hw,
 		/* Fall back to all multicast if we've no filter */
 		value = GMAC_FRAME_FILTER_PM;
 	} else if (!netdev_mc_empty(dev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct netdev_hw_addr *ha;
 
 		/* Hash filter for multicast */
 		value = GMAC_FRAME_FILTER_HMC;
 
-<<<<<<< HEAD
-		memset(mc_filter, 0, sizeof(mc_filter));
-		netdev_for_each_mc_addr(ha, dev) {
-			/* The upper 6 bits of the calculated CRC are used to
-			   index the contens of the hash table */
-			int bit_nr =
-			    bitrev32(~crc32_le(~0, ha->addr, 6)) >> 26;
-			/* The most significant bit determines the register to
-			 * use (H/L) while the other 5 bits determine the bit
-			 * within the register. */
-			mc_filter[bit_nr >> 5] |= 1 << (bit_nr & 31);
-		}
-		writel(mc_filter[0], ioaddr + GMAC_HASH_LOW);
-		writel(mc_filter[1], ioaddr + GMAC_HASH_HIGH);
-	}
-
-	/* Handle multiple unicast addresses (perfect filtering)*/
-	if (netdev_uc_count(dev) > GMAC_MAX_UNICAST_ADDRESSES)
-		/* Switch to promiscuous mode is more than 16 addrs
-		   are required */
-=======
 		netdev_for_each_mc_addr(ha, dev) {
 			/* The upper n bits of the calculated CRC are used to
 			 * index the contents of the hash table. The number of
@@ -299,16 +189,12 @@ static void dwmac1000_set_filter(struct mac_device_info *hw,
 		/* Switch to promiscuous mode if more than unicast
 		 * addresses are requested than supported by hardware.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		value |= GMAC_FRAME_FILTER_PR;
 	else {
 		int reg = 1;
 		struct netdev_hw_addr *ha;
 
 		netdev_for_each_uc_addr(ha, dev) {
-<<<<<<< HEAD
-			dwmac1000_set_umac_addr(ioaddr, ha->addr, reg);
-=======
 			stmmac_set_mac_addr(ioaddr, ha->addr,
 					    GMAC_ADDR_HIGH(reg),
 					    GMAC_ADDR_LOW(reg));
@@ -318,7 +204,6 @@ static void dwmac1000_set_filter(struct mac_device_info *hw,
 		while (reg < perfect_addr_number) {
 			writel(0, ioaddr + GMAC_ADDR_HIGH(reg));
 			writel(0, ioaddr + GMAC_ADDR_LOW(reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			reg++;
 		}
 	}
@@ -328,26 +213,6 @@ static void dwmac1000_set_filter(struct mac_device_info *hw,
 	value |= GMAC_FRAME_FILTER_RA;
 #endif
 	writel(value, ioaddr + GMAC_FRAME_FILTER);
-<<<<<<< HEAD
-
-	CHIP_DBG(KERN_INFO "\tFrame Filter reg: 0x%08x\n\tHash regs: "
-	    "HI 0x%08x, LO 0x%08x\n", readl(ioaddr + GMAC_FRAME_FILTER),
-	    readl(ioaddr + GMAC_HASH_HIGH), readl(ioaddr + GMAC_HASH_LOW));
-}
-
-static void dwmac1000_flow_ctrl(void __iomem *ioaddr, unsigned int duplex,
-			   unsigned int fc, unsigned int pause_time)
-{
-	unsigned int flow = 0;
-
-	CHIP_DBG(KERN_DEBUG "GMAC Flow-Control:\n");
-	if (fc & FLOW_RX) {
-		CHIP_DBG(KERN_DEBUG "\tReceive Flow-Control ON\n");
-		flow |= GMAC_FLOW_CTRL_RFE;
-	}
-	if (fc & FLOW_TX) {
-		CHIP_DBG(KERN_DEBUG "\tTransmit Flow-Control ON\n");
-=======
 }
 
 
@@ -368,35 +233,17 @@ static void dwmac1000_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
 	}
 	if (fc & FLOW_TX) {
 		pr_debug("\tTransmit Flow-Control ON\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flow |= GMAC_FLOW_CTRL_TFE;
 	}
 
 	if (duplex) {
-<<<<<<< HEAD
-		CHIP_DBG(KERN_DEBUG "\tduplex mode: PAUSE %d\n", pause_time);
-=======
 		pr_debug("\tduplex mode: PAUSE %d\n", pause_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flow |= (pause_time << GMAC_FLOW_CTRL_PT_SHIFT);
 	}
 
 	writel(flow, ioaddr + GMAC_FLOW_CTRL);
 }
 
-<<<<<<< HEAD
-static void dwmac1000_pmt(void __iomem *ioaddr, unsigned long mode)
-{
-	unsigned int pmt = 0;
-
-	if (mode & WAKE_MAGIC) {
-		CHIP_DBG(KERN_DEBUG "GMAC: WOL Magic frame\n");
-		pmt |= power_down | magic_pkt_en;
-	}
-	if (mode & WAKE_UCAST) {
-		CHIP_DBG(KERN_DEBUG "GMAC: WOL on global unicast\n");
-		pmt |= global_unicast;
-=======
 static void dwmac1000_pmt(struct mac_device_info *hw, unsigned long mode)
 {
 	void __iomem *ioaddr = hw->pcsr;
@@ -409,40 +256,11 @@ static void dwmac1000_pmt(struct mac_device_info *hw, unsigned long mode)
 	if (mode & WAKE_UCAST) {
 		pr_debug("GMAC: WOL on global unicast\n");
 		pmt |= power_down | global_unicast | wake_up_frame_en;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	writel(pmt, ioaddr + GMAC_PMT);
 }
 
-<<<<<<< HEAD
-
-static void dwmac1000_irq_status(void __iomem *ioaddr)
-{
-	u32 intr_status = readl(ioaddr + GMAC_INT_STATUS);
-
-	/* Not used events (e.g. MMC interrupts) are not handled. */
-	if ((intr_status & mmc_tx_irq))
-		CHIP_DBG(KERN_DEBUG "GMAC: MMC tx interrupt: 0x%08x\n",
-		    readl(ioaddr + GMAC_MMC_TX_INTR));
-	if (unlikely(intr_status & mmc_rx_irq))
-		CHIP_DBG(KERN_DEBUG "GMAC: MMC rx interrupt: 0x%08x\n",
-		    readl(ioaddr + GMAC_MMC_RX_INTR));
-	if (unlikely(intr_status & mmc_rx_csum_offload_irq))
-		CHIP_DBG(KERN_DEBUG "GMAC: MMC rx csum offload: 0x%08x\n",
-		    readl(ioaddr + GMAC_MMC_RX_CSUM_OFFLOAD));
-	if (unlikely(intr_status & pmt_irq)) {
-		CHIP_DBG(KERN_DEBUG "GMAC: received Magic frame\n");
-		/* clear the PMT bits 5 and 6 by reading the PMT
-		 * status register. */
-		readl(ioaddr + GMAC_PMT);
-	}
-}
-
-static const struct stmmac_ops dwmac1000_ops = {
-	.core_init = dwmac1000_core_init,
-	.rx_coe = dwmac1000_rx_coe_supported,
-=======
 /* RGMII or SMII interface */
 static void dwmac1000_rgsmii(void __iomem *ioaddr, struct stmmac_extra_stats *x)
 {
@@ -688,7 +506,6 @@ const struct stmmac_ops dwmac1000_ops = {
 	.core_init = dwmac1000_core_init,
 	.set_mac = stmmac_set_mac,
 	.rx_ipc = dwmac1000_rx_ipc_enable,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dump_regs = dwmac1000_dump_regs,
 	.host_irq_status = dwmac1000_irq_status,
 	.set_filter = dwmac1000_set_filter,
@@ -696,30 +513,6 @@ const struct stmmac_ops dwmac1000_ops = {
 	.pmt = dwmac1000_pmt,
 	.set_umac_addr = dwmac1000_set_umac_addr,
 	.get_umac_addr = dwmac1000_get_umac_addr,
-<<<<<<< HEAD
-};
-
-struct mac_device_info *dwmac1000_setup(void __iomem *ioaddr)
-{
-	struct mac_device_info *mac;
-	u32 hwid = readl(ioaddr + GMAC_VERSION);
-
-	mac = kzalloc(sizeof(const struct mac_device_info), GFP_KERNEL);
-	if (!mac)
-		return NULL;
-
-	mac->mac = &dwmac1000_ops;
-	mac->dma = &dwmac1000_dma_ops;
-
-	mac->link.port = GMAC_CONTROL_PS;
-	mac->link.duplex = GMAC_CONTROL_DM;
-	mac->link.speed = GMAC_CONTROL_FES;
-	mac->mii.addr = GMAC_MII_ADDR;
-	mac->mii.data = GMAC_MII_DATA;
-	mac->synopsys_uid = hwid;
-
-	return mac;
-=======
 	.set_eee_mode = dwmac1000_set_eee_mode,
 	.reset_eee_mode = dwmac1000_reset_eee_mode,
 	.set_eee_timer = dwmac1000_set_eee_timer,
@@ -763,5 +556,4 @@ int dwmac1000_setup(struct stmmac_priv *priv)
 	mac->mii.clk_csr_mask = GENMASK(5, 2);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

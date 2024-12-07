@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: MIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * xen.h
  *
@@ -14,10 +11,6 @@
 #define __XEN_PUBLIC_XEN_H__
 
 #include <asm/xen/interface.h>
-<<<<<<< HEAD
-#include <asm/pvclock-abi.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * XEN "SYSTEM CALLS" (a.k.a. HYPERCALLS).
@@ -38,11 +31,7 @@
 #define __HYPERVISOR_set_callbacks         4
 #define __HYPERVISOR_fpu_taskswitch        5
 #define __HYPERVISOR_sched_op_compat       6
-<<<<<<< HEAD
-#define __HYPERVISOR_dom0_op               7
-=======
 #define __HYPERVISOR_platform_op           7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __HYPERVISOR_set_debugreg          8
 #define __HYPERVISOR_get_debugreg          9
 #define __HYPERVISOR_update_descriptor    10
@@ -61,11 +50,7 @@
 #define __HYPERVISOR_vcpu_op              24
 #define __HYPERVISOR_set_segment_base     25 /* x86/64 only */
 #define __HYPERVISOR_mmuext_op            26
-<<<<<<< HEAD
-#define __HYPERVISOR_acm_op               27
-=======
 #define __HYPERVISOR_xsm_op               27
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __HYPERVISOR_nmi_op               28
 #define __HYPERVISOR_sched_op             29
 #define __HYPERVISOR_callback_op          30
@@ -73,9 +58,6 @@
 #define __HYPERVISOR_event_channel_op     32
 #define __HYPERVISOR_physdev_op           33
 #define __HYPERVISOR_hvm_op               34
-<<<<<<< HEAD
-#define __HYPERVISOR_tmem_op              38
-=======
 #define __HYPERVISOR_sysctl               35
 #define __HYPERVISOR_domctl               36
 #define __HYPERVISOR_kexec_op             37
@@ -83,7 +65,6 @@
 #define __HYPERVISOR_xc_reserved_op       39 /* reserved for XenClient */
 #define __HYPERVISOR_xenpmu_op            40
 #define __HYPERVISOR_dm_op                41
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Architecture-specific hypercall definitions. */
 #define __HYPERVISOR_arch_0               48
@@ -99,14 +80,6 @@
  * VIRTUAL INTERRUPTS
  *
  * Virtual interrupts that a guest OS may receive from Xen.
-<<<<<<< HEAD
- */
-#define VIRQ_TIMER      0  /* Timebase update, and/or requested timeout.  */
-#define VIRQ_DEBUG      1  /* Request guest to dump debug info.           */
-#define VIRQ_CONSOLE    2  /* (DOM0) Bytes received on emergency console. */
-#define VIRQ_DOM_EXC    3  /* (DOM0) Exceptional event for some domain.   */
-#define VIRQ_DEBUGGER   6  /* (DOM0) A domain has paused for debugging.   */
-=======
  * In the side comments, 'V.' denotes a per-VCPU VIRQ while 'G.' denotes a
  * global VIRQ. The former can be bound once per VCPU and cannot be re-bound.
  * The latter can be allocated only once per guest: they must initially be
@@ -125,7 +98,6 @@
 #define VIRQ_XC_RESERVED 11 /* G. Reserved for XenClient                     */
 #define VIRQ_ENOMEM     12 /* G. (DOM0) Low on heap memory       */
 #define VIRQ_XENPMU     13  /* PMC interrupt                                 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Architecture-specific VIRQ definitions. */
 #define VIRQ_ARCH_0    16
@@ -138,21 +110,6 @@
 #define VIRQ_ARCH_7    23
 
 #define NR_VIRQS       24
-<<<<<<< HEAD
-/*
- * MMU-UPDATE REQUESTS
- *
- * HYPERVISOR_mmu_update() accepts a list of (ptr, val) pairs.
- * A foreigndom (FD) can be specified (or DOMID_SELF for none).
- * Where the FD has some effect, it is described below.
- * ptr[1:0] specifies the appropriate MMU_* command.
- *
- * ptr[1:0] == MMU_NORMAL_PT_UPDATE:
- * Updates an entry in a page table. If updating an L1 table, and the new
- * table entry is valid/present, the mapped frame must belong to the FD, if
- * an FD has been specified. If attempting to map an I/O page then the
- * caller assumes the privilege of the FD.
-=======
 
 /*
  * enum neg_errnoval HYPERVISOR_mmu_update(const struct mmu_update reqs[],
@@ -176,14 +133,11 @@
  * and the new table entry is valid/present, the mapped frame must belong to
  * FD. If attempting to map an I/O page then the caller assumes the privilege
  * of the FD.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FD == DOMID_IO: Permit /only/ I/O mappings, at the priv level of the caller.
  * FD == DOMID_XEN: Map restricted areas of Xen's heap space.
  * ptr[:2]  -- Machine address of the page-table entry to modify.
  * val      -- Value to write.
  *
-<<<<<<< HEAD
-=======
  * There also certain implicit requirements when using this hypercall. The
  * pages that make up a pagetable must be mapped read-only in the guest.
  * This prevents uncontrolled guest updates to the pagetable. Xen strictly
@@ -218,7 +172,6 @@
  * mentioned above. The argument is MMUEXT_UNPIN_TABLE for all levels and the
  * pagetable MUST not be in use (meaning that the cr3 is not set to it).
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ptr[1:0] == MMU_MACHPHYS_UPDATE:
  * Updates an entry in the machine->pseudo-physical mapping table.
  * ptr[:2]  -- Machine address within the frame whose mapping to modify.
@@ -228,12 +181,6 @@
  * ptr[1:0] == MMU_PT_UPDATE_PRESERVE_AD:
  * As MMU_NORMAL_PT_UPDATE above, but A/D bits currently in the PTE are ORed
  * with those in @val.
-<<<<<<< HEAD
- */
-#define MMU_NORMAL_PT_UPDATE      0 /* checked '*ptr = val'. ptr is MA.       */
-#define MMU_MACHPHYS_UPDATE       1 /* ptr = MA of frame to modify entry for  */
-#define MMU_PT_UPDATE_PRESERVE_AD 2 /* atomically: *ptr = val | (*ptr&(A|D)) */
-=======
  *
  * @val is usually the machine frame number along with some attributes.
  * The attributes by default follow the architecture defined bits. Meaning that
@@ -305,21 +252,16 @@
 #define MMU_MACHPHYS_UPDATE        1 /* ptr = MA of frame to modify entry for */
 #define MMU_PT_UPDATE_PRESERVE_AD  2 /* atomically: *ptr = val | (*ptr&(A|D)) */
 #define MMU_PT_UPDATE_NO_TRANSLATE 3 /* checked '*ptr = val'. ptr is MA.      */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * MMU EXTENDED OPERATIONS
  *
-<<<<<<< HEAD
- * HYPERVISOR_mmuext_op() accepts a list of mmuext_op structures.
-=======
  * enum neg_errnoval HYPERVISOR_mmuext_op(mmuext_op_t uops[],
  *                                        unsigned int count,
  *                                        unsigned int *pdone,
  *                                        unsigned int foreigndom)
  */
 /* HYPERVISOR_mmuext_op() accepts a list of mmuext_op structures.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * A foreigndom (FD) can be specified (or DOMID_SELF for none).
  * Where the FD has some effect, it is described below.
  *
@@ -356,11 +298,6 @@
  * cmd: MMUEXT_FLUSH_CACHE
  * No additional arguments. Writes back and flushes cache contents.
  *
-<<<<<<< HEAD
- * cmd: MMUEXT_SET_LDT
- * linear_addr: Linear address of LDT base (NB. must be page-aligned).
- * nr_ents: Number of entries in LDT.
-=======
  * cmd: MMUEXT_FLUSH_CACHE_GLOBAL
  * No additional arguments. Writes back and flushes cache contents
  * on all CPUs in the system.
@@ -378,7 +315,6 @@
  *
  * cmd: MMUEXT_[UN]MARK_SUPER
  * mfn: Machine frame number of head of superpage to be [un]marked.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define MMUEXT_PIN_L1_TABLE      0
 #define MMUEXT_PIN_L2_TABLE      1
@@ -395,27 +331,19 @@
 #define MMUEXT_FLUSH_CACHE      12
 #define MMUEXT_SET_LDT          13
 #define MMUEXT_NEW_USER_BASEPTR 15
-<<<<<<< HEAD
-=======
 #define MMUEXT_CLEAR_PAGE       16
 #define MMUEXT_COPY_PAGE        17
 #define MMUEXT_FLUSH_CACHE_GLOBAL 18
 #define MMUEXT_MARK_SUPER       19
 #define MMUEXT_UNMARK_SUPER     20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 struct mmuext_op {
 	unsigned int cmd;
 	union {
-<<<<<<< HEAD
-		/* [UN]PIN_TABLE, NEW_BASEPTR, NEW_USER_BASEPTR */
-		unsigned long mfn;
-=======
 		/* [UN]PIN_TABLE, NEW_BASEPTR, NEW_USER_BASEPTR
 		 * CLEAR_PAGE, COPY_PAGE, [UN]MARK_SUPER */
 		xen_pfn_t mfn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* INVLPG_LOCAL, INVLPG_ALL, SET_LDT */
 		unsigned long linear_addr;
 	} arg1;
@@ -424,11 +352,8 @@ struct mmuext_op {
 		unsigned int nr_ents;
 		/* TLB_FLUSH_MULTI, INVLPG_MULTI */
 		void *vcpumask;
-<<<<<<< HEAD
-=======
 		/* COPY_PAGE */
 		xen_pfn_t src_mfn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} arg2;
 };
 DEFINE_GUEST_HANDLE_STRUCT(mmuext_op);
@@ -456,13 +381,6 @@ DEFINE_GUEST_HANDLE_STRUCT(mmuext_op);
  */
 #define VMASST_CMD_enable                0
 #define VMASST_CMD_disable               1
-<<<<<<< HEAD
-#define VMASST_TYPE_4gb_segments         0
-#define VMASST_TYPE_4gb_segments_notify  1
-#define VMASST_TYPE_writable_pagetables  2
-#define VMASST_TYPE_pae_extended_cr3     3
-#define MAX_VMASST_TYPE 3
-=======
 
 /* x86/32 guests: simulate full 4GB segment limits. */
 #define VMASST_TYPE_4gb_segments         0
@@ -496,7 +414,6 @@ DEFINE_GUEST_HANDLE_STRUCT(mmuext_op);
 #define VMASST_TYPE_runstate_update_flag 5
 
 #define MAX_VMASST_TYPE 5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 
@@ -527,8 +444,6 @@ typedef uint16_t domid_t;
  */
 #define DOMID_XEN  (0x7FF2U)
 
-<<<<<<< HEAD
-=======
 /* DOMID_COW is used as the owner of sharable pages */
 #define DOMID_COW  (0x7FF3U)
 
@@ -538,7 +453,6 @@ typedef uint16_t domid_t;
 /* Idle domain. */
 #define DOMID_IDLE (0x7FFFU)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Send an array of these to HYPERVISOR_mmu_update().
  * NB. The fields are natural pointer/address size for this architecture.
@@ -551,23 +465,6 @@ DEFINE_GUEST_HANDLE_STRUCT(mmu_update);
 
 /*
  * Send an array of these to HYPERVISOR_multicall().
-<<<<<<< HEAD
- * NB. The fields are natural register size for this architecture.
- */
-struct multicall_entry {
-    unsigned long op;
-    long result;
-    unsigned long args[6];
-};
-DEFINE_GUEST_HANDLE_STRUCT(multicall_entry);
-
-/*
- * Event channel endpoints per domain:
- *  1024 if a long is 32 bits; 4096 if a long is 64 bits.
- */
-#define NR_EVENT_CHANNELS (sizeof(unsigned long) * sizeof(unsigned long) * 64)
-
-=======
  * NB. The fields are logically the natural register size for this
  * architecture. In cases where xen_ulong_t is larger than this then
  * any unused bits in the upper portion must be zero.
@@ -579,7 +476,6 @@ struct multicall_entry {
 };
 DEFINE_GUEST_HANDLE_STRUCT(multicall_entry);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vcpu_time_info {
 	/*
 	 * Updates to the following values are preceded and followed
@@ -634,11 +530,7 @@ struct vcpu_info {
 	 */
 	uint8_t evtchn_upcall_pending;
 	uint8_t evtchn_upcall_mask;
-<<<<<<< HEAD
-	unsigned long evtchn_pending_sel;
-=======
 	xen_ulong_t evtchn_pending_sel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct arch_vcpu_info arch;
 	struct pvclock_vcpu_time_info time;
 }; /* 64 bytes (x86) */
@@ -681,53 +573,22 @@ struct shared_info {
 	 * per-vcpu selector word to be set. Each bit in the selector covers a
 	 * 'C long' in the PENDING bitfield array.
 	 */
-<<<<<<< HEAD
-	unsigned long evtchn_pending[sizeof(unsigned long) * 8];
-	unsigned long evtchn_mask[sizeof(unsigned long) * 8];
-=======
 	xen_ulong_t evtchn_pending[sizeof(xen_ulong_t) * 8];
 	xen_ulong_t evtchn_mask[sizeof(xen_ulong_t) * 8];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Wallclock time: updated only by control software. Guests should base
 	 * their gettimeofday() syscall on this wallclock-base value.
 	 */
 	struct pvclock_wall_clock wc;
-<<<<<<< HEAD
-
-=======
 #ifndef CONFIG_X86_32
 	uint32_t wc_sec_hi;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct arch_shared_info arch;
 
 };
 
 /*
-<<<<<<< HEAD
- * Start-of-day memory layout for the initial domain (DOM0):
- *  1. The domain is started within contiguous virtual-memory region.
- *  2. The contiguous region begins and ends on an aligned 4MB boundary.
- *  3. The region start corresponds to the load address of the OS image.
- *     If the load address is not 4MB aligned then the address is rounded down.
- *  4. This the order of bootstrap elements in the initial virtual region:
- *      a. relocated kernel image
- *      b. initial ram disk              [mod_start, mod_len]
- *      c. list of allocated page frames [mfn_list, nr_pages]
- *      d. start_info_t structure        [register ESI (x86)]
- *      e. bootstrap page tables         [pt_base, CR3 (x86)]
- *      f. bootstrap stack               [register ESP (x86)]
- *  5. Bootstrap elements are packed together, but each is 4kB-aligned.
- *  6. The initial ram disk may be omitted.
- *  7. The list of page frames forms a contiguous 'pseudo-physical' memory
- *     layout for the domain. In particular, the bootstrap virtual-memory
- *     region is a 1:1 mapping to the first section of the pseudo-physical map.
- *  8. All bootstrap elements are mapped read-writable for the guest OS. The
- *     only exception is the bootstrap page table, which is mapped read-only.
- *  9. There is guaranteed to be at least 512kB padding after the final
-=======
  * Start-of-day memory layout
  *
  *  1. The domain is started within contiguous virtual-memory region.
@@ -751,7 +612,6 @@ struct shared_info {
  *  6. All bootstrap elements are mapped read-writable for the guest OS. The
  *     only exception is the bootstrap page table, which is mapped read-only.
  *  7. There is guaranteed to be at least 512kB padding after the final
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *     bootstrap element. If necessary, the bootstrap virtual region is
  *     extended by an extra 4MB to ensure this.
  */
@@ -763,19 +623,11 @@ struct start_info {
 	unsigned long nr_pages;     /* Total pages allocated to this domain.  */
 	unsigned long shared_info;  /* MACHINE address of shared info struct. */
 	uint32_t flags;             /* SIF_xxx flags.                         */
-<<<<<<< HEAD
-	unsigned long store_mfn;    /* MACHINE page number of shared page.    */
-	uint32_t store_evtchn;      /* Event channel for store communication. */
-	union {
-		struct {
-			unsigned long mfn;  /* MACHINE page number of console page.   */
-=======
 	xen_pfn_t store_mfn;        /* MACHINE page number of shared page.    */
 	uint32_t store_evtchn;      /* Event channel for store communication. */
 	union {
 		struct {
 			xen_pfn_t mfn;      /* MACHINE page number of console page.   */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			uint32_t  evtchn;   /* Event channel for console page.        */
 		} domU;
 		struct {
@@ -790,10 +642,6 @@ struct start_info {
 	unsigned long mod_start;    /* VIRTUAL address of pre-loaded module.  */
 	unsigned long mod_len;      /* Size (bytes) of pre-loaded module.     */
 	int8_t cmd_line[MAX_GUEST_CMDLINE];
-<<<<<<< HEAD
-};
-
-=======
 	/* The pfn range here covers both page table and p->m table frames.   */
 	unsigned long first_p2m_pfn;/* 1st pfn forming initial P->M table.    */
 	unsigned long nr_p2m_frames;/* # of pfns forming initial P->M table.  */
@@ -838,15 +686,11 @@ struct xen_multiboot_mod_list {
  * This structure includes a variety of information required to
  * have a working VGA/VESA console.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dom0_vga_console_info {
 	uint8_t video_type;
 #define XEN_VGATYPE_TEXT_MODE_3 0x03
 #define XEN_VGATYPE_VESA_LFB    0x23
-<<<<<<< HEAD
-=======
 #define XEN_VGATYPE_EFI_LFB     0x70
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	union {
 		struct {
@@ -878,24 +722,13 @@ struct dom0_vga_console_info {
 			uint32_t gbl_caps;
 			/* Mode attributes (offset 0x0, VESA command 0x4f01). */
 			uint16_t mode_attrs;
-<<<<<<< HEAD
-=======
 			uint16_t pad;
 			/* high 32 bits of lfb_base */
 			uint32_t ext_lfb_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} vesa_lfb;
 	} u;
 };
 
-<<<<<<< HEAD
-/* These flags are passed in the 'flags' field of start_info_t. */
-#define SIF_PRIVILEGED    (1<<0)  /* Is the domain privileged? */
-#define SIF_INITDOMAIN    (1<<1)  /* Is this the initial control domain? */
-#define SIF_PM_MASK       (0xFF<<8) /* reserve 1 byte for xen-pm options */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef uint64_t cpumap_t;
 
 typedef uint8_t xen_domain_handle_t[16];

@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-/*
- * MPC83xx/85xx/86xx PCI/PCIE support routing.
- *
- * Copyright 2007-2011 Freescale Semiconductor, Inc.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * MPC83xx/85xx/86xx PCI/PCIE support routing.
  *
  * Copyright 2007-2012 Freescale Semiconductor, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright 2008-2009 MontaVista Software, Inc.
  *
  * Initial author: Xianghua Xiao <x.xiao@freescale.com>
@@ -19,31 +12,11 @@
  * MPC83xx PCI-Express support:
  * 	Tony Li <tony.li@freescale.com>
  * 	Anton Vorontsov <avorontsov@ru.mvista.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/pci.h>
 #include <linux/delay.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/bootmem.h>
-#include <linux/memblock.h>
-#include <linux/log2.h>
-#include <linux/slab.h>
-
-#include <asm/io.h>
-#include <asm/prom.h>
-#include <asm/pci-bridge.h>
-#include <asm/machdep.h>
-=======
 #include <linux/fsl/edac.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -66,28 +39,11 @@
 #include <asm/ppc-opcode.h>
 #include <asm/swiotlb.h>
 #include <asm/setup.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sysdev/fsl_soc.h>
 #include <sysdev/fsl_pci.h>
 
 static int fsl_pcie_bus_fixup, is_mpc83xx_pci;
 
-<<<<<<< HEAD
-static void __init quirk_fsl_pcie_header(struct pci_dev *dev)
-{
-	u8 progif;
-
-	/* if we aren't a PCIe don't bother */
-	if (!pci_find_capability(dev, PCI_CAP_ID_EXP))
-		return;
-
-	/* if we aren't in host mode don't bother */
-	pci_read_config_byte(dev, PCI_CLASS_PROG, &progif);
-	if (progif & 0x1)
-		return;
-
-	dev->class = PCI_CLASS_BRIDGE_PCI << 8;
-=======
 static void quirk_fsl_pcie_early(struct pci_dev *dev)
 {
 	u8 hdr_type;
@@ -102,49 +58,10 @@ static void quirk_fsl_pcie_early(struct pci_dev *dev)
 		return;
 
 	dev->class = PCI_CLASS_BRIDGE_PCI_NORMAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fsl_pcie_bus_fixup = 1;
 	return;
 }
 
-<<<<<<< HEAD
-static int __init fsl_pcie_check_link(struct pci_controller *hose)
-{
-	u32 val;
-
-	early_read_config_dword(hose, 0, 0, PCIE_LTSSM, &val);
-	if (val < PCIE_LTSSM_L0)
-		return 1;
-	return 0;
-}
-
-#if defined(CONFIG_FSL_SOC_BOOKE) || defined(CONFIG_PPC_86xx)
-
-#define MAX_PHYS_ADDR_BITS	40
-static u64 pci64_dma_offset = 1ull << MAX_PHYS_ADDR_BITS;
-
-static int fsl_pci_dma_set_mask(struct device *dev, u64 dma_mask)
-{
-	if (!dev->dma_mask || !dma_supported(dev, dma_mask))
-		return -EIO;
-
-	/*
-	 * Fixup PCI devices that are able to DMA to above the physical
-	 * address width of the SoC such that we can address any internal
-	 * SoC address from across PCI if needed
-	 */
-	if ((dev->bus == &pci_bus_type) &&
-	    dma_mask >= DMA_BIT_MASK(MAX_PHYS_ADDR_BITS)) {
-		set_dma_ops(dev, &dma_direct_ops);
-		set_dma_offset(dev, pci64_dma_offset);
-	}
-
-	*dev->dma_mask = dma_mask;
-	return 0;
-}
-
-static int __init setup_one_atmu(struct ccsr_pci __iomem *pci,
-=======
 static int fsl_indirect_read_config(struct pci_bus *, unsigned int,
 				    int, int, u32 *);
 
@@ -226,7 +143,6 @@ static void fsl_pci_dma_set_mask(struct device *dev, u64 dma_mask)
 }
 
 static int setup_one_atmu(struct ccsr_pci __iomem *pci,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int index, const struct resource *res,
 	resource_size_t offset)
 {
@@ -243,11 +159,7 @@ static int setup_one_atmu(struct ccsr_pci __iomem *pci,
 		flags |= 0x10000000; /* enable relaxed ordering */
 
 	for (i = 0; size > 0; i++) {
-<<<<<<< HEAD
-		unsigned int bits = min(__ilog2(size),
-=======
 		unsigned int bits = min_t(u32, ilog2(size),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					__ffs(pci_addr | phys_addr));
 
 		if (index + i >= 5)
@@ -266,36 +178,6 @@ static int setup_one_atmu(struct ccsr_pci __iomem *pci,
 	return i;
 }
 
-<<<<<<< HEAD
-/* atmu setup for fsl pci/pcie controller */
-static void __init setup_pci_atmu(struct pci_controller *hose,
-				  struct resource *rsrc)
-{
-	struct ccsr_pci __iomem *pci;
-	int i, j, n, mem_log, win_idx = 3, start_idx = 1, end_idx = 4;
-	u64 mem, sz, paddr_hi = 0;
-	u64 paddr_lo = ULLONG_MAX;
-	u32 pcicsrbar = 0, pcicsrbar_sz;
-	u32 piwar = PIWAR_EN | PIWAR_PF | PIWAR_TGI_LOCAL |
-			PIWAR_READ_SNOOP | PIWAR_WRITE_SNOOP;
-	char *name = hose->dn->full_name;
-	const u64 *reg;
-	int len;
-
-	pr_debug("PCI memory map start 0x%016llx, size 0x%016llx\n",
-		 (u64)rsrc->start, (u64)resource_size(rsrc));
-
-	if (of_device_is_compatible(hose->dn, "fsl,qoriq-pcie-v2.2")) {
-		win_idx = 2;
-		start_idx = 0;
-		end_idx = 3;
-	}
-
-	pci = ioremap(rsrc->start, resource_size(rsrc));
-	if (!pci) {
-	    dev_err(hose->parent, "Unable to map ATMU registers\n");
-	    return;
-=======
 static bool is_kdump(void)
 {
 	struct device_node *node;
@@ -355,22 +237,16 @@ static void setup_pci_atmu(struct pci_controller *hose)
 			start_idx = 0;
 			end_idx = 3;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Disable all windows (except powar0 since it's ignored) */
 	for(i = 1; i < 5; i++)
 		out_be32(&pci->pow[i].powar, 0);
-<<<<<<< HEAD
-	for (i = start_idx; i < end_idx; i++)
-		out_be32(&pci->piw[i].piwar, 0);
-=======
 
 	if (setup_inbound) {
 		for (i = start_idx; i < end_idx; i++)
 			out_be32(&pci->piw[i].piwar, 0);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup outbound MEM window */
 	for(i = 0, j = 1; i < 3; i++) {
@@ -380,14 +256,9 @@ static void setup_pci_atmu(struct pci_controller *hose)
 		paddr_lo = min(paddr_lo, (u64)hose->mem_resources[i].start);
 		paddr_hi = max(paddr_hi, (u64)hose->mem_resources[i].end);
 
-<<<<<<< HEAD
-		n = setup_one_atmu(pci, j, &hose->mem_resources[i],
-				   hose->pci_mem_offset);
-=======
 		/* We assume all memory resources have the same offset */
 		offset = hose->mem_offset[i];
 		n = setup_one_atmu(pci, j, &hose->mem_resources[i], offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (n < 0 || j >= 5) {
 			pr_err("Ran out of outbound PCI ATMUs for resource %d!\n", i);
@@ -411,29 +282,12 @@ static void setup_pci_atmu(struct pci_controller *hose)
 			out_be32(&pci->pow[j].powbar, (hose->io_base_phys >> 12));
 			/* Enable, IO R/W */
 			out_be32(&pci->pow[j].powar, 0x80088000
-<<<<<<< HEAD
-				| (__ilog2(hose->io_resource.end
-=======
 				| (ilog2(hose->io_resource.end
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				- hose->io_resource.start + 1) - 1));
 		}
 	}
 
 	/* convert to pci address space */
-<<<<<<< HEAD
-	paddr_hi -= hose->pci_mem_offset;
-	paddr_lo -= hose->pci_mem_offset;
-
-	if (paddr_hi == paddr_lo) {
-		pr_err("%s: No outbound window space\n", name);
-		goto out;
-	}
-
-	if (paddr_lo == 0) {
-		pr_err("%s: No space for inbound window\n", name);
-		goto out;
-=======
 	paddr_hi -= offset;
 	paddr_lo -= offset;
 
@@ -445,7 +299,6 @@ static void setup_pci_atmu(struct pci_controller *hose)
 	if (paddr_lo == 0) {
 		pr_err("%pOF: No space for inbound window\n", hose->dn);
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* setup PCSRBAR/PEXCSRBAR */
@@ -462,18 +315,11 @@ static void setup_pci_atmu(struct pci_controller *hose)
 
 	paddr_lo = min(paddr_lo, (u64)pcicsrbar);
 
-<<<<<<< HEAD
-	pr_info("%s: PCICSRBAR @ 0x%x\n", name, pcicsrbar);
-
-	/* Setup inbound mem window */
-	mem = memblock_end_of_DRAM();
-=======
 	pr_info("%pOF: PCICSRBAR @ 0x%x\n", hose->dn, pcicsrbar);
 
 	/* Setup inbound mem window */
 	mem = memblock_end_of_DRAM();
 	pr_info("%s: end of DRAM %llx\n", __func__, mem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The msi-address-64 property, if it exists, indicates the physical
@@ -492,58 +338,30 @@ static void setup_pci_atmu(struct pci_controller *hose)
 		u64 address = be64_to_cpup(reg);
 
 		if ((address >= mem) && (address < (mem + PAGE_SIZE))) {
-<<<<<<< HEAD
-			pr_info("%s: extending DDR ATMU to cover MSIIR", name);
-			mem += PAGE_SIZE;
-		} else {
-			/* TODO: Create a new ATMU for MSIIR */
-			pr_warn("%s: msi-address-64 address of %llx is "
-				"unsupported\n", name, address);
-=======
 			pr_info("%pOF: extending DDR ATMU to cover MSIIR", hose->dn);
 			mem += PAGE_SIZE;
 		} else {
 			/* TODO: Create a new ATMU for MSIIR */
 			pr_warn("%pOF: msi-address-64 address of %llx is "
 				"unsupported\n", hose->dn, address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	sz = min(mem, paddr_lo);
-<<<<<<< HEAD
-	mem_log = __ilog2_u64(sz);
-=======
 	mem_log = ilog2(sz);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PCIe can overmap inbound & outbound since RX & TX are separated */
 	if (early_find_capability(hose, 0, 0, PCI_CAP_ID_EXP)) {
 		/* Size window to exact size if power-of-two or one size up */
 		if ((1ull << mem_log) != mem) {
-<<<<<<< HEAD
-			if ((1ull << mem_log) > mem)
-				pr_info("%s: Setting PCI inbound window "
-					"greater than memory size\n", name);
-			mem_log++;
-=======
 			mem_log++;
 			if ((1ull << mem_log) > mem)
 				pr_info("%pOF: Setting PCI inbound window "
 					"greater than memory size\n", hose->dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		piwar |= ((mem_log - 1) & PIWAR_SZ_MASK);
 
-<<<<<<< HEAD
-		/* Setup inbound memory window */
-		out_be32(&pci->piw[win_idx].pitar,  0x00000000);
-		out_be32(&pci->piw[win_idx].piwbar, 0x00000000);
-		out_be32(&pci->piw[win_idx].piwar,  piwar);
-		win_idx--;
-
-=======
 		if (setup_inbound) {
 			/* Setup inbound memory window */
 			out_be32(&pci->piw[win_idx].pitar,  0x00000000);
@@ -552,7 +370,6 @@ static void setup_pci_atmu(struct pci_controller *hose)
 		}
 
 		win_idx--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hose->dma_window_base_cur = 0x00000000;
 		hose->dma_window_size = (resource_size_t)sz;
 
@@ -562,27 +379,13 @@ static void setup_pci_atmu(struct pci_controller *hose)
 		 * SWIOTLB and access the full range of memory
 		 */
 		if (sz != mem) {
-<<<<<<< HEAD
-			mem_log = __ilog2_u64(mem);
-=======
 			mem_log = ilog2(mem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Size window up if we dont fit in exact power-of-2 */
 			if ((1ull << mem_log) != mem)
 				mem_log++;
 
 			piwar = (piwar & ~PIWAR_SZ_MASK) | (mem_log - 1);
-<<<<<<< HEAD
-
-			/* Setup inbound memory window */
-			out_be32(&pci->piw[win_idx].pitar,  0x00000000);
-			out_be32(&pci->piw[win_idx].piwbear,
-					pci64_dma_offset >> 44);
-			out_be32(&pci->piw[win_idx].piwbar,
-					pci64_dma_offset >> 12);
-			out_be32(&pci->piw[win_idx].piwar,  piwar);
-=======
 			pci64_dma_offset = 1ULL << mem_log;
 
 			if (setup_inbound) {
@@ -594,7 +397,6 @@ static void setup_pci_atmu(struct pci_controller *hose)
 						pci64_dma_offset >> 12);
 				out_be32(&pci->piw[win_idx].piwar,  piwar);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * install our own dma_set_mask handler to fixup dma_ops
@@ -602,23 +404,11 @@ static void setup_pci_atmu(struct pci_controller *hose)
 			 */
 			ppc_md.dma_set_mask = fsl_pci_dma_set_mask;
 
-<<<<<<< HEAD
-			pr_info("%s: Setup 64-bit PCI DMA window\n", name);
-=======
 			pr_info("%pOF: Setup 64-bit PCI DMA window\n", hose->dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		u64 paddr = 0;
 
-<<<<<<< HEAD
-		/* Setup inbound memory window */
-		out_be32(&pci->piw[win_idx].pitar,  paddr >> 12);
-		out_be32(&pci->piw[win_idx].piwbar, paddr >> 12);
-		out_be32(&pci->piw[win_idx].piwar,  (piwar | (mem_log - 1)));
-		win_idx--;
-
-=======
 		if (setup_inbound) {
 			/* Setup inbound memory window */
 			out_be32(&pci->piw[win_idx].pitar,  paddr >> 12);
@@ -628,21 +418,10 @@ static void setup_pci_atmu(struct pci_controller *hose)
 		}
 
 		win_idx--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		paddr += 1ull << mem_log;
 		sz -= 1ull << mem_log;
 
 		if (sz) {
-<<<<<<< HEAD
-			mem_log = __ilog2_u64(sz);
-			piwar |= (mem_log - 1);
-
-			out_be32(&pci->piw[win_idx].pitar,  paddr >> 12);
-			out_be32(&pci->piw[win_idx].piwbar, paddr >> 12);
-			out_be32(&pci->piw[win_idx].piwar,  piwar);
-			win_idx--;
-
-=======
 			mem_log = ilog2(sz);
 			piwar |= (mem_log - 1);
 
@@ -655,7 +434,6 @@ static void setup_pci_atmu(struct pci_controller *hose)
 			}
 
 			win_idx--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			paddr += 1ull << mem_log;
 		}
 
@@ -664,29 +442,6 @@ static void setup_pci_atmu(struct pci_controller *hose)
 	}
 
 	if (hose->dma_window_size < mem) {
-<<<<<<< HEAD
-#ifndef CONFIG_SWIOTLB
-		pr_err("%s: ERROR: Memory size exceeds PCI ATMU ability to "
-			"map - enable CONFIG_SWIOTLB to avoid dma errors.\n",
-			 name);
-#endif
-		/* adjusting outbound windows could reclaim space in mem map */
-		if (paddr_hi < 0xffffffffull)
-			pr_warning("%s: WARNING: Outbound window cfg leaves "
-				"gaps in memory map. Adjusting the memory map "
-				"could reduce unnecessary bounce buffering.\n",
-				name);
-
-		pr_info("%s: DMA window size is 0x%llx\n", name,
-			(u64)hose->dma_window_size);
-	}
-
-out:
-	iounmap(pci);
-}
-
-static void __init setup_pci_cmd(struct pci_controller *hose)
-=======
 #ifdef CONFIG_SWIOTLB
 		ppc_swiotlb_enable = 1;
 #else
@@ -707,7 +462,6 @@ static void __init setup_pci_cmd(struct pci_controller *hose)
 }
 
 static void setup_pci_cmd(struct pci_controller *hose)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 cmd;
 	int cap_x;
@@ -765,26 +519,12 @@ void fsl_pcibios_fixup_bus(struct pci_bus *bus)
 	}
 }
 
-<<<<<<< HEAD
-int __init fsl_add_bridge(struct device_node *dev, int is_primary)
-=======
 static int fsl_add_bridge(struct platform_device *pdev, int is_primary)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len;
 	struct pci_controller *hose;
 	struct resource rsrc;
 	const int *bus_range;
-<<<<<<< HEAD
-	u8 progif;
-
-	if (!of_device_is_available(dev)) {
-		pr_warning("%s: disabled\n", dev->full_name);
-		return -ENODEV;
-	}
-
-	pr_debug("Adding PCI host bridge %s\n", dev->full_name);
-=======
 	u8 hdr_type, progif;
 	u32 class_code;
 	struct device_node *dev;
@@ -800,7 +540,6 @@ static int fsl_add_bridge(struct platform_device *pdev, int is_primary)
 	}
 
 	pr_debug("Adding PCI host bridge %pOF\n", dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fetch host bridge registers address */
 	if (of_address_to_resource(dev, 0, &rsrc)) {
@@ -811,36 +550,14 @@ static int fsl_add_bridge(struct platform_device *pdev, int is_primary)
 	/* Get bus range if any */
 	bus_range = of_get_property(dev, "bus-range", &len);
 	if (bus_range == NULL || len < 2 * sizeof(int))
-<<<<<<< HEAD
-		printk(KERN_WARNING "Can't get bus-range for %s, assume"
-			" bus 0\n", dev->full_name);
-=======
 		printk(KERN_WARNING "Can't get bus-range for %pOF, assume"
 			" bus 0\n", dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_add_flags(PCI_REASSIGN_ALL_BUS);
 	hose = pcibios_alloc_controller(dev);
 	if (!hose)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	hose->first_busno = bus_range ? bus_range[0] : 0x0;
-	hose->last_busno = bus_range ? bus_range[1] : 0xff;
-
-	setup_indirect_pci(hose, rsrc.start, rsrc.start + 0x4,
-		PPC_INDIRECT_TYPE_BIG_ENDIAN);
-
-	early_read_config_byte(hose, 0, 0, PCI_CLASS_PROG, &progif);
-	if ((progif & 1) == 1) {
-		/* unmap cfg_data & cfg_addr separately if not on same page */
-		if (((unsigned long)hose->cfg_data & PAGE_MASK) !=
-		    ((unsigned long)hose->cfg_addr & PAGE_MASK))
-			iounmap(hose->cfg_data);
-		iounmap(hose->cfg_addr);
-		pcibios_free_controller(hose);
-		return 0;
-=======
 	/* set platform device as the parent */
 	hose->parent = &pdev->dev;
 	hose->first_busno = bus_range ? bus_range[0] : 0x0;
@@ -873,7 +590,6 @@ static int fsl_add_bridge(struct platform_device *pdev, int is_primary)
 		if ((progif & 1) &&
 		    !of_property_read_bool(dev, "fsl,pci-agent-force-enum"))
 			goto no_bridge;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	setup_pci_cmd(hose);
@@ -884,8 +600,6 @@ static int fsl_add_bridge(struct platform_device *pdev, int is_primary)
 			PPC_INDIRECT_TYPE_SURPRESS_PRIMARY_BUS;
 		if (fsl_pcie_check_link(hose))
 			hose->indirect_type |= PPC_INDIRECT_TYPE_NO_PCIE_LINK;
-<<<<<<< HEAD
-=======
 		/* Fix Class Code to PCI_CLASS_BRIDGE_PCI_NORMAL for pre-3.0 controller */
 		if (in_be32(&pci->block_rev1) < PCIE_IP_REV_3_0) {
 			early_read_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, &class_code);
@@ -914,7 +628,6 @@ static int fsl_add_bridge(struct platform_device *pdev, int is_primary)
 			early_write_config_word(hose, 0, 0,
 					PCI_BUS_FUNCTION, temp);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	printk(KERN_INFO "Found FSL PCI host bridge at 0x%016llx. "
@@ -930,15 +643,6 @@ static int fsl_add_bridge(struct platform_device *pdev, int is_primary)
 	pci_process_bridge_OF_ranges(hose, dev, is_primary);
 
 	/* Setup PEX window registers */
-<<<<<<< HEAD
-	setup_pci_atmu(hose, &rsrc);
-
-	return 0;
-}
-#endif /* CONFIG_FSL_SOC_BOOKE || CONFIG_PPC_86xx */
-
-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_FREESCALE, PCI_ANY_ID, quirk_fsl_pcie_header);
-=======
 	setup_pci_atmu(hose);
 
 	/* Set up controller operations */
@@ -960,7 +664,6 @@ no_bridge:
 
 DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_FREESCALE, PCI_ANY_ID,
 			quirk_fsl_pcie_early);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_PPC_83xx) || defined(CONFIG_PPC_MPC512x)
 struct mpc83xx_pcie_priv {
@@ -1039,76 +742,21 @@ mapped:
 	return pcie->cfg_type1 + offset;
 }
 
-<<<<<<< HEAD
-static int mpc83xx_pcie_read_config(struct pci_bus *bus, unsigned int devfn,
-				    int offset, int len, u32 *val)
-{
-	void __iomem *cfg_addr;
-
-	cfg_addr = mpc83xx_pcie_remap_cfg(bus, devfn, offset);
-	if (!cfg_addr)
-		return PCIBIOS_DEVICE_NOT_FOUND;
-
-	switch (len) {
-	case 1:
-		*val = in_8(cfg_addr);
-		break;
-	case 2:
-		*val = in_le16(cfg_addr);
-		break;
-	default:
-		*val = in_le32(cfg_addr);
-		break;
-	}
-
-	return PCIBIOS_SUCCESSFUL;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mpc83xx_pcie_write_config(struct pci_bus *bus, unsigned int devfn,
 				     int offset, int len, u32 val)
 {
 	struct pci_controller *hose = pci_bus_to_host(bus);
-<<<<<<< HEAD
-	void __iomem *cfg_addr;
-
-	cfg_addr = mpc83xx_pcie_remap_cfg(bus, devfn, offset);
-	if (!cfg_addr)
-		return PCIBIOS_DEVICE_NOT_FOUND;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PPC_INDIRECT_TYPE_SURPRESS_PRIMARY_BUS */
 	if (offset == PCI_PRIMARY_BUS && bus->number == hose->first_busno)
 		val &= 0xffffff00;
 
-<<<<<<< HEAD
-	switch (len) {
-	case 1:
-		out_8(cfg_addr, val);
-		break;
-	case 2:
-		out_le16(cfg_addr, val);
-		break;
-	default:
-		out_le32(cfg_addr, val);
-		break;
-	}
-
-	return PCIBIOS_SUCCESSFUL;
-}
-
-static struct pci_ops mpc83xx_pcie_ops = {
-	.read = mpc83xx_pcie_read_config,
-=======
 	return pci_generic_config_write(bus, devfn, offset, len, val);
 }
 
 static struct pci_ops mpc83xx_pcie_ops = {
 	.map_bus = mpc83xx_pcie_remap_cfg,
 	.read = pci_generic_config_read,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write = mpc83xx_pcie_write_config,
 };
 
@@ -1119,11 +767,7 @@ static int __init mpc83xx_pcie_setup(struct pci_controller *hose,
 	u32 cfg_bar;
 	int ret = -ENOMEM;
 
-<<<<<<< HEAD
-	pcie = zalloc_maybe_bootmem(sizeof(*pcie), GFP_KERNEL);
-=======
 	pcie = kzalloc(sizeof(*pcie), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pcie)
 		return ret;
 
@@ -1145,10 +789,7 @@ static int __init mpc83xx_pcie_setup(struct pci_controller *hose,
 	WARN_ON(hose->dn->data);
 	hose->dn->data = pcie;
 	hose->ops = &mpc83xx_pcie_ops;
-<<<<<<< HEAD
-=======
 	hose->indirect_type |= PPC_INDIRECT_TYPE_FSL_CFG_REG_LINK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	out_le32(pcie->cfg_type0 + PEX_OUTWIN0_TAH, 0);
 	out_le32(pcie->cfg_type0 + PEX_OUTWIN0_TAL, 0);
@@ -1178,19 +819,11 @@ int __init mpc83xx_add_bridge(struct device_node *dev)
 	is_mpc83xx_pci = 1;
 
 	if (!of_device_is_available(dev)) {
-<<<<<<< HEAD
-		pr_warning("%s: disabled by the firmware.\n",
-			   dev->full_name);
-		return -ENODEV;
-	}
-	pr_debug("Adding PCI host bridge %s\n", dev->full_name);
-=======
 		pr_warn("%pOF: disabled by the firmware.\n",
 			dev);
 		return -ENODEV;
 	}
 	pr_debug("Adding PCI host bridge %pOF\n", dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fetch host bridge registers address */
 	if (of_address_to_resource(dev, 0, &rsrc_reg)) {
@@ -1225,13 +858,8 @@ int __init mpc83xx_add_bridge(struct device_node *dev)
 	/* Get bus range if any */
 	bus_range = of_get_property(dev, "bus-range", &len);
 	if (bus_range == NULL || len < 2 * sizeof(int)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Can't get bus-range for %s, assume"
-		       " bus 0\n", dev->full_name);
-=======
 		printk(KERN_WARNING "Can't get bus-range for %pOF, assume"
 		       " bus 0\n", dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pci_add_flags(PCI_REASSIGN_ALL_BUS);
@@ -1282,13 +910,8 @@ u64 fsl_pci_immrbar_base(struct pci_controller *hose)
 		in = pcie->cfg_type0 + PEX_RC_INWIN_BASE;
 		for (i = 0; i < 4; i++) {
 			/* not enabled, skip */
-<<<<<<< HEAD
-			if (!in_le32(&in[i].ar) & PEX_RCIWARn_EN)
-				 continue;
-=======
 			if (!(in_le32(&in[i].ar) & PEX_RCIWARn_EN))
 				continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (get_immrbase() == in_le32(&in[i].tar))
 				return (u64)in_le32(&in[i].barh) << 32 |
@@ -1305,8 +928,6 @@ u64 fsl_pci_immrbar_base(struct pci_controller *hose)
 
 		pci_bus_read_config_dword(hose->bus,
 			PCI_DEVFN(0, 0), PCI_BASE_ADDRESS_0, &base);
-<<<<<<< HEAD
-=======
 
 		/*
 		 * For PEXCSRBAR, bit 3-0 indicate prefetchable and
@@ -1315,15 +936,12 @@ u64 fsl_pci_immrbar_base(struct pci_controller *hose)
 		 */
 		base &= PCI_BASE_ADDRESS_MEM_MASK;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return base;
 	}
 #endif
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_PPC_E500
 static int mcheck_handle_load(struct pt_regs *regs, u32 inst)
@@ -1747,4 +1365,3 @@ static int __init fsl_pci_init(void)
 }
 arch_initcall(fsl_pci_init);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

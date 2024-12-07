@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
@@ -9,14 +6,6 @@
  *
  *	See the file "skfddi.c" for further information.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
@@ -37,10 +26,6 @@
  *
  * 	The following external HW dependent functions are referenced :
  * 		sm_pm_bypass_req()
-<<<<<<< HEAD
- * 		sm_pm_ls_latch()
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 		sm_pm_get_ls()
  * 
  * 	The following HW dependent events are required :
@@ -55,13 +40,6 @@
 #define KERNEL
 #include "h/smtstate.h"
 
-<<<<<<< HEAD
-#ifndef	lint
-static const char ID_sccs[] = "@(#)ecm.c	2.7 99/08/05 (C) SK " ;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * FSM Macros
  */
@@ -79,10 +57,6 @@ static const char ID_sccs[] = "@(#)ecm.c	2.7 99/08/05 (C) SK " ;
 #define EC6_CHECK	6			/* checking bypass */
 #define EC7_DEINSERT	7			/* bypass being turnde off */
 
-<<<<<<< HEAD
-#ifdef	DEBUG
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * symbolic state names
  */
@@ -99,10 +73,6 @@ static const char * const ecm_events[] = {
 	"EC_TIMEOUT_TD","EC_TIMEOUT_TMAX",
 	"EC_TIMEOUT_IMAX","EC_TIMEOUT_INMAX","EC_TEST_DONE"
 } ;
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * all Globals  are defined in smc.h
@@ -145,17 +115,10 @@ void ecm(struct s_smc *smc, int event)
 	int	state ;
 
 	do {
-<<<<<<< HEAD
-		DB_ECM("ECM : state %s%s",
-			(smc->mib.fddiSMTECMState & AFLAG) ? "ACTIONS " : "",
-			ecm_states[smc->mib.fddiSMTECMState & ~AFLAG]) ;
-		DB_ECM(" event %s\n",ecm_events[event],0) ;
-=======
 		DB_ECM("ECM : state %s%s event %s",
 		       smc->mib.fddiSMTECMState & AFLAG ? "ACTIONS " : "",
 		       ecm_states[smc->mib.fddiSMTECMState & ~AFLAG],
 		       ecm_events[event]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		state = smc->mib.fddiSMTECMState ;
 		ecm_fsm(smc,event) ;
 		event = 0 ;
@@ -180,18 +143,11 @@ static void ecm_fsm(struct s_smc *smc, int cmd)
 	/* For AIX event notification: */
 	/* Is a disconnect  command remotely issued ? */
 	if (cmd == EC_DISCONNECT &&
-<<<<<<< HEAD
-		smc->mib.fddiSMTRemoteDisconnectFlag == TRUE)
-		AIX_EVENT (smc, (u_long) CIO_HARD_FAIL, (u_long)
-			FDDI_REMOTE_DISCONNECT, smt_get_event_word(smc),
-			smt_get_error_word(smc) );
-=======
 	    smc->mib.fddiSMTRemoteDisconnectFlag == TRUE) {
 		AIX_EVENT (smc, (u_long) CIO_HARD_FAIL, (u_long)
 			FDDI_REMOTE_DISCONNECT, smt_get_event_word(smc),
 			smt_get_error_word(smc) );
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*jd 05-Aug-1999 Bug #10419 "Port Disconnect fails at Dup MAc Cond."*/
 	if (cmd == EC_CONNECT) {
@@ -392,11 +348,6 @@ static void ecm_fsm(struct s_smc *smc, int cmd)
 		 */
 		start_ecm_timer(smc,smc->s.ecm_check_poll,0) ;
 		smc->e.ecm_line_state = TRUE ;	/* flag to pcm: report Q/HLS */
-<<<<<<< HEAD
-		(void) sm_pm_ls_latch(smc,PA,1) ; /* enable line state latch */
-		(void) sm_pm_ls_latch(smc,PB,1) ; /* enable line state latch */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ACTIONS_DONE() ;
 		break ;
 	case EC6_CHECK :
@@ -416,11 +367,7 @@ static void ecm_fsm(struct s_smc *smc, int cmd)
 			 (((ls_a == PC_ILS) && (ls_b == PC_QLS)) ||
 			  ((ls_a == PC_QLS) && (ls_b == PC_ILS)))){
 			smc->e.sb_flag = TRUE ;
-<<<<<<< HEAD
-			DB_ECMN(1,"ECM : EC6_CHECK - stuck bypass\n",0,0) ;
-=======
 			DB_ECMN(1, "ECM : EC6_CHECK - stuck bypass");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			AIX_EVENT(smc, (u_long) FDDI_RING_STATUS, (u_long)
 				FDDI_SMT_ERROR, (u_long) FDDI_BYPASS_STUCK,
 				smt_get_error_word(smc));
@@ -484,50 +431,29 @@ static void prop_actions(struct s_smc *smc)
 		return ;
 	}
 
-<<<<<<< HEAD
-	DB_ECM("ECM : prop_actions - trace_prop %d\n", smc->e.trace_prop,0) ;
-	DB_ECM("ECM : prop_actions - in %d out %d\n", port_in,port_out) ;
-
-	if (smc->e.trace_prop & ENTITY_BIT(ENTITY_MAC)) {
-		/* trace initiatior */
-		DB_ECM("ECM : initiate TRACE on PHY %c\n",'A'+port_in-PA,0) ;
-=======
 	DB_ECM("ECM : prop_actions - trace_prop %lu", smc->e.trace_prop);
 	DB_ECM("ECM : prop_actions - in %d out %d", port_in, port_out);
 
 	if (smc->e.trace_prop & ENTITY_BIT(ENTITY_MAC)) {
 		/* trace initiatior */
 		DB_ECM("ECM : initiate TRACE on PHY %c", 'A' + port_in - PA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		queue_event(smc,EVENT_PCM+port_in,PC_TRACE) ;
 	}
 	else if ((smc->e.trace_prop & ENTITY_BIT(ENTITY_PHY(PA))) &&
 		port_out != PA) {
 		/* trace propagate upstream */
-<<<<<<< HEAD
-		DB_ECM("ECM : propagate TRACE on PHY B\n",0,0) ;
-=======
 		DB_ECM("ECM : propagate TRACE on PHY B");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		queue_event(smc,EVENT_PCMB,PC_TRACE) ;
 	}
 	else if ((smc->e.trace_prop & ENTITY_BIT(ENTITY_PHY(PB))) &&
 		port_out != PB) {
 		/* trace propagate upstream */
-<<<<<<< HEAD
-		DB_ECM("ECM : propagate TRACE on PHY A\n",0,0) ;
-=======
 		DB_ECM("ECM : propagate TRACE on PHY A");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		queue_event(smc,EVENT_PCMA,PC_TRACE) ;
 	}
 	else {
 		/* signal trace termination */
-<<<<<<< HEAD
-		DB_ECM("ECM : TRACE terminated\n",0,0) ;
-=======
 		DB_ECM("ECM : TRACE terminated");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smc->e.path_test = PT_PENDING ;
 	}
 	smc->e.trace_prop = 0 ;
@@ -544,22 +470,13 @@ static void prop_actions(struct s_smc *smc)
 
 	RS_SET(smc,RS_EVENT) ;
 	while (smc->e.trace_prop) {
-<<<<<<< HEAD
-		DB_ECM("ECM : prop_actions - trace_prop %d\n",
-			smc->e.trace_prop,0) ;
-=======
 		DB_ECM("ECM : prop_actions - trace_prop %d",
 		       smc->e.trace_prop);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (smc->e.trace_prop & ENTITY_BIT(ENTITY_MAC)) {
 			initiator = ENTITY_MAC ;
 			smc->e.trace_prop &= ~ENTITY_BIT(ENTITY_MAC) ;
-<<<<<<< HEAD
-			DB_ECM("ECM: MAC initiates trace\n",0,0) ;
-=======
 			DB_ECM("ECM: MAC initiates trace");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		else {
 			for (p = NUMPHYS-1 ; p >= 0 ; p--) {
@@ -574,20 +491,12 @@ static void prop_actions(struct s_smc *smc)
 
 		if (upstream == ENTITY_MAC) {
 			/* signal trace termination */
-<<<<<<< HEAD
-			DB_ECM("ECM : TRACE terminated\n",0,0) ;
-=======
 			DB_ECM("ECM : TRACE terminated");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			smc->e.path_test = PT_PENDING ;
 		}
 		else {
 			/* trace propagate upstream */
-<<<<<<< HEAD
-			DB_ECM("ECM : propagate TRACE on PHY %d\n",upstream,0) ;
-=======
 			DB_ECM("ECM : propagate TRACE on PHY %d", upstream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			queue_event(smc,EVENT_PCM+upstream,PC_TRACE) ;
 		}
 	}

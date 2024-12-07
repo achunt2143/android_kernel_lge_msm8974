@@ -119,13 +119,10 @@
 #define  RL5C4XX_MISC_CONTROL           0x2F /* 8 bit */
 #define  RL5C4XX_ZV_ENABLE              0x08
 
-<<<<<<< HEAD
-=======
 /* Misc Control 3 Register */
 #define RL5C4XX_MISC3			0x00A2 /* 16 bit */
 #define  RL5C47X_MISC3_CB_CLKRUN_DIS	BIT(1)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __YENTA_H
 
 #define rl_misc(socket)		((socket)->private[0])
@@ -163,8 +160,6 @@ static void ricoh_set_zv(struct yenta_socket *socket)
         }
 }
 
-<<<<<<< HEAD
-=======
 static void ricoh_set_clkrun(struct yenta_socket *socket, bool quiet)
 {
 	u16 misc3;
@@ -194,7 +189,6 @@ static void ricoh_set_clkrun(struct yenta_socket *socket, bool quiet)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ricoh_save_state(struct yenta_socket *socket)
 {
 	rl_misc(socket) = config_readw(socket, RL5C4XX_MISC);
@@ -211,10 +205,7 @@ static void ricoh_restore_state(struct yenta_socket *socket)
 	config_writew(socket, RL5C4XX_16BIT_IO_0, rl_io(socket));
 	config_writew(socket, RL5C4XX_16BIT_MEM_0, rl_mem(socket));
 	config_writew(socket, RL5C4XX_CONFIG, rl_config(socket));
-<<<<<<< HEAD
-=======
 	ricoh_set_clkrun(socket, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -240,10 +231,7 @@ static int ricoh_override(struct yenta_socket *socket)
 	config_writew(socket, RL5C4XX_CONFIG, config);
 
 	ricoh_set_zv(socket);
-<<<<<<< HEAD
-=======
 	ricoh_set_clkrun(socket, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

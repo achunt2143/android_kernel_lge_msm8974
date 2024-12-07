@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 Jeff Dike (jdike@karaya.com)
- * Licensed under the GPL
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2018 Cambridge Greys Ltd
  * Copyright (C) 2015-2016 Anton Ivanov (aivanov@brocade.com)
  * Copyright (C) 2000 Jeff Dike (jdike@karaya.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* 2001-09-28...2002-04-17
@@ -30,15 +24,10 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/blkdev.h>
-<<<<<<< HEAD
-#include <linux/ata.h>
-#include <linux/hdreg.h>
-=======
 #include <linux/blk-mq.h>
 #include <linux/ata.h>
 #include <linux/hdreg.h>
 #include <linux/major.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cdrom.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -48,33 +37,6 @@
 #include <linux/platform_device.h>
 #include <linux/scatterlist.h>
 #include <asm/tlbflush.h>
-<<<<<<< HEAD
-#include "kern_util.h"
-#include "mconsole_kern.h"
-#include "init.h"
-#include "irq_kern.h"
-#include "ubd.h"
-#include "os.h"
-#include "cow.h"
-
-enum ubd_req { UBD_READ, UBD_WRITE };
-
-struct io_thread_req {
-	struct request *req;
-	enum ubd_req op;
-	int fds[2];
-	unsigned long offsets[2];
-	unsigned long long offset;
-	unsigned long length;
-	char *buffer;
-	int sectorsize;
-	unsigned long sector_mask;
-	unsigned long long cow_offset;
-	unsigned long bitmap_words[2];
-	int error;
-};
-
-=======
 #include <kern_util.h>
 #include "mconsole_kern.h"
 #include <init.h>
@@ -118,7 +80,6 @@ static int io_remainder_size;
 
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int ubd_test_bit(__u64 bit, unsigned char *data)
 {
 	__u64 n;
@@ -147,13 +108,7 @@ static inline void ubd_set_bit(__u64 bit, unsigned char *data)
 static DEFINE_MUTEX(ubd_lock);
 static DEFINE_MUTEX(ubd_mutex); /* replaces BKL, might not be needed */
 
-<<<<<<< HEAD
-static int ubd_open(struct block_device *bdev, fmode_t mode);
-static int ubd_release(struct gendisk *disk, fmode_t mode);
-static int ubd_ioctl(struct block_device *bdev, fmode_t mode,
-=======
 static int ubd_ioctl(struct block_device *bdev, blk_mode_t mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     unsigned int cmd, unsigned long arg);
 static int ubd_getgeo(struct block_device *bdev, struct hd_geometry *geo);
 
@@ -161,25 +116,11 @@ static int ubd_getgeo(struct block_device *bdev, struct hd_geometry *geo);
 
 static const struct block_device_operations ubd_blops = {
         .owner		= THIS_MODULE,
-<<<<<<< HEAD
-        .open		= ubd_open,
-        .release	= ubd_release,
-        .ioctl		= ubd_ioctl,
-	.getgeo		= ubd_getgeo,
-};
-
-/* Protected by ubd_lock */
-static int fake_major = UBD_MAJOR;
-static struct gendisk *ubd_gendisk[MAX_DEV];
-static struct gendisk *fake_gendisk[MAX_DEV];
-
-=======
         .ioctl		= ubd_ioctl,
         .compat_ioctl	= blkdev_compat_ptr_ioctl,
 	.getgeo		= ubd_getgeo,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_BLK_DEV_UBD_SYNC
 #define OPEN_FLAGS ((struct openflags) { .r = 1, .w = 1, .s = 1, .c = 0, \
 					 .cl = 1 })
@@ -203,41 +144,22 @@ struct cow {
 #define MAX_SG 64
 
 struct ubd {
-<<<<<<< HEAD
-	struct list_head restart;
-	/* name (and fd, below) of the file opened for writing, either the
-	 * backing or the cow file. */
-	char *file;
-	int count;
-=======
 	/* name (and fd, below) of the file opened for writing, either the
 	 * backing or the cow file. */
 	char *file;
 	char *serial;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int fd;
 	__u64 size;
 	struct openflags boot_openflags;
 	struct openflags openflags;
 	unsigned shared:1;
 	unsigned no_cow:1;
-<<<<<<< HEAD
-	struct cow cow;
-	struct platform_device pdev;
-	struct request_queue *queue;
-	spinlock_t lock;
-	struct scatterlist sg[MAX_SG];
-	struct request *request;
-	int start_sg, end_sg;
-	sector_t rq_pos;
-=======
 	unsigned no_trim:1;
 	struct cow cow;
 	struct platform_device pdev;
 	struct gendisk *disk;
 	struct blk_mq_tag_set tag_set;
 	spinlock_t lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define DEFAULT_COW { \
@@ -250,89 +172,21 @@ struct ubd {
 
 #define DEFAULT_UBD { \
 	.file = 		NULL, \
-<<<<<<< HEAD
-	.count =		0, \
-=======
 	.serial =		NULL, \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fd =			-1, \
 	.size =			-1, \
 	.boot_openflags =	OPEN_FLAGS, \
 	.openflags =		OPEN_FLAGS, \
 	.no_cow =               0, \
-<<<<<<< HEAD
-	.shared =		0, \
-	.cow =			DEFAULT_COW, \
-	.lock =			__SPIN_LOCK_UNLOCKED(ubd_devs.lock), \
-	.request =		NULL, \
-	.start_sg =		0, \
-	.end_sg =		0, \
-	.rq_pos =		0, \
-=======
 	.no_trim =		0, \
 	.shared =		0, \
 	.cow =			DEFAULT_COW, \
 	.lock =			__SPIN_LOCK_UNLOCKED(ubd_devs.lock), \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Protected by ubd_lock */
 static struct ubd ubd_devs[MAX_DEV] = { [0 ... MAX_DEV - 1] = DEFAULT_UBD };
 
-<<<<<<< HEAD
-/* Only changed by fake_ide_setup which is a setup */
-static int fake_ide = 0;
-static struct proc_dir_entry *proc_ide_root = NULL;
-static struct proc_dir_entry *proc_ide = NULL;
-
-static void make_proc_ide(void)
-{
-	proc_ide_root = proc_mkdir("ide", NULL);
-	proc_ide = proc_mkdir("ide0", proc_ide_root);
-}
-
-static int fake_ide_media_proc_show(struct seq_file *m, void *v)
-{
-	seq_puts(m, "disk\n");
-	return 0;
-}
-
-static int fake_ide_media_proc_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, fake_ide_media_proc_show, NULL);
-}
-
-static const struct file_operations fake_ide_media_proc_fops = {
-	.owner		= THIS_MODULE,
-	.open		= fake_ide_media_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-static void make_ide_entries(const char *dev_name)
-{
-	struct proc_dir_entry *dir, *ent;
-	char name[64];
-
-	if(proc_ide_root == NULL) make_proc_ide();
-
-	dir = proc_mkdir(dev_name, proc_ide);
-	if(!dir) return;
-
-	ent = proc_create("media", S_IRUGO, dir, &fake_ide_media_proc_fops);
-	if(!ent) return;
-	snprintf(name, sizeof(name), "ide0/%s", dev_name);
-	proc_symlink(dev_name, proc_ide_root, name);
-}
-
-static int fake_ide_setup(char *str)
-{
-	fake_ide = 1;
-	return 1;
-}
-
-=======
 static blk_status_t ubd_queue_rq(struct blk_mq_hw_ctx *hctx,
 				 const struct blk_mq_queue_data *bd);
 
@@ -341,16 +195,11 @@ static int fake_ide_setup(char *str)
 	pr_warn("The fake_ide option has been removed\n");
 	return 1;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __setup("fake_ide", fake_ide_setup);
 
 __uml_help(fake_ide_setup,
 "fake_ide\n"
-<<<<<<< HEAD
-"    Create ide0 entries that map onto ubd devices.\n\n"
-=======
 "    Obsolete stub.\n\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 static int parse_unit(char **ptr)
@@ -380,48 +229,12 @@ static int ubd_setup_common(char *str, int *index_out, char **error_out)
 {
 	struct ubd *ubd_dev;
 	struct openflags flags = global_openflags;
-<<<<<<< HEAD
-	char *backing_file;
-=======
 	char *file, *backing_file, *serial;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int n, err = 0, i;
 
 	if(index_out) *index_out = -1;
 	n = *str;
 	if(n == '='){
-<<<<<<< HEAD
-		char *end;
-		int major;
-
-		str++;
-		if(!strcmp(str, "sync")){
-			global_openflags = of_sync(global_openflags);
-			goto out1;
-		}
-
-		err = -EINVAL;
-		major = simple_strtoul(str, &end, 0);
-		if((*end != '\0') || (end == str)){
-			*error_out = "Didn't parse major number";
-			goto out1;
-		}
-
-		mutex_lock(&ubd_lock);
-		if (fake_major != UBD_MAJOR) {
-			*error_out = "Can't assign a fake major twice";
-			goto out1;
-		}
-
-		fake_major = major;
-
-		printk(KERN_INFO "Setting extra ubd major number to %d\n",
-		       major);
-		err = 0;
-	out1:
-		mutex_unlock(&ubd_lock);
-		return err;
-=======
 		str++;
 		if(!strcmp(str, "sync")){
 			global_openflags = of_sync(global_openflags);
@@ -430,7 +243,6 @@ static int ubd_setup_common(char *str, int *index_out, char **error_out)
 
 		pr_warn("fake major not supported any more\n");
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	n = parse_unit(&str);
@@ -456,11 +268,7 @@ static int ubd_setup_common(char *str, int *index_out, char **error_out)
 		*index_out = n;
 
 	err = -EINVAL;
-<<<<<<< HEAD
-	for (i = 0; i < sizeof("rscd="); i++) {
-=======
 	for (i = 0; i < sizeof("rscdt="); i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (*str) {
 		case 'r':
 			flags.w = 0;
@@ -474,22 +282,15 @@ static int ubd_setup_common(char *str, int *index_out, char **error_out)
 		case 'c':
 			ubd_dev->shared = 1;
 			break;
-<<<<<<< HEAD
-=======
 		case 't':
 			ubd_dev->no_trim = 1;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case '=':
 			str++;
 			goto break_loop;
 		default:
 			*error_out = "Expected '=' or flag letter "
-<<<<<<< HEAD
-				"(r, s, c, or d)";
-=======
 				"(r, s, c, t or d)";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 		str++;
@@ -502,26 +303,6 @@ static int ubd_setup_common(char *str, int *index_out, char **error_out)
 	goto out;
 
 break_loop:
-<<<<<<< HEAD
-	backing_file = strchr(str, ',');
-
-	if (backing_file == NULL)
-		backing_file = strchr(str, ':');
-
-	if(backing_file != NULL){
-		if(ubd_dev->no_cow){
-			*error_out = "Can't specify both 'd' and a cow file";
-			goto out;
-		}
-		else {
-			*backing_file = '\0';
-			backing_file++;
-		}
-	}
-	err = 0;
-	ubd_dev->file = str;
-	ubd_dev->cow.file = backing_file;
-=======
 	file = strsep(&str, ",:");
 	if (*file == '\0')
 		file = NULL;
@@ -543,7 +324,6 @@ break_loop:
 	ubd_dev->file = file;
 	ubd_dev->cow.file = backing_file;
 	ubd_dev->serial = serial;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ubd_dev->boot_openflags = flags;
 out:
 	mutex_unlock(&ubd_lock);
@@ -564,11 +344,7 @@ static int ubd_setup(char *str)
 
 __setup("ubd", ubd_setup);
 __uml_help(ubd_setup,
-<<<<<<< HEAD
-"ubd<n><flags>=<filename>[(:|,)<filename2>]\n"
-=======
 "ubd<n><flags>=<filename>[(:|,)<filename2>][(:|,)<serial>]\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "    This is used to associate a device with a file in the underlying\n"
 "    filesystem. When specifying two filenames, the first one is the\n"
 "    COW name and the second is the backing file name. As separator you can\n"
@@ -590,8 +366,6 @@ __uml_help(ubd_setup,
 "    'c' will cause the device to be treated as being shared between multiple\n"
 "    UMLs and file locking will be turned off - this is appropriate for a\n"
 "    cluster filesystem and inappropriate at almost all other times.\n\n"
-<<<<<<< HEAD
-=======
 "    't' will disable trim/discard support on the device (enabled by default).\n\n"
 "    An optional device serial number can be exposed using the serial parameter\n"
 "    on the cmdline which is exposed as a sysfs entry. This is particularly\n"
@@ -599,7 +373,6 @@ __uml_help(ubd_setup,
 "    specifying a label, the filename2 must be also presented. It can be\n"
 "    an empty string, in which case the backing file is not used:\n"
 "       ubd0=File,,Serial\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 static int udb_setup(char *str)
@@ -618,28 +391,6 @@ __uml_help(udb_setup,
 "    in the boot output.\n\n"
 );
 
-<<<<<<< HEAD
-static void do_ubd_request(struct request_queue * q);
-
-/* Only changed by ubd_init, which is an initcall. */
-static int thread_fd = -1;
-static LIST_HEAD(restart);
-
-/* XXX - move this inside ubd_intr. */
-/* Called without dev->lock held, and only in interrupt context. */
-static void ubd_handler(void)
-{
-	struct io_thread_req *req;
-	struct ubd *ubd;
-	struct list_head *list, *next_ele;
-	unsigned long flags;
-	int n;
-
-	while(1){
-		n = os_read_file(thread_fd, &req,
-				 sizeof(struct io_thread_req *));
-		if(n != sizeof(req)){
-=======
 /* Only changed by ubd_init, which is an initcall. */
 static int thread_fd = -1;
 
@@ -711,27 +462,12 @@ static void ubd_handler(void)
 			UBD_REQ_BUFFER_SIZE
 		);
 		if (n < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if(n == -EAGAIN)
 				break;
 			printk(KERN_ERR "spurious interrupt in ubd_handler, "
 			       "err = %d\n", -n);
 			return;
 		}
-<<<<<<< HEAD
-
-		blk_end_request(req->req, 0, req->length);
-		kfree(req);
-	}
-	reactivate_fd(thread_fd, UBD_IRQ);
-
-	list_for_each_safe(list, next_ele, &restart){
-		ubd = container_of(list, struct ubd, restart);
-		list_del_init(&ubd->restart);
-		spin_lock_irqsave(&ubd->lock, flags);
-		do_ubd_request(ubd->queue);
-		spin_unlock_irqrestore(&ubd->lock, flags);
-=======
 		for (count = 0; count < n/sizeof(struct io_thread_req *); count++) {
 			struct io_thread_req *io_req = (*irq_req_buffer)[count];
 
@@ -742,7 +478,6 @@ static void ubd_handler(void)
 			blk_mq_end_request(io_req->req, io_req->error);
 			kfree(io_req);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -772,11 +507,7 @@ static inline int ubd_file_size(struct ubd *ubd_dev, __u64 *size_out)
 	__u32 version;
 	__u32 align;
 	char *backing_file;
-<<<<<<< HEAD
-	time_t mtime;
-=======
 	time64_t mtime;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long long size;
 	int sector_size;
 	int bitmap_offset;
@@ -787,11 +518,7 @@ static inline int ubd_file_size(struct ubd *ubd_dev, __u64 *size_out)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	fd = os_open_file(ubd_dev->file, global_openflags, 0);
-=======
 	fd = os_open_file(ubd_dev->file, of_read(OPENFLAGS()), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fd < 0)
 		return fd;
 
@@ -812,30 +539,16 @@ static int read_cow_bitmap(int fd, void *buf, int offset, int len)
 {
 	int err;
 
-<<<<<<< HEAD
-	err = os_seek_file(fd, offset);
-	if (err < 0)
-		return err;
-
-	err = os_read_file(fd, buf, len);
-=======
 	err = os_pread_file(fd, buf, len, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int backing_file_mismatch(char *file, __u64 size, time_t mtime)
-{
-	unsigned long modtime;
-=======
 static int backing_file_mismatch(char *file, __u64 size, time64_t mtime)
 {
 	time64_t modtime;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long long actual;
 	int err;
 
@@ -861,11 +574,7 @@ static int backing_file_mismatch(char *file, __u64 size, time64_t mtime)
 		return -EINVAL;
 	}
 	if (modtime != mtime) {
-<<<<<<< HEAD
-		printk(KERN_ERR "mtime mismatch (%ld vs %ld) of COW header vs "
-=======
 		printk(KERN_ERR "mtime mismatch (%lld vs %lld) of COW header vs "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "backing file\n", mtime, modtime);
 		return -EINVAL;
 	}
@@ -908,11 +617,7 @@ static int open_ubd_file(char *file, struct openflags *openflags, int shared,
 		  unsigned long *bitmap_len_out, int *data_offset_out,
 		  int *create_cow_out)
 {
-<<<<<<< HEAD
-	time_t mtime;
-=======
 	time64_t mtime;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long long size;
 	__u32 version, align;
 	char *backing_file;
@@ -1042,11 +747,7 @@ static int ubd_open_dev(struct ubd *ubd_dev)
 
 	if((fd == -ENOENT) && create_cow){
 		fd = create_cow_file(ubd_dev->file, ubd_dev->cow.file,
-<<<<<<< HEAD
-					  ubd_dev->openflags, 1 << 9, PAGE_SIZE,
-=======
 					  ubd_dev->openflags, SECTOR_SIZE, PAGE_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  &ubd_dev->cow.bitmap_offset,
 					  &ubd_dev->cow.bitmap_len,
 					  &ubd_dev->cow.data_offset);
@@ -1064,11 +765,6 @@ static int ubd_open_dev(struct ubd *ubd_dev)
 	ubd_dev->fd = fd;
 
 	if(ubd_dev->cow.file != NULL){
-<<<<<<< HEAD
-		blk_queue_max_hw_sectors(ubd_dev->queue, 8 * sizeof(long));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		ubd_dev->cow.bitmap = vmalloc(ubd_dev->cow.bitmap_len);
 		if(ubd_dev->cow.bitmap == NULL){
@@ -1100,49 +796,6 @@ static void ubd_device_release(struct device *dev)
 {
 	struct ubd *ubd_dev = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	blk_cleanup_queue(ubd_dev->queue);
-	*ubd_dev = ((struct ubd) DEFAULT_UBD);
-}
-
-static int ubd_disk_register(int major, u64 size, int unit,
-			     struct gendisk **disk_out)
-{
-	struct gendisk *disk;
-
-	disk = alloc_disk(1 << UBD_SHIFT);
-	if(disk == NULL)
-		return -ENOMEM;
-
-	disk->major = major;
-	disk->first_minor = unit << UBD_SHIFT;
-	disk->fops = &ubd_blops;
-	set_capacity(disk, size / 512);
-	if (major == UBD_MAJOR)
-		sprintf(disk->disk_name, "ubd%c", 'a' + unit);
-	else
-		sprintf(disk->disk_name, "ubd_fake%d", unit);
-
-	/* sysfs register (not for ide fake devices) */
-	if (major == UBD_MAJOR) {
-		ubd_devs[unit].pdev.id   = unit;
-		ubd_devs[unit].pdev.name = DRIVER_NAME;
-		ubd_devs[unit].pdev.dev.release = ubd_device_release;
-		dev_set_drvdata(&ubd_devs[unit].pdev.dev, &ubd_devs[unit]);
-		platform_device_register(&ubd_devs[unit].pdev);
-		disk->driverfs_dev = &ubd_devs[unit].pdev.dev;
-	}
-
-	disk->private_data = &ubd_devs[unit];
-	disk->queue = ubd_devs[unit].queue;
-	add_disk(disk);
-
-	*disk_out = disk;
-	return 0;
-}
-
-#define ROUND_BLOCK(n) ((n + ((1 << 9) - 1)) & (-1 << 9))
-=======
 	blk_mq_free_tag_set(&ubd_dev->tag_set);
 	*ubd_dev = ((struct ubd) DEFAULT_UBD);
 }
@@ -1187,26 +840,20 @@ static const struct attribute_group *ubd_attr_groups[] = {
 static const struct blk_mq_ops ubd_mq_ops = {
 	.queue_rq = ubd_queue_rq,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ubd_add(int n, char **error_out)
 {
 	struct ubd *ubd_dev = &ubd_devs[n];
-<<<<<<< HEAD
-=======
 	struct queue_limits lim = {
 		.max_segments		= MAX_SG,
 		.seg_boundary_mask	= PAGE_SIZE - 1,
 	};
 	struct gendisk *disk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	if(ubd_dev->file == NULL)
 		goto out;
 
-<<<<<<< HEAD
-=======
 	if (ubd_dev->cow.file)
 		lim.max_hw_sectors = 8 * sizeof(long);
 	if (!ubd_dev->no_trim) {
@@ -1214,53 +861,12 @@ static int ubd_add(int n, char **error_out)
 		lim.max_write_zeroes_sectors = UBD_MAX_REQUEST;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = ubd_file_size(ubd_dev, &ubd_dev->size);
 	if(err < 0){
 		*error_out = "Couldn't determine size of device's file";
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ubd_dev->size = ROUND_BLOCK(ubd_dev->size);
-
-	INIT_LIST_HEAD(&ubd_dev->restart);
-	sg_init_table(ubd_dev->sg, MAX_SG);
-
-	err = -ENOMEM;
-	ubd_dev->queue = blk_init_queue(do_ubd_request, &ubd_dev->lock);
-	if (ubd_dev->queue == NULL) {
-		*error_out = "Failed to initialize device queue";
-		goto out;
-	}
-	ubd_dev->queue->queuedata = ubd_dev;
-
-	blk_queue_max_segments(ubd_dev->queue, MAX_SG);
-	err = ubd_disk_register(UBD_MAJOR, ubd_dev->size, n, &ubd_gendisk[n]);
-	if(err){
-		*error_out = "Failed to register device";
-		goto out_cleanup;
-	}
-
-	if (fake_major != UBD_MAJOR)
-		ubd_disk_register(fake_major, ubd_dev->size, n,
-				  &fake_gendisk[n]);
-
-	/*
-	 * Perhaps this should also be under the "if (fake_major)" above
-	 * using the fake_disk->disk_name
-	 */
-	if (fake_ide)
-		make_ide_entries(ubd_gendisk[n]->disk_name);
-
-	err = 0;
-out:
-	return err;
-
-out_cleanup:
-	blk_cleanup_queue(ubd_dev->queue);
-	goto out;
-=======
 	err = ubd_open_dev(ubd_dev);
 	if (err) {
 		pr_err("ubd%c: Can't open \"%s\": errno = %d\n",
@@ -1318,7 +924,6 @@ out_close:
 	ubd_close_dev(ubd_dev);
 out:
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ubd_config(char *str, char **error_out)
@@ -1402,10 +1007,6 @@ static int ubd_id(char **str, int *start_out, int *end_out)
 
 static int ubd_remove(int n, char **error_out)
 {
-<<<<<<< HEAD
-	struct gendisk *disk = ubd_gendisk[n];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ubd *ubd_dev;
 	int err = -ENODEV;
 
@@ -1416,23 +1017,6 @@ static int ubd_remove(int n, char **error_out)
 	if(ubd_dev->file == NULL)
 		goto out;
 
-<<<<<<< HEAD
-	/* you cannot remove a open disk */
-	err = -EBUSY;
-	if(ubd_dev->count > 0)
-		goto out;
-
-	ubd_gendisk[n] = NULL;
-	if(disk != NULL){
-		del_gendisk(disk);
-		put_disk(disk);
-	}
-
-	if(fake_gendisk[n] != NULL){
-		del_gendisk(fake_gendisk[n]);
-		put_disk(fake_gendisk[n]);
-		fake_gendisk[n] = NULL;
-=======
 	if (ubd_dev->disk) {
 		/* you cannot remove a open disk */
 		err = -EBUSY;
@@ -1442,7 +1026,6 @@ static int ubd_remove(int n, char **error_out)
 		del_gendisk(ubd_dev->disk);
 		ubd_close_dev(ubd_dev);
 		put_disk(ubd_dev->disk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = 0;
@@ -1501,14 +1084,6 @@ static int __init ubd_init(void)
 	if (register_blkdev(UBD_MAJOR, "ubd"))
 		return -1;
 
-<<<<<<< HEAD
-	if (fake_major != UBD_MAJOR) {
-		char name[sizeof("ubd_nnn\0")];
-
-		snprintf(name, sizeof(name), "ubd_%d", fake_major);
-		if (register_blkdev(fake_major, "ubd"))
-			return -1;
-=======
 	irq_req_buffer = kmalloc_array(UBD_REQ_BUFFER_SIZE,
 				       sizeof(struct io_thread_req *),
 				       GFP_KERNEL
@@ -1529,7 +1104,6 @@ static int __init ubd_init(void)
 	if (io_req_buffer == NULL) {
 		printk(KERN_ERR "Failed to initialize ubd buffering\n");
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	platform_driver_register(&ubd_driver);
 	mutex_lock(&ubd_lock);
@@ -1556,12 +1130,7 @@ static int __init ubd_driver_init(void){
 		 * enough. So use anyway the io thread. */
 	}
 	stack = alloc_stack(0, 0);
-<<<<<<< HEAD
-	io_pid = start_io_thread(stack + PAGE_SIZE - sizeof(void *),
-				 &thread_fd);
-=======
 	io_pid = start_io_thread(stack + PAGE_SIZE, &thread_fd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if(io_pid < 0){
 		printk(KERN_ERR
 		       "ubd : Failed to start I/O thread (errno = %d) - "
@@ -1571,76 +1140,22 @@ static int __init ubd_driver_init(void){
 	}
 	err = um_request_irq(UBD_IRQ, thread_fd, IRQ_READ, ubd_intr,
 			     0, "ubd", ubd_devs);
-<<<<<<< HEAD
-	if(err != 0)
-=======
 	if(err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "um_request_irq failed - errno = %d\n", -err);
 	return 0;
 }
 
 device_initcall(ubd_driver_init);
 
-<<<<<<< HEAD
-static int ubd_open(struct block_device *bdev, fmode_t mode)
-{
-	struct gendisk *disk = bdev->bd_disk;
-	struct ubd *ubd_dev = disk->private_data;
-	int err = 0;
-
-	mutex_lock(&ubd_mutex);
-	if(ubd_dev->count == 0){
-		err = ubd_open_dev(ubd_dev);
-		if(err){
-			printk(KERN_ERR "%s: Can't open \"%s\": errno = %d\n",
-			       disk->disk_name, ubd_dev->file, -err);
-			goto out;
-		}
-	}
-	ubd_dev->count++;
-	set_disk_ro(disk, !ubd_dev->openflags.w);
-
-	/* This should no more be needed. And it didn't work anyway to exclude
-	 * read-write remounting of filesystems.*/
-	/*if((mode & FMODE_WRITE) && !ubd_dev->openflags.w){
-	        if(--ubd_dev->count == 0) ubd_close_dev(ubd_dev);
-	        err = -EROFS;
-	}*/
-out:
-	mutex_unlock(&ubd_mutex);
-	return err;
-}
-
-static int ubd_release(struct gendisk *disk, fmode_t mode)
-{
-	struct ubd *ubd_dev = disk->private_data;
-
-	mutex_lock(&ubd_mutex);
-	if(--ubd_dev->count == 0)
-		ubd_close_dev(ubd_dev);
-	mutex_unlock(&ubd_mutex);
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void cowify_bitmap(__u64 io_offset, int length, unsigned long *cow_mask,
 			  __u64 *cow_offset, unsigned long *bitmap,
 			  __u64 bitmap_offset, unsigned long *bitmap_words,
 			  __u64 bitmap_len)
 {
-<<<<<<< HEAD
-	__u64 sector = io_offset >> 9;
-	int i, update_bitmap = 0;
-
-	for(i = 0; i < length >> 9; i++){
-=======
 	__u64 sector = io_offset >> SECTOR_SHIFT;
 	int i, update_bitmap = 0;
 
 	for (i = 0; i < length >> SECTOR_SHIFT; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if(cow_mask != NULL)
 			ubd_set_bit(i, (unsigned char *) cow_mask);
 		if(ubd_test_bit(sector + i, (unsigned char *) bitmap))
@@ -1671,112 +1186,6 @@ static void cowify_bitmap(__u64 io_offset, int length, unsigned long *cow_mask,
 	*cow_offset += bitmap_offset;
 }
 
-<<<<<<< HEAD
-static void cowify_req(struct io_thread_req *req, unsigned long *bitmap,
-		       __u64 bitmap_offset, __u64 bitmap_len)
-{
-	__u64 sector = req->offset >> 9;
-	int i;
-
-	if(req->length > (sizeof(req->sector_mask) * 8) << 9)
-		panic("Operation too long");
-
-	if(req->op == UBD_READ) {
-		for(i = 0; i < req->length >> 9; i++){
-			if(ubd_test_bit(sector + i, (unsigned char *) bitmap))
-				ubd_set_bit(i, (unsigned char *)
-					    &req->sector_mask);
-		}
-	}
-	else cowify_bitmap(req->offset, req->length, &req->sector_mask,
-			   &req->cow_offset, bitmap, bitmap_offset,
-			   req->bitmap_words, bitmap_len);
-}
-
-/* Called with dev->lock held */
-static void prepare_request(struct request *req, struct io_thread_req *io_req,
-			    unsigned long long offset, int page_offset,
-			    int len, struct page *page)
-{
-	struct gendisk *disk = req->rq_disk;
-	struct ubd *ubd_dev = disk->private_data;
-
-	io_req->req = req;
-	io_req->fds[0] = (ubd_dev->cow.file != NULL) ? ubd_dev->cow.fd :
-		ubd_dev->fd;
-	io_req->fds[1] = ubd_dev->fd;
-	io_req->cow_offset = -1;
-	io_req->offset = offset;
-	io_req->length = len;
-	io_req->error = 0;
-	io_req->sector_mask = 0;
-
-	io_req->op = (rq_data_dir(req) == READ) ? UBD_READ : UBD_WRITE;
-	io_req->offsets[0] = 0;
-	io_req->offsets[1] = ubd_dev->cow.data_offset;
-	io_req->buffer = page_address(page) + page_offset;
-	io_req->sectorsize = 1 << 9;
-
-	if(ubd_dev->cow.file != NULL)
-		cowify_req(io_req, ubd_dev->cow.bitmap,
-			   ubd_dev->cow.bitmap_offset, ubd_dev->cow.bitmap_len);
-
-}
-
-/* Called with dev->lock held */
-static void do_ubd_request(struct request_queue *q)
-{
-	struct io_thread_req *io_req;
-	struct request *req;
-	int n;
-
-	while(1){
-		struct ubd *dev = q->queuedata;
-		if(dev->end_sg == 0){
-			struct request *req = blk_fetch_request(q);
-			if(req == NULL)
-				return;
-
-			dev->request = req;
-			dev->rq_pos = blk_rq_pos(req);
-			dev->start_sg = 0;
-			dev->end_sg = blk_rq_map_sg(q, req, dev->sg);
-		}
-
-		req = dev->request;
-		while(dev->start_sg < dev->end_sg){
-			struct scatterlist *sg = &dev->sg[dev->start_sg];
-
-			io_req = kmalloc(sizeof(struct io_thread_req),
-					 GFP_ATOMIC);
-			if(io_req == NULL){
-				if(list_empty(&dev->restart))
-					list_add(&dev->restart, &restart);
-				return;
-			}
-			prepare_request(req, io_req,
-					(unsigned long long)dev->rq_pos << 9,
-					sg->offset, sg->length, sg_page(sg));
-
-			n = os_write_file(thread_fd, &io_req,
-					  sizeof(struct io_thread_req *));
-			if(n != sizeof(struct io_thread_req *)){
-				if(n != -EAGAIN)
-					printk("write to io thread failed, "
-					       "errno = %d\n", -n);
-				else if(list_empty(&dev->restart))
-					list_add(&dev->restart, &restart);
-				kfree(io_req);
-				return;
-			}
-
-			dev->rq_pos += sg->length >> 9;
-			dev->start_sg++;
-		}
-		dev->end_sg = 0;
-		dev->request = NULL;
-	}
-=======
 static void cowify_req(struct io_thread_req *req, struct io_desc *segment,
 		       unsigned long offset, unsigned long *bitmap,
 		       __u64 bitmap_offset, __u64 bitmap_len)
@@ -1930,7 +1339,6 @@ static blk_status_t ubd_queue_rq(struct blk_mq_hw_ctx *hctx,
 	}
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ubd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
@@ -1943,11 +1351,7 @@ static int ubd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ubd_ioctl(struct block_device *bdev, fmode_t mode,
-=======
 static int ubd_ioctl(struct block_device *bdev, blk_mode_t mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     unsigned int cmd, unsigned long arg)
 {
 	struct ubd *ubd_dev = bdev->bd_disk->private_data;
@@ -1979,48 +1383,6 @@ static int ubd_ioctl(struct block_device *bdev, blk_mode_t mode,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static int update_bitmap(struct io_thread_req *req)
-{
-	int n;
-
-	if(req->cow_offset == -1)
-		return 0;
-
-	n = os_seek_file(req->fds[1], req->cow_offset);
-	if(n < 0){
-		printk("do_io - bitmap lseek failed : err = %d\n", -n);
-		return 1;
-	}
-
-	n = os_write_file(req->fds[1], &req->bitmap_words,
-			  sizeof(req->bitmap_words));
-	if(n != sizeof(req->bitmap_words)){
-		printk("do_io - bitmap update failed, err = %d fd = %d\n", -n,
-		       req->fds[1]);
-		return 1;
-	}
-
-	return 0;
-}
-
-static void do_io(struct io_thread_req *req)
-{
-	char *buf;
-	unsigned long len;
-	int n, nsectors, start, end, bit;
-	int err;
-	__u64 off;
-
-	nsectors = req->length / req->sectorsize;
-	start = 0;
-	do {
-		bit = ubd_test_bit(start, (unsigned char *) &req->sector_mask);
-		end = start;
-		while((end < nsectors) &&
-		      (ubd_test_bit(end, (unsigned char *)
-				    &req->sector_mask) == bit))
-=======
 static int map_error(int error_code)
 {
 	switch (error_code) {
@@ -2085,58 +1447,27 @@ static void do_io(struct io_thread_req *req, struct io_desc *desc)
 		end = start;
 		while((end < nsectors) &&
 		      (ubd_test_bit(end, (unsigned char *) &desc->sector_mask) == bit))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			end++;
 
 		off = req->offset + req->offsets[bit] +
 			start * req->sectorsize;
 		len = (end - start) * req->sectorsize;
-<<<<<<< HEAD
-		buf = &req->buffer[start * req->sectorsize];
-
-		err = os_seek_file(req->fds[bit], off);
-		if(err < 0){
-			printk("do_io - lseek failed : err = %d\n", -err);
-			req->error = 1;
-			return;
-		}
-		if(req->op == UBD_READ){
-=======
 		if (desc->buffer != NULL)
 			buf = &desc->buffer[start * req->sectorsize];
 
 		switch (req_op(req->req)) {
 		case REQ_OP_READ:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			n = 0;
 			do {
 				buf = &buf[n];
 				len -= n;
-<<<<<<< HEAD
-				n = os_read_file(req->fds[bit], buf, len);
-				if (n < 0) {
-					printk("do_io - read failed, err = %d "
-					       "fd = %d\n", -n, req->fds[bit]);
-					req->error = 1;
-=======
 				n = os_pread_file(req->fds[bit], buf, len, off);
 				if (n < 0) {
 					req->error = map_error(-n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return;
 				}
 			} while((n < len) && (n != 0));
 			if (n < len) memset(&buf[n], 0, len - n);
-<<<<<<< HEAD
-		} else {
-			n = os_write_file(req->fds[bit], buf, len);
-			if(n != len){
-				printk("do_io - write failed err = %d "
-				       "fd = %d\n", -n, req->fds[bit]);
-				req->error = 1;
-				return;
-			}
-=======
 			break;
 		case REQ_OP_WRITE:
 			n = os_pwrite_file(req->fds[bit], buf, len, off);
@@ -2163,18 +1494,13 @@ static void do_io(struct io_thread_req *req, struct io_desc *desc)
 			WARN_ON_ONCE(1);
 			req->error = BLK_STS_NOTSUPP;
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		start = end;
 	} while(start < nsectors);
 
-<<<<<<< HEAD
-	req->error = update_bitmap(req);
-=======
 	req->offset += len;
 	req->error = update_bitmap(req, desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Changed in start_io_thread, which is serialized by being called only
@@ -2183,36 +1509,6 @@ static void do_io(struct io_thread_req *req, struct io_desc *desc)
 int kernel_fd = -1;
 
 /* Only changed by the io thread. XXX: currently unused. */
-<<<<<<< HEAD
-static int io_count = 0;
-
-int io_thread(void *arg)
-{
-	struct io_thread_req *req;
-	int n;
-
-	ignore_sigwinch_sig();
-	while(1){
-		n = os_read_file(kernel_fd, &req,
-				 sizeof(struct io_thread_req *));
-		if(n != sizeof(struct io_thread_req *)){
-			if(n < 0)
-				printk("io_thread - read failed, fd = %d, "
-				       "err = %d\n", kernel_fd, -n);
-			else {
-				printk("io_thread - short read, fd = %d, "
-				       "length = %d\n", kernel_fd, n);
-			}
-			continue;
-		}
-		io_count++;
-		do_io(req);
-		n = os_write_file(kernel_fd, &req,
-				  sizeof(struct io_thread_req *));
-		if(n != sizeof(struct io_thread_req *))
-			printk("io_thread - write failed, fd = %d, err = %d\n",
-			       kernel_fd, -n);
-=======
 static int io_count;
 
 int io_thread(void *arg)
@@ -2259,7 +1555,6 @@ int io_thread(void *arg)
 				ubd_write_poll(-1);
 			}
 		} while (written < n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;

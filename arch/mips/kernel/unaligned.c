@@ -7,10 +7,7 @@
  *
  * Copyright (C) 1996, 1998, 1999, 2002 by Ralf Baechle
  * Copyright (C) 1999 Silicon Graphics, Inc.
-<<<<<<< HEAD
-=======
  * Copyright (C) 2014 Imagination Technologies Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file contains exception handler for address error exception with the
  * special capability to execute faulting instructions in software.  The
@@ -25,19 +22,11 @@
  *
  * For now I enable fixing of address errors by default to make life easier.
  * I however intend to disable this somewhen in the future when the alignment
-<<<<<<< HEAD
- * problems with user programs have been fixed.  For programmers this is the
- * right way to go.
- *
- * Fixing address errors is a per process option.  The option is inherited
- * across fork(2) and execve(2) calls.  If you really want to use the
-=======
  * problems with user programs have been fixed.	 For programmers this is the
  * right way to go.
  *
  * Fixing address errors is a per process option.  The option is inherited
  * across fork(2) and execve(2) calls.	If you really want to use the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * option in your user programs - I discourage the use of the software
  * emulation strongly - use the following code in your userland stuff:
  *
@@ -55,31 +44,11 @@
  * #include <sys/sysmips.h>
  *
  * struct foo {
-<<<<<<< HEAD
- *         unsigned char bar[8];
-=======
  *	   unsigned char bar[8];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * };
  *
  * main(int argc, char *argv[])
  * {
-<<<<<<< HEAD
- *         struct foo x = {0, 1, 2, 3, 4, 5, 6, 7};
- *         unsigned int *p = (unsigned int *) (x.bar + 3);
- *         int i;
- *
- *         if (argc > 1)
- *                 sysmips(MIPS_FIXADE, atoi(argv[1]));
- *
- *         printf("*p = %08lx\n", *p);
- *
- *         *p = 0xdeadface;
- *
- *         for(i = 0; i <= 7; i++)
- *         printf("%02x ", x.bar[i]);
- *         printf("\n");
-=======
  *	   struct foo x = {0, 1, 2, 3, 4, 5, 6, 7};
  *	   unsigned int *p = (unsigned int *) (x.bar + 3);
  *	   int i;
@@ -94,25 +63,17 @@
  *	   for(i = 0; i <= 7; i++)
  *	   printf("%02x ", x.bar[i]);
  *	   printf("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * }
  *
  * Coprocessor loads are not supported; I think this case is unimportant
  * in the practice.
  *
  * TODO: Handle ndc (attempted store to doubleword in uncached memory)
-<<<<<<< HEAD
- *       exception for the R6000.
- *       A store crossing a page boundary might be executed only partially.
- *       Undo the partial store in this case.
- */
-=======
  *	 exception for the R6000.
  *	 A store crossing a page boundary might be executed only partially.
  *	 Undo the partial store in this case.
  */
 #include <linux/context_tracking.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/signal.h>
 #include <linux/smp.h>
@@ -124,13 +85,6 @@
 #include <asm/branch.h>
 #include <asm/byteorder.h>
 #include <asm/cop2.h>
-<<<<<<< HEAD
-#include <asm/inst.h>
-#include <asm/uaccess.h>
-
-#define STR(x)  __STR(x)
-#define __STR(x)  #x
-=======
 #include <asm/debug.h>
 #include <asm/fpu.h>
 #include <asm/fpu_emulator.h>
@@ -141,7 +95,6 @@
 #include <linux/uaccess.h>
 
 #include "access-helper.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	UNALIGNED_ACTION_QUIET,
@@ -157,13 +110,6 @@ static u32 unaligned_action;
 extern void show_registers(struct pt_regs *regs);
 
 static void emulate_load_store_insn(struct pt_regs *regs,
-<<<<<<< HEAD
-	void __user *addr, unsigned int __user *pc)
-{
-	union mips_instruction insn;
-	unsigned long value;
-	unsigned int res;
-=======
 	void __user *addr, unsigned int *pc)
 {
 	unsigned long origpc, orig31, value;
@@ -173,24 +119,12 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 
 	origpc = (unsigned long)pc;
 	orig31 = regs->regs[31];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	perf_sw_event(PERF_COUNT_SW_EMULATION_FAULTS, 1, regs, 0);
 
 	/*
 	 * This load never faults.
 	 */
-<<<<<<< HEAD
-	__get_user(insn.word, pc);
-
-	switch (insn.i_format.opcode) {
-	/*
-	 * These are instructions that a compiler doesn't generate.  We
-	 * can assume therefore that the code is MIPS-aware and
-	 * really buggy.  Emulating these instructions would break the
-	 * semantics anyway.
-	 */
-=======
 	__get_inst32(&insn.word, pc, user);
 
 	switch (insn.i_format.opcode) {
@@ -200,25 +134,16 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		 * really buggy.  Emulating these instructions would break the
 		 * semantics anyway.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ll_op:
 	case lld_op:
 	case sc_op:
 	case scd_op:
 
-<<<<<<< HEAD
-	/*
-	 * For these instructions the only way to create an address
-	 * error is an attempted access to kernel/supervisor address
-	 * space.
-	 */
-=======
 		/*
 		 * For these instructions the only way to create an address
 		 * error is an attempted access to kernel/supervisor address
 		 * space.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ldl_op:
 	case ldr_op:
 	case lwl_op:
@@ -232,38 +157,6 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 	case sb_op:
 		goto sigbus;
 
-<<<<<<< HEAD
-	/*
-	 * The remaining opcodes are the ones that are really of interest.
-	 */
-	case lh_op:
-		if (!access_ok(VERIFY_READ, addr, 2))
-			goto sigbus;
-
-		__asm__ __volatile__ (".set\tnoat\n"
-#ifdef __BIG_ENDIAN
-			"1:\tlb\t%0, 0(%2)\n"
-			"2:\tlbu\t$1, 1(%2)\n\t"
-#endif
-#ifdef __LITTLE_ENDIAN
-			"1:\tlb\t%0, 1(%2)\n"
-			"2:\tlbu\t$1, 0(%2)\n\t"
-#endif
-			"sll\t%0, 0x8\n\t"
-			"or\t%0, $1\n\t"
-			"li\t%1, 0\n"
-			"3:\t.set\tat\n\t"
-			".section\t.fixup,\"ax\"\n\t"
-			"4:\tli\t%1, %3\n\t"
-			"j\t3b\n\t"
-			".previous\n\t"
-			".section\t__ex_table,\"a\"\n\t"
-			STR(PTR)"\t1b, 4b\n\t"
-			STR(PTR)"\t2b, 4b\n\t"
-			".previous"
-			: "=&r" (value), "=r" (res)
-			: "r" (addr), "i" (-EFAULT));
-=======
 		/*
 		 * The remaining opcodes are the ones that are really of
 		 * interest.
@@ -402,7 +295,6 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		else
 			LoadHW(addr, value, res);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res)
 			goto fault;
 		compute_return_epc(regs);
@@ -410,31 +302,6 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		break;
 
 	case lw_op:
-<<<<<<< HEAD
-		if (!access_ok(VERIFY_READ, addr, 4))
-			goto sigbus;
-
-		__asm__ __volatile__ (
-#ifdef __BIG_ENDIAN
-			"1:\tlwl\t%0, (%2)\n"
-			"2:\tlwr\t%0, 3(%2)\n\t"
-#endif
-#ifdef __LITTLE_ENDIAN
-			"1:\tlwl\t%0, 3(%2)\n"
-			"2:\tlwr\t%0, (%2)\n\t"
-#endif
-			"li\t%1, 0\n"
-			"3:\t.section\t.fixup,\"ax\"\n\t"
-			"4:\tli\t%1, %3\n\t"
-			"j\t3b\n\t"
-			".previous\n\t"
-			".section\t__ex_table,\"a\"\n\t"
-			STR(PTR)"\t1b, 4b\n\t"
-			STR(PTR)"\t2b, 4b\n\t"
-			".previous"
-			: "=&r" (value), "=r" (res)
-			: "r" (addr), "i" (-EFAULT));
-=======
 		if (user && !access_ok(addr, 4))
 			goto sigbus;
 
@@ -443,7 +310,6 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		else
 			LoadW(addr, value, res);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res)
 			goto fault;
 		compute_return_epc(regs);
@@ -451,35 +317,6 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		break;
 
 	case lhu_op:
-<<<<<<< HEAD
-		if (!access_ok(VERIFY_READ, addr, 2))
-			goto sigbus;
-
-		__asm__ __volatile__ (
-			".set\tnoat\n"
-#ifdef __BIG_ENDIAN
-			"1:\tlbu\t%0, 0(%2)\n"
-			"2:\tlbu\t$1, 1(%2)\n\t"
-#endif
-#ifdef __LITTLE_ENDIAN
-			"1:\tlbu\t%0, 1(%2)\n"
-			"2:\tlbu\t$1, 0(%2)\n\t"
-#endif
-			"sll\t%0, 0x8\n\t"
-			"or\t%0, $1\n\t"
-			"li\t%1, 0\n"
-			"3:\t.set\tat\n\t"
-			".section\t.fixup,\"ax\"\n\t"
-			"4:\tli\t%1, %3\n\t"
-			"j\t3b\n\t"
-			".previous\n\t"
-			".section\t__ex_table,\"a\"\n\t"
-			STR(PTR)"\t1b, 4b\n\t"
-			STR(PTR)"\t2b, 4b\n\t"
-			".previous"
-			: "=&r" (value), "=r" (res)
-			: "r" (addr), "i" (-EFAULT));
-=======
 		if (user && !access_ok(addr, 2))
 			goto sigbus;
 
@@ -488,7 +325,6 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		else
 			LoadHWU(addr, value, res);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res)
 			goto fault;
 		compute_return_epc(regs);
@@ -504,38 +340,10 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		 * would blow up, so for now we don't handle unaligned 64-bit
 		 * instructions on 32-bit kernels.
 		 */
-<<<<<<< HEAD
-		if (!access_ok(VERIFY_READ, addr, 4))
-			goto sigbus;
-
-		__asm__ __volatile__ (
-#ifdef __BIG_ENDIAN
-			"1:\tlwl\t%0, (%2)\n"
-			"2:\tlwr\t%0, 3(%2)\n\t"
-#endif
-#ifdef __LITTLE_ENDIAN
-			"1:\tlwl\t%0, 3(%2)\n"
-			"2:\tlwr\t%0, (%2)\n\t"
-#endif
-			"dsll\t%0, %0, 32\n\t"
-			"dsrl\t%0, %0, 32\n\t"
-			"li\t%1, 0\n"
-			"3:\t.section\t.fixup,\"ax\"\n\t"
-			"4:\tli\t%1, %3\n\t"
-			"j\t3b\n\t"
-			".previous\n\t"
-			".section\t__ex_table,\"a\"\n\t"
-			STR(PTR)"\t1b, 4b\n\t"
-			STR(PTR)"\t2b, 4b\n\t"
-			".previous"
-			: "=&r" (value), "=r" (res)
-			: "r" (addr), "i" (-EFAULT));
-=======
 		if (user && !access_ok(addr, 4))
 			goto sigbus;
 
 		LoadWU(addr, value, res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res)
 			goto fault;
 		compute_return_epc(regs);
@@ -555,36 +363,10 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		 * would blow up, so for now we don't handle unaligned 64-bit
 		 * instructions on 32-bit kernels.
 		 */
-<<<<<<< HEAD
-		if (!access_ok(VERIFY_READ, addr, 8))
-			goto sigbus;
-
-		__asm__ __volatile__ (
-#ifdef __BIG_ENDIAN
-			"1:\tldl\t%0, (%2)\n"
-			"2:\tldr\t%0, 7(%2)\n\t"
-#endif
-#ifdef __LITTLE_ENDIAN
-			"1:\tldl\t%0, 7(%2)\n"
-			"2:\tldr\t%0, (%2)\n\t"
-#endif
-			"li\t%1, 0\n"
-			"3:\t.section\t.fixup,\"ax\"\n\t"
-			"4:\tli\t%1, %3\n\t"
-			"j\t3b\n\t"
-			".previous\n\t"
-			".section\t__ex_table,\"a\"\n\t"
-			STR(PTR)"\t1b, 4b\n\t"
-			STR(PTR)"\t2b, 4b\n\t"
-			".previous"
-			: "=&r" (value), "=r" (res)
-			: "r" (addr), "i" (-EFAULT));
-=======
 		if (user && !access_ok(addr, 8))
 			goto sigbus;
 
 		LoadDW(addr, value, res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res)
 			goto fault;
 		compute_return_epc(regs);
@@ -596,73 +378,6 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		goto sigill;
 
 	case sh_op:
-<<<<<<< HEAD
-		if (!access_ok(VERIFY_WRITE, addr, 2))
-			goto sigbus;
-
-		value = regs->regs[insn.i_format.rt];
-		__asm__ __volatile__ (
-#ifdef __BIG_ENDIAN
-			".set\tnoat\n"
-			"1:\tsb\t%1, 1(%2)\n\t"
-			"srl\t$1, %1, 0x8\n"
-			"2:\tsb\t$1, 0(%2)\n\t"
-			".set\tat\n\t"
-#endif
-#ifdef __LITTLE_ENDIAN
-			".set\tnoat\n"
-			"1:\tsb\t%1, 0(%2)\n\t"
-			"srl\t$1,%1, 0x8\n"
-			"2:\tsb\t$1, 1(%2)\n\t"
-			".set\tat\n\t"
-#endif
-			"li\t%0, 0\n"
-			"3:\n\t"
-			".section\t.fixup,\"ax\"\n\t"
-			"4:\tli\t%0, %3\n\t"
-			"j\t3b\n\t"
-			".previous\n\t"
-			".section\t__ex_table,\"a\"\n\t"
-			STR(PTR)"\t1b, 4b\n\t"
-			STR(PTR)"\t2b, 4b\n\t"
-			".previous"
-			: "=r" (res)
-			: "r" (value), "r" (addr), "i" (-EFAULT));
-		if (res)
-			goto fault;
-		compute_return_epc(regs);
-		break;
-
-	case sw_op:
-		if (!access_ok(VERIFY_WRITE, addr, 4))
-			goto sigbus;
-
-		value = regs->regs[insn.i_format.rt];
-		__asm__ __volatile__ (
-#ifdef __BIG_ENDIAN
-			"1:\tswl\t%1,(%2)\n"
-			"2:\tswr\t%1, 3(%2)\n\t"
-#endif
-#ifdef __LITTLE_ENDIAN
-			"1:\tswl\t%1, 3(%2)\n"
-			"2:\tswr\t%1, (%2)\n\t"
-#endif
-			"li\t%0, 0\n"
-			"3:\n\t"
-			".section\t.fixup,\"ax\"\n\t"
-			"4:\tli\t%0, %3\n\t"
-			"j\t3b\n\t"
-			".previous\n\t"
-			".section\t__ex_table,\"a\"\n\t"
-			STR(PTR)"\t1b, 4b\n\t"
-			STR(PTR)"\t2b, 4b\n\t"
-			".previous"
-		: "=r" (res)
-		: "r" (value), "r" (addr), "i" (-EFAULT));
-		if (res)
-			goto fault;
-		compute_return_epc(regs);
-=======
 		if (user && !access_ok(addr, 2))
 			goto sigbus;
 
@@ -692,7 +407,6 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 
 		if (res)
 			goto fault;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case sd_op:
@@ -704,36 +418,6 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		 * would blow up, so for now we don't handle unaligned 64-bit
 		 * instructions on 32-bit kernels.
 		 */
-<<<<<<< HEAD
-		if (!access_ok(VERIFY_WRITE, addr, 8))
-			goto sigbus;
-
-		value = regs->regs[insn.i_format.rt];
-		__asm__ __volatile__ (
-#ifdef __BIG_ENDIAN
-			"1:\tsdl\t%1,(%2)\n"
-			"2:\tsdr\t%1, 7(%2)\n\t"
-#endif
-#ifdef __LITTLE_ENDIAN
-			"1:\tsdl\t%1, 7(%2)\n"
-			"2:\tsdr\t%1, (%2)\n\t"
-#endif
-			"li\t%0, 0\n"
-			"3:\n\t"
-			".section\t.fixup,\"ax\"\n\t"
-			"4:\tli\t%0, %3\n\t"
-			"j\t3b\n\t"
-			".previous\n\t"
-			".section\t__ex_table,\"a\"\n\t"
-			STR(PTR)"\t1b, 4b\n\t"
-			STR(PTR)"\t2b, 4b\n\t"
-			".previous"
-		: "=r" (res)
-		: "r" (value), "r" (addr), "i" (-EFAULT));
-		if (res)
-			goto fault;
-		compute_return_epc(regs);
-=======
 		if (user && !access_ok(addr, 8))
 			goto sigbus;
 
@@ -742,29 +426,18 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 		StoreDW(addr, value, res);
 		if (res)
 			goto fault;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif /* CONFIG_64BIT */
 
 		/* Cannot handle 64-bit instructions in 32-bit kernel */
 		goto sigill;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MIPS_FP_SUPPORT
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case lwc1_op:
 	case ldc1_op:
 	case swc1_op:
 	case sdc1_op:
-<<<<<<< HEAD
-		/*
-		 * I herewith declare: this does not happen.  So send SIGBUS.
-		 */
-		goto sigbus;
-
-=======
 	case cop1x_op: {
 		void __user *fault_addr = NULL;
 
@@ -871,16 +544,12 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 #endif /* CONFIG_CPU_HAS_MSA */
 
 #ifndef CONFIG_CPU_MIPSR6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * COP2 is available to implementor for application specific use.
 	 * It's up to applications to register a notifier chain and do
 	 * whatever they have to do, including possible sending of signals.
-<<<<<<< HEAD
-=======
 	 *
 	 * This instruction has been reallocated in Release 6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	case lwc2_op:
 		cu2_notifier_call_chain(CU2_LWC2_OP, regs);
@@ -897,8 +566,6 @@ static void emulate_load_store_insn(struct pt_regs *regs,
 	case sdc2_op:
 		cu2_notifier_call_chain(CU2_SDC2_OP, regs);
 		break;
-<<<<<<< HEAD
-=======
 #endif
 	default:
 		/*
@@ -1807,7 +1474,6 @@ writeDW:
 
 		/* Cannot handle 64-bit instructions in 32-bit kernel */
 		goto sigill;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		/*
@@ -1824,63 +1490,32 @@ writeDW:
 	return;
 
 fault:
-<<<<<<< HEAD
-=======
 	/* roll back jump/branch */
 	regs->cp0_epc = origpc;
 	regs->regs[31] = orig31;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Did we have an exception handler installed? */
 	if (fixup_exception(regs))
 		return;
 
 	die_if_kernel("Unhandled kernel unaligned access", regs);
-<<<<<<< HEAD
-	force_sig(SIGSEGV, current);
-=======
 	force_sig(SIGSEGV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 
 sigbus:
 	die_if_kernel("Unhandled kernel unaligned access", regs);
-<<<<<<< HEAD
-	force_sig(SIGBUS, current);
-=======
 	force_sig(SIGBUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 
 sigill:
-<<<<<<< HEAD
-	die_if_kernel("Unhandled kernel unaligned access or invalid instruction", regs);
-	force_sig(SIGILL, current);
-=======
 	die_if_kernel
 	    ("Unhandled kernel unaligned access or invalid instruction", regs);
 	force_sig(SIGILL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 asmlinkage void do_ade(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	unsigned int __user *pc;
-	mm_segment_t seg;
-
-	perf_sw_event(PERF_COUNT_SW_ALIGNMENT_FAULTS,
-			1, regs, regs->cp0_badvaddr);
-	/*
-	 * Did we catch a fault trying to load an instruction?
-	 * Or are we running in MIPS16 mode?
-	 */
-	if ((regs->cp0_badvaddr == regs->cp0_epc) || (regs->cp0_epc & 0x1))
-		goto sigbus;
-
-	pc = (unsigned int __user *) exception_epc(regs);
-=======
 	enum ctx_state prev_state;
 	unsigned int *pc;
 
@@ -1910,28 +1545,15 @@ asmlinkage void do_ade(struct pt_regs *regs)
 	if (regs->cp0_badvaddr == regs->cp0_epc)
 		goto sigbus;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (user_mode(regs) && !test_thread_flag(TIF_FIXADE))
 		goto sigbus;
 	if (unaligned_action == UNALIGNED_ACTION_SIGNAL)
 		goto sigbus;
-<<<<<<< HEAD
-	else if (unaligned_action == UNALIGNED_ACTION_SHOW)
-		show_registers(regs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Do branch emulation only if we didn't forward the exception.
 	 * This is all so but ugly ...
 	 */
-<<<<<<< HEAD
-	seg = get_fs();
-	if (!user_mode(regs))
-		set_fs(KERNEL_DS);
-	emulate_load_store_insn(regs, (void __user *)regs->cp0_badvaddr, pc);
-	set_fs(seg);
-=======
 
 	/*
 	 * Are we running in microMIPS mode?
@@ -1966,44 +1588,16 @@ asmlinkage void do_ade(struct pt_regs *regs)
 	pc = (unsigned int *)exception_epc(regs);
 
 	emulate_load_store_insn(regs, (void __user *)regs->cp0_badvaddr, pc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 
 sigbus:
 	die_if_kernel("Kernel unaligned instruction access", regs);
-<<<<<<< HEAD
-	force_sig(SIGBUS, current);
-=======
 	force_sig(SIGBUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * XXX On return from the signal handler we should advance the epc
 	 */
-<<<<<<< HEAD
-}
-
-#ifdef CONFIG_DEBUG_FS
-extern struct dentry *mips_debugfs_dir;
-static int __init debugfs_unaligned(void)
-{
-	struct dentry *d;
-
-	if (!mips_debugfs_dir)
-		return -ENODEV;
-	d = debugfs_create_u32("unaligned_instructions", S_IRUGO,
-			       mips_debugfs_dir, &unaligned_instructions);
-	if (!d)
-		return -ENOMEM;
-	d = debugfs_create_u32("unaligned_action", S_IRUGO | S_IWUSR,
-			       mips_debugfs_dir, &unaligned_action);
-	if (!d)
-		return -ENOMEM;
-	return 0;
-}
-__initcall(debugfs_unaligned);
-=======
 	exception_exit(prev_state);
 }
 
@@ -2017,5 +1611,4 @@ static int __init debugfs_unaligned(void)
 	return 0;
 }
 arch_initcall(debugfs_unaligned);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

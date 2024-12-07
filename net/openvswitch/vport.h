@@ -1,40 +1,16 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2007-2011 Nicira Networks.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2007-2012 Nicira, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef VPORT_H
 #define VPORT_H 1
 
-<<<<<<< HEAD
-#include <linux/list.h>
-#include <linux/openvswitch.h>
-=======
 #include <linux/if_tunnel.h>
 #include <linux/list.h>
 #include <linux/netlink.h>
 #include <linux/openvswitch.h>
 #include <linux/reciprocal_div.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/skbuff.h>
 #include <linux/spinlock.h>
 #include <linux/u64_stats_sync.h>
@@ -44,11 +20,7 @@
 struct vport;
 struct vport_parms;
 
-<<<<<<< HEAD
-/* The following definitions are for users of the vport subsytem: */
-=======
 /* The following definitions are for users of the vport subsystem: */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ovs_vport_init(void);
 void ovs_vport_exit(void);
@@ -56,32 +28,6 @@ void ovs_vport_exit(void);
 struct vport *ovs_vport_add(const struct vport_parms *);
 void ovs_vport_del(struct vport *);
 
-<<<<<<< HEAD
-struct vport *ovs_vport_locate(const char *name);
-
-void ovs_vport_get_stats(struct vport *, struct ovs_vport_stats *);
-
-int ovs_vport_set_options(struct vport *, struct nlattr *options);
-int ovs_vport_get_options(const struct vport *, struct sk_buff *);
-
-int ovs_vport_send(struct vport *, struct sk_buff *);
-
-/* The following definitions are for implementers of vport devices: */
-
-struct vport_percpu_stats {
-	u64 rx_bytes;
-	u64 rx_packets;
-	u64 tx_bytes;
-	u64 tx_packets;
-	struct u64_stats_sync sync;
-};
-
-struct vport_err_stats {
-	u64 rx_dropped;
-	u64 rx_errors;
-	u64 tx_dropped;
-	u64 tx_errors;
-=======
 struct vport *ovs_vport_locate(const struct net *net, const char *name);
 
 void ovs_vport_get_stats(struct vport *, struct ovs_vport_stats *);
@@ -109,39 +55,10 @@ struct vport_portids {
 	struct rcu_head rcu;
 	u32 n_ids;
 	u32 ids[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct vport - one port within a datapath
-<<<<<<< HEAD
- * @rcu: RCU callback head for deferred destruction.
- * @port_no: Index into @dp's @ports array.
- * @dp: Datapath to which this port belongs.
- * @node: Element in @dp's @port_list.
- * @upcall_pid: The Netlink port to use for packets received on this port that
- * miss the flow table.
- * @hash_node: Element in @dev_table hash table in vport.c.
- * @ops: Class structure.
- * @percpu_stats: Points to per-CPU statistics used and maintained by vport
- * @stats_lock: Protects @err_stats;
- * @err_stats: Points to error statistics used and maintained by vport
- */
-struct vport {
-	struct rcu_head rcu;
-	u16 port_no;
-	struct datapath	*dp;
-	struct list_head node;
-	u32 upcall_pid;
-
-	struct hlist_node hash_node;
-	const struct vport_ops *ops;
-
-	struct vport_percpu_stats __percpu *percpu_stats;
-
-	spinlock_t stats_lock;
-	struct vport_err_stats err_stats;
-=======
  * @dev: Pointer to net_device.
  * @dev_tracker: refcount tracker for @dev reference
  * @dp: Datapath to which this port belongs.
@@ -168,7 +85,6 @@ struct vport {
 
 	struct list_head detach_list;
 	struct rcu_head rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -178,30 +94,20 @@ struct vport {
  * @type: New vport's type.
  * @options: %OVS_VPORT_ATTR_OPTIONS attribute from Netlink message, %NULL if
  * none was supplied.
-<<<<<<< HEAD
-=======
  * @desired_ifindex: New vport's ifindex.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dp: New vport's datapath.
  * @port_no: New vport's port number.
  */
 struct vport_parms {
 	const char *name;
 	enum ovs_vport_type type;
-<<<<<<< HEAD
-=======
 	int desired_ifindex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlattr *options;
 
 	/* For ovs_vport_alloc(). */
 	struct datapath *dp;
 	u16 port_no;
-<<<<<<< HEAD
-	u32 upcall_pid;
-=======
 	struct nlattr *upcall_portids;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -217,46 +123,19 @@ struct vport_parms {
  * @get_options: Appends vport-specific attributes for the configuration of an
  * existing vport to a &struct sk_buff.  May be %NULL for a vport that does not
  * have any configuration.
-<<<<<<< HEAD
- * @get_name: Get the device's name.
- * @get_config: Get the device's configuration.
- * @get_ifindex: Get the system interface index associated with the device.
- * May be null if the device does not have an ifindex.
- * @send: Send a packet on the device.  Returns the length of the packet sent.
-=======
  * @send: Send a packet on the device.
  * zero for dropped packets or negative for error.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct vport_ops {
 	enum ovs_vport_type type;
 
-<<<<<<< HEAD
-	/* Called with RTNL lock. */
-=======
 	/* Called with ovs_mutex. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vport *(*create)(const struct vport_parms *);
 	void (*destroy)(struct vport *);
 
 	int (*set_options)(struct vport *, struct nlattr *);
 	int (*get_options)(const struct vport *, struct sk_buff *);
 
-<<<<<<< HEAD
-	/* Called with rcu_read_lock or RTNL lock. */
-	const char *(*get_name)(const struct vport *);
-	void (*get_config)(const struct vport *, void *);
-	int (*get_ifindex)(const struct vport *);
-
-	int (*send)(struct vport *, struct sk_buff *);
-};
-
-enum vport_err_type {
-	VPORT_E_RX_DROPPED,
-	VPORT_E_RX_ERROR,
-	VPORT_E_TX_DROPPED,
-	VPORT_E_TX_ERROR,
-=======
 	int (*send)(struct sk_buff *skb);
 	struct module *owner;
 	struct list_head list;
@@ -272,7 +151,6 @@ struct vport_upcall_stats_percpu {
 	struct u64_stats_sync syncp;
 	u64_stats_t n_success;
 	u64_stats_t n_fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct vport *ovs_vport_alloc(int priv_size, const struct vport_ops *,
@@ -292,11 +170,7 @@ void ovs_vport_free(struct vport *);
  */
 static inline void *vport_priv(const struct vport *vport)
 {
-<<<<<<< HEAD
-	return (u8 *)vport + ALIGN(sizeof(struct vport), VPORT_ALIGN);
-=======
 	return (u8 *)(uintptr_t)vport + ALIGN(sizeof(struct vport), VPORT_ALIGN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -309,20 +183,6 @@ static inline void *vport_priv(const struct vport *vport)
  * the result of a hash table lookup.  @priv must point to the start of the
  * private data area.
  */
-<<<<<<< HEAD
-static inline struct vport *vport_from_priv(const void *priv)
-{
-	return (struct vport *)(priv - ALIGN(sizeof(struct vport), VPORT_ALIGN));
-}
-
-void ovs_vport_receive(struct vport *, struct sk_buff *);
-void ovs_vport_record_error(struct vport *, enum vport_err_type err_type);
-
-/* List of statically compiled vport implementations.  Don't forget to also
- * add yours to the list at the top of vport.c. */
-extern const struct vport_ops ovs_netdev_vport_ops;
-extern const struct vport_ops ovs_internal_vport_ops;
-=======
 static inline struct vport *vport_from_priv(void *priv)
 {
 	return (struct vport *)((u8 *)priv - ALIGN(sizeof(struct vport), VPORT_ALIGN));
@@ -345,6 +205,5 @@ int __ovs_vport_ops_register(struct vport_ops *ops);
 
 void ovs_vport_ops_unregister(struct vport_ops *ops);
 void ovs_vport_send(struct vport *vport, struct sk_buff *skb, u8 mac_proto);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* vport.h */

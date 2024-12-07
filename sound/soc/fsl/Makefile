@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-# MPC8610 HPCD Machine Support
-snd-soc-mpc8610-hpcd-objs := mpc8610_hpcd.o
-obj-$(CONFIG_SND_SOC_MPC8610_HPCD) += snd-soc-mpc8610-hpcd.o
-
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # P1022 DS Machine Support
 snd-soc-p1022-ds-objs := p1022_ds.o
 obj-$(CONFIG_SND_SOC_P1022_DS) += snd-soc-p1022-ds.o
 
-<<<<<<< HEAD
-# Freescale PowerPC SSI/DMA Platform Support
-snd-soc-fsl-ssi-objs := fsl_ssi.o
-snd-soc-fsl-dma-objs := fsl_dma.o
-obj-$(CONFIG_SND_SOC_POWERPC_SSI) += snd-soc-fsl-ssi.o snd-soc-fsl-dma.o
-=======
 # P1022 RDK Machine Support
 snd-soc-p1022-rdk-objs := p1022_rdk.o
 obj-$(CONFIG_SND_SOC_P1022_RDK) += snd-soc-p1022-rdk.o
@@ -55,7 +42,6 @@ obj-$(CONFIG_SND_SOC_FSL_XCVR) += snd-soc-fsl-xcvr.o
 obj-$(CONFIG_SND_SOC_FSL_AUD2HTX) += snd-soc-fsl-aud2htx.o
 obj-$(CONFIG_SND_SOC_FSL_RPMSG) += snd-soc-fsl-rpmsg.o
 obj-$(CONFIG_SND_SOC_POWERPC_QMC_AUDIO) += snd-soc-fsl-qmc-audio.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # MPC5200 Platform Support
 obj-$(CONFIG_SND_MPC52xx_DMA) += mpc5200_dma.o
@@ -66,8 +52,6 @@ obj-$(CONFIG_SND_SOC_MPC5200_AC97) += mpc5200_psc_ac97.o
 obj-$(CONFIG_SND_MPC52xx_SOC_PCM030) += pcm030-audio-fabric.o
 obj-$(CONFIG_SND_MPC52xx_SOC_EFIKA) += efika-audio-fabric.o
 
-<<<<<<< HEAD
-=======
 # i.MX Platform Support
 snd-soc-imx-audmux-objs := imx-audmux.o
 obj-$(CONFIG_SND_SOC_IMX_AUDMUX) += snd-soc-imx-audmux.o
@@ -95,4 +79,3 @@ obj-$(CONFIG_SND_SOC_IMX_AUDMIX) += snd-soc-imx-audmix.o
 obj-$(CONFIG_SND_SOC_IMX_HDMI) += snd-soc-imx-hdmi.o
 obj-$(CONFIG_SND_SOC_IMX_RPMSG) += snd-soc-imx-rpmsg.o
 obj-$(CONFIG_SND_SOC_IMX_CARD) += snd-soc-imx-card.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

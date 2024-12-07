@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_USER_32_H
 #define _ASM_X86_USER_32_H
 
@@ -127,12 +124,5 @@ struct user{
   char u_comm[32];		/* User command that was responsible */
   int u_debugreg[8];
 };
-<<<<<<< HEAD
-#define NBPG PAGE_SIZE
-#define UPAGES 1
-#define HOST_TEXT_START_ADDR (u.start_code)
-#define HOST_STACK_END_ADDR (u.start_stack + u.u_ssize * NBPG)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_USER_32_H */

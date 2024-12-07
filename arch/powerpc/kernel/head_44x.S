@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Kernel execution entry point code.
  *
@@ -25,20 +22,6 @@
  * 	   	debbie_chu@mvista.com
  *    Copyright 2002-2005 MontaVista Software, Inc.
  *      PowerPC 44x support, Matt Porter <mporter@kernel.crashing.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- */
-
-#include <linux/init.h>
-#include <asm/processor.h>
-#include <asm/page.h>
-#include <asm/mmu.h>
-#include <asm/pgtable.h>
-=======
  */
 
 #include <linux/init.h>
@@ -46,17 +29,13 @@
 #include <asm/processor.h>
 #include <asm/page.h>
 #include <asm/mmu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cputable.h>
 #include <asm/thread_info.h>
 #include <asm/ppc_asm.h>
 #include <asm/asm-offsets.h>
 #include <asm/ptrace.h>
 #include <asm/synch.h>
-<<<<<<< HEAD
-=======
 #include <asm/code-patching-asm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "head_booke.h"
 
 
@@ -72,13 +51,8 @@
  *
  */
 	__HEAD
-<<<<<<< HEAD
-_ENTRY(_stext);
-_ENTRY(_start);
-=======
 _GLOBAL(_stext);
 _GLOBAL(_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Reserve a word at a fixed location to store the address
 	 * of abatron_pteptrs
@@ -95,11 +69,7 @@ _GLOBAL(_start);
  * address.
  * r21 will be loaded with the physical runtime address of _stext
  */
-<<<<<<< HEAD
-	bl	0f				/* Get our runtime address */
-=======
 	bcl	20,31,$+4			/* Get our runtime address */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 0:	mflr	r21				/* Make it accessible */
 	addis	r21,r21,(_stext - 0b)@ha
 	addi	r21,r21,(_stext - 0b)@l 	/* Get our current runtime base */
@@ -138,11 +108,7 @@ _GLOBAL(_start);
 	lis	r1,init_thread_union@h
 	ori	r1,r1,init_thread_union@l
 	li	r0,0
-<<<<<<< HEAD
-	stwu	r0,THREAD_SIZE-STACK_FRAME_OVERHEAD(r1)
-=======
 	stwu	r0,THREAD_SIZE-STACK_FRAME_MIN_SIZE(r1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bl	early_init
 
@@ -232,12 +198,9 @@ _GLOBAL(_start);
 /*
  * Decide what sort of machine this is and initialize the MMU.
  */
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_KASAN
 	bl	kasan_early_init
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r3,0
 	mr	r4,r31
 	bl	machine_init
@@ -285,18 +248,11 @@ _GLOBAL(_start);
 
 interrupt_base:
 	/* Critical Input Interrupt */
-<<<<<<< HEAD
-	CRITICAL_EXCEPTION(0x0100, CriticalInput, unknown_exception)
-
-	/* Machine Check Interrupt */
-	CRITICAL_EXCEPTION(0x0200, MachineCheck, machine_check_exception)
-=======
 	CRITICAL_EXCEPTION(0x0100, CRITICAL, CriticalInput, unknown_exception)
 
 	/* Machine Check Interrupt */
 	CRITICAL_EXCEPTION(0x0200, MACHINE_CHECK, MachineCheck, \
 			   machine_check_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MCHECK_EXCEPTION(0x0210, MachineCheckA, machine_check_exception)
 
 	/* Data Storage Interrupt */
@@ -306,11 +262,7 @@ interrupt_base:
 	INSTRUCTION_STORAGE_EXCEPTION
 
 	/* External Input Interrupt */
-<<<<<<< HEAD
-	EXCEPTION(0x0500, ExternalInput, do_IRQ, EXC_XFER_LITE)
-=======
 	EXCEPTION(0x0500, BOOKE_INTERRUPT_EXTERNAL, ExternalInput, do_IRQ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Alignment Interrupt */
 	ALIGNMENT_EXCEPTION
@@ -322,17 +274,6 @@ interrupt_base:
 #ifdef CONFIG_PPC_FPU
 	FP_UNAVAILABLE_EXCEPTION
 #else
-<<<<<<< HEAD
-	EXCEPTION(0x2010, FloatingPointUnavailable, unknown_exception, EXC_XFER_EE)
-#endif
-	/* System Call Interrupt */
-	START_EXCEPTION(SystemCall)
-	NORMAL_EXCEPTION_PROLOG
-	EXC_XFER_EE_LITE(0x0c00, DoSyscall)
-
-	/* Auxiliary Processor Unavailable Interrupt */
-	EXCEPTION(0x2020, AuxillaryProcessorUnavailable, unknown_exception, EXC_XFER_EE)
-=======
 	EXCEPTION(0x2010, BOOKE_INTERRUPT_FP_UNAVAIL, \
 		  FloatingPointUnavailable, unknown_exception)
 #endif
@@ -343,31 +284,20 @@ interrupt_base:
 	/* Auxiliary Processor Unavailable Interrupt */
 	EXCEPTION(0x2020, BOOKE_INTERRUPT_AP_UNAVAIL, \
 		  AuxillaryProcessorUnavailable, unknown_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Decrementer Interrupt */
 	DECREMENTER_EXCEPTION
 
 	/* Fixed Internal Timer Interrupt */
 	/* TODO: Add FIT support */
-<<<<<<< HEAD
-	EXCEPTION(0x1010, FixedIntervalTimer, unknown_exception, EXC_XFER_EE)
-=======
 	EXCEPTION(0x1010, BOOKE_INTERRUPT_FIT, FixedIntervalTimer, unknown_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Watchdog Timer Interrupt */
 	/* TODO: Add watchdog support */
 #ifdef CONFIG_BOOKE_WDT
-<<<<<<< HEAD
-	CRITICAL_EXCEPTION(0x1020, WatchdogTimer, WatchdogException)
-#else
-	CRITICAL_EXCEPTION(0x1020, WatchdogTimer, unknown_exception)
-=======
 	CRITICAL_EXCEPTION(0x1020, WATCHDOG, WatchdogTimer, WatchdogException)
 #else
 	CRITICAL_EXCEPTION(0x1020, WATCHDOG, WatchdogTimer, unknown_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* Data TLB Error Interrupt */
@@ -384,13 +314,8 @@ interrupt_base:
 	 * kernel page tables.
 	 */
 	lis	r11, PAGE_OFFSET@h
-<<<<<<< HEAD
-	cmplw	r10, r11
-	blt+	3f
-=======
 	cmplw	cr7, r10, r11
 	blt+	cr7, 3f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lis	r11, swapper_pg_dir@h
 	ori	r11, r11, swapper_pg_dir@l
 
@@ -408,23 +333,16 @@ interrupt_base:
 	mfspr	r12,SPRN_MMUCR
 	mfspr   r13,SPRN_PID		/* Get PID */
 	rlwimi	r12,r13,0,24,31		/* Set TID */
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC_KUAP
 	cmpwi	r13,0
 	beq	2f			/* KUAP Fault */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 4:
 	mtspr	SPRN_MMUCR,r12
 
 	/* Mask of required permission bits. Note that while we
-<<<<<<< HEAD
-	 * do copy ESR:ST to _PAGE_RW position as trying to write
-=======
 	 * do copy ESR:ST to _PAGE_WRITE position as trying to write
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * to an RO page is pretty common, we don't do it with
 	 * _PAGE_DIRTY. We could do it, but it's a fairly rare
 	 * event so I'd rather take the overhead when it happens
@@ -437,11 +355,7 @@ interrupt_base:
 	 *       place or can we save a couple of instructions here ?
 	 */
 	mfspr	r12,SPRN_ESR
-<<<<<<< HEAD
-	li	r13,_PAGE_PRESENT|_PAGE_ACCESSED
-=======
 	li	r13,_PAGE_PRESENT|_PAGE_ACCESSED|_PAGE_READ
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rlwimi	r13,r12,10,30,30
 
 	/* Load the PTE */
@@ -463,25 +377,14 @@ interrupt_base:
 	/* Load the next available TLB index */
 	lwz	r13,tlb_44x_index@l(r10)
 
-<<<<<<< HEAD
-	bne	2f			/* Bail if permission mismach */
-=======
 	bne	2f			/* Bail if permission mismatch */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Increment, rollover, and store TLB index */
 	addi	r13,r13,1
 
-<<<<<<< HEAD
-	/* Compare with watermark (instruction gets patched) */
-	.globl tlb_44x_patch_hwater_D
-tlb_44x_patch_hwater_D:
-	cmpwi	0,r13,1			/* reserve entries */
-=======
 	patch_site 0f, patch__tlb_44x_hwater_D
 	/* Compare with watermark (instruction gets patched) */
 0:	cmpwi	0,r13,1			/* reserve entries */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ble	5f
 	li	r13,0
 5:
@@ -525,13 +428,8 @@ tlb_44x_patch_hwater_D:
 	 * kernel page tables.
 	 */
 	lis	r11, PAGE_OFFSET@h
-<<<<<<< HEAD
-	cmplw	r10, r11
-	blt+	3f
-=======
 	cmplw	cr7, r10, r11
 	blt+	cr7, 3f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lis	r11, swapper_pg_dir@h
 	ori	r11, r11, swapper_pg_dir@l
 
@@ -549,13 +447,10 @@ tlb_44x_patch_hwater_D:
 	mfspr	r12,SPRN_MMUCR
 	mfspr   r13,SPRN_PID		/* Get PID */
 	rlwimi	r12,r13,0,24,31		/* Set TID */
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC_KUAP
 	cmpwi	r13,0
 	beq	2f			/* KUAP Fault */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 4:
 	mtspr	SPRN_MMUCR,r12
@@ -581,25 +476,14 @@ tlb_44x_patch_hwater_D:
 	/* Load the next available TLB index */
 	lwz	r13,tlb_44x_index@l(r10)
 
-<<<<<<< HEAD
-	bne	2f			/* Bail if permission mismach */
-=======
 	bne	2f			/* Bail if permission mismatch */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Increment, rollover, and store TLB index */
 	addi	r13,r13,1
 
-<<<<<<< HEAD
-	/* Compare with watermark (instruction gets patched) */
-	.globl tlb_44x_patch_hwater_I
-tlb_44x_patch_hwater_I:
-	cmpwi	0,r13,1			/* reserve entries */
-=======
 	patch_site 0f, patch__tlb_44x_hwater_I
 	/* Compare with watermark (instruction gets patched) */
 0:	cmpwi	0,r13,1			/* reserve entries */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ble	5f
 	li	r13,0
 5:
@@ -631,10 +515,7 @@ tlb_44x_patch_hwater_I:
  * 	r11 - PTE high word value
  *	r12 - PTE low word value
  *	r13 - TLB index
-<<<<<<< HEAD
-=======
  *	cr7 - Result of comparison with PAGE_OFFSET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	MMUCR - loaded with proper value when we get here
  *	Upon exit, we reload everything and RFI.
  */
@@ -653,21 +534,12 @@ finish_tlb_load_44x:
 	tlbwe	r10,r13,PPC44x_TLB_PAGEID	/* Write PAGEID */
 
 	/* And WS 2 */
-<<<<<<< HEAD
-	li	r10,0xf85			/* Mask to apply from PTE */
-	rlwimi	r10,r12,29,30,30		/* DIRTY -> SW position */
-	and	r11,r12,r10			/* Mask PTE bits to keep */
-	andi.	r10,r12,_PAGE_USER		/* User page ? */
-	beq	1f				/* nope, leave U bits empty */
-	rlwimi	r11,r11,3,26,28			/* yes, copy S bits to U */
-=======
 	li	r10,0xf84			/* Mask to apply from PTE */
 	rlwimi	r10,r12,29,30,31		/* DIRTY,READ -> SW,SR position */
 	and	r11,r12,r10			/* Mask PTE bits to keep */
 	bge	cr7,1f			/* User page ? no, leave U bits empty */
 	rlwimi	r11,r11,3,26,28			/* yes, copy S bits to U */
 	rlwinm	r11,r11,0,~PPC44x_TLB_SX	/* Clear SX if User page */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	tlbwe	r11,r13,PPC44x_TLB_ATTRIB	/* Write ATTRIB */
 
 	/* Done...restore registers and get out of here.
@@ -696,13 +568,8 @@ finish_tlb_load_44x:
 	 * kernel page tables.
 	 */
 	lis	r11,PAGE_OFFSET@h
-<<<<<<< HEAD
-	cmplw	cr0,r10,r11
-	blt+	3f
-=======
 	cmplw	cr7,r10,r11
 	blt+	cr7,3f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lis	r11,swapper_pg_dir@h
 	ori	r11,r11, swapper_pg_dir@l
 	li	r12,0			/* MMUCR = 0 */
@@ -712,12 +579,6 @@ finish_tlb_load_44x:
 3:	mfspr	r11,SPRN_SPRG3
 	lwz	r11,PGDIR(r11)
 	mfspr   r12,SPRN_PID		/* Get PID */
-<<<<<<< HEAD
-4:	mtspr	SPRN_MMUCR,r12		/* Set MMUCR */
-
-	/* Mask of required permission bits. Note that while we
-	 * do copy ESR:ST to _PAGE_RW position as trying to write
-=======
 #ifdef CONFIG_PPC_KUAP
 	cmpwi	r12,0
 	beq	2f			/* KUAP Fault */
@@ -726,7 +587,6 @@ finish_tlb_load_44x:
 
 	/* Mask of required permission bits. Note that while we
 	 * do copy ESR:ST to _PAGE_WRITE position as trying to write
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * to an RO page is pretty common, we don't do it with
 	 * _PAGE_DIRTY. We could do it, but it's a fairly rare
 	 * event so I'd rather take the overhead when it happens
@@ -739,11 +599,7 @@ finish_tlb_load_44x:
 	 *       place or can we save a couple of instructions here ?
 	 */
 	mfspr	r12,SPRN_ESR
-<<<<<<< HEAD
-	li	r13,_PAGE_PRESENT|_PAGE_ACCESSED
-=======
 	li	r13,_PAGE_PRESENT|_PAGE_ACCESSED|_PAGE_READ
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rlwimi	r13,r12,10,30,30
 
 	/* Load the PTE */
@@ -813,13 +669,8 @@ finish_tlb_load_44x:
 	 * kernel page tables.
 	 */
 	lis	r11,PAGE_OFFSET@h
-<<<<<<< HEAD
-	cmplw	cr0,r10,r11
-	blt+	3f
-=======
 	cmplw	cr7,r10,r11
 	blt+	cr7,3f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lis	r11,swapper_pg_dir@h
 	ori	r11,r11, swapper_pg_dir@l
 	li	r12,0			/* MMUCR = 0 */
@@ -829,13 +680,10 @@ finish_tlb_load_44x:
 3:	mfspr	r11,SPRN_SPRG_THREAD
 	lwz	r11,PGDIR(r11)
 	mfspr   r12,SPRN_PID		/* Get PID */
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC_KUAP
 	cmpwi	r12,0
 	beq	2f			/* KUAP Fault */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 4:	mtspr	SPRN_MMUCR,r12		/* Set MMUCR */
 
 	/* Make up the required permissions */
@@ -896,10 +744,7 @@ finish_tlb_load_44x:
  * 	r11 - PTE high word value
  *	r12 - PTE low word value
  *      r13 - free to use
-<<<<<<< HEAD
-=======
  *	cr7 - Result of comparison with PAGE_OFFSET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	MMUCR - loaded with proper value when we get here
  *	Upon exit, we reload everything and RFI.
  */
@@ -909,21 +754,12 @@ finish_tlb_load_47x:
 	tlbwe	r11,r13,1
 
 	/* And make up word 2 */
-<<<<<<< HEAD
-	li	r10,0xf85			/* Mask to apply from PTE */
-	rlwimi	r10,r12,29,30,30		/* DIRTY -> SW position */
-	and	r11,r12,r10			/* Mask PTE bits to keep */
-	andi.	r10,r12,_PAGE_USER		/* User page ? */
-	beq	1f				/* nope, leave U bits empty */
-	rlwimi	r11,r11,3,26,28			/* yes, copy S bits to U */
-=======
 	li	r10,0xf84			/* Mask to apply from PTE */
 	rlwimi	r10,r12,29,30,31		/* DIRTY,READ -> SW,SR position */
 	and	r11,r12,r10			/* Mask PTE bits to keep */
 	bge	cr7,1f			/* User page ? no, leave U bits empty */
 	rlwimi	r11,r11,3,26,28			/* yes, copy S bits to U */
 	rlwinm	r11,r11,0,~PPC47x_TLB2_SX	/* Clear SX if User page */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	tlbwe	r11,r13,2
 
 	/* Done...restore registers and get out of here.
@@ -946,11 +782,8 @@ finish_tlb_load_47x:
 	 */
 	DEBUG_CRIT_EXCEPTION
 
-<<<<<<< HEAD
-=======
 interrupt_end:
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Global functions
  */
@@ -965,41 +798,6 @@ _GLOBAL(__fixup_440A_mcheck)
 	blr
 
 /*
-<<<<<<< HEAD
- * extern void giveup_altivec(struct task_struct *prev)
- *
- * The 44x core does not have an AltiVec unit.
- */
-_GLOBAL(giveup_altivec)
-	blr
-
-/*
- * extern void giveup_fpu(struct task_struct *prev)
- *
- * The 44x core does not have an FPU.
- */
-#ifndef CONFIG_PPC_FPU
-_GLOBAL(giveup_fpu)
-	blr
-#endif
-
-_GLOBAL(set_context)
-
-#ifdef CONFIG_BDI_SWITCH
-	/* Context switch the PTE pointer for the Abatron BDI2000.
-	 * The PGDIR is the second parameter.
-	 */
-	lis	r5, abatron_pteptrs@h
-	ori	r5, r5, abatron_pteptrs@l
-	stw	r4, 0x4(r5)
-#endif
-	mtspr	SPRN_PID,r3
-	isync			/* Force context change */
-	blr
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Init CPU state. This is called at boot time or for secondary CPUs
  * to setup initial TLB entries, setup IVORs, etc...
  *
@@ -1007,11 +805,7 @@ _GLOBAL(set_context)
 _GLOBAL(init_cpu_state)
 	mflr	r22
 #ifdef CONFIG_PPC_47x
-<<<<<<< HEAD
-	/* We use the PVR to differenciate 44x cores from 476 */
-=======
 	/* We use the PVR to differentiate 44x cores from 476 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfspr	r3,SPRN_PVR
 	srwi	r3,r3,16
 	cmplwi	cr0,r3,PVR_476FPE@h
@@ -1068,11 +862,7 @@ _GLOBAL(init_cpu_state)
 wmmucr:	mtspr	SPRN_MMUCR,r3			/* Put MMUCR */
 	sync
 
-<<<<<<< HEAD
-	bl	invstr				/* Find our address */
-=======
 	bcl	20,31,$+4			/* Find our address */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 invstr:	mflr	r5				/* Make it accessible */
 	tlbsx	r23,0,r5			/* Find entry we are in */
 	li	r4,0				/* Start at TLB entry 0 */
@@ -1221,26 +1011,13 @@ _GLOBAL(start_secondary_47x)
 	 */
 	lis	r1,temp_boot_stack@h
 	ori	r1,r1,temp_boot_stack@l
-<<<<<<< HEAD
-	addi	r1,r1,1024-STACK_FRAME_OVERHEAD
-=======
 	addi	r1,r1,1024-STACK_FRAME_MIN_SIZE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r0,0
 	stw	r0,0(r1)
 	bl	mmu_init_secondary
 
 	/* Now we can get our task struct and real stack pointer */
 
-<<<<<<< HEAD
-	/* Get current_thread_info and current */
-	lis	r1,secondary_ti@ha
-	lwz	r1,secondary_ti@l(r1)
-	lwz	r2,TI_TASK(r1)
-
-	/* Current stack pointer */
-	addi	r1,r1,THREAD_SIZE-STACK_FRAME_OVERHEAD
-=======
 	/* Get current's stack and current */
 	lis	r2,secondary_current@ha
 	lwz	r2,secondary_current@l(r2)
@@ -1248,7 +1025,6 @@ _GLOBAL(start_secondary_47x)
 
 	/* Current stack pointer */
 	addi	r1,r1,THREAD_SIZE-STACK_FRAME_MIN_SIZE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r0,0
 	stw	r0,0(r1)
 
@@ -1278,11 +1054,7 @@ head_start_47x:
 	sync
 
 	/* Find the entry we are running from */
-<<<<<<< HEAD
-	bl	1f
-=======
 	bcl	20,31,$+4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	mflr	r23
 	tlbsx	r23,0,r23
 	tlbre	r24,r23,0
@@ -1437,19 +1209,12 @@ clear_utlb_entry:
 
 	/* We configure icbi to invalidate 128 bytes at a time since the
 	 * current 32-bit kernel code isn't too happy with icache != dcache
-<<<<<<< HEAD
-	 * block size
-	 */
-	mfspr	r3,SPRN_CCR0
-	oris	r3,r3,0x0020
-=======
 	 * block size. We also disable the BTAC as this can cause errors
 	 * in some circumstances (see IBM Erratum 47).
 	 */
 	mfspr	r3,SPRN_CCR0
 	oris	r3,r3,0x0020
 	ori	r3,r3,0x0040
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtspr	SPRN_CCR0,r3
 	isync
 
@@ -1477,38 +1242,8 @@ head_start_common:
 	isync
 	blr
 
-<<<<<<< HEAD
-/*
- * We put a few things here that have to be page-aligned. This stuff
- * goes at the beginning of the data segment, which is page-aligned.
- */
-	.data
-	.align	PAGE_SHIFT
-	.globl	sdata
-sdata:
-	.globl	empty_zero_page
-empty_zero_page:
-	.space	PAGE_SIZE
-
-/*
- * To support >32-bit physical addresses, we use an 8KB pgdir.
- */
-	.globl	swapper_pg_dir
-swapper_pg_dir:
-	.space	PGD_TABLE_SIZE
-
-/*
- * Room for two PTE pointers, usually the kernel and current user pointers
- * to their respective root page table.
- */
-abatron_pteptrs:
-	.space	8
-
-#ifdef CONFIG_SMP
-=======
 #ifdef CONFIG_SMP
 	.data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align	12
 temp_boot_stack:
 	.space	1024

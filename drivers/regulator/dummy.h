@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * dummy.h
  *
@@ -9,14 +6,6 @@
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This is useful for systems with mixed controllable and
  * non-controllable regulators, as well as for allowing testing on
  * systems with no controllable regulators.

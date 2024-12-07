@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2010 QLogic Corporation
- *
- * See LICENSE.qla4xxx for copyright and licensing details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic iSCSI HBA Driver
  * Copyright (c)  2003-2012 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ql4_def.h"
@@ -44,11 +36,7 @@ void qla4xxx_dump_registers(struct scsi_qla_host *ha)
 	if (is_qla8022(ha)) {
 		for (i = 1; i < MBOX_REG_COUNT; i++)
 			printk(KERN_INFO "mailbox[%d]     = 0x%08X\n",
-<<<<<<< HEAD
-			    i, readl(&ha->qla4_8xxx_reg->mailbox_in[i]));
-=======
 			    i, readl(&ha->qla4_82xx_reg->mailbox_in[i]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -142,8 +130,6 @@ void qla4xxx_dump_registers(struct scsi_qla_host *ha)
 		    &ha->reg->ctrl_status);
 	}
 }
-<<<<<<< HEAD
-=======
 
 void qla4_8xxx_dump_peg_reg(struct scsi_qla_host *ha)
 {
@@ -173,4 +159,3 @@ void qla4_8xxx_dump_peg_reg(struct scsi_qla_host *ha)
 			   halt_status1, halt_status2);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,28 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Real-Time Scheduling Class (mapped to the SCHED_FIFO and SCHED_RR
  * policies)
  */
 
-<<<<<<< HEAD
-#include "sched.h"
-
-#include <linux/slab.h>
-=======
 int sched_rr_timeslice = RR_TIMESLICE;
 /* More than 4 hours if BW_SHIFT equals 20. */
 static const u64 max_rt_runtime = MAX_BW;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun);
 
 struct rt_bandwidth def_rt_bandwidth;
 
-<<<<<<< HEAD
-=======
 /*
  * period over which we measure -rt task CPU usage in us.
  * default: 1s
@@ -78,26 +67,10 @@ static int __init sched_rt_sysctl_init(void)
 late_initcall(sched_rt_sysctl_init);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum hrtimer_restart sched_rt_period_timer(struct hrtimer *timer)
 {
 	struct rt_bandwidth *rt_b =
 		container_of(timer, struct rt_bandwidth, rt_period_timer);
-<<<<<<< HEAD
-	ktime_t now;
-	int overrun;
-	int idle = 0;
-
-	for (;;) {
-		now = hrtimer_cb_get_time(timer);
-		overrun = hrtimer_forward(timer, now, rt_b->rt_period);
-
-		if (!overrun)
-			break;
-
-		idle = do_sched_rt_period_timer(rt_b, overrun);
-	}
-=======
 	int idle = 0;
 	int overrun;
 
@@ -114,7 +87,6 @@ static enum hrtimer_restart sched_rt_period_timer(struct hrtimer *timer)
 	if (idle)
 		rt_b->rt_period_active = 0;
 	raw_spin_unlock(&rt_b->rt_runtime_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return idle ? HRTIMER_NORESTART : HRTIMER_RESTART;
 }
@@ -126,13 +98,6 @@ void init_rt_bandwidth(struct rt_bandwidth *rt_b, u64 period, u64 runtime)
 
 	raw_spin_lock_init(&rt_b->rt_runtime_lock);
 
-<<<<<<< HEAD
-	hrtimer_init(&rt_b->rt_period_timer,
-			CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	rt_b->rt_period_timer.function = sched_rt_period_timer;
-}
-
-=======
 	hrtimer_init(&rt_b->rt_period_timer, CLOCK_MONOTONIC,
 		     HRTIMER_MODE_REL_HARD);
 	rt_b->rt_period_timer.function = sched_rt_period_timer;
@@ -158,28 +123,15 @@ static inline void do_start_rt_bandwidth(struct rt_bandwidth *rt_b)
 	raw_spin_unlock(&rt_b->rt_runtime_lock);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void start_rt_bandwidth(struct rt_bandwidth *rt_b)
 {
 	if (!rt_bandwidth_enabled() || rt_b->rt_runtime == RUNTIME_INF)
 		return;
 
-<<<<<<< HEAD
-	if (hrtimer_active(&rt_b->rt_period_timer))
-		return;
-
-	raw_spin_lock(&rt_b->rt_runtime_lock);
-	start_bandwidth_timer(&rt_b->rt_period_timer, rt_b->rt_period);
-	raw_spin_unlock(&rt_b->rt_runtime_lock);
-}
-
-void init_rt_rq(struct rt_rq *rt_rq, struct rq *rq)
-=======
 	do_start_rt_bandwidth(rt_b);
 }
 
 void init_rt_rq(struct rt_rq *rt_rq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rt_prio_array *array;
 	int i;
@@ -193,14 +145,6 @@ void init_rt_rq(struct rt_rq *rt_rq)
 	__set_bit(MAX_RT_PRIO, array->bitmap);
 
 #if defined CONFIG_SMP
-<<<<<<< HEAD
-	rt_rq->highest_prio.curr = MAX_RT_PRIO;
-	rt_rq->highest_prio.next = MAX_RT_PRIO;
-	rt_rq->rt_nr_migratory = 0;
-	rt_rq->overloaded = 0;
-	plist_head_init(&rt_rq->pushable_tasks);
-#endif
-=======
 	rt_rq->highest_prio.curr = MAX_RT_PRIO-1;
 	rt_rq->highest_prio.next = MAX_RT_PRIO-1;
 	rt_rq->overloaded = 0;
@@ -208,7 +152,6 @@ void init_rt_rq(struct rt_rq *rt_rq)
 #endif /* CONFIG_SMP */
 	/* We start is dequeued state, because no RT tasks are queued */
 	rt_rq->rt_queued = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rt_rq->rt_time = 0;
 	rt_rq->rt_throttled = 0;
@@ -242,8 +185,6 @@ static inline struct rt_rq *rt_rq_of_se(struct sched_rt_entity *rt_se)
 	return rt_se->rt_rq;
 }
 
-<<<<<<< HEAD
-=======
 static inline struct rq *rq_of_rt_se(struct sched_rt_entity *rt_se)
 {
 	struct rt_rq *rt_rq = rt_se->rt_rq;
@@ -258,17 +199,10 @@ void unregister_rt_sched_group(struct task_group *tg)
 
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void free_rt_sched_group(struct task_group *tg)
 {
 	int i;
 
-<<<<<<< HEAD
-	if (tg->rt_se)
-		destroy_rt_bandwidth(&tg->rt_bandwidth);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for_each_possible_cpu(i) {
 		if (tg->rt_rq)
 			kfree(tg->rt_rq[i]);
@@ -286,11 +220,7 @@ void init_tg_rt_entry(struct task_group *tg, struct rt_rq *rt_rq,
 {
 	struct rq *rq = cpu_rq(cpu);
 
-<<<<<<< HEAD
-	rt_rq->highest_prio.curr = MAX_RT_PRIO;
-=======
 	rt_rq->highest_prio.curr = MAX_RT_PRIO-1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rt_rq->rt_nr_boosted = 0;
 	rt_rq->rq = rq;
 	rt_rq->tg = tg;
@@ -317,17 +247,10 @@ int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent)
 	struct sched_rt_entity *rt_se;
 	int i;
 
-<<<<<<< HEAD
-	tg->rt_rq = kzalloc(sizeof(rt_rq) * nr_cpu_ids, GFP_KERNEL);
-	if (!tg->rt_rq)
-		goto err;
-	tg->rt_se = kzalloc(sizeof(rt_se) * nr_cpu_ids, GFP_KERNEL);
-=======
 	tg->rt_rq = kcalloc(nr_cpu_ids, sizeof(rt_rq), GFP_KERNEL);
 	if (!tg->rt_rq)
 		goto err;
 	tg->rt_se = kcalloc(nr_cpu_ids, sizeof(rt_se), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tg->rt_se)
 		goto err;
 
@@ -345,11 +268,7 @@ int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent)
 		if (!rt_se)
 			goto err_free_rq;
 
-<<<<<<< HEAD
-		init_rt_rq(rt_rq, cpu_rq(i));
-=======
 		init_rt_rq(rt_rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rt_rq->rt_runtime = tg->rt_bandwidth.rt_runtime;
 		init_tg_rt_entry(tg, rt_rq, rt_se, i, parent->rt_se[i]);
 	}
@@ -376,12 +295,6 @@ static inline struct rq *rq_of_rt_rq(struct rt_rq *rt_rq)
 	return container_of(rt_rq, struct rq, rt);
 }
 
-<<<<<<< HEAD
-static inline struct rt_rq *rt_rq_of_se(struct sched_rt_entity *rt_se)
-{
-	struct task_struct *p = rt_task_of(rt_se);
-	struct rq *rq = task_rq(p);
-=======
 static inline struct rq *rq_of_rt_se(struct sched_rt_entity *rt_se)
 {
 	struct task_struct *p = rt_task_of(rt_se);
@@ -392,16 +305,12 @@ static inline struct rq *rq_of_rt_se(struct sched_rt_entity *rt_se)
 static inline struct rt_rq *rt_rq_of_se(struct sched_rt_entity *rt_se)
 {
 	struct rq *rq = rq_of_rt_se(rt_se);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return &rq->rt;
 }
 
-<<<<<<< HEAD
-=======
 void unregister_rt_sched_group(struct task_group *tg) { }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void free_rt_sched_group(struct task_group *tg) { }
 
 int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent)
@@ -412,15 +321,12 @@ int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent)
 
 #ifdef CONFIG_SMP
 
-<<<<<<< HEAD
-=======
 static inline bool need_pull_rt_task(struct rq *rq, struct task_struct *prev)
 {
 	/* Try to pull RT tasks here if we lower this rq's prio */
 	return rq->online && rq->rt.highest_prio.curr > prev->prio;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int rt_overloaded(struct rq *rq)
 {
 	return atomic_read(&rq->rd->rto_count);
@@ -438,15 +344,10 @@ static inline void rt_set_overload(struct rq *rq)
 	 * if we should look at the mask. It would be a shame
 	 * if we looked at the mask, but the mask was not
 	 * updated yet.
-<<<<<<< HEAD
-	 */
-	wmb();
-=======
 	 *
 	 * Matched by the barrier in pull_rt_task().
 	 */
 	smp_wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_inc(&rq->rd->rto_count);
 }
 
@@ -460,57 +361,11 @@ static inline void rt_clear_overload(struct rq *rq)
 	cpumask_clear_cpu(rq->cpu, rq->rd->rto_mask);
 }
 
-<<<<<<< HEAD
-static void update_rt_migration(struct rt_rq *rt_rq)
-{
-	if (rt_rq->rt_nr_migratory && rt_rq->rt_nr_total > 1) {
-		if (!rt_rq->overloaded) {
-			rt_set_overload(rq_of_rt_rq(rt_rq));
-			rt_rq->overloaded = 1;
-		}
-	} else if (rt_rq->overloaded) {
-		rt_clear_overload(rq_of_rt_rq(rt_rq));
-		rt_rq->overloaded = 0;
-	}
-}
-
-static void inc_rt_migration(struct sched_rt_entity *rt_se, struct rt_rq *rt_rq)
-{
-	if (!rt_entity_is_task(rt_se))
-		return;
-
-	rt_rq = &rq_of_rt_rq(rt_rq)->rt;
-
-	rt_rq->rt_nr_total++;
-	if (rt_se->nr_cpus_allowed > 1)
-		rt_rq->rt_nr_migratory++;
-
-	update_rt_migration(rt_rq);
-}
-
-static void dec_rt_migration(struct sched_rt_entity *rt_se, struct rt_rq *rt_rq)
-{
-	if (!rt_entity_is_task(rt_se))
-		return;
-
-	rt_rq = &rq_of_rt_rq(rt_rq)->rt;
-
-	rt_rq->rt_nr_total--;
-	if (rt_se->nr_cpus_allowed > 1)
-		rt_rq->rt_nr_migratory--;
-
-	update_rt_migration(rt_rq);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int has_pushable_tasks(struct rq *rq)
 {
 	return !plist_head_empty(&rq->rt.pushable_tasks);
 }
 
-<<<<<<< HEAD
-=======
 static DEFINE_PER_CPU(struct balance_callback, rt_push_head);
 static DEFINE_PER_CPU(struct balance_callback, rt_pull_head);
 
@@ -530,7 +385,6 @@ static inline void rt_queue_pull_task(struct rq *rq)
 	queue_balance_callback(rq, &per_cpu(rt_pull_head, rq->cpu), pull_rt_task);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void enqueue_pushable_task(struct rq *rq, struct task_struct *p)
 {
 	plist_del(&p->pushable_tasks, &rq->rt.pushable_tasks);
@@ -540,14 +394,11 @@ static void enqueue_pushable_task(struct rq *rq, struct task_struct *p)
 	/* Update the highest prio pushable task */
 	if (p->prio < rq->rt.highest_prio.next)
 		rq->rt.highest_prio.next = p->prio;
-<<<<<<< HEAD
-=======
 
 	if (!rq->rt.overloaded) {
 		rt_set_overload(rq);
 		rq->rt.overloaded = 1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dequeue_pushable_task(struct rq *rq, struct task_struct *p)
@@ -559,10 +410,6 @@ static void dequeue_pushable_task(struct rq *rq, struct task_struct *p)
 		p = plist_first_entry(&rq->rt.pushable_tasks,
 				      struct task_struct, pushable_tasks);
 		rq->rt.highest_prio.next = p->prio;
-<<<<<<< HEAD
-	} else
-		rq->rt.highest_prio.next = MAX_RT_PRIO;
-=======
 	} else {
 		rq->rt.highest_prio.next = MAX_RT_PRIO-1;
 
@@ -571,7 +418,6 @@ static void dequeue_pushable_task(struct rq *rq, struct task_struct *p)
 			rq->rt.overloaded = 0;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
@@ -584,25 +430,6 @@ static inline void dequeue_pushable_task(struct rq *rq, struct task_struct *p)
 {
 }
 
-<<<<<<< HEAD
-static inline
-void inc_rt_migration(struct sched_rt_entity *rt_se, struct rt_rq *rt_rq)
-{
-}
-
-static inline
-void dec_rt_migration(struct sched_rt_entity *rt_se, struct rt_rq *rt_rq)
-{
-}
-
-#endif /* CONFIG_SMP */
-
-static inline int on_rt_rq(struct sched_rt_entity *rt_se)
-{
-	return !list_empty(&rt_se->run_list);
-}
-
-=======
 static inline void rt_queue_push_tasks(struct rq *rq)
 {
 }
@@ -655,7 +482,6 @@ static inline bool rt_task_fits_capacity(struct task_struct *p, int cpu)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_RT_GROUP_SCHED
 
 static inline u64 sched_rt_runtime(struct rt_rq *rt_rq)
@@ -691,23 +517,6 @@ static inline struct task_group *next_task_group(struct task_group *tg)
 		(iter = next_task_group(iter)) &&			\
 		(rt_rq = iter->rt_rq[cpu_of(rq)]);)
 
-<<<<<<< HEAD
-static inline void list_add_leaf_rt_rq(struct rt_rq *rt_rq)
-{
-	list_add_rcu(&rt_rq->leaf_rt_rq_list,
-			&rq_of_rt_rq(rt_rq)->leaf_rt_rq_list);
-}
-
-static inline void list_del_leaf_rt_rq(struct rt_rq *rt_rq)
-{
-	list_del_rcu(&rt_rq->leaf_rt_rq_list);
-}
-
-#define for_each_leaf_rt_rq(rt_rq, rq) \
-	list_for_each_entry_rcu(rt_rq, &rq->leaf_rt_rq_list, leaf_rt_rq_list)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define for_each_sched_rt_entity(rt_se) \
 	for (; rt_se; rt_se = rt_se->parent)
 
@@ -716,37 +525,20 @@ static inline struct rt_rq *group_rt_rq(struct sched_rt_entity *rt_se)
 	return rt_se->my_q;
 }
 
-<<<<<<< HEAD
-static void enqueue_rt_entity(struct sched_rt_entity *rt_se, bool head);
-static void dequeue_rt_entity(struct sched_rt_entity *rt_se);
-=======
 static void enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags);
 static void dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void sched_rt_rq_enqueue(struct rt_rq *rt_rq)
 {
 	struct task_struct *curr = rq_of_rt_rq(rt_rq)->curr;
-<<<<<<< HEAD
-	struct sched_rt_entity *rt_se;
-
-	int cpu = cpu_of(rq_of_rt_rq(rt_rq));
-=======
 	struct rq *rq = rq_of_rt_rq(rt_rq);
 	struct sched_rt_entity *rt_se;
 
 	int cpu = cpu_of(rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rt_se = rt_rq->tg->rt_se[cpu];
 
 	if (rt_rq->rt_nr_running) {
-<<<<<<< HEAD
-		if (rt_se && !on_rt_rq(rt_se))
-			enqueue_rt_entity(rt_se, false);
-		if (rt_rq->highest_prio.curr < curr->prio)
-			resched_task(curr);
-=======
 		if (!rt_se)
 			enqueue_top_rt_rq(rt_rq);
 		else if (!on_rt_rq(rt_se))
@@ -754,7 +546,6 @@ static void sched_rt_rq_enqueue(struct rt_rq *rt_rq)
 
 		if (rt_rq->highest_prio.curr < curr->prio)
 			resched_curr(rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -765,10 +556,6 @@ static void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
 
 	rt_se = rt_rq->tg->rt_se[cpu];
 
-<<<<<<< HEAD
-	if (rt_se && on_rt_rq(rt_se))
-		dequeue_rt_entity(rt_se);
-=======
 	if (!rt_se) {
 		dequeue_top_rt_rq(rt_rq, rt_rq->rt_nr_running);
 		/* Kick cpufreq (see the comment in kernel/sched/sched.h). */
@@ -776,7 +563,6 @@ static void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
 	}
 	else if (on_rt_rq(rt_se))
 		dequeue_rt_entity(rt_se, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int rt_rq_throttled(struct rt_rq *rt_rq)
@@ -799,11 +585,7 @@ static int rt_se_boosted(struct sched_rt_entity *rt_se)
 #ifdef CONFIG_SMP
 static inline const struct cpumask *sched_rt_period_mask(void)
 {
-<<<<<<< HEAD
-	return cpu_rq(smp_processor_id())->rd->span;
-=======
 	return this_rq()->rd->span;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 static inline const struct cpumask *sched_rt_period_mask(void)
@@ -840,20 +622,6 @@ typedef struct rt_rq *rt_rq_iter_t;
 #define for_each_rt_rq(rt_rq, iter, rq) \
 	for ((void) iter, rt_rq = &rq->rt; rt_rq; rt_rq = NULL)
 
-<<<<<<< HEAD
-static inline void list_add_leaf_rt_rq(struct rt_rq *rt_rq)
-{
-}
-
-static inline void list_del_leaf_rt_rq(struct rt_rq *rt_rq)
-{
-}
-
-#define for_each_leaf_rt_rq(rt_rq, rq) \
-	for (rt_rq = &rq->rt; rt_rq; rt_rq = NULL)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define for_each_sched_rt_entity(rt_se) \
 	for (; rt_se; rt_se = NULL)
 
@@ -864,10 +632,6 @@ static inline struct rt_rq *group_rt_rq(struct sched_rt_entity *rt_se)
 
 static inline void sched_rt_rq_enqueue(struct rt_rq *rt_rq)
 {
-<<<<<<< HEAD
-	if (rt_rq->rt_nr_running)
-		resched_task(rq_of_rt_rq(rt_rq)->curr);
-=======
 	struct rq *rq = rq_of_rt_rq(rt_rq);
 
 	if (!rt_rq->rt_nr_running)
@@ -875,15 +639,11 @@ static inline void sched_rt_rq_enqueue(struct rt_rq *rt_rq)
 
 	enqueue_top_rt_rq(rt_rq);
 	resched_curr(rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
 {
-<<<<<<< HEAD
-=======
 	dequeue_top_rt_rq(rt_rq, rt_rq->rt_nr_running);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int rt_rq_throttled(struct rt_rq *rt_rq)
@@ -909,8 +669,6 @@ static inline struct rt_bandwidth *sched_rt_bandwidth(struct rt_rq *rt_rq)
 
 #endif /* CONFIG_RT_GROUP_SCHED */
 
-<<<<<<< HEAD
-=======
 bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
 {
 	struct rt_bandwidth *rt_b = sched_rt_bandwidth(rt_rq);
@@ -919,24 +677,15 @@ bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
 		rt_rq->rt_time < rt_b->rt_runtime);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 /*
  * We ran out of runtime, see if we can borrow some from our neighbours.
  */
-<<<<<<< HEAD
-static int do_balance_runtime(struct rt_rq *rt_rq)
-{
-	struct rt_bandwidth *rt_b = sched_rt_bandwidth(rt_rq);
-	struct root_domain *rd = rq_of_rt_rq(rt_rq)->rd;
-	int i, weight, more = 0;
-=======
 static void do_balance_runtime(struct rt_rq *rt_rq)
 {
 	struct rt_bandwidth *rt_b = sched_rt_bandwidth(rt_rq);
 	struct root_domain *rd = rq_of_rt_rq(rt_rq)->rd;
 	int i, weight;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 rt_period;
 
 	weight = cpumask_weight(rd->span);
@@ -954,11 +703,7 @@ static void do_balance_runtime(struct rt_rq *rt_rq)
 		/*
 		 * Either all rqs have inf runtime and there's nothing to steal
 		 * or __disable_runtime() below sets a specific rq to inf to
-<<<<<<< HEAD
-		 * indicate its been disabled and disalow stealing.
-=======
 		 * indicate its been disabled and disallow stealing.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (iter->rt_runtime == RUNTIME_INF)
 			goto next;
@@ -974,10 +719,6 @@ static void do_balance_runtime(struct rt_rq *rt_rq)
 				diff = rt_period - rt_rq->rt_runtime;
 			iter->rt_runtime -= diff;
 			rt_rq->rt_runtime += diff;
-<<<<<<< HEAD
-			more = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rt_rq->rt_runtime == rt_period) {
 				raw_spin_unlock(&iter->rt_runtime_lock);
 				break;
@@ -987,11 +728,6 @@ next:
 		raw_spin_unlock(&iter->rt_runtime_lock);
 	}
 	raw_spin_unlock(&rt_b->rt_runtime_lock);
-<<<<<<< HEAD
-
-	return more;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1063,11 +799,7 @@ static void __disable_runtime(struct rq *rq)
 		 * We cannot be left wanting - that would mean some runtime
 		 * leaked out of the system.
 		 */
-<<<<<<< HEAD
-		BUG_ON(want);
-=======
 		WARN_ON_ONCE(want);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 balanced:
 		/*
 		 * Disable all the borrow logic by pretending we have inf
@@ -1077,12 +809,9 @@ balanced:
 		rt_rq->rt_throttled = 0;
 		raw_spin_unlock(&rt_rq->rt_runtime_lock);
 		raw_spin_unlock(&rt_b->rt_runtime_lock);
-<<<<<<< HEAD
-=======
 
 		/* Make rt_rq available for pick_next_task() */
 		sched_rt_rq_enqueue(rt_rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1110,28 +839,6 @@ static void __enable_runtime(struct rq *rq)
 	}
 }
 
-<<<<<<< HEAD
-static int balance_runtime(struct rt_rq *rt_rq)
-{
-	int more = 0;
-
-	if (!sched_feat(RT_RUNTIME_SHARE))
-		return more;
-
-	if (rt_rq->rt_time > rt_rq->rt_runtime) {
-		raw_spin_unlock(&rt_rq->rt_runtime_lock);
-		more = do_balance_runtime(rt_rq);
-		raw_spin_lock(&rt_rq->rt_runtime_lock);
-	}
-
-	return more;
-}
-#else /* !CONFIG_SMP */
-static inline int balance_runtime(struct rt_rq *rt_rq)
-{
-	return 0;
-}
-=======
 static void balance_runtime(struct rt_rq *rt_rq)
 {
 	if (!sched_feat(RT_RUNTIME_SHARE))
@@ -1145,7 +852,6 @@ static void balance_runtime(struct rt_rq *rt_rq)
 }
 #else /* !CONFIG_SMP */
 static inline void balance_runtime(struct rt_rq *rt_rq) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SMP */
 
 static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun)
@@ -1171,10 +877,6 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun)
 		int enqueue = 0;
 		struct rt_rq *rt_rq = sched_rt_period_rt_rq(rt_b, i);
 		struct rq *rq = rq_of_rt_rq(rt_rq);
-<<<<<<< HEAD
-
-		raw_spin_lock(&rq->lock);
-=======
 		struct rq_flags rf;
 		int skip;
 
@@ -1193,7 +895,6 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun)
 		rq_lock(rq, &rf);
 		update_rq_clock(rq);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rt_rq->rt_time) {
 			u64 runtime;
 
@@ -1207,13 +908,6 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun)
 				enqueue = 1;
 
 				/*
-<<<<<<< HEAD
-				 * Force a clock update if the CPU was idle,
-				 * lest wakeup -> unthrottle time accumulate.
-				 */
-				if (rt_rq->rt_nr_running && rq->curr == rq->idle)
-					rq->skip_clock_update = -1;
-=======
 				 * When we're idle and a woken (rt) task is
 				 * throttled wakeup_preempt() will set
 				 * skip_update and the time between the wakeup
@@ -1222,7 +916,6 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun)
 				 */
 				if (rt_rq->rt_nr_running && rq->curr == rq->idle)
 					rq_clock_cancel_skipupdate(rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			if (rt_rq->rt_time || rt_rq->rt_nr_running)
 				idle = 0;
@@ -1237,11 +930,7 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun)
 
 		if (enqueue)
 			sched_rt_rq_enqueue(rt_rq);
-<<<<<<< HEAD
-		raw_spin_unlock(&rq->lock);
-=======
 		rq_unlock(rq, &rf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!throttled && (!rt_bandwidth_enabled() || rt_b->rt_runtime == RUNTIME_INF))
@@ -1285,19 +974,8 @@ static int sched_rt_runtime_exceeded(struct rt_rq *rt_rq)
 		 * but accrue some time due to boosting.
 		 */
 		if (likely(rt_b->rt_runtime)) {
-<<<<<<< HEAD
-			static bool once = false;
-
-			rt_rq->rt_throttled = 1;
-
-			if (!once) {
-				once = true;
-				printk_deferred("sched: RT throttling activated\n");
-			}
-=======
 			rt_rq->rt_throttled = 1;
 			printk_deferred_once("sched: RT throttling activated\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/*
 			 * In case we did anyway, make it go away,
@@ -1324,69 +1002,35 @@ static void update_curr_rt(struct rq *rq)
 {
 	struct task_struct *curr = rq->curr;
 	struct sched_rt_entity *rt_se = &curr->rt;
-<<<<<<< HEAD
-	struct rt_rq *rt_rq = rt_rq_of_se(rt_se);
-	u64 delta_exec;
-=======
 	s64 delta_exec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (curr->sched_class != &rt_sched_class)
 		return;
 
-<<<<<<< HEAD
-	delta_exec = rq->clock_task - curr->se.exec_start;
-	if (unlikely((s64)delta_exec < 0))
-		delta_exec = 0;
-
-	schedstat_set(curr->se.statistics.exec_max,
-		      max(curr->se.statistics.exec_max, delta_exec));
-
-	curr->se.sum_exec_runtime += delta_exec;
-	account_group_exec_runtime(curr, delta_exec);
-
-	curr->se.exec_start = rq->clock_task;
-	cpuacct_charge(curr, delta_exec);
-
-	sched_rt_avg_update(rq, delta_exec);
-=======
 	delta_exec = update_curr_common(rq);
 	if (unlikely(delta_exec <= 0))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!rt_bandwidth_enabled())
 		return;
 
 	for_each_sched_rt_entity(rt_se) {
-<<<<<<< HEAD
-		rt_rq = rt_rq_of_se(rt_se);
-=======
 		struct rt_rq *rt_rq = rt_rq_of_se(rt_se);
 		int exceeded;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (sched_rt_runtime(rt_rq) != RUNTIME_INF) {
 			raw_spin_lock(&rt_rq->rt_runtime_lock);
 			rt_rq->rt_time += delta_exec;
-<<<<<<< HEAD
-			if (sched_rt_runtime_exceeded(rt_rq))
-				resched_task(curr);
-			raw_spin_unlock(&rt_rq->rt_runtime_lock);
-=======
 			exceeded = sched_rt_runtime_exceeded(rt_rq);
 			if (exceeded)
 				resched_curr(rq);
 			raw_spin_unlock(&rt_rq->rt_runtime_lock);
 			if (exceeded)
 				do_start_rt_bandwidth(sched_rt_bandwidth(rt_rq));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void
 dequeue_top_rt_rq(struct rt_rq *rt_rq, unsigned int count)
 {
@@ -1426,7 +1070,6 @@ enqueue_top_rt_rq(struct rt_rq *rt_rq)
 	cpufreq_update_util(rq, 0);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined CONFIG_SMP
 
 static void
@@ -1502,14 +1145,9 @@ dec_rt_prio(struct rt_rq *rt_rq, int prio)
 				sched_find_first_bit(array->bitmap);
 		}
 
-<<<<<<< HEAD
-	} else
-		rt_rq->highest_prio.curr = MAX_RT_PRIO;
-=======
 	} else {
 		rt_rq->highest_prio.curr = MAX_RT_PRIO-1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dec_rt_prio_smp(rt_rq, prio, prev_prio);
 }
@@ -1556,8 +1194,6 @@ void dec_rt_group(struct sched_rt_entity *rt_se, struct rt_rq *rt_rq) {}
 #endif /* CONFIG_RT_GROUP_SCHED */
 
 static inline
-<<<<<<< HEAD
-=======
 unsigned int rt_se_nr_running(struct sched_rt_entity *rt_se)
 {
 	struct rt_rq *group_rq = group_rt_rq(rt_se);
@@ -1583,23 +1219,15 @@ unsigned int rt_se_rr_nr_running(struct sched_rt_entity *rt_se)
 }
 
 static inline
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void inc_rt_tasks(struct sched_rt_entity *rt_se, struct rt_rq *rt_rq)
 {
 	int prio = rt_se_prio(rt_se);
 
 	WARN_ON(!rt_prio(prio));
-<<<<<<< HEAD
-	rt_rq->rt_nr_running++;
-
-	inc_rt_prio(rt_rq, prio);
-	inc_rt_migration(rt_se, rt_rq);
-=======
 	rt_rq->rt_nr_running += rt_se_nr_running(rt_se);
 	rt_rq->rr_nr_running += rt_se_rr_nr_running(rt_se);
 
 	inc_rt_prio(rt_rq, prio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inc_rt_group(rt_se, rt_rq);
 }
 
@@ -1608,16 +1236,6 @@ void dec_rt_tasks(struct sched_rt_entity *rt_se, struct rt_rq *rt_rq)
 {
 	WARN_ON(!rt_prio(rt_se_prio(rt_se)));
 	WARN_ON(!rt_rq->rt_nr_running);
-<<<<<<< HEAD
-	rt_rq->rt_nr_running--;
-
-	dec_rt_prio(rt_rq, rt_se_prio(rt_se));
-	dec_rt_migration(rt_se, rt_rq);
-	dec_rt_group(rt_se, rt_rq);
-}
-
-static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, bool head)
-=======
 	rt_rq->rt_nr_running -= rt_se_nr_running(rt_se);
 	rt_rq->rr_nr_running -= rt_se_rr_nr_running(rt_se);
 
@@ -1755,7 +1373,6 @@ update_stats_dequeue_rt(struct rt_rq *rt_rq, struct sched_rt_entity *rt_se,
 }
 
 static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rt_rq *rt_rq = rt_rq_of_se(rt_se);
 	struct rt_prio_array *array = &rt_rq->active;
@@ -1768,19 +1385,6 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	 * get throttled and the current group doesn't have any other
 	 * active members.
 	 */
-<<<<<<< HEAD
-	if (group_rq && (rt_rq_throttled(group_rq) || !group_rq->rt_nr_running))
-		return;
-
-	if (!rt_rq->rt_nr_running)
-		list_add_leaf_rt_rq(rt_rq);
-
-	if (head)
-		list_add(&rt_se->run_list, queue);
-	else
-		list_add_tail(&rt_se->run_list, queue);
-	__set_bit(rt_se_prio(rt_se), array->bitmap);
-=======
 	if (group_rq && (rt_rq_throttled(group_rq) || !group_rq->rt_nr_running)) {
 		if (rt_se->on_list)
 			__delist_rt_entity(rt_se, array);
@@ -1798,29 +1402,15 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 		rt_se->on_list = 1;
 	}
 	rt_se->on_rq = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inc_rt_tasks(rt_se, rt_rq);
 }
 
-<<<<<<< HEAD
-static void __dequeue_rt_entity(struct sched_rt_entity *rt_se)
-=======
 static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rt_rq *rt_rq = rt_rq_of_se(rt_se);
 	struct rt_prio_array *array = &rt_rq->active;
 
-<<<<<<< HEAD
-	list_del_init(&rt_se->run_list);
-	if (list_empty(array->queue + rt_se_prio(rt_se)))
-		__clear_bit(rt_se_prio(rt_se), array->bitmap);
-
-	dec_rt_tasks(rt_se, rt_rq);
-	if (!rt_rq->rt_nr_running)
-		list_del_leaf_rt_rq(rt_rq);
-=======
 	if (move_entity(flags)) {
 		WARN_ON_ONCE(!rt_se->on_list);
 		__delist_rt_entity(rt_se, array);
@@ -1828,47 +1418,22 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	rt_se->on_rq = 0;
 
 	dec_rt_tasks(rt_se, rt_rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Because the prio of an upper entry depends on the lower
  * entries, we must remove entries top - down.
  */
-<<<<<<< HEAD
-static void dequeue_rt_stack(struct sched_rt_entity *rt_se)
-{
-	struct sched_rt_entity *back = NULL;
-=======
 static void dequeue_rt_stack(struct sched_rt_entity *rt_se, unsigned int flags)
 {
 	struct sched_rt_entity *back = NULL;
 	unsigned int rt_nr_running;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for_each_sched_rt_entity(rt_se) {
 		rt_se->back = back;
 		back = rt_se;
 	}
 
-<<<<<<< HEAD
-	for (rt_se = back; rt_se; rt_se = rt_se->back) {
-		if (on_rt_rq(rt_se))
-			__dequeue_rt_entity(rt_se);
-	}
-}
-
-static void enqueue_rt_entity(struct sched_rt_entity *rt_se, bool head)
-{
-	dequeue_rt_stack(rt_se);
-	for_each_sched_rt_entity(rt_se)
-		__enqueue_rt_entity(rt_se, head);
-}
-
-static void dequeue_rt_entity(struct sched_rt_entity *rt_se)
-{
-	dequeue_rt_stack(rt_se);
-=======
 	rt_nr_running = rt_rq_of_se(back)->rt_nr_running;
 
 	for (rt_se = back; rt_se; rt_se = rt_se->back) {
@@ -1898,20 +1463,14 @@ static void dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
 	update_stats_dequeue_rt(rt_rq_of_se(rt_se), rt_se, flags);
 
 	dequeue_rt_stack(rt_se, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for_each_sched_rt_entity(rt_se) {
 		struct rt_rq *rt_rq = group_rt_rq(rt_se);
 
 		if (rt_rq && rt_rq->rt_nr_running)
-<<<<<<< HEAD
-			__enqueue_rt_entity(rt_se, false);
-	}
-=======
 			__enqueue_rt_entity(rt_se, flags);
 	}
 	enqueue_top_rt_rq(&rq->rt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1925,14 +1484,6 @@ enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 	if (flags & ENQUEUE_WAKEUP)
 		rt_se->timeout = 0;
 
-<<<<<<< HEAD
-	enqueue_rt_entity(rt_se, flags & ENQUEUE_HEAD);
-
-	if (!task_current(rq, p) && p->rt.nr_cpus_allowed > 1)
-		enqueue_pushable_task(rq, p);
-
-	inc_nr_running(rq);
-=======
 	check_schedstat_required();
 	update_stats_wait_start_rt(rt_rq_of_se(rt_se), rt_se);
 
@@ -1940,7 +1491,6 @@ enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 
 	if (!task_current(rq, p) && p->nr_cpus_allowed > 1)
 		enqueue_pushable_task(rq, p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dequeue_task_rt(struct rq *rq, struct task_struct *p, int flags)
@@ -1948,17 +1498,9 @@ static void dequeue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 	struct sched_rt_entity *rt_se = &p->rt;
 
 	update_curr_rt(rq);
-<<<<<<< HEAD
-	dequeue_rt_entity(rt_se);
-
-	dequeue_pushable_task(rq, p);
-
-	dec_nr_running(rq);
-=======
 	dequeue_rt_entity(rt_se, flags);
 
 	dequeue_pushable_task(rq, p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1999,21 +1541,6 @@ static void yield_task_rt(struct rq *rq)
 static int find_lowest_rq(struct task_struct *task);
 
 static int
-<<<<<<< HEAD
-select_task_rq_rt(struct task_struct *p, int sd_flag, int flags)
-{
-	struct task_struct *curr;
-	struct rq *rq;
-	int cpu;
-
-	cpu = task_cpu(p);
-
-	if (p->rt.nr_cpus_allowed == 1)
-		goto out;
-
-	/* For anything but wake ups, just return the task_cpu */
-	if (sd_flag != SD_BALANCE_WAKE && sd_flag != SD_BALANCE_FORK)
-=======
 select_task_rq_rt(struct task_struct *p, int cpu, int flags)
 {
 	struct task_struct *curr;
@@ -2022,17 +1549,12 @@ select_task_rq_rt(struct task_struct *p, int cpu, int flags)
 
 	/* For anything but wake ups, just return the task_cpu */
 	if (!(flags & (WF_TTWU | WF_FORK)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	rq = cpu_rq(cpu);
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	curr = ACCESS_ONCE(rq->curr); /* unlocked access */
-=======
 	curr = READ_ONCE(rq->curr); /* unlocked access */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the current task on @p's runqueue is an RT task, then
@@ -2055,16 +1577,6 @@ select_task_rq_rt(struct task_struct *p, int cpu, int flags)
 	 *
 	 * This test is optimistic, if we get it wrong the load-balancer
 	 * will have to sort it out.
-<<<<<<< HEAD
-	 */
-	if (curr && unlikely(rt_task(curr)) &&
-	    (curr->rt.nr_cpus_allowed < 2 ||
-	     curr->prio <= p->prio) &&
-	    (p->rt.nr_cpus_allowed > 1)) {
-		int target = find_lowest_rq(p);
-
-		/*
-=======
 	 *
 	 * We take into account the capacity of the CPU to ensure it fits the
 	 * requirement of the task - which is only important on heterogeneous
@@ -2085,7 +1597,6 @@ select_task_rq_rt(struct task_struct *p, int cpu, int flags)
 			goto out_unlock;
 
 		/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * Don't bother moving it if the destination CPU is
 		 * not running a lower priority task.
 		 */
@@ -2093,11 +1604,8 @@ select_task_rq_rt(struct task_struct *p, int cpu, int flags)
 		    p->prio < cpu_rq(target)->rt.highest_prio.curr)
 			cpu = target;
 	}
-<<<<<<< HEAD
-=======
 
 out_unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 
 out:
@@ -2106,27 +1614,6 @@ out:
 
 static void check_preempt_equal_prio(struct rq *rq, struct task_struct *p)
 {
-<<<<<<< HEAD
-	if (rq->curr->rt.nr_cpus_allowed == 1)
-		return;
-
-	if (p->rt.nr_cpus_allowed != 1
-	    && cpupri_find(&rq->rd->cpupri, p, NULL))
-		return;
-
-	if (!cpupri_find(&rq->rd->cpupri, rq->curr, NULL))
-		return;
-
-	/*
-	 * There appears to be other cpus that can accept
-	 * current and none to run 'p', so lets reschedule
-	 * to try and push current away:
-	 */
-	requeue_task_rt(rq, p, 1);
-	resched_task(rq->curr);
-}
-
-=======
 	/*
 	 * Current can't be migrated, useless to reschedule,
 	 * let's hope p can move out.
@@ -2168,23 +1655,15 @@ static int balance_rt(struct rq *rq, struct task_struct *p, struct rq_flags *rf)
 
 	return sched_stop_runnable(rq) || sched_dl_runnable(rq) || sched_rt_runnable(rq);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SMP */
 
 /*
  * Preempt the current task with a newly woken task if needed:
  */
-<<<<<<< HEAD
-static void check_preempt_curr_rt(struct rq *rq, struct task_struct *p, int flags)
-{
-	if (p->prio < rq->curr->prio) {
-		resched_task(rq->curr);
-=======
 static void wakeup_preempt_rt(struct rq *rq, struct task_struct *p, int flags)
 {
 	if (p->prio < rq->curr->prio) {
 		resched_curr(rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -2206,10 +1685,6 @@ static void wakeup_preempt_rt(struct rq *rq, struct task_struct *p, int flags)
 #endif
 }
 
-<<<<<<< HEAD
-static struct sched_rt_entity *pick_next_rt_entity(struct rq *rq,
-						   struct rt_rq *rt_rq)
-=======
 static inline void set_next_task_rt(struct rq *rq, struct task_struct *p, bool first)
 {
 	struct sched_rt_entity *rt_se = &p->rt;
@@ -2237,7 +1712,6 @@ static inline void set_next_task_rt(struct rq *rq, struct task_struct *p, bool f
 }
 
 static struct sched_rt_entity *pick_next_rt_entity(struct rt_rq *rt_rq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rt_prio_array *array = &rt_rq->active;
 	struct sched_rt_entity *next = NULL;
@@ -2248,11 +1722,8 @@ static struct sched_rt_entity *pick_next_rt_entity(struct rt_rq *rt_rq)
 	BUG_ON(idx >= MAX_RT_PRIO);
 
 	queue = array->queue + idx;
-<<<<<<< HEAD
-=======
 	if (SCHED_WARN_ON(list_empty(queue)))
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	next = list_entry(queue->next, struct sched_rt_entity, run_list);
 
 	return next;
@@ -2261,27 +1732,6 @@ static struct sched_rt_entity *pick_next_rt_entity(struct rt_rq *rt_rq)
 static struct task_struct *_pick_next_task_rt(struct rq *rq)
 {
 	struct sched_rt_entity *rt_se;
-<<<<<<< HEAD
-	struct task_struct *p;
-	struct rt_rq *rt_rq;
-
-	rt_rq = &rq->rt;
-
-	if (!rt_rq->rt_nr_running)
-		return NULL;
-
-	if (rt_rq_throttled(rt_rq))
-		return NULL;
-
-	do {
-		rt_se = pick_next_rt_entity(rq, rt_rq);
-		BUG_ON(!rt_se);
-		rt_rq = group_rt_rq(rt_se);
-	} while (rt_rq);
-
-	p = rt_task_of(rt_se);
-	p->se.exec_start = rq->clock_task;
-=======
 	struct rt_rq *rt_rq  = &rq->rt;
 
 	do {
@@ -2302,43 +1752,22 @@ static struct task_struct *pick_task_rt(struct rq *rq)
 		return NULL;
 
 	p = _pick_next_task_rt(rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return p;
 }
 
 static struct task_struct *pick_next_task_rt(struct rq *rq)
 {
-<<<<<<< HEAD
-	struct task_struct *p = _pick_next_task_rt(rq);
-
-	/* The running task is never eligible for pushing */
-	if (p)
-		dequeue_pushable_task(rq, p);
-
-#ifdef CONFIG_SMP
-	/*
-	 * We detect this state here so that we can avoid taking the RQ
-	 * lock again later if there is no need to push
-	 */
-	rq->post_schedule = has_pushable_tasks(rq);
-#endif
-=======
 	struct task_struct *p = pick_task_rt(rq);
 
 	if (p)
 		set_next_task_rt(rq, p, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return p;
 }
 
 static void put_prev_task_rt(struct rq *rq, struct task_struct *p)
 {
-<<<<<<< HEAD
-	update_curr_rt(rq);
-
-=======
 	struct sched_rt_entity *rt_se = &p->rt;
 	struct rt_rq *rt_rq = &rq->rt;
 
@@ -2349,16 +1778,11 @@ static void put_prev_task_rt(struct rq *rq, struct task_struct *p)
 
 	update_rt_rq_load_avg(rq_clock_pelt(rq), rq, 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The previous task needs to be made eligible for pushing
 	 * if it is still active
 	 */
-<<<<<<< HEAD
-	if (on_rt_rq(&p->rt) && p->rt.nr_cpus_allowed > 1)
-=======
 	if (on_rt_rq(&p->rt) && p->nr_cpus_allowed > 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		enqueue_pushable_task(rq, p);
 }
 
@@ -2369,51 +1793,6 @@ static void put_prev_task_rt(struct rq *rq, struct task_struct *p)
 
 static int pick_rt_task(struct rq *rq, struct task_struct *p, int cpu)
 {
-<<<<<<< HEAD
-	if (!task_running(rq, p) &&
-	    (cpu < 0 || cpumask_test_cpu(cpu, tsk_cpus_allowed(p))) &&
-	    (p->rt.nr_cpus_allowed > 1))
-		return 1;
-	return 0;
-}
-
-/* Return the second highest RT task, NULL otherwise */
-static struct task_struct *pick_next_highest_task_rt(struct rq *rq, int cpu)
-{
-	struct task_struct *next = NULL;
-	struct sched_rt_entity *rt_se;
-	struct rt_prio_array *array;
-	struct rt_rq *rt_rq;
-	int idx;
-
-	for_each_leaf_rt_rq(rt_rq, rq) {
-		array = &rt_rq->active;
-		idx = sched_find_first_bit(array->bitmap);
-next_idx:
-		if (idx >= MAX_RT_PRIO)
-			continue;
-		if (next && next->prio <= idx)
-			continue;
-		list_for_each_entry(rt_se, array->queue + idx, run_list) {
-			struct task_struct *p;
-
-			if (!rt_entity_is_task(rt_se))
-				continue;
-
-			p = rt_task_of(rt_se);
-			if (pick_rt_task(rq, p, cpu)) {
-				next = p;
-				break;
-			}
-		}
-		if (!next) {
-			idx = find_next_bit(array->bitmap, MAX_RT_PRIO, idx+1);
-			goto next_idx;
-		}
-	}
-
-	return next;
-=======
 	if (!task_on_cpu(rq, p) &&
 	    cpumask_test_cpu(cpu, &p->cpus_mask))
 		return 1;
@@ -2439,7 +1818,6 @@ static struct task_struct *pick_highest_pushable_task(struct rq *rq, int cpu)
 	}
 
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEFINE_PER_CPU(cpumask_var_t, local_cpu_mask);
@@ -2447,35 +1825,15 @@ static DEFINE_PER_CPU(cpumask_var_t, local_cpu_mask);
 static int find_lowest_rq(struct task_struct *task)
 {
 	struct sched_domain *sd;
-<<<<<<< HEAD
-	struct cpumask *lowest_mask = __get_cpu_var(local_cpu_mask);
-	int this_cpu = smp_processor_id();
-	int cpu      = task_cpu(task);
-=======
 	struct cpumask *lowest_mask = this_cpu_cpumask_var_ptr(local_cpu_mask);
 	int this_cpu = smp_processor_id();
 	int cpu      = task_cpu(task);
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Make sure the mask is initialized first */
 	if (unlikely(!lowest_mask))
 		return -1;
 
-<<<<<<< HEAD
-	if (task->rt.nr_cpus_allowed == 1)
-		return -1; /* No other targets possible */
-
-	if (!cpupri_find(&task_rq(task)->rd->cpupri, task, lowest_mask))
-		return -1; /* No targets found */
-
-	/*
-	 * At this point we have built a mask of cpus representing the
-	 * lowest priority tasks in the system.  Now we want to elect
-	 * the best one based on our affinity and topology.
-	 *
-	 * We prioritize the last cpu that the task executed on since
-=======
 	if (task->nr_cpus_allowed == 1)
 		return -1; /* No other targets possible */
 
@@ -2503,7 +1861,6 @@ static int find_lowest_rq(struct task_struct *task)
 	 * the best one based on our affinity and topology.
 	 *
 	 * We prioritize the last CPU that the task executed on since
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * it is most likely cache-hot in that location.
 	 */
 	if (cpumask_test_cpu(cpu, lowest_mask))
@@ -2511,11 +1868,7 @@ static int find_lowest_rq(struct task_struct *task)
 
 	/*
 	 * Otherwise, we consult the sched_domains span maps to figure
-<<<<<<< HEAD
-	 * out which cpu is logically closest to our hot cache data.
-=======
 	 * out which CPU is logically closest to our hot cache data.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (!cpumask_test_cpu(this_cpu, lowest_mask))
 		this_cpu = -1; /* Skip this_cpu opt if not among lowest */
@@ -2535,13 +1888,8 @@ static int find_lowest_rq(struct task_struct *task)
 				return this_cpu;
 			}
 
-<<<<<<< HEAD
-			best_cpu = cpumask_first_and(lowest_mask,
-						     sched_domain_span(sd));
-=======
 			best_cpu = cpumask_any_and_distribute(lowest_mask,
 							      sched_domain_span(sd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (best_cpu < nr_cpu_ids) {
 				rcu_read_unlock();
 				return best_cpu;
@@ -2558,16 +1906,10 @@ static int find_lowest_rq(struct task_struct *task)
 	if (this_cpu != -1)
 		return this_cpu;
 
-<<<<<<< HEAD
-	cpu = cpumask_any(lowest_mask);
-	if (cpu < nr_cpu_ids)
-		return cpu;
-=======
 	cpu = cpumask_any_distribute(lowest_mask);
 	if (cpu < nr_cpu_ids)
 		return cpu;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 
@@ -2603,16 +1945,6 @@ static struct rq *find_lock_lowest_rq(struct task_struct *task, struct rq *rq)
 			 * the mean time, task could have
 			 * migrated already or had its affinity changed.
 			 * Also make sure that it wasn't scheduled on its rq.
-<<<<<<< HEAD
-			 */
-			if (unlikely(task_rq(task) != rq ||
-				     !cpumask_test_cpu(lowest_rq->cpu,
-						       tsk_cpus_allowed(task)) ||
-				     task_running(rq, task) ||
-				     !task->on_rq)) {
-
-				raw_spin_unlock(&lowest_rq->lock);
-=======
 			 * It is possible the task was scheduled, set
 			 * "migrate_disabled" and then got preempted, so we must
 			 * check the task migration disable flag here too.
@@ -2625,7 +1957,6 @@ static struct rq *find_lock_lowest_rq(struct task_struct *task, struct rq *rq)
 				     !task_on_rq_queued(task))) {
 
 				double_unlock_balance(rq, lowest_rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lowest_rq = NULL;
 				break;
 			}
@@ -2655,15 +1986,9 @@ static struct task_struct *pick_next_pushable_task(struct rq *rq)
 
 	BUG_ON(rq->cpu != task_cpu(p));
 	BUG_ON(task_current(rq, p));
-<<<<<<< HEAD
-	BUG_ON(p->rt.nr_cpus_allowed <= 1);
-
-	BUG_ON(!p->on_rq);
-=======
 	BUG_ON(p->nr_cpus_allowed <= 1);
 
 	BUG_ON(!task_on_rq_queued(p));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(!rt_task(p));
 
 	return p;
@@ -2674,11 +1999,7 @@ static struct task_struct *pick_next_pushable_task(struct rq *rq)
  * running task can migrate over to a CPU that is running a task
  * of lesser priority.
  */
-<<<<<<< HEAD
-static int push_rt_task(struct rq *rq)
-=======
 static int push_rt_task(struct rq *rq, bool pull)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct task_struct *next_task;
 	struct rq *lowest_rq;
@@ -2691,33 +2012,13 @@ static int push_rt_task(struct rq *rq, bool pull)
 	if (!next_task)
 		return 0;
 
-<<<<<<< HEAD
-#ifdef __ARCH_WANT_INTERRUPTS_ON_CTXSW
-       if (unlikely(task_running(rq, next_task)))
-               return 0;
-#endif
-
 retry:
-	if (unlikely(next_task == rq->curr)) {
-		WARN_ON(1);
-		return 0;
-	}
-
-=======
-retry:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * It's possible that the next_task slipped in of
 	 * higher priority than current. If that's the case
 	 * just reschedule current.
 	 */
 	if (unlikely(next_task->prio < rq->curr->prio)) {
-<<<<<<< HEAD
-		resched_task(rq->curr);
-		return 0;
-	}
-
-=======
 		resched_curr(rq);
 		return 0;
 	}
@@ -2767,7 +2068,6 @@ retry:
 	if (WARN_ON(next_task == rq->curr))
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We might release rq lock */
 	get_task_struct(next_task);
 
@@ -2784,20 +2084,12 @@ retry:
 		 * pushing.
 		 */
 		task = pick_next_pushable_task(rq);
-<<<<<<< HEAD
-		if (task_cpu(next_task) == rq->cpu && task == next_task) {
-=======
 		if (task == next_task) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * The task hasn't migrated, and is still the next
 			 * eligible task, but we failed to find a run-queue
 			 * to push it to.  Do not retry in this case, since
-<<<<<<< HEAD
-			 * other cpus will pull from us when ready.
-=======
 			 * other CPUs will pull from us when ready.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			goto out;
 		}
@@ -2817,19 +2109,10 @@ retry:
 	deactivate_task(rq, next_task, 0);
 	set_task_cpu(next_task, lowest_rq->cpu);
 	activate_task(lowest_rq, next_task, 0);
-<<<<<<< HEAD
-	ret = 1;
-
-	resched_task(lowest_rq->curr);
-
-	double_unlock_balance(rq, lowest_rq);
-
-=======
 	resched_curr(lowest_rq);
 	ret = 1;
 
 	double_unlock_balance(rq, lowest_rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	put_task_struct(next_task);
 
@@ -2839,20 +2122,6 @@ out:
 static void push_rt_tasks(struct rq *rq)
 {
 	/* push_rt_task will return true if it moved an RT */
-<<<<<<< HEAD
-	while (push_rt_task(rq))
-		;
-}
-
-static int pull_rt_task(struct rq *this_rq)
-{
-	int this_cpu = this_rq->cpu, ret = 0, cpu;
-	struct task_struct *p;
-	struct rq *src_rq;
-
-	if (likely(!rt_overloaded(this_rq)))
-		return 0;
-=======
 	while (push_rt_task(rq, false))
 		;
 }
@@ -3056,7 +2325,6 @@ static void pull_rt_task(struct rq *this_rq)
 		return;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for_each_cpu(cpu, this_rq->rd->rto_mask) {
 		if (this_cpu == cpu)
@@ -3080,17 +2348,6 @@ static void pull_rt_task(struct rq *this_rq)
 		 * double_lock_balance, and another CPU could
 		 * alter this_rq
 		 */
-<<<<<<< HEAD
-		double_lock_balance(this_rq, src_rq);
-
-		/*
-		 * Are there still pullable RT tasks?
-		 */
-		if (src_rq->rt.rt_nr_running <= 1)
-			goto skip;
-
-		p = pick_next_highest_task_rt(src_rq, this_cpu);
-=======
 		push_task = NULL;
 		double_lock_balance(this_rq, src_rq);
 
@@ -3099,7 +2356,6 @@ static void pull_rt_task(struct rq *this_rq)
 		 * on its rq, and no others.
 		 */
 		p = pick_highest_pushable_task(src_rq, this_cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Do we have an RT task that preempts
@@ -3107,21 +2363,12 @@ static void pull_rt_task(struct rq *this_rq)
 		 */
 		if (p && (p->prio < this_rq->rt.highest_prio.curr)) {
 			WARN_ON(p == src_rq->curr);
-<<<<<<< HEAD
-			WARN_ON(!p->on_rq);
-
-			/*
-			 * There's a chance that p is higher in priority
-			 * than what's currently running on its cpu.
-			 * This is just that p is wakeing up and hasn't
-=======
 			WARN_ON(!task_on_rq_queued(p));
 
 			/*
 			 * There's a chance that p is higher in priority
 			 * than what's currently running on its CPU.
 			 * This is just that p is waking up and hasn't
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * had a chance to schedule. We only pull
 			 * p if it is lower in priority than the
 			 * current task on the run queue
@@ -3129,13 +2376,6 @@ static void pull_rt_task(struct rq *this_rq)
 			if (p->prio < src_rq->curr->prio)
 				goto skip;
 
-<<<<<<< HEAD
-			ret = 1;
-
-			deactivate_task(src_rq, p, 0);
-			set_task_cpu(p, this_cpu);
-			activate_task(this_rq, p, 0);
-=======
 			if (is_migration_disabled(p)) {
 				push_task = get_push_task(src_rq);
 			} else {
@@ -3144,7 +2384,6 @@ static void pull_rt_task(struct rq *this_rq)
 				activate_task(this_rq, p, 0);
 				resched = true;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * We continue with the search, just in
 			 * case there's an even higher prio task
@@ -3154,23 +2393,6 @@ static void pull_rt_task(struct rq *this_rq)
 		}
 skip:
 		double_unlock_balance(this_rq, src_rq);
-<<<<<<< HEAD
-	}
-
-	return ret;
-}
-
-static void pre_schedule_rt(struct rq *rq, struct task_struct *prev)
-{
-	/* Try to pull RT tasks here if we lower this rq's prio */
-	if (rq->rt.highest_prio.curr > prev->prio)
-		pull_rt_task(rq);
-}
-
-static void post_schedule_rt(struct rq *rq)
-{
-	push_rt_tasks(rq);
-=======
 
 		if (push_task) {
 			preempt_disable();
@@ -3184,7 +2406,6 @@ static void post_schedule_rt(struct rq *rq)
 
 	if (resched)
 		resched_curr(this_rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3193,61 +2414,6 @@ static void post_schedule_rt(struct rq *rq)
  */
 static void task_woken_rt(struct rq *rq, struct task_struct *p)
 {
-<<<<<<< HEAD
-	if (!task_running(rq, p) &&
-	    !test_tsk_need_resched(rq->curr) &&
-	    has_pushable_tasks(rq) &&
-	    p->rt.nr_cpus_allowed > 1 &&
-	    rt_task(rq->curr) &&
-	    (rq->curr->rt.nr_cpus_allowed < 2 ||
-	     rq->curr->prio <= p->prio))
-		push_rt_tasks(rq);
-}
-
-static void set_cpus_allowed_rt(struct task_struct *p,
-				const struct cpumask *new_mask)
-{
-	int weight = cpumask_weight(new_mask);
-
-	BUG_ON(!rt_task(p));
-
-	/*
-	 * Update the migration status of the RQ if we have an RT task
-	 * which is running AND changing its weight value.
-	 */
-	if (p->on_rq && (weight != p->rt.nr_cpus_allowed)) {
-		struct rq *rq = task_rq(p);
-
-		if (!task_current(rq, p)) {
-			/*
-			 * Make sure we dequeue this task from the pushable list
-			 * before going further.  It will either remain off of
-			 * the list because we are no longer pushable, or it
-			 * will be requeued.
-			 */
-			if (p->rt.nr_cpus_allowed > 1)
-				dequeue_pushable_task(rq, p);
-
-			/*
-			 * Requeue if our weight is changing and still > 1
-			 */
-			if (weight > 1)
-				enqueue_pushable_task(rq, p);
-
-		}
-
-		if ((p->rt.nr_cpus_allowed <= 1) && (weight > 1)) {
-			rq->rt.rt_nr_migratory++;
-		} else if ((p->rt.nr_cpus_allowed > 1) && (weight <= 1)) {
-			BUG_ON(!rq->rt.rt_nr_migratory);
-			rq->rt.rt_nr_migratory--;
-		}
-
-		update_rt_migration(&rq->rt);
-	}
-}
-
-=======
 	bool need_to_push = !task_on_cpu(rq, p) &&
 			    !test_tsk_need_resched(rq->curr) &&
 			    p->nr_cpus_allowed > 1 &&
@@ -3259,7 +2425,6 @@ static void set_cpus_allowed_rt(struct task_struct *p,
 		push_rt_tasks(rq);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Assumes rq->lock is held */
 static void rq_online_rt(struct rq *rq)
 {
@@ -3295,13 +2460,6 @@ static void switched_from_rt(struct rq *rq, struct task_struct *p)
 	 * we may need to handle the pulling of RT tasks
 	 * now.
 	 */
-<<<<<<< HEAD
-	if (p->on_rq && !rq->rt.rt_nr_running)
-		pull_rt_task(rq);
-}
-
-void init_sched_rt_class(void)
-=======
 	if (!task_on_rq_queued(p) || rq->rt.rt_nr_running)
 		return;
 
@@ -3309,7 +2467,6 @@ void init_sched_rt_class(void)
 }
 
 void __init init_sched_rt_class(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 
@@ -3327,26 +2484,6 @@ void __init init_sched_rt_class(void)
  */
 static void switched_to_rt(struct rq *rq, struct task_struct *p)
 {
-<<<<<<< HEAD
-	int check_resched = 1;
-
-	/*
-	 * If we are already running, then there's nothing
-	 * that needs to be done. But if we are not running
-	 * we may need to preempt the current running task.
-	 * If that current running task is also an RT task
-	 * then see if we can move to another run queue.
-	 */
-	if (p->on_rq && rq->curr != p) {
-#ifdef CONFIG_SMP
-		if (rq->rt.overloaded && push_rt_task(rq) &&
-		    /* Don't resched if we changed runqueues */
-		    rq != task_rq(p))
-			check_resched = 0;
-#endif /* CONFIG_SMP */
-		if (check_resched && p->prio < rq->curr->prio)
-			resched_task(rq->curr);
-=======
 	/*
 	 * If we are running, update the avg_rt tracking, as the running time
 	 * will now on be accounted into the latter.
@@ -3368,7 +2505,6 @@ static void switched_to_rt(struct rq *rq, struct task_struct *p)
 #endif /* CONFIG_SMP */
 		if (p->prio < rq->curr->prio && cpu_online(cpu_of(rq)))
 			resched_curr(rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -3379,38 +2515,16 @@ static void switched_to_rt(struct rq *rq, struct task_struct *p)
 static void
 prio_changed_rt(struct rq *rq, struct task_struct *p, int oldprio)
 {
-<<<<<<< HEAD
-	if (!p->on_rq)
-		return;
-
-	if (rq->curr == p) {
-=======
 	if (!task_on_rq_queued(p))
 		return;
 
 	if (task_current(rq, p)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 		/*
 		 * If our priority decreases while running, we
 		 * may need to pull tasks to this runqueue.
 		 */
 		if (oldprio < p->prio)
-<<<<<<< HEAD
-			pull_rt_task(rq);
-		/*
-		 * If there's a higher priority task waiting to run
-		 * then reschedule. Note, the above pull_rt_task
-		 * can release the rq lock and p could migrate.
-		 * Only reschedule if p is still on the same runqueue.
-		 */
-		if (p->prio > rq->rt.highest_prio.curr && rq->curr == p)
-			resched_task(p);
-#else
-		/* For UP simply resched on drop of prio */
-		if (oldprio < p->prio)
-			resched_task(p);
-=======
 			rt_queue_pull_task(rq);
 
 		/*
@@ -3423,7 +2537,6 @@ prio_changed_rt(struct rq *rq, struct task_struct *p, int oldprio)
 		/* For UP simply resched on drop of prio */
 		if (oldprio < p->prio)
 			resched_curr(rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SMP */
 	} else {
 		/*
@@ -3432,18 +2545,11 @@ prio_changed_rt(struct rq *rq, struct task_struct *p, int oldprio)
 		 * then reschedule.
 		 */
 		if (p->prio < rq->curr->prio)
-<<<<<<< HEAD
-			resched_task(rq->curr);
-	}
-}
-
-=======
 			resched_curr(rq);
 	}
 }
 
 #ifdef CONFIG_POSIX_TIMERS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void watchdog(struct rq *rq, struct task_struct *p)
 {
 	unsigned long soft, hard;
@@ -3461,13 +2567,6 @@ static void watchdog(struct rq *rq, struct task_struct *p)
 		}
 
 		next = DIV_ROUND_UP(min(soft, hard), USEC_PER_SEC/HZ);
-<<<<<<< HEAD
-		if (p->rt.timeout > next)
-			p->cputime_expires.sched_exp = p->se.sum_exec_runtime;
-	}
-}
-
-=======
 		if (p->rt.timeout > next) {
 			posix_cputimers_rt_watchdog(&p->posix_cputimers,
 						    p->se.sum_exec_runtime);
@@ -3486,16 +2585,12 @@ static inline void watchdog(struct rq *rq, struct task_struct *p) { }
  * and everything must be accessed through the @rq and @curr passed in
  * parameters.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void task_tick_rt(struct rq *rq, struct task_struct *p, int queued)
 {
 	struct sched_rt_entity *rt_se = &p->rt;
 
 	update_curr_rt(rq);
-<<<<<<< HEAD
-=======
 	update_rt_rq_load_avg(rq_clock_pelt(rq), rq, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	watchdog(rq, p);
 
@@ -3509,65 +2604,32 @@ static void task_tick_rt(struct rq *rq, struct task_struct *p, int queued)
 	if (--p->rt.time_slice)
 		return;
 
-<<<<<<< HEAD
-	p->rt.time_slice = RR_TIMESLICE;
-
-	/*
-	 * Requeue to the end of queue if we (and all of our ancestors) are the
-	 * only element on the queue
-=======
 	p->rt.time_slice = sched_rr_timeslice;
 
 	/*
 	 * Requeue to the end of queue if we (and all of our ancestors) are not
 	 * the only element on the queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	for_each_sched_rt_entity(rt_se) {
 		if (rt_se->run_list.prev != rt_se->run_list.next) {
 			requeue_task_rt(rq, p, 0);
-<<<<<<< HEAD
-			set_tsk_need_resched(p);
-=======
 			resched_curr(rq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
 }
 
-<<<<<<< HEAD
-static void set_curr_task_rt(struct rq *rq)
-{
-	struct task_struct *p = rq->curr;
-
-	p->se.exec_start = rq->clock_task;
-
-	/* The running task is never eligible for pushing */
-	dequeue_pushable_task(rq, p);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int get_rr_interval_rt(struct rq *rq, struct task_struct *task)
 {
 	/*
 	 * Time slice is 0 for SCHED_FIFO tasks
 	 */
 	if (task->policy == SCHED_RR)
-<<<<<<< HEAD
-		return RR_TIMESLICE;
-=======
 		return sched_rr_timeslice;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return 0;
 }
 
-<<<<<<< HEAD
-const struct sched_class rt_sched_class = {
-	.next			= &fair_sched_class,
-=======
 #ifdef CONFIG_SCHED_CORE
 static int task_is_throttled_rt(struct task_struct *p, int cpu)
 {
@@ -3585,31 +2647,10 @@ static int task_is_throttled_rt(struct task_struct *p, int cpu)
 
 DEFINE_SCHED_CLASS(rt) = {
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enqueue_task		= enqueue_task_rt,
 	.dequeue_task		= dequeue_task_rt,
 	.yield_task		= yield_task_rt,
 
-<<<<<<< HEAD
-	.check_preempt_curr	= check_preempt_curr_rt,
-
-	.pick_next_task		= pick_next_task_rt,
-	.put_prev_task		= put_prev_task_rt,
-
-#ifdef CONFIG_SMP
-	.select_task_rq		= select_task_rq_rt,
-
-	.set_cpus_allowed       = set_cpus_allowed_rt,
-	.rq_online              = rq_online_rt,
-	.rq_offline             = rq_offline_rt,
-	.pre_schedule		= pre_schedule_rt,
-	.post_schedule		= post_schedule_rt,
-	.task_woken		= task_woken_rt,
-	.switched_from		= switched_from_rt,
-#endif
-
-	.set_curr_task          = set_curr_task_rt,
-=======
 	.wakeup_preempt		= wakeup_preempt_rt,
 
 	.pick_next_task		= pick_next_task_rt,
@@ -3628,20 +2669,12 @@ DEFINE_SCHED_CLASS(rt) = {
 	.find_lock_rq		= find_lock_lowest_rq,
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.task_tick		= task_tick_rt,
 
 	.get_rr_interval	= get_rr_interval_rt,
 
 	.prio_changed		= prio_changed_rt,
 	.switched_to		= switched_to_rt,
-<<<<<<< HEAD
-};
-
-#ifdef CONFIG_SCHED_DEBUG
-extern void print_rt_rq(struct seq_file *m, int cpu, struct rt_rq *rt_rq);
-
-=======
 
 	.update_curr		= update_curr_rt,
 
@@ -3986,7 +3019,6 @@ static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
 #endif /* CONFIG_SYSCTL */
 
 #ifdef CONFIG_SCHED_DEBUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void print_rt_stats(struct seq_file *m, int cpu)
 {
 	rt_rq_iter_t iter;

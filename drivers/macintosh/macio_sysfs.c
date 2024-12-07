@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/stat.h>
-#include <asm/macio.h>
-
-
-#define macio_config_of_attr(field, format_string)			\
-static ssize_t								\
-field##_show (struct device *dev, struct device_attribute *attr,	\
-              char *buf)						\
-{									\
-	struct macio_dev *mdev = to_macio_device (dev);			\
-	return sprintf (buf, format_string, mdev->ofdev.dev.of_node->field); \
-}
-
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/kernel.h>
 #include <linux/of.h>
@@ -21,7 +5,6 @@ field##_show (struct device *dev, struct device_attribute *attr,	\
 #include <linux/stat.h>
 #include <asm/macio.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 compatible_show (struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -47,24 +30,12 @@ compatible_show (struct device *dev, struct device_attribute *attr, char *buf)
 
 	return length;
 }
-<<<<<<< HEAD
-=======
 static DEVICE_ATTR_RO(compatible);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t modalias_show (struct device *dev, struct device_attribute *attr,
 			      char *buf)
 {
-<<<<<<< HEAD
-	int len = of_device_get_modalias(dev, buf, PAGE_SIZE - 2);
-
-	buf[len] = '\n';
-	buf[len+1] = 0;
-
-	return len+1;
-=======
 	return of_device_modalias(dev, buf, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t devspec_show(struct device *dev,
@@ -73,21 +44,6 @@ static ssize_t devspec_show(struct device *dev,
 	struct platform_device *ofdev;
 
 	ofdev = to_platform_device(dev);
-<<<<<<< HEAD
-	return sprintf(buf, "%s\n", ofdev->dev.of_node->full_name);
-}
-
-macio_config_of_attr (name, "%s\n");
-macio_config_of_attr (type, "%s\n");
-
-struct device_attribute macio_dev_attrs[] = {
-	__ATTR_RO(name),
-	__ATTR_RO(type),
-	__ATTR_RO(compatible),
-	__ATTR_RO(modalias),
-	__ATTR_RO(devspec),
-	__ATTR_NULL
-=======
 	return sprintf(buf, "%pOF\n", ofdev->dev.of_node);
 }
 static DEVICE_ATTR_RO(modalias);
@@ -123,5 +79,4 @@ static const struct attribute_group macio_dev_group = {
 const struct attribute_group *macio_dev_groups[] = {
 	&macio_dev_group,
 	NULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

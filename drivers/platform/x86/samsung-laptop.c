@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Samsung Laptop driver
  *
  * Copyright (C) 2009,2011 Greg Kroah-Hartman (gregkh@suse.de)
  * Copyright (C) 2009,2011 Novell Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -34,14 +23,8 @@
 #include <linux/debugfs.h>
 #include <linux/ctype.h>
 #include <linux/efi.h>
-<<<<<<< HEAD
-#if (defined CONFIG_ACPI_VIDEO || defined CONFIG_ACPI_VIDEO_MODULE)
-#include <acpi/video.h>
-#endif
-=======
 #include <linux/suspend.h>
 #include <acpi/video.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This driver is needed because a number of Samsung laptops do not hook
@@ -137,13 +120,10 @@ struct sabi_commands {
 	u16 get_wireless_status;
 	u16 set_wireless_status;
 
-<<<<<<< HEAD
-=======
 	/* 0x80 is off, 0x81 is on */
 	u16 get_lid_handling;
 	u16 set_lid_handling;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 0x81 to read, (0x82 | level << 8) to set, 0xaabb to enable */
 	u16 kbd_backlight;
 
@@ -172,11 +152,7 @@ struct sabi_config {
 
 static const struct sabi_config sabi_configs[] = {
 	{
-<<<<<<< HEAD
-		/* I don't know if it is really 2, but it it is
-=======
 		/* I don't know if it is really 2, but it is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * less than 3 anyway */
 		.sabi_version = 2,
 
@@ -218,12 +194,9 @@ static const struct sabi_config sabi_configs[] = {
 			.get_wireless_status = 0xFFFF,
 			.set_wireless_status = 0xFFFF,
 
-<<<<<<< HEAD
-=======
 			.get_lid_handling = 0xFFFF,
 			.set_lid_handling = 0xFFFF,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.kbd_backlight = 0xFFFF,
 
 			.set_linux = 0x0a,
@@ -284,12 +257,9 @@ static const struct sabi_config sabi_configs[] = {
 			.get_wireless_status = 0x69,
 			.set_wireless_status = 0x6a,
 
-<<<<<<< HEAD
-=======
 			.get_lid_handling = 0x6d,
 			.set_lid_handling = 0x6e,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.kbd_backlight = 0x78,
 
 			.set_linux = 0xff,
@@ -377,11 +347,8 @@ struct samsung_laptop {
 	struct samsung_laptop_debug debug;
 	struct samsung_quirks *quirks;
 
-<<<<<<< HEAD
-=======
 	struct notifier_block pm_nb;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool handle_backlight;
 	bool has_stepping_quirk;
 
@@ -389,21 +356,13 @@ struct samsung_laptop {
 };
 
 struct samsung_quirks {
-<<<<<<< HEAD
-	bool broken_acpi_video;
-=======
 	bool four_kbd_backlight_levels;
 	bool enable_kbd_backlight;
 	bool lid_handling;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct samsung_quirks samsung_unknown = {};
 
-<<<<<<< HEAD
-static struct samsung_quirks samsung_broken_acpi_video = {
-	.broken_acpi_video = true,
-=======
 static struct samsung_quirks samsung_np740u3e = {
 	.four_kbd_backlight_levels = true,
 	.enable_kbd_backlight = true,
@@ -411,7 +370,6 @@ static struct samsung_quirks samsung_np740u3e = {
 
 static struct samsung_quirks samsung_lid_handling = {
 	.lid_handling = true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static bool force;
@@ -420,11 +378,7 @@ MODULE_PARM_DESC(force,
 		"Disable the DMI check and forces the driver to be loaded");
 
 static bool debug;
-<<<<<<< HEAD
-module_param(debug, bool, S_IRUGO | S_IWUSR);
-=======
 module_param(debug, bool, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(debug, "Debug enabled or not");
 
 static int sabi_command(struct samsung_laptop *samsung, u16 command,
@@ -623,11 +577,7 @@ static int seclinux_rfkill_set(void *data, bool blocked)
 				 !blocked);
 }
 
-<<<<<<< HEAD
-static struct rfkill_ops seclinux_rfkill_ops = {
-=======
 static const struct rfkill_ops seclinux_rfkill_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_block = seclinux_rfkill_set,
 };
 
@@ -687,11 +637,7 @@ static void swsmi_rfkill_query(struct rfkill *rfkill, void *priv)
 	rfkill_set_sw_state(rfkill, !ret);
 }
 
-<<<<<<< HEAD
-static struct rfkill_ops swsmi_rfkill_ops = {
-=======
 static const struct rfkill_ops swsmi_rfkill_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_block = swsmi_rfkill_set,
 	.query = swsmi_rfkill_query,
 };
@@ -749,11 +695,7 @@ static ssize_t set_performance_level(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(performance_level, S_IWUSR | S_IRUGO,
-=======
 static DEVICE_ATTR(performance_level, 0644,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   get_performance_level, set_performance_level);
 
 static int read_battery_life_extender(struct samsung_laptop *samsung)
@@ -812,11 +754,7 @@ static ssize_t set_battery_life_extender(struct device *dev,
 	struct samsung_laptop *samsung = dev_get_drvdata(dev);
 	int ret, value;
 
-<<<<<<< HEAD
-	if (!count || sscanf(buf, "%i", &value) != 1)
-=======
 	if (!count || kstrtoint(buf, 0, &value) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	ret = write_battery_life_extender(samsung, !!value);
@@ -826,11 +764,7 @@ static ssize_t set_battery_life_extender(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(battery_life_extender, S_IWUSR | S_IRUGO,
-=======
 static DEVICE_ATTR(battery_life_extender, 0644,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   get_battery_life_extender, set_battery_life_extender);
 
 static int read_usb_charge(struct samsung_laptop *samsung)
@@ -889,11 +823,7 @@ static ssize_t set_usb_charge(struct device *dev,
 	struct samsung_laptop *samsung = dev_get_drvdata(dev);
 	int ret, value;
 
-<<<<<<< HEAD
-	if (!count || sscanf(buf, "%i", &value) != 1)
-=======
 	if (!count || kstrtoint(buf, 0, &value) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	ret = write_usb_charge(samsung, !!value);
@@ -903,11 +833,6 @@ static ssize_t set_usb_charge(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(usb_charge, S_IWUSR | S_IRUGO,
-		   get_usb_charge, set_usb_charge);
-
-=======
 static DEVICE_ATTR(usb_charge, 0644,
 		   get_usb_charge, set_usb_charge);
 
@@ -976,15 +901,11 @@ static ssize_t set_lid_handling(struct device *dev,
 static DEVICE_ATTR(lid_handling, 0644,
 		   get_lid_handling, set_lid_handling);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute *platform_attributes[] = {
 	&dev_attr_performance_level.attr,
 	&dev_attr_battery_life_extender.attr,
 	&dev_attr_usb_charge.attr,
-<<<<<<< HEAD
-=======
 	&dev_attr_lid_handling.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL
 };
 
@@ -1107,8 +1028,6 @@ static int __init samsung_rfkill_init(struct samsung_laptop *samsung)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void samsung_lid_handling_exit(struct samsung_laptop *samsung)
 {
 	if (samsung->quirks->lid_handling)
@@ -1125,7 +1044,6 @@ static int __init samsung_lid_handling_init(struct samsung_laptop *samsung)
 	return retval;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int kbd_backlight_enable(struct samsung_laptop *samsung)
 {
 	const struct sabi_commands *commands = &samsung->config->commands;
@@ -1193,11 +1111,6 @@ static void kbd_led_set(struct led_classdev *led_cdev,
 
 	if (value > samsung->kbd_led.max_brightness)
 		value = samsung->kbd_led.max_brightness;
-<<<<<<< HEAD
-	else if (value < 0)
-		value = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	samsung->kbd_led_wk = value;
 	queue_work(samsung->led_workqueue, &samsung->kbd_led_work);
@@ -1213,12 +1126,7 @@ static enum led_brightness kbd_led_get(struct led_classdev *led_cdev)
 
 static void samsung_leds_exit(struct samsung_laptop *samsung)
 {
-<<<<<<< HEAD
-	if (!IS_ERR_OR_NULL(samsung->kbd_led.dev))
-		led_classdev_unregister(&samsung->kbd_led);
-=======
 	led_classdev_unregister(&samsung->kbd_led);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (samsung->led_workqueue)
 		destroy_workqueue(samsung->led_workqueue);
 }
@@ -1238,11 +1146,8 @@ static int __init samsung_leds_init(struct samsung_laptop *samsung)
 		samsung->kbd_led.brightness_set = kbd_led_set;
 		samsung->kbd_led.brightness_get = kbd_led_get;
 		samsung->kbd_led.max_brightness = 8;
-<<<<<<< HEAD
-=======
 		if (samsung->quirks->four_kbd_backlight_levels)
 			samsung->kbd_led.max_brightness = 4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = led_classdev_register(&samsung->platform_device->dev,
 					   &samsung->kbd_led);
@@ -1291,18 +1196,10 @@ static int __init samsung_backlight_init(struct samsung_laptop *samsung)
 }
 
 static umode_t samsung_sysfs_is_visible(struct kobject *kobj,
-<<<<<<< HEAD
-				       struct attribute *attr, int idx)
-{
-	struct device *dev = container_of(kobj, struct device, kobj);
-	struct platform_device *pdev = to_platform_device(dev);
-	struct samsung_laptop *samsung = platform_get_drvdata(pdev);
-=======
 					struct attribute *attr, int idx)
 {
 	struct device *dev = kobj_to_dev(kobj);
 	struct samsung_laptop *samsung = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool ok = true;
 
 	if (attr == &dev_attr_performance_level.attr)
@@ -1311,20 +1208,13 @@ static umode_t samsung_sysfs_is_visible(struct kobject *kobj,
 		ok = !!(read_battery_life_extender(samsung) >= 0);
 	if (attr == &dev_attr_usb_charge.attr)
 		ok = !!(read_usb_charge(samsung) >= 0);
-<<<<<<< HEAD
-=======
 	if (attr == &dev_attr_lid_handling.attr)
 		ok = !!(read_lid_handling(samsung) >= 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ok ? attr->mode : 0;
 }
 
-<<<<<<< HEAD
-static struct attribute_group platform_attribute_group = {
-=======
 static const struct attribute_group platform_attribute_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.is_visible = samsung_sysfs_is_visible,
 	.attrs = platform_attributes
 };
@@ -1344,11 +1234,7 @@ static int __init samsung_sysfs_init(struct samsung_laptop *samsung)
 
 }
 
-<<<<<<< HEAD
-static int show_call(struct seq_file *m, void *data)
-=======
 static int samsung_laptop_call_show(struct seq_file *m, void *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct samsung_laptop *samsung = m->private;
 	struct sabi_data *sdata = &samsung->debug.data;
@@ -1370,47 +1256,19 @@ static int samsung_laptop_call_show(struct seq_file *m, void *data)
 		   sdata->d0, sdata->d1, sdata->d2, sdata->d3);
 	return 0;
 }
-<<<<<<< HEAD
-
-static int samsung_debugfs_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, show_call, inode->i_private);
-}
-
-static const struct file_operations samsung_laptop_call_io_ops = {
-	.owner = THIS_MODULE,
-	.open = samsung_debugfs_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
-};
-=======
 DEFINE_SHOW_ATTRIBUTE(samsung_laptop_call);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void samsung_debugfs_exit(struct samsung_laptop *samsung)
 {
 	debugfs_remove_recursive(samsung->debug.root);
 }
 
-<<<<<<< HEAD
-static int samsung_debugfs_init(struct samsung_laptop *samsung)
-{
-	struct dentry *dent;
-
-	samsung->debug.root = debugfs_create_dir("samsung-laptop", NULL);
-	if (!samsung->debug.root) {
-		pr_err("failed to create debugfs directory");
-		goto error_debugfs;
-	}
-=======
 static void samsung_debugfs_init(struct samsung_laptop *samsung)
 {
 	struct dentry *root;
 
 	root = debugfs_create_dir("samsung-laptop", NULL);
 	samsung->debug.root = root;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	samsung->debug.f0000_wrapper.data = samsung->f0000_segment;
 	samsung->debug.f0000_wrapper.size = 0xffff;
@@ -1421,62 +1279,6 @@ static void samsung_debugfs_init(struct samsung_laptop *samsung)
 	samsung->debug.sdiag_wrapper.data = samsung->sdiag;
 	samsung->debug.sdiag_wrapper.size = strlen(samsung->sdiag);
 
-<<<<<<< HEAD
-	dent = debugfs_create_u16("command", S_IRUGO | S_IWUSR,
-				  samsung->debug.root, &samsung->debug.command);
-	if (!dent)
-		goto error_debugfs;
-
-	dent = debugfs_create_u32("d0", S_IRUGO | S_IWUSR, samsung->debug.root,
-				  &samsung->debug.data.d0);
-	if (!dent)
-		goto error_debugfs;
-
-	dent = debugfs_create_u32("d1", S_IRUGO | S_IWUSR, samsung->debug.root,
-				  &samsung->debug.data.d1);
-	if (!dent)
-		goto error_debugfs;
-
-	dent = debugfs_create_u16("d2", S_IRUGO | S_IWUSR, samsung->debug.root,
-				  &samsung->debug.data.d2);
-	if (!dent)
-		goto error_debugfs;
-
-	dent = debugfs_create_u8("d3", S_IRUGO | S_IWUSR, samsung->debug.root,
-				 &samsung->debug.data.d3);
-	if (!dent)
-		goto error_debugfs;
-
-	dent = debugfs_create_blob("data", S_IRUGO | S_IWUSR,
-				   samsung->debug.root,
-				   &samsung->debug.data_wrapper);
-	if (!dent)
-		goto error_debugfs;
-
-	dent = debugfs_create_blob("f0000_segment", S_IRUSR | S_IWUSR,
-				   samsung->debug.root,
-				   &samsung->debug.f0000_wrapper);
-	if (!dent)
-		goto error_debugfs;
-
-	dent = debugfs_create_file("call", S_IFREG | S_IRUGO,
-				   samsung->debug.root, samsung,
-				   &samsung_laptop_call_io_ops);
-	if (!dent)
-		goto error_debugfs;
-
-	dent = debugfs_create_blob("sdiag", S_IRUGO | S_IWUSR,
-				   samsung->debug.root,
-				   &samsung->debug.sdiag_wrapper);
-	if (!dent)
-		goto error_debugfs;
-
-	return 0;
-
-error_debugfs:
-	samsung_debugfs_exit(samsung);
-	return -ENOMEM;
-=======
 	debugfs_create_u16("command", 0644, root, &samsung->debug.command);
 	debugfs_create_u32("d0", 0644, root, &samsung->debug.data.d0);
 	debugfs_create_u32("d1", 0644, root, &samsung->debug.data.d1);
@@ -1488,7 +1290,6 @@ error_debugfs:
 	debugfs_create_file("call", 0444, root, samsung,
 			    &samsung_laptop_call_fops);
 	debugfs_create_blob("sdiag", 0444, root, &samsung->debug.sdiag_wrapper);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void samsung_sabi_exit(struct samsung_laptop *samsung)
@@ -1569,19 +1370,11 @@ static int __init samsung_sabi_init(struct samsung_laptop *samsung)
 	const struct sabi_config *config = NULL;
 	const struct sabi_commands *commands;
 	unsigned int ifaceP;
-<<<<<<< HEAD
-	int ret = 0;
-	int i;
-	int loca;
-
-	samsung->f0000_segment = ioremap_nocache(0xf0000, 0xffff);
-=======
 	int loca = 0xffff;
 	int ret = 0;
 	int i;
 
 	samsung->f0000_segment = ioremap(0xf0000, 0xffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!samsung->f0000_segment) {
 		if (debug || force)
 			pr_err("Can't map the segment at 0xf0000\n");
@@ -1592,11 +1385,7 @@ static int __init samsung_sabi_init(struct samsung_laptop *samsung)
 	samsung_sabi_diag(samsung);
 
 	/* Try to find one of the signatures in memory to find the header */
-<<<<<<< HEAD
-	for (i = 0; sabi_configs[i].test_string != 0; ++i) {
-=======
 	for (i = 0; sabi_configs[i].test_string != NULL; ++i) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		samsung->config = &sabi_configs[i];
 		loca = find_signature(samsung->f0000_segment,
 				      samsung->config->test_string);
@@ -1625,11 +1414,7 @@ static int __init samsung_sabi_init(struct samsung_laptop *samsung)
 	if (debug)
 		samsung_sabi_infos(samsung, loca, ifaceP);
 
-<<<<<<< HEAD
-	samsung->sabi_iface = ioremap_nocache(ifaceP, 16);
-=======
 	samsung->sabi_iface = ioremap(ifaceP, 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!samsung->sabi_iface) {
 		pr_err("Can't remap %x\n", ifaceP);
 		ret = -EINVAL;
@@ -1669,8 +1454,6 @@ static void samsung_platform_exit(struct samsung_laptop *samsung)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static int samsung_pm_notification(struct notifier_block *nb,
 				   unsigned long val, void *ptr)
 {
@@ -1687,16 +1470,11 @@ static int samsung_pm_notification(struct notifier_block *nb,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init samsung_platform_init(struct samsung_laptop *samsung)
 {
 	struct platform_device *pdev;
 
-<<<<<<< HEAD
-	pdev = platform_device_register_simple("samsung", -1, NULL, 0);
-=======
 	pdev = platform_device_register_simple("samsung", PLATFORM_DEVID_NONE, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(pdev))
 		return PTR_ERR(pdev);
 
@@ -1713,11 +1491,7 @@ static int __init samsung_dmi_matched(const struct dmi_system_id *d)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct dmi_system_id __initdata samsung_dmi_table[] = {
-=======
 static const struct dmi_system_id samsung_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR,
@@ -1746,68 +1520,6 @@ static const struct dmi_system_id samsung_dmi_table[] __initconst = {
 			DMI_MATCH(DMI_CHASSIS_TYPE, "14"), /* Sub-Notebook */
 		},
 	},
-<<<<<<< HEAD
-	/* Specific DMI ids for laptop with quirks */
-	{
-	 .callback = samsung_dmi_matched,
-	 .ident = "N150P",
-	 .matches = {
-		DMI_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
-		DMI_MATCH(DMI_PRODUCT_NAME, "N150P"),
-		DMI_MATCH(DMI_BOARD_NAME, "N150P"),
-		},
-	 .driver_data = &samsung_broken_acpi_video,
-	},
-	{
-	 .callback = samsung_dmi_matched,
-	 .ident = "N145P/N250P/N260P",
-	 .matches = {
-		DMI_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
-		DMI_MATCH(DMI_PRODUCT_NAME, "N145P/N250P/N260P"),
-		DMI_MATCH(DMI_BOARD_NAME, "N145P/N250P/N260P"),
-		},
-	 .driver_data = &samsung_broken_acpi_video,
-	},
-	{
-	 .callback = samsung_dmi_matched,
-	 .ident = "N150/N210/N220",
-	 .matches = {
-		DMI_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
-		DMI_MATCH(DMI_PRODUCT_NAME, "N150/N210/N220"),
-		DMI_MATCH(DMI_BOARD_NAME, "N150/N210/N220"),
-		},
-	 .driver_data = &samsung_broken_acpi_video,
-	},
-	{
-	 .callback = samsung_dmi_matched,
-	 .ident = "NF110/NF210/NF310",
-	 .matches = {
-		DMI_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
-		DMI_MATCH(DMI_PRODUCT_NAME, "NF110/NF210/NF310"),
-		DMI_MATCH(DMI_BOARD_NAME, "NF110/NF210/NF310"),
-		},
-	 .driver_data = &samsung_broken_acpi_video,
-	},
-	{
-	 .callback = samsung_dmi_matched,
-	 .ident = "N250P",
-	 .matches = {
-		DMI_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
-		DMI_MATCH(DMI_PRODUCT_NAME, "N250P"),
-		DMI_MATCH(DMI_BOARD_NAME, "N250P"),
-		},
-	 .driver_data = &samsung_broken_acpi_video,
-	},
-	{
-	 .callback = samsung_dmi_matched,
-	 .ident = "NC210",
-	 .matches = {
-		DMI_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
-		DMI_MATCH(DMI_PRODUCT_NAME, "NC210/NC110"),
-		DMI_MATCH(DMI_BOARD_NAME, "NC210/NC110"),
-		},
-	 .driver_data = &samsung_broken_acpi_video,
-=======
 	/* DMI ids for laptops with bad Chassis Type */
 	{
 	  .ident = "R40/R41",
@@ -1835,7 +1547,6 @@ static const struct dmi_system_id samsung_dmi_table[] __initconst = {
 		DMI_MATCH(DMI_PRODUCT_NAME, "300V3Z/300V4Z/300V5Z"),
 		},
 	 .driver_data = &samsung_lid_handling,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{ },
 };
@@ -1863,23 +1574,8 @@ static int __init samsung_init(void)
 	samsung->handle_backlight = true;
 	samsung->quirks = quirks;
 
-<<<<<<< HEAD
-
-#if (defined CONFIG_ACPI_VIDEO || defined CONFIG_ACPI_VIDEO_MODULE)
-	/* Don't handle backlight here if the acpi video already handle it */
-	if (acpi_video_backlight_support()) {
-		if (samsung->quirks->broken_acpi_video) {
-			pr_info("Disabling ACPI video driver\n");
-			acpi_video_unregister();
-		} else {
-			samsung->handle_backlight = false;
-		}
-	}
-#endif
-=======
 	if (acpi_video_get_backlight_type() != acpi_backlight_vendor)
 		samsung->handle_backlight = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = samsung_platform_init(samsung);
 	if (ret)
@@ -1889,16 +1585,6 @@ static int __init samsung_init(void)
 	if (ret)
 		goto error_sabi;
 
-<<<<<<< HEAD
-#ifdef CONFIG_ACPI
-	/* Only log that if we are really on a sabi platform */
-	if (acpi_video_backlight_support() &&
-	    !samsung->quirks->broken_acpi_video)
-		pr_info("Backlight controlled by ACPI video driver\n");
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = samsung_sysfs_init(samsung);
 	if (ret)
 		goto error_sysfs;
@@ -1915,11 +1601,6 @@ static int __init samsung_init(void)
 	if (ret)
 		goto error_leds;
 
-<<<<<<< HEAD
-	ret = samsung_debugfs_init(samsung);
-	if (ret)
-		goto error_debugfs;
-=======
 	ret = samsung_lid_handling_init(samsung);
 	if (ret)
 		goto error_lid_handling;
@@ -1928,16 +1609,11 @@ static int __init samsung_init(void)
 
 	samsung->pm_nb.notifier_call = samsung_pm_notification;
 	register_pm_notifier(&samsung->pm_nb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	samsung_platform_device = samsung->platform_device;
 	return ret;
 
-<<<<<<< HEAD
-error_debugfs:
-=======
 error_lid_handling:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	samsung_leds_exit(samsung);
 error_leds:
 	samsung_rfkill_exit(samsung);
@@ -1959,15 +1635,10 @@ static void __exit samsung_exit(void)
 	struct samsung_laptop *samsung;
 
 	samsung = platform_get_drvdata(samsung_platform_device);
-<<<<<<< HEAD
-
-	samsung_debugfs_exit(samsung);
-=======
 	unregister_pm_notifier(&samsung->pm_nb);
 
 	samsung_debugfs_exit(samsung);
 	samsung_lid_handling_exit(samsung);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	samsung_leds_exit(samsung);
 	samsung_rfkill_exit(samsung);
 	samsung_backlight_exit(samsung);

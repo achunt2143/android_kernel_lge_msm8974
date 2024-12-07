@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-#
-# SLIMBUS driver configuration
-#
-menuconfig SLIMBUS
-	bool "Slimbus support"
-	depends on HAS_IOMEM
-	help
-	  Slimbus is standard interface between baseband and
-	  application processors and peripheral components in mobile
-	  terminals.
-
-if SLIMBUS
-config SLIMBUS_MSM_CTRL
-	tristate "Qualcomm Slimbus Master Component"
-	default n
-	help
-	  Select driver for Qualcomm's Slimbus Master Component.
-
-config SLIMBUS_MSM_NGD
-	tristate "Qualcomm Slimbus Satellite Component"
-	help
-	  Select driver for Qualcomm's Slimbus Satellite Component.
-=======
 # SPDX-License-Identifier: GPL-2.0
 #
 # SLIMbus driver configuration
@@ -54,13 +30,8 @@ config SLIM_QCOM_NGD_CTRL
 	help
 	  Select driver if Qualcomm's SLIMbus Satellite Non-Generic Device
 	  Component is programmed using Linux kernel.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is light-weight slimbus controller driver responsible for
 	  communicating with slave HW directly over the bus using messaging
 	  interface, and communicating with master component residing on ADSP
 	  for bandwidth and data-channel management.
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif

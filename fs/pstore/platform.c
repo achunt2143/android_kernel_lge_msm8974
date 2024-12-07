@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-/*
- * Persistent Storage - platform driver interface parts.
- *
- * Copyright (C) 2010 Intel Corporation <tony.luck@intel.com>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Persistent Storage - platform driver interface parts.
@@ -29,32 +8,23 @@
 
 #define pr_fmt(fmt) "pstore: " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/kmsg_dump.h>
-<<<<<<< HEAD
-=======
 #include <linux/console.h>
 #include <linux/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/pstore.h>
 #include <linux/string.h>
 #include <linux/timer.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
-<<<<<<< HEAD
-#include <linux/hardirq.h>
-#include <linux/workqueue.h>
-=======
 #include <linux/jiffies.h>
 #include <linux/vmalloc.h>
 #include <linux/workqueue.h>
 #include <linux/zlib.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "internal.h"
 
@@ -63,14 +33,6 @@
  * whether the system is actually still running well enough
  * to let someone see the entry
  */
-<<<<<<< HEAD
-#define	PSTORE_INTERVAL	(60 * HZ)
-
-static int pstore_new_entry;
-
-static void pstore_timefunc(unsigned long);
-static DEFINE_TIMER(pstore_timer, pstore_timefunc, 0, 0);
-=======
 static int pstore_update_ms = -1;
 module_param_named(update_ms, pstore_update_ms, int, 0600);
 MODULE_PARM_DESC(update_ms, "milliseconds before pstore updates its content "
@@ -95,24 +57,11 @@ static int pstore_new_entry;
 
 static void pstore_timefunc(struct timer_list *);
 static DEFINE_TIMER(pstore_timer, pstore_timefunc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void pstore_dowork(struct work_struct *);
 static DECLARE_WORK(pstore_work, pstore_dowork);
 
 /*
-<<<<<<< HEAD
- * pstore_lock just protects "psinfo" during
- * calls to pstore_register()
- */
-static DEFINE_SPINLOCK(pstore_lock);
-static struct pstore_info *psinfo;
-
-static char *backend;
-
-/* How much of the console log to snapshot */
-static unsigned long kmsg_bytes = 10240;
-=======
  * psinfo_lock protects "psinfo" during calls to
  * pstore_register(), pstore_unregister(), and
  * the filesystem mount/unmount routines.
@@ -157,7 +106,6 @@ static void *compress_workspace;
 
 static char *big_oops_buf;
 static size_t max_compressed_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void pstore_set_kmsg_bytes(int bytes)
 {
@@ -167,29 +115,6 @@ void pstore_set_kmsg_bytes(int bytes)
 /* Tag each group of saved records with a sequence number */
 static int	oopscount;
 
-<<<<<<< HEAD
-static const char *get_reason_str(enum kmsg_dump_reason reason)
-{
-	switch (reason) {
-	case KMSG_DUMP_PANIC:
-		return "Panic";
-	case KMSG_DUMP_OOPS:
-		return "Oops";
-	case KMSG_DUMP_EMERG:
-		return "Emergency";
-	case KMSG_DUMP_RESTART:
-		return "Restart";
-	case KMSG_DUMP_HALT:
-		return "Halt";
-	case KMSG_DUMP_POWEROFF:
-		return "Poweroff";
-	default:
-		return "Unknown";
-	}
-}
-
-bool pstore_cannot_block_path(enum kmsg_dump_reason reason)
-=======
 const char *pstore_type_to_name(enum pstore_type_id type)
 {
 	BUILD_BUG_ON(ARRAY_SIZE(pstore_type_names) != PSTORE_TYPE_MAX);
@@ -223,7 +148,6 @@ static void pstore_timer_kick(void)
 }
 
 static bool pstore_cannot_block_path(enum kmsg_dump_reason reason)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * In case of NMI path, pstore shouldn't be blocked
@@ -235,28 +159,16 @@ static bool pstore_cannot_block_path(enum kmsg_dump_reason reason)
 	switch (reason) {
 	/* In panic case, other cpus are stopped by smp_send_stop(). */
 	case KMSG_DUMP_PANIC:
-<<<<<<< HEAD
-	/* Emergency restart shouldn't be blocked by spin lock. */
-=======
 	/*
 	 * Emergency restart shouldn't be blocked by spinning on
 	 * pstore_info::buf_lock.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KMSG_DUMP_EMERG:
 		return true;
 	default:
 		return false;
 	}
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(pstore_cannot_block_path);
-
-/*
- * callback from kmsg_dump. (s2,l2) has the most recently
- * written bytes, older bytes are in (s1,l1). Save as much
- * as we can from the end of the buffer.
-=======
 
 static int pstore_compress(const void *in, void *out,
 			   unsigned int inlen, unsigned int outlen)
@@ -361,59 +273,10 @@ void pstore_record_init(struct pstore_record *record,
 /*
  * callback from kmsg_dump. Save as much as we can (up to kmsg_bytes) from the
  * end of the buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void pstore_dump(struct kmsg_dumper *dumper,
 			enum kmsg_dump_reason reason)
 {
-<<<<<<< HEAD
-	unsigned long	total = 0;
-	const char	*why;
-	u64		id;
-	unsigned int	part = 1;
-	unsigned long	flags = 0;
-	int		is_locked = 0;
-	int		ret;
-
-	why = get_reason_str(reason);
-
-	if (pstore_cannot_block_path(reason)) {
-		is_locked = spin_trylock_irqsave(&psinfo->buf_lock, flags);
-		if (!is_locked) {
-			pr_err("pstore dump routine blocked in %s path, may corrupt error record\n"
-				       , in_nmi() ? "NMI" : why);
-		}
-	} else
-		spin_lock_irqsave(&psinfo->buf_lock, flags);
-	oopscount++;
-	while (total < kmsg_bytes) {
-		char *dst;
-		unsigned long size;
-		int hsize;
-		size_t len;
-
-		dst = psinfo->buf;
-		hsize = sprintf(dst, "%s#%d Part%d\n", why, oopscount, part);
-		size = psinfo->bufsize - hsize;
-		dst += hsize;
-
-		if (!kmsg_dump_get_buffer(dumper, true, dst, size, &len))
-			break;
-
-		ret = psinfo->write(PSTORE_TYPE_DMESG, reason, &id, part,
-				    hsize + len, psinfo);
-		if (ret == 0 && reason == KMSG_DUMP_OOPS && pstore_is_mounted())
-			pstore_new_entry = 1;
-
-		total += hsize + len;
-		part++;
-	}
-	if (pstore_cannot_block_path(reason)) {
-		if (is_locked)
-			spin_unlock_irqrestore(&psinfo->buf_lock, flags);
-	} else
-		spin_unlock_irqrestore(&psinfo->buf_lock, flags);
-=======
 	struct kmsg_dump_iter iter;
 	unsigned long	total = 0;
 	const char	*why;
@@ -507,7 +370,6 @@ static void pstore_dump(struct kmsg_dumper *dumper,
 		pr_err_once("backend (%s) writing error (%d)\n", psinfo->name,
 			    saved_ret);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct kmsg_dumper pstore_dumper = {
@@ -515,8 +377,6 @@ static struct kmsg_dumper pstore_dumper = {
 };
 
 /*
-<<<<<<< HEAD
-=======
  * Register with kmsg_dump to save last part of console log on panic.
  */
 static void pstore_register_kmsg(void)
@@ -596,49 +456,11 @@ out:
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * platform specific persistent storage driver registers with
  * us here. If pstore is already mounted, call the platform
  * read function right away to populate the file system. If not
  * then the pstore mount code will call us later to fill out
  * the file system.
-<<<<<<< HEAD
- *
- * Register with kmsg_dump to save last part of console log on panic.
- */
-int pstore_register(struct pstore_info *psi)
-{
-	struct module *owner = psi->owner;
-
-	spin_lock(&pstore_lock);
-	if (psinfo) {
-		spin_unlock(&pstore_lock);
-		return -EBUSY;
-	}
-
-	if (backend && strcmp(backend, psi->name)) {
-		spin_unlock(&pstore_lock);
-		return -EINVAL;
-	}
-
-	psinfo = psi;
-	mutex_init(&psinfo->read_mutex);
-	spin_unlock(&pstore_lock);
-
-	if (owner && !try_module_get(owner)) {
-		psinfo = NULL;
-		return -EINVAL;
-	}
-
-	if (pstore_is_mounted())
-		pstore_get_records(0);
-
-	kmsg_dump_register(&pstore_dumper);
-
-	pstore_timer.expires = jiffies + PSTORE_INTERVAL;
-	add_timer(&pstore_timer);
-
-=======
  */
 int pstore_register(struct pstore_info *psi)
 {
@@ -711,15 +533,10 @@ int pstore_register(struct pstore_info *psi)
 	pr_info("Registered %s as persistent store backend\n", psi->name);
 
 	mutex_unlock(&psinfo_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(pstore_register);
 
-<<<<<<< HEAD
-/*
- * Read all the records from the persistent store. Create
-=======
 void pstore_unregister(struct pstore_info *psi)
 {
 	/* It's okay to unregister nothing. */
@@ -832,26 +649,10 @@ static void decompress_record(struct pstore_record *record,
 
 /*
  * Read all the records from one persistent store backend. Create
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * files in our filesystem.  Don't warn about -EEXIST errors
  * when we are re-scanning the backing store looking to add new
  * error records.
  */
-<<<<<<< HEAD
-void pstore_get_records(int quiet)
-{
-	struct pstore_info *psi = psinfo;
-	char			*buf = NULL;
-	ssize_t			size;
-	u64			id;
-	enum pstore_type_id	type;
-	struct timespec		time;
-	int			failed = 0, rc;
-
-	if (!psi)
-		return;
-
-=======
 void pstore_get_backend_records(struct pstore_info *psi,
 				struct dentry *root, int quiet)
 {
@@ -868,20 +669,10 @@ void pstore_get_backend_records(struct pstore_info *psi,
 		zlib_inflateInit2(&zstream, -DEF_WBITS);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&psi->read_mutex);
 	if (psi->open && psi->open(psi))
 		goto out;
 
-<<<<<<< HEAD
-	while ((size = psi->read(&id, &type, &time, &buf, psi)) > 0) {
-		rc = pstore_mkfile(type, psi->name, id, buf, (size_t)size,
-				  time, psi);
-		kfree(buf);
-		buf = NULL;
-		if (rc && (rc != -EEXIST || !quiet))
-			failed++;
-=======
 	/*
 	 * Backend callback read() allocates record.buf. decompress_record()
 	 * may reallocate record.buf. On success, pstore_mkfile() will keep
@@ -916,18 +707,12 @@ void pstore_get_backend_records(struct pstore_info *psi,
 			if (rc != -EEXIST || !quiet)
 				failed++;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (psi->close)
 		psi->close(psi);
 out:
 	mutex_unlock(&psi->read_mutex);
 
-<<<<<<< HEAD
-	if (failed)
-		printk(KERN_WARNING "pstore: failed to load %d record(s) from '%s'\n",
-		       failed, psi->name);
-=======
 	if (IS_ENABLED(CONFIG_PSTORE_COMPRESS) && compress) {
 		if (zlib_inflateEnd(&zstream) != Z_OK)
 			pr_warn("zlib_inflateEnd() failed\n");
@@ -940,7 +725,6 @@ out:
 	if (!stop_loop)
 		pr_err("looping? Too many records seen from '%s'\n",
 			psi->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pstore_dowork(struct work_struct *work)
@@ -948,24 +732,13 @@ static void pstore_dowork(struct work_struct *work)
 	pstore_get_records(1);
 }
 
-<<<<<<< HEAD
-static void pstore_timefunc(unsigned long dummy)
-=======
 static void pstore_timefunc(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (pstore_new_entry) {
 		pstore_new_entry = 0;
 		schedule_work(&pstore_work);
 	}
 
-<<<<<<< HEAD
-	mod_timer(&pstore_timer, jiffies + PSTORE_INTERVAL);
-}
-
-module_param(backend, charp, 0444);
-MODULE_PARM_DESC(backend, "Pstore backend to use");
-=======
 	pstore_timer_kick();
 }
 
@@ -989,4 +762,3 @@ module_exit(pstore_exit)
 
 MODULE_AUTHOR("Tony Luck <tony.luck@intel.com>");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

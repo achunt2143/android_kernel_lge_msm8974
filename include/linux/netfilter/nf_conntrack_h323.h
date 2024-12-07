@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#ifndef _NF_CONNTRACK_H323_H
-#define _NF_CONNTRACK_H323_H
-
-#ifdef __KERNEL__
-
-#include <linux/netfilter/nf_conntrack_h323_asn1.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _NF_CONNTRACK_H323_H
 #define _NF_CONNTRACK_H323_H
@@ -16,7 +8,6 @@
 #include <linux/netfilter/nf_conntrack_h323_asn1.h>
 #include <net/netfilter/nf_conntrack_expect.h>
 #include <uapi/linux/netfilter/nf_conntrack_tuple_common.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RAS_PORT 1719
 #define Q931_PORT 1720
@@ -40,74 +31,6 @@ struct nf_ct_h323_master {
 	};
 };
 
-<<<<<<< HEAD
-struct nf_conn;
-
-extern int get_h225_addr(struct nf_conn *ct, unsigned char *data,
-			 TransportAddress *taddr,
-			 union nf_inet_addr *addr, __be16 *port);
-extern void nf_conntrack_h245_expect(struct nf_conn *new,
-				     struct nf_conntrack_expect *this);
-extern void nf_conntrack_q931_expect(struct nf_conn *new,
-				     struct nf_conntrack_expect *this);
-extern int (*set_h245_addr_hook) (struct sk_buff *skb, unsigned int protoff,
-				  unsigned char **data, int dataoff,
-				  H245_TransportAddress *taddr,
-				  union nf_inet_addr *addr,
-				  __be16 port);
-extern int (*set_h225_addr_hook) (struct sk_buff *skb, unsigned int protoff,
-				  unsigned char **data, int dataoff,
-				  TransportAddress *taddr,
-				  union nf_inet_addr *addr,
-				  __be16 port);
-extern int (*set_sig_addr_hook) (struct sk_buff *skb,
-				 struct nf_conn *ct,
-				 enum ip_conntrack_info ctinfo,
-				 unsigned int protoff, unsigned char **data,
-				 TransportAddress *taddr, int count);
-extern int (*set_ras_addr_hook) (struct sk_buff *skb,
-				 struct nf_conn *ct,
-				 enum ip_conntrack_info ctinfo,
-				 unsigned int protoff, unsigned char **data,
-				 TransportAddress *taddr, int count);
-extern int (*nat_rtp_rtcp_hook) (struct sk_buff *skb,
-				 struct nf_conn *ct,
-				 enum ip_conntrack_info ctinfo,
-				 unsigned int protoff, unsigned char **data,
-				 int dataoff,
-				 H245_TransportAddress *taddr,
-				 __be16 port, __be16 rtp_port,
-				 struct nf_conntrack_expect *rtp_exp,
-				 struct nf_conntrack_expect *rtcp_exp);
-extern int (*nat_t120_hook) (struct sk_buff *skb, struct nf_conn *ct,
-			     enum ip_conntrack_info ctinfo,
-			     unsigned int protoff,
-			     unsigned char **data, int dataoff,
-			     H245_TransportAddress *taddr, __be16 port,
-			     struct nf_conntrack_expect *exp);
-extern int (*nat_h245_hook) (struct sk_buff *skb, struct nf_conn *ct,
-			     enum ip_conntrack_info ctinfo,
-			     unsigned int protoff,
-			     unsigned char **data, int dataoff,
-			     TransportAddress *taddr, __be16 port,
-			     struct nf_conntrack_expect *exp);
-extern int (*nat_callforwarding_hook) (struct sk_buff *skb,
-				       struct nf_conn *ct,
-				       enum ip_conntrack_info ctinfo,
-				       unsigned int protoff,
-				       unsigned char **data, int dataoff,
-				       TransportAddress *taddr,
-				       __be16 port,
-				       struct nf_conntrack_expect *exp);
-extern int (*nat_q931_hook) (struct sk_buff *skb, struct nf_conn *ct,
-			     enum ip_conntrack_info ctinfo,
-			     unsigned int protoff,
-			     unsigned char **data, TransportAddress *taddr,
-			     int idx, __be16 port,
-			     struct nf_conntrack_expect *exp);
-
-#endif
-=======
 int get_h225_addr(struct nf_conn *ct, unsigned char *data,
 		  TransportAddress *taddr, union nf_inet_addr *addr,
 		  __be16 *port);
@@ -169,6 +92,5 @@ struct nfct_h323_nat_hooks {
 			__be16 port, struct nf_conntrack_expect *exp);
 };
 extern const struct nfct_h323_nat_hooks __rcu *nfct_h323_nat_hook;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

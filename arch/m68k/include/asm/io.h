@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#ifdef __uClinux__
-#include "io_no.h"
-#else
-#include "io_mm.h"
-#endif
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _M68K_IO_H
 #define _M68K_IO_H
@@ -21,4 +14,3 @@
 #include <asm-generic/io.h>
 
 #endif /* _M68K_IO_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

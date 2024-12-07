@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-/*
- * Secondary CPU startup routine source file.
- *
- * Copyright (C) 2009 Texas Instruments, Inc.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Secondary CPU startup routine source file.
  *
  * Copyright (C) 2009-2014 Texas Instruments, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Author:
  *      Santosh Shilimkar <santosh.shilimkar@ti.com>
@@ -17,21 +10,10 @@
  * Interface functions needed for the SMP. This file is based on arm
  * realview smp platform.
  * Copyright (c) 2003 ARM Limited.
-<<<<<<< HEAD
- *
- * This program is free software,you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/linkage.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-
-	__CPUINIT
-=======
 #include <asm/assembler.h>
 
 #include "omap44xx.h"
@@ -89,7 +71,6 @@ wait_2:	ldr	r2, =AUX_CORE_BOOT0_PA	@ read from AuxCoreBoot0
 hyp_boot:
 	b	omap_secondary_startup
 ENDPROC(omap5_secondary_hyp_startup)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP4 specific entry point for secondary CPU to jump from ROM
  * code.  This routine also provides a holding flag into which
@@ -97,11 +78,7 @@ ENDPROC(omap5_secondary_hyp_startup)
  * The primary core will update this flag using a hardware
  * register AuxCoreBoot0.
  */
-<<<<<<< HEAD
-ENTRY(omap_secondary_startup)
-=======
 ENTRY(omap4_secondary_startup)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 hold:	ldr	r12,=0x103
 	dsb
 	smc	#0			@ read from AuxCoreBoot0
@@ -115,11 +92,6 @@ hold:	ldr	r12,=0x103
 	 * we've been released from the wait loop,secondary_stack
 	 * should now contain the SVC stack for this core
 	 */
-<<<<<<< HEAD
-	b	secondary_startup
-ENDPROC(omap_secondary_startup)
-
-=======
 	b	omap_secondary_startup
 ENDPROC(omap4_secondary_startup)
 
@@ -159,4 +131,3 @@ hold_2:	ldr	r12,=0x103
 	 */
 	b	omap_secondary_startup
 ENDPROC(omap4460_secondary_startup)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

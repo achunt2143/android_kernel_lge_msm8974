@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 What:		/sys/devices/system/node/possible
 Date:		October 2002
 Contact:	Linux Memory Management list <linux-mm@kvack.org>
@@ -31,16 +29,12 @@ Description:
 		Nodes that have regular or high memory.
 		Depends on CONFIG_HIGHMEM.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 What:		/sys/devices/system/node/nodeX
 Date:		October 2002
 Contact:	Linux Memory Management list <linux-mm@kvack.org>
 Description:
 		When CONFIG_NUMA is enabled, this is a directory containing
 		information on node X such as what CPUs are local to the
-<<<<<<< HEAD
-		node.
-=======
 		node. Each file is detailed next.
 
 What:		/sys/devices/system/node/nodeX/cpumap
@@ -227,4 +221,3 @@ Contact:	Jiaqi Yan <jiaqiyan@google.com>
 Description:
 		Of the raw poisoned pages on a NUMA node, how many pages are
 		recovered by memory error recovery attempt.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

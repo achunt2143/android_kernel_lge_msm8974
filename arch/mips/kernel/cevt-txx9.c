@@ -4,11 +4,7 @@
  * for more details.
  *
  * Based on linux/arch/mips/kernel/cevt-r4k.c,
-<<<<<<< HEAD
- *          linux/arch/mips/jmr3927/rbhma3100/setup.c
-=======
  *	    linux/arch/mips/jmr3927/rbhma3100/setup.c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright 2001 MontaVista Software Inc.
  * Copyright (C) 2000-2001 Toshiba Corporation
@@ -18,10 +14,7 @@
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched_clock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/time.h>
 #include <asm/txx9tmr.h>
 
@@ -34,11 +27,7 @@ struct txx9_clocksource {
 	struct txx9_tmr_reg __iomem *tmrptr;
 };
 
-<<<<<<< HEAD
-static cycle_t txx9_cs_read(struct clocksource *cs)
-=======
 static u64 txx9_cs_read(struct clocksource *cs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct txx9_clocksource *txx9_cs =
 		container_of(cs, struct txx9_clocksource, cs);
@@ -58,14 +47,11 @@ static struct txx9_clocksource txx9_clocksource = {
 	},
 };
 
-<<<<<<< HEAD
-=======
 static u64 notrace txx9_read_sched_clock(void)
 {
 	return __raw_readl(&txx9_clocksource.tmrptr->trr);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init txx9_clocksource_init(unsigned long baseaddr,
 				  unsigned int imbusclk)
 {
@@ -81,12 +67,9 @@ void __init txx9_clocksource_init(unsigned long baseaddr,
 	__raw_writel(1 << TXX9_CLOCKSOURCE_BITS, &tmrptr->cpra);
 	__raw_writel(TCR_BASE | TXx9_TMTCR_TCE, &tmrptr->tcr);
 	txx9_clocksource.tmrptr = tmrptr;
-<<<<<<< HEAD
-=======
 
 	sched_clock_register(txx9_read_sched_clock, TXX9_CLOCKSOURCE_BITS,
 			     TIMER_CLK(imbusclk));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct txx9_clock_event_device {
@@ -102,42 +85,13 @@ static void txx9tmr_stop_and_clear(struct txx9_tmr_reg __iomem *tmrptr)
 	__raw_writel(0, &tmrptr->tisr);
 }
 
-<<<<<<< HEAD
-static void txx9tmr_set_mode(enum clock_event_mode mode,
-			     struct clock_event_device *evt)
-=======
 static int txx9tmr_set_state_periodic(struct clock_event_device *evt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct txx9_clock_event_device *txx9_cd =
 		container_of(evt, struct txx9_clock_event_device, cd);
 	struct txx9_tmr_reg __iomem *tmrptr = txx9_cd->tmrptr;
 
 	txx9tmr_stop_and_clear(tmrptr);
-<<<<<<< HEAD
-	switch (mode) {
-	case CLOCK_EVT_MODE_PERIODIC:
-		__raw_writel(TXx9_TMITMR_TIIE | TXx9_TMITMR_TZCE,
-			     &tmrptr->itmr);
-		/* start timer */
-		__raw_writel(((u64)(NSEC_PER_SEC / HZ) * evt->mult) >>
-			     evt->shift,
-			     &tmrptr->cpra);
-		__raw_writel(TCR_BASE | TXx9_TMTCR_TCE, &tmrptr->tcr);
-		break;
-	case CLOCK_EVT_MODE_SHUTDOWN:
-	case CLOCK_EVT_MODE_UNUSED:
-		__raw_writel(0, &tmrptr->itmr);
-		break;
-	case CLOCK_EVT_MODE_ONESHOT:
-		__raw_writel(TXx9_TMITMR_TIIE, &tmrptr->itmr);
-		break;
-	case CLOCK_EVT_MODE_RESUME:
-		__raw_writel(TIMER_CCD, &tmrptr->ccdr);
-		__raw_writel(0, &tmrptr->itmr);
-		break;
-	}
-=======
 
 	__raw_writel(TXx9_TMITMR_TIIE | TXx9_TMITMR_TZCE, &tmrptr->itmr);
 	/* start timer */
@@ -179,7 +133,6 @@ static int txx9tmr_tick_resume(struct clock_event_device *evt)
 	__raw_writel(TIMER_CCD, &tmrptr->ccdr);
 	__raw_writel(0, &tmrptr->itmr);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int txx9tmr_set_next_event(unsigned long delta,
@@ -198,14 +151,6 @@ static int txx9tmr_set_next_event(unsigned long delta,
 
 static struct txx9_clock_event_device txx9_clock_event_device = {
 	.cd = {
-<<<<<<< HEAD
-		.name		= "TXx9",
-		.features	= CLOCK_EVT_FEAT_PERIODIC |
-				  CLOCK_EVT_FEAT_ONESHOT,
-		.rating		= 200,
-		.set_mode	= txx9tmr_set_mode,
-		.set_next_event	= txx9tmr_set_next_event,
-=======
 		.name			= "TXx9",
 		.features		= CLOCK_EVT_FEAT_PERIODIC |
 					  CLOCK_EVT_FEAT_ONESHOT,
@@ -215,7 +160,6 @@ static struct txx9_clock_event_device txx9_clock_event_device = {
 		.set_state_oneshot	= txx9tmr_set_state_oneshot,
 		.tick_resume		= txx9tmr_tick_resume,
 		.set_next_event		= txx9tmr_set_next_event,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -225,25 +169,11 @@ static irqreturn_t txx9tmr_interrupt(int irq, void *dev_id)
 	struct clock_event_device *cd = &txx9_cd->cd;
 	struct txx9_tmr_reg __iomem *tmrptr = txx9_cd->tmrptr;
 
-<<<<<<< HEAD
-	__raw_writel(0, &tmrptr->tisr);	/* ack interrupt */
-=======
 	__raw_writel(0, &tmrptr->tisr); /* ack interrupt */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cd->event_handler(cd);
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static struct irqaction txx9tmr_irq = {
-	.handler	= txx9tmr_interrupt,
-	.flags		= IRQF_PERCPU | IRQF_TIMER,
-	.name		= "txx9tmr",
-	.dev_id		= &txx9_clock_event_device,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init txx9_clockevent_init(unsigned long baseaddr, int irq,
 				 unsigned int imbusclk)
 {
@@ -259,13 +189,6 @@ void __init txx9_clockevent_init(unsigned long baseaddr, int irq,
 	clockevent_set_clock(cd, TIMER_CLK(imbusclk));
 	cd->max_delta_ns =
 		clockevent_delta2ns(0xffffffff >> (32 - TXX9_TIMER_BITS), cd);
-<<<<<<< HEAD
-	cd->min_delta_ns = clockevent_delta2ns(0xf, cd);
-	cd->irq = irq;
-	cd->cpumask = cpumask_of(0),
-	clockevents_register_device(cd);
-	setup_irq(irq, &txx9tmr_irq);
-=======
 	cd->max_delta_ticks = 0xffffffff >> (32 - TXX9_TIMER_BITS);
 	cd->min_delta_ns = clockevent_delta2ns(0xf, cd);
 	cd->min_delta_ticks = 0xf;
@@ -275,7 +198,6 @@ void __init txx9_clockevent_init(unsigned long baseaddr, int irq,
 	if (request_irq(irq, txx9tmr_interrupt, IRQF_PERCPU | IRQF_TIMER,
 			"txx9tmr", &txx9_clock_event_device))
 		pr_err("Failed to request irq %d (txx9tmr)\n", irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO "TXx9: clockevent device at 0x%lx, irq %d\n",
 	       baseaddr, irq);
 }

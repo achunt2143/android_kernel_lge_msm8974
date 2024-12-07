@@ -22,19 +22,6 @@
  * Authors: Alex Deucher
  *
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "radeon_drm.h"
-#include "radeon.h"
-#include "atom.h"
-
-extern void radeon_atom_copy_swap(u8 *dst, u8 *src, u8 num_bytes, bool to_le);
-
-#define TARGET_HW_I2C_CLOCK 50
-
-/* these are a limitation of ProcessI2cChannelTransaction not the hw */
-#define ATOM_MAX_HW_I2C_WRITE 2
-=======
 
 #include <drm/radeon_drm.h>
 #include "radeon.h"
@@ -44,28 +31,17 @@ extern void radeon_atom_copy_swap(u8 *dst, u8 *src, u8 num_bytes, bool to_le);
 
 /* these are a limitation of ProcessI2cChannelTransaction not the hw */
 #define ATOM_MAX_HW_I2C_WRITE 3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATOM_MAX_HW_I2C_READ  255
 
 static int radeon_process_i2c_ch(struct radeon_i2c_chan *chan,
 				 u8 slave_addr, u8 flags,
-<<<<<<< HEAD
-				 u8 *buf, u8 num)
-=======
 				 u8 *buf, int num)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct drm_device *dev = chan->dev;
 	struct radeon_device *rdev = dev->dev_private;
 	PROCESS_I2C_CHANNEL_TRANSACTION_PS_ALLOCATION args;
 	int index = GetIndexIntoMasterTable(COMMAND, ProcessI2cChannelTransaction);
 	unsigned char *base;
-<<<<<<< HEAD
-	u16 out;
-
-	memset(&args, 0, sizeof(args));
-
-=======
 	u16 out = cpu_to_le16(0);
 	int r = 0;
 
@@ -74,27 +50,10 @@ static int radeon_process_i2c_ch(struct radeon_i2c_chan *chan,
 	mutex_lock(&chan->mutex);
 	mutex_lock(&rdev->mode_info.atom_context->scratch_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	base = (unsigned char *)rdev->mode_info.atom_context->scratch;
 
 	if (flags & HW_I2C_WRITE) {
 		if (num > ATOM_MAX_HW_I2C_WRITE) {
-<<<<<<< HEAD
-			DRM_ERROR("hw i2c: tried to write too many bytes (%d vs 2)\n", num);
-			return -EINVAL;
-		}
-		memcpy(&out, buf, num);
-		args.lpI2CDataOut = cpu_to_le16(out);
-	} else {
-		if (num > ATOM_MAX_HW_I2C_READ) {
-			DRM_ERROR("hw i2c: tried to read too many bytes (%d vs 255)\n", num);
-			return -EINVAL;
-		}
-	}
-
-	args.ucI2CSpeed = TARGET_HW_I2C_CLOCK;
-	args.ucRegIndex = 0;
-=======
 			DRM_ERROR("hw i2c: tried to write too many bytes (%d vs 3)\n", num);
 			r = -EINVAL;
 			goto done;
@@ -115,40 +74,27 @@ static int radeon_process_i2c_ch(struct radeon_i2c_chan *chan,
 
 	args.ucFlag = flags;
 	args.ucI2CSpeed = TARGET_HW_I2C_CLOCK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	args.ucTransBytes = num;
 	args.ucSlaveAddr = slave_addr << 1;
 	args.ucLineNumber = chan->rec.i2c_id;
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table_scratch_unlocked(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* error */
 	if (args.ucStatus != HW_ASSISTED_I2C_STATUS_SUCCESS) {
 		DRM_DEBUG_KMS("hw_i2c error\n");
-<<<<<<< HEAD
-		return -EIO;
-=======
 		r = -EIO;
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!(flags & HW_I2C_WRITE))
 		radeon_atom_copy_swap(buf, base, num, false);
 
-<<<<<<< HEAD
-	return 0;
-=======
 done:
 	mutex_unlock(&rdev->mode_info.atom_context->scratch_mutex);
 	mutex_unlock(&chan->mutex);
 
 	return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int radeon_atom_hw_i2c_xfer(struct i2c_adapter *i2c_adap,
@@ -157,22 +103,14 @@ int radeon_atom_hw_i2c_xfer(struct i2c_adapter *i2c_adap,
 	struct radeon_i2c_chan *i2c = i2c_get_adapdata(i2c_adap);
 	struct i2c_msg *p;
 	int i, remaining, current_count, buffer_offset, max_bytes, ret;
-<<<<<<< HEAD
-	u8 buf = 0, flags;
-=======
 	u8 flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check for bus probe */
 	p = &msgs[0];
 	if ((num == 1) && (p->len == 0)) {
 		ret = radeon_process_i2c_ch(i2c,
 					    p->addr, HW_I2C_WRITE,
-<<<<<<< HEAD
-					    &buf, 1);
-=======
 					    NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 		else

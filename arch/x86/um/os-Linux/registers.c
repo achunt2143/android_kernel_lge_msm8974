@@ -5,20 +5,11 @@
  */
 
 #include <errno.h>
-<<<<<<< HEAD
-=======
 #include <stdlib.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sys/ptrace.h>
 #ifdef __i386__
 #include <sys/user.h>
 #endif
-<<<<<<< HEAD
-#include "longjmp.h"
-#include "sysdep/ptrace_user.h"
-
-int save_fp_registers(int pid, unsigned long *fp_regs)
-=======
 #include <longjmp.h>
 #include <sysdep/ptrace_user.h>
 #include <sys/uio.h>
@@ -29,16 +20,12 @@ int save_fp_registers(int pid, unsigned long *fp_regs)
 int have_xstate_support;
 
 int save_i387_registers(int pid, unsigned long *fp_regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ptrace(PTRACE_GETFPREGS, pid, 0, fp_regs) < 0)
 		return -errno;
 	return 0;
 }
 
-<<<<<<< HEAD
-int restore_fp_registers(int pid, unsigned long *fp_regs)
-=======
 int save_fp_registers(int pid, unsigned long *fp_regs)
 {
 #ifdef PTRACE_GETREGSET
@@ -56,15 +43,12 @@ int save_fp_registers(int pid, unsigned long *fp_regs)
 }
 
 int restore_i387_registers(int pid, unsigned long *fp_regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ptrace(PTRACE_SETFPREGS, pid, 0, fp_regs) < 0)
 		return -errno;
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 int restore_fp_registers(int pid, unsigned long *fp_regs)
 {
 #ifdef PTRACE_SETREGSET
@@ -80,7 +64,6 @@ int restore_fp_registers(int pid, unsigned long *fp_regs)
 		return restore_i387_registers(pid, fp_regs);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __i386__
 int have_fpx_regs = 1;
 int save_fpx_registers(int pid, unsigned long *fp_regs)
@@ -140,8 +123,6 @@ int put_fp_registers(int pid, unsigned long *regs)
 	return restore_fp_registers(pid, regs);
 }
 
-<<<<<<< HEAD
-=======
 void arch_init_registers(int pid)
 {
 #ifdef PTRACE_GETREGSET
@@ -160,7 +141,6 @@ void arch_init_registers(int pid)
 	free(fp_regs);
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 unsigned long get_thread_reg(int reg, jmp_buf *buf)

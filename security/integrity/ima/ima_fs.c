@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2005,2006,2007,2008 IBM Corporation
  *
@@ -10,47 +7,19 @@
  * Reiner Sailer <sailer@us.ibm.com>
  * Mimi Zohar <zohar@us.ibm.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * File: ima_fs.c
  *	implemenents security file system for reporting
  *	current measurement list and IMA statistics
  */
-<<<<<<< HEAD
-#include <linux/fcntl.h>
-#include <linux/slab.h>
-#include <linux/module.h>
-=======
 
 #include <linux/fcntl.h>
 #include <linux/kernel_read_file.h>
 #include <linux/slab.h>
 #include <linux/init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/seq_file.h>
 #include <linux/rculist.h>
 #include <linux/rcupdate.h>
 #include <linux/parser.h>
-<<<<<<< HEAD
-
-#include "ima.h"
-
-static int valid_policy = 1;
-#define TMPBUFLEN 12
-static ssize_t ima_show_htable_value(char __user *buf, size_t count,
-				     loff_t *ppos, atomic_long_t *val)
-{
-	char tmpbuf[TMPBUFLEN];
-	ssize_t len;
-
-	len = scnprintf(tmpbuf, TMPBUFLEN, "%li\n", atomic_long_read(val));
-=======
 #include <linux/vmalloc.h>
 
 #include "ima.h"
@@ -76,7 +45,6 @@ static ssize_t ima_show_htable_value(char __user *buf, size_t count,
 	ssize_t len;
 
 	len = scnprintf(tmpbuf, sizeof(tmpbuf), "%li\n", atomic_long_read(val));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return simple_read_from_buffer(buf, count, ppos, tmpbuf, len);
 }
 
@@ -131,12 +99,7 @@ static void *ima_measurements_next(struct seq_file *m, void *v, loff_t *pos)
 	 * against concurrent list-extension
 	 */
 	rcu_read_lock();
-<<<<<<< HEAD
-	qe = list_entry_rcu(qe->later.next,
-			    struct ima_queue_entry, later);
-=======
 	qe = list_entry_rcu(qe->later.next, struct ima_queue_entry, later);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 	(*pos)++;
 
@@ -147,11 +110,7 @@ static void ima_measurements_stop(struct seq_file *m, void *v)
 {
 }
 
-<<<<<<< HEAD
-static void ima_putc(struct seq_file *m, void *data, int datalen)
-=======
 void ima_putc(struct seq_file *m, void *data, int datalen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (datalen--)
 		seq_putc(m, *(char *)data++);
@@ -162,57 +121,24 @@ void ima_putc(struct seq_file *m, void *data, int datalen)
  *       char[20]=template digest
  *       32bit-le=template name size
  *       char[n]=template name
-<<<<<<< HEAD
- *       eventdata[n]=template specific data
- */
-static int ima_measurements_show(struct seq_file *m, void *v)
-=======
  *       [eventdata length]
  *       eventdata[n]=template specific data
  */
 int ima_measurements_show(struct seq_file *m, void *v)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* the list never shrinks, so we don't need a lock here */
 	struct ima_queue_entry *qe = v;
 	struct ima_template_entry *e;
-<<<<<<< HEAD
-	int namelen;
-	u32 pcr = CONFIG_IMA_MEASURE_PCR_IDX;
-=======
 	char *template_name;
 	u32 pcr, namelen, template_data_len; /* temporary fields */
 	bool is_ima_template = false;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get entry */
 	e = qe->entry;
 	if (e == NULL)
 		return -1;
 
-<<<<<<< HEAD
-	/*
-	 * 1st: PCRIndex
-	 * PCR used is always the same (config option) in
-	 * little-endian format
-	 */
-	ima_putc(m, &pcr, sizeof pcr);
-
-	/* 2nd: template digest */
-	ima_putc(m, e->digest, IMA_DIGEST_SIZE);
-
-	/* 3rd: template name size */
-	namelen = strlen(e->template_name);
-	ima_putc(m, &namelen, sizeof namelen);
-
-	/* 4th:  template name */
-	ima_putc(m, (void *)e->template_name, namelen);
-
-	/* 5th:  template specific data */
-	ima_template_show(m, (struct ima_template_data *)&e->template,
-			  IMA_SHOW_BINARY);
-=======
 	template_name = (e->template_desc->name[0] != '\0') ?
 	    e->template_desc->name : e->template_desc->fmt;
 
@@ -257,7 +183,6 @@ int ima_measurements_show(struct seq_file *m, void *v)
 			show = IMA_SHOW_BINARY_OLD_STRING_FMT;
 		field->field_show(m, show, &e->template_data[i]);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -280,37 +205,6 @@ static const struct file_operations ima_measurements_ops = {
 	.release = seq_release,
 };
 
-<<<<<<< HEAD
-static void ima_print_digest(struct seq_file *m, u8 *digest)
-{
-	int i;
-
-	for (i = 0; i < IMA_DIGEST_SIZE; i++)
-		seq_printf(m, "%02x", *(digest + i));
-}
-
-void ima_template_show(struct seq_file *m, void *e, enum ima_show_type show)
-{
-	struct ima_template_data *entry = e;
-	int namelen;
-
-	switch (show) {
-	case IMA_SHOW_ASCII:
-		ima_print_digest(m, entry->digest);
-		seq_printf(m, " %s\n", entry->file_name);
-		break;
-	case IMA_SHOW_BINARY:
-		ima_putc(m, entry->digest, IMA_DIGEST_SIZE);
-
-		namelen = strlen(entry->file_name);
-		ima_putc(m, &namelen, sizeof namelen);
-		ima_putc(m, entry->file_name, namelen);
-	default:
-		break;
-	}
-}
-
-=======
 void ima_print_digest(struct seq_file *m, u8 *digest, u32 size)
 {
 	u32 i;
@@ -319,38 +213,20 @@ void ima_print_digest(struct seq_file *m, u8 *digest, u32 size)
 		seq_printf(m, "%02x", *(digest + i));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* print in ascii */
 static int ima_ascii_measurements_show(struct seq_file *m, void *v)
 {
 	/* the list never shrinks, so we don't need a lock here */
 	struct ima_queue_entry *qe = v;
 	struct ima_template_entry *e;
-<<<<<<< HEAD
-=======
 	char *template_name;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get entry */
 	e = qe->entry;
 	if (e == NULL)
 		return -1;
 
-<<<<<<< HEAD
-	/* 1st: PCR used (config option) */
-	seq_printf(m, "%2d ", CONFIG_IMA_MEASURE_PCR_IDX);
-
-	/* 2nd: SHA1 template hash */
-	ima_print_digest(m, e->digest);
-
-	/* 3th:  template name */
-	seq_printf(m, " %s ", e->template_name);
-
-	/* 4th:  template specific data */
-	ima_template_show(m, (struct ima_template_data *)&e->template,
-			  IMA_SHOW_ASCII);
-=======
 	template_name = (e->template_desc->name[0] != '\0') ?
 	    e->template_desc->name : e->template_desc->fmt;
 
@@ -373,7 +249,6 @@ static int ima_ascii_measurements_show(struct seq_file *m, void *v)
 							&e->template_data[i]);
 	}
 	seq_puts(m, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -396,12 +271,6 @@ static const struct file_operations ima_ascii_measurements_ops = {
 	.release = seq_release,
 };
 
-<<<<<<< HEAD
-static ssize_t ima_write_policy(struct file *file, const char __user *buf,
-				size_t datalen, loff_t *ppos)
-{
-	char *data = NULL;
-=======
 static ssize_t ima_read_policy(char *path)
 {
 	void *data = NULL;
@@ -446,7 +315,6 @@ static ssize_t ima_write_policy(struct file *file, const char __user *buf,
 				size_t datalen, loff_t *ppos)
 {
 	char *data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t result;
 
 	if (datalen >= PAGE_SIZE)
@@ -457,24 +325,6 @@ static ssize_t ima_write_policy(struct file *file, const char __user *buf,
 	if (*ppos != 0)
 		goto out;
 
-<<<<<<< HEAD
-	result = -ENOMEM;
-	data = kmalloc(datalen + 1, GFP_KERNEL);
-	if (!data)
-		goto out;
-
-	*(data + datalen) = '\0';
-
-	result = -EFAULT;
-	if (copy_from_user(data, buf, datalen))
-		goto out;
-
-	result = ima_parse_add_rule(data);
-out:
-	if (result < 0)
-		valid_policy = 0;
-	kfree(data);
-=======
 	data = memdup_user_nul(buf, datalen);
 	if (IS_ERR(data)) {
 		result = PTR_ERR(data);
@@ -503,35 +353,17 @@ out:
 	if (result < 0)
 		valid_policy = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
 static struct dentry *ima_dir;
-<<<<<<< HEAD
-=======
 static struct dentry *ima_symlink;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct dentry *binary_runtime_measurements;
 static struct dentry *ascii_runtime_measurements;
 static struct dentry *runtime_measurements_count;
 static struct dentry *violations;
 static struct dentry *ima_policy;
 
-<<<<<<< HEAD
-static atomic_t policy_opencount = ATOMIC_INIT(1);
-/*
- * ima_open_policy: sequentialize access to the policy file
- */
-static int ima_open_policy(struct inode * inode, struct file * filp)
-{
-	/* No point in being allowed to open it if you aren't going to write */
-	if (!(filp->f_flags & O_WRONLY))
-		return -EACCES;
-	if (atomic_dec_and_test(&policy_opencount))
-		return 0;
-	return -EBUSY;
-=======
 enum ima_fs_flags {
 	IMA_FS_BUSY,
 };
@@ -566,7 +398,6 @@ static int ima_open_policy(struct inode *inode, struct file *filp)
 	if (test_and_set_bit(IMA_FS_BUSY, &ima_fs_flags))
 		return -EBUSY;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -578,17 +409,6 @@ static int ima_open_policy(struct inode *inode, struct file *filp)
  */
 static int ima_release_policy(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	if (!valid_policy) {
-		ima_delete_rules();
-		valid_policy = 1;
-		atomic_set(&policy_opencount, 1);
-		return 0;
-	}
-	ima_update_policy();
-	securityfs_remove(ima_policy);
-	ima_policy = NULL;
-=======
 	const char *cause = valid_policy ? "completed" : "failed";
 
 	if ((file->f_flags & O_ACCMODE) == O_RDONLY)
@@ -619,28 +439,19 @@ static int ima_release_policy(struct inode *inode, struct file *file)
 #elif defined(CONFIG_IMA_READ_POLICY)
 	inode->i_mode &= ~S_IWUSR;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static const struct file_operations ima_measure_policy_ops = {
 	.open = ima_open_policy,
 	.write = ima_write_policy,
-<<<<<<< HEAD
-=======
 	.read = seq_read,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.release = ima_release_policy,
 	.llseek = generic_file_llseek,
 };
 
 int __init ima_fs_init(void)
 {
-<<<<<<< HEAD
-	ima_dir = securityfs_create_dir("ima", NULL);
-	if (IS_ERR(ima_dir))
-		return -1;
-=======
 	int ret;
 
 	ima_dir = securityfs_create_dir("ima", integrity_dir);
@@ -653,77 +464,37 @@ int __init ima_fs_init(void)
 		ret = PTR_ERR(ima_symlink);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	binary_runtime_measurements =
 	    securityfs_create_file("binary_runtime_measurements",
 				   S_IRUSR | S_IRGRP, ima_dir, NULL,
 				   &ima_measurements_ops);
-<<<<<<< HEAD
-	if (IS_ERR(binary_runtime_measurements))
-		goto out;
-=======
 	if (IS_ERR(binary_runtime_measurements)) {
 		ret = PTR_ERR(binary_runtime_measurements);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ascii_runtime_measurements =
 	    securityfs_create_file("ascii_runtime_measurements",
 				   S_IRUSR | S_IRGRP, ima_dir, NULL,
 				   &ima_ascii_measurements_ops);
-<<<<<<< HEAD
-	if (IS_ERR(ascii_runtime_measurements))
-		goto out;
-=======
 	if (IS_ERR(ascii_runtime_measurements)) {
 		ret = PTR_ERR(ascii_runtime_measurements);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	runtime_measurements_count =
 	    securityfs_create_file("runtime_measurements_count",
 				   S_IRUSR | S_IRGRP, ima_dir, NULL,
 				   &ima_measurements_count_ops);
-<<<<<<< HEAD
-	if (IS_ERR(runtime_measurements_count))
-		goto out;
-=======
 	if (IS_ERR(runtime_measurements_count)) {
 		ret = PTR_ERR(runtime_measurements_count);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	violations =
 	    securityfs_create_file("violations", S_IRUSR | S_IRGRP,
 				   ima_dir, NULL, &ima_htable_violations_ops);
-<<<<<<< HEAD
-	if (IS_ERR(violations))
-		goto out;
-
-	ima_policy = securityfs_create_file("policy",
-					    S_IWUSR,
-					    ima_dir, NULL,
-					    &ima_measure_policy_ops);
-	if (IS_ERR(ima_policy))
-		goto out;
-
-	return 0;
-out:
-	securityfs_remove(runtime_measurements_count);
-	securityfs_remove(ascii_runtime_measurements);
-	securityfs_remove(binary_runtime_measurements);
-	securityfs_remove(ima_dir);
-	securityfs_remove(ima_policy);
-	return -1;
-}
-
-void __exit ima_fs_cleanup(void)
-{
-=======
 	if (IS_ERR(violations)) {
 		ret = PTR_ERR(violations);
 		goto out;
@@ -740,18 +511,12 @@ void __exit ima_fs_cleanup(void)
 	return 0;
 out:
 	securityfs_remove(ima_policy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	securityfs_remove(violations);
 	securityfs_remove(runtime_measurements_count);
 	securityfs_remove(ascii_runtime_measurements);
 	securityfs_remove(binary_runtime_measurements);
-<<<<<<< HEAD
-	securityfs_remove(ima_dir);
-	securityfs_remove(ima_policy);
-=======
 	securityfs_remove(ima_symlink);
 	securityfs_remove(ima_dir);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

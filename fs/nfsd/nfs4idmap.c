@@ -36,18 +36,12 @@
 #include <linux/seq_file.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <net/net_namespace.h>
-#include "idmap.h"
-#include "nfsd.h"
-=======
 #include <linux/sunrpc/svc_xprt.h>
 #include <net/net_namespace.h>
 #include "idmap.h"
 #include "nfsd.h"
 #include "netns.h"
 #include "vfs.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Turn off idmapping when using AUTH_SYS.
@@ -66,17 +60,6 @@ MODULE_PARM_DESC(nfs4_disable_idmapping,
  * that.
  */
 
-<<<<<<< HEAD
-#define IDMAP_TYPE_USER  0
-#define IDMAP_TYPE_GROUP 1
-
-struct ent {
-	struct cache_head h;
-	int               type;		       /* User / Group */
-	uid_t             id;
-	char              name[IDMAP_NAMESZ];
-	char              authname[IDMAP_NAMESZ];
-=======
 struct ent {
 	struct cache_head h;
 	int               type;		       /* User / Group */
@@ -84,7 +67,6 @@ struct ent {
 	char              name[IDMAP_NAMESZ];
 	char              authname[IDMAP_NAMESZ];
 	struct rcu_head	  rcu_head;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Common entry handling */
@@ -101,24 +83,15 @@ ent_init(struct cache_head *cnew, struct cache_head *citm)
 	new->id = itm->id;
 	new->type = itm->type;
 
-<<<<<<< HEAD
-	strlcpy(new->name, itm->name, sizeof(new->name));
-	strlcpy(new->authname, itm->authname, sizeof(new->name));
-=======
 	strscpy(new->name, itm->name, sizeof(new->name));
 	strscpy(new->authname, itm->authname, sizeof(new->authname));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 ent_put(struct kref *ref)
 {
 	struct ent *map = container_of(ref, struct ent, h.ref);
-<<<<<<< HEAD
-	kfree(map);
-=======
 	kfree_rcu(map, rcu_head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct cache_head *
@@ -135,11 +108,6 @@ ent_alloc(void)
  * ID -> Name cache
  */
 
-<<<<<<< HEAD
-static struct cache_head *idtoname_table[ENT_HASHMAX];
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static uint32_t
 idtoname_hash(struct ent *ent)
 {
@@ -155,15 +123,12 @@ idtoname_hash(struct ent *ent)
 	return hash;
 }
 
-<<<<<<< HEAD
-=======
 static int
 idtoname_upcall(struct cache_detail *cd, struct cache_head *h)
 {
 	return sunrpc_cache_pipe_upcall_timeout(cd, h);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 idtoname_request(struct cache_detail *cd, struct cache_head *ch, char **bpp,
     int *blen)
@@ -180,15 +145,6 @@ idtoname_request(struct cache_detail *cd, struct cache_head *ch, char **bpp,
 }
 
 static int
-<<<<<<< HEAD
-idtoname_upcall(struct cache_detail *cd, struct cache_head *ch)
-{
-	return sunrpc_cache_pipe_upcall(cd, ch, idtoname_request);
-}
-
-static int
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 idtoname_match(struct cache_head *ca, struct cache_head *cb)
 {
 	struct ent *a = container_of(ca, struct ent, h);
@@ -213,11 +169,7 @@ idtoname_show(struct seq_file *m, struct cache_detail *cd, struct cache_head *h)
 			ent->id);
 	if (test_bit(CACHE_VALID, &h->flags))
 		seq_printf(m, " %s", ent->name);
-<<<<<<< HEAD
-	seq_printf(m, "\n");
-=======
 	seq_putc(m, '\n');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -230,18 +182,6 @@ warn_no_idmapd(struct cache_detail *detail, int has_died)
 
 
 static int         idtoname_parse(struct cache_detail *, char *, int);
-<<<<<<< HEAD
-static struct ent *idtoname_lookup(struct ent *);
-static struct ent *idtoname_update(struct ent *, struct ent *);
-
-static struct cache_detail idtoname_cache = {
-	.owner		= THIS_MODULE,
-	.hash_size	= ENT_HASHMAX,
-	.hash_table	= idtoname_table,
-	.name		= "nfs4.idtoname",
-	.cache_put	= ent_put,
-	.cache_upcall	= idtoname_upcall,
-=======
 static struct ent *idtoname_lookup(struct cache_detail *, struct ent *);
 static struct ent *idtoname_update(struct cache_detail *, struct ent *,
 				   struct ent *);
@@ -253,7 +193,6 @@ static const struct cache_detail idtoname_cache_template = {
 	.cache_put	= ent_put,
 	.cache_upcall	= idtoname_upcall,
 	.cache_request	= idtoname_request,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cache_parse	= idtoname_parse,
 	.cache_show	= idtoname_show,
 	.warn_no_listener = warn_no_idmapd,
@@ -282,12 +221,8 @@ idtoname_parse(struct cache_detail *cd, char *buf, int buflen)
 	memset(&ent, 0, sizeof(ent));
 
 	/* Authentication name */
-<<<<<<< HEAD
-	if (qword_get(&buf, buf1, PAGE_SIZE) <= 0)
-=======
 	len = qword_get(&buf, buf1, PAGE_SIZE);
 	if (len <= 0 || len >= IDMAP_NAMESZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	memcpy(ent.authname, buf1, sizeof(ent.authname));
 
@@ -305,58 +240,18 @@ idtoname_parse(struct cache_detail *cd, char *buf, int buflen)
 		goto out;
 
 	/* expiry */
-<<<<<<< HEAD
-	ent.h.expiry_time = get_expiry(&buf);
-	if (ent.h.expiry_time == 0)
-		goto out;
-
-	error = -ENOMEM;
-	res = idtoname_lookup(&ent);
-=======
 	error = get_expiry(&buf, &ent.h.expiry_time);
 	if (error)
 		goto out;
 
 	error = -ENOMEM;
 	res = idtoname_lookup(cd, &ent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!res)
 		goto out;
 
 	/* Name */
 	error = -EINVAL;
 	len = qword_get(&buf, buf1, PAGE_SIZE);
-<<<<<<< HEAD
-	if (len < 0)
-		goto out;
-	if (len == 0)
-		set_bit(CACHE_NEGATIVE, &ent.h.flags);
-	else if (len >= IDMAP_NAMESZ)
-		goto out;
-	else
-		memcpy(ent.name, buf1, sizeof(ent.name));
-	error = -ENOMEM;
-	res = idtoname_update(&ent, res);
-	if (res == NULL)
-		goto out;
-
-	cache_put(&res->h, &idtoname_cache);
-
-	error = 0;
-out:
-	kfree(buf1);
-
-	return error;
-}
-
-
-static struct ent *
-idtoname_lookup(struct ent *item)
-{
-	struct cache_head *ch = sunrpc_cache_lookup(&idtoname_cache,
-						    &item->h,
-						    idtoname_hash(item));
-=======
 	if (len < 0 || len >= IDMAP_NAMESZ)
 		goto out;
 	if (len == 0)
@@ -380,7 +275,6 @@ idtoname_lookup(struct cache_detail *cd, struct ent *item)
 {
 	struct cache_head *ch = sunrpc_cache_lookup_rcu(cd, &item->h,
 							idtoname_hash(item));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ch)
 		return container_of(ch, struct ent, h);
 	else
@@ -388,16 +282,9 @@ idtoname_lookup(struct cache_detail *cd, struct ent *item)
 }
 
 static struct ent *
-<<<<<<< HEAD
-idtoname_update(struct ent *new, struct ent *old)
-{
-	struct cache_head *ch = sunrpc_cache_update(&idtoname_cache,
-						    &new->h, &old->h,
-=======
 idtoname_update(struct cache_detail *cd, struct ent *new, struct ent *old)
 {
 	struct cache_head *ch = sunrpc_cache_update(cd, &new->h, &old->h,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    idtoname_hash(new));
 	if (ch)
 		return container_of(ch, struct ent, h);
@@ -410,26 +297,18 @@ idtoname_update(struct cache_detail *cd, struct ent *new, struct ent *old)
  * Name -> ID cache
  */
 
-<<<<<<< HEAD
-static struct cache_head *nametoid_table[ENT_HASHMAX];
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int
 nametoid_hash(struct ent *ent)
 {
 	return hash_str(ent->name, ENT_HASHBITS);
 }
 
-<<<<<<< HEAD
-=======
 static int
 nametoid_upcall(struct cache_detail *cd, struct cache_head *h)
 {
 	return sunrpc_cache_pipe_upcall_timeout(cd, h);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 nametoid_request(struct cache_detail *cd, struct cache_head *ch, char **bpp,
     int *blen)
@@ -444,15 +323,6 @@ nametoid_request(struct cache_detail *cd, struct cache_head *ch, char **bpp,
 }
 
 static int
-<<<<<<< HEAD
-nametoid_upcall(struct cache_detail *cd, struct cache_head *ch)
-{
-	return sunrpc_cache_pipe_upcall(cd, ch, nametoid_request);
-}
-
-static int
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 nametoid_match(struct cache_head *ca, struct cache_head *cb)
 {
 	struct ent *a = container_of(ca, struct ent, h);
@@ -477,23 +347,6 @@ nametoid_show(struct seq_file *m, struct cache_detail *cd, struct cache_head *h)
 			ent->name);
 	if (test_bit(CACHE_VALID, &h->flags))
 		seq_printf(m, " %u", ent->id);
-<<<<<<< HEAD
-	seq_printf(m, "\n");
-	return 0;
-}
-
-static struct ent *nametoid_lookup(struct ent *);
-static struct ent *nametoid_update(struct ent *, struct ent *);
-static int         nametoid_parse(struct cache_detail *, char *, int);
-
-static struct cache_detail nametoid_cache = {
-	.owner		= THIS_MODULE,
-	.hash_size	= ENT_HASHMAX,
-	.hash_table	= nametoid_table,
-	.name		= "nfs4.nametoid",
-	.cache_put	= ent_put,
-	.cache_upcall	= nametoid_upcall,
-=======
 	seq_putc(m, '\n');
 	return 0;
 }
@@ -510,7 +363,6 @@ static const struct cache_detail nametoid_cache_template = {
 	.cache_put	= ent_put,
 	.cache_upcall	= nametoid_upcall,
 	.cache_request	= nametoid_request,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cache_parse	= nametoid_parse,
 	.cache_show	= nametoid_show,
 	.warn_no_listener = warn_no_idmapd,
@@ -525,11 +377,7 @@ nametoid_parse(struct cache_detail *cd, char *buf, int buflen)
 {
 	struct ent ent, *res;
 	char *buf1;
-<<<<<<< HEAD
-	int error = -EINVAL;
-=======
 	int len, error = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (buf[buflen - 1] != '\n')
 		return (-EINVAL);
@@ -542,12 +390,8 @@ nametoid_parse(struct cache_detail *cd, char *buf, int buflen)
 	memset(&ent, 0, sizeof(ent));
 
 	/* Authentication name */
-<<<<<<< HEAD
-	if (qword_get(&buf, buf1, PAGE_SIZE) <= 0)
-=======
 	len = qword_get(&buf, buf1, PAGE_SIZE);
 	if (len <= 0 || len >= IDMAP_NAMESZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	memcpy(ent.authname, buf1, sizeof(ent.authname));
 
@@ -558,24 +402,14 @@ nametoid_parse(struct cache_detail *cd, char *buf, int buflen)
 		IDMAP_TYPE_USER : IDMAP_TYPE_GROUP;
 
 	/* Name */
-<<<<<<< HEAD
-	error = qword_get(&buf, buf1, PAGE_SIZE);
-	if (error <= 0 || error >= IDMAP_NAMESZ)
-=======
 	len = qword_get(&buf, buf1, PAGE_SIZE);
 	if (len <= 0 || len >= IDMAP_NAMESZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	memcpy(ent.name, buf1, sizeof(ent.name));
 
 	/* expiry */
-<<<<<<< HEAD
-	ent.h.expiry_time = get_expiry(&buf);
-	if (ent.h.expiry_time == 0)
-=======
 	error = get_expiry(&buf, &ent.h.expiry_time);
 	if (error)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	/* ID */
@@ -586,20 +420,6 @@ nametoid_parse(struct cache_detail *cd, char *buf, int buflen)
 		set_bit(CACHE_NEGATIVE, &ent.h.flags);
 
 	error = -ENOMEM;
-<<<<<<< HEAD
-	res = nametoid_lookup(&ent);
-	if (res == NULL)
-		goto out;
-	res = nametoid_update(&ent, res);
-	if (res == NULL)
-		goto out;
-
-	cache_put(&res->h, &nametoid_cache);
-	error = 0;
-out:
-	kfree(buf1);
-
-=======
 	res = nametoid_lookup(cd, &ent);
 	if (res == NULL)
 		goto out;
@@ -611,24 +431,15 @@ out:
 	error = 0;
 out:
 	kfree(buf1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (error);
 }
 
 
 static struct ent *
-<<<<<<< HEAD
-nametoid_lookup(struct ent *item)
-{
-	struct cache_head *ch = sunrpc_cache_lookup(&nametoid_cache,
-						    &item->h,
-						    nametoid_hash(item));
-=======
 nametoid_lookup(struct cache_detail *cd, struct ent *item)
 {
 	struct cache_head *ch = sunrpc_cache_lookup_rcu(cd, &item->h,
 							nametoid_hash(item));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ch)
 		return container_of(ch, struct ent, h);
 	else
@@ -636,16 +447,9 @@ nametoid_lookup(struct cache_detail *cd, struct ent *item)
 }
 
 static struct ent *
-<<<<<<< HEAD
-nametoid_update(struct ent *new, struct ent *old)
-{
-	struct cache_head *ch = sunrpc_cache_update(&nametoid_cache,
-						    &new->h, &old->h,
-=======
 nametoid_update(struct cache_detail *cd, struct ent *new, struct ent *old)
 {
 	struct cache_head *ch = sunrpc_cache_update(cd, &new->h, &old->h,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    nametoid_hash(new));
 	if (ch)
 		return container_of(ch, struct ent, h);
@@ -658,18 +462,6 @@ nametoid_update(struct cache_detail *cd, struct ent *new, struct ent *old)
  */
 
 int
-<<<<<<< HEAD
-nfsd_idmap_init(void)
-{
-	int rv;
-
-	rv = cache_register_net(&idtoname_cache, &init_net);
-	if (rv)
-		return rv;
-	rv = cache_register_net(&nametoid_cache, &init_net);
-	if (rv)
-		cache_unregister_net(&idtoname_cache, &init_net);
-=======
 nfsd_idmap_init(struct net *net)
 {
 	int rv;
@@ -697,17 +489,10 @@ unregister_idtoname_cache:
 	cache_unregister_net(nn->idtoname_cache, net);
 destroy_idtoname_cache:
 	cache_destroy_net(nn->idtoname_cache, net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rv;
 }
 
 void
-<<<<<<< HEAD
-nfsd_idmap_shutdown(void)
-{
-	cache_unregister_net(&idtoname_cache, &init_net);
-	cache_unregister_net(&nametoid_cache, &init_net);
-=======
 nfsd_idmap_shutdown(struct net *net)
 {
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
@@ -716,26 +501,16 @@ nfsd_idmap_shutdown(struct net *net)
 	cache_unregister_net(nn->nametoid_cache, net);
 	cache_destroy_net(nn->idtoname_cache, net);
 	cache_destroy_net(nn->nametoid_cache, net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 idmap_lookup(struct svc_rqst *rqstp,
-<<<<<<< HEAD
-		struct ent *(*lookup_fn)(struct ent *), struct ent *key,
-		struct cache_detail *detail, struct ent **item)
-{
-	int ret;
-
-	*item = lookup_fn(key);
-=======
 		struct ent *(*lookup_fn)(struct cache_detail *, struct ent *),
 		struct ent *key, struct cache_detail *detail, struct ent **item)
 {
 	int ret;
 
 	*item = lookup_fn(detail, key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!*item)
 		return -ENOMEM;
  retry:
@@ -743,11 +518,7 @@ idmap_lookup(struct svc_rqst *rqstp,
 
 	if (ret == -ETIMEDOUT) {
 		struct ent *prev_item = *item;
-<<<<<<< HEAD
-		*item = lookup_fn(key);
-=======
 		*item = lookup_fn(detail, key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*item != prev_item)
 			goto retry;
 		cache_put(&(*item)->h, detail);
@@ -766,45 +537,25 @@ rqst_authname(struct svc_rqst *rqstp)
 
 static __be32
 idmap_name_to_id(struct svc_rqst *rqstp, int type, const char *name, u32 namelen,
-<<<<<<< HEAD
-		uid_t *id)
-=======
 		u32 *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ent *item, key = {
 		.type = type,
 	};
 	int ret;
-<<<<<<< HEAD
-=======
 	struct nfsd_net *nn = net_generic(SVC_NET(rqstp), nfsd_net_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (namelen + 1 > sizeof(key.name))
 		return nfserr_badowner;
 	memcpy(key.name, name, namelen);
 	key.name[namelen] = '\0';
-<<<<<<< HEAD
-	strlcpy(key.authname, rqst_authname(rqstp), sizeof(key.authname));
-	ret = idmap_lookup(rqstp, nametoid_lookup, &key, &nametoid_cache, &item);
-=======
 	strscpy(key.authname, rqst_authname(rqstp), sizeof(key.authname));
 	ret = idmap_lookup(rqstp, nametoid_lookup, &key, nn->nametoid_cache, &item);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret == -ENOENT)
 		return nfserr_badowner;
 	if (ret)
 		return nfserrno(ret);
 	*id = item->id;
-<<<<<<< HEAD
-	cache_put(&item->h, &nametoid_cache);
-	return 0;
-}
-
-static int
-idmap_id_to_name(struct svc_rqst *rqstp, int type, uid_t id, char *name)
-=======
 	cache_put(&item->h, nn->nametoid_cache);
 	return 0;
 }
@@ -825,31 +576,11 @@ static __be32 encode_ascii_id(struct xdr_stream *xdr, u32 id)
 
 static __be32 idmap_id_to_name(struct xdr_stream *xdr,
 			       struct svc_rqst *rqstp, int type, u32 id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ent *item, key = {
 		.id = id,
 		.type = type,
 	};
-<<<<<<< HEAD
-	int ret;
-
-	strlcpy(key.authname, rqst_authname(rqstp), sizeof(key.authname));
-	ret = idmap_lookup(rqstp, idtoname_lookup, &key, &idtoname_cache, &item);
-	if (ret == -ENOENT)
-		return sprintf(name, "%u", id);
-	if (ret)
-		return ret;
-	ret = strlen(item->name);
-	BUG_ON(ret > IDMAP_NAMESZ);
-	memcpy(name, item->name, ret);
-	cache_put(&item->h, &idtoname_cache);
-	return ret;
-}
-
-static bool
-numeric_name_to_id(struct svc_rqst *rqstp, int type, const char *name, u32 namelen, uid_t *id)
-=======
 	__be32 *p;
 	int ret;
 	struct nfsd_net *nn = net_generic(SVC_NET(rqstp), nfsd_net_id);
@@ -872,7 +603,6 @@ numeric_name_to_id(struct svc_rqst *rqstp, int type, const char *name, u32 namel
 
 static bool
 numeric_name_to_id(struct svc_rqst *rqstp, int type, const char *name, u32 namelen, u32 *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	char buf[11];
@@ -888,15 +618,9 @@ numeric_name_to_id(struct svc_rqst *rqstp, int type, const char *name, u32 namel
 }
 
 static __be32
-<<<<<<< HEAD
-do_name_to_id(struct svc_rqst *rqstp, int type, const char *name, u32 namelen, uid_t *id)
-{
-	if (nfs4_disable_idmapping && rqstp->rq_flavor < RPC_AUTH_GSS)
-=======
 do_name_to_id(struct svc_rqst *rqstp, int type, const char *name, u32 namelen, u32 *id)
 {
 	if (nfs4_disable_idmapping && rqstp->rq_cred.cr_flavor < RPC_AUTH_GSS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (numeric_name_to_id(rqstp, type, name, namelen, id))
 			return 0;
 		/*
@@ -906,30 +630,16 @@ do_name_to_id(struct svc_rqst *rqstp, int type, const char *name, u32 namelen, u
 	return idmap_name_to_id(rqstp, type, name, namelen, id);
 }
 
-<<<<<<< HEAD
-static int
-do_id_to_name(struct svc_rqst *rqstp, int type, uid_t id, char *name)
-{
-	if (nfs4_disable_idmapping && rqstp->rq_flavor < RPC_AUTH_GSS)
-		return sprintf(name, "%u", id);
-	return idmap_id_to_name(rqstp, type, id, name);
-=======
 static __be32 encode_name_from_id(struct xdr_stream *xdr,
 				  struct svc_rqst *rqstp, int type, u32 id)
 {
 	if (nfs4_disable_idmapping && rqstp->rq_cred.cr_flavor < RPC_AUTH_GSS)
 		return encode_ascii_id(xdr, id);
 	return idmap_id_to_name(xdr, rqstp, type, id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __be32
 nfsd_map_name_to_uid(struct svc_rqst *rqstp, const char *name, size_t namelen,
-<<<<<<< HEAD
-		__u32 *id)
-{
-	return do_name_to_id(rqstp, IDMAP_TYPE_USER, name, namelen, id);
-=======
 		kuid_t *uid)
 {
 	__be32 status;
@@ -943,28 +653,10 @@ nfsd_map_name_to_uid(struct svc_rqst *rqstp, const char *name, size_t namelen,
 	if (!uid_valid(*uid))
 		status = nfserr_badowner;
 	return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __be32
 nfsd_map_name_to_gid(struct svc_rqst *rqstp, const char *name, size_t namelen,
-<<<<<<< HEAD
-		__u32 *id)
-{
-	return do_name_to_id(rqstp, IDMAP_TYPE_GROUP, name, namelen, id);
-}
-
-int
-nfsd_map_uid_to_name(struct svc_rqst *rqstp, __u32 id, char *name)
-{
-	return do_id_to_name(rqstp, IDMAP_TYPE_USER, id, name);
-}
-
-int
-nfsd_map_gid_to_name(struct svc_rqst *rqstp, __u32 id, char *name)
-{
-	return do_id_to_name(rqstp, IDMAP_TYPE_GROUP, id, name);
-=======
 		kgid_t *gid)
 {
 	__be32 status;
@@ -992,5 +684,4 @@ __be32 nfsd4_encode_group(struct xdr_stream *xdr, struct svc_rqst *rqstp,
 {
 	u32 id = from_kgid_munged(nfsd_user_namespace(rqstp), gid);
 	return encode_name_from_id(xdr, rqstp, IDMAP_TYPE_GROUP, id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

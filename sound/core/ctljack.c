@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Helper functions for jack-detection kcontrols
  *
  * Copyright (c) 2011 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -30,11 +19,7 @@ static int jack_detect_kctl_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new jack_detect_kctl = {
-=======
 static const struct snd_kcontrol_new jack_detect_kctl = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* name is filled later */
 	.iface = SNDRV_CTL_ELEM_IFACE_CARD,
 	.access = SNDRV_CTL_ELEM_ACCESS_READ,
@@ -42,21 +27,6 @@ static const struct snd_kcontrol_new jack_detect_kctl = {
 	.get = jack_detect_kctl_get,
 };
 
-<<<<<<< HEAD
-struct snd_kcontrol *
-snd_kctl_jack_new(const char *name, int idx, void *private_data)
-{
-	struct snd_kcontrol *kctl;
-	kctl = snd_ctl_new1(&jack_detect_kctl, private_data);
-	if (!kctl)
-		return NULL;
-	snprintf(kctl->id.name, sizeof(kctl->id.name), "%s Jack", name);
-	kctl->id.index = idx;
-	kctl->private_value = 0;
-	return kctl;
-}
-EXPORT_SYMBOL_GPL(snd_kctl_jack_new);
-=======
 static int get_available_index(struct snd_card *card, const char *name)
 {
 	struct snd_ctl_elem_id sid;
@@ -103,7 +73,6 @@ snd_kctl_jack_new(const char *name, struct snd_card *card)
 	kctl->private_value = 0;
 	return kctl;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void snd_kctl_jack_report(struct snd_card *card,
 			  struct snd_kcontrol *kctl, bool status)
@@ -113,7 +82,3 @@ void snd_kctl_jack_report(struct snd_card *card,
 	kctl->private_value = status;
 	snd_ctl_notify(card, SNDRV_CTL_EVENT_MASK_VALUE, &kctl->id);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(snd_kctl_jack_report);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

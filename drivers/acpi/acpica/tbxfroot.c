@@ -1,57 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "actables.h"
@@ -59,12 +14,6 @@
 #define _COMPONENT          ACPI_TABLES
 ACPI_MODULE_NAME("tbxfroot")
 
-<<<<<<< HEAD
-/* Local prototypes */
-static u8 *acpi_tb_scan_memory_for_rsdp(u8 * start_address, u32 length);
-
-static acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp);
-=======
 /*******************************************************************************
  *
  * FUNCTION:    acpi_tb_get_rsdp_length
@@ -94,17 +43,12 @@ u32 acpi_tb_get_rsdp_length(struct acpi_table_rsdp *rsdp)
 		return (ACPI_RSDP_CHECKSUM_LENGTH);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_tb_validate_rsdp
  *
-<<<<<<< HEAD
- * PARAMETERS:  Rsdp                - Pointer to unvalidated RSDP
-=======
  * PARAMETERS:  rsdp                - Pointer to unvalidated RSDP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -112,14 +56,8 @@ u32 acpi_tb_get_rsdp_length(struct acpi_table_rsdp *rsdp)
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-static acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp)
-{
-	ACPI_FUNCTION_ENTRY();
-=======
 acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The signature and checksum must both be correct
@@ -127,12 +65,7 @@ acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp)
 	 * Note: Sometimes there exists more than one RSDP in memory; the valid
 	 * RSDP has a valid checksum, all others have an invalid checksum.
 	 */
-<<<<<<< HEAD
-	if (ACPI_STRNCMP((char *)rsdp, ACPI_SIG_RSDP,
-			 sizeof(ACPI_SIG_RSDP) - 1) != 0) {
-=======
 	if (!ACPI_VALIDATE_RSDP_SIG(rsdp->signature)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Nope, BAD Signature */
 
@@ -141,22 +74,14 @@ acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp)
 
 	/* Check the standard checksum */
 
-<<<<<<< HEAD
-	if (acpi_tb_checksum((u8 *) rsdp, ACPI_RSDP_CHECKSUM_LENGTH) != 0) {
-=======
 	if (acpi_ut_checksum((u8 *)rsdp, ACPI_RSDP_CHECKSUM_LENGTH) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (AE_BAD_CHECKSUM);
 	}
 
 	/* Check extended checksum if table version >= 2 */
 
 	if ((rsdp->revision >= 2) &&
-<<<<<<< HEAD
-	    (acpi_tb_checksum((u8 *) rsdp, ACPI_RSDP_XCHECKSUM_LENGTH) != 0)) {
-=======
 	    (acpi_ut_checksum((u8 *)rsdp, ACPI_RSDP_XCHECKSUM_LENGTH) != 0)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (AE_BAD_CHECKSUM);
 	}
 
@@ -171,17 +96,10 @@ acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp)
  *
  * RETURN:      Status, RSDP physical address
  *
-<<<<<<< HEAD
- * DESCRIPTION: Search lower 1_mbyte of memory for the root system descriptor
- *              pointer structure.  If it is found, set *RSDP to point to it.
- *
- * NOTE1:       The RSDP must be either in the first 1_k of the Extended
-=======
  * DESCRIPTION: Search lower 1Mbyte of memory for the root system descriptor
  *              pointer structure. If it is found, set *RSDP to point to it.
  *
  * NOTE1:       The RSDP must be either in the first 1K of the Extended
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              BIOS Data Area or between E0000 and FFFFF (From ACPI Spec.)
  *              Only a 32-bit physical address is necessary.
  *
@@ -190,20 +108,13 @@ acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp)
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-acpi_status acpi_find_root_pointer(acpi_size *table_address)
-=======
 acpi_status ACPI_INIT_FUNCTION
 acpi_find_root_pointer(acpi_physical_address *table_address)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 *table_ptr;
 	u8 *mem_rover;
 	u32 physical_address;
-<<<<<<< HEAD
-=======
 	u32 ebda_window_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(acpi_find_root_pointer);
 
@@ -229,20 +140,6 @@ acpi_find_root_pointer(acpi_physical_address *table_address)
 
 	/* EBDA present? */
 
-<<<<<<< HEAD
-	if (physical_address > 0x400) {
-		/*
-		 * 1b) Search EBDA paragraphs (EBDA is required to be a
-		 *     minimum of 1_k length)
-		 */
-		table_ptr = acpi_os_map_memory((acpi_physical_address)
-					       physical_address,
-					       ACPI_EBDA_WINDOW_SIZE);
-		if (!table_ptr) {
-			ACPI_ERROR((AE_INFO,
-				    "Could not map memory at 0x%8.8X for length %u",
-				    physical_address, ACPI_EBDA_WINDOW_SIZE));
-=======
 	/*
 	 * Check that the EBDA pointer from memory is sane and does not point
 	 * above valid low memory
@@ -267,20 +164,13 @@ acpi_find_root_pointer(acpi_physical_address *table_address)
 			ACPI_ERROR((AE_INFO,
 				    "Could not map memory at 0x%8.8X for length %u",
 				    physical_address, ebda_window_size));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
 
 		mem_rover =
-<<<<<<< HEAD
-		    acpi_tb_scan_memory_for_rsdp(table_ptr,
-						 ACPI_EBDA_WINDOW_SIZE);
-		acpi_os_unmap_memory(table_ptr, ACPI_EBDA_WINDOW_SIZE);
-=======
 		    acpi_tb_scan_memory_for_rsdp(table_ptr, ebda_window_size);
 		acpi_os_unmap_memory(table_ptr, ebda_window_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (mem_rover) {
 
@@ -289,12 +179,8 @@ acpi_find_root_pointer(acpi_physical_address *table_address)
 			physical_address +=
 			    (u32) ACPI_PTR_DIFF(mem_rover, table_ptr);
 
-<<<<<<< HEAD
-			*table_address = physical_address;
-=======
 			*table_address =
 			    (acpi_physical_address)physical_address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return_ACPI_STATUS(AE_OK);
 		}
 	}
@@ -327,50 +213,31 @@ acpi_find_root_pointer(acpi_physical_address *table_address)
 		    (ACPI_HI_RSDP_WINDOW_BASE +
 		     ACPI_PTR_DIFF(mem_rover, table_ptr));
 
-<<<<<<< HEAD
-		*table_address = physical_address;
-=======
 		*table_address = (acpi_physical_address)physical_address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_ACPI_STATUS(AE_OK);
 	}
 
 	/* A valid RSDP was not found */
 
-<<<<<<< HEAD
-	ACPI_ERROR((AE_INFO, "A valid RSDP was not found"));
-	return_ACPI_STATUS(AE_NOT_FOUND);
-}
-
-=======
 	ACPI_BIOS_ERROR((AE_INFO, "A valid RSDP was not found"));
 	return_ACPI_STATUS(AE_NOT_FOUND);
 }
 
 ACPI_EXPORT_SYMBOL_INIT(acpi_find_root_pointer)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_tb_scan_memory_for_rsdp
  *
  * PARAMETERS:  start_address       - Starting pointer for search
-<<<<<<< HEAD
- *              Length              - Maximum length to search
-=======
  *              length              - Maximum length to search
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Pointer to the RSDP if found, otherwise NULL.
  *
  * DESCRIPTION: Search a block of memory for the RSDP signature
  *
  ******************************************************************************/
-<<<<<<< HEAD
-static u8 *acpi_tb_scan_memory_for_rsdp(u8 * start_address, u32 length)
-=======
 u8 *acpi_tb_scan_memory_for_rsdp(u8 *start_address, u32 length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 	u8 *mem_rover;

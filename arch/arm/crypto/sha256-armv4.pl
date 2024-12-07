@@ -1,6 +1,4 @@
 #!/usr/bin/env perl
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 # This code is taken from the OpenSSL project but the author (Andy Polyakov)
@@ -10,19 +8,12 @@
 #
 # The original headers, including the original license headers, are
 # included below for completeness.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # ====================================================================
 # Written by Andy Polyakov <appro@openssl.org> for the OpenSSL
 # project. The module is, however, dual licensed under OpenSSL and
 # CRYPTOGAMS licenses depending on where you obtain it. For further
-<<<<<<< HEAD
-# details see http://www.openssl.org/~appro/cryptogams/.
-#
-# Permission to use under GPL terms is granted.
-=======
 # details see https://www.openssl.org/~appro/cryptogams/.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # ====================================================================
 
 # SHA256 block procedure for ARMv4. May 2007.
@@ -184,10 +175,6 @@ $code=<<___;
 #else
 .syntax unified
 # ifdef __thumb2__
-<<<<<<< HEAD
-#  define adrl adr
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .thumb
 # else
 .code   32
@@ -224,18 +211,11 @@ K256:
 .global	sha256_block_data_order
 .type	sha256_block_data_order,%function
 sha256_block_data_order:
-<<<<<<< HEAD
-#if __ARM_ARCH__<7
-	sub	r3,pc,#8		@ sha256_block_data_order
-#else
-	adr	r3,sha256_block_data_order
-=======
 .Lsha256_block_data_order:
 #if __ARM_ARCH__<7
 	sub	r3,pc,#8		@ sha256_block_data_order
 #else
 	adr	r3,.Lsha256_block_data_order
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
 	ldr	r12,.LOPENSSL_armcap
@@ -490,12 +470,8 @@ sha256_block_data_order_neon:
 	stmdb	sp!,{r4-r12,lr}
 
 	sub	$H,sp,#16*4+16
-<<<<<<< HEAD
-	adrl	$Ktbl,K256
-=======
 	adr	$Ktbl,.Lsha256_block_data_order
 	sub	$Ktbl,$Ktbl,#.Lsha256_block_data_order-K256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bic	$H,$H,#15		@ align for 128-bit stores
 	mov	$t2,sp
 	mov	sp,$H			@ alloca

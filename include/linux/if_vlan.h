@@ -1,38 +1,17 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * VLAN		An implementation of 802.1Q VLAN tagging.
  *
  * Authors:	Ben Greear <greearb@candelatech.com>
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
- */
-
-#ifndef _LINUX_IF_VLAN_H_
-#define _LINUX_IF_VLAN_H_
-
-#ifdef __KERNEL__
-=======
  */
 #ifndef _LINUX_IF_VLAN_H_
 #define _LINUX_IF_VLAN_H_
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/rtnetlink.h>
 #include <linux/bug.h>
-<<<<<<< HEAD
-=======
 #include <uapi/linux/if_vlan.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VLAN_HLEN	4		/* The additional bytes required by VLAN
 					 * (in addition to the Ethernet header)
@@ -46,11 +25,8 @@
 #define VLAN_ETH_DATA_LEN	1500	/* Max. octets in payload	 */
 #define VLAN_ETH_FRAME_LEN	1518	/* Max. octets in frame sans FCS */
 
-<<<<<<< HEAD
-=======
 #define VLAN_MAX_DEPTH	8		/* Max. number of nested VLAN tags parsed */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 	struct vlan_hdr - vlan header
  * 	@h_vlan_TCI: priority and VLAN ID
@@ -65,24 +41,15 @@ struct vlan_hdr {
  *	struct vlan_ethhdr - vlan ethernet header (ethhdr + vlan_hdr)
  *	@h_dest: destination ethernet address
  *	@h_source: source ethernet address
-<<<<<<< HEAD
- *	@h_vlan_proto: ethernet protocol (always 0x8100)
-=======
  *	@h_vlan_proto: ethernet protocol
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@h_vlan_TCI: priority and VLAN ID
  *	@h_vlan_encapsulated_proto: packet type ID or len
  */
 struct vlan_ethhdr {
-<<<<<<< HEAD
-	unsigned char	h_dest[ETH_ALEN];
-	unsigned char	h_source[ETH_ALEN];
-=======
 	struct_group(addrs,
 		unsigned char	h_dest[ETH_ALEN];
 		unsigned char	h_source[ETH_ALEN];
 	);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be16		h_vlan_proto;
 	__be16		h_vlan_TCI;
 	__be16		h_vlan_encapsulated_proto;
@@ -95,12 +62,6 @@ static inline struct vlan_ethhdr *vlan_eth_hdr(const struct sk_buff *skb)
 	return (struct vlan_ethhdr *)skb_mac_header(skb);
 }
 
-<<<<<<< HEAD
-#define VLAN_PRIO_MASK		0xe000 /* Priority Code Point */
-#define VLAN_PRIO_SHIFT		13
-#define VLAN_CFI_MASK		0x1000 /* Canonical Format Indicator */
-#define VLAN_TAG_PRESENT	VLAN_CFI_MASK
-=======
 /* Prefer this version in TX path, instead of
  * skb_reset_mac_header() + vlan_eth_hdr()
  */
@@ -112,43 +73,17 @@ static inline struct vlan_ethhdr *skb_vlan_eth_hdr(const struct sk_buff *skb)
 #define VLAN_PRIO_MASK		0xe000 /* Priority Code Point */
 #define VLAN_PRIO_SHIFT		13
 #define VLAN_CFI_MASK		0x1000 /* Canonical Format Indicator / Drop Eligible Indicator */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VLAN_VID_MASK		0x0fff /* VLAN Identifier */
 #define VLAN_N_VID		4096
 
 /* found in socket.c */
 extern void vlan_ioctl_set(int (*hook)(struct net *, void __user *));
 
-<<<<<<< HEAD
-struct vlan_info;
-
-static inline int is_vlan_dev(struct net_device *dev)
-=======
 static inline bool is_vlan_dev(const struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         return dev->priv_flags & IFF_802_1Q_VLAN;
 }
 
-<<<<<<< HEAD
-#define vlan_tx_tag_present(__skb)	((__skb)->vlan_tci & VLAN_TAG_PRESENT)
-#define vlan_tx_nonzero_tag_present(__skb) \
-	(vlan_tx_tag_present(__skb) && ((__skb)->vlan_tci & VLAN_VID_MASK))
-#define vlan_tx_tag_get(__skb)		((__skb)->vlan_tci & ~VLAN_TAG_PRESENT)
-
-#if defined(CONFIG_VLAN_8021Q) || defined(CONFIG_VLAN_8021Q_MODULE)
-
-extern struct net_device *__vlan_find_dev_deep(struct net_device *real_dev,
-					       u16 vlan_id);
-extern struct net_device *vlan_dev_real_dev(const struct net_device *dev);
-extern u16 vlan_dev_vlan_id(const struct net_device *dev);
-
-extern bool vlan_do_receive(struct sk_buff **skb);
-extern struct sk_buff *vlan_untag(struct sk_buff *skb);
-
-extern int vlan_vid_add(struct net_device *dev, unsigned short vid);
-extern void vlan_vid_del(struct net_device *dev, unsigned short vid);
-=======
 #define skb_vlan_tag_present(__skb)	(!!(__skb)->vlan_all)
 #define skb_vlan_tag_get(__skb)		((__skb)->vlan_tci)
 #define skb_vlan_tag_get_id(__skb)	((__skb)->vlan_tci & VLAN_VID_MASK)
@@ -292,17 +227,11 @@ extern bool vlan_do_receive(struct sk_buff **skb);
 
 extern int vlan_vid_add(struct net_device *dev, __be16 proto, u16 vid);
 extern void vlan_vid_del(struct net_device *dev, __be16 proto, u16 vid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int vlan_vids_add_by_dev(struct net_device *dev,
 				const struct net_device *by_dev);
 extern void vlan_vids_del_by_dev(struct net_device *dev,
 				 const struct net_device *by_dev);
-<<<<<<< HEAD
-#else
-static inline struct net_device *
-__vlan_find_dev_deep(struct net_device *real_dev, u16 vlan_id)
-=======
 
 extern bool vlan_uses_dev(const struct net_device *dev);
 
@@ -310,13 +239,10 @@ extern bool vlan_uses_dev(const struct net_device *dev);
 static inline struct net_device *
 __vlan_find_dev_deep_rcu(struct net_device *real_dev,
 		     __be16 vlan_proto, u16 vlan_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 static inline int
 vlan_for_each(struct net_device *dev,
 	      int (*action)(struct net_device *dev, int vid, void *arg),
@@ -325,7 +251,6 @@ vlan_for_each(struct net_device *dev,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct net_device *vlan_dev_real_dev(const struct net_device *dev)
 {
 	BUG();
@@ -338,8 +263,6 @@ static inline u16 vlan_dev_vlan_id(const struct net_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline __be16 vlan_dev_vlan_proto(const struct net_device *dev)
 {
 	BUG();
@@ -352,31 +275,17 @@ static inline u16 vlan_dev_get_egress_qos_mask(struct net_device *dev,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool vlan_do_receive(struct sk_buff **skb)
 {
 	return false;
 }
 
-<<<<<<< HEAD
-static inline struct sk_buff *vlan_untag(struct sk_buff *skb)
-{
-	return skb;
-}
-
-static inline int vlan_vid_add(struct net_device *dev, unsigned short vid)
-=======
 static inline int vlan_vid_add(struct net_device *dev, __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline void vlan_vid_del(struct net_device *dev, unsigned short vid)
-=======
 static inline void vlan_vid_del(struct net_device *dev, __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
@@ -390,17 +299,6 @@ static inline void vlan_vids_del_by_dev(struct net_device *dev,
 					const struct net_device *by_dev)
 {
 }
-<<<<<<< HEAD
-#endif
-
-/**
- * vlan_insert_tag - regular VLAN tag inserting
- * @skb: skbuff to tag
- * @vlan_tci: VLAN TCI to insert
- *
- * Inserts the VLAN tag into @skb as part of the payload
- * Returns a VLAN tagged skb. If a new skb is created, @skb is freed.
-=======
 
 static inline bool vlan_uses_dev(const struct net_device *dev)
 {
@@ -511,35 +409,12 @@ static inline int __vlan_insert_tag(struct sk_buff *skb,
  *
  * Inserts the VLAN tag into @skb as part of the payload at offset mac_len
  * Returns a VLAN tagged skb. This might change skb->head.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Following the skb_unshare() example, in case of error, the calling function
  * doesn't have to worry about freeing the original skb.
  *
  * Does not change skb->protocol so this function can be used during receive.
  */
-<<<<<<< HEAD
-static inline struct sk_buff *vlan_insert_tag(struct sk_buff *skb, u16 vlan_tci)
-{
-	struct vlan_ethhdr *veth;
-
-	if (skb_cow_head(skb, VLAN_HLEN) < 0) {
-		kfree_skb(skb);
-		return NULL;
-	}
-	veth = (struct vlan_ethhdr *)skb_push(skb, VLAN_HLEN);
-
-	/* Move the mac addresses to the beginning of the new header. */
-	memmove(skb->data, skb->data + VLAN_HLEN, 2 * ETH_ALEN);
-	skb->mac_header -= VLAN_HLEN;
-
-	/* first, the ethernet type */
-	veth->h_vlan_proto = htons(ETH_P_8021Q);
-
-	/* now, the TCI */
-	veth->h_vlan_TCI = htons(vlan_tci);
-
-=======
 static inline struct sk_buff *vlan_insert_inner_tag(struct sk_buff *skb,
 						    __be16 vlan_proto,
 						    u16 vlan_tci,
@@ -552,19 +427,10 @@ static inline struct sk_buff *vlan_insert_inner_tag(struct sk_buff *skb,
 		dev_kfree_skb_any(skb);
 		return NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return skb;
 }
 
 /**
-<<<<<<< HEAD
- * __vlan_put_tag - regular VLAN tag inserting
- * @skb: skbuff to tag
- * @vlan_tci: VLAN TCI to insert
- *
- * Inserts the VLAN tag into @skb as part of the payload
- * Returns a VLAN tagged skb. If a new skb is created, @skb is freed.
-=======
  * vlan_insert_tag - regular VLAN tag inserting
  * @skb: skbuff to tag
  * @vlan_proto: VLAN encapsulation protocol
@@ -592,18 +458,10 @@ static inline struct sk_buff *vlan_insert_tag(struct sk_buff *skb,
  *
  * Inserts the VLAN tag into @skb as part of the payload
  * Returns a VLAN tagged skb. This might change skb->head.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Following the skb_unshare() example, in case of error, the calling function
  * doesn't have to worry about freeing the original skb.
  */
-<<<<<<< HEAD
-static inline struct sk_buff *__vlan_put_tag(struct sk_buff *skb, u16 vlan_tci)
-{
-	skb = vlan_insert_tag(skb, vlan_tci);
-	if (skb)
-		skb->protocol = htons(ETH_P_8021Q);
-=======
 static inline struct sk_buff *vlan_insert_tag_set_proto(struct sk_buff *skb,
 							__be16 vlan_proto,
 							u16 vlan_tci)
@@ -652,80 +510,37 @@ static inline struct sk_buff *__vlan_hwaccel_push_inside(struct sk_buff *skb)
 					skb_vlan_tag_get(skb));
 	if (likely(skb))
 		__vlan_hwaccel_clear_tag(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return skb;
 }
 
 /**
  * __vlan_hwaccel_put_tag - hardware accelerated VLAN inserting
  * @skb: skbuff to tag
-<<<<<<< HEAD
-=======
  * @vlan_proto: VLAN encapsulation protocol
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @vlan_tci: VLAN TCI to insert
  *
  * Puts the VLAN TCI in @skb->vlan_tci and lets the device do the rest
  */
-<<<<<<< HEAD
-static inline struct sk_buff *__vlan_hwaccel_put_tag(struct sk_buff *skb,
-						     u16 vlan_tci)
-{
-	skb->vlan_tci = VLAN_TAG_PRESENT | vlan_tci;
-	return skb;
-}
-
-#define HAVE_VLAN_PUT_TAG
-
-/**
- * vlan_put_tag - inserts VLAN tag according to device features
- * @skb: skbuff to tag
- * @vlan_tci: VLAN TCI to insert
- *
- * Assumes skb->dev is the target that will xmit this frame.
- * Returns a VLAN tagged skb.
- */
-static inline struct sk_buff *vlan_put_tag(struct sk_buff *skb, u16 vlan_tci)
-{
-	if (skb->dev->features & NETIF_F_HW_VLAN_TX) {
-		return __vlan_hwaccel_put_tag(skb, vlan_tci);
-	} else {
-		return __vlan_put_tag(skb, vlan_tci);
-	}
-=======
 static inline void __vlan_hwaccel_put_tag(struct sk_buff *skb,
 					  __be16 vlan_proto, u16 vlan_tci)
 {
 	skb->vlan_proto = vlan_proto;
 	skb->vlan_tci = vlan_tci;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * __vlan_get_tag - get the VLAN ID that is part of the payload
  * @skb: skbuff to query
-<<<<<<< HEAD
- * @vlan_tci: buffer to store vlaue
-=======
  * @vlan_tci: buffer to store value
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns error if the skb is not of VLAN type
  */
 static inline int __vlan_get_tag(const struct sk_buff *skb, u16 *vlan_tci)
 {
-<<<<<<< HEAD
-	struct vlan_ethhdr *veth = (struct vlan_ethhdr *)skb->data;
-
-	if (veth->h_vlan_proto != htons(ETH_P_8021Q)) {
-		return -EINVAL;
-	}
-=======
 	struct vlan_ethhdr *veth = skb_vlan_eth_hdr(skb);
 
 	if (!eth_type_vlan(veth->h_vlan_proto))
 		return -ENODATA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*vlan_tci = ntohs(veth->h_vlan_TCI);
 	return 0;
@@ -734,34 +549,13 @@ static inline int __vlan_get_tag(const struct sk_buff *skb, u16 *vlan_tci)
 /**
  * __vlan_hwaccel_get_tag - get the VLAN ID that is in @skb->cb[]
  * @skb: skbuff to query
-<<<<<<< HEAD
- * @vlan_tci: buffer to store vlaue
-=======
  * @vlan_tci: buffer to store value
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns error if @skb->vlan_tci is not set correctly
  */
 static inline int __vlan_hwaccel_get_tag(const struct sk_buff *skb,
 					 u16 *vlan_tci)
 {
-<<<<<<< HEAD
-	if (vlan_tx_tag_present(skb)) {
-		*vlan_tci = vlan_tx_tag_get(skb);
-		return 0;
-	} else {
-		*vlan_tci = 0;
-		return -EINVAL;
-	}
-}
-
-#define HAVE_VLAN_GET_TAG
-
-/**
- * vlan_get_tag - get the VLAN ID from the skb
- * @skb: skbuff to query
- * @vlan_tci: buffer to store vlaue
-=======
 	if (skb_vlan_tag_present(skb)) {
 		*vlan_tci = skb_vlan_tag_get(skb);
 		return 0;
@@ -775,17 +569,12 @@ static inline int __vlan_hwaccel_get_tag(const struct sk_buff *skb,
  * vlan_get_tag - get the VLAN ID from the skb
  * @skb: skbuff to query
  * @vlan_tci: buffer to store value
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns error if the skb is not VLAN tagged
  */
 static inline int vlan_get_tag(const struct sk_buff *skb, u16 *vlan_tci)
 {
-<<<<<<< HEAD
-	if (skb->dev->features & NETIF_F_HW_VLAN_TX) {
-=======
 	if (skb->dev->features & NETIF_F_HW_VLAN_CTAG_TX) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return __vlan_hwaccel_get_tag(skb, vlan_tci);
 	} else {
 		return __vlan_get_tag(skb, vlan_tci);
@@ -795,8 +584,6 @@ static inline int vlan_get_tag(const struct sk_buff *skb, u16 *vlan_tci)
 /**
  * vlan_get_protocol - get protocol EtherType.
  * @skb: skbuff to query
-<<<<<<< HEAD
-=======
  * @type: first vlan protocol
  * @depth: buffer to store length of eth and vlan tags in bytes
  *
@@ -841,30 +628,12 @@ static inline __be16 __vlan_get_protocol(const struct sk_buff *skb, __be16 type,
 /**
  * vlan_get_protocol - get protocol EtherType.
  * @skb: skbuff to query
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns the EtherType of the packet, regardless of whether it is
  * vlan encapsulated (normal or hardware accelerated) or not.
  */
 static inline __be16 vlan_get_protocol(const struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	__be16 protocol = 0;
-
-	if (vlan_tx_tag_present(skb) ||
-	     skb->protocol != cpu_to_be16(ETH_P_8021Q))
-		protocol = skb->protocol;
-	else {
-		__be16 proto, *protop;
-		protop = skb_header_pointer(skb, offsetof(struct vlan_ethhdr,
-						h_vlan_encapsulated_proto),
-						sizeof(proto), &proto);
-		if (likely(protop))
-			protocol = *protop;
-	}
-
-	return protocol;
-=======
 	return __vlan_get_protocol(skb, skb->protocol, NULL);
 }
 
@@ -897,7 +666,6 @@ static inline __be16 skb_protocol(const struct sk_buff *skb, bool skip_vlan)
 		return skb_vlan_tag_present(skb) ? skb->vlan_proto : skb->protocol;
 
 	return vlan_get_protocol(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void vlan_set_encap_proto(struct sk_buff *skb,
@@ -912,11 +680,7 @@ static inline void vlan_set_encap_proto(struct sk_buff *skb,
 	 */
 
 	proto = vhdr->h_vlan_encapsulated_proto;
-<<<<<<< HEAD
-	if (ntohs(proto) >= 1536) {
-=======
 	if (eth_proto_is_802_3(proto)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb->protocol = proto;
 		return;
 	}
@@ -937,56 +701,6 @@ static inline void vlan_set_encap_proto(struct sk_buff *skb,
 		 */
 		skb->protocol = htons(ETH_P_802_2);
 }
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-
-/* VLAN IOCTLs are found in sockios.h */
-
-/* Passed in vlan_ioctl_args structure to determine behaviour. */
-enum vlan_ioctl_cmds {
-	ADD_VLAN_CMD,
-	DEL_VLAN_CMD,
-	SET_VLAN_INGRESS_PRIORITY_CMD,
-	SET_VLAN_EGRESS_PRIORITY_CMD,
-	GET_VLAN_INGRESS_PRIORITY_CMD,
-	GET_VLAN_EGRESS_PRIORITY_CMD,
-	SET_VLAN_NAME_TYPE_CMD,
-	SET_VLAN_FLAG_CMD,
-	GET_VLAN_REALDEV_NAME_CMD, /* If this works, you know it's a VLAN device, btw */
-	GET_VLAN_VID_CMD /* Get the VID of this VLAN (specified by name) */
-};
-
-enum vlan_flags {
-	VLAN_FLAG_REORDER_HDR	= 0x1,
-	VLAN_FLAG_GVRP		= 0x2,
-	VLAN_FLAG_LOOSE_BINDING	= 0x4,
-};
-
-enum vlan_name_types {
-	VLAN_NAME_TYPE_PLUS_VID, /* Name will look like:  vlan0005 */
-	VLAN_NAME_TYPE_RAW_PLUS_VID, /* name will look like:  eth1.0005 */
-	VLAN_NAME_TYPE_PLUS_VID_NO_PAD, /* Name will look like:  vlan5 */
-	VLAN_NAME_TYPE_RAW_PLUS_VID_NO_PAD, /* Name will look like:  eth0.5 */
-	VLAN_NAME_TYPE_HIGHEST
-};
-
-struct vlan_ioctl_args {
-	int cmd; /* Should be one of the vlan_ioctl_cmds enum above. */
-	char device1[24];
-
-        union {
-		char device2[24];
-		int VID;
-		unsigned int skb_priority;
-		unsigned int name_type;
-		unsigned int bind_type;
-		unsigned int flag; /* Matches vlan_dev_priv flags */
-        } u;
-
-	short vlan_qos;   
-};
-
-=======
 
 /**
  * vlan_remove_tag - remove outer VLAN tag from payload
@@ -1099,5 +813,4 @@ static inline unsigned long compare_vlan_header(const struct vlan_hdr *h1,
 		(__force u32)h2->h_vlan_encapsulated_proto);
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(_LINUX_IF_VLAN_H_) */

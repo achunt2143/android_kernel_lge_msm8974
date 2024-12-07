@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/io-writesw-armv3.S
  *
  *  Copyright (C) 1995-2000 Russell King
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/linkage.h>
 #include <asm/assembler.h>
@@ -35,19 +25,11 @@
 		orr	r3, r3, r3, lsl #16
 		str	r3, [r0]
 		subs	r2, r2, #1
-<<<<<<< HEAD
-		moveq	pc, lr
-
-ENTRY(__raw_writesw)
-		teq	r2, #0		@ do we have to check for the zero len?
-		moveq	pc, lr
-=======
 		reteq	lr
 
 ENTRY(__raw_writesw)
 		teq	r2, #0		@ do we have to check for the zero len?
 		reteq	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tst	r1, #3
 		bne	.Loutsw_align
 
@@ -94,11 +76,7 @@ ENTRY(__raw_writesw)
 		bpl	.Loutsw_8_lp
 
 		tst	r2, #7
-<<<<<<< HEAD
-		ldmeqfd	sp!, {r4, r5, r6, pc}
-=======
 		ldmfdeq	sp!, {r4, r5, r6, pc}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .Lno_outsw_8:	tst	r2, #4
 		beq	.Lno_outsw_4

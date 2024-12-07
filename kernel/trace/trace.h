@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_KERNEL_TRACE_H
 #define _LINUX_KERNEL_TRACE_H
 
@@ -14,11 +11,6 @@
 #include <linux/mmiotrace.h>
 #include <linux/tracepoint.h>
 #include <linux/ftrace.h>
-<<<<<<< HEAD
-#include <linux/hw_breakpoint.h>
-#include <linux/trace_seq.h>
-#include <linux/ftrace_event.h>
-=======
 #include <linux/trace.h>
 #include <linux/hw_breakpoint.h>
 #include <linux/trace_seq.h>
@@ -39,7 +31,6 @@
 
 #define TRACE_MODE_WRITE	0640
 #define TRACE_MODE_READ		0440
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum trace_type {
 	__TRACE_FIRST_TYPE = 0,
@@ -57,15 +48,12 @@ enum trace_type {
 	TRACE_GRAPH_ENT,
 	TRACE_USER_STACK,
 	TRACE_BLK,
-<<<<<<< HEAD
-=======
 	TRACE_BPUTS,
 	TRACE_HWLAT,
 	TRACE_OSNOISE,
 	TRACE_TIMERLAT,
 	TRACE_RAW_DATA,
 	TRACE_FUNC_REPEATS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__TRACE_LAST_TYPE,
 };
@@ -74,23 +62,15 @@ enum trace_type {
 #undef __field
 #define __field(type, item)		type	item;
 
-<<<<<<< HEAD
-=======
 #undef __field_fn
 #define __field_fn(type, item)		type	item;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef __field_struct
 #define __field_struct(type, item)	__field(type, item)
 
 #undef __field_desc
 #define __field_desc(type, container, item)
 
-<<<<<<< HEAD
-#undef __array
-#define __array(type, item, size)	type	item[size];
-
-=======
 #undef __field_packed
 #define __field_packed(type, container, item)
 
@@ -107,49 +87,25 @@ enum trace_type {
 #undef __stack_array
 #define __stack_array(type, item, size, field)		type item[] __counted_by(field);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef __array_desc
 #define __array_desc(type, container, item, size)
 
 #undef __dynamic_array
 #define __dynamic_array(type, item)	type	item[];
 
-<<<<<<< HEAD
-=======
 #undef __rel_dynamic_array
 #define __rel_dynamic_array(type, item)	type	item[];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef F_STRUCT
 #define F_STRUCT(args...)		args
 
 #undef FTRACE_ENTRY
-<<<<<<< HEAD
-#define FTRACE_ENTRY(name, struct_name, id, tstruct, print, filter)	\
-=======
 #define FTRACE_ENTRY(name, struct_name, id, tstruct, print)		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct struct_name {						\
 		struct trace_entry	ent;				\
 		tstruct							\
 	}
 
-<<<<<<< HEAD
-#undef TP_ARGS
-#define TP_ARGS(args...)	args
-
-#undef FTRACE_ENTRY_DUP
-#define FTRACE_ENTRY_DUP(name, name_struct, id, tstruct, printk, filter)
-
-#undef FTRACE_ENTRY_REG
-#define FTRACE_ENTRY_REG(name, struct_name, id, tstruct, print,	\
-			 filter, regfn) \
-	FTRACE_ENTRY(name, struct_name, id, PARAMS(tstruct), PARAMS(print), \
-		     filter)
-
-#include "trace_entries.h"
-
-=======
 #undef FTRACE_ENTRY_DUP
 #define FTRACE_ENTRY_DUP(name, name_struct, id, tstruct, printk)
 
@@ -173,7 +129,6 @@ enum trace_type {
 #define HIST_STACKTRACE_SIZE	(HIST_STACKTRACE_DEPTH * sizeof(unsigned long))
 #define HIST_STACKTRACE_SKIP	5
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * syscalls are special, and need special handling, this is why
  * they are not included in trace_entries.h
@@ -195,36 +150,16 @@ struct kprobe_trace_entry_head {
 	unsigned long		ip;
 };
 
-<<<<<<< HEAD
-=======
 struct eprobe_trace_entry_head {
 	struct trace_entry	ent;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct kretprobe_trace_entry_head {
 	struct trace_entry	ent;
 	unsigned long		func;
 	unsigned long		ret_ip;
 };
 
-<<<<<<< HEAD
-/*
- * trace_flag_type is an enumeration that holds different
- * states when a trace occurs. These are:
- *  IRQS_OFF		- interrupts were disabled
- *  IRQS_NOSUPPORT	- arch does not support irqs_disabled_flags
- *  NEED_RESCHED	- reschedule is requested
- *  HARDIRQ		- inside an interrupt handler
- *  SOFTIRQ		- inside a softirq handler
- */
-enum trace_flag_type {
-	TRACE_FLAG_IRQS_OFF		= 0x01,
-	TRACE_FLAG_IRQS_NOSUPPORT	= 0x02,
-	TRACE_FLAG_NEED_RESCHED		= 0x04,
-	TRACE_FLAG_HARDIRQ		= 0x08,
-	TRACE_FLAG_SOFTIRQ		= 0x10,
-=======
 struct fentry_trace_entry_head {
 	struct trace_entry	ent;
 	unsigned long		ip;
@@ -234,16 +169,12 @@ struct fexit_trace_entry_head {
 	struct trace_entry	ent;
 	unsigned long		func;
 	unsigned long		ret_ip;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define TRACE_BUF_SIZE		1024
 
-<<<<<<< HEAD
-=======
 struct trace_array;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The CPU trace array - it consists of thousands of trace entries
  * plus some other descriptor data: (for example which task started
@@ -253,10 +184,7 @@ struct trace_array_cpu {
 	atomic_t		disabled;
 	void			*buffer_page;	/* ring buffer spare */
 
-<<<<<<< HEAD
-=======
 	unsigned long		entries;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		saved_latency;
 	unsigned long		critical_start;
 	unsigned long		critical_end;
@@ -265,12 +193,6 @@ struct trace_array_cpu {
 	unsigned long		policy;
 	unsigned long		rt_priority;
 	unsigned long		skipped_entries;
-<<<<<<< HEAD
-	cycle_t			preempt_timestamp;
-	pid_t			pid;
-	uid_t			uid;
-	char			comm[TASK_COMM_LEN];
-=======
 	u64			preempt_timestamp;
 	pid_t			pid;
 	kuid_t			uid;
@@ -387,7 +309,6 @@ struct trace_func_repeats {
 	unsigned long	parent_ip;
 	unsigned long	count;
 	u64		ts_last_call;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -396,17 +317,6 @@ struct trace_func_repeats {
  * They have on/off state as well:
  */
 struct trace_array {
-<<<<<<< HEAD
-	struct ring_buffer	*buffer;
-	unsigned long		entries;
-	int			cpu;
-	int			buffer_disabled;
-	cycle_t			time_start;
-	struct task_struct	*waiter;
-	struct trace_array_cpu	*data[NR_CPUS];
-};
-
-=======
 	struct list_head	list;
 	char			*name;
 	struct array_buffer	array_buffer;
@@ -544,24 +454,15 @@ static inline struct trace_array *top_trace_array(void)
 	return tr;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FTRACE_CMP_TYPE(var, type) \
 	__builtin_types_compatible_p(typeof(var), type *)
 
 #undef IF_ASSIGN
-<<<<<<< HEAD
-#define IF_ASSIGN(var, entry, etype, id)		\
-	if (FTRACE_CMP_TYPE(var, etype)) {		\
-		var = (typeof(var))(entry);		\
-		WARN_ON(id && (entry)->type != id);	\
-		break;					\
-=======
 #define IF_ASSIGN(var, entry, etype, id)			\
 	if (FTRACE_CMP_TYPE(var, etype)) {			\
 		var = (typeof(var))(entry);			\
 		WARN_ON(id != 0 && (entry)->type != id);	\
 		break;						\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 /* Will cause compile errors if type is not found. */
@@ -588,14 +489,11 @@ extern void __ftrace_bad_type(void);
 		IF_ASSIGN(var, ent, struct userstack_entry, TRACE_USER_STACK);\
 		IF_ASSIGN(var, ent, struct print_entry, TRACE_PRINT);	\
 		IF_ASSIGN(var, ent, struct bprint_entry, TRACE_BPRINT);	\
-<<<<<<< HEAD
-=======
 		IF_ASSIGN(var, ent, struct bputs_entry, TRACE_BPUTS);	\
 		IF_ASSIGN(var, ent, struct hwlat_entry, TRACE_HWLAT);	\
 		IF_ASSIGN(var, ent, struct osnoise_entry, TRACE_OSNOISE);\
 		IF_ASSIGN(var, ent, struct timerlat_entry, TRACE_TIMERLAT);\
 		IF_ASSIGN(var, ent, struct raw_data_entry, TRACE_RAW_DATA);\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		IF_ASSIGN(var, ent, struct trace_mmiotrace_rw,		\
 			  TRACE_MMIO_RW);				\
 		IF_ASSIGN(var, ent, struct trace_mmiotrace_map,		\
@@ -605,11 +503,8 @@ extern void __ftrace_bad_type(void);
 			  TRACE_GRAPH_ENT);		\
 		IF_ASSIGN(var, ent, struct ftrace_graph_ret_entry,	\
 			  TRACE_GRAPH_RET);		\
-<<<<<<< HEAD
-=======
 		IF_ASSIGN(var, ent, struct func_repeats_entry,		\
 			  TRACE_FUNC_REPEATS);				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__ftrace_bad_type();					\
 	} while (0)
 
@@ -630,28 +525,13 @@ struct tracer_opt {
 struct tracer_flags {
 	u32			val;
 	struct tracer_opt	*opts;
-<<<<<<< HEAD
-=======
 	struct tracer		*trace;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Makes more easy to define a tracer opt */
 #define TRACER_OPT(s, b)	.name = #s, .bit = b
 
 
-<<<<<<< HEAD
-/**
- * struct tracer - a specific tracer and its callbacks to interact with debugfs
- * @name: the name chosen to select it on the available_tracers file
- * @init: called when one switches to this tracer (echo name > current_tracer)
- * @reset: called when one switches to another tracer
- * @start: called when tracing is unpaused (echo 1 > tracing_enabled)
- * @stop: called when tracing is paused (echo 0 > tracing_enabled)
- * @open: called when the trace file is opened
- * @pipe_open: called when the trace_pipe file is opened
- * @wait_pipe: override how the user waits for traces on trace_pipe
-=======
 struct trace_option_dentry {
 	struct tracer_opt		*opt;
 	struct tracer_flags		*flags;
@@ -669,7 +549,6 @@ struct trace_option_dentry {
  * @update_thresh: called when tracing_thresh is updated
  * @open: called when the trace file is opened
  * @pipe_open: called when the trace_pipe file is opened
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @close: called when the trace file is released
  * @pipe_close: called when the trace_pipe file is released
  * @read: override the default read callback on trace_pipe
@@ -686,15 +565,9 @@ struct tracer {
 	void			(*reset)(struct trace_array *tr);
 	void			(*start)(struct trace_array *tr);
 	void			(*stop)(struct trace_array *tr);
-<<<<<<< HEAD
-	void			(*open)(struct trace_iterator *iter);
-	void			(*pipe_open)(struct trace_iterator *iter);
-	void			(*wait_pipe)(struct trace_iterator *iter);
-=======
 	int			(*update_thresh)(struct trace_array *tr);
 	void			(*open)(struct trace_iterator *iter);
 	void			(*pipe_open)(struct trace_iterator *iter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			(*close)(struct trace_iterator *iter);
 	void			(*pipe_close)(struct trace_iterator *iter);
 	ssize_t			(*read)(struct trace_iterator *iter,
@@ -713,55 +586,6 @@ struct tracer {
 	void			(*print_header)(struct seq_file *m);
 	enum print_line_t	(*print_line)(struct trace_iterator *iter);
 	/* If you handled the flag setting, return 0 */
-<<<<<<< HEAD
-	int			(*set_flag)(u32 old_flags, u32 bit, int set);
-	/* Return 0 if OK with change, else return non-zero */
-	int			(*flag_changed)(struct tracer *tracer,
-						u32 mask, int set);
-	struct tracer		*next;
-	struct tracer_flags	*flags;
-	int			print_max;
-	int			use_max_tr;
-	bool			enabled;
-};
-
-
-/* Only current can touch trace_recursion */
-#define trace_recursion_inc() do { (current)->trace_recursion++; } while (0)
-#define trace_recursion_dec() do { (current)->trace_recursion--; } while (0)
-
-/* Ring buffer has the 10 LSB bits to count */
-#define trace_recursion_buffer() ((current)->trace_recursion & 0x3ff)
-
-/* for function tracing recursion */
-#define TRACE_INTERNAL_BIT		(1<<11)
-#define TRACE_GLOBAL_BIT		(1<<12)
-#define TRACE_CONTROL_BIT		(1<<13)
-
-/*
- * Abuse of the trace_recursion.
- * As we need a way to maintain state if we are tracing the function
- * graph in irq because we want to trace a particular function that
- * was called in irq context but we have irq tracing off. Since this
- * can only be modified by current, we can reuse trace_recursion.
- */
-#define TRACE_IRQ_BIT			(1<<13)
-
-#define trace_recursion_set(bit)	do { (current)->trace_recursion |= (bit); } while (0)
-#define trace_recursion_clear(bit)	do { (current)->trace_recursion &= ~(bit); } while (0)
-#define trace_recursion_test(bit)	((current)->trace_recursion & (bit))
-
-#define TRACE_PIPE_ALL_CPU	-1
-
-int tracer_init(struct tracer *t, struct trace_array *tr);
-int tracing_is_enabled(void);
-void trace_wake_up(void);
-void tracing_reset(struct trace_array *tr, int cpu);
-void tracing_reset_online_cpus(struct trace_array *tr);
-void tracing_reset_current(int cpu);
-void tracing_reset_current_online_cpus(void);
-int tracing_open_generic(struct inode *inode, struct file *filp);
-=======
 	int			(*set_flag)(struct trace_array *tr,
 					    u32 old_flags, u32 bit, int set);
 	/* Return 0 if OK with change, else return non-zero */
@@ -800,37 +624,21 @@ bool tracing_is_disabled(void);
 bool tracer_tracing_is_on(struct trace_array *tr);
 void tracer_tracing_on(struct trace_array *tr);
 void tracer_tracing_off(struct trace_array *tr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dentry *trace_create_file(const char *name,
 				 umode_t mode,
 				 struct dentry *parent,
 				 void *data,
 				 const struct file_operations *fops);
 
-<<<<<<< HEAD
-struct dentry *tracing_init_dentry(void);
-=======
 int tracing_init_dentry(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ring_buffer_event;
 
 struct ring_buffer_event *
-<<<<<<< HEAD
-trace_buffer_lock_reserve(struct ring_buffer *buffer,
-			  int type,
-			  unsigned long len,
-			  unsigned long flags,
-			  int pc);
-void trace_buffer_unlock_commit(struct ring_buffer *buffer,
-				struct ring_buffer_event *event,
-				unsigned long flags, int pc);
-=======
 trace_buffer_lock_reserve(struct trace_buffer *buffer,
 			  int type,
 			  unsigned long len,
 			  unsigned int trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct trace_entry *tracing_get_trace_entry(struct trace_array *tr,
 						struct trace_array_cpu *data);
@@ -838,8 +646,6 @@ struct trace_entry *tracing_get_trace_entry(struct trace_array *tr,
 struct trace_entry *trace_find_next_entry(struct trace_iterator *iter,
 					  int *ent_cpu, u64 *ent_ts);
 
-<<<<<<< HEAD
-=======
 void trace_buffer_unlock_commit_nostack(struct trace_buffer *buffer,
 					struct ring_buffer_event *event);
 
@@ -849,7 +655,6 @@ void trace_check_vprintf(struct trace_iterator *iter, const char *fmt,
 			 va_list ap) __printf(2, 0);
 char *trace_iter_expand_format(struct trace_iterator *iter);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int trace_empty(struct trace_iterator *iter);
 
 void *trace_find_next_entry_inc(struct trace_iterator *iter);
@@ -858,37 +663,6 @@ void trace_init_global_iter(struct trace_iterator *iter);
 
 void tracing_iter_reset(struct trace_iterator *iter, int cpu);
 
-<<<<<<< HEAD
-void default_wait_pipe(struct trace_iterator *iter);
-void poll_wait_pipe(struct trace_iterator *iter);
-
-void ftrace(struct trace_array *tr,
-			    struct trace_array_cpu *data,
-			    unsigned long ip,
-			    unsigned long parent_ip,
-			    unsigned long flags, int pc);
-void tracing_sched_switch_trace(struct trace_array *tr,
-				struct task_struct *prev,
-				struct task_struct *next,
-				unsigned long flags, int pc);
-
-void tracing_sched_wakeup_trace(struct trace_array *tr,
-				struct task_struct *wakee,
-				struct task_struct *cur,
-				unsigned long flags, int pc);
-void trace_function(struct trace_array *tr,
-		    unsigned long ip,
-		    unsigned long parent_ip,
-		    unsigned long flags, int pc);
-void trace_graph_function(struct trace_array *tr,
-		    unsigned long ip,
-		    unsigned long parent_ip,
-		    unsigned long flags, int pc);
-void trace_latency_header(struct seq_file *m);
-void trace_default_header(struct seq_file *m);
-void print_trace_header(struct seq_file *m, struct trace_iterator *iter);
-int trace_empty(struct trace_iterator *iter);
-=======
 unsigned long trace_total_entries_cpu(struct trace_array *tr, int cpu);
 unsigned long trace_total_entries(struct trace_array *tr);
 
@@ -903,7 +677,6 @@ void trace_graph_function(struct trace_array *tr,
 void trace_latency_header(struct seq_file *m);
 void trace_default_header(struct seq_file *m);
 void print_trace_header(struct seq_file *m, struct trace_iterator *iter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void trace_graph_return(struct ftrace_graph_ret *trace);
 int trace_graph_entry(struct ftrace_graph_ent *trace);
@@ -911,18 +684,6 @@ void set_graph_array(struct trace_array *tr);
 
 void tracing_start_cmdline_record(void);
 void tracing_stop_cmdline_record(void);
-<<<<<<< HEAD
-void tracing_sched_switch_assign_trace(struct trace_array *tr);
-void tracing_stop_sched_switch_record(void);
-void tracing_start_sched_switch_record(void);
-int register_tracer(struct tracer *type);
-void unregister_tracer(struct tracer *type);
-int is_tracing_stopped(void);
-enum trace_file_type {
-	TRACE_FILE_LAT_FMT	= 1,
-	TRACE_FILE_ANNOTATE	= 2,
-};
-=======
 void tracing_start_tgid_record(void);
 void tracing_stop_tgid_record(void);
 
@@ -930,7 +691,6 @@ int register_tracer(struct tracer *type);
 int is_tracing_stopped(void);
 
 loff_t tracing_lseek(struct file *file, loff_t offset, int whence);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern cpumask_var_t __read_mostly tracing_buffer_mask;
 
@@ -941,47 +701,6 @@ extern unsigned long nsecs_to_usecs(unsigned long nsecs);
 
 extern unsigned long tracing_thresh;
 
-<<<<<<< HEAD
-#ifdef CONFIG_TRACER_MAX_TRACE
-extern unsigned long tracing_max_latency;
-
-void update_max_tr(struct trace_array *tr, struct task_struct *tsk, int cpu);
-void update_max_tr_single(struct trace_array *tr,
-			  struct task_struct *tsk, int cpu);
-#endif /* CONFIG_TRACER_MAX_TRACE */
-
-#ifdef CONFIG_STACKTRACE
-void ftrace_trace_stack(struct ring_buffer *buffer, unsigned long flags,
-			int skip, int pc);
-
-void ftrace_trace_stack_regs(struct ring_buffer *buffer, unsigned long flags,
-			     int skip, int pc, struct pt_regs *regs);
-
-void ftrace_trace_userstack(struct ring_buffer *buffer, unsigned long flags,
-			    int pc);
-
-void __trace_stack(struct trace_array *tr, unsigned long flags, int skip,
-		   int pc);
-#else
-static inline void ftrace_trace_stack(struct ring_buffer *buffer,
-				      unsigned long flags, int skip, int pc)
-{
-}
-
-static inline void ftrace_trace_stack_regs(struct ring_buffer *buffer,
-					   unsigned long flags, int skip,
-					   int pc, struct pt_regs *regs)
-{
-}
-
-static inline void ftrace_trace_userstack(struct ring_buffer *buffer,
-					  unsigned long flags, int pc)
-{
-}
-
-static inline void __trace_stack(struct trace_array *tr, unsigned long flags,
-				 int skip, int pc)
-=======
 /* PID filtering */
 
 extern int pid_max;
@@ -1023,19 +742,10 @@ void __trace_stack(struct trace_array *tr, unsigned int trace_ctx, int skip);
 #else
 static inline void __trace_stack(struct trace_array *tr, unsigned int trace_ctx,
 				 int skip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif /* CONFIG_STACKTRACE */
 
-<<<<<<< HEAD
-extern cycle_t ftrace_now(int cpu);
-
-extern void trace_find_cmdline(int pid, char comm[]);
-
-#ifdef CONFIG_DYNAMIC_FTRACE
-extern unsigned long ftrace_update_tot_cnt;
-=======
 void trace_last_func_repeats(struct trace_array *tr,
 			     struct trace_func_repeats *last_info,
 			     unsigned int trace_ctx);
@@ -1054,20 +764,10 @@ void ftrace_init_trace_array(struct trace_array *tr);
 #else
 static inline void ftrace_init_trace_array(struct trace_array *tr) { }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DYN_FTRACE_TEST_NAME trace_selftest_dynamic_test_func
 extern int DYN_FTRACE_TEST_NAME(void);
 #define DYN_FTRACE_TEST_NAME2 trace_selftest_dynamic_test_func2
 extern int DYN_FTRACE_TEST_NAME2(void);
-<<<<<<< HEAD
-#endif
-
-extern int ring_buffer_expanded;
-extern bool tracing_selftest_disabled;
-DECLARE_PER_CPU(int, ftrace_cpu_disabled);
-
-#ifdef CONFIG_FTRACE_STARTUP_TEST
-=======
 
 extern void trace_set_ring_buffer_expanded(struct trace_array *tr);
 extern bool tracing_selftest_disabled;
@@ -1075,7 +775,6 @@ extern bool tracing_selftest_disabled;
 #ifdef CONFIG_FTRACE_STARTUP_TEST
 extern void __init disable_tracing_selftest(const char *reason);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int trace_selftest_startup_function(struct tracer *trace,
 					   struct trace_array *tr);
 extern int trace_selftest_startup_function_graph(struct tracer *trace,
@@ -1090,16 +789,6 @@ extern int trace_selftest_startup_wakeup(struct tracer *trace,
 					 struct trace_array *tr);
 extern int trace_selftest_startup_nop(struct tracer *trace,
 					 struct trace_array *tr);
-<<<<<<< HEAD
-extern int trace_selftest_startup_sched_switch(struct tracer *trace,
-					       struct trace_array *tr);
-extern int trace_selftest_startup_branch(struct tracer *trace,
-					 struct trace_array *tr);
-#endif /* CONFIG_FTRACE_STARTUP_TEST */
-
-extern void *head_page(struct trace_array_cpu *data);
-extern unsigned long long ns2usecs(cycle_t nsec);
-=======
 extern int trace_selftest_startup_branch(struct tracer *trace,
 					 struct trace_array *tr);
 /*
@@ -1118,7 +807,6 @@ static inline void __init disable_tracing_selftest(const char *reason)
 
 extern void *head_page(struct trace_array_cpu *data);
 extern unsigned long long ns2usecs(u64 nsec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int
 trace_vbprintk(unsigned long ip, const char *fmt, va_list args);
 extern int
@@ -1126,16 +814,6 @@ trace_vprintk(unsigned long ip, const char *fmt, va_list args);
 extern int
 trace_array_vprintk(struct trace_array *tr,
 		    unsigned long ip, const char *fmt, va_list args);
-<<<<<<< HEAD
-int trace_array_printk(struct trace_array *tr,
-		       unsigned long ip, const char *fmt, ...);
-void trace_printk_seq(struct trace_seq *s);
-enum print_line_t print_trace_line(struct trace_iterator *iter);
-
-extern unsigned long trace_flags;
-
-extern int trace_clock_id;
-=======
 int trace_array_printk_buf(struct trace_buffer *buffer,
 			   unsigned long ip, const char *fmt, ...);
 void trace_printk_seq(struct trace_seq *s);
@@ -1171,7 +849,6 @@ static __always_inline bool ftrace_hash_empty(struct ftrace_hash *hash)
 {
 	return !hash || !(hash->count || (hash->flags & FTRACE_HASH_FL_MOD));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Standard output formatting function used for function return traces */
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
@@ -1183,8 +860,6 @@ static __always_inline bool ftrace_hash_empty(struct ftrace_hash *hash)
 #define TRACE_GRAPH_PRINT_PROC          0x8
 #define TRACE_GRAPH_PRINT_DURATION      0x10
 #define TRACE_GRAPH_PRINT_ABS_TIME      0x20
-<<<<<<< HEAD
-=======
 #define TRACE_GRAPH_PRINT_REL_TIME      0x40
 #define TRACE_GRAPH_PRINT_IRQS          0x80
 #define TRACE_GRAPH_PRINT_TAIL          0x100
@@ -1202,66 +877,16 @@ extern void ftrace_graph_graph_time_control(bool enable);
 #else
 static inline void ftrace_graph_graph_time_control(bool enable) { }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern enum print_line_t
 print_graph_function_flags(struct trace_iterator *iter, u32 flags);
 extern void print_graph_headers_flags(struct seq_file *s, u32 flags);
-<<<<<<< HEAD
-extern enum print_line_t
-=======
 extern void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 trace_print_graph_duration(unsigned long long duration, struct trace_seq *s);
 extern void graph_trace_open(struct trace_iterator *iter);
 extern void graph_trace_close(struct trace_iterator *iter);
 extern int __trace_graph_entry(struct trace_array *tr,
 			       struct ftrace_graph_ent *trace,
-<<<<<<< HEAD
-			       unsigned long flags, int pc);
-extern void __trace_graph_return(struct trace_array *tr,
-				 struct ftrace_graph_ret *trace,
-				 unsigned long flags, int pc);
-
-
-#ifdef CONFIG_DYNAMIC_FTRACE
-/* TODO: make this variable */
-#define FTRACE_GRAPH_MAX_FUNCS		32
-extern int ftrace_graph_filter_enabled;
-extern int ftrace_graph_count;
-extern unsigned long ftrace_graph_funcs[FTRACE_GRAPH_MAX_FUNCS];
-
-static inline int ftrace_graph_addr(unsigned long addr)
-{
-	int i;
-
-	if (!ftrace_graph_filter_enabled)
-		return 1;
-
-	for (i = 0; i < ftrace_graph_count; i++) {
-		if (addr == ftrace_graph_funcs[i]) {
-			/*
-			 * If no irqs are to be traced, but a set_graph_function
-			 * is set, and called by an interrupt handler, we still
-			 * want to trace it.
-			 */
-			if (in_irq())
-				trace_recursion_set(TRACE_IRQ_BIT);
-			else
-				trace_recursion_clear(TRACE_IRQ_BIT);
-			return 1;
-		}
-	}
-
-	return 0;
-}
-#else
-static inline int ftrace_graph_addr(unsigned long addr)
-{
-	return 1;
-}
-#endif /* CONFIG_DYNAMIC_FTRACE */
-=======
 			       unsigned int trace_ctx);
 extern void __trace_graph_return(struct trace_array *tr,
 				 struct ftrace_graph_ret *trace,
@@ -1372,7 +997,6 @@ static inline bool ftrace_graph_ignore_func(struct ftrace_graph_ent *trace)
 		(fgraph_max_depth && trace->depth >= fgraph_max_depth);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else /* CONFIG_FUNCTION_GRAPH_TRACER */
 static inline enum print_line_t
 print_graph_function_flags(struct trace_iterator *iter, u32 flags)
@@ -1384,18 +1008,6 @@ print_graph_function_flags(struct trace_iterator *iter, u32 flags)
 extern struct list_head ftrace_pids;
 
 #ifdef CONFIG_FUNCTION_TRACER
-<<<<<<< HEAD
-static inline int ftrace_trace_task(struct task_struct *task)
-{
-	if (list_empty(&ftrace_pids))
-		return 1;
-
-	return test_tsk_trace_trace(task);
-}
-extern int ftrace_is_dead(void);
-#else
-static inline int ftrace_trace_task(struct task_struct *task)
-=======
 
 #define FTRACE_PID_IGNORE	-1
 #define FTRACE_PID_TRACE	-2
@@ -1431,16 +1043,10 @@ int init_function_trace(void);
 void ftrace_pid_follow_fork(struct trace_array *tr, bool enable);
 #else
 static inline int ftrace_trace_task(struct trace_array *tr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 1;
 }
 static inline int ftrace_is_dead(void) { return 0; }
-<<<<<<< HEAD
-#endif
-
-int ftrace_event_is_function(struct ftrace_event_call *call);
-=======
 static inline int
 ftrace_create_function_files(struct trace_array *tr,
 			     struct dentry *parent)
@@ -1542,7 +1148,6 @@ static inline void clear_ftrace_function_probes(struct trace_array *tr)
 #endif /* CONFIG_FUNCTION_TRACER && CONFIG_DYNAMIC_FTRACE */
 
 bool ftrace_event_is_function(struct trace_event_call *call);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * struct trace_parser - servers for reading the user input separated by spaces
@@ -1580,8 +1185,6 @@ extern int trace_get_user(struct trace_parser *parser, const char __user *ubuf,
 	size_t cnt, loff_t *ppos);
 
 /*
-<<<<<<< HEAD
-=======
  * Only create function graph options if function graph is configured.
  */
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
@@ -1617,43 +1220,10 @@ extern int trace_get_user(struct trace_parser *parser, const char __user *ubuf,
 #endif
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * trace_iterator_flags is an enumeration that defines bit
  * positions into trace_flags that controls the output.
  *
  * NOTE: These bits must match the trace_options array in
-<<<<<<< HEAD
- *       trace.c.
- */
-enum trace_iterator_flags {
-	TRACE_ITER_PRINT_PARENT		= 0x01,
-	TRACE_ITER_SYM_OFFSET		= 0x02,
-	TRACE_ITER_SYM_ADDR		= 0x04,
-	TRACE_ITER_VERBOSE		= 0x08,
-	TRACE_ITER_RAW			= 0x10,
-	TRACE_ITER_HEX			= 0x20,
-	TRACE_ITER_BIN			= 0x40,
-	TRACE_ITER_BLOCK		= 0x80,
-	TRACE_ITER_STACKTRACE		= 0x100,
-	TRACE_ITER_PRINTK		= 0x200,
-	TRACE_ITER_PREEMPTONLY		= 0x400,
-	TRACE_ITER_BRANCH		= 0x800,
-	TRACE_ITER_ANNOTATE		= 0x1000,
-	TRACE_ITER_USERSTACKTRACE       = 0x2000,
-	TRACE_ITER_SYM_USEROBJ          = 0x4000,
-	TRACE_ITER_PRINTK_MSGONLY	= 0x8000,
-	TRACE_ITER_CONTEXT_INFO		= 0x10000, /* Print pid/cpu/time */
-	TRACE_ITER_LATENCY_FMT		= 0x20000,
-	TRACE_ITER_SLEEP_TIME		= 0x40000,
-	TRACE_ITER_GRAPH_TIME		= 0x80000,
-	TRACE_ITER_RECORD_CMD		= 0x100000,
-	TRACE_ITER_OVERWRITE		= 0x200000,
-	TRACE_ITER_STOP_ON_FREE		= 0x400000,
-	TRACE_ITER_IRQ_INFO		= 0x800000,
-};
-
-/*
-=======
  *       trace.c (this macro guarantees it).
  */
 #define TRACE_FLAGS						\
@@ -1710,7 +1280,6 @@ enum trace_iterator_bits {
 enum trace_iterator_flags { TRACE_FLAGS };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TRACE_ITER_SYM_MASK masks the options in trace_flags that
  * control the output of kernel symbols.
  */
@@ -1724,11 +1293,7 @@ extern int enable_branch_tracing(struct trace_array *tr);
 extern void disable_branch_tracing(void);
 static inline int trace_branch_enable(struct trace_array *tr)
 {
-<<<<<<< HEAD
-	if (trace_flags & TRACE_ITER_BRANCH)
-=======
 	if (tr->trace_flags & TRACE_ITER_BRANCH)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return enable_branch_tracing(tr);
 	return 0;
 }
@@ -1748,14 +1313,6 @@ static inline void trace_branch_disable(void)
 #endif /* CONFIG_BRANCH_TRACER */
 
 /* set ring buffers to default size if not already done so */
-<<<<<<< HEAD
-int tracing_update_buffers(void);
-
-/* trace event type bit fields, not numeric */
-enum {
-	TRACE_EVENT_TYPE_PRINTF		= 1,
-	TRACE_EVENT_TYPE_RAW		= 2,
-=======
 int tracing_update_buffers(struct trace_array *tr);
 
 union trace_synth_field {
@@ -1764,31 +1321,16 @@ union trace_synth_field {
 	u32				as_u32;
 	u64				as_u64;
 	struct trace_dynamic_info	as_dynamic;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ftrace_event_field {
 	struct list_head	link;
-<<<<<<< HEAD
-	char			*name;
-	char			*type;
-=======
 	const char		*name;
 	const char		*type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			filter_type;
 	int			offset;
 	int			size;
 	int			is_signed;
-<<<<<<< HEAD
-};
-
-struct event_filter {
-	int			n_preds;	/* Number assigned */
-	int			a_preds;	/* allocated */
-	struct filter_pred	*preds;
-	struct filter_pred	*root;
-=======
 	int			len;
 };
 
@@ -1796,21 +1338,12 @@ struct prog_entry;
 
 struct event_filter {
 	struct prog_entry __rcu	*prog;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char			*filter_string;
 };
 
 struct event_subsystem {
 	struct list_head	list;
 	const char		*name;
-<<<<<<< HEAD
-	struct dentry		*entry;
-	struct event_filter	*filter;
-	int			nr_events;
-	int			ref_count;
-};
-
-=======
 	struct event_filter	*filter;
 	int			ref_count;
 };
@@ -1947,7 +1480,6 @@ event_trigger_unlock_commit(struct trace_event_file *file,
 		event_triggers_post_call(file, tt);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FILTER_PRED_INVALID	((unsigned short)-1)
 #define FILTER_PRED_IS_RIGHT	(1 << 15)
 #define FILTER_PRED_FOLD	(1 << 15)
@@ -1964,11 +1496,6 @@ event_trigger_unlock_commit(struct trace_event_file *file,
 struct filter_pred;
 struct regex;
 
-<<<<<<< HEAD
-typedef int (*filter_pred_fn_t) (struct filter_pred *pred, void *event);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef int (*regex_match_func)(char *str, struct regex *r, int len);
 
 enum regex_type {
@@ -1976,11 +1503,8 @@ enum regex_type {
 	MATCH_FRONT_ONLY,
 	MATCH_MIDDLE_ONLY,
 	MATCH_END_ONLY,
-<<<<<<< HEAD
-=======
 	MATCH_GLOB,
 	MATCH_INDEX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct regex {
@@ -1990,32 +1514,6 @@ struct regex {
 	regex_match_func	match;
 };
 
-<<<<<<< HEAD
-struct filter_pred {
-	filter_pred_fn_t 	fn;
-	u64 			val;
-	struct regex		regex;
-	unsigned short		*ops;
-	struct ftrace_event_field *field;
-	int 			offset;
-	int 			not;
-	int 			op;
-	unsigned short		index;
-	unsigned short		parent;
-	unsigned short		left;
-	unsigned short		right;
-};
-
-extern struct list_head ftrace_common_fields;
-
-extern enum regex_type
-filter_parse_regex(char *buff, int len, char **search, int *not);
-extern void print_event_filter(struct ftrace_event_call *call,
-			       struct trace_seq *s);
-extern int apply_event_filter(struct ftrace_event_call *call,
-			      char *filter_string);
-extern int apply_subsystem_event_filter(struct event_subsystem *system,
-=======
 static inline bool is_string_field(struct ftrace_event_field *field)
 {
 	return field->filter_type == FILTER_DYN_STRING ||
@@ -2037,32 +1535,10 @@ extern void print_event_filter(struct trace_event_file *file,
 extern int apply_event_filter(struct trace_event_file *file,
 			      char *filter_string);
 extern int apply_subsystem_event_filter(struct trace_subsystem_dir *dir,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					char *filter_string);
 extern void print_subsystem_event_filter(struct event_subsystem *system,
 					 struct trace_seq *s);
 extern int filter_assign_type(const char *type);
-<<<<<<< HEAD
-
-struct list_head *
-trace_get_fields(struct ftrace_event_call *event_call);
-
-static inline int
-filter_check_discard(struct ftrace_event_call *call, void *rec,
-		     struct ring_buffer *buffer,
-		     struct ring_buffer_event *event)
-{
-	if (unlikely(call->flags & TRACE_EVENT_FL_FILTERED) &&
-	    !filter_match_preds(call->filter, rec)) {
-		ring_buffer_discard_commit(buffer, event);
-		return 1;
-	}
-
-	return 0;
-}
-
-extern void trace_event_enable_cmd_record(bool enable);
-=======
 extern int create_event_filter(struct trace_array *tr,
 			       struct trace_event_call *call,
 			       char *filter_str, bool set_str,
@@ -2092,31 +1568,10 @@ static inline void *event_file_data(struct file *filp)
 {
 	return READ_ONCE(file_inode(filp)->i_private);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct mutex event_mutex;
 extern struct list_head ftrace_events;
 
-<<<<<<< HEAD
-extern const char *__start___trace_bprintk_fmt[];
-extern const char *__stop___trace_bprintk_fmt[];
-
-int trace_keep_overwrite(struct tracer *tracer, u32 mask, int set);
-int set_tracer_flag(unsigned int mask, int enabled);
-
-#undef FTRACE_ENTRY
-#define FTRACE_ENTRY(call, struct_name, id, tstruct, print, filter)	\
-	extern struct ftrace_event_call					\
-	__attribute__((__aligned__(4))) event_##call;
-#undef FTRACE_ENTRY_DUP
-#define FTRACE_ENTRY_DUP(call, struct_name, id, tstruct, print, filter)	\
-	FTRACE_ENTRY(call, struct_name, id, PARAMS(tstruct), PARAMS(print), \
-		     filter)
-#include "trace_entries.h"
-
-#if defined(CONFIG_PERF_EVENTS) && defined(CONFIG_FUNCTION_TRACER)
-int perf_ftrace_event_register(struct ftrace_event_call *call,
-=======
 extern const struct file_operations event_trigger_fops;
 extern const struct file_operations event_hist_fops;
 extern const struct file_operations event_hist_debug_fops;
@@ -2498,14 +1953,11 @@ extern void tracing_log_err(struct trace_array *tr,
 
 #if defined(CONFIG_PERF_EVENTS) && defined(CONFIG_FUNCTION_TRACER)
 int perf_ftrace_event_register(struct trace_event_call *call,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       enum trace_reg type, void *data);
 #else
 #define perf_ftrace_event_register NULL
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_FTRACE_SYSCALLS
 void init_ftrace_syscalls(void);
 const char *get_syscall_name(int syscall);
@@ -2629,5 +2081,4 @@ static inline int rv_init_interface(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_KERNEL_TRACE_H */

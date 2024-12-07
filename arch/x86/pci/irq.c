@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Low-Level PCI Support for PC -- Routing of Interrupts
  *
@@ -16,11 +13,6 @@
 #include <linux/dmi.h>
 #include <linux/io.h>
 #include <linux/smp.h>
-<<<<<<< HEAD
-#include <asm/io_apic.h>
-#include <linux/irq.h>
-#include <linux/acpi.h>
-=======
 #include <linux/spinlock.h>
 #include <asm/io_apic.h>
 #include <linux/irq.h>
@@ -28,27 +20,20 @@
 
 #include <asm/i8259.h>
 #include <asm/pc-conf-reg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pci_x86.h>
 
 #define PIRQ_SIGNATURE	(('$' << 0) + ('P' << 8) + ('I' << 16) + ('R' << 24))
 #define PIRQ_VERSION 0x0100
 
-<<<<<<< HEAD
-=======
 #define IRT_SIGNATURE	(('$' << 0) + ('I' << 8) + ('R' << 16) + ('T' << 24))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int broken_hp_bios_irq9;
 static int acer_tm360_irqrouting;
 
 static struct irq_routing_table *pirq_table;
 
 static int pirq_enable_irq(struct pci_dev *dev);
-<<<<<<< HEAD
-=======
 static void pirq_disable_irq(struct pci_dev *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Never use: 0, 1, 2 (timer, keyboard, and cascade)
@@ -68,11 +53,8 @@ struct irq_router {
 	int (*get)(struct pci_dev *router, struct pci_dev *dev, int pirq);
 	int (*set)(struct pci_dev *router, struct pci_dev *dev, int pirq,
 		int new);
-<<<<<<< HEAD
-=======
 	int (*lvl)(struct pci_dev *router, struct pci_dev *dev, int pirq,
 		int irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct irq_router_handler {
@@ -81,62 +63,38 @@ struct irq_router_handler {
 };
 
 int (*pcibios_enable_irq)(struct pci_dev *dev) = pirq_enable_irq;
-<<<<<<< HEAD
-void (*pcibios_disable_irq)(struct pci_dev *dev) = NULL;
-=======
 void (*pcibios_disable_irq)(struct pci_dev *dev) = pirq_disable_irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Check passed address for the PCI IRQ Routing Table signature
  *  and perform checksum verification.
  */
 
-<<<<<<< HEAD
-static inline struct irq_routing_table *pirq_check_routing_table(u8 *addr)
-=======
 static inline struct irq_routing_table *pirq_check_routing_table(u8 *addr,
 								 u8 *limit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct irq_routing_table *rt;
 	int i;
 	u8 sum;
 
-<<<<<<< HEAD
-	rt = (struct irq_routing_table *) addr;
-	if (rt->signature != PIRQ_SIGNATURE ||
-	    rt->version != PIRQ_VERSION ||
-	    rt->size % 16 ||
-	    rt->size < sizeof(struct irq_routing_table))
-=======
 	rt = (struct irq_routing_table *)addr;
 	if (rt->signature != PIRQ_SIGNATURE ||
 	    rt->version != PIRQ_VERSION ||
 	    rt->size % 16 ||
 	    rt->size < sizeof(struct irq_routing_table) ||
 	    (limit && rt->size > limit - addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	sum = 0;
 	for (i = 0; i < rt->size; i++)
 		sum += addr[i];
 	if (!sum) {
-<<<<<<< HEAD
-		DBG(KERN_DEBUG "PCI: Interrupt Routing Table found at 0x%p\n",
-			rt);
-=======
 		DBG(KERN_DEBUG "PCI: Interrupt Routing Table found at 0x%lx\n",
 		    __pa(rt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rt;
 	}
 	return NULL;
 }
 
-<<<<<<< HEAD
-
-=======
 /*
  * Handle the $IRT PCI IRQ Routing Table format used by AMI for its BCP
  * (BIOS Configuration Program) external tool meant for tweaking BIOS
@@ -205,7 +163,6 @@ static inline struct irq_routing_table *pirq_convert_irt_table(u8 *addr,
 
 	return rt;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Search 0xf0000 -- 0xfffff for the PCI IRQ Routing Table.
@@ -213,29 +170,18 @@ static inline struct irq_routing_table *pirq_convert_irt_table(u8 *addr,
 
 static struct irq_routing_table * __init pirq_find_routing_table(void)
 {
-<<<<<<< HEAD
-=======
 	u8 * const bios_start = (u8 *)__va(0xf0000);
 	u8 * const bios_end = (u8 *)__va(0x100000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *addr;
 	struct irq_routing_table *rt;
 
 	if (pirq_table_addr) {
-<<<<<<< HEAD
-		rt = pirq_check_routing_table((u8 *) __va(pirq_table_addr));
-=======
 		rt = pirq_check_routing_table((u8 *)__va(pirq_table_addr),
 					      NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rt)
 			return rt;
 		printk(KERN_WARNING "PCI: PIRQ table NOT found at pirqaddr\n");
 	}
-<<<<<<< HEAD
-	for (addr = (u8 *) __va(0xf0000); addr < (u8 *) __va(0x100000); addr += 16) {
-		rt = pirq_check_routing_table(addr);
-=======
 	for (addr = bios_start;
 	     addr < bios_end - sizeof(struct irq_routing_table);
 	     addr += 16) {
@@ -247,7 +193,6 @@ static struct irq_routing_table * __init pirq_find_routing_table(void)
 	     addr < bios_end - sizeof(struct irt_routing_table);
 	     addr++) {
 		rt = pirq_convert_irt_table(addr, bios_end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rt)
 			return rt;
 	}
@@ -273,12 +218,8 @@ static void __init pirq_peer_trick(void)
 #ifdef DEBUG
 		{
 			int j;
-<<<<<<< HEAD
-			DBG(KERN_DEBUG "%02x:%02x slot=%02x", e->bus, e->devfn/8, e->slot);
-=======
 			DBG(KERN_DEBUG "%02x:%02x.%x slot=%02x",
 			    e->bus, e->devfn / 8, e->devfn % 8, e->slot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (j = 0; j < 4; j++)
 				DBG(" %d:%02x/%04x", j, e->irq[j].link, e->irq[j].bitmap);
 			DBG("\n");
@@ -287,40 +228,15 @@ static void __init pirq_peer_trick(void)
 		busmap[e->bus] = 1;
 	}
 	for (i = 1; i < 256; i++) {
-<<<<<<< HEAD
-		int node;
-		if (!busmap[i] || pci_find_bus(0, i))
-			continue;
-		node = get_mp_bus_to_node(i);
-		if (pci_scan_bus_on_node(i, &pci_root_ops, node))
-			printk(KERN_INFO "PCI: Discovered primary peer "
-			       "bus %02x [IRQ]\n", i);
-=======
 		if (!busmap[i] || pci_find_bus(0, i))
 			continue;
 		pcibios_scan_root(i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pcibios_last_bus = -1;
 }
 
 /*
  *  Code for querying and setting of IRQ routes on various interrupt routers.
-<<<<<<< HEAD
- */
-
-void eisa_set_level_irq(unsigned int irq)
-{
-	unsigned char mask = 1 << (irq & 7);
-	unsigned int port = 0x4d0 + (irq >> 3);
-	unsigned char val;
-	static u16 eisa_irq_mask;
-
-	if (irq >= 16 || (1 << irq) & eisa_irq_mask)
-		return;
-
-	eisa_irq_mask |= (1 << irq);
-=======
  *  PIC Edge/Level Control Registers (ELCR) 0x4d0 & 0x4d1.
  */
 
@@ -335,7 +251,6 @@ void elcr_set_level_irq(unsigned int irq)
 		return;
 
 	elcr_irq_mask |= (1 << irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_DEBUG "PCI: setting IRQ %u as level-triggered\n", irq);
 	val = inb(port);
 	if (!(val & mask)) {
@@ -345,8 +260,6 @@ void elcr_set_level_irq(unsigned int irq)
 }
 
 /*
-<<<<<<< HEAD
-=======
  *	PIRQ routing for the M1487 ISA Bus Controller (IBC) ASIC used
  *	with the ALi FinALi 486 chipset.  The IBC is not decoded in the
  *	PCI configuration space, so we identify it by the accompanying
@@ -493,7 +406,6 @@ static int pirq_finali_lvl(struct pci_dev *router, struct pci_dev *dev,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Common IRQ routing practice: nibbles in config space,
  * offset by some magic constant.
  */
@@ -544,8 +456,6 @@ static int pirq_ali_set(struct pci_dev *router, struct pci_dev *dev, int pirq, i
 }
 
 /*
-<<<<<<< HEAD
-=======
  *	PIRQ routing for the 82374EB/82374SB EISA System Component (ESC)
  *	ASIC used with the Intel 82420 and 82430 PCIsets.  The ESC is not
  *	decoded in the PCI configuration space, so we identify it by the
@@ -614,7 +524,6 @@ static int pirq_esc_set(struct pci_dev *router, struct pci_dev *dev, int pirq,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The Intel PIIX4 pirq rules are fairly simple: "pirq" is
  * just a pointer to the config space.
  */
@@ -633,8 +542,6 @@ static int pirq_piix_set(struct pci_dev *router, struct pci_dev *dev, int pirq, 
 }
 
 /*
-<<<<<<< HEAD
-=======
  *	PIRQ routing for the 82426EX ISA Bridge (IB) ASIC used with the
  *	Intel 82420EX PCIset.
  *
@@ -679,7 +586,6 @@ static int pirq_ib_set(struct pci_dev *router, struct pci_dev *dev, int pirq,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The VIA pirq rules are nibble-based, like ALI,
  * but without the ugly irq number munging.
  * However, PIRQD is in the upper instead of lower 4 bits.
@@ -770,8 +676,6 @@ static int pirq_cyrix_set(struct pci_dev *router, struct pci_dev *dev, int pirq,
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 
 /*
  *	PIRQ routing for the SiS85C497 AT Bus Controller & Megacell (ATM)
@@ -847,7 +751,6 @@ static int pirq_sis497_set(struct pci_dev *router, struct pci_dev *dev,
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	PIRQ routing for SiS 85C503 router used in several SiS chipsets.
  *	We have to deal with the following issues here:
@@ -909,20 +812,12 @@ static int pirq_sis497_set(struct pci_dev *router, struct pci_dev *dev,
  *				bit 6-4 are probably unused, not like 5595
  */
 
-<<<<<<< HEAD
-#define PIRQ_SIS_IRQ_MASK	0x0f
-#define PIRQ_SIS_IRQ_DISABLE	0x80
-#define PIRQ_SIS_USB_ENABLE	0x40
-
-static int pirq_sis_get(struct pci_dev *router, struct pci_dev *dev, int pirq)
-=======
 #define PIRQ_SIS503_IRQ_MASK	0x0f
 #define PIRQ_SIS503_IRQ_DISABLE	0x80
 #define PIRQ_SIS503_USB_ENABLE	0x40
 
 static int pirq_sis503_get(struct pci_dev *router, struct pci_dev *dev,
 			   int pirq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 x;
 	int reg;
@@ -931,18 +826,11 @@ static int pirq_sis503_get(struct pci_dev *router, struct pci_dev *dev,
 	if (reg >= 0x01 && reg <= 0x04)
 		reg += 0x40;
 	pci_read_config_byte(router, reg, &x);
-<<<<<<< HEAD
-	return (x & PIRQ_SIS_IRQ_DISABLE) ? 0 : (x & PIRQ_SIS_IRQ_MASK);
-}
-
-static int pirq_sis_set(struct pci_dev *router, struct pci_dev *dev, int pirq, int irq)
-=======
 	return (x & PIRQ_SIS503_IRQ_DISABLE) ? 0 : (x & PIRQ_SIS503_IRQ_MASK);
 }
 
 static int pirq_sis503_set(struct pci_dev *router, struct pci_dev *dev,
 			   int pirq, int irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 x;
 	int reg;
@@ -951,13 +839,8 @@ static int pirq_sis503_set(struct pci_dev *router, struct pci_dev *dev,
 	if (reg >= 0x01 && reg <= 0x04)
 		reg += 0x40;
 	pci_read_config_byte(router, reg, &x);
-<<<<<<< HEAD
-	x &= ~(PIRQ_SIS_IRQ_MASK | PIRQ_SIS_IRQ_DISABLE);
-	x |= irq ? irq: PIRQ_SIS_IRQ_DISABLE;
-=======
 	x &= ~(PIRQ_SIS503_IRQ_MASK | PIRQ_SIS503_IRQ_DISABLE);
 	x |= irq ? irq : PIRQ_SIS503_IRQ_DISABLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_write_config_byte(router, reg, x);
 	return 1;
 }
@@ -1091,14 +974,11 @@ static __init int intel_router_probe(struct irq_router *r, struct pci_dev *route
 		return 0;
 
 	switch (device) {
-<<<<<<< HEAD
-=======
 	case PCI_DEVICE_ID_INTEL_82375:
 		r->name = "PCEB/ESC";
 		r->get = pirq_esc_get;
 		r->set = pirq_esc_set;
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PCI_DEVICE_ID_INTEL_82371FB_0:
 	case PCI_DEVICE_ID_INTEL_82371SB_0:
 	case PCI_DEVICE_ID_INTEL_82371AB_0:
@@ -1144,14 +1024,11 @@ static __init int intel_router_probe(struct irq_router *r, struct pci_dev *route
 		r->get = pirq_piix_get;
 		r->set = pirq_piix_set;
 		return 1;
-<<<<<<< HEAD
-=======
 	case PCI_DEVICE_ID_INTEL_82425:
 		r->name = "PSC/IB";
 		r->get = pirq_ib_get;
 		r->set = pirq_ib_set;
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if ((device >= PCI_DEVICE_ID_INTEL_5_3400_SERIES_LPC_MIN && 
@@ -1255,15 +1132,6 @@ static __init int serverworks_router_probe(struct irq_router *r,
 
 static __init int sis_router_probe(struct irq_router *r, struct pci_dev *router, u16 device)
 {
-<<<<<<< HEAD
-	if (device != PCI_DEVICE_ID_SI_503)
-		return 0;
-
-	r->name = "SIS";
-	r->get = pirq_sis_get;
-	r->set = pirq_sis_set;
-	return 1;
-=======
 	switch (device) {
 	case PCI_DEVICE_ID_SI_496:
 		r->name = "SiS85C497";
@@ -1277,7 +1145,6 @@ static __init int sis_router_probe(struct irq_router *r, struct pci_dev *router,
 		return 1;
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __init int cyrix_router_probe(struct irq_router *r, struct pci_dev *router, u16 device)
@@ -1319,15 +1186,12 @@ static __init int ite_router_probe(struct irq_router *r, struct pci_dev *router,
 static __init int ali_router_probe(struct irq_router *r, struct pci_dev *router, u16 device)
 {
 	switch (device) {
-<<<<<<< HEAD
-=======
 	case PCI_DEVICE_ID_AL_M1489:
 		r->name = "FinALi";
 		r->get = pirq_finali_get;
 		r->set = pirq_finali_set;
 		r->lvl = pirq_finali_lvl;
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PCI_DEVICE_ID_AL_M1533:
 	case PCI_DEVICE_ID_AL_M1563:
 		r->name = "ALI";
@@ -1400,12 +1264,6 @@ static struct pci_dev *pirq_router_dev;
  *	chipset" ?
  */
 
-<<<<<<< HEAD
-static void __init pirq_find_router(struct irq_router *r)
-{
-	struct irq_routing_table *rt = pirq_table;
-	struct irq_router_handler *h;
-=======
 static bool __init pirq_try_router(struct irq_router *r,
 				   struct irq_routing_table *rt,
 				   struct pci_dev *dev)
@@ -1432,7 +1290,6 @@ static void __init pirq_find_router(struct irq_router *r)
 {
 	struct irq_routing_table *rt = pirq_table;
 	struct pci_dev *dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PCI_BIOS
 	if (!rt->signature) {
@@ -1451,28 +1308,6 @@ static void __init pirq_find_router(struct irq_router *r)
 	DBG(KERN_DEBUG "PCI: Attempting to find IRQ router for [%04x:%04x]\n",
 	    rt->rtr_vendor, rt->rtr_device);
 
-<<<<<<< HEAD
-	pirq_router_dev = pci_get_bus_and_slot(rt->rtr_bus, rt->rtr_devfn);
-	if (!pirq_router_dev) {
-		DBG(KERN_DEBUG "PCI: Interrupt router not found at "
-			"%02x:%02x\n", rt->rtr_bus, rt->rtr_devfn);
-		return;
-	}
-
-	for (h = pirq_routers; h->vendor; h++) {
-		/* First look for a router match */
-		if (rt->rtr_vendor == h->vendor &&
-			h->probe(r, pirq_router_dev, rt->rtr_device))
-			break;
-		/* Fall back to a device match */
-		if (pirq_router_dev->vendor == h->vendor &&
-			h->probe(r, pirq_router_dev, pirq_router_dev->device))
-			break;
-	}
-	dev_info(&pirq_router_dev->dev, "%s IRQ router [%04x:%04x]\n",
-		 pirq_router.name,
-		 pirq_router_dev->vendor, pirq_router_dev->device);
-=======
 	/* Use any vendor:device provided by the routing table or try all.  */
 	if (rt->rtr_vendor) {
 		dev = pci_get_domain_bus_and_slot(0, rt->rtr_bus,
@@ -1496,14 +1331,10 @@ static void __init pirq_find_router(struct irq_router *r)
 	else
 		DBG(KERN_DEBUG "PCI: Interrupt router not found at "
 		    "%02x:%02x\n", rt->rtr_bus, rt->rtr_devfn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The device remains referenced for the kernel lifetime */
 }
 
-<<<<<<< HEAD
-static struct irq_info *pirq_get_info(struct pci_dev *dev)
-=======
 /*
  * We're supposed to match on the PCI device only and not the function,
  * but some BIOSes build their tables with the PCI function included
@@ -1511,20 +1342,10 @@ static struct irq_info *pirq_get_info(struct pci_dev *dev)
  * it precedence over a slot match.
  */
 static struct irq_info *pirq_get_dev_info(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct irq_routing_table *rt = pirq_table;
 	int entries = (rt->size - sizeof(struct irq_routing_table)) /
 		sizeof(struct irq_info);
-<<<<<<< HEAD
-	struct irq_info *info;
-
-	for (info = rt->slots; entries--; info++)
-		if (info->bus == dev->bus->number &&
-			PCI_SLOT(info->devfn) == PCI_SLOT(dev->devfn))
-			return info;
-	return NULL;
-=======
 	struct irq_info *slotinfo = NULL;
 	struct irq_info *info;
 
@@ -1568,20 +1389,13 @@ static struct irq_info *pirq_get_info(struct pci_dev *dev, u8 *pin)
 	}
 	*pin = temp_pin;
 	return info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcibios_lookup_irq(struct pci_dev *dev, int assign)
 {
-<<<<<<< HEAD
-	u8 pin;
-	struct irq_info *info;
-	int i, pirq, newirq;
-=======
 	struct irq_info *info;
 	int i, pirq, newirq;
 	u8 dpin, pin;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int irq = 0;
 	u32 mask;
 	struct irq_router *r = &pirq_router;
@@ -1589,13 +1403,8 @@ static int pcibios_lookup_irq(struct pci_dev *dev, int assign)
 	char *msg = NULL;
 
 	/* Find IRQ pin */
-<<<<<<< HEAD
-	pci_read_config_byte(dev, PCI_INTERRUPT_PIN, &pin);
-	if (!pin) {
-=======
 	pci_read_config_byte(dev, PCI_INTERRUPT_PIN, &dpin);
 	if (!dpin) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(&dev->dev, "no interrupt pin\n");
 		return 0;
 	}
@@ -1608,36 +1417,21 @@ static int pcibios_lookup_irq(struct pci_dev *dev, int assign)
 	if (!pirq_table)
 		return 0;
 
-<<<<<<< HEAD
-	info = pirq_get_info(dev);
-	if (!info) {
-		dev_dbg(&dev->dev, "PCI INT %c not found in routing table\n",
-			'A' + pin - 1);
-=======
 	pin = dpin;
 	info = pirq_get_info(dev, &pin);
 	if (!info) {
 		dev_dbg(&dev->dev, "PCI INT %c not found in routing table\n",
 			'A' + dpin - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	pirq = info->irq[pin - 1].link;
 	mask = info->irq[pin - 1].bitmap;
 	if (!pirq) {
-<<<<<<< HEAD
-		dev_dbg(&dev->dev, "PCI INT %c not routed\n", 'A' + pin - 1);
-		return 0;
-	}
-	dev_dbg(&dev->dev, "PCI INT %c -> PIRQ %02x, mask %04x, excl %04x",
-		'A' + pin - 1, pirq, mask, pirq_table->exclusive_irqs);
-=======
 		dev_dbg(&dev->dev, "PCI INT %c not routed\n", 'A' + dpin - 1);
 		return 0;
 	}
 	dev_dbg(&dev->dev, "PCI INT %c -> PIRQ %02x, mask %04x, excl %04x",
 		'A' + dpin - 1, pirq, mask, pirq_table->exclusive_irqs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mask &= pcibios_irq_mask;
 
 	/* Work around broken HP Pavilion Notebooks which assign USB to
@@ -1679,11 +1473,7 @@ static int pcibios_lookup_irq(struct pci_dev *dev, int assign)
 				newirq = i;
 		}
 	}
-<<<<<<< HEAD
-	dev_dbg(&dev->dev, "PCI INT %c -> newirq %d", 'A' + pin - 1, newirq);
-=======
 	dev_dbg(&dev->dev, "PCI INT %c -> newirq %d", 'A' + dpin - 1, newirq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check if it is hardcoded */
 	if ((pirq & 0xf0) == 0xf0) {
@@ -1692,13 +1482,6 @@ static int pcibios_lookup_irq(struct pci_dev *dev, int assign)
 	} else if (r->get && (irq = r->get(pirq_router_dev, dev, pirq)) && \
 	((!(pci_probe & PCI_USE_PIRQ_MASK)) || ((1 << irq) & mask))) {
 		msg = "found";
-<<<<<<< HEAD
-		eisa_set_level_irq(irq);
-	} else if (newirq && r->set &&
-		(dev->class >> 8) != PCI_CLASS_DISPLAY_VGA) {
-		if (r->set(pirq_router_dev, dev, pirq, newirq)) {
-			eisa_set_level_irq(newirq);
-=======
 		if (r->lvl)
 			r->lvl(pirq_router_dev, dev, pirq, irq);
 		else
@@ -1710,7 +1493,6 @@ static int pcibios_lookup_irq(struct pci_dev *dev, int assign)
 				r->lvl(pirq_router_dev, dev, pirq, newirq);
 			else
 				elcr_set_level_irq(newirq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg = "assigned";
 			irq = newirq;
 		}
@@ -1725,17 +1507,6 @@ static int pcibios_lookup_irq(struct pci_dev *dev, int assign)
 			return 0;
 		}
 	}
-<<<<<<< HEAD
-	dev_info(&dev->dev, "%s PCI INT %c -> IRQ %d\n", msg, 'A' + pin - 1, irq);
-
-	/* Update IRQ for all devices with the same pirq value */
-	for_each_pci_dev(dev2) {
-		pci_read_config_byte(dev2, PCI_INTERRUPT_PIN, &pin);
-		if (!pin)
-			continue;
-
-		info = pirq_get_info(dev2);
-=======
 	dev_info(&dev->dev, "%s PCI INT %c -> IRQ %d\n",
 		 msg, 'A' + dpin - 1, irq);
 
@@ -1747,7 +1518,6 @@ static int pcibios_lookup_irq(struct pci_dev *dev, int assign)
 
 		pin = dpin;
 		info = pirq_get_info(dev2, &pin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!info)
 			continue;
 		if (info->irq[pin - 1].link == pirq) {
@@ -1846,11 +1616,7 @@ static int __init fix_acer_tm360_irqrouting(const struct dmi_system_id *d)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct dmi_system_id __initdata pciirq_dmi_table[] = {
-=======
 static const struct dmi_system_id pciirq_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.callback = fix_broken_hp_bios_irq9,
 		.ident = "HP Pavilion N5400 Series Laptop",
@@ -1875,11 +1641,8 @@ static const struct dmi_system_id pciirq_dmi_table[] __initconst = {
 
 void __init pcibios_irq_init(void)
 {
-<<<<<<< HEAD
-=======
 	struct irq_routing_table *rtable = NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DBG(KERN_DEBUG "PCI: IRQ init\n");
 
 	if (raw_pci_ops == NULL)
@@ -1890,15 +1653,10 @@ void __init pcibios_irq_init(void)
 	pirq_table = pirq_find_routing_table();
 
 #ifdef CONFIG_PCI_BIOS
-<<<<<<< HEAD
-	if (!pirq_table && (pci_probe & PCI_BIOS_IRQ_SCAN))
-		pirq_table = pcibios_get_irq_routing_table();
-=======
 	if (!pirq_table && (pci_probe & PCI_BIOS_IRQ_SCAN)) {
 		pirq_table = pcibios_get_irq_routing_table();
 		rtable = pirq_table;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	if (pirq_table) {
 		pirq_peer_trick();
@@ -1913,15 +1671,10 @@ void __init pcibios_irq_init(void)
 		 * If we're using the I/O APIC, avoid using the PCI IRQ
 		 * routing table
 		 */
-<<<<<<< HEAD
-		if (io_apic_assign_pci_irqs)
-			pirq_table = NULL;
-=======
 		if (io_apic_assign_pci_irqs) {
 			kfree(rtable);
 			pirq_table = NULL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	x86_init.pci.fixup_irqs();
@@ -1965,11 +1718,7 @@ void pcibios_penalize_isa_irq(int irq, int active)
 
 static int pirq_enable_irq(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	u8 pin;
-=======
 	u8 pin = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_read_config_byte(dev, PCI_INTERRUPT_PIN, &pin);
 	if (pin && !pcibios_lookup_irq(dev, 1)) {
@@ -1982,20 +1731,12 @@ static int pirq_enable_irq(struct pci_dev *dev)
 #ifdef CONFIG_X86_IO_APIC
 			struct pci_dev *temp_dev;
 			int irq;
-<<<<<<< HEAD
-			struct io_apic_irq_attr irq_attr;
-
-			irq = IO_APIC_get_PCI_irq_vector(dev->bus->number,
-						PCI_SLOT(dev->devfn),
-						pin - 1, &irq_attr);
-=======
 
 			if (dev->irq_managed && dev->irq > 0)
 				return 0;
 
 			irq = IO_APIC_get_PCI_irq_vector(dev->bus->number,
 						PCI_SLOT(dev->devfn), pin - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Busses behind bridges are typically not listed in the MP-table.
 			 * In this case we have to look up the IRQ based on the parent bus,
@@ -2009,11 +1750,7 @@ static int pirq_enable_irq(struct pci_dev *dev)
 				pin = pci_swizzle_interrupt_pin(dev, pin);
 				irq = IO_APIC_get_PCI_irq_vector(bridge->bus->number,
 						PCI_SLOT(bridge->devfn),
-<<<<<<< HEAD
-						pin - 1, &irq_attr);
-=======
 						pin - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (irq >= 0)
 					dev_warn(&dev->dev, "using bridge %s "
 						 "INT %c to get IRQ %d\n",
@@ -2023,12 +1760,7 @@ static int pirq_enable_irq(struct pci_dev *dev)
 			}
 			dev = temp_dev;
 			if (irq >= 0) {
-<<<<<<< HEAD
-				io_apic_set_pci_routing(&dev->dev, irq,
-							 &irq_attr);
-=======
 				dev->irq_managed = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->irq = irq;
 				dev_info(&dev->dev, "PCI->APIC IRQ transform: "
 					 "INT %c -> IRQ %d\n", 'A' + pin - 1, irq);
@@ -2054,8 +1786,6 @@ static int pirq_enable_irq(struct pci_dev *dev)
 	}
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 bool mp_should_keep_irq(struct device *dev)
 {
@@ -2078,4 +1808,3 @@ static void pirq_disable_irq(struct pci_dev *dev)
 		dev->irq_managed = 0;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

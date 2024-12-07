@@ -1,10 +1,6 @@
 /*
    BlueZ - Bluetooth protocol stack for Linux
-<<<<<<< HEAD
-   Copyright (c) 2000-2001, 2011, The Linux Foundation. All rights reserved.
-=======
    Copyright (C) 2000-2001 Qualcomm Incorporated
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
 
@@ -27,52 +23,14 @@
 */
 
 /* Bluetooth HCI sockets. */
-<<<<<<< HEAD
-
-#include <linux/module.h>
-
-#include <linux/types.h>
-#include <linux/capability.h>
-#include <linux/errno.h>
-#include <linux/kernel.h>
-#include <linux/slab.h>
-#include <linux/poll.h>
-#include <linux/fcntl.h>
-#include <linux/init.h>
-#include <linux/skbuff.h>
-#include <linux/workqueue.h>
-#include <linux/interrupt.h>
-#include <linux/compat.h>
-#include <linux/socket.h>
-#include <linux/ioctl.h>
-#include <net/sock.h>
-
-#include <asm/system.h>
-#include <linux/uaccess.h>
-=======
 #include <linux/compat.h>
 #include <linux/export.h>
 #include <linux/utsname.h>
 #include <linux/sched.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unaligned.h>
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
-<<<<<<< HEAD
-
-static bool enable_mgmt = 1;
-
-/* ----- HCI socket interface ----- */
-
-static inline int hci_test_bit(int nr, void *addr)
-{
-	return *((__u32 *) addr + (nr >> 5)) & ((__u32) 1 << (nr & 31));
-}
-
-/* Security filter */
-static struct hci_sec_filter hci_sec_filter = {
-=======
 #include <net/bluetooth/hci_mon.h>
 #include <net/bluetooth/mgmt.h>
 
@@ -180,7 +138,6 @@ struct hci_sec_filter {
 };
 
 static const struct hci_sec_filter hci_sec_filter = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Packet types */
 	0x10,
 	/* Events */
@@ -205,14 +162,6 @@ static struct bt_sock_list hci_sk_list = {
 	.lock = __RW_LOCK_UNLOCKED(hci_sk_list.lock)
 };
 
-<<<<<<< HEAD
-/* Send frame to RAW socket */
-void hci_send_to_sock(struct hci_dev *hdev, struct sk_buff *skb,
-							struct sock *skip_sk)
-{
-	struct sock *sk;
-	struct hlist_node *node;
-=======
 static bool is_filtered_packet(struct sock *sk, struct sk_buff *skb)
 {
 	struct hci_filter *flt;
@@ -255,23 +204,13 @@ void hci_send_to_sock(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct sock *sk;
 	struct sk_buff *skb_copy = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("hdev %p len %d", hdev, skb->len);
 
 	read_lock(&hci_sk_list.lock);
-<<<<<<< HEAD
-	sk_for_each(sk, node, &hci_sk_list.head) {
-		struct hci_filter *flt;
-		struct sk_buff *nskb;
-
-		if (sk == skip_sk)
-			continue;
-=======
 
 	sk_for_each(sk, &hci_sk_list.head) {
 		struct sk_buff *nskb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (sk->sk_state != BT_BOUND || hci_pi(sk)->hdev != hdev)
 			continue;
@@ -280,52 +219,6 @@ void hci_send_to_sock(struct hci_dev *hdev, struct sk_buff *skb)
 		if (skb->sk == sk)
 			continue;
 
-<<<<<<< HEAD
-		if (bt_cb(skb)->channel != hci_pi(sk)->channel)
-			continue;
-
-		if (bt_cb(skb)->channel == HCI_CHANNEL_CONTROL)
-			goto clone;
-
-		/* Apply filter */
-		flt = &hci_pi(sk)->filter;
-
-		if (!test_bit((bt_cb(skb)->pkt_type == HCI_VENDOR_PKT) ?
-				0 : (bt_cb(skb)->pkt_type & HCI_FLT_TYPE_BITS), &flt->type_mask))
-			continue;
-
-		if (bt_cb(skb)->pkt_type == HCI_EVENT_PKT) {
-			register int evt = (*(__u8 *)skb->data & HCI_FLT_EVENT_BITS);
-
-			if (!hci_test_bit(evt, &flt->event_mask))
-				continue;
-
-			if (flt->opcode &&
-			    ((evt == HCI_EV_CMD_COMPLETE &&
-			      flt->opcode !=
-			      get_unaligned((__le16 *)(skb->data + 3))) ||
-			     (evt == HCI_EV_CMD_STATUS &&
-			      flt->opcode !=
-			      get_unaligned((__le16 *)(skb->data + 4)))))
-				continue;
-		}
-
-clone:
-		nskb = skb_clone(skb, GFP_ATOMIC);
-		if (!nskb)
-			continue;
-
-		/* Put type byte before the data */
-		if (bt_cb(skb)->channel == HCI_CHANNEL_RAW)
-			memcpy(skb_push(nskb, 1), &bt_cb(nskb)->pkt_type, 1);
-
-		if (sock_queue_rcv_skb(sk, nskb))
-			kfree_skb(nskb);
-	}
-	read_unlock(&hci_sk_list.lock);
-}
-
-=======
 		if (hci_pi(sk)->channel == HCI_CHANNEL_RAW) {
 			if (hci_skb_pkt_type(skb) != HCI_COMMAND_PKT &&
 			    hci_skb_pkt_type(skb) != HCI_EVENT_PKT &&
@@ -998,28 +891,17 @@ void hci_mgmt_chan_unregister(struct hci_mgmt_chan *c)
 }
 EXPORT_SYMBOL(hci_mgmt_chan_unregister);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hci_sock_release(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
 	struct hci_dev *hdev;
-<<<<<<< HEAD
-=======
 	struct sk_buff *skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("sock %p sk %p", sock, sk);
 
 	if (!sk)
 		return 0;
 
-<<<<<<< HEAD
-	hdev = hci_pi(sk)->hdev;
-
-	bt_sock_unlink(&hci_sk_list, sk);
-
-	if (hdev) {
-=======
 	lock_sock(sk);
 
 	switch (hci_pi(sk)->channel) {
@@ -1066,94 +948,24 @@ static int hci_sock_release(struct socket *sock)
 			mgmt_index_added(hdev);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_dec(&hdev->promisc);
 		hci_dev_put(hdev);
 	}
 
 	sock_orphan(sk);
-<<<<<<< HEAD
-
-	skb_queue_purge(&sk->sk_receive_queue);
-	skb_queue_purge(&sk->sk_write_queue);
-
-=======
 	release_sock(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sock_put(sk);
 	return 0;
 }
 
-<<<<<<< HEAD
-struct bdaddr_list *hci_blacklist_lookup(struct hci_dev *hdev, bdaddr_t *bdaddr)
-{
-	struct list_head *p;
-
-	list_for_each(p, &hdev->blacklist) {
-		struct bdaddr_list *b;
-
-		b = list_entry(p, struct bdaddr_list, list);
-
-		if (bacmp(bdaddr, &b->bdaddr) == 0)
-			return b;
-	}
-
-	return NULL;
-}
-
-static int hci_blacklist_add(struct hci_dev *hdev, void __user *arg)
-{
-	bdaddr_t bdaddr;
-	struct bdaddr_list *entry;
-=======
 static int hci_sock_reject_list_add(struct hci_dev *hdev, void __user *arg)
 {
 	bdaddr_t bdaddr;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(&bdaddr, arg, sizeof(bdaddr)))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	if (bacmp(&bdaddr, BDADDR_ANY) == 0)
-		return -EBADF;
-
-	if (hci_blacklist_lookup(hdev, &bdaddr))
-		return -EEXIST;
-
-	entry = kzalloc(sizeof(struct bdaddr_list), GFP_KERNEL);
-	if (!entry)
-		return -ENOMEM;
-
-	bacpy(&entry->bdaddr, &bdaddr);
-
-	list_add(&entry->list, &hdev->blacklist);
-
-	return 0;
-}
-
-int hci_blacklist_clear(struct hci_dev *hdev)
-{
-	struct list_head *p, *n;
-
-	list_for_each_safe(p, n, &hdev->blacklist) {
-		struct bdaddr_list *b;
-
-		b = list_entry(p, struct bdaddr_list, list);
-
-		list_del(p);
-		kfree(b);
-	}
-
-	return 0;
-}
-
-static int hci_blacklist_del(struct hci_dev *hdev, void __user *arg)
-{
-	bdaddr_t bdaddr;
-	struct bdaddr_list *entry;
-=======
 	hci_dev_lock(hdev);
 
 	err = hci_bdaddr_list_add(&hdev->reject_list, &bdaddr, BDADDR_BREDR);
@@ -1167,33 +979,10 @@ static int hci_sock_reject_list_del(struct hci_dev *hdev, void __user *arg)
 {
 	bdaddr_t bdaddr;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(&bdaddr, arg, sizeof(bdaddr)))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	if (bacmp(&bdaddr, BDADDR_ANY) == 0)
-		return hci_blacklist_clear(hdev);
-
-	entry = hci_blacklist_lookup(hdev, &bdaddr);
-	if (!entry)
-		return -ENOENT;
-
-	list_del(&entry->list);
-	kfree(entry);
-
-	return 0;
-}
-
-/* Ioctls that require bound socket */
-static inline int hci_sock_bound_ioctl(struct sock *sk, unsigned int cmd, unsigned long arg)
-{
-	struct hci_dev *hdev = hci_pi(sk)->hdev;
-
-	if (!hdev)
-		return -EBADFD;
-=======
 	hci_dev_lock(hdev);
 
 	err = hci_bdaddr_list_del(&hdev->reject_list, &bdaddr, BDADDR_BREDR);
@@ -1220,55 +1009,10 @@ static int hci_sock_bound_ioctl(struct sock *sk, unsigned int cmd,
 
 	if (hdev->dev_type != HCI_PRIMARY)
 		return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case HCISETRAW:
 		if (!capable(CAP_NET_ADMIN))
-<<<<<<< HEAD
-			return -EACCES;
-
-		if (test_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks))
-			return -EPERM;
-
-		if (arg)
-			set_bit(HCI_RAW, &hdev->flags);
-		else
-			clear_bit(HCI_RAW, &hdev->flags);
-
-		return 0;
-
-	case HCIGETCONNINFO:
-		return hci_get_conn_info(hdev, (void __user *) arg);
-
-	case HCIGETAUTHINFO:
-		return hci_get_auth_info(hdev, (void __user *) arg);
-
-	case HCIBLOCKADDR:
-		if (!capable(CAP_NET_ADMIN))
-			return -EACCES;
-		return hci_blacklist_add(hdev, (void __user *) arg);
-
-	case HCIUNBLOCKADDR:
-		if (!capable(CAP_NET_ADMIN))
-			return -EACCES;
-		return hci_blacklist_del(hdev, (void __user *) arg);
-
-	case HCISETAUTHINFO:
-		return hci_set_auth_info(hdev, (void __user *) arg);
-
-	default:
-		if (hdev->ioctl)
-			return hdev->ioctl(hdev, cmd, arg);
-		return -EINVAL;
-	}
-}
-
-static int hci_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
-{
-	struct sock *sk = sock->sk;
-	void __user *argp = (void __user *) arg;
-=======
 			return -EPERM;
 		return -EOPNOTSUPP;
 
@@ -1297,13 +1041,10 @@ static int hci_sock_ioctl(struct socket *sock, unsigned int cmd,
 {
 	void __user *argp = (void __user *)arg;
 	struct sock *sk = sock->sk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	BT_DBG("cmd %x arg %lx", cmd, arg);
 
-<<<<<<< HEAD
-=======
 	/* Make sure the cmd is valid before doing anything */
 	switch (cmd) {
 	case HCIGETDEVLIST:
@@ -1369,7 +1110,6 @@ static int hci_sock_ioctl(struct socket *sock, unsigned int cmd,
 
 	release_sock(sk);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case HCIGETDEVLIST:
 		return hci_get_dev_list(argp);
@@ -1382,44 +1122,22 @@ static int hci_sock_ioctl(struct socket *sock, unsigned int cmd,
 
 	case HCIDEVUP:
 		if (!capable(CAP_NET_ADMIN))
-<<<<<<< HEAD
-			return -EACCES;
-
-		err =  hci_dev_open(arg);
-		if (!err || err == -EALREADY)
-			return 0;
-		else
-			return err;
-
-	case HCIDEVDOWN:
-		if (!capable(CAP_NET_ADMIN))
-			return -EACCES;
-=======
 			return -EPERM;
 		return hci_dev_open(arg);
 
 	case HCIDEVDOWN:
 		if (!capable(CAP_NET_ADMIN))
 			return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return hci_dev_close(arg);
 
 	case HCIDEVRESET:
 		if (!capable(CAP_NET_ADMIN))
-<<<<<<< HEAD
-			return -EACCES;
-=======
 			return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return hci_dev_reset(arg);
 
 	case HCIDEVRESTAT:
 		if (!capable(CAP_NET_ADMIN))
-<<<<<<< HEAD
-			return -EACCES;
-=======
 			return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return hci_dev_reset_stat(arg);
 
 	case HCISETSCAN:
@@ -1431,27 +1149,11 @@ static int hci_sock_ioctl(struct socket *sock, unsigned int cmd,
 	case HCISETACLMTU:
 	case HCISETSCOMTU:
 		if (!capable(CAP_NET_ADMIN))
-<<<<<<< HEAD
-			return -EACCES;
-=======
 			return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return hci_dev_cmd(cmd, argp);
 
 	case HCIINQUIRY:
 		return hci_inquiry(argp);
-<<<<<<< HEAD
-
-	default:
-		lock_sock(sk);
-		err = hci_sock_bound_ioctl(sk, cmd, arg);
-		release_sock(sk);
-		return err;
-	}
-}
-
-static int hci_sock_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
-=======
 	}
 
 	lock_sock(sk);
@@ -1481,15 +1183,11 @@ static int hci_sock_compat_ioctl(struct socket *sock, unsigned int cmd,
 
 static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
 			 int addr_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sockaddr_hci haddr;
 	struct sock *sk = sock->sk;
 	struct hci_dev *hdev = NULL;
-<<<<<<< HEAD
-=======
 	struct sk_buff *skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int len, err = 0;
 
 	BT_DBG("sock %p sk %p", sock, sk);
@@ -1504,17 +1202,6 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
 	if (haddr.hci_family != AF_BLUETOOTH)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (haddr.hci_channel > HCI_CHANNEL_CONTROL)
-		return -EINVAL;
-
-	if (haddr.hci_channel == HCI_CHANNEL_CONTROL && !enable_mgmt)
-		return -EINVAL;
-
-	lock_sock(sk);
-
-	if (sk->sk_state == BT_BOUND || hci_pi(sk)->hdev) {
-=======
 	lock_sock(sk);
 
 	/* Allow detaching from dead device and attaching to alive device, if
@@ -1530,14 +1217,10 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
 	hdev = NULL;
 
 	if (sk->sk_state == BT_BOUND) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EALREADY;
 		goto done;
 	}
 
-<<<<<<< HEAD
-	if (haddr.hci_dev != HCI_DEV_NONE) {
-=======
 	switch (haddr.hci_channel) {
 	case HCI_CHANNEL_RAW:
 		if (hci_pi(sk)->hdev) {
@@ -1602,20 +1285,12 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
 			goto done;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hdev = hci_dev_get(haddr.hci_dev);
 		if (!hdev) {
 			err = -ENODEV;
 			goto done;
 		}
 
-<<<<<<< HEAD
-		atomic_inc(&hdev->promisc);
-	}
-
-	hci_pi(sk)->channel = haddr.hci_channel;
-	hci_pi(sk)->hdev = hdev;
-=======
 		if (test_bit(HCI_INIT, &hdev->flags) ||
 		    hci_dev_test_flag(hdev, HCI_SETUP) ||
 		    hci_dev_test_flag(hdev, HCI_CONFIG) ||
@@ -1799,7 +1474,6 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
 	if (!hci_pi(sk)->mtu)
 		hci_pi(sk)->mtu = HCI_MAX_FRAME_SIZE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk->sk_state = BT_BOUND;
 
 done:
@@ -1807,36 +1481,6 @@ done:
 	return err;
 }
 
-<<<<<<< HEAD
-static int hci_sock_getname(struct socket *sock, struct sockaddr *addr, int *addr_len, int peer)
-{
-	struct sockaddr_hci *haddr = (struct sockaddr_hci *) addr;
-	struct sock *sk = sock->sk;
-	struct hci_dev *hdev = hci_pi(sk)->hdev;
-
-	BT_DBG("sock %p sk %p", sock, sk);
-
-	if (!hdev)
-		return -EBADFD;
-
-	lock_sock(sk);
-
-	*addr_len = sizeof(*haddr);
-	haddr->hci_family = AF_BLUETOOTH;
-	haddr->hci_dev    = hdev->id;
-
-	release_sock(sk);
-	return 0;
-}
-
-static inline void hci_sock_cmsg(struct sock *sk, struct msghdr *msg, struct sk_buff *skb)
-{
-	__u32 mask = hci_pi(sk)->cmsg_mask;
-
-	if (mask & HCI_CMSG_DIR) {
-		int incoming = bt_cb(skb)->incoming;
-		put_cmsg(msg, SOL_HCI, HCI_CMSG_DIR, sizeof(incoming), &incoming);
-=======
 static int hci_sock_getname(struct socket *sock, struct sockaddr *addr,
 			    int peer)
 {
@@ -1877,20 +1521,13 @@ static void hci_sock_cmsg(struct sock *sk, struct msghdr *msg,
 		int incoming = bt_cb(skb)->incoming;
 		put_cmsg(msg, SOL_HCI, HCI_CMSG_DIR, sizeof(incoming),
 			 &incoming);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (mask & HCI_CMSG_TSTAMP) {
 #ifdef CONFIG_COMPAT
-<<<<<<< HEAD
-		struct compat_timeval ctv;
-#endif
-		struct timeval tv;
-=======
 		struct old_timeval32 ctv;
 #endif
 		struct __kernel_old_timeval tv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void *data;
 		int len;
 
@@ -1899,12 +1536,8 @@ static void hci_sock_cmsg(struct sock *sk, struct msghdr *msg,
 		data = &tv;
 		len = sizeof(tv);
 #ifdef CONFIG_COMPAT
-<<<<<<< HEAD
-		if (msg->msg_flags & MSG_CMSG_COMPAT) {
-=======
 		if (!COMPAT_USE_64BIT_TIME &&
 		    (msg->msg_flags & MSG_CMSG_COMPAT)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ctv.tv_sec = tv.tv_sec;
 			ctv.tv_usec = tv.tv_usec;
 			data = &ctv;
@@ -1916,19 +1549,6 @@ static void hci_sock_cmsg(struct sock *sk, struct msghdr *msg,
 	}
 }
 
-<<<<<<< HEAD
-static int hci_sock_recvmsg(struct kiocb *iocb, struct socket *sock,
-				struct msghdr *msg, size_t len, int flags)
-{
-	int noblock = flags & MSG_DONTWAIT;
-	struct sock *sk = sock->sk;
-	struct sk_buff *skb;
-	int copied, err;
-
-	BT_DBG("sock %p, sk %p", sock, sk);
-
-	if (flags & (MSG_OOB))
-=======
 static int hci_sock_recvmsg(struct socket *sock, struct msghdr *msg,
 			    size_t len, int flags)
 {
@@ -1944,24 +1564,16 @@ static int hci_sock_recvmsg(struct socket *sock, struct msghdr *msg,
 		return -EOPNOTSUPP;
 
 	if (hci_pi(sk)->channel == HCI_CHANNEL_LOGGING)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EOPNOTSUPP;
 
 	if (sk->sk_state == BT_CLOSED)
 		return 0;
 
-<<<<<<< HEAD
-	skb = skb_recv_datagram(sk, flags, noblock, &err);
-	if (!skb)
-		return err;
-
-=======
 	skb = skb_recv_datagram(sk, flags, &err);
 	if (!skb)
 		return err;
 
 	skblen = skb->len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	copied = skb->len;
 	if (len < copied) {
 		msg->msg_flags |= MSG_TRUNC;
@@ -1969,37 +1581,6 @@ static int hci_sock_recvmsg(struct socket *sock, struct msghdr *msg,
 	}
 
 	skb_reset_transport_header(skb);
-<<<<<<< HEAD
-	err = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
-
-	hci_sock_cmsg(sk, msg, skb);
-
-	skb_free_datagram(sk, skb);
-
-	return err ? : copied;
-}
-
-static int hci_sock_sendmsg(struct kiocb *iocb, struct socket *sock,
-			    struct msghdr *msg, size_t len)
-{
-	struct sock *sk = sock->sk;
-	struct hci_dev *hdev;
-	struct sk_buff *skb;
-	int reserve = 0;
-	int err;
-
-	BT_DBG("sock %p sk %p", sock, sk);
-
-	if (msg->msg_flags & MSG_OOB)
-		return -EOPNOTSUPP;
-
-	if (msg->msg_flags & ~(MSG_DONTWAIT|MSG_NOSIGNAL|MSG_ERRQUEUE))
-		return -EINVAL;
-
-	if (len < 4 || len > HCI_MAX_FRAME_SIZE)
-		return -EINVAL;
-
-=======
 	err = skb_copy_datagram_msg(skb, 0, msg, copied);
 
 	switch (hci_pi(sk)->channel) {
@@ -2235,26 +1816,10 @@ static int hci_sock_sendmsg(struct socket *sock, struct msghdr *msg,
 	if (IS_ERR(skb))
 		return PTR_ERR(skb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock_sock(sk);
 
 	switch (hci_pi(sk)->channel) {
 	case HCI_CHANNEL_RAW:
-<<<<<<< HEAD
-		break;
-	case HCI_CHANNEL_CONTROL:
-		err = mgmt_control(sk, msg, len);
-		goto done;
-	default:
-		err = -EINVAL;
-		goto done;
-	}
-
-	hdev = hci_pi(sk)->hdev;
-	if (!hdev) {
-		err = -EBADFD;
-		goto done;
-=======
 	case HCI_CHANNEL_USER:
 		break;
 	case HCI_CHANNEL_MONITOR:
@@ -2279,38 +1844,10 @@ static int hci_sock_sendmsg(struct socket *sock, struct msghdr *msg,
 	if (IS_ERR(hdev)) {
 		err = PTR_ERR(hdev);
 		goto drop;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!test_bit(HCI_UP, &hdev->flags)) {
 		err = -ENETDOWN;
-<<<<<<< HEAD
-		goto done;
-	}
-
-	/* Allocate extra headroom for Qualcomm PAL */
-	if (hdev->dev_type == HCI_AMP && hdev->manufacturer == 0x001d)
-		reserve = BT_SKB_RESERVE_80211;
-
-	skb = bt_skb_send_alloc(sk, len + reserve,
-					msg->msg_flags & MSG_DONTWAIT, &err);
-	if (!skb)
-		goto done;
-
-	if (reserve)
-		skb_reserve(skb, reserve);
-
-	if (memcpy_fromiovec(skb_put(skb, len), msg->msg_iov, len)) {
-		err = -EFAULT;
-		goto drop;
-	}
-
-	bt_cb(skb)->pkt_type = *((unsigned char *) skb->data);
-	skb_pull(skb, 1);
-	skb->dev = (void *) hdev;
-
-	if (bt_cb(skb)->pkt_type == HCI_COMMAND_PKT) {
-=======
 		goto drop;
 	}
 
@@ -2334,32 +1871,18 @@ static int hci_sock_sendmsg(struct socket *sock, struct msghdr *msg,
 		skb_queue_tail(&hdev->raw_q, skb);
 		queue_work(hdev->workqueue, &hdev->tx_work);
 	} else if (hci_skb_pkt_type(skb) == HCI_COMMAND_PKT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u16 opcode = get_unaligned_le16(skb->data);
 		u16 ogf = hci_opcode_ogf(opcode);
 		u16 ocf = hci_opcode_ocf(opcode);
 
 		if (((ogf > HCI_SFLT_MAX_OGF) ||
-<<<<<<< HEAD
-				!hci_test_bit(ocf & HCI_FLT_OCF_BITS, &hci_sec_filter.ocf_mask[ogf])) &&
-					!capable(CAP_NET_RAW)) {
-=======
 		     !hci_test_bit(ocf & HCI_FLT_OCF_BITS,
 				   &hci_sec_filter.ocf_mask[ogf])) &&
 		    !capable(CAP_NET_RAW)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EPERM;
 			goto drop;
 		}
 
-<<<<<<< HEAD
-		if (test_bit(HCI_RAW, &hdev->flags) || (ogf == 0x3f)) {
-			skb_queue_tail(&hdev->raw_q, skb);
-			tasklet_schedule(&hdev->tx_task);
-		} else {
-			skb_queue_tail(&hdev->cmd_q, skb);
-			tasklet_schedule(&hdev->cmd_task);
-=======
 		/* Since the opcode has already been extracted here, store
 		 * a copy of the value for later use by the drivers.
 		 */
@@ -2376,7 +1899,6 @@ static int hci_sock_sendmsg(struct socket *sock, struct msghdr *msg,
 
 			skb_queue_tail(&hdev->cmd_q, skb);
 			queue_work(hdev->workqueue, &hdev->cmd_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		if (!capable(CAP_NET_RAW)) {
@@ -2384,10 +1906,6 @@ static int hci_sock_sendmsg(struct socket *sock, struct msghdr *msg,
 			goto drop;
 		}
 
-<<<<<<< HEAD
-		skb_queue_tail(&hdev->raw_q, skb);
-		tasklet_schedule(&hdev->tx_task);
-=======
 		if (hci_skb_pkt_type(skb) != HCI_ACLDATA_PKT &&
 		    hci_skb_pkt_type(skb) != HCI_SCODATA_PKT &&
 		    hci_skb_pkt_type(skb) != HCI_ISODATA_PKT) {
@@ -2397,7 +1915,6 @@ static int hci_sock_sendmsg(struct socket *sock, struct msghdr *msg,
 
 		skb_queue_tail(&hdev->raw_q, skb);
 		queue_work(hdev->workqueue, &hdev->tx_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = len;
@@ -2411,12 +1928,8 @@ drop:
 	goto done;
 }
 
-<<<<<<< HEAD
-static int hci_sock_setsockopt(struct socket *sock, int level, int optname, char __user *optval, unsigned int len)
-=======
 static int hci_sock_setsockopt_old(struct socket *sock, int level, int optname,
 				   sockptr_t optval, unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hci_ufilter uf = { .opcode = 0 };
 	struct sock *sk = sock->sk;
@@ -2426,14 +1939,6 @@ static int hci_sock_setsockopt_old(struct socket *sock, int level, int optname,
 
 	lock_sock(sk);
 
-<<<<<<< HEAD
-	switch (optname) {
-	case HCI_DATA_DIR:
-		if (get_user(opt, (int __user *)optval)) {
-			err = -EFAULT;
-			break;
-		}
-=======
 	if (hci_pi(sk)->channel != HCI_CHANNEL_RAW) {
 		err = -EBADFD;
 		goto done;
@@ -2444,7 +1949,6 @@ static int hci_sock_setsockopt_old(struct socket *sock, int level, int optname,
 		err = bt_copy_from_sockptr(&opt, sizeof(opt), optval, len);
 		if (err)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (opt)
 			hci_pi(sk)->cmsg_mask |= HCI_CMSG_DIR;
@@ -2453,16 +1957,9 @@ static int hci_sock_setsockopt_old(struct socket *sock, int level, int optname,
 		break;
 
 	case HCI_TIME_STAMP:
-<<<<<<< HEAD
-		if (get_user(opt, (int __user *)optval)) {
-			err = -EFAULT;
-			break;
-		}
-=======
 		err = bt_copy_from_sockptr(&opt, sizeof(opt), optval, len);
 		if (err)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (opt)
 			hci_pi(sk)->cmsg_mask |= HCI_CMSG_TSTAMP;
@@ -2480,17 +1977,9 @@ static int hci_sock_setsockopt_old(struct socket *sock, int level, int optname,
 			uf.event_mask[1] = *((u32 *) f->event_mask + 1);
 		}
 
-<<<<<<< HEAD
-		len = min_t(unsigned int, len, sizeof(uf));
-		if (copy_from_user(&uf, optval, len)) {
-			err = -EFAULT;
-			break;
-		}
-=======
 		err = bt_copy_from_sockptr(&uf, sizeof(uf), optval, len);
 		if (err)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!capable(CAP_NET_RAW)) {
 			uf.type_mask &= hci_sec_filter.type_mask;
@@ -2513,21 +2002,11 @@ static int hci_sock_setsockopt_old(struct socket *sock, int level, int optname,
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 done:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_sock(sk);
 	return err;
 }
 
-<<<<<<< HEAD
-static int hci_sock_getsockopt(struct socket *sock, int level, int optname, char __user *optval, int __user *optlen)
-{
-	struct hci_ufilter uf;
-	struct sock *sk = sock->sk;
-	int len, opt;
-=======
 static int hci_sock_setsockopt(struct socket *sock, int level, int optname,
 			       sockptr_t optval, unsigned int len)
 {
@@ -2584,13 +2063,10 @@ static int hci_sock_getsockopt_old(struct socket *sock, int level, int optname,
 	int len, opt, err = 0;
 
 	BT_DBG("sk %p, opt %d", sk, optname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (get_user(len, optlen))
 		return -EFAULT;
 
-<<<<<<< HEAD
-=======
 	lock_sock(sk);
 
 	if (hci_pi(sk)->channel != HCI_CHANNEL_RAW) {
@@ -2598,7 +2074,6 @@ static int hci_sock_getsockopt_old(struct socket *sock, int level, int optname,
 		goto done;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (optname) {
 	case HCI_DATA_DIR:
 		if (hci_pi(sk)->cmsg_mask & HCI_CMSG_DIR)
@@ -2607,11 +2082,7 @@ static int hci_sock_getsockopt_old(struct socket *sock, int level, int optname,
 			opt = 0;
 
 		if (put_user(opt, optval))
-<<<<<<< HEAD
-			return -EFAULT;
-=======
 			err = -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case HCI_TIME_STAMP:
@@ -2621,21 +2092,14 @@ static int hci_sock_getsockopt_old(struct socket *sock, int level, int optname,
 			opt = 0;
 
 		if (put_user(opt, optval))
-<<<<<<< HEAD
-			return -EFAULT;
-=======
 			err = -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case HCI_FILTER:
 		{
 			struct hci_filter *f = &hci_pi(sk)->filter;
 
-<<<<<<< HEAD
-=======
 			memset(&uf, 0, sizeof(uf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			uf.type_mask = f->type_mask;
 			uf.opcode    = f->opcode;
 			uf.event_mask[0] = *((u32 *) f->event_mask + 0);
@@ -2644,17 +2108,6 @@ static int hci_sock_getsockopt_old(struct socket *sock, int level, int optname,
 
 		len = min_t(unsigned int, len, sizeof(uf));
 		if (copy_to_user(optval, &uf, len))
-<<<<<<< HEAD
-			return -EFAULT;
-		break;
-
-	default:
-		return -ENOPROTOOPT;
-		break;
-	}
-
-	return 0;
-=======
 			err = -EFAULT;
 		break;
 
@@ -2706,7 +2159,6 @@ static void hci_sock_destruct(struct sock *sk)
 	mgmt_cleanup(sk);
 	skb_queue_purge(&sk->sk_receive_queue);
 	skb_queue_purge(&sk->sk_write_queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct proto_ops hci_sock_ops = {
@@ -2718,12 +2170,9 @@ static const struct proto_ops hci_sock_ops = {
 	.sendmsg	= hci_sock_sendmsg,
 	.recvmsg	= hci_sock_recvmsg,
 	.ioctl		= hci_sock_ioctl,
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= hci_sock_compat_ioctl,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.poll		= datagram_poll,
 	.listen		= sock_no_listen,
 	.shutdown	= sock_no_shutdown,
@@ -2753,20 +2202,6 @@ static int hci_sock_create(struct net *net, struct socket *sock, int protocol,
 
 	sock->ops = &hci_sock_ops;
 
-<<<<<<< HEAD
-	sk = sk_alloc(net, PF_BLUETOOTH, GFP_ATOMIC, &hci_sk_proto);
-	if (!sk)
-		return -ENOMEM;
-
-	sock_init_data(sock, sk);
-
-	sock_reset_flag(sk, SOCK_ZAPPED);
-
-	sk->sk_protocol = protocol;
-
-	sock->state = SS_UNCONNECTED;
-	sk->sk_state = BT_OPEN;
-=======
 	sk = bt_sock_alloc(net, sock, &hci_sk_proto, protocol, GFP_ATOMIC,
 			   kern);
 	if (!sk)
@@ -2774,86 +2209,28 @@ static int hci_sock_create(struct net *net, struct socket *sock, int protocol,
 
 	sock->state = SS_UNCONNECTED;
 	sk->sk_destruct = hci_sock_destruct;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bt_sock_link(&hci_sk_list, sk);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int hci_sock_dev_event(struct notifier_block *this, unsigned long event, void *ptr)
-{
-	struct hci_dev *hdev = (struct hci_dev *) ptr;
-	struct hci_ev_si_device ev;
-
-	BT_DBG("hdev %s event %ld", hdev->name, event);
-
-	/* Send event to sockets */
-	ev.event  = event;
-	ev.dev_id = hdev->id;
-	hci_si_event(NULL, HCI_EV_SI_DEVICE, sizeof(ev), &ev);
-
-	if (event == HCI_DEV_UNREG) {
-		struct sock *sk;
-		struct hlist_node *node;
-
-		/* Detach sockets from device */
-		read_lock(&hci_sk_list.lock);
-		sk_for_each(sk, node, &hci_sk_list.head) {
-			local_bh_disable();
-			bh_lock_sock_nested(sk);
-			if (hci_pi(sk)->hdev == hdev) {
-				hci_pi(sk)->hdev = NULL;
-				sk->sk_err = EPIPE;
-				sk->sk_state = BT_OPEN;
-				sk->sk_state_change(sk);
-
-				hci_dev_put(hdev);
-			}
-			bh_unlock_sock(sk);
-			local_bh_enable();
-		}
-		read_unlock(&hci_sk_list.lock);
-	}
-
-	return NOTIFY_DONE;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_proto_family hci_sock_family_ops = {
 	.family	= PF_BLUETOOTH,
 	.owner	= THIS_MODULE,
 	.create	= hci_sock_create,
 };
 
-<<<<<<< HEAD
-static struct notifier_block hci_sock_nblock = {
-	.notifier_call = hci_sock_dev_event
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init hci_sock_init(void)
 {
 	int err;
 
-<<<<<<< HEAD
-=======
 	BUILD_BUG_ON(sizeof(struct sockaddr_hci) > sizeof(struct sockaddr));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = proto_register(&hci_sk_proto, 0);
 	if (err < 0)
 		return err;
 
 	err = bt_sock_register(BTPROTO_HCI, &hci_sock_family_ops);
-<<<<<<< HEAD
-	if (err < 0)
-		goto error;
-
-	hci_register_notifier(&hci_sock_nblock);
-=======
 	if (err < 0) {
 		BT_ERR("HCI socket registration failed");
 		goto error;
@@ -2865,37 +2242,19 @@ int __init hci_sock_init(void)
 		bt_sock_unregister(BTPROTO_HCI);
 		goto error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_INFO("HCI socket layer initialized");
 
 	return 0;
 
 error:
-<<<<<<< HEAD
-	BT_ERR("HCI socket registration failed");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	proto_unregister(&hci_sk_proto);
 	return err;
 }
 
 void hci_sock_cleanup(void)
 {
-<<<<<<< HEAD
-	if (bt_sock_unregister(BTPROTO_HCI) < 0)
-		BT_ERR("HCI socket unregistration failed");
-
-	hci_unregister_notifier(&hci_sock_nblock);
-
-	proto_unregister(&hci_sk_proto);
-}
-
-module_param(enable_mgmt, bool, 0644);
-MODULE_PARM_DESC(enable_mgmt, "Enable Management interface");
-=======
 	bt_procfs_cleanup(&init_net, "hci");
 	bt_sock_unregister(BTPROTO_HCI);
 	proto_unregister(&hci_sk_proto);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

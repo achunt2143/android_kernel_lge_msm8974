@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PowerPC version
  *    Copyright (C) 1995-1996 Gary Thomas (gdt@linuxppc.org)
@@ -19,30 +16,16 @@
  *  This file contains the entry point for the 64-bit kernel along
  *  with some early initialization code common to all 64-bit powerpc
  *  variants.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
- */
-
-#include <linux/threads.h>
-=======
  */
 
 #include <linux/linkage.h>
 #include <linux/threads.h>
 #include <linux/init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/reg.h>
 #include <asm/page.h>
 #include <asm/mmu.h>
 #include <asm/ppc_asm.h>
-<<<<<<< HEAD
-=======
 #include <asm/head-64.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/asm-offsets.h>
 #include <asm/bug.h>
 #include <asm/cputable.h>
@@ -55,8 +38,6 @@
 #include <asm/kvm_book3s_asm.h>
 #include <asm/ptrace.h>
 #include <asm/hw_irq.h>
-<<<<<<< HEAD
-=======
 #include <asm/cputhreads.h>
 #include <asm/ppc-opcode.h>
 #include <asm/feature-fixups.h>
@@ -65,7 +46,6 @@
 #else
 #include <asm/exception-64e.h>
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The physical memory is laid out such that the secondary processor
  * spin code sits at 0x0000...0x00ff. On server, the vectors follow
@@ -77,14 +57,6 @@
  *
  *  For pSeries or server processors:
  *   1. The MMU is off & open firmware is running in real mode.
-<<<<<<< HEAD
- *   2. The kernel is entered at __start
- * -or- For OPAL entry:
- *   1. The MMU is off, processor in HV mode, primary CPU enters at 0
- *      with device-tree in gpr3. We also get OPAL base in r8 and
- *	entry in r9 for debugging purposes
- *   2. Secondary processors enter at 0x60 with PIR in gpr3
-=======
  *   2. The primary CPU enters at __start.
  *   3. If the RTAS supports "query-cpu-stopped-state", then secondary
  *      CPUs will enter as directed by "start-cpu" RTAS call, which is
@@ -97,22 +69,12 @@
  *      in r8, and entry in r9 for debugging purposes.
  *   3. Secondary CPUs enter as directed by OPAL_START_CPU call, which
  *      is at generic_secondary_smp_init, with PIR in r3.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  For Book3E processors:
  *   1. The MMU is on running in AS0 in a state defined in ePAPR
  *   2. The kernel is entered at __start
  */
 
-<<<<<<< HEAD
-	.text
-	.globl  _stext
-_stext:
-_GLOBAL(__start)
-	/* NOP this out unconditionally */
-BEGIN_FTR_SECTION
-	b	.__start_initialization_multiplatform
-=======
 /*
  * boot_from_prom and prom_init run at the physical address. Everything
  * after prom and kexec entry run at the virtual address (PAGE_OFFSET).
@@ -133,22 +95,11 @@ _GLOBAL(__start)
 BEGIN_FTR_SECTION
 	FIXUP_ENDIAN
 	b	__start_initialization_multiplatform
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 END_FTR_SECTION(0, 1)
 
 	/* Catch branch to 0 in real mode */
 	trap
 
-<<<<<<< HEAD
-	/* Secondary processors spin on this value until it becomes nonzero.
-	 * When it does it contains the real address of the descriptor
-	 * of the function that the cpu should jump to to continue
-	 * initialization.
-	 */
-	.globl  __secondary_hold_spinloop
-__secondary_hold_spinloop:
-	.llong	0x0
-=======
 	/* Secondary processors spin on this value until it becomes non-zero.
 	 * When non-zero, it contains the real address of the function the cpu
 	 * should jump to.
@@ -157,27 +108,16 @@ __secondary_hold_spinloop:
 	.globl  __secondary_hold_spinloop
 __secondary_hold_spinloop:
 	.8byte	0x0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Secondary processors write this value with their cpu # */
 	/* after they enter the spin loop immediately below.	  */
 	.globl	__secondary_hold_acknowledge
 __secondary_hold_acknowledge:
-<<<<<<< HEAD
-	.llong	0x0
-=======
 	.8byte	0x0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_RELOCATABLE
 	/* This flag is set to 1 by a loader if the kernel should run
 	 * at the loaded address instead of the linked address.  This
-<<<<<<< HEAD
-	 * is used by kexec-tools to keep the the kdump kernel in the
-	 * crash_kernel region.  The loader is responsible for
-	 * observing the alignment requirement.
-	 */
-=======
 	 * is used by kexec-tools to keep the kdump kernel in the
 	 * crash_kernel region.  The loader is responsible for
 	 * observing the alignment requirement.
@@ -189,17 +129,12 @@ __secondary_hold_acknowledge:
 #define RUN_AT_LOAD_DEFAULT 0x72756e30  /* "run0" -- relocate to 0 by default */
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Do not move this variable as kexec-tools knows about it. */
 	. = 0x5c
 	.globl	__run_at_load
 __run_at_load:
-<<<<<<< HEAD
-	.long	0x72756e30	/* "run0" -- relocate to 0 by default */
-=======
 DEFINE_FIXED_SYMBOL(__run_at_load, first_256B)
 	.long	RUN_AT_LOAD_DEFAULT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	. = 0x60
@@ -214,42 +149,20 @@ DEFINE_FIXED_SYMBOL(__run_at_load, first_256B)
  */
 	.globl	__secondary_hold
 __secondary_hold:
-<<<<<<< HEAD
-#ifndef CONFIG_PPC_BOOK3E
-=======
 	FIXUP_ENDIAN
 #ifndef CONFIG_PPC_BOOK3E_64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfmsr	r24
 	ori	r24,r24,MSR_RI
 	mtmsrd	r24			/* RI on */
 #endif
 	/* Grab our physical cpu number */
 	mr	r24,r3
-<<<<<<< HEAD
-=======
 	/* stash r4 for book3e */
 	mr	r25,r4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Tell the master cpu we're here */
 	/* Relocation is off & we are located at an address less */
 	/* than 0x100, so only need to grab low order offset.    */
-<<<<<<< HEAD
-	std	r24,__secondary_hold_acknowledge-_stext(0)
-	sync
-
-	/* All secondary cpus wait here until told to start. */
-100:	ld	r4,__secondary_hold_spinloop-_stext(0)
-	cmpdi	0,r4,0
-	beq	100b
-
-#if defined(CONFIG_SMP) || defined(CONFIG_KEXEC)
-	ld	r4,0(r4)		/* deref function descriptor */
-	mtctr	r4
-	mr	r3,r24
-	li	r4,0
-=======
 	std	r24,(ABS_ADDR(__secondary_hold_acknowledge, first_256B))(0)
 	sync
 
@@ -273,26 +186,14 @@ __secondary_hold:
 #else
 	li	r4,0
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Make sure that patched code is visible */
 	isync
 	bctr
 #else
-<<<<<<< HEAD
-	BUG_OPCODE
-#endif
-
-/* This value is used to mark exception frames on the stack. */
-	.section ".toc","aw"
-exception_marker:
-	.tc	ID_72656773_68657265[TC],0x7265677368657265
-	.text
-=======
 0:	trap
 	EMIT_BUG_ENTRY 0b, __FILE__, __LINE__, 0
 #endif
 CLOSE_FIXED_SECTION(first_256B)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * On server, we include the exception vectors code here as it
@@ -301,26 +202,6 @@ CLOSE_FIXED_SECTION(first_256B)
  */
 #ifdef CONFIG_PPC_BOOK3S
 #include "exceptions-64s.S"
-<<<<<<< HEAD
-#endif
-
-_GLOBAL(generic_secondary_thread_init)
-	mr	r24,r3
-
-	/* turn on 64-bit mode */
-	bl	.enable_64b_mode
-
-	/* get a valid TOC pointer, wherever we're mapped at */
-	bl	.relative_toc
-
-#ifdef CONFIG_PPC_BOOK3E
-	/* Book3E initialization */
-	mr	r3,r24
-	bl	.book3e_secondary_thread_init
-#endif
-	b	generic_secondary_common_init
-
-=======
 #else
 OPEN_TEXT_SECTION(0x100)
 #endif
@@ -437,7 +318,6 @@ _GLOBAL(fsl_secondary_thread_init)
 
 #endif /* CONFIG_PPC_BOOK3E_64 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * On pSeries and most other platforms, secondary processors spin
  * in the following code.
@@ -448,8 +328,6 @@ _GLOBAL(fsl_secondary_thread_init)
  * as SCOM before entry).
  */
 _GLOBAL(generic_secondary_smp_init)
-<<<<<<< HEAD
-=======
 	FIXUP_ENDIAN
 
 	li	r13,0
@@ -457,23 +335,10 @@ _GLOBAL(generic_secondary_smp_init)
 	/* Poison TOC */
 	li	r2,-1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mr	r24,r3
 	mr	r25,r4
 
 	/* turn on 64-bit mode */
-<<<<<<< HEAD
-	bl	.enable_64b_mode
-
-	/* get a valid TOC pointer, wherever we're mapped at */
-	bl	.relative_toc
-
-#ifdef CONFIG_PPC_BOOK3E
-	/* Book3E initialization */
-	mr	r3,r24
-	mr	r4,r25
-	bl	.book3e_secondary_core_init
-=======
 	bl	enable_64b_mode
 
 #ifdef CONFIG_PPC_BOOK3E_64
@@ -528,7 +393,6 @@ _GLOBAL(generic_secondary_smp_init)
 	bctr
 2:
 	bl	relative_toc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 generic_secondary_common_init:
@@ -536,21 +400,6 @@ generic_secondary_common_init:
 	 * physical cpu id in r24, we need to search the pacas to find
 	 * which logical id maps to our physical one.
 	 */
-<<<<<<< HEAD
-	LOAD_REG_ADDR(r13, paca)	/* Load paca pointer		 */
-	ld	r13,0(r13)		/* Get base vaddr of paca array	 */
-#ifndef CONFIG_SMP
-	addi	r13,r13,PACA_SIZE	/* know r13 if used accidentally */
-	b	.kexec_wait		/* wait for next kernel if !SMP	 */
-#else
-	LOAD_REG_ADDR(r7, nr_cpu_ids)	/* Load nr_cpu_ids address       */
-	lwz	r7,0(r7)		/* also the max paca allocated 	 */
-	li	r5,0			/* logical cpu id                */
-1:	lhz	r6,PACAHWCPUID(r13)	/* Load HW procid from paca      */
-	cmpw	r6,r24			/* Compare to our id             */
-	beq	2f
-	addi	r13,r13,PACA_SIZE	/* Loop to next PACA on miss     */
-=======
 #ifndef CONFIG_SMP
 	b	kexec_wait		/* wait for next kernel if !SMP	 */
 #else
@@ -569,23 +418,15 @@ generic_secondary_common_init:
 	lhz	r6,PACAHWCPUID(r13)	/* Load HW procid from paca      */
 	cmpw	r6,r24			/* Compare to our id             */
 	beq	2f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	r5,r5,1
 	cmpw	r5,r7			/* Check if more pacas exist     */
 	blt	1b
 
 	mr	r3,r24			/* not found, copy phys to r3	 */
-<<<<<<< HEAD
-	b	.kexec_wait		/* next kernel might do better	 */
-
-2:	SET_PACA(r13)
-#ifdef CONFIG_PPC_BOOK3E
-=======
 	b	kexec_wait		/* next kernel might do better	 */
 
 2:	SET_PACA(r13)
 #ifdef CONFIG_PPC_BOOK3E_64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	r12,r13,PACA_EXTLB	/* and TLB exc frame in another  */
 	mtspr	SPRN_SPRG_TLB_EXFRAME,r12
 #endif
@@ -593,16 +434,6 @@ generic_secondary_common_init:
 	/* From now on, r24 is expected to be logical cpuid */
 	mr	r24,r5
 
-<<<<<<< HEAD
-	/* See if we need to call a cpu state restore handler */
-	LOAD_REG_ADDR(r23, cur_cpu_spec)
-	ld	r23,0(r23)
-	ld	r23,CPU_SPEC_RESTORE(r23)
-	cmpdi	0,r23,0
-	beq	3f
-	ld	r23,0(r23)
-	mtctr	r23
-=======
 	/* Create a temp kernel stack for use before relocation is on.	*/
 	ld	r1,PACAEMERGSP(r13)
 	subi	r1,r1,STACK_FRAME_MIN_SIZE
@@ -617,7 +448,6 @@ generic_secondary_common_init:
 	ld	r12,0(r12)
 #endif
 	mtctr	r12
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bctrl
 
 3:	LOAD_REG_ADDR(r3, spinning_secondaries) /* Decrement spinning_secondaries */
@@ -636,13 +466,6 @@ generic_secondary_common_init:
 	sync				/* order paca.run and cur_cpu_spec */
 	isync				/* In case code patching happened */
 
-<<<<<<< HEAD
-	/* Create a temp kernel stack for use before relocation is on.	*/
-	ld	r1,PACAEMERGSP(r13)
-	subi	r1,r1,STACK_FRAME_OVERHEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b	__secondary_start
 #endif /* SMP */
 
@@ -651,11 +474,7 @@ generic_secondary_common_init:
  * Assumes we're mapped EA == RA if the MMU is on.
  */
 #ifdef CONFIG_PPC_BOOK3S
-<<<<<<< HEAD
-_STATIC(__mmu_off)
-=======
 SYM_FUNC_START_LOCAL(__mmu_off)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfmsr	r3
 	andi.	r0,r3,MSR_IR|MSR_DR
 	beqlr
@@ -666,10 +485,6 @@ SYM_FUNC_START_LOCAL(__mmu_off)
 	sync
 	rfid
 	b	.	/* prevent speculative execution */
-<<<<<<< HEAD
-#endif
-
-=======
 SYM_FUNC_END(__mmu_off)
 
 SYM_FUNC_START_LOCAL(start_initialization_book3s)
@@ -698,7 +513,6 @@ SYM_FUNC_START_LOCAL(start_initialization_book3s)
 	blr
 SYM_FUNC_END(start_initialization_book3s)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Here is our main kernel entry point. We support currently 2 kind of entries
@@ -711,20 +525,6 @@ SYM_FUNC_END(start_initialization_book3s)
  *                 DT block, r4 is a physical pointer to the kernel itself
  *
  */
-<<<<<<< HEAD
-_GLOBAL(__start_initialization_multiplatform)
-	/* Make sure we are running in 64 bits mode */
-	bl	.enable_64b_mode
-
-	/* Get TOC pointer (current runtime address) */
-	bl	.relative_toc
-
-	/* find out where we are now */
-	bcl	20,31,$+4
-0:	mflr	r26			/* r26 = runtime addr here */
-	addis	r26,r26,(_stext - 0b)@ha
-	addi	r26,r26,(_stext - 0b)@l	/* current runtime base addr */
-=======
 __start_initialization_multiplatform:
 	/* Make sure we are running in 64 bits mode */
 	bl	enable_64b_mode
@@ -734,18 +534,13 @@ __start_initialization_multiplatform:
 
 	/* Poison TOC */
 	li	r2,-1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Are we booted from a PROM Of-type client-interface ?
 	 */
 	cmpldi	cr0,r5,0
 	beq	1f
-<<<<<<< HEAD
-	b	.__boot_from_prom		/* yes -> prom */
-=======
 	b	__boot_from_prom		/* yes -> prom */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:
 	/* Save parameters */
 	mr	r31,r3
@@ -756,33 +551,6 @@ __start_initialization_multiplatform:
 	mr	r29,r9
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_PPC_BOOK3E
-	bl	.start_initialization_book3e
-	b	.__after_prom_start
-#else
-	/* Setup some critical 970 SPRs before switching MMU off */
-	mfspr	r0,SPRN_PVR
-	srwi	r0,r0,16
-	cmpwi	r0,0x39		/* 970 */
-	beq	1f
-	cmpwi	r0,0x3c		/* 970FX */
-	beq	1f
-	cmpwi	r0,0x44		/* 970MP */
-	beq	1f
-	cmpwi	r0,0x45		/* 970GX */
-	bne	2f
-1:	bl	.__cpu_preinit_ppc970
-2:
-
-	/* Switch off MMU if not already off */
-	bl	.__mmu_off
-	b	.__after_prom_start
-#endif /* CONFIG_PPC_BOOK3E */
-
-_INIT_STATIC(__boot_from_prom)
-#ifdef CONFIG_PPC_OF_BOOT_TRAMPOLINE
-=======
 	/* Get TOC pointer (current runtime address) */
 	bl	relative_toc
 
@@ -818,7 +586,6 @@ __boot_from_prom:
 	addis	r26,r26,(_stext - 0b)@ha
 	addi	r26,r26,(_stext - 0b)@l	/* current runtime base addr */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Save parameters */
 	mr	r31,r3
 	mr	r30,r4
@@ -836,11 +603,7 @@ __boot_from_prom:
 #ifdef CONFIG_RELOCATABLE
 	/* Relocate code for where we are now */
 	mr	r3,r26
-<<<<<<< HEAD
-	bl	.relocate
-=======
 	bl	relocate
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* Restore parameters */
@@ -852,30 +615,12 @@ __boot_from_prom:
 
 	/* Do all of the interaction with OF client interface */
 	mr	r8,r26
-<<<<<<< HEAD
-	bl	.prom_init
-=======
 	bl	CFUNC(prom_init)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* #CONFIG_PPC_OF_BOOT_TRAMPOLINE */
 
 	/* We never return. We also hit that trap if trying to boot
 	 * from OF while CONFIG_PPC_OF_BOOT_TRAMPOLINE isn't selected */
 	trap
-<<<<<<< HEAD
-
-_STATIC(__after_prom_start)
-#ifdef CONFIG_RELOCATABLE
-	/* process relocations for the final address of the kernel */
-	lis	r25,PAGE_OFFSET@highest	/* compute virtual base of kernel */
-	sldi	r25,r25,32
-	lwz	r7,__run_at_load-_stext(r26)
-	cmplwi	cr0,r7,1	/* flagged to stay where we are ? */
-	bne	1f
-	add	r25,r25,r26
-1:	mr	r3,r25
-	bl	.relocate
-=======
 	.previous
 
 __after_prom_start:
@@ -892,7 +637,6 @@ __after_prom_start:
 	/* IVPR needs to be set after relocation. */
 	bl	init_core_book3e
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -902,24 +646,11 @@ __after_prom_start:
  *
  * Note: This process overwrites the OF exception vectors.
  */
-<<<<<<< HEAD
-	li	r3,0			/* target addr */
-#ifdef CONFIG_PPC_BOOK3E
-	tovirt(r3,r3)			/* on booke, we already run at PAGE_OFFSET */
-#endif
-=======
 	LOAD_REG_IMMEDIATE(r3, PAGE_OFFSET)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mr.	r4,r26			/* In some cases the loader may  */
 	beq	9f			/* have already put us at zero */
 	li	r6,0x100		/* Start offset, the first 0x100 */
 					/* bytes were copied earlier.	 */
-<<<<<<< HEAD
-#ifdef CONFIG_PPC_BOOK3E
-	tovirt(r6,r6)			/* on booke, we already run at PAGE_OFFSET */
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_RELOCATABLE
 /*
@@ -927,36 +658,6 @@ __after_prom_start:
  * variable __run_at_load, if it is set the kernel is treated as relocatable
  * kernel, otherwise it will be moved to PHYSICAL_START
  */
-<<<<<<< HEAD
-	lwz	r7,__run_at_load-_stext(r26)
-	cmplwi	cr0,r7,1
-	bne	3f
-
-	li	r5,__end_interrupts - _stext	/* just copy interrupts */
-	b	5f
-3:
-#endif
-	lis	r5,(copy_to_here - _stext)@ha
-	addi	r5,r5,(copy_to_here - _stext)@l /* # bytes of memory to copy */
-
-	bl	.copy_and_flush		/* copy the first n bytes	 */
-					/* this includes the code being	 */
-					/* executed here.		 */
-	addis	r8,r3,(4f - _stext)@ha	/* Jump to the copy of this code */
-	addi	r8,r8,(4f - _stext)@l	/* that we just made */
-	mtctr	r8
-	bctr
-
-.balign 8
-p_end:	.llong	_end - _stext
-
-4:	/* Now copy the rest of the kernel up to _end */
-	addis	r5,r26,(p_end - _stext)@ha
-	ld	r5,(p_end - _stext)@l(r5)	/* get _end */
-5:	bl	.copy_and_flush		/* copy the rest */
-
-9:	b	.start_here_multiplatform
-=======
 	lwz	r7,(FIXED_SYMBOL_ABS_ADDR(__run_at_load))(r26)
 	cmplwi	cr0,r7,1
 	bne	3f
@@ -999,7 +700,6 @@ p_end: .8byte _end - copy_to_here
 5:	bl	copy_and_flush		/* copy the rest */
 
 9:	b	start_here_multiplatform
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Copy routine used to copy the kernel to start at physical address 0
@@ -1037,11 +737,8 @@ _GLOBAL(copy_and_flush)
 	isync
 	blr
 
-<<<<<<< HEAD
-=======
 _ASM_NOKPROBE_SYMBOL(copy_and_flush); /* Called in real mode */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .align 8
 copy_to_here:
 
@@ -1068,11 +765,7 @@ __secondary_start_pmac_0:
 	
 _GLOBAL(pmac_secondary_start)
 	/* turn on 64-bit mode */
-<<<<<<< HEAD
-	bl	.enable_64b_mode
-=======
 	bl	enable_64b_mode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	li	r0,0
 	mfspr	r3,SPRN_HID4
@@ -1083,13 +776,6 @@ _GLOBAL(pmac_secondary_start)
 	sync
 	slbia
 
-<<<<<<< HEAD
-	/* get TOC pointer (real address) */
-	bl	.relative_toc
-
-	/* Copy some CPU settings from CPU 0 */
-	bl	.__restore_cpu_ppc970
-=======
 	/* Branch to our PAGE_OFFSET address */
 	bcl	20,31,$+4
 1:	mflr	r11
@@ -1102,7 +788,6 @@ _GLOBAL(pmac_secondary_start)
 
 	/* Copy some CPU settings from CPU 0 */
 	bl	__restore_cpu_ppc970
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* pSeries do that early though I don't think we really need it */
 	mfmsr	r3
@@ -1110,39 +795,23 @@ _GLOBAL(pmac_secondary_start)
 	mtmsrd	r3			/* RI on */
 
 	/* Set up a paca value for this processor. */
-<<<<<<< HEAD
-	LOAD_REG_ADDR(r4,paca)		/* Load paca pointer		*/
-	ld	r4,0(r4)		/* Get base vaddr of paca array	*/
-	mulli	r13,r24,PACA_SIZE	/* Calculate vaddr of right paca */
-	add	r13,r13,r4		/* for this processor.		*/
-=======
 	LOAD_REG_ADDR(r4,paca_ptrs)	/* Load paca pointer		*/
 	ld	r4,0(r4)		/* Get base vaddr of paca_ptrs array */
 	sldi	r5,r24,3		/* get paca_ptrs[] index from cpu id */
 	ldx	r13,r5,r4		/* r13 = paca_ptrs[cpu id]       */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SET_PACA(r13)			/* Save vaddr of paca in an SPRG*/
 
 	/* Mark interrupts soft and hard disabled (they might be enabled
 	 * in the PACA when doing hotplug)
 	 */
-<<<<<<< HEAD
-	li	r0,0
-	stb	r0,PACASOFTIRQEN(r13)
-=======
 	li	r0,IRQS_DISABLED
 	stb	r0,PACAIRQSOFTMASK(r13)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r0,PACA_IRQ_HARD_DIS
 	stb	r0,PACAIRQHAPPENED(r13)
 
 	/* Create a temp kernel stack for use before relocation is on.	*/
 	ld	r1,PACAEMERGSP(r13)
-<<<<<<< HEAD
-	subi	r1,r1,STACK_FRAME_OVERHEAD
-=======
 	subi	r1,r1,STACK_FRAME_MIN_SIZE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	b	__secondary_start
 
@@ -1169,23 +838,6 @@ __secondary_start:
 	/* Set thread priority to MEDIUM */
 	HMT_MEDIUM
 
-<<<<<<< HEAD
-	/* Initialize the kernel stack */
-	LOAD_REG_ADDR(r3, current_set)
-	sldi	r28,r24,3		/* get current_set[cpu#]	 */
-	ldx	r14,r3,r28
-	addi	r14,r14,THREAD_SIZE-STACK_FRAME_OVERHEAD
-	std	r14,PACAKSAVE(r13)
-
-	/* Do early setup for that CPU (stab, slb, hash table pointer) */
-	bl	.early_setup_secondary
-
-	/*
-	 * setup the new stack pointer, but *don't* use this until
-	 * translation is on.
-	 */
-	mr	r1, r14
-=======
 	/*
 	 * Do early setup for this CPU, in particular initialising the MMU so we
 	 * can turn it on below. This is a call to C, which is OK, we're still
@@ -1199,7 +851,6 @@ __secondary_start:
 	 * below, because it may not be inside the RMO.
 	 */
 	ld	r1, PACAKSAVE(r13)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear backchain so we get nice backtraces */
 	li	r7,0
@@ -1208,30 +859,18 @@ __secondary_start:
 	/* Mark interrupts soft and hard disabled (they might be enabled
 	 * in the PACA when doing hotplug)
 	 */
-<<<<<<< HEAD
-	stb	r7,PACASOFTIRQEN(r13)
-=======
 	li	r7,IRQS_DISABLED
 	stb	r7,PACAIRQSOFTMASK(r13)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r0,PACA_IRQ_HARD_DIS
 	stb	r0,PACAIRQHAPPENED(r13)
 
 	/* enable MMU and jump to start_secondary */
-<<<<<<< HEAD
-	LOAD_REG_ADDR(r3, .start_secondary_prolog)
-=======
 	LOAD_REG_ADDR(r3, start_secondary_prolog)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LOAD_REG_IMMEDIATE(r4, MSR_KERNEL)
 
 	mtspr	SPRN_SRR0,r3
 	mtspr	SPRN_SRR1,r4
-<<<<<<< HEAD
-	RFI
-=======
 	RFI_TO_KERNEL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b	.	/* prevent speculative execution */
 
 /* 
@@ -1239,19 +878,11 @@ __secondary_start:
  * zero the stack back-chain pointer and get the TOC virtual address
  * before going into C code.
  */
-<<<<<<< HEAD
-_GLOBAL(start_secondary_prolog)
-	ld	r2,PACATOC(r13)
-	li	r3,0
-	std	r3,0(r1)		/* Zero the stack frame pointer	*/
-	bl	.start_secondary
-=======
 start_secondary_prolog:
 	LOAD_PACA_TOC()
 	li	r3,0
 	std	r3,0(r1)		/* Zero the stack frame pointer	*/
 	bl	CFUNC(start_secondary)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b	.
 /*
  * Reset stack pointer and call start_secondary
@@ -1262,27 +893,13 @@ _GLOBAL(start_secondary_resume)
 	ld	r1,PACAKSAVE(r13)	/* Reload kernel stack pointer */
 	li	r3,0
 	std	r3,0(r1)		/* Zero the stack frame pointer	*/
-<<<<<<< HEAD
-	bl	.start_secondary
-=======
 	bl	CFUNC(start_secondary)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b	.
 #endif
 
 /*
  * This subroutine clobbers r11 and r12
  */
-<<<<<<< HEAD
-_GLOBAL(enable_64b_mode)
-	mfmsr	r11			/* grab the current MSR */
-#ifdef CONFIG_PPC_BOOK3E
-	oris	r11,r11,0x8000		/* CM bit set, we'll set ICM later */
-	mtmsr	r11
-#else /* CONFIG_PPC_BOOK3E */
-	li	r12,(MSR_64BIT | MSR_ISF)@highest
-	sldi	r12,r12,48
-=======
 SYM_FUNC_START_LOCAL(enable_64b_mode)
 	mfmsr	r11			/* grab the current MSR */
 #ifdef CONFIG_PPC_BOOK3E_64
@@ -1290,25 +907,17 @@ SYM_FUNC_START_LOCAL(enable_64b_mode)
 	mtmsr	r11
 #else /* CONFIG_PPC_BOOK3E_64 */
 	LOAD_REG_IMMEDIATE(r12, MSR_64BIT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	or	r11,r11,r12
 	mtmsrd	r11
 	isync
 #endif
 	blr
-<<<<<<< HEAD
-=======
 SYM_FUNC_END(enable_64b_mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This puts the TOC pointer into r2, offset by 0x8000 (as expected
  * by the toolchain).  It computes the correct value for wherever we
  * are running at the moment, using position-independent code.
-<<<<<<< HEAD
- */
-_GLOBAL(relative_toc)
-=======
  *
  * Note: The compiler constructs pointers using offsets from the
  * TOC in -mcmodel=medium mode. After we relocate to 0 but before
@@ -1323,7 +932,6 @@ _GLOBAL(relative_toc)
 	tdnei	r2,-1
 	blr
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mflr	r0
 	bcl	20,31,$+4
 0:	mflr	r11
@@ -1332,27 +940,17 @@ _GLOBAL(relative_toc)
 	mtlr	r0
 	blr
 
-<<<<<<< HEAD
-p_toc:	.llong	__toc_start + 0x8000 - 0b
-=======
 .balign 8
 p_toc:	.8byte	.TOC. - 0b
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is where the main kernel code starts.
  */
-<<<<<<< HEAD
-_INIT_STATIC(start_here_multiplatform)
-	/* set up the TOC (real address) */
-	bl	.relative_toc
-=======
 __REF
 start_here_multiplatform:
 	/* Adjust TOC for moved kernel. Could adjust when moving it instead. */
 	bl	relative_toc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear out the BSS. It may have been done in prom_init,
 	 * already but that's irrelevant since prom_init will soon
@@ -1374,19 +972,12 @@ start_here_multiplatform:
 
 #ifdef CONFIG_PPC_EARLY_DEBUG_OPAL
 	/* Setup OPAL entry */
-<<<<<<< HEAD
-=======
 	LOAD_REG_ADDR(r11, opal)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	std	r28,0(r11);
 	std	r29,8(r11);
 #endif
 
-<<<<<<< HEAD
-#ifndef CONFIG_PPC_BOOK3E
-=======
 #ifndef CONFIG_PPC_BOOK3E_64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfmsr	r6
 	ori	r6,r6,MSR_RI
 	mtmsrd	r6			/* RI on */
@@ -1399,37 +990,6 @@ start_here_multiplatform:
 	std	r0,0(r4)
 #endif
 
-<<<<<<< HEAD
-	/* The following gets the stack set up with the regs */
-	/* pointing to the real addr of the kernel stack.  This is   */
-	/* all done to support the C function call below which sets  */
-	/* up the htab.  This is done because we have relocated the  */
-	/* kernel but are still running in real mode. */
-
-	LOAD_REG_ADDR(r3,init_thread_union)
-
-	/* set up a stack pointer */
-	addi	r1,r3,THREAD_SIZE
-	li	r0,0
-	stdu	r0,-STACK_FRAME_OVERHEAD(r1)
-
-	/* Do very early kernel initializations, including initial hash table,
-	 * stab and slb setup before we turn on relocation.	*/
-
-	/* Restore parameters passed from prom_init/kexec */
-	mr	r3,r31
-	bl	.early_setup		/* also sets r13 and SPRG_PACA */
-
-	LOAD_REG_ADDR(r3, .start_here_common)
-	ld	r4,PACAKMSR(r13)
-	mtspr	SPRN_SRR0,r3
-	mtspr	SPRN_SRR1,r4
-	RFI
-	b	.	/* prevent speculative execution */
-	
-	/* This is where all platforms converge execution */
-_INIT_GLOBAL(start_here_common)
-=======
 	/* set up a stack pointer */
 	LOAD_REG_ADDR(r3,init_thread_union)
 	LOAD_REG_IMMEDIATE(r1,THREAD_SIZE)
@@ -1461,60 +1021,24 @@ _INIT_GLOBAL(start_here_common)
 	/* This is where all platforms converge execution */
 
 start_here_common:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* relocation is on at this point */
 	std	r1,PACAKSAVE(r13)
 
 	/* Load the TOC (virtual address) */
-<<<<<<< HEAD
-	ld	r2,PACATOC(r13)
-
-	/* Do more system initializations in virtual mode */
-	bl	.setup_system
-=======
 	LOAD_PACA_TOC()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Mark interrupts soft and hard disabled (they might be enabled
 	 * in the PACA when doing hotplug)
 	 */
-<<<<<<< HEAD
-	li	r0,0
-	stb	r0,PACASOFTIRQEN(r13)
-=======
 	li	r0,IRQS_DISABLED
 	stb	r0,PACAIRQSOFTMASK(r13)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r0,PACA_IRQ_HARD_DIS
 	stb	r0,PACAIRQHAPPENED(r13)
 
 	/* Generic kernel entry */
-<<<<<<< HEAD
-	bl	.start_kernel
-
-	/* Not reached */
-	BUG_OPCODE
-
-/*
- * We put a few things here that have to be page-aligned.
- * This stuff goes at the beginning of the bss, which is page-aligned.
- */
-	.section ".bss"
-
-	.align	PAGE_SHIFT
-
-	.globl	empty_zero_page
-empty_zero_page:
-	.space	PAGE_SIZE
-
-	.globl	swapper_pg_dir
-swapper_pg_dir:
-	.space	PGD_TABLE_SIZE
-=======
 	bl	CFUNC(start_kernel)
 
 	/* Not reached */
 0:	trap
 	EMIT_BUG_ENTRY 0b, __FILE__, __LINE__, 0
 	.previous
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

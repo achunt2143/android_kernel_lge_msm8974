@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Block device driver configuration
 #
@@ -17,9 +14,6 @@ if MD
 
 config BLK_DEV_MD
 	tristate "RAID support"
-<<<<<<< HEAD
-	---help---
-=======
 	select BLOCK_HOLDER_DEPRECATED if SYSFS
 	select BUFFER_HEAD
 	# BLOCK_LEGACY_AUTOLOAD requirement should be removed
@@ -27,7 +21,6 @@ config BLK_DEV_MD
 	# the default - are widely available.
 	select BLOCK_LEGACY_AUTOLOAD
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver lets you combine several hard disk partitions into one
 	  logical block device. This can be used to simply append one
 	  partition to another one or to combine several redundant hard disks
@@ -39,11 +32,7 @@ config BLK_DEV_MD
 
 	  More information about Software RAID on Linux is contained in the
 	  Software RAID mini-HOWTO, available from
-<<<<<<< HEAD
-	  <http://www.tldp.org/docs.html#howto>. There you will also learn
-=======
 	  <https://www.tldp.org/docs.html#howto>. There you will also learn
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  where to get the supporting user space utilities raidtools.
 
 	  If unsure, say N.
@@ -52,38 +41,16 @@ config MD_AUTODETECT
 	bool "Autodetect RAID arrays during kernel boot"
 	depends on BLK_DEV_MD=y
 	default y
-<<<<<<< HEAD
-	---help---
-	  If you say Y here, then the kernel will try to autodetect raid
-	  arrays as part of its boot process. 
-
-	  If you don't use raid and say Y, this autodetection can cause 
-=======
 	help
 	  If you say Y here, then the kernel will try to autodetect raid
 	  arrays as part of its boot process.
 
 	  If you don't use raid and say Y, this autodetection can cause
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  a several-second delay in the boot time due to various
 	  synchronisation steps that are part of this step.
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-config MD_LINEAR
-	tristate "Linear (append) mode"
-	depends on BLK_DEV_MD
-	---help---
-	  If you say Y here, then your multiple devices driver will be able to
-	  use the so-called linear mode, i.e. it will combine the hard disk
-	  partitions by simply appending one to the other.
-
-	  To compile this as a module, choose M here: the module
-	  will be called linear.
-
-	  If unsure, say Y.
-=======
 config MD_BITMAP_FILE
 	bool "MD bitmap file support (deprecated)"
 	default y
@@ -93,16 +60,11 @@ config MD_BITMAP_FILE
 	  bitmaps near the MD superblock, and very problematic code that abuses
 	  various kernel APIs and can only work with files on a file system not
 	  actually sitting on the MD device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MD_RAID0
 	tristate "RAID-0 (striping) mode"
 	depends on BLK_DEV_MD
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you say Y here, then your multiple devices driver will be able to
 	  use the so-called raid0 mode, i.e. it will combine the hard disk
 	  partitions into one logical device in such a fashion as to fill them
@@ -111,11 +73,7 @@ config MD_RAID0
 
 	  Information about Software RAID on Linux is contained in the
 	  Software-RAID mini-HOWTO, available from
-<<<<<<< HEAD
-	  <http://www.tldp.org/docs.html#howto>. There you will also
-=======
 	  <https://www.tldp.org/docs.html#howto>. There you will also
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  learn where to get the supporting user space utilities raidtools.
 
 	  To compile this as a module, choose M here: the module
@@ -126,11 +84,7 @@ config MD_RAID0
 config MD_RAID1
 	tristate "RAID-1 (mirroring) mode"
 	depends on BLK_DEV_MD
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  A RAID-1 set consists of several disk drives which are exact copies
 	  of each other.  In the event of a mirror failure, the RAID driver
 	  will continue to use the operational mirrors in the set, providing
@@ -141,11 +95,7 @@ config MD_RAID1
 
 	  Information about Software RAID on Linux is contained in the
 	  Software-RAID mini-HOWTO, available from
-<<<<<<< HEAD
-	  <http://www.tldp.org/docs.html#howto>.  There you will also
-=======
 	  <https://www.tldp.org/docs.html#howto>.  There you will also
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  learn where to get the supporting user space utilities raidtools.
 
 	  If you want to use such a RAID-1 set, say Y.  To compile this code
@@ -156,11 +106,7 @@ config MD_RAID1
 config MD_RAID10
 	tristate "RAID-10 (mirrored striping) mode"
 	depends on BLK_DEV_MD
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  RAID-10 provides a combination of striping (RAID-0) and
 	  mirroring (RAID-1) with easier configuration and more flexible
 	  layout.
@@ -172,11 +118,7 @@ config MD_RAID10
 
 	  RAID-10 requires mdadm-1.7.0 or later, available at:
 
-<<<<<<< HEAD
-	  ftp://ftp.kernel.org/pub/linux/utils/raid/mdadm/
-=======
 	  https://www.kernel.org/pub/linux/utils/raid/mdadm/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If unsure, say Y.
 
@@ -184,19 +126,12 @@ config MD_RAID456
 	tristate "RAID-4/RAID-5/RAID-6 mode"
 	depends on BLK_DEV_MD
 	select RAID6_PQ
-<<<<<<< HEAD
-=======
 	select LIBCRC32C
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select ASYNC_MEMCPY
 	select ASYNC_XOR
 	select ASYNC_PQ
 	select ASYNC_RAID6_RECOV
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  A RAID-5 set of N drives with a capacity of C MB per drive provides
 	  the capacity of C * (N - 1) MB, and protects against a failure
 	  of a single drive. For a given sector (row) number, (N - 1) drives
@@ -215,11 +150,7 @@ config MD_RAID456
 
 	  Information about Software RAID on Linux is contained in the
 	  Software-RAID mini-HOWTO, available from
-<<<<<<< HEAD
-	  <http://www.tldp.org/docs.html#howto>. There you will also
-=======
 	  <https://www.tldp.org/docs.html#howto>. There you will also
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  learn where to get the supporting user space utilities raidtools.
 
 	  If you want to use such a RAID-4/RAID-5/RAID-6 set, say Y.  To
@@ -228,46 +159,6 @@ config MD_RAID456
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-config MULTICORE_RAID456
-	bool "RAID-4/RAID-5/RAID-6 Multicore processing (EXPERIMENTAL)"
-	depends on MD_RAID456
-	depends on SMP
-	depends on EXPERIMENTAL
-	---help---
-	  Enable the raid456 module to dispatch per-stripe raid operations to a
-	  thread pool.
-
-	  If unsure, say N.
-
-config MD_MULTIPATH
-	tristate "Multipath I/O support"
-	depends on BLK_DEV_MD
-	help
-	  MD_MULTIPATH provides a simple multi-path personality for use
-	  the MD framework.  It is not under active development.  New
-	  projects should consider using DM_MULTIPATH which has more
-	  features and more testing.
-
-	  If unsure, say N.
-
-config MD_FAULTY
-	tristate "Faulty test module for MD"
-	depends on BLK_DEV_MD
-	help
-	  The "faulty" module allows for a block device that occasionally returns
-	  read or write errors.  It is useful for testing.
-
-	  In unsure, say N.
-
-config BLK_DEV_DM_BUILTIN
-	boolean
-
-config BLK_DEV_DM
-	tristate "Device mapper support"
-	select BLK_DEV_DM_BUILTIN
-	---help---
-=======
 config MD_CLUSTER
 	tristate "Cluster Support for MD"
 	depends on BLK_DEV_MD
@@ -296,7 +187,6 @@ config BLK_DEV_DM
 	select BLK_MQ_STACKING
 	depends on DAX || DAX=n
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Device-mapper is a low level volume manager.  It works by allowing
 	  people to specify mappings for ranges of logical sectors.  Various
 	  mapping types are available, in addition people may write their own
@@ -310,42 +200,21 @@ config BLK_DEV_DM
 	  If unsure, say N.
 
 config DM_DEBUG
-<<<<<<< HEAD
-	boolean "Device mapper debugging support"
-	depends on BLK_DEV_DM
-	---help---
-=======
 	bool "Device mapper debugging support"
 	depends on BLK_DEV_DM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Enable this for messages that may help debug device-mapper problems.
 
 	  If unsure, say N.
 
 config DM_BUFIO
        tristate
-<<<<<<< HEAD
-       depends on BLK_DEV_DM && EXPERIMENTAL
-       ---help---
-=======
        depends on BLK_DEV_DM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 This interface allows you to do buffered I/O on a device and acts
 	 as a cache, holding recently-read blocks in memory and performing
 	 delayed writes.
 
-<<<<<<< HEAD
-source "drivers/md/persistent-data/Kconfig"
-
-config DM_CRYPT
-	tristate "Crypt target support"
-	depends on BLK_DEV_DM
-	select CRYPTO
-	select CRYPTO_CBC
-	---help---
-=======
 config DM_DEBUG_BLOCK_MANAGER_LOCKING
        bool "Block manager locking"
        depends on DM_BUFIO
@@ -389,75 +258,18 @@ config DM_CRYPT
 	select CRYPTO_CBC
 	select CRYPTO_ESSIV
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This device-mapper target allows you to create a device that
 	  transparently encrypts the data on it. You'll need to activate
 	  the ciphers you're going to use in the cryptoapi configuration.
 
-<<<<<<< HEAD
-	  Information on how to use dm-crypt can be found on
-
-	  <http://www.saout.de/misc/dm-crypt/>
-=======
 	  For further information on dm-crypt and userspace tools see:
 	  <https://gitlab.com/cryptsetup/cryptsetup/wikis/DMCrypt>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this code as a module, choose M here: the module will
 	  be called dm-crypt.
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-config DM_REQ_CRYPT
-	tristate "Crypt target support"
-	depends on BLK_DEV_DM
-	select XTS
-	select CRYPTO_XTS
-	---help---
-	  This request based device-mapper target allows you to create a device that
-	  transparently encrypts the data on it. You'll need to activate
-	  the ciphers you're going to use in the cryptoapi configuration.
-          The DM REQ CRYPT operates on requests (bigger payloads) to utilize 
-          crypto hardware better.	  
-
-	  To compile this code as a module, choose M here: the module will
-	  be called dm-req-crypt.
-
-	  If unsure, say N.
-	  
-config DM_SNAPSHOT
-       tristate "Snapshot target"
-       depends on BLK_DEV_DM
-       ---help---
-         Allow volume managers to take writable snapshots of a device.
-
-config DM_THIN_PROVISIONING
-       tristate "Thin provisioning target (EXPERIMENTAL)"
-       depends on BLK_DEV_DM && EXPERIMENTAL
-       select DM_PERSISTENT_DATA
-       ---help---
-         Provides thin provisioning and snapshots that share a data store.
-
-config DM_DEBUG_BLOCK_STACK_TRACING
-	boolean "Keep stack trace of thin provisioning block lock holders"
-	depends on STACKTRACE_SUPPORT && DM_THIN_PROVISIONING
-	select STACKTRACE
-	---help---
-	  Enable this for messages that may help debug problems with the
-	  block manager locking used by thin provisioning.
-
-	  If unsure, say N.
-
-config DM_DEBUG_SPACE_MAPS
-	boolean "Extra validation for thin provisioning space maps"
-	depends on DM_THIN_PROVISIONING
-	---help---
-	  Enable this for messages that may help debug problems with the
-	  space maps used by thin provisioning.
-
-          If unsure, say N.
-=======
 config DM_SNAPSHOT
        tristate "Snapshot target"
        depends on BLK_DEV_DM
@@ -541,25 +353,10 @@ config DM_CLONE
 	 I/O.
 
 	 If unsure, say N.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config DM_MIRROR
        tristate "Mirror target"
        depends on BLK_DEV_DM
-<<<<<<< HEAD
-       ---help---
-         Allow volume managers to mirror logical volumes, also
-         needed for live data migration tools such as 'pvmove'.
-
-config DM_RAID
-       tristate "RAID 1/4/5/6 target"
-       depends on BLK_DEV_DM
-       select MD_RAID1
-       select MD_RAID456
-       select BLK_DEV_MD
-       ---help---
-	 A dm target that supports RAID1, RAID4, RAID5 and RAID6 mappings
-=======
 	help
 	 Allow volume managers to mirror logical volumes, also
 	 needed for live data migration tools such as 'pvmove'.
@@ -585,7 +382,6 @@ config DM_RAID
        select BLK_DEV_MD
 	help
 	 A dm target that supports RAID1, RAID10, RAID4, RAID5 and RAID6 mappings
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	 A RAID-5 set of N drives with a capacity of C MB per drive provides
 	 the capacity of C * (N - 1) MB, and protects against a failure
@@ -603,28 +399,10 @@ config DM_RAID
 	 RAID-5, RAID-6 distributes the syndromes across the drives
 	 in one of the available parity distribution methods.
 
-<<<<<<< HEAD
-config DM_LOG_USERSPACE
-	tristate "Mirror userspace logging (EXPERIMENTAL)"
-	depends on DM_MIRROR && EXPERIMENTAL && NET
-	select CONNECTOR
-	---help---
-	  The userspace logging module provides a mechanism for
-	  relaying the dm-dirty-log API to userspace.  Log designs
-	  which are more suited to userspace implementation (e.g.
-	  shared storage logs) or experimental logs can be implemented
-	  by leveraging this framework.
-
-config DM_ZERO
-	tristate "Zero target"
-	depends on BLK_DEV_DM
-	---help---
-=======
 config DM_ZERO
 	tristate "Zero target"
 	depends on BLK_DEV_DM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  A target that discards writes, and returns all zeroes for
 	  reads.  Useful in some recovery situations.
 
@@ -636,21 +414,13 @@ config DM_MULTIPATH
 	# it is, DM_MULTIPATH must depend on it.  We get a build
 	# error if SCSI_DH=m and DM_MULTIPATH=y
 	depends on !SCSI_DH || SCSI
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Allow volume managers to support multipath hardware.
 
 config DM_MULTIPATH_QL
 	tristate "I/O Path Selector based on the number of in-flight I/Os"
 	depends on DM_MULTIPATH
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This path selector is a dynamic load balancer which selects
 	  the path with the least number of in-flight I/Os.
 
@@ -659,23 +429,13 @@ config DM_MULTIPATH_QL
 config DM_MULTIPATH_ST
 	tristate "I/O Path Selector based on the service time"
 	depends on DM_MULTIPATH
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This path selector is a dynamic load balancer which selects
 	  the path expected to complete the incoming I/O in the shortest
 	  time.
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-config DM_DELAY
-	tristate "I/O delaying target (EXPERIMENTAL)"
-	depends on BLK_DEV_DM && EXPERIMENTAL
-	---help---
-=======
 config DM_MULTIPATH_HST
 	tristate "I/O Path Selector based on historical service time"
 	depends on DM_MULTIPATH
@@ -700,33 +460,11 @@ config DM_DELAY
 	tristate "I/O delaying target"
 	depends on BLK_DEV_DM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	A target that delays reads and/or writes and can send
 	them to different devices.  Useful for testing.
 
 	If unsure, say N.
 
-<<<<<<< HEAD
-config DM_UEVENT
-	bool "DM uevents"
-	depends on BLK_DEV_DM
-	---help---
-	Generate udev events for DM events.
-
-config DM_FLAKEY
-       tristate "Flakey target (EXPERIMENTAL)"
-       depends on BLK_DEV_DM && EXPERIMENTAL
-       ---help---
-         A target that intermittently fails I/O for debugging purposes.
-
-config DM_VERITY
-	tristate "Verity target support (EXPERIMENTAL)"
-	depends on BLK_DEV_DM && EXPERIMENTAL
-	select CRYPTO
-	select CRYPTO_HASH
-	select DM_BUFIO
-	---help---
-=======
 config DM_DUST
 	tristate "Bad sector simulation target"
 	depends on BLK_DEV_DM
@@ -767,7 +505,6 @@ config DM_VERITY
 	select CRYPTO_HASH
 	select DM_BUFIO
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This device-mapper target creates a read-only device that
 	  transparently validates the data on one underlying device against
 	  a pre-generated tree of cryptographic checksums stored on a second
@@ -781,8 +518,6 @@ config DM_VERITY
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-=======
 config DM_VERITY_VERIFY_ROOTHASH_SIG
 	bool "Verity data device root hash signature verification support"
 	depends on DM_VERITY
@@ -900,5 +635,4 @@ config DM_AUDIT
 
 source "drivers/md/dm-vdo/Kconfig"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # MD

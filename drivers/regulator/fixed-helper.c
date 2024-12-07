@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-#include <linux/slab.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/slab.h>
 #include <linux/string.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/regulator/machine.h>
 #include <linux/regulator/fixed.h>
@@ -19,23 +15,11 @@ static void regulator_fixed_release(struct device *dev)
 {
 	struct fixed_regulator_data *data = container_of(dev,
 			struct fixed_regulator_data, pdev.dev);
-<<<<<<< HEAD
-=======
 	kfree_const(data->cfg.supply_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(data);
 }
 
 /**
-<<<<<<< HEAD
- * regulator_register_fixed - register a no-op fixed regulator
- * @id: platform device id
- * @supplies: consumers for this regulator
- * @num_supplies: number of consumers
- */
-struct platform_device *regulator_register_fixed(int id,
-		struct regulator_consumer_supply *supplies, int num_supplies)
-=======
  * regulator_register_always_on - register an always-on regulator with a fixed name
  * @id: platform device id
  * @name: name to be used for the regulator
@@ -45,7 +29,6 @@ struct platform_device *regulator_register_fixed(int id,
  */
 struct platform_device *regulator_register_always_on(int id, const char *name,
 	struct regulator_consumer_supply *supplies, int num_supplies, int uv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fixed_regulator_data *data;
 
@@ -53,11 +36,6 @@ struct platform_device *regulator_register_always_on(int id, const char *name,
 	if (!data)
 		return NULL;
 
-<<<<<<< HEAD
-	data->cfg.supply_name = "fixed-dummy";
-	data->cfg.microvolts = 0;
-	data->cfg.gpio = -EINVAL;
-=======
 	data->cfg.supply_name = kstrdup_const(name, GFP_KERNEL);
 	if (!data->cfg.supply_name) {
 		kfree(data);
@@ -65,7 +43,6 @@ struct platform_device *regulator_register_always_on(int id, const char *name,
 	}
 
 	data->cfg.microvolts = uv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->cfg.enabled_at_boot = 1;
 	data->cfg.init_data = &data->init_data;
 

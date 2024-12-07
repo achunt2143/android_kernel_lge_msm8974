@@ -1,26 +1,14 @@
-<<<<<<< HEAD
-config SECURITY_YAMA
-	bool "Yama support"
-	depends on SECURITY
-	select SECURITYFS
-	select SECURITY_PATH
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config SECURITY_YAMA
 	bool "Yama support"
 	depends on SECURITY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	help
 	  This selects Yama, which extends DAC support with additional
 	  system-wide security settings beyond regular Linux discretionary
 	  access controls. Currently available is ptrace scope restriction.
-<<<<<<< HEAD
-	  Further information can be found in Documentation/security/Yama.txt.
-=======
 	  Like capabilities, this security module stacks with other LSMs.
 	  Further information can be found in
 	  Documentation/admin-guide/LSM/Yama.rst.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If you are unsure how to answer this question, answer N.

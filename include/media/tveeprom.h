@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-/*
- */
-
-struct tveeprom {
-	u32 has_radio;
-	/* If has_ir == 0, then it is unknown what the IR capabilities are,
-	   otherwise:
-	   bit 0: 1 (= IR capabilities are known)
-	   bit 1: IR receiver present
-	   bit 2: IR transmitter (blaster) present */
-	u32 has_ir;
-	u32 has_MAC_address; /* 0: no MAC, 1: MAC present, 2: unknown */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /*
@@ -85,7 +71,6 @@ struct tveeprom {
 	u32 has_radio;
 	u32 has_ir;
 	u32 has_MAC_address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32 tuner_type;
 	u32 tuner_formats;
@@ -95,12 +80,6 @@ struct tveeprom {
 	u32 tuner2_formats;
 	u32 tuner2_hauppauge_model;
 
-<<<<<<< HEAD
-	u32 digitizer;
-	u32 digitizer_formats;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 audio_processor;
 	u32 decoder_processor;
 
@@ -108,14 +87,6 @@ struct tveeprom {
 	u32 revision;
 	u32 serial_number;
 	char rev_str[5];
-<<<<<<< HEAD
-	u8 MAC_address[6];
-};
-
-void tveeprom_hauppauge_analog(struct i2c_client *c, struct tveeprom *tvee,
-			       unsigned char *eeprom_data);
-
-=======
 	u8 MAC_address[ETH_ALEN];
 };
 
@@ -142,5 +113,4 @@ void tveeprom_hauppauge_analog(struct tveeprom *tvee,
  *		be parsed by tveeprom_hauppauge_analog(), len should be, at
  *		least, 256.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int tveeprom_read(struct i2c_client *c, unsigned char *eedata, int len);

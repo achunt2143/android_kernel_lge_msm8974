@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/pci.c
  *
@@ -21,18 +18,11 @@
 #include <linux/init.h>
 #include <linux/ioport.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-#include <linux/module.h>
-#include <linux/cache.h>
-#include <linux/slab.h>
-=======
 #include <linux/memblock.h>
 #include <linux/module.h>
 #include <linux/cache.h>
 #include <linux/slab.h>
 #include <linux/syscalls.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machvec.h>
 
 #include "proto.h"
@@ -71,23 +61,13 @@ struct pci_controller *pci_isa_hose;
  * Quirks.
  */
 
-<<<<<<< HEAD
-static void __init
-quirk_isa_bridge(struct pci_dev *dev)
-=======
 static void quirk_isa_bridge(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dev->class = PCI_CLASS_BRIDGE_ISA << 8;
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82378, quirk_isa_bridge);
 
-<<<<<<< HEAD
-static void __init
-quirk_cypress(struct pci_dev *dev)
-=======
 static void quirk_cypress(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* The Notorious Cy82C693 chip.  */
 
@@ -126,12 +106,7 @@ static void quirk_cypress(struct pci_dev *dev)
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_CONTAQ, PCI_DEVICE_ID_CONTAQ_82C693, quirk_cypress);
 
 /* Called for each device after PCI setup is done. */
-<<<<<<< HEAD
-static void __init
-pcibios_fixup_final(struct pci_dev *dev)
-=======
 static void pcibios_fixup_final(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int class = dev->class >> 8;
 
@@ -222,19 +197,6 @@ pcibios_init(void)
 
 subsys_initcall(pcibios_init);
 
-<<<<<<< HEAD
-char * __devinit
-pcibios_setup(char *str)
-{
-	return str;
-}
-
-#ifdef ALPHA_RESTORE_SRM_SETUP
-static struct pdev_srm_saved_conf *srm_saved_configs;
-
-void __devinit
-pdev_save_srm_config(struct pci_dev *dev)
-=======
 #ifdef ALPHA_RESTORE_SRM_SETUP
 /* Store PCI device configuration left by SRM here. */
 struct pdev_srm_saved_conf
@@ -246,7 +208,6 @@ struct pdev_srm_saved_conf
 static struct pdev_srm_saved_conf *srm_saved_configs;
 
 static void pdev_save_srm_config(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pdev_srm_saved_conf *tmp;
 	static int printed = 0;
@@ -286,52 +247,24 @@ pci_restore_srm_config(void)
 		pci_restore_state(tmp->dev);
 	}
 }
-<<<<<<< HEAD
-#endif
-
-void __devinit
-pcibios_fixup_bus(struct pci_bus *bus)
-=======
 #else
 #define pdev_save_srm_config(dev)	do {} while (0)
 #endif
 
 void pcibios_fixup_bus(struct pci_bus *bus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *dev = bus->self;
 
 	if (pci_has_flag(PCI_PROBE_ONLY) && dev &&
-<<<<<<< HEAD
- 		   (dev->class >> 8) == PCI_CLASS_BRIDGE_PCI) {
- 		pci_read_bridge_bases(bus);
-	} 
-=======
 	    (dev->class >> 8) == PCI_CLASS_BRIDGE_PCI) {
 		pci_read_bridge_bases(bus);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(dev, &bus->devices, bus_list) {
 		pdev_save_srm_config(dev);
 	}
 }
 
-<<<<<<< HEAD
-void __init
-pcibios_update_irq(struct pci_dev *dev, int irq)
-{
-	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
-}
-
-int
-pcibios_enable_device(struct pci_dev *dev, int mask)
-{
-	return pci_enable_resources(dev, mask);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  If we set up a device for bus mastering, we need to check the latency
  *  timer as certain firmware forgets to set it properly, as seen
@@ -355,18 +288,6 @@ pcibios_claim_one_bus(struct pci_bus *b)
 	struct pci_bus *child_bus;
 
 	list_for_each_entry(dev, &b->devices, bus_list) {
-<<<<<<< HEAD
-		int i;
-
-		for (i = 0; i < PCI_NUM_RESOURCES; i++) {
-			struct resource *r = &dev->resource[i];
-
-			if (r->parent || !r->start || !r->flags)
-				continue;
-			if (pci_has_flag(PCI_PROBE_ONLY) ||
-			    (r->flags & IORESOURCE_PCI_FIXED))
-				pci_claim_resource(dev, i);
-=======
 		struct resource *r;
 		int i;
 
@@ -380,7 +301,6 @@ pcibios_claim_one_bus(struct pci_bus *b)
 
 				pci_claim_bridge_resource(dev, i);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -402,14 +322,9 @@ common_init_pci(void)
 {
 	struct pci_controller *hose;
 	struct list_head resources;
-<<<<<<< HEAD
-	struct pci_bus *bus;
-	int next_busno;
-=======
 	struct pci_host_bridge *bridge;
 	struct pci_bus *bus;
 	int ret, next_busno;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int need_domain_info = 0;
 	u32 pci_mem_end;
 	u32 sg_base;
@@ -432,13 +347,6 @@ common_init_pci(void)
 		pci_add_resource_offset(&resources, hose->mem_space,
 					hose->mem_space->start);
 
-<<<<<<< HEAD
-		bus = pci_scan_root_bus(NULL, next_busno, alpha_mv.pci_ops,
-					hose, &resources);
-		hose->bus = bus;
-		hose->need_domain_info = need_domain_info;
-		next_busno = bus->subordinate + 1;
-=======
 		bridge = pci_alloc_host_bridge(0);
 		if (!bridge)
 			continue;
@@ -460,7 +368,6 @@ common_init_pci(void)
 		bus = hose->bus = bridge->bus;
 		hose->need_domain_info = need_domain_info;
 		next_busno = bus->busn_res.end + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Don't allow 8-bit bus number overflow inside the hose -
 		   reserve some space for bridges. */ 
 		if (next_busno > 224) {
@@ -472,12 +379,6 @@ common_init_pci(void)
 	pcibios_claim_console_setup();
 
 	pci_assign_unassigned_resources();
-<<<<<<< HEAD
-	pci_fixup_irqs(alpha_mv.pci_swizzle, alpha_mv.pci_map_irq);
-}
-
-
-=======
 	for (hose = hose_head; hose; hose = hose->next) {
 		bus = hose->bus;
 		if (bus)
@@ -485,20 +386,15 @@ common_init_pci(void)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pci_controller * __init
 alloc_pci_controller(void)
 {
 	struct pci_controller *hose;
 
-<<<<<<< HEAD
-	hose = alloc_bootmem(sizeof(*hose));
-=======
 	hose = memblock_alloc(sizeof(*hose), SMP_CACHE_BYTES);
 	if (!hose)
 		panic("%s: Failed to allocate %zu bytes\n", __func__,
 		      sizeof(*hose));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*hose_tail = hose;
 	hose_tail = &hose->next;
@@ -509,13 +405,6 @@ alloc_pci_controller(void)
 struct resource * __init
 alloc_resource(void)
 {
-<<<<<<< HEAD
-	struct resource *res;
-
-	res = alloc_bootmem(sizeof(*res));
-
-	return res;
-=======
 	void *ptr = memblock_alloc(sizeof(struct resource), SMP_CACHE_BYTES);
 
 	if (!ptr)
@@ -523,20 +412,14 @@ alloc_resource(void)
 		      sizeof(struct resource));
 
 	return ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /* Provide information on locations of various I/O regions in physical
    memory.  Do this on a per-card basis so that we choose the right hose.  */
 
-<<<<<<< HEAD
-asmlinkage long
-sys_pciconfig_iobase(long which, unsigned long bus, unsigned long dfn)
-=======
 SYSCALL_DEFINE3(pciconfig_iobase, long, which, unsigned long, bus,
 		unsigned long, dfn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_controller *hose;
 	struct pci_dev *dev;
@@ -551,11 +434,7 @@ SYSCALL_DEFINE3(pciconfig_iobase, long, which, unsigned long, bus,
 		if (bus == 0 && dfn == 0) {
 			hose = pci_isa_hose;
 		} else {
-<<<<<<< HEAD
-			dev = pci_get_bus_and_slot(bus, dfn);
-=======
 			dev = pci_get_domain_bus_and_slot(0, bus, dfn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!dev)
 				return -ENODEV;
 			hose = dev->sysdata;

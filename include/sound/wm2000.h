@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/sound/wm2000.h -- Platform data for WM2000
  *
  * Copyright 2010 Wolfson Microelectronics. PLC.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_SND_WM2000_H
@@ -22,12 +12,6 @@ struct wm2000_platform_data {
 	/** Filename for system-specific image to download to device. */
 	const char *download_file;
 
-<<<<<<< HEAD
-	/** Divide MCLK by 2 for system clock? */
-	unsigned int mclkdiv2:1;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/** Disable speech clarity enhancement, for use when an
 	 * external algorithm is used. */
 	unsigned int speech_enh_disable:1;

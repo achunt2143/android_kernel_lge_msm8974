@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Arizona-i2c.c  --  Arizona I2C bus interface
  *
  * Copyright 2012 Wolfson Microelectronics plc
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/err.h>
@@ -24,43 +14,12 @@
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mfd/arizona/core.h>
 
 #include "arizona.h"
 
-<<<<<<< HEAD
-static __devinit int arizona_i2c_probe(struct i2c_client *i2c,
-					  const struct i2c_device_id *id)
-{
-	struct arizona *arizona;
-	const struct regmap_config *regmap_config;
-	int ret, type;
-
-	if (i2c->dev.of_node)
-		type = arizona_of_get_type(&i2c->dev);
-	else
-		type = id->driver_data;
-
-	switch (type) {
-#ifdef CONFIG_MFD_WM5102
-	case WM5102:
-		regmap_config = &wm5102_i2c_regmap;
-		break;
-#endif
-#ifdef CONFIG_MFD_WM5110
-	case WM5110:
-		regmap_config = &wm5110_i2c_regmap;
-		break;
-#endif
-	default:
-		dev_err(&i2c->dev, "Unknown device type %ld\n",
-			id->driver_data);
-=======
 static int arizona_i2c_probe(struct i2c_client *i2c)
 {
 	struct arizona *arizona;
@@ -96,7 +55,6 @@ static int arizona_i2c_probe(struct i2c_client *i2c)
 	if (!regmap_config) {
 		dev_err(&i2c->dev,
 			"No kernel support for device type %ld\n", type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -112,57 +70,31 @@ static int arizona_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-<<<<<<< HEAD
-	arizona->type = id->driver_data;
-=======
 	arizona->type = type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	arizona->dev = &i2c->dev;
 	arizona->irq = i2c->irq;
 
 	return arizona_dev_init(arizona);
 }
 
-<<<<<<< HEAD
-static int __devexit arizona_i2c_remove(struct i2c_client *i2c)
-{
-	struct arizona *arizona = dev_get_drvdata(&i2c->dev);
-	arizona_dev_exit(arizona);
-	return 0;
-=======
 static void arizona_i2c_remove(struct i2c_client *i2c)
 {
 	struct arizona *arizona = dev_get_drvdata(&i2c->dev);
 
 	arizona_dev_exit(arizona);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id arizona_i2c_id[] = {
 	{ "wm5102", WM5102 },
 	{ "wm5110", WM5110 },
-<<<<<<< HEAD
-=======
 	{ "wm8280", WM8280 },
 	{ "wm8997", WM8997 },
 	{ "wm8998", WM8998 },
 	{ "wm1814", WM1814 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, arizona_i2c_id);
 
-<<<<<<< HEAD
-static struct i2c_driver arizona_i2c_driver = {
-	.driver = {
-		.name	= "arizona",
-		.owner	= THIS_MODULE,
-		.pm	= &arizona_pm_ops,
-		.of_match_table	= of_match_ptr(arizona_of_match),
-	},
-	.probe		= arizona_i2c_probe,
-	.remove		= __devexit_p(arizona_i2c_remove),
-=======
 #ifdef CONFIG_OF
 static const struct of_device_id arizona_i2c_of_match[] = {
 	{ .compatible = "wlf,wm5102", .data = (void *)WM5102 },
@@ -184,16 +116,12 @@ static struct i2c_driver arizona_i2c_driver = {
 	},
 	.probe		= arizona_i2c_probe,
 	.remove		= arizona_i2c_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= arizona_i2c_id,
 };
 
 module_i2c_driver(arizona_i2c_driver);
 
-<<<<<<< HEAD
-=======
 MODULE_SOFTDEP("pre: arizona_ldo1");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Arizona I2C bus interface");
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_LICENSE("GPL");

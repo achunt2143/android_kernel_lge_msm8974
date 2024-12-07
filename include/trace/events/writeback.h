@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM writeback
 
 #if !defined(_TRACE_WRITEBACK_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_WRITEBACK_H
 
-<<<<<<< HEAD
-=======
 #include <linux/tracepoint.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/backing-dev.h>
 #include <linux/writeback.h>
 
@@ -25,26 +19,6 @@
 		{I_FREEING,		"I_FREEING"},		\
 		{I_CLEAR,		"I_CLEAR"},		\
 		{I_SYNC,		"I_SYNC"},		\
-<<<<<<< HEAD
-		{I_REFERENCED,		"I_REFERENCED"}		\
-	)
-
-#define WB_WORK_REASON							\
-		{WB_REASON_BACKGROUND,		"background"},		\
-		{WB_REASON_TRY_TO_FREE_PAGES,	"try_to_free_pages"},	\
-		{WB_REASON_SYNC,		"sync"},		\
-		{WB_REASON_PERIODIC,		"periodic"},		\
-		{WB_REASON_LAPTOP_TIMER,	"laptop_timer"},	\
-		{WB_REASON_FREE_MORE_MEM,	"free_more_memory"},	\
-		{WB_REASON_FS_FREE_SPACE,	"fs_free_space"},	\
-		{WB_REASON_FORKER_THREAD,	"forker_thread"}
-
-struct wb_writeback_work;
-
-DECLARE_EVENT_CLASS(writeback_work_class,
-	TP_PROTO(struct backing_dev_info *bdi, struct wb_writeback_work *work),
-	TP_ARGS(bdi, work),
-=======
 		{I_DIRTY_TIME,		"I_DIRTY_TIME"},	\
 		{I_REFERENCED,		"I_REFERENCED"}		\
 	)
@@ -373,7 +347,6 @@ DEFINE_EVENT(writeback_write_inode_template, writeback_write_inode,
 DECLARE_EVENT_CLASS(writeback_work_class,
 	TP_PROTO(struct bdi_writeback *wb, struct wb_writeback_work *work),
 	TP_ARGS(wb, work),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_STRUCT__entry(
 		__array(char, name, 32)
 		__field(long, nr_pages)
@@ -383,19 +356,10 @@ DECLARE_EVENT_CLASS(writeback_work_class,
 		__field(int, range_cyclic)
 		__field(int, for_background)
 		__field(int, reason)
-<<<<<<< HEAD
-	),
-	TP_fast_assign(
-		struct device *dev = bdi->dev;
-		if (!dev)
-			dev = default_backing_dev_info.dev;
-		strncpy(__entry->name, dev_name(dev), 32);
-=======
 		__field(ino_t, cgroup_ino)
 	),
 	TP_fast_assign(
 		strscpy_pad(__entry->name, bdi_dev_name(wb->bdi), 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->nr_pages = work->nr_pages;
 		__entry->sb_dev = work->sb ? work->sb->s_dev : 0;
 		__entry->sync_mode = work->sync_mode;
@@ -403,16 +367,10 @@ DECLARE_EVENT_CLASS(writeback_work_class,
 		__entry->range_cyclic = work->range_cyclic;
 		__entry->for_background	= work->for_background;
 		__entry->reason = work->reason;
-<<<<<<< HEAD
-	),
-	TP_printk("bdi %s: sb_dev %d:%d nr_pages=%ld sync_mode=%d "
-		  "kupdate=%d range_cyclic=%d background=%d reason=%s",
-=======
 		__entry->cgroup_ino = __trace_wb_assign_cgroup(wb);
 	),
 	TP_printk("bdi %s: sb_dev %d:%d nr_pages=%ld sync_mode=%d "
 		  "kupdate=%d range_cyclic=%d background=%d reason=%s cgroup_ino=%lu",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->name,
 		  MAJOR(__entry->sb_dev), MINOR(__entry->sb_dev),
 		  __entry->nr_pages,
@@ -420,24 +378,14 @@ DECLARE_EVENT_CLASS(writeback_work_class,
 		  __entry->for_kupdate,
 		  __entry->range_cyclic,
 		  __entry->for_background,
-<<<<<<< HEAD
-		  __print_symbolic(__entry->reason, WB_WORK_REASON)
-=======
 		  __print_symbolic(__entry->reason, WB_WORK_REASON),
 		  (unsigned long)__entry->cgroup_ino
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	)
 );
 #define DEFINE_WRITEBACK_WORK_EVENT(name) \
 DEFINE_EVENT(writeback_work_class, name, \
-<<<<<<< HEAD
-	TP_PROTO(struct backing_dev_info *bdi, struct wb_writeback_work *work), \
-	TP_ARGS(bdi, work))
-DEFINE_WRITEBACK_WORK_EVENT(writeback_nothread);
-=======
 	TP_PROTO(struct bdi_writeback *wb, struct wb_writeback_work *work), \
 	TP_ARGS(wb, work))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_WRITEBACK_WORK_EVENT(writeback_queue);
 DEFINE_WRITEBACK_WORK_EVENT(writeback_exec);
 DEFINE_WRITEBACK_WORK_EVENT(writeback_start);
@@ -457,8 +405,6 @@ TRACE_EVENT(writeback_pages_written,
 );
 
 DECLARE_EVENT_CLASS(writeback_class,
-<<<<<<< HEAD
-=======
 	TP_PROTO(struct bdi_writeback *wb),
 	TP_ARGS(wb),
 	TP_STRUCT__entry(
@@ -482,41 +428,18 @@ DEFINE_EVENT(writeback_class, name, \
 DEFINE_WRITEBACK_EVENT(writeback_wake_background);
 
 TRACE_EVENT(writeback_bdi_register,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_PROTO(struct backing_dev_info *bdi),
 	TP_ARGS(bdi),
 	TP_STRUCT__entry(
 		__array(char, name, 32)
 	),
 	TP_fast_assign(
-<<<<<<< HEAD
-		strncpy(__entry->name, dev_name(bdi->dev), 32);
-	),
-	TP_printk("bdi %s",
-		  __entry->name
-	)
-);
-#define DEFINE_WRITEBACK_EVENT(name) \
-DEFINE_EVENT(writeback_class, name, \
-	TP_PROTO(struct backing_dev_info *bdi), \
-	TP_ARGS(bdi))
-
-DEFINE_WRITEBACK_EVENT(writeback_nowork);
-DEFINE_WRITEBACK_EVENT(writeback_wake_background);
-DEFINE_WRITEBACK_EVENT(writeback_wake_thread);
-DEFINE_WRITEBACK_EVENT(writeback_wake_forker_thread);
-DEFINE_WRITEBACK_EVENT(writeback_bdi_register);
-DEFINE_WRITEBACK_EVENT(writeback_bdi_unregister);
-DEFINE_WRITEBACK_EVENT(writeback_thread_start);
-DEFINE_WRITEBACK_EVENT(writeback_thread_stop);
-=======
 		strscpy_pad(__entry->name, bdi_dev_name(bdi), 32);
 	),
 	TP_printk("bdi %s",
 		__entry->name
 	)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DECLARE_EVENT_CLASS(wbc_class,
 	TP_PROTO(struct writeback_control *wbc, struct backing_dev_info *bdi),
@@ -532,18 +455,11 @@ DECLARE_EVENT_CLASS(wbc_class,
 		__field(int, range_cyclic)
 		__field(long, range_start)
 		__field(long, range_end)
-<<<<<<< HEAD
-	),
-
-	TP_fast_assign(
-		strncpy(__entry->name, dev_name(bdi->dev), 32);
-=======
 		__field(ino_t, cgroup_ino)
 	),
 
 	TP_fast_assign(
 		strscpy_pad(__entry->name, bdi_dev_name(bdi), 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->nr_to_write	= wbc->nr_to_write;
 		__entry->pages_skipped	= wbc->pages_skipped;
 		__entry->sync_mode	= wbc->sync_mode;
@@ -553,19 +469,12 @@ DECLARE_EVENT_CLASS(wbc_class,
 		__entry->range_cyclic	= wbc->range_cyclic;
 		__entry->range_start	= (long)wbc->range_start;
 		__entry->range_end	= (long)wbc->range_end;
-<<<<<<< HEAD
-=======
 		__entry->cgroup_ino	= __trace_wbc_assign_cgroup(wbc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("bdi %s: towrt=%ld skip=%ld mode=%d kupd=%d "
 		"bgrd=%d reclm=%d cyclic=%d "
-<<<<<<< HEAD
-		"start=0x%lx end=0x%lx",
-=======
 		"start=0x%lx end=0x%lx cgroup_ino=%lu",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->name,
 		__entry->nr_to_write,
 		__entry->pages_skipped,
@@ -575,13 +484,9 @@ DECLARE_EVENT_CLASS(wbc_class,
 		__entry->for_reclaim,
 		__entry->range_cyclic,
 		__entry->range_start,
-<<<<<<< HEAD
-		__entry->range_end)
-=======
 		__entry->range_end,
 		(unsigned long)__entry->cgroup_ino
 	)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 )
 
 #define DEFINE_WBC_EVENT(name) \
@@ -593,38 +498,15 @@ DEFINE_WBC_EVENT(wbc_writepage);
 TRACE_EVENT(writeback_queue_io,
 	TP_PROTO(struct bdi_writeback *wb,
 		 struct wb_writeback_work *work,
-<<<<<<< HEAD
-		 int moved),
-	TP_ARGS(wb, work, moved),
-=======
 		 unsigned long dirtied_before,
 		 int moved),
 	TP_ARGS(wb, work, dirtied_before, moved),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_STRUCT__entry(
 		__array(char,		name, 32)
 		__field(unsigned long,	older)
 		__field(long,		age)
 		__field(int,		moved)
 		__field(int,		reason)
-<<<<<<< HEAD
-	),
-	TP_fast_assign(
-		unsigned long *older_than_this = work->older_than_this;
-		strncpy(__entry->name, dev_name(wb->bdi->dev), 32);
-		__entry->older	= older_than_this ?  *older_than_this : 0;
-		__entry->age	= older_than_this ?
-				  (jiffies - *older_than_this) * 1000 / HZ : -1;
-		__entry->moved	= moved;
-		__entry->reason	= work->reason;
-	),
-	TP_printk("bdi %s: older=%lu age=%ld enqueue=%d reason=%s",
-		__entry->name,
-		__entry->older,	/* older_than_this in jiffies */
-		__entry->age,	/* older_than_this in relative milliseconds */
-		__entry->moved,
-		__print_symbolic(__entry->reason, WB_WORK_REASON)
-=======
 		__field(ino_t,		cgroup_ino)
 	),
 	TP_fast_assign(
@@ -642,7 +524,6 @@ TRACE_EVENT(writeback_queue_io,
 		__entry->moved,
 		__print_symbolic(__entry->reason, WB_WORK_REASON),
 		(unsigned long)__entry->cgroup_ino
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	)
 );
 
@@ -659,10 +540,6 @@ TRACE_EVENT(global_dirty_state,
 	TP_STRUCT__entry(
 		__field(unsigned long,	nr_dirty)
 		__field(unsigned long,	nr_writeback)
-<<<<<<< HEAD
-		__field(unsigned long,	nr_unstable)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(unsigned long,	background_thresh)
 		__field(unsigned long,	dirty_thresh)
 		__field(unsigned long,	dirty_limit)
@@ -671,19 +548,6 @@ TRACE_EVENT(global_dirty_state,
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->nr_dirty	= global_page_state(NR_FILE_DIRTY);
-		__entry->nr_writeback	= global_page_state(NR_WRITEBACK);
-		__entry->nr_unstable	= global_page_state(NR_UNSTABLE_NFS);
-		__entry->nr_dirtied	= global_page_state(NR_DIRTIED);
-		__entry->nr_written	= global_page_state(NR_WRITTEN);
-		__entry->background_thresh = background_thresh;
-		__entry->dirty_thresh	= dirty_thresh;
-		__entry->dirty_limit = global_dirty_limit;
-	),
-
-	TP_printk("dirty=%lu writeback=%lu unstable=%lu "
-=======
 		__entry->nr_dirty	= global_node_page_state(NR_FILE_DIRTY);
 		__entry->nr_writeback	= global_node_page_state(NR_WRITEBACK);
 		__entry->nr_dirtied	= global_node_page_state(NR_DIRTIED);
@@ -694,15 +558,10 @@ TRACE_EVENT(global_dirty_state,
 	),
 
 	TP_printk("dirty=%lu writeback=%lu "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  "bg_thresh=%lu thresh=%lu limit=%lu "
 		  "dirtied=%lu written=%lu",
 		  __entry->nr_dirty,
 		  __entry->nr_writeback,
-<<<<<<< HEAD
-		  __entry->nr_unstable,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->background_thresh,
 		  __entry->dirty_thresh,
 		  __entry->dirty_limit,
@@ -715,19 +574,11 @@ TRACE_EVENT(global_dirty_state,
 
 TRACE_EVENT(bdi_dirty_ratelimit,
 
-<<<<<<< HEAD
-	TP_PROTO(struct backing_dev_info *bdi,
-		 unsigned long dirty_rate,
-		 unsigned long task_ratelimit),
-
-	TP_ARGS(bdi, dirty_rate, task_ratelimit),
-=======
 	TP_PROTO(struct bdi_writeback *wb,
 		 unsigned long dirty_rate,
 		 unsigned long task_ratelimit),
 
 	TP_ARGS(wb, dirty_rate, task_ratelimit),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__array(char,		bdi, 32)
@@ -737,19 +588,6 @@ TRACE_EVENT(bdi_dirty_ratelimit,
 		__field(unsigned long,	dirty_ratelimit)
 		__field(unsigned long,	task_ratelimit)
 		__field(unsigned long,	balanced_dirty_ratelimit)
-<<<<<<< HEAD
-	),
-
-	TP_fast_assign(
-		strlcpy(__entry->bdi, dev_name(bdi->dev), 32);
-		__entry->write_bw	= KBps(bdi->write_bandwidth);
-		__entry->avg_write_bw	= KBps(bdi->avg_write_bandwidth);
-		__entry->dirty_rate	= KBps(dirty_rate);
-		__entry->dirty_ratelimit = KBps(bdi->dirty_ratelimit);
-		__entry->task_ratelimit	= KBps(task_ratelimit);
-		__entry->balanced_dirty_ratelimit =
-					  KBps(bdi->balanced_dirty_ratelimit);
-=======
 		__field(ino_t,		cgroup_ino)
 	),
 
@@ -763,39 +601,26 @@ TRACE_EVENT(bdi_dirty_ratelimit,
 		__entry->balanced_dirty_ratelimit =
 					KBps(wb->balanced_dirty_ratelimit);
 		__entry->cgroup_ino	= __trace_wb_assign_cgroup(wb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("bdi %s: "
 		  "write_bw=%lu awrite_bw=%lu dirty_rate=%lu "
 		  "dirty_ratelimit=%lu task_ratelimit=%lu "
-<<<<<<< HEAD
-		  "balanced_dirty_ratelimit=%lu",
-=======
 		  "balanced_dirty_ratelimit=%lu cgroup_ino=%lu",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->bdi,
 		  __entry->write_bw,		/* write bandwidth */
 		  __entry->avg_write_bw,	/* avg write bandwidth */
 		  __entry->dirty_rate,		/* bdi dirty rate */
 		  __entry->dirty_ratelimit,	/* base ratelimit */
 		  __entry->task_ratelimit, /* ratelimit with position control */
-<<<<<<< HEAD
-		  __entry->balanced_dirty_ratelimit /* the balanced ratelimit */
-=======
 		  __entry->balanced_dirty_ratelimit, /* the balanced ratelimit */
 		  (unsigned long)__entry->cgroup_ino
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	)
 );
 
 TRACE_EVENT(balance_dirty_pages,
 
-<<<<<<< HEAD
-	TP_PROTO(struct backing_dev_info *bdi,
-=======
 	TP_PROTO(struct bdi_writeback *wb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 unsigned long thresh,
 		 unsigned long bg_thresh,
 		 unsigned long dirty,
@@ -808,11 +633,7 @@ TRACE_EVENT(balance_dirty_pages,
 		 long pause,
 		 unsigned long start_time),
 
-<<<<<<< HEAD
-	TP_ARGS(bdi, thresh, bg_thresh, dirty, bdi_thresh, bdi_dirty,
-=======
 	TP_ARGS(wb, thresh, bg_thresh, dirty, bdi_thresh, bdi_dirty,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dirty_ratelimit, task_ratelimit,
 		dirtied, period, pause, start_time),
 
@@ -831,26 +652,16 @@ TRACE_EVENT(balance_dirty_pages,
 		__field(	 long,	pause)
 		__field(unsigned long,	period)
 		__field(	 long,	think)
-<<<<<<< HEAD
-=======
 		__field(ino_t,		cgroup_ino)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		unsigned long freerun = (thresh + bg_thresh) / 2;
-<<<<<<< HEAD
-		strlcpy(__entry->bdi, dev_name(bdi->dev), 32);
-
-		__entry->limit		= global_dirty_limit;
-		__entry->setpoint	= (global_dirty_limit + freerun) / 2;
-=======
 		strscpy_pad(__entry->bdi, bdi_dev_name(wb->bdi), 32);
 
 		__entry->limit		= global_wb_domain.dirty_limit;
 		__entry->setpoint	= (global_wb_domain.dirty_limit +
 						freerun) / 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->dirty		= dirty;
 		__entry->bdi_setpoint	= __entry->setpoint *
 						bdi_thresh / (thresh + 1);
@@ -864,10 +675,7 @@ TRACE_EVENT(balance_dirty_pages,
 		__entry->period		= period * 1000 / HZ;
 		__entry->pause		= pause * 1000 / HZ;
 		__entry->paused		= (jiffies - start_time) * 1000 / HZ;
-<<<<<<< HEAD
-=======
 		__entry->cgroup_ino	= __trace_wb_assign_cgroup(wb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 
@@ -876,11 +684,7 @@ TRACE_EVENT(balance_dirty_pages,
 		  "bdi_setpoint=%lu bdi_dirty=%lu "
 		  "dirty_ratelimit=%lu task_ratelimit=%lu "
 		  "dirtied=%u dirtied_pause=%u "
-<<<<<<< HEAD
-		  "paused=%lu pause=%ld period=%lu think=%ld",
-=======
 		  "paused=%lu pause=%ld period=%lu think=%ld cgroup_ino=%lu",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->bdi,
 		  __entry->limit,
 		  __entry->setpoint,
@@ -894,45 +698,6 @@ TRACE_EVENT(balance_dirty_pages,
 		  __entry->paused,	/* ms */
 		  __entry->pause,	/* ms */
 		  __entry->period,	/* ms */
-<<<<<<< HEAD
-		  __entry->think	/* ms */
-	  )
-);
-
-DECLARE_EVENT_CLASS(writeback_congest_waited_template,
-
-	TP_PROTO(unsigned int usec_timeout, unsigned int usec_delayed),
-
-	TP_ARGS(usec_timeout, usec_delayed),
-
-	TP_STRUCT__entry(
-		__field(	unsigned int,	usec_timeout	)
-		__field(	unsigned int,	usec_delayed	)
-	),
-
-	TP_fast_assign(
-		__entry->usec_timeout	= usec_timeout;
-		__entry->usec_delayed	= usec_delayed;
-	),
-
-	TP_printk("usec_timeout=%u usec_delayed=%u",
-			__entry->usec_timeout,
-			__entry->usec_delayed)
-);
-
-DEFINE_EVENT(writeback_congest_waited_template, writeback_congestion_wait,
-
-	TP_PROTO(unsigned int usec_timeout, unsigned int usec_delayed),
-
-	TP_ARGS(usec_timeout, usec_delayed)
-);
-
-DEFINE_EVENT(writeback_congest_waited_template, writeback_wait_iff_congested,
-
-	TP_PROTO(unsigned int usec_timeout, unsigned int usec_delayed),
-
-	TP_ARGS(usec_timeout, usec_delayed)
-=======
 		  __entry->think,	/* ms */
 		  (unsigned long)__entry->cgroup_ino
 	  )
@@ -968,7 +733,6 @@ TRACE_EVENT(writeback_sb_inodes_requeue,
 		  (jiffies - __entry->dirtied_when) / HZ,
 		  (unsigned long)__entry->cgroup_ino
 	)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DECLARE_EVENT_CLASS(writeback_single_inode_template,
@@ -982,44 +746,24 @@ DECLARE_EVENT_CLASS(writeback_single_inode_template,
 
 	TP_STRUCT__entry(
 		__array(char, name, 32)
-<<<<<<< HEAD
-		__field(unsigned long, ino)
-=======
 		__field(ino_t, ino)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(unsigned long, state)
 		__field(unsigned long, dirtied_when)
 		__field(unsigned long, writeback_index)
 		__field(long, nr_to_write)
 		__field(unsigned long, wrote)
-<<<<<<< HEAD
-	),
-
-	TP_fast_assign(
-		strncpy(__entry->name,
-			dev_name(inode_to_bdi(inode)->dev), 32);
-=======
 		__field(ino_t, cgroup_ino)
 	),
 
 	TP_fast_assign(
 		strscpy_pad(__entry->name,
 			    bdi_dev_name(inode_to_bdi(inode)), 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->ino		= inode->i_ino;
 		__entry->state		= inode->i_state;
 		__entry->dirtied_when	= inode->dirtied_when;
 		__entry->writeback_index = inode->i_mapping->writeback_index;
 		__entry->nr_to_write	= nr_to_write;
 		__entry->wrote		= nr_to_write - wbc->nr_to_write;
-<<<<<<< HEAD
-	),
-
-	TP_printk("bdi %s: ino=%lu state=%s dirtied_when=%lu age=%lu "
-		  "index=%lu to_write=%ld wrote=%lu",
-		  __entry->name,
-		  __entry->ino,
-=======
 		__entry->cgroup_ino	= __trace_wbc_assign_cgroup(wbc);
 	),
 
@@ -1027,26 +771,17 @@ DECLARE_EVENT_CLASS(writeback_single_inode_template,
 		  "index=%lu to_write=%ld wrote=%lu cgroup_ino=%lu",
 		  __entry->name,
 		  (unsigned long)__entry->ino,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  show_inode_state(__entry->state),
 		  __entry->dirtied_when,
 		  (jiffies - __entry->dirtied_when) / HZ,
 		  __entry->writeback_index,
 		  __entry->nr_to_write,
-<<<<<<< HEAD
-		  __entry->wrote
-	)
-);
-
-DEFINE_EVENT(writeback_single_inode_template, writeback_single_inode_requeue,
-=======
 		  __entry->wrote,
 		  (unsigned long)__entry->cgroup_ino
 	)
 );
 
 DEFINE_EVENT(writeback_single_inode_template, writeback_single_inode_start,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_PROTO(struct inode *inode,
 		 struct writeback_control *wbc,
 		 unsigned long nr_to_write),
@@ -1060,8 +795,6 @@ DEFINE_EVENT(writeback_single_inode_template, writeback_single_inode,
 	TP_ARGS(inode, wbc, nr_to_write)
 );
 
-<<<<<<< HEAD
-=======
 DECLARE_EVENT_CLASS(writeback_inode_template,
 	TP_PROTO(struct inode *inode),
 
@@ -1122,7 +855,6 @@ DEFINE_EVENT(writeback_inode_template, sb_clear_inode_writeback,
 	TP_ARGS(inode)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _TRACE_WRITEBACK_H */
 
 /* This part must be outside protection */

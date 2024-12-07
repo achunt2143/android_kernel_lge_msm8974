@@ -1,32 +1,3 @@
-<<<<<<< HEAD
-/*
- *  Linux MegaRAID driver for SAS based RAID controllers
- *
- *  Copyright (c) 2009-2011  LSI Corporation.
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- *  FILE: megaraid_sas.h
- *
- *  Authors: LSI Corporation
- *
- *  Send feedback to: <megaraidlinux@lsi.com>
- *
- *  Mail to: LSI Corporation, 1621 Barber Lane, Milpitas, CA 95035
- *     ATTN: Linuxraid
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  *  Linux MegaRAID driver for SAS based RAID controllers
@@ -42,20 +13,11 @@
  *           Sumit Saxena <sumit.saxena@broadcom.com>
  *
  *  Send feedback to: megaraidlinux.pdl@broadcom.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef LSI_MEGARAID_SAS_H
 #define LSI_MEGARAID_SAS_H
 
-<<<<<<< HEAD
-/*
- * MegaRAID SAS Driver meta data
- */
-#define MEGASAS_VERSION				"00.00.06.14-rc1"
-#define MEGASAS_RELDATE				"Jan. 6, 2012"
-#define MEGASAS_EXT_VERSION			"Fri. Jan. 6 17:00:00 PDT 2012"
-=======
 #include <scsi/scsi_cmnd.h>
 
 /*
@@ -65,7 +27,6 @@
 #define MEGASAS_RELDATE				"Oct 03, 2023"
 
 #define MEGASAS_MSIX_NAME_LEN			32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Device IDs
@@ -78,9 +39,6 @@
 #define	PCI_DEVICE_ID_LSI_SAS0073SKINNY		0x0073
 #define	PCI_DEVICE_ID_LSI_SAS0071SKINNY		0x0071
 #define	PCI_DEVICE_ID_LSI_FUSION		0x005b
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_LSI_INVADER		0x005d
-=======
 #define PCI_DEVICE_ID_LSI_PLASMA		0x002f
 #define PCI_DEVICE_ID_LSI_INVADER		0x005d
 #define PCI_DEVICE_ID_LSI_FURY			0x005f
@@ -138,7 +96,6 @@
 	"Intel(R) RAID Controller RS3WC040"
 #define MEGARAID_INTEL_RMS3BC160_BRANDING	\
 	"Intel(R) Integrated RAID Module RMS3BC160"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * =====================================
@@ -147,11 +104,7 @@
  */
 
 /*
-<<<<<<< HEAD
- * MFI stands for  MegaRAID SAS FW Interface. This is just a moniker for 
-=======
  * MFI stands for  MegaRAID SAS FW Interface. This is just a moniker for
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * protocol between the software and firmware. Commands are issued using
  * "message frames"
  */
@@ -171,21 +124,15 @@
 #define MFI_STATE_READY				0xB0000000
 #define MFI_STATE_OPERATIONAL			0xC0000000
 #define MFI_STATE_FAULT				0xF0000000
-<<<<<<< HEAD
-=======
 #define MFI_STATE_FORCE_OCR			0x00000080
 #define MFI_STATE_DMADONE			0x00000008
 #define MFI_STATE_CRASH_DUMP_DONE		0x00000004
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MFI_RESET_REQUIRED			0x00000001
 #define MFI_RESET_ADAPTER			0x00000002
 #define MEGAMFI_FRAME_SIZE			64
 
-<<<<<<< HEAD
-=======
 #define MFI_STATE_FAULT_CODE			0x0FFF0000
 #define MFI_STATE_FAULT_SUBCODE			0x0000FF00
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * During FW init, clear pending cmds & reset state using inbound_msg_0
  *
@@ -195,10 +142,7 @@
  * CLR_HANDSHAKE: FW is waiting for HANDSHAKE from BIOS or Driver
  * HOTPLUG	: Resume from Hotplug
  * MFI_STOP_ADP	: Send signal to FW to stop processing
-<<<<<<< HEAD
-=======
  * MFI_ADP_TRIGGER_SNAP_DUMP: Inform firmware to initiate snap dump
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define WRITE_SEQUENCE_OFFSET		(0x0000000FC) /* I20 */
 #define HOST_DIAGNOSTIC_OFFSET		(0x000000F8)  /* I20 */
@@ -215,11 +159,8 @@
 #define MFI_RESET_FLAGS				MFI_INIT_READY| \
 						MFI_INIT_MFIMODE| \
 						MFI_INIT_ABORT
-<<<<<<< HEAD
-=======
 #define MFI_ADP_TRIGGER_SNAP_DUMP		0x00000100
 #define MPI2_IOCINIT_MSGFLAG_RDPQ_ARRAY_MODE    (0x01)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * MFI frame flags
@@ -236,13 +177,10 @@
 #define MFI_FRAME_DIR_BOTH			0x0018
 #define MFI_FRAME_IEEE                          0x0020
 
-<<<<<<< HEAD
-=======
 /* Driver internal */
 #define DRV_DCMD_POLLED_MODE		0x1
 #define DRV_DCMD_SKIP_REFIRE		0x2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definition for cmd_status
  */
@@ -251,21 +189,6 @@
 /*
  * MFI command opcodes
  */
-<<<<<<< HEAD
-#define MFI_CMD_INIT				0x00
-#define MFI_CMD_LD_READ				0x01
-#define MFI_CMD_LD_WRITE			0x02
-#define MFI_CMD_LD_SCSI_IO			0x03
-#define MFI_CMD_PD_SCSI_IO			0x04
-#define MFI_CMD_DCMD				0x05
-#define MFI_CMD_ABORT				0x06
-#define MFI_CMD_SMP				0x07
-#define MFI_CMD_STP				0x08
-#define MFI_CMD_INVALID				0xff
-
-#define MR_DCMD_CTRL_GET_INFO			0x01010000
-#define MR_DCMD_LD_GET_LIST			0x03010000
-=======
 enum MFI_CMD_OP {
 	MFI_CMD_INIT		= 0x0,
 	MFI_CMD_LD_READ		= 0x1,
@@ -285,7 +208,6 @@ enum MFI_CMD_OP {
 #define MR_DCMD_CTRL_GET_INFO			0x01010000
 #define MR_DCMD_LD_GET_LIST			0x03010000
 #define MR_DCMD_LD_LIST_QUERY			0x03010100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MR_DCMD_CTRL_CACHE_FLUSH		0x01101000
 #define MR_FLUSH_CTRL_CACHE			0x01
@@ -305,8 +227,6 @@ enum MFI_CMD_OP {
 #define MR_DCMD_CLUSTER_RESET_LD		0x08010200
 #define MR_DCMD_PD_LIST_QUERY                   0x02010100
 
-<<<<<<< HEAD
-=======
 #define MR_DCMD_CTRL_SET_CRASH_DUMP_PARAMS	0x01190100
 #define MR_DRIVER_SET_APP_CRASHDUMP_MODE	(0xF0010000 | 0x0600)
 #define MR_DCMD_PD_GET_INFO			0x02020000
@@ -317,7 +237,6 @@ enum MFI_CMD_OP {
 extern u8 MR_ValidateMapInfo(struct megasas_instance *instance, u64 map_id);
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MFI command completion codes
  */
@@ -384,8 +303,6 @@ enum MFI_STAT {
 	MFI_STAT_INVALID_STATUS = 0xFF
 };
 
-<<<<<<< HEAD
-=======
 enum mfi_evt_class {
 	MFI_EVT_CLASS_DEBUG =		-2,
 	MFI_EVT_CLASS_PROGRESS =	-1,
@@ -415,7 +332,6 @@ enum _MR_CRASH_BUF_STATUS {
 	MR_CRASH_BUF_TURN_ON = 1,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Number of mailbox bytes in DCMD message frame
  */
@@ -490,10 +406,7 @@ enum MR_EVT_ARGS {
 
 
 #define SGE_BUFFER_SIZE	4096
-<<<<<<< HEAD
-=======
 #define MEGASAS_CLUSTER_ID_SIZE	16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * define constants for device list query options
  */
@@ -506,8 +419,6 @@ enum MR_PD_QUERY_TYPE {
 	MR_PD_QUERY_TYPE_EXPOSED_TO_HOST    = 5,
 };
 
-<<<<<<< HEAD
-=======
 enum MR_LD_QUERY_TYPE {
 	MR_LD_QUERY_TYPE_ALL	         = 0,
 	MR_LD_QUERY_TYPE_EXPOSED_TO_HOST = 1,
@@ -517,7 +428,6 @@ enum MR_LD_QUERY_TYPE {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MR_EVT_CFG_CLEARED                              0x0004
 #define MR_EVT_LD_STATE_CHANGE                          0x0051
 #define MR_EVT_PD_INSERTED                              0x005b
@@ -527,11 +437,7 @@ enum MR_LD_QUERY_TYPE {
 #define MR_EVT_FOREIGN_CFG_IMPORTED                     0x00db
 #define MR_EVT_LD_OFFLINE                               0x00fc
 #define MR_EVT_CTRL_HOST_BUS_SCAN_REQUESTED             0x0152
-<<<<<<< HEAD
-#define MAX_LOGICAL_DRIVES				64
-=======
 #define MR_EVT_CTRL_PROP_CHANGED			0x012f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum MR_PD_STATE {
 	MR_PD_STATE_UNCONFIGURED_GOOD   = 0x00,
@@ -545,8 +451,6 @@ enum MR_PD_STATE {
 	MR_PD_STATE_SYSTEM              = 0x40,
  };
 
-<<<<<<< HEAD
-=======
 union MR_PD_REF {
 	struct {
 		u16	 deviceId;
@@ -811,17 +715,12 @@ struct MR_TARGET_PROPERTIES {
 	u8     reset_tmo;
 	u8     reserved[499];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  /*
  * defines the physical drive address structure
  */
 struct MR_PD_ADDRESS {
-<<<<<<< HEAD
-	u16     deviceId;
-=======
 	__le16	deviceId;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16     enclDeviceId;
 
 	union {
@@ -846,13 +745,8 @@ struct MR_PD_ADDRESS {
  * defines the physical drive list structure
  */
 struct MR_PD_LIST {
-<<<<<<< HEAD
-	u32             size;
-	u32             count;
-=======
 	__le32		size;
 	__le32		count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct MR_PD_ADDRESS   addr[1];
 } __packed;
 
@@ -869,38 +763,21 @@ union  MR_LD_REF {
 	struct {
 		u8      targetId;
 		u8      reserved;
-<<<<<<< HEAD
-		u16     seqNum;
-	};
-	u32     ref;
-=======
 		__le16     seqNum;
 	};
 	__le32     ref;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /*
  * defines the logical drive list structure
  */
 struct MR_LD_LIST {
-<<<<<<< HEAD
-	u32     ldCount;
-	u32     reserved;
-=======
 	__le32     ldCount;
 	__le32     reserved;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		union MR_LD_REF   ref;
 		u8          state;
 		u8          reserved[3];
-<<<<<<< HEAD
-		u64         size;
-	} ldList[MAX_LOGICAL_DRIVES];
-} __packed;
-
-=======
 		__le64		size;
 	} ldList[MAX_LOGICAL_DRIVES_EXT];
 } __packed;
@@ -945,7 +822,6 @@ struct MR_HOST_DEVICE_LIST {
 			      (MEGASAS_MAX_PD + MAX_LOGICAL_DRIVES_EXT - 1)))
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SAS controller properties
  */
@@ -985,27 +861,6 @@ struct megasas_ctrl_prop {
 	* a bit in the following structure.
 	*/
 	struct {
-<<<<<<< HEAD
-		u32     copyBackDisabled            : 1;
-		u32     SMARTerEnabled              : 1;
-		u32     prCorrectUnconfiguredAreas  : 1;
-		u32     useFdeOnly                  : 1;
-		u32     disableNCQ                  : 1;
-		u32     SSDSMARTerEnabled           : 1;
-		u32     SSDPatrolReadEnabled        : 1;
-		u32     enableSpinDownUnconfigured  : 1;
-		u32     autoEnhancedImport          : 1;
-		u32     enableSecretKeyControl      : 1;
-		u32     disableOnlineCtrlReset      : 1;
-		u32     allowBootWithPinnedCache    : 1;
-		u32     disableSpinDownHS           : 1;
-		u32     enableJBOD                  : 1;
-		u32     reserved                    :18;
-	} OnOffProperties;
-	u8 autoSnapVDSpace;
-	u8 viewSpace;
-	u16 spinDownTime;
-=======
 #if   defined(__BIG_ENDIAN_BITFIELD)
 		u32     reserved:18;
 		u32     enableJBOD:1;
@@ -1061,7 +916,6 @@ struct megasas_ctrl_prop {
 		} on_off_properties2;
 	};
 	__le16 spinDownTime;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8  reserved[24];
 } __packed;
 
@@ -1075,17 +929,10 @@ struct megasas_ctrl_info {
 	 */
 	struct {
 
-<<<<<<< HEAD
-		u16 vendor_id;
-		u16 device_id;
-		u16 sub_vendor_id;
-		u16 sub_device_id;
-=======
 		__le16 vendor_id;
 		__le16 device_id;
 		__le16 sub_vendor_id;
 		__le16 sub_device_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8 reserved[24];
 
 	} __attribute__ ((packed)) pci;
@@ -1099,12 +946,8 @@ struct megasas_ctrl_info {
 		u8 PCIE:1;
 		u8 iSCSI:1;
 		u8 SAS_3G:1;
-<<<<<<< HEAD
-		u8 reserved_0:4;
-=======
 		u8 SRIOV:1;
 		u8 reserved_0:3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8 reserved_1[6];
 		u8 port_count;
 		u64 port_addr[8];
@@ -1130,13 +973,8 @@ struct megasas_ctrl_info {
 	/*
 	 * List of components residing in flash. All str are null terminated
 	 */
-<<<<<<< HEAD
-	u32 image_check_word;
-	u32 image_component_count;
-=======
 	__le32 image_check_word;
 	__le32 image_component_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct {
 
@@ -1153,11 +991,7 @@ struct megasas_ctrl_info {
 	 * empty if a flash operation has not occurred. All stings are null
 	 * terminated
 	 */
-<<<<<<< HEAD
-	u32 pending_image_component_count;
-=======
 	__le32 pending_image_component_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct {
 
@@ -1190,38 +1024,18 @@ struct megasas_ctrl_info {
 
 	} __attribute__ ((packed)) hw_present;
 
-<<<<<<< HEAD
-	u32 current_fw_time;
-=======
 	__le32 current_fw_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Maximum data transfer sizes
 	 */
-<<<<<<< HEAD
-	u16 max_concurrent_cmds;
-	u16 max_sge_count;
-	u32 max_request_size;
-=======
 	__le16 max_concurrent_cmds;
 	__le16 max_sge_count;
 	__le32 max_request_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Logical and physical device counts
 	 */
-<<<<<<< HEAD
-	u16 ld_present_count;
-	u16 ld_degraded_count;
-	u16 ld_offline_count;
-
-	u16 pd_present_count;
-	u16 pd_disk_present_count;
-	u16 pd_disk_pred_failure_count;
-	u16 pd_disk_failed_count;
-=======
 	__le16 ld_present_count;
 	__le16 ld_degraded_count;
 	__le16 ld_offline_count;
@@ -1230,31 +1044,19 @@ struct megasas_ctrl_info {
 	__le16 pd_disk_present_count;
 	__le16 pd_disk_pred_failure_count;
 	__le16 pd_disk_failed_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Memory size information
 	 */
-<<<<<<< HEAD
-	u16 nvram_size;
-	u16 memory_size;
-	u16 flash_size;
-=======
 	__le16 nvram_size;
 	__le16 memory_size;
 	__le16 flash_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Error counters
 	 */
-<<<<<<< HEAD
-	u16 mem_correctable_error_count;
-	u16 mem_uncorrectable_error_count;
-=======
 	__le16 mem_correctable_error_count;
 	__le16 mem_uncorrectable_error_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Cluster information
@@ -1265,11 +1067,7 @@ struct megasas_ctrl_info {
 	/*
 	 * Additional max data transfer sizes
 	 */
-<<<<<<< HEAD
-	u16 max_strips_per_io;
-=======
 	__le16 max_strips_per_io;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Controller capabilities structures
@@ -1361,10 +1159,6 @@ struct megasas_ctrl_info {
 	 */
 	char package_version[0x60];
 
-<<<<<<< HEAD
-	u8 pad[0x800 - 0x6a0];
-
-=======
 
 	/*
 	* If adapterOperations.supportMoreThan8Phys is set,
@@ -1705,7 +1499,6 @@ struct megasas_ctrl_info {
 	u8 TaskAbortTO;	/* Timeout value in seconds used by Abort Task TM */
 	u8 MaxResetTO;	/* Max Supported Reset timeout in seconds. */
 	u8 reserved8[3];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /*
@@ -1720,29 +1513,20 @@ struct megasas_ctrl_info {
 #define MEGASAS_MAX_DEV_PER_CHANNEL		128
 #define MEGASAS_DEFAULT_INIT_ID			-1
 #define MEGASAS_MAX_LUN				8
-<<<<<<< HEAD
-#define MEGASAS_MAX_LD				64
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MEGASAS_DEFAULT_CMD_PER_LUN		256
 #define MEGASAS_MAX_PD                          (MEGASAS_MAX_PD_CHANNELS * \
 						MEGASAS_MAX_DEV_PER_CHANNEL)
 #define MEGASAS_MAX_LD_IDS			(MEGASAS_MAX_LD_CHANNELS * \
 						MEGASAS_MAX_DEV_PER_CHANNEL)
 
-<<<<<<< HEAD
-=======
 #define MEGASAS_MAX_SUPPORTED_LD_IDS		240
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MEGASAS_MAX_SECTORS                    (2*1024)
 #define MEGASAS_MAX_SECTORS_IEEE		(2*128)
 #define MEGASAS_DBG_LVL				1
 
 #define MEGASAS_FW_BUSY				1
 
-<<<<<<< HEAD
-=======
 /* Driver's internal Logging levels*/
 #define OCR_DEBUG    (1 << 0)
 #define TM_DEBUG     (1 << 1)
@@ -1773,7 +1557,6 @@ enum FW_BOOT_CONTEXT {
 	OCR_CONTEXT = 1,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Frame Type */
 #define IO_FRAME				0
 #define PTHRU_FRAME				1
@@ -1790,12 +1573,8 @@ enum FW_BOOT_CONTEXT {
 #define	MEGASAS_RESET_NOTICE_INTERVAL		5
 #define MEGASAS_IOCTL_CMD			0
 #define MEGASAS_DEFAULT_CMD_TIMEOUT		90
-<<<<<<< HEAD
-
-=======
 #define MEGASAS_THROTTLE_QUEUE_DEPTH		16
 #define MEGASAS_DEFAULT_TM_TIMEOUT		50
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * FW reports the maximum of number of commands that it can accept (maximum
  * commands that can be outstanding) at any time. The driver must report a
@@ -1805,16 +1584,11 @@ enum FW_BOOT_CONTEXT {
  */
 #define MEGASAS_INT_CMDS			32
 #define MEGASAS_SKINNY_INT_CMDS			5
-<<<<<<< HEAD
-
-#define MEGASAS_MAX_MSIX_QUEUES			16
-=======
 #define MEGASAS_FUSION_INTERNAL_CMDS		8
 #define MEGASAS_FUSION_IOCTL_CMDS		3
 #define MEGASAS_MFI_IOCTL_CMDS			27
 
 #define MEGASAS_MAX_MSIX_QUEUES			128
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * FW can accept both 32 and 64 bit SGLs. We want to allocate 32/64 bit
  * SGLs based on the size of dma_addr_t
@@ -1829,15 +1603,11 @@ enum FW_BOOT_CONTEXT {
 
 #define MFI_OB_INTR_STATUS_MASK			0x00000002
 #define MFI_POLL_TIMEOUT_SECS			60
-<<<<<<< HEAD
-
-=======
 #define MFI_IO_TIMEOUT_SECS			180
 #define MEGASAS_SRIOV_HEARTBEAT_INTERVAL_VF	(5 * HZ)
 #define MEGASAS_OCR_SETTLE_TIME_VF		(1000 * 30)
 #define MEGASAS_SRIOV_MAX_RESET_TRIES_VF	1
 #define MEGASAS_ROUTINE_WAIT_TIME_VF		300
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MFI_REPLY_1078_MESSAGE_INTERRUPT	0x80000000
 #define MFI_REPLY_GEN2_MESSAGE_INTERRUPT	0x00000001
 #define MFI_GEN2_ENABLE_INTERRUPT_MASK		(0x00000001 | 0x00000004)
@@ -1847,8 +1617,6 @@ enum FW_BOOT_CONTEXT {
 #define MFI_1068_PCSR_OFFSET			0x84
 #define MFI_1068_FW_HANDSHAKE_OFFSET		0x64
 #define MFI_1068_FW_READY			0xDDDD0000
-<<<<<<< HEAD
-=======
 
 #define MR_MAX_REPLY_QUEUES_OFFSET              0X0000001F
 #define MR_MAX_REPLY_QUEUES_EXT_OFFSET          0X003FC000
@@ -1880,16 +1648,11 @@ enum MR_ADAPTER_TYPE {
 	AERO_SERIES = 5,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 * register set for both 1068 and 1078 controllers
 * structure extended for 1078 registers
 */
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct megasas_register_set {
 	u32	doorbell;                       /*0000h*/
 	u32	fusion_seq_offset;		/*0004h*/
@@ -1922,27 +1685,16 @@ struct megasas_register_set {
 
 	u32 	reserved_3[3];			/*00A4h*/
 
-<<<<<<< HEAD
-	u32 	outbound_scratch_pad ;		/*00B0h*/
-	u32	outbound_scratch_pad_2;         /*00B4h*/
-
-	u32	reserved_4[2];			/*00B8h*/
-=======
 	u32	outbound_scratch_pad_0;		/*00B0h*/
 	u32	outbound_scratch_pad_1;         /*00B4h*/
 	u32	outbound_scratch_pad_2;         /*00B8h*/
 	u32	outbound_scratch_pad_3;         /*00BCh*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32 	inbound_low_queue_port ;	/*00C0h*/
 
 	u32 	inbound_high_queue_port ;	/*00C4h*/
 
-<<<<<<< HEAD
-	u32 	reserved_5;			/*00C8h*/
-=======
 	u32 inbound_single_queue_port;	/*00C8h*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	res_6[11];			/*CCh*/
 	u32	host_diag;
 	u32	seq_offset;
@@ -1951,42 +1703,19 @@ struct megasas_register_set {
 
 struct megasas_sge32 {
 
-<<<<<<< HEAD
-	u32 phys_addr;
-	u32 length;
-=======
 	__le32 phys_addr;
 	__le32 length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 } __attribute__ ((packed));
 
 struct megasas_sge64 {
 
-<<<<<<< HEAD
-	u64 phys_addr;
-	u32 length;
-=======
 	__le64 phys_addr;
 	__le32 length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 } __attribute__ ((packed));
 
 struct megasas_sge_skinny {
-<<<<<<< HEAD
-	u64 phys_addr;
-	u32 length;
-	u32 flag;
-} __packed;
-
-union megasas_sgl {
-
-	struct megasas_sge32 sge32[1];
-	struct megasas_sge64 sge64[1];
-	struct megasas_sge_skinny sge_skinny[1];
-
-=======
 	__le64 phys_addr;
 	__le32 length;
 	__le32 flag;
@@ -1996,7 +1725,6 @@ union megasas_sgl {
 	DECLARE_FLEX_ARRAY(struct megasas_sge32, sge32);
 	DECLARE_FLEX_ARRAY(struct megasas_sge64, sge64);
 	DECLARE_FLEX_ARRAY(struct megasas_sge_skinny, sge_skinny);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 struct megasas_header {
@@ -2011,21 +1739,12 @@ struct megasas_header {
 	u8 cdb_len;		/*06h */
 	u8 sge_count;		/*07h */
 
-<<<<<<< HEAD
-	u32 context;		/*08h */
-	u32 pad_0;		/*0Ch */
-
-	u16 flags;		/*10h */
-	u16 timeout;		/*12h */
-	u32 data_xferlen;	/*14h */
-=======
 	__le32 context;		/*08h */
 	__le32 pad_0;		/*0Ch */
 
 	__le16 flags;		/*10h */
 	__le16 timeout;		/*12h */
 	__le32 data_xferlen;	/*14h */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 } __attribute__ ((packed));
 
@@ -2036,8 +1755,6 @@ union megasas_sgl_frame {
 
 } __attribute__ ((packed));
 
-<<<<<<< HEAD
-=======
 typedef union _MFI_CAPABILITIES {
 	struct {
 #if   defined(__BIG_ENDIAN_BITFIELD)
@@ -2083,7 +1800,6 @@ typedef union _MFI_CAPABILITIES {
 	__le32		reg;
 } MFI_CAPABILITIES;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct megasas_init_frame {
 
 	u8 cmd;			/*00h */
@@ -2091,23 +1807,6 @@ struct megasas_init_frame {
 	u8 cmd_status;		/*02h */
 
 	u8 reserved_1;		/*03h */
-<<<<<<< HEAD
-	u32 reserved_2;		/*04h */
-
-	u32 context;		/*08h */
-	u32 pad_0;		/*0Ch */
-
-	u16 flags;		/*10h */
-	u16 reserved_3;		/*12h */
-	u32 data_xfer_len;	/*14h */
-
-	u32 queue_info_new_phys_addr_lo;	/*18h */
-	u32 queue_info_new_phys_addr_hi;	/*1Ch */
-	u32 queue_info_old_phys_addr_lo;	/*20h */
-	u32 queue_info_old_phys_addr_hi;	/*24h */
-
-	u32 reserved_4[6];	/*28h */
-=======
 	MFI_CAPABILITIES driver_operations; /*04h*/
 
 	__le32 context;		/*08h */
@@ -2125,23 +1824,11 @@ struct megasas_init_frame {
 	__le32 system_info_lo;      /*30h */
 	__le32 system_info_hi;      /*34h */
 	__le32 reserved_5[2];	/*38h */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 } __attribute__ ((packed));
 
 struct megasas_init_queue_info {
 
-<<<<<<< HEAD
-	u32 init_flags;		/*00h */
-	u32 reply_queue_entries;	/*04h */
-
-	u32 reply_queue_start_phys_addr_lo;	/*08h */
-	u32 reply_queue_start_phys_addr_hi;	/*0Ch */
-	u32 producer_index_phys_addr_lo;	/*10h */
-	u32 producer_index_phys_addr_hi;	/*14h */
-	u32 consumer_index_phys_addr_lo;	/*18h */
-	u32 consumer_index_phys_addr_hi;	/*1Ch */
-=======
 	__le32 init_flags;		/*00h */
 	__le32 reply_queue_entries;	/*04h */
 
@@ -2151,7 +1838,6 @@ struct megasas_init_queue_info {
 	__le32 producer_index_phys_addr_hi;	/*14h */
 	__le32 consumer_index_phys_addr_lo;	/*18h */
 	__le32 consumer_index_phys_addr_hi;	/*1Ch */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 } __attribute__ ((packed));
 
@@ -2167,20 +1853,6 @@ struct megasas_io_frame {
 	u8 reserved_0;		/*06h */
 	u8 sge_count;		/*07h */
 
-<<<<<<< HEAD
-	u32 context;		/*08h */
-	u32 pad_0;		/*0Ch */
-
-	u16 flags;		/*10h */
-	u16 timeout;		/*12h */
-	u32 lba_count;		/*14h */
-
-	u32 sense_buf_phys_addr_lo;	/*18h */
-	u32 sense_buf_phys_addr_hi;	/*1Ch */
-
-	u32 start_lba_lo;	/*20h */
-	u32 start_lba_hi;	/*24h */
-=======
 	__le32 context;		/*08h */
 	__le32 pad_0;		/*0Ch */
 
@@ -2193,7 +1865,6 @@ struct megasas_io_frame {
 
 	__le32 start_lba_lo;	/*20h */
 	__le32 start_lba_hi;	/*24h */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	union megasas_sgl sgl;	/*28h */
 
@@ -2211,17 +1882,6 @@ struct megasas_pthru_frame {
 	u8 cdb_len;		/*06h */
 	u8 sge_count;		/*07h */
 
-<<<<<<< HEAD
-	u32 context;		/*08h */
-	u32 pad_0;		/*0Ch */
-
-	u16 flags;		/*10h */
-	u16 timeout;		/*12h */
-	u32 data_xfer_len;	/*14h */
-
-	u32 sense_buf_phys_addr_lo;	/*18h */
-	u32 sense_buf_phys_addr_hi;	/*1Ch */
-=======
 	__le32 context;		/*08h */
 	__le32 pad_0;		/*0Ch */
 
@@ -2231,7 +1891,6 @@ struct megasas_pthru_frame {
 
 	__le32 sense_buf_phys_addr_lo;	/*18h */
 	__le32 sense_buf_phys_addr_hi;	/*1Ch */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 cdb[16];		/*20h */
 	union megasas_sgl sgl;	/*30h */
@@ -2246,21 +1905,6 @@ struct megasas_dcmd_frame {
 	u8 reserved_1[4];	/*03h */
 	u8 sge_count;		/*07h */
 
-<<<<<<< HEAD
-	u32 context;		/*08h */
-	u32 pad_0;		/*0Ch */
-
-	u16 flags;		/*10h */
-	u16 timeout;		/*12h */
-
-	u32 data_xfer_len;	/*14h */
-	u32 opcode;		/*18h */
-
-	union {			/*1Ch */
-		u8 b[12];
-		u16 s[6];
-		u32 w[3];
-=======
 	__le32 context;		/*08h */
 	__le32 pad_0;		/*0Ch */
 
@@ -2274,7 +1918,6 @@ struct megasas_dcmd_frame {
 		u8 b[12];
 		__le16 s[6];
 		__le32 w[3];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} mbox;
 
 	union megasas_sgl sgl;	/*28h */
@@ -2288,24 +1931,6 @@ struct megasas_abort_frame {
 	u8 cmd_status;		/*02h */
 
 	u8 reserved_1;		/*03h */
-<<<<<<< HEAD
-	u32 reserved_2;		/*04h */
-
-	u32 context;		/*08h */
-	u32 pad_0;		/*0Ch */
-
-	u16 flags;		/*10h */
-	u16 reserved_3;		/*12h */
-	u32 reserved_4;		/*14h */
-
-	u32 abort_context;	/*18h */
-	u32 pad_1;		/*1Ch */
-
-	u32 abort_mfi_phys_addr_lo;	/*20h */
-	u32 abort_mfi_phys_addr_hi;	/*24h */
-
-	u32 reserved_5[6];	/*28h */
-=======
 	__le32 reserved_2;	/*04h */
 
 	__le32 context;		/*08h */
@@ -2322,7 +1947,6 @@ struct megasas_abort_frame {
 	__le32 abort_mfi_phys_addr_hi;	/*24h */
 
 	__le32 reserved_5[6];	/*28h */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 } __attribute__ ((packed));
 
@@ -2336,16 +1960,6 @@ struct megasas_smp_frame {
 	u8 reserved_2[3];	/*04h */
 	u8 sge_count;		/*07h */
 
-<<<<<<< HEAD
-	u32 context;		/*08h */
-	u32 pad_0;		/*0Ch */
-
-	u16 flags;		/*10h */
-	u16 timeout;		/*12h */
-
-	u32 data_xfer_len;	/*14h */
-	u64 sas_addr;		/*18h */
-=======
 	__le32 context;		/*08h */
 	__le32 pad_0;		/*0Ch */
 
@@ -2354,7 +1968,6 @@ struct megasas_smp_frame {
 
 	__le32 data_xfer_len;	/*14h */
 	__le64 sas_addr;	/*18h */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	union {
 		struct megasas_sge32 sge32[2];	/* [0]: resp [1]: req */
@@ -2374,18 +1987,6 @@ struct megasas_stp_frame {
 	u8 reserved_3[2];	/*05h */
 	u8 sge_count;		/*07h */
 
-<<<<<<< HEAD
-	u32 context;		/*08h */
-	u32 pad_0;		/*0Ch */
-
-	u16 flags;		/*10h */
-	u16 timeout;		/*12h */
-
-	u32 data_xfer_len;	/*14h */
-
-	u16 fis[10];		/*18h */
-	u32 stp_flags;
-=======
 	__le32 context;		/*08h */
 	__le32 pad_0;		/*0Ch */
 
@@ -2396,7 +1997,6 @@ struct megasas_stp_frame {
 
 	__le16 fis[10];		/*18h */
 	__le32 stp_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	union {
 		struct megasas_sge32 sge32[2];	/* [0]: resp [1]: data */
@@ -2419,8 +2019,6 @@ union megasas_frame {
 	u8 raw_bytes[64];
 };
 
-<<<<<<< HEAD
-=======
 /**
  * struct MR_PRIV_DEVICE - sdev private hostdata
  * @is_tm_capable: firmware managed tm_capable flag
@@ -2436,17 +2034,11 @@ struct MR_PRIV_DEVICE {
 	u8 task_abort_tmo;
 	u8 target_reset_tmo;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct megasas_cmd;
 
 union megasas_evt_class_locale {
 
 	struct {
-<<<<<<< HEAD
-		u16 locale;
-		u8 reserved;
-		s8 class;
-=======
 #ifndef __BIG_ENDIAN_BITFIELD
 		u16 locale;
 		u8 reserved;
@@ -2456,7 +2048,6 @@ union megasas_evt_class_locale {
 		u8 reserved;
 		u16 locale;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} __attribute__ ((packed)) members;
 
 	u32 word;
@@ -2464,31 +2055,18 @@ union megasas_evt_class_locale {
 } __attribute__ ((packed));
 
 struct megasas_evt_log_info {
-<<<<<<< HEAD
-	u32 newest_seq_num;
-	u32 oldest_seq_num;
-	u32 clear_seq_num;
-	u32 shutdown_seq_num;
-	u32 boot_seq_num;
-=======
 	__le32 newest_seq_num;
 	__le32 oldest_seq_num;
 	__le32 clear_seq_num;
 	__le32 shutdown_seq_num;
 	__le32 boot_seq_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 } __attribute__ ((packed));
 
 struct megasas_progress {
 
-<<<<<<< HEAD
-	u16 progress;
-	u16 elapsed_seconds;
-=======
 	__le16 progress;
 	__le16 elapsed_seconds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 } __attribute__ ((packed));
 
@@ -2509,15 +2087,9 @@ struct megasas_evtarg_pd {
 
 struct megasas_evt_detail {
 
-<<<<<<< HEAD
-	u32 seq_num;
-	u32 time_stamp;
-	u32 code;
-=======
 	__le32 seq_num;
 	__le32 time_stamp;
 	__le32 code;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union megasas_evt_class_locale cl;
 	u8 arg_type;
 	u8 reserved1[15];
@@ -2536,31 +2108,18 @@ struct megasas_evt_detail {
 
 		struct {
 			struct megasas_evtarg_ld ld;
-<<<<<<< HEAD
-			u64 count;
-		} __attribute__ ((packed)) ld_count;
-
-		struct {
-			u64 lba;
-=======
 			__le64 count;
 		} __attribute__ ((packed)) ld_count;
 
 		struct {
 			__le64 lba;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct megasas_evtarg_ld ld;
 		} __attribute__ ((packed)) ld_lba;
 
 		struct {
 			struct megasas_evtarg_ld ld;
-<<<<<<< HEAD
-			u32 prevOwner;
-			u32 newOwner;
-=======
 			__le32 prevOwner;
 			__le32 newOwner;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} __attribute__ ((packed)) ld_owner;
 
 		struct {
@@ -2617,11 +2176,7 @@ struct megasas_evt_detail {
 
 		struct {
 			u16 vendorId;
-<<<<<<< HEAD
-			u16 deviceId;
-=======
 			__le16 deviceId;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u16 subVendorId;
 			u16 subDeviceId;
 		} __attribute__ ((packed)) pci;
@@ -2641,15 +2196,9 @@ struct megasas_evt_detail {
 		} __attribute__ ((packed)) ecc;
 
 		u8 b[96];
-<<<<<<< HEAD
-		u16 s[48];
-		u32 w[24];
-		u64 d[12];
-=======
 		__le16 s[48];
 		__le32 w[24];
 		__le64 d[12];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} args;
 
 	char description[128];
@@ -2657,35 +2206,11 @@ struct megasas_evt_detail {
 } __attribute__ ((packed));
 
 struct megasas_aen_event {
-<<<<<<< HEAD
-	struct work_struct hotplug_work;
-=======
 	struct delayed_work hotplug_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct megasas_instance *instance;
 };
 
 struct megasas_irq_context {
-<<<<<<< HEAD
-	struct megasas_instance *instance;
-	u32 MSIxIndex;
-};
-
-struct megasas_instance {
-
-	u32 *producer;
-	dma_addr_t producer_h;
-	u32 *consumer;
-	dma_addr_t consumer_h;
-
-	u32 *reply_queue;
-	dma_addr_t reply_queue_h;
-
-	struct megasas_register_set __iomem *reg_set;
-
-	struct megasas_pd_list          pd_list[MEGASAS_MAX_PD];
-	u8     ld_ids[MEGASAS_MAX_LD_IDS];
-=======
 	char name[MEGASAS_MSIX_NAME_LEN];
 	struct megasas_instance *instance;
 	u32 MSIxIndex;
@@ -2817,17 +2342,10 @@ struct megasas_instance {
 	u8 ld_tgtid_status[MEGASAS_MAX_LD_IDS];
 	u8 ld_ids_prev[MEGASAS_MAX_LD_IDS];
 	u8 ld_ids_from_raidmap[MEGASAS_MAX_LD_IDS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s8 init_id;
 
 	u16 max_num_sge;
 	u16 max_fw_cmds;
-<<<<<<< HEAD
-	/* For Fusion its num IOCTL cmds, for others MFI based its
-	   max_fw_cmds */
-	u16 max_mfi_cmds;
-	u32 max_sectors_per_req;
-=======
 	u16 max_mpt_cmds;
 	u16 max_mfi_cmds;
 	u16 max_scsi_cmds;
@@ -2835,24 +2353,16 @@ struct megasas_instance {
 	u16 cur_can_queue;
 	u32 max_sectors_per_req;
 	bool msix_load_balance;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct megasas_aen_event *ev;
 
 	struct megasas_cmd **cmd_list;
 	struct list_head cmd_pool;
 	/* used to sync fire the cmd to fw */
-<<<<<<< HEAD
-	spinlock_t cmd_pool_lock;
-	/* used to sync fire the cmd to fw */
-	spinlock_t hba_lock;
-	/* used to synch producer, consumer ptrs in dpc */
-=======
 	spinlock_t mfi_pool_lock;
 	/* used to sync fire the cmd to fw */
 	spinlock_t hba_lock;
 	/* used to synch producer, consumer ptrs in dpc */
 	spinlock_t stream_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t completion_lock;
 	struct dma_pool *frame_dma_pool;
 	struct dma_pool *sense_dma_pool;
@@ -2860,10 +2370,6 @@ struct megasas_instance {
 	struct megasas_evt_detail *evt_detail;
 	dma_addr_t evt_detail_h;
 	struct megasas_cmd *aen_cmd;
-<<<<<<< HEAD
-	struct mutex aen_mutex;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct semaphore ioctl_sem;
 
 	struct Scsi_Host *host;
@@ -2874,11 +2380,6 @@ struct megasas_instance {
 	struct pci_dev *pdev;
 	u32 unique_id;
 	u32 fw_support_ieee;
-<<<<<<< HEAD
-
-	atomic_t fw_outstanding;
-	atomic_t fw_reset_no_pci_access;
-=======
 	u32 threshold_reply_count;
 
 	atomic_t fw_outstanding;
@@ -2886,26 +2387,19 @@ struct megasas_instance {
 	atomic_t fw_reset_no_pci_access;
 	atomic64_t total_io_count;
 	atomic64_t high_iops_outstanding;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct megasas_instance_template *instancet;
 	struct tasklet_struct isr_tasklet;
 	struct work_struct work_init;
-<<<<<<< HEAD
-=======
 	struct delayed_work fw_fault_work;
 	struct workqueue_struct *fw_fault_work_q;
 	char fault_handler_work_q_name[48];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 flag;
 	u8 unload;
 	u8 flag_ieee;
 	u8 issuepend_done;
 	u8 disableOnlineCtrlReset;
-<<<<<<< HEAD
-	u8 adprecovery;
-=======
 	u8 UnevenSpanSupport;
 
 	u8 supportmax256vd;
@@ -2917,7 +2411,6 @@ struct megasas_instance {
 	u16 drv_supported_pd_count;
 
 	atomic_t adprecovery;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_time;
 	u32 mfiStatus;
 	u32 last_seq_num;
@@ -2927,15 +2420,6 @@ struct megasas_instance {
 	/* Ptr to hba specific information */
 	void *ctrl_context;
 	unsigned int msix_vectors;
-<<<<<<< HEAD
-	struct msix_entry msixentry[MEGASAS_MAX_MSIX_QUEUES];
-	struct megasas_irq_context irq_context[MEGASAS_MAX_MSIX_QUEUES];
-	u64 map_id;
-	struct megasas_cmd *map_update_cmd;
-	unsigned long bar;
-	long reset_flags;
-	struct mutex reset_mutex;
-=======
 	struct megasas_irq_context irq_context[MEGASAS_MAX_MSIX_QUEUES];
 	u64 map_id;
 	u64 pd_seq_map_id;
@@ -3040,7 +2524,6 @@ struct MR_CTRL_HB_HOST_MEM {
 		u32 reserved_driver[7];
 	} HB;
 	u8 pad[0x400-0x40];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -3049,10 +2532,7 @@ enum {
 	MEGASAS_ADPRESET_SM_FW_RESET_SUCCESS	= 2,
 	MEGASAS_ADPRESET_SM_OPERATIONAL		= 3,
 	MEGASAS_HW_CRITICAL_ERROR		= 4,
-<<<<<<< HEAD
-=======
 	MEGASAS_ADPRESET_SM_POLLING		= 5,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MEGASAS_ADPRESET_INPROG_SIGN		= 0xDEADDEAD,
 };
 
@@ -3060,21 +2540,12 @@ struct megasas_instance_template {
 	void (*fire_cmd)(struct megasas_instance *, dma_addr_t, \
 		u32, struct megasas_register_set __iomem *);
 
-<<<<<<< HEAD
-	void (*enable_intr)(struct megasas_register_set __iomem *) ;
-	void (*disable_intr)(struct megasas_register_set __iomem *);
-
-	int (*clear_intr)(struct megasas_register_set __iomem *);
-
-	u32 (*read_fw_status_reg)(struct megasas_register_set __iomem *);
-=======
 	void (*enable_intr)(struct megasas_instance *);
 	void (*disable_intr)(struct megasas_instance *);
 
 	int (*clear_intr)(struct megasas_instance *);
 
 	u32 (*read_fw_status_reg)(struct megasas_instance *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*adp_reset)(struct megasas_instance *, \
 		struct megasas_register_set __iomem *);
 	int (*check_reset)(struct megasas_instance *, \
@@ -3084,18 +2555,6 @@ struct megasas_instance_template {
 	u32 (*init_adapter)(struct megasas_instance *);
 	u32 (*build_and_issue_cmd) (struct megasas_instance *,
 				    struct scsi_cmnd *);
-<<<<<<< HEAD
-	void (*issue_dcmd) (struct megasas_instance *instance,
-			    struct megasas_cmd *cmd);
-};
-
-#define MEGASAS_IS_LOGICAL(scp)						\
-	(scp->device->channel < MEGASAS_MAX_PD_CHANNELS) ? 0 : 1
-
-#define MEGASAS_DEV_INDEX(inst, scp)					\
-	((scp->device->channel % 2) * MEGASAS_MAX_DEV_PER_CHANNEL) + 	\
-	scp->device->id
-=======
 	void (*issue_dcmd)(struct megasas_instance *instance,
 			    struct megasas_cmd *cmd);
 };
@@ -3113,7 +2572,6 @@ struct megasas_instance_template {
 #define MEGASAS_PD_INDEX(scp)						\
 	((scp->device->channel * MEGASAS_MAX_DEV_PER_CHANNEL) +		\
 	scp->device->id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct megasas_cmd {
 
@@ -3124,22 +2582,15 @@ struct megasas_cmd {
 
 	u32 index;
 	u8 sync_cmd;
-<<<<<<< HEAD
-	u8 cmd_status;
-=======
 	u8 cmd_status_drv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 abort_aen;
 	u8 retry_for_fw_reset;
 
 
 	struct list_head list;
 	struct scsi_cmnd *scmd;
-<<<<<<< HEAD
-=======
 	u8 flags;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct megasas_instance *instance;
 	union {
 		struct {
@@ -3150,8 +2601,6 @@ struct megasas_cmd {
 	};
 };
 
-<<<<<<< HEAD
-=======
 struct megasas_cmd_priv {
 	void	*cmd_priv;
 	u8	status;
@@ -3162,7 +2611,6 @@ static inline struct megasas_cmd_priv *megasas_priv(struct scsi_cmnd *cmd)
 	return scsi_cmd_priv(cmd);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_MGMT_ADAPTERS		1024
 #define MAX_IOCTL_SGE			16
 
@@ -3190,10 +2638,6 @@ struct megasas_aen {
 	u32 class_locale_word;
 } __attribute__ ((packed));
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct compat_megasas_iocpacket {
 	u16 host_no;
 	u16 __pad1;
@@ -3209,10 +2653,6 @@ struct compat_megasas_iocpacket {
 } __attribute__ ((packed));
 
 #define MEGASAS_IOC_FIRMWARE32	_IOWR('M', 1, struct compat_megasas_iocpacket)
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MEGASAS_IOC_FIRMWARE	_IOWR('M', 1, struct megasas_iocpacket)
 #define MEGASAS_IOC_GET_AEN	_IOW('M', 3, struct megasas_aen)
@@ -3224,10 +2664,6 @@ struct megasas_mgmt_info {
 	int max_index;
 };
 
-<<<<<<< HEAD
-#define msi_control_reg(base) (base + PCI_MSI_FLAGS)
-#define PCI_MSIX_FLAGS_ENABLE (1 << 15)
-=======
 enum MEGASAS_OCR_CAUSE {
 	FW_FAULT_OCR			= 0,
 	SCSIIO_TIMEOUT_OCR		= 1,
@@ -3324,6 +2760,5 @@ void megasas_exit_debugfs(void);
 void megasas_setup_debugfs(struct megasas_instance *instance);
 void megasas_destroy_debugfs(struct megasas_instance *instance);
 int megasas_blk_mq_poll(struct Scsi_Host *shost, unsigned int queue_num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif				/*LSI_MEGARAID_SAS_H */

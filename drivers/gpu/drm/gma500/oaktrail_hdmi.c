@@ -24,13 +24,6 @@
  *	Li Peng <peng.li@intel.com>
  */
 
-<<<<<<< HEAD
-#include <drm/drmP.h>
-#include <drm/drm.h>
-#include "psb_intel_drv.h"
-#include "psb_intel_reg.h"
-#include "psb_drv.h"
-=======
 #include <linux/delay.h>
 
 #include <drm/drm.h>
@@ -42,7 +35,6 @@
 #include "psb_drv.h"
 #include "psb_intel_drv.h"
 #include "psb_intel_reg.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HDMI_READ(reg)		readl(hdmi_dev->regs + (reg))
 #define HDMI_WRITE(reg, val)	writel(val, hdmi_dev->regs + (reg))
@@ -141,11 +133,7 @@ static const struct oaktrail_hdmi_limit oaktrail_hdmi_limit = {
 
 static void oaktrail_hdmi_audio_enable(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct oaktrail_hdmi_dev *hdmi_dev = dev_priv->hdmi_priv;
 
 	HDMI_WRITE(HDMI_HCR, 0x67);
@@ -160,11 +148,7 @@ static void oaktrail_hdmi_audio_enable(struct drm_device *dev)
 
 static void oaktrail_hdmi_audio_disable(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct oaktrail_hdmi_dev *hdmi_dev = dev_priv->hdmi_priv;
 
 	HDMI_WRITE(0x51a8, 0x0);
@@ -177,8 +161,6 @@ static void oaktrail_hdmi_audio_disable(struct drm_device *dev)
 	HDMI_READ(HDMI_HCR);
 }
 
-<<<<<<< HEAD
-=======
 static unsigned int htotal_calculate(struct drm_display_mode *mode)
 {
 	u32 new_crtc_htotal;
@@ -510,17 +492,12 @@ void oaktrail_crtc_hdmi_dpms(struct drm_crtc *crtc, int mode)
 	return;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void oaktrail_hdmi_dpms(struct drm_encoder *encoder, int mode)
 {
 	static int dpms_mode = -1;
 
 	struct drm_device *dev = encoder->dev;
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct oaktrail_hdmi_dev *hdmi_dev = dev_priv->hdmi_priv;
 	u32 temp;
 
@@ -536,16 +513,9 @@ static void oaktrail_hdmi_dpms(struct drm_encoder *encoder, int mode)
 	HDMI_WRITE(HDMI_VIDEO_REG, temp);
 }
 
-<<<<<<< HEAD
-static int oaktrail_hdmi_mode_valid(struct drm_connector *connector,
-				struct drm_display_mode *mode)
-{
-	struct drm_psb_private *dev_priv = connector->dev->dev_private;
-=======
 static enum drm_mode_status oaktrail_hdmi_mode_valid(struct drm_connector *connector,
 				struct drm_display_mode *mode)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mode->clock > 165000)
 		return MODE_CLOCK_HIGH;
 	if (mode->clock < 20000)
@@ -554,37 +524,15 @@ static enum drm_mode_status oaktrail_hdmi_mode_valid(struct drm_connector *conne
 	if (mode->flags & DRM_MODE_FLAG_DBLSCAN)
 		return MODE_NO_DBLESCAN;
 
-<<<<<<< HEAD
-	/* We assume worst case scenario of 32 bpp here, since we don't know */
-	if ((ALIGN(mode->hdisplay * 4, 64) * mode->vdisplay) >
-	    dev_priv->vram_stolen_size)
-		return MODE_MEM;
-
 	return MODE_OK;
 }
 
-static bool oaktrail_hdmi_mode_fixup(struct drm_encoder *encoder,
-				 struct drm_display_mode *mode,
-				 struct drm_display_mode *adjusted_mode)
-{
-	return true;
-}
-
-=======
-	return MODE_OK;
-}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum drm_connector_status
 oaktrail_hdmi_detect(struct drm_connector *connector, bool force)
 {
 	enum drm_connector_status status;
 	struct drm_device *dev = connector->dev;
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct oaktrail_hdmi_dev *hdmi_dev = dev_priv->hdmi_priv;
 	u32 temp;
 
@@ -615,15 +563,6 @@ static const unsigned char raw_edid[] = {
 
 static int oaktrail_hdmi_get_modes(struct drm_connector *connector)
 {
-<<<<<<< HEAD
-	struct drm_device *dev = connector->dev;
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	struct i2c_adapter *i2c_adap;
-	struct edid *edid;
-	struct drm_display_mode *mode, *t;
-	int i = 0, ret = 0;
-
-=======
 	struct i2c_adapter *i2c_adap;
 	struct edid *edid;
 	int ret = 0;
@@ -633,7 +572,6 @@ static int oaktrail_hdmi_get_modes(struct drm_connector *connector)
 	 *	read the EDID somehow but I've yet to find working reference
 	 *	code.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_adap = i2c_get_adapter(3);
 	if (i2c_adap == NULL) {
 		DRM_ERROR("No ddc adapter available!\n");
@@ -644,28 +582,10 @@ static int oaktrail_hdmi_get_modes(struct drm_connector *connector)
 	}
 
 	if (edid) {
-<<<<<<< HEAD
-		drm_mode_connector_update_edid_property(connector, edid);
-		ret = drm_add_edid_modes(connector, edid);
-		connector->display_info.raw_edid = NULL;
-	}
-
-	/*
-	 * prune modes that require frame buffer bigger than stolen mem
-	 */
-	list_for_each_entry_safe(mode, t, &connector->probed_modes, head) {
-		if ((mode->hdisplay * mode->vdisplay * 4) >= dev_priv->vram_stolen_size) {
-			i++;
-			drm_mode_remove(connector, mode);
-		}
-	}
-	return ret - i;
-=======
 		drm_connector_update_edid_property(connector, edid);
 		ret = drm_add_edid_modes(connector, edid);
 	}
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void oaktrail_hdmi_mode_set(struct drm_encoder *encoder,
@@ -685,27 +605,16 @@ static void oaktrail_hdmi_destroy(struct drm_connector *connector)
 
 static const struct drm_encoder_helper_funcs oaktrail_hdmi_helper_funcs = {
 	.dpms = oaktrail_hdmi_dpms,
-<<<<<<< HEAD
-	.mode_fixup = oaktrail_hdmi_mode_fixup,
-	.prepare = psb_intel_encoder_prepare,
-	.mode_set = oaktrail_hdmi_mode_set,
-	.commit = psb_intel_encoder_commit,
-=======
 	.prepare = gma_encoder_prepare,
 	.mode_set = oaktrail_hdmi_mode_set,
 	.commit = gma_encoder_commit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct drm_connector_helper_funcs
 					oaktrail_hdmi_connector_helper_funcs = {
 	.get_modes = oaktrail_hdmi_get_modes,
 	.mode_valid = oaktrail_hdmi_mode_valid,
-<<<<<<< HEAD
-	.best_encoder = psb_intel_best_encoder,
-=======
 	.best_encoder = gma_best_encoder,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct drm_connector_funcs oaktrail_hdmi_connector_funcs = {
@@ -715,35 +624,6 @@ static const struct drm_connector_funcs oaktrail_hdmi_connector_funcs = {
 	.destroy = oaktrail_hdmi_destroy,
 };
 
-<<<<<<< HEAD
-static void oaktrail_hdmi_enc_destroy(struct drm_encoder *encoder)
-{
-	drm_encoder_cleanup(encoder);
-}
-
-static const struct drm_encoder_funcs oaktrail_hdmi_enc_funcs = {
-	.destroy = oaktrail_hdmi_enc_destroy,
-};
-
-void oaktrail_hdmi_init(struct drm_device *dev,
-					struct psb_intel_mode_device *mode_dev)
-{
-	struct psb_intel_encoder *psb_intel_encoder;
-	struct psb_intel_connector *psb_intel_connector;
-	struct drm_connector *connector;
-	struct drm_encoder *encoder;
-
-	psb_intel_encoder = kzalloc(sizeof(struct psb_intel_encoder), GFP_KERNEL);
-	if (!psb_intel_encoder)
-		return;
-
-	psb_intel_connector = kzalloc(sizeof(struct psb_intel_connector), GFP_KERNEL);
-	if (!psb_intel_connector)
-		goto failed_connector;
-
-	connector = &psb_intel_connector->base;
-	encoder = &psb_intel_encoder->base;
-=======
 void oaktrail_hdmi_init(struct drm_device *dev,
 					struct psb_intel_mode_device *mode_dev)
 {
@@ -762,62 +642,32 @@ void oaktrail_hdmi_init(struct drm_device *dev,
 
 	connector = &gma_connector->base;
 	encoder = &gma_encoder->base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	drm_connector_init(dev, connector,
 			   &oaktrail_hdmi_connector_funcs,
 			   DRM_MODE_CONNECTOR_DVID);
 
-<<<<<<< HEAD
-	drm_encoder_init(dev, encoder,
-			 &oaktrail_hdmi_enc_funcs,
-			 DRM_MODE_ENCODER_TMDS);
-
-	psb_intel_connector_attach_encoder(psb_intel_connector,
-					   psb_intel_encoder);
-
-	psb_intel_encoder->type = INTEL_OUTPUT_HDMI;
-=======
 	drm_simple_encoder_init(dev, encoder, DRM_MODE_ENCODER_TMDS);
 
 	gma_connector_attach_encoder(gma_connector, gma_encoder);
 
 	gma_encoder->type = INTEL_OUTPUT_HDMI;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	drm_encoder_helper_add(encoder, &oaktrail_hdmi_helper_funcs);
 	drm_connector_helper_add(connector, &oaktrail_hdmi_connector_helper_funcs);
 
 	connector->display_info.subpixel_order = SubPixelHorizontalRGB;
 	connector->interlace_allowed = false;
 	connector->doublescan_allowed = false;
-<<<<<<< HEAD
-	drm_sysfs_connector_add(connector);
-=======
 	dev_info(dev->dev, "HDMI initialised.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 
 failed_connector:
-<<<<<<< HEAD
-	kfree(psb_intel_encoder);
-}
-
-static DEFINE_PCI_DEVICE_TABLE(hdmi_ids) = {
-	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x080d) },
-	{ 0 }
-};
-
-void oaktrail_hdmi_setup(struct drm_device *dev)
-{
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	kfree(gma_encoder);
 }
 
 void oaktrail_hdmi_setup(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *pdev;
 	struct oaktrail_hdmi_dev *hdmi_dev;
 	int ret;
@@ -857,12 +707,9 @@ void oaktrail_hdmi_setup(struct drm_device *dev)
 
 	dev_priv->hdmi_priv = hdmi_dev;
 	oaktrail_hdmi_audio_disable(dev);
-<<<<<<< HEAD
-=======
 
 	dev_info(dev->dev, "HDMI hardware present.\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 free:
@@ -873,11 +720,7 @@ out:
 
 void oaktrail_hdmi_teardown(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct oaktrail_hdmi_dev *hdmi_dev = dev_priv->hdmi_priv;
 	struct pci_dev *pdev;
 
@@ -894,16 +737,10 @@ void oaktrail_hdmi_teardown(struct drm_device *dev)
 /* save HDMI register state */
 void oaktrail_hdmi_save(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	struct oaktrail_hdmi_dev *hdmi_dev = dev_priv->hdmi_priv;
-	struct psb_state *regs = &dev_priv->regs.psb;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 	struct oaktrail_hdmi_dev *hdmi_dev = dev_priv->hdmi_priv;
 	struct psb_state *regs = &dev_priv->regs.psb;
 	struct psb_pipe *pipeb = &dev_priv->regs.pipe[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/* dpll */
@@ -914,16 +751,6 @@ void oaktrail_hdmi_save(struct drm_device *dev)
 	hdmi_dev->saveDPLL_CLK_ENABLE = PSB_RVDC32(DPLL_CLK_ENABLE);
 
 	/* pipe B */
-<<<<<<< HEAD
-	regs->savePIPEBCONF = PSB_RVDC32(PIPEBCONF);
-	regs->savePIPEBSRC  = PSB_RVDC32(PIPEBSRC);
-	regs->saveHTOTAL_B  = PSB_RVDC32(HTOTAL_B);
-	regs->saveHBLANK_B  = PSB_RVDC32(HBLANK_B);
-	regs->saveHSYNC_B   = PSB_RVDC32(HSYNC_B);
-	regs->saveVTOTAL_B  = PSB_RVDC32(VTOTAL_B);
-	regs->saveVBLANK_B  = PSB_RVDC32(VBLANK_B);
-	regs->saveVSYNC_B   = PSB_RVDC32(VSYNC_B);
-=======
 	pipeb->conf = PSB_RVDC32(PIPEBCONF);
 	pipeb->src = PSB_RVDC32(PIPEBSRC);
 	pipeb->htotal = PSB_RVDC32(HTOTAL_B);
@@ -932,7 +759,6 @@ void oaktrail_hdmi_save(struct drm_device *dev)
 	pipeb->vtotal = PSB_RVDC32(VTOTAL_B);
 	pipeb->vblank = PSB_RVDC32(VBLANK_B);
 	pipeb->vsync = PSB_RVDC32(VSYNC_B);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdmi_dev->savePCH_PIPEBCONF = PSB_RVDC32(PCH_PIPEBCONF);
 	hdmi_dev->savePCH_PIPEBSRC = PSB_RVDC32(PCH_PIPEBSRC);
@@ -944,21 +770,12 @@ void oaktrail_hdmi_save(struct drm_device *dev)
 	hdmi_dev->savePCH_VSYNC_B  = PSB_RVDC32(PCH_VSYNC_B);
 
 	/* plane */
-<<<<<<< HEAD
-	regs->saveDSPBCNTR = PSB_RVDC32(DSPBCNTR);
-	regs->saveDSPBSTRIDE = PSB_RVDC32(DSPBSTRIDE);
-	regs->saveDSPBADDR = PSB_RVDC32(DSPBBASE);
-	regs->saveDSPBSURF = PSB_RVDC32(DSPBSURF);
-	regs->saveDSPBLINOFF = PSB_RVDC32(DSPBLINOFF);
-	regs->saveDSPBTILEOFF = PSB_RVDC32(DSPBTILEOFF);
-=======
 	pipeb->cntr = PSB_RVDC32(DSPBCNTR);
 	pipeb->stride = PSB_RVDC32(DSPBSTRIDE);
 	pipeb->addr = PSB_RVDC32(DSPBBASE);
 	pipeb->surf = PSB_RVDC32(DSPBSURF);
 	pipeb->linoff = PSB_RVDC32(DSPBLINOFF);
 	pipeb->tileoff = PSB_RVDC32(DSPBTILEOFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* cursor B */
 	regs->saveDSPBCURSOR_CTRL = PSB_RVDC32(CURBCNTR);
@@ -967,26 +784,16 @@ void oaktrail_hdmi_save(struct drm_device *dev)
 
 	/* save palette */
 	for (i = 0; i < 256; i++)
-<<<<<<< HEAD
-		regs->save_palette_b[i] = PSB_RVDC32(PALETTE_B + (i << 2));
-=======
 		pipeb->palette[i] = PSB_RVDC32(PALETTE_B + (i << 2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* restore HDMI register state */
 void oaktrail_hdmi_restore(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	struct oaktrail_hdmi_dev *hdmi_dev = dev_priv->hdmi_priv;
-	struct psb_state *regs = &dev_priv->regs.psb;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 	struct oaktrail_hdmi_dev *hdmi_dev = dev_priv->hdmi_priv;
 	struct psb_state *regs = &dev_priv->regs.psb;
 	struct psb_pipe *pipeb = &dev_priv->regs.pipe[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/* dpll */
@@ -995,18 +802,6 @@ void oaktrail_hdmi_restore(struct drm_device *dev)
 	PSB_WVDC32(hdmi_dev->saveDPLL_ADJUST, DPLL_ADJUST);
 	PSB_WVDC32(hdmi_dev->saveDPLL_UPDATE, DPLL_UPDATE);
 	PSB_WVDC32(hdmi_dev->saveDPLL_CLK_ENABLE, DPLL_CLK_ENABLE);
-<<<<<<< HEAD
-	DRM_UDELAY(150);
-
-	/* pipe */
-	PSB_WVDC32(regs->savePIPEBSRC, PIPEBSRC);
-	PSB_WVDC32(regs->saveHTOTAL_B, HTOTAL_B);
-	PSB_WVDC32(regs->saveHBLANK_B, HBLANK_B);
-	PSB_WVDC32(regs->saveHSYNC_B,  HSYNC_B);
-	PSB_WVDC32(regs->saveVTOTAL_B, VTOTAL_B);
-	PSB_WVDC32(regs->saveVBLANK_B, VBLANK_B);
-	PSB_WVDC32(regs->saveVSYNC_B,  VSYNC_B);
-=======
 	udelay(150);
 
 	/* pipe */
@@ -1017,7 +812,6 @@ void oaktrail_hdmi_restore(struct drm_device *dev)
 	PSB_WVDC32(pipeb->vtotal, VTOTAL_B);
 	PSB_WVDC32(pipeb->vblank, VBLANK_B);
 	PSB_WVDC32(pipeb->vsync,  VSYNC_B);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PSB_WVDC32(hdmi_dev->savePCH_PIPEBSRC, PCH_PIPEBSRC);
 	PSB_WVDC32(hdmi_dev->savePCH_HTOTAL_B, PCH_HTOTAL_B);
@@ -1027,17 +821,6 @@ void oaktrail_hdmi_restore(struct drm_device *dev)
 	PSB_WVDC32(hdmi_dev->savePCH_VBLANK_B, PCH_VBLANK_B);
 	PSB_WVDC32(hdmi_dev->savePCH_VSYNC_B,  PCH_VSYNC_B);
 
-<<<<<<< HEAD
-	PSB_WVDC32(regs->savePIPEBCONF, PIPEBCONF);
-	PSB_WVDC32(hdmi_dev->savePCH_PIPEBCONF, PCH_PIPEBCONF);
-
-	/* plane */
-	PSB_WVDC32(regs->saveDSPBLINOFF, DSPBLINOFF);
-	PSB_WVDC32(regs->saveDSPBSTRIDE, DSPBSTRIDE);
-	PSB_WVDC32(regs->saveDSPBTILEOFF, DSPBTILEOFF);
-	PSB_WVDC32(regs->saveDSPBCNTR, DSPBCNTR);
-	PSB_WVDC32(regs->saveDSPBSURF, DSPBSURF);
-=======
 	PSB_WVDC32(pipeb->conf, PIPEBCONF);
 	PSB_WVDC32(hdmi_dev->savePCH_PIPEBCONF, PCH_PIPEBCONF);
 
@@ -1047,7 +830,6 @@ void oaktrail_hdmi_restore(struct drm_device *dev)
 	PSB_WVDC32(pipeb->tileoff, DSPBTILEOFF);
 	PSB_WVDC32(pipeb->cntr, DSPBCNTR);
 	PSB_WVDC32(pipeb->surf, DSPBSURF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* cursor B */
 	PSB_WVDC32(regs->saveDSPBCURSOR_CTRL, CURBCNTR);
@@ -1056,9 +838,5 @@ void oaktrail_hdmi_restore(struct drm_device *dev)
 
 	/* restore palette */
 	for (i = 0; i < 256; i++)
-<<<<<<< HEAD
-		PSB_WVDC32(regs->save_palette_b[i], PALETTE_B + (i << 2));
-=======
 		PSB_WVDC32(pipeb->palette[i], PALETTE_B + (i << 2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,15 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_COREDUMP_H
 #define _LINUX_COREDUMP_H
 
 #include <linux/types.h>
 #include <linux/mm.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-=======
 #include <asm/siginfo.h>
 
 #ifdef CONFIG_COREDUMP
@@ -34,16 +29,11 @@ struct coredump_params {
 	size_t vma_data_size;
 	struct core_vma_metadata *vma_meta;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are the only things you should do on a core-file: use only these
  * functions to write out all the necessary info.
  */
-<<<<<<< HEAD
-extern int dump_write(struct file *file, const void *addr, int nr);
-extern int dump_seek(struct file *file, loff_t off);
-=======
 extern void dump_skip_to(struct coredump_params *cprm, unsigned long to);
 extern void dump_skip(struct coredump_params *cprm, size_t nr);
 extern int dump_emit(struct coredump_params *cprm, const void *addr, int nr);
@@ -60,6 +50,5 @@ extern void validate_coredump_safety(void);
 #else
 static inline void validate_coredump_safety(void) {}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_COREDUMP_H */

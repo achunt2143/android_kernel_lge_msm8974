@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright (C) 1991, 1992 Linus Torvalds
  *   Copyright 2007 rPath, Inc. - All Rights Reserved
  *   Copyright 2009 Intel Corporation; author H. Peter Anvin
  *
-<<<<<<< HEAD
- *   This file is part of the Linux kernel, and is made available under
- *   the terms of the GNU General Public License version 2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -24,18 +15,6 @@
 
 #define SMAP	0x534d4150	/* ASCII "SMAP" */
 
-<<<<<<< HEAD
-static int detect_memory_e820(void)
-{
-	int count = 0;
-	struct biosregs ireg, oreg;
-	struct e820entry *desc = boot_params.e820_map;
-	static struct e820entry buf; /* static so it is zeroed */
-
-	initregs(&ireg);
-	ireg.ax  = 0xe820;
-	ireg.cx  = sizeof buf;
-=======
 static void detect_memory_e820(void)
 {
 	int count = 0;
@@ -46,7 +25,6 @@ static void detect_memory_e820(void)
 	initregs(&ireg);
 	ireg.ax  = 0xe820;
 	ireg.cx  = sizeof(buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ireg.edx = SMAP;
 	ireg.di  = (size_t)&buf;
 
@@ -86,21 +64,12 @@ static void detect_memory_e820(void)
 
 		*desc++ = buf;
 		count++;
-<<<<<<< HEAD
-	} while (ireg.ebx && count < ARRAY_SIZE(boot_params.e820_map));
-
-	return boot_params.e820_entries = count;
-}
-
-static int detect_memory_e801(void)
-=======
 	} while (ireg.ebx && count < ARRAY_SIZE(boot_params.e820_table));
 
 	boot_params.e820_entries = count;
 }
 
 static void detect_memory_e801(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct biosregs ireg, oreg;
 
@@ -109,11 +78,7 @@ static void detect_memory_e801(void)
 	intcall(0x15, &ireg, &oreg);
 
 	if (oreg.eflags & X86_EFLAGS_CF)
-<<<<<<< HEAD
-		return -1;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Do we really need to do this? */
 	if (oreg.cx || oreg.dx) {
@@ -122,11 +87,7 @@ static void detect_memory_e801(void)
 	}
 
 	if (oreg.ax > 15*1024) {
-<<<<<<< HEAD
-		return -1;	/* Bogus! */
-=======
 		return;	/* Bogus! */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (oreg.ax == 15*1024) {
 		boot_params.alt_mem_k = (oreg.bx << 6) + oreg.ax;
 	} else {
@@ -139,17 +100,9 @@ static void detect_memory_e801(void)
 		 */
 		boot_params.alt_mem_k = oreg.ax;
 	}
-<<<<<<< HEAD
-
-	return 0;
-}
-
-static int detect_memory_88(void)
-=======
 }
 
 static void detect_memory_88(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct biosregs ireg, oreg;
 
@@ -158,26 +111,6 @@ static void detect_memory_88(void)
 	intcall(0x15, &ireg, &oreg);
 
 	boot_params.screen_info.ext_mem_k = oreg.ax;
-<<<<<<< HEAD
-
-	return -(oreg.eflags & X86_EFLAGS_CF); /* 0 or -1 */
-}
-
-int detect_memory(void)
-{
-	int err = -1;
-
-	if (detect_memory_e820() > 0)
-		err = 0;
-
-	if (!detect_memory_e801())
-		err = 0;
-
-	if (!detect_memory_88())
-		err = 0;
-
-	return err;
-=======
 }
 
 void detect_memory(void)
@@ -187,5 +120,4 @@ void detect_memory(void)
 	detect_memory_e801();
 
 	detect_memory_88();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

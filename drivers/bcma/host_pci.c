@@ -13,14 +13,6 @@
 
 static void bcma_host_pci_switch_core(struct bcma_device *core)
 {
-<<<<<<< HEAD
-	pci_write_config_dword(core->bus->host_pci, BCMA_PCI_BAR0_WIN,
-			       core->addr);
-	pci_write_config_dword(core->bus->host_pci, BCMA_PCI_BAR0_WIN2,
-			       core->wrap);
-	core->bus->mapped_core = core;
-	pr_debug("Switched to core: 0x%X\n", core->id.id);
-=======
 	int win2 = core->bus->host_is_pcie2 ?
 		BCMA_PCIE2_BAR0_WIN2 : BCMA_PCI_BAR0_WIN2;
 
@@ -29,7 +21,6 @@ static void bcma_host_pci_switch_core(struct bcma_device *core)
 	pci_write_config_dword(core->bus->host_pci, win2, core->wrap);
 	core->bus->mapped_core = core;
 	bcma_debug(core->bus, "Switched to core: 0x%X\n", core->id.id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Provides access to the requested core. Returns base offset that has to be
@@ -88,13 +79,8 @@ static void bcma_host_pci_write32(struct bcma_device *core, u16 offset,
 }
 
 #ifdef CONFIG_BCMA_BLOCKIO
-<<<<<<< HEAD
-void bcma_host_pci_block_read(struct bcma_device *core, void *buffer,
-			      size_t count, u16 offset, u8 reg_width)
-=======
 static void bcma_host_pci_block_read(struct bcma_device *core, void *buffer,
 				     size_t count, u16 offset, u8 reg_width)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *addr = core->bus->mmio + offset;
 	if (core->bus->mapped_core != core)
@@ -116,14 +102,9 @@ static void bcma_host_pci_block_read(struct bcma_device *core, void *buffer,
 	}
 }
 
-<<<<<<< HEAD
-void bcma_host_pci_block_write(struct bcma_device *core, const void *buffer,
-			       size_t count, u16 offset, u8 reg_width)
-=======
 static void bcma_host_pci_block_write(struct bcma_device *core,
 				      const void *buffer, size_t count,
 				      u16 offset, u8 reg_width)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *addr = core->bus->mmio + offset;
 	if (core->bus->mapped_core != core)
@@ -161,11 +142,7 @@ static void bcma_host_pci_awrite32(struct bcma_device *core, u16 offset,
 	iowrite32(value, core->bus->mmio + (1 * BCMA_CORE_SIZE) + offset);
 }
 
-<<<<<<< HEAD
-const struct bcma_host_ops bcma_host_pci_ops = {
-=======
 static const struct bcma_host_ops bcma_host_pci_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read8		= bcma_host_pci_read8,
 	.read16		= bcma_host_pci_read16,
 	.read32		= bcma_host_pci_read32,
@@ -180,20 +157,11 @@ static const struct bcma_host_ops bcma_host_pci_ops = {
 	.awrite32	= bcma_host_pci_awrite32,
 };
 
-<<<<<<< HEAD
-static int __devinit bcma_host_pci_probe(struct pci_dev *dev,
-					 const struct pci_device_id *id)
-{
-	struct bcma_bus *bus;
-	int err = -ENOMEM;
-	const char *name;
-=======
 static int bcma_host_pci_probe(struct pci_dev *dev,
 			       const struct pci_device_id *id)
 {
 	struct bcma_bus *bus;
 	int err = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 val;
 
 	/* Alloc */
@@ -206,14 +174,7 @@ static int bcma_host_pci_probe(struct pci_dev *dev,
 	if (err)
 		goto err_kfree_bus;
 
-<<<<<<< HEAD
-	name = dev_name(&dev->dev);
-	if (dev->driver && dev->driver->name)
-		name = dev->driver->name;
-	err = pci_request_regions(dev, name);
-=======
 	err = pci_request_regions(dev, "bcma-pci-bridge");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto err_pci_disable;
 	pci_set_master(dev);
@@ -225,10 +186,6 @@ static int bcma_host_pci_probe(struct pci_dev *dev,
 		pci_write_config_dword(dev, 0x40, val & 0xffff00ff);
 
 	/* SSB needed additional powering up, do we have any AMBA PCI cards? */
-<<<<<<< HEAD
-	if (!pci_is_pcie(dev))
-		pr_err("PCI card detected, report problems.\n");
-=======
 	if (!pci_is_pcie(dev)) {
 		bcma_err(bus, "PCI card detected, they are not supported.\n");
 		err = -ENXIO;
@@ -236,7 +193,6 @@ static int bcma_host_pci_probe(struct pci_dev *dev,
 	}
 
 	bus->dev = &dev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Map MMIO */
 	err = -ENOMEM;
@@ -249,12 +205,6 @@ static int bcma_host_pci_probe(struct pci_dev *dev,
 	bus->hosttype = BCMA_HOSTTYPE_PCI;
 	bus->ops = &bcma_host_pci_ops;
 
-<<<<<<< HEAD
-	/* Register */
-	err = bcma_bus_register(bus);
-	if (err)
-		goto err_pci_unmap_mmio;
-=======
 	bus->boardinfo.vendor = bus->host_pci->subsystem_vendor;
 	bus->boardinfo.type = bus->host_pci->subsystem_device;
 
@@ -273,18 +223,14 @@ static int bcma_host_pci_probe(struct pci_dev *dev,
 	err = bcma_bus_register(bus);
 	if (err)
 		goto err_unregister_cores;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(dev, bus);
 
 out:
 	return err;
 
-<<<<<<< HEAD
-=======
 err_unregister_cores:
 	bcma_unregister_cores(bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_pci_unmap_mmio:
 	pci_iounmap(dev, bus->mmio);
 err_pci_release_regions:
@@ -305,23 +251,12 @@ static void bcma_host_pci_remove(struct pci_dev *dev)
 	pci_release_regions(dev);
 	pci_disable_device(dev);
 	kfree(bus);
-<<<<<<< HEAD
-	pci_set_drvdata(dev, NULL);
-}
-
-#ifdef CONFIG_PM
-static int bcma_host_pci_suspend(struct device *dev)
-{
-	struct pci_dev *pdev = to_pci_dev(dev);
-	struct bcma_bus *bus = pci_get_drvdata(pdev);
-=======
 }
 
 #ifdef CONFIG_PM_SLEEP
 static int bcma_host_pci_suspend(struct device *dev)
 {
 	struct bcma_bus *bus = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bus->mapped_core = NULL;
 
@@ -330,12 +265,7 @@ static int bcma_host_pci_suspend(struct device *dev)
 
 static int bcma_host_pci_resume(struct device *dev)
 {
-<<<<<<< HEAD
-	struct pci_dev *pdev = to_pci_dev(dev);
-	struct bcma_bus *bus = pci_get_drvdata(pdev);
-=======
 	struct bcma_bus *bus = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return bcma_bus_resume(bus);
 }
@@ -344,20 +274,6 @@ static SIMPLE_DEV_PM_OPS(bcma_pm_ops, bcma_host_pci_suspend,
 			 bcma_host_pci_resume);
 #define BCMA_PM_OPS	(&bcma_pm_ops)
 
-<<<<<<< HEAD
-#else /* CONFIG_PM */
-
-#define BCMA_PM_OPS     NULL
-
-#endif /* CONFIG_PM */
-
-static DEFINE_PCI_DEVICE_TABLE(bcma_pci_bridge_tbl) = {
-	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x0576) },
-	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4331) },
-	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4353) },
-	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4357) },
-	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4727) },
-=======
 #else /* CONFIG_PM_SLEEP */
 
 #define BCMA_PM_OPS     NULL
@@ -385,7 +301,6 @@ static const struct pci_device_id bcma_pci_bridge_tbl[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4727) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 43227) },	/* 0xa8db, BCM43217 (sic!) */
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 43228) },	/* 0xa8dc */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, },
 };
 MODULE_DEVICE_TABLE(pci, bcma_pci_bridge_tbl);
@@ -407,8 +322,6 @@ void __exit bcma_host_pci_exit(void)
 {
 	pci_unregister_driver(&bcma_pci_bridge_driver);
 }
-<<<<<<< HEAD
-=======
 
 /**************************************************
  * Runtime ops for drivers.
@@ -471,4 +384,3 @@ out:
 	return err;
 }
 EXPORT_SYMBOL_GPL(bcma_host_pci_irq_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

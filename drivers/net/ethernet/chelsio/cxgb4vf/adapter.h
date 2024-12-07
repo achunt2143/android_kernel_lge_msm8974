@@ -40,10 +40,7 @@
 #ifndef __CXGB4VF_ADAPTER_H__
 #define __CXGB4VF_ADAPTER_H__
 
-<<<<<<< HEAD
-=======
 #include <linux/etherdevice.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/pci.h>
 #include <linux/spinlock.h>
@@ -96,12 +93,6 @@ struct sge_rspq;
  */
 struct port_info {
 	struct adapter *adapter;	/* our adapter */
-<<<<<<< HEAD
-	u16 viid;			/* virtual interface ID */
-	s16 xact_addr_filt;		/* index of our MAC address filter */
-	u16 rss_size;			/* size of VI's RSS table slice */
-	u8 pidx;			/* index into adapter port[] */
-=======
 	u32 vlan_id;			/* vlan id for VST */
 	u16 viid;			/* virtual interface ID */
 	int xact_addr_filt;		/* index of our MAC address filter */
@@ -110,7 +101,6 @@ struct port_info {
 	s8 mdio_addr;
 	u8 port_type;			/* firmware port type */
 	u8 mod_type;			/* firmware module type */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 port_id;			/* physical port ID */
 	u8 nqsets;			/* # of "Queue Sets" */
 	u8 first_qset;			/* index of first "Queue Set" */
@@ -153,11 +143,8 @@ struct sge_fl {
 	struct rx_sw_desc *sdesc;	/* address of SW RX descriptor ring */
 	__be64 *desc;			/* address of HW RX descriptor ring */
 	dma_addr_t addr;		/* PCI bus address of hardware ring */
-<<<<<<< HEAD
-=======
 	void __iomem *bar2_addr;	/* address of BAR2 Queue registers */
 	unsigned int bar2_qid;		/* Queue ID for BAR2 Queue registers */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -198,11 +185,8 @@ struct sge_rspq {
 	u16 abs_id;			/* SGE abs QID for the response Q */
 	__be64 *desc;			/* address of hardware response ring */
 	dma_addr_t phys_addr;		/* PCI bus address of ring */
-<<<<<<< HEAD
-=======
 	void __iomem *bar2_addr;	/* address of BAR2 Queue registers */
 	unsigned int bar2_qid;		/* Queue ID for BAR2 Queue registers */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int iqe_len;		/* entry size */
 	unsigned int size;		/* capcity of response Q */
 	struct adapter *adapter;	/* our adapter */
@@ -265,11 +249,8 @@ struct sge_txq {
 	struct tx_sw_desc *sdesc;	/* address of SW TX descriptor ring */
 	struct sge_qstat *stat;		/* queue status entry */
 	dma_addr_t phys_addr;		/* PCI bus address of hardware ring */
-<<<<<<< HEAD
-=======
 	void __iomem *bar2_addr;	/* address of BAR2 Queue registers */
 	unsigned int bar2_qid;		/* Queue ID for BAR2 Queue registers */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -329,8 +310,6 @@ struct sge {
 	u16 timer_val[SGE_NTIMERS];	/* interrupt holdoff timer array */
 	u8 counter_val[SGE_NCOUNTERS];	/* interrupt RX threshold array */
 
-<<<<<<< HEAD
-=======
 	/* Decoded Adapter Parameters.
 	 */
 	u32 fl_pg_order;		/* large page allocation size */
@@ -339,7 +318,6 @@ struct sge {
 	u32 fl_align;			/* response queue message alignment */
 	u32 fl_starve_thres;		/* Free List starvation threshold */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Reverse maps from Absolute Queue IDs to associated queue pointers.
 	 * The absolute Queue IDs are in a compact range which start at a
@@ -372,8 +350,6 @@ struct sge {
 #define for_each_ethrxq(sge, iter) \
 	for (iter = 0; iter < (sge)->ethqsets; iter++)
 
-<<<<<<< HEAD
-=======
 struct hash_mac_addr {
 	struct list_head list;
 	u8 addr[ETH_ALEN];
@@ -384,17 +360,13 @@ struct mbox_list {
 	struct list_head list;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Per-"adapter" (Virtual Function) information.
  */
 struct adapter {
 	/* PCI resources */
 	void __iomem *regs;
-<<<<<<< HEAD
-=======
 	void __iomem *bar2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *pdev;
 	struct device *pdev_dev;
 
@@ -421,15 +393,6 @@ struct adapter {
 
 	/* various locks */
 	spinlock_t stats_lock;
-<<<<<<< HEAD
-};
-
-enum { /* adapter flags */
-	FULL_INIT_DONE     = (1UL << 0),
-	USING_MSI          = (1UL << 1),
-	USING_MSIX         = (1UL << 2),
-	QUEUES_BOUND       = (1UL << 3),
-=======
 
 	/* lock for mailbox cmd list */
 	spinlock_t mbox_lock;
@@ -450,7 +413,6 @@ enum { /* adapter flags */
 	CXGB4VF_QUEUES_BOUND			= (1UL << 3),
 	CXGB4VF_ROOT_NO_RELAXED_ORDERING	= (1UL << 4),
 	CXGB4VF_FW_OK				= (1UL << 5),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -546,12 +508,7 @@ static inline const char *port_name(struct adapter *adapter, int pidx)
 static inline void t4_os_set_hw_addr(struct adapter *adapter, int pidx,
 				     u8 hw_addr[])
 {
-<<<<<<< HEAD
-	memcpy(adapter->port[pidx]->dev_addr, hw_addr, ETH_ALEN);
-	memcpy(adapter->port[pidx]->perm_addr, hw_addr, ETH_ALEN);
-=======
 	eth_hw_addr_set(adapter->port[pidx], hw_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -593,10 +550,7 @@ static inline struct adapter *netdev2adap(const struct net_device *dev)
  * is "contracted" to provide for the common code.
  */
 void t4vf_os_link_changed(struct adapter *, int, int);
-<<<<<<< HEAD
-=======
 void t4vf_os_portmod_changed(struct adapter *, int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * SGE function prototype declarations.
@@ -609,11 +563,7 @@ int t4vf_sge_alloc_eth_txq(struct adapter *, struct sge_eth_txq *,
 			   unsigned int);
 void t4vf_free_sge_resources(struct adapter *);
 
-<<<<<<< HEAD
-int t4vf_eth_xmit(struct sk_buff *, struct net_device *);
-=======
 netdev_tx_t t4vf_eth_xmit(struct sk_buff *, struct net_device *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int t4vf_ethrx_handler(struct sge_rspq *, const __be64 *,
 		       const struct pkt_gl *);
 

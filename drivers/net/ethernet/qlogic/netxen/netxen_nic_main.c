@@ -1,33 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2003 - 2009 NetXen, Inc.
  * Copyright (C) 2009 - QLogic Corporation.
  * All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston,
- * MA  02111-1307, USA.
- *
- * The full GNU General Public License is included in this distribution
- * in the file called "COPYING".
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -43,10 +18,6 @@
 #include <linux/ipv6.h>
 #include <linux/inetdevice.h>
 #include <linux/sysfs.h>
-<<<<<<< HEAD
-#include <linux/aer.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("QLogic/NetXen (1/10) GbE Intelligent Ethernet Driver");
 MODULE_LICENSE("GPL");
@@ -70,36 +41,20 @@ static int auto_fw_reset = AUTO_FW_RESET_ENABLED;
 module_param(auto_fw_reset, int, 0644);
 MODULE_PARM_DESC(auto_fw_reset,"Auto firmware reset (0=disabled, 1=enabled");
 
-<<<<<<< HEAD
-static int __devinit netxen_nic_probe(struct pci_dev *pdev,
-		const struct pci_device_id *ent);
-static void __devexit netxen_nic_remove(struct pci_dev *pdev);
-=======
 static int netxen_nic_probe(struct pci_dev *pdev,
 		const struct pci_device_id *ent);
 static void netxen_nic_remove(struct pci_dev *pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int netxen_nic_open(struct net_device *netdev);
 static int netxen_nic_close(struct net_device *netdev);
 static netdev_tx_t netxen_nic_xmit_frame(struct sk_buff *,
 					       struct net_device *);
-<<<<<<< HEAD
-static void netxen_tx_timeout(struct net_device *netdev);
-=======
 static void netxen_tx_timeout(struct net_device *netdev, unsigned int txqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void netxen_tx_timeout_task(struct work_struct *work);
 static void netxen_fw_poll_work(struct work_struct *work);
 static void netxen_schedule_work(struct netxen_adapter *adapter,
 		work_func_t func, int delay);
 static void netxen_cancel_fw_work(struct netxen_adapter *adapter);
 static int netxen_nic_poll(struct napi_struct *napi, int budget);
-<<<<<<< HEAD
-#ifdef CONFIG_NET_POLL_CONTROLLER
-static void netxen_nic_poll_controller(struct net_device *netdev);
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void netxen_create_sysfs_entries(struct netxen_adapter *adapter);
 static void netxen_remove_sysfs_entries(struct netxen_adapter *adapter);
@@ -113,17 +68,10 @@ static irqreturn_t netxen_intr(int irq, void *data);
 static irqreturn_t netxen_msi_intr(int irq, void *data);
 static irqreturn_t netxen_msix_intr(int irq, void *data);
 
-<<<<<<< HEAD
-static void netxen_free_vlan_ip_list(struct netxen_adapter *);
-static void netxen_restore_indev_addr(struct net_device *dev, unsigned long);
-static struct rtnl_link_stats64 *netxen_nic_get_stats(struct net_device *dev,
-						      struct rtnl_link_stats64 *stats);
-=======
 static void netxen_free_ip_list(struct netxen_adapter *, bool);
 static void netxen_restore_indev_addr(struct net_device *dev, unsigned long);
 static void netxen_nic_get_stats(struct net_device *dev,
 				 struct rtnl_link_stats64 *stats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int netxen_nic_set_mac(struct net_device *netdev, void *p);
 
 /*  PCI Device ID Table  */
@@ -131,11 +79,7 @@ static int netxen_nic_set_mac(struct net_device *netdev, void *p);
 	{PCI_DEVICE(PCI_VENDOR_ID_NETXEN, (device)), \
 	.class = PCI_CLASS_NETWORK_ETHERNET << 8, .class_mask = ~0}
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(netxen_pci_tbl) = {
-=======
 static const struct pci_device_id netxen_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ENTRY(PCI_DEVICE_ID_NX2031_10GXSR),
 	ENTRY(PCI_DEVICE_ID_NX2031_10GCX4),
 	ENTRY(PCI_DEVICE_ID_NX2031_4GCU),
@@ -212,13 +156,7 @@ netxen_alloc_sds_rings(struct netxen_recv_context *recv_ctx, int count)
 static void
 netxen_free_sds_rings(struct netxen_recv_context *recv_ctx)
 {
-<<<<<<< HEAD
-	if (recv_ctx->sds_rings != NULL)
-		kfree(recv_ctx->sds_rings);
-
-=======
 	kfree(recv_ctx->sds_rings);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	recv_ctx->sds_rings = NULL;
 }
 
@@ -234,12 +172,7 @@ netxen_napi_add(struct netxen_adapter *adapter, struct net_device *netdev)
 
 	for (ring = 0; ring < adapter->max_sds_rings; ring++) {
 		sds_ring = &recv_ctx->sds_rings[ring];
-<<<<<<< HEAD
-		netif_napi_add(netdev, &sds_ring->napi,
-				netxen_nic_poll, NETXEN_NETDEV_WEIGHT);
-=======
 		netif_napi_add(netdev, &sds_ring->napi, netxen_nic_poll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -300,25 +233,14 @@ static int nx_set_dma_mask(struct netxen_adapter *adapter)
 	cmask = DMA_BIT_MASK(32);
 
 	if (NX_IS_REVISION_P2(adapter->ahw.revision_id)) {
-<<<<<<< HEAD
-#ifndef CONFIG_IA64
 		mask = DMA_BIT_MASK(35);
-#endif
-=======
-		mask = DMA_BIT_MASK(35);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		mask = DMA_BIT_MASK(39);
 		cmask = mask;
 	}
 
-<<<<<<< HEAD
-	if (pci_set_dma_mask(pdev, mask) == 0 &&
-		pci_set_consistent_dma_mask(pdev, cmask) == 0) {
-=======
 	if (dma_set_mask(&pdev->dev, mask) == 0 &&
 	    dma_set_coherent_mask(&pdev->dev, cmask) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adapter->pci_using_dac = 1;
 		return 0;
 	}
@@ -351,21 +273,13 @@ nx_update_dma_mask(struct netxen_adapter *adapter)
 
 		mask = DMA_BIT_MASK(32+shift);
 
-<<<<<<< HEAD
-		err = pci_set_dma_mask(pdev, mask);
-=======
 		err = dma_set_mask(&pdev->dev, mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto err_out;
 
 		if (NX_IS_REVISION_P3(adapter->ahw.revision_id)) {
 
-<<<<<<< HEAD
-			err = pci_set_consistent_dma_mask(pdev, mask);
-=======
 			err = dma_set_coherent_mask(&pdev->dev, mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err)
 				goto err_out;
 		}
@@ -375,13 +289,8 @@ nx_update_dma_mask(struct netxen_adapter *adapter)
 	return 0;
 
 err_out:
-<<<<<<< HEAD
-	pci_set_dma_mask(pdev, old_mask);
-	pci_set_consistent_dma_mask(pdev, old_cmask);
-=======
 	dma_set_mask(&pdev->dev, old_mask);
 	dma_set_coherent_mask(&pdev->dev, old_cmask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -523,26 +432,14 @@ static void netxen_pcie_strap_init(struct netxen_adapter *adapter)
 static void netxen_set_msix_bit(struct pci_dev *pdev, int enable)
 {
 	u32 control;
-<<<<<<< HEAD
-	int pos;
-
-	pos = pci_find_capability(pdev, PCI_CAP_ID_MSIX);
-	if (pos) {
-		pci_read_config_dword(pdev, pos, &control);
-=======
 
 	if (pdev->msix_cap) {
 		pci_read_config_dword(pdev, pdev->msix_cap, &control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (enable)
 			control |= PCI_MSIX_FLAGS_ENABLE;
 		else
 			control = 0;
-<<<<<<< HEAD
-		pci_write_config_dword(pdev, pos, control);
-=======
 		pci_write_config_dword(pdev, pdev->msix_cap, control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -562,10 +459,7 @@ netxen_read_mac_addr(struct netxen_adapter *adapter)
 	u64 mac_addr;
 	struct net_device *netdev = adapter->netdev;
 	struct pci_dev *pdev = adapter->pdev;
-<<<<<<< HEAD
-=======
 	u8 addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (NX_IS_REVISION_P3(adapter->ahw.revision_id)) {
 		if (netxen_p3_get_mac_addr(adapter, &mac_addr) != 0)
@@ -577,24 +471,14 @@ netxen_read_mac_addr(struct netxen_adapter *adapter)
 
 	p = (unsigned char *)&mac_addr;
 	for (i = 0; i < 6; i++)
-<<<<<<< HEAD
-		netdev->dev_addr[i] = *(p + 5 - i);
-
-	memcpy(netdev->perm_addr, netdev->dev_addr, netdev->addr_len);
-=======
 		addr[i] = *(p + 5 - i);
 	eth_hw_addr_set(netdev, addr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(adapter->mac_addr, netdev->dev_addr, netdev->addr_len);
 
 	/* set station address */
 
-<<<<<<< HEAD
-	if (!is_valid_ether_addr(netdev->perm_addr))
-=======
 	if (!is_valid_ether_addr(netdev->dev_addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_warn(&pdev->dev, "Bad MAC address %pM.\n", netdev->dev_addr);
 
 	return 0;
@@ -614,11 +498,7 @@ static int netxen_nic_set_mac(struct net_device *netdev, void *p)
 	}
 
 	memcpy(adapter->mac_addr, addr->sa_data, netdev->addr_len);
-<<<<<<< HEAD
-	memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
-=======
 	eth_hw_addr_set(netdev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter->macaddr_set(adapter, addr->sa_data);
 
 	if (netif_running(netdev)) {
@@ -680,29 +560,6 @@ static const struct net_device_ops netxen_netdev_ops = {
 	.ndo_tx_timeout	   = netxen_tx_timeout,
 	.ndo_fix_features = netxen_fix_features,
 	.ndo_set_features = netxen_set_features,
-<<<<<<< HEAD
-#ifdef CONFIG_NET_POLL_CONTROLLER
-	.ndo_poll_controller = netxen_nic_poll_controller,
-#endif
-};
-
-static void
-netxen_setup_intr(struct netxen_adapter *adapter)
-{
-	struct netxen_legacy_intr_set *legacy_intrp;
-	struct pci_dev *pdev = adapter->pdev;
-	int err, num_msix;
-
-	if (adapter->rss_supported) {
-		num_msix = (num_online_cpus() >= MSIX_ENTRIES_PER_ADAPTER) ?
-			MSIX_ENTRIES_PER_ADAPTER : 2;
-	} else
-		num_msix = 1;
-
-	adapter->max_sds_rings = 1;
-
-	adapter->flags &= ~(NETXEN_NIC_MSI_ENABLED | NETXEN_NIC_MSIX_ENABLED);
-=======
 };
 
 static inline void netxen_set_interrupt_mode(struct netxen_adapter *adapter,
@@ -721,22 +578,12 @@ netxen_initialize_interrupt_registers(struct netxen_adapter *adapter)
 {
 	struct netxen_legacy_intr_set *legacy_intrp;
 	u32 tgt_status_reg, int_state_reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adapter->ahw.revision_id >= NX_P3_B0)
 		legacy_intrp = &legacy_intr[adapter->ahw.pci_func];
 	else
 		legacy_intrp = &legacy_intr[0];
 
-<<<<<<< HEAD
-	adapter->int_vec_bit = legacy_intrp->int_vec_bit;
-	adapter->tgt_status_reg = netxen_get_ioaddr(adapter,
-			legacy_intrp->tgt_status_reg);
-	adapter->tgt_mask_reg = netxen_get_ioaddr(adapter,
-			legacy_intrp->tgt_mask_reg);
-	adapter->pci_int_reg = netxen_get_ioaddr(adapter,
-			legacy_intrp->pci_int_reg);
-=======
 	tgt_status_reg = legacy_intrp->tgt_status_reg;
 	int_state_reg = ISR_INT_STATE_REG;
 
@@ -746,25 +593,10 @@ netxen_initialize_interrupt_registers(struct netxen_adapter *adapter)
 						  legacy_intrp->tgt_mask_reg);
 	adapter->pci_int_reg = netxen_get_ioaddr(adapter,
 						 legacy_intrp->pci_int_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter->isr_int_vec = netxen_get_ioaddr(adapter, ISR_INT_VECTOR);
 
 	if (adapter->ahw.revision_id >= NX_P3_B1)
 		adapter->crb_int_state_reg = netxen_get_ioaddr(adapter,
-<<<<<<< HEAD
-			ISR_INT_STATE_REG);
-	else
-		adapter->crb_int_state_reg = netxen_get_ioaddr(adapter,
-			CRB_INT_VECTOR);
-
-	netxen_set_msix_bit(pdev, 0);
-
-	if (adapter->msix_supported) {
-
-		netxen_init_msix_entries(adapter, num_msix);
-		err = pci_enable_msix(pdev, adapter->msix_entries, num_msix);
-		if (err == 0) {
-=======
 							       int_state_reg);
 	else
 		adapter->crb_int_state_reg = netxen_get_ioaddr(adapter,
@@ -783,7 +615,6 @@ static int netxen_setup_msi_interrupts(struct netxen_adapter *adapter,
 		err = pci_enable_msix_range(pdev, adapter->msix_entries,
 					    num_msix, num_msix);
 		if (err > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			adapter->flags |= NETXEN_NIC_MSIX_ENABLED;
 			netxen_set_msix_bit(pdev, 1);
 
@@ -791,33 +622,12 @@ static int netxen_setup_msi_interrupts(struct netxen_adapter *adapter,
 				adapter->max_sds_rings = num_msix;
 
 			dev_info(&pdev->dev, "using msi-x interrupts\n");
-<<<<<<< HEAD
-			return;
-		}
-
-		if (err > 0)
-			pci_disable_msix(pdev);
-
-=======
 			return 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* fall through for msi */
 	}
 
 	if (use_msi && !pci_enable_msi(pdev)) {
-<<<<<<< HEAD
-		adapter->flags |= NETXEN_NIC_MSI_ENABLED;
-		adapter->tgt_status_reg = netxen_get_ioaddr(adapter,
-				msi_tgt_status[adapter->ahw.pci_func]);
-		dev_info(&pdev->dev, "using msi interrupts\n");
-		adapter->msix_entries[0].vector = pdev->irq;
-		return;
-	}
-
-	dev_info(&pdev->dev, "using legacy interrupts\n");
-	adapter->msix_entries[0].vector = pdev->irq;
-=======
 		value = msi_tgt_status[adapter->ahw.pci_func];
 		adapter->flags |= NETXEN_NIC_MSI_ENABLED;
 		adapter->tgt_status_reg = netxen_get_ioaddr(adapter, value);
@@ -865,7 +675,6 @@ static int netxen_setup_intr(struct netxen_adapter *adapter)
 		dev_info(&pdev->dev, "using legacy interrupts\n");
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1014,12 +823,8 @@ netxen_check_options(struct netxen_adapter *adapter)
 	ptr32 = (__le32 *)&serial_num;
 	offset = NX_FW_SERIAL_NUM_OFFSET;
 	for (i = 0; i < 8; i++) {
-<<<<<<< HEAD
-		if (netxen_rom_fast_read(adapter, offset, &val) == -1) {
-=======
 		err = netxen_rom_fast_read(adapter, offset, &val);
 		if (err) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_err(&pdev->dev, "error reading board info\n");
 			adapter->driver_mismatch = 1;
 			return;
@@ -1035,11 +840,7 @@ netxen_check_options(struct netxen_adapter *adapter)
 	adapter->fw_version = NETXEN_VERSION_CODE(fw_major, fw_minor, fw_build);
 
 	/* Get FW Mini Coredump template and store it */
-<<<<<<< HEAD
-	 if (NX_IS_REVISION_P3(adapter->ahw.revision_id)) {
-=======
 	if (NX_IS_REVISION_P3(adapter->ahw.revision_id)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (adapter->mdump.md_template == NULL ||
 				adapter->fw_version > prev_fw_version) {
 			kfree(adapter->mdump.md_template);
@@ -1052,13 +853,9 @@ netxen_check_options(struct netxen_adapter *adapter)
 	}
 
 	if (adapter->portnum == 0) {
-<<<<<<< HEAD
-		get_brd_name_by_type(adapter->ahw.board_type, brd_name);
-=======
 		if (netxen_nic_get_brd_name_by_type(adapter->ahw.board_type,
 						    brd_name))
 			strcpy(serial_num, "Unknown");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pr_info("%s: %s Board S/N %s  Chip rev 0x%x\n",
 				module_name(THIS_MODULE),
@@ -1077,15 +874,9 @@ netxen_check_options(struct netxen_adapter *adapter)
 		adapter->ahw.cut_through = (i & 0x8000) ? 1 : 0;
 	}
 
-<<<<<<< HEAD
-	dev_info(&pdev->dev, "firmware v%d.%d.%d [%s]\n",
-			fw_major, fw_minor, fw_build,
-			adapter->ahw.cut_through ? "cut-through" : "legacy");
-=======
 	dev_info(&pdev->dev, "Driver v%s, firmware v%d.%d.%d [%s]\n",
 		 NETXEN_NIC_LINUX_VERSIONID, fw_major, fw_minor, fw_build,
 		 adapter->ahw.cut_through ? "cut-through" : "legacy");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adapter->fw_version >= NETXEN_VERSION_CODE(4, 0, 222))
 		adapter->capabilities = NXRD32(adapter, CRB_FW_CAPABILITIES_1);
@@ -1365,10 +1156,6 @@ __netxen_nic_down(struct netxen_adapter *adapter, struct net_device *netdev)
 		return;
 
 	smp_mb();
-<<<<<<< HEAD
-	spin_lock(&adapter->tx_clean_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_carrier_off(netdev);
 	netif_tx_disable(netdev);
 
@@ -1386,10 +1173,6 @@ __netxen_nic_down(struct netxen_adapter *adapter, struct net_device *netdev)
 	netxen_napi_disable(adapter);
 
 	netxen_release_tx_buffers(adapter);
-<<<<<<< HEAD
-	spin_unlock(&adapter->tx_clean_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Usage: During suspend and firmware recovery module */
@@ -1412,10 +1195,7 @@ netxen_nic_attach(struct netxen_adapter *adapter)
 	int err, ring;
 	struct nx_host_rds_ring *rds_ring;
 	struct nx_host_tx_ring *tx_ring;
-<<<<<<< HEAD
-=======
 	u32 capab2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adapter->is_up == NETXEN_ADAPTER_UP_MAGIC)
 		return 0;
@@ -1424,8 +1204,6 @@ netxen_nic_attach(struct netxen_adapter *adapter)
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-=======
 	adapter->flags &= ~NETXEN_FW_MSS_CAP;
 	if (adapter->capabilities & NX_FW_CAPABILITY_MORE_CAPS) {
 		capab2 = NXRD32(adapter, CRB_FW_CAPABILITIES_2);
@@ -1433,7 +1211,6 @@ netxen_nic_attach(struct netxen_adapter *adapter)
 			adapter->flags |= NETXEN_FW_MSS_CAP;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = netxen_napi_add(adapter, netdev);
 	if (err)
 		return err;
@@ -1564,11 +1341,7 @@ netxen_setup_netdev(struct netxen_adapter *adapter,
 
 	netxen_nic_change_mtu(netdev, netdev->mtu);
 
-<<<<<<< HEAD
-	SET_ETHTOOL_OPS(netdev, &netxen_nic_ethtool_ops);
-=======
 	netdev->ethtool_ops = &netxen_nic_ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_TSO |
 	                      NETIF_F_RXCSUM;
@@ -1584,11 +1357,7 @@ netxen_setup_netdev(struct netxen_adapter *adapter,
 	}
 
 	if (adapter->capabilities & NX_FW_CAPABILITY_FVLANTX)
-<<<<<<< HEAD
-		netdev->hw_features |= NETIF_F_HW_VLAN_TX;
-=======
 		netdev->hw_features |= NETIF_F_HW_VLAN_CTAG_TX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adapter->capabilities & NX_FW_CAPABILITY_HW_LRO)
 		netdev->hw_features |= NETIF_F_LRO;
@@ -1613,8 +1382,6 @@ netxen_setup_netdev(struct netxen_adapter *adapter,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 #define NETXEN_ULA_ADAPTER_KEY		(0xdaddad01)
 #define NETXEN_NON_ULA_ADAPTER_KEY	(0xdaddad00)
 
@@ -1641,7 +1408,6 @@ static void netxen_read_ula_info(struct netxen_adapter *adapter)
 	return;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PCIEAER
 static void netxen_mask_aer_correctable(struct netxen_adapter *adapter)
 {
@@ -1657,11 +1423,7 @@ static void netxen_mask_aer_correctable(struct netxen_adapter *adapter)
 		adapter->ahw.board_type != NETXEN_BRDTYPE_P3_10G_TP)
 		return;
 
-<<<<<<< HEAD
-	if (root->pcie_type != PCI_EXP_TYPE_ROOT_PORT)
-=======
 	if (pci_pcie_type(root) != PCI_EXP_TYPE_ROOT_PORT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	aer_pos = pci_find_ext_capability(root, PCI_EXT_CAP_ID_ERR);
@@ -1672,11 +1434,7 @@ static void netxen_mask_aer_correctable(struct netxen_adapter *adapter)
 }
 #endif
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 netxen_nic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	struct net_device *netdev = NULL;
@@ -1687,14 +1445,8 @@ netxen_nic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	u32 val;
 
 	if (pdev->revision >= NX_P3_A0 && pdev->revision <= NX_P3_B1) {
-<<<<<<< HEAD
-		pr_warning("%s: chip revisions between 0x%x-0x%x "
-				"will not be enabled.\n",
-				module_name(THIS_MODULE), NX_P3_A0, NX_P3_B1);
-=======
 		pr_warn("%s: chip revisions between 0x%x-0x%x will not be enabled\n",
 			module_name(THIS_MODULE), NX_P3_A0, NX_P3_B1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -1709,12 +1461,6 @@ netxen_nic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if ((err = pci_request_regions(pdev, netxen_nic_driver_name)))
 		goto err_out_disable_pdev;
 
-<<<<<<< HEAD
-	if (NX_IS_REVISION_P3(pdev->revision))
-		pci_enable_pcie_error_reporting(pdev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_master(pdev);
 
 	netdev = alloc_etherdev(sizeof(struct netxen_adapter));
@@ -1738,11 +1484,7 @@ netxen_nic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	spin_lock_init(&adapter->tx_clean_lock);
 	INIT_LIST_HEAD(&adapter->mac_list);
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&adapter->vlan_ip_list);
-=======
 	INIT_LIST_HEAD(&adapter->ip_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = netxen_setup_pci_map(adapter);
 	if (err)
@@ -1798,11 +1540,6 @@ netxen_nic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 			adapter->physical_port = i;
 	}
 
-<<<<<<< HEAD
-	netxen_nic_clear_stats(adapter);
-
-	netxen_setup_intr(adapter);
-=======
 	/* MTU range: 0 - 8000 (P2) or 9600 (P3) */
 	netdev->min_mtu = 0;
 	if (NX_IS_REVISION_P3(adapter->ahw.revision_id))
@@ -1821,7 +1558,6 @@ netxen_nic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	netxen_read_ula_info(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = netxen_setup_netdev(adapter, netdev);
 	if (err)
@@ -1864,10 +1600,6 @@ err_out_free_res:
 	pci_release_regions(pdev);
 
 err_out_disable_pdev:
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_disable_device(pdev);
 	return err;
 }
@@ -1884,11 +1616,7 @@ void netxen_cleanup_minidump(struct netxen_adapter *adapter)
 	}
 }
 
-<<<<<<< HEAD
-static void __devexit netxen_nic_remove(struct pci_dev *pdev)
-=======
 static void netxen_nic_remove(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netxen_adapter *adapter;
 	struct net_device *netdev;
@@ -1905,11 +1633,7 @@ static void netxen_nic_remove(struct pci_dev *pdev)
 
 	cancel_work_sync(&adapter->tx_timeout_task);
 
-<<<<<<< HEAD
-	netxen_free_vlan_ip_list(adapter);
-=======
 	netxen_free_ip_list(adapter, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netxen_nic_detach(adapter);
 
 	nx_decr_dev_ref_cnt(adapter);
@@ -1920,33 +1644,18 @@ static void netxen_nic_remove(struct pci_dev *pdev)
 	clear_bit(__NX_RESETTING, &adapter->state);
 
 	netxen_teardown_intr(adapter);
-<<<<<<< HEAD
-
-=======
 	netxen_set_interrupt_mode(adapter, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netxen_remove_diag_entries(adapter);
 
 	netxen_cleanup_pci_map(adapter);
 
 	netxen_release_firmware(adapter);
 
-<<<<<<< HEAD
-	if (NX_IS_REVISION_P3(pdev->revision)) {
-		netxen_cleanup_minidump(adapter);
-		pci_disable_pcie_error_reporting(pdev);
-	}
-
-	pci_release_regions(pdev);
-	pci_disable_device(pdev);
-	pci_set_drvdata(pdev, NULL);
-=======
 	if (NX_IS_REVISION_P3(pdev->revision))
 		netxen_cleanup_minidump(adapter);
 
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	free_netdev(netdev);
 }
@@ -1974,27 +1683,13 @@ static void netxen_nic_detach_func(struct netxen_adapter *adapter)
 	clear_bit(__NX_RESETTING, &adapter->state);
 }
 
-<<<<<<< HEAD
-static int netxen_nic_attach_func(struct pci_dev *pdev)
-=======
 static int netxen_nic_attach_late_func(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netxen_adapter *adapter = pci_get_drvdata(pdev);
 	struct net_device *netdev = adapter->netdev;
 	int err;
 
-<<<<<<< HEAD
-	err = pci_enable_device(pdev);
-	if (err)
-		return err;
-
-	pci_set_power_state(pdev, PCI_D0);
 	pci_set_master(pdev);
-	pci_restore_state(pdev);
-=======
-	pci_set_master(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	adapter->ahw.crb_win = -1;
 	adapter->ahw.ocm_win = -1;
@@ -2028,8 +1723,6 @@ err_out:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int netxen_nic_attach_func(struct pci_dev *pdev)
 {
 	int err;
@@ -2044,7 +1737,6 @@ static int netxen_nic_attach_func(struct pci_dev *pdev)
 	return netxen_nic_attach_late_func(pdev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static pci_ers_result_t netxen_io_error_detected(struct pci_dev *pdev,
 						pci_channel_state_t state)
 {
@@ -2072,14 +1764,6 @@ static pci_ers_result_t netxen_io_slot_reset(struct pci_dev *pdev)
 	return err ? PCI_ERS_RESULT_DISCONNECT : PCI_ERS_RESULT_RECOVERED;
 }
 
-<<<<<<< HEAD
-static void netxen_io_resume(struct pci_dev *pdev)
-{
-	pci_cleanup_aer_uncorrect_error_status(pdev);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void netxen_nic_shutdown(struct pci_dev *pdev)
 {
 	struct netxen_adapter *adapter = pci_get_drvdata(pdev);
@@ -2097,28 +1781,6 @@ static void netxen_nic_shutdown(struct pci_dev *pdev)
 	pci_disable_device(pdev);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int
-netxen_nic_suspend(struct pci_dev *pdev, pm_message_t state)
-{
-	struct netxen_adapter *adapter = pci_get_drvdata(pdev);
-	int retval;
-
-	netxen_nic_detach_func(adapter);
-
-	retval = pci_save_state(pdev);
-	if (retval)
-		return retval;
-
-	if (netxen_nic_wol_supported(adapter)) {
-		pci_enable_wake(pdev, PCI_D3cold, 1);
-		pci_enable_wake(pdev, PCI_D3hot, 1);
-	}
-
-	pci_disable_device(pdev);
-	pci_set_power_state(pdev, pci_choose_state(pdev, state));
-=======
 static int __maybe_unused
 netxen_nic_suspend(struct device *dev_d)
 {
@@ -2128,25 +1790,15 @@ netxen_nic_suspend(struct device *dev_d)
 
 	if (netxen_nic_wol_supported(adapter))
 		device_wakeup_enable(dev_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int
-netxen_nic_resume(struct pci_dev *pdev)
-{
-	return netxen_nic_attach_func(pdev);
-}
-#endif
-=======
 static int __maybe_unused
 netxen_nic_resume(struct device *dev_d)
 {
 	return netxen_nic_attach_late_func(to_pci_dev(dev_d));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int netxen_nic_open(struct net_device *netdev)
 {
@@ -2200,16 +1852,6 @@ netxen_tso_check(struct net_device *netdev,
 
 	if (protocol == cpu_to_be16(ETH_P_8021Q)) {
 
-<<<<<<< HEAD
-		vh = (struct vlan_ethhdr *)skb->data;
-		protocol = vh->h_vlan_encapsulated_proto;
-		flags = FLAGS_VLAN_TAGGED;
-
-	} else if (vlan_tx_tag_present(skb)) {
-
-		flags = FLAGS_VLAN_OOB;
-		vid = vlan_tx_tag_get(skb);
-=======
 		vh = skb_vlan_eth_hdr(skb);
 		protocol = vh->h_vlan_encapsulated_proto;
 		flags = FLAGS_VLAN_TAGGED;
@@ -2217,7 +1859,6 @@ netxen_tso_check(struct net_device *netdev,
 	} else if (skb_vlan_tag_present(skb)) {
 		flags = FLAGS_VLAN_OOB;
 		vid = skb_vlan_tag_get(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netxen_set_tx_vlan_tci(first_desc, vid);
 		vlan_oob = 1;
 	}
@@ -2225,11 +1866,7 @@ netxen_tso_check(struct net_device *netdev,
 	if ((netdev->features & (NETIF_F_TSO | NETIF_F_TSO6)) &&
 			skb_shinfo(skb)->gso_size > 0) {
 
-<<<<<<< HEAD
-		hdr_len = skb_transport_offset(skb) + tcp_hdrlen(skb);
-=======
 		hdr_len = skb_tcp_all_headers(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		first_desc->mss = cpu_to_le16(skb_shinfo(skb)->gso_size);
 		first_desc->total_hdr_length = hdr_len;
@@ -2327,26 +1964,16 @@ netxen_map_tx_skb(struct pci_dev *pdev,
 		struct sk_buff *skb, struct netxen_cmd_buffer *pbuf)
 {
 	struct netxen_skb_frag *nf;
-<<<<<<< HEAD
-	struct skb_frag_struct *frag;
-=======
 	skb_frag_t *frag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, nr_frags;
 	dma_addr_t map;
 
 	nr_frags = skb_shinfo(skb)->nr_frags;
 	nf = &pbuf->frag_array[0];
 
-<<<<<<< HEAD
-	map = pci_map_single(pdev, skb->data,
-			skb_headlen(skb), PCI_DMA_TODEVICE);
-	if (pci_dma_mapping_error(pdev, map))
-=======
 	map = dma_map_single(&pdev->dev, skb->data, skb_headlen(skb),
 			     DMA_TO_DEVICE);
 	if (dma_mapping_error(&pdev->dev, map))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_err;
 
 	nf->dma = map;
@@ -2370,20 +1997,12 @@ netxen_map_tx_skb(struct pci_dev *pdev,
 unwind:
 	while (--i >= 0) {
 		nf = &pbuf->frag_array[i+1];
-<<<<<<< HEAD
-		pci_unmap_page(pdev, nf->dma, nf->length, PCI_DMA_TODEVICE);
-=======
 		dma_unmap_page(&pdev->dev, nf->dma, nf->length, DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nf->dma = 0ULL;
 	}
 
 	nf = &pbuf->frag_array[0];
-<<<<<<< HEAD
-	pci_unmap_single(pdev, nf->dma, skb_headlen(skb), PCI_DMA_TODEVICE);
-=======
 	dma_unmap_single(&pdev->dev, nf->dma, skb_headlen(skb), DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nf->dma = 0ULL;
 
 out_err:
@@ -2408,17 +2027,10 @@ netxen_nic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
 	struct pci_dev *pdev;
 	int i, k;
 	int delta = 0;
-<<<<<<< HEAD
-	struct skb_frag_struct *frag;
-
-	u32 producer;
-	int frag_count, no_of_desc;
-=======
 	skb_frag_t *frag;
 
 	u32 producer;
 	int frag_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 num_txd = tx_ring->num_desc;
 
 	frag_count = skb_shinfo(skb)->nr_frags + 1;
@@ -2438,11 +2050,6 @@ netxen_nic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
 
 		frag_count = 1 + skb_shinfo(skb)->nr_frags;
 	}
-<<<<<<< HEAD
-	/* 4 fragments per cmd des */
-	no_of_desc = (frag_count + 3) >> 2;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(netxen_tx_avail(tx_ring) <= TX_STOP_THRESH)) {
 		netif_stop_queue(netdev);
@@ -2599,11 +2206,7 @@ static void netxen_nic_handle_phy_intr(struct netxen_adapter *adapter)
 	netxen_advert_link_change(adapter, linkup);
 }
 
-<<<<<<< HEAD
-static void netxen_tx_timeout(struct net_device *netdev)
-=======
 static void netxen_tx_timeout(struct net_device *netdev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netxen_adapter *adapter = netdev_priv(netdev);
 
@@ -2645,11 +2248,7 @@ static void netxen_tx_timeout_task(struct work_struct *work)
 			goto request_reset;
 		}
 	}
-<<<<<<< HEAD
-	adapter->netdev->trans_start = jiffies;
-=======
 	netif_trans_update(adapter->netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rtnl_unlock();
 	return;
 
@@ -2658,13 +2257,8 @@ request_reset:
 	clear_bit(__NX_RESETTING, &adapter->state);
 }
 
-<<<<<<< HEAD
-static struct rtnl_link_stats64 *netxen_nic_get_stats(struct net_device *netdev,
-						      struct rtnl_link_stats64 *stats)
-=======
 static void netxen_nic_get_stats(struct net_device *netdev,
 				 struct rtnl_link_stats64 *stats)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netxen_adapter *adapter = netdev_priv(netdev);
 
@@ -2674,11 +2268,6 @@ static void netxen_nic_get_stats(struct net_device *netdev,
 	stats->tx_bytes = adapter->stats.txbytes;
 	stats->rx_dropped = adapter->stats.rxdropped;
 	stats->tx_dropped = adapter->stats.txdropped;
-<<<<<<< HEAD
-
-	return stats;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t netxen_intr(int irq, void *data)
@@ -2758,16 +2347,11 @@ static int netxen_nic_poll(struct napi_struct *napi, int budget)
 
 	work_done = netxen_process_rcv_ring(sds_ring, budget);
 
-<<<<<<< HEAD
-	if ((work_done < budget) && tx_complete) {
-		napi_complete(&sds_ring->napi);
-=======
 	if (!tx_complete)
 		work_done = budget;
 
 	if (work_done < budget) {
 		napi_complete_done(&sds_ring->napi, work_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (test_bit(__NX_DEV_UP, &adapter->state))
 			netxen_nic_enable_int(sds_ring);
 	}
@@ -2775,26 +2359,6 @@ static int netxen_nic_poll(struct napi_struct *napi, int budget)
 	return work_done;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_NET_POLL_CONTROLLER
-static void netxen_nic_poll_controller(struct net_device *netdev)
-{
-	int ring;
-	struct nx_host_sds_ring *sds_ring;
-	struct netxen_adapter *adapter = netdev_priv(netdev);
-	struct netxen_recv_context *recv_ctx = &adapter->recv_ctx;
-
-	disable_irq(adapter->irq);
-	for (ring = 0; ring < adapter->max_sds_rings; ring++) {
-		sds_ring = &recv_ctx->sds_rings[ring];
-		netxen_intr(adapter->irq, sds_ring);
-	}
-	enable_irq(adapter->irq);
-}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 nx_incr_dev_ref_cnt(struct netxen_adapter *adapter)
 {
@@ -3143,12 +2707,8 @@ netxen_fw_poll_work(struct work_struct *work)
 	if (test_bit(__NX_RESETTING, &adapter->state))
 		goto reschedule;
 
-<<<<<<< HEAD
-	if (test_bit(__NX_DEV_UP, &adapter->state)) {
-=======
 	if (test_bit(__NX_DEV_UP, &adapter->state) &&
 	    !(adapter->capabilities & NX_FW_CAPABILITY_LINK_NOTIFICATION)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!adapter->has_link_events) {
 
 			netxen_nic_handle_phy_intr(adapter);
@@ -3180,11 +2740,7 @@ netxen_store_bridged_mode(struct device *dev,
 	if (adapter->is_up != NETXEN_ADAPTER_UP_MAGIC)
 		goto err_out;
 
-<<<<<<< HEAD
-	if (strict_strtoul(buf, 2, &new))
-=======
 	if (kstrtoul(buf, 2, &new))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out;
 
 	if (!netxen_config_bridged_mode(adapter, !!new))
@@ -3210,17 +2766,10 @@ netxen_show_bridged_mode(struct device *dev,
 	return sprintf(buf, "%d\n", bridged_mode);
 }
 
-<<<<<<< HEAD
-static struct device_attribute dev_attr_bridged_mode = {
-       .attr = {.name = "bridged_mode", .mode = (S_IRUGO | S_IWUSR)},
-       .show = netxen_show_bridged_mode,
-       .store = netxen_store_bridged_mode,
-=======
 static const struct device_attribute dev_attr_bridged_mode = {
 	.attr = { .name = "bridged_mode", .mode = 0644 },
 	.show = netxen_show_bridged_mode,
 	.store = netxen_store_bridged_mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static ssize_t
@@ -3230,11 +2779,7 @@ netxen_store_diag_mode(struct device *dev,
 	struct netxen_adapter *adapter = dev_get_drvdata(dev);
 	unsigned long new;
 
-<<<<<<< HEAD
-	if (strict_strtoul(buf, 2, &new))
-=======
 	if (kstrtoul(buf, 2, &new))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (!!new != !!(adapter->flags & NETXEN_NIC_DIAG_ENABLED))
@@ -3253,13 +2798,8 @@ netxen_show_diag_mode(struct device *dev,
 			!!(adapter->flags & NETXEN_NIC_DIAG_ENABLED));
 }
 
-<<<<<<< HEAD
-static struct device_attribute dev_attr_diag_mode = {
-	.attr = {.name = "diag_mode", .mode = (S_IRUGO | S_IWUSR)},
-=======
 static const struct device_attribute dev_attr_diag_mode = {
 	.attr = { .name = "diag_mode", .mode = 0644 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.show = netxen_show_diag_mode,
 	.store = netxen_store_diag_mode,
 };
@@ -3295,11 +2835,7 @@ netxen_sysfs_read_crb(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *attr,
 		char *buf, loff_t offset, size_t size)
 {
-<<<<<<< HEAD
-	struct device *dev = container_of(kobj, struct device, kobj);
-=======
 	struct device *dev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct netxen_adapter *adapter = dev_get_drvdata(dev);
 	u32 data;
 	u64 qmdata;
@@ -3327,11 +2863,7 @@ netxen_sysfs_write_crb(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *attr,
 		char *buf, loff_t offset, size_t size)
 {
-<<<<<<< HEAD
-	struct device *dev = container_of(kobj, struct device, kobj);
-=======
 	struct device *dev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct netxen_adapter *adapter = dev_get_drvdata(dev);
 	u32 data;
 	u64 qmdata;
@@ -3372,11 +2904,7 @@ netxen_sysfs_read_mem(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *attr,
 		char *buf, loff_t offset, size_t size)
 {
-<<<<<<< HEAD
-	struct device *dev = container_of(kobj, struct device, kobj);
-=======
 	struct device *dev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct netxen_adapter *adapter = dev_get_drvdata(dev);
 	u64 data;
 	int ret;
@@ -3397,11 +2925,7 @@ static ssize_t netxen_sysfs_write_mem(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *attr, char *buf,
 		loff_t offset, size_t size)
 {
-<<<<<<< HEAD
-	struct device *dev = container_of(kobj, struct device, kobj);
-=======
 	struct device *dev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct netxen_adapter *adapter = dev_get_drvdata(dev);
 	u64 data;
 	int ret;
@@ -3419,32 +2943,20 @@ static ssize_t netxen_sysfs_write_mem(struct file *filp, struct kobject *kobj,
 }
 
 
-<<<<<<< HEAD
-static struct bin_attribute bin_attr_crb = {
-	.attr = {.name = "crb", .mode = (S_IRUGO | S_IWUSR)},
-=======
 static const struct bin_attribute bin_attr_crb = {
 	.attr = { .name = "crb", .mode = 0644 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size = 0,
 	.read = netxen_sysfs_read_crb,
 	.write = netxen_sysfs_write_crb,
 };
 
-<<<<<<< HEAD
-static struct bin_attribute bin_attr_mem = {
-	.attr = {.name = "mem", .mode = (S_IRUGO | S_IWUSR)},
-=======
 static const struct bin_attribute bin_attr_mem = {
 	.attr = { .name = "mem", .mode = 0644 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size = 0,
 	.read = netxen_sysfs_read_mem,
 	.write = netxen_sysfs_write_mem,
 };
 
-<<<<<<< HEAD
-=======
 static ssize_t
 netxen_sysfs_read_dimm(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *attr,
@@ -3573,7 +3085,6 @@ static const struct bin_attribute bin_attr_dimm = {
 	.read = netxen_sysfs_read_dimm,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 netxen_create_sysfs_entries(struct netxen_adapter *adapter)
@@ -3611,11 +3122,8 @@ netxen_create_diag_entries(struct netxen_adapter *adapter)
 		dev_info(dev, "failed to create crb sysfs entry\n");
 	if (device_create_bin_file(dev, &bin_attr_mem))
 		dev_info(dev, "failed to create mem sysfs entry\n");
-<<<<<<< HEAD
-=======
 	if (device_create_bin_file(dev, &bin_attr_dimm))
 		dev_info(dev, "failed to create dimm sysfs entry\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -3628,10 +3136,7 @@ netxen_remove_diag_entries(struct netxen_adapter *adapter)
 	device_remove_file(dev, &dev_attr_diag_mode);
 	device_remove_bin_file(dev, &bin_attr_crb);
 	device_remove_bin_file(dev, &bin_attr_mem);
-<<<<<<< HEAD
-=======
 	device_remove_bin_file(dev, &bin_attr_dimm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_INET
@@ -3651,28 +3156,6 @@ netxen_destip_supported(struct netxen_adapter *adapter)
 }
 
 static void
-<<<<<<< HEAD
-netxen_free_vlan_ip_list(struct netxen_adapter *adapter)
-{
-	struct nx_vlan_ip_list  *cur;
-	struct list_head *head = &adapter->vlan_ip_list;
-
-	while (!list_empty(head)) {
-		cur = list_entry(head->next, struct nx_vlan_ip_list, list);
-		netxen_config_ipaddr(adapter, cur->ip_addr, NX_IP_DOWN);
-		list_del(&cur->list);
-		kfree(cur);
-	}
-
-}
-static void
-netxen_list_config_vlan_ip(struct netxen_adapter *adapter,
-		struct in_ifaddr *ifa, unsigned long event)
-{
-	struct net_device *dev;
-	struct nx_vlan_ip_list *cur, *tmp_cur;
-	struct list_head *head;
-=======
 netxen_free_ip_list(struct netxen_adapter *adapter, bool master)
 {
 	struct nx_ip_list  *cur, *tmp_cur;
@@ -3701,43 +3184,10 @@ netxen_list_config_ip(struct netxen_adapter *adapter,
 	struct nx_ip_list *cur, *tmp_cur;
 	struct list_head *head;
 	bool ret = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = ifa->ifa_dev ? ifa->ifa_dev->dev : NULL;
 
 	if (dev == NULL)
-<<<<<<< HEAD
-		return;
-
-	if (!is_vlan_dev(dev))
-		return;
-
-	switch (event) {
-	case NX_IP_UP:
-		list_for_each(head, &adapter->vlan_ip_list) {
-			cur = list_entry(head, struct nx_vlan_ip_list, list);
-
-			if (cur->ip_addr == ifa->ifa_address)
-				return;
-		}
-
-		cur = kzalloc(sizeof(struct nx_vlan_ip_list), GFP_ATOMIC);
-		if (cur == NULL) {
-			printk(KERN_ERR "%s: failed to add vlan ip to list\n",
-					adapter->netdev->name);
-			return;
-		}
-
-		cur->ip_addr = ifa->ifa_address;
-		list_add_tail(&cur->list, &adapter->vlan_ip_list);
-		break;
-	case NX_IP_DOWN:
-		list_for_each_entry_safe(cur, tmp_cur,
-					&adapter->vlan_ip_list, list) {
-			if (cur->ip_addr == ifa->ifa_address) {
-				list_del(&cur->list);
-				kfree(cur);
-=======
 		goto out;
 
 	switch (event) {
@@ -3769,28 +3219,20 @@ netxen_list_config_ip(struct netxen_adapter *adapter,
 				netxen_config_ipaddr(adapter, ifa->ifa_address,
 						     NX_IP_DOWN);
 				ret = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
 	}
-<<<<<<< HEAD
-}
-=======
 out:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 netxen_config_indev_addr(struct netxen_adapter *adapter,
 		struct net_device *dev, unsigned long event)
 {
 	struct in_device *indev;
-<<<<<<< HEAD
-=======
 	struct in_ifaddr *ifa;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!netxen_destip_supported(adapter))
 		return;
@@ -3799,19 +3241,6 @@ netxen_config_indev_addr(struct netxen_adapter *adapter,
 	if (!indev)
 		return;
 
-<<<<<<< HEAD
-	for_ifa(indev) {
-		switch (event) {
-		case NETDEV_UP:
-			netxen_config_ipaddr(adapter,
-					ifa->ifa_address, NX_IP_UP);
-			netxen_list_config_vlan_ip(adapter, ifa, NX_IP_UP);
-			break;
-		case NETDEV_DOWN:
-			netxen_config_ipaddr(adapter,
-					ifa->ifa_address, NX_IP_DOWN);
-			netxen_list_config_vlan_ip(adapter, ifa, NX_IP_DOWN);
-=======
 	rcu_read_lock();
 	in_dev_for_each_ifa_rcu(ifa, indev) {
 		switch (event) {
@@ -3820,18 +3249,12 @@ netxen_config_indev_addr(struct netxen_adapter *adapter,
 			break;
 		case NETDEV_DOWN:
 			netxen_list_config_ip(adapter, ifa, NX_IP_DOWN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			break;
 		}
-<<<<<<< HEAD
-	} endfor_ifa(indev);
-
-=======
 	}
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	in_dev_put(indev);
 }
 
@@ -3840,27 +3263,17 @@ netxen_restore_indev_addr(struct net_device *netdev, unsigned long event)
 
 {
 	struct netxen_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	struct nx_vlan_ip_list *pos, *tmp_pos;
-=======
 	struct nx_ip_list *pos, *tmp_pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long ip_event;
 
 	ip_event = (event == NETDEV_UP) ? NX_IP_UP : NX_IP_DOWN;
 	netxen_config_indev_addr(adapter, netdev, event);
 
-<<<<<<< HEAD
-	list_for_each_entry_safe(pos, tmp_pos, &adapter->vlan_ip_list, list) {
-=======
 	list_for_each_entry_safe(pos, tmp_pos, &adapter->ip_list, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netxen_config_ipaddr(adapter, pos->ip_addr, ip_event);
 	}
 }
 
-<<<<<<< HEAD
-=======
 static inline bool
 netxen_config_checkdev(struct net_device *dev)
 {
@@ -3915,43 +3328,18 @@ static void netxen_config_master(struct net_device *dev, unsigned long event)
 		netxen_free_ip_list(adapter, true);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int netxen_netdev_event(struct notifier_block *this,
 				 unsigned long event, void *ptr)
 {
 	struct netxen_adapter *adapter;
-<<<<<<< HEAD
-	struct net_device *dev = (struct net_device *)ptr;
-	struct net_device *orig_dev = dev;
-=======
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
 	struct net_device *orig_dev = dev;
 	struct net_device *slave;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 recheck:
 	if (dev == NULL)
 		goto done;
 
-<<<<<<< HEAD
-	if (dev->priv_flags & IFF_802_1Q_VLAN) {
-		dev = vlan_dev_real_dev(dev);
-		goto recheck;
-	}
-
-	if (!is_netxen_netdev(dev))
-		goto done;
-
-	adapter = netdev_priv(dev);
-
-	if (!adapter)
-		goto done;
-
-	if (adapter->is_up != NETXEN_ADAPTER_UP_MAGIC)
-		goto done;
-
-	netxen_config_indev_addr(adapter, orig_dev, event);
-=======
 	if (is_vlan_dev(dev)) {
 		dev = vlan_dev_real_dev(dev);
 		goto recheck;
@@ -3978,7 +3366,6 @@ recheck:
 			netxen_config_indev_addr(adapter, orig_dev, event);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done:
 	return NOTIFY_DONE;
 }
@@ -3988,56 +3375,16 @@ netxen_inetaddr_event(struct notifier_block *this,
 		unsigned long event, void *ptr)
 {
 	struct netxen_adapter *adapter;
-<<<<<<< HEAD
-	struct net_device *dev;
-
-	struct in_ifaddr *ifa = (struct in_ifaddr *)ptr;
-
-	dev = ifa->ifa_dev ? ifa->ifa_dev->dev : NULL;
-
-=======
 	struct net_device *dev, *slave;
 	struct in_ifaddr *ifa = (struct in_ifaddr *)ptr;
 	unsigned long ip_event;
 
 	dev = ifa->ifa_dev ? ifa->ifa_dev->dev : NULL;
 	ip_event = (event == NETDEV_UP) ? NX_IP_UP : NX_IP_DOWN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 recheck:
 	if (dev == NULL)
 		goto done;
 
-<<<<<<< HEAD
-	if (dev->priv_flags & IFF_802_1Q_VLAN) {
-		dev = vlan_dev_real_dev(dev);
-		goto recheck;
-	}
-
-	if (!is_netxen_netdev(dev))
-		goto done;
-
-	adapter = netdev_priv(dev);
-
-	if (!adapter || !netxen_destip_supported(adapter))
-		goto done;
-
-	if (adapter->is_up != NETXEN_ADAPTER_UP_MAGIC)
-		goto done;
-
-	switch (event) {
-	case NETDEV_UP:
-		netxen_config_ipaddr(adapter, ifa->ifa_address, NX_IP_UP);
-		netxen_list_config_vlan_ip(adapter, ifa, NX_IP_UP);
-		break;
-	case NETDEV_DOWN:
-		netxen_config_ipaddr(adapter, ifa->ifa_address, NX_IP_DOWN);
-		netxen_list_config_vlan_ip(adapter, ifa, NX_IP_DOWN);
-		break;
-	default:
-		break;
-	}
-
-=======
 	if (is_vlan_dev(dev)) {
 		dev = vlan_dev_real_dev(dev);
 		goto recheck;
@@ -4060,7 +3407,6 @@ recheck:
 			netxen_list_config_ip(adapter, ifa, ip_event);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done:
 	return NOTIFY_DONE;
 }
@@ -4077,18 +3423,6 @@ static void
 netxen_restore_indev_addr(struct net_device *dev, unsigned long event)
 { }
 static void
-<<<<<<< HEAD
-netxen_free_vlan_ip_list(struct netxen_adapter *adapter)
-{ }
-#endif
-
-static struct pci_error_handlers netxen_err_handler = {
-	.error_detected = netxen_io_error_detected,
-	.slot_reset = netxen_io_slot_reset,
-	.resume = netxen_io_resume,
-};
-
-=======
 netxen_free_ip_list(struct netxen_adapter *adapter, bool master)
 { }
 #endif
@@ -4102,21 +3436,12 @@ static SIMPLE_DEV_PM_OPS(netxen_nic_pm_ops,
 			 netxen_nic_suspend,
 			 netxen_nic_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver netxen_driver = {
 	.name = netxen_nic_driver_name,
 	.id_table = netxen_pci_tbl,
 	.probe = netxen_nic_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(netxen_nic_remove),
-#ifdef CONFIG_PM
-	.suspend = netxen_nic_suspend,
-	.resume = netxen_nic_resume,
-#endif
-=======
 	.remove = netxen_nic_remove,
 	.driver.pm = &netxen_nic_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown = netxen_nic_shutdown,
 	.err_handler = &netxen_err_handler
 };

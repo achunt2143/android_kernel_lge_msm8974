@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-/* Driver for USB Mass Storage compliant devices
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Driver for USB Mass Storage compliant devices
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Unusual Devices File
  *
  * Current development and maintenance by:
@@ -12,44 +8,17 @@
  *
  * Initial work by:
  *   (c) 2000 Adam J. Richter (adam@yggdrasil.com), Yggdrasil Computing, Inc.
-<<<<<<< HEAD
- *
- * Please see http://www.one-eyed-alien.net/~mdharm/linux-usb for more
- * information about this driver.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
-/* IMPORTANT NOTE: This file must be included in another file which does
-=======
  */
 
 /*
  * IMPORTANT NOTE: This file must be included in another file which does
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * the following thing for it to work:
  * The UNUSUAL_DEV, COMPLIANT_DEV, and USUAL_DEV macros must be defined
  * before this file is included.
  */
 
-<<<<<<< HEAD
-/* If you edit this file, please try to keep it sorted first by VendorID,
-=======
 /*
  * If you edit this file, please try to keep it sorted first by VendorID,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * then by ProductID.
  *
  * If you want to add an entry for this file, be sure to include the
@@ -57,17 +26,6 @@
  *	- a patch that adds the entry for your device, including your
  *	  email address right above the entry (plus maybe a brief
  *	  explanation of the reason for the entry),
-<<<<<<< HEAD
- *	- a copy of /proc/bus/usb/devices with your device plugged in
- *	  running with this patch.
- * Send your submission to either Phil Dibowitz <phil@ipom.com> or
- * Alan Stern <stern@rowland.harvard.edu>, and don't forget to CC: the
- * USB development list <linux-usb@vger.kernel.org> and the USB storage list
- * <usb-storage@lists.one-eyed-alien.net>
- */
-
-/* Note: If you add an entry only in order to set the CAPACITY_OK flag,
-=======
  *	- a copy of /sys/kernel/debug/usb/devices with your device plugged in
  *	  running with this patch.
  * Send your submission to the USB development list <linux-usb@vger.kernel.org>
@@ -75,14 +33,11 @@
 
 /*
  * Note: If you add an entry only in order to set the CAPACITY_OK flag,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * use the COMPLIANT_DEV macro instead of UNUSUAL_DEV.  This is
  * because such entries mark devices which actually work correctly,
  * as opposed to devices that do something strangely or wrongly.
  */
 
-<<<<<<< HEAD
-=======
 /*
  * In-kernel mode switching is deprecated.  Do not add new devices to
  * this list for the sole purpose of switching them to a different
@@ -92,18 +47,12 @@
  * maintained at https://www.draisberghof.de/usb_modeswitch/
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if !defined(CONFIG_USB_STORAGE_SDDR09) && \
 		!defined(CONFIG_USB_STORAGE_SDDR09_MODULE)
 #define NO_SDDR09
 #endif
 
-<<<<<<< HEAD
-/* patch submitted by Vivian Bregier <Vivian.Bregier@imag.fr>
- */
-=======
 /* patch submitted by Vivian Bregier <Vivian.Bregier@imag.fr> */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x03eb, 0x2002, 0x0100, 0x0100,
 		"ATMEL",
 		"SND1 Storage",
@@ -129,12 +78,8 @@ UNUSUAL_DEV(  0x03f0, 0x070c, 0x0000, 0x0000,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_SANE_SENSE ),
 
-<<<<<<< HEAD
-/* Reported by Grant Grundler <grundler@parisc-linux.org>
-=======
 /*
  * Reported by Grant Grundler <grundler@parisc-linux.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * HP r707 camera in "Disk" mode with 2.00.23 or 2.00.24 firmware.
  */
 UNUSUAL_DEV(  0x03f0, 0x4002, 0x0001, 0x0001,
@@ -148,12 +93,8 @@ UNUSUAL_DEV(  0x03f3, 0x0001, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, usb_stor_euscsi_init,
 		US_FL_SCM_MULT_TARG ),
 
-<<<<<<< HEAD
-/* Reported by Sebastian Kapfer <sebastian_kapfer@gmx.net>
-=======
 /*
  * Reported by Sebastian Kapfer <sebastian_kapfer@gmx.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * and Olaf Hering <olh@suse.de> (different bcd's, same vendor/product)
  * for USB floppies that need the SINGLE_LUN enforcement.
  */
@@ -170,12 +111,8 @@ UNUSUAL_DEV(  0x040d, 0x6205, 0x0003, 0x0003,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-/* Deduced by Jonathan Woithe <jwoithe@physics.adelaide.edu.au>
-=======
 /*
  * Deduced by Jonathan Woithe <jwoithe@just42.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Entry needed for flags: US_FL_FIX_INQUIRY because initial inquiry message
  * always fails and confuses drive.
  */
@@ -218,15 +155,10 @@ UNUSUAL_DEV(  0x0420, 0x0001, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-/* Reported by Andrew Nayenko <relan@bk.ru>
- * Updated for new firmware by Phillip Potter <phillipinda@hotmail.com> */
-=======
 /*
  * Reported by Andrew Nayenko <relan@bk.ru>
  * Updated for new firmware by Phillip Potter <phil@philpotter.co.uk>
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x0421, 0x0019, 0x0592, 0x0610,
 		"Nokia",
 		"Nokia 6288",
@@ -254,30 +186,20 @@ UNUSUAL_DEV(  0x0421, 0x0434, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_CAPACITY | US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-/* Reported by Sumedha Swamy <sumedhaswamy@gmail.com> and
- * Einar Th. Einarsson <einarthered@gmail.com> */
-=======
 /*
  * Reported by Sumedha Swamy <sumedhaswamy@gmail.com> and
  * Einar Th. Einarsson <einarthered@gmail.com>
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x0421, 0x0444, 0x0100, 0x0100,
 		"Nokia",
 		"N91",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE | US_FL_FIX_CAPACITY ),
 
-<<<<<<< HEAD
-/* Reported by Jiri Slaby <jirislaby@gmail.com> and
- * Rene C. Castberg <Rene@Castberg.org> */
-=======
 /*
  * Reported by Jiri Slaby <jirislaby@gmail.com> and
  * Rene C. Castberg <Rene@Castberg.org>
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x0421, 0x0446, 0x0100, 0x0100,
 		"Nokia",
 		"N80",
@@ -341,15 +263,10 @@ UNUSUAL_DEV(  0x0436, 0x0005, 0x0100, 0x0100,
 		US_FL_SINGLE_LUN ),
 #endif
 
-<<<<<<< HEAD
-/* Patch submitted by Daniel Drake <dsd@gentoo.org>
- * Device reports nonsense bInterfaceProtocol 6 when connected over USB2 */
-=======
 /*
  * Patch submitted by Daniel Drake <dsd@gentoo.org>
  * Device reports nonsense bInterfaceProtocol 6 when connected over USB2
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x0451, 0x5416, 0x0100, 0x0100,
 		"Neuros Audio",
 		"USB 2.0 HD 2.5",
@@ -367,29 +284,18 @@ UNUSUAL_DEV(  0x0457, 0x0150, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL, US_FL_NOT_LOCKABLE ),
 
 /*
-<<<<<<< HEAD
-* Bohdan Linda <bohdan.linda@gmail.com>
-* 1GB USB sticks MyFlash High Speed. I have restricted
-* the revision to my model only
-*/
-=======
  * Bohdan Linda <bohdan.linda@gmail.com>
  * 1GB USB sticks MyFlash High Speed. I have restricted
  * the revision to my model only
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x0457, 0x0151, 0x0100, 0x0100,
 		"USB 2.0",
 		"Flash Disk",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_NOT_LOCKABLE ),
 
-<<<<<<< HEAD
-/* Reported by Tamas Kerecsen <kerecsen@bigfoot.com>
-=======
 /*
  * Reported by Tamas Kerecsen <kerecsen@bigfoot.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Obviously the PROM has not been customized by the VAR;
  * the Vendor and Product string descriptors are:
  *	Generic Mass Storage (PROTOTYPE--Remember to change idVendor)
@@ -413,8 +319,6 @@ UNUSUAL_DEV(  0x046b, 0xff40, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_NO_WP_DETECT),
 
-<<<<<<< HEAD
-=======
 /* Reported by Egbert Eich <eich@suse.com> */
 UNUSUAL_DEV(  0x0480, 0xd010, 0x0100, 0x9999,
 		"Toshiba",
@@ -422,7 +326,6 @@ UNUSUAL_DEV(  0x0480, 0xd010, 0x0100, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_ALWAYS_SYNC),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Patch submitted by Philipp Friedrich <philipp@void.at> */
 UNUSUAL_DEV(  0x0482, 0x0100, 0x0100, 0x0100,
 		"Kyocera",
@@ -448,46 +351,30 @@ UNUSUAL_DEV(  0x0482, 0x0107, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_CAPACITY | US_FL_NOT_LOCKABLE),
 
-<<<<<<< HEAD
-/* Reported by Paul Stewart <stewart@wetlogic.net>
- * This entry is needed because the device reports Sub=ff */
-=======
 /*
  * Reported by Paul Stewart <stewart@wetlogic.net>
  * This entry is needed because the device reports Sub=ff
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x04a4, 0x0004, 0x0001, 0x0001,
 		"Hitachi",
 		"DVD-CAM DZ-MV100A Camcorder",
 		USB_SC_SCSI, USB_PR_CB, NULL, US_FL_SINGLE_LUN),
 
-<<<<<<< HEAD
-/* BENQ DC5330
- * Reported by Manuel Fombuena <mfombuena@ya.com> and
- * Frank Copeland <fjc@thingy.apana.org.au> */
-=======
 /*
  * BENQ DC5330
  * Reported by Manuel Fombuena <mfombuena@ya.com> and
  * Frank Copeland <fjc@thingy.apana.org.au>
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x04a5, 0x3010, 0x0100, 0x0100,
 		"Tekom Technologies, Inc",
 		"300_CAMERA",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-/* Patch for Nikon coolpix 2000
- * Submitted by Fabien Cosse <fabien.cosse@wanadoo.fr>*/
-=======
 /*
  * Patch for Nikon coolpix 2000
  * Submitted by Fabien Cosse <fabien.cosse@wanadoo.fr>
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x04b0, 0x0301, 0x0010, 0x0010,
 		"NIKON",
 		"NIKON DSC E2000",
@@ -501,37 +388,24 @@ UNUSUAL_DEV(  0x04b3, 0x4001, 0x0110, 0x0110,
 		USB_SC_DEVICE, USB_PR_CB, NULL,
 		US_FL_MAX_SECTORS_MIN),
 
-<<<<<<< HEAD
-/* Reported by Simon Levitt <simon@whattf.com>
- * This entry needs Sub and Proto fields */
-=======
 /*
  * Reported by Simon Levitt <simon@whattf.com>
  * This entry needs Sub and Proto fields
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x04b8, 0x0601, 0x0100, 0x0100,
 		"Epson",
 		"875DC Storage",
 		USB_SC_SCSI, USB_PR_CB, NULL, US_FL_FIX_INQUIRY),
 
-<<<<<<< HEAD
-/* Reported by Khalid Aziz <khalid@gonehiking.org>
- * This entry is needed because the device reports Sub=ff */
-=======
 /*
  * Reported by Khalid Aziz <khalid@gonehiking.org>
  * This entry is needed because the device reports Sub=ff
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x04b8, 0x0602, 0x0110, 0x0110,
 		"Epson",
 		"785EPX Storage",
 		USB_SC_SCSI, USB_PR_BULK, NULL, US_FL_SINGLE_LUN),
 
-<<<<<<< HEAD
-/* Not sure who reported this originally but
-=======
 /*
  * Reported by James Buren <braewoods+lkml@braewoods.net>
  * Virtual ISOs cannot be remounted if ejected while the device is locked
@@ -544,7 +418,6 @@ UNUSUAL_DEV(  0x04c5, 0x2028, 0x0001, 0x0001,
 
 /*
  * Not sure who reported this originally but
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Pavel Machek <pavel@ucw.cz> reported that the extra US_FL_SINGLE_LUN
  * flag be added */
 UNUSUAL_DEV(  0x04cb, 0x0100, 0x0000, 0x2210,
@@ -552,11 +425,6 @@ UNUSUAL_DEV(  0x04cb, 0x0100, 0x0000, 0x2210,
 		"FinePix 1400Zoom",
 		USB_SC_UFI, USB_PR_DEVICE, NULL, US_FL_FIX_INQUIRY | US_FL_SINGLE_LUN),
 
-<<<<<<< HEAD
-/* Reported by Ondrej Zary <linux@rainbow-software.org>
- * The device reports one sector more and breaks when that sector is accessed
- */
-=======
 /*
  * Reported by Ondrej Zary <linux@zary.sk>
  * The device reports one sector more and breaks when that sector is accessed
@@ -568,19 +436,14 @@ UNUSUAL_DEV(  0x04ce, 0x0002, 0x0000, 0x026b,
 		"SL11R-IDE",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_CAPACITY | US_FL_BULK_IGNORE_TAG),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x04ce, 0x0002, 0x026c, 0x026c,
 		"ScanLogic",
 		"SL11R-IDE",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_CAPACITY),
 
-<<<<<<< HEAD
-/* Reported by Kriston Fincher <kriston@airmail.net>
-=======
 /*
  * Reported by Kriston Fincher <kriston@airmail.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Patch submitted by Sean Millichamp <sean@bruenor.org>
  * This is to support the Panasonic PalmCam PV-SD4090
  * This entry is needed because the device reports Sub=ff 
@@ -590,15 +453,10 @@ UNUSUAL_DEV(  0x04da, 0x0901, 0x0100, 0x0200,
 		"LS-120 Camera",
 		USB_SC_UFI, USB_PR_DEVICE, NULL, 0),
 
-<<<<<<< HEAD
-/* From Yukihiro Nakai, via zaitcev@yahoo.com.
- * This is needed for CB instead of CBI */
-=======
 /*
  * From Yukihiro Nakai, via zaitcev@yahoo.com.
  * This is needed for CB instead of CBI
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x04da, 0x0d05, 0x0000, 0x0000,
 		"Sharp CE-CW05",
 		"CD-R/RW Drive",
@@ -618,12 +476,8 @@ UNUSUAL_DEV(  0x04da, 0x2373, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_CAPACITY | US_FL_NOT_LOCKABLE ),
 
-<<<<<<< HEAD
-/* Most of the following entries were developed with the help of
-=======
 /*
  * Most of the following entries were developed with the help of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Shuttle/SCM directly.
  */
 UNUSUAL_DEV(  0x04e6, 0x0001, 0x0200, 0x0200,
@@ -675,35 +529,24 @@ UNUSUAL_DEV(  0x04e6, 0x000a, 0x0200, 0x0200,
 		"eUSB CompactFlash Adapter",
 		USB_SC_8020, USB_PR_CB, NULL, 0),
 
-<<<<<<< HEAD
-UNUSUAL_DEV(  0x04e6, 0x000B, 0x0100, 0x0100,
-=======
 UNUSUAL_DEV(  0x04e6, 0x000b, 0x0100, 0x0100,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Shuttle",
 		"eUSCSI Bridge",
 		USB_SC_SCSI, USB_PR_BULK, usb_stor_euscsi_init,
 		US_FL_SCM_MULT_TARG ), 
 
-<<<<<<< HEAD
-UNUSUAL_DEV(  0x04e6, 0x000C, 0x0100, 0x0100,
-=======
 UNUSUAL_DEV(  0x04e6, 0x000c, 0x0100, 0x0100,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Shuttle",
 		"eUSCSI Bridge",
 		USB_SC_SCSI, USB_PR_BULK, usb_stor_euscsi_init,
 		US_FL_SCM_MULT_TARG ),
 
-<<<<<<< HEAD
-=======
 UNUSUAL_DEV(  0x04e6, 0x000f, 0x0000, 0x9999,
 		"SCM Microsystems",
 		"eUSB SCSI Adapter (Bus Powered)",
 		USB_SC_SCSI, USB_PR_BULK, usb_stor_euscsi_init,
 		US_FL_SCM_MULT_TARG ),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x04e6, 0x0101, 0x0200, 0x0200,
 		"Shuttle",
 		"CD-RW Device",
@@ -730,12 +573,8 @@ UNUSUAL_DEV(  0x04e8, 0x5136, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_MAX_SECTORS_64),
 
-<<<<<<< HEAD
-/* Entry and supporting patch by Theodore Kilgore <kilgota@auburn.edu>.
-=======
 /*
  * Entry and supporting patch by Theodore Kilgore <kilgota@auburn.edu>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Device uses standards-violating 32-byte Bulk Command Block Wrappers and
  * reports itself as "Proprietary SCSI Bulk." Cf. device entry 0x084d:0x0011.
  */
@@ -752,12 +591,8 @@ UNUSUAL_DEV(  0x050d, 0x0115, 0x0133, 0x0133,
 		USB_SC_SCSI, USB_PR_BULK, usb_stor_euscsi_init,
 		US_FL_SCM_MULT_TARG ),
 
-<<<<<<< HEAD
-/* Iomega Clik! Drive 
-=======
 /*
  * Iomega Clik! Drive 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Reported by David Chatenay <dchatenay@hotmail.com>
  * The reason this is needed is not fully known.
  */
@@ -774,12 +609,8 @@ COMPLIANT_DEV(0x0525, 0xa4a5, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_CAPACITY_OK ),
 
-<<<<<<< HEAD
-/* Yakumo Mega Image 37
-=======
 /*
  * Yakumo Mega Image 37
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Submitted by Stephan Fuhrmann <atomenergie@t-online.de> */
 UNUSUAL_DEV(  0x052b, 0x1801, 0x0100, 0x0100,
 		"Tekom Technologies, Inc",
@@ -787,15 +618,10 @@ UNUSUAL_DEV(  0x052b, 0x1801, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-/* Another Yakumo camera.
- * Reported by Michele Alzetta <michele.alzetta@aliceposta.it> */
-=======
 /*
  * Another Yakumo camera.
  * Reported by Michele Alzetta <michele.alzetta@aliceposta.it>
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x052b, 0x1804, 0x0100, 0x0100,
 		"Tekom Technologies, Inc",
 		"300_CAMERA",
@@ -809,30 +635,20 @@ UNUSUAL_DEV(  0x052b, 0x1807, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-/* Yakumo Mega Image 47
- * Reported by Bjoern Paetzel <kolrabi@kolrabi.de> */
-=======
 /*
  * Yakumo Mega Image 47
  * Reported by Bjoern Paetzel <kolrabi@kolrabi.de>
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x052b, 0x1905, 0x0100, 0x0100,
 		"Tekom Technologies, Inc",
 		"400_CAMERA",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-/* Reported by Paul Ortyl <ortylp@3miasto.net>
- * Note that it's similar to the device above, only different prodID */
-=======
 /*
  * Reported by Paul Ortyl <ortylp@3miasto.net>
  * Note that it's similar to the device above, only different prodID
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x052b, 0x1911, 0x0100, 0x0100,
 		"Tekom Technologies, Inc",
 		"400_CAMERA",
@@ -845,15 +661,10 @@ UNUSUAL_DEV(  0x054c, 0x0010, 0x0106, 0x0450,
 		USB_SC_SCSI, USB_PR_DEVICE, NULL,
 		US_FL_SINGLE_LUN | US_FL_NOT_LOCKABLE | US_FL_NO_WP_DETECT ),
 
-<<<<<<< HEAD
-/* Submitted by Lars Jacob <jacob.lars@googlemail.com>
- * This entry is needed because the device reports Sub=ff */
-=======
 /*
  * Submitted by Lars Jacob <jacob.lars@googlemail.com>
  * This entry is needed because the device reports Sub=ff
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x054c, 0x0010, 0x0500, 0x0610,
 		"Sony",
 		"DSC-T1/T5/H5",
@@ -956,12 +767,8 @@ UNUSUAL_DEV(  0x057b, 0x0000, 0x0000, 0x0299,
 		USB_SC_DEVICE,  USB_PR_CB, NULL,
 		US_FL_SINGLE_LUN),
 
-<<<<<<< HEAD
-/* Reported by Johann Cardon <johann.cardon@free.fr>
-=======
 /*
  * Reported by Johann Cardon <johann.cardon@free.fr>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This entry is needed only because the device reports
  * bInterfaceClass = 0xff (vendor-specific)
  */
@@ -983,12 +790,8 @@ UNUSUAL_DEV(  0x0595, 0x4343, 0x0000, 0x2210,
 		"Digital Camera EX-20 DSC",
 		USB_SC_8070, USB_PR_DEVICE, NULL, 0 ),
 
-<<<<<<< HEAD
-/* Reported by Andre Welter <a.r.welter@gmx.de>
-=======
 /*
  * Reported by Andre Welter <a.r.welter@gmx.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This antique device predates the release of the Bulk-only Transport
  * spec, and if it gets a Get-Max-LUN then it requires the host to do a
  * Clear-Halt on the bulk endpoints.  The SINGLE_LUN flag will prevent
@@ -1020,12 +823,8 @@ UNUSUAL_DEV(  0x059f, 0x0651, 0x0000, 0x0000,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_NO_WP_DETECT ),
 
-<<<<<<< HEAD
-/* Submitted by Joel Bourquard <numlock@freesurf.ch>
-=======
 /*
  * Submitted by Joel Bourquard <numlock@freesurf.ch>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Some versions of this device need the SubClass and Protocol overrides
  * while others don't.
  */
@@ -1035,12 +834,8 @@ UNUSUAL_DEV(  0x05ab, 0x0060, 0x1104, 0x1110,
 		USB_SC_SCSI, USB_PR_BULK, NULL,
 		US_FL_NEED_OVERRIDE ),
 
-<<<<<<< HEAD
-/* Submitted by Sven Anderson <sven-linux@anderson.de>
-=======
 /*
  * Submitted by Sven Anderson <sven-linux@anderson.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * There are at least four ProductIDs used for iPods, so I added 0x1202 and
  * 0x1204. They just need the US_FL_FIX_CAPACITY. As the bcdDevice appears
  * to change with firmware updates, I changed the range to maximum for all
@@ -1081,12 +876,8 @@ UNUSUAL_DEV( 0x05ac, 0x120a, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_CAPACITY ),
 
-<<<<<<< HEAD
-/* Reported by Dan Williams <dcbw@redhat.com>
-=======
 /*
  * Reported by Dan Williams <dcbw@redhat.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Option N.V. mobile broadband modems
  * Ignore driver CD mode and force into modem mode by default.
  */
@@ -1105,12 +896,8 @@ UNUSUAL_DEV(  0x05dc, 0xb002, 0x0000, 0x0113,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_INQUIRY ),
 
-<<<<<<< HEAD
-/* The following two entries are for a Genesys USB to IDE
-=======
 /*
  * The following two entries are for a Genesys USB to IDE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * converter chip, but it changes its ProductId depending
  * on whether or not a disk or an optical device is enclosed
  * They were originally reported by Alexander Oltu
@@ -1140,15 +927,10 @@ UNUSUAL_DEV(  0x05e3, 0x0723, 0x9451, 0x9451,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_SANE_SENSE ),
 
-<<<<<<< HEAD
-/* Reported by Hanno Boeck <hanno@gmx.de>
- * Taken from the Lycoris Kernel */
-=======
 /*
  * Reported by Hanno Boeck <hanno@gmx.de>
  * Taken from the Lycoris Kernel
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x0636, 0x0003, 0x0000, 0x9999,
 		"Vivitar",
 		"Vivicam 35Xx",
@@ -1182,15 +964,10 @@ UNUSUAL_DEV( 0x067b, 0x2317, 0x0001, 0x001,
 		US_FL_NOT_LOCKABLE ),
 
 /* Reported by Richard -=[]=- <micro_flyer@hotmail.com> */
-<<<<<<< HEAD
-/* Change to bcdDeviceMin (0x0100 to 0x0001) reported by
- * Thomas Bartosik <tbartdev@gmx-topmail.de> */
-=======
 /*
  * Change to bcdDeviceMin (0x0100 to 0x0001) reported by
  * Thomas Bartosik <tbartdev@gmx-topmail.de>
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV( 0x067b, 0x2507, 0x0001, 0x0100,
 		"Prolific Technology Inc.",
 		"Mass Storage Device",
@@ -1228,15 +1005,12 @@ UNUSUAL_DEV(  0x069b, 0x3004, 0x0001, 0x0001,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_CAPACITY ),
 
-<<<<<<< HEAD
-=======
 UNUSUAL_DEV(  0x06ca, 0x2003, 0x0100, 0x0100,
 		"Newer Technology",
 		"uSCSI",
 		USB_SC_DEVICE, USB_PR_DEVICE, usb_stor_euscsi_init,
 		US_FL_SCM_MULT_TARG ),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Reported by Adrian Pilchowiec <adi1981@epf.pl> */
 UNUSUAL_DEV(  0x071b, 0x3203, 0x0000, 0x0000,
 		"RockChip",
@@ -1245,12 +1019,8 @@ UNUSUAL_DEV(  0x071b, 0x3203, 0x0000, 0x0000,
 		US_FL_NO_WP_DETECT | US_FL_MAX_SECTORS_64 |
 		US_FL_NO_READ_CAPACITY_16),
 
-<<<<<<< HEAD
-/* Reported by Jean-Baptiste Onofre <jb@nanthrax.net>
-=======
 /*
  * Reported by Jean-Baptiste Onofre <jb@nanthrax.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Support the following product :
  *    "Dane-Elec MediaTouch"
  */
@@ -1260,12 +1030,8 @@ UNUSUAL_DEV(  0x071b, 0x32bb, 0x0000, 0x0000,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_NO_WP_DETECT | US_FL_MAX_SECTORS_64),
 
-<<<<<<< HEAD
-/* Reported by Massimiliano Ghilardi <massimiliano.ghilardi@gmail.com>
-=======
 /*
  * Reported by Massimiliano Ghilardi <massimiliano.ghilardi@gmail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This USB MP3/AVI player device fails and disconnects if more than 128
  * sectors (64kB) are read/written in a single command, and may be present
  * at least in the following products:
@@ -1334,12 +1100,8 @@ UNUSUAL_DEV(  0x07af, 0x0006, 0x0100, 0x0100,
 		US_FL_SINGLE_LUN ),
 #endif
 
-<<<<<<< HEAD
-/* Datafab KECF-USB / Sagatek DCS-CF / Simpletech Flashlink UCF-100
-=======
 /*
  * Datafab KECF-USB / Sagatek DCS-CF / Simpletech Flashlink UCF-100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Only revision 1.13 tested (same for all of the above devices,
  * based on the Datafab DF-UG-07 chip).  Needed for US_FL_FIX_INQUIRY.
  * Submitted by Marek Michalkiewicz <marekm@amelek.gda.pl>.
@@ -1351,12 +1113,8 @@ UNUSUAL_DEV(  0x07c4, 0xa400, 0x0000, 0xffff,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_INQUIRY | US_FL_FIX_CAPACITY ),
 
-<<<<<<< HEAD
-/* Reported by Rauch Wolke <rauchwolke@gmx.net>
-=======
 /*
  * Reported by Rauch Wolke <rauchwolke@gmx.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * and augmented by binbin <binbinsh@gmail.com> (Bugzilla #12882)
  */
 UNUSUAL_DEV(  0x07c4, 0xa4a5, 0x0000, 0xffff,
@@ -1365,12 +1123,8 @@ UNUSUAL_DEV(  0x07c4, 0xa4a5, 0x0000, 0xffff,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE | US_FL_MAX_SECTORS_64 ),
 
-<<<<<<< HEAD
-/* Casio QV 2x00/3x00/4000/8000 digital still cameras are not conformant
-=======
 /*
  * Casio QV 2x00/3x00/4000/8000 digital still cameras are not conformant
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * to the USB storage specification in two ways:
  * - They tell us they are using transport protocol CBI. In reality they
  *   are using transport protocol CB.
@@ -1421,9 +1175,6 @@ UNUSUAL_DEV( 0x0840, 0x0085, 0x0001, 0x0001,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_CAPACITY),
 
-<<<<<<< HEAD
-/* Entry and supporting patch by Theodore Kilgore <kilgota@auburn.edu>.
-=======
 /* Supplied with some Castlewood ORB removable drives */
 UNUSUAL_DEV(  0x084b, 0xa001, 0x0000, 0x9999,
 		"Castlewood Systems",
@@ -1433,7 +1184,6 @@ UNUSUAL_DEV(  0x084b, 0xa001, 0x0000, 0x9999,
 
 /*
  * Entry and supporting patch by Theodore Kilgore <kilgota@auburn.edu>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Flag will support Bulk devices which use a standards-violating 32-byte
  * Command Block Wrapper. Here, the "DC2MEGA" cameras (several brands) with
  * Grandtech GT892x chip, which request "Proprietary SCSI Bulk" support.
@@ -1445,12 +1195,8 @@ UNUSUAL_DEV(  0x084d, 0x0011, 0x0110, 0x0110,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_BULK32),
 
-<<<<<<< HEAD
-/* Reported by <ttkspam@free.fr>
-=======
 /*
  * Reported by <ttkspam@free.fr>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The device reports a vendor-specific device class, requiring an
  * explicit vendor/product match.
  */
@@ -1459,20 +1205,12 @@ UNUSUAL_DEV(  0x0851, 0x1542, 0x0002, 0x0002,
 		"FW_Omega2",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL, 0),
 
-<<<<<<< HEAD
-/* Andrew Lunn <andrew@lunn.ch>
- * PanDigital Digital Picture Frame. Does not like ALLOW_MEDIUM_REMOVAL
- * on LUN 4.
- * Note: Vend:Prod clash with "Ltd Maxell WS30 Slim Digital Camera"
-*/
-=======
 /*
  * Andrew Lunn <andrew@lunn.ch>
  * PanDigital Digital Picture Frame. Does not like ALLOW_MEDIUM_REMOVAL
  * on LUN 4.
  * Note: Vend:Prod clash with "Ltd Maxell WS30 Slim Digital Camera"
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x0851, 0x1543, 0x0200, 0x0200,
 		"PanDigital",
 		"Photo Frame",
@@ -1498,12 +1236,8 @@ UNUSUAL_DEV(  0x08bd, 0x1100, 0x0000, 0x0000,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_SINGLE_LUN),
 
-<<<<<<< HEAD
-/* Submitted by Dylan Taft <d13f00l@gmail.com>
-=======
 /*
  * Submitted by Dylan Taft <d13f00l@gmail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * US_FL_IGNORE_RESIDUE Needed
  */
 UNUSUAL_DEV(  0x08ca, 0x3103, 0x0100, 0x0100,
@@ -1512,12 +1246,8 @@ UNUSUAL_DEV(  0x08ca, 0x3103, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE),
 
-<<<<<<< HEAD
-/* Entry needed for flags. Moreover, all devices with this ID use
-=======
 /*
  * Entry needed for flags. Moreover, all devices with this ID use
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * bulk-only transport, but _some_ falsely report Control/Bulk instead.
  * One example is "Trumpion Digital Research MYMP3".
  * Submitted by Bjoern Brill <brill(at)fs.math.uni-frankfurt.de>
@@ -1528,12 +1258,8 @@ UNUSUAL_DEV(  0x090a, 0x1001, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_BULK, NULL,
 		US_FL_NEED_OVERRIDE ),
 
-<<<<<<< HEAD
-/* Reported by Filippo Bardelli <filibard@libero.it>
-=======
 /*
  * Reported by Filippo Bardelli <filibard@libero.it>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The device reports a subclass of RBC, which is wrong.
  */
 UNUSUAL_DEV(  0x090a, 0x1050, 0x0100, 0x0100,
@@ -1556,9 +1282,6 @@ UNUSUAL_DEV( 0x090c, 0x1132, 0x0000, 0xffff,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_CAPACITY ),
 
-<<<<<<< HEAD
-/* Reported by Paul Hartman <paul.hartman+linux@gmail.com>
-=======
 /*
  * Reported by Icenowy Zheng <icenowy@aosc.io>
  * The SMI SM3350 USB-UFS bridge controller will enter a wrong state
@@ -1573,7 +1296,6 @@ UNUSUAL_DEV(  0x090c, 0x3350, 0x0000, 0xffff,
 
 /*
  * Reported by Paul Hartman <paul.hartman+linux@gmail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This card reader returns "Illegal Request, Logical Block Address
  * Out of Range" for the first READ(10) after a new card is inserted.
  */
@@ -1583,9 +1305,6 @@ UNUSUAL_DEV(  0x090c, 0x6000, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_INITIAL_READ10 ),
 
-<<<<<<< HEAD
-/* This Pentax still camera is not conformant
-=======
 /*
  * Patch by Tasos Sahanidis <tasos@tasossah.com>
  * This flash drive always shows up with write protect enabled
@@ -1599,7 +1318,6 @@ UNUSUAL_DEV(0x0951, 0x1697, 0x0100, 0x0100,
 
 /*
  * This Pentax still camera is not conformant
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * to the USB storage specification: -
  * - It does not like the INQUIRY command. So we must handle this command
  *   of the SCSI layer ourselves.
@@ -1612,15 +1330,10 @@ UNUSUAL_DEV( 0x0a17, 0x0004, 0x1000, 0x1000,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_INQUIRY ),
 
-<<<<<<< HEAD
-/* These are virtual windows driver CDs, which the zd1211rw driver
- * automatically converts into WLAN devices. */
-=======
 /*
  * These are virtual windows driver CDs, which the zd1211rw driver
  * automatically converts into WLAN devices.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV( 0x0ace, 0x2011, 0x0101, 0x0101,
 		"ZyXEL",
 		"G-220F USB-WLAN Install",
@@ -1633,12 +1346,8 @@ UNUSUAL_DEV( 0x0ace, 0x20ff, 0x0101, 0x0101,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_DEVICE ),
 
-<<<<<<< HEAD
-/* Reported by Dan Williams <dcbw@redhat.com>
-=======
 /*
  * Reported by Dan Williams <dcbw@redhat.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Option N.V. mobile broadband modems
  * Ignore driver CD mode and force into modem mode by default.
  */
@@ -1650,38 +1359,24 @@ UNUSUAL_DEV(  0x0af0, 0x6971, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, option_ms_init,
 		0),
 
-<<<<<<< HEAD
-/* Reported by F. Aben <f.aben@option.com>
- * This device (wrongly) has a vendor-specific device descriptor.
- * The entry is needed so usb-storage can bind to it's mass-storage
- * interface as an interface driver */
-=======
 /*
  * Reported by F. Aben <f.aben@option.com>
  * This device (wrongly) has a vendor-specific device descriptor.
  * The entry is needed so usb-storage can bind to it's mass-storage
  * interface as an interface driver
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV( 0x0af0, 0x7401, 0x0000, 0x0000,
 		"Option",
 		"GI 0401 SD-Card",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		0 ),
 
-<<<<<<< HEAD
-/* Reported by Jan Dumon <j.dumon@option.com>
- * These devices (wrongly) have a vendor-specific device descriptor.
- * These entries are needed so usb-storage can bind to their mass-storage
- * interface as an interface driver */
-=======
 /*
  * Reported by Jan Dumon <j.dumon@option.com>
  * These devices (wrongly) have a vendor-specific device descriptor.
  * These entries are needed so usb-storage can bind to their mass-storage
  * interface as an interface driver
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV( 0x0af0, 0x7501, 0x0000, 0x0000,
 		"Option",
 		"GI 0431 SD-Card",
@@ -1772,15 +1467,12 @@ UNUSUAL_DEV( 0x0af0, 0xd357, 0x0000, 0x0000,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		0 ),
 
-<<<<<<< HEAD
-=======
 /* Reported by Namjae Jeon <namjae.jeon@samsung.com> */
 UNUSUAL_DEV(0x0bc2, 0x2300, 0x0000, 0x9999,
 		"Seagate",
 		"Portable HDD",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL, US_FL_WRITE_CACHE),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Reported by Ben Efros <ben@pc-doctor.com> */
 UNUSUAL_DEV( 0x0bc2, 0x3010, 0x0000, 0x0000,
 		"Seagate",
@@ -1788,8 +1480,6 @@ UNUSUAL_DEV( 0x0bc2, 0x3010, 0x0000, 0x0000,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_SANE_SENSE ),
 
-<<<<<<< HEAD
-=======
 /* Reported by Kris Lindgren <kris.lindgren@gmail.com> */
 UNUSUAL_DEV( 0x0bc2, 0x3332, 0x0000, 0x9999,
 		"Seagate",
@@ -1797,7 +1487,6 @@ UNUSUAL_DEV( 0x0bc2, 0x3332, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_NO_WP_DETECT ),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x0d49, 0x7310, 0x0000, 0x9999,
 		"Maxtor",
 		"USB to SATA",
@@ -1838,12 +1527,8 @@ UNUSUAL_DEV(  0x0dc4, 0x0073, 0x0000, 0x0000,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_CAPACITY),
 
-<<<<<<< HEAD
-/* Reported by Lubomir Blaha <tritol@trilogic.cz>
-=======
 /*
  * Reported by Lubomir Blaha <tritol@trilogic.cz>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * I _REALLY_ don't know what 3rd, 4th number and all defines mean, but this
  * works for me. Can anybody correct these values? (I able to test corrected
  * version.)
@@ -1854,15 +1539,10 @@ UNUSUAL_DEV( 0x0dd8, 0x1060, 0x0000, 0xffff,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_INQUIRY ),
 
-<<<<<<< HEAD
-/* Reported by Edward Chapman (taken from linux-usb mailing list)
-   Netac OnlyDisk Mini U2CV2 512MB USB 2.0 Flash Drive */
-=======
 /*
  * Reported by Edward Chapman (taken from linux-usb mailing list)
  * Netac OnlyDisk Mini U2CV2 512MB USB 2.0 Flash Drive
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV( 0x0dd8, 0xd202, 0x0000, 0x9999,
 		"Netac",
 		"USB Flash Disk",
@@ -1870,15 +1550,10 @@ UNUSUAL_DEV( 0x0dd8, 0xd202, 0x0000, 0x9999,
 		US_FL_IGNORE_RESIDUE ),
 
 
-<<<<<<< HEAD
-/* Patch by Stephan Walter <stephan.walter@epfl.ch>
- * I don't know why, but it works... */
-=======
 /*
  * Patch by Stephan Walter <stephan.walter@epfl.ch>
  * I don't know why, but it works...
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV( 0x0dda, 0x0001, 0x0012, 0x0012,
 		"WINWARD",
 		"Music Disk",
@@ -1906,15 +1581,10 @@ UNUSUAL_DEV( 0x0ed1, 0x6660, 0x0100, 0x0300,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_INQUIRY ),
 
-<<<<<<< HEAD
-/* Submitted by Daniel Drake <dsd@gentoo.org>
- * Reported by dayul on the Gentoo Forums */
-=======
 /*
  * Submitted by Daniel Drake <dsd@gentoo.org>
  * Reported by dayul on the Gentoo Forums
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x0ea0, 0x2168, 0x0110, 0x0110,
 		"Ours Technology",
 		"Flash Disk",
@@ -1928,27 +1598,18 @@ UNUSUAL_DEV(  0x0ea0, 0x6828, 0x0110, 0x0110,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-/* Reported by Benjamin Schiller <sbenni@gmx.de>
- * It is also sold by Easylite as DJ 20 */
-=======
 /*
  * Reported by Benjamin Schiller <sbenni@gmx.de>
  * It is also sold by Easylite as DJ 20
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x0ed1, 0x7636, 0x0103, 0x0103,
 		"Typhoon",
 		"My DJ 1820",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE | US_FL_GO_SLOW | US_FL_MAX_SECTORS_64),
 
-<<<<<<< HEAD
-/* Patch by Leonid Petrov mail at lpetrov.net
-=======
 /*
  * Patch by Leonid Petrov mail at lpetrov.net
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Reported by Robert Spitzenpfeil <robert@spitzenpfeil.org>
  * http://www.qbik.ch/usb/devices/showdev.php?id=1705
  * Updated to 103 device by MJ Ray mjr at phonecoop.coop
@@ -1959,12 +1620,8 @@ UNUSUAL_DEV(  0x0f19, 0x0103, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-/* David Kuehling <dvdkhlng@gmx.de>:
-=======
 /*
  * David Kuehling <dvdkhlng@gmx.de>:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * for MP3-Player AVOX WSX-300ER (bought in Japan).  Reports lots of SCSI
  * errors when trying to write.
  */
@@ -2002,15 +1659,10 @@ UNUSUAL_DEV(  0x0fce, 0xd0e1, 0x0000, 0x0000,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_DEVICE),
 
-<<<<<<< HEAD
-/* Reported by Jan Mate <mate@fiit.stuba.sk>
- * and by Soeren Sonnenburg <kernel@nn7.de> */
-=======
 /*
  * Reported by Jan Mate <mate@fiit.stuba.sk>
  * and by Soeren Sonnenburg <kernel@nn7.de>
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x0fce, 0xe030, 0x0000, 0x0000,
 		"Sony Ericsson",
 		"P990i",
@@ -2031,12 +1683,8 @@ UNUSUAL_DEV(  0x0fce, 0xe092, 0x0000, 0x0000,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-/* Reported by Kevin Cernekee <kpc-usbdev@gelato.uiuc.edu>
-=======
 /*
  * Reported by Kevin Cernekee <kpc-usbdev@gelato.uiuc.edu>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Tested on hardware version 1.10.
  * Entry is needed only for the initializer function override.
  * Devices with bcd > 110 seem to not need it while those
@@ -2054,9 +1702,6 @@ UNUSUAL_DEV(  0x1058, 0x0704, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_SANE_SENSE),
 
-<<<<<<< HEAD
-/* Reported by Fabio Venturi <f.venturi@tdnet.it>
-=======
 /* Reported by Namjae Jeon <namjae.jeon@samsung.com> */
 UNUSUAL_DEV(0x1058, 0x070a, 0x0000, 0x9999,
 		"Western Digital",
@@ -2065,7 +1710,6 @@ UNUSUAL_DEV(0x1058, 0x070a, 0x0000, 0x9999,
 
 /*
  * Reported by Fabio Venturi <f.venturi@tdnet.it>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The device reports a vendor-specific bDeviceClass.
  */
 UNUSUAL_DEV(  0x10d6, 0x2200, 0x0100, 0x0100,
@@ -2074,12 +1718,8 @@ UNUSUAL_DEV(  0x10d6, 0x2200, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		0),
 
-<<<<<<< HEAD
-/* Reported by Pascal Terjan <pterjan@mandriva.com>
-=======
 /*
  * Reported by Pascal Terjan <pterjan@mandriva.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Ignore driver CD mode and force into modem mode by default.
  */
 UNUSUAL_DEV(  0x1186, 0x3e04, 0x0000, 0x0000,
@@ -2087,12 +1727,8 @@ UNUSUAL_DEV(  0x1186, 0x3e04, 0x0000, 0x0000,
            "USB Mass Storage",
            USB_SC_DEVICE, USB_PR_DEVICE, option_ms_init, US_FL_IGNORE_DEVICE),
 
-<<<<<<< HEAD
-/* Reported by Kevin Lloyd <linux@sierrawireless.com>
-=======
 /*
  * Reported by Kevin Lloyd <linux@sierrawireless.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Entry is needed for the initializer function override,
  * which instructs the device to load as a modem
  * device.
@@ -2103,12 +1739,8 @@ UNUSUAL_DEV(  0x1199, 0x0fff, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, sierra_ms_init,
 		0),
 
-<<<<<<< HEAD
-/* Reported by Jaco Kroon <jaco@kroon.co.za>
-=======
 /*
  * Reported by Jaco Kroon <jaco@kroon.co.za>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The usb-storage module found on the Digitech GNX4 (and supposedly other
  * devices) misbehaves and causes a bunch of invalid I/O errors.
  */
@@ -2118,12 +1750,8 @@ UNUSUAL_DEV(  0x1210, 0x0003, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-/* Reported by fangxiaozhi <huananhu@huawei.com>
-=======
 /*
  * Reported by fangxiaozhi <huananhu@huawei.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This brings the HUAWEI data card devices into multi-port mode
  */
 UNUSUAL_DEV(  0x12d1, 0x1001, 0x0000, 0x0000,
@@ -2471,8 +2099,6 @@ UNUSUAL_DEV(  0x1370, 0x6828, 0x0110, 0x0110,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-=======
 /*
  * Reported by Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
  * The INIC-3619 bridge is used in the StarTech SLSODDU33B
@@ -2487,7 +2113,6 @@ UNUSUAL_DEV(  0x13fd, 0x3609, 0x0209, 0x0209,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Reported by Qinglin Ye <yestyle@gmail.com> */
 UNUSUAL_DEV(  0x13fe, 0x3600, 0x0100, 0x0100,
 		"Kingston",
@@ -2503,19 +2128,12 @@ UNUSUAL_DEV(  0x14cd, 0x6600, 0x0201, 0x0201,
 		US_FL_IGNORE_RESIDUE ),
 
 /* Reported by Michael Büsch <m@bues.ch> */
-<<<<<<< HEAD
-UNUSUAL_DEV(  0x152d, 0x0567, 0x0114, 0x0114,
-=======
 UNUSUAL_DEV(  0x152d, 0x0567, 0x0114, 0x0117,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"JMicron",
 		"USB to ATA/ATAPI Bridge",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_BROKEN_FUA ),
 
-<<<<<<< HEAD
-/* Reported by Alexandre Oliva <oliva@lsd.ic.unicamp.br>
-=======
 /* Reported by David Kozub <zub@linux.fjfi.cvut.cz> */
 UNUSUAL_DEV(0x152d, 0x0578, 0x0000, 0x9999,
 		"JMicron",
@@ -2525,7 +2143,6 @@ UNUSUAL_DEV(0x152d, 0x0578, 0x0000, 0x9999,
 
 /*
  * Reported by Alexandre Oliva <oliva@lsd.ic.unicamp.br>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * JMicron responds to USN and several other SCSI ioctls with a
  * residue that causes subsequent I/O requests to fail.  */
 UNUSUAL_DEV(  0x152d, 0x2329, 0x0100, 0x0100,
@@ -2541,9 +2158,6 @@ UNUSUAL_DEV(  0x152d, 0x2566, 0x0114, 0x0114,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_BROKEN_FUA ),
 
-<<<<<<< HEAD
-/* Entrega Technologies U1-SC25 (later Xircom PortGear PGSCSI)
-=======
 /* Reported by Teijo Kinnunen <teijo.kinnunen@code-q.fi> */
 UNUSUAL_DEV(  0x152d, 0x2567, 0x0117, 0x0117,
 		"JMicron",
@@ -2560,7 +2174,6 @@ UNUSUAL_DEV(0x152d, 0x9561, 0x0000, 0x9999,
 
 /*
  * Entrega Technologies U1-SC25 (later Xircom PortGear PGSCSI)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * and Mac USB Dock USB-SCSI */
 UNUSUAL_DEV(  0x1645, 0x0007, 0x0100, 0x0133,
 		"Entrega Technologies",
@@ -2568,23 +2181,16 @@ UNUSUAL_DEV(  0x1645, 0x0007, 0x0100, 0x0133,
 		USB_SC_DEVICE, USB_PR_DEVICE, usb_stor_euscsi_init,
 		US_FL_SCM_MULT_TARG ),
 
-<<<<<<< HEAD
-/* Reported by Robert Schedel <r.schedel@yahoo.de>
- * Note: this is a 'super top' device like the above 14cd/6600 device */
-=======
 /*
  * Reported by Robert Schedel <r.schedel@yahoo.de>
  * Note: this is a 'super top' device like the above 14cd/6600 device
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x1652, 0x6600, 0x0201, 0x0201,
 		"Teac",
 		"HD-35PUK-B",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_RESIDUE ),
 
-<<<<<<< HEAD
-=======
 /* Reported by Oliver Neukum <oneukum@suse.com> */
 UNUSUAL_DEV(  0x174c, 0x55aa, 0x0100, 0x0100,
 		"ASMedia",
@@ -2592,7 +2198,6 @@ UNUSUAL_DEV(  0x174c, 0x55aa, 0x0100, 0x0100,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_NEEDS_CAP16),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Reported by Jesse Feddema <jdfeddema@gmail.com> */
 UNUSUAL_DEV(  0x177f, 0x0400, 0x0000, 0x0000,
 		"Yarvik",
@@ -2606,19 +2211,12 @@ UNUSUAL_DEV(  0x1822, 0x0001, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, usb_stor_euscsi_init,
 		US_FL_SCM_MULT_TARG ),
 
-<<<<<<< HEAD
-/* Reported by Hans de Goede <hdegoede@redhat.com>
- * These Appotech controllers are found in Picture Frames, they provide a
- * (buggy) emulation of a cdrom drive which contains the windows software
- * Uploading of pictures happens over the corresponding /dev/sg device. */
-=======
 /*
  * Reported by Hans de Goede <hdegoede@redhat.com>
  * These Appotech controllers are found in Picture Frames, they provide a
  * (buggy) emulation of a cdrom drive which contains the windows software
  * Uploading of pictures happens over the corresponding /dev/sg device.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV( 0x1908, 0x1315, 0x0000, 0x0000,
 		"BUILDWIN",
 		"Photo Frame",
@@ -2635,9 +2233,6 @@ UNUSUAL_DEV( 0x1908, 0x3335, 0x0200, 0x0200,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_NO_READ_DISC_INFO ),
 
-<<<<<<< HEAD
-/* Reported by Oliver Neukum <oneukum@suse.com>
-=======
 /*
  * Reported by Matthias Schwarzott <zzam@gentoo.org>
  * The Amazon Kindle treats SYNCHRONIZE CACHE as an indication that
@@ -2652,29 +2247,20 @@ UNUSUAL_DEV( 0x1949, 0x0004, 0x0000, 0x9999,
 
 /*
  * Reported by Oliver Neukum <oneukum@suse.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This device morphes spontaneously into another device if the access
  * pattern of Windows isn't followed. Thus writable media would be dirty
  * if the initial instance is used. So the device is limited to its
  * virtual CD.
-<<<<<<< HEAD
- * And yes, the concept that BCD goes up to 9 is not heeded */
-=======
  * And yes, the concept that BCD goes up to 9 is not heeded
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV( 0x19d2, 0x1225, 0x0000, 0xffff,
 		"ZTE,Incorporated",
 		"ZTE WCDMA Technologies MSM",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_SINGLE_LUN ),
 
-<<<<<<< HEAD
-/* Reported by Sven Geggus <sven-usbst@geggus.net>
-=======
 /*
  * Reported by Sven Geggus <sven-usbst@geggus.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This encrypted pen drive returns bogus data for the initial READ(10).
  */
 UNUSUAL_DEV(  0x1b1c, 0x1ab5, 0x0200, 0x0200,
@@ -2683,11 +2269,6 @@ UNUSUAL_DEV(  0x1b1c, 0x1ab5, 0x0200, 0x0200,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_INITIAL_READ10 ),
 
-<<<<<<< HEAD
-/* Patch by Richard Schütz <r.schtz@t-online.de>
- * This external hard drive enclosure uses a JMicron chip which
- * needs the US_FL_IGNORE_RESIDUE flag to work properly. */
-=======
 /*
  * Reported by Hans de Goede <hdegoede@redhat.com>
  * These are mini projectors using USB for both power and video data transport
@@ -2705,7 +2286,6 @@ UNUSUAL_DEV( 0x1de1, 0xc102, 0x0000, 0xffff,
  * This external hard drive enclosure uses a JMicron chip which
  * needs the US_FL_IGNORE_RESIDUE flag to work properly.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV(  0x1e68, 0x001b, 0x0000, 0x0000,
 		"TrekStor GmbH & Co. KG",
 		"DataStation maxi g.u",
@@ -2719,8 +2299,6 @@ UNUSUAL_DEV( 0x1e74, 0x4621, 0x0000, 0x0000,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_BULK_IGNORE_TAG | US_FL_MAX_SECTORS_64 ),
 
-<<<<<<< HEAD
-=======
 /* Reported by Witold Lipieta <witold.lipieta@thaumatec.com> */
 UNUSUAL_DEV( 0x1fc9, 0x0117, 0x0100, 0x0100,
 		"NXP Semiconductors",
@@ -2745,19 +2323,14 @@ UNUSUAL_DEV( 0x2109, 0x0715, 0x9999, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_UAS),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNUSUAL_DEV( 0x2116, 0x0320, 0x0001, 0x0001,
 		"ST",
 		"2A",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_FIX_CAPACITY),
 
-<<<<<<< HEAD
-/* patch submitted by Davide Perini <perini.davide@dpsoftware.org>
-=======
 /*
  * patch submitted by Davide Perini <perini.davide@dpsoftware.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * and Renato Perini <rperini@email.it>
  */
 UNUSUAL_DEV(  0x22b8, 0x3010, 0x0001, 0x0001,
@@ -2784,9 +2357,6 @@ UNUSUAL_DEV(  0x2735, 0x100b, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_GO_SLOW ),
 
-<<<<<<< HEAD
-/* Reported by Frederic Marchal <frederic.marchal@wowcompany.com>
-=======
 /* Reported-by: Tim Anderson <tsa@biglakesoftware.com> */
 UNUSUAL_DEV(  0x2ca3, 0x0031, 0x0000, 0x9999,
 		"DJI",
@@ -2796,7 +2366,6 @@ UNUSUAL_DEV(  0x2ca3, 0x0031, 0x0000, 0x9999,
 
 /*
  * Reported by Frederic Marchal <frederic.marchal@wowcompany.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Mio Moov 330
  */
 UNUSUAL_DEV(  0x3340, 0xffff, 0x0000, 0x0000,
@@ -2805,8 +2374,6 @@ UNUSUAL_DEV(  0x3340, 0xffff, 0x0000, 0x0000,
 		USB_SC_DEVICE,USB_PR_DEVICE,NULL,
 		US_FL_MAX_SECTORS_64 ),
 
-<<<<<<< HEAD
-=======
 /* Reported by Cyril Roelandt <tipecaml@gmail.com> */
 UNUSUAL_DEV(  0x357d, 0x7788, 0x0114, 0x0114,
 		"JMicron",
@@ -2814,7 +2381,6 @@ UNUSUAL_DEV(  0x357d, 0x7788, 0x0114, 0x0114,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_BROKEN_FUA | US_FL_IGNORE_UAS ),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Reported by Andrey Rahmatullin <wrar@altlinux.org> */
 UNUSUAL_DEV(  0x4102, 0x1020, 0x0100,  0x0100,
 		"iRiver",
@@ -2838,8 +2404,6 @@ UNUSUAL_DEV(  0x4146, 0xba01, 0x0100, 0x0100,
 		"Micro Mini 1GB",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL, US_FL_NOT_LOCKABLE ),
 
-<<<<<<< HEAD
-=======
 /* "G-DRIVE" external HDD hangs on write without these.
  * Patch submitted by Alexander Kappner <agk@godking.net>
  */
@@ -2849,7 +2413,6 @@ UNUSUAL_DEV(0x4971, 0x8024, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_ALWAYS_SYNC),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Nick Bowler <nbowler@elliptictech.com>
  * SCSI stack spams (otherwise harmless) error messages.
@@ -2873,31 +2436,6 @@ UNUSUAL_DEV( 0xed10, 0x7636, 0x0001, 0x0001,
 		"Digital MP3 Audio Player",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL, US_FL_NOT_LOCKABLE ),
 
-<<<<<<< HEAD
-/* Control/Bulk transport for all SubClass values */
-USUAL_DEV(USB_SC_RBC, USB_PR_CB, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_8020, USB_PR_CB, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_QIC, USB_PR_CB, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_UFI, USB_PR_CB, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_8070, USB_PR_CB, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_SCSI, USB_PR_CB, USB_US_TYPE_STOR),
-
-/* Control/Bulk/Interrupt transport for all SubClass values */
-USUAL_DEV(USB_SC_RBC, USB_PR_CBI, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_8020, USB_PR_CBI, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_QIC, USB_PR_CBI, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_UFI, USB_PR_CBI, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_8070, USB_PR_CBI, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_SCSI, USB_PR_CBI, USB_US_TYPE_STOR),
-
-/* Bulk-only transport for all SubClass values */
-USUAL_DEV(USB_SC_RBC, USB_PR_BULK, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_8020, USB_PR_BULK, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_QIC, USB_PR_BULK, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_UFI, USB_PR_BULK, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_8070, USB_PR_BULK, USB_US_TYPE_STOR),
-USUAL_DEV(USB_SC_SCSI, USB_PR_BULK, 0),
-=======
 /* Unusual uas devices */
 #if IS_ENABLED(CONFIG_USB_UAS)
 #include "unusual_uas.h"
@@ -2926,4 +2464,3 @@ USUAL_DEV(USB_SC_QIC, USB_PR_BULK),
 USUAL_DEV(USB_SC_UFI, USB_PR_BULK),
 USUAL_DEV(USB_SC_8070, USB_PR_BULK),
 USUAL_DEV(USB_SC_SCSI, USB_PR_BULK),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

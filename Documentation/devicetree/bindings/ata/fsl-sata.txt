@@ -16,10 +16,6 @@ Required properties:
                           4 for controller @ 0x1b000
 
 Optional properties:
-<<<<<<< HEAD
-- interrupt-parent  : optional, if needed for interrupt mapping
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 - reg               : <registers mapping>
 
 Example:

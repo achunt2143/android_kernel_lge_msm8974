@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-#include "cache.h"
-#include <linux/kernel.h>
-
-int prefixcmp(const char *str, const char *prefix)
-{
-	for (; ; str++, prefix++)
-		if (!*prefix)
-			return 0;
-		else if (*str != *prefix)
-			return (unsigned char)*prefix - (unsigned char)*str;
-}
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include "cache.h"
 #include "debug.h"
@@ -22,7 +9,6 @@ int prefixcmp(const char *str, const char *prefix)
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Used as the default ->buf value, so that people can always assume
@@ -31,31 +17,19 @@ int prefixcmp(const char *str, const char *prefix)
  */
 char strbuf_slopbuf[1];
 
-<<<<<<< HEAD
-void strbuf_init(struct strbuf *sb, ssize_t hint)
-=======
 int strbuf_init(struct strbuf *sb, ssize_t hint)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sb->alloc = sb->len = 0;
 	sb->buf = strbuf_slopbuf;
 	if (hint)
-<<<<<<< HEAD
-		strbuf_grow(sb, hint);
-=======
 		return strbuf_grow(sb, hint);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void strbuf_release(struct strbuf *sb)
 {
 	if (sb->alloc) {
-<<<<<<< HEAD
-		free(sb->buf);
-=======
 		zfree(&sb->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		strbuf_init(sb, 0);
 	}
 }
@@ -69,70 +43,6 @@ char *strbuf_detach(struct strbuf *sb, size_t *sz)
 	return res;
 }
 
-<<<<<<< HEAD
-void strbuf_grow(struct strbuf *sb, size_t extra)
-{
-	if (sb->len + extra + 1 <= sb->len)
-		die("you want to use way too much memory");
-	if (!sb->alloc)
-		sb->buf = NULL;
-	ALLOC_GROW(sb->buf, sb->len + extra + 1, sb->alloc);
-}
-
-static void strbuf_splice(struct strbuf *sb, size_t pos, size_t len,
-				   const void *data, size_t dlen)
-{
-	if (pos + len < pos)
-		die("you want to use way too much memory");
-	if (pos > sb->len)
-		die("`pos' is too far after the end of the buffer");
-	if (pos + len > sb->len)
-		die("`pos + len' is too far after the end of the buffer");
-
-	if (dlen >= len)
-		strbuf_grow(sb, dlen - len);
-	memmove(sb->buf + pos + dlen,
-			sb->buf + pos + len,
-			sb->len - pos - len);
-	memcpy(sb->buf + pos, data, dlen);
-	strbuf_setlen(sb, sb->len + dlen - len);
-}
-
-void strbuf_remove(struct strbuf *sb, size_t pos, size_t len)
-{
-	strbuf_splice(sb, pos, len, NULL, 0);
-}
-
-void strbuf_add(struct strbuf *sb, const void *data, size_t len)
-{
-	strbuf_grow(sb, len);
-	memcpy(sb->buf + sb->len, data, len);
-	strbuf_setlen(sb, sb->len + len);
-}
-
-void strbuf_addf(struct strbuf *sb, const char *fmt, ...)
-{
-	int len;
-	va_list ap;
-
-	if (!strbuf_avail(sb))
-		strbuf_grow(sb, 64);
-	va_start(ap, fmt);
-	len = vscnprintf(sb->buf + sb->len, sb->alloc - sb->len, fmt, ap);
-	va_end(ap);
-	if (len < 0)
-		die("your vscnprintf is broken");
-	if (len > strbuf_avail(sb)) {
-		strbuf_grow(sb, len);
-		va_start(ap, fmt);
-		len = vscnprintf(sb->buf + sb->len, sb->alloc - sb->len, fmt, ap);
-		va_end(ap);
-		if (len > strbuf_avail(sb)) {
-			die("this should not happen, your snprintf is broken");
-		}
-	}
-	strbuf_setlen(sb, sb->len + len);
-=======
 int strbuf_grow(struct strbuf *sb, size_t extra)
 {
 	char *buf;
@@ -224,24 +134,18 @@ int strbuf_addf(struct strbuf *sb, const char *fmt, ...)
 	ret = strbuf_addv(sb, fmt, ap);
 	va_end(ap);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 ssize_t strbuf_read(struct strbuf *sb, int fd, ssize_t hint)
 {
 	size_t oldlen = sb->len;
 	size_t oldalloc = sb->alloc;
-<<<<<<< HEAD
-
-	strbuf_grow(sb, hint ? hint : 8192);
-=======
 	int ret;
 
 	ret = strbuf_grow(sb, hint ? hint : 8192);
 	if (ret)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (;;) {
 		ssize_t cnt;
 
@@ -251,22 +155,14 @@ ssize_t strbuf_read(struct strbuf *sb, int fd, ssize_t hint)
 				strbuf_release(sb);
 			else
 				strbuf_setlen(sb, oldlen);
-<<<<<<< HEAD
-			return -1;
-=======
 			return cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (!cnt)
 			break;
 		sb->len += cnt;
-<<<<<<< HEAD
-		strbuf_grow(sb, 8192);
-=======
 		ret = strbuf_grow(sb, 8192);
 		if (ret)
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sb->buf[sb->len] = '\0';

@@ -33,20 +33,14 @@
  * SOFTWARE.
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/ethtool.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 
 #include "t4vf_common.h"
 #include "t4vf_defs.h"
 
 #include "../cxgb4/t4_regs.h"
-<<<<<<< HEAD
-=======
 #include "../cxgb4/t4_values.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "../cxgb4/t4fw_api.h"
 
 /*
@@ -54,11 +48,7 @@
  * returning a value other than all 1's).  Return an error if it doesn't
  * become ready ...
  */
-<<<<<<< HEAD
-int __devinit t4vf_wait_dev_ready(struct adapter *adapter)
-=======
 int t4vf_wait_dev_ready(struct adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const u32 whoami = T4VF_PL_BASE_ADDR + PL_VF_WHOAMI;
 	const u32 notready1 = 0xffffffff;
@@ -87,23 +77,6 @@ static void get_mbox_rpl(struct adapter *adapter, __be64 *rpl, int size,
 		*rpl++ = cpu_to_be64(t4_read_reg64(adapter, mbox_data));
 }
 
-<<<<<<< HEAD
-/*
- * Dump contents of mailbox with a leading tag.
- */
-static void dump_mbox(struct adapter *adapter, const char *tag, u32 mbox_data)
-{
-	dev_err(adapter->pdev_dev,
-		"mbox %s: %llx %llx %llx %llx %llx %llx %llx %llx\n", tag,
-		(unsigned long long)t4_read_reg64(adapter, mbox_data +  0),
-		(unsigned long long)t4_read_reg64(adapter, mbox_data +  8),
-		(unsigned long long)t4_read_reg64(adapter, mbox_data + 16),
-		(unsigned long long)t4_read_reg64(adapter, mbox_data + 24),
-		(unsigned long long)t4_read_reg64(adapter, mbox_data + 32),
-		(unsigned long long)t4_read_reg64(adapter, mbox_data + 40),
-		(unsigned long long)t4_read_reg64(adapter, mbox_data + 48),
-		(unsigned long long)t4_read_reg64(adapter, mbox_data + 56));
-=======
 /**
  *	t4vf_record_mbox - record a Firmware Mailbox Command/Reply in the log
  *	@adapter: the adapter
@@ -131,7 +104,6 @@ static void t4vf_record_mbox(struct adapter *adapter, const __be64 *cmd,
 	entry->seqno = log->seqno++;
 	entry->access = access;
 	entry->execute = execute;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -161,13 +133,6 @@ int t4vf_wr_mbox_core(struct adapter *adapter, const void *cmd, int size,
 		1, 1, 3, 5, 10, 10, 20, 50, 100
 	};
 
-<<<<<<< HEAD
-	u32 v;
-	int i, ms, delay_idx;
-	const __be64 *p;
-	u32 mbox_data = T4VF_MBDATA_BASE_ADDR;
-	u32 mbox_ctl = T4VF_CIM_BASE_ADDR + CIM_VF_EXT_MAILBOX_CTRL;
-=======
 	u16 access = 0, execute = 0;
 	u32 v, mbox_data;
 	int i, ms, delay_idx, ret;
@@ -184,7 +149,6 @@ int t4vf_wr_mbox_core(struct adapter *adapter, const void *cmd, int size,
 		mbox_data = T4VF_MBDATA_BASE_ADDR;
 	else
 		mbox_data = T6VF_MBDATA_BASE_ADDR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Commands must be multiples of 16 bytes in length and may not be
@@ -194,8 +158,6 @@ int t4vf_wr_mbox_core(struct adapter *adapter, const void *cmd, int size,
 	    size > NUM_CIM_VF_MAILBOX_DATA_INSTANCES * 4)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	/* Queue ourselves onto the mailbox access list.  When our entry is at
 	 * the front of the list, we have rights to access the mailbox.  So we
 	 * wait [for a while] till we're at the front [or bail out with an
@@ -241,18 +203,10 @@ int t4vf_wr_mbox_core(struct adapter *adapter, const void *cmd, int size,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Loop trying to get ownership of the mailbox.  Return an error
 	 * if we can't gain ownership.
 	 */
-<<<<<<< HEAD
-	v = MBOWNER_GET(t4_read_reg(adapter, mbox_ctl));
-	for (i = 0; v == MBOX_OWNER_NONE && i < 3; i++)
-		v = MBOWNER_GET(t4_read_reg(adapter, mbox_ctl));
-	if (v != MBOX_OWNER_DRV)
-		return v == MBOX_OWNER_FW ? -EBUSY : -ETIMEDOUT;
-=======
 	v = MBOWNER_G(t4_read_reg(adapter, mbox_ctl));
 	for (i = 0; v == MBOX_OWNER_NONE && i < 3; i++)
 		v = MBOWNER_G(t4_read_reg(adapter, mbox_ctl));
@@ -264,7 +218,6 @@ int t4vf_wr_mbox_core(struct adapter *adapter, const void *cmd, int size,
 		t4vf_record_mbox(adapter, cmd, size, access, ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Write the command array into the Mailbox Data register array and
@@ -279,21 +232,14 @@ int t4vf_wr_mbox_core(struct adapter *adapter, const void *cmd, int size,
 	 * Data registers before doing the write to the VF Mailbox Control
 	 * register.
 	 */
-<<<<<<< HEAD
-=======
 	if (cmd_op != FW_VI_STATS_CMD)
 		t4vf_record_mbox(adapter, cmd, size, access, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0, p = cmd; i < size; i += 8)
 		t4_write_reg64(adapter, mbox_data + i, be64_to_cpu(*p++));
 	t4_read_reg(adapter, mbox_data);         /* flush write */
 
 	t4_write_reg(adapter, mbox_ctl,
-<<<<<<< HEAD
-		     MBMSGVALID | MBOWNER(MBOX_OWNER_FW));
-=======
 		     MBMSGVALID_F | MBOWNER_V(MBOX_OWNER_FW));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t4_read_reg(adapter, mbox_ctl);          /* flush write */
 
 	/*
@@ -315,24 +261,14 @@ int t4vf_wr_mbox_core(struct adapter *adapter, const void *cmd, int size,
 		 * If we're the owner, see if this is the reply we wanted.
 		 */
 		v = t4_read_reg(adapter, mbox_ctl);
-<<<<<<< HEAD
-		if (MBOWNER_GET(v) == MBOX_OWNER_DRV) {
-=======
 		if (MBOWNER_G(v) == MBOX_OWNER_DRV) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * If the Message Valid bit isn't on, revoke ownership
 			 * of the mailbox and continue waiting for our reply.
 			 */
-<<<<<<< HEAD
-			if ((v & MBMSGVALID) == 0) {
-				t4_write_reg(adapter, mbox_ctl,
-					     MBOWNER(MBOX_OWNER_NONE));
-=======
 			if ((v & MBMSGVALID_F) == 0) {
 				t4_write_reg(adapter, mbox_ctl,
 					     MBOWNER_V(MBOX_OWNER_NONE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 
@@ -343,56 +279,6 @@ int t4vf_wr_mbox_core(struct adapter *adapter, const void *cmd, int size,
 			 * We return the (negated) firmware command return
 			 * code (this depends on FW_SUCCESS == 0).
 			 */
-<<<<<<< HEAD
-
-			/* return value in low-order little-endian word */
-			v = t4_read_reg(adapter, mbox_data);
-			if (FW_CMD_RETVAL_GET(v))
-				dump_mbox(adapter, "FW Error", mbox_data);
-
-			if (rpl) {
-				/* request bit in high-order BE word */
-				WARN_ON((be32_to_cpu(*(const u32 *)cmd)
-					 & FW_CMD_REQUEST) == 0);
-				get_mbox_rpl(adapter, rpl, size, mbox_data);
-				WARN_ON((be32_to_cpu(*(u32 *)rpl)
-					 & FW_CMD_REQUEST) != 0);
-			}
-			t4_write_reg(adapter, mbox_ctl,
-				     MBOWNER(MBOX_OWNER_NONE));
-			return -FW_CMD_RETVAL_GET(v);
-		}
-	}
-
-	/*
-	 * We timed out.  Return the error ...
-	 */
-	dump_mbox(adapter, "FW Timeout", mbox_data);
-	return -ETIMEDOUT;
-}
-
-/**
- *	hash_mac_addr - return the hash value of a MAC address
- *	@addr: the 48-bit Ethernet MAC address
- *
- *	Hashes a MAC address according to the hash function used by hardware
- *	inexact (hash) address matching.
- */
-static int hash_mac_addr(const u8 *addr)
-{
-	u32 a = ((u32)addr[0] << 16) | ((u32)addr[1] << 8) | addr[2];
-	u32 b = ((u32)addr[3] << 16) | ((u32)addr[4] << 8) | addr[5];
-	a ^= b;
-	a ^= (a >> 12);
-	a ^= (a >> 6);
-	return a & 0x3f;
-}
-
-/**
- *	init_link_config - initialize a link's SW state
- *	@lc: structure holding the link state
- *	@caps: link capabilities
-=======
 			get_mbox_rpl(adapter, cmd_rpl, size, mbox_data);
 
 			/* return value in low-order little-endian word */
@@ -563,27 +449,10 @@ static fw_port_cap32_t fwcap_to_fwspeed(fw_port_cap32_t acaps)
  *	@lc: structure holding the link state
  *	@pcaps: link Port Capabilities
  *	@acaps: link current Advertised Port Capabilities
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Initializes the SW state maintained for each link, including the link's
  *	capabilities and default speed/flow-control/autonegotiation settings.
  */
-<<<<<<< HEAD
-static void __devinit init_link_config(struct link_config *lc,
-				       unsigned int caps)
-{
-	lc->supported = caps;
-	lc->requested_speed = 0;
-	lc->speed = 0;
-	lc->requested_fc = lc->fc = PAUSE_RX | PAUSE_TX;
-	if (lc->supported & SUPPORTED_Autoneg) {
-		lc->advertising = lc->supported;
-		lc->autoneg = AUTONEG_ENABLE;
-		lc->requested_fc |= PAUSE_AUTONEG;
-	} else {
-		lc->advertising = 0;
-		lc->autoneg = AUTONEG_DISABLE;
-=======
 static void init_link_config(struct link_config *lc,
 			     fw_port_cap32_t pcaps,
 			     fw_port_cap32_t acaps)
@@ -616,7 +485,6 @@ static void init_link_config(struct link_config *lc,
 		lc->acaps = 0;
 		lc->autoneg = AUTONEG_DISABLE;
 		lc->speed_caps = fwcap_to_fwspeed(acaps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -625,15 +493,6 @@ static void init_link_config(struct link_config *lc,
  *	@adapter: the adapter
  *	@pidx: the adapter port index
  */
-<<<<<<< HEAD
-int __devinit t4vf_port_init(struct adapter *adapter, int pidx)
-{
-	struct port_info *pi = adap2pinfo(adapter, pidx);
-	struct fw_vi_cmd vi_cmd, vi_rpl;
-	struct fw_port_cmd port_cmd, port_rpl;
-	int v;
-	u32 word;
-=======
 int t4vf_port_init(struct adapter *adapter, int pidx)
 {
 	struct port_info *pi = adap2pinfo(adapter, pidx);
@@ -661,26 +520,12 @@ int t4vf_port_init(struct adapter *adapter, int pidx)
 		fw_caps = (ret == 0 ? FW_CAPS32 : FW_CAPS16);
 		adapter->params.fw_caps_support = fw_caps;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Execute a VI Read command to get our Virtual Interface information
 	 * like MAC address, etc.
 	 */
 	memset(&vi_cmd, 0, sizeof(vi_cmd));
-<<<<<<< HEAD
-	vi_cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP(FW_VI_CMD) |
-				       FW_CMD_REQUEST |
-				       FW_CMD_READ);
-	vi_cmd.alloc_to_len16 = cpu_to_be32(FW_LEN16(vi_cmd));
-	vi_cmd.type_viid = cpu_to_be16(FW_VI_CMD_VIID(pi->viid));
-	v = t4vf_wr_mbox(adapter, &vi_cmd, sizeof(vi_cmd), &vi_rpl);
-	if (v)
-		return v;
-
-	BUG_ON(pi->port_id != FW_VI_CMD_PORTID_GET(vi_rpl.portid_pkd));
-	pi->rss_size = FW_VI_CMD_RSSSIZE_GET(be16_to_cpu(vi_rpl.rsssize_pkd));
-=======
 	vi_cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP_V(FW_VI_CMD) |
 				       FW_CMD_REQUEST_F |
 				       FW_CMD_READ_F);
@@ -692,7 +537,6 @@ int t4vf_port_init(struct adapter *adapter, int pidx)
 
 	BUG_ON(pi->port_id != FW_VI_CMD_PORTID_G(vi_rpl.portid_pkd));
 	pi->rss_size = FW_VI_CMD_RSSSIZE_G(be16_to_cpu(vi_rpl.rsssize_pkd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t4_os_set_hw_addr(adapter, pidx, vi_rpl.mac);
 
 	/*
@@ -703,31 +547,6 @@ int t4vf_port_init(struct adapter *adapter, int pidx)
 		return 0;
 
 	memset(&port_cmd, 0, sizeof(port_cmd));
-<<<<<<< HEAD
-	port_cmd.op_to_portid = cpu_to_be32(FW_CMD_OP(FW_PORT_CMD) |
-					    FW_CMD_REQUEST |
-					    FW_CMD_READ |
-					    FW_PORT_CMD_PORTID(pi->port_id));
-	port_cmd.action_to_len16 =
-		cpu_to_be32(FW_PORT_CMD_ACTION(FW_PORT_ACTION_GET_PORT_INFO) |
-			    FW_LEN16(port_cmd));
-	v = t4vf_wr_mbox(adapter, &port_cmd, sizeof(port_cmd), &port_rpl);
-	if (v)
-		return v;
-
-	v = 0;
-	word = be16_to_cpu(port_rpl.u.info.pcap);
-	if (word & FW_PORT_CAP_SPEED_100M)
-		v |= SUPPORTED_100baseT_Full;
-	if (word & FW_PORT_CAP_SPEED_1G)
-		v |= SUPPORTED_1000baseT_Full;
-	if (word & FW_PORT_CAP_SPEED_10G)
-		v |= SUPPORTED_10000baseT_Full;
-	if (word & FW_PORT_CAP_ANEG)
-		v |= SUPPORTED_Autoneg;
-	init_link_config(&pi->link_cfg, v);
-
-=======
 	port_cmd.op_to_portid = cpu_to_be32(FW_CMD_OP_V(FW_PORT_CMD) |
 					    FW_CMD_REQUEST_F |
 					    FW_CMD_READ_F |
@@ -768,7 +587,6 @@ int t4vf_port_init(struct adapter *adapter, int pidx)
 	pi->mod_type = FW_PORT_MOD_TYPE_NA;
 
 	init_link_config(&pi->link_cfg, pcaps, acaps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -777,11 +595,7 @@ int t4vf_port_init(struct adapter *adapter, int pidx)
  *      @adapter: the adapter
  *
  *	Issues a reset command to FW.  For a Physical Function this would
-<<<<<<< HEAD
- *	result in the Firmware reseting all of its state.  For a Virtual
-=======
  *	result in the Firmware resetting all of its state.  For a Virtual
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Function this just resets the state associated with the VF.
  */
 int t4vf_fw_reset(struct adapter *adapter)
@@ -789,13 +603,8 @@ int t4vf_fw_reset(struct adapter *adapter)
 	struct fw_reset_cmd cmd;
 
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_write = cpu_to_be32(FW_CMD_OP(FW_RESET_CMD) |
-				      FW_CMD_WRITE);
-=======
 	cmd.op_to_write = cpu_to_be32(FW_CMD_OP_V(FW_RESET_CMD) |
 				      FW_CMD_WRITE_F);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd.retval_len16 = cpu_to_be32(FW_LEN16(cmd));
 	return t4vf_wr_mbox(adapter, &cmd, sizeof(cmd), NULL);
 }
@@ -810,13 +619,8 @@ int t4vf_fw_reset(struct adapter *adapter)
  *	Reads the values of firmware or device parameters.  Up to 7 parameters
  *	can be queried at once.
  */
-<<<<<<< HEAD
-int t4vf_query_params(struct adapter *adapter, unsigned int nparams,
-		      const u32 *params, u32 *vals)
-=======
 static int t4vf_query_params(struct adapter *adapter, unsigned int nparams,
 			     const u32 *params, u32 *vals)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, ret;
 	struct fw_params_cmd cmd, rpl;
@@ -827,21 +631,12 @@ static int t4vf_query_params(struct adapter *adapter, unsigned int nparams,
 		return -EINVAL;
 
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP(FW_PARAMS_CMD) |
-				    FW_CMD_REQUEST |
-				    FW_CMD_READ);
-	len16 = DIV_ROUND_UP(offsetof(struct fw_params_cmd,
-				      param[nparams].mnem), 16);
-	cmd.retval_len16 = cpu_to_be32(FW_CMD_LEN16(len16));
-=======
 	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP_V(FW_PARAMS_CMD) |
 				    FW_CMD_REQUEST_F |
 				    FW_CMD_READ_F);
 	len16 = DIV_ROUND_UP(offsetof(struct fw_params_cmd,
 				      param[nparams].mnem), 16);
 	cmd.retval_len16 = cpu_to_be32(FW_CMD_LEN16_V(len16));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0, p = &cmd.param[0]; i < nparams; i++, p++)
 		p->mnem = htonl(*params++);
 
@@ -874,21 +669,12 @@ int t4vf_set_params(struct adapter *adapter, unsigned int nparams,
 		return -EINVAL;
 
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP(FW_PARAMS_CMD) |
-				    FW_CMD_REQUEST |
-				    FW_CMD_WRITE);
-	len16 = DIV_ROUND_UP(offsetof(struct fw_params_cmd,
-				      param[nparams]), 16);
-	cmd.retval_len16 = cpu_to_be32(FW_CMD_LEN16(len16));
-=======
 	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP_V(FW_PARAMS_CMD) |
 				    FW_CMD_REQUEST_F |
 				    FW_CMD_WRITE_F);
 	len16 = DIV_ROUND_UP(offsetof(struct fw_params_cmd,
 				      param[nparams]), 16);
 	cmd.retval_len16 = cpu_to_be32(FW_CMD_LEN16_V(len16));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0, p = &cmd.param[0]; i < nparams; i++, p++) {
 		p->mnem = cpu_to_be32(*params++);
 		p->val = cpu_to_be32(*vals++);
@@ -898,8 +684,6 @@ int t4vf_set_params(struct adapter *adapter, unsigned int nparams,
 }
 
 /**
-<<<<<<< HEAD
-=======
  *	t4vf_fl_pkt_align - return the fl packet alignment
  *	@adapter: the adapter
  *
@@ -1053,7 +837,6 @@ unsigned int t4vf_get_pf_from_vf(struct adapter *adapter)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	t4vf_get_sge_params - retrieve adapter Scatter gather Engine parameters
  *	@adapter: the adapter
  *
@@ -1067,22 +850,6 @@ int t4vf_get_sge_params(struct adapter *adapter)
 	u32 params[7], vals[7];
 	int v;
 
-<<<<<<< HEAD
-	params[0] = (FW_PARAMS_MNEM(FW_PARAMS_MNEM_REG) |
-		     FW_PARAMS_PARAM_XYZ(SGE_CONTROL));
-	params[1] = (FW_PARAMS_MNEM(FW_PARAMS_MNEM_REG) |
-		     FW_PARAMS_PARAM_XYZ(SGE_HOST_PAGE_SIZE));
-	params[2] = (FW_PARAMS_MNEM(FW_PARAMS_MNEM_REG) |
-		     FW_PARAMS_PARAM_XYZ(SGE_FL_BUFFER_SIZE0));
-	params[3] = (FW_PARAMS_MNEM(FW_PARAMS_MNEM_REG) |
-		     FW_PARAMS_PARAM_XYZ(SGE_FL_BUFFER_SIZE1));
-	params[4] = (FW_PARAMS_MNEM(FW_PARAMS_MNEM_REG) |
-		     FW_PARAMS_PARAM_XYZ(SGE_TIMER_VALUE_0_AND_1));
-	params[5] = (FW_PARAMS_MNEM(FW_PARAMS_MNEM_REG) |
-		     FW_PARAMS_PARAM_XYZ(SGE_TIMER_VALUE_2_AND_3));
-	params[6] = (FW_PARAMS_MNEM(FW_PARAMS_MNEM_REG) |
-		     FW_PARAMS_PARAM_XYZ(SGE_TIMER_VALUE_4_AND_5));
-=======
 	params[0] = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_REG) |
 		     FW_PARAMS_PARAM_XYZ_V(SGE_CONTROL_A));
 	params[1] = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_REG) |
@@ -1097,7 +864,6 @@ int t4vf_get_sge_params(struct adapter *adapter)
 		     FW_PARAMS_PARAM_XYZ_V(SGE_TIMER_VALUE_2_AND_3_A));
 	params[6] = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_REG) |
 		     FW_PARAMS_PARAM_XYZ_V(SGE_TIMER_VALUE_4_AND_5_A));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v = t4vf_query_params(adapter, 7, params, vals);
 	if (v)
 		return v;
@@ -1109,14 +875,6 @@ int t4vf_get_sge_params(struct adapter *adapter)
 	sge_params->sge_timer_value_2_and_3 = vals[5];
 	sge_params->sge_timer_value_4_and_5 = vals[6];
 
-<<<<<<< HEAD
-	params[0] = (FW_PARAMS_MNEM(FW_PARAMS_MNEM_REG) |
-		     FW_PARAMS_PARAM_XYZ(SGE_INGRESS_RX_THRESHOLD));
-	v = t4vf_query_params(adapter, 1, params, vals);
-	if (v)
-		return v;
-	sge_params->sge_ingress_rx_threshold = vals[0];
-=======
 	/* T4 uses a single control field to specify both the PCIe Padding and
 	 * Packing Boundary.  T5 introduced the ability to specify these
 	 * separately with the Padding Boundary in SGE_CONTROL and Packing
@@ -1194,7 +952,6 @@ int t4vf_get_sge_params(struct adapter *adapter)
 			((sge_params->sge_ingress_queues_per_page >> s_qpp)
 			 & QUEUESPERPAGEPF0_M);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1212,13 +969,8 @@ int t4vf_get_vpd_params(struct adapter *adapter)
 	u32 params[7], vals[7];
 	int v;
 
-<<<<<<< HEAD
-	params[0] = (FW_PARAMS_MNEM(FW_PARAMS_MNEM_DEV) |
-		     FW_PARAMS_PARAM_X(FW_PARAMS_PARAM_DEV_CCLK));
-=======
 	params[0] = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
 		     FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_CCLK));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v = t4vf_query_params(adapter, 1, params, vals);
 	if (v)
 		return v;
@@ -1240,17 +992,10 @@ int t4vf_get_dev_params(struct adapter *adapter)
 	u32 params[7], vals[7];
 	int v;
 
-<<<<<<< HEAD
-	params[0] = (FW_PARAMS_MNEM(FW_PARAMS_MNEM_DEV) |
-		     FW_PARAMS_PARAM_X(FW_PARAMS_PARAM_DEV_FWREV));
-	params[1] = (FW_PARAMS_MNEM(FW_PARAMS_MNEM_DEV) |
-		     FW_PARAMS_PARAM_X(FW_PARAMS_PARAM_DEV_TPREV));
-=======
 	params[0] = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
 		     FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_FWREV));
 	params[1] = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
 		     FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_TPREV));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v = t4vf_query_params(adapter, 2, params, vals);
 	if (v)
 		return v;
@@ -1278,15 +1023,9 @@ int t4vf_get_rss_glb_config(struct adapter *adapter)
 	 * our RSS configuration.
 	 */
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_write = cpu_to_be32(FW_CMD_OP(FW_RSS_GLB_CONFIG_CMD) |
-				      FW_CMD_REQUEST |
-				      FW_CMD_READ);
-=======
 	cmd.op_to_write = cpu_to_be32(FW_CMD_OP_V(FW_RSS_GLB_CONFIG_CMD) |
 				      FW_CMD_REQUEST_F |
 				      FW_CMD_READ_F);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd.retval_len16 = cpu_to_be32(FW_LEN16(cmd));
 	v = t4vf_wr_mbox(adapter, &cmd, sizeof(cmd), &rpl);
 	if (v)
@@ -1298,11 +1037,7 @@ int t4vf_get_rss_glb_config(struct adapter *adapter)
 	 * filtering at this point to weed out modes which don't support
 	 * VF Drivers ...
 	 */
-<<<<<<< HEAD
-	rss->mode = FW_RSS_GLB_CONFIG_CMD_MODE_GET(
-=======
 	rss->mode = FW_RSS_GLB_CONFIG_CMD_MODE_G(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			be32_to_cpu(rpl.u.manual.mode_pkd));
 	switch (rss->mode) {
 	case FW_RSS_GLB_CONFIG_CMD_MODE_BASICVIRTUAL: {
@@ -1310,28 +1045,6 @@ int t4vf_get_rss_glb_config(struct adapter *adapter)
 				rpl.u.basicvirtual.synmapen_to_hashtoeplitz);
 
 		rss->u.basicvirtual.synmapen =
-<<<<<<< HEAD
-			((word & FW_RSS_GLB_CONFIG_CMD_SYNMAPEN) != 0);
-		rss->u.basicvirtual.syn4tupenipv6 =
-			((word & FW_RSS_GLB_CONFIG_CMD_SYN4TUPENIPV6) != 0);
-		rss->u.basicvirtual.syn2tupenipv6 =
-			((word & FW_RSS_GLB_CONFIG_CMD_SYN2TUPENIPV6) != 0);
-		rss->u.basicvirtual.syn4tupenipv4 =
-			((word & FW_RSS_GLB_CONFIG_CMD_SYN4TUPENIPV4) != 0);
-		rss->u.basicvirtual.syn2tupenipv4 =
-			((word & FW_RSS_GLB_CONFIG_CMD_SYN2TUPENIPV4) != 0);
-
-		rss->u.basicvirtual.ofdmapen =
-			((word & FW_RSS_GLB_CONFIG_CMD_OFDMAPEN) != 0);
-
-		rss->u.basicvirtual.tnlmapen =
-			((word & FW_RSS_GLB_CONFIG_CMD_TNLMAPEN) != 0);
-		rss->u.basicvirtual.tnlalllookup =
-			((word  & FW_RSS_GLB_CONFIG_CMD_TNLALLLKP) != 0);
-
-		rss->u.basicvirtual.hashtoeplitz =
-			((word & FW_RSS_GLB_CONFIG_CMD_HASHTOEPLITZ) != 0);
-=======
 			((word & FW_RSS_GLB_CONFIG_CMD_SYNMAPEN_F) != 0);
 		rss->u.basicvirtual.syn4tupenipv6 =
 			((word & FW_RSS_GLB_CONFIG_CMD_SYN4TUPENIPV6_F) != 0);
@@ -1352,7 +1065,6 @@ int t4vf_get_rss_glb_config(struct adapter *adapter)
 
 		rss->u.basicvirtual.hashtoeplitz =
 			((word & FW_RSS_GLB_CONFIG_CMD_HASHTOEPLITZ_F) != 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* we need at least Tunnel Map Enable to be set */
 		if (!rss->u.basicvirtual.tnlmapen)
@@ -1387,15 +1099,9 @@ int t4vf_get_vfres(struct adapter *adapter)
 	 * with error on command failure.
 	 */
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP(FW_PFVF_CMD) |
-				    FW_CMD_REQUEST |
-				    FW_CMD_READ);
-=======
 	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP_V(FW_PFVF_CMD) |
 				    FW_CMD_REQUEST_F |
 				    FW_CMD_READ_F);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd.retval_len16 = cpu_to_be32(FW_LEN16(cmd));
 	v = t4vf_wr_mbox(adapter, &cmd, sizeof(cmd), &rpl);
 	if (v)
@@ -1405,24 +1111,6 @@ int t4vf_get_vfres(struct adapter *adapter)
 	 * Extract VF resource limits and return success.
 	 */
 	word = be32_to_cpu(rpl.niqflint_niq);
-<<<<<<< HEAD
-	vfres->niqflint = FW_PFVF_CMD_NIQFLINT_GET(word);
-	vfres->niq = FW_PFVF_CMD_NIQ_GET(word);
-
-	word = be32_to_cpu(rpl.type_to_neq);
-	vfres->neq = FW_PFVF_CMD_NEQ_GET(word);
-	vfres->pmask = FW_PFVF_CMD_PMASK_GET(word);
-
-	word = be32_to_cpu(rpl.tc_to_nexactf);
-	vfres->tc = FW_PFVF_CMD_TC_GET(word);
-	vfres->nvi = FW_PFVF_CMD_NVI_GET(word);
-	vfres->nexactf = FW_PFVF_CMD_NEXACTF_GET(word);
-
-	word = be32_to_cpu(rpl.r_caps_to_nethctrl);
-	vfres->r_caps = FW_PFVF_CMD_R_CAPS_GET(word);
-	vfres->wx_caps = FW_PFVF_CMD_WX_CAPS_GET(word);
-	vfres->nethctrl = FW_PFVF_CMD_NETHCTRL_GET(word);
-=======
 	vfres->niqflint = FW_PFVF_CMD_NIQFLINT_G(word);
 	vfres->niq = FW_PFVF_CMD_NIQ_G(word);
 
@@ -1439,7 +1127,6 @@ int t4vf_get_vfres(struct adapter *adapter)
 	vfres->r_caps = FW_PFVF_CMD_R_CAPS_G(word);
 	vfres->wx_caps = FW_PFVF_CMD_WX_CAPS_G(word);
 	vfres->nethctrl = FW_PFVF_CMD_NETHCTRL_G(word);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1460,15 +1147,9 @@ int t4vf_read_rss_vi_config(struct adapter *adapter, unsigned int viid,
 	int v;
 
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP(FW_RSS_VI_CONFIG_CMD) |
-				     FW_CMD_REQUEST |
-				     FW_CMD_READ |
-=======
 	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP_V(FW_RSS_VI_CONFIG_CMD) |
 				     FW_CMD_REQUEST_F |
 				     FW_CMD_READ_F |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     FW_RSS_VI_CONFIG_CMD_VIID(viid));
 	cmd.retval_len16 = cpu_to_be32(FW_LEN16(cmd));
 	v = t4vf_wr_mbox(adapter, &cmd, sizeof(cmd), &rpl);
@@ -1480,19 +1161,6 @@ int t4vf_read_rss_vi_config(struct adapter *adapter, unsigned int viid,
 		u32 word = be32_to_cpu(rpl.u.basicvirtual.defaultq_to_udpen);
 
 		config->basicvirtual.ip6fourtupen =
-<<<<<<< HEAD
-			((word & FW_RSS_VI_CONFIG_CMD_IP6FOURTUPEN) != 0);
-		config->basicvirtual.ip6twotupen =
-			((word & FW_RSS_VI_CONFIG_CMD_IP6TWOTUPEN) != 0);
-		config->basicvirtual.ip4fourtupen =
-			((word & FW_RSS_VI_CONFIG_CMD_IP4FOURTUPEN) != 0);
-		config->basicvirtual.ip4twotupen =
-			((word & FW_RSS_VI_CONFIG_CMD_IP4TWOTUPEN) != 0);
-		config->basicvirtual.udpen =
-			((word & FW_RSS_VI_CONFIG_CMD_UDPEN) != 0);
-		config->basicvirtual.defaultq =
-			FW_RSS_VI_CONFIG_CMD_DEFAULTQ_GET(word);
-=======
 			((word & FW_RSS_VI_CONFIG_CMD_IP6FOURTUPEN_F) != 0);
 		config->basicvirtual.ip6twotupen =
 			((word & FW_RSS_VI_CONFIG_CMD_IP6TWOTUPEN_F) != 0);
@@ -1504,7 +1172,6 @@ int t4vf_read_rss_vi_config(struct adapter *adapter, unsigned int viid,
 			((word & FW_RSS_VI_CONFIG_CMD_UDPEN_F) != 0);
 		config->basicvirtual.defaultq =
 			FW_RSS_VI_CONFIG_CMD_DEFAULTQ_G(word);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -1530,15 +1197,9 @@ int t4vf_write_rss_vi_config(struct adapter *adapter, unsigned int viid,
 	struct fw_rss_vi_config_cmd cmd, rpl;
 
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP(FW_RSS_VI_CONFIG_CMD) |
-				     FW_CMD_REQUEST |
-				     FW_CMD_WRITE |
-=======
 	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP_V(FW_RSS_VI_CONFIG_CMD) |
 				     FW_CMD_REQUEST_F |
 				     FW_CMD_WRITE_F |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     FW_RSS_VI_CONFIG_CMD_VIID(viid));
 	cmd.retval_len16 = cpu_to_be32(FW_LEN16(cmd));
 	switch (adapter->params.rss.mode) {
@@ -1546,18 +1207,6 @@ int t4vf_write_rss_vi_config(struct adapter *adapter, unsigned int viid,
 		u32 word = 0;
 
 		if (config->basicvirtual.ip6fourtupen)
-<<<<<<< HEAD
-			word |= FW_RSS_VI_CONFIG_CMD_IP6FOURTUPEN;
-		if (config->basicvirtual.ip6twotupen)
-			word |= FW_RSS_VI_CONFIG_CMD_IP6TWOTUPEN;
-		if (config->basicvirtual.ip4fourtupen)
-			word |= FW_RSS_VI_CONFIG_CMD_IP4FOURTUPEN;
-		if (config->basicvirtual.ip4twotupen)
-			word |= FW_RSS_VI_CONFIG_CMD_IP4TWOTUPEN;
-		if (config->basicvirtual.udpen)
-			word |= FW_RSS_VI_CONFIG_CMD_UDPEN;
-		word |= FW_RSS_VI_CONFIG_CMD_DEFAULTQ(
-=======
 			word |= FW_RSS_VI_CONFIG_CMD_IP6FOURTUPEN_F;
 		if (config->basicvirtual.ip6twotupen)
 			word |= FW_RSS_VI_CONFIG_CMD_IP6TWOTUPEN_F;
@@ -1568,7 +1217,6 @@ int t4vf_write_rss_vi_config(struct adapter *adapter, unsigned int viid,
 		if (config->basicvirtual.udpen)
 			word |= FW_RSS_VI_CONFIG_CMD_UDPEN_F;
 		word |= FW_RSS_VI_CONFIG_CMD_DEFAULTQ_V(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				config->basicvirtual.defaultq);
 		cmd.u.basicvirtual.defaultq_to_udpen = cpu_to_be32(word);
 		break;
@@ -1607,17 +1255,10 @@ int t4vf_config_rss_range(struct adapter *adapter, unsigned int viid,
 	 * Initialize firmware command template to write the RSS table.
 	 */
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP(FW_RSS_IND_TBL_CMD) |
-				     FW_CMD_REQUEST |
-				     FW_CMD_WRITE |
-				     FW_RSS_IND_TBL_CMD_VIID(viid));
-=======
 	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP_V(FW_RSS_IND_TBL_CMD) |
 				     FW_CMD_REQUEST_F |
 				     FW_CMD_WRITE_F |
 				     FW_RSS_IND_TBL_CMD_VIID_V(viid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd.retval_len16 = cpu_to_be32(FW_LEN16(cmd));
 
 	/*
@@ -1668,15 +1309,9 @@ int t4vf_config_rss_range(struct adapter *adapter, unsigned int viid,
 				if (rsp >= rsp_end)
 					rsp = rspq;
 			}
-<<<<<<< HEAD
-			*qp++ = cpu_to_be32(FW_RSS_IND_TBL_CMD_IQ0(qbuf[0]) |
-					    FW_RSS_IND_TBL_CMD_IQ1(qbuf[1]) |
-					    FW_RSS_IND_TBL_CMD_IQ2(qbuf[2]));
-=======
 			*qp++ = cpu_to_be32(FW_RSS_IND_TBL_CMD_IQ0_V(qbuf[0]) |
 					    FW_RSS_IND_TBL_CMD_IQ1_V(qbuf[1]) |
 					    FW_RSS_IND_TBL_CMD_IQ2_V(qbuf[2]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/*
@@ -1709,15 +1344,6 @@ int t4vf_alloc_vi(struct adapter *adapter, int port_id)
 	 * VIID.
 	 */
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP(FW_VI_CMD) |
-				    FW_CMD_REQUEST |
-				    FW_CMD_WRITE |
-				    FW_CMD_EXEC);
-	cmd.alloc_to_len16 = cpu_to_be32(FW_LEN16(cmd) |
-					 FW_VI_CMD_ALLOC);
-	cmd.portid_pkd = FW_VI_CMD_PORTID(port_id);
-=======
 	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP_V(FW_VI_CMD) |
 				    FW_CMD_REQUEST_F |
 				    FW_CMD_WRITE_F |
@@ -1725,16 +1351,11 @@ int t4vf_alloc_vi(struct adapter *adapter, int port_id)
 	cmd.alloc_to_len16 = cpu_to_be32(FW_LEN16(cmd) |
 					 FW_VI_CMD_ALLOC_F);
 	cmd.portid_pkd = FW_VI_CMD_PORTID_V(port_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v = t4vf_wr_mbox(adapter, &cmd, sizeof(cmd), &rpl);
 	if (v)
 		return v;
 
-<<<<<<< HEAD
-	return FW_VI_CMD_VIID_GET(be16_to_cpu(rpl.type_viid));
-=======
 	return FW_VI_CMD_VIID_G(be16_to_cpu(rpl.type_viid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1753,21 +1374,12 @@ int t4vf_free_vi(struct adapter *adapter, int viid)
 	 * Execute a VI command to free the Virtual Interface.
 	 */
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP(FW_VI_CMD) |
-				    FW_CMD_REQUEST |
-				    FW_CMD_EXEC);
-	cmd.alloc_to_len16 = cpu_to_be32(FW_LEN16(cmd) |
-					 FW_VI_CMD_FREE);
-	cmd.type_viid = cpu_to_be16(FW_VI_CMD_VIID(viid));
-=======
 	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP_V(FW_VI_CMD) |
 				    FW_CMD_REQUEST_F |
 				    FW_CMD_EXEC_F);
 	cmd.alloc_to_len16 = cpu_to_be32(FW_LEN16(cmd) |
 					 FW_VI_CMD_FREE_F);
 	cmd.type_viid = cpu_to_be16(FW_VI_CMD_VIID_V(viid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return t4vf_wr_mbox(adapter, &cmd, sizeof(cmd), NULL);
 }
 
@@ -1786,28 +1398,17 @@ int t4vf_enable_vi(struct adapter *adapter, unsigned int viid,
 	struct fw_vi_enable_cmd cmd;
 
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP(FW_VI_ENABLE_CMD) |
-				     FW_CMD_REQUEST |
-				     FW_CMD_EXEC |
-				     FW_VI_ENABLE_CMD_VIID(viid));
-	cmd.ien_to_len16 = cpu_to_be32(FW_VI_ENABLE_CMD_IEN(rx_en) |
-				       FW_VI_ENABLE_CMD_EEN(tx_en) |
-=======
 	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP_V(FW_VI_ENABLE_CMD) |
 				     FW_CMD_REQUEST_F |
 				     FW_CMD_EXEC_F |
 				     FW_VI_ENABLE_CMD_VIID_V(viid));
 	cmd.ien_to_len16 = cpu_to_be32(FW_VI_ENABLE_CMD_IEN_V(rx_en) |
 				       FW_VI_ENABLE_CMD_EEN_V(tx_en) |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       FW_LEN16(cmd));
 	return t4vf_wr_mbox(adapter, &cmd, sizeof(cmd), NULL);
 }
 
 /**
-<<<<<<< HEAD
-=======
  *	t4vf_enable_pi - enable/disable a Port's virtual interface
  *	@adapter: the adapter
  *	@pi: the Port Information structure
@@ -1832,7 +1433,6 @@ int t4vf_enable_pi(struct adapter *adapter, struct port_info *pi,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	t4vf_identify_port - identify a VI's port by blinking its LED
  *	@adapter: the adapter
  *	@viid: the Virtual Interface ID
@@ -1846,19 +1446,11 @@ int t4vf_identify_port(struct adapter *adapter, unsigned int viid,
 	struct fw_vi_enable_cmd cmd;
 
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP(FW_VI_ENABLE_CMD) |
-				     FW_CMD_REQUEST |
-				     FW_CMD_EXEC |
-				     FW_VI_ENABLE_CMD_VIID(viid));
-	cmd.ien_to_len16 = cpu_to_be32(FW_VI_ENABLE_CMD_LED |
-=======
 	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP_V(FW_VI_ENABLE_CMD) |
 				     FW_CMD_REQUEST_F |
 				     FW_CMD_EXEC_F |
 				     FW_VI_ENABLE_CMD_VIID_V(viid));
 	cmd.ien_to_len16 = cpu_to_be32(FW_VI_ENABLE_CMD_LED_F |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       FW_LEN16(cmd));
 	cmd.blinkdur = cpu_to_be16(nblinks);
 	return t4vf_wr_mbox(adapter, &cmd, sizeof(cmd), NULL);
@@ -1874,10 +1466,7 @@ int t4vf_identify_port(struct adapter *adapter, unsigned int viid,
  *	@bcast: 1 to enable broadcast Rx, 0 to disable it, -1 no change
  *	@vlanex: 1 to enable hardware VLAN Tag extraction, 0 to disable it,
  *		-1 no change
-<<<<<<< HEAD
-=======
  *	@sleep_ok: call is allowed to sleep
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Sets Rx properties of a virtual interface.
  */
@@ -1889,30 +1478,6 @@ int t4vf_set_rxmode(struct adapter *adapter, unsigned int viid,
 
 	/* convert to FW values */
 	if (mtu < 0)
-<<<<<<< HEAD
-		mtu = FW_VI_RXMODE_CMD_MTU_MASK;
-	if (promisc < 0)
-		promisc = FW_VI_RXMODE_CMD_PROMISCEN_MASK;
-	if (all_multi < 0)
-		all_multi = FW_VI_RXMODE_CMD_ALLMULTIEN_MASK;
-	if (bcast < 0)
-		bcast = FW_VI_RXMODE_CMD_BROADCASTEN_MASK;
-	if (vlanex < 0)
-		vlanex = FW_VI_RXMODE_CMD_VLANEXEN_MASK;
-
-	memset(&cmd, 0, sizeof(cmd));
-	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP(FW_VI_RXMODE_CMD) |
-				     FW_CMD_REQUEST |
-				     FW_CMD_WRITE |
-				     FW_VI_RXMODE_CMD_VIID(viid));
-	cmd.retval_len16 = cpu_to_be32(FW_LEN16(cmd));
-	cmd.mtu_to_vlanexen =
-		cpu_to_be32(FW_VI_RXMODE_CMD_MTU(mtu) |
-			    FW_VI_RXMODE_CMD_PROMISCEN(promisc) |
-			    FW_VI_RXMODE_CMD_ALLMULTIEN(all_multi) |
-			    FW_VI_RXMODE_CMD_BROADCASTEN(bcast) |
-			    FW_VI_RXMODE_CMD_VLANEXEN(vlanex));
-=======
 		mtu = FW_VI_RXMODE_CMD_MTU_M;
 	if (promisc < 0)
 		promisc = FW_VI_RXMODE_CMD_PROMISCEN_M;
@@ -1935,7 +1500,6 @@ int t4vf_set_rxmode(struct adapter *adapter, unsigned int viid,
 			    FW_VI_RXMODE_CMD_ALLMULTIEN_V(all_multi) |
 			    FW_VI_RXMODE_CMD_BROADCASTEN_V(bcast) |
 			    FW_VI_RXMODE_CMD_VLANEXEN_V(vlanex));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return t4vf_wr_mbox_core(adapter, &cmd, sizeof(cmd), NULL, sleep_ok);
 }
 
@@ -1968,14 +1532,9 @@ int t4vf_alloc_mac_filt(struct adapter *adapter, unsigned int viid, bool free,
 	unsigned nfilters = 0;
 	unsigned int rem = naddr;
 	struct fw_vi_mac_cmd cmd, rpl;
-<<<<<<< HEAD
-
-	if (naddr > FW_CLS_TCAM_NUM_ENTRIES)
-=======
 	unsigned int max_naddr = adapter->params.arch.mps_tcam_size;
 
 	if (naddr > max_naddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	for (offset = 0; offset < naddr; /**/) {
@@ -1988,21 +1547,6 @@ int t4vf_alloc_mac_filt(struct adapter *adapter, unsigned int viid, bool free,
 		int i;
 
 		memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-		cmd.op_to_viid = cpu_to_be32(FW_CMD_OP(FW_VI_MAC_CMD) |
-					     FW_CMD_REQUEST |
-					     FW_CMD_WRITE |
-					     (free ? FW_CMD_EXEC : 0) |
-					     FW_VI_MAC_CMD_VIID(viid));
-		cmd.freemacs_to_len16 =
-			cpu_to_be32(FW_VI_MAC_CMD_FREEMACS(free) |
-				    FW_CMD_LEN16(len16));
-
-		for (i = 0, p = cmd.u.exact; i < fw_naddr; i++, p++) {
-			p->valid_to_idx = cpu_to_be16(
-				FW_VI_MAC_CMD_VALID |
-				FW_VI_MAC_CMD_IDX(FW_VI_MAC_ADD_MAC));
-=======
 		cmd.op_to_viid = cpu_to_be32(FW_CMD_OP_V(FW_VI_MAC_CMD) |
 					     FW_CMD_REQUEST_F |
 					     FW_CMD_WRITE_F |
@@ -2016,7 +1560,6 @@ int t4vf_alloc_mac_filt(struct adapter *adapter, unsigned int viid, bool free,
 			p->valid_to_idx = cpu_to_be16(
 				FW_VI_MAC_CMD_VALID_F |
 				FW_VI_MAC_CMD_IDX_V(FW_VI_MAC_ADD_MAC));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(p->macaddr, addr[offset+i], sizeof(p->macaddr));
 		}
 
@@ -2027,26 +1570,15 @@ int t4vf_alloc_mac_filt(struct adapter *adapter, unsigned int viid, bool free,
 			break;
 
 		for (i = 0, p = rpl.u.exact; i < fw_naddr; i++, p++) {
-<<<<<<< HEAD
-			u16 index = FW_VI_MAC_CMD_IDX_GET(
-=======
 			u16 index = FW_VI_MAC_CMD_IDX_G(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				be16_to_cpu(p->valid_to_idx));
 
 			if (idx)
 				idx[offset+i] =
-<<<<<<< HEAD
-					(index >= FW_CLS_TCAM_NUM_ENTRIES
-					 ? 0xffff
-					 : index);
-			if (index < FW_CLS_TCAM_NUM_ENTRIES)
-=======
 					(index >= max_naddr
 					 ? 0xffff
 					 : index);
 			if (index < max_naddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				nfilters++;
 			else if (hash)
 				*hash |= (1ULL << hash_mac_addr(addr[offset+i]));
@@ -2067,8 +1599,6 @@ int t4vf_alloc_mac_filt(struct adapter *adapter, unsigned int viid, bool free,
 }
 
 /**
-<<<<<<< HEAD
-=======
  *	t4vf_free_mac_filt - frees exact-match filters of given MAC addresses
  *	@adapter: the adapter
  *	@viid: the VI id
@@ -2140,7 +1670,6 @@ int t4vf_free_mac_filt(struct adapter *adapter, unsigned int viid,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	t4vf_change_mac - modifies the exact-match filter for a MAC address
  *	@adapter: the adapter
  *	@viid: the Virtual Interface ID
@@ -2166,10 +1695,7 @@ int t4vf_change_mac(struct adapter *adapter, unsigned int viid,
 	struct fw_vi_mac_exact *p = &cmd.u.exact[0];
 	size_t len16 = DIV_ROUND_UP(offsetof(struct fw_vi_mac_cmd,
 					     u.exact[1]), 16);
-<<<<<<< HEAD
-=======
 	unsigned int max_mac_addr = adapter->params.arch.mps_tcam_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If this is a new allocation, determine whether it should be
@@ -2179,15 +1705,6 @@ int t4vf_change_mac(struct adapter *adapter, unsigned int viid,
 		idx = persist ? FW_VI_MAC_ADD_PERSIST_MAC : FW_VI_MAC_ADD_MAC;
 
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP(FW_VI_MAC_CMD) |
-				     FW_CMD_REQUEST |
-				     FW_CMD_WRITE |
-				     FW_VI_MAC_CMD_VIID(viid));
-	cmd.freemacs_to_len16 = cpu_to_be32(FW_CMD_LEN16(len16));
-	p->valid_to_idx = cpu_to_be16(FW_VI_MAC_CMD_VALID |
-				      FW_VI_MAC_CMD_IDX(idx));
-=======
 	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP_V(FW_VI_MAC_CMD) |
 				     FW_CMD_REQUEST_F |
 				     FW_CMD_WRITE_F |
@@ -2195,19 +1712,13 @@ int t4vf_change_mac(struct adapter *adapter, unsigned int viid,
 	cmd.freemacs_to_len16 = cpu_to_be32(FW_CMD_LEN16_V(len16));
 	p->valid_to_idx = cpu_to_be16(FW_VI_MAC_CMD_VALID_F |
 				      FW_VI_MAC_CMD_IDX_V(idx));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(p->macaddr, addr, sizeof(p->macaddr));
 
 	ret = t4vf_wr_mbox(adapter, &cmd, sizeof(cmd), &rpl);
 	if (ret == 0) {
 		p = &rpl.u.exact[0];
-<<<<<<< HEAD
-		ret = FW_VI_MAC_CMD_IDX_GET(be16_to_cpu(p->valid_to_idx));
-		if (ret >= FW_CLS_TCAM_NUM_ENTRIES)
-=======
 		ret = FW_VI_MAC_CMD_IDX_G(be16_to_cpu(p->valid_to_idx));
 		if (ret >= max_mac_addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ENOMEM;
 	}
 	return ret;
@@ -2231,15 +1742,6 @@ int t4vf_set_addr_hash(struct adapter *adapter, unsigned int viid,
 					     u.exact[0]), 16);
 
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP(FW_VI_MAC_CMD) |
-				     FW_CMD_REQUEST |
-				     FW_CMD_WRITE |
-				     FW_VI_ENABLE_CMD_VIID(viid));
-	cmd.freemacs_to_len16 = cpu_to_be32(FW_VI_MAC_CMD_HASHVECEN |
-					    FW_VI_MAC_CMD_HASHUNIEN(ucast) |
-					    FW_CMD_LEN16(len16));
-=======
 	cmd.op_to_viid = cpu_to_be32(FW_CMD_OP_V(FW_VI_MAC_CMD) |
 				     FW_CMD_REQUEST_F |
 				     FW_CMD_WRITE_F |
@@ -2247,7 +1749,6 @@ int t4vf_set_addr_hash(struct adapter *adapter, unsigned int viid,
 	cmd.freemacs_to_len16 = cpu_to_be32(FW_VI_MAC_CMD_HASHVECEN_F |
 					    FW_VI_MAC_CMD_HASHUNIEN_V(ucast) |
 					    FW_CMD_LEN16_V(len16));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd.u.hash.hashvec = cpu_to_be64(vec);
 	return t4vf_wr_mbox_core(adapter, &cmd, sizeof(cmd), NULL, sleep_ok);
 }
@@ -2283,16 +1784,6 @@ int t4vf_get_port_stats(struct adapter *adapter, int pidx,
 		int ret;
 
 		memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-		cmd.op_to_viid = cpu_to_be32(FW_CMD_OP(FW_VI_STATS_CMD) |
-					     FW_VI_STATS_CMD_VIID(pi->viid) |
-					     FW_CMD_REQUEST |
-					     FW_CMD_READ);
-		cmd.retval_len16 = cpu_to_be32(FW_CMD_LEN16(len16));
-		cmd.u.ctl.nstats_ix =
-			cpu_to_be16(FW_VI_STATS_CMD_IX(ix) |
-				    FW_VI_STATS_CMD_NSTATS(nstats));
-=======
 		cmd.op_to_viid = cpu_to_be32(FW_CMD_OP_V(FW_VI_STATS_CMD) |
 					     FW_VI_STATS_CMD_VIID_V(pi->viid) |
 					     FW_CMD_REQUEST_F |
@@ -2301,7 +1792,6 @@ int t4vf_get_port_stats(struct adapter *adapter, int pidx,
 		cmd.u.ctl.nstats_ix =
 			cpu_to_be16(FW_VI_STATS_CMD_IX_V(ix) |
 				    FW_VI_STATS_CMD_NSTATS_V(nstats));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = t4vf_wr_mbox_ns(adapter, &cmd, len, &rpl);
 		if (ret)
 			return ret;
@@ -2353,15 +1843,6 @@ int t4vf_iq_free(struct adapter *adapter, unsigned int iqtype,
 	struct fw_iq_cmd cmd;
 
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP(FW_IQ_CMD) |
-				    FW_CMD_REQUEST |
-				    FW_CMD_EXEC);
-	cmd.alloc_to_len16 = cpu_to_be32(FW_IQ_CMD_FREE |
-					 FW_LEN16(cmd));
-	cmd.type_to_iqandstindex =
-		cpu_to_be32(FW_IQ_CMD_TYPE(iqtype));
-=======
 	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP_V(FW_IQ_CMD) |
 				    FW_CMD_REQUEST_F |
 				    FW_CMD_EXEC_F);
@@ -2369,7 +1850,6 @@ int t4vf_iq_free(struct adapter *adapter, unsigned int iqtype,
 					 FW_LEN16(cmd));
 	cmd.type_to_iqandstindex =
 		cpu_to_be32(FW_IQ_CMD_TYPE_V(iqtype));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd.iqid = cpu_to_be16(iqid);
 	cmd.fl0id = cpu_to_be16(fl0id);
@@ -2389,27 +1869,16 @@ int t4vf_eth_eq_free(struct adapter *adapter, unsigned int eqid)
 	struct fw_eq_eth_cmd cmd;
 
 	memset(&cmd, 0, sizeof(cmd));
-<<<<<<< HEAD
-	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP(FW_EQ_ETH_CMD) |
-				    FW_CMD_REQUEST |
-				    FW_CMD_EXEC);
-	cmd.alloc_to_len16 = cpu_to_be32(FW_EQ_ETH_CMD_FREE |
-					 FW_LEN16(cmd));
-	cmd.eqid_pkd = cpu_to_be32(FW_EQ_ETH_CMD_EQID(eqid));
-=======
 	cmd.op_to_vfn = cpu_to_be32(FW_CMD_OP_V(FW_EQ_ETH_CMD) |
 				    FW_CMD_REQUEST_F |
 				    FW_CMD_EXEC_F);
 	cmd.alloc_to_len16 = cpu_to_be32(FW_EQ_ETH_CMD_FREE_F |
 					 FW_LEN16(cmd));
 	cmd.eqid_pkd = cpu_to_be32(FW_EQ_ETH_CMD_EQID_V(eqid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return t4vf_wr_mbox(adapter, &cmd, sizeof(cmd), NULL);
 }
 
 /**
-<<<<<<< HEAD
-=======
  *	t4vf_link_down_rc_str - return a string for a Link Down Reason Code
  *	@link_down_rc: Link Down Reason Code
  *
@@ -2619,7 +2088,6 @@ int t4vf_update_port_info(struct port_info *pi)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	t4vf_handle_fw_rpl - process a firmware reply message
  *	@adapter: the adapter
  *	@rpl: start of the firmware message
@@ -2629,11 +2097,7 @@ int t4vf_update_port_info(struct port_info *pi)
 int t4vf_handle_fw_rpl(struct adapter *adapter, const __be64 *rpl)
 {
 	const struct fw_cmd_hdr *cmd_hdr = (const struct fw_cmd_hdr *)rpl;
-<<<<<<< HEAD
-	u8 opcode = FW_CMD_OP_GET(be32_to_cpu(cmd_hdr->hi));
-=======
 	u8 opcode = FW_CMD_OP_G(be32_to_cpu(cmd_hdr->hi));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (opcode) {
 	case FW_PORT_CMD: {
@@ -2642,72 +2106,18 @@ int t4vf_handle_fw_rpl(struct adapter *adapter, const __be64 *rpl)
 		 */
 		const struct fw_port_cmd *port_cmd =
 			(const struct fw_port_cmd *)rpl;
-<<<<<<< HEAD
-		u32 word;
-		int action, port_id, link_ok, speed, fc, pidx;
-
-		/*
-		 * Extract various fields from port status change message.
-		 */
-		action = FW_PORT_CMD_ACTION_GET(
-			be32_to_cpu(port_cmd->action_to_len16));
-		if (action != FW_PORT_ACTION_GET_PORT_INFO) {
-=======
 		int action = FW_PORT_CMD_ACTION_G(
 			be32_to_cpu(port_cmd->action_to_len16));
 		int port_id, pidx;
 
 		if (action != FW_PORT_ACTION_GET_PORT_INFO &&
 		    action != FW_PORT_ACTION_GET_PORT_INFO32) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_err(adapter->pdev_dev,
 				"Unknown firmware PORT reply action %x\n",
 				action);
 			break;
 		}
 
-<<<<<<< HEAD
-		port_id = FW_PORT_CMD_PORTID_GET(
-			be32_to_cpu(port_cmd->op_to_portid));
-
-		word = be32_to_cpu(port_cmd->u.info.lstatus_to_modtype);
-		link_ok = (word & FW_PORT_CMD_LSTATUS) != 0;
-		speed = 0;
-		fc = 0;
-		if (word & FW_PORT_CMD_RXPAUSE)
-			fc |= PAUSE_RX;
-		if (word & FW_PORT_CMD_TXPAUSE)
-			fc |= PAUSE_TX;
-		if (word & FW_PORT_CMD_LSPEED(FW_PORT_CAP_SPEED_100M))
-			speed = SPEED_100;
-		else if (word & FW_PORT_CMD_LSPEED(FW_PORT_CAP_SPEED_1G))
-			speed = SPEED_1000;
-		else if (word & FW_PORT_CMD_LSPEED(FW_PORT_CAP_SPEED_10G))
-			speed = SPEED_10000;
-
-		/*
-		 * Scan all of our "ports" (Virtual Interfaces) looking for
-		 * those bound to the physical port which has changed.  If
-		 * our recorded state doesn't match the current state,
-		 * signal that change to the OS code.
-		 */
-		for_each_port(adapter, pidx) {
-			struct port_info *pi = adap2pinfo(adapter, pidx);
-			struct link_config *lc;
-
-			if (pi->port_id != port_id)
-				continue;
-
-			lc = &pi->link_cfg;
-			if (link_ok != lc->link_ok || speed != lc->speed ||
-			    fc != lc->fc) {
-				/* something changed */
-				lc->link_ok = link_ok;
-				lc->speed = speed;
-				lc->fc = fc;
-				t4vf_os_link_changed(adapter, pidx, link_ok);
-			}
-=======
 		port_id = FW_PORT_CMD_PORTID_G(
 			be32_to_cpu(port_cmd->op_to_portid));
 		for_each_port(adapter, pidx) {
@@ -2716,7 +2126,6 @@ int t4vf_handle_fw_rpl(struct adapter *adapter, const __be64 *rpl)
 			if (pi->port_id != port_id)
 				continue;
 			t4vf_handle_get_port_info(pi, port_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	}
@@ -2727,8 +2136,6 @@ int t4vf_handle_fw_rpl(struct adapter *adapter, const __be64 *rpl)
 	}
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 int t4vf_prep_adapter(struct adapter *adapter)
 {
@@ -2851,4 +2258,3 @@ int t4vf_get_vf_vlan_acl(struct adapter *adapter)
 
 	return vlan;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  HID driver for some a4tech "special" devices
  *
@@ -9,21 +6,10 @@
  *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
  *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
  *  Copyright (c) 2006-2007 Jiri Kosina
-<<<<<<< HEAD
- *  Copyright (c) 2007 Paul Walmsley
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Copyright (c) 2008 Jiri Slaby
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -37,19 +23,14 @@
 #define A4_2WHEEL_MOUSE_HACK_7	0x01
 #define A4_2WHEEL_MOUSE_HACK_B8	0x02
 
-<<<<<<< HEAD
-=======
 #define A4_WHEEL_ORIENTATION	(HID_UP_GENDESK | 0x000000b8)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct a4tech_sc {
 	unsigned long quirks;
 	unsigned int hw_wheel;
 	__s32 delayed_value;
 };
 
-<<<<<<< HEAD
-=======
 static int a4_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 			    struct hid_field *field, struct hid_usage *usage,
 			    unsigned long **bit, int *max)
@@ -72,22 +53,16 @@ static int a4_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int a4_input_mapped(struct hid_device *hdev, struct hid_input *hi,
 		struct hid_field *field, struct hid_usage *usage,
 		unsigned long **bit, int *max)
 {
 	struct a4tech_sc *a4 = hid_get_drvdata(hdev);
 
-<<<<<<< HEAD
-	if (usage->type == EV_REL && usage->code == REL_WHEEL)
-		set_bit(REL_HWHEEL, *bit);
-=======
 	if (usage->type == EV_REL && usage->code == REL_WHEEL_HI_RES) {
 		set_bit(REL_HWHEEL, *bit);
 		set_bit(REL_HWHEEL_HI_RES, *bit);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((a4->quirks & A4_2WHEEL_MOUSE_HACK_7) && usage->hid == 0x00090007)
 		return -1;
@@ -101,37 +76,22 @@ static int a4_event(struct hid_device *hdev, struct hid_field *field,
 	struct a4tech_sc *a4 = hid_get_drvdata(hdev);
 	struct input_dev *input;
 
-<<<<<<< HEAD
-	if (!(hdev->claimed & HID_CLAIMED_INPUT) || !field->hidinput ||
-			!usage->type)
-=======
 	if (!(hdev->claimed & HID_CLAIMED_INPUT) || !field->hidinput)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	input = field->hidinput->input;
 
 	if (a4->quirks & A4_2WHEEL_MOUSE_HACK_B8) {
-<<<<<<< HEAD
-		if (usage->type == EV_REL && usage->code == REL_WHEEL) {
-=======
 		if (usage->type == EV_REL && usage->code == REL_WHEEL_HI_RES) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			a4->delayed_value = value;
 			return 1;
 		}
 
-<<<<<<< HEAD
-		if (usage->hid == 0x000100b8) {
-			input_event(input, EV_REL, value ? REL_HWHEEL :
-					REL_WHEEL, a4->delayed_value);
-=======
 		if (usage->hid == A4_WHEEL_ORIENTATION) {
 			input_event(input, EV_REL, value ? REL_HWHEEL :
 					REL_WHEEL, a4->delayed_value);
 			input_event(input, EV_REL, value ? REL_HWHEEL_HI_RES :
 					REL_WHEEL_HI_RES, a4->delayed_value * 120);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 		}
 	}
@@ -141,14 +101,9 @@ static int a4_event(struct hid_device *hdev, struct hid_field *field,
 		return 1;
 	}
 
-<<<<<<< HEAD
-	if (usage->code == REL_WHEEL && a4->hw_wheel) {
-		input_event(input, usage->type, REL_HWHEEL, value);
-=======
 	if (usage->code == REL_WHEEL_HI_RES && a4->hw_wheel) {
 		input_event(input, usage->type, REL_HWHEEL, value);
 		input_event(input, usage->type, REL_HWHEEL_HI_RES, value * 120);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -160,18 +115,10 @@ static int a4_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	struct a4tech_sc *a4;
 	int ret;
 
-<<<<<<< HEAD
-	a4 = kzalloc(sizeof(*a4), GFP_KERNEL);
-	if (a4 == NULL) {
-		hid_err(hdev, "can't alloc device descriptor\n");
-		ret = -ENOMEM;
-		goto err_free;
-=======
 	a4 = devm_kzalloc(&hdev->dev, sizeof(*a4), GFP_KERNEL);
 	if (a4 == NULL) {
 		hid_err(hdev, "can't alloc device descriptor\n");
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	a4->quirks = id->driver_data;
@@ -181,38 +128,16 @@ static int a4_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	ret = hid_parse(hdev);
 	if (ret) {
 		hid_err(hdev, "parse failed\n");
-<<<<<<< HEAD
-		goto err_free;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = hid_hw_start(hdev, HID_CONNECT_DEFAULT);
 	if (ret) {
 		hid_err(hdev, "hw start failed\n");
-<<<<<<< HEAD
-		goto err_free;
-	}
-
-	return 0;
-err_free:
-	kfree(a4);
-	return ret;
-}
-
-static void a4_remove(struct hid_device *hdev)
-{
-	struct a4tech_sc *a4 = hid_get_drvdata(hdev);
-
-	hid_hw_stop(hdev);
-	kfree(a4);
-=======
 		return ret;
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct hid_device_id a4_devices[] = {
@@ -222,11 +147,8 @@ static const struct hid_device_id a4_devices[] = {
 		.driver_data = A4_2WHEEL_MOUSE_HACK_B8 },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_A4TECH, USB_DEVICE_ID_A4TECH_RP_649),
 		.driver_data = A4_2WHEEL_MOUSE_HACK_B8 },
-<<<<<<< HEAD
-=======
 	{ HID_USB_DEVICE(USB_VENDOR_ID_A4TECH, USB_DEVICE_ID_A4TECH_NB_95),
 		.driver_data = A4_2WHEEL_MOUSE_HACK_B8 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(hid, a4_devices);
@@ -234,26 +156,6 @@ MODULE_DEVICE_TABLE(hid, a4_devices);
 static struct hid_driver a4_driver = {
 	.name = "a4tech",
 	.id_table = a4_devices,
-<<<<<<< HEAD
-	.input_mapped = a4_input_mapped,
-	.event = a4_event,
-	.probe = a4_probe,
-	.remove = a4_remove,
-};
-
-static int __init a4_init(void)
-{
-	return hid_register_driver(&a4_driver);
-}
-
-static void __exit a4_exit(void)
-{
-	hid_unregister_driver(&a4_driver);
-}
-
-module_init(a4_init);
-module_exit(a4_exit);
-=======
 	.input_mapping = a4_input_mapping,
 	.input_mapped = a4_input_mapped,
 	.event = a4_event,
@@ -261,5 +163,4 @@ module_exit(a4_exit);
 };
 module_hid_driver(a4_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

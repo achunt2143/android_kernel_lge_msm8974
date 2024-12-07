@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ARCH_ASM_MACH_OMAP2_PRCM_COMMON_H
 #define __ARCH_ASM_MACH_OMAP2_PRCM_COMMON_H
 
@@ -12,13 +9,6 @@
  * Copyright (C) 2007-2009 Nokia Corporation
  *
  * Written by Paul Walmsley
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Module offsets from both CM_BASE & PRM_BASE */
@@ -55,8 +45,6 @@
 #define OMAP3430_NEON_MOD				0xb00
 #define OMAP3430ES2_USBHOST_MOD				0xc00
 
-<<<<<<< HEAD
-=======
 /*
  * TI81XX PRM module offsets
  */
@@ -75,7 +63,6 @@
 #define TI816X_PRM_SGX_MOD				0x0f00
 #define TI81XX_PRM_ALWON_MOD			0x1800
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 24XX register bits shared between CM & PRM registers */
 
 /* CM_FCLKEN1_CORE, CM_ICLKEN1_CORE, PM_WKEN1_CORE shared bits */
@@ -137,11 +124,8 @@
 #define OMAP2430_EN_MDM_INTC_MASK			(1 << 11)
 #define OMAP2430_EN_USBHS_SHIFT				6
 #define OMAP2430_EN_USBHS_MASK				(1 << 6)
-<<<<<<< HEAD
-=======
 #define OMAP24XX_EN_GPMC_SHIFT				1
 #define OMAP24XX_EN_GPMC_MASK				(1 << 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CM_IDLEST1_CORE, PM_WKST1_CORE shared bits */
 #define OMAP2420_ST_MMC_SHIFT				26
@@ -210,11 +194,8 @@
 /* PM_WKST_WKUP, CM_IDLEST_WKUP shared bits */
 #define OMAP24XX_ST_GPIOS_SHIFT				2
 #define OMAP24XX_ST_GPIOS_MASK				(1 << 2)
-<<<<<<< HEAD
-=======
 #define OMAP24XX_ST_32KSYNC_SHIFT			1
 #define OMAP24XX_ST_32KSYNC_MASK			(1 << 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OMAP24XX_ST_GPT1_SHIFT				0
 #define OMAP24XX_ST_GPT1_MASK				(1 << 0)
 
@@ -239,13 +220,8 @@
 #define OMAP3430_EN_MMC2_SHIFT				25
 #define OMAP3430_EN_MMC1_MASK				(1 << 24)
 #define OMAP3430_EN_MMC1_SHIFT				24
-<<<<<<< HEAD
-#define OMAP3430_EN_UART4_MASK				(1 << 23)
-#define OMAP3430_EN_UART4_SHIFT				23
-=======
 #define AM35XX_EN_UART4_MASK				(1 << 23)
 #define AM35XX_EN_UART4_SHIFT				23
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OMAP3430_EN_MCSPI4_MASK				(1 << 21)
 #define OMAP3430_EN_MCSPI4_SHIFT			21
 #define OMAP3430_EN_MCSPI3_MASK				(1 << 20)
@@ -350,11 +326,8 @@
 #define OMAP3430_ST_SR1_MASK				(1 << 6)
 #define OMAP3430_ST_GPIO1_SHIFT				3
 #define OMAP3430_ST_GPIO1_MASK				(1 << 3)
-<<<<<<< HEAD
-=======
 #define OMAP3430_ST_32KSYNC_SHIFT			2
 #define OMAP3430_ST_32KSYNC_MASK			(1 << 2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OMAP3430_ST_GPT12_SHIFT				1
 #define OMAP3430_ST_GPT12_MASK				(1 << 1)
 #define OMAP3430_ST_GPT1_SHIFT				0
@@ -448,18 +421,6 @@
 #define OMAP3430_EN_CORE_MASK				(1 << 0)
 
 
-<<<<<<< HEAD
-/*
- * MAX_MODULE_HARDRESET_WAIT: Maximum microseconds to wait for an OMAP
- * submodule to exit hardreset
- */
-#define MAX_MODULE_HARDRESET_WAIT		10000
-
-# ifndef __ASSEMBLER__
-extern void __iomem *prm_base;
-extern void __iomem *cm_base;
-extern void __iomem *cm2_base;
-=======
 
 /*
  * Maximum time(us) it takes to output the signal WUCLKOUT of the last
@@ -491,7 +452,6 @@ extern void __iomem *cm2_base;
 		udelay(1);					\
 	}							\
 })
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct omap_prcm_irq - describes a PRCM interrupt bit
@@ -515,10 +475,7 @@ struct omap_prcm_irq {
  * struct omap_prcm_irq_setup - PRCM interrupt controller details
  * @ack: PRM register offset for the first PRM_IRQSTATUS_MPU register
  * @mask: PRM register offset for the first PRM_IRQENABLE_MPU register
-<<<<<<< HEAD
-=======
  * @pm_ctrl: PRM register offset for the PRM_IO_PMCTRL register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @nr_regs: number of PRM_IRQ{STATUS,ENABLE}_MPU* registers
  * @nr_irqs: number of entries in the @irqs array
  * @irqs: ptr to an array of PRCM interrupt bits (see @nr_irqs)
@@ -527,10 +484,7 @@ struct omap_prcm_irq {
  * @ocp_barrier: fn ptr to force buffered PRM writes to complete
  * @save_and_clear_irqen: fn ptr to save and clear IRQENABLE regs
  * @restore_irqen: fn ptr to save and clear IRQENABLE regs
-<<<<<<< HEAD
-=======
  * @reconfigure_io_chain: fn ptr to reconfigure IO chain
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @saved_mask: IRQENABLE regs are saved here during suspend
  * @priority_mask: 1 bit per IRQ, set to 1 if omap_prcm_irq.priority = true
  * @base_irq: base dynamic IRQ number, returned from irq_alloc_descs() in init
@@ -544,10 +498,7 @@ struct omap_prcm_irq {
 struct omap_prcm_irq_setup {
 	u16 ack;
 	u16 mask;
-<<<<<<< HEAD
-=======
 	u16 pm_ctrl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 nr_regs;
 	u8 nr_irqs;
 	const struct omap_prcm_irq *irqs;
@@ -556,10 +507,7 @@ struct omap_prcm_irq_setup {
 	void (*ocp_barrier)(void);
 	void (*save_and_clear_irqen)(u32 *saved_mask);
 	void (*restore_irqen)(u32 *saved_mask);
-<<<<<<< HEAD
-=======
 	void (*reconfigure_io_chain)(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 *saved_mask;
 	u32 *priority_mask;
 	int base_irq;
@@ -574,9 +522,6 @@ struct omap_prcm_irq_setup {
 	.priority = _priority				\
 	}
 
-<<<<<<< HEAD
-extern void omap_prcm_irq_cleanup(void);
-=======
 struct omap_domain_base {
 	u32 pa;
 	void __iomem *va;
@@ -605,7 +550,6 @@ struct omap_prcm_init_data {
 	struct device_node *np;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int omap_prcm_register_chain_handler(
 	struct omap_prcm_irq_setup *irq_setup);
 extern int omap_prcm_event_to_irq(const char *event);

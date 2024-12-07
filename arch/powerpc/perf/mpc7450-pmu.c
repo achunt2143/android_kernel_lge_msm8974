@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Performance counter support for MPC7450-family processors.
  *
  * Copyright 2008-2009 Paul Mackerras, IBM Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/string.h>
 #include <linux/perf_event.h>
@@ -159,11 +148,7 @@ static u32 classbits[N_CLASSES - 1][2] = {
 };
 
 static int mpc7450_get_constraint(u64 event, unsigned long *maskp,
-<<<<<<< HEAD
-				  unsigned long *valp)
-=======
 				  unsigned long *valp, u64 event_config1 __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int pmc, class;
 	u32 mask, value;
@@ -271,15 +256,10 @@ static const u32 pmcsel_mask[N_COUNTER] = {
 /*
  * Compute MMCR0/1/2 values for a set of events.
  */
-<<<<<<< HEAD
-static int mpc7450_compute_mmcr(u64 event[], int n_ev,
-				unsigned int hwc[], unsigned long mmcr[])
-=======
 static int mpc7450_compute_mmcr(u64 event[], int n_ev, unsigned int hwc[],
 				struct mmcr_regs *mmcr,
 				struct perf_event *pevents[],
 				u32 flags __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 event_index[N_CLASSES][N_COUNTER];
 	int n_classevent[N_CLASSES];
@@ -342,11 +322,6 @@ static int mpc7450_compute_mmcr(u64 event[], int n_ev, unsigned int hwc[],
 		mmcr0 |= MMCR0_PMCnCE;
 
 	/* Return MMCRx values */
-<<<<<<< HEAD
-	mmcr[0] = mmcr0;
-	mmcr[1] = mmcr1;
-	mmcr[2] = mmcr2;
-=======
 	mmcr->mmcr0 = mmcr0;
 	mmcr->mmcr1 = mmcr1;
 	mmcr->mmcr2 = mmcr2;
@@ -357,7 +332,6 @@ static int mpc7450_compute_mmcr(u64 event[], int n_ev, unsigned int hwc[],
 	 * use mmcr2 value.
 	 */
 	mmcr->mmcra = mmcr2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -365,21 +339,12 @@ static int mpc7450_compute_mmcr(u64 event[], int n_ev, unsigned int hwc[],
  * Disable counting by a PMC.
  * Note that the pmc argument is 0-based here, not 1-based.
  */
-<<<<<<< HEAD
-static void mpc7450_disable_pmc(unsigned int pmc, unsigned long mmcr[])
-{
-	if (pmc <= 1)
-		mmcr[0] &= ~(pmcsel_mask[pmc] << pmcsel_shift[pmc]);
-	else
-		mmcr[1] &= ~(pmcsel_mask[pmc] << pmcsel_shift[pmc]);
-=======
 static void mpc7450_disable_pmc(unsigned int pmc, struct mmcr_regs *mmcr)
 {
 	if (pmc <= 1)
 		mmcr->mmcr0 &= ~(pmcsel_mask[pmc] << pmcsel_shift[pmc]);
 	else
 		mmcr->mmcr1 &= ~(pmcsel_mask[pmc] << pmcsel_shift[pmc]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mpc7450_generic_events[] = {
@@ -397,11 +362,7 @@ static int mpc7450_generic_events[] = {
  * 0 means not supported, -1 means nonsensical, other values
  * are event codes.
  */
-<<<<<<< HEAD
-static int mpc7450_cache_events[C(MAX)][C(OP_MAX)][C(RESULT_MAX)] = {
-=======
 static u64 mpc7450_cache_events[C(MAX)][C(OP_MAX)][C(RESULT_MAX)] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[C(L1D)] = {		/* 	RESULT_ACCESS	RESULT_MISS */
 		[C(OP_READ)] = {	0,		0x225	},
 		[C(OP_WRITE)] = {	0,		0x227	},
@@ -456,14 +417,9 @@ struct power_pmu mpc7450_pmu = {
 
 static int __init init_mpc7450_pmu(void)
 {
-<<<<<<< HEAD
-	if (!cur_cpu_spec->oprofile_cpu_type ||
-	    strcmp(cur_cpu_spec->oprofile_cpu_type, "ppc/7450"))
-=======
 	if (!pvr_version_is(PVR_VER_7450) && !pvr_version_is(PVR_VER_7455) &&
 	    !pvr_version_is(PVR_VER_7447) && !pvr_version_is(PVR_VER_7447A) &&
 	    !pvr_version_is(PVR_VER_7448))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	return register_power_pmu(&mpc7450_pmu);

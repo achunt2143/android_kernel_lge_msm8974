@@ -1,19 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sched
 
 #if !defined(_TRACE_SCHED_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_SCHED_H
 
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/kthread.h>
 #include <linux/sched/numa_balancing.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/tracepoint.h>
 #include <linux/binfmts.h>
 
@@ -59,44 +52,6 @@ TRACE_EVENT(sched_kthread_stop_ret,
 	TP_printk("ret=%d", __entry->ret)
 );
 
-<<<<<<< HEAD
-/*
- * Tracepoint for task enqueue/dequeue:
- */
-TRACE_EVENT(sched_enq_deq_task,
-
-	TP_PROTO(struct task_struct *p, int enqueue),
-
-	TP_ARGS(p, enqueue),
-
-	TP_STRUCT__entry(
-		__array(	char,	comm,	TASK_COMM_LEN	)
-		__field(	pid_t,	pid			)
-		__field(	int,	prio			)
-		__field(	int,	cpu			)
-		__field(	int,	enqueue			)
-		__field(unsigned int,	nr_running		)
-		__field(unsigned long,	cpu_load		)
-		__field(unsigned int,	rt_nr_running		)
-	),
-
-	TP_fast_assign(
-		memcpy(__entry->comm, p->comm, TASK_COMM_LEN);
-		__entry->pid		= p->pid;
-		__entry->prio		= p->prio;
-		__entry->cpu		= task_cpu(p);
-		__entry->enqueue	= enqueue;
-		__entry->nr_running	= task_rq(p)->nr_running;
-		__entry->cpu_load	= task_rq(p)->cpu_load[0];
-		__entry->rt_nr_running	= task_rq(p)->rt.rt_nr_running;
-	),
-
-	TP_printk("cpu=%d %s comm=%s pid=%d prio=%d nr_running=%u cpu_load=%lu rt_nr_running=%u",
-			__entry->cpu, __entry->enqueue ? "enqueue" : "dequeue",
-			__entry->comm, __entry->pid,
-			__entry->prio, __entry->nr_running,
-			__entry->cpu_load, __entry->rt_nr_running)
-=======
 /**
  * sched_kthread_work_queue_work - called when a work gets queued
  * @worker:	pointer to the kthread_worker
@@ -178,7 +133,6 @@ TRACE_EVENT(sched_kthread_work_execute_end,
 	),
 
 	TP_printk("work struct %p: function %ps", __entry->work, __entry->function)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /*
@@ -186,45 +140,20 @@ TRACE_EVENT(sched_kthread_work_execute_end,
  */
 DECLARE_EVENT_CLASS(sched_wakeup_template,
 
-<<<<<<< HEAD
-	TP_PROTO(struct task_struct *p, int success),
-
-	TP_ARGS(p, success),
-=======
 	TP_PROTO(struct task_struct *p),
 
 	TP_ARGS(__perf_task(p)),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__array(	char,	comm,	TASK_COMM_LEN	)
 		__field(	pid_t,	pid			)
 		__field(	int,	prio			)
-<<<<<<< HEAD
-		__field(	int,	success			)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	int,	target_cpu		)
 	),
 
 	TP_fast_assign(
 		memcpy(__entry->comm, p->comm, TASK_COMM_LEN);
 		__entry->pid		= p->pid;
-<<<<<<< HEAD
-		__entry->prio		= p->prio;
-		__entry->success	= success;
-		__entry->target_cpu	= task_cpu(p);
-	),
-
-	TP_printk("comm=%s pid=%d prio=%d success=%d target_cpu=%03d",
-		  __entry->comm, __entry->pid, __entry->prio,
-		  __entry->success, __entry->target_cpu)
-);
-
-DEFINE_EVENT(sched_wakeup_template, sched_wakeup,
-	     TP_PROTO(struct task_struct *p, int success),
-	     TP_ARGS(p, success));
-=======
 		__entry->prio		= p->prio; /* XXX SCHED_DEADLINE */
 		__entry->target_cpu	= task_cpu(p);
 	),
@@ -249,33 +178,11 @@ DEFINE_EVENT(sched_wakeup_template, sched_waking,
 DEFINE_EVENT(sched_wakeup_template, sched_wakeup,
 	     TP_PROTO(struct task_struct *p),
 	     TP_ARGS(p));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Tracepoint for waking up a new task:
  */
 DEFINE_EVENT(sched_wakeup_template, sched_wakeup_new,
-<<<<<<< HEAD
-	     TP_PROTO(struct task_struct *p, int success),
-	     TP_ARGS(p, success));
-
-#ifdef CREATE_TRACE_POINTS
-static inline long __trace_sched_switch_state(struct task_struct *p)
-{
-	long state = p->state;
-
-#ifdef CONFIG_PREEMPT
-	/*
-	 * For all intents and purposes a preempted task is a running task.
-	 */
-	if (task_thread_info(p)->preempt_count & PREEMPT_ACTIVE)
-		state = TASK_RUNNING | TASK_STATE_MAX;
-#endif
-
-	return state;
-}
-#endif
-=======
 	     TP_PROTO(struct task_struct *p),
 	     TP_ARGS(p));
 
@@ -308,26 +215,18 @@ static inline long __trace_sched_switch_state(bool preempt,
 	return state ? (1 << (state - 1)) : state;
 }
 #endif /* CREATE_TRACE_POINTS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Tracepoint for task switches, performed by the scheduler:
  */
 TRACE_EVENT(sched_switch,
 
-<<<<<<< HEAD
-	TP_PROTO(struct task_struct *prev,
-		 struct task_struct *next),
-
-	TP_ARGS(prev, next),
-=======
 	TP_PROTO(bool preempt,
 		 struct task_struct *prev,
 		 struct task_struct *next,
 		 unsigned int prev_state),
 
 	TP_ARGS(preempt, prev, next, prev_state),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__array(	char,	prev_comm,	TASK_COMM_LEN	)
@@ -343,30 +242,15 @@ TRACE_EVENT(sched_switch,
 		memcpy(__entry->next_comm, next->comm, TASK_COMM_LEN);
 		__entry->prev_pid	= prev->pid;
 		__entry->prev_prio	= prev->prio;
-<<<<<<< HEAD
-		__entry->prev_state	= __trace_sched_switch_state(prev);
-		memcpy(__entry->prev_comm, prev->comm, TASK_COMM_LEN);
-		__entry->next_pid	= next->pid;
-		__entry->next_prio	= next->prio;
-=======
 		__entry->prev_state	= __trace_sched_switch_state(preempt, prev_state, prev);
 		memcpy(__entry->prev_comm, prev->comm, TASK_COMM_LEN);
 		__entry->next_pid	= next->pid;
 		__entry->next_prio	= next->prio;
 		/* XXX SCHED_DEADLINE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("prev_comm=%s prev_pid=%d prev_prio=%d prev_state=%s%s ==> next_comm=%s next_pid=%d next_prio=%d",
 		__entry->prev_comm, __entry->prev_pid, __entry->prev_prio,
-<<<<<<< HEAD
-		__entry->prev_state & (TASK_STATE_MAX-1) ?
-		  __print_flags(__entry->prev_state & (TASK_STATE_MAX-1), "|",
-				{ 1, "S"} , { 2, "D" }, { 4, "T" }, { 8, "t" },
-				{ 16, "Z" }, { 32, "X" }, { 64, "x" },
-				{ 128, "W" }) : "R",
-		__entry->prev_state & TASK_STATE_MAX ? "+" : "",
-=======
 
 		(__entry->prev_state & (TASK_REPORT_MAX - 1)) ?
 		  __print_flags(__entry->prev_state & (TASK_REPORT_MAX - 1), "|",
@@ -381,7 +265,6 @@ TRACE_EVENT(sched_switch,
 		  "R",
 
 		__entry->prev_state & TASK_REPORT_MAX ? "+" : "",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->next_comm, __entry->next_pid, __entry->next_prio)
 );
 
@@ -405,11 +288,7 @@ TRACE_EVENT(sched_migrate_task,
 	TP_fast_assign(
 		memcpy(__entry->comm, p->comm, TASK_COMM_LEN);
 		__entry->pid		= p->pid;
-<<<<<<< HEAD
-		__entry->prio		= p->prio;
-=======
 		__entry->prio		= p->prio; /* XXX SCHED_DEADLINE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->orig_cpu	= task_cpu(p);
 		__entry->dest_cpu	= dest_cpu;
 	),
@@ -419,84 +298,6 @@ TRACE_EVENT(sched_migrate_task,
 		  __entry->orig_cpu, __entry->dest_cpu)
 );
 
-<<<<<<< HEAD
-/*
- * Tracepoint for a CPU going offline/online:
- */
-TRACE_EVENT(sched_cpu_hotplug,
-
-	TP_PROTO(int affected_cpu, int error, int status),
-
-	TP_ARGS(affected_cpu, error, status),
-
-	TP_STRUCT__entry(
-		__field(	int,	affected_cpu		)
-		__field(	int,	error			)
-		__field(	int,	status			)
-	),
-
-	TP_fast_assign(
-		__entry->affected_cpu	= affected_cpu;
-		__entry->error		= error;
-		__entry->status		= status;
-	),
-
-	TP_printk("cpu %d %s error=%d", __entry->affected_cpu,
-		__entry->status ? "online" : "offline", __entry->error)
-);
-
-/*
- * Tracepoint for load balancing:
- */
-#if NR_CPUS > 32
-#error "Unsupported NR_CPUS for lb tracepoint."
-#endif
-TRACE_EVENT(sched_load_balance,
-
-	TP_PROTO(int cpu, enum cpu_idle_type idle, int balance,
-		 unsigned long group_mask, int busiest_nr_running,
-		 unsigned long imbalance, unsigned int env_flags, int ld_moved,
-		 unsigned int balance_interval),
-
-	TP_ARGS(cpu, idle, balance, group_mask, busiest_nr_running,
-		imbalance, env_flags, ld_moved, balance_interval),
-
-	TP_STRUCT__entry(
-		__field(	int,			cpu)
-		__field(	enum cpu_idle_type,	idle)
-		__field(	int,			balance)
-		__field(	unsigned long,		group_mask)
-		__field(	int,			busiest_nr_running)
-		__field(	unsigned long,		imbalance)
-		__field(	unsigned int,		env_flags)
-		__field(	int,			ld_moved)
-		__field(	unsigned int,		balance_interval)
-	),
-
-	TP_fast_assign(
-		__entry->cpu			= cpu;
-		__entry->idle			= idle;
-		__entry->balance		= balance;
-		__entry->group_mask		= group_mask;
-		__entry->busiest_nr_running	= busiest_nr_running;
-		__entry->imbalance		= imbalance;
-		__entry->env_flags		= env_flags;
-		__entry->ld_moved		= ld_moved;
-		__entry->balance_interval	= balance_interval;
-	),
-
-	TP_printk("cpu=%d state=%s balance=%d group=%#lx busy_nr=%d imbalance=%ld flags=%#x ld_moved=%d bal_int=%d",
-		  __entry->cpu,
-		  __entry->idle == CPU_IDLE ? "idle" :
-		  (__entry->idle == CPU_NEWLY_IDLE ? "newly_idle" : "busy"),
-		  __entry->balance,
-		  __entry->group_mask, __entry->busiest_nr_running,
-		  __entry->imbalance, __entry->env_flags, __entry->ld_moved,
-		  __entry->balance_interval)
-);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DECLARE_EVENT_CLASS(sched_process_template,
 
 	TP_PROTO(struct task_struct *p),
@@ -512,11 +313,7 @@ DECLARE_EVENT_CLASS(sched_process_template,
 	TP_fast_assign(
 		memcpy(__entry->comm, p->comm, TASK_COMM_LEN);
 		__entry->pid		= p->pid;
-<<<<<<< HEAD
-		__entry->prio		= p->prio;
-=======
 		__entry->prio		= p->prio; /* XXX SCHED_DEADLINE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("comm=%s pid=%d prio=%d",
@@ -529,10 +326,6 @@ DECLARE_EVENT_CLASS(sched_process_template,
 DEFINE_EVENT(sched_process_template, sched_process_free,
 	     TP_PROTO(struct task_struct *p),
 	     TP_ARGS(p));
-<<<<<<< HEAD
-	     
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Tracepoint for a task exiting:
@@ -566,11 +359,7 @@ TRACE_EVENT(sched_process_wait,
 	TP_fast_assign(
 		memcpy(__entry->comm, current->comm, TASK_COMM_LEN);
 		__entry->pid		= pid_nr(pid);
-<<<<<<< HEAD
-		__entry->prio		= current->prio;
-=======
 		__entry->prio		= current->prio; /* XXX SCHED_DEADLINE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("comm=%s pid=%d prio=%d",
@@ -578,11 +367,7 @@ TRACE_EVENT(sched_process_wait,
 );
 
 /*
-<<<<<<< HEAD
- * Tracepoint for do_fork:
-=======
  * Tracepoint for kernel_clone:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 TRACE_EVENT(sched_process_fork,
 
@@ -635,8 +420,6 @@ TRACE_EVENT(sched_process_exec,
 		  __entry->pid, __entry->old_pid)
 );
 
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_SCHEDSTATS
 #define DEFINE_EVENT_SCHEDSTAT DEFINE_EVENT
@@ -646,24 +429,15 @@ TRACE_EVENT(sched_process_exec,
 #define DECLARE_EVENT_CLASS_SCHEDSTAT DECLARE_EVENT_CLASS_NOP
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * XXX the below sched_stat tracepoints only apply to SCHED_OTHER/BATCH/IDLE
  *     adding sched_stat support to SCHED_FIFO/RR would be welcome.
  */
-<<<<<<< HEAD
-DECLARE_EVENT_CLASS(sched_stat_template,
-
-	TP_PROTO(struct task_struct *tsk, u64 delay),
-
-	TP_ARGS(tsk, delay),
-=======
 DECLARE_EVENT_CLASS_SCHEDSTAT(sched_stat_template,
 
 	TP_PROTO(struct task_struct *tsk, u64 delay),
 
 	TP_ARGS(__perf_task(tsk), __perf_count(delay)),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__array( char,	comm,	TASK_COMM_LEN	)
@@ -675,12 +449,6 @@ DECLARE_EVENT_CLASS_SCHEDSTAT(sched_stat_template,
 		memcpy(__entry->comm, tsk->comm, TASK_COMM_LEN);
 		__entry->pid	= tsk->pid;
 		__entry->delay	= delay;
-<<<<<<< HEAD
-	)
-	TP_perf_assign(
-		__perf_count(delay);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("comm=%s pid=%d delay=%Lu [ns]",
@@ -688,19 +456,11 @@ DECLARE_EVENT_CLASS_SCHEDSTAT(sched_stat_template,
 			(unsigned long long)__entry->delay)
 );
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Tracepoint for accounting wait time (time the task is runnable
  * but not actually running due to scheduler contention).
  */
-<<<<<<< HEAD
-DEFINE_EVENT(sched_stat_template, sched_stat_wait,
-=======
 DEFINE_EVENT_SCHEDSTAT(sched_stat_template, sched_stat_wait,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     TP_PROTO(struct task_struct *tsk, u64 delay),
 	     TP_ARGS(tsk, delay));
 
@@ -708,11 +468,7 @@ DEFINE_EVENT_SCHEDSTAT(sched_stat_template, sched_stat_wait,
  * Tracepoint for accounting sleep time (time the task is not runnable,
  * including iowait, see below).
  */
-<<<<<<< HEAD
-DEFINE_EVENT(sched_stat_template, sched_stat_sleep,
-=======
 DEFINE_EVENT_SCHEDSTAT(sched_stat_template, sched_stat_sleep,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     TP_PROTO(struct task_struct *tsk, u64 delay),
 	     TP_ARGS(tsk, delay));
 
@@ -720,22 +476,14 @@ DEFINE_EVENT_SCHEDSTAT(sched_stat_template, sched_stat_sleep,
  * Tracepoint for accounting iowait time (time the task is not runnable
  * due to waiting on IO to complete).
  */
-<<<<<<< HEAD
-DEFINE_EVENT(sched_stat_template, sched_stat_iowait,
-=======
 DEFINE_EVENT_SCHEDSTAT(sched_stat_template, sched_stat_iowait,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     TP_PROTO(struct task_struct *tsk, u64 delay),
 	     TP_ARGS(tsk, delay));
 
 /*
  * Tracepoint for accounting blocked time (time the task is in uninterruptible).
  */
-<<<<<<< HEAD
-DEFINE_EVENT(sched_stat_template, sched_stat_blocked,
-=======
 DEFINE_EVENT_SCHEDSTAT(sched_stat_template, sched_stat_blocked,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     TP_PROTO(struct task_struct *tsk, u64 delay),
 	     TP_ARGS(tsk, delay));
 
@@ -743,48 +491,22 @@ DEFINE_EVENT_SCHEDSTAT(sched_stat_template, sched_stat_blocked,
  * Tracepoint for accounting runtime (time the task is executing
  * on a CPU).
  */
-<<<<<<< HEAD
-TRACE_EVENT(sched_stat_runtime,
-
-	TP_PROTO(struct task_struct *tsk, u64 runtime, u64 vruntime),
-
-	TP_ARGS(tsk, runtime, vruntime),
-=======
 DECLARE_EVENT_CLASS(sched_stat_runtime,
 
 	TP_PROTO(struct task_struct *tsk, u64 runtime),
 
 	TP_ARGS(tsk, __perf_count(runtime)),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__array( char,	comm,	TASK_COMM_LEN	)
 		__field( pid_t,	pid			)
 		__field( u64,	runtime			)
-<<<<<<< HEAD
-		__field( u64,	vruntime			)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		memcpy(__entry->comm, tsk->comm, TASK_COMM_LEN);
 		__entry->pid		= tsk->pid;
 		__entry->runtime	= runtime;
-<<<<<<< HEAD
-		__entry->vruntime	= vruntime;
-	)
-	TP_perf_assign(
-		__perf_count(runtime);
-	),
-
-	TP_printk("comm=%s pid=%d runtime=%Lu [ns] vruntime=%Lu [ns]",
-			__entry->comm, __entry->pid,
-			(unsigned long long)__entry->runtime,
-			(unsigned long long)__entry->vruntime)
-);
-
-=======
 	),
 
 	TP_printk("comm=%s pid=%d runtime=%Lu [ns]",
@@ -796,22 +518,15 @@ DEFINE_EVENT(sched_stat_runtime, sched_stat_runtime,
 	     TP_PROTO(struct task_struct *tsk, u64 runtime),
 	     TP_ARGS(tsk, runtime));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Tracepoint for showing priority inheritance modifying a tasks
  * priority.
  */
 TRACE_EVENT(sched_pi_setprio,
 
-<<<<<<< HEAD
-	TP_PROTO(struct task_struct *tsk, int newprio),
-
-	TP_ARGS(tsk, newprio),
-=======
 	TP_PROTO(struct task_struct *tsk, struct task_struct *pi_task),
 
 	TP_ARGS(tsk, pi_task),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__array( char,	comm,	TASK_COMM_LEN	)
@@ -824,14 +539,10 @@ TRACE_EVENT(sched_pi_setprio,
 		memcpy(__entry->comm, tsk->comm, TASK_COMM_LEN);
 		__entry->pid		= tsk->pid;
 		__entry->oldprio	= tsk->prio;
-<<<<<<< HEAD
-		__entry->newprio	= newprio;
-=======
 		__entry->newprio	= pi_task ?
 				min(tsk->normal_prio, pi_task->prio) :
 				tsk->normal_prio;
 		/* XXX SCHED_DEADLINE bits missing */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("comm=%s pid=%d oldprio=%d newprio=%d",
@@ -839,8 +550,6 @@ TRACE_EVENT(sched_pi_setprio,
 			__entry->oldprio, __entry->newprio)
 );
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_DETECT_HUNG_TASK
 TRACE_EVENT(sched_process_hang,
 	TP_PROTO(struct task_struct *tsk),
@@ -1080,7 +789,6 @@ DECLARE_TRACE(sched_compute_energy_tp,
 		 unsigned long max_util, unsigned long busy_time),
 	TP_ARGS(p, dst_cpu, energy, max_util, busy_time));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _TRACE_SCHED_H */
 
 /* This part must be outside protection */

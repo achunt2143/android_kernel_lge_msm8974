@@ -1,25 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MX31 CPU type detection
  *
  * Copyright (c) 2009 Daniel Mack <daniel@caiaq.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-
-#include <linux/module.h>
-#include <linux/io.h>
-#include <mach/hardware.h>
-#include <mach/iim.h>
-#include <mach/common.h>
-=======
  */
 
 #include <linux/module.h>
@@ -29,7 +12,6 @@
 #include "common.h"
 #include "hardware.h"
 #include "iim.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int mx31_cpu_rev = -1;
 
@@ -51,12 +33,6 @@ static struct {
 
 static int mx31_read_cpu_rev(void)
 {
-<<<<<<< HEAD
-	u32 i, srev;
-
-	/* read SREV register from IIM module */
-	srev = __raw_readl(MX31_IO_ADDRESS(MX31_IIM_BASE_ADDR + MXC_IIMSREV));
-=======
 	void __iomem *iim_base;
 	struct device_node *np;
 	u32 i, srev;
@@ -68,7 +44,6 @@ static int mx31_read_cpu_rev(void)
 
 	/* read SREV register from IIM module */
 	srev = imx_readl(iim_base + MXC_IIMSREV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srev &= 0xff;
 
 	for (i = 0; i < ARRAY_SIZE(mx31_cpu_type); i++)

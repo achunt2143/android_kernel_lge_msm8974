@@ -1,37 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1999 Hewlett-Packard (Frank Rowand)
  * Copyright (C) 1999 Philipp Rumpf <prumpf@tux.org>
  * Copyright (C) 1999 SuSE GmbH
-<<<<<<< HEAD
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2, or (at your option)
- *    any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program; if not, write to the Free Software
- *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
  * Copyright (C) 2021 Helge Deller <deller@gmx.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _PARISC_ASSEMBLY_H
 #define _PARISC_ASSEMBLY_H
 
-<<<<<<< HEAD
-#define CALLEE_FLOAT_FRAME_SIZE	80
-=======
 #ifdef CONFIG_64BIT
 #define RP_OFFSET	16
 #define FRAME_SIZE	128
@@ -77,7 +54,6 @@
 #define SR_USER		3
 
 #ifdef __ASSEMBLY__
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 #define LDREG	ldd
@@ -89,13 +65,6 @@
 #define SHLREG	shld
 #define ANDCM   andcm,*
 #define	COND(x)	* ## x
-<<<<<<< HEAD
-#define RP_OFFSET	16
-#define FRAME_SIZE	128
-#define CALLEE_REG_FRAME_SIZE	144
-#define ASM_ULONG_INSN	.dword
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else	/* CONFIG_64BIT */
 #define LDREG	ldw
 #define STREG	stw
@@ -106,35 +75,8 @@
 #define SHLREG	shlw
 #define ANDCM   andcm
 #define COND(x)	x
-<<<<<<< HEAD
-#define RP_OFFSET	20
-#define FRAME_SIZE	64
-#define CALLEE_REG_FRAME_SIZE	128
-#define ASM_ULONG_INSN	.word
 #endif
 
-#define CALLEE_SAVE_FRAME_SIZE (CALLEE_REG_FRAME_SIZE + CALLEE_FLOAT_FRAME_SIZE)
-
-#ifdef CONFIG_PA20
-#define LDCW		ldcw,co
-#define BL		b,l
-# ifdef CONFIG_64BIT
-#  define LEVEL		2.0w
-# else
-#  define LEVEL		2.0
-# endif
-#else
-#define LDCW		ldcw
-#define BL		bl
-#define LEVEL		1.1
-#endif
-
-#ifdef __ASSEMBLY__
-
-=======
-#endif
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_64BIT
 /* the 64-bit pa gnu assembler unfortunately defaults to .level 1.1 or 2.0 so
  * work around that for now... */
@@ -146,14 +88,7 @@
 #include <asm/types.h>
 
 #include <asm/asmregs.h>
-<<<<<<< HEAD
-
-	sp	=	30
-	gp	=	27
-	ipsw	=	22
-=======
 #include <asm/psw.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We provide two versions of each macro to convert from physical
@@ -162,28 +97,6 @@
 	 * version takes two arguments: a src and destination register.
 	 * However, the source and destination registers can not be
 	 * the same register.
-<<<<<<< HEAD
-	 */
-
-	.macro  tophys  grvirt, grphys
-	ldil    L%(__PAGE_OFFSET), \grphys
-	sub     \grvirt, \grphys, \grphys
-	.endm
-	
-	.macro  tovirt  grphys, grvirt
-	ldil    L%(__PAGE_OFFSET), \grvirt
-	add     \grphys, \grvirt, \grvirt
-	.endm
-
-	.macro  tophys_r1  gr
-	ldil    L%(__PAGE_OFFSET), %r1
-	sub     \gr, %r1, \gr
-	.endm
-	
-	.macro  tovirt_r1  gr
-	ldil    L%(__PAGE_OFFSET), %r1
-	add     \gr, %r1, \gr
-=======
 	 *
 	 * We use add,l to avoid clobbering the C/B bits in the PSW.
 	 */
@@ -206,7 +119,6 @@
 	.macro  tovirt_r1  gr
 	ldil    L%(__PAGE_OFFSET), %r1
 	addl    \gr, %r1, \gr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	.macro delay value
@@ -220,20 +132,8 @@
 	.macro	debug value
 	.endm
 
-<<<<<<< HEAD
-
-	/* Shift Left - note the r and t can NOT be the same! */
-	.macro shl r, sa, t
-	dep,z	\r, 31-(\sa), 32-(\sa), \t
-	.endm
-
-	/* The PA 2.0 shift left */
-	.macro shlw r, sa, t
-	depw,z	\r, 31-(\sa), 32-(\sa), \t
-=======
 	.macro shlw r, sa, t
 	zdep	\r, 31-(\sa), 32-(\sa), \t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	/* And the PA 2.0W shift left */
@@ -241,11 +141,7 @@
 	depd,z	\r, 63-(\sa), 64-(\sa), \t
 	.endm
 
-<<<<<<< HEAD
-	/* Shift Right - note the r and t can NOT be the same! */
-=======
 	/* Shift Right for 32-bit. Clobbers upper 32-bit on PA2.0. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.macro shr r, sa, t
 	extru \r, 31-(\sa), 32-(\sa), \t
 	.endm
@@ -255,8 +151,6 @@
 	extrd,u \r, 63-(\sa), 64-(\sa), \t
 	.endm
 
-<<<<<<< HEAD
-=======
 	/* Extract unsigned for 32- and 64-bit
 	 * The extru instruction leaves the most significant 32 bits of the
 	 * target register in an undefined state on PA 2.0 systems. */
@@ -288,7 +182,6 @@
 #endif
 	.endm
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* load 32-bit 'value' into 'reg' compensating for the ldil
 	 * sign-extension when running in wide mode.
 	 * WARNING!! neither 'value' nor 'reg' can be expressions
@@ -574,10 +467,6 @@
 	SAVE_SP  (%sr4, PT_SR4 (\regs))
 	SAVE_SP  (%sr5, PT_SR5 (\regs))
 	SAVE_SP  (%sr6, PT_SR6 (\regs))
-<<<<<<< HEAD
-	SAVE_SP  (%sr7, PT_SR7 (\regs))
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SAVE_CR  (%cr17, PT_IASQ0(\regs))
 	mtctl	 %r0,	%cr17
@@ -655,8 +544,6 @@
 	nop	/* 7 */
 	.endm
 
-<<<<<<< HEAD
-=======
 	/* Switch to virtual mapping, trashing only %r1 */
 	.macro  virt_map
 	/* pcxt_ssm_bug */
@@ -695,6 +582,5 @@
 	.previous
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASSEMBLY__ */
 #endif

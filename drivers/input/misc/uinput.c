@@ -1,37 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  User level driver support for input subsystem
  *
  * Heavily based on evdev.c by Vojtech Pavlik
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * Author: Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>
- *
- * Changes/Revisions:
-=======
  * Author: Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>
  *
  * Changes/Revisions:
  *	0.4	01/09/2014 (Benjamin Tissoires <benjamin.tissoires@redhat.com>)
  *		- add UI_GET_SYSNAME ioctl
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	0.3	09/04/2006 (Anssi Hannula <anssi.hannula@gmail.com>)
  *		- updated ff support for the changes in kernel interface
  *		- added MODULE_VERSION
@@ -41,10 +18,7 @@
  *	0.1	20/06/2002
  *		- first public version
  */
-<<<<<<< HEAD
-=======
 #include <uapi/linux/uinput.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/poll.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
@@ -52,20 +26,6 @@
 #include <linux/init.h>
 #include <linux/fs.h>
 #include <linux/miscdevice.h>
-<<<<<<< HEAD
-#include <linux/uinput.h>
-#include <linux/input/mt.h>
-#include "../input-compat.h"
-
-static int uinput_dev_event(struct input_dev *dev, unsigned int type, unsigned int code, int value)
-{
-	struct uinput_device	*udev = input_get_drvdata(dev);
-
-	udev->buff[udev->head].type = type;
-	udev->buff[udev->head].code = code;
-	udev->buff[udev->head].value = value;
-	do_gettimeofday(&udev->buff[udev->head].time);
-=======
 #include <linux/overflow.h>
 #include <linux/input/mt.h>
 #include "../input-compat.h"
@@ -125,7 +85,6 @@ static int uinput_dev_event(struct input_dev *dev,
 		.value = value,
 	};
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udev->head = (udev->head + 1) % UINPUT_BUFFER_SIZE;
 
 	wake_up_interruptible(&udev->waitq);
@@ -134,18 +93,11 @@ static int uinput_dev_event(struct input_dev *dev,
 }
 
 /* Atomically allocate an ID for the given request. Returns 0 on success. */
-<<<<<<< HEAD
-static int uinput_request_alloc_id(struct uinput_device *udev, struct uinput_request *request)
-{
-	int id;
-	int err = -1;
-=======
 static bool uinput_request_alloc_id(struct uinput_device *udev,
 				    struct uinput_request *request)
 {
 	unsigned int id;
 	bool reserved = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&udev->requests_lock);
 
@@ -153,25 +105,12 @@ static bool uinput_request_alloc_id(struct uinput_device *udev,
 		if (!udev->requests[id]) {
 			request->id = id;
 			udev->requests[id] = request;
-<<<<<<< HEAD
-			err = 0;
-=======
 			reserved = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
 	spin_unlock(&udev->requests_lock);
-<<<<<<< HEAD
-	return err;
-}
-
-static struct uinput_request *uinput_request_find(struct uinput_device *udev, int id)
-{
-	/* Find an input request, by ID. Returns NULL if the ID isn't valid. */
-	if (id >= UINPUT_NUM_REQUESTS || id < 0)
-=======
 	return reserved;
 }
 
@@ -180,38 +119,11 @@ static struct uinput_request *uinput_request_find(struct uinput_device *udev,
 {
 	/* Find an input request, by ID. Returns NULL if the ID isn't valid. */
 	if (id >= UINPUT_NUM_REQUESTS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	return udev->requests[id];
 }
 
-<<<<<<< HEAD
-static inline int uinput_request_reserve_slot(struct uinput_device *udev, struct uinput_request *request)
-{
-	/* Allocate slot. If none are available right away, wait. */
-	return wait_event_interruptible(udev->requests_waitq,
-					!uinput_request_alloc_id(udev, request));
-}
-
-static void uinput_request_done(struct uinput_device *udev, struct uinput_request *request)
-{
-	/* Mark slot as available */
-	udev->requests[request->id] = NULL;
-	wake_up(&udev->requests_waitq);
-
-	complete(&request->done);
-}
-
-static int uinput_request_submit(struct uinput_device *udev, struct uinput_request *request)
-{
-	int retval;
-
-	retval = uinput_request_reserve_slot(udev, request);
-	if (retval)
-		return retval;
-
-=======
 static int uinput_request_reserve_slot(struct uinput_device *udev,
 				       struct uinput_request *request)
 {
@@ -236,7 +148,6 @@ static int uinput_request_send(struct uinput_device *udev,
 {
 	int retval;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = mutex_lock_interruptible(&udev->mutex);
 	if (retval)
 		return retval;
@@ -246,16 +157,12 @@ static int uinput_request_send(struct uinput_device *udev,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/* Tell our userspace app about this new request by queueing an input event */
-=======
 	init_completion(&request->done);
 
 	/*
 	 * Tell our userspace application about this new request
 	 * by queueing an input event.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uinput_dev_event(udev->dev, EV_UINPUT, request->code, request->id);
 
  out:
@@ -263,10 +170,6 @@ static int uinput_request_send(struct uinput_device *udev,
 	return retval;
 }
 
-<<<<<<< HEAD
-/*
- * Fail all ouitstanding requests so handlers don't wait for the userspace
-=======
 static int uinput_request_submit(struct uinput_device *udev,
 				 struct uinput_request *request)
 {
@@ -294,7 +197,6 @@ static int uinput_request_submit(struct uinput_device *udev,
 
 /*
  * Fail all outstanding requests so handlers don't wait for the userspace
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * to finish processing them.
  */
 static void uinput_flush_requests(struct uinput_device *udev)
@@ -308,11 +210,7 @@ static void uinput_flush_requests(struct uinput_device *udev)
 		request = udev->requests[i];
 		if (request) {
 			request->retval = -ENODEV;
-<<<<<<< HEAD
-			uinput_request_done(udev, request);
-=======
 			complete(&request->done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -334,20 +232,12 @@ static int uinput_dev_playback(struct input_dev *dev, int effect_id, int value)
 	return uinput_dev_event(dev, EV_FF, effect_id, value);
 }
 
-<<<<<<< HEAD
-static int uinput_dev_upload_effect(struct input_dev *dev, struct ff_effect *effect, struct ff_effect *old)
-{
-	struct uinput_device *udev = input_get_drvdata(dev);
-	struct uinput_request request;
-	int retval;
-=======
 static int uinput_dev_upload_effect(struct input_dev *dev,
 				    struct ff_effect *effect,
 				    struct ff_effect *old)
 {
 	struct uinput_device *udev = input_get_drvdata(dev);
 	struct uinput_request request;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * uinput driver does not currently support periodic effects with
@@ -360,54 +250,21 @@ static int uinput_dev_upload_effect(struct input_dev *dev,
 			effect->u.periodic.waveform == FF_CUSTOM)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	request.id = -1;
-	init_completion(&request.done);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	request.code = UI_FF_UPLOAD;
 	request.u.upload.effect = effect;
 	request.u.upload.old = old;
 
-<<<<<<< HEAD
-	retval = uinput_request_submit(udev, &request);
-	if (!retval) {
-		wait_for_completion(&request.done);
-		retval = request.retval;
-	}
-
-	return retval;
-=======
 	return uinput_request_submit(udev, &request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int uinput_dev_erase_effect(struct input_dev *dev, int effect_id)
 {
 	struct uinput_device *udev = input_get_drvdata(dev);
 	struct uinput_request request;
-<<<<<<< HEAD
-	int retval;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(EV_FF, dev->evbit))
 		return -ENOSYS;
 
-<<<<<<< HEAD
-	request.id = -1;
-	init_completion(&request.done);
-	request.code = UI_FF_ERASE;
-	request.u.effect_id = effect_id;
-
-	retval = uinput_request_submit(udev, &request);
-	if (!retval) {
-		wait_for_completion(&request.done);
-		retval = request.retval;
-	}
-
-	return retval;
-=======
 	request.code = UI_FF_ERASE;
 	request.u.effect_id = effect_id;
 
@@ -424,7 +281,6 @@ static int uinput_dev_flush(struct input_dev *dev, struct file *file)
 	 * nobody on the other side anymore.
 	 */
 	return file ? input_ff_flush(dev, file) : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void uinput_destroy_device(struct uinput_device *udev)
@@ -453,19 +309,13 @@ static void uinput_destroy_device(struct uinput_device *udev)
 static int uinput_create_device(struct uinput_device *udev)
 {
 	struct input_dev *dev = udev->dev;
-<<<<<<< HEAD
-	int error;
-=======
 	int error, nslot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (udev->state != UIST_SETUP_COMPLETE) {
 		printk(KERN_DEBUG "%s: write device info first\n", UINPUT_NAME);
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-=======
 	if (test_bit(EV_ABS, dev->evbit)) {
 		input_alloc_absinfo(dev);
 		if (!dev->absinfo) {
@@ -490,7 +340,6 @@ static int uinput_create_device(struct uinput_device *udev)
 		goto fail1;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (udev->ff_effects_max) {
 		error = input_ff_create(dev, udev->ff_effects_max);
 		if (error)
@@ -501,10 +350,6 @@ static int uinput_create_device(struct uinput_device *udev)
 		dev->ff->playback = uinput_dev_playback;
 		dev->ff->set_gain = uinput_dev_set_gain;
 		dev->ff->set_autocenter = uinput_dev_set_autocenter;
-<<<<<<< HEAD
-	}
-
-=======
 		/*
 		 * The standard input_ff_flush() implementation does
 		 * not quite work for uinput as we can't reasonably
@@ -517,7 +362,6 @@ static int uinput_create_device(struct uinput_device *udev)
 
 	input_set_drvdata(udev->dev, udev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = input_register_device(udev->dev);
 	if (error)
 		goto fail2;
@@ -546,9 +390,6 @@ static int uinput_open(struct inode *inode, struct file *file)
 	newdev->state = UIST_NEW_DEVICE;
 
 	file->private_data = newdev;
-<<<<<<< HEAD
-	nonseekable_open(inode, file);
-=======
 	stream_open(inode, file);
 
 	return 0;
@@ -575,7 +416,6 @@ static int uinput_validate_absinfo(struct input_dev *dev, unsigned int code,
 		       UINPUT_NAME, code, abs->flat, min, max);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -583,52 +423,6 @@ static int uinput_validate_absinfo(struct input_dev *dev, unsigned int code,
 static int uinput_validate_absbits(struct input_dev *dev)
 {
 	unsigned int cnt;
-<<<<<<< HEAD
-	int retval = 0;
-
-	for (cnt = 0; cnt < ABS_CNT; cnt++) {
-		int min, max;
-		if (!test_bit(cnt, dev->absbit))
-			continue;
-
-		min = input_abs_get_min(dev, cnt);
-		max = input_abs_get_max(dev, cnt);
-
-		if ((min != 0 || max != 0) && max <= min) {
-			printk(KERN_DEBUG
-				"%s: invalid abs[%02x] min:%d max:%d\n",
-				UINPUT_NAME, cnt,
-				input_abs_get_min(dev, cnt),
-				input_abs_get_max(dev, cnt));
-			retval = -EINVAL;
-			break;
-		}
-
-		if (input_abs_get_flat(dev, cnt) >
-		    input_abs_get_max(dev, cnt) - input_abs_get_min(dev, cnt)) {
-			printk(KERN_DEBUG
-				"%s: abs_flat #%02x out of range: %d "
-				"(min:%d/max:%d)\n",
-				UINPUT_NAME, cnt,
-				input_abs_get_flat(dev, cnt),
-				input_abs_get_min(dev, cnt),
-				input_abs_get_max(dev, cnt));
-			retval = -EINVAL;
-			break;
-		}
-	}
-	return retval;
-}
-
-static int uinput_allocate_device(struct uinput_device *udev)
-{
-	udev->dev = input_allocate_device();
-	if (!udev->dev)
-		return -ENOMEM;
-
-	udev->dev->event = uinput_dev_event;
-	input_set_drvdata(udev->dev, udev);
-=======
 	int error;
 
 	if (!test_bit(EV_ABS, dev->evbit))
@@ -646,14 +440,10 @@ static int uinput_allocate_device(struct uinput_device *udev)
 		if (error)
 			return error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int uinput_setup_device(struct uinput_device *udev, const char __user *buffer, size_t count)
-=======
 static int uinput_dev_setup(struct uinput_device *udev,
 			    struct uinput_setup __user *arg)
 {
@@ -719,7 +509,6 @@ static int uinput_abs_setup(struct uinput_device *udev,
 /* legacy setup via write() */
 static int uinput_setup_device_legacy(struct uinput_device *udev,
 				      const char __user *buffer, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uinput_user_dev	*user_dev;
 	struct input_dev	*dev;
@@ -730,15 +519,9 @@ static int uinput_setup_device_legacy(struct uinput_device *udev,
 		return -EINVAL;
 
 	if (!udev->dev) {
-<<<<<<< HEAD
-		retval = uinput_allocate_device(udev);
-		if (retval)
-			return retval;
-=======
 		udev->dev = input_allocate_device();
 		if (!udev->dev)
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev = udev->dev;
@@ -775,25 +558,9 @@ static int uinput_setup_device_legacy(struct uinput_device *udev,
 		input_abs_set_flat(dev, i, user_dev->absflat[i]);
 	}
 
-<<<<<<< HEAD
-	/* check if absmin/absmax/absfuzz/absflat are filled as
-	 * told in Documentation/input/input-programming.txt */
-	if (test_bit(EV_ABS, dev->evbit)) {
-		retval = uinput_validate_absbits(dev);
-		if (retval < 0)
-			goto exit;
-		if (test_bit(ABS_MT_SLOT, dev->absbit)) {
-			int nslot = input_abs_get_max(dev, ABS_MT_SLOT) + 1;
-			input_mt_init_slots(dev, nslot);
-		} else if (test_bit(ABS_MT_POSITION_X, dev->absbit)) {
-			input_set_events_per_packet(dev, 60);
-		}
-	}
-=======
 	retval = uinput_validate_absbits(dev);
 	if (retval < 0)
 		goto exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	udev->state = UIST_SETUP_COMPLETE;
 	retval = count;
@@ -803,24 +570,6 @@ static int uinput_setup_device_legacy(struct uinput_device *udev,
 	return retval;
 }
 
-<<<<<<< HEAD
-static inline ssize_t uinput_inject_event(struct uinput_device *udev, const char __user *buffer, size_t count)
-{
-	struct input_event ev;
-
-	if (count < input_event_size())
-		return -EINVAL;
-
-	if (input_event_from_user(buffer, &ev))
-		return -EFAULT;
-
-	input_event(udev->dev, ev.type, ev.code, ev.value);
-
-	return input_event_size();
-}
-
-static ssize_t uinput_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
-=======
 /*
  * Returns true if the given timestamp is valid (i.e., if all the following
  * conditions are satisfied), false otherwise.
@@ -883,73 +632,26 @@ static ssize_t uinput_inject_events(struct uinput_device *udev,
 
 static ssize_t uinput_write(struct file *file, const char __user *buffer,
 			    size_t count, loff_t *ppos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uinput_device *udev = file->private_data;
 	int retval;
 
-<<<<<<< HEAD
-=======
 	if (count == 0)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = mutex_lock_interruptible(&udev->mutex);
 	if (retval)
 		return retval;
 
 	retval = udev->state == UIST_CREATED ?
-<<<<<<< HEAD
-			uinput_inject_event(udev, buffer, count) :
-			uinput_setup_device(udev, buffer, count);
-=======
 			uinput_inject_events(udev, buffer, count) :
 			uinput_setup_device_legacy(udev, buffer, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&udev->mutex);
 
 	return retval;
 }
 
-<<<<<<< HEAD
-static ssize_t uinput_read(struct file *file, char __user *buffer, size_t count, loff_t *ppos)
-{
-	struct uinput_device *udev = file->private_data;
-	int retval = 0;
-
-	if (udev->state != UIST_CREATED)
-		return -ENODEV;
-
-	if (udev->head == udev->tail && (file->f_flags & O_NONBLOCK))
-		return -EAGAIN;
-
-	retval = wait_event_interruptible(udev->waitq,
-			udev->head != udev->tail || udev->state != UIST_CREATED);
-	if (retval)
-		return retval;
-
-	retval = mutex_lock_interruptible(&udev->mutex);
-	if (retval)
-		return retval;
-
-	if (udev->state != UIST_CREATED) {
-		retval = -ENODEV;
-		goto out;
-	}
-
-	while (udev->head != udev->tail && retval + input_event_size() <= count) {
-		if (input_event_to_user(buffer + retval, &udev->buff[udev->tail])) {
-			retval = -EFAULT;
-			goto out;
-		}
-		udev->tail = (udev->tail + 1) % UINPUT_BUFFER_SIZE;
-		retval += input_event_size();
-	}
-
- out:
-	mutex_unlock(&udev->mutex);
-=======
 static bool uinput_fetch_next_event(struct uinput_device *udev,
 				    struct input_event *event)
 {
@@ -1018,34 +720,21 @@ static ssize_t uinput_read(struct file *file, char __user *buffer,
 						  udev->head != udev->tail ||
 						  udev->state != UIST_CREATED);
 	} while (retval == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
 
-<<<<<<< HEAD
-static unsigned int uinput_poll(struct file *file, poll_table *wait)
-{
-	struct uinput_device *udev = file->private_data;
-=======
 static __poll_t uinput_poll(struct file *file, poll_table *wait)
 {
 	struct uinput_device *udev = file->private_data;
 	__poll_t mask = EPOLLOUT | EPOLLWRNORM; /* uinput is always writable */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	poll_wait(file, &udev->waitq, wait);
 
 	if (udev->head != udev->tail)
-<<<<<<< HEAD
-		return POLLIN | POLLRDNORM;
-
-	return 0;
-=======
 		mask |= EPOLLIN | EPOLLRDNORM;
 
 	return mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int uinput_release(struct inode *inode, struct file *file)
@@ -1060,13 +749,8 @@ static int uinput_release(struct inode *inode, struct file *file)
 
 #ifdef CONFIG_COMPAT
 struct uinput_ff_upload_compat {
-<<<<<<< HEAD
-	int			request_id;
-	int			retval;
-=======
 	__u32			request_id;
 	__s32			retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ff_effect_compat	effect;
 	struct ff_effect_compat	old;
 };
@@ -1074,11 +758,7 @@ struct uinput_ff_upload_compat {
 static int uinput_ff_upload_to_user(char __user *buffer,
 				    const struct uinput_ff_upload *ff_up)
 {
-<<<<<<< HEAD
-	if (INPUT_COMPAT_TEST) {
-=======
 	if (in_compat_syscall()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct uinput_ff_upload_compat ff_up_compat;
 
 		ff_up_compat.request_id = ff_up->request_id;
@@ -1109,11 +789,7 @@ static int uinput_ff_upload_to_user(char __user *buffer,
 static int uinput_ff_upload_from_user(const char __user *buffer,
 				      struct uinput_ff_upload *ff_up)
 {
-<<<<<<< HEAD
-	if (INPUT_COMPAT_TEST) {
-=======
 	if (in_compat_syscall()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct uinput_ff_upload_compat ff_up_compat;
 
 		if (copy_from_user(&ff_up_compat, buffer,
@@ -1169,8 +845,6 @@ static int uinput_ff_upload_from_user(const char __user *buffer,
 	__ret;						\
 })
 
-<<<<<<< HEAD
-=======
 static int uinput_str_to_user(void __user *dest, const char *str,
 			      unsigned int maxlen)
 {
@@ -1196,7 +870,6 @@ static int uinput_str_to_user(void __user *dest, const char *str,
 	return ret ? -EFAULT : len;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long uinput_ioctl_handler(struct file *file, unsigned int cmd,
 				 unsigned long arg, void __user *p)
 {
@@ -1206,167 +879,14 @@ static long uinput_ioctl_handler(struct file *file, unsigned int cmd,
 	struct uinput_ff_erase  ff_erase;
 	struct uinput_request   *req;
 	char			*phys;
-<<<<<<< HEAD
-=======
 	const char		*name;
 	unsigned int		size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = mutex_lock_interruptible(&udev->mutex);
 	if (retval)
 		return retval;
 
 	if (!udev->dev) {
-<<<<<<< HEAD
-		retval = uinput_allocate_device(udev);
-		if (retval)
-			goto out;
-	}
-
-	switch (cmd) {
-		case UI_DEV_CREATE:
-			retval = uinput_create_device(udev);
-			break;
-
-		case UI_DEV_DESTROY:
-			uinput_destroy_device(udev);
-			break;
-
-		case UI_SET_EVBIT:
-			retval = uinput_set_bit(arg, evbit, EV_MAX);
-			break;
-
-		case UI_SET_KEYBIT:
-			retval = uinput_set_bit(arg, keybit, KEY_MAX);
-			break;
-
-		case UI_SET_RELBIT:
-			retval = uinput_set_bit(arg, relbit, REL_MAX);
-			break;
-
-		case UI_SET_ABSBIT:
-			retval = uinput_set_bit(arg, absbit, ABS_MAX);
-			break;
-
-		case UI_SET_MSCBIT:
-			retval = uinput_set_bit(arg, mscbit, MSC_MAX);
-			break;
-
-		case UI_SET_LEDBIT:
-			retval = uinput_set_bit(arg, ledbit, LED_MAX);
-			break;
-
-		case UI_SET_SNDBIT:
-			retval = uinput_set_bit(arg, sndbit, SND_MAX);
-			break;
-
-		case UI_SET_FFBIT:
-			retval = uinput_set_bit(arg, ffbit, FF_MAX);
-			break;
-
-		case UI_SET_SWBIT:
-			retval = uinput_set_bit(arg, swbit, SW_MAX);
-			break;
-
-		case UI_SET_PROPBIT:
-			retval = uinput_set_bit(arg, propbit, INPUT_PROP_MAX);
-			break;
-
-		case UI_SET_PHYS:
-			if (udev->state == UIST_CREATED) {
-				retval = -EINVAL;
-				goto out;
-			}
-
-			phys = strndup_user(p, 1024);
-			if (IS_ERR(phys)) {
-				retval = PTR_ERR(phys);
-				goto out;
-			}
-
-			kfree(udev->dev->phys);
-			udev->dev->phys = phys;
-			break;
-
-		case UI_BEGIN_FF_UPLOAD:
-			retval = uinput_ff_upload_from_user(p, &ff_up);
-			if (retval)
-				break;
-
-			req = uinput_request_find(udev, ff_up.request_id);
-			if (!req || req->code != UI_FF_UPLOAD || !req->u.upload.effect) {
-				retval = -EINVAL;
-				break;
-			}
-
-			ff_up.retval = 0;
-			ff_up.effect = *req->u.upload.effect;
-			if (req->u.upload.old)
-				ff_up.old = *req->u.upload.old;
-			else
-				memset(&ff_up.old, 0, sizeof(struct ff_effect));
-
-			retval = uinput_ff_upload_to_user(p, &ff_up);
-			break;
-
-		case UI_BEGIN_FF_ERASE:
-			if (copy_from_user(&ff_erase, p, sizeof(ff_erase))) {
-				retval = -EFAULT;
-				break;
-			}
-
-			req = uinput_request_find(udev, ff_erase.request_id);
-			if (!req || req->code != UI_FF_ERASE) {
-				retval = -EINVAL;
-				break;
-			}
-
-			ff_erase.retval = 0;
-			ff_erase.effect_id = req->u.effect_id;
-			if (copy_to_user(p, &ff_erase, sizeof(ff_erase))) {
-				retval = -EFAULT;
-				break;
-			}
-
-			break;
-
-		case UI_END_FF_UPLOAD:
-			retval = uinput_ff_upload_from_user(p, &ff_up);
-			if (retval)
-				break;
-
-			req = uinput_request_find(udev, ff_up.request_id);
-			if (!req || req->code != UI_FF_UPLOAD ||
-			    !req->u.upload.effect) {
-				retval = -EINVAL;
-				break;
-			}
-
-			req->retval = ff_up.retval;
-			uinput_request_done(udev, req);
-			break;
-
-		case UI_END_FF_ERASE:
-			if (copy_from_user(&ff_erase, p, sizeof(ff_erase))) {
-				retval = -EFAULT;
-				break;
-			}
-
-			req = uinput_request_find(udev, ff_erase.request_id);
-			if (!req || req->code != UI_FF_ERASE) {
-				retval = -EINVAL;
-				break;
-			}
-
-			req->retval = ff_erase.retval;
-			uinput_request_done(udev, req);
-			break;
-
-		default:
-			retval = -EINVAL;
-	}
-
-=======
 		udev->dev = input_allocate_device();
 		if (!udev->dev) {
 			retval = -ENOMEM;
@@ -1545,7 +1065,6 @@ static long uinput_ioctl_handler(struct file *file, unsigned int cmd,
 	}
 
 	retval = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	mutex_unlock(&udev->mutex);
 	return retval;
@@ -1557,10 +1076,6 @@ static long uinput_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 }
 
 #ifdef CONFIG_COMPAT
-<<<<<<< HEAD
-static long uinput_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
-{
-=======
 
 /*
  * These IOCTLs change their size and thus their numbers between
@@ -1588,7 +1103,6 @@ static long uinput_compat_ioctl(struct file *file,
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return uinput_ioctl_handler(file, cmd, arg, compat_ptr(arg));
 }
 #endif
@@ -1612,29 +1126,6 @@ static struct miscdevice uinput_misc = {
 	.minor		= UINPUT_MINOR,
 	.name		= UINPUT_NAME,
 };
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(UINPUT_MINOR);
-MODULE_ALIAS("devname:" UINPUT_NAME);
-
-static int __init uinput_init(void)
-{
-	return misc_register(&uinput_misc);
-}
-
-static void __exit uinput_exit(void)
-{
-	misc_deregister(&uinput_misc);
-}
-
-MODULE_AUTHOR("Aristeu Sergio Rozanski Filho");
-MODULE_DESCRIPTION("User level driver support for input subsystem");
-MODULE_LICENSE("GPL");
-MODULE_VERSION("0.3");
-
-module_init(uinput_init);
-module_exit(uinput_exit);
-
-=======
 module_misc_device(uinput_misc);
 
 MODULE_ALIAS_MISCDEV(UINPUT_MINOR);
@@ -1643,4 +1134,3 @@ MODULE_ALIAS("devname:" UINPUT_NAME);
 MODULE_AUTHOR("Aristeu Sergio Rozanski Filho");
 MODULE_DESCRIPTION("User level driver support for input subsystem");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,43 +1,20 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Watchdog driver for Atmel AT91RM9200 (Thunder)
  *
  *  Copyright (C) 2003 SAN People (Pty) Ltd
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/bitops.h>
-<<<<<<< HEAD
-=======
 #include <linux/delay.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/miscdevice.h>
-#include <linux/module.h>
-#include <linux/moduleparam.h>
-#include <linux/platform_device.h>
-#include <linux/types.h>
-#include <linux/watchdog.h>
-#include <linux/uaccess.h>
-#include <mach/at91_st.h>
-=======
 #include <linux/mfd/syscon.h>
 #include <linux/mfd/syscon/atmel-st.h>
 #include <linux/miscdevice.h>
@@ -50,17 +27,13 @@
 #include <linux/types.h>
 #include <linux/watchdog.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WDT_DEFAULT_TIME	5	/* seconds */
 #define WDT_MAX_TIME		256	/* seconds */
 
 static int wdt_time = WDT_DEFAULT_TIME;
 static bool nowayout = WATCHDOG_NOWAYOUT;
-<<<<<<< HEAD
-=======
 static struct regmap *regmap_st;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(wdt_time, int, 0);
 MODULE_PARM_DESC(wdt_time, "Watchdog time in seconds. (default="
@@ -78,8 +51,6 @@ static unsigned long at91wdt_busy;
 
 /* ......................................................................... */
 
-<<<<<<< HEAD
-=======
 static int at91rm9200_restart(struct notifier_block *this,
 					unsigned long mode, void *cmd)
 {
@@ -101,17 +72,12 @@ static struct notifier_block at91rm9200_restart_nb = {
 	.priority = 192,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Disable the watchdog.
  */
 static inline void at91_wdt_stop(void)
 {
-<<<<<<< HEAD
-	at91_st_write(AT91_ST_WDMR, AT91_ST_EXTEN);
-=======
 	regmap_write(regmap_st, AT91_ST_WDMR, AT91_ST_EXTEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -119,15 +85,9 @@ static inline void at91_wdt_stop(void)
  */
 static inline void at91_wdt_start(void)
 {
-<<<<<<< HEAD
-	at91_st_write(AT91_ST_WDMR, AT91_ST_EXTEN | AT91_ST_RSTEN |
-				(((65536 * wdt_time) >> 8) & AT91_ST_WDV));
-	at91_st_write(AT91_ST_CR, AT91_ST_WDRST);
-=======
 	regmap_write(regmap_st, AT91_ST_WDMR, AT91_ST_EXTEN | AT91_ST_RSTEN |
 				(((65536 * wdt_time) >> 8) & AT91_ST_WDV));
 	regmap_write(regmap_st, AT91_ST_CR, AT91_ST_WDRST);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -135,11 +95,7 @@ static inline void at91_wdt_start(void)
  */
 static inline void at91_wdt_reload(void)
 {
-<<<<<<< HEAD
-	at91_st_write(AT91_ST_CR, AT91_ST_WDRST);
-=======
 	regmap_write(regmap_st, AT91_ST_CR, AT91_ST_WDRST);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ......................................................................... */
@@ -153,11 +109,7 @@ static int at91_wdt_open(struct inode *inode, struct file *file)
 		return -EBUSY;
 
 	at91_wdt_start();
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -260,10 +212,7 @@ static const struct file_operations at91wdt_fops = {
 	.owner		= THIS_MODULE,
 	.llseek		= no_llseek,
 	.unlocked_ioctl	= at91_wdt_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= at91_wdt_open,
 	.release	= at91_wdt_close,
 	.write		= at91_wdt_write,
@@ -275,23 +224,16 @@ static struct miscdevice at91wdt_miscdev = {
 	.fops		= &at91wdt_fops,
 };
 
-<<<<<<< HEAD
-static int __devinit at91wdt_probe(struct platform_device *pdev)
-{
-=======
 static int at91wdt_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	struct device *parent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	if (at91wdt_miscdev.parent)
 		return -EBUSY;
 	at91wdt_miscdev.parent = &pdev->dev;
 
-<<<<<<< HEAD
-=======
 	parent = dev->parent;
 	if (!parent) {
 		dev_err(dev, "no parent\n");
@@ -302,34 +244,19 @@ static int at91wdt_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap_st))
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = misc_register(&at91wdt_miscdev);
 	if (res)
 		return res;
 
-<<<<<<< HEAD
-=======
 	res = register_restart_handler(&at91rm9200_restart_nb);
 	if (res)
 		dev_warn(dev, "failed to register restart handler\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_info("AT91 Watchdog Timer enabled (%d seconds%s)\n",
 		wdt_time, nowayout ? ", nowayout" : "");
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit at91wdt_remove(struct platform_device *pdev)
-{
-	int res;
-
-	res = misc_deregister(&at91wdt_miscdev);
-	if (!res)
-		at91wdt_miscdev.parent = NULL;
-
-	return res;
-=======
 static void at91wdt_remove(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -341,7 +268,6 @@ static void at91wdt_remove(struct platform_device *pdev)
 
 	misc_deregister(&at91wdt_miscdev);
 	at91wdt_miscdev.parent = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void at91wdt_shutdown(struct platform_device *pdev)
@@ -349,11 +275,6 @@ static void at91wdt_shutdown(struct platform_device *pdev)
 	at91_wdt_stop();
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int at91wdt_suspend(struct platform_device *pdev, pm_message_t message)
 {
 	at91_wdt_stop();
@@ -367,22 +288,6 @@ static int at91wdt_resume(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-#else
-#define at91wdt_suspend NULL
-#define at91wdt_resume	NULL
-#endif
-
-static struct platform_driver at91wdt_driver = {
-	.probe		= at91wdt_probe,
-	.remove		= __devexit_p(at91wdt_remove),
-	.shutdown	= at91wdt_shutdown,
-	.suspend	= at91wdt_suspend,
-	.resume		= at91wdt_resume,
-	.driver		= {
-		.name	= "at91_wdt",
-		.owner	= THIS_MODULE,
-=======
 static const struct of_device_id at91_wdt_dt_ids[] = {
 	{ .compatible = "atmel,at91rm9200-wdt" },
 	{ /* sentinel */ }
@@ -398,7 +303,6 @@ static struct platform_driver at91wdt_driver = {
 	.driver		= {
 		.name	= "atmel_st_watchdog",
 		.of_match_table = at91_wdt_dt_ids,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -426,9 +330,4 @@ module_exit(at91_wdt_exit);
 MODULE_AUTHOR("Andrew Victor");
 MODULE_DESCRIPTION("Watchdog driver for Atmel AT91RM9200");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-MODULE_ALIAS("platform:at91_wdt");
-=======
 MODULE_ALIAS("platform:atmel_st_watchdog");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

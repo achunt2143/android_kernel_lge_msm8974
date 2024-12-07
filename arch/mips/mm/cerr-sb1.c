@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001,2002,2003 Broadcom Corporation
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2001,2002,2003 Broadcom Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/sched.h>
 #include <asm/mipsregs.h>
@@ -33,11 +14,7 @@
 
 /*
  * We'd like to dump the L2_ECC_TAG register on errors, but errata make
-<<<<<<< HEAD
- * that unsafe... So for now we don't.  (BCM1250/BCM112x erratum SOC-48.)
-=======
  * that unsafe... So for now we don't.	(BCM1250/BCM112x erratum SOC-48.)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #undef DUMP_L2_ECC_TAG_ON_ERROR
 
@@ -58,11 +35,7 @@
 #define CP0_CERRI_EXTERNAL     (1 << 26)
 
 #define CP0_CERRI_IDX_VALID(c) (!((c) & CP0_CERRI_EXTERNAL))
-<<<<<<< HEAD
-#define CP0_CERRI_DATA         (CP0_CERRI_DATA_PARITY)
-=======
 #define CP0_CERRI_DATA	       (CP0_CERRI_DATA_PARITY)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CP0_CERRD_MULTIPLE     (1 << 31)
 #define CP0_CERRD_TAG_STATE    (1 << 30)
@@ -70,13 +43,8 @@
 #define CP0_CERRD_DATA_SBE     (1 << 28)
 #define CP0_CERRD_DATA_DBE     (1 << 27)
 #define CP0_CERRD_EXTERNAL     (1 << 26)
-<<<<<<< HEAD
-#define CP0_CERRD_LOAD         (1 << 25)
-#define CP0_CERRD_STORE        (1 << 24)
-=======
 #define CP0_CERRD_LOAD	       (1 << 25)
 #define CP0_CERRD_STORE	       (1 << 24)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CP0_CERRD_FILLWB       (1 << 23)
 #define CP0_CERRD_COHERENCY    (1 << 22)
 #define CP0_CERRD_DUPTAG       (1 << 21)
@@ -88,17 +56,10 @@
    (CP0_CERRD_LOAD | CP0_CERRD_STORE | CP0_CERRD_FILLWB | CP0_CERRD_COHERENCY | CP0_CERRD_DUPTAG)
 #define CP0_CERRD_TYPES \
    (CP0_CERRD_TAG_STATE | CP0_CERRD_TAG_ADDRESS | CP0_CERRD_DATA_SBE | CP0_CERRD_DATA_DBE | CP0_CERRD_EXTERNAL)
-<<<<<<< HEAD
-#define CP0_CERRD_DATA         (CP0_CERRD_DATA_SBE | CP0_CERRD_DATA_DBE)
-
-static uint32_t	extract_ic(unsigned short addr, int data);
-static uint32_t	extract_dc(unsigned short addr, int data);
-=======
 #define CP0_CERRD_DATA	       (CP0_CERRD_DATA_SBE | CP0_CERRD_DATA_DBE)
 
 static uint32_t extract_ic(unsigned short addr, int data);
 static uint32_t extract_dc(unsigned short addr, int data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void breakout_errctl(unsigned int val)
 {
@@ -208,15 +169,7 @@ asmlinkage void sb1_cache_error(void)
 
 #ifdef CONFIG_SIBYTE_BW_TRACE
 	/* Freeze the trace buffer now */
-<<<<<<< HEAD
-#if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
-	csr_out32(M_BCM1480_SCD_TRACE_CFG_FREEZE, IOADDR(A_SCD_TRACE_CFG));
-#else
 	csr_out32(M_SCD_TRACE_CFG_FREEZE, IOADDR(A_SCD_TRACE_CFG));
-#endif
-=======
-	csr_out32(M_SCD_TRACE_CFG_FREEZE, IOADDR(A_SCD_TRACE_CFG));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("Trace buffer frozen\n");
 #endif
 
@@ -239,19 +192,11 @@ asmlinkage void sb1_cache_error(void)
 	  "=r" (dpahi), "=r" (dpalo), "=r" (eepc));
 
 	cerr_dpa = (((uint64_t)dpahi) << 32) | dpalo;
-<<<<<<< HEAD
-	printk(" c0_errorepc ==   %08x\n", eepc);
-	printk(" c0_errctl   ==   %08x", errctl);
-	breakout_errctl(errctl);
-	if (errctl & CP0_ERRCTL_ICACHE) {
-		printk(" c0_cerr_i   ==   %08x", cerr_i);
-=======
 	printk(" c0_errorepc ==	  %08x\n", eepc);
 	printk(" c0_errctl   ==	  %08x", errctl);
 	breakout_errctl(errctl);
 	if (errctl & CP0_ERRCTL_ICACHE) {
 		printk(" c0_cerr_i   ==	  %08x", cerr_i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		breakout_cerri(cerr_i);
 		if (CP0_CERRI_IDX_VALID(cerr_i)) {
 			/* Check index of EPC, allowing for delay slot */
@@ -267,11 +212,7 @@ asmlinkage void sb1_cache_error(void)
 		}
 	}
 	if (errctl & CP0_ERRCTL_DCACHE) {
-<<<<<<< HEAD
-		printk(" c0_cerr_d   ==   %08x", cerr_d);
-=======
 		printk(" c0_cerr_d   ==	  %08x", cerr_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		breakout_cerrd(cerr_d);
 		if (CP0_CERRD_DPA_VALID(cerr_d)) {
 			printk(" c0_cerr_dpa == %010llx\n", cerr_dpa);
@@ -298,11 +239,7 @@ asmlinkage void sb1_cache_error(void)
 	/*
 	 * Calling panic() when a fatal cache error occurs scrambles the
 	 * state of the system (and the cache), making it difficult to
-<<<<<<< HEAD
-	 * investigate after the fact.  However, if you just stall the CPU,
-=======
 	 * investigate after the fact.	However, if you just stall the CPU,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the other CPU may keep on running, which is typically very
 	 * undesirable.
 	 */
@@ -457,11 +394,7 @@ static uint32_t extract_ic(unsigned short addr, int data)
 				"	dmfc0  $1, $28, 1\n\t"
 				"	dsrl32 %1, $1, 0 \n\t"
 				"	sll    %2, $1, 0 \n\t"
-<<<<<<< HEAD
-				"	.set	pop         \n"
-=======
 				"	.set	pop	    \n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				: "=r" (datahi), "=r" (insta), "=r" (instb)
 				: "r" ((way << 13) | addr | (offset << 3)));
 				predecode = (datahi >> 8) & 0xff;
@@ -491,13 +424,8 @@ static uint8_t dc_ecc(uint64_t dword)
 {
 	uint64_t t;
 	uint32_t w;
-<<<<<<< HEAD
-	uint8_t  p;
-	int      i;
-=======
 	uint8_t	 p;
 	int	 i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = 0;
 	for (i = 7; i >= 0; i--)

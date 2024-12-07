@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _RDS_IB_H
 #define _RDS_IB_H
 
@@ -13,35 +10,21 @@
 #include "rds.h"
 #include "rdma_transport.h"
 
-<<<<<<< HEAD
-#define RDS_FMR_SIZE			256
-#define RDS_FMR_POOL_SIZE		8192
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RDS_IB_MAX_SGE			8
 #define RDS_IB_RECV_SGE 		2
 
 #define RDS_IB_DEFAULT_RECV_WR		1024
 #define RDS_IB_DEFAULT_SEND_WR		256
-<<<<<<< HEAD
-
-#define RDS_IB_DEFAULT_RETRY_COUNT	2
-=======
 #define RDS_IB_DEFAULT_FR_WR		512
 
 #define RDS_IB_DEFAULT_RETRY_COUNT	1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RDS_IB_SUPPORTED_PROTOCOLS	0x00000003	/* minor versions supported */
 
 #define RDS_IB_RECYCLE_BATCH_COUNT	32
 
-<<<<<<< HEAD
-=======
 #define RDS_IB_WC_MAX			32
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct rw_semaphore rds_ib_devices_lock;
 extern struct list_head rds_ib_devices;
 
@@ -68,27 +51,11 @@ struct rds_ib_cache_head {
 };
 
 struct rds_ib_refill_cache {
-<<<<<<< HEAD
-	struct rds_ib_cache_head *percpu;
-=======
 	struct rds_ib_cache_head __percpu *percpu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	 *xfer;
 	struct list_head	 *ready;
 };
 
-<<<<<<< HEAD
-struct rds_ib_connect_private {
-	/* Add new fields at the end, and don't permute existing fields. */
-	__be32			dp_saddr;
-	__be32			dp_daddr;
-	u8			dp_protocol_major;
-	u8			dp_protocol_minor;
-	__be16			dp_protocol_minor_mask; /* bitmask */
-	__be32			dp_reserved1;
-	__be64			dp_ack_seq;
-	__be32			dp_credit;		/* non-zero enables flow ctl */
-=======
 /* This is the common structure for the IB private data exchange in setting up
  * an RDS connection.  The exchange is different for IPv4 and IPv6 connections.
  * The reason is that the address size is different and the addresses
@@ -129,20 +96,15 @@ struct rds6_ib_connect_private {
 union rds_ib_conn_priv {
 	struct rds_ib_connect_private	ricp_v4;
 	struct rds6_ib_connect_private	ricp_v6;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct rds_ib_send_work {
 	void			*s_op;
-<<<<<<< HEAD
-	struct ib_send_wr	s_wr;
-=======
 	union {
 		struct ib_send_wr	s_wr;
 		struct ib_rdma_wr	s_rdma_wr;
 		struct ib_atomic_wr	s_atomic_wr;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ib_sge		s_sge[RDS_IB_MAX_SGE];
 	unsigned long		s_queued;
 };
@@ -162,8 +124,6 @@ struct rds_ib_work_ring {
 	atomic_t	w_free_ctr;
 };
 
-<<<<<<< HEAD
-=======
 /* Rings are posted with all the allocations they'll need to queue the
  * incoming message to the receiving socket so this can't fail.
  * All fragments start with a header, so we can make sure we're not receiving
@@ -178,7 +138,6 @@ struct rds_ib_ack_state {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rds_ib_device;
 
 struct rds_ib_connection {
@@ -190,11 +149,6 @@ struct rds_ib_connection {
 	/* alphabet soup, IBTA style */
 	struct rdma_cm_id	*i_cm_id;
 	struct ib_pd		*i_pd;
-<<<<<<< HEAD
-	struct ib_mr		*i_mr;
-	struct ib_cq		*i_send_cq;
-	struct ib_cq		*i_recv_cq;
-=======
 	struct ib_cq		*i_send_cq;
 	struct ib_cq		*i_recv_cq;
 	struct ib_wc		i_send_wc[RDS_IB_WC_MAX];
@@ -207,45 +161,27 @@ struct rds_ib_connection {
 	/* interrupt handling */
 	struct tasklet_struct	i_send_tasklet;
 	struct tasklet_struct	i_recv_tasklet;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* tx */
 	struct rds_ib_work_ring	i_send_ring;
 	struct rm_data_op	*i_data_op;
-<<<<<<< HEAD
-	struct rds_header	*i_send_hdrs;
-	u64			i_send_hdrs_dma;
-=======
 	struct rds_header	**i_send_hdrs;
 	dma_addr_t		*i_send_hdrs_dma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rds_ib_send_work *i_sends;
 	atomic_t		i_signaled_sends;
 
 	/* rx */
-<<<<<<< HEAD
-	struct tasklet_struct	i_recv_tasklet;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex		i_recv_mutex;
 	struct rds_ib_work_ring	i_recv_ring;
 	struct rds_ib_incoming	*i_ibinc;
 	u32			i_recv_data_rem;
-<<<<<<< HEAD
-	struct rds_header	*i_recv_hdrs;
-	u64			i_recv_hdrs_dma;
-=======
 	struct rds_header	**i_recv_hdrs;
 	dma_addr_t		*i_recv_hdrs_dma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rds_ib_recv_work *i_recvs;
 	u64			i_ack_recv;	/* last ACK received */
 	struct rds_ib_refill_cache i_cache_incs;
 	struct rds_ib_refill_cache i_cache_frags;
-<<<<<<< HEAD
-=======
 	atomic_t		i_cache_allocs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sending acks */
 	unsigned long		i_ack_flags;
@@ -258,11 +194,7 @@ struct rds_ib_connection {
 	struct rds_header	*i_ack;
 	struct ib_send_wr	i_ack_wr;
 	struct ib_sge		i_ack_sge;
-<<<<<<< HEAD
-	u64			i_ack_dma;
-=======
 	dma_addr_t		i_ack_dma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		i_ack_queued;
 
 	/* Flow control related information
@@ -280,8 +212,6 @@ struct rds_ib_connection {
 
 	/* Batched completions */
 	unsigned int		i_unsignaled_wrs;
-<<<<<<< HEAD
-=======
 
 	/* Endpoint role in connection */
 	bool			i_active_side;
@@ -291,7 +221,6 @@ struct rds_ib_connection {
 	int			i_scq_vector;
 	int			i_rcq_vector;
 	u8			i_sl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* This assumes that atomic_t is at least 32 bits */
@@ -303,15 +232,12 @@ struct rds_ib_connection {
 struct rds_ib_ipaddr {
 	struct list_head	list;
 	__be32			ipaddr;
-<<<<<<< HEAD
-=======
 	struct rcu_head		rcu;
 };
 
 enum {
 	RDS_IB_MR_8K_POOL,
 	RDS_IB_MR_1M_POOL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct rds_ib_device {
@@ -320,12 +246,6 @@ struct rds_ib_device {
 	struct list_head	conn_list;
 	struct ib_device	*dev;
 	struct ib_pd		*pd;
-<<<<<<< HEAD
-	struct ib_mr		*mr;
-	struct rds_ib_mr_pool	*mr_pool;
-	unsigned int		fmr_max_remaps;
-	unsigned int		max_fmrs;
-=======
 	u8			odp_capable:1;
 
 	unsigned int		max_mrs;
@@ -333,26 +253,16 @@ struct rds_ib_device {
 	struct rds_ib_mr_pool   *mr_8k_pool;
 	unsigned int		max_8k_mrs;
 	unsigned int		max_1m_mrs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			max_sge;
 	unsigned int		max_wrs;
 	unsigned int		max_initiator_depth;
 	unsigned int		max_responder_resources;
 	spinlock_t		spinlock;	/* protect the above */
-<<<<<<< HEAD
-	atomic_t		refcount;
-	struct work_struct	free_work;
-};
-
-#define pcidev_to_node(pcidev) pcibus_to_node(pcidev->bus)
-#define ibdev_to_node(ibdev) pcidev_to_node(to_pci_dev(ibdev->dma_device))
-=======
 	refcount_t		refcount;
 	struct work_struct	free_work;
 	int			*vector_load;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define rdsibdev_to_node(rdsibdev) ibdev_to_node(rdsibdev->dev)
 
 /* bits for i_ack_flags */
@@ -365,48 +275,27 @@ struct rds_ib_device {
 struct rds_ib_statistics {
 	uint64_t	s_ib_connect_raced;
 	uint64_t	s_ib_listen_closed_stale;
-<<<<<<< HEAD
-	uint64_t	s_ib_tx_cq_call;
-=======
 	uint64_t	s_ib_evt_handler_call;
 	uint64_t	s_ib_tasklet_call;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint64_t	s_ib_tx_cq_event;
 	uint64_t	s_ib_tx_ring_full;
 	uint64_t	s_ib_tx_throttle;
 	uint64_t	s_ib_tx_sg_mapping_failure;
 	uint64_t	s_ib_tx_stalled;
 	uint64_t	s_ib_tx_credit_updates;
-<<<<<<< HEAD
-	uint64_t	s_ib_rx_cq_call;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint64_t	s_ib_rx_cq_event;
 	uint64_t	s_ib_rx_ring_empty;
 	uint64_t	s_ib_rx_refill_from_cq;
 	uint64_t	s_ib_rx_refill_from_thread;
 	uint64_t	s_ib_rx_alloc_limit;
-<<<<<<< HEAD
-=======
 	uint64_t	s_ib_rx_total_frags;
 	uint64_t	s_ib_rx_total_incs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint64_t	s_ib_rx_credit_updates;
 	uint64_t	s_ib_ack_sent;
 	uint64_t	s_ib_ack_send_failure;
 	uint64_t	s_ib_ack_send_delayed;
 	uint64_t	s_ib_ack_send_piggybacked;
 	uint64_t	s_ib_ack_received;
-<<<<<<< HEAD
-	uint64_t	s_ib_rdma_mr_alloc;
-	uint64_t	s_ib_rdma_mr_free;
-	uint64_t	s_ib_rdma_mr_used;
-	uint64_t	s_ib_rdma_mr_pool_flush;
-	uint64_t	s_ib_rdma_mr_pool_wait;
-	uint64_t	s_ib_rdma_mr_pool_depleted;
-	uint64_t	s_ib_atomic_cswp;
-	uint64_t	s_ib_atomic_fadd;
-=======
 	uint64_t	s_ib_rdma_mr_8k_alloc;
 	uint64_t	s_ib_rdma_mr_8k_free;
 	uint64_t	s_ib_rdma_mr_8k_used;
@@ -425,7 +314,6 @@ struct rds_ib_statistics {
 	uint64_t	s_ib_atomic_fadd;
 	uint64_t	s_ib_recv_added_to_cache;
 	uint64_t	s_ib_recv_removed_from_cache;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct workqueue_struct *rds_ib_wq;
@@ -435,17 +323,6 @@ extern struct workqueue_struct *rds_ib_wq;
  * doesn't define it.
  */
 static inline void rds_ib_dma_sync_sg_for_cpu(struct ib_device *dev,
-<<<<<<< HEAD
-		struct scatterlist *sg, unsigned int sg_dma_len, int direction)
-{
-	unsigned int i;
-
-	for (i = 0; i < sg_dma_len; ++i) {
-		ib_dma_sync_single_for_cpu(dev,
-				ib_sg_dma_address(dev, &sg[i]),
-				ib_sg_dma_len(dev, &sg[i]),
-				direction);
-=======
 					      struct scatterlist *sglist,
 					      unsigned int sg_dma_len,
 					      int direction)
@@ -456,23 +333,11 @@ static inline void rds_ib_dma_sync_sg_for_cpu(struct ib_device *dev,
 	for_each_sg(sglist, sg, sg_dma_len, i) {
 		ib_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
 					   sg_dma_len(sg), direction);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #define ib_dma_sync_sg_for_cpu	rds_ib_dma_sync_sg_for_cpu
 
 static inline void rds_ib_dma_sync_sg_for_device(struct ib_device *dev,
-<<<<<<< HEAD
-		struct scatterlist *sg, unsigned int sg_dma_len, int direction)
-{
-	unsigned int i;
-
-	for (i = 0; i < sg_dma_len; ++i) {
-		ib_dma_sync_single_for_device(dev,
-				ib_sg_dma_address(dev, &sg[i]),
-				ib_sg_dma_len(dev, &sg[i]),
-				direction);
-=======
 						 struct scatterlist *sglist,
 						 unsigned int sg_dma_len,
 						 int direction)
@@ -483,7 +348,6 @@ static inline void rds_ib_dma_sync_sg_for_device(struct ib_device *dev,
 	for_each_sg(sglist, sg, sg_dma_len, i) {
 		ib_dma_sync_single_for_device(dev, sg_dma_address(sg),
 					      sg_dma_len(sg), direction);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #define ib_dma_sync_sg_for_device	rds_ib_dma_sync_sg_for_device
@@ -495,10 +359,6 @@ struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device);
 void rds_ib_dev_put(struct rds_ib_device *rds_ibdev);
 extern struct ib_client rds_ib_client;
 
-<<<<<<< HEAD
-extern unsigned int fmr_message_size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned int rds_ib_retry_count;
 
 extern spinlock_t ib_nodev_conns_lock;
@@ -507,21 +367,6 @@ extern struct list_head ib_nodev_conns;
 /* ib_cm.c */
 int rds_ib_conn_alloc(struct rds_connection *conn, gfp_t gfp);
 void rds_ib_conn_free(void *arg);
-<<<<<<< HEAD
-int rds_ib_conn_connect(struct rds_connection *conn);
-void rds_ib_conn_shutdown(struct rds_connection *conn);
-void rds_ib_state_change(struct sock *sk);
-int rds_ib_listen_init(void);
-void rds_ib_listen_stop(void);
-void __rds_ib_conn_error(struct rds_connection *conn, const char *, ...);
-int rds_ib_cm_handle_connect(struct rdma_cm_id *cm_id,
-			     struct rdma_cm_event *event);
-int rds_ib_cm_initiate_connect(struct rdma_cm_id *cm_id);
-void rds_ib_cm_connect_complete(struct rds_connection *conn,
-				struct rdma_cm_event *event);
-
-
-=======
 int rds_ib_conn_path_connect(struct rds_conn_path *cp);
 void rds_ib_conn_path_shutdown(struct rds_conn_path *cp);
 void rds_ib_state_change(struct sock *sk);
@@ -535,46 +380,20 @@ int rds_ib_cm_initiate_connect(struct rdma_cm_id *cm_id, bool isv6);
 void rds_ib_cm_connect_complete(struct rds_connection *conn,
 				struct rdma_cm_event *event);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define rds_ib_conn_error(conn, fmt...) \
 	__rds_ib_conn_error(conn, KERN_WARNING "RDS/IB: " fmt)
 
 /* ib_rdma.c */
-<<<<<<< HEAD
-int rds_ib_update_ipaddr(struct rds_ib_device *rds_ibdev, __be32 ipaddr);
-void rds_ib_add_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *conn);
-void rds_ib_remove_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *conn);
-void rds_ib_destroy_nodev_conns(void);
-struct rds_ib_mr_pool *rds_ib_create_mr_pool(struct rds_ib_device *);
-void rds_ib_get_mr_info(struct rds_ib_device *rds_ibdev, struct rds_info_rdma_connection *iinfo);
-void rds_ib_destroy_mr_pool(struct rds_ib_mr_pool *);
-void *rds_ib_get_mr(struct scatterlist *sg, unsigned long nents,
-		    struct rds_sock *rs, u32 *key_ret);
-void rds_ib_sync_mr(void *trans_private, int dir);
-void rds_ib_free_mr(void *trans_private, int invalidate);
-void rds_ib_flush_mrs(void);
-=======
 int rds_ib_update_ipaddr(struct rds_ib_device *rds_ibdev,
 			 struct in6_addr *ipaddr);
 void rds_ib_add_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *conn);
 void rds_ib_remove_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *conn);
 void rds_ib_destroy_nodev_conns(void);
 void rds_ib_mr_cqe_handler(struct rds_ib_connection *ic, struct ib_wc *wc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ib_recv.c */
 int rds_ib_recv_init(void);
 void rds_ib_recv_exit(void);
-<<<<<<< HEAD
-int rds_ib_recv(struct rds_connection *conn);
-int rds_ib_recv_alloc_caches(struct rds_ib_connection *ic);
-void rds_ib_recv_free_caches(struct rds_ib_connection *ic);
-void rds_ib_recv_refill(struct rds_connection *conn, int prefill);
-void rds_ib_inc_free(struct rds_incoming *inc);
-int rds_ib_inc_copy_to_user(struct rds_incoming *inc, struct iovec *iov,
-			     size_t size);
-void rds_ib_recv_cq_comp_handler(struct ib_cq *cq, void *context);
-=======
 int rds_ib_recv_path(struct rds_conn_path *conn);
 int rds_ib_recv_alloc_caches(struct rds_ib_connection *ic, gfp_t gfp);
 void rds_ib_recv_free_caches(struct rds_ib_connection *ic);
@@ -583,7 +402,6 @@ void rds_ib_inc_free(struct rds_incoming *inc);
 int rds_ib_inc_copy_to_user(struct rds_incoming *inc, struct iov_iter *to);
 void rds_ib_recv_cqe_handler(struct rds_ib_connection *ic, struct ib_wc *wc,
 			     struct rds_ib_ack_state *state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rds_ib_recv_tasklet_fn(unsigned long data);
 void rds_ib_recv_init_ring(struct rds_ib_connection *ic);
 void rds_ib_recv_clear_ring(struct rds_ib_connection *ic);
@@ -591,10 +409,7 @@ void rds_ib_recv_init_ack(struct rds_ib_connection *ic);
 void rds_ib_attempt_ack(struct rds_ib_connection *ic);
 void rds_ib_ack_send_complete(struct rds_ib_connection *ic);
 u64 rds_ib_piggyb_ack(struct rds_ib_connection *ic);
-<<<<<<< HEAD
-=======
 void rds_ib_set_ack(struct rds_ib_connection *ic, u64 seq, int ack_required);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ib_ring.c */
 void rds_ib_ring_init(struct rds_ib_work_ring *ring, u32 nr);
@@ -609,18 +424,10 @@ u32 rds_ib_ring_completed(struct rds_ib_work_ring *ring, u32 wr_id, u32 oldest);
 extern wait_queue_head_t rds_ib_ring_empty_wait;
 
 /* ib_send.c */
-<<<<<<< HEAD
-char *rds_ib_wc_status_str(enum ib_wc_status status);
-void rds_ib_xmit_complete(struct rds_connection *conn);
-int rds_ib_xmit(struct rds_connection *conn, struct rds_message *rm,
-		unsigned int hdr_off, unsigned int sg, unsigned int off);
-void rds_ib_send_cq_comp_handler(struct ib_cq *cq, void *context);
-=======
 void rds_ib_xmit_path_complete(struct rds_conn_path *cp);
 int rds_ib_xmit(struct rds_connection *conn, struct rds_message *rm,
 		unsigned int hdr_off, unsigned int sg, unsigned int off);
 void rds_ib_send_cqe_handler(struct rds_ib_connection *ic, struct ib_wc *wc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rds_ib_send_init_ring(struct rds_ib_connection *ic);
 void rds_ib_send_clear_ring(struct rds_ib_connection *ic);
 int rds_ib_xmit_rdma(struct rds_connection *conn, struct rm_rdma_op *op);
@@ -631,15 +438,10 @@ int rds_ib_send_grab_credits(struct rds_ib_connection *ic, u32 wanted,
 int rds_ib_xmit_atomic(struct rds_connection *conn, struct rm_atomic_op *op);
 
 /* ib_stats.c */
-<<<<<<< HEAD
-DECLARE_PER_CPU(struct rds_ib_statistics, rds_ib_stats);
-#define rds_ib_stats_inc(member) rds_stats_inc_which(rds_ib_stats, member)
-=======
 DECLARE_PER_CPU_SHARED_ALIGNED(struct rds_ib_statistics, rds_ib_stats);
 #define rds_ib_stats_inc(member) rds_stats_inc_which(rds_ib_stats, member)
 #define rds_ib_stats_add(member, count) \
 		rds_stats_add_which(rds_ib_stats, member, count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int rds_ib_stats_info_copy(struct rds_info_iterator *iter,
 				    unsigned int avail);
 

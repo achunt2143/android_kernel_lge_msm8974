@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(__i386__) || defined(__x86_64__)
 #include <unistd.h>
 #include <errno.h>
@@ -11,24 +8,16 @@
 #include <pci/pci.h>
 
 #include "helpers/helpers.h"
-<<<<<<< HEAD
-
-=======
 #include "cpufreq.h"
 #include "acpi_cppc.h"
 
 /* ACPI P-States Helper Functions for AMD Processors ***************/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_AMD_PSTATE_STATUS	0xc0010063
 #define MSR_AMD_PSTATE		0xc0010064
 #define MSR_AMD_PSTATE_LIMIT	0xc0010061
 
-<<<<<<< HEAD
-union msr_pstate {
-=======
 union core_pstate {
 	/* pre fam 17h: */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		unsigned fid:6;
 		unsigned did:3;
@@ -41,20 +30,6 @@ union core_pstate {
 		unsigned idddiv:2;
 		unsigned res3:21;
 		unsigned en:1;
-<<<<<<< HEAD
-	} bits;
-	unsigned long long val;
-};
-
-static int get_did(int family, union msr_pstate pstate)
-{
-	int t;
-
-	if (family == 0x12)
-		t = pstate.val & 0xf;
-	else
-		t = pstate.bits.did;
-=======
 	} pstate;
 	/* since fam 17h: */
 	struct {
@@ -79,26 +54,10 @@ static int get_did(union core_pstate pstate)
 		t = pstate.val & 0xf;
 	else
 		t = pstate.pstate.did;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return t;
 }
 
-<<<<<<< HEAD
-static int get_cof(int family, union msr_pstate pstate)
-{
-	int t;
-	int fid, did;
-
-	did = get_did(family, pstate);
-
-	t = 0x10;
-	fid = pstate.bits.fid;
-	if (family == 0x11)
-		t = 0x8;
-
-	return (100 * (fid + t)) >> did;
-=======
 static int get_cof(union core_pstate pstate)
 {
 	int t;
@@ -116,17 +75,11 @@ static int get_cof(union core_pstate pstate)
 		cof = (100 * (fid + t)) >> did;
 	}
 	return cof;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Needs:
  * cpu          -> the cpu that gets evaluated
-<<<<<<< HEAD
- * cpu_family   -> The cpu's family (0x10, 0x12,...)
- * boots_states -> how much boost states the machines support
-=======
  * boost_states -> how much boost states the machines support
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Fills up:
  * pstates -> a pointer to an array of size MAX_HW_PSTATES
@@ -136,20 +89,6 @@ static int get_cof(union core_pstate pstate)
  *
  * returns zero on success, -1 on failure
  */
-<<<<<<< HEAD
-int decode_pstates(unsigned int cpu, unsigned int cpu_family,
-		   int boost_states, unsigned long *pstates, int *no)
-{
-	int i, psmax, pscur;
-	union msr_pstate pstate;
-	unsigned long long val;
-
-	/* Only read out frequencies from HW when CPU might be boostable
-	   to keep the code as short and clean as possible.
-	   Otherwise frequencies are exported via ACPI tables.
-	*/
-	if (cpu_family < 0x10 || cpu_family == 0x14)
-=======
 int decode_pstates(unsigned int cpu, int boost_states,
 		   unsigned long *pstates, int *no)
 {
@@ -161,23 +100,12 @@ int decode_pstates(unsigned int cpu, int boost_states,
 	 * otherwise frequencies are exported via ACPI tables.
 	 */
 	if (!(cpupower_cpu_info.caps & CPUPOWER_CAP_AMD_HW_PSTATE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 
 	if (read_msr(cpu, MSR_AMD_PSTATE_LIMIT, &val))
 		return -1;
 
 	psmax = (val >> 4) & 0x7;
-<<<<<<< HEAD
-
-	if (read_msr(cpu, MSR_AMD_PSTATE_STATUS, &val))
-		return -1;
-
-	pscur = val & 0x7;
-
-	pscur += boost_states;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	psmax += boost_states;
 	for (i = 0; i <= psmax; i++) {
 		if (i >= MAX_HW_PSTATES) {
@@ -187,16 +115,12 @@ int decode_pstates(unsigned int cpu, int boost_states,
 		}
 		if (read_msr(cpu, MSR_AMD_PSTATE + i, &pstate.val))
 			return -1;
-<<<<<<< HEAD
-		pstates[i] = get_cof(cpu_family, pstate);
-=======
 
 		/* The enabled bit (bit 63) is common for all families */
 		if (!pstate.pstatedef.en)
 			continue;
 
 		pstates[i] = get_cof(pstate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	*no = i;
 	return 0;
@@ -225,8 +149,6 @@ int amd_pci_get_num_boost_states(int *active, int *states)
 	pci_cleanup(pci_acc);
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 /* ACPI P-States Helper Functions for AMD Processors ***************/
 
@@ -301,5 +223,4 @@ void amd_pstate_show_perf_and_freq(unsigned int cpu, int no_rounding)
 }
 
 /* AMD P-State Helper Functions ************************************/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* defined(__i386__) || defined(__x86_64__) */

@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/uaccess.h>
@@ -33,31 +15,18 @@
 
 BFA_TRC_FILE(LDRV, BSG);
 
-<<<<<<< HEAD
-int
-bfad_iocmd_ioc_enable(struct bfad_s *bfad, void *cmd)
-{
-	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
-	int	rc = 0;
-=======
 static int
 bfad_iocmd_ioc_enable(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long	flags;
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	/* If IOC is not in disabled state - return */
 	if (!bfa_ioc_is_disabled(&bfad->bfa.ioc)) {
 		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
-<<<<<<< HEAD
-		iocmd->status = BFA_STATUS_IOC_FAILURE;
-		return rc;
-=======
 		iocmd->status = BFA_STATUS_OK;
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	init_completion(&bfad->enable_comp);
@@ -66,19 +35,6 @@ bfad_iocmd_ioc_enable(struct bfad_s *bfad, void *cmd)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	wait_for_completion(&bfad->enable_comp);
 
-<<<<<<< HEAD
-	return rc;
-}
-
-int
-bfad_iocmd_ioc_disable(struct bfad_s *bfad, void *cmd)
-{
-	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
-	int	rc = 0;
-	unsigned long	flags;
-
-	spin_lock_irqsave(&bfad->bfad_lock, flags);
-=======
 	return 0;
 }
 
@@ -95,7 +51,6 @@ bfad_iocmd_ioc_disable(struct bfad_s *bfad, void *cmd)
 		return 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bfad->disable_active) {
 		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 		return -EBUSY;
@@ -110,11 +65,7 @@ bfad_iocmd_ioc_disable(struct bfad_s *bfad, void *cmd)
 	bfad->disable_active = BFA_FALSE;
 	iocmd->status = BFA_STATUS_OK;
 
-<<<<<<< HEAD
-	return rc;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -147,16 +98,10 @@ bfad_iocmd_ioc_get_info(struct bfad_s *bfad, void *cmd)
 
 	/* set adapter hw path */
 	strcpy(iocmd->adapter_hwpath, bfad->pci_name);
-<<<<<<< HEAD
-	i = strlen(iocmd->adapter_hwpath) - 1;
-	while (iocmd->adapter_hwpath[i] != '.')
-		i--;
-=======
 	for (i = 0; iocmd->adapter_hwpath[i] != ':' && i < BFA_STRING_32; i++)
 		;
 	for (; iocmd->adapter_hwpath[++i] != ':' && i < BFA_STRING_32; )
 		;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iocmd->adapter_hwpath[i] = '\0';
 	iocmd->status = BFA_STATUS_OK;
 	return 0;
@@ -174,11 +119,7 @@ bfad_iocmd_ioc_get_attr(struct bfad_s *bfad, void *cmd)
 
 	/* fill in driver attr info */
 	strcpy(iocmd->ioc_attr.driver_attr.driver, BFAD_DRIVER_NAME);
-<<<<<<< HEAD
-	strncpy(iocmd->ioc_attr.driver_attr.driver_ver,
-=======
 	strscpy(iocmd->ioc_attr.driver_attr.driver_ver,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BFAD_DRIVER_VERSION, BFA_VERSION_LEN);
 	strcpy(iocmd->ioc_attr.driver_attr.fw_ver,
 		iocmd->ioc_attr.adapter_attr.fw_ver);
@@ -195,11 +136,7 @@ bfad_iocmd_ioc_get_attr(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_ioc_get_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_ioc_stats_s *iocmd = (struct bfa_bsg_ioc_stats_s *)cmd;
@@ -209,11 +146,7 @@ bfad_iocmd_ioc_get_stats(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_ioc_get_fwstats(struct bfad_s *bfad, void *cmd,
 			unsigned int payload_len)
 {
@@ -243,11 +176,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_ioc_reset_stats(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
@@ -265,11 +194,7 @@ bfad_iocmd_ioc_reset_stats(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_ioc_set_name(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 {
 	struct bfa_bsg_ioc_name_s *iocmd = (struct bfa_bsg_ioc_name_s *) cmd;
@@ -283,11 +208,7 @@ bfad_iocmd_ioc_set_name(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_iocfc_get_attr(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_iocfc_attr_s *iocmd = (struct bfa_bsg_iocfc_attr_s *)cmd;
@@ -298,9 +219,6 @@ bfad_iocmd_iocfc_get_attr(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
 bfad_iocmd_ioc_fw_sig_inv(struct bfad_s *bfad, void *cmd)
 {
@@ -314,7 +232,6 @@ bfad_iocmd_ioc_fw_sig_inv(struct bfad_s *bfad, void *cmd)
 }
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_iocfc_set_intr(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_iocfc_intr_s *iocmd = (struct bfa_bsg_iocfc_intr_s *)cmd;
@@ -327,11 +244,7 @@ bfad_iocmd_iocfc_set_intr(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_port_enable(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
@@ -352,11 +265,7 @@ bfad_iocmd_port_enable(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_port_disable(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
@@ -398,25 +307,15 @@ bfad_iocmd_port_get_attr(struct bfad_s *bfad, void *cmd)
 	iocmd->attr.port_type = port_attr.port_type;
 	iocmd->attr.loopback = port_attr.loopback;
 	iocmd->attr.authfail = port_attr.authfail;
-<<<<<<< HEAD
-	strncpy(iocmd->attr.port_symname.symname,
-		port_attr.port_cfg.sym_name.symname,
-		sizeof(port_attr.port_cfg.sym_name.symname));
-=======
 	strscpy(iocmd->attr.port_symname.symname,
 		port_attr.port_cfg.sym_name.symname,
 		sizeof(iocmd->attr.port_symname.symname));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iocmd->status = BFA_STATUS_OK;
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_port_get_stats(struct bfad_s *bfad, void *cmd,
 			unsigned int payload_len)
 {
@@ -450,11 +349,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_port_reset_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
@@ -475,11 +370,7 @@ bfad_iocmd_port_reset_stats(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_set_port_cfg(struct bfad_s *bfad, void *iocmd, unsigned int v_cmd)
 {
 	struct bfa_bsg_port_cfg_s *cmd = (struct bfa_bsg_port_cfg_s *)iocmd;
@@ -499,11 +390,7 @@ bfad_iocmd_set_port_cfg(struct bfad_s *bfad, void *iocmd, unsigned int v_cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_port_cfg_maxfrsize(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_port_cfg_maxfrsize_s *iocmd =
@@ -517,25 +404,6 @@ bfad_iocmd_port_cfg_maxfrsize(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-bfad_iocmd_port_cfg_bbsc(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
-{
-	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
-	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(&bfad->bfa);
-	unsigned long	flags;
-
-	spin_lock_irqsave(&bfad->bfad_lock, flags);
-	if (bfa_ioc_get_type(&bfad->bfa.ioc) == BFA_IOC_TYPE_FC) {
-		if (v_cmd == IOCMD_PORT_BBSC_ENABLE)
-			fcport->cfg.bb_scn_state = BFA_TRUE;
-		else if (v_cmd == IOCMD_PORT_BBSC_DISABLE)
-			fcport->cfg.bb_scn_state = BFA_FALSE;
-	}
-	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
-
-	iocmd->status = BFA_STATUS_OK;
-=======
 static int
 bfad_iocmd_port_cfg_bbcr(struct bfad_s *bfad, unsigned int cmd, void *pcmd)
 {
@@ -556,13 +424,10 @@ bfad_iocmd_port_cfg_bbcr(struct bfad_s *bfad, unsigned int cmd, void *pcmd)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 
 	iocmd->status = rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-=======
 bfad_iocmd_port_get_bbcr_attr(struct bfad_s *bfad, void *pcmd)
 {
 	struct bfa_bsg_bbcr_attr_s *iocmd = (struct bfa_bsg_bbcr_attr_s *) pcmd;
@@ -578,7 +443,6 @@ bfad_iocmd_port_get_bbcr_attr(struct bfad_s *bfad, void *pcmd)
 
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_lport_get_attr(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_fcs_lport_s	*fcs_port;
@@ -601,11 +465,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_lport_get_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_fcs_lport_s *fcs_port;
@@ -629,11 +489,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_lport_reset_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_fcs_lport_s *fcs_port;
@@ -667,11 +523,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_lport_get_iostats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_fcs_lport_s *fcs_port;
@@ -696,11 +548,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_lport_get_rports(struct bfad_s *bfad, void *cmd,
 			unsigned int payload_len)
 {
@@ -715,12 +563,8 @@ bfad_iocmd_lport_get_rports(struct bfad_s *bfad, void *cmd,
 
 	if (bfad_chk_iocmd_sz(payload_len,
 			sizeof(struct bfa_bsg_lport_get_rports_s),
-<<<<<<< HEAD
-			sizeof(wwn_t) * iocmd->nrports) != BFA_STATUS_OK) {
-=======
 			sizeof(struct bfa_rport_qualifier_s) * iocmd->nrports)
 			!= BFA_STATUS_OK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iocmd->status = BFA_STATUS_VERSION_FAIL;
 		return 0;
 	}
@@ -737,25 +581,16 @@ bfad_iocmd_lport_get_rports(struct bfad_s *bfad, void *cmd,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	bfa_fcs_lport_get_rports(fcs_port, (wwn_t *)iocmd_bufptr,
-				&iocmd->nrports);
-=======
 	bfa_fcs_lport_get_rport_quals(fcs_port,
 			(struct bfa_rport_qualifier_s *)iocmd_bufptr,
 			&iocmd->nrports);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	iocmd->status = BFA_STATUS_OK;
 out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_rport_get_attr(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_rport_attr_s *iocmd = (struct bfa_bsg_rport_attr_s *)cmd;
@@ -773,15 +608,11 @@ bfad_iocmd_rport_get_attr(struct bfad_s *bfad, void *cmd)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	fcs_rport = bfa_fcs_rport_lookup(fcs_port, iocmd->rpwwn);
-=======
 	if (iocmd->pid)
 		fcs_rport = bfa_fcs_lport_get_rport_by_qualifier(fcs_port,
 						iocmd->rpwwn, iocmd->pid);
 	else
 		fcs_rport = bfa_fcs_rport_lookup(fcs_port, iocmd->rpwwn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fcs_rport == NULL) {
 		bfa_trc(bfad, 0);
 		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
@@ -845,11 +676,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_rport_get_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_rport_stats_s *iocmd =
@@ -878,17 +705,11 @@ bfad_iocmd_rport_get_stats(struct bfad_s *bfad, void *cmd)
 
 	memcpy((void *)&iocmd->stats, (void *)&fcs_rport->stats,
 		sizeof(struct bfa_rport_stats_s));
-<<<<<<< HEAD
-	memcpy((void *)&iocmd->stats.hal_stats,
-	       (void *)&(bfa_fcs_rport_get_halrport(fcs_rport)->stats),
-	       sizeof(struct bfa_rport_hal_stats_s));
-=======
 	if (bfa_fcs_rport_get_halrport(fcs_rport)) {
 		memcpy((void *)&iocmd->stats.hal_stats,
 		       (void *)&(bfa_fcs_rport_get_halrport(fcs_rport)->stats),
 			sizeof(struct bfa_rport_hal_stats_s));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	iocmd->status = BFA_STATUS_OK;
@@ -896,11 +717,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_rport_clr_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_rport_reset_stats_s *iocmd =
@@ -928,23 +745,15 @@ bfad_iocmd_rport_clr_stats(struct bfad_s *bfad, void *cmd)
 
 	memset((char *)&fcs_rport->stats, 0, sizeof(struct bfa_rport_stats_s));
 	rport = bfa_fcs_rport_get_halrport(fcs_rport);
-<<<<<<< HEAD
-	memset(&rport->stats, 0, sizeof(rport->stats));
-=======
 	if (rport)
 		memset(&rport->stats, 0, sizeof(rport->stats));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	iocmd->status = BFA_STATUS_OK;
 out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_rport_set_speed(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_rport_set_speed_s *iocmd =
@@ -972,23 +781,15 @@ bfad_iocmd_rport_set_speed(struct bfad_s *bfad, void *cmd)
 	fcs_rport->rpf.assigned_speed  = iocmd->speed;
 	/* Set this speed in f/w only if the RPSC speed is not available */
 	if (fcs_rport->rpf.rpsc_speed == BFA_PORT_SPEED_UNKNOWN)
-<<<<<<< HEAD
-		bfa_rport_speed(fcs_rport->bfa_rport, iocmd->speed);
-=======
 		if (fcs_rport->bfa_rport)
 			bfa_rport_speed(fcs_rport->bfa_rport, iocmd->speed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	iocmd->status = BFA_STATUS_OK;
 out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_vport_get_attr(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_fcs_vport_s *fcs_vport;
@@ -1011,11 +812,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_vport_get_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_fcs_vport_s *fcs_vport;
@@ -1043,11 +840,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_vport_clr_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_fcs_vport_s *fcs_vport;
@@ -1090,11 +883,7 @@ bfad_iocmd_fabric_get_lports(struct bfad_s *bfad, void *cmd,
 
 	if (bfad_chk_iocmd_sz(payload_len,
 		sizeof(struct bfa_bsg_fabric_get_lports_s),
-<<<<<<< HEAD
-		sizeof(wwn_t[iocmd->nports])) != BFA_STATUS_OK) {
-=======
 		sizeof(wwn_t) * iocmd->nports) != BFA_STATUS_OK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iocmd->status = BFA_STATUS_VERSION_FAIL;
 		goto out;
 	}
@@ -1118,9 +907,6 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
 bfad_iocmd_qos_set_bw(struct bfad_s *bfad, void *pcmd)
 {
@@ -1135,7 +921,6 @@ bfad_iocmd_qos_set_bw(struct bfad_s *bfad, void *pcmd)
 }
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_ratelim(struct bfad_s *bfad, unsigned int cmd, void *pcmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)pcmd;
@@ -1144,18 +929,6 @@ bfad_iocmd_ratelim(struct bfad_s *bfad, unsigned int cmd, void *pcmd)
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 
-<<<<<<< HEAD
-	if (cmd == IOCMD_RATELIM_ENABLE)
-		fcport->cfg.ratelimit = BFA_TRUE;
-	else if (cmd == IOCMD_RATELIM_DISABLE)
-		fcport->cfg.ratelimit = BFA_FALSE;
-
-	if (fcport->cfg.trl_def_speed == BFA_PORT_SPEED_UNKNOWN)
-		fcport->cfg.trl_def_speed = BFA_PORT_SPEED_1GBPS;
-
-	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
-	iocmd->status = BFA_STATUS_OK;
-=======
 	if ((fcport->cfg.topology == BFA_PORT_TOPOLOGY_LOOP) &&
 		(fcport->topology == BFA_PORT_TOPOLOGY_LOOP))
 		iocmd->status = BFA_STATUS_TOPOLOGY_LOOP;
@@ -1172,16 +945,11 @@ bfad_iocmd_ratelim(struct bfad_s *bfad, unsigned int cmd, void *pcmd)
 	}
 
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_ratelim_speed(struct bfad_s *bfad, unsigned int cmd, void *pcmd)
 {
 	struct bfa_bsg_trl_speed_s *iocmd = (struct bfa_bsg_trl_speed_s *)pcmd;
@@ -1198,10 +966,6 @@ bfad_iocmd_ratelim_speed(struct bfad_s *bfad, unsigned int cmd, void *pcmd)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	fcport->cfg.trl_def_speed = iocmd->speed;
-	iocmd->status = BFA_STATUS_OK;
-=======
 	if ((fcport->cfg.topology == BFA_PORT_TOPOLOGY_LOOP) &&
 		(fcport->topology == BFA_PORT_TOPOLOGY_LOOP))
 		iocmd->status = BFA_STATUS_TOPOLOGY_LOOP;
@@ -1209,17 +973,12 @@ bfad_iocmd_ratelim_speed(struct bfad_s *bfad, unsigned int cmd, void *pcmd)
 		fcport->cfg.trl_def_speed = iocmd->speed;
 		iocmd->status = BFA_STATUS_OK;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_cfg_fcpim(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_fcpim_s *iocmd = (struct bfa_bsg_fcpim_s *)cmd;
@@ -1232,11 +991,7 @@ bfad_iocmd_cfg_fcpim(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_fcpim_get_modstats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_fcpim_modstats_s *iocmd =
@@ -1258,11 +1013,7 @@ bfad_iocmd_fcpim_get_modstats(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_fcpim_clr_modstats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_fcpim_modstatsclr_s *iocmd =
@@ -1284,11 +1035,7 @@ bfad_iocmd_fcpim_clr_modstats(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_fcpim_get_del_itn_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_fcpim_del_itn_stats_s *iocmd =
@@ -1345,16 +1092,10 @@ bfad_iocmd_itnim_get_iostats(struct bfad_s *bfad, void *cmd)
 			iocmd->status = BFA_STATUS_UNKNOWN_RWWN;
 		else {
 			iocmd->status = BFA_STATUS_OK;
-<<<<<<< HEAD
-			memcpy((void *)&iocmd->iostats, (void *)
-			       &(bfa_fcs_itnim_get_halitn(itnim)->stats),
-			       sizeof(struct bfa_itnim_iostats_s));
-=======
 			if (bfa_fcs_itnim_get_halitn(itnim))
 				memcpy((void *)&iocmd->iostats, (void *)
 				&(bfa_fcs_itnim_get_halitn(itnim)->stats),
 				       sizeof(struct bfa_itnim_iostats_s));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
@@ -1419,11 +1160,7 @@ bfad_iocmd_itnim_get_itnstats(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_fcport_enable(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
@@ -1436,11 +1173,7 @@ bfad_iocmd_fcport_enable(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_fcport_disable(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
@@ -1453,11 +1186,7 @@ bfad_iocmd_fcport_disable(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_ioc_get_pcifn_cfg(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_pcifn_cfg_s *iocmd = (struct bfa_bsg_pcifn_cfg_s *)cmd;
@@ -1479,11 +1208,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_pcifn_create(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_pcifn_s *iocmd = (struct bfa_bsg_pcifn_s *)cmd;
@@ -1494,13 +1219,8 @@ bfad_iocmd_pcifn_create(struct bfad_s *bfad, void *cmd)
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	iocmd->status = bfa_ablk_pf_create(&bfad->bfa.modules.ablk,
 				&iocmd->pcifn_id, iocmd->port,
-<<<<<<< HEAD
-				iocmd->pcifn_class, iocmd->bandwidth,
-				bfad_hcb_comp, &fcomp);
-=======
 				iocmd->pcifn_class, iocmd->bw_min,
 				iocmd->bw_max, bfad_hcb_comp, &fcomp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	if (iocmd->status != BFA_STATUS_OK)
 		goto out;
@@ -1511,11 +1231,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_pcifn_delete(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_pcifn_s *iocmd = (struct bfa_bsg_pcifn_s *)cmd;
@@ -1537,11 +1253,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_pcifn_bw(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_pcifn_s *iocmd = (struct bfa_bsg_pcifn_s *)cmd;
@@ -1551,13 +1263,8 @@ bfad_iocmd_pcifn_bw(struct bfad_s *bfad, void *cmd)
 	init_completion(&fcomp.comp);
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	iocmd->status = bfa_ablk_pf_update(&bfad->bfa.modules.ablk,
-<<<<<<< HEAD
-				iocmd->pcifn_id, iocmd->bandwidth,
-				bfad_hcb_comp, &fcomp);
-=======
 				iocmd->pcifn_id, iocmd->bw_min,
 				iocmd->bw_max, bfad_hcb_comp, &fcomp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	bfa_trc(bfad, iocmd->status);
 	if (iocmd->status != BFA_STATUS_OK)
@@ -1570,11 +1277,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_adapter_cfg_mode(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_adapter_cfg_mode_s *iocmd =
@@ -1597,11 +1300,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_port_cfg_mode(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_port_cfg_mode_s *iocmd =
@@ -1625,11 +1324,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_ablk_optrom(struct bfad_s *bfad, unsigned int cmd, void *pcmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)pcmd;
@@ -1655,11 +1350,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_faa_query(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_faa_attr_s *iocmd = (struct bfa_bsg_faa_attr_s *)cmd;
@@ -1682,11 +1373,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_cee_attr(struct bfad_s *bfad, void *cmd, unsigned int payload_len)
 {
 	struct bfa_bsg_cee_attr_s *iocmd =
@@ -1722,11 +1409,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_cee_get_stats(struct bfad_s *bfad, void *cmd,
 			unsigned int payload_len)
 {
@@ -1763,11 +1446,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_cee_reset_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
@@ -1781,11 +1460,7 @@ bfad_iocmd_cee_reset_stats(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_sfp_media(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_sfp_media_s *iocmd = (struct bfa_bsg_sfp_media_s *)cmd;
@@ -1807,11 +1482,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_sfp_speed(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_sfp_speed_s *iocmd = (struct bfa_bsg_sfp_speed_s *)cmd;
@@ -1832,11 +1503,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_flash_get_attr(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_flash_attr_s *iocmd =
@@ -1857,11 +1524,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_flash_erase_part(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_flash_s *iocmd = (struct bfa_bsg_flash_s *)cmd;
@@ -1881,11 +1544,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_flash_update_part(struct bfad_s *bfad, void *cmd,
 			unsigned int payload_len)
 {
@@ -1917,11 +1576,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_flash_read_part(struct bfad_s *bfad, void *cmd,
 			unsigned int payload_len)
 {
@@ -1953,11 +1608,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_diag_temp(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_diag_get_temp_s *iocmd =
@@ -1979,11 +1630,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_diag_memtest(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_diag_memtest_s *iocmd =
@@ -2006,11 +1653,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_diag_loopback(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_diag_loopback_s *iocmd =
@@ -2033,11 +1676,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_diag_fwping(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_diag_fwping_s *iocmd =
@@ -2061,11 +1700,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_diag_queuetest(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_diag_qtest_s *iocmd = (struct bfa_bsg_diag_qtest_s *)cmd;
@@ -2086,11 +1721,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_diag_sfp(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_sfp_show_s *iocmd =
@@ -2113,11 +1744,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_diag_led(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_diag_led_s *iocmd = (struct bfa_bsg_diag_led_s *)cmd;
@@ -2130,11 +1757,7 @@ bfad_iocmd_diag_led(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_diag_beacon_lport(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_diag_beacon_s *iocmd =
@@ -2149,11 +1772,7 @@ bfad_iocmd_diag_beacon_lport(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_diag_lb_stat(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_diag_lb_stat_s *iocmd =
@@ -2168,9 +1787,6 @@ bfad_iocmd_diag_lb_stat(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
 bfad_iocmd_diag_dport_enable(struct bfad_s *bfad, void *pcmd)
 {
@@ -2254,7 +1870,6 @@ bfad_iocmd_diag_dport_show(struct bfad_s *bfad, void *pcmd)
 
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_phy_get_attr(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_phy_attr_s *iocmd =
@@ -2275,11 +1890,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_phy_get_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_phy_stats_s *iocmd =
@@ -2300,11 +1911,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_phy_read(struct bfad_s *bfad, void *cmd, unsigned int payload_len)
 {
 	struct bfa_bsg_phy_s *iocmd = (struct bfa_bsg_phy_s *)cmd;
@@ -2336,11 +1943,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_vhba_query(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_vhba_attr_s *iocmd =
@@ -2359,11 +1962,7 @@ bfad_iocmd_vhba_query(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_phy_update(struct bfad_s *bfad, void *cmd, unsigned int payload_len)
 {
 	struct bfa_bsg_phy_s *iocmd = (struct bfa_bsg_phy_s *)cmd;
@@ -2393,11 +1992,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_porglog_get(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_debug_s *iocmd = (struct bfa_bsg_debug_s *)cmd;
@@ -2417,11 +2012,7 @@ out:
 }
 
 #define BFA_DEBUG_FW_CORE_CHUNK_SZ	0x4000U /* 16K chunks for FW dump */
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_debug_fw_core(struct bfad_s *bfad, void *cmd,
 			unsigned int payload_len)
 {
@@ -2455,11 +2046,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_debug_ctl(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
@@ -2480,11 +2067,7 @@ bfad_iocmd_debug_ctl(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_porglog_ctl(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_portlogctl_s *iocmd = (struct bfa_bsg_portlogctl_s *)cmd;
@@ -2498,30 +2081,16 @@ bfad_iocmd_porglog_ctl(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_fcpim_cfg_profile(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 {
 	struct bfa_bsg_fcpim_profile_s *iocmd =
 				(struct bfa_bsg_fcpim_profile_s *)cmd;
-<<<<<<< HEAD
-	struct timeval  tv;
-	unsigned long	flags;
-
-	do_gettimeofday(&tv);
-	spin_lock_irqsave(&bfad->bfad_lock, flags);
-	if (v_cmd == IOCMD_FCPIM_PROFILE_ON)
-		iocmd->status = bfa_fcpim_profile_on(&bfad->bfa, tv.tv_sec);
-=======
 	unsigned long	flags;
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	if (v_cmd == IOCMD_FCPIM_PROFILE_ON)
 		iocmd->status = bfa_fcpim_profile_on(&bfad->bfa, ktime_get_real_seconds());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (v_cmd == IOCMD_FCPIM_PROFILE_OFF)
 		iocmd->status = bfa_fcpim_profile_off(&bfad->bfa);
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
@@ -2556,11 +2125,7 @@ bfad_iocmd_itnim_get_ioprofile(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_fcport_get_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_fcport_stats_s *iocmd =
@@ -2570,12 +2135,7 @@ bfad_iocmd_fcport_get_stats(struct bfad_s *bfad, void *cmd)
 	struct bfa_cb_pending_q_s cb_qe;
 
 	init_completion(&fcomp.comp);
-<<<<<<< HEAD
-	bfa_pending_q_init(&cb_qe, (bfa_cb_cbfn_t)bfad_hcb_comp,
-			   &fcomp, &iocmd->stats);
-=======
 	bfa_pending_q_init_status(&cb_qe, bfad_hcb_comp, &fcomp, &iocmd->stats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	iocmd->status = bfa_fcport_get_stats(&bfad->bfa, &cb_qe);
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
@@ -2589,11 +2149,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_fcport_reset_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
@@ -2602,11 +2158,7 @@ bfad_iocmd_fcport_reset_stats(struct bfad_s *bfad, void *cmd)
 	struct bfa_cb_pending_q_s cb_qe;
 
 	init_completion(&fcomp.comp);
-<<<<<<< HEAD
-	bfa_pending_q_init(&cb_qe, (bfa_cb_cbfn_t)bfad_hcb_comp, &fcomp, NULL);
-=======
 	bfa_pending_q_init_status(&cb_qe, bfad_hcb_comp, &fcomp, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	iocmd->status = bfa_fcport_clear_stats(&bfad->bfa, &cb_qe);
@@ -2621,11 +2173,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_boot_cfg(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_boot_s *iocmd = (struct bfa_bsg_boot_s *)cmd;
@@ -2635,11 +2183,7 @@ bfad_iocmd_boot_cfg(struct bfad_s *bfad, void *cmd)
 	init_completion(&fcomp.comp);
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	iocmd->status = bfa_flash_update_part(BFA_FLASH(&bfad->bfa),
-<<<<<<< HEAD
-			BFA_FLASH_PART_BOOT, PCI_FUNC(bfad->pcidev->devfn),
-=======
 			BFA_FLASH_PART_BOOT, bfad->bfa.ioc.port_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&iocmd->cfg, sizeof(struct bfa_boot_cfg_s), 0,
 			bfad_hcb_comp, &fcomp);
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
@@ -2651,11 +2195,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_boot_query(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_boot_s *iocmd = (struct bfa_bsg_boot_s *)cmd;
@@ -2665,11 +2205,7 @@ bfad_iocmd_boot_query(struct bfad_s *bfad, void *cmd)
 	init_completion(&fcomp.comp);
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	iocmd->status = bfa_flash_read_part(BFA_FLASH(&bfad->bfa),
-<<<<<<< HEAD
-			BFA_FLASH_PART_BOOT, PCI_FUNC(bfad->pcidev->devfn),
-=======
 			BFA_FLASH_PART_BOOT, bfad->bfa.ioc.port_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&iocmd->cfg, sizeof(struct bfa_boot_cfg_s), 0,
 			bfad_hcb_comp, &fcomp);
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
@@ -2681,11 +2217,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_preboot_query(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_preboot_s *iocmd = (struct bfa_bsg_preboot_s *)cmd;
@@ -2704,11 +2236,7 @@ bfad_iocmd_preboot_query(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_ethboot_cfg(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_ethboot_s *iocmd = (struct bfa_bsg_ethboot_s *)cmd;
@@ -2731,11 +2259,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_ethboot_query(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_ethboot_s *iocmd = (struct bfa_bsg_ethboot_s *)cmd;
@@ -2758,11 +2282,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_cfg_trunk(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
@@ -2772,28 +2292,6 @@ bfad_iocmd_cfg_trunk(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 
-<<<<<<< HEAD
-	if (v_cmd == IOCMD_TRUNK_ENABLE) {
-		trunk->attr.state = BFA_TRUNK_OFFLINE;
-		bfa_fcport_disable(&bfad->bfa);
-		fcport->cfg.trunked = BFA_TRUE;
-	} else if (v_cmd == IOCMD_TRUNK_DISABLE) {
-		trunk->attr.state = BFA_TRUNK_DISABLED;
-		bfa_fcport_disable(&bfad->bfa);
-		fcport->cfg.trunked = BFA_FALSE;
-	}
-
-	if (!bfa_fcport_is_disabled(&bfad->bfa))
-		bfa_fcport_enable(&bfad->bfa);
-
-	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
-
-	iocmd->status = BFA_STATUS_OK;
-	return 0;
-}
-
-int
-=======
 	if (bfa_fcport_is_dport(&bfad->bfa)) {
 		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 		return BFA_STATUS_DPORT_ERR;
@@ -2825,7 +2323,6 @@ int
 }
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_trunk_get_attr(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_trunk_attr_s *iocmd = (struct bfa_bsg_trunk_attr_s *)cmd;
@@ -2834,18 +2331,6 @@ bfad_iocmd_trunk_get_attr(struct bfad_s *bfad, void *cmd)
 	unsigned long	flags;
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
-<<<<<<< HEAD
-	memcpy((void *)&iocmd->attr, (void *)&trunk->attr,
-		sizeof(struct bfa_trunk_attr_s));
-	iocmd->attr.port_id = bfa_lps_get_base_pid(&bfad->bfa);
-	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
-
-	iocmd->status = BFA_STATUS_OK;
-	return 0;
-}
-
-int
-=======
 	if ((fcport->cfg.topology == BFA_PORT_TOPOLOGY_LOOP) ||
 		(fcport->topology == BFA_PORT_TOPOLOGY_LOOP))
 		iocmd->status = BFA_STATUS_TOPOLOGY_LOOP;
@@ -2861,7 +2346,6 @@ int
 }
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_qos(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
@@ -2870,20 +2354,6 @@ bfad_iocmd_qos(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	if (bfa_ioc_get_type(&bfad->bfa.ioc) == BFA_IOC_TYPE_FC) {
-<<<<<<< HEAD
-		if (v_cmd == IOCMD_QOS_ENABLE)
-			fcport->cfg.qos_enabled = BFA_TRUE;
-		else if (v_cmd == IOCMD_QOS_DISABLE)
-			fcport->cfg.qos_enabled = BFA_FALSE;
-	}
-	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
-
-	iocmd->status = BFA_STATUS_OK;
-	return 0;
-}
-
-int
-=======
 		if ((fcport->cfg.topology == BFA_PORT_TOPOLOGY_LOOP) &&
 		(fcport->topology == BFA_PORT_TOPOLOGY_LOOP))
 			iocmd->status = BFA_STATUS_TOPOLOGY_LOOP;
@@ -2904,7 +2374,6 @@ int
 }
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_qos_get_attr(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_qos_attr_s *iocmd = (struct bfa_bsg_qos_attr_s *)cmd;
@@ -2912,17 +2381,6 @@ bfad_iocmd_qos_get_attr(struct bfad_s *bfad, void *cmd)
 	unsigned long	flags;
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
-<<<<<<< HEAD
-	iocmd->attr.state = fcport->qos_attr.state;
-	iocmd->attr.total_bb_cr = be32_to_cpu(fcport->qos_attr.total_bb_cr);
-	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
-
-	iocmd->status = BFA_STATUS_OK;
-	return 0;
-}
-
-int
-=======
 	if ((fcport->cfg.topology == BFA_PORT_TOPOLOGY_LOOP) &&
 		(fcport->topology == BFA_PORT_TOPOLOGY_LOOP))
 		iocmd->status = BFA_STATUS_TOPOLOGY_LOOP;
@@ -2942,7 +2400,6 @@ int
 }
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_qos_get_vc_attr(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_qos_vc_attr_s *iocmd =
@@ -2974,11 +2431,7 @@ bfad_iocmd_qos_get_vc_attr(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_qos_get_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_fcport_stats_s *iocmd =
@@ -2986,16 +2439,6 @@ bfad_iocmd_qos_get_stats(struct bfad_s *bfad, void *cmd)
 	struct bfad_hal_comp fcomp;
 	unsigned long	flags;
 	struct bfa_cb_pending_q_s cb_qe;
-<<<<<<< HEAD
-
-	init_completion(&fcomp.comp);
-	bfa_pending_q_init(&cb_qe, (bfa_cb_cbfn_t)bfad_hcb_comp,
-			   &fcomp, &iocmd->stats);
-
-	spin_lock_irqsave(&bfad->bfad_lock, flags);
-	WARN_ON(!bfa_ioc_get_fcmode(&bfad->bfa.ioc));
-	iocmd->status = bfa_fcport_get_stats(&bfad->bfa, &cb_qe);
-=======
 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(&bfad->bfa);
 
 	init_completion(&fcomp.comp);
@@ -3008,7 +2451,6 @@ bfad_iocmd_qos_get_stats(struct bfad_s *bfad, void *cmd)
 		iocmd->status = BFA_STATUS_TOPOLOGY_LOOP;
 	else
 		iocmd->status = bfa_fcport_get_stats(&bfad->bfa, &cb_qe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	if (iocmd->status != BFA_STATUS_OK) {
 		bfa_trc(bfad, iocmd->status);
@@ -3020,27 +2462,13 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_qos_reset_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
 	struct bfad_hal_comp fcomp;
 	unsigned long	flags;
 	struct bfa_cb_pending_q_s cb_qe;
-<<<<<<< HEAD
-
-	init_completion(&fcomp.comp);
-	bfa_pending_q_init(&cb_qe, (bfa_cb_cbfn_t)bfad_hcb_comp,
-			   &fcomp, NULL);
-
-	spin_lock_irqsave(&bfad->bfad_lock, flags);
-	WARN_ON(!bfa_ioc_get_fcmode(&bfad->bfa.ioc));
-	iocmd->status = bfa_fcport_clear_stats(&bfad->bfa, &cb_qe);
-=======
 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(&bfad->bfa);
 
 	init_completion(&fcomp.comp);
@@ -3053,7 +2481,6 @@ bfad_iocmd_qos_reset_stats(struct bfad_s *bfad, void *cmd)
 		iocmd->status = BFA_STATUS_TOPOLOGY_LOOP;
 	else
 		iocmd->status = bfa_fcport_clear_stats(&bfad->bfa, &cb_qe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	if (iocmd->status != BFA_STATUS_OK) {
 		bfa_trc(bfad, iocmd->status);
@@ -3065,11 +2492,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_vf_get_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_vf_stats_s *iocmd =
@@ -3092,11 +2515,7 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_vf_clr_stats(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_vf_reset_stats_s *iocmd =
@@ -3118,8 +2537,6 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Set the SCSI device sdev_bflags - sdev_bflags are used by the
  * SCSI mid-layer to choose LUN Scanning mode REPORT_LUNS vs. Sequential Scan
@@ -3149,7 +2566,6 @@ static void bfad_reset_sdev_bflags(struct bfad_im_port_s *im_port,
 	spin_unlock_irqrestore(im_port->shost->host_lock, flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Function to reset the LUN SCAN mode */
 static void
 bfad_iocmd_lunmask_reset_lunscan_mode(struct bfad_s *bfad, int lunmask_cfg)
@@ -3165,11 +2581,7 @@ bfad_iocmd_lunmask_reset_lunscan_mode(struct bfad_s *bfad, int lunmask_cfg)
 		bfad_reset_sdev_bflags(vport->drv_port.im_port, lunmask_cfg);
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_lunmask(struct bfad_s *bfad, void *pcmd, unsigned int v_cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)pcmd;
@@ -3192,11 +2604,7 @@ bfad_iocmd_lunmask(struct bfad_s *bfad, void *pcmd, unsigned int v_cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_fcpim_lunmask_query(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_fcpim_lunmask_query_s *iocmd =
@@ -3210,11 +2618,7 @@ bfad_iocmd_fcpim_lunmask_query(struct bfad_s *bfad, void *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_fcpim_cfg_lunmask(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 {
 	struct bfa_bsg_fcpim_lunmask_s *iocmd =
@@ -3234,8 +2638,6 @@ bfad_iocmd_fcpim_cfg_lunmask(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 }
 
 static int
-<<<<<<< HEAD
-=======
 bfad_iocmd_fcpim_throttle_query(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_fcpim_throttle_s *iocmd =
@@ -3369,7 +2771,6 @@ bfad_iocmd_fruvpd_get_max_size(struct bfad_s *bfad, void *cmd)
 }
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_iocmd_handler(struct bfad_s *bfad, unsigned int cmd, void *iocmd,
 		unsigned int payload_len)
 {
@@ -3432,18 +2833,12 @@ bfad_iocmd_handler(struct bfad_s *bfad, unsigned int cmd, void *iocmd,
 	case IOCMD_PORT_CFG_MAXFRSZ:
 		rc = bfad_iocmd_port_cfg_maxfrsize(bfad, iocmd);
 		break;
-<<<<<<< HEAD
-	case IOCMD_PORT_BBSC_ENABLE:
-	case IOCMD_PORT_BBSC_DISABLE:
-		rc = bfad_iocmd_port_cfg_bbsc(bfad, iocmd, cmd);
-=======
 	case IOCMD_PORT_BBCR_ENABLE:
 	case IOCMD_PORT_BBCR_DISABLE:
 		rc = bfad_iocmd_port_cfg_bbcr(bfad, cmd, iocmd);
 		break;
 	case IOCMD_PORT_BBCR_GET_ATTR:
 		rc = bfad_iocmd_port_get_bbcr_attr(bfad, iocmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case IOCMD_LPORT_GET_ATTR:
 		rc = bfad_iocmd_lport_get_attr(bfad, iocmd);
@@ -3527,12 +2922,9 @@ bfad_iocmd_handler(struct bfad_s *bfad, unsigned int cmd, void *iocmd,
 	case IOCMD_IOC_PCIFN_CFG:
 		rc = bfad_iocmd_ioc_get_pcifn_cfg(bfad, iocmd);
 		break;
-<<<<<<< HEAD
-=======
 	case IOCMD_IOC_FW_SIG_INV:
 		rc = bfad_iocmd_ioc_fw_sig_inv(bfad, iocmd);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IOCMD_PCIFN_CREATE:
 		rc = bfad_iocmd_pcifn_create(bfad, iocmd);
 		break;
@@ -3609,8 +3001,6 @@ bfad_iocmd_handler(struct bfad_s *bfad, unsigned int cmd, void *iocmd,
 	case IOCMD_DIAG_LB_STAT:
 		rc = bfad_iocmd_diag_lb_stat(bfad, iocmd);
 		break;
-<<<<<<< HEAD
-=======
 	case IOCMD_DIAG_DPORT_ENABLE:
 		rc = bfad_iocmd_diag_dport_enable(bfad, iocmd);
 		break;
@@ -3623,7 +3013,6 @@ bfad_iocmd_handler(struct bfad_s *bfad, unsigned int cmd, void *iocmd,
 	case IOCMD_DIAG_DPORT_START:
 		rc = bfad_iocmd_diag_dport_start(bfad, iocmd);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IOCMD_PHY_GET_ATTR:
 		rc = bfad_iocmd_phy_get_attr(bfad, iocmd);
 		break;
@@ -3705,12 +3094,9 @@ bfad_iocmd_handler(struct bfad_s *bfad, unsigned int cmd, void *iocmd,
 	case IOCMD_QOS_RESET_STATS:
 		rc = bfad_iocmd_qos_reset_stats(bfad, iocmd);
 		break;
-<<<<<<< HEAD
-=======
 	case IOCMD_QOS_SET_BW:
 		rc = bfad_iocmd_qos_set_bw(bfad, iocmd);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IOCMD_VF_GET_STATS:
 		rc = bfad_iocmd_vf_get_stats(bfad, iocmd);
 		break;
@@ -3729,8 +3115,6 @@ bfad_iocmd_handler(struct bfad_s *bfad, unsigned int cmd, void *iocmd,
 	case IOCMD_FCPIM_LUNMASK_DELETE:
 		rc = bfad_iocmd_fcpim_cfg_lunmask(bfad, iocmd, cmd);
 		break;
-<<<<<<< HEAD
-=======
 	case IOCMD_FCPIM_THROTTLE_QUERY:
 		rc = bfad_iocmd_fcpim_throttle_query(bfad, iocmd);
 		break;
@@ -3754,7 +3138,6 @@ bfad_iocmd_handler(struct bfad_s *bfad, unsigned int cmd, void *iocmd,
 	case IOCMD_FRUVPD_GET_MAX_SIZE:
 		rc = bfad_iocmd_fruvpd_get_max_size(bfad, iocmd);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		rc = -EINVAL;
 		break;
@@ -3763,24 +3146,6 @@ bfad_iocmd_handler(struct bfad_s *bfad, unsigned int cmd, void *iocmd,
 }
 
 static int
-<<<<<<< HEAD
-bfad_im_bsg_vendor_request(struct fc_bsg_job *job)
-{
-	uint32_t vendor_cmd = job->request->rqst_data.h_vendor.vendor_cmd[0];
-	struct bfad_im_port_s *im_port =
-			(struct bfad_im_port_s *) job->shost->hostdata[0];
-	struct bfad_s *bfad = im_port->bfad;
-	struct request_queue *request_q = job->req->q;
-	void *payload_kbuf;
-	int rc = -EINVAL;
-
-	/*
-	 * Set the BSG device request_queue size to 256 to support
-	 * payloads larger than 512*1024K bytes.
-	 */
-	blk_queue_max_segments(request_q, 256);
-
-=======
 bfad_im_bsg_vendor_request(struct bsg_job *job)
 {
 	struct fc_bsg_request *bsg_request = job->request;
@@ -3792,7 +3157,6 @@ bfad_im_bsg_vendor_request(struct bsg_job *job)
 	void *payload_kbuf;
 	int rc = -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Allocate a temp buffer to hold the passed in user space command */
 	payload_kbuf = kzalloc(job->request_payload.payload_len, GFP_KERNEL);
 	if (!payload_kbuf) {
@@ -3822,41 +3186,24 @@ bfad_im_bsg_vendor_request(struct bsg_job *job)
 
 	/* Fill the BSG job reply data */
 	job->reply_len = job->reply_payload.payload_len;
-<<<<<<< HEAD
-	job->reply->reply_payload_rcv_len = job->reply_payload.payload_len;
-	job->reply->result = rc;
-
-	job->job_done(job);
-=======
 	bsg_reply->reply_payload_rcv_len = job->reply_payload.payload_len;
 	bsg_reply->result = rc;
 
 	bsg_job_done(job, bsg_reply->result,
 		       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 error:
 	/* free the command buffer */
 	kfree(payload_kbuf);
 out:
-<<<<<<< HEAD
-	job->reply->result = rc;
-	job->reply_len = sizeof(uint32_t);
-	job->reply->reply_payload_rcv_len = 0;
-=======
 	bsg_reply->result = rc;
 	job->reply_len = sizeof(uint32_t);
 	bsg_reply->reply_payload_rcv_len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 /* FC passthru call backs */
-<<<<<<< HEAD
-u64
-=======
 static u64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_fcxp_get_req_sgaddr_cb(void *bfad_fcxp, int sgeid)
 {
 	struct bfad_fcxp	*drv_fcxp = bfad_fcxp;
@@ -3868,11 +3215,7 @@ bfad_fcxp_get_req_sgaddr_cb(void *bfad_fcxp, int sgeid)
 	return addr;
 }
 
-<<<<<<< HEAD
-u32
-=======
 static u32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_fcxp_get_req_sglen_cb(void *bfad_fcxp, int sgeid)
 {
 	struct bfad_fcxp	*drv_fcxp = bfad_fcxp;
@@ -3882,11 +3225,7 @@ bfad_fcxp_get_req_sglen_cb(void *bfad_fcxp, int sgeid)
 	return sge->sg_len;
 }
 
-<<<<<<< HEAD
-u64
-=======
 static u64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_fcxp_get_rsp_sgaddr_cb(void *bfad_fcxp, int sgeid)
 {
 	struct bfad_fcxp	*drv_fcxp = bfad_fcxp;
@@ -3898,11 +3237,7 @@ bfad_fcxp_get_rsp_sgaddr_cb(void *bfad_fcxp, int sgeid)
 	return addr;
 }
 
-<<<<<<< HEAD
-u32
-=======
 static u32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_fcxp_get_rsp_sglen_cb(void *bfad_fcxp, int sgeid)
 {
 	struct bfad_fcxp	*drv_fcxp = bfad_fcxp;
@@ -3912,11 +3247,7 @@ bfad_fcxp_get_rsp_sglen_cb(void *bfad_fcxp, int sgeid)
 	return sge->sg_len;
 }
 
-<<<<<<< HEAD
-void
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_send_fcpt_cb(void *bfad_fcxp, struct bfa_fcxp_s *fcxp, void *cbarg,
 		bfa_status_t req_status, u32 rsp_len, u32 resid_len,
 		struct fchs_s *rsp_fchs)
@@ -3931,11 +3262,7 @@ bfad_send_fcpt_cb(void *bfad_fcxp, struct bfa_fcxp_s *fcxp, void *cbarg,
 	complete(&drv_fcxp->comp);
 }
 
-<<<<<<< HEAD
-struct bfad_buf_info *
-=======
 static struct bfad_buf_info *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_fcxp_map_sg(struct bfad_s *bfad, void *payload_kbuf,
 		 uint32_t payload_len, uint32_t *num_sgles)
 {
@@ -3943,14 +3270,9 @@ bfad_fcxp_map_sg(struct bfad_s *bfad, void *payload_kbuf,
 	struct bfa_sge_s	*sg_table;
 	int sge_num = 1;
 
-<<<<<<< HEAD
-	buf_base = kzalloc((sizeof(struct bfad_buf_info) +
-			   sizeof(struct bfa_sge_s)) * sge_num, GFP_KERNEL);
-=======
 	buf_base = kcalloc(sizeof(struct bfad_buf_info) +
 				sizeof(struct bfa_sge_s),
 			   sge_num, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buf_base)
 		return NULL;
 
@@ -3960,22 +3282,13 @@ bfad_fcxp_map_sg(struct bfad_s *bfad, void *payload_kbuf,
 	/* Allocate dma coherent memory */
 	buf_info = buf_base;
 	buf_info->size = payload_len;
-<<<<<<< HEAD
-	buf_info->virt = dma_alloc_coherent(&bfad->pcidev->dev, buf_info->size,
-					&buf_info->phys, GFP_KERNEL);
-=======
 	buf_info->virt = dma_alloc_coherent(&bfad->pcidev->dev,
 					    buf_info->size, &buf_info->phys,
 					    GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buf_info->virt)
 		goto out_free_mem;
 
 	/* copy the linear bsg buffer to buf_info */
-<<<<<<< HEAD
-	memset(buf_info->virt, 0, buf_info->size);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(buf_info->virt, payload_kbuf, buf_info->size);
 
 	/*
@@ -3993,11 +3306,7 @@ out_free_mem:
 	return NULL;
 }
 
-<<<<<<< HEAD
-void
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_fcxp_free_mem(struct bfad_s *bfad, struct bfad_buf_info *buf_base,
 		   uint32_t num_sgles)
 {
@@ -4015,13 +3324,8 @@ bfad_fcxp_free_mem(struct bfad_s *bfad, struct bfad_buf_info *buf_base,
 	}
 }
 
-<<<<<<< HEAD
-int
-bfad_fcxp_bsg_send(struct fc_bsg_job *job, struct bfad_fcxp *drv_fcxp,
-=======
 static int
 bfad_fcxp_bsg_send(struct bsg_job *job, struct bfad_fcxp *drv_fcxp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   bfa_bsg_fcpt_t *bsg_fcpt)
 {
 	struct bfa_fcxp_s *hal_fcxp;
@@ -4032,21 +3336,13 @@ bfad_fcxp_bsg_send(struct bsg_job *job, struct bfad_fcxp *drv_fcxp,
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 
 	/* Allocate bfa_fcxp structure */
-<<<<<<< HEAD
-	hal_fcxp = bfa_fcxp_alloc(drv_fcxp, &bfad->bfa,
-=======
 	hal_fcxp = bfa_fcxp_req_rsp_alloc(drv_fcxp, &bfad->bfa,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  drv_fcxp->num_req_sgles,
 				  drv_fcxp->num_rsp_sgles,
 				  bfad_fcxp_get_req_sgaddr_cb,
 				  bfad_fcxp_get_req_sglen_cb,
 				  bfad_fcxp_get_rsp_sgaddr_cb,
-<<<<<<< HEAD
-				  bfad_fcxp_get_rsp_sglen_cb);
-=======
 				  bfad_fcxp_get_rsp_sglen_cb, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hal_fcxp) {
 		bfa_trc(bfad, 0);
 		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
@@ -4068,52 +3364,31 @@ bfad_fcxp_bsg_send(struct bsg_job *job, struct bfad_fcxp *drv_fcxp,
 	return BFA_STATUS_OK;
 }
 
-<<<<<<< HEAD
-int
-bfad_im_bsg_els_ct_request(struct fc_bsg_job *job)
-{
-	struct bfa_bsg_data *bsg_data;
-	struct bfad_im_port_s *im_port =
-			(struct bfad_im_port_s *) job->shost->hostdata[0];
-=======
 static int
 bfad_im_bsg_els_ct_request(struct bsg_job *job)
 {
 	struct bfa_bsg_data *bsg_data;
 	struct Scsi_Host *shost = fc_bsg_to_shost(job);
 	struct bfad_im_port_s *im_port = bfad_get_im_port(shost);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfad_s *bfad = im_port->bfad;
 	bfa_bsg_fcpt_t *bsg_fcpt;
 	struct bfad_fcxp    *drv_fcxp;
 	struct bfa_fcs_lport_s *fcs_port;
 	struct bfa_fcs_rport_s *fcs_rport;
-<<<<<<< HEAD
-	uint32_t command_type = job->request->msgcode;
-=======
 	struct fc_bsg_request *bsg_request = job->request;
 	struct fc_bsg_reply *bsg_reply = job->reply;
 	uint32_t command_type = bsg_request->msgcode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	struct bfad_buf_info *rsp_buf_info;
 	void *req_kbuf = NULL, *rsp_kbuf = NULL;
 	int rc = -EINVAL;
 
 	job->reply_len  = sizeof(uint32_t);	/* Atleast uint32_t reply_len */
-<<<<<<< HEAD
-	job->reply->reply_payload_rcv_len = 0;
-
-	/* Get the payload passed in from userspace */
-	bsg_data = (struct bfa_bsg_data *) (((char *)job->request) +
-					sizeof(struct fc_bsg_request));
-=======
 	bsg_reply->reply_payload_rcv_len = 0;
 
 	/* Get the payload passed in from userspace */
 	bsg_data = (struct bfa_bsg_data *) (((char *)bsg_request) +
 					    sizeof(struct fc_bsg_request));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bsg_data == NULL)
 		goto out;
 
@@ -4122,14 +3397,6 @@ bfad_im_bsg_els_ct_request(struct bsg_job *job)
 	 * buffer of size bsg_data->payload_len
 	 */
 	bsg_fcpt = kzalloc(bsg_data->payload_len, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!bsg_fcpt)
-		goto out;
-
-	if (copy_from_user((uint8_t *)bsg_fcpt, bsg_data->payload,
-				bsg_data->payload_len)) {
-		kfree(bsg_fcpt);
-=======
 	if (!bsg_fcpt) {
 		rc = -ENOMEM;
 		goto out;
@@ -4140,7 +3407,6 @@ bfad_im_bsg_els_ct_request(struct bsg_job *job)
 				bsg_data->payload_len)) {
 		kfree(bsg_fcpt);
 		rc = -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -4169,11 +3435,7 @@ bfad_im_bsg_els_ct_request(struct bsg_job *job)
 
 	drv_fcxp->port = fcs_port->bfad_port;
 
-<<<<<<< HEAD
-	if (drv_fcxp->port->bfad == 0)
-=======
 	if (!drv_fcxp->port->bfad)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drv_fcxp->port->bfad = bfad;
 
 	/* Fetch the bfa_rport - if nexus needed */
@@ -4270,15 +3532,6 @@ bfad_im_bsg_els_ct_request(struct bsg_job *job)
 	/* fill the job->reply data */
 	if (drv_fcxp->req_status == BFA_STATUS_OK) {
 		job->reply_len = drv_fcxp->rsp_len;
-<<<<<<< HEAD
-		job->reply->reply_payload_rcv_len = drv_fcxp->rsp_len;
-		job->reply->reply_data.ctels_reply.status = FC_CTELS_STATUS_OK;
-	} else {
-		job->reply->reply_payload_rcv_len =
-					sizeof(struct fc_bsg_ctels_reply);
-		job->reply_len = sizeof(uint32_t);
-		job->reply->reply_data.ctels_reply.status =
-=======
 		bsg_reply->reply_payload_rcv_len = drv_fcxp->rsp_len;
 		bsg_reply->reply_data.ctels_reply.status = FC_CTELS_STATUS_OK;
 	} else {
@@ -4286,7 +3539,6 @@ bfad_im_bsg_els_ct_request(struct bsg_job *job)
 					sizeof(struct fc_bsg_ctels_reply);
 		job->reply_len = sizeof(uint32_t);
 		bsg_reply->reply_data.ctels_reply.status =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						FC_CTELS_STATUS_REJECT;
 	}
 
@@ -4305,42 +3557,23 @@ out_free_mem:
 	kfree(rsp_kbuf);
 
 	/* Need a copy to user op */
-<<<<<<< HEAD
-	if (copy_to_user(bsg_data->payload, (void *) bsg_fcpt,
-			 bsg_data->payload_len))
-=======
 	if (copy_to_user((void *)(unsigned long)bsg_data->payload,
 			(void *)bsg_fcpt, bsg_data->payload_len))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EIO;
 
 	kfree(bsg_fcpt);
 	kfree(drv_fcxp);
 out:
-<<<<<<< HEAD
-	job->reply->result = rc;
-
-	if (rc == BFA_STATUS_OK)
-		job->job_done(job);
-=======
 	bsg_reply->result = rc;
 
 	if (rc == BFA_STATUS_OK)
 		bsg_job_done(job, bsg_reply->result,
 			       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
 
 int
-<<<<<<< HEAD
-bfad_im_bsg_request(struct fc_bsg_job *job)
-{
-	uint32_t rc = BFA_STATUS_OK;
-
-	switch (job->request->msgcode) {
-=======
 bfad_im_bsg_request(struct bsg_job *job)
 {
 	struct fc_bsg_request *bsg_request = job->request;
@@ -4348,7 +3581,6 @@ bfad_im_bsg_request(struct bsg_job *job)
 	uint32_t rc = BFA_STATUS_OK;
 
 	switch (bsg_request->msgcode) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FC_BSG_HST_VENDOR:
 		/* Process BSG HST Vendor requests */
 		rc = bfad_im_bsg_vendor_request(job);
@@ -4361,13 +3593,8 @@ bfad_im_bsg_request(struct bsg_job *job)
 		rc = bfad_im_bsg_els_ct_request(job);
 		break;
 	default:
-<<<<<<< HEAD
-		job->reply->result = rc = -EINVAL;
-		job->reply->reply_payload_rcv_len = 0;
-=======
 		bsg_reply->result = rc = -EINVAL;
 		bsg_reply->reply_payload_rcv_len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -4375,11 +3602,7 @@ bfad_im_bsg_request(struct bsg_job *job)
 }
 
 int
-<<<<<<< HEAD
-bfad_im_bsg_timeout(struct fc_bsg_job *job)
-=======
 bfad_im_bsg_timeout(struct bsg_job *job)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Don't complete the BSG job request - return -EAGAIN
 	 * to reset bsg job timeout : for ELS/CT pass thru we

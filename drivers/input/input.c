@@ -1,30 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The input core
  *
  * Copyright (c) 1999-2002 Vojtech Pavlik
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pr_fmt(fmt) KBUILD_BASENAME ": " fmt
 
 #include <linux/init.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-=======
 #include <linux/idr.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input/mt.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -33,13 +19,6 @@
 #include <linux/proc_fs.h>
 #include <linux/sched.h>
 #include <linux/seq_file.h>
-<<<<<<< HEAD
-#include <linux/poll.h>
-#include <linux/device.h>
-#include <linux/mutex.h>
-#include <linux/rcupdate.h>
-#include "input-compat.h"
-=======
 #include <linux/pm.h>
 #include <linux/poll.h>
 #include <linux/device.h>
@@ -49,19 +28,14 @@
 #include "input-compat.h"
 #include "input-core-private.h"
 #include "input-poller.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Vojtech Pavlik <vojtech@suse.cz>");
 MODULE_DESCRIPTION("Input core");
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-#define INPUT_DEVICES	256
-=======
 #define INPUT_MAX_CHAR_DEVICES		1024
 #define INPUT_FIRST_DYNAMIC_DEV		256
 static DEFINE_IDA(input_ida);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static LIST_HEAD(input_dev_list);
 static LIST_HEAD(input_handler_list);
@@ -74,9 +48,6 @@ static LIST_HEAD(input_handler_list);
  */
 static DEFINE_MUTEX(input_mutex);
 
-<<<<<<< HEAD
-static struct input_handler *input_table[8];
-=======
 static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
 
 static const unsigned int input_max_code[EV_CNT] = {
@@ -89,7 +60,6 @@ static const unsigned int input_max_code[EV_CNT] = {
 	[EV_SND] = SND_MAX,
 	[EV_FF] = FF_MAX,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int is_event_supported(unsigned int code,
 				     unsigned long *bm, unsigned int max)
@@ -113,91 +83,11 @@ static int input_defuzz_abs_event(int value, int old_val, int fuzz)
 	return value;
 }
 
-<<<<<<< HEAD
-/*
- * Pass event first through all filters and then, if event has not been
- * filtered out, through all open handles. This function is called with
- * dev->event_lock held and interrupts disabled.
- */
-static void input_pass_event(struct input_dev *dev,
-			     unsigned int type, unsigned int code, int value)
-{
-	struct input_handler *handler;
-	struct input_handle *handle;
-
-	rcu_read_lock();
-
-	handle = rcu_dereference(dev->grab);
-	if (handle)
-		handle->handler->event(handle, type, code, value);
-	else {
-		bool filtered = false;
-
-		list_for_each_entry_rcu(handle, &dev->h_list, d_node) {
-			if (!handle->open)
-				continue;
-
-			handler = handle->handler;
-			if (!handler->filter) {
-				if (filtered)
-					break;
-
-				handler->event(handle, type, code, value);
-
-			} else if (handler->filter(handle, type, code, value))
-				filtered = true;
-		}
-	}
-
-	rcu_read_unlock();
-}
-
-/*
- * Generate software autorepeat event. Note that we take
- * dev->event_lock here to avoid racing with input_event
- * which may cause keys get "stuck".
- */
-static void input_repeat_key(unsigned long data)
-{
-	struct input_dev *dev = (void *) data;
-	unsigned long flags;
-
-	spin_lock_irqsave(&dev->event_lock, flags);
-
-	if (test_bit(dev->repeat_key, dev->key) &&
-	    is_event_supported(dev->repeat_key, dev->keybit, KEY_MAX)) {
-
-		input_pass_event(dev, EV_KEY, dev->repeat_key, 2);
-
-		if (dev->sync) {
-			/*
-			 * Only send SYN_REPORT if we are not in a middle
-			 * of driver parsing a new hardware packet.
-			 * Otherwise assume that the driver will send
-			 * SYN_REPORT once it's done.
-			 */
-			input_pass_event(dev, EV_SYN, SYN_REPORT, 1);
-		}
-
-		if (dev->rep[REP_PERIOD])
-			mod_timer(&dev->timer, jiffies +
-					msecs_to_jiffies(dev->rep[REP_PERIOD]));
-	}
-
-	spin_unlock_irqrestore(&dev->event_lock, flags);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void input_start_autorepeat(struct input_dev *dev, int code)
 {
 	if (test_bit(EV_REP, dev->evbit) &&
 	    dev->rep[REP_PERIOD] && dev->rep[REP_DELAY] &&
-<<<<<<< HEAD
-	    dev->timer.data) {
-=======
 	    dev->timer.function) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->repeat_key = code;
 		mod_timer(&dev->timer,
 			  jiffies + msecs_to_jiffies(dev->rep[REP_DELAY]));
@@ -209,11 +99,6 @@ static void input_stop_autorepeat(struct input_dev *dev)
 	del_timer(&dev->timer);
 }
 
-<<<<<<< HEAD
-#define INPUT_IGNORE_EVENT	0
-#define INPUT_PASS_TO_HANDLERS	1
-#define INPUT_PASS_TO_DEVICE	2
-=======
 /*
  * Pass event first through all filters and then, if event has not been
  * filtered out, through all open handles. This function is called with
@@ -299,17 +184,13 @@ static void input_pass_values(struct input_dev *dev,
 #define INPUT_PASS_TO_DEVICE	2
 #define INPUT_SLOT		4
 #define INPUT_FLUSH		8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INPUT_PASS_TO_ALL	(INPUT_PASS_TO_HANDLERS | INPUT_PASS_TO_DEVICE)
 
 static int input_handle_abs_event(struct input_dev *dev,
 				  unsigned int code, int *pval)
 {
-<<<<<<< HEAD
-=======
 	struct input_mt *mt = dev->mt;
 	bool is_new_slot = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool is_mt_event;
 	int *pold;
 
@@ -318,13 +199,8 @@ static int input_handle_abs_event(struct input_dev *dev,
 		 * "Stage" the event; we'll flush it later, when we
 		 * get actual touch data.
 		 */
-<<<<<<< HEAD
-		if (*pval >= 0 && *pval < dev->mtsize)
-			dev->slot = *pval;
-=======
 		if (mt && *pval >= 0 && *pval < mt->num_slots)
 			mt->slot = *pval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return INPUT_IGNORE_EVENT;
 	}
@@ -333,15 +209,9 @@ static int input_handle_abs_event(struct input_dev *dev,
 
 	if (!is_mt_event) {
 		pold = &dev->absinfo[code].value;
-<<<<<<< HEAD
-	} else if (dev->mt) {
-		struct input_mt_slot *mtslot = &dev->mt[dev->slot];
-		pold = &mtslot->abs[code - ABS_MT_FIRST];
-=======
 	} else if (mt) {
 		pold = &mt->slots[mt->slot].abs[code - ABS_MT_FIRST];
 		is_new_slot = mt->slot != dev->absinfo[ABS_MT_SLOT].value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/*
 		 * Bypass filtering for multi-touch events when
@@ -360,26 +230,14 @@ static int input_handle_abs_event(struct input_dev *dev,
 	}
 
 	/* Flush pending "slot" event */
-<<<<<<< HEAD
-	if (is_mt_event && dev->slot != input_abs_get_val(dev, ABS_MT_SLOT)) {
-		input_abs_set_val(dev, ABS_MT_SLOT, dev->slot);
-		input_pass_event(dev, EV_ABS, ABS_MT_SLOT, dev->slot);
-=======
 	if (is_new_slot) {
 		dev->absinfo[ABS_MT_SLOT].value = mt->slot;
 		return INPUT_PASS_TO_HANDLERS | INPUT_SLOT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return INPUT_PASS_TO_HANDLERS;
 }
 
-<<<<<<< HEAD
-static void input_handle_event(struct input_dev *dev,
-			       unsigned int type, unsigned int code, int value)
-{
-	int disposition = INPUT_IGNORE_EVENT;
-=======
 static int input_get_disposition(struct input_dev *dev,
 			  unsigned int type, unsigned int code, int *pval)
 {
@@ -389,7 +247,6 @@ static int input_get_disposition(struct input_dev *dev,
 	/* filter-out events from inhibited devices */
 	if (dev->inhibited)
 		return INPUT_IGNORE_EVENT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 
@@ -400,39 +257,15 @@ static int input_get_disposition(struct input_dev *dev,
 			break;
 
 		case SYN_REPORT:
-<<<<<<< HEAD
-			if (!dev->sync) {
-				dev->sync = true;
-				disposition = INPUT_PASS_TO_HANDLERS;
-			}
-			break;
-		case SYN_MT_REPORT:
-			dev->sync = false;
-=======
 			disposition = INPUT_PASS_TO_HANDLERS | INPUT_FLUSH;
 			break;
 		case SYN_MT_REPORT:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			disposition = INPUT_PASS_TO_HANDLERS;
 			break;
 		}
 		break;
 
 	case EV_KEY:
-<<<<<<< HEAD
-		if (is_event_supported(code, dev->keybit, KEY_MAX) &&
-		    !!test_bit(code, dev->key) != value) {
-
-			if (value != 2) {
-				__change_bit(code, dev->key);
-				if (value)
-					input_start_autorepeat(dev, code);
-				else
-					input_stop_autorepeat(dev);
-			}
-
-			disposition = INPUT_PASS_TO_HANDLERS;
-=======
 		if (is_event_supported(code, dev->keybit, KEY_MAX)) {
 
 			/* auto-repeat bypasses state updates */
@@ -446,17 +279,12 @@ static int input_get_disposition(struct input_dev *dev,
 				__change_bit(code, dev->key);
 				disposition = INPUT_PASS_TO_HANDLERS;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
 	case EV_SW:
 		if (is_event_supported(code, dev->swbit, SW_MAX) &&
-<<<<<<< HEAD
-		    !!test_bit(code, dev->sw) != value) {
-=======
 		    !!test_bit(code, dev->sw) != !!value) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			__change_bit(code, dev->sw);
 			disposition = INPUT_PASS_TO_HANDLERS;
@@ -483,11 +311,7 @@ static int input_get_disposition(struct input_dev *dev,
 
 	case EV_LED:
 		if (is_event_supported(code, dev->ledbit, LED_MAX) &&
-<<<<<<< HEAD
-		    !!test_bit(code, dev->led) != value) {
-=======
 		    !!test_bit(code, dev->led) != !!value) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			__change_bit(code, dev->led);
 			disposition = INPUT_PASS_TO_ALL;
@@ -520,16 +344,6 @@ static int input_get_disposition(struct input_dev *dev,
 		break;
 	}
 
-<<<<<<< HEAD
-	if (disposition != INPUT_IGNORE_EVENT && type != EV_SYN)
-		dev->sync = false;
-
-	if ((disposition & INPUT_PASS_TO_DEVICE) && dev->event)
-		dev->event(dev, type, code, value);
-
-	if (disposition & INPUT_PASS_TO_HANDLERS)
-		input_pass_event(dev, type, code, value);
-=======
 	*pval = value;
 	return disposition;
 }
@@ -591,7 +405,6 @@ void input_handle_event(struct input_dev *dev,
 
 		input_event_dispose(dev, disposition, type, code, value);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -619,10 +432,6 @@ void input_event(struct input_dev *dev,
 	if (is_event_supported(type, dev->evbit, EV_MAX)) {
 
 		spin_lock_irqsave(&dev->event_lock, flags);
-<<<<<<< HEAD
-		add_input_randomness(type, code, value);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_handle_event(dev, type, code, value);
 		spin_unlock_irqrestore(&dev->event_lock, flags);
 	}
@@ -670,13 +479,6 @@ EXPORT_SYMBOL(input_inject_event);
  */
 void input_alloc_absinfo(struct input_dev *dev)
 {
-<<<<<<< HEAD
-	if (!dev->absinfo)
-		dev->absinfo = kcalloc(ABS_CNT, sizeof(struct input_absinfo),
-					GFP_KERNEL);
-
-	WARN(!dev->absinfo, "%s(): kcalloc() failed?\n", __func__);
-=======
 	if (dev->absinfo)
 		return;
 
@@ -690,7 +492,6 @@ void input_alloc_absinfo(struct input_dev *dev)
 		 * device with ABS bits but without absinfo.
 		 */
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(input_alloc_absinfo);
 
@@ -699,12 +500,9 @@ void input_set_abs_params(struct input_dev *dev, unsigned int axis,
 {
 	struct input_absinfo *absinfo;
 
-<<<<<<< HEAD
-=======
 	__set_bit(EV_ABS, dev->evbit);
 	__set_bit(axis, dev->absbit);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_alloc_absinfo(dev);
 	if (!dev->absinfo)
 		return;
@@ -714,13 +512,6 @@ void input_set_abs_params(struct input_dev *dev, unsigned int axis,
 	absinfo->maximum = max;
 	absinfo->fuzz = fuzz;
 	absinfo->flat = flat;
-<<<<<<< HEAD
-
-	dev->absbit[BIT_WORD(axis)] |= BIT_MASK(axis);
-}
-EXPORT_SYMBOL(input_set_abs_params);
-
-=======
 }
 EXPORT_SYMBOL(input_set_abs_params);
 
@@ -760,7 +551,6 @@ void input_copy_abs(struct input_dev *dst, unsigned int dst_axis,
 	dst->absinfo[dst_axis] = src->absinfo[src_axis];
 }
 EXPORT_SYMBOL(input_copy_abs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * input_grab_device - grabs device for exclusive use
@@ -795,12 +585,6 @@ EXPORT_SYMBOL(input_grab_device);
 static void __input_release_device(struct input_handle *handle)
 {
 	struct input_dev *dev = handle->dev;
-<<<<<<< HEAD
-
-	if (dev->grab == handle) {
-		rcu_assign_pointer(dev->grab, NULL);
-		/* Make sure input_pass_event() notices that grab is gone */
-=======
 	struct input_handle *grabber;
 
 	grabber = rcu_dereference_protected(dev->grab,
@@ -808,7 +592,6 @@ static void __input_release_device(struct input_handle *handle)
 	if (grabber == handle) {
 		rcu_assign_pointer(dev->grab, NULL);
 		/* Make sure input_pass_values() notices that grab is gone */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		synchronize_rcu();
 
 		list_for_each_entry(handle, &dev->h_list, d_node)
@@ -859,14 +642,6 @@ int input_open_device(struct input_handle *handle)
 
 	handle->open++;
 
-<<<<<<< HEAD
-	if (!dev->users++ && dev->open)
-		retval = dev->open(dev);
-
-	if (retval) {
-		dev->users--;
-		if (!--handle->open) {
-=======
 	if (dev->users++ || dev->inhibited) {
 		/*
 		 * Device is already opened and/or inhibited,
@@ -880,17 +655,11 @@ int input_open_device(struct input_handle *handle)
 		if (retval) {
 			dev->users--;
 			handle->open--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Make sure we are not delivering any more events
 			 * through this handle
 			 */
 			synchronize_rcu();
-<<<<<<< HEAD
-		}
-	}
-
-=======
 			goto out;
 		}
 	}
@@ -898,7 +667,6 @@ int input_open_device(struct input_handle *handle)
 	if (dev->poller)
 		input_dev_poller_start(dev->poller);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	mutex_unlock(&dev->mutex);
 	return retval;
@@ -937,14 +705,6 @@ void input_close_device(struct input_handle *handle)
 
 	__input_release_device(handle);
 
-<<<<<<< HEAD
-	if (!--dev->users && dev->close)
-		dev->close(dev);
-
-	if (!--handle->open) {
-		/*
-		 * synchronize_rcu() makes sure that input_pass_event()
-=======
 	if (!--dev->users && !dev->inhibited) {
 		if (dev->poller)
 			input_dev_poller_stop(dev->poller);
@@ -955,7 +715,6 @@ void input_close_device(struct input_handle *handle)
 	if (!--handle->open) {
 		/*
 		 * synchronize_rcu() makes sure that input_pass_values()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * completed and that no more input events are delivered
 		 * through this handle
 		 */
@@ -970,21 +729,6 @@ EXPORT_SYMBOL(input_close_device);
  * Simulate keyup events for all keys that are marked as pressed.
  * The function must be called with dev->event_lock held.
  */
-<<<<<<< HEAD
-static void input_dev_release_keys(struct input_dev *dev)
-{
-	int code;
-
-	if (is_event_supported(EV_KEY, dev->evbit, EV_MAX)) {
-		for (code = 0; code <= KEY_MAX; code++) {
-			if (is_event_supported(code, dev->keybit, KEY_MAX) &&
-			    __test_and_clear_bit(code, dev->key)) {
-				input_pass_event(dev, EV_KEY, code, 0);
-			}
-		}
-		input_pass_event(dev, EV_SYN, SYN_REPORT, 1);
-	}
-=======
 static bool input_dev_release_keys(struct input_dev *dev)
 {
 	bool need_sync = false;
@@ -1000,7 +744,6 @@ static bool input_dev_release_keys(struct input_dev *dev)
 	}
 
 	return need_sync;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1027,12 +770,8 @@ static void input_disconnect_device(struct input_dev *dev)
 	 * generate events even after we done here but they will not
 	 * reach any handlers.
 	 */
-<<<<<<< HEAD
-	input_dev_release_keys(dev);
-=======
 	if (input_dev_release_keys(dev))
 		input_handle_event(dev, EV_SYN, SYN_REPORT, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(handle, &dev->h_list, d_node)
 		handle->open = 0;
@@ -1169,18 +908,6 @@ static int input_default_setkeycode(struct input_dev *dev,
 		}
 	}
 
-<<<<<<< HEAD
-	__clear_bit(*old_keycode, dev->keybit);
-	__set_bit(ke->keycode, dev->keybit);
-
-	for (i = 0; i < dev->keycodemax; i++) {
-		if (input_fetch_keycode(dev, i) == *old_keycode) {
-			__set_bit(*old_keycode, dev->keybit);
-			break; /* Setting the bit twice is useless, so break */
-		}
-	}
-
-=======
 	if (*old_keycode <= KEY_MAX) {
 		__clear_bit(*old_keycode, dev->keybit);
 		for (i = 0; i < dev->keycodemax; i++) {
@@ -1193,7 +920,6 @@ static int input_default_setkeycode(struct input_dev *dev,
 	}
 
 	__set_bit(ke->keycode, dev->keybit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1249,15 +975,6 @@ int input_set_keycode(struct input_dev *dev,
 	 * Simulate keyup event if keycode is not present
 	 * in the keymap anymore
 	 */
-<<<<<<< HEAD
-	if (test_bit(EV_KEY, dev->evbit) &&
-	    !is_event_supported(old_keycode, dev->keybit, KEY_MAX) &&
-	    __test_and_clear_bit(old_keycode, dev->key)) {
-
-		input_pass_event(dev, EV_KEY, old_keycode, 0);
-		if (dev->sync)
-			input_pass_event(dev, EV_SYN, SYN_REPORT, 1);
-=======
 	if (old_keycode > KEY_MAX) {
 		dev_warn(dev->dev.parent ?: &dev->dev,
 			 "%s: got too big old keycode %#x\n",
@@ -1275,7 +992,6 @@ int input_set_keycode(struct input_dev *dev,
 				    EV_KEY, old_keycode, 0);
 		input_event_dispose(dev, INPUT_PASS_TO_HANDLERS | INPUT_FLUSH,
 				    EV_SYN, SYN_REPORT, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
  out:
@@ -1285,14 +1001,6 @@ int input_set_keycode(struct input_dev *dev,
 }
 EXPORT_SYMBOL(input_set_keycode);
 
-<<<<<<< HEAD
-#define MATCH_BIT(bit, max) \
-		for (i = 0; i < BITS_TO_LONGS(max); i++) \
-			if ((id->bit[i] & dev->bit[i]) != id->bit[i]) \
-				break; \
-		if (i != BITS_TO_LONGS(max)) \
-			continue;
-=======
 bool input_match_device_id(const struct input_dev *dev,
 			   const struct input_device_id *id)
 {
@@ -1328,53 +1036,17 @@ bool input_match_device_id(const struct input_dev *dev,
 	return true;
 }
 EXPORT_SYMBOL(input_match_device_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct input_device_id *input_match_device(struct input_handler *handler,
 							struct input_dev *dev)
 {
 	const struct input_device_id *id;
-<<<<<<< HEAD
-	int i;
-
-	for (id = handler->id_table; id->flags || id->driver_info; id++) {
-
-		if (id->flags & INPUT_DEVICE_ID_MATCH_BUS)
-			if (id->bustype != dev->id.bustype)
-				continue;
-
-		if (id->flags & INPUT_DEVICE_ID_MATCH_VENDOR)
-			if (id->vendor != dev->id.vendor)
-				continue;
-
-		if (id->flags & INPUT_DEVICE_ID_MATCH_PRODUCT)
-			if (id->product != dev->id.product)
-				continue;
-
-		if (id->flags & INPUT_DEVICE_ID_MATCH_VERSION)
-			if (id->version != dev->id.version)
-				continue;
-
-		MATCH_BIT(evbit,  EV_MAX);
-		MATCH_BIT(keybit, KEY_MAX);
-		MATCH_BIT(relbit, REL_MAX);
-		MATCH_BIT(absbit, ABS_MAX);
-		MATCH_BIT(mscbit, MSC_MAX);
-		MATCH_BIT(ledbit, LED_MAX);
-		MATCH_BIT(sndbit, SND_MAX);
-		MATCH_BIT(ffbit,  FF_MAX);
-		MATCH_BIT(swbit,  SW_MAX);
-
-		if (!handler->match || handler->match(handler, dev))
-			return id;
-=======
 
 	for (id = handler->id_table; id->flags || id->driver_info; id++) {
 		if (input_match_device_id(dev, id) &&
 		    (!handler->match || handler->match(handler, dev))) {
 			return id;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return NULL;
@@ -1404,11 +1076,7 @@ static int input_bits_to_string(char *buf, int buf_size,
 {
 	int len = 0;
 
-<<<<<<< HEAD
-	if (INPUT_COMPAT_TEST) {
-=======
 	if (in_compat_syscall()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 dword = bits >> 32;
 		if (dword || !skip_empty)
 			len += snprintf(buf, buf_size, "%x ", dword);
@@ -1448,20 +1116,12 @@ static inline void input_wakeup_procfs_readers(void)
 	wake_up(&input_devices_poll_wait);
 }
 
-<<<<<<< HEAD
-static unsigned int input_proc_devices_poll(struct file *file, poll_table *wait)
-=======
 static __poll_t input_proc_devices_poll(struct file *file, poll_table *wait)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	poll_wait(file, &input_devices_poll_wait, wait);
 	if (file->f_version != input_devices_state) {
 		file->f_version = input_devices_state;
-<<<<<<< HEAD
-		return POLLIN | POLLRDNORM;
-=======
 		return EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1528,11 +1188,7 @@ static void input_seq_print_bitmap(struct seq_file *seq, const char *name,
 	 * If no output was produced print a single 0.
 	 */
 	if (skip_empty)
-<<<<<<< HEAD
-		seq_puts(seq, "0");
-=======
 		seq_putc(seq, '0');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seq_putc(seq, '\n');
 }
@@ -1550,11 +1206,7 @@ static int input_devices_seq_show(struct seq_file *seq, void *v)
 	seq_printf(seq, "P: Phys=%s\n", dev->phys ? dev->phys : "");
 	seq_printf(seq, "S: Sysfs=%s\n", path ? path : "");
 	seq_printf(seq, "U: Uniq=%s\n", dev->uniq ? dev->uniq : "");
-<<<<<<< HEAD
-	seq_printf(seq, "H: Handlers=");
-=======
 	seq_puts(seq, "H: Handlers=");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(handle, &dev->h_list, d_node)
 		seq_printf(seq, "%s ", handle->name);
@@ -1598,22 +1250,12 @@ static int input_proc_devices_open(struct inode *inode, struct file *file)
 	return seq_open(file, &input_devices_seq_ops);
 }
 
-<<<<<<< HEAD
-static const struct file_operations input_devices_fileops = {
-	.owner		= THIS_MODULE,
-	.open		= input_proc_devices_open,
-	.poll		= input_proc_devices_poll,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-=======
 static const struct proc_ops input_devices_proc_ops = {
 	.proc_open	= input_proc_devices_open,
 	.proc_poll	= input_proc_devices_poll,
 	.proc_read	= seq_read,
 	.proc_lseek	= seq_lseek,
 	.proc_release	= seq_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void *input_handlers_seq_start(struct seq_file *seq, loff_t *pos)
@@ -1652,11 +1294,7 @@ static int input_handlers_seq_show(struct seq_file *seq, void *v)
 	seq_printf(seq, "N: Number=%u Name=%s", state->pos, handler->name);
 	if (handler->filter)
 		seq_puts(seq, " (filter)");
-<<<<<<< HEAD
-	if (handler->fops)
-=======
 	if (handler->legacy_minors)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_printf(seq, " Minor=%d", handler->minor);
 	seq_putc(seq, '\n');
 
@@ -1675,20 +1313,11 @@ static int input_proc_handlers_open(struct inode *inode, struct file *file)
 	return seq_open(file, &input_handlers_seq_ops);
 }
 
-<<<<<<< HEAD
-static const struct file_operations input_handlers_fileops = {
-	.owner		= THIS_MODULE,
-	.open		= input_proc_handlers_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-=======
 static const struct proc_ops input_handlers_proc_ops = {
 	.proc_open	= input_proc_handlers_open,
 	.proc_read	= seq_read,
 	.proc_lseek	= seq_lseek,
 	.proc_release	= seq_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init input_proc_init(void)
@@ -1700,20 +1329,12 @@ static int __init input_proc_init(void)
 		return -ENOMEM;
 
 	entry = proc_create("devices", 0, proc_bus_input_dir,
-<<<<<<< HEAD
-			    &input_devices_fileops);
-=======
 			    &input_devices_proc_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!entry)
 		goto fail1;
 
 	entry = proc_create("handlers", 0, proc_bus_input_dir,
-<<<<<<< HEAD
-			    &input_handlers_fileops);
-=======
 			    &input_handlers_proc_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!entry)
 		goto fail2;
 
@@ -1744,13 +1365,8 @@ static ssize_t input_dev_show_##name(struct device *dev,		\
 {									\
 	struct input_dev *input_dev = to_input_dev(dev);		\
 									\
-<<<<<<< HEAD
-	return scnprintf(buf, PAGE_SIZE, "%s\n",			\
-			 input_dev->name ? input_dev->name : "");	\
-=======
 	return sysfs_emit(buf, "%s\n",					\
 			  input_dev->name ? input_dev->name : "");	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }									\
 static DEVICE_ATTR(name, S_IRUGO, input_dev_show_##name, NULL)
 
@@ -1759,11 +1375,7 @@ INPUT_DEV_STRING_ATTR_SHOW(phys);
 INPUT_DEV_STRING_ATTR_SHOW(uniq);
 
 static int input_print_modalias_bits(char *buf, int size,
-<<<<<<< HEAD
-				     char name, unsigned long *bm,
-=======
 				     char name, const unsigned long *bm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     unsigned int min_bit, unsigned int max_bit)
 {
 	int len = 0, i;
@@ -1775,11 +1387,7 @@ static int input_print_modalias_bits(char *buf, int size,
 	return len;
 }
 
-<<<<<<< HEAD
-static int input_print_modalias(char *buf, int size, struct input_dev *id,
-=======
 static int input_print_modalias(char *buf, int size, const struct input_dev *id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				int add_cr)
 {
 	int len;
@@ -1827,11 +1435,7 @@ static ssize_t input_dev_show_modalias(struct device *dev,
 }
 static DEVICE_ATTR(modalias, S_IRUGO, input_dev_show_modalias, NULL);
 
-<<<<<<< HEAD
-static int input_print_bitmap(char *buf, int buf_size, unsigned long *bitmap,
-=======
 static int input_print_bitmap(char *buf, int buf_size, const unsigned long *bitmap,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      int max, int add_cr);
 
 static ssize_t input_dev_show_properties(struct device *dev,
@@ -1845,8 +1449,6 @@ static ssize_t input_dev_show_properties(struct device *dev,
 }
 static DEVICE_ATTR(properties, S_IRUGO, input_dev_show_properties, NULL);
 
-<<<<<<< HEAD
-=======
 static int input_inhibit_device(struct input_dev *dev);
 static int input_uninhibit_device(struct input_dev *dev);
 
@@ -1883,25 +1485,17 @@ static ssize_t inhibited_store(struct device *dev,
 
 static DEVICE_ATTR_RW(inhibited);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute *input_dev_attrs[] = {
 	&dev_attr_name.attr,
 	&dev_attr_phys.attr,
 	&dev_attr_uniq.attr,
 	&dev_attr_modalias.attr,
 	&dev_attr_properties.attr,
-<<<<<<< HEAD
-	NULL
-};
-
-static struct attribute_group input_dev_attr_group = {
-=======
 	&dev_attr_inhibited.attr,
 	NULL
 };
 
 static const struct attribute_group input_dev_attr_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs	= input_dev_attrs,
 };
 
@@ -1911,11 +1505,7 @@ static ssize_t input_dev_show_id_##name(struct device *dev,		\
 					char *buf)			\
 {									\
 	struct input_dev *input_dev = to_input_dev(dev);		\
-<<<<<<< HEAD
-	return scnprintf(buf, PAGE_SIZE, "%04x\n", input_dev->id.name);	\
-=======
 	return sysfs_emit(buf, "%04x\n", input_dev->id.name);		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }									\
 static DEVICE_ATTR(name, S_IRUGO, input_dev_show_id_##name, NULL)
 
@@ -1932,20 +1522,12 @@ static struct attribute *input_dev_id_attrs[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group input_dev_id_attr_group = {
-=======
 static const struct attribute_group input_dev_id_attr_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name	= "id",
 	.attrs	= input_dev_id_attrs,
 };
 
-<<<<<<< HEAD
-static int input_print_bitmap(char *buf, int buf_size, unsigned long *bitmap,
-=======
 static int input_print_bitmap(char *buf, int buf_size, const unsigned long *bitmap,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      int max, int add_cr)
 {
 	int i;
@@ -2010,11 +1592,7 @@ static struct attribute *input_dev_caps_attrs[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group input_dev_caps_attr_group = {
-=======
 static const struct attribute_group input_dev_caps_attr_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name	= "capabilities",
 	.attrs	= input_dev_caps_attrs,
 };
@@ -2023,10 +1601,7 @@ static const struct attribute_group *input_dev_attr_groups[] = {
 	&input_dev_attr_group,
 	&input_dev_id_attr_group,
 	&input_dev_caps_attr_group,
-<<<<<<< HEAD
-=======
 	&input_poller_attribute_group,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL
 };
 
@@ -2036,13 +1611,9 @@ static void input_dev_release(struct device *device)
 
 	input_ff_destroy(dev);
 	input_mt_destroy_slots(dev);
-<<<<<<< HEAD
-	kfree(dev->absinfo);
-=======
 	kfree(dev->poller);
 	kfree(dev->absinfo);
 	kfree(dev->vals);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(dev);
 
 	module_put(THIS_MODULE);
@@ -2053,11 +1624,7 @@ static void input_dev_release(struct device *device)
  * device bitfields.
  */
 static int input_add_uevent_bm_var(struct kobj_uevent_env *env,
-<<<<<<< HEAD
-				   const char *name, unsigned long *bitmap, int max)
-=======
 				   const char *name, const unsigned long *bitmap, int max)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len;
 
@@ -2075,11 +1642,7 @@ static int input_add_uevent_bm_var(struct kobj_uevent_env *env,
 }
 
 static int input_add_uevent_modalias_var(struct kobj_uevent_env *env,
-<<<<<<< HEAD
-					 struct input_dev *dev)
-=======
 					 const struct input_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len;
 
@@ -2117,15 +1680,9 @@ static int input_add_uevent_modalias_var(struct kobj_uevent_env *env,
 			return err;					\
 	} while (0)
 
-<<<<<<< HEAD
-static int input_dev_uevent(struct device *device, struct kobj_uevent_env *env)
-{
-	struct input_dev *dev = to_input_dev(device);
-=======
 static int input_dev_uevent(const struct device *device, struct kobj_uevent_env *env)
 {
 	const struct input_dev *dev = to_input_dev(device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INPUT_ADD_HOTPLUG_VAR("PRODUCT=%x/%x/%x/%x",
 				dev->id.bustype, dev->id.vendor,
@@ -2170,14 +1727,7 @@ static int input_dev_uevent(const struct device *device, struct kobj_uevent_env 
 		if (!test_bit(EV_##type, dev->evbit))			\
 			break;						\
 									\
-<<<<<<< HEAD
-		for (i = 0; i < type##_MAX; i++) {			\
-			if (!test_bit(i, dev->bits##bit))		\
-				continue;				\
-									\
-=======
 		for_each_set_bit(i, dev->bits##bit, type##_CNT) {	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			active = test_bit(i, dev->bits);		\
 			if (!active && !on)				\
 				continue;				\
@@ -2210,33 +1760,6 @@ static void input_dev_toggle(struct input_dev *dev, bool activate)
  */
 void input_reset_device(struct input_dev *dev)
 {
-<<<<<<< HEAD
-	mutex_lock(&dev->mutex);
-
-	if (dev->users) {
-		input_dev_toggle(dev, true);
-
-		/*
-		 * Keys that have been pressed at suspend time are unlikely
-		 * to be still pressed when we resume.
-		 */
-        /* LGE_CHANGE
-         *
-         * During Suspend & Resume Do not release keys for Power Long Key press.
-         * If some devices want to release pressed keys on Suspend,
-         * Add the routine on each devices.
-         *
-         * B2-BSP-TS@lge.com
-         */
-		/*if (!test_bit(INPUT_PROP_NO_DUMMY_RELEASE, dev->propbit)) {
-			spin_lock_irq(&dev->event_lock);
-			input_dev_release_keys(dev);
-			spin_unlock_irq(&dev->event_lock);
-		}
-        */
-	}
-
-=======
 	unsigned long flags;
 
 	mutex_lock(&dev->mutex);
@@ -2247,14 +1770,10 @@ void input_reset_device(struct input_dev *dev)
 		input_handle_event(dev, EV_SYN, SYN_REPORT, 1);
 
 	spin_unlock_irqrestore(&dev->event_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&dev->mutex);
 }
 EXPORT_SYMBOL(input_reset_device);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 static int input_inhibit_device(struct input_dev *dev)
 {
 	mutex_lock(&dev->mutex);
@@ -2312,19 +1831,10 @@ out:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int input_dev_suspend(struct device *dev)
 {
 	struct input_dev *input_dev = to_input_dev(dev);
 
-<<<<<<< HEAD
-	mutex_lock(&input_dev->mutex);
-
-	if (input_dev->users)
-		input_dev_toggle(input_dev, false);
-
-	mutex_unlock(&input_dev->mutex);
-=======
 	spin_lock_irq(&input_dev->event_lock);
 
 	/*
@@ -2338,7 +1848,6 @@ static int input_dev_suspend(struct device *dev)
 	input_dev_toggle(input_dev, false);
 
 	spin_unlock_irq(&input_dev->event_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2347,9 +1856,6 @@ static int input_dev_resume(struct device *dev)
 {
 	struct input_dev *input_dev = to_input_dev(dev);
 
-<<<<<<< HEAD
-	input_reset_device(input_dev);
-=======
 	spin_lock_irq(&input_dev->event_lock);
 
 	/* Restore state of LEDs and sounds, if any were active. */
@@ -2388,7 +1894,6 @@ static int input_dev_poweroff(struct device *dev)
 	input_dev_toggle(input_dev, false);
 
 	spin_unlock_irq(&input_dev->event_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2396,23 +1901,6 @@ static int input_dev_poweroff(struct device *dev)
 static const struct dev_pm_ops input_dev_pm_ops = {
 	.suspend	= input_dev_suspend,
 	.resume		= input_dev_resume,
-<<<<<<< HEAD
-	.poweroff	= input_dev_suspend,
-	.restore	= input_dev_resume,
-};
-#endif /* CONFIG_PM */
-
-static struct device_type input_dev_type = {
-	.groups		= input_dev_attr_groups,
-	.release	= input_dev_release,
-	.uevent		= input_dev_uevent,
-#ifdef CONFIG_PM
-	.pm		= &input_dev_pm_ops,
-#endif
-};
-
-static char *input_devnode(struct device *dev, umode_t *mode)
-=======
 	.freeze		= input_dev_freeze,
 	.poweroff	= input_dev_poweroff,
 	.restore	= input_dev_resume,
@@ -2426,16 +1914,11 @@ static const struct device_type input_dev_type = {
 };
 
 static char *input_devnode(const struct device *dev, umode_t *mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return kasprintf(GFP_KERNEL, "input/%s", dev_name(dev));
 }
 
-<<<<<<< HEAD
-struct class input_class = {
-=======
 const struct class input_class = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "input",
 	.devnode	= input_devnode,
 };
@@ -2444,11 +1927,7 @@ EXPORT_SYMBOL_GPL(input_class);
 /**
  * input_allocate_device - allocate memory for new input device
  *
-<<<<<<< HEAD
- * Returns prepared struct input_dev or NULL.
-=======
  * Returns prepared struct input_dev or %NULL.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * NOTE: Use input_free_device() to free devices that have not been
  * registered; input_unregister_device() should be used for already
@@ -2456,27 +1935,16 @@ EXPORT_SYMBOL_GPL(input_class);
  */
 struct input_dev *input_allocate_device(void)
 {
-<<<<<<< HEAD
-	struct input_dev *dev;
-
-	dev = kzalloc(sizeof(struct input_dev), GFP_KERNEL);
-=======
 	static atomic_t input_no = ATOMIC_INIT(-1);
 	struct input_dev *dev;
 
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev) {
 		dev->dev.type = &input_dev_type;
 		dev->dev.class = &input_class;
 		device_initialize(&dev->dev);
 		mutex_init(&dev->mutex);
 		spin_lock_init(&dev->event_lock);
-<<<<<<< HEAD
-		INIT_LIST_HEAD(&dev->h_list);
-		INIT_LIST_HEAD(&dev->node);
-
-=======
 		timer_setup(&dev->timer, NULL, 0);
 		INIT_LIST_HEAD(&dev->h_list);
 		INIT_LIST_HEAD(&dev->node);
@@ -2484,7 +1952,6 @@ struct input_dev *input_allocate_device(void)
 		dev_set_name(&dev->dev, "input%lu",
 			     (unsigned long)atomic_inc_return(&input_no));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__module_get(THIS_MODULE);
 	}
 
@@ -2492,8 +1959,6 @@ struct input_dev *input_allocate_device(void)
 }
 EXPORT_SYMBOL(input_allocate_device);
 
-<<<<<<< HEAD
-=======
 struct input_devres {
 	struct input_dev *input;
 };
@@ -2559,7 +2024,6 @@ struct input_dev *devm_input_allocate_device(struct device *dev)
 }
 EXPORT_SYMBOL(devm_input_allocate_device);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * input_free_device - free memory occupied by input_dev structure
  * @dev: input device to free
@@ -2576,10 +2040,6 @@ EXPORT_SYMBOL(devm_input_allocate_device);
  */
 void input_free_device(struct input_dev *dev)
 {
-<<<<<<< HEAD
-	if (dev)
-		input_put_device(dev);
-=======
 	if (dev) {
 		if (dev->devres_managed)
 			WARN_ON(devres_destroy(dev->dev.parent,
@@ -2588,13 +2048,10 @@ void input_free_device(struct input_dev *dev)
 						dev));
 		input_put_device(dev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(input_free_device);
 
 /**
-<<<<<<< HEAD
-=======
  * input_set_timestamp - set timestamp for input events
  * @dev: input device to set timestamp for
  * @timestamp: the time at which the event has occurred
@@ -2635,7 +2092,6 @@ ktime_t *input_get_timestamp(struct input_dev *dev)
 EXPORT_SYMBOL(input_get_timestamp);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * input_set_capability - mark device as capable of a certain event
  * @dev: device that is capable of emitting or accepting event
  * @type: type of the event (EV_KEY, EV_REL, etc...)
@@ -2646,8 +2102,6 @@ EXPORT_SYMBOL(input_get_timestamp);
  */
 void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
 {
-<<<<<<< HEAD
-=======
 	if (type < EV_CNT && input_max_code[type] &&
 	    code > input_max_code[type]) {
 		pr_err("%s: invalid code %u for type %u\n", __func__, code,
@@ -2656,7 +2110,6 @@ void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (type) {
 	case EV_KEY:
 		__set_bit(code, dev->keybit);
@@ -2668,12 +2121,6 @@ void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int
 
 	case EV_ABS:
 		input_alloc_absinfo(dev);
-<<<<<<< HEAD
-		if (!dev->absinfo)
-			return;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__set_bit(code, dev->absbit);
 		break;
 
@@ -2702,12 +2149,7 @@ void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int
 		break;
 
 	default:
-<<<<<<< HEAD
-		pr_err("input_set_capability: unknown type %u (code %u)\n",
-		       type, code);
-=======
 		pr_err("%s: unknown type %u (code %u)\n", __func__, type, code);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dump_stack();
 		return;
 	}
@@ -2722,13 +2164,8 @@ static unsigned int input_estimate_events_per_packet(struct input_dev *dev)
 	int i;
 	unsigned int events;
 
-<<<<<<< HEAD
-	if (dev->mtsize) {
-		mt_slots = dev->mtsize;
-=======
 	if (dev->mt) {
 		mt_slots = dev->mt->num_slots;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (test_bit(ABS_MT_TRACKING_ID, dev->absbit)) {
 		mt_slots = dev->absinfo[ABS_MT_TRACKING_ID].maximum -
 			   dev->absinfo[ABS_MT_TRACKING_ID].minimum + 1,
@@ -2741,20 +2178,6 @@ static unsigned int input_estimate_events_per_packet(struct input_dev *dev)
 
 	events = mt_slots + 1; /* count SYN_MT_REPORT and SYN_REPORT */
 
-<<<<<<< HEAD
-	for (i = 0; i < ABS_CNT; i++) {
-		if (test_bit(i, dev->absbit)) {
-			if (input_is_mt_axis(i))
-				events += mt_slots;
-			else
-				events++;
-		}
-	}
-
-	for (i = 0; i < REL_CNT; i++)
-		if (test_bit(i, dev->relbit))
-			events++;
-=======
 	if (test_bit(EV_ABS, dev->evbit))
 		for_each_set_bit(i, dev->absbit, ABS_CNT)
 			events += input_is_mt_axis(i) ? mt_slots : 1;
@@ -2764,7 +2187,6 @@ static unsigned int input_estimate_events_per_packet(struct input_dev *dev)
 
 	/* Make room for KEY and MSC events */
 	events += 7;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return events;
 }
@@ -2788,100 +2210,7 @@ static void input_cleanse_bitmasks(struct input_dev *dev)
 	INPUT_CLEANSE_BITMASK(dev, SW, sw);
 }
 
-<<<<<<< HEAD
-/**
- * input_register_device - register device with input core
- * @dev: device to be registered
- *
- * This function registers device with input core. The device must be
- * allocated with input_allocate_device() and all it's capabilities
- * set up before registering.
- * If function fails the device must be freed with input_free_device().
- * Once device has been successfully registered it can be unregistered
- * with input_unregister_device(); input_free_device() should not be
- * called in this case.
- */
-int input_register_device(struct input_dev *dev)
-{
-	static atomic_t input_no = ATOMIC_INIT(0);
-	struct input_handler *handler;
-	const char *path;
-	int error;
-
-	/* Every input device generates EV_SYN/SYN_REPORT events. */
-	__set_bit(EV_SYN, dev->evbit);
-
-	/* KEY_RESERVED is not supposed to be transmitted to userspace. */
-	__clear_bit(KEY_RESERVED, dev->keybit);
-
-	/* Make sure that bitmasks not mentioned in dev->evbit are clean. */
-	input_cleanse_bitmasks(dev);
-
-	if (!dev->hint_events_per_packet)
-		dev->hint_events_per_packet =
-				input_estimate_events_per_packet(dev);
-
-	/*
-	 * If delay and period are pre-set by the driver, then autorepeating
-	 * is handled by the driver itself and we don't do it in input.c.
-	 */
-	init_timer(&dev->timer);
-	if (!dev->rep[REP_DELAY] && !dev->rep[REP_PERIOD]) {
-		dev->timer.data = (long) dev;
-		dev->timer.function = input_repeat_key;
-		dev->rep[REP_DELAY] = 250;
-		dev->rep[REP_PERIOD] = 33;
-	}
-
-	if (!dev->getkeycode)
-		dev->getkeycode = input_default_getkeycode;
-
-	if (!dev->setkeycode)
-		dev->setkeycode = input_default_setkeycode;
-
-	dev_set_name(&dev->dev, "input%ld",
-		     (unsigned long) atomic_inc_return(&input_no) - 1);
-
-	error = device_add(&dev->dev);
-	if (error)
-		return error;
-
-	path = kobject_get_path(&dev->dev.kobj, GFP_KERNEL);
-	pr_info("%s as %s\n",
-		dev->name ? dev->name : "Unspecified device",
-		path ? path : "N/A");
-	kfree(path);
-
-	error = mutex_lock_interruptible(&input_mutex);
-	if (error) {
-		device_del(&dev->dev);
-		return error;
-	}
-
-	list_add_tail(&dev->node, &input_dev_list);
-
-	list_for_each_entry(handler, &input_handler_list, node)
-		input_attach_handler(dev, handler);
-
-	input_wakeup_procfs_readers();
-
-	mutex_unlock(&input_mutex);
-
-	return 0;
-}
-EXPORT_SYMBOL(input_register_device);
-
-/**
- * input_unregister_device - unregister previously registered device
- * @dev: device to be unregistered
- *
- * This function unregisters an input device. Once device is unregistered
- * the caller should not try to access it as it may get freed at any moment.
- */
-void input_unregister_device(struct input_dev *dev)
-=======
 static void __input_unregister_device(struct input_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct input_handle *handle, *next;
 
@@ -2900,9 +2229,6 @@ static void __input_unregister_device(struct input_dev *dev)
 
 	mutex_unlock(&input_mutex);
 
-<<<<<<< HEAD
-	device_unregister(&dev->dev);
-=======
 	device_del(&dev->dev);
 }
 
@@ -3114,7 +2440,6 @@ void input_unregister_device(struct input_dev *dev)
 		__input_unregister_device(dev);
 		input_put_device(dev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(input_unregister_device);
 
@@ -3129,24 +2454,6 @@ EXPORT_SYMBOL(input_unregister_device);
 int input_register_handler(struct input_handler *handler)
 {
 	struct input_dev *dev;
-<<<<<<< HEAD
-	int retval;
-
-	retval = mutex_lock_interruptible(&input_mutex);
-	if (retval)
-		return retval;
-
-	INIT_LIST_HEAD(&handler->h_list);
-
-	if (handler->fops != NULL) {
-		if (input_table[handler->minor >> 5]) {
-			retval = -EBUSY;
-			goto out;
-		}
-		input_table[handler->minor >> 5] = handler;
-	}
-
-=======
 	int error;
 
 	error = mutex_lock_interruptible(&input_mutex);
@@ -3155,7 +2462,6 @@ int input_register_handler(struct input_handler *handler)
 
 	INIT_LIST_HEAD(&handler->h_list);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_tail(&handler->node, &input_handler_list);
 
 	list_for_each_entry(dev, &input_dev_list, node)
@@ -3163,14 +2469,8 @@ int input_register_handler(struct input_handler *handler)
 
 	input_wakeup_procfs_readers();
 
-<<<<<<< HEAD
- out:
-	mutex_unlock(&input_mutex);
-	return retval;
-=======
 	mutex_unlock(&input_mutex);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(input_register_handler);
 
@@ -3193,12 +2493,6 @@ void input_unregister_handler(struct input_handler *handler)
 
 	list_del_init(&handler->node);
 
-<<<<<<< HEAD
-	if (handler->fops != NULL)
-		input_table[handler->minor >> 5] = NULL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_wakeup_procfs_readers();
 
 	mutex_unlock(&input_mutex);
@@ -3213,11 +2507,7 @@ EXPORT_SYMBOL(input_unregister_handler);
  *
  * Iterate over @bus's list of devices, and call @fn for each, passing
  * it @data and stop when @fn returns a non-zero value. The function is
-<<<<<<< HEAD
- * using RCU to traverse the list and therefore may be usind in atonic
-=======
  * using RCU to traverse the list and therefore may be using in atomic
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * contexts. The @fn callback is invoked from RCU critical section and
  * thus must not sleep.
  */
@@ -3319,53 +2609,6 @@ void input_unregister_handle(struct input_handle *handle)
 }
 EXPORT_SYMBOL(input_unregister_handle);
 
-<<<<<<< HEAD
-static int input_open_file(struct inode *inode, struct file *file)
-{
-	struct input_handler *handler;
-	const struct file_operations *old_fops, *new_fops = NULL;
-	int err;
-
-	err = mutex_lock_interruptible(&input_mutex);
-	if (err)
-		return err;
-
-	/* No load-on-demand here? */
-	handler = input_table[iminor(inode) >> 5];
-	if (handler)
-		new_fops = fops_get(handler->fops);
-
-	mutex_unlock(&input_mutex);
-
-	/*
-	 * That's _really_ odd. Usually NULL ->open means "nothing special",
-	 * not "no device". Oh, well...
-	 */
-	if (!new_fops || !new_fops->open) {
-		fops_put(new_fops);
-		err = -ENODEV;
-		goto out;
-	}
-
-	old_fops = file->f_op;
-	file->f_op = new_fops;
-
-	err = new_fops->open(inode, file);
-	if (err) {
-		fops_put(file->f_op);
-		file->f_op = fops_get(old_fops);
-	}
-	fops_put(old_fops);
-out:
-	return err;
-}
-
-static const struct file_operations input_fops = {
-	.owner = THIS_MODULE,
-	.open = input_open_file,
-	.llseek = noop_llseek,
-};
-=======
 /**
  * input_get_new_minor - allocates a new input minor number
  * @legacy_base: beginning or the legacy range to be searched
@@ -3410,7 +2653,6 @@ void input_free_minor(unsigned int minor)
 	ida_free(&input_ida, minor);
 }
 EXPORT_SYMBOL(input_free_minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init input_init(void)
 {
@@ -3426,12 +2668,8 @@ static int __init input_init(void)
 	if (err)
 		goto fail1;
 
-<<<<<<< HEAD
-	err = register_chrdev(INPUT_MAJOR, "input", &input_fops);
-=======
 	err = register_chrdev_region(MKDEV(INPUT_MAJOR, 0),
 				     INPUT_MAX_CHAR_DEVICES, "input");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		pr_err("unable to register char major %d", INPUT_MAJOR);
 		goto fail2;
@@ -3447,12 +2685,8 @@ static int __init input_init(void)
 static void __exit input_exit(void)
 {
 	input_proc_exit();
-<<<<<<< HEAD
-	unregister_chrdev(INPUT_MAJOR, "input");
-=======
 	unregister_chrdev_region(MKDEV(INPUT_MAJOR, 0),
 				 INPUT_MAX_CHAR_DEVICES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	class_unregister(&input_class);
 }
 

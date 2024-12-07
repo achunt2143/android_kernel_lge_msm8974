@@ -1,27 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************
  * Copyright (c) 2011, Intel Corporation.
  * All Rights Reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **************************************************************************/
 
 /* TODO
@@ -30,18 +11,6 @@
  * - Check ioremap failures
  */
 
-<<<<<<< HEAD
-#include <drm/drmP.h>
-#include <drm/drm.h>
-#include "gma_drm.h"
-#include "psb_drv.h"
-#include "mid_bios.h"
-
-static void mid_get_fuse_settings(struct drm_device *dev)
-{
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	struct pci_dev *pci_root = pci_get_bus_and_slot(0, 0);
-=======
 #include <drm/drm.h>
 
 #include "mid_bios.h"
@@ -54,17 +23,12 @@ static void mid_get_fuse_settings(struct drm_device *dev)
 	struct pci_dev *pci_root =
 		pci_get_domain_bus_and_slot(pci_domain_nr(pdev->bus),
 					    0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t fuse_value = 0;
 	uint32_t fuse_value_tmp = 0;
 
 #define FB_REG06 0xD0810600
 #define FB_MIPI_DISABLE  (1 << 11)
 #define FB_REG09 0xD0810900
-<<<<<<< HEAD
-#define FB_REG09 0xD0810900
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FB_SKU_MASK  0x7000
 #define FB_SKU_SHIFT 12
 #define FB_SKU_100 0
@@ -130,14 +94,10 @@ static void mid_get_fuse_settings(struct drm_device *dev)
 static void mid_get_pci_revID(struct drm_psb_private *dev_priv)
 {
 	uint32_t platform_rev_id = 0;
-<<<<<<< HEAD
-	struct pci_dev *pci_gfx_root = pci_get_bus_and_slot(0, PCI_DEVFN(2, 0));
-=======
 	struct pci_dev *pdev = to_pci_dev(dev_priv->dev.dev);
 	int domain = pci_domain_nr(pdev->bus);
 	struct pci_dev *pci_gfx_root =
 		pci_get_domain_bus_and_slot(domain, 0, PCI_DEVFN(2, 0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_gfx_root == NULL) {
 		WARN_ON(1);
@@ -146,10 +106,6 @@ static void mid_get_pci_revID(struct drm_psb_private *dev_priv)
 	pci_read_config_dword(pci_gfx_root, 0x08, &platform_rev_id);
 	dev_priv->platform_rev_id = (uint8_t) platform_rev_id;
 	pci_dev_put(pci_gfx_root);
-<<<<<<< HEAD
-	dev_dbg(dev_priv->dev->dev, "platform_rev_id is %x\n",
-					dev_priv->platform_rev_id);
-=======
 	dev_dbg(dev_priv->dev.dev, "platform_rev_id is %x\n", dev_priv->platform_rev_id);
 }
 
@@ -309,26 +265,10 @@ static int mid_get_vbt_data_r10(struct drm_psb_private *dev_priv, u32 addr)
 out:
 	kfree(gct);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mid_get_vbt_data(struct drm_psb_private *dev_priv)
 {
-<<<<<<< HEAD
-	struct drm_device *dev = dev_priv->dev;
-	struct oaktrail_vbt *vbt = &dev_priv->vbt_data;
-	u32 addr;
-	u16 new_size;
-	u8 *vbt_virtual;
-	u8 bpi;
-	u8 number_desc = 0;
-	struct oaktrail_timing_info *dp_ti = &dev_priv->gct_data.DTD;
-	struct gct_r10_timing_info ti;
-	void *pGCT;
-	struct pci_dev *pci_gfx_root = pci_get_bus_and_slot(0, PCI_DEVFN(2, 0));
-
-	/* Get the address of the platform config vbt, B0:D2:F0;0xFC */
-=======
 	struct drm_device *dev = &dev_priv->dev;
 	struct pci_dev *pdev = to_pci_dev(dev->dev);
 	u32 addr;
@@ -340,127 +280,11 @@ static void mid_get_vbt_data(struct drm_psb_private *dev_priv)
 	int ret = -1;
 
 	/* Get the address of the platform config vbt */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_read_config_dword(pci_gfx_root, 0xFC, &addr);
 	pci_dev_put(pci_gfx_root);
 
 	dev_dbg(dev->dev, "drm platform config address is %x\n", addr);
 
-<<<<<<< HEAD
-	/* check for platform config address == 0. */
-	/* this means fw doesn't support vbt */
-
-	if (addr == 0) {
-		vbt->size = 0;
-		return;
-	}
-
-	/* get the virtual address of the vbt */
-	vbt_virtual = ioremap(addr, sizeof(*vbt));
-	if (vbt_virtual == NULL) {
-		vbt->size = 0;
-		return;
-	}
-
-	memcpy(vbt, vbt_virtual, sizeof(*vbt));
-	iounmap(vbt_virtual); /* Free virtual address space */
-
-	/* No matching signature don't process the data */
-	if (memcmp(vbt->signature, "$GCT", 4)) {
-		vbt->size = 0;
-		return;
-	}
-
-	dev_dbg(dev->dev, "GCT revision is %x\n", vbt->revision);
-
-	switch (vbt->revision) {
-	case 0:
-		vbt->oaktrail_gct = ioremap(addr + sizeof(*vbt) - 4,
-					vbt->size - sizeof(*vbt) + 4);
-		pGCT = vbt->oaktrail_gct;
-		bpi = ((struct oaktrail_gct_v1 *)pGCT)->PD.BootPanelIndex;
-		dev_priv->gct_data.bpi = bpi;
-		dev_priv->gct_data.pt =
-			((struct oaktrail_gct_v1 *)pGCT)->PD.PanelType;
-		memcpy(&dev_priv->gct_data.DTD,
-			&((struct oaktrail_gct_v1 *)pGCT)->panel[bpi].DTD,
-				sizeof(struct oaktrail_timing_info));
-		dev_priv->gct_data.Panel_Port_Control =
-		  ((struct oaktrail_gct_v1 *)pGCT)->panel[bpi].Panel_Port_Control;
-		dev_priv->gct_data.Panel_MIPI_Display_Descriptor =
-			((struct oaktrail_gct_v1 *)pGCT)->panel[bpi].Panel_MIPI_Display_Descriptor;
-		break;
-	case 1:
-		vbt->oaktrail_gct = ioremap(addr + sizeof(*vbt) - 4,
-					vbt->size - sizeof(*vbt) + 4);
-		pGCT = vbt->oaktrail_gct;
-		bpi = ((struct oaktrail_gct_v2 *)pGCT)->PD.BootPanelIndex;
-		dev_priv->gct_data.bpi = bpi;
-		dev_priv->gct_data.pt =
-			((struct oaktrail_gct_v2 *)pGCT)->PD.PanelType;
-		memcpy(&dev_priv->gct_data.DTD,
-			&((struct oaktrail_gct_v2 *)pGCT)->panel[bpi].DTD,
-				sizeof(struct oaktrail_timing_info));
-		dev_priv->gct_data.Panel_Port_Control =
-		  ((struct oaktrail_gct_v2 *)pGCT)->panel[bpi].Panel_Port_Control;
-		dev_priv->gct_data.Panel_MIPI_Display_Descriptor =
-			((struct oaktrail_gct_v2 *)pGCT)->panel[bpi].Panel_MIPI_Display_Descriptor;
-		break;
-	case 0x10:
-		/*header definition changed from rev 01 (v2) to rev 10h. */
-		/*so, some values have changed location*/
-		new_size = vbt->checksum; /*checksum contains lo size byte*/
-		/*LSB of oaktrail_gct contains hi size byte*/
-		new_size |= ((0xff & (unsigned int)(long)vbt->oaktrail_gct)) << 8;
-
-		vbt->checksum = vbt->size; /*size contains the checksum*/
-		if (new_size > 0xff)
-			vbt->size = 0xff; /*restrict size to 255*/
-		else
-			vbt->size = new_size;
-
-		/* number of descriptors defined in the GCT */
-		number_desc = ((0xff00 & (unsigned int)(long)vbt->oaktrail_gct)) >> 8;
-		bpi = ((0xff0000 & (unsigned int)(long)vbt->oaktrail_gct)) >> 16;
-		vbt->oaktrail_gct = ioremap(addr + GCT_R10_HEADER_SIZE,
-				GCT_R10_DISPLAY_DESC_SIZE * number_desc);
-		pGCT = vbt->oaktrail_gct;
-		pGCT = (u8 *)pGCT + (bpi*GCT_R10_DISPLAY_DESC_SIZE);
-		dev_priv->gct_data.bpi = bpi; /*save boot panel id*/
-
-		/*copy the GCT display timings into a temp structure*/
-		memcpy(&ti, pGCT, sizeof(struct gct_r10_timing_info));
-
-		/*now copy the temp struct into the dev_priv->gct_data*/
-		dp_ti->pixel_clock = ti.pixel_clock;
-		dp_ti->hactive_hi = ti.hactive_hi;
-		dp_ti->hactive_lo = ti.hactive_lo;
-		dp_ti->hblank_hi = ti.hblank_hi;
-		dp_ti->hblank_lo = ti.hblank_lo;
-		dp_ti->hsync_offset_hi = ti.hsync_offset_hi;
-		dp_ti->hsync_offset_lo = ti.hsync_offset_lo;
-		dp_ti->hsync_pulse_width_hi = ti.hsync_pulse_width_hi;
-		dp_ti->hsync_pulse_width_lo = ti.hsync_pulse_width_lo;
-		dp_ti->vactive_hi = ti.vactive_hi;
-		dp_ti->vactive_lo = ti.vactive_lo;
-		dp_ti->vblank_hi = ti.vblank_hi;
-		dp_ti->vblank_lo = ti.vblank_lo;
-		dp_ti->vsync_offset_hi = ti.vsync_offset_hi;
-		dp_ti->vsync_offset_lo = ti.vsync_offset_lo;
-		dp_ti->vsync_pulse_width_hi = ti.vsync_pulse_width_hi;
-		dp_ti->vsync_pulse_width_lo = ti.vsync_pulse_width_lo;
-
-		/* Move the MIPI_Display_Descriptor data from GCT to dev priv */
-		dev_priv->gct_data.Panel_MIPI_Display_Descriptor =
-							*((u8 *)pGCT + 0x0d);
-		dev_priv->gct_data.Panel_MIPI_Display_Descriptor |=
-						(*((u8 *)pGCT + 0x0e)) << 8;
-		break;
-	default:
-		dev_err(dev->dev, "Unknown revision of GCT!\n");
-		vbt->size = 0;
-	}
-=======
 	if (!addr)
 		goto out;
 
@@ -496,16 +320,11 @@ out:
 		dev_err(dev->dev, "Unable to read GCT!");
 	else
 		dev_priv->has_gct = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mid_chip_setup(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mid_get_fuse_settings(dev);
 	mid_get_vbt_data(dev_priv);
 	mid_get_pci_revID(dev_priv);

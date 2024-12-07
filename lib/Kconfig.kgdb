@@ -1,17 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HAVE_ARCH_KGDB
 	bool
 
-<<<<<<< HEAD
-menuconfig KGDB
-	bool "KGDB: kernel debugger"
-	depends on HAVE_ARCH_KGDB
-	depends on DEBUG_KERNEL && EXPERIMENTAL
-=======
 # set if architecture has the its kgdb_arch_handle_qxfer_pkt
 # function to enable gdb stub to address XML packet sent from GDB.
 config HAVE_ARCH_KGDB_QXFER_PKT
@@ -21,7 +12,6 @@ menuconfig KGDB
 	bool "KGDB: kernel debugger"
 	depends on HAVE_ARCH_KGDB
 	depends on DEBUG_KERNEL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you say Y here, it will be possible to remotely debug the
 	  kernel using gdb.  It is recommended but not required, that
@@ -29,17 +19,11 @@ menuconfig KGDB
 	  CONFIG_FRAME_POINTER to aid in producing more reliable stack
 	  backtraces in the external debugger.  Documentation of
 	  kernel debugger is available at http://kgdb.sourceforge.net
-<<<<<<< HEAD
-	  as well as in DocBook form in Documentation/DocBook/.  If
-=======
 	  as well as in Documentation/dev-tools/kgdb.rst.  If
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  unsure, say N.
 
 if KGDB
 
-<<<<<<< HEAD
-=======
 config KGDB_HONOUR_BLOCKLIST
 	bool "KGDB: use kprobe blocklist to prohibit unsafe breakpoints"
 	depends on HAVE_KPROBES
@@ -55,15 +39,11 @@ config KGDB_HONOUR_BLOCKLIST
 
 	  If unsure, say Y.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config KGDB_SERIAL_CONSOLE
 	tristate "KGDB: use kgdb over the serial console"
 	select CONSOLE_POLL
 	select MAGIC_SYSRQ
-<<<<<<< HEAD
-=======
 	depends on TTY && VT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	help
 	  Share a serial console with kgdb. Sysrq-g must be used
@@ -104,15 +84,9 @@ config KGDB_LOW_LEVEL_TRAP
        depends on X86 || MIPS
        default n
        help
-<<<<<<< HEAD
-         This will add an extra call back to kgdb for the breakpoint
-         exception handler on which will will allow kgdb to step
-         through a notify handler.
-=======
 	 This will add an extra call back to kgdb for the breakpoint
 	 exception handler which will allow kgdb to step through a
 	 notify handler.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config KGDB_KDB
 	bool "KGDB_KDB: include kdb frontend for kgdb"
@@ -120,11 +94,6 @@ config KGDB_KDB
 	help
 	  KDB frontend for kernel
 
-<<<<<<< HEAD
-config KDB_KEYBOARD
-	bool "KGDB_KDB: keyboard as input device"
-	depends on VT && KGDB_KDB
-=======
 config KDB_DEFAULT_ENABLE
 	hex "KDB: Select kdb command functions to be enabled by default"
 	depends on KGDB_KDB
@@ -153,13 +122,10 @@ config KDB_DEFAULT_ENABLE
 config KDB_KEYBOARD
 	bool "KGDB_KDB: keyboard as input device"
 	depends on VT && KGDB_KDB && !PARISC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	help
 	  KDB can use a PS/2 type keyboard for an input device
 
-<<<<<<< HEAD
-=======
 config KDB_CONTINUE_CATASTROPHIC
 	int "KDB: continue after catastrophic errors"
 	depends on KGDB_KDB
@@ -196,5 +162,4 @@ config ARCH_HAS_EARLY_DEBUG
 	  places you might or might not end up being able to use kgdb
 	  depending on exactly how far along the architecture has initted.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # KGDB

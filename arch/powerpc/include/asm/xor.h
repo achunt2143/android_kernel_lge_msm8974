@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-#include <asm-generic/xor.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  *
@@ -48,4 +45,3 @@ do {							\
 } while (0)
 
 #endif /* _ASM_POWERPC_XOR_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

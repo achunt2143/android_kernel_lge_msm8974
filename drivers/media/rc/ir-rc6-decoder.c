@@ -1,22 +1,7 @@
-<<<<<<< HEAD
-/* ir-rc6-decoder.c - A decoder for the RC6 IR protocol
- *
- * Copyright (C) 2010 by David Härdeman <david@hardeman.nu>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* ir-rc6-decoder.c - A decoder for the RC6 IR protocol
  *
  * Copyright (C) 2010 by David Härdeman <david@hardeman.nu>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "rc-core-priv.h"
@@ -30,11 +15,7 @@
  * RC6-6A-32	(MCE version with toggle bit in body)
  */
 
-<<<<<<< HEAD
-#define RC6_UNIT		444444	/* nanosecs */
-=======
 #define RC6_UNIT		444	/* microseconds */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RC6_HEADER_NBITS	4	/* not including toggle bit */
 #define RC6_0_NBITS		16
 #define RC6_6A_32_NBITS		32
@@ -51,11 +32,8 @@
 #define RC6_6A_MCE_TOGGLE_MASK	0x8000	/* for the body bits */
 #define RC6_6A_LCC_MASK		0xffff0000 /* RC6-6A-32 long customer code mask */
 #define RC6_6A_MCE_CC		0x800f0000 /* MCE customer code */
-<<<<<<< HEAD
-=======
 #define RC6_6A_ZOTAC_CC		0x80340000 /* Zotac customer code */
 #define RC6_6A_KATHREIN_CC	0x80460000 /* Kathrein RCU-676 customer code */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CHAR_BIT
 #define CHAR_BIT 8	/* Normally in <limits.h> */
 #endif
@@ -86,11 +64,7 @@ static enum rc6_mode rc6_mode(struct rc6_dec *data)
 	case 6:
 		if (!data->toggle)
 			return RC6_MODE_6A;
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return RC6_MODE_UNKNOWN;
 	}
@@ -108,19 +82,10 @@ static int ir_rc6_decode(struct rc_dev *dev, struct ir_raw_event ev)
 	struct rc6_dec *data = &dev->raw->rc6;
 	u32 scancode;
 	u8 toggle;
-<<<<<<< HEAD
-
-	if (!(dev->raw->enabled_protocols & RC_TYPE_RC6))
-		return 0;
-
-	if (!is_timing_event(ev)) {
-		if (ev.reset)
-=======
 	enum rc_proto protocol;
 
 	if (!is_timing_event(ev)) {
 		if (ev.overflow)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			data->state = STATE_INACTIVE;
 		return 0;
 	}
@@ -129,13 +94,8 @@ static int ir_rc6_decode(struct rc_dev *dev, struct ir_raw_event ev)
 		goto out;
 
 again:
-<<<<<<< HEAD
-	IR_dprintk(2, "RC6 decode started at state %i (%uus %s)\n",
-		   data->state, TO_US(ev.duration), TO_STR(ev.pulse));
-=======
 	dev_dbg(&dev->dev, "RC6 decode started at state %i (%uus %s)\n",
 		data->state, ev.duration, TO_STR(ev.pulse));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!geq_margin(ev.duration, RC6_UNIT, RC6_UNIT / 2))
 		return 0;
@@ -179,12 +139,6 @@ again:
 		return 0;
 
 	case STATE_HEADER_BIT_END:
-<<<<<<< HEAD
-		if (!is_transition(&ev, &dev->raw->prev_ev))
-			break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (data->count == RC6_HEADER_NBITS)
 			data->state = STATE_TOGGLE_START;
 		else
@@ -202,17 +156,8 @@ again:
 		return 0;
 
 	case STATE_TOGGLE_END:
-<<<<<<< HEAD
-		if (!is_transition(&ev, &dev->raw->prev_ev) ||
-		    !geq_margin(ev.duration, RC6_TOGGLE_END, RC6_UNIT / 2))
-			break;
-
-		if (!(data->header & RC6_STARTBIT_MASK)) {
-			IR_dprintk(1, "RC6 invalid start bit\n");
-=======
 		if (!(data->header & RC6_STARTBIT_MASK)) {
 			dev_dbg(&dev->dev, "RC6 invalid start bit\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -229,11 +174,7 @@ again:
 			data->wanted_bits = RC6_6A_NBITS;
 			break;
 		default:
-<<<<<<< HEAD
-			IR_dprintk(1, "RC6 unknown mode\n");
-=======
 			dev_dbg(&dev->dev, "RC6 unknown mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 		goto again;
@@ -256,12 +197,6 @@ again:
 		break;
 
 	case STATE_BODY_BIT_END:
-<<<<<<< HEAD
-		if (!is_transition(&ev, &dev->raw->prev_ev))
-			break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (data->count == data->wanted_bits)
 			data->state = STATE_FINISHED;
 		else
@@ -278,14 +213,6 @@ again:
 		case RC6_MODE_0:
 			scancode = data->body;
 			toggle = data->toggle;
-<<<<<<< HEAD
-			IR_dprintk(1, "RC6(0) scancode 0x%04x (toggle: %u)\n",
-				   scancode, toggle);
-			break;
-		case RC6_MODE_6A:
-			if (data->count > CHAR_BIT * sizeof data->body) {
-				IR_dprintk(1, "RC6 too many (%u) data bits\n",
-=======
 			protocol = RC_PROTO_RC6_0;
 			dev_dbg(&dev->dev, "RC6(0) scancode 0x%04x (toggle: %u)\n",
 				scancode, toggle);
@@ -294,31 +221,11 @@ again:
 		case RC6_MODE_6A:
 			if (data->count > CHAR_BIT * sizeof data->body) {
 				dev_dbg(&dev->dev, "RC6 too many (%u) data bits\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					data->count);
 				goto out;
 			}
 
 			scancode = data->body;
-<<<<<<< HEAD
-			if (data->count == RC6_6A_32_NBITS &&
-					(scancode & RC6_6A_LCC_MASK) == RC6_6A_MCE_CC) {
-				/* MCE RC */
-				toggle = (scancode & RC6_6A_MCE_TOGGLE_MASK) ? 1 : 0;
-				scancode &= ~RC6_6A_MCE_TOGGLE_MASK;
-			} else {
-				toggle = 0;
-			}
-			IR_dprintk(1, "RC6(6A) scancode 0x%08x (toggle: %u)\n",
-				   scancode, toggle);
-			break;
-		default:
-			IR_dprintk(1, "RC6 unknown mode\n");
-			goto out;
-		}
-
-		rc_keydown(dev, scancode, toggle);
-=======
 			switch (data->count) {
 			case 20:
 				protocol = RC_PROTO_RC6_6A_20;
@@ -357,28 +264,17 @@ again:
 		}
 
 		rc_keydown(dev, protocol, scancode, toggle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data->state = STATE_INACTIVE;
 		return 0;
 	}
 
 out:
-<<<<<<< HEAD
-	IR_dprintk(1, "RC6 decode failed at state %i (%uus %s)\n",
-		   data->state, TO_US(ev.duration), TO_STR(ev.pulse));
-=======
 	dev_dbg(&dev->dev, "RC6 decode failed at state %i (%uus %s)\n",
 		data->state, ev.duration, TO_STR(ev.pulse));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->state = STATE_INACTIVE;
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static struct ir_raw_handler rc6_handler = {
-	.protocols	= RC_TYPE_RC6,
-	.decode		= ir_rc6_decode,
-=======
 static const struct ir_raw_timings_manchester ir_rc6_timings[4] = {
 	{
 		.leader_pulse		= RC6_PREFIX_PULSE,
@@ -488,7 +384,6 @@ static struct ir_raw_handler rc6_handler = {
 	.encode		= ir_rc6_encode,
 	.carrier	= 36000,
 	.min_timeout	= RC6_SUFFIX_SPACE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ir_rc6_decode_init(void)

@@ -1,26 +1,13 @@
-<<<<<<< HEAD
-/* (C) 1999 Jérôme de Vivie <devivie@info.enserb.u-bordeaux.fr>
- * (C) 1999 Hervé Eychenne <eychenne@info.enserb.u-bordeaux.fr>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* (C) 1999 Jérôme de Vivie <devivie@info.enserb.u-bordeaux.fr>
  * (C) 1999 Hervé Eychenne <eychenne@info.enserb.u-bordeaux.fr>
  * (C) 2006-2012 Patrick McHardy <kaber@trash.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-#include <linux/spinlock.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 
 #include <linux/netfilter/x_tables.h>
@@ -28,11 +15,7 @@
 
 struct xt_limit_priv {
 	unsigned long prev;
-<<<<<<< HEAD
-	uint32_t credit;
-=======
 	u32 credit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 MODULE_LICENSE("GPL");
@@ -45,11 +28,6 @@ MODULE_ALIAS("ip6t_limit");
  * see net/sched/sch_tbf.c in the linux source tree
  */
 
-<<<<<<< HEAD
-static DEFINE_SPINLOCK(limit_lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Rusty: This is my (non-mathematically-inclined) understanding of
    this algorithm.  The `average rate' in jiffies becomes your initial
    amount of credit `credit' and the most credit you can ever have
@@ -63,11 +41,7 @@ static DEFINE_SPINLOCK(limit_lock);
 
    See Alexey's formal explanation in net/sched/sch_tbf.c.
 
-<<<<<<< HEAD
-   To get the maxmum range, we multiply by this factor (ie. you get N
-=======
    To get the maximum range, we multiply by this factor (ie. you get N
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
    credits per jiffy).  We want to allow a rate as low as 1 per day
    (slowest userspace tool allows), which means
    CREDITS_PER_JIFFY*HZ*60*60*24 < 2^32. ie. */
@@ -90,24 +64,6 @@ limit_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	const struct xt_rateinfo *r = par->matchinfo;
 	struct xt_limit_priv *priv = r->master;
-<<<<<<< HEAD
-	unsigned long now = jiffies;
-
-	spin_lock_bh(&limit_lock);
-	priv->credit += (now - xchg(&priv->prev, now)) * CREDITS_PER_JIFFY;
-	if (priv->credit > r->credit_cap)
-		priv->credit = r->credit_cap;
-
-	if (priv->credit >= r->cost) {
-		/* We're not limited. */
-		priv->credit -= r->cost;
-		spin_unlock_bh(&limit_lock);
-		return true;
-	}
-
-	spin_unlock_bh(&limit_lock);
-	return false;
-=======
 	unsigned long now;
 	u32 old_credit, new_credit, credit_increase = 0;
 	bool ret;
@@ -133,7 +89,6 @@ limit_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	} while (cmpxchg(&priv->credit, old_credit, new_credit) != old_credit);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Precision saver. */
@@ -155,13 +110,8 @@ static int limit_mt_check(const struct xt_mtchk_param *par)
 	/* Check for overflow. */
 	if (r->burst == 0
 	    || user2credits(r->avg * r->burst) < user2credits(r->avg)) {
-<<<<<<< HEAD
-		pr_info("Overflow, try lower: %u/%u\n",
-			r->avg, r->burst);
-=======
 		pr_info_ratelimited("Overflow, try lower: %u/%u\n",
 				    r->avg, r->burst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	}
 
@@ -179,10 +129,7 @@ static int limit_mt_check(const struct xt_mtchk_param *par)
 		r->credit_cap = priv->credit; /* Credits full. */
 		r->cost = user2credits(r->avg);
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -193,11 +140,7 @@ static void limit_mt_destroy(const struct xt_mtdtor_param *par)
 	kfree(info->master);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct compat_xt_rateinfo {
 	u_int32_t avg;
 	u_int32_t burst;
@@ -239,11 +182,7 @@ static int limit_mt_compat_to_user(void __user *dst, const void *src)
 	};
 	return copy_to_user(dst, &cm, sizeof(cm)) ? -EFAULT : 0;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_COMPAT */
-=======
 #endif /* CONFIG_NETFILTER_XTABLES_COMPAT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct xt_match limit_mt_reg __read_mostly = {
 	.name             = "limit",
@@ -253,19 +192,12 @@ static struct xt_match limit_mt_reg __read_mostly = {
 	.checkentry       = limit_mt_check,
 	.destroy          = limit_mt_destroy,
 	.matchsize        = sizeof(struct xt_rateinfo),
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.compatsize       = sizeof(struct compat_xt_rateinfo),
 	.compat_from_user = limit_mt_compat_from_user,
 	.compat_to_user   = limit_mt_compat_to_user,
 #endif
-<<<<<<< HEAD
-=======
 	.usersize         = offsetof(struct xt_rateinfo, prev),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.me               = THIS_MODULE,
 };
 

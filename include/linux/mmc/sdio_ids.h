@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SDIO Classes, Interface Types, Manufacturer IDs, etc.
  */
@@ -27,13 +24,10 @@
 /*
  * Vendors and devices.  Sort key: vendor first, device next.
  */
-<<<<<<< HEAD
-=======
 
 #define SDIO_VENDOR_ID_STE			0x0020
 #define SDIO_DEVICE_ID_STE_CW1200		0x2280
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SDIO_VENDOR_ID_INTEL			0x0089
 #define SDIO_DEVICE_ID_INTEL_IWMC3200WIMAX	0x1402
 #define SDIO_DEVICE_ID_INTEL_IWMC3200WIFI	0x1403
@@ -42,12 +36,6 @@
 #define SDIO_DEVICE_ID_INTEL_IWMC3200BT		0x1406
 #define SDIO_DEVICE_ID_INTEL_IWMC3200WIMAX_2G5	0x1407
 
-<<<<<<< HEAD
-#define SDIO_VENDOR_ID_MARVELL			0x02df
-#define SDIO_DEVICE_ID_MARVELL_LIBERTAS		0x9103
-#define SDIO_DEVICE_ID_MARVELL_8688WLAN		0x9104
-#define SDIO_DEVICE_ID_MARVELL_8688BT		0x9105
-=======
 #define SDIO_VENDOR_ID_CGUYS			0x0092
 #define SDIO_DEVICE_ID_CGUYS_EW_CG1102GC	0x0004
 
@@ -136,18 +124,12 @@
 #define SDIO_DEVICE_ID_REALTEK_RTW8723DS_2ANT	0xd723
 #define SDIO_DEVICE_ID_REALTEK_RTW8723DS_1ANT	0xd724
 #define SDIO_DEVICE_ID_REALTEK_RTW8821DS	0xd821
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SDIO_VENDOR_ID_SIANO			0x039a
 #define SDIO_DEVICE_ID_SIANO_NOVA_B0		0x0201
 #define SDIO_DEVICE_ID_SIANO_NICE		0x0202
 #define SDIO_DEVICE_ID_SIANO_VEGA_A0		0x0300
 #define SDIO_DEVICE_ID_SIANO_VENICE		0x0301
-<<<<<<< HEAD
-#define SDIO_DEVICE_ID_SIANO_NOVA_A0		0x1100
-#define SDIO_DEVICE_ID_SIANO_STELLAR 		0x5347
-
-=======
 #define SDIO_DEVICE_ID_SIANO_MING		0x0302
 #define SDIO_DEVICE_ID_SIANO_PELE		0x0500
 #define SDIO_DEVICE_ID_SIANO_RIO		0x0600
@@ -163,5 +145,4 @@
 #define SDIO_VENDOR_ID_TI_WL1251		0x104c
 #define SDIO_DEVICE_ID_TI_WL1251		0x9066
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LINUX_MMC_SDIO_IDS_H */

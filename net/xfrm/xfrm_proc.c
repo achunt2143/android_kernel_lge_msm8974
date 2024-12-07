@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xfrm_proc.c
  *
  * Copyright (C)2006-2007 USAGI/WIDE Project
  *
  * Authors:	Masahide NAKAMURA <nakam@linux-ipv6.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -50,45 +39,13 @@ static const struct snmp_mib xfrm_mib_list[] = {
 	SNMP_MIB_ITEM("XfrmOutPolDead", LINUX_MIB_XFRMOUTPOLDEAD),
 	SNMP_MIB_ITEM("XfrmOutPolError", LINUX_MIB_XFRMOUTPOLERROR),
 	SNMP_MIB_ITEM("XfrmFwdHdrError", LINUX_MIB_XFRMFWDHDRERROR),
-<<<<<<< HEAD
-=======
 	SNMP_MIB_ITEM("XfrmOutStateInvalid", LINUX_MIB_XFRMOUTSTATEINVALID),
 	SNMP_MIB_ITEM("XfrmAcquireError", LINUX_MIB_XFRMACQUIREERROR),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_SENTINEL
 };
 
 static int xfrm_statistics_seq_show(struct seq_file *seq, void *v)
 {
-<<<<<<< HEAD
-	struct net *net = seq->private;
-	int i;
-	for (i=0; xfrm_mib_list[i].name; i++)
-		seq_printf(seq, "%-24s\t%lu\n", xfrm_mib_list[i].name,
-			   snmp_fold_field((void __percpu **)
-					   net->mib.xfrm_statistics,
-					   xfrm_mib_list[i].entry));
-	return 0;
-}
-
-static int xfrm_statistics_seq_open(struct inode *inode, struct file *file)
-{
-	return single_open_net(inode, file, xfrm_statistics_seq_show);
-}
-
-static const struct file_operations xfrm_statistics_seq_fops = {
-	.owner	 = THIS_MODULE,
-	.open	 = xfrm_statistics_seq_open,
-	.read	 = seq_read,
-	.llseek	 = seq_lseek,
-	.release = single_release_net,
-};
-
-int __net_init xfrm_proc_init(struct net *net)
-{
-	if (!proc_net_fops_create(net, "xfrm_stat", S_IRUGO,
-				  &xfrm_statistics_seq_fops))
-=======
 	unsigned long buff[LINUX_MIB_XFRMMAX];
 	struct net *net = seq->private;
 	int i;
@@ -109,16 +66,11 @@ int __net_init xfrm_proc_init(struct net *net)
 {
 	if (!proc_create_net_single("xfrm_stat", 0444, net->proc_net,
 			 xfrm_statistics_seq_show, NULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	return 0;
 }
 
 void xfrm_proc_fini(struct net *net)
 {
-<<<<<<< HEAD
-	proc_net_remove(net, "xfrm_stat");
-=======
 	remove_proc_entry("xfrm_stat", net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

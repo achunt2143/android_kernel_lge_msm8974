@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/mfd/ucb1x00-assabet.c
  *
  *  Copyright (C) 2001-2003 Russell King, All Rights Reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  We handle the machine-specific bits of the UCB1x00 driver here.
  */
 #include <linux/module.h>
@@ -38,11 +28,7 @@ static ssize_t name##_show(struct device *dev, struct device_attribute *attr, \
 	ucb1x00_adc_disable(ucb);				\
 	return sprintf(buf, "%d\n", val);			\
 }								\
-<<<<<<< HEAD
-static DEVICE_ATTR(name,0444,name##_show,NULL)
-=======
 static DEVICE_ATTR_RO(name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 UCB1X00_ATTR(vbatt, UCB_ADC_INP_AD1);
 UCB1X00_ATTR(vcharger, UCB_ADC_INP_AD0);

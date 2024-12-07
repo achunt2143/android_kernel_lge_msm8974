@@ -1,46 +1,3 @@
-<<<<<<< HEAD
-/*
- *
- * Copyright (c) 2003 by Karsten Wiese <annabellesgarden@yahoo.de>
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- */
-
-enum E_In84{
-	eFader0 = 0,
-	eFader1,
-	eFader2,
-	eFader3,
-	eFader4,
-	eFader5,
-	eFader6,
-	eFader7,
-	eFaderM,
-	eTransport,
-	eModifier = 10,
-	eFilterSelect,
-	eSelect,
-	eMute,
-
-	eSwitch   = 15,
-	eWheelGain,
-	eWheelFreq,
-	eWheelQ,
-	eWheelPan,
-	eWheel    = 20
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  *
@@ -69,7 +26,6 @@ enum E_IN84 {
 	E_WHEEL_Q,
 	E_WHEEL_PAN,
 	E_WHEEL    = 20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define T_RECORD   1
@@ -83,39 +39,6 @@ enum E_IN84 {
 
 
 struct us428_ctls {
-<<<<<<< HEAD
-	unsigned char   Fader[9];
-	unsigned char 	Transport;
-	unsigned char 	Modifier;
-	unsigned char 	FilterSelect;
-	unsigned char 	Select;
-	unsigned char   Mute;
-	unsigned char   UNKNOWN;
-	unsigned char   Switch;	     
-	unsigned char   Wheel[5];
-};
-
-struct us428_setByte {
-	unsigned char Offset,
-		Value;
-};
-
-enum {
-	eLT_Volume = 0,
-	eLT_Light
-};
-
-struct usX2Y_volume {
-	unsigned char Channel,
-		LH,
-		LL,
-		RH,
-		RL;
-};
-
-struct us428_lights {
-	struct us428_setByte Light[7];
-=======
 	unsigned char	fader[9];
 	unsigned char	transport;
 	unsigned char	modifier;
@@ -147,32 +70,16 @@ struct usx2y_volume {
 
 struct us428_lights {
 	struct us428_set_byte light[7];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct us428_p4out {
 	char type;
 	union {
-<<<<<<< HEAD
-		struct usX2Y_volume vol;
-=======
 		struct usx2y_volume vol;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct us428_lights lights;
 	} val;
 };
 
-<<<<<<< HEAD
-#define N_us428_ctl_BUFS 16
-#define N_us428_p4out_BUFS 16
-struct us428ctls_sharedmem{
-	struct us428_ctls	CtlSnapShot[N_us428_ctl_BUFS];
-	int			CtlSnapShotDiffersAt[N_us428_ctl_BUFS];
-	int			CtlSnapShotLast, CtlSnapShotRed;
-	struct us428_p4out	p4out[N_us428_p4out_BUFS];
-	int			p4outLast, p4outSent;
-};
-=======
 #define N_US428_CTL_BUFS 16
 #define N_US428_P4OUT_BUFS 16
 struct us428ctls_sharedmem {
@@ -184,4 +91,3 @@ struct us428ctls_sharedmem {
 };
 
 #define US428_SHAREDMEM_PAGES	PAGE_ALIGN(sizeof(struct us428ctls_sharedmem))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

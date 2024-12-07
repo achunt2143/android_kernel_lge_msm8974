@@ -27,13 +27,6 @@
 /*
  * Authors: Thomas Hellström <thomas-at-tungstengraphics-dot-com>
  */
-<<<<<<< HEAD
-
-#include <linux/export.h>
-#include "drmP.h"
-
-#if defined(CONFIG_X86)
-=======
 #include <linux/cc_platform.h>
 #include <linux/export.h>
 #include <linux/highmem.h>
@@ -54,28 +47,19 @@
  * sfence to avoid ordering issues.  For drm_clflush_page this fencing happens
  * in the caller.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 drm_clflush_page(struct page *page)
 {
 	uint8_t *page_virtual;
 	unsigned int i;
-<<<<<<< HEAD
-=======
 	const int size = boot_cpu_data.x86_clflush_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(page == NULL))
 		return;
 
 	page_virtual = kmap_atomic(page);
-<<<<<<< HEAD
-	for (i = 0; i < PAGE_SIZE; i += boot_cpu_data.x86_clflush_size)
-		clflush(page_virtual + i);
-=======
 	for (i = 0; i < PAGE_SIZE; i += size)
 		clflushopt(page_virtual + i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kunmap_atomic(page_virtual);
 }
 
@@ -84,21 +68,6 @@ static void drm_cache_flush_clflush(struct page *pages[],
 {
 	unsigned long i;
 
-<<<<<<< HEAD
-	mb();
-	for (i = 0; i < num_pages; i++)
-		drm_clflush_page(*pages++);
-	mb();
-}
-
-static void
-drm_clflush_ipi_handler(void *null)
-{
-	wbinvd();
-}
-#endif
-
-=======
 	mb(); /*Full memory barrier used before so that CLFLUSH is ordered*/
 	for (i = 0; i < num_pages; i++)
 		drm_clflush_page(*pages++);
@@ -114,35 +83,22 @@ drm_clflush_ipi_handler(void *null)
  * Flush every data cache line entry that points to an address belonging
  * to a page in the array.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 drm_clflush_pages(struct page *pages[], unsigned long num_pages)
 {
 
 #if defined(CONFIG_X86)
-<<<<<<< HEAD
-	if (cpu_has_clflush) {
-=======
 	if (static_cpu_has(X86_FEATURE_CLFLUSH)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drm_cache_flush_clflush(pages, num_pages);
 		return;
 	}
 
-<<<<<<< HEAD
-	if (on_each_cpu(drm_clflush_ipi_handler, NULL, 1) != 0)
-		printk(KERN_ERR "Timed out waiting for cache flush.\n");
-
-#elif defined(__powerpc__)
-	unsigned long i;
-=======
 	if (wbinvd_on_all_cpus())
 		pr_err("Timed out waiting for cache flush\n");
 
 #elif defined(__powerpc__)
 	unsigned long i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < num_pages; i++) {
 		struct page *page = pages[i];
 		void *page_virtual;
@@ -156,13 +112,6 @@ drm_clflush_pages(struct page *pages[], unsigned long num_pages)
 		kunmap_atomic(page_virtual);
 	}
 #else
-<<<<<<< HEAD
-	printk(KERN_ERR "Architecture has no drm_cache.c support\n");
-	WARN_ON_ONCE(1);
-#endif
-}
-EXPORT_SYMBOL(drm_clflush_pages);
-=======
 	WARN_ONCE(1, "Architecture has no drm_cache.c support\n");
 #endif
 }
@@ -405,4 +354,3 @@ void drm_memcpy_init_early(void)
 {
 }
 #endif /* CONFIG_X86 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

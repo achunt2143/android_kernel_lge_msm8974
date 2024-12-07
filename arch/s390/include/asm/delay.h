@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- *  include/asm-s390/delay.h
- *
- *  S390 version
- *    Copyright (C) 1999 IBM Deutschland Entwicklung GmbH, IBM Corporation
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *  S390 version
  *    Copyright IBM Corp. 1999
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Martin Schwidefsky (schwidefsky@de.ibm.com)
  *
  *  Derived from "include/asm-i386/delay.h"
@@ -21,16 +13,6 @@
 #ifndef _S390_DELAY_H
 #define _S390_DELAY_H
 
-<<<<<<< HEAD
-void __ndelay(unsigned long long nsecs);
-void __udelay(unsigned long long usecs);
-void udelay_simple(unsigned long long usecs);
-void __delay(unsigned long loops);
-
-#define ndelay(n) __ndelay((unsigned long long) (n))
-#define udelay(n) __udelay((unsigned long long) (n))
-#define mdelay(n) __udelay((unsigned long long) (n) * 1000)
-=======
 void __ndelay(unsigned long nsecs);
 void __udelay(unsigned long usecs);
 void __delay(unsigned long loops);
@@ -38,6 +20,5 @@ void __delay(unsigned long loops);
 #define ndelay(n) __ndelay((unsigned long)(n))
 #define udelay(n) __udelay((unsigned long)(n))
 #define mdelay(n) __udelay((unsigned long)(n) * 1000)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* defined(_S390_DELAY_H) */

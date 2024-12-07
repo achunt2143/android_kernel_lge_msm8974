@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef BOARD_BCM963XX_H_
 #define BOARD_BCM963XX_H_
 
@@ -9,11 +6,7 @@
 #include <linux/gpio.h>
 #include <linux/leds.h>
 #include <bcm63xx_dev_enet.h>
-<<<<<<< HEAD
-#include <bcm63xx_dev_dsp.h>
-=======
 #include <bcm63xx_dev_usb_usbd.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * flash mapping
@@ -22,26 +15,6 @@
 #define BCM963XX_NVRAM_OFFSET		0x580
 
 /*
-<<<<<<< HEAD
- * nvram structure
- */
-struct bcm963xx_nvram {
-	u32	version;
-	u8	reserved1[256];
-	u8	name[16];
-	u32	main_tp_number;
-	u32	psi_size;
-	u32	mac_addr_count;
-	u8	mac_addr_base[6];
-	u8	reserved2[2];
-	u32	checksum_old;
-	u8	reserved3[720];
-	u32	checksum_high;
-};
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * board definition
  */
 struct board_info {
@@ -51,33 +24,18 @@ struct board_info {
 	/* enabled feature/device */
 	unsigned int	has_enet0:1;
 	unsigned int	has_enet1:1;
-<<<<<<< HEAD
-=======
 	unsigned int	has_enetsw:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int	has_pci:1;
 	unsigned int	has_pccard:1;
 	unsigned int	has_ohci0:1;
 	unsigned int	has_ehci0:1;
-<<<<<<< HEAD
-	unsigned int	has_dsp:1;
-=======
 	unsigned int	has_usbd:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int	has_uart0:1;
 	unsigned int	has_uart1:1;
 
 	/* ethernet config */
 	struct bcm63xx_enet_platform_data enet0;
 	struct bcm63xx_enet_platform_data enet1;
-<<<<<<< HEAD
-
-	/* DSP config */
-	struct bcm63xx_dsp_platform_data dsp;
-
-	/* GPIO LEDs */
-	struct gpio_led leds[5];
-=======
 	struct bcm63xx_enetsw_platform_data enetsw;
 
 	/* USB config */
@@ -91,7 +49,6 @@ struct board_info {
 
 	/* External PHY reset GPIO flags from gpio.h */
 	unsigned long ephy_reset_gpio_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif /* ! BOARD_BCM963XX_H_ */

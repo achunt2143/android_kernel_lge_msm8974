@@ -11,10 +11,6 @@
 #include <linux/delay.h>
 #include <linux/err.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
 #include <linux/platform_device.h>
@@ -393,11 +389,7 @@ static const struct i2c_algorithm sh7760_i2c_algo = {
  * iclk = mclk/(CDF + 1).  iclk must be < 20MHz.
  * scl = iclk/(SCGD*8 + 20).
  */
-<<<<<<< HEAD
-static int __devinit calc_CCR(unsigned long scl_hz)
-=======
 static int calc_CCR(unsigned long scl_hz)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct clk *mclk;
 	unsigned long mck, m1, dff, odff, iclk;
@@ -437,36 +429,22 @@ static int calc_CCR(unsigned long scl_hz)
 	return ((scgdm << 2) | cdfm);
 }
 
-<<<<<<< HEAD
-static int __devinit sh7760_i2c_probe(struct platform_device *pdev)
-=======
 static int sh7760_i2c_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sh7760_i2c_platdata *pd;
 	struct resource *res;
 	struct cami2c *id;
 	int ret;
 
-<<<<<<< HEAD
-	pd = pdev->dev.platform_data;
-=======
 	pd = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pd) {
 		dev_err(&pdev->dev, "no platform_data!\n");
 		ret = -ENODEV;
 		goto out0;
 	}
 
-<<<<<<< HEAD
-	id = kzalloc(sizeof(struct cami2c), GFP_KERNEL);
-	if (!id) {
-		dev_err(&pdev->dev, "no mem for private data\n");
-=======
 	id = kzalloc(sizeof(*id), GFP_KERNEL);
 	if (!id) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto out0;
 	}
@@ -492,13 +470,6 @@ static int sh7760_i2c_probe(struct platform_device *pdev)
 		goto out2;
 	}
 
-<<<<<<< HEAD
-	id->irq = platform_get_irq(pdev, 0);
-
-	id->adap.nr = pdev->id;
-	id->adap.algo = &sh7760_i2c_algo;
-	id->adap.class = I2C_CLASS_HWMON | I2C_CLASS_SPD;
-=======
 	ret = platform_get_irq(pdev, 0);
 	if (ret < 0)
 		goto out3;
@@ -507,7 +478,6 @@ static int sh7760_i2c_probe(struct platform_device *pdev)
 	id->adap.nr = pdev->id;
 	id->adap.algo = &sh7760_i2c_algo;
 	id->adap.class = I2C_CLASS_HWMON;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	id->adap.retries = 3;
 	id->adap.algo_data = id;
 	id->adap.dev.parent = &pdev->dev;
@@ -542,15 +512,8 @@ static int sh7760_i2c_probe(struct platform_device *pdev)
 	}
 
 	ret = i2c_add_numbered_adapter(&id->adap);
-<<<<<<< HEAD
-	if (ret < 0) {
-		dev_err(&pdev->dev, "reg adap failed: %d\n", ret);
-		goto out4;
-	}
-=======
 	if (ret < 0)
 		goto out4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(pdev, id);
 
@@ -572,11 +535,7 @@ out0:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit sh7760_i2c_remove(struct platform_device *pdev)
-=======
 static void sh7760_i2c_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cami2c *id = platform_get_drvdata(pdev);
 
@@ -586,27 +545,14 @@ static void sh7760_i2c_remove(struct platform_device *pdev)
 	release_resource(id->ioarea);
 	kfree(id->ioarea);
 	kfree(id);
-<<<<<<< HEAD
-	platform_set_drvdata(pdev, NULL);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver sh7760_i2c_drv = {
 	.driver	= {
 		.name	= SH7760_I2C_DEVNAME,
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= sh7760_i2c_probe,
-	.remove		= __devexit_p(sh7760_i2c_remove),
-=======
 	},
 	.probe		= sh7760_i2c_probe,
 	.remove_new	= sh7760_i2c_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(sh7760_i2c_drv);

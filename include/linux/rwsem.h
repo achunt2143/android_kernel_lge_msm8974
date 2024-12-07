@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* rwsem.h: R/W semaphores, public interface
  *
  * Written by David Howells (dhowells@redhat.com).
@@ -14,24 +11,6 @@
 #include <linux/linkage.h>
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/list.h>
-#include <linux/spinlock.h>
-
-#include <linux/atomic.h>
-
-struct rw_semaphore;
-
-#ifdef CONFIG_RWSEM_GENERIC_SPINLOCK
-#include <linux/rwsem-spinlock.h> /* use a generic implementation */
-#else
-/* All arch specific implementations share the same struct */
-struct rw_semaphore {
-	long			count;
-	raw_spinlock_t		wait_lock;
-	struct list_head	wait_list;
-=======
 #include <linux/list.h>
 #include <linux/spinlock.h>
 #include <linux/atomic.h>
@@ -82,42 +61,11 @@ struct rw_semaphore {
 #ifdef CONFIG_DEBUG_RWSEMS
 	void *magic;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 	struct lockdep_map	dep_map;
 #endif
 };
 
-<<<<<<< HEAD
-extern struct rw_semaphore *rwsem_down_read_failed(struct rw_semaphore *sem);
-extern struct rw_semaphore *rwsem_down_write_failed(struct rw_semaphore *sem);
-extern struct rw_semaphore *rwsem_wake(struct rw_semaphore *);
-extern struct rw_semaphore *rwsem_downgrade_wake(struct rw_semaphore *sem);
-
-/* Include the arch specific part */
-#include <asm/rwsem.h>
-
-/* In all implementations count != 0 means locked */
-static inline int rwsem_is_locked(struct rw_semaphore *sem)
-{
-	return sem->count != 0;
-}
-
-#endif
-
-/* Common initializer macros and functions */
-
-#ifdef CONFIG_DEBUG_LOCK_ALLOC
-# define __RWSEM_DEP_MAP_INIT(lockname) , .dep_map = { .name = #lockname }
-#else
-# define __RWSEM_DEP_MAP_INIT(lockname)
-#endif
-
-#define __RWSEM_INITIALIZER(name)			\
-	{ RWSEM_UNLOCKED_VALUE,				\
-	  __RAW_SPIN_LOCK_UNLOCKED(name.wait_lock),	\
-	  LIST_HEAD_INIT((name).wait_list)		\
-=======
 #define RWSEM_UNLOCKED_VALUE		0UL
 #define RWSEM_WRITER_LOCKED		(1UL << 0)
 #define __RWSEM_COUNT_INIT(name)	.count = ATOMIC_LONG_INIT(RWSEM_UNLOCKED_VALUE)
@@ -158,7 +106,6 @@ static inline void rwsem_assert_held_write_nolockdep(const struct rw_semaphore *
 	  .wait_lock = __RAW_SPIN_LOCK_UNLOCKED(name.wait_lock),\
 	  .wait_list = LIST_HEAD_INIT((name).wait_list),	\
 	  __RWSEM_DEBUG_INIT(name)				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  __RWSEM_DEP_MAP_INIT(name) }
 
 #define DECLARE_RWSEM(name) \
@@ -175,11 +122,6 @@ do {								\
 } while (0)
 
 /*
-<<<<<<< HEAD
- * lock for reading
- */
-extern void down_read(struct rw_semaphore *sem);
-=======
  * This is the same regardless of which rwsem implementation that is being used.
  * It is just a heuristic meant to be called by somebody already holding the
  * rwsem to see if somebody from an incompatible type is wanting access to the
@@ -269,7 +211,6 @@ static inline void rwsem_assert_held_write(const struct rw_semaphore *sem)
 extern void down_read(struct rw_semaphore *sem);
 extern int __must_check down_read_interruptible(struct rw_semaphore *sem);
 extern int __must_check down_read_killable(struct rw_semaphore *sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * trylock for reading -- returns 1 if successful, 0 if contention
@@ -280,10 +221,7 @@ extern int down_read_trylock(struct rw_semaphore *sem);
  * lock for writing
  */
 extern void down_write(struct rw_semaphore *sem);
-<<<<<<< HEAD
-=======
 extern int __must_check down_write_killable(struct rw_semaphore *sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * trylock for writing -- returns 1 if successful, 0 if contention
@@ -300,8 +238,6 @@ extern void up_read(struct rw_semaphore *sem);
  */
 extern void up_write(struct rw_semaphore *sem);
 
-<<<<<<< HEAD
-=======
 DEFINE_GUARD(rwsem_read, struct rw_semaphore *, down_read(_T), up_read(_T))
 DEFINE_GUARD_COND(rwsem_read, _try, down_read_trylock(_T))
 DEFINE_GUARD_COND(rwsem_read, _intr, down_read_interruptible(_T) == 0)
@@ -309,7 +245,6 @@ DEFINE_GUARD_COND(rwsem_read, _intr, down_read_interruptible(_T) == 0)
 DEFINE_GUARD(rwsem_write, struct rw_semaphore *, down_write(_T), up_write(_T))
 DEFINE_GUARD_COND(rwsem_write, _try, down_write_trylock(_T))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * downgrade write lock to read lock
  */
@@ -327,15 +262,6 @@ extern void downgrade_write(struct rw_semaphore *sem);
  * static then another method for expressing nested locking is
  * the explicit definition of lock class keys and the use of
  * lockdep_set_class() at lock initialization time.
-<<<<<<< HEAD
- * See Documentation/lockdep-design.txt for more details.)
- */
-extern void down_read_nested(struct rw_semaphore *sem, int subclass);
-extern void down_write_nested(struct rw_semaphore *sem, int subclass);
-#else
-# define down_read_nested(sem, subclass)		down_read(sem)
-# define down_write_nested(sem, subclass)	down_write(sem)
-=======
  * See Documentation/locking/lockdep-design.rst for more details.)
  */
 extern void down_read_nested(struct rw_semaphore *sem, int subclass);
@@ -366,7 +292,6 @@ extern void up_read_non_owner(struct rw_semaphore *sem);
 # define down_write_killable_nested(sem, subclass)	down_write_killable(sem)
 # define down_read_non_owner(sem)		down_read(sem)
 # define up_read_non_owner(sem)			up_read(sem)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* _LINUX_RWSEM_H */

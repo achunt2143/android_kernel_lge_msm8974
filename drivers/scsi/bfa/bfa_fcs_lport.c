@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "bfad_drv.h"
@@ -34,8 +16,6 @@
 
 BFA_TRC_FILE(FCS, PORT);
 
-<<<<<<< HEAD
-=======
 /*
  * ALPA to LIXA bitmap mapping
  *
@@ -64,7 +44,6 @@ static const u8 loop_alpa_map[] = {
 	0xDA, 0xDC, 0xE0, 0xE1, 0xE2, 0xE4, 0xE8, 0xEF, /* Word 3 Bits 07..00 */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void     bfa_fcs_lport_send_ls_rjt(struct bfa_fcs_lport_s *port,
 					 struct fchs_s *rx_fchs, u8 reason_code,
 					 u8 reason_code_expl);
@@ -93,40 +72,15 @@ static void	bfa_fcs_lport_n2n_init(struct bfa_fcs_lport_s *port);
 static void	bfa_fcs_lport_n2n_online(struct bfa_fcs_lport_s *port);
 static void	bfa_fcs_lport_n2n_offline(struct bfa_fcs_lport_s *port);
 
-<<<<<<< HEAD
-=======
 static void	bfa_fcs_lport_loop_init(struct bfa_fcs_lport_s *port);
 static void	bfa_fcs_lport_loop_online(struct bfa_fcs_lport_s *port);
 static void	bfa_fcs_lport_loop_offline(struct bfa_fcs_lport_s *port);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct {
 	void		(*init) (struct bfa_fcs_lport_s *port);
 	void		(*online) (struct bfa_fcs_lport_s *port);
 	void		(*offline) (struct bfa_fcs_lport_s *port);
 } __port_action[] = {
-<<<<<<< HEAD
-	{
-	bfa_fcs_lport_unknown_init, bfa_fcs_lport_unknown_online,
-			bfa_fcs_lport_unknown_offline}, {
-	bfa_fcs_lport_fab_init, bfa_fcs_lport_fab_online,
-			bfa_fcs_lport_fab_offline}, {
-	bfa_fcs_lport_n2n_init, bfa_fcs_lport_n2n_online,
-			bfa_fcs_lport_n2n_offline},
-	};
-
-/*
- *  fcs_port_sm FCS logical port state machine
- */
-
-enum bfa_fcs_lport_event {
-	BFA_FCS_PORT_SM_CREATE = 1,
-	BFA_FCS_PORT_SM_ONLINE = 2,
-	BFA_FCS_PORT_SM_OFFLINE = 3,
-	BFA_FCS_PORT_SM_DELETE = 4,
-	BFA_FCS_PORT_SM_DELRPORT = 5,
-	BFA_FCS_PORT_SM_STOP = 6,
-=======
 	[BFA_FCS_FABRIC_UNKNOWN] = {
 		.init = bfa_fcs_lport_unknown_init,
 		.online = bfa_fcs_lport_unknown_online,
@@ -147,7 +101,6 @@ enum bfa_fcs_lport_event {
 		.online = bfa_fcs_lport_loop_online,
 		.offline = bfa_fcs_lport_loop_offline
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void     bfa_fcs_lport_sm_uninit(struct bfa_fcs_lport_s *port,
@@ -203,11 +156,8 @@ bfa_fcs_lport_sm_init(struct bfa_fcs_lport_s *port,
 		/* If vport - send completion call back */
 		if (port->vport)
 			bfa_fcs_vport_stop_comp(port->vport);
-<<<<<<< HEAD
-=======
 		else
 			bfa_wc_down(&(port->fabric->stop_wc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFA_FCS_PORT_SM_OFFLINE:
@@ -243,11 +193,8 @@ bfa_fcs_lport_sm_online(
 			/* If vport - send completion call back */
 			if (port->vport)
 				bfa_fcs_vport_stop_comp(port->vport);
-<<<<<<< HEAD
-=======
 			else
 				bfa_wc_down(&(port->fabric->stop_wc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			bfa_sm_set_state(port, bfa_fcs_lport_sm_stopping);
 			list_for_each_safe(qe, qen, &port->rport_q) {
@@ -304,11 +251,8 @@ bfa_fcs_lport_sm_offline(
 			/* If vport - send completion call back */
 			if (port->vport)
 				bfa_fcs_vport_stop_comp(port->vport);
-<<<<<<< HEAD
-=======
 			else
 				bfa_wc_down(&(port->fabric->stop_wc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			bfa_sm_set_state(port, bfa_fcs_lport_sm_stopping);
 			list_for_each_safe(qe, qen, &port->rport_q) {
@@ -354,11 +298,8 @@ bfa_fcs_lport_sm_stopping(struct bfa_fcs_lport_s *port,
 			/* If vport - send completion call back */
 			if (port->vport)
 				bfa_fcs_vport_stop_comp(port->vport);
-<<<<<<< HEAD
-=======
 			else
 				bfa_wc_down(&(port->fabric->stop_wc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -432,11 +373,7 @@ bfa_fcs_lport_send_ls_rjt(struct bfa_fcs_lport_s *port, struct fchs_s *rx_fchs,
 	bfa_trc(port->fcs, rx_fchs->d_id);
 	bfa_trc(port->fcs, rx_fchs->s_id);
 
-<<<<<<< HEAD
-	fcxp = bfa_fcs_fcxp_alloc(port->fcs);
-=======
 	fcxp = bfa_fcs_fcxp_alloc(port->fcs, BFA_FALSE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fcxp)
 		return;
 
@@ -466,11 +403,7 @@ bfa_fcs_lport_send_fcgs_rjt(struct bfa_fcs_lport_s *port,
 	bfa_trc(port->fcs, rx_fchs->d_id);
 	bfa_trc(port->fcs, rx_fchs->s_id);
 
-<<<<<<< HEAD
-	fcxp = bfa_fcs_fcxp_alloc(port->fcs);
-=======
 	fcxp = bfa_fcs_fcxp_alloc(port->fcs, BFA_FALSE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fcxp)
 		return;
 
@@ -607,11 +540,7 @@ bfa_fcs_lport_echo(struct bfa_fcs_lport_s *port, struct fchs_s *rx_fchs,
 	bfa_trc(port->fcs, rx_fchs->s_id);
 	bfa_trc(port->fcs, rx_fchs->d_id);
 
-<<<<<<< HEAD
-	fcxp = bfa_fcs_fcxp_alloc(port->fcs);
-=======
 	fcxp = bfa_fcs_fcxp_alloc(port->fcs, BFA_FALSE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fcxp)
 		return;
 
@@ -656,11 +585,7 @@ bfa_fcs_lport_rnid(struct bfa_fcs_lport_s *port, struct fchs_s *rx_fchs,
 	bfa_trc(port->fcs, rx_fchs->d_id);
 	bfa_trc(port->fcs, rx_len);
 
-<<<<<<< HEAD
-	fcxp = bfa_fcs_fcxp_alloc(port->fcs);
-=======
 	fcxp = bfa_fcs_fcxp_alloc(port->fcs, BFA_FALSE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fcxp)
 		return;
 
@@ -724,11 +649,7 @@ bfa_fcs_lport_online_actions(struct bfa_fcs_lport_s *port)
 	__port_action[port->fabric->fab_type].online(port);
 
 	wwn2str(lpwwn_buf, bfa_fcs_lport_get_pwwn(port));
-<<<<<<< HEAD
-	BFA_LOG(KERN_INFO, bfad, bfa_log_level,
-=======
 	BFA_LOG(KERN_WARNING, bfad, bfa_log_level,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Logical port online: WWN = %s Role = %s\n",
 		lpwwn_buf, "Initiator");
 	bfa_fcs_lport_aen_post(port, BFA_LPORT_AEN_ONLINE);
@@ -751,20 +672,12 @@ bfa_fcs_lport_offline_actions(struct bfa_fcs_lport_s *port)
 	wwn2str(lpwwn_buf, bfa_fcs_lport_get_pwwn(port));
 	if (bfa_sm_cmp_state(port->fabric,
 			bfa_fcs_fabric_sm_online) == BFA_TRUE) {
-<<<<<<< HEAD
-		BFA_LOG(KERN_ERR, bfad, bfa_log_level,
-=======
 		BFA_LOG(KERN_WARNING, bfad, bfa_log_level,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Logical port lost fabric connectivity: WWN = %s Role = %s\n",
 		lpwwn_buf, "Initiator");
 		bfa_fcs_lport_aen_post(port, BFA_LPORT_AEN_DISCONNECT);
 	} else {
-<<<<<<< HEAD
-		BFA_LOG(KERN_INFO, bfad, bfa_log_level,
-=======
 		BFA_LOG(KERN_WARNING, bfad, bfa_log_level,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Logical port taken offline: WWN = %s Role = %s\n",
 		lpwwn_buf, "Initiator");
 		bfa_fcs_lport_aen_post(port, BFA_LPORT_AEN_OFFLINE);
@@ -804,11 +717,7 @@ bfa_fcs_lport_abts_acc(struct bfa_fcs_lport_s *port, struct fchs_s *rx_fchs)
 	bfa_trc(port->fcs, rx_fchs->d_id);
 	bfa_trc(port->fcs, rx_fchs->s_id);
 
-<<<<<<< HEAD
-	fcxp = bfa_fcs_fcxp_alloc(port->fcs);
-=======
 	fcxp = bfa_fcs_fcxp_alloc(port->fcs, BFA_FALSE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fcxp)
 		return;
 
@@ -833,21 +742,10 @@ bfa_fcs_lport_deleted(struct bfa_fcs_lport_s *port)
 	bfa_fcs_lport_aen_post(port, BFA_LPORT_AEN_DELETE);
 
 	/* Base port will be deleted by the OS driver */
-<<<<<<< HEAD
-	if (port->vport) {
-		bfa_fcb_lport_delete(port->fcs->bfad, port->port_cfg.roles,
-				port->fabric->vf_drv,
-				port->vport ? port->vport->vport_drv : NULL);
-		bfa_fcs_vport_delete_comp(port->vport);
-	} else {
-		bfa_wc_down(&port->fabric->wc);
-	}
-=======
 	if (port->vport)
 		bfa_fcs_vport_delete_comp(port->vport);
 	else
 		bfa_wc_down(&port->fabric->wc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -866,9 +764,6 @@ bfa_fcs_lport_uf_recv(struct bfa_fcs_lport_s *lport,
 	bfa_trc(lport->fcs, fchs->type);
 
 	if (!bfa_fcs_lport_is_online(lport)) {
-<<<<<<< HEAD
-		bfa_stats(lport, uf_recv_drops);
-=======
 		/*
 		 * In direct attach topology, it is possible to get a PLOGI
 		 * before the lport is online due to port feature
@@ -883,7 +778,6 @@ bfa_fcs_lport_uf_recv(struct bfa_fcs_lport_s *lport,
 		} else
 			bfa_stats(lport, uf_recv_drops);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1006,8 +900,6 @@ bfa_fcs_lport_get_rport_by_pid(struct bfa_fcs_lport_s *port, u32 pid)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * OLD_PID based Lookup for a R-Port in the Port R-Port Queue
  */
 struct bfa_fcs_rport_s *
@@ -1027,7 +919,6 @@ bfa_fcs_lport_get_rport_by_old_pid(struct bfa_fcs_lport_s *port, u32 pid)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   PWWN based Lookup for a R-Port in the Port R-Port Queue
  */
 struct bfa_fcs_rport_s *
@@ -1066,8 +957,6 @@ bfa_fcs_lport_get_rport_by_nwwn(struct bfa_fcs_lport_s *port, wwn_t nwwn)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * PWWN & PID based Lookup for a R-Port in the Port R-Port Queue
  */
 struct bfa_fcs_rport_s *
@@ -1088,7 +977,6 @@ bfa_fcs_lport_get_rport_by_qualifier(struct bfa_fcs_lport_s *port,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Called by rport module when new rports are discovered.
  */
 void
@@ -1136,8 +1024,6 @@ bfa_fcs_lport_offline(struct bfa_fcs_lport_s *port)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Called by fabric for base port and by vport for virtual ports
  * when target mode driver is unloaded.
  */
@@ -1148,7 +1034,6 @@ bfa_fcs_lport_stop(struct bfa_fcs_lport_s *port)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Called by fabric to delete base lport and associated resources.
  *
  * Called by vport to delete lport and associated resources. Should call
@@ -1216,8 +1101,6 @@ bfa_fcs_lport_init(struct bfa_fcs_lport_s *lport,
 	bfa_sm_send_event(lport, BFA_FCS_PORT_SM_CREATE);
 }
 
-<<<<<<< HEAD
-=======
 void
 bfa_fcs_lport_set_symname(struct bfa_fcs_lport_s *port,
 				char *symname)
@@ -1229,7 +1112,6 @@ bfa_fcs_lport_set_symname(struct bfa_fcs_lport_s *port,
 			BFA_FCS_GET_NS_FROM_PORT(port), NULL);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fcs_lport_api
  */
@@ -1294,11 +1176,7 @@ static void
 bfa_fcs_lport_fab_online(struct bfa_fcs_lport_s *port)
 {
 	bfa_fcs_lport_ns_online(port);
-<<<<<<< HEAD
-	bfa_fcs_lport_scn_online(port);
-=======
 	bfa_fcs_lport_fab_scn_online(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1392,8 +1270,6 @@ bfa_fcs_lport_n2n_offline(struct bfa_fcs_lport_s *port)
 	n2n_port->reply_oxid = 0;
 }
 
-<<<<<<< HEAD
-=======
 static void
 bfa_fcport_get_loop_attr(struct bfa_fcs_lport_s *port)
 {
@@ -1486,7 +1362,6 @@ bfa_fcs_lport_loop_offline(struct bfa_fcs_lport_s *port)
 {
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BFA_FCS_FDMI_CMD_MAX_RETRIES 2
 
 /*
@@ -1520,11 +1395,7 @@ static void     bfa_fcs_lport_fdmi_rpa_response(void *fcsarg,
 					       u32 resid_len,
 					       struct fchs_s *rsp_fchs);
 static void     bfa_fcs_lport_fdmi_timeout(void *arg);
-<<<<<<< HEAD
-static u16 bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi,
-=======
 static int bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  u8 *pyld);
 static u16 bfa_fcs_lport_fdmi_build_rprt_pyld(struct bfa_fcs_lport_fdmi_s *fdmi,
 						  u8 *pyld);
@@ -1542,23 +1413,6 @@ u32	bfa_fcs_fdmi_convert_speed(enum bfa_port_speed pport_speed);
  *  fcs_fdmi_sm FCS FDMI state machine
  */
 
-<<<<<<< HEAD
-/*
- *  FDMI State Machine events
- */
-enum port_fdmi_event {
-	FDMISM_EVENT_PORT_ONLINE = 1,
-	FDMISM_EVENT_PORT_OFFLINE = 2,
-	FDMISM_EVENT_RSP_OK = 4,
-	FDMISM_EVENT_RSP_ERROR = 5,
-	FDMISM_EVENT_TIMEOUT = 6,
-	FDMISM_EVENT_RHBA_SENT = 7,
-	FDMISM_EVENT_RPRT_SENT = 8,
-	FDMISM_EVENT_RPA_SENT = 9,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void     bfa_fcs_lport_fdmi_sm_offline(struct bfa_fcs_lport_fdmi_s *fdmi,
 					     enum port_fdmi_event event);
 static void     bfa_fcs_lport_fdmi_sm_sending_rhba(
@@ -1987,18 +1841,11 @@ bfa_fcs_lport_fdmi_send_rhba(void *fdmi_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 	bfa_trc(port->fcs, port->port_cfg.pwwn);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &fdmi->fcxp_wqe,
-					bfa_fcs_lport_fdmi_send_rhba, fdmi);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &fdmi->fcxp_wqe,
 				bfa_fcs_lport_fdmi_send_rhba, fdmi, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	fdmi->fcxp = fcxp;
@@ -2013,11 +1860,8 @@ bfa_fcs_lport_fdmi_send_rhba(void *fdmi_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 		bfa_fcs_lport_fdmi_build_rhba_pyld(fdmi,
 					  (u8 *) ((struct ct_hdr_s *) pyld
 						       + 1));
-<<<<<<< HEAD
-=======
 	if (attr_len < 0)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bfa_fcxp_send(fcxp, NULL, port->fabric->vf_id, port->lp_tag, BFA_FALSE,
 			  FC_CLASS_3, (len + attr_len), &fchs,
@@ -2027,19 +1871,6 @@ bfa_fcs_lport_fdmi_send_rhba(void *fdmi_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 	bfa_sm_send_event(fdmi, FDMISM_EVENT_RHBA_SENT);
 }
 
-<<<<<<< HEAD
-static          u16
-bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
-{
-	struct bfa_fcs_lport_s *port = fdmi->ms->port;
-	struct bfa_fcs_fdmi_hba_attr_s hba_attr;
-	struct bfa_fcs_fdmi_hba_attr_s *fcs_hba_attr = &hba_attr;
-	struct fdmi_rhba_s *rhba = (struct fdmi_rhba_s *) pyld;
-	struct fdmi_attr_s *attr;
-	u8        *curr_ptr;
-	u16        len, count;
-	u16	templen;
-=======
 static int
 bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 {
@@ -2054,7 +1885,6 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	fcs_hba_attr = kzalloc(sizeof(*fcs_hba_attr), GFP_KERNEL);
 	if (!fcs_hba_attr)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * get hba attributes
@@ -2190,20 +2020,10 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 					 sizeof(templen));
 	}
 
-<<<<<<< HEAD
-	/*
-	 * f/w Version = driver version
-	 */
-	attr = (struct fdmi_attr_s *) curr_ptr;
-	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_FW_VERSION);
-	templen = (u16) strlen(fcs_hba_attr->driver_version);
-	memcpy(attr->value, fcs_hba_attr->driver_version, templen);
-=======
 	attr = (struct fdmi_attr_s *) curr_ptr;
 	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_FW_VERSION);
 	templen = (u16) strlen(fcs_hba_attr->fw_version);
 	memcpy(attr->value, fcs_hba_attr->fw_version, templen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	templen = fc_roundup(templen, sizeof(u32));
 	curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 	len += templen;
@@ -2234,17 +2054,12 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_MAX_CT);
 	templen = sizeof(fcs_hba_attr->max_ct_pyld);
 	memcpy(attr->value, &fcs_hba_attr->max_ct_pyld, templen);
-<<<<<<< HEAD
-=======
 	templen = fc_roundup(templen, sizeof(u32));
 	curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len += templen;
 	count++;
 	attr->len = cpu_to_be16(templen + sizeof(attr->type) +
 			     sizeof(templen));
-<<<<<<< HEAD
-=======
 	/*
 	 * Send extended attributes ( FOS 7.1 support )
 	 */
@@ -2304,7 +2119,6 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 		attr->len = cpu_to_be16(templen + sizeof(attr->type) +
 					sizeof(templen));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Update size of payload
@@ -2312,12 +2126,9 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	len += ((sizeof(attr->type) + sizeof(attr->len)) * count);
 
 	rhba->hba_attr_blk.attr_count = cpu_to_be32(count);
-<<<<<<< HEAD
-=======
 
 	kfree(fcs_hba_attr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
@@ -2371,18 +2182,11 @@ bfa_fcs_lport_fdmi_send_rprt(void *fdmi_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 	bfa_trc(port->fcs, port->port_cfg.pwwn);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &fdmi->fcxp_wqe,
-					bfa_fcs_lport_fdmi_send_rprt, fdmi);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &fdmi->fcxp_wqe,
 				bfa_fcs_lport_fdmi_send_rprt, fdmi, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	fdmi->fcxp = fcxp;
@@ -2518,8 +2322,6 @@ bfa_fcs_lport_fdmi_build_portattr_block(struct bfa_fcs_lport_fdmi_s *fdmi,
 				sizeof(templen));
 	}
 
-<<<<<<< HEAD
-=======
 	if (fdmi->retry_cnt == 0) {
 		attr = (struct fdmi_attr_s *) curr_ptr;
 		attr->type = cpu_to_be16(FDMI_PORT_ATTRIB_NODE_NAME);
@@ -2627,7 +2429,6 @@ bfa_fcs_lport_fdmi_build_portattr_block(struct bfa_fcs_lport_fdmi_s *fdmi,
 				sizeof(templen));
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Update size of payload
 	 */
@@ -2704,18 +2505,11 @@ bfa_fcs_lport_fdmi_send_rpa(void *fdmi_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 	bfa_trc(port->fcs, port->port_cfg.pwwn);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &fdmi->fcxp_wqe,
-					bfa_fcs_lport_fdmi_send_rpa, fdmi);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &fdmi->fcxp_wqe,
 				bfa_fcs_lport_fdmi_send_rpa, fdmi, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	fdmi->fcxp = fcxp;
@@ -2802,10 +2596,7 @@ bfa_fcs_fdmi_get_hbaattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 {
 	struct bfa_fcs_lport_s *port = fdmi->ms->port;
 	struct bfa_fcs_driver_info_s  *driver_info = &port->fcs->driver_info;
-<<<<<<< HEAD
-=======
 	struct bfa_fcs_fdmi_port_attr_s fcs_port_attr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(hba_attr, 0, sizeof(struct bfa_fcs_fdmi_hba_attr_s));
 
@@ -2824,17 +2615,10 @@ bfa_fcs_fdmi_get_hbaattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 	bfa_ioc_get_adapter_fw_ver(&port->fcs->bfa->ioc,
 					hba_attr->fw_version);
 
-<<<<<<< HEAD
-	strncpy(hba_attr->driver_version, (char *)driver_info->version,
-		sizeof(hba_attr->driver_version));
-
-	strncpy(hba_attr->os_name, driver_info->host_os_name,
-=======
 	strscpy(hba_attr->driver_version, (char *)driver_info->version,
 		sizeof(hba_attr->driver_version));
 
 	strscpy(hba_attr->os_name, driver_info->host_os_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(hba_attr->os_name));
 
 	/*
@@ -2842,15 +2626,6 @@ bfa_fcs_fdmi_get_hbaattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 	 * to the os name along with a separator
 	 */
 	if (driver_info->host_os_patch[0] != '\0') {
-<<<<<<< HEAD
-		strncat(hba_attr->os_name, BFA_FCS_PORT_SYMBNAME_SEPARATOR,
-			sizeof(BFA_FCS_PORT_SYMBNAME_SEPARATOR));
-		strncat(hba_attr->os_name, driver_info->host_os_patch,
-				sizeof(driver_info->host_os_patch));
-	}
-
-	hba_attr->max_ct_pyld = cpu_to_be32(FC_MAX_PDUSZ);
-=======
 		strlcat(hba_attr->os_name, BFA_FCS_PORT_SYMBNAME_SEPARATOR,
 			sizeof(hba_attr->os_name));
 		strlcat(hba_attr->os_name, driver_info->host_os_patch,
@@ -2869,7 +2644,6 @@ bfa_fcs_fdmi_get_hbaattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 	hba_attr->fabric_name = port->fabric->lps->pr_nwwn;
 	strscpy(hba_attr->bios_ver, hba_attr->option_rom_ver, BFA_VERSION_LEN);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -2879,10 +2653,7 @@ bfa_fcs_fdmi_get_portattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 	struct bfa_fcs_lport_s *port = fdmi->ms->port;
 	struct bfa_fcs_driver_info_s  *driver_info = &port->fcs->driver_info;
 	struct bfa_port_attr_s pport_attr;
-<<<<<<< HEAD
-=======
 	struct bfa_lport_attr_s lport_attr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(port_attr, 0, sizeof(struct bfa_fcs_fdmi_port_attr_s));
 
@@ -2933,30 +2704,17 @@ bfa_fcs_fdmi_get_portattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 	/*
 	 * Max PDU Size.
 	 */
-<<<<<<< HEAD
-	port_attr->max_frm_size = cpu_to_be32(FC_MAX_PDUSZ);
-=======
 	port_attr->max_frm_size = cpu_to_be32(pport_attr.pport_cfg.maxfrsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * OS device Name
 	 */
-<<<<<<< HEAD
-	strncpy(port_attr->os_device_name, (char *)driver_info->os_device_name,
-=======
 	strscpy(port_attr->os_device_name, driver_info->os_device_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(port_attr->os_device_name));
 
 	/*
 	 * Host name
 	 */
-<<<<<<< HEAD
-	strncpy(port_attr->host_name, (char *)driver_info->host_machine_name,
-		sizeof(port_attr->host_name));
-
-=======
 	strscpy(port_attr->host_name, driver_info->host_machine_name,
 		sizeof(port_attr->host_name));
 
@@ -2972,7 +2730,6 @@ bfa_fcs_fdmi_get_portattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 	fc_get_fc4type_bitmask(FC_TYPE_FCP, port_attr->port_act_fc4_type);
 	port_attr->port_state = cpu_to_be32(pport_attr.port_state);
 	port_attr->num_ports = cpu_to_be32(port->num_rports);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3079,22 +2836,6 @@ static void     bfa_fcs_lport_ms_gfn_response(void *fcsarg,
  *  fcs_ms_sm FCS MS state machine
  */
 
-<<<<<<< HEAD
-/*
- *  MS State Machine events
- */
-enum port_ms_event {
-	MSSM_EVENT_PORT_ONLINE = 1,
-	MSSM_EVENT_PORT_OFFLINE = 2,
-	MSSM_EVENT_RSP_OK = 3,
-	MSSM_EVENT_RSP_ERROR = 4,
-	MSSM_EVENT_TIMEOUT = 5,
-	MSSM_EVENT_FCXP_SENT = 6,
-	MSSM_EVENT_PORT_FABRIC_RSCN = 7
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void     bfa_fcs_lport_ms_sm_offline(struct bfa_fcs_lport_ms_s *ms,
 					   enum port_ms_event event);
 static void     bfa_fcs_lport_ms_sm_plogi_sending(struct bfa_fcs_lport_ms_s *ms,
@@ -3367,18 +3108,11 @@ bfa_fcs_lport_ms_send_gmal(void *ms_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 	bfa_trc(port->fcs, port->pid);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ms->fcxp_wqe,
-					bfa_fcs_lport_ms_send_gmal, ms);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ms->fcxp_wqe,
 				bfa_fcs_lport_ms_send_gmal, ms, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ms->fcxp = fcxp;
@@ -3455,11 +3189,7 @@ bfa_fcs_lport_ms_gmal_response(void *fcsarg, struct bfa_fcxp_s *fcxp,
 					rsp_str[gmal_entry->len-1] = 0;
 
 				/* copy IP Address to fabric */
-<<<<<<< HEAD
-				strncpy(bfa_fcs_lport_get_fabric_ipaddr(port),
-=======
 				strscpy(bfa_fcs_lport_get_fabric_ipaddr(port),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					gmal_entry->ip_addr,
 					BFA_FCS_FABRIC_IPADDR_SZ);
 				break;
@@ -3579,18 +3309,11 @@ bfa_fcs_lport_ms_send_gfn(void *ms_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 	bfa_trc(port->fcs, port->pid);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ms->fcxp_wqe,
-					bfa_fcs_lport_ms_send_gfn, ms);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ms->fcxp_wqe,
 				bfa_fcs_lport_ms_send_gfn, ms, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ms->fcxp = fcxp;
@@ -3663,20 +3386,12 @@ bfa_fcs_lport_ms_send_plogi(void *ms_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 	bfa_trc(port->fcs, port->pid);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		port->stats.ms_plogi_alloc_wait++;
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ms->fcxp_wqe,
-					bfa_fcs_lport_ms_send_plogi, ms);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		port->stats.ms_plogi_alloc_wait++;
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ms->fcxp_wqe,
 				bfa_fcs_lport_ms_send_plogi, ms, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ms->fcxp = fcxp;
@@ -3826,13 +3541,10 @@ static void     bfa_fcs_lport_ns_send_rff_id(void *ns_cbarg,
 					    struct bfa_fcxp_s *fcxp_alloced);
 static void     bfa_fcs_lport_ns_send_gid_ft(void *ns_cbarg,
 					    struct bfa_fcxp_s *fcxp_alloced);
-<<<<<<< HEAD
-=======
 static void	bfa_fcs_lport_ns_send_rnn_id(void *ns_cbarg,
 					struct bfa_fcxp_s *fcxp_alloced);
 static void	bfa_fcs_lport_ns_send_rsnn_nn(void *ns_cbarg,
 					struct bfa_fcxp_s *fcxp_alloced);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void     bfa_fcs_lport_ns_timeout(void *arg);
 static void     bfa_fcs_lport_ns_plogi_response(void *fcsarg,
 					       struct bfa_fcxp_s *fcxp,
@@ -3869,8 +3581,6 @@ static void     bfa_fcs_lport_ns_gid_ft_response(void *fcsarg,
 						u32 rsp_len,
 						u32 resid_len,
 						struct fchs_s *rsp_fchs);
-<<<<<<< HEAD
-=======
 static void     bfa_fcs_lport_ns_rnn_id_response(void *fcsarg,
 						struct bfa_fcxp_s *fcxp,
 						void *cbarg,
@@ -3885,7 +3595,6 @@ static void     bfa_fcs_lport_ns_rsnn_nn_response(void *fcsarg,
 						u32 rsp_len,
 						u32 resid_len,
 						struct fchs_s *rsp_fchs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void     bfa_fcs_lport_ns_process_gidft_pids(
 				struct bfa_fcs_lport_s *port,
 				u32 *pid_buf, u32 n_pids);
@@ -3895,26 +3604,6 @@ static void bfa_fcs_lport_ns_boot_target_disc(bfa_fcs_lport_t *port);
  *  fcs_ns_sm FCS nameserver interface state machine
  */
 
-<<<<<<< HEAD
-/*
- * VPort NS State Machine events
- */
-enum vport_ns_event {
-	NSSM_EVENT_PORT_ONLINE = 1,
-	NSSM_EVENT_PORT_OFFLINE = 2,
-	NSSM_EVENT_PLOGI_SENT = 3,
-	NSSM_EVENT_RSP_OK = 4,
-	NSSM_EVENT_RSP_ERROR = 5,
-	NSSM_EVENT_TIMEOUT = 6,
-	NSSM_EVENT_NS_QUERY = 7,
-	NSSM_EVENT_RSPNID_SENT = 8,
-	NSSM_EVENT_RFTID_SENT = 9,
-	NSSM_EVENT_RFFID_SENT = 10,
-	NSSM_EVENT_GIDFT_SENT = 11,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void     bfa_fcs_lport_ns_sm_offline(struct bfa_fcs_lport_ns_s *ns,
 					   enum vport_ns_event event);
 static void     bfa_fcs_lport_ns_sm_plogi_sending(struct bfa_fcs_lport_ns_s *ns,
@@ -3953,8 +3642,6 @@ static void     bfa_fcs_lport_ns_sm_gid_ft_retry(struct bfa_fcs_lport_ns_s *ns,
 						enum vport_ns_event event);
 static void     bfa_fcs_lport_ns_sm_online(struct bfa_fcs_lport_ns_s *ns,
 					  enum vport_ns_event event);
-<<<<<<< HEAD
-=======
 static void     bfa_fcs_lport_ns_sm_sending_rnn_id(
 					struct bfa_fcs_lport_ns_s *ns,
 					enum vport_ns_event event);
@@ -3970,7 +3657,6 @@ static void     bfa_fcs_lport_ns_sm_rsnn_nn(struct bfa_fcs_lport_ns_s *ns,
 static void     bfa_fcs_lport_ns_sm_rsnn_nn_retry(
 					struct bfa_fcs_lport_ns_s *ns,
 					enum vport_ns_event event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Start in offline state - awaiting linkup
  */
@@ -4038,14 +3724,9 @@ bfa_fcs_lport_ns_sm_plogi(struct bfa_fcs_lport_ns_s *ns,
 		break;
 
 	case NSSM_EVENT_RSP_OK:
-<<<<<<< HEAD
-		bfa_sm_set_state(ns, bfa_fcs_lport_ns_sm_sending_rspn_id);
-		bfa_fcs_lport_ns_send_rspn_id(ns, NULL);
-=======
 		bfa_sm_set_state(ns, bfa_fcs_lport_ns_sm_sending_rnn_id);
 		ns->num_rnnid_retries = 0;
 		bfa_fcs_lport_ns_send_rnn_id(ns, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case NSSM_EVENT_PORT_OFFLINE:
@@ -4085,8 +3766,6 @@ bfa_fcs_lport_ns_sm_plogi_retry(struct bfa_fcs_lport_ns_s *ns,
 }
 
 static void
-<<<<<<< HEAD
-=======
 bfa_fcs_lport_ns_sm_sending_rnn_id(struct bfa_fcs_lport_ns_s *ns,
 					enum vport_ns_event event)
 {
@@ -4257,7 +3936,6 @@ bfa_fcs_lport_ns_sm_rsnn_nn_retry(struct bfa_fcs_lport_ns_s *ns,
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcs_lport_ns_sm_sending_rspn_id(struct bfa_fcs_lport_ns_s *ns,
 				   enum vport_ns_event event)
 {
@@ -4629,11 +4307,7 @@ bfa_fcs_lport_ns_sm_online(struct bfa_fcs_lport_ns_s *ns,
 			bfa_sm_set_state(ns,
 				bfa_fcs_lport_ns_sm_sending_gid_ft);
 			bfa_fcs_lport_ns_send_gid_ft(ns, NULL);
-<<<<<<< HEAD
-		};
-=======
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -4658,20 +4332,12 @@ bfa_fcs_lport_ns_send_plogi(void *ns_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 	bfa_trc(port->fcs, port->pid);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		port->stats.ns_plogi_alloc_wait++;
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ns->fcxp_wqe,
-					bfa_fcs_lport_ns_send_plogi, ns);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		port->stats.ns_plogi_alloc_wait++;
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ns->fcxp_wqe,
 				bfa_fcs_lport_ns_send_plogi, ns, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ns->fcxp = fcxp;
@@ -4750,8 +4416,6 @@ bfa_fcs_lport_ns_plogi_response(void *fcsarg, struct bfa_fcxp_s *fcxp,
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Register node name for port_id
  */
 static void
@@ -4908,7 +4572,6 @@ bfa_fcs_lport_ns_rsnn_nn_response(void *fcsarg, struct bfa_fcxp_s *fcxp,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Register the symbolic port name.
  */
 static void
@@ -4926,20 +4589,12 @@ bfa_fcs_lport_ns_send_rspn_id(void *ns_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 	bfa_trc(port->fcs, port->port_cfg.pwwn);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		port->stats.ns_rspnid_alloc_wait++;
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ns->fcxp_wqe,
-					bfa_fcs_lport_ns_send_rspn_id, ns);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		port->stats.ns_rspnid_alloc_wait++;
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ns->fcxp_wqe,
 				bfa_fcs_lport_ns_send_rspn_id, ns, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ns->fcxp = fcxp;
@@ -4953,23 +4608,6 @@ bfa_fcs_lport_ns_send_rspn_id(void *ns_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 		 * to that of the base port.
 		 */
 
-<<<<<<< HEAD
-		strncpy((char *)psymbl,
-			(char *) &
-			(bfa_fcs_lport_get_psym_name
-			 (bfa_fcs_get_base_port(port->fcs))),
-			strlen((char *) &
-			       bfa_fcs_lport_get_psym_name(bfa_fcs_get_base_port
-							  (port->fcs))));
-
-		/* Ensure we have a null terminating string. */
-		((char *)psymbl)[strlen((char *) &
-			bfa_fcs_lport_get_psym_name(bfa_fcs_get_base_port
-						(port->fcs)))] = 0;
-		strncat((char *)psymbl,
-			(char *) &(bfa_fcs_lport_get_psym_name(port)),
-		strlen((char *) &bfa_fcs_lport_get_psym_name(port)));
-=======
 		strscpy(symbl,
 			(char *)&(bfa_fcs_lport_get_psym_name
 			 (bfa_fcs_get_base_port(port->fcs))),
@@ -4977,7 +4615,6 @@ bfa_fcs_lport_ns_send_rspn_id(void *ns_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 		strlcat(symbl, (char *)&(bfa_fcs_lport_get_psym_name(port)),
 			sizeof(symbl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		psymbl = (u8 *) &(bfa_fcs_lport_get_psym_name(port));
 	}
@@ -5046,20 +4683,12 @@ bfa_fcs_lport_ns_send_rft_id(void *ns_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 	bfa_trc(port->fcs, port->port_cfg.pwwn);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		port->stats.ns_rftid_alloc_wait++;
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ns->fcxp_wqe,
-					bfa_fcs_lport_ns_send_rft_id, ns);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		port->stats.ns_rftid_alloc_wait++;
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ns->fcxp_wqe,
 				bfa_fcs_lport_ns_send_rft_id, ns, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ns->fcxp = fcxp;
@@ -5128,20 +4757,12 @@ bfa_fcs_lport_ns_send_rff_id(void *ns_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 	bfa_trc(port->fcs, port->port_cfg.pwwn);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		port->stats.ns_rffid_alloc_wait++;
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ns->fcxp_wqe,
-					bfa_fcs_lport_ns_send_rff_id, ns);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		port->stats.ns_rffid_alloc_wait++;
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ns->fcxp_wqe,
 				bfa_fcs_lport_ns_send_rff_id, ns, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ns->fcxp = fcxp;
@@ -5220,20 +4841,12 @@ bfa_fcs_lport_ns_send_gid_ft(void *ns_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 	bfa_trc(port->fcs, port->pid);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		port->stats.ns_gidft_alloc_wait++;
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ns->fcxp_wqe,
-					bfa_fcs_lport_ns_send_gid_ft, ns);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		port->stats.ns_gidft_alloc_wait++;
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &ns->fcxp_wqe,
 				bfa_fcs_lport_ns_send_gid_ft, ns, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ns->fcxp = fcxp;
@@ -5363,13 +4976,10 @@ bfa_fcs_lport_ns_process_gidft_pids(struct bfa_fcs_lport_s *port, u32 *pid_buf,
 	struct fcgs_gidft_resp_s *gidft_entry;
 	struct bfa_fcs_rport_s *rport;
 	u32        ii;
-<<<<<<< HEAD
-=======
 	struct bfa_fcs_fabric_s *fabric = port->fabric;
 	struct bfa_fcs_vport_s *vport;
 	struct list_head *qe;
 	u8 found = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (ii = 0; ii < n_pids; ii++) {
 		gidft_entry = (struct fcgs_gidft_resp_s *) &pid_buf[ii];
@@ -5378,8 +4988,6 @@ bfa_fcs_lport_ns_process_gidft_pids(struct bfa_fcs_lport_s *port, u32 *pid_buf,
 			continue;
 
 		/*
-<<<<<<< HEAD
-=======
 		 * Ignore PID if it is of base port
 		 * (Avoid vports discovering base port as remote port)
 		 */
@@ -5403,7 +5011,6 @@ bfa_fcs_lport_ns_process_gidft_pids(struct bfa_fcs_lport_s *port, u32 *pid_buf,
 		}
 
 		/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * Check if this rport already exists
 		 */
 		rport = bfa_fcs_lport_get_rport_by_pid(port, gidft_entry->pid);
@@ -5470,12 +5077,8 @@ bfa_fcs_lport_ns_query(struct bfa_fcs_lport_s *port)
 	struct bfa_fcs_lport_ns_s *ns = BFA_FCS_GET_NS_FROM_PORT(port);
 
 	bfa_trc(port->fcs, port->pid);
-<<<<<<< HEAD
-	bfa_sm_send_event(ns, NSSM_EVENT_NS_QUERY);
-=======
 	if (bfa_sm_cmp_state(ns, bfa_fcs_lport_ns_sm_online))
 		bfa_sm_send_event(ns, NSSM_EVENT_NS_QUERY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -5495,8 +5098,6 @@ bfa_fcs_lport_ns_boot_target_disc(bfa_fcs_lport_t *port)
 	}
 }
 
-<<<<<<< HEAD
-=======
 void
 bfa_fcs_lport_ns_util_send_rspn_id(void *cbarg, struct bfa_fcxp_s *fcxp_alloced)
 {
@@ -5552,7 +5153,6 @@ bfa_fcs_lport_ns_util_send_rspn_id(void *cbarg, struct bfa_fcxp_s *fcxp_alloced)
 	port->stats.ns_rspnid_sent++;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * FCS SCN
  */
@@ -5580,21 +5180,6 @@ static void     bfa_fcs_lport_scn_timeout(void *arg);
  *  fcs_scm_sm FCS SCN state machine
  */
 
-<<<<<<< HEAD
-/*
- * VPort SCN State Machine events
- */
-enum port_scn_event {
-	SCNSM_EVENT_PORT_ONLINE = 1,
-	SCNSM_EVENT_PORT_OFFLINE = 2,
-	SCNSM_EVENT_RSP_OK = 3,
-	SCNSM_EVENT_RSP_ERROR = 4,
-	SCNSM_EVENT_TIMEOUT = 5,
-	SCNSM_EVENT_SCR_SENT = 6,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void     bfa_fcs_lport_scn_sm_offline(struct bfa_fcs_lport_scn_s *scn,
 					    enum port_scn_event event);
 static void     bfa_fcs_lport_scn_sm_sending_scr(
@@ -5730,18 +5315,11 @@ bfa_fcs_lport_scn_send_scr(void *scn_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 	bfa_trc(port->fcs, port->pid);
 	bfa_trc(port->fcs, port->port_cfg.pwwn);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &scn->fcxp_wqe,
-					bfa_fcs_lport_scn_send_scr, scn);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &scn->fcxp_wqe,
 				bfa_fcs_lport_scn_send_scr, scn, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	scn->fcxp = fcxp;
@@ -5823,11 +5401,7 @@ bfa_fcs_lport_scn_send_ls_acc(struct bfa_fcs_lport_s *port,
 
 	bfa_trc(port->fcs, rx_fchs->s_id);
 
-<<<<<<< HEAD
-	fcxp = bfa_fcs_fcxp_alloc(port->fcs);
-=======
 	fcxp = bfa_fcs_fcxp_alloc(port->fcs, BFA_FALSE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fcxp)
 		return;
 
@@ -5889,11 +5463,7 @@ bfa_fcs_lport_scn_offline(struct bfa_fcs_lport_s *port)
 }
 
 void
-<<<<<<< HEAD
-bfa_fcs_lport_scn_online(struct bfa_fcs_lport_s *port)
-=======
 bfa_fcs_lport_fab_scn_online(struct bfa_fcs_lport_s *port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bfa_fcs_lport_scn_s *scn = BFA_FCS_GET_SCN_FROM_PORT(port);
 
@@ -5905,18 +5475,13 @@ static void
 bfa_fcs_lport_scn_portid_rscn(struct bfa_fcs_lport_s *port, u32 rpid)
 {
 	struct bfa_fcs_rport_s *rport;
-<<<<<<< HEAD
-=======
 	struct bfa_fcs_fabric_s *fabric = port->fabric;
 	struct bfa_fcs_vport_s *vport;
 	struct list_head *qe;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bfa_trc(port->fcs, rpid);
 
 	/*
-<<<<<<< HEAD
-=======
 	 * Ignore PID if it is of base port or of vports created on the
 	 * same base port. It is to avoid vports discovering base port or
 	 * other vports created on same base port as remote port
@@ -5930,17 +5495,13 @@ bfa_fcs_lport_scn_portid_rscn(struct bfa_fcs_lport_s *port, u32 rpid)
 			return;
 	}
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * If this is an unknown device, then it just came online.
 	 * Otherwise let rport handle the RSCN event.
 	 */
 	rport = bfa_fcs_lport_get_rport_by_pid(port, rpid);
-<<<<<<< HEAD
-=======
 	if (!rport)
 		rport = bfa_fcs_lport_get_rport_by_old_pid(port, rpid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rport == NULL) {
 		/*
 		 * If min cfg mode is enabled, we donot need to
@@ -6047,11 +5608,7 @@ bfa_fcs_lport_scn_process_rscn(struct bfa_fcs_lport_s *port,
 				bfa_fcs_lport_ms_fabric_rscn(port);
 				break;
 			}
-<<<<<<< HEAD
-			/* !!!!!!!!! Fall Through !!!!!!!!!!!!! */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case FC_RSCN_FORMAT_AREA:
 		case FC_RSCN_FORMAT_DOMAIN:
@@ -6137,24 +5694,15 @@ bfa_fcs_lport_get_rport(struct bfa_fcs_lport_s *port, wwn_t wwn, int index,
 }
 
 void
-<<<<<<< HEAD
-bfa_fcs_lport_get_rports(struct bfa_fcs_lport_s *port,
-	 wwn_t rport_wwns[], int *nrports)
-=======
 bfa_fcs_lport_get_rport_quals(struct bfa_fcs_lport_s *port,
 		struct bfa_rport_qualifier_s rports[], int *nrports)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct list_head	*qh, *qe;
 	struct bfa_fcs_rport_s *rport = NULL;
 	int	i;
 	struct bfa_fcs_s	*fcs;
 
-<<<<<<< HEAD
-	if (port == NULL || rport_wwns == NULL || *nrports == 0)
-=======
 	if (port == NULL || rports == NULL || *nrports == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	fcs = port->fcs;
@@ -6174,9 +5722,6 @@ bfa_fcs_lport_get_rport_quals(struct bfa_fcs_lport_s *port,
 			continue;
 		}
 
-<<<<<<< HEAD
-		rport_wwns[i] = rport->pwwn;
-=======
 		if (!rport->pwwn && !rport->pid) {
 			qe = bfa_q_next(qe);
 			continue;
@@ -6184,7 +5729,6 @@ bfa_fcs_lport_get_rport_quals(struct bfa_fcs_lport_s *port,
 
 		rports[i].pwwn = rport->pwwn;
 		rports[i].pid = rport->pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		i++;
 		qe = bfa_q_next(qe);
@@ -6209,21 +5753,13 @@ bfa_fcs_lport_get_rport_max_speed(bfa_fcs_lport_t *port)
 	bfa_port_speed_t max_speed = 0;
 	struct bfa_port_attr_s port_attr;
 	bfa_port_speed_t port_speed, rport_speed;
-<<<<<<< HEAD
-	bfa_boolean_t trl_enabled = bfa_fcport_is_ratelim(port->fcs->bfa);
-
-=======
 	bfa_boolean_t trl_enabled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (port == NULL)
 		return 0;
 
 	fcs = port->fcs;
-<<<<<<< HEAD
-=======
 	trl_enabled = bfa_fcport_is_ratelim(port->fcs->bfa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get Physical port's current speed */
 	bfa_fcport_get_attr(port->fcs->bfa, &port_attr);
@@ -6349,8 +5885,6 @@ bfa_fcs_lport_clear_stats(struct bfa_fcs_lport_s *fcs_port)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Let new loop map create missing rports
  */
 void
@@ -6360,7 +5894,6 @@ bfa_fcs_lport_lip_scn_online(struct bfa_fcs_lport_s *port)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FCS virtual port state machine
  */
 
@@ -6385,29 +5918,6 @@ static void     bfa_fcs_vport_free(struct bfa_fcs_vport_s *vport);
  *  fcs_vport_sm FCS virtual port state machine
  */
 
-<<<<<<< HEAD
-/*
- * VPort State Machine events
- */
-enum bfa_fcs_vport_event {
-	BFA_FCS_VPORT_SM_CREATE = 1,	/*  vport create event */
-	BFA_FCS_VPORT_SM_DELETE = 2,	/*  vport delete event */
-	BFA_FCS_VPORT_SM_START = 3,	/*  vport start request */
-	BFA_FCS_VPORT_SM_STOP = 4,	/*  stop: unsupported */
-	BFA_FCS_VPORT_SM_ONLINE = 5,	/*  fabric online */
-	BFA_FCS_VPORT_SM_OFFLINE = 6,	/*  fabric offline event */
-	BFA_FCS_VPORT_SM_FRMSENT = 7,	/*  fdisc/logo sent events */
-	BFA_FCS_VPORT_SM_RSP_OK = 8,	/*  good response */
-	BFA_FCS_VPORT_SM_RSP_ERROR = 9,	/*  error/bad response */
-	BFA_FCS_VPORT_SM_TIMEOUT = 10,	/*  delay timer event */
-	BFA_FCS_VPORT_SM_DELCOMP = 11,	/*  lport delete completion */
-	BFA_FCS_VPORT_SM_RSP_DUP_WWN = 12,	/*  Dup wnn error*/
-	BFA_FCS_VPORT_SM_RSP_FAILED = 13,	/*  non-retryable failure */
-	BFA_FCS_VPORT_SM_STOPCOMP = 14,	/* vport delete completion */
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void     bfa_fcs_vport_sm_uninit(struct bfa_fcs_vport_s *vport,
 					enum bfa_fcs_vport_event event);
 static void     bfa_fcs_vport_sm_created(struct bfa_fcs_vport_s *vport,
@@ -6435,9 +5945,6 @@ static void	bfa_fcs_vport_sm_stopping(struct bfa_fcs_vport_s *vport,
 static void	bfa_fcs_vport_sm_logo_for_stop(struct bfa_fcs_vport_s *vport,
 					enum bfa_fcs_vport_event event);
 
-<<<<<<< HEAD
-static struct bfa_sm_table_s  vport_sm_table[] = {
-=======
 struct bfa_fcs_vport_sm_table_s {
 	bfa_fcs_vport_sm_t sm;		/*  state machine function	*/
 	enum bfa_vport_state state;	/*  state machine encoding	*/
@@ -6455,7 +5962,6 @@ bfa_vport_sm_to_state(struct bfa_fcs_vport_sm_table_s *smt, bfa_fcs_vport_sm_t s
 }
 
 static struct bfa_fcs_vport_sm_table_s  vport_sm_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{BFA_SM(bfa_fcs_vport_sm_uninit), BFA_FCS_VPORT_UNINIT},
 	{BFA_SM(bfa_fcs_vport_sm_created), BFA_FCS_VPORT_CREATED},
 	{BFA_SM(bfa_fcs_vport_sm_offline), BFA_FCS_VPORT_OFFLINE},
@@ -6611,10 +6117,7 @@ bfa_fcs_vport_sm_fdisc(struct bfa_fcs_vport_s *vport,
 		break;
 
 	case BFA_FCS_VPORT_SM_RSP_FAILED:
-<<<<<<< HEAD
-=======
 	case BFA_FCS_VPORT_SM_FABRIC_MAX:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bfa_sm_set_state(vport, bfa_fcs_vport_sm_offline);
 		break;
 
@@ -6685,10 +6188,7 @@ bfa_fcs_vport_sm_fdisc_rsp_wait(struct bfa_fcs_vport_s *vport,
 	case BFA_FCS_VPORT_SM_OFFLINE:
 	case BFA_FCS_VPORT_SM_RSP_ERROR:
 	case BFA_FCS_VPORT_SM_RSP_FAILED:
-<<<<<<< HEAD
-=======
 	case BFA_FCS_VPORT_SM_FABRIC_MAX:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BFA_FCS_VPORT_SM_RSP_DUP_WWN:
 		bfa_sm_set_state(vport, bfa_fcs_vport_sm_cleanup);
 		bfa_sm_send_event(vport->lps, BFA_LPS_SM_OFFLINE);
@@ -6854,13 +6354,7 @@ bfa_fcs_vport_sm_logo_for_stop(struct bfa_fcs_vport_s *vport,
 	switch (event) {
 	case BFA_FCS_VPORT_SM_OFFLINE:
 		bfa_sm_send_event(vport->lps, BFA_LPS_SM_OFFLINE);
-<<<<<<< HEAD
-		/*
-		 * !!! fall through !!!
-		 */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case BFA_FCS_VPORT_SM_RSP_OK:
 	case BFA_FCS_VPORT_SM_RSP_ERROR:
@@ -6886,13 +6380,7 @@ bfa_fcs_vport_sm_logo(struct bfa_fcs_vport_s *vport,
 	switch (event) {
 	case BFA_FCS_VPORT_SM_OFFLINE:
 		bfa_sm_send_event(vport->lps, BFA_LPS_SM_OFFLINE);
-<<<<<<< HEAD
-		/*
-		 * !!! fall through !!!
-		 */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case BFA_FCS_VPORT_SM_RSP_OK:
 	case BFA_FCS_VPORT_SM_RSP_ERROR:
@@ -6982,11 +6470,7 @@ bfa_fcs_vport_fdisc_rejected(struct bfa_fcs_vport_s *vport)
 		else {
 			bfa_fcs_vport_aen_post(&vport->lport,
 					BFA_LPORT_AEN_NPIV_FABRIC_MAX);
-<<<<<<< HEAD
-			bfa_sm_send_event(vport, BFA_FCS_VPORT_SM_RSP_FAILED);
-=======
 			bfa_sm_send_event(vport, BFA_FCS_VPORT_SM_FABRIC_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -7041,19 +6525,6 @@ bfa_fcs_vport_free(struct bfa_fcs_vport_s *vport)
 			(struct bfad_vport_s *)vport->vport_drv;
 
 	bfa_fcs_fabric_delvport(__vport_fabric(vport), vport);
-<<<<<<< HEAD
-
-	if (vport_drv->comp_del)
-		complete(vport_drv->comp_del);
-	else
-		kfree(vport_drv);
-
-	bfa_lps_delete(vport->lps);
-}
-
-
-
-=======
 	bfa_lps_delete(vport->lps);
 
 	if (vport_drv->comp_del) {
@@ -7069,7 +6540,6 @@ bfa_fcs_vport_free(struct bfa_fcs_vport_s *vport)
 	bfad_im_port_delete(vport_drv->drv_port.bfad, &vport_drv->drv_port);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fcs_vport_public FCS virtual port public interfaces
  */
@@ -7105,8 +6575,6 @@ bfa_fcs_vport_cleanup(struct bfa_fcs_vport_s *vport)
 {
 	vport->vport_stats.fab_cleanup++;
 }
-<<<<<<< HEAD
-=======
 
 /*
  * Stop notification from fabric SM. To be invoked from within FCS.
@@ -7117,7 +6585,6 @@ bfa_fcs_vport_fcs_stop(struct bfa_fcs_vport_s *vport)
 	bfa_sm_send_event(vport, BFA_FCS_VPORT_SM_STOP);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * delete notification from fabric SM. To be invoked from within FCS.
  */
@@ -7321,11 +6788,7 @@ bfa_fcs_vport_get_attr(struct bfa_fcs_vport_s *vport,
 	memset(attr, 0, sizeof(struct bfa_vport_attr_s));
 
 	bfa_fcs_lport_get_attr(&vport->lport, &attr->port_attr);
-<<<<<<< HEAD
-	attr->vport_state = bfa_sm_to_state(vport_sm_table, vport->sm);
-=======
 	attr->vport_state = bfa_vport_sm_to_state(vport_sm_table, vport->sm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -7393,9 +6856,6 @@ bfa_cb_lps_fdisc_comp(void *bfad, void *uarg, bfa_status_t status)
 			break;
 		}
 
-<<<<<<< HEAD
-		bfa_sm_send_event(vport, BFA_FCS_VPORT_SM_RSP_ERROR);
-=======
 		if (vport->fdisc_retries < BFA_FCS_VPORT_MAX_RETRIES)
 			bfa_sm_send_event(vport, BFA_FCS_VPORT_SM_RSP_ERROR);
 		else
@@ -7409,7 +6869,6 @@ bfa_cb_lps_fdisc_comp(void *bfad, void *uarg, bfa_status_t status)
 			bfa_sm_send_event(vport, BFA_FCS_VPORT_SM_RSP_ERROR);
 		else
 			bfa_sm_send_event(vport, BFA_FCS_VPORT_SM_RSP_FAILED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFA_STATUS_FABRIC_RJT:

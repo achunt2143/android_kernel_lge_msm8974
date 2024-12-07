@@ -9,9 +9,6 @@
 #define __stringify_1(x...)	#x
 #define __stringify(x...)	__stringify_1(x)
 
-<<<<<<< HEAD
-=======
 #define FILE_LINE	__FILE__ ":" __stringify(__LINE__)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* !__LINUX_STRINGIFY_H */

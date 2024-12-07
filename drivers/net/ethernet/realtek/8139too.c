@@ -11,11 +11,7 @@
 
 	-----<snip>-----
 
-<<<<<<< HEAD
-        	Written 1997-2001 by Donald Becker.
-=======
 		Written 1997-2001 by Donald Becker.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		This software may be used and distributed according to the
 		terms of the GNU General Public License (GPL), incorporated
 		herein by reference.  Drivers based on or derived from this
@@ -116,10 +112,7 @@
 #include <linux/io.h>
 #include <linux/uaccess.h>
 #include <linux/gfp.h>
-<<<<<<< HEAD
-=======
 #include <linux/if_vlan.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 
 #define RTL8139_DRIVER_NAME   DRV_NAME " Fast Ethernet driver " DRV_VERSION
@@ -156,15 +149,9 @@ static int full_duplex[MAX_UNITS] = {-1, -1, -1, -1, -1, -1, -1, -1};
 
 /* Whether to use MMIO or PIO. Default to MMIO. */
 #ifdef CONFIG_8139TOO_PIO
-<<<<<<< HEAD
-static int use_io = 1;
-#else
-static int use_io = 0;
-=======
 static bool use_io = true;
 #else
 static bool use_io = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Maximum number of multicast addresses to filter (vs. Rx-all-multicast).
@@ -196,12 +183,6 @@ static int debug = -1;
 /* Number of Tx descriptor registers. */
 #define NUM_TX_DESC	4
 
-<<<<<<< HEAD
-/* max supported ethernet frame size -- must be at least (dev->mtu+14+4).*/
-#define MAX_ETH_FRAME_SIZE	1536
-
-/* Size of the Tx bounce buffers -- must be at least (dev->mtu+14+4). */
-=======
 /* max supported ethernet frame size -- must be at least (dev->mtu+18+4).*/
 #define MAX_ETH_FRAME_SIZE	1792
 
@@ -209,7 +190,6 @@ static int debug = -1;
 #define MAX_ETH_DATA_SIZE (MAX_ETH_FRAME_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN)
 
 /* Size of the Tx bounce buffers -- must be at least (dev->mtu+18+4). */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TX_BUF_SIZE	MAX_ETH_FRAME_SIZE
 #define TX_BUF_TOT_LEN	(TX_BUF_SIZE * NUM_TX_DESC)
 
@@ -252,21 +232,13 @@ typedef enum {
 static const struct {
 	const char *name;
 	u32 hw_flags;
-<<<<<<< HEAD
-} board_info[] __devinitdata = {
-=======
 } board_info[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "RealTek RTL8139", RTL8139_CAPS },
 	{ "RealTek RTL8129", RTL8129_CAPS },
 };
 
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(rtl8139_pci_tbl) = {
-=======
 static const struct pci_device_id rtl8139_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x10ec, 0x8139, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
 	{0x10ec, 0x8138, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
 	{0x1113, 0x1211, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
@@ -286,10 +258,7 @@ static const struct pci_device_id rtl8139_pci_tbl[] = {
 	{0x126c, 0x1211, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
 	{0x1743, 0x8139, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
 	{0x021b, 0x8139, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
-<<<<<<< HEAD
-=======
 	{0x16ec, 0xab06, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SH_SECUREEDGE5410
 	/* Bogus 8139 silicon reports 8129 without external PROM :-( */
@@ -579,13 +548,8 @@ static const struct {
 
 	{ "RTL-8100",
 	  HW_REVID(1, 1, 1, 1, 0, 1, 0),
-<<<<<<< HEAD
- 	  HasLWake,
- 	},
-=======
 	  HasLWake,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ "RTL-8100B/8139D",
 	  HW_REVID(1, 1, 1, 0, 1, 0, 1),
@@ -661,11 +625,7 @@ MODULE_DESCRIPTION ("RealTek RTL-8139 Fast Ethernet driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_VERSION);
 
-<<<<<<< HEAD
-module_param(use_io, int, 0);
-=======
 module_param(use_io, bool, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(use_io, "Force use of I/O access mode. 0=MMIO 1=PIO");
 module_param(multicast_filter_limit, int, 0);
 module_param_array(media, int, NULL, 0);
@@ -682,11 +642,7 @@ static int mdio_read (struct net_device *dev, int phy_id, int location);
 static void mdio_write (struct net_device *dev, int phy_id, int location,
 			int val);
 static void rtl8139_start_thread(struct rtl8139_private *tp);
-<<<<<<< HEAD
-static void rtl8139_tx_timeout (struct net_device *dev);
-=======
 static void rtl8139_tx_timeout (struct net_device *dev, unsigned int txqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rtl8139_init_ring (struct net_device *dev);
 static netdev_tx_t rtl8139_start_xmit (struct sk_buff *skb,
 				       struct net_device *dev);
@@ -698,14 +654,8 @@ static int rtl8139_poll(struct napi_struct *napi, int budget);
 static irqreturn_t rtl8139_interrupt (int irq, void *dev_instance);
 static int rtl8139_close (struct net_device *dev);
 static int netdev_ioctl (struct net_device *dev, struct ifreq *rq, int cmd);
-<<<<<<< HEAD
-static struct rtnl_link_stats64 *rtl8139_get_stats64(struct net_device *dev,
-						    struct rtnl_link_stats64
-						    *stats);
-=======
 static void rtl8139_get_stats64(struct net_device *dev,
 				struct rtnl_link_stats64 *stats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rtl8139_set_rx_mode (struct net_device *dev);
 static void __set_rx_mode (struct net_device *dev);
 static void rtl8139_hw_start (struct net_device *dev);
@@ -781,10 +731,6 @@ static void __rtl8139_cleanup_dev (struct net_device *dev)
 	pci_release_regions (pdev);
 
 	free_netdev(dev);
-<<<<<<< HEAD
-	pci_set_drvdata (pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -805,25 +751,14 @@ static void rtl8139_chip_reset (void __iomem *ioaddr)
 }
 
 
-<<<<<<< HEAD
-static __devinit struct net_device * rtl8139_init_board (struct pci_dev *pdev)
-{
-=======
 static struct net_device *rtl8139_init_board(struct pci_dev *pdev)
 {
 	struct device *d = &pdev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *ioaddr;
 	struct net_device *dev;
 	struct rtl8139_private *tp;
 	u8 tmp8;
 	int rc, disable_dev_on_err = 0;
-<<<<<<< HEAD
-	unsigned int i;
-	unsigned long pio_start, pio_end, pio_flags, pio_len;
-	unsigned long mmio_start, mmio_end, mmio_flags, mmio_len;
-	u32 version;
-=======
 	unsigned int i, bar;
 	unsigned long io_len;
 	u32 version;
@@ -834,7 +769,6 @@ static struct net_device *rtl8139_init_board(struct pci_dev *pdev)
 		{ IORESOURCE_IO,  "PIO" },
 		{ IORESOURCE_MEM, "MMIO" }
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	assert (pdev != NULL);
 
@@ -853,91 +787,16 @@ static struct net_device *rtl8139_init_board(struct pci_dev *pdev)
 	if (rc)
 		goto err_out;
 
-<<<<<<< HEAD
-	pio_start = pci_resource_start (pdev, 0);
-	pio_end = pci_resource_end (pdev, 0);
-	pio_flags = pci_resource_flags (pdev, 0);
-	pio_len = pci_resource_len (pdev, 0);
-
-	mmio_start = pci_resource_start (pdev, 1);
-	mmio_end = pci_resource_end (pdev, 1);
-	mmio_flags = pci_resource_flags (pdev, 1);
-	mmio_len = pci_resource_len (pdev, 1);
-
-	/* set this immediately, we need to know before
-	 * we talk to the chip directly */
-	pr_debug("PIO region size == 0x%02lX\n", pio_len);
-	pr_debug("MMIO region size == 0x%02lX\n", mmio_len);
-
-retry:
-	if (use_io) {
-		/* make sure PCI base addr 0 is PIO */
-		if (!(pio_flags & IORESOURCE_IO)) {
-			dev_err(&pdev->dev, "region #0 not a PIO resource, aborting\n");
-			rc = -ENODEV;
-			goto err_out;
-		}
-		/* check for weird/broken PCI region reporting */
-		if (pio_len < RTL_MIN_IO_SIZE) {
-			dev_err(&pdev->dev, "Invalid PCI I/O region size(s), aborting\n");
-			rc = -ENODEV;
-			goto err_out;
-		}
-	} else {
-		/* make sure PCI base addr 1 is MMIO */
-		if (!(mmio_flags & IORESOURCE_MEM)) {
-			dev_err(&pdev->dev, "region #1 not an MMIO resource, aborting\n");
-			rc = -ENODEV;
-			goto err_out;
-		}
-		if (mmio_len < RTL_MIN_IO_SIZE) {
-			dev_err(&pdev->dev, "Invalid PCI mem region size(s), aborting\n");
-			rc = -ENODEV;
-			goto err_out;
-		}
-	}
-
-	rc = pci_request_regions (pdev, DRV_NAME);
-	if (rc)
-		goto err_out;
-	disable_dev_on_err = 1;
-
-	/* enable PCI bus-mastering */
-=======
 	disable_dev_on_err = 1;
 	rc = pci_request_regions (pdev, DRV_NAME);
 	if (rc)
 		goto err_out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_master (pdev);
 
 	u64_stats_init(&tp->rx_stats.syncp);
 	u64_stats_init(&tp->tx_stats.syncp);
 
-<<<<<<< HEAD
-	if (use_io) {
-		ioaddr = pci_iomap(pdev, 0, 0);
-		if (!ioaddr) {
-			dev_err(&pdev->dev, "cannot map PIO, aborting\n");
-			rc = -EIO;
-			goto err_out;
-		}
-		dev->base_addr = pio_start;
-		tp->regs_len = pio_len;
-	} else {
-		/* ioremap MMIO region */
-		ioaddr = pci_iomap(pdev, 1, 0);
-		if (ioaddr == NULL) {
-			dev_err(&pdev->dev, "cannot remap MMIO, trying PIO\n");
-			pci_release_regions(pdev);
-			use_io = 1;
-			goto retry;
-		}
-		dev->base_addr = (long) ioaddr;
-		tp->regs_len = mmio_len;
-	}
-=======
 retry:
 	/* PIO bar register comes first. */
 	bar = !use_io;
@@ -970,7 +829,6 @@ retry:
 		goto err_out;
 	}
 	tp->regs_len = io_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tp->mmio_addr = ioaddr;
 
 	/* Bring old chips out of low-power mode. */
@@ -1070,19 +928,11 @@ static const struct net_device_ops rtl8139_netdev_ops = {
 	.ndo_open		= rtl8139_open,
 	.ndo_stop		= rtl8139_close,
 	.ndo_get_stats64	= rtl8139_get_stats64,
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address 	= rtl8139_set_mac_address,
 	.ndo_start_xmit		= rtl8139_start_xmit,
 	.ndo_set_rx_mode	= rtl8139_set_rx_mode,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= netdev_ioctl,
-=======
 	.ndo_eth_ioctl		= netdev_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout		= rtl8139_tx_timeout,
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= rtl8139_poll_controller,
@@ -1090,20 +940,12 @@ static const struct net_device_ops rtl8139_netdev_ops = {
 	.ndo_set_features	= rtl8139_set_features,
 };
 
-<<<<<<< HEAD
-static int __devinit rtl8139_init_one (struct pci_dev *pdev,
-				       const struct pci_device_id *ent)
-{
-	struct net_device *dev = NULL;
-	struct rtl8139_private *tp;
-=======
 static int rtl8139_init_one(struct pci_dev *pdev,
 			    const struct pci_device_id *ent)
 {
 	struct net_device *dev = NULL;
 	struct rtl8139_private *tp;
 	__le16 addr[ETH_ALEN / 2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, addr_len, option;
 	void __iomem *ioaddr;
 	static int board_idx = -1;
@@ -1137,11 +979,7 @@ static int rtl8139_init_one(struct pci_dev *pdev,
 	    pdev->subsystem_vendor == PCI_VENDOR_ID_ATHEROS &&
 	    pdev->subsystem_device == PCI_DEVICE_ID_REALTEK_8139) {
 		pr_info("OQO Model 2 detected. Forcing PIO\n");
-<<<<<<< HEAD
-		use_io = 1;
-=======
 		use_io = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev = rtl8139_init_board (pdev);
@@ -1157,24 +995,14 @@ static int rtl8139_init_one(struct pci_dev *pdev,
 
 	addr_len = read_eeprom (ioaddr, 0, 8) == 0x8129 ? 8 : 6;
 	for (i = 0; i < 3; i++)
-<<<<<<< HEAD
-		((__le16 *) (dev->dev_addr))[i] =
-		    cpu_to_le16(read_eeprom (ioaddr, i + 7, addr_len));
-	memcpy(dev->perm_addr, dev->dev_addr, dev->addr_len);
-=======
 		addr[i] = cpu_to_le16(read_eeprom (ioaddr, i + 7, addr_len));
 	eth_hw_addr_set(dev, (u8 *)addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The Rtl8139-specific entries in the device structure. */
 	dev->netdev_ops = &rtl8139_netdev_ops;
 	dev->ethtool_ops = &rtl8139_ethtool_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
-<<<<<<< HEAD
-	netif_napi_add(dev, &tp->napi, rtl8139_poll, 64);
-=======
 	netif_napi_add(dev, &tp->napi, rtl8139_poll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* note: the hardware is not capable of sg/csum/highdma, however
 	 * through the use of skb_copy_and_csum_dev we enable these
@@ -1186,13 +1014,9 @@ static int rtl8139_init_one(struct pci_dev *pdev,
 	dev->hw_features |= NETIF_F_RXALL;
 	dev->hw_features |= NETIF_F_RXFCS;
 
-<<<<<<< HEAD
-	dev->irq = pdev->irq;
-=======
 	/* MTU range: 68 - 1770 */
 	dev->min_mtu = ETH_MIN_MTU;
 	dev->max_mtu = MAX_ETH_DATA_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* tp zeroed and aligned in alloc_etherdev */
 	tp = netdev_priv(dev);
@@ -1219,15 +1043,9 @@ static int rtl8139_init_one(struct pci_dev *pdev,
 
 	pci_set_drvdata (pdev, dev);
 
-<<<<<<< HEAD
-	netdev_info(dev, "%s at 0x%lx, %pM, IRQ %d\n",
-		    board_info[ent->driver_data].name,
-		    dev->base_addr, dev->dev_addr, dev->irq);
-=======
 	netdev_info(dev, "%s at 0x%p, %pM, IRQ %d\n",
 		    board_info[ent->driver_data].name,
 		    ioaddr, dev->dev_addr, pdev->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev_dbg(dev, "Identified 8139 chip type '%s'\n",
 		   rtl_chip_info[tp->chipset].name);
@@ -1294,11 +1112,7 @@ err_out:
 }
 
 
-<<<<<<< HEAD
-static void __devexit rtl8139_remove_one (struct pci_dev *pdev)
-=======
 static void rtl8139_remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata (pdev);
 	struct rtl8139_private *tp = netdev_priv(dev);
@@ -1336,11 +1150,7 @@ static void rtl8139_remove_one(struct pci_dev *pdev)
 #define EE_READ_CMD		(6)
 #define EE_ERASE_CMD	(7)
 
-<<<<<<< HEAD
-static int __devinit read_eeprom (void __iomem *ioaddr, int location, int addr_len)
-=======
 static int read_eeprom(void __iomem *ioaddr, int location, int addr_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	unsigned retval = 0;
@@ -1372,11 +1182,7 @@ static int read_eeprom(void __iomem *ioaddr, int location, int addr_len)
 	}
 
 	/* Terminate the EEPROM access. */
-<<<<<<< HEAD
-	RTL_W8 (Cfg9346, ~EE_CS);
-=======
 	RTL_W8(Cfg9346, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	eeprom_delay ();
 
 	return retval;
@@ -1514,18 +1320,11 @@ static void mdio_write (struct net_device *dev, int phy_id, int location,
 static int rtl8139_open (struct net_device *dev)
 {
 	struct rtl8139_private *tp = netdev_priv(dev);
-<<<<<<< HEAD
-	int retval;
-	void __iomem *ioaddr = tp->mmio_addr;
-
-	retval = request_irq (dev->irq, rtl8139_interrupt, IRQF_SHARED, dev->name, dev);
-=======
 	void __iomem *ioaddr = tp->mmio_addr;
 	const int irq = tp->pci_dev->irq;
 	int retval;
 
 	retval = request_irq(irq, rtl8139_interrupt, IRQF_SHARED, dev->name, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		return retval;
 
@@ -1534,11 +1333,7 @@ static int rtl8139_open (struct net_device *dev)
 	tp->rx_ring = dma_alloc_coherent(&tp->pci_dev->dev, RX_BUF_TOT_LEN,
 					   &tp->rx_ring_dma, GFP_KERNEL);
 	if (tp->tx_bufs == NULL || tp->rx_ring == NULL) {
-<<<<<<< HEAD
-		free_irq(dev->irq, dev);
-=======
 		free_irq(irq, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (tp->tx_bufs)
 			dma_free_coherent(&tp->pci_dev->dev, TX_BUF_TOT_LEN,
@@ -1564,11 +1359,7 @@ static int rtl8139_open (struct net_device *dev)
 		  "%s() ioaddr %#llx IRQ %d GP Pins %02x %s-duplex\n",
 		  __func__,
 		  (unsigned long long)pci_resource_start (tp->pci_dev, 1),
-<<<<<<< HEAD
-		  dev->irq, RTL_R8 (MediaStatus),
-=======
 		  irq, RTL_R8 (MediaStatus),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  tp->mii.full_duplex ? "full" : "half");
 
 	rtl8139_start_thread(tp);
@@ -1870,13 +1661,10 @@ static void rtl8139_tx_timeout_task (struct work_struct *work)
 	int i;
 	u8 tmp8;
 
-<<<<<<< HEAD
-=======
 	napi_disable(&tp->napi);
 	netif_stop_queue(dev);
 	synchronize_rcu();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netdev_dbg(dev, "Transmit timeout, status %02x %04x %04x media %02x\n",
 		   RTL_R8(ChipCmd), RTL_R16(IntrStatus),
 		   RTL_R16(IntrMask), RTL_R8(MediaStatus));
@@ -1906,16 +1694,6 @@ static void rtl8139_tx_timeout_task (struct work_struct *work)
 	spin_unlock_irq(&tp->lock);
 
 	/* ...and finally, reset everything */
-<<<<<<< HEAD
-	if (netif_running(dev)) {
-		rtl8139_hw_start (dev);
-		netif_wake_queue (dev);
-	}
-	spin_unlock_bh(&tp->rx_lock);
-}
-
-static void rtl8139_tx_timeout (struct net_device *dev)
-=======
 	napi_enable(&tp->napi);
 	rtl8139_hw_start(dev);
 	netif_wake_queue(dev);
@@ -1924,7 +1702,6 @@ static void rtl8139_tx_timeout (struct net_device *dev)
 }
 
 static void rtl8139_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtl8139_private *tp = netdev_priv(dev);
 
@@ -1952,15 +1729,9 @@ static netdev_tx_t rtl8139_start_xmit (struct sk_buff *skb,
 		if (len < ETH_ZLEN)
 			memset(tp->tx_buf[entry], 0, ETH_ZLEN);
 		skb_copy_and_csum_dev(skb, tp->tx_buf[entry]);
-<<<<<<< HEAD
-		dev_kfree_skb(skb);
-	} else {
-		dev_kfree_skb(skb);
-=======
 		dev_kfree_skb_any(skb);
 	} else {
 		dev_kfree_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->stats.tx_dropped++;
 		return NETDEV_TX_OK;
 	}
@@ -2266,11 +2037,7 @@ keep_pkt:
 		/* Malloc up new buffer, compatible with net-2e. */
 		/* Omit the four octet CRC from the length. */
 
-<<<<<<< HEAD
-		skb = netdev_alloc_skb_ip_align(dev, pkt_size);
-=======
 		skb = napi_alloc_skb(&tp->napi, pkt_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (likely(skb)) {
 #if RX_BUF_IDX == 3
 			wrap_copy(skb, rx_ring, ring_offset+4, pkt_size);
@@ -2288,11 +2055,6 @@ keep_pkt:
 
 			netif_receive_skb (skb);
 		} else {
-<<<<<<< HEAD
-			if (net_ratelimit())
-				netdev_warn(dev, "Memory squeeze, dropping packet\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->stats.rx_dropped++;
 		}
 		received++;
@@ -2375,20 +2137,10 @@ static int rtl8139_poll(struct napi_struct *napi, int budget)
 
 	if (work_done < budget) {
 		unsigned long flags;
-<<<<<<< HEAD
-		/*
-		 * Order is important since data can get interrupted
-		 * again when we think we are done.
-		 */
-		spin_lock_irqsave(&tp->lock, flags);
-		__napi_complete(napi);
-		RTL_W16_F(IntrMask, rtl8139_intr_mask);
-=======
 
 		spin_lock_irqsave(&tp->lock, flags);
 		if (napi_complete_done(napi, work_done))
 			RTL_W16_F(IntrMask, rtl8139_intr_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&tp->lock, flags);
 	}
 	spin_unlock(&tp->rx_lock);
@@ -2469,18 +2221,12 @@ static irqreturn_t rtl8139_interrupt (int irq, void *dev_instance)
  */
 static void rtl8139_poll_controller(struct net_device *dev)
 {
-<<<<<<< HEAD
-	disable_irq(dev->irq);
-	rtl8139_interrupt(dev->irq, dev);
-	enable_irq(dev->irq);
-=======
 	struct rtl8139_private *tp = netdev_priv(dev);
 	const int irq = tp->pci_dev->irq;
 
 	disable_irq_nosync(irq);
 	rtl8139_interrupt(irq, dev);
 	enable_irq(irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -2493,11 +2239,7 @@ static int rtl8139_set_mac_address(struct net_device *dev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, addr->sa_data, dev->addr_len);
-=======
 	eth_hw_addr_set(dev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&tp->lock);
 
@@ -2537,11 +2279,7 @@ static int rtl8139_close (struct net_device *dev)
 
 	spin_unlock_irqrestore (&tp->lock, flags);
 
-<<<<<<< HEAD
-	free_irq (dev->irq, dev);
-=======
 	free_irq(tp->pci_dev->irq, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rtl8139_tx_clear (tp);
 
@@ -2642,19 +2380,6 @@ static int rtl8139_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 static void rtl8139_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
 	struct rtl8139_private *tp = netdev_priv(dev);
-<<<<<<< HEAD
-	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
-	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
-	strlcpy(info->bus_info, pci_name(tp->pci_dev), sizeof(info->bus_info));
-	info->regdump_len = tp->regs_len;
-}
-
-static int rtl8139_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct rtl8139_private *tp = netdev_priv(dev);
-	spin_lock_irq(&tp->lock);
-	mii_ethtool_gset(&tp->mii, cmd);
-=======
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strscpy(info->version, DRV_VERSION, sizeof(info->version));
 	strscpy(info->bus_info, pci_name(tp->pci_dev), sizeof(info->bus_info));
@@ -2666,26 +2391,17 @@ static int rtl8139_get_link_ksettings(struct net_device *dev,
 	struct rtl8139_private *tp = netdev_priv(dev);
 	spin_lock_irq(&tp->lock);
 	mii_ethtool_get_link_ksettings(&tp->mii, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&tp->lock);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int rtl8139_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-=======
 static int rtl8139_set_link_ksettings(struct net_device *dev,
 				      const struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtl8139_private *tp = netdev_priv(dev);
 	int rc;
 	spin_lock_irq(&tp->lock);
-<<<<<<< HEAD
-	rc = mii_ethtool_sset(&tp->mii, cmd);
-=======
 	rc = mii_ethtool_set_link_ksettings(&tp->mii, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&tp->lock);
 	return rc;
 }
@@ -2767,11 +2483,6 @@ static void rtl8139_get_strings(struct net_device *dev, u32 stringset, u8 *data)
 
 static const struct ethtool_ops rtl8139_ethtool_ops = {
 	.get_drvinfo		= rtl8139_get_drvinfo,
-<<<<<<< HEAD
-	.get_settings		= rtl8139_get_settings,
-	.set_settings		= rtl8139_set_settings,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_regs_len		= rtl8139_get_regs_len,
 	.get_regs		= rtl8139_get_regs,
 	.nway_reset		= rtl8139_nway_reset,
@@ -2783,11 +2494,8 @@ static const struct ethtool_ops rtl8139_ethtool_ops = {
 	.get_strings		= rtl8139_get_strings,
 	.get_sset_count		= rtl8139_get_sset_count,
 	.get_ethtool_stats	= rtl8139_get_ethtool_stats,
-<<<<<<< HEAD
-=======
 	.get_link_ksettings	= rtl8139_get_link_ksettings,
 	.set_link_ksettings	= rtl8139_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
@@ -2806,11 +2514,7 @@ static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 }
 
 
-<<<<<<< HEAD
-static struct rtnl_link_stats64 *
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 rtl8139_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
 {
 	struct rtl8139_private *tp = netdev_priv(dev);
@@ -2828,20 +2532,6 @@ rtl8139_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
 	netdev_stats_to_stats64(stats, &dev->stats);
 
 	do {
-<<<<<<< HEAD
-		start = u64_stats_fetch_begin_irq(&tp->rx_stats.syncp);
-		stats->rx_packets = tp->rx_stats.packets;
-		stats->rx_bytes = tp->rx_stats.bytes;
-	} while (u64_stats_fetch_retry_irq(&tp->rx_stats.syncp, start));
-
-	do {
-		start = u64_stats_fetch_begin_irq(&tp->tx_stats.syncp);
-		stats->tx_packets = tp->tx_stats.packets;
-		stats->tx_bytes = tp->tx_stats.bytes;
-	} while (u64_stats_fetch_retry_irq(&tp->tx_stats.syncp, start));
-
-	return stats;
-=======
 		start = u64_stats_fetch_begin(&tp->rx_stats.syncp);
 		stats->rx_packets = tp->rx_stats.packets;
 		stats->rx_bytes = tp->rx_stats.bytes;
@@ -2852,7 +2542,6 @@ rtl8139_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
 		stats->tx_packets = tp->tx_stats.packets;
 		stats->tx_bytes = tp->tx_stats.bytes;
 	} while (u64_stats_fetch_retry(&tp->tx_stats.syncp, start));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Set or clear the multicast filter for this adaptor.
@@ -2915,26 +2604,13 @@ static void rtl8139_set_rx_mode (struct net_device *dev)
 	spin_unlock_irqrestore (&tp->lock, flags);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-
-static int rtl8139_suspend (struct pci_dev *pdev, pm_message_t state)
-{
-	struct net_device *dev = pci_get_drvdata (pdev);
-=======
 static int __maybe_unused rtl8139_suspend(struct device *device)
 {
 	struct net_device *dev = dev_get_drvdata(device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rtl8139_private *tp = netdev_priv(dev);
 	void __iomem *ioaddr = tp->mmio_addr;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	pci_save_state (pdev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!netif_running (dev))
 		return 0;
 
@@ -2952,22 +2628,6 @@ static int __maybe_unused rtl8139_suspend(struct device *device)
 
 	spin_unlock_irqrestore (&tp->lock, flags);
 
-<<<<<<< HEAD
-	pci_set_power_state (pdev, PCI_D3hot);
-
-	return 0;
-}
-
-
-static int rtl8139_resume (struct pci_dev *pdev)
-{
-	struct net_device *dev = pci_get_drvdata (pdev);
-
-	pci_restore_state (pdev);
-	if (!netif_running (dev))
-		return 0;
-	pci_set_power_state (pdev, PCI_D0);
-=======
 	return 0;
 }
 
@@ -2978,34 +2638,20 @@ static int __maybe_unused rtl8139_resume(struct device *device)
 	if (!netif_running (dev))
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rtl8139_init_ring (dev);
 	rtl8139_hw_start (dev);
 	netif_device_attach (dev);
 	return 0;
 }
 
-<<<<<<< HEAD
-#endif /* CONFIG_PM */
-
-=======
 static SIMPLE_DEV_PM_OPS(rtl8139_pm_ops, rtl8139_suspend, rtl8139_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver rtl8139_pci_driver = {
 	.name		= DRV_NAME,
 	.id_table	= rtl8139_pci_tbl,
 	.probe		= rtl8139_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(rtl8139_remove_one),
-#ifdef CONFIG_PM
-	.suspend	= rtl8139_suspend,
-	.resume		= rtl8139_resume,
-#endif /* CONFIG_PM */
-=======
 	.remove		= rtl8139_remove_one,
 	.driver.pm	= &rtl8139_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 

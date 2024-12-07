@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	xt_u32 - kernel module to match u32 packet content
  *
@@ -99,8 +96,6 @@ static bool u32_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	return ret ^ data->invert;
 }
 
-<<<<<<< HEAD
-=======
 static int u32_mt_checkentry(const struct xt_mtchk_param *par)
 {
 	const struct xt_u32 *data = par->matchinfo;
@@ -121,16 +116,12 @@ static int u32_mt_checkentry(const struct xt_mtchk_param *par)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct xt_match xt_u32_mt_reg __read_mostly = {
 	.name       = "u32",
 	.revision   = 0,
 	.family     = NFPROTO_UNSPEC,
 	.match      = u32_mt,
-<<<<<<< HEAD
-=======
 	.checkentry = u32_mt_checkentry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.matchsize  = sizeof(struct xt_u32),
 	.me         = THIS_MODULE,
 };

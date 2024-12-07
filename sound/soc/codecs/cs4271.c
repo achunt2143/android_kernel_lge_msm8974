@@ -1,25 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CS4271 ASoC codec driver
  *
  * Copyright (c) 2010 Alexander Sverdlin <subaparts@yandex.ru>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This driver support CS4271 codec being master or slave, working
  * in control port mode, connected either via SPI or I2C.
  * The data format accepted is I2S or left-justified.
@@ -29,15 +13,6 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <sound/pcm.h>
-#include <sound/soc.h>
-#include <sound/tlv.h>
-#include <linux/gpio.h>
-#include <linux/i2c.h>
-#include <linux/spi/spi.h>
-#include <sound/cs4271.h>
-=======
 #include <linux/gpio/consumer.h>
 #include <linux/of.h>
 #include <linux/regulator/consumer.h>
@@ -46,7 +21,6 @@
 #include <sound/tlv.h>
 #include <sound/cs4271.h>
 #include "cs4271.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CS4271_PCM_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | \
 			    SNDRV_PCM_FMTBIT_S24_LE | \
@@ -55,19 +29,6 @@
 
 /*
  * CS4271 registers
-<<<<<<< HEAD
- * High byte represents SPI chip address (0x10) + write command (0)
- * Low byte - codec register address
- */
-#define CS4271_MODE1	0x2001	/* Mode Control 1 */
-#define CS4271_DACCTL	0x2002	/* DAC Control */
-#define CS4271_DACVOL	0x2003	/* DAC Volume & Mixing Control */
-#define CS4271_VOLA	0x2004	/* DAC Channel A Volume Control */
-#define CS4271_VOLB	0x2005	/* DAC Channel B Volume Control */
-#define CS4271_ADCCTL	0x2006	/* ADC Control */
-#define CS4271_MODE2	0x2007	/* Mode Control 2 */
-#define CS4271_CHIPID	0x2008	/* Chip ID */
-=======
  */
 #define CS4271_MODE1	0x01	/* Mode Control 1 */
 #define CS4271_DACCTL	0x02	/* DAC Control */
@@ -77,7 +38,6 @@
 #define CS4271_ADCCTL	0x06	/* ADC Control */
 #define CS4271_MODE2	0x07	/* Mode Control 2 */
 #define CS4271_CHIPID	0x08	/* Chip ID */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CS4271_FIRSTREG	CS4271_MODE1
 #define CS4271_LASTREG	CS4271_MODE2
@@ -172,31 +132,6 @@
  * Array do not include Chip ID, as codec driver does not use
  * registers read operations at all
  */
-<<<<<<< HEAD
-static const u8 cs4271_dflt_reg[CS4271_NR_REGS] = {
-	0,
-	0,
-	CS4271_DACCTL_AMUTE,
-	CS4271_DACVOL_SOFT | CS4271_DACVOL_ATAPI_AL_BR,
-	0,
-	0,
-	0,
-	0,
-};
-
-struct cs4271_private {
-	/* SND_SOC_I2C or SND_SOC_SPI */
-	enum snd_soc_control_type	bus_type;
-	unsigned int			mclk;
-	bool				master;
-	bool				deemph;
-	/* Current sample rate for de-emphasis control */
-	int				rate;
-	/* GPIO driving Reset pin, if any */
-	int				gpio_nreset;
-	/* GPIO that disable serial bus, if any */
-	int				gpio_disable;
-=======
 static const struct reg_default cs4271_reg_defaults[] = {
 	{ CS4271_MODE1,		0, },
 	{ CS4271_DACCTL,	CS4271_DACCTL_AMUTE, },
@@ -248,7 +183,6 @@ static const struct snd_soc_dapm_route cs4271_dapm_routes[] = {
 	{ "AOUTA-", NULL, "Playback" },
 	{ "AOUTB+", NULL, "Playback" },
 	{ "AOUTB-", NULL, "Playback" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -259,13 +193,8 @@ static const struct snd_soc_dapm_route cs4271_dapm_routes[] = {
 static int cs4271_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 				 int clk_id, unsigned int freq, int dir)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	struct cs4271_private *cs4271 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cs4271->mclk = freq;
 	return 0;
@@ -274,28 +203,13 @@ static int cs4271_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 static int cs4271_set_dai_fmt(struct snd_soc_dai *codec_dai,
 			      unsigned int format)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	struct cs4271_private *cs4271 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int val = 0;
 	int ret;
 
 	switch (format & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBS_CFS:
-<<<<<<< HEAD
-		cs4271->master = 0;
-		break;
-	case SND_SOC_DAIFMT_CBM_CFM:
-		cs4271->master = 1;
-		val |= CS4271_MODE1_MASTER;
-		break;
-	default:
-		dev_err(codec->dev, "Invalid DAI format\n");
-=======
 		cs4271->master = false;
 		break;
 	case SND_SOC_DAIFMT_CBM_CFM:
@@ -304,47 +218,30 @@ static int cs4271_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		break;
 	default:
 		dev_err(component->dev, "Invalid DAI format\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	switch (format & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_LEFT_J:
 		val |= CS4271_MODE1_DAC_DIF_LJ;
-<<<<<<< HEAD
-		ret = snd_soc_update_bits(codec, CS4271_ADCCTL,
-=======
 		ret = regmap_update_bits(cs4271->regmap, CS4271_ADCCTL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			CS4271_ADCCTL_ADC_DIF_MASK, CS4271_ADCCTL_ADC_DIF_LJ);
 		if (ret < 0)
 			return ret;
 		break;
 	case SND_SOC_DAIFMT_I2S:
 		val |= CS4271_MODE1_DAC_DIF_I2S;
-<<<<<<< HEAD
-		ret = snd_soc_update_bits(codec, CS4271_ADCCTL,
-=======
 		ret = regmap_update_bits(cs4271->regmap, CS4271_ADCCTL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			CS4271_ADCCTL_ADC_DIF_MASK, CS4271_ADCCTL_ADC_DIF_I2S);
 		if (ret < 0)
 			return ret;
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Invalid DAI format\n");
-		return -EINVAL;
-	}
-
-	ret = snd_soc_update_bits(codec, CS4271_MODE1,
-=======
 		dev_err(component->dev, "Invalid DAI format\n");
 		return -EINVAL;
 	}
 
 	ret = regmap_update_bits(cs4271->regmap, CS4271_MODE1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		CS4271_MODE1_DAC_DIF_MASK | CS4271_MODE1_MASTER, val);
 	if (ret < 0)
 		return ret;
@@ -353,15 +250,9 @@ static int cs4271_set_dai_fmt(struct snd_soc_dai *codec_dai,
 
 static int cs4271_deemph[] = {0, 44100, 48000, 32000};
 
-<<<<<<< HEAD
-static int cs4271_set_deemph(struct snd_soc_codec *codec)
-{
-	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
-=======
 static int cs4271_set_deemph(struct snd_soc_component *component)
 {
 	struct cs4271_private *cs4271 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, ret;
 	int val = CS4271_DACCTL_DEM_DIS;
 
@@ -375,11 +266,7 @@ static int cs4271_set_deemph(struct snd_soc_component *component)
 		val <<= 4;
 	}
 
-<<<<<<< HEAD
-	ret = snd_soc_update_bits(codec, CS4271_DACCTL,
-=======
 	ret = regmap_update_bits(cs4271->regmap, CS4271_DACCTL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		CS4271_DACCTL_DEM_MASK, val);
 	if (ret < 0)
 		return ret;
@@ -389,13 +276,8 @@ static int cs4271_set_deemph(struct snd_soc_component *component)
 static int cs4271_get_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct cs4271_private *cs4271 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ucontrol->value.integer.value[0] = cs4271->deemph;
 	return 0;
@@ -404,19 +286,11 @@ static int cs4271_get_deemph(struct snd_kcontrol *kcontrol,
 static int cs4271_put_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
-
-	cs4271->deemph = ucontrol->value.integer.value[0];
-	return cs4271_set_deemph(codec);
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct cs4271_private *cs4271 = snd_soc_component_get_drvdata(component);
 
 	cs4271->deemph = ucontrol->value.integer.value[0];
 	return cs4271_set_deemph(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct cs4271_clk_cfg {
@@ -456,24 +330,12 @@ static struct cs4271_clk_cfg cs4271_clk_tab[] = {
 	{0, CS4271_MODE1_MODE_4X, 256,  CS4271_MODE1_DIV_2},
 };
 
-<<<<<<< HEAD
-#define CS4171_NR_RATIOS ARRAY_SIZE(cs4271_clk_tab)
-=======
 #define CS4271_NR_RATIOS ARRAY_SIZE(cs4271_clk_tab)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int cs4271_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_codec *codec = rtd->codec;
-	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
-	int i, ret;
-	unsigned int ratio, val;
-
-=======
 	struct snd_soc_component *component = dai->component;
 	struct cs4271_private *cs4271 = snd_soc_component_get_drvdata(component);
 	int i, ret;
@@ -506,7 +368,6 @@ static int cs4271_hw_params(struct snd_pcm_substream *substream,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cs4271->rate = params_rate(params);
 
 	/* Configure DAC */
@@ -518,45 +379,24 @@ static int cs4271_hw_params(struct snd_pcm_substream *substream,
 		val = CS4271_MODE1_MODE_4X;
 
 	ratio = cs4271->mclk / cs4271->rate;
-<<<<<<< HEAD
-	for (i = 0; i < CS4171_NR_RATIOS; i++)
-=======
 	for (i = 0; i < CS4271_NR_RATIOS; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((cs4271_clk_tab[i].master == cs4271->master) &&
 		    (cs4271_clk_tab[i].speed_mode == val) &&
 		    (cs4271_clk_tab[i].ratio == ratio))
 			break;
 
-<<<<<<< HEAD
-	if (i == CS4171_NR_RATIOS) {
-		dev_err(codec->dev, "Invalid sample rate\n");
-=======
 	if (i == CS4271_NR_RATIOS) {
 		dev_err(component->dev, "Invalid sample rate\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	val |= cs4271_clk_tab[i].ratio_mask;
 
-<<<<<<< HEAD
-	ret = snd_soc_update_bits(codec, CS4271_MODE1,
-=======
 	ret = regmap_update_bits(cs4271->regmap, CS4271_MODE1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		CS4271_MODE1_MODE_MASK | CS4271_MODE1_DIV_MASK, val);
 	if (ret < 0)
 		return ret;
 
-<<<<<<< HEAD
-	return cs4271_set_deemph(codec);
-}
-
-static int cs4271_digital_mute(struct snd_soc_dai *dai, int mute)
-{
-	struct snd_soc_codec *codec = dai->codec;
-=======
 	return cs4271_set_deemph(component);
 }
 
@@ -564,28 +404,18 @@ static int cs4271_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
 {
 	struct snd_soc_component *component = dai->component;
 	struct cs4271_private *cs4271 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	int val_a = 0;
 	int val_b = 0;
 
-<<<<<<< HEAD
-=======
 	if (stream != SNDRV_PCM_STREAM_PLAYBACK)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mute) {
 		val_a = CS4271_VOLA_MUTE;
 		val_b = CS4271_VOLB_MUTE;
 	}
 
-<<<<<<< HEAD
-	ret = snd_soc_update_bits(codec, CS4271_VOLA, CS4271_VOLA_MUTE, val_a);
-	if (ret < 0)
-		return ret;
-	ret = snd_soc_update_bits(codec, CS4271_VOLB, CS4271_VOLB_MUTE, val_b);
-=======
 	ret = regmap_update_bits(cs4271->regmap, CS4271_VOLA,
 				 CS4271_VOLA_MUTE, val_a);
 	if (ret < 0)
@@ -593,7 +423,6 @@ static int cs4271_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
 
 	ret = regmap_update_bits(cs4271->regmap, CS4271_VOLB,
 				 CS4271_VOLB_MUTE, val_b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -628,11 +457,7 @@ static const struct snd_soc_dai_ops cs4271_dai_ops = {
 	.hw_params	= cs4271_hw_params,
 	.set_sysclk	= cs4271_set_dai_sysclk,
 	.set_fmt	= cs4271_set_dai_fmt,
-<<<<<<< HEAD
-	.digital_mute	= cs4271_digital_mute,
-=======
 	.mute_stream	= cs4271_mute_stream,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver cs4271_dai = {
@@ -652,34 +477,6 @@ static struct snd_soc_dai_driver cs4271_dai = {
 		.formats	= CS4271_PCM_FORMATS,
 	},
 	.ops = &cs4271_dai_ops,
-<<<<<<< HEAD
-	.symmetric_rates = 1,
-};
-
-#ifdef CONFIG_PM
-static int cs4271_soc_suspend(struct snd_soc_codec *codec)
-{
-	int ret;
-	/* Set power-down bit */
-	ret = snd_soc_update_bits(codec, CS4271_MODE2, CS4271_MODE2_PDN,
-				  CS4271_MODE2_PDN);
-	if (ret < 0)
-		return ret;
-	return 0;
-}
-
-static int cs4271_soc_resume(struct snd_soc_codec *codec)
-{
-	int ret;
-	/* Restore codec state */
-	ret = snd_soc_cache_sync(codec);
-	if (ret < 0)
-		return ret;
-	/* then disable the power-down bit */
-	ret = snd_soc_update_bits(codec, CS4271_MODE2, CS4271_MODE2_PDN, 0);
-	if (ret < 0)
-		return ret;
-=======
 	.symmetric_rate = 1,
 };
 
@@ -739,7 +536,6 @@ static int cs4271_soc_resume(struct snd_soc_component *component)
 	if (ret < 0)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 #else
@@ -747,57 +543,6 @@ static int cs4271_soc_resume(struct snd_soc_component *component)
 #define cs4271_soc_resume	NULL
 #endif /* CONFIG_PM */
 
-<<<<<<< HEAD
-static int cs4271_probe(struct snd_soc_codec *codec)
-{
-	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
-	struct cs4271_platform_data *cs4271plat = codec->dev->platform_data;
-	int ret;
-	int gpio_nreset = -EINVAL;
-
-	if (cs4271plat && gpio_is_valid(cs4271plat->gpio_nreset))
-		gpio_nreset = cs4271plat->gpio_nreset;
-
-	if (gpio_nreset >= 0)
-		if (gpio_request(gpio_nreset, "CS4271 Reset"))
-			gpio_nreset = -EINVAL;
-	if (gpio_nreset >= 0) {
-		/* Reset codec */
-		gpio_direction_output(gpio_nreset, 0);
-		mdelay(1);
-		gpio_set_value(gpio_nreset, 1);
-		/* Give the codec time to wake up */
-		mdelay(1);
-	}
-
-	cs4271->gpio_nreset = gpio_nreset;
-
-	/*
-	 * In case of I2C, chip address specified in board data.
-	 * So cache IO operations use 8 bit codec register address.
-	 * In case of SPI, chip address and register address
-	 * passed together as 16 bit value.
-	 * Anyway, register address is masked with 0xFF inside
-	 * soc-cache code.
-	 */
-	if (cs4271->bus_type == SND_SOC_SPI)
-		ret = snd_soc_codec_set_cache_io(codec, 16, 8,
-			cs4271->bus_type);
-	else
-		ret = snd_soc_codec_set_cache_io(codec, 8, 8,
-			cs4271->bus_type);
-	if (ret) {
-		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
-		return ret;
-	}
-
-	ret = snd_soc_update_bits(codec, CS4271_MODE2,
-				  CS4271_MODE2_PDN | CS4271_MODE2_CPEN,
-				  CS4271_MODE2_PDN | CS4271_MODE2_CPEN);
-	if (ret < 0)
-		return ret;
-	ret = snd_soc_update_bits(codec, CS4271_MODE2, CS4271_MODE2_PDN, 0);
-=======
 #ifdef CONFIG_OF
 const struct of_device_id cs4271_dt_ids[] = {
 	{ .compatible = "cirrus,cs4271", },
@@ -845,159 +590,11 @@ static int cs4271_component_probe(struct snd_soc_component *component)
 		return ret;
 	ret = regmap_update_bits(cs4271->regmap, CS4271_MODE2,
 				 CS4271_MODE2_PDN, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 	/* Power-up sequence requires 85 uS */
 	udelay(85);
 
-<<<<<<< HEAD
-	return snd_soc_add_codec_controls(codec, cs4271_snd_controls,
-		ARRAY_SIZE(cs4271_snd_controls));
-}
-
-static int cs4271_remove(struct snd_soc_codec *codec)
-{
-	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
-	int gpio_nreset;
-
-	gpio_nreset = cs4271->gpio_nreset;
-
-	if (gpio_is_valid(gpio_nreset)) {
-		/* Set codec to the reset state */
-		gpio_set_value(gpio_nreset, 0);
-		gpio_free(gpio_nreset);
-	}
-
-	return 0;
-};
-
-static struct snd_soc_codec_driver soc_codec_dev_cs4271 = {
-	.probe			= cs4271_probe,
-	.remove			= cs4271_remove,
-	.suspend		= cs4271_soc_suspend,
-	.resume			= cs4271_soc_resume,
-	.reg_cache_default	= cs4271_dflt_reg,
-	.reg_cache_size		= ARRAY_SIZE(cs4271_dflt_reg),
-	.reg_word_size		= sizeof(cs4271_dflt_reg[0]),
-	.compress_type		= SND_SOC_FLAT_COMPRESSION,
-};
-
-#if defined(CONFIG_SPI_MASTER)
-static int __devinit cs4271_spi_probe(struct spi_device *spi)
-{
-	struct cs4271_private *cs4271;
-
-	cs4271 = devm_kzalloc(&spi->dev, sizeof(*cs4271), GFP_KERNEL);
-	if (!cs4271)
-		return -ENOMEM;
-
-	spi_set_drvdata(spi, cs4271);
-	cs4271->bus_type = SND_SOC_SPI;
-
-	return snd_soc_register_codec(&spi->dev, &soc_codec_dev_cs4271,
-		&cs4271_dai, 1);
-}
-
-static int __devexit cs4271_spi_remove(struct spi_device *spi)
-{
-	snd_soc_unregister_codec(&spi->dev);
-	return 0;
-}
-
-static struct spi_driver cs4271_spi_driver = {
-	.driver = {
-		.name	= "cs4271",
-		.owner	= THIS_MODULE,
-	},
-	.probe		= cs4271_spi_probe,
-	.remove		= __devexit_p(cs4271_spi_remove),
-};
-#endif /* defined(CONFIG_SPI_MASTER) */
-
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-static const struct i2c_device_id cs4271_i2c_id[] = {
-	{"cs4271", 0},
-	{}
-};
-MODULE_DEVICE_TABLE(i2c, cs4271_i2c_id);
-
-static int __devinit cs4271_i2c_probe(struct i2c_client *client,
-				      const struct i2c_device_id *id)
-{
-	struct cs4271_private *cs4271;
-
-	cs4271 = devm_kzalloc(&client->dev, sizeof(*cs4271), GFP_KERNEL);
-	if (!cs4271)
-		return -ENOMEM;
-
-	i2c_set_clientdata(client, cs4271);
-	cs4271->bus_type = SND_SOC_I2C;
-
-	return snd_soc_register_codec(&client->dev, &soc_codec_dev_cs4271,
-		&cs4271_dai, 1);
-}
-
-static int __devexit cs4271_i2c_remove(struct i2c_client *client)
-{
-	snd_soc_unregister_codec(&client->dev);
-	return 0;
-}
-
-static struct i2c_driver cs4271_i2c_driver = {
-	.driver = {
-		.name	= "cs4271",
-		.owner	= THIS_MODULE,
-	},
-	.id_table	= cs4271_i2c_id,
-	.probe		= cs4271_i2c_probe,
-	.remove		= __devexit_p(cs4271_i2c_remove),
-};
-#endif /* defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE) */
-
-/*
- * We only register our serial bus driver here without
- * assignment to particular chip. So if any of the below
- * fails, there is some problem with I2C or SPI subsystem.
- * In most cases this module will be compiled with support
- * of only one serial bus.
- */
-static int __init cs4271_modinit(void)
-{
-	int ret;
-
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-	ret = i2c_add_driver(&cs4271_i2c_driver);
-	if (ret) {
-		pr_err("Failed to register CS4271 I2C driver: %d\n", ret);
-		return ret;
-	}
-#endif
-
-#if defined(CONFIG_SPI_MASTER)
-	ret = spi_register_driver(&cs4271_spi_driver);
-	if (ret) {
-		pr_err("Failed to register CS4271 SPI driver: %d\n", ret);
-		return ret;
-	}
-#endif
-
-	return 0;
-}
-module_init(cs4271_modinit);
-
-static void __exit cs4271_modexit(void)
-{
-#if defined(CONFIG_SPI_MASTER)
-	spi_unregister_driver(&cs4271_spi_driver);
-#endif
-
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-	i2c_del_driver(&cs4271_i2c_driver);
-#endif
-}
-module_exit(cs4271_modexit);
-=======
 	if (amutec_eq_bmutec)
 		regmap_update_bits(cs4271->regmap, CS4271_MODE2,
 				   CS4271_MODE2_MUTECAEQUB,
@@ -1094,7 +691,6 @@ int cs4271_probe(struct device *dev, struct regmap *regmap)
 					       &cs4271_dai, 1);
 }
 EXPORT_SYMBOL_GPL(cs4271_probe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alexander Sverdlin <subaparts@yandex.ru>");
 MODULE_DESCRIPTION("Cirrus Logic CS4271 ALSA SoC Codec Driver");

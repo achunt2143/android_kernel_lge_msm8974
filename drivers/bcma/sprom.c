@@ -28,11 +28,7 @@ static int(*get_fallback_sprom)(struct bcma_bus *dev, struct ssb_sprom *out);
  * callback handler which fills the SPROM data structure. The fallback is
  * used for PCI based BCMA devices, where no valid SPROM can be found
  * in the shadow registers and to provide the SPROM for SoCs where BCMA is
-<<<<<<< HEAD
- * to controll the system bus.
-=======
  * to control the system bus.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is useful for weird architectures that have a half-assed
  * BCMA device hardwired to their PCI bus.
@@ -64,19 +60,11 @@ static int bcma_fill_sprom_with_fallback(struct bcma_bus *bus,
 	if (err)
 		goto fail;
 
-<<<<<<< HEAD
-	pr_debug("Using SPROM revision %d provided by"
-		 " platform.\n", bus->sprom.revision);
-	return 0;
-fail:
-	pr_warn("Using fallback SPROM failed (err %d)\n", err);
-=======
 	bcma_debug(bus, "Using SPROM revision %d provided by platform.\n",
 		   bus->sprom.revision);
 	return 0;
 fail:
 	bcma_warn(bus, "Using fallback SPROM failed (err %d)\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -84,21 +72,12 @@ fail:
  * R/W ops.
  **************************************************/
 
-<<<<<<< HEAD
-static void bcma_sprom_read(struct bcma_bus *bus, u16 offset, u16 *sprom)
-{
-	int i;
-	for (i = 0; i < SSB_SPROMSIZE_WORDS_R4; i++)
-		sprom[i] = bcma_read16(bus->drv_cc.core,
-				       offset + (i * 2));
-=======
 static void bcma_sprom_read(struct bcma_bus *bus, u16 offset, u16 *sprom,
 			    size_t words)
 {
 	int i;
 	for (i = 0; i < words; i++)
 		sprom[i] = bcma_read16(bus->drv_cc.core, offset + (i * 2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**************************************************
@@ -145,50 +124,29 @@ static inline u8 bcma_crc8(u8 crc, u8 data)
 	return t[crc ^ data];
 }
 
-<<<<<<< HEAD
-static u8 bcma_sprom_crc(const u16 *sprom)
-=======
 static u8 bcma_sprom_crc(const u16 *sprom, size_t words)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int word;
 	u8 crc = 0xFF;
 
-<<<<<<< HEAD
-	for (word = 0; word < SSB_SPROMSIZE_WORDS_R4 - 1; word++) {
-		crc = bcma_crc8(crc, sprom[word] & 0x00FF);
-		crc = bcma_crc8(crc, (sprom[word] & 0xFF00) >> 8);
-	}
-	crc = bcma_crc8(crc, sprom[SSB_SPROMSIZE_WORDS_R4 - 1] & 0x00FF);
-=======
 	for (word = 0; word < words - 1; word++) {
 		crc = bcma_crc8(crc, sprom[word] & 0x00FF);
 		crc = bcma_crc8(crc, (sprom[word] & 0xFF00) >> 8);
 	}
 	crc = bcma_crc8(crc, sprom[words - 1] & 0x00FF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	crc ^= 0xFF;
 
 	return crc;
 }
 
-<<<<<<< HEAD
-static int bcma_sprom_check_crc(const u16 *sprom)
-=======
 static int bcma_sprom_check_crc(const u16 *sprom, size_t words)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 crc;
 	u8 expected_crc;
 	u16 tmp;
 
-<<<<<<< HEAD
-	crc = bcma_sprom_crc(sprom);
-	tmp = sprom[SSB_SPROMSIZE_WORDS_R4 - 1] & SSB_SPROM_REVISION_CRC;
-=======
 	crc = bcma_sprom_crc(sprom, words);
 	tmp = sprom[words - 1] & SSB_SPROM_REVISION_CRC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	expected_crc = tmp >> SSB_SPROM_REVISION_CRC_SHIFT;
 	if (crc != expected_crc)
 		return -EPROTO;
@@ -196,41 +154,25 @@ static int bcma_sprom_check_crc(const u16 *sprom, size_t words)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int bcma_sprom_valid(const u16 *sprom)
-=======
 static int bcma_sprom_valid(struct bcma_bus *bus, const u16 *sprom,
 			    size_t words)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 revision;
 	int err;
 
-<<<<<<< HEAD
-	err = bcma_sprom_check_crc(sprom);
-	if (err)
-		return err;
-
-	revision = sprom[SSB_SPROMSIZE_WORDS_R4 - 1] & SSB_SPROM_REVISION_REV;
-	if (revision != 8 && revision != 9) {
-=======
 	err = bcma_sprom_check_crc(sprom, words);
 	if (err)
 		return err;
 
 	revision = sprom[words - 1] & SSB_SPROM_REVISION_REV;
 	if (revision < 8 || revision > 11) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("Unsupported SPROM revision: %d\n", revision);
 		return -ENOENT;
 	}
 
-<<<<<<< HEAD
-=======
 	bus->sprom.revision = revision;
 	bcma_debug(bus, "Found SPROM revision %d\n", revision);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -243,8 +185,6 @@ static int bcma_sprom_valid(struct bcma_bus *bus, const u16 *sprom,
 #define SPEX(_field, _offset, _mask, _shift)	\
 	bus->sprom._field = ((sprom[SPOFF(_offset)] & (_mask)) >> (_shift))
 
-<<<<<<< HEAD
-=======
 #define SPEX32(_field, _offset, _mask, _shift)	\
 	bus->sprom._field = ((((u32)sprom[SPOFF((_offset)+2)] << 16 | \
 				sprom[SPOFF(_offset)]) & (_mask)) >> (_shift))
@@ -278,38 +218,24 @@ static s8 sprom_extract_antgain(const u16 *in, u16 offset, u16 mask, u16 shift)
 	return (s8)gain;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bcma_sprom_extract_r8(struct bcma_bus *bus, const u16 *sprom)
 {
 	u16 v, o;
 	int i;
-<<<<<<< HEAD
-	u16 pwr_info_offset[] = {
-=======
 	static const u16 pwr_info_offset[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SSB_SROM8_PWR_INFO_CORE0, SSB_SROM8_PWR_INFO_CORE1,
 		SSB_SROM8_PWR_INFO_CORE2, SSB_SROM8_PWR_INFO_CORE3
 	};
 	BUILD_BUG_ON(ARRAY_SIZE(pwr_info_offset) !=
 			ARRAY_SIZE(bus->sprom.core_pwr_info));
 
-<<<<<<< HEAD
-	bus->sprom.revision = sprom[SSB_SPROMSIZE_WORDS_R4 - 1] &
-		SSB_SPROM_REVISION_REV;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 3; i++) {
 		v = sprom[SPOFF(SSB_SPROM8_IL0MAC) + i];
 		*(((__be16 *)bus->sprom.il0mac) + i) = cpu_to_be16(v);
 	}
 
 	SPEX(board_rev, SSB_SPROM8_BOARDREV, ~0, 0);
-<<<<<<< HEAD
-=======
 	SPEX(board_type, SSB_SPROM1_SPID, ~0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SPEX(txpid2g[0], SSB_SPROM4_TXPID2G01, SSB_SPROM4_TXPID2G0,
 	     SSB_SPROM4_TXPID2G0_SHIFT);
@@ -352,16 +278,10 @@ static void bcma_sprom_extract_r8(struct bcma_bus *bus, const u16 *sprom)
 	SPEX(boardflags2_lo, SSB_SPROM8_BFL2LO, ~0, 0);
 	SPEX(boardflags2_hi, SSB_SPROM8_BFL2HI, ~0, 0);
 
-<<<<<<< HEAD
-	SPEX(country_code, SSB_SPROM8_CCODE, ~0, 0);
-
-	/* Extract cores power info info */
-=======
 	SPEX(alpha2[0], SSB_SPROM8_CCODE, 0xff00, 8);
 	SPEX(alpha2[1], SSB_SPROM8_CCODE, 0x00ff, 0);
 
 	/* Extract core's power info */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ARRAY_SIZE(pwr_info_offset); i++) {
 		o = pwr_info_offset[i];
 		SPEX(core_pwr_info[i].itssi_2g, o + SSB_SROM8_2G_MAXP_ITSSI,
@@ -414,8 +334,6 @@ static void bcma_sprom_extract_r8(struct bcma_bus *bus, const u16 *sprom)
 	     SSB_SROM8_FEM_TR_ISO_SHIFT);
 	SPEX(fem.ghz5.antswlut, SSB_SPROM8_FEM5G, SSB_SROM8_FEM_ANTSWLUT,
 	     SSB_SROM8_FEM_ANTSWLUT_SHIFT);
-<<<<<<< HEAD
-=======
 
 	SPEX(ant_available_a, SSB_SPROM8_ANTAVAIL, SSB_SPROM8_ANTAVAIL_A,
 	     SSB_SPROM8_ANTAVAIL_A_SHIFT);
@@ -554,7 +472,6 @@ static void bcma_sprom_extract_r8(struct bcma_bus *bus, const u16 *sprom)
 	SPEX(temps_hysteresis, SSB_SPROM8_TEMPDELTA,
 	     SSB_SPROM8_TEMPDELTA_HYSTERESIS,
 	     SSB_SPROM8_TEMPDELTA_HYSTERESIS_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -578,19 +495,11 @@ static bool bcma_sprom_ext_available(struct bcma_bus *bus)
 	/* older chipcommon revisions use chip status register */
 	chip_status = bcma_read32(bus->drv_cc.core, BCMA_CC_CHIPSTAT);
 	switch (bus->chipinfo.id) {
-<<<<<<< HEAD
-	case 0x4313:
-		present_mask = BCMA_CC_CHIPST_4313_SPROM_PRESENT;
-		break;
-
-	case 0x4331:
-=======
 	case BCMA_CHIP_ID_BCM4313:
 		present_mask = BCMA_CC_CHIPST_4313_SPROM_PRESENT;
 		break;
 
 	case BCMA_CHIP_ID_BCM4331:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		present_mask = BCMA_CC_CHIPST_4331_SPROM_PRESENT;
 		break;
 
@@ -612,22 +521,6 @@ static bool bcma_sprom_onchip_available(struct bcma_bus *bus)
 
 	chip_status = bcma_read32(bus->drv_cc.core, BCMA_CC_CHIPSTAT);
 	switch (bus->chipinfo.id) {
-<<<<<<< HEAD
-	case 0x4313:
-		present = chip_status & BCMA_CC_CHIPST_4313_OTP_PRESENT;
-		break;
-
-	case 0x4331:
-		present = chip_status & BCMA_CC_CHIPST_4331_OTP_PRESENT;
-		break;
-
-	case 43224:
-	case 43225:
-		/* for these chips OTP is always available */
-		present = true;
-		break;
-
-=======
 	case BCMA_CHIP_ID_BCM4313:
 		present = chip_status & BCMA_CC_CHIPST_4313_OTP_PRESENT;
 		break;
@@ -648,7 +541,6 @@ static bool bcma_sprom_onchip_available(struct bcma_bus *bus)
 	case BCMA_CHIP_ID_BCM43428:
 		present = chip_status & BCMA_CC_CHIPST_43228_OTP_PRESENT;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		present = false;
 		break;
@@ -686,16 +578,12 @@ int bcma_sprom_get(struct bcma_bus *bus)
 {
 	u16 offset = BCMA_CC_SPROM;
 	u16 *sprom;
-<<<<<<< HEAD
-	int err = 0;
-=======
 	static const size_t sprom_sizes[] = {
 		SSB_SPROMSIZE_WORDS_R4,
 		SSB_SPROMSIZE_WORDS_R10,
 		SSB_SPROMSIZE_WORDS_R11,
 	};
 	int i, err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!bus->drv_cc.core)
 		return -EOPNOTSUPP;
@@ -724,30 +612,6 @@ int bcma_sprom_get(struct bcma_bus *bus)
 		}
 	}
 
-<<<<<<< HEAD
-	sprom = kcalloc(SSB_SPROMSIZE_WORDS_R4, sizeof(u16),
-			GFP_KERNEL);
-	if (!sprom)
-		return -ENOMEM;
-
-	if (bus->chipinfo.id == 0x4331 || bus->chipinfo.id == 43431)
-		bcma_chipco_bcm4331_ext_pa_lines_ctl(&bus->drv_cc, false);
-
-	pr_debug("SPROM offset 0x%x\n", offset);
-	bcma_sprom_read(bus, offset, sprom);
-
-	if (bus->chipinfo.id == 0x4331 || bus->chipinfo.id == 43431)
-		bcma_chipco_bcm4331_ext_pa_lines_ctl(&bus->drv_cc, true);
-
-	err = bcma_sprom_valid(sprom);
-	if (err)
-		goto out;
-
-	bcma_sprom_extract_r8(bus, sprom);
-
-out:
-	kfree(sprom);
-=======
 	if (bus->chipinfo.id == BCMA_CHIP_ID_BCM4331 ||
 	    bus->chipinfo.id == BCMA_CHIP_ID_BCM43431)
 		bcma_chipco_bcm4331_ext_pa_lines_ctl(&bus->drv_cc, false);
@@ -780,6 +644,5 @@ out:
 		kfree(sprom);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }

@@ -1,36 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_PLATFORM_H
-#define _ASM_X86_PLATFORM_H
-
-#include <asm/pgtable_types.h>
-#include <asm/bootparam.h>
-
-struct mpc_bus;
-struct mpc_cpu;
-struct mpc_table;
-struct cpuinfo_x86;
-
-/**
- * struct x86_init_mpparse - platform specific mpparse ops
- * @mpc_record:			platform specific mpc record accounting
- * @setup_ioapic_ids:		platform specific ioapic id override
- * @mpc_apic_id:		platform specific mpc apic id assignment
- * @smp_read_mpc_oem:		platform specific oem mpc table setup
- * @mpc_oem_pci_bus:		platform specific pci bus setup (default NULL)
- * @mpc_oem_bus_info:		platform specific mpc bus info
- * @find_smp_config:		find the smp configuration
- * @get_smp_config:		get the smp configuration
- */
-struct x86_init_mpparse {
-	void (*mpc_record)(unsigned int mode);
-	void (*setup_ioapic_ids)(void);
-	int (*mpc_apic_id)(struct mpc_cpu *m);
-	void (*smp_read_mpc_oem)(struct mpc_table *mpc);
-	void (*mpc_oem_pci_bus)(struct mpc_bus *m);
-	void (*mpc_oem_bus_info)(struct mpc_bus *m, char *name);
-	void (*find_smp_config)(void);
-	void (*get_smp_config)(unsigned int early);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_PLATFORM_H
 #define _ASM_X86_PLATFORM_H
@@ -55,7 +22,6 @@ struct x86_init_mpparse {
 	void (*find_mptable)(void);
 	void (*early_parse_smp_cfg)(void);
 	void (*parse_smp_cfg)(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -64,20 +30,13 @@ struct x86_init_mpparse {
  * @reserve_resources:		reserve the standard resources for the
  *				platform
  * @memory_setup:		platform specific memory setup
-<<<<<<< HEAD
- *
-=======
  * @dmi_setup:			platform specific DMI setup
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct x86_init_resources {
 	void (*probe_roms)(void);
 	void (*reserve_resources)(void);
 	char *(*memory_setup)(void);
-<<<<<<< HEAD
-=======
 	void (*dmi_setup)(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -85,33 +44,21 @@ struct x86_init_resources {
  * @pre_vector_init:		init code to run before interrupt vectors
  *				are set up.
  * @intr_init:			interrupt init code
-<<<<<<< HEAD
- * @trap_init:			platform specific trap setup
-=======
  * @intr_mode_select:		interrupt delivery mode selection
  * @intr_mode_init:		interrupt delivery mode setup
  * @create_pci_msi_domain:	Create the PCI/MSI interrupt domain
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct x86_init_irqs {
 	void (*pre_vector_init)(void);
 	void (*intr_init)(void);
-<<<<<<< HEAD
-	void (*trap_init)(void);
-=======
 	void (*intr_mode_select)(void);
 	void (*intr_mode_init)(void);
 	struct irq_domain *(*create_pci_msi_domain)(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct x86_init_oem - oem platform specific customizing functions
-<<<<<<< HEAD
- * @arch_setup:			platform specific architecure setup
-=======
  * @arch_setup:			platform specific architecture setup
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @banner:			print a platform specific banner
  */
 struct x86_init_oem {
@@ -120,26 +67,6 @@ struct x86_init_oem {
 };
 
 /**
-<<<<<<< HEAD
- * struct x86_init_mapping - platform specific initial kernel pagetable setup
- * @pagetable_reserve:	reserve a range of addresses for kernel pagetable usage
- *
- * For more details on the purpose of this hook, look in
- * init_memory_mapping and the commit that added it.
- */
-struct x86_init_mapping {
-	void (*pagetable_reserve)(u64 start, u64 end);
-};
-
-/**
- * struct x86_init_paging - platform specific paging functions
- * @pagetable_setup_start:	platform specific pre paging_init() call
- * @pagetable_setup_done:	platform specific post paging_init() call
- */
-struct x86_init_paging {
-	void (*pagetable_setup_start)(pgd_t *base);
-	void (*pagetable_setup_done)(pgd_t *base);
-=======
  * struct x86_init_paging - platform specific paging functions
  * @pagetable_init:	platform specific paging initialization call to setup
  *			the kernel pagetables and prepare accessors functions.
@@ -148,26 +75,17 @@ struct x86_init_paging {
  */
 struct x86_init_paging {
 	void (*pagetable_init)(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct x86_init_timers - platform specific timer setup
  * @setup_perpcu_clockev:	set up the per cpu clock event device for the
  *				boot cpu
-<<<<<<< HEAD
- * @tsc_pre_init:		platform function called before TSC init
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @timer_init:			initialize the platform timer (default PIT/HPET)
  * @wallclock_init:		init the wallclock device
  */
 struct x86_init_timers {
 	void (*setup_percpu_clockev)(void);
-<<<<<<< HEAD
-	void (*tsc_pre_init)(void);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*timer_init)(void);
 	void (*wallclock_init)(void);
 };
@@ -195,8 +113,6 @@ struct x86_init_pci {
 };
 
 /**
-<<<<<<< HEAD
-=======
  * struct x86_hyper_init - x86 hypervisor init functions
  * @init_platform:		platform setup
  * @guest_late_init:		guest late init
@@ -242,7 +158,6 @@ struct x86_guest {
 };
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * struct x86_init_ops - functions for platform specific setup
  *
  */
@@ -251,37 +166,25 @@ struct x86_init_ops {
 	struct x86_init_mpparse		mpparse;
 	struct x86_init_irqs		irqs;
 	struct x86_init_oem		oem;
-<<<<<<< HEAD
-	struct x86_init_mapping		mapping;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct x86_init_paging		paging;
 	struct x86_init_timers		timers;
 	struct x86_init_iommu		iommu;
 	struct x86_init_pci		pci;
-<<<<<<< HEAD
-=======
 	struct x86_hyper_init		hyper;
 	struct x86_init_acpi		acpi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct x86_cpuinit_ops - platform specific cpu hotplug setups
  * @setup_percpu_clockev:	set up the per cpu clock event device
  * @early_percpu_clock_init:	early init of the per cpu clock event device
-<<<<<<< HEAD
-=======
  * @fixup_cpu_id:		fixup function for cpuinfo_x86::topo.pkg_id
  * @parallel_bringup:		Parallel bringup control
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct x86_cpuinit_ops {
 	void (*setup_percpu_clockev)(void);
 	void (*early_percpu_clock_init)(void);
 	void (*fixup_cpu_id)(struct cpuinfo_x86 *c, int node);
-<<<<<<< HEAD
-=======
 	bool parallel_bringup;
 };
 
@@ -369,33 +272,16 @@ struct x86_hyper_runtime {
 	void (*sev_es_hcall_prepare)(struct ghcb *ghcb, struct pt_regs *regs);
 	bool (*sev_es_hcall_finish)(struct ghcb *ghcb, struct pt_regs *regs);
 	bool (*is_private_mmio)(u64 addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct x86_platform_ops - platform specific runtime functions
-<<<<<<< HEAD
- * @calibrate_tsc:		calibrate TSC
- * @wallclock_init:		init the wallclock device
-=======
  * @calibrate_cpu:		calibrate CPU
  * @calibrate_tsc:		calibrate TSC, if different from CPU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @get_wallclock:		get time from HW clock like RTC etc.
  * @set_wallclock:		set time back to HW clock
  * @is_untracked_pat_range	exclude from PAT logic
  * @nmi_init			enable NMI on cpus
-<<<<<<< HEAD
- * @i8042_detect		pre-detect if i8042 controller exists
- * @save_sched_clock_state:	save state for sched_clock() on suspend
- * @restore_sched_clock_state:	restore state for sched_clock() on resume
- */
-struct x86_platform_ops {
-	unsigned long (*calibrate_tsc)(void);
-	void (*wallclock_init)(void);
-	unsigned long (*get_wallclock)(void);
-	int (*set_wallclock)(unsigned long nowtime);
-=======
  * @save_sched_clock_state:	save state for sched_clock() on suspend
  * @restore_sched_clock_state:	restore state for sched_clock() on resume
  * @apic_post_init:		adjust apic if needed
@@ -416,25 +302,10 @@ struct x86_platform_ops {
 	unsigned long (*calibrate_tsc)(void);
 	void (*get_wallclock)(struct timespec64 *ts);
 	int (*set_wallclock)(const struct timespec64 *ts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*iommu_shutdown)(void);
 	bool (*is_untracked_pat_range)(u64 start, u64 end);
 	void (*nmi_init)(void);
 	unsigned char (*get_nmi_reason)(void);
-<<<<<<< HEAD
-	int (*i8042_detect)(void);
-	void (*save_sched_clock_state)(void);
-	void (*restore_sched_clock_state)(void);
-};
-
-struct pci_dev;
-
-struct x86_msi_ops {
-	int (*setup_msi_irqs)(struct pci_dev *dev, int nvec, int type);
-	void (*teardown_msi_irq)(unsigned int irq);
-	void (*teardown_msi_irqs)(struct pci_dev *dev);
-	void (*restore_msi_irqs)(struct pci_dev *dev, int irq);
-=======
 	void (*save_sched_clock_state)(void);
 	void (*restore_sched_clock_state)(void);
 	void (*apic_post_init)(void);
@@ -449,18 +320,12 @@ struct x86_msi_ops {
 struct x86_apic_ops {
 	unsigned int	(*io_apic_read)   (unsigned int apic, unsigned int reg);
 	void		(*restore)(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct x86_init_ops x86_init;
 extern struct x86_cpuinit_ops x86_cpuinit;
 extern struct x86_platform_ops x86_platform;
 extern struct x86_msi_ops x86_msi;
-<<<<<<< HEAD
-
-extern void x86_init_noop(void);
-extern void x86_init_uint_noop(unsigned int unused);
-=======
 extern struct x86_apic_ops x86_apic_ops;
 
 extern void x86_early_init_platform_quirks(void);
@@ -471,6 +336,5 @@ extern void x86_op_int_noop(int cpu);
 extern bool x86_pnpbios_disabled(void);
 extern int set_rtc_noop(const struct timespec64 *now);
 extern void get_rtc_noop(struct timespec64 *now);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

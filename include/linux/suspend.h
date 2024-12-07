@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_SUSPEND_H
 #define _LINUX_SUSPEND_H
 
@@ -22,20 +19,11 @@ static inline void pm_set_vt_switch(int do_switch)
 #endif
 
 #ifdef CONFIG_VT_CONSOLE_SLEEP
-<<<<<<< HEAD
-extern int pm_prepare_console(void);
-extern void pm_restore_console(void);
-#else
-static inline int pm_prepare_console(void)
-{
-	return 0;
-=======
 extern void pm_prepare_console(void);
 extern void pm_restore_console(void);
 #else
 static inline void pm_prepare_console(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void pm_restore_console(void)
@@ -46,75 +34,12 @@ static inline void pm_restore_console(void)
 typedef int __bitwise suspend_state_t;
 
 #define PM_SUSPEND_ON		((__force suspend_state_t) 0)
-<<<<<<< HEAD
-#define PM_SUSPEND_STANDBY	((__force suspend_state_t) 1)
-#define PM_SUSPEND_MEM		((__force suspend_state_t) 3)
-#define PM_SUSPEND_MAX		((__force suspend_state_t) 4)
-
-enum suspend_stat_step {
-	SUSPEND_FREEZE = 1,
-	SUSPEND_PREPARE,
-	SUSPEND_SUSPEND,
-	SUSPEND_SUSPEND_LATE,
-	SUSPEND_SUSPEND_NOIRQ,
-	SUSPEND_RESUME_NOIRQ,
-	SUSPEND_RESUME_EARLY,
-	SUSPEND_RESUME
-};
-
-struct suspend_stats {
-	int	success;
-	int	fail;
-	int	failed_freeze;
-	int	failed_prepare;
-	int	failed_suspend;
-	int	failed_suspend_late;
-	int	failed_suspend_noirq;
-	int	failed_resume;
-	int	failed_resume_early;
-	int	failed_resume_noirq;
-#define	REC_FAILED_NUM	2
-	int	last_failed_dev;
-	char	failed_devs[REC_FAILED_NUM][40];
-	int	last_failed_errno;
-	int	errno[REC_FAILED_NUM];
-	int	last_failed_step;
-	enum suspend_stat_step	failed_steps[REC_FAILED_NUM];
-};
-
-extern struct suspend_stats suspend_stats;
-
-static inline void dpm_save_failed_dev(const char *name)
-{
-	strlcpy(suspend_stats.failed_devs[suspend_stats.last_failed_dev],
-		name,
-		sizeof(suspend_stats.failed_devs[0]));
-	suspend_stats.last_failed_dev++;
-	suspend_stats.last_failed_dev %= REC_FAILED_NUM;
-}
-
-static inline void dpm_save_failed_errno(int err)
-{
-	suspend_stats.errno[suspend_stats.last_failed_errno] = err;
-	suspend_stats.last_failed_errno++;
-	suspend_stats.last_failed_errno %= REC_FAILED_NUM;
-}
-
-static inline void dpm_save_failed_step(enum suspend_stat_step step)
-{
-	suspend_stats.failed_steps[suspend_stats.last_failed_step] = step;
-	suspend_stats.last_failed_step++;
-	suspend_stats.last_failed_step %= REC_FAILED_NUM;
-}
-
-=======
 #define PM_SUSPEND_TO_IDLE	((__force suspend_state_t) 1)
 #define PM_SUSPEND_STANDBY	((__force suspend_state_t) 2)
 #define PM_SUSPEND_MEM		((__force suspend_state_t) 3)
 #define PM_SUSPEND_MIN		PM_SUSPEND_TO_IDLE
 #define PM_SUSPEND_MAX		((__force suspend_state_t) 4)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct platform_suspend_ops - Callbacks for managing platform dependent
  *	system sleep states.
@@ -206,9 +131,6 @@ struct platform_suspend_ops {
 	void (*recover)(void);
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_SUSPEND
-=======
 struct platform_s2idle_ops {
 	int (*begin)(void);
 	int (*prepare)(void);
@@ -225,7 +147,6 @@ extern suspend_state_t pm_suspend_target_state;
 extern suspend_state_t mem_sleep_current;
 extern suspend_state_t mem_sleep_default;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * suspend_set_ops - set platform dependent suspend operations
  * @ops: The new suspend operations to set.
@@ -233,8 +154,6 @@ extern suspend_state_t mem_sleep_default;
 extern void suspend_set_ops(const struct platform_suspend_ops *ops);
 extern int suspend_valid_only_mem(suspend_state_t state);
 
-<<<<<<< HEAD
-=======
 extern unsigned int pm_suspend_global_flags;
 
 #define PM_SUSPEND_FLAG_FW_SUSPEND	BIT(0)
@@ -337,7 +256,6 @@ extern void __init pm_states_init(void);
 extern void s2idle_set_ops(const struct platform_s2idle_ops *ops);
 extern void s2idle_wake(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * arch_suspend_disable_irqs - disable IRQs for suspend
  *
@@ -357,13 +275,6 @@ extern void arch_suspend_disable_irqs(void);
 extern void arch_suspend_enable_irqs(void);
 
 extern int pm_suspend(suspend_state_t state);
-<<<<<<< HEAD
-#else /* !CONFIG_SUSPEND */
-#define suspend_valid_only_mem	NULL
-
-static inline void suspend_set_ops(const struct platform_suspend_ops *ops) {}
-static inline int pm_suspend(suspend_state_t state) { return -ENOSYS; }
-=======
 extern bool sync_on_suspend_enabled;
 #else /* !CONFIG_SUSPEND */
 #define suspend_valid_only_mem	NULL
@@ -385,7 +296,6 @@ static inline bool idle_should_enter_s2idle(void) { return false; }
 static inline void __init pm_states_init(void) {}
 static inline void s2idle_set_ops(const struct platform_s2idle_ops *ops) {}
 static inline void s2idle_wake(void) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !CONFIG_SUSPEND */
 
 /* struct pbe is used for creating lists of pages that should be restored
@@ -398,12 +308,6 @@ struct pbe {
 	struct pbe *next;
 };
 
-<<<<<<< HEAD
-/* mm/page_alloc.c */
-extern void mark_free_pages(struct zone *zone);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct platform_hibernation_ops - hibernation platform support
  *
@@ -457,11 +361,7 @@ extern void mark_free_pages(struct zone *zone);
  *	platforms which require special recovery actions in that situation.
  */
 struct platform_hibernation_ops {
-<<<<<<< HEAD
-	int (*begin)(void);
-=======
 	int (*begin)(pm_message_t stage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*end)(void);
 	int (*pre_snapshot)(void);
 	void (*finish)(void);
@@ -475,32 +375,11 @@ struct platform_hibernation_ops {
 
 #ifdef CONFIG_HIBERNATION
 /* kernel/power/snapshot.c */
-<<<<<<< HEAD
-extern void __register_nosave_region(unsigned long b, unsigned long e, int km);
-static inline void __init register_nosave_region(unsigned long b, unsigned long e)
-{
-	__register_nosave_region(b, e, 0);
-}
-static inline void __init register_nosave_region_late(unsigned long b, unsigned long e)
-{
-	__register_nosave_region(b, e, 1);
-}
-=======
 extern void register_nosave_region(unsigned long b, unsigned long e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int swsusp_page_is_forbidden(struct page *);
 extern void swsusp_set_page_free(struct page *);
 extern void swsusp_unset_page_free(struct page *);
 extern unsigned long get_safe_page(gfp_t gfp_mask);
-<<<<<<< HEAD
-
-extern void hibernation_set_ops(const struct platform_hibernation_ops *ops);
-extern int hibernate(void);
-extern bool system_entering_hibernation(void);
-#else /* CONFIG_HIBERNATION */
-static inline void register_nosave_region(unsigned long b, unsigned long e) {}
-static inline void register_nosave_region_late(unsigned long b, unsigned long e) {}
-=======
 extern asmlinkage int swsusp_arch_suspend(void);
 extern asmlinkage int swsusp_arch_resume(void);
 
@@ -520,7 +399,6 @@ int arch_hibernation_header_restore(void *addr);
 
 #else /* CONFIG_HIBERNATION */
 static inline void register_nosave_region(unsigned long b, unsigned long e) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int swsusp_page_is_forbidden(struct page *p) { return 0; }
 static inline void swsusp_set_page_free(struct page *p) {}
 static inline void swsusp_unset_page_free(struct page *p) {}
@@ -528,10 +406,6 @@ static inline void swsusp_unset_page_free(struct page *p) {}
 static inline void hibernation_set_ops(const struct platform_hibernation_ops *ops) {}
 static inline int hibernate(void) { return -ENOSYS; }
 static inline bool system_entering_hibernation(void) { return false; }
-<<<<<<< HEAD
-#endif /* CONFIG_HIBERNATION */
-
-=======
 static inline bool hibernation_available(void) { return false; }
 
 static inline int hibernate_quiet_exec(int (*func)(void *data), void *data) {
@@ -547,7 +421,6 @@ int is_hibernate_resume_dev(dev_t dev);
 static inline int is_hibernate_resume_dev(dev_t dev) { return 0; }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Hibernation and suspend events */
 #define PM_HIBERNATION_PREPARE	0x0001 /* Going to hibernate */
 #define PM_POST_HIBERNATION	0x0002 /* Hibernation finished */
@@ -556,11 +429,7 @@ static inline int is_hibernate_resume_dev(dev_t dev) { return 0; }
 #define PM_RESTORE_PREPARE	0x0005 /* Going to restore a saved image */
 #define PM_POST_RESTORE		0x0006 /* Restore failed */
 
-<<<<<<< HEAD
-extern struct mutex pm_mutex;
-=======
 extern struct mutex system_transition_mutex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PM_SLEEP
 void save_processor_state(void);
@@ -569,12 +438,9 @@ void restore_processor_state(void);
 /* kernel/power/main.c */
 extern int register_pm_notifier(struct notifier_block *nb);
 extern int unregister_pm_notifier(struct notifier_block *nb);
-<<<<<<< HEAD
-=======
 extern void ksys_sync_helper(void);
 extern void pm_report_hw_sleep_time(u64 t);
 extern void pm_report_max_hw_sleep(u64 t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pm_notifier(fn, pri) {				\
 	static struct notifier_block fn##_nb =			\
@@ -585,39 +451,6 @@ extern void pm_report_max_hw_sleep(u64 t);
 /* drivers/base/power/wakeup.c */
 extern bool events_check_enabled;
 
-<<<<<<< HEAD
-extern bool pm_wakeup_pending(void);
-extern bool pm_get_wakeup_count(unsigned int *count, bool block);
-extern bool pm_save_wakeup_count(unsigned int count);
-extern void pm_wakep_autosleep_enabled(bool set);
-
-static inline void lock_system_sleep(void)
-{
-	current->flags |= PF_FREEZER_SKIP;
-	mutex_lock(&pm_mutex);
-}
-
-static inline void unlock_system_sleep(void)
-{
-	/*
-	 * Don't use freezer_count() because we don't want the call to
-	 * try_to_freeze() here.
-	 *
-	 * Reason:
-	 * Fundamentally, we just don't need it, because freezing condition
-	 * doesn't come into effect until we release the pm_mutex lock,
-	 * since the freezer always works with pm_mutex held.
-	 *
-	 * More importantly, in the case of hibernation,
-	 * unlock_system_sleep() gets called in snapshot_read() and
-	 * snapshot_write() when the freezing condition is still in effect.
-	 * Which means, if we use try_to_freeze() here, it would make them
-	 * enter the refrigerator, thus causing hibernation to lockup.
-	 */
-	current->flags &= ~PF_FREEZER_SKIP;
-	mutex_unlock(&pm_mutex);
-}
-=======
 static inline bool pm_suspended_storage(void)
 {
 	return !gfp_has_io_fs(gfp_allowed_mask);
@@ -636,7 +469,6 @@ extern void pm_print_active_wakeup_sources(void);
 
 extern unsigned int lock_system_sleep(void);
 extern void unlock_system_sleep(unsigned int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else /* !CONFIG_PM_SLEEP */
 
@@ -650,17 +482,6 @@ static inline int unregister_pm_notifier(struct notifier_block *nb)
 	return 0;
 }
 
-<<<<<<< HEAD
-#define pm_notifier(fn, pri)	do { (void)(fn); } while (0)
-
-static inline bool pm_wakeup_pending(void) { return false; }
-
-static inline void lock_system_sleep(void) {}
-static inline void unlock_system_sleep(void) {}
-
-#endif /* !CONFIG_PM_SLEEP */
-
-=======
 static inline void pm_report_hw_sleep_time(u64 t) {};
 static inline void pm_report_max_hw_sleep(u64 t) {};
 
@@ -735,7 +556,6 @@ static inline int pm_dyn_debug_messages_on(void)
 #define pm_deferred_pr_dbg(fmt, ...) \
 	__pm_deferred_pr_dbg(fmt, ##__VA_ARGS__)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM_AUTOSLEEP
 
 /* kernel/power/autosleep.c */
@@ -747,41 +567,6 @@ static inline void queue_up_suspend_work(void) {}
 
 #endif /* !CONFIG_PM_AUTOSLEEP */
 
-<<<<<<< HEAD
-#ifdef CONFIG_ARCH_SAVE_PAGE_KEYS
-/*
- * The ARCH_SAVE_PAGE_KEYS functions can be used by an architecture
- * to save/restore additional information to/from the array of page
- * frame numbers in the hibernation image. For s390 this is used to
- * save and restore the storage key for each page that is included
- * in the hibernation image.
- */
-unsigned long page_key_additional_pages(unsigned long pages);
-int page_key_alloc(unsigned long pages);
-void page_key_free(void);
-void page_key_read(unsigned long *pfn);
-void page_key_memorize(unsigned long *pfn);
-void page_key_write(void *address);
-
-#else /* !CONFIG_ARCH_SAVE_PAGE_KEYS */
-
-static inline unsigned long page_key_additional_pages(unsigned long pages)
-{
-	return 0;
-}
-
-static inline int  page_key_alloc(unsigned long pages)
-{
-	return 0;
-}
-
-static inline void page_key_free(void) {}
-static inline void page_key_read(unsigned long *pfn) {}
-static inline void page_key_memorize(unsigned long *pfn) {}
-static inline void page_key_write(void *address) {}
-
-#endif /* !CONFIG_ARCH_SAVE_PAGE_KEYS */
-=======
 enum suspend_stat_step {
 	SUSPEND_WORKING = 0,
 	SUSPEND_FREEZE,
@@ -796,6 +581,5 @@ enum suspend_stat_step {
 
 void dpm_save_failed_dev(const char *name);
 void dpm_save_failed_step(enum suspend_stat_step step);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_SUSPEND_H */

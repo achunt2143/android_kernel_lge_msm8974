@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file does the necessary interface mapping between the bootwrapper
  * device tree operations and the interface provided by shared source
  * files flatdevicetree.[ch].
  *
  * Copyright 2007 David Gibson, IBM Corporation.
-<<<<<<< HEAD
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stddef.h>
@@ -51,21 +30,12 @@
 
 #define offset_devp(off)	\
 	({ \
-<<<<<<< HEAD
-		int _offset = (off); \
-		check_err(_offset) ? NULL : (void *)(_offset+1); \
-	})
-
-#define devp_offset_find(devp)	(((int)(devp))-1)
-#define devp_offset(devp)	(devp ? ((int)(devp))-1 : 0)
-=======
 		unsigned long _offset = (off); \
 		check_err(_offset) ? NULL : (void *)(_offset+1); \
 	})
 
 #define devp_offset_find(devp)	(((unsigned long)(devp))-1)
 #define devp_offset(devp)	(devp ? ((unsigned long)(devp))-1 : 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void *fdt;
 static void *buf; /* = NULL */

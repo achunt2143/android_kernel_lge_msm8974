@@ -10,20 +10,12 @@
  * Licensed under the GNU/GPL. See COPYING for details.
  */
 
-<<<<<<< HEAD
-=======
 #include "ssb_private.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial.h>
 #include <linux/serial_core.h>
 #include <linux/serial_reg.h>
 
-<<<<<<< HEAD
-#include "ssb_private.h"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u32 extif_read32(struct ssb_extif *extif, u16 offset)
 {
@@ -71,11 +63,7 @@ int ssb_extif_serial_init(struct ssb_extif *extif, struct ssb_serial_port *ports
 	for (i = 0; i < 2; i++) {
 		void __iomem *uart_regs;
 
-<<<<<<< HEAD
-		uart_regs = ioremap_nocache(SSB_EUART, 16);
-=======
 		uart_regs = ioremap(SSB_EUART, 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (uart_regs) {
 			uart_regs += (i * 8);
 
@@ -124,12 +112,6 @@ void ssb_extif_get_clockcontrol(struct ssb_extif *extif,
 	*m = extif_read32(extif, SSB_EXTIF_CLOCK_SB);
 }
 
-<<<<<<< HEAD
-void ssb_extif_watchdog_timer_set(struct ssb_extif *extif,
-				  u32 ticks)
-{
-	extif_write32(extif, SSB_EXTIF_WATCHDOG, ticks);
-=======
 u32 ssb_extif_watchdog_timer_set_wdt(struct bcm47xx_wdt *wdt, u32 ticks)
 {
 	struct ssb_extif *extif = bcm47xx_wdt_get_drvdata(wdt);
@@ -161,7 +143,6 @@ void ssb_extif_init(struct ssb_extif *extif)
 	if (!extif->dev)
 		return; /* We don't have a Extif core */
 	spin_lock_init(&extif->gpio_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 ssb_extif_gpio_in(struct ssb_extif *extif, u32 mask)
@@ -171,10 +152,6 @@ u32 ssb_extif_gpio_in(struct ssb_extif *extif, u32 mask)
 
 u32 ssb_extif_gpio_out(struct ssb_extif *extif, u32 mask, u32 value)
 {
-<<<<<<< HEAD
-	return extif_write32_masked(extif, SSB_EXTIF_GPIO_OUT(0),
-				   mask, value);
-=======
 	unsigned long flags;
 	u32 res = 0;
 
@@ -184,15 +161,10 @@ u32 ssb_extif_gpio_out(struct ssb_extif *extif, u32 mask, u32 value)
 	spin_unlock_irqrestore(&extif->gpio_lock, flags);
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 ssb_extif_gpio_outen(struct ssb_extif *extif, u32 mask, u32 value)
 {
-<<<<<<< HEAD
-	return extif_write32_masked(extif, SSB_EXTIF_GPIO_OUTEN(0),
-				   mask, value);
-=======
 	unsigned long flags;
 	u32 res = 0;
 
@@ -202,14 +174,10 @@ u32 ssb_extif_gpio_outen(struct ssb_extif *extif, u32 mask, u32 value)
 	spin_unlock_irqrestore(&extif->gpio_lock, flags);
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 ssb_extif_gpio_polarity(struct ssb_extif *extif, u32 mask, u32 value)
 {
-<<<<<<< HEAD
-	return extif_write32_masked(extif, SSB_EXTIF_GPIO_INTPOL, mask, value);
-=======
 	unsigned long flags;
 	u32 res = 0;
 
@@ -218,14 +186,10 @@ u32 ssb_extif_gpio_polarity(struct ssb_extif *extif, u32 mask, u32 value)
 	spin_unlock_irqrestore(&extif->gpio_lock, flags);
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 ssb_extif_gpio_intmask(struct ssb_extif *extif, u32 mask, u32 value)
 {
-<<<<<<< HEAD
-	return extif_write32_masked(extif, SSB_EXTIF_GPIO_INTMASK, mask, value);
-=======
 	unsigned long flags;
 	u32 res = 0;
 
@@ -234,5 +198,4 @@ u32 ssb_extif_gpio_intmask(struct ssb_extif *extif, u32 mask, u32 value)
 	spin_unlock_irqrestore(&extif->gpio_lock, flags);
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

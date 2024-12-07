@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * privcmd.c
  *
@@ -10,13 +7,6 @@
  * Copyright (c) 2002-2004, K A Fraser, B Dragovic
  */
 
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/sched.h>
-#include <linux/slab.h>
-#include <linux/string.h>
-=======
 #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
 
 #include <linux/eventfd.h>
@@ -29,7 +19,6 @@
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/workqueue.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/mm.h>
 #include <linux/mman.h>
@@ -39,27 +28,13 @@
 #include <linux/pagemap.h>
 #include <linux/seq_file.h>
 #include <linux/miscdevice.h>
-<<<<<<< HEAD
-
-#include <asm/pgalloc.h>
-#include <asm/pgtable.h>
-#include <asm/tlb.h>
-=======
 #include <linux/moduleparam.h>
 #include <linux/virtio_mmio.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/xen/hypervisor.h>
 #include <asm/xen/hypercall.h>
 
 #include <xen/xen.h>
-<<<<<<< HEAD
-#include <xen/privcmd.h>
-#include <xen/interface/xen.h>
-#include <xen/features.h>
-#include <xen/page.h>
-#include <xen/xen-ops.h>
-=======
 #include <xen/events.h>
 #include <xen/privcmd.h>
 #include <xen/interface/xen.h>
@@ -70,26 +45,11 @@
 #include <xen/page.h>
 #include <xen/xen-ops.h>
 #include <xen/balloon.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "privcmd.h"
 
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-#ifndef HAVE_ARCH_PRIVCMD_MMAP
-static int privcmd_enforce_singleshot_mapping(struct vm_area_struct *vma);
-#endif
-
-static long privcmd_ioctl_hypercall(void __user *udata)
-{
-	struct privcmd_hypercall hypercall;
-	long ret;
-
-	if (copy_from_user(&hypercall, udata, sizeof(hypercall)))
-		return -EFAULT;
-
-=======
 #define PRIV_VMA_LOCKED ((void *)1)
 
 static unsigned int privcmd_dm_op_max_num = 16;
@@ -126,15 +86,11 @@ static long privcmd_ioctl_hypercall(struct file *file, void __user *udata)
 		return -EFAULT;
 
 	xen_preemptible_hcall_begin();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = privcmd_call(hypercall.op,
 			   hypercall.arg[0], hypercall.arg[1],
 			   hypercall.arg[2], hypercall.arg[3],
 			   hypercall.arg[4]);
-<<<<<<< HEAD
-=======
 	xen_preemptible_hcall_end();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -157,11 +113,7 @@ static void free_page_list(struct list_head *pages)
  */
 static int gather_array(struct list_head *pagelist,
 			unsigned nelem, size_t size,
-<<<<<<< HEAD
-			void __user *data)
-=======
 			const void __user *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned pageidx;
 	void *pagedata;
@@ -236,9 +188,6 @@ static int traverse_pages(unsigned nelem, size_t size,
 	return ret;
 }
 
-<<<<<<< HEAD
-struct mmap_mfn_state {
-=======
 /*
  * Similar to traverse_pages, but use each page as a "block" of
  * data to be processed as one unit.
@@ -271,23 +220,15 @@ static int traverse_pages_block(unsigned nelem, size_t size,
 }
 
 struct mmap_gfn_state {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long va;
 	struct vm_area_struct *vma;
 	domid_t domain;
 };
 
-<<<<<<< HEAD
-static int mmap_mfn_range(void *data, void *state)
-{
-	struct privcmd_mmap_entry *msg = data;
-	struct mmap_mfn_state *st = state;
-=======
 static int mmap_gfn_range(void *data, void *state)
 {
 	struct privcmd_mmap_entry *msg = data;
 	struct mmap_gfn_state *st = state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vm_area_struct *vma = st->vma;
 	int rc;
 
@@ -301,19 +242,11 @@ static int mmap_gfn_range(void *data, void *state)
 	    ((msg->va+(msg->npages<<PAGE_SHIFT)) > vma->vm_end))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	rc = xen_remap_domain_mfn_range(vma,
-					msg->va & PAGE_MASK,
-					msg->mfn, msg->npages,
-					vma->vm_page_prot,
-					st->domain);
-=======
 	rc = xen_remap_domain_gfn_range(vma,
 					msg->va & PAGE_MASK,
 					msg->mfn, msg->npages,
 					vma->vm_page_prot,
 					st->domain, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0)
 		return rc;
 
@@ -322,42 +255,27 @@ static int mmap_gfn_range(void *data, void *state)
 	return 0;
 }
 
-<<<<<<< HEAD
-static long privcmd_ioctl_mmap(void __user *udata)
-{
-=======
 static long privcmd_ioctl_mmap(struct file *file, void __user *udata)
 {
 	struct privcmd_data *data = file->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct privcmd_mmap mmapcmd;
 	struct mm_struct *mm = current->mm;
 	struct vm_area_struct *vma;
 	int rc;
 	LIST_HEAD(pagelist);
-<<<<<<< HEAD
-	struct mmap_mfn_state state;
-
-	if (!xen_initial_domain())
-		return -EPERM;
-=======
 	struct mmap_gfn_state state;
 
 	/* We only support privcmd_ioctl_mmap_batch for non-auto-translated. */
 	if (xen_feature(XENFEAT_auto_translated_physmap))
 		return -ENOSYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(&mmapcmd, udata, sizeof(mmapcmd)))
 		return -EFAULT;
 
-<<<<<<< HEAD
-=======
 	/* If restriction is in place, check the domid matches */
 	if (data->domid != DOMID_INVALID && data->domid != mmapcmd.dom)
 		return -EPERM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = gather_array(&pagelist,
 			  mmapcmd.num, sizeof(struct privcmd_mmap_entry),
 			  mmapcmd.entry);
@@ -365,32 +283,19 @@ static long privcmd_ioctl_mmap(struct file *file, void __user *udata)
 	if (rc || list_empty(&pagelist))
 		goto out;
 
-<<<<<<< HEAD
-	down_write(&mm->mmap_sem);
-=======
 	mmap_write_lock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{
 		struct page *page = list_first_entry(&pagelist,
 						     struct page, lru);
 		struct privcmd_mmap_entry *msg = page_address(page);
 
-<<<<<<< HEAD
-		vma = find_vma(mm, msg->va);
-		rc = -EINVAL;
-
-		if (!vma || (msg->va != vma->vm_start) ||
-		    !privcmd_enforce_singleshot_mapping(vma))
-			goto out_up;
-=======
 		vma = vma_lookup(mm, msg->va);
 		rc = -EINVAL;
 
 		if (!vma || (msg->va != vma->vm_start) || vma->vm_private_data)
 			goto out_up;
 		vma->vm_private_data = PRIV_VMA_LOCKED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	state.va = vma->vm_start;
@@ -399,19 +304,11 @@ static long privcmd_ioctl_mmap(struct file *file, void __user *udata)
 
 	rc = traverse_pages(mmapcmd.num, sizeof(struct privcmd_mmap_entry),
 			    &pagelist,
-<<<<<<< HEAD
-			    mmap_mfn_range, &state);
-
-
-out_up:
-	up_write(&mm->mmap_sem);
-=======
 			    mmap_gfn_range, &state);
 
 
 out_up:
 	mmap_write_unlock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	free_page_list(&pagelist);
@@ -423,24 +320,6 @@ struct mmap_batch_state {
 	domid_t domain;
 	unsigned long va;
 	struct vm_area_struct *vma;
-<<<<<<< HEAD
-	int err;
-
-	xen_pfn_t __user *user;
-};
-
-static int mmap_batch_fn(void *data, void *state)
-{
-	xen_pfn_t *mfnp = data;
-	struct mmap_batch_state *st = state;
-
-	if (xen_remap_domain_mfn_range(st->vma, st->va & PAGE_MASK, *mfnp, 1,
-				       st->vma->vm_page_prot, st->domain) < 0) {
-		*mfnp |= 0xf0000000U;
-		st->err++;
-	}
-	st->va += PAGE_SIZE;
-=======
 	int index;
 	/* A tristate:
 	 *      0 for no errors
@@ -489,27 +368,10 @@ static int mmap_batch_fn(void *data, int nr, void *state)
 	}
 	st->va += XEN_PAGE_SIZE * nr;
 	st->index += nr / XEN_PFN_PER_PAGE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int mmap_return_errors(void *data, void *state)
-{
-	xen_pfn_t *mfnp = data;
-	struct mmap_batch_state *st = state;
-
-	return put_user(*mfnp, st->user++);
-}
-
-static struct vm_operations_struct privcmd_vm_ops;
-
-static long privcmd_ioctl_mmap_batch(void __user *udata)
-{
-	int ret;
-	struct privcmd_mmapbatch m;
-=======
 static int mmap_return_error(int err, struct mmap_batch_state *st)
 {
 	int ret;
@@ -591,63 +453,12 @@ static long privcmd_ioctl_mmap_batch(
 	struct privcmd_data *data = file->private_data;
 	int ret;
 	struct privcmd_mmapbatch_v2 m;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mm_struct *mm = current->mm;
 	struct vm_area_struct *vma;
 	unsigned long nr_pages;
 	LIST_HEAD(pagelist);
 	struct mmap_batch_state state;
 
-<<<<<<< HEAD
-	if (!xen_initial_domain())
-		return -EPERM;
-
-	if (copy_from_user(&m, udata, sizeof(m)))
-		return -EFAULT;
-
-	nr_pages = m.num;
-	if ((m.num <= 0) || (nr_pages > (LONG_MAX >> PAGE_SHIFT)))
-		return -EINVAL;
-
-	ret = gather_array(&pagelist, m.num, sizeof(xen_pfn_t),
-			   m.arr);
-
-	if (ret || list_empty(&pagelist))
-		goto out;
-
-	down_write(&mm->mmap_sem);
-
-	vma = find_vma(mm, m.addr);
-	ret = -EINVAL;
-	if (!vma ||
-	    vma->vm_ops != &privcmd_vm_ops ||
-	    (m.addr != vma->vm_start) ||
-	    ((m.addr + (nr_pages << PAGE_SHIFT)) != vma->vm_end) ||
-	    !privcmd_enforce_singleshot_mapping(vma)) {
-		up_write(&mm->mmap_sem);
-		goto out;
-	}
-
-	state.domain = m.dom;
-	state.vma = vma;
-	state.va = m.addr;
-	state.err = 0;
-
-	ret = traverse_pages(m.num, sizeof(xen_pfn_t),
-			     &pagelist, mmap_batch_fn, &state);
-
-	up_write(&mm->mmap_sem);
-
-	if (state.err > 0) {
-		state.user = m.arr;
-		ret = traverse_pages(m.num, sizeof(xen_pfn_t),
-			       &pagelist,
-			       mmap_return_errors, &state);
-	}
-
-out:
-	free_page_list(&pagelist);
-=======
 	switch (version) {
 	case 1:
 		if (copy_from_user(&m, udata, sizeof(struct privcmd_mmapbatch)))
@@ -1606,17 +1417,10 @@ static int privcmd_ioeventfd_deassign(struct privcmd_ioeventfd *ioeventfd)
 unlock:
 	mutex_unlock(&ioreq_lock);
 	eventfd_ctx_put(eventfd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static long privcmd_ioctl(struct file *file,
-			  unsigned int cmd, unsigned long data)
-{
-	int ret = -ENOSYS;
-=======
 static long privcmd_ioctl_ioeventfd(struct file *file, void __user *udata)
 {
 	struct privcmd_data *data = file->private_data;
@@ -1686,26 +1490,10 @@ static long privcmd_ioctl(struct file *file,
 			  unsigned int cmd, unsigned long data)
 {
 	int ret = -ENOTTY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __user *udata = (void __user *) data;
 
 	switch (cmd) {
 	case IOCTL_PRIVCMD_HYPERCALL:
-<<<<<<< HEAD
-		ret = privcmd_ioctl_hypercall(udata);
-		break;
-
-	case IOCTL_PRIVCMD_MMAP:
-		ret = privcmd_ioctl_mmap(udata);
-		break;
-
-	case IOCTL_PRIVCMD_MMAPBATCH:
-		ret = privcmd_ioctl_mmap_batch(udata);
-		break;
-
-	default:
-		ret = -EINVAL;
-=======
 		ret = privcmd_ioctl_hypercall(file, udata);
 		break;
 
@@ -1742,20 +1530,12 @@ static long privcmd_ioctl(struct file *file,
 		break;
 
 	default:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int privcmd_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-	printk(KERN_DEBUG "privcmd_fault: vma=%p %lx-%lx, pgoff=%lx, uv=%p\n",
-	       vma, vma->vm_start, vma->vm_end,
-	       vmf->pgoff, vmf->virtual_address);
-=======
 static int privcmd_open(struct inode *ino, struct file *file)
 {
 	struct privcmd_data *data = kzalloc(sizeof(*data), GFP_KERNEL);
@@ -1802,47 +1582,27 @@ static vm_fault_t privcmd_fault(struct vm_fault *vmf)
 	printk(KERN_DEBUG "privcmd_fault: vma=%p %lx-%lx, pgoff=%lx, uv=%p\n",
 	       vmf->vma, vmf->vma->vm_start, vmf->vma->vm_end,
 	       vmf->pgoff, (void *)vmf->address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return VM_FAULT_SIGBUS;
 }
 
-<<<<<<< HEAD
-static struct vm_operations_struct privcmd_vm_ops = {
-=======
 static const struct vm_operations_struct privcmd_vm_ops = {
 	.close = privcmd_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fault = privcmd_fault
 };
 
 static int privcmd_mmap(struct file *file, struct vm_area_struct *vma)
 {
-<<<<<<< HEAD
-	/* Unsupported for auto-translate guests. */
-	if (xen_feature(XENFEAT_auto_translated_physmap))
-		return -ENOSYS;
-
-	/* DONTCOPY is essential for Xen because copy_page_range doesn't know
-	 * how to recreate these mappings */
-	vma->vm_flags |= VM_RESERVED | VM_IO | VM_DONTCOPY | VM_PFNMAP;
-=======
 	/* DONTCOPY is essential for Xen because copy_page_range doesn't know
 	 * how to recreate these mappings */
 	vm_flags_set(vma, VM_IO | VM_PFNMAP | VM_DONTCOPY |
 			 VM_DONTEXPAND | VM_DONTDUMP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma->vm_ops = &privcmd_vm_ops;
 	vma->vm_private_data = NULL;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int privcmd_enforce_singleshot_mapping(struct vm_area_struct *vma)
-{
-	return (xchg(&vma->vm_private_data, (void *)1) == NULL);
-=======
 /*
  * For MMAPBATCH*. This allows asserting the singleshot mapping
  * on a per pfn/pte basis. Mapping calls that fail with ENOENT
@@ -1860,17 +1620,13 @@ static int privcmd_vma_range_is_mapped(
 {
 	return apply_to_page_range(vma->vm_mm, addr, nr_pages << PAGE_SHIFT,
 				   is_mapped_fn, NULL) != 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct file_operations xen_privcmd_fops = {
 	.owner = THIS_MODULE,
 	.unlocked_ioctl = privcmd_ioctl,
-<<<<<<< HEAD
-=======
 	.open = privcmd_open,
 	.release = privcmd_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mmap = privcmd_mmap,
 };
 EXPORT_SYMBOL_GPL(xen_privcmd_fops);
@@ -1890,12 +1646,6 @@ static int __init privcmd_init(void)
 
 	err = misc_register(&privcmd_dev);
 	if (err != 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Could not register Xen privcmd device\n");
-		return err;
-	}
-	return 0;
-=======
 		pr_err("Could not register Xen privcmd device\n");
 		return err;
 	}
@@ -1919,19 +1669,14 @@ err_irqfd:
 err_privcmdbuf:
 	misc_deregister(&privcmd_dev);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit privcmd_exit(void)
 {
-<<<<<<< HEAD
-	misc_deregister(&privcmd_dev);
-=======
 	privcmd_ioeventfd_exit();
 	privcmd_irqfd_exit();
 	misc_deregister(&privcmd_dev);
 	misc_deregister(&xen_privcmdbuf_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(privcmd_init);

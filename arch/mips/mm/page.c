@@ -6,47 +6,26 @@
  * Copyright (C) 2003, 04, 05 Ralf Baechle (ralf@linux-mips.org)
  * Copyright (C) 2007  Maciej W. Rozycki
  * Copyright (C) 2008  Thiemo Seufer
-<<<<<<< HEAD
- */
-#include <linux/init.h>
-=======
  * Copyright (C) 2012  MIPS Technologies, Inc.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <linux/mm.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/proc_fs.h>
 
 #include <asm/bugs.h>
 #include <asm/cacheops.h>
-<<<<<<< HEAD
-#include <asm/inst.h>
-#include <asm/io.h>
-#include <asm/page.h>
-#include <asm/pgtable.h>
-=======
 #include <asm/cpu-type.h>
 #include <asm/inst.h>
 #include <asm/io.h>
 #include <asm/page.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/prefetch.h>
 #include <asm/bootinfo.h>
 #include <asm/mipsregs.h>
 #include <asm/mmu_context.h>
-<<<<<<< HEAD
-#include <asm/cpu.h>
-#include <asm/war.h>
-=======
 #include <asm/regdef.h>
 #include <asm/cpu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SIBYTE_DMA_PAGEOPS
 #include <asm/sibyte/sb1250.h>
@@ -56,22 +35,6 @@
 
 #include <asm/uasm.h>
 
-<<<<<<< HEAD
-/* Registers used in the assembled routines. */
-#define ZERO 0
-#define AT 2
-#define A0 4
-#define A1 5
-#define A2 6
-#define T0 8
-#define T1 9
-#define T2 10
-#define T3 11
-#define T9 25
-#define RA 31
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Handle labels (which must be positive integers). */
 enum label_id {
 	label_clear_nopref = 1,
@@ -88,89 +51,13 @@ UASM_L_LA(_copy_pref_both)
 UASM_L_LA(_copy_pref_store)
 
 /* We need one branch and therefore one relocation per target label. */
-<<<<<<< HEAD
-static struct uasm_label __cpuinitdata labels[5];
-static struct uasm_reloc __cpuinitdata relocs[5];
-=======
 static struct uasm_label labels[5];
 static struct uasm_reloc relocs[5];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define cpu_is_r4600_v1_x()	((read_c0_prid() & 0xfffffff0) == 0x00002010)
 #define cpu_is_r4600_v2_x()	((read_c0_prid() & 0xfffffff0) == 0x00002020)
 
 /*
-<<<<<<< HEAD
- * Maximum sizes:
- *
- * R4000 128 bytes S-cache:		0x058 bytes
- * R4600 v1.7:				0x05c bytes
- * R4600 v2.0:				0x060 bytes
- * With prefetching, 16 word strides	0x120 bytes
- */
-
-static u32 clear_page_array[0x120 / 4];
-
-#ifdef CONFIG_SIBYTE_DMA_PAGEOPS
-void clear_page_cpu(void *page) __attribute__((alias("clear_page_array")));
-#else
-void clear_page(void *page) __attribute__((alias("clear_page_array")));
-#endif
-
-EXPORT_SYMBOL(clear_page);
-
-/*
- * Maximum sizes:
- *
- * R4000 128 bytes S-cache:		0x11c bytes
- * R4600 v1.7:				0x080 bytes
- * R4600 v2.0:				0x07c bytes
- * With prefetching, 16 word strides	0x540 bytes
- */
-static u32 copy_page_array[0x540 / 4];
-
-#ifdef CONFIG_SIBYTE_DMA_PAGEOPS
-void
-copy_page_cpu(void *to, void *from) __attribute__((alias("copy_page_array")));
-#else
-void copy_page(void *to, void *from) __attribute__((alias("copy_page_array")));
-#endif
-
-EXPORT_SYMBOL(copy_page);
-
-
-static int pref_bias_clear_store __cpuinitdata;
-static int pref_bias_copy_load __cpuinitdata;
-static int pref_bias_copy_store __cpuinitdata;
-
-static u32 pref_src_mode __cpuinitdata;
-static u32 pref_dst_mode __cpuinitdata;
-
-static int clear_word_size __cpuinitdata;
-static int copy_word_size __cpuinitdata;
-
-static int half_clear_loop_size __cpuinitdata;
-static int half_copy_loop_size __cpuinitdata;
-
-static int cache_line_size __cpuinitdata;
-#define cache_line_mask() (cache_line_size - 1)
-
-static inline void __cpuinit
-pg_addiu(u32 **buf, unsigned int reg1, unsigned int reg2, unsigned int off)
-{
-	if (cpu_has_64bit_gp_regs && DADDI_WAR && r4k_daddiu_bug()) {
-		if (off > 0x7fff) {
-			uasm_i_lui(buf, T9, uasm_rel_hi(off));
-			uasm_i_addiu(buf, T9, T9, uasm_rel_lo(off));
-		} else
-			uasm_i_addiu(buf, T9, ZERO, off);
-		uasm_i_daddu(buf, reg1, reg2, T9);
-	} else {
-		if (off > 0x7fff) {
-			uasm_i_lui(buf, T9, uasm_rel_hi(off));
-			uasm_i_addiu(buf, T9, T9, uasm_rel_lo(off));
-			UASM_i_ADDU(buf, reg1, reg2, T9);
-=======
  * R6 has a limited offset of the pref instruction.
  * Skip it if the offset is more than 9 bits.
  */
@@ -217,17 +104,12 @@ pg_addiu(u32 **buf, unsigned int reg1, unsigned int reg2, unsigned int off)
 			uasm_i_lui(buf, GPR_T9, uasm_rel_hi(off));
 			uasm_i_addiu(buf, GPR_T9, GPR_T9, uasm_rel_lo(off));
 			UASM_i_ADDU(buf, reg1, reg2, GPR_T9);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			UASM_i_ADDIU(buf, reg1, reg2, off);
 	}
 }
 
-<<<<<<< HEAD
-static void __cpuinit set_prefetch_parameters(void)
-=======
 static void set_prefetch_parameters(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (cpu_has_64bit_gp_regs || cpu_has_64bit_zero_reg)
 		clear_word_size = 8;
@@ -259,25 +141,10 @@ static void set_prefetch_parameters(void)
 			pref_bias_copy_load = 256;
 			break;
 
-<<<<<<< HEAD
-		case CPU_RM9000:
-			/*
-			 * As a workaround for erratum G105 which make the
-			 * PrepareForStore hint unusable we fall back to
-			 * StoreRetained on the RM9000.  Once it is known which
-			 * versions of the RM9000 we'll be able to condition-
-			 * alize this.
-			 */
-
-		case CPU_R10000:
-		case CPU_R12000:
-		case CPU_R14000:
-=======
 		case CPU_R10000:
 		case CPU_R12000:
 		case CPU_R14000:
 		case CPU_R16000:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Those values have been experimentally tuned for an
 			 * Origin 200.
@@ -308,8 +175,6 @@ static void set_prefetch_parameters(void)
 			}
 			break;
 
-<<<<<<< HEAD
-=======
 		case CPU_LOONGSON64:
 			/* Loongson-3 only support the Pref_Load/Pref_Store. */
 			pref_bias_clear_store = 128;
@@ -319,15 +184,11 @@ static void set_prefetch_parameters(void)
 			pref_dst_mode = Pref_Store;
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			pref_bias_clear_store = 128;
 			pref_bias_copy_load = 256;
 			pref_bias_copy_store = 128;
 			pref_src_mode = Pref_LoadStreamed;
-<<<<<<< HEAD
-			pref_dst_mode = Pref_PrepareForStore;
-=======
 			if (cpu_has_mips_r6)
 				/*
 				 * Bit 30 (Pref_PrepareForStore) has been
@@ -337,7 +198,6 @@ static void set_prefetch_parameters(void)
 				pref_dst_mode = Pref_StoreStreamed;
 			else
 				pref_dst_mode = Pref_PrepareForStore;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	} else {
@@ -358,18 +218,6 @@ static void set_prefetch_parameters(void)
 				      4 * copy_word_size));
 }
 
-<<<<<<< HEAD
-static void __cpuinit build_clear_store(u32 **buf, int off)
-{
-	if (cpu_has_64bit_gp_regs || cpu_has_64bit_zero_reg) {
-		uasm_i_sd(buf, ZERO, off, A0);
-	} else {
-		uasm_i_sw(buf, ZERO, off, A0);
-	}
-}
-
-static inline void __cpuinit build_clear_pref(u32 **buf, int off)
-=======
 static void build_clear_store(u32 **buf, int off)
 {
 	if (cpu_has_64bit_gp_regs || cpu_has_64bit_zero_reg) {
@@ -380,21 +228,11 @@ static void build_clear_store(u32 **buf, int off)
 }
 
 static inline void build_clear_pref(u32 **buf, int off)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (off & cache_line_mask())
 		return;
 
 	if (pref_bias_clear_store) {
-<<<<<<< HEAD
-		uasm_i_pref(buf, pref_dst_mode, pref_bias_clear_store + off,
-			    A0);
-	} else if (cache_line_size == (half_clear_loop_size << 1)) {
-		if (cpu_has_cache_cdex_s) {
-			uasm_i_cache(buf, Create_Dirty_Excl_SD, off, A0);
-		} else if (cpu_has_cache_cdex_p) {
-			if (R4600_V1_HIT_CACHEOP_WAR && cpu_is_r4600_v1_x()) {
-=======
 		_uasm_i_pref(buf, pref_dst_mode, pref_bias_clear_store + off,
 			    GPR_A0);
 	} else if (cache_line_size == (half_clear_loop_size << 1)) {
@@ -403,30 +241,12 @@ static inline void build_clear_pref(u32 **buf, int off)
 		} else if (cpu_has_cache_cdex_p) {
 			if (IS_ENABLED(CONFIG_WAR_R4600_V1_HIT_CACHEOP) &&
 			    cpu_is_r4600_v1_x()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				uasm_i_nop(buf);
 				uasm_i_nop(buf);
 				uasm_i_nop(buf);
 				uasm_i_nop(buf);
 			}
 
-<<<<<<< HEAD
-			if (R4600_V2_HIT_CACHEOP_WAR && cpu_is_r4600_v2_x())
-				uasm_i_lw(buf, ZERO, ZERO, AT);
-
-			uasm_i_cache(buf, Create_Dirty_Excl_D, off, A0);
-		}
-		}
-}
-
-void __cpuinit build_clear_page(void)
-{
-	int off;
-	u32 *buf = (u32 *)&clear_page_array;
-	struct uasm_label *l = labels;
-	struct uasm_reloc *r = relocs;
-	int i;
-=======
 			if (IS_ENABLED(CONFIG_WAR_R4600_V2_HIT_CACHEOP) &&
 			    cpu_is_r4600_v2_x())
 				uasm_i_lw(buf, GPR_ZERO, GPR_ZERO, GPR_AT);
@@ -453,7 +273,6 @@ void build_clear_page(void)
 	if (atomic_xchg(&run_once, 1)) {
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(labels, 0, sizeof(labels));
 	memset(relocs, 0, sizeof(relocs));
@@ -470,17 +289,6 @@ void build_clear_page(void)
 
 	off = PAGE_SIZE - pref_bias_clear_store;
 	if (off > 0xffff || !pref_bias_clear_store)
-<<<<<<< HEAD
-		pg_addiu(&buf, A2, A0, off);
-	else
-		uasm_i_ori(&buf, A2, A0, off);
-
-	if (R4600_V2_HIT_CACHEOP_WAR && cpu_is_r4600_v2_x())
-		uasm_i_lui(&buf, AT, 0xa000);
-
-	off = cache_line_size ? min(8, pref_bias_clear_store / cache_line_size)
-	                        * cache_line_size : 0;
-=======
 		pg_addiu(&buf, GPR_A2, GPR_A0, off);
 	else
 		uasm_i_ori(&buf, GPR_A2, GPR_A0, off);
@@ -490,7 +298,6 @@ void build_clear_page(void)
 
 	off = cache_line_size ? min(8, pref_bias_clear_store / cache_line_size)
 				* cache_line_size : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (off) {
 		build_clear_pref(&buf, -off);
 		off -= cache_line_size;
@@ -501,96 +308,43 @@ void build_clear_page(void)
 		build_clear_store(&buf, off);
 		off += clear_word_size;
 	} while (off < half_clear_loop_size);
-<<<<<<< HEAD
-	pg_addiu(&buf, A0, A0, 2 * off);
-=======
 	pg_addiu(&buf, GPR_A0, GPR_A0, 2 * off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	off = -off;
 	do {
 		build_clear_pref(&buf, off);
 		if (off == -clear_word_size)
-<<<<<<< HEAD
-			uasm_il_bne(&buf, &r, A0, A2, label_clear_pref);
-=======
 			uasm_il_bne(&buf, &r, GPR_A0, GPR_A2, label_clear_pref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		build_clear_store(&buf, off);
 		off += clear_word_size;
 	} while (off < 0);
 
 	if (pref_bias_clear_store) {
-<<<<<<< HEAD
-		pg_addiu(&buf, A2, A0, pref_bias_clear_store);
-=======
 		pg_addiu(&buf, GPR_A2, GPR_A0, pref_bias_clear_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uasm_l_clear_nopref(&l, buf);
 		off = 0;
 		do {
 			build_clear_store(&buf, off);
 			off += clear_word_size;
 		} while (off < half_clear_loop_size);
-<<<<<<< HEAD
-		pg_addiu(&buf, A0, A0, 2 * off);
-		off = -off;
-		do {
-			if (off == -clear_word_size)
-				uasm_il_bne(&buf, &r, A0, A2,
-=======
 		pg_addiu(&buf, GPR_A0, GPR_A0, 2 * off);
 		off = -off;
 		do {
 			if (off == -clear_word_size)
 				uasm_il_bne(&buf, &r, GPR_A0, GPR_A2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    label_clear_nopref);
 			build_clear_store(&buf, off);
 			off += clear_word_size;
 		} while (off < 0);
 	}
 
-<<<<<<< HEAD
-	uasm_i_jr(&buf, RA);
-	uasm_i_nop(&buf);
-
-	BUG_ON(buf > clear_page_array + ARRAY_SIZE(clear_page_array));
-=======
 	uasm_i_jr(&buf, GPR_RA);
 	uasm_i_nop(&buf);
 
 	BUG_ON(buf > &__clear_page_end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uasm_resolve_relocs(relocs, labels);
 
 	pr_debug("Synthesized clear page handler (%u instructions).\n",
-<<<<<<< HEAD
-		 (u32)(buf - clear_page_array));
-
-	pr_debug("\t.set push\n");
-	pr_debug("\t.set noreorder\n");
-	for (i = 0; i < (buf - clear_page_array); i++)
-		pr_debug("\t.word 0x%08x\n", clear_page_array[i]);
-	pr_debug("\t.set pop\n");
-}
-
-static void __cpuinit build_copy_load(u32 **buf, int reg, int off)
-{
-	if (cpu_has_64bit_gp_regs) {
-		uasm_i_ld(buf, reg, off, A1);
-	} else {
-		uasm_i_lw(buf, reg, off, A1);
-	}
-}
-
-static void __cpuinit build_copy_store(u32 **buf, int reg, int off)
-{
-	if (cpu_has_64bit_gp_regs) {
-		uasm_i_sd(buf, reg, off, A0);
-	} else {
-		uasm_i_sw(buf, reg, off, A0);
-=======
 		 (u32)(buf - &__clear_page_start));
 
 	pr_debug("\t.set push\n");
@@ -615,7 +369,6 @@ static void build_copy_store(u32 **buf, int reg, int off)
 		uasm_i_sd(buf, reg, off, GPR_A0);
 	} else {
 		uasm_i_sw(buf, reg, off, GPR_A0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -625,11 +378,7 @@ static inline void build_copy_load_pref(u32 **buf, int off)
 		return;
 
 	if (pref_bias_copy_load)
-<<<<<<< HEAD
-		uasm_i_pref(buf, pref_src_mode, pref_bias_copy_load + off, A1);
-=======
 		_uasm_i_pref(buf, pref_src_mode, pref_bias_copy_load + off, GPR_A1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void build_copy_store_pref(u32 **buf, int off)
@@ -638,15 +387,6 @@ static inline void build_copy_store_pref(u32 **buf, int off)
 		return;
 
 	if (pref_bias_copy_store) {
-<<<<<<< HEAD
-		uasm_i_pref(buf, pref_dst_mode, pref_bias_copy_store + off,
-			    A0);
-	} else if (cache_line_size == (half_copy_loop_size << 1)) {
-		if (cpu_has_cache_cdex_s) {
-			uasm_i_cache(buf, Create_Dirty_Excl_SD, off, A0);
-		} else if (cpu_has_cache_cdex_p) {
-			if (R4600_V1_HIT_CACHEOP_WAR && cpu_is_r4600_v1_x()) {
-=======
 		_uasm_i_pref(buf, pref_dst_mode, pref_bias_copy_store + off,
 			    GPR_A0);
 	} else if (cache_line_size == (half_copy_loop_size << 1)) {
@@ -655,38 +395,21 @@ static inline void build_copy_store_pref(u32 **buf, int off)
 		} else if (cpu_has_cache_cdex_p) {
 			if (IS_ENABLED(CONFIG_WAR_R4600_V1_HIT_CACHEOP) &&
 			    cpu_is_r4600_v1_x()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				uasm_i_nop(buf);
 				uasm_i_nop(buf);
 				uasm_i_nop(buf);
 				uasm_i_nop(buf);
 			}
 
-<<<<<<< HEAD
-			if (R4600_V2_HIT_CACHEOP_WAR && cpu_is_r4600_v2_x())
-				uasm_i_lw(buf, ZERO, ZERO, AT);
-
-			uasm_i_cache(buf, Create_Dirty_Excl_D, off, A0);
-=======
 			if (IS_ENABLED(CONFIG_WAR_R4600_V2_HIT_CACHEOP) &&
 			    cpu_is_r4600_v2_x())
 				uasm_i_lw(buf, GPR_ZERO, GPR_ZERO, GPR_AT);
 
 			uasm_i_cache(buf, Create_Dirty_Excl_D, off, GPR_A0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-void __cpuinit build_copy_page(void)
-{
-	int off;
-	u32 *buf = (u32 *)&copy_page_array;
-	struct uasm_label *l = labels;
-	struct uasm_reloc *r = relocs;
-	int i;
-=======
 void build_copy_page(void)
 {
 	int off;
@@ -699,7 +422,6 @@ void build_copy_page(void)
 	if (atomic_xchg(&run_once, 1)) {
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(labels, 0, sizeof(labels));
 	memset(relocs, 0, sizeof(relocs));
@@ -720,17 +442,6 @@ void build_copy_page(void)
 
 	off = PAGE_SIZE - pref_bias_copy_load;
 	if (off > 0xffff || !pref_bias_copy_load)
-<<<<<<< HEAD
-		pg_addiu(&buf, A2, A0, off);
-	else
-		uasm_i_ori(&buf, A2, A0, off);
-
-	if (R4600_V2_HIT_CACHEOP_WAR && cpu_is_r4600_v2_x())
-		uasm_i_lui(&buf, AT, 0xa000);
-
-	off = cache_line_size ? min(8, pref_bias_copy_load / cache_line_size) *
-	                        cache_line_size : 0;
-=======
 		pg_addiu(&buf, GPR_A2, GPR_A0, off);
 	else
 		uasm_i_ori(&buf, GPR_A2, GPR_A0, off);
@@ -740,17 +451,12 @@ void build_copy_page(void)
 
 	off = cache_line_size ? min(8, pref_bias_copy_load / cache_line_size) *
 				cache_line_size : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (off) {
 		build_copy_load_pref(&buf, -off);
 		off -= cache_line_size;
 	}
 	off = cache_line_size ? min(8, pref_bias_copy_store / cache_line_size) *
-<<<<<<< HEAD
-	                        cache_line_size : 0;
-=======
 				cache_line_size : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (off) {
 		build_copy_store_pref(&buf, -off);
 		off -= cache_line_size;
@@ -758,47 +464,6 @@ void build_copy_page(void)
 	uasm_l_copy_pref_both(&l, buf);
 	do {
 		build_copy_load_pref(&buf, off);
-<<<<<<< HEAD
-		build_copy_load(&buf, T0, off);
-		build_copy_load_pref(&buf, off + copy_word_size);
-		build_copy_load(&buf, T1, off + copy_word_size);
-		build_copy_load_pref(&buf, off + 2 * copy_word_size);
-		build_copy_load(&buf, T2, off + 2 * copy_word_size);
-		build_copy_load_pref(&buf, off + 3 * copy_word_size);
-		build_copy_load(&buf, T3, off + 3 * copy_word_size);
-		build_copy_store_pref(&buf, off);
-		build_copy_store(&buf, T0, off);
-		build_copy_store_pref(&buf, off + copy_word_size);
-		build_copy_store(&buf, T1, off + copy_word_size);
-		build_copy_store_pref(&buf, off + 2 * copy_word_size);
-		build_copy_store(&buf, T2, off + 2 * copy_word_size);
-		build_copy_store_pref(&buf, off + 3 * copy_word_size);
-		build_copy_store(&buf, T3, off + 3 * copy_word_size);
-		off += 4 * copy_word_size;
-	} while (off < half_copy_loop_size);
-	pg_addiu(&buf, A1, A1, 2 * off);
-	pg_addiu(&buf, A0, A0, 2 * off);
-	off = -off;
-	do {
-		build_copy_load_pref(&buf, off);
-		build_copy_load(&buf, T0, off);
-		build_copy_load_pref(&buf, off + copy_word_size);
-		build_copy_load(&buf, T1, off + copy_word_size);
-		build_copy_load_pref(&buf, off + 2 * copy_word_size);
-		build_copy_load(&buf, T2, off + 2 * copy_word_size);
-		build_copy_load_pref(&buf, off + 3 * copy_word_size);
-		build_copy_load(&buf, T3, off + 3 * copy_word_size);
-		build_copy_store_pref(&buf, off);
-		build_copy_store(&buf, T0, off);
-		build_copy_store_pref(&buf, off + copy_word_size);
-		build_copy_store(&buf, T1, off + copy_word_size);
-		build_copy_store_pref(&buf, off + 2 * copy_word_size);
-		build_copy_store(&buf, T2, off + 2 * copy_word_size);
-		build_copy_store_pref(&buf, off + 3 * copy_word_size);
-		if (off == -(4 * copy_word_size))
-			uasm_il_bne(&buf, &r, A2, A0, label_copy_pref_both);
-		build_copy_store(&buf, T3, off + 3 * copy_word_size);
-=======
 		build_copy_load(&buf, GPR_T0, off);
 		build_copy_load_pref(&buf, off + copy_word_size);
 		build_copy_load(&buf, GPR_T1, off + copy_word_size);
@@ -838,55 +503,15 @@ void build_copy_page(void)
 		if (off == -(4 * copy_word_size))
 			uasm_il_bne(&buf, &r, GPR_A2, GPR_A0, label_copy_pref_both);
 		build_copy_store(&buf, GPR_T3, off + 3 * copy_word_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		off += 4 * copy_word_size;
 	} while (off < 0);
 
 	if (pref_bias_copy_load - pref_bias_copy_store) {
-<<<<<<< HEAD
-		pg_addiu(&buf, A2, A0,
-=======
 		pg_addiu(&buf, GPR_A2, GPR_A0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 pref_bias_copy_load - pref_bias_copy_store);
 		uasm_l_copy_pref_store(&l, buf);
 		off = 0;
 		do {
-<<<<<<< HEAD
-			build_copy_load(&buf, T0, off);
-			build_copy_load(&buf, T1, off + copy_word_size);
-			build_copy_load(&buf, T2, off + 2 * copy_word_size);
-			build_copy_load(&buf, T3, off + 3 * copy_word_size);
-			build_copy_store_pref(&buf, off);
-			build_copy_store(&buf, T0, off);
-			build_copy_store_pref(&buf, off + copy_word_size);
-			build_copy_store(&buf, T1, off + copy_word_size);
-			build_copy_store_pref(&buf, off + 2 * copy_word_size);
-			build_copy_store(&buf, T2, off + 2 * copy_word_size);
-			build_copy_store_pref(&buf, off + 3 * copy_word_size);
-			build_copy_store(&buf, T3, off + 3 * copy_word_size);
-			off += 4 * copy_word_size;
-		} while (off < half_copy_loop_size);
-		pg_addiu(&buf, A1, A1, 2 * off);
-		pg_addiu(&buf, A0, A0, 2 * off);
-		off = -off;
-		do {
-			build_copy_load(&buf, T0, off);
-			build_copy_load(&buf, T1, off + copy_word_size);
-			build_copy_load(&buf, T2, off + 2 * copy_word_size);
-			build_copy_load(&buf, T3, off + 3 * copy_word_size);
-			build_copy_store_pref(&buf, off);
-			build_copy_store(&buf, T0, off);
-			build_copy_store_pref(&buf, off + copy_word_size);
-			build_copy_store(&buf, T1, off + copy_word_size);
-			build_copy_store_pref(&buf, off + 2 * copy_word_size);
-			build_copy_store(&buf, T2, off + 2 * copy_word_size);
-			build_copy_store_pref(&buf, off + 3 * copy_word_size);
-			if (off == -(4 * copy_word_size))
-				uasm_il_bne(&buf, &r, A2, A0,
-					    label_copy_pref_store);
-			build_copy_store(&buf, T3, off + 3 * copy_word_size);
-=======
 			build_copy_load(&buf, GPR_T0, off);
 			build_copy_load(&buf, GPR_T1, off + copy_word_size);
 			build_copy_load(&buf, GPR_T2, off + 2 * copy_word_size);
@@ -920,43 +545,11 @@ void build_copy_page(void)
 				uasm_il_bne(&buf, &r, GPR_A2, GPR_A0,
 					    label_copy_pref_store);
 			build_copy_store(&buf, GPR_T3, off + 3 * copy_word_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			off += 4 * copy_word_size;
 		} while (off < 0);
 	}
 
 	if (pref_bias_copy_store) {
-<<<<<<< HEAD
-		pg_addiu(&buf, A2, A0, pref_bias_copy_store);
-		uasm_l_copy_nopref(&l, buf);
-		off = 0;
-		do {
-			build_copy_load(&buf, T0, off);
-			build_copy_load(&buf, T1, off + copy_word_size);
-			build_copy_load(&buf, T2, off + 2 * copy_word_size);
-			build_copy_load(&buf, T3, off + 3 * copy_word_size);
-			build_copy_store(&buf, T0, off);
-			build_copy_store(&buf, T1, off + copy_word_size);
-			build_copy_store(&buf, T2, off + 2 * copy_word_size);
-			build_copy_store(&buf, T3, off + 3 * copy_word_size);
-			off += 4 * copy_word_size;
-		} while (off < half_copy_loop_size);
-		pg_addiu(&buf, A1, A1, 2 * off);
-		pg_addiu(&buf, A0, A0, 2 * off);
-		off = -off;
-		do {
-			build_copy_load(&buf, T0, off);
-			build_copy_load(&buf, T1, off + copy_word_size);
-			build_copy_load(&buf, T2, off + 2 * copy_word_size);
-			build_copy_load(&buf, T3, off + 3 * copy_word_size);
-			build_copy_store(&buf, T0, off);
-			build_copy_store(&buf, T1, off + copy_word_size);
-			build_copy_store(&buf, T2, off + 2 * copy_word_size);
-			if (off == -(4 * copy_word_size))
-				uasm_il_bne(&buf, &r, A2, A0,
-					    label_copy_nopref);
-			build_copy_store(&buf, T3, off + 3 * copy_word_size);
-=======
 		pg_addiu(&buf, GPR_A2, GPR_A0, pref_bias_copy_store);
 		uasm_l_copy_nopref(&l, buf);
 		off = 0;
@@ -986,50 +579,30 @@ void build_copy_page(void)
 				uasm_il_bne(&buf, &r, GPR_A2, GPR_A0,
 					    label_copy_nopref);
 			build_copy_store(&buf, GPR_T3, off + 3 * copy_word_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			off += 4 * copy_word_size;
 		} while (off < 0);
 	}
 
-<<<<<<< HEAD
-	uasm_i_jr(&buf, RA);
-	uasm_i_nop(&buf);
-
-	BUG_ON(buf > copy_page_array + ARRAY_SIZE(copy_page_array));
-=======
 	uasm_i_jr(&buf, GPR_RA);
 	uasm_i_nop(&buf);
 
 	BUG_ON(buf > &__copy_page_end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uasm_resolve_relocs(relocs, labels);
 
 	pr_debug("Synthesized copy page handler (%u instructions).\n",
-<<<<<<< HEAD
-		 (u32)(buf - copy_page_array));
-
-	pr_debug("\t.set push\n");
-	pr_debug("\t.set noreorder\n");
-	for (i = 0; i < (buf - copy_page_array); i++)
-		pr_debug("\t.word 0x%08x\n", copy_page_array[i]);
-=======
 		 (u32)(buf - &__copy_page_start));
 
 	pr_debug("\t.set push\n");
 	pr_debug("\t.set noreorder\n");
 	for (i = 0; i < (buf - &__copy_page_start); i++)
 		pr_debug("\t.word 0x%08x\n", (&__copy_page_start)[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("\t.set pop\n");
 }
 
 #ifdef CONFIG_SIBYTE_DMA_PAGEOPS
-<<<<<<< HEAD
-=======
 extern void clear_page_cpu(void *page);
 extern void copy_page_cpu(void *to, void *from);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Pad descriptors to cacheline, since each is exclusively owned by a
@@ -1042,24 +615,6 @@ struct dmadscr {
 	u64 pad_b;
 } ____cacheline_aligned_in_smp page_descr[DM_NUM_CHANNELS];
 
-<<<<<<< HEAD
-void sb1_dma_init(void)
-{
-	int i;
-
-	for (i = 0; i < DM_NUM_CHANNELS; i++) {
-		const u64 base_val = CPHYSADDR((unsigned long)&page_descr[i]) |
-				     V_DM_DSCR_BASE_RINGSZ(1);
-		void *base_reg = IOADDR(A_DM_REGISTER(i, R_DM_DSCR_BASE));
-
-		__raw_writeq(base_val, base_reg);
-		__raw_writeq(base_val | M_DM_DSCR_BASE_RESET, base_reg);
-		__raw_writeq(base_val | M_DM_DSCR_BASE_ENABL, base_reg);
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void clear_page(void *page)
 {
 	u64 to_phys = CPHYSADDR((unsigned long)page);
@@ -1083,10 +638,7 @@ void clear_page(void *page)
 		;
 	__raw_readq(IOADDR(A_DM_REGISTER(cpu, R_DM_DSCR_BASE)));
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(clear_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void copy_page(void *to, void *from)
 {
@@ -1113,9 +665,6 @@ void copy_page(void *to, void *from)
 		;
 	__raw_readq(IOADDR(A_DM_REGISTER(cpu, R_DM_DSCR_BASE)));
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(copy_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_SIBYTE_DMA_PAGEOPS */

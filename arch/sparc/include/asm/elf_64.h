@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SPARC64_ELF_H
 #define __ASM_SPARC64_ELF_H
 
@@ -11,13 +8,8 @@
 
 #include <asm/ptrace.h>
 #include <asm/processor.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/spitfire.h>
-=======
 #include <asm/spitfire.h>
 #include <asm/adi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Sparc section types
@@ -95,8 +87,6 @@
 #define AV_SPARC_IMA		0x00400000 /* integer multiply-add */
 #define AV_SPARC_ASI_CACHE_SPARING \
 				0x00800000 /* cache sparing ASIs available */
-<<<<<<< HEAD
-=======
 #define AV_SPARC_PAUSE		0x01000000 /* PAUSE available */
 #define AV_SPARC_CBCOND		0x02000000 /* CBCOND insns available */
 
@@ -107,7 +97,6 @@
  */
 #define HWCAP_SPARC_CRYPTO	0x04000000 /* CRYPTO insns available */
 #define HWCAP_SPARC_ADI		0x08000000 /* ADI available */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CORE_DUMP_USE_REGSET
 
@@ -222,8 +211,6 @@ do {	if ((ex).e_ident[EI_CLASS] == ELFCLASS32)	\
 			(current->personality & (~PER_MASK)));	\
 } while (0)
 
-<<<<<<< HEAD
-=======
 extern unsigned int vdso_enabled;
 
 #define	ARCH_DLINFO							\
@@ -242,5 +229,4 @@ struct linux_binprm;
 #define ARCH_HAS_SETUP_ADDITIONAL_PAGES	1
 extern int arch_setup_additional_pages(struct linux_binprm *bprm,
 					int uses_interp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(__ASM_SPARC64_ELF_H) */

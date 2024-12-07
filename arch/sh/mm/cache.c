@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/mm/cache.c
  *
  * Copyright (C) 1999, 2000, 2002  Niibe Yutaka
  * Copyright (C) 2002 - 2010  Paul Mundt
-<<<<<<< HEAD
- *
- * Released under the terms of the GNU GPL v2.0.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/mm.h>
 #include <linux/init.h>
@@ -28,15 +20,9 @@ void (*local_flush_cache_mm)(void *args) = cache_noop;
 void (*local_flush_cache_dup_mm)(void *args) = cache_noop;
 void (*local_flush_cache_page)(void *args) = cache_noop;
 void (*local_flush_cache_range)(void *args) = cache_noop;
-<<<<<<< HEAD
-void (*local_flush_dcache_page)(void *args) = cache_noop;
-void (*local_flush_icache_range)(void *args) = cache_noop;
-void (*local_flush_icache_page)(void *args) = cache_noop;
-=======
 void (*local_flush_dcache_folio)(void *args) = cache_noop;
 void (*local_flush_icache_range)(void *args) = cache_noop;
 void (*local_flush_icache_folio)(void *args) = cache_noop;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void (*local_flush_cache_sigtramp)(void *args) = cache_noop;
 
 void (*__flush_wback_region)(void *start, int size);
@@ -55,11 +41,8 @@ static inline void cacheop_on_each_cpu(void (*func) (void *info), void *info,
 {
 	preempt_disable();
 
-<<<<<<< HEAD
-=======
 	/* Needing IPI for cross-core flush is SHX3-specific. */
 #ifdef CONFIG_CPU_SHX3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * It's possible that this gets called early on when IRQs are
 	 * still disabled due to ioremapping by the boot CPU, so don't
@@ -67,10 +50,7 @@ static inline void cacheop_on_each_cpu(void (*func) (void *info), void *info,
 	 */
 	if (num_online_cpus() > 1)
 		smp_call_function(func, info, wait);
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	func(info);
 
@@ -81,26 +61,17 @@ void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 		       unsigned long vaddr, void *dst, const void *src,
 		       unsigned long len)
 {
-<<<<<<< HEAD
-	if (boot_cpu_data.dcache.n_aliases && page_mapped(page) &&
-	    test_bit(PG_dcache_clean, &page->flags)) {
-=======
 	struct folio *folio = page_folio(page);
 
 	if (boot_cpu_data.dcache.n_aliases && folio_mapped(folio) &&
 	    test_bit(PG_dcache_clean, &folio->flags)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void *vto = kmap_coherent(page, vaddr) + (vaddr & ~PAGE_MASK);
 		memcpy(vto, src, len);
 		kunmap_coherent(vto);
 	} else {
 		memcpy(dst, src, len);
 		if (boot_cpu_data.dcache.n_aliases)
-<<<<<<< HEAD
-			clear_bit(PG_dcache_clean, &page->flags);
-=======
 			clear_bit(PG_dcache_clean, &folio->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (vma->vm_flags & VM_EXEC)
@@ -111,47 +82,30 @@ void copy_from_user_page(struct vm_area_struct *vma, struct page *page,
 			 unsigned long vaddr, void *dst, const void *src,
 			 unsigned long len)
 {
-<<<<<<< HEAD
-	if (boot_cpu_data.dcache.n_aliases && page_mapped(page) &&
-	    test_bit(PG_dcache_clean, &page->flags)) {
-=======
 	struct folio *folio = page_folio(page);
 
 	if (boot_cpu_data.dcache.n_aliases && page_mapcount(page) &&
 	    test_bit(PG_dcache_clean, &folio->flags)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void *vfrom = kmap_coherent(page, vaddr) + (vaddr & ~PAGE_MASK);
 		memcpy(dst, vfrom, len);
 		kunmap_coherent(vfrom);
 	} else {
 		memcpy(dst, src, len);
 		if (boot_cpu_data.dcache.n_aliases)
-<<<<<<< HEAD
-			clear_bit(PG_dcache_clean, &page->flags);
-=======
 			clear_bit(PG_dcache_clean, &folio->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 void copy_user_highpage(struct page *to, struct page *from,
 			unsigned long vaddr, struct vm_area_struct *vma)
 {
-<<<<<<< HEAD
-=======
 	struct folio *src = page_folio(from);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *vfrom, *vto;
 
 	vto = kmap_atomic(to);
 
-<<<<<<< HEAD
-	if (boot_cpu_data.dcache.n_aliases && page_mapped(from) &&
-	    test_bit(PG_dcache_clean, &from->flags)) {
-=======
 	if (boot_cpu_data.dcache.n_aliases && folio_mapped(src) &&
 	    test_bit(PG_dcache_clean, &src->flags)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vfrom = kmap_coherent(from, vaddr);
 		copy_page(vto, vfrom);
 		kunmap_coherent(vfrom);
@@ -187,48 +141,28 @@ EXPORT_SYMBOL(clear_user_highpage);
 void __update_cache(struct vm_area_struct *vma,
 		    unsigned long address, pte_t pte)
 {
-<<<<<<< HEAD
-	struct page *page;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long pfn = pte_pfn(pte);
 
 	if (!boot_cpu_data.dcache.n_aliases)
 		return;
 
-<<<<<<< HEAD
-	page = pfn_to_page(pfn);
-	if (pfn_valid(pfn)) {
-		int dirty = !test_and_set_bit(PG_dcache_clean, &page->flags);
-		if (dirty)
-			__flush_purge_region(page_address(page), PAGE_SIZE);
-=======
 	if (pfn_valid(pfn)) {
 		struct folio *folio = page_folio(pfn_to_page(pfn));
 		int dirty = !test_and_set_bit(PG_dcache_clean, &folio->flags);
 		if (dirty)
 			__flush_purge_region(folio_address(folio),
 						folio_size(folio));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 void __flush_anon_page(struct page *page, unsigned long vmaddr)
 {
-<<<<<<< HEAD
-	unsigned long addr = (unsigned long) page_address(page);
-
-	if (pages_do_alias(addr, vmaddr)) {
-		if (boot_cpu_data.dcache.n_aliases && page_mapped(page) &&
-		    test_bit(PG_dcache_clean, &page->flags)) {
-=======
 	struct folio *folio = page_folio(page);
 	unsigned long addr = (unsigned long) page_address(page);
 
 	if (pages_do_alias(addr, vmaddr)) {
 		if (boot_cpu_data.dcache.n_aliases && folio_mapped(folio) &&
 		    test_bit(PG_dcache_clean, &folio->flags)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			void *kaddr;
 
 			kaddr = kmap_coherent(page, vmaddr);
@@ -236,12 +170,8 @@ void __flush_anon_page(struct page *page, unsigned long vmaddr)
 			/* __flush_purge_region((void *)kaddr, PAGE_SIZE); */
 			kunmap_coherent(kaddr);
 		} else
-<<<<<<< HEAD
-			__flush_purge_region((void *)addr, PAGE_SIZE);
-=======
 			__flush_purge_region(folio_address(folio),
 						folio_size(folio));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -292,19 +222,11 @@ void flush_cache_range(struct vm_area_struct *vma, unsigned long start,
 }
 EXPORT_SYMBOL(flush_cache_range);
 
-<<<<<<< HEAD
-void flush_dcache_page(struct page *page)
-{
-	cacheop_on_each_cpu(local_flush_dcache_page, page, 1);
-}
-EXPORT_SYMBOL(flush_dcache_page);
-=======
 void flush_dcache_folio(struct folio *folio)
 {
 	cacheop_on_each_cpu(local_flush_dcache_folio, folio, 1);
 }
 EXPORT_SYMBOL(flush_dcache_folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void flush_icache_range(unsigned long start, unsigned long end)
 {
@@ -316,13 +238,6 @@ void flush_icache_range(unsigned long start, unsigned long end)
 
 	cacheop_on_each_cpu(local_flush_icache_range, (void *)&data, 1);
 }
-<<<<<<< HEAD
-
-void flush_icache_page(struct vm_area_struct *vma, struct page *page)
-{
-	/* Nothing uses the VMA, so just pass the struct page along */
-	cacheop_on_each_cpu(local_flush_icache_page, page, 1);
-=======
 EXPORT_SYMBOL(flush_icache_range);
 
 void flush_icache_pages(struct vm_area_struct *vma, struct page *page,
@@ -330,7 +245,6 @@ void flush_icache_pages(struct vm_area_struct *vma, struct page *page,
 {
 	/* Nothing uses the VMA, so just pass the folio along */
 	cacheop_on_each_cpu(local_flush_icache_folio, page_folio(page), 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void flush_cache_sigtramp(unsigned long address)
@@ -340,15 +254,11 @@ void flush_cache_sigtramp(unsigned long address)
 
 static void compute_alias(struct cache_info *c)
 {
-<<<<<<< HEAD
-	c->alias_mask = ((c->sets - 1) << c->entry_shift) & ~(PAGE_SIZE - 1);
-=======
 #ifdef CONFIG_MMU
 	c->alias_mask = ((c->sets - 1) << c->entry_shift) & ~(PAGE_SIZE - 1);
 #else
 	c->alias_mask = 0;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->n_aliases = c->alias_mask ? (c->alias_mask >> PAGE_SHIFT) + 1 : 0;
 }
 
@@ -390,13 +300,8 @@ void __init cpu_cache_init(void)
 {
 	unsigned int cache_disabled = 0;
 
-<<<<<<< HEAD
-#ifdef CCR
-	cache_disabled = !(__raw_readl(CCR) & CCR_CACHE_ENABLE);
-=======
 #ifdef SH_CCR
 	cache_disabled = !(__raw_readl(SH_CCR) & CCR_CACHE_ENABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	compute_alias(&boot_cpu_data.icache);
@@ -414,15 +319,11 @@ void __init cpu_cache_init(void)
 	if (unlikely(cache_disabled))
 		goto skip;
 
-<<<<<<< HEAD
-	if (boot_cpu_data.family == CPU_FAMILY_SH2) {
-=======
 	if (boot_cpu_data.type == CPU_J2) {
 		extern void __weak j2_cache_init(void);
 
 		j2_cache_init();
 	} else if (boot_cpu_data.family == CPU_FAMILY_SH2) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		extern void __weak sh2_cache_init(void);
 
 		sh2_cache_init();
@@ -462,15 +363,6 @@ void __init cpu_cache_init(void)
 		}
 	}
 
-<<<<<<< HEAD
-	if (boot_cpu_data.family == CPU_FAMILY_SH5) {
-		extern void __weak sh5_cache_init(void);
-
-		sh5_cache_init();
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 skip:
 	emit_cache_params();
 }

@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2007-2011 Nicira Networks.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2007-2014 Nicira, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef DATAPATH_H
@@ -31,15 +12,6 @@
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
 #include <linux/u64_stats_sync.h>
-<<<<<<< HEAD
-
-#include "flow.h"
-
-struct vport;
-
-#define DP_MAX_PORTS 1024
-#define SAMPLE_ACTION_DEPTH 3
-=======
 #include <net/ip_tunnels.h>
 
 #include "conntrack.h"
@@ -51,7 +23,6 @@ struct vport;
 #define DP_MAX_PORTS                USHRT_MAX
 #define DP_VPORT_HASH_BUCKETS       1024
 #define DP_MASKS_REBALANCE_INTERVAL 4000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct dp_stats_percpu - per-cpu packet processing statistics for a given
@@ -64,22 +35,16 @@ struct vport;
  * @n_lost: Number of received packets that had no matching flow in the flow
  * table that could not be sent to userspace (normally due to an overflow in
  * one of the datapath's queues).
-<<<<<<< HEAD
-=======
  * @n_mask_hit: Number of masks looked up for flow match.
  *   @n_mask_hit / (@n_hit + @n_missed)  will be the average masks looked
  *   up per packet.
  * @n_cache_hit: The number of received packets that had their mask found using
  * the mask cache.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct dp_stats_percpu {
 	u64 n_hit;
 	u64 n_missed;
 	u64 n_lost;
-<<<<<<< HEAD
-	struct u64_stats_sync sync;
-=======
 	u64 n_mask_hit;
 	u64 n_cache_hit;
 	struct u64_stats_sync syncp;
@@ -98,22 +63,12 @@ struct dp_nlsk_pids {
 	struct rcu_head rcu;
 	u32 n_pids;
 	u32 pids[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct datapath - datapath for flow-based packet switching
  * @rcu: RCU callback head for deferred destruction.
  * @list_node: Element in global 'dps' list.
-<<<<<<< HEAD
- * @n_flows: Number of flows currently in flow table.
- * @table: Current flow table.  Protected by genl_lock and RCU.
- * @ports: Map from port number to &struct vport.  %OVSP_LOCAL port
- * always exists, other ports may be %NULL.  Protected by RTNL and RCU.
- * @port_list: List of all ports in @ports in arbitrary order.  RTNL required
- * to iterate or modify.
- * @stats_percpu: Per-CPU datapath statistics.
-=======
  * @table: flow table.
  * @ports: Hash table for ports.  %OVSP_LOCAL port always exists.  Protected by
  * ovs_mutex and RCU.
@@ -122,7 +77,6 @@ struct dp_nlsk_pids {
  * @max_headroom: the maximum headroom of all vports in this datapath; it will
  * be used by all the internal vports in this dp.
  * @upcall_portids: RCU protected 'struct dp_nlsk_pids'.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Context: See the comment on locking at the top of datapath.c for additional
  * locking information.
@@ -132,16 +86,6 @@ struct datapath {
 	struct list_head list_node;
 
 	/* Flow table. */
-<<<<<<< HEAD
-	struct flow_table __rcu *table;
-
-	/* Switch ports. */
-	struct vport __rcu *ports[DP_MAX_PORTS];
-	struct list_head port_list;
-
-	/* Stats. */
-	struct dp_stats_percpu __percpu *stats_percpu;
-=======
 	struct flow_table table;
 
 	/* Switch ports. */
@@ -161,17 +105,10 @@ struct datapath {
 	struct dp_meter_table meter_tbl;
 
 	struct dp_nlsk_pids __rcu *upcall_portids;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct ovs_skb_cb - OVS data in skb CB
-<<<<<<< HEAD
- * @flow: The flow associated with this packet.  May be %NULL if no flow.
- */
-struct ovs_skb_cb {
-	struct sw_flow		*flow;
-=======
  * @input_vport: The original vport packet came in on. This value is cached
  * when a packet is received by OVS.
  * @mru: The maximum received fragement size; 0 if the packet is not
@@ -184,42 +121,12 @@ struct ovs_skb_cb {
 	u16			mru;
 	u16			acts_origlen;
 	u32			cutlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define OVS_CB(skb) ((struct ovs_skb_cb *)(skb)->cb)
 
 /**
  * struct dp_upcall - metadata to include with a packet to send to userspace
  * @cmd: One of %OVS_PACKET_CMD_*.
-<<<<<<< HEAD
- * @key: Becomes %OVS_PACKET_ATTR_KEY.  Must be nonnull.
- * @userdata: If nonnull, its u64 value is extracted and passed to userspace as
- * %OVS_PACKET_ATTR_USERDATA.
- * @pid: Netlink PID to which packet should be sent.  If @pid is 0 then no
- * packet is sent and the packet is accounted in the datapath's @n_lost
- * counter.
- */
-struct dp_upcall_info {
-	u8 cmd;
-	const struct sw_flow_key *key;
-	const struct nlattr *userdata;
-	u32 pid;
-};
-
-extern struct notifier_block ovs_dp_device_notifier;
-extern struct genl_multicast_group ovs_dp_vport_multicast_group;
-
-void ovs_dp_process_received_packet(struct vport *, struct sk_buff *);
-void ovs_dp_detach_port(struct vport *);
-int ovs_dp_upcall(struct datapath *, struct sk_buff *,
-		  const struct dp_upcall_info *);
-
-const char *ovs_dp_name(const struct datapath *dp);
-struct sk_buff *ovs_vport_cmd_build_info(struct vport *, u32 pid, u32 seq,
-					 u8 cmd);
-
-int ovs_execute_actions(struct datapath *dp, struct sk_buff *skb);
-=======
  * @userdata: If nonnull, its variable-length value is passed to userspace as
  * %OVS_PACKET_ATTR_USERDATA.
  * @portid: Netlink portid to which packet should be sent.  If @portid is 0
@@ -375,5 +282,4 @@ do {								\
 	if (logging_allowed && net_ratelimit())			\
 		pr_info("netlink: " fmt "\n", ##__VA_ARGS__);	\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* datapath.h */

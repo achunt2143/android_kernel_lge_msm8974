@@ -1,29 +1,3 @@
-<<<<<<< HEAD
-config NET_DSA
-	tristate "Distributed Switch Architecture support"
-	default n
-	depends on EXPERIMENTAL && NETDEVICES && !S390
-	select PHYLIB
-	---help---
-	  This allows you to use hardware switch chips that use
-	  the Distributed Switch Architecture.
-
-
-if NET_DSA
-
-# tagging formats
-config NET_DSA_TAG_DSA
-	bool
-	default n
-
-config NET_DSA_TAG_EDSA
-	bool
-	default n
-
-config NET_DSA_TAG_TRAILER
-	bool
-	default n
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 
 menuconfig NET_DSA
@@ -197,6 +171,5 @@ config NET_DSA_TAG_XRS700X
 	help
 	  Say Y or M if you want to enable support for tagging frames for
 	  Arrow SpeedChips XRS700x switches that use a single byte tag trailer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif

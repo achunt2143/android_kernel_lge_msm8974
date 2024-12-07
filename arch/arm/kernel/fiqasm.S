@@ -32,11 +32,7 @@ ENTRY(__set_fiq_regs)
 	ldr	lr, [r0]
 	msr	cpsr_c, r1	@ return to SVC mode
 	mov	r0, r0		@ avoid hazard prior to ARMv4
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(__set_fiq_regs)
 
 ENTRY(__get_fiq_regs)
@@ -49,9 +45,5 @@ ENTRY(__get_fiq_regs)
 	str	lr, [r0]
 	msr	cpsr_c, r1	@ return to SVC mode
 	mov	r0, r0		@ avoid hazard prior to ARMv4
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(__get_fiq_regs)

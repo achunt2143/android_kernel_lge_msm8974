@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * Coda File System, Linux Kernel module
  * 
@@ -16,15 +13,12 @@
 #ifndef _LINUX_CODA_FS
 #define _LINUX_CODA_FS
 
-<<<<<<< HEAD
-=======
 #ifdef pr_fmt
 #undef pr_fmt
 #endif
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/param.h>
 #include <linux/mm.h>
@@ -52,18 +46,6 @@ extern const struct file_operations coda_ioctl_operations;
 /* operations shared over more than one file */
 int coda_open(struct inode *i, struct file *f);
 int coda_release(struct inode *i, struct file *f);
-<<<<<<< HEAD
-int coda_permission(struct inode *inode, int mask);
-int coda_revalidate_inode(struct dentry *);
-int coda_getattr(struct vfsmount *, struct dentry *, struct kstat *);
-int coda_setattr(struct dentry *, struct iattr *);
-
-/* this file:  heloers */
-char *coda_f2s(struct CodaFid *f);
-int coda_isroot(struct inode *i);
-int coda_iscontrol(const char *name, size_t length);
-
-=======
 int coda_permission(struct mnt_idmap *idmap, struct inode *inode,
 		    int mask);
 int coda_revalidate_inode(struct inode *);
@@ -76,40 +58,15 @@ char *coda_f2s(struct CodaFid *f);
 int coda_iscontrol(const char *name, size_t length);
 
 umode_t coda_inode_type(struct coda_vattr *attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void coda_vattr_to_iattr(struct inode *, struct coda_vattr *);
 void coda_iattr_to_vattr(struct iattr *, struct coda_vattr *);
 unsigned short coda_flags_to_cflags(unsigned short);
 
-<<<<<<< HEAD
-/* sysctl.h */
-void coda_sysctl_init(void);
-void coda_sysctl_clean(void);
-
-#define CODA_ALLOC(ptr, cast, size) do { \
-    if (size < PAGE_SIZE) \
-        ptr = kzalloc((unsigned long) size, GFP_KERNEL); \
-    else \
-        ptr = (cast)vzalloc((unsigned long) size); \
-    if (!ptr) \
-        printk("kernel malloc returns 0 at %s:%d\n", __FILE__, __LINE__); \
-} while (0)
-
-
-#define CODA_FREE(ptr,size) \
-    do { if (size < PAGE_SIZE) kfree((ptr)); else vfree((ptr)); } while (0)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* inode to cnode access functions */
 
 static inline struct coda_inode_info *ITOC(struct inode *inode)
 {
-<<<<<<< HEAD
-	return list_entry(inode, struct coda_inode_info, vfs_inode);
-=======
 	return container_of(inode, struct coda_inode_info, vfs_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __inline__ struct CodaFid *coda_i2f(struct inode *inode)
@@ -127,12 +84,9 @@ static __inline__ void coda_flag_inode(struct inode *inode, int flag)
 {
 	struct coda_inode_info *cii = ITOC(inode);
 
-<<<<<<< HEAD
-=======
 	if (!inode)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&cii->c_lock);
 	cii->c_flags |= flag;
 	spin_unlock(&cii->c_lock);

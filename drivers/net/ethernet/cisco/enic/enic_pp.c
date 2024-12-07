@@ -1,25 +1,5 @@
-<<<<<<< HEAD
-/*
- * Copyright 2011 Cisco Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 // Copyright 2011 Cisco Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -78,15 +58,9 @@ static int enic_set_port_profile(struct enic *enic, int vf)
 	struct vic_provinfo *vp;
 	const u8 oui[3] = VIC_PROVINFO_CISCO_OUI;
 	const __be16 os_type = htons(VIC_GENERIC_PROV_OS_TYPE_LINUX);
-<<<<<<< HEAD
-	char uuid_str[38];
-	char client_mac_str[18];
-	u8 *client_mac;
-=======
 	const u8 *client_mac;
 	char uuid_str[38];
 	char client_mac_str[18];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	ENIC_PP_BY_INDEX(enic, vf, pp, &err);
@@ -173,11 +147,7 @@ static int enic_are_pp_different(struct enic_port_profile *pp1,
 	return strcmp(pp1->name, pp2->name) | !!memcmp(pp1->instance_uuid,
 		pp2->instance_uuid, PORT_UUID_MAX) |
 		!!memcmp(pp1->host_uuid, pp2->host_uuid, PORT_UUID_MAX) |
-<<<<<<< HEAD
-		!!memcmp(pp1->mac_addr, pp2->mac_addr, ETH_ALEN);
-=======
 		!ether_addr_equal(pp1->mac_addr, pp2->mac_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int enic_pp_preassociate(struct enic *enic, int vf,
@@ -199,11 +169,7 @@ static int (*enic_pp_handlers[])(struct enic *enic, int vf,
 };
 
 static const int enic_pp_handlers_count =
-<<<<<<< HEAD
-			sizeof(enic_pp_handlers)/sizeof(*enic_pp_handlers);
-=======
 			ARRAY_SIZE(enic_pp_handlers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int enic_pp_preassociate(struct enic *enic, int vf,
 	struct enic_port_profile *prev_pp, int *restore_pp)

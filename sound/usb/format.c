@@ -1,23 +1,5 @@
-<<<<<<< HEAD
-/*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -25,10 +7,7 @@
 #include <linux/usb.h>
 #include <linux/usb/audio.h>
 #include <linux/usb/audio-v2.h>
-<<<<<<< HEAD
-=======
 #include <linux/usb/audio-v3.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -37,10 +16,6 @@
 #include "card.h"
 #include "quirks.h"
 #include "helper.h"
-<<<<<<< HEAD
-#include "debug.h"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "clock.h"
 #include "format.h"
 
@@ -51,25 +26,6 @@
  * @dev: usb device
  * @fp: audioformat record
  * @format: the format tag (wFormatTag)
-<<<<<<< HEAD
- * @fmt: the format type descriptor
- */
-static u64 parse_audio_format_i_type(struct snd_usb_audio *chip,
-				     struct audioformat *fp,
-				     int format, void *_fmt,
-				     int protocol)
-{
-	int sample_width, sample_bytes;
-	u64 pcm_formats;
-
-	switch (protocol) {
-	case UAC_VERSION_1:
-	default: {
-		struct uac_format_type_i_discrete_descriptor *fmt = _fmt;
-		sample_width = fmt->bBitResolution;
-		sample_bytes = fmt->bSubframeSize;
-		format = 1 << format;
-=======
  * @fmt: the format type descriptor (v1/v2) or AudioStreaming descriptor (v3)
  */
 static u64 parse_audio_format_i_type(struct snd_usb_audio *chip,
@@ -92,7 +48,6 @@ static u64 parse_audio_format_i_type(struct snd_usb_audio *chip,
 		sample_width = fmt->bBitResolution;
 		sample_bytes = fmt->bSubframeSize;
 		format = 1ULL << format;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -100,8 +55,6 @@ static u64 parse_audio_format_i_type(struct snd_usb_audio *chip,
 		struct uac_format_type_i_ext_descriptor *fmt = _fmt;
 		sample_width = fmt->bBitResolution;
 		sample_bytes = fmt->bSubslotSize;
-<<<<<<< HEAD
-=======
 
 		if (format & UAC2_FORMAT_TYPE_I_RAW_DATA) {
 			pcm_formats |= SNDRV_PCM_FMTBIT_SPECIAL;
@@ -121,30 +74,11 @@ static u64 parse_audio_format_i_type(struct snd_usb_audio *chip,
 		if (format & UAC3_FORMAT_TYPE_I_RAW_DATA)
 			pcm_formats |= SNDRV_PCM_FMTBIT_SPECIAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		format <<= 1;
 		break;
 	}
 	}
 
-<<<<<<< HEAD
-	pcm_formats = 0;
-
-	if (format == 0 || format == (1 << UAC_FORMAT_TYPE_I_UNDEFINED)) {
-		/* some devices don't define this correctly... */
-		snd_printdd(KERN_INFO "%d:%u:%d : format type 0 is detected, processed as PCM\n",
-			    chip->dev->devnum, fp->iface, fp->altsetting);
-		format = 1 << UAC_FORMAT_TYPE_I_PCM;
-	}
-	if (format & (1 << UAC_FORMAT_TYPE_I_PCM)) {
-		if (chip->usb_id == USB_ID(0x0582, 0x0016) /* Edirol SD-90 */ &&
-		    sample_width == 24 && sample_bytes == 2)
-			sample_bytes = 3;
-		else if (sample_width > sample_bytes * 8) {
-			snd_printk(KERN_INFO "%d:%u:%d : sample bitwidth %d in over sample bytes %d\n",
-				   chip->dev->devnum, fp->iface, fp->altsetting,
-				   sample_width, sample_bytes);
-=======
 	fp->fmt_bits = sample_width;
 
 	if ((pcm_formats == 0) &&
@@ -165,7 +99,6 @@ static u64 parse_audio_format_i_type(struct snd_usb_audio *chip,
 			usb_audio_info(chip, "%u:%d : sample bitwidth %d in over sample bytes %d\n",
 				 fp->iface, fp->altsetting,
 				 sample_width, sample_bytes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* check the format byte size */
 		switch (sample_bytes) {
@@ -188,16 +121,10 @@ static u64 parse_audio_format_i_type(struct snd_usb_audio *chip,
 			pcm_formats |= SNDRV_PCM_FMTBIT_S32_LE;
 			break;
 		default:
-<<<<<<< HEAD
-			snd_printk(KERN_INFO "%d:%u:%d : unsupported sample bitwidth %d in %d bytes\n",
-				   chip->dev->devnum, fp->iface, fp->altsetting,
-				   sample_width, sample_bytes);
-=======
 			usb_audio_info(chip,
 				 "%u:%d : unsupported sample bitwidth %d in %d bytes\n",
 				 fp->iface, fp->altsetting,
 				 sample_width, sample_bytes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -219,14 +146,6 @@ static u64 parse_audio_format_i_type(struct snd_usb_audio *chip,
 		pcm_formats |= SNDRV_PCM_FMTBIT_MU_LAW;
 	}
 	if (format & ~0x3f) {
-<<<<<<< HEAD
-		snd_printk(KERN_INFO "%d:%u:%d : unsupported format bits %#x\n",
-			   chip->dev->devnum, fp->iface, fp->altsetting, format);
-	}
-	return pcm_formats;
-}
-
-=======
 		usb_audio_info(chip,
 			 "%u:%d : unsupported format bits %#llx\n",
 			 fp->iface, fp->altsetting, format);
@@ -267,7 +186,6 @@ static void set_rate_table_min_max(struct audioformat *fp)
 		fp->rates |= snd_pcm_rate_to_rate_bit(rate);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * parse the format descriptor and stores the possible sample rates
@@ -285,16 +203,10 @@ static int parse_audio_format_rates_v1(struct snd_usb_audio *chip, struct audiof
 	int nr_rates = fmt[offset];
 
 	if (fmt[0] < offset + 1 + 3 * (nr_rates ? nr_rates : 2)) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "%d:%u:%d : invalid UAC_FORMAT_TYPE desc\n",
-				   chip->dev->devnum, fp->iface, fp->altsetting);
-		return -1;
-=======
 		usb_audio_err(chip,
 			"%u:%d : invalid UAC_FORMAT_TYPE desc\n",
 			fp->iface, fp->altsetting);
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (nr_rates) {
@@ -303,53 +215,18 @@ static int parse_audio_format_rates_v1(struct snd_usb_audio *chip, struct audiof
 		 */
 		int r, idx;
 
-<<<<<<< HEAD
-		fp->rate_table = kmalloc(sizeof(int) * nr_rates, GFP_KERNEL);
-		if (fp->rate_table == NULL) {
-			snd_printk(KERN_ERR "cannot malloc\n");
-			return -1;
-		}
-
-		fp->nr_rates = 0;
-		fp->rate_min = fp->rate_max = 0;
-=======
 		fp->rate_table = kmalloc_array(nr_rates, sizeof(int),
 					       GFP_KERNEL);
 		if (fp->rate_table == NULL)
 			return -ENOMEM;
 
 		fp->nr_rates = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (r = 0, idx = offset + 1; r < nr_rates; r++, idx += 3) {
 			unsigned int rate = combine_triple(&fmt[idx]);
 			if (!rate)
 				continue;
 			/* C-Media CM6501 mislabels its 96 kHz altsetting */
 			/* Terratec Aureon 7.1 USB C-Media 6206, too */
-<<<<<<< HEAD
-			if (rate == 48000 && nr_rates == 1 &&
-			    (chip->usb_id == USB_ID(0x0d8c, 0x0201) ||
-			     chip->usb_id == USB_ID(0x0d8c, 0x0102) ||
-			     chip->usb_id == USB_ID(0x0ccd, 0x00b1)) &&
-			    fp->altsetting == 5 && fp->maxpacksize == 392)
-				rate = 96000;
-			/* Creative VF0470 Live Cam reports 16 kHz instead of 8kHz */
-			if (rate == 16000 && chip->usb_id == USB_ID(0x041e, 0x4068))
-				rate = 8000;
-
-			fp->rate_table[fp->nr_rates] = rate;
-			if (!fp->rate_min || rate < fp->rate_min)
-				fp->rate_min = rate;
-			if (!fp->rate_max || rate > fp->rate_max)
-				fp->rate_max = rate;
-			fp->rates |= snd_pcm_rate_to_rate_bit(rate);
-			fp->nr_rates++;
-		}
-		if (!fp->nr_rates) {
-			hwc_debug("All rates were zero. Skipping format!\n");
-			return -1;
-		}
-=======
 			/* Ozone Z90 USB C-Media, too */
 			if (rate == 48000 && nr_rates == 1 &&
 			    (chip->usb_id == USB_ID(0x0d8c, 0x0201) ||
@@ -373,18 +250,12 @@ static int parse_audio_format_rates_v1(struct snd_usb_audio *chip, struct audiof
 			return -EINVAL;
 		}
 		set_rate_table_min_max(fp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* continuous rates */
 		fp->rates = SNDRV_PCM_RATE_CONTINUOUS;
 		fp->rate_min = combine_triple(&fmt[offset + 1]);
 		fp->rate_max = combine_triple(&fmt[offset + 4]);
 	}
-<<<<<<< HEAD
-	return 0;
-}
-
-=======
 
 	/* Jabra Evolve 65 headset */
 	if (chip->usb_id == USB_ID(0x0b0e, 0x030b)) {
@@ -472,28 +343,18 @@ static bool focusrite_valid_sample_rate(struct snd_usb_audio *chip,
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Helper function to walk the array of sample rate triplets reported by
  * the device. The problem is that we need to parse whole array first to
  * get to know how many sample rates we have to expect.
  * Then fp->rate_table can be allocated and filled.
  */
-<<<<<<< HEAD
-static int parse_uac2_sample_rate_range(struct audioformat *fp, int nr_triplets,
-=======
 static int parse_uac2_sample_rate_range(struct snd_usb_audio *chip,
 					struct audioformat *fp, int nr_triplets,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					const unsigned char *data)
 {
 	int i, nr_rates = 0;
 
-<<<<<<< HEAD
-	fp->rates = fp->rate_min = fp->rate_max = 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < nr_triplets; i++) {
 		int min = combine_quad(&data[2 + 12 * i]);
 		int max = combine_quad(&data[6 + 12 * i]);
@@ -516,22 +377,6 @@ static int parse_uac2_sample_rate_range(struct snd_usb_audio *chip,
 		}
 
 		for (rate = min; rate <= max; rate += res) {
-<<<<<<< HEAD
-			if (fp->rate_table)
-				fp->rate_table[nr_rates] = rate;
-			if (!fp->rate_min || rate < fp->rate_min)
-				fp->rate_min = rate;
-			if (!fp->rate_max || rate > fp->rate_max)
-				fp->rate_max = rate;
-			fp->rates |= snd_pcm_rate_to_rate_bit(rate);
-
-			nr_rates++;
-			if (nr_rates >= MAX_NR_RATES) {
-				snd_printk(KERN_ERR "invalid uac2 rates\n");
-				break;
-			}
-
-=======
 
 			/* Filter out invalid rates on Presonus Studio 1810c */
 			if (chip->usb_id == USB_ID(0x194f, 0x010c) &&
@@ -552,7 +397,6 @@ static int parse_uac2_sample_rate_range(struct snd_usb_audio *chip,
 			}
 
 skip_rate:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* avoid endless loop */
 			if (res == 0)
 				break;
@@ -562,13 +406,6 @@ skip_rate:
 	return nr_rates;
 }
 
-<<<<<<< HEAD
-/*
- * parse the format descriptor and stores the possible sample rates
- * on the audioformat table (audio class v2).
- */
-static int parse_audio_format_rates_v2(struct snd_usb_audio *chip,
-=======
 /* Line6 Helix series and the Rode Rodecaster Pro don't support the
  * UAC2_CS_RANGE usb function call. Return a static table of known
  * clock rates.
@@ -705,25 +542,16 @@ static int validate_sample_rate_table_v2v3(struct snd_usb_audio *chip,
  * on the audioformat table (audio class v2 and v3).
  */
 static int parse_audio_format_rates_v2v3(struct snd_usb_audio *chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       struct audioformat *fp)
 {
 	struct usb_device *dev = chip->dev;
 	unsigned char tmp[2], *data;
-<<<<<<< HEAD
-	int nr_triplets, data_size, ret = 0;
-	int clock = snd_usb_clock_find_source(chip, fp->clock);
-
-	if (clock < 0) {
-		snd_printk(KERN_ERR "%s(): unable to find clock source (clock %d)\n",
-=======
 	int nr_triplets, data_size, ret = 0, ret_l6;
 	int clock = snd_usb_clock_find_source(chip, fp, false);
 
 	if (clock < 0) {
 		dev_err(&dev->dev,
 			"%s(): unable to find clock source (clock %d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__func__, clock);
 		goto err;
 	}
@@ -736,10 +564,6 @@ static int parse_audio_format_rates_v2v3(struct snd_usb_audio *chip,
 			      tmp, sizeof(tmp));
 
 	if (ret < 0) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "%s(): unable to retrieve number of sample rates (clock %d)\n",
-				__func__, clock);
-=======
 		/* line6 helix devices don't support UAC2_CS_CONTROL_SAM_FREQ call */
 		ret_l6 = line6_parse_audio_format_rates_quirk(chip, fp);
 		if (ret_l6 == -ENODEV) {
@@ -756,7 +580,6 @@ static int parse_audio_format_rates_v2v3(struct snd_usb_audio *chip,
 			return 0;
 		}
 		ret = ret_l6;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
@@ -776,12 +599,8 @@ static int parse_audio_format_rates_v2v3(struct snd_usb_audio *chip,
 			      data, data_size);
 
 	if (ret < 0) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "%s(): unable to retrieve sample rate range (clock %d)\n",
-=======
 		dev_err(&dev->dev,
 			"%s(): unable to retrieve sample rate range (clock %d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__func__, clock);
 		ret = -EINVAL;
 		goto err_free;
@@ -792,11 +611,7 @@ static int parse_audio_format_rates_v2v3(struct snd_usb_audio *chip,
 	 * will have to deal with. */
 	kfree(fp->rate_table);
 	fp->rate_table = NULL;
-<<<<<<< HEAD
-	fp->nr_rates = parse_uac2_sample_rate_range(fp, nr_triplets, data);
-=======
 	fp->nr_rates = parse_uac2_sample_rate_range(chip, fp, nr_triplets, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fp->nr_rates == 0) {
 		/* SNDRV_PCM_RATE_CONTINUOUS */
@@ -804,11 +619,7 @@ static int parse_audio_format_rates_v2v3(struct snd_usb_audio *chip,
 		goto err_free;
 	}
 
-<<<<<<< HEAD
-	fp->rate_table = kmalloc(sizeof(int) * fp->nr_rates, GFP_KERNEL);
-=======
 	fp->rate_table = kmalloc_array(fp->nr_rates, sizeof(int), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fp->rate_table) {
 		ret = -ENOMEM;
 		goto err_free;
@@ -816,9 +627,6 @@ static int parse_audio_format_rates_v2v3(struct snd_usb_audio *chip,
 
 	/* Call the triplet parser again, but this time, fp->rate_table is
 	 * allocated, so the rates will be stored */
-<<<<<<< HEAD
-	parse_uac2_sample_rate_range(fp, nr_triplets, data);
-=======
 	parse_uac2_sample_rate_range(chip, fp, nr_triplets, data);
 
 	ret = validate_sample_rate_table_v2v3(chip, fp, clock);
@@ -826,7 +634,6 @@ static int parse_audio_format_rates_v2v3(struct snd_usb_audio *chip,
 		goto err_free;
 
 	set_rate_table_min_max(fp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_free:
 	kfree(data);
@@ -838,17 +645,6 @@ err:
  * parse the format type I and III descriptors
  */
 static int parse_audio_format_i(struct snd_usb_audio *chip,
-<<<<<<< HEAD
-				struct audioformat *fp, int format,
-				struct uac_format_type_i_continuous_descriptor *fmt,
-				struct usb_host_interface *iface)
-{
-	struct usb_interface_descriptor *altsd = get_iface_desc(iface);
-	int protocol = altsd->bInterfaceProtocol;
-	int pcm_format, ret;
-
-	if (fmt->bFormatType == UAC_FORMAT_TYPE_III) {
-=======
 				struct audioformat *fp, u64 format,
 				void *_fmt)
 {
@@ -873,7 +669,6 @@ static int parse_audio_format_i(struct snd_usb_audio *chip,
 	}
 
 	if (fmt_type == UAC_FORMAT_TYPE_III) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* FIXME: the format type is really IECxxx
 		 *        but we give normal PCM format to get the existing
 		 *        apps working...
@@ -890,20 +685,11 @@ static int parse_audio_format_i(struct snd_usb_audio *chip,
 		default:
 			pcm_format = SNDRV_PCM_FORMAT_S16_LE;
 		}
-<<<<<<< HEAD
-		fp->formats = 1uLL << pcm_format;
-	} else {
-		fp->formats = parse_audio_format_i_type(chip, fp, format,
-							fmt, protocol);
-		if (!fp->formats)
-			return -1;
-=======
 		fp->formats = pcm_format_to_bits(pcm_format);
 	} else {
 		fp->formats = parse_audio_format_i_type(chip, fp, format, _fmt);
 		if (!fp->formats)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* gather possible sample rates */
@@ -911,27 +697,6 @@ static int parse_audio_format_i(struct snd_usb_audio *chip,
 	 * proprietary class specific descriptor.
 	 * audio class v2 uses class specific EP0 range requests for that.
 	 */
-<<<<<<< HEAD
-	switch (protocol) {
-	default:
-		snd_printdd(KERN_WARNING "%d:%u:%d : invalid protocol version %d, assuming v1\n",
-			   chip->dev->devnum, fp->iface, fp->altsetting, protocol);
-		/* fall through */
-	case UAC_VERSION_1:
-		fp->channels = fmt->bNrChannels;
-		ret = parse_audio_format_rates_v1(chip, fp, (unsigned char *) fmt, 7);
-		break;
-	case UAC_VERSION_2:
-		/* fp->channels is already set in this case */
-		ret = parse_audio_format_rates_v2(chip, fp);
-		break;
-	}
-
-	if (fp->channels < 1) {
-		snd_printk(KERN_ERR "%d:%u:%d : invalid channels %d\n",
-			   chip->dev->devnum, fp->iface, fp->altsetting, fp->channels);
-		return -1;
-=======
 	switch (fp->protocol) {
 	default:
 	case UAC_VERSION_1: {
@@ -954,7 +719,6 @@ static int parse_audio_format_i(struct snd_usb_audio *chip,
 			"%u:%d : invalid channels %d\n",
 			fp->iface, fp->altsetting, fp->channels);
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -965,18 +729,9 @@ static int parse_audio_format_i(struct snd_usb_audio *chip,
  */
 static int parse_audio_format_ii(struct snd_usb_audio *chip,
 				 struct audioformat *fp,
-<<<<<<< HEAD
-				 int format, void *_fmt,
-				 struct usb_host_interface *iface)
-{
-	int brate, framesize, ret;
-	struct usb_interface_descriptor *altsd = get_iface_desc(iface);
-	int protocol = altsd->bInterfaceProtocol;
-=======
 				 u64 format, void *_fmt)
 {
 	int brate, framesize, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (format) {
 	case UAC_FORMAT_TYPE_II_AC3:
@@ -988,39 +743,22 @@ static int parse_audio_format_ii(struct snd_usb_audio *chip,
 		fp->formats = SNDRV_PCM_FMTBIT_MPEG;
 		break;
 	default:
-<<<<<<< HEAD
-		snd_printd(KERN_INFO "%d:%u:%d : unknown format tag %#x is detected.  processed as MPEG.\n",
-			   chip->dev->devnum, fp->iface, fp->altsetting, format);
-=======
 		usb_audio_info(chip,
 			 "%u:%d : unknown format tag %#llx is detected.  processed as MPEG.\n",
 			 fp->iface, fp->altsetting, format);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fp->formats = SNDRV_PCM_FMTBIT_MPEG;
 		break;
 	}
 
 	fp->channels = 1;
 
-<<<<<<< HEAD
-	switch (protocol) {
-	default:
-		snd_printdd(KERN_WARNING "%d:%u:%d : invalid protocol version %d, assuming v1\n",
-			   chip->dev->devnum, fp->iface, fp->altsetting, protocol);
-		/* fall through */
-=======
 	switch (fp->protocol) {
 	default:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case UAC_VERSION_1: {
 		struct uac_format_type_ii_discrete_descriptor *fmt = _fmt;
 		brate = le16_to_cpu(fmt->wMaxBitRate);
 		framesize = le16_to_cpu(fmt->wSamplesPerFrame);
-<<<<<<< HEAD
-		snd_printd(KERN_INFO "found format II with max.bitrate = %d, frame size=%d\n", brate, framesize);
-=======
 		usb_audio_info(chip, "found format II with max.bitrate = %d, frame size=%d\n", brate, framesize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fp->frame_size = framesize;
 		ret = parse_audio_format_rates_v1(chip, fp, _fmt, 8); /* fmt[8..] sample rates */
 		break;
@@ -1029,15 +767,9 @@ static int parse_audio_format_ii(struct snd_usb_audio *chip,
 		struct uac_format_type_ii_ext_descriptor *fmt = _fmt;
 		brate = le16_to_cpu(fmt->wMaxBitRate);
 		framesize = le16_to_cpu(fmt->wSamplesPerFrame);
-<<<<<<< HEAD
-		snd_printd(KERN_INFO "found format II with max.bitrate = %d, frame size=%d\n", brate, framesize);
-		fp->frame_size = framesize;
-		ret = parse_audio_format_rates_v2(chip, fp);
-=======
 		usb_audio_info(chip, "found format II with max.bitrate = %d, frame size=%d\n", brate, framesize);
 		fp->frame_size = framesize;
 		ret = parse_audio_format_rates_v2v3(chip, fp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	}
@@ -1045,33 +777,16 @@ static int parse_audio_format_ii(struct snd_usb_audio *chip,
 	return ret;
 }
 
-<<<<<<< HEAD
-int snd_usb_parse_audio_format(struct snd_usb_audio *chip, struct audioformat *fp,
-			       int format, struct uac_format_type_i_continuous_descriptor *fmt,
-			       int stream, struct usb_host_interface *iface)
-=======
 int snd_usb_parse_audio_format(struct snd_usb_audio *chip,
 			       struct audioformat *fp, u64 format,
 			       struct uac_format_type_i_continuous_descriptor *fmt,
 			       int stream)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
 	switch (fmt->bFormatType) {
 	case UAC_FORMAT_TYPE_I:
 	case UAC_FORMAT_TYPE_III:
-<<<<<<< HEAD
-		err = parse_audio_format_i(chip, fp, format, fmt, iface);
-		break;
-	case UAC_FORMAT_TYPE_II:
-		err = parse_audio_format_ii(chip, fp, format, fmt, iface);
-		break;
-	default:
-		snd_printd(KERN_INFO "%d:%u:%d : format type %d is not supported yet\n",
-			   chip->dev->devnum, fp->iface, fp->altsetting,
-			   fmt->bFormatType);
-=======
 		err = parse_audio_format_i(chip, fp, format, fmt);
 		break;
 	case UAC_FORMAT_TYPE_II:
@@ -1082,7 +797,6 @@ int snd_usb_parse_audio_format(struct snd_usb_audio *chip,
 			 "%u:%d : format type %d is not supported yet\n",
 			 fp->iface, fp->altsetting,
 			 fmt->bFormatType);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOTSUPP;
 	}
 	fp->fmt_type = fmt->bFormatType;
@@ -1105,8 +819,6 @@ int snd_usb_parse_audio_format(struct snd_usb_audio *chip,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 int snd_usb_parse_audio_format_v3(struct snd_usb_audio *chip,
 			       struct audioformat *fp,
 			       struct uac3_as_header_descriptor *as,
@@ -1130,4 +842,3 @@ int snd_usb_parse_audio_format_v3(struct snd_usb_audio *chip,
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

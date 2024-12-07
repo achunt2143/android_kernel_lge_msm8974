@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-#ifndef __ASM_SH_SPINLOCK_TYPES_H
-#define __ASM_SH_SPINLOCK_TYPES_H
-
-#ifndef __LINUX_SPINLOCK_TYPES_H
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_SH_SPINLOCK_TYPES_H
 #define __ASM_SH_SPINLOCK_TYPES_H
 
 #ifndef __LINUX_SPINLOCK_TYPES_RAW_H
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # error "please don't include this file directly"
 #endif
 

@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Industrial Computer Source WDT501 driver
  *
  *	(c) Copyright 1996-1997 Alan Cox <alan@lxorguk.ukuu.org.uk>,
  *						All Rights Reserved.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Neither Alan Cox nor CymruNet Ltd. admit liability nor provide
  *	warranty for any of this software. This material is provided
  *	"AS-IS" and at no charge.
@@ -85,15 +74,9 @@ static int irq = 11;
 
 static DEFINE_SPINLOCK(wdt_lock);
 
-<<<<<<< HEAD
-module_param(io, int, 0);
-MODULE_PARM_DESC(io, "WDT io port (default=0x240)");
-module_param(irq, int, 0);
-=======
 module_param_hw(io, int, ioport, 0);
 MODULE_PARM_DESC(io, "WDT io port (default=0x240)");
 module_param_hw(irq, int, irq, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(irq, "WDT irq (default=11)");
 
 /* Support for the Fan Tachometer on the WDT501-P */
@@ -406,11 +389,7 @@ static long wdt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (wdt_set_heartbeat(new_heartbeat))
 			return -EINVAL;
 		wdt_ping();
-<<<<<<< HEAD
-		/* Fall */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		return put_user(heartbeat, p);
 	default:
@@ -438,11 +417,7 @@ static int wdt_open(struct inode *inode, struct file *file)
 	 *	Activate
 	 */
 	wdt_start();
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -502,11 +477,7 @@ static ssize_t wdt_temp_read(struct file *file, char __user *buf,
 
 static int wdt_temp_open(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -523,11 +494,7 @@ static int wdt_temp_release(struct inode *inode, struct file *file)
 }
 
 /**
-<<<<<<< HEAD
- *	notify_sys:
-=======
  *	wdt_notify_sys:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@this: our notifier block
  *	@code: the event being reported
  *	@unused: unused
@@ -556,10 +523,7 @@ static const struct file_operations wdt_fops = {
 	.llseek		= no_llseek,
 	.write		= wdt_write,
 	.unlocked_ioctl	= wdt_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= wdt_open,
 	.release	= wdt_release,
 };
@@ -594,11 +558,7 @@ static struct notifier_block wdt_notifier = {
 };
 
 /**
-<<<<<<< HEAD
- *	cleanup_module:
-=======
  *	wdt_exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Unload the watchdog. You cannot do this with any file handles open.
  *	If your watchdog is set to continue ticking on close and you unload
@@ -701,9 +661,4 @@ module_exit(wdt_exit);
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("Driver for ISA ICS watchdog cards (WDT500/501)");
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-MODULE_ALIAS_MISCDEV(TEMP_MINOR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

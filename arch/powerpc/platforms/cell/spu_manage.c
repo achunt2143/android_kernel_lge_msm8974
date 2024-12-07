@@ -1,29 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * spu management operations for of based platforms
  *
  * (C) Copyright IBM Deutschland Entwicklung GmbH 2005
  * Copyright 2006 Sony Corp.
  * (C) Copyright 2007 TOSHIBA CORPORATION
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/interrupt.h>
@@ -35,26 +16,16 @@
 #include <linux/io.h>
 #include <linux/mutex.h>
 #include <linux/device.h>
-<<<<<<< HEAD
-=======
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/spu.h>
 #include <asm/spu_priv1.h>
 #include <asm/firmware.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-
-#include "spufs/spufs.h"
-#include "interrupt.h"
-=======
 
 #include "spufs/spufs.h"
 #include "interrupt.h"
 #include "spu_priv1_mmio.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct device_node *spu_devnode(struct spu *spu)
 {
@@ -124,14 +95,10 @@ static int __init spu_map_interrupts_old(struct spu *spu,
 	spu->irqs[2] = irq_create_mapping(NULL, IIC_IRQ_CLASS_2 | isrc);
 
 	/* Right now, we only fail if class 2 failed */
-<<<<<<< HEAD
-	return spu->irqs[2] == NO_IRQ ? -EINVAL : 0;
-=======
 	if (!spu->irqs[2])
 		return -EINVAL;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __iomem * __init spu_map_prop_old(struct spu *spu,
@@ -203,50 +170,16 @@ out:
 
 static int __init spu_map_interrupts(struct spu *spu, struct device_node *np)
 {
-<<<<<<< HEAD
-	struct of_irq oirq;
-	int ret;
-	int i;
-
-	for (i=0; i < 3; i++) {
-		ret = of_irq_map_one(np, i, &oirq);
-		if (ret) {
-			pr_debug("spu_new: failed to get irq %d\n", i);
-			goto err;
-		}
-		ret = -EINVAL;
-		pr_debug("  irq %d no 0x%x on %s\n", i, oirq.specifier[0],
-			 oirq.controller->full_name);
-		spu->irqs[i] = irq_create_of_mapping(oirq.controller,
-					oirq.specifier, oirq.size);
-		if (spu->irqs[i] == NO_IRQ) {
-			pr_debug("spu_new: failed to map it !\n");
-			goto err;
-		}
-=======
 	int i;
 
 	for (i=0; i < 3; i++) {
 		spu->irqs[i] = irq_of_parse_and_map(np, i);
 		if (!spu->irqs[i])
 			goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 
 err:
-<<<<<<< HEAD
-	pr_debug("failed to map irq %x for spu %s\n", *oirq.specifier,
-		spu->name);
-	for (; i >= 0; i--) {
-		if (spu->irqs[i] != NO_IRQ)
-			irq_dispose_mapping(spu->irqs[i]);
-	}
-	return ret;
-}
-
-static int spu_map_resource(struct spu *spu, int nr,
-=======
 	pr_debug("failed to map irq %x for spu %s\n", i, spu->name);
 	for (; i >= 0; i--) {
 		if (spu->irqs[i])
@@ -256,7 +189,6 @@ static int spu_map_resource(struct spu *spu, int nr,
 }
 
 static int __init spu_map_resource(struct spu *spu, int nr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    void __iomem** virt, unsigned long *phys)
 {
 	struct device_node *np = spu->devnode;
@@ -288,55 +220,32 @@ static int __init spu_map_device(struct spu *spu)
 	ret = spu_map_resource(spu, 0, (void __iomem**)&spu->local_store,
 			       &spu->local_store_phys);
 	if (ret) {
-<<<<<<< HEAD
-		pr_debug("spu_new: failed to map %s resource 0\n",
-			 np->full_name);
-=======
 		pr_debug("spu_new: failed to map %pOF resource 0\n",
 			 np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	ret = spu_map_resource(spu, 1, (void __iomem**)&spu->problem,
 			       &spu->problem_phys);
 	if (ret) {
-<<<<<<< HEAD
-		pr_debug("spu_new: failed to map %s resource 1\n",
-			 np->full_name);
-=======
 		pr_debug("spu_new: failed to map %pOF resource 1\n",
 			 np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unmap;
 	}
 	ret = spu_map_resource(spu, 2, (void __iomem**)&spu->priv2, NULL);
 	if (ret) {
-<<<<<<< HEAD
-		pr_debug("spu_new: failed to map %s resource 2\n",
-			 np->full_name);
-=======
 		pr_debug("spu_new: failed to map %pOF resource 2\n",
 			 np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unmap;
 	}
 	if (!firmware_has_feature(FW_FEATURE_LPAR))
 		ret = spu_map_resource(spu, 3,
 			       (void __iomem**)&spu->priv1, NULL);
 	if (ret) {
-<<<<<<< HEAD
-		pr_debug("spu_new: failed to map %s resource 3\n",
-			 np->full_name);
-		goto out_unmap;
-	}
-	pr_debug("spu_new: %s maps:\n", np->full_name);
-=======
 		pr_debug("spu_new: failed to map %pOF resource 3\n",
 			 np);
 		goto out_unmap;
 	}
 	pr_debug("spu_new: %pOF maps:\n", np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("  local store   : 0x%016lx -> 0x%p\n",
 		 spu->local_store_phys, spu->local_store);
 	pr_debug("  problem state : 0x%016lx -> 0x%p\n",
@@ -360,21 +269,12 @@ static int __init of_enumerate_spus(int (*fn)(void *data))
 	unsigned int n = 0;
 
 	ret = -ENODEV;
-<<<<<<< HEAD
-	for (node = of_find_node_by_type(NULL, "spe");
-			node; node = of_find_node_by_type(node, "spe")) {
-		ret = fn(node);
-		if (ret) {
-			printk(KERN_WARNING "%s: Error initializing %s\n",
-				__func__, node->name);
-=======
 	for_each_node_by_type(node, "spe") {
 		ret = fn(node);
 		if (ret) {
 			printk(KERN_WARNING "%s: Error initializing %pOFn\n",
 				__func__, node);
 			of_node_put(node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		n++;
@@ -393,13 +293,8 @@ static int __init of_create_spu(struct spu *spu, void *data)
 
 	spu->node = of_node_to_nid(spe);
 	if (spu->node >= MAX_NUMNODES) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "SPE %s on node %d ignored,"
-		       " node number too big\n", spe->full_name, spu->node);
-=======
 		printk(KERN_WARNING "SPE %pOF on node %d ignored,"
 		       " node number too big\n", spe, spu->node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "Check if CONFIG_NUMA is enabled.\n");
 		ret = -ENODEV;
 		goto out;
@@ -468,11 +363,7 @@ static void disable_spu_by_master_run(struct spu_context *ctx)
 static int qs20_reg_idxs[QS20_SPES_PER_BE] =   { 0, 2, 4, 6, 7, 5, 3, 1 };
 static int qs20_reg_memory[QS20_SPES_PER_BE] = { 1, 1, 0, 0, 0, 0, 0, 0 };
 
-<<<<<<< HEAD
-static struct spu *spu_lookup_reg(int node, u32 reg)
-=======
 static struct spu *__init spu_lookup_reg(int node, u32 reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct spu *spu;
 	const u32 *spu_reg;
@@ -485,11 +376,7 @@ static struct spu *__init spu_lookup_reg(int node, u32 reg)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static void init_affinity_qs20_harcoded(void)
-=======
 static void __init init_affinity_qs20_harcoded(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int node, i;
 	struct spu *last_spu, *spu;
@@ -511,20 +398,12 @@ static void __init init_affinity_qs20_harcoded(void)
 	}
 }
 
-<<<<<<< HEAD
-static int of_has_vicinity(void)
-=======
 static int __init of_has_vicinity(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dn;
 
 	for_each_node_by_type(dn, "spe") {
-<<<<<<< HEAD
-		if (of_find_property(dn, "vicinity", NULL))  {
-=======
 		if (of_property_present(dn, "vicinity"))  {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			of_node_put(dn);
 			return 1;
 		}
@@ -532,11 +411,7 @@ static int __init of_has_vicinity(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct spu *devnode_spu(int cbe, struct device_node *dn)
-=======
 static struct spu *__init devnode_spu(int cbe, struct device_node *dn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct spu *spu;
 
@@ -546,11 +421,7 @@ static struct spu *__init devnode_spu(int cbe, struct device_node *dn)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static struct spu *
-=======
 static struct spu * __init
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 neighbour_spu(int cbe, struct device_node *target, struct device_node *avoid)
 {
 	struct spu *spu;
@@ -571,20 +442,12 @@ neighbour_spu(int cbe, struct device_node *target, struct device_node *avoid)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static void init_affinity_node(int cbe)
-=======
 static void __init init_affinity_node(int cbe)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct spu *spu, *last_spu;
 	struct device_node *vic_dn, *last_spu_dn;
 	phandle avoid_ph;
 	const phandle *vic_handles;
-<<<<<<< HEAD
-	const char *name;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int lenp, i, added;
 
 	last_spu = list_first_entry(&cbe_spu_info[cbe].spus, struct spu,
@@ -596,11 +459,7 @@ static void __init init_affinity_node(int cbe)
 
 		/*
 		 * Walk through each phandle in vicinity property of the spu
-<<<<<<< HEAD
-		 * (tipically two vicinity phandles per spe node)
-=======
 		 * (typically two vicinity phandles per spe node)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		for (i = 0; i < (lenp / sizeof(phandle)); i++) {
 			if (vic_handles[i] == avoid_ph)
@@ -610,16 +469,7 @@ static void __init init_affinity_node(int cbe)
 			if (!vic_dn)
 				continue;
 
-<<<<<<< HEAD
-			/* a neighbour might be spe, mic-tm, or bif0 */
-			name = of_get_property(vic_dn, "name", NULL);
-			if (!name)
-				continue;
-
-			if (strcmp(name, "spe") == 0) {
-=======
 			if (of_node_name_eq(vic_dn, "spe") ) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				spu = devnode_spu(cbe, vic_dn);
 				avoid_ph = last_spu_dn->phandle;
 			} else {
@@ -632,22 +482,15 @@ static void __init init_affinity_node(int cbe)
 				spu = neighbour_spu(cbe, vic_dn, last_spu_dn);
 				if (!spu)
 					continue;
-<<<<<<< HEAD
-				if (!strcmp(name, "mic-tm")) {
-=======
 				if (of_node_name_eq(vic_dn, "mic-tm")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					last_spu->has_mem_affinity = 1;
 					spu->has_mem_affinity = 1;
 				}
 				avoid_ph = vic_dn->phandle;
 			}
 
-<<<<<<< HEAD
-=======
 			of_node_put(vic_dn);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_add_tail(&spu->aff_list, &last_spu->aff_list);
 			last_spu = spu;
 			break;
@@ -655,11 +498,7 @@ static void __init init_affinity_node(int cbe)
 	}
 }
 
-<<<<<<< HEAD
-static void init_affinity_fw(void)
-=======
 static void __init init_affinity_fw(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cbe;
 
@@ -672,12 +511,7 @@ static int __init init_affinity(void)
 	if (of_has_vicinity()) {
 		init_affinity_fw();
 	} else {
-<<<<<<< HEAD
-		long root = of_get_flat_dt_root();
-		if (of_flat_dt_is_compatible(root, "IBM,CPBW-1.0"))
-=======
 		if (of_machine_is_compatible("IBM,CPBW-1.0"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			init_affinity_qs20_harcoded();
 		else
 			printk("No affinity configuration found\n");

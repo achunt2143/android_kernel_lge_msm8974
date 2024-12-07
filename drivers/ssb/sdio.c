@@ -12,22 +12,14 @@
  *
  */
 
-<<<<<<< HEAD
-=======
 #include "ssb_private.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ssb/ssb.h>
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/etherdevice.h>
 #include <linux/mmc/sdio_func.h>
 
-<<<<<<< HEAD
-#include "ssb_private.h"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Define the following to 1 to enable a printk on each coreswitch. */
 #define SSB_VERBOSE_SDIOCORESWITCH_DEBUG		0
 
@@ -208,11 +200,7 @@ out:
 }
 
 /* host must be already claimed */
-<<<<<<< HEAD
-int ssb_sdio_switch_core(struct ssb_bus *bus, struct ssb_device *dev)
-=======
 static int ssb_sdio_switch_core(struct ssb_bus *bus, struct ssb_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 coreidx = dev->core_index;
 	u32 sbaddr;
@@ -328,30 +316,18 @@ static void ssb_sdio_block_read(struct ssb_device *dev, void *buffer,
 		break;
 	}
 	case sizeof(u16): {
-<<<<<<< HEAD
-		SSB_WARN_ON(count & 1);
-=======
 		WARN_ON(count & 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = sdio_readsb(bus->host_sdio, buffer, offset, count);
 		break;
 	}
 	case sizeof(u32): {
-<<<<<<< HEAD
-		SSB_WARN_ON(count & 3);
-=======
 		WARN_ON(count & 3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		offset |= SBSDIO_SB_ACCESS_2_4B_FLAG;	/* 32 bit data access */
 		error = sdio_readsb(bus->host_sdio, buffer, offset, count);
 		break;
 	}
 	default:
-<<<<<<< HEAD
-		SSB_WARN_ON(1);
-=======
 		WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!error)
 		goto out;
@@ -435,10 +411,6 @@ static void ssb_sdio_block_write(struct ssb_device *dev, const void *buffer,
 	sdio_claim_host(bus->host_sdio);
 	if (unlikely(ssb_sdio_switch_core(bus, dev))) {
 		error = -EIO;
-<<<<<<< HEAD
-		memset((void *)buffer, 0xff, count);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out;
 	}
 	offset |= bus->sdio_sbaddr & 0xffff;
@@ -450,30 +422,18 @@ static void ssb_sdio_block_write(struct ssb_device *dev, const void *buffer,
 				     (void *)buffer, count);
 		break;
 	case sizeof(u16):
-<<<<<<< HEAD
-		SSB_WARN_ON(count & 1);
-=======
 		WARN_ON(count & 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = sdio_writesb(bus->host_sdio, offset,
 				     (void *)buffer, count);
 		break;
 	case sizeof(u32):
-<<<<<<< HEAD
-		SSB_WARN_ON(count & 3);
-=======
 		WARN_ON(count & 3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		offset |= SBSDIO_SB_ACCESS_2_4B_FLAG;	/* 32 bit data access */
 		error = sdio_writesb(bus->host_sdio, offset,
 				     (void *)buffer, count);
 		break;
 	default:
-<<<<<<< HEAD
-		SSB_WARN_ON(1);
-=======
 		WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!error)
 		goto out;

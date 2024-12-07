@@ -1,31 +1,3 @@
-<<<<<<< HEAD
-/*******************************************************************************
- * This file contains the iSCSI Target specific Task Management functions.
- *
- * \u00a9 Copyright 2007-2011 RisingTide Systems LLC.
- *
- * Licensed to the Linux Foundation under the General Public License (GPL) version 2.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- ******************************************************************************/
-
-#include <asm/unaligned.h>
-#include <scsi/iscsi_proto.h>
-#include <target/target_core_base.h>
-#include <target/target_core_fabric.h>
-
-#include "iscsi_target_core.h"
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*******************************************************************************
  * This file contains the iSCSI Target specific Task Management functions.
@@ -44,7 +16,6 @@
 #include <target/iscsi/iscsi_transport.h>
 
 #include <target/iscsi/iscsi_target_core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iscsi_target_seq_pdu_list.h"
 #include "iscsi_target_datain_values.h"
 #include "iscsi_target_device.h"
@@ -57,19 +28,11 @@
 #include "iscsi_target.h"
 
 u8 iscsit_tmr_abort_task(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-	unsigned char *buf)
-{
-	struct iscsi_cmd *ref_cmd;
-	struct iscsi_conn *conn = cmd->conn;
-=======
 	struct iscsit_cmd *cmd,
 	unsigned char *buf)
 {
 	struct iscsit_cmd *ref_cmd;
 	struct iscsit_conn *conn = cmd->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_tmr_req *tmr_req = cmd->tmr_req;
 	struct se_tmr_req *se_tmr = cmd->se_cmd.se_tmr_req;
 	struct iscsi_tm *hdr = (struct iscsi_tm *) buf;
@@ -78,35 +41,20 @@ u8 iscsit_tmr_abort_task(
 	if (!ref_cmd) {
 		pr_err("Unable to locate RefTaskTag: 0x%08x on CID:"
 			" %hu.\n", hdr->rtt, conn->cid);
-<<<<<<< HEAD
-		return ((hdr->refcmdsn >= conn->sess->exp_cmd_sn) &&
-			(hdr->refcmdsn <= conn->sess->max_cmd_sn)) ?
-			ISCSI_TMF_RSP_COMPLETE : ISCSI_TMF_RSP_NO_TASK;
-	}
-	if (ref_cmd->cmd_sn != hdr->refcmdsn) {
-=======
 		return (iscsi_sna_gte(be32_to_cpu(hdr->refcmdsn), conn->sess->exp_cmd_sn) &&
 			iscsi_sna_lte(be32_to_cpu(hdr->refcmdsn), (u32) atomic_read(&conn->sess->max_cmd_sn))) ?
 			ISCSI_TMF_RSP_COMPLETE : ISCSI_TMF_RSP_NO_TASK;
 	}
 	if (ref_cmd->cmd_sn != be32_to_cpu(hdr->refcmdsn)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("RefCmdSN 0x%08x does not equal"
 			" task's CmdSN 0x%08x. Rejecting ABORT_TASK.\n",
 			hdr->refcmdsn, ref_cmd->cmd_sn);
 		return ISCSI_TMF_RSP_REJECTED;
 	}
 
-<<<<<<< HEAD
-	se_tmr->ref_task_tag		= hdr->rtt;
-	se_tmr->ref_cmd			= &ref_cmd->se_cmd;
-	tmr_req->ref_cmd_sn		= hdr->refcmdsn;
-	tmr_req->exp_data_sn		= hdr->exp_datasn;
-=======
 	se_tmr->ref_task_tag		= (__force u32)hdr->rtt;
 	tmr_req->ref_cmd		= ref_cmd;
 	tmr_req->exp_data_sn		= be32_to_cpu(hdr->exp_datasn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ISCSI_TMF_RSP_COMPLETE;
 }
@@ -115,18 +63,6 @@ u8 iscsit_tmr_abort_task(
  *	Called from iscsit_handle_task_mgt_cmd().
  */
 int iscsit_tmr_task_warm_reset(
-<<<<<<< HEAD
-	struct iscsi_conn *conn,
-	struct iscsi_tmr_req *tmr_req,
-	unsigned char *buf)
-{
-	struct iscsi_session *sess = conn->sess;
-	struct iscsi_node_attrib *na = iscsit_tpg_get_node_attrib(sess);
-#if 0
-	struct iscsi_init_task_mgt_cmnd *hdr =
-		(struct iscsi_init_task_mgt_cmnd *) buf;
-#endif
-=======
 	struct iscsit_conn *conn,
 	struct iscsi_tmr_req *tmr_req,
 	unsigned char *buf)
@@ -134,16 +70,11 @@ int iscsit_tmr_task_warm_reset(
 	struct iscsit_session *sess = conn->sess;
 	struct iscsi_node_attrib *na = iscsit_tpg_get_node_attrib(sess);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!na->tmr_warm_reset) {
 		pr_err("TMR Opcode TARGET_WARM_RESET authorization"
 			" failed for Initiator Node: %s\n",
 			sess->se_sess->se_node_acl->initiatorname);
-<<<<<<< HEAD
-		 return -1;
-=======
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/*
 	 * Do the real work in transport_generic_do_tmr().
@@ -152,19 +83,11 @@ int iscsit_tmr_task_warm_reset(
 }
 
 int iscsit_tmr_task_cold_reset(
-<<<<<<< HEAD
-	struct iscsi_conn *conn,
-	struct iscsi_tmr_req *tmr_req,
-	unsigned char *buf)
-{
-	struct iscsi_session *sess = conn->sess;
-=======
 	struct iscsit_conn *conn,
 	struct iscsi_tmr_req *tmr_req,
 	unsigned char *buf)
 {
 	struct iscsit_session *sess = conn->sess;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_node_attrib *na = iscsit_tpg_get_node_attrib(sess);
 
 	if (!na->tmr_cold_reset) {
@@ -180,28 +103,16 @@ int iscsit_tmr_task_cold_reset(
 }
 
 u8 iscsit_tmr_task_reassign(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-	unsigned char *buf)
-{
-	struct iscsi_cmd *ref_cmd = NULL;
-	struct iscsi_conn *conn = cmd->conn;
-=======
 	struct iscsit_cmd *cmd,
 	unsigned char *buf)
 {
 	struct iscsit_cmd *ref_cmd = NULL;
 	struct iscsit_conn *conn = cmd->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_conn_recovery *cr = NULL;
 	struct iscsi_tmr_req *tmr_req = cmd->tmr_req;
 	struct se_tmr_req *se_tmr = cmd->se_cmd.se_tmr_req;
 	struct iscsi_tm *hdr = (struct iscsi_tm *) buf;
-<<<<<<< HEAD
-	int ret;
-=======
 	u64 ret, ref_lun;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("Got TASK_REASSIGN TMR ITT: 0x%08x,"
 		" RefTaskTag: 0x%08x, ExpDataSN: 0x%08x, CID: %hu\n",
@@ -225,11 +136,7 @@ u8 iscsit_tmr_task_reassign(
 	}
 	/*
 	 * Temporary check to prevent connection recovery for
-<<<<<<< HEAD
-	 * connections with a differing MaxRecvDataSegmentLength.
-=======
 	 * connections with a differing Max*DataSegmentLength.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (cr->maxrecvdatasegmentlength !=
 	    conn->conn_ops->MaxRecvDataSegmentLength) {
@@ -238,14 +145,6 @@ u8 iscsit_tmr_task_reassign(
 			" TMR TASK_REASSIGN.\n");
 		return ISCSI_TMF_RSP_REJECTED;
 	}
-<<<<<<< HEAD
-
-	se_tmr->ref_task_tag		= hdr->rtt;
-	se_tmr->ref_cmd			= &ref_cmd->se_cmd;
-	se_tmr->ref_task_lun		= get_unaligned_le64(&hdr->lun);
-	tmr_req->ref_cmd_sn		= hdr->refcmdsn;
-	tmr_req->exp_data_sn		= hdr->exp_datasn;
-=======
 	if (cr->maxxmitdatasegmentlength !=
 	    conn->conn_ops->MaxXmitDataSegmentLength) {
 		pr_err("Unable to perform connection recovery for"
@@ -265,7 +164,6 @@ u8 iscsit_tmr_task_reassign(
 	se_tmr->ref_task_tag		= (__force u32)hdr->rtt;
 	tmr_req->ref_cmd		= ref_cmd;
 	tmr_req->exp_data_sn		= be32_to_cpu(hdr->exp_datasn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmr_req->conn_recovery		= cr;
 	tmr_req->task_reassign		= 1;
 	/*
@@ -277,15 +175,9 @@ u8 iscsit_tmr_task_reassign(
 }
 
 static void iscsit_task_reassign_remove_cmd(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-	struct iscsi_conn_recovery *cr,
-	struct iscsi_session *sess)
-=======
 	struct iscsit_cmd *cmd,
 	struct iscsi_conn_recovery *cr,
 	struct iscsit_session *sess)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -301,17 +193,9 @@ static void iscsit_task_reassign_remove_cmd(
 
 static int iscsit_task_reassign_complete_nop_out(
 	struct iscsi_tmr_req *tmr_req,
-<<<<<<< HEAD
-	struct iscsi_conn *conn)
-{
-	struct se_tmr_req *se_tmr = tmr_req->se_tmr_req;
-	struct se_cmd *se_cmd = se_tmr->ref_cmd;
-	struct iscsi_cmd *cmd = container_of(se_cmd, struct iscsi_cmd, se_cmd);
-=======
 	struct iscsit_conn *conn)
 {
 	struct iscsit_cmd *cmd = tmr_req->ref_cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_conn_recovery *cr;
 
 	if (!cmd->cr) {
@@ -331,11 +215,7 @@ static int iscsit_task_reassign_complete_nop_out(
 	iscsit_task_reassign_remove_cmd(cmd, cr, conn->sess);
 
 	spin_lock_bh(&conn->cmd_lock);
-<<<<<<< HEAD
-	list_add_tail(&cmd->i_list, &conn->conn_cmd_list);
-=======
 	list_add_tail(&cmd->i_conn_node, &conn->conn_cmd_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_bh(&conn->cmd_lock);
 
 	cmd->i_state = ISTATE_SEND_NOPIN;
@@ -344,20 +224,12 @@ static int iscsit_task_reassign_complete_nop_out(
 }
 
 static int iscsit_task_reassign_complete_write(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-=======
 	struct iscsit_cmd *cmd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_tmr_req *tmr_req)
 {
 	int no_build_r2ts = 0;
 	u32 length = 0, offset = 0;
-<<<<<<< HEAD
-	struct iscsi_conn *conn = cmd->conn;
-=======
 	struct iscsit_conn *conn = cmd->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct se_cmd *se_cmd = &cmd->se_cmd;
 	/*
 	 * The Initiator must not send a R2T SNACK with a Begrun less than
@@ -381,12 +253,8 @@ static int iscsit_task_reassign_complete_write(
 			pr_debug("WRITE ITT: 0x%08x: t_state: %d"
 				" never sent to transport\n",
 				cmd->init_task_tag, cmd->se_cmd.t_state);
-<<<<<<< HEAD
-			return transport_generic_handle_data(se_cmd);
-=======
 			target_execute_cmd(se_cmd);
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		cmd->i_state = ISTATE_SEND_STATUS;
@@ -404,15 +272,9 @@ static int iscsit_task_reassign_complete_write(
 		offset = cmd->next_burst_len = cmd->write_data_done;
 
 		if ((conn->sess->sess_ops->FirstBurstLength - offset) >=
-<<<<<<< HEAD
-		     cmd->data_length) {
-			no_build_r2ts = 1;
-			length = (cmd->data_length - offset);
-=======
 		     cmd->se_cmd.data_length) {
 			no_build_r2ts = 1;
 			length = (cmd->se_cmd.data_length - offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			length = (conn->sess->sess_ops->FirstBurstLength - offset);
 
@@ -430,16 +292,6 @@ static int iscsit_task_reassign_complete_write(
 	/*
 	 * iscsit_build_r2ts_for_cmd() can handle the rest from here.
 	 */
-<<<<<<< HEAD
-	return iscsit_build_r2ts_for_cmd(cmd, conn, 2);
-}
-
-static int iscsit_task_reassign_complete_read(
-	struct iscsi_cmd *cmd,
-	struct iscsi_tmr_req *tmr_req)
-{
-	struct iscsi_conn *conn = cmd->conn;
-=======
 	return conn->conn_transport->iscsit_get_dataout(conn, cmd, true);
 }
 
@@ -448,7 +300,6 @@ static int iscsit_task_reassign_complete_read(
 	struct iscsi_tmr_req *tmr_req)
 {
 	struct iscsit_conn *conn = cmd->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_datain_req *dr;
 	struct se_cmd *se_cmd = &cmd->se_cmd;
 	/*
@@ -467,11 +318,7 @@ static int iscsit_task_reassign_complete_read(
 		pr_debug("READ ITT: 0x%08x: t_state: %d never sent to"
 			" transport\n", cmd->init_task_tag,
 			cmd->se_cmd.t_state);
-<<<<<<< HEAD
-		transport_handle_cdb_direct(se_cmd);
-=======
 		target_submit(se_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -502,17 +349,10 @@ static int iscsit_task_reassign_complete_read(
 }
 
 static int iscsit_task_reassign_complete_none(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-	struct iscsi_tmr_req *tmr_req)
-{
-	struct iscsi_conn *conn = cmd->conn;
-=======
 	struct iscsit_cmd *cmd,
 	struct iscsi_tmr_req *tmr_req)
 {
 	struct iscsit_conn *conn = cmd->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd->i_state = ISTATE_SEND_STATUS;
 	iscsit_add_cmd_to_response_queue(cmd, conn, cmd->i_state);
@@ -521,17 +361,9 @@ static int iscsit_task_reassign_complete_none(
 
 static int iscsit_task_reassign_complete_scsi_cmnd(
 	struct iscsi_tmr_req *tmr_req,
-<<<<<<< HEAD
-	struct iscsi_conn *conn)
-{
-	struct se_tmr_req *se_tmr = tmr_req->se_tmr_req;
-	struct se_cmd *se_cmd = se_tmr->ref_cmd;
-	struct iscsi_cmd *cmd = container_of(se_cmd, struct iscsi_cmd, se_cmd);
-=======
 	struct iscsit_conn *conn)
 {
 	struct iscsit_cmd *cmd = tmr_req->ref_cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_conn_recovery *cr;
 
 	if (!cmd->cr) {
@@ -551,17 +383,10 @@ static int iscsit_task_reassign_complete_scsi_cmnd(
 	iscsit_task_reassign_remove_cmd(cmd, cr, conn->sess);
 
 	spin_lock_bh(&conn->cmd_lock);
-<<<<<<< HEAD
-	list_add_tail(&cmd->i_list, &conn->conn_cmd_list);
-	spin_unlock_bh(&conn->cmd_lock);
-
-	if (se_cmd->se_cmd_flags & SCF_SENT_CHECK_CONDITION) {
-=======
 	list_add_tail(&cmd->i_conn_node, &conn->conn_cmd_list);
 	spin_unlock_bh(&conn->cmd_lock);
 
 	if (cmd->se_cmd.se_cmd_flags & SCF_SENT_CHECK_CONDITION) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd->i_state = ISTATE_SEND_STATUS;
 		iscsit_add_cmd_to_response_queue(cmd, conn, cmd->i_state);
 		return 0;
@@ -585,21 +410,6 @@ static int iscsit_task_reassign_complete_scsi_cmnd(
 
 static int iscsit_task_reassign_complete(
 	struct iscsi_tmr_req *tmr_req,
-<<<<<<< HEAD
-	struct iscsi_conn *conn)
-{
-	struct se_tmr_req *se_tmr = tmr_req->se_tmr_req;
-	struct se_cmd *se_cmd;
-	struct iscsi_cmd *cmd;
-	int ret = 0;
-
-	if (!se_tmr->ref_cmd) {
-		pr_err("TMR Request is missing a RefCmd struct iscsi_cmd.\n");
-		return -1;
-	}
-	se_cmd = se_tmr->ref_cmd;
-	cmd = container_of(se_cmd, struct iscsi_cmd, se_cmd);
-=======
 	struct iscsit_conn *conn)
 {
 	struct iscsit_cmd *cmd;
@@ -610,7 +420,6 @@ static int iscsit_task_reassign_complete(
 		return -1;
 	}
 	cmd = tmr_req->ref_cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd->conn = conn;
 
@@ -623,22 +432,14 @@ static int iscsit_task_reassign_complete(
 		break;
 	default:
 		 pr_err("Illegal iSCSI Opcode 0x%02x during"
-<<<<<<< HEAD
-			" command realligence\n", cmd->iscsi_opcode);
-=======
 			" command reallegiance\n", cmd->iscsi_opcode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
 	if (ret != 0)
 		return ret;
 
-<<<<<<< HEAD
-	pr_debug("Completed connection realligence for Opcode: 0x%02x,"
-=======
 	pr_debug("Completed connection reallegiance for Opcode: 0x%02x,"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		" ITT: 0x%08x to CID: %hu.\n", cmd->iscsi_opcode,
 			cmd->init_task_tag, conn->cid);
 
@@ -650,11 +451,7 @@ static int iscsit_task_reassign_complete(
  *	Right now the only one that its really needed for is
  *	connection recovery releated TASK_REASSIGN.
  */
-<<<<<<< HEAD
-extern int iscsit_tmr_post_handler(struct iscsi_cmd *cmd, struct iscsi_conn *conn)
-=======
 int iscsit_tmr_post_handler(struct iscsit_cmd *cmd, struct iscsit_conn *conn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_tmr_req *tmr_req = cmd->tmr_req;
 	struct se_tmr_req *se_tmr = cmd->se_cmd.se_tmr_req;
@@ -665,35 +462,21 @@ int iscsit_tmr_post_handler(struct iscsit_cmd *cmd, struct iscsit_conn *conn)
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(iscsit_tmr_post_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Nothing to do here, but leave it for good measure. :-)
  */
-<<<<<<< HEAD
-int iscsit_task_reassign_prepare_read(
-	struct iscsi_tmr_req *tmr_req,
-	struct iscsi_conn *conn)
-=======
 static int iscsit_task_reassign_prepare_read(
 	struct iscsi_tmr_req *tmr_req,
 	struct iscsit_conn *conn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
 static void iscsit_task_reassign_prepare_unsolicited_dataout(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-	struct iscsi_conn *conn)
-=======
 	struct iscsit_cmd *cmd,
 	struct iscsit_conn *conn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, j;
 	struct iscsi_pdu *pdu = NULL;
@@ -759,21 +542,11 @@ static void iscsit_task_reassign_prepare_unsolicited_dataout(
 	}
 }
 
-<<<<<<< HEAD
-int iscsit_task_reassign_prepare_write(
-	struct iscsi_tmr_req *tmr_req,
-	struct iscsi_conn *conn)
-{
-	struct se_tmr_req *se_tmr = tmr_req->se_tmr_req;
-	struct se_cmd *se_cmd = se_tmr->ref_cmd;
-	struct iscsi_cmd *cmd = container_of(se_cmd, struct iscsi_cmd, se_cmd);
-=======
 static int iscsit_task_reassign_prepare_write(
 	struct iscsi_tmr_req *tmr_req,
 	struct iscsit_conn *conn)
 {
 	struct iscsit_cmd *cmd = tmr_req->ref_cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_pdu *pdu = NULL;
 	struct iscsi_r2t *r2t = NULL, *r2t_tmp;
 	int first_incomplete_r2t = 1, i = 0;
@@ -802,11 +575,7 @@ static int iscsit_task_reassign_prepare_write(
 	 *
 	 * If we have not received all DataOUT in question,  we must
 	 * make sure to make the appropriate changes to values in
-<<<<<<< HEAD
-	 * struct iscsi_cmd (and elsewhere depending on session parameters)
-=======
 	 * struct iscsit_cmd (and elsewhere depending on session parameters)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * so iscsit_build_r2ts_for_cmd() in iscsit_task_reassign_complete_write()
 	 * will resend a new R2T for the DataOUT sequences in question.
 	 */
@@ -939,11 +708,7 @@ next:
 	 * to check that the Initiator is not requesting R2Ts for DataOUT
 	 * sequences it has already completed.
 	 *
-<<<<<<< HEAD
-	 * Free each R2T in question and adjust values in struct iscsi_cmd
-=======
 	 * Free each R2T in question and adjust values in struct iscsit_cmd
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * accordingly so iscsit_build_r2ts_for_cmd() do the rest of
 	 * the work after the TMR TASK_REASSIGN Response is sent.
 	 */
@@ -1008,17 +773,6 @@ drop_unacknowledged_r2ts:
 
 /*
  *	Performs sanity checks TMR TASK_REASSIGN's ExpDataSN for
-<<<<<<< HEAD
- *	a given struct iscsi_cmd.
- */
-int iscsit_check_task_reassign_expdatasn(
-	struct iscsi_tmr_req *tmr_req,
-	struct iscsi_conn *conn)
-{
-	struct se_tmr_req *se_tmr = tmr_req->se_tmr_req;
-	struct se_cmd *se_cmd = se_tmr->ref_cmd;
-	struct iscsi_cmd *ref_cmd = container_of(se_cmd, struct iscsi_cmd, se_cmd);
-=======
  *	a given struct iscsit_cmd.
  */
 int iscsit_check_task_reassign_expdatasn(
@@ -1026,16 +780,11 @@ int iscsit_check_task_reassign_expdatasn(
 	struct iscsit_conn *conn)
 {
 	struct iscsit_cmd *ref_cmd = tmr_req->ref_cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ref_cmd->iscsi_opcode != ISCSI_OP_SCSI_CMD)
 		return 0;
 
-<<<<<<< HEAD
-	if (se_cmd->se_cmd_flags & SCF_SENT_CHECK_CONDITION)
-=======
 	if (ref_cmd->se_cmd.se_cmd_flags & SCF_SENT_CHECK_CONDITION)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (ref_cmd->data_direction == DMA_NONE)

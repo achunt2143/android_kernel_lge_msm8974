@@ -59,11 +59,6 @@ static int snd_pcm_plugin_alloc(struct snd_pcm_plugin *plugin, snd_pcm_uframes_t
 	} else {
 		format = &plugin->dst_format;
 	}
-<<<<<<< HEAD
-	if ((width = snd_pcm_format_physical_width(format->format)) < 0)
-		return width;
-	size = frames * format->channels * width;
-=======
 	width = snd_pcm_format_physical_width(format->format);
 	if (width < 0)
 		return width;
@@ -71,18 +66,12 @@ static int snd_pcm_plugin_alloc(struct snd_pcm_plugin *plugin, snd_pcm_uframes_t
 	/* check for too large period size once again */
 	if (size > 1024 * 1024)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (snd_BUG_ON(size % 8))
 		return -ENXIO;
 	size /= 8;
 	if (plugin->buf_frames < frames) {
-<<<<<<< HEAD
-		vfree(plugin->buf);
-		plugin->buf = vmalloc(size);
-=======
 		kvfree(plugin->buf);
 		plugin->buf = kvzalloc(size, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		plugin->buf_frames = frames;
 	}
 	if (!plugin->buf) {
@@ -126,11 +115,7 @@ int snd_pcm_plug_alloc(struct snd_pcm_substream *plug, snd_pcm_uframes_t frames)
 		while (plugin->next) {
 			if (plugin->dst_frames)
 				frames = plugin->dst_frames(plugin, frames);
-<<<<<<< HEAD
-			if (snd_BUG_ON(frames <= 0))
-=======
 			if ((snd_pcm_sframes_t)frames <= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENXIO;
 			plugin = plugin->next;
 			err = snd_pcm_plugin_alloc(plugin, frames);
@@ -142,11 +127,7 @@ int snd_pcm_plug_alloc(struct snd_pcm_substream *plug, snd_pcm_uframes_t frames)
 		while (plugin->prev) {
 			if (plugin->src_frames)
 				frames = plugin->src_frames(plugin, frames);
-<<<<<<< HEAD
-			if (snd_BUG_ON(frames <= 0))
-=======
 			if ((snd_pcm_sframes_t)frames <= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENXIO;
 			plugin = plugin->prev;
 			err = snd_pcm_plugin_alloc(plugin, frames);
@@ -214,45 +195,11 @@ int snd_pcm_plugin_free(struct snd_pcm_plugin *plugin)
 	if (plugin->private_free)
 		plugin->private_free(plugin);
 	kfree(plugin->buf_channels);
-<<<<<<< HEAD
-	vfree(plugin->buf);
-=======
 	kvfree(plugin->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(plugin);
 	return 0;
 }
 
-<<<<<<< HEAD
-snd_pcm_sframes_t snd_pcm_plug_client_size(struct snd_pcm_substream *plug, snd_pcm_uframes_t drv_frames)
-{
-	struct snd_pcm_plugin *plugin, *plugin_prev, *plugin_next;
-	int stream = snd_pcm_plug_stream(plug);
-
-	if (snd_BUG_ON(!plug))
-		return -ENXIO;
-	if (drv_frames == 0)
-		return 0;
-	if (stream == SNDRV_PCM_STREAM_PLAYBACK) {
-		plugin = snd_pcm_plug_last(plug);
-		while (plugin && drv_frames > 0) {
-			plugin_prev = plugin->prev;
-			if (plugin->src_frames)
-				drv_frames = plugin->src_frames(plugin, drv_frames);
-			plugin = plugin_prev;
-		}
-	} else if (stream == SNDRV_PCM_STREAM_CAPTURE) {
-		plugin = snd_pcm_plug_first(plug);
-		while (plugin && drv_frames > 0) {
-			plugin_next = plugin->next;
-			if (plugin->dst_frames)
-				drv_frames = plugin->dst_frames(plugin, drv_frames);
-			plugin = plugin_next;
-		}
-	} else
-		snd_BUG();
-	return drv_frames;
-=======
 static snd_pcm_sframes_t calc_dst_frames(struct snd_pcm_substream *plug,
 					 snd_pcm_sframes_t frames,
 					 bool check_size)
@@ -310,50 +257,10 @@ snd_pcm_sframes_t snd_pcm_plug_client_size(struct snd_pcm_substream *plug, snd_p
 		snd_BUG();
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 snd_pcm_sframes_t snd_pcm_plug_slave_size(struct snd_pcm_substream *plug, snd_pcm_uframes_t clt_frames)
 {
-<<<<<<< HEAD
-	struct snd_pcm_plugin *plugin, *plugin_prev, *plugin_next;
-	snd_pcm_sframes_t frames;
-	int stream = snd_pcm_plug_stream(plug);
-	
-	if (snd_BUG_ON(!plug))
-		return -ENXIO;
-	if (clt_frames == 0)
-		return 0;
-	frames = clt_frames;
-	if (stream == SNDRV_PCM_STREAM_PLAYBACK) {
-		plugin = snd_pcm_plug_first(plug);
-		while (plugin && frames > 0) {
-			plugin_next = plugin->next;
-			if (plugin->dst_frames) {
-				frames = plugin->dst_frames(plugin, frames);
-				if (frames < 0)
-					return frames;
-			}
-			plugin = plugin_next;
-		}
-	} else if (stream == SNDRV_PCM_STREAM_CAPTURE) {
-		plugin = snd_pcm_plug_last(plug);
-		while (plugin) {
-			plugin_prev = plugin->prev;
-			if (plugin->src_frames) {
-				frames = plugin->src_frames(plugin, frames);
-				if (frames < 0)
-					return frames;
-			}
-			plugin = plugin_prev;
-		}
-	} else
-		snd_BUG();
-	return frames;
-}
-
-static int snd_pcm_plug_formats(struct snd_mask *mask, snd_pcm_format_t format)
-=======
 	if (snd_BUG_ON(!plug))
 		return -ENXIO;
 	switch (snd_pcm_plug_stream(plug)) {
@@ -369,7 +276,6 @@ static int snd_pcm_plug_formats(struct snd_mask *mask, snd_pcm_format_t format)
 
 static int snd_pcm_plug_formats(const struct snd_mask *mask,
 				snd_pcm_format_t format)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_mask formats = *mask;
 	u64 linfmts = (SNDRV_PCM_FMTBIT_U8 | SNDRV_PCM_FMTBIT_S8 |
@@ -383,16 +289,6 @@ static int snd_pcm_plug_formats(const struct snd_mask *mask,
 		       SNDRV_PCM_FMTBIT_U32_BE | SNDRV_PCM_FMTBIT_S32_BE);
 	snd_mask_set(&formats, (__force int)SNDRV_PCM_FORMAT_MU_LAW);
 	
-<<<<<<< HEAD
-	if (formats.bits[0] & (u32)linfmts)
-		formats.bits[0] |= (u32)linfmts;
-	if (formats.bits[1] & (u32)(linfmts >> 32))
-		formats.bits[1] |= (u32)(linfmts >> 32);
-	return snd_mask_test(&formats, (__force int)format);
-}
-
-static snd_pcm_format_t preferred_formats[] = {
-=======
 	if (formats.bits[0] & lower_32_bits(linfmts))
 		formats.bits[0] |= lower_32_bits(linfmts);
 	if (formats.bits[1] & upper_32_bits(linfmts))
@@ -401,7 +297,6 @@ static snd_pcm_format_t preferred_formats[] = {
 }
 
 static const snd_pcm_format_t preferred_formats[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNDRV_PCM_FORMAT_S16_LE,
 	SNDRV_PCM_FORMAT_S16_BE,
 	SNDRV_PCM_FORMAT_U16_LE,
@@ -423,11 +318,7 @@ static const snd_pcm_format_t preferred_formats[] = {
 };
 
 snd_pcm_format_t snd_pcm_plug_slave_format(snd_pcm_format_t format,
-<<<<<<< HEAD
-					   struct snd_mask *format_mask)
-=======
 					   const struct snd_mask *format_mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -470,10 +361,7 @@ snd_pcm_format_t snd_pcm_plug_slave_format(snd_pcm_format_t format,
 				if (snd_mask_test(format_mask, (__force int)format1))
 					return format1;
 			}
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			return (__force snd_pcm_format_t)-EINVAL;
 		}
@@ -688,12 +576,8 @@ snd_pcm_sframes_t snd_pcm_plug_client_channels_buf(struct snd_pcm_substream *plu
 	}
 	v = plugin->buf_channels;
 	*channels = v;
-<<<<<<< HEAD
-	if ((width = snd_pcm_format_physical_width(format->format)) < 0)
-=======
 	width = snd_pcm_format_physical_width(format->format);
 	if (width < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return width;
 	nchannels = format->channels;
 	if (snd_BUG_ON(plugin->access != SNDRV_PCM_ACCESS_RW_INTERLEAVED &&
@@ -718,20 +602,6 @@ snd_pcm_sframes_t snd_pcm_plug_write_transfer(struct snd_pcm_substream *plug, st
 	snd_pcm_sframes_t frames = size;
 
 	plugin = snd_pcm_plug_first(plug);
-<<<<<<< HEAD
-	while (plugin && frames > 0) {
-		if ((next = plugin->next) != NULL) {
-			snd_pcm_sframes_t frames1 = frames;
-			if (plugin->dst_frames)
-				frames1 = plugin->dst_frames(plugin, frames);
-			if ((err = next->client_channels(next, frames1, &dst_channels)) < 0) {
-				return err;
-			}
-			if (err != frames1) {
-				frames = err;
-				if (plugin->src_frames)
-					frames = plugin->src_frames(plugin, frames1);
-=======
 	while (plugin) {
 		if (frames <= 0)
 			return frames;
@@ -753,26 +623,17 @@ snd_pcm_sframes_t snd_pcm_plug_write_transfer(struct snd_pcm_substream *plug, st
 					if (frames <= 0)
 						return frames;
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else
 			dst_channels = NULL;
 		pdprintf("write plugin: %s, %li\n", plugin->name, frames);
-<<<<<<< HEAD
-		if ((frames = plugin->transfer(plugin, src_channels, dst_channels, frames)) < 0)
-=======
 		frames = plugin->transfer(plugin, src_channels, dst_channels, frames);
 		if (frames < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return frames;
 		src_channels = dst_channels;
 		plugin = next;
 	}
-<<<<<<< HEAD
-	return snd_pcm_plug_client_size(plug, frames);
-=======
 	return calc_src_frames(plug, frames, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 snd_pcm_sframes_t snd_pcm_plug_read_transfer(struct snd_pcm_substream *plug, struct snd_pcm_plugin_channel *dst_channels_final, snd_pcm_uframes_t size)
@@ -782,40 +643,25 @@ snd_pcm_sframes_t snd_pcm_plug_read_transfer(struct snd_pcm_substream *plug, str
 	snd_pcm_sframes_t frames = size;
 	int err;
 
-<<<<<<< HEAD
-	frames = snd_pcm_plug_slave_size(plug, frames);
-=======
 	frames = calc_src_frames(plug, frames, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (frames < 0)
 		return frames;
 
 	src_channels = NULL;
 	plugin = snd_pcm_plug_first(plug);
 	while (plugin && frames > 0) {
-<<<<<<< HEAD
-		if ((next = plugin->next) != NULL) {
-			if ((err = plugin->client_channels(plugin, frames, &dst_channels)) < 0) {
-				return err;
-			}
-=======
 		next = plugin->next;
 		if (next) {
 			err = plugin->client_channels(plugin, frames, &dst_channels);
 			if (err < 0)
 				return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			frames = err;
 		} else {
 			dst_channels = dst_channels_final;
 		}
 		pdprintf("read plugin: %s, %li\n", plugin->name, frames);
-<<<<<<< HEAD
-		if ((frames = plugin->transfer(plugin, src_channels, dst_channels, frames)) < 0)
-=======
 		frames = plugin->transfer(plugin, src_channels, dst_channels, frames);
 		if (frames < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return frames;
 		plugin = next;
 		src_channels = dst_channels;

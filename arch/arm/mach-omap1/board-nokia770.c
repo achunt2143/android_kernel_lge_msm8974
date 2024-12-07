@@ -1,41 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap1/board-nokia770.c
  *
  * Modified from board-generic.c
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#include <linux/gpio.h>
-=======
  */
 #include <linux/clkdev.h>
 #include <linux/irq.h>
 #include <linux/gpio/consumer.h>
 #include <linux/gpio/machine.h>
 #include <linux/gpio/property.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/mutex.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/input.h>
-#include <linux/clk.h>
-#include <linux/omapfb.h>
-
-#include <linux/spi/spi.h>
-#include <linux/spi/ads7846.h>
-#include <linux/workqueue.h>
-#include <linux/delay.h>
-
-=======
 #include <linux/property.h>
 #include <linux/input.h>
 #include <linux/omapfb.h>
@@ -48,24 +25,10 @@
 #include <linux/platform_data/lcd-mipid.h>
 #include <linux/platform_data/gpio-omap.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
-<<<<<<< HEAD
-#include <plat/mux.h>
-#include <plat/usb.h>
-#include <plat/board.h>
-#include <plat/keypad.h>
-#include <plat/lcd_mipid.h>
-#include <plat/mmc.h>
-#include <plat/clock.h>
-
-#include <mach/hardware.h>
-
-#include "common.h"
-=======
 #include "mux.h"
 #include "hardware.h"
 #include "usb.h"
@@ -91,7 +54,6 @@ static const struct software_node *nokia770_gpiochip_nodes[] = {
 	&nokia770_gpiochip2_node,
 	NULL
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ADS7846_PENDOWN_GPIO	15
 
@@ -143,23 +105,6 @@ static struct platform_device *nokia770_devices[] __initdata = {
 	&nokia770_kp_device,
 };
 
-<<<<<<< HEAD
-static void mipid_shutdown(struct mipid_platform_data *pdata)
-{
-	if (pdata->nreset_gpio != -1) {
-		printk(KERN_INFO "shutdown LCD\n");
-		gpio_set_value(pdata->nreset_gpio, 0);
-		msleep(120);
-	}
-}
-
-static struct mipid_platform_data nokia770_mipid_platform_data = {
-	.shutdown = mipid_shutdown,
-};
-
-static struct omap_lcd_config nokia770_lcd_config __initdata = {
-	.ctrl_name	= "hwa742",
-=======
 static struct mipid_platform_data nokia770_mipid_platform_data = { };
 
 static const struct omap_lcd_config nokia770_lcd_config __initconst = {
@@ -175,42 +120,15 @@ static const struct property_entry nokia770_mipid_props[] = {
 static const struct software_node nokia770_mipid_swnode = {
 	.name = "lcd_mipid",
 	.properties = nokia770_mipid_props,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __init mipid_dev_init(void)
 {
-<<<<<<< HEAD
-	nokia770_mipid_platform_data.nreset_gpio = 13;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nokia770_mipid_platform_data.data_lines = 16;
 
 	omapfb_set_lcd_config(&nokia770_lcd_config);
 }
 
-<<<<<<< HEAD
-static void __init ads7846_dev_init(void)
-{
-	if (gpio_request(ADS7846_PENDOWN_GPIO, "ADS7846 pendown") < 0)
-		printk(KERN_ERR "can't get ads7846 pen down GPIO\n");
-}
-
-static int ads7846_get_pendown_state(void)
-{
-	return !gpio_get_value(ADS7846_PENDOWN_GPIO);
-}
-
-static struct ads7846_platform_data nokia770_ads7846_platform_data __initdata = {
-	.x_max		= 0x0fff,
-	.y_max		= 0x0fff,
-	.x_plate_ohms	= 180,
-	.pressure_max	= 255,
-	.debounce_max	= 10,
-	.debounce_tol	= 3,
-	.debounce_rep	= 1,
-	.get_pendown_state	= ads7846_get_pendown_state,
-=======
 static const struct property_entry nokia770_ads7846_props[] = {
 	PROPERTY_ENTRY_STRING("compatible", "ti,ads7846"),
 	PROPERTY_ENTRY_U32("touchscreen-size-x", 4096),
@@ -228,7 +146,6 @@ static const struct property_entry nokia770_ads7846_props[] = {
 static const struct software_node nokia770_ads7846_swnode = {
 	.name = "ads7846",
 	.properties = nokia770_ads7846_props,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct spi_board_info nokia770_spi_board_info[] __initdata = {
@@ -238,21 +155,14 @@ static struct spi_board_info nokia770_spi_board_info[] __initdata = {
 		.chip_select    = 3,
 		.max_speed_hz   = 12000000,
 		.platform_data	= &nokia770_mipid_platform_data,
-<<<<<<< HEAD
-=======
 		.swnode         = &nokia770_mipid_swnode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[1] = {
 		.modalias       = "ads7846",
 		.bus_num        = 2,
 		.chip_select    = 0,
 		.max_speed_hz   = 2500000,
-<<<<<<< HEAD
-		.platform_data	= &nokia770_ads7846_platform_data,
-=======
 		.swnode         = &nokia770_ads7846_swnode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -269,34 +179,6 @@ static struct omap_usb_config nokia770_usb_config __initdata = {
 	.register_dev	= 1,
 	.hmc_mode	= 16,
 	.pins[0]	= 6,
-<<<<<<< HEAD
-};
-
-#if defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE)
-
-#define NOKIA770_GPIO_MMC_POWER		41
-#define NOKIA770_GPIO_MMC_SWITCH	23
-
-static int nokia770_mmc_set_power(struct device *dev, int slot, int power_on,
-				int vdd)
-{
-	gpio_set_value(NOKIA770_GPIO_MMC_POWER, power_on);
-	return 0;
-}
-
-static int nokia770_mmc_get_cover_state(struct device *dev, int slot)
-{
-	return gpio_get_value(NOKIA770_GPIO_MMC_SWITCH);
-}
-
-static struct omap_mmc_platform_data nokia770_mmc2_data = {
-	.nr_slots                       = 1,
-	.dma_mask			= 0xffffffff,
-	.max_freq                       = 12000000,
-	.slots[0]       = {
-		.set_power		= nokia770_mmc_set_power,
-		.get_cover_state	= nokia770_mmc_get_cover_state,
-=======
 	.extcon		= "tahvo-usb",
 };
 
@@ -319,7 +201,6 @@ static struct omap_mmc_platform_data nokia770_mmc2_data = {
 	.nr_slots                       = 1,
 	.max_freq                       = 12000000,
 	.slots[0]       = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.ocr_mask               = MMC_VDD_32_33|MMC_VDD_33_34,
 		.name                   = "mmcblk",
 	},
@@ -329,24 +210,7 @@ static struct omap_mmc_platform_data *nokia770_mmc_data[OMAP16XX_NR_MMC];
 
 static void __init nokia770_mmc_init(void)
 {
-<<<<<<< HEAD
-	int ret;
-
-	ret = gpio_request(NOKIA770_GPIO_MMC_POWER, "MMC power");
-	if (ret < 0)
-		return;
-	gpio_direction_output(NOKIA770_GPIO_MMC_POWER, 0);
-
-	ret = gpio_request(NOKIA770_GPIO_MMC_SWITCH, "MMC cover");
-	if (ret < 0) {
-		gpio_free(NOKIA770_GPIO_MMC_POWER);
-		return;
-	}
-	gpio_direction_input(NOKIA770_GPIO_MMC_SWITCH);
-
-=======
 	gpiod_add_lookup_table(&nokia770_mmc_gpio_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Only the second MMC controller is used */
 	nokia770_mmc_data[1] = &nokia770_mmc2_data;
 	omap1_init_mmc(nokia770_mmc_data, OMAP16XX_NR_MMC);
@@ -358,10 +222,6 @@ static inline void nokia770_mmc_init(void)
 }
 #endif
 
-<<<<<<< HEAD
-static void __init omap_nokia770_init(void)
-{
-=======
 #if IS_ENABLED(CONFIG_I2C_CBUS_GPIO)
 
 static const struct software_node_ref_args nokia770_cbus_gpio_refs[] = {
@@ -449,7 +309,6 @@ static void __init omap_nokia770_init(void)
 {
 	struct gpio_desc *d;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* On Nokia 770, the SleepX signal is masked with an
 	 * MPUIO line by default.  It has to be unmasked for it
 	 * to become functional */
@@ -459,10 +318,6 @@ static void __init omap_nokia770_init(void)
 	/* Unmask SleepX signal */
 	omap_writew((omap_readw(0xfffb5004) & ~2), 0xfffb5004);
 
-<<<<<<< HEAD
-	platform_add_devices(nokia770_devices, ARRAY_SIZE(nokia770_devices));
-	nokia770_spi_board_info[1].irq = gpio_to_irq(15);
-=======
 	software_node_register_node_group(nokia770_gpiochip_nodes);
 	platform_add_devices(nokia770_devices, ARRAY_SIZE(nokia770_devices));
 
@@ -473,41 +328,24 @@ static void __init omap_nokia770_init(void)
 	else
 		nokia770_spi_board_info[1].irq = gpiod_to_irq(d);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spi_register_board_info(nokia770_spi_board_info,
 				ARRAY_SIZE(nokia770_spi_board_info));
 	omap_serial_init();
 	omap_register_i2c_bus(1, 100, NULL, 0);
 	hwa742_dev_init();
-<<<<<<< HEAD
-	ads7846_dev_init();
-	mipid_dev_init();
-	omap1_usb_init(&nokia770_usb_config);
-	nokia770_mmc_init();
-=======
 	mipid_dev_init();
 	omap1_usb_init(&nokia770_usb_config);
 	nokia770_mmc_init();
 	nokia770_cbus_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MACHINE_START(NOKIA770, "Nokia 770")
 	.atag_offset	= 0x100,
-<<<<<<< HEAD
-	.map_io		= omap16xx_map_io,
-	.init_early     = omap1_init_early,
-	.reserve	= omap_reserve,
-	.init_irq	= omap1_init_irq,
-	.init_machine	= omap_nokia770_init,
-	.timer		= &omap1_timer,
-=======
 	.map_io		= omap1_map_io,
 	.init_early     = omap1_init_early,
 	.init_irq	= omap1_init_irq,
 	.init_machine	= omap_nokia770_init,
 	.init_late	= omap1_init_late,
 	.init_time	= omap1_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= omap1_restart,
 MACHINE_END

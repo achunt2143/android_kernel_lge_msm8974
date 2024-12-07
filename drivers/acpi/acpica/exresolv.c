@@ -1,58 +1,12 @@
-<<<<<<< HEAD
-
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "amlcode.h"
@@ -158,11 +112,7 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
 
 	stack_desc = *stack_ptr;
 
-<<<<<<< HEAD
-	/* This is a union acpi_operand_object    */
-=======
 	/* This is an object of type union acpi_operand_object */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (stack_desc->common.type) {
 	case ACPI_TYPE_LOCAL_REFERENCE:
@@ -172,10 +122,6 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
 		switch (ref_type) {
 		case ACPI_REFCLASS_LOCAL:
 		case ACPI_REFCLASS_ARG:
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Get the local from the method's state info
 			 * Note: this increments the local's object reference count
@@ -216,12 +162,8 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
 
 				if ((walk_state->opcode ==
 				     AML_INT_METHODCALL_OP)
-<<<<<<< HEAD
-				    || (walk_state->opcode == AML_COPY_OP)) {
-=======
 				    || (walk_state->opcode ==
 					AML_COPY_OBJECT_OP)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				}
 
@@ -234,10 +176,6 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
 					 * (i.e., dereference the package index)
 					 * Delete the ref object, increment the returned object
 					 */
-<<<<<<< HEAD
-					acpi_ut_remove_reference(stack_desc);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					acpi_ut_add_reference(obj_desc);
 					*stack_ptr = obj_desc;
 				} else {
@@ -246,12 +184,8 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
 					 * the package, can't dereference it
 					 */
 					ACPI_ERROR((AE_INFO,
-<<<<<<< HEAD
-						    "Attempt to dereference an Index to NULL package element Idx=%p",
-=======
 						    "Attempt to dereference an Index to "
 						    "NULL package element Idx=%p",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    stack_desc));
 					status = AE_AML_UNINITIALIZED_ELEMENT;
 				}
@@ -341,10 +275,7 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -356,21 +287,13 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
  * FUNCTION:    acpi_ex_resolve_multiple
  *
  * PARAMETERS:  walk_state          - Current state (contains AML opcode)
-<<<<<<< HEAD
- *              Operand             - Starting point for resolution
-=======
  *              operand             - Starting point for resolution
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              return_type         - Where the object type is returned
  *              return_desc         - Where the resolved object is returned
  *
  * RETURN:      Status
  *
-<<<<<<< HEAD
- * DESCRIPTION: Return the base object and type.  Traverse a reference list if
-=======
  * DESCRIPTION: Return the base object and type. Traverse a reference list if
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              necessary to get to the base object.
  *
  ******************************************************************************/
@@ -378,20 +301,12 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
 acpi_status
 acpi_ex_resolve_multiple(struct acpi_walk_state *walk_state,
 			 union acpi_operand_object *operand,
-<<<<<<< HEAD
-			 acpi_object_type * return_type,
-			 union acpi_operand_object **return_desc)
-{
-	union acpi_operand_object *obj_desc = (void *)operand;
-	struct acpi_namespace_node *node;
-=======
 			 acpi_object_type *return_type,
 			 union acpi_operand_object **return_desc)
 {
 	union acpi_operand_object *obj_desc = ACPI_CAST_PTR(void, operand);
 	struct acpi_namespace_node *node =
 	    ACPI_CAST_PTR(struct acpi_namespace_node, operand);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_object_type type;
 	acpi_status status;
 
@@ -401,35 +316,19 @@ acpi_ex_resolve_multiple(struct acpi_walk_state *walk_state,
 
 	switch (ACPI_GET_DESCRIPTOR_TYPE(obj_desc)) {
 	case ACPI_DESC_TYPE_OPERAND:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		type = obj_desc->common.type;
 		break;
 
 	case ACPI_DESC_TYPE_NAMED:
-<<<<<<< HEAD
-		type = ((struct acpi_namespace_node *)obj_desc)->type;
-		obj_desc =
-		    acpi_ns_get_attached_object((struct acpi_namespace_node *)
-						obj_desc);
-=======
 
 		type = ((struct acpi_namespace_node *)obj_desc)->type;
 		obj_desc = acpi_ns_get_attached_object(node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* If we had an Alias node, use the attached object for type info */
 
 		if (type == ACPI_TYPE_LOCAL_ALIAS) {
 			type = ((struct acpi_namespace_node *)obj_desc)->type;
-<<<<<<< HEAD
-			obj_desc =
-			    acpi_ns_get_attached_object((struct
-							 acpi_namespace_node *)
-							obj_desc);
-=======
 			obj_desc = acpi_ns_get_attached_object((struct
 								acpi_namespace_node
 								*)obj_desc);
@@ -453,7 +352,6 @@ acpi_ex_resolve_multiple(struct acpi_walk_state *walk_state,
 				return_ACPI_STATUS(AE_AML_UNINITIALIZED_NODE);
 			}
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -608,11 +506,7 @@ acpi_ex_resolve_multiple(struct acpi_walk_state *walk_state,
 	 */
 	type = obj_desc->common.type;
 
-<<<<<<< HEAD
-      exit:
-=======
 exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Convert internal types to external types */
 
 	switch (type) {
@@ -631,13 +525,9 @@ exit:
 		break;
 
 	default:
-<<<<<<< HEAD
-		/* No change to Type required */
-=======
 
 		/* No change to Type required */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 

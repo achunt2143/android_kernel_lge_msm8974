@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-orion5x/pci.c
  *
  * PCI and PCIe functions for Marvell Orion System On Chip
  *
  * Maintainer: Tzachi Perelstein <tzachi@marvell.com>
-<<<<<<< HEAD
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -26,13 +16,8 @@
 #include <asm/mach/pci.h>
 #include <plat/pcie.h>
 #include <plat/addr-map.h>
-<<<<<<< HEAD
-#include <mach/orion5x.h>
-#include "common.h"
-=======
 #include "common.h"
 #include "orion5x.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*****************************************************************************
  * Orion has one PCIe controller and one PCI controller.
@@ -50,11 +35,7 @@
 /*****************************************************************************
  * PCIe controller
  ****************************************************************************/
-<<<<<<< HEAD
-#define PCIE_BASE	((void __iomem *)ORION5X_PCIE_VIRT_BASE)
-=======
 #define PCIE_BASE	(ORION5X_PCIE_VIRT_BASE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init orion5x_pcie_id(u32 *dev, u32 *rev)
 {
@@ -127,11 +108,7 @@ static int pcie_rd_conf_wa(struct pci_bus *bus, u32 devfn,
 		return PCIBIOS_DEVICE_NOT_FOUND;
 	}
 
-<<<<<<< HEAD
-	ret = orion_pcie_rd_conf_wa((void __iomem *)ORION5X_PCIE_WA_VIRT_BASE,
-=======
 	ret = orion_pcie_rd_conf_wa(ORION5X_PCIE_WA_VIRT_BASE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    bus, devfn, where, size, val);
 
 	return ret;
@@ -162,10 +139,7 @@ static struct pci_ops pcie_ops = {
 static int __init pcie_setup(struct pci_sys_data *sys)
 {
 	struct resource *res;
-<<<<<<< HEAD
-=======
 	struct resource realio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dev;
 
 	/*
@@ -181,17 +155,6 @@ static int __init pcie_setup(struct pci_sys_data *sys)
 	if (dev == MV88F5181_DEV_ID || dev == MV88F5182_DEV_ID) {
 		printk(KERN_NOTICE "Applying Orion-1/Orion-NAS PCIe config "
 				   "read transaction workaround\n");
-<<<<<<< HEAD
-		orion5x_setup_pcie_wa_win(ORION5X_PCIE_WA_PHYS_BASE,
-					  ORION5X_PCIE_WA_SIZE);
-		pcie_ops.read = pcie_rd_conf_wa;
-	}
-
-	/*
-	 * Request resources.
-	 */
-	res = kzalloc(sizeof(struct resource) * 2, GFP_KERNEL);
-=======
 		mvebu_mbus_add_window_by_id(ORION_MBUS_PCIE_WA_TARGET,
 					    ORION_MBUS_PCIE_WA_ATTR,
 					    ORION5X_PCIE_WA_PHYS_BASE,
@@ -207,34 +170,10 @@ static int __init pcie_setup(struct pci_sys_data *sys)
 	 * Request resources.
 	 */
 	res = kzalloc(sizeof(struct resource), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!res)
 		panic("pcie_setup unable to alloc resources");
 
 	/*
-<<<<<<< HEAD
-	 * IORESOURCE_IO
-	 */
-	sys->io_offset = 0;
-	res[0].name = "PCIe I/O Space";
-	res[0].flags = IORESOURCE_IO;
-	res[0].start = ORION5X_PCIE_IO_BUS_BASE;
-	res[0].end = res[0].start + ORION5X_PCIE_IO_SIZE - 1;
-	if (request_resource(&ioport_resource, &res[0]))
-		panic("Request PCIe IO resource failed\n");
-	pci_add_resource_offset(&sys->resources, &res[0], sys->io_offset);
-
-	/*
-	 * IORESOURCE_MEM
-	 */
-	res[1].name = "PCIe Memory Space";
-	res[1].flags = IORESOURCE_MEM;
-	res[1].start = ORION5X_PCIE_MEM_PHYS_BASE;
-	res[1].end = res[1].start + ORION5X_PCIE_MEM_SIZE - 1;
-	if (request_resource(&iomem_resource, &res[1]))
-		panic("Request PCIe Memory resource failed\n");
-	pci_add_resource_offset(&sys->resources, &res[1], sys->mem_offset);
-=======
 	 * IORESOURCE_MEM
 	 */
 	res->name = "PCIe Memory Space";
@@ -244,7 +183,6 @@ static int __init pcie_setup(struct pci_sys_data *sys)
 	if (request_resource(&iomem_resource, res))
 		panic("Request PCIe Memory resource failed\n");
 	pci_add_resource_offset(&sys->resources, res, sys->mem_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -252,11 +190,7 @@ static int __init pcie_setup(struct pci_sys_data *sys)
 /*****************************************************************************
  * PCI controller
  ****************************************************************************/
-<<<<<<< HEAD
-#define ORION5X_PCI_REG(x)	(ORION5X_PCI_VIRT_BASE | (x))
-=======
 #define ORION5X_PCI_REG(x)	(ORION5X_PCI_VIRT_BASE + (x))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_MODE		ORION5X_PCI_REG(0xd00)
 #define PCI_CMD			ORION5X_PCI_REG(0xc00)
 #define PCI_P2P_CONF		ORION5X_PCI_REG(0x1d14)
@@ -306,19 +240,11 @@ static int __init pcie_setup(struct pci_sys_data *sys)
 #define PCI_BAR_SIZE_DDR_CS(n)	(((n) == 0) ? ORION5X_PCI_REG(0xc08) : \
 				 ((n) == 1) ? ORION5X_PCI_REG(0xd08) : \
 				 ((n) == 2) ? ORION5X_PCI_REG(0xc0c) : \
-<<<<<<< HEAD
-				 ((n) == 3) ? ORION5X_PCI_REG(0xd0c) : 0)
-#define PCI_BAR_REMAP_DDR_CS(n)	(((n) == 0) ? ORION5X_PCI_REG(0xc48) : \
-				 ((n) == 1) ? ORION5X_PCI_REG(0xd48) : \
-				 ((n) == 2) ? ORION5X_PCI_REG(0xc4c) : \
-				 ((n) == 3) ? ORION5X_PCI_REG(0xd4c) : 0)
-=======
 				 ((n) == 3) ? ORION5X_PCI_REG(0xd0c) : NULL)
 #define PCI_BAR_REMAP_DDR_CS(n)	(((n) == 0) ? ORION5X_PCI_REG(0xc48) : \
 				 ((n) == 1) ? ORION5X_PCI_REG(0xd48) : \
 				 ((n) == 2) ? ORION5X_PCI_REG(0xc4c) : \
 				 ((n) == 3) ? ORION5X_PCI_REG(0xd4c) : NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_BAR_ENABLE		ORION5X_PCI_REG(0xc3c)
 #define PCI_ADDR_DECODE_CTRL	ORION5X_PCI_REG(0xd3c)
 
@@ -478,14 +404,9 @@ static void __init orion5x_pci_master_slave_enable(void)
 	orion5x_pci_hw_wr_conf(bus_nr, 0, func, reg, 4, val | 0x7);
 }
 
-<<<<<<< HEAD
-static void __init orion5x_setup_pci_wins(struct mbus_dram_target_info *dram)
-{
-=======
 static void __init orion5x_setup_pci_wins(void)
 {
 	const struct mbus_dram_target_info *dram = mv_mbus_dram_info();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 win_enable;
 	int bus;
 	int i;
@@ -502,11 +423,7 @@ static void __init orion5x_setup_pci_wins(void)
 	bus = orion5x_pci_local_bus_nr();
 
 	for (i = 0; i < dram->num_cs; i++) {
-<<<<<<< HEAD
-		struct mbus_dram_window *cs = dram->cs + i;
-=======
 		const struct mbus_dram_window *cs = dram->cs + i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 func = PCI_CONF_FUNC_BAR_CS(cs->cs_index);
 		u32 reg;
 		u32 val;
@@ -549,19 +466,12 @@ static void __init orion5x_setup_pci_wins(void)
 static int __init pci_setup(struct pci_sys_data *sys)
 {
 	struct resource *res;
-<<<<<<< HEAD
-=======
 	struct resource realio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Point PCI unit MBUS decode windows to DRAM space.
 	 */
-<<<<<<< HEAD
-	orion5x_setup_pci_wins(&orion_mbus_dram_info);
-=======
 	orion5x_setup_pci_wins();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Master + Slave enable
@@ -573,12 +483,6 @@ static int __init pci_setup(struct pci_sys_data *sys)
 	 */
 	orion5x_setbits(PCI_CMD, PCI_CMD_HOST_REORDER);
 
-<<<<<<< HEAD
-	/*
-	 * Request resources
-	 */
-	res = kzalloc(sizeof(struct resource) * 2, GFP_KERNEL);
-=======
 	realio.start = sys->busnr * SZ_64K;
 	realio.end = realio.start + SZ_64K - 1;
 	pci_remap_iospace(&realio, ORION5X_PCI_IO_PHYS_BASE);
@@ -587,34 +491,10 @@ static int __init pci_setup(struct pci_sys_data *sys)
 	 * Request resources
 	 */
 	res = kzalloc(sizeof(struct resource), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!res)
 		panic("pci_setup unable to alloc resources");
 
 	/*
-<<<<<<< HEAD
-	 * IORESOURCE_IO
-	 */
-	sys->io_offset = 0;
-	res[0].name = "PCI I/O Space";
-	res[0].flags = IORESOURCE_IO;
-	res[0].start = ORION5X_PCI_IO_BUS_BASE;
-	res[0].end = res[0].start + ORION5X_PCI_IO_SIZE - 1;
-	if (request_resource(&ioport_resource, &res[0]))
-		panic("Request PCI IO resource failed\n");
-	pci_add_resource_offset(&sys->resources, &res[0], sys->io_offset);
-
-	/*
-	 * IORESOURCE_MEM
-	 */
-	res[1].name = "PCI Memory Space";
-	res[1].flags = IORESOURCE_MEM;
-	res[1].start = ORION5X_PCI_MEM_PHYS_BASE;
-	res[1].end = res[1].start + ORION5X_PCI_MEM_SIZE - 1;
-	if (request_resource(&iomem_resource, &res[1]))
-		panic("Request PCI Memory resource failed\n");
-	pci_add_resource_offset(&sys->resources, &res[1], sys->mem_offset);
-=======
 	 * IORESOURCE_MEM
 	 */
 	res->name = "PCI Memory Space";
@@ -624,7 +504,6 @@ static int __init pci_setup(struct pci_sys_data *sys)
 	if (request_resource(&iomem_resource, res))
 		panic("Request PCI Memory resource failed\n");
 	pci_add_resource_offset(&sys->resources, res, sys->mem_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -633,20 +512,6 @@ static int __init pci_setup(struct pci_sys_data *sys)
 /*****************************************************************************
  * General PCIe + PCI
  ****************************************************************************/
-<<<<<<< HEAD
-static void __devinit rc_pci_fixup(struct pci_dev *dev)
-{
-	/*
-	 * Prevent enumeration of root complex.
-	 */
-	if (dev->bus->parent == NULL && dev->devfn == 0) {
-		int i;
-
-		for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
-			dev->resource[i].start = 0;
-			dev->resource[i].end   = 0;
-			dev->resource[i].flags = 0;
-=======
 
 /*
  * The root complex has a hardwired class of PCI_CLASS_MEMORY_OTHER, when it
@@ -665,7 +530,6 @@ static void rc_pci_fixup(struct pci_dev *dev)
 			r->start	= 0;
 			r->end		= 0;
 			r->flags	= 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -685,42 +549,10 @@ void __init orion5x_pci_set_cardbus_mode(void)
 
 int __init orion5x_pci_sys_setup(int nr, struct pci_sys_data *sys)
 {
-<<<<<<< HEAD
-	int ret = 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vga_base = ORION5X_PCIE_MEM_PHYS_BASE;
 
 	if (nr == 0) {
 		orion_pcie_set_local_bus_nr(PCIE_BASE, sys->busnr);
-<<<<<<< HEAD
-		ret = pcie_setup(sys);
-	} else if (nr == 1 && !orion5x_pci_disabled) {
-		orion5x_pci_set_bus_nr(sys->busnr);
-		ret = pci_setup(sys);
-	}
-
-	return ret;
-}
-
-struct pci_bus __init *orion5x_pci_sys_scan_bus(int nr, struct pci_sys_data *sys)
-{
-	struct pci_bus *bus;
-
-	if (nr == 0) {
-		bus = pci_scan_root_bus(NULL, sys->busnr, &pcie_ops, sys,
-					&sys->resources);
-	} else if (nr == 1 && !orion5x_pci_disabled) {
-		bus = pci_scan_root_bus(NULL, sys->busnr, &pci_ops, sys,
-					&sys->resources);
-	} else {
-		bus = NULL;
-		BUG();
-	}
-
-	return bus;
-=======
 		return pcie_setup(sys);
 	}
 
@@ -753,7 +585,6 @@ int __init orion5x_pci_sys_scan_bus(int nr, struct pci_host_bridge *bridge)
 
 	BUG();
 	return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __init orion5x_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)

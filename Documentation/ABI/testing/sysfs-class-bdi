@@ -23,17 +23,6 @@ default
 	The default backing dev, used for non-block device backed
 	filesystems which do not provide their own BDI.
 
-<<<<<<< HEAD
-Files under /sys/class/bdi/<bdi>/
----------------------------------
-
-read_ahead_kb (read-write)
-
-	Size of the read-ahead window in kilobytes
-
-min_ratio (read-write)
-
-=======
 What:		/sys/class/bdi/<bdi>/read_ahead_kb
 Date:		January 2008
 Contact:	Peter Zijlstra <a.p.zijlstra@chello.nl>
@@ -45,7 +34,6 @@ What:		/sys/class/bdi/<bdi>/min_ratio
 Date:		January 2008
 Contact:	Peter Zijlstra <a.p.zijlstra@chello.nl>
 Description:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Under normal circumstances each device is given a part of the
 	total write-back cache that relates to its current average
 	writeout speed in relation to the other devices.
@@ -54,10 +42,6 @@ Description:
 	percentage of the write-back cache to a particular device.
 	For example, this is useful for providing a minimum QoS.
 
-<<<<<<< HEAD
-max_ratio (read-write)
-
-=======
 	(read-write)
 
 What:		/sys/class/bdi/<bdi>/min_ratio_fine
@@ -79,15 +63,12 @@ What:		/sys/class/bdi/<bdi>/max_ratio
 Date:		January 2008
 Contact:	Peter Zijlstra <a.p.zijlstra@chello.nl>
 Description:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Allows limiting a particular device to use not more than the
 	given percentage of the write-back cache.  This is useful in
 	situations where we want to avoid one device taking all or
 	most of the write-back cache.  For example in case of an NFS
 	mount that is prone to get stuck, or a FUSE mount which cannot
 	be trusted to play fair.
-<<<<<<< HEAD
-=======
 
 	(read-write)
 
@@ -151,4 +132,3 @@ Description:
 	request must not be changed until writeout is complete.
 
 	(read-only)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

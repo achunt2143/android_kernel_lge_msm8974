@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Routines to manage notifier chains for passing status changes to any
  *	interested routines. We need this instead of hard coded call lists so
@@ -46,15 +43,6 @@
  * in srcu_notifier_call_chain(): no cache bounces and no memory barriers.
  * As compensation, srcu_notifier_chain_unregister() is rather expensive.
  * SRCU notifier chains should be used when the chain will be called very
-<<<<<<< HEAD
- * often but notifier_blocks will seldom be removed.  Also, SRCU notifier
- * chains are slightly more difficult to use because they require special
- * runtime initialization.
- */
-
-struct notifier_block {
-	int (*notifier_call)(struct notifier_block *, unsigned long, void *);
-=======
  * often but notifier_blocks will seldom be removed.
  */
 
@@ -65,7 +53,6 @@ typedef	int (*notifier_fn_t)(struct notifier_block *nb,
 
 struct notifier_block {
 	notifier_fn_t notifier_call;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct notifier_block __rcu *next;
 	int priority;
 };
@@ -86,10 +73,7 @@ struct raw_notifier_head {
 
 struct srcu_notifier_head {
 	struct mutex mutex;
-<<<<<<< HEAD
-=======
 	struct srcu_usage srcuu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct srcu_struct srcu;
 	struct notifier_block __rcu *head;
 };
@@ -106,11 +90,7 @@ struct srcu_notifier_head {
 		(name)->head = NULL;		\
 	} while (0)
 
-<<<<<<< HEAD
-/* srcu_notifier_heads must be initialized and cleaned up dynamically */
-=======
 /* srcu_notifier_heads must be cleaned up dynamically */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void srcu_init_notifier_head(struct srcu_notifier_head *nh);
 #define srcu_cleanup_notifier_head(name)	\
 		cleanup_srcu_struct(&(name)->srcu);
@@ -123,9 +103,6 @@ extern void srcu_init_notifier_head(struct srcu_notifier_head *nh);
 		.head = NULL }
 #define RAW_NOTIFIER_INIT(name)	{				\
 		.head = NULL }
-<<<<<<< HEAD
-/* srcu_notifier_heads cannot be initialized statically */
-=======
 
 #define SRCU_NOTIFIER_INIT(name, pcpu)				\
 	{							\
@@ -134,7 +111,6 @@ extern void srcu_init_notifier_head(struct srcu_notifier_head *nh);
 		.srcuu = __SRCU_USAGE_INIT(name.srcuu),		\
 		.srcu = __SRCU_STRUCT_INIT(name.srcu, name.srcuu, pcpu), \
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ATOMIC_NOTIFIER_HEAD(name)				\
 	struct atomic_notifier_head name =			\
@@ -146,8 +122,6 @@ extern void srcu_init_notifier_head(struct srcu_notifier_head *nh);
 	struct raw_notifier_head name =				\
 		RAW_NOTIFIER_INIT(name)
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_TREE_SRCU
 #define _SRCU_NOTIFIER_HEAD(name, mod)				\
 	static DEFINE_PER_CPU(struct srcu_data, name##_head_srcu_data); \
@@ -167,7 +141,6 @@ extern void srcu_init_notifier_head(struct srcu_notifier_head *nh);
 #define SRCU_NOTIFIER_HEAD_STATIC(name)				\
 	_SRCU_NOTIFIER_HEAD(name, static)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __KERNEL__
 
 extern int atomic_notifier_chain_register(struct atomic_notifier_head *nh,
@@ -179,16 +152,10 @@ extern int raw_notifier_chain_register(struct raw_notifier_head *nh,
 extern int srcu_notifier_chain_register(struct srcu_notifier_head *nh,
 		struct notifier_block *nb);
 
-<<<<<<< HEAD
-extern int blocking_notifier_chain_cond_register(
-		struct blocking_notifier_head *nh,
-		struct notifier_block *nb);
-=======
 extern int atomic_notifier_chain_register_unique_prio(
 		struct atomic_notifier_head *nh, struct notifier_block *nb);
 extern int blocking_notifier_chain_register_unique_prio(
 		struct blocking_notifier_head *nh, struct notifier_block *nb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int atomic_notifier_chain_unregister(struct atomic_notifier_head *nh,
 		struct notifier_block *nb);
@@ -201,22 +168,6 @@ extern int srcu_notifier_chain_unregister(struct srcu_notifier_head *nh,
 
 extern int atomic_notifier_call_chain(struct atomic_notifier_head *nh,
 		unsigned long val, void *v);
-<<<<<<< HEAD
-extern int __atomic_notifier_call_chain(struct atomic_notifier_head *nh,
-	unsigned long val, void *v, int nr_to_call, int *nr_calls);
-extern int blocking_notifier_call_chain(struct blocking_notifier_head *nh,
-		unsigned long val, void *v);
-extern int __blocking_notifier_call_chain(struct blocking_notifier_head *nh,
-	unsigned long val, void *v, int nr_to_call, int *nr_calls);
-extern int raw_notifier_call_chain(struct raw_notifier_head *nh,
-		unsigned long val, void *v);
-extern int __raw_notifier_call_chain(struct raw_notifier_head *nh,
-	unsigned long val, void *v, int nr_to_call, int *nr_calls);
-extern int srcu_notifier_call_chain(struct srcu_notifier_head *nh,
-		unsigned long val, void *v);
-extern int __srcu_notifier_call_chain(struct srcu_notifier_head *nh,
-	unsigned long val, void *v, int nr_to_call, int *nr_calls);
-=======
 extern int blocking_notifier_call_chain(struct blocking_notifier_head *nh,
 		unsigned long val, void *v);
 extern int raw_notifier_call_chain(struct raw_notifier_head *nh,
@@ -230,7 +181,6 @@ extern int raw_notifier_call_chain_robust(struct raw_notifier_head *nh,
 		unsigned long val_up, unsigned long val_down, void *v);
 
 extern bool atomic_notifier_call_chain_is_empty(struct atomic_notifier_head *nh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NOTIFY_DONE		0x0000		/* Don't care */
 #define NOTIFY_OK		0x0001		/* Suits me */

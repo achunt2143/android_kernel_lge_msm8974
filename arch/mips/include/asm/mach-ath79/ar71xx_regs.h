@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-/*
- *  Atheros AR71XX/AR724X/AR913X SoC register definitions
- *
- *  Copyright (C) 2008-2010 Gabor Juhos <juhosg@openwrt.org>
- *  Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
- *
- *  Parts of this file are based on Atheros' 2.6.15 BSP
- *
- *  This program is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License version 2 as published
- *  by the Free Software Foundation.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  *  Atheros AR71XX/AR724X/AR913X SoC register definitions
@@ -20,28 +7,20 @@
  *  Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
  *
  *  Parts of this file are based on Atheros' 2.6.15/2.6.31 BSP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_MACH_AR71XX_REGS_H
 #define __ASM_MACH_AR71XX_REGS_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/bitops.h>
 
 #define AR71XX_APB_BASE		0x18000000
-<<<<<<< HEAD
-=======
 #define AR71XX_GE0_BASE		0x19000000
 #define AR71XX_GE0_SIZE		0x10000
 #define AR71XX_GE1_BASE		0x1a000000
 #define AR71XX_GE1_SIZE		0x10000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR71XX_EHCI_BASE	0x1b000000
 #define AR71XX_EHCI_SIZE	0x1000
 #define AR71XX_OHCI_BASE	0x1c000000
@@ -55,19 +34,12 @@
 #define AR71XX_UART_SIZE	0x100
 #define AR71XX_USB_CTRL_BASE	(AR71XX_APB_BASE + 0x00030000)
 #define AR71XX_USB_CTRL_SIZE	0x100
-<<<<<<< HEAD
-#define AR71XX_GPIO_BASE        (AR71XX_APB_BASE + 0x00040000)
-#define AR71XX_GPIO_SIZE        0x100
-=======
 #define AR71XX_GPIO_BASE	(AR71XX_APB_BASE + 0x00040000)
 #define AR71XX_GPIO_SIZE	0x100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR71XX_PLL_BASE		(AR71XX_APB_BASE + 0x00050000)
 #define AR71XX_PLL_SIZE		0x100
 #define AR71XX_RESET_BASE	(AR71XX_APB_BASE + 0x00060000)
 #define AR71XX_RESET_SIZE	0x100
-<<<<<<< HEAD
-=======
 #define AR71XX_MII_BASE		(AR71XX_APB_BASE + 0x00070000)
 #define AR71XX_MII_SIZE		0x100
 
@@ -86,15 +58,12 @@
 #define AR71XX_PCI_CFG_BASE	\
 	(AR71XX_PCI_MEM_BASE + AR71XX_PCI_WIN7_OFFS + 0x10000)
 #define AR71XX_PCI_CFG_SIZE	0x100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AR7240_USB_CTRL_BASE	(AR71XX_APB_BASE + 0x00030000)
 #define AR7240_USB_CTRL_SIZE	0x100
 #define AR7240_OHCI_BASE	0x1b000000
 #define AR7240_OHCI_SIZE	0x1000
 
-<<<<<<< HEAD
-=======
 #define AR724X_PCI_MEM_BASE	0x10000000
 #define AR724X_PCI_MEM_SIZE	0x04000000
 
@@ -105,7 +74,6 @@
 #define AR724X_PCI_CTRL_BASE	(AR71XX_APB_BASE + 0x000f0000)
 #define AR724X_PCI_CTRL_SIZE	0x100
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR724X_EHCI_BASE	0x1b000000
 #define AR724X_EHCI_SIZE	0x1000
 
@@ -116,18 +84,13 @@
 
 #define AR933X_UART_BASE	(AR71XX_APB_BASE + 0x00020000)
 #define AR933X_UART_SIZE	0x14
-<<<<<<< HEAD
-=======
 #define AR933X_GMAC_BASE	(AR71XX_APB_BASE + 0x00070000)
 #define AR933X_GMAC_SIZE	0x04
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR933X_WMAC_BASE	(AR71XX_APB_BASE + 0x00100000)
 #define AR933X_WMAC_SIZE	0x20000
 #define AR933X_EHCI_BASE	0x1b000000
 #define AR933X_EHCI_SIZE	0x1000
 
-<<<<<<< HEAD
-=======
 #define AR934X_GMAC_BASE	(AR71XX_APB_BASE + 0x00070000)
 #define AR934X_GMAC_SIZE	0x14
 #define AR934X_WMAC_BASE	(AR71XX_APB_BASE + 0x00100000)
@@ -234,7 +197,6 @@
 #define QCA956X_DAM_RESET_SIZE		0x4
 #define QCA956X_INLINE_CHKSUM_ENG	BIT(27)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DDR_CTRL block
  */
@@ -266,8 +228,6 @@
 #define AR933X_DDR_REG_FLUSH_USB	0x84
 #define AR933X_DDR_REG_FLUSH_WMAC	0x88
 
-<<<<<<< HEAD
-=======
 #define AR934X_DDR_REG_FLUSH_GE0	0x9c
 #define AR934X_DDR_REG_FLUSH_GE1	0xa0
 #define AR934X_DDR_REG_FLUSH_USB	0xa4
@@ -280,7 +240,6 @@
 #define QCA953X_DDR_REG_FLUSH_PCIE	0xa8
 #define QCA953X_DDR_REG_FLUSH_WMAC	0xac
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PLL block
  */
@@ -289,13 +248,8 @@
 #define AR71XX_PLL_REG_ETH0_INT_CLOCK	0x10
 #define AR71XX_PLL_REG_ETH1_INT_CLOCK	0x14
 
-<<<<<<< HEAD
-#define AR71XX_PLL_DIV_SHIFT		3
-#define AR71XX_PLL_DIV_MASK		0x1f
-=======
 #define AR71XX_PLL_FB_SHIFT		3
 #define AR71XX_PLL_FB_MASK		0x1f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR71XX_CPU_DIV_SHIFT		16
 #define AR71XX_CPU_DIV_MASK		0x3
 #define AR71XX_DDR_DIV_SHIFT		18
@@ -303,13 +257,6 @@
 #define AR71XX_AHB_DIV_SHIFT		20
 #define AR71XX_AHB_DIV_MASK		0x7
 
-<<<<<<< HEAD
-#define AR724X_PLL_REG_CPU_CONFIG	0x00
-#define AR724X_PLL_REG_PCIE_CONFIG	0x18
-
-#define AR724X_PLL_DIV_SHIFT		0
-#define AR724X_PLL_DIV_MASK		0x3ff
-=======
 #define AR71XX_ETH0_PLL_SHIFT		17
 #define AR71XX_ETH1_PLL_SHIFT		19
 
@@ -321,7 +268,6 @@
 
 #define AR724X_PLL_FB_SHIFT		0
 #define AR724X_PLL_FB_MASK		0x3ff
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR724X_PLL_REF_DIV_SHIFT	10
 #define AR724X_PLL_REF_DIV_MASK		0xf
 #define AR724X_AHB_DIV_SHIFT		19
@@ -329,34 +275,23 @@
 #define AR724X_DDR_DIV_SHIFT		22
 #define AR724X_DDR_DIV_MASK		0x3
 
-<<<<<<< HEAD
-=======
 #define AR7242_PLL_REG_ETH0_INT_CLOCK	0x2c
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR913X_PLL_REG_CPU_CONFIG	0x00
 #define AR913X_PLL_REG_ETH_CONFIG	0x04
 #define AR913X_PLL_REG_ETH0_INT_CLOCK	0x14
 #define AR913X_PLL_REG_ETH1_INT_CLOCK	0x18
 
-<<<<<<< HEAD
-#define AR913X_PLL_DIV_SHIFT		0
-#define AR913X_PLL_DIV_MASK		0x3ff
-=======
 #define AR913X_PLL_FB_SHIFT		0
 #define AR913X_PLL_FB_MASK		0x3ff
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR913X_DDR_DIV_SHIFT		22
 #define AR913X_DDR_DIV_MASK		0x3
 #define AR913X_AHB_DIV_SHIFT		19
 #define AR913X_AHB_DIV_MASK		0x1
 
-<<<<<<< HEAD
-=======
 #define AR913X_ETH0_PLL_SHIFT		20
 #define AR913X_ETH1_PLL_SHIFT		22
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR933X_PLL_CPU_CONFIG_REG	0x00
 #define AR933X_PLL_CLOCK_CTRL_REG	0x08
 
@@ -375,8 +310,6 @@
 #define AR933X_PLL_CLOCK_CTRL_AHB_DIV_SHIFT	15
 #define AR933X_PLL_CLOCK_CTRL_AHB_DIV_MASK	0x7
 
-<<<<<<< HEAD
-=======
 #define AR934X_PLL_CPU_CONFIG_REG		0x00
 #define AR934X_PLL_DDR_CONFIG_REG		0x04
 #define AR934X_PLL_CPU_DDR_CLK_CTRL_REG		0x08
@@ -567,7 +500,6 @@
 #define QCA956X_PLL_ETH_SGMII_SERDES_PLL_REFCLK			BIT(1)
 #define QCA956X_PLL_ETH_SGMII_SERDES_EN_PLL			BIT(0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * USB_CONFIG block
  */
@@ -603,8 +535,6 @@
 #define AR933X_RESET_REG_RESET_MODULE		0x1c
 #define AR933X_RESET_REG_BOOTSTRAP		0xac
 
-<<<<<<< HEAD
-=======
 #define AR934X_RESET_REG_RESET_MODULE		0x1c
 #define AR934X_RESET_REG_BOOTSTRAP		0xb0
 #define AR934X_RESET_REG_PCIE_WMAC_INT_STATUS	0xac
@@ -622,7 +552,6 @@
 #define QCA956X_RESET_REG_EXT_INT_STATUS	0xac
 
 #define MISC_INT_MIPS_SI_TIMERINT_MASK	BIT(28)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MISC_INT_ETHSW			BIT(12)
 #define MISC_INT_TIMER4			BIT(10)
 #define MISC_INT_TIMER3			BIT(9)
@@ -672,23 +601,15 @@
 #define AR913X_RESET_USB_HOST		BIT(5)
 #define AR913X_RESET_USB_PHY		BIT(4)
 
-<<<<<<< HEAD
-#define AR933X_RESET_WMAC		BIT(11)
-=======
 #define AR933X_RESET_GE1_MDIO		BIT(23)
 #define AR933X_RESET_GE0_MDIO		BIT(22)
 #define AR933X_RESET_GE1_MAC		BIT(13)
 #define AR933X_RESET_WMAC		BIT(11)
 #define AR933X_RESET_GE0_MAC		BIT(9)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR933X_RESET_USB_HOST		BIT(5)
 #define AR933X_RESET_USB_PHY		BIT(4)
 #define AR933X_RESET_USBSUS_OVERRIDE	BIT(3)
 
-<<<<<<< HEAD
-#define AR933X_BOOTSTRAP_REF_CLK_40	BIT(0)
-
-=======
 #define AR934X_RESET_HOST		BIT(31)
 #define AR934X_RESET_SLIC		BIT(30)
 #define AR934X_RESET_HDMA		BIT(29)
@@ -924,7 +845,6 @@
 	 QCA956X_EXT_INT_PCIE_RC2_INT1 | QCA956X_EXT_INT_PCIE_RC2_INT2 | \
 	 QCA956X_EXT_INT_PCIE_RC2_INT3)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REV_ID_MAJOR_MASK		0xfff0
 #define REV_ID_MAJOR_AR71XX		0x00a0
 #define REV_ID_MAJOR_AR913X		0x00b0
@@ -933,8 +853,6 @@
 #define REV_ID_MAJOR_AR7242		0x1100
 #define REV_ID_MAJOR_AR9330		0x0110
 #define REV_ID_MAJOR_AR9331		0x1110
-<<<<<<< HEAD
-=======
 #define REV_ID_MAJOR_AR9341		0x0120
 #define REV_ID_MAJOR_AR9342		0x1120
 #define REV_ID_MAJOR_AR9344		0x2120
@@ -945,7 +863,6 @@
 #define REV_ID_MAJOR_TP9343		0x0150
 #define REV_ID_MAJOR_QCA956X		0x1150
 #define REV_ID_MAJOR_QCN550X		0x2170
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AR71XX_REV_ID_MINOR_MASK	0x3
 #define AR71XX_REV_ID_MINOR_AR7130	0x0
@@ -964,8 +881,6 @@
 
 #define AR724X_REV_ID_REVISION_MASK	0x3
 
-<<<<<<< HEAD
-=======
 #define AR934X_REV_ID_REVISION_MASK	0xf
 
 #define QCA953X_REV_ID_REVISION_MASK	0xf
@@ -974,7 +889,6 @@
 
 #define QCA956X_REV_ID_REVISION_MASK	0xf
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SPI block
  */
@@ -1012,12 +926,6 @@
 #define AR71XX_GPIO_REG_INT_ENABLE	0x24
 #define AR71XX_GPIO_REG_FUNC		0x28
 
-<<<<<<< HEAD
-#define AR71XX_GPIO_COUNT		16
-#define AR724X_GPIO_COUNT		18
-#define AR913X_GPIO_COUNT		22
-#define AR933X_GPIO_COUNT		30
-=======
 #define AR934X_GPIO_REG_OUT_FUNC0	0x2c
 #define AR934X_GPIO_REG_OUT_FUNC1	0x30
 #define AR934X_GPIO_REG_OUT_FUNC2	0x34
@@ -1410,6 +1318,5 @@
 
 #define QCA956X_SGMII_CONFIG_MODE_CTRL_SHIFT	0
 #define QCA956X_SGMII_CONFIG_MODE_CTRL_MASK	0x7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_MACH_AR71XX_REGS_H */

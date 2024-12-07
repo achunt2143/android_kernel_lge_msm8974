@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common Intel AGPGART and GTT definitions.
  */
@@ -59,26 +56,13 @@
 #define INTEL_I860_ERRSTS	0xc8
 
 /* Intel i810 registers */
-<<<<<<< HEAD
-#define I810_GMADDR		0x10
-#define I810_MMADDR		0x14
-=======
 #define I810_GMADR_BAR		0
 #define I810_MMADR_BAR		1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define I810_PTE_BASE		0x10000
 #define I810_PTE_MAIN_UNCACHED	0x00000000
 #define I810_PTE_LOCAL		0x00000002
 #define I810_PTE_VALID		0x00000001
 #define I830_PTE_SYSTEM_CACHED  0x00000006
-<<<<<<< HEAD
-/* GT PTE cache control fields */
-#define GEN6_PTE_UNCACHED	0x00000002
-#define GEN6_PTE_LLC		0x00000004
-#define GEN6_PTE_LLC_MLC	0x00000006
-#define GEN6_PTE_GFDT		0x00000008
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define I810_SMRAM_MISCC	0x70
 #define I810_GFX_MEM_WIN_SIZE	0x00010000
@@ -130,15 +114,9 @@
 #define INTEL_I850_ERRSTS	0xc8
 
 /* intel 915G registers */
-<<<<<<< HEAD
-#define I915_GMADDR	0x18
-#define I915_MMADDR	0x10
-#define I915_PTEADDR	0x1C
-=======
 #define I915_GMADR_BAR	2
 #define I915_MMADR_BAR	0
 #define I915_PTE_BAR	3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define I915_GMCH_GMS_STOLEN_48M	(0x6 << 4)
 #define I915_GMCH_GMS_STOLEN_64M	(0x7 << 4)
 #define G33_GMCH_GMS_STOLEN_128M	(0x8 << 4)
@@ -164,32 +142,6 @@
 #define INTEL_I7505_AGPCTRL	0x70
 #define INTEL_I7505_MCHCFG	0x50
 
-<<<<<<< HEAD
-#define SNB_GMCH_CTRL	0x50
-#define SNB_GMCH_GMS_STOLEN_MASK	0xF8
-#define SNB_GMCH_GMS_STOLEN_32M		(1 << 3)
-#define SNB_GMCH_GMS_STOLEN_64M		(2 << 3)
-#define SNB_GMCH_GMS_STOLEN_96M		(3 << 3)
-#define SNB_GMCH_GMS_STOLEN_128M	(4 << 3)
-#define SNB_GMCH_GMS_STOLEN_160M	(5 << 3)
-#define SNB_GMCH_GMS_STOLEN_192M	(6 << 3)
-#define SNB_GMCH_GMS_STOLEN_224M	(7 << 3)
-#define SNB_GMCH_GMS_STOLEN_256M	(8 << 3)
-#define SNB_GMCH_GMS_STOLEN_288M	(9 << 3)
-#define SNB_GMCH_GMS_STOLEN_320M	(0xa << 3)
-#define SNB_GMCH_GMS_STOLEN_352M	(0xb << 3)
-#define SNB_GMCH_GMS_STOLEN_384M	(0xc << 3)
-#define SNB_GMCH_GMS_STOLEN_416M	(0xd << 3)
-#define SNB_GMCH_GMS_STOLEN_448M	(0xe << 3)
-#define SNB_GMCH_GMS_STOLEN_480M	(0xf << 3)
-#define SNB_GMCH_GMS_STOLEN_512M	(0x10 << 3)
-#define SNB_GTT_SIZE_0M			(0 << 8)
-#define SNB_GTT_SIZE_1M			(1 << 8)
-#define SNB_GTT_SIZE_2M			(2 << 8)
-#define SNB_GTT_SIZE_MASK		(3 << 8)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pci devices ids */
 #define PCI_DEVICE_ID_INTEL_E7221_HB	0x2588
 #define PCI_DEVICE_ID_INTEL_E7221_IG	0x258a
@@ -238,31 +190,5 @@
 #define PCI_DEVICE_ID_INTEL_IRONLAKE_MA_HB	    0x0062
 #define PCI_DEVICE_ID_INTEL_IRONLAKE_MC2_HB    0x006a
 #define PCI_DEVICE_ID_INTEL_IRONLAKE_M_IG	    0x0046
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_HB		0x0100  /* Desktop */
-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_GT1_IG		0x0102
-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_GT2_IG		0x0112
-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_GT2_PLUS_IG	0x0122
-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_HB		0x0104  /* Mobile */
-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_GT1_IG	0x0106
-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_GT2_IG	0x0116
-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_GT2_PLUS_IG	0x0126
-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_S_HB		0x0108  /* Server */
-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_S_IG		0x010A
-#define PCI_DEVICE_ID_INTEL_IVYBRIDGE_HB		0x0150  /* Desktop */
-#define PCI_DEVICE_ID_INTEL_IVYBRIDGE_GT1_IG		0x0152
-#define PCI_DEVICE_ID_INTEL_IVYBRIDGE_GT2_IG		0x0162
-#define PCI_DEVICE_ID_INTEL_IVYBRIDGE_M_HB		0x0154  /* Mobile */
-#define PCI_DEVICE_ID_INTEL_IVYBRIDGE_M_GT1_IG		0x0156
-#define PCI_DEVICE_ID_INTEL_IVYBRIDGE_M_GT2_IG		0x0166
-#define PCI_DEVICE_ID_INTEL_IVYBRIDGE_S_HB		0x0158  /* Server */
-#define PCI_DEVICE_ID_INTEL_IVYBRIDGE_S_GT1_IG		0x015A
-#define PCI_DEVICE_ID_INTEL_IVYBRIDGE_S_GT2_IG		0x016A
 
-int intel_gmch_probe(struct pci_dev *pdev,
-			       struct agp_bridge_data *bridge);
-void intel_gmch_remove(struct pci_dev *pdev);
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

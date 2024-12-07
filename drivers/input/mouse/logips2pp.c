@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Logitech PS/2++ mouse driver
  *
  * Copyright (c) 1999-2003 Vojtech Pavlik <vojtech@suse.cz>
  * Copyright (c) 2003 Eric Wong <eric@yhbt.net>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-
-#include <linux/input.h>
-#include <linux/serio.h>
-#include <linux/libps2.h>
-=======
  */
 
 #include <linux/bitops.h>
@@ -25,7 +11,6 @@
 #include <linux/serio.h>
 #include <linux/libps2.h>
 #include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "psmouse.h"
 #include "logips2pp.h"
 
@@ -36,21 +21,12 @@
 #define PS2PP_KIND_TRACKMAN	4
 
 /* Logitech mouse features */
-<<<<<<< HEAD
-#define PS2PP_WHEEL		0x01
-#define PS2PP_HWHEEL		0x02
-#define PS2PP_SIDE_BTN		0x04
-#define PS2PP_EXTRA_BTN		0x08
-#define PS2PP_TASK_BTN		0x10
-#define PS2PP_NAV_BTN		0x20
-=======
 #define PS2PP_WHEEL		BIT(0)
 #define PS2PP_HWHEEL		BIT(1)
 #define PS2PP_SIDE_BTN		BIT(2)
 #define PS2PP_EXTRA_BTN		BIT(3)
 #define PS2PP_TASK_BTN		BIT(4)
 #define PS2PP_NAV_BTN		BIT(5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ps2pp_info {
 	u8 model;
@@ -65,11 +41,7 @@ struct ps2pp_info {
 static psmouse_ret_t ps2pp_process_byte(struct psmouse *psmouse)
 {
 	struct input_dev *dev = psmouse->dev;
-<<<<<<< HEAD
-	unsigned char *packet = psmouse->packet;
-=======
 	u8 *packet = psmouse->packet;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (psmouse->pktcnt < 3)
 		return PSMOUSE_GOOD_DATA;
@@ -85,51 +57,30 @@ static psmouse_ret_t ps2pp_process_byte(struct psmouse *psmouse)
 
 		case 0x0d: /* Mouse extra info */
 
-<<<<<<< HEAD
-			input_report_rel(dev, packet[2] & 0x80 ? REL_HWHEEL : REL_WHEEL,
-				(int) (packet[2] & 8) - (int) (packet[2] & 7));
-			input_report_key(dev, BTN_SIDE, (packet[2] >> 4) & 1);
-			input_report_key(dev, BTN_EXTRA, (packet[2] >> 5) & 1);
-=======
 			input_report_rel(dev,
 				packet[2] & 0x80 ? REL_HWHEEL : REL_WHEEL,
 				-sign_extend32(packet[2], 3));
 			input_report_key(dev, BTN_SIDE,  packet[2] & BIT(4));
 			input_report_key(dev, BTN_EXTRA, packet[2] & BIT(5));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			break;
 
 		case 0x0e: /* buttons 4, 5, 6, 7, 8, 9, 10 info */
 
-<<<<<<< HEAD
-			input_report_key(dev, BTN_SIDE, (packet[2]) & 1);
-			input_report_key(dev, BTN_EXTRA, (packet[2] >> 1) & 1);
-			input_report_key(dev, BTN_BACK, (packet[2] >> 3) & 1);
-			input_report_key(dev, BTN_FORWARD, (packet[2] >> 4) & 1);
-			input_report_key(dev, BTN_TASK, (packet[2] >> 2) & 1);
-=======
 			input_report_key(dev, BTN_SIDE,    packet[2] & BIT(0));
 			input_report_key(dev, BTN_EXTRA,   packet[2] & BIT(1));
 			input_report_key(dev, BTN_TASK,    packet[2] & BIT(2));
 			input_report_key(dev, BTN_BACK,    packet[2] & BIT(3));
 			input_report_key(dev, BTN_FORWARD, packet[2] & BIT(4));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			break;
 
 		case 0x0f: /* TouchPad extra info */
 
-<<<<<<< HEAD
-			input_report_rel(dev, packet[2] & 0x08 ? REL_HWHEEL : REL_WHEEL,
-				(int) ((packet[2] >> 4) & 8) - (int) ((packet[2] >> 4) & 7));
-			packet[0] = packet[2] | 0x08;
-=======
 			input_report_rel(dev,
 				packet[2] & 0x08 ? REL_HWHEEL : REL_WHEEL,
 				-sign_extend32(packet[2] >> 4, 3));
 			packet[0] = packet[2] | BIT(3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		default:
@@ -138,18 +89,6 @@ static psmouse_ret_t ps2pp_process_byte(struct psmouse *psmouse)
 				    (packet[1] >> 4) | (packet[0] & 0x30));
 			break;
 		}
-<<<<<<< HEAD
-	} else {
-		/* Standard PS/2 motion data */
-		input_report_rel(dev, REL_X, packet[1] ? (int) packet[1] - (int) ((packet[0] << 4) & 0x100) : 0);
-		input_report_rel(dev, REL_Y, packet[2] ? (int) ((packet[0] << 3) & 0x100) - (int) packet[2] : 0);
-	}
-
-	input_report_key(dev, BTN_LEFT,    packet[0]       & 1);
-	input_report_key(dev, BTN_MIDDLE, (packet[0] >> 2) & 1);
-	input_report_key(dev, BTN_RIGHT,  (packet[0] >> 1) & 1);
-
-=======
 
 		psmouse_report_standard_buttons(dev, packet[0]);
 
@@ -158,7 +97,6 @@ static psmouse_ret_t ps2pp_process_byte(struct psmouse *psmouse)
 		psmouse_report_standard_packet(dev, packet);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_sync(dev);
 
 	return PSMOUSE_FULL_PACKET;
@@ -172,15 +110,6 @@ static psmouse_ret_t ps2pp_process_byte(struct psmouse *psmouse)
  * Ugly.
  */
 
-<<<<<<< HEAD
-static int ps2pp_cmd(struct psmouse *psmouse, unsigned char *param, unsigned char command)
-{
-	if (psmouse_sliced_command(psmouse, command))
-		return -1;
-
-	if (ps2_command(&psmouse->ps2dev, param, PSMOUSE_CMD_POLL | 0x0300))
-		return -1;
-=======
 static int ps2pp_cmd(struct psmouse *psmouse, u8 *param, u8 command)
 {
 	int error;
@@ -192,7 +121,6 @@ static int ps2pp_cmd(struct psmouse *psmouse, u8 *param, u8 command)
 	error = ps2_command(&psmouse->ps2dev, param, PSMOUSE_CMD_POLL | 0x0300);
 	if (error)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -208,11 +136,7 @@ static int ps2pp_cmd(struct psmouse *psmouse, u8 *param, u8 command)
 static void ps2pp_set_smartscroll(struct psmouse *psmouse, bool smartscroll)
 {
 	struct ps2dev *ps2dev = &psmouse->ps2dev;
-<<<<<<< HEAD
-	unsigned char param[4];
-=======
 	u8 param[4];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ps2pp_cmd(psmouse, param, 0x32);
 
@@ -250,11 +174,7 @@ static ssize_t ps2pp_attr_set_smartscroll(struct psmouse *psmouse, void *data,
 }
 
 PSMOUSE_DEFINE_ATTR(smartscroll, S_IWUSR | S_IRUGO, NULL,
-<<<<<<< HEAD
-			ps2pp_attr_show_smartscroll, ps2pp_attr_set_smartscroll);
-=======
 		    ps2pp_attr_show_smartscroll, ps2pp_attr_set_smartscroll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Support 800 dpi resolution _only_ if the user wants it (there are good
@@ -262,20 +182,12 @@ PSMOUSE_DEFINE_ATTR(smartscroll, S_IWUSR | S_IRUGO, NULL,
  * also good reasons to use it, let the user decide).
  */
 
-<<<<<<< HEAD
-static void ps2pp_set_resolution(struct psmouse *psmouse, unsigned int resolution)
-{
-	if (resolution > 400) {
-		struct ps2dev *ps2dev = &psmouse->ps2dev;
-		unsigned char param = 3;
-=======
 static void ps2pp_set_resolution(struct psmouse *psmouse,
 				 unsigned int resolution)
 {
 	if (resolution > 400) {
 		struct ps2dev *ps2dev = &psmouse->ps2dev;
 		u8 param = 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ps2_command(ps2dev, NULL, PSMOUSE_CMD_SETSCALE11);
 		ps2_command(ps2dev, NULL, PSMOUSE_CMD_SETSCALE11);
@@ -288,12 +200,8 @@ static void ps2pp_set_resolution(struct psmouse *psmouse,
 
 static void ps2pp_disconnect(struct psmouse *psmouse)
 {
-<<<<<<< HEAD
-	device_remove_file(&psmouse->ps2dev.serio->dev, &psmouse_attr_smartscroll.dattr);
-=======
 	device_remove_file(&psmouse->ps2dev.serio->dev,
 			   &psmouse_attr_smartscroll.dattr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct ps2pp_info *get_model_info(unsigned char model)
@@ -317,11 +225,7 @@ static const struct ps2pp_info *get_model_info(unsigned char model)
 		{ 61,	PS2PP_KIND_MX,					/* MX700 */
 				PS2PP_WHEEL | PS2PP_SIDE_BTN | PS2PP_TASK_BTN |
 				PS2PP_EXTRA_BTN | PS2PP_NAV_BTN },
-<<<<<<< HEAD
-		{ 66,	PS2PP_KIND_MX,					/* MX3100 reciver */
-=======
 		{ 66,	PS2PP_KIND_MX,					/* MX3100 receiver */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				PS2PP_WHEEL | PS2PP_SIDE_BTN | PS2PP_TASK_BTN |
 				PS2PP_EXTRA_BTN | PS2PP_NAV_BTN | PS2PP_HWHEEL },
 		{ 72,	PS2PP_KIND_TRACKMAN,	0 },			/* T-CH11: TrackMan Marble */
@@ -370,26 +274,6 @@ static void ps2pp_set_model_properties(struct psmouse *psmouse,
 	struct input_dev *input_dev = psmouse->dev;
 
 	if (model_info->features & PS2PP_SIDE_BTN)
-<<<<<<< HEAD
-		__set_bit(BTN_SIDE, input_dev->keybit);
-
-	if (model_info->features & PS2PP_EXTRA_BTN)
-		__set_bit(BTN_EXTRA, input_dev->keybit);
-
-	if (model_info->features & PS2PP_TASK_BTN)
-		__set_bit(BTN_TASK, input_dev->keybit);
-
-	if (model_info->features & PS2PP_NAV_BTN) {
-		__set_bit(BTN_FORWARD, input_dev->keybit);
-		__set_bit(BTN_BACK, input_dev->keybit);
-	}
-
-	if (model_info->features & PS2PP_WHEEL)
-		__set_bit(REL_WHEEL, input_dev->relbit);
-
-	if (model_info->features & PS2PP_HWHEEL)
-		__set_bit(REL_HWHEEL, input_dev->relbit);
-=======
 		input_set_capability(input_dev, EV_KEY, BTN_SIDE);
 
 	if (model_info->features & PS2PP_EXTRA_BTN)
@@ -408,7 +292,6 @@ static void ps2pp_set_model_properties(struct psmouse *psmouse,
 
 	if (model_info->features & PS2PP_HWHEEL)
 		input_set_capability(input_dev, EV_REL, REL_HWHEEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (model_info->kind) {
 
@@ -440,8 +323,6 @@ static void ps2pp_set_model_properties(struct psmouse *psmouse,
 	}
 }
 
-<<<<<<< HEAD
-=======
 static int ps2pp_setup_protocol(struct psmouse *psmouse,
 				const struct ps2pp_info *model_info)
 {
@@ -466,7 +347,6 @@ static int ps2pp_setup_protocol(struct psmouse *psmouse,
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Logitech magic init. Detect whether the mouse is a Logitech one
@@ -474,21 +354,12 @@ static int ps2pp_setup_protocol(struct psmouse *psmouse,
  * that support it.
  */
 
-<<<<<<< HEAD
-int ps2pp_init(struct psmouse *psmouse, bool set_properties)
-{
-	struct ps2dev *ps2dev = &psmouse->ps2dev;
-	unsigned char param[4];
-	unsigned char model, buttons;
-	const struct ps2pp_info *model_info;
-=======
 int ps2pp_detect(struct psmouse *psmouse, bool set_properties)
 {
 	struct ps2dev *ps2dev = &psmouse->ps2dev;
 	const struct ps2pp_info *model_info;
 	u8 param[4];
 	u8 model, buttons;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool use_ps2pp = false;
 	int error;
 
@@ -504,11 +375,7 @@ int ps2pp_detect(struct psmouse *psmouse, bool set_properties)
 	buttons = param[1];
 
 	if (!model || !buttons)
-<<<<<<< HEAD
-		return -1;
-=======
 		return -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	model_info = get_model_info(model);
 	if (model_info) {
@@ -530,12 +397,8 @@ int ps2pp_detect(struct psmouse *psmouse, bool set_properties)
 
 			param[0] = 0;
 			if (!ps2_command(ps2dev, param, 0x13d1) &&
-<<<<<<< HEAD
-			    param[0] == 0x06 && param[1] == 0x00 && param[2] == 0x14) {
-=======
 			    param[0] == 0x06 && param[1] == 0x00 &&
 			    param[2] == 0x14) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				use_ps2pp = true;
 			}
 
@@ -554,13 +417,9 @@ int ps2pp_detect(struct psmouse *psmouse, bool set_properties)
 		}
 
 	} else {
-<<<<<<< HEAD
-		psmouse_warn(psmouse, "Detected unknown Logitech mouse model %d\n", model);
-=======
 		psmouse_warn(psmouse,
 			     "Detected unknown Logitech mouse model %d\n",
 			     model);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (set_properties) {
@@ -568,28 +427,6 @@ int ps2pp_detect(struct psmouse *psmouse, bool set_properties)
 		psmouse->model = model;
 
 		if (use_ps2pp) {
-<<<<<<< HEAD
-			psmouse->protocol_handler = ps2pp_process_byte;
-			psmouse->pktsize = 3;
-
-			if (model_info->kind != PS2PP_KIND_TP3) {
-				psmouse->set_resolution = ps2pp_set_resolution;
-				psmouse->disconnect = ps2pp_disconnect;
-
-				error = device_create_file(&psmouse->ps2dev.serio->dev,
-							   &psmouse_attr_smartscroll.dattr);
-				if (error) {
-					psmouse_err(psmouse,
-						    "failed to create smartscroll sysfs attribute, error: %d\n",
-						    error);
-					return -1;
-				}
-			}
-		}
-
-		if (buttons >= 3)
-			__set_bit(BTN_MIDDLE, psmouse->dev->keybit);
-=======
 			error = ps2pp_setup_protocol(psmouse, model_info);
 			if (error)
 				return error;
@@ -597,16 +434,11 @@ int ps2pp_detect(struct psmouse *psmouse, bool set_properties)
 
 		if (buttons >= 3)
 			input_set_capability(psmouse->dev, EV_KEY, BTN_MIDDLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (model_info)
 			ps2pp_set_model_properties(psmouse, model_info, use_ps2pp);
 	}
 
-<<<<<<< HEAD
-	return use_ps2pp ? 0 : -1;
-=======
 	return use_ps2pp ? 0 : -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* RomFS storage access routines
  *
  * Copyright © 2007 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -228,15 +217,8 @@ int romfs_dev_read(struct super_block *sb, unsigned long pos,
 	size_t limit;
 
 	limit = romfs_maxsize(sb);
-<<<<<<< HEAD
-	if (pos >= limit)
-		return -EIO;
-	if (buflen > limit - pos)
-		buflen = limit - pos;
-=======
 	if (pos >= limit || buflen > limit - pos)
 		return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_ROMFS_ON_MTD
 	if (sb->s_mtd)

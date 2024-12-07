@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/**
- * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
- *
- * This source file is released under GPL v2 license (no other versions).
- * See the COPYING file included in the main directory of this source
- * distribution for the license terms and conditions.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	ctmixer.c
  *
  * @Brief
@@ -19,10 +9,6 @@
  *
  * @Author	Liu Chun
  * @Date 	May 28 2008
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -864,13 +850,8 @@ static int ct_mixer_get_resources(struct ct_mixer *mixer)
 	for (i = 0; i < (NUM_CT_SUMS * CHN_NUM); i++) {
 		err = sum_mgr->get_sum(sum_mgr, &sum_desc, &sum);
 		if (err) {
-<<<<<<< HEAD
-			printk(KERN_ERR "ctxfi:Failed to get sum resources for "
-					  "front output!\n");
-=======
 			dev_err(mixer->atc->card->dev,
 				"Failed to get sum resources for front output!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		mixer->sums[i] = sum;
@@ -884,13 +865,8 @@ static int ct_mixer_get_resources(struct ct_mixer *mixer)
 	for (i = 0; i < (NUM_CT_AMIXERS * CHN_NUM); i++) {
 		err = amixer_mgr->get_amixer(amixer_mgr, &am_desc, &amixer);
 		if (err) {
-<<<<<<< HEAD
-			printk(KERN_ERR "ctxfi:Failed to get amixer resources "
-			       "for mixer obj!\n");
-=======
 			dev_err(mixer->atc->card->dev,
 				"Failed to get amixer resources for mixer obj!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		mixer->amixers[i] = amixer;
@@ -930,22 +906,14 @@ static int ct_mixer_get_mem(struct ct_mixer **rmixer)
 	if (!mixer)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	mixer->amixers = kzalloc(sizeof(void *)*(NUM_CT_AMIXERS*CHN_NUM),
-=======
 	mixer->amixers = kcalloc(NUM_CT_AMIXERS * CHN_NUM, sizeof(void *),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 GFP_KERNEL);
 	if (!mixer->amixers) {
 		err = -ENOMEM;
 		goto error1;
 	}
-<<<<<<< HEAD
-	mixer->sums = kzalloc(sizeof(void *)*(NUM_CT_SUMS*CHN_NUM), GFP_KERNEL);
-=======
 	mixer->sums = kcalloc(NUM_CT_SUMS * CHN_NUM, sizeof(void *),
 			      GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mixer->sums) {
 		err = -ENOMEM;
 		goto error2;
@@ -966,23 +934,11 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 	struct sum *sum;
 	struct amixer *amix_d, *amix_s;
 	enum CT_AMIXER_CTL i, j;
-<<<<<<< HEAD
-=======
 	enum CT_SUM_CTL k;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Build topology from destination to source */
 
 	/* Set up Master mixer */
-<<<<<<< HEAD
-	for (i = AMIXER_MASTER_F, j = SUM_IN_F;
-					i <= AMIXER_MASTER_S; i++, j++) {
-		amix_d = mixer->amixers[i*CHN_NUM];
-		sum = mixer->sums[j*CHN_NUM];
-		amix_d->ops->setup(amix_d, &sum->rsc, INIT_VOL, NULL);
-		amix_d = mixer->amixers[i*CHN_NUM+1];
-		sum = mixer->sums[j*CHN_NUM+1];
-=======
 	for (i = AMIXER_MASTER_F, k = SUM_IN_F;
 					i <= AMIXER_MASTER_S; i++, k++) {
 		amix_d = mixer->amixers[i*CHN_NUM];
@@ -990,7 +946,6 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 		amix_d->ops->setup(amix_d, &sum->rsc, INIT_VOL, NULL);
 		amix_d = mixer->amixers[i*CHN_NUM+1];
 		sum = mixer->sums[k*CHN_NUM+1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		amix_d->ops->setup(amix_d, &sum->rsc, INIT_VOL, NULL);
 	}
 
@@ -1014,21 +969,12 @@ static int ct_mixer_topology_build(struct ct_mixer *mixer)
 	amix_d->ops->setup(amix_d, &amix_s->rsc, INIT_VOL, NULL);
 
 	/* Set up PCM-in mixer */
-<<<<<<< HEAD
-	for (i = AMIXER_PCM_F, j = SUM_IN_F; i <= AMIXER_PCM_S; i++, j++) {
-		amix_d = mixer->amixers[i*CHN_NUM];
-		sum = mixer->sums[j*CHN_NUM];
-		amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
-		amix_d = mixer->amixers[i*CHN_NUM+1];
-		sum = mixer->sums[j*CHN_NUM+1];
-=======
 	for (i = AMIXER_PCM_F, k = SUM_IN_F; i <= AMIXER_PCM_S; i++, k++) {
 		amix_d = mixer->amixers[i*CHN_NUM];
 		sum = mixer->sums[k*CHN_NUM];
 		amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
 		amix_d = mixer->amixers[i*CHN_NUM+1];
 		sum = mixer->sums[k*CHN_NUM+1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		amix_d->ops->setup(amix_d, NULL, INIT_VOL, sum);
 	}
 
@@ -1170,11 +1116,7 @@ mixer_set_input_right(struct ct_mixer *mixer,
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mixer_resume(struct ct_mixer *mixer)
 {
 	int i, state;
@@ -1244,11 +1186,7 @@ int ct_mixer_create(struct ct_atc *atc, struct ct_mixer **rmixer)
 	mixer->get_output_ports = mixer_get_output_ports;
 	mixer->set_input_left = mixer_set_input_left;
 	mixer->set_input_right = mixer_set_input_right;
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mixer->resume = mixer_resume;
 #endif
 

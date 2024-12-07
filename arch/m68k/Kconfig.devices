@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if MMU
 
 config ARCH_MAY_HAVE_PC_FDC
@@ -22,10 +19,7 @@ config HEARTBEAT
 # We have a dedicated heartbeat LED. :-)
 config PROC_HARDWARE
 	bool "/proc/hardware support"
-<<<<<<< HEAD
-=======
 	depends on PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to support the /proc/hardware file, which gives you
 	  access to information about the machine you're running on,
@@ -49,11 +43,7 @@ config NFBLOCK
 
 config NFCON
 	tristate "NatFeat console driver"
-<<<<<<< HEAD
-	depends on NATFEAT
-=======
 	depends on TTY && NATFEAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y to include support for the ARAnyM NatFeat console driver
 	  which allows the console output to be redirected to the stderr
@@ -67,8 +57,6 @@ config NFETH
 	  which will emulate a regular ethernet device while presenting an
 	  ethertap device to the host system.
 
-<<<<<<< HEAD
-=======
 config ATARI_ETHERNAT
 	bool "Atari EtherNAT Ethernet support"
 	depends on ATARI
@@ -93,19 +81,13 @@ config ATARI_ETHERNEC
 	  To compile the actual ethernet driver, choose Y or M in for the NE2000
 	  option in the network device section; the module will be called ne.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endmenu
 
 menu "Character devices"
 
 config ATARI_DSP56K
-<<<<<<< HEAD
-	tristate "Atari DSP56k support (EXPERIMENTAL)"
-	depends on ATARI && EXPERIMENTAL
-=======
 	tristate "Atari DSP56k support"
 	depends on ATARI
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you want to be able to use the DSP56001 in Falcons, say Y. This
 	  driver is still experimental, and if you don't know what it is, or
@@ -115,11 +97,7 @@ config ATARI_DSP56K
 
 config AMIGA_BUILTIN_SERIAL
 	tristate "Amiga builtin serial support"
-<<<<<<< HEAD
-	depends on AMIGA
-=======
 	depends on AMIGA && TTY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you want to use your Amiga's built-in serial port in Linux,
 	  answer Y.
@@ -135,11 +113,7 @@ config HPDCA
 
 config HPAPCI
 	tristate "HP APCI serial support"
-<<<<<<< HEAD
-	depends on HP300 && SERIAL_8250 && EXPERIMENTAL
-=======
 	depends on HP300 && SERIAL_8250
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you want to use the internal "APCI" serial ports on an HP400
 	  machine, say Y here.
@@ -147,11 +121,7 @@ config HPAPCI
 config SERIAL_CONSOLE
 	bool "Support for serial port console"
 	depends on AMIGA_BUILTIN_SERIAL=y
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you say Y here, it will be possible to use a serial port as the
 	  system console (the system console is the device which receives all
 	  kernel messages and warnings and which allows logins in single user

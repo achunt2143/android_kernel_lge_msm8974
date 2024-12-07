@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xfrm_output.c - Common IPsec encapsulation code.
  *
  * Copyright (c) 2007 Herbert Xu <herbert@gondor.apana.org.au>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -24,11 +13,6 @@
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <net/dst.h>
-<<<<<<< HEAD
-#include <net/xfrm.h>
-
-static int xfrm_output2(struct sk_buff *skb);
-=======
 #include <net/gso.h>
 #include <net/icmp.h>
 #include <net/inet_ecn.h>
@@ -43,7 +27,6 @@ static int xfrm_output2(struct sk_buff *skb);
 
 static int xfrm_output2(struct net *net, struct sock *sk, struct sk_buff *skb);
 static int xfrm_inner_extract_output(struct xfrm_state *x, struct sk_buff *skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int xfrm_skb_check_space(struct sk_buff *skb)
 {
@@ -62,8 +45,6 @@ static int xfrm_skb_check_space(struct sk_buff *skb)
 	return pskb_expand_head(skb, nhead, ntail, GFP_ATOMIC);
 }
 
-<<<<<<< HEAD
-=======
 /* Children define the path of the packet through the
  * Linux networking.  Thus, destinations are stackable.
  */
@@ -506,18 +487,13 @@ int pktgen_xfrm_outer_mode_output(struct xfrm_state *x, struct sk_buff *skb)
 EXPORT_SYMBOL_GPL(pktgen_xfrm_outer_mode_output);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int xfrm_output_one(struct sk_buff *skb, int err)
 {
 	struct dst_entry *dst = skb_dst(skb);
 	struct xfrm_state *x = dst->xfrm;
 	struct net *net = xs_net(x);
 
-<<<<<<< HEAD
-	if (err <= 0)
-=======
 	if (err <= 0 || x->xso.type == XFRM_DEV_OFFLOAD_PACKET)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto resume;
 
 	do {
@@ -527,21 +503,15 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
 			goto error_nolock;
 		}
 
-<<<<<<< HEAD
-		err = x->outer_mode->output(x, skb);
-=======
 		skb->mark = xfrm_smark_get(skb->mark, x);
 
 		err = xfrm_outer_mode_output(x, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTSTATEMODEERROR);
 			goto error_nolock;
 		}
 
 		spin_lock_bh(&x->lock);
-<<<<<<< HEAD
-=======
 
 		if (unlikely(x->km.state != XFRM_STATE_VALID)) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTSTATEINVALID);
@@ -549,18 +519,13 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
 			goto error;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = xfrm_state_check_expire(x);
 		if (err) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTSTATEEXPIRED);
 			goto error;
 		}
 
-<<<<<<< HEAD
-		err = x->repl->overflow(x, skb);
-=======
 		err = xfrm_replay_overflow(x, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTSTATESEQERROR);
 			goto error;
@@ -568,20 +533,11 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
 
 		x->curlft.bytes += skb->len;
 		x->curlft.packets++;
-<<<<<<< HEAD
-=======
 		x->lastused = ktime_get_real_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_unlock_bh(&x->lock);
 
 		skb_dst_force(skb);
-<<<<<<< HEAD
-
-		err = x->type->output(x, skb);
-		if (err == -EINPROGRESS)
-			goto out_exit;
-=======
 		if (!skb_dst(skb)) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTERROR);
 			err = -EHOSTUNREACH;
@@ -598,7 +554,6 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
 			if (err == -EINPROGRESS)
 				goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 resume:
 		if (err) {
@@ -614,34 +569,14 @@ resume:
 		}
 		skb_dst_set(skb, dst);
 		x = dst->xfrm;
-<<<<<<< HEAD
-	} while (x && !(x->outer_mode->flags & XFRM_MODE_FLAG_TUNNEL));
-
-	err = 0;
-
-out_exit:
-	return err;
-=======
 	} while (x && !(x->outer_mode.flags & XFRM_MODE_FLAG_TUNNEL));
 
 	return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error:
 	spin_unlock_bh(&x->lock);
 error_nolock:
 	kfree_skb(skb);
-<<<<<<< HEAD
-	goto out_exit;
-}
-
-int xfrm_output_resume(struct sk_buff *skb, int err)
-{
-	while (likely((err = xfrm_output_one(skb, err)) == 0)) {
-		nf_reset(skb);
-
-		err = skb_dst(skb)->ops->local_out(skb);
-=======
 out:
 	return err;
 }
@@ -654,22 +589,14 @@ int xfrm_output_resume(struct sock *sk, struct sk_buff *skb, int err)
 		nf_reset_ct(skb);
 
 		err = skb_dst(skb)->ops->local_out(net, sk, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(err != 1))
 			goto out;
 
 		if (!skb_dst(skb)->xfrm)
-<<<<<<< HEAD
-			return dst_output(skb);
-
-		err = nf_hook(skb_dst(skb)->ops->family,
-			      NF_INET_POST_ROUTING, skb,
-=======
 			return dst_output(net, sk, skb);
 
 		err = nf_hook(skb_dst(skb)->ops->family,
 			      NF_INET_POST_ROUTING, net, sk, skb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      NULL, skb_dst(skb)->dev, xfrm_output2);
 		if (unlikely(err != 1))
 			goto out;
@@ -683,17 +610,6 @@ out:
 }
 EXPORT_SYMBOL_GPL(xfrm_output_resume);
 
-<<<<<<< HEAD
-static int xfrm_output2(struct sk_buff *skb)
-{
-	return xfrm_output_resume(skb, 1);
-}
-
-static int xfrm_output_gso(struct sk_buff *skb)
-{
-	struct sk_buff *segs;
-
-=======
 static int xfrm_output2(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	return xfrm_output_resume(sk, skb, 1);
@@ -705,7 +621,6 @@ static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_buff *skb
 
 	BUILD_BUG_ON(sizeof(*IPCB(skb)) > SKB_GSO_CB_OFFSET);
 	BUILD_BUG_ON(sizeof(*IP6CB(skb)) > SKB_GSO_CB_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	segs = skb_gso_segment(skb, 0);
 	kfree_skb(skb);
 	if (IS_ERR(segs))
@@ -713,26 +628,6 @@ static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_buff *skb
 	if (segs == NULL)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	do {
-		struct sk_buff *nskb = segs->next;
-		int err;
-
-		segs->next = NULL;
-		err = xfrm_output2(segs);
-
-		if (unlikely(err)) {
-			while ((segs = nskb)) {
-				nskb = segs->next;
-				segs->next = NULL;
-				kfree_skb(segs);
-			}
-			return err;
-		}
-
-		segs = nskb;
-	} while (segs);
-=======
 	skb_list_walk_safe(segs, segs, nskb) {
 		int err;
 
@@ -744,20 +639,10 @@ static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_buff *skb
 			return err;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int xfrm_output(struct sk_buff *skb)
-{
-	struct net *net = dev_net(skb_dst(skb)->dev);
-	int err;
-
-	if (skb_is_gso(skb))
-		return xfrm_output_gso(skb);
-=======
 /* For partial checksum offload, the outer header checksum is calculated
  * by software and the inner header checksum is calculated by hardware.
  * This requires hardware to know the inner packet type to calculate
@@ -880,7 +765,6 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
 		if (skb_is_gso(skb))
 			return xfrm_output_gso(net, sk, skb);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 		err = skb_checksum_help(skb);
@@ -891,27 +775,6 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
 		}
 	}
 
-<<<<<<< HEAD
-	return xfrm_output2(skb);
-}
-
-int xfrm_inner_extract_output(struct xfrm_state *x, struct sk_buff *skb)
-{
-	struct xfrm_mode *inner_mode;
-	if (x->sel.family == AF_UNSPEC)
-		inner_mode = xfrm_ip2inner_mode(x,
-				xfrm_af2proto(skb_dst(skb)->ops->family));
-	else
-		inner_mode = x->inner_mode;
-
-	if (inner_mode == NULL)
-		return -EAFNOSUPPORT;
-	return inner_mode->afinfo->extract_output(x, skb);
-}
-
-EXPORT_SYMBOL_GPL(xfrm_output);
-EXPORT_SYMBOL_GPL(xfrm_inner_extract_output);
-=======
 out:
 	return xfrm_output2(net, sk, skb);
 }
@@ -1047,4 +910,3 @@ void xfrm_local_error(struct sk_buff *skb, int mtu)
 	}
 }
 EXPORT_SYMBOL_GPL(xfrm_local_error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

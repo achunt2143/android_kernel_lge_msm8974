@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This file is meant to be include multiple times by other headers */
 /* last 2 argments are used by platforms/cell/io-workarounds.[ch] */
 

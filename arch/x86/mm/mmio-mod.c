@@ -1,22 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) IBM Corporation, 2005
  *               Jeff Muizelaar, 2006, 2007
@@ -27,27 +10,14 @@
 
 #define pr_fmt(fmt) "mmiotrace: " fmt
 
-<<<<<<< HEAD
-#define DEBUG 1
-
-#include <linux/module.h>
-=======
 #include <linux/moduleparam.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/debugfs.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-#include <linux/kallsyms.h>
-#include <asm/pgtable.h>
-#include <linux/mmiotrace.h>
-#include <asm/e820.h> /* for ISA_START_ADDRESS */
-=======
 #include <linux/mmiotrace.h>
 #include <linux/pgtable.h>
 #include <asm/e820/api.h> /* for ISA_START_ADDRESS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 #include <linux/percpu.h>
 #include <linux/cpu.h>
@@ -138,13 +108,8 @@ static void die_kmmio_nesting_error(struct pt_regs *regs, unsigned long addr)
 	pr_emerg("unexpected fault for address: 0x%08lx, last fault for address: 0x%08lx\n",
 		 addr, my_reason->addr);
 	print_pte(addr);
-<<<<<<< HEAD
-	print_symbol(KERN_EMERG "faulting IP is at %s\n", regs->ip);
-	print_symbol(KERN_EMERG "last faulting IP was at %s\n", my_reason->ip);
-=======
 	pr_emerg("faulting IP is at %pS\n", (void *)regs->ip);
 	pr_emerg("last faulting IP was at %pS\n", (void *)my_reason->ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __i386__
 	pr_emerg("eax: %08lx   ebx: %08lx   ecx: %08lx   edx: %08lx\n",
 		 regs->ax, regs->bx, regs->cx, regs->dx);
@@ -405,36 +370,21 @@ static void enter_uniprocessor(void)
 	int cpu;
 	int err;
 
-<<<<<<< HEAD
-	if (downed_cpus == NULL &&
-=======
 	if (!cpumask_available(downed_cpus) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !alloc_cpumask_var(&downed_cpus, GFP_KERNEL)) {
 		pr_notice("Failed to allocate mask\n");
 		goto out;
 	}
 
-<<<<<<< HEAD
-	get_online_cpus();
-=======
 	cpus_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpumask_copy(downed_cpus, cpu_online_mask);
 	cpumask_clear_cpu(cpumask_first(cpu_online_mask), downed_cpus);
 	if (num_online_cpus() > 1)
 		pr_notice("Disabling non-boot CPUs...\n");
-<<<<<<< HEAD
-	put_online_cpus();
-
-	for_each_cpu(cpu, downed_cpus) {
-		err = cpu_down(cpu);
-=======
 	cpus_read_unlock();
 
 	for_each_cpu(cpu, downed_cpus) {
 		err = remove_cpu(cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!err)
 			pr_info("CPU%d is down.\n", cpu);
 		else
@@ -442,36 +392,19 @@ static void enter_uniprocessor(void)
 	}
 out:
 	if (num_online_cpus() > 1)
-<<<<<<< HEAD
-		pr_warning("multiple CPUs still online, may miss events.\n");
-}
-
-/* __ref because leave_uniprocessor calls cpu_up which is __cpuinit,
-   but this whole function is ifdefed CONFIG_HOTPLUG_CPU */
-static void __ref leave_uniprocessor(void)
-=======
 		pr_warn("multiple CPUs still online, may miss events.\n");
 }
 
 static void leave_uniprocessor(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cpu;
 	int err;
 
-<<<<<<< HEAD
-	if (downed_cpus == NULL || cpumask_weight(downed_cpus) == 0)
-		return;
-	pr_notice("Re-enabling CPUs...\n");
-	for_each_cpu(cpu, downed_cpus) {
-		err = cpu_up(cpu);
-=======
 	if (!cpumask_available(downed_cpus) || cpumask_empty(downed_cpus))
 		return;
 	pr_notice("Re-enabling CPUs...\n");
 	for_each_cpu(cpu, downed_cpus) {
 		err = add_cpu(cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!err)
 			pr_info("enabled CPU%d.\n", cpu);
 		else
@@ -483,13 +416,8 @@ static void leave_uniprocessor(void)
 static void enter_uniprocessor(void)
 {
 	if (num_online_cpus() > 1)
-<<<<<<< HEAD
-		pr_warning("multiple CPUs are online, may miss events. "
-			   "Suggest booting with maxcpus=1 kernel argument.\n");
-=======
 		pr_warn("multiple CPUs are online, may miss events. "
 			"Suggest booting with maxcpus=1 kernel argument.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void leave_uniprocessor(void)

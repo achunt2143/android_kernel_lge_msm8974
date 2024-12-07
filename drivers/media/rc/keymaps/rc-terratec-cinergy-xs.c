@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-/* terratec-cinergy-xs.h - Keytable for terratec_cinergy_xs Remote Controller
- *
- * keymap imported from ir-keymaps.c
- *
- * Copyright (c) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 // terratec-cinergy-xs.h - Keytable for terratec_cinergy_xs Remote Controller
 //
 // keymap imported from ir-keymaps.c
 //
 // Copyright (c) 2010 by Mauro Carvalho Chehab
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -30,22 +16,6 @@ static struct rc_map_table terratec_cinergy_xs[] = {
 	{ 0x41, KEY_HOME},
 	{ 0x01, KEY_POWER},
 	{ 0x42, KEY_MENU},
-<<<<<<< HEAD
-	{ 0x02, KEY_1},
-	{ 0x03, KEY_2},
-	{ 0x04, KEY_3},
-	{ 0x43, KEY_SUBTITLE},
-	{ 0x05, KEY_4},
-	{ 0x06, KEY_5},
-	{ 0x07, KEY_6},
-	{ 0x44, KEY_TEXT},
-	{ 0x08, KEY_7},
-	{ 0x09, KEY_8},
-	{ 0x0a, KEY_9},
-	{ 0x45, KEY_DELETE},
-	{ 0x0b, KEY_TUNER},
-	{ 0x0c, KEY_0},
-=======
 	{ 0x02, KEY_NUMERIC_1},
 	{ 0x03, KEY_NUMERIC_2},
 	{ 0x04, KEY_NUMERIC_3},
@@ -60,7 +30,6 @@ static struct rc_map_table terratec_cinergy_xs[] = {
 	{ 0x45, KEY_DELETE},
 	{ 0x0b, KEY_TUNER},
 	{ 0x0c, KEY_NUMERIC_0},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0d, KEY_MODE},
 	{ 0x46, KEY_TV},
 	{ 0x47, KEY_DVD},
@@ -95,17 +64,10 @@ static struct rc_map_table terratec_cinergy_xs[] = {
 
 static struct rc_map_list terratec_cinergy_xs_map = {
 	.map = {
-<<<<<<< HEAD
-		.scan    = terratec_cinergy_xs,
-		.size    = ARRAY_SIZE(terratec_cinergy_xs),
-		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
-		.name    = RC_MAP_TERRATEC_CINERGY_XS,
-=======
 		.scan     = terratec_cinergy_xs,
 		.size     = ARRAY_SIZE(terratec_cinergy_xs),
 		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
 		.name     = RC_MAP_TERRATEC_CINERGY_XS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -123,9 +85,5 @@ module_init(init_rc_map_terratec_cinergy_xs)
 module_exit(exit_rc_map_terratec_cinergy_xs)
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
-=======
 MODULE_AUTHOR("Mauro Carvalho Chehab");
 MODULE_DESCRIPTION("Terratec Cinergy Hybrid T USB XS remote controller keytable");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

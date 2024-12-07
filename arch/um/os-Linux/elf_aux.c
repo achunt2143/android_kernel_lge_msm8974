@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-/*
- *  arch/um/kernel/elf_aux.c
- *
- *  Scan the Elf auxiliary vector provided by the host to extract
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  *  arch/um/kernel/elf_aux.c
  *
  *  Scan the ELF auxiliary vector provided by the host to extract
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  information about vsyscall-page, etc.
  *
  *  Copyright (C) 2004 Fujitsu Siemens Computers GmbH
@@ -17,15 +10,9 @@
  */
 #include <elf.h>
 #include <stddef.h>
-<<<<<<< HEAD
-#include "init.h"
-#include "elf_user.h"
-#include "mem_user.h"
-=======
 #include <init.h>
 #include <elf_user.h>
 #include <mem_user.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef Elf32_auxv_t elf_auxv_t;
 

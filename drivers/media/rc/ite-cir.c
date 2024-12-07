@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for ITE Tech Inc. IT8712F/IT8512 CIR
  *
  * Copyright (C) 2010 Juan Jesús García de Soria <skandalfo@gmail.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Inspired by the original lirc_it87 and lirc_ite8709 drivers, on top of the
  * skeleton provided by the nuvoton-cir driver.
  *
@@ -54,44 +33,10 @@
 
 /* module parameters */
 
-<<<<<<< HEAD
-/* debug level */
-static int debug;
-module_param(debug, int, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(debug, "Enable debugging output");
-
-/* low limit for RX carrier freq, Hz, 0 for no RX demodulation */
-static int rx_low_carrier_freq;
-module_param(rx_low_carrier_freq, int, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(rx_low_carrier_freq, "Override low RX carrier frequency, Hz, "
-		 "0 for no RX demodulation");
-
-/* high limit for RX carrier freq, Hz, 0 for no RX demodulation */
-static int rx_high_carrier_freq;
-module_param(rx_high_carrier_freq, int, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(rx_high_carrier_freq, "Override high RX carrier frequency, "
-		 "Hz, 0 for no RX demodulation");
-
-/* override tx carrier frequency */
-static int tx_carrier_freq;
-module_param(tx_carrier_freq, int, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(tx_carrier_freq, "Override TX carrier frequency, Hz");
-
-/* override tx duty cycle */
-static int tx_duty_cycle;
-module_param(tx_duty_cycle, int, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(tx_duty_cycle, "Override TX duty cycle, 1-100");
-
-/* override default sample period */
-static long sample_period;
-module_param(sample_period, long, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(sample_period, "Override carrier sample period, us");
-=======
 /* default sample period */
 static long sample_period = NSEC_PER_SEC / 115200;
 module_param(sample_period, long, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(sample_period, "sample period");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* override detected model id */
 static int model_number = -1;
@@ -131,13 +76,7 @@ static u8 ite_get_carrier_freq_bits(unsigned int freq)
 			freq = ITE_LCF_MAX_CARRIER_FREQ;
 
 		/* convert to kHz and subtract the base freq */
-<<<<<<< HEAD
-		freq =
-		    DIV_ROUND_CLOSEST(freq - ITE_LCF_MIN_CARRIER_FREQ,
-				      1000);
-=======
 		freq = DIV_ROUND_CLOSEST(freq - ITE_LCF_MIN_CARRIER_FREQ, 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return (u8) freq;
 	}
@@ -195,57 +134,25 @@ static u8 ite_get_pulse_width_bits(unsigned int freq, int duty_cycle)
 static void ite_decode_bytes(struct ite_dev *dev, const u8 * data, int
 			     length)
 {
-<<<<<<< HEAD
-	u32 sample_period;
-	unsigned long *ldata;
-	unsigned int next_one, next_zero, size;
-	DEFINE_IR_RAW_EVENT(ev);
-=======
 	unsigned long *ldata;
 	unsigned int next_one, next_zero, size;
 	struct ir_raw_event ev = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (length == 0)
 		return;
 
-<<<<<<< HEAD
-	sample_period = dev->params.sample_period;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldata = (unsigned long *)data;
 	size = length << 3;
 	next_one = find_next_bit_le(ldata, size, 0);
 	if (next_one > 0) {
 		ev.pulse = true;
-<<<<<<< HEAD
-		ev.duration =
-		    ITE_BITS_TO_NS(next_one, sample_period);
-=======
 		ev.duration = ITE_BITS_TO_US(next_one, sample_period);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ir_raw_event_store_with_filter(dev->rdev, &ev);
 	}
 
 	while (next_one < size) {
 		next_zero = find_next_zero_bit_le(ldata, size, next_one + 1);
 		ev.pulse = false;
-<<<<<<< HEAD
-		ev.duration = ITE_BITS_TO_NS(next_zero - next_one, sample_period);
-		ir_raw_event_store_with_filter(dev->rdev, &ev);
-
-		if (next_zero < size) {
-			next_one =
-			    find_next_bit_le(ldata,
-						     size,
-						     next_zero + 1);
-			ev.pulse = true;
-			ev.duration =
-			    ITE_BITS_TO_NS(next_one - next_zero,
-					   sample_period);
-			ir_raw_event_store_with_filter
-			    (dev->rdev, &ev);
-=======
 		ev.duration = ITE_BITS_TO_US(next_zero - next_one, sample_period);
 		ir_raw_event_store_with_filter(dev->rdev, &ev);
 
@@ -255,18 +162,13 @@ static void ite_decode_bytes(struct ite_dev *dev, const u8 * data, int
 			ev.duration = ITE_BITS_TO_US(next_one - next_zero,
 						     sample_period);
 			ir_raw_event_store_with_filter(dev->rdev, &ev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			next_one = size;
 	}
 
 	ir_raw_event_handle(dev->rdev);
 
-<<<<<<< HEAD
-	ite_dbg_verbose("decoded %d bytes.", length);
-=======
 	dev_dbg(&dev->rdev->dev, "decoded %d bytes\n", length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* set all the rx/tx carrier parameters; this must be called with the device
@@ -278,23 +180,6 @@ static void ite_set_carrier_params(struct ite_dev *dev)
 	bool use_demodulator;
 	bool for_tx = dev->transmitting;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-	if (for_tx) {
-		/* we don't need no stinking calculations */
-		freq = dev->params.tx_carrier_freq;
-		allowance = ITE_RXDCR_DEFAULT;
-		use_demodulator = false;
-	} else {
-		low_freq = dev->params.rx_low_carrier_freq;
-		high_freq = dev->params.rx_high_carrier_freq;
-
-		if (low_freq == 0) {
-			/* don't demodulate */
-			freq =
-			ITE_DEFAULT_CARRIER_FREQ;
-=======
 	if (for_tx) {
 		/* we don't need no stinking calculations */
 		freq = dev->tx_carrier_freq;
@@ -307,7 +192,6 @@ static void ite_set_carrier_params(struct ite_dev *dev)
 		if (low_freq == 0) {
 			/* don't demodulate */
 			freq = ITE_DEFAULT_CARRIER_FREQ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			allowance = ITE_RXDCR_DEFAULT;
 			use_demodulator = false;
 		} else {
@@ -325,48 +209,26 @@ static void ite_set_carrier_params(struct ite_dev *dev)
 
 			if (allowance > ITE_RXDCR_MAX)
 				allowance = ITE_RXDCR_MAX;
-<<<<<<< HEAD
-=======
 
 			use_demodulator = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* set the carrier parameters in a device-dependent way */
-<<<<<<< HEAD
-	dev->params.set_carrier_params(dev, ite_is_high_carrier_freq(freq),
-		 use_demodulator, ite_get_carrier_freq_bits(freq), allowance,
-		 ite_get_pulse_width_bits(freq, dev->params.tx_duty_cycle));
-=======
 	dev->params->set_carrier_params(dev, ite_is_high_carrier_freq(freq),
 		 use_demodulator, ite_get_carrier_freq_bits(freq), allowance,
 		 ite_get_pulse_width_bits(freq, dev->tx_duty_cycle));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* interrupt service routine for incoming and outgoing CIR data */
 static irqreturn_t ite_cir_isr(int irq, void *data)
 {
 	struct ite_dev *dev = data;
-<<<<<<< HEAD
-	unsigned long flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irqreturn_t ret = IRQ_RETVAL(IRQ_NONE);
 	u8 rx_buf[ITE_RX_FIFO_LEN];
 	int rx_bytes;
 	int iflags;
 
-<<<<<<< HEAD
-	ite_dbg_verbose("%s firing", __func__);
-
-	/* grab the spinlock */
-	spin_lock_irqsave(&dev->lock, flags);
-
-	/* read the interrupt flags */
-	iflags = dev->params.get_irq_causes(dev);
-=======
 	/* grab the spinlock */
 	spin_lock(&dev->lock);
 
@@ -378,39 +240,19 @@ static irqreturn_t ite_cir_isr(int irq, void *data)
 		dev_warn(&dev->rdev->dev, "receive overflow\n");
 		ir_raw_event_overflow(dev->rdev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check for the receive interrupt */
 	if (iflags & (ITE_IRQ_RX_FIFO | ITE_IRQ_RX_FIFO_OVERRUN)) {
 		/* read the FIFO bytes */
-<<<<<<< HEAD
-		rx_bytes =
-			dev->params.get_rx_bytes(dev, rx_buf,
-					     ITE_RX_FIFO_LEN);
-=======
 		rx_bytes = dev->params->get_rx_bytes(dev, rx_buf,
 						    ITE_RX_FIFO_LEN);
 
 		dev_dbg(&dev->rdev->dev, "interrupt %d RX bytes\n", rx_bytes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (rx_bytes > 0) {
 			/* drop the spinlock, since the ir-core layer
 			 * may call us back again through
 			 * ite_s_idle() */
-<<<<<<< HEAD
-			spin_unlock_irqrestore(&dev->
-									 lock,
-									 flags);
-
-			/* decode the data we've just received */
-			ite_decode_bytes(dev, rx_buf,
-								   rx_bytes);
-
-			/* reacquire the spinlock */
-			spin_lock_irqsave(&dev->lock,
-								    flags);
-=======
 			spin_unlock(&dev->lock);
 
 			/* decode the data we've just received */
@@ -418,18 +260,13 @@ static irqreturn_t ite_cir_isr(int irq, void *data)
 
 			/* reacquire the spinlock */
 			spin_lock(&dev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* mark the interrupt as serviced */
 			ret = IRQ_RETVAL(IRQ_HANDLED);
 		}
 	} else if (iflags & ITE_IRQ_TX_FIFO) {
 		/* FIFO space available interrupt */
-<<<<<<< HEAD
-		ite_dbg_verbose("got interrupt for TX FIFO");
-=======
 		dev_dbg(&dev->rdev->dev, "interrupt TX FIFO\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* wake any sleeping transmitter */
 		wake_up_interruptible(&dev->tx_queue);
@@ -439,13 +276,7 @@ static irqreturn_t ite_cir_isr(int irq, void *data)
 	}
 
 	/* drop the spinlock */
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&dev->lock, flags);
-
-	ite_dbg_verbose("%s done returning %d", __func__, (int)ret);
-=======
 	spin_unlock(&dev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -458,13 +289,8 @@ static int ite_set_rx_carrier_range(struct rc_dev *rcdev, u32 carrier_low, u32
 	struct ite_dev *dev = rcdev->priv;
 
 	spin_lock_irqsave(&dev->lock, flags);
-<<<<<<< HEAD
-	dev->params.rx_low_carrier_freq = carrier_low;
-	dev->params.rx_high_carrier_freq = carrier_high;
-=======
 	dev->rx_low_carrier_freq = carrier_low;
 	dev->rx_high_carrier_freq = carrier_high;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ite_set_carrier_params(dev);
 	spin_unlock_irqrestore(&dev->lock, flags);
 
@@ -478,11 +304,7 @@ static int ite_set_tx_carrier(struct rc_dev *rcdev, u32 carrier)
 	struct ite_dev *dev = rcdev->priv;
 
 	spin_lock_irqsave(&dev->lock, flags);
-<<<<<<< HEAD
-	dev->params.tx_carrier_freq = carrier;
-=======
 	dev->tx_carrier_freq = carrier;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ite_set_carrier_params(dev);
 	spin_unlock_irqrestore(&dev->lock, flags);
 
@@ -496,11 +318,7 @@ static int ite_set_tx_duty_cycle(struct rc_dev *rcdev, u32 duty_cycle)
 	struct ite_dev *dev = rcdev->priv;
 
 	spin_lock_irqsave(&dev->lock, flags);
-<<<<<<< HEAD
-	dev->params.tx_duty_cycle = duty_cycle;
-=======
 	dev->tx_duty_cycle = duty_cycle;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ite_set_carrier_params(dev);
 	spin_unlock_irqrestore(&dev->lock, flags);
 
@@ -521,15 +339,8 @@ static int ite_tx_ir(struct rc_dev *rcdev, unsigned *txbuf, unsigned n)
 	u8 last_sent[ITE_TX_FIFO_LEN];
 	u8 val;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-	/* clear the array just in case */
-	memset(last_sent, 0, ARRAY_SIZE(last_sent));
-=======
 	/* clear the array just in case */
 	memset(last_sent, 0, sizeof(last_sent));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&dev->lock, flags);
 
@@ -541,54 +352,29 @@ static int ite_tx_ir(struct rc_dev *rcdev, unsigned *txbuf, unsigned n)
 
 	/* calculate how much time we can send in one byte */
 	max_rle_us =
-<<<<<<< HEAD
-	    (ITE_BAUDRATE_DIVISOR * dev->params.sample_period *
-	     ITE_TX_MAX_RLE) / 1000;
-
-	/* disable the receiver */
-	dev->params.disable_rx(dev);
-=======
 	    (ITE_BAUDRATE_DIVISOR * sample_period *
 	     ITE_TX_MAX_RLE) / 1000;
 
 	/* disable the receiver */
 	dev->params->disable_rx(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* this is where we'll begin filling in the FIFO, until it's full.
 	 * then we'll just activate the interrupt, wait for it to wake us up
 	 * again, disable it, continue filling the FIFO... until everything
 	 * has been pushed out */
-<<<<<<< HEAD
-	fifo_avail =
-	    ITE_TX_FIFO_LEN - dev->params.get_tx_used_slots(dev);
-
-	while (n > 0 && dev->in_use) {
-=======
 	fifo_avail = ITE_TX_FIFO_LEN - dev->params->get_tx_used_slots(dev);
 
 	while (n > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* transmit the next sample */
 		is_pulse = !is_pulse;
 		remaining_us = *(txbuf++);
 		n--;
 
-<<<<<<< HEAD
-		ite_dbg("%s: %ld",
-				      ((is_pulse) ? "pulse" : "space"),
-				      (long int)
-				      remaining_us);
-
-		/* repeat while the pulse is non-zero length */
-		while (remaining_us > 0 && dev->in_use) {
-=======
 		dev_dbg(&dev->rdev->dev, "%s: %d\n",
 			is_pulse ? "pulse" : "space", remaining_us);
 
 		/* repeat while the pulse is non-zero length */
 		while (remaining_us > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (remaining_us > max_rle_us)
 				next_rle_us = max_rle_us;
 
@@ -619,51 +405,29 @@ static int ite_tx_ir(struct rc_dev *rcdev, unsigned *txbuf, unsigned n)
 			 * some other slot got freed
 			 */
 			if (fifo_avail <= 0)
-<<<<<<< HEAD
-				fifo_avail = ITE_TX_FIFO_LEN - dev->params.get_tx_used_slots(dev);
-=======
 				fifo_avail = ITE_TX_FIFO_LEN - dev->params->get_tx_used_slots(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* if it's still full */
 			if (fifo_avail <= 0) {
 				/* enable the tx interrupt */
-<<<<<<< HEAD
-				dev->params.
-				enable_tx_interrupt(dev);
-=======
 				dev->params->enable_tx_interrupt(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* drop the spinlock */
 				spin_unlock_irqrestore(&dev->lock, flags);
 
 				/* wait for the FIFO to empty enough */
-<<<<<<< HEAD
-				wait_event_interruptible(dev->tx_queue, (fifo_avail = ITE_TX_FIFO_LEN - dev->params.get_tx_used_slots(dev)) >= 8);
-=======
 				wait_event_interruptible(dev->tx_queue,
 					(fifo_avail = ITE_TX_FIFO_LEN - dev->params->get_tx_used_slots(dev)) >= 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* get the spinlock again */
 				spin_lock_irqsave(&dev->lock, flags);
 
 				/* disable the tx interrupt again. */
-<<<<<<< HEAD
-				dev->params.
-				disable_tx_interrupt(dev);
-			}
-
-			/* now send the byte through the FIFO */
-			dev->params.put_tx_byte(dev, val);
-=======
 				dev->params->disable_tx_interrupt(dev);
 			}
 
 			/* now send the byte through the FIFO */
 			dev->params->put_tx_byte(dev, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fifo_avail--;
 		}
 	}
@@ -671,11 +435,7 @@ static int ite_tx_ir(struct rc_dev *rcdev, unsigned *txbuf, unsigned n)
 	/* wait and don't return until the whole FIFO has been sent out;
 	 * otherwise we could configure the RX carrier params instead of the
 	 * TX ones while the transmission is still being performed! */
-<<<<<<< HEAD
-	fifo_remaining = dev->params.get_tx_used_slots(dev);
-=======
 	fifo_remaining = dev->params->get_tx_used_slots(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	remaining_us = 0;
 	while (fifo_remaining > 0) {
 		fifo_remaining--;
@@ -700,14 +460,8 @@ static int ite_tx_ir(struct rc_dev *rcdev, unsigned *txbuf, unsigned n)
 	/* and set the carrier values for reception */
 	ite_set_carrier_params(dev);
 
-<<<<<<< HEAD
-	/* reenable the receiver */
-	if (dev->in_use)
-		dev->params.enable_rx(dev);
-=======
 	/* re-enable the receiver */
 	dev->params->enable_rx(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* notify transmission end */
 	wake_up_interruptible(&dev->tx_ended);
@@ -723,17 +477,9 @@ static void ite_s_idle(struct rc_dev *rcdev, bool enable)
 	unsigned long flags;
 	struct ite_dev *dev = rcdev->priv;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-	if (enable) {
-		spin_lock_irqsave(&dev->lock, flags);
-		dev->params.idle_rx(dev);
-=======
 	if (enable) {
 		spin_lock_irqsave(&dev->lock, flags);
 		dev->params->idle_rx(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&dev->lock, flags);
 	}
 }
@@ -749,11 +495,6 @@ static int it87_get_irq_causes(struct ite_dev *dev)
 	u8 iflags;
 	int ret = 0;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* read the interrupt flags */
 	iflags = inb(dev->cir_addr + IT87_IIR) & IT87_II;
 
@@ -780,11 +521,6 @@ static void it87_set_carrier_params(struct ite_dev *dev, bool high_freq,
 {
 	u8 val;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* program the RCR register */
 	val = inb(dev->cir_addr + IT87_RCR)
 		& ~(IT87_HCFS | IT87_RXEND | IT87_RXDCR);
@@ -810,11 +546,6 @@ static int it87_get_rx_bytes(struct ite_dev *dev, u8 * buf, int buf_size)
 {
 	int fifo, read = 0;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* read how many bytes are still in the FIFO */
 	fifo = inb(dev->cir_addr + IT87_RSR) & IT87_RXFBC;
 
@@ -833,11 +564,6 @@ static int it87_get_rx_bytes(struct ite_dev *dev, u8 * buf, int buf_size)
  * empty; let's expect this won't be a problem */
 static int it87_get_tx_used_slots(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return inb(dev->cir_addr + IT87_TSR) & IT87_TXFBC;
 }
 
@@ -851,11 +577,6 @@ static void it87_put_tx_byte(struct ite_dev *dev, u8 value)
   pulse is detected; this must be called with the device spinlock held */
 static void it87_idle_rx(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable streaming by clearing RXACT writing it as 1 */
 	outb(inb(dev->cir_addr + IT87_RCR) | IT87_RXACT,
 		dev->cir_addr + IT87_RCR);
@@ -868,11 +589,6 @@ static void it87_idle_rx(struct ite_dev *dev)
 /* disable the receiver; this must be called with the device spinlock held */
 static void it87_disable_rx(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable the receiver interrupts */
 	outb(inb(dev->cir_addr + IT87_IER) & ~(IT87_RDAIE | IT87_RFOIE),
 		dev->cir_addr + IT87_IER);
@@ -889,11 +605,6 @@ static void it87_disable_rx(struct ite_dev *dev)
 /* enable the receiver; this must be called with the device spinlock held */
 static void it87_enable_rx(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable the receiver by setting RXEN */
 	outb(inb(dev->cir_addr + IT87_RCR) | IT87_RXEN,
 		dev->cir_addr + IT87_RCR);
@@ -910,11 +621,6 @@ static void it87_enable_rx(struct ite_dev *dev)
  * spinlock held */
 static void it87_disable_tx_interrupt(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable the transmitter interrupts */
 	outb(inb(dev->cir_addr + IT87_IER) & ~IT87_TLDLIE,
 		dev->cir_addr + IT87_IER);
@@ -924,11 +630,6 @@ static void it87_disable_tx_interrupt(struct ite_dev *dev)
  * spinlock held */
 static void it87_enable_tx_interrupt(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable the transmitter interrupts and master enable flag */
 	outb(inb(dev->cir_addr + IT87_IER) | IT87_TLDLIE | IT87_IEC,
 		dev->cir_addr + IT87_IER);
@@ -937,11 +638,6 @@ static void it87_enable_tx_interrupt(struct ite_dev *dev)
 /* disable the device; this must be called with the device spinlock held */
 static void it87_disable(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clear out all interrupt enable flags */
 	outb(inb(dev->cir_addr + IT87_IER) &
 		~(IT87_IEC | IT87_RFOIE | IT87_RDAIE | IT87_TLDLIE),
@@ -958,11 +654,6 @@ static void it87_disable(struct ite_dev *dev)
 /* initialize the hardware */
 static void it87_init_hardware(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable just the baud rate divisor register,
 	disabling all the interrupts at the same time */
 	outb((inb(dev->cir_addr + IT87_IER) &
@@ -999,11 +690,6 @@ static int it8708_get_irq_causes(struct ite_dev *dev)
 	u8 iflags;
 	int ret = 0;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* read the interrupt flags */
 	iflags = inb(dev->cir_addr + IT8708_C0IIR);
 
@@ -1025,11 +711,6 @@ static void it8708_set_carrier_params(struct ite_dev *dev, bool high_freq,
 {
 	u8 val;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* program the C0CFR register, with HRAE=1 */
 	outb(inb(dev->cir_addr + IT8708_BANKSEL) | IT8708_HRAE,
 		dev->cir_addr + IT8708_BANKSEL);
@@ -1068,11 +749,6 @@ static int it8708_get_rx_bytes(struct ite_dev *dev, u8 * buf, int buf_size)
 {
 	int fifo, read = 0;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* read how many bytes are still in the FIFO */
 	fifo = inb(dev->cir_addr + IT8708_C0RFSR) & IT85_RXFBC;
 
@@ -1091,11 +767,6 @@ static int it8708_get_rx_bytes(struct ite_dev *dev, u8 * buf, int buf_size)
  * empty; let's expect this won't be a problem */
 static int it8708_get_tx_used_slots(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return inb(dev->cir_addr + IT8708_C0TFSR) & IT85_TXFBC;
 }
 
@@ -1109,11 +780,6 @@ static void it8708_put_tx_byte(struct ite_dev *dev, u8 value)
   pulse is detected; this must be called with the device spinlock held */
 static void it8708_idle_rx(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable streaming by clearing RXACT writing it as 1 */
 	outb(inb(dev->cir_addr + IT8708_C0RCR) | IT85_RXACT,
 		dev->cir_addr + IT8708_C0RCR);
@@ -1126,11 +792,6 @@ static void it8708_idle_rx(struct ite_dev *dev)
 /* disable the receiver; this must be called with the device spinlock held */
 static void it8708_disable_rx(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable the receiver interrupts */
 	outb(inb(dev->cir_addr + IT8708_C0IER) &
 		~(IT85_RDAIE | IT85_RFOIE),
@@ -1148,11 +809,6 @@ static void it8708_disable_rx(struct ite_dev *dev)
 /* enable the receiver; this must be called with the device spinlock held */
 static void it8708_enable_rx(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable the receiver by setting RXEN */
 	outb(inb(dev->cir_addr + IT8708_C0RCR) | IT85_RXEN,
 		dev->cir_addr + IT8708_C0RCR);
@@ -1170,11 +826,6 @@ static void it8708_enable_rx(struct ite_dev *dev)
  * spinlock held */
 static void it8708_disable_tx_interrupt(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable the transmitter interrupts */
 	outb(inb(dev->cir_addr + IT8708_C0IER) & ~IT85_TLDLIE,
 		dev->cir_addr + IT8708_C0IER);
@@ -1184,11 +835,6 @@ static void it8708_disable_tx_interrupt(struct ite_dev *dev)
  * spinlock held */
 static void it8708_enable_tx_interrupt(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable the transmitter interrupts and master enable flag */
 	outb(inb(dev->cir_addr + IT8708_C0IER)
 		|IT85_TLDLIE | IT85_IEC,
@@ -1198,11 +844,6 @@ static void it8708_enable_tx_interrupt(struct ite_dev *dev)
 /* disable the device; this must be called with the device spinlock held */
 static void it8708_disable(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clear out all interrupt enable flags */
 	outb(inb(dev->cir_addr + IT8708_C0IER) &
 		~(IT85_IEC | IT85_RFOIE | IT85_RDAIE | IT85_TLDLIE),
@@ -1219,11 +860,6 @@ static void it8708_disable(struct ite_dev *dev)
 /* initialize the hardware */
 static void it8708_init_hardware(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable all the interrupts */
 	outb(inb(dev->cir_addr + IT8708_C0IER) &
 		~(IT85_IEC | IT85_RFOIE | IT85_RDAIE | IT85_TLDLIE),
@@ -1329,11 +965,6 @@ static int it8709_get_irq_causes(struct ite_dev *dev)
 	u8 iflags;
 	int ret = 0;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* read the interrupt flags */
 	iflags = it8709_rm(dev, IT8709_IIR);
 
@@ -1355,11 +986,6 @@ static void it8709_set_carrier_params(struct ite_dev *dev, bool high_freq,
 {
 	u8 val;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = (it8709_rr(dev, IT85_C0CFR)
 		     &~(IT85_HCFS | IT85_CFQ)) |
 	    carrier_freq_bits;
@@ -1392,11 +1018,6 @@ static int it8709_get_rx_bytes(struct ite_dev *dev, u8 * buf, int buf_size)
 {
 	int fifo, read = 0;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* read how many bytes are still in the FIFO */
 	fifo = it8709_rm(dev, IT8709_RFSR) & IT85_RXFBC;
 
@@ -1420,11 +1041,6 @@ static int it8709_get_rx_bytes(struct ite_dev *dev, u8 * buf, int buf_size)
  * empty; let's expect this won't be a problem */
 static int it8709_get_tx_used_slots(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return it8709_rr(dev, IT85_C0TFSR) & IT85_TXFBC;
 }
 
@@ -1438,11 +1054,6 @@ static void it8709_put_tx_byte(struct ite_dev *dev, u8 value)
   pulse is detected; this must be called with the device spinlock held */
 static void it8709_idle_rx(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable streaming by clearing RXACT writing it as 1 */
 	it8709_wr(dev, it8709_rr(dev, IT85_C0RCR) | IT85_RXACT,
 			    IT85_C0RCR);
@@ -1455,11 +1066,6 @@ static void it8709_idle_rx(struct ite_dev *dev)
 /* disable the receiver; this must be called with the device spinlock held */
 static void it8709_disable_rx(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable the receiver interrupts */
 	it8709_wr(dev, it8709_rr(dev, IT85_C0IER) &
 			    ~(IT85_RDAIE | IT85_RFOIE),
@@ -1477,11 +1083,6 @@ static void it8709_disable_rx(struct ite_dev *dev)
 /* enable the receiver; this must be called with the device spinlock held */
 static void it8709_enable_rx(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable the receiver by setting RXEN */
 	it8709_wr(dev, it8709_rr(dev, IT85_C0RCR) | IT85_RXEN,
 			    IT85_C0RCR);
@@ -1499,11 +1100,6 @@ static void it8709_enable_rx(struct ite_dev *dev)
  * spinlock held */
 static void it8709_disable_tx_interrupt(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable the transmitter interrupts */
 	it8709_wr(dev, it8709_rr(dev, IT85_C0IER) & ~IT85_TLDLIE,
 			    IT85_C0IER);
@@ -1513,11 +1109,6 @@ static void it8709_disable_tx_interrupt(struct ite_dev *dev)
  * spinlock held */
 static void it8709_enable_tx_interrupt(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable the transmitter interrupts and master enable flag */
 	it8709_wr(dev, it8709_rr(dev, IT85_C0IER)
 			    |IT85_TLDLIE | IT85_IEC,
@@ -1527,11 +1118,6 @@ static void it8709_enable_tx_interrupt(struct ite_dev *dev)
 /* disable the device; this must be called with the device spinlock held */
 static void it8709_disable(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clear out all interrupt enable flags */
 	it8709_wr(dev, it8709_rr(dev, IT85_C0IER) &
 			~(IT85_IEC | IT85_RFOIE | IT85_RDAIE | IT85_TLDLIE),
@@ -1548,11 +1134,6 @@ static void it8709_disable(struct ite_dev *dev)
 /* initialize the hardware */
 static void it8709_init_hardware(struct ite_dev *dev)
 {
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable all the interrupts */
 	it8709_wr(dev, it8709_rr(dev, IT85_C0IER) &
 			~(IT85_IEC | IT85_RFOIE | IT85_RDAIE | IT85_TLDLIE),
@@ -1594,20 +1175,10 @@ static int ite_open(struct rc_dev *rcdev)
 	struct ite_dev *dev = rcdev->priv;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-	spin_lock_irqsave(&dev->lock, flags);
-	dev->in_use = true;
-
-	/* enable the receiver */
-	dev->params.enable_rx(dev);
-=======
 	spin_lock_irqsave(&dev->lock, flags);
 
 	/* enable the receiver */
 	dev->params->enable_rx(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&dev->lock, flags);
 
@@ -1620,25 +1191,14 @@ static void ite_close(struct rc_dev *rcdev)
 	struct ite_dev *dev = rcdev->priv;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
 	spin_lock_irqsave(&dev->lock, flags);
-	dev->in_use = false;
-=======
-	spin_lock_irqsave(&dev->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* wait for any transmission to end */
 	spin_unlock_irqrestore(&dev->lock, flags);
 	wait_event_interruptible(dev->tx_ended, !dev->transmitting);
 	spin_lock_irqsave(&dev->lock, flags);
 
-<<<<<<< HEAD
-	dev->params.disable(dev);
-=======
 	dev->params->disable(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&dev->lock, flags);
 }
@@ -1649,15 +1209,6 @@ static const struct ite_dev_params ite_dev_descs[] = {
 	       .model = "ITE8704 CIR transceiver",
 	       .io_region_size = IT87_IOREG_LENGTH,
 	       .io_rsrc_no = 0,
-<<<<<<< HEAD
-	       .hw_tx_capable = true,
-	       .sample_period = (u32) (1000000000ULL / 115200),
-	       .tx_carrier_freq = 38000,
-	       .tx_duty_cycle = 33,
-	       .rx_low_carrier_freq = 0,
-	       .rx_high_carrier_freq = 0,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* operations */
 	       .get_irq_causes = it87_get_irq_causes,
@@ -1677,15 +1228,6 @@ static const struct ite_dev_params ite_dev_descs[] = {
 	       .model = "ITE8713 CIR transceiver",
 	       .io_region_size = IT87_IOREG_LENGTH,
 	       .io_rsrc_no = 0,
-<<<<<<< HEAD
-	       .hw_tx_capable = true,
-	       .sample_period = (u32) (1000000000ULL / 115200),
-	       .tx_carrier_freq = 38000,
-	       .tx_duty_cycle = 33,
-	       .rx_low_carrier_freq = 0,
-	       .rx_high_carrier_freq = 0,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* operations */
 	       .get_irq_causes = it87_get_irq_causes,
@@ -1705,15 +1247,6 @@ static const struct ite_dev_params ite_dev_descs[] = {
 	       .model = "ITE8708 CIR transceiver",
 	       .io_region_size = IT8708_IOREG_LENGTH,
 	       .io_rsrc_no = 0,
-<<<<<<< HEAD
-	       .hw_tx_capable = true,
-	       .sample_period = (u32) (1000000000ULL / 115200),
-	       .tx_carrier_freq = 38000,
-	       .tx_duty_cycle = 33,
-	       .rx_low_carrier_freq = 0,
-	       .rx_high_carrier_freq = 0,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* operations */
 	       .get_irq_causes = it8708_get_irq_causes,
@@ -1734,15 +1267,6 @@ static const struct ite_dev_params ite_dev_descs[] = {
 	       .model = "ITE8709 CIR transceiver",
 	       .io_region_size = IT8709_IOREG_LENGTH,
 	       .io_rsrc_no = 2,
-<<<<<<< HEAD
-	       .hw_tx_capable = true,
-	       .sample_period = (u32) (1000000000ULL / 115200),
-	       .tx_carrier_freq = 38000,
-	       .tx_duty_cycle = 33,
-	       .rx_low_carrier_freq = 0,
-	       .rx_high_carrier_freq = 0,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* operations */
 	       .get_irq_causes = it8709_get_irq_causes,
@@ -1780,77 +1304,43 @@ static int ite_probe(struct pnp_dev *pdev, const struct pnp_device_id
 	int model_no;
 	int io_rsrc_no;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	itdev = kzalloc(sizeof(struct ite_dev), GFP_KERNEL);
 	if (!itdev)
 		return ret;
 
 	/* input device for IR remote (and tx) */
-<<<<<<< HEAD
-	rdev = rc_allocate_device();
-	if (!rdev)
-		goto failure;
-=======
 	rdev = rc_allocate_device(RC_DRIVER_IR_RAW);
 	if (!rdev)
 		goto exit_free_dev_rdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	itdev->rdev = rdev;
 
 	ret = -ENODEV;
 
 	/* get the model number */
 	model_no = (int)dev_id->driver_data;
-<<<<<<< HEAD
-	ite_pr(KERN_NOTICE, "Auto-detected model: %s\n",
-=======
 	dev_dbg(&pdev->dev, "Auto-detected model: %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ite_dev_descs[model_no].model);
 
 	if (model_number >= 0 && model_number < ARRAY_SIZE(ite_dev_descs)) {
 		model_no = model_number;
-<<<<<<< HEAD
-		ite_pr(KERN_NOTICE, "The model has been fixed by a module "
-			"parameter.");
-	}
-
-	ite_pr(KERN_NOTICE, "Using model: %s\n", ite_dev_descs[model_no].model);
-
-=======
 		dev_info(&pdev->dev, "model has been forced to: %s",
 			 ite_dev_descs[model_no].model);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* get the description for the device */
 	dev_desc = &ite_dev_descs[model_no];
 	io_rsrc_no = dev_desc->io_rsrc_no;
 
 	/* validate pnp resources */
 	if (!pnp_port_valid(pdev, io_rsrc_no) ||
-<<<<<<< HEAD
-	    pnp_port_len(pdev, io_rsrc_no) != dev_desc->io_region_size) {
-		dev_err(&pdev->dev, "IR PNP Port not valid!\n");
-		goto failure;
-=======
 	    pnp_port_len(pdev, io_rsrc_no) < dev_desc->io_region_size) {
 		dev_err(&pdev->dev, "IR PNP Port not valid!\n");
 		goto exit_free_dev_rdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!pnp_irq_valid(pdev, 0)) {
 		dev_err(&pdev->dev, "PNP IRQ not valid!\n");
-<<<<<<< HEAD
-		goto failure;
-=======
 		goto exit_free_dev_rdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* store resource values */
@@ -1860,12 +1350,6 @@ static int ite_probe(struct pnp_dev *pdev, const struct pnp_device_id
 	/* initialize spinlocks */
 	spin_lock_init(&itdev->lock);
 
-<<<<<<< HEAD
-	/* initialize raw event */
-	init_ir_raw_event(&itdev->rawir);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set driver data into the pnp device */
 	pnp_set_drvdata(pdev, itdev);
 	itdev->pdev = pdev;
@@ -1874,48 +1358,6 @@ static int ite_probe(struct pnp_dev *pdev, const struct pnp_device_id
 	init_waitqueue_head(&itdev->tx_queue);
 	init_waitqueue_head(&itdev->tx_ended);
 
-<<<<<<< HEAD
-	/* copy model-specific parameters */
-	itdev->params = *dev_desc;
-
-	/* apply any overrides */
-	if (sample_period > 0)
-		itdev->params.sample_period = sample_period;
-
-	if (tx_carrier_freq > 0)
-		itdev->params.tx_carrier_freq = tx_carrier_freq;
-
-	if (tx_duty_cycle > 0 && tx_duty_cycle <= 100)
-		itdev->params.tx_duty_cycle = tx_duty_cycle;
-
-	if (rx_low_carrier_freq > 0)
-		itdev->params.rx_low_carrier_freq = rx_low_carrier_freq;
-
-	if (rx_high_carrier_freq > 0)
-		itdev->params.rx_high_carrier_freq = rx_high_carrier_freq;
-
-	/* print out parameters */
-	ite_pr(KERN_NOTICE, "TX-capable: %d\n", (int)
-			 itdev->params.hw_tx_capable);
-	ite_pr(KERN_NOTICE, "Sample period (ns): %ld\n", (long)
-		     itdev->params.sample_period);
-	ite_pr(KERN_NOTICE, "TX carrier frequency (Hz): %d\n", (int)
-		     itdev->params.tx_carrier_freq);
-	ite_pr(KERN_NOTICE, "TX duty cycle (%%): %d\n", (int)
-		     itdev->params.tx_duty_cycle);
-	ite_pr(KERN_NOTICE, "RX low carrier frequency (Hz): %d\n", (int)
-		     itdev->params.rx_low_carrier_freq);
-	ite_pr(KERN_NOTICE, "RX high carrier frequency (Hz): %d\n", (int)
-		     itdev->params.rx_high_carrier_freq);
-
-	/* set up hardware initial state */
-	itdev->params.init_hardware(itdev);
-
-	/* set up ir-core props */
-	rdev->priv = itdev;
-	rdev->driver_type = RC_DRIVER_IR_RAW;
-	rdev->allowed_protos = RC_TYPE_ALL;
-=======
 	/* Set model-specific parameters */
 	itdev->params = dev_desc;
 
@@ -1928,29 +1370,10 @@ static int ite_probe(struct pnp_dev *pdev, const struct pnp_device_id
 	rdev->priv = itdev;
 	rdev->dev.parent = &pdev->dev;
 	rdev->allowed_protocols = RC_PROTO_BIT_ALL_IR_DECODER;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->open = ite_open;
 	rdev->close = ite_close;
 	rdev->s_idle = ite_s_idle;
 	rdev->s_rx_carrier_range = ite_set_rx_carrier_range;
-<<<<<<< HEAD
-	rdev->min_timeout = ITE_MIN_IDLE_TIMEOUT;
-	rdev->max_timeout = ITE_MAX_IDLE_TIMEOUT;
-	rdev->timeout = ITE_IDLE_TIMEOUT;
-	rdev->rx_resolution = ITE_BAUDRATE_DIVISOR *
-				itdev->params.sample_period;
-	rdev->tx_resolution = ITE_BAUDRATE_DIVISOR *
-				itdev->params.sample_period;
-
-	/* set up transmitter related values if needed */
-	if (itdev->params.hw_tx_capable) {
-		rdev->tx_ir = ite_tx_ir;
-		rdev->s_tx_carrier = ite_set_tx_carrier;
-		rdev->s_tx_duty_cycle = ite_set_tx_duty_cycle;
-	}
-
-	rdev->input_name = dev_desc->model;
-=======
 	/* FIFO threshold is 17 bytes, so 17 * 8 samples minimum */
 	rdev->min_timeout = 17 * 8 * ITE_BAUDRATE_DIVISOR *
 			    sample_period / 1000;
@@ -1965,7 +1388,6 @@ static int ite_probe(struct pnp_dev *pdev, const struct pnp_device_id
 	rdev->s_tx_duty_cycle = ite_set_tx_duty_cycle;
 
 	rdev->device_name = dev_desc->model;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->input_id.bustype = BUS_HOST;
 	rdev->input_id.vendor = PCI_VENDOR_ID_ITE;
 	rdev->input_id.product = 0;
@@ -1973,40 +1395,14 @@ static int ite_probe(struct pnp_dev *pdev, const struct pnp_device_id
 	rdev->driver_name = ITE_DRIVER_NAME;
 	rdev->map_name = RC_MAP_RC6_MCE;
 
-<<<<<<< HEAD
-=======
 	ret = rc_register_device(rdev);
 	if (ret)
 		goto exit_free_dev_rdev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = -EBUSY;
 	/* now claim resources */
 	if (!request_region(itdev->cir_addr,
 				dev_desc->io_region_size, ITE_DRIVER_NAME))
-<<<<<<< HEAD
-		goto failure;
-
-	if (request_irq(itdev->cir_irq, ite_cir_isr, IRQF_SHARED,
-			ITE_DRIVER_NAME, (void *)itdev))
-		goto failure;
-
-	ret = rc_register_device(rdev);
-	if (ret)
-		goto failure;
-
-	ite_pr(KERN_NOTICE, "driver has been successfully loaded\n");
-
-	return 0;
-
-failure:
-	if (itdev->cir_irq)
-		free_irq(itdev->cir_irq, itdev);
-
-	if (itdev->cir_addr)
-		release_region(itdev->cir_addr, itdev->params.io_region_size);
-
-=======
 		goto exit_unregister_device;
 
 	if (request_irq(itdev->cir_irq, ite_cir_isr, IRQF_SHARED,
@@ -2021,45 +1417,27 @@ exit_unregister_device:
 	rc_unregister_device(rdev);
 	rdev = NULL;
 exit_free_dev_rdev:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc_free_device(rdev);
 	kfree(itdev);
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __devexit ite_remove(struct pnp_dev *pdev)
-=======
 static void ite_remove(struct pnp_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ite_dev *dev = pnp_get_drvdata(pdev);
 	unsigned long flags;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-	spin_lock_irqsave(&dev->lock, flags);
-
-	/* disable hardware */
-	dev->params.disable(dev);
-=======
 	spin_lock_irqsave(&dev->lock, flags);
 
 	/* disable hardware */
 	dev->params->disable(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&dev->lock, flags);
 
 	/* free resources */
 	free_irq(dev->cir_irq, dev);
-<<<<<<< HEAD
-	release_region(dev->cir_addr, dev->params.io_region_size);
-=======
 	release_region(dev->cir_addr, dev->params->io_region_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc_unregister_device(dev->rdev);
 
@@ -2071,22 +1449,13 @@ static int ite_suspend(struct pnp_dev *pdev, pm_message_t state)
 	struct ite_dev *dev = pnp_get_drvdata(pdev);
 	unsigned long flags;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* wait for any transmission to end */
 	wait_event_interruptible(dev->tx_ended, !dev->transmitting);
 
 	spin_lock_irqsave(&dev->lock, flags);
 
 	/* disable all interrupts */
-<<<<<<< HEAD
-	dev->params.disable(dev);
-=======
 	dev->params->disable(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&dev->lock, flags);
 
@@ -2095,24 +1464,6 @@ static int ite_suspend(struct pnp_dev *pdev, pm_message_t state)
 
 static int ite_resume(struct pnp_dev *pdev)
 {
-<<<<<<< HEAD
-	int ret = 0;
-	struct ite_dev *dev = pnp_get_drvdata(pdev);
-	unsigned long flags;
-
-	ite_dbg("%s called", __func__);
-
-	spin_lock_irqsave(&dev->lock, flags);
-
-	/* reinitialize hardware config registers */
-	dev->params.init_hardware(dev);
-	/* enable the receiver */
-	dev->params.enable_rx(dev);
-
-	spin_unlock_irqrestore(&dev->lock, flags);
-
-	return ret;
-=======
 	struct ite_dev *dev = pnp_get_drvdata(pdev);
 	unsigned long flags;
 
@@ -2126,7 +1477,6 @@ static int ite_resume(struct pnp_dev *pdev)
 	spin_unlock_irqrestore(&dev->lock, flags);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ite_shutdown(struct pnp_dev *pdev)
@@ -2134,19 +1484,10 @@ static void ite_shutdown(struct pnp_dev *pdev)
 	struct ite_dev *dev = pnp_get_drvdata(pdev);
 	unsigned long flags;
 
-<<<<<<< HEAD
-	ite_dbg("%s called", __func__);
-
-	spin_lock_irqsave(&dev->lock, flags);
-
-	/* disable all interrupts */
-	dev->params.disable(dev);
-=======
 	spin_lock_irqsave(&dev->lock, flags);
 
 	/* disable all interrupts */
 	dev->params->disable(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&dev->lock, flags);
 }
@@ -2155,38 +1496,16 @@ static struct pnp_driver ite_driver = {
 	.name		= ITE_DRIVER_NAME,
 	.id_table	= ite_ids,
 	.probe		= ite_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(ite_remove),
-=======
 	.remove		= ite_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ite_suspend,
 	.resume		= ite_resume,
 	.shutdown	= ite_shutdown,
 };
 
-<<<<<<< HEAD
-int ite_init(void)
-{
-	return pnp_register_driver(&ite_driver);
-}
-
-void ite_exit(void)
-{
-	pnp_unregister_driver(&ite_driver);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DEVICE_TABLE(pnp, ite_ids);
 MODULE_DESCRIPTION("ITE Tech Inc. IT8712F/ITE8512F CIR driver");
 
 MODULE_AUTHOR("Juan J. Garcia de Soria <skandalfo@gmail.com>");
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-module_init(ite_init);
-module_exit(ite_exit);
-=======
 module_pnp_driver(ite_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

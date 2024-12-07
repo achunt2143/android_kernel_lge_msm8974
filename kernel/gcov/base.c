@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  This code maintains a list of active profiling data structures.
  *
@@ -22,76 +19,11 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include "gcov.h"
-
-static struct gcov_info *gcov_info_head;
-static int gcov_events_enabled;
-static DEFINE_MUTEX(gcov_lock);
-
-/*
- * __gcov_init is called by gcc-generated constructor code for each object
- * file compiled with -fprofile-arcs.
- */
-void __gcov_init(struct gcov_info *info)
-{
-	static unsigned int gcov_version;
-
-	mutex_lock(&gcov_lock);
-	if (gcov_version == 0) {
-		gcov_version = info->version;
-		/*
-		 * Printing gcc's version magic may prove useful for debugging
-		 * incompatibility reports.
-		 */
-		pr_info("version magic: 0x%x\n", gcov_version);
-	}
-	/*
-	 * Add new profiling data structure to list and inform event
-	 * listener.
-	 */
-	info->next = gcov_info_head;
-	gcov_info_head = info;
-	if (gcov_events_enabled)
-		gcov_event(GCOV_ADD, info);
-	mutex_unlock(&gcov_lock);
-}
-EXPORT_SYMBOL(__gcov_init);
-
-/*
- * These functions may be referenced by gcc-generated profiling code but serve
- * no function for kernel profiling.
- */
-void __gcov_flush(void)
-{
-	/* Unused. */
-}
-EXPORT_SYMBOL(__gcov_flush);
-
-void __gcov_merge_add(gcov_type *counters, unsigned int n_counters)
-{
-	/* Unused. */
-}
-EXPORT_SYMBOL(__gcov_merge_add);
-
-void __gcov_merge_single(gcov_type *counters, unsigned int n_counters)
-{
-	/* Unused. */
-}
-EXPORT_SYMBOL(__gcov_merge_single);
-
-void __gcov_merge_delta(gcov_type *counters, unsigned int n_counters)
-{
-	/* Unused. */
-}
-EXPORT_SYMBOL(__gcov_merge_delta);
-=======
 #include <linux/sched.h>
 #include "gcov.h"
 
 int gcov_events_enabled;
 DEFINE_MUTEX(gcov_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * gcov_enable_events - enable event reporting through gcov_event()
@@ -103,24 +35,6 @@ DEFINE_MUTEX(gcov_lock);
  */
 void gcov_enable_events(void)
 {
-<<<<<<< HEAD
-	struct gcov_info *info;
-
-	mutex_lock(&gcov_lock);
-	gcov_events_enabled = 1;
-	/* Perform event callback for previously registered entries. */
-	for (info = gcov_info_head; info; info = info->next)
-		gcov_event(GCOV_ADD, info);
-	mutex_unlock(&gcov_lock);
-}
-
-#ifdef CONFIG_MODULES
-static inline int within(void *addr, void *start, unsigned long size)
-{
-	return ((addr >= start) && (addr < start + size));
-}
-
-=======
 	struct gcov_info *info = NULL;
 
 	mutex_lock(&gcov_lock);
@@ -185,48 +99,28 @@ size_t store_gcov_u64(void *buffer, size_t off, u64 v)
 }
 
 #ifdef CONFIG_MODULES
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Update list and generate events when modules are unloaded. */
 static int gcov_module_notifier(struct notifier_block *nb, unsigned long event,
 				void *data)
 {
 	struct module *mod = data;
-<<<<<<< HEAD
-	struct gcov_info *info;
-	struct gcov_info *prev;
-=======
 	struct gcov_info *info = NULL;
 	struct gcov_info *prev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (event != MODULE_STATE_GOING)
 		return NOTIFY_OK;
 	mutex_lock(&gcov_lock);
-<<<<<<< HEAD
-	prev = NULL;
-	/* Remove entries located in module from linked list. */
-	for (info = gcov_info_head; info; info = info->next) {
-		if (within(info, mod->module_core, mod->core_size)) {
-			if (prev)
-				prev->next = info->next;
-			else
-				gcov_info_head = info->next;
-=======
 
 	/* Remove entries located in module from linked list. */
 	while ((info = gcov_info_next(info))) {
 		if (gcov_info_within_module(info, mod)) {
 			gcov_info_unlink(prev, info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (gcov_events_enabled)
 				gcov_event(GCOV_REMOVE, info);
 		} else
 			prev = info;
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&gcov_lock);
 
 	return NOTIFY_OK;

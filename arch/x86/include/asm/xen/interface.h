@@ -3,9 +3,6 @@
  *
  * Guest OS interface to x86 Xen.
  *
-<<<<<<< HEAD
- * Copyright (c) 2004, K A Fraser
-=======
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal in the Software without restriction, including without limitation the
@@ -25,14 +22,11 @@
  * DEALINGS IN THE SOFTWARE.
  *
  * Copyright (c) 2004-2006, K A Fraser
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_X86_XEN_INTERFACE_H
 #define _ASM_X86_XEN_INTERFACE_H
 
-<<<<<<< HEAD
-=======
 /*
  * XEN_GUEST_HANDLE represents a guest pointer, when passed as a field
  * in a struct in memory.
@@ -41,7 +35,6 @@
  * XEN_GUEST_HANDLE_PARAM and XEN_GUEST_HANDLE are the same on X86 but
  * they might not be on other architectures.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __XEN__
 #define __DEFINE_GUEST_HANDLE(name, type) \
     typedef struct { type *p; } __guest_handle_ ## name
@@ -80,18 +73,6 @@
 #endif
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-/* Guest handles for primitive C types. */
-__DEFINE_GUEST_HANDLE(uchar, unsigned char);
-__DEFINE_GUEST_HANDLE(uint,  unsigned int);
-__DEFINE_GUEST_HANDLE(ulong, unsigned long);
-DEFINE_GUEST_HANDLE(char);
-DEFINE_GUEST_HANDLE(int);
-DEFINE_GUEST_HANDLE(long);
-DEFINE_GUEST_HANDLE(void);
-DEFINE_GUEST_HANDLE(uint64_t);
-DEFINE_GUEST_HANDLE(uint32_t);
-=======
 /* Explicitly size integers that represent pfns in the public interface
  * with Xen so that on ARM we can have one ABI that works for 32 and 64
  * bit guests. */
@@ -112,7 +93,6 @@ DEFINE_GUEST_HANDLE(uint64_t);
 DEFINE_GUEST_HANDLE(uint32_t);
 DEFINE_GUEST_HANDLE(xen_pfn_t);
 DEFINE_GUEST_HANDLE(xen_ulong_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifndef HYPERVISOR_VIRT_START
@@ -134,23 +114,16 @@ DEFINE_GUEST_HANDLE(xen_ulong_t);
  * start of the GDT because some stupid OSes export hard-coded selector values
  * in their ABI. These hard-coded values are always near the start of the GDT,
  * so Xen places itself out of the way, at the far end of the GDT.
-<<<<<<< HEAD
-=======
  *
  * NB The LDT is set using the MMUEXT_SET_LDT op of HYPERVISOR_mmuext_op
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define FIRST_RESERVED_GDT_PAGE  14
 #define FIRST_RESERVED_GDT_BYTE  (FIRST_RESERVED_GDT_PAGE * 4096)
 #define FIRST_RESERVED_GDT_ENTRY (FIRST_RESERVED_GDT_BYTE / 8)
 
 /*
-<<<<<<< HEAD
- * Send an array of these to HYPERVISOR_set_trap_table()
-=======
  * Send an array of these to HYPERVISOR_set_trap_table().
  * Terminate the array with a sentinel entry, with traps[].address==0.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The privilege level specifies which modes may enter a trap via a software
  * interrupt. On x86/64, since rings 1 and 2 are unavailable, we allocate
  * privilege levels as follows:
@@ -174,12 +147,6 @@ struct trap_info {
 DEFINE_GUEST_HANDLE_STRUCT(trap_info);
 
 struct arch_shared_info {
-<<<<<<< HEAD
-    unsigned long max_pfn;                  /* max pfn that appears in table */
-    /* Frame containing list of mfns containing list of mfns containing p2m. */
-    unsigned long pfn_to_mfn_frame_list_list;
-    unsigned long nmi_reason;
-=======
 	/*
 	 * Number of valid entries in the p2m table(s) anchored at
 	 * pfn_to_mfn_frame_list_list and/or p2m_vaddr.
@@ -218,18 +185,10 @@ struct arch_shared_info {
 #ifdef CONFIG_X86_32
 	uint32_t wc_sec_hi;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif	/* !__ASSEMBLY__ */
 
 #ifdef CONFIG_X86_32
-<<<<<<< HEAD
-#include "interface_32.h"
-#else
-#include "interface_64.h"
-#endif
-
-=======
 #include <asm/xen/interface_32.h>
 #else
 #include <asm/xen/interface_64.h>
@@ -237,13 +196,10 @@ struct arch_shared_info {
 
 #include <asm/pvclock-abi.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASSEMBLY__
 /*
  * The following is all CPU context. Note that the fpu_ctxt block is filled
  * in by FXSAVE if the CPU has feature FXSR; otherwise FSAVE is used.
-<<<<<<< HEAD
-=======
  *
  * Also note that when calling DOMCTL_setvcpucontext and VCPU_initialise
  * for HVM and PVH guests, not all information in this structure is updated:
@@ -253,16 +209,10 @@ struct arch_shared_info {
  *
  * - PVH guests are the same as HVM guests, but additionally use ctrlreg[3] to
  * set cr3. All other fields not used should be set to 0.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct vcpu_guest_context {
     /* FPU registers come first so they can be aligned for FXSAVE/FXRSTOR. */
     struct { char x[512]; } fpu_ctxt;       /* User-level FPU registers     */
-<<<<<<< HEAD
-#define VGCF_I387_VALID (1<<0)
-#define VGCF_HVM_GUEST  (1<<1)
-#define VGCF_IN_KERNEL  (1<<2)
-=======
 #define VGCF_I387_VALID                (1<<0)
 #define VGCF_IN_KERNEL                 (1<<2)
 #define _VGCF_i387_valid               0
@@ -275,7 +225,6 @@ struct vcpu_guest_context {
 #define VGCF_syscall_disables_events   (1<<_VGCF_syscall_disables_events)
 #define _VGCF_online                   5
 #define VGCF_online                    (1<<_VGCF_online)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     unsigned long flags;                    /* VGCF_* flags                 */
     struct cpu_user_regs user_regs;         /* User-level CPU registers     */
     struct trap_info trap_ctxt[256];        /* Virtual IDT                  */
@@ -304,8 +253,6 @@ struct vcpu_guest_context {
 #endif
 };
 DEFINE_GUEST_HANDLE_STRUCT(vcpu_guest_context);
-<<<<<<< HEAD
-=======
 
 /* AMD PMU registers and structures */
 struct xen_pmu_amd_ctxt {
@@ -429,26 +376,15 @@ struct xen_pmu_arch {
 	} c;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* !__ASSEMBLY__ */
 
 /*
  * Prefix forces emulation of some non-trapping instructions.
  * Currently only CPUID.
  */
-<<<<<<< HEAD
-#ifdef __ASSEMBLY__
-#define XEN_EMULATE_PREFIX .byte 0x0f,0x0b,0x78,0x65,0x6e ;
-#define XEN_CPUID          XEN_EMULATE_PREFIX cpuid
-#else
-#define XEN_EMULATE_PREFIX ".byte 0x0f,0x0b,0x78,0x65,0x6e ; "
-#define XEN_CPUID          XEN_EMULATE_PREFIX "cpuid"
-#endif
-=======
 #include <asm/emulate_prefix.h>
 
 #define XEN_EMULATE_PREFIX __ASM_FORM(.byte __XEN_EMULATE_PREFIX ;)
 #define XEN_CPUID          XEN_EMULATE_PREFIX __ASM_FORM(cpuid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_XEN_INTERFACE_H */

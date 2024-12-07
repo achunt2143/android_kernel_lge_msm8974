@@ -1,38 +1,3 @@
-<<<<<<< HEAD
-/*
- *  Copyright (C) 2009-2010, Lars-Peter Clausen <lars@metafoo.de>
- *  JZ4740 SD/MMC controller driver
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
- *  You should have received a copy of the  GNU General Public License along
- *  with this program; if not, write  to the Free Software Foundation, Inc.,
- *  675 Mass Ave, Cambridge, MA 02139, USA.
- *
- */
-
-#include <linux/mmc/host.h>
-#include <linux/err.h>
-#include <linux/io.h>
-#include <linux/irq.h>
-#include <linux/interrupt.h>
-#include <linux/module.h>
-#include <linux/platform_device.h>
-#include <linux/delay.h>
-#include <linux/scatterlist.h>
-#include <linux/clk.h>
-
-#include <linux/bitops.h>
-#include <linux/gpio.h>
-#include <asm/mach-jz4740/gpio.h>
-#include <asm/cacheflush.h>
-#include <linux/dma-mapping.h>
-
-#include <asm/mach-jz4740/jz4740_mmc.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Copyright (C) 2009-2010, Lars-Peter Clausen <lars@metafoo.de>
@@ -61,7 +26,6 @@
 #include <linux/scatterlist.h>
 
 #include <asm/cacheflush.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define JZ_REG_MMC_STRPCL	0x00
 #define JZ_REG_MMC_STATUS	0x04
@@ -79,11 +43,8 @@
 #define JZ_REG_MMC_RESP_FIFO	0x34
 #define JZ_REG_MMC_RXFIFO	0x38
 #define JZ_REG_MMC_TXFIFO	0x3C
-<<<<<<< HEAD
-=======
 #define JZ_REG_MMC_LPM		0x40
 #define JZ_REG_MMC_DMAC		0x44
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define JZ_MMC_STRPCL_EXIT_MULTIPLE BIT(7)
 #define JZ_MMC_STRPCL_EXIT_TRANSFER BIT(6)
@@ -119,11 +80,8 @@
 
 #define JZ_MMC_CMDAT_IO_ABORT BIT(11)
 #define JZ_MMC_CMDAT_BUS_WIDTH_4BIT BIT(10)
-<<<<<<< HEAD
-=======
 #define JZ_MMC_CMDAT_BUS_WIDTH_8BIT (BIT(10) | BIT(9))
 #define	JZ_MMC_CMDAT_BUS_WIDTH_MASK (BIT(10) | BIT(9))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define JZ_MMC_CMDAT_DMA_EN BIT(8)
 #define JZ_MMC_CMDAT_INIT BIT(7)
 #define JZ_MMC_CMDAT_BUSY BIT(6)
@@ -142,10 +100,6 @@
 #define JZ_MMC_IRQ_PRG_DONE BIT(1)
 #define JZ_MMC_IRQ_DATA_TRAN_DONE BIT(0)
 
-<<<<<<< HEAD
-
-#define JZ_MMC_CLK_RATE 24000000
-=======
 #define JZ_MMC_DMAC_DMA_SEL BIT(1)
 #define JZ_MMC_DMAC_DMA_EN BIT(0)
 
@@ -165,7 +119,6 @@ enum jz4740_mmc_version {
 	JZ_MMC_JZ4780,
 	JZ_MMC_X1000,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum jz4740_mmc_state {
 	JZ4740_MMC_STATE_READ_RESPONSE,
@@ -174,22 +127,6 @@ enum jz4740_mmc_state {
 	JZ4740_MMC_STATE_DONE,
 };
 
-<<<<<<< HEAD
-struct jz4740_mmc_host {
-	struct mmc_host *mmc;
-	struct platform_device *pdev;
-	struct jz4740_mmc_platform_data *pdata;
-	struct clk *clk;
-
-	int irq;
-	int card_detect_irq;
-
-	struct resource *mem;
-	void __iomem *base;
-	struct mmc_request *req;
-	struct mmc_command *cmd;
-
-=======
 /*
  * The MMC core allows to prepare a mmc_request while another mmc_request
  * is in-flight. This is used via the pre_req/post_req hooks.
@@ -225,26 +162,17 @@ struct jz4740_mmc_host {
 
 	bool vqmmc_enabled;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long waiting;
 
 	uint32_t cmdat;
 
-<<<<<<< HEAD
-	uint16_t irq_mask;
-=======
 	uint32_t irq_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t lock;
 
 	struct timer_list timeout_timer;
 	struct sg_mapping_iter miter;
 	enum jz4740_mmc_state state;
-<<<<<<< HEAD
-};
-
-=======
 
 	/* DMA support */
 	struct dma_chan *dma_rx;
@@ -476,7 +404,6 @@ static void jz4740_mmc_post_request(struct mmc_host *mmc,
 
 /*----------------------------------------------------------------------------*/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void jz4740_mmc_set_irq_enabled(struct jz4740_mmc_host *host,
 	unsigned int irq, bool enabled)
 {
@@ -487,15 +414,9 @@ static void jz4740_mmc_set_irq_enabled(struct jz4740_mmc_host *host,
 		host->irq_mask &= ~irq;
 	else
 		host->irq_mask |= irq;
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&host->lock, flags);
-
-	writew(host->irq_mask, host->base + JZ_REG_MMC_IMASK);
-=======
 
 	jz4740_mmc_write_irq_mask(host, host->irq_mask);
 	spin_unlock_irqrestore(&host->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void jz4740_mmc_clock_enable(struct jz4740_mmc_host *host,
@@ -535,12 +456,6 @@ static void jz4740_mmc_reset(struct jz4740_mmc_host *host)
 static void jz4740_mmc_request_done(struct jz4740_mmc_host *host)
 {
 	struct mmc_request *req;
-<<<<<<< HEAD
-
-	req = host->req;
-	host->req = NULL;
-
-=======
 	struct mmc_data *data;
 
 	req = host->req;
@@ -549,7 +464,6 @@ static void jz4740_mmc_request_done(struct jz4740_mmc_host *host)
 
 	if (data && data->host_cookie == COOKIE_MAPPED)
 		jz4740_mmc_dma_unmap(host, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mmc_request_done(host->mmc, req);
 }
 
@@ -557,27 +471,16 @@ static unsigned int jz4740_mmc_poll_irq(struct jz4740_mmc_host *host,
 	unsigned int irq)
 {
 	unsigned int timeout = 0x800;
-<<<<<<< HEAD
-	uint16_t status;
-
-	do {
-		status = readw(host->base + JZ_REG_MMC_IREG);
-=======
 	uint32_t status;
 
 	do {
 		status = jz4740_mmc_read_irq_reg(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (!(status & irq) && --timeout);
 
 	if (timeout == 0) {
 		set_bit(0, &host->waiting);
-<<<<<<< HEAD
-		mod_timer(&host->timeout_timer, jiffies + 5*HZ);
-=======
 		mod_timer(&host->timeout_timer,
 			  jiffies + msecs_to_jiffies(JZ_MMC_REQ_TIMEOUT_MS));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		jz4740_mmc_set_irq_enabled(host, irq, true);
 		return true;
 	}
@@ -599,8 +502,6 @@ static void jz4740_mmc_transfer_check_state(struct jz4740_mmc_host *host,
 			host->req->cmd->error = -EIO;
 			data->error = -EIO;
 		}
-<<<<<<< HEAD
-=======
 	} else if (status & JZ_MMC_STATUS_READ_ERROR_MASK) {
 		if (status & (JZ_MMC_STATUS_TIMEOUT_READ)) {
 			host->req->cmd->error = -ETIMEDOUT;
@@ -609,7 +510,6 @@ static void jz4740_mmc_transfer_check_state(struct jz4740_mmc_host *host,
 			host->req->cmd->error = -EIO;
 			data->error = -EIO;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -675,11 +575,7 @@ static bool jz4740_mmc_read_data(struct jz4740_mmc_host *host,
 	void __iomem *fifo_addr = host->base + JZ_REG_MMC_RXFIFO;
 	uint32_t *buf;
 	uint32_t d;
-<<<<<<< HEAD
-	uint16_t status;
-=======
 	uint32_t status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t i, j;
 	unsigned int timeout;
 
@@ -721,13 +617,6 @@ static bool jz4740_mmc_read_data(struct jz4740_mmc_host *host,
 			}
 		}
 		data->bytes_xfered += miter->length;
-<<<<<<< HEAD
-
-		/* This can go away once MIPS implements
-		 * flush_kernel_dcache_page */
-		flush_dcache_page(miter->page);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	sg_miter_stop(miter);
 
@@ -750,15 +639,9 @@ poll_timeout:
 	return true;
 }
 
-<<<<<<< HEAD
-static void jz4740_mmc_timeout(unsigned long data)
-{
-	struct jz4740_mmc_host *host = (struct jz4740_mmc_host *)data;
-=======
 static void jz4740_mmc_timeout(struct timer_list *t)
 {
 	struct jz4740_mmc_host *host = from_timer(host, t, timeout_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_and_clear_bit(0, &host->waiting))
 		return;
@@ -824,10 +707,6 @@ static void jz4740_mmc_send_command(struct jz4740_mmc_host *host,
 		cmdat |= JZ_MMC_CMDAT_DATA_EN;
 		if (cmd->data->flags & MMC_DATA_WRITE)
 			cmdat |= JZ_MMC_CMDAT_WRITE;
-<<<<<<< HEAD
-		if (cmd->data->flags & MMC_DATA_STREAM)
-			cmdat |= JZ_MMC_CMDAT_STREAM;
-=======
 		if (host->use_dma) {
 			/*
 			 * The JZ4780's MMC controller has integrated DMA ability
@@ -847,7 +726,6 @@ static void jz4740_mmc_send_command(struct jz4740_mmc_host *host,
 		} else if (host->version >= JZ_MMC_JZ4780) {
 			writel(0, host->base + JZ_REG_MMC_DMAC);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		writew(cmd->data->blksz, host->base + JZ_REG_MMC_BLKLEN);
 		writew(cmd->data->blocks, host->base + JZ_REG_MMC_NOB);
@@ -880,10 +758,7 @@ static irqreturn_t jz_mmc_irq_worker(int irq, void *devid)
 	struct jz4740_mmc_host *host = (struct jz4740_mmc_host *)devid;
 	struct mmc_command *cmd = host->req->cmd;
 	struct mmc_request *req = host->req;
-<<<<<<< HEAD
-=======
 	struct mmc_data *data = cmd->data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool timeout = false;
 
 	if (cmd->error)
@@ -894,18 +769,6 @@ static irqreturn_t jz_mmc_irq_worker(int irq, void *devid)
 		if (cmd->flags & MMC_RSP_PRESENT)
 			jz4740_mmc_read_response(host, cmd);
 
-<<<<<<< HEAD
-		if (!cmd->data)
-			break;
-
-		jz_mmc_prepare_data_transfer(host);
-
-	case JZ4740_MMC_STATE_TRANSFER_DATA:
-		if (cmd->data->flags & MMC_DATA_READ)
-			timeout = jz4740_mmc_read_data(host, cmd->data);
-		else
-			timeout = jz4740_mmc_write_data(host, cmd->data);
-=======
 		if (!data)
 			break;
 
@@ -931,30 +794,21 @@ static irqreturn_t jz_mmc_irq_worker(int irq, void *devid)
 			timeout = jz4740_mmc_read_data(host, data);
 		else
 			timeout = jz4740_mmc_write_data(host, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (unlikely(timeout)) {
 			host->state = JZ4740_MMC_STATE_TRANSFER_DATA;
 			break;
 		}
 
-<<<<<<< HEAD
-		jz4740_mmc_transfer_check_state(host, cmd->data);
-=======
 		jz4740_mmc_transfer_check_state(host, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		timeout = jz4740_mmc_poll_irq(host, JZ_MMC_IRQ_DATA_TRAN_DONE);
 		if (unlikely(timeout)) {
 			host->state = JZ4740_MMC_STATE_SEND_STOP;
 			break;
 		}
-<<<<<<< HEAD
-		writew(JZ_MMC_IRQ_DATA_TRAN_DONE, host->base + JZ_REG_MMC_IREG);
-=======
 		jz4740_mmc_write_irq_reg(host, JZ_MMC_IRQ_DATA_TRAN_DONE);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case JZ4740_MMC_STATE_SEND_STOP:
 		if (!req->stop)
@@ -962,13 +816,6 @@ static irqreturn_t jz_mmc_irq_worker(int irq, void *devid)
 
 		jz4740_mmc_send_command(host, req->stop);
 
-<<<<<<< HEAD
-		timeout = jz4740_mmc_poll_irq(host, JZ_MMC_IRQ_PRG_DONE);
-		if (timeout) {
-			host->state = JZ4740_MMC_STATE_DONE;
-			break;
-		}
-=======
 		if (mmc_resp_type(req->stop) & MMC_RSP_BUSY) {
 			timeout = jz4740_mmc_poll_irq(host,
 						      JZ_MMC_IRQ_PRG_DONE);
@@ -979,7 +826,6 @@ static irqreturn_t jz_mmc_irq_worker(int irq, void *devid)
 		}
 		fallthrough;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case JZ4740_MMC_STATE_DONE:
 		break;
 	}
@@ -994,16 +840,10 @@ static irqreturn_t jz_mmc_irq(int irq, void *devid)
 {
 	struct jz4740_mmc_host *host = devid;
 	struct mmc_command *cmd = host->cmd;
-<<<<<<< HEAD
-	uint16_t irq_reg, status, tmp;
-
-	irq_reg = readw(host->base + JZ_REG_MMC_IREG);
-=======
 	uint32_t irq_reg, status, tmp;
 
 	status = readl(host->base + JZ_REG_MMC_STATUS);
 	irq_reg = jz4740_mmc_read_irq_reg(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tmp = irq_reg;
 	irq_reg &= ~host->irq_mask;
@@ -1012,17 +852,10 @@ static irqreturn_t jz_mmc_irq(int irq, void *devid)
 		JZ_MMC_IRQ_PRG_DONE | JZ_MMC_IRQ_DATA_TRAN_DONE);
 
 	if (tmp != irq_reg)
-<<<<<<< HEAD
-		writew(tmp & ~irq_reg, host->base + JZ_REG_MMC_IREG);
-
-	if (irq_reg & JZ_MMC_IRQ_SDIO) {
-		writew(JZ_MMC_IRQ_SDIO, host->base + JZ_REG_MMC_IREG);
-=======
 		jz4740_mmc_write_irq_reg(host, tmp & ~irq_reg);
 
 	if (irq_reg & JZ_MMC_IRQ_SDIO) {
 		jz4740_mmc_write_irq_reg(host, JZ_MMC_IRQ_SDIO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mmc_signal_sdio_irq(host->mmc);
 		irq_reg &= ~JZ_MMC_IRQ_SDIO;
 	}
@@ -1031,28 +864,6 @@ static irqreturn_t jz_mmc_irq(int irq, void *devid)
 		if (test_and_clear_bit(0, &host->waiting)) {
 			del_timer(&host->timeout_timer);
 
-<<<<<<< HEAD
-			status = readl(host->base + JZ_REG_MMC_STATUS);
-
-			if (status & JZ_MMC_STATUS_TIMEOUT_RES) {
-					cmd->error = -ETIMEDOUT;
-			} else if (status & JZ_MMC_STATUS_CRC_RES_ERR) {
-					cmd->error = -EIO;
-			} else if (status & (JZ_MMC_STATUS_CRC_READ_ERROR |
-				    JZ_MMC_STATUS_CRC_WRITE_ERROR)) {
-					if (cmd->data)
-							cmd->data->error = -EIO;
-					cmd->error = -EIO;
-			} else if (status & (JZ_MMC_STATUS_CRC_READ_ERROR |
-					JZ_MMC_STATUS_CRC_WRITE_ERROR)) {
-					if (cmd->data)
-							cmd->data->error = -EIO;
-					cmd->error = -EIO;
-			}
-
-			jz4740_mmc_set_irq_enabled(host, irq_reg, false);
-			writew(irq_reg, host->base + JZ_REG_MMC_IREG);
-=======
 			if (status & JZ_MMC_STATUS_TIMEOUT_RES) {
 				cmd->error = -ETIMEDOUT;
 			} else if (status & JZ_MMC_STATUS_CRC_RES_ERR) {
@@ -1066,7 +877,6 @@ static irqreturn_t jz_mmc_irq(int irq, void *devid)
 
 			jz4740_mmc_set_irq_enabled(host, irq_reg, false);
 			jz4740_mmc_write_irq_reg(host, irq_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			return IRQ_WAKE_THREAD;
 		}
@@ -1081,11 +891,7 @@ static int jz4740_mmc_set_clock_rate(struct jz4740_mmc_host *host, int rate)
 	int real_rate;
 
 	jz4740_mmc_clock_disable(host);
-<<<<<<< HEAD
-	clk_set_rate(host->clk, JZ_MMC_CLK_RATE);
-=======
 	clk_set_rate(host->clk, host->mmc->f_max);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	real_rate = clk_get_rate(host->clk);
 
@@ -1095,8 +901,6 @@ static int jz4740_mmc_set_clock_rate(struct jz4740_mmc_host *host, int rate)
 	}
 
 	writew(div, host->base + JZ_REG_MMC_CLKRT);
-<<<<<<< HEAD
-=======
 
 	if (real_rate > 25000000) {
 		if (host->version >= JZ_MMC_JZ4780) {
@@ -1113,7 +917,6 @@ static int jz4740_mmc_set_clock_rate(struct jz4740_mmc_host *host, int rate)
 				   host->base + JZ_REG_MMC_LPM);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return real_rate;
 }
 
@@ -1123,55 +926,27 @@ static void jz4740_mmc_request(struct mmc_host *mmc, struct mmc_request *req)
 
 	host->req = req;
 
-<<<<<<< HEAD
-	writew(0xffff, host->base + JZ_REG_MMC_IREG);
-
-	writew(JZ_MMC_IRQ_END_CMD_RES, host->base + JZ_REG_MMC_IREG);
-=======
 	jz4740_mmc_write_irq_reg(host, ~0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jz4740_mmc_set_irq_enabled(host, JZ_MMC_IRQ_END_CMD_RES, true);
 
 	host->state = JZ4740_MMC_STATE_READ_RESPONSE;
 	set_bit(0, &host->waiting);
-<<<<<<< HEAD
-	mod_timer(&host->timeout_timer, jiffies + 5*HZ);
-=======
 	mod_timer(&host->timeout_timer,
 		  jiffies + msecs_to_jiffies(JZ_MMC_REQ_TIMEOUT_MS));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jz4740_mmc_send_command(host, req->cmd);
 }
 
 static void jz4740_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	struct jz4740_mmc_host *host = mmc_priv(mmc);
-<<<<<<< HEAD
-=======
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ios->clock)
 		jz4740_mmc_set_clock_rate(host, ios->clock);
 
 	switch (ios->power_mode) {
 	case MMC_POWER_UP:
 		jz4740_mmc_reset(host);
-<<<<<<< HEAD
-		if (gpio_is_valid(host->pdata->gpio_power))
-			gpio_set_value(host->pdata->gpio_power,
-					!host->pdata->power_active_low);
-		host->cmdat |= JZ_MMC_CMDAT_INIT;
-		clk_enable(host->clk);
-		break;
-	case MMC_POWER_ON:
-		break;
-	default:
-		if (gpio_is_valid(host->pdata->gpio_power))
-			gpio_set_value(host->pdata->gpio_power,
-					host->pdata->power_active_low);
-		clk_disable(host->clk);
-=======
 		if (!IS_ERR(mmc->supply.vmmc))
 			mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, ios->vdd);
 		host->cmdat |= JZ_MMC_CMDAT_INIT;
@@ -1196,19 +971,11 @@ static void jz4740_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		clk_disable_unprepare(host->clk);
 		break;
 	default:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	switch (ios->bus_width) {
 	case MMC_BUS_WIDTH_1:
-<<<<<<< HEAD
-		host->cmdat &= ~JZ_MMC_CMDAT_BUS_WIDTH_4BIT;
-		break;
-	case MMC_BUS_WIDTH_4:
-		host->cmdat |= JZ_MMC_CMDAT_BUS_WIDTH_4BIT;
-		break;
-=======
 		host->cmdat &= ~JZ_MMC_CMDAT_BUS_WIDTH_MASK;
 		break;
 	case MMC_BUS_WIDTH_4:
@@ -1219,170 +986,17 @@ static void jz4740_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		host->cmdat &= ~JZ_MMC_CMDAT_BUS_WIDTH_MASK;
 		host->cmdat |= JZ_MMC_CMDAT_BUS_WIDTH_8BIT;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
 }
 
-<<<<<<< HEAD
-static int jz4740_mmc_get_ro(struct mmc_host *mmc)
-{
-	struct jz4740_mmc_host *host = mmc_priv(mmc);
-	if (!gpio_is_valid(host->pdata->gpio_read_only))
-		return -ENOSYS;
-
-	return gpio_get_value(host->pdata->gpio_read_only) ^
-		host->pdata->read_only_active_low;
-}
-
-static int jz4740_mmc_get_cd(struct mmc_host *mmc)
-{
-	struct jz4740_mmc_host *host = mmc_priv(mmc);
-	if (!gpio_is_valid(host->pdata->gpio_card_detect))
-		return -ENOSYS;
-
-	return gpio_get_value(host->pdata->gpio_card_detect) ^
-			host->pdata->card_detect_active_low;
-}
-
-static irqreturn_t jz4740_mmc_card_detect_irq(int irq, void *devid)
-{
-	struct jz4740_mmc_host *host = devid;
-
-	mmc_detect_change(host->mmc, HZ / 2);
-
-	return IRQ_HANDLED;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void jz4740_mmc_enable_sdio_irq(struct mmc_host *mmc, int enable)
 {
 	struct jz4740_mmc_host *host = mmc_priv(mmc);
 	jz4740_mmc_set_irq_enabled(host, JZ_MMC_IRQ_SDIO, enable);
 }
 
-<<<<<<< HEAD
-static const struct mmc_host_ops jz4740_mmc_ops = {
-	.request	= jz4740_mmc_request,
-	.set_ios	= jz4740_mmc_set_ios,
-	.get_ro		= jz4740_mmc_get_ro,
-	.get_cd		= jz4740_mmc_get_cd,
-	.enable_sdio_irq = jz4740_mmc_enable_sdio_irq,
-};
-
-static const struct jz_gpio_bulk_request jz4740_mmc_pins[] = {
-	JZ_GPIO_BULK_PIN(MSC_CMD),
-	JZ_GPIO_BULK_PIN(MSC_CLK),
-	JZ_GPIO_BULK_PIN(MSC_DATA0),
-	JZ_GPIO_BULK_PIN(MSC_DATA1),
-	JZ_GPIO_BULK_PIN(MSC_DATA2),
-	JZ_GPIO_BULK_PIN(MSC_DATA3),
-};
-
-static int __devinit jz4740_mmc_request_gpio(struct device *dev, int gpio,
-	const char *name, bool output, int value)
-{
-	int ret;
-
-	if (!gpio_is_valid(gpio))
-		return 0;
-
-	ret = gpio_request(gpio, name);
-	if (ret) {
-		dev_err(dev, "Failed to request %s gpio: %d\n", name, ret);
-		return ret;
-	}
-
-	if (output)
-		gpio_direction_output(gpio, value);
-	else
-		gpio_direction_input(gpio);
-
-	return 0;
-}
-
-static int __devinit jz4740_mmc_request_gpios(struct platform_device *pdev)
-{
-	int ret;
-	struct jz4740_mmc_platform_data *pdata = pdev->dev.platform_data;
-
-	if (!pdata)
-		return 0;
-
-	ret = jz4740_mmc_request_gpio(&pdev->dev, pdata->gpio_card_detect,
-			"MMC detect change", false, 0);
-	if (ret)
-		goto err;
-
-	ret = jz4740_mmc_request_gpio(&pdev->dev, pdata->gpio_read_only,
-			"MMC read only", false, 0);
-	if (ret)
-		goto err_free_gpio_card_detect;
-
-	ret = jz4740_mmc_request_gpio(&pdev->dev, pdata->gpio_power,
-			"MMC read only", true, pdata->power_active_low);
-	if (ret)
-		goto err_free_gpio_read_only;
-
-	return 0;
-
-err_free_gpio_read_only:
-	if (gpio_is_valid(pdata->gpio_read_only))
-		gpio_free(pdata->gpio_read_only);
-err_free_gpio_card_detect:
-	if (gpio_is_valid(pdata->gpio_card_detect))
-		gpio_free(pdata->gpio_card_detect);
-err:
-	return ret;
-}
-
-static int __devinit jz4740_mmc_request_cd_irq(struct platform_device *pdev,
-	struct jz4740_mmc_host *host)
-{
-	struct jz4740_mmc_platform_data *pdata = pdev->dev.platform_data;
-
-	if (!gpio_is_valid(pdata->gpio_card_detect))
-		return 0;
-
-	host->card_detect_irq = gpio_to_irq(pdata->gpio_card_detect);
-	if (host->card_detect_irq < 0) {
-		dev_warn(&pdev->dev, "Failed to get card detect irq\n");
-		return 0;
-	}
-
-	return request_irq(host->card_detect_irq, jz4740_mmc_card_detect_irq,
-			IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-			"MMC card detect", host);
-}
-
-static void jz4740_mmc_free_gpios(struct platform_device *pdev)
-{
-	struct jz4740_mmc_platform_data *pdata = pdev->dev.platform_data;
-
-	if (!pdata)
-		return;
-
-	if (gpio_is_valid(pdata->gpio_power))
-		gpio_free(pdata->gpio_power);
-	if (gpio_is_valid(pdata->gpio_read_only))
-		gpio_free(pdata->gpio_read_only);
-	if (gpio_is_valid(pdata->gpio_card_detect))
-		gpio_free(pdata->gpio_card_detect);
-}
-
-static inline size_t jz4740_mmc_num_pins(struct jz4740_mmc_host *host)
-{
-	size_t num_pins = ARRAY_SIZE(jz4740_mmc_pins);
-	if (host->pdata && host->pdata->data_1bit)
-		num_pins -= 3;
-
-	return num_pins;
-}
-
-static int __devinit jz4740_mmc_probe(struct platform_device* pdev)
-=======
 static int jz4740_voltage_switch(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	int ret;
@@ -1423,17 +1037,10 @@ static const struct of_device_id jz4740_mmc_of_match[] = {
 MODULE_DEVICE_TABLE(of, jz4740_mmc_of_match);
 
 static int jz4740_mmc_probe(struct platform_device* pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct mmc_host *mmc;
 	struct jz4740_mmc_host *host;
-<<<<<<< HEAD
-	struct jz4740_mmc_platform_data *pdata;
-
-	pdata = pdev->dev.platform_data;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmc = mmc_alloc_host(sizeof(struct jz4740_mmc_host), &pdev->dev);
 	if (!mmc) {
@@ -1442,9 +1049,6 @@ static int jz4740_mmc_probe(struct platform_device* pdev)
 	}
 
 	host = mmc_priv(mmc);
-<<<<<<< HEAD
-	host->pdata = pdata;
-=======
 
 	/* Default if no match is JZ4740 */
 	host->version = (enum jz4740_mmc_version)device_get_match_data(&pdev->dev);
@@ -1456,69 +1060,20 @@ static int jz4740_mmc_probe(struct platform_device* pdev)
 	}
 
 	mmc_regulator_get_supply(mmc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host->irq = platform_get_irq(pdev, 0);
 	if (host->irq < 0) {
 		ret = host->irq;
-<<<<<<< HEAD
-		dev_err(&pdev->dev, "Failed to get platform irq: %d\n", ret);
-		goto err_free_host;
-	}
-
-	host->clk = clk_get(&pdev->dev, "mmc");
-=======
 		goto err_free_host;
 	}
 
 	host->clk = devm_clk_get(&pdev->dev, "mmc");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(host->clk)) {
 		ret = PTR_ERR(host->clk);
 		dev_err(&pdev->dev, "Failed to get mmc clock\n");
 		goto err_free_host;
 	}
 
-<<<<<<< HEAD
-	host->mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!host->mem) {
-		ret = -ENOENT;
-		dev_err(&pdev->dev, "Failed to get base platform memory\n");
-		goto err_clk_put;
-	}
-
-	host->mem = request_mem_region(host->mem->start,
-					resource_size(host->mem), pdev->name);
-	if (!host->mem) {
-		ret = -EBUSY;
-		dev_err(&pdev->dev, "Failed to request base memory region\n");
-		goto err_clk_put;
-	}
-
-	host->base = ioremap_nocache(host->mem->start, resource_size(host->mem));
-	if (!host->base) {
-		ret = -EBUSY;
-		dev_err(&pdev->dev, "Failed to ioremap base memory\n");
-		goto err_release_mem_region;
-	}
-
-	ret = jz_gpio_bulk_request(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
-	if (ret) {
-		dev_err(&pdev->dev, "Failed to request mmc pins: %d\n", ret);
-		goto err_iounmap;
-	}
-
-	ret = jz4740_mmc_request_gpios(pdev);
-	if (ret)
-		goto err_gpio_bulk_free;
-
-	mmc->ops = &jz4740_mmc_ops;
-	mmc->f_min = JZ_MMC_CLK_RATE / 128;
-	mmc->f_max = JZ_MMC_CLK_RATE;
-	mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
-	mmc->caps = (pdata && pdata->data_1bit) ? 0 : MMC_CAP_4_BIT_DATA;
-	mmc->caps |= MMC_CAP_SDIO_IRQ;
-=======
 	host->base = devm_platform_get_and_ioremap_resource(pdev, 0, &host->mem_res);
 	if (IS_ERR(host->base)) {
 		ret = PTR_ERR(host->base);
@@ -1546,7 +1101,6 @@ static int jz4740_mmc_probe(struct platform_device* pdev)
 	 * future improvement should instead respect the cmd->busy_timeout.
 	 */
 	mmc->max_busy_timeout = JZ_MMC_REQ_TIMEOUT_MS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmc->max_blk_size = (1 << 10) - 1;
 	mmc->max_blk_count = (1 << 15) - 1;
@@ -1558,35 +1112,14 @@ static int jz4740_mmc_probe(struct platform_device* pdev)
 	host->mmc = mmc;
 	host->pdev = pdev;
 	spin_lock_init(&host->lock);
-<<<<<<< HEAD
-	host->irq_mask = 0xffff;
-
-	ret = jz4740_mmc_request_cd_irq(pdev, host);
-	if (ret) {
-		dev_err(&pdev->dev, "Failed to request card detect irq\n");
-		goto err_free_gpios;
-	}
-=======
 	host->irq_mask = ~0;
 
 	jz4740_mmc_reset(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = request_threaded_irq(host->irq, jz_mmc_irq, jz_mmc_irq_worker, 0,
 			dev_name(&pdev->dev), host);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to request irq: %d\n", ret);
-<<<<<<< HEAD
-		goto err_free_card_detect_irq;
-	}
-
-	jz4740_mmc_reset(host);
-	jz4740_mmc_clock_disable(host);
-	setup_timer(&host->timeout_timer, jz4740_mmc_timeout,
-			(unsigned long)host);
-	/* It is not important when it times out, it just needs to timeout. */
-	set_timer_slack(&host->timeout_timer, HZ);
-=======
 		goto err_free_host;
 	}
 
@@ -1597,38 +1130,12 @@ static int jz4740_mmc_probe(struct platform_device* pdev)
 	if (ret == -EPROBE_DEFER)
 		goto err_free_irq;
 	host->use_dma = !ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(pdev, host);
 	ret = mmc_add_host(mmc);
 
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to add mmc host: %d\n", ret);
-<<<<<<< HEAD
-		goto err_free_irq;
-	}
-	dev_info(&pdev->dev, "JZ SD/MMC card driver registered\n");
-
-	return 0;
-
-err_free_irq:
-	free_irq(host->irq, host);
-err_free_card_detect_irq:
-	if (host->card_detect_irq >= 0)
-		free_irq(host->card_detect_irq, host);
-err_free_gpios:
-	jz4740_mmc_free_gpios(pdev);
-err_gpio_bulk_free:
-	jz_gpio_bulk_free(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
-err_iounmap:
-	iounmap(host->base);
-err_release_mem_region:
-	release_mem_region(host->mem->start, resource_size(host->mem));
-err_clk_put:
-	clk_put(host->clk);
-err_free_host:
-	platform_set_drvdata(pdev, NULL);
-=======
 		goto err_release_dma;
 	}
 	dev_info(&pdev->dev, "Ingenic SD/MMC card driver registered\n");
@@ -1646,17 +1153,12 @@ err_release_dma:
 err_free_irq:
 	free_irq(host->irq, host);
 err_free_host:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mmc_free_host(mmc);
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit jz4740_mmc_remove(struct platform_device *pdev)
-=======
 static void jz4740_mmc_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jz4740_mmc_host *host = platform_get_drvdata(pdev);
 
@@ -1667,36 +1169,6 @@ static void jz4740_mmc_remove(struct platform_device *pdev)
 	mmc_remove_host(host->mmc);
 
 	free_irq(host->irq, host);
-<<<<<<< HEAD
-	if (host->card_detect_irq >= 0)
-		free_irq(host->card_detect_irq, host);
-
-	jz4740_mmc_free_gpios(pdev);
-	jz_gpio_bulk_free(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
-
-	iounmap(host->base);
-	release_mem_region(host->mem->start, resource_size(host->mem));
-
-	clk_put(host->clk);
-
-	platform_set_drvdata(pdev, NULL);
-	mmc_free_host(host->mmc);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-
-static int jz4740_mmc_suspend(struct device *dev)
-{
-	struct jz4740_mmc_host *host = dev_get_drvdata(dev);
-
-	mmc_suspend_host(host->mmc);
-
-	jz_gpio_bulk_suspend(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
-
-	return 0;
-=======
 
 	if (host->use_dma)
 		jz4740_mmc_release_dma_channels(host);
@@ -1707,41 +1179,10 @@ static int jz4740_mmc_suspend(struct device *dev)
 static int jz4740_mmc_suspend(struct device *dev)
 {
 	return pinctrl_pm_select_sleep_state(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int jz4740_mmc_resume(struct device *dev)
 {
-<<<<<<< HEAD
-	struct jz4740_mmc_host *host = dev_get_drvdata(dev);
-
-	jz_gpio_bulk_resume(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
-
-	mmc_resume_host(host->mmc);
-
-	return 0;
-}
-
-const struct dev_pm_ops jz4740_mmc_pm_ops = {
-	.suspend	= jz4740_mmc_suspend,
-	.resume		= jz4740_mmc_resume,
-	.poweroff	= jz4740_mmc_suspend,
-	.restore	= jz4740_mmc_resume,
-};
-
-#define JZ4740_MMC_PM_OPS (&jz4740_mmc_pm_ops)
-#else
-#define JZ4740_MMC_PM_OPS NULL
-#endif
-
-static struct platform_driver jz4740_mmc_driver = {
-	.probe = jz4740_mmc_probe,
-	.remove = __devexit_p(jz4740_mmc_remove),
-	.driver = {
-		.name = "jz4740-mmc",
-		.owner = THIS_MODULE,
-		.pm = JZ4740_MMC_PM_OPS,
-=======
 	return pinctrl_select_default_state(dev);
 }
 
@@ -1756,7 +1197,6 @@ static struct platform_driver jz4740_mmc_driver = {
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 		.of_match_table = jz4740_mmc_of_match,
 		.pm = pm_sleep_ptr(&jz4740_mmc_pm_ops),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

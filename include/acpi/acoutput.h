@@ -1,57 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: acoutput.h -- debug output
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2011, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACOUTPUT_H__
 #define __ACOUTPUT_H__
 
@@ -83,10 +38,7 @@
 #define ACPI_EXAMPLE                0x00004000
 #define ACPI_DRIVER                 0x00008000
 #define DT_COMPILER                 0x00010000
-<<<<<<< HEAD
-=======
 #define ASL_PREPROCESSOR            0x00020000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_ALL_COMPONENTS         0x0001FFFF
 #define ACPI_COMPONENT_DEFAULT      (ACPI_ALL_COMPONENTS)
@@ -102,12 +54,8 @@
 #define ACPI_LV_DEBUG_OBJECT        0x00000002
 #define ACPI_LV_INFO                0x00000004
 #define ACPI_LV_REPAIR              0x00000008
-<<<<<<< HEAD
-#define ACPI_LV_ALL_EXCEPTIONS      0x0000000F
-=======
 #define ACPI_LV_TRACE_POINT         0x00000010
 #define ACPI_LV_ALL_EXCEPTIONS      0x0000001F
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Trace verbosity level 1 [Standard Trace Level] */
 
@@ -125,24 +73,16 @@
 #define ACPI_LV_RESOURCES           0x00010000
 #define ACPI_LV_USER_REQUESTS       0x00020000
 #define ACPI_LV_PACKAGE             0x00040000
-<<<<<<< HEAD
-#define ACPI_LV_VERBOSITY1          0x0007FF40 | ACPI_LV_ALL_EXCEPTIONS
-=======
 #define ACPI_LV_EVALUATION          0x00080000
 #define ACPI_LV_VERBOSITY1          0x000FFF40 | ACPI_LV_ALL_EXCEPTIONS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Trace verbosity level 2 [Function tracing and memory allocation] */
 
 #define ACPI_LV_ALLOCATIONS         0x00100000
 #define ACPI_LV_FUNCTIONS           0x00200000
 #define ACPI_LV_OPTIMIZATIONS       0x00400000
-<<<<<<< HEAD
-#define ACPI_LV_VERBOSITY2          0x00700000 | ACPI_LV_VERBOSITY1
-=======
 #define ACPI_LV_PARSE_TREES         0x00800000
 #define ACPI_LV_VERBOSITY2          0x00F00000 | ACPI_LV_VERBOSITY1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_LV_ALL                 ACPI_LV_VERBOSITY2
 
 /* Trace verbosity level 3 [Threading, I/O, and Interrupts] */
@@ -176,10 +116,7 @@
 #define ACPI_DB_DEBUG_OBJECT        ACPI_DEBUG_LEVEL (ACPI_LV_DEBUG_OBJECT)
 #define ACPI_DB_INFO                ACPI_DEBUG_LEVEL (ACPI_LV_INFO)
 #define ACPI_DB_REPAIR              ACPI_DEBUG_LEVEL (ACPI_LV_REPAIR)
-<<<<<<< HEAD
-=======
 #define ACPI_DB_TRACE_POINT         ACPI_DEBUG_LEVEL (ACPI_LV_TRACE_POINT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_DB_ALL_EXCEPTIONS      ACPI_DEBUG_LEVEL (ACPI_LV_ALL_EXCEPTIONS)
 
 /* Trace level -- also used in the global "DebugLevel" */
@@ -196,10 +133,7 @@
 #define ACPI_DB_TABLES              ACPI_DEBUG_LEVEL (ACPI_LV_TABLES)
 #define ACPI_DB_FUNCTIONS           ACPI_DEBUG_LEVEL (ACPI_LV_FUNCTIONS)
 #define ACPI_DB_OPTIMIZATIONS       ACPI_DEBUG_LEVEL (ACPI_LV_OPTIMIZATIONS)
-<<<<<<< HEAD
-=======
 #define ACPI_DB_PARSE_TREES         ACPI_DEBUG_LEVEL (ACPI_LV_PARSE_TREES)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_DB_VALUES              ACPI_DEBUG_LEVEL (ACPI_LV_VALUES)
 #define ACPI_DB_OBJECTS             ACPI_DEBUG_LEVEL (ACPI_LV_OBJECTS)
 #define ACPI_DB_ALLOCATIONS         ACPI_DEBUG_LEVEL (ACPI_LV_ALLOCATIONS)
@@ -208,10 +142,7 @@
 #define ACPI_DB_INTERRUPTS          ACPI_DEBUG_LEVEL (ACPI_LV_INTERRUPTS)
 #define ACPI_DB_USER_REQUESTS       ACPI_DEBUG_LEVEL (ACPI_LV_USER_REQUESTS)
 #define ACPI_DB_PACKAGE             ACPI_DEBUG_LEVEL (ACPI_LV_PACKAGE)
-<<<<<<< HEAD
-=======
 #define ACPI_DB_EVALUATION          ACPI_DEBUG_LEVEL (ACPI_LV_EVALUATION)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_DB_MUTEX               ACPI_DEBUG_LEVEL (ACPI_LV_MUTEX)
 #define ACPI_DB_EVENTS              ACPI_DEBUG_LEVEL (ACPI_LV_EVENTS)
 
@@ -219,12 +150,6 @@
 
 /* Defaults for debug_level, debug and normal */
 
-<<<<<<< HEAD
-#define ACPI_DEBUG_DEFAULT          (ACPI_LV_INFO | ACPI_LV_REPAIR)
-#define ACPI_NORMAL_DEFAULT         (ACPI_LV_INIT | ACPI_LV_DEBUG_OBJECT | ACPI_LV_REPAIR)
-#define ACPI_DEBUG_ALL              (ACPI_LV_AML_DISASSEMBLE | ACPI_LV_ALL_EXCEPTIONS | ACPI_LV_ALL)
-
-=======
 #ifndef ACPI_DEBUG_DEFAULT
 #define ACPI_DEBUG_DEFAULT          (ACPI_LV_INIT | ACPI_LV_DEBUG_OBJECT | ACPI_LV_EVALUATION | ACPI_LV_REPAIR)
 #endif
@@ -246,7 +171,6 @@
 #define ACPI_TRACE_LEVEL_DEFAULT    ACPI_LV_TRACE_POINT
 #define ACPI_TRACE_LAYER_DEFAULT    ACPI_EXECUTER
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined (ACPI_DEBUG_OUTPUT) || !defined (ACPI_NO_ERROR_MESSAGES)
 /*
  * The module name is used primarily for error and debug messages.
@@ -279,12 +203,9 @@
 #define ACPI_WARNING(plist)             acpi_warning plist
 #define ACPI_EXCEPTION(plist)           acpi_exception plist
 #define ACPI_ERROR(plist)               acpi_error plist
-<<<<<<< HEAD
-=======
 #define ACPI_BIOS_WARNING(plist)        acpi_bios_warning plist
 #define ACPI_BIOS_EXCEPTION(plist)      acpi_bios_exception plist
 #define ACPI_BIOS_ERROR(plist)          acpi_bios_error plist
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_DEBUG_OBJECT(obj,l,i)      acpi_ex_do_debug_object(obj,l,i)
 
 #else
@@ -295,12 +216,9 @@
 #define ACPI_WARNING(plist)
 #define ACPI_EXCEPTION(plist)
 #define ACPI_ERROR(plist)
-<<<<<<< HEAD
-=======
 #define ACPI_BIOS_WARNING(plist)
 #define ACPI_BIOS_EXCEPTION(plist)
 #define ACPI_BIOS_ERROR(plist)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_DEBUG_OBJECT(obj,l,i)
 
 #endif				/* ACPI_NO_ERROR_MESSAGES */
@@ -313,36 +231,21 @@
 /*
  * If ACPI_GET_FUNCTION_NAME was not defined in the compiler-dependent header,
  * define it now. This is the case where there the compiler does not support
-<<<<<<< HEAD
- * a __FUNCTION__ macro or equivalent.
-=======
  * a __func__ macro or equivalent.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef ACPI_GET_FUNCTION_NAME
 #define ACPI_GET_FUNCTION_NAME          _acpi_function_name
 
 /*
-<<<<<<< HEAD
- * The Name parameter should be the procedure name as a quoted string.
- * The function name is also used by the function exit macros below.
- * Note: (const char) is used to be compatible with the debug interfaces
- * and macros such as __FUNCTION__.
-=======
  * The Name parameter should be the procedure name as a non-quoted string.
  * The function name is also used by the function exit macros below.
  * Note: (const char) is used to be compatible with the debug interfaces
  * and macros such as __func__.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define ACPI_FUNCTION_NAME(name)        static const char _acpi_function_name[] = #name;
 
 #else
-<<<<<<< HEAD
-/* Compiler supports __FUNCTION__ (or equivalent) -- Ignore this macro */
-=======
 /* Compiler supports __func__ (or equivalent) -- Ignore this macro */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_FUNCTION_NAME(name)
 #endif				/* ACPI_GET_FUNCTION_NAME */
@@ -351,9 +254,6 @@
  * Common parameters used for debug output functions:
  * line number, function name, module(file) name, component ID
  */
-<<<<<<< HEAD
-#define ACPI_DEBUG_PARAMETERS           __LINE__, ACPI_GET_FUNCTION_NAME, _acpi_module_name, _COMPONENT
-=======
 #define ACPI_DEBUG_PARAMETERS \
 	__LINE__, ACPI_GET_FUNCTION_NAME, _acpi_module_name, _COMPONENT
 
@@ -361,16 +261,12 @@
 
 #define ACPI_IS_DEBUG_ENABLED(level, component) \
 	((level & acpi_dbg_level) && (component & acpi_dbg_layer))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Master debug print macros
  * Print message if and only if:
  *    1) Debug print for the current component is enabled
  *    2) Debug error level or trace level for the print statement is enabled
-<<<<<<< HEAD
- */
-=======
  *
  * November 2012: Moved the runtime check for whether to actually emit the
  * debug message outside of the print function itself. This improves overall
@@ -391,13 +287,10 @@
 
 #ifndef COMPILER_VA_MACRO
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_DEBUG_PRINT(plist)         acpi_debug_print plist
 #define ACPI_DEBUG_PRINT_RAW(plist)     acpi_debug_print_raw plist
 
 #else
-<<<<<<< HEAD
-=======
 
 /* Helper macros for DEBUG_PRINT */
 
@@ -536,16 +429,10 @@
 #define ACPI_TRACE_POINT(a, b, c, d)    acpi_trace_point (a, b, c, d)
 
 #else				/* ACPI_DEBUG_OUTPUT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is the non-debug case -- make everything go away,
  * leaving no executable debug code!
  */
-<<<<<<< HEAD
-#define ACPI_FUNCTION_NAME(a)
-#define ACPI_DEBUG_PRINT(pl)
-#define ACPI_DEBUG_PRINT_RAW(pl)
-=======
 #define ACPI_DEBUG_PRINT(pl)
 #define ACPI_DEBUG_PRINT_RAW(pl)
 #define ACPI_DEBUG_EXEC(a)
@@ -573,7 +460,6 @@
 #define return_VALUE(s)                 return(s)
 #define return_UINT8(s)                 return(s)
 #define return_UINT32(s)                return(s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif				/* ACPI_DEBUG_OUTPUT */
 

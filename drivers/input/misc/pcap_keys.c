@@ -1,28 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Input driver for PCAP events:
  *   * Power key
  *   * Headphone button
  *
  *  Copyright (c) 2008,2009 Ilya Petrov <ilya.muromec@gmail.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
- *
  */
 
 #include <linux/module.h>
-#include <linux/init.h>
-=======
- */
-
-#include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/input.h>
@@ -58,11 +43,7 @@ static irqreturn_t pcap_keys_handler(int irq, void *_pcap_keys)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit pcap_keys_probe(struct platform_device *pdev)
-=======
 static int pcap_keys_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = -ENOMEM;
 	struct pcap_keys *pcap_keys;
@@ -118,11 +99,7 @@ fail:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit pcap_keys_remove(struct platform_device *pdev)
-=======
 static void pcap_keys_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcap_keys *pcap_keys = platform_get_drvdata(pdev);
 
@@ -131,25 +108,13 @@ static void pcap_keys_remove(struct platform_device *pdev)
 
 	input_unregister_device(pcap_keys->input);
 	kfree(pcap_keys);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver pcap_keys_device_driver = {
 	.probe		= pcap_keys_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(pcap_keys_remove),
-	.driver		= {
-		.name	= "pcap-keys",
-		.owner	= THIS_MODULE,
-=======
 	.remove_new	= pcap_keys_remove,
 	.driver		= {
 		.name	= "pcap-keys",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 module_platform_driver(pcap_keys_device_driver);

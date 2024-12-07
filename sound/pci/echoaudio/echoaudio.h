@@ -153,12 +153,6 @@
 #define _ECHOAUDIO_H_
 
 
-<<<<<<< HEAD
-#define TRUE 1
-#define FALSE 0
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "echoaudio_dsp.h"
 
 
@@ -298,43 +292,6 @@
 #define PIPE_STATE_PENDING	3	/* Pipe has pending start */
 
 
-<<<<<<< HEAD
-/* Debug initialization */
-#ifdef CONFIG_SND_DEBUG
-#define DE_INIT(x) snd_printk x
-#else
-#define DE_INIT(x)
-#endif
-
-/* Debug hw_params callbacks */
-#ifdef CONFIG_SND_DEBUG
-#define DE_HWP(x) snd_printk x
-#else
-#define DE_HWP(x)
-#endif
-
-/* Debug normal activity (open, start, stop...) */
-#ifdef CONFIG_SND_DEBUG
-#define DE_ACT(x) snd_printk x
-#else
-#define DE_ACT(x)
-#endif
-
-/* Debug midi activity */
-#ifdef CONFIG_SND_DEBUG
-#define DE_MID(x) snd_printk x
-#else
-#define DE_MID(x)
-#endif
-
-
-struct audiopipe {
-	volatile u32 *dma_counter;	/* Commpage register that contains
-					 * the current dma position
-					 * (lower 32 bits only)
-					 */
-	u32 last_counter;		/* The last position, which is used
-=======
 
 struct audiopipe {
 	volatile __le32 *dma_counter;	/* Commpage register that contains
@@ -347,7 +304,6 @@ struct audiopipe {
 	u32 last_counter;		/* Used exclusively by pcm_pointer
 					 * under PCM core locks.
 					 * The last position, which is used
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 * to compute...
 					 */
 	u32 position;			/* ...the number of bytes tranferred
@@ -381,18 +337,10 @@ struct audioformat {
 struct echoaudio {
 	spinlock_t lock;
 	struct snd_pcm_substream *substream[DSP_MAXPIPES];
-<<<<<<< HEAD
-	int last_period[DSP_MAXPIPES];
-	struct mutex mode_mutex;
-	u16 num_digital_modes, digital_mode_list[6];
-	u16 num_clock_sources, clock_source_list[10];
-	atomic_t opencount;
-=======
 	struct mutex mode_mutex;
 	u16 num_digital_modes, digital_mode_list[6];
 	u16 num_clock_sources, clock_source_list[10];
 	unsigned int opencount;  /* protected by mode_mutex */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_kcontrol *clock_src_ctl;
 	struct snd_pcm *analog_pcm, *digital_pcm;
 	struct snd_card *card;
@@ -400,11 +348,7 @@ struct echoaudio {
 	struct pci_dev *pci;
 	unsigned long dsp_registers_phys;
 	struct resource *iores;
-<<<<<<< HEAD
-	struct snd_dma_buffer commpage_dma_buf;
-=======
 	struct snd_dma_buffer *commpage_dma_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int irq;
 #ifdef ECHOCARD_HAS_MIDI
 	struct snd_rawmidi *rmidi;
@@ -413,13 +357,8 @@ struct echoaudio {
 	struct timer_list timer;
 	char tinuse;				/* Timer in use */
 	char midi_full;				/* MIDI output buffer is full */
-<<<<<<< HEAD
-	char can_set_rate;
-	char rate_set;
-=======
 	char can_set_rate;                      /* protected by mode_mutex */
 	char rate_set;                          /* protected by mode_mutex */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This stuff is used mainly by the lowlevel code */
 	struct comm_page *comm_page;	/* Virtual address of the memory
@@ -440,13 +379,8 @@ struct echoaudio {
 					 */
 	u8 output_clock;		/* Layla20 only */
 	char meters_enabled;		/* VU-meters status */
-<<<<<<< HEAD
-	char asic_loaded;		/* Set TRUE when ASIC loaded */
-	char bad_board;			/* Set TRUE if DSP won't load */
-=======
 	char asic_loaded;		/* Set true when ASIC loaded */
 	char bad_board;			/* Set true if DSP won't load */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char professional_spdif;	/* 0 = consumer; 1 = professional */
 	char non_audio_spdif;		/* 3G - only */
 	char digital_in_automute;	/* Gina24, Layla24, Mona - only */
@@ -485,19 +419,10 @@ struct echoaudio {
 	short asic_code;		/* Current ASIC code */
 	u32 comm_page_phys;			/* Physical address of the
 						 * memory seen by DSP */
-<<<<<<< HEAD
-	volatile u32 __iomem *dsp_registers;	/* DSP's register base */
-	u32 active_mask;			/* Chs. active mask or
-						 * punks out */
-#ifdef CONFIG_PM
-	const struct firmware *fw_cache[8];	/* Cached firmwares */
-#endif
-=======
 	u32 __iomem *dsp_registers;		/* DSP's register base */
 	u32 active_mask;			/* Chs. active mask or
 						 * punks out */
 	const struct firmware *fw_cache[8];	/* Cached firmwares */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef ECHOCARD_HAS_MIDI
 	u16 mtc_state;				/* State for MIDI input parsing state machine */
@@ -514,25 +439,16 @@ static int wait_handshake(struct echoaudio *chip);
 static int send_vector(struct echoaudio *chip, u32 command);
 static int get_firmware(const struct firmware **fw_entry,
 			struct echoaudio *chip, const short fw_index);
-<<<<<<< HEAD
-static void free_firmware(const struct firmware *fw_entry);
-=======
 static void free_firmware(const struct firmware *fw_entry,
 			  struct echoaudio *chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef ECHOCARD_HAS_MIDI
 static int enable_midi_input(struct echoaudio *chip, char enable);
 static void snd_echo_midi_output_trigger(
 			struct snd_rawmidi_substream *substream, int up);
 static int midi_service_irq(struct echoaudio *chip);
-<<<<<<< HEAD
-static int __devinit snd_echo_midi_create(struct snd_card *card,
-					  struct echoaudio *chip);
-=======
 static int snd_echo_midi_create(struct snd_card *card,
 				struct echoaudio *chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 
@@ -645,13 +561,4 @@ static inline int monitor_index(const struct echoaudio *chip, int out, int in)
 	return out * num_busses_in(chip) + in;
 }
 
-<<<<<<< HEAD
-
-#ifndef pci_device
-#define pci_device(chip) (&chip->pci->dev)
-#endif
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ECHOAUDIO_H_ */

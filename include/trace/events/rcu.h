@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rcu
 
@@ -10,15 +7,12 @@
 
 #include <linux/tracepoint.h>
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RCU_TRACE
 #define TRACE_EVENT_RCU TRACE_EVENT
 #else
 #define TRACE_EVENT_RCU TRACE_EVENT_NOP
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Tracepoint for start/end markers used for utilization calculations.
  * By convention, the string is of the following forms:
@@ -32,20 +26,12 @@
  */
 TRACE_EVENT(rcu_utilization,
 
-<<<<<<< HEAD
-	TP_PROTO(char *s),
-=======
 	TP_PROTO(const char *s),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(s),
 
 	TP_STRUCT__entry(
-<<<<<<< HEAD
-		__field(char *, s)
-=======
 		__field(const char *, s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
@@ -55,31 +41,6 @@ TRACE_EVENT(rcu_utilization,
 	TP_printk("%s", __entry->s)
 );
 
-<<<<<<< HEAD
-#ifdef CONFIG_RCU_TRACE
-
-#if defined(CONFIG_TREE_RCU) || defined(CONFIG_TREE_PREEMPT_RCU)
-
-/*
- * Tracepoint for grace-period events: starting and ending a grace
- * period ("start" and "end", respectively), a CPU noting the start
- * of a new grace period or the end of an old grace period ("cpustart"
- * and "cpuend", respectively), a CPU passing through a quiescent
- * state ("cpuqs"), a CPU coming online or going offline ("cpuonl"
- * and "cpuofl", respectively), and a CPU being kicked for being too
- * long in dyntick-idle mode ("kick").
- */
-TRACE_EVENT(rcu_grace_period,
-
-	TP_PROTO(char *rcuname, unsigned long gpnum, char *gpevent),
-
-	TP_ARGS(rcuname, gpnum, gpevent),
-
-	TP_STRUCT__entry(
-		__field(char *, rcuname)
-		__field(unsigned long, gpnum)
-		__field(char *, gpevent)
-=======
 #if defined(CONFIG_TREE_RCU)
 
 /*
@@ -115,19 +76,10 @@ TRACE_EVENT_RCU(rcu_grace_period,
 		__field(const char *, rcuname)
 		__field(long, gp_seq)
 		__field(const char *, gpevent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->rcuname = rcuname;
-<<<<<<< HEAD
-		__entry->gpnum = gpnum;
-		__entry->gpevent = gpevent;
-	),
-
-	TP_printk("%s %lu %s",
-		  __entry->rcuname, __entry->gpnum, __entry->gpevent)
-=======
 		__entry->gp_seq = (long)gp_seq;
 		__entry->gpevent = gpevent;
 	),
@@ -183,7 +135,6 @@ TRACE_EVENT_RCU(rcu_future_grace_period,
 	TP_printk("%s %ld %ld %u %d %d %s",
 		  __entry->rcuname, (long)__entry->gp_seq, (long)__entry->gp_seq_req, __entry->level,
 		  __entry->grplo, __entry->grphi, __entry->gpevent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /*
@@ -193,18 +144,6 @@ TRACE_EVENT_RCU(rcu_future_grace_period,
  * rcu_node structure, and the mask of CPUs that will be waited for.
  * All but the type of RCU are extracted from the rcu_node structure.
  */
-<<<<<<< HEAD
-TRACE_EVENT(rcu_grace_period_init,
-
-	TP_PROTO(char *rcuname, unsigned long gpnum, u8 level,
-		 int grplo, int grphi, unsigned long qsmask),
-
-	TP_ARGS(rcuname, gpnum, level, grplo, grphi, qsmask),
-
-	TP_STRUCT__entry(
-		__field(char *, rcuname)
-		__field(unsigned long, gpnum)
-=======
 TRACE_EVENT_RCU(rcu_grace_period_init,
 
 	TP_PROTO(const char *rcuname, unsigned long gp_seq, u8 level,
@@ -215,7 +154,6 @@ TRACE_EVENT_RCU(rcu_grace_period_init,
 	TP_STRUCT__entry(
 		__field(const char *, rcuname)
 		__field(long, gp_seq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(u8, level)
 		__field(int, grplo)
 		__field(int, grphi)
@@ -224,30 +162,19 @@ TRACE_EVENT_RCU(rcu_grace_period_init,
 
 	TP_fast_assign(
 		__entry->rcuname = rcuname;
-<<<<<<< HEAD
-		__entry->gpnum = gpnum;
-=======
 		__entry->gp_seq = (long)gp_seq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->level = level;
 		__entry->grplo = grplo;
 		__entry->grphi = grphi;
 		__entry->qsmask = qsmask;
 	),
 
-<<<<<<< HEAD
-	TP_printk("%s %lu %u %d %d %lx",
-		  __entry->rcuname, __entry->gpnum, __entry->level,
-=======
 	TP_printk("%s %ld %u %d %d %lx",
 		  __entry->rcuname, __entry->gp_seq, __entry->level,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->grplo, __entry->grphi, __entry->qsmask)
 );
 
 /*
-<<<<<<< HEAD
-=======
  * Tracepoint for expedited grace-period events.  Takes a string identifying
  * the RCU flavor, the expedited grace-period sequence number, and a string
  * identifying the grace-period-related event as follows:
@@ -377,23 +304,11 @@ TRACE_EVENT_RCU(rcu_nocb_wake,
 #endif
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Tracepoint for tasks blocking within preemptible-RCU read-side
  * critical sections.  Track the type of RCU (which one day might
  * include SRCU), the grace-period number that the task is blocking
  * (the current or the next), and the task's PID.
  */
-<<<<<<< HEAD
-TRACE_EVENT(rcu_preempt_task,
-
-	TP_PROTO(char *rcuname, int pid, unsigned long gpnum),
-
-	TP_ARGS(rcuname, pid, gpnum),
-
-	TP_STRUCT__entry(
-		__field(char *, rcuname)
-		__field(unsigned long, gpnum)
-=======
 TRACE_EVENT_RCU(rcu_preempt_task,
 
 	TP_PROTO(const char *rcuname, int pid, unsigned long gp_seq),
@@ -403,27 +318,17 @@ TRACE_EVENT_RCU(rcu_preempt_task,
 	TP_STRUCT__entry(
 		__field(const char *, rcuname)
 		__field(long, gp_seq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, pid)
 	),
 
 	TP_fast_assign(
 		__entry->rcuname = rcuname;
-<<<<<<< HEAD
-		__entry->gpnum = gpnum;
-		__entry->pid = pid;
-	),
-
-	TP_printk("%s %lu %d",
-		  __entry->rcuname, __entry->gpnum, __entry->pid)
-=======
 		__entry->gp_seq = (long)gp_seq;
 		__entry->pid = pid;
 	),
 
 	TP_printk("%s %ld %d",
 		  __entry->rcuname, __entry->gp_seq, __entry->pid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /*
@@ -431,17 +336,6 @@ TRACE_EVENT_RCU(rcu_preempt_task,
  * read-side critical section exiting that critical section.  Track the
  * type of RCU (which one day might include SRCU) and the task's PID.
  */
-<<<<<<< HEAD
-TRACE_EVENT(rcu_unlock_preempted_task,
-
-	TP_PROTO(char *rcuname, unsigned long gpnum, int pid),
-
-	TP_ARGS(rcuname, gpnum, pid),
-
-	TP_STRUCT__entry(
-		__field(char *, rcuname)
-		__field(unsigned long, gpnum)
-=======
 TRACE_EVENT_RCU(rcu_unlock_preempted_task,
 
 	TP_PROTO(const char *rcuname, unsigned long gp_seq, int pid),
@@ -451,25 +345,16 @@ TRACE_EVENT_RCU(rcu_unlock_preempted_task,
 	TP_STRUCT__entry(
 		__field(const char *, rcuname)
 		__field(long, gp_seq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, pid)
 	),
 
 	TP_fast_assign(
 		__entry->rcuname = rcuname;
-<<<<<<< HEAD
-		__entry->gpnum = gpnum;
-		__entry->pid = pid;
-	),
-
-	TP_printk("%s %lu %d", __entry->rcuname, __entry->gpnum, __entry->pid)
-=======
 		__entry->gp_seq = (long)gp_seq;
 		__entry->pid = pid;
 	),
 
 	TP_printk("%s %ld %d", __entry->rcuname, __entry->gp_seq, __entry->pid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /*
@@ -480,19 +365,6 @@ TRACE_EVENT_RCU(rcu_unlock_preempted_task,
  * whether there are any blocked tasks blocking the current grace period.
  * All but the type of RCU are extracted from the rcu_node structure.
  */
-<<<<<<< HEAD
-TRACE_EVENT(rcu_quiescent_state_report,
-
-	TP_PROTO(char *rcuname, unsigned long gpnum,
-		 unsigned long mask, unsigned long qsmask,
-		 u8 level, int grplo, int grphi, int gp_tasks),
-
-	TP_ARGS(rcuname, gpnum, mask, qsmask, level, grplo, grphi, gp_tasks),
-
-	TP_STRUCT__entry(
-		__field(char *, rcuname)
-		__field(unsigned long, gpnum)
-=======
 TRACE_EVENT_RCU(rcu_quiescent_state_report,
 
 	TP_PROTO(const char *rcuname, unsigned long gp_seq,
@@ -504,7 +376,6 @@ TRACE_EVENT_RCU(rcu_quiescent_state_report,
 	TP_STRUCT__entry(
 		__field(const char *, rcuname)
 		__field(long, gp_seq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(unsigned long, mask)
 		__field(unsigned long, qsmask)
 		__field(u8, level)
@@ -515,11 +386,7 @@ TRACE_EVENT_RCU(rcu_quiescent_state_report,
 
 	TP_fast_assign(
 		__entry->rcuname = rcuname;
-<<<<<<< HEAD
-		__entry->gpnum = gpnum;
-=======
 		__entry->gp_seq = (long)gp_seq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->mask = mask;
 		__entry->qsmask = qsmask;
 		__entry->level = level;
@@ -528,13 +395,8 @@ TRACE_EVENT_RCU(rcu_quiescent_state_report,
 		__entry->gp_tasks = gp_tasks;
 	),
 
-<<<<<<< HEAD
-	TP_printk("%s %lu %lx>%lx %u %d %d %u",
-		  __entry->rcuname, __entry->gpnum,
-=======
 	TP_printk("%s %ld %lx>%lx %u %d %d %u",
 		  __entry->rcuname, __entry->gp_seq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->mask, __entry->qsmask, __entry->level,
 		  __entry->grplo, __entry->grphi, __entry->gp_tasks)
 );
@@ -543,23 +405,6 @@ TRACE_EVENT_RCU(rcu_quiescent_state_report,
  * Tracepoint for quiescent states detected by force_quiescent_state().
  * These trace events include the type of RCU, the grace-period number
  * that was blocked by the CPU, the CPU itself, and the type of quiescent
-<<<<<<< HEAD
- * state, which can be "dti" for dyntick-idle mode, "ofl" for CPU offline,
- * or "kick" when kicking a CPU that has been in dyntick-idle mode for
- * too long.
- */
-TRACE_EVENT(rcu_fqs,
-
-	TP_PROTO(char *rcuname, unsigned long gpnum, int cpu, char *qsevent),
-
-	TP_ARGS(rcuname, gpnum, cpu, qsevent),
-
-	TP_STRUCT__entry(
-		__field(char *, rcuname)
-		__field(unsigned long, gpnum)
-		__field(int, cpu)
-		__field(char *, qsevent)
-=======
  * state, which can be "dti" for dyntick-idle mode or "kick" when kicking
  * a CPU that has been in dyntick-idle mode for too long.
  */
@@ -574,52 +419,15 @@ TRACE_EVENT_RCU(rcu_fqs,
 		__field(long, gp_seq)
 		__field(int, cpu)
 		__field(const char *, qsevent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->rcuname = rcuname;
-<<<<<<< HEAD
-		__entry->gpnum = gpnum;
-=======
 		__entry->gp_seq = (long)gp_seq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->cpu = cpu;
 		__entry->qsevent = qsevent;
 	),
 
-<<<<<<< HEAD
-	TP_printk("%s %lu %d %s",
-		  __entry->rcuname, __entry->gpnum,
-		  __entry->cpu, __entry->qsevent)
-);
-
-#endif /* #if defined(CONFIG_TREE_RCU) || defined(CONFIG_TREE_PREEMPT_RCU) */
-
-/*
- * Tracepoint for dyntick-idle entry/exit events.  These take a string
- * as argument: "Start" for entering dyntick-idle mode, "End" for
- * leaving it, "--=" for events moving towards idle, and "++=" for events
- * moving away from idle.  "Error on entry: not idle task" and "Error on
- * exit: not idle task" indicate that a non-idle task is erroneously
- * toying with the idle loop.
- *
- * These events also take a pair of numbers, which indicate the nesting
- * depth before and after the event of interest.  Note that task-related
- * events use the upper bits of each number, while interrupt-related
- * events use the lower bits.
- */
-TRACE_EVENT(rcu_dyntick,
-
-	TP_PROTO(char *polarity, long long oldnesting, long long newnesting),
-
-	TP_ARGS(polarity, oldnesting, newnesting),
-
-	TP_STRUCT__entry(
-		__field(char *, polarity)
-		__field(long long, oldnesting)
-		__field(long long, newnesting)
-=======
 	TP_printk("%s %ld %d %s",
 		  __entry->rcuname, __entry->gp_seq,
 		  __entry->cpu, __entry->qsevent)
@@ -680,65 +488,18 @@ TRACE_EVENT_RCU(rcu_dyntick,
 		__field(long, oldnesting)
 		__field(long, newnesting)
 		__field(int, dynticks)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->polarity = polarity;
 		__entry->oldnesting = oldnesting;
 		__entry->newnesting = newnesting;
-<<<<<<< HEAD
-	),
-
-	TP_printk("%s %llx %llx", __entry->polarity,
-		  __entry->oldnesting, __entry->newnesting)
-);
-
-/*
- * Tracepoint for RCU preparation for idle, the goal being to get RCU
- * processing done so that the current CPU can shut off its scheduling
- * clock and enter dyntick-idle mode.  One way to accomplish this is
- * to drain all RCU callbacks from this CPU, and the other is to have
- * done everything RCU requires for the current grace period.  In this
- * latter case, the CPU will be awakened at the end of the current grace
- * period in order to process the remainder of its callbacks.
- *
- * These tracepoints take a string as argument:
- *
- *	"No callbacks": Nothing to do, no callbacks on this CPU.
- *	"In holdoff": Nothing to do, holding off after unsuccessful attempt.
- *	"Begin holdoff": Attempt failed, don't retry until next jiffy.
- *	"Dyntick with callbacks": Entering dyntick-idle despite callbacks.
- *	"Dyntick with lazy callbacks": Entering dyntick-idle w/lazy callbacks.
- *	"More callbacks": Still more callbacks, try again to clear them out.
- *	"Callbacks drained": All callbacks processed, off to dyntick idle!
- *	"Timer": Timer fired to cause CPU to continue processing callbacks.
- *	"Demigrate": Timer fired on wrong CPU, woke up correct CPU.
- *	"Cleanup after idle": Idle exited, timer canceled.
- */
-TRACE_EVENT(rcu_prep_idle,
-
-	TP_PROTO(char *reason),
-
-	TP_ARGS(reason),
-
-	TP_STRUCT__entry(
-		__field(char *, reason)
-	),
-
-	TP_fast_assign(
-		__entry->reason = reason;
-	),
-
-	TP_printk("%s", __entry->reason)
-=======
 		__entry->dynticks = dynticks;
 	),
 
 	TP_printk("%s %lx %lx %#3x", __entry->polarity,
 		  __entry->oldnesting, __entry->newnesting,
 		  __entry->dynticks & 0xfff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /*
@@ -748,20 +509,6 @@ TRACE_EVENT(rcu_prep_idle,
  * number of lazy callbacks queued, and the fourth element is the
  * total number of callbacks queued.
  */
-<<<<<<< HEAD
-TRACE_EVENT(rcu_callback,
-
-	TP_PROTO(char *rcuname, struct rcu_head *rhp, long qlen_lazy,
-		 long qlen),
-
-	TP_ARGS(rcuname, rhp, qlen_lazy, qlen),
-
-	TP_STRUCT__entry(
-		__field(char *, rcuname)
-		__field(void *, rhp)
-		__field(void *, func)
-		__field(long, qlen_lazy)
-=======
 TRACE_EVENT_RCU(rcu_callback,
 
 	TP_PROTO(const char *rcuname, struct rcu_head *rhp, long qlen),
@@ -772,7 +519,6 @@ TRACE_EVENT_RCU(rcu_callback,
 		__field(const char *, rcuname)
 		__field(void *, rhp)
 		__field(void *, func)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(long, qlen)
 	),
 
@@ -780,15 +526,6 @@ TRACE_EVENT_RCU(rcu_callback,
 		__entry->rcuname = rcuname;
 		__entry->rhp = rhp;
 		__entry->func = rhp->func;
-<<<<<<< HEAD
-		__entry->qlen_lazy = qlen_lazy;
-		__entry->qlen = qlen;
-	),
-
-	TP_printk("%s rhp=%p func=%pf %ld/%ld",
-		  __entry->rcuname, __entry->rhp, __entry->func,
-		  __entry->qlen_lazy, __entry->qlen)
-=======
 		__entry->qlen = qlen;
 	),
 
@@ -821,35 +558,16 @@ TRACE_EVENT_RCU(rcu_segcb_stats,
 			  __entry->seglen[0], __entry->seglen[1], __entry->seglen[2], __entry->seglen[3],
 			  __entry->gp_seq[0], __entry->gp_seq[1], __entry->gp_seq[2], __entry->gp_seq[3])
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /*
  * Tracepoint for the registration of a single RCU callback of the special
-<<<<<<< HEAD
- * kfree() form.  The first argument is the RCU type, the second argument
-=======
  * kvfree() form.  The first argument is the RCU type, the second argument
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * is a pointer to the RCU callback, the third argument is the offset
  * of the callback within the enclosing RCU-protected data structure,
  * the fourth argument is the number of lazy callbacks queued, and the
  * fifth argument is the total number of callbacks queued.
  */
-<<<<<<< HEAD
-TRACE_EVENT(rcu_kfree_callback,
-
-	TP_PROTO(char *rcuname, struct rcu_head *rhp, unsigned long offset,
-		 long qlen_lazy, long qlen),
-
-	TP_ARGS(rcuname, rhp, offset, qlen_lazy, qlen),
-
-	TP_STRUCT__entry(
-		__field(char *, rcuname)
-		__field(void *, rhp)
-		__field(unsigned long, offset)
-		__field(long, qlen_lazy)
-=======
 TRACE_EVENT_RCU(rcu_kvfree_callback,
 
 	TP_PROTO(const char *rcuname, struct rcu_head *rhp, unsigned long offset,
@@ -861,7 +579,6 @@ TRACE_EVENT_RCU(rcu_kvfree_callback,
 		__field(const char *, rcuname)
 		__field(void *, rhp)
 		__field(unsigned long, offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(long, qlen)
 	),
 
@@ -869,22 +586,12 @@ TRACE_EVENT_RCU(rcu_kvfree_callback,
 		__entry->rcuname = rcuname;
 		__entry->rhp = rhp;
 		__entry->offset = offset;
-<<<<<<< HEAD
-		__entry->qlen_lazy = qlen_lazy;
-		__entry->qlen = qlen;
-	),
-
-	TP_printk("%s rhp=%p func=%ld %ld/%ld",
-		  __entry->rcuname, __entry->rhp, __entry->offset,
-		  __entry->qlen_lazy, __entry->qlen)
-=======
 		__entry->qlen = qlen;
 	),
 
 	TP_printk("%s rhp=%p func=%ld %ld",
 		  __entry->rcuname, __entry->rhp, __entry->offset,
 		  __entry->qlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /*
@@ -894,19 +601,6 @@ TRACE_EVENT_RCU(rcu_kvfree_callback,
  * the total number of callbacks queued, and the fourth argument is
  * the current RCU-callback batch limit.
  */
-<<<<<<< HEAD
-TRACE_EVENT(rcu_batch_start,
-
-	TP_PROTO(char *rcuname, long qlen_lazy, long qlen, int blimit),
-
-	TP_ARGS(rcuname, qlen_lazy, qlen, blimit),
-
-	TP_STRUCT__entry(
-		__field(char *, rcuname)
-		__field(long, qlen_lazy)
-		__field(long, qlen)
-		__field(int, blimit)
-=======
 TRACE_EVENT_RCU(rcu_batch_start,
 
 	TP_PROTO(const char *rcuname, long qlen, long blimit),
@@ -917,27 +611,16 @@ TRACE_EVENT_RCU(rcu_batch_start,
 		__field(const char *, rcuname)
 		__field(long, qlen)
 		__field(long, blimit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->rcuname = rcuname;
-<<<<<<< HEAD
-		__entry->qlen_lazy = qlen_lazy;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->qlen = qlen;
 		__entry->blimit = blimit;
 	),
 
-<<<<<<< HEAD
-	TP_printk("%s CBs=%ld/%ld bl=%d",
-		  __entry->rcuname, __entry->qlen_lazy, __entry->qlen,
-		  __entry->blimit)
-=======
 	TP_printk("%s CBs=%ld bl=%ld",
 		  __entry->rcuname, __entry->qlen, __entry->blimit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /*
@@ -945,24 +628,14 @@ TRACE_EVENT_RCU(rcu_batch_start,
  * The first argument is the type of RCU, and the second argument is
  * a pointer to the RCU callback itself.
  */
-<<<<<<< HEAD
-TRACE_EVENT(rcu_invoke_callback,
-
-	TP_PROTO(char *rcuname, struct rcu_head *rhp),
-=======
 TRACE_EVENT_RCU(rcu_invoke_callback,
 
 	TP_PROTO(const char *rcuname, struct rcu_head *rhp),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(rcuname, rhp),
 
 	TP_STRUCT__entry(
-<<<<<<< HEAD
-		__field(char *, rcuname)
-=======
 		__field(const char *, rcuname)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(void *, rhp)
 		__field(void *, func)
 	),
@@ -973,43 +646,25 @@ TRACE_EVENT_RCU(rcu_invoke_callback,
 		__entry->func = rhp->func;
 	),
 
-<<<<<<< HEAD
-	TP_printk("%s rhp=%p func=%pf",
-=======
 	TP_printk("%s rhp=%p func=%ps",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->rcuname, __entry->rhp, __entry->func)
 );
 
 /*
  * Tracepoint for the invocation of a single RCU callback of the special
-<<<<<<< HEAD
- * kfree() form.  The first argument is the RCU flavor, the second
-=======
  * kvfree() form.  The first argument is the RCU flavor, the second
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * argument is a pointer to the RCU callback, and the third argument
  * is the offset of the callback within the enclosing RCU-protected
  * data structure.
  */
-<<<<<<< HEAD
-TRACE_EVENT(rcu_invoke_kfree_callback,
-
-	TP_PROTO(char *rcuname, struct rcu_head *rhp, unsigned long offset),
-=======
 TRACE_EVENT_RCU(rcu_invoke_kvfree_callback,
 
 	TP_PROTO(const char *rcuname, struct rcu_head *rhp, unsigned long offset),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(rcuname, rhp, offset),
 
 	TP_STRUCT__entry(
-<<<<<<< HEAD
-		__field(char *, rcuname)
-=======
 		__field(const char *, rcuname)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(void *, rhp)
 		__field(unsigned long, offset)
 	),
@@ -1025,8 +680,6 @@ TRACE_EVENT_RCU(rcu_invoke_kvfree_callback,
 );
 
 /*
-<<<<<<< HEAD
-=======
  * Tracepoint for the invocation of a single RCU callback of the special
  * kfree_bulk() form. The first argument is the RCU flavor, the second
  * argument is a number of elements in array to free, the third is an
@@ -1055,7 +708,6 @@ TRACE_EVENT_RCU(rcu_invoke_kfree_bulk_callback,
 );
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Tracepoint for exiting rcu_do_batch after RCU callbacks have been
  * invoked.  The first argument is the name of the RCU flavor,
  * the second argument is number of callbacks actually invoked,
@@ -1066,36 +718,20 @@ TRACE_EVENT_RCU(rcu_invoke_kfree_bulk_callback,
  * and the sixth argument (risk) is the return value from
  * rcu_is_callbacks_kthread().
  */
-<<<<<<< HEAD
-TRACE_EVENT(rcu_batch_end,
-
-	TP_PROTO(char *rcuname, int callbacks_invoked,
-		 bool cb, bool nr, bool iit, bool risk),
-=======
 TRACE_EVENT_RCU(rcu_batch_end,
 
 	TP_PROTO(const char *rcuname, int callbacks_invoked,
 		 char cb, char nr, char iit, char risk),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(rcuname, callbacks_invoked, cb, nr, iit, risk),
 
 	TP_STRUCT__entry(
-<<<<<<< HEAD
-		__field(char *, rcuname)
-		__field(int, callbacks_invoked)
-		__field(bool, cb)
-		__field(bool, nr)
-		__field(bool, iit)
-		__field(bool, risk)
-=======
 		__field(const char *, rcuname)
 		__field(int, callbacks_invoked)
 		__field(char, cb)
 		__field(char, nr)
 		__field(char, iit)
 		__field(char, risk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
@@ -1118,55 +754,6 @@ TRACE_EVENT_RCU(rcu_batch_end,
 /*
  * Tracepoint for rcutorture readers.  The first argument is the name
  * of the RCU flavor from rcutorture's viewpoint and the second argument
-<<<<<<< HEAD
- * is the callback address.
- */
-TRACE_EVENT(rcu_torture_read,
-
-	TP_PROTO(char *rcutorturename, struct rcu_head *rhp),
-
-	TP_ARGS(rcutorturename, rhp),
-
-	TP_STRUCT__entry(
-		__field(char *, rcutorturename)
-		__field(struct rcu_head *, rhp)
-	),
-
-	TP_fast_assign(
-		__entry->rcutorturename = rcutorturename;
-		__entry->rhp = rhp;
-	),
-
-	TP_printk("%s torture read %p",
-		  __entry->rcutorturename, __entry->rhp)
-);
-
-#else /* #ifdef CONFIG_RCU_TRACE */
-
-#define trace_rcu_grace_period(rcuname, gpnum, gpevent) do { } while (0)
-#define trace_rcu_grace_period_init(rcuname, gpnum, level, grplo, grphi, \
-				    qsmask) do { } while (0)
-#define trace_rcu_preempt_task(rcuname, pid, gpnum) do { } while (0)
-#define trace_rcu_unlock_preempted_task(rcuname, gpnum, pid) do { } while (0)
-#define trace_rcu_quiescent_state_report(rcuname, gpnum, mask, qsmask, level, \
-					 grplo, grphi, gp_tasks) do { } \
-	while (0)
-#define trace_rcu_fqs(rcuname, gpnum, cpu, qsevent) do { } while (0)
-#define trace_rcu_dyntick(polarity, oldnesting, newnesting) do { } while (0)
-#define trace_rcu_prep_idle(reason) do { } while (0)
-#define trace_rcu_callback(rcuname, rhp, qlen_lazy, qlen) do { } while (0)
-#define trace_rcu_kfree_callback(rcuname, rhp, offset, qlen_lazy, qlen) \
-	do { } while (0)
-#define trace_rcu_batch_start(rcuname, qlen_lazy, qlen, blimit) \
-	do { } while (0)
-#define trace_rcu_invoke_callback(rcuname, rhp) do { } while (0)
-#define trace_rcu_invoke_kfree_callback(rcuname, rhp, offset) do { } while (0)
-#define trace_rcu_batch_end(rcuname, callbacks_invoked, cb, nr, iit, risk) \
-	do { } while (0)
-#define trace_rcu_torture_read(rcutorturename, rhp) do { } while (0)
-
-#endif /* #else #ifdef CONFIG_RCU_TRACE */
-=======
  * is the callback address.  The third argument is the start time in
  * seconds, and the last two arguments are the grace period numbers
  * at the beginning and end of the read, respectively.  Note that the
@@ -1243,7 +830,6 @@ TRACE_EVENT_RCU(rcu_barrier,
 		  __entry->rcuname, __entry->s, __entry->cpu, __entry->cnt,
 		  __entry->done)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _TRACE_RCU_H */
 

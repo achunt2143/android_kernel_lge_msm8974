@@ -11,21 +11,15 @@
  * warranty of any kind, whether express or implied.
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/clk.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dma-mapping.h>
 #include <linux/etherdevice.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/serial_8250.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/usb/ehci_pdriver.h>
 #include <linux/usb/ohci_pdriver.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach-au1x00/au1000.h>
 #include <asm/mach-au1x00/au1xxx_dbdma.h>
@@ -57,17 +51,10 @@ static void alchemy_8250_pm(struct uart_port *port, unsigned int state,
 #define PORT(_base, _irq)					\
 	{							\
 		.mapbase	= _base,			\
-<<<<<<< HEAD
-		.irq		= _irq,				\
-		.regshift	= 2,				\
-		.iotype		= UPIO_AU,			\
-		.flags		= UPF_SKIP_TEST | UPF_IOREMAP |	\
-=======
 		.mapsize	= 0x1000,			\
 		.irq		= _irq,				\
 		.regshift	= 2,				\
 		.flags		= UPF_SKIP_TEST | UPF_IOREMAP | \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  UPF_FIXED_TYPE,		\
 		.type		= PORT_16550A,			\
 		.pm		= alchemy_8250_pm,		\
@@ -113,14 +100,6 @@ static struct platform_device au1xx0_uart_device = {
 
 static void __init alchemy_setup_uarts(int ctype)
 {
-<<<<<<< HEAD
-	unsigned int uartclk = get_au1x00_uart_baud_base() * 16;
-	int s = sizeof(struct plat_serial8250_port);
-	int c = alchemy_get_uarts(ctype);
-	struct plat_serial8250_port *ports;
-
-	ports = kzalloc(s * (c + 1), GFP_KERNEL);
-=======
 	long uartclk;
 	int s = sizeof(struct plat_serial8250_port);
 	int c = alchemy_get_uarts(ctype);
@@ -137,7 +116,6 @@ static void __init alchemy_setup_uarts(int ctype)
 	clk_put(clk);
 
 	ports = kcalloc(s, (c + 1), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ports) {
 		printk(KERN_INFO "Alchemy: no memory for UART data\n");
 		return;
@@ -146,10 +124,6 @@ static void __init alchemy_setup_uarts(int ctype)
 	au1xx0_uart_device.dev.platform_data = ports;
 
 	/* Fill up uartclk. */
-<<<<<<< HEAD
-	for (s = 0; s < c; s++)
-		ports[s].uartclk = uartclk;
-=======
 	for (s = 0; s < c; s++) {
 		ports[s].uartclk = uartclk;
 		if (au_platform_setup(&ports[s]) < 0) {
@@ -158,17 +132,11 @@ static void __init alchemy_setup_uarts(int ctype)
 			return;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (platform_device_register(&au1xx0_uart_device))
 		printk(KERN_INFO "Alchemy: failed to register UARTs\n");
 }
 
 
-<<<<<<< HEAD
-/* The dmamask must be set for OHCI/EHCI to work */
-static u64 alchemy_ohci_dmamask = DMA_BIT_MASK(32);
-static u64 __maybe_unused alchemy_ehci_dmamask = DMA_BIT_MASK(32);
-=======
 static u64 alchemy_all_dmamask = DMA_BIT_MASK(32);
 
 /* Power on callback for the ehci platform driver */
@@ -217,7 +185,6 @@ static struct usb_ohci_pdata alchemy_ohci_pdata = {
 	.power_off		= alchemy_ohci_power_off,
 	.power_suspend		= alchemy_ohci_power_off,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned long alchemy_ohci_data[][2] __initdata = {
 	[ALCHEMY_CPU_AU1000] = { AU1000_USB_OHCI_PHYS_ADDR, AU1000_USB_HOST_INT },
@@ -235,11 +202,7 @@ static unsigned long alchemy_ehci_data[][2] __initdata = {
 
 static int __init _new_usbres(struct resource **r, struct platform_device **d)
 {
-<<<<<<< HEAD
-	*r = kzalloc(sizeof(struct resource) * 2, GFP_KERNEL);
-=======
 	*r = kcalloc(2, sizeof(struct resource), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!*r)
 		return -ENOMEM;
 	*d = kzalloc(sizeof(struct platform_device), GFP_KERNEL);
@@ -270,16 +233,10 @@ static void __init alchemy_setup_usb(int ctype)
 	res[1].start = alchemy_ohci_data[ctype][1];
 	res[1].end = res[1].start;
 	res[1].flags = IORESOURCE_IRQ;
-<<<<<<< HEAD
-	pdev->name = "au1xxx-ohci";
-	pdev->id = 0;
-	pdev->dev.dma_mask = &alchemy_ohci_dmamask;
-=======
 	pdev->name = "ohci-platform";
 	pdev->id = 0;
 	pdev->dev.dma_mask = &alchemy_all_dmamask;
 	pdev->dev.platform_data = &alchemy_ohci_pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (platform_device_register(pdev))
 		printk(KERN_INFO "Alchemy USB: cannot add OHCI0\n");
@@ -296,16 +253,10 @@ static void __init alchemy_setup_usb(int ctype)
 		res[1].start = alchemy_ehci_data[ctype][1];
 		res[1].end = res[1].start;
 		res[1].flags = IORESOURCE_IRQ;
-<<<<<<< HEAD
-		pdev->name = "au1xxx-ehci";
-		pdev->id = 0;
-		pdev->dev.dma_mask = &alchemy_ehci_dmamask;
-=======
 		pdev->name = "ehci-platform";
 		pdev->id = 0;
 		pdev->dev.dma_mask = &alchemy_all_dmamask;
 		pdev->dev.platform_data = &alchemy_ehci_pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (platform_device_register(pdev))
 			printk(KERN_INFO "Alchemy USB: cannot add EHCI0\n");
@@ -322,16 +273,10 @@ static void __init alchemy_setup_usb(int ctype)
 		res[1].start = AU1300_USB_INT;
 		res[1].end = res[1].start;
 		res[1].flags = IORESOURCE_IRQ;
-<<<<<<< HEAD
-		pdev->name = "au1xxx-ohci";
-		pdev->id = 1;
-		pdev->dev.dma_mask = &alchemy_ohci_dmamask;
-=======
 		pdev->name = "ohci-platform";
 		pdev->id = 1;
 		pdev->dev.dma_mask = &alchemy_all_dmamask;
 		pdev->dev.platform_data = &alchemy_ohci_pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (platform_device_register(pdev))
 			printk(KERN_INFO "Alchemy USB: cannot add OHCI1\n");
@@ -397,15 +342,11 @@ static struct platform_device au1xxx_eth0_device = {
 	.name		= "au1000-eth",
 	.id		= 0,
 	.num_resources	= MAC_RES_COUNT,
-<<<<<<< HEAD
-	.dev.platform_data = &au1xxx_eth0_platform_data,
-=======
 	.dev = {
 		.dma_mask               = &alchemy_all_dmamask,
 		.coherent_dma_mask      = DMA_BIT_MASK(32),
 		.platform_data          = &au1xxx_eth0_platform_data,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource au1xxx_eth1_resources[][MAC_RES_COUNT] __initdata = {
@@ -437,15 +378,11 @@ static struct platform_device au1xxx_eth1_device = {
 	.name		= "au1000-eth",
 	.id		= 1,
 	.num_resources	= MAC_RES_COUNT,
-<<<<<<< HEAD
-	.dev.platform_data = &au1xxx_eth1_platform_data,
-=======
 	.dev = {
 		.dma_mask               = &alchemy_all_dmamask,
 		.coherent_dma_mask      = DMA_BIT_MASK(32),
 		.platform_data          = &au1xxx_eth1_platform_data,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init au1xxx_override_eth_cfg(unsigned int port,
@@ -472,21 +409,12 @@ static void __init alchemy_setup_macs(int ctype)
 	if (alchemy_get_macs(ctype) < 1)
 		return;
 
-<<<<<<< HEAD
-	macres = kmalloc(sizeof(struct resource) * MAC_RES_COUNT, GFP_KERNEL);
-=======
 	macres = kmemdup(au1xxx_eth0_resources[ctype],
 			 sizeof(struct resource) * MAC_RES_COUNT, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!macres) {
 		printk(KERN_INFO "Alchemy: no memory for MAC0 resources\n");
 		return;
 	}
-<<<<<<< HEAD
-	memcpy(macres, au1xxx_eth0_resources[ctype],
-	       sizeof(struct resource) * MAC_RES_COUNT);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	au1xxx_eth0_device.resource = macres;
 
 	i = prom_get_ethernet_addr(ethaddr);
@@ -502,21 +430,12 @@ static void __init alchemy_setup_macs(int ctype)
 	if (alchemy_get_macs(ctype) < 2)
 		return;
 
-<<<<<<< HEAD
-	macres = kmalloc(sizeof(struct resource) * MAC_RES_COUNT, GFP_KERNEL);
-=======
 	macres = kmemdup(au1xxx_eth1_resources[ctype],
 			 sizeof(struct resource) * MAC_RES_COUNT, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!macres) {
 		printk(KERN_INFO "Alchemy: no memory for MAC1 resources\n");
 		return;
 	}
-<<<<<<< HEAD
-	memcpy(macres, au1xxx_eth1_resources[ctype],
-	       sizeof(struct resource) * MAC_RES_COUNT);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	au1xxx_eth1_device.resource = macres;
 
 	ethaddr[5] += 1;	/* next addr for 2nd MAC */
@@ -524,11 +443,7 @@ static void __init alchemy_setup_macs(int ctype)
 		memcpy(au1xxx_eth1_platform_data.mac, ethaddr, 6);
 
 	/* Register second MAC if enabled in pinfunc */
-<<<<<<< HEAD
-	if (!(au_readl(SYS_PINFUNC) & (u32)SYS_PF_NI2)) {
-=======
 	if (!(alchemy_rdsys(AU1000_SYS_PINFUNC) & SYS_PF_NI2)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = platform_device_register(&au1xxx_eth1_device);
 		if (ret)
 			printk(KERN_INFO "Alchemy: failed to register MAC1\n");

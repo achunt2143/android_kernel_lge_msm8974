@@ -1,36 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Broadcom BCM63xx SPI controller support
  *
  * Copyright (C) 2009-2012 Florian Fainelli <florian@openwrt.org>
  * Copyright (C) 2010 Tanguy Bouzeloc <tanguy.bouzeloc@efixo.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  */
 
 #include <linux/kernel.h>
-#include <linux/init.h>
-=======
- */
-
-#include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/module.h>
@@ -40,15 +16,6 @@
 #include <linux/spi/spi.h>
 #include <linux/completion.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-#include <linux/workqueue.h>
-#include <linux/pm_runtime.h>
-
-#include <bcm63xx_dev_spi.h>
-
-#define PFX		KBUILD_MODNAME
-#define DRV_VER		"0.1.2"
-=======
 #include <linux/pm_runtime.h>
 #include <linux/of.h>
 #include <linux/reset.h>
@@ -163,7 +130,6 @@ enum bcm63xx_regs_spi {
 
 #define BCM63XX_SPI_MAX_CS		8
 #define BCM63XX_SPI_BUS_NUM		0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bcm63xx_spi {
 	struct completion	done;
@@ -172,70 +138,34 @@ struct bcm63xx_spi {
 	int			irq;
 
 	/* Platform data */
-<<<<<<< HEAD
-	u32			speed_hz;
-	unsigned		fifo_size;
-
-	/* Data buffers */
-	const unsigned char	*tx_ptr;
-	unsigned char		*rx_ptr;
-=======
 	const unsigned long	*reg_offsets;
 	unsigned int		fifo_size;
 	unsigned int		msg_type_shift;
 	unsigned int		msg_ctl_width;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* data iomem */
 	u8 __iomem		*tx_io;
 	const u8 __iomem	*rx_io;
 
-<<<<<<< HEAD
-	int			remaining_bytes;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct clk		*clk;
 	struct platform_device	*pdev;
 };
 
 static inline u8 bcm_spi_readb(struct bcm63xx_spi *bs,
-<<<<<<< HEAD
-				unsigned int offset)
-{
-	return bcm_readb(bs->regs + bcm63xx_spireg(offset));
-}
-
-static inline u16 bcm_spi_readw(struct bcm63xx_spi *bs,
-				unsigned int offset)
-{
-	return bcm_readw(bs->regs + bcm63xx_spireg(offset));
-=======
 			       unsigned int offset)
 {
 	return readb(bs->regs + bs->reg_offsets[offset]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void bcm_spi_writeb(struct bcm63xx_spi *bs,
 				  u8 value, unsigned int offset)
 {
-<<<<<<< HEAD
-	bcm_writeb(value, bs->regs + bcm63xx_spireg(offset));
-=======
 	writeb(value, bs->regs + bs->reg_offsets[offset]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void bcm_spi_writew(struct bcm63xx_spi *bs,
 				  u16 value, unsigned int offset)
 {
-<<<<<<< HEAD
-	bcm_writew(value, bs->regs + bcm63xx_spireg(offset));
-}
-
-static const unsigned bcm63xx_spi_freq_table[SPI_CLK_MASK][2] = {
-=======
 #ifdef CONFIG_CPU_BIG_ENDIAN
 	iowrite16be(value, bs->regs + bs->reg_offsets[offset]);
 #else
@@ -244,7 +174,6 @@ static const unsigned bcm63xx_spi_freq_table[SPI_CLK_MASK][2] = {
 }
 
 static const unsigned int bcm63xx_spi_freq_table[SPI_CLK_MASK][2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 20000000, SPI_CLK_20MHZ },
 	{ 12500000, SPI_CLK_12_50MHZ },
 	{  6250000, SPI_CLK_6_250MHZ },
@@ -254,42 +183,6 @@ static const unsigned int bcm63xx_spi_freq_table[SPI_CLK_MASK][2] = {
 	{   391000, SPI_CLK_0_391MHZ }
 };
 
-<<<<<<< HEAD
-static int bcm63xx_spi_check_transfer(struct spi_device *spi,
-					struct spi_transfer *t)
-{
-	u8 bits_per_word;
-
-	bits_per_word = (t) ? t->bits_per_word : spi->bits_per_word;
-	if (bits_per_word != 8) {
-		dev_err(&spi->dev, "%s, unsupported bits_per_word=%d\n",
-			__func__, bits_per_word);
-		return -EINVAL;
-	}
-
-	if (spi->chip_select > spi->master->num_chipselect) {
-		dev_err(&spi->dev, "%s, unsupported slave %d\n",
-			__func__, spi->chip_select);
-		return -EINVAL;
-	}
-
-	return 0;
-}
-
-static void bcm63xx_spi_setup_transfer(struct spi_device *spi,
-				      struct spi_transfer *t)
-{
-	struct bcm63xx_spi *bs = spi_master_get_devdata(spi->master);
-	u32 hz;
-	u8 clk_cfg, reg;
-	int i;
-
-	hz = (t) ? t->speed_hz : spi->max_speed_hz;
-
-	/* Find the closest clock configuration */
-	for (i = 0; i < SPI_CLK_MASK; i++) {
-		if (hz <= bcm63xx_spi_freq_table[i][0]) {
-=======
 static void bcm63xx_spi_setup_transfer(struct spi_device *spi,
 				      struct spi_transfer *t)
 {
@@ -303,19 +196,11 @@ static void bcm63xx_spi_setup_transfer(struct spi_device *spi,
 	/* Find the closest clock configuration */
 	for (i = 0; i < SPI_CLK_MASK; i++) {
 		if (t->speed_hz >= bcm63xx_spi_freq_table[i][0]) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			clk_cfg = bcm63xx_spi_freq_table[i][1];
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	/* No matching configuration found, default to lowest */
-	if (i == SPI_CLK_MASK)
-		clk_cfg = SPI_CLK_0_391MHZ;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clear existing clock configuration bits of the register */
 	reg = bcm_spi_readb(bs, SPI_CLK_CFG);
 	reg &= ~SPI_CLK_MASK;
@@ -323,65 +208,12 @@ static void bcm63xx_spi_setup_transfer(struct spi_device *spi,
 
 	bcm_spi_writeb(bs, reg, SPI_CLK_CFG);
 	dev_dbg(&spi->dev, "Setting clock register to %02x (hz %d)\n",
-<<<<<<< HEAD
-		clk_cfg, hz);
-=======
 		clk_cfg, t->speed_hz);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* the spi->mode bits understood by this driver: */
 #define MODEBITS (SPI_CPOL | SPI_CPHA)
 
-<<<<<<< HEAD
-static int bcm63xx_spi_setup(struct spi_device *spi)
-{
-	struct bcm63xx_spi *bs;
-	int ret;
-
-	bs = spi_master_get_devdata(spi->master);
-
-	if (!spi->bits_per_word)
-		spi->bits_per_word = 8;
-
-	if (spi->mode & ~MODEBITS) {
-		dev_err(&spi->dev, "%s, unsupported mode bits %x\n",
-			__func__, spi->mode & ~MODEBITS);
-		return -EINVAL;
-	}
-
-	ret = bcm63xx_spi_check_transfer(spi, NULL);
-	if (ret < 0) {
-		dev_err(&spi->dev, "setup: unsupported mode bits %x\n",
-			spi->mode & ~MODEBITS);
-		return ret;
-	}
-
-	dev_dbg(&spi->dev, "%s, mode %d, %u bits/w, %u nsec/bit\n",
-		__func__, spi->mode & MODEBITS, spi->bits_per_word, 0);
-
-	return 0;
-}
-
-/* Fill the TX FIFO with as many bytes as possible */
-static void bcm63xx_spi_fill_tx_fifo(struct bcm63xx_spi *bs)
-{
-	u8 size;
-
-	/* Fill the Tx FIFO with as many bytes as possible */
-	size = bs->remaining_bytes < bs->fifo_size ? bs->remaining_bytes :
-		bs->fifo_size;
-	memcpy_toio(bs->tx_io, bs->tx_ptr, size);
-	bs->remaining_bytes -= size;
-}
-
-static unsigned int bcm63xx_txrx_bufs(struct spi_device *spi,
-					struct spi_transfer *t)
-{
-	struct bcm63xx_spi *bs = spi_master_get_devdata(spi->master);
-	u16 msg_ctl;
-	u16 cmd;
-=======
 static int bcm63xx_txrx_bufs(struct spi_device *spi, struct spi_transfer *first,
 				unsigned int num_transfers)
 {
@@ -392,7 +224,6 @@ static int bcm63xx_txrx_bufs(struct spi_device *spi, struct spi_transfer *first,
 	struct spi_transfer *t = first;
 	bool do_rx = false;
 	bool do_tx = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable the CMD_DONE interrupt */
 	bcm_spi_writeb(bs, 0, SPI_INT_MASK);
@@ -400,35 +231,6 @@ static int bcm63xx_txrx_bufs(struct spi_device *spi, struct spi_transfer *first,
 	dev_dbg(&spi->dev, "txrx: tx %p, rx %p, len %d\n",
 		t->tx_buf, t->rx_buf, t->len);
 
-<<<<<<< HEAD
-	/* Transmitter is inhibited */
-	bs->tx_ptr = t->tx_buf;
-	bs->rx_ptr = t->rx_buf;
-
-	if (t->tx_buf) {
-		bs->remaining_bytes = t->len;
-		bcm63xx_spi_fill_tx_fifo(bs);
-	}
-
-	init_completion(&bs->done);
-
-	/* Fill in the Message control register */
-	msg_ctl = (t->len << SPI_BYTE_CNT_SHIFT);
-
-	if (t->rx_buf && t->tx_buf)
-		msg_ctl |= (SPI_FD_RW << SPI_MSG_TYPE_SHIFT);
-	else if (t->rx_buf)
-		msg_ctl |= (SPI_HD_R << SPI_MSG_TYPE_SHIFT);
-	else if (t->tx_buf)
-		msg_ctl |= (SPI_HD_W << SPI_MSG_TYPE_SHIFT);
-
-	bcm_spi_writew(bs, msg_ctl, SPI_MSG_CTL);
-
-	/* Issue the transfer */
-	cmd = SPI_CMD_START_IMMEDIATE;
-	cmd |= (0 << SPI_CMD_PREPEND_BYTE_CNT_SHIFT);
-	cmd |= (spi->chip_select << SPI_CMD_DEVICE_ID_SHIFT);
-=======
 	if (num_transfers > 1 && t->tx_buf && t->len <= BCM63XX_SPI_MAX_PREPEND)
 		prepend_len = t->len;
 
@@ -481,22 +283,11 @@ static int bcm63xx_txrx_bufs(struct spi_device *spi, struct spi_transfer *first,
 	cmd = SPI_CMD_START_IMMEDIATE;
 	cmd |= (prepend_len << SPI_CMD_PREPEND_BYTE_CNT_SHIFT);
 	cmd |= (spi_get_chipselect(spi, 0) << SPI_CMD_DEVICE_ID_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bcm_spi_writew(bs, cmd, SPI_CMD);
 
 	/* Enable the CMD_DONE interrupt */
 	bcm_spi_writeb(bs, SPI_INTR_CMD_DONE, SPI_INT_MASK);
 
-<<<<<<< HEAD
-	return t->len - bs->remaining_bytes;
-}
-
-static int bcm63xx_spi_prepare_transfer(struct spi_master *master)
-{
-	struct bcm63xx_spi *bs = spi_master_get_devdata(master);
-
-	pm_runtime_get_sync(&bs->pdev->dev);
-=======
 	timeout = wait_for_completion_timeout(&bs->done, HZ);
 	if (!timeout)
 		return -ETIMEDOUT;
@@ -517,65 +308,10 @@ static int bcm63xx_spi_prepare_transfer(struct spi_master *master)
 		t = list_entry(t->transfer_list.next, struct spi_transfer,
 			       transfer_list);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int bcm63xx_spi_unprepare_transfer(struct spi_master *master)
-{
-	struct bcm63xx_spi *bs = spi_master_get_devdata(master);
-
-	pm_runtime_put(&bs->pdev->dev);
-
-	return 0;
-}
-
-static int bcm63xx_spi_transfer_one(struct spi_master *master,
-					struct spi_message *m)
-{
-	struct bcm63xx_spi *bs = spi_master_get_devdata(master);
-	struct spi_transfer *t;
-	struct spi_device *spi = m->spi;
-	int status = 0;
-	unsigned int timeout = 0;
-
-	list_for_each_entry(t, &m->transfers, transfer_list) {
-		unsigned int len = t->len;
-		u8 rx_tail;
-
-		status = bcm63xx_spi_check_transfer(spi, t);
-		if (status < 0)
-			goto exit;
-
-		/* configure adapter for a new transfer */
-		bcm63xx_spi_setup_transfer(spi, t);
-
-		while (len) {
-			/* send the data */
-			len -= bcm63xx_txrx_bufs(spi, t);
-
-			timeout = wait_for_completion_timeout(&bs->done, HZ);
-			if (!timeout) {
-				status = -ETIMEDOUT;
-				goto exit;
-			}
-
-			/* read out all data */
-			rx_tail = bcm_spi_readb(bs, SPI_RX_TAIL);
-
-			/* Read out all the data */
-			if (rx_tail)
-				memcpy_fromio(bs->rx_ptr, bs->rx_io, rx_tail);
-		}
-
-		m->actual_length += t->len;
-	}
-exit:
-	m->status = status;
-	spi_finalize_current_message(master);
-=======
 static int bcm63xx_spi_transfer_one(struct spi_controller *host,
 					struct spi_message *m)
 {
@@ -650,27 +386,17 @@ static int bcm63xx_spi_transfer_one(struct spi_controller *host,
 exit:
 	m->status = status;
 	spi_finalize_current_message(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* This driver supports single master mode only. Hence
-=======
 /* This driver supports single host mode only. Hence
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * CMD_DONE is the only interrupt we care about
  */
 static irqreturn_t bcm63xx_spi_interrupt(int irq, void *dev_id)
 {
-<<<<<<< HEAD
-	struct spi_master *master = (struct spi_master *)dev_id;
-	struct bcm63xx_spi *bs = spi_master_get_devdata(master);
-=======
 	struct spi_controller *host = (struct spi_controller *)dev_id;
 	struct bcm63xx_spi *bs = spi_controller_get_devdata(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 intr;
 
 	/* Read interupts and clear them immediately */
@@ -685,65 +411,6 @@ static irqreturn_t bcm63xx_spi_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-
-static int __devinit bcm63xx_spi_probe(struct platform_device *pdev)
-{
-	struct resource *r;
-	struct device *dev = &pdev->dev;
-	struct bcm63xx_spi_pdata *pdata = pdev->dev.platform_data;
-	int irq;
-	struct spi_master *master;
-	struct clk *clk;
-	struct bcm63xx_spi *bs;
-	int ret;
-
-	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!r) {
-		dev_err(dev, "no iomem\n");
-		ret = -ENXIO;
-		goto out;
-	}
-
-	irq = platform_get_irq(pdev, 0);
-	if (irq < 0) {
-		dev_err(dev, "no irq\n");
-		ret = -ENXIO;
-		goto out;
-	}
-
-	clk = clk_get(dev, "spi");
-	if (IS_ERR(clk)) {
-		dev_err(dev, "no clock for device\n");
-		ret = PTR_ERR(clk);
-		goto out;
-	}
-
-	master = spi_alloc_master(dev, sizeof(*bs));
-	if (!master) {
-		dev_err(dev, "out of memory\n");
-		ret = -ENOMEM;
-		goto out_clk;
-	}
-
-	bs = spi_master_get_devdata(master);
-
-	platform_set_drvdata(pdev, master);
-	bs->pdev = pdev;
-
-	if (!devm_request_mem_region(&pdev->dev, r->start,
-					resource_size(r), PFX)) {
-		dev_err(dev, "iomem request failed\n");
-		ret = -ENXIO;
-		goto out_err;
-	}
-
-	bs->regs = devm_ioremap_nocache(&pdev->dev, r->start,
-							resource_size(r));
-	if (!bs->regs) {
-		dev_err(dev, "unable to ioremap regs\n");
-		ret = -ENOMEM;
-=======
 static size_t bcm63xx_spi_max_length(struct spi_device *spi)
 {
 	struct bcm63xx_spi *bs = spi_controller_get_devdata(spi->controller);
@@ -873,75 +540,21 @@ static int bcm63xx_spi_probe(struct platform_device *pdev)
 	bs->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &r);
 	if (IS_ERR(bs->regs)) {
 		ret = PTR_ERR(bs->regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_err;
 	}
 
 	bs->irq = irq;
 	bs->clk = clk;
-<<<<<<< HEAD
-	bs->fifo_size = pdata->fifo_size;
-
-	ret = devm_request_irq(&pdev->dev, irq, bcm63xx_spi_interrupt, 0,
-							pdev->name, master);
-=======
 	bs->reg_offsets = bcm63xx_spireg;
 	bs->fifo_size = bs->reg_offsets[SPI_MSG_DATA_SIZE];
 
 	ret = devm_request_irq(&pdev->dev, irq, bcm63xx_spi_interrupt, 0,
 			       pdev->name, host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(dev, "unable to request irq\n");
 		goto out_err;
 	}
 
-<<<<<<< HEAD
-	master->bus_num = pdata->bus_num;
-	master->num_chipselect = pdata->num_chipselect;
-	master->setup = bcm63xx_spi_setup;
-	master->prepare_transfer_hardware = bcm63xx_spi_prepare_transfer;
-	master->unprepare_transfer_hardware = bcm63xx_spi_unprepare_transfer;
-	master->transfer_one_message = bcm63xx_spi_transfer_one;
-	master->mode_bits = MODEBITS;
-	bs->speed_hz = pdata->speed_hz;
-	bs->tx_io = (u8 *)(bs->regs + bcm63xx_spireg(SPI_MSG_DATA));
-	bs->rx_io = (const u8 *)(bs->regs + bcm63xx_spireg(SPI_RX_DATA));
-
-	/* Initialize hardware */
-	clk_enable(bs->clk);
-	bcm_spi_writeb(bs, SPI_INTR_CLEAR_ALL, SPI_INT_STATUS);
-
-	/* register and we are done */
-	ret = spi_register_master(master);
-	if (ret) {
-		dev_err(dev, "spi register failed\n");
-		goto out_clk_disable;
-	}
-
-	dev_info(dev, "at 0x%08x (irq %d, FIFOs size %d) v%s\n",
-		 r->start, irq, bs->fifo_size, DRV_VER);
-
-	return 0;
-
-out_clk_disable:
-	clk_disable(clk);
-out_err:
-	platform_set_drvdata(pdev, NULL);
-	spi_master_put(master);
-out_clk:
-	clk_put(clk);
-out:
-	return ret;
-}
-
-static int __devexit bcm63xx_spi_remove(struct platform_device *pdev)
-{
-	struct spi_master *master = platform_get_drvdata(pdev);
-	struct bcm63xx_spi *bs = spi_master_get_devdata(master);
-
-	spi_unregister_master(master);
-=======
 	host->dev.of_node = dev->of_node;
 	host->bus_num = bus_num;
 	host->num_chipselect = num_cs;
@@ -996,30 +609,11 @@ static void bcm63xx_spi_remove(struct platform_device *pdev)
 {
 	struct spi_controller *host = platform_get_drvdata(pdev);
 	struct bcm63xx_spi *bs = spi_controller_get_devdata(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* reset spi block */
 	bcm_spi_writeb(bs, 0, SPI_INT_MASK);
 
 	/* HW shutdown */
-<<<<<<< HEAD
-	clk_disable(bs->clk);
-	clk_put(bs->clk);
-
-	platform_set_drvdata(pdev, 0);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-static int bcm63xx_spi_suspend(struct device *dev)
-{
-	struct spi_master *master =
-			platform_get_drvdata(to_platform_device(dev));
-	struct bcm63xx_spi *bs = spi_master_get_devdata(master);
-
-	clk_disable(bs->clk);
-=======
 	clk_disable_unprepare(bs->clk);
 }
 
@@ -1031,20 +625,12 @@ static int bcm63xx_spi_suspend(struct device *dev)
 	spi_controller_suspend(host);
 
 	clk_disable_unprepare(bs->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int bcm63xx_spi_resume(struct device *dev)
 {
-<<<<<<< HEAD
-	struct spi_master *master =
-			platform_get_drvdata(to_platform_device(dev));
-	struct bcm63xx_spi *bs = spi_master_get_devdata(master);
-
-	clk_enable(bs->clk);
-=======
 	struct spi_controller *host = dev_get_drvdata(dev);
 	struct bcm63xx_spi *bs = spi_controller_get_devdata(host);
 	int ret;
@@ -1054,42 +640,21 @@ static int bcm63xx_spi_resume(struct device *dev)
 		return ret;
 
 	spi_controller_resume(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct dev_pm_ops bcm63xx_spi_pm_ops = {
-	.suspend	= bcm63xx_spi_suspend,
-	.resume		= bcm63xx_spi_resume,
-};
-
-#define BCM63XX_SPI_PM_OPS	(&bcm63xx_spi_pm_ops)
-#else
-#define BCM63XX_SPI_PM_OPS	NULL
-#endif
-=======
 static DEFINE_SIMPLE_DEV_PM_OPS(bcm63xx_spi_pm_ops, bcm63xx_spi_suspend, bcm63xx_spi_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver bcm63xx_spi_driver = {
 	.driver = {
 		.name	= "bcm63xx-spi",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-		.pm	= BCM63XX_SPI_PM_OPS,
-	},
-	.probe		= bcm63xx_spi_probe,
-	.remove		= __devexit_p(bcm63xx_spi_remove),
-=======
 		.pm	= &bcm63xx_spi_pm_ops,
 		.of_match_table = bcm63xx_spi_of_match,
 	},
 	.id_table	= bcm63xx_spi_dev_match,
 	.probe		= bcm63xx_spi_probe,
 	.remove_new	= bcm63xx_spi_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(bcm63xx_spi_driver);

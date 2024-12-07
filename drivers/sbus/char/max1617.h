@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Id: max1617.h,v 1.1 2001/04/02 09:59:08 davem Exp $ */
 #ifndef _MAX1617_H
 #define _MAX1617_H

@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for C-Media's CMI8330 and CMI8329 soundcards.
  *  Copyright (c) by George Talusan <gstalusan@uwaterloo.ca>
  *    http://www.undergrad.math.uwaterloo.ca/~gstalusa
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -72,10 +51,6 @@
 MODULE_AUTHOR("George Talusan <gstalusan@uwaterloo.ca>");
 MODULE_DESCRIPTION("C-Media CMI8330/CMI8329");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{C-Media,CMI8330,isapnp:{CMI0001,@@@0001,@X@0001}}}");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;
@@ -105,29 +80,6 @@ module_param_array(isapnp, bool, NULL, 0444);
 MODULE_PARM_DESC(isapnp, "PnP detection for specified soundcard.");
 #endif
 
-<<<<<<< HEAD
-module_param_array(sbport, long, NULL, 0444);
-MODULE_PARM_DESC(sbport, "Port # for CMI8330/CMI8329 SB driver.");
-module_param_array(sbirq, int, NULL, 0444);
-MODULE_PARM_DESC(sbirq, "IRQ # for CMI8330/CMI8329 SB driver.");
-module_param_array(sbdma8, int, NULL, 0444);
-MODULE_PARM_DESC(sbdma8, "DMA8 for CMI8330/CMI8329 SB driver.");
-module_param_array(sbdma16, int, NULL, 0444);
-MODULE_PARM_DESC(sbdma16, "DMA16 for CMI8330/CMI8329 SB driver.");
-
-module_param_array(wssport, long, NULL, 0444);
-MODULE_PARM_DESC(wssport, "Port # for CMI8330/CMI8329 WSS driver.");
-module_param_array(wssirq, int, NULL, 0444);
-MODULE_PARM_DESC(wssirq, "IRQ # for CMI8330/CMI8329 WSS driver.");
-module_param_array(wssdma, int, NULL, 0444);
-MODULE_PARM_DESC(wssdma, "DMA for CMI8330/CMI8329 WSS driver.");
-
-module_param_array(fmport, long, NULL, 0444);
-MODULE_PARM_DESC(fmport, "FM port # for CMI8330/CMI8329 driver.");
-module_param_array(mpuport, long, NULL, 0444);
-MODULE_PARM_DESC(mpuport, "MPU-401 port # for CMI8330/CMI8329 driver.");
-module_param_array(mpuirq, int, NULL, 0444);
-=======
 module_param_hw_array(sbport, long, ioport, NULL, 0444);
 MODULE_PARM_DESC(sbport, "Port # for CMI8330/CMI8329 SB driver.");
 module_param_hw_array(sbirq, int, irq, NULL, 0444);
@@ -149,7 +101,6 @@ MODULE_PARM_DESC(fmport, "FM port # for CMI8330/CMI8329 driver.");
 module_param_hw_array(mpuport, long, ioport, NULL, 0444);
 MODULE_PARM_DESC(mpuport, "MPU-401 port # for CMI8330/CMI8329 driver.");
 module_param_hw_array(mpuirq, int, irq, NULL, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(mpuirq, "IRQ # for CMI8330/CMI8329 MPU-401 port.");
 #ifdef CONFIG_PNP
 static int isa_registered;
@@ -168,11 +119,7 @@ static int pnp_registered;
 #define CMI8330_LINGAIN   25
 #define CMI8330_CDINGAIN  26
 
-<<<<<<< HEAD
-static unsigned char snd_cmi8330_image[((CMI8330_CDINGAIN)-16) + 1] =
-=======
 static const unsigned char snd_cmi8330_image[((CMI8330_CDINGAIN)-16) + 1] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	0x40,			/* 16 - recording mux (SB-mixer-enabled) */
 #ifdef ENABLE_SB_MIXER
@@ -220,11 +167,7 @@ struct snd_cmi8330 {
 
 #ifdef CONFIG_PNP
 
-<<<<<<< HEAD
-static struct pnp_card_device_id snd_cmi8330_pnpids[] = {
-=======
 static const struct pnp_card_device_id snd_cmi8330_pnpids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .id = "CMI0001", .devs = { { "@X@0001" }, { "@@@0001" }, { "@H@0001" }, { "A@@0001" } } },
 	{ .id = "CMI0001", .devs = { { "@@@0001" }, { "@X@0001" }, { "@H@0001" } } },
 	{ .id = "" }
@@ -235,11 +178,7 @@ MODULE_DEVICE_TABLE(pnp_card, snd_cmi8330_pnpids);
 #endif
 
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_cmi8330_controls[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_cmi8330_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 WSS_DOUBLE("Master Playback Volume", 0,
 		CMI8330_MASTVOL, CMI8330_MASTVOL, 4, 0, 15, 0),
 WSS_SINGLE("Loud Playback Switch", 0,
@@ -295,11 +234,7 @@ WSS_SINGLE(SNDRV_CTL_NAME_IEC958("Input ", PLAYBACK, SWITCH), 0,
 };
 
 #ifdef ENABLE_SB_MIXER
-<<<<<<< HEAD
-static struct sbmix_elem cmi8330_sb_mixers[] __devinitdata = {
-=======
 static const struct sbmix_elem cmi8330_sb_mixers[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SB_DOUBLE("SB Master Playback Volume", SB_DSP4_MASTER_DEV, (SB_DSP4_MASTER_DEV + 1), 3, 3, 31),
 SB_DOUBLE("Tone Control - Bass", SB_DSP4_BASS_DEV, (SB_DSP4_BASS_DEV + 1), 4, 4, 15),
 SB_DOUBLE("Tone Control - Treble", SB_DSP4_TREBLE_DEV, (SB_DSP4_TREBLE_DEV + 1), 4, 4, 15),
@@ -317,11 +252,7 @@ SB_DOUBLE("SB Playback Volume", SB_DSP4_OGAIN_DEV, (SB_DSP4_OGAIN_DEV + 1), 6, 6
 SB_SINGLE("SB Mic Auto Gain", SB_DSP4_MIC_AGC, 0, 1),
 };
 
-<<<<<<< HEAD
-static unsigned char cmi8330_sb_init_values[][2] __devinitdata = {
-=======
 static const unsigned char cmi8330_sb_init_values[][2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ SB_DSP4_MASTER_DEV + 0, 0 },
 	{ SB_DSP4_MASTER_DEV + 1, 0 },
 	{ SB_DSP4_PCM_DEV + 0, 0 },
@@ -335,11 +266,7 @@ static const unsigned char cmi8330_sb_init_values[][2] = {
 };
 
 
-<<<<<<< HEAD
-static int __devinit cmi8330_add_sb_mixers(struct snd_sb *chip)
-=======
 static int cmi8330_add_sb_mixers(struct snd_sb *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int idx, err;
 	unsigned long flags;
@@ -357,23 +284,15 @@ static int cmi8330_add_sb_mixers(struct snd_sb *chip)
 	}
 
 	for (idx = 0; idx < ARRAY_SIZE(cmi8330_sb_mixers); idx++) {
-<<<<<<< HEAD
-		if ((err = snd_sbmixer_add_ctl_elem(chip, &cmi8330_sb_mixers[idx])) < 0)
-=======
 		err = snd_sbmixer_add_ctl_elem(chip, &cmi8330_sb_mixers[idx]);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	return 0;
 }
 #endif
 
-<<<<<<< HEAD
-static int __devinit snd_cmi8330_mixer(struct snd_card *card, struct snd_cmi8330 *acard)
-=======
 static int snd_cmi8330_mixer(struct snd_card *card, struct snd_cmi8330 *acard)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int idx;
 	int err;
@@ -389,27 +308,17 @@ static int snd_cmi8330_mixer(struct snd_card *card, struct snd_cmi8330 *acard)
 	}
 
 #ifdef ENABLE_SB_MIXER
-<<<<<<< HEAD
-	if ((err = cmi8330_add_sb_mixers(acard->sb)) < 0)
-=======
 	err = cmi8330_add_sb_mixers(acard->sb);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 #endif
 	return 0;
 }
 
 #ifdef CONFIG_PNP
-<<<<<<< HEAD
-static int __devinit snd_cmi8330_pnp(int dev, struct snd_cmi8330 *acard,
-				     struct pnp_card_link *card,
-				     const struct pnp_card_device_id *id)
-=======
 static int snd_cmi8330_pnp(int dev, struct snd_cmi8330 *acard,
 			   struct pnp_card_link *card,
 			   const struct pnp_card_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pnp_dev *pdev;
 	int err;
@@ -515,30 +424,18 @@ static int snd_cmi8330_capture_open(struct snd_pcm_substream *substream)
 	return chip->streams[SNDRV_PCM_STREAM_CAPTURE].open(substream);
 }
 
-<<<<<<< HEAD
-static int __devinit snd_cmi8330_pcm(struct snd_card *card, struct snd_cmi8330 *chip)
-=======
 static int snd_cmi8330_pcm(struct snd_card *card, struct snd_cmi8330 *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	const struct snd_pcm_ops *ops;
 	int err;
-<<<<<<< HEAD
-	static snd_pcm_open_callback_t cmi_open_callbacks[2] = {
-=======
 	static const snd_pcm_open_callback_t cmi_open_callbacks[2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_cmi8330_playback_open,
 		snd_cmi8330_capture_open
 	};
 
-<<<<<<< HEAD
-	if ((err = snd_pcm_new(card, (chip->type == CMI8329) ? "CMI8329" : "CMI8330", 0, 1, 1, &pcm)) < 0)
-=======
 	err = snd_pcm_new(card, (chip->type == CMI8329) ? "CMI8329" : "CMI8330", 0, 1, 1, &pcm);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	strcpy(pcm->name, (chip->type == CMI8329) ? "CMI8329" : "CMI8330");
 	pcm->private_data = chip;
@@ -560,14 +457,8 @@ static int snd_cmi8330_pcm(struct snd_card *card, struct snd_cmi8330 *chip)
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &chip->streams[SNDRV_PCM_STREAM_PLAYBACK].ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &chip->streams[SNDRV_PCM_STREAM_CAPTURE].ops);
 
-<<<<<<< HEAD
-	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
-					      snd_dma_isa_data(),
-					      64*1024, 128*1024);
-=======
 	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
 				       card->dev, 64*1024, 128*1024);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->pcm = pcm;
 
 	return 0;
@@ -580,10 +471,6 @@ static int snd_cmi8330_suspend(struct snd_card *card)
 	struct snd_cmi8330 *acard = card->private_data;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
-<<<<<<< HEAD
-	snd_pcm_suspend_all(acard->pcm);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acard->wss->suspend(acard->wss);
 	snd_sbmixer_suspend(acard->sb);
 	return 0;
@@ -613,24 +500,15 @@ static int snd_cmi8330_resume(struct snd_card *card)
 
 #define PFX	"cmi8330: "
 
-<<<<<<< HEAD
-static int snd_cmi8330_card_new(int dev, struct snd_card **cardp)
-=======
 static int snd_cmi8330_card_new(struct device *pdev, int dev,
 				struct snd_card **cardp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct snd_cmi8330 *acard;
 	int err;
 
-<<<<<<< HEAD
-	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
-			      sizeof(struct snd_cmi8330), &card);
-=======
 	err = snd_devm_card_new(pdev, index[dev], id[dev], THIS_MODULE,
 				sizeof(struct snd_cmi8330), &card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		snd_printk(KERN_ERR PFX "could not get a new card\n");
 		return err;
@@ -641,11 +519,7 @@ static int snd_cmi8330_card_new(struct device *pdev, int dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_cmi8330_probe(struct snd_card *card, int dev)
-=======
 static int snd_cmi8330_probe(struct snd_card *card, int dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_cmi8330 *acard;
 	int i, err;
@@ -665,14 +539,6 @@ static int snd_cmi8330_probe(struct snd_card *card, int dev)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	if ((err = snd_sbdsp_create(card, sbport[dev],
-				    sbirq[dev],
-				    snd_sb16dsp_interrupt,
-				    sbdma8[dev],
-				    sbdma16[dev],
-				    SB_HW_AUTO, &acard->sb)) < 0) {
-=======
 	err = snd_sbdsp_create(card, sbport[dev],
 			       sbirq[dev],
 			       snd_sb16dsp_interrupt,
@@ -680,17 +546,12 @@ static int snd_cmi8330_probe(struct snd_card *card, int dev)
 			       sbdma16[dev],
 			       SB_HW_AUTO, &acard->sb);
 	if (err < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR PFX "SB16 device busy??\n");
 		return err;
 	}
 	if (acard->sb->hardware != SB_HW_16) {
 		snd_printk(KERN_ERR PFX "SB16 not found during probe\n");
-<<<<<<< HEAD
-		return err;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	snd_wss_out(acard->wss, CS4231_MISC_INFO, 0x40); /* switch on MODE2 */
@@ -698,22 +559,14 @@ static int snd_cmi8330_probe(struct snd_card *card, int dev)
 		snd_wss_out(acard->wss, i,
 			    snd_cmi8330_image[i - CMI8330_RMUX3D]);
 
-<<<<<<< HEAD
-	if ((err = snd_cmi8330_mixer(card, acard)) < 0) {
-=======
 	err = snd_cmi8330_mixer(card, acard);
 	if (err < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR PFX "failed to create mixers\n");
 		return err;
 	}
 
-<<<<<<< HEAD
-	if ((err = snd_cmi8330_pcm(card, acard)) < 0) {
-=======
 	err = snd_cmi8330_pcm(card, acard);
 	if (err < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR PFX "failed to create pcms\n");
 		return err;
 	}
@@ -750,13 +603,8 @@ static int snd_cmi8330_probe(struct snd_card *card, int dev)
 	return snd_card_register(card);
 }
 
-<<<<<<< HEAD
-static int __devinit snd_cmi8330_isa_match(struct device *pdev,
-					   unsigned int dev)
-=======
 static int snd_cmi8330_isa_match(struct device *pdev,
 				 unsigned int dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!enable[dev] || is_isapnp_selected(dev))
 		return 0;
@@ -771,49 +619,22 @@ static int snd_cmi8330_isa_match(struct device *pdev,
 	return 1;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_cmi8330_isa_probe(struct device *pdev,
-					   unsigned int dev)
-=======
 static int snd_cmi8330_isa_probe(struct device *pdev,
 				 unsigned int dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	int err;
 
-<<<<<<< HEAD
-	err = snd_cmi8330_card_new(dev, &card);
-	if (err < 0)
-		return err;
-	snd_card_set_dev(card, pdev);
-	if ((err = snd_cmi8330_probe(card, dev)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-=======
 	err = snd_cmi8330_card_new(pdev, dev, &card);
 	if (err < 0)
 		return err;
 	err = snd_cmi8330_probe(card, dev);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_drvdata(pdev, card);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit snd_cmi8330_isa_remove(struct device *devptr,
-					    unsigned int dev)
-{
-	snd_card_free(dev_get_drvdata(devptr));
-	dev_set_drvdata(devptr, NULL);
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static int snd_cmi8330_isa_suspend(struct device *dev, unsigned int n,
 				   pm_message_t state)
@@ -832,10 +653,6 @@ static int snd_cmi8330_isa_resume(struct device *dev, unsigned int n)
 static struct isa_driver snd_cmi8330_driver = {
 	.match		= snd_cmi8330_isa_match,
 	.probe		= snd_cmi8330_isa_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(snd_cmi8330_isa_remove),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= snd_cmi8330_isa_suspend,
 	.resume		= snd_cmi8330_isa_resume,
@@ -847,13 +664,8 @@ static struct isa_driver snd_cmi8330_driver = {
 
 
 #ifdef CONFIG_PNP
-<<<<<<< HEAD
-static int __devinit snd_cmi8330_pnp_detect(struct pnp_card_link *pcard,
-					    const struct pnp_card_device_id *pid)
-=======
 static int snd_cmi8330_pnp_detect(struct pnp_card_link *pcard,
 				  const struct pnp_card_device_id *pid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -866,21 +678,6 @@ static int snd_cmi8330_pnp_detect(struct pnp_card_link *pcard,
 	if (dev >= SNDRV_CARDS)
 		return -ENODEV;
 			       
-<<<<<<< HEAD
-	res = snd_cmi8330_card_new(dev, &card);
-	if (res < 0)
-		return res;
-	if ((res = snd_cmi8330_pnp(dev, card->private_data, pcard, pid)) < 0) {
-		snd_printk(KERN_ERR PFX "PnP detection failed\n");
-		snd_card_free(card);
-		return res;
-	}
-	snd_card_set_dev(card, &pcard->card->dev);
-	if ((res = snd_cmi8330_probe(card, dev)) < 0) {
-		snd_card_free(card);
-		return res;
-	}
-=======
 	res = snd_cmi8330_card_new(&pcard->card->dev, dev, &card);
 	if (res < 0)
 		return res;
@@ -892,21 +689,11 @@ static int snd_cmi8330_pnp_detect(struct pnp_card_link *pcard,
 	res = snd_cmi8330_probe(card, dev);
 	if (res < 0)
 		return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnp_set_card_drvdata(pcard, card);
 	dev++;
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit snd_cmi8330_pnp_remove(struct pnp_card_link * pcard)
-{
-	snd_card_free(pnp_get_card_drvdata(pcard));
-	pnp_set_card_drvdata(pcard, NULL);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static int snd_cmi8330_pnp_suspend(struct pnp_card_link *pcard, pm_message_t state)
 {
@@ -924,10 +711,6 @@ static struct pnp_card_driver cmi8330_pnpc_driver = {
 	.name = "cmi8330",
 	.id_table = snd_cmi8330_pnpids,
 	.probe = snd_cmi8330_pnp_detect,
-<<<<<<< HEAD
-	.remove = __devexit_p(snd_cmi8330_pnp_remove),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= snd_cmi8330_pnp_suspend,
 	.resume		= snd_cmi8330_pnp_resume,

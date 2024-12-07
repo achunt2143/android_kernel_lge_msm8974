@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * max98095.c -- MAX98095 ALSA SoC Audio driver
  *
  * Copyright 2011 Maxim Integrated Products
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -22,11 +12,8 @@
 #include <linux/delay.h>
 #include <linux/pm.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-=======
 #include <linux/clk.h>
 #include <linux/mutex.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -36,10 +23,7 @@
 #include <linux/slab.h>
 #include <asm/div64.h>
 #include <sound/max98095.h>
-<<<<<<< HEAD
-=======
 #include <sound/jack.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "max98095.h"
 
 enum max98095_type {
@@ -54,15 +38,10 @@ struct max98095_cdata {
 };
 
 struct max98095_priv {
-<<<<<<< HEAD
-	enum max98095_type devtype;
-	struct max98095_pdata *pdata;
-=======
 	struct regmap *regmap;
 	enum max98095_type devtype;
 	struct max98095_pdata *pdata;
 	struct clk *mclk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int sysclk;
 	struct max98095_cdata dai[3];
 	const char **eq_texts;
@@ -74,586 +53,6 @@ struct max98095_priv {
 	u8 lin_state;
 	unsigned int mic1pre;
 	unsigned int mic2pre;
-<<<<<<< HEAD
-};
-
-static const u8 max98095_reg_def[M98095_REG_CNT] = {
-	0x00, /* 00 */
-	0x00, /* 01 */
-	0x00, /* 02 */
-	0x00, /* 03 */
-	0x00, /* 04 */
-	0x00, /* 05 */
-	0x00, /* 06 */
-	0x00, /* 07 */
-	0x00, /* 08 */
-	0x00, /* 09 */
-	0x00, /* 0A */
-	0x00, /* 0B */
-	0x00, /* 0C */
-	0x00, /* 0D */
-	0x00, /* 0E */
-	0x00, /* 0F */
-	0x00, /* 10 */
-	0x00, /* 11 */
-	0x00, /* 12 */
-	0x00, /* 13 */
-	0x00, /* 14 */
-	0x00, /* 15 */
-	0x00, /* 16 */
-	0x00, /* 17 */
-	0x00, /* 18 */
-	0x00, /* 19 */
-	0x00, /* 1A */
-	0x00, /* 1B */
-	0x00, /* 1C */
-	0x00, /* 1D */
-	0x00, /* 1E */
-	0x00, /* 1F */
-	0x00, /* 20 */
-	0x00, /* 21 */
-	0x00, /* 22 */
-	0x00, /* 23 */
-	0x00, /* 24 */
-	0x00, /* 25 */
-	0x00, /* 26 */
-	0x00, /* 27 */
-	0x00, /* 28 */
-	0x00, /* 29 */
-	0x00, /* 2A */
-	0x00, /* 2B */
-	0x00, /* 2C */
-	0x00, /* 2D */
-	0x00, /* 2E */
-	0x00, /* 2F */
-	0x00, /* 30 */
-	0x00, /* 31 */
-	0x00, /* 32 */
-	0x00, /* 33 */
-	0x00, /* 34 */
-	0x00, /* 35 */
-	0x00, /* 36 */
-	0x00, /* 37 */
-	0x00, /* 38 */
-	0x00, /* 39 */
-	0x00, /* 3A */
-	0x00, /* 3B */
-	0x00, /* 3C */
-	0x00, /* 3D */
-	0x00, /* 3E */
-	0x00, /* 3F */
-	0x00, /* 40 */
-	0x00, /* 41 */
-	0x00, /* 42 */
-	0x00, /* 43 */
-	0x00, /* 44 */
-	0x00, /* 45 */
-	0x00, /* 46 */
-	0x00, /* 47 */
-	0x00, /* 48 */
-	0x00, /* 49 */
-	0x00, /* 4A */
-	0x00, /* 4B */
-	0x00, /* 4C */
-	0x00, /* 4D */
-	0x00, /* 4E */
-	0x00, /* 4F */
-	0x00, /* 50 */
-	0x00, /* 51 */
-	0x00, /* 52 */
-	0x00, /* 53 */
-	0x00, /* 54 */
-	0x00, /* 55 */
-	0x00, /* 56 */
-	0x00, /* 57 */
-	0x00, /* 58 */
-	0x00, /* 59 */
-	0x00, /* 5A */
-	0x00, /* 5B */
-	0x00, /* 5C */
-	0x00, /* 5D */
-	0x00, /* 5E */
-	0x00, /* 5F */
-	0x00, /* 60 */
-	0x00, /* 61 */
-	0x00, /* 62 */
-	0x00, /* 63 */
-	0x00, /* 64 */
-	0x00, /* 65 */
-	0x00, /* 66 */
-	0x00, /* 67 */
-	0x00, /* 68 */
-	0x00, /* 69 */
-	0x00, /* 6A */
-	0x00, /* 6B */
-	0x00, /* 6C */
-	0x00, /* 6D */
-	0x00, /* 6E */
-	0x00, /* 6F */
-	0x00, /* 70 */
-	0x00, /* 71 */
-	0x00, /* 72 */
-	0x00, /* 73 */
-	0x00, /* 74 */
-	0x00, /* 75 */
-	0x00, /* 76 */
-	0x00, /* 77 */
-	0x00, /* 78 */
-	0x00, /* 79 */
-	0x00, /* 7A */
-	0x00, /* 7B */
-	0x00, /* 7C */
-	0x00, /* 7D */
-	0x00, /* 7E */
-	0x00, /* 7F */
-	0x00, /* 80 */
-	0x00, /* 81 */
-	0x00, /* 82 */
-	0x00, /* 83 */
-	0x00, /* 84 */
-	0x00, /* 85 */
-	0x00, /* 86 */
-	0x00, /* 87 */
-	0x00, /* 88 */
-	0x00, /* 89 */
-	0x00, /* 8A */
-	0x00, /* 8B */
-	0x00, /* 8C */
-	0x00, /* 8D */
-	0x00, /* 8E */
-	0x00, /* 8F */
-	0x00, /* 90 */
-	0x00, /* 91 */
-	0x30, /* 92 */
-	0xF0, /* 93 */
-	0x00, /* 94 */
-	0x00, /* 95 */
-	0x3F, /* 96 */
-	0x00, /* 97 */
-	0x00, /* 98 */
-	0x00, /* 99 */
-	0x00, /* 9A */
-	0x00, /* 9B */
-	0x00, /* 9C */
-	0x00, /* 9D */
-	0x00, /* 9E */
-	0x00, /* 9F */
-	0x00, /* A0 */
-	0x00, /* A1 */
-	0x00, /* A2 */
-	0x00, /* A3 */
-	0x00, /* A4 */
-	0x00, /* A5 */
-	0x00, /* A6 */
-	0x00, /* A7 */
-	0x00, /* A8 */
-	0x00, /* A9 */
-	0x00, /* AA */
-	0x00, /* AB */
-	0x00, /* AC */
-	0x00, /* AD */
-	0x00, /* AE */
-	0x00, /* AF */
-	0x00, /* B0 */
-	0x00, /* B1 */
-	0x00, /* B2 */
-	0x00, /* B3 */
-	0x00, /* B4 */
-	0x00, /* B5 */
-	0x00, /* B6 */
-	0x00, /* B7 */
-	0x00, /* B8 */
-	0x00, /* B9 */
-	0x00, /* BA */
-	0x00, /* BB */
-	0x00, /* BC */
-	0x00, /* BD */
-	0x00, /* BE */
-	0x00, /* BF */
-	0x00, /* C0 */
-	0x00, /* C1 */
-	0x00, /* C2 */
-	0x00, /* C3 */
-	0x00, /* C4 */
-	0x00, /* C5 */
-	0x00, /* C6 */
-	0x00, /* C7 */
-	0x00, /* C8 */
-	0x00, /* C9 */
-	0x00, /* CA */
-	0x00, /* CB */
-	0x00, /* CC */
-	0x00, /* CD */
-	0x00, /* CE */
-	0x00, /* CF */
-	0x00, /* D0 */
-	0x00, /* D1 */
-	0x00, /* D2 */
-	0x00, /* D3 */
-	0x00, /* D4 */
-	0x00, /* D5 */
-	0x00, /* D6 */
-	0x00, /* D7 */
-	0x00, /* D8 */
-	0x00, /* D9 */
-	0x00, /* DA */
-	0x00, /* DB */
-	0x00, /* DC */
-	0x00, /* DD */
-	0x00, /* DE */
-	0x00, /* DF */
-	0x00, /* E0 */
-	0x00, /* E1 */
-	0x00, /* E2 */
-	0x00, /* E3 */
-	0x00, /* E4 */
-	0x00, /* E5 */
-	0x00, /* E6 */
-	0x00, /* E7 */
-	0x00, /* E8 */
-	0x00, /* E9 */
-	0x00, /* EA */
-	0x00, /* EB */
-	0x00, /* EC */
-	0x00, /* ED */
-	0x00, /* EE */
-	0x00, /* EF */
-	0x00, /* F0 */
-	0x00, /* F1 */
-	0x00, /* F2 */
-	0x00, /* F3 */
-	0x00, /* F4 */
-	0x00, /* F5 */
-	0x00, /* F6 */
-	0x00, /* F7 */
-	0x00, /* F8 */
-	0x00, /* F9 */
-	0x00, /* FA */
-	0x00, /* FB */
-	0x00, /* FC */
-	0x00, /* FD */
-	0x00, /* FE */
-	0x00, /* FF */
-};
-
-static struct {
-	int readable;
-	int writable;
-} max98095_access[M98095_REG_CNT] = {
-	{ 0x00, 0x00 }, /* 00 */
-	{ 0xFF, 0x00 }, /* 01 */
-	{ 0xFF, 0x00 }, /* 02 */
-	{ 0xFF, 0x00 }, /* 03 */
-	{ 0xFF, 0x00 }, /* 04 */
-	{ 0xFF, 0x00 }, /* 05 */
-	{ 0xFF, 0x00 }, /* 06 */
-	{ 0xFF, 0x00 }, /* 07 */
-	{ 0xFF, 0x00 }, /* 08 */
-	{ 0xFF, 0x00 }, /* 09 */
-	{ 0xFF, 0x00 }, /* 0A */
-	{ 0xFF, 0x00 }, /* 0B */
-	{ 0xFF, 0x00 }, /* 0C */
-	{ 0xFF, 0x00 }, /* 0D */
-	{ 0xFF, 0x00 }, /* 0E */
-	{ 0xFF, 0x9F }, /* 0F */
-	{ 0xFF, 0xFF }, /* 10 */
-	{ 0xFF, 0xFF }, /* 11 */
-	{ 0xFF, 0xFF }, /* 12 */
-	{ 0xFF, 0xFF }, /* 13 */
-	{ 0xFF, 0xFF }, /* 14 */
-	{ 0xFF, 0xFF }, /* 15 */
-	{ 0xFF, 0xFF }, /* 16 */
-	{ 0xFF, 0xFF }, /* 17 */
-	{ 0xFF, 0xFF }, /* 18 */
-	{ 0xFF, 0xFF }, /* 19 */
-	{ 0xFF, 0xFF }, /* 1A */
-	{ 0xFF, 0xFF }, /* 1B */
-	{ 0xFF, 0xFF }, /* 1C */
-	{ 0xFF, 0xFF }, /* 1D */
-	{ 0xFF, 0x77 }, /* 1E */
-	{ 0xFF, 0x77 }, /* 1F */
-	{ 0xFF, 0x77 }, /* 20 */
-	{ 0xFF, 0x77 }, /* 21 */
-	{ 0xFF, 0x77 }, /* 22 */
-	{ 0xFF, 0x77 }, /* 23 */
-	{ 0xFF, 0xFF }, /* 24 */
-	{ 0xFF, 0x7F }, /* 25 */
-	{ 0xFF, 0x31 }, /* 26 */
-	{ 0xFF, 0xFF }, /* 27 */
-	{ 0xFF, 0xFF }, /* 28 */
-	{ 0xFF, 0xFF }, /* 29 */
-	{ 0xFF, 0xF7 }, /* 2A */
-	{ 0xFF, 0x2F }, /* 2B */
-	{ 0xFF, 0xEF }, /* 2C */
-	{ 0xFF, 0xFF }, /* 2D */
-	{ 0xFF, 0xFF }, /* 2E */
-	{ 0xFF, 0xFF }, /* 2F */
-	{ 0xFF, 0xFF }, /* 30 */
-	{ 0xFF, 0xFF }, /* 31 */
-	{ 0xFF, 0xFF }, /* 32 */
-	{ 0xFF, 0xFF }, /* 33 */
-	{ 0xFF, 0xF7 }, /* 34 */
-	{ 0xFF, 0x2F }, /* 35 */
-	{ 0xFF, 0xCF }, /* 36 */
-	{ 0xFF, 0xFF }, /* 37 */
-	{ 0xFF, 0xFF }, /* 38 */
-	{ 0xFF, 0xFF }, /* 39 */
-	{ 0xFF, 0xFF }, /* 3A */
-	{ 0xFF, 0xFF }, /* 3B */
-	{ 0xFF, 0xFF }, /* 3C */
-	{ 0xFF, 0xFF }, /* 3D */
-	{ 0xFF, 0xF7 }, /* 3E */
-	{ 0xFF, 0x2F }, /* 3F */
-	{ 0xFF, 0xCF }, /* 40 */
-	{ 0xFF, 0xFF }, /* 41 */
-	{ 0xFF, 0x77 }, /* 42 */
-	{ 0xFF, 0xFF }, /* 43 */
-	{ 0xFF, 0xFF }, /* 44 */
-	{ 0xFF, 0xFF }, /* 45 */
-	{ 0xFF, 0xFF }, /* 46 */
-	{ 0xFF, 0xFF }, /* 47 */
-	{ 0xFF, 0xFF }, /* 48 */
-	{ 0xFF, 0x0F }, /* 49 */
-	{ 0xFF, 0xFF }, /* 4A */
-	{ 0xFF, 0xFF }, /* 4B */
-	{ 0xFF, 0x3F }, /* 4C */
-	{ 0xFF, 0x3F }, /* 4D */
-	{ 0xFF, 0x3F }, /* 4E */
-	{ 0xFF, 0xFF }, /* 4F */
-	{ 0xFF, 0x7F }, /* 50 */
-	{ 0xFF, 0x7F }, /* 51 */
-	{ 0xFF, 0x0F }, /* 52 */
-	{ 0xFF, 0x3F }, /* 53 */
-	{ 0xFF, 0x3F }, /* 54 */
-	{ 0xFF, 0x3F }, /* 55 */
-	{ 0xFF, 0xFF }, /* 56 */
-	{ 0xFF, 0xFF }, /* 57 */
-	{ 0xFF, 0xBF }, /* 58 */
-	{ 0xFF, 0x1F }, /* 59 */
-	{ 0xFF, 0xBF }, /* 5A */
-	{ 0xFF, 0x1F }, /* 5B */
-	{ 0xFF, 0xBF }, /* 5C */
-	{ 0xFF, 0x3F }, /* 5D */
-	{ 0xFF, 0x3F }, /* 5E */
-	{ 0xFF, 0x7F }, /* 5F */
-	{ 0xFF, 0x7F }, /* 60 */
-	{ 0xFF, 0x47 }, /* 61 */
-	{ 0xFF, 0x9F }, /* 62 */
-	{ 0xFF, 0x9F }, /* 63 */
-	{ 0xFF, 0x9F }, /* 64 */
-	{ 0xFF, 0x9F }, /* 65 */
-	{ 0xFF, 0x9F }, /* 66 */
-	{ 0xFF, 0xBF }, /* 67 */
-	{ 0xFF, 0xBF }, /* 68 */
-	{ 0xFF, 0xFF }, /* 69 */
-	{ 0xFF, 0xFF }, /* 6A */
-	{ 0xFF, 0x7F }, /* 6B */
-	{ 0xFF, 0xF7 }, /* 6C */
-	{ 0xFF, 0xFF }, /* 6D */
-	{ 0xFF, 0xFF }, /* 6E */
-	{ 0xFF, 0x1F }, /* 6F */
-	{ 0xFF, 0xF7 }, /* 70 */
-	{ 0xFF, 0xFF }, /* 71 */
-	{ 0xFF, 0xFF }, /* 72 */
-	{ 0xFF, 0x1F }, /* 73 */
-	{ 0xFF, 0xF7 }, /* 74 */
-	{ 0xFF, 0xFF }, /* 75 */
-	{ 0xFF, 0xFF }, /* 76 */
-	{ 0xFF, 0x1F }, /* 77 */
-	{ 0xFF, 0xF7 }, /* 78 */
-	{ 0xFF, 0xFF }, /* 79 */
-	{ 0xFF, 0xFF }, /* 7A */
-	{ 0xFF, 0x1F }, /* 7B */
-	{ 0xFF, 0xF7 }, /* 7C */
-	{ 0xFF, 0xFF }, /* 7D */
-	{ 0xFF, 0xFF }, /* 7E */
-	{ 0xFF, 0x1F }, /* 7F */
-	{ 0xFF, 0xF7 }, /* 80 */
-	{ 0xFF, 0xFF }, /* 81 */
-	{ 0xFF, 0xFF }, /* 82 */
-	{ 0xFF, 0x1F }, /* 83 */
-	{ 0xFF, 0x7F }, /* 84 */
-	{ 0xFF, 0x0F }, /* 85 */
-	{ 0xFF, 0xD8 }, /* 86 */
-	{ 0xFF, 0xFF }, /* 87 */
-	{ 0xFF, 0xEF }, /* 88 */
-	{ 0xFF, 0xFE }, /* 89 */
-	{ 0xFF, 0xFE }, /* 8A */
-	{ 0xFF, 0xFF }, /* 8B */
-	{ 0xFF, 0xFF }, /* 8C */
-	{ 0xFF, 0x3F }, /* 8D */
-	{ 0xFF, 0xFF }, /* 8E */
-	{ 0xFF, 0x3F }, /* 8F */
-	{ 0xFF, 0x8F }, /* 90 */
-	{ 0xFF, 0xFF }, /* 91 */
-	{ 0xFF, 0x3F }, /* 92 */
-	{ 0xFF, 0xFF }, /* 93 */
-	{ 0xFF, 0xFF }, /* 94 */
-	{ 0xFF, 0x0F }, /* 95 */
-	{ 0xFF, 0x3F }, /* 96 */
-	{ 0xFF, 0x8C }, /* 97 */
-	{ 0x00, 0x00 }, /* 98 */
-	{ 0x00, 0x00 }, /* 99 */
-	{ 0x00, 0x00 }, /* 9A */
-	{ 0x00, 0x00 }, /* 9B */
-	{ 0x00, 0x00 }, /* 9C */
-	{ 0x00, 0x00 }, /* 9D */
-	{ 0x00, 0x00 }, /* 9E */
-	{ 0x00, 0x00 }, /* 9F */
-	{ 0x00, 0x00 }, /* A0 */
-	{ 0x00, 0x00 }, /* A1 */
-	{ 0x00, 0x00 }, /* A2 */
-	{ 0x00, 0x00 }, /* A3 */
-	{ 0x00, 0x00 }, /* A4 */
-	{ 0x00, 0x00 }, /* A5 */
-	{ 0x00, 0x00 }, /* A6 */
-	{ 0x00, 0x00 }, /* A7 */
-	{ 0x00, 0x00 }, /* A8 */
-	{ 0x00, 0x00 }, /* A9 */
-	{ 0x00, 0x00 }, /* AA */
-	{ 0x00, 0x00 }, /* AB */
-	{ 0x00, 0x00 }, /* AC */
-	{ 0x00, 0x00 }, /* AD */
-	{ 0x00, 0x00 }, /* AE */
-	{ 0x00, 0x00 }, /* AF */
-	{ 0x00, 0x00 }, /* B0 */
-	{ 0x00, 0x00 }, /* B1 */
-	{ 0x00, 0x00 }, /* B2 */
-	{ 0x00, 0x00 }, /* B3 */
-	{ 0x00, 0x00 }, /* B4 */
-	{ 0x00, 0x00 }, /* B5 */
-	{ 0x00, 0x00 }, /* B6 */
-	{ 0x00, 0x00 }, /* B7 */
-	{ 0x00, 0x00 }, /* B8 */
-	{ 0x00, 0x00 }, /* B9 */
-	{ 0x00, 0x00 }, /* BA */
-	{ 0x00, 0x00 }, /* BB */
-	{ 0x00, 0x00 }, /* BC */
-	{ 0x00, 0x00 }, /* BD */
-	{ 0x00, 0x00 }, /* BE */
-	{ 0x00, 0x00 }, /* BF */
-	{ 0x00, 0x00 }, /* C0 */
-	{ 0x00, 0x00 }, /* C1 */
-	{ 0x00, 0x00 }, /* C2 */
-	{ 0x00, 0x00 }, /* C3 */
-	{ 0x00, 0x00 }, /* C4 */
-	{ 0x00, 0x00 }, /* C5 */
-	{ 0x00, 0x00 }, /* C6 */
-	{ 0x00, 0x00 }, /* C7 */
-	{ 0x00, 0x00 }, /* C8 */
-	{ 0x00, 0x00 }, /* C9 */
-	{ 0x00, 0x00 }, /* CA */
-	{ 0x00, 0x00 }, /* CB */
-	{ 0x00, 0x00 }, /* CC */
-	{ 0x00, 0x00 }, /* CD */
-	{ 0x00, 0x00 }, /* CE */
-	{ 0x00, 0x00 }, /* CF */
-	{ 0x00, 0x00 }, /* D0 */
-	{ 0x00, 0x00 }, /* D1 */
-	{ 0x00, 0x00 }, /* D2 */
-	{ 0x00, 0x00 }, /* D3 */
-	{ 0x00, 0x00 }, /* D4 */
-	{ 0x00, 0x00 }, /* D5 */
-	{ 0x00, 0x00 }, /* D6 */
-	{ 0x00, 0x00 }, /* D7 */
-	{ 0x00, 0x00 }, /* D8 */
-	{ 0x00, 0x00 }, /* D9 */
-	{ 0x00, 0x00 }, /* DA */
-	{ 0x00, 0x00 }, /* DB */
-	{ 0x00, 0x00 }, /* DC */
-	{ 0x00, 0x00 }, /* DD */
-	{ 0x00, 0x00 }, /* DE */
-	{ 0x00, 0x00 }, /* DF */
-	{ 0x00, 0x00 }, /* E0 */
-	{ 0x00, 0x00 }, /* E1 */
-	{ 0x00, 0x00 }, /* E2 */
-	{ 0x00, 0x00 }, /* E3 */
-	{ 0x00, 0x00 }, /* E4 */
-	{ 0x00, 0x00 }, /* E5 */
-	{ 0x00, 0x00 }, /* E6 */
-	{ 0x00, 0x00 }, /* E7 */
-	{ 0x00, 0x00 }, /* E8 */
-	{ 0x00, 0x00 }, /* E9 */
-	{ 0x00, 0x00 }, /* EA */
-	{ 0x00, 0x00 }, /* EB */
-	{ 0x00, 0x00 }, /* EC */
-	{ 0x00, 0x00 }, /* ED */
-	{ 0x00, 0x00 }, /* EE */
-	{ 0x00, 0x00 }, /* EF */
-	{ 0x00, 0x00 }, /* F0 */
-	{ 0x00, 0x00 }, /* F1 */
-	{ 0x00, 0x00 }, /* F2 */
-	{ 0x00, 0x00 }, /* F3 */
-	{ 0x00, 0x00 }, /* F4 */
-	{ 0x00, 0x00 }, /* F5 */
-	{ 0x00, 0x00 }, /* F6 */
-	{ 0x00, 0x00 }, /* F7 */
-	{ 0x00, 0x00 }, /* F8 */
-	{ 0x00, 0x00 }, /* F9 */
-	{ 0x00, 0x00 }, /* FA */
-	{ 0x00, 0x00 }, /* FB */
-	{ 0x00, 0x00 }, /* FC */
-	{ 0x00, 0x00 }, /* FD */
-	{ 0x00, 0x00 }, /* FE */
-	{ 0xFF, 0x00 }, /* FF */
-};
-
-static int max98095_readable(struct snd_soc_codec *codec, unsigned int reg)
-{
-	if (reg >= M98095_REG_CNT)
-		return 0;
-	return max98095_access[reg].readable != 0;
-}
-
-static int max98095_volatile(struct snd_soc_codec *codec, unsigned int reg)
-{
-	if (reg > M98095_REG_MAX_CACHED)
-		return 1;
-
-	switch (reg) {
-	case M98095_000_HOST_DATA:
-	case M98095_001_HOST_INT_STS:
-	case M98095_002_HOST_RSP_STS:
-	case M98095_003_HOST_CMD_STS:
-	case M98095_004_CODEC_STS:
-	case M98095_005_DAI1_ALC_STS:
-	case M98095_006_DAI2_ALC_STS:
-	case M98095_007_JACK_AUTO_STS:
-	case M98095_008_JACK_MANUAL_STS:
-	case M98095_009_JACK_VBAT_STS:
-	case M98095_00A_ACC_ADC_STS:
-	case M98095_00B_MIC_NG_AGC_STS:
-	case M98095_00C_SPK_L_VOLT_STS:
-	case M98095_00D_SPK_R_VOLT_STS:
-	case M98095_00E_TEMP_SENSOR_STS:
-		return 1;
-	}
-
-	return 0;
-}
-
-/*
- * Filter coefficients are in a separate register segment
- * and they share the address space of the normal registers.
- * The coefficient registers do not need or share the cache.
- */
-static int max98095_hw_write(struct snd_soc_codec *codec, unsigned int reg,
-			     unsigned int value)
-{
-	int ret;
-
-	codec->cache_bypass = 1;
-	ret = snd_soc_write(codec, reg, value);
-	codec->cache_bypass = 0;
-
-	return ret ? -EIO : 0;
-}
-
-/*
- * Load equalizer DSP coefficient configurations registers
- */
-static void m98095_eq_band(struct snd_soc_codec *codec, unsigned int dai,
-=======
 	struct snd_soc_jack *headphone_jack;
 	struct snd_soc_jack *mic_jack;
 	struct mutex lock;
@@ -850,20 +249,14 @@ static const struct regmap_config max98095_regmap = {
  * Load equalizer DSP coefficient configurations registers
  */
 static void m98095_eq_band(struct snd_soc_component *component, unsigned int dai,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    unsigned int band, u16 *coefs)
 {
 	unsigned int eq_reg;
 	unsigned int i;
 
-<<<<<<< HEAD
-	BUG_ON(band > 4);
-	BUG_ON(dai > 1);
-=======
 	if (WARN_ON(band > 4) ||
 	    WARN_ON(dai > 1))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Load the base register address */
 	eq_reg = dai ? M98095_142_DAI2_EQ_BASE : M98095_110_DAI1_EQ_BASE;
@@ -873,37 +266,23 @@ static void m98095_eq_band(struct snd_soc_component *component, unsigned int dai
 
 	/* Step through the registers and coefs */
 	for (i = 0; i < M98095_COEFS_PER_BAND; i++) {
-<<<<<<< HEAD
-		max98095_hw_write(codec, eq_reg++, M98095_BYTE1(coefs[i]));
-		max98095_hw_write(codec, eq_reg++, M98095_BYTE0(coefs[i]));
-=======
 		snd_soc_component_write(component, eq_reg++, M98095_BYTE1(coefs[i]));
 		snd_soc_component_write(component, eq_reg++, M98095_BYTE0(coefs[i]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /*
  * Load biquad filter coefficient configurations registers
  */
-<<<<<<< HEAD
-static void m98095_biquad_band(struct snd_soc_codec *codec, unsigned int dai,
-=======
 static void m98095_biquad_band(struct snd_soc_component *component, unsigned int dai,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    unsigned int band, u16 *coefs)
 {
 	unsigned int bq_reg;
 	unsigned int i;
 
-<<<<<<< HEAD
-	BUG_ON(band > 1);
-	BUG_ON(dai > 1);
-=======
 	if (WARN_ON(band > 1) ||
 	    WARN_ON(dai > 1))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Load the base register address */
 	bq_reg = dai ? M98095_17E_DAI2_BQ_BASE : M98095_174_DAI1_BQ_BASE;
@@ -913,30 +292,12 @@ static void m98095_biquad_band(struct snd_soc_component *component, unsigned int
 
 	/* Step through the registers and coefs */
 	for (i = 0; i < M98095_COEFS_PER_BAND; i++) {
-<<<<<<< HEAD
-		max98095_hw_write(codec, bq_reg++, M98095_BYTE1(coefs[i]));
-		max98095_hw_write(codec, bq_reg++, M98095_BYTE0(coefs[i]));
-=======
 		snd_soc_component_write(component, bq_reg++, M98095_BYTE1(coefs[i]));
 		snd_soc_component_write(component, bq_reg++, M98095_BYTE0(coefs[i]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static const char * const max98095_fltr_mode[] = { "Voice", "Music" };
-<<<<<<< HEAD
-static const struct soc_enum max98095_dai1_filter_mode_enum[] = {
-	SOC_ENUM_SINGLE(M98095_02E_DAI1_FILTERS, 7, 2, max98095_fltr_mode),
-};
-static const struct soc_enum max98095_dai2_filter_mode_enum[] = {
-	SOC_ENUM_SINGLE(M98095_038_DAI2_FILTERS, 7, 2, max98095_fltr_mode),
-};
-
-static const char * const max98095_extmic_text[] = { "None", "MIC1", "MIC2" };
-
-static const struct soc_enum max98095_extmic_enum =
-	SOC_ENUM_SINGLE(M98095_087_CFG_MIC, 0, 3, max98095_extmic_text);
-=======
 static SOC_ENUM_SINGLE_DECL(max98095_dai1_filter_mode_enum,
 			    M98095_02E_DAI1_FILTERS, 7,
 			    max98095_fltr_mode);
@@ -949,21 +310,15 @@ static const char * const max98095_extmic_text[] = { "None", "MIC1", "MIC2" };
 static SOC_ENUM_SINGLE_DECL(max98095_extmic_enum,
 			    M98095_087_CFG_MIC, 0,
 			    max98095_extmic_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new max98095_extmic_mux =
 	SOC_DAPM_ENUM("External MIC Mux", max98095_extmic_enum);
 
 static const char * const max98095_linein_text[] = { "INA", "INB" };
 
-<<<<<<< HEAD
-static const struct soc_enum max98095_linein_enum =
-	SOC_ENUM_SINGLE(M98095_086_CFG_LINE, 6, 2, max98095_linein_text);
-=======
 static SOC_ENUM_SINGLE_DECL(max98095_linein_enum,
 			    M98095_086_CFG_LINE, 6,
 			    max98095_linein_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new max98095_linein_mux =
 	SOC_DAPM_ENUM("Linein Input Mux", max98095_linein_enum);
@@ -971,13 +326,6 @@ static const struct snd_kcontrol_new max98095_linein_mux =
 static const char * const max98095_line_mode_text[] = {
 	"Stereo", "Differential"};
 
-<<<<<<< HEAD
-static const struct soc_enum max98095_linein_mode_enum =
-	SOC_ENUM_SINGLE(M98095_086_CFG_LINE, 7, 2, max98095_line_mode_text);
-
-static const struct soc_enum max98095_lineout_mode_enum =
-	SOC_ENUM_SINGLE(M98095_086_CFG_LINE, 4, 2, max98095_line_mode_text);
-=======
 static SOC_ENUM_SINGLE_DECL(max98095_linein_mode_enum,
 			    M98095_086_CFG_LINE, 7,
 			    max98095_line_mode_text);
@@ -985,22 +333,10 @@ static SOC_ENUM_SINGLE_DECL(max98095_linein_mode_enum,
 static SOC_ENUM_SINGLE_DECL(max98095_lineout_mode_enum,
 			    M98095_086_CFG_LINE, 4,
 			    max98095_line_mode_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char * const max98095_dai_fltr[] = {
 	"Off", "Elliptical-HPF-16k", "Butterworth-HPF-16k",
 	"Elliptical-HPF-8k", "Butterworth-HPF-8k", "Butterworth-HPF-Fs/240"};
-<<<<<<< HEAD
-static const struct soc_enum max98095_dai1_dac_filter_enum[] = {
-	SOC_ENUM_SINGLE(M98095_02E_DAI1_FILTERS, 0, 6, max98095_dai_fltr),
-};
-static const struct soc_enum max98095_dai2_dac_filter_enum[] = {
-	SOC_ENUM_SINGLE(M98095_038_DAI2_FILTERS, 0, 6, max98095_dai_fltr),
-};
-static const struct soc_enum max98095_dai3_dac_filter_enum[] = {
-	SOC_ENUM_SINGLE(M98095_042_DAI3_FILTERS, 0, 6, max98095_dai_fltr),
-};
-=======
 static SOC_ENUM_SINGLE_DECL(max98095_dai1_dac_filter_enum,
 			    M98095_02E_DAI1_FILTERS, 0,
 			    max98095_dai_fltr);
@@ -1010,26 +346,16 @@ static SOC_ENUM_SINGLE_DECL(max98095_dai2_dac_filter_enum,
 static SOC_ENUM_SINGLE_DECL(max98095_dai3_dac_filter_enum,
 			    M98095_042_DAI3_FILTERS, 0,
 			    max98095_dai_fltr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int max98095_mic1pre_set(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-	unsigned int sel = ucontrol->value.integer.value[0];
-
-	max98095->mic1pre = sel;
-	snd_soc_update_bits(codec, M98095_05F_LVL_MIC1, M98095_MICPRE_MASK,
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
 	unsigned int sel = ucontrol->value.integer.value[0];
 
 	max98095->mic1pre = sel;
 	snd_soc_component_update_bits(component, M98095_05F_LVL_MIC1, M98095_MICPRE_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(1+sel)<<M98095_MICPRE_SHIFT);
 
 	return 0;
@@ -1038,13 +364,8 @@ static int max98095_mic1pre_set(struct snd_kcontrol *kcontrol,
 static int max98095_mic1pre_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ucontrol->value.integer.value[0] = max98095->mic1pre;
 	return 0;
@@ -1053,21 +374,12 @@ static int max98095_mic1pre_get(struct snd_kcontrol *kcontrol,
 static int max98095_mic2pre_set(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-	unsigned int sel = ucontrol->value.integer.value[0];
-
-	max98095->mic2pre = sel;
-	snd_soc_update_bits(codec, M98095_060_LVL_MIC2, M98095_MICPRE_MASK,
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
 	unsigned int sel = ucontrol->value.integer.value[0];
 
 	max98095->mic2pre = sel;
 	snd_soc_component_update_bits(component, M98095_060_LVL_MIC2, M98095_MICPRE_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(1+sel)<<M98095_MICPRE_SHIFT);
 
 	return 0;
@@ -1076,60 +388,27 @@ static int max98095_mic2pre_set(struct snd_kcontrol *kcontrol,
 static int max98095_mic2pre_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ucontrol->value.integer.value[0] = max98095->mic2pre;
 	return 0;
 }
 
-<<<<<<< HEAD
-static const unsigned int max98095_micboost_tlv[] = {
-	TLV_DB_RANGE_HEAD(2),
-	0, 1, TLV_DB_SCALE_ITEM(0, 2000, 0),
-	2, 2, TLV_DB_SCALE_ITEM(3000, 0, 0),
-};
-=======
 static const DECLARE_TLV_DB_RANGE(max98095_micboost_tlv,
 	0, 1, TLV_DB_SCALE_ITEM(0, 2000, 0),
 	2, 2, TLV_DB_SCALE_ITEM(3000, 0, 0)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const DECLARE_TLV_DB_SCALE(max98095_mic_tlv, 0, 100, 0);
 static const DECLARE_TLV_DB_SCALE(max98095_adc_tlv, -1200, 100, 0);
 static const DECLARE_TLV_DB_SCALE(max98095_adcboost_tlv, 0, 600, 0);
 
-<<<<<<< HEAD
-static const unsigned int max98095_hp_tlv[] = {
-	TLV_DB_RANGE_HEAD(5),
-=======
 static const DECLARE_TLV_DB_RANGE(max98095_hp_tlv,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 6, TLV_DB_SCALE_ITEM(-6700, 400, 0),
 	7, 14, TLV_DB_SCALE_ITEM(-4000, 300, 0),
 	15, 21, TLV_DB_SCALE_ITEM(-1700, 200, 0),
 	22, 27, TLV_DB_SCALE_ITEM(-400, 100, 0),
-<<<<<<< HEAD
-	28, 31, TLV_DB_SCALE_ITEM(150, 50, 0),
-};
-
-static const unsigned int max98095_spk_tlv[] = {
-	TLV_DB_RANGE_HEAD(4),
-	0, 10, TLV_DB_SCALE_ITEM(-5900, 400, 0),
-	11, 18, TLV_DB_SCALE_ITEM(-1700, 200, 0),
-	19, 27, TLV_DB_SCALE_ITEM(-200, 100, 0),
-	28, 39, TLV_DB_SCALE_ITEM(650, 50, 0),
-};
-
-static const unsigned int max98095_rcv_lout_tlv[] = {
-	TLV_DB_RANGE_HEAD(5),
-=======
 	28, 31, TLV_DB_SCALE_ITEM(150, 50, 0)
 );
 
@@ -1141,22 +420,10 @@ static const DECLARE_TLV_DB_RANGE(max98095_spk_tlv,
 );
 
 static const DECLARE_TLV_DB_RANGE(max98095_rcv_lout_tlv,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 6, TLV_DB_SCALE_ITEM(-6200, 400, 0),
 	7, 14, TLV_DB_SCALE_ITEM(-3500, 300, 0),
 	15, 21, TLV_DB_SCALE_ITEM(-1200, 200, 0),
 	22, 27, TLV_DB_SCALE_ITEM(100, 100, 0),
-<<<<<<< HEAD
-	28, 31, TLV_DB_SCALE_ITEM(650, 50, 0),
-};
-
-static const unsigned int max98095_lin_tlv[] = {
-	TLV_DB_RANGE_HEAD(3),
-	0, 2, TLV_DB_SCALE_ITEM(-600, 300, 0),
-	3, 3, TLV_DB_SCALE_ITEM(300, 1100, 0),
-	4, 5, TLV_DB_SCALE_ITEM(1400, 600, 0),
-};
-=======
 	28, 31, TLV_DB_SCALE_ITEM(650, 50, 0)
 );
 
@@ -1165,7 +432,6 @@ static const DECLARE_TLV_DB_RANGE(max98095_lin_tlv,
 	3, 3, TLV_DB_SCALE_ITEM(300, 1100, 0),
 	4, 5, TLV_DB_SCALE_ITEM(1400, 600, 0)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new max98095_snd_controls[] = {
 
@@ -1329,37 +595,21 @@ static const struct snd_kcontrol_new max98095_right_ADC_mixer_controls[] = {
 static int max98095_mic_event(struct snd_soc_dapm_widget *w,
 			     struct snd_kcontrol *kcontrol, int event)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = w->codec;
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
 		if (w->reg == M98095_05F_LVL_MIC1) {
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, w->reg, M98095_MICPRE_MASK,
-				(1+max98095->mic1pre)<<M98095_MICPRE_SHIFT);
-		} else {
-			snd_soc_update_bits(codec, w->reg, M98095_MICPRE_MASK,
-=======
 			snd_soc_component_update_bits(component, w->reg, M98095_MICPRE_MASK,
 				(1+max98095->mic1pre)<<M98095_MICPRE_SHIFT);
 		} else {
 			snd_soc_component_update_bits(component, w->reg, M98095_MICPRE_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(1+max98095->mic2pre)<<M98095_MICPRE_SHIFT);
 		}
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, w->reg, M98095_MICPRE_MASK, 0);
-=======
 		snd_soc_component_update_bits(component, w->reg, M98095_MICPRE_MASK, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -1375,41 +625,25 @@ static int max98095_mic_event(struct snd_soc_dapm_widget *w,
 static int max98095_line_pga(struct snd_soc_dapm_widget *w,
 			     int event, u8 channel)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = w->codec;
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-	u8 *state;
-
-	BUG_ON(!((channel == 1) || (channel == 2)));
-=======
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
 	u8 *state;
 
 	if (WARN_ON(!(channel == 1 || channel == 2)))
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	state = &max98095->lin_state;
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
 		*state |= channel;
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, w->reg,
-=======
 		snd_soc_component_update_bits(component, w->reg,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(1 << w->shift), (1 << w->shift));
 		break;
 	case SND_SOC_DAPM_POST_PMD:
 		*state &= ~channel;
 		if (*state == 0) {
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, w->reg,
-=======
 			snd_soc_component_update_bits(component, w->reg,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(1 << w->shift), 0);
 		}
 		break;
@@ -1439,17 +673,6 @@ static int max98095_pga_in2_event(struct snd_soc_dapm_widget *w,
 static int max98095_lineout_event(struct snd_soc_dapm_widget *w,
 			     struct snd_kcontrol *kcontrol, int event)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = w->codec;
-
-	switch (event) {
-	case SND_SOC_DAPM_POST_PMU:
-		snd_soc_update_bits(codec, w->reg,
-			(1 << (w->shift+2)), (1 << (w->shift+2)));
-		break;
-	case SND_SOC_DAPM_POST_PMD:
-		snd_soc_update_bits(codec, w->reg,
-=======
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 
 	switch (event) {
@@ -1459,7 +682,6 @@ static int max98095_lineout_event(struct snd_soc_dapm_widget *w,
 		break;
 	case SND_SOC_DAPM_POST_PMD:
 		snd_soc_component_update_bits(component, w->reg,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(1 << (w->shift+2)), 0);
 		break;
 	default:
@@ -1682,17 +904,6 @@ static const struct snd_soc_dapm_route max98095_audio_map[] = {
 	{"MIC2 Input", NULL, "MIC2"},
 };
 
-<<<<<<< HEAD
-static int max98095_add_widgets(struct snd_soc_codec *codec)
-{
-	snd_soc_add_codec_controls(codec, max98095_snd_controls,
-			     ARRAY_SIZE(max98095_snd_controls));
-
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* codec mclk clock divider coefficients */
 static const struct {
 	u32 rate;
@@ -1728,13 +939,8 @@ static int max98095_dai1_hw_params(struct snd_pcm_substream *substream,
 				   struct snd_pcm_hw_params *params,
 				   struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = dai->component;
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max98095_cdata *cdata;
 	unsigned long long ni;
 	unsigned int rate;
@@ -1744,15 +950,6 @@ static int max98095_dai1_hw_params(struct snd_pcm_substream *substream,
 
 	rate = params_rate(params);
 
-<<<<<<< HEAD
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-		snd_soc_update_bits(codec, M98095_02A_DAI1_FORMAT,
-			M98095_DAI_WS, 0);
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-		snd_soc_update_bits(codec, M98095_02A_DAI1_FORMAT,
-=======
 	switch (params_width(params)) {
 	case 16:
 		snd_soc_component_update_bits(component, M98095_02A_DAI1_FORMAT,
@@ -1760,7 +957,6 @@ static int max98095_dai1_hw_params(struct snd_pcm_substream *substream,
 		break;
 	case 24:
 		snd_soc_component_update_bits(component, M98095_02A_DAI1_FORMAT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			M98095_DAI_WS, M98095_DAI_WS);
 		break;
 	default:
@@ -1770,54 +966,31 @@ static int max98095_dai1_hw_params(struct snd_pcm_substream *substream,
 	if (rate_value(rate, &regval))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, M98095_027_DAI1_CLKMODE,
-=======
 	snd_soc_component_update_bits(component, M98095_027_DAI1_CLKMODE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		M98095_CLKMODE_MASK, regval);
 	cdata->rate = rate;
 
 	/* Configure NI when operating as master */
-<<<<<<< HEAD
-	if (snd_soc_read(codec, M98095_02A_DAI1_FORMAT) & M98095_DAI_MAS) {
-		if (max98095->sysclk == 0) {
-			dev_err(codec->dev, "Invalid system clock frequency\n");
-=======
 	if (snd_soc_component_read(component, M98095_02A_DAI1_FORMAT) & M98095_DAI_MAS) {
 		if (max98095->sysclk == 0) {
 			dev_err(component->dev, "Invalid system clock frequency\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		ni = 65536ULL * (rate < 50000 ? 96ULL : 48ULL)
 				* (unsigned long long int)rate;
 		do_div(ni, (unsigned long long int)max98095->sysclk);
-<<<<<<< HEAD
-		snd_soc_write(codec, M98095_028_DAI1_CLKCFG_HI,
-			(ni >> 8) & 0x7F);
-		snd_soc_write(codec, M98095_029_DAI1_CLKCFG_LO,
-=======
 		snd_soc_component_write(component, M98095_028_DAI1_CLKCFG_HI,
 			(ni >> 8) & 0x7F);
 		snd_soc_component_write(component, M98095_029_DAI1_CLKCFG_LO,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ni & 0xFF);
 	}
 
 	/* Update sample rate mode */
 	if (rate < 50000)
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, M98095_02E_DAI1_FILTERS,
-			M98095_DAI_DHF, 0);
-	else
-		snd_soc_update_bits(codec, M98095_02E_DAI1_FILTERS,
-=======
 		snd_soc_component_update_bits(component, M98095_02E_DAI1_FILTERS,
 			M98095_DAI_DHF, 0);
 	else
 		snd_soc_component_update_bits(component, M98095_02E_DAI1_FILTERS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			M98095_DAI_DHF, M98095_DAI_DHF);
 
 	return 0;
@@ -1827,13 +1000,8 @@ static int max98095_dai2_hw_params(struct snd_pcm_substream *substream,
 				   struct snd_pcm_hw_params *params,
 				   struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = dai->component;
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max98095_cdata *cdata;
 	unsigned long long ni;
 	unsigned int rate;
@@ -1843,15 +1011,6 @@ static int max98095_dai2_hw_params(struct snd_pcm_substream *substream,
 
 	rate = params_rate(params);
 
-<<<<<<< HEAD
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-		snd_soc_update_bits(codec, M98095_034_DAI2_FORMAT,
-			M98095_DAI_WS, 0);
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-		snd_soc_update_bits(codec, M98095_034_DAI2_FORMAT,
-=======
 	switch (params_width(params)) {
 	case 16:
 		snd_soc_component_update_bits(component, M98095_034_DAI2_FORMAT,
@@ -1859,7 +1018,6 @@ static int max98095_dai2_hw_params(struct snd_pcm_substream *substream,
 		break;
 	case 24:
 		snd_soc_component_update_bits(component, M98095_034_DAI2_FORMAT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			M98095_DAI_WS, M98095_DAI_WS);
 		break;
 	default:
@@ -1869,54 +1027,31 @@ static int max98095_dai2_hw_params(struct snd_pcm_substream *substream,
 	if (rate_value(rate, &regval))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, M98095_031_DAI2_CLKMODE,
-=======
 	snd_soc_component_update_bits(component, M98095_031_DAI2_CLKMODE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		M98095_CLKMODE_MASK, regval);
 	cdata->rate = rate;
 
 	/* Configure NI when operating as master */
-<<<<<<< HEAD
-	if (snd_soc_read(codec, M98095_034_DAI2_FORMAT) & M98095_DAI_MAS) {
-		if (max98095->sysclk == 0) {
-			dev_err(codec->dev, "Invalid system clock frequency\n");
-=======
 	if (snd_soc_component_read(component, M98095_034_DAI2_FORMAT) & M98095_DAI_MAS) {
 		if (max98095->sysclk == 0) {
 			dev_err(component->dev, "Invalid system clock frequency\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		ni = 65536ULL * (rate < 50000 ? 96ULL : 48ULL)
 				* (unsigned long long int)rate;
 		do_div(ni, (unsigned long long int)max98095->sysclk);
-<<<<<<< HEAD
-		snd_soc_write(codec, M98095_032_DAI2_CLKCFG_HI,
-			(ni >> 8) & 0x7F);
-		snd_soc_write(codec, M98095_033_DAI2_CLKCFG_LO,
-=======
 		snd_soc_component_write(component, M98095_032_DAI2_CLKCFG_HI,
 			(ni >> 8) & 0x7F);
 		snd_soc_component_write(component, M98095_033_DAI2_CLKCFG_LO,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ni & 0xFF);
 	}
 
 	/* Update sample rate mode */
 	if (rate < 50000)
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, M98095_038_DAI2_FILTERS,
-			M98095_DAI_DHF, 0);
-	else
-		snd_soc_update_bits(codec, M98095_038_DAI2_FILTERS,
-=======
 		snd_soc_component_update_bits(component, M98095_038_DAI2_FILTERS,
 			M98095_DAI_DHF, 0);
 	else
 		snd_soc_component_update_bits(component, M98095_038_DAI2_FILTERS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			M98095_DAI_DHF, M98095_DAI_DHF);
 
 	return 0;
@@ -1926,13 +1061,8 @@ static int max98095_dai3_hw_params(struct snd_pcm_substream *substream,
 				   struct snd_pcm_hw_params *params,
 				   struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = dai->component;
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max98095_cdata *cdata;
 	unsigned long long ni;
 	unsigned int rate;
@@ -1942,15 +1072,6 @@ static int max98095_dai3_hw_params(struct snd_pcm_substream *substream,
 
 	rate = params_rate(params);
 
-<<<<<<< HEAD
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-		snd_soc_update_bits(codec, M98095_03E_DAI3_FORMAT,
-			M98095_DAI_WS, 0);
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-		snd_soc_update_bits(codec, M98095_03E_DAI3_FORMAT,
-=======
 	switch (params_width(params)) {
 	case 16:
 		snd_soc_component_update_bits(component, M98095_03E_DAI3_FORMAT,
@@ -1958,7 +1079,6 @@ static int max98095_dai3_hw_params(struct snd_pcm_substream *substream,
 		break;
 	case 24:
 		snd_soc_component_update_bits(component, M98095_03E_DAI3_FORMAT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			M98095_DAI_WS, M98095_DAI_WS);
 		break;
 	default:
@@ -1968,54 +1088,31 @@ static int max98095_dai3_hw_params(struct snd_pcm_substream *substream,
 	if (rate_value(rate, &regval))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, M98095_03B_DAI3_CLKMODE,
-=======
 	snd_soc_component_update_bits(component, M98095_03B_DAI3_CLKMODE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		M98095_CLKMODE_MASK, regval);
 	cdata->rate = rate;
 
 	/* Configure NI when operating as master */
-<<<<<<< HEAD
-	if (snd_soc_read(codec, M98095_03E_DAI3_FORMAT) & M98095_DAI_MAS) {
-		if (max98095->sysclk == 0) {
-			dev_err(codec->dev, "Invalid system clock frequency\n");
-=======
 	if (snd_soc_component_read(component, M98095_03E_DAI3_FORMAT) & M98095_DAI_MAS) {
 		if (max98095->sysclk == 0) {
 			dev_err(component->dev, "Invalid system clock frequency\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		ni = 65536ULL * (rate < 50000 ? 96ULL : 48ULL)
 				* (unsigned long long int)rate;
 		do_div(ni, (unsigned long long int)max98095->sysclk);
-<<<<<<< HEAD
-		snd_soc_write(codec, M98095_03C_DAI3_CLKCFG_HI,
-			(ni >> 8) & 0x7F);
-		snd_soc_write(codec, M98095_03D_DAI3_CLKCFG_LO,
-=======
 		snd_soc_component_write(component, M98095_03C_DAI3_CLKCFG_HI,
 			(ni >> 8) & 0x7F);
 		snd_soc_component_write(component, M98095_03D_DAI3_CLKCFG_LO,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ni & 0xFF);
 	}
 
 	/* Update sample rate mode */
 	if (rate < 50000)
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, M98095_042_DAI3_FILTERS,
-			M98095_DAI_DHF, 0);
-	else
-		snd_soc_update_bits(codec, M98095_042_DAI3_FILTERS,
-=======
 		snd_soc_component_update_bits(component, M98095_042_DAI3_FILTERS,
 			M98095_DAI_DHF, 0);
 	else
 		snd_soc_component_update_bits(component, M98095_042_DAI3_FILTERS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			M98095_DAI_DHF, M98095_DAI_DHF);
 
 	return 0;
@@ -2024,41 +1121,24 @@ static int max98095_dai3_hw_params(struct snd_pcm_substream *substream,
 static int max98095_dai_set_sysclk(struct snd_soc_dai *dai,
 				   int clk_id, unsigned int freq, int dir)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = dai->component;
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Requested clock frequency is already setup */
 	if (freq == max98095->sysclk)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	if (!IS_ERR(max98095->mclk)) {
 		freq = clk_round_rate(max98095->mclk, freq);
 		clk_set_rate(max98095->mclk, freq);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Setup clocks for slave mode, and using the PLL
 	 * PSCLK = 0x01 (when master clk is 10MHz to 20MHz)
 	 *         0x02 (when master clk is 20MHz to 40MHz)..
 	 *         0x03 (when master clk is 40MHz to 60MHz)..
 	 */
 	if ((freq >= 10000000) && (freq < 20000000)) {
-<<<<<<< HEAD
-		snd_soc_write(codec, M98095_026_SYS_CLK, 0x10);
-	} else if ((freq >= 20000000) && (freq < 40000000)) {
-		snd_soc_write(codec, M98095_026_SYS_CLK, 0x20);
-	} else if ((freq >= 40000000) && (freq < 60000000)) {
-		snd_soc_write(codec, M98095_026_SYS_CLK, 0x30);
-	} else {
-		dev_err(codec->dev, "Invalid master clock frequency\n");
-=======
 		snd_soc_component_write(component, M98095_026_SYS_CLK, 0x10);
 	} else if ((freq >= 20000000) && (freq < 40000000)) {
 		snd_soc_component_write(component, M98095_026_SYS_CLK, 0x20);
@@ -2066,7 +1146,6 @@ static int max98095_dai_set_sysclk(struct snd_soc_dai *dai,
 		snd_soc_component_write(component, M98095_026_SYS_CLK, 0x30);
 	} else {
 		dev_err(component->dev, "Invalid master clock frequency\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -2079,13 +1158,8 @@ static int max98095_dai_set_sysclk(struct snd_soc_dai *dai,
 static int max98095_dai1_set_fmt(struct snd_soc_dai *codec_dai,
 				 unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max98095_cdata *cdata;
 	u8 regval = 0;
 
@@ -2094,24 +1168,6 @@ static int max98095_dai1_set_fmt(struct snd_soc_dai *codec_dai,
 	if (fmt != cdata->fmt) {
 		cdata->fmt = fmt;
 
-<<<<<<< HEAD
-		switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-		case SND_SOC_DAIFMT_CBS_CFS:
-			/* Slave mode PLL */
-			snd_soc_write(codec, M98095_028_DAI1_CLKCFG_HI,
-				0x80);
-			snd_soc_write(codec, M98095_029_DAI1_CLKCFG_LO,
-				0x00);
-			break;
-		case SND_SOC_DAIFMT_CBM_CFM:
-			/* Set to master mode */
-			regval |= M98095_DAI_MAS;
-			break;
-		case SND_SOC_DAIFMT_CBS_CFM:
-		case SND_SOC_DAIFMT_CBM_CFS:
-		default:
-			dev_err(codec->dev, "Clock mode unsupported");
-=======
 		switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 		case SND_SOC_DAIFMT_CBC_CFC:
 			/* Consumer mode PLL */
@@ -2126,7 +1182,6 @@ static int max98095_dai1_set_fmt(struct snd_soc_dai *codec_dai,
 			break;
 		default:
 			dev_err(component->dev, "Clock mode unsupported");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -2156,19 +1211,11 @@ static int max98095_dai1_set_fmt(struct snd_soc_dai *codec_dai,
 			return -EINVAL;
 		}
 
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, M98095_02A_DAI1_FORMAT,
-			M98095_DAI_MAS | M98095_DAI_DLY | M98095_DAI_BCI |
-			M98095_DAI_WCI, regval);
-
-		snd_soc_write(codec, M98095_02B_DAI1_CLOCK, M98095_DAI_BSEL64);
-=======
 		snd_soc_component_update_bits(component, M98095_02A_DAI1_FORMAT,
 			M98095_DAI_MAS | M98095_DAI_DLY | M98095_DAI_BCI |
 			M98095_DAI_WCI, regval);
 
 		snd_soc_component_write(component, M98095_02B_DAI1_CLOCK, M98095_DAI_BSEL64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -2177,13 +1224,8 @@ static int max98095_dai1_set_fmt(struct snd_soc_dai *codec_dai,
 static int max98095_dai2_set_fmt(struct snd_soc_dai *codec_dai,
 				 unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max98095_cdata *cdata;
 	u8 regval = 0;
 
@@ -2192,24 +1234,6 @@ static int max98095_dai2_set_fmt(struct snd_soc_dai *codec_dai,
 	if (fmt != cdata->fmt) {
 		cdata->fmt = fmt;
 
-<<<<<<< HEAD
-		switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-		case SND_SOC_DAIFMT_CBS_CFS:
-			/* Slave mode PLL */
-			snd_soc_write(codec, M98095_032_DAI2_CLKCFG_HI,
-				0x80);
-			snd_soc_write(codec, M98095_033_DAI2_CLKCFG_LO,
-				0x00);
-			break;
-		case SND_SOC_DAIFMT_CBM_CFM:
-			/* Set to master mode */
-			regval |= M98095_DAI_MAS;
-			break;
-		case SND_SOC_DAIFMT_CBS_CFM:
-		case SND_SOC_DAIFMT_CBM_CFS:
-		default:
-			dev_err(codec->dev, "Clock mode unsupported");
-=======
 		switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 		case SND_SOC_DAIFMT_CBC_CFC:
 			/* Consumer mode PLL */
@@ -2224,7 +1248,6 @@ static int max98095_dai2_set_fmt(struct snd_soc_dai *codec_dai,
 			break;
 		default:
 			dev_err(component->dev, "Clock mode unsupported");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -2254,19 +1277,11 @@ static int max98095_dai2_set_fmt(struct snd_soc_dai *codec_dai,
 			return -EINVAL;
 		}
 
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, M98095_034_DAI2_FORMAT,
-			M98095_DAI_MAS | M98095_DAI_DLY | M98095_DAI_BCI |
-			M98095_DAI_WCI, regval);
-
-		snd_soc_write(codec, M98095_035_DAI2_CLOCK,
-=======
 		snd_soc_component_update_bits(component, M98095_034_DAI2_FORMAT,
 			M98095_DAI_MAS | M98095_DAI_DLY | M98095_DAI_BCI |
 			M98095_DAI_WCI, regval);
 
 		snd_soc_component_write(component, M98095_035_DAI2_CLOCK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			M98095_DAI_BSEL64);
 	}
 
@@ -2276,13 +1291,8 @@ static int max98095_dai2_set_fmt(struct snd_soc_dai *codec_dai,
 static int max98095_dai3_set_fmt(struct snd_soc_dai *codec_dai,
 				 unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max98095_cdata *cdata;
 	u8 regval = 0;
 
@@ -2291,24 +1301,6 @@ static int max98095_dai3_set_fmt(struct snd_soc_dai *codec_dai,
 	if (fmt != cdata->fmt) {
 		cdata->fmt = fmt;
 
-<<<<<<< HEAD
-		switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-		case SND_SOC_DAIFMT_CBS_CFS:
-			/* Slave mode PLL */
-			snd_soc_write(codec, M98095_03C_DAI3_CLKCFG_HI,
-				0x80);
-			snd_soc_write(codec, M98095_03D_DAI3_CLKCFG_LO,
-				0x00);
-			break;
-		case SND_SOC_DAIFMT_CBM_CFM:
-			/* Set to master mode */
-			regval |= M98095_DAI_MAS;
-			break;
-		case SND_SOC_DAIFMT_CBS_CFM:
-		case SND_SOC_DAIFMT_CBM_CFS:
-		default:
-			dev_err(codec->dev, "Clock mode unsupported");
-=======
 		switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 		case SND_SOC_DAIFMT_CBC_CFC:
 			/* Consumer mode PLL */
@@ -2323,7 +1315,6 @@ static int max98095_dai3_set_fmt(struct snd_soc_dai *codec_dai,
 			break;
 		default:
 			dev_err(component->dev, "Clock mode unsupported");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -2353,35 +1344,21 @@ static int max98095_dai3_set_fmt(struct snd_soc_dai *codec_dai,
 			return -EINVAL;
 		}
 
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, M98095_03E_DAI3_FORMAT,
-			M98095_DAI_MAS | M98095_DAI_DLY | M98095_DAI_BCI |
-			M98095_DAI_WCI, regval);
-
-		snd_soc_write(codec, M98095_03F_DAI3_CLOCK,
-=======
 		snd_soc_component_update_bits(component, M98095_03E_DAI3_FORMAT,
 			M98095_DAI_MAS | M98095_DAI_DLY | M98095_DAI_BCI |
 			M98095_DAI_WCI, regval);
 
 		snd_soc_component_write(component, M98095_03F_DAI3_CLOCK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			M98095_DAI_BSEL64);
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int max98095_set_bias_level(struct snd_soc_codec *codec,
-				   enum snd_soc_bias_level level)
-{
-=======
 static int max98095_set_bias_level(struct snd_soc_component *component,
 				   enum snd_soc_bias_level level)
 {
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	switch (level) {
@@ -2389,16 +1366,6 @@ static int max98095_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
-<<<<<<< HEAD
-		break;
-
-	case SND_SOC_BIAS_STANDBY:
-		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
-			ret = snd_soc_cache_sync(codec);
-
-			if (ret != 0) {
-				dev_err(codec->dev, "Failed to sync cache: %d\n", ret);
-=======
 		/*
 		 * SND_SOC_BIAS_PREPARE is called while preparing for a
 		 * transition to ON or away from ON. If current bias_level
@@ -2424,34 +1391,20 @@ static int max98095_set_bias_level(struct snd_soc_component *component,
 
 			if (ret != 0) {
 				dev_err(component->dev, "Failed to sync cache: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return ret;
 			}
 		}
 
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, M98095_090_PWR_EN_IN,
-=======
 		snd_soc_component_update_bits(component, M98095_090_PWR_EN_IN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				M98095_MBEN, M98095_MBEN);
 		break;
 
 	case SND_SOC_BIAS_OFF:
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, M98095_090_PWR_EN_IN,
-				M98095_MBEN, 0);
-		codec->cache_sync = 1;
-		break;
-	}
-	codec->dapm.bias_level = level;
-=======
 		snd_soc_component_update_bits(component, M98095_090_PWR_EN_IN,
 				M98095_MBEN, 0);
 		regcache_mark_dirty(max98095->regmap);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2532,31 +1485,18 @@ static int max98095_get_eq_channel(const char *name)
 static int max98095_put_eq_enum(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-	struct max98095_pdata *pdata = max98095->pdata;
-	int channel = max98095_get_eq_channel(kcontrol->id.name);
-	struct max98095_cdata *cdata;
-	unsigned int sel = ucontrol->value.integer.value[0];
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
 	struct max98095_pdata *pdata = max98095->pdata;
 	int channel = max98095_get_eq_channel(kcontrol->id.name);
 	struct max98095_cdata *cdata;
 	unsigned int sel = ucontrol->value.enumerated.item[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max98095_eq_cfg *coef_set;
 	int fs, best, best_val, i;
 	int regmask, regsave;
 
-<<<<<<< HEAD
-	BUG_ON(channel > 1);
-=======
 	if (WARN_ON(channel > 1))
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pdata || !max98095->eq_textcnt)
 		return 0;
@@ -2579,11 +1519,7 @@ static int max98095_put_eq_enum(struct snd_kcontrol *kcontrol,
 		}
 	}
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Selected %s/%dHz for %dHz sample rate\n",
-=======
 	dev_dbg(component->dev, "Selected %s/%dHz for %dHz sample rate\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdata->eq_cfg[best].name,
 		pdata->eq_cfg[best].rate, fs);
 
@@ -2592,23 +1528,6 @@ static int max98095_put_eq_enum(struct snd_kcontrol *kcontrol,
 	regmask = (channel == 0) ? M98095_EQ1EN : M98095_EQ2EN;
 
 	/* Disable filter while configuring, and save current on/off state */
-<<<<<<< HEAD
-	regsave = snd_soc_read(codec, M98095_088_CFG_LEVEL);
-	snd_soc_update_bits(codec, M98095_088_CFG_LEVEL, regmask, 0);
-
-	mutex_lock(&codec->mutex);
-	snd_soc_update_bits(codec, M98095_00F_HOST_CFG, M98095_SEG, M98095_SEG);
-	m98095_eq_band(codec, channel, 0, coef_set->band1);
-	m98095_eq_band(codec, channel, 1, coef_set->band2);
-	m98095_eq_band(codec, channel, 2, coef_set->band3);
-	m98095_eq_band(codec, channel, 3, coef_set->band4);
-	m98095_eq_band(codec, channel, 4, coef_set->band5);
-	snd_soc_update_bits(codec, M98095_00F_HOST_CFG, M98095_SEG, 0);
-	mutex_unlock(&codec->mutex);
-
-	/* Restore the original on/off state */
-	snd_soc_update_bits(codec, M98095_088_CFG_LEVEL, regmask, regsave);
-=======
 	regsave = snd_soc_component_read(component, M98095_088_CFG_LEVEL);
 	snd_soc_component_update_bits(component, M98095_088_CFG_LEVEL, regmask, 0);
 
@@ -2624,20 +1543,14 @@ static int max98095_put_eq_enum(struct snd_kcontrol *kcontrol,
 
 	/* Restore the original on/off state */
 	snd_soc_component_update_bits(component, M98095_088_CFG_LEVEL, regmask, regsave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int max98095_get_eq_enum(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int channel = max98095_get_eq_channel(kcontrol->id.name);
 	struct max98095_cdata *cdata;
 
@@ -2647,15 +1560,9 @@ static int max98095_get_eq_enum(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void max98095_handle_eq_pdata(struct snd_soc_codec *codec)
-{
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 static void max98095_handle_eq_pdata(struct snd_soc_component *component)
 {
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max98095_pdata *pdata = max98095->pdata;
 	struct max98095_eq_cfg *cfg;
 	unsigned int cfgcnt;
@@ -2706,37 +1613,15 @@ static void max98095_handle_eq_pdata(struct snd_soc_component *component)
 
 	/* Now point the soc_enum to .texts array items */
 	max98095->eq_enum.texts = max98095->eq_texts;
-<<<<<<< HEAD
-	max98095->eq_enum.max = max98095->eq_textcnt;
-
-	ret = snd_soc_add_codec_controls(codec, controls, ARRAY_SIZE(controls));
-	if (ret != 0)
-		dev_err(codec->dev, "Failed to add EQ control: %d\n", ret);
-=======
 	max98095->eq_enum.items = max98095->eq_textcnt;
 
 	ret = snd_soc_add_component_controls(component, controls, ARRAY_SIZE(controls));
 	if (ret != 0)
 		dev_err(component->dev, "Failed to add EQ control: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *bq_mode_name[] = {"Biquad1 Mode", "Biquad2 Mode"};
 
-<<<<<<< HEAD
-static int max98095_get_bq_channel(struct snd_soc_codec *codec,
-				   const char *name)
-{
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(bq_mode_name); i++)
-		if (strcmp(name, bq_mode_name[i]) == 0)
-			return i;
-
-	/* Shouldn't happen */
-	dev_err(codec->dev, "Bad biquad channel name '%s'\n", name);
-	return -EINVAL;
-=======
 static int max98095_get_bq_channel(struct snd_soc_component *component,
 				   const char *name)
 {
@@ -2746,27 +1631,17 @@ static int max98095_get_bq_channel(struct snd_soc_component *component,
 	if (ret < 0)
 		dev_err(component->dev, "Bad biquad channel name '%s'\n", name);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int max98095_put_bq_enum(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-	struct max98095_pdata *pdata = max98095->pdata;
-	int channel = max98095_get_bq_channel(codec, kcontrol->id.name);
-	struct max98095_cdata *cdata;
-	unsigned int sel = ucontrol->value.integer.value[0];
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
 	struct max98095_pdata *pdata = max98095->pdata;
 	int channel = max98095_get_bq_channel(component, kcontrol->id.name);
 	struct max98095_cdata *cdata;
 	unsigned int sel = ucontrol->value.enumerated.item[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max98095_biquad_cfg *coef_set;
 	int fs, best, best_val, i;
 	int regmask, regsave;
@@ -2795,11 +1670,7 @@ static int max98095_put_bq_enum(struct snd_kcontrol *kcontrol,
 		}
 	}
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Selected %s/%dHz for %dHz sample rate\n",
-=======
 	dev_dbg(component->dev, "Selected %s/%dHz for %dHz sample rate\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdata->bq_cfg[best].name,
 		pdata->bq_cfg[best].rate, fs);
 
@@ -2808,20 +1679,6 @@ static int max98095_put_bq_enum(struct snd_kcontrol *kcontrol,
 	regmask = (channel == 0) ? M98095_BQ1EN : M98095_BQ2EN;
 
 	/* Disable filter while configuring, and save current on/off state */
-<<<<<<< HEAD
-	regsave = snd_soc_read(codec, M98095_088_CFG_LEVEL);
-	snd_soc_update_bits(codec, M98095_088_CFG_LEVEL, regmask, 0);
-
-	mutex_lock(&codec->mutex);
-	snd_soc_update_bits(codec, M98095_00F_HOST_CFG, M98095_SEG, M98095_SEG);
-	m98095_biquad_band(codec, channel, 0, coef_set->band1);
-	m98095_biquad_band(codec, channel, 1, coef_set->band2);
-	snd_soc_update_bits(codec, M98095_00F_HOST_CFG, M98095_SEG, 0);
-	mutex_unlock(&codec->mutex);
-
-	/* Restore the original on/off state */
-	snd_soc_update_bits(codec, M98095_088_CFG_LEVEL, regmask, regsave);
-=======
 	regsave = snd_soc_component_read(component, M98095_088_CFG_LEVEL);
 	snd_soc_component_update_bits(component, M98095_088_CFG_LEVEL, regmask, 0);
 
@@ -2834,22 +1691,15 @@ static int max98095_put_bq_enum(struct snd_kcontrol *kcontrol,
 
 	/* Restore the original on/off state */
 	snd_soc_component_update_bits(component, M98095_088_CFG_LEVEL, regmask, regsave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int max98095_get_bq_enum(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-	int channel = max98095_get_bq_channel(codec, kcontrol->id.name);
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
 	int channel = max98095_get_bq_channel(component, kcontrol->id.name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max98095_cdata *cdata;
 
 	if (channel < 0)
@@ -2861,15 +1711,9 @@ static int max98095_get_bq_enum(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void max98095_handle_bq_pdata(struct snd_soc_codec *codec)
-{
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 static void max98095_handle_bq_pdata(struct snd_soc_component *component)
 {
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max98095_pdata *pdata = max98095->pdata;
 	struct max98095_biquad_cfg *cfg;
 	unsigned int cfgcnt;
@@ -2921,18 +1765,6 @@ static void max98095_handle_bq_pdata(struct snd_soc_component *component)
 
 	/* Now point the soc_enum to .texts array items */
 	max98095->bq_enum.texts = max98095->bq_texts;
-<<<<<<< HEAD
-	max98095->bq_enum.max = max98095->bq_textcnt;
-
-	ret = snd_soc_add_codec_controls(codec, controls, ARRAY_SIZE(controls));
-	if (ret != 0)
-		dev_err(codec->dev, "Failed to add Biquad control: %d\n", ret);
-}
-
-static void max98095_handle_pdata(struct snd_soc_codec *codec)
-{
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-=======
 	max98095->bq_enum.items = max98095->bq_textcnt;
 
 	ret = snd_soc_add_component_controls(component, controls, ARRAY_SIZE(controls));
@@ -2943,16 +1775,11 @@ static void max98095_handle_pdata(struct snd_soc_codec *codec)
 static void max98095_handle_pdata(struct snd_soc_component *component)
 {
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max98095_pdata *pdata = max98095->pdata;
 	u8 regval = 0;
 
 	if (!pdata) {
-<<<<<<< HEAD
-		dev_dbg(codec->dev, "No platform data\n");
-=======
 		dev_dbg(component->dev, "No platform data\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -2963,23 +1790,6 @@ static void max98095_handle_pdata(struct snd_soc_component *component)
 	if (pdata->digmic_right_mode)
 		regval |= M98095_DIGMIC_R;
 
-<<<<<<< HEAD
-	snd_soc_write(codec, M98095_087_CFG_MIC, regval);
-
-	/* Configure equalizers */
-	if (pdata->eq_cfgcnt)
-		max98095_handle_eq_pdata(codec);
-
-	/* Configure bi-quad filters */
-	if (pdata->bq_cfgcnt)
-		max98095_handle_bq_pdata(codec);
-}
-
-#ifdef CONFIG_PM
-static int max98095_suspend(struct snd_soc_codec *codec)
-{
-	max98095_set_bias_level(codec, SND_SOC_BIAS_OFF);
-=======
 	snd_soc_component_write(component, M98095_087_CFG_MIC, regval);
 
 	/* Configure equalizers */
@@ -3112,16 +1922,10 @@ static int max98095_suspend(struct snd_soc_component *component)
 		max98095_jack_detect_disable(component);
 
 	snd_soc_component_force_bias_level(component, SND_SOC_BIAS_OFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int max98095_resume(struct snd_soc_codec *codec)
-{
-	max98095_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-=======
 static int max98095_resume(struct snd_soc_component *component)
 {
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
@@ -3133,7 +1937,6 @@ static int max98095_resume(struct snd_soc_component *component)
 		max98095_jack_detect_enable(component);
 		max98095_report_jack(client->irq, component);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3142,27 +1945,12 @@ static int max98095_resume(struct snd_soc_component *component)
 #define max98095_resume NULL
 #endif
 
-<<<<<<< HEAD
-static int max98095_reset(struct snd_soc_codec *codec)
-=======
 static int max98095_reset(struct snd_soc_component *component)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, ret;
 
 	/* Gracefully reset the DSP core and the codec hardware
 	 * in a proper sequence */
-<<<<<<< HEAD
-	ret = snd_soc_write(codec, M98095_00F_HOST_CFG, 0);
-	if (ret < 0) {
-		dev_err(codec->dev, "Failed to reset DSP: %d\n", ret);
-		return ret;
-	}
-
-	ret = snd_soc_write(codec, M98095_097_PWR_SYS, 0);
-	if (ret < 0) {
-		dev_err(codec->dev, "Failed to reset codec: %d\n", ret);
-=======
 	ret = snd_soc_component_write(component, M98095_00F_HOST_CFG, 0);
 	if (ret < 0) {
 		dev_err(component->dev, "Failed to reset DSP: %d\n", ret);
@@ -3172,22 +1960,15 @@ static int max98095_reset(struct snd_soc_component *component)
 	ret = snd_soc_component_write(component, M98095_097_PWR_SYS, 0);
 	if (ret < 0) {
 		dev_err(component->dev, "Failed to reset component: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	/* Reset to hardware default for registers, as there is not
 	 * a soft reset hardware control register */
 	for (i = M98095_010_HOST_INT_CFG; i < M98095_REG_MAX_CACHED; i++) {
-<<<<<<< HEAD
-		ret = snd_soc_write(codec, i, max98095_reg_def[i]);
-		if (ret < 0) {
-			dev_err(codec->dev, "Failed to reset: %d\n", ret);
-=======
 		ret = snd_soc_component_write(component, i, snd_soc_component_read(component, i));
 		if (ret < 0) {
 			dev_err(component->dev, "Failed to reset: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ret;
 		}
 	}
@@ -3195,22 +1976,6 @@ static int max98095_reset(struct snd_soc_component *component)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int max98095_probe(struct snd_soc_codec *codec)
-{
-	struct max98095_priv *max98095 = snd_soc_codec_get_drvdata(codec);
-	struct max98095_cdata *cdata;
-	int ret = 0;
-
-	ret = snd_soc_codec_set_cache_io(codec, 8, 8, SND_SOC_I2C);
-	if (ret != 0) {
-		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
-		return ret;
-	}
-
-	/* reset the codec, the DSP core, and disable all interrupts */
-	max98095_reset(codec);
-=======
 static int max98095_probe(struct snd_soc_component *component)
 {
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
@@ -3226,7 +1991,6 @@ static int max98095_probe(struct snd_soc_component *component)
 	max98095_reset(component);
 
 	client = to_i2c_client(component->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialize private data */
 
@@ -3256,48 +2020,6 @@ static int max98095_probe(struct snd_soc_component *component)
 	max98095->mic1pre = 0;
 	max98095->mic2pre = 0;
 
-<<<<<<< HEAD
-	ret = snd_soc_read(codec, M98095_0FF_REV_ID);
-	if (ret < 0) {
-		dev_err(codec->dev, "Failure reading hardware revision: %d\n",
-			ret);
-		goto err_access;
-	}
-	dev_info(codec->dev, "Hardware revision: %c\n", ret - 0x40 + 'A');
-
-	snd_soc_write(codec, M98095_097_PWR_SYS, M98095_PWRSV);
-
-	/* initialize registers cache to hardware default */
-	max98095_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-
-	snd_soc_write(codec, M98095_048_MIX_DAC_LR,
-		M98095_DAI1L_TO_DACL|M98095_DAI1R_TO_DACR);
-
-	snd_soc_write(codec, M98095_049_MIX_DAC_M,
-		M98095_DAI2M_TO_DACM|M98095_DAI3M_TO_DACM);
-
-	snd_soc_write(codec, M98095_092_PWR_EN_OUT, M98095_SPK_SPREADSPECTRUM);
-	snd_soc_write(codec, M98095_045_CFG_DSP, M98095_DSPNORMAL);
-	snd_soc_write(codec, M98095_04E_CFG_HP, M98095_HPNORMAL);
-
-	snd_soc_write(codec, M98095_02C_DAI1_IOCFG,
-		M98095_S1NORMAL|M98095_SDATA);
-
-	snd_soc_write(codec, M98095_036_DAI2_IOCFG,
-		M98095_S2NORMAL|M98095_SDATA);
-
-	snd_soc_write(codec, M98095_040_DAI3_IOCFG,
-		M98095_S3NORMAL|M98095_SDATA);
-
-	max98095_handle_pdata(codec);
-
-	/* take the codec out of the shut down */
-	snd_soc_update_bits(codec, M98095_097_PWR_SYS, M98095_SHDNRUN,
-		M98095_SHDNRUN);
-
-	max98095_add_widgets(codec);
-
-=======
 	if (client->irq) {
 		/* register an audio interrupt */
 		ret = request_threaded_irq(client->irq, NULL,
@@ -3350,63 +2072,10 @@ static int max98095_probe(struct snd_soc_component *component)
 err_irq:
 	if (client->irq)
 		free_irq(client->irq, component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_access:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int max98095_remove(struct snd_soc_codec *codec)
-{
-	max98095_set_bias_level(codec, SND_SOC_BIAS_OFF);
-
-	return 0;
-}
-
-static struct snd_soc_codec_driver soc_codec_dev_max98095 = {
-	.probe   = max98095_probe,
-	.remove  = max98095_remove,
-	.suspend = max98095_suspend,
-	.resume  = max98095_resume,
-	.set_bias_level = max98095_set_bias_level,
-	.reg_cache_size = ARRAY_SIZE(max98095_reg_def),
-	.reg_word_size = sizeof(u8),
-	.reg_cache_default = max98095_reg_def,
-	.readable_register = max98095_readable,
-	.volatile_register = max98095_volatile,
-	.dapm_widgets	  = max98095_dapm_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(max98095_dapm_widgets),
-	.dapm_routes     = max98095_audio_map,
-	.num_dapm_routes = ARRAY_SIZE(max98095_audio_map),
-};
-
-static int max98095_i2c_probe(struct i2c_client *i2c,
-			     const struct i2c_device_id *id)
-{
-	struct max98095_priv *max98095;
-	int ret;
-
-	max98095 = devm_kzalloc(&i2c->dev, sizeof(struct max98095_priv),
-				GFP_KERNEL);
-	if (max98095 == NULL)
-		return -ENOMEM;
-
-	max98095->devtype = id->driver_data;
-	i2c_set_clientdata(i2c, max98095);
-	max98095->pdata = i2c->dev.platform_data;
-
-	ret = snd_soc_register_codec(&i2c->dev, &soc_codec_dev_max98095,
-				     max98095_dai, ARRAY_SIZE(max98095_dai));
-	return ret;
-}
-
-static int __devexit max98095_i2c_remove(struct i2c_client *client)
-{
-	snd_soc_unregister_codec(&client->dev);
-	return 0;
-}
-
-=======
 static void max98095_remove(struct snd_soc_component *component)
 {
 	struct max98095_priv *max98095 = snd_soc_component_get_drvdata(component);
@@ -3436,42 +2105,12 @@ static const struct snd_soc_component_driver soc_component_dev_max98095 = {
 	.endianness		= 1,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id max98095_i2c_id[] = {
 	{ "max98095", MAX98095 },
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, max98095_i2c_id);
 
-<<<<<<< HEAD
-static struct i2c_driver max98095_i2c_driver = {
-	.driver = {
-		.name = "max98095",
-		.owner = THIS_MODULE,
-	},
-	.probe  = max98095_i2c_probe,
-	.remove = __devexit_p(max98095_i2c_remove),
-	.id_table = max98095_i2c_id,
-};
-
-static int __init max98095_init(void)
-{
-	int ret;
-
-	ret = i2c_add_driver(&max98095_i2c_driver);
-	if (ret)
-		pr_err("Failed to register max98095 I2C driver: %d\n", ret);
-
-	return ret;
-}
-module_init(max98095_init);
-
-static void __exit max98095_exit(void)
-{
-	i2c_del_driver(&max98095_i2c_driver);
-}
-module_exit(max98095_exit);
-=======
 static int max98095_i2c_probe(struct i2c_client *i2c)
 {
 	struct max98095_priv *max98095;
@@ -3521,7 +2160,6 @@ static struct i2c_driver max98095_i2c_driver = {
 };
 
 module_i2c_driver(max98095_i2c_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ALSA SoC MAX98095 driver");
 MODULE_AUTHOR("Peter Hsiang");

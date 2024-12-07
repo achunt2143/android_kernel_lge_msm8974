@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006 Benjamin Herrenschmidt, IBM Corporation
  *
@@ -9,11 +6,6 @@
  * busses using the iommu infrastructure
  */
 
-<<<<<<< HEAD
-#include <linux/export.h>
-#include <asm/iommu.h>
-
-=======
 #include <linux/dma-direct.h>
 #include <linux/pci.h>
 #include <asm/iommu.h>
@@ -75,7 +67,6 @@ bool arch_dma_unmap_sg_direct(struct device *dev, struct scatterlist *sg,
 }
 #endif /* CONFIG_ARCH_HAS_DMA_MAP_DIRECT */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic iommu implementation
  */
@@ -86,11 +77,7 @@ bool arch_dma_unmap_sg_direct(struct device *dev, struct scatterlist *sg,
  */
 static void *dma_iommu_alloc_coherent(struct device *dev, size_t size,
 				      dma_addr_t *dma_handle, gfp_t flag,
-<<<<<<< HEAD
-				      struct dma_attrs *attrs)
-=======
 				      unsigned long attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return iommu_alloc_coherent(dev, get_iommu_table_base(dev), size,
 				    dma_handle, dev->coherent_dma_mask, flag,
@@ -99,11 +86,7 @@ static void *dma_iommu_alloc_coherent(struct device *dev, size_t size,
 
 static void dma_iommu_free_coherent(struct device *dev, size_t size,
 				    void *vaddr, dma_addr_t dma_handle,
-<<<<<<< HEAD
-				    struct dma_attrs *attrs)
-=======
 				    unsigned long attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iommu_free_coherent(get_iommu_table_base(dev), size, vaddr, dma_handle);
 }
@@ -116,27 +99,16 @@ static void dma_iommu_free_coherent(struct device *dev, size_t size,
 static dma_addr_t dma_iommu_map_page(struct device *dev, struct page *page,
 				     unsigned long offset, size_t size,
 				     enum dma_data_direction direction,
-<<<<<<< HEAD
-				     struct dma_attrs *attrs)
-{
-	return iommu_map_page(dev, get_iommu_table_base(dev), page, offset,
-			      size, device_to_mask(dev), direction, attrs);
-=======
 				     unsigned long attrs)
 {
 	return iommu_map_page(dev, get_iommu_table_base(dev), page, offset,
 			      size, dma_get_mask(dev), direction, attrs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static void dma_iommu_unmap_page(struct device *dev, dma_addr_t dma_handle,
 				 size_t size, enum dma_data_direction direction,
-<<<<<<< HEAD
-				 struct dma_attrs *attrs)
-=======
 				 unsigned long attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iommu_unmap_page(get_iommu_table_base(dev), dma_handle, size, direction,
 			 attrs);
@@ -145,58 +117,14 @@ static void dma_iommu_unmap_page(struct device *dev, dma_addr_t dma_handle,
 
 static int dma_iommu_map_sg(struct device *dev, struct scatterlist *sglist,
 			    int nelems, enum dma_data_direction direction,
-<<<<<<< HEAD
-			    struct dma_attrs *attrs)
-{
-	return iommu_map_sg(dev, get_iommu_table_base(dev), sglist, nelems,
-			    device_to_mask(dev), direction, attrs);
-=======
 			    unsigned long attrs)
 {
 	return ppc_iommu_map_sg(dev, get_iommu_table_base(dev), sglist, nelems,
 				dma_get_mask(dev), direction, attrs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dma_iommu_unmap_sg(struct device *dev, struct scatterlist *sglist,
 		int nelems, enum dma_data_direction direction,
-<<<<<<< HEAD
-		struct dma_attrs *attrs)
-{
-	iommu_unmap_sg(get_iommu_table_base(dev), sglist, nelems, direction,
-		       attrs);
-}
-
-/* We support DMA to/from any memory page via the iommu */
-static int dma_iommu_dma_supported(struct device *dev, u64 mask)
-{
-	struct iommu_table *tbl = get_iommu_table_base(dev);
-
-	if (!tbl) {
-		dev_info(dev, "Warning: IOMMU dma not supported: mask 0x%08llx"
-			", table unavailable\n", mask);
-		return 0;
-	}
-
-	if ((tbl->it_offset + tbl->it_size) > (mask >> IOMMU_PAGE_SHIFT)) {
-		dev_info(dev, "Warning: IOMMU window too big for device mask\n");
-		dev_info(dev, "mask: 0x%08llx, table end: 0x%08lx\n",
-				mask, (tbl->it_offset + tbl->it_size) <<
-				IOMMU_PAGE_SHIFT);
-		return 0;
-	} else
-		return 1;
-}
-
-static u64 dma_iommu_get_required_mask(struct device *dev)
-{
-	struct iommu_table *tbl = get_iommu_table_base(dev);
-	u64 mask;
-	if (!tbl)
-		return 0;
-
-	mask = 1ULL < (fls_long(tbl->it_offset + tbl->it_size) - 1);
-=======
 		unsigned long attrs)
 {
 	ppc_iommu_unmap_sg(get_iommu_table_base(dev), sglist, nelems,
@@ -272,17 +200,12 @@ u64 dma_iommu_get_required_mask(struct device *dev)
 
 	mask = 1ULL << (fls_long(tbl->it_offset + tbl->it_size) +
 			tbl->it_page_shift - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mask += mask - 1;
 
 	return mask;
 }
 
-<<<<<<< HEAD
-struct dma_map_ops dma_iommu_ops = {
-=======
 const struct dma_map_ops dma_iommu_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.alloc			= dma_iommu_alloc_coherent,
 	.free			= dma_iommu_free_coherent,
 	.map_sg			= dma_iommu_map_sg,
@@ -291,13 +214,8 @@ const struct dma_map_ops dma_iommu_ops = {
 	.map_page		= dma_iommu_map_page,
 	.unmap_page		= dma_iommu_unmap_page,
 	.get_required_mask	= dma_iommu_get_required_mask,
-<<<<<<< HEAD
-};
-EXPORT_SYMBOL(dma_iommu_ops);
-=======
 	.mmap			= dma_common_mmap,
 	.get_sgtable		= dma_common_get_sgtable,
 	.alloc_pages		= dma_common_alloc_pages,
 	.free_pages		= dma_common_free_pages,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

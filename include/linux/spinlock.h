@@ -1,12 +1,7 @@
-<<<<<<< HEAD
-#ifndef __LINUX_SPINLOCK_H
-#define __LINUX_SPINLOCK_H
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __LINUX_SPINLOCK_H
 #define __LINUX_SPINLOCK_H
 #define __LINUX_INSIDE_SPINLOCK_H
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * include/linux/spinlock.h - generic spinlock/rwlock declarations
@@ -18,11 +13,8 @@
  *  asm/spinlock_types.h: contains the arch_spinlock_t/arch_rwlock_t and the
  *                        initializers
  *
-<<<<<<< HEAD
-=======
  *  linux/spinlock_types_raw:
  *			  The raw types and initializers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  linux/spinlock_types.h:
  *                        defines the generic type and initializers
  *
@@ -42,11 +34,8 @@
  *                        contains the generic, simplified UP spinlock type.
  *                        (which is an empty structure on non-debug builds)
  *
-<<<<<<< HEAD
-=======
  *  linux/spinlock_types_raw:
  *			  The raw RT types and initializers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  linux/spinlock_types.h:
  *                        defines the generic type and initializers
  *
@@ -69,19 +58,12 @@
 #include <linux/compiler.h>
 #include <linux/irqflags.h>
 #include <linux/thread_info.h>
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/stringify.h>
-#include <linux/bottom_half.h>
-#include <asm/barrier.h>
-=======
 #include <linux/stringify.h>
 #include <linux/bottom_half.h>
 #include <linux/lockdep.h>
 #include <linux/cleanup.h>
 #include <asm/barrier.h>
 #include <asm/mmiowb.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -99,11 +81,7 @@
 #define LOCK_SECTION_END                        \
         ".previous\n\t"
 
-<<<<<<< HEAD
-#define __lockfunc __attribute__((section(".spinlock.text")))
-=======
 #define __lockfunc __section(".spinlock.text")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Pull the arch_spinlock_t and arch_rwlock_t definitions:
@@ -121,14 +99,6 @@
 
 #ifdef CONFIG_DEBUG_SPINLOCK
   extern void __raw_spin_lock_init(raw_spinlock_t *lock, const char *name,
-<<<<<<< HEAD
-				   struct lock_class_key *key);
-# define raw_spin_lock_init(lock)				\
-do {								\
-	static struct lock_class_key __key;			\
-								\
-	__raw_spin_lock_init((lock), #lock, &__key);		\
-=======
 				   struct lock_class_key *key, short inner);
 
 # define raw_spin_lock_init(lock)					\
@@ -136,7 +106,6 @@ do {									\
 	static struct lock_class_key __key;				\
 									\
 	__raw_spin_lock_init((lock), #lock, &__key, LD_WAIT_SPIN);	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 
 #else
@@ -146,36 +115,11 @@ do {									\
 
 #define raw_spin_is_locked(lock)	arch_spin_is_locked(&(lock)->raw_lock)
 
-<<<<<<< HEAD
-#ifdef CONFIG_GENERIC_LOCKBREAK
-#define raw_spin_is_contended(lock) ((lock)->break_lock)
-#else
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef arch_spin_is_contended
 #define raw_spin_is_contended(lock)	arch_spin_is_contended(&(lock)->raw_lock)
 #else
 #define raw_spin_is_contended(lock)	(((void)(lock), 0))
 #endif /*arch_spin_is_contended*/
-<<<<<<< HEAD
-#endif
-
-/* The lock does not imply full memory barrier. */
-#ifndef ARCH_HAS_SMP_MB_AFTER_LOCK
-static inline void smp_mb__after_lock(void) { smp_mb(); }
-#endif
-
-/**
- * raw_spin_unlock_wait - wait until the spinlock gets unlocked
- * @lock: the spinlock in question.
- */
-#define raw_spin_unlock_wait(lock)	arch_spin_unlock_wait(&(lock)->raw_lock)
-
-#ifdef CONFIG_DEBUG_SPINLOCK
- extern void do_raw_spin_lock(raw_spinlock_t *lock) __acquires(lock);
-#define do_raw_spin_lock_flags(lock, flags) do_raw_spin_lock(lock)
-=======
 
 /*
  * smp_mb__after_spinlock() provides the equivalent of a full memory barrier
@@ -234,7 +178,6 @@ static inline void smp_mb__after_lock(void) { smp_mb(); }
 
 #ifdef CONFIG_DEBUG_SPINLOCK
  extern void do_raw_spin_lock(raw_spinlock_t *lock) __acquires(lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  extern int do_raw_spin_trylock(raw_spinlock_t *lock);
  extern void do_raw_spin_unlock(raw_spinlock_t *lock) __releases(lock);
 #else
@@ -242,39 +185,22 @@ static inline void do_raw_spin_lock(raw_spinlock_t *lock) __acquires(lock)
 {
 	__acquire(lock);
 	arch_spin_lock(&lock->raw_lock);
-<<<<<<< HEAD
-}
-
-static inline void
-do_raw_spin_lock_flags(raw_spinlock_t *lock, unsigned long *flags) __acquires(lock)
-{
-	__acquire(lock);
-	arch_spin_lock_flags(&lock->raw_lock, *flags);
-=======
 	mmiowb_spin_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int do_raw_spin_trylock(raw_spinlock_t *lock)
 {
-<<<<<<< HEAD
-	return arch_spin_trylock(&(lock)->raw_lock);
-=======
 	int ret = arch_spin_trylock(&(lock)->raw_lock);
 
 	if (ret)
 		mmiowb_spin_lock();
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void do_raw_spin_unlock(raw_spinlock_t *lock) __releases(lock)
 {
-<<<<<<< HEAD
-=======
 	mmiowb_spin_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	arch_spin_unlock(&lock->raw_lock);
 	__release(lock);
 }
@@ -282,11 +208,7 @@ static inline void do_raw_spin_unlock(raw_spinlock_t *lock) __releases(lock)
 
 /*
  * Define the various spin_lock methods.  Note we define these
-<<<<<<< HEAD
- * regardless of whether CONFIG_SMP or CONFIG_PREEMPT are set. The
-=======
  * regardless of whether CONFIG_SMP or CONFIG_PREEMPTION are set. The
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * various methods are defined as nops in the case they are not
  * required.
  */
@@ -304,9 +226,6 @@ static inline void do_raw_spin_unlock(raw_spinlock_t *lock) __releases(lock)
 		 _raw_spin_lock_nest_lock(lock, &(nest_lock)->dep_map);	\
 	 } while (0)
 #else
-<<<<<<< HEAD
-# define raw_spin_lock_nested(lock, subclass)		_raw_spin_lock(lock)
-=======
 /*
  * Always evaluate the 'subclass' argument to avoid that the compiler
  * warns about set-but-not-used variables when building with
@@ -314,7 +233,6 @@ static inline void do_raw_spin_unlock(raw_spinlock_t *lock) __releases(lock)
  */
 # define raw_spin_lock_nested(lock, subclass)		\
 	_raw_spin_lock(((void)(subclass), (lock)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define raw_spin_lock_nest_lock(lock, nest_lock)	_raw_spin_lock(lock)
 #endif
 
@@ -382,21 +300,10 @@ static inline void do_raw_spin_unlock(raw_spinlock_t *lock) __releases(lock)
 	1 : ({ local_irq_restore(flags); 0; }); \
 })
 
-<<<<<<< HEAD
-/**
- * raw_spin_can_lock - would raw_spin_trylock() succeed?
- * @lock: the spinlock in question.
- */
-#define raw_spin_can_lock(lock)	(!raw_spin_is_locked(lock))
-
-/* Include rwlock functions */
-#include <linux/rwlock.h>
-=======
 #ifndef CONFIG_PREEMPT_RT
 /* Include rwlock functions for !RT */
 #include <linux/rwlock.h>
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Pull the _spin_*()/_read_*()/_write_*() functions/declarations:
@@ -407,34 +314,18 @@ static inline void do_raw_spin_unlock(raw_spinlock_t *lock) __releases(lock)
 # include <linux/spinlock_api_up.h>
 #endif
 
-<<<<<<< HEAD
-=======
 /* Non PREEMPT_RT kernel, map to raw spinlocks: */
 #ifndef CONFIG_PREEMPT_RT
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Map the spin_lock functions to the raw variants for PREEMPT_RT=n
  */
 
-<<<<<<< HEAD
-static inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
-=======
 static __always_inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return &lock->rlock;
 }
 
-<<<<<<< HEAD
-#define spin_lock_init(_lock)				\
-do {							\
-	spinlock_check(_lock);				\
-	raw_spin_lock_init(&(_lock)->rlock);		\
-} while (0)
-
-static inline void spin_lock(spinlock_t *lock)
-=======
 #ifdef CONFIG_DEBUG_SPINLOCK
 
 # define spin_lock_init(lock)					\
@@ -456,25 +347,16 @@ do {						\
 #endif
 
 static __always_inline void spin_lock(spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	raw_spin_lock(&lock->rlock);
 }
 
-<<<<<<< HEAD
-static inline void spin_lock_bh(spinlock_t *lock)
-=======
 static __always_inline void spin_lock_bh(spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	raw_spin_lock_bh(&lock->rlock);
 }
 
-<<<<<<< HEAD
-static inline int spin_trylock(spinlock_t *lock)
-=======
 static __always_inline int spin_trylock(spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return raw_spin_trylock(&lock->rlock);
 }
@@ -489,11 +371,7 @@ do {									\
 	raw_spin_lock_nest_lock(spinlock_check(lock), nest_lock);	\
 } while (0)
 
-<<<<<<< HEAD
-static inline void spin_lock_irq(spinlock_t *lock)
-=======
 static __always_inline void spin_lock_irq(spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	raw_spin_lock_irq(&lock->rlock);
 }
@@ -508,56 +386,32 @@ do {									\
 	raw_spin_lock_irqsave_nested(spinlock_check(lock), flags, subclass); \
 } while (0)
 
-<<<<<<< HEAD
-static inline void spin_unlock(spinlock_t *lock)
-=======
 static __always_inline void spin_unlock(spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	raw_spin_unlock(&lock->rlock);
 }
 
-<<<<<<< HEAD
-static inline void spin_unlock_bh(spinlock_t *lock)
-=======
 static __always_inline void spin_unlock_bh(spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	raw_spin_unlock_bh(&lock->rlock);
 }
 
-<<<<<<< HEAD
-static inline void spin_unlock_irq(spinlock_t *lock)
-=======
 static __always_inline void spin_unlock_irq(spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	raw_spin_unlock_irq(&lock->rlock);
 }
 
-<<<<<<< HEAD
-static inline void spin_unlock_irqrestore(spinlock_t *lock, unsigned long flags)
-=======
 static __always_inline void spin_unlock_irqrestore(spinlock_t *lock, unsigned long flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	raw_spin_unlock_irqrestore(&lock->rlock, flags);
 }
 
-<<<<<<< HEAD
-static inline int spin_trylock_bh(spinlock_t *lock)
-=======
 static __always_inline int spin_trylock_bh(spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return raw_spin_trylock_bh(&lock->rlock);
 }
 
-<<<<<<< HEAD
-static inline int spin_trylock_irq(spinlock_t *lock)
-=======
 static __always_inline int spin_trylock_irq(spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return raw_spin_trylock_irq(&lock->rlock);
 }
@@ -567,14 +421,6 @@ static __always_inline int spin_trylock_irq(spinlock_t *lock)
 	raw_spin_trylock_irqsave(spinlock_check(lock), flags); \
 })
 
-<<<<<<< HEAD
-static inline void spin_unlock_wait(spinlock_t *lock)
-{
-	raw_spin_unlock_wait(&lock->rlock);
-}
-
-static inline int spin_is_locked(spinlock_t *lock)
-=======
 /**
  * spin_is_locked() - Check whether a spinlock is locked.
  * @lock: Pointer to the spinlock.
@@ -594,28 +440,15 @@ static inline int spin_is_locked(spinlock_t *lock)
  * Therefore you should not rely heavily on the return value.
  */
 static __always_inline int spin_is_locked(spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return raw_spin_is_locked(&lock->rlock);
 }
 
-<<<<<<< HEAD
-static inline int spin_is_contended(spinlock_t *lock)
-=======
 static __always_inline int spin_is_contended(spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return raw_spin_is_contended(&lock->rlock);
 }
 
-<<<<<<< HEAD
-static inline int spin_can_lock(spinlock_t *lock)
-{
-	return raw_spin_can_lock(&lock->rlock);
-}
-
-#define assert_spin_locked(lock)	assert_raw_spin_locked(&(lock)->rlock)
-=======
 #define assert_spin_locked(lock)	assert_raw_spin_locked(&(lock)->rlock)
 
 #else  /* !CONFIG_PREEMPT_RT */
@@ -652,7 +485,6 @@ static inline int rwlock_needbreak(rwlock_t *lock)
 	return 0;
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Pull the atomic_t declaration:
@@ -671,8 +503,6 @@ extern int _atomic_dec_and_lock(atomic_t *atomic, spinlock_t *lock);
 #define atomic_dec_and_lock(atomic, lock) \
 		__cond_lock(lock, _atomic_dec_and_lock(atomic, lock))
 
-<<<<<<< HEAD
-=======
 extern int _atomic_dec_and_lock_irqsave(atomic_t *atomic, spinlock_t *lock,
 					unsigned long *flags);
 #define atomic_dec_and_lock_irqsave(atomic, lock, flags) \
@@ -776,5 +606,4 @@ DEFINE_LOCK_GUARD_1(write_lock_irqsave, rwlock_t,
 		    unsigned long flags)
 
 #undef __LINUX_INSIDE_SPINLOCK_H
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_SPINLOCK_H */

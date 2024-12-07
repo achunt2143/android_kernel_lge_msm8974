@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AMD CS5535/CS5536 GPIO driver
  * Copyright (C) 2006  Advanced Micro Devices, Inc.
  * Copyright (C) 2007-2009  Andres Salomon <dilinger@collabora.co.uk>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public License
- * as published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-=======
 #include <linux/gpio/driver.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/cs5535.h>
 #include <asm/msr.h>
@@ -53,13 +39,10 @@ static ulong mask = GPIO_DEFAULT_MASK;
 module_param_named(mask, mask, ulong, 0444);
 MODULE_PARM_DESC(mask, "GPIO channel mask.");
 
-<<<<<<< HEAD
-=======
 /*
  * FIXME: convert this singleton driver to use the state container
  * design pattern, see Documentation/driver-api/driver-model/design-patterns.rst
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct cs5535_gpio_chip {
 	struct gpio_chip chip;
 	resource_size_t base;
@@ -219,11 +202,7 @@ EXPORT_SYMBOL_GPL(cs5535_gpio_setup_event);
 
 static int chip_gpio_request(struct gpio_chip *c, unsigned offset)
 {
-<<<<<<< HEAD
-	struct cs5535_gpio_chip *chip = (struct cs5535_gpio_chip *) c;
-=======
 	struct cs5535_gpio_chip *chip = gpiochip_get_data(c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&chip->lock, flags);
@@ -263,11 +242,7 @@ static void chip_gpio_set(struct gpio_chip *chip, unsigned offset, int val)
 
 static int chip_direction_input(struct gpio_chip *c, unsigned offset)
 {
-<<<<<<< HEAD
-	struct cs5535_gpio_chip *chip = (struct cs5535_gpio_chip *) c;
-=======
 	struct cs5535_gpio_chip *chip = gpiochip_get_data(c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&chip->lock, flags);
@@ -280,11 +255,7 @@ static int chip_direction_input(struct gpio_chip *c, unsigned offset)
 
 static int chip_direction_output(struct gpio_chip *c, unsigned offset, int val)
 {
-<<<<<<< HEAD
-	struct cs5535_gpio_chip *chip = (struct cs5535_gpio_chip *) c;
-=======
 	struct cs5535_gpio_chip *chip = gpiochip_get_data(c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&chip->lock, flags);
@@ -330,11 +301,7 @@ static struct cs5535_gpio_chip cs5535_gpio_chip = {
 	},
 };
 
-<<<<<<< HEAD
-static int __devinit cs5535_gpio_probe(struct platform_device *pdev)
-=======
 static int cs5535_gpio_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *res;
 	int err = -EIO;
@@ -350,14 +317,6 @@ static int cs5535_gpio_probe(struct platform_device *pdev)
 	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
 	if (!res) {
 		dev_err(&pdev->dev, "can't fetch device resource info\n");
-<<<<<<< HEAD
-		goto done;
-	}
-
-	if (!request_region(res->start, resource_size(res), pdev->name)) {
-		dev_err(&pdev->dev, "can't request region\n");
-		goto done;
-=======
 		return err;
 	}
 
@@ -365,7 +324,6 @@ static int cs5535_gpio_probe(struct platform_device *pdev)
 				 pdev->name)) {
 		dev_err(&pdev->dev, "can't request region\n");
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* set up the driver-specific struct */
@@ -387,52 +345,15 @@ static int cs5535_gpio_probe(struct platform_device *pdev)
 				mask_orig, mask);
 
 	/* finally, register with the generic GPIO API */
-<<<<<<< HEAD
-	err = gpiochip_add(&cs5535_gpio_chip.chip);
-	if (err)
-		goto release_region;
-
-	return 0;
-
-release_region:
-	release_region(res->start, resource_size(res));
-done:
-	return err;
-}
-
-static int __devexit cs5535_gpio_remove(struct platform_device *pdev)
-{
-	struct resource *r;
-	int err;
-
-	err = gpiochip_remove(&cs5535_gpio_chip.chip);
-	if (err) {
-		/* uhh? */
-		dev_err(&pdev->dev, "unable to remove gpio_chip?\n");
-		return err;
-	}
-
-	r = platform_get_resource(pdev, IORESOURCE_IO, 0);
-	release_region(r->start, resource_size(r));
-	return 0;
-=======
 	return devm_gpiochip_add_data(&pdev->dev, &cs5535_gpio_chip.chip,
 				      &cs5535_gpio_chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver cs5535_gpio_driver = {
 	.driver = {
 		.name = DRV_NAME,
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
 	},
 	.probe = cs5535_gpio_probe,
-	.remove = __devexit_p(cs5535_gpio_remove),
-=======
-	},
-	.probe = cs5535_gpio_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(cs5535_gpio_driver);

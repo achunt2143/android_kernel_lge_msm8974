@@ -1,19 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCI Backend - Handles the virtual fields in the configuration space headers.
  *
  * Author: Ryan Wilson <hap9@epoch.ncsc.mil>
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #define dev_fmt pr_fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/pci.h>
 #include "pciback.h"
@@ -74,55 +68,20 @@ static int command_write(struct pci_dev *dev, int offset, u16 value, void *data)
 
 	dev_data = pci_get_drvdata(dev);
 	if (!pci_is_enabled(dev) && is_enable_cmd(value)) {
-<<<<<<< HEAD
-		if (unlikely(verbose_request))
-			printk(KERN_DEBUG DRV_NAME ": %s: enable\n",
-			       pci_name(dev));
-=======
 		dev_dbg(&dev->dev, "enable\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = pci_enable_device(dev);
 		if (err)
 			return err;
 		if (dev_data)
 			dev_data->enable_intx = 1;
 	} else if (pci_is_enabled(dev) && !is_enable_cmd(value)) {
-<<<<<<< HEAD
-		if (unlikely(verbose_request))
-			printk(KERN_DEBUG DRV_NAME ": %s: disable\n",
-			       pci_name(dev));
-=======
 		dev_dbg(&dev->dev, "disable\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_disable_device(dev);
 		if (dev_data)
 			dev_data->enable_intx = 0;
 	}
 
 	if (!dev->is_busmaster && is_master_cmd(value)) {
-<<<<<<< HEAD
-		if (unlikely(verbose_request))
-			printk(KERN_DEBUG DRV_NAME ": %s: set bus master\n",
-			       pci_name(dev));
-		pci_set_master(dev);
-	}
-
-	if (value & PCI_COMMAND_INVALIDATE) {
-		if (unlikely(verbose_request))
-			printk(KERN_DEBUG
-			       DRV_NAME ": %s: enable memory-write-invalidate\n",
-			       pci_name(dev));
-		err = pci_set_mwi(dev);
-		if (err) {
-			printk(KERN_WARNING
-			       DRV_NAME ": %s: cannot enable "
-			       "memory-write-invalidate (%d)\n",
-			       pci_name(dev), err);
-			value &= ~PCI_COMMAND_INVALIDATE;
-		}
-	}
-
-=======
 		dev_dbg(&dev->dev, "set bus master\n");
 		pci_set_master(dev);
 	} else if (dev->is_busmaster && !is_master_cmd(value)) {
@@ -149,7 +108,6 @@ static int command_write(struct pci_dev *dev, int offset, u16 value, void *data)
 	    ((cmd->val ^ value) & PCI_COMMAND_INTX_DISABLE))
 		pci_intx(dev, !(value & PCI_COMMAND_INTX_DISABLE));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd->val = value;
 
 	if (!xen_pcibk_permissive && (!dev_data || !dev_data->permissive))
@@ -171,23 +129,14 @@ static int rom_write(struct pci_dev *dev, int offset, u32 value, void *data)
 	struct pci_bar_info *bar = data;
 
 	if (unlikely(!bar)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING DRV_NAME ": driver data not found for %s\n",
-		       pci_name(dev));
-=======
 		dev_warn(&dev->dev, "driver data not found\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return XEN_PCI_ERR_op_failed;
 	}
 
 	/* A write to obtain the length must happen as a 32-bit write.
 	 * This does not (yet) support writing individual bytes
 	 */
-<<<<<<< HEAD
-	if (value == ~PCI_ROM_ADDRESS_ENABLE)
-=======
 	if ((value | ~PCI_ROM_ADDRESS_MASK) == ~0U)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bar->which = 1;
 	else {
 		u32 tmpval;
@@ -211,28 +160,18 @@ static int rom_write(struct pci_dev *dev, int offset, u32 value, void *data)
 static int bar_write(struct pci_dev *dev, int offset, u32 value, void *data)
 {
 	struct pci_bar_info *bar = data;
-<<<<<<< HEAD
-
-	if (unlikely(!bar)) {
-		printk(KERN_WARNING DRV_NAME ": driver data not found for %s\n",
-		       pci_name(dev));
-=======
 	unsigned int pos = (offset - PCI_BASE_ADDRESS_0) / 4;
 	const struct resource *res = dev->resource;
 	u32 mask;
 
 	if (unlikely(!bar)) {
 		dev_warn(&dev->dev, "driver data not found\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return XEN_PCI_ERR_op_failed;
 	}
 
 	/* A write to obtain the length must happen as a 32-bit write.
 	 * This does not (yet) support writing individual bytes
 	 */
-<<<<<<< HEAD
-	if (value == ~0)
-=======
 	if (res[pos].flags & IORESOURCE_IO)
 		mask = ~PCI_BASE_ADDRESS_IO_MASK;
 	else if (pos && (res[pos - 1].flags & IORESOURCE_MEM_64))
@@ -240,7 +179,6 @@ static int bar_write(struct pci_dev *dev, int offset, u32 value, void *data)
 	else
 		mask = ~PCI_BASE_ADDRESS_MEM_MASK;
 	if ((value | mask) == ~0U)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bar->which = 1;
 	else {
 		u32 tmpval;
@@ -260,12 +198,7 @@ static int bar_read(struct pci_dev *dev, int offset, u32 * value, void *data)
 	struct pci_bar_info *bar = data;
 
 	if (unlikely(!bar)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING DRV_NAME ": driver data not found for %s\n",
-		       pci_name(dev));
-=======
 		dev_warn(&dev->dev, "driver data not found\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return XEN_PCI_ERR_op_failed;
 	}
 
@@ -274,14 +207,6 @@ static int bar_read(struct pci_dev *dev, int offset, u32 * value, void *data)
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline void read_dev_bar(struct pci_dev *dev,
-				struct pci_bar_info *bar_info, int offset,
-				u32 len_mask)
-{
-	int	pos;
-	struct resource	*res = dev->resource;
-=======
 static void *bar_init(struct pci_dev *dev, int offset)
 {
 	unsigned int pos;
@@ -290,51 +215,11 @@ static void *bar_init(struct pci_dev *dev, int offset)
 
 	if (!bar)
 		return ERR_PTR(-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (offset == PCI_ROM_ADDRESS || offset == PCI_ROM_ADDRESS1)
 		pos = PCI_ROM_RESOURCE;
 	else {
 		pos = (offset - PCI_BASE_ADDRESS_0) / 4;
-<<<<<<< HEAD
-		if (pos && ((res[pos - 1].flags & (PCI_BASE_ADDRESS_SPACE |
-				PCI_BASE_ADDRESS_MEM_TYPE_MASK)) ==
-			   (PCI_BASE_ADDRESS_SPACE_MEMORY |
-				PCI_BASE_ADDRESS_MEM_TYPE_64))) {
-			bar_info->val = res[pos - 1].start >> 32;
-			bar_info->len_val = res[pos - 1].end >> 32;
-			return;
-		}
-	}
-
-	bar_info->val = res[pos].start |
-			(res[pos].flags & PCI_REGION_FLAG_MASK);
-	bar_info->len_val = resource_size(&res[pos]);
-}
-
-static void *bar_init(struct pci_dev *dev, int offset)
-{
-	struct pci_bar_info *bar = kmalloc(sizeof(*bar), GFP_KERNEL);
-
-	if (!bar)
-		return ERR_PTR(-ENOMEM);
-
-	read_dev_bar(dev, bar, offset, ~0);
-	bar->which = 0;
-
-	return bar;
-}
-
-static void *rom_init(struct pci_dev *dev, int offset)
-{
-	struct pci_bar_info *bar = kmalloc(sizeof(*bar), GFP_KERNEL);
-
-	if (!bar)
-		return ERR_PTR(-ENOMEM);
-
-	read_dev_bar(dev, bar, offset, ~PCI_ROM_ADDRESS_ENABLE);
-	bar->which = 0;
-=======
 		if (pos && (res[pos - 1].flags & IORESOURCE_MEM_64)) {
 			/*
 			 * Use ">> 16 >> 16" instead of direct ">> 32" shift
@@ -355,7 +240,6 @@ static void *rom_init(struct pci_dev *dev, int offset)
 		   (res[pos].flags & PCI_REGION_FLAG_MASK);
 	bar->len_val = -resource_size(&res[pos]) |
 		       (res[pos].flags & PCI_REGION_FLAG_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return bar;
 }
@@ -478,11 +362,7 @@ static const struct config_field header_common[] = {
 	{						\
 	.offset     = reg_offset,			\
 	.size       = 4,				\
-<<<<<<< HEAD
-	.init       = rom_init,				\
-=======
 	.init       = bar_init,				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reset      = bar_reset,			\
 	.release    = bar_release,			\
 	.u.dw.read  = bar_read,				\
@@ -526,13 +406,8 @@ int xen_pcibk_config_header_add_fields(struct pci_dev *dev)
 
 	default:
 		err = -EINVAL;
-<<<<<<< HEAD
-		printk(KERN_ERR DRV_NAME ": %s: Unsupported header type %d!\n",
-		       pci_name(dev), dev->hdr_type);
-=======
 		dev_err(&dev->dev, "Unsupported header type %d!\n",
 			dev->hdr_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 

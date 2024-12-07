@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ptrace.c: Sparc process tracing support.
  *
  * Copyright (C) 1996, 2008 David S. Miller (davem@davemloft.net)
@@ -24,21 +21,12 @@
 #include <linux/signal.h>
 #include <linux/regset.h>
 #include <linux/elf.h>
-<<<<<<< HEAD
-#include <linux/tracehook.h>
-
-#include <asm/pgtable.h>
-#include <asm/uaccess.h>
-#include <asm/cacheflush.h>
-
-=======
 
 #include <linux/uaccess.h>
 #include <asm/cacheflush.h>
 
 #include "kernel.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* #define ALLOW_INIT_TRACING */
 
 /*
@@ -56,18 +44,6 @@ enum sparc_regset {
 	REGSET_FP,
 };
 
-<<<<<<< HEAD
-static int genregs32_get(struct task_struct *target,
-			 const struct user_regset *regset,
-			 unsigned int pos, unsigned int count,
-			 void *kbuf, void __user *ubuf)
-{
-	const struct pt_regs *regs = target->thread.kregs;
-	unsigned long __user *reg_window;
-	unsigned long *k = kbuf;
-	unsigned long __user *u = ubuf;
-	unsigned long reg;
-=======
 static int regwindow32_get(struct task_struct *target,
 			   const struct pt_regs *regs,
 			   u32 *uregs)
@@ -110,75 +86,10 @@ static int genregs32_get(struct task_struct *target,
 {
 	const struct pt_regs *regs = target->thread.kregs;
 	u32 uregs[16];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (target == current)
 		flush_user_windows();
 
-<<<<<<< HEAD
-	pos /= sizeof(reg);
-	count /= sizeof(reg);
-
-	if (kbuf) {
-		for (; count > 0 && pos < 16; count--)
-			*k++ = regs->u_regs[pos++];
-
-		reg_window = (unsigned long __user *) regs->u_regs[UREG_I6];
-		reg_window -= 16;
-		for (; count > 0 && pos < 32; count--) {
-			if (get_user(*k++, &reg_window[pos++]))
-				return -EFAULT;
-		}
-	} else {
-		for (; count > 0 && pos < 16; count--) {
-			if (put_user(regs->u_regs[pos++], u++))
-				return -EFAULT;
-		}
-
-		reg_window = (unsigned long __user *) regs->u_regs[UREG_I6];
-		reg_window -= 16;
-		for (; count > 0 && pos < 32; count--) {
-			if (get_user(reg, &reg_window[pos++]) ||
-			    put_user(reg, u++))
-				return -EFAULT;
-		}
-	}
-	while (count > 0) {
-		switch (pos) {
-		case 32: /* PSR */
-			reg = regs->psr;
-			break;
-		case 33: /* PC */
-			reg = regs->pc;
-			break;
-		case 34: /* NPC */
-			reg = regs->npc;
-			break;
-		case 35: /* Y */
-			reg = regs->y;
-			break;
-		case 36: /* WIM */
-		case 37: /* TBR */
-			reg = 0;
-			break;
-		default:
-			goto finish;
-		}
-
-		if (kbuf)
-			*k++ = reg;
-		else if (put_user(reg, u++))
-			return -EFAULT;
-		pos++;
-		count--;
-	}
-finish:
-	pos *= sizeof(reg);
-	count *= sizeof(reg);
-
-	return user_regset_copyout_zero(&pos, &count, &kbuf, &ubuf,
-					38 * sizeof(reg), -1);
-=======
 	membuf_write(&to, regs->u_regs, 16 * sizeof(u32));
 	if (!to.left)
 		return 0;
@@ -190,7 +101,6 @@ finish:
 	membuf_store(&to, regs->npc);
 	membuf_store(&to, regs->y);
 	return membuf_zero(&to, 2 * sizeof(u32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int genregs32_set(struct task_struct *target,
@@ -199,90 +109,13 @@ static int genregs32_set(struct task_struct *target,
 			 const void *kbuf, const void __user *ubuf)
 {
 	struct pt_regs *regs = target->thread.kregs;
-<<<<<<< HEAD
-	unsigned long __user *reg_window;
-	const unsigned long *k = kbuf;
-	const unsigned long __user *u = ubuf;
-	unsigned long reg;
-=======
 	u32 uregs[16];
 	u32 psr;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (target == current)
 		flush_user_windows();
 
-<<<<<<< HEAD
-	pos /= sizeof(reg);
-	count /= sizeof(reg);
-
-	if (kbuf) {
-		for (; count > 0 && pos < 16; count--)
-			regs->u_regs[pos++] = *k++;
-
-		reg_window = (unsigned long __user *) regs->u_regs[UREG_I6];
-		reg_window -= 16;
-		for (; count > 0 && pos < 32; count--) {
-			if (put_user(*k++, &reg_window[pos++]))
-				return -EFAULT;
-		}
-	} else {
-		for (; count > 0 && pos < 16; count--) {
-			if (get_user(reg, u++))
-				return -EFAULT;
-			regs->u_regs[pos++] = reg;
-		}
-
-		reg_window = (unsigned long __user *) regs->u_regs[UREG_I6];
-		reg_window -= 16;
-		for (; count > 0 && pos < 32; count--) {
-			if (get_user(reg, u++) ||
-			    put_user(reg, &reg_window[pos++]))
-				return -EFAULT;
-		}
-	}
-	while (count > 0) {
-		unsigned long psr;
-
-		if (kbuf)
-			reg = *k++;
-		else if (get_user(reg, u++))
-			return -EFAULT;
-
-		switch (pos) {
-		case 32: /* PSR */
-			psr = regs->psr;
-			psr &= ~(PSR_ICC | PSR_SYSCALL);
-			psr |= (reg & (PSR_ICC | PSR_SYSCALL));
-			regs->psr = psr;
-			break;
-		case 33: /* PC */
-			regs->pc = reg;
-			break;
-		case 34: /* NPC */
-			regs->npc = reg;
-			break;
-		case 35: /* Y */
-			regs->y = reg;
-			break;
-		case 36: /* WIM */
-		case 37: /* TBR */
-			break;
-		default:
-			goto finish;
-		}
-
-		pos++;
-		count--;
-	}
-finish:
-	pos *= sizeof(reg);
-	count *= sizeof(reg);
-
-	return user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf,
-					 38 * sizeof(reg), -1);
-=======
 	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf,
 				 regs->u_regs,
 				 0, 16 * sizeof(u32));
@@ -328,64 +161,22 @@ finish:
 	user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf, 36 * sizeof(u32),
 				  38 * sizeof(u32));
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fpregs32_get(struct task_struct *target,
 			const struct user_regset *regset,
-<<<<<<< HEAD
-			unsigned int pos, unsigned int count,
-			void *kbuf, void __user *ubuf)
-{
-	const unsigned long *fpregs = target->thread.float_regs;
-	int ret = 0;
-
-=======
 			struct membuf to)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if 0
 	if (target == current)
 		save_and_clear_fpu();
 #endif
 
-<<<<<<< HEAD
-	ret = user_regset_copyout(&pos, &count, &kbuf, &ubuf,
-				  fpregs,
-				  0, 32 * sizeof(u32));
-
-	if (!ret)
-		ret = user_regset_copyout_zero(&pos, &count, &kbuf, &ubuf,
-					       32 * sizeof(u32),
-					       33 * sizeof(u32));
-	if (!ret)
-		ret = user_regset_copyout(&pos, &count, &kbuf, &ubuf,
-					  &target->thread.fsr,
-					  33 * sizeof(u32),
-					  34 * sizeof(u32));
-
-	if (!ret) {
-		unsigned long val;
-
-		val = (1 << 8) | (8 << 16);
-		ret = user_regset_copyout(&pos, &count, &kbuf, &ubuf,
-					  &val,
-					  34 * sizeof(u32),
-					  35 * sizeof(u32));
-	}
-
-	if (!ret)
-		ret = user_regset_copyout_zero(&pos, &count, &kbuf, &ubuf,
-					       35 * sizeof(u32), -1);
-
-	return ret;
-=======
 	membuf_write(&to, target->thread.float_regs, 32 * sizeof(u32));
 	membuf_zero(&to, sizeof(u32));
 	membuf_write(&to, &target->thread.fsr, sizeof(u32));
 	membuf_store(&to, (u32)((1 << 8) | (8 << 16)));
 	return membuf_zero(&to, 64 * sizeof(u32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fpregs32_set(struct task_struct *target,
@@ -407,26 +198,14 @@ static int fpregs32_set(struct task_struct *target,
 		user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf,
 					  32 * sizeof(u32),
 					  33 * sizeof(u32));
-<<<<<<< HEAD
-	if (!ret && count > 0) {
-=======
 	if (!ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf,
 					 &target->thread.fsr,
 					 33 * sizeof(u32),
 					 34 * sizeof(u32));
-<<<<<<< HEAD
-	}
-
-	if (!ret)
-		ret = user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf,
-						34 * sizeof(u32), -1);
-=======
 	if (!ret)
 		user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf,
 					  34 * sizeof(u32), -1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -442,11 +221,7 @@ static const struct user_regset sparc32_regsets[] = {
 		.core_note_type = NT_PRSTATUS,
 		.n = 38,
 		.size = sizeof(u32), .align = sizeof(u32),
-<<<<<<< HEAD
-		.get = genregs32_get, .set = genregs32_set
-=======
 		.regset_get = genregs32_get, .set = genregs32_set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* Format is:
 	 *	F0 --> F31
@@ -462,12 +237,6 @@ static const struct user_regset sparc32_regsets[] = {
 		.core_note_type = NT_PRFPREG,
 		.n = 99,
 		.size = sizeof(u32), .align = sizeof(u32),
-<<<<<<< HEAD
-		.get = fpregs32_get, .set = fpregs32_set
-	},
-};
-
-=======
 		.regset_get = fpregs32_get, .set = fpregs32_set
 	},
 };
@@ -566,7 +335,6 @@ static const struct user_regset_view ptrace32_view = {
 	.regsets = ptrace32_regsets, .n = ARRAY_SIZE(ptrace32_regsets)
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct user_regset_view user_sparc32_view = {
 	.name = "sparc", .e_machine = EM_SPARC,
 	.regsets = sparc32_regsets, .n = ARRAY_SIZE(sparc32_regsets)
@@ -594,108 +362,44 @@ long arch_ptrace(struct task_struct *child, long request,
 {
 	unsigned long addr2 = current->thread.kregs->u_regs[UREG_I4];
 	void __user *addr2p;
-<<<<<<< HEAD
-	const struct user_regset_view *view;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pt_regs __user *pregs;
 	struct fps __user *fps;
 	int ret;
 
-<<<<<<< HEAD
-	view = task_user_regset_view(current);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr2p = (void __user *) addr2;
 	pregs = (struct pt_regs __user *) addr;
 	fps = (struct fps __user *) addr;
 
 	switch(request) {
 	case PTRACE_GETREGS: {
-<<<<<<< HEAD
-		ret = copy_regset_to_user(child, view, REGSET_GENERAL,
-					  32 * sizeof(u32),
-					  4 * sizeof(u32),
-					  &pregs->psr);
-		if (!ret)
-			copy_regset_to_user(child, view, REGSET_GENERAL,
-					    1 * sizeof(u32),
-					    15 * sizeof(u32),
-					    &pregs->u_regs[0]);
-=======
 		ret = copy_regset_to_user(child, &ptrace32_view,
 					  REGSET_GENERAL, 0,
 					  19 * sizeof(u32),
 					  pregs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	case PTRACE_SETREGS: {
-<<<<<<< HEAD
-		ret = copy_regset_from_user(child, view, REGSET_GENERAL,
-					    32 * sizeof(u32),
-					    4 * sizeof(u32),
-					    &pregs->psr);
-		if (!ret)
-			copy_regset_from_user(child, view, REGSET_GENERAL,
-					      1 * sizeof(u32),
-					      15 * sizeof(u32),
-					      &pregs->u_regs[0]);
-=======
 		ret = copy_regset_from_user(child, &ptrace32_view,
 					    REGSET_GENERAL, 0,
 					    19 * sizeof(u32),
 					    pregs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	case PTRACE_GETFPREGS: {
-<<<<<<< HEAD
-		ret = copy_regset_to_user(child, view, REGSET_FP,
-					  0 * sizeof(u32),
-					  32 * sizeof(u32),
-					  &fps->regs[0]);
-		if (!ret)
-			ret = copy_regset_to_user(child, view, REGSET_FP,
-						  33 * sizeof(u32),
-						  1 * sizeof(u32),
-						  &fps->fsr);
-
-		if (!ret) {
-			if (__put_user(0, &fps->fpqd) ||
-			    __put_user(0, &fps->flags) ||
-			    __put_user(0, &fps->extra) ||
-			    clear_user(fps->fpq, sizeof(fps->fpq)))
-				ret = -EFAULT;
-		}
-=======
 		ret = copy_regset_to_user(child, &ptrace32_view,
 					  REGSET_FP, 0,
 					  68 * sizeof(u32),
 					  fps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	case PTRACE_SETFPREGS: {
-<<<<<<< HEAD
-		ret = copy_regset_from_user(child, view, REGSET_FP,
-					    0 * sizeof(u32),
-					    32 * sizeof(u32),
-					    &fps->regs[0]);
-		if (!ret)
-			ret = copy_regset_from_user(child, view, REGSET_FP,
-						    33 * sizeof(u32),
-						    1 * sizeof(u32),
-						    &fps->fsr);
-=======
 		ret = copy_regset_from_user(child, &ptrace32_view,
 					  REGSET_FP, 0,
 					  33 * sizeof(u32),
 					  fps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -735,15 +439,9 @@ asmlinkage int syscall_trace(struct pt_regs *regs, int syscall_exit_p)
 
 	if (test_thread_flag(TIF_SYSCALL_TRACE)) {
 		if (syscall_exit_p)
-<<<<<<< HEAD
-			tracehook_report_syscall_exit(regs, 0);
-		else
-			ret = tracehook_report_syscall_entry(regs);
-=======
 			ptrace_report_syscall_exit(regs, 0);
 		else
 			ret = ptrace_report_syscall_entry(regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;

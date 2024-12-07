@@ -1,85 +1,20 @@
-<<<<<<< HEAD
-#ifndef __HID_H
-#define __HID_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999 Andreas Gal
  *  Copyright (c) 2000-2001 Vojtech Pavlik
  *  Copyright (c) 2006-2007 Jiri Kosina
  */
-<<<<<<< HEAD
-
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
-/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Should you need to contact me, the author, you can do so either by
  * e-mail - mail your message to <vojtech@ucw.cz>, or by paper mail:
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
-<<<<<<< HEAD
-
-/*
- * USB HID (Human Interface Device) interface class code
- */
-
-#define USB_INTERFACE_CLASS_HID		3
-
-/*
- * USB HID interface subclass and protocol codes
- */
-
-#define USB_INTERFACE_SUBCLASS_BOOT	1
-#define USB_INTERFACE_PROTOCOL_KEYBOARD	1
-#define USB_INTERFACE_PROTOCOL_MOUSE	2
-
-/*
- * HID class requests
- */
-
-#define HID_REQ_GET_REPORT		0x01
-#define HID_REQ_GET_IDLE		0x02
-#define HID_REQ_GET_PROTOCOL		0x03
-#define HID_REQ_SET_REPORT		0x09
-#define HID_REQ_SET_IDLE		0x0A
-#define HID_REQ_SET_PROTOCOL		0x0B
-
-/*
- * HID class descriptor types
- */
-
-#define HID_DT_HID			(USB_TYPE_CLASS | 0x01)
-#define HID_DT_REPORT			(USB_TYPE_CLASS | 0x02)
-#define HID_DT_PHYSICAL			(USB_TYPE_CLASS | 0x03)
-
-#define HID_MAX_DESCRIPTOR_SIZE		4096
-
-#ifdef __KERNEL__
-
-=======
 #ifndef __HID_H
 #define __HID_H
 
 
 #include <linux/bitops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/list.h>
@@ -88,14 +23,10 @@
 #include <linux/workqueue.h>
 #include <linux/input.h>
 #include <linux/semaphore.h>
-<<<<<<< HEAD
-#include <linux/power_supply.h>
-=======
 #include <linux/mutex.h>
 #include <linux/power_supply.h>
 #include <uapi/linux/hid.h>
 #include <linux/hid_bpf.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We parse each description item into this structure. Short items data
@@ -172,10 +103,7 @@ struct hid_item {
 #define HID_COLLECTION_PHYSICAL		0
 #define HID_COLLECTION_APPLICATION	1
 #define HID_COLLECTION_LOGICAL		2
-<<<<<<< HEAD
-=======
 #define HID_COLLECTION_NAMED_ARRAY	4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * HID report descriptor global item tags
@@ -223,15 +151,6 @@ struct hid_item {
 #define HID_UP_LED		0x00080000
 #define HID_UP_BUTTON		0x00090000
 #define HID_UP_ORDINAL		0x000a0000
-<<<<<<< HEAD
-#define HID_UP_CONSUMER		0x000c0000
-#define HID_UP_DIGITIZER	0x000d0000
-#define HID_UP_PID		0x000f0000
-#define HID_UP_HPVENDOR         0xff7f0000
-#define HID_UP_MSVENDOR		0xff000000
-#define HID_UP_CUSTOM		0x00ff0000
-#define HID_UP_LOGIVENDOR	0xffbc0000
-=======
 #define HID_UP_TELEPHONY	0x000b0000
 #define HID_UP_CONSUMER		0x000c0000
 #define HID_UP_DIGITIZER	0x000d0000
@@ -249,7 +168,6 @@ struct hid_item {
 #define HID_UP_SENSOR		0x00200000
 #define HID_UP_ASUSVENDOR	0xff310000
 #define HID_UP_GOOGLEVENDOR	0xffd10000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HID_USAGE		0x0000ffff
 
@@ -260,8 +178,6 @@ struct hid_item {
 #define HID_GD_KEYBOARD		0x00010006
 #define HID_GD_KEYPAD		0x00010007
 #define HID_GD_MULTIAXIS	0x00010008
-<<<<<<< HEAD
-=======
 /*
  * Microsoft Win8 Wireless Radio Controls extensions CA, see:
  * http://www.usb.org/developers/hidpage/HUTRR40RadioHIDUsagesFinal.pdf
@@ -273,7 +189,6 @@ struct hid_item {
  */
 #define HID_GD_SYSTEM_MULTIAXIS	0x0001000e
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HID_GD_X		0x00010030
 #define HID_GD_Y		0x00010031
 #define HID_GD_Z		0x00010032
@@ -297,20 +212,12 @@ struct hid_item {
 #define HID_GD_VBRZ		0x00010045
 #define HID_GD_VNO		0x00010046
 #define HID_GD_FEATURE		0x00010047
-<<<<<<< HEAD
-=======
 #define HID_GD_RESOLUTION_MULTIPLIER	0x00010048
 #define HID_GD_SYSTEM_CONTROL	0x00010080
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HID_GD_UP		0x00010090
 #define HID_GD_DOWN		0x00010091
 #define HID_GD_RIGHT		0x00010092
 #define HID_GD_LEFT		0x00010093
-<<<<<<< HEAD
-
-#define HID_DC_BATTERYSTRENGTH	0x00060020
-
-=======
 /* Microsoft Win8 Wireless Radio Controls CA usage codes */
 #define HID_GD_RFKILL_BTN	0x000100c6
 #define HID_GD_RFKILL_LED	0x000100c7
@@ -321,16 +228,12 @@ struct hid_item {
 #define HID_CP_CONSUMER_CONTROL	0x000c0001
 #define HID_CP_AC_PAN		0x000c0238
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HID_DG_DIGITIZER	0x000d0001
 #define HID_DG_PEN		0x000d0002
 #define HID_DG_LIGHTPEN		0x000d0003
 #define HID_DG_TOUCHSCREEN	0x000d0004
 #define HID_DG_TOUCHPAD		0x000d0005
-<<<<<<< HEAD
-=======
 #define HID_DG_WHITEBOARD	0x000d0006
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HID_DG_STYLUS		0x000d0020
 #define HID_DG_PUCK		0x000d0021
 #define HID_DG_FINGER		0x000d0022
@@ -340,11 +243,6 @@ struct hid_item {
 #define HID_DG_TOUCH		0x000d0033
 #define HID_DG_UNTOUCH		0x000d0034
 #define HID_DG_TAP		0x000d0035
-<<<<<<< HEAD
-#define HID_DG_TABLETFUNCTIONKEY	0x000d0039
-#define HID_DG_PROGRAMCHANGEKEY	0x000d003a
-#define HID_DG_INVERT		0x000d003c
-=======
 #define HID_DG_TRANSDUCER_INDEX	0x000d0038
 #define HID_DG_TABLETFUNCTIONKEY	0x000d0039
 #define HID_DG_PROGRAMCHANGEKEY	0x000d003a
@@ -353,19 +251,11 @@ struct hid_item {
 #define HID_DG_TILT_X		0x000d003d
 #define HID_DG_TILT_Y		0x000d003e
 #define HID_DG_TWIST		0x000d0041
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HID_DG_TIPSWITCH	0x000d0042
 #define HID_DG_TIPSWITCH2	0x000d0043
 #define HID_DG_BARRELSWITCH	0x000d0044
 #define HID_DG_ERASER		0x000d0045
 #define HID_DG_TABLETPICK	0x000d0046
-<<<<<<< HEAD
-/*
- * as of May 20, 2009 the usages below are not yet in the official USB spec
- * but are being pushed by Microsft as described in their paper "Digitizer
- * Drivers for Windows Touch and Pen-Based Computers"
- */
-=======
 #define HID_DG_PEN_COLOR			0x000d005c
 #define HID_DG_PEN_LINE_WIDTH			0x000d005e
 #define HID_DG_PEN_LINE_STYLE			0x000d0070
@@ -407,7 +297,6 @@ struct hid_item {
 #define HID_DG_DEVICECONFIG	0x000d000e
 #define HID_DG_DEVICESETTINGS	0x000d0023
 #define HID_DG_AZIMUTH		0x000d003f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HID_DG_CONFIDENCE	0x000d0047
 #define HID_DG_WIDTH		0x000d0048
 #define HID_DG_HEIGHT		0x000d0049
@@ -416,16 +305,6 @@ struct hid_item {
 #define HID_DG_DEVICEINDEX	0x000d0053
 #define HID_DG_CONTACTCOUNT	0x000d0054
 #define HID_DG_CONTACTMAX	0x000d0055
-<<<<<<< HEAD
-
-/*
- * HID report types --- Ouch! HID spec says 1 2 3!
- */
-
-#define HID_INPUT_REPORT	0
-#define HID_OUTPUT_REPORT	1
-#define HID_FEATURE_REPORT	2
-=======
 #define HID_DG_SCANTIME		0x000d0056
 #define HID_DG_SURFACESWITCH	0x000d0057
 #define HID_DG_BUTTONSWITCH	0x000d0058
@@ -438,20 +317,11 @@ struct hid_item {
 #define HID_BAT_CHARGING		0x00850044
 
 #define HID_VD_ASUS_CUSTOM_MEDIA_KEYS	0xff310076
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * HID connect requests
  */
 
-<<<<<<< HEAD
-#define HID_CONNECT_HIDINPUT		0x01
-#define HID_CONNECT_HIDINPUT_FORCE	0x02
-#define HID_CONNECT_HIDRAW		0x04
-#define HID_CONNECT_HIDDEV		0x08
-#define HID_CONNECT_HIDDEV_FORCE	0x10
-#define HID_CONNECT_FF			0x20
-=======
 #define HID_CONNECT_HIDINPUT		BIT(0)
 #define HID_CONNECT_HIDINPUT_FORCE	BIT(1)
 #define HID_CONNECT_HIDRAW		BIT(2)
@@ -459,7 +329,6 @@ struct hid_item {
 #define HID_CONNECT_HIDDEV_FORCE	BIT(4)
 #define HID_CONNECT_FF			BIT(5)
 #define HID_CONNECT_DRIVER		BIT(6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HID_CONNECT_DEFAULT	(HID_CONNECT_HIDINPUT|HID_CONNECT_HIDRAW| \
 		HID_CONNECT_HIDDEV|HID_CONNECT_FF)
 
@@ -467,31 +336,11 @@ struct hid_item {
  * HID device quirks.
  */
 
-<<<<<<< HEAD
-/* 
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Increase this if you need to configure more HID quirks at module load time
  */
 #define MAX_USBHID_BOOT_QUIRKS 4
 
-<<<<<<< HEAD
-#define HID_QUIRK_INVERT			0x00000001
-#define HID_QUIRK_NOTOUCH			0x00000002
-#define HID_QUIRK_IGNORE			0x00000004
-#define HID_QUIRK_NOGET				0x00000008
-#define HID_QUIRK_HIDDEV_FORCE			0x00000010
-#define HID_QUIRK_BADPAD			0x00000020
-#define HID_QUIRK_MULTI_INPUT			0x00000040
-#define HID_QUIRK_HIDINPUT_FORCE		0x00000080
-#define HID_QUIRK_MULTITOUCH			0x00000100
-#define HID_QUIRK_SKIP_OUTPUT_REPORTS		0x00010000
-#define HID_QUIRK_FULLSPEED_INTERVAL		0x10000000
-#define HID_QUIRK_NO_INIT_REPORTS		0x20000000
-#define HID_QUIRK_NO_IGNORE			0x40000000
-#define HID_QUIRK_NO_INPUT_SYNC			0x80000000
-=======
 /**
  * DOC: HID quirks
  * | @HID_QUIRK_NOTOUCH:
@@ -566,7 +415,6 @@ struct hid_item {
  */
 #define HID_REPORT_PROTOCOL	1
 #define HID_BOOT_PROTOCOL	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is the global environment of the parser. This information is
@@ -596,10 +444,7 @@ struct hid_global {
 
 struct hid_local {
 	unsigned usage[HID_MAX_USAGES]; /* usage array */
-<<<<<<< HEAD
-=======
 	u8 usage_size[HID_MAX_USAGES]; /* usage size array */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned collection_index[HID_MAX_USAGES]; /* collection index array */
 	unsigned usage_index;
 	unsigned usage_minimum;
@@ -613,10 +458,7 @@ struct hid_local {
  */
 
 struct hid_collection {
-<<<<<<< HEAD
-=======
 	int parent_idx; /* device->collection */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned type;
 	unsigned usage;
 	unsigned level;
@@ -625,24 +467,17 @@ struct hid_collection {
 struct hid_usage {
 	unsigned  hid;			/* hid usage code */
 	unsigned  collection_index;	/* index into collection array */
-<<<<<<< HEAD
-	/* hidinput data */
-=======
 	unsigned  usage_index;		/* index into usage array */
 	__s8	  resolution_multiplier;/* Effective Resolution Multiplier
 					   (HUT v1.12, 4.3.1), default: 1 */
 	/* hidinput data */
 	__s8	  wheel_factor;		/* 120/resolution_multiplier */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u16     code;			/* input driver code */
 	__u8      type;			/* input driver type */
 	__s8	  hat_min;		/* hat switch fun */
 	__s8	  hat_max;		/* ditto */
 	__s8	  hat_dir;		/* ditto */
-<<<<<<< HEAD
-=======
 	__s16	  wheel_accumulated;	/* hi-res wheel */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct hid_input;
@@ -659,42 +494,22 @@ struct hid_field {
 	unsigned  report_count;		/* number of this field in the report */
 	unsigned  report_type;		/* (input,output,feature) */
 	__s32    *value;		/* last known value(s) */
-<<<<<<< HEAD
-=======
 	__s32    *new_value;		/* newly read value(s) */
 	__s32    *usages_priorities;	/* priority of each usage when reading the report
 					 * bits 8-16 are reserved for hid-input usage
 					 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__s32     logical_minimum;
 	__s32     logical_maximum;
 	__s32     physical_minimum;
 	__s32     physical_maximum;
 	__s32     unit_exponent;
 	unsigned  unit;
-<<<<<<< HEAD
-=======
 	bool      ignored;		/* this field is ignored in this event */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hid_report *report;	/* associated report */
 	unsigned index;			/* index into report->field[] */
 	/* hidinput data */
 	struct hid_input *hidinput;	/* associated input structure */
 	__u16 dpad;			/* dpad input code */
-<<<<<<< HEAD
-};
-
-#define HID_MAX_FIELDS 128
-
-struct hid_report {
-	struct list_head list;
-	unsigned id;					/* id of this report */
-	unsigned type;					/* report type */
-	struct hid_field *field[HID_MAX_FIELDS];	/* fields of the report */
-	unsigned maxfield;				/* maximum valid field index */
-	unsigned size;					/* size of the report (bits) */
-	struct hid_device *device;			/* associated device */
-=======
 	unsigned int slot_idx;		/* slot index in a report */
 };
 
@@ -723,7 +538,6 @@ struct hid_report {
 	/* tool related state */
 	bool tool_active;				/* whether the current tool is active */
 	unsigned int tool;				/* BTN_TOOL_* */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define HID_MAX_IDS 256
@@ -734,15 +548,8 @@ struct hid_report_enum {
 	struct hid_report *report_id_hash[HID_MAX_IDS];
 };
 
-<<<<<<< HEAD
-#define HID_REPORT_TYPES 3
-
-#define HID_MIN_BUFFER_SIZE	64		/* make sure there is at least a packet size of space */
-#define HID_MAX_BUFFER_SIZE	4096		/* 4kb */
-=======
 #define HID_MIN_BUFFER_SIZE	64		/* make sure there is at least a packet size of space */
 #define HID_MAX_BUFFER_SIZE	16384		/* 16kb */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HID_CONTROL_FIFO_SIZE	256		/* to init devices with >100 reports */
 #define HID_OUTPUT_FIFO_SIZE	64
 
@@ -757,14 +564,6 @@ struct hid_output_fifo {
 	char *raw_report;
 };
 
-<<<<<<< HEAD
-#define HID_CLAIMED_INPUT	1
-#define HID_CLAIMED_HIDDEV	2
-#define HID_CLAIMED_HIDRAW	4
-
-#define HID_STAT_ADDED		1
-#define HID_STAT_PARSED		2
-=======
 #define HID_CLAIMED_INPUT	BIT(0)
 #define HID_CLAIMED_HIDDEV	BIT(1)
 #define HID_CLAIMED_HIDRAW	BIT(2)
@@ -774,19 +573,15 @@ struct hid_output_fifo {
 #define HID_STAT_PARSED		BIT(1)
 #define HID_STAT_DUP_DETECTED	BIT(2)
 #define HID_STAT_REPROBED	BIT(3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hid_input {
 	struct list_head list;
 	struct hid_report *report;
 	struct input_dev *input;
-<<<<<<< HEAD
-=======
 	const char *name;
 	struct list_head reports;	/* the list of reports */
 	unsigned int application;	/* application usage for this input */
 	bool registered;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum hid_type {
@@ -795,24 +590,18 @@ enum hid_type {
 	HID_TYPE_USBNONE
 };
 
-<<<<<<< HEAD
-=======
 enum hid_battery_status {
 	HID_BATTERY_UNKNOWN = 0,
 	HID_BATTERY_QUERIED,		/* Kernel explicitly queried battery strength */
 	HID_BATTERY_REPORTED,		/* Device sent unsolicited battery strength report */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hid_driver;
 struct hid_ll_driver;
 
 struct hid_device {							/* device report descriptor */
-<<<<<<< HEAD
-=======
 	__u8 *dev_rdesc;
 	unsigned dev_rsize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 *rdesc;
 	unsigned rsize;
 	struct hid_collection *collection;				/* List of HID collections */
@@ -820,23 +609,13 @@ struct hid_device {							/* device report descriptor */
 	unsigned maxcollection;						/* Number of parsed collections */
 	unsigned maxapplication;					/* Number of applications */
 	__u16 bus;							/* BUS ID */
-<<<<<<< HEAD
-=======
 	__u16 group;							/* Report group */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u32 vendor;							/* Vendor ID */
 	__u32 product;							/* Product ID */
 	__u32 version;							/* HID version */
 	enum hid_type type;						/* device type (mouse, kbd, ...) */
 	unsigned country;						/* HID country */
 	struct hid_report_enum report_enum[HID_REPORT_TYPES];
-<<<<<<< HEAD
-
-	struct semaphore driver_lock;					/* protects the current driver */
-	struct device dev;						/* device */
-	struct hid_driver *driver;
-	struct hid_ll_driver *ll_driver;
-=======
 	struct work_struct led_work;					/* delayed LED worker */
 
 	struct semaphore driver_input_lock;				/* protects the current driver */
@@ -847,34 +626,19 @@ struct hid_device {							/* device report descriptor */
 	const struct hid_ll_driver *ll_driver;
 	struct mutex ll_open_lock;
 	unsigned int ll_open_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_HID_BATTERY_STRENGTH
 	/*
 	 * Power supply information for HID devices which report
-<<<<<<< HEAD
-	 * battery strength. power_supply is registered iff
-	 * battery.name is non-NULL.
-	 */
-	struct power_supply battery;
-=======
 	 * battery strength. power_supply was successfully registered if
 	 * battery is non-NULL.
 	 */
 	struct power_supply *battery;
 	__s32 battery_capacity;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__s32 battery_min;
 	__s32 battery_max;
 	__s32 battery_report_type;
 	__s32 battery_report_id;
-<<<<<<< HEAD
-#endif
-
-	unsigned int status;						/* see STAT flags above */
-	unsigned claimed;						/* Claimed by hidinput, hiddev? */
-	unsigned quirks;						/* Various quirks the device can pull on us */
-=======
 	__s32 battery_charge_status;
 	enum hid_battery_status battery_status;
 	bool battery_avoid_query;
@@ -886,18 +650,11 @@ struct hid_device {							/* device report descriptor */
 	unsigned quirks;						/* Various quirks the device can pull on us */
 	unsigned initial_quirks;					/* Initial set of quirks supplied when creating device */
 	bool io_started;						/* If IO has started */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct list_head inputs;					/* The list of inputs */
 	void *hiddev;							/* The hiddev structure */
 	void *hidraw;
-<<<<<<< HEAD
-	int minor;							/* Hiddev minor number */
 
-	int open;							/* is the device open by anyone? */
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char name[128];							/* Device name */
 	char phys[64];							/* Device physical location */
 	char uniq[64];							/* Device unique identifier (serial #) */
@@ -914,26 +671,12 @@ struct hid_device {							/* device report descriptor */
 				  struct hid_usage *, __s32);
 	void (*hiddev_report_event) (struct hid_device *, struct hid_report *);
 
-<<<<<<< HEAD
-	/* handler for raw input (Get_Report) data, used by hidraw */
-	int (*hid_get_raw_report) (struct hid_device *, unsigned char, __u8 *, size_t, unsigned char);
-
-	/* handler for raw output data, used by hidraw */
-	int (*hid_output_raw_report) (struct hid_device *, __u8 *, size_t, unsigned char);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* debugging support via debugfs */
 	unsigned short debug;
 	struct dentry *debug_dir;
 	struct dentry *debug_rdesc;
 	struct dentry *debug_events;
 	struct list_head debug_list;
-<<<<<<< HEAD
-	wait_queue_head_t debug_wait;
-};
-
-=======
 	spinlock_t  debug_list_lock;
 	wait_queue_head_t debug_wait;
 	struct kref			ref;
@@ -950,7 +693,6 @@ void hiddev_free(struct kref *ref);
 #define to_hid_device(pdev) \
 	container_of(pdev, struct hid_device, dev)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void *hid_get_drvdata(struct hid_device *hdev)
 {
 	return dev_get_drvdata(&hdev->dev);
@@ -964,16 +706,6 @@ static inline void hid_set_drvdata(struct hid_device *hdev, void *data)
 #define HID_GLOBAL_STACK_SIZE 4
 #define HID_COLLECTION_STACK_SIZE 4
 
-<<<<<<< HEAD
-struct hid_parser {
-	struct hid_global     global;
-	struct hid_global     global_stack[HID_GLOBAL_STACK_SIZE];
-	unsigned              global_stack_ptr;
-	struct hid_local      local;
-	unsigned              collection_stack[HID_COLLECTION_STACK_SIZE];
-	unsigned              collection_stack_ptr;
-	struct hid_device    *device;
-=======
 #define HID_SCAN_FLAG_MT_WIN_8			BIT(0)
 #define HID_SCAN_FLAG_VENDOR_SPECIFIC		BIT(1)
 #define HID_SCAN_FLAG_GD_POINTER		BIT(2)
@@ -988,7 +720,6 @@ struct hid_parser {
 	unsigned int          collection_stack_size;
 	struct hid_device    *device;
 	unsigned int          scan_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct hid_class_descriptor {
@@ -1006,14 +737,6 @@ struct hid_descriptor {
 	struct hid_class_descriptor desc[1];
 } __attribute__ ((packed));
 
-<<<<<<< HEAD
-#define HID_DEVICE(b, ven, prod) \
-	.bus = (b), \
-	.vendor = (ven), .product = (prod)
-
-#define HID_USB_DEVICE(ven, prod)	HID_DEVICE(BUS_USB, ven, prod)
-#define HID_BLUETOOTH_DEVICE(ven, prod)	HID_DEVICE(BUS_BLUETOOTH, ven, prod)
-=======
 #define HID_DEVICE(b, g, ven, prod)					\
 	.bus = (b), .group = (g), .vendor = (ven), .product = (prod)
 #define HID_USB_DEVICE(ven, prod)				\
@@ -1022,7 +745,6 @@ struct hid_descriptor {
 	.bus = BUS_BLUETOOTH, .vendor = (ven), .product = (prod)
 #define HID_I2C_DEVICE(ven, prod)				\
 	.bus = BUS_I2C, .vendor = (ven), .product = (prod)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HID_REPORT_ID(rep) \
 	.report_type = (rep)
@@ -1047,46 +769,29 @@ struct hid_usage_id {
  * 	      to be called)
  * @dyn_list: list of dynamically added device ids
  * @dyn_lock: lock protecting @dyn_list
-<<<<<<< HEAD
-=======
  * @match: check if the given device is handled by this driver
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @probe: new device inserted
  * @remove: device removed (NULL if not a hot-plug capable driver)
  * @report_table: on which reports to call raw_event (NULL means all)
  * @raw_event: if report in report_table, this hook is called (NULL means nop)
  * @usage_table: on which events to call event (NULL means all)
  * @event: if usage in usage_table, this hook is called (NULL means nop)
-<<<<<<< HEAD
- * @report_fixup: called before report descriptor parsing (NULL means nop)
- * @input_mapping: invoked on input registering before mapping an usage
- * @input_mapped: invoked on input registering after mapping an usage
- * @feature_mapping: invoked on feature registering
- * @input_register: called just before input device is registered after reports
- * 		    are parsed.
-=======
  * @report: this hook is called after parsing a report (NULL means nop)
  * @report_fixup: called before report descriptor parsing (NULL means nop)
  * @input_mapping: invoked on input registering before mapping an usage
  * @input_mapped: invoked on input registering after mapping an usage
  * @input_configured: invoked just before the device is registered
  * @feature_mapping: invoked on feature registering
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @suspend: invoked on suspend (NULL means nop)
  * @resume: invoked on resume if device was not reset (NULL means nop)
  * @reset_resume: invoked on resume if device was reset (NULL means nop)
  *
-<<<<<<< HEAD
- * raw_event and event should return 0 on no action performed, 1 when no
- * further processing should be done and negative on error
-=======
  * probe should return -errno on error, or 0 on success. During probe,
  * input will not be passed to raw_event unless hid_device_io_start is
  * called.
  *
  * raw_event and event should return negative on error, any other value will
  * pass the event on to .event() typically return 0 for success.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * input_mapping shall return a negative value to completely ignore this usage
  * (e.g. doubled or invalid usage), zero to continue with parsing of this
@@ -1105,10 +810,7 @@ struct hid_driver {
 	struct list_head dyn_list;
 	spinlock_t dyn_lock;
 
-<<<<<<< HEAD
-=======
 	bool (*match)(struct hid_device *dev, bool ignore_special_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*probe)(struct hid_device *dev, const struct hid_device_id *id);
 	void (*remove)(struct hid_device *dev);
 
@@ -1118,10 +820,7 @@ struct hid_driver {
 	const struct hid_usage_id *usage_table;
 	int (*event)(struct hid_device *hdev, struct hid_field *field,
 			struct hid_usage *usage, __s32 value);
-<<<<<<< HEAD
-=======
 	void (*report)(struct hid_device *hdev, struct hid_report *report);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__u8 *(*report_fixup)(struct hid_device *hdev, __u8 *buf,
 			unsigned int *size);
@@ -1132,18 +831,6 @@ struct hid_driver {
 	int (*input_mapped)(struct hid_device *hdev,
 			struct hid_input *hidinput, struct hid_field *field,
 			struct hid_usage *usage, unsigned long **bit, int *max);
-<<<<<<< HEAD
-	void (*feature_mapping)(struct hid_device *hdev,
-			struct hid_field *field,
-			struct hid_usage *usage);
-	int (*input_register)(struct hid_device *hdev, struct hid_input
-			*hidinput);
-#ifdef CONFIG_PM
-	int (*suspend)(struct hid_device *hdev, pm_message_t message);
-	int (*resume)(struct hid_device *hdev);
-	int (*reset_resume)(struct hid_device *hdev);
-#endif
-=======
 	int (*input_configured)(struct hid_device *hdev,
 				struct hid_input *hidinput);
 	void (*feature_mapping)(struct hid_device *hdev,
@@ -1154,30 +841,19 @@ struct hid_driver {
 	int (*resume)(struct hid_device *hdev);
 	int (*reset_resume)(struct hid_device *hdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* private: */
 	struct device_driver driver;
 };
 
-<<<<<<< HEAD
-/**
- * hid_ll_driver - low level driver callbacks
-=======
 #define to_hid_driver(pdrv) \
 	container_of(pdrv, struct hid_driver, driver)
 
 /**
  * struct hid_ll_driver - low level driver callbacks
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @start: called on probe to start the device
  * @stop: called on remove
  * @open: called by input layer on open
  * @close: called by input layer on close
-<<<<<<< HEAD
- * @hidinput_input_event: event input event (e.g. ff or leds)
- * @parse: this method is called only once to parse the device data,
- *	   shouldn't allocate anything to not leak memory
-=======
  * @power: request underlying hardware to enter requested power mode
  * @parse: this method is called only once to parse the device data,
  *	   shouldn't allocate anything to not leak memory
@@ -1188,7 +864,6 @@ struct hid_driver {
  * @idle: send idle request to device
  * @may_wakeup: return if device may act as a wakeup source during system-suspend
  * @max_buffer_size: over-ride maximum data buffer size (default: HID_MAX_BUFFER_SIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct hid_ll_driver {
 	int (*start)(struct hid_device *hdev);
@@ -1199,14 +874,6 @@ struct hid_ll_driver {
 
 	int (*power)(struct hid_device *hdev, int level);
 
-<<<<<<< HEAD
-	int (*hidinput_input_event) (struct input_dev *idev, unsigned int type,
-			unsigned int code, int value);
-
-	int (*parse)(struct hid_device *hdev);
-};
-
-=======
 	int (*parse)(struct hid_device *hdev);
 
 	void (*request)(struct hid_device *hdev,
@@ -1228,23 +895,11 @@ struct hid_ll_driver {
 
 extern bool hid_is_usb(const struct hid_device *hdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	PM_HINT_FULLON	1<<5
 #define PM_HINT_NORMAL	1<<1
 
 /* Applications from HID Usage Tables 4/8/99 Version 1.1 */
 /* We ignore a few input applications that are not widely used */
-<<<<<<< HEAD
-#define IS_INPUT_APPLICATION(a) (((a >= 0x00010000) && (a <= 0x00010008)) || (a == 0x00010080) || (a == 0x000c0001) || ((a >= 0x000d0002) && (a <= 0x000d0006)))
-
-/* HID core API */
-
-extern int hid_debug;
-
-extern int hid_add_device(struct hid_device *);
-extern void hid_destroy_device(struct hid_device *);
-
-=======
 #define IS_INPUT_APPLICATION(a) \
 		(((a >= HID_UP_GENDESK) && (a <= HID_GD_MULTIAXIS)) \
 		|| ((a >= HID_DG_DIGITIZER) && (a <= HID_DG_WHITEBOARD)) \
@@ -1259,7 +914,6 @@ extern void hid_destroy_device(struct hid_device *);
 
 extern const struct bus_type hid_bus_type;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int __must_check __hid_register_driver(struct hid_driver *,
 		struct module *, const char *mod_name);
 
@@ -1269,8 +923,6 @@ extern int __must_check __hid_register_driver(struct hid_driver *,
 
 extern void hid_unregister_driver(struct hid_driver *);
 
-<<<<<<< HEAD
-=======
 /**
  * module_hid_driver() - Helper macro for registering a HID driver
  * @__hid_driver: hid_driver struct
@@ -1283,32 +935,12 @@ extern void hid_unregister_driver(struct hid_driver *);
 	module_driver(__hid_driver, hid_register_driver, \
 		      hid_unregister_driver)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void hidinput_hid_event(struct hid_device *, struct hid_field *, struct hid_usage *, __s32);
 extern void hidinput_report_event(struct hid_device *hid, struct hid_report *report);
 extern int hidinput_connect(struct hid_device *hid, unsigned int force);
 extern void hidinput_disconnect(struct hid_device *);
 
 int hid_set_field(struct hid_field *, unsigned, __s32);
-<<<<<<< HEAD
-int hid_input_report(struct hid_device *, int type, u8 *, int, int);
-int hidinput_find_field(struct hid_device *hid, unsigned int type, unsigned int code, struct hid_field **field);
-struct hid_field *hidinput_get_led_field(struct hid_device *hid);
-unsigned int hidinput_count_leds(struct hid_device *hid);
-void hid_output_report(struct hid_report *report, __u8 *data);
-struct hid_device *hid_allocate_device(void);
-struct hid_report *hid_register_report(struct hid_device *device, unsigned type, unsigned id);
-int hid_parse_report(struct hid_device *hid, __u8 *start, unsigned size);
-struct hid_report *hid_validate_values(struct hid_device *hid,
-				       unsigned int type, unsigned int id,
-				       unsigned int field_index,
-				       unsigned int report_counts);
-int hid_check_keys_pressed(struct hid_device *hid);
-int hid_connect(struct hid_device *hid, unsigned int connect_mask);
-void hid_disconnect(struct hid_device *hid);
-const struct hid_device_id *hid_match_id(struct hid_device *hdev,
-					 const struct hid_device_id *id);
-=======
 int hid_input_report(struct hid_device *hid, enum hid_report_type type, u8 *data, u32 size,
 		     int interrupt);
 struct hid_field *hidinput_get_led_field(struct hid_device *hid);
@@ -1391,7 +1023,6 @@ static inline void hid_device_io_stop(struct hid_device *hid) {
 	hid->io_started = false;
 	down(&hid->driver_input_lock);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * hid_map_usage - map usage input bits
@@ -1402,36 +1033,6 @@ static inline void hid_device_io_stop(struct hid_device *hid) {
  * @max: maximal valid usage->code to consider later (out parameter)
  * @type: input event type (EV_KEY, EV_REL, ...)
  * @c: code which corresponds to this usage and type
-<<<<<<< HEAD
- */
-static inline void hid_map_usage(struct hid_input *hidinput,
-		struct hid_usage *usage, unsigned long **bit, int *max,
-		__u8 type, __u16 c)
-{
-	struct input_dev *input = hidinput->input;
-
-	usage->type = type;
-	usage->code = c;
-
-	switch (type) {
-	case EV_ABS:
-		*bit = input->absbit;
-		*max = ABS_MAX;
-		break;
-	case EV_REL:
-		*bit = input->relbit;
-		*max = REL_MAX;
-		break;
-	case EV_KEY:
-		*bit = input->keybit;
-		*max = KEY_MAX;
-		break;
-	case EV_LED:
-		*bit = input->ledbit;
-		*max = LED_MAX;
-		break;
-	}
-=======
  *
  * The value pointed to by @bit will be set to NULL if either @type is
  * an unhandled event type, or if @c is out of range for @type. This
@@ -1479,14 +1080,11 @@ static inline void hid_map_usage(struct hid_input *hidinput,
 	usage->code = c;
 	*max = limit;
 	*bit = bmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * hid_map_usage_clear - map usage input bits and clear the input bit
  *
-<<<<<<< HEAD
-=======
  * @hidinput: hidinput which we are interested in
  * @usage: usage to fill in
  * @bit: pointer to input->{}bit (out parameter)
@@ -1494,7 +1092,6 @@ static inline void hid_map_usage(struct hid_input *hidinput,
  * @type: input event type (EV_KEY, EV_REL, ...)
  * @c: code which corresponds to this usage and type
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The same as hid_map_usage, except the @c bit is also cleared in supported
  * bits (@bit).
  */
@@ -1503,12 +1100,8 @@ static inline void hid_map_usage_clear(struct hid_input *hidinput,
 		__u8 type, __u16 c)
 {
 	hid_map_usage(hidinput, usage, bit, max, type, c);
-<<<<<<< HEAD
-	clear_bit(c, *bit);
-=======
 	if (*bit)
 		clear_bit(usage->code, *bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1522,83 +1115,6 @@ static inline void hid_map_usage_clear(struct hid_input *hidinput,
  */
 static inline int __must_check hid_parse(struct hid_device *hdev)
 {
-<<<<<<< HEAD
-	int ret;
-
-	if (hdev->status & HID_STAT_PARSED)
-		return 0;
-
-	ret = hdev->ll_driver->parse(hdev);
-	if (!ret)
-		hdev->status |= HID_STAT_PARSED;
-
-	return ret;
-}
-
-/**
- * hid_hw_start - start underlaying HW
- *
- * @hdev: hid device
- * @connect_mask: which outputs to connect, see HID_CONNECT_*
- *
- * Call this in probe function *after* hid_parse. This will setup HW buffers
- * and start the device (if not deffered to device open). hid_hw_stop must be
- * called if this was successful.
- */
-static inline int __must_check hid_hw_start(struct hid_device *hdev,
-		unsigned int connect_mask)
-{
-	int ret = hdev->ll_driver->start(hdev);
-	if (ret || !connect_mask)
-		return ret;
-	ret = hid_connect(hdev, connect_mask);
-	if (ret)
-		hdev->ll_driver->stop(hdev);
-	return ret;
-}
-
-/**
- * hid_hw_stop - stop underlaying HW
- *
- * @hdev: hid device
- *
- * This is usually called from remove function or from probe when something
- * failed and hid_hw_start was called already.
- */
-static inline void hid_hw_stop(struct hid_device *hdev)
-{
-	hid_disconnect(hdev);
-	hdev->ll_driver->stop(hdev);
-}
-
-/**
- * hid_hw_open - signal underlaying HW to start delivering events
- *
- * @hdev: hid device
- *
- * Tell underlying HW to start delivering events from the device.
- * This function should be called sometime after successful call
- * to hid_hiw_start().
- */
-static inline int __must_check hid_hw_open(struct hid_device *hdev)
-{
-	return hdev->ll_driver->open(hdev);
-}
-
-/**
- * hid_hw_close - signal underlaying HW to stop delivering events
- *
- * @hdev: hid device
- *
- * This function indicates that we are not interested in the events
- * from this device anymore. Delivery of events may or may not stop,
- * depending on the number of users still outstanding.
- */
-static inline void hid_hw_close(struct hid_device *hdev)
-{
-	hdev->ll_driver->close(hdev);
-}
-=======
 	return hid_open_report(hdev);
 }
 
@@ -1614,7 +1130,6 @@ int hid_hw_raw_request(struct hid_device *hdev,
 		       size_t len, enum hid_report_type rtype,
 		       enum hid_class_request reqtype);
 int hid_hw_output_report(struct hid_device *hdev, __u8 *buf, size_t len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * hid_hw_power - requests underlying HW to go into given power mode
@@ -1631,19 +1146,6 @@ static inline int hid_hw_power(struct hid_device *hdev, int level)
 	return hdev->ll_driver->power ? hdev->ll_driver->power(hdev, level) : 0;
 }
 
-<<<<<<< HEAD
-int hid_report_raw_event(struct hid_device *hid, int type, u8 *data, int size,
-		int interrupt);
-
-extern int hid_generic_init(void);
-extern void hid_generic_exit(void);
-
-/* HID quirks API */
-u32 usbhid_lookup_quirk(const u16 idVendor, const u16 idProduct);
-int usbhid_quirks_init(char **quirks_param);
-void usbhid_quirks_exit(void);
-void usbhid_set_leds(struct hid_device *hid);
-=======
 
 /**
  * hid_hw_idle - send idle request to device
@@ -1706,7 +1208,6 @@ int hid_report_raw_event(struct hid_device *hid, enum hid_report_type type, u8 *
 unsigned long hid_lookup_quirk(const struct hid_device *hdev);
 int hid_quirks_init(char **quirks_param, __u16 bus, int count);
 void hid_quirks_exit(__u16 bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_HID_PID
 int hid_pidff_init(struct hid_device *hid);
@@ -1714,37 +1215,6 @@ int hid_pidff_init(struct hid_device *hid);
 #define hid_pidff_init NULL
 #endif
 
-<<<<<<< HEAD
-#define dbg_hid(format, arg...)						\
-do {									\
-	if (hid_debug)							\
-		printk(KERN_DEBUG "%s: " format, __FILE__, ##arg);	\
-} while (0)
-
-#define hid_printk(level, hid, fmt, arg...)		\
-	dev_printk(level, &(hid)->dev, fmt, ##arg)
-#define hid_emerg(hid, fmt, arg...)			\
-	dev_emerg(&(hid)->dev, fmt, ##arg)
-#define hid_crit(hid, fmt, arg...)			\
-	dev_crit(&(hid)->dev, fmt, ##arg)
-#define hid_alert(hid, fmt, arg...)			\
-	dev_alert(&(hid)->dev, fmt, ##arg)
-#define hid_err(hid, fmt, arg...)			\
-	dev_err(&(hid)->dev, fmt, ##arg)
-#define hid_notice(hid, fmt, arg...)			\
-	dev_notice(&(hid)->dev, fmt, ##arg)
-#define hid_warn(hid, fmt, arg...)			\
-	dev_warn(&(hid)->dev, fmt, ##arg)
-#define hid_info(hid, fmt, arg...)			\
-	dev_info(&(hid)->dev, fmt, ##arg)
-#define hid_dbg(hid, fmt, arg...)			\
-	dev_dbg(&(hid)->dev, fmt, ##arg)
-
-#endif /* __KERNEL__ */
-
-#endif
-
-=======
 #define dbg_hid(fmt, ...) pr_debug("%s: " fmt, __FILE__, ##__VA_ARGS__)
 
 #define hid_err(hid, fmt, ...)				\
@@ -1770,4 +1240,3 @@ do {									\
 	dev_dbg_once(&(hid)->dev, fmt, ##__VA_ARGS__)
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

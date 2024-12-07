@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SuperH process tracing
  *
@@ -9,20 +6,10 @@
  * Copyright (C) 2002 - 2009  Paul Mundt
  *
  * Audit support by Yuichi Nakamura <ynakam@hitachisoft.jp>
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
-#include <linux/kernel.h>
-#include <linux/sched.h>
-=======
  */
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/sched/task_stack.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/smp.h>
 #include <linux/errno.h>
@@ -33,19 +20,10 @@
 #include <linux/io.h>
 #include <linux/audit.h>
 #include <linux/seccomp.h>
-<<<<<<< HEAD
-#include <linux/tracehook.h>
-#include <linux/elf.h>
-#include <linux/regset.h>
-#include <linux/hw_breakpoint.h>
-#include <asm/uaccess.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/elf.h>
 #include <linux/regset.h>
 #include <linux/hw_breakpoint.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h>
 #include <asm/mmu_context.h>
 #include <asm/syscalls.h>
@@ -135,15 +113,7 @@ void user_enable_single_step(struct task_struct *child)
 
 	set_tsk_thread_flag(child, TIF_SINGLESTEP);
 
-<<<<<<< HEAD
-	if (ptrace_get_breakpoints(child) < 0)
-		return;
-
 	set_single_step(child, pc);
-	ptrace_put_breakpoints(child);
-=======
-	set_single_step(child, pc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void user_disable_single_step(struct task_struct *child)
@@ -163,34 +133,11 @@ void ptrace_disable(struct task_struct *child)
 
 static int genregs_get(struct task_struct *target,
 		       const struct user_regset *regset,
-<<<<<<< HEAD
-		       unsigned int pos, unsigned int count,
-		       void *kbuf, void __user *ubuf)
-{
-	const struct pt_regs *regs = task_pt_regs(target);
-	int ret;
-
-	ret = user_regset_copyout(&pos, &count, &kbuf, &ubuf,
-				  regs->regs,
-				  0, 16 * sizeof(unsigned long));
-	if (!ret)
-		/* PC, PR, SR, GBR, MACH, MACL, TRA */
-		ret = user_regset_copyout(&pos, &count, &kbuf, &ubuf,
-					  &regs->pc,
-					  offsetof(struct pt_regs, pc),
-					  sizeof(struct pt_regs));
-	if (!ret)
-		ret = user_regset_copyout_zero(&pos, &count, &kbuf, &ubuf,
-					       sizeof(struct pt_regs), -1);
-
-	return ret;
-=======
 		       struct membuf to)
 {
 	const struct pt_regs *regs = task_pt_regs(target);
 
 	return membuf_write(&to, regs, sizeof(struct pt_regs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int genregs_set(struct task_struct *target,
@@ -210,28 +157,16 @@ static int genregs_set(struct task_struct *target,
 					 offsetof(struct pt_regs, pc),
 					 sizeof(struct pt_regs));
 	if (!ret)
-<<<<<<< HEAD
-		ret = user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf,
-						sizeof(struct pt_regs), -1);
-=======
 		user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf,
 					  sizeof(struct pt_regs), -1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 #ifdef CONFIG_SH_FPU
-<<<<<<< HEAD
-int fpregs_get(struct task_struct *target,
-	       const struct user_regset *regset,
-	       unsigned int pos, unsigned int count,
-	       void *kbuf, void __user *ubuf)
-=======
 static int fpregs_get(struct task_struct *target,
 	       const struct user_regset *regset,
 	       struct membuf to)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -239,17 +174,8 @@ static int fpregs_get(struct task_struct *target,
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	if ((boot_cpu_data.flags & CPU_HAS_FPU))
-		return user_regset_copyout(&pos, &count, &kbuf, &ubuf,
-					   &target->thread.xstate->hardfpu, 0, -1);
-
-	return user_regset_copyout(&pos, &count, &kbuf, &ubuf,
-				   &target->thread.xstate->softfpu, 0, -1);
-=======
 	return membuf_write(&to, target->thread.xstate,
 			    sizeof(struct user_fpu_struct));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fpregs_set(struct task_struct *target,
@@ -283,29 +209,12 @@ static int fpregs_active(struct task_struct *target,
 #ifdef CONFIG_SH_DSP
 static int dspregs_get(struct task_struct *target,
 		       const struct user_regset *regset,
-<<<<<<< HEAD
-		       unsigned int pos, unsigned int count,
-		       void *kbuf, void __user *ubuf)
-{
-	const struct pt_dspregs *regs =
-		(struct pt_dspregs *)&target->thread.dsp_status.dsp_regs;
-	int ret;
-
-	ret = user_regset_copyout(&pos, &count, &kbuf, &ubuf, regs,
-				  0, sizeof(struct pt_dspregs));
-	if (!ret)
-		ret = user_regset_copyout_zero(&pos, &count, &kbuf, &ubuf,
-					       sizeof(struct pt_dspregs), -1);
-
-	return ret;
-=======
 		       struct membuf to)
 {
 	const struct pt_dspregs *regs =
 		(struct pt_dspregs *)&target->thread.dsp_status.dsp_regs;
 
 	return membuf_write(&to, regs, sizeof(struct pt_dspregs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dspregs_set(struct task_struct *target,
@@ -320,13 +229,8 @@ static int dspregs_set(struct task_struct *target,
 	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf, regs,
 				 0, sizeof(struct pt_dspregs));
 	if (!ret)
-<<<<<<< HEAD
-		ret = user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf,
-						sizeof(struct pt_dspregs), -1);
-=======
 		user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf,
 					  sizeof(struct pt_dspregs), -1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -391,11 +295,7 @@ static const struct user_regset sh_regsets[] = {
 		.n		= ELF_NGREG,
 		.size		= sizeof(long),
 		.align		= sizeof(long),
-<<<<<<< HEAD
-		.get		= genregs_get,
-=======
 		.regset_get		= genregs_get,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.set		= genregs_set,
 	},
 
@@ -405,11 +305,7 @@ static const struct user_regset sh_regsets[] = {
 		.n		= sizeof(struct user_fpu_struct) / sizeof(long),
 		.size		= sizeof(long),
 		.align		= sizeof(long),
-<<<<<<< HEAD
-		.get		= fpregs_get,
-=======
 		.regset_get		= fpregs_get,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.set		= fpregs_set,
 		.active		= fpregs_active,
 	},
@@ -420,11 +316,7 @@ static const struct user_regset sh_regsets[] = {
 		.n		= sizeof(struct pt_dspregs) / sizeof(long),
 		.size		= sizeof(long),
 		.align		= sizeof(long),
-<<<<<<< HEAD
-		.get		= dspregs_get,
-=======
 		.regset_get		= dspregs_get,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.set		= dspregs_set,
 		.active		= dspregs_active,
 	},
@@ -560,33 +452,6 @@ long arch_ptrace(struct task_struct *child, long request,
 	return ret;
 }
 
-<<<<<<< HEAD
-static inline int audit_arch(void)
-{
-	int arch = EM_SH;
-
-#ifdef CONFIG_CPU_LITTLE_ENDIAN
-	arch |= __AUDIT_ARCH_LE;
-#endif
-
-	return arch;
-}
-
-asmlinkage long do_syscall_trace_enter(struct pt_regs *regs)
-{
-	long ret = 0;
-
-	secure_computing_strict(regs->regs[0]);
-
-	if (test_thread_flag(TIF_SYSCALL_TRACE) &&
-	    tracehook_report_syscall_entry(regs))
-		/*
-		 * Tracing decided this syscall should not happen.
-		 * We'll return a bogus call number to get an ENOSYS
-		 * error, but leave the original number in regs->regs[0].
-		 */
-		ret = -1L;
-=======
 asmlinkage long do_syscall_trace_enter(struct pt_regs *regs)
 {
 	if (test_thread_flag(TIF_SYSCALL_TRACE) &&
@@ -597,23 +462,14 @@ asmlinkage long do_syscall_trace_enter(struct pt_regs *regs)
 
 	if (secure_computing() == -1)
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(test_thread_flag(TIF_SYSCALL_TRACEPOINT)))
 		trace_sys_enter(regs, regs->regs[0]);
 
-<<<<<<< HEAD
-	audit_syscall_entry(audit_arch(), regs->regs[3],
-			    regs->regs[4], regs->regs[5],
-			    regs->regs[6], regs->regs[7]);
-
-	return ret ?: regs->regs[0];
-=======
 	audit_syscall_entry(regs->regs[3], regs->regs[4], regs->regs[5],
 			    regs->regs[6], regs->regs[7]);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 asmlinkage void do_syscall_trace_leave(struct pt_regs *regs)
@@ -627,9 +483,5 @@ asmlinkage void do_syscall_trace_leave(struct pt_regs *regs)
 
 	step = test_thread_flag(TIF_SINGLESTEP);
 	if (step || test_thread_flag(TIF_SYSCALL_TRACE))
-<<<<<<< HEAD
-		tracehook_report_syscall_exit(regs, step);
-=======
 		ptrace_report_syscall_exit(regs, step);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

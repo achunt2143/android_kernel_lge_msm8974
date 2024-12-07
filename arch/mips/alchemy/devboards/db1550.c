@@ -1,19 +1,11 @@
-<<<<<<< HEAD
-/*
- * Alchemy Db1550 board support
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Alchemy Db1550/Pb1550 board support
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * (c) 2011 Manuel Lauss <manuel.lauss@googlemail.com>
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/clk.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dma-mapping.h>
 #include <linux/gpio.h>
 #include <linux/i2c.h>
@@ -21,57 +13,23 @@
 #include <linux/io.h>
 #include <linux/interrupt.h>
 #include <linux/mtd/mtd.h>
-<<<<<<< HEAD
-#include <linux/mtd/nand.h>
-#include <linux/mtd/partitions.h>
-=======
 #include <linux/mtd/platnand.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/pm.h>
 #include <linux/spi/spi.h>
 #include <linux/spi/flash.h>
-<<<<<<< HEAD
-#include <asm/mach-au1x00/au1000.h>
-=======
 #include <asm/bootinfo.h>
 #include <asm/mach-au1x00/au1000.h>
 #include <asm/mach-au1x00/gpio-au1000.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mach-au1x00/au1xxx_eth.h>
 #include <asm/mach-au1x00/au1xxx_dbdma.h>
 #include <asm/mach-au1x00/au1xxx_psc.h>
 #include <asm/mach-au1x00/au1550_spi.h>
-<<<<<<< HEAD
-=======
 #include <asm/mach-au1x00/au1550nd.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mach-db1x00/bcsr.h>
 #include <prom.h>
 #include "platform.h"
 
-<<<<<<< HEAD
-
-const char *get_system_type(void)
-{
-	return "DB1550";
-}
-
-static void __init db1550_hw_setup(void)
-{
-	void __iomem *base;
-
-	alchemy_gpio_direction_output(203, 0);	/* red led on */
-
-	/* complete SPI setup: link psc0_intclk to a 48MHz source,
-	 * and assign GPIO16 to PSC0_SYNC1 (SPI cs# line)
-	 */
-	base = (void __iomem *)SYS_CLKSRC;
-	__raw_writel(__raw_readl(base) | 0x000001e0, base);
-	base = (void __iomem *)SYS_PINFUNC;
-	__raw_writel(__raw_readl(base) | 1, base);
-	wmb();
-=======
 static void __init db1550_hw_setup(void)
 {
 	void __iomem *base;
@@ -82,7 +40,6 @@ static void __init db1550_hw_setup(void)
 	 */
 	v = alchemy_rdsys(AU1000_SYS_PINFUNC);
 	alchemy_wrsys(v | 1 | SYS_PF_PSC1_S1, AU1000_SYS_PINFUNC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* reset the AC97 codec now, the reset time in the psc-ac97 driver
 	 * is apparently too short although it's ridiculous as it is.
@@ -94,31 +51,15 @@ static void __init db1550_hw_setup(void)
 	wmb();
 	__raw_writel(PSC_AC97RST_RST, base + PSC_AC97RST_OFFSET);
 	wmb();
-<<<<<<< HEAD
-
-	alchemy_gpio_direction_output(202, 0);	/* green led on */
-}
-
-void __init board_setup(void)
-=======
 }
 
 int __init db1550_board_setup(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned short whoami;
 
 	bcsr_init(DB1550_BCSR_PHYS_ADDR,
 		  DB1550_BCSR_PHYS_ADDR + DB1550_BCSR_HEXLED_OFS);
 
-<<<<<<< HEAD
-	whoami = bcsr_read(BCSR_WHOAMI);
-	printk(KERN_INFO "Alchemy/AMD DB1550 Board, CPLD Rev %d"
-		"  Board-ID %d  Daughtercard ID %d\n",
-		(whoami >> 4) & 0xf, (whoami >> 8) & 0xf, whoami & 0xf);
-
-	db1550_hw_setup();
-=======
 	whoami = bcsr_read(BCSR_WHOAMI); /* PB1550 hexled offset differs */
 	switch (BCSR_WHOAMI_BOARD(whoami)) {
 	case BCSR_WHOAMI_PB1550_SDR:
@@ -138,24 +79,16 @@ int __init db1550_board_setup(void)
 
 	db1550_hw_setup();
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*****************************************************************************/
 
-<<<<<<< HEAD
-static struct mtd_partition db1550_spiflash_parts[] = {
-	{
-		.name	= "spi_flash",
-		.offset	= 0,
-=======
 static u64 au1550_all_dmamask = DMA_BIT_MASK(32);
 
 static struct mtd_partition db1550_spiflash_parts[] = {
 	{
 		.name	= "spi_flash",
 		.offset = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.size	= MTDPART_SIZ_FULL,
 	},
 };
@@ -195,18 +128,10 @@ static struct i2c_board_info db1550_i2c_devs[] __initdata = {
 
 /**********************************************************************/
 
-<<<<<<< HEAD
-static void au1550_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
-				 unsigned int ctrl)
-{
-	struct nand_chip *this = mtd->priv;
-	unsigned long ioaddr = (unsigned long)this->IO_ADDR_W;
-=======
 static void au1550_nand_cmd_ctrl(struct nand_chip *this, int cmd,
 				 unsigned int ctrl)
 {
 	unsigned long ioaddr = (unsigned long)this->legacy.IO_ADDR_W;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ioaddr &= 0xffffff00;
 
@@ -218,32 +143,13 @@ static void au1550_nand_cmd_ctrl(struct nand_chip *this, int cmd,
 		/* assume we want to r/w real data  by default */
 		ioaddr += MEM_STNAND_DATA;
 	}
-<<<<<<< HEAD
-	this->IO_ADDR_R = this->IO_ADDR_W = (void __iomem *)ioaddr;
-	if (cmd != NAND_CMD_NONE) {
-		__raw_writeb(cmd, this->IO_ADDR_W);
-=======
 	this->legacy.IO_ADDR_R = this->legacy.IO_ADDR_W = (void __iomem *)ioaddr;
 	if (cmd != NAND_CMD_NONE) {
 		__raw_writeb(cmd, this->legacy.IO_ADDR_W);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wmb();
 	}
 }
 
-<<<<<<< HEAD
-static int au1550_nand_device_ready(struct mtd_info *mtd)
-{
-	return __raw_readl((void __iomem *)MEM_STSTAT) & 1;
-}
-
-static const char *db1550_part_probes[] = { "cmdlinepart", NULL };
-
-static struct mtd_partition db1550_nand_parts[] = {
-	{
-		.name	= "NAND FS 0",
-		.offset	= 0,
-=======
 static int au1550_nand_device_ready(struct nand_chip *this)
 {
 	return alchemy_rdsmem(AU1000_MEM_STSTAT) & 1;
@@ -253,16 +159,11 @@ static struct mtd_partition db1550_nand_parts[] = {
 	{
 		.name	= "NAND FS 0",
 		.offset = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.size	= 8 * 1024 * 1024,
 	},
 	{
 		.name	= "NAND FS 1",
-<<<<<<< HEAD
-		.offset	= MTDPART_OFS_APPEND,
-=======
 		.offset = MTDPART_OFS_APPEND,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.size	= MTDPART_SIZ_FULL
 	},
 };
@@ -274,10 +175,6 @@ struct platform_nand_data db1550_nand_platdata = {
 		.nr_partitions	= ARRAY_SIZE(db1550_nand_parts),
 		.partitions	= db1550_nand_parts,
 		.chip_delay	= 20,
-<<<<<<< HEAD
-		.part_probe_types = db1550_part_probes,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.ctrl = {
 		.dev_ready	= au1550_nand_device_ready,
@@ -303,8 +200,6 @@ static struct platform_device db1550_nand_dev = {
 	}
 };
 
-<<<<<<< HEAD
-=======
 static struct au1550nd_platdata pb1550_nand_pd = {
 	.parts		= db1550_nand_parts,
 	.num_parts	= ARRAY_SIZE(db1550_nand_parts),
@@ -338,7 +233,6 @@ static void __init pb1550_nand_setup(void)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**********************************************************************/
 
 static struct resource au1550_psc0_res[] = {
@@ -378,18 +272,10 @@ static struct au1550_spi_info db1550_spi_platdata = {
 	.activate_cs	= db1550_spi_cs_en,
 };
 
-<<<<<<< HEAD
-static u64 spi_dmamask = DMA_BIT_MASK(32);
-
-static struct platform_device db1550_spi_dev = {
-	.dev	= {
-		.dma_mask		= &spi_dmamask,
-=======
 
 static struct platform_device db1550_spi_dev = {
 	.dev	= {
 		.dma_mask		= &au1550_all_dmamask,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
 		.platform_data		= &db1550_spi_platdata,
 	},
@@ -513,24 +399,18 @@ static struct platform_device db1550_i2sdma_dev = {
 
 static struct platform_device db1550_sndac97_dev = {
 	.name		= "db1550-ac97",
-<<<<<<< HEAD
-=======
 	.dev = {
 		.dma_mask		= &au1550_all_dmamask,
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device db1550_sndi2s_dev = {
 	.name		= "db1550-i2s",
-<<<<<<< HEAD
-=======
 	.dev = {
 		.dma_mask		= &au1550_all_dmamask,
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**********************************************************************/
@@ -560,8 +440,6 @@ static int db1550_map_pci_irq(const struct pci_dev *d, u8 slot, u8 pin)
 	return -1;
 }
 
-<<<<<<< HEAD
-=======
 static int pb1550_map_pci_irq(const struct pci_dev *d, u8 slot, u8 pin)
 {
 	if ((slot < 12) || (slot > 13) || pin == 0)
@@ -585,7 +463,6 @@ static int pb1550_map_pci_irq(const struct pci_dev *d, u8 slot, u8 pin)
 	return -1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource alchemy_pci_host_res[] = {
 	[0] = {
 		.start	= AU1500_PCI_PHYS_ADDR,
@@ -609,10 +486,6 @@ static struct platform_device db1550_pci_host_dev = {
 /**********************************************************************/
 
 static struct platform_device *db1550_devs[] __initdata = {
-<<<<<<< HEAD
-	&db1550_nand_dev,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&db1550_i2c_dev,
 	&db1550_ac97_dev,
 	&db1550_spi_dev,
@@ -625,29 +498,6 @@ static struct platform_device *db1550_devs[] __initdata = {
 };
 
 /* must be arch_initcall; MIPS PCI scans busses in a subsys_initcall */
-<<<<<<< HEAD
-static int __init db1550_pci_init(void)
-{
-	return platform_device_register(&db1550_pci_host_dev);
-}
-arch_initcall(db1550_pci_init);
-
-static int __init db1550_dev_init(void)
-{
-	int swapped;
-
-	irq_set_irq_type(AU1550_GPIO0_INT, IRQ_TYPE_EDGE_BOTH);  /* CD0# */
-	irq_set_irq_type(AU1550_GPIO1_INT, IRQ_TYPE_EDGE_BOTH);  /* CD1# */
-	irq_set_irq_type(AU1550_GPIO3_INT, IRQ_TYPE_LEVEL_LOW);  /* CARD0# */
-	irq_set_irq_type(AU1550_GPIO5_INT, IRQ_TYPE_LEVEL_LOW);  /* CARD1# */
-	irq_set_irq_type(AU1550_GPIO21_INT, IRQ_TYPE_LEVEL_LOW); /* STSCHG0# */
-	irq_set_irq_type(AU1550_GPIO22_INT, IRQ_TYPE_LEVEL_LOW); /* STSCHG1# */
-
-	i2c_register_board_info(0, db1550_i2c_devs,
-				ARRAY_SIZE(db1550_i2c_devs));
-	spi_register_board_info(db1550_spi_devs,
-				ARRAY_SIZE(db1550_i2c_devs));
-=======
 int __init db1550_pci_setup(int id)
 {
 	if (id)
@@ -753,7 +603,6 @@ int __init db1550_dev_setup(void)
 		clk_prepare_enable(c);
 		clk_put(c);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Audio PSC clock is supplied by codecs (PSC1, 3) FIXME: platdata!! */
 	__raw_writel(PSC_SEL_CLK_SERCLK,
@@ -770,39 +619,11 @@ int __init db1550_dev_setup(void)
 	    (void __iomem *)KSEG1ADDR(AU1550_PSC2_PHYS_ADDR) + PSC_SEL_OFFSET);
 	wmb();
 
-<<<<<<< HEAD
-	db1x_register_pcmcia_socket(
-		AU1000_PCMCIA_ATTR_PHYS_ADDR,
-		AU1000_PCMCIA_ATTR_PHYS_ADDR + 0x000400000 - 1,
-		AU1000_PCMCIA_MEM_PHYS_ADDR,
-		AU1000_PCMCIA_MEM_PHYS_ADDR  + 0x000400000 - 1,
-		AU1000_PCMCIA_IO_PHYS_ADDR,
-		AU1000_PCMCIA_IO_PHYS_ADDR   + 0x000010000 - 1,
-		AU1550_GPIO3_INT, AU1550_GPIO0_INT,
-		/*AU1550_GPIO21_INT*/0, 0, 0);
-
-	db1x_register_pcmcia_socket(
-		AU1000_PCMCIA_ATTR_PHYS_ADDR + 0x004000000,
-		AU1000_PCMCIA_ATTR_PHYS_ADDR + 0x004400000 - 1,
-		AU1000_PCMCIA_MEM_PHYS_ADDR  + 0x004000000,
-		AU1000_PCMCIA_MEM_PHYS_ADDR  + 0x004400000 - 1,
-		AU1000_PCMCIA_IO_PHYS_ADDR   + 0x004000000,
-		AU1000_PCMCIA_IO_PHYS_ADDR   + 0x004010000 - 1,
-		AU1550_GPIO5_INT, AU1550_GPIO1_INT,
-		/*AU1550_GPIO22_INT*/0, 0, 1);
-
-	swapped = bcsr_read(BCSR_STATUS) & BCSR_STATUS_DB1000_SWAPBOOT;
-=======
 	id ? pb1550_devices() : db1550_devices();
 
 	swapped = bcsr_read(BCSR_STATUS) &
 	       (id ? BCSR_STATUS_PB1550_SWAPBOOT : BCSR_STATUS_DB1000_SWAPBOOT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	db1x_register_norflash(128 << 20, 4, swapped);
 
 	return platform_add_devices(db1550_devs, ARRAY_SIZE(db1550_devs));
 }
-<<<<<<< HEAD
-device_initcall(db1550_dev_init);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

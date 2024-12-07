@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ip22-hpc.c: Routines for generic manipulation of the HPC controllers.
  *
@@ -9,13 +6,8 @@
  * Copyright (C) 1998 Ralf Baechle
  */
 
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/module.h>
-=======
 #include <linux/export.h>
 #include <linux/init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 
 #include <asm/io.h>

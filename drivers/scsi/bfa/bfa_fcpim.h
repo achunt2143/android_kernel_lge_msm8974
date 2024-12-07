@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BFA_FCPIM_H__
@@ -53,11 +35,7 @@ void bfa_itn_create(struct bfa_s *bfa, struct bfa_rport_s *rport,
 		void (*isr)(struct bfa_s *bfa, struct bfi_msg_s *m));
 void bfa_itn_isr(struct bfa_s *bfa, struct bfi_msg_s *m);
 void bfa_iotag_attach(struct bfa_fcp_mod_s *fcp);
-<<<<<<< HEAD
-void bfa_fcp_res_recfg(struct bfa_s *bfa, u16 num_ioim_fw);
-=======
 void bfa_fcp_res_recfg(struct bfa_s *bfa, u16 num_ioim_fw, u16 max_ioim_fw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BFA_FCP_MOD(_hal)	(&(_hal)->modules.fcp_mod)
 #define BFA_MEM_FCP_KVA(__bfa)	(&(BFA_FCP_MOD(__bfa)->kva_seg))
@@ -66,13 +44,9 @@ void bfa_fcp_res_recfg(struct bfa_s *bfa, u16 num_ioim_fw, u16 max_ioim_fw);
 #define BFA_ITN_FROM_TAG(_fcp, _tag)	\
 	((_fcp)->itn_arr + ((_tag) & ((_fcp)->num_itns - 1)))
 #define BFA_SNSINFO_FROM_TAG(_fcp, _tag) \
-<<<<<<< HEAD
-	bfa_mem_get_dmabuf_kva(_fcp, _tag, BFI_IOIM_SNSLEN)
-=======
 	bfa_mem_get_dmabuf_kva(_fcp, (_tag & BFA_IOIM_IOTAG_MASK),	\
 	BFI_IOIM_SNSLEN)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BFA_ITNIM_MIN   32
 #define BFA_ITNIM_MAX   1024
@@ -154,11 +128,7 @@ struct bfa_fcpim_s {
 	struct bfa_fcpim_del_itn_stats_s del_itn_stats;
 	bfa_boolean_t		ioredirect;
 	bfa_boolean_t		io_profile;
-<<<<<<< HEAD
-	u32			io_profile_start_time;
-=======
 	time64_t		io_profile_start_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_fcpim_profile_t     profile_comp;
 	bfa_fcpim_profile_t     profile_start;
 };
@@ -173,10 +143,7 @@ struct bfa_fcp_mod_s {
 	struct list_head	iotag_unused_q;	/* unused IO resources*/
 	struct bfa_iotag_s	*iotag_arr;
 	struct bfa_itn_s	*itn_arr;
-<<<<<<< HEAD
-=======
 	int			max_ioim_reqs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			num_ioim_reqs;
 	int			num_fwtio_reqs;
 	int			num_itns;
@@ -184,11 +151,6 @@ struct bfa_fcp_mod_s {
 	struct bfa_fcpim_s	fcpim;
 	struct bfa_mem_dma_s	dma_seg[BFA_FCP_DMA_SEGS];
 	struct bfa_mem_kva_s	kva_seg;
-<<<<<<< HEAD
-};
-
-/*
-=======
 	int			throttle_update_required;
 };
 
@@ -220,16 +182,11 @@ struct bfa_ioim_s;
 typedef void (*bfa_ioim_sm_t)(struct bfa_ioim_s *, enum bfa_ioim_event);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * BFA IO (initiator mode)
  */
 struct bfa_ioim_s {
 	struct list_head	qe;		/*  queue elememt	*/
-<<<<<<< HEAD
-	bfa_sm_t		sm;		/*  BFA ioim state machine */
-=======
 	bfa_ioim_sm_t		sm;		/*  BFA ioim state machine */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_s		*bfa;		/*  BFA module	*/
 	struct bfa_fcpim_s	*fcpim;		/*  parent fcpim module */
 	struct bfa_itnim_s	*itnim;		/*  i-t-n nexus for this IO  */
@@ -256,8 +213,6 @@ struct bfa_ioim_sp_s {
 	struct bfa_tskim_s	*tskim;		/*  Relevant TM cmd	*/
 };
 
-<<<<<<< HEAD
-=======
 enum bfa_tskim_event {
 	BFA_TSKIM_SM_START	= 1,	/*  TM command start		*/
 	BFA_TSKIM_SM_DONE	= 2,	/*  TM completion		*/
@@ -273,17 +228,12 @@ enum bfa_tskim_event {
 struct bfa_tskim_s;
 typedef void (*bfa_tskim_sm_t)(struct bfa_tskim_s *, enum bfa_tskim_event);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * BFA Task management command (initiator mode)
  */
 struct bfa_tskim_s {
 	struct list_head	qe;
-<<<<<<< HEAD
-	bfa_sm_t		sm;
-=======
 	bfa_tskim_sm_t		sm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_s		*bfa;	/*  BFA module  */
 	struct bfa_fcpim_s	*fcpim;	/*  parent fcpim module	*/
 	struct bfa_itnim_s	*itnim;	/*  i-t-n nexus for this IO  */
@@ -301,8 +251,6 @@ struct bfa_tskim_s {
 };
 
 /*
-<<<<<<< HEAD
-=======
  *  itnim state machine event
  */
 enum bfa_itnim_event {
@@ -321,16 +269,11 @@ struct bfa_itnim_s;
 typedef void (*bfa_itnim_sm_t)(struct bfa_itnim_s *, enum bfa_itnim_event);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * BFA i-t-n (initiator mode)
  */
 struct bfa_itnim_s {
 	struct list_head	qe;	/*  queue element	*/
-<<<<<<< HEAD
-	bfa_sm_t		sm;	/*  i-t-n im BFA state machine  */
-=======
 	bfa_itnim_sm_t		sm;	/*  i-t-n im BFA state machine  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_s		*bfa;	/*  bfa instance	*/
 	struct bfa_rport_s	*rport;	/*  bfa rport	*/
 	void			*ditn;	/*  driver i-t-n structure	*/
@@ -419,11 +362,7 @@ bfa_status_t bfa_fcpim_port_iostats(struct bfa_s *bfa,
 			struct bfa_itnim_iostats_s *stats, u8 lp_tag);
 void bfa_fcpim_add_stats(struct bfa_itnim_iostats_s *fcpim_stats,
 			struct bfa_itnim_iostats_s *itnim_stats);
-<<<<<<< HEAD
-bfa_status_t bfa_fcpim_profile_on(struct bfa_s *bfa, u32 time);
-=======
 bfa_status_t bfa_fcpim_profile_on(struct bfa_s *bfa, time64_t time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_status_t bfa_fcpim_profile_off(struct bfa_s *bfa);
 
 #define bfa_fcpim_ioredirect_enabled(__bfa)				\
@@ -534,13 +473,10 @@ bfa_status_t	bfa_fcpim_lunmask_delete(struct bfa_s *bfa, u16 vf_id,
 bfa_status_t	bfa_fcpim_lunmask_add(struct bfa_s *bfa, u16 vf_id,
 				wwn_t *pwwn, wwn_t rpwwn, struct scsi_lun lun);
 bfa_status_t	bfa_fcpim_lunmask_clear(struct bfa_s *bfa);
-<<<<<<< HEAD
-=======
 u16		bfa_fcpim_read_throttle(struct bfa_s *bfa);
 bfa_status_t	bfa_fcpim_write_throttle(struct bfa_s *bfa, u16 value);
 bfa_status_t	bfa_fcpim_throttle_set(struct bfa_s *bfa, u16 value);
 bfa_status_t	bfa_fcpim_throttle_get(struct bfa_s *bfa, void *buf);
 u16     bfa_fcpim_get_throttle_cfg(struct bfa_s *bfa, u16 drv_cfg_param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __BFA_FCPIM_H__ */

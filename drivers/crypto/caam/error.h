@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CAAM Error Reporting code header
  *
@@ -10,10 +7,6 @@
 
 #ifndef CAAM_ERROR_H
 #define CAAM_ERROR_H
-<<<<<<< HEAD
-#define CAAM_ERROR_STR_MAX 302
-extern char *caam_jr_strstatus(char *outstr, u32 status);
-=======
 
 #include "desc.h"
 
@@ -33,5 +26,4 @@ static inline bool is_mdha(u32 algtype)
 	return (algtype & OP_ALG_ALGSEL_MASK & ~OP_ALG_ALGSEL_SUBMASK) ==
 	       OP_ALG_CHA_MDHA;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CAAM_ERROR_H */

@@ -1,26 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This only handles 32bit MTRR on 32bit hosts. This is strictly wrong
  * because MTRRs can span up to 40 bits (36bits on most modern x86)
  */
-<<<<<<< HEAD
-#define DEBUG
-
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/io.h>
-#include <linux/mm.h>
-
-#include <asm/processor-flags.h>
-#include <asm/cpufeature.h>
-#include <asm/tlbflush.h>
-#include <asm/mtrr.h>
-#include <asm/msr.h>
-#include <asm/pat.h>
-=======
 
 #include <linux/export.h>
 #include <linux/init.h>
@@ -36,7 +18,6 @@
 #include <asm/mtrr.h>
 #include <asm/msr.h>
 #include <asm/memtype.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "mtrr.h"
 
@@ -52,8 +33,6 @@ static struct fixed_range_block fixed_range_blocks[] = {
 	{}
 };
 
-<<<<<<< HEAD
-=======
 struct cache_map {
 	u64 start;
 	u64 end;
@@ -103,7 +82,6 @@ static unsigned int cache_map_size = CACHE_MAP_MAX;
 static unsigned int cache_map_n;
 static unsigned int cache_map_fixed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long smp_changes_mask;
 static int mtrr_state_set;
 u64 mtrr_tom2;
@@ -111,22 +89,15 @@ u64 mtrr_tom2;
 struct mtrr_state_type mtrr_state;
 EXPORT_SYMBOL_GPL(mtrr_state);
 
-<<<<<<< HEAD
-=======
 /* Reserved bits in the high portion of the MTRRphysBaseN MSR. */
 u32 phys_hi_rsvd;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * BIOS is expected to clear MtrrFixDramModEn bit, see for example
  * "BIOS and Kernel Developer's Guide for the AMD Athlon 64 and AMD
  * Opteron Processors" (26094 Rev. 3.30 February 2006), section
  * "13.2.1.2 SYSCFG Register": "The MtrrFixDramModEn bit should be set
-<<<<<<< HEAD
- * to 1 during BIOS initalization of the fixed MTRRs, then cleared to
-=======
  * to 1 during BIOS initialization of the fixed MTRRs, then cleared to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 0 for operation."
  */
 static inline void k8_check_syscfg_dram_mod_en(void)
@@ -137,15 +108,6 @@ static inline void k8_check_syscfg_dram_mod_en(void)
 	      (boot_cpu_data.x86 >= 0x0f)))
 		return;
 
-<<<<<<< HEAD
-	rdmsr(MSR_K8_SYSCFG, lo, hi);
-	if (lo & K8_MTRRFIXRANGE_DRAM_MODIFY) {
-		printk(KERN_ERR FW_WARN "MTRR: CPU %u: SYSCFG[MtrrFixDramModEn]"
-		       " not cleared by BIOS, clearing this bit\n",
-		       smp_processor_id());
-		lo &= ~K8_MTRRFIXRANGE_DRAM_MODIFY;
-		mtrr_wrmsr(MSR_K8_SYSCFG, lo, hi);
-=======
 	if (cc_platform_has(CC_ATTR_HOST_SEV_SNP))
 		return;
 
@@ -156,7 +118,6 @@ static inline void k8_check_syscfg_dram_mod_en(void)
 		       smp_processor_id());
 		lo &= ~K8_MTRRFIXRANGE_DRAM_MODIFY;
 		mtrr_wrmsr(MSR_AMD64_SYSCFG, lo, hi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -165,186 +126,6 @@ static u64 get_mtrr_size(u64 mask)
 {
 	u64 size;
 
-<<<<<<< HEAD
-	mask >>= PAGE_SHIFT;
-	mask |= size_or_mask;
-	size = -mask;
-	size <<= PAGE_SHIFT;
-	return size;
-}
-
-/*
- * Check and return the effective type for MTRR-MTRR type overlap.
- * Returns 1 if the effective type is UNCACHEABLE, else returns 0
- */
-static int check_type_overlap(u8 *prev, u8 *curr)
-{
-	if (*prev == MTRR_TYPE_UNCACHABLE || *curr == MTRR_TYPE_UNCACHABLE) {
-		*prev = MTRR_TYPE_UNCACHABLE;
-		*curr = MTRR_TYPE_UNCACHABLE;
-		return 1;
-	}
-
-	if ((*prev == MTRR_TYPE_WRBACK && *curr == MTRR_TYPE_WRTHROUGH) ||
-	    (*prev == MTRR_TYPE_WRTHROUGH && *curr == MTRR_TYPE_WRBACK)) {
-		*prev = MTRR_TYPE_WRTHROUGH;
-		*curr = MTRR_TYPE_WRTHROUGH;
-	}
-
-	if (*prev != *curr) {
-		*prev = MTRR_TYPE_UNCACHABLE;
-		*curr = MTRR_TYPE_UNCACHABLE;
-		return 1;
-	}
-
-	return 0;
-}
-
-/*
- * Error/Semi-error returns:
- * 0xFF - when MTRR is not enabled
- * *repeat == 1 implies [start:end] spanned across MTRR range and type returned
- *		corresponds only to [start:*partial_end].
- *		Caller has to lookup again for [*partial_end:end].
- */
-static u8 __mtrr_type_lookup(u64 start, u64 end, u64 *partial_end, int *repeat)
-{
-	int i;
-	u64 base, mask;
-	u8 prev_match, curr_match;
-
-	*repeat = 0;
-	if (!mtrr_state_set)
-		return 0xFF;
-
-	if (!mtrr_state.enabled)
-		return 0xFF;
-
-	/* Make end inclusive end, instead of exclusive */
-	end--;
-
-	/* Look in fixed ranges. Just return the type as per start */
-	if (mtrr_state.have_fixed && (start < 0x100000)) {
-		int idx;
-
-		if (start < 0x80000) {
-			idx = 0;
-			idx += (start >> 16);
-			return mtrr_state.fixed_ranges[idx];
-		} else if (start < 0xC0000) {
-			idx = 1 * 8;
-			idx += ((start - 0x80000) >> 14);
-			return mtrr_state.fixed_ranges[idx];
-		} else if (start < 0x1000000) {
-			idx = 3 * 8;
-			idx += ((start - 0xC0000) >> 12);
-			return mtrr_state.fixed_ranges[idx];
-		}
-	}
-
-	/*
-	 * Look in variable ranges
-	 * Look of multiple ranges matching this address and pick type
-	 * as per MTRR precedence
-	 */
-	if (!(mtrr_state.enabled & 2))
-		return mtrr_state.def_type;
-
-	prev_match = 0xFF;
-	for (i = 0; i < num_var_ranges; ++i) {
-		unsigned short start_state, end_state;
-
-		if (!(mtrr_state.var_ranges[i].mask_lo & (1 << 11)))
-			continue;
-
-		base = (((u64)mtrr_state.var_ranges[i].base_hi) << 32) +
-		       (mtrr_state.var_ranges[i].base_lo & PAGE_MASK);
-		mask = (((u64)mtrr_state.var_ranges[i].mask_hi) << 32) +
-		       (mtrr_state.var_ranges[i].mask_lo & PAGE_MASK);
-
-		start_state = ((start & mask) == (base & mask));
-		end_state = ((end & mask) == (base & mask));
-
-		if (start_state != end_state) {
-			/*
-			 * We have start:end spanning across an MTRR.
-			 * We split the region into
-			 * either
-			 * (start:mtrr_end) (mtrr_end:end)
-			 * or
-			 * (start:mtrr_start) (mtrr_start:end)
-			 * depending on kind of overlap.
-			 * Return the type for first region and a pointer to
-			 * the start of second region so that caller will
-			 * lookup again on the second region.
-			 * Note: This way we handle multiple overlaps as well.
-			 */
-			if (start_state)
-				*partial_end = base + get_mtrr_size(mask);
-			else
-				*partial_end = base;
-
-			if (unlikely(*partial_end <= start)) {
-				WARN_ON(1);
-				*partial_end = start + PAGE_SIZE;
-			}
-
-			end = *partial_end - 1; /* end is inclusive */
-			*repeat = 1;
-		}
-
-		if ((start & mask) != (base & mask))
-			continue;
-
-		curr_match = mtrr_state.var_ranges[i].base_lo & 0xff;
-		if (prev_match == 0xFF) {
-			prev_match = curr_match;
-			continue;
-		}
-
-		if (check_type_overlap(&prev_match, &curr_match))
-			return curr_match;
-	}
-
-	if (mtrr_tom2) {
-		if (start >= (1ULL<<32) && (end < mtrr_tom2))
-			return MTRR_TYPE_WRBACK;
-	}
-
-	if (prev_match != 0xFF)
-		return prev_match;
-
-	return mtrr_state.def_type;
-}
-
-/*
- * Returns the effective MTRR type for the region
- * Error return:
- * 0xFF - when MTRR is not enabled
- */
-u8 mtrr_type_lookup(u64 start, u64 end)
-{
-	u8 type, prev_type;
-	int repeat;
-	u64 partial_end;
-
-	type = __mtrr_type_lookup(start, end, &partial_end, &repeat);
-
-	/*
-	 * Common path is with repeat = 0.
-	 * However, we can have cases where [start:end] spans across some
-	 * MTRR range. Do repeated lookups for that case here.
-	 */
-	while (repeat) {
-		prev_type = type;
-		start = partial_end;
-		type = __mtrr_type_lookup(start, end, &partial_end, &repeat);
-
-		if (check_type_overlap(&prev_type, &type))
-			return type;
-	}
-
-=======
 	mask |= (u64)phys_hi_rsvd << 32;
 	size = -mask;
 
@@ -768,7 +549,6 @@ u8 mtrr_type_lookup(u64 start, u64 end, u8 *uniform)
 	if (start < end)
 		type = type_merge(type, mtrr_state.def_type, uniform);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return type;
 }
 
@@ -811,11 +591,7 @@ static void get_fixed_ranges(mtrr_type *frs)
 
 void mtrr_save_fixed_ranges(void *info)
 {
-<<<<<<< HEAD
-	if (cpu_has_mtrr)
-=======
 	if (boot_cpu_has(X86_FEATURE_MTRR))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		get_fixed_ranges(mtrr_state.fixed_ranges);
 }
 
@@ -828,13 +604,8 @@ static void __init print_fixed_last(void)
 	if (!last_fixed_end)
 		return;
 
-<<<<<<< HEAD
-	pr_debug("  %05X-%05X %s\n", last_fixed_start,
-		 last_fixed_end - 1, mtrr_attrib_to_str(last_fixed_type));
-=======
 	pr_info("  %05X-%05X %s\n", last_fixed_start,
 		last_fixed_end - 1, mtrr_attrib_to_str(last_fixed_type));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	last_fixed_end = 0;
 }
@@ -867,24 +638,11 @@ print_fixed(unsigned base, unsigned step, const mtrr_type *types)
 	}
 }
 
-<<<<<<< HEAD
-static void prepare_set(void);
-static void post_set(void);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init print_mtrr_state(void)
 {
 	unsigned int i;
 	int high_width;
 
-<<<<<<< HEAD
-	pr_debug("MTRR default type: %s\n",
-		 mtrr_attrib_to_str(mtrr_state.def_type));
-	if (mtrr_state.have_fixed) {
-		pr_debug("MTRR fixed ranges %sabled:\n",
-			 mtrr_state.enabled & 1 ? "en" : "dis");
-=======
 	pr_info("MTRR default type: %s\n",
 		mtrr_attrib_to_str(mtrr_state.def_type));
 	if (mtrr_state.have_fixed) {
@@ -892,7 +650,6 @@ static void __init print_mtrr_state(void)
 			((mtrr_state.enabled & MTRR_STATE_MTRR_ENABLED) &&
 			 (mtrr_state.enabled & MTRR_STATE_MTRR_FIXED_ENABLED)) ?
 			 "en" : "dis");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		print_fixed(0x00000, 0x10000, mtrr_state.fixed_ranges + 0);
 		for (i = 0; i < 2; ++i)
 			print_fixed(0x80000 + i * 0x20000, 0x04000,
@@ -904,39 +661,6 @@ static void __init print_mtrr_state(void)
 		/* tail */
 		print_fixed_last();
 	}
-<<<<<<< HEAD
-	pr_debug("MTRR variable ranges %sabled:\n",
-		 mtrr_state.enabled & 2 ? "en" : "dis");
-	if (size_or_mask & 0xffffffffUL)
-		high_width = ffs(size_or_mask & 0xffffffffUL) - 1;
-	else
-		high_width = ffs(size_or_mask>>32) + 32 - 1;
-	high_width = (high_width - (32 - PAGE_SHIFT) + 3) / 4;
-
-	for (i = 0; i < num_var_ranges; ++i) {
-		if (mtrr_state.var_ranges[i].mask_lo & (1 << 11))
-			pr_debug("  %u base %0*X%05X000 mask %0*X%05X000 %s\n",
-				 i,
-				 high_width,
-				 mtrr_state.var_ranges[i].base_hi,
-				 mtrr_state.var_ranges[i].base_lo >> 12,
-				 high_width,
-				 mtrr_state.var_ranges[i].mask_hi,
-				 mtrr_state.var_ranges[i].mask_lo >> 12,
-				 mtrr_attrib_to_str(mtrr_state.var_ranges[i].base_lo & 0xff));
-		else
-			pr_debug("  %u disabled\n", i);
-	}
-	if (mtrr_tom2)
-		pr_debug("TOM2: %016llx aka %lldM\n", mtrr_tom2, mtrr_tom2>>20);
-}
-
-/* Grab all of the MTRR state for this CPU into *state */
-void __init get_mtrr_state(void)
-{
-	struct mtrr_var_range *vrs;
-	unsigned long flags;
-=======
 	pr_info("MTRR variable ranges %sabled:\n",
 		mtrr_state.enabled & MTRR_STATE_MTRR_ENABLED ? "en" : "dis");
 	high_width = (boot_cpu_data.x86_phys_bits - (32 - PAGE_SHIFT) + 3) / 4;
@@ -964,18 +688,13 @@ void __init get_mtrr_state(void)
 bool __init get_mtrr_state(void)
 {
 	struct mtrr_var_range *vrs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned lo, dummy;
 	unsigned int i;
 
 	vrs = mtrr_state.var_ranges;
 
 	rdmsr(MSR_MTRRcap, lo, dummy);
-<<<<<<< HEAD
-	mtrr_state.have_fixed = (lo >> 8) & 1;
-=======
 	mtrr_state.have_fixed = lo & MTRR_CAP_FIX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < num_var_ranges; i++)
 		get_mtrr_var_range(i, &vrs[i]);
@@ -983,13 +702,8 @@ bool __init get_mtrr_state(void)
 		get_fixed_ranges(mtrr_state.fixed_ranges);
 
 	rdmsr(MSR_MTRRdefType, lo, dummy);
-<<<<<<< HEAD
-	mtrr_state.def_type = (lo & 0xff);
-	mtrr_state.enabled = (lo & 0xc00) >> 10;
-=======
 	mtrr_state.def_type = lo & MTRR_DEF_TYPE_TYPE;
 	mtrr_state.enabled = (lo & MTRR_DEF_TYPE_ENABLE) >> MTRR_STATE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (amd_special_default_mtrr()) {
 		unsigned low, high;
@@ -1002,27 +716,12 @@ bool __init get_mtrr_state(void)
 		mtrr_tom2 &= 0xffffff800000ULL;
 	}
 
-<<<<<<< HEAD
-	print_mtrr_state();
-
-	mtrr_state_set = 1;
-
-	/* PAT setup for BP. We need to go through sync steps here */
-	local_irq_save(flags);
-	prepare_set();
-
-	pat_init();
-
-	post_set();
-	local_irq_restore(flags);
-=======
 	if (mtrr_debug)
 		print_mtrr_state();
 
 	mtrr_state_set = 1;
 
 	return !!(mtrr_state.enabled & MTRR_STATE_MTRR_ENABLED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Some BIOS's are messed up and don't set all MTRRs the same! */
@@ -1033,16 +732,6 @@ void __init mtrr_state_warn(void)
 	if (!mask)
 		return;
 	if (mask & MTRR_CHANGE_MASK_FIXED)
-<<<<<<< HEAD
-		pr_warning("mtrr: your CPUs had inconsistent fixed MTRR settings\n");
-	if (mask & MTRR_CHANGE_MASK_VARIABLE)
-		pr_warning("mtrr: your CPUs had inconsistent variable MTRR settings\n");
-	if (mask & MTRR_CHANGE_MASK_DEFTYPE)
-		pr_warning("mtrr: your CPUs had inconsistent MTRRdefType settings\n");
-
-	printk(KERN_INFO "mtrr: probably your BIOS does not setup all CPUs.\n");
-	printk(KERN_INFO "mtrr: corrected configuration.\n");
-=======
 		pr_warn("mtrr: your CPUs had inconsistent fixed MTRR settings\n");
 	if (mask & MTRR_CHANGE_MASK_VARIABLE)
 		pr_warn("mtrr: your CPUs had inconsistent variable MTRR settings\n");
@@ -1051,7 +740,6 @@ void __init mtrr_state_warn(void)
 
 	pr_info("mtrr: probably your BIOS does not setup all CPUs.\n");
 	pr_info("mtrr: corrected configuration.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1062,12 +750,7 @@ void __init mtrr_state_warn(void)
 void mtrr_wrmsr(unsigned msr, unsigned a, unsigned b)
 {
 	if (wrmsr_safe(msr, a, b) < 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR
-			"MTRR: CPU %u: Writing MSR %x to %x:%x failed\n",
-=======
 		pr_err("MTRR: CPU %u: Writing MSR %x to %x:%x failed\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			smp_processor_id(), msr, a, b);
 	}
 }
@@ -1122,14 +805,9 @@ generic_get_free_region(unsigned long base, unsigned long size, int replace_reg)
 static void generic_get_mtrr(unsigned int reg, unsigned long *base,
 			     unsigned long *size, mtrr_type *type)
 {
-<<<<<<< HEAD
-	unsigned int mask_lo, mask_hi, base_lo, base_hi;
-	unsigned int tmp, hi;
-=======
 	u32 mask_lo, mask_hi, base_lo, base_hi;
 	unsigned int hi;
 	u64 tmp, mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * get_mtrr doesn't need to update mtrr_state, also it could be called
@@ -1139,11 +817,7 @@ static void generic_get_mtrr(unsigned int reg, unsigned long *base,
 
 	rdmsr(MTRRphysMask_MSR(reg), mask_lo, mask_hi);
 
-<<<<<<< HEAD
-	if ((mask_lo & 0x800) == 0) {
-=======
 	if (!(mask_lo & MTRR_PHYSMASK_V)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*  Invalid (i.e. free) range */
 		*base = 0;
 		*size = 0;
@@ -1154,20 +828,6 @@ static void generic_get_mtrr(unsigned int reg, unsigned long *base,
 	rdmsr(MTRRphysBase_MSR(reg), base_lo, base_hi);
 
 	/* Work out the shifted address mask: */
-<<<<<<< HEAD
-	tmp = mask_hi << (32 - PAGE_SHIFT) | mask_lo >> PAGE_SHIFT;
-	mask_lo = size_or_mask | tmp;
-
-	/* Expand tmp with high bits to all 1s: */
-	hi = fls(tmp);
-	if (hi > 0) {
-		tmp |= ~((1<<(hi - 1)) - 1);
-
-		if (tmp != mask_lo) {
-			printk(KERN_WARNING "mtrr: your BIOS has configured an incorrect mask, fixing it.\n");
-			add_taint(TAINT_FIRMWARE_WORKAROUND);
-			mask_lo = tmp;
-=======
 	tmp = (u64)mask_hi << 32 | (mask_lo & PAGE_MASK);
 	mask = (u64)phys_hi_rsvd << 32 | tmp;
 
@@ -1180,7 +840,6 @@ static void generic_get_mtrr(unsigned int reg, unsigned long *base,
 			pr_warn("mtrr: your BIOS has configured an incorrect mask, fixing it.\n");
 			add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
 			mask = tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1188,15 +847,9 @@ static void generic_get_mtrr(unsigned int reg, unsigned long *base,
 	 * This works correctly if size is a power of two, i.e. a
 	 * contiguous range:
 	 */
-<<<<<<< HEAD
-	*size = -mask_lo;
-	*base = base_hi << (32 - PAGE_SHIFT) | base_lo >> PAGE_SHIFT;
-	*type = base_lo & 0xff;
-=======
 	*size = -mask >> PAGE_SHIFT;
 	*base = (u64)base_hi << (32 - PAGE_SHIFT) | base_lo >> PAGE_SHIFT;
 	*type = base_lo & MTRR_PHYSBASE_TYPE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_put_cpu:
 	put_cpu();
@@ -1234,14 +887,8 @@ static bool set_mtrr_var_ranges(unsigned int index, struct mtrr_var_range *vr)
 	bool changed = false;
 
 	rdmsr(MTRRphysBase_MSR(index), lo, hi);
-<<<<<<< HEAD
-	if ((vr->base_lo & 0xfffff0ffUL) != (lo & 0xfffff0ffUL)
-	    || (vr->base_hi & (size_and_mask >> (32 - PAGE_SHIFT))) !=
-		(hi & (size_and_mask >> (32 - PAGE_SHIFT)))) {
-=======
 	if ((vr->base_lo & ~MTRR_PHYSBASE_RSVD) != (lo & ~MTRR_PHYSBASE_RSVD)
 	    || (vr->base_hi & ~phys_hi_rsvd) != (hi & ~phys_hi_rsvd)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mtrr_wrmsr(MTRRphysBase_MSR(index), vr->base_lo, vr->base_hi);
 		changed = true;
@@ -1249,14 +896,8 @@ static bool set_mtrr_var_ranges(unsigned int index, struct mtrr_var_range *vr)
 
 	rdmsr(MTRRphysMask_MSR(index), lo, hi);
 
-<<<<<<< HEAD
-	if ((vr->mask_lo & 0xfffff800UL) != (lo & 0xfffff800UL)
-	    || (vr->mask_hi & (size_and_mask >> (32 - PAGE_SHIFT))) !=
-		(hi & (size_and_mask >> (32 - PAGE_SHIFT)))) {
-=======
 	if ((vr->mask_lo & ~MTRR_PHYSMASK_RSVD) != (lo & ~MTRR_PHYSMASK_RSVD)
 	    || (vr->mask_hi & ~phys_hi_rsvd) != (hi & ~phys_hi_rsvd)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mtrr_wrmsr(MTRRphysMask_MSR(index), vr->mask_lo, vr->mask_hi);
 		changed = true;
 	}
@@ -1268,14 +909,10 @@ static u32 deftype_lo, deftype_hi;
 /**
  * set_mtrr_state - Set the MTRR state for this CPU.
  *
-<<<<<<< HEAD
- * NOTE: The CPU must already be in a safe state for MTRR changes.
-=======
  * NOTE: The CPU must already be in a safe state for MTRR changes, including
  *       measures that only a single CPU can be active in set_mtrr_state() in
  *       order to not be subject to races for usage of deftype_lo. This is
  *       accomplished by taking cache_disable_lock.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * RETURNS: 0 if no changes made, else a mask indicating what was changed.
  */
 static unsigned long set_mtrr_state(void)
@@ -1295,103 +932,24 @@ static unsigned long set_mtrr_state(void)
 	 * Set_mtrr_restore restores the old value of MTRRdefType,
 	 * so to set it we fiddle with the saved value:
 	 */
-<<<<<<< HEAD
-	if ((deftype_lo & 0xff) != mtrr_state.def_type
-	    || ((deftype_lo & 0xc00) >> 10) != mtrr_state.enabled) {
-
-		deftype_lo = (deftype_lo & ~0xcff) | mtrr_state.def_type |
-			     (mtrr_state.enabled << 10);
-=======
 	if ((deftype_lo & MTRR_DEF_TYPE_TYPE) != mtrr_state.def_type ||
 	    ((deftype_lo & MTRR_DEF_TYPE_ENABLE) >> MTRR_STATE_SHIFT) != mtrr_state.enabled) {
 
 		deftype_lo = (deftype_lo & MTRR_DEF_TYPE_DISABLE) |
 			     mtrr_state.def_type |
 			     (mtrr_state.enabled << MTRR_STATE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		change_mask |= MTRR_CHANGE_MASK_DEFTYPE;
 	}
 
 	return change_mask;
 }
 
-<<<<<<< HEAD
-
-static unsigned long cr4;
-static DEFINE_RAW_SPINLOCK(set_atomicity_lock);
-
-/*
- * Since we are disabling the cache don't allow any interrupts,
- * they would run extremely slow and would only increase the pain.
- *
- * The caller must ensure that local interrupts are disabled and
- * are reenabled after post_set() has been called.
- */
-static void prepare_set(void) __acquires(set_atomicity_lock)
-{
-	unsigned long cr0;
-
-	/*
-	 * Note that this is not ideal
-	 * since the cache is only flushed/disabled for this CPU while the
-	 * MTRRs are changed, but changing this requires more invasive
-	 * changes to the way the kernel boots
-	 */
-
-	raw_spin_lock(&set_atomicity_lock);
-
-	/* Enter the no-fill (CD=1, NW=0) cache mode and flush caches. */
-	cr0 = read_cr0() | X86_CR0_CD;
-	write_cr0(cr0);
-	wbinvd();
-
-	/* Save value of CR4 and clear Page Global Enable (bit 7) */
-	if (cpu_has_pge) {
-		cr4 = read_cr4();
-		write_cr4(cr4 & ~X86_CR4_PGE);
-	}
-
-	/* Flush all TLBs via a mov %cr3, %reg; mov %reg, %cr3 */
-	__flush_tlb();
-
-=======
 void mtrr_disable(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Save MTRR state */
 	rdmsr(MSR_MTRRdefType, deftype_lo, deftype_hi);
 
 	/* Disable MTRRs, and set the default type to uncached */
-<<<<<<< HEAD
-	mtrr_wrmsr(MSR_MTRRdefType, deftype_lo & ~0xcff, deftype_hi);
-	wbinvd();
-}
-
-static void post_set(void) __releases(set_atomicity_lock)
-{
-	/* Flush TLBs (no need to flush caches - they are disabled) */
-	__flush_tlb();
-
-	/* Intel (P6) standard MTRRs */
-	mtrr_wrmsr(MSR_MTRRdefType, deftype_lo, deftype_hi);
-
-	/* Enable caches */
-	write_cr0(read_cr0() & 0xbfffffff);
-
-	/* Restore value of CR4 */
-	if (cpu_has_pge)
-		write_cr4(cr4);
-	raw_spin_unlock(&set_atomicity_lock);
-}
-
-static void generic_set_all(void)
-{
-	unsigned long mask, count;
-	unsigned long flags;
-
-	local_irq_save(flags);
-	prepare_set();
-=======
 	mtrr_wrmsr(MSR_MTRRdefType, deftype_lo & MTRR_DEF_TYPE_DISABLE, deftype_hi);
 }
 
@@ -1404,32 +962,16 @@ void mtrr_enable(void)
 void mtrr_generic_set_state(void)
 {
 	unsigned long mask, count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Actually set the state */
 	mask = set_mtrr_state();
 
-<<<<<<< HEAD
-	/* also set PAT */
-	pat_init();
-
-	post_set();
-	local_irq_restore(flags);
-
-	/* Use the atomic bitops to update the global mask */
-	for (count = 0; count < sizeof mask * 8; ++count) {
-=======
 	/* Use the atomic bitops to update the global mask */
 	for (count = 0; count < sizeof(mask) * 8; ++count) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mask & 0x01)
 			set_bit(count, &smp_changes_mask);
 		mask >>= 1;
 	}
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1451,11 +993,7 @@ static void generic_set_mtrr(unsigned int reg, unsigned long base,
 	vr = &mtrr_state.var_ranges[reg];
 
 	local_irq_save(flags);
-<<<<<<< HEAD
-	prepare_set();
-=======
 	cache_disable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (size == 0) {
 		/*
@@ -1466,25 +1004,15 @@ static void generic_set_mtrr(unsigned int reg, unsigned long base,
 		memset(vr, 0, sizeof(struct mtrr_var_range));
 	} else {
 		vr->base_lo = base << PAGE_SHIFT | type;
-<<<<<<< HEAD
-		vr->base_hi = (base & size_and_mask) >> (32 - PAGE_SHIFT);
-		vr->mask_lo = -size << PAGE_SHIFT | 0x800;
-		vr->mask_hi = (-size & size_and_mask) >> (32 - PAGE_SHIFT);
-=======
 		vr->base_hi = (base >> (32 - PAGE_SHIFT)) & ~phys_hi_rsvd;
 		vr->mask_lo = -size << PAGE_SHIFT | MTRR_PHYSMASK_V;
 		vr->mask_hi = (-size >> (32 - PAGE_SHIFT)) & ~phys_hi_rsvd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mtrr_wrmsr(MTRRphysBase_MSR(reg), vr->base_lo, vr->base_hi);
 		mtrr_wrmsr(MTRRphysMask_MSR(reg), vr->mask_lo, vr->mask_hi);
 	}
 
-<<<<<<< HEAD
-	post_set();
-=======
 	cache_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 }
 
@@ -1497,29 +1025,17 @@ int generic_validate_add_page(unsigned long base, unsigned long size,
 	 * For Intel PPro stepping <= 7
 	 * must be 4 MiB aligned and not touch 0x70000000 -> 0x7003FFFF
 	 */
-<<<<<<< HEAD
-	if (is_cpu(INTEL) && boot_cpu_data.x86 == 6 &&
-	    boot_cpu_data.x86_model == 1 &&
-	    boot_cpu_data.x86_mask <= 7) {
-		if (base & ((1 << (22 - PAGE_SHIFT)) - 1)) {
-			pr_warning("mtrr: base(0x%lx000) is not 4 MiB aligned\n", base);
-=======
 	if (mtrr_if == &generic_mtrr_ops && boot_cpu_data.x86 == 6 &&
 	    boot_cpu_data.x86_model == 1 &&
 	    boot_cpu_data.x86_stepping <= 7) {
 		if (base & ((1 << (22 - PAGE_SHIFT)) - 1)) {
 			pr_warn("mtrr: base(0x%lx000) is not 4 MiB aligned\n", base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		if (!(base + size < 0x70000 || base > 0x7003F) &&
 		    (type == MTRR_TYPE_WRCOMB
 		     || type == MTRR_TYPE_WRBACK)) {
-<<<<<<< HEAD
-			pr_warning("mtrr: writable mtrr between 0x70000000 and 0x7003FFFF may hang the CPU.\n");
-=======
 			pr_warn("mtrr: writable mtrr between 0x70000000 and 0x7003FFFF may hang the CPU.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
@@ -1533,11 +1049,7 @@ int generic_validate_add_page(unsigned long base, unsigned long size,
 	     lbase = lbase >> 1, last = last >> 1)
 		;
 	if (lbase != last) {
-<<<<<<< HEAD
-		pr_warning("mtrr: base(0x%lx000) is not aligned on a size(0x%lx000) boundary\n", base, size);
-=======
 		pr_warn("mtrr: base(0x%lx000) is not aligned on a size(0x%lx000) boundary\n", base, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	return 0;
@@ -1547,11 +1059,7 @@ static int generic_have_wrcomb(void)
 {
 	unsigned long config, dummy;
 	rdmsr(MSR_MTRRcap, config, dummy);
-<<<<<<< HEAD
-	return config & (1 << 10);
-=======
 	return config & MTRR_CAP_WC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int positive_have_wrcomb(void)
@@ -1563,11 +1071,6 @@ int positive_have_wrcomb(void)
  * Generic structure...
  */
 const struct mtrr_ops generic_mtrr_ops = {
-<<<<<<< HEAD
-	.use_intel_if		= 1,
-	.set_all		= generic_set_all,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get			= generic_get_mtrr,
 	.get_free_region	= generic_get_free_region,
 	.set			= generic_set_mtrr,

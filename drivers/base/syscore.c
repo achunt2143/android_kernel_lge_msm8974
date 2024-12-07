@@ -1,27 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  syscore.c - Execution of system core operations.
  *
  *  Copyright (C) 2011 Rafael J. Wysocki <rjw@sisk.pl>, Novell Inc.
-<<<<<<< HEAD
- *
- *  This file is released under the GPLv2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/syscore_ops.h>
 #include <linux/mutex.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/interrupt.h>
-=======
 #include <linux/suspend.h>
 #include <trace/events/power.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static LIST_HEAD(syscore_ops_list);
 static DEFINE_MUTEX(syscore_ops_lock);
@@ -61,46 +49,23 @@ int syscore_suspend(void)
 	struct syscore_ops *ops;
 	int ret = 0;
 
-<<<<<<< HEAD
-	pr_debug("Checking wakeup interrupts\n");
-
-	/* Return error code if there are any wakeup interrupts pending. */
-	ret = check_wakeup_irqs();
-	if (ret)
-		return ret;
-=======
 	trace_suspend_resume(TPS("syscore_suspend"), 0, true);
 	pm_pr_dbg("Checking wakeup interrupts\n");
 
 	/* Return error code if there are any wakeup interrupts pending. */
 	if (pm_wakeup_pending())
 		return -EBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WARN_ONCE(!irqs_disabled(),
 		"Interrupts enabled before system core suspend.\n");
 
 	list_for_each_entry_reverse(ops, &syscore_ops_list, node)
 		if (ops->suspend) {
-<<<<<<< HEAD
-			if (initcall_debug)
-				pr_info("PM: Calling %pF\n", ops->suspend);
-=======
 			pm_pr_dbg("Calling %pS\n", ops->suspend);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = ops->suspend();
 			if (ret)
 				goto err_out;
 			WARN_ONCE(!irqs_disabled(),
-<<<<<<< HEAD
-				"Interrupts enabled after %pF\n", ops->suspend);
-		}
-
-	return 0;
-
- err_out:
-	pr_err("PM: System core suspend callback %pF failed.\n", ops->suspend);
-=======
 				"Interrupts enabled after %pS\n", ops->suspend);
 		}
 
@@ -109,7 +74,6 @@ int syscore_suspend(void)
 
  err_out:
 	pr_err("PM: System core suspend callback %pS failed.\n", ops->suspend);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry_continue(ops, &syscore_ops_list, node)
 		if (ops->resume)
@@ -128,30 +92,18 @@ void syscore_resume(void)
 {
 	struct syscore_ops *ops;
 
-<<<<<<< HEAD
-=======
 	trace_suspend_resume(TPS("syscore_resume"), 0, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ONCE(!irqs_disabled(),
 		"Interrupts enabled before system core resume.\n");
 
 	list_for_each_entry(ops, &syscore_ops_list, node)
 		if (ops->resume) {
-<<<<<<< HEAD
-			if (initcall_debug)
-				pr_info("PM: Calling %pF\n", ops->resume);
-			ops->resume();
-			WARN_ONCE(!irqs_disabled(),
-				"Interrupts enabled after %pF\n", ops->resume);
-		}
-=======
 			pm_pr_dbg("Calling %pS\n", ops->resume);
 			ops->resume();
 			WARN_ONCE(!irqs_disabled(),
 				"Interrupts enabled after %pS\n", ops->resume);
 		}
 	trace_suspend_resume(TPS("syscore_resume"), 0, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(syscore_resume);
 #endif /* CONFIG_PM_SLEEP */
@@ -168,11 +120,7 @@ void syscore_shutdown(void)
 	list_for_each_entry_reverse(ops, &syscore_ops_list, node)
 		if (ops->shutdown) {
 			if (initcall_debug)
-<<<<<<< HEAD
-				pr_info("PM: Calling %pF\n", ops->shutdown);
-=======
 				pr_info("PM: Calling %pS\n", ops->shutdown);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ops->shutdown();
 		}
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/mm/madvise.c
  *
@@ -14,16 +11,6 @@
 #include <linux/syscalls.h>
 #include <linux/mempolicy.h>
 #include <linux/page-isolation.h>
-<<<<<<< HEAD
-#include <linux/hugetlb.h>
-#include <linux/sched.h>
-#include <linux/ksm.h>
-#include <linux/file.h>
-
-/*
- * Any behaviour which results in changes to the vma->vm_flags needs to
- * take mmap_sem for writing. Others, which simply traverse vmas, need
-=======
 #include <linux/page_idle.h>
 #include <linux/userfaultfd_k.h>
 #include <linux/hugetlb.h>
@@ -58,7 +45,6 @@ struct madvise_walk_private {
 /*
  * Any behaviour which results in changes to the vma->vm_flags needs to
  * take mmap_lock for writing. Others, which simply traverse vmas, need
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * to only take it for reading.
  */
 static int madvise_need_mmap_write(int behavior)
@@ -67,8 +53,6 @@ static int madvise_need_mmap_write(int behavior)
 	case MADV_REMOVE:
 	case MADV_WILLNEED:
 	case MADV_DONTNEED:
-<<<<<<< HEAD
-=======
 	case MADV_DONTNEED_LOCKED:
 	case MADV_COLD:
 	case MADV_PAGEOUT:
@@ -76,7 +60,6 @@ static int madvise_need_mmap_write(int behavior)
 	case MADV_POPULATE_READ:
 	case MADV_POPULATE_WRITE:
 	case MADV_COLLAPSE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	default:
 		/* be safe, default to 1. list exceptions explicitly */
@@ -84,114 +67,6 @@ static int madvise_need_mmap_write(int behavior)
 	}
 }
 
-<<<<<<< HEAD
-/*
- * We can potentially split a vm area into separate
- * areas, each area with its own behavior.
- */
-static long madvise_behavior(struct vm_area_struct * vma,
-		     struct vm_area_struct **prev,
-		     unsigned long start, unsigned long end, int behavior)
-{
-	struct mm_struct * mm = vma->vm_mm;
-	int error = 0;
-	pgoff_t pgoff;
-	unsigned long new_flags = vma->vm_flags;
-
-	switch (behavior) {
-	case MADV_NORMAL:
-		new_flags = new_flags & ~VM_RAND_READ & ~VM_SEQ_READ;
-		break;
-	case MADV_SEQUENTIAL:
-		new_flags = (new_flags & ~VM_RAND_READ) | VM_SEQ_READ;
-		break;
-	case MADV_RANDOM:
-		new_flags = (new_flags & ~VM_SEQ_READ) | VM_RAND_READ;
-		break;
-	case MADV_DONTFORK:
-		new_flags |= VM_DONTCOPY;
-		break;
-	case MADV_DOFORK:
-		if (vma->vm_flags & VM_IO) {
-			error = -EINVAL;
-			goto out;
-		}
-		new_flags &= ~VM_DONTCOPY;
-		break;
-	case MADV_DONTDUMP:
-		new_flags |= VM_NODUMP;
-		break;
-	case MADV_DODUMP:
-		new_flags &= ~VM_NODUMP;
-		break;
-	case MADV_MERGEABLE:
-	case MADV_UNMERGEABLE:
-		error = ksm_madvise(vma, start, end, behavior, &new_flags);
-		if (error)
-			goto out;
-		break;
-	case MADV_HUGEPAGE:
-	case MADV_NOHUGEPAGE:
-		error = hugepage_madvise(vma, &new_flags, behavior);
-		if (error)
-			goto out;
-		break;
-	}
-
-	if (new_flags == vma->vm_flags) {
-		*prev = vma;
-		goto out;
-	}
-
-	pgoff = vma->vm_pgoff + ((start - vma->vm_start) >> PAGE_SHIFT);
-	*prev = vma_merge(mm, *prev, start, end, new_flags, vma->anon_vma,
-				vma->vm_file, pgoff, vma_policy(vma),
-				vma_get_anon_name(vma));
-	if (*prev) {
-		vma = *prev;
-		goto success;
-	}
-
-	*prev = vma;
-
-	if (start != vma->vm_start) {
-		error = split_vma(mm, vma, start, 1);
-		if (error)
-			goto out;
-	}
-
-	if (end != vma->vm_end) {
-		error = split_vma(mm, vma, end, 0);
-		if (error)
-			goto out;
-	}
-
-success:
-	/*
-	 * vm_flags is protected by the mmap_sem held in write mode.
-	 */
-	vma->vm_flags = new_flags;
-
-out:
-	if (error == -ENOMEM)
-		error = -EAGAIN;
-	return error;
-}
-
-/*
- * Schedule all required I/O operations.  Do not wait for completion.
- */
-static long madvise_willneed(struct vm_area_struct * vma,
-			     struct vm_area_struct ** prev,
-			     unsigned long start, unsigned long end)
-{
-	struct file *file = vma->vm_file;
-
-	if (!file)
-		return -EBADF;
-
-	if (file->f_mapping->a_ops->get_xip_mem) {
-=======
 #ifdef CONFIG_ANON_VMA_NAME
 struct anon_vma_name *anon_vma_name_alloc(const char *name)
 {
@@ -410,20 +285,10 @@ static long madvise_willneed(struct vm_area_struct *vma,
 #endif
 
 	if (IS_DAX(file_inode(file))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* no bad return value, but ignore advice */
 		return 0;
 	}
 
-<<<<<<< HEAD
-	*prev = vma;
-	start = ((start - vma->vm_start) >> PAGE_SHIFT) + vma->vm_pgoff;
-	if (end > vma->vm_end)
-		end = vma->vm_end;
-	end = ((end - vma->vm_start) >> PAGE_SHIFT) + vma->vm_pgoff;
-
-	force_page_cache_readahead(file->f_mapping, file, start, end - start);
-=======
 	/*
 	 * Filesystem's fadvise may need to take various locks.  We need to
 	 * explicitly grab a reference because the vma (and hence the
@@ -923,7 +788,6 @@ static int madvise_free_single_vma(struct vm_area_struct *vma,
 	mmu_notifier_invalidate_range_end(&range);
 	tlb_finish_mmu(&tlb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -931,13 +795,8 @@ static int madvise_free_single_vma(struct vm_area_struct *vma,
  * Application no longer needs these pages.  If the pages are dirty,
  * it's OK to just throw them away.  The app will be more careful about
  * data it wants to keep.  Be sure to free swap resources too.  The
-<<<<<<< HEAD
- * zap_page_range call sets things up for shrink_active_list to actually free
- * these pages later if no one else has touched them in the meantime,
-=======
  * zap_page_range_single call sets things up for shrink_active_list to actually
  * free these pages later if no one else has touched them in the meantime,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * although we could add these pages to a global reuse list for
  * shrink_active_list to pick up before reclaiming other pages.
  *
@@ -951,24 +810,6 @@ static int madvise_free_single_vma(struct vm_area_struct *vma,
  * An interface that causes the system to free clean pages and flush
  * dirty pages is already available as msync(MS_INVALIDATE).
  */
-<<<<<<< HEAD
-static long madvise_dontneed(struct vm_area_struct * vma,
-			     struct vm_area_struct ** prev,
-			     unsigned long start, unsigned long end)
-{
-	*prev = vma;
-	if (vma->vm_flags & (VM_LOCKED|VM_HUGETLB|VM_PFNMAP))
-		return -EINVAL;
-
-	if (unlikely(vma->vm_flags & VM_NONLINEAR)) {
-		struct zap_details details = {
-			.nonlinear_vma = vma,
-			.last_index = ULONG_MAX,
-		};
-		zap_page_range(vma, start, end - start, &details);
-	} else
-		zap_page_range(vma, start, end - start, NULL);
-=======
 static long madvise_dontneed_single_vma(struct vm_area_struct *vma,
 					unsigned long start, unsigned long end)
 {
@@ -1101,34 +942,17 @@ static long madvise_populate(struct vm_area_struct *vma,
 		}
 		start += pages * PAGE_SIZE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*
  * Application wants to free up the pages and associated backing store.
  * This is effectively punching a hole into the middle of a file.
-<<<<<<< HEAD
- *
- * NOTE: Currently, only shmfs/tmpfs is supported for this operation.
- * Other filesystems return -ENOSYS.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static long madvise_remove(struct vm_area_struct *vma,
 				struct vm_area_struct **prev,
 				unsigned long start, unsigned long end)
 {
-<<<<<<< HEAD
-	struct address_space *mapping;
-	loff_t offset, endoff;
-	int error;
-	struct file *f;
-
-	*prev = NULL;	/* tell sys_madvise we drop mmap_sem */
-
-	if (vma->vm_flags & (VM_LOCKED|VM_NONLINEAR|VM_HUGETLB))
-=======
 	loff_t offset;
 	int error;
 	struct file *f;
@@ -1137,7 +961,6 @@ static long madvise_remove(struct vm_area_struct *vma,
 	*prev = NULL;	/* tell sys_madvise we drop mmap_lock */
 
 	if (vma->vm_flags & VM_LOCKED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	f = vma->vm_file;
@@ -1146,29 +969,6 @@ static long madvise_remove(struct vm_area_struct *vma,
 			return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if ((vma->vm_flags & (VM_SHARED|VM_WRITE)) != (VM_SHARED|VM_WRITE))
-		return -EACCES;
-
-	mapping = vma->vm_file->f_mapping;
-
-	offset = (loff_t)(start - vma->vm_start)
-			+ ((loff_t)vma->vm_pgoff << PAGE_SHIFT);
-	endoff = (loff_t)(end - vma->vm_start - 1)
-			+ ((loff_t)vma->vm_pgoff << PAGE_SHIFT);
-
-	/*
-	 * vmtruncate_range may need to take i_mutex.  We need to
-	 * explicitly grab a reference because the vma (and hence the
-	 * vma's reference to the file) can go away as soon as we drop
-	 * mmap_sem.
-	 */
-	get_file(f);
-	up_read(&current->mm->mmap_sem);
-	error = vmtruncate_range(mapping->host, offset, endoff);
-	fput(f);
-	down_read(&current->mm->mmap_sem);
-=======
 	if (!vma_is_shared_maywrite(vma))
 		return -EACCES;
 
@@ -1287,7 +1087,6 @@ out:
 	 */
 	if (error == -ENOMEM)
 		error = -EAGAIN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1295,53 +1094,6 @@ out:
 /*
  * Error injection support for memory error handling.
  */
-<<<<<<< HEAD
-static int madvise_hwpoison(int bhv, unsigned long start, unsigned long end)
-{
-	int ret = 0;
-
-	if (!capable(CAP_SYS_ADMIN))
-		return -EPERM;
-	for (; start < end; start += PAGE_SIZE) {
-		struct page *p;
-		int ret = get_user_pages_fast(start, 1, 0, &p);
-		if (ret != 1)
-			return ret;
-		if (bhv == MADV_SOFT_OFFLINE) {
-			printk(KERN_INFO "Soft offlining page %lx at %lx\n",
-				page_to_pfn(p), start);
-			ret = soft_offline_page(p, MF_COUNT_INCREASED);
-			if (ret)
-				break;
-			continue;
-		}
-		printk(KERN_INFO "Injecting memory failure for page %lx at %lx\n",
-		       page_to_pfn(p), start);
-		/* Ignore return value for now */
-		memory_failure(page_to_pfn(p), 0, MF_COUNT_INCREASED);
-	}
-	return ret;
-}
-#endif
-
-static long
-madvise_vma(struct vm_area_struct *vma, struct vm_area_struct **prev,
-		unsigned long start, unsigned long end, int behavior)
-{
-	switch (behavior) {
-	case MADV_REMOVE:
-		return madvise_remove(vma, prev, start, end);
-	case MADV_WILLNEED:
-		return madvise_willneed(vma, prev, start, end);
-	case MADV_DONTNEED:
-		return madvise_dontneed(vma, prev, start, end);
-	default:
-		return madvise_behavior(vma, prev, start, end, behavior);
-	}
-}
-
-static int
-=======
 static int madvise_inject_error(int behavior,
 		unsigned long start, unsigned long end)
 {
@@ -1389,7 +1141,6 @@ static int madvise_inject_error(int behavior,
 #endif
 
 static bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 madvise_behavior_valid(int behavior)
 {
 	switch (behavior) {
@@ -1401,15 +1152,12 @@ madvise_behavior_valid(int behavior)
 	case MADV_REMOVE:
 	case MADV_WILLNEED:
 	case MADV_DONTNEED:
-<<<<<<< HEAD
-=======
 	case MADV_DONTNEED_LOCKED:
 	case MADV_FREE:
 	case MADV_COLD:
 	case MADV_PAGEOUT:
 	case MADV_POPULATE_READ:
 	case MADV_POPULATE_WRITE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_KSM
 	case MADV_MERGEABLE:
 	case MADV_UNMERGEABLE:
@@ -1417,18 +1165,6 @@ madvise_behavior_valid(int behavior)
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 	case MADV_HUGEPAGE:
 	case MADV_NOHUGEPAGE:
-<<<<<<< HEAD
-#endif
-	case MADV_DONTDUMP:
-	case MADV_DODUMP:
-		return 1;
-
-	default:
-		return 0;
-	}
-}
-
-=======
 	case MADV_COLLAPSE:
 #endif
 	case MADV_DONTDUMP:
@@ -1575,7 +1311,6 @@ int madvise_set_anon_name(struct mm_struct *mm, unsigned long start,
 				 madvise_vma_anon_name);
 }
 #endif /* CONFIG_ANON_VMA_NAME */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The madvise(2) system call.
  *
@@ -1598,21 +1333,13 @@ int madvise_set_anon_name(struct mm_struct *mm, unsigned long start,
  *		some pages ahead.
  *  MADV_DONTNEED - the application is finished with the given range,
  *		so the kernel can free resources associated with it.
-<<<<<<< HEAD
-=======
  *  MADV_FREE - the application marks pages in the given range as lazy free,
  *		where actual purges are postponed until memory pressure happens.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  MADV_REMOVE - the application wants to free up the given range of
  *		pages and associated backing store.
  *  MADV_DONTFORK - omit this area from child's address space when forking:
  *		typically, to avoid COWing pages pinned by get_user_pages().
  *  MADV_DOFORK - cancel MADV_DONTFORK: no longer omit this area when forking.
-<<<<<<< HEAD
- *  MADV_MERGEABLE - the application recommends that KSM try to merge pages in
- *		this area with pages of identical content from other such areas.
- *  MADV_UNMERGEABLE- cancel MADV_MERGEABLE: no longer merge pages with others.
-=======
  *  MADV_WIPEONFORK - present the child process with zero-filled memory in this
  *              range after a fork.
  *  MADV_KEEPONFORK - undo the effect of MADV_WIPEONFORK
@@ -1641,116 +1368,20 @@ int madvise_set_anon_name(struct mm_struct *mm, unsigned long start,
  *		triggering read faults if required
  *  MADV_POPULATE_WRITE - populate (prefault) page tables writable by
  *		triggering write faults if required
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * return values:
  *  zero    - success
  *  -EINVAL - start + len < 0, start is not page-aligned,
  *		"behavior" is not a valid value, or application
-<<<<<<< HEAD
- *		is attempting to release locked or shared pages.
-=======
  *		is attempting to release locked or shared pages,
  *		or the specified address range includes file, Huge TLB,
  *		MAP_SHARED or VMPFNMAP range.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  -ENOMEM - addresses in the specified range are not currently
  *		mapped, or are outside the AS of the process.
  *  -EIO    - an I/O error occurred while paging in data.
  *  -EBADF  - map exists, but area maps something that isn't a file.
  *  -EAGAIN - a kernel resource was temporarily unavailable.
  */
-<<<<<<< HEAD
-SYSCALL_DEFINE3(madvise, unsigned long, start, size_t, len_in, int, behavior)
-{
-	unsigned long end, tmp;
-	struct vm_area_struct * vma, *prev;
-	int unmapped_error = 0;
-	int error = -EINVAL;
-	int write;
-	size_t len;
-
-#ifdef CONFIG_MEMORY_FAILURE
-	if (behavior == MADV_HWPOISON || behavior == MADV_SOFT_OFFLINE)
-		return madvise_hwpoison(behavior, start, start+len_in);
-#endif
-	if (!madvise_behavior_valid(behavior))
-		return error;
-
-	write = madvise_need_mmap_write(behavior);
-	if (write)
-		down_write(&current->mm->mmap_sem);
-	else
-		down_read(&current->mm->mmap_sem);
-
-	if (start & ~PAGE_MASK)
-		goto out;
-	len = (len_in + ~PAGE_MASK) & PAGE_MASK;
-
-	/* Check to see whether len was rounded up from small -ve to zero */
-	if (len_in && !len)
-		goto out;
-
-	end = start + len;
-	if (end < start)
-		goto out;
-
-	error = 0;
-	if (end == start)
-		goto out;
-
-	/*
-	 * If the interval [start,end) covers some unmapped address
-	 * ranges, just ignore them, but return -ENOMEM at the end.
-	 * - different from the way of handling in mlock etc.
-	 */
-	vma = find_vma_prev(current->mm, start, &prev);
-	if (vma && start > vma->vm_start)
-		prev = vma;
-
-	for (;;) {
-		/* Still start < end. */
-		error = -ENOMEM;
-		if (!vma)
-			goto out;
-
-		/* Here start < (end|vma->vm_end). */
-		if (start < vma->vm_start) {
-			unmapped_error = -ENOMEM;
-			start = vma->vm_start;
-			if (start >= end)
-				goto out;
-		}
-
-		/* Here vma->vm_start <= start < (end|vma->vm_end) */
-		tmp = vma->vm_end;
-		if (end < tmp)
-			tmp = end;
-
-		/* Here vma->vm_start <= start < tmp <= (end|vma->vm_end). */
-		error = madvise_vma(vma, &prev, start, tmp, behavior);
-		if (error)
-			goto out;
-		start = tmp;
-		if (prev && start < prev->vm_end)
-			start = prev->vm_end;
-		error = unmapped_error;
-		if (start >= end)
-			goto out;
-		if (prev)
-			vma = prev->vm_next;
-		else	/* madvise_remove dropped mmap_sem */
-			vma = find_vma(current->mm, start);
-	}
-out:
-	if (write)
-		up_write(&current->mm->mmap_sem);
-	else
-		up_read(&current->mm->mmap_sem);
-
-	return error;
-}
-=======
 int do_madvise(struct mm_struct *mm, unsigned long start, size_t len_in, int behavior)
 {
 	unsigned long end;
@@ -1879,4 +1510,3 @@ free_iov:
 out:
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

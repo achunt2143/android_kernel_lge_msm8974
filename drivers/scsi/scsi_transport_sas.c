@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2005-2006 Dell Inc.
- *	Released under GPL v2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2005-2006 Dell Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Serial Attached SCSI (SAS) transport class.
  *
@@ -39,10 +33,7 @@
 #include <linux/bsg.h>
 
 #include <scsi/scsi.h>
-<<<<<<< HEAD
-=======
 #include <scsi/scsi_cmnd.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_transport.h>
@@ -161,11 +152,8 @@ static struct {
 	{ SAS_LINK_RATE_1_5_GBPS,	"1.5 Gbit" },
 	{ SAS_LINK_RATE_3_0_GBPS,	"3.0 Gbit" },
 	{ SAS_LINK_RATE_6_0_GBPS,	"6.0 Gbit" },
-<<<<<<< HEAD
-=======
 	{ SAS_LINK_RATE_12_0_GBPS,	"12.0 Gbit" },
 	{ SAS_LINK_RATE_22_5_GBPS,	"22.5 Gbit" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 sas_bitfield_name_search(linkspeed, sas_linkspeed_names)
 sas_bitfield_name_set(linkspeed, sas_linkspeed_names)
@@ -181,47 +169,6 @@ static struct sas_end_device *sas_sdev_to_rdev(struct scsi_device *sdev)
 	return rdev;
 }
 
-<<<<<<< HEAD
-static void sas_smp_request(struct request_queue *q, struct Scsi_Host *shost,
-			    struct sas_rphy *rphy)
-{
-	struct request *req;
-	int ret;
-	int (*handler)(struct Scsi_Host *, struct sas_rphy *, struct request *);
-
-	while ((req = blk_fetch_request(q)) != NULL) {
-		spin_unlock_irq(q->queue_lock);
-
-		handler = to_sas_internal(shost->transportt)->f->smp_handler;
-		ret = handler(shost, rphy, req);
-		req->errors = ret;
-
-		blk_end_request_all(req, ret);
-
-		spin_lock_irq(q->queue_lock);
-	}
-}
-
-static void sas_host_smp_request(struct request_queue *q)
-{
-	sas_smp_request(q, (struct Scsi_Host *)q->queuedata, NULL);
-}
-
-static void sas_non_host_smp_request(struct request_queue *q)
-{
-	struct sas_rphy *rphy = q->queuedata;
-	sas_smp_request(q, rphy_to_shost(rphy), rphy);
-}
-
-static void sas_host_release(struct device *dev)
-{
-	struct Scsi_Host *shost = dev_to_shost(dev);
-	struct sas_host_attrs *sas_host = to_sas_host_attrs(shost);
-	struct request_queue *q = sas_host->q;
-
-	if (q)
-		blk_cleanup_queue(q);
-=======
 static int sas_smp_dispatch(struct bsg_job *job)
 {
 	struct Scsi_Host *shost = dev_to_shost(job->dev);
@@ -238,20 +185,11 @@ static int sas_smp_dispatch(struct bsg_job *job)
 
 	to_sas_internal(shost->transportt)->f->smp_handler(job, shost, rphy);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sas_bsg_initialize(struct Scsi_Host *shost, struct sas_rphy *rphy)
 {
 	struct request_queue *q;
-<<<<<<< HEAD
-	int error;
-	struct device *dev;
-	char namebuf[20];
-	const char *name;
-	void (*release)(struct device *);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!to_sas_internal(shost->transportt)->f->smp_handler) {
 		printk("%s can't handle SMP requests\n", shost->hostt->name);
@@ -259,58 +197,6 @@ static int sas_bsg_initialize(struct Scsi_Host *shost, struct sas_rphy *rphy)
 	}
 
 	if (rphy) {
-<<<<<<< HEAD
-		q = blk_init_queue(sas_non_host_smp_request, NULL);
-		dev = &rphy->dev;
-		name = dev_name(dev);
-		release = NULL;
-	} else {
-		q = blk_init_queue(sas_host_smp_request, NULL);
-		dev = &shost->shost_gendev;
-		snprintf(namebuf, sizeof(namebuf),
-			 "sas_host%d", shost->host_no);
-		name = namebuf;
-		release = sas_host_release;
-	}
-	if (!q)
-		return -ENOMEM;
-
-	error = bsg_register_queue(q, dev, name, release);
-	if (error) {
-		blk_cleanup_queue(q);
-		return -ENOMEM;
-	}
-
-	if (rphy)
-		rphy->q = q;
-	else
-		to_sas_host_attrs(shost)->q = q;
-
-	if (rphy)
-		q->queuedata = rphy;
-	else
-		q->queuedata = shost;
-
-	queue_flag_set_unlocked(QUEUE_FLAG_BIDI, q);
-	return 0;
-}
-
-static void sas_bsg_remove(struct Scsi_Host *shost, struct sas_rphy *rphy)
-{
-	struct request_queue *q;
-
-	if (rphy)
-		q = rphy->q;
-	else
-		q = to_sas_host_attrs(shost)->q;
-
-	if (!q)
-		return;
-
-	bsg_unregister_queue(q);
-}
-
-=======
 		q = bsg_setup_queue(&rphy->dev, dev_name(&rphy->dev),
 				sas_smp_dispatch, NULL, 0);
 		if (IS_ERR(q))
@@ -330,7 +216,6 @@ static void sas_bsg_remove(struct Scsi_Host *shost, struct sas_rphy *rphy)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SAS host attributes
  */
@@ -340,10 +225,7 @@ static int sas_host_setup(struct transport_container *tc, struct device *dev,
 {
 	struct Scsi_Host *shost = dev_to_shost(dev);
 	struct sas_host_attrs *sas_host = to_sas_host_attrs(shost);
-<<<<<<< HEAD
-=======
 	struct device *dma_dev = shost->dma_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&sas_host->rphy_list);
 	mutex_init(&sas_host->lock);
@@ -355,14 +237,11 @@ static int sas_host_setup(struct transport_container *tc, struct device *dev,
 		dev_printk(KERN_ERR, dev, "fail to a bsg device %d\n",
 			   shost->host_no);
 
-<<<<<<< HEAD
-=======
 	if (dma_dev->dma_mask) {
 		shost->opt_sectors = min_t(unsigned int, shost->max_sectors,
 				dma_opt_mapping_size(dma_dev) >> SECTOR_SHIFT);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -370,15 +249,9 @@ static int sas_host_remove(struct transport_container *tc, struct device *dev,
 			   struct device *cdev)
 {
 	struct Scsi_Host *shost = dev_to_shost(dev);
-<<<<<<< HEAD
-
-	sas_bsg_remove(shost, NULL);
-
-=======
 	struct request_queue *q = to_sas_host_attrs(shost)->q;
 
 	bsg_remove_queue(q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -433,30 +306,20 @@ EXPORT_SYMBOL(sas_remove_children);
  * sas_remove_host  -  tear down a Scsi_Host's SAS data structures
  * @shost:	Scsi Host that is torn down
  *
-<<<<<<< HEAD
- * Removes all SAS PHYs and remote PHYs for a given Scsi_Host.
- * Must be called just before scsi_remove_host for SAS HBAs.
-=======
  * Removes all SAS PHYs and remote PHYs for a given Scsi_Host and remove the
  * Scsi_Host as well.
  *
  * Note: Do not call scsi_remove_host() on the Scsi_Host any more, as it is
  * already removed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void sas_remove_host(struct Scsi_Host *shost)
 {
 	sas_remove_children(&shost->shost_gendev);
-<<<<<<< HEAD
-=======
 	scsi_remove_host(shost);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(sas_remove_host);
 
 /**
-<<<<<<< HEAD
-=======
  * sas_get_address - return the SAS address of the device
  * @sdev: scsi device
  *
@@ -471,7 +334,6 @@ u64 sas_get_address(struct scsi_device *sdev)
 EXPORT_SYMBOL(sas_get_address);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * sas_tlr_supported - checking TLR bit in vpd 0x90
  * @sdev: scsi device struct
  *
@@ -487,12 +349,9 @@ sas_tlr_supported(struct scsi_device *sdev)
 	char *buffer = kzalloc(vpd_len, GFP_KERNEL);
 	int ret = 0;
 
-<<<<<<< HEAD
-=======
 	if (!buffer)
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (scsi_get_vpd_page(sdev, 0x90, buffer, vpd_len))
 		goto out;
 
@@ -710,11 +569,7 @@ show_sas_phy_enable(struct device *dev, struct device_attribute *attr,
 {
 	struct sas_phy *phy = transport_class_to_phy(dev);
 
-<<<<<<< HEAD
-	return snprintf(buf, 20, "%d", phy->enabled);
-=======
 	return snprintf(buf, 20, "%d\n", phy->enabled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR, show_sas_phy_enable,
@@ -758,10 +613,6 @@ sas_phy_protocol_attr(identify.target_port_protocols,
 sas_phy_simple_attr(identify.sas_address, sas_address, "0x%016llx\n",
 		unsigned long long);
 sas_phy_simple_attr(identify.phy_identifier, phy_identifier, "%d\n", u8);
-<<<<<<< HEAD
-//sas_phy_simple_attr(port_identifier, port_identifier, "%d\n", int);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sas_phy_linkspeed_attr(negotiated_linkrate);
 sas_phy_linkspeed_attr(minimum_linkrate_hw);
 sas_phy_linkspeed_rw_attr(minimum_linkrate);
@@ -871,14 +722,6 @@ int sas_phy_add(struct sas_phy *phy)
 	int error;
 
 	error = device_add(&phy->dev);
-<<<<<<< HEAD
-	if (!error) {
-		transport_add_device(&phy->dev);
-		transport_configure_device(&phy->dev);
-	}
-
-	return error;
-=======
 	if (error)
 		return error;
 
@@ -890,7 +733,6 @@ int sas_phy_add(struct sas_phy *phy)
 	transport_configure_device(&phy->dev);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(sas_phy_add);
 
@@ -1354,16 +1196,6 @@ show_sas_rphy_enclosure_identifier(struct device *dev,
 	u64 identifier;
 	int error;
 
-<<<<<<< HEAD
-	/*
-	 * Only devices behind an expander are supported, because the
-	 * enclosure identifier is a SMP feature.
-	 */
-	if (scsi_is_sas_phy_local(phy))
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = i->f->get_enclosure_identifier(rphy, &identifier);
 	if (error)
 		return error;
@@ -1383,12 +1215,6 @@ show_sas_rphy_bay_identifier(struct device *dev,
 	struct sas_internal *i = to_sas_internal(shost->transportt);
 	int val;
 
-<<<<<<< HEAD
-	if (scsi_is_sas_phy_local(phy))
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = i->f->get_bay_identifier(rphy);
 	if (val < 0)
 		return val;
@@ -1404,10 +1230,7 @@ sas_rphy_protocol_attr(identify.target_port_protocols, target_port_protocols);
 sas_rphy_simple_attr(identify.sas_address, sas_address, "0x%016llx\n",
 		unsigned long long);
 sas_rphy_simple_attr(identify.phy_identifier, phy_identifier, "%d\n", u8);
-<<<<<<< HEAD
-=======
 sas_rphy_simple_attr(scsi_target_id, scsi_target_id, "%d\n", u32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* only need 8 bytes of data plus header (4 or 8) */
 #define BUF_SIZE 64
@@ -1417,27 +1240,15 @@ int sas_read_port_mode_page(struct scsi_device *sdev)
 	char *buffer = kzalloc(BUF_SIZE, GFP_KERNEL), *msdata;
 	struct sas_end_device *rdev = sas_sdev_to_rdev(sdev);
 	struct scsi_mode_data mode_data;
-<<<<<<< HEAD
-	int res, error;
-=======
 	int error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!buffer)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	res = scsi_mode_sense(sdev, 1, 0x19, buffer, BUF_SIZE, 30*HZ, 3,
-			      &mode_data, NULL);
-
-	error = -EINVAL;
-	if (!scsi_status_is_good(res))
-=======
 	error = scsi_mode_sense(sdev, 1, 0x19, 0, buffer, BUF_SIZE, 30*HZ, 3,
 				&mode_data, NULL);
 
 	if (error)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	msdata = buffer +  mode_data.header_length +
@@ -1590,12 +1401,6 @@ static void sas_expander_release(struct device *dev)
 	struct sas_rphy *rphy = dev_to_rphy(dev);
 	struct sas_expander_device *edev = rphy_to_expander_device(rphy);
 
-<<<<<<< HEAD
-	if (rphy->q)
-		blk_cleanup_queue(rphy->q);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_device(dev->parent);
 	kfree(edev);
 }
@@ -1605,22 +1410,12 @@ static void sas_end_device_release(struct device *dev)
 	struct sas_rphy *rphy = dev_to_rphy(dev);
 	struct sas_end_device *edev = rphy_to_end_device(rphy);
 
-<<<<<<< HEAD
-	if (rphy->q)
-		blk_cleanup_queue(rphy->q);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_device(dev->parent);
 	kfree(edev);
 }
 
 /**
-<<<<<<< HEAD
- * sas_rphy_initialize - common rphy intialization
-=======
  * sas_rphy_initialize - common rphy initialization
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rphy:	rphy to initialise
  *
  * Used by both sas_end_device_alloc() and sas_expander_alloc() to
@@ -1741,11 +1536,7 @@ int sas_rphy_add(struct sas_rphy *rphy)
 	list_add_tail(&rphy->list, &sas_host->rphy_list);
 	if (identify->device_type == SAS_END_DEVICE &&
 	    (identify->target_port_protocols &
-<<<<<<< HEAD
-	     (SAS_PROTOCOL_SSP|SAS_PROTOCOL_STP|SAS_PROTOCOL_SATA)))
-=======
 	     (SAS_PROTOCOL_SSP | SAS_PROTOCOL_STP | SAS_PROTOCOL_SATA)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rphy->scsi_target_id = sas_host->next_target_id++;
 	else if (identify->device_type == SAS_END_DEVICE)
 		rphy->scsi_target_id = -1;
@@ -1760,12 +1551,8 @@ int sas_rphy_add(struct sas_rphy *rphy)
 		else
 			lun = 0;
 
-<<<<<<< HEAD
-		scsi_scan_target(&rphy->dev, 0, rphy->scsi_target_id, lun, 0);
-=======
 		scsi_scan_target(&rphy->dev, 0, rphy->scsi_target_id, lun,
 				 SCSI_SCAN_INITIAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1793,11 +1580,6 @@ void sas_rphy_free(struct sas_rphy *rphy)
 	list_del(&rphy->list);
 	mutex_unlock(&sas_host->lock);
 
-<<<<<<< HEAD
-	sas_bsg_remove(shost, rphy);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	transport_destroy_device(dev);
 
 	put_device(dev);
@@ -1856,10 +1638,7 @@ sas_rphy_remove(struct sas_rphy *rphy)
 	}
 
 	sas_rphy_unlink(rphy);
-<<<<<<< HEAD
-=======
 	bsg_remove_queue(rphy->q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	transport_remove_device(dev);
 	device_del(dev);
 }
@@ -1885,11 +1664,7 @@ EXPORT_SYMBOL(scsi_is_sas_rphy);
  */
 
 static int sas_user_scan(struct Scsi_Host *shost, uint channel,
-<<<<<<< HEAD
-		uint id, uint lun)
-=======
 		uint id, u64 lun)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sas_host_attrs *sas_host = to_sas_host_attrs(shost);
 	struct sas_rphy *rphy;
@@ -1902,13 +1677,8 @@ static int sas_user_scan(struct Scsi_Host *shost, uint channel,
 
 		if ((channel == SCAN_WILD_CARD || channel == 0) &&
 		    (id == SCAN_WILD_CARD || id == rphy->scsi_target_id)) {
-<<<<<<< HEAD
-			scsi_scan_target(&rphy->dev, 0,
-					 rphy->scsi_target_id, lun, 1);
-=======
 			scsi_scan_target(&rphy->dev, 0, rphy->scsi_target_id,
 					 lun, SCSI_SCAN_MANUAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	mutex_unlock(&sas_host->lock);
@@ -2029,10 +1799,6 @@ sas_attach_transport(struct sas_function_template *ft)
 	SETUP_PHY_ATTRIBUTE(device_type);
 	SETUP_PHY_ATTRIBUTE(sas_address);
 	SETUP_PHY_ATTRIBUTE(phy_identifier);
-<<<<<<< HEAD
-	//SETUP_PHY_ATTRIBUTE(port_identifier);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SETUP_PHY_ATTRIBUTE(negotiated_linkrate);
 	SETUP_PHY_ATTRIBUTE(minimum_linkrate_hw);
 	SETUP_PHY_ATTRIBUTE_RW(minimum_linkrate);
@@ -2058,10 +1824,7 @@ sas_attach_transport(struct sas_function_template *ft)
 	SETUP_RPORT_ATTRIBUTE(rphy_device_type);
 	SETUP_RPORT_ATTRIBUTE(rphy_sas_address);
 	SETUP_RPORT_ATTRIBUTE(rphy_phy_identifier);
-<<<<<<< HEAD
-=======
 	SETUP_RPORT_ATTRIBUTE(rphy_scsi_target_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SETUP_OPTIONAL_RPORT_ATTRIBUTE(rphy_enclosure_identifier,
 				       get_enclosure_identifier);
 	SETUP_OPTIONAL_RPORT_ATTRIBUTE(rphy_bay_identifier,

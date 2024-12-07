@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Eee PC WMI hotkey driver
  *
@@ -12,23 +9,6 @@
  * Copyright (C) 2005 Miloslav Trmac <mitr@volny.cz>
  * Copyright (C) 2005 Bernhard Rosenkraenzer <bero@arklinux.org>
  * Copyright (C) 2005 Dmitry Torokhov <dtor@mail.ru>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -40,21 +20,13 @@
 #include <linux/input/sparse-keymap.h>
 #include <linux/dmi.h>
 #include <linux/fb.h>
-<<<<<<< HEAD
-#include <acpi/acpi_bus.h>
-=======
 #include <linux/acpi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "asus-wmi.h"
 
 #define	EEEPC_WMI_FILE	"eeepc-wmi"
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Corentin Chary <corentincj@iksaif.net>");
-=======
 MODULE_AUTHOR("Corentin Chary <corentin.chary@gmail.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Eee PC WMI Hotkey Driver");
 MODULE_LICENSE("GPL");
 
@@ -78,11 +50,8 @@ MODULE_PARM_DESC(hotplug_wireless,
 #define HOME_RELEASE	0xe5
 
 static const struct key_entry eeepc_wmi_keymap[] = {
-<<<<<<< HEAD
-=======
 	{ KE_KEY, ASUS_WMI_BRN_DOWN, { KEY_BRIGHTNESSDOWN } },
 	{ KE_KEY, ASUS_WMI_BRN_UP, { KEY_BRIGHTNESSUP } },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Sleep already handled via generic ACPI code */
 	{ KE_KEY, 0x30, { KEY_VOLUMEUP } },
 	{ KE_KEY, 0x31, { KEY_VOLUMEDOWN } },
@@ -99,11 +68,7 @@ static const struct key_entry eeepc_wmi_keymap[] = {
 	{ KE_KEY, 0xe1, { KEY_F14 } }, /* Change Resolution */
 	{ KE_KEY, HOME_PRESS, { KEY_CONFIG } }, /* Home/Express gate key */
 	{ KE_KEY, 0xe8, { KEY_SCREENLOCK } },
-<<<<<<< HEAD
-	{ KE_KEY, 0xe9, { KEY_BRIGHTNESS_ZERO } },
-=======
 	{ KE_KEY, 0xe9, { KEY_DISPLAYTOGGLE } },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ KE_KEY, 0xeb, { KEY_CAMERA_ZOOMOUT } },
 	{ KE_KEY, 0xec, { KEY_CAMERA_UP } },
 	{ KE_KEY, 0xed, { KEY_CAMERA_DOWN } },
@@ -162,11 +127,7 @@ static int dmi_matched(const struct dmi_system_id *dmi)
 	return 1;
 }
 
-<<<<<<< HEAD
-static struct dmi_system_id asus_quirks[] = {
-=======
 static const struct dmi_system_id asus_quirks[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.callback = dmi_matched,
 		.ident = "ASUSTeK Computer INC. 1000H",
@@ -185,11 +146,7 @@ static const struct dmi_system_id asus_quirks[] = {
 		},
 		.driver_data = &quirk_asus_unknown,
 	},
-<<<<<<< HEAD
-	{},
-=======
 	{}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void eeepc_wmi_key_filter(struct asus_wmi_driver *asus_wmi, int *code,
@@ -211,37 +168,10 @@ static void eeepc_wmi_key_filter(struct asus_wmi_driver *asus_wmi, int *code,
 	}
 }
 
-<<<<<<< HEAD
-static acpi_status eeepc_wmi_parse_device(acpi_handle handle, u32 level,
-						 void *context, void **retval)
-{
-	pr_warn("Found legacy ATKD device (%s)\n", EEEPC_ACPI_HID);
-	*(bool *)context = true;
-	return AE_CTRL_TERMINATE;
-}
-
-static int eeepc_wmi_check_atkd(void)
-{
-	acpi_status status;
-	bool found = false;
-
-	status = acpi_get_devices(EEEPC_ACPI_HID, eeepc_wmi_parse_device,
-				  &found, NULL);
-
-	if (ACPI_FAILURE(status) || !found)
-		return 0;
-	return -1;
-}
-
-static int eeepc_wmi_probe(struct platform_device *pdev)
-{
-	if (eeepc_wmi_check_atkd()) {
-=======
 static int eeepc_wmi_probe(struct platform_device *pdev)
 {
 	if (acpi_dev_found(EEEPC_ACPI_HID)) {
 		pr_warn("Found legacy ATKD device (%s)\n", EEEPC_ACPI_HID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_warn("WMI device present, but legacy ATKD device is also "
 			"present and enabled\n");
 		pr_warn("You probably booted with acpi_osi=\"Linux\" or "

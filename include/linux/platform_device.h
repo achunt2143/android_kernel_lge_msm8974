@@ -1,39 +1,16 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * platform_device.h - generic, centralized driver model
  *
  * Copyright (c) 2001-2003 Patrick Mochel <mochel@osdl.org>
  *
-<<<<<<< HEAD
- * This file is released under the GPLv2
- *
- * See Documentation/driver-model/ for more information.
-=======
  * See Documentation/driver-api/driver-model/ for more information.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _PLATFORM_DEVICE_H_
 #define _PLATFORM_DEVICE_H_
 
 #include <linux/device.h>
-<<<<<<< HEAD
-#include <linux/mod_devicetable.h>
-
-struct mfd_cell;
-
-struct platform_device {
-	const char	* name;
-	int		id;
-	struct device	dev;
-	u32		num_resources;
-	struct resource	* resource;
-
-	const struct platform_device_id	*id_entry;
-=======
 
 #define PLATFORM_DEVID_NONE	(-1)
 #define PLATFORM_DEVID_AUTO	(-2)
@@ -59,7 +36,6 @@ struct platform_device {
 	 * frees it.  Use driver_set_override() to set or clear it.
 	 */
 	const char *driver_override;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* MFD cell pointer */
 	struct mfd_cell *mfd_cell;
@@ -70,10 +46,7 @@ struct platform_device {
 
 #define platform_get_device_id(pdev)	((pdev)->id_entry)
 
-<<<<<<< HEAD
-=======
 #define dev_is_platform(dev) ((dev)->bus == &platform_bus_type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define to_platform_device(x) container_of((x), struct platform_device, dev)
 
 extern int platform_device_register(struct platform_device *);
@@ -82,13 +55,6 @@ extern void platform_device_unregister(struct platform_device *);
 extern struct bus_type platform_bus_type;
 extern struct device platform_bus;
 
-<<<<<<< HEAD
-extern void arch_setup_pdev_archdata(struct platform_device *);
-extern struct resource *platform_get_resource(struct platform_device *, unsigned int, unsigned int);
-extern int platform_get_irq(struct platform_device *, unsigned int);
-extern struct resource *platform_get_resource_byname(struct platform_device *, unsigned int, const char *);
-extern int platform_get_irq_byname(struct platform_device *, const char *);
-=======
 extern struct resource *platform_get_resource(struct platform_device *,
 					      unsigned int, unsigned int);
 extern struct resource *platform_get_mem_or_io(struct platform_device *,
@@ -148,16 +114,12 @@ extern struct resource *platform_get_resource_byname(struct platform_device *,
 extern int platform_get_irq_byname(struct platform_device *, const char *);
 extern int platform_get_irq_byname_optional(struct platform_device *dev,
 					    const char *name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int platform_add_devices(struct platform_device **, int);
 
 struct platform_device_info {
 		struct device *parent;
-<<<<<<< HEAD
-=======
 		struct fwnode_handle *fwnode;
 		bool of_node_reused;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		const char *name;
 		int id;
@@ -168,11 +130,8 @@ struct platform_device_info {
 		const void *data;
 		size_t size_data;
 		u64 dma_mask;
-<<<<<<< HEAD
-=======
 
 		const struct property_entry *properties;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 extern struct platform_device *platform_device_register_full(
 		const struct platform_device_info *pdevinfo);
@@ -268,21 +227,14 @@ extern struct platform_device *platform_device_alloc(const char *name, int id);
 extern int platform_device_add_resources(struct platform_device *pdev,
 					 const struct resource *res,
 					 unsigned int num);
-<<<<<<< HEAD
-extern int platform_device_add_data(struct platform_device *pdev, const void *data, size_t size);
-=======
 extern int platform_device_add_data(struct platform_device *pdev,
 				    const void *data, size_t size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int platform_device_add(struct platform_device *pdev);
 extern void platform_device_del(struct platform_device *pdev);
 extern void platform_device_put(struct platform_device *pdev);
 
 struct platform_driver {
 	int (*probe)(struct platform_device *);
-<<<<<<< HEAD
-	int (*remove)(struct platform_device *);
-=======
 
 	/*
 	 * Traditionally the remove callback returned an int which however is
@@ -295,17 +247,11 @@ struct platform_driver {
 	int (*remove)(struct platform_device *);
 	void (*remove_new)(struct platform_device *);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*shutdown)(struct platform_device *);
 	int (*suspend)(struct platform_device *, pm_message_t state);
 	int (*resume)(struct platform_device *);
 	struct device_driver driver;
 	const struct platform_device_id *id_table;
-<<<<<<< HEAD
-};
-
-extern int platform_driver_register(struct platform_driver *);
-=======
 	bool prevent_deferred_probe;
 	/*
 	 * For most device drivers, no need to care about this flag as long as
@@ -327,33 +273,23 @@ extern int platform_driver_register(struct platform_driver *);
 	__platform_driver_register(drv, THIS_MODULE)
 extern int __platform_driver_register(struct platform_driver *,
 					struct module *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void platform_driver_unregister(struct platform_driver *);
 
 /* non-hotpluggable platform devices may use this so that probe() and
  * its support may live in __init sections, conserving runtime memory.
  */
-<<<<<<< HEAD
-extern int platform_driver_probe(struct platform_driver *driver,
-		int (*probe)(struct platform_device *));
-=======
 #define platform_driver_probe(drv, probe) \
 	__platform_driver_probe(drv, probe, THIS_MODULE)
 extern int __platform_driver_probe(struct platform_driver *driver,
 		int (*probe)(struct platform_device *), struct module *module);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void *platform_get_drvdata(const struct platform_device *pdev)
 {
 	return dev_get_drvdata(&pdev->dev);
 }
 
-<<<<<<< HEAD
-static inline void platform_set_drvdata(struct platform_device *pdev, void *data)
-=======
 static inline void platform_set_drvdata(struct platform_device *pdev,
 					void *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dev_set_drvdata(&pdev->dev, data);
 }
@@ -367,64 +303,6 @@ static inline void platform_set_drvdata(struct platform_device *pdev,
 	module_driver(__platform_driver, platform_driver_register, \
 			platform_driver_unregister)
 
-<<<<<<< HEAD
-extern struct platform_device *platform_create_bundle(struct platform_driver *driver,
-					int (*probe)(struct platform_device *),
-					struct resource *res, unsigned int n_res,
-					const void *data, size_t size);
-
-/* early platform driver interface */
-struct early_platform_driver {
-	const char *class_str;
-	struct platform_driver *pdrv;
-	struct list_head list;
-	int requested_id;
-	char *buffer;
-	int bufsize;
-};
-
-#define EARLY_PLATFORM_ID_UNSET -2
-#define EARLY_PLATFORM_ID_ERROR -3
-
-extern int early_platform_driver_register(struct early_platform_driver *epdrv,
-					  char *buf);
-extern void early_platform_add_devices(struct platform_device **devs, int num);
-
-static inline int is_early_platform_device(struct platform_device *pdev)
-{
-	return !pdev->dev.driver;
-}
-
-extern void early_platform_driver_register_all(char *class_str);
-extern int early_platform_driver_probe(char *class_str,
-				       int nr_probe, int user_only);
-extern void early_platform_cleanup(void);
-
-#define early_platform_init(class_string, platdrv)		\
-	early_platform_init_buffer(class_string, platdrv, NULL, 0)
-
-#ifndef MODULE
-#define early_platform_init_buffer(class_string, platdrv, buf, bufsiz)	\
-static __initdata struct early_platform_driver early_driver = {		\
-	.class_str = class_string,					\
-	.buffer = buf,							\
-	.bufsize = bufsiz,						\
-	.pdrv = platdrv,						\
-	.requested_id = EARLY_PLATFORM_ID_UNSET,			\
-};									\
-static int __init early_platform_driver_setup_func(char *buffer)	\
-{									\
-	return early_platform_driver_register(&early_driver, buffer);	\
-}									\
-early_param(class_string, early_platform_driver_setup_func)
-#else /* MODULE */
-#define early_platform_init_buffer(class_string, platdrv, buf, bufsiz)	\
-static inline char *early_platform_driver_setup_func(void)		\
-{									\
-	return bufsiz ? buf : NULL;					\
-}
-#endif /* MODULE */
-=======
 /* builtin_platform_driver() - Helper macro for builtin drivers that
  * don't do anything special in driver init.  This eliminates some
  * boilerplate.  Each driver may only use this macro once, and
@@ -480,7 +358,6 @@ void platform_unregister_drivers(struct platform_driver * const *drivers,
 
 #define platform_register_drivers(drivers, count) \
 	__platform_register_drivers(drivers, count, THIS_MODULE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SUSPEND
 extern int platform_pm_suspend(struct device *dev);
@@ -514,8 +391,6 @@ extern int platform_pm_restore(struct device *dev);
 #define USE_PLATFORM_PM_SLEEP_OPS
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_SUPERH
 /*
  * REVISIT: This stub is needed for all non-SuperH users of early platform
@@ -531,5 +406,4 @@ static inline int is_sh_early_platform_device(struct platform_device *pdev)
 /* For now only SuperH uses it */
 void early_platform_cleanup(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _PLATFORM_DEVICE_H_ */

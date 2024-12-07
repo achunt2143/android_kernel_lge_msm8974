@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * acl.c
  *
  * Copyright (C) 2004, 2008 Oracle.  All rights reserved.
@@ -13,18 +7,6 @@
  * CREDITS:
  * Lots of code in this file is copy from linux/fs/ext3/acl.c.
  * Copyright (C) 2001-2003 Andreas Gruenbacher, <agruen@suse.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -59,13 +41,6 @@ static struct posix_acl *ocfs2_acl_from_xattr(const void *value, size_t size)
 		return ERR_PTR(-EINVAL);
 
 	count = size / sizeof(struct posix_acl_entry);
-<<<<<<< HEAD
-	if (count < 0)
-		return ERR_PTR(-EINVAL);
-	if (count == 0)
-		return NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acl = posix_acl_alloc(count, GFP_NOFS);
 	if (!acl)
@@ -76,9 +51,6 @@ static struct posix_acl *ocfs2_acl_from_xattr(const void *value, size_t size)
 
 		acl->a_entries[n].e_tag  = le16_to_cpu(entry->e_tag);
 		acl->a_entries[n].e_perm = le16_to_cpu(entry->e_perm);
-<<<<<<< HEAD
-		acl->a_entries[n].e_id   = le32_to_cpu(entry->e_id);
-=======
 		switch(acl->a_entries[n].e_tag) {
 		case ACL_USER:
 			acl->a_entries[n].e_uid =
@@ -93,7 +65,6 @@ static struct posix_acl *ocfs2_acl_from_xattr(const void *value, size_t size)
 		default:
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		value += sizeof(struct posix_acl_entry);
 
 	}
@@ -119,9 +90,6 @@ static void *ocfs2_acl_to_xattr(const struct posix_acl *acl, size_t *size)
 	for (n = 0; n < acl->a_count; n++, entry++) {
 		entry->e_tag  = cpu_to_le16(acl->a_entries[n].e_tag);
 		entry->e_perm = cpu_to_le16(acl->a_entries[n].e_perm);
-<<<<<<< HEAD
-		entry->e_id   = cpu_to_le32(acl->a_entries[n].e_id);
-=======
 		switch(acl->a_entries[n].e_tag) {
 		case ACL_USER:
 			entry->e_id = cpu_to_le32(
@@ -137,7 +105,6 @@ static void *ocfs2_acl_to_xattr(const struct posix_acl *acl, size_t *size)
 			entry->e_id = cpu_to_le32(ACL_UNDEFINED_ID);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ocfs2_acl;
 }
@@ -183,39 +150,6 @@ static struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode,
 	return acl;
 }
 
-<<<<<<< HEAD
-
-/*
- * Get posix acl.
- */
-static struct posix_acl *ocfs2_get_acl(struct inode *inode, int type)
-{
-	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
-	struct buffer_head *di_bh = NULL;
-	struct posix_acl *acl;
-	int ret;
-
-	if (!(osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL))
-		return NULL;
-
-	ret = ocfs2_inode_lock(inode, &di_bh, 0);
-	if (ret < 0) {
-		mlog_errno(ret);
-		acl = ERR_PTR(ret);
-		return acl;
-	}
-
-	acl = ocfs2_get_acl_nolock(inode, type, di_bh);
-
-	ocfs2_inode_unlock(inode, 0);
-
-	brelse(di_bh);
-
-	return acl;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Helper function to set i_mode in memory and disk. Some call paths
  * will not have di_bh or a journal handle to pass, in which case it
@@ -257,18 +191,11 @@ static int ocfs2_acl_set_mode(struct inode *inode, struct buffer_head *di_bh,
 	}
 
 	inode->i_mode = new_mode;
-<<<<<<< HEAD
-	inode->i_ctime = CURRENT_TIME;
-	di->i_mode = cpu_to_le16(inode->i_mode);
-	di->i_ctime = cpu_to_le64(inode->i_ctime.tv_sec);
-	di->i_ctime_nsec = cpu_to_le32(inode->i_ctime.tv_nsec);
-=======
 	inode_set_ctime_current(inode);
 	di->i_mode = cpu_to_le16(inode->i_mode);
 	di->i_ctime = cpu_to_le64(inode_get_ctime_sec(inode));
 	di->i_ctime_nsec = cpu_to_le32(inode_get_ctime_nsec(inode));
 	ocfs2_update_inode_fsync_trans(handle, inode, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_journal_dirty(handle, di_bh);
 
@@ -303,19 +230,6 @@ static int ocfs2_set_acl(handle_t *handle,
 	switch (type) {
 	case ACL_TYPE_ACCESS:
 		name_index = OCFS2_XATTR_INDEX_POSIX_ACL_ACCESS;
-<<<<<<< HEAD
-		if (acl) {
-			umode_t mode = inode->i_mode;
-			ret = posix_acl_update_mode(inode, &mode, &acl);
-			if (ret)
-				return ret;
-			ret = ocfs2_acl_set_mode(inode, di_bh,
-						 handle, mode);
-			if (ret)
-				return ret;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ACL_TYPE_DEFAULT:
 		name_index = OCFS2_XATTR_INDEX_POSIX_ACL_DEFAULT;
@@ -340,18 +254,12 @@ static int ocfs2_set_acl(handle_t *handle,
 		ret = ocfs2_xattr_set(inode, name_index, "", value, size, 0);
 
 	kfree(value);
-<<<<<<< HEAD
-=======
 	if (!ret)
 		set_cached_acl(inode, type, acl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-struct posix_acl *ocfs2_iop_get_acl(struct inode *inode, int type)
-=======
 int ocfs2_iop_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
 		      struct posix_acl *acl, int type)
 {
@@ -383,39 +291,20 @@ unlock:
 }
 
 struct posix_acl *ocfs2_iop_get_acl(struct inode *inode, int type, bool rcu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ocfs2_super *osb;
 	struct buffer_head *di_bh = NULL;
 	struct posix_acl *acl;
-<<<<<<< HEAD
-	int ret = -EAGAIN;
-=======
 	int had_lock;
 	struct ocfs2_lock_holder oh;
 
 	if (rcu)
 		return ERR_PTR(-ECHILD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	osb = OCFS2_SB(inode->i_sb);
 	if (!(osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL))
 		return NULL;
 
-<<<<<<< HEAD
-	ret = ocfs2_read_inode_block(inode, &di_bh);
-	if (ret < 0)
-		return ERR_PTR(ret);
-
-	acl = ocfs2_get_acl_nolock(inode, type, di_bh);
-
-	brelse(di_bh);
-
-	return acl;
-}
-
-int ocfs2_acl_chmod(struct inode *inode)
-=======
 	had_lock = ocfs2_inode_lock_tracker(inode, &di_bh, 0, &oh);
 	if (had_lock < 0)
 		return ERR_PTR(had_lock);
@@ -430,7 +319,6 @@ int ocfs2_acl_chmod(struct inode *inode)
 }
 
 int ocfs2_acl_chmod(struct inode *inode, struct buffer_head *bh)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	struct posix_acl *acl;
@@ -442,19 +330,12 @@ int ocfs2_acl_chmod(struct inode *inode, struct buffer_head *bh)
 	if (!(osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL))
 		return 0;
 
-<<<<<<< HEAD
-	acl = ocfs2_get_acl(inode, ACL_TYPE_ACCESS);
-	if (IS_ERR(acl) || !acl)
-		return PTR_ERR(acl);
-	ret = posix_acl_chmod(&acl, GFP_KERNEL, inode->i_mode);
-=======
 	down_read(&OCFS2_I(inode)->ip_xattr_sem);
 	acl = ocfs2_get_acl_nolock(inode, ACL_TYPE_ACCESS, bh);
 	up_read(&OCFS2_I(inode)->ip_xattr_sem);
 	if (IS_ERR_OR_NULL(acl))
 		return PTR_ERR_OR_ZERO(acl);
 	ret = __posix_acl_chmod(&acl, GFP_KERNEL, inode->i_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 	ret = ocfs2_set_acl(NULL, inode, NULL, ACL_TYPE_ACCESS,
@@ -482,15 +363,10 @@ int ocfs2_init_acl(handle_t *handle,
 
 	if (!S_ISLNK(inode->i_mode)) {
 		if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-<<<<<<< HEAD
-			acl = ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT,
-						   dir_bh);
-=======
 			down_read(&OCFS2_I(dir)->ip_xattr_sem);
 			acl = ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT,
 						   dir_bh);
 			up_read(&OCFS2_I(dir)->ip_xattr_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (IS_ERR(acl))
 				return PTR_ERR(acl);
 		}
@@ -512,11 +388,7 @@ int ocfs2_init_acl(handle_t *handle,
 				goto cleanup;
 		}
 		mode = inode->i_mode;
-<<<<<<< HEAD
-		ret = posix_acl_create(&acl, GFP_NOFS, &mode);
-=======
 		ret = __posix_acl_create(&acl, GFP_NOFS, &mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return ret;
 
@@ -536,116 +408,3 @@ cleanup:
 	posix_acl_release(acl);
 	return ret;
 }
-<<<<<<< HEAD
-
-static size_t ocfs2_xattr_list_acl_access(struct dentry *dentry,
-					  char *list,
-					  size_t list_len,
-					  const char *name,
-					  size_t name_len,
-					  int type)
-{
-	struct ocfs2_super *osb = OCFS2_SB(dentry->d_sb);
-	const size_t size = sizeof(POSIX_ACL_XATTR_ACCESS);
-
-	if (!(osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL))
-		return 0;
-
-	if (list && size <= list_len)
-		memcpy(list, POSIX_ACL_XATTR_ACCESS, size);
-	return size;
-}
-
-static size_t ocfs2_xattr_list_acl_default(struct dentry *dentry,
-					   char *list,
-					   size_t list_len,
-					   const char *name,
-					   size_t name_len,
-					   int type)
-{
-	struct ocfs2_super *osb = OCFS2_SB(dentry->d_sb);
-	const size_t size = sizeof(POSIX_ACL_XATTR_DEFAULT);
-
-	if (!(osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL))
-		return 0;
-
-	if (list && size <= list_len)
-		memcpy(list, POSIX_ACL_XATTR_DEFAULT, size);
-	return size;
-}
-
-static int ocfs2_xattr_get_acl(struct dentry *dentry, const char *name,
-		void *buffer, size_t size, int type)
-{
-	struct ocfs2_super *osb = OCFS2_SB(dentry->d_sb);
-	struct posix_acl *acl;
-	int ret;
-
-	if (strcmp(name, "") != 0)
-		return -EINVAL;
-	if (!(osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL))
-		return -EOPNOTSUPP;
-
-	acl = ocfs2_get_acl(dentry->d_inode, type);
-	if (IS_ERR(acl))
-		return PTR_ERR(acl);
-	if (acl == NULL)
-		return -ENODATA;
-	ret = posix_acl_to_xattr(acl, buffer, size);
-	posix_acl_release(acl);
-
-	return ret;
-}
-
-static int ocfs2_xattr_set_acl(struct dentry *dentry, const char *name,
-		const void *value, size_t size, int flags, int type)
-{
-	struct inode *inode = dentry->d_inode;
-	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
-	struct posix_acl *acl;
-	int ret = 0;
-
-	if (strcmp(name, "") != 0)
-		return -EINVAL;
-	if (!(osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL))
-		return -EOPNOTSUPP;
-
-	if (!inode_owner_or_capable(inode))
-		return -EPERM;
-
-	if (value) {
-		acl = posix_acl_from_xattr(value, size);
-		if (IS_ERR(acl))
-			return PTR_ERR(acl);
-		else if (acl) {
-			ret = posix_acl_valid(acl);
-			if (ret)
-				goto cleanup;
-		}
-	} else
-		acl = NULL;
-
-	ret = ocfs2_set_acl(NULL, inode, NULL, type, acl, NULL, NULL);
-
-cleanup:
-	posix_acl_release(acl);
-	return ret;
-}
-
-const struct xattr_handler ocfs2_xattr_acl_access_handler = {
-	.prefix	= POSIX_ACL_XATTR_ACCESS,
-	.flags	= ACL_TYPE_ACCESS,
-	.list	= ocfs2_xattr_list_acl_access,
-	.get	= ocfs2_xattr_get_acl,
-	.set	= ocfs2_xattr_set_acl,
-};
-
-const struct xattr_handler ocfs2_xattr_acl_default_handler = {
-	.prefix	= POSIX_ACL_XATTR_DEFAULT,
-	.flags	= ACL_TYPE_DEFAULT,
-	.list	= ocfs2_xattr_list_acl_default,
-	.get	= ocfs2_xattr_get_acl,
-	.set	= ocfs2_xattr_set_acl,
-};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/nfs/dir.c
  *
@@ -21,11 +18,8 @@
  *  6 Jun 1999	Cache readdir lookups in the page cache. -DaveM
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/compat.h>
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/time.h>
 #include <linux/errno.h>
 #include <linux/stat.h>
@@ -41,146 +35,37 @@
 #include <linux/pagevec.h>
 #include <linux/namei.h>
 #include <linux/mount.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-#include <linux/kmemleak.h>
-#include <linux/xattr.h>
-=======
 #include <linux/swap.h>
 #include <linux/sched.h>
 #include <linux/kmemleak.h>
 #include <linux/xattr.h>
 #include <linux/hash.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "delegation.h"
 #include "iostat.h"
 #include "internal.h"
 #include "fscache.h"
 
-<<<<<<< HEAD
-=======
 #include "nfstrace.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* #define NFS_DEBUG_VERBOSE 1 */
 
 static int nfs_opendir(struct inode *, struct file *);
 static int nfs_closedir(struct inode *, struct file *);
-<<<<<<< HEAD
-static int nfs_readdir(struct file *, void *, filldir_t);
-static struct dentry *nfs_lookup(struct inode *, struct dentry *, unsigned int);
-static int nfs_create(struct inode *, struct dentry *, umode_t, bool);
-static int nfs_mkdir(struct inode *, struct dentry *, umode_t);
-static int nfs_rmdir(struct inode *, struct dentry *);
-static int nfs_unlink(struct inode *, struct dentry *);
-static int nfs_symlink(struct inode *, struct dentry *, const char *);
-static int nfs_link(struct dentry *, struct inode *, struct dentry *);
-static int nfs_mknod(struct inode *, struct dentry *, umode_t, dev_t);
-static int nfs_rename(struct inode *, struct dentry *,
-		      struct inode *, struct dentry *);
-static int nfs_fsync_dir(struct file *, loff_t, loff_t, int);
-static loff_t nfs_llseek_dir(struct file *, loff_t, int);
-static void nfs_readdir_clear_array(struct page*);
-=======
 static int nfs_readdir(struct file *, struct dir_context *);
 static int nfs_fsync_dir(struct file *, loff_t, loff_t, int);
 static loff_t nfs_llseek_dir(struct file *, loff_t, int);
 static void nfs_readdir_clear_array(struct folio *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const struct file_operations nfs_dir_operations = {
 	.llseek		= nfs_llseek_dir,
 	.read		= generic_read_dir,
-<<<<<<< HEAD
-	.readdir	= nfs_readdir,
-=======
 	.iterate_shared	= nfs_readdir,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= nfs_opendir,
 	.release	= nfs_closedir,
 	.fsync		= nfs_fsync_dir,
 };
 
-<<<<<<< HEAD
-const struct inode_operations nfs_dir_inode_operations = {
-	.create		= nfs_create,
-	.lookup		= nfs_lookup,
-	.link		= nfs_link,
-	.unlink		= nfs_unlink,
-	.symlink	= nfs_symlink,
-	.mkdir		= nfs_mkdir,
-	.rmdir		= nfs_rmdir,
-	.mknod		= nfs_mknod,
-	.rename		= nfs_rename,
-	.permission	= nfs_permission,
-	.getattr	= nfs_getattr,
-	.setattr	= nfs_setattr,
-};
-
-const struct address_space_operations nfs_dir_aops = {
-	.freepage = nfs_readdir_clear_array,
-};
-
-#ifdef CONFIG_NFS_V3
-const struct inode_operations nfs3_dir_inode_operations = {
-	.create		= nfs_create,
-	.lookup		= nfs_lookup,
-	.link		= nfs_link,
-	.unlink		= nfs_unlink,
-	.symlink	= nfs_symlink,
-	.mkdir		= nfs_mkdir,
-	.rmdir		= nfs_rmdir,
-	.mknod		= nfs_mknod,
-	.rename		= nfs_rename,
-	.permission	= nfs_permission,
-	.getattr	= nfs_getattr,
-	.setattr	= nfs_setattr,
-	.listxattr	= nfs3_listxattr,
-	.getxattr	= nfs3_getxattr,
-	.setxattr	= nfs3_setxattr,
-	.removexattr	= nfs3_removexattr,
-};
-#endif  /* CONFIG_NFS_V3 */
-
-#ifdef CONFIG_NFS_V4
-
-static int nfs_atomic_open(struct inode *, struct dentry *,
-			   struct file *, unsigned, umode_t,
-			   int *);
-const struct inode_operations nfs4_dir_inode_operations = {
-	.create		= nfs_create,
-	.lookup		= nfs_lookup,
-	.atomic_open	= nfs_atomic_open,
-	.link		= nfs_link,
-	.unlink		= nfs_unlink,
-	.symlink	= nfs_symlink,
-	.mkdir		= nfs_mkdir,
-	.rmdir		= nfs_rmdir,
-	.mknod		= nfs_mknod,
-	.rename		= nfs_rename,
-	.permission	= nfs_permission,
-	.getattr	= nfs_getattr,
-	.setattr	= nfs_setattr,
-	.getxattr	= generic_getxattr,
-	.setxattr	= generic_setxattr,
-	.listxattr	= generic_listxattr,
-	.removexattr	= generic_removexattr,
-};
-
-#endif /* CONFIG_NFS_V4 */
-
-static struct nfs_open_dir_context *alloc_nfs_open_dir_context(struct inode *dir, struct rpc_cred *cred)
-{
-	struct nfs_open_dir_context *ctx;
-	ctx = kmalloc(sizeof(*ctx), GFP_KERNEL);
-	if (ctx != NULL) {
-		ctx->duped = 0;
-		ctx->attr_gencount = NFS_I(dir)->attr_gencount;
-		ctx->dir_cookie = 0;
-		ctx->dup_cookie = 0;
-		ctx->cred = get_rpccred(cred);
-=======
 const struct address_space_operations nfs_dir_aops = {
 	.free_folio = nfs_readdir_clear_array,
 };
@@ -206,25 +91,17 @@ alloc_nfs_open_dir_context(struct inode *dir)
 		list_add_tail_rcu(&ctx->list, &nfsi->open_files);
 		memcpy(ctx->verf, nfsi->cookieverf, sizeof(ctx->verf));
 		spin_unlock(&dir->i_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ctx;
 	}
 	return  ERR_PTR(-ENOMEM);
 }
 
-<<<<<<< HEAD
-static void put_nfs_open_dir_context(struct nfs_open_dir_context *ctx)
-{
-	put_rpccred(ctx->cred);
-	kfree(ctx);
-=======
 static void put_nfs_open_dir_context(struct inode *dir, struct nfs_open_dir_context *ctx)
 {
 	spin_lock(&dir->i_lock);
 	list_del_rcu(&ctx->list);
 	spin_unlock(&dir->i_lock);
 	kfree_rcu(ctx, rcu_head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -235,116 +112,37 @@ nfs_opendir(struct inode *inode, struct file *filp)
 {
 	int res = 0;
 	struct nfs_open_dir_context *ctx;
-<<<<<<< HEAD
-	struct rpc_cred *cred;
-
-	dfprintk(FILE, "NFS: open dir(%s/%s)\n",
-			filp->f_path.dentry->d_parent->d_name.name,
-			filp->f_path.dentry->d_name.name);
-
-	nfs_inc_stats(inode, NFSIOS_VFSOPEN);
-
-	cred = rpc_lookup_cred();
-	if (IS_ERR(cred))
-		return PTR_ERR(cred);
-	ctx = alloc_nfs_open_dir_context(inode, cred);
-=======
 
 	dfprintk(FILE, "NFS: open dir(%pD2)\n", filp);
 
 	nfs_inc_stats(inode, NFSIOS_VFSOPEN);
 
 	ctx = alloc_nfs_open_dir_context(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(ctx)) {
 		res = PTR_ERR(ctx);
 		goto out;
 	}
 	filp->private_data = ctx;
-<<<<<<< HEAD
-	if (filp->f_path.dentry == filp->f_path.mnt->mnt_root) {
-		/* This is a mountpoint, so d_revalidate will never
-		 * have been called, so we need to refresh the
-		 * inode (for close-open consistency) ourselves.
-		 */
-		__nfs_revalidate_inode(NFS_SERVER(inode), inode);
-	}
 out:
-	put_rpccred(cred);
-=======
-out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
 static int
 nfs_closedir(struct inode *inode, struct file *filp)
 {
-<<<<<<< HEAD
-	put_nfs_open_dir_context(filp->private_data);
-=======
 	put_nfs_open_dir_context(file_inode(filp), filp->private_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 struct nfs_cache_array_entry {
 	u64 cookie;
 	u64 ino;
-<<<<<<< HEAD
-	struct qstr string;
-=======
 	const char *name;
 	unsigned int name_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char d_type;
 };
 
 struct nfs_cache_array {
-<<<<<<< HEAD
-	int size;
-	int eof_index;
-	u64 last_cookie;
-	struct nfs_cache_array_entry array[0];
-};
-
-typedef int (*decode_dirent_t)(struct xdr_stream *, struct nfs_entry *, int);
-typedef struct {
-	struct file	*file;
-	struct page	*page;
-	unsigned long	page_index;
-	u64		*dir_cookie;
-	u64		last_cookie;
-	loff_t		current_index;
-	decode_dirent_t	decode;
-
-	unsigned long	timestamp;
-	unsigned long	gencount;
-	unsigned int	cache_entry_index;
-	unsigned int	plus:1;
-	unsigned int	eof:1;
-} nfs_readdir_descriptor_t;
-
-/*
- * The caller is responsible for calling nfs_readdir_release_array(page)
- */
-static
-struct nfs_cache_array *nfs_readdir_get_array(struct page *page)
-{
-	void *ptr;
-	if (page == NULL)
-		return ERR_PTR(-EIO);
-	ptr = kmap(page);
-	if (ptr == NULL)
-		return ERR_PTR(-ENOMEM);
-	return ptr;
-}
-
-static
-void nfs_readdir_release_array(struct page *page)
-{
-	kunmap(page);
-=======
 	u64 change_attr;
 	u64 last_cookie;
 	unsigned int size;
@@ -413,24 +211,11 @@ static void nfs_readdir_folio_init_array(struct folio *folio, u64 last_cookie,
 	array->folio_is_eof = 0;
 	array->cookies_are_ordered = 1;
 	kunmap_local(array);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * we are freeing strings created by nfs_add_to_readdir_array()
  */
-<<<<<<< HEAD
-static
-void nfs_readdir_clear_array(struct page *page)
-{
-	struct nfs_cache_array *array;
-	int i;
-
-	array = kmap_atomic(page);
-	for (i = 0; i < array->size; i++)
-		kfree(array->array[i].string.name);
-	kunmap_atomic(array);
-=======
 static void nfs_readdir_clear_array(struct folio *folio)
 {
 	struct nfs_cache_array *array;
@@ -481,7 +266,6 @@ static void nfs_readdir_array_set_eof(struct nfs_cache_array *array)
 static bool nfs_readdir_array_is_full(struct nfs_cache_array *array)
 {
 	return array->folio_full;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -489,67 +273,14 @@ static bool nfs_readdir_array_is_full(struct nfs_cache_array *array)
  * when called by nfs_readdir_add_to_array, the strings will be freed in
  * nfs_clear_readdir_array()
  */
-<<<<<<< HEAD
-static
-int nfs_readdir_make_qstr(struct qstr *string, const char *name, unsigned int len)
-{
-	string->len = len;
-	string->name = kmemdup(name, len, GFP_KERNEL);
-	if (string->name == NULL)
-		return -ENOMEM;
-=======
 static const char *nfs_readdir_copy_name(const char *name, unsigned int len)
 {
 	const char *ret = kmemdup_nul(name, len, GFP_KERNEL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Avoid a kmemleak false positive. The pointer to the name is stored
 	 * in a page cache page which kmemleak does not scan.
 	 */
-<<<<<<< HEAD
-	kmemleak_not_leak(string->name);
-	string->hash = full_name_hash(name, len);
-	return 0;
-}
-
-static
-int nfs_readdir_add_to_array(struct nfs_entry *entry, struct page *page)
-{
-	struct nfs_cache_array *array = nfs_readdir_get_array(page);
-	struct nfs_cache_array_entry *cache_entry;
-	int ret;
-
-	if (IS_ERR(array))
-		return PTR_ERR(array);
-
-	cache_entry = &array->array[array->size];
-
-	/* Check that this entry lies within the page bounds */
-	ret = -ENOSPC;
-	if ((char *)&cache_entry[1] - (char *)page_address(page) > PAGE_SIZE)
-		goto out;
-
-	cache_entry->cookie = entry->prev_cookie;
-	cache_entry->ino = entry->ino;
-	cache_entry->d_type = entry->d_type;
-	ret = nfs_readdir_make_qstr(&cache_entry->string, entry->name, entry->len);
-	if (ret)
-		goto out;
-	array->last_cookie = entry->cookie;
-	array->size++;
-	if (entry->eof != 0)
-		array->eof_index = array->size;
-out:
-	nfs_readdir_release_array(page);
-	return ret;
-}
-
-static
-int nfs_readdir_search_for_pos(struct nfs_cache_array *array, nfs_readdir_descriptor_t *desc)
-{
-	loff_t diff = desc->file->f_pos - desc->current_index;
-=======
 	if (ret != NULL)
 		kmemleak_not_leak(ret);
 	return ret;
@@ -767,70 +498,18 @@ static int nfs_readdir_search_for_pos(struct nfs_cache_array *array,
 				      struct nfs_readdir_descriptor *desc)
 {
 	loff_t diff = desc->ctx->pos - desc->current_index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int index;
 
 	if (diff < 0)
 		goto out_eof;
 	if (diff >= array->size) {
-<<<<<<< HEAD
-		if (array->eof_index >= 0)
-			goto out_eof;
-=======
 		if (array->folio_is_eof)
 			goto out_eof;
 		nfs_readdir_seek_next_array(array, desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EAGAIN;
 	}
 
 	index = (unsigned int)diff;
-<<<<<<< HEAD
-	*desc->dir_cookie = array->array[index].cookie;
-	desc->cache_entry_index = index;
-	return 0;
-out_eof:
-	desc->eof = 1;
-	return -EBADCOOKIE;
-}
-
-static
-int nfs_readdir_search_for_cookie(struct nfs_cache_array *array, nfs_readdir_descriptor_t *desc)
-{
-	int i;
-	loff_t new_pos;
-	int status = -EAGAIN;
-
-	for (i = 0; i < array->size; i++) {
-		if (array->array[i].cookie == *desc->dir_cookie) {
-			struct nfs_inode *nfsi = NFS_I(desc->file->f_path.dentry->d_inode);
-			struct nfs_open_dir_context *ctx = desc->file->private_data;
-
-			new_pos = desc->current_index + i;
-			if (ctx->attr_gencount != nfsi->attr_gencount
-			    || (nfsi->cache_validity & (NFS_INO_INVALID_ATTR|NFS_INO_INVALID_DATA))) {
-				ctx->duped = 0;
-				ctx->attr_gencount = nfsi->attr_gencount;
-			} else if (new_pos < desc->file->f_pos) {
-				if (ctx->duped > 0
-				    && ctx->dup_cookie == *desc->dir_cookie) {
-					if (printk_ratelimit()) {
-						pr_notice("NFS: directory %s/%s contains a readdir loop."
-								"Please contact your server vendor.  "
-								"The file: %s has duplicate cookie %llu\n",
-								desc->file->f_dentry->d_parent->d_name.name,
-								desc->file->f_dentry->d_name.name,
-								array->array[i].string.name,
-								*desc->dir_cookie);
-					}
-					status = -ELOOP;
-					goto out;
-				}
-				ctx->dup_cookie = *desc->dir_cookie;
-				ctx->duped = -1;
-			}
-			desc->file->f_pos = new_pos;
-=======
 	desc->dir_cookie = array->array[index].cookie;
 	desc->cache_entry_index = index;
 	return 0;
@@ -867,24 +546,10 @@ static int nfs_readdir_search_for_cookie(struct nfs_cache_array *array,
 				desc->ctx->pos = desc->dir_cookie;
 			else
 				desc->ctx->pos = desc->current_index + i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			desc->cache_entry_index = i;
 			return 0;
 		}
 	}
-<<<<<<< HEAD
-	if (array->eof_index >= 0) {
-		status = -EBADCOOKIE;
-		if (*desc->dir_cookie == array->last_cookie)
-			desc->eof = 1;
-	}
-out:
-	return status;
-}
-
-static
-int nfs_readdir_search_array(nfs_readdir_descriptor_t *desc)
-=======
 check_eof:
 	if (array->folio_is_eof) {
 		status = -EBADCOOKIE;
@@ -896,51 +561,22 @@ check_eof:
 }
 
 static int nfs_readdir_search_array(struct nfs_readdir_descriptor *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nfs_cache_array *array;
 	int status;
 
-<<<<<<< HEAD
-	array = nfs_readdir_get_array(desc->page);
-	if (IS_ERR(array)) {
-		status = PTR_ERR(array);
-		goto out;
-	}
-
-	if (*desc->dir_cookie == 0)
-=======
 	array = kmap_local_folio(desc->folio, 0);
 
 	if (desc->dir_cookie == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = nfs_readdir_search_for_pos(array, desc);
 	else
 		status = nfs_readdir_search_for_cookie(array, desc);
 
-<<<<<<< HEAD
-	if (status == -EAGAIN) {
-		desc->last_cookie = array->last_cookie;
-		desc->current_index += array->size;
-		desc->page_index++;
-	}
-	nfs_readdir_release_array(desc->page);
-out:
-=======
 	kunmap_local(array);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /* Fill a page with xdr information before transferring to the cache page */
-<<<<<<< HEAD
-static
-int nfs_readdir_xdr_filler(struct page **pages, nfs_readdir_descriptor_t *desc,
-			struct nfs_entry *entry, struct file *file, struct inode *inode)
-{
-	struct nfs_open_dir_context *ctx = file->private_data;
-	struct rpc_cred	*cred = ctx->cred;
-=======
 static int nfs_readdir_xdr_filler(struct nfs_readdir_descriptor *desc,
 				  __be32 *verf, u64 cookie,
 				  struct page **pages, size_t bufsize,
@@ -959,30 +595,19 @@ static int nfs_readdir_xdr_filler(struct nfs_readdir_descriptor *desc,
 	struct nfs_readdir_res res = {
 		.verf = verf_res,
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long	timestamp, gencount;
 	int		error;
 
  again:
 	timestamp = jiffies;
 	gencount = nfs_inc_attr_generation_counter();
-<<<<<<< HEAD
-	error = NFS_PROTO(inode)->readdir(file->f_path.dentry, cred, entry->cookie, pages,
-					  NFS_SERVER(inode)->dtsize, desc->plus);
-=======
 	desc->dir_verifier = nfs_save_change_attribute(inode);
 	error = NFS_PROTO(inode)->readdir(&arg, &res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0) {
 		/* We requested READDIRPLUS, but the server doesn't grok it */
 		if (error == -ENOTSUPP && desc->plus) {
 			NFS_SERVER(inode)->caps &= ~NFS_CAP_READDIRPLUS;
-<<<<<<< HEAD
-			clear_bit(NFS_INO_ADVISE_RDPLUS, &NFS_I(inode)->flags);
-			desc->plus = 0;
-=======
 			desc->plus = arg.plus = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto again;
 		}
 		goto error;
@@ -993,14 +618,6 @@ error:
 	return error;
 }
 
-<<<<<<< HEAD
-static int xdr_decode(nfs_readdir_descriptor_t *desc,
-		      struct nfs_entry *entry, struct xdr_stream *xdr)
-{
-	int error;
-
-	error = desc->decode(xdr, entry, desc->plus);
-=======
 static int xdr_decode(struct nfs_readdir_descriptor *desc,
 		      struct nfs_entry *entry, struct xdr_stream *xdr)
 {
@@ -1008,7 +625,6 @@ static int xdr_decode(struct nfs_readdir_descriptor *desc,
 	int error;
 
 	error = NFS_PROTO(inode)->decode_dirent(xdr, entry, desc->plus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 	entry->fattr->time_start = desc->timestamp;
@@ -1016,29 +632,6 @@ static int xdr_decode(struct nfs_readdir_descriptor *desc,
 	return 0;
 }
 
-<<<<<<< HEAD
-static
-int nfs_same_file(struct dentry *dentry, struct nfs_entry *entry)
-{
-	if (dentry->d_inode == NULL)
-		goto different;
-	if (nfs_compare_fh(entry->fh, NFS_FH(dentry->d_inode)) != 0)
-		goto different;
-	return 1;
-different:
-	return 0;
-}
-
-static
-void nfs_prime_dcache(struct dentry *parent, struct nfs_entry *entry)
-{
-	struct qstr filename = QSTR_INIT(entry->name, entry->len);
-	struct dentry *dentry;
-	struct dentry *alias;
-	struct inode *dir = parent->d_inode;
-	struct inode *inode;
-
-=======
 /* Match file and dirent using either filehandle or fileid
  * Note: caller is responsible for checking the fsid
  */
@@ -1148,45 +741,12 @@ void nfs_prime_dcache(struct dentry *parent, struct nfs_entry *entry,
 	/* ...or '/' */
 	if (strnchr(filename.name, filename.len, '/'))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (filename.name[0] == '.') {
 		if (filename.len == 1)
 			return;
 		if (filename.len == 2 && filename.name[1] == '.')
 			return;
 	}
-<<<<<<< HEAD
-	filename.hash = full_name_hash(filename.name, filename.len);
-
-	dentry = d_lookup(parent, &filename);
-	if (dentry != NULL) {
-		if (nfs_same_file(dentry, entry)) {
-			nfs_refresh_inode(dentry->d_inode, entry->fattr);
-			goto out;
-		} else {
-			d_drop(dentry);
-			dput(dentry);
-		}
-	}
-
-	dentry = d_alloc(parent, &filename);
-	if (dentry == NULL)
-		return;
-
-	inode = nfs_fhget(dentry->d_sb, entry->fh, entry->fattr);
-	if (IS_ERR(inode))
-		goto out;
-
-	alias = d_materialise_unique(dentry, inode);
-	if (IS_ERR(alias))
-		goto out;
-	else if (alias) {
-		nfs_set_verifier(alias, nfs_save_change_attribute(dir));
-		dput(alias);
-	} else
-		nfs_set_verifier(dentry, nfs_save_change_attribute(dir));
-
-=======
 	filename.hash = full_name_hash(parent, filename.name, filename.len);
 
 	dentry = d_lookup(parent, &filename);
@@ -1236,23 +796,10 @@ again:
 	}
 	nfs_set_verifier(dentry, dir_verifier);
 	trace_nfs_readdir_lookup(d_inode(parent), dentry, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	dput(dentry);
 }
 
-<<<<<<< HEAD
-/* Perform conversion from xdr to cache array */
-static
-int nfs_readdir_page_filler(nfs_readdir_descriptor_t *desc, struct nfs_entry *entry,
-				struct page **xdr_pages, struct page *page, unsigned int buflen)
-{
-	struct xdr_stream stream;
-	struct xdr_buf buf;
-	struct page *scratch;
-	struct nfs_cache_array *array;
-	unsigned int count = 0;
-=======
 static int nfs_readdir_entry_decode(struct nfs_readdir_descriptor *desc,
 				    struct nfs_entry *entry,
 				    struct xdr_stream *stream)
@@ -1281,7 +828,6 @@ static int nfs_readdir_folio_filler(struct nfs_readdir_descriptor *desc,
 	struct page *scratch;
 	struct xdr_buf buf;
 	u64 cookie;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 
 	scratch = alloc_page(GFP_KERNEL);
@@ -1289,38 +835,6 @@ static int nfs_readdir_folio_filler(struct nfs_readdir_descriptor *desc,
 		return -ENOMEM;
 
 	xdr_init_decode_pages(&stream, &buf, xdr_pages, buflen);
-<<<<<<< HEAD
-	xdr_set_scratch_buffer(&stream, page_address(scratch), PAGE_SIZE);
-
-	do {
-		status = xdr_decode(desc, entry, &stream);
-		if (status != 0) {
-			if (status == -EAGAIN)
-				status = 0;
-			break;
-		}
-
-		count++;
-
-		if (desc->plus != 0)
-			nfs_prime_dcache(desc->file->f_path.dentry, entry);
-
-		status = nfs_readdir_add_to_array(entry, page);
-		if (status != 0)
-			break;
-	} while (!entry->eof);
-
-	if (count == 0 || (status == -EBADCOOKIE && entry->eof != 0)) {
-		array = nfs_readdir_get_array(page);
-		if (!IS_ERR(array)) {
-			array->eof_index = array->size;
-			status = 0;
-			nfs_readdir_release_array(page);
-		} else
-			status = PTR_ERR(array);
-	}
-
-=======
 	xdr_set_scratch_page(&stream, scratch);
 
 	do {
@@ -1373,37 +887,10 @@ static int nfs_readdir_folio_filler(struct nfs_readdir_descriptor *desc,
 	if (folio != *arrays)
 		nfs_readdir_folio_unlock_and_put(folio);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_page(scratch);
 	return status;
 }
 
-<<<<<<< HEAD
-static
-void nfs_readdir_free_pagearray(struct page **pages, unsigned int npages)
-{
-	unsigned int i;
-	for (i = 0; i < npages; i++)
-		put_page(pages[i]);
-}
-
-static
-void nfs_readdir_free_large_page(void *ptr, struct page **pages,
-		unsigned int npages)
-{
-	nfs_readdir_free_pagearray(pages, npages);
-}
-
-/*
- * nfs_readdir_large_page will allocate pages that must be freed with a call
- * to nfs_readdir_free_large_page
- */
-static
-int nfs_readdir_large_page(struct page **pages, unsigned int npages)
-{
-	unsigned int i;
-
-=======
 static void nfs_readdir_free_pages(struct page **pages, size_t npages)
 {
 	while (npages--)
@@ -1423,119 +910,12 @@ static struct page **nfs_readdir_alloc_pages(size_t npages)
 	pages = kmalloc_array(npages, sizeof(*pages), GFP_KERNEL);
 	if (!pages)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < npages; i++) {
 		struct page *page = alloc_page(GFP_KERNEL);
 		if (page == NULL)
 			goto out_freepages;
 		pages[i] = page;
 	}
-<<<<<<< HEAD
-	return 0;
-
-out_freepages:
-	nfs_readdir_free_pagearray(pages, i);
-	return -ENOMEM;
-}
-
-static
-int nfs_readdir_xdr_to_array(nfs_readdir_descriptor_t *desc, struct page *page, struct inode *inode)
-{
-	struct page *pages[NFS_MAX_READDIR_PAGES];
-	void *pages_ptr = NULL;
-	struct nfs_entry entry;
-	struct file	*file = desc->file;
-	struct nfs_cache_array *array;
-	int status = -ENOMEM;
-	unsigned int array_size = ARRAY_SIZE(pages);
-
-	entry.prev_cookie = 0;
-	entry.cookie = desc->last_cookie;
-	entry.eof = 0;
-	entry.fh = nfs_alloc_fhandle();
-	entry.fattr = nfs_alloc_fattr();
-	entry.server = NFS_SERVER(inode);
-	if (entry.fh == NULL || entry.fattr == NULL)
-		goto out;
-
-	array = nfs_readdir_get_array(page);
-	if (IS_ERR(array)) {
-		status = PTR_ERR(array);
-		goto out;
-	}
-	memset(array, 0, sizeof(struct nfs_cache_array));
-	array->eof_index = -1;
-
-	status = nfs_readdir_large_page(pages, array_size);
-	if (status < 0)
-		goto out_release_array;
-	do {
-		unsigned int pglen;
-		status = nfs_readdir_xdr_filler(pages, desc, &entry, file, inode);
-
-		if (status < 0)
-			break;
-		pglen = status;
-		status = nfs_readdir_page_filler(desc, &entry, pages, page, pglen);
-		if (status < 0) {
-			if (status == -ENOSPC)
-				status = 0;
-			break;
-		}
-	} while (array->eof_index < 0);
-
-	nfs_readdir_free_large_page(pages_ptr, pages, array_size);
-out_release_array:
-	nfs_readdir_release_array(page);
-out:
-	nfs_free_fattr(entry.fattr);
-	nfs_free_fhandle(entry.fh);
-	return status;
-}
-
-/*
- * Now we cache directories properly, by converting xdr information
- * to an array that can be used for lookups later.  This results in
- * fewer cache pages, since we can store more information on each page.
- * We only need to convert from xdr once so future lookups are much simpler
- */
-static
-int nfs_readdir_filler(nfs_readdir_descriptor_t *desc, struct page* page)
-{
-	struct inode	*inode = desc->file->f_path.dentry->d_inode;
-	int ret;
-
-	ret = nfs_readdir_xdr_to_array(desc, page, inode);
-	if (ret < 0)
-		goto error;
-	SetPageUptodate(page);
-
-	if (invalidate_inode_pages2_range(inode->i_mapping, page->index + 1, -1) < 0) {
-		/* Should never happen */
-		nfs_zap_mapping(inode, inode->i_mapping);
-	}
-	unlock_page(page);
-	return 0;
- error:
-	unlock_page(page);
-	return ret;
-}
-
-static
-void cache_page_release(nfs_readdir_descriptor_t *desc)
-{
-	if (!desc->page->mapping)
-		nfs_readdir_clear_array(desc->page);
-	page_cache_release(desc->page);
-	desc->page = NULL;
-}
-
-static
-struct page *get_cache_page(nfs_readdir_descriptor_t *desc)
-{
-	return read_cache_page(desc->file->f_path.dentry->d_inode->i_mapping,
-			desc->page_index, (filler_t *)nfs_readdir_filler, desc);
-=======
 	return pages;
 
 out_freepages:
@@ -1622,26 +1002,10 @@ nfs_readdir_folio_get_cached(struct nfs_readdir_descriptor *desc)
 	if (desc->clear_cache && !nfs_readdir_folio_needs_filling(folio))
 		nfs_readdir_folio_reinit_array(folio, cookie, change_attr);
 	return folio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Returns 0 if desc->dir_cookie was found on page desc->page_index
-<<<<<<< HEAD
- */
-static
-int find_cache_page(nfs_readdir_descriptor_t *desc)
-{
-	int res;
-
-	desc->page = get_cache_page(desc);
-	if (IS_ERR(desc->page))
-		return PTR_ERR(desc->page);
-
-	res = nfs_readdir_search_array(desc);
-	if (res != 0)
-		cache_page_release(desc);
-=======
  * and locks the page to prevent removal from the page cache.
  */
 static int find_and_lock_cache_page(struct nfs_readdir_descriptor *desc)
@@ -1694,83 +1058,20 @@ static int find_and_lock_cache_page(struct nfs_readdir_descriptor *desc)
 	if (res == 0)
 		return 0;
 	nfs_readdir_folio_unlock_and_put_cached(desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
 /* Search for desc->dir_cookie from the beginning of the page cache */
-<<<<<<< HEAD
-static inline
-int readdir_search_pagecache(nfs_readdir_descriptor_t *desc)
-{
-	int res;
-
-	if (desc->page_index == 0) {
-		desc->current_index = 0;
-		desc->last_cookie = 0;
-	}
-	do {
-		res = find_cache_page(desc);
-=======
 static int readdir_search_pagecache(struct nfs_readdir_descriptor *desc)
 {
 	int res;
 
 	do {
 		res = find_and_lock_cache_page(desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (res == -EAGAIN);
 	return res;
 }
 
-<<<<<<< HEAD
-/*
- * Once we've found the start of the dirent within a page: fill 'er up...
- */
-static 
-int nfs_do_filldir(nfs_readdir_descriptor_t *desc, void *dirent,
-		   filldir_t filldir)
-{
-	struct file	*file = desc->file;
-	int i = 0;
-	int res = 0;
-	struct nfs_cache_array *array = NULL;
-	struct nfs_open_dir_context *ctx = file->private_data;
-
-	array = nfs_readdir_get_array(desc->page);
-	if (IS_ERR(array)) {
-		res = PTR_ERR(array);
-		goto out;
-	}
-
-	for (i = desc->cache_entry_index; i < array->size; i++) {
-		struct nfs_cache_array_entry *ent;
-
-		ent = &array->array[i];
-		if (filldir(dirent, ent->string.name, ent->string.len,
-		    file->f_pos, nfs_compat_user_ino64(ent->ino),
-		    ent->d_type) < 0) {
-			desc->eof = 1;
-			break;
-		}
-		file->f_pos++;
-		if (i < (array->size-1))
-			*desc->dir_cookie = array->array[i+1].cookie;
-		else
-			*desc->dir_cookie = array->last_cookie;
-		if (ctx->duped != 0)
-			ctx->duped = 1;
-	}
-	if (array->eof_index >= 0)
-		desc->eof = 1;
-
-	nfs_readdir_release_array(desc->page);
-out:
-	cache_page_release(desc);
-	dfprintk(DIRCACHE, "NFS: nfs_do_filldir() filling ended @ cookie %Lu; returning = %d\n",
-			(unsigned long long)*desc->dir_cookie, res);
-	return res;
-=======
 #define NFS_READDIR_CACHE_MISS_THRESHOLD (16UL)
 
 /*
@@ -1824,7 +1125,6 @@ static void nfs_do_filldir(struct nfs_readdir_descriptor *desc,
 	kunmap_local(array);
 	dfprintk(DIRCACHE, "NFS: nfs_do_filldir() filling ended @ cookie %llu\n",
 			(unsigned long long)desc->dir_cookie);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1839,44 +1139,6 @@ static void nfs_do_filldir(struct nfs_readdir_descriptor *desc,
  *	 we should already have a complete representation of the
  *	 directory in the page cache by the time we get here.
  */
-<<<<<<< HEAD
-static inline
-int uncached_readdir(nfs_readdir_descriptor_t *desc, void *dirent,
-		     filldir_t filldir)
-{
-	struct page	*page = NULL;
-	int		status;
-	struct inode *inode = desc->file->f_path.dentry->d_inode;
-	struct nfs_open_dir_context *ctx = desc->file->private_data;
-
-	dfprintk(DIRCACHE, "NFS: uncached_readdir() searching for cookie %Lu\n",
-			(unsigned long long)*desc->dir_cookie);
-
-	page = alloc_page(GFP_HIGHUSER);
-	if (!page) {
-		status = -ENOMEM;
-		goto out;
-	}
-
-	desc->page_index = 0;
-	desc->last_cookie = *desc->dir_cookie;
-	desc->page = page;
-	ctx->duped = 0;
-
-	status = nfs_readdir_xdr_to_array(desc, page, inode);
-	if (status < 0)
-		goto out_release;
-
-	status = nfs_do_filldir(desc, dirent, filldir);
-
- out:
-	dfprintk(DIRCACHE, "NFS: %s: returns %d\n",
-			__func__, status);
-	return status;
- out_release:
-	cache_page_release(desc);
-	goto out;
-=======
 static int uncached_readdir(struct nfs_readdir_descriptor *desc)
 {
 	struct folio	**arrays;
@@ -1948,31 +1210,12 @@ static bool nfs_readdir_handle_cache_misses(struct inode *inode,
 		return false;
 	trace_nfs_readdir_force_readdirplus(inode);
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* The file offset position represents the dirent entry number.  A
    last cookie cache takes care of the common case of reading the
    whole directory.
  */
-<<<<<<< HEAD
-static int nfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
-{
-	struct dentry	*dentry = filp->f_path.dentry;
-	struct inode	*inode = dentry->d_inode;
-	nfs_readdir_descriptor_t my_desc,
-			*desc = &my_desc;
-	struct nfs_open_dir_context *dir_ctx = filp->private_data;
-	int res;
-
-	dfprintk(FILE, "NFS: readdir(%s/%s) starting at cookie %llu\n",
-			dentry->d_parent->d_name.name, dentry->d_name.name,
-			(long long)filp->f_pos);
-	nfs_inc_stats(inode, NFSIOS_VFSGETDENTS);
-
-	/*
-	 * filp->f_pos points to the dirent entry number.
-=======
 static int nfs_readdir(struct file *file, struct dir_context *ctx)
 {
 	struct dentry	*dentry = file_dentry(file);
@@ -1990,24 +1233,10 @@ static int nfs_readdir(struct file *file, struct dir_context *ctx)
 
 	/*
 	 * ctx->pos points to the dirent entry number.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * *desc->dir_cookie has the cookie for the next entry. We have
 	 * to either find the entry with the appropriate number or
 	 * revalidate the cookie.
 	 */
-<<<<<<< HEAD
-	memset(desc, 0, sizeof(*desc));
-
-	desc->file = filp;
-	desc->dir_cookie = &dir_ctx->dir_cookie;
-	desc->decode = NFS_PROTO(inode)->decode_dirent;
-	desc->plus = NFS_USE_READDIRPLUS(inode);
-
-	nfs_block_sillyrename(dentry);
-	res = nfs_revalidate_mapping(inode, filp->f_mapping);
-	if (res < 0)
-		goto out;
-=======
 	nfs_revalidate_mapping(inode, file->f_mapping);
 
 	res = -ENOMEM;
@@ -2040,7 +1269,6 @@ static int nfs_readdir(struct file *file, struct dir_context *ctx)
 	force_clear = nfs_readdir_handle_cache_misses(inode, desc, cache_misses,
 						      force_clear);
 	desc->clear_cache = force_clear;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		res = readdir_search_pagecache(desc);
@@ -2048,13 +1276,6 @@ static int nfs_readdir(struct file *file, struct dir_context *ctx)
 		if (res == -EBADCOOKIE) {
 			res = 0;
 			/* This means either end of directory */
-<<<<<<< HEAD
-			if (*desc->dir_cookie && desc->eof == 0) {
-				/* Or that the server has 'lost' a cookie */
-				res = uncached_readdir(desc, dirent, filldir);
-				if (res == 0)
-					continue;
-=======
 			if (desc->dir_cookie && !desc->eof) {
 				/* Or that the server has 'lost' a cookie */
 				res = uncached_readdir(desc);
@@ -2062,72 +1283,18 @@ static int nfs_readdir(struct file *file, struct dir_context *ctx)
 					continue;
 				if (res == -EBADCOOKIE || res == -ENOTSYNC)
 					res = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		}
 		if (res == -ETOOSMALL && desc->plus) {
-<<<<<<< HEAD
-			clear_bit(NFS_INO_ADVISE_RDPLUS, &NFS_I(inode)->flags);
-			nfs_zap_caches(inode);
-			desc->page_index = 0;
-			desc->plus = 0;
-			desc->eof = 0;
-=======
 			nfs_zap_caches(inode);
 			desc->plus = false;
 			desc->eof = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		if (res < 0)
 			break;
 
-<<<<<<< HEAD
-		res = nfs_do_filldir(desc, dirent, filldir);
-		if (res < 0)
-			break;
-	} while (!desc->eof);
-out:
-	nfs_unblock_sillyrename(dentry);
-	if (res > 0)
-		res = 0;
-	dfprintk(FILE, "NFS: readdir(%s/%s) returns %d\n",
-			dentry->d_parent->d_name.name, dentry->d_name.name,
-			res);
-	return res;
-}
-
-static loff_t nfs_llseek_dir(struct file *filp, loff_t offset, int origin)
-{
-	struct dentry *dentry = filp->f_path.dentry;
-	struct inode *inode = dentry->d_inode;
-	struct nfs_open_dir_context *dir_ctx = filp->private_data;
-
-	dfprintk(FILE, "NFS: llseek dir(%s/%s, %lld, %d)\n",
-			dentry->d_parent->d_name.name,
-			dentry->d_name.name,
-			offset, origin);
-
-	mutex_lock(&inode->i_mutex);
-	switch (origin) {
-		case 1:
-			offset += filp->f_pos;
-		case 0:
-			if (offset >= 0)
-				break;
-		default:
-			offset = -EINVAL;
-			goto out;
-	}
-	if (offset != filp->f_pos) {
-		filp->f_pos = offset;
-		dir_ctx->dir_cookie = 0;
-		dir_ctx->duped = 0;
-	}
-out:
-	mutex_unlock(&inode->i_mutex);
-=======
 		nfs_do_filldir(desc, nfsi->cookieverf);
 		nfs_readdir_folio_unlock_and_put_cached(desc);
 		if (desc->folio_index == desc->folio_index_max)
@@ -2190,7 +1357,6 @@ static loff_t nfs_llseek_dir(struct file *filp, loff_t offset, int whence)
 		dir_ctx->eof = false;
 	}
 	spin_unlock(&filp->f_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return offset;
 }
 
@@ -2201,50 +1367,27 @@ static loff_t nfs_llseek_dir(struct file *filp, loff_t offset, int whence)
 static int nfs_fsync_dir(struct file *filp, loff_t start, loff_t end,
 			 int datasync)
 {
-<<<<<<< HEAD
-	struct dentry *dentry = filp->f_path.dentry;
-	struct inode *inode = dentry->d_inode;
-
-	dfprintk(FILE, "NFS: fsync dir(%s/%s) datasync %d\n",
-			dentry->d_parent->d_name.name, dentry->d_name.name,
-			datasync);
-
-	mutex_lock(&inode->i_mutex);
-	nfs_inc_stats(dentry->d_inode, NFSIOS_VFSFSYNC);
-	mutex_unlock(&inode->i_mutex);
-=======
 	dfprintk(FILE, "NFS: fsync dir(%pD2) datasync %d\n", filp, datasync);
 
 	nfs_inc_stats(file_inode(filp), NFSIOS_VFSFSYNC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
  * nfs_force_lookup_revalidate - Mark the directory as having changed
-<<<<<<< HEAD
- * @dir - pointer to directory inode
-=======
  * @dir: pointer to directory inode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This forces the revalidation code in nfs_lookup_revalidate() to do a
  * full lookup on all child dentries of 'dir' whenever a change occurs
  * on the server that might have invalidated our dcache.
  *
-<<<<<<< HEAD
-=======
  * Note that we reserve bit '0' as a tag to let us know when a dentry
  * was revalidated while holding a delegation on its inode.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The caller should be holding dir->i_lock
  */
 void nfs_force_lookup_revalidate(struct inode *dir)
 {
-<<<<<<< HEAD
-	NFS_I(dir)->cache_change_attribute++;
-=======
 	NFS_I(dir)->cache_change_attribute += 2;
 }
 EXPORT_SYMBOL_GPL(nfs_force_lookup_revalidate);
@@ -2350,35 +1493,21 @@ static int nfs_dentry_verify_change(struct inode *dir, struct dentry *dentry)
 	    d_really_is_negative(dentry))
 		return dentry->d_time == inode_peek_iversion_raw(dir);
 	return nfs_verify_change_attribute(dir, dentry->d_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * A check for whether or not the parent directory has changed.
  * In the case it has, we assume that the dentries are untrustworthy
  * and may need to be looked up again.
-<<<<<<< HEAD
- */
-static int nfs_check_verifier(struct inode *dir, struct dentry *dentry)
-=======
  * If rcu_walk prevents us from performing a full check, return 0.
  */
 static int nfs_check_verifier(struct inode *dir, struct dentry *dentry,
 			      int rcu_walk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (IS_ROOT(dentry))
 		return 1;
 	if (NFS_SERVER(dir)->flags & NFS_MOUNT_LOOKUP_CACHE_NONE)
 		return 0;
-<<<<<<< HEAD
-	if (!nfs_verify_change_attribute(dir, dentry->d_time))
-		return 0;
-	/* Revalidate nfsi->cache_change_attribute before we declare a match */
-	if (nfs_revalidate_inode(NFS_SERVER(dir), dir) < 0)
-		return 0;
-	if (!nfs_verify_change_attribute(dir, dentry->d_time))
-=======
 	if (!nfs_dentry_verify_change(dir, dentry))
 		return 0;
 	/* Revalidate nfsi->cache_change_attribute before we declare a match */
@@ -2389,7 +1518,6 @@ static int nfs_check_verifier(struct inode *dir, struct dentry *dentry,
 			return 0;
 	}
 	if (!nfs_dentry_verify_change(dir, dentry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	return 1;
 }
@@ -2413,25 +1541,6 @@ static int nfs_is_exclusive_create(struct inode *dir, unsigned int flags)
  * particular file and the "nocto" mount flag is not set.
  *
  */
-<<<<<<< HEAD
-static inline
-int nfs_lookup_verify_inode(struct inode *inode, unsigned int flags)
-{
-	struct nfs_server *server = NFS_SERVER(inode);
-
-	if (IS_AUTOMOUNT(inode))
-		return 0;
-	/* VFS wants an on-the-wire revalidation */
-	if (flags & LOOKUP_REVAL)
-		goto out_force;
-	/* This is an open(2) */
-	if ((flags & LOOKUP_OPEN) && !(server->flags & NFS_MOUNT_NOCTO) &&
-	    (S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode)))
-		goto out_force;
-	return 0;
-out_force:
-	return __nfs_revalidate_inode(server, inode);
-=======
 static
 int nfs_lookup_verify_inode(struct inode *inode, unsigned int flags)
 {
@@ -2480,7 +1589,6 @@ static void nfs_mark_dir_for_revalidate(struct inode *inode)
 	spin_lock(&inode->i_lock);
 	nfs_set_cache_invalid(inode, NFS_INO_INVALID_CHANGE);
 	spin_unlock(&inode->i_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2489,28 +1597,17 @@ static void nfs_mark_dir_for_revalidate(struct inode *inode)
  *
  * If parent mtime has changed, we revalidate, else we wait for a
  * period corresponding to the parent's attribute cache timeout value.
-<<<<<<< HEAD
-=======
  *
  * If LOOKUP_RCU prevents us from performing a full check, return 1
  * suggesting a reval is needed.
  *
  * Note that when creating a new file, or looking up a rename target,
  * then it shouldn't be necessary to revalidate a negative dentry.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline
 int nfs_neg_need_reval(struct inode *dir, struct dentry *dentry,
 		       unsigned int flags)
 {
-<<<<<<< HEAD
-	/* Don't revalidate a negative dentry if we're creating a new file */
-	if (flags & LOOKUP_CREATE)
-		return 0;
-	if (NFS_SERVER(dir)->flags & NFS_MOUNT_LOOKUP_CACHE_NONEG)
-		return 1;
-	return !nfs_check_verifier(dir, dentry);
-=======
 	if (flags & (LOOKUP_CREATE | LOOKUP_RENAME_TARGET))
 		return 0;
 	if (NFS_SERVER(dir)->flags & NFS_MOUNT_LOOKUP_CACHE_NONEG)
@@ -2620,7 +1717,6 @@ out:
 	if (!ret && nfs_dentry_verify_change(dir, dentry))
 		nfs_mark_dir_for_revalidate(dir);
 	return nfs_lookup_revalidate_done(dir, dentry, inode, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2634,105 +1730,6 @@ out:
  * If the parent directory is seen to have changed, we throw out the
  * cached dentry and do a new lookup.
  */
-<<<<<<< HEAD
-static int nfs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
-{
-	struct inode *dir;
-	struct inode *inode;
-	struct dentry *parent;
-	struct nfs_fh *fhandle = NULL;
-	struct nfs_fattr *fattr = NULL;
-	int error;
-
-	if (flags & LOOKUP_RCU)
-		return -ECHILD;
-
-	parent = dget_parent(dentry);
-	dir = parent->d_inode;
-	nfs_inc_stats(dir, NFSIOS_DENTRYREVALIDATE);
-	inode = dentry->d_inode;
-
-	if (!inode) {
-		if (nfs_neg_need_reval(dir, dentry, flags))
-			goto out_bad;
-		goto out_valid;
-	}
-
-	if (is_bad_inode(inode)) {
-		dfprintk(LOOKUPCACHE, "%s: %s/%s has dud inode\n",
-				__func__, dentry->d_parent->d_name.name,
-				dentry->d_name.name);
-		goto out_bad;
-	}
-
-	if (nfs_have_delegation(inode, FMODE_READ))
-		goto out_set_verifier;
-
-	/* Force a full look up iff the parent directory has changed */
-	if (!nfs_is_exclusive_create(dir, flags) && nfs_check_verifier(dir, dentry)) {
-		if (nfs_lookup_verify_inode(inode, flags))
-			goto out_zap_parent;
-		goto out_valid;
-	}
-
-	if (NFS_STALE(inode))
-		goto out_bad;
-
-	error = -ENOMEM;
-	fhandle = nfs_alloc_fhandle();
-	fattr = nfs_alloc_fattr();
-	if (fhandle == NULL || fattr == NULL)
-		goto out_error;
-
-	error = NFS_PROTO(dir)->lookup(NFS_SERVER(dir)->client, dir, &dentry->d_name, fhandle, fattr);
-	if (error)
-		goto out_bad;
-	if (nfs_compare_fh(NFS_FH(inode), fhandle))
-		goto out_bad;
-	if ((error = nfs_refresh_inode(inode, fattr)) != 0)
-		goto out_bad;
-
-	nfs_free_fattr(fattr);
-	nfs_free_fhandle(fhandle);
-out_set_verifier:
-	nfs_set_verifier(dentry, nfs_save_change_attribute(dir));
- out_valid:
-	dput(parent);
-	dfprintk(LOOKUPCACHE, "NFS: %s(%s/%s) is valid\n",
-			__func__, dentry->d_parent->d_name.name,
-			dentry->d_name.name);
-	return 1;
-out_zap_parent:
-	nfs_zap_caches(dir);
- out_bad:
-	nfs_mark_for_revalidate(dir);
-	if (inode && S_ISDIR(inode->i_mode)) {
-		/* Purge readdir caches. */
-		nfs_zap_caches(inode);
-		/* If we have submounts, don't unhash ! */
-		if (have_submounts(dentry))
-			goto out_valid;
-		if (dentry->d_flags & DCACHE_DISCONNECTED)
-			goto out_valid;
-		shrink_dcache_parent(dentry);
-	}
-	d_drop(dentry);
-	nfs_free_fattr(fattr);
-	nfs_free_fhandle(fhandle);
-	dput(parent);
-	dfprintk(LOOKUPCACHE, "NFS: %s(%s/%s) is invalid\n",
-			__func__, dentry->d_parent->d_name.name,
-			dentry->d_name.name);
-	return 0;
-out_error:
-	nfs_free_fattr(fattr);
-	nfs_free_fhandle(fhandle);
-	dput(parent);
-	dfprintk(LOOKUPCACHE, "NFS: %s(%s/%s) lookup returned error %d\n",
-			__func__, dentry->d_parent->d_name.name,
-			dentry->d_name.name, error);
-	return error;
-=======
 static int
 nfs_do_lookup_revalidate(struct inode *dir, struct dentry *dentry,
 			 unsigned int flags)
@@ -2855,7 +1852,6 @@ static int nfs_weak_revalidate(struct dentry *dentry, unsigned int flags)
 	dfprintk(LOOKUPCACHE, "NFS: %s: inode %lu is %s\n",
 			__func__, inode->i_ino, error ? "invalid" : "valid");
 	return !error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2863,31 +1859,18 @@ static int nfs_weak_revalidate(struct dentry *dentry, unsigned int flags)
  */
 static int nfs_dentry_delete(const struct dentry *dentry)
 {
-<<<<<<< HEAD
-	dfprintk(VFS, "NFS: dentry_delete(%s/%s, %x)\n",
-		dentry->d_parent->d_name.name, dentry->d_name.name,
-		dentry->d_flags);
-
-	/* Unhash any dentry with a stale inode */
-	if (dentry->d_inode != NULL && NFS_STALE(dentry->d_inode))
-=======
 	dfprintk(VFS, "NFS: dentry_delete(%pd2, %x)\n",
 		dentry, dentry->d_flags);
 
 	/* Unhash any dentry with a stale inode */
 	if (d_really_is_positive(dentry) && NFS_STALE(d_inode(dentry)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	if (dentry->d_flags & DCACHE_NFSFS_RENAMED) {
 		/* Unhash it, so that ->d_iput() would be called */
 		return 1;
 	}
-<<<<<<< HEAD
-	if (!(dentry->d_sb->s_flags & MS_ACTIVE)) {
-=======
 	if (!(dentry->d_sb->s_flags & SB_ACTIVE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Unhash it, so that ancestors of killed async unlink
 		 * files will be cleaned up during umount */
 		return 1;
@@ -2901,18 +1884,12 @@ static void nfs_drop_nlink(struct inode *inode)
 {
 	spin_lock(&inode->i_lock);
 	/* drop the inode if we're reasonably sure this is the last link */
-<<<<<<< HEAD
-	if (inode->i_nlink == 1)
-		clear_nlink(inode);
-	NFS_I(inode)->cache_validity |= NFS_INO_INVALID_ATTR;
-=======
 	if (inode->i_nlink > 0)
 		drop_nlink(inode);
 	NFS_I(inode)->attr_gencount = nfs_inc_attr_generation_counter();
 	nfs_set_cache_invalid(
 		inode, NFS_INO_INVALID_CHANGE | NFS_INO_INVALID_CTIME |
 			       NFS_INO_INVALID_NLINK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&inode->i_lock);
 }
 
@@ -2922,13 +1899,6 @@ static void nfs_drop_nlink(struct inode *inode)
  */
 static void nfs_dentry_iput(struct dentry *dentry, struct inode *inode)
 {
-<<<<<<< HEAD
-	if (S_ISDIR(inode->i_mode))
-		/* drop any readdir cache as it could easily be old */
-		NFS_I(inode)->cache_validity |= NFS_INO_INVALID_DATA;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dentry->d_flags & DCACHE_NFSFS_RENAMED) {
 		nfs_complete_unlink(dentry, inode);
 		nfs_drop_nlink(inode);
@@ -2949,34 +1919,12 @@ static void nfs_d_release(struct dentry *dentry)
 
 const struct dentry_operations nfs_dentry_operations = {
 	.d_revalidate	= nfs_lookup_revalidate,
-<<<<<<< HEAD
-=======
 	.d_weak_revalidate	= nfs_weak_revalidate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.d_delete	= nfs_dentry_delete,
 	.d_iput		= nfs_dentry_iput,
 	.d_automount	= nfs_d_automount,
 	.d_release	= nfs_d_release,
 };
-<<<<<<< HEAD
-
-static struct dentry *nfs_lookup(struct inode *dir, struct dentry * dentry, unsigned int flags)
-{
-	struct dentry *res;
-	struct dentry *parent;
-	struct inode *inode = NULL;
-	struct nfs_fh *fhandle = NULL;
-	struct nfs_fattr *fattr = NULL;
-	int error;
-
-	dfprintk(VFS, "NFS: lookup(%s/%s)\n",
-		dentry->d_parent->d_name.name, dentry->d_name.name);
-	nfs_inc_stats(dir, NFSIOS_VFSLOOKUP);
-
-	res = ERR_PTR(-ENAMETOOLONG);
-	if (dentry->d_name.len > NFS_SERVER(dir)->namelen)
-		goto out;
-=======
 EXPORT_SYMBOL_GPL(nfs_dentry_operations);
 
 struct dentry *nfs_lookup(struct inode *dir, struct dentry * dentry, unsigned int flags)
@@ -2993,35 +1941,11 @@ struct dentry *nfs_lookup(struct inode *dir, struct dentry * dentry, unsigned in
 
 	if (unlikely(dentry->d_name.len > NFS_SERVER(dir)->namelen))
 		return ERR_PTR(-ENAMETOOLONG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we're doing an exclusive create, optimize away the lookup
 	 * but don't hash the dentry.
 	 */
-<<<<<<< HEAD
-	if (nfs_is_exclusive_create(dir, flags)) {
-		d_instantiate(dentry, NULL);
-		res = NULL;
-		goto out;
-	}
-
-	res = ERR_PTR(-ENOMEM);
-	fhandle = nfs_alloc_fhandle();
-	fattr = nfs_alloc_fattr();
-	if (fhandle == NULL || fattr == NULL)
-		goto out;
-
-	parent = dentry->d_parent;
-	/* Protect against concurrent sillydeletes */
-	nfs_block_sillyrename(parent);
-	error = NFS_PROTO(dir)->lookup(NFS_SERVER(dir)->client, dir, &dentry->d_name, fhandle, fattr);
-	if (error == -ENOENT)
-		goto no_entry;
-	if (error < 0) {
-		res = ERR_PTR(error);
-		goto out_unblock_sillyrename;
-=======
 	if (nfs_is_exclusive_create(dir, flags) || flags & LOOKUP_RENAME_TARGET)
 		return NULL;
 
@@ -3042,26 +1966,10 @@ struct dentry *nfs_lookup(struct inode *dir, struct dentry * dentry, unsigned in
 	if (error < 0) {
 		res = ERR_PTR(error);
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	inode = nfs_fhget(dentry->d_sb, fhandle, fattr);
 	res = ERR_CAST(inode);
 	if (IS_ERR(res))
-<<<<<<< HEAD
-		goto out_unblock_sillyrename;
-
-no_entry:
-	res = d_materialise_unique(dentry, inode);
-	if (res != NULL) {
-		if (IS_ERR(res))
-			goto out_unblock_sillyrename;
-		dentry = res;
-	}
-	nfs_set_verifier(dentry, nfs_save_change_attribute(dir));
-out_unblock_sillyrename:
-	nfs_unblock_sillyrename(parent);
-out:
-=======
 		goto out;
 
 	/* Notify readdir to use READDIRPLUS */
@@ -3077,15 +1985,10 @@ no_entry:
 	nfs_set_verifier(dentry, dir_verifier);
 out:
 	trace_nfs_lookup_exit(dir, dentry, flags, PTR_ERR_OR_ZERO(res));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nfs_free_fattr(fattr);
 	nfs_free_fhandle(fhandle);
 	return res;
 }
-<<<<<<< HEAD
-
-#ifdef CONFIG_NFS_V4
-=======
 EXPORT_SYMBOL_GPL(nfs_lookup);
 
 void nfs_d_prune_case_insensitive_aliases(struct inode *inode)
@@ -3097,89 +2000,31 @@ void nfs_d_prune_case_insensitive_aliases(struct inode *inode)
 EXPORT_SYMBOL_GPL(nfs_d_prune_case_insensitive_aliases);
 
 #if IS_ENABLED(CONFIG_NFS_V4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nfs4_lookup_revalidate(struct dentry *, unsigned int);
 
 const struct dentry_operations nfs4_dentry_operations = {
 	.d_revalidate	= nfs4_lookup_revalidate,
-<<<<<<< HEAD
-=======
 	.d_weak_revalidate	= nfs_weak_revalidate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.d_delete	= nfs_dentry_delete,
 	.d_iput		= nfs_dentry_iput,
 	.d_automount	= nfs_d_automount,
 	.d_release	= nfs_d_release,
 };
-<<<<<<< HEAD
-
-static fmode_t flags_to_mode(int flags)
-{
-	fmode_t res = (__force fmode_t)flags & FMODE_EXEC;
-	if ((flags & O_ACCMODE) != O_WRONLY)
-		res |= FMODE_READ;
-	if ((flags & O_ACCMODE) != O_RDONLY)
-		res |= FMODE_WRITE;
-	return res;
-}
-
-static struct nfs_open_context *create_nfs_open_context(struct dentry *dentry, int open_flags)
-{
-	return alloc_nfs_open_context(dentry, flags_to_mode(open_flags));
-=======
 EXPORT_SYMBOL_GPL(nfs4_dentry_operations);
 
 static struct nfs_open_context *create_nfs_open_context(struct dentry *dentry, int open_flags, struct file *filp)
 {
 	return alloc_nfs_open_context(dentry, flags_to_mode(open_flags), filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int do_open(struct inode *inode, struct file *filp)
 {
-<<<<<<< HEAD
-	nfs_fscache_set_inode_cookie(inode, filp);
-=======
 	nfs_fscache_open_file(inode, filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int nfs_finish_open(struct nfs_open_context *ctx,
 			   struct dentry *dentry,
-<<<<<<< HEAD
-			   struct file *file, unsigned open_flags,
-			   int *opened)
-{
-	int err;
-
-	if (ctx->dentry != dentry) {
-		dput(ctx->dentry);
-		ctx->dentry = dget(dentry);
-	}
-
-	/* If the open_intent is for execute, we have an extra check to make */
-	if (ctx->mode & FMODE_EXEC) {
-		err = nfs_may_open(dentry->d_inode, ctx->cred, open_flags);
-		if (err < 0)
-			goto out;
-	}
-
-	err = finish_open(file, dentry, do_open, opened);
-	if (err)
-		goto out;
-	nfs_file_set_open_context(file, ctx);
-
-out:
-	put_nfs_open_context(ctx);
-	return err;
-}
-
-static int nfs_atomic_open(struct inode *dir, struct dentry *dentry,
-			    struct file *file, unsigned open_flags,
-			    umode_t mode, int *opened)
-{
-=======
 			   struct file *file, unsigned open_flags)
 {
 	int err;
@@ -3200,24 +2045,10 @@ int nfs_atomic_open(struct inode *dir, struct dentry *dentry,
 		    umode_t mode)
 {
 	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nfs_open_context *ctx;
 	struct dentry *res;
 	struct iattr attr = { .ia_valid = ATTR_OPEN };
 	struct inode *inode;
-<<<<<<< HEAD
-	int err;
-
-	/* Expect a negative dentry */
-	BUG_ON(dentry->d_inode);
-
-	dfprintk(VFS, "NFS: atomic_open(%s/%ld), %s\n",
-			dir->i_sb->s_id, dir->i_ino, dentry->d_name.name);
-
-	/* NFS only supports OPEN on regular files */
-	if ((open_flags & O_DIRECTORY)) {
-		if (!d_unhashed(dentry)) {
-=======
 	unsigned int lookup_flags = 0;
 	unsigned long dir_verifier;
 	bool switched = false;
@@ -3237,7 +2068,6 @@ int nfs_atomic_open(struct inode *dir, struct dentry *dentry,
 	/* NFS only supports OPEN on regular files */
 	if ((open_flags & O_DIRECTORY)) {
 		if (!d_in_lookup(dentry)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Hashed negative dentry with O_DIRECTORY: dentry was
 			 * revalidated and is fine, no need to perform lookup
@@ -3245,10 +2075,7 @@ int nfs_atomic_open(struct inode *dir, struct dentry *dentry,
 			 */
 			return -ENOENT;
 		}
-<<<<<<< HEAD
-=======
 		lookup_flags = LOOKUP_OPEN|LOOKUP_DIRECTORY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto no_open;
 	}
 
@@ -3256,10 +2083,6 @@ int nfs_atomic_open(struct inode *dir, struct dentry *dentry,
 		return -ENAMETOOLONG;
 
 	if (open_flags & O_CREAT) {
-<<<<<<< HEAD
-		attr.ia_valid |= ATTR_MODE;
-		attr.ia_mode = mode & ~current_umask();
-=======
 		struct nfs_server *server = NFS_SERVER(dir);
 
 		if (!(server->attr_bitmask[2] & FATTR4_WORD2_MODE_UMASK))
@@ -3267,16 +2090,12 @@ int nfs_atomic_open(struct inode *dir, struct dentry *dentry,
 
 		attr.ia_valid |= ATTR_MODE;
 		attr.ia_mode = mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (open_flags & O_TRUNC) {
 		attr.ia_valid |= ATTR_SIZE;
 		attr.ia_size = 0;
 	}
 
-<<<<<<< HEAD
-	ctx = create_nfs_open_context(dentry, open_flags);
-=======
 	if (!(open_flags & O_CREAT) && !d_in_lookup(dentry)) {
 		d_drop(dentry);
 		switched = true;
@@ -3289,23 +2108,10 @@ int nfs_atomic_open(struct inode *dir, struct dentry *dentry,
 	}
 
 	ctx = create_nfs_open_context(dentry, open_flags, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = PTR_ERR(ctx);
 	if (IS_ERR(ctx))
 		goto out;
 
-<<<<<<< HEAD
-	nfs_block_sillyrename(dentry->d_parent);
-	inode = NFS_PROTO(dir)->open_context(dir, ctx, open_flags, &attr);
-	d_drop(dentry);
-	if (IS_ERR(inode)) {
-		nfs_unblock_sillyrename(dentry->d_parent);
-		put_nfs_open_context(ctx);
-		err = PTR_ERR(inode);
-		switch (err) {
-		case -ENOENT:
-			d_add(dentry, NULL);
-=======
 	trace_nfs_atomic_open_enter(dir, ctx, open_flags);
 	inode = NFS_PROTO(dir)->open_context(dir, ctx, open_flags, &attr, &created);
 	if (created)
@@ -3323,7 +2129,6 @@ int nfs_atomic_open(struct inode *dir, struct dentry *dentry,
 			else
 				dir_verifier = nfs_save_change_attribute(dir);
 			nfs_set_verifier(dentry, dir_verifier);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case -EISDIR:
 		case -ENOTDIR:
@@ -3338,48 +2143,6 @@ int nfs_atomic_open(struct inode *dir, struct dentry *dentry,
 		}
 		goto out;
 	}
-<<<<<<< HEAD
-	res = d_add_unique(dentry, inode);
-	if (res != NULL)
-		dentry = res;
-
-	nfs_unblock_sillyrename(dentry->d_parent);
-	nfs_set_verifier(dentry, nfs_save_change_attribute(dir));
-
-	err = nfs_finish_open(ctx, dentry, file, open_flags, opened);
-
-	dput(res);
-out:
-	return err;
-
-no_open:
-	res = nfs_lookup(dir, dentry, 0);
-	err = PTR_ERR(res);
-	if (IS_ERR(res))
-		goto out;
-
-	return finish_no_open(file, res);
-}
-
-static int nfs4_lookup_revalidate(struct dentry *dentry, unsigned int flags)
-{
-	struct dentry *parent = NULL;
-	struct inode *inode;
-	struct inode *dir;
-	int ret = 0;
-
-	if (flags & LOOKUP_RCU)
-		return -ECHILD;
-
-	if (!(flags & LOOKUP_OPEN) || (flags & LOOKUP_DIRECTORY))
-		goto no_open;
-	if (d_mountpoint(dentry))
-		goto no_open;
-
-	inode = dentry->d_inode;
-	parent = dget_parent(dentry);
-	dir = parent->d_inode;
-=======
 	file->f_mode |= FMODE_CAN_ODIRECT;
 
 	err = nfs_finish_open(ctx, ctx->dentry, file, open_flags);
@@ -3439,37 +2202,10 @@ nfs4_do_lookup_revalidate(struct inode *dir, struct dentry *dentry,
 		goto full_reval;
 
 	inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We can't create new files in nfs_open_revalidate(), so we
 	 * optimize away revalidation of negative dentries.
 	 */
-<<<<<<< HEAD
-	if (inode == NULL) {
-		if (!nfs_neg_need_reval(dir, dentry, flags))
-			ret = 1;
-		goto out;
-	}
-
-	/* NFS only supports OPEN on regular files */
-	if (!S_ISREG(inode->i_mode))
-		goto no_open_dput;
-	/* We cannot do exclusive creation on a positive dentry */
-	if (flags & LOOKUP_EXCL)
-		goto no_open_dput;
-
-	/* Let f_op->open() actually open (and revalidate) the file */
-	ret = 1;
-
-out:
-	dput(parent);
-	return ret;
-
-no_open_dput:
-	dput(parent);
-no_open:
-	return nfs_lookup_revalidate(dentry, flags);
-=======
 	if (inode == NULL)
 		goto full_reval;
 
@@ -3503,13 +2239,10 @@ static int nfs4_lookup_revalidate(struct dentry *dentry, unsigned int flags)
 {
 	return __nfs_lookup_revalidate(dentry, flags,
 			nfs4_do_lookup_revalidate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* CONFIG_NFSV4 */
 
-<<<<<<< HEAD
-=======
 struct dentry *
 nfs_add_or_obtain(struct dentry *dentry, struct nfs_fh *fhandle,
 				struct nfs_fattr *fattr)
@@ -3546,50 +2279,12 @@ out_error:
 }
 EXPORT_SYMBOL_GPL(nfs_add_or_obtain);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Code common to create, mkdir, and mknod.
  */
 int nfs_instantiate(struct dentry *dentry, struct nfs_fh *fhandle,
 				struct nfs_fattr *fattr)
 {
-<<<<<<< HEAD
-	struct dentry *parent = dget_parent(dentry);
-	struct inode *dir = parent->d_inode;
-	struct inode *inode;
-	int error = -EACCES;
-
-	d_drop(dentry);
-
-	/* We may have been initialized further down */
-	if (dentry->d_inode)
-		goto out;
-	if (fhandle->size == 0) {
-		error = NFS_PROTO(dir)->lookup(NFS_SERVER(dir)->client, dir, &dentry->d_name, fhandle, fattr);
-		if (error)
-			goto out_error;
-	}
-	nfs_set_verifier(dentry, nfs_save_change_attribute(dir));
-	if (!(fattr->valid & NFS_ATTR_FATTR)) {
-		struct nfs_server *server = NFS_SB(dentry->d_sb);
-		error = server->nfs_client->rpc_ops->getattr(server, fhandle, fattr);
-		if (error < 0)
-			goto out_error;
-	}
-	inode = nfs_fhget(dentry->d_sb, fhandle, fattr);
-	error = PTR_ERR(inode);
-	if (IS_ERR(inode))
-		goto out_error;
-	d_add(dentry, inode);
-out:
-	dput(parent);
-	return 0;
-out_error:
-	nfs_mark_for_revalidate(dir);
-	dput(parent);
-	return error;
-}
-=======
 	struct dentry *d;
 
 	d = nfs_add_or_obtain(dentry, fhandle, fattr);
@@ -3601,7 +2296,6 @@ out_error:
 	return 0;
 }
 EXPORT_SYMBOL_GPL(nfs_instantiate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Following a failed create operation, we drop the dentry rather
@@ -3609,36 +2303,22 @@ EXPORT_SYMBOL_GPL(nfs_instantiate);
  * that the operation succeeded on the server, but an error in the
  * reply path made it appear to have failed.
  */
-<<<<<<< HEAD
-static int nfs_create(struct inode *dir, struct dentry *dentry,
-		umode_t mode, bool excl)
-=======
 int nfs_create(struct mnt_idmap *idmap, struct inode *dir,
 	       struct dentry *dentry, umode_t mode, bool excl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iattr attr;
 	int open_flags = excl ? O_CREAT | O_EXCL : O_CREAT;
 	int error;
 
-<<<<<<< HEAD
-	dfprintk(VFS, "NFS: create(%s/%ld), %s\n",
-			dir->i_sb->s_id, dir->i_ino, dentry->d_name.name);
-=======
 	dfprintk(VFS, "NFS: create(%s/%lu), %pd\n",
 			dir->i_sb->s_id, dir->i_ino, dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	attr.ia_mode = mode;
 	attr.ia_valid = ATTR_MODE;
 
-<<<<<<< HEAD
-	error = NFS_PROTO(dir)->create(dir, dentry, &attr, open_flags);
-=======
 	trace_nfs_create_enter(dir, dentry, open_flags);
 	error = NFS_PROTO(dir)->create(dir, dentry, &attr, open_flags);
 	trace_nfs_create_exit(dir, dentry, open_flags, error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error != 0)
 		goto out_err;
 	return 0;
@@ -3646,47 +2326,27 @@ out_err:
 	d_drop(dentry);
 	return error;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(nfs_create);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * See comments for nfs_proc_create regarding failed operations.
  */
-<<<<<<< HEAD
-static int
-nfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t rdev)
-=======
 int
 nfs_mknod(struct mnt_idmap *idmap, struct inode *dir,
 	  struct dentry *dentry, umode_t mode, dev_t rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iattr attr;
 	int status;
 
-<<<<<<< HEAD
-	dfprintk(VFS, "NFS: mknod(%s/%ld), %s\n",
-			dir->i_sb->s_id, dir->i_ino, dentry->d_name.name);
-
-	if (!new_valid_dev(rdev))
-		return -EINVAL;
-=======
 	dfprintk(VFS, "NFS: mknod(%s/%lu), %pd\n",
 			dir->i_sb->s_id, dir->i_ino, dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	attr.ia_mode = mode;
 	attr.ia_valid = ATTR_MODE;
 
-<<<<<<< HEAD
-	status = NFS_PROTO(dir)->mknod(dir, dentry, &attr, rdev);
-=======
 	trace_nfs_mknod_enter(dir, dentry);
 	status = NFS_PROTO(dir)->mknod(dir, dentry, &attr, rdev);
 	trace_nfs_mknod_exit(dir, dentry, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status != 0)
 		goto out_err;
 	return 0;
@@ -3694,42 +2354,26 @@ out_err:
 	d_drop(dentry);
 	return status;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(nfs_mknod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * See comments for nfs_proc_create regarding failed operations.
  */
-<<<<<<< HEAD
-static int nfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
-=======
 int nfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 	      struct dentry *dentry, umode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iattr attr;
 	int error;
 
-<<<<<<< HEAD
-	dfprintk(VFS, "NFS: mkdir(%s/%ld), %s\n",
-			dir->i_sb->s_id, dir->i_ino, dentry->d_name.name);
-=======
 	dfprintk(VFS, "NFS: mkdir(%s/%lu), %pd\n",
 			dir->i_sb->s_id, dir->i_ino, dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	attr.ia_valid = ATTR_MODE;
 	attr.ia_mode = mode | S_IFDIR;
 
-<<<<<<< HEAD
-	error = NFS_PROTO(dir)->mkdir(dir, dentry, &attr);
-=======
 	trace_nfs_mkdir_enter(dir, dentry);
 	error = NFS_PROTO(dir)->mkdir(dir, dentry, &attr);
 	trace_nfs_mkdir_exit(dir, dentry, error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error != 0)
 		goto out_err;
 	return 0;
@@ -3737,31 +2381,6 @@ out_err:
 	d_drop(dentry);
 	return error;
 }
-<<<<<<< HEAD
-
-static void nfs_dentry_handle_enoent(struct dentry *dentry)
-{
-	if (dentry->d_inode != NULL && !d_unhashed(dentry))
-		d_delete(dentry);
-}
-
-static int nfs_rmdir(struct inode *dir, struct dentry *dentry)
-{
-	int error;
-
-	dfprintk(VFS, "NFS: rmdir(%s/%ld), %s\n",
-			dir->i_sb->s_id, dir->i_ino, dentry->d_name.name);
-
-	error = NFS_PROTO(dir)->rmdir(dir, &dentry->d_name);
-	/* Ensure the VFS deletes this inode */
-	if (error == 0 && dentry->d_inode != NULL)
-		clear_nlink(dentry->d_inode);
-	else if (error == -ENOENT)
-		nfs_dentry_handle_enoent(dentry);
-
-	return error;
-}
-=======
 EXPORT_SYMBOL_GPL(nfs_mkdir);
 
 static void nfs_dentry_handle_enoent(struct dentry *dentry)
@@ -3813,7 +2432,6 @@ int nfs_rmdir(struct inode *dir, struct dentry *dentry)
 	return error;
 }
 EXPORT_SYMBOL_GPL(nfs_rmdir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Remove a file after making sure there are no pending writes,
@@ -3824,20 +2442,11 @@ EXPORT_SYMBOL_GPL(nfs_rmdir);
  */
 static int nfs_safe_remove(struct dentry *dentry)
 {
-<<<<<<< HEAD
-	struct inode *dir = dentry->d_parent->d_inode;
-	struct inode *inode = dentry->d_inode;
-	int error = -EBUSY;
-		
-	dfprintk(VFS, "NFS: safe_remove(%s/%s)\n",
-		dentry->d_parent->d_name.name, dentry->d_name.name);
-=======
 	struct inode *dir = d_inode(dentry->d_parent);
 	struct inode *inode = d_inode(dentry);
 	int error = -EBUSY;
 		
 	dfprintk(VFS, "NFS: safe_remove(%pd2)\n", dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the dentry was sillyrenamed, we simply call d_delete() */
 	if (dentry->d_flags & DCACHE_NFSFS_RENAMED) {
@@ -3845,17 +2454,6 @@ static int nfs_safe_remove(struct dentry *dentry)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	if (inode != NULL) {
-		nfs_inode_return_delegation(inode);
-		error = NFS_PROTO(dir)->remove(dir, &dentry->d_name);
-		if (error == 0)
-			nfs_drop_nlink(inode);
-	} else
-		error = NFS_PROTO(dir)->remove(dir, &dentry->d_name);
-	if (error == -ENOENT)
-		nfs_dentry_handle_enoent(dentry);
-=======
 	trace_nfs_remove_enter(dir, dentry);
 	if (inode != NULL) {
 		error = NFS_PROTO(dir)->remove(dir, dentry);
@@ -3866,7 +2464,6 @@ static int nfs_safe_remove(struct dentry *dentry)
 	if (error == -ENOENT)
 		nfs_dentry_handle_enoent(dentry);
 	trace_nfs_remove_exit(dir, dentry, error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return error;
 }
@@ -3876,36 +2473,6 @@ out:
  *
  *  If sillyrename() returns 0, we do nothing, otherwise we unlink.
  */
-<<<<<<< HEAD
-static int nfs_unlink(struct inode *dir, struct dentry *dentry)
-{
-	int error;
-	int need_rehash = 0;
-
-	dfprintk(VFS, "NFS: unlink(%s/%ld, %s)\n", dir->i_sb->s_id,
-		dir->i_ino, dentry->d_name.name);
-
-	spin_lock(&dentry->d_lock);
-	if (dentry->d_count > 1) {
-		spin_unlock(&dentry->d_lock);
-		/* Start asynchronous writeout of the inode */
-		write_inode_now(dentry->d_inode, 0);
-		error = nfs_sillyrename(dir, dentry);
-		return error;
-	}
-	if (!d_unhashed(dentry)) {
-		__d_drop(dentry);
-		need_rehash = 1;
-	}
-	spin_unlock(&dentry->d_lock);
-	error = nfs_safe_remove(dentry);
-	if (!error || error == -ENOENT) {
-		nfs_set_verifier(dentry, nfs_save_change_attribute(dir));
-	} else if (need_rehash)
-		d_rehash(dentry);
-	return error;
-}
-=======
 int nfs_unlink(struct inode *dir, struct dentry *dentry)
 {
 	int error;
@@ -3948,7 +2515,6 @@ out:
 	return error;
 }
 EXPORT_SYMBOL_GPL(nfs_unlink);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * To create a symbolic link, most file systems instantiate a new inode,
@@ -3965,29 +2531,17 @@ EXPORT_SYMBOL_GPL(nfs_unlink);
  * now have a new file handle and can instantiate an in-core NFS inode
  * and move the raw page into its mapping.
  */
-<<<<<<< HEAD
-static int nfs_symlink(struct inode *dir, struct dentry *dentry, const char *symname)
-{
-	struct pagevec lru_pvec;
-	struct page *page;
-=======
 int nfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
 		struct dentry *dentry, const char *symname)
 {
 	struct folio *folio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *kaddr;
 	struct iattr attr;
 	unsigned int pathlen = strlen(symname);
 	int error;
 
-<<<<<<< HEAD
-	dfprintk(VFS, "NFS: symlink(%s/%ld, %s, %s)\n", dir->i_sb->s_id,
-		dir->i_ino, dentry->d_name.name, symname);
-=======
 	dfprintk(VFS, "NFS: symlink(%s/%lu, %pd, %s)\n", dir->i_sb->s_id,
 		dir->i_ino, dentry, symname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pathlen > PAGE_SIZE)
 		return -ENAMETOOLONG;
@@ -3995,28 +2549,6 @@ int nfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
 	attr.ia_mode = S_IFLNK | S_IRWXUGO;
 	attr.ia_valid = ATTR_MODE;
 
-<<<<<<< HEAD
-	page = alloc_page(GFP_HIGHUSER);
-	if (!page)
-		return -ENOMEM;
-
-	kaddr = kmap_atomic(page);
-	memcpy(kaddr, symname, pathlen);
-	if (pathlen < PAGE_SIZE)
-		memset(kaddr + pathlen, 0, PAGE_SIZE - pathlen);
-	kunmap_atomic(kaddr);
-
-	error = NFS_PROTO(dir)->symlink(dir, dentry, page, pathlen, &attr);
-	if (error != 0) {
-		dfprintk(VFS, "NFS: symlink(%s/%ld, %s, %s) error %d\n",
-			dir->i_sb->s_id, dir->i_ino,
-			dentry->d_name.name, symname, error);
-		d_drop(dentry);
-		__free_page(page);
-		return error;
-	}
-
-=======
 	folio = folio_alloc(GFP_USER, 0);
 	if (!folio)
 		return -ENOMEM;
@@ -4040,46 +2572,10 @@ int nfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
 
 	nfs_set_verifier(dentry, nfs_save_change_attribute(dir));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * No big deal if we can't add this page to the page cache here.
 	 * READLINK will get the missing page from the server if needed.
 	 */
-<<<<<<< HEAD
-	pagevec_init(&lru_pvec, 0);
-	if (!add_to_page_cache(page, dentry->d_inode->i_mapping, 0,
-							GFP_KERNEL)) {
-		pagevec_add(&lru_pvec, page);
-		pagevec_lru_add_file(&lru_pvec);
-		SetPageUptodate(page);
-		unlock_page(page);
-	} else
-		__free_page(page);
-
-	return 0;
-}
-
-static int 
-nfs_link(struct dentry *old_dentry, struct inode *dir, struct dentry *dentry)
-{
-	struct inode *inode = old_dentry->d_inode;
-	int error;
-
-	dfprintk(VFS, "NFS: link(%s/%s -> %s/%s)\n",
-		old_dentry->d_parent->d_name.name, old_dentry->d_name.name,
-		dentry->d_parent->d_name.name, dentry->d_name.name);
-
-	nfs_inode_return_delegation(inode);
-
-	d_drop(dentry);
-	error = NFS_PROTO(dir)->link(inode, dir, &dentry->d_name);
-	if (error == 0) {
-		ihold(inode);
-		d_add(dentry, inode);
-	}
-	return error;
-}
-=======
 	if (filemap_add_folio(d_inode(dentry)->i_mapping, folio, 0,
 							GFP_KERNEL) == 0) {
 		folio_mark_uptodate(folio);
@@ -4123,7 +2619,6 @@ nfs_unblock_rename(struct rpc_task *task, struct nfs_renamedata *data)
 	new_dentry->d_fsdata = NULL;
 	wake_up_var(&new_dentry->d_fsdata);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * RENAME
@@ -4149,21 +2644,6 @@ nfs_unblock_rename(struct rpc_task *task, struct nfs_renamedata *data)
  * If these conditions are met, we can drop the dentries before doing
  * the rename.
  */
-<<<<<<< HEAD
-static int nfs_rename(struct inode *old_dir, struct dentry *old_dentry,
-		      struct inode *new_dir, struct dentry *new_dentry)
-{
-	struct inode *old_inode = old_dentry->d_inode;
-	struct inode *new_inode = new_dentry->d_inode;
-	struct dentry *dentry = NULL, *rehash = NULL;
-	int error = -EBUSY;
-
-	dfprintk(VFS, "NFS: rename(%s/%s -> %s/%s, ct=%d)\n",
-		 old_dentry->d_parent->d_name.name, old_dentry->d_name.name,
-		 new_dentry->d_parent->d_name.name, new_dentry->d_name.name,
-		 new_dentry->d_count);
-
-=======
 int nfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 	       struct dentry *old_dentry, struct inode *new_dir,
 	       struct dentry *new_dentry, unsigned int flags)
@@ -4183,7 +2663,6 @@ int nfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 		 d_count(new_dentry));
 
 	trace_nfs_rename_enter(old_dir, old_dentry, new_dir, new_dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * For non-directories, check whether the target is busy and if so,
 	 * make a copy of the dentry and then do a silly-rename. If the
@@ -4191,20 +2670,6 @@ int nfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 	 * the new target.
 	 */
 	if (new_inode && !S_ISDIR(new_inode->i_mode)) {
-<<<<<<< HEAD
-		/*
-		 * To prevent any new references to the target during the
-		 * rename, we unhash the dentry in advance.
-		 */
-		if (!d_unhashed(new_dentry)) {
-			d_drop(new_dentry);
-			rehash = new_dentry;
-		}
-
-		if (new_dentry->d_count > 2) {
-			int err;
-
-=======
 		/* We must prevent any concurrent open until the unlink
 		 * completes.  ->d_revalidate will wait for ->d_fsdata
 		 * to clear.  We set it here to ensure no lookup succeeds until
@@ -4226,7 +2691,6 @@ int nfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 
 			spin_unlock(&new_dentry->d_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* copy the target dentry's name */
 			dentry = d_alloc(new_dentry->d_parent,
 					 &new_dentry->d_name);
@@ -4239,28 +2703,6 @@ int nfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 				goto out;
 
 			new_dentry = dentry;
-<<<<<<< HEAD
-			rehash = NULL;
-			new_inode = NULL;
-		}
-	}
-
-	nfs_inode_return_delegation(old_inode);
-	if (new_inode != NULL)
-		nfs_inode_return_delegation(new_inode);
-
-	error = NFS_PROTO(old_dir)->rename(old_dir, &old_dentry->d_name,
-					   new_dir, &new_dentry->d_name);
-	nfs_mark_for_revalidate(old_inode);
-out:
-	if (rehash)
-		d_rehash(rehash);
-	if (!error) {
-		if (new_inode != NULL)
-			nfs_drop_nlink(new_inode);
-		d_move(old_dentry, new_dentry);
-		nfs_set_verifier(new_dentry,
-=======
 			new_inode = NULL;
 		} else {
 			new_dentry->d_fsdata = NFS_FSDATA_BLOCKED;
@@ -4310,7 +2752,6 @@ out:
 		 */
 		d_move(old_dentry, new_dentry);
 		nfs_set_verifier(old_dentry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					nfs_save_change_attribute(new_dir));
 	} else if (error == -ENOENT)
 		nfs_dentry_handle_enoent(old_dentry);
@@ -4320,24 +2761,12 @@ out:
 		dput(dentry);
 	return error;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(nfs_rename);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_SPINLOCK(nfs_access_lru_lock);
 static LIST_HEAD(nfs_access_lru_list);
 static atomic_long_t nfs_access_nr_entries;
 
-<<<<<<< HEAD
-static void nfs_access_free_entry(struct nfs_access_entry *entry)
-{
-	put_rpccred(entry->cred);
-	kfree(entry);
-	smp_mb__before_atomic_dec();
-	atomic_long_dec(&nfs_access_nr_entries);
-	smp_mb__after_atomic_dec();
-=======
 static unsigned long nfs_access_max_cachesize = 4*1024*1024;
 module_param(nfs_access_max_cachesize, ulong, 0644);
 MODULE_PARM_DESC(nfs_access_max_cachesize, "NFS access maximum total cache length");
@@ -4349,7 +2778,6 @@ static void nfs_access_free_entry(struct nfs_access_entry *entry)
 	smp_mb__before_atomic();
 	atomic_long_dec(&nfs_access_nr_entries);
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nfs_access_free_list(struct list_head *head)
@@ -4363,26 +2791,13 @@ static void nfs_access_free_list(struct list_head *head)
 	}
 }
 
-<<<<<<< HEAD
-int nfs_access_cache_shrinker(struct shrinker *shrink,
-			      struct shrink_control *sc)
-=======
 static unsigned long
 nfs_do_access_cache_scan(unsigned int nr_to_scan)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	LIST_HEAD(head);
 	struct nfs_inode *nfsi, *next;
 	struct nfs_access_entry *cache;
-<<<<<<< HEAD
-	int nr_to_scan = sc->nr_to_scan;
-	gfp_t gfp_mask = sc->gfp_mask;
-
-	if ((gfp_mask & GFP_KERNEL) != GFP_KERNEL)
-		return (nr_to_scan == 0) ? 0 : -1;
-=======
 	long freed = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&nfs_access_lru_lock);
 	list_for_each_entry_safe(nfsi, next, &nfs_access_lru_list, access_cache_inode_lru) {
@@ -4398,33 +2813,21 @@ nfs_do_access_cache_scan(unsigned int nr_to_scan)
 				struct nfs_access_entry, lru);
 		list_move(&cache->lru, &head);
 		rb_erase(&cache->rb_node, &nfsi->access_cache);
-<<<<<<< HEAD
-=======
 		freed++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!list_empty(&nfsi->access_cache_entry_lru))
 			list_move_tail(&nfsi->access_cache_inode_lru,
 					&nfs_access_lru_list);
 		else {
 remove_lru_entry:
 			list_del_init(&nfsi->access_cache_inode_lru);
-<<<<<<< HEAD
-			smp_mb__before_clear_bit();
-			clear_bit(NFS_INO_ACL_LRU_SET, &nfsi->flags);
-			smp_mb__after_clear_bit();
-=======
 			smp_mb__before_atomic();
 			clear_bit(NFS_INO_ACL_LRU_SET, &nfsi->flags);
 			smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		spin_unlock(&inode->i_lock);
 	}
 	spin_unlock(&nfs_access_lru_lock);
 	nfs_access_free_list(&head);
-<<<<<<< HEAD
-	return (atomic_long_read(&nfs_access_nr_entries) / 100) * sysctl_vfs_cache_pressure;
-=======
 	return freed;
 }
 
@@ -4460,7 +2863,6 @@ nfs_access_cache_enforce_limit(void)
 	if (diff < nr_to_scan)
 		nr_to_scan = diff;
 	nfs_do_access_cache_scan(nr_to_scan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __nfs_access_zap_cache(struct nfs_inode *nfsi, struct list_head *head)
@@ -4495,20 +2897,6 @@ void nfs_access_zap_cache(struct inode *inode)
 	spin_unlock(&nfs_access_lru_lock);
 	nfs_access_free_list(&head);
 }
-<<<<<<< HEAD
-
-static struct nfs_access_entry *nfs_access_search_rbtree(struct inode *inode, struct rpc_cred *cred)
-{
-	struct rb_node *n = NFS_I(inode)->access_cache.rb_node;
-	struct nfs_access_entry *entry;
-
-	while (n != NULL) {
-		entry = rb_entry(n, struct nfs_access_entry, rb_node);
-
-		if (cred < entry->cred)
-			n = n->rb_left;
-		else if (cred > entry->cred)
-=======
 EXPORT_SYMBOL_GPL(nfs_access_zap_cache);
 
 static int access_cmp(const struct cred *a, const struct nfs_access_entry *b)
@@ -4560,7 +2948,6 @@ static struct nfs_access_entry *nfs_access_search_rbtree(struct inode *inode, co
 		if (cmp < 0)
 			n = n->rb_left;
 		else if (cmp > 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			n = n->rb_right;
 		else
 			return entry;
@@ -4568,26 +2955,6 @@ static struct nfs_access_entry *nfs_access_search_rbtree(struct inode *inode, co
 	return NULL;
 }
 
-<<<<<<< HEAD
-static int nfs_access_get_cached(struct inode *inode, struct rpc_cred *cred, struct nfs_access_entry *res)
-{
-	struct nfs_inode *nfsi = NFS_I(inode);
-	struct nfs_access_entry *cache;
-	int err = -ENOENT;
-
-	spin_lock(&inode->i_lock);
-	if (nfsi->cache_validity & NFS_INO_INVALID_ACCESS)
-		goto out_zap;
-	cache = nfs_access_search_rbtree(inode, cred);
-	if (cache == NULL)
-		goto out;
-	if (!nfs_have_delegated_attributes(inode) &&
-	    !time_in_range_open(jiffies, cache->jiffies, cache->jiffies + nfsi->attrtimeo))
-		goto out_stale;
-	res->jiffies = cache->jiffies;
-	res->cred = cache->cred;
-	res->mask = cache->mask;
-=======
 static u64 nfs_access_login_time(const struct task_struct *task,
 				 const struct cred *cred)
 {
@@ -4643,30 +3010,17 @@ static int nfs_access_get_cached_locked(struct inode *inode, const struct cred *
 	if ((s64)(login_time - cache->timestamp) > 0)
 		goto out;
 	*mask = cache->mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_move_tail(&cache->lru, &nfsi->access_cache_entry_lru);
 	err = 0;
 out:
 	spin_unlock(&inode->i_lock);
 	return err;
-<<<<<<< HEAD
-out_stale:
-	rb_erase(&cache->rb_node, &nfsi->access_cache);
-	list_del(&cache->lru);
-	spin_unlock(&inode->i_lock);
-	nfs_access_free_entry(cache);
-	return -ENOENT;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_zap:
 	spin_unlock(&inode->i_lock);
 	nfs_access_zap_cache(inode);
 	return -ENOENT;
 }
 
-<<<<<<< HEAD
-static void nfs_access_add_rbtree(struct inode *inode, struct nfs_access_entry *set)
-=======
 static int nfs_access_get_cached_rcu(struct inode *inode, const struct cred *cred, u32 *mask)
 {
 	/* Only check the most recently returned cache entry,
@@ -4716,34 +3070,23 @@ EXPORT_SYMBOL_GPL(nfs_access_get_cached);
 static void nfs_access_add_rbtree(struct inode *inode,
 				  struct nfs_access_entry *set,
 				  const struct cred *cred)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nfs_inode *nfsi = NFS_I(inode);
 	struct rb_root *root_node = &nfsi->access_cache;
 	struct rb_node **p = &root_node->rb_node;
 	struct rb_node *parent = NULL;
 	struct nfs_access_entry *entry;
-<<<<<<< HEAD
-=======
 	int cmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&inode->i_lock);
 	while (*p != NULL) {
 		parent = *p;
 		entry = rb_entry(parent, struct nfs_access_entry, rb_node);
-<<<<<<< HEAD
-
-		if (set->cred < entry->cred)
-			p = &parent->rb_left;
-		else if (set->cred > entry->cred)
-=======
 		cmp = access_cmp(cred, entry);
 
 		if (cmp < 0)
 			p = &parent->rb_left;
 		else if (cmp > 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			p = &parent->rb_right;
 		else
 			goto found;
@@ -4761,29 +3104,13 @@ found:
 	nfs_access_free_entry(entry);
 }
 
-<<<<<<< HEAD
-static void nfs_access_add_cache(struct inode *inode, struct nfs_access_entry *set)
-=======
 void nfs_access_add_cache(struct inode *inode, struct nfs_access_entry *set,
 			  const struct cred *cred)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nfs_access_entry *cache = kmalloc(sizeof(*cache), GFP_KERNEL);
 	if (cache == NULL)
 		return;
 	RB_CLEAR_NODE(&cache->rb_node);
-<<<<<<< HEAD
-	cache->jiffies = set->jiffies;
-	cache->cred = get_rpccred(set->cred);
-	cache->mask = set->mask;
-
-	nfs_access_add_rbtree(inode, cache);
-
-	/* Update accounting */
-	smp_mb__before_atomic_inc();
-	atomic_long_inc(&nfs_access_nr_entries);
-	smp_mb__after_atomic_inc();
-=======
 	cache->fsuid = cred->fsuid;
 	cache->fsgid = cred->fsgid;
 	cache->group_info = get_group_info(cred->group_info);
@@ -4801,7 +3128,6 @@ void nfs_access_add_cache(struct inode *inode, struct nfs_access_entry *set,
 	smp_mb__before_atomic();
 	atomic_long_inc(&nfs_access_nr_entries);
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Add inode to global LRU list */
 	if (!test_bit(NFS_INO_ACL_LRU_SET, &NFS_I(inode)->flags)) {
@@ -4811,37 +3137,6 @@ void nfs_access_add_cache(struct inode *inode, struct nfs_access_entry *set,
 					&nfs_access_lru_list);
 		spin_unlock(&nfs_access_lru_lock);
 	}
-<<<<<<< HEAD
-}
-
-static int nfs_do_access(struct inode *inode, struct rpc_cred *cred, int mask)
-{
-	struct nfs_access_entry cache;
-	int status;
-
-	status = nfs_access_get_cached(inode, cred, &cache);
-	if (status == 0)
-		goto out;
-
-	/* Be clever: ask server to check for all possible rights */
-	cache.mask = MAY_EXEC | MAY_WRITE | MAY_READ;
-	cache.cred = cred;
-	cache.jiffies = jiffies;
-	status = NFS_PROTO(inode)->access(inode, &cache);
-	if (status != 0) {
-		if (status == -ESTALE) {
-			nfs_zap_caches(inode);
-			if (!S_ISDIR(inode->i_mode))
-				set_bit(NFS_INO_STALE, &NFS_I(inode)->flags);
-		}
-		return status;
-	}
-	nfs_access_add_cache(inode, &cache);
-out:
-	if ((mask & ~cache.mask & (MAY_READ | MAY_WRITE | MAY_EXEC)) == 0)
-		return 0;
-	return -EACCES;
-=======
 	nfs_access_cache_enforce_limit();
 }
 EXPORT_SYMBOL_GPL(nfs_access_add_cache);
@@ -4927,36 +3222,12 @@ out_cached:
 out:
 	trace_nfs_access_exit(inode, mask, cache_mask, status);
 	return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int nfs_open_permission_mask(int openflags)
 {
 	int mask = 0;
 
-<<<<<<< HEAD
-	if ((openflags & O_ACCMODE) != O_WRONLY)
-		mask |= MAY_READ;
-	if ((openflags & O_ACCMODE) != O_RDONLY)
-		mask |= MAY_WRITE;
-	if (openflags & __FMODE_EXEC)
-		mask |= MAY_EXEC;
-	return mask;
-}
-
-int nfs_may_open(struct inode *inode, struct rpc_cred *cred, int openflags)
-{
-	return nfs_do_access(inode, cred, nfs_open_permission_mask(openflags));
-}
-
-int nfs_permission(struct inode *inode, int mask)
-{
-	struct rpc_cred *cred;
-	int res = 0;
-
-	if (mask & MAY_NOT_BLOCK)
-		return -ECHILD;
-=======
 	if (openflags & __FMODE_EXEC) {
 		/* ONLY check exec rights */
 		mask = MAY_EXEC;
@@ -4999,7 +3270,6 @@ int nfs_permission(struct mnt_idmap *idmap,
 {
 	const struct cred *cred = current_cred();
 	int res = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nfs_inc_stats(inode, NFSIOS_VFSACCESS);
 
@@ -5013,17 +3283,9 @@ int nfs_permission(struct mnt_idmap *idmap,
 		case S_IFLNK:
 			goto out;
 		case S_IFREG:
-<<<<<<< HEAD
-			/* NFSv4 has atomic_open... */
-			if (nfs_server_capable(inode, NFS_CAP_ATOMIC_OPEN)
-					&& (mask & MAY_OPEN)
-					&& !(mask & MAY_EXEC))
-				goto out;
-=======
 			if ((mask & MAY_OPEN) &&
 			   nfs_server_capable(inode, NFS_CAP_ATOMIC_OPEN))
 				return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case S_IFDIR:
 			/*
@@ -5038,34 +3300,6 @@ force_lookup:
 	if (!NFS_PROTO(inode)->access)
 		goto out_notsup;
 
-<<<<<<< HEAD
-	cred = rpc_lookup_cred();
-	if (!IS_ERR(cred)) {
-		res = nfs_do_access(inode, cred, mask);
-		put_rpccred(cred);
-	} else
-		res = PTR_ERR(cred);
-out:
-	if (!res && (mask & MAY_EXEC) && !execute_ok(inode))
-		res = -EACCES;
-
-	dfprintk(VFS, "NFS: permission(%s/%ld), mask=0x%x, res=%d\n",
-		inode->i_sb->s_id, inode->i_ino, mask, res);
-	return res;
-out_notsup:
-	res = nfs_revalidate_inode(NFS_SERVER(inode), inode);
-	if (res == 0)
-		res = generic_permission(inode, mask);
-	goto out;
-}
-
-/*
- * Local variables:
- *  version-control: t
- *  kept-new-versions: 5
- * End:
- */
-=======
 	res = nfs_do_access(inode, cred, mask);
 out:
 	if (!res && (mask & MAY_EXEC))
@@ -5085,4 +3319,3 @@ out_notsup:
 	goto out;
 }
 EXPORT_SYMBOL_GPL(nfs_permission);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

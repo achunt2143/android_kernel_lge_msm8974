@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-#ifndef __LINUX_PIM_H
-#define __LINUX_PIM_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __LINUX_PIM_H
 #define __LINUX_PIM_H
 
 #include <linux/skbuff.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/byteorder.h>
 
 /* Message types - V1 */
@@ -17,15 +11,6 @@
 
 /* Message types - V2 */
 #define PIM_VERSION		2
-<<<<<<< HEAD
-#define PIM_REGISTER		1
-
-#define PIM_NULL_REGISTER	cpu_to_be32(0x40000000)
-
-/* PIMv2 register message header layout (ietf-draft-idmr-pimvsm-v2-00.ps */
-struct pimreghdr
-{
-=======
 
 /* RFC7761, sec 4.9:
  *  Type
@@ -75,17 +60,12 @@ struct pimhdr {
 
 /* PIMv2 register message header layout (ietf-draft-idmr-pimvsm-v2-00.ps */
 struct pimreghdr {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8	type;
 	__u8	reserved;
 	__be16	csum;
 	__be32	flags;
 };
 
-<<<<<<< HEAD
-struct sk_buff;
-extern int pim_rcv_v1(struct sk_buff *);
-=======
 int pim_rcv_v1(struct sk_buff *skb);
 
 static inline bool ipmr_pimsm_enabled(void)
@@ -113,5 +93,4 @@ static inline bool pim_ipv4_all_pim_routers(__be32 addr)
 {
 	return addr == htonl(0xE000000D);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

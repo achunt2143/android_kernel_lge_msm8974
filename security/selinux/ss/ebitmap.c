@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Implementation of the extensible bitmap type.
- *
- * Author : Stephen Smalley, <sds@epoch.ncsc.mil>
- */
-/*
- * Updated: Hewlett-Packard <paul@paul-moore.com>
- *
- *      Added support to import/export the NetLabel category bitmap
- *
- * (c) Copyright Hewlett-Packard Development Company, L.P., 2006
- */
-/*
- * Updated: KaiGai Kohei <kaigai@ak.jp.nec.com>
- *      Applied standard bit operations to improve bitmap scanning.
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Implementation of the extensible bitmap type.
@@ -28,27 +11,16 @@
  *
  * Updated: KaiGai Kohei <kaigai@ak.jp.nec.com>
  *          Applied standard bit operations to improve bitmap scanning.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-=======
 #include <linux/jhash.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netlabel.h>
 #include "ebitmap.h"
 #include "policydb.h"
 
-<<<<<<< HEAD
-#define BITS_PER_U64	(sizeof(u64) * 8)
-
-int ebitmap_cmp(struct ebitmap *e1, struct ebitmap *e2)
-{
-	struct ebitmap_node *n1, *n2;
-=======
 #define BITS_PER_U64 (sizeof(u64) * 8)
 
 static struct kmem_cache *ebitmap_node_cachep __ro_after_init;
@@ -56,19 +28,13 @@ static struct kmem_cache *ebitmap_node_cachep __ro_after_init;
 int ebitmap_cmp(const struct ebitmap *e1, const struct ebitmap *e2)
 {
 	const struct ebitmap_node *n1, *n2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (e1->highbit != e2->highbit)
 		return 0;
 
 	n1 = e1->node;
 	n2 = e2->node;
-<<<<<<< HEAD
-	while (n1 && n2 &&
-	       (n1->startbit == n2->startbit) &&
-=======
 	while (n1 && n2 && (n1->startbit == n2->startbit) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       !memcmp(n1->maps, n2->maps, EBITMAP_SIZE / 8)) {
 		n1 = n1->next;
 		n2 = n2->next;
@@ -80,26 +46,16 @@ int ebitmap_cmp(const struct ebitmap *e1, const struct ebitmap *e2)
 	return 1;
 }
 
-<<<<<<< HEAD
-int ebitmap_cpy(struct ebitmap *dst, struct ebitmap *src)
-{
-	struct ebitmap_node *n, *new, *prev;
-=======
 int ebitmap_cpy(struct ebitmap *dst, const struct ebitmap *src)
 {
 	struct ebitmap_node *new, *prev;
 	const struct ebitmap_node *n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ebitmap_init(dst);
 	n = src->node;
 	prev = NULL;
 	while (n) {
-<<<<<<< HEAD
-		new = kzalloc(sizeof(*new), GFP_ATOMIC);
-=======
 		new = kmem_cache_zalloc(ebitmap_node_cachep, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!new) {
 			ebitmap_destroy(dst);
 			return -ENOMEM;
@@ -119,8 +75,6 @@ int ebitmap_cpy(struct ebitmap *dst, const struct ebitmap *src)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 int ebitmap_and(struct ebitmap *dst, const struct ebitmap *e1,
 		const struct ebitmap *e2)
 {
@@ -140,7 +94,6 @@ int ebitmap_and(struct ebitmap *dst, const struct ebitmap *e1,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NETLABEL
 /**
  * ebitmap_netlbl_export - Export an ebitmap into a NetLabel category bitmap
@@ -153,21 +106,6 @@ int ebitmap_and(struct ebitmap *dst, const struct ebitmap *e1,
  *
  */
 int ebitmap_netlbl_export(struct ebitmap *ebmap,
-<<<<<<< HEAD
-			  struct netlbl_lsm_secattr_catmap **catmap)
-{
-	struct ebitmap_node *e_iter = ebmap->node;
-	struct netlbl_lsm_secattr_catmap *c_iter;
-	u32 cmap_idx, cmap_sft;
-	int i;
-
-	/* NetLabel's NETLBL_CATMAP_MAPTYPE is defined as an array of u64,
-	 * however, it is not always compatible with an array of unsigned long
-	 * in ebitmap_node.
-	 * In addition, you should pay attention the following implementation
-	 * assumes unsigned long has a width equal with or less than 64-bit.
-	 */
-=======
 			  struct netlbl_lsm_catmap **catmap)
 {
 	struct ebitmap_node *e_iter = ebmap->node;
@@ -175,41 +113,12 @@ int ebitmap_netlbl_export(struct ebitmap *ebmap,
 	u32 offset;
 	unsigned int iter;
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (e_iter == NULL) {
 		*catmap = NULL;
 		return 0;
 	}
 
-<<<<<<< HEAD
-	c_iter = netlbl_secattr_catmap_alloc(GFP_ATOMIC);
-	if (c_iter == NULL)
-		return -ENOMEM;
-	*catmap = c_iter;
-	c_iter->startbit = e_iter->startbit & ~(NETLBL_CATMAP_SIZE - 1);
-
-	while (e_iter) {
-		for (i = 0; i < EBITMAP_UNIT_NUMS; i++) {
-			unsigned int delta, e_startbit, c_endbit;
-
-			e_startbit = e_iter->startbit + i * EBITMAP_UNIT_SIZE;
-			c_endbit = c_iter->startbit + NETLBL_CATMAP_SIZE;
-			if (e_startbit >= c_endbit) {
-				c_iter->next
-				  = netlbl_secattr_catmap_alloc(GFP_ATOMIC);
-				if (c_iter->next == NULL)
-					goto netlbl_export_failure;
-				c_iter = c_iter->next;
-				c_iter->startbit
-				  = e_startbit & ~(NETLBL_CATMAP_SIZE - 1);
-			}
-			delta = e_startbit - c_iter->startbit;
-			cmap_idx = delta / NETLBL_CATMAP_MAPSIZE;
-			cmap_sft = delta % NETLBL_CATMAP_MAPSIZE;
-			c_iter->bitmap[cmap_idx]
-				|= e_iter->maps[i] << cmap_sft;
-=======
 	if (*catmap != NULL)
 		netlbl_catmap_free(*catmap);
 	*catmap = NULL;
@@ -225,7 +134,6 @@ int ebitmap_netlbl_export(struct ebitmap *ebmap,
 					goto netlbl_export_failure;
 			}
 			offset += EBITMAP_UNIT_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		e_iter = e_iter->next;
 	}
@@ -233,11 +141,7 @@ int ebitmap_netlbl_export(struct ebitmap *ebmap,
 	return 0;
 
 netlbl_export_failure:
-<<<<<<< HEAD
-	netlbl_secattr_catmap_free(*catmap);
-=======
 	netlbl_catmap_free(*catmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
@@ -252,60 +156,6 @@ netlbl_export_failure:
  *
  */
 int ebitmap_netlbl_import(struct ebitmap *ebmap,
-<<<<<<< HEAD
-			  struct netlbl_lsm_secattr_catmap *catmap)
-{
-	struct ebitmap_node *e_iter = NULL;
-	struct ebitmap_node *emap_prev = NULL;
-	struct netlbl_lsm_secattr_catmap *c_iter = catmap;
-	u32 c_idx, c_pos, e_idx, e_sft;
-
-	/* NetLabel's NETLBL_CATMAP_MAPTYPE is defined as an array of u64,
-	 * however, it is not always compatible with an array of unsigned long
-	 * in ebitmap_node.
-	 * In addition, you should pay attention the following implementation
-	 * assumes unsigned long has a width equal with or less than 64-bit.
-	 */
-
-	do {
-		for (c_idx = 0; c_idx < NETLBL_CATMAP_MAPCNT; c_idx++) {
-			unsigned int delta;
-			u64 map = c_iter->bitmap[c_idx];
-
-			if (!map)
-				continue;
-
-			c_pos = c_iter->startbit
-				+ c_idx * NETLBL_CATMAP_MAPSIZE;
-			if (!e_iter
-			    || c_pos >= e_iter->startbit + EBITMAP_SIZE) {
-				e_iter = kzalloc(sizeof(*e_iter), GFP_ATOMIC);
-				if (!e_iter)
-					goto netlbl_import_failure;
-				e_iter->startbit
-					= c_pos - (c_pos % EBITMAP_SIZE);
-				if (emap_prev == NULL)
-					ebmap->node = e_iter;
-				else
-					emap_prev->next = e_iter;
-				emap_prev = e_iter;
-			}
-			delta = c_pos - e_iter->startbit;
-			e_idx = delta / EBITMAP_UNIT_SIZE;
-			e_sft = delta % EBITMAP_UNIT_SIZE;
-			while (map) {
-				e_iter->maps[e_idx++] |= map & (-1UL);
-				map = EBITMAP_SHIFT_UNIT_SIZE(map);
-			}
-		}
-		c_iter = c_iter->next;
-	} while (c_iter);
-	if (e_iter != NULL)
-		ebmap->highbit = e_iter->startbit + EBITMAP_SIZE;
-	else
-		ebitmap_destroy(ebmap);
-
-=======
 			  struct netlbl_lsm_catmap *catmap)
 {
 	int rc;
@@ -351,7 +201,6 @@ int ebitmap_netlbl_import(struct ebitmap *ebmap,
 	}
 
 	/* NOTE: we should never reach this return */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 netlbl_import_failure:
@@ -360,11 +209,6 @@ netlbl_import_failure:
 }
 #endif /* CONFIG_NETLABEL */
 
-<<<<<<< HEAD
-int ebitmap_contains(struct ebitmap *e1, struct ebitmap *e2)
-{
-	struct ebitmap_node *n1, *n2;
-=======
 /*
  * Check to see if all the bits set in e2 are also set in e1. Optionally,
  * if last_e2bit is non-zero, the highest set bit in e2 cannot exceed
@@ -374,7 +218,6 @@ int ebitmap_contains(const struct ebitmap *e1, const struct ebitmap *e2,
 		     u32 last_e2bit)
 {
 	const struct ebitmap_node *n1, *n2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (e1->highbit < e2->highbit)
@@ -382,20 +225,12 @@ int ebitmap_contains(const struct ebitmap *e1, const struct ebitmap *e2,
 
 	n1 = e1->node;
 	n2 = e2->node;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (n1 && n2 && (n1->startbit <= n2->startbit)) {
 		if (n1->startbit < n2->startbit) {
 			n1 = n1->next;
 			continue;
 		}
-<<<<<<< HEAD
-		for (i = 0; i < EBITMAP_UNIT_NUMS; i++) {
-			if ((n1->maps[i] & n2->maps[i]) != n2->maps[i])
-				return 0;
-=======
 		for (i = EBITMAP_UNIT_NUMS - 1; (i >= 0) && !n2->maps[i];)
 			i--; /* Skip trailing NULL map entries */
 		if (last_e2bit && (i >= 0)) {
@@ -409,7 +244,6 @@ int ebitmap_contains(const struct ebitmap *e1, const struct ebitmap *e2,
 			if ((n1->maps[i] & n2->maps[i]) != n2->maps[i])
 				return 0;
 			i--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		n1 = n1->next;
@@ -422,15 +256,9 @@ int ebitmap_contains(const struct ebitmap *e1, const struct ebitmap *e2,
 	return 1;
 }
 
-<<<<<<< HEAD
-int ebitmap_get_bit(struct ebitmap *e, unsigned long bit)
-{
-	struct ebitmap_node *n;
-=======
 int ebitmap_get_bit(const struct ebitmap *e, unsigned long bit)
 {
 	const struct ebitmap_node *n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (e->highbit < bit)
 		return 0;
@@ -471,13 +299,8 @@ int ebitmap_set_bit(struct ebitmap *e, unsigned long bit, int value)
 					 * within the bitmap
 					 */
 					if (prev)
-<<<<<<< HEAD
-						e->highbit = prev->startbit
-							     + EBITMAP_SIZE;
-=======
 						e->highbit = prev->startbit +
 							     EBITMAP_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					else
 						e->highbit = 0;
 				}
@@ -485,11 +308,7 @@ int ebitmap_set_bit(struct ebitmap *e, unsigned long bit, int value)
 					prev->next = n->next;
 				else
 					e->node = n->next;
-<<<<<<< HEAD
-				kfree(n);
-=======
 				kmem_cache_free(ebitmap_node_cachep, n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			return 0;
 		}
@@ -500,11 +319,7 @@ int ebitmap_set_bit(struct ebitmap *e, unsigned long bit, int value)
 	if (!value)
 		return 0;
 
-<<<<<<< HEAD
-	new = kzalloc(sizeof(*new), GFP_ATOMIC);
-=======
 	new = kmem_cache_zalloc(ebitmap_node_cachep, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!new)
 		return -ENOMEM;
 
@@ -537,32 +352,20 @@ void ebitmap_destroy(struct ebitmap *e)
 	while (n) {
 		temp = n;
 		n = n->next;
-<<<<<<< HEAD
-		kfree(temp);
-=======
 		kmem_cache_free(ebitmap_node_cachep, temp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	e->highbit = 0;
 	e->node = NULL;
-<<<<<<< HEAD
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ebitmap_read(struct ebitmap *e, void *fp)
 {
 	struct ebitmap_node *n = NULL;
 	u32 mapunit, count, startbit, index;
-<<<<<<< HEAD
-	u64 map;
-=======
 	__le32 ebitmap_start;
 	u64 map;
 	__le64 mapbits;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le32 buf[3];
 	int rc, i;
 
@@ -577,13 +380,8 @@ int ebitmap_read(struct ebitmap *e, void *fp)
 	count = le32_to_cpu(buf[2]);
 
 	if (mapunit != BITS_PER_U64) {
-<<<<<<< HEAD
-		printk(KERN_ERR "SELinux: ebitmap: map size %u does not "
-		       "match my size %Zd (high bit was %d)\n",
-=======
 		pr_err("SELinux: ebitmap: map size %u does not "
 		       "match my size %zd (high bit was %d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       mapunit, BITS_PER_U64, e->highbit);
 		goto bad;
 	}
@@ -597,18 +395,6 @@ int ebitmap_read(struct ebitmap *e, void *fp)
 		goto ok;
 	}
 
-<<<<<<< HEAD
-	for (i = 0; i < count; i++) {
-		rc = next_entry(&startbit, fp, sizeof(u32));
-		if (rc < 0) {
-			printk(KERN_ERR "SELinux: ebitmap: truncated map\n");
-			goto bad;
-		}
-		startbit = le32_to_cpu(startbit);
-
-		if (startbit & (mapunit - 1)) {
-			printk(KERN_ERR "SELinux: ebitmap start bit (%d) is "
-=======
 	if (e->highbit && !count)
 		goto bad;
 
@@ -622,17 +408,12 @@ int ebitmap_read(struct ebitmap *e, void *fp)
 
 		if (startbit & (mapunit - 1)) {
 			pr_err("SELinux: ebitmap start bit (%d) is "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "not a multiple of the map unit size (%u)\n",
 			       startbit, mapunit);
 			goto bad;
 		}
 		if (startbit > e->highbit - mapunit) {
-<<<<<<< HEAD
-			printk(KERN_ERR "SELinux: ebitmap start bit (%d) is "
-=======
 			pr_err("SELinux: ebitmap start bit (%d) is "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "beyond the end of the bitmap (%u)\n",
 			       startbit, (e->highbit - mapunit));
 			goto bad;
@@ -640,17 +421,10 @@ int ebitmap_read(struct ebitmap *e, void *fp)
 
 		if (!n || startbit >= n->startbit + EBITMAP_SIZE) {
 			struct ebitmap_node *tmp;
-<<<<<<< HEAD
-			tmp = kzalloc(sizeof(*tmp), GFP_KERNEL);
-			if (!tmp) {
-				printk(KERN_ERR
-				       "SELinux: ebitmap: out of memory\n");
-=======
 			tmp = kmem_cache_zalloc(ebitmap_node_cachep,
 						GFP_KERNEL);
 			if (!tmp) {
 				pr_err("SELinux: ebitmap: out of memory\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rc = -ENOMEM;
 				goto bad;
 			}
@@ -662,31 +436,18 @@ int ebitmap_read(struct ebitmap *e, void *fp)
 				e->node = tmp;
 			n = tmp;
 		} else if (startbit <= n->startbit) {
-<<<<<<< HEAD
-			printk(KERN_ERR "SELinux: ebitmap: start bit %d"
-=======
 			pr_err("SELinux: ebitmap: start bit %d"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       " comes after start bit %d\n",
 			       startbit, n->startbit);
 			goto bad;
 		}
 
-<<<<<<< HEAD
-		rc = next_entry(&map, fp, sizeof(u64));
-		if (rc < 0) {
-			printk(KERN_ERR "SELinux: ebitmap: truncated map\n");
-			goto bad;
-		}
-		map = le64_to_cpu(map);
-=======
 		rc = next_entry(&mapbits, fp, sizeof(u64));
 		if (rc < 0) {
 			pr_err("SELinux: ebitmap: truncated map\n");
 			goto bad;
 		}
 		map = le64_to_cpu(mapbits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		index = (startbit - n->startbit) / EBITMAP_UNIT_SIZE;
 		while (map) {
@@ -705,11 +466,7 @@ bad:
 	goto out;
 }
 
-<<<<<<< HEAD
-int ebitmap_write(struct ebitmap *e, void *fp)
-=======
 int ebitmap_write(const struct ebitmap *e, void *fp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ebitmap_node *n;
 	u32 count;
@@ -722,12 +479,8 @@ int ebitmap_write(const struct ebitmap *e, void *fp)
 	count = 0;
 	last_bit = 0;
 	last_startbit = -1;
-<<<<<<< HEAD
-	ebitmap_for_each_positive_bit(e, n, bit) {
-=======
 	ebitmap_for_each_positive_bit(e, n, bit)
 	{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rounddown(bit, (int)BITS_PER_U64) > last_startbit) {
 			count++;
 			last_startbit = rounddown(bit, BITS_PER_U64);
@@ -743,12 +496,8 @@ int ebitmap_write(const struct ebitmap *e, void *fp)
 
 	map = 0;
 	last_startbit = INT_MIN;
-<<<<<<< HEAD
-	ebitmap_for_each_positive_bit(e, n, bit) {
-=======
 	ebitmap_for_each_positive_bit(e, n, bit)
 	{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rounddown(bit, (int)BITS_PER_U64) > last_startbit) {
 			__le64 buf64[1];
 
@@ -793,8 +542,6 @@ int ebitmap_write(const struct ebitmap *e, void *fp)
 	}
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 u32 ebitmap_hash(const struct ebitmap *e, u32 hash)
 {
@@ -815,4 +562,3 @@ void __init ebitmap_cache_init(void)
 						sizeof(struct ebitmap_node), 0,
 						SLAB_PANIC, NULL);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

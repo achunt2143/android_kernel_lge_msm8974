@@ -10,13 +10,6 @@ Required properties:
   - reg : the I2C address of the device for I2C, the chip select
           number for SPI.
 
-<<<<<<< HEAD
-Example:
-
-codec: wm8741@1a {
-	compatible = "wlf,wm8741";
-	reg = <0x1a>;
-=======
 Optional properties:
 
   - diff-mode: Differential output mode configuration. Default value for field
@@ -33,5 +26,4 @@ wm8741: codec@1a {
 	reg = <0x1a>;
 
 	diff-mode = <3>;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

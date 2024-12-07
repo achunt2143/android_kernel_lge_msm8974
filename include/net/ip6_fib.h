@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Linux INET6 implementation 
  *
  *	Authors:
  *	Pedro Roque		<roque@di.fc.ul.pt>	
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _IP6_FIB_H
@@ -23,12 +12,6 @@
 #include <linux/ipv6_route.h>
 #include <linux/rtnetlink.h>
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-#include <net/dst.h>
-#include <net/flow.h>
-#include <net/netlink.h>
-#include <net/inetpeer.h>
-=======
 #include <linux/notifier.h>
 #include <net/dst.h>
 #include <net/flow.h>
@@ -38,7 +21,6 @@
 #include <net/fib_notifier.h>
 #include <linux/indirect_call_wrapper.h>
 #include <uapi/linux/bpf.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_IPV6_MULTIPLE_TABLES
 #define FIB6_TABLE_HASHSZ 256
@@ -46,14 +28,10 @@
 #define FIB6_TABLE_HASHSZ 1
 #endif
 
-<<<<<<< HEAD
-struct rt6_info;
-=======
 #define RT6_DEBUG 2
 
 struct rt6_info;
 struct fib6_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fib6_config {
 	u32		fc_table;
@@ -63,15 +41,11 @@ struct fib6_config {
 	int		fc_ifindex;
 	u32		fc_flags;
 	u32		fc_protocol;
-<<<<<<< HEAD
-	u32		fc_type;	/* only 8 bits are used */
-=======
 	u16		fc_type;        /* only 8 bits are used */
 	u16		fc_delete_all_nh : 1,
 			fc_ignore_dev_down:1,
 			__unused : 14;
 	u32		fc_nh_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct in6_addr	fc_dst;
 	struct in6_addr	fc_src;
@@ -81,25 +55,6 @@ struct fib6_config {
 	unsigned long	fc_expires;
 	struct nlattr	*fc_mx;
 	int		fc_mx_len;
-<<<<<<< HEAD
-
-	struct nl_info	fc_nlinfo;
-};
-
-struct fib6_node {
-	struct fib6_node	*parent;
-	struct fib6_node	*left;
-	struct fib6_node	*right;
-#ifdef CONFIG_IPV6_SUBTREES
-	struct fib6_node	*subtree;
-#endif
-	struct rt6_info		*leaf;
-
-	__u16			fn_bit;		/* bit key */
-	__u16			fn_flags;
-	__u32			fn_sernum;
-	struct rt6_info		*rr_ptr;
-=======
 	int		fc_mp_len;
 	struct nlattr	*fc_mp;
 
@@ -128,15 +83,10 @@ struct fib6_node {
 struct fib6_gc_args {
 	int			timeout;
 	int			more;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifndef CONFIG_IPV6_SUBTREES
 #define FIB6_SUBTREE(fn)	NULL
-<<<<<<< HEAD
-#else
-#define FIB6_SUBTREE(fn)	((fn)->subtree)
-=======
 
 static inline bool fib6_routes_require_src(const struct net *net)
 {
@@ -164,7 +114,6 @@ static inline void fib6_routes_require_src_dec(struct net *net)
 }
 
 #define FIB6_SUBTREE(fn)	(rcu_dereference_protected((fn)->subtree, 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -179,43 +128,6 @@ struct rt6key {
 
 struct fib6_table;
 
-<<<<<<< HEAD
-struct rt6_info {
-	struct dst_entry		dst;
-
-	/*
-	 * Tail elements of dst_entry (__refcnt etc.)
-	 * and these elements (rarely used in hot path) are in
-	 * the same cache line.
-	 */
-	struct fib6_table		*rt6i_table;
-	struct fib6_node		*rt6i_node;
-
-	struct in6_addr			rt6i_gateway;
-
-	atomic_t			rt6i_ref;
-
-	/* These are in a separate cache line. */
-	struct rt6key			rt6i_dst ____cacheline_aligned_in_smp;
-	u32				rt6i_flags;
-	struct rt6key			rt6i_src;
-	struct rt6key			rt6i_prefsrc;
-	u32				rt6i_metric;
-	u32				rt6i_peer_genid;
-
-	struct inet6_dev		*rt6i_idev;
-	struct inet_peer		*rt6i_peer;
-
-#ifdef CONFIG_XFRM
-	u32				rt6i_flow_cache_genid;
-#endif
-	/* more non-fragment space at head required */
-	unsigned short			rt6i_nfheader_len;
-
-	u8				rt6i_protocol;
-};
-
-=======
 struct rt6_exception_bucket {
 	struct hlist_head	chain;
 	int			depth;
@@ -322,71 +234,11 @@ struct fib6_result {
 	for (rt = (w)->leaf; rt;					\
 	     rt = rcu_dereference_protected(rt->fib6_next, 1))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct inet6_dev *ip6_dst_idev(struct dst_entry *dst)
 {
 	return ((struct rt6_info *)dst)->rt6i_idev;
 }
 
-<<<<<<< HEAD
-static inline void rt6_clean_expires(struct rt6_info *rt)
-{
-	if (!(rt->rt6i_flags & RTF_EXPIRES) && rt->dst.from)
-		dst_release(rt->dst.from);
-
-	rt->rt6i_flags &= ~RTF_EXPIRES;
-	rt->dst.from = NULL;
-}
-
-static inline void rt6_set_expires(struct rt6_info *rt, unsigned long expires)
-{
-	if (!(rt->rt6i_flags & RTF_EXPIRES) && rt->dst.from)
-		dst_release(rt->dst.from);
-
-	rt->rt6i_flags |= RTF_EXPIRES;
-	rt->dst.expires = expires;
-}
-
-static inline void rt6_update_expires(struct rt6_info *rt, int timeout)
-{
-	if (!(rt->rt6i_flags & RTF_EXPIRES)) {
-		if (rt->dst.from)
-			dst_release(rt->dst.from);
-		/* dst_set_expires relies on expires == 0 
-		 * if it has not been set previously.
-		 */
-		rt->dst.expires = 0;
-	}
-
-	dst_set_expires(&rt->dst, timeout);
-	rt->rt6i_flags |= RTF_EXPIRES;
-}
-
-static inline void rt6_set_from(struct rt6_info *rt, struct rt6_info *from)
-{
-	struct dst_entry *new = (struct dst_entry *) from;
-
-	if (!(rt->rt6i_flags & RTF_EXPIRES) && rt->dst.from) {
-		if (new == rt->dst.from)
-			return;
-		dst_release(rt->dst.from);
-	}
-
-	rt->rt6i_flags &= ~RTF_EXPIRES;
-	rt->dst.from = new;
-	dst_hold(new);
-}
-
-struct fib6_walker_t {
-	struct list_head lh;
-	struct fib6_node *root, *node;
-	struct rt6_info *leaf;
-	unsigned char state;
-	unsigned char prune;
-	unsigned int skip;
-	unsigned int count;
-	int (*func)(struct fib6_walker_t *);
-=======
 static inline bool fib6_requires_src(const struct fib6_info *rt)
 {
 	return rt->fib6_src.plen > 0;
@@ -509,19 +361,10 @@ struct fib6_walker {
 	unsigned int count;
 	unsigned int skip_in_node;
 	int (*func)(struct fib6_walker *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *args;
 };
 
 struct rt6_statistics {
-<<<<<<< HEAD
-	__u32		fib_nodes;
-	__u32		fib_route_nodes;
-	__u32		fib_rt_alloc;		/* permanent routes	*/
-	__u32		fib_rt_entries;		/* rt entries in table	*/
-	__u32		fib_rt_cache;		/* cache routes		*/
-	__u32		fib_discarded_routes;
-=======
 	__u32		fib_nodes;		/* all fib6 nodes */
 	__u32		fib_route_nodes;	/* intermediate nodes */
 	__u32		fib_rt_entries;		/* rt entries in fib table */
@@ -530,7 +373,6 @@ struct rt6_statistics {
 
 	/* The following stat is not protected by any lock */
 	atomic_t	fib_rt_alloc;		/* total number of routes alloced */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define RTN_TL_ROOT	0x0001
@@ -546,10 +388,6 @@ struct rt6_statistics {
 struct fib6_table {
 	struct hlist_node	tb6_hlist;
 	u32			tb6_id;
-<<<<<<< HEAD
-	rwlock_t		tb6_lock;
-	struct fib6_node	tb6_root;
-=======
 	spinlock_t		tb6_lock;
 	struct fib6_node	tb6_root;
 	struct inet_peer_base	tb6_peers;
@@ -557,7 +395,6 @@ struct fib6_table {
 	unsigned int		fib_seq;
 	struct hlist_head       tb6_gc_hlist;	/* GC candidates */
 #define RT6_TABLE_HAS_DFLT_ROUTER	BIT(0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define RT6_TABLE_UNSPEC	RT_TABLE_UNSPEC
@@ -578,9 +415,6 @@ struct fib6_table {
 
 typedef struct rt6_info *(*pol_lookup_t)(struct net *,
 					 struct fib6_table *,
-<<<<<<< HEAD
-					 struct flowi6 *, int);
-=======
 					 struct flowi6 *,
 					 const struct sk_buff *, int);
 
@@ -589,57 +423,11 @@ struct fib6_entry_notifier_info {
 	struct fib6_info *rt;
 	unsigned int nsiblings;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	exported functions
  */
 
-<<<<<<< HEAD
-extern struct fib6_table        *fib6_get_table(struct net *net, u32 id);
-extern struct fib6_table        *fib6_new_table(struct net *net, u32 id);
-extern struct dst_entry         *fib6_rule_lookup(struct net *net,
-						  struct flowi6 *fl6, int flags,
-						  pol_lookup_t lookup);
-
-extern struct fib6_node		*fib6_lookup(struct fib6_node *root,
-					     const struct in6_addr *daddr,
-					     const struct in6_addr *saddr);
-
-struct fib6_node		*fib6_locate(struct fib6_node *root,
-					     const struct in6_addr *daddr, int dst_len,
-					     const struct in6_addr *saddr, int src_len);
-
-extern void			fib6_clean_all_ro(struct net *net,
-					       int (*func)(struct rt6_info *, void *arg),
-					       int prune, void *arg);
-
-extern void			fib6_clean_all(struct net *net,
-					       int (*func)(struct rt6_info *, void *arg),
-					       int prune, void *arg);
-
-extern int			fib6_add(struct fib6_node *root,
-					 struct rt6_info *rt,
-					 struct nl_info *info);
-
-extern int			fib6_del(struct rt6_info *rt,
-					 struct nl_info *info);
-
-extern void			inet6_rt_notify(int event, struct rt6_info *rt,
-						struct nl_info *info);
-
-extern void			fib6_run_gc(unsigned long expires,
-					    struct net *net, bool force);
-
-extern void			fib6_gc_cleanup(void);
-
-extern int			fib6_init(void);
-
-#ifdef CONFIG_IPV6_MULTIPLE_TABLES
-extern int			fib6_rules_init(void);
-extern void			fib6_rules_cleanup(void);
-#else
-=======
 struct fib6_table *fib6_get_table(struct net *net, u32 id);
 struct fib6_table *fib6_new_table(struct net *net, u32 id);
 struct dst_entry *fib6_rule_lookup(struct net *net, struct flowi6 *fl6,
@@ -869,7 +657,6 @@ static inline bool fib6_has_custom_rules(const struct net *net)
 {
 	return false;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int               fib6_rules_init(void)
 {
 	return 0;
@@ -878,8 +665,6 @@ static inline void              fib6_rules_cleanup(void)
 {
 	return ;
 }
-<<<<<<< HEAD
-=======
 static inline bool fib6_rule_default(const struct fib_rule *rule)
 {
 	return true;
@@ -900,6 +685,5 @@ static inline bool fib6_rules_early_flow_dissect(struct net *net,
 {
 	return false;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #endif

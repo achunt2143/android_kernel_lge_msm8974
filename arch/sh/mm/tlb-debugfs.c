@@ -149,29 +149,10 @@ static const struct file_operations tlb_debugfs_fops = {
 
 static int __init tlb_debugfs_init(void)
 {
-<<<<<<< HEAD
-	struct dentry *itlb, *utlb;
-
-	itlb = debugfs_create_file("itlb", S_IRUSR, arch_debugfs_dir,
-				   (unsigned int *)TLB_TYPE_ITLB,
-				   &tlb_debugfs_fops);
-	if (unlikely(!itlb))
-		return -ENOMEM;
-
-	utlb = debugfs_create_file("utlb", S_IRUSR, arch_debugfs_dir,
-				   (unsigned int *)TLB_TYPE_UTLB,
-				   &tlb_debugfs_fops);
-	if (unlikely(!utlb)) {
-		debugfs_remove(itlb);
-		return -ENOMEM;
-	}
-
-=======
 	debugfs_create_file("itlb", S_IRUSR, arch_debugfs_dir,
 			    (void *)TLB_TYPE_ITLB, &tlb_debugfs_fops);
 	debugfs_create_file("utlb", S_IRUSR, arch_debugfs_dir,
 			    (void *)TLB_TYPE_UTLB, &tlb_debugfs_fops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 module_init(tlb_debugfs_init);

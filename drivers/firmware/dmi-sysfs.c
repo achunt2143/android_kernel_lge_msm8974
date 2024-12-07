@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * dmi-sysfs.c
  *
@@ -29,10 +26,7 @@
 #include <linux/slab.h>
 #include <linux/list.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include <asm/dmi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_ENTRY_TYPE 255 /* Most of these aren't used, but we consider
 			      the top entry type is only 8 bits */
@@ -268,11 +262,7 @@ struct dmi_system_event_log {
 	u8	header_format;
 	u8	type_descriptors_supported_count;
 	u8	per_log_type_descriptor_length;
-<<<<<<< HEAD
-	u8	supported_log_type_descriptos[0];
-=======
 	u8	supported_log_type_descriptos[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define DMI_SYSFS_SEL_FIELD(_field) \
@@ -312,16 +302,6 @@ static struct attribute *dmi_sysfs_sel_attrs[] = {
 	&dmi_sysfs_attr_sel_per_log_type_descriptor_length.attr,
 	NULL,
 };
-<<<<<<< HEAD
-
-
-static struct kobj_type dmi_system_event_log_ktype = {
-	.release = dmi_entry_free,
-	.sysfs_ops = &dmi_sysfs_specialize_attr_ops,
-	.default_attrs = dmi_sysfs_sel_attrs,
-};
-
-=======
 ATTRIBUTE_GROUPS(dmi_sysfs_sel);
 
 static const struct kobj_type dmi_system_event_log_ktype = {
@@ -331,7 +311,6 @@ static const struct kobj_type dmi_system_event_log_ktype = {
 };
 
 #ifdef CONFIG_HAS_IOPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef u8 (*sel_io_reader)(const struct dmi_system_event_log *sel,
 			    loff_t offset);
 
@@ -396,10 +375,7 @@ static ssize_t dmi_sel_raw_read_io(struct dmi_sysfs_entry *entry,
 
 	return wrote;
 }
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t dmi_sel_raw_read_phys32(struct dmi_sysfs_entry *entry,
 				       const struct dmi_system_event_log *sel,
@@ -408,11 +384,7 @@ static ssize_t dmi_sel_raw_read_phys32(struct dmi_sysfs_entry *entry,
 	u8 __iomem *mapped;
 	ssize_t wrote = 0;
 
-<<<<<<< HEAD
-	mapped = ioremap(sel->access_method_address, sel->area_length);
-=======
 	mapped = dmi_remap(sel->access_method_address, sel->area_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mapped)
 		return -EIO;
 
@@ -422,11 +394,7 @@ static ssize_t dmi_sel_raw_read_phys32(struct dmi_sysfs_entry *entry,
 		wrote++;
 	}
 
-<<<<<<< HEAD
-	iounmap(mapped);
-=======
 	dmi_unmap(mapped);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return wrote;
 }
 
@@ -443,34 +411,21 @@ static ssize_t dmi_sel_raw_read_helper(struct dmi_sysfs_entry *entry,
 	memcpy(&sel, dh, sizeof(sel));
 
 	switch (sel.access_method) {
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_HAS_IOPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DMI_SEL_ACCESS_METHOD_IO8:
 	case DMI_SEL_ACCESS_METHOD_IO2x8:
 	case DMI_SEL_ACCESS_METHOD_IO16:
 		return dmi_sel_raw_read_io(entry, &sel, state->buf,
 					   state->pos, state->count);
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DMI_SEL_ACCESS_METHOD_PHYS32:
 		return dmi_sel_raw_read_phys32(entry, &sel, state->buf,
 					       state->pos, state->count);
 	case DMI_SEL_ACCESS_METHOD_GPNV:
-<<<<<<< HEAD
-		pr_info("dmi-sysfs: GPNV support missing.\n");
-		return -EIO;
-	default:
-		pr_info("dmi-sysfs: Unknown access method %02x\n",
-=======
 		pr_info_ratelimited("dmi-sysfs: GPNV support missing.\n");
 		return -EIO;
 	default:
 		pr_info_ratelimited("dmi-sysfs: Unknown access method %02x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sel.access_method);
 		return -EIO;
 	}
@@ -567,10 +522,7 @@ static struct attribute *dmi_sysfs_entry_attrs[] = {
 	&dmi_sysfs_attr_entry_position.attr,
 	NULL,
 };
-<<<<<<< HEAD
-=======
 ATTRIBUTE_GROUPS(dmi_sysfs_entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t dmi_entry_raw_read_helper(struct dmi_sysfs_entry *entry,
 					 const struct dmi_header *dh,
@@ -608,33 +560,19 @@ static const struct bin_attribute dmi_entry_raw_attr = {
 static void dmi_sysfs_entry_release(struct kobject *kobj)
 {
 	struct dmi_sysfs_entry *entry = to_entry(kobj);
-<<<<<<< HEAD
-	sysfs_remove_bin_file(&entry->kobj, &dmi_entry_raw_attr);
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&entry_list_lock);
 	list_del(&entry->list);
 	spin_unlock(&entry_list_lock);
 	kfree(entry);
 }
 
-<<<<<<< HEAD
-static struct kobj_type dmi_sysfs_entry_ktype = {
-	.release = dmi_sysfs_entry_release,
-	.sysfs_ops = &dmi_sysfs_attr_ops,
-	.default_attrs = dmi_sysfs_entry_attrs,
-};
-
-static struct kobject *dmi_kobj;
-=======
 static const struct kobj_type dmi_sysfs_entry_ktype = {
 	.release = dmi_sysfs_entry_release,
 	.sysfs_ops = &dmi_sysfs_attr_ops,
 	.default_groups = dmi_sysfs_entry_groups,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct kset *dmi_kset;
 
 /* Global count of all instances seen.  Only for setup */
@@ -669,27 +607,16 @@ static void __init dmi_sysfs_register_handle(const struct dmi_header *dh,
 	*ret = kobject_init_and_add(&entry->kobj, &dmi_sysfs_entry_ktype, NULL,
 				    "%d-%d", dh->type, entry->instance);
 
-<<<<<<< HEAD
-	if (*ret) {
-		kfree(entry);
-		return;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Thread on the global list for cleanup */
 	spin_lock(&entry_list_lock);
 	list_add_tail(&entry->list, &entry_list);
 	spin_unlock(&entry_list_lock);
 
-<<<<<<< HEAD
-=======
 	if (*ret) {
 		kobject_put(&entry->kobj);
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Handle specializations by type */
 	switch (dh->type) {
 	case DMI_ENTRY_SYSTEM_EVENT_LOG:
@@ -727,19 +654,6 @@ static void cleanup_entry_list(void)
 
 static int __init dmi_sysfs_init(void)
 {
-<<<<<<< HEAD
-	int error = -ENOMEM;
-	int val;
-
-	/* Set up our directory */
-	dmi_kobj = kobject_create_and_add("dmi", firmware_kobj);
-	if (!dmi_kobj)
-		goto err;
-
-	dmi_kset = kset_create_and_add("entries", NULL, dmi_kobj);
-	if (!dmi_kset)
-		goto err;
-=======
 	int error;
 	int val;
 
@@ -754,7 +668,6 @@ static int __init dmi_sysfs_init(void)
 		error = -ENOMEM;
 		goto err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = 0;
 	error = dmi_walk(dmi_sysfs_register_handle, &val);
@@ -771,10 +684,6 @@ static int __init dmi_sysfs_init(void)
 err:
 	cleanup_entry_list();
 	kset_unregister(dmi_kset);
-<<<<<<< HEAD
-	kobject_put(dmi_kobj);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -784,10 +693,6 @@ static void __exit dmi_sysfs_exit(void)
 	pr_debug("dmi-sysfs: unloading.\n");
 	cleanup_entry_list();
 	kset_unregister(dmi_kset);
-<<<<<<< HEAD
-	kobject_put(dmi_kobj);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(dmi_sysfs_init);

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * balloc.c
  *
@@ -9,14 +6,6 @@
  *	Block allocation handling routines for the OSTA-UDF(tm) filesystem.
  *
  * COPYRIGHT
-<<<<<<< HEAD
- *	This file is distributed under the terms of the GNU General Public
- *	License (GPL). Copies of the GPL can be obtained from:
- *		ftp://prep.ai.mit.edu/pub/gnu/GPL
- *	Each contributing author retains all rights to their own work.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  (C) 1999-2001 Ben Fennema
  *  (C) 1999 Stelias Computing Inc
  *
@@ -28,10 +17,6 @@
 
 #include "udfdecl.h"
 
-<<<<<<< HEAD
-#include <linux/buffer_head.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bitops.h>
 
 #include "udf_i.h"
@@ -47,25 +32,13 @@ static int read_block_bitmap(struct super_block *sb,
 			     unsigned long bitmap_nr)
 {
 	struct buffer_head *bh = NULL;
-<<<<<<< HEAD
-	int retval = 0;
-=======
 	int i;
 	int max_bits, off, count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kernel_lb_addr loc;
 
 	loc.logicalBlockNum = bitmap->s_extPosition;
 	loc.partitionReferenceNum = UDF_SB(sb)->s_partition;
 
-<<<<<<< HEAD
-	bh = udf_tread(sb, udf_get_lb_pblock(sb, &loc, block));
-	if (!bh)
-		retval = -EIO;
-
-	bitmap->s_block_bitmap[bitmap_nr] = bh;
-	return retval;
-=======
 	bh = sb_bread(sb, udf_get_lb_pblock(sb, &loc, block));
 	bitmap->s_block_bitmap[bitmap_nr] = bh;
 	if (!bh)
@@ -94,7 +67,6 @@ static int read_block_bitmap(struct super_block *sb,
 		if (udf_test_bit(i + off, bh->b_data))
 			return -EFSCORRUPTED;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __load_block_bitmap(struct super_block *sb,
@@ -105,21 +77,6 @@ static int __load_block_bitmap(struct super_block *sb,
 	int nr_groups = bitmap->s_nr_groups;
 
 	if (block_group >= nr_groups) {
-<<<<<<< HEAD
-		udf_debug("block_group (%d) > nr_groups (%d)\n",
-			  block_group, nr_groups);
-	}
-
-	if (bitmap->s_block_bitmap[block_group]) {
-		return block_group;
-	} else {
-		retval = read_block_bitmap(sb, bitmap, block_group,
-					   block_group);
-		if (retval < 0)
-			return retval;
-		return block_group;
-	}
-=======
 		udf_debug("block_group (%u) > nr_groups (%d)\n",
 			  block_group, nr_groups);
 	}
@@ -132,7 +89,6 @@ static int __load_block_bitmap(struct super_block *sb,
 		return retval;
 
 	return block_group;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int load_block_bitmap(struct super_block *sb,
@@ -185,11 +141,7 @@ static void udf_bitmap_free_blocks(struct super_block *sb,
 	partmap = &sbi->s_partmaps[bloc->partitionReferenceNum];
 	if (bloc->logicalBlockNum + count < count ||
 	    (bloc->logicalBlockNum + count) > partmap->s_partition_len) {
-<<<<<<< HEAD
-		udf_debug("%d < %d || %d + %d > %d\n",
-=======
 		udf_debug("%u < %d || %u + %u > %u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  bloc->logicalBlockNum, 0,
 			  bloc->logicalBlockNum, count,
 			  partmap->s_partition_len);
@@ -218,15 +170,9 @@ static void udf_bitmap_free_blocks(struct super_block *sb,
 		bh = bitmap->s_block_bitmap[bitmap_nr];
 		for (i = 0; i < count; i++) {
 			if (udf_set_bit(bit + i, bh->b_data)) {
-<<<<<<< HEAD
-				udf_debug("bit %ld already set\n", bit + i);
-				udf_debug("byte=%2x\n",
-					  ((char *)bh->b_data)[(bit + i) >> 3]);
-=======
 				udf_debug("bit %lu already set\n", bit + i);
 				udf_debug("byte=%2x\n",
 					  ((__u8 *)bh->b_data)[(bit + i) >> 3]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		udf_add_free_space(sb, sbi->s_partition, count);
@@ -248,13 +194,8 @@ static int udf_bitmap_prealloc_blocks(struct super_block *sb,
 {
 	struct udf_sb_info *sbi = UDF_SB(sb);
 	int alloc_count = 0;
-<<<<<<< HEAD
-	int bit, block, block_group, group_start;
-	int nr_groups, bitmap_nr;
-=======
 	int bit, block, block_group;
 	int bitmap_nr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *bh;
 	__u32 part_len;
 
@@ -267,15 +208,8 @@ static int udf_bitmap_prealloc_blocks(struct super_block *sb,
 		block_count = part_len - first_block;
 
 	do {
-<<<<<<< HEAD
-		nr_groups = udf_compute_nr_groups(sb, partition);
 		block = first_block + (sizeof(struct spaceBitmapDesc) << 3);
 		block_group = block >> (sb->s_blocksize_bits + 3);
-		group_start = block_group ? 0 : sizeof(struct spaceBitmapDesc);
-=======
-		block = first_block + (sizeof(struct spaceBitmapDesc) << 3);
-		block_group = block >> (sb->s_blocksize_bits + 3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		bitmap_nr = load_block_bitmap(sb, bitmap, block_group);
 		if (bitmap_nr < 0)
@@ -301,22 +235,11 @@ out:
 	return alloc_count;
 }
 
-<<<<<<< HEAD
-static int udf_bitmap_new_block(struct super_block *sb,
-=======
 static udf_pblk_t udf_bitmap_new_block(struct super_block *sb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct udf_bitmap *bitmap, uint16_t partition,
 				uint32_t goal, int *err)
 {
 	struct udf_sb_info *sbi = UDF_SB(sb);
-<<<<<<< HEAD
-	int newbit, bit = 0, block, block_group, group_start;
-	int end_goal, nr_groups, bitmap_nr, i;
-	struct buffer_head *bh = NULL;
-	char *ptr;
-	int newblock = 0;
-=======
 	int newbit, bit = 0;
 	udf_pblk_t block;
 	int block_group, group_start;
@@ -324,7 +247,6 @@ static udf_pblk_t udf_bitmap_new_block(struct super_block *sb,
 	struct buffer_head *bh = NULL;
 	char *ptr;
 	udf_pblk_t newblock = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*err = -ENOSPC;
 	mutex_lock(&sbi->s_alloc_mutex);
@@ -422,8 +344,6 @@ got_block:
 	newblock = bit + (block_group << (sb->s_blocksize_bits + 3)) -
 		(sizeof(struct spaceBitmapDesc) << 3);
 
-<<<<<<< HEAD
-=======
 	if (newblock >= sbi->s_partmaps[partition].s_partition_len) {
 		/*
 		 * Ran off the end of the bitmap, and bits following are
@@ -435,7 +355,6 @@ got_block:
 		goto error_return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!udf_clear_bit(bit, bh->b_data)) {
 		udf_debug("bit already cleared for block %d\n", bit);
 		goto repeat;
@@ -467,21 +386,13 @@ static void udf_table_free_blocks(struct super_block *sb,
 	struct kernel_lb_addr eloc;
 	struct extent_position oepos, epos;
 	int8_t etype;
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct udf_inode_info *iinfo;
 
 	mutex_lock(&sbi->s_alloc_mutex);
 	partmap = &sbi->s_partmaps[bloc->partitionReferenceNum];
 	if (bloc->logicalBlockNum + count < count ||
 	    (bloc->logicalBlockNum + count) > partmap->s_partition_len) {
-<<<<<<< HEAD
-		udf_debug("%d < %d || %d + %d > %d\n",
-=======
 		udf_debug("%u < %d || %u + %u > %u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  bloc->logicalBlockNum, 0,
 			  bloc->logicalBlockNum, count,
 			  partmap->s_partition_len);
@@ -541,10 +452,6 @@ static void udf_table_free_blocks(struct super_block *sb,
 		}
 
 		if (epos.bh != oepos.bh) {
-<<<<<<< HEAD
-			i = -1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			oepos.block = epos.block;
 			brelse(oepos.bh);
 			get_bh(epos.bh);
@@ -570,12 +477,6 @@ static void udf_table_free_blocks(struct super_block *sb,
 		 */
 
 		int adsize;
-<<<<<<< HEAD
-		struct short_ad *sad = NULL;
-		struct long_ad *lad = NULL;
-		struct allocExtDesc *aed;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		eloc.logicalBlockNum = start;
 		elen = EXT_RECORDED_ALLOCATED |
@@ -592,104 +493,6 @@ static void udf_table_free_blocks(struct super_block *sb,
 		}
 
 		if (epos.offset + (2 * adsize) > sb->s_blocksize) {
-<<<<<<< HEAD
-			unsigned char *sptr, *dptr;
-			int loffset;
-
-			brelse(oepos.bh);
-			oepos = epos;
-
-			/* Steal a block from the extent being free'd */
-			epos.block.logicalBlockNum = eloc.logicalBlockNum;
-			eloc.logicalBlockNum++;
-			elen -= sb->s_blocksize;
-
-			epos.bh = udf_tread(sb,
-					udf_get_lb_pblock(sb, &epos.block, 0));
-			if (!epos.bh) {
-				brelse(oepos.bh);
-				goto error_return;
-			}
-			aed = (struct allocExtDesc *)(epos.bh->b_data);
-			aed->previousAllocExtLocation =
-				cpu_to_le32(oepos.block.logicalBlockNum);
-			if (epos.offset + adsize > sb->s_blocksize) {
-				loffset = epos.offset;
-				aed->lengthAllocDescs = cpu_to_le32(adsize);
-				sptr = iinfo->i_ext.i_data + epos.offset
-								- adsize;
-				dptr = epos.bh->b_data +
-					sizeof(struct allocExtDesc);
-				memcpy(dptr, sptr, adsize);
-				epos.offset = sizeof(struct allocExtDesc) +
-						adsize;
-			} else {
-				loffset = epos.offset + adsize;
-				aed->lengthAllocDescs = cpu_to_le32(0);
-				if (oepos.bh) {
-					sptr = oepos.bh->b_data + epos.offset;
-					aed = (struct allocExtDesc *)
-						oepos.bh->b_data;
-					le32_add_cpu(&aed->lengthAllocDescs,
-							adsize);
-				} else {
-					sptr = iinfo->i_ext.i_data +
-								epos.offset;
-					iinfo->i_lenAlloc += adsize;
-					mark_inode_dirty(table);
-				}
-				epos.offset = sizeof(struct allocExtDesc);
-			}
-			if (sbi->s_udfrev >= 0x0200)
-				udf_new_tag(epos.bh->b_data, TAG_IDENT_AED,
-					    3, 1, epos.block.logicalBlockNum,
-					    sizeof(struct tag));
-			else
-				udf_new_tag(epos.bh->b_data, TAG_IDENT_AED,
-					    2, 1, epos.block.logicalBlockNum,
-					    sizeof(struct tag));
-
-			switch (iinfo->i_alloc_type) {
-			case ICBTAG_FLAG_AD_SHORT:
-				sad = (struct short_ad *)sptr;
-				sad->extLength = cpu_to_le32(
-					EXT_NEXT_EXTENT_ALLOCDECS |
-					sb->s_blocksize);
-				sad->extPosition =
-					cpu_to_le32(epos.block.logicalBlockNum);
-				break;
-			case ICBTAG_FLAG_AD_LONG:
-				lad = (struct long_ad *)sptr;
-				lad->extLength = cpu_to_le32(
-					EXT_NEXT_EXTENT_ALLOCDECS |
-					sb->s_blocksize);
-				lad->extLocation =
-					cpu_to_lelb(epos.block);
-				break;
-			}
-			if (oepos.bh) {
-				udf_update_tag(oepos.bh->b_data, loffset);
-				mark_buffer_dirty(oepos.bh);
-			} else {
-				mark_inode_dirty(table);
-			}
-		}
-
-		/* It's possible that stealing the block emptied the extent */
-		if (elen) {
-			udf_write_aext(table, &epos, &eloc, elen, 1);
-
-			if (!epos.bh) {
-				iinfo->i_lenAlloc += adsize;
-				mark_inode_dirty(table);
-			} else {
-				aed = (struct allocExtDesc *)epos.bh->b_data;
-				le32_add_cpu(&aed->lengthAllocDescs, adsize);
-				udf_update_tag(epos.bh->b_data, epos.offset);
-				mark_buffer_dirty(epos.bh);
-			}
-		}
-=======
 			/* Steal a block from the extent being free'd */
 			udf_setup_indirect_aext(table, eloc.logicalBlockNum,
 						&epos);
@@ -701,7 +504,6 @@ static void udf_table_free_blocks(struct super_block *sb,
 		/* It's possible that stealing the block emptied the extent */
 		if (elen)
 			__udf_add_aext(table, &epos, &eloc, elen, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	brelse(epos.bh);
@@ -743,11 +545,7 @@ static int udf_table_prealloc_blocks(struct super_block *sb,
 
 	while (first_block != eloc.logicalBlockNum &&
 	       (etype = udf_next_aext(table, &epos, &eloc, &elen, 1)) != -1) {
-<<<<<<< HEAD
-		udf_debug("eloc=%d, elen=%d, first_block=%d\n",
-=======
 		udf_debug("eloc=%u, elen=%u, first_block=%u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  eloc.logicalBlockNum, elen, first_block);
 		; /* empty loop body */
 	}
@@ -763,12 +561,7 @@ static int udf_table_prealloc_blocks(struct super_block *sb,
 			udf_write_aext(table, &epos, &eloc,
 					(etype << 30) | elen, 1);
 		} else
-<<<<<<< HEAD
-			udf_delete_aext(table, epos, eloc,
-					(etype << 30) | elen);
-=======
 			udf_delete_aext(table, epos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		alloc_count = 0;
 	}
@@ -781,26 +574,16 @@ static int udf_table_prealloc_blocks(struct super_block *sb,
 	return alloc_count;
 }
 
-<<<<<<< HEAD
-static int udf_table_new_block(struct super_block *sb,
-=======
 static udf_pblk_t udf_table_new_block(struct super_block *sb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct inode *table, uint16_t partition,
 			       uint32_t goal, int *err)
 {
 	struct udf_sb_info *sbi = UDF_SB(sb);
 	uint32_t spread = 0xFFFFFFFF, nspread = 0xFFFFFFFF;
-<<<<<<< HEAD
-	uint32_t newblock = 0, adsize;
-	uint32_t elen, goal_elen = 0;
-	struct kernel_lb_addr eloc, uninitialized_var(goal_eloc);
-=======
 	udf_pblk_t newblock = 0;
 	uint32_t adsize;
 	uint32_t elen, goal_elen = 0;
 	struct kernel_lb_addr eloc, goal_eloc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct extent_position epos, goal_epos;
 	int8_t etype;
 	struct udf_inode_info *iinfo = UDF_I(table);
@@ -874,11 +657,7 @@ static udf_pblk_t udf_table_new_block(struct super_block *sb,
 	if (goal_elen)
 		udf_write_aext(table, &goal_epos, &goal_eloc, goal_elen, 1);
 	else
-<<<<<<< HEAD
-		udf_delete_aext(table, goal_epos, goal_eloc, goal_elen);
-=======
 		udf_delete_aext(table, goal_epos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(goal_epos.bh);
 
 	udf_add_free_space(sb, partition, -1);
@@ -901,15 +680,6 @@ void udf_free_blocks(struct super_block *sb, struct inode *inode,
 	} else if (map->s_partition_flags & UDF_PART_FLAG_UNALLOC_TABLE) {
 		udf_table_free_blocks(sb, map->s_uspace.s_table,
 				      bloc, offset, count);
-<<<<<<< HEAD
-	} else if (map->s_partition_flags & UDF_PART_FLAG_FREED_BITMAP) {
-		udf_bitmap_free_blocks(sb, map->s_fspace.s_bitmap,
-				       bloc, offset, count);
-	} else if (map->s_partition_flags & UDF_PART_FLAG_FREED_TABLE) {
-		udf_table_free_blocks(sb, map->s_fspace.s_table,
-				      bloc, offset, count);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (inode) {
@@ -924,11 +694,7 @@ inline int udf_prealloc_blocks(struct super_block *sb,
 			       uint32_t block_count)
 {
 	struct udf_part_map *map = &UDF_SB(sb)->s_partmaps[partition];
-<<<<<<< HEAD
-	sector_t allocated;
-=======
 	int allocated;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (map->s_partition_flags & UDF_PART_FLAG_UNALLOC_BITMAP)
 		allocated = udf_bitmap_prealloc_blocks(sb,
@@ -940,19 +706,6 @@ inline int udf_prealloc_blocks(struct super_block *sb,
 						      map->s_uspace.s_table,
 						      partition, first_block,
 						      block_count);
-<<<<<<< HEAD
-	else if (map->s_partition_flags & UDF_PART_FLAG_FREED_BITMAP)
-		allocated = udf_bitmap_prealloc_blocks(sb,
-						       map->s_fspace.s_bitmap,
-						       partition, first_block,
-						       block_count);
-	else if (map->s_partition_flags & UDF_PART_FLAG_FREED_TABLE)
-		allocated = udf_table_prealloc_blocks(sb,
-						      map->s_fspace.s_table,
-						      partition, first_block,
-						      block_count);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return 0;
 
@@ -961,20 +714,12 @@ inline int udf_prealloc_blocks(struct super_block *sb,
 	return allocated;
 }
 
-<<<<<<< HEAD
-inline int udf_new_block(struct super_block *sb,
-=======
 inline udf_pblk_t udf_new_block(struct super_block *sb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 struct inode *inode,
 			 uint16_t partition, uint32_t goal, int *err)
 {
 	struct udf_part_map *map = &UDF_SB(sb)->s_partmaps[partition];
-<<<<<<< HEAD
-	int block;
-=======
 	udf_pblk_t block;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (map->s_partition_flags & UDF_PART_FLAG_UNALLOC_BITMAP)
 		block = udf_bitmap_new_block(sb,
@@ -984,17 +729,6 @@ inline udf_pblk_t udf_new_block(struct super_block *sb,
 		block = udf_table_new_block(sb,
 					    map->s_uspace.s_table,
 					    partition, goal, err);
-<<<<<<< HEAD
-	else if (map->s_partition_flags & UDF_PART_FLAG_FREED_BITMAP)
-		block = udf_bitmap_new_block(sb,
-					     map->s_fspace.s_bitmap,
-					     partition, goal, err);
-	else if (map->s_partition_flags & UDF_PART_FLAG_FREED_TABLE)
-		block = udf_table_new_block(sb,
-					    map->s_fspace.s_table,
-					    partition, goal, err);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		*err = -EIO;
 		return 0;

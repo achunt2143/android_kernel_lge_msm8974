@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Performance counter support for POWER6 processors.
  *
  * Copyright 2008-2009 Paul Mackerras, IBM Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/perf_event.h>
@@ -21,11 +10,8 @@
 #include <asm/reg.h>
 #include <asm/cputable.h>
 
-<<<<<<< HEAD
-=======
 #include "internal.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Bits in event code for POWER6
  */
@@ -187,12 +173,8 @@ static int power6_marked_instr_event(u64 event)
  * Assign PMC numbers and compute MMCR1 value for a set of events
  */
 static int p6_compute_mmcr(u64 event[], int n_ev,
-<<<<<<< HEAD
-			   unsigned int hwc[], unsigned long mmcr[])
-=======
 			   unsigned int hwc[], struct mmcr_regs *mmcr, struct perf_event *pevents[],
 			   u32 flags __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long mmcr1 = 0;
 	unsigned long mmcra = MMCRA_SDAR_DCACHE_MISS | MMCRA_SDAR_ERAT_MISS;
@@ -264,15 +246,6 @@ static int p6_compute_mmcr(u64 event[], int n_ev,
 		if (pmc < 4)
 			mmcr1 |= (unsigned long)psel << MMCR1_PMCSEL_SH(pmc);
 	}
-<<<<<<< HEAD
-	mmcr[0] = 0;
-	if (pmc_inuse & 1)
-		mmcr[0] = MMCR0_PMC1CE;
-	if (pmc_inuse & 0xe)
-		mmcr[0] |= MMCR0_PMCjCE;
-	mmcr[1] = mmcr1;
-	mmcr[2] = mmcra;
-=======
 	mmcr->mmcr0 = 0;
 	if (pmc_inuse & 1)
 		mmcr->mmcr0 = MMCR0_PMC1CE;
@@ -280,7 +253,6 @@ static int p6_compute_mmcr(u64 event[], int n_ev,
 		mmcr->mmcr0 |= MMCR0_PMCjCE;
 	mmcr->mmcr1 = mmcr1;
 	mmcr->mmcra = mmcra;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -295,11 +267,7 @@ static int p6_compute_mmcr(u64 event[], int n_ev,
  *	32-34	select field: nest (subunit) event selector
  */
 static int p6_get_constraint(u64 event, unsigned long *maskp,
-<<<<<<< HEAD
-			     unsigned long *valp)
-=======
 			     unsigned long *valp, u64 event_config1 __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int pmc, byte, sh, subunit;
 	unsigned long mask = 0, value = 0;
@@ -367,28 +335,6 @@ static const unsigned int event_alternatives[][MAX_ALT] = {
 	{ 0x3000fe, 0x400056 },			/* PM_DATA_FROM_L3MISS */
 };
 
-<<<<<<< HEAD
-/*
- * This could be made more efficient with a binary search on
- * a presorted list, if necessary
- */
-static int find_alternatives_list(u64 event)
-{
-	int i, j;
-	unsigned int alt;
-
-	for (i = 0; i < ARRAY_SIZE(event_alternatives); ++i) {
-		if (event < event_alternatives[i][0])
-			return -1;
-		for (j = 0; j < MAX_ALT; ++j) {
-			alt = event_alternatives[i][j];
-			if (!alt || event < alt)
-				break;
-			if (event == alt)
-				return i;
-		}
-	}
-=======
 static int find_alternatives_list(u64 event)
 {
 	const unsigned int presorted_event_table[] = {
@@ -421,7 +367,6 @@ static int find_alternatives_list(u64 event)
 			return event_index_table[mid];
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 
@@ -527,19 +472,11 @@ static int p6_get_alternatives(u64 event, unsigned int flags, u64 alt[])
 	return nalt;
 }
 
-<<<<<<< HEAD
-static void p6_disable_pmc(unsigned int pmc, unsigned long mmcr[])
-{
-	/* Set PMCxSEL to 0 to disable PMCx */
-	if (pmc <= 3)
-		mmcr[1] &= ~(0xffUL << MMCR1_PMCSEL_SH(pmc));
-=======
 static void p6_disable_pmc(unsigned int pmc, struct mmcr_regs *mmcr)
 {
 	/* Set PMCxSEL to 0 to disable PMCx */
 	if (pmc <= 3)
 		mmcr->mmcr1 &= ~(0xffUL << MMCR1_PMCSEL_SH(pmc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int power6_generic_events[] = {
@@ -559,11 +496,7 @@ static int power6_generic_events[] = {
  * are event codes.
  * The "DTLB" and "ITLB" events relate to the DERAT and IERAT.
  */
-<<<<<<< HEAD
-static int power6_cache_events[C(MAX)][C(OP_MAX)][C(RESULT_MAX)] = {
-=======
 static u64 power6_cache_events[C(MAX)][C(OP_MAX)][C(RESULT_MAX)] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[C(L1D)] = {		/* 	RESULT_ACCESS	RESULT_MISS */
 		[C(OP_READ)] = {	0x280030,	0x80080		},
 		[C(OP_WRITE)] = {	0x180032,	0x80088		},
@@ -618,24 +551,12 @@ static struct power_pmu power6_pmu = {
 	.cache_events		= &power6_cache_events,
 };
 
-<<<<<<< HEAD
-static int __init init_power6_pmu(void)
-{
-	if (!cur_cpu_spec->oprofile_cpu_type ||
-	    strcmp(cur_cpu_spec->oprofile_cpu_type, "ppc64/power6"))
-=======
 int __init init_power6_pmu(void)
 {
 	unsigned int pvr = mfspr(SPRN_PVR);
 
 	if (PVR_VER(pvr) != PVR_POWER6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	return register_power_pmu(&power6_pmu);
 }
-<<<<<<< HEAD
-
-early_initcall(init_power6_pmu);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

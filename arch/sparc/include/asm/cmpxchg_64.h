@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 64-bit atomic xchg() and cmpxchg() definitions.
  *
  * Copyright (C) 1996, 1997, 2000 David S. Miller (davem@redhat.com)
@@ -10,8 +7,6 @@
 #ifndef __ARCH_SPARC64_CMPXCHG__
 #define __ARCH_SPARC64_CMPXCHG__
 
-<<<<<<< HEAD
-=======
 static inline unsigned long
 __cmpxchg_u32(volatile int *m, int old, int new)
 {
@@ -23,7 +18,6 @@ __cmpxchg_u32(volatile int *m, int old, int new)
 	return new;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned long xchg32(__volatile__ unsigned int *m, unsigned int val)
 {
 	unsigned long tmp1, tmp2;
@@ -58,16 +52,6 @@ static inline unsigned long xchg64(__volatile__ unsigned long *m, unsigned long 
 	return val;
 }
 
-<<<<<<< HEAD
-#define xchg(ptr,x) ((__typeof__(*(ptr)))__xchg((unsigned long)(x),(ptr),sizeof(*(ptr))))
-
-extern void __xchg_called_with_bad_pointer(void);
-
-static inline unsigned long __xchg(unsigned long x, __volatile__ void * ptr,
-				       int size)
-{
-	switch (size) {
-=======
 #define arch_xchg(ptr,x)							\
 ({	__typeof__(*(ptr)) __ret;					\
 	__ret = (__typeof__(*(ptr)))					\
@@ -109,7 +93,6 @@ __arch_xchg(unsigned long x, __volatile__ void * ptr, int size)
 	switch (size) {
 	case 2:
 		return xchg16(ptr, x);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 4:
 		return xchg32(ptr, x);
 	case 8:
@@ -127,21 +110,6 @@ __arch_xchg(unsigned long x, __volatile__ void * ptr, int size)
 
 #include <asm-generic/cmpxchg-local.h>
 
-<<<<<<< HEAD
-#define __HAVE_ARCH_CMPXCHG 1
-
-static inline unsigned long
-__cmpxchg_u32(volatile int *m, int old, int new)
-{
-	__asm__ __volatile__("cas [%2], %3, %0"
-			     : "=&r" (new)
-			     : "0" (new), "r" (m), "r" (old)
-			     : "memory");
-
-	return new;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned long
 __cmpxchg_u64(volatile long *m, unsigned long old, unsigned long new)
@@ -154,11 +122,6 @@ __cmpxchg_u64(volatile long *m, unsigned long old, unsigned long new)
 	return new;
 }
 
-<<<<<<< HEAD
-/* This function doesn't exist, so you'll get a linker error
-   if something tries to do an invalid cmpxchg().  */
-extern void __cmpxchg_called_with_bad_pointer(void);
-=======
 /*
  * Use 4 byte cas instruction to achieve 1 byte cmpxchg. Main logic
  * here is to get the bit shift of the byte we are interested in.
@@ -189,17 +152,13 @@ __cmpxchg_u8(volatile unsigned char *m, unsigned char old, unsigned char new)
 /* This function doesn't exist, so you'll get a linker error
    if something tries to do an invalid cmpxchg().  */
 void __cmpxchg_called_with_bad_pointer(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned long
 __cmpxchg(volatile void *ptr, unsigned long old, unsigned long new, int size)
 {
 	switch (size) {
-<<<<<<< HEAD
-=======
 		case 1:
 			return __cmpxchg_u8(ptr, old, new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 4:
 			return __cmpxchg_u32(ptr, old, new);
 		case 8:
@@ -209,11 +168,7 @@ __cmpxchg(volatile void *ptr, unsigned long old, unsigned long new, int size)
 	return old;
 }
 
-<<<<<<< HEAD
-#define cmpxchg(ptr,o,n)						 \
-=======
 #define arch_cmpxchg(ptr,o,n)						 \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   ({									 \
      __typeof__(*(ptr)) _o_ = (o);					 \
      __typeof__(*(ptr)) _n_ = (n);					 \
@@ -234,26 +189,12 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
 	case 4:
 	case 8:	return __cmpxchg(ptr, old, new, size);
 	default:
-<<<<<<< HEAD
-		return __cmpxchg_local_generic(ptr, old, new, size);
-=======
 		return __generic_cmpxchg_local(ptr, old, new, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return old;
 }
 
-<<<<<<< HEAD
-#define cmpxchg_local(ptr, o, n)				  	\
-	((__typeof__(*(ptr)))__cmpxchg_local((ptr), (unsigned long)(o),	\
-			(unsigned long)(n), sizeof(*(ptr))))
-#define cmpxchg64_local(ptr, o, n)					\
-  ({									\
-	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
-	cmpxchg_local((ptr), (o), (n));					\
-  })
-=======
 #define arch_cmpxchg_local(ptr, o, n)				  	\
 	((__typeof__(*(ptr)))__cmpxchg_local((ptr), (unsigned long)(o),	\
 			(unsigned long)(n), sizeof(*(ptr))))
@@ -263,6 +204,5 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
 	arch_cmpxchg_local((ptr), (o), (n));					\
   })
 #define arch_cmpxchg64(ptr, o, n)	arch_cmpxchg64_local((ptr), (o), (n))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ARCH_SPARC64_CMPXCHG__ */

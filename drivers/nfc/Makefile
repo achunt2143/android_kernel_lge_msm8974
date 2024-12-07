@@ -1,23 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for nfc devices
 #
 
-<<<<<<< HEAD
-obj-$(CONFIG_LGE_NFC_PN544_C2)	:= pn544_lge.o
-obj-$(CONFIG_LGE_NFC_PN544_C2)	+= pn544_lge_hwadapter.o
-obj-$(CONFIG_LGE_NFC_PN544_C3)	:= pn544_lge.o
-obj-$(CONFIG_LGE_NFC_PN544_C3)	+= pn544_lge_hwadapter.o
-obj-$(CONFIG_LGE_NFC_PN547_C2)	:= pn547_lge.o
-obj-$(CONFIG_LGE_NFC_PN547_C2)	+= pn547_lge_hwadapter.o
-obj-$(CONFIG_LGE_NFC_SONY)  += snfc/
-obj-$(CONFIG_NFC_BCM2079X) += bcm2079x.o
-
-ccflags-$(CONFIG_NFC_DEBUG) := -DDEBUG
-=======
 obj-$(CONFIG_NFC_FDP)		+= fdp/
 obj-$(CONFIG_NFC_PN544)		+= pn544/
 obj-$(CONFIG_NFC_MICROREAD)	+= microread/
@@ -33,4 +18,3 @@ obj-$(CONFIG_NFC_NXP_NCI)	+= nxp-nci/
 obj-$(CONFIG_NFC_S3FWRN5)	+= s3fwrn5/
 obj-$(CONFIG_NFC_ST95HF)	+= st95hf/
 obj-$(CONFIG_NFC_VIRTUAL_NCI)	+= virtual_ncidev.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

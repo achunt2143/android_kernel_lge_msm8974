@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hpfs/anode.c
  *
@@ -24,11 +21,7 @@ secno hpfs_bplus_lookup(struct super_block *s, struct inode *inode,
 	int c1, c2 = 0;
 	go_down:
 	if (hpfs_sb(s)->sb_chk) if (hpfs_stop_cycles(s, a, &c1, &c2, "hpfs_bplus_lookup")) return -1;
-<<<<<<< HEAD
-	if (btree->internal) {
-=======
 	if (bp_internal(btree)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < btree->n_used_nodes; i++)
 			if (le32_to_cpu(btree->u.internal[i].file_secno) > sec) {
 				a = le32_to_cpu(btree->u.internal[i].down);
@@ -90,11 +83,7 @@ secno hpfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
 		brelse(bh);
 		return -1;
 	}
-<<<<<<< HEAD
-	if (btree->internal) {
-=======
 	if (bp_internal(btree)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		a = le32_to_cpu(btree->u.internal[n].down);
 		btree->u.internal[n].file_secno = cpu_to_le32(-1);
 		mark_buffer_dirty(bh);
@@ -114,11 +103,7 @@ secno hpfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
 			return -1;
 		}
 		if (hpfs_alloc_if_possible(s, se = le32_to_cpu(btree->u.external[n].disk_secno) + le32_to_cpu(btree->u.external[n].length))) {
-<<<<<<< HEAD
-			btree->u.external[n].length = cpu_to_le32(le32_to_cpu(btree->u.external[n].length) + 1);
-=======
 			le32_add_cpu(&btree->u.external[n].length, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mark_buffer_dirty(bh);
 			brelse(bh);
 			return se;
@@ -145,20 +130,12 @@ secno hpfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
 		}
 		if (a == node && fnod) {
 			anode->up = cpu_to_le32(node);
-<<<<<<< HEAD
-			anode->btree.fnode_parent = 1;
-=======
 			anode->btree.flags |= BP_fnode_parent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			anode->btree.n_used_nodes = btree->n_used_nodes;
 			anode->btree.first_free = btree->first_free;
 			anode->btree.n_free_nodes = 40 - anode->btree.n_used_nodes;
 			memcpy(&anode->u, &btree->u, btree->n_used_nodes * 12);
-<<<<<<< HEAD
-			btree->internal = 1;
-=======
 			btree->flags |= BP_internal;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			btree->n_free_nodes = 11;
 			btree->n_used_nodes = 1;
 			btree->first_free = cpu_to_le16((char *)&(btree->u.internal[1]) - (char *)btree);
@@ -177,11 +154,7 @@ secno hpfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
 		btree = &anode->btree;
 	}
 	btree->n_free_nodes--; n = btree->n_used_nodes++;
-<<<<<<< HEAD
-	btree->first_free = cpu_to_le16(le16_to_cpu(btree->first_free) + 12);
-=======
 	le16_add_cpu(&btree->first_free, 12);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	btree->u.external[n].disk_secno = cpu_to_le32(se);
 	btree->u.external[n].file_secno = cpu_to_le32(fs);
 	btree->u.external[n].length = cpu_to_le32(1);
@@ -202,11 +175,7 @@ secno hpfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
 		}
 		if (btree->n_free_nodes) {
 			btree->n_free_nodes--; n = btree->n_used_nodes++;
-<<<<<<< HEAD
-			btree->first_free = cpu_to_le16(le16_to_cpu(btree->first_free) + 8);
-=======
 			le16_add_cpu(&btree->first_free, 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			btree->u.internal[n].file_secno = cpu_to_le32(-1);
 			btree->u.internal[n].down = cpu_to_le32(na);
 			btree->u.internal[n-1].file_secno = cpu_to_le32(fs);
@@ -216,14 +185,10 @@ secno hpfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
 			hpfs_free_sectors(s, ra, 1);
 			if ((anode = hpfs_map_anode(s, na, &bh))) {
 				anode->up = cpu_to_le32(up);
-<<<<<<< HEAD
-				anode->btree.fnode_parent = up == node && fnod;
-=======
 				if (up == node && fnod)
 					anode->btree.flags |= BP_fnode_parent;
 				else
 					anode->btree.flags &= ~BP_fnode_parent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mark_buffer_dirty(bh);
 				brelse(bh);
 			}
@@ -237,11 +202,7 @@ secno hpfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
 		if ((new_anode = hpfs_alloc_anode(s, a, &na, &bh))) {
 			anode = new_anode;
 			/*anode->up = cpu_to_le32(up != -1 ? up : ra);*/
-<<<<<<< HEAD
-			anode->btree.internal = 1;
-=======
 			anode->btree.flags |= BP_internal;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			anode->btree.n_used_nodes = 1;
 			anode->btree.n_free_nodes = 59;
 			anode->btree.first_free = cpu_to_le16(16);
@@ -258,12 +219,8 @@ secno hpfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
 	}
 	if ((anode = hpfs_map_anode(s, na, &bh))) {
 		anode->up = cpu_to_le32(node);
-<<<<<<< HEAD
-		if (fnod) anode->btree.fnode_parent = 1;
-=======
 		if (fnod)
 			anode->btree.flags |= BP_fnode_parent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mark_buffer_dirty(bh);
 		brelse(bh);
 	}
@@ -282,15 +239,6 @@ secno hpfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
 	}
 	ranode->up = cpu_to_le32(node);
 	memcpy(&ranode->btree, btree, le16_to_cpu(btree->first_free));
-<<<<<<< HEAD
-	if (fnod) ranode->btree.fnode_parent = 1;
-	ranode->btree.n_free_nodes = (ranode->btree.internal ? 60 : 40) - ranode->btree.n_used_nodes;
-	if (ranode->btree.internal) for (n = 0; n < ranode->btree.n_used_nodes; n++) {
-		struct anode *unode;
-		if ((unode = hpfs_map_anode(s, le32_to_cpu(ranode->u.internal[n].down), &bh1))) {
-			unode->up = cpu_to_le32(ra);
-			unode->btree.fnode_parent = 0;
-=======
 	if (fnod)
 		ranode->btree.flags |= BP_fnode_parent;
 	ranode->btree.n_free_nodes = (bp_internal(&ranode->btree) ? 60 : 40) - ranode->btree.n_used_nodes;
@@ -299,16 +247,11 @@ secno hpfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
 		if ((unode = hpfs_map_anode(s, le32_to_cpu(ranode->u.internal[n].down), &bh1))) {
 			unode->up = cpu_to_le32(ra);
 			unode->btree.flags &= ~BP_fnode_parent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mark_buffer_dirty(bh1);
 			brelse(bh1);
 		}
 	}
-<<<<<<< HEAD
-	btree->internal = 1;
-=======
 	btree->flags |= BP_internal;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	btree->n_free_nodes = fnod ? 10 : 58;
 	btree->n_used_nodes = 2;
 	btree->first_free = cpu_to_le16((char *)&btree->u.internal[2] - (char *)btree);
@@ -341,11 +284,7 @@ void hpfs_remove_btree(struct super_block *s, struct bplus_header *btree)
 	int d1, d2;
 	go_down:
 	d2 = 0;
-<<<<<<< HEAD
-	while (btree1->internal) {
-=======
 	while (bp_internal(btree1)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ano = le32_to_cpu(btree1->u.internal[pos].down);
 		if (level) brelse(bh);
 		if (hpfs_sb(s)->sb_chk)
@@ -479,21 +418,13 @@ void hpfs_truncate_btree(struct super_block *s, secno f, int fno, unsigned secs)
 			btree->n_free_nodes = 8;
 			btree->n_used_nodes = 0;
 			btree->first_free = cpu_to_le16(8);
-<<<<<<< HEAD
-			btree->internal = 0;
-=======
 			btree->flags &= ~BP_internal;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mark_buffer_dirty(bh);
 		} else hpfs_free_sectors(s, f, 1);
 		brelse(bh);
 		return;
 	}
-<<<<<<< HEAD
-	while (btree->internal) {
-=======
 	while (bp_internal(btree)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nodes = btree->n_used_nodes + btree->n_free_nodes;
 		for (i = 0; i < btree->n_used_nodes; i++)
 			if (le32_to_cpu(btree->u.internal[i].file_secno) >= secs) goto f;
@@ -554,15 +485,6 @@ void hpfs_remove_fnode(struct super_block *s, fnode_secno fno)
 	struct extended_attribute *ea;
 	struct extended_attribute *ea_end;
 	if (!(fnode = hpfs_map_fnode(s, fno, &bh))) return;
-<<<<<<< HEAD
-	if (!fnode->dirflag) hpfs_remove_btree(s, &fnode->btree);
-	else hpfs_remove_dtree(s, le32_to_cpu(fnode->u.external[0].disk_secno));
-	ea_end = fnode_end_ea(fnode);
-	for (ea = fnode_ea(fnode); ea < ea_end; ea = next_ea(ea))
-		if (ea->indirect)
-			hpfs_ea_remove(s, ea_sec(ea), ea->anode, ea_len(ea));
-	hpfs_ea_ext_remove(s, le32_to_cpu(fnode->ea_secno), fnode->ea_anode, le32_to_cpu(fnode->ea_size_l));
-=======
 	if (!fnode_is_dir(fnode)) hpfs_remove_btree(s, &fnode->btree);
 	else hpfs_remove_dtree(s, le32_to_cpu(fnode->u.external[0].disk_secno));
 	ea_end = fnode_end_ea(fnode);
@@ -570,7 +492,6 @@ void hpfs_remove_fnode(struct super_block *s, fnode_secno fno)
 		if (ea_indirect(ea))
 			hpfs_ea_remove(s, ea_sec(ea), ea_in_anode(ea), ea_len(ea));
 	hpfs_ea_ext_remove(s, le32_to_cpu(fnode->ea_secno), fnode_in_anode(fnode), le32_to_cpu(fnode->ea_size_l));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(bh);
 	hpfs_free_sectors(s, fno, 1);
 }

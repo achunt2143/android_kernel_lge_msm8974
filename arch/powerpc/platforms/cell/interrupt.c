@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cell Internal Interrupt Controller
  *
@@ -12,23 +9,6 @@
  *
  * Author: Arnd Bergmann <arndb@de.ibm.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TODO:
  * - Fix various assumptions related to HW CPU numbers vs. linux CPU numbers
  *   vs node numbers in the setup code
@@ -38,26 +18,16 @@
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-=======
 #include <linux/irqdomain.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/percpu.h>
 #include <linux/types.h>
 #include <linux/ioport.h>
 #include <linux/kernel_stat.h>
-<<<<<<< HEAD
-
-#include <asm/io.h>
-#include <asm/pgtable.h>
-#include <asm/prom.h>
-=======
 #include <linux/pgtable.h>
 #include <linux/of_address.h>
 
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ptrace.h>
 #include <asm/machdep.h>
 #include <asm/cell-regs.h>
@@ -100,11 +70,7 @@ static void iic_unmask(struct irq_data *d)
 
 static void iic_eoi(struct irq_data *d)
 {
-<<<<<<< HEAD
-	struct iic *iic = &__get_cpu_var(cpu_iic);
-=======
 	struct iic *iic = this_cpu_ptr(&cpu_iic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	out_be64(&iic->regs->prio, iic->eoi_stack[--iic->eoi_ptr]);
 	BUG_ON(iic->eoi_ptr < 0);
 }
@@ -121,19 +87,12 @@ static void iic_ioexc_eoi(struct irq_data *d)
 {
 }
 
-<<<<<<< HEAD
-static void iic_ioexc_cascade(unsigned int irq, struct irq_desc *desc)
-=======
 static void iic_ioexc_cascade(struct irq_desc *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	struct cbe_iic_regs __iomem *node_iic =
 		(void __iomem *)irq_desc_get_handler_data(desc);
-<<<<<<< HEAD
-=======
 	unsigned int irq = irq_desc_get_irq(desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int base = (irq & 0xffffff00) | IIC_IRQ_TYPE_IOEXC;
 	unsigned long bits, ack;
 	int cascade;
@@ -148,19 +107,9 @@ static void iic_ioexc_cascade(struct irq_desc *desc)
 			out_be64(&node_iic->iic_is, ack);
 		/* handle them */
 		for (cascade = 63; cascade >= 0; cascade--)
-<<<<<<< HEAD
-			if (bits & (0x8000000000000000UL >> cascade)) {
-				unsigned int cirq =
-					irq_linear_revmap(iic_host,
-							  base | cascade);
-				if (cirq != NO_IRQ)
-					generic_handle_irq(cirq);
-			}
-=======
 			if (bits & (0x8000000000000000UL >> cascade))
 				generic_handle_domain_irq(iic_host,
 							  base | cascade);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* post-ack level interrupts */
 		ack = bits & ~IIC_ISR_EDGE_MASK;
 		if (ack)
@@ -184,16 +133,6 @@ static unsigned int iic_get_irq(void)
 	struct iic *iic;
 	unsigned int virq;
 
-<<<<<<< HEAD
-	iic = &__get_cpu_var(cpu_iic);
-	*(unsigned long *) &pending =
-		in_be64((u64 __iomem *) &iic->regs->pending_destr);
-	if (!(pending.flags & CBE_IIC_IRQ_VALID))
-		return NO_IRQ;
-	virq = irq_linear_revmap(iic_host, iic_pending_to_hwnum(pending));
-	if (virq == NO_IRQ)
-		return NO_IRQ;
-=======
 	iic = this_cpu_ptr(&cpu_iic);
 	*(unsigned long *) &pending =
 		in_be64((u64 __iomem *) &iic->regs->pending_destr);
@@ -202,7 +141,6 @@ static unsigned int iic_get_irq(void)
 	virq = irq_linear_revmap(iic_host, iic_pending_to_hwnum(pending));
 	if (!virq)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iic->eoi_stack[++iic->eoi_ptr] = pending.prio;
 	BUG_ON(iic->eoi_ptr > 15);
 	return virq;
@@ -210,11 +148,7 @@ static unsigned int iic_get_irq(void)
 
 void iic_setup_cpu(void)
 {
-<<<<<<< HEAD
-	out_be64(&__get_cpu_var(cpu_iic).regs->prio, 0xff);
-=======
 	out_be64(&this_cpu_ptr(&cpu_iic)->regs->prio, 0xff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u8 iic_get_target_id(int cpu)
@@ -237,25 +171,12 @@ void iic_message_pass(int cpu, int msg)
 	out_be64(&per_cpu(cpu_iic, cpu).regs->generate, (0xf - msg) << 4);
 }
 
-<<<<<<< HEAD
-struct irq_domain *iic_get_irq_host(int node)
-{
-	return iic_host;
-}
-EXPORT_SYMBOL_GPL(iic_get_irq_host);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void iic_request_ipi(int msg)
 {
 	int virq;
 
 	virq = irq_create_mapping(iic_host, iic_msg_to_irq(msg));
-<<<<<<< HEAD
-	if (virq == NO_IRQ) {
-=======
 	if (!virq) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR
 		       "iic: failed to map IPI %s\n", smp_ipi_name[msg]);
 		return;
@@ -273,24 +194,15 @@ void iic_request_IPIs(void)
 {
 	iic_request_ipi(PPC_MSG_CALL_FUNCTION);
 	iic_request_ipi(PPC_MSG_RESCHEDULE);
-<<<<<<< HEAD
-	iic_request_ipi(PPC_MSG_CALL_FUNC_SINGLE);
-	iic_request_ipi(PPC_MSG_DEBUGGER_BREAK);
-=======
 	iic_request_ipi(PPC_MSG_TICK_BROADCAST);
 	iic_request_ipi(PPC_MSG_NMI_IPI);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* CONFIG_SMP */
 
 
-<<<<<<< HEAD
-static int iic_host_match(struct irq_domain *h, struct device_node *node)
-=======
 static int iic_host_match(struct irq_domain *h, struct device_node *node,
 			  enum irq_domain_bus_token bus_token)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return of_device_is_compatible(node,
 				    "IBM,CBEA-Internal-Interrupt-Controller");
@@ -375,13 +287,8 @@ static void __init init_one_iic(unsigned int hw_cpu, unsigned long addr,
 	iic->node = of_node_get(node);
 	out_be64(&iic->regs->prio, 0);
 
-<<<<<<< HEAD
-	printk(KERN_INFO "IIC for CPU %d target id 0x%x : %s\n",
-	       hw_cpu, iic->target_id, node->full_name);
-=======
 	printk(KERN_INFO "IIC for CPU %d target id 0x%x : %pOF\n",
 	       hw_cpu, iic->target_id, node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init setup_iic(void)
@@ -392,12 +299,7 @@ static int __init setup_iic(void)
 	struct cbe_iic_regs __iomem *node_iic;
 	const u32 *np;
 
-<<<<<<< HEAD
-	for (dn = NULL;
-	     (dn = of_find_node_by_name(dn,"interrupt-controller")) != NULL;) {
-=======
 	for_each_node_by_name(dn, "interrupt-controller") {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!of_device_is_compatible(dn,
 				     "IBM,CBEA-Internal-Interrupt-Controller"))
 			continue;
@@ -428,11 +330,7 @@ static int __init setup_iic(void)
 		cascade |= 1 << IIC_IRQ_CLASS_SHIFT;
 		cascade |= IIC_UNIT_IIC;
 		cascade = irq_create_mapping(iic_host, cascade);
-<<<<<<< HEAD
-		if (cascade == NO_IRQ)
-=======
 		if (!cascade)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		/*
 		 * irq_data is a generic pointer that gets passed back

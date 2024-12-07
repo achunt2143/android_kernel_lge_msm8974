@@ -19,18 +19,11 @@
  *
  */
 
-<<<<<<< HEAD
-=======
 #include <crypto/algapi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mm.h>
 #include <asm/byteorder.h>
-<<<<<<< HEAD
-#include <linux/crypto.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 
 #define KHAZAD_KEY_SIZE		16
@@ -826,11 +819,7 @@ static void khazad_crypt(const u64 roundKey[KHAZAD_ROUNDS + 1],
 			T6[(int)(state >>  8) & 0xff] ^
 			T7[(int)(state      ) & 0xff] ^
 			roundKey[r];
-<<<<<<< HEAD
-    	}
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	state = (T0[(int)(state >> 56)       ] & 0xff00000000000000ULL) ^
 		(T1[(int)(state >> 48) & 0xff] & 0x00ff000000000000ULL) ^
@@ -859,19 +848,12 @@ static void khazad_decrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
 
 static struct crypto_alg khazad_alg = {
 	.cra_name		=	"khazad",
-<<<<<<< HEAD
-=======
 	.cra_driver_name	=	"khazad-generic",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_flags		=	CRYPTO_ALG_TYPE_CIPHER,
 	.cra_blocksize		=	KHAZAD_BLOCK_SIZE,
 	.cra_ctxsize		=	sizeof (struct khazad_ctx),
 	.cra_alignmask		=	7,
 	.cra_module		=	THIS_MODULE,
-<<<<<<< HEAD
-	.cra_list		=	LIST_HEAD_INIT(khazad_alg.cra_list),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_u			=	{ .cipher = {
 	.cia_min_keysize	=	KHAZAD_KEY_SIZE,
 	.cia_max_keysize	=	KHAZAD_KEY_SIZE,
@@ -894,16 +876,9 @@ static void __exit khazad_mod_fini(void)
 }
 
 
-<<<<<<< HEAD
-module_init(khazad_mod_init);
-=======
 subsys_initcall(khazad_mod_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(khazad_mod_fini);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Khazad Cryptographic Algorithm");
-<<<<<<< HEAD
-=======
 MODULE_ALIAS_CRYPTO("khazad");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

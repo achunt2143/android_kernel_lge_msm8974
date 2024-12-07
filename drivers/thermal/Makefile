@@ -1,23 +1,3 @@
-<<<<<<< HEAD
-#
-# Makefile for sensor chip drivers.
-#
-
-obj-$(CONFIG_THERMAL)		+= thermal_sys.o
-obj-$(CONFIG_THERMAL_MSM_POPMEM)	+= msm_popmem-tm.o
-obj-$(CONFIG_THERMAL_TSENS)	+= msm_tsens.o
-obj-$(CONFIG_THERMAL_TSENS8960) += msm8960_tsens.o
-obj-$(CONFIG_THERMAL_PM8XXX)	+= pm8xxx-tm.o
-ifdef CONFIG_BRICKED_THERMAL
-	obj-y	+= msm_thermal-bricked.o
-else
-	obj-$(CONFIG_THERMAL_MONITOR)	+= msm_thermal.o msm_thermal-dev.o
-endif
-obj-$(CONFIG_SPEAR_THERMAL)		+= spear_thermal.o
-obj-$(CONFIG_THERMAL_TSENS8974)	+= msm8974-tsens.o
-obj-$(CONFIG_THERMAL_QPNP)	+= qpnp-temp-alarm.o
-obj-$(CONFIG_THERMAL_QPNP_ADC_TM)	+= qpnp-adc-tm.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 #
 # Makefile for sensor chip drivers.
@@ -85,4 +65,3 @@ obj-$(CONFIG_AMLOGIC_THERMAL)     += amlogic_thermal.o
 obj-$(CONFIG_SPRD_THERMAL)	+= sprd_thermal.o
 obj-$(CONFIG_KHADAS_MCU_FAN_THERMAL)	+= khadas_mcu_fan.o
 obj-$(CONFIG_LOONGSON2_THERMAL)	+= loongson2_thermal.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

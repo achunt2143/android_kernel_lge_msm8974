@@ -1,19 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_ARM_STRING_H
 #define __ASM_ARM_STRING_H
 
 /*
  * We don't do inline string functions, since the
  * optimised inline asm versions are not small.
-<<<<<<< HEAD
-=======
  *
  * The __underscore versions of some functions are for KASan to be able
  * to replace them with instrumented versions.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define __HAVE_ARCH_STRRCHR
@@ -24,39 +18,17 @@ extern char * strchr(const char * s, int c);
 
 #define __HAVE_ARCH_MEMCPY
 extern void * memcpy(void *, const void *, __kernel_size_t);
-<<<<<<< HEAD
-
-#define __HAVE_ARCH_MEMMOVE
-extern void * memmove(void *, const void *, __kernel_size_t);
-=======
 extern void *__memcpy(void *dest, const void *src, __kernel_size_t n);
 
 #define __HAVE_ARCH_MEMMOVE
 extern void * memmove(void *, const void *, __kernel_size_t);
 extern void *__memmove(void *dest, const void *src, __kernel_size_t n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __HAVE_ARCH_MEMCHR
 extern void * memchr(const void *, int, __kernel_size_t);
 
 #define __HAVE_ARCH_MEMSET
 extern void * memset(void *, int, __kernel_size_t);
-<<<<<<< HEAD
-
-extern void __memzero(void *ptr, __kernel_size_t n);
-
-#define memset(p,v,n)							\
-	({								\
-	 	void *__p = (p); size_t __n = n;			\
-		if ((__n) != 0) {					\
-			if (__builtin_constant_p((v)) && (v) == 0)	\
-				__memzero((__p),(__n));			\
-			else						\
-				memset((__p),(v),(__n));		\
-		}							\
-		(__p);							\
-	})
-=======
 extern void *__memset(void *s, int c, __kernel_size_t n);
 
 #define __HAVE_ARCH_MEMSET32
@@ -92,6 +64,5 @@ static inline void *memset64(uint64_t *p, uint64_t v, __kernel_size_t n)
 #endif
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

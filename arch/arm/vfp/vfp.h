@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/vfp/vfp.h
  *
  *  Copyright (C) 2004 ARM Limited.
  *  Written by Deep Blue Solutions Limited.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static inline u32 vfp_shiftright32jamming(u32 val, unsigned int shift)
@@ -162,13 +152,8 @@ struct vfp_single {
 	u32	significand;
 };
 
-<<<<<<< HEAD
-extern s32 vfp_get_float(unsigned int reg);
-extern void vfp_put_float(s32 val, unsigned int reg);
-=======
 asmlinkage s32 vfp_get_float(unsigned int reg);
 asmlinkage void vfp_put_float(s32 val, unsigned int reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * VFP_SINGLE_MANTISSA_BITS - number of bits in the mantissa
@@ -282,13 +267,8 @@ struct vfp_double {
 #else
 #define VFP_REG_ZERO	16
 #endif
-<<<<<<< HEAD
-extern u64 vfp_get_double(unsigned int reg);
-extern void vfp_put_double(u64 val, unsigned int reg);
-=======
 asmlinkage u64 vfp_get_double(unsigned int reg);
 asmlinkage void vfp_put_double(u64 val, unsigned int reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VFP_DOUBLE_MANTISSA_BITS	(52)
 #define VFP_DOUBLE_EXPONENT_BITS	(11)
@@ -394,9 +374,5 @@ struct op {
 	u32 flags;
 };
 
-<<<<<<< HEAD
-extern void vfp_save_state(void *location, u32 fpexc);
-=======
 asmlinkage void vfp_save_state(void *location, u32 fpexc);
 asmlinkage u32 vfp_load_state(const void *location);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

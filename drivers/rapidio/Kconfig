@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#
-# RapidIO configuration
-#
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 #
 # RapidIO configuration
@@ -18,29 +13,20 @@ menuconfig RAPIDIO
 	  If you say Y here, the kernel will include drivers and
 	  infrastructure code to support RapidIO interconnect devices.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "drivers/rapidio/devices/Kconfig"
 
 config RAPIDIO_DISC_TIMEOUT
 	int "Discovery timeout duration (seconds)"
 	depends on RAPIDIO
 	default "30"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Amount of time a discovery node waits for a host to complete
 	  enumeration before giving up.
 
 config RAPIDIO_ENABLE_RX_TX_PORTS
 	bool "Enable RapidIO Input/Output Ports"
 	depends on RAPIDIO
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  The RapidIO specification describes a Output port transmit
 	  enable and a Input port receive enable. The recommended state
 	  for Input ports and Output ports should be disabled. When
@@ -48,8 +34,6 @@ config RAPIDIO_ENABLE_RX_TX_PORTS
 	  ports for Input/Output direction to allow other traffic
 	  than Maintenance transfers.
 
-<<<<<<< HEAD
-=======
 config RAPIDIO_DMA_ENGINE
 	bool "DMA Engine support for RapidIO"
 	depends on RAPIDIO
@@ -64,7 +48,6 @@ config RAPIDIO_DMA_ENGINE
 
 	  If you are unsure about this, say Y here.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config RAPIDIO_DEBUG
 	bool "RapidIO subsystem debug messages"
 	depends on RAPIDIO
@@ -76,9 +59,6 @@ config RAPIDIO_DEBUG
 
 	  If you are unsure about this, say N here.
 
-<<<<<<< HEAD
-source "drivers/rapidio/switches/Kconfig"
-=======
 choice
 	prompt "Enumeration method"
 	depends on RAPIDIO
@@ -122,4 +102,3 @@ menu "RapidIO Switch drivers"
 source "drivers/rapidio/switches/Kconfig"
 
 endmenu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

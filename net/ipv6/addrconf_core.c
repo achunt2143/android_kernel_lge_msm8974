@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IPv6 library code, needed by static components when full IPv6 support is
  * not configured or static.
@@ -9,14 +6,6 @@
 
 #include <linux/export.h>
 #include <net/ipv6.h>
-<<<<<<< HEAD
-
-#define IPV6_ADDR_SCOPE_TYPE(scope)	((scope) << 16)
-
-static inline unsigned ipv6_addr_scope2type(unsigned scope)
-{
-	switch(scope) {
-=======
 #include <net/ipv6_stubs.h>
 #include <net/addrconf.h>
 #include <net/ip.h>
@@ -33,7 +22,6 @@ EXPORT_SYMBOL(__fib6_flush_trees);
 static inline unsigned int ipv6_addr_scope2type(unsigned int scope)
 {
 	switch (scope) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IPV6_ADDR_SCOPE_NODELOCAL:
 		return (IPV6_ADDR_SCOPE_TYPE(IPV6_ADDR_SCOPE_NODELOCAL) |
 			IPV6_ADDR_LOOPBACK);
@@ -101,8 +89,6 @@ int __ipv6_addr_type(const struct in6_addr *addr)
 }
 EXPORT_SYMBOL(__ipv6_addr_type);
 
-<<<<<<< HEAD
-=======
 static ATOMIC_NOTIFIER_HEAD(inet6addr_chain);
 static BLOCKING_NOTIFIER_HEAD(inet6addr_validator_chain);
 
@@ -292,4 +278,3 @@ void in6_dev_finish_destroy(struct inet6_dev *idev)
 	call_rcu(&idev->rcu, in6_dev_finish_destroy_rcu);
 }
 EXPORT_SYMBOL(in6_dev_finish_destroy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

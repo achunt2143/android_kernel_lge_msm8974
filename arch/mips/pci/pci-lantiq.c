@@ -1,16 +1,7 @@
-<<<<<<< HEAD
-/*
- *  This program is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License version 2 as published
- *  by the Free Software Foundation.
- *
- *  Copyright (C) 2010 John Crispin <blogic@openwrt.org>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *
  *  Copyright (C) 2010 John Crispin <john@phrozen.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -18,15 +9,6 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/mm.h>
-#include <linux/vmalloc.h>
-#include <linux/export.h>
-#include <linux/platform_device.h>
-
-#include <asm/pci.h>
-#include <asm/gpio.h>
-=======
 #include <linux/gpio/consumer.h>
 #include <linux/mm.h>
 #include <linux/vmalloc.h>
@@ -35,28 +17,13 @@
 #include <linux/of_pci.h>
 #include <linux/platform_device.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/addrspace.h>
 
 #include <lantiq_soc.h>
 #include <lantiq_irq.h>
-<<<<<<< HEAD
-#include <lantiq_platform.h>
 
 #include "pci-lantiq.h"
 
-#define LTQ_PCI_CFG_BASE		0x17000000
-#define LTQ_PCI_CFG_SIZE		0x00008000
-#define LTQ_PCI_MEM_BASE		0x18000000
-#define LTQ_PCI_MEM_SIZE		0x02000000
-#define LTQ_PCI_IO_BASE			0x1AE00000
-#define LTQ_PCI_IO_SIZE			0x00200000
-
-=======
-
-#include "pci-lantiq.h"
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_CR_FCI_ADDR_MAP0		0x00C0
 #define PCI_CR_FCI_ADDR_MAP1		0x00C4
 #define PCI_CR_FCI_ADDR_MAP2		0x00C8
@@ -92,46 +59,6 @@
 #define ltq_pci_cfg_w32(x, y)	ltq_w32((x), ltq_pci_mapped_cfg + (y))
 #define ltq_pci_cfg_r32(x)	ltq_r32(ltq_pci_mapped_cfg + (x))
 
-<<<<<<< HEAD
-struct ltq_pci_gpio_map {
-	int pin;
-	int alt0;
-	int alt1;
-	int dir;
-	char *name;
-};
-
-/* the pci core can make use of the following gpios */
-static struct ltq_pci_gpio_map ltq_pci_gpio_map[] = {
-	{ 0, 1, 0, 0, "pci-exin0" },
-	{ 1, 1, 0, 0, "pci-exin1" },
-	{ 2, 1, 0, 0, "pci-exin2" },
-	{ 39, 1, 0, 0, "pci-exin3" },
-	{ 10, 1, 0, 0, "pci-exin4" },
-	{ 9, 1, 0, 0, "pci-exin5" },
-	{ 30, 1, 0, 1, "pci-gnt1" },
-	{ 23, 1, 0, 1, "pci-gnt2" },
-	{ 19, 1, 0, 1, "pci-gnt3" },
-	{ 38, 1, 0, 1, "pci-gnt4" },
-	{ 29, 1, 0, 0, "pci-req1" },
-	{ 31, 1, 0, 0, "pci-req2" },
-	{ 3, 1, 0, 0, "pci-req3" },
-	{ 37, 1, 0, 0, "pci-req4" },
-};
-
-__iomem void *ltq_pci_mapped_cfg;
-static __iomem void *ltq_pci_membase;
-
-int (*ltqpci_plat_dev_init)(struct pci_dev *dev) = NULL;
-
-/* Since the PCI REQ pins can be reused for other functionality, make it
-   possible to exclude those from interpretation by the PCI controller */
-static int ltq_pci_req_mask = 0xf;
-
-static int *ltq_pci_irq_map;
-
-struct pci_ops ltq_pci_ops = {
-=======
 __iomem void *ltq_pci_mapped_cfg;
 static __iomem void *ltq_pci_membase;
 
@@ -140,109 +67,29 @@ static struct clk *clk_pci, *clk_external;
 static struct resource pci_io_resource;
 static struct resource pci_mem_resource;
 static struct pci_ops pci_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read	= ltq_pci_read_config_dword,
 	.write	= ltq_pci_write_config_dword
 };
 
-<<<<<<< HEAD
-static struct resource pci_io_resource = {
-	.name	= "pci io space",
-	.start	= LTQ_PCI_IO_BASE,
-	.end	= LTQ_PCI_IO_BASE + LTQ_PCI_IO_SIZE - 1,
-	.flags	= IORESOURCE_IO
-};
-
-static struct resource pci_mem_resource = {
-	.name	= "pci memory space",
-	.start	= LTQ_PCI_MEM_BASE,
-	.end	= LTQ_PCI_MEM_BASE + LTQ_PCI_MEM_SIZE - 1,
-	.flags	= IORESOURCE_MEM
-};
-
-static struct pci_controller ltq_pci_controller = {
-	.pci_ops	= &ltq_pci_ops,
-=======
 static struct pci_controller pci_controller = {
 	.pci_ops	= &pci_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mem_resource	= &pci_mem_resource,
 	.mem_offset	= 0x00000000UL,
 	.io_resource	= &pci_io_resource,
 	.io_offset	= 0x00000000UL,
 };
 
-<<<<<<< HEAD
-int pcibios_plat_dev_init(struct pci_dev *dev)
-{
-	if (ltqpci_plat_dev_init)
-		return ltqpci_plat_dev_init(dev);
-
-	return 0;
-}
-
-static u32 ltq_calc_bar11mask(void)
-=======
 static inline u32 ltq_calc_bar11mask(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 mem, bar11mask;
 
 	/* BAR11MASK value depends on available memory on system. */
-<<<<<<< HEAD
-	mem = num_physpages * PAGE_SIZE;
-=======
 	mem = get_num_physpages() * PAGE_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bar11mask = (0x0ffffff0 & ~((1 << (fls(mem) - 1)) - 1)) | 8;
 
 	return bar11mask;
 }
 
-<<<<<<< HEAD
-static void ltq_pci_setup_gpio(int gpio)
-{
-	int i;
-	for (i = 0; i < ARRAY_SIZE(ltq_pci_gpio_map); i++) {
-		if (gpio & (1 << i)) {
-			ltq_gpio_request(ltq_pci_gpio_map[i].pin,
-				ltq_pci_gpio_map[i].alt0,
-				ltq_pci_gpio_map[i].alt1,
-				ltq_pci_gpio_map[i].dir,
-				ltq_pci_gpio_map[i].name);
-		}
-	}
-	ltq_gpio_request(21, 0, 0, 1, "pci-reset");
-	ltq_pci_req_mask = (gpio >> PCI_REQ_SHIFT) & PCI_REQ_MASK;
-}
-
-static int __devinit ltq_pci_startup(struct ltq_pci_data *conf)
-{
-	u32 temp_buffer;
-
-	/* set clock to 33Mhz */
-	if (ltq_is_ar9()) {
-		ltq_cgu_w32(ltq_cgu_r32(LTQ_CGU_IFCCR) & ~0x1f00000, LTQ_CGU_IFCCR);
-		ltq_cgu_w32(ltq_cgu_r32(LTQ_CGU_IFCCR) | 0xe00000, LTQ_CGU_IFCCR);
-	} else {
-		ltq_cgu_w32(ltq_cgu_r32(LTQ_CGU_IFCCR) & ~0xf00000, LTQ_CGU_IFCCR);
-		ltq_cgu_w32(ltq_cgu_r32(LTQ_CGU_IFCCR) | 0x800000, LTQ_CGU_IFCCR);
-	}
-
-	/* external or internal clock ? */
-	if (conf->clock) {
-		ltq_cgu_w32(ltq_cgu_r32(LTQ_CGU_IFCCR) & ~(1 << 16),
-			LTQ_CGU_IFCCR);
-		ltq_cgu_w32((1 << 30), LTQ_CGU_PCICR);
-	} else {
-		ltq_cgu_w32(ltq_cgu_r32(LTQ_CGU_IFCCR) | (1 << 16),
-			LTQ_CGU_IFCCR);
-		ltq_cgu_w32((1 << 31) | (1 << 30), LTQ_CGU_PCICR);
-	}
-
-	/* setup pci clock and gpis used by pci */
-	ltq_pci_setup_gpio(conf->gpio);
-=======
 static int ltq_pci_startup(struct platform_device *pdev)
 {
 	struct device_node *node = pdev->dev.of_node;
@@ -285,7 +132,6 @@ static int ltq_pci_startup(struct platform_device *pdev)
 		return error;
 	}
 	gpiod_set_consumer_name(reset_gpio, "pci_reset");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* enable auto-switching between PCI and EBU */
 	ltq_pci_w32(0xa, PCI_CR_CLK_CTRL);
@@ -298,12 +144,6 @@ static int ltq_pci_startup(struct platform_device *pdev)
 
 	/* enable external 2 PCI masters */
 	temp_buffer = ltq_pci_r32(PCI_CR_PC_ARB);
-<<<<<<< HEAD
-	temp_buffer &= (~(ltq_pci_req_mask << 16));
-	/* enable internal arbiter */
-	temp_buffer |= (1 << INTERNAL_ARB_ENABLE_BIT);
-	/* enable internal PCI master reqest */
-=======
 	/* setup the request mask */
 	req_mask = of_get_property(node, "req-mask", NULL);
 	if (req_mask)
@@ -313,7 +153,6 @@ static int ltq_pci_startup(struct platform_device *pdev)
 	/* enable internal arbiter */
 	temp_buffer |= (1 << INTERNAL_ARB_ENABLE_BIT);
 	/* enable internal PCI master request */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	temp_buffer &= (~(3 << PCI_MASTER0_REQ_MASK_2BITS));
 
 	/* enable EBU request */
@@ -354,49 +193,6 @@ static int ltq_pci_startup(struct platform_device *pdev)
 	ltq_ebu_w32(ltq_ebu_r32(LTQ_EBU_PCC_IEN) | 0x10, LTQ_EBU_PCC_IEN);
 
 	/* toggle reset pin */
-<<<<<<< HEAD
-	__gpio_set_value(21, 0);
-	wmb();
-	mdelay(1);
-	__gpio_set_value(21, 1);
-	return 0;
-}
-
-int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	if (ltq_pci_irq_map[slot])
-		return ltq_pci_irq_map[slot];
-	printk(KERN_ERR "lq_pci: trying to map irq for unknown slot %d\n",
-		slot);
-
-	return 0;
-}
-
-static int __devinit ltq_pci_probe(struct platform_device *pdev)
-{
-	struct ltq_pci_data *ltq_pci_data =
-		(struct ltq_pci_data *) pdev->dev.platform_data;
-
-	pci_clear_flags(PCI_PROBE_ONLY);
-	ltq_pci_irq_map = ltq_pci_data->irq;
-	ltq_pci_membase = ioremap_nocache(PCI_CR_BASE_ADDR, PCI_CR_SIZE);
-	ltq_pci_mapped_cfg =
-		ioremap_nocache(LTQ_PCI_CFG_BASE, LTQ_PCI_CFG_BASE);
-	ltq_pci_controller.io_map_base =
-		(unsigned long)ioremap(LTQ_PCI_IO_BASE, LTQ_PCI_IO_SIZE - 1);
-	ltq_pci_startup(ltq_pci_data);
-	register_pci_controller(&ltq_pci_controller);
-
-	return 0;
-}
-
-static struct platform_driver
-ltq_pci_driver = {
-	.probe = ltq_pci_probe,
-	.driver = {
-		.name = "ltq_pci",
-		.owner = THIS_MODULE,
-=======
 	if (reset_gpio) {
 		gpiod_set_value_cansleep(reset_gpio, 1);
 		wmb();
@@ -435,7 +231,6 @@ static struct platform_driver ltq_pci_driver = {
 	.driver = {
 		.name = "pci-xway",
 		.of_match_table = ltq_pci_match,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -443,11 +238,7 @@ int __init pcibios_init(void)
 {
 	int ret = platform_driver_register(&ltq_pci_driver);
 	if (ret)
-<<<<<<< HEAD
-		printk(KERN_INFO "ltq_pci: Error registering platfom driver!");
-=======
 		pr_info("pci-xway: Error registering platform driver!");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 

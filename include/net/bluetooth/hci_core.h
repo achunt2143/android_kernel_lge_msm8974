@@ -1,12 +1,7 @@
 /*
    BlueZ - Bluetooth protocol stack for Linux
-<<<<<<< HEAD
-   Copyright (c) 2000-2001, The Linux Foundation. All rights reserved.
-   Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
-=======
    Copyright (c) 2000-2001, 2010, Code Aurora Forum. All rights reserved.
    Copyright 2023-2024 NXP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
 
@@ -31,12 +26,6 @@
 #ifndef __HCI_CORE_H
 #define __HCI_CORE_H
 
-<<<<<<< HEAD
-#include <net/bluetooth/hci.h>
-/* HCI upper protocols */
-#define HCI_PROTO_L2CAP	0
-#define HCI_PROTO_SCO	1
-=======
 #include <linux/idr.h>
 #include <linux/leds.h>
 #include <linux/rculist.h>
@@ -51,7 +40,6 @@
 
 /* HCI maximum id value */
 #define HCI_MAX_ID 10000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* HCI Core structures */
 struct inquiry_data {
@@ -66,9 +54,6 @@ struct inquiry_data {
 };
 
 struct inquiry_entry {
-<<<<<<< HEAD
-	struct inquiry_entry	*next;
-=======
 	struct list_head	all;		/* inq_cache.all */
 	struct list_head	list;		/* unknown or resolve */
 	enum {
@@ -77,17 +62,10 @@ struct inquiry_entry {
 		NAME_PENDING,
 		NAME_KNOWN,
 	} name_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u32			timestamp;
 	struct inquiry_data	data;
 };
 
-<<<<<<< HEAD
-struct inquiry_cache {
-	spinlock_t		lock;
-	__u32			timestamp;
-	struct inquiry_entry	*list;
-=======
 struct discovery_state {
 	int			type;
 	enum {
@@ -143,36 +121,21 @@ enum suspended_state {
 	BT_RUNNING = 0,
 	BT_SUSPEND_DISCONNECT,
 	BT_SUSPEND_CONFIGURE_WAKE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct hci_conn_hash {
 	struct list_head list;
-<<<<<<< HEAD
-	spinlock_t       lock;
-	unsigned int     acl_num;
-	unsigned int     sco_num;
-	unsigned int     le_num;
-};
-
-struct hci_chan_list {
-	struct list_head list;
-	spinlock_t       lock;
-=======
 	unsigned int     acl_num;
 	unsigned int     amp_num;
 	unsigned int     sco_num;
 	unsigned int     iso_num;
 	unsigned int     le_num;
 	unsigned int     le_num_peripheral;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bdaddr_list {
 	struct list_head list;
 	bdaddr_t bdaddr;
-<<<<<<< HEAD
-=======
 	u8 bdaddr_type;
 };
 
@@ -207,48 +170,11 @@ struct bdaddr_list_with_flags {
 	bdaddr_t bdaddr;
 	u8 bdaddr_type;
 	hci_conn_flags_t flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bt_uuid {
 	struct list_head list;
 	u8 uuid[16];
-<<<<<<< HEAD
-	u8 svc_hint;
-};
-
-struct key_master_id {
-	__le16 ediv;
-	u8 rand[8];
-} __packed;
-
-#define KEY_TYPE_LE_BASE	0x11
-#define KEY_TYPE_LTK		0x11
-#define KEY_TYPE_IRK		0x12
-#define KEY_TYPE_CSRK		0x13
-
-struct link_key_data {
-	bdaddr_t bdaddr;
-	u8 addr_type;
-	u8 key_type;
-	u8 val[16];
-	u8 pin_len;
-	u8 auth;
-	u8 dlen;
-	u8 data[0];
-} __packed;
-
-struct link_key {
-	struct list_head list;
-	bdaddr_t bdaddr;
-	u8 addr_type;
-	u8 key_type;
-	u8 val[16];
-	u8 pin_len;
-	u8 auth;
-	u8 dlen;
-	u8 data[0];
-=======
 	u8 size;
 	u8 svc_hint;
 };
@@ -301,32 +227,11 @@ struct link_key {
 	u8 type;
 	u8 val[HCI_LINK_KEY_SIZE];
 	u8 pin_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct oob_data {
 	struct list_head list;
 	bdaddr_t bdaddr;
-<<<<<<< HEAD
-	u8 hash[16];
-	u8 randomizer[16];
-};
-
-struct adv_entry {
-	struct list_head list;
-	bdaddr_t bdaddr;
-	u8 bdaddr_type;
-	u8 flags;
-};
-
-#define NUM_REASSEMBLY 4
-struct hci_dev {
-	struct list_head list;
-	spinlock_t	lock;
-	atomic_t	refcnt;
-
-	char		name[8];
-=======
 	u8 bdaddr_type;
 	u8 present;
 	u8 hash192[16];
@@ -453,22 +358,11 @@ struct hci_dev {
 	struct ida	unset_handle_ida;
 
 	const char	*name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long	flags;
 	__u16		id;
 	__u8		bus;
 	__u8		dev_type;
 	bdaddr_t	bdaddr;
-<<<<<<< HEAD
-	__u8		dev_name[HCI_MAX_NAME_LENGTH];
-	__u8		eir[HCI_MAX_EIR_LENGTH];
-	__u8		dev_class[3];
-	__u8		major_class;
-	__u8		minor_class;
-	__u8		features[8];
-	__u8		commands[64];
-	__u8		ssp_mode;
-=======
 	bdaddr_t	setup_addr;
 	bdaddr_t	public_addr;
 	bdaddr_t	random_addr;
@@ -491,16 +385,10 @@ struct hci_dev {
 	__u8		mesh_ad_types[16];
 	__u8		mesh_send_ref;
 	__u8		commands[64];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8		hci_ver;
 	__u16		hci_rev;
 	__u8		lmp_ver;
 	__u16		manufacturer;
-<<<<<<< HEAD
-	__le16		lmp_subver;
-	__u16		voice_setting;
-	__u8		io_capability;
-=======
 	__u16		lmp_subver;
 	__u16		voice_setting;
 	__u8		num_iac;
@@ -569,7 +457,6 @@ struct hci_dev {
 	__u16		def_le_autoconnect_timeout;
 	__s8		min_le_tx_power;
 	__s8		max_le_tx_power;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__u16		pkt_type;
 	__u16		esco_type;
@@ -591,15 +478,11 @@ struct hci_dev {
 	__u32		amp_max_flush_to;
 	__u32		amp_be_flush_to;
 
-<<<<<<< HEAD
-	__s8		is_wbs;
-=======
 	struct amp_assoc	loc_assoc;
 
 	__u8		flow_ctl_mode;
 
 	unsigned int	auto_accept_delay;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long	quirks;
 
@@ -607,24 +490,11 @@ struct hci_dev {
 	unsigned int	acl_cnt;
 	unsigned int	sco_cnt;
 	unsigned int	le_cnt;
-<<<<<<< HEAD
-
-	__u8	flow_ctl_mode;
-=======
 	unsigned int	iso_cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int	acl_mtu;
 	unsigned int	sco_mtu;
 	unsigned int	le_mtu;
-<<<<<<< HEAD
-	unsigned int	acl_pkts;
-	unsigned int	sco_pkts;
-	unsigned int	le_pkts;
-	unsigned int	le_white_list_size;
-
-	unsigned int	data_block_len;
-=======
 	unsigned int	iso_mtu;
 	unsigned int	acl_pkts;
 	unsigned int	sco_pkts;
@@ -635,24 +505,11 @@ struct hci_dev {
 	__u16		block_mtu;
 	__u16		num_blocks;
 	__u16		block_cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long	acl_last_tx;
 	unsigned long	sco_last_tx;
 	unsigned long	le_last_tx;
 
-<<<<<<< HEAD
-	struct workqueue_struct	*workqueue;
-
-	struct work_struct	power_on;
-	struct work_struct	power_off;
-	struct timer_list	off_timer;
-
-	struct timer_list	cmd_timer;
-	struct tasklet_struct	cmd_task;
-	struct tasklet_struct	rx_task;
-	struct tasklet_struct	tx_task;
-=======
 	__u8		le_tx_def_phys;
 	__u8		le_rx_def_phys;
 
@@ -682,63 +539,18 @@ struct hci_dev {
 	struct work_struct	tx_work;
 
 	struct delayed_work	le_scan_disable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct sk_buff_head	rx_q;
 	struct sk_buff_head	raw_q;
 	struct sk_buff_head	cmd_q;
 
 	struct sk_buff		*sent_cmd;
-<<<<<<< HEAD
-	struct sk_buff		*reassembly[NUM_REASSEMBLY];
-=======
 	struct sk_buff		*recv_event;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex		req_lock;
 	wait_queue_head_t	req_wait_q;
 	__u32			req_status;
 	__u32			req_result;
-<<<<<<< HEAD
-
-	__u16			init_last_cmd;
-
-	struct crypto_blkcipher	*tfm;
-
-	struct inquiry_cache	inq_cache;
-	struct hci_conn_hash	conn_hash;
-	struct hci_chan_list	chan_list;
-	struct list_head	blacklist;
-
-	struct list_head	uuids;
-
-	struct list_head	link_keys;
-
-	struct list_head	remote_oob_data;
-
-	struct list_head	adv_entries;
-	rwlock_t		adv_entries_lock;
-	struct timer_list	adv_timer;
-
-	struct timer_list	disco_timer;
-	struct timer_list	disco_le_timer;
-	__u8			disco_state;
-	int			disco_int_phase;
-	int			disco_int_count;
-
-	struct hci_dev_stats	stat;
-
-	struct sk_buff_head	driver_init;
-
-	void			*driver_data;
-	void			*core_data;
-
-	atomic_t		promisc;
-
-	struct dentry		*debugfs;
-
-	struct device		*parent;
-=======
 	struct sk_buff		*req_skb;
 	struct sk_buff		*req_rsp;
 
@@ -790,14 +602,10 @@ struct hci_dev {
 
 	struct hci_devcoredump	dump;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device		dev;
 
 	struct rfkill		*rfkill;
 
-<<<<<<< HEAD
-	struct module		*owner;
-=======
 	DECLARE_BITMAP(dev_flags, __HCI_NUM_FLAGS);
 	hci_conn_flags_t	conn_flags;
 
@@ -850,17 +658,10 @@ struct hci_dev {
 	bool			aosp_capable;
 	bool			aosp_quality_report;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int (*open)(struct hci_dev *hdev);
 	int (*close)(struct hci_dev *hdev);
 	int (*flush)(struct hci_dev *hdev);
-<<<<<<< HEAD
-	int (*send)(struct sk_buff *skb);
-	void (*destruct)(struct hci_dev *hdev);
-	void (*notify)(struct hci_dev *hdev, unsigned int evt);
-	int (*ioctl)(struct hci_dev *hdev, unsigned int cmd, unsigned long arg);
-=======
 	int (*setup)(struct hci_dev *hdev);
 	int (*shutdown)(struct hci_dev *hdev);
 	int (*send)(struct hci_dev *hdev, struct sk_buff *skb);
@@ -886,33 +687,12 @@ enum conn_reasons {
 	CONN_REASON_L2CAP_CHAN,
 	CONN_REASON_SCO_CONNECT,
 	CONN_REASON_ISO_CONNECT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct hci_conn {
 	struct list_head list;
 
 	atomic_t	refcnt;
-<<<<<<< HEAD
-	spinlock_t	lock;
-
-	bdaddr_t	dst;
-	__u8		 dst_id;
-	__u8            dst_type;
-	__u16		handle;
-	__u16		state;
-	__u8		mode;
-	__u8		type;
-	__u8		out;
-	__u8		attempt;
-	__u8		dev_class[3];
-	__u8		features[8];
-	__u8		ssp_mode;
-	__u16		interval;
-	__u16		pkt_type;
-	__u16		link_policy;
-	__u32		link_mode;
-=======
 
 	bdaddr_t	dst;
 	__u8		dst_type;
@@ -936,28 +716,12 @@ struct hci_conn {
 	__u16		pkt_type;
 	__u16		link_policy;
 	__u8		key_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8		auth_type;
 	__u8		sec_level;
 	__u8		pending_sec_level;
 	__u8		pin_length;
 	__u8		enc_key_size;
 	__u8		io_capability;
-<<<<<<< HEAD
-	__u8		auth_initiator;
-	__u8		power_save;
-	__u16		disc_timeout;
-	__u16		conn_timeout;
-	unsigned long	pend;
-
-	__u8		remote_cap;
-	__u8		remote_oob;
-	__u8		remote_auth;
-
-	__s8	rssi_threshold;
-	__u16	rssi_update_interval;
-	__u8	rssi_update_thresh_exceed;
-=======
 	__u32		passkey_notify;
 	__u8		passkey_entered;
 	__u16		disc_timeout;
@@ -995,23 +759,10 @@ struct hci_conn {
 	__u8		remote_cap;
 	__u8		remote_auth;
 	__u8		remote_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int	sent;
 
 	struct sk_buff_head data_q;
-<<<<<<< HEAD
-
-	struct timer_list disc_timer;
-	struct timer_list idle_timer;
-	struct delayed_work	rssi_update_work;
-	struct timer_list encrypt_pause_timer;
-
-	struct work_struct work_add;
-	struct work_struct work_del;
-	struct device	dev;
-	atomic_t	devref;
-=======
 	struct list_head chan_list;
 
 	struct delayed_work disc_work;
@@ -1021,37 +772,10 @@ struct hci_conn {
 
 	struct device	dev;
 	struct dentry	*debugfs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct hci_dev	*hdev;
 	void		*l2cap_data;
 	void		*sco_data;
-<<<<<<< HEAD
-	void		*priv;
-
-	__u8             link_key[16];
-	__u8             key_type;
-
-	struct hci_conn	*link;
-
-	/* Low Energy SMP pairing data */
-	__u8		oob; /* OOB pairing supported */
-	__u8		tk_valid; /* TK value is valid */
-	__u8		cfm_pending; /* CONFIRM cmd may be sent */
-	__u8		preq[7]; /* Pairing Request */
-	__u8		prsp[7]; /* Pairing Response */
-	__u8		prnd[16]; /* Pairing Random */
-	__u8		pcnf[16]; /* Pairing Confirm */
-	__u8		tk[16]; /* Temporary Key */
-	__u8		smp_key_size;
-	__u8		sec_req;
-	__u8		auth;
-	void		*smp_conn;
-	struct timer_list smp_timer;
-	__u8		conn_valid;
-	__u8		hidp_session_valid;
-
-=======
 	void		*iso_data;
 	struct amp_mgr	*amp_mgr;
 
@@ -1060,13 +784,10 @@ struct hci_conn {
 	struct hci_link *link;
 
 	struct bt_codec codec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void (*connect_cfm_cb)	(struct hci_conn *conn, u8 status);
 	void (*security_cfm_cb)	(struct hci_conn *conn, u8 status);
 	void (*disconn_cfm_cb)	(struct hci_conn *conn, u8 reason);
-<<<<<<< HEAD
-=======
 
 	void (*cleanup)(struct hci_conn *conn);
 };
@@ -1074,49 +795,10 @@ struct hci_conn {
 struct hci_link {
 	struct list_head list;
 	struct hci_conn *conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct hci_chan {
 	struct list_head list;
-<<<<<<< HEAD
-	struct hci_dev	*hdev;
-	__u16		state;
-	atomic_t	refcnt;
-	__u16		ll_handle;
-	struct hci_ext_fs	tx_fs;
-	struct hci_ext_fs	rx_fs;
-	struct hci_conn	*conn;
-	void		*l2cap_sk;
-};
-
-extern struct hci_proto *hci_proto[];
-extern struct list_head hci_dev_list;
-extern struct list_head hci_cb_list;
-extern rwlock_t hci_dev_list_lock;
-extern rwlock_t hci_cb_list_lock;
-
-/* ----- Inquiry cache ----- */
-#define INQUIRY_CACHE_AGE_MAX   (HZ*30)   /* 30 seconds */
-#define INQUIRY_ENTRY_AGE_MAX   (HZ*60*60)   /* 1 Hour */
-
-#define inquiry_cache_lock(c)		spin_lock(&c->lock)
-#define inquiry_cache_unlock(c)		spin_unlock(&c->lock)
-#define inquiry_cache_lock_bh(c)	spin_lock_bh(&c->lock)
-#define inquiry_cache_unlock_bh(c)	spin_unlock_bh(&c->lock)
-
-static inline void inquiry_cache_init(struct hci_dev *hdev)
-{
-	struct inquiry_cache *c = &hdev->inq_cache;
-	spin_lock_init(&c->lock);
-	c->list = NULL;
-}
-
-static inline int inquiry_cache_empty(struct hci_dev *hdev)
-{
-	struct inquiry_cache *c = &hdev->inq_cache;
-	return c->list == NULL;
-=======
 	__u16 handle;
 	struct hci_conn *conn;
 	struct sk_buff_head data_q;
@@ -1249,16 +931,11 @@ void hci_discovery_set_state(struct hci_dev *hdev, int state);
 static inline int inquiry_cache_empty(struct hci_dev *hdev)
 {
 	return list_empty(&hdev->discovery.all);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline long inquiry_cache_age(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	struct inquiry_cache *c = &hdev->inq_cache;
-=======
 	struct discovery_state *c = &hdev->discovery;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return jiffies - c->timestamp;
 }
 
@@ -1267,10 +944,6 @@ static inline long inquiry_entry_age(struct inquiry_entry *e)
 	return jiffies - e->timestamp;
 }
 
-<<<<<<< HEAD
-struct inquiry_entry *hci_inquiry_cache_lookup(struct hci_dev *hdev, bdaddr_t *bdaddr);
-void hci_inquiry_cache_update(struct hci_dev *hdev, struct inquiry_data *data);
-=======
 struct inquiry_entry *hci_inquiry_cache_lookup(struct hci_dev *hdev,
 					       bdaddr_t *bdaddr);
 struct inquiry_entry *hci_inquiry_cache_lookup_unknown(struct hci_dev *hdev,
@@ -1283,7 +956,6 @@ void hci_inquiry_cache_update_resolve(struct hci_dev *hdev,
 u32 hci_inquiry_cache_update(struct hci_dev *hdev, struct inquiry_data *data,
 			     bool name_known);
 void hci_inquiry_cache_flush(struct hci_dev *hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ----- HCI Connections ----- */
 enum {
@@ -1292,17 +964,6 @@ enum {
 	HCI_CONN_RSWITCH_PEND,
 	HCI_CONN_MODE_CHANGE_PEND,
 	HCI_CONN_SCO_SETUP_PEND,
-<<<<<<< HEAD
-};
-
-static inline void hci_conn_hash_init(struct hci_dev *hdev)
-{
-	struct hci_conn_hash *h = &hdev->conn_hash;
-	INIT_LIST_HEAD(&h->list);
-	spin_lock_init(&h->lock);
-	h->acl_num = 0;
-	h->sco_num = 0;
-=======
 	HCI_CONN_MGMT_CONNECTED,
 	HCI_CONN_SSP_ENABLED,
 	HCI_CONN_SC_ENABLED,
@@ -1342,25 +1003,16 @@ static inline bool hci_conn_sc_enabled(struct hci_conn *conn)
 	struct hci_dev *hdev = conn->hdev;
 	return hci_dev_test_flag(hdev, HCI_SC_ENABLED) &&
 	       test_bit(HCI_CONN_SC_ENABLED, &conn->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void hci_conn_hash_add(struct hci_dev *hdev, struct hci_conn *c)
 {
 	struct hci_conn_hash *h = &hdev->conn_hash;
-<<<<<<< HEAD
-	list_add(&c->list, &h->list);
-=======
 	list_add_tail_rcu(&c->list, &h->list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (c->type) {
 	case ACL_LINK:
 		h->acl_num++;
 		break;
-<<<<<<< HEAD
-	case LE_LINK:
-		h->le_num++;
-=======
 	case AMP_LINK:
 		h->amp_num++;
 		break;
@@ -1368,40 +1020,28 @@ static inline void hci_conn_hash_add(struct hci_dev *hdev, struct hci_conn *c)
 		h->le_num++;
 		if (c->role == HCI_ROLE_SLAVE)
 			h->le_num_peripheral++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SCO_LINK:
 	case ESCO_LINK:
 		h->sco_num++;
 		break;
-<<<<<<< HEAD
-=======
 	case ISO_LINK:
 		h->iso_num++;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static inline void hci_conn_hash_del(struct hci_dev *hdev, struct hci_conn *c)
 {
 	struct hci_conn_hash *h = &hdev->conn_hash;
-<<<<<<< HEAD
-	list_del(&c->list);
-=======
 
 	list_del_rcu(&c->list);
 	synchronize_rcu();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (c->type) {
 	case ACL_LINK:
 		h->acl_num--;
 		break;
-<<<<<<< HEAD
-	case LE_LINK:
-		h->le_num--;
-=======
 	case AMP_LINK:
 		h->amp_num--;
 		break;
@@ -1409,17 +1049,11 @@ static inline void hci_conn_hash_del(struct hci_dev *hdev, struct hci_conn *c)
 		h->le_num--;
 		if (c->role == HCI_ROLE_SLAVE)
 			h->le_num_peripheral--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SCO_LINK:
 	case ESCO_LINK:
 		h->sco_num--;
 		break;
-<<<<<<< HEAD
-	}
-}
-
-=======
 	case ISO_LINK:
 		h->iso_num--;
 		break;
@@ -1539,29 +1173,10 @@ hci_conn_hash_lookup_per_adv_bis(struct hci_dev *hdev,
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct hci_conn *hci_conn_hash_lookup_handle(struct hci_dev *hdev,
 								__u16 handle)
 {
 	struct hci_conn_hash *h = &hdev->conn_hash;
-<<<<<<< HEAD
-	struct list_head *p;
-	struct hci_conn  *c;
-
-	list_for_each(p, &h->list) {
-		c = list_entry(p, struct hci_conn, list);
-		if (c->handle == handle)
-			return c;
-	}
-	return NULL;
-}
-
-static inline void hci_chan_list_init(struct hci_dev *hdev)
-{
-	struct hci_chan_list *h = &hdev->chan_list;
-	INIT_LIST_HEAD(&h->list);
-	spin_lock_init(&h->lock);
-=======
 	struct hci_conn  *c;
 
 	rcu_read_lock();
@@ -1575,38 +1190,12 @@ static inline void hci_chan_list_init(struct hci_dev *hdev)
 	rcu_read_unlock();
 
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct hci_conn *hci_conn_hash_lookup_ba(struct hci_dev *hdev,
 							__u8 type, bdaddr_t *ba)
 {
 	struct hci_conn_hash *h = &hdev->conn_hash;
-<<<<<<< HEAD
-	struct list_head *p;
-	struct hci_conn  *c;
-
-	list_for_each(p, &h->list) {
-		c = list_entry(p, struct hci_conn, list);
-		if (c->type == type && !bacmp(&c->dst, ba))
-			return c;
-	}
-	return NULL;
-}
-
-static inline struct hci_conn *hci_conn_hash_lookup_id(struct hci_dev *hdev,
-					bdaddr_t *ba, __u8 id)
-{
-	struct hci_conn_hash *h = &hdev->conn_hash;
-	struct list_head *p;
-	struct hci_conn  *c;
-
-	list_for_each(p, &h->list) {
-		c = list_entry(p, struct hci_conn, list);
-		if (!bacmp(&c->dst, ba) && (c->dst_id == id))
-			return c;
-	}
-=======
 	struct hci_conn  *c;
 
 	rcu_read_lock();
@@ -1795,7 +1384,6 @@ hci_conn_hash_lookup_pa_sync_handle(struct hci_dev *hdev, __u16 sync_handle)
 	}
 	rcu_read_unlock();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -1803,109 +1391,6 @@ static inline struct hci_conn *hci_conn_hash_lookup_state(struct hci_dev *hdev,
 							__u8 type, __u16 state)
 {
 	struct hci_conn_hash *h = &hdev->conn_hash;
-<<<<<<< HEAD
-	struct list_head *p;
-	struct hci_conn  *c;
-
-	list_for_each(p, &h->list) {
-		c = list_entry(p, struct hci_conn, list);
-		if (c->type == type && c->state == state)
-			return c;
-	}
-	return NULL;
-}
-
-static inline struct hci_chan *hci_chan_list_lookup_handle(struct hci_dev *hdev,
-					__u16 handle)
-{
-	struct hci_chan_list *l = &hdev->chan_list;
-	struct list_head *p;
-	struct hci_chan  *c;
-
-	list_for_each(p, &l->list) {
-		c = list_entry(p, struct hci_chan, list);
-		if (c->ll_handle == handle)
-			return c;
-	}
-	return NULL;
-}
-
-static inline struct hci_chan *hci_chan_list_lookup_id(struct hci_dev *hdev,
-					__u8 handle)
-{
-	struct hci_chan_list *l = &hdev->chan_list;
-	struct list_head *p;
-	struct hci_chan  *c;
-
-	list_for_each(p, &l->list) {
-		c = list_entry(p, struct hci_chan, list);
-		if (c->conn->handle == handle)
-			return c;
-	}
-	return NULL;
-}
-
-void hci_acl_connect(struct hci_conn *conn);
-void hci_acl_disconn(struct hci_conn *conn, __u8 reason);
-void hci_add_sco(struct hci_conn *conn, __u16 handle);
-void hci_setup_sync(struct hci_conn *conn, __u16 handle);
-void hci_sco_setup(struct hci_conn *conn, __u8 status);
-
-struct hci_conn *hci_conn_add(struct hci_dev *hdev, int type,
-					__u16 pkt_type, bdaddr_t *dst);
-struct hci_conn *hci_le_conn_add(struct hci_dev *hdev, bdaddr_t *dst,
-							__u8 addr_type);
-int hci_conn_del(struct hci_conn *conn);
-void hci_conn_hash_flush(struct hci_dev *hdev, u8 is_process);
-void hci_conn_check_pending(struct hci_dev *hdev);
-
-struct hci_chan *hci_chan_add(struct hci_dev *hdev);
-int hci_chan_del(struct hci_chan *chan);
-static inline void hci_chan_hold(struct hci_chan *chan)
-{
-	atomic_inc(&chan->refcnt);
-}
-int hci_chan_put(struct hci_chan *chan);
-
-struct hci_chan *hci_chan_create(struct hci_chan *chan,
-				struct hci_ext_fs *tx_fs,
-				struct hci_ext_fs *rx_fs);
-void hci_chan_modify(struct hci_chan *chan,
-				struct hci_ext_fs *tx_fs,
-				struct hci_ext_fs *rx_fs);
-
-struct hci_conn *hci_connect(struct hci_dev *hdev, int type,
-					__u16 pkt_type, bdaddr_t *dst,
-					__u8 sec_level, __u8 auth_type);
-struct hci_conn *hci_le_connect(struct hci_dev *hdev, __u16 pkt_type,
-					bdaddr_t *dst, __u8 sec_level,
-					__u8 auth_type,
-					struct bt_le_params *le_params);
-void hci_le_add_dev_white_list(struct hci_dev *hdev, bdaddr_t *dst);
-void hci_le_remove_dev_white_list(struct hci_dev *hdev, bdaddr_t *dst);
-void hci_le_cancel_create_connect(struct hci_dev *hdev, bdaddr_t *dst);
-int hci_conn_check_link_mode(struct hci_conn *conn);
-int hci_conn_security(struct hci_conn *conn, __u8 sec_level, __u8 auth_type);
-int hci_conn_change_link_key(struct hci_conn *conn);
-int hci_conn_switch_role(struct hci_conn *conn, __u8 role);
-void hci_disconnect(struct hci_conn *conn, __u8 reason);
-void hci_disconnect_amp(struct hci_conn *conn, __u8 reason);
-
-void hci_conn_enter_active_mode(struct hci_conn *conn, __u8 force_active);
-void hci_conn_enter_sniff_mode(struct hci_conn *conn);
-
-void hci_conn_hold_device(struct hci_conn *conn);
-void hci_conn_put_device(struct hci_conn *conn);
-
-void hci_conn_set_rssi_reporter(struct hci_conn *conn,
-		s8 rssi_threshold, u16 interval, u8 updateOnThreshExceed);
-void hci_conn_unset_rssi_reporter(struct hci_conn *conn);
-
-static inline void hci_conn_hold(struct hci_conn *conn)
-{
-	atomic_inc(&conn->refcnt);
-	del_timer(&conn->disc_timer);
-=======
 	struct hci_conn  *c;
 
 	rcu_read_lock();
@@ -2088,26 +1573,10 @@ static inline struct hci_conn *hci_conn_get(struct hci_conn *conn)
 {
 	get_device(&conn->dev);
 	return conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void hci_conn_put(struct hci_conn *conn)
 {
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&conn->refcnt)) {
-		unsigned long timeo;
-		if (conn->type == ACL_LINK || conn->type == LE_LINK) {
-			del_timer(&conn->idle_timer);
-			if (conn->state == BT_CONNECTED) {
-				timeo = msecs_to_jiffies(conn->disc_timeout);
-				if (!conn->out)
-					timeo *= 4;
-			} else
-				timeo = msecs_to_jiffies(10);
-		} else
-			timeo = msecs_to_jiffies(10);
-		mod_timer(&conn->disc_timer, jiffies + timeo);
-=======
 	put_device(&conn->dev);
 }
 
@@ -2153,64 +1622,20 @@ static inline void hci_conn_drop(struct hci_conn *conn)
 		cancel_delayed_work(&conn->disc_work);
 		queue_delayed_work(conn->hdev->workqueue,
 				   &conn->disc_work, timeo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /* ----- HCI Devices ----- */
-<<<<<<< HEAD
-static inline void __hci_dev_put(struct hci_dev *d)
-{
-	if (atomic_dec_and_test(&d->refcnt))
-		d->destruct(d);
-}
-
-static inline void hci_dev_put(struct hci_dev *d)
-{
-	__hci_dev_put(d);
-	module_put(d->owner);
-}
-
-static inline struct hci_dev *__hci_dev_hold(struct hci_dev *d)
-{
-	atomic_inc(&d->refcnt);
-	return d;
-=======
 static inline void hci_dev_put(struct hci_dev *d)
 {
 	BT_DBG("%s orig refcnt %d", d->name,
 	       kref_read(&d->dev.kobj.kref));
 
 	put_device(&d->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct hci_dev *hci_dev_hold(struct hci_dev *d)
 {
-<<<<<<< HEAD
-	if (try_module_get(d->owner))
-		return __hci_dev_hold(d);
-	return NULL;
-}
-
-#define hci_dev_lock(d)		spin_lock(&d->lock)
-#define hci_dev_unlock(d)	spin_unlock(&d->lock)
-#define hci_dev_lock_bh(d)	spin_lock_bh(&d->lock)
-#define hci_dev_unlock_bh(d)	spin_unlock_bh(&d->lock)
-
-struct hci_dev *hci_dev_get(int index);
-struct hci_dev *hci_get_route(bdaddr_t *src, bdaddr_t *dst);
-struct hci_dev *hci_dev_get_type(__u8 amp_type);
-
-struct hci_dev *hci_alloc_dev(void);
-void hci_free_dev(struct hci_dev *hdev);
-int hci_register_dev(struct hci_dev *hdev);
-int hci_unregister_dev(struct hci_dev *hdev);
-int hci_suspend_dev(struct hci_dev *hdev);
-int hci_resume_dev(struct hci_dev *hdev);
-int hci_dev_open(__u16 dev);
-int hci_dev_close(__u16 dev);
-=======
 	BT_DBG("%s orig refcnt %d", d->name,
 	       kref_read(&d->dev.kobj.kref));
 
@@ -2289,7 +1714,6 @@ static inline void hci_devcd_setup(struct hci_dev *hdev)
 int hci_dev_open(__u16 dev);
 int hci_dev_close(__u16 dev);
 int hci_dev_do_close(struct hci_dev *hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int hci_dev_reset(__u16 dev);
 int hci_dev_reset_stat(__u16 dev);
 int hci_dev_cmd(unsigned int cmd, void __user *arg);
@@ -2298,50 +1722,6 @@ int hci_get_dev_info(void __user *arg);
 int hci_get_conn_list(void __user *arg);
 int hci_get_conn_info(struct hci_dev *hdev, void __user *arg);
 int hci_get_auth_info(struct hci_dev *hdev, void __user *arg);
-<<<<<<< HEAD
-int hci_set_auth_info(struct hci_dev *hdev, void __user *arg);
-int hci_inquiry(void __user *arg);
-
-struct bdaddr_list *hci_blacklist_lookup(struct hci_dev *hdev, bdaddr_t *bdaddr);
-int hci_blacklist_clear(struct hci_dev *hdev);
-
-int hci_uuids_clear(struct hci_dev *hdev);
-
-int hci_link_keys_clear(struct hci_dev *hdev);
-struct link_key *hci_find_link_key(struct hci_dev *hdev, bdaddr_t *bdaddr);
-int hci_add_link_key(struct hci_dev *hdev, int new_key, bdaddr_t *bdaddr,
-						u8 *key, u8 type, u8 pin_len);
-struct link_key *hci_find_ltk(struct hci_dev *hdev, __le16 ediv, u8 rand[8]);
-struct link_key *hci_find_link_key_type(struct hci_dev *hdev,
-					bdaddr_t *bdaddr, u8 type);
-int hci_add_ltk(struct hci_dev *hdev, int new_key, bdaddr_t *bdaddr, u8 type,
-		u8 auth, u8 key_size, __le16 ediv, u8 rand[8], u8 ltk[16]);
-int hci_remove_link_key(struct hci_dev *hdev, bdaddr_t *bdaddr);
-
-int hci_remote_oob_data_clear(struct hci_dev *hdev);
-struct oob_data *hci_find_remote_oob_data(struct hci_dev *hdev,
-							bdaddr_t *bdaddr);
-int hci_add_remote_oob_data(struct hci_dev *hdev, bdaddr_t *bdaddr, u8 *hash,
-								u8 *randomizer);
-int hci_remove_remote_oob_data(struct hci_dev *hdev, bdaddr_t *bdaddr);
-
-#define ADV_CLEAR_TIMEOUT (3*60*HZ) /* Three minutes */
-int hci_adv_entries_clear(struct hci_dev *hdev);
-struct adv_entry *hci_find_adv_entry(struct hci_dev *hdev, bdaddr_t *bdaddr);
-int hci_add_adv_entry(struct hci_dev *hdev,
-					struct hci_ev_le_advertising_info *ev);
-
-void hci_del_off_timer(struct hci_dev *hdev);
-
-void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb);
-
-int hci_recv_frame(struct sk_buff *skb);
-int hci_recv_fragment(struct hci_dev *hdev, int type, void *data, int count);
-int hci_recv_stream_fragment(struct hci_dev *hdev, void *data, int count);
-
-int hci_register_sysfs(struct hci_dev *hdev);
-void hci_unregister_sysfs(struct hci_dev *hdev);
-=======
 int hci_inquiry(void __user *arg);
 
 struct bdaddr_list *hci_bdaddr_list_lookup(struct list_head *list,
@@ -2447,76 +1827,10 @@ int hci_get_adv_monitor_offload_ext(struct hci_dev *hdev);
 void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb);
 
 void hci_init_sysfs(struct hci_dev *hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void hci_conn_init_sysfs(struct hci_conn *conn);
 void hci_conn_add_sysfs(struct hci_conn *conn);
 void hci_conn_del_sysfs(struct hci_conn *conn);
 
-<<<<<<< HEAD
-#define SET_HCIDEV_DEV(hdev, pdev) ((hdev)->parent = (pdev))
-
-/* ----- LMP capabilities ----- */
-#define lmp_rswitch_capable(dev)   ((dev)->features[0] & LMP_RSWITCH)
-#define lmp_encrypt_capable(dev)   ((dev)->features[0] & LMP_ENCRYPT)
-#define lmp_sniff_capable(dev)     ((dev)->features[0] & LMP_SNIFF)
-#define lmp_sniffsubr_capable(dev) ((dev)->features[5] & LMP_SNIFF_SUBR)
-#define lmp_esco_capable(dev)      ((dev)->features[3] & LMP_ESCO)
-#define lmp_ssp_capable(dev)       ((dev)->features[6] & LMP_SIMPLE_PAIR)
-#define lmp_no_flush_capable(dev)  ((dev)->features[6] & LMP_NO_FLUSH)
-#define lmp_le_capable(dev)        ((dev)->features[4] & LMP_LE)
-
-/* ----- HCI protocols ----- */
-struct hci_proto {
-	char		*name;
-	unsigned int	id;
-	unsigned long	flags;
-
-	void		*priv;
-
-	int (*connect_ind)	(struct hci_dev *hdev, bdaddr_t *bdaddr, __u8 type);
-	int (*connect_cfm)	(struct hci_conn *conn, __u8 status);
-	int (*disconn_ind)	(struct hci_conn *conn);
-	int (*disconn_cfm)	(struct hci_conn *conn, __u8 reason,
-							__u8 is_process);
-	int (*recv_acldata)	(struct hci_conn *conn, struct sk_buff *skb, __u16 flags);
-	int (*recv_scodata)	(struct hci_conn *conn, struct sk_buff *skb);
-	int (*security_cfm)	(struct hci_conn *conn, __u8 status, __u8 encrypt);
-	int (*create_cfm)	(struct hci_chan *chan, __u8 status);
-	int (*modify_cfm)	(struct hci_chan *chan, __u8 status);
-	int (*destroy_cfm)	(struct hci_chan *chan, __u8 status);
-};
-
-static inline int hci_proto_connect_ind(struct hci_dev *hdev, bdaddr_t *bdaddr, __u8 type)
-{
-	register struct hci_proto *hp;
-	int mask = 0;
-
-	hp = hci_proto[HCI_PROTO_L2CAP];
-	if (hp && hp->connect_ind)
-		mask |= hp->connect_ind(hdev, bdaddr, type);
-
-	hp = hci_proto[HCI_PROTO_SCO];
-	if (hp && hp->connect_ind)
-		mask |= hp->connect_ind(hdev, bdaddr, type);
-
-	return mask;
-}
-
-static inline void hci_proto_connect_cfm(struct hci_conn *conn, __u8 status)
-{
-	register struct hci_proto *hp;
-
-	hp = hci_proto[HCI_PROTO_L2CAP];
-	if (hp && hp->connect_cfm)
-		hp->connect_cfm(conn, status);
-
-	hp = hci_proto[HCI_PROTO_SCO];
-	if (hp && hp->connect_cfm)
-		hp->connect_cfm(conn, status);
-
-	if (conn->connect_cfm_cb)
-		conn->connect_cfm_cb(conn, status);
-=======
 #define SET_HCIDEV_DEV(hdev, pdev) ((hdev)->dev.parent = (pdev))
 #define GET_HCIDEV_DEV(hdev) ((hdev)->dev.parent)
 
@@ -2665,179 +1979,30 @@ static inline int hci_proto_connect_ind(struct hci_dev *hdev, bdaddr_t *bdaddr,
 		BT_ERR("unknown link type %d", type);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int hci_proto_disconn_ind(struct hci_conn *conn)
 {
-<<<<<<< HEAD
-	register struct hci_proto *hp;
-	int reason = 0x13;
-
-	hp = hci_proto[HCI_PROTO_L2CAP];
-	if (hp && hp->disconn_ind)
-		reason = hp->disconn_ind(conn);
-
-	hp = hci_proto[HCI_PROTO_SCO];
-	if (hp && hp->disconn_ind)
-		reason = hp->disconn_ind(conn);
-
-	return reason;
-}
-
-static inline void hci_proto_disconn_cfm(struct hci_conn *conn, __u8 reason,
-							__u8 is_process)
-{
-	register struct hci_proto *hp;
-
-	hp = hci_proto[HCI_PROTO_L2CAP];
-	if (hp && hp->disconn_cfm)
-		hp->disconn_cfm(conn, reason, is_process);
-
-	hp = hci_proto[HCI_PROTO_SCO];
-	if (hp && hp->disconn_cfm)
-		hp->disconn_cfm(conn, reason, is_process);
-
-	if (conn->disconn_cfm_cb)
-		conn->disconn_cfm_cb(conn, reason);
-}
-
-static inline void hci_proto_auth_cfm(struct hci_conn *conn, __u8 status)
-{
-	register struct hci_proto *hp;
-	__u8 encrypt;
-
-	if (test_bit(HCI_CONN_ENCRYPT_PEND, &conn->pend))
-		return;
-
-	encrypt = (conn->link_mode & HCI_LM_ENCRYPT) ? 0x01 : 0x00;
-
-	hp = hci_proto[HCI_PROTO_L2CAP];
-	if (hp && hp->security_cfm)
-		hp->security_cfm(conn, status, encrypt);
-
-	hp = hci_proto[HCI_PROTO_SCO];
-	if (hp && hp->security_cfm)
-		hp->security_cfm(conn, status, encrypt);
-
-	if (conn->security_cfm_cb)
-		conn->security_cfm_cb(conn, status);
-}
-
-static inline void hci_proto_encrypt_cfm(struct hci_conn *conn, __u8 status, __u8 encrypt)
-{
-	register struct hci_proto *hp;
-
-	hp = hci_proto[HCI_PROTO_L2CAP];
-	if (hp && hp->security_cfm)
-		hp->security_cfm(conn, status, encrypt);
-
-	hp = hci_proto[HCI_PROTO_SCO];
-	if (hp && hp->security_cfm)
-		hp->security_cfm(conn, status, encrypt);
-
-	if (conn->security_cfm_cb)
-		conn->security_cfm_cb(conn, status);
-}
-
-static inline void hci_proto_create_cfm(struct hci_chan *chan, __u8 status)
-{
-	register struct hci_proto *hp;
-
-	hp = hci_proto[HCI_PROTO_L2CAP];
-	if (hp && hp->create_cfm)
-		hp->create_cfm(chan, status);
-}
-
-static inline void hci_proto_modify_cfm(struct hci_chan *chan, __u8 status)
-{
-	register struct hci_proto *hp;
-
-	hp = hci_proto[HCI_PROTO_L2CAP];
-	if (hp && hp->modify_cfm)
-		hp->modify_cfm(chan, status);
-}
-
-static inline void hci_proto_destroy_cfm(struct hci_chan *chan, __u8 status)
-{
-	register struct hci_proto *hp;
-
-	hp = hci_proto[HCI_PROTO_L2CAP];
-	if (hp && hp->destroy_cfm)
-		hp->destroy_cfm(chan, status);
-}
-
-int hci_register_proto(struct hci_proto *hproto);
-int hci_unregister_proto(struct hci_proto *hproto);
-
-=======
 	if (conn->type != ACL_LINK && conn->type != LE_LINK)
 		return HCI_ERROR_REMOTE_USER_TERM;
 
 	return l2cap_disconn_ind(conn);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ----- HCI callbacks ----- */
 struct hci_cb {
 	struct list_head list;
 
 	char *name;
 
-<<<<<<< HEAD
-	void (*security_cfm)	(struct hci_conn *conn, __u8 status, __u8 encrypt);
-=======
 	void (*connect_cfm)	(struct hci_conn *conn, __u8 status);
 	void (*disconn_cfm)	(struct hci_conn *conn, __u8 status);
 	void (*security_cfm)	(struct hci_conn *conn, __u8 status,
 								__u8 encrypt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*key_change_cfm)	(struct hci_conn *conn, __u8 status);
 	void (*role_switch_cfm)	(struct hci_conn *conn, __u8 status, __u8 role);
 };
 
-<<<<<<< HEAD
-static inline void hci_auth_cfm(struct hci_conn *conn, __u8 status)
-{
-	struct list_head *p;
-	__u8 encrypt;
-
-	hci_proto_auth_cfm(conn, status);
-
-	if (test_bit(HCI_CONN_ENCRYPT_PEND, &conn->pend))
-		return;
-
-	encrypt = (conn->link_mode & HCI_LM_ENCRYPT) ? 0x01 : 0x00;
-
-	read_lock_bh(&hci_cb_list_lock);
-	list_for_each(p, &hci_cb_list) {
-		struct hci_cb *cb = list_entry(p, struct hci_cb, list);
-		if (cb->security_cfm)
-			cb->security_cfm(conn, status, encrypt);
-	}
-	read_unlock_bh(&hci_cb_list_lock);
-}
-
-static inline void hci_encrypt_cfm(struct hci_conn *conn, __u8 status, __u8 encrypt)
-{
-	struct list_head *p;
-
-	if (conn->sec_level == BT_SECURITY_SDP)
-		conn->sec_level = BT_SECURITY_LOW;
-
-	if (!status && encrypt && conn->pending_sec_level > conn->sec_level)
-		conn->sec_level = conn->pending_sec_level;
-
-	hci_proto_encrypt_cfm(conn, status, encrypt);
-
-	read_lock_bh(&hci_cb_list_lock);
-	list_for_each(p, &hci_cb_list) {
-		struct hci_cb *cb = list_entry(p, struct hci_cb, list);
-		if (cb->security_cfm)
-			cb->security_cfm(conn, status, encrypt);
-	}
-	read_unlock_bh(&hci_cb_list_lock);
-=======
 static inline void hci_connect_cfm(struct hci_conn *conn, __u8 status)
 {
 	struct hci_cb *cb;
@@ -2927,35 +2092,10 @@ static inline void hci_encrypt_cfm(struct hci_conn *conn, __u8 status)
 
 	if (conn->security_cfm_cb)
 		conn->security_cfm_cb(conn, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void hci_key_change_cfm(struct hci_conn *conn, __u8 status)
 {
-<<<<<<< HEAD
-	struct list_head *p;
-
-	read_lock_bh(&hci_cb_list_lock);
-	list_for_each(p, &hci_cb_list) {
-		struct hci_cb *cb = list_entry(p, struct hci_cb, list);
-		if (cb->key_change_cfm)
-			cb->key_change_cfm(conn, status);
-	}
-	read_unlock_bh(&hci_cb_list_lock);
-}
-
-static inline void hci_role_switch_cfm(struct hci_conn *conn, __u8 status, __u8 role)
-{
-	struct list_head *p;
-
-	read_lock_bh(&hci_cb_list_lock);
-	list_for_each(p, &hci_cb_list) {
-		struct hci_cb *cb = list_entry(p, struct hci_cb, list);
-		if (cb->role_switch_cfm)
-			cb->role_switch_cfm(conn, status, role);
-	}
-	read_unlock_bh(&hci_cb_list_lock);
-=======
 	struct hci_cb *cb;
 
 	mutex_lock(&hci_cb_list_lock);
@@ -3030,133 +2170,11 @@ static inline int hci_check_conn_params(u16 min, u16 max, u16 latency,
 		return -EINVAL;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int hci_register_cb(struct hci_cb *hcb);
 int hci_unregister_cb(struct hci_cb *hcb);
 
-<<<<<<< HEAD
-int hci_register_notifier(struct notifier_block *nb);
-int hci_unregister_notifier(struct notifier_block *nb);
-
-/* AMP Manager event callbacks */
-struct amp_mgr_cb {
-	struct list_head list;
-	void (*amp_cmd_complete_event) (struct hci_dev *hdev, __u16 opcode,
-					struct sk_buff *skb);
-	void (*amp_cmd_status_event) (struct hci_dev *hdev, __u16 opcode,
-					__u8 status);
-	void (*amp_event) (struct hci_dev *hdev, __u8 ev_code,
-					struct sk_buff *skb);
-};
-
-void hci_amp_cmd_complete(struct hci_dev *hdev, __u16 opcode,
-			struct sk_buff *skb);
-void hci_amp_cmd_status(struct hci_dev *hdev, __u16 opcode, __u8 status);
-void hci_amp_event_packet(struct hci_dev *hdev, __u8 ev_code,
-			struct sk_buff *skb);
-
-int hci_register_amp(struct amp_mgr_cb *acb);
-int hci_unregister_amp(struct amp_mgr_cb *acb);
-
-int hci_send_cmd(struct hci_dev *hdev, __u16 opcode, __u32 plen, void *param);
-void hci_send_acl(struct hci_conn *conn, struct hci_chan *chan,
-		struct sk_buff *skb, __u16 flags);
-void hci_send_sco(struct hci_conn *conn, struct sk_buff *skb);
-
-void *hci_sent_cmd_data(struct hci_dev *hdev, __u16 opcode);
-
-void hci_si_event(struct hci_dev *hdev, int type, int dlen, void *data);
-
-/* ----- HCI Sockets ----- */
-void hci_send_to_sock(struct hci_dev *hdev, struct sk_buff *skb,
-							struct sock *skip_sk);
-
-/* Management interface */
-int mgmt_control(struct sock *sk, struct msghdr *msg, size_t len);
-int mgmt_index_added(u16 index);
-int mgmt_index_removed(u16 index);
-int mgmt_powered(u16 index, u8 powered);
-int mgmt_discoverable(u16 index, u8 discoverable);
-int mgmt_connectable(u16 index, u8 connectable);
-int mgmt_new_key(u16 index, struct link_key *key, u8 bonded);
-int mgmt_connected(u16 index, bdaddr_t *bdaddr, u8 le);
-int mgmt_le_conn_params(u16 index, bdaddr_t *bdaddr, u16 interval,
-						u16 latency, u16 timeout);
-int mgmt_disconnected(u16 index, bdaddr_t *bdaddr, u8 reason);
-int mgmt_disconnect_failed(u16 index);
-int mgmt_connect_failed(u16 index, bdaddr_t *bdaddr, u8 status);
-int mgmt_pin_code_request(u16 index, bdaddr_t *bdaddr);
-int mgmt_pin_code_reply_complete(u16 index, bdaddr_t *bdaddr, u8 status);
-int mgmt_pin_code_neg_reply_complete(u16 index, bdaddr_t *bdaddr, u8 status);
-int mgmt_user_confirm_request(u16 index, u8 event, bdaddr_t *bdaddr,
-							__le32 value);
-int mgmt_user_oob_request(u16 index, bdaddr_t *bdaddr);
-int mgmt_user_confirm_reply_complete(u16 index, bdaddr_t *bdaddr, u8 status);
-int mgmt_user_confirm_neg_reply_complete(u16 index, bdaddr_t *bdaddr,
-								u8 status);
-int mgmt_auth_failed(u16 index, bdaddr_t *bdaddr, u8 status);
-int mgmt_set_local_name_complete(u16 index, u8 *name, u8 status);
-int mgmt_read_local_oob_data_reply_complete(u16 index, u8 *hash, u8 *randomizer,
-								u8 status);
-int mgmt_device_found(u16 index, bdaddr_t *bdaddr, u8 type, u8 le,
-				u8 *dev_class, s8 rssi, u8 eir_len, u8 *eir);
-void mgmt_read_rssi_complete(u16 index, s8 rssi, bdaddr_t *bdaddr,
-				u16 handle, u8 status);
-int mgmt_remote_name(u16 index, bdaddr_t *bdaddr, u8 status, u8 *name);
-void mgmt_inquiry_started(u16 index);
-void mgmt_inquiry_complete_evt(u16 index, u8 status);
-void mgmt_disco_timeout(unsigned long data);
-void mgmt_disco_le_timeout(unsigned long data);
-int mgmt_encrypt_change(u16 index, bdaddr_t *bdaddr, u8 status);
-
-/* LE SMP Management interface */
-int le_user_confirm_reply(struct hci_conn *conn, u16 mgmt_op, void *cp);
-int mgmt_remote_class(u16 index, bdaddr_t *bdaddr, u8 dev_class[3]);
-int mgmt_remote_version(u16 index, bdaddr_t *bdaddr, u8 ver, u16 mnf,
-							u16 sub_ver);
-int mgmt_remote_features(u16 index, bdaddr_t *bdaddr, u8 features[8]);
-
-/* HCI info for socket */
-#define hci_pi(sk) ((struct hci_pinfo *) sk)
-
-struct hci_pinfo {
-	struct bt_sock    bt;
-	struct hci_dev    *hdev;
-	struct hci_filter filter;
-	__u32             cmsg_mask;
-	unsigned short   channel;
-};
-
-/* HCI security filter */
-#define HCI_SFLT_MAX_OGF  5
-
-struct hci_sec_filter {
-	__u32 type_mask;
-	__u32 event_mask[2];
-	__u32 ocf_mask[HCI_SFLT_MAX_OGF + 1][4];
-};
-
-/* ----- HCI requests ----- */
-#define HCI_REQ_DONE	  0
-#define HCI_REQ_PEND	  1
-#define HCI_REQ_CANCELED  2
-
-#define hci_req_lock(d)		mutex_lock(&d->req_lock)
-#define hci_req_unlock(d)	mutex_unlock(&d->req_lock)
-
-void hci_req_complete(struct hci_dev *hdev, __u16 cmd, int result);
-
-void hci_le_conn_update(struct hci_conn *conn, u16 min, u16 max,
-					u16 latency, u16 to_multiplier);
-void hci_le_start_enc(struct hci_conn *conn, __le16 ediv, __u8 rand[8],
-							__u8 ltk[16]);
-void hci_le_ltk_reply(struct hci_conn *conn, u8 ltk[16]);
-void hci_le_ltk_neg_reply(struct hci_conn *conn);
-
-void hci_read_rssi(struct hci_conn *conn);
-=======
 int __hci_cmd_send(struct hci_dev *hdev, u16 opcode, u32 plen,
 		   const void *param);
 
@@ -3327,6 +2345,5 @@ void hci_copy_identity_address(struct hci_dev *hdev, bdaddr_t *bdaddr,
 #define LOCAL_CODEC_SCO_MASK	BIT(1)
 
 #define TRANSPORT_TYPE_MAX	0x04
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __HCI_CORE_H */

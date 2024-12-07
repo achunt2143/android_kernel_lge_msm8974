@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ARCH_ARM_MACH_OMAP2_SDRC_H
 #define __ARCH_ARM_MACH_OMAP2_SDRC_H
 
 /*
-<<<<<<< HEAD
- * OMAP2 SDRC register definitions
- *
- * Copyright (C) 2007 Texas Instruments, Inc.
- * Copyright (C) 2007 Nokia Corporation
- *
- * Written by Paul Walmsley
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#undef DEBUG
-
-#include <plat/sdrc.h>
-
-=======
  * OMAP2/3 SDRC/SMS macros and prototypes
  *
  * Copyright (C) 2007-2008, 2012 Texas Instruments, Inc.
@@ -34,7 +14,6 @@
  */
 #undef DEBUG
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASSEMBLER__
 
 #include <linux/io.h>
@@ -49,39 +28,23 @@ extern void __iomem *omap2_sms_base;
 
 static inline void sdrc_write_reg(u32 val, u16 reg)
 {
-<<<<<<< HEAD
-	__raw_writel(val, OMAP_SDRC_REGADDR(reg));
-=======
 	writel_relaxed(val, OMAP_SDRC_REGADDR(reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 sdrc_read_reg(u16 reg)
 {
-<<<<<<< HEAD
-	return __raw_readl(OMAP_SDRC_REGADDR(reg));
-=======
 	return readl_relaxed(OMAP_SDRC_REGADDR(reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* SMS global register get/set */
 
 static inline void sms_write_reg(u32 val, u16 reg)
 {
-<<<<<<< HEAD
-	__raw_writel(val, OMAP_SMS_REGADDR(reg));
-=======
 	writel_relaxed(val, OMAP_SMS_REGADDR(reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 sms_read_reg(u16 reg)
 {
-<<<<<<< HEAD
-	return __raw_readl(OMAP_SMS_REGADDR(reg));
-}
-=======
 	return readl_relaxed(OMAP_SMS_REGADDR(reg));
 }
 
@@ -133,7 +96,6 @@ u32 omap2xxx_sdrc_dll_is_unlocked(void);
 u32 omap2xxx_sdrc_reprogram(u32 level, u32 force);
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define OMAP242X_SDRC_REGADDR(reg)					\
 			OMAP2_L3_IO_ADDRESS(OMAP2420_SDRC_BASE + (reg))
@@ -141,10 +103,7 @@ u32 omap2xxx_sdrc_reprogram(u32 level, u32 force);
 			OMAP2_L3_IO_ADDRESS(OMAP243X_SDRC_BASE + (reg))
 #define OMAP34XX_SDRC_REGADDR(reg)					\
 			OMAP2_L3_IO_ADDRESS(OMAP343X_SDRC_BASE + (reg))
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* __ASSEMBLER__ */
 
 /* Minimum frequency that the SDRC DLL can lock at */
@@ -162,8 +121,6 @@ u32 omap2xxx_sdrc_reprogram(u32 level, u32 force);
  */
 #define SDRC_MPURATE_LOOPS		96
 
-<<<<<<< HEAD
-=======
 /* SDRC register offsets - read/write with sdrc_{read,write}_reg() */
 
 #define SDRC_SYSCONFIG		0x010
@@ -245,5 +202,4 @@ u32 omap2xxx_sdrc_reprogram(u32 level, u32 force);
 
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

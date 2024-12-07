@@ -1,22 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _MATRIX_KEYPAD_H
 #define _MATRIX_KEYPAD_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/input.h>
-#include <linux/of.h>
-
-#define MATRIX_MAX_ROWS		18
-#define MATRIX_MAX_COLS		18
-
-#define KEY(row, col, val)	((((row) % (MATRIX_MAX_ROWS)) << 24) |\
-				 (((col) % (MATRIX_MAX_COLS)) << 16) |\
-				 (val & 0xffff))
-=======
 
 struct device;
 struct input_dev;
@@ -27,7 +13,6 @@ struct input_dev;
 #define KEY(row, col, val)	((((row) & (MATRIX_MAX_ROWS - 1)) << 24) |\
 				 (((col) & (MATRIX_MAX_COLS - 1)) << 16) |\
 				 ((val) & 0xffff))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KEY_ROW(k)		(((k) >> 24) & 0xff)
 #define KEY_COL(k)		(((k) >> 16) & 0xff)
@@ -66,11 +51,8 @@ struct matrix_keymap_data {
  * @wakeup: controls whether the device should be set up as wakeup
  *	source
  * @no_autorepeat: disable key autorepeat
-<<<<<<< HEAD
-=======
  * @drive_inactive_cols: drive inactive columns during scan, rather than
  *	making them inputs.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This structure represents platform-specific data that use used by
  * matrix_keypad driver to perform proper initialization.
@@ -95,59 +77,6 @@ struct matrix_keypad_platform_data {
 	bool		active_low;
 	bool		wakeup;
 	bool		no_autorepeat;
-<<<<<<< HEAD
-};
-
-/**
- * matrix_keypad_build_keymap - convert platform keymap into matrix keymap
- * @keymap_data: keymap supplied by the platform code
- * @row_shift: number of bits to shift row value by to advance to the next
- * line in the keymap
- * @keymap: expanded version of keymap that is suitable for use by
- * matrix keyboad driver
- * @keybit: pointer to bitmap of keys supported by input device
- *
- * This function converts platform keymap (encoded with KEY() macro) into
- * an array of keycodes that is suitable for using in a standard matrix
- * keyboard driver that uses row and col as indices.
- */
-static inline void
-matrix_keypad_build_keymap(const struct matrix_keymap_data *keymap_data,
-			   unsigned int row_shift,
-			   unsigned short *keymap, unsigned long *keybit)
-{
-	int i;
-
-	for (i = 0; i < keymap_data->keymap_size; i++) {
-		unsigned int key = keymap_data->keymap[i];
-		unsigned int row = KEY_ROW(key);
-		unsigned int col = KEY_COL(key);
-		unsigned short code = KEY_VAL(key);
-
-		keymap[MATRIX_SCAN_CODE(row, col, row_shift)] = code;
-		__set_bit(code, keybit);
-	}
-	__clear_bit(KEY_RESERVED, keybit);
-}
-
-#ifdef CONFIG_INPUT_OF_MATRIX_KEYMAP
-struct matrix_keymap_data *
-matrix_keyboard_of_fill_keymap(struct device_node *np, const char *propname);
-
-void matrix_keyboard_of_free_keymap(const struct matrix_keymap_data *kd);
-#else
-static inline struct matrix_keymap_data *
-matrix_keyboard_of_fill_keymap(struct device_node *np, const char *propname)
-{
-	return NULL;
-}
-
-static inline void
-matrix_keyboard_of_free_keymap(const struct matrix_keymap_data *kd)
-{
-}
-#endif
-=======
 	bool		drive_inactive_cols;
 };
 
@@ -160,6 +89,5 @@ int matrix_keypad_parse_properties(struct device *dev,
 				   unsigned int *rows, unsigned int *cols);
 
 #define matrix_keypad_parse_of_params matrix_keypad_parse_properties
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _MATRIX_KEYPAD_H */

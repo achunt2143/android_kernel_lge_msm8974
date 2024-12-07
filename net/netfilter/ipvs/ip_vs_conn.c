@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IPVS         An implementation of the IP virtual server support for the
  *              LINUX operating system.  IPVS is now implemented as a module
@@ -13,23 +10,11 @@
  *              Peter Kese <peter.kese@ijs.si>
  *              Julian Anastasov <ja@ssi.bg>
  *
-<<<<<<< HEAD
- *              This program is free software; you can redistribute it and/or
- *              modify it under the terms of the GNU General Public License
- *              as published by the Free Software Foundation; either version
- *              2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The IPVS code for kernel 2.2 was done by Wensong Zhang and Peter Kese,
  * with changes/fixes from Julian Anastasov, Lars Marowsky-Bree, Horms
  * and others. Many code here is taken from IP MASQ code of kernel 2.2.
  *
  * Changes:
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT "IPVS"
@@ -37,26 +22,16 @@
 
 #include <linux/interrupt.h>
 #include <linux/in.h>
-<<<<<<< HEAD
-#include <linux/net.h>
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/vmalloc.h>
-=======
 #include <linux/inet.h>
 #include <linux/net.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/proc_fs.h>		/* for proc_net_* */
 #include <linux/slab.h>
 #include <linux/seq_file.h>
 #include <linux/jhash.h>
 #include <linux/random.h>
-<<<<<<< HEAD
-=======
 #include <linux/rcupdate_wait.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/net_namespace.h>
 #include <net/ip_vs.h>
@@ -98,11 +73,6 @@ static unsigned int ip_vs_conn_rnd __read_mostly;
 #define CT_LOCKARRAY_SIZE  (1<<CT_LOCKARRAY_BITS)
 #define CT_LOCKARRAY_MASK  (CT_LOCKARRAY_SIZE-1)
 
-<<<<<<< HEAD
-struct ip_vs_aligned_lock
-{
-	rwlock_t	l;
-=======
 /* We need an addrstrlen that works with or without v6 */
 #ifdef CONFIG_IP_VS_IPV6
 #define IP_VS_ADDRSTRLEN INET6_ADDRSTRLEN
@@ -113,55 +83,12 @@ struct ip_vs_aligned_lock
 struct ip_vs_aligned_lock
 {
 	spinlock_t	l;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((__aligned__(SMP_CACHE_BYTES)));
 
 /* lock array for conn table */
 static struct ip_vs_aligned_lock
 __ip_vs_conntbl_lock_array[CT_LOCKARRAY_SIZE] __cacheline_aligned;
 
-<<<<<<< HEAD
-static inline void ct_read_lock(unsigned key)
-{
-	read_lock(&__ip_vs_conntbl_lock_array[key&CT_LOCKARRAY_MASK].l);
-}
-
-static inline void ct_read_unlock(unsigned key)
-{
-	read_unlock(&__ip_vs_conntbl_lock_array[key&CT_LOCKARRAY_MASK].l);
-}
-
-static inline void ct_write_lock(unsigned key)
-{
-	write_lock(&__ip_vs_conntbl_lock_array[key&CT_LOCKARRAY_MASK].l);
-}
-
-static inline void ct_write_unlock(unsigned key)
-{
-	write_unlock(&__ip_vs_conntbl_lock_array[key&CT_LOCKARRAY_MASK].l);
-}
-
-static inline void ct_read_lock_bh(unsigned key)
-{
-	read_lock_bh(&__ip_vs_conntbl_lock_array[key&CT_LOCKARRAY_MASK].l);
-}
-
-static inline void ct_read_unlock_bh(unsigned key)
-{
-	read_unlock_bh(&__ip_vs_conntbl_lock_array[key&CT_LOCKARRAY_MASK].l);
-}
-
-static inline void ct_write_lock_bh(unsigned key)
-{
-	write_lock_bh(&__ip_vs_conntbl_lock_array[key&CT_LOCKARRAY_MASK].l);
-}
-
-static inline void ct_write_unlock_bh(unsigned key)
-{
-	write_unlock_bh(&__ip_vs_conntbl_lock_array[key&CT_LOCKARRAY_MASK].l);
-}
-
-=======
 static inline void ct_write_lock_bh(unsigned int key)
 {
 	spin_lock_bh(&__ip_vs_conntbl_lock_array[key&CT_LOCKARRAY_MASK].l);
@@ -173,16 +100,11 @@ static inline void ct_write_unlock_bh(unsigned int key)
 }
 
 static void ip_vs_conn_expire(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Returns hash value for IPVS connection entry
  */
-<<<<<<< HEAD
-static unsigned int ip_vs_conn_hashkey(struct net *net, int af, unsigned proto,
-=======
 static unsigned int ip_vs_conn_hashkey(struct netns_ipvs *ipvs, int af, unsigned int proto,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       const union nf_inet_addr *addr,
 				       __be16 port)
 {
@@ -190,19 +112,11 @@ static unsigned int ip_vs_conn_hashkey(struct netns_ipvs *ipvs, int af, unsigned
 	if (af == AF_INET6)
 		return (jhash_3words(jhash(addr, 16, ip_vs_conn_rnd),
 				    (__force u32)port, proto, ip_vs_conn_rnd) ^
-<<<<<<< HEAD
-			((size_t)net>>8)) & ip_vs_conn_tab_mask;
-#endif
-	return (jhash_3words((__force u32)addr->ip, (__force u32)port, proto,
-			    ip_vs_conn_rnd) ^
-		((size_t)net>>8)) & ip_vs_conn_tab_mask;
-=======
 			((size_t)ipvs>>8)) & ip_vs_conn_tab_mask;
 #endif
 	return (jhash_3words((__force u32)addr->ip, (__force u32)port, proto,
 			    ip_vs_conn_rnd) ^
 		((size_t)ipvs>>8)) & ip_vs_conn_tab_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int ip_vs_conn_hashkey_param(const struct ip_vs_conn_param *p,
@@ -223,22 +137,14 @@ static unsigned int ip_vs_conn_hashkey_param(const struct ip_vs_conn_param *p,
 		port = p->vport;
 	}
 
-<<<<<<< HEAD
-	return ip_vs_conn_hashkey(p->net, p->af, p->protocol, addr, port);
-=======
 	return ip_vs_conn_hashkey(p->ipvs, p->af, p->protocol, addr, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int ip_vs_conn_hashkey_conn(const struct ip_vs_conn *cp)
 {
 	struct ip_vs_conn_param p;
 
-<<<<<<< HEAD
-	ip_vs_conn_fill_param(ip_vs_conn_net(cp), cp->af, cp->protocol,
-=======
 	ip_vs_conn_fill_param(cp->ipvs, cp->af, cp->protocol,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      &cp->caddr, cp->cport, NULL, 0, &p);
 
 	if (cp->pe) {
@@ -256,11 +162,7 @@ static unsigned int ip_vs_conn_hashkey_conn(const struct ip_vs_conn *cp)
  */
 static inline int ip_vs_conn_hash(struct ip_vs_conn *cp)
 {
-<<<<<<< HEAD
-	unsigned hash;
-=======
 	unsigned int hash;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (cp->flags & IP_VS_CONN_F_ONE_PACKET)
@@ -269,18 +171,6 @@ static inline int ip_vs_conn_hash(struct ip_vs_conn *cp)
 	/* Hash by protocol, client address and port */
 	hash = ip_vs_conn_hashkey_conn(cp);
 
-<<<<<<< HEAD
-	ct_write_lock(hash);
-	spin_lock(&cp->lock);
-
-	if (!(cp->flags & IP_VS_CONN_F_HASHED)) {
-		hlist_add_head(&cp->c_list, &ip_vs_conn_tab[hash]);
-		cp->flags |= IP_VS_CONN_F_HASHED;
-		atomic_inc(&cp->refcnt);
-		ret = 1;
-	} else {
-		pr_err("%s(): request for already hashed, called from %pF\n",
-=======
 	ct_write_lock_bh(hash);
 	spin_lock(&cp->lock);
 
@@ -291,17 +181,12 @@ static inline int ip_vs_conn_hash(struct ip_vs_conn *cp)
 		ret = 1;
 	} else {
 		pr_err("%s(): request for already hashed, called from %pS\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       __func__, __builtin_return_address(0));
 		ret = 0;
 	}
 
 	spin_unlock(&cp->lock);
-<<<<<<< HEAD
-	ct_write_unlock(hash);
-=======
 	ct_write_unlock_bh(hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -309,33 +194,16 @@ static inline int ip_vs_conn_hash(struct ip_vs_conn *cp)
 
 /*
  *	UNhashes ip_vs_conn from ip_vs_conn_tab.
-<<<<<<< HEAD
- *	returns bool success.
- */
-static inline int ip_vs_conn_unhash(struct ip_vs_conn *cp)
-{
-	unsigned hash;
-=======
  *	returns bool success. Caller should hold conn reference.
  */
 static inline int ip_vs_conn_unhash(struct ip_vs_conn *cp)
 {
 	unsigned int hash;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/* unhash it and decrease its reference counter */
 	hash = ip_vs_conn_hashkey_conn(cp);
 
-<<<<<<< HEAD
-	ct_write_lock(hash);
-	spin_lock(&cp->lock);
-
-	if (cp->flags & IP_VS_CONN_F_HASHED) {
-		hlist_del(&cp->c_list);
-		cp->flags &= ~IP_VS_CONN_F_HASHED;
-		atomic_dec(&cp->refcnt);
-=======
 	ct_write_lock_bh(hash);
 	spin_lock(&cp->lock);
 
@@ -343,15 +211,11 @@ static inline int ip_vs_conn_unhash(struct ip_vs_conn *cp)
 		hlist_del_rcu(&cp->c_list);
 		cp->flags &= ~IP_VS_CONN_F_HASHED;
 		refcount_dec(&cp->refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = 1;
 	} else
 		ret = 0;
 
 	spin_unlock(&cp->lock);
-<<<<<<< HEAD
-	ct_write_unlock(hash);
-=======
 	ct_write_unlock_bh(hash);
 
 	return ret;
@@ -384,7 +248,6 @@ static inline bool ip_vs_conn_unlink(struct ip_vs_conn *cp)
 
 	spin_unlock(&cp->lock);
 	ct_write_unlock_bh(hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -399,19 +262,6 @@ static inline bool ip_vs_conn_unlink(struct ip_vs_conn *cp)
 static inline struct ip_vs_conn *
 __ip_vs_conn_in_get(const struct ip_vs_conn_param *p)
 {
-<<<<<<< HEAD
-	unsigned hash;
-	struct ip_vs_conn *cp;
-	struct hlist_node *n;
-
-	hash = ip_vs_conn_hashkey_param(p, false);
-
-	ct_read_lock(hash);
-
-	hlist_for_each_entry(cp, n, &ip_vs_conn_tab[hash], c_list) {
-		if (cp->af == p->af &&
-		    p->cport == cp->cport && p->vport == cp->vport &&
-=======
 	unsigned int hash;
 	struct ip_vs_conn *cp;
 
@@ -422,32 +272,20 @@ __ip_vs_conn_in_get(const struct ip_vs_conn_param *p)
 	hlist_for_each_entry_rcu(cp, &ip_vs_conn_tab[hash], c_list) {
 		if (p->cport == cp->cport && p->vport == cp->vport &&
 		    cp->af == p->af &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    ip_vs_addr_equal(p->af, p->caddr, &cp->caddr) &&
 		    ip_vs_addr_equal(p->af, p->vaddr, &cp->vaddr) &&
 		    ((!p->cport) ^ (!(cp->flags & IP_VS_CONN_F_NO_CPORT))) &&
 		    p->protocol == cp->protocol &&
-<<<<<<< HEAD
-		    ip_vs_conn_net_eq(cp, p->net)) {
-			/* HIT */
-			atomic_inc(&cp->refcnt);
-			ct_read_unlock(hash);
-=======
 		    cp->ipvs == p->ipvs) {
 			if (!__ip_vs_conn_get(cp))
 				continue;
 			/* HIT */
 			rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return cp;
 		}
 	}
 
-<<<<<<< HEAD
-	ct_read_unlock(hash);
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NULL;
 }
@@ -473,25 +311,6 @@ struct ip_vs_conn *ip_vs_conn_in_get(const struct ip_vs_conn_param *p)
 }
 
 static int
-<<<<<<< HEAD
-ip_vs_conn_fill_param_proto(int af, const struct sk_buff *skb,
-			    const struct ip_vs_iphdr *iph,
-			    unsigned int proto_off, int inverse,
-			    struct ip_vs_conn_param *p)
-{
-	__be16 _ports[2], *pptr;
-	struct net *net = skb_net(skb);
-
-	pptr = skb_header_pointer(skb, proto_off, sizeof(_ports), _ports);
-	if (pptr == NULL)
-		return 1;
-
-	if (likely(!inverse))
-		ip_vs_conn_fill_param(net, af, iph->protocol, &iph->saddr,
-				      pptr[0], &iph->daddr, pptr[1], p);
-	else
-		ip_vs_conn_fill_param(net, af, iph->protocol, &iph->daddr,
-=======
 ip_vs_conn_fill_param_proto(struct netns_ipvs *ipvs,
 			    int af, const struct sk_buff *skb,
 			    const struct ip_vs_iphdr *iph,
@@ -508,21 +327,11 @@ ip_vs_conn_fill_param_proto(struct netns_ipvs *ipvs,
 				      pptr[0], &iph->daddr, pptr[1], p);
 	else
 		ip_vs_conn_fill_param(ipvs, af, iph->protocol, &iph->daddr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      pptr[1], &iph->saddr, pptr[0], p);
 	return 0;
 }
 
 struct ip_vs_conn *
-<<<<<<< HEAD
-ip_vs_conn_in_get_proto(int af, const struct sk_buff *skb,
-			const struct ip_vs_iphdr *iph,
-			unsigned int proto_off, int inverse)
-{
-	struct ip_vs_conn_param p;
-
-	if (ip_vs_conn_fill_param_proto(af, skb, iph, proto_off, inverse, &p))
-=======
 ip_vs_conn_in_get_proto(struct netns_ipvs *ipvs, int af,
 			const struct sk_buff *skb,
 			const struct ip_vs_iphdr *iph)
@@ -530,7 +339,6 @@ ip_vs_conn_in_get_proto(struct netns_ipvs *ipvs, int af,
 	struct ip_vs_conn_param p;
 
 	if (ip_vs_conn_fill_param_proto(ipvs, af, skb, iph, &p))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	return ip_vs_conn_in_get(&p);
@@ -540,22 +348,6 @@ EXPORT_SYMBOL_GPL(ip_vs_conn_in_get_proto);
 /* Get reference to connection template */
 struct ip_vs_conn *ip_vs_ct_in_get(const struct ip_vs_conn_param *p)
 {
-<<<<<<< HEAD
-	unsigned hash;
-	struct ip_vs_conn *cp;
-	struct hlist_node *n;
-
-	hash = ip_vs_conn_hashkey_param(p, false);
-
-	ct_read_lock(hash);
-
-	hlist_for_each_entry(cp, n, &ip_vs_conn_tab[hash], c_list) {
-		if (!ip_vs_conn_net_eq(cp, p->net))
-			continue;
-		if (p->pe_data && p->pe->ct_match) {
-			if (p->pe == cp->pe && p->pe->ct_match(p, cp))
-				goto out;
-=======
 	unsigned int hash;
 	struct ip_vs_conn *cp;
 
@@ -571,7 +363,6 @@ struct ip_vs_conn *ip_vs_ct_in_get(const struct ip_vs_conn_param *p)
 				if (__ip_vs_conn_get(cp))
 					goto out;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -581,12 +372,6 @@ struct ip_vs_conn *ip_vs_ct_in_get(const struct ip_vs_conn_param *p)
 		     * p->vaddr is a fwmark */
 		    ip_vs_addr_equal(p->protocol == IPPROTO_IP ? AF_UNSPEC :
 				     p->af, p->vaddr, &cp->vaddr) &&
-<<<<<<< HEAD
-		    p->cport == cp->cport && p->vport == cp->vport &&
-		    cp->flags & IP_VS_CONN_F_TEMPLATE &&
-		    p->protocol == cp->protocol)
-			goto out;
-=======
 		    p->vport == cp->vport && p->cport == cp->cport &&
 		    cp->flags & IP_VS_CONN_F_TEMPLATE &&
 		    p->protocol == cp->protocol &&
@@ -594,18 +379,11 @@ struct ip_vs_conn *ip_vs_ct_in_get(const struct ip_vs_conn_param *p)
 			if (__ip_vs_conn_get(cp))
 				goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	cp = NULL;
 
   out:
-<<<<<<< HEAD
-	if (cp)
-		atomic_inc(&cp->refcnt);
-	ct_read_unlock(hash);
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	IP_VS_DBG_BUF(9, "template lookup/in %s %s:%d->%s:%d %s\n",
 		      ip_vs_proto_name(p->protocol),
@@ -622,35 +400,16 @@ struct ip_vs_conn *ip_vs_ct_in_get(const struct ip_vs_conn_param *p)
  *	p->vaddr, p->vport: pkt dest address (foreign host) */
 struct ip_vs_conn *ip_vs_conn_out_get(const struct ip_vs_conn_param *p)
 {
-<<<<<<< HEAD
-	unsigned hash;
-	struct ip_vs_conn *cp, *ret=NULL;
-	struct hlist_node *n;
-=======
 	unsigned int hash;
 	struct ip_vs_conn *cp, *ret=NULL;
 	const union nf_inet_addr *saddr;
 	__be16 sport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Check for "full" addressed entries
 	 */
 	hash = ip_vs_conn_hashkey_param(p, true);
 
-<<<<<<< HEAD
-	ct_read_lock(hash);
-
-	hlist_for_each_entry(cp, n, &ip_vs_conn_tab[hash], c_list) {
-		if (cp->af == p->af &&
-		    p->vport == cp->cport && p->cport == cp->dport &&
-		    ip_vs_addr_equal(p->af, p->vaddr, &cp->caddr) &&
-		    ip_vs_addr_equal(p->af, p->caddr, &cp->daddr) &&
-		    p->protocol == cp->protocol &&
-		    ip_vs_conn_net_eq(cp, p->net)) {
-			/* HIT */
-			atomic_inc(&cp->refcnt);
-=======
 	rcu_read_lock();
 
 	hlist_for_each_entry_rcu(cp, &ip_vs_conn_tab[hash], c_list) {
@@ -673,17 +432,12 @@ struct ip_vs_conn *ip_vs_conn_out_get(const struct ip_vs_conn_param *p)
 			if (!__ip_vs_conn_get(cp))
 				continue;
 			/* HIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = cp;
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	ct_read_unlock(hash);
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	IP_VS_DBG_BUF(9, "lookup/out %s %s:%d->%s:%d %s\n",
 		      ip_vs_proto_name(p->protocol),
@@ -695,15 +449,6 @@ struct ip_vs_conn *ip_vs_conn_out_get(const struct ip_vs_conn_param *p)
 }
 
 struct ip_vs_conn *
-<<<<<<< HEAD
-ip_vs_conn_out_get_proto(int af, const struct sk_buff *skb,
-			 const struct ip_vs_iphdr *iph,
-			 unsigned int proto_off, int inverse)
-{
-	struct ip_vs_conn_param p;
-
-	if (ip_vs_conn_fill_param_proto(af, skb, iph, proto_off, inverse, &p))
-=======
 ip_vs_conn_out_get_proto(struct netns_ipvs *ipvs, int af,
 			 const struct sk_buff *skb,
 			 const struct ip_vs_iphdr *iph)
@@ -711,7 +456,6 @@ ip_vs_conn_out_get_proto(struct netns_ipvs *ipvs, int af,
 	struct ip_vs_conn_param p;
 
 	if (ip_vs_conn_fill_param_proto(ipvs, af, skb, iph, &p))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	return ip_vs_conn_out_get(&p);
@@ -721,11 +465,7 @@ EXPORT_SYMBOL_GPL(ip_vs_conn_out_get_proto);
 /*
  *      Put back the conn and restart its timer with its timeout
  */
-<<<<<<< HEAD
-void ip_vs_conn_put(struct ip_vs_conn *cp)
-=======
 static void __ip_vs_conn_put_timer(struct ip_vs_conn *cp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long t = (cp->flags & IP_VS_CONN_F_ONE_PACKET) ?
 		0 : cp->timeout;
@@ -734,8 +474,6 @@ static void __ip_vs_conn_put_timer(struct ip_vs_conn *cp)
 	__ip_vs_conn_put(cp);
 }
 
-<<<<<<< HEAD
-=======
 void ip_vs_conn_put(struct ip_vs_conn *cp)
 {
 	if ((cp->flags & IP_VS_CONN_F_ONE_PACKET) &&
@@ -746,7 +484,6 @@ void ip_vs_conn_put(struct ip_vs_conn *cp)
 	else
 		__ip_vs_conn_put_timer(cp);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Fill a no_client_port connection with a client port number
@@ -754,21 +491,13 @@ void ip_vs_conn_put(struct ip_vs_conn *cp)
 void ip_vs_conn_fill_cport(struct ip_vs_conn *cp, __be16 cport)
 {
 	if (ip_vs_conn_unhash(cp)) {
-<<<<<<< HEAD
-		spin_lock(&cp->lock);
-=======
 		spin_lock_bh(&cp->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cp->flags & IP_VS_CONN_F_NO_CPORT) {
 			atomic_dec(&ip_vs_conn_no_cport_cnt);
 			cp->flags &= ~IP_VS_CONN_F_NO_CPORT;
 			cp->cport = cport;
 		}
-<<<<<<< HEAD
-		spin_unlock(&cp->lock);
-=======
 		spin_unlock_bh(&cp->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* hash on new dport */
 		ip_vs_conn_hash(cp);
@@ -788,16 +517,12 @@ static inline void ip_vs_bind_xmit(struct ip_vs_conn *cp)
 		break;
 
 	case IP_VS_CONN_F_TUNNEL:
-<<<<<<< HEAD
-		cp->packet_xmit = ip_vs_tunnel_xmit;
-=======
 #ifdef CONFIG_IP_VS_IPV6
 		if (cp->daf == AF_INET6)
 			cp->packet_xmit = ip_vs_tunnel_xmit_v6;
 		else
 #endif
 			cp->packet_xmit = ip_vs_tunnel_xmit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case IP_VS_CONN_F_DROUTE:
@@ -823,14 +548,10 @@ static inline void ip_vs_bind_xmit_v6(struct ip_vs_conn *cp)
 		break;
 
 	case IP_VS_CONN_F_TUNNEL:
-<<<<<<< HEAD
-		cp->packet_xmit = ip_vs_tunnel_xmit_v6;
-=======
 		if (cp->daf == AF_INET6)
 			cp->packet_xmit = ip_vs_tunnel_xmit_v6;
 		else
 			cp->packet_xmit = ip_vs_tunnel_xmit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case IP_VS_CONN_F_DROUTE:
@@ -863,38 +584,18 @@ static inline void
 ip_vs_bind_dest(struct ip_vs_conn *cp, struct ip_vs_dest *dest)
 {
 	unsigned int conn_flags;
-<<<<<<< HEAD
-=======
 	__u32 flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if dest is NULL, then return directly */
 	if (!dest)
 		return;
 
 	/* Increase the refcnt counter of the dest */
-<<<<<<< HEAD
-	atomic_inc(&dest->refcnt);
-=======
 	ip_vs_dest_hold(dest);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	conn_flags = atomic_read(&dest->conn_flags);
 	if (cp->protocol != IPPROTO_UDP)
 		conn_flags &= ~IP_VS_CONN_F_ONE_PACKET;
-<<<<<<< HEAD
-	/* Bind with the destination and its corresponding transmitter */
-	if (cp->flags & IP_VS_CONN_F_SYNC) {
-		/* if the connection is not template and is created
-		 * by sync, preserve the activity flag.
-		 */
-		if (!(cp->flags & IP_VS_CONN_F_TEMPLATE))
-			conn_flags &= ~IP_VS_CONN_F_INACTIVE;
-		/* connections inherit forwarding method from dest */
-		cp->flags &= ~IP_VS_CONN_F_FWD_MASK;
-	}
-	cp->flags |= conn_flags;
-=======
 	flags = cp->flags;
 	/* Bind with the destination and its corresponding transmitter */
 	if (flags & IP_VS_CONN_F_SYNC) {
@@ -908,7 +609,6 @@ ip_vs_bind_dest(struct ip_vs_conn *cp, struct ip_vs_dest *dest)
 	}
 	flags |= conn_flags;
 	cp->flags = flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cp->dest = dest;
 
 	IP_VS_DBG_BUF(7, "Bind-dest %s c:%s:%d v:%s:%d "
@@ -917,20 +617,6 @@ ip_vs_bind_dest(struct ip_vs_conn *cp, struct ip_vs_dest *dest)
 		      ip_vs_proto_name(cp->protocol),
 		      IP_VS_DBG_ADDR(cp->af, &cp->caddr), ntohs(cp->cport),
 		      IP_VS_DBG_ADDR(cp->af, &cp->vaddr), ntohs(cp->vport),
-<<<<<<< HEAD
-		      IP_VS_DBG_ADDR(cp->af, &cp->daddr), ntohs(cp->dport),
-		      ip_vs_fwd_tag(cp), cp->state,
-		      cp->flags, atomic_read(&cp->refcnt),
-		      atomic_read(&dest->refcnt));
-
-	/* Update the connection counters */
-	if (!(cp->flags & IP_VS_CONN_F_TEMPLATE)) {
-		/* It is a normal connection, so increase the inactive
-		   connection counter because it is in TCP SYNRECV
-		   state (inactive) or other protocol inacive state */
-		if ((cp->flags & IP_VS_CONN_F_SYNC) &&
-		    (!(cp->flags & IP_VS_CONN_F_INACTIVE)))
-=======
 		      IP_VS_DBG_ADDR(cp->daf, &cp->daddr), ntohs(cp->dport),
 		      ip_vs_fwd_tag(cp), cp->state,
 		      cp->flags, refcount_read(&cp->refcnt),
@@ -943,7 +629,6 @@ ip_vs_bind_dest(struct ip_vs_conn *cp, struct ip_vs_dest *dest)
 		 * update them on state change
 		 */
 		if (!(flags & IP_VS_CONN_F_INACTIVE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atomic_inc(&dest->activeconns);
 		else
 			atomic_inc(&dest->inactconns);
@@ -963,20 +648,6 @@ ip_vs_bind_dest(struct ip_vs_conn *cp, struct ip_vs_dest *dest)
  * Check if there is a destination for the connection, if so
  * bind the connection to the destination.
  */
-<<<<<<< HEAD
-struct ip_vs_dest *ip_vs_try_bind_dest(struct ip_vs_conn *cp)
-{
-	struct ip_vs_dest *dest;
-
-	if ((cp) && (!cp->dest)) {
-		dest = ip_vs_find_dest(ip_vs_conn_net(cp), cp->af, &cp->daddr,
-				       cp->dport, &cp->vaddr, cp->vport,
-				       cp->protocol, cp->fwmark, cp->flags);
-		ip_vs_bind_dest(cp, dest);
-		return dest;
-	} else
-		return NULL;
-=======
 void ip_vs_try_bind_dest(struct ip_vs_conn *cp)
 {
 	struct ip_vs_dest *dest;
@@ -1023,7 +694,6 @@ void ip_vs_try_bind_dest(struct ip_vs_conn *cp)
 			ip_vs_bind_app(cp, pd->pp);
 	}
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1044,17 +714,10 @@ static inline void ip_vs_unbind_dest(struct ip_vs_conn *cp)
 		      ip_vs_proto_name(cp->protocol),
 		      IP_VS_DBG_ADDR(cp->af, &cp->caddr), ntohs(cp->cport),
 		      IP_VS_DBG_ADDR(cp->af, &cp->vaddr), ntohs(cp->vport),
-<<<<<<< HEAD
-		      IP_VS_DBG_ADDR(cp->af, &cp->daddr), ntohs(cp->dport),
-		      ip_vs_fwd_tag(cp), cp->state,
-		      cp->flags, atomic_read(&cp->refcnt),
-		      atomic_read(&dest->refcnt));
-=======
 		      IP_VS_DBG_ADDR(cp->daf, &cp->daddr), ntohs(cp->dport),
 		      ip_vs_fwd_tag(cp), cp->state,
 		      cp->flags, refcount_read(&cp->refcnt),
 		      refcount_read(&dest->refcnt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update the connection counters */
 	if (!(cp->flags & IP_VS_CONN_F_TEMPLATE)) {
@@ -1082,16 +745,7 @@ static inline void ip_vs_unbind_dest(struct ip_vs_conn *cp)
 			dest->flags &= ~IP_VS_DEST_F_OVERLOAD;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Simply decrease the refcnt of the dest, because the
-	 * dest will be either in service's destination list
-	 * or in the trash.
-	 */
-	atomic_dec(&dest->refcnt);
-=======
 	ip_vs_dest_put(dest);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int expire_quiescent_template(struct netns_ipvs *ipvs,
@@ -1110,29 +764,18 @@ static int expire_quiescent_template(struct netns_ipvs *ipvs,
  *	If available, return 1, otherwise invalidate this connection
  *	template and return 0.
  */
-<<<<<<< HEAD
-int ip_vs_check_template(struct ip_vs_conn *ct)
-{
-	struct ip_vs_dest *dest = ct->dest;
-	struct netns_ipvs *ipvs = net_ipvs(ip_vs_conn_net(ct));
-=======
 int ip_vs_check_template(struct ip_vs_conn *ct, struct ip_vs_dest *cdest)
 {
 	struct ip_vs_dest *dest = ct->dest;
 	struct netns_ipvs *ipvs = ct->ipvs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Checking the dest server status.
 	 */
 	if ((dest == NULL) ||
 	    !(dest->flags & IP_VS_DEST_F_AVAILABLE) ||
-<<<<<<< HEAD
-	    expire_quiescent_template(ipvs, dest)) {
-=======
 	    expire_quiescent_template(ipvs, dest) ||
 	    (cdest && (dest != cdest))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		IP_VS_DBG_BUF(9, "check_template: dest not available for "
 			      "protocol %s s:%s:%d v:%s:%d "
 			      "-> d:%s:%d\n",
@@ -1141,11 +784,7 @@ int ip_vs_check_template(struct ip_vs_conn *ct, struct ip_vs_dest *cdest)
 			      ntohs(ct->cport),
 			      IP_VS_DBG_ADDR(ct->af, &ct->vaddr),
 			      ntohs(ct->vport),
-<<<<<<< HEAD
-			      IP_VS_DBG_ADDR(ct->af, &ct->daddr),
-=======
 			      IP_VS_DBG_ADDR(ct->daf, &ct->daddr),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      ntohs(ct->dport));
 
 		/*
@@ -1164,29 +803,12 @@ int ip_vs_check_template(struct ip_vs_conn *ct, struct ip_vs_dest *cdest)
 		 * Simply decrease the refcnt of the template,
 		 * don't restart its timer.
 		 */
-<<<<<<< HEAD
-		atomic_dec(&ct->refcnt);
-=======
 		__ip_vs_conn_put(ct);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	return 1;
 }
 
-<<<<<<< HEAD
-static void ip_vs_conn_expire(unsigned long data)
-{
-	struct ip_vs_conn *cp = (struct ip_vs_conn *)data;
-	struct netns_ipvs *ipvs = net_ipvs(ip_vs_conn_net(cp));
-
-	cp->timeout = 60*HZ;
-
-	/*
-	 *	hey, I'm using it
-	 */
-	atomic_inc(&cp->refcnt);
-=======
 static void ip_vs_conn_rcu_free(struct rcu_head *head)
 {
 	struct ip_vs_conn *cp = container_of(head, struct ip_vs_conn,
@@ -1226,7 +848,6 @@ static void ip_vs_conn_expire(struct timer_list *t)
 {
 	struct ip_vs_conn *cp = from_timer(cp, t, timer);
 	struct netns_ipvs *ipvs = cp->ipvs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	do I control anybody?
@@ -1234,28 +855,6 @@ static void ip_vs_conn_expire(struct timer_list *t)
 	if (atomic_read(&cp->n_control))
 		goto expire_later;
 
-<<<<<<< HEAD
-	/*
-	 *	unhash it if it is hashed in the conn table
-	 */
-	if (!ip_vs_conn_unhash(cp) && !(cp->flags & IP_VS_CONN_F_ONE_PACKET))
-		goto expire_later;
-
-	/*
-	 *	refcnt==1 implies I'm the only one referrer
-	 */
-	if (likely(atomic_read(&cp->refcnt) == 1)) {
-		/* delete the timer if it is activated by other users */
-		if (timer_pending(&cp->timer))
-			del_timer(&cp->timer);
-
-		/* does anybody control me? */
-		if (cp->control)
-			ip_vs_control_del(cp);
-
-		if (cp->flags & IP_VS_CONN_F_NFCT) {
-			ip_vs_conn_drop_conntrack(cp);
-=======
 	/* Unlink conn if not referenced anymore */
 	if (likely(ip_vs_conn_unlink(cp))) {
 		struct ip_vs_conn *ct = cp->control;
@@ -1281,7 +880,6 @@ static void ip_vs_conn_expire(struct timer_list *t)
 
 		if ((cp->flags & IP_VS_CONN_F_NFCT) &&
 		    !(cp->flags & IP_VS_CONN_F_ONE_PACKET)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Do not access conntracks during subsys cleanup
 			 * because nf_conntrack_find_get can not be used after
 			 * conntrack cleanup for the net.
@@ -1291,40 +889,11 @@ static void ip_vs_conn_expire(struct timer_list *t)
 				ip_vs_conn_drop_conntrack(cp);
 		}
 
-<<<<<<< HEAD
-		ip_vs_pe_put(cp->pe);
-		kfree(cp->pe_data);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(cp->app != NULL))
 			ip_vs_unbind_app(cp);
 		ip_vs_unbind_dest(cp);
 		if (cp->flags & IP_VS_CONN_F_NO_CPORT)
 			atomic_dec(&ip_vs_conn_no_cport_cnt);
-<<<<<<< HEAD
-		atomic_dec(&ipvs->conn_count);
-
-		kmem_cache_free(ip_vs_conn_cachep, cp);
-		return;
-	}
-
-	/* hash it back to the table */
-	ip_vs_conn_hash(cp);
-
-  expire_later:
-	IP_VS_DBG(7, "delayed: conn->refcnt-1=%d conn->n_control=%d\n",
-		  atomic_read(&cp->refcnt)-1,
-		  atomic_read(&cp->n_control));
-
-	ip_vs_conn_put(cp);
-}
-
-
-void ip_vs_conn_expire_now(struct ip_vs_conn *cp)
-{
-	if (del_timer(&cp->timer))
-		mod_timer(&cp->timer, jiffies);
-=======
 		if (cp->flags & IP_VS_CONN_F_ONE_PACKET)
 			ip_vs_conn_rcu_free(&cp->rcu_head);
 		else
@@ -1362,7 +931,6 @@ void ip_vs_conn_expire_now(struct ip_vs_conn *cp)
 	if (timer_pending(&cp->timer) &&
 	    time_after(cp->timer.expires, jiffies))
 		mod_timer_pending(&cp->timer, jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1370,18 +938,6 @@ void ip_vs_conn_expire_now(struct ip_vs_conn *cp)
  *	Create a new connection entry and hash it into the ip_vs_conn_tab
  */
 struct ip_vs_conn *
-<<<<<<< HEAD
-ip_vs_conn_new(const struct ip_vs_conn_param *p,
-	       const union nf_inet_addr *daddr, __be16 dport, unsigned flags,
-	       struct ip_vs_dest *dest, __u32 fwmark)
-{
-	struct ip_vs_conn *cp;
-	struct netns_ipvs *ipvs = net_ipvs(p->net);
-	struct ip_vs_proto_data *pd = ip_vs_proto_data_get(p->net,
-							   p->protocol);
-
-	cp = kmem_cache_zalloc(ip_vs_conn_cachep, GFP_ATOMIC);
-=======
 ip_vs_conn_new(const struct ip_vs_conn_param *p, int dest_af,
 	       const union nf_inet_addr *daddr, __be16 dport, unsigned int flags,
 	       struct ip_vs_dest *dest, __u32 fwmark)
@@ -1392,26 +948,12 @@ ip_vs_conn_new(const struct ip_vs_conn_param *p, int dest_af,
 							   p->protocol);
 
 	cp = kmem_cache_alloc(ip_vs_conn_cachep, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cp == NULL) {
 		IP_VS_ERR_RL("%s(): no memory\n", __func__);
 		return NULL;
 	}
 
 	INIT_HLIST_NODE(&cp->c_list);
-<<<<<<< HEAD
-	setup_timer(&cp->timer, ip_vs_conn_expire, (unsigned long)cp);
-	ip_vs_conn_net_set(cp, p->net);
-	cp->af		   = p->af;
-	cp->protocol	   = p->protocol;
-	ip_vs_addr_copy(p->af, &cp->caddr, p->caddr);
-	cp->cport	   = p->cport;
-	ip_vs_addr_copy(p->af, &cp->vaddr, p->vaddr);
-	cp->vport	   = p->vport;
-	/* proto should only be IPPROTO_IP if d_addr is a fwmark */
-	ip_vs_addr_copy(p->protocol == IPPROTO_IP ? AF_UNSPEC : p->af,
-			&cp->daddr, daddr);
-=======
 	timer_setup(&cp->timer, ip_vs_conn_expire, 0);
 	cp->ipvs	   = ipvs;
 	cp->af		   = p->af;
@@ -1424,7 +966,6 @@ ip_vs_conn_new(const struct ip_vs_conn_param *p, int dest_af,
 		       &cp->vaddr, p->vaddr);
 	cp->vport	   = p->vport;
 	ip_vs_addr_set(cp->daf, &cp->daddr, daddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cp->dport          = dport;
 	cp->flags	   = flags;
 	cp->fwmark         = fwmark;
@@ -1433,13 +974,10 @@ ip_vs_conn_new(const struct ip_vs_conn_param *p, int dest_af,
 		cp->pe = p->pe;
 		cp->pe_data = p->pe_data;
 		cp->pe_data_len = p->pe_data_len;
-<<<<<<< HEAD
-=======
 	} else {
 		cp->pe = NULL;
 		cp->pe_data = NULL;
 		cp->pe_data_len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_lock_init(&cp->lock);
 
@@ -1448,13 +986,6 @@ ip_vs_conn_new(const struct ip_vs_conn_param *p, int dest_af,
 	 * it in the table, so that other thread run ip_vs_random_dropentry
 	 * but cannot drop this entry.
 	 */
-<<<<<<< HEAD
-	atomic_set(&cp->refcnt, 1);
-
-	atomic_set(&cp->n_control, 0);
-	atomic_set(&cp->in_pkts, 0);
-
-=======
 	refcount_set(&cp->refcnt, 1);
 
 	cp->control = NULL;
@@ -1468,27 +999,19 @@ ip_vs_conn_new(const struct ip_vs_conn_param *p, int dest_af,
 	cp->in_seq.delta = 0;
 	cp->out_seq.delta = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_inc(&ipvs->conn_count);
 	if (flags & IP_VS_CONN_F_NO_CPORT)
 		atomic_inc(&ip_vs_conn_no_cport_cnt);
 
 	/* Bind the connection with a destination server */
-<<<<<<< HEAD
-=======
 	cp->dest = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ip_vs_bind_dest(cp, dest);
 
 	/* Set its state and timeout */
 	cp->state = 0;
-<<<<<<< HEAD
-	cp->timeout = 3*HZ;
-=======
 	cp->old_state = 0;
 	cp->timeout = 3*HZ;
 	cp->sync_endtime = jiffies & ~3UL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Bind its packet transmitter */
 #ifdef CONFIG_IP_VS_IPV6
@@ -1531,48 +1054,30 @@ static void *ip_vs_conn_array(struct seq_file *seq, loff_t pos)
 	int idx;
 	struct ip_vs_conn *cp;
 	struct ip_vs_iter_state *iter = seq->private;
-<<<<<<< HEAD
-	struct hlist_node *n;
-
-	for (idx = 0; idx < ip_vs_conn_tab_size; idx++) {
-		ct_read_lock_bh(idx);
-		hlist_for_each_entry(cp, n, &ip_vs_conn_tab[idx], c_list) {
-=======
 
 	for (idx = 0; idx < ip_vs_conn_tab_size; idx++) {
 		hlist_for_each_entry_rcu(cp, &ip_vs_conn_tab[idx], c_list) {
 			/* __ip_vs_conn_get() is not needed by
 			 * ip_vs_conn_seq_show and ip_vs_conn_sync_seq_show
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (pos-- == 0) {
 				iter->l = &ip_vs_conn_tab[idx];
 				return cp;
 			}
 		}
-<<<<<<< HEAD
-		ct_read_unlock_bh(idx);
-=======
 		cond_resched_rcu();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return NULL;
 }
 
 static void *ip_vs_conn_seq_start(struct seq_file *seq, loff_t *pos)
-<<<<<<< HEAD
-=======
 	__acquires(RCU)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ip_vs_iter_state *iter = seq->private;
 
 	iter->l = NULL;
-<<<<<<< HEAD
-=======
 	rcu_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return *pos ? ip_vs_conn_array(seq, *pos - 1) :SEQ_START_TOKEN;
 }
 
@@ -1589,21 +1094,6 @@ static void *ip_vs_conn_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 		return ip_vs_conn_array(seq, 0);
 
 	/* more on same hash chain? */
-<<<<<<< HEAD
-	if ((e = cp->c_list.next))
-		return hlist_entry(e, struct ip_vs_conn, c_list);
-
-	idx = l - ip_vs_conn_tab;
-	ct_read_unlock_bh(idx);
-
-	while (++idx < ip_vs_conn_tab_size) {
-		ct_read_lock_bh(idx);
-		hlist_for_each_entry(cp, e, &ip_vs_conn_tab[idx], c_list) {
-			iter->l = &ip_vs_conn_tab[idx];
-			return cp;
-		}
-		ct_read_unlock_bh(idx);
-=======
 	e = rcu_dereference(hlist_next_rcu(&cp->c_list));
 	if (e)
 		return hlist_entry(e, struct ip_vs_conn, c_list);
@@ -1615,25 +1105,15 @@ static void *ip_vs_conn_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 			return cp;
 		}
 		cond_resched_rcu();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	iter->l = NULL;
 	return NULL;
 }
 
 static void ip_vs_conn_seq_stop(struct seq_file *seq, void *v)
-<<<<<<< HEAD
-{
-	struct ip_vs_iter_state *iter = seq->private;
-	struct hlist_head *l = iter->l;
-
-	if (l)
-		ct_read_unlock_bh(l - ip_vs_conn_tab);
-=======
 	__releases(RCU)
 {
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ip_vs_conn_seq_show(struct seq_file *seq, void *v)
@@ -1647,14 +1127,9 @@ static int ip_vs_conn_seq_show(struct seq_file *seq, void *v)
 		struct net *net = seq_file_net(seq);
 		char pe_data[IP_VS_PENAME_MAXLEN + IP_VS_PEDATA_MAXLEN + 3];
 		size_t len = 0;
-<<<<<<< HEAD
-
-		if (!ip_vs_conn_net_eq(cp, net))
-=======
 		char dbuf[IP_VS_ADDRSTRLEN];
 
 		if (!net_eq(cp->ipvs->net, net))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		if (cp->pe_data) {
 			pe_data[0] = ' ';
@@ -1667,17 +1142,6 @@ static int ip_vs_conn_seq_show(struct seq_file *seq, void *v)
 		pe_data[len] = '\0';
 
 #ifdef CONFIG_IP_VS_IPV6
-<<<<<<< HEAD
-		if (cp->af == AF_INET6)
-			seq_printf(seq, "%-3s %pI6 %04X %pI6 %04X "
-				"%pI6 %04X %-11s %7lu%s\n",
-				ip_vs_proto_name(cp->protocol),
-				&cp->caddr.in6, ntohs(cp->cport),
-				&cp->vaddr.in6, ntohs(cp->vport),
-				&cp->daddr.in6, ntohs(cp->dport),
-				ip_vs_state_name(cp->protocol, cp->state),
-				(cp->timer.expires-jiffies)/HZ, pe_data);
-=======
 		if (cp->daf == AF_INET6)
 			snprintf(dbuf, sizeof(dbuf), "%pI6", &cp->daddr.in6);
 		else
@@ -1697,20 +1161,10 @@ static int ip_vs_conn_seq_show(struct seq_file *seq, void *v)
 				jiffies_delta_to_msecs(cp->timer.expires -
 						       jiffies) / 1000,
 				pe_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 #endif
 			seq_printf(seq,
 				"%-3s %08X %04X %08X %04X"
-<<<<<<< HEAD
-				" %08X %04X %-11s %7lu%s\n",
-				ip_vs_proto_name(cp->protocol),
-				ntohl(cp->caddr.ip), ntohs(cp->cport),
-				ntohl(cp->vaddr.ip), ntohs(cp->vport),
-				ntohl(cp->daddr.ip), ntohs(cp->dport),
-				ip_vs_state_name(cp->protocol, cp->state),
-				(cp->timer.expires-jiffies)/HZ, pe_data);
-=======
 				" %s %04X %-11s %7u%s\n",
 				ip_vs_proto_name(cp->protocol),
 				ntohl(cp->caddr.ip), ntohs(cp->cport),
@@ -1720,7 +1174,6 @@ static int ip_vs_conn_seq_show(struct seq_file *seq, void *v)
 				jiffies_delta_to_msecs(cp->timer.expires -
 						       jiffies) / 1000,
 				pe_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1732,25 +1185,7 @@ static const struct seq_operations ip_vs_conn_seq_ops = {
 	.show  = ip_vs_conn_seq_show,
 };
 
-<<<<<<< HEAD
-static int ip_vs_conn_open(struct inode *inode, struct file *file)
-{
-	return seq_open_net(inode, file, &ip_vs_conn_seq_ops,
-			    sizeof(struct ip_vs_iter_state));
-}
-
-static const struct file_operations ip_vs_conn_fops = {
-	.owner	 = THIS_MODULE,
-	.open    = ip_vs_conn_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = seq_release_net,
-};
-
-static const char *ip_vs_origin_name(unsigned flags)
-=======
 static const char *ip_vs_origin_name(unsigned int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (flags & IP_VS_CONN_F_SYNC)
 		return "SYNC";
@@ -1760,10 +1195,7 @@ static const char *ip_vs_origin_name(unsigned int flags)
 
 static int ip_vs_conn_sync_seq_show(struct seq_file *seq, void *v)
 {
-<<<<<<< HEAD
-=======
 	char dbuf[IP_VS_ADDRSTRLEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (v == SEQ_START_TOKEN)
 		seq_puts(seq,
@@ -1772,21 +1204,6 @@ static int ip_vs_conn_sync_seq_show(struct seq_file *seq, void *v)
 		const struct ip_vs_conn *cp = v;
 		struct net *net = seq_file_net(seq);
 
-<<<<<<< HEAD
-		if (!ip_vs_conn_net_eq(cp, net))
-			return 0;
-
-#ifdef CONFIG_IP_VS_IPV6
-		if (cp->af == AF_INET6)
-			seq_printf(seq, "%-3s %pI6 %04X %pI6 %04X %pI6 %04X %-11s %-6s %7lu\n",
-				ip_vs_proto_name(cp->protocol),
-				&cp->caddr.in6, ntohs(cp->cport),
-				&cp->vaddr.in6, ntohs(cp->vport),
-				&cp->daddr.in6, ntohs(cp->dport),
-				ip_vs_state_name(cp->protocol, cp->state),
-				ip_vs_origin_name(cp->flags),
-				(cp->timer.expires-jiffies)/HZ);
-=======
 		if (!net_eq(cp->ipvs->net, net))
 			return 0;
 
@@ -1810,21 +1227,10 @@ static int ip_vs_conn_sync_seq_show(struct seq_file *seq, void *v)
 				ip_vs_origin_name(cp->flags),
 				jiffies_delta_to_msecs(cp->timer.expires -
 						       jiffies) / 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 #endif
 			seq_printf(seq,
 				"%-3s %08X %04X %08X %04X "
-<<<<<<< HEAD
-				"%08X %04X %-11s %-6s %7lu\n",
-				ip_vs_proto_name(cp->protocol),
-				ntohl(cp->caddr.ip), ntohs(cp->cport),
-				ntohl(cp->vaddr.ip), ntohs(cp->vport),
-				ntohl(cp->daddr.ip), ntohs(cp->dport),
-				ip_vs_state_name(cp->protocol, cp->state),
-				ip_vs_origin_name(cp->flags),
-				(cp->timer.expires-jiffies)/HZ);
-=======
 				"%s %04X %-11s %-6s %7u\n",
 				ip_vs_proto_name(cp->protocol),
 				ntohl(cp->caddr.ip), ntohs(cp->cport),
@@ -1834,7 +1240,6 @@ static int ip_vs_conn_sync_seq_show(struct seq_file *seq, void *v)
 				ip_vs_origin_name(cp->flags),
 				jiffies_delta_to_msecs(cp->timer.expires -
 						       jiffies) / 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1845,28 +1250,6 @@ static const struct seq_operations ip_vs_conn_sync_seq_ops = {
 	.stop  = ip_vs_conn_seq_stop,
 	.show  = ip_vs_conn_sync_seq_show,
 };
-<<<<<<< HEAD
-
-static int ip_vs_conn_sync_open(struct inode *inode, struct file *file)
-{
-	return seq_open_net(inode, file, &ip_vs_conn_sync_seq_ops,
-			    sizeof(struct ip_vs_iter_state));
-}
-
-static const struct file_operations ip_vs_conn_sync_fops = {
-	.owner	 = THIS_MODULE,
-	.open    = ip_vs_conn_sync_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = seq_release_net,
-};
-
-#endif
-
-
-/*
- *      Randomly drop connection entries before running out of memory
-=======
 #endif
 
 
@@ -1875,7 +1258,6 @@ static const struct file_operations ip_vs_conn_sync_fops = {
  * - traffic for services in OPS mode increases ct->in_pkts, so it is supported
  * - traffic for services not in OPS mode does not increase ct->in_pkts in
  * all cases, so it is not supported
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int todrop_entry(struct ip_vs_conn *cp)
 {
@@ -1883,13 +1265,8 @@ static inline int todrop_entry(struct ip_vs_conn *cp)
 	 * The drop rate array needs tuning for real environments.
 	 * Called from timer bh only => no locking
 	 */
-<<<<<<< HEAD
-	static const char todrop_rate[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
-	static char todrop_counter[9] = {0};
-=======
 	static const signed char todrop_rate[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
 	static signed char todrop_counter[9] = {0};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/* if the conn entry hasn't lasted for 60 seconds, don't drop it.
@@ -1910,10 +1287,6 @@ static inline int todrop_entry(struct ip_vs_conn *cp)
 	return 1;
 }
 
-<<<<<<< HEAD
-/* Called from keventd and must protect itself from softirqs */
-void ip_vs_random_dropentry(struct net *net)
-=======
 static inline bool ip_vs_conn_ops_mode(struct ip_vs_conn *cp)
 {
 	struct ip_vs_service *svc;
@@ -1926,35 +1299,15 @@ static inline bool ip_vs_conn_ops_mode(struct ip_vs_conn *cp)
 
 /* Called from keventd and must protect itself from softirqs */
 void ip_vs_random_dropentry(struct netns_ipvs *ipvs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int idx;
 	struct ip_vs_conn *cp;
 
-<<<<<<< HEAD
-=======
 	rcu_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Randomly scan 1/32 of the whole table every second
 	 */
 	for (idx = 0; idx < (ip_vs_conn_tab_size>>5); idx++) {
-<<<<<<< HEAD
-		unsigned hash = net_random() & ip_vs_conn_tab_mask;
-		struct hlist_node *n;
-
-		/*
-		 *  Lock is actually needed in this loop.
-		 */
-		ct_write_lock_bh(hash);
-
-		hlist_for_each_entry(cp, n, &ip_vs_conn_tab[hash], c_list) {
-			if (cp->flags & IP_VS_CONN_F_TEMPLATE)
-				/* connection template */
-				continue;
-			if (!ip_vs_conn_net_eq(cp, net))
-				continue;
-=======
 		unsigned int hash = get_random_u32() & ip_vs_conn_tab_mask;
 
 		hlist_for_each_entry_rcu(cp, &ip_vs_conn_tab[hash], c_list) {
@@ -1970,7 +1323,6 @@ void ip_vs_random_dropentry(struct netns_ipvs *ipvs)
 					goto drop;
 				continue;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cp->protocol == IPPROTO_TCP) {
 				switch(cp->state) {
 				case IP_VS_TCP_S_SYN_RECV:
@@ -1985,9 +1337,6 @@ void ip_vs_random_dropentry(struct netns_ipvs *ipvs)
 				default:
 					continue;
 				}
-<<<<<<< HEAD
-			} else {
-=======
 			} else if (cp->protocol == IPPROTO_SCTP) {
 				switch (cp->state) {
 				case IP_VS_SCTP_S_INIT1:
@@ -2002,22 +1351,10 @@ void ip_vs_random_dropentry(struct netns_ipvs *ipvs)
 				}
 			} else {
 try_drop:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (!todrop_entry(cp))
 					continue;
 			}
 
-<<<<<<< HEAD
-			IP_VS_DBG(4, "del connection\n");
-			ip_vs_conn_expire_now(cp);
-			if (cp->control) {
-				IP_VS_DBG(4, "del conn template\n");
-				ip_vs_conn_expire_now(cp->control);
-			}
-		}
-		ct_write_unlock_bh(hash);
-	}
-=======
 drop:
 			IP_VS_DBG(4, "drop connection\n");
 			ip_vs_conn_del(cp);
@@ -2025,42 +1362,12 @@ drop:
 		cond_resched_rcu();
 	}
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /*
  *      Flush all the connection entries in the ip_vs_conn_tab
  */
-<<<<<<< HEAD
-static void ip_vs_conn_flush(struct net *net)
-{
-	int idx;
-	struct ip_vs_conn *cp;
-	struct netns_ipvs *ipvs = net_ipvs(net);
-
-flush_again:
-	for (idx = 0; idx < ip_vs_conn_tab_size; idx++) {
-		struct hlist_node *n;
-
-		/*
-		 *  Lock is actually needed in this loop.
-		 */
-		ct_write_lock_bh(idx);
-
-		hlist_for_each_entry(cp, n, &ip_vs_conn_tab[idx], c_list) {
-			if (!ip_vs_conn_net_eq(cp, net))
-				continue;
-			IP_VS_DBG(4, "del connection\n");
-			ip_vs_conn_expire_now(cp);
-			if (cp->control) {
-				IP_VS_DBG(4, "del conn template\n");
-				ip_vs_conn_expire_now(cp->control);
-			}
-		}
-		ct_write_unlock_bh(idx);
-	}
-=======
 static void ip_vs_conn_flush(struct netns_ipvs *ipvs)
 {
 	int idx;
@@ -2086,7 +1393,6 @@ flush_again:
 		cond_resched_rcu();
 	}
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* the counter may be not NULL, because maybe some conn entries
 	   are run by slow timer handler or unhashed but still referred */
@@ -2095,28 +1401,6 @@ flush_again:
 		goto flush_again;
 	}
 }
-<<<<<<< HEAD
-/*
- * per netns init and exit
- */
-int __net_init ip_vs_conn_net_init(struct net *net)
-{
-	struct netns_ipvs *ipvs = net_ipvs(net);
-
-	atomic_set(&ipvs->conn_count, 0);
-
-	proc_net_fops_create(net, "ip_vs_conn", 0, &ip_vs_conn_fops);
-	proc_net_fops_create(net, "ip_vs_conn_sync", 0, &ip_vs_conn_sync_fops);
-	return 0;
-}
-
-void __net_exit ip_vs_conn_net_cleanup(struct net *net)
-{
-	/* flush all the connection entries first */
-	ip_vs_conn_flush(net);
-	proc_net_remove(net, "ip_vs_conn");
-	proc_net_remove(net, "ip_vs_conn_sync");
-=======
 
 #ifdef CONFIG_SYSCTL
 void ip_vs_expire_nodest_conn_flush(struct netns_ipvs *ipvs)
@@ -2193,16 +1477,10 @@ void __net_exit ip_vs_conn_net_cleanup(struct netns_ipvs *ipvs)
 	remove_proc_entry("ip_vs_conn", ipvs->net->proc_net);
 	remove_proc_entry("ip_vs_conn_sync", ipvs->net->proc_net);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __init ip_vs_conn_init(void)
 {
-<<<<<<< HEAD
-	int idx;
-
-	/* Compute size and mask */
-=======
 	size_t tab_array_size;
 	int max_avail;
 #if BITS_PER_LONG > 32
@@ -2219,40 +1497,20 @@ int __init ip_vs_conn_init(void)
 	max_avail -= order_base_2(sizeof(struct ip_vs_conn));
 	max = clamp(max, min, max_avail);
 	ip_vs_conn_tab_bits = clamp_val(ip_vs_conn_tab_bits, min, max);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ip_vs_conn_tab_size = 1 << ip_vs_conn_tab_bits;
 	ip_vs_conn_tab_mask = ip_vs_conn_tab_size - 1;
 
 	/*
 	 * Allocate the connection hash table and initialize its list heads
 	 */
-<<<<<<< HEAD
-	ip_vs_conn_tab = vmalloc(ip_vs_conn_tab_size * sizeof(*ip_vs_conn_tab));
-=======
 	tab_array_size = array_size(ip_vs_conn_tab_size,
 				    sizeof(*ip_vs_conn_tab));
 	ip_vs_conn_tab = kvmalloc_array(ip_vs_conn_tab_size,
 					sizeof(*ip_vs_conn_tab), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ip_vs_conn_tab)
 		return -ENOMEM;
 
 	/* Allocate ip_vs_conn slab cache */
-<<<<<<< HEAD
-	ip_vs_conn_cachep = kmem_cache_create("ip_vs_conn",
-					      sizeof(struct ip_vs_conn), 0,
-					      SLAB_HWCACHE_ALIGN, NULL);
-	if (!ip_vs_conn_cachep) {
-		vfree(ip_vs_conn_tab);
-		return -ENOMEM;
-	}
-
-	pr_info("Connection hash table configured "
-		"(size=%d, memory=%ldKbytes)\n",
-		ip_vs_conn_tab_size,
-		(long)(ip_vs_conn_tab_size*sizeof(struct list_head))/1024);
-	IP_VS_DBG(0, "Each connection entry needs %Zd bytes at least\n",
-=======
 	ip_vs_conn_cachep = KMEM_CACHE(ip_vs_conn, SLAB_HWCACHE_ALIGN);
 	if (!ip_vs_conn_cachep) {
 		kvfree(ip_vs_conn_tab);
@@ -2262,18 +1520,13 @@ int __init ip_vs_conn_init(void)
 	pr_info("Connection hash table configured (size=%d, memory=%zdKbytes)\n",
 		ip_vs_conn_tab_size, tab_array_size / 1024);
 	IP_VS_DBG(0, "Each connection entry needs %zd bytes at least\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  sizeof(struct ip_vs_conn));
 
 	for (idx = 0; idx < ip_vs_conn_tab_size; idx++)
 		INIT_HLIST_HEAD(&ip_vs_conn_tab[idx]);
 
 	for (idx = 0; idx < CT_LOCKARRAY_SIZE; idx++)  {
-<<<<<<< HEAD
-		rwlock_init(&__ip_vs_conntbl_lock_array[idx].l);
-=======
 		spin_lock_init(&__ip_vs_conntbl_lock_array[idx].l);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* calculate the random value for connection hash */
@@ -2284,15 +1537,9 @@ int __init ip_vs_conn_init(void)
 
 void ip_vs_conn_cleanup(void)
 {
-<<<<<<< HEAD
-	/* Release the empty cache */
-	kmem_cache_destroy(ip_vs_conn_cachep);
-	vfree(ip_vs_conn_tab);
-=======
 	/* Wait all ip_vs_conn_rcu_free() callbacks to complete */
 	rcu_barrier();
 	/* Release the empty cache */
 	kmem_cache_destroy(ip_vs_conn_cachep);
 	kvfree(ip_vs_conn_tab);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

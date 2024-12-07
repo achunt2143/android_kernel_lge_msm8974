@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/net/ethernet/ibm/ehea/ehea_main.c
  *
@@ -13,32 +10,11 @@
  *	 Christoph Raisch <raisch@de.ibm.com>
  *	 Jan-Bernd Themann <themann@de.ibm.com>
  *	 Thomas Klein <tklein@de.ibm.com>
-<<<<<<< HEAD
- *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-<<<<<<< HEAD
-=======
 #include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/in.h>
 #include <linux/ip.h>
 #include <linux/tcp.h>
@@ -53,12 +29,9 @@
 #include <asm/kexec.h>
 #include <linux/mutex.h>
 #include <linux/prefetch.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/ip.h>
 
@@ -93,18 +66,6 @@ MODULE_PARM_DESC(msg_level, "msg_level");
 MODULE_PARM_DESC(prop_carrier_state, "Propagate carrier state of physical "
 		 "port to stack. 1:yes, 0:no.  Default = 0 ");
 MODULE_PARM_DESC(rq3_entries, "Number of entries for Receive Queue 3 "
-<<<<<<< HEAD
-		 "[2^x - 1], x = [6..14]. Default = "
-		 __MODULE_STRING(EHEA_DEF_ENTRIES_RQ3) ")");
-MODULE_PARM_DESC(rq2_entries, "Number of entries for Receive Queue 2 "
-		 "[2^x - 1], x = [6..14]. Default = "
-		 __MODULE_STRING(EHEA_DEF_ENTRIES_RQ2) ")");
-MODULE_PARM_DESC(rq1_entries, "Number of entries for Receive Queue 1 "
-		 "[2^x - 1], x = [6..14]. Default = "
-		 __MODULE_STRING(EHEA_DEF_ENTRIES_RQ1) ")");
-MODULE_PARM_DESC(sq_entries, " Number of entries for the Send Queue  "
-		 "[2^x - 1], x = [6..14]. Default = "
-=======
 		 "[2^x - 1], x = [7..14]. Default = "
 		 __MODULE_STRING(EHEA_DEF_ENTRIES_RQ3) ")");
 MODULE_PARM_DESC(rq2_entries, "Number of entries for Receive Queue 2 "
@@ -115,7 +76,6 @@ MODULE_PARM_DESC(rq1_entries, "Number of entries for Receive Queue 1 "
 		 __MODULE_STRING(EHEA_DEF_ENTRIES_RQ1) ")");
 MODULE_PARM_DESC(sq_entries, " Number of entries for the Send Queue  "
 		 "[2^x - 1], x = [7..14]. Default = "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 __MODULE_STRING(EHEA_DEF_ENTRIES_SQ) ")");
 MODULE_PARM_DESC(use_mcs, " Multiple receive queues, 1: enable, 0: disable, "
 		 "Default = 1");
@@ -128,14 +88,6 @@ static struct ehea_fw_handle_array ehea_fw_handles;
 static struct ehea_bcmc_reg_array ehea_bcmc_regs;
 
 
-<<<<<<< HEAD
-static int __devinit ehea_probe_adapter(struct platform_device *dev,
-					const struct of_device_id *id);
-
-static int __devexit ehea_remove(struct platform_device *dev);
-
-static struct of_device_id ehea_device_table[] = {
-=======
 static int ehea_probe_adapter(struct platform_device *dev);
 
 static void ehea_remove(struct platform_device *dev);
@@ -154,7 +106,6 @@ static const struct of_device_id ehea_module_device_table[] = {
 MODULE_DEVICE_TABLE(of, ehea_module_device_table);
 
 static const struct of_device_id ehea_device_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "lhea",
 		.compatible = "IBM,lhea",
@@ -163,22 +114,14 @@ static const struct of_device_id ehea_device_table[] = {
 };
 MODULE_DEVICE_TABLE(of, ehea_device_table);
 
-<<<<<<< HEAD
-static struct of_platform_driver ehea_driver = {
-=======
 static struct platform_driver ehea_driver = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.name = "ehea",
 		.owner = THIS_MODULE,
 		.of_match_table = ehea_device_table,
 	},
 	.probe = ehea_probe_adapter,
-<<<<<<< HEAD
-	.remove = ehea_remove,
-=======
 	.remove_new = ehea_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void ehea_dump(void *adr, int len, char *msg)
@@ -375,13 +318,8 @@ out:
 	spin_unlock_irqrestore(&ehea_bcmc_regs.lock, flags);
 }
 
-<<<<<<< HEAD
-static struct rtnl_link_stats64 *ehea_get_stats64(struct net_device *dev,
-					struct rtnl_link_stats64 *stats)
-=======
 static void ehea_get_stats64(struct net_device *dev,
 			     struct rtnl_link_stats64 *stats)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehea_port *port = netdev_priv(dev);
 	u64 rx_packets = 0, tx_packets = 0, rx_bytes = 0, tx_bytes = 0;
@@ -404,10 +342,6 @@ static void ehea_get_stats64(struct net_device *dev,
 
 	stats->multicast = port->stats.multicast;
 	stats->rx_errors = port->stats.rx_errors;
-<<<<<<< HEAD
-	return stats;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ehea_update_stats(struct work_struct *work)
@@ -469,10 +403,6 @@ static void ehea_refill_rq1(struct ehea_port_res *pr, int index, int nr_of_wqes)
 			skb_arr_rq1[index] = netdev_alloc_skb(dev,
 							      EHEA_L_PKT_SIZE);
 			if (!skb_arr_rq1[index]) {
-<<<<<<< HEAD
-				netdev_info(dev, "Unable to allocate enough skb in the array\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pr->rq1_skba.os_skbs = fill_wqes - i;
 				break;
 			}
@@ -502,15 +432,8 @@ static void ehea_init_fill_rq1(struct ehea_port_res *pr, int nr_rq1a)
 
 	for (i = 0; i < nr_rq1a; i++) {
 		skb_arr_rq1[i] = netdev_alloc_skb(dev, EHEA_L_PKT_SIZE);
-<<<<<<< HEAD
-		if (!skb_arr_rq1[i]) {
-			netdev_info(dev, "Not enough memory to allocate skb array\n");
-			break;
-		}
-=======
 		if (!skb_arr_rq1[i])
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Ring doorbell */
 	ehea_update_rq1a(pr->qp, i - 1);
@@ -557,11 +480,7 @@ static int ehea_refill_rq_def(struct ehea_port_res *pr,
 		skb_arr[index] = skb;
 		tmp_addr = ehea_map_vaddr(skb->data);
 		if (tmp_addr == -1) {
-<<<<<<< HEAD
-			dev_kfree_skb(skb);
-=======
 			dev_consume_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			q_skba->os_skbs = fill_wqes - i;
 			ret = 0;
 			break;
@@ -774,15 +693,8 @@ static int ehea_proc_rwqes(struct net_device *dev,
 
 					skb = netdev_alloc_skb(dev,
 							       EHEA_L_PKT_SIZE);
-<<<<<<< HEAD
-					if (!skb) {
-						netdev_err(dev, "Not enough memory to allocate skb\n");
-						break;
-					}
-=======
 					if (!skb)
 						break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 				skb_copy_to_linear_data(skb, ((char *)cqe) + 64,
 						 cqe->num_bytes_transfered - 4);
@@ -814,12 +726,8 @@ static int ehea_proc_rwqes(struct net_device *dev,
 			processed_bytes += skb->len;
 
 			if (cqe->status & EHEA_CQE_VLAN_TAG_XTRACT)
-<<<<<<< HEAD
-				__vlan_hwaccel_put_tag(skb, cqe->vlan_tag);
-=======
 				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
 						       cqe->vlan_tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			napi_gro_receive(&pr->napi, skb);
 		} else {
@@ -860,19 +768,11 @@ static void check_sqs(struct ehea_port *port)
 {
 	struct ehea_swqe *swqe;
 	int swqe_index;
-<<<<<<< HEAD
-	int i, k;
-=======
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < port->num_def_qps; i++) {
 		struct ehea_port_res *pr = &port->port_res[i];
 		int ret;
-<<<<<<< HEAD
-		k = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		swqe = ehea_get_swqe(pr->qp, &swqe_index);
 		memset(swqe, 0, SWQE_HEADER_SIZE);
 		atomic_dec(&pr->swqe_avail);
@@ -945,11 +845,7 @@ static struct ehea_cqe *ehea_proc_cqes(struct ehea_port_res *pr, int my_quota)
 
 			index = EHEA_BMASK_GET(EHEA_WR_ID_INDEX, cqe->wr_id);
 			skb = pr->sq_skba.arr[index];
-<<<<<<< HEAD
-			dev_kfree_skb(skb);
-=======
 			dev_consume_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr->sq_skba.arr[index] = NULL;
 		}
 
@@ -1004,11 +900,7 @@ static int ehea_poll(struct napi_struct *napi, int budget)
 		if (!cqe && !cqe_skb)
 			return rx;
 
-<<<<<<< HEAD
-		if (!napi_reschedule(napi))
-=======
 		if (!napi_schedule(napi))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rx;
 
 		cqe_skb = ehea_proc_cqes(pr, EHEA_POLL_MAX_CQES);
@@ -1018,20 +910,6 @@ static int ehea_poll(struct napi_struct *napi, int budget)
 	return rx;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_NET_POLL_CONTROLLER
-static void ehea_netpoll(struct net_device *dev)
-{
-	struct ehea_port *port = netdev_priv(dev);
-	int i;
-
-	for (i = 0; i < port->num_def_qps; i++)
-		napi_schedule(&port->port_res[i].napi);
-}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t ehea_recv_irq_handler(int irq, void *param)
 {
 	struct ehea_port_res *pr = param;
@@ -1268,26 +1146,15 @@ static void ehea_parse_eqe(struct ehea_adapter *adapter, u64 eqe)
 	ec = EHEA_BMASK_GET(NEQE_EVENT_CODE, eqe);
 	portnum = EHEA_BMASK_GET(NEQE_PORTNUM, eqe);
 	port = ehea_get_port(adapter, portnum);
-<<<<<<< HEAD
-=======
 	if (!port) {
 		netdev_err(NULL, "unknown portnum %x\n", portnum);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev = port->netdev;
 
 	switch (ec) {
 	case EHEA_EC_PORTSTATE_CHG:	/* port state change */
 
-<<<<<<< HEAD
-		if (!port) {
-			netdev_err(dev, "unknown portnum %x\n", portnum);
-			break;
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (EHEA_BMASK_GET(NEQE_PORT_UP, eqe)) {
 			if (!netif_carrier_ok(dev)) {
 				ret = ehea_sense_port_attr(port);
@@ -1349,15 +1216,9 @@ static void ehea_parse_eqe(struct ehea_adapter *adapter, u64 eqe)
 	}
 }
 
-<<<<<<< HEAD
-static void ehea_neq_tasklet(unsigned long data)
-{
-	struct ehea_adapter *adapter = (struct ehea_adapter *)data;
-=======
 static void ehea_neq_tasklet(struct tasklet_struct *t)
 {
 	struct ehea_adapter *adapter = from_tasklet(adapter, t, neq_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ehea_eqe *eqe;
 	u64 event_mask;
 
@@ -1413,11 +1274,7 @@ static int ehea_reg_interrupts(struct net_device *dev)
 
 	ret = ibmebus_request_irq(port->qp_eq->attr.ist1,
 				  ehea_qp_aff_irq_handler,
-<<<<<<< HEAD
-				  IRQF_DISABLED, port->int_aff_name, port);
-=======
 				  0, port->int_aff_name, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		netdev_err(dev, "failed registering irq for qp_aff_irq_handler:ist=%X\n",
 			   port->qp_eq->attr.ist1);
@@ -1435,12 +1292,7 @@ static int ehea_reg_interrupts(struct net_device *dev)
 			 "%s-queue%d", dev->name, i);
 		ret = ibmebus_request_irq(pr->eq->attr.ist1,
 					  ehea_recv_irq_handler,
-<<<<<<< HEAD
-					  IRQF_DISABLED, pr->int_send_name,
-					  pr);
-=======
 					  0, pr->int_send_name, pr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			netdev_err(dev, "failed registering irq for ehea_queue port_res_nr:%d, ist=%X\n",
 				   i, pr->eq->attr.ist1);
@@ -1601,11 +1453,7 @@ static int ehea_init_port_res(struct ehea_port *port, struct ehea_port_res *pr,
 
 	memset(pr, 0, sizeof(struct ehea_port_res));
 
-<<<<<<< HEAD
-	pr->tx_bytes = rx_bytes;
-=======
 	pr->tx_bytes = tx_bytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr->tx_packets = tx_packets;
 	pr->rx_bytes = rx_bytes;
 	pr->rx_packets = rx_packets;
@@ -1699,11 +1547,7 @@ static int ehea_init_port_res(struct ehea_port *port, struct ehea_port_res *pr,
 
 	kfree(init_attr);
 
-<<<<<<< HEAD
-	netif_napi_add(pr->port->netdev, &pr->napi, ehea_poll, 64);
-=======
 	netif_napi_add(pr->port->netdev, &pr->napi, ehea_poll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = 0;
 	goto out;
@@ -1737,22 +1581,6 @@ static int ehea_clean_portres(struct ehea_port *port, struct ehea_port_res *pr)
 		ehea_destroy_eq(pr->eq);
 
 		for (i = 0; i < pr->rq1_skba.len; i++)
-<<<<<<< HEAD
-			if (pr->rq1_skba.arr[i])
-				dev_kfree_skb(pr->rq1_skba.arr[i]);
-
-		for (i = 0; i < pr->rq2_skba.len; i++)
-			if (pr->rq2_skba.arr[i])
-				dev_kfree_skb(pr->rq2_skba.arr[i]);
-
-		for (i = 0; i < pr->rq3_skba.len; i++)
-			if (pr->rq3_skba.arr[i])
-				dev_kfree_skb(pr->rq3_skba.arr[i]);
-
-		for (i = 0; i < pr->sq_skba.len; i++)
-			if (pr->sq_skba.arr[i])
-				dev_kfree_skb(pr->sq_skba.arr[i]);
-=======
 			dev_kfree_skb(pr->rq1_skba.arr[i]);
 
 		for (i = 0; i < pr->rq2_skba.len; i++)
@@ -1763,7 +1591,6 @@ static int ehea_clean_portres(struct ehea_port *port, struct ehea_port_res *pr)
 
 		for (i = 0; i < pr->sq_skba.len; i++)
 			dev_kfree_skb(pr->sq_skba.arr[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		vfree(pr->rq1_skba.arr);
 		vfree(pr->rq2_skba.arr);
@@ -1791,11 +1618,7 @@ static void write_swqe2_immediate(struct sk_buff *skb, struct ehea_swqe *swqe,
 		 * For TSO packets we only copy the headers into the
 		 * immediate area.
 		 */
-<<<<<<< HEAD
-		immediate_len = ETH_HLEN + ip_hdrlen(skb) + tcp_hdrlen(skb);
-=======
 		immediate_len = skb_tcp_all_headers(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (skb_is_gso(skb) || skb_data_size >= SWQE2_MAX_IMM) {
@@ -1921,11 +1744,7 @@ static int ehea_set_mac_addr(struct net_device *dev, void *sa)
 		goto out_free;
 	}
 
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, mac_addr->sa_data, dev->addr_len);
-=======
 	eth_hw_addr_set(dev, mac_addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Deregister old MAC in pHYP */
 	if (port->state == EHEA_PORT_UP) {
@@ -2081,15 +1900,8 @@ static void ehea_add_multicast_entry(struct ehea_port *port, u8 *mc_mac_addr)
 	u64 hret;
 
 	ehea_mcl_entry = kzalloc(sizeof(*ehea_mcl_entry), GFP_ATOMIC);
-<<<<<<< HEAD
-	if (!ehea_mcl_entry) {
-		pr_err("no mem for mcl_entry\n");
-		return;
-	}
-=======
 	if (!ehea_mcl_entry)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&ehea_mcl_entry->list);
 
@@ -2142,26 +1954,11 @@ out:
 	ehea_update_bcmc_registrations();
 }
 
-<<<<<<< HEAD
-static int ehea_change_mtu(struct net_device *dev, int new_mtu)
-{
-	if ((new_mtu < 68) || (new_mtu > EHEA_MAX_PACKET_SIZE))
-		return -EINVAL;
-	dev->mtu = new_mtu;
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void xmit_common(struct sk_buff *skb, struct ehea_swqe *swqe)
 {
 	swqe->tx_control |= EHEA_SWQE_IMM_DATA_PRESENT | EHEA_SWQE_CRC;
 
-<<<<<<< HEAD
-	if (skb->protocol != htons(ETH_P_IP))
-=======
 	if (vlan_get_protocol(skb) != htons(ETH_P_IP))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (skb->ip_summed == CHECKSUM_PARTIAL)
@@ -2212,17 +2009,10 @@ static void ehea_xmit3(struct sk_buff *skb, struct net_device *dev,
 		skb_copy_bits(skb, 0, imm_data, skb->len);
 
 	swqe->immediate_data_length = skb->len;
-<<<<<<< HEAD
-	dev_kfree_skb(skb);
-}
-
-static int ehea_start_xmit(struct sk_buff *skb, struct net_device *dev)
-=======
 	dev_consume_skb_any(skb);
 }
 
 static netdev_tx_t ehea_start_xmit(struct sk_buff *skb, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehea_port *port = netdev_priv(dev);
 	struct ehea_swqe *swqe;
@@ -2238,15 +2028,9 @@ static netdev_tx_t ehea_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	memset(swqe, 0, SWQE_HEADER_SIZE);
 	atomic_dec(&pr->swqe_avail);
 
-<<<<<<< HEAD
-	if (vlan_tx_tag_present(skb)) {
-		swqe->tx_control |= EHEA_SWQE_VLAN_INSERT;
-		swqe->vlan_tag = vlan_tx_tag_get(skb);
-=======
 	if (skb_vlan_tag_present(skb)) {
 		swqe->tx_control |= EHEA_SWQE_VLAN_INSERT;
 		swqe->vlan_tag = skb_vlan_tag_get(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pr->tx_packets++;
@@ -2302,11 +2086,7 @@ static netdev_tx_t ehea_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK;
 }
 
-<<<<<<< HEAD
-static int ehea_vlan_rx_add_vid(struct net_device *dev, unsigned short vid)
-=======
 static int ehea_vlan_rx_add_vid(struct net_device *dev, __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehea_port *port = netdev_priv(dev);
 	struct ehea_adapter *adapter = port->adapter;
@@ -2344,11 +2124,7 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int ehea_vlan_rx_kill_vid(struct net_device *dev, unsigned short vid)
-=======
 static int ehea_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehea_port *port = netdev_priv(dev);
 	struct ehea_adapter *adapter = port->adapter;
@@ -2635,11 +2411,8 @@ static int ehea_open(struct net_device *dev)
 
 	netif_info(port, ifup, dev, "enabling port\n");
 
-<<<<<<< HEAD
-=======
 	netif_carrier_off(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ehea_up(dev);
 	if (!ret) {
 		port_napi_enable(port);
@@ -2848,15 +2621,8 @@ static int ehea_restart_qps(struct net_device *dev)
 	u16 dummy16 = 0;
 
 	cb0 = (void *)get_zeroed_page(GFP_KERNEL);
-<<<<<<< HEAD
-	if (!cb0) {
-		ret = -ENOMEM;
-		goto out;
-	}
-=======
 	if (!cb0)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < (port->num_def_qps); i++) {
 		struct ehea_port_res *pr =  &port->port_res[i];
@@ -2876,10 +2642,7 @@ static int ehea_restart_qps(struct net_device *dev)
 					    cb0);
 		if (hret != H_SUCCESS) {
 			netdev_err(dev, "query_ehea_qp failed (1)\n");
-<<<<<<< HEAD
-=======
 			ret = -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
@@ -2892,10 +2655,7 @@ static int ehea_restart_qps(struct net_device *dev)
 					     &dummy64, &dummy16, &dummy16);
 		if (hret != H_SUCCESS) {
 			netdev_err(dev, "modify_ehea_qp failed (1)\n");
-<<<<<<< HEAD
-=======
 			ret = -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
@@ -2904,10 +2664,7 @@ static int ehea_restart_qps(struct net_device *dev)
 					    cb0);
 		if (hret != H_SUCCESS) {
 			netdev_err(dev, "query_ehea_qp failed (2)\n");
-<<<<<<< HEAD
-=======
 			ret = -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
@@ -3034,11 +2791,7 @@ out:
 	return;
 }
 
-<<<<<<< HEAD
-static void ehea_tx_watchdog(struct net_device *dev)
-=======
 static void ehea_tx_watchdog(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehea_port *port = netdev_priv(dev);
 
@@ -3118,28 +2871,16 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static ssize_t ehea_show_port_id(struct device *dev,
-				 struct device_attribute *attr, char *buf)
-=======
 static ssize_t log_port_id_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehea_port *port = container_of(dev, struct ehea_port, ofdev.dev);
 	return sprintf(buf, "%d", port->logical_port_id);
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(log_port_id, S_IRUSR | S_IRGRP | S_IROTH, ehea_show_port_id,
-		   NULL);
-
-static void __devinit logical_port_release(struct device *dev)
-=======
 static DEVICE_ATTR_RO(log_port_id);
 
 static void logical_port_release(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehea_port *port = container_of(dev, struct ehea_port, ofdev.dev);
 	of_node_put(port->ofdev.dev.of_node);
@@ -3160,10 +2901,7 @@ static struct device *ehea_register_port(struct ehea_port *port,
 	ret = of_device_register(&port->ofdev);
 	if (ret) {
 		pr_err("failed to register device. ret=%d\n", ret);
-<<<<<<< HEAD
-=======
 		put_device(&port->ofdev.dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -3191,20 +2929,10 @@ static const struct net_device_ops ehea_netdev_ops = {
 	.ndo_open		= ehea_open,
 	.ndo_stop		= ehea_stop,
 	.ndo_start_xmit		= ehea_start_xmit,
-<<<<<<< HEAD
-#ifdef CONFIG_NET_POLL_CONTROLLER
-	.ndo_poll_controller	= ehea_netpoll,
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_get_stats64	= ehea_get_stats64,
 	.ndo_set_mac_address	= ehea_set_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_rx_mode	= ehea_set_multicast_list,
-<<<<<<< HEAD
-	.ndo_change_mtu		= ehea_change_mtu,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_vlan_rx_add_vid	= ehea_vlan_rx_add_vid,
 	.ndo_vlan_rx_kill_vid	= ehea_vlan_rx_kill_vid,
 	.ndo_tx_timeout		= ehea_tx_watchdog,
@@ -3262,51 +2990,31 @@ static struct ehea_port *ehea_setup_single_port(struct ehea_adapter *adapter,
 	SET_NETDEV_DEV(dev, port_dev);
 
 	/* initialize net_device structure */
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, &port->mac_addr, ETH_ALEN);
-=======
 	eth_hw_addr_set(dev, (u8 *)&port->mac_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->netdev_ops = &ehea_netdev_ops;
 	ehea_set_ethtool_ops(dev);
 
-<<<<<<< HEAD
-	dev->hw_features = NETIF_F_SG | NETIF_F_TSO
-		      | NETIF_F_IP_CSUM | NETIF_F_HW_VLAN_TX | NETIF_F_LRO;
-	dev->features = NETIF_F_SG | NETIF_F_TSO
-		      | NETIF_F_HIGHDMA | NETIF_F_IP_CSUM | NETIF_F_HW_VLAN_TX
-		      | NETIF_F_HW_VLAN_RX | NETIF_F_HW_VLAN_FILTER
-		      | NETIF_F_RXCSUM;
-=======
 	dev->hw_features = NETIF_F_SG | NETIF_F_TSO |
 		      NETIF_F_IP_CSUM | NETIF_F_HW_VLAN_CTAG_TX;
 	dev->features = NETIF_F_SG | NETIF_F_TSO |
 		      NETIF_F_HIGHDMA | NETIF_F_IP_CSUM |
 		      NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
 		      NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXCSUM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->vlan_features = NETIF_F_SG | NETIF_F_TSO | NETIF_F_HIGHDMA |
 			NETIF_F_IP_CSUM;
 	dev->watchdog_timeo = EHEA_WATCH_DOG_TIMEOUT;
 
-<<<<<<< HEAD
-=======
 	/* MTU range: 68 - 9022 */
 	dev->min_mtu = ETH_MIN_MTU;
 	dev->max_mtu = EHEA_MAX_PACKET_SIZE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_WORK(&port->reset_task, ehea_reset_port);
 	INIT_DELAYED_WORK(&port->stats_work, ehea_update_stats);
 
 	init_waitqueue_head(&port->swqe_avail_wq);
 	init_waitqueue_head(&port->restart_wq);
 
-<<<<<<< HEAD
-	memset(&port->stats, 0, sizeof(struct net_device_stats));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = register_netdev(dev);
 	if (ret) {
 		pr_err("register_netdev failed. ret=%d\n", ret);
@@ -3366,12 +3074,7 @@ static int ehea_setup_ports(struct ehea_adapter *adapter)
 		dn_log_port_id = of_get_property(eth_dn, "ibm,hea-port-no",
 						 NULL);
 		if (!dn_log_port_id) {
-<<<<<<< HEAD
-			pr_err("bad device node: eth_dn name=%s\n",
-			       eth_dn->full_name);
-=======
 			pr_err("bad device node: eth_dn name=%pOF\n", eth_dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -3415,11 +3118,7 @@ static struct device_node *ehea_get_eth_dn(struct ehea_adapter *adapter,
 	return NULL;
 }
 
-<<<<<<< HEAD
-static ssize_t ehea_probe_port(struct device *dev,
-=======
 static ssize_t probe_port_store(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct device_attribute *attr,
 			       const char *buf, size_t count)
 {
@@ -3449,10 +3148,7 @@ static ssize_t probe_port_store(struct device *dev,
 
 	if (ehea_add_adapter_mr(adapter)) {
 		pr_err("creating MR failed\n");
-<<<<<<< HEAD
-=======
 		of_node_put(eth_dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -3477,15 +3173,9 @@ static ssize_t probe_port_store(struct device *dev,
 	return (ssize_t) count;
 }
 
-<<<<<<< HEAD
-static ssize_t ehea_remove_port(struct device *dev,
-				struct device_attribute *attr,
-				const char *buf, size_t count)
-=======
 static ssize_t remove_port_store(struct device *dev,
 				 struct device_attribute *attr,
 				 const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehea_adapter *adapter = dev_get_drvdata(dev);
 	struct ehea_port *port;
@@ -3518,13 +3208,8 @@ static ssize_t remove_port_store(struct device *dev,
 	return (ssize_t) count;
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(probe_port, S_IWUSR, NULL, ehea_probe_port);
-static DEVICE_ATTR(remove_port, S_IWUSR, NULL, ehea_remove_port);
-=======
 static DEVICE_ATTR_WO(probe_port);
 static DEVICE_ATTR_WO(remove_port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ehea_create_device_sysfs(struct platform_device *dev)
 {
@@ -3543,10 +3228,6 @@ static void ehea_remove_device_sysfs(struct platform_device *dev)
 	device_remove_file(&dev->dev, &dev_attr_remove_port);
 }
 
-<<<<<<< HEAD
-static int __devinit ehea_probe_adapter(struct platform_device *dev,
-					const struct of_device_id *id)
-=======
 static int ehea_reboot_notifier(struct notifier_block *nb,
 				unsigned long action, void *unused)
 {
@@ -3683,30 +3364,22 @@ static void ehea_unregister_memory_hooks(void)
 }
 
 static int ehea_probe_adapter(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehea_adapter *adapter;
 	const u64 *adapter_handle;
 	int ret;
 	int i;
 
-<<<<<<< HEAD
-=======
 	ret = ehea_register_memory_hooks();
 	if (ret)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev || !dev->dev.of_node) {
 		pr_err("Invalid ibmebus device probed\n");
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	adapter = kzalloc(sizeof(*adapter), GFP_KERNEL);
-=======
 	adapter = devm_kzalloc(&dev->dev, sizeof(*adapter), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!adapter) {
 		ret = -ENOMEM;
 		dev_err(&dev->dev, "no mem for ehea_adapter\n");
@@ -3724,22 +3397,14 @@ static int ehea_probe_adapter(struct platform_device *dev)
 
 	if (!adapter->handle) {
 		dev_err(&dev->dev, "failed getting handle for adapter"
-<<<<<<< HEAD
-			" '%s'\n", dev->dev.of_node->full_name);
-=======
 			" '%pOF'\n", dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENODEV;
 		goto out_free_ad;
 	}
 
 	adapter->pd = EHEA_PD_ID;
 
-<<<<<<< HEAD
-	dev_set_drvdata(&dev->dev, adapter);
-=======
 	platform_set_drvdata(dev, adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/* initialize adapter and ports */
@@ -3758,12 +3423,7 @@ static int ehea_probe_adapter(struct platform_device *dev)
 		goto out_free_ad;
 	}
 
-<<<<<<< HEAD
-	tasklet_init(&adapter->neq_tasklet, ehea_neq_tasklet,
-		     (unsigned long)adapter);
-=======
 	tasklet_setup(&adapter->neq_tasklet, ehea_neq_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ehea_create_device_sysfs(dev);
 	if (ret)
@@ -3776,11 +3436,7 @@ static int ehea_probe_adapter(struct platform_device *dev)
 	}
 
 	ret = ibmebus_request_irq(adapter->neq->attr.ist1,
-<<<<<<< HEAD
-				  ehea_interrupt_neq, IRQF_DISABLED,
-=======
 				  ehea_interrupt_neq, 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  "ehea_neq", adapter);
 	if (ret) {
 		dev_err(&dev->dev, "requesting NEQ IRQ failed\n");
@@ -3808,10 +3464,6 @@ out_kill_eq:
 
 out_free_ad:
 	list_del(&adapter->list);
-<<<<<<< HEAD
-	kfree(adapter);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	ehea_update_firmware_handles();
@@ -3819,15 +3471,9 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit ehea_remove(struct platform_device *dev)
-{
-	struct ehea_adapter *adapter = dev_get_drvdata(&dev->dev);
-=======
 static void ehea_remove(struct platform_device *dev)
 {
 	struct ehea_adapter *adapter = platform_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < EHEA_MAX_PORTS; i++)
@@ -3844,95 +3490,10 @@ static void ehea_remove(struct platform_device *dev)
 	ehea_destroy_eq(adapter->neq);
 	ehea_remove_adapter_mr(adapter);
 	list_del(&adapter->list);
-<<<<<<< HEAD
-	kfree(adapter);
-
-	ehea_update_firmware_handles();
-
-	return 0;
-}
-
-static void ehea_crash_handler(void)
-{
-	int i;
-
-	if (ehea_fw_handles.arr)
-		for (i = 0; i < ehea_fw_handles.num_entries; i++)
-			ehea_h_free_resource(ehea_fw_handles.arr[i].adh,
-					     ehea_fw_handles.arr[i].fwh,
-					     FORCE_FREE);
-
-	if (ehea_bcmc_regs.arr)
-		for (i = 0; i < ehea_bcmc_regs.num_entries; i++)
-			ehea_h_reg_dereg_bcmc(ehea_bcmc_regs.arr[i].adh,
-					      ehea_bcmc_regs.arr[i].port_id,
-					      ehea_bcmc_regs.arr[i].reg_type,
-					      ehea_bcmc_regs.arr[i].macaddr,
-					      0, H_DEREG_BCMC);
-}
-
-static int ehea_mem_notifier(struct notifier_block *nb,
-                             unsigned long action, void *data)
-{
-	int ret = NOTIFY_BAD;
-	struct memory_notify *arg = data;
-
-	mutex_lock(&dlpar_mem_lock);
-
-	switch (action) {
-	case MEM_CANCEL_OFFLINE:
-		pr_info("memory offlining canceled");
-		/* Readd canceled memory block */
-	case MEM_ONLINE:
-		pr_info("memory is going online");
-		set_bit(__EHEA_STOP_XFER, &ehea_driver_flags);
-		if (ehea_add_sect_bmap(arg->start_pfn, arg->nr_pages))
-			goto out_unlock;
-		ehea_rereg_mrs();
-		break;
-	case MEM_GOING_OFFLINE:
-		pr_info("memory is going offline");
-		set_bit(__EHEA_STOP_XFER, &ehea_driver_flags);
-		if (ehea_rem_sect_bmap(arg->start_pfn, arg->nr_pages))
-			goto out_unlock;
-		ehea_rereg_mrs();
-		break;
-	default:
-		break;
-	}
-
-	ehea_update_firmware_handles();
-	ret = NOTIFY_OK;
-
-out_unlock:
-	mutex_unlock(&dlpar_mem_lock);
-	return ret;
-}
-
-static struct notifier_block ehea_mem_nb = {
-	.notifier_call = ehea_mem_notifier,
-};
-
-static int ehea_reboot_notifier(struct notifier_block *nb,
-				unsigned long action, void *unused)
-{
-	if (action == SYS_RESTART) {
-		pr_info("Reboot: freeing all eHEA resources\n");
-		ibmebus_unregister_driver(&ehea_driver);
-	}
-	return NOTIFY_DONE;
-}
-
-static struct notifier_block ehea_reboot_nb = {
-	.notifier_call = ehea_reboot_notifier,
-};
-
-=======
 
 	ehea_update_firmware_handles();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int check_module_parm(void)
 {
 	int ret = 0;
@@ -3961,22 +3522,12 @@ static int check_module_parm(void)
 	return ret;
 }
 
-<<<<<<< HEAD
-static ssize_t ehea_show_capabilities(struct device_driver *drv,
-				      char *buf)
-=======
 static ssize_t capabilities_show(struct device_driver *drv, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sprintf(buf, "%d", EHEA_CAPABILITIES);
 }
 
-<<<<<<< HEAD
-static DRIVER_ATTR(capabilities, S_IRUSR | S_IRGRP | S_IROTH,
-		   ehea_show_capabilities, NULL);
-=======
 static DRIVER_ATTR_RO(capabilities);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init ehea_module_init(void)
 {
@@ -3994,33 +3545,10 @@ static int __init ehea_module_init(void)
 	if (ret)
 		goto out;
 
-<<<<<<< HEAD
-	ret = ehea_create_busmap();
-	if (ret)
-		goto out;
-
-	ret = register_reboot_notifier(&ehea_reboot_nb);
-	if (ret)
-		pr_info("failed registering reboot notifier\n");
-
-	ret = register_memory_notifier(&ehea_mem_nb);
-	if (ret)
-		pr_info("failed registering memory remove notifier\n");
-
-	ret = crash_shutdown_register(ehea_crash_handler);
-	if (ret)
-		pr_info("failed registering crash handler\n");
-
-	ret = ibmebus_register_driver(&ehea_driver);
-	if (ret) {
-		pr_err("failed registering eHEA device driver on ebus\n");
-		goto out2;
-=======
 	ret = ibmebus_register_driver(&ehea_driver);
 	if (ret) {
 		pr_err("failed registering eHEA device driver on ebus\n");
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = driver_create_file(&ehea_driver.driver,
@@ -4028,47 +3556,22 @@ static int __init ehea_module_init(void)
 	if (ret) {
 		pr_err("failed to register capabilities attribute, ret=%d\n",
 		       ret);
-<<<<<<< HEAD
-		goto out3;
-=======
 		goto out2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 
-<<<<<<< HEAD
-out3:
-	ibmebus_unregister_driver(&ehea_driver);
-out2:
-	unregister_memory_notifier(&ehea_mem_nb);
-	unregister_reboot_notifier(&ehea_reboot_nb);
-	crash_shutdown_unregister(ehea_crash_handler);
-=======
 out2:
 	ibmebus_unregister_driver(&ehea_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
 
 static void __exit ehea_module_exit(void)
 {
-<<<<<<< HEAD
-	int ret;
-
-	driver_remove_file(&ehea_driver.driver, &driver_attr_capabilities);
-	ibmebus_unregister_driver(&ehea_driver);
-	unregister_reboot_notifier(&ehea_reboot_nb);
-	ret = crash_shutdown_unregister(ehea_crash_handler);
-	if (ret)
-		pr_info("failed unregistering crash handler\n");
-	unregister_memory_notifier(&ehea_mem_nb);
-=======
 	driver_remove_file(&ehea_driver.driver, &driver_attr_capabilities);
 	ibmebus_unregister_driver(&ehea_driver);
 	ehea_unregister_memory_hooks();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ehea_fw_handles.arr);
 	kfree(ehea_bcmc_regs.arr);
 	ehea_destroy_busmap();

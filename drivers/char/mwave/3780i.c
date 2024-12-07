@@ -50,19 +50,11 @@
 #include <linux/unistd.h>
 #include <linux/delay.h>
 #include <linux/ioport.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bitops.h>
 #include <linux/sched.h>	/* cond_resched() */
 
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 #include "smapi.h"
 #include "mwavedd.h"
@@ -132,11 +124,7 @@ static void dsp3780I_WriteGenCfg(unsigned short usDspBaseIO, unsigned uIndex,
 		MKBYTE(rSlaveControl));
 
 	rSlaveControl_Save = rSlaveControl;
-<<<<<<< HEAD
-	rSlaveControl.ConfigMode = TRUE;
-=======
 	rSlaveControl.ConfigMode = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PRINTK_2(TRACE_3780I,
 		"3780i::dsp3780i_WriteGenCfg entry rSlaveControl+ConfigMode %x\n",
@@ -167,11 +155,7 @@ unsigned char dsp3780I_ReadGenCfg(unsigned short usDspBaseIO,
 
 	MKBYTE(rSlaveControl) = InByteDsp(DSP_IsaSlaveControl);
 	rSlaveControl_Save = rSlaveControl;
-<<<<<<< HEAD
-	rSlaveControl.ConfigMode = TRUE;
-=======
 	rSlaveControl.ConfigMode = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OutByteDsp(DSP_IsaSlaveControl, MKBYTE(rSlaveControl));
 	OutByteDsp(DSP_ConfigAddress, (unsigned char) uIndex);
 	ucValue = InByteDsp(DSP_ConfigData);
@@ -246,11 +230,7 @@ int dsp3780I_EnableDSP(DSP_3780I_CONFIG_SETTINGS * pSettings,
 			rUartCfg1.BaseIO = 3;
 			break;
 		}
-<<<<<<< HEAD
-		rUartCfg2.Enable = TRUE;
-=======
 		rUartCfg2.Enable = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rHBridgeCfg1.Reserved = rHBridgeCfg2.Reserved = 0;
@@ -258,11 +238,7 @@ int dsp3780I_EnableDSP(DSP_3780I_CONFIG_SETTINGS * pSettings,
 	rHBridgeCfg1.IrqPulse = pSettings->bDspIrqPulse;
 	rHBridgeCfg1.Irq = (unsigned char) pIrqMap[pSettings->usDspIrq];
 	rHBridgeCfg1.AccessMode = 1;
-<<<<<<< HEAD
-	rHBridgeCfg2.Enable = TRUE;
-=======
 	rHBridgeCfg2.Enable = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	rBusmasterCfg2.Reserved = 0;
@@ -302,13 +278,8 @@ int dsp3780I_EnableDSP(DSP_3780I_CONFIG_SETTINGS * pSettings,
 	* soft-reset active for 10ms.
 	*/
 	rSlaveControl.ClockControl = 0;
-<<<<<<< HEAD
-	rSlaveControl.SoftReset = TRUE;
-	rSlaveControl.ConfigMode = FALSE;
-=======
 	rSlaveControl.SoftReset = true;
 	rSlaveControl.ConfigMode = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rSlaveControl.Reserved = 0;
 
 	PRINTK_4(TRACE_3780I,
@@ -331,11 +302,7 @@ int dsp3780I_EnableDSP(DSP_3780I_CONFIG_SETTINGS * pSettings,
 	for (i = 0; i < 11; i++)
 		udelay(2000);
 
-<<<<<<< HEAD
-	rSlaveControl.SoftReset = FALSE;
-=======
 	rSlaveControl.SoftReset = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OutWordDsp(DSP_IsaSlaveControl, MKWORD(rSlaveControl));
 
 	MKWORD(tval) = InWordDsp(DSP_IsaSlaveControl);
@@ -359,17 +326,10 @@ int dsp3780I_EnableDSP(DSP_3780I_CONFIG_SETTINGS * pSettings,
 	}
 
 
-<<<<<<< HEAD
-	rHBridgeControl.EnableDspInt = FALSE;
-	rHBridgeControl.MemAutoInc = TRUE;
-	rHBridgeControl.IoAutoInc = FALSE;
-	rHBridgeControl.DiagnosticMode = FALSE;
-=======
 	rHBridgeControl.EnableDspInt = false;
 	rHBridgeControl.MemAutoInc = true;
 	rHBridgeControl.IoAutoInc = false;
 	rHBridgeControl.DiagnosticMode = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PRINTK_3(TRACE_3780I,
 		"3780i::dsp3780i_EnableDSP DSP_HBridgeControl %x rHBridgeControl %x\n",
@@ -385,11 +345,7 @@ int dsp3780I_EnableDSP(DSP_3780I_CONFIG_SETTINGS * pSettings,
 	ChipID = ReadMsaCfg(DSP_ChipID);
 
 	PRINTK_2(TRACE_3780I,
-<<<<<<< HEAD
-		"3780i::dsp3780I_EnableDSP exiting bRC=TRUE, ChipID %x\n",
-=======
 		"3780i::dsp3780I_EnableDSP exiting bRC=true, ChipID %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ChipID);
 
 	return 0;
@@ -405,13 +361,8 @@ int dsp3780I_DisableDSP(DSP_3780I_CONFIG_SETTINGS * pSettings)
 	PRINTK_1(TRACE_3780I, "3780i::dsp3780i_DisableDSP entry\n");
 
 	rSlaveControl.ClockControl = 0;
-<<<<<<< HEAD
-	rSlaveControl.SoftReset = TRUE;
-	rSlaveControl.ConfigMode = FALSE;
-=======
 	rSlaveControl.SoftReset = true;
 	rSlaveControl.ConfigMode = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rSlaveControl.Reserved = 0;
 	spin_lock_irqsave(&dsp_lock, flags);
 	OutWordDsp(DSP_IsaSlaveControl, MKWORD(rSlaveControl));
@@ -447,24 +398,14 @@ int dsp3780I_Reset(DSP_3780I_CONFIG_SETTINGS * pSettings)
 	PRINTK_2(TRACE_3780I, "3780i::dsp3780i_Reset rHBridgeControl %x\n",
 		MKWORD(rHBridgeControl));
 
-<<<<<<< HEAD
-	rHBridgeControl.EnableDspInt = FALSE;
-=======
 	rHBridgeControl.EnableDspInt = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OutWordDsp(DSP_HBridgeControl, MKWORD(rHBridgeControl));
 	spin_unlock_irqrestore(&dsp_lock, flags);
 
 	/* Reset the core via the boot domain register */
-<<<<<<< HEAD
-	rBootDomain.ResetCore = TRUE;
-	rBootDomain.Halt = TRUE;
-	rBootDomain.NMI = TRUE;
-=======
 	rBootDomain.ResetCore = true;
 	rBootDomain.Halt = true;
 	rBootDomain.NMI = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rBootDomain.Reserved = 0;
 
 	PRINTK_2(TRACE_3780I, "3780i::dsp3780i_Reset rBootDomain %x\n",
@@ -497,44 +438,26 @@ int dsp3780I_Run(DSP_3780I_CONFIG_SETTINGS * pSettings)
 
 
 	/* Transition the core to a running state */
-<<<<<<< HEAD
-	rBootDomain.ResetCore = TRUE;
-	rBootDomain.Halt = FALSE;
-	rBootDomain.NMI = TRUE;
-=======
 	rBootDomain.ResetCore = true;
 	rBootDomain.Halt = false;
 	rBootDomain.NMI = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rBootDomain.Reserved = 0;
 	WriteMsaCfg(DSP_MspBootDomain, MKWORD(rBootDomain));
 
 	udelay(5);
 
-<<<<<<< HEAD
-	rBootDomain.ResetCore = FALSE;
-	WriteMsaCfg(DSP_MspBootDomain, MKWORD(rBootDomain));
-	udelay(5);
-
-	rBootDomain.NMI = FALSE;
-=======
 	rBootDomain.ResetCore = false;
 	WriteMsaCfg(DSP_MspBootDomain, MKWORD(rBootDomain));
 	udelay(5);
 
 	rBootDomain.NMI = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WriteMsaCfg(DSP_MspBootDomain, MKWORD(rBootDomain));
 	udelay(5);
 
 	/* Enable DSP to PC interrupt */
 	spin_lock_irqsave(&dsp_lock, flags);
 	MKWORD(rHBridgeControl) = InWordDsp(DSP_HBridgeControl);
-<<<<<<< HEAD
-	rHBridgeControl.EnableDspInt = TRUE;
-=======
 	rHBridgeControl.EnableDspInt = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PRINTK_2(TRACE_3780I, "3780i::dsp3780i_Run rHBridgeControl %x\n",
 		MKWORD(rHBridgeControl));
@@ -543,11 +466,7 @@ int dsp3780I_Run(DSP_3780I_CONFIG_SETTINGS * pSettings)
 	spin_unlock_irqrestore(&dsp_lock, flags);
 
 
-<<<<<<< HEAD
-	PRINTK_1(TRACE_3780I, "3780i::dsp3780i_Run exit bRC=TRUE\n");
-=======
 	PRINTK_1(TRACE_3780I, "3780i::dsp3780i_Run exit bRC=true\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -589,11 +508,7 @@ int dsp3780I_ReadDStore(unsigned short usDspBaseIO, void __user *pvBuffer,
 
 
 	PRINTK_1(TRACE_3780I,
-<<<<<<< HEAD
-		"3780I::dsp3780I_ReadDStore exit bRC=TRUE\n");
-=======
 		"3780I::dsp3780I_ReadDStore exit bRC=true\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -635,11 +550,7 @@ int dsp3780I_ReadAndClearDStore(unsigned short usDspBaseIO,
 
 
 	PRINTK_1(TRACE_3780I,
-<<<<<<< HEAD
-		"3780I::dsp3780I_ReadAndClearDStore exit bRC=TRUE\n");
-=======
 		"3780I::dsp3780I_ReadAndClearDStore exit bRC=true\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -681,11 +592,7 @@ int dsp3780I_WriteDStore(unsigned short usDspBaseIO, void __user *pvBuffer,
 
 
 	PRINTK_1(TRACE_3780I,
-<<<<<<< HEAD
-		"3780I::dsp3780D_WriteDStore exit bRC=TRUE\n");
-=======
 		"3780I::dsp3780D_WriteDStore exit bRC=true\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -733,11 +640,7 @@ int dsp3780I_ReadIStore(unsigned short usDspBaseIO, void __user *pvBuffer,
 	}
 
 	PRINTK_1(TRACE_3780I,
-<<<<<<< HEAD
-		"3780I::dsp3780I_ReadIStore exit bRC=TRUE\n");
-=======
 		"3780I::dsp3780I_ReadIStore exit bRC=true\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -786,11 +689,7 @@ int dsp3780I_WriteIStore(unsigned short usDspBaseIO, void __user *pvBuffer,
 	}
 
 	PRINTK_1(TRACE_3780I,
-<<<<<<< HEAD
-		"3780I::dsp3780I_WriteIStore exit bRC=TRUE\n");
-=======
 		"3780I::dsp3780I_WriteIStore exit bRC=true\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -814,11 +713,7 @@ int dsp3780I_GetIPCSource(unsigned short usDspBaseIO,
 	*/
 	spin_lock_irqsave(&dsp_lock, flags);
 	MKWORD(rHBridgeControl) = InWordDsp(DSP_HBridgeControl);
-<<<<<<< HEAD
-	rHBridgeControl.EnableDspInt = FALSE;
-=======
 	rHBridgeControl.EnableDspInt = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OutWordDsp(DSP_HBridgeControl, MKWORD(rHBridgeControl));
 
 	*pusIPCSource = InWordDsp(DSP_Interrupt);
@@ -830,11 +725,7 @@ int dsp3780I_GetIPCSource(unsigned short usDspBaseIO,
 
 	OutWordDsp(DSP_Interrupt, (unsigned short) ~(*pusIPCSource));
 
-<<<<<<< HEAD
-	rHBridgeControl.EnableDspInt = TRUE;
-=======
 	rHBridgeControl.EnableDspInt = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OutWordDsp(DSP_HBridgeControl, MKWORD(rHBridgeControl));
 	spin_unlock_irqrestore(&dsp_lock, flags);
 

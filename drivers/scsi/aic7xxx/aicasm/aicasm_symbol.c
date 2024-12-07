@@ -44,15 +44,7 @@
 
 #include <sys/types.h>
 
-<<<<<<< HEAD
-#ifdef __linux__
 #include "aicdb.h"
-#else
-#include <db.h>
-#endif
-=======
-#include "aicdb.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <fcntl.h>
 #include <inttypes.h>
 #include <regex.h>
@@ -60,10 +52,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sysexits.h>
-<<<<<<< HEAD
-=======
 #include <ctype.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "aicasm_symbol.h"
 #include "aicasm.h"

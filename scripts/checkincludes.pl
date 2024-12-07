@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-#!/usr/bin/perl
-=======
 #!/usr/bin/env perl
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # checkincludes: find/remove files included more than once
 #
@@ -42,11 +38,8 @@ if ($#ARGV >= 1) {
 	}
 }
 
-<<<<<<< HEAD
-=======
 my $dup_counter = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 foreach my $file (@ARGV) {
 	open(my $f, '<', $file)
 	    or die "Cannot open $file: $!.\n";
@@ -67,10 +60,7 @@ foreach my $file (@ARGV) {
 		foreach my $filename (keys %includedfiles) {
 			if ($includedfiles{$filename} > 1) {
 				print "$file: $filename is included more than once.\n";
-<<<<<<< HEAD
-=======
 				++$dup_counter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		next;
@@ -87,10 +77,7 @@ foreach my $file (@ARGV) {
 					if ($includedfiles{$filename} > 1) {
 						$includedfiles{$filename}--;
 						$dups++;
-<<<<<<< HEAD
-=======
 						++$dup_counter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					} else {
 						print {$f} $_;
 					}
@@ -105,10 +92,7 @@ foreach my $file (@ARGV) {
 	}
 	close($f);
 }
-<<<<<<< HEAD
-=======
 
 if ($dup_counter == 0) {
 	print "No duplicate includes found.\n";
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

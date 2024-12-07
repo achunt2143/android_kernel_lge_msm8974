@@ -15,17 +15,10 @@
 
 #include <asm/ptrace.h>
 #include <asm/coprocessor.h>
-<<<<<<< HEAD
-
-/* Xtensa processor ELF architecture-magic number */
-
-#define EM_XTENSA	94
-=======
 #include <linux/elf-em.h>
 
 /* Xtensa processor ELF architecture-magic number */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EM_XTENSA_OLD	0xABC7
 
 /* Xtensa relocations defined by the ABIs */
@@ -82,22 +75,7 @@
 
 typedef unsigned long elf_greg_t;
 
-<<<<<<< HEAD
-typedef struct {
-	elf_greg_t pc;
-	elf_greg_t ps;
-	elf_greg_t lbeg;
-	elf_greg_t lend;
-	elf_greg_t lcount;
-	elf_greg_t sar;
-	elf_greg_t windowstart;
-	elf_greg_t windowbase;
-	elf_greg_t reserved[8+48];
-	elf_greg_t a[64];
-} xtensa_gregset_t;
-=======
 typedef struct user_pt_regs xtensa_gregset_t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ELF_NGREG	(sizeof(xtensa_gregset_t) / sizeof(elf_greg_t))
 
@@ -108,14 +86,6 @@ typedef elf_greg_t elf_gregset_t[ELF_NGREG];
 typedef unsigned int elf_fpreg_t;
 typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 
-<<<<<<< HEAD
-#define ELF_CORE_COPY_REGS(_eregs, _pregs) 				\
-	xtensa_elf_core_copy_regs ((xtensa_gregset_t*)&(_eregs), _pregs);
-
-extern void xtensa_elf_core_copy_regs (xtensa_gregset_t *, struct pt_regs *);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is used to ensure we don't load something for the wrong architecture.
  */
@@ -123,13 +93,10 @@ extern void xtensa_elf_core_copy_regs (xtensa_gregset_t *, struct pt_regs *);
 #define elf_check_arch(x) ( ( (x)->e_machine == EM_XTENSA )  || \
 			    ( (x)->e_machine == EM_XTENSA_OLD ) )
 
-<<<<<<< HEAD
-=======
 #define ELFOSABI_XTENSA_FDPIC 65
 #define elf_check_fdpic(x) ((x)->e_ident[EI_OSABI] == ELFOSABI_XTENSA_FDPIC)
 #define ELF_FDPIC_CORE_EFLAGS 0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * These are used to set parameters in the core dumps.
  */
@@ -146,10 +113,7 @@ extern void xtensa_elf_core_copy_regs (xtensa_gregset_t *, struct pt_regs *);
 #define ELF_ARCH	EM_XTENSA
 
 #define ELF_EXEC_PAGESIZE	PAGE_SIZE
-<<<<<<< HEAD
-=======
 #define CORE_DUMP_USE_REGSET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is the location that an ET_DYN program is loaded if exec'ed.  Typical
@@ -193,13 +157,6 @@ extern void xtensa_elf_core_copy_regs (xtensa_gregset_t *, struct pt_regs *);
  */
 
 #define ELF_PLAT_INIT(_r, load_addr) \
-<<<<<<< HEAD
-  do { _r->areg[0]=0; /*_r->areg[1]=0;*/ _r->areg[2]=0;  _r->areg[3]=0;  \
-       _r->areg[4]=0;  _r->areg[5]=0;    _r->areg[6]=0;  _r->areg[7]=0;  \
-       _r->areg[8]=0;  _r->areg[9]=0;    _r->areg[10]=0; _r->areg[11]=0; \
-       _r->areg[12]=0; _r->areg[13]=0;   _r->areg[14]=0; _r->areg[15]=0; \
-  } while (0)
-=======
 	do { \
 		(_r)->areg[0]  = 0; /*(_r)->areg[1] = 0;*/ \
 		(_r)->areg[2]  = 0; (_r)->areg[3]  = 0; \
@@ -217,7 +174,6 @@ extern void xtensa_elf_core_copy_regs (xtensa_gregset_t *, struct pt_regs *);
 		(_r)->areg[5] = _interp_map_addr; \
 		(_r)->areg[6] = dynamic_addr; \
 	} while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct {
 	xtregs_opt_t	opt;
@@ -234,22 +190,7 @@ typedef struct {
 #endif
 } elf_xtregs_t;
 
-<<<<<<< HEAD
-#define SET_PERSONALITY(ex) set_personality(PER_LINUX_32BIT)
-
-struct task_struct;
-
-extern void do_copy_regs (xtensa_gregset_t*, struct pt_regs*,
-			  struct task_struct*);
-extern void do_restore_regs (xtensa_gregset_t*, struct pt_regs*,
-			     struct task_struct*);
-extern void do_save_fpregs (elf_fpregset_t*, struct pt_regs*,
-			    struct task_struct*);
-extern int do_restore_fpregs (elf_fpregset_t*, struct pt_regs*,
-			      struct task_struct*);
-=======
 #define SET_PERSONALITY(ex) \
 	set_personality(PER_LINUX_32BIT | (current->personality & (~PER_MASK)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _XTENSA_ELF_H */

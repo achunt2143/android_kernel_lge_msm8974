@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/ev6-copy_user.S
  *
@@ -16,24 +13,6 @@
  * only _after_ a successful copy). There is also some rather minor
  * exception setup stuff..
  *
-<<<<<<< HEAD
- * NOTE! This is not directly C-callable, because the calling semantics are
- * different:
- *
- * Inputs:
- *	length in $0
- *	destination address in $6
- *	source address in $7
- *	return address in $28
- *
- * Outputs:
- *	bytes left to copy in $0
- *
- * Clobbers:
- *	$1,$2,$3,$4,$5,$6,$7
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Much of the information about 21264 scheduling/coding comes from:
  *	Compiler Writer's Guide for the Alpha 21264
  *	abbreviated as 'CWG' in other comments here
@@ -44,10 +23,7 @@
  *	L	- lower subcluster; L0 - subcluster L0; L1 - subcluster L1
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Allow an exception for an insn; exit if we get one.  */
 #define EXI(x,y...)			\
 	99: x,##y;			\
@@ -70,19 +46,12 @@
 				# Pipeline info: Slotting & Comments
 __copy_user:
 	.prologue 0
-<<<<<<< HEAD
-	subq $0, 32, $1		# .. E  .. ..	: Is this going to be a small copy?
-	beq $0, $zerolength	# U  .. .. ..	: U L U L
-
-	and $6,7,$3		# .. .. .. E	: is leading dest misalignment
-=======
 	mov $18, $0		# .. .. .. E
 	subq $18, 32, $1	# .. .. E. ..	: Is this going to be a small copy?
 	nop			# .. E  .. ..
 	beq $18, $zerolength	# U  .. .. ..	: U L U L
 
 	and $16,7,$3		# .. .. .. E	: is leading dest misalignment
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ble $1, $onebyteloop	# .. .. U  ..	: 1st branch : small amount of data
 	beq $3, $destaligned	# .. U  .. ..	: 2nd (one cycle fetcher stall)
 	subq $3, 8, $3		# E  .. .. ..	: L U U L : trip counter
@@ -92,30 +61,17 @@ __copy_user:
  * We know we have at least one trip through this loop
  */
 $aligndest:
-<<<<<<< HEAD
-	EXI( ldbu $1,0($7) )	# .. .. .. L	: Keep loads separate from stores
-	addq $6,1,$6		# .. .. E  ..	: Section 3.8 in the CWG
-=======
 	EXI( ldbu $1,0($17) )	# .. .. .. L	: Keep loads separate from stores
 	addq $16,1,$16		# .. .. E  ..	: Section 3.8 in the CWG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addq $3,1,$3		# .. E  .. ..	:
 	nop			# E  .. .. ..	: U L U L
 
 /*
-<<<<<<< HEAD
- * the -1 is to compensate for the inc($6) done in a previous quadpack
- * which allows us zero dependencies within either quadpack in the loop
- */
-	EXO( stb $1,-1($6) )	# .. .. .. L	:
-	addq $7,1,$7		# .. .. E  ..	: Section 3.8 in the CWG
-=======
  * the -1 is to compensate for the inc($16) done in a previous quadpack
  * which allows us zero dependencies within either quadpack in the loop
  */
 	EXO( stb $1,-1($16) )	# .. .. .. L	:
 	addq $17,1,$17		# .. .. E  ..	: Section 3.8 in the CWG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	subq $0,1,$0		# .. E  .. ..	:
 	bne $3, $aligndest	# U  .. .. ..	: U L U L
 
@@ -124,15 +80,6 @@ $aligndest:
  * If we arrived via branch, we have a minimum of 32 bytes
  */
 $destaligned:
-<<<<<<< HEAD
-	and $7,7,$1		# .. .. .. E	: Check _current_ source alignment
-	bic $0,7,$4		# .. .. E  ..	: number bytes as a quadword loop
-	EXI( ldq_u $3,0($7) )	# .. L  .. ..	: Forward fetch for fallthrough code
-	beq $1,$quadaligned	# U  .. .. ..	: U L U L
-
-/*
- * In the worst case, we've just executed an ldq_u here from 0($7)
-=======
 	and $17,7,$1		# .. .. .. E	: Check _current_ source alignment
 	bic $0,7,$4		# .. .. E  ..	: number bytes as a quadword loop
 	EXI( ldq_u $3,0($17) )	# .. L  .. ..	: Forward fetch for fallthrough code
@@ -140,25 +87,11 @@ $destaligned:
 
 /*
  * In the worst case, we've just executed an ldq_u here from 0($17)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * and we'll repeat it once if we take the branch
  */
 
 /* Misaligned quadword loop - not unrolled.  Leave it that way. */
 $misquad:
-<<<<<<< HEAD
-	EXI( ldq_u $2,8($7) )	# .. .. .. L	:
-	subq $4,8,$4		# .. .. E  ..	:
-	extql $3,$7,$3		# .. U  .. ..	:
-	extqh $2,$7,$1		# U  .. .. ..	: U U L L
-
-	bis $3,$1,$1		# .. .. .. E	:
-	EXO( stq $1,0($6) )	# .. .. L  ..	:
-	addq $7,8,$7		# .. E  .. ..	:
-	subq $0,8,$0		# E  .. .. ..	: U L L U
-
-	addq $6,8,$6		# .. .. .. E	:
-=======
 	EXI( ldq_u $2,8($17) )	# .. .. .. L	:
 	subq $4,8,$4		# .. .. E  ..	:
 	extql $3,$17,$3		# .. U  .. ..	:
@@ -170,7 +103,6 @@ $misquad:
 	subq $0,8,$0		# E  .. .. ..	: U L L U
 
 	addq $16,8,$16		# .. .. .. E	:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bis $2,$2,$3		# .. .. E  ..	:
 	nop			# .. E  .. ..	:
 	bne $4,$misquad		# U  .. .. ..	: U L U L
@@ -181,13 +113,8 @@ $misquad:
 	beq $0,$zerolength	# U  .. .. ..	: U L U L
 
 /* We know we have at least one trip through the byte loop */
-<<<<<<< HEAD
-	EXI ( ldbu $2,0($7) )	# .. .. .. L	: No loads in the same quad
-	addq $6,1,$6		# .. .. E  ..	: as the store (Section 3.8 in CWG)
-=======
 	EXI ( ldbu $2,0($17) )	# .. .. .. L	: No loads in the same quad
 	addq $16,1,$16		# .. .. E  ..	: as the store (Section 3.8 in CWG)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nop			# .. E  .. ..	:
 	br $31, $dirtyentry	# L0 .. .. ..	: L U U L
 /* Do the trailing byte loop load, then hop into the store part of the loop */
@@ -197,13 +124,8 @@ $misquad:
  * Based upon the usage context, it's worth the effort to unroll this loop
  * $0 - number of bytes to be moved
  * $4 - number of bytes to move as quadwords
-<<<<<<< HEAD
- * $6 is current destination address
- * $7 is current source address
-=======
  * $16 is current destination address
  * $17 is current source address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 $quadaligned:
 	subq	$4, 32, $2	# .. .. .. E	: do not unroll for small stuff
@@ -221,31 +143,6 @@ $quadaligned:
  * instruction memory hint instruction).
  */
 $unroll4:
-<<<<<<< HEAD
-	EXI( ldq $1,0($7) )	# .. .. .. L
-	EXI( ldq $2,8($7) )	# .. .. L  ..
-	subq	$4,32,$4	# .. E  .. ..
-	nop			# E  .. .. ..	: U U L L
-
-	addq	$7,16,$7	# .. .. .. E
-	EXO( stq $1,0($6) )	# .. .. L  ..
-	EXO( stq $2,8($6) )	# .. L  .. ..
-	subq	$0,16,$0	# E  .. .. ..	: U L L U
-
-	addq	$6,16,$6	# .. .. .. E
-	EXI( ldq $1,0($7) )	# .. .. L  ..
-	EXI( ldq $2,8($7) )	# .. L  .. ..
-	subq	$4, 32, $3	# E  .. .. ..	: U U L L : is there enough for another trip?
-
-	EXO( stq $1,0($6) )	# .. .. .. L
-	EXO( stq $2,8($6) )	# .. .. L  ..
-	subq	$0,16,$0	# .. E  .. ..
-	addq	$7,16,$7	# E  .. .. ..	: U L L U
-
-	nop			# .. .. .. E
-	nop			# .. .. E  ..
-	addq	$6,16,$6	# .. E  .. ..
-=======
 	EXI( ldq $1,0($17) )	# .. .. .. L
 	EXI( ldq $2,8($17) )	# .. .. L  ..
 	subq	$4,32,$4	# .. E  .. ..
@@ -269,7 +166,6 @@ $unroll4:
 	nop			# .. .. .. E
 	nop			# .. .. E  ..
 	addq	$16,16,$16	# .. E  .. ..
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bgt	$3,$unroll4	# U  .. .. ..	: U L U L
 
 	nop
@@ -278,16 +174,6 @@ $unroll4:
 	beq	$4, $noquads
 
 $onequad:
-<<<<<<< HEAD
-	EXI( ldq $1,0($7) )
-	subq	$4,8,$4
-	addq	$7,8,$7
-	nop
-
-	EXO( stq $1,0($6) )
-	subq	$0,8,$0
-	addq	$6,8,$6
-=======
 	EXI( ldq $1,0($17) )
 	subq	$4,8,$4
 	addq	$17,8,$17
@@ -296,7 +182,6 @@ $onequad:
 	EXO( stq $1,0($16) )
 	subq	$0,8,$0
 	addq	$16,8,$16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bne	$4,$onequad
 
 $noquads:
@@ -310,15 +195,6 @@ $noquads:
  * There's no point in doing a lot of complex alignment calculations to try to
  * to quadword stuff for a small amount of data.
  *	$0 - remaining number of bytes left to copy
-<<<<<<< HEAD
- *	$6 - current dest addr
- *	$7 - current source addr
- */
-
-$onebyteloop:
-	EXI ( ldbu $2,0($7) )	# .. .. .. L	: No loads in the same quad
-	addq $6,1,$6		# .. .. E  ..	: as the store (Section 3.8 in CWG)
-=======
  *	$16 - current dest addr
  *	$17 - current source addr
  */
@@ -326,67 +202,26 @@ $onebyteloop:
 $onebyteloop:
 	EXI ( ldbu $2,0($17) )	# .. .. .. L	: No loads in the same quad
 	addq $16,1,$16		# .. .. E  ..	: as the store (Section 3.8 in CWG)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nop			# .. E  .. ..	:
 	nop			# E  .. .. ..	: U L U L
 
 $dirtyentry:
 /*
-<<<<<<< HEAD
- * the -1 is to compensate for the inc($6) done in a previous quadpack
- * which allows us zero dependencies within either quadpack in the loop
- */
-	EXO ( stb $2,-1($6) )	# .. .. .. L	:
-	addq $7,1,$7		# .. .. E  ..	: quadpack as the load
-=======
  * the -1 is to compensate for the inc($16) done in a previous quadpack
  * which allows us zero dependencies within either quadpack in the loop
  */
 	EXO ( stb $2,-1($16) )	# .. .. .. L	:
 	addq $17,1,$17		# .. .. E  ..	: quadpack as the load
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	subq $0,1,$0		# .. E  .. ..	: change count _after_ copy
 	bgt $0,$onebyteloop	# U  .. .. ..	: U L U L
 
 $zerolength:
-<<<<<<< HEAD
-=======
 $exitin:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 $exitout:			# Destination for exception recovery(?)
 	nop			# .. .. .. E
 	nop			# .. .. E  ..
 	nop			# .. E  .. ..
-<<<<<<< HEAD
-	ret $31,($28),1		# L0 .. .. ..	: L U L U
-
-$exitin:
-
-	/* A stupid byte-by-byte zeroing of the rest of the output
-	   buffer.  This cures security holes by never leaving 
-	   random kernel data around to be copied elsewhere.  */
-
-	nop
-	nop
-	nop
-	mov	$0,$1
-
-$101:
-	EXO ( stb $31,0($6) )	# L
-	subq $1,1,$1		# E
-	addq $6,1,$6		# E
-	bgt $1,$101		# U
-
-	nop
-	nop
-	nop
-	ret $31,($28),1		# L0
-
-	.end __copy_user
-
-=======
 	ret $31,($26),1		# L0 .. .. ..	: L U L U
 
 	.end __copy_user
 	EXPORT_SYMBOL(__copy_user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/mempool.h>
@@ -31,17 +12,11 @@
 #include <linux/pci.h>
 #include <linux/skbuff.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/spinlock.h>
-#include <linux/workqueue.h>
-#include <linux/if_ether.h>
-=======
 #include <linux/irq.h>
 #include <linux/spinlock.h>
 #include <linux/workqueue.h>
 #include <linux/if_ether.h>
 #include <linux/blk-mq-pci.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/fc/fc_fip.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_transport.h>
@@ -54,10 +29,7 @@
 #include "vnic_intr.h"
 #include "vnic_stats.h"
 #include "fnic_io.h"
-<<<<<<< HEAD
-=======
 #include "fnic_fip.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "fnic.h"
 
 #define PCI_DEVICE_ID_CISCO_FNIC	0x0045
@@ -67,14 +39,9 @@
 
 static struct kmem_cache *fnic_sgl_cache[FNIC_SGL_NUM_CACHES];
 static struct kmem_cache *fnic_io_req_cache;
-<<<<<<< HEAD
-LIST_HEAD(fnic_list);
-DEFINE_SPINLOCK(fnic_list_lock);
-=======
 static LIST_HEAD(fnic_list);
 static DEFINE_SPINLOCK(fnic_list_lock);
 static DEFINE_IDA(fnic_ida);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Supported devices by fnic module */
 static struct pci_device_id fnic_id_table[] = {
@@ -94,8 +61,6 @@ module_param(fnic_log_level, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(fnic_log_level, "bit mask of fnic logging levels");
 
 
-<<<<<<< HEAD
-=======
 unsigned int io_completions = FNIC_DFLT_IO_COMPLETIONS;
 module_param(io_completions, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(io_completions, "Max CQ entries to process at a time");
@@ -114,7 +79,6 @@ static unsigned int fnic_max_qdepth = FNIC_DFLT_QUEUE_DEPTH;
 module_param(fnic_max_qdepth, uint, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(fnic_max_qdepth, "Queue depth to report for each LUN");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct libfc_function_template fnic_transport_template = {
 	.frame_send = fnic_send,
 	.lport_set_port_id = fnic_set_port_id,
@@ -127,21 +91,6 @@ static int fnic_slave_alloc(struct scsi_device *sdev)
 {
 	struct fc_rport *rport = starget_to_rport(scsi_target(sdev));
 
-<<<<<<< HEAD
-	sdev->tagged_supported = 1;
-
-	if (!rport || fc_remote_port_chkready(rport))
-		return -ENXIO;
-
-	scsi_activate_tcq(sdev, FNIC_DFLT_QUEUE_DEPTH);
-	return 0;
-}
-
-static struct scsi_host_template fnic_host_template = {
-	.module = THIS_MODULE,
-	.name = DRV_NAME,
-	.queuecommand = fnic_queuecommand,
-=======
 	if (!rport || fc_remote_port_chkready(rport))
 		return -ENXIO;
 
@@ -154,22 +103,10 @@ static const struct scsi_host_template fnic_host_template = {
 	.name = DRV_NAME,
 	.queuecommand = fnic_queuecommand,
 	.eh_timed_out = fc_eh_timed_out,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eh_abort_handler = fnic_abort_cmd,
 	.eh_device_reset_handler = fnic_device_reset,
 	.eh_host_reset_handler = fnic_host_reset,
 	.slave_alloc = fnic_slave_alloc,
-<<<<<<< HEAD
-	.change_queue_depth = fc_change_queue_depth,
-	.change_queue_type = fc_change_queue_type,
-	.this_id = -1,
-	.cmd_per_lun = 3,
-	.can_queue = FNIC_MAX_IO_REQ,
-	.use_clustering = ENABLE_CLUSTERING,
-	.sg_tablesize = FNIC_MAX_SG_DESC_CNT,
-	.max_sectors = 0xffff,
-	.shost_attrs = fnic_attrs,
-=======
 	.change_queue_depth = scsi_change_queue_depth,
 	.this_id = -1,
 	.cmd_per_lun = 3,
@@ -180,7 +117,6 @@ static const struct scsi_host_template fnic_host_template = {
 	.track_queue_depth = 1,
 	.cmd_size = sizeof(struct fnic_cmd_priv),
 	.map_queues = fnic_mq_map_queues_cpus,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void
@@ -195,10 +131,7 @@ fnic_set_rport_dev_loss_tmo(struct fc_rport *rport, u32 timeout)
 static void fnic_get_host_speed(struct Scsi_Host *shost);
 static struct scsi_transport_template *fnic_fc_transport;
 static struct fc_host_statistics *fnic_get_stats(struct Scsi_Host *);
-<<<<<<< HEAD
-=======
 static void fnic_reset_host_stats(struct Scsi_Host *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct fc_function_template fnic_fc_functions = {
 
@@ -226,10 +159,7 @@ static struct fc_function_template fnic_fc_functions = {
 	.set_rport_dev_loss_tmo = fnic_set_rport_dev_loss_tmo,
 	.issue_fc_host_lip = fnic_reset,
 	.get_fc_host_stats = fnic_get_stats,
-<<<<<<< HEAD
-=======
 	.reset_fc_host_stats = fnic_reset_host_stats,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dd_fcrport_size = sizeof(struct fc_rport_libfc_priv),
 	.terminate_rport_io = fnic_terminate_rport_io,
 	.bsg_request = fc_lport_bsg_request,
@@ -243,13 +173,6 @@ static void fnic_get_host_speed(struct Scsi_Host *shost)
 
 	/* Add in other values as they get defined in fw */
 	switch (port_speed) {
-<<<<<<< HEAD
-	case 10000:
-		fc_host_speed(shost) = FC_PORTSPEED_10GBIT;
-		break;
-	default:
-		fc_host_speed(shost) = FC_PORTSPEED_10GBIT;
-=======
 	case DCEM_PORTSPEED_10G:
 		fc_host_speed(shost) = FC_PORTSPEED_10GBIT;
 		break;
@@ -268,7 +191,6 @@ static void fnic_get_host_speed(struct Scsi_Host *shost)
 		break;
 	default:
 		fc_host_speed(shost) = FC_PORTSPEED_UNKNOWN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -291,11 +213,7 @@ static struct fc_host_statistics *fnic_get_stats(struct Scsi_Host *host)
 	spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 
 	if (ret) {
-<<<<<<< HEAD
-		FNIC_MAIN_DBG(KERN_DEBUG, fnic->lport->host,
-=======
 		FNIC_MAIN_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      "fnic: Get vnic stats failed"
 			      " 0x%x", ret);
 		return stats;
@@ -308,20 +226,14 @@ static struct fc_host_statistics *fnic_get_stats(struct Scsi_Host *host)
 	stats->error_frames = vs->tx.tx_errors + vs->rx.rx_errors;
 	stats->dumped_frames = vs->tx.tx_drops + vs->rx.rx_drop;
 	stats->invalid_crc_count = vs->rx.rx_crc_errors;
-<<<<<<< HEAD
-	stats->seconds_since_last_reset = (jiffies - lp->boot_time) / HZ;
-=======
 	stats->seconds_since_last_reset =
 			(jiffies - fnic->stats_reset_time) / HZ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stats->fcp_input_megabytes = div_u64(fnic->fcp_input_bytes, 1000000);
 	stats->fcp_output_megabytes = div_u64(fnic->fcp_output_bytes, 1000000);
 
 	return stats;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * fnic_dump_fchost_stats
  * note : dumps fc_statistics into system logs
@@ -424,7 +336,6 @@ static void fnic_reset_host_stats(struct Scsi_Host *host)
 	return;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void fnic_log_q_error(struct fnic *fnic)
 {
 	unsigned int i;
@@ -447,11 +358,7 @@ void fnic_log_q_error(struct fnic *fnic)
 	}
 
 	for (i = 0; i < fnic->wq_copy_count; i++) {
-<<<<<<< HEAD
-		error_status = ioread32(&fnic->wq_copy[i].ctrl->error_status);
-=======
 		error_status = ioread32(&fnic->hw_copy_wq[i].ctrl->error_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error_status)
 			shost_printk(KERN_ERR, fnic->lport->host,
 				     "CWQ[%d] error_status"
@@ -486,11 +393,7 @@ static int fnic_notify_set(struct fnic *fnic)
 		err = vnic_dev_notify_set(fnic->vdev, -1);
 		break;
 	case VNIC_DEV_INTR_MODE_MSIX:
-<<<<<<< HEAD
-		err = vnic_dev_notify_set(fnic->vdev, FNIC_MSIX_ERR_NOTIFY);
-=======
 		err = vnic_dev_notify_set(fnic->vdev, fnic->wq_copy_count + fnic->copy_wq_base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		shost_printk(KERN_ERR, fnic->lport->host,
@@ -504,23 +407,15 @@ static int fnic_notify_set(struct fnic *fnic)
 	return err;
 }
 
-<<<<<<< HEAD
-static void fnic_notify_timer(unsigned long data)
-{
-	struct fnic *fnic = (struct fnic *)data;
-=======
 static void fnic_notify_timer(struct timer_list *t)
 {
 	struct fnic *fnic = from_timer(fnic, t, notify_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fnic_handle_link_event(fnic);
 	mod_timer(&fnic->notify_timer,
 		  round_jiffies(jiffies + FNIC_NOTIFY_TIMER_PERIOD));
 }
 
-<<<<<<< HEAD
-=======
 static void fnic_fip_notify_timer(struct timer_list *t)
 {
 	struct fnic *fnic = from_timer(fnic, t, fip_timer);
@@ -528,7 +423,6 @@ static void fnic_fip_notify_timer(struct timer_list *t)
 	fnic_handle_fip_timer(fnic);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void fnic_notify_timer_start(struct fnic *fnic)
 {
 	switch (vnic_dev_get_intr_mode(fnic->vdev)) {
@@ -542,11 +436,7 @@ static void fnic_notify_timer_start(struct fnic *fnic)
 	default:
 		/* Using intr for notification for INTx/MSI-X */
 		break;
-<<<<<<< HEAD
-	};
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fnic_dev_wait(struct vnic_dev *vdev,
@@ -557,23 +447,14 @@ static int fnic_dev_wait(struct vnic_dev *vdev,
 	unsigned long time;
 	int done;
 	int err;
-<<<<<<< HEAD
-=======
 	int count;
 
 	count = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = start(vdev, arg);
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	/* Wait for func to complete...2 seconds max */
-	time = jiffies + (HZ * 2);
-	do {
-		err = finished(vdev, &done);
-=======
 	/* Wait for func to complete.
 	* Sometime schedule_timeout_uninterruptible take long time
 	* to wake up so we do not retry as we are only waiting for
@@ -584,17 +465,12 @@ static int fnic_dev_wait(struct vnic_dev *vdev,
 	do {
 		err = finished(vdev, &done);
 		count++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 		if (done)
 			return 0;
 		schedule_timeout_uninterruptible(HZ / 10);
-<<<<<<< HEAD
-	} while (time_after(time, jiffies));
-=======
 	} while (time_after(time, jiffies) || (count < 3));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -ETIMEDOUT;
 }
@@ -603,10 +479,7 @@ static int fnic_cleanup(struct fnic *fnic)
 {
 	unsigned int i;
 	int err;
-<<<<<<< HEAD
-=======
 	int raw_wq_rq_counts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vnic_dev_disable(fnic->vdev);
 	for (i = 0; i < fnic->intr_count; i++)
@@ -623,15 +496,6 @@ static int fnic_cleanup(struct fnic *fnic)
 			return err;
 	}
 	for (i = 0; i < fnic->wq_copy_count; i++) {
-<<<<<<< HEAD
-		err = vnic_wq_copy_disable(&fnic->wq_copy[i]);
-		if (err)
-			return err;
-	}
-
-	/* Clean up completed IOs and FCS frames */
-	fnic_wq_copy_cmpl_handler(fnic, -1);
-=======
 		err = vnic_wq_copy_disable(&fnic->hw_copy_wq[i]);
 		if (err)
 			return err;
@@ -640,7 +504,6 @@ static int fnic_cleanup(struct fnic *fnic)
 	}
 
 	/* Clean up completed IOs and FCS frames */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fnic_wq_cmpl_handler(fnic, -1);
 	fnic_rq_cmpl_handler(fnic, -1);
 
@@ -650,11 +513,7 @@ static int fnic_cleanup(struct fnic *fnic)
 	for (i = 0; i < fnic->rq_count; i++)
 		vnic_rq_clean(&fnic->rq[i], fnic_free_rq_buf);
 	for (i = 0; i < fnic->wq_copy_count; i++)
-<<<<<<< HEAD
-		vnic_wq_copy_clean(&fnic->wq_copy[i],
-=======
 		vnic_wq_copy_clean(&fnic->hw_copy_wq[i],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   fnic_wq_copy_cleanup_handler);
 
 	for (i = 0; i < fnic->cq_count; i++)
@@ -686,10 +545,6 @@ static u8 *fnic_get_mac(struct fc_lport *lport)
 	return fnic->data_src_addr;
 }
 
-<<<<<<< HEAD
-static int __devinit fnic_probe(struct pci_dev *pdev,
-				const struct pci_device_id *ent)
-=======
 static void fnic_set_vlan(struct fnic *fnic, u16 vlan_id)
 {
 	vnic_dev_set_default_vlan(fnic->vdev, vlan_id);
@@ -750,23 +605,16 @@ void fnic_mq_map_queues_cpus(struct Scsi_Host *host)
 }
 
 static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host;
 	struct fc_lport *lp;
 	struct fnic *fnic;
 	mempool_t *pool;
-<<<<<<< HEAD
-	int err;
-	int i;
-	unsigned long flags;
-=======
 	int err = 0;
 	int fnic_id = 0;
 	int i;
 	unsigned long flags;
 	int hwq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Allocate SCSI Host and set up association between host,
@@ -778,12 +626,6 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		err = -ENOMEM;
 		goto err_out;
 	}
-<<<<<<< HEAD
-	host = lp->host;
-	fnic = lport_priv(lp);
-	fnic->lport = lp;
-	fnic->ctlr.lp = lp;
-=======
 
 	host = lp->host;
 	fnic = lport_priv(lp);
@@ -798,29 +640,13 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	fnic->ctlr.lp = lp;
 	fnic->link_events = 0;
 	fnic->pdev = pdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snprintf(fnic->name, sizeof(fnic->name) - 1, "%s%d", DRV_NAME,
 		 host->host_no);
 
 	host->transportt = fnic_fc_transport;
-<<<<<<< HEAD
-
-	err = scsi_init_shared_tag_map(host, FNIC_MAX_IO_REQ);
-	if (err) {
-		shost_printk(KERN_ERR, fnic->lport->host,
-			     "Unable to alloc shared tag map\n");
-		goto err_out_free_hba;
-	}
-
-	/* Setup PCI resources */
-	pci_set_drvdata(pdev, fnic);
-
-	fnic->pdev = pdev;
-=======
 	fnic->fnic_num = fnic_id;
 	fnic_stats_debugfs_init(fnic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = pci_enable_device(pdev);
 	if (err) {
@@ -839,45 +665,18 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	pci_set_master(pdev);
 
 	/* Query PCI controller on system for DMA addressing
-<<<<<<< HEAD
-	 * limitation for the device.  Try 40-bit first, and
-	 * fail to 32-bit.
-	 */
-	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(40));
-	if (err) {
-		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-=======
 	 * limitation for the device.  Try 47-bit first, and
 	 * fail to 32-bit. Cisco VIC supports 47 bits only.
 	 */
 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(47));
 	if (err) {
 		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			shost_printk(KERN_ERR, fnic->lport->host,
 				     "No usable DMA configuration "
 				     "aborting\n");
 			goto err_out_release_regions;
 		}
-<<<<<<< HEAD
-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-		if (err) {
-			shost_printk(KERN_ERR, fnic->lport->host,
-				     "Unable to obtain 32-bit DMA "
-				     "for consistent allocations, aborting.\n");
-			goto err_out_release_regions;
-		}
-	} else {
-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(40));
-		if (err) {
-			shost_printk(KERN_ERR, fnic->lport->host,
-				     "Unable to obtain 40-bit DMA "
-				     "for consistent allocations, aborting.\n");
-			goto err_out_release_regions;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Map vNIC resources from BAR0 */
@@ -909,14 +708,6 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_out_iounmap;
 	}
 
-<<<<<<< HEAD
-	err = fnic_dev_wait(fnic->vdev, vnic_dev_open,
-			    vnic_dev_open_done, 0);
-	if (err) {
-		shost_printk(KERN_ERR, fnic->lport->host,
-			     "vNIC dev open failed, aborting.\n");
-		goto err_out_vnic_unregister;
-=======
 	err = vnic_dev_cmd_init(fnic->vdev);
 	if (err) {
 		shost_printk(KERN_ERR, fnic->lport->host,
@@ -931,7 +722,6 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		shost_printk(KERN_ERR, fnic->lport->host,
 			     "vNIC dev open failed, aborting.\n");
 		goto err_out_dev_cmd_deinit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = vnic_dev_init(fnic->vdev, 0);
@@ -958,15 +748,9 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 			     "aborting.\n");
 		goto err_out_dev_close;
 	}
-<<<<<<< HEAD
-	host->max_lun = fnic->config.luns_per_tgt;
-	host->max_id = FNIC_MAX_FCP_TARGET;
-	host->max_cmd_len = FCOE_MAX_CMD_LEN;
-=======
 
 	/* Setup PCI resources */
 	pci_set_drvdata(pdev, fnic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fnic_get_res_counts(fnic);
 
@@ -986,8 +770,6 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_out_clear_intr;
 	}
 
-<<<<<<< HEAD
-=======
 	fnic_scsi_drv_init(fnic);
 
 	for (hwq = 0; hwq < fnic->wq_copy_count; hwq++) {
@@ -998,7 +780,6 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 	shost_printk(KERN_INFO, fnic->lport->host, "fnic copy wqs: %d, Q0 ioreq table size: %d\n",
 			fnic->wq_copy_count, fnic->sw_copy_wq[0].ioreq_table_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialize all fnic locks */
 	spin_lock_init(&fnic->fnic_lock);
@@ -1013,13 +794,7 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		fnic->fw_ack_index[i] = -1;
 	}
 
-<<<<<<< HEAD
-	for (i = 0; i < FNIC_IO_LOCKS; i++)
-		spin_lock_init(&fnic->io_req_lock[i]);
-
-=======
 	err = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fnic->io_req_pool = mempool_create_slab_pool(2, fnic_io_req_cache);
 	if (!fnic->io_req_pool)
 		goto err_out_free_resources;
@@ -1049,9 +824,6 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		vnic_dev_packet_filter(fnic->vdev, 1, 1, 0, 0, 0);
 		vnic_dev_add_addr(fnic->vdev, FIP_ALL_ENODE_MACS);
 		vnic_dev_add_addr(fnic->vdev, fnic->ctlr.ctl_src_addr);
-<<<<<<< HEAD
-		fcoe_ctlr_init(&fnic->ctlr, FIP_MODE_AUTO);
-=======
 		fnic->set_vlan = fnic_set_vlan;
 		fcoe_ctlr_init(&fnic->ctlr, FIP_MODE_AUTO);
 		timer_setup(&fnic->fip_timer, fnic_fip_notify_timer, 0);
@@ -1062,16 +834,10 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		skb_queue_head_init(&fnic->fip_frame_queue);
 		INIT_LIST_HEAD(&fnic->evlist);
 		INIT_LIST_HEAD(&fnic->vlans);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		shost_printk(KERN_INFO, fnic->lport->host,
 			     "firmware uses non-FIP mode\n");
 		fcoe_ctlr_init(&fnic->ctlr, FIP_MODE_NON_FIP);
-<<<<<<< HEAD
-	}
-	fnic->state = FNIC_IN_FC_MODE;
-
-=======
 		fnic->ctlr.state = FIP_ST_NON_FIP;
 	}
 	fnic->state = FNIC_IN_FC_MODE;
@@ -1079,7 +845,6 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	atomic_set(&fnic->in_flight, 0);
 	fnic->state_flags = FNIC_FLAGS_NONE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable hardware stripping of vlan header on ingress */
 	fnic_set_nic_config(fnic, 0, 0, 0, 0, 0, 0, 1);
 
@@ -1093,12 +858,7 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	/* Setup notify timer when using MSI interrupts */
 	if (vnic_dev_get_intr_mode(fnic->vdev) == VNIC_DEV_INTR_MODE_MSI)
-<<<<<<< HEAD
-		setup_timer(&fnic->notify_timer,
-			    fnic_notify_timer, (unsigned long)fnic);
-=======
 		timer_setup(&fnic->notify_timer, fnic_notify_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocate RQ buffers and post them to RQ*/
 	for (i = 0; i < fnic->rq_count; i++) {
@@ -1107,12 +867,6 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 			shost_printk(KERN_ERR, fnic->lport->host,
 				     "fnic_alloc_rq_frame can't alloc "
 				     "frame\n");
-<<<<<<< HEAD
-			goto err_out_free_rq_buf;
-		}
-	}
-
-=======
 			goto err_out_rq_buf;
 		}
 	}
@@ -1134,7 +888,6 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_out_request_intr;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Initialization done with PCI system, hardware, firmware.
 	 * Add host to SCSI
@@ -1143,16 +896,10 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (err) {
 		shost_printk(KERN_ERR, fnic->lport->host,
 			     "fnic: scsi_add_host failed...exiting\n");
-<<<<<<< HEAD
-		goto err_out_free_rq_buf;
-	}
-
-=======
 		goto err_out_scsi_add_host;
 	}
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Start local port initiatialization */
 
 	lp->link_up = 0;
@@ -1176,18 +923,11 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (!fc_exch_mgr_alloc(lp, FC_CLASS_3, FCPIO_HOST_EXCH_RANGE_START,
 			       FCPIO_HOST_EXCH_RANGE_END, NULL)) {
 		err = -ENOMEM;
-<<<<<<< HEAD
-		goto err_out_remove_scsi_host;
-	}
-
-	fc_lport_init_stats(lp);
-=======
 		goto err_out_fc_exch_mgr_alloc;
 	}
 
 	fc_lport_init_stats(lp);
 	fnic->stats_reset_time = jiffies;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fc_lport_config(lp);
 
@@ -1211,31 +951,10 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	skb_queue_head_init(&fnic->frame_queue);
 	skb_queue_head_init(&fnic->tx_queue);
 
-<<<<<<< HEAD
-	/* Enable all queues */
-	for (i = 0; i < fnic->raw_wq_count; i++)
-		vnic_wq_enable(&fnic->wq[i]);
-	for (i = 0; i < fnic->rq_count; i++)
-		vnic_rq_enable(&fnic->rq[i]);
-	for (i = 0; i < fnic->wq_copy_count; i++)
-		vnic_wq_copy_enable(&fnic->wq_copy[i]);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_fabric_login(lp);
 
 	vnic_dev_enable(fnic->vdev);
 
-<<<<<<< HEAD
-	err = fnic_request_intr(fnic);
-	if (err) {
-		shost_printk(KERN_ERR, fnic->lport->host,
-			     "Unable to request irq.\n");
-		goto err_out_free_exch_mgr;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < fnic->intr_count; i++)
 		vnic_intr_unmask(&fnic->intr[i]);
 
@@ -1245,14 +964,6 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 err_out_free_exch_mgr:
 	fc_exch_mgr_free(lp);
-<<<<<<< HEAD
-err_out_remove_scsi_host:
-	fc_remove_host(lp->host);
-	scsi_remove_host(lp->host);
-err_out_free_rq_buf:
-	for (i = 0; i < fnic->rq_count; i++)
-		vnic_rq_clean(&fnic->rq[i], fnic_free_rq_buf);
-=======
 err_out_fc_exch_mgr_alloc:
 	fc_remove_host(lp->host);
 	scsi_remove_host(lp->host);
@@ -1262,7 +973,6 @@ err_out_request_intr:
 	for (i = 0; i < fnic->rq_count; i++)
 		vnic_rq_clean(&fnic->rq[i], fnic_free_rq_buf);
 err_out_rq_buf:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vnic_dev_notify_unset(fnic->vdev);
 err_out_free_max_pool:
 	mempool_destroy(fnic->io_sgl_pool[FNIC_SGL_CACHE_MAX]);
@@ -1271,20 +981,14 @@ err_out_free_dflt_pool:
 err_out_free_ioreq_pool:
 	mempool_destroy(fnic->io_req_pool);
 err_out_free_resources:
-<<<<<<< HEAD
-=======
 	for (hwq = 0; hwq < fnic->wq_copy_count; hwq++)
 		kfree(fnic->sw_copy_wq[hwq].io_req_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fnic_free_vnic_resources(fnic);
 err_out_clear_intr:
 	fnic_clear_intr_mode(fnic);
 err_out_dev_close:
 	vnic_dev_close(fnic->vdev);
-<<<<<<< HEAD
-=======
 err_out_dev_cmd_deinit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_vnic_unregister:
 	vnic_dev_unregister(fnic->vdev);
 err_out_iounmap:
@@ -1294,30 +998,20 @@ err_out_release_regions:
 err_out_disable_device:
 	pci_disable_device(pdev);
 err_out_free_hba:
-<<<<<<< HEAD
-=======
 	fnic_stats_debugfs_remove(fnic);
 	ida_free(&fnic_ida, fnic->fnic_num);
 err_out_ida_alloc:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_host_put(lp->host);
 err_out:
 	return err;
 }
 
-<<<<<<< HEAD
-static void __devexit fnic_remove(struct pci_dev *pdev)
-=======
 static void fnic_remove(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fnic *fnic = pci_get_drvdata(pdev);
 	struct fc_lport *lp = fnic->lport;
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 	int hwq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Mark state so that the workqueue thread stops forwarding
@@ -1340,8 +1034,6 @@ static void fnic_remove(struct pci_dev *pdev)
 	skb_queue_purge(&fnic->frame_queue);
 	skb_queue_purge(&fnic->tx_queue);
 
-<<<<<<< HEAD
-=======
 	if (fnic->config.flags & VFCF_FIP_CAPABLE) {
 		del_timer_sync(&fnic->fip_timer);
 		skb_queue_purge(&fnic->fip_frame_queue);
@@ -1349,7 +1041,6 @@ static void fnic_remove(struct pci_dev *pdev)
 		fnic_fcoe_evlist_free(fnic);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Log off the fabric. This stops all remote ports, dns port,
 	 * logs off the fabric. This flushes all rport, disc, lport work
@@ -1363,10 +1054,7 @@ static void fnic_remove(struct pci_dev *pdev)
 
 	fcoe_ctlr_destroy(&fnic->ctlr);
 	fc_lport_destroy(lp);
-<<<<<<< HEAD
-=======
 	fnic_stats_debugfs_remove(fnic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This stops the fnic device, masks all interrupts. Completed
@@ -1384,11 +1072,8 @@ static void fnic_remove(struct pci_dev *pdev)
 
 	fc_remove_host(fnic->lport->host);
 	scsi_remove_host(fnic->lport->host);
-<<<<<<< HEAD
-=======
 	for (hwq = 0; hwq < fnic->wq_copy_count; hwq++)
 		kfree(fnic->sw_copy_wq[hwq].io_req_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_exch_mgr_free(fnic->lport);
 	vnic_dev_notify_unset(fnic->vdev);
 	fnic_free_intr(fnic);
@@ -1399,11 +1084,7 @@ static void fnic_remove(struct pci_dev *pdev)
 	fnic_iounmap(fnic);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-=======
 	ida_free(&fnic_ida, fnic->fnic_num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_host_put(lp->host);
 }
 
@@ -1411,11 +1092,7 @@ static struct pci_driver fnic_driver = {
 	.name = DRV_NAME,
 	.id_table = fnic_id_table,
 	.probe = fnic_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(fnic_remove),
-=======
 	.remove = fnic_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init fnic_init_module(void)
@@ -1425,8 +1102,6 @@ static int __init fnic_init_module(void)
 
 	printk(KERN_INFO PFX "%s, ver %s\n", DRV_DESCRIPTION, DRV_VERSION);
 
-<<<<<<< HEAD
-=======
 	/* Create debugfs entries for fnic */
 	err = fnic_debugfs_init();
 	if (err < 0) {
@@ -1452,7 +1127,6 @@ static int __init fnic_init_module(void)
 		fnic_fc_trace_free();
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Create a cache for allocation of default size sgls */
 	len = sizeof(struct fnic_dflt_sgl_list);
 	fnic_sgl_cache[FNIC_SGL_CACHE_DFLT] = kmem_cache_create
@@ -1469,13 +1143,8 @@ static int __init fnic_init_module(void)
 	len = sizeof(struct fnic_sgl_list);
 	fnic_sgl_cache[FNIC_SGL_CACHE_MAX] = kmem_cache_create
 		("fnic_sgl_max", len + FNIC_SG_DESC_ALIGN, FNIC_SG_DESC_ALIGN,
-<<<<<<< HEAD
-		 SLAB_HWCACHE_ALIGN,
-		 NULL);
-=======
 		  SLAB_HWCACHE_ALIGN,
 		  NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fnic_sgl_cache[FNIC_SGL_CACHE_MAX]) {
 		printk(KERN_ERR PFX "failed to create fnic max sgl slab\n");
 		err = -ENOMEM;
@@ -1499,17 +1168,12 @@ static int __init fnic_init_module(void)
 		goto err_create_fnic_workq;
 	}
 
-<<<<<<< HEAD
-	spin_lock_init(&fnic_list_lock);
-	INIT_LIST_HEAD(&fnic_list);
-=======
 	fnic_fip_queue = create_singlethread_workqueue("fnic_fip_q");
 	if (!fnic_fip_queue) {
 		printk(KERN_ERR PFX "fnic FIP work queue create failed\n");
 		err = -ENOMEM;
 		goto err_create_fip_workq;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fnic_fc_transport = fc_attach_transport(&fnic_fc_functions);
 	if (!fnic_fc_transport) {
@@ -1529,11 +1193,8 @@ static int __init fnic_init_module(void)
 err_pci_register:
 	fc_release_transport(fnic_fc_transport);
 err_fc_transport:
-<<<<<<< HEAD
-=======
 	destroy_workqueue(fnic_fip_queue);
 err_create_fip_workq:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	destroy_workqueue(fnic_event_queue);
 err_create_fnic_workq:
 	kmem_cache_destroy(fnic_io_req_cache);
@@ -1542,12 +1203,9 @@ err_create_fnic_ioreq_slab:
 err_create_fnic_sgl_slab_max:
 	kmem_cache_destroy(fnic_sgl_cache[FNIC_SGL_CACHE_DFLT]);
 err_create_fnic_sgl_slab_dflt:
-<<<<<<< HEAD
-=======
 	fnic_trace_free();
 	fnic_fc_trace_free();
 	fnic_debugfs_terminate();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1555,27 +1213,17 @@ static void __exit fnic_cleanup_module(void)
 {
 	pci_unregister_driver(&fnic_driver);
 	destroy_workqueue(fnic_event_queue);
-<<<<<<< HEAD
-=======
 	if (fnic_fip_queue)
 		destroy_workqueue(fnic_fip_queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(fnic_sgl_cache[FNIC_SGL_CACHE_MAX]);
 	kmem_cache_destroy(fnic_sgl_cache[FNIC_SGL_CACHE_DFLT]);
 	kmem_cache_destroy(fnic_io_req_cache);
 	fc_release_transport(fnic_fc_transport);
-<<<<<<< HEAD
-=======
 	fnic_trace_free();
 	fnic_fc_trace_free();
 	fnic_debugfs_terminate();
 	ida_destroy(&fnic_ida);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(fnic_init_module);
 module_exit(fnic_cleanup_module);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

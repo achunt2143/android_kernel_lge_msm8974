@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-#ifndef __ASM_GENERIC_SPINLOCK_H
-#define __ASM_GENERIC_SPINLOCK_H
-/*
- * You need to implement asm/spinlock.h for SMP support. The generic
- * version does not handle SMP.
- */
-#ifdef CONFIG_SMP
-#error need an architecture specific asm/spinlock.h
-#endif
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /*
@@ -101,6 +90,5 @@ static __always_inline int arch_spin_is_contended(arch_spinlock_t *lock)
 }
 
 #include <asm/qrwlock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_GENERIC_SPINLOCK_H */

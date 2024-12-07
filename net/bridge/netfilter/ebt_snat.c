@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ebt_snat
  *
@@ -25,17 +22,10 @@ ebt_snat_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct ebt_nat_info *info = par->targinfo;
 
-<<<<<<< HEAD
-	if (!skb_make_writable(skb, 0))
-		return EBT_DROP;
-
-	memcpy(eth_hdr(skb)->h_source, info->mac, ETH_ALEN);
-=======
 	if (skb_ensure_writable(skb, 0))
 		return EBT_DROP;
 
 	ether_addr_copy(eth_hdr(skb)->h_source, info->mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(info->target & NAT_ARP_BIT) &&
 	    eth_hdr(skb)->h_proto == htons(ETH_P_ARP)) {
 		const struct arphdr *ap;
@@ -46,11 +36,7 @@ ebt_snat_tg(struct sk_buff *skb, const struct xt_action_param *par)
 			return EBT_DROP;
 		if (ap->ar_hln != ETH_ALEN)
 			goto out;
-<<<<<<< HEAD
-		if (skb_store_bits(skb, sizeof(_ah), info->mac,ETH_ALEN))
-=======
 		if (skb_store_bits(skb, sizeof(_ah), info->mac, ETH_ALEN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return EBT_DROP;
 	}
 out:
@@ -66,11 +52,7 @@ static int ebt_snat_tg_check(const struct xt_tgchk_param *par)
 	if (BASE_CHAIN && tmp == EBT_RETURN)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (tmp < -NUM_STANDARD_TARGETS || tmp >= 0)
-=======
 	if (ebt_invalid_target(tmp))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	tmp = info->target | EBT_VERDICT_BITS;
 	if ((tmp & ~NAT_ARP_BIT) != ~NAT_ARP_BIT)

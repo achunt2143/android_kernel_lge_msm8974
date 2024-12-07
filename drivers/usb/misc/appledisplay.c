@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Apple Cinema Display driver
  *
  * Copyright (C) 2006  Michael Hanselmann (linux-kernel@hansmi.ch)
  *
  * Thanks to Caskey L. Dickson for his work with acdctl.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -70,11 +50,8 @@ static const struct usb_device_id appledisplay_table[] = {
 	{ APPLEDISPLAY_DEVICE(0x9219) },
 	{ APPLEDISPLAY_DEVICE(0x921c) },
 	{ APPLEDISPLAY_DEVICE(0x921d) },
-<<<<<<< HEAD
-=======
 	{ APPLEDISPLAY_DEVICE(0x9222) },
 	{ APPLEDISPLAY_DEVICE(0x9226) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ APPLEDISPLAY_DEVICE(0x9236) },
 
 	/* Terminating entry */
@@ -92,27 +69,15 @@ struct appledisplay {
 
 	struct delayed_work work;
 	int button_pressed;
-<<<<<<< HEAD
-	spinlock_t lock;
-};
-
-static atomic_t count_displays = ATOMIC_INIT(0);
-static struct workqueue_struct *wq;
-=======
 	struct mutex sysfslock;		/* concurrent read and write */
 };
 
 static atomic_t count_displays = ATOMIC_INIT(0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void appledisplay_complete(struct urb *urb)
 {
 	struct appledisplay *pdata = urb->context;
-<<<<<<< HEAD
-	unsigned long flags;
-=======
 	struct device *dev = &pdata->udev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status = urb->status;
 	int retval;
 
@@ -121,51 +86,28 @@ static void appledisplay_complete(struct urb *urb)
 		/* success */
 		break;
 	case -EOVERFLOW:
-<<<<<<< HEAD
-		printk(KERN_ERR "appletouch: OVERFLOW with data "
-			"length %d, actual length is %d\n",
-			ACD_URB_BUFFER_LEN, pdata->urb->actual_length);
-=======
 		dev_err(dev,
 			"OVERFLOW with data length %d, actual length is %d\n",
 			ACD_URB_BUFFER_LEN, pdata->urb->actual_length);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
 		/* This urb is terminated, clean up */
-<<<<<<< HEAD
-		dbg("%s - urb shuttingdown with status: %d",
-			__func__, status);
-		return;
-	default:
-		dbg("%s - nonzero urb status received: %d",
-=======
 		dev_dbg(dev, "%s - urb shuttingdown with status: %d\n",
 			__func__, status);
 		return;
 	default:
 		dev_dbg(dev, "%s - nonzero urb status received: %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, status);
 		goto exit;
 	}
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&pdata->lock, flags);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch(pdata->urbdata[1]) {
 	case ACD_BTN_BRIGHT_UP:
 	case ACD_BTN_BRIGHT_DOWN:
 		pdata->button_pressed = 1;
-<<<<<<< HEAD
-		queue_delayed_work(wq, &pdata->work, 0);
-=======
 		schedule_delayed_work(&pdata->work, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ACD_BTN_NONE:
 	default:
@@ -173,20 +115,10 @@ static void appledisplay_complete(struct urb *urb)
 		break;
 	}
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&pdata->lock, flags);
-
-exit:
-	retval = usb_submit_urb(pdata->urb, GFP_ATOMIC);
-	if (retval) {
-		dev_err(&pdata->udev->dev,
-			"%s - usb_submit_urb failed with result %d\n",
-=======
 exit:
 	retval = usb_submit_urb(pdata->urb, GFP_ATOMIC);
 	if (retval) {
 		dev_err(dev, "%s - usb_submit_urb failed with result %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, retval);
 	}
 }
@@ -196,10 +128,7 @@ static int appledisplay_bl_update_status(struct backlight_device *bd)
 	struct appledisplay *pdata = bl_get_data(bd);
 	int retval;
 
-<<<<<<< HEAD
-=======
 	mutex_lock(&pdata->sysfslock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdata->msgdata[0] = 0x10;
 	pdata->msgdata[1] = bd->props.brightness;
 
@@ -212,30 +141,20 @@ static int appledisplay_bl_update_status(struct backlight_device *bd)
 		0,
 		pdata->msgdata, 2,
 		ACD_USB_TIMEOUT);
-<<<<<<< HEAD
-
-	return retval;
-=======
 	mutex_unlock(&pdata->sysfslock);
 
 	if (retval < 0)
 		return retval;
 	else
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int appledisplay_bl_get_brightness(struct backlight_device *bd)
 {
 	struct appledisplay *pdata = bl_get_data(bd);
-<<<<<<< HEAD
-	int retval;
-
-=======
 	int retval, brightness;
 
 	mutex_lock(&pdata->sysfslock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = usb_control_msg(
 		pdata->udev,
 		usb_rcvctrlpipe(pdata->udev, 0),
@@ -245,8 +164,6 @@ static int appledisplay_bl_get_brightness(struct backlight_device *bd)
 		0,
 		pdata->msgdata, 2,
 		ACD_USB_TIMEOUT);
-<<<<<<< HEAD
-=======
 	if (retval < 2) {
 		if (retval >= 0)
 			retval = -EMSGSIZE;
@@ -254,16 +171,11 @@ static int appledisplay_bl_get_brightness(struct backlight_device *bd)
 		brightness = pdata->msgdata[1];
 	}
 	mutex_unlock(&pdata->sysfslock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (retval < 0)
 		return retval;
 	else
-<<<<<<< HEAD
-		return pdata->msgdata[1];
-=======
 		return brightness;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct backlight_ops appledisplay_bl_data = {
@@ -292,36 +204,13 @@ static int appledisplay_probe(struct usb_interface *iface,
 	struct backlight_properties props;
 	struct appledisplay *pdata;
 	struct usb_device *udev = interface_to_usbdev(iface);
-<<<<<<< HEAD
-	struct usb_host_interface *iface_desc;
-	struct usb_endpoint_descriptor *endpoint;
-	int int_in_endpointAddr = 0;
-	int i, retval = -ENOMEM, brightness;
-=======
 	struct usb_endpoint_descriptor *endpoint;
 	int int_in_endpointAddr = 0;
 	int retval, brightness;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char bl_name[20];
 
 	/* set up the endpoint information */
 	/* use only the first interrupt-in endpoint */
-<<<<<<< HEAD
-	iface_desc = iface->cur_altsetting;
-	for (i = 0; i < iface_desc->desc.bNumEndpoints; i++) {
-		endpoint = &iface_desc->endpoint[i].desc;
-		if (!int_in_endpointAddr && usb_endpoint_is_int_in(endpoint)) {
-			/* we found an interrupt in endpoint */
-			int_in_endpointAddr = endpoint->bEndpointAddress;
-			break;
-		}
-	}
-	if (!int_in_endpointAddr) {
-		dev_err(&iface->dev, "Could not find int-in endpoint\n");
-		return -EIO;
-	}
-
-=======
 	retval = usb_find_int_in_endpoint(iface->cur_altsetting, &endpoint);
 	if (retval) {
 		dev_err(&iface->dev, "Could not find int-in endpoint\n");
@@ -330,37 +219,22 @@ static int appledisplay_probe(struct usb_interface *iface,
 
 	int_in_endpointAddr = endpoint->bEndpointAddress;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* allocate memory for our device state and initialize it */
 	pdata = kzalloc(sizeof(struct appledisplay), GFP_KERNEL);
 	if (!pdata) {
 		retval = -ENOMEM;
-<<<<<<< HEAD
-		dev_err(&iface->dev, "Out of memory\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
 	pdata->udev = udev;
 
-<<<<<<< HEAD
-	spin_lock_init(&pdata->lock);
-	INIT_DELAYED_WORK(&pdata->work, appledisplay_work);
-=======
 	INIT_DELAYED_WORK(&pdata->work, appledisplay_work);
 	mutex_init(&pdata->sysfslock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Allocate buffer for control messages */
 	pdata->msgdata = kmalloc(ACD_MSG_BUFFER_LEN, GFP_KERNEL);
 	if (!pdata->msgdata) {
 		retval = -ENOMEM;
-<<<<<<< HEAD
-		dev_err(&iface->dev,
-			"Allocating buffer for control messages failed\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
@@ -368,10 +242,6 @@ static int appledisplay_probe(struct usb_interface *iface,
 	pdata->urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!pdata->urb) {
 		retval = -ENOMEM;
-<<<<<<< HEAD
-		dev_err(&iface->dev, "Allocating URB failed\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
@@ -389,10 +259,7 @@ static int appledisplay_probe(struct usb_interface *iface,
 		usb_rcvintpipe(udev, int_in_endpointAddr),
 		pdata->urbdata, ACD_URB_BUFFER_LEN, appledisplay_complete,
 		pdata, 1);
-<<<<<<< HEAD
-=======
 	pdata->urb->transfer_flags = URB_NO_TRANSFER_DMA_MAP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (usb_submit_urb(pdata->urb, GFP_KERNEL)) {
 		retval = -EIO;
 		dev_err(&iface->dev, "Submitting URB failed\n");
@@ -437,21 +304,12 @@ error:
 	if (pdata) {
 		if (pdata->urb) {
 			usb_kill_urb(pdata->urb);
-<<<<<<< HEAD
-			if (pdata->urbdata)
-				usb_free_coherent(pdata->udev, ACD_URB_BUFFER_LEN,
-					pdata->urbdata, pdata->urb->transfer_dma);
-			usb_free_urb(pdata->urb);
-		}
-		if (pdata->bd && !IS_ERR(pdata->bd))
-=======
 			cancel_delayed_work_sync(&pdata->work);
 			usb_free_coherent(pdata->udev, ACD_URB_BUFFER_LEN,
 					pdata->urbdata, pdata->urb->transfer_dma);
 			usb_free_urb(pdata->urb);
 		}
 		if (!IS_ERR(pdata->bd))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			backlight_device_unregister(pdata->bd);
 		kfree(pdata->msgdata);
 	}
@@ -466,11 +324,7 @@ static void appledisplay_disconnect(struct usb_interface *iface)
 
 	if (pdata) {
 		usb_kill_urb(pdata->urb);
-<<<<<<< HEAD
-		cancel_delayed_work(&pdata->work);
-=======
 		cancel_delayed_work_sync(&pdata->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		backlight_device_unregister(pdata->bd);
 		usb_free_coherent(pdata->udev, ACD_URB_BUFFER_LEN,
 			pdata->urbdata, pdata->urb->transfer_dma);
@@ -488,35 +342,8 @@ static struct usb_driver appledisplay_driver = {
 	.disconnect	= appledisplay_disconnect,
 	.id_table	= appledisplay_table,
 };
-<<<<<<< HEAD
-
-static int __init appledisplay_init(void)
-{
-	wq = create_singlethread_workqueue("appledisplay");
-	if (!wq) {
-		printk(KERN_ERR "appledisplay: Could not create work queue\n");
-		return -ENOMEM;
-	}
-
-	return usb_register(&appledisplay_driver);
-}
-
-static void __exit appledisplay_exit(void)
-{
-	flush_workqueue(wq);
-	destroy_workqueue(wq);
-	usb_deregister(&appledisplay_driver);
-}
-=======
 module_usb_driver(appledisplay_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Michael Hanselmann");
 MODULE_DESCRIPTION("Apple Cinema Display driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-
-module_init(appledisplay_init);
-module_exit(appledisplay_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

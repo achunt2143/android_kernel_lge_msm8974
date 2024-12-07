@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-#ifndef ___ASM_SPARC_CPUDATA_H
-#define ___ASM_SPARC_CPUDATA_H
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef ___ASM_SPARC_CPUDATA_H
 #define ___ASM_SPARC_CPUDATA_H
@@ -15,7 +11,6 @@ extern const struct seq_operations cpuinfo_op;
 
 #endif /* !(__ASSEMBLY__) */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(__sparc__) && defined(__arch64__)
 #include <asm/cpudata_64.h>
 #else

@@ -36,16 +36,10 @@
 #include <linux/i2c.h>
 #include <linux/init.h>
 #include <linux/kthread.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-
-#include <asm/prom.h>
-=======
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/io.h>
 #include <asm/sections.h>
@@ -307,17 +301,11 @@ static int control_loop(void *dummy)
 /*	i2c probing and setup						*/
 /************************************************************************/
 
-<<<<<<< HEAD
-static int
-do_attach( struct i2c_adapter *adapter )
-{
-=======
 static void do_attach(struct i2c_adapter *adapter)
 {
 	struct i2c_board_info info = { };
 	struct device_node *np;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* scan 0x48-0x4f (DS1775) and 0x2c-2x2f (ADM1030) */
 	static const unsigned short scan_ds1775[] = {
 		0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f,
@@ -328,30 +316,6 @@ static void do_attach(struct i2c_adapter *adapter)
 		I2C_CLIENT_END
 	};
 
-<<<<<<< HEAD
-	if( strncmp(adapter->name, "uni-n", 5) )
-		return 0;
-
-	if( !x.running ) {
-		struct i2c_board_info info;
-
-		memset(&info, 0, sizeof(struct i2c_board_info));
-		strlcpy(info.type, "therm_ds1775", I2C_NAME_SIZE);
-		i2c_new_probed_device(adapter, &info, scan_ds1775, NULL);
-
-		strlcpy(info.type, "therm_adm1030", I2C_NAME_SIZE);
-		i2c_new_probed_device(adapter, &info, scan_adm1030, NULL);
-
-		if( x.thermostat && x.fan ) {
-			x.running = 1;
-			x.poll_task = kthread_run(control_loop, NULL, "g4fand");
-		}
-	}
-	return 0;
-}
-
-static int
-=======
 	if (x.running || strncmp(adapter->name, "uni-n", 5))
 		return;
 
@@ -375,7 +339,6 @@ static int
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 do_remove(struct i2c_client *client)
 {
 	if (x.running) {
@@ -389,11 +352,6 @@ do_remove(struct i2c_client *client)
 		x.fan = NULL;
 	else
 		printk(KERN_ERR "g4fan: bad client\n");
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -448,17 +406,6 @@ out:
 enum chip { ds1775, adm1030 };
 
 static const struct i2c_device_id therm_windtunnel_id[] = {
-<<<<<<< HEAD
-	{ "therm_ds1775", ds1775 },
-	{ "therm_adm1030", adm1030 },
-	{ }
-};
-
-static int
-do_probe(struct i2c_client *cl, const struct i2c_device_id *id)
-{
-	struct i2c_adapter *adapter = cl->adapter;
-=======
 	{ "MAC,ds1775", ds1775 },
 	{ "MAC,adm1030", adm1030 },
 	{ }
@@ -471,7 +418,6 @@ do_probe(struct i2c_client *cl)
 	const struct i2c_device_id *id = i2c_client_get_device_id(cl);
 	struct i2c_adapter *adapter = cl->adapter;
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if( !i2c_check_functionality(adapter, I2C_FUNC_SMBUS_WORD_DATA
 				     | I2C_FUNC_SMBUS_WRITE_BYTE) )
@@ -479,13 +425,6 @@ do_probe(struct i2c_client *cl)
 
 	switch (id->driver_data) {
 	case adm1030:
-<<<<<<< HEAD
-		return attach_fan( cl );
-	case ds1775:
-		return attach_thermostat(cl);
-	}
-	return 0;
-=======
 		ret = attach_fan(cl);
 		break;
 	case ds1775:
@@ -499,17 +438,12 @@ do_probe(struct i2c_client *cl)
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct i2c_driver g4fan_driver = {
 	.driver = {
 		.name	= "therm_windtunnel",
 	},
-<<<<<<< HEAD
-	.attach_adapter = do_attach,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe		= do_probe,
 	.remove		= do_remove,
 	.id_table	= therm_windtunnel_id,
@@ -522,16 +456,6 @@ static struct i2c_driver g4fan_driver = {
 
 static int therm_of_probe(struct platform_device *dev)
 {
-<<<<<<< HEAD
-	return i2c_add_driver( &g4fan_driver );
-}
-
-static int
-therm_of_remove( struct platform_device *dev )
-{
-	i2c_del_driver( &g4fan_driver );
-	return 0;
-=======
 	struct i2c_adapter *adap;
 	int ret, i = 0;
 
@@ -560,7 +484,6 @@ therm_of_remove( struct platform_device *dev )
 static void therm_of_remove(struct platform_device *dev)
 {
 	i2c_del_driver( &g4fan_driver );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id therm_of_match[] = {{
@@ -568,26 +491,15 @@ static const struct of_device_id therm_of_match[] = {{
 	.compatible	= "adm1030"
     }, {}
 };
-<<<<<<< HEAD
-=======
 MODULE_DEVICE_TABLE(of, therm_of_match);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver therm_of_driver = {
 	.driver = {
 		.name = "temperature",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = therm_of_match,
-	},
-	.probe		= therm_of_probe,
-	.remove		= therm_of_remove,
-=======
 		.of_match_table = therm_of_match,
 	},
 	.probe		= therm_of_probe,
 	.remove_new	= therm_of_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct apple_thermal_info {

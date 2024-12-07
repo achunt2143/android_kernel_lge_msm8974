@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hfs/btree.c
  *
@@ -52,11 +49,7 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
 				    mdb->drXTFlSize, be32_to_cpu(mdb->drXTClpSiz));
 		if (HFS_I(tree->inode)->alloc_blocks >
 					HFS_I(tree->inode)->first_blocks) {
-<<<<<<< HEAD
-			printk(KERN_ERR "hfs: invalid btree extent records\n");
-=======
 			pr_err("invalid btree extent records\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unlock_new_inode(tree->inode);
 			goto free_inode;
 		}
@@ -68,12 +61,7 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
 				    mdb->drCTFlSize, be32_to_cpu(mdb->drCTClpSiz));
 
 		if (!HFS_I(tree->inode)->first_blocks) {
-<<<<<<< HEAD
-			printk(KERN_ERR "hfs: invalid btree extent records "
-								"(0 size).\n");
-=======
 			pr_err("invalid btree extent records (0 size)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unlock_new_inode(tree->inode);
 			goto free_inode;
 		}
@@ -92,12 +80,8 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
 		goto free_inode;
 
 	/* Load the header */
-<<<<<<< HEAD
-	head = (struct hfs_btree_header_rec *)(kmap(page) + sizeof(struct hfs_bnode_desc));
-=======
 	head = (struct hfs_btree_header_rec *)(kmap_local_page(page) +
 					       sizeof(struct hfs_bnode_desc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tree->root = be32_to_cpu(head->root);
 	tree->leaf_count = be32_to_cpu(head->leaf_count);
 	tree->leaf_head = be32_to_cpu(head->leaf_head);
@@ -117,25 +101,15 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
 	switch (id) {
 	case HFS_EXT_CNID:
 		if (tree->max_key_len != HFS_MAX_EXT_KEYLEN) {
-<<<<<<< HEAD
-			printk(KERN_ERR "hfs: invalid extent max_key_len %d\n",
-				tree->max_key_len);
-=======
 			pr_err("invalid extent max_key_len %d\n",
 			       tree->max_key_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fail_page;
 		}
 		break;
 	case HFS_CAT_CNID:
 		if (tree->max_key_len != HFS_MAX_CAT_KEYLEN) {
-<<<<<<< HEAD
-			printk(KERN_ERR "hfs: invalid catalog max_key_len %d\n",
-				tree->max_key_len);
-=======
 			pr_err("invalid catalog max_key_len %d\n",
 			       tree->max_key_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fail_page;
 		}
 		break;
@@ -144,16 +118,6 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
 	}
 
 	tree->node_size_shift = ffs(size) - 1;
-<<<<<<< HEAD
-	tree->pages_per_bnode = (tree->node_size + PAGE_CACHE_SIZE - 1) >> PAGE_CACHE_SHIFT;
-
-	kunmap(page);
-	page_cache_release(page);
-	return tree;
-
-fail_page:
-	page_cache_release(page);
-=======
 	tree->pages_per_bnode = (tree->node_size + PAGE_SIZE - 1) >> PAGE_SHIFT;
 
 	kunmap_local(head);
@@ -163,7 +127,6 @@ fail_page:
 fail_page:
 	kunmap_local(head);
 	put_page(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_inode:
 	tree->inode->i_mapping->a_ops = &hfs_aops;
 	iput(tree->inode);
@@ -185,14 +148,9 @@ void hfs_btree_close(struct hfs_btree *tree)
 		while ((node = tree->node_hash[i])) {
 			tree->node_hash[i] = node->next_hash;
 			if (atomic_read(&node->refcnt))
-<<<<<<< HEAD
-				printk(KERN_ERR "hfs: node %d:%d still has %d user(s)!\n",
-					node->tree->cnid, node->this, atomic_read(&node->refcnt));
-=======
 				pr_err("node %d:%d still has %d user(s)!\n",
 				       node->tree->cnid, node->this,
 				       atomic_read(&node->refcnt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hfs_bnode_free(node);
 			tree->node_hash_cnt--;
 		}
@@ -213,12 +171,8 @@ void hfs_btree_write(struct hfs_btree *tree)
 		return;
 	/* Load the header */
 	page = node->page[0];
-<<<<<<< HEAD
-	head = (struct hfs_btree_header_rec *)(kmap(page) + sizeof(struct hfs_bnode_desc));
-=======
 	head = (struct hfs_btree_header_rec *)(kmap_local_page(page) +
 					       sizeof(struct hfs_bnode_desc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	head->root = cpu_to_be32(tree->root);
 	head->leaf_count = cpu_to_be32(tree->leaf_count);
@@ -229,11 +183,7 @@ void hfs_btree_write(struct hfs_btree *tree)
 	head->attributes = cpu_to_be32(tree->attributes);
 	head->depth = cpu_to_be16(tree->depth);
 
-<<<<<<< HEAD
-	kunmap(page);
-=======
 	kunmap_local(head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_page_dirty(page);
 	hfs_bnode_put(node);
 }
@@ -273,8 +223,6 @@ static struct hfs_bnode *hfs_bmap_new_bmap(struct hfs_bnode *prev, u32 idx)
 	return node;
 }
 
-<<<<<<< HEAD
-=======
 /* Make sure @tree has enough space for the @rsvd_nodes */
 int hfs_bmap_reserve(struct hfs_btree *tree, int rsvd_nodes)
 {
@@ -299,7 +247,6 @@ int hfs_bmap_reserve(struct hfs_btree *tree, int rsvd_nodes)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 {
 	struct hfs_bnode *node, *next_node;
@@ -309,34 +256,11 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 	u16 off16;
 	u16 len;
 	u8 *data, byte, m;
-<<<<<<< HEAD
-	int i;
-
-	while (!tree->free_nodes) {
-		struct inode *inode = tree->inode;
-		u32 count;
-		int res;
-
-		res = hfs_extend_file(inode);
-		if (res)
-			return ERR_PTR(res);
-		HFS_I(inode)->phys_size = inode->i_size =
-				(loff_t)HFS_I(inode)->alloc_blocks *
-				HFS_SB(tree->sb)->alloc_blksz;
-		HFS_I(inode)->fs_blocks = inode->i_size >>
-					  tree->sb->s_blocksize_bits;
-		inode_set_bytes(inode, inode->i_size);
-		count = inode->i_size >> tree->node_size_shift;
-		tree->free_nodes = count - tree->node_count;
-		tree->node_count = count;
-	}
-=======
 	int i, res;
 
 	res = hfs_bmap_reserve(tree, 1);
 	if (res)
 		return ERR_PTR(res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nidx = 0;
 	node = hfs_bnode_find(tree, nidx);
@@ -346,15 +270,9 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 	off = off16;
 
 	off += node->page_offset;
-<<<<<<< HEAD
-	pagep = node->page + (off >> PAGE_CACHE_SHIFT);
-	data = kmap(*pagep);
-	off &= ~PAGE_CACHE_MASK;
-=======
 	pagep = node->page + (off >> PAGE_SHIFT);
 	data = kmap_local_page(*pagep);
 	off &= ~PAGE_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	idx = 0;
 
 	for (;;) {
@@ -366,11 +284,7 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 						idx += i;
 						data[off] |= m;
 						set_page_dirty(*pagep);
-<<<<<<< HEAD
-						kunmap(*pagep);
-=======
 						kunmap_local(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						tree->free_nodes--;
 						mark_inode_dirty(tree->inode);
 						hfs_bnode_put(node);
@@ -378,31 +292,18 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 					}
 				}
 			}
-<<<<<<< HEAD
-			if (++off >= PAGE_CACHE_SIZE) {
-				kunmap(*pagep);
-				data = kmap(*++pagep);
-=======
 			if (++off >= PAGE_SIZE) {
 				kunmap_local(data);
 				data = kmap_local_page(*++pagep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				off = 0;
 			}
 			idx += 8;
 			len--;
 		}
-<<<<<<< HEAD
-		kunmap(*pagep);
-		nidx = node->next;
-		if (!nidx) {
-			printk(KERN_DEBUG "hfs: create new bmap node...\n");
-=======
 		kunmap_local(data);
 		nidx = node->next;
 		if (!nidx) {
 			printk(KERN_DEBUG "create new bmap node...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			next_node = hfs_bmap_new_bmap(node, idx);
 		} else
 			next_node = hfs_bnode_find(tree, nidx);
@@ -414,15 +315,9 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 		len = hfs_brec_lenoff(node, 0, &off16);
 		off = off16;
 		off += node->page_offset;
-<<<<<<< HEAD
-		pagep = node->page + (off >> PAGE_CACHE_SHIFT);
-		data = kmap(*pagep);
-		off &= ~PAGE_CACHE_MASK;
-=======
 		pagep = node->page + (off >> PAGE_SHIFT);
 		data = kmap_local_page(*pagep);
 		off &= ~PAGE_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -434,11 +329,7 @@ void hfs_bmap_free(struct hfs_bnode *node)
 	u32 nidx;
 	u8 *data, byte, m;
 
-<<<<<<< HEAD
-	dprint(DBG_BNODE_MOD, "btree_free_node: %u\n", node->this);
-=======
 	hfs_dbg(BNODE_MOD, "btree_free_node: %u\n", node->this);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tree = node->tree;
 	nidx = node->this;
 	node = hfs_bnode_find(tree, 0);
@@ -450,14 +341,6 @@ void hfs_bmap_free(struct hfs_bnode *node)
 
 		nidx -= len * 8;
 		i = node->next;
-<<<<<<< HEAD
-		hfs_bnode_put(node);
-		if (!i) {
-			/* panic */;
-			printk(KERN_CRIT "hfs: unable to free bnode %u. bmap not found!\n", node->this);
-			return;
-		}
-=======
 		if (!i) {
 			/* panic */;
 			pr_crit("unable to free bnode %u. bmap not found!\n",
@@ -466,34 +349,19 @@ void hfs_bmap_free(struct hfs_bnode *node)
 			return;
 		}
 		hfs_bnode_put(node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		node = hfs_bnode_find(tree, i);
 		if (IS_ERR(node))
 			return;
 		if (node->type != HFS_NODE_MAP) {
 			/* panic */;
-<<<<<<< HEAD
-			printk(KERN_CRIT "hfs: invalid bmap found! (%u,%d)\n", node->this, node->type);
-=======
 			pr_crit("invalid bmap found! (%u,%d)\n",
 				node->this, node->type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hfs_bnode_put(node);
 			return;
 		}
 		len = hfs_brec_lenoff(node, 0, &off);
 	}
 	off += node->page_offset + nidx / 8;
-<<<<<<< HEAD
-	page = node->page[off >> PAGE_CACHE_SHIFT];
-	data = kmap(page);
-	off &= ~PAGE_CACHE_MASK;
-	m = 1 << (~nidx & 7);
-	byte = data[off];
-	if (!(byte & m)) {
-		printk(KERN_CRIT "hfs: trying to free free bnode %u(%d)\n", node->this, node->type);
-		kunmap(page);
-=======
 	page = node->page[off >> PAGE_SHIFT];
 	data = kmap_local_page(page);
 	off &= ~PAGE_MASK;
@@ -503,17 +371,12 @@ void hfs_bmap_free(struct hfs_bnode *node)
 		pr_crit("trying to free free bnode %u(%d)\n",
 			node->this, node->type);
 		kunmap_local(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hfs_bnode_put(node);
 		return;
 	}
 	data[off] = byte & ~m;
 	set_page_dirty(page);
-<<<<<<< HEAD
-	kunmap(page);
-=======
 	kunmap_local(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hfs_bnode_put(node);
 	tree->free_nodes++;
 	mark_inode_dirty(tree->inode);

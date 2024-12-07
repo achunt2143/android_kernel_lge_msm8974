@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * adummy.c: a dummy ATM driver
  */
@@ -20,11 +17,7 @@
 #include <linux/slab.h>
 #include <asm/io.h>
 #include <asm/byteorder.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/atmdev.h>
 #include <linux/atm.h>
@@ -79,11 +72,7 @@ static struct attribute *adummy_attrs[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group adummy_group_attrs = {
-=======
 static const struct attribute_group adummy_group_attrs = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = NULL, /* We want them in dev's root folder */
 	.attrs = adummy_attrs
 };
@@ -142,11 +131,7 @@ adummy_proc_read(struct atm_dev *dev, loff_t *pos, char *page)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct atmdev_ops adummy_ops =
-=======
 static const struct atmdev_ops adummy_ops =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		adummy_open,
 	.close =	adummy_close,	

@@ -1,27 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is the infamous ld script for the 64 bits vdso
  * library
  */
-<<<<<<< HEAD
-=======
 
 #include <asm/page.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/vdso.h>
 
 OUTPUT_FORMAT("elf64-s390", "elf64-s390", "elf64-s390")
 OUTPUT_ARCH(s390:64-bit)
-<<<<<<< HEAD
-ENTRY(_start)
-
-SECTIONS
-{
-	. = VDSO64_LBASE + SIZEOF_HEADERS;
-=======
 
 SECTIONS
 {
@@ -30,7 +17,6 @@ SECTIONS
 	PROVIDE(_timens_data = _vdso_data + PAGE_SIZE);
 #endif
 	. = VDSO_LBASE + SIZEOF_HEADERS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.hash		: { *(.hash) }			:text
 	.gnu.hash	: { *(.gnu.hash) }
@@ -64,10 +50,7 @@ SECTIONS
 
 	.rela.dyn ALIGN(8) : { *(.rela.dyn) }
 	.got ALIGN(8)	: { *(.got .toc) }
-<<<<<<< HEAD
-=======
 	.got.plt ALIGN(8) : { *(.got.plt) }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	_end = .;
 	PROVIDE(end = .);
@@ -115,12 +98,6 @@ SECTIONS
 	.debug_ranges	0 : { *(.debug_ranges) }
 	.gnu.attributes 0 : { KEEP (*(.gnu.attributes)) }
 
-<<<<<<< HEAD
-	. = ALIGN(4096);
-	PROVIDE(_vdso_data = .);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/DISCARD/	: {
 		*(.note.GNU-stack)
 		*(.branch_lt)
@@ -159,14 +136,10 @@ VERSION
 		__kernel_gettimeofday;
 		__kernel_clock_gettime;
 		__kernel_clock_getres;
-<<<<<<< HEAD
-
-=======
 		__kernel_getcpu;
 		__kernel_restart_syscall;
 		__kernel_rt_sigreturn;
 		__kernel_sigreturn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local: *;
 	};
 }

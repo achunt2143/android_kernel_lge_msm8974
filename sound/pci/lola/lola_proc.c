@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Support for Digigram Lola PCI-e boards
  *
  *  Copyright (c) 2011 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the Free
- *  Software Foundation; either version 2 of the License, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- *  more details.
- *
- *  You should have received a copy of the GNU General Public License along with
- *  this program; if not, write to the Free Software Foundation, Inc., 59
- *  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -158,11 +138,7 @@ static void lola_proc_codec_rw_write(struct snd_info_entry *entry,
 	char line[64];
 	unsigned int id, verb, data, extdata;
 	while (!snd_info_get_line(buffer, line, sizeof(line))) {
-<<<<<<< HEAD
-		if (sscanf(line, "%i %i %i %i", &id, &verb, &data, &extdata) != 4)
-=======
 		if (sscanf(line, "%u %u %u %u", &id, &verb, &data, &extdata) != 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		lola_codec_read(chip, id, verb, data, extdata,
 				&chip->debug_res,
@@ -217,21 +193,6 @@ static void lola_proc_regs_read(struct snd_info_entry *entry,
 	}
 }
 
-<<<<<<< HEAD
-void __devinit lola_proc_debug_new(struct lola *chip)
-{
-	struct snd_info_entry *entry;
-
-	if (!snd_card_proc_new(chip->card, "codec", &entry))
-		snd_info_set_text_ops(entry, chip, lola_proc_codec_read);
-	if (!snd_card_proc_new(chip->card, "codec_rw", &entry)) {
-		snd_info_set_text_ops(entry, chip, lola_proc_codec_rw_read);
-		entry->mode |= S_IWUSR;
-		entry->c.text.write = lola_proc_codec_rw_write;
-	}
-	if (!snd_card_proc_new(chip->card, "regs", &entry))
-		snd_info_set_text_ops(entry, chip, lola_proc_regs_read);
-=======
 void lola_proc_debug_new(struct lola *chip)
 {
 	snd_card_ro_proc_new(chip->card, "codec", chip, lola_proc_codec_read);
@@ -239,5 +200,4 @@ void lola_proc_debug_new(struct lola *chip)
 			     lola_proc_codec_rw_read,
 			     lola_proc_codec_rw_write);
 	snd_card_ro_proc_new(chip->card, "regs", chip, lola_proc_regs_read);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

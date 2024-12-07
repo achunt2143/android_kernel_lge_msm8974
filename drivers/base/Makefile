@@ -1,23 +1,3 @@
-<<<<<<< HEAD
-# Makefile for the Linux device tree
-
-obj-y			:= core.o bus.o dd.o syscore.o \
-			   driver.o class.o platform.o \
-			   cpu.o firmware.o init.o map.o devres.o \
-			   attribute_container.o transport_class.o \
-			   topology.o sys.o
-obj-$(CONFIG_DEVTMPFS)	+= devtmpfs.o
-obj-$(CONFIG_CMA) += dma-contiguous.o
-obj-y			+= power/
-obj-$(CONFIG_HAS_DMA)	+= dma-mapping.o
-obj-$(CONFIG_HAVE_GENERIC_DMA_COHERENT) += dma-coherent.o
-obj-$(CONFIG_DMA_SHARED_BUFFER) += dma-buf.o
-obj-$(CONFIG_GENLOCK) += genlock.o
-obj-$(CONFIG_ISA)	+= isa.o
-obj-$(CONFIG_FW_LOADER)	+= firmware_class.o
-obj-$(CONFIG_NUMA)	+= node.o
-obj-$(CONFIG_MEMORY_HOTPLUG_SPARSE) += memory.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 # Makefile for the Linux device tree
 
@@ -34,7 +14,6 @@ obj-$(CONFIG_ISA_BUS_API)	+= isa.o
 obj-y				+= firmware_loader/
 obj-$(CONFIG_NUMA)	+= node.o
 obj-$(CONFIG_MEMORY_HOTPLUG) += memory.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ifeq ($(CONFIG_SYSFS),y)
 obj-$(CONFIG_MODULES)	+= module.o
 endif
@@ -42,14 +21,6 @@ obj-$(CONFIG_SYS_HYPERVISOR) += hypervisor.o
 obj-$(CONFIG_REGMAP)	+= regmap/
 obj-$(CONFIG_SOC_BUS) += soc.o
 obj-$(CONFIG_PINCTRL) += pinctrl.o
-<<<<<<< HEAD
-
-obj-$(CONFIG_SYNC)	+= sync.o
-obj-$(CONFIG_SW_SYNC)	+= sw_sync.o
-
-ccflags-$(CONFIG_DEBUG_DRIVER) := -DDEBUG
-
-=======
 obj-$(CONFIG_DEV_COREDUMP) += devcoredump.o
 obj-$(CONFIG_GENERIC_MSI_IRQ) += platform-msi.o
 obj-$(CONFIG_GENERIC_ARCH_TOPOLOGY) += arch_topology.o
@@ -63,4 +34,3 @@ ccflags-$(CONFIG_DEBUG_DRIVER) := -DDEBUG
 # define_trace.h needs to know how to find our header
 CFLAGS_trace.o		:= -I$(src)
 obj-$(CONFIG_TRACING)	+= trace.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

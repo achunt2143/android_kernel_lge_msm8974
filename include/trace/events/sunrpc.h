@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sunrpc
 
@@ -10,13 +7,6 @@
 
 #include <linux/sunrpc/sched.h>
 #include <linux/sunrpc/clnt.h>
-<<<<<<< HEAD
-#include <linux/tracepoint.h>
-
-DECLARE_EVENT_CLASS(rpc_task_status,
-
-	TP_PROTO(struct rpc_task *task),
-=======
 #include <linux/sunrpc/svc.h>
 #include <linux/sunrpc/xprtsock.h>
 #include <linux/sunrpc/svc_xprt.h>
@@ -284,73 +274,16 @@ TRACE_DEFINE_ENUM(RPCSEC_GSS_CTXPROBLEM);
 DECLARE_EVENT_CLASS(rpc_task_status,
 
 	TP_PROTO(const struct rpc_task *task),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(task),
 
 	TP_STRUCT__entry(
-<<<<<<< HEAD
-		__field(const struct rpc_task *, task)
-		__field(const struct rpc_clnt *, clnt)
-=======
 		__field(unsigned int, task_id)
 		__field(unsigned int, client_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, status)
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->task = task;
-		__entry->clnt = task->tk_client;
-		__entry->status = task->tk_status;
-	),
-
-	TP_printk("task:%p@%p, status %d",__entry->task, __entry->clnt, __entry->status)
-);
-
-DEFINE_EVENT(rpc_task_status, rpc_call_status,
-	TP_PROTO(struct rpc_task *task),
-
-	TP_ARGS(task)
-);
-
-DEFINE_EVENT(rpc_task_status, rpc_bind_status,
-	TP_PROTO(struct rpc_task *task),
-
-	TP_ARGS(task)
-);
-
-TRACE_EVENT(rpc_connect_status,
-	TP_PROTO(struct rpc_task *task, int status),
-
-	TP_ARGS(task, status),
-
-	TP_STRUCT__entry(
-		__field(const struct rpc_task *, task)
-		__field(const struct rpc_clnt *, clnt)
-		__field(int, status)
-	),
-
-	TP_fast_assign(
-		__entry->task = task;
-		__entry->clnt = task->tk_client;
-		__entry->status = status;
-	),
-
-	TP_printk("task:%p@%p, status %d",__entry->task, __entry->clnt, __entry->status)
-);
-
-DECLARE_EVENT_CLASS(rpc_task_running,
-
-	TP_PROTO(const struct rpc_clnt *clnt, const struct rpc_task *task, const void *action),
-
-	TP_ARGS(clnt, task, action),
-
-	TP_STRUCT__entry(
-		__field(const struct rpc_clnt *, clnt)
-		__field(const struct rpc_task *, task)
-=======
 		__entry->task_id = task->tk_pid;
 		__entry->client_id = task->tk_client->cl_clid;
 		__entry->status = task->tk_status;
@@ -439,7 +372,6 @@ DECLARE_EVENT_CLASS(rpc_task_running,
 	TP_STRUCT__entry(
 		__field(unsigned int, task_id)
 		__field(unsigned int, client_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(const void *, action)
 		__field(unsigned long, runstate)
 		__field(int, status)
@@ -447,73 +379,24 @@ DECLARE_EVENT_CLASS(rpc_task_running,
 		),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->clnt = clnt;
-		__entry->task = task;
-=======
 		__entry->client_id = task->tk_client ?
 				     task->tk_client->cl_clid : -1;
 		__entry->task_id = task->tk_pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->action = action;
 		__entry->runstate = task->tk_runstate;
 		__entry->status = task->tk_status;
 		__entry->flags = task->tk_flags;
 		),
 
-<<<<<<< HEAD
-	TP_printk("task:%p@%p flags=%4.4x state=%4.4lx status=%d action=%pf",
-		__entry->task,
-		__entry->clnt,
-		__entry->flags,
-		__entry->runstate,
-=======
 	TP_printk(SUNRPC_TRACE_TASK_SPECIFIER
 		  " flags=%s runstate=%s status=%d action=%ps",
 		__entry->task_id, __entry->client_id,
 		rpc_show_task_flags(__entry->flags),
 		rpc_show_runstate(__entry->runstate),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->status,
 		__entry->action
 		)
 );
-<<<<<<< HEAD
-
-DEFINE_EVENT(rpc_task_running, rpc_task_begin,
-
-	TP_PROTO(const struct rpc_clnt *clnt, const struct rpc_task *task, const void *action),
-
-	TP_ARGS(clnt, task, action)
-
-);
-
-DEFINE_EVENT(rpc_task_running, rpc_task_run_action,
-
-	TP_PROTO(const struct rpc_clnt *clnt, const struct rpc_task *task, const void *action),
-
-	TP_ARGS(clnt, task, action)
-
-);
-
-DEFINE_EVENT(rpc_task_running, rpc_task_complete,
-
-	TP_PROTO(const struct rpc_clnt *clnt, const struct rpc_task *task, const void *action),
-
-	TP_ARGS(clnt, task, action)
-
-);
-
-DECLARE_EVENT_CLASS(rpc_task_queued,
-
-	TP_PROTO(const struct rpc_clnt *clnt, const struct rpc_task *task, const struct rpc_wait_queue *q),
-
-	TP_ARGS(clnt, task, q),
-
-	TP_STRUCT__entry(
-		__field(const struct rpc_clnt *, clnt)
-		__field(const struct rpc_task *, task)
-=======
 #define DEFINE_RPC_RUNNING_EVENT(name) \
 	DEFINE_EVENT(rpc_task_running, rpc_task_##name, \
 			TP_PROTO( \
@@ -541,7 +424,6 @@ DECLARE_EVENT_CLASS(rpc_task_queued,
 	TP_STRUCT__entry(
 		__field(unsigned int, task_id)
 		__field(unsigned int, client_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(unsigned long, timeout)
 		__field(unsigned long, runstate)
 		__field(int, status)
@@ -550,57 +432,26 @@ DECLARE_EVENT_CLASS(rpc_task_queued,
 		),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->clnt = clnt;
-		__entry->task = task;
-		__entry->timeout = task->tk_timeout;
-=======
 		__entry->client_id = task->tk_client ?
 				     task->tk_client->cl_clid : -1;
 		__entry->task_id = task->tk_pid;
 		__entry->timeout = rpc_task_timeout(task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->runstate = task->tk_runstate;
 		__entry->status = task->tk_status;
 		__entry->flags = task->tk_flags;
 		__assign_str(q_name, rpc_qname(q));
 		),
 
-<<<<<<< HEAD
-	TP_printk("task:%p@%p flags=%4.4x state=%4.4lx status=%d timeout=%lu queue=%s",
-		__entry->task,
-		__entry->clnt,
-		__entry->flags,
-		__entry->runstate,
-=======
 	TP_printk(SUNRPC_TRACE_TASK_SPECIFIER
 		  " flags=%s runstate=%s status=%d timeout=%lu queue=%s",
 		__entry->task_id, __entry->client_id,
 		rpc_show_task_flags(__entry->flags),
 		rpc_show_runstate(__entry->runstate),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->status,
 		__entry->timeout,
 		__get_str(q_name)
 		)
 );
-<<<<<<< HEAD
-
-DEFINE_EVENT(rpc_task_queued, rpc_task_sleep,
-
-	TP_PROTO(const struct rpc_clnt *clnt, const struct rpc_task *task, const struct rpc_wait_queue *q),
-
-	TP_ARGS(clnt, task, q)
-
-);
-
-DEFINE_EVENT(rpc_task_queued, rpc_task_wakeup,
-
-	TP_PROTO(const struct rpc_clnt *clnt, const struct rpc_task *task, const struct rpc_wait_queue *q),
-
-	TP_ARGS(clnt, task, q)
-
-=======
 #define DEFINE_RPC_QUEUED_EVENT(name) \
 	DEFINE_EVENT(rpc_task_queued, rpc_task_##name, \
 			TP_PROTO( \
@@ -2666,7 +2517,6 @@ TRACE_EVENT(svc_unregister,
 	TP_printk("program=%sv%u error=%d",
 		__get_str(program), __entry->version, __entry->error
 	)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 #endif /* _TRACE_SUNRPC_H */

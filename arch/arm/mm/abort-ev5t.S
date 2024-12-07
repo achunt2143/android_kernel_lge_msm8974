@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 #include "abort-macro.S"
@@ -25,15 +22,10 @@ ENTRY(v5t_early_abort)
 	mrc	p15, 0, r0, c6, c0, 0		@ get FAR
 	do_thumb_abort fsr=r1, pc=r4, psr=r5, tmp=r3
 	ldreq	r3, [r4]			@ read aborted ARM instruction
-<<<<<<< HEAD
-	bic	r1, r1, #1 << 11		@ clear bits 11 of FSR
-	do_ldrd_abort tmp=ip, insn=r3
-=======
 	uaccess_disable ip			@ disable user access
 	bic	r1, r1, #1 << 11		@ clear bits 11 of FSR
 	teq_ldrd tmp=ip, insn=r3		@ insn was LDRD?
 	beq	do_DataAbort			@ yes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tst	r3, #1 << 20			@ check write
 	orreq	r1, r1, #1 << 11
 	b	do_DataAbort

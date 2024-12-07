@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  i2c_adap_pxa.c
  *
@@ -10,13 +7,6 @@
  *  Copyright (C) 2002 Intrinsyc Software Inc.
  *  Copyright (C) 2004-2005 Deep Blue Solutions Ltd.
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  History:
  *    Apr 2002: Initial version [CS]
  *    Jun 2002: Properly separated algo/adap [FB]
@@ -26,89 +16,6 @@
  *    Dec 2004: Added support for PXA27x and slave device probing [Liam Girdwood]
  *    Feb 2005: Rework slave mode handling [RMK]
  */
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/i2c.h>
-#include <linux/init.h>
-#include <linux/time.h>
-#include <linux/sched.h>
-#include <linux/delay.h>
-#include <linux/errno.h>
-#include <linux/interrupt.h>
-#include <linux/i2c-pxa.h>
-#include <linux/of.h>
-#include <linux/of_device.h>
-#include <linux/of_i2c.h>
-#include <linux/platform_device.h>
-#include <linux/err.h>
-#include <linux/clk.h>
-#include <linux/slab.h>
-#include <linux/io.h>
-#include <linux/i2c/pxa-i2c.h>
-
-#include <asm/irq.h>
-
-#ifndef CONFIG_HAVE_CLK
-#define clk_get(dev, id)	NULL
-#define clk_put(clk)		do { } while (0)
-#define clk_disable(clk)	do { } while (0)
-#define clk_enable(clk)		do { } while (0)
-#endif
-
-struct pxa_reg_layout {
-	u32 ibmr;
-	u32 idbr;
-	u32 icr;
-	u32 isr;
-	u32 isar;
-};
-
-enum pxa_i2c_types {
-	REGS_PXA2XX,
-	REGS_PXA3XX,
-	REGS_CE4100,
-};
-
-/*
- * I2C registers definitions
- */
-static struct pxa_reg_layout pxa_reg_layout[] = {
-	[REGS_PXA2XX] = {
-		.ibmr =	0x00,
-		.idbr =	0x08,
-		.icr =	0x10,
-		.isr =	0x18,
-		.isar =	0x20,
-	},
-	[REGS_PXA3XX] = {
-		.ibmr =	0x00,
-		.idbr =	0x04,
-		.icr =	0x08,
-		.isr =	0x0c,
-		.isar =	0x10,
-	},
-	[REGS_CE4100] = {
-		.ibmr =	0x14,
-		.idbr =	0x0c,
-		.icr =	0x00,
-		.isr =	0x04,
-		/* no isar register */
-	},
-};
-
-static const struct platform_device_id i2c_pxa_id_table[] = {
-	{ "pxa2xx-i2c",		REGS_PXA2XX },
-	{ "pxa3xx-pwri2c",	REGS_PXA3XX },
-	{ "ce4100-i2c",		REGS_CE4100 },
-	{ },
-};
-MODULE_DEVICE_TABLE(platform, i2c_pxa_id_table);
-
-/*
- * I2C bit definitions
- */
-=======
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -131,7 +38,6 @@ MODULE_DEVICE_TABLE(platform, i2c_pxa_id_table);
 /* I2C register field definitions */
 #define IBMR_SDAS	(1 << 0)
 #define IBMR_SCLS	(1 << 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ICR_START	(1 << 0)	   /* start bit */
 #define ICR_STOP	(1 << 1)	   /* stop bit */
@@ -149,13 +55,10 @@ MODULE_DEVICE_TABLE(platform, i2c_pxa_id_table);
 #define ICR_SADIE	(1 << 13)	   /* slave address detected int enable */
 #define ICR_UR		(1 << 14)	   /* unit reset */
 #define ICR_FM		(1 << 15)	   /* fast mode */
-<<<<<<< HEAD
-=======
 #define ICR_HS		(1 << 16)	   /* High Speed mode */
 #define ICR_A3700_FM	(1 << 16)	   /* fast mode for armada-3700 */
 #define ICR_A3700_HS	(1 << 17)	   /* high speed mode for armada-3700 */
 #define ICR_GPIOEN	(1 << 19)	   /* enable GPIO mode for SCL in HS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ISR_RWM		(1 << 0)	   /* read/write mode */
 #define ISR_ACKNAK	(1 << 1)	   /* ack/nak status */
@@ -169,8 +72,6 @@ MODULE_DEVICE_TABLE(platform, i2c_pxa_id_table);
 #define ISR_SAD		(1 << 9)	   /* slave address detected */
 #define ISR_BED		(1 << 10)	   /* bus error no ACK/NAK */
 
-<<<<<<< HEAD
-=======
 #define ILCR_SLV_SHIFT		0
 #define ILCR_SLV_MASK		(0x1FF << ILCR_SLV_SHIFT)
 #define ILCR_FLV_SHIFT		9
@@ -321,7 +222,6 @@ static const struct platform_device_id i2c_pxa_id_table[] = {
 };
 MODULE_DEVICE_TABLE(platform, i2c_pxa_id_table);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pxa_i2c {
 	spinlock_t		lock;
 	wait_queue_head_t	wait;
@@ -330,19 +230,12 @@ struct pxa_i2c {
 	unsigned int		msg_idx;
 	unsigned int		msg_ptr;
 	unsigned int		slave_addr;
-<<<<<<< HEAD
-=======
 	unsigned int		req_slave_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct i2c_adapter	adap;
 	struct clk		*clk;
 #ifdef CONFIG_I2C_PXA_SLAVE
-<<<<<<< HEAD
-	struct i2c_slave_client *slave;
-=======
 	struct i2c_client	*slave;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	unsigned int		irqlogidx;
@@ -355,11 +248,8 @@ struct pxa_i2c {
 	void __iomem		*reg_icr;
 	void __iomem		*reg_isr;
 	void __iomem		*reg_isar;
-<<<<<<< HEAD
-=======
 	void __iomem		*reg_ilcr;
 	void __iomem		*reg_iwcr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long		iobase;
 	unsigned long		iosize;
@@ -367,8 +257,6 @@ struct pxa_i2c {
 	int			irq;
 	unsigned int		use_pio :1;
 	unsigned int		fast_mode :1;
-<<<<<<< HEAD
-=======
 	unsigned int		high_mode:1;
 	unsigned char		master_code;
 	unsigned long		rate;
@@ -380,7 +268,6 @@ struct pxa_i2c {
 	struct pinctrl		*pinctrl;
 	struct pinctrl_state	*pinctrl_default;
 	struct pinctrl_state	*pinctrl_recovery;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define _IBMR(i2c)	((i2c)->reg_ibmr)
@@ -388,11 +275,8 @@ struct pxa_i2c {
 #define _ICR(i2c)	((i2c)->reg_icr)
 #define _ISR(i2c)	((i2c)->reg_isr)
 #define _ISAR(i2c)	((i2c)->reg_isar)
-<<<<<<< HEAD
-=======
 #define _ILCR(i2c)	((i2c)->reg_ilcr)
 #define _IWCR(i2c)	((i2c)->reg_iwcr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * I2C Slave mode address
@@ -411,15 +295,6 @@ struct bits {
 static inline void
 decode_bits(const char *prefix, const struct bits *bits, int num, u32 val)
 {
-<<<<<<< HEAD
-	printk("%s %08x: ", prefix, val);
-	while (num--) {
-		const char *str = val & bits->mask ? bits->set : bits->unset;
-		if (str)
-			printk("%s ", str);
-		bits++;
-	}
-=======
 	printk("%s %08x:", prefix, val);
 	while (num--) {
 		const char *str = val & bits->mask ? bits->set : bits->unset;
@@ -428,7 +303,6 @@ decode_bits(const char *prefix, const struct bits *bits, int num, u32 val)
 		bits++;
 	}
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct bits isr_bits[] = {
@@ -448,15 +322,9 @@ static const struct bits isr_bits[] = {
 static void decode_ISR(unsigned int val)
 {
 	decode_bits(KERN_DEBUG "ISR", isr_bits, ARRAY_SIZE(isr_bits), val);
-<<<<<<< HEAD
-	printk("\n");
-}
-
-=======
 }
 
 #ifdef CONFIG_I2C_PXA_SLAVE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct bits icr_bits[] = {
 	PXA_BIT(ICR_START,  "START",	NULL),
 	PXA_BIT(ICR_STOP,   "STOP",	NULL),
@@ -475,17 +343,9 @@ static const struct bits icr_bits[] = {
 	PXA_BIT(ICR_UR,     "UR",		"ur"),
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_I2C_PXA_SLAVE
 static void decode_ICR(unsigned int val)
 {
 	decode_bits(KERN_DEBUG "ICR", icr_bits, ARRAY_SIZE(icr_bits), val);
-	printk("\n");
-=======
-static void decode_ICR(unsigned int val)
-{
-	decode_bits(KERN_DEBUG "ICR", icr_bits, ARRAY_SIZE(icr_bits), val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -502,17 +362,6 @@ static void i2c_pxa_show_state(struct pxa_i2c *i2c, int lno, const char *fname)
 static void i2c_pxa_scream_blue_murder(struct pxa_i2c *i2c, const char *why)
 {
 	unsigned int i;
-<<<<<<< HEAD
-	printk(KERN_ERR "i2c: error: %s\n", why);
-	printk(KERN_ERR "i2c: msg_num: %d msg_idx: %d msg_ptr: %d\n",
-		i2c->msg_num, i2c->msg_idx, i2c->msg_ptr);
-	printk(KERN_ERR "i2c: ICR: %08x ISR: %08x\n",
-	       readl(_ICR(i2c)), readl(_ISR(i2c)));
-	printk(KERN_DEBUG "i2c: log: ");
-	for (i = 0; i < i2c->irqlogidx; i++)
-		printk("[%08x:%08x] ", i2c->isrlog[i], i2c->icrlog[i]);
-	printk("\n");
-=======
 	struct device *dev = &i2c->adap.dev;
 
 	dev_err(dev, "slave_0x%x error: %s\n",
@@ -526,7 +375,6 @@ static void i2c_pxa_scream_blue_murder(struct pxa_i2c *i2c, const char *why)
 	for (i = 0; i < i2c->irqlogidx; i++)
 		pr_cont(" [%03x:%05x]", i2c->isrlog[i], i2c->icrlog[i]);
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else /* ifdef DEBUG */
@@ -541,10 +389,6 @@ static void i2c_pxa_scream_blue_murder(struct pxa_i2c *i2c, const char *why)
 #endif /* ifdef DEBUG / else */
 
 static void i2c_pxa_master_complete(struct pxa_i2c *i2c, int ret);
-<<<<<<< HEAD
-static irqreturn_t i2c_pxa_handler(int this_irq, void *dev_id);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int i2c_pxa_is_slavemode(struct pxa_i2c *i2c)
 {
@@ -560,11 +404,7 @@ static void i2c_pxa_abort(struct pxa_i2c *i2c)
 		return;
 	}
 
-<<<<<<< HEAD
-	while ((i > 0) && (readl(_IBMR(i2c)) & 0x1) == 0) {
-=======
 	while ((i > 0) && (readl(_IBMR(i2c)) & IBMR_SDAS) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long icr = readl(_ICR(i2c));
 
 		icr &= ~ICR_START;
@@ -585,13 +425,6 @@ static void i2c_pxa_abort(struct pxa_i2c *i2c)
 static int i2c_pxa_wait_bus_not_busy(struct pxa_i2c *i2c)
 {
 	int timeout = DEF_TIMEOUT;
-<<<<<<< HEAD
-
-	while (timeout-- && readl(_ISR(i2c)) & (ISR_IBB | ISR_UB)) {
-		if ((readl(_ISR(i2c)) & ISR_SAD) != 0)
-			timeout += 4;
-
-=======
 	u32 isr;
 
 	while (1) {
@@ -605,21 +438,13 @@ static int i2c_pxa_wait_bus_not_busy(struct pxa_i2c *i2c)
 		if (!timeout--)
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(2);
 		show_state(i2c);
 	}
 
-<<<<<<< HEAD
-	if (timeout < 0)
-		show_state(i2c);
-
-	return timeout < 0 ? I2C_RETRY : 0;
-=======
 	show_state(i2c);
 
 	return I2C_RETRY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int i2c_pxa_wait_master(struct pxa_i2c *i2c)
@@ -641,12 +466,8 @@ static int i2c_pxa_wait_master(struct pxa_i2c *i2c)
 		 * quick check of the i2c lines themselves to ensure they've
 		 * gone high...
 		 */
-<<<<<<< HEAD
-		if ((readl(_ISR(i2c)) & (ISR_UB | ISR_IBB)) == 0 && readl(_IBMR(i2c)) == 3) {
-=======
 		if ((readl(_ISR(i2c)) & (ISR_UB | ISR_IBB)) == 0 &&
 		    readl(_IBMR(i2c)) == (IBMR_SCLS | IBMR_SDAS)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i2c_debug > 0)
 				dev_dbg(&i2c->adap.dev, "%s: done\n", __func__);
 			return 1;
@@ -746,37 +567,19 @@ static void i2c_pxa_set_slave(struct pxa_i2c *i2c, int errcode)
 #define i2c_pxa_set_slave(i2c, err)	do { } while (0)
 #endif
 
-<<<<<<< HEAD
-static void i2c_pxa_reset(struct pxa_i2c *i2c)
-{
-	pr_debug("Resetting I2C Controller Unit\n");
-
-	/* abort any transfer currently under way */
-	i2c_pxa_abort(i2c);
-
-=======
 static void i2c_pxa_do_reset(struct pxa_i2c *i2c)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* reset according to 9.8 */
 	writel(ICR_UR, _ICR(i2c));
 	writel(I2C_ISR_INIT, _ISR(i2c));
 	writel(readl(_ICR(i2c)) & ~ICR_UR, _ICR(i2c));
 
-<<<<<<< HEAD
-	if (i2c->reg_isar)
-		writel(i2c->slave_addr, _ISAR(i2c));
-
-	/* set control register values */
-	writel(I2C_ICR_INIT | (i2c->fast_mode ? ICR_FM : 0), _ICR(i2c));
-=======
 	if (i2c->reg_isar && IS_ENABLED(CONFIG_I2C_PXA_SLAVE))
 		writel(i2c->slave_addr, _ISAR(i2c));
 
 	/* set control register values */
 	writel(I2C_ICR_INIT | (i2c->fast_mode ? i2c->fm_mask : 0), _ICR(i2c));
 	writel(readl(_ICR(i2c)) | (i2c->high_mode ? i2c->hs_mask : 0), _ICR(i2c));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_I2C_PXA_SLAVE
 	dev_info(&i2c->adap.dev, "Enabling slave mode\n");
@@ -784,21 +587,15 @@ static void i2c_pxa_do_reset(struct pxa_i2c *i2c)
 #endif
 
 	i2c_pxa_set_slave(i2c, 0);
-<<<<<<< HEAD
-
-=======
 }
 
 static void i2c_pxa_enable(struct pxa_i2c *i2c)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable unit */
 	writel(readl(_ICR(i2c)) | ICR_IUE, _ICR(i2c));
 	udelay(100);
 }
 
-<<<<<<< HEAD
-=======
 static void i2c_pxa_reset(struct pxa_i2c *i2c)
 {
 	pr_debug("Resetting I2C Controller Unit\n");
@@ -809,7 +606,6 @@ static void i2c_pxa_reset(struct pxa_i2c *i2c)
 	i2c_pxa_enable(i2c);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_I2C_PXA_SLAVE
 /*
@@ -821,14 +617,6 @@ static void i2c_pxa_slave_txempty(struct pxa_i2c *i2c, u32 isr)
 	if (isr & ISR_BED) {
 		/* what should we do here? */
 	} else {
-<<<<<<< HEAD
-		int ret = 0;
-
-		if (i2c->slave != NULL)
-			ret = i2c->slave->read(i2c->slave->data);
-
-		writel(ret, _IDBR(i2c));
-=======
 		u8 byte = 0;
 
 		if (i2c->slave != NULL)
@@ -836,24 +624,16 @@ static void i2c_pxa_slave_txempty(struct pxa_i2c *i2c, u32 isr)
 					&byte);
 
 		writel(byte, _IDBR(i2c));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(readl(_ICR(i2c)) | ICR_TB, _ICR(i2c));   /* allow next byte */
 	}
 }
 
 static void i2c_pxa_slave_rxfull(struct pxa_i2c *i2c, u32 isr)
 {
-<<<<<<< HEAD
-	unsigned int byte = readl(_IDBR(i2c));
-
-	if (i2c->slave != NULL)
-		i2c->slave->write(i2c->slave->data, byte);
-=======
 	u8 byte = readl(_IDBR(i2c));
 
 	if (i2c->slave != NULL)
 		i2c_slave_event(i2c->slave, I2C_SLAVE_WRITE_RECEIVED, &byte);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writel(readl(_ICR(i2c)) | ICR_TB, _ICR(i2c));
 }
@@ -866,11 +646,6 @@ static void i2c_pxa_slave_start(struct pxa_i2c *i2c, u32 isr)
 		dev_dbg(&i2c->adap.dev, "SAD, mode is slave-%cx\n",
 		       (isr & ISR_RWM) ? 'r' : 't');
 
-<<<<<<< HEAD
-	if (i2c->slave != NULL)
-		i2c->slave->event(i2c->slave->data,
-				 (isr & ISR_RWM) ? I2C_SLAVE_EVENT_START_READ : I2C_SLAVE_EVENT_START_WRITE);
-=======
 	if (i2c->slave != NULL) {
 		if (isr & ISR_RWM) {
 			u8 byte = 0;
@@ -883,7 +658,6 @@ static void i2c_pxa_slave_start(struct pxa_i2c *i2c, u32 isr)
 					NULL);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * slave could interrupt in the middle of us generating a
@@ -896,11 +670,7 @@ static void i2c_pxa_slave_start(struct pxa_i2c *i2c, u32 isr)
 	timeout = 0x10000;
 
 	while (1) {
-<<<<<<< HEAD
-		if ((readl(_IBMR(i2c)) & 2) == 2)
-=======
 		if ((readl(_IBMR(i2c)) & IBMR_SCLS) == IBMR_SCLS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		timeout--;
@@ -920,11 +690,7 @@ static void i2c_pxa_slave_stop(struct pxa_i2c *i2c)
 		dev_dbg(&i2c->adap.dev, "ISR: SSD (Slave Stop)\n");
 
 	if (i2c->slave != NULL)
-<<<<<<< HEAD
-		i2c->slave->event(i2c->slave->data, I2C_SLAVE_EVENT_STOP);
-=======
 		i2c_slave_event(i2c->slave, I2C_SLAVE_STOP, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (i2c_debug > 2)
 		dev_dbg(&i2c->adap.dev, "ISR: SSD (Slave Stop) acked\n");
@@ -936,8 +702,6 @@ static void i2c_pxa_slave_stop(struct pxa_i2c *i2c)
 	if (i2c->msg)
 		i2c_pxa_master_complete(i2c, I2C_RETRY);
 }
-<<<<<<< HEAD
-=======
 
 static int i2c_pxa_slave_reg(struct i2c_client *slave)
 {
@@ -970,7 +734,6 @@ static int i2c_pxa_slave_unreg(struct i2c_client *slave)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static void i2c_pxa_slave_txempty(struct pxa_i2c *i2c, u32 isr)
 {
@@ -1002,11 +765,7 @@ static void i2c_pxa_slave_start(struct pxa_i2c *i2c, u32 isr)
 	timeout = 0x10000;
 
 	while (1) {
-<<<<<<< HEAD
-		if ((readl(_IBMR(i2c)) & 2) == 2)
-=======
 		if ((readl(_IBMR(i2c)) & IBMR_SCLS) == IBMR_SCLS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		timeout--;
@@ -1031,19 +790,6 @@ static void i2c_pxa_slave_stop(struct pxa_i2c *i2c)
  * PXA I2C Master mode
  */
 
-<<<<<<< HEAD
-static inline unsigned int i2c_pxa_addr_byte(struct i2c_msg *msg)
-{
-	unsigned int addr = (msg->addr & 0x7f) << 1;
-
-	if (msg->flags & I2C_M_RD)
-		addr |= 1;
-
-	return addr;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void i2c_pxa_start_message(struct pxa_i2c *i2c)
 {
 	u32 icr;
@@ -1051,12 +797,8 @@ static inline void i2c_pxa_start_message(struct pxa_i2c *i2c)
 	/*
 	 * Step 1: target slave address into IDBR
 	 */
-<<<<<<< HEAD
-	writel(i2c_pxa_addr_byte(i2c->msg), _IDBR(i2c));
-=======
 	i2c->req_slave_addr = i2c_8bit_addr_from_msg(i2c->msg);
 	writel(i2c->req_slave_addr, _IDBR(i2c));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Step 2: initiate the write.
@@ -1069,166 +811,6 @@ static inline void i2c_pxa_stop_message(struct pxa_i2c *i2c)
 {
 	u32 icr;
 
-<<<<<<< HEAD
-	/*
-	 * Clear the STOP and ACK flags
-	 */
-	icr = readl(_ICR(i2c));
-	icr &= ~(ICR_STOP | ICR_ACKNAK);
-	writel(icr, _ICR(i2c));
-}
-
-static int i2c_pxa_pio_set_master(struct pxa_i2c *i2c)
-{
-	/* make timeout the same as for interrupt based functions */
-	long timeout = 2 * DEF_TIMEOUT;
-
-	/*
-	 * Wait for the bus to become free.
-	 */
-	while (timeout-- && readl(_ISR(i2c)) & (ISR_IBB | ISR_UB)) {
-		udelay(1000);
-		show_state(i2c);
-	}
-
-	if (timeout < 0) {
-		show_state(i2c);
-		dev_err(&i2c->adap.dev,
-			"i2c_pxa: timeout waiting for bus free\n");
-		return I2C_RETRY;
-	}
-
-	/*
-	 * Set master mode.
-	 */
-	writel(readl(_ICR(i2c)) | ICR_SCLE, _ICR(i2c));
-
-	return 0;
-}
-
-static int i2c_pxa_do_pio_xfer(struct pxa_i2c *i2c,
-			       struct i2c_msg *msg, int num)
-{
-	unsigned long timeout = 500000; /* 5 seconds */
-	int ret = 0;
-
-	ret = i2c_pxa_pio_set_master(i2c);
-	if (ret)
-		goto out;
-
-	i2c->msg = msg;
-	i2c->msg_num = num;
-	i2c->msg_idx = 0;
-	i2c->msg_ptr = 0;
-	i2c->irqlogidx = 0;
-
-	i2c_pxa_start_message(i2c);
-
-	while (i2c->msg_num > 0 && --timeout) {
-		i2c_pxa_handler(0, i2c);
-		udelay(10);
-	}
-
-	i2c_pxa_stop_message(i2c);
-
-	/*
-	 * We place the return code in i2c->msg_idx.
-	 */
-	ret = i2c->msg_idx;
-
-out:
-	if (timeout == 0)
-		i2c_pxa_scream_blue_murder(i2c, "timeout");
-
-	return ret;
-}
-
-/*
- * We are protected by the adapter bus mutex.
- */
-static int i2c_pxa_do_xfer(struct pxa_i2c *i2c, struct i2c_msg *msg, int num)
-{
-	long timeout;
-	int ret;
-
-	/*
-	 * Wait for the bus to become free.
-	 */
-	ret = i2c_pxa_wait_bus_not_busy(i2c);
-	if (ret) {
-		dev_err(&i2c->adap.dev, "i2c_pxa: timeout waiting for bus free\n");
-		goto out;
-	}
-
-	/*
-	 * Set master mode.
-	 */
-	ret = i2c_pxa_set_master(i2c);
-	if (ret) {
-		dev_err(&i2c->adap.dev, "i2c_pxa_set_master: error %d\n", ret);
-		goto out;
-	}
-
-	spin_lock_irq(&i2c->lock);
-
-	i2c->msg = msg;
-	i2c->msg_num = num;
-	i2c->msg_idx = 0;
-	i2c->msg_ptr = 0;
-	i2c->irqlogidx = 0;
-
-	i2c_pxa_start_message(i2c);
-
-	spin_unlock_irq(&i2c->lock);
-
-	/*
-	 * The rest of the processing occurs in the interrupt handler.
-	 */
-	timeout = wait_event_timeout(i2c->wait, i2c->msg_num == 0, HZ * 5);
-	i2c_pxa_stop_message(i2c);
-
-	/*
-	 * We place the return code in i2c->msg_idx.
-	 */
-	ret = i2c->msg_idx;
-
-	if (!timeout && i2c->msg_num) {
-		i2c_pxa_scream_blue_murder(i2c, "timeout");
-		ret = I2C_RETRY;
-	}
-
- out:
-	return ret;
-}
-
-static int i2c_pxa_pio_xfer(struct i2c_adapter *adap,
-			    struct i2c_msg msgs[], int num)
-{
-	struct pxa_i2c *i2c = adap->algo_data;
-	int ret, i;
-
-	/* If the I2C controller is disabled we need to reset it
-	  (probably due to a suspend/resume destroying state). We do
-	  this here as we can then avoid worrying about resuming the
-	  controller before its users. */
-	if (!(readl(_ICR(i2c)) & ICR_IUE))
-		i2c_pxa_reset(i2c);
-
-	for (i = adap->retries; i >= 0; i--) {
-		ret = i2c_pxa_do_pio_xfer(i2c, msgs, num);
-		if (ret != I2C_RETRY)
-			goto out;
-
-		if (i2c_debug)
-			dev_dbg(&adap->dev, "Retrying transmission\n");
-		udelay(100);
-	}
-	i2c_pxa_scream_blue_murder(i2c, "exhausted retries");
-	ret = -EREMOTEIO;
- out:
-	i2c_pxa_set_slave(i2c, ret);
-	return ret;
-=======
 	/* Clear the START, STOP, ACK, TB and MA flags */
 	icr = readl(_ICR(i2c));
 	icr &= ~(ICR_START | ICR_STOP | ICR_ACKNAK | ICR_TB | ICR_MA);
@@ -1261,7 +843,6 @@ static int i2c_pxa_send_mastercode(struct pxa_i2c *i2c)
 	i2c->highmode_enter = false;
 
 	return (timeout == 0) ? I2C_RETRY : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1303,13 +884,9 @@ static void i2c_pxa_irq_txempty(struct pxa_i2c *i2c, u32 isr)
 		return; /* ignore */
 	}
 
-<<<<<<< HEAD
-	if (isr & ISR_BED) {
-=======
 	if ((isr & ISR_BED) &&
 		(!((i2c->msg->flags & I2C_M_IGNORE_NAK) &&
 			(isr & ISR_ACKNAK)))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int ret = BUS_ERROR;
 
 		/*
@@ -1319,11 +896,7 @@ static void i2c_pxa_irq_txempty(struct pxa_i2c *i2c, u32 isr)
 		 */
 		if (isr & ISR_ACKNAK) {
 			if (i2c->msg_ptr == 0 && i2c->msg_idx == 0)
-<<<<<<< HEAD
-				ret = I2C_RETRY;
-=======
 				ret = NO_SLAVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else
 				ret = XFER_NAKED;
 		}
@@ -1347,14 +920,6 @@ static void i2c_pxa_irq_txempty(struct pxa_i2c *i2c, u32 isr)
 		icr |= ICR_ALDIE | ICR_TB;
 
 		/*
-<<<<<<< HEAD
-		 * If this is the last byte of the last message, send
-		 * a STOP.
-		 */
-		if (i2c->msg_ptr == i2c->msg->len &&
-		    i2c->msg_idx == i2c->msg_num - 1)
-			icr |= ICR_STOP;
-=======
 		 * If this is the last byte of the last message or last byte
 		 * of any message with I2C_M_STOP (e.g. SCCB), send a STOP.
 		 */
@@ -1363,7 +928,6 @@ static void i2c_pxa_irq_txempty(struct pxa_i2c *i2c, u32 isr)
 			(i2c->msg_idx == i2c->msg_num - 1)))
 				icr |= ICR_STOP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (i2c->msg_idx < i2c->msg_num - 1) {
 		/*
 		 * Next segment of the message.
@@ -1383,12 +947,8 @@ static void i2c_pxa_irq_txempty(struct pxa_i2c *i2c, u32 isr)
 		/*
 		 * Write the next address.
 		 */
-<<<<<<< HEAD
-		writel(i2c_pxa_addr_byte(i2c->msg), _IDBR(i2c));
-=======
 		i2c->req_slave_addr = i2c_8bit_addr_from_msg(i2c->msg);
 		writel(i2c->req_slave_addr, _IDBR(i2c));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * And trigger a repeated start, and send the byte.
@@ -1396,19 +956,8 @@ static void i2c_pxa_irq_txempty(struct pxa_i2c *i2c, u32 isr)
 		icr &= ~ICR_ALDIE;
 		icr |= ICR_START | ICR_TB;
 	} else {
-<<<<<<< HEAD
-		if (i2c->msg->len == 0) {
-			/*
-			 * Device probes have a message length of zero
-			 * and need the bus to be reset before it can
-			 * be used again.
-			 */
-			i2c_pxa_reset(i2c);
-		}
-=======
 		if (i2c->msg->len == 0)
 			icr |= ICR_MA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i2c_pxa_master_complete(i2c, 0);
 	}
 
@@ -1481,21 +1030,14 @@ static irqreturn_t i2c_pxa_handler(int this_irq, void *dev_id)
 			i2c_pxa_slave_txempty(i2c, isr);
 		if (isr & ISR_IRF)
 			i2c_pxa_slave_rxfull(i2c, isr);
-<<<<<<< HEAD
-	} else if (i2c->msg) {
-=======
 	} else if (i2c->msg && (!i2c->highmode_enter)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (isr & ISR_ITE)
 			i2c_pxa_irq_txempty(i2c, isr);
 		if (isr & ISR_IRF)
 			i2c_pxa_irq_rxfull(i2c, isr);
-<<<<<<< HEAD
-=======
 	} else if ((isr & ISR_ITE) && i2c->highmode_enter) {
 		i2c->highmode_enter = false;
 		wake_up(&i2c->wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		i2c_pxa_scream_blue_murder(i2c, "spurious irq");
 	}
@@ -1503,24 +1045,6 @@ static irqreturn_t i2c_pxa_handler(int this_irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-
-static int i2c_pxa_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[], int num)
-{
-	struct pxa_i2c *i2c = adap->algo_data;
-	int ret, i;
-
-	for (i = adap->retries; i >= 0; i--) {
-		ret = i2c_pxa_do_xfer(i2c, msgs, num);
-		if (ret != I2C_RETRY)
-			goto out;
-
-		if (i2c_debug)
-			dev_dbg(&adap->dev, "Retrying transmission\n");
-		udelay(100);
-	}
-	i2c_pxa_scream_blue_murder(i2c, "exhausted retries");
-=======
 /*
  * We are protected by the adapter bus mutex.
  */
@@ -1609,18 +1133,12 @@ static int i2c_pxa_internal_xfer(struct pxa_i2c *i2c,
 	}
 	if (ret != NO_SLAVE)
 		i2c_pxa_scream_blue_murder(i2c, "exhausted retries");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = -EREMOTEIO;
  out:
 	i2c_pxa_set_slave(i2c, ret);
 	return ret;
 }
 
-<<<<<<< HEAD
-static u32 i2c_pxa_functionality(struct i2c_adapter *adap)
-{
-	return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL;
-=======
 static int i2c_pxa_xfer(struct i2c_adapter *adap,
 			struct i2c_msg msgs[], int num)
 {
@@ -1633,29 +1151,11 @@ static u32 i2c_pxa_functionality(struct i2c_adapter *adap)
 {
 	return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL |
 		I2C_FUNC_PROTOCOL_MANGLING | I2C_FUNC_NOSTART;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_algorithm i2c_pxa_algorithm = {
 	.master_xfer	= i2c_pxa_xfer,
 	.functionality	= i2c_pxa_functionality,
-<<<<<<< HEAD
-};
-
-static const struct i2c_algorithm i2c_pxa_pio_algorithm = {
-	.master_xfer	= i2c_pxa_pio_xfer,
-	.functionality	= i2c_pxa_functionality,
-};
-
-static struct of_device_id i2c_pxa_dt_ids[] = {
-	{ .compatible = "mrvl,pxa-i2c", .data = (void *)REGS_PXA2XX },
-	{ .compatible = "mrvl,pwri2c", .data = (void *)REGS_PXA3XX },
-	{ .compatible = "mrvl,mmp-twsi", .data = (void *)REGS_PXA2XX },
-	{}
-};
-MODULE_DEVICE_TABLE(of, i2c_pxa_dt_ids);
-
-=======
 #ifdef CONFIG_I2C_PXA_SLAVE
 	.reg_slave	= i2c_pxa_slave_reg,
 	.unreg_slave	= i2c_pxa_slave_unreg,
@@ -1752,30 +1252,10 @@ static const struct i2c_algorithm i2c_pxa_pio_algorithm = {
 #endif
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int i2c_pxa_probe_dt(struct platform_device *pdev, struct pxa_i2c *i2c,
 			    enum pxa_i2c_types *i2c_types)
 {
 	struct device_node *np = pdev->dev.of_node;
-<<<<<<< HEAD
-	const struct of_device_id *of_id =
-			of_match_device(i2c_pxa_dt_ids, &pdev->dev);
-	int ret;
-
-	if (!of_id)
-		return 1;
-	ret = of_alias_get_id(np, "i2c");
-	if (ret < 0) {
-		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
-		return ret;
-	}
-	pdev->id = ret;
-	if (of_get_property(np, "mrvl,i2c-polling", NULL))
-		i2c->use_pio = 1;
-	if (of_get_property(np, "mrvl,i2c-fast-mode", NULL))
-		i2c->fast_mode = 1;
-	*i2c_types = (u32)(of_id->data);
-=======
 
 	if (!pdev->dev.of_node)
 		return 1;
@@ -1788,7 +1268,6 @@ static int i2c_pxa_probe_dt(struct platform_device *pdev, struct pxa_i2c *i2c,
 
 	*i2c_types = (enum pxa_i2c_types)device_get_match_data(&pdev->dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1796,44 +1275,22 @@ static int i2c_pxa_probe_pdata(struct platform_device *pdev,
 			       struct pxa_i2c *i2c,
 			       enum pxa_i2c_types *i2c_types)
 {
-<<<<<<< HEAD
-	struct i2c_pxa_platform_data *plat = pdev->dev.platform_data;
-=======
 	struct i2c_pxa_platform_data *plat = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct platform_device_id *id = platform_get_device_id(pdev);
 
 	*i2c_types = id->driver_data;
 	if (plat) {
 		i2c->use_pio = plat->use_pio;
 		i2c->fast_mode = plat->fast_mode;
-<<<<<<< HEAD
-=======
 		i2c->high_mode = plat->high_mode;
 		i2c->master_code = plat->master_code;
 		if (!i2c->master_code)
 			i2c->master_code = 0xe;
 		i2c->rate = plat->rate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int i2c_pxa_probe(struct platform_device *dev)
-{
-	struct i2c_pxa_platform_data *plat = dev->dev.platform_data;
-	enum pxa_i2c_types i2c_type;
-	struct pxa_i2c *i2c;
-	struct resource *res = NULL;
-	int ret, irq;
-
-	i2c = kzalloc(sizeof(struct pxa_i2c), GFP_KERNEL);
-	if (!i2c) {
-		ret = -ENOMEM;
-		goto emalloc;
-	}
-=======
 static void i2c_pxa_prepare_recovery(struct i2c_adapter *adap)
 {
 	struct pxa_i2c *i2c = adap->algo_data;
@@ -1992,75 +1449,27 @@ static int i2c_pxa_probe(struct platform_device *dev)
 	ret = i2c_pxa_init_recovery(i2c);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = i2c_pxa_probe_dt(dev, i2c, &i2c_type);
 	if (ret > 0)
 		ret = i2c_pxa_probe_pdata(dev, i2c, &i2c_type);
 	if (ret < 0)
-<<<<<<< HEAD
-		goto eclk;
-
-	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
-	irq = platform_get_irq(dev, 0);
-	if (res == NULL || irq < 0) {
-		ret = -ENODEV;
-		goto eclk;
-	}
-
-	if (!request_mem_region(res->start, resource_size(res), res->name)) {
-		ret = -ENOMEM;
-		goto eclk;
-	}
-
-	i2c->adap.owner   = THIS_MODULE;
-	i2c->adap.retries = 5;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&i2c->lock);
 	init_waitqueue_head(&i2c->wait);
 
-<<<<<<< HEAD
-	/*
-	 * If "dev->id" is negative we consider it as zero.
-	 * The reason to do so is to avoid sysfs names that only make
-	 * sense when there are multiple adapters.
-	 */
-	i2c->adap.nr = dev->id;
-	snprintf(i2c->adap.name, sizeof(i2c->adap.name), "pxa_i2c-i2c.%u",
-		 i2c->adap.nr);
-
-	i2c->clk = clk_get(&dev->dev, NULL);
-	if (IS_ERR(i2c->clk)) {
-		ret = PTR_ERR(i2c->clk);
-		goto eclk;
-	}
-
-	i2c->reg_base = ioremap(res->start, resource_size(res));
-	if (!i2c->reg_base) {
-		ret = -EIO;
-		goto eremap;
-	}
-=======
 	strscpy(i2c->adap.name, "pxa_i2c-i2c", sizeof(i2c->adap.name));
 
 	i2c->clk = devm_clk_get(&dev->dev, NULL);
 	if (IS_ERR(i2c->clk))
 		return dev_err_probe(&dev->dev, PTR_ERR(i2c->clk),
 				     "failed to get the clk\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i2c->reg_ibmr = i2c->reg_base + pxa_reg_layout[i2c_type].ibmr;
 	i2c->reg_idbr = i2c->reg_base + pxa_reg_layout[i2c_type].idbr;
 	i2c->reg_icr = i2c->reg_base + pxa_reg_layout[i2c_type].icr;
 	i2c->reg_isr = i2c->reg_base + pxa_reg_layout[i2c_type].isr;
-<<<<<<< HEAD
-	if (i2c_type != REGS_CE4100)
-		i2c->reg_isar = i2c->reg_base + pxa_reg_layout[i2c_type].isar;
-
-=======
 	i2c->fm_mask = pxa_reg_layout[i2c_type].fm;
 	i2c->hs_mask = pxa_reg_layout[i2c_type].hs;
 
@@ -2072,25 +1481,12 @@ static int i2c_pxa_probe(struct platform_device *dev)
 		i2c->reg_iwcr = i2c->reg_base + pxa_reg_layout[i2c_type].iwcr;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c->iobase = res->start;
 	i2c->iosize = resource_size(res);
 
 	i2c->irq = irq;
 
 	i2c->slave_addr = I2C_PXA_SLAVE_ADDR;
-<<<<<<< HEAD
-
-	if (plat) {
-#ifdef CONFIG_I2C_PXA_SLAVE
-		i2c->slave_addr = plat->slave_addr;
-		i2c->slave = plat->slave;
-#endif
-		i2c->adap.class = plat->class;
-	}
-
-	clk_enable(i2c->clk);
-=======
 	i2c->highmode_enter = false;
 
 	if (plat) {
@@ -2108,18 +1504,11 @@ static int i2c_pxa_probe(struct platform_device *dev)
 	}
 
 	clk_prepare_enable(i2c->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (i2c->use_pio) {
 		i2c->adap.algo = &i2c_pxa_pio_algorithm;
 	} else {
 		i2c->adap.algo = &i2c_pxa_algorithm;
-<<<<<<< HEAD
-		ret = request_irq(irq, i2c_pxa_handler, IRQF_SHARED,
-				  i2c->adap.name, i2c);
-		if (ret)
-			goto ereqirq;
-=======
 		ret = devm_request_irq(&dev->dev, irq, i2c_pxa_handler,
 				IRQF_SHARED | IRQF_NO_SUSPEND,
 				dev_name(&dev->dev), i2c);
@@ -2127,83 +1516,17 @@ static int i2c_pxa_probe(struct platform_device *dev)
 			dev_err(&dev->dev, "failed to request irq: %d\n", ret);
 			goto ereqirq;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	i2c_pxa_reset(i2c);
 
-<<<<<<< HEAD
-	i2c->adap.algo_data = i2c;
-	i2c->adap.dev.parent = &dev->dev;
-#ifdef CONFIG_OF
-	i2c->adap.dev.of_node = dev->dev.of_node;
-#endif
-
-	ret = i2c_add_numbered_adapter(&i2c->adap);
-	if (ret < 0) {
-		printk(KERN_INFO "I2C: Failed to add bus\n");
-		goto eadapt;
-	}
-	of_i2c_register_devices(&i2c->adap);
-=======
 	ret = i2c_add_numbered_adapter(&i2c->adap);
 	if (ret < 0)
 		goto ereqirq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(dev, i2c);
 
 #ifdef CONFIG_I2C_PXA_SLAVE
-<<<<<<< HEAD
-	printk(KERN_INFO "I2C: %s: PXA I2C adapter, slave address %d\n",
-	       dev_name(&i2c->adap.dev), i2c->slave_addr);
-#else
-	printk(KERN_INFO "I2C: %s: PXA I2C adapter\n",
-	       dev_name(&i2c->adap.dev));
-#endif
-	return 0;
-
-eadapt:
-	if (!i2c->use_pio)
-		free_irq(irq, i2c);
-ereqirq:
-	clk_disable(i2c->clk);
-	iounmap(i2c->reg_base);
-eremap:
-	clk_put(i2c->clk);
-eclk:
-	kfree(i2c);
-emalloc:
-	release_mem_region(res->start, resource_size(res));
-	return ret;
-}
-
-static int __exit i2c_pxa_remove(struct platform_device *dev)
-{
-	struct pxa_i2c *i2c = platform_get_drvdata(dev);
-
-	platform_set_drvdata(dev, NULL);
-
-	i2c_del_adapter(&i2c->adap);
-	if (!i2c->use_pio)
-		free_irq(i2c->irq, i2c);
-
-	clk_disable(i2c->clk);
-	clk_put(i2c->clk);
-
-	iounmap(i2c->reg_base);
-	release_mem_region(i2c->iobase, i2c->iosize);
-	kfree(i2c);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-static int i2c_pxa_suspend_noirq(struct device *dev)
-{
-	struct platform_device *pdev = to_platform_device(dev);
-	struct pxa_i2c *i2c = platform_get_drvdata(pdev);
-=======
 	dev_info(&i2c->adap.dev, " PXA I2C adapter, slave address %d\n",
 		i2c->slave_addr);
 #else
@@ -2228,7 +1551,6 @@ static void i2c_pxa_remove(struct platform_device *dev)
 static int i2c_pxa_suspend_noirq(struct device *dev)
 {
 	struct pxa_i2c *i2c = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clk_disable(i2c->clk);
 
@@ -2237,12 +1559,7 @@ static int i2c_pxa_suspend_noirq(struct device *dev)
 
 static int i2c_pxa_resume_noirq(struct device *dev)
 {
-<<<<<<< HEAD
-	struct platform_device *pdev = to_platform_device(dev);
-	struct pxa_i2c *i2c = platform_get_drvdata(pdev);
-=======
 	struct pxa_i2c *i2c = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clk_enable(i2c->clk);
 	i2c_pxa_reset(i2c);
@@ -2255,27 +1572,12 @@ static const struct dev_pm_ops i2c_pxa_dev_pm_ops = {
 	.resume_noirq = i2c_pxa_resume_noirq,
 };
 
-<<<<<<< HEAD
-#define I2C_PXA_DEV_PM_OPS (&i2c_pxa_dev_pm_ops)
-#else
-#define I2C_PXA_DEV_PM_OPS NULL
-#endif
-
-static struct platform_driver i2c_pxa_driver = {
-	.probe		= i2c_pxa_probe,
-	.remove		= __exit_p(i2c_pxa_remove),
-	.driver		= {
-		.name	= "pxa2xx-i2c",
-		.owner	= THIS_MODULE,
-		.pm	= I2C_PXA_DEV_PM_OPS,
-=======
 static struct platform_driver i2c_pxa_driver = {
 	.probe		= i2c_pxa_probe,
 	.remove_new	= i2c_pxa_remove,
 	.driver		= {
 		.name	= "pxa2xx-i2c",
 		.pm	= pm_sleep_ptr(&i2c_pxa_dev_pm_ops),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = i2c_pxa_dt_ids,
 	},
 	.id_table	= i2c_pxa_id_table,
@@ -2292,10 +1594,6 @@ static void __exit i2c_adap_pxa_exit(void)
 }
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS("platform:pxa2xx-i2c");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 subsys_initcall(i2c_adap_pxa_init);
 module_exit(i2c_adap_pxa_exit);

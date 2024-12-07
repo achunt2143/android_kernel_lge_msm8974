@@ -652,11 +652,7 @@ struct scu_iit_entry {
 
 
 /*
-<<<<<<< HEAD
- * TODO: Where is the SAS_LNKTOV regsiter?
-=======
  * TODO: Where is the SAS_LNKTOV register?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TODO: Where is the SAS_PHYTOV register? */
 
 #define SCU_SAS_TRANSMIT_IDENTIFICATION_SMP_TARGET_SHIFT            (1)
@@ -1243,8 +1239,6 @@ struct scu_transport_layer_registers {
 #define SCU_SAS_LLCTL_GEN_BIT(name) \
 	SCU_GEN_BIT(SCU_SAS_LINK_LAYER_CONTROL_ ## name)
 
-<<<<<<< HEAD
-=======
 #define SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_DEFAULT                     (0xF0)
 #define SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_EXTENDED                    (0x1FF)
 #define SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_SHIFT                       (0)
@@ -1253,7 +1247,6 @@ struct scu_transport_layer_registers {
 #define SCU_SAS_LLTXCOMSAS_GEN_VAL(name, value) \
 	SCU_GEN_VALUE(SCU_SAS_LINK_LAYER_TXCOMSAS_ ## name, value)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* #define SCU_FRXHECR_DCNT_OFFSET      0x00B0 */
 #define SCU_PSZGCR_OFFSET           0x00E4
@@ -1834,11 +1827,7 @@ struct scu_peg_registers {
 };
 
 /**
-<<<<<<< HEAD
- * struct scu_registers - SCU regsiters including both PEG registers if we turn
-=======
  * struct scu_registers - SCU registers including both PEG registers if we turn
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    on that compile option. All of these registers are in the memory mapped
  *    space returned from BAR1.
  *

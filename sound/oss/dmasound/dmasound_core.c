@@ -182,14 +182,9 @@
 #include <linux/soundcard.h>
 #include <linux/poll.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-=======
 #include <linux/sched/signal.h>
 
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dmasound.h"
 
@@ -211,18 +206,10 @@ module_param(writeBufSize, int, 0);
 
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-#ifdef MODULE
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sq_unit = -1;
 static int mixer_unit = -1;
 static int state_unit = -1;
 static int irq_installed;
-<<<<<<< HEAD
-#endif /* MODULE */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* control over who can modify resources shared between play/record */
 static fmode_t shared_resource_owner;
@@ -366,13 +353,8 @@ static int mixer_ioctl(struct file *file, u_int cmd, u_long arg)
 		{
 		    mixer_info info;
 		    memset(&info, 0, sizeof(info));
-<<<<<<< HEAD
-		    strlcpy(info.id, dmasound.mach.name2, sizeof(info.id));
-		    strlcpy(info.name, dmasound.mach.name2, sizeof(info.name));
-=======
 		    strscpy(info.id, dmasound.mach.name2, sizeof(info.id));
 		    strscpy(info.name, dmasound.mach.name2, sizeof(info.name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    info.modify_counter = mixer.modify_counter;
 		    if (copy_to_user((void __user *)arg, &info, sizeof(info)))
 			    return -EFAULT;
@@ -400,22 +382,13 @@ static const struct file_operations mixer_fops =
 	.owner		= THIS_MODULE,
 	.llseek		= no_llseek,
 	.unlocked_ioctl	= mixer_unlocked_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= mixer_open,
 	.release	= mixer_release,
 };
 
 static void mixer_init(void)
 {
-<<<<<<< HEAD
-#ifndef MODULE
-	int mixer_unit;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mixer_unit = register_sound_mixer(&mixer_fops, -1);
 	if (mixer_unit < 0)
 		return;
@@ -443,11 +416,7 @@ static int sq_allocate_buffers(struct sound_queue *sq, int num, int size)
 		return 0;
 	sq->numBufs = num;
 	sq->bufSize = size;
-<<<<<<< HEAD
-	sq->buffers = kmalloc (num * sizeof(char *), GFP_KERNEL);
-=======
 	sq->buffers = kmalloc_array (num, sizeof(char *), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sq->buffers)
 		return -ENOMEM;
 	for (i = 0; i < num; i++) {
@@ -647,17 +616,6 @@ static ssize_t sq_write(struct file *file, const char __user *src, size_t uLeft,
 	}
 
 	while (uLeft) {
-<<<<<<< HEAD
-		while (write_sq.count >= write_sq.max_active) {
-			sq_play();
-			if (write_sq.non_blocking)
-				return uWritten > 0 ? uWritten : -EAGAIN;
-			SLEEP(write_sq.action_queue);
-			if (signal_pending(current))
-				return uWritten > 0 ? uWritten : -EINTR;
-		}
-
-=======
 		DEFINE_WAIT(wait);
 
 		while (write_sq.count >= write_sq.max_active) {
@@ -679,7 +637,6 @@ static ssize_t sq_write(struct file *file, const char __user *src, size_t uLeft,
 
 		finish_wait(&write_sq.action_queue, &wait);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Here, we can avoid disabling the interrupt by first
 		 * copying and translating the data, and then updating
 		 * the write_sq variables. Until this is done, the interrupt
@@ -709,15 +666,9 @@ static ssize_t sq_write(struct file *file, const char __user *src, size_t uLeft,
 	return uUsed < 0? uUsed: uWritten;
 }
 
-<<<<<<< HEAD
-static unsigned int sq_poll(struct file *file, struct poll_table_struct *wait)
-{
-	unsigned int mask = 0;
-=======
 static __poll_t sq_poll(struct file *file, struct poll_table_struct *wait)
 {
 	__poll_t mask = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retVal;
 	
 	if (write_sq.locked == 0) {
@@ -729,11 +680,7 @@ static __poll_t sq_poll(struct file *file, struct poll_table_struct *wait)
 		poll_wait(file, &write_sq.action_queue, wait);
 	if (file->f_mode & FMODE_WRITE)
 		if (write_sq.count < write_sq.max_active || write_sq.block_size - write_sq.rear_size > 0)
-<<<<<<< HEAD
-			mask |= POLLOUT | POLLWRNORM;
-=======
 			mask |= EPOLLOUT | EPOLLWRNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mask;
 
 }
@@ -769,16 +716,8 @@ static int sq_open2(struct sound_queue *sq, struct file *file, fmode_t mode,
 			if (file->f_flags & O_NONBLOCK)
 				return rc;
 			rc = -EINTR;
-<<<<<<< HEAD
-			while (sq->busy) {
-				SLEEP(sq->open_queue);
-				if (signal_pending(current))
-					return rc;
-			}
-=======
 			if (wait_event_interruptible(sq->open_queue, !sq->busy))
 				return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = 0;
 #else
 			/* OSS manual says we will return EBUSY regardless
@@ -902,11 +841,7 @@ static void sq_reset(void)
 	shared_resources_initialised = 0 ;
 }
 
-<<<<<<< HEAD
-static int sq_fsync(struct file *filp, struct dentry *dentry)
-=======
 static int sq_fsync(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = 0;
 	int timeout = 5;
@@ -915,12 +850,8 @@ static int sq_fsync(void)
 	sq_play();	/* there may be an incomplete frame waiting */
 
 	while (write_sq.active) {
-<<<<<<< HEAD
-		SLEEP(write_sq.sync_queue);
-=======
 		wait_event_interruptible_timeout(write_sq.sync_queue,
 						 !write_sq.active, HZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (signal_pending(current)) {
 			/* While waiting for audio output to drain, an
 			 * interrupt occurred.  Stop audio output immediately
@@ -950,11 +881,7 @@ static int sq_release(struct inode *inode, struct file *file)
 
 	if (file->f_mode & FMODE_WRITE) {
 		if (write_sq.busy)
-<<<<<<< HEAD
-			rc = sq_fsync(file, file->f_path.dentry);
-=======
 			rc = sq_fsync();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sq_reset_output() ; /* make sure dma is stopped and all is quiet */
 		write_sq_release_buffers();
@@ -1067,17 +994,9 @@ static int sq_ioctl(struct file *file, u_int cmd, u_long arg)
 	case SNDCTL_DSP_RESET:
 		sq_reset();
 		return 0;
-<<<<<<< HEAD
-		break ;
 	case SNDCTL_DSP_GETFMTS:
 		fmt = dmasound.mach.hardware_afmts ; /* this is what OSS says.. */
 		return IOCTL_OUT(arg, fmt);
-		break ;
-=======
-	case SNDCTL_DSP_GETFMTS:
-		fmt = dmasound.mach.hardware_afmts ; /* this is what OSS says.. */
-		return IOCTL_OUT(arg, fmt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDCTL_DSP_GETBLKSIZE:
 		/* this should tell the caller about bytes that the app can
 		   read/write - the app doesn't care about our internal buffers.
@@ -1094,10 +1013,6 @@ static int sq_ioctl(struct file *file, u_int cmd, u_long arg)
 			size = write_sq.user_frag_size ;
 		}
 		return IOCTL_OUT(arg, size);
-<<<<<<< HEAD
-		break ;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDCTL_DSP_POST:
 		/* all we are going to do is to tell the LL that any
 		   partial frags can be queued for output.
@@ -1114,21 +1029,13 @@ static int sq_ioctl(struct file *file, u_int cmd, u_long arg)
 		*/
 		result = 0 ;
 		if (file->f_mode & FMODE_WRITE) {
-<<<<<<< HEAD
-			result = sq_fsync(file, file->f_path.dentry);
-=======
 			result = sq_fsync();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sq_reset_output() ;
 		}
 		/* if we are the shared resource owner then release them */
 		if (file->f_mode & shared_resource_owner)
 			shared_resources_initialised = 0 ;
 		return result ;
-<<<<<<< HEAD
-		break ;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SOUND_PCM_READ_RATE:
 		return IOCTL_OUT(arg, dmasound.soft.speed);
 	case SNDCTL_DSP_SPEED:
@@ -1207,10 +1114,6 @@ static int sq_ioctl(struct file *file, u_int cmd, u_long arg)
 		   the value is 'random' and that the user _must_ check the actual
 		   frags values using SNDCTL_DSP_GETBLKSIZE or similar */
 		return IOCTL_OUT(arg, data);
-<<<<<<< HEAD
-		break ;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDCTL_DSP_GETOSPACE:
 		/*
 		*/
@@ -1255,10 +1158,7 @@ static const struct file_operations sq_fops =
 	.write		= sq_write,
 	.poll		= sq_poll,
 	.unlocked_ioctl	= sq_unlocked_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= sq_open,
 	.release	= sq_release,
 };
@@ -1266,12 +1166,6 @@ static const struct file_operations sq_fops =
 static int sq_init(void)
 {
 	const struct file_operations *fops = &sq_fops;
-<<<<<<< HEAD
-#ifndef MODULE
-	int sq_unit;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sq_unit = register_sound_dsp(fops, -1);
 	if (sq_unit < 0) {
@@ -1327,33 +1221,6 @@ static char *get_afmt_string(int afmt)
         switch(afmt) {
             case AFMT_MU_LAW:
                 return "mu-law";
-<<<<<<< HEAD
-                break;
-            case AFMT_A_LAW:
-                return "A-law";
-                break;
-            case AFMT_U8:
-                return "unsigned 8 bit";
-                break;
-            case AFMT_S8:
-                return "signed 8 bit";
-                break;
-            case AFMT_S16_BE:
-                return "signed 16 bit BE";
-                break;
-            case AFMT_U16_BE:
-                return "unsigned 16 bit BE";
-                break;
-            case AFMT_S16_LE:
-                return "signed 16 bit LE";
-                break;
-            case AFMT_U16_LE:
-                return "unsigned 16 bit LE";
-                break;
-	    case 0:
-		return "format not set" ;
-		break ;
-=======
             case AFMT_A_LAW:
                 return "A-law";
             case AFMT_U8:
@@ -1370,7 +1237,6 @@ static char *get_afmt_string(int afmt)
                 return "unsigned 16 bit LE";
 	    case 0:
 		return "format not set" ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
             default:
                 break ;
         }
@@ -1492,12 +1358,6 @@ static const struct file_operations state_fops = {
 
 static int state_init(void)
 {
-<<<<<<< HEAD
-#ifndef MODULE
-	int state_unit;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	state_unit = register_sound_special(&state_fops, SND_DEV_STATUS);
 	if (state_unit < 0)
 		return state_unit ;
@@ -1515,16 +1375,9 @@ static int state_init(void)
 int dmasound_init(void)
 {
 	int res ;
-<<<<<<< HEAD
-#ifdef MODULE
-	if (irq_installed)
-		return -EBUSY;
-#endif
-=======
 
 	if (irq_installed)
 		return -EBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set up sound queue, /dev/audio and /dev/dsp. */
 
@@ -1543,13 +1396,7 @@ int dmasound_init(void)
 		printk(KERN_ERR "DMA sound driver: Interrupt initialization failed\n");
 		return -ENODEV;
 	}
-<<<<<<< HEAD
-#ifdef MODULE
 	irq_installed = 1;
-#endif
-=======
-	irq_installed = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "%s DMA sound driver rev %03d installed\n",
 		dmasound.mach.name, (DMASOUND_CORE_REVISION<<4) +
@@ -1563,11 +1410,6 @@ int dmasound_init(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef MODULE
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void dmasound_deinit(void)
 {
 	if (irq_installed) {
@@ -1586,13 +1428,7 @@ void dmasound_deinit(void)
 		unregister_sound_dsp(sq_unit);
 }
 
-<<<<<<< HEAD
-#else /* !MODULE */
-
-static int dmasound_setup(char *str)
-=======
 static int __maybe_unused dmasound_setup(char *str)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ints[6], size;
 
@@ -1610,21 +1446,13 @@ static int __maybe_unused dmasound_setup(char *str)
 			printk("dmasound_setup: invalid catch radius, using default = %d\n", catchRadius);
 		else
 			catchRadius = ints[3];
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 2:
 		if (ints[1] < MIN_BUFFERS)
 			printk("dmasound_setup: invalid number of buffers, using default = %d\n", numWriteBufs);
 		else
 			numWriteBufs = ints[1];
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:
 		if ((size = ints[2]) < 256) /* check for small buffer specs */
 			size <<= 10 ;
@@ -1643,11 +1471,6 @@ static int __maybe_unused dmasound_setup(char *str)
 
 __setup("dmasound=", dmasound_setup);
 
-<<<<<<< HEAD
-#endif /* !MODULE */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     /*
      *  Conversion tables
      */
@@ -1734,13 +1557,7 @@ char dmasound_alaw2dma8[] = {
 
 EXPORT_SYMBOL(dmasound);
 EXPORT_SYMBOL(dmasound_init);
-<<<<<<< HEAD
-#ifdef MODULE
 EXPORT_SYMBOL(dmasound_deinit);
-#endif
-=======
-EXPORT_SYMBOL(dmasound_deinit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(dmasound_write_sq);
 EXPORT_SYMBOL(dmasound_catchRadius);
 #ifdef HAS_8BIT_TABLES

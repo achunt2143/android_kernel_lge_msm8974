@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2008 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
@@ -17,28 +6,20 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/buffer_head.h>
 #include <linux/delay.h>
 #include <linux/sort.h>
-<<<<<<< HEAD
-=======
 #include <linux/hash.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/jhash.h>
 #include <linux/kallsyms.h>
 #include <linux/gfs2_ondisk.h>
 #include <linux/list.h>
 #include <linux/wait.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/seq_file.h>
 #include <linux/debugfs.h>
 #include <linux/kthread.h>
@@ -49,15 +30,12 @@
 #include <linux/rculist_bl.h>
 #include <linux/bit_spinlock.h>
 #include <linux/percpu.h>
-<<<<<<< HEAD
-=======
 #include <linux/list_sort.h>
 #include <linux/lockref.h>
 #include <linux/rhashtable.h>
 #include <linux/pid_namespace.h>
 #include <linux/fdtable.h>
 #include <linux/file.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "gfs2.h"
 #include "incore.h"
@@ -74,30 +52,14 @@
 #include "trace_gfs2.h"
 
 struct gfs2_glock_iter {
-<<<<<<< HEAD
-	int hash;			/* hash bucket index         */
-	struct gfs2_sbd *sdp;		/* incore superblock         */
-	struct gfs2_glock *gl;		/* current glock struct      */
-	char string[512];		/* scratch space             */
-=======
 	struct gfs2_sbd *sdp;		/* incore superblock           */
 	struct rhashtable_iter hti;	/* rhashtable iterator         */
 	struct gfs2_glock *gl;		/* current glock struct        */
 	loff_t last_pos;		/* last position               */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 typedef void (*glock_examiner) (struct gfs2_glock * gl);
 
-<<<<<<< HEAD
-static int __dump_glock(struct seq_file *seq, const struct gfs2_glock *gl);
-#define GLOCK_BUG_ON(gl,x) do { if (unlikely(x)) { __dump_glock(NULL, gl); BUG(); } } while(0)
-static void do_xmote(struct gfs2_glock *gl, struct gfs2_holder *gh, unsigned int target);
-
-static struct dentry *gfs2_root;
-static struct workqueue_struct *glock_workqueue;
-struct workqueue_struct *gfs2_delete_workqueue;
-=======
 static void do_xmote(struct gfs2_glock *gl, struct gfs2_holder *gh, unsigned int target);
 static void __gfs2_glock_dq(struct gfs2_holder *gh);
 static void handle_callback(struct gfs2_glock *gl, unsigned int state,
@@ -105,48 +67,11 @@ static void handle_callback(struct gfs2_glock *gl, unsigned int state,
 
 static struct dentry *gfs2_root;
 static struct workqueue_struct *glock_workqueue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(lru_list);
 static atomic_t lru_count = ATOMIC_INIT(0);
 static DEFINE_SPINLOCK(lru_lock);
 
 #define GFS2_GL_HASH_SHIFT      15
-<<<<<<< HEAD
-#define GFS2_GL_HASH_SIZE       (1 << GFS2_GL_HASH_SHIFT)
-#define GFS2_GL_HASH_MASK       (GFS2_GL_HASH_SIZE - 1)
-
-static struct hlist_bl_head gl_hash_table[GFS2_GL_HASH_SIZE];
-static struct dentry *gfs2_root;
-
-/**
- * gl_hash() - Turn glock number into hash bucket number
- * @lock: The glock number
- *
- * Returns: The number of the corresponding hash bucket
- */
-
-static unsigned int gl_hash(const struct gfs2_sbd *sdp,
-			    const struct lm_lockname *name)
-{
-	unsigned int h;
-
-	h = jhash(&name->ln_number, sizeof(u64), 0);
-	h = jhash(&name->ln_type, sizeof(unsigned int), h);
-	h = jhash(&sdp, sizeof(struct gfs2_sbd *), h);
-	h &= GFS2_GL_HASH_MASK;
-
-	return h;
-}
-
-static inline void spin_lock_bucket(unsigned int hash)
-{
-	hlist_bl_lock(&gl_hash_table[hash]);
-}
-
-static inline void spin_unlock_bucket(unsigned int hash)
-{
-	hlist_bl_unlock(&gl_hash_table[hash]);
-=======
 #define GFS2_GL_HASH_SIZE       BIT(GFS2_GL_HASH_SHIFT)
 
 static const struct rhashtable_params ht_parms = {
@@ -199,28 +124,12 @@ static void wake_up_glock(struct gfs2_glock *gl)
 
 	if (waitqueue_active(wq))
 		__wake_up(wq, TASK_NORMAL, 1, &gl->gl_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gfs2_glock_dealloc(struct rcu_head *rcu)
 {
 	struct gfs2_glock *gl = container_of(rcu, struct gfs2_glock, gl_rcu);
 
-<<<<<<< HEAD
-	if (gl->gl_ops->go_flags & GLOF_ASPACE)
-		kmem_cache_free(gfs2_glock_aspace_cachep, gl);
-	else
-		kmem_cache_free(gfs2_glock_cachep, gl);
-}
-
-void gfs2_glock_free(struct gfs2_glock *gl)
-{
-	struct gfs2_sbd *sdp = gl->gl_sbd;
-
-	call_rcu(&gl->gl_rcu, gfs2_glock_dealloc);
-	if (atomic_dec_and_test(&sdp->sd_glock_disposal))
-		wake_up(&sdp->sd_glock_wait);
-=======
 	kfree(gl->gl_lksb.sb_lvbptr);
 	if (gl->gl_ops->go_flags & GLOF_ASPACE) {
 		struct gfs2_glock_aspace *gla =
@@ -268,7 +177,6 @@ void gfs2_glock_free(struct gfs2_glock *gl)
 	call_rcu(&gl->gl_rcu, gfs2_glock_dealloc);
 	if (atomic_dec_and_test(&sdp->sd_glock_disposal))
 		wake_up(&sdp->sd_kill_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -277,18 +185,11 @@ void gfs2_glock_free(struct gfs2_glock *gl)
  *
  */
 
-<<<<<<< HEAD
-void gfs2_glock_hold(struct gfs2_glock *gl)
-{
-	GLOCK_BUG_ON(gl, atomic_read(&gl->gl_ref) == 0);
-	atomic_inc(&gl->gl_ref);
-=======
 struct gfs2_glock *gfs2_glock_hold(struct gfs2_glock *gl)
 {
 	GLOCK_BUG_ON(gl, __lockref_is_dead(&gl->gl_lockref));
 	lockref_get(&gl->gl_lockref);
 	return gl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -314,27 +215,6 @@ static int demote_ok(const struct gfs2_glock *gl)
 
 void gfs2_glock_add_to_lru(struct gfs2_glock *gl)
 {
-<<<<<<< HEAD
-	spin_lock(&lru_lock);
-
-	if (!list_empty(&gl->gl_lru))
-		list_del_init(&gl->gl_lru);
-	else
-		atomic_inc(&lru_count);
-
-	list_add_tail(&gl->gl_lru, &lru_list);
-	set_bit(GLF_LRU, &gl->gl_flags);
-	spin_unlock(&lru_lock);
-}
-
-static void __gfs2_glock_remove_from_lru(struct gfs2_glock *gl)
-{
-	if (!list_empty(&gl->gl_lru)) {
-		list_del_init(&gl->gl_lru);
-		atomic_dec(&lru_count);
-		clear_bit(GLF_LRU, &gl->gl_flags);
-	}
-=======
 	if (!(gl->gl_ops->go_flags & GLOF_LRU))
 		return;
 
@@ -348,44 +228,10 @@ static void __gfs2_glock_remove_from_lru(struct gfs2_glock *gl)
 	}
 
 	spin_unlock(&lru_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gfs2_glock_remove_from_lru(struct gfs2_glock *gl)
 {
-<<<<<<< HEAD
-	spin_lock(&lru_lock);
-	__gfs2_glock_remove_from_lru(gl);
-	spin_unlock(&lru_lock);
-}
-
-/**
- * __gfs2_glock_schedule_for_reclaim - Add a glock to the reclaim list
- * @gl: the glock
- *
- * If the glock is demotable, then we add it (or move it) to the end
- * of the glock LRU list.
- */
-
-static void __gfs2_glock_schedule_for_reclaim(struct gfs2_glock *gl)
-{
-	if (demote_ok(gl))
-		gfs2_glock_add_to_lru(gl);
-}
-
-/**
- * gfs2_glock_put_nolock() - Decrement reference count on glock
- * @gl: The glock to put
- *
- * This function should only be used if the caller has its own reference
- * to the glock, in addition to the one it is dropping.
- */
-
-void gfs2_glock_put_nolock(struct gfs2_glock *gl)
-{
-	if (atomic_dec_and_test(&gl->gl_ref))
-		GLOCK_BUG_ON(gl, 1);
-=======
 	if (!(gl->gl_ops->go_flags & GLOF_LRU))
 		return;
 
@@ -445,7 +291,6 @@ static void __gfs2_glock_put(struct gfs2_glock *gl)
 void gfs2_glock_queue_put(struct gfs2_glock *gl)
 {
 	gfs2_glock_queue_work(gl, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -456,78 +301,6 @@ void gfs2_glock_queue_put(struct gfs2_glock *gl)
 
 void gfs2_glock_put(struct gfs2_glock *gl)
 {
-<<<<<<< HEAD
-	struct gfs2_sbd *sdp = gl->gl_sbd;
-	struct address_space *mapping = gfs2_glock2aspace(gl);
-
-	if (atomic_dec_and_lock(&gl->gl_ref, &lru_lock)) {
-		__gfs2_glock_remove_from_lru(gl);
-		spin_unlock(&lru_lock);
-		spin_lock_bucket(gl->gl_hash);
-		hlist_bl_del_rcu(&gl->gl_list);
-		spin_unlock_bucket(gl->gl_hash);
-		GLOCK_BUG_ON(gl, !list_empty(&gl->gl_holders));
-		GLOCK_BUG_ON(gl, mapping && mapping->nrpages);
-		trace_gfs2_glock_put(gl);
-		sdp->sd_lockstruct.ls_ops->lm_put_lock(gl);
-	}
-}
-
-/**
- * search_bucket() - Find struct gfs2_glock by lock number
- * @bucket: the bucket to search
- * @name: The lock name
- *
- * Returns: NULL, or the struct gfs2_glock with the requested number
- */
-
-static struct gfs2_glock *search_bucket(unsigned int hash,
-					const struct gfs2_sbd *sdp,
-					const struct lm_lockname *name)
-{
-	struct gfs2_glock *gl;
-	struct hlist_bl_node *h;
-
-	hlist_bl_for_each_entry_rcu(gl, h, &gl_hash_table[hash], gl_list) {
-		if (!lm_name_equal(&gl->gl_name, name))
-			continue;
-		if (gl->gl_sbd != sdp)
-			continue;
-		if (atomic_inc_not_zero(&gl->gl_ref))
-			return gl;
-	}
-
-	return NULL;
-}
-
-/**
- * may_grant - check if its ok to grant a new lock
- * @gl: The glock
- * @gh: The lock request which we wish to grant
- *
- * Returns: true if its ok to grant the lock
- */
-
-static inline int may_grant(const struct gfs2_glock *gl, const struct gfs2_holder *gh)
-{
-	const struct gfs2_holder *gh_head = list_entry(gl->gl_holders.next, const struct gfs2_holder, gh_list);
-	if ((gh->gh_state == LM_ST_EXCLUSIVE ||
-	     gh_head->gh_state == LM_ST_EXCLUSIVE) && gh != gh_head)
-		return 0;
-	if (gl->gl_state == gh->gh_state)
-		return 1;
-	if (gh->gh_flags & GL_EXACT)
-		return 0;
-	if (gl->gl_state == LM_ST_EXCLUSIVE) {
-		if (gh->gh_state == LM_ST_SHARED && gh_head->gh_state == LM_ST_SHARED)
-			return 1;
-		if (gh->gh_state == LM_ST_DEFERRED && gh_head->gh_state == LM_ST_DEFERRED)
-			return 1;
-	}
-	if (gl->gl_state != LM_ST_UNLOCKED && (gh->gh_flags & LM_FLAG_ANY))
-		return 1;
-	return 0;
-=======
 	if (lockref_put_or_lock(&gl->gl_lockref))
 		return;
 
@@ -588,16 +361,11 @@ static inline bool may_grant(struct gfs2_glock *gl,
 	if (gh->gh_flags & LM_FLAG_ANY)
 		return gl->gl_state != LM_ST_UNLOCKED;
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gfs2_holder_wake(struct gfs2_holder *gh)
 {
 	clear_bit(HIF_WAIT, &gh->gh_iflags);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-	wake_up_bit(&gh->gh_iflags, HIF_WAIT);
-=======
 	smp_mb__after_atomic();
 	wake_up_bit(&gh->gh_iflags, HIF_WAIT);
 	if (gh->gh_flags & GL_ASYNC) {
@@ -605,23 +373,15 @@ static void gfs2_holder_wake(struct gfs2_holder *gh)
 
 		wake_up(&sdp->sd_async_glock_wait);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * do_error - Something unexpected has happened during a lock request
-<<<<<<< HEAD
- *
- */
-
-static inline void do_error(struct gfs2_glock *gl, const int ret)
-=======
  * @gl: The glock
  * @ret: The status from the DLM
  */
 
 static void do_error(struct gfs2_glock *gl, const int ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gfs2_holder *gh, *tmp;
 
@@ -641,59 +401,6 @@ static void do_error(struct gfs2_glock *gl, const int ret)
 }
 
 /**
-<<<<<<< HEAD
- * do_promote - promote as many requests as possible on the current queue
- * @gl: The glock
- * 
- * Returns: 1 if there is a blocked holder at the head of the list, or 2
- *          if a type specific operation is underway.
- */
-
-static int do_promote(struct gfs2_glock *gl)
-__releases(&gl->gl_spin)
-__acquires(&gl->gl_spin)
-{
-	const struct gfs2_glock_operations *glops = gl->gl_ops;
-	struct gfs2_holder *gh, *tmp;
-	int ret;
-
-restart:
-	list_for_each_entry_safe(gh, tmp, &gl->gl_holders, gh_list) {
-		if (test_bit(HIF_HOLDER, &gh->gh_iflags))
-			continue;
-		if (may_grant(gl, gh)) {
-			if (gh->gh_list.prev == &gl->gl_holders &&
-			    glops->go_lock) {
-				spin_unlock(&gl->gl_spin);
-				/* FIXME: eliminate this eventually */
-				ret = glops->go_lock(gh);
-				spin_lock(&gl->gl_spin);
-				if (ret) {
-					if (ret == 1)
-						return 2;
-					gh->gh_error = ret;
-					list_del_init(&gh->gh_list);
-					trace_gfs2_glock_queue(gh, 0);
-					gfs2_holder_wake(gh);
-					goto restart;
-				}
-				set_bit(HIF_HOLDER, &gh->gh_iflags);
-				trace_gfs2_promote(gh, 1);
-				gfs2_holder_wake(gh);
-				goto restart;
-			}
-			set_bit(HIF_HOLDER, &gh->gh_iflags);
-			trace_gfs2_promote(gh, 0);
-			gfs2_holder_wake(gh);
-			continue;
-		}
-		if (gh->gh_list.prev == &gl->gl_holders)
-			return 1;
-		do_error(gl, 0);
-		break;
-	}
-	return 0;
-=======
  * find_first_holder - find the first "holder" gh
  * @gl: the glock
  */
@@ -791,7 +498,6 @@ static bool do_promote(struct gfs2_glock *gl)
 			current_gh = gh;
 	}
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -811,12 +517,6 @@ static inline struct gfs2_holder *find_first_waiter(const struct gfs2_glock *gl)
 }
 
 /**
-<<<<<<< HEAD
- * state_change - record that the glock is now in a different state
- * @gl: the glock
- * @new_state the new state
- *
-=======
  * find_last_waiter - find the last gh that's waiting for the glock
  * @gl: the glock
  *
@@ -837,7 +537,6 @@ static inline struct gfs2_holder *find_last_waiter(const struct gfs2_glock *gl)
  * state_change - record that the glock is now in a different state
  * @gl: the glock
  * @new_state: the new state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static void state_change(struct gfs2_glock *gl, unsigned int new_state)
@@ -848,23 +547,12 @@ static void state_change(struct gfs2_glock *gl, unsigned int new_state)
 	held2 = (new_state != LM_ST_UNLOCKED);
 
 	if (held1 != held2) {
-<<<<<<< HEAD
-		if (held2)
-			gfs2_glock_hold(gl);
-		else
-			gfs2_glock_put_nolock(gl);
-	}
-	if (held1 && held2 && list_empty(&gl->gl_holders))
-		clear_bit(GLF_QUEUED, &gl->gl_flags);
-
-=======
 		GLOCK_BUG_ON(gl, __lockref_is_dead(&gl->gl_lockref));
 		if (held2)
 			gl->gl_lockref.count++;
 		else
 			gl->gl_lockref.count--;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (new_state != gl->gl_target)
 		/* shorten our minimum hold time */
 		gl->gl_hold_time = max(gl->gl_hold_time - GL_GLOCK_HOLD_DECR,
@@ -873,8 +561,6 @@ static void state_change(struct gfs2_glock *gl, unsigned int new_state)
 	gl->gl_tchange = jiffies;
 }
 
-<<<<<<< HEAD
-=======
 static void gfs2_set_demote(struct gfs2_glock *gl)
 {
 	struct gfs2_sbd *sdp = gl->gl_name.ln_sbd;
@@ -884,16 +570,11 @@ static void gfs2_set_demote(struct gfs2_glock *gl)
 	wake_up(&sdp->sd_async_glock_wait);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void gfs2_demote_wake(struct gfs2_glock *gl)
 {
 	gl->gl_demote_state = LM_ST_EXCLUSIVE;
 	clear_bit(GLF_DEMOTE, &gl->gl_flags);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up_bit(&gl->gl_flags, GLF_DEMOTE);
 }
 
@@ -909,14 +590,8 @@ static void finish_xmote(struct gfs2_glock *gl, unsigned int ret)
 	const struct gfs2_glock_operations *glops = gl->gl_ops;
 	struct gfs2_holder *gh;
 	unsigned state = ret & LM_OUT_ST_MASK;
-<<<<<<< HEAD
-	int rv;
-
-	spin_lock(&gl->gl_spin);
-=======
 
 	spin_lock(&gl->gl_lockref.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace_gfs2_glock_state_change(gl, state);
 	state_change(gl, state);
 	gh = find_first_waiter(gl);
@@ -928,15 +603,6 @@ static void finish_xmote(struct gfs2_glock *gl, unsigned int ret)
 
 	/* Check for state != intended state */
 	if (unlikely(state != gl->gl_target)) {
-<<<<<<< HEAD
-		if (gh && !test_bit(GLF_DEMOTE_IN_PROGRESS, &gl->gl_flags)) {
-			/* move to back of queue and try next entry */
-			if (ret & LM_OUT_CANCELED) {
-				if ((gh->gh_flags & LM_FLAG_PRIORITY) == 0)
-					list_move_tail(&gh->gh_list, &gl->gl_holders);
-				gh = find_first_waiter(gl);
-				gl->gl_target = gh->gh_state;
-=======
 		if (gh && (ret & LM_OUT_CANCELED))
 			gfs2_holder_wake(gh);
 		if (gh && !test_bit(GLF_DEMOTE_IN_PROGRESS, &gl->gl_flags)) {
@@ -947,7 +613,6 @@ static void finish_xmote(struct gfs2_glock *gl, unsigned int ret)
 				gl->gl_target = gh->gh_state;
 				if (do_promote(gl))
 					goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto retry;
 			}
 			/* Some error or failed "try lock" - report it */
@@ -970,18 +635,11 @@ retry:
 			do_xmote(gl, gh, LM_ST_UNLOCKED);
 			break;
 		default: /* Everything else */
-<<<<<<< HEAD
-			printk(KERN_ERR "GFS2: wanted %u got %u\n", gl->gl_target, state);
-			GLOCK_BUG_ON(gl, 1);
-		}
-		spin_unlock(&gl->gl_spin);
-=======
 			fs_err(gl->gl_name.ln_sbd, "wanted %u got %u\n",
 			       gl->gl_target, state);
 			GLOCK_BUG_ON(gl, 1);
 		}
 		spin_unlock(&gl->gl_lockref.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -990,32 +648,16 @@ retry:
 		gfs2_demote_wake(gl);
 	if (state != LM_ST_UNLOCKED) {
 		if (glops->go_xmote_bh) {
-<<<<<<< HEAD
-			spin_unlock(&gl->gl_spin);
-			rv = glops->go_xmote_bh(gl, gh);
-			spin_lock(&gl->gl_spin);
-=======
 			int rv;
 
 			spin_unlock(&gl->gl_lockref.lock);
 			rv = glops->go_xmote_bh(gl);
 			spin_lock(&gl->gl_lockref.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rv) {
 				do_error(gl, rv);
 				goto out;
 			}
 		}
-<<<<<<< HEAD
-		rv = do_promote(gl);
-		if (rv == 2)
-			goto out_locked;
-	}
-out:
-	clear_bit(GLF_LOCK, &gl->gl_flags);
-out_locked:
-	spin_unlock(&gl->gl_spin);
-=======
 		do_promote(gl);
 	}
 out:
@@ -1031,7 +673,6 @@ static bool is_system_glock(struct gfs2_glock *gl)
 	if (gl == m_ip->i_gl)
 		return true;
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1042,19 +683,6 @@ static bool is_system_glock(struct gfs2_glock *gl)
  *
  */
 
-<<<<<<< HEAD
-static void do_xmote(struct gfs2_glock *gl, struct gfs2_holder *gh, unsigned int target)
-__releases(&gl->gl_spin)
-__acquires(&gl->gl_spin)
-{
-	const struct gfs2_glock_operations *glops = gl->gl_ops;
-	struct gfs2_sbd *sdp = gl->gl_sbd;
-	unsigned int lck_flags = gh ? gh->gh_flags : 0;
-	int ret;
-
-	lck_flags &= (LM_FLAG_TRY | LM_FLAG_TRY_1CB | LM_FLAG_NOEXP |
-		      LM_FLAG_PRIORITY);
-=======
 static void do_xmote(struct gfs2_glock *gl, struct gfs2_holder *gh,
 					 unsigned int target)
 __releases(&gl->gl_lockref.lock)
@@ -1070,14 +698,10 @@ __acquires(&gl->gl_lockref.lock)
 		goto skip_inval;
 
 	lck_flags &= (LM_FLAG_TRY | LM_FLAG_TRY_1CB | LM_FLAG_NOEXP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	GLOCK_BUG_ON(gl, gl->gl_state == target);
 	GLOCK_BUG_ON(gl, gl->gl_state == gl->gl_target);
 	if ((target == LM_ST_UNLOCKED || target == LM_ST_DEFERRED) &&
 	    glops->go_inval) {
-<<<<<<< HEAD
-		set_bit(GLF_INVALIDATE_IN_PROGRESS, &gl->gl_flags);
-=======
 		/*
 		 * If another process is already doing the invalidate, let that
 		 * finish first.  The glock state machine will get back to this
@@ -1086,7 +710,6 @@ __acquires(&gl->gl_lockref.lock)
 		if (test_and_set_bit(GLF_INVALIDATE_IN_PROGRESS,
 				     &gl->gl_flags))
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		do_error(gl, 0); /* Fail queued try locks */
 	}
 	gl->gl_req = target;
@@ -1095,44 +718,6 @@ __acquires(&gl->gl_lockref.lock)
 	    (gl->gl_state == LM_ST_EXCLUSIVE) ||
 	    (lck_flags & (LM_FLAG_TRY|LM_FLAG_TRY_1CB)))
 		clear_bit(GLF_BLOCKING, &gl->gl_flags);
-<<<<<<< HEAD
-	spin_unlock(&gl->gl_spin);
-	if (glops->go_xmote_th)
-		glops->go_xmote_th(gl);
-	if (test_bit(GLF_INVALIDATE_IN_PROGRESS, &gl->gl_flags))
-		glops->go_inval(gl, target == LM_ST_DEFERRED ? 0 : DIO_METADATA);
-	clear_bit(GLF_INVALIDATE_IN_PROGRESS, &gl->gl_flags);
-
-	gfs2_glock_hold(gl);
-	if (sdp->sd_lockstruct.ls_ops->lm_lock)	{
-		/* lock_dlm */
-		ret = sdp->sd_lockstruct.ls_ops->lm_lock(gl, target, lck_flags);
-		GLOCK_BUG_ON(gl, ret);
-	} else { /* lock_nolock */
-		finish_xmote(gl, target);
-		if (queue_delayed_work(glock_workqueue, &gl->gl_work, 0) == 0)
-			gfs2_glock_put(gl);
-	}
-
-	spin_lock(&gl->gl_spin);
-}
-
-/**
- * find_first_holder - find the first "holder" gh
- * @gl: the glock
- */
-
-static inline struct gfs2_holder *find_first_holder(const struct gfs2_glock *gl)
-{
-	struct gfs2_holder *gh;
-
-	if (!list_empty(&gl->gl_holders)) {
-		gh = list_entry(gl->gl_holders.next, struct gfs2_holder, gh_list);
-		if (test_bit(HIF_HOLDER, &gh->gh_iflags))
-			return gh;
-	}
-	return NULL;
-=======
 	spin_unlock(&gl->gl_lockref.lock);
 	if (glops->go_sync) {
 		ret = glops->go_sync(gl);
@@ -1234,7 +819,6 @@ skip_inval:
 	}
 out:
 	spin_lock(&gl->gl_lockref.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1245,18 +829,10 @@ out:
  */
 
 static void run_queue(struct gfs2_glock *gl, const int nonblock)
-<<<<<<< HEAD
-__releases(&gl->gl_spin)
-__acquires(&gl->gl_spin)
-{
-	struct gfs2_holder *gh = NULL;
-	int ret;
-=======
 __releases(&gl->gl_lockref.lock)
 __acquires(&gl->gl_lockref.lock)
 {
 	struct gfs2_holder *gh = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_and_set_bit(GLF_LOCK, &gl->gl_flags))
 		return;
@@ -1275,69 +851,25 @@ __acquires(&gl->gl_lockref.lock)
 	} else {
 		if (test_bit(GLF_DEMOTE, &gl->gl_flags))
 			gfs2_demote_wake(gl);
-<<<<<<< HEAD
-		ret = do_promote(gl);
-		if (ret == 0)
-			goto out_unlock;
-		if (ret == 2)
-			goto out;
-=======
 		if (do_promote(gl))
 			goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gh = find_first_waiter(gl);
 		gl->gl_target = gh->gh_state;
 		if (!(gh->gh_flags & (LM_FLAG_TRY | LM_FLAG_TRY_1CB)))
 			do_error(gl, 0); /* Fail queued try locks */
 	}
 	do_xmote(gl, gh, gl->gl_target);
-<<<<<<< HEAD
-out:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 out_sched:
 	clear_bit(GLF_LOCK, &gl->gl_flags);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-	gfs2_glock_hold(gl);
-	if (queue_delayed_work(glock_workqueue, &gl->gl_work, 0) == 0)
-		gfs2_glock_put_nolock(gl);
-=======
 	smp_mb__after_atomic();
 	gl->gl_lockref.count++;
 	__gfs2_glock_queue_work(gl, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 out_unlock:
 	clear_bit(GLF_LOCK, &gl->gl_flags);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-	return;
-}
-
-static void delete_work_func(struct work_struct *work)
-{
-	struct gfs2_glock *gl = container_of(work, struct gfs2_glock, gl_delete);
-	struct gfs2_sbd *sdp = gl->gl_sbd;
-	struct gfs2_inode *ip;
-	struct inode *inode;
-	u64 no_addr = gl->gl_name.ln_number;
-
-	ip = gl->gl_object;
-	/* Note: Unsafe to dereference ip as we don't hold right refs/locks */
-
-	if (ip)
-		inode = gfs2_ilookup(sdp->sd_vfs, no_addr, 1);
-	else
-		inode = gfs2_lookup_by_inum(sdp, no_addr, NULL, GFS2_BLKST_UNLINKED);
-	if (inode && !IS_ERR(inode)) {
-		d_prune_aliases(inode);
-		iput(inode);
-	}
-=======
 	smp_mb__after_atomic();
 	return;
 }
@@ -1530,7 +1062,6 @@ static void delete_work_func(struct work_struct *work)
 	}
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_glock_put(gl);
 }
 
@@ -1538,15 +1069,6 @@ static void glock_work_func(struct work_struct *work)
 {
 	unsigned long delay = 0;
 	struct gfs2_glock *gl = container_of(work, struct gfs2_glock, gl_work.work);
-<<<<<<< HEAD
-	int drop_ref = 0;
-
-	if (test_and_clear_bit(GLF_REPLY_PENDING, &gl->gl_flags)) {
-		finish_xmote(gl, gl->gl_reply);
-		drop_ref = 1;
-	}
-	spin_lock(&gl->gl_spin);
-=======
 	unsigned int drop_refs = 1;
 
 	if (test_and_clear_bit(GLF_REPLY_PENDING, &gl->gl_flags)) {
@@ -1554,7 +1076,6 @@ static void glock_work_func(struct work_struct *work)
 		drop_refs++;
 	}
 	spin_lock(&gl->gl_lockref.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(GLF_PENDING_DEMOTE, &gl->gl_flags) &&
 	    gl->gl_state != LM_ST_UNLOCKED &&
 	    gl->gl_demote_state != LM_ST_EXCLUSIVE) {
@@ -1566,23 +1087,6 @@ static void glock_work_func(struct work_struct *work)
 
 		if (!delay) {
 			clear_bit(GLF_PENDING_DEMOTE, &gl->gl_flags);
-<<<<<<< HEAD
-			set_bit(GLF_DEMOTE, &gl->gl_flags);
-		}
-	}
-	run_queue(gl, 0);
-	spin_unlock(&gl->gl_spin);
-	if (!delay)
-		gfs2_glock_put(gl);
-	else {
-		if (gl->gl_name.ln_type != LM_TYPE_INODE)
-			delay = 0;
-		if (queue_delayed_work(glock_workqueue, &gl->gl_work, delay) == 0)
-			gfs2_glock_put(gl);
-	}
-	if (drop_ref)
-		gfs2_glock_put(gl);
-=======
 			gfs2_set_demote(gl);
 		}
 	}
@@ -1640,7 +1144,6 @@ out:
 	rcu_read_unlock();
 	finish_wait(wq, &wait.wait);
 	return gl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1661,43 +1164,6 @@ int gfs2_glock_get(struct gfs2_sbd *sdp, u64 number,
 		   struct gfs2_glock **glp)
 {
 	struct super_block *s = sdp->sd_vfs;
-<<<<<<< HEAD
-	struct lm_lockname name = { .ln_number = number, .ln_type = glops->go_type };
-	struct gfs2_glock *gl, *tmp;
-	unsigned int hash = gl_hash(sdp, &name);
-	struct address_space *mapping;
-	struct kmem_cache *cachep;
-
-	rcu_read_lock();
-	gl = search_bucket(hash, sdp, &name);
-	rcu_read_unlock();
-
-	*glp = gl;
-	if (gl)
-		return 0;
-	if (!create)
-		return -ENOENT;
-
-	if (glops->go_flags & GLOF_ASPACE)
-		cachep = gfs2_glock_aspace_cachep;
-	else
-		cachep = gfs2_glock_cachep;
-	gl = kmem_cache_alloc(cachep, GFP_KERNEL);
-	if (!gl)
-		return -ENOMEM;
-
-	atomic_inc(&sdp->sd_glock_disposal);
-	gl->gl_sbd = sdp;
-	gl->gl_flags = 0;
-	gl->gl_name = name;
-	atomic_set(&gl->gl_ref, 1);
-	gl->gl_state = LM_ST_UNLOCKED;
-	gl->gl_target = LM_ST_UNLOCKED;
-	gl->gl_demote_state = LM_ST_EXCLUSIVE;
-	gl->gl_hash = hash;
-	gl->gl_ops = glops;
-	gl->gl_dstamp = ktime_set(0, 0);
-=======
 	struct lm_lockname name = { .ln_number = number,
 				    .ln_type = glops->go_type,
 				    .ln_sbd = sdp };
@@ -1745,28 +1211,18 @@ int gfs2_glock_get(struct gfs2_sbd *sdp, u64 number,
 	gl->gl_target = LM_ST_UNLOCKED;
 	gl->gl_demote_state = LM_ST_EXCLUSIVE;
 	gl->gl_dstamp = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	preempt_disable();
 	/* We use the global stats to estimate the initial per-glock stats */
 	gl->gl_stats = this_cpu_ptr(sdp->sd_lkstats)->lkstats[glops->go_type];
 	preempt_enable();
 	gl->gl_stats.stats[GFS2_LKS_DCOUNT] = 0;
 	gl->gl_stats.stats[GFS2_LKS_QCOUNT] = 0;
-<<<<<<< HEAD
-	memset(&gl->gl_lksb, 0, sizeof(struct dlm_lksb));
-	gl->gl_lksb.sb_lvbptr = gl->gl_lvb;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gl->gl_tchange = jiffies;
 	gl->gl_object = NULL;
 	gl->gl_hold_time = GL_GLOCK_DFT_HOLD;
 	INIT_DELAYED_WORK(&gl->gl_work, glock_work_func);
-<<<<<<< HEAD
-	INIT_WORK(&gl->gl_delete, delete_work_func);
-=======
 	if (gl->gl_name.ln_type == LM_TYPE_IOPEN)
 		INIT_DELAYED_WORK(&gl->gl_delete, delete_work_func);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mapping = gfs2_glock2aspace(gl);
 	if (mapping) {
@@ -1774,32 +1230,6 @@ int gfs2_glock_get(struct gfs2_sbd *sdp, u64 number,
 		mapping->host = s->s_bdev->bd_inode;
 		mapping->flags = 0;
 		mapping_set_gfp_mask(mapping, GFP_NOFS);
-<<<<<<< HEAD
-		mapping->assoc_mapping = NULL;
-		mapping->backing_dev_info = s->s_bdi;
-		mapping->writeback_index = 0;
-	}
-
-	spin_lock_bucket(hash);
-	tmp = search_bucket(hash, sdp, &name);
-	if (tmp) {
-		spin_unlock_bucket(hash);
-		kmem_cache_free(cachep, gl);
-		atomic_dec(&sdp->sd_glock_disposal);
-		gl = tmp;
-	} else {
-		hlist_bl_add_head_rcu(&gl->gl_list, &gl_hash_table[hash]);
-		spin_unlock_bucket(hash);
-	}
-
-	*glp = gl;
-
-	return 0;
-}
-
-/**
- * gfs2_holder_init - initialize a struct gfs2_holder in the default way
-=======
 		mapping->i_private_data = NULL;
 		mapping->writeback_index = 0;
 	}
@@ -1826,7 +1256,6 @@ out:
 
 /**
  * __gfs2_holder_init - initialize a struct gfs2_holder in the default way
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @gl: the glock
  * @state: the state we're requesting
  * @flags: the modifier flags
@@ -1834,20 +1263,6 @@ out:
  *
  */
 
-<<<<<<< HEAD
-void gfs2_holder_init(struct gfs2_glock *gl, unsigned int state, unsigned flags,
-		      struct gfs2_holder *gh)
-{
-	INIT_LIST_HEAD(&gh->gh_list);
-	gh->gh_gl = gl;
-	gh->gh_ip = (unsigned long)__builtin_return_address(0);
-	gh->gh_owner_pid = get_pid(task_pid(current));
-	gh->gh_state = state;
-	gh->gh_flags = flags;
-	gh->gh_error = 0;
-	gh->gh_iflags = 0;
-	gfs2_glock_hold(gl);
-=======
 void __gfs2_holder_init(struct gfs2_glock *gl, unsigned int state, u16 flags,
 			struct gfs2_holder *gh, unsigned long ip)
 {
@@ -1858,7 +1273,6 @@ void __gfs2_holder_init(struct gfs2_glock *gl, unsigned int state, u16 flags,
 	gh->gh_state = state;
 	gh->gh_flags = flags;
 	gh->gh_iflags = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1871,23 +1285,13 @@ void __gfs2_holder_init(struct gfs2_glock *gl, unsigned int state, u16 flags,
  *
  */
 
-<<<<<<< HEAD
-void gfs2_holder_reinit(unsigned int state, unsigned flags, struct gfs2_holder *gh)
-=======
 void gfs2_holder_reinit(unsigned int state, u16 flags, struct gfs2_holder *gh)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	gh->gh_state = state;
 	gh->gh_flags = flags;
 	gh->gh_iflags = 0;
-<<<<<<< HEAD
-	gh->gh_ip = (unsigned long)__builtin_return_address(0);
-	if (gh->gh_owner_pid)
-		put_pid(gh->gh_owner_pid);
-=======
 	gh->gh_ip = _RET_IP_;
 	put_pid(gh->gh_owner_pid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gh->gh_owner_pid = get_pid(task_pid(current));
 }
 
@@ -1901,77 +1305,6 @@ void gfs2_holder_uninit(struct gfs2_holder *gh)
 {
 	put_pid(gh->gh_owner_pid);
 	gfs2_glock_put(gh->gh_gl);
-<<<<<<< HEAD
-	gh->gh_gl = NULL;
-	gh->gh_ip = 0;
-}
-
-/**
- * gfs2_glock_holder_wait
- * @word: unused
- *
- * This function and gfs2_glock_demote_wait both show up in the WCHAN
- * field. Thus I've separated these otherwise identical functions in
- * order to be more informative to the user.
- */
-
-static int gfs2_glock_holder_wait(void *word)
-{
-        schedule();
-        return 0;
-}
-
-static int gfs2_glock_demote_wait(void *word)
-{
-	schedule();
-	return 0;
-}
-
-static void wait_on_holder(struct gfs2_holder *gh)
-{
-	unsigned long time1 = jiffies;
-
-	might_sleep();
-	wait_on_bit(&gh->gh_iflags, HIF_WAIT, gfs2_glock_holder_wait, TASK_UNINTERRUPTIBLE);
-	if (time_after(jiffies, time1 + HZ)) /* have we waited > a second? */
-		/* Lengthen the minimum hold time. */
-		gh->gh_gl->gl_hold_time = min(gh->gh_gl->gl_hold_time +
-					      GL_GLOCK_HOLD_INCR,
-					      GL_GLOCK_MAX_HOLD);
-}
-
-static void wait_on_demote(struct gfs2_glock *gl)
-{
-	might_sleep();
-	wait_on_bit(&gl->gl_flags, GLF_DEMOTE, gfs2_glock_demote_wait, TASK_UNINTERRUPTIBLE);
-}
-
-/**
- * handle_callback - process a demote request
- * @gl: the glock
- * @state: the state the caller wants us to change to
- *
- * There are only two requests that we are going to see in actual
- * practise: LM_ST_SHARED and LM_ST_UNLOCKED
- */
-
-static void handle_callback(struct gfs2_glock *gl, unsigned int state,
-			    unsigned long delay)
-{
-	int bit = delay ? GLF_PENDING_DEMOTE : GLF_DEMOTE;
-
-	set_bit(bit, &gl->gl_flags);
-	if (gl->gl_demote_state == LM_ST_EXCLUSIVE) {
-		gl->gl_demote_state = state;
-		gl->gl_demote_time = jiffies;
-	} else if (gl->gl_demote_state != LM_ST_UNLOCKED &&
-			gl->gl_demote_state != state) {
-		gl->gl_demote_state = LM_ST_UNLOCKED;
-	}
-	if (gl->gl_ops->go_callback)
-		gl->gl_ops->go_callback(gl);
-	trace_gfs2_demote_rq(gl);
-=======
 	gfs2_holder_mark_uninitialized(gh);
 	gh->gh_ip = 0;
 }
@@ -2004,7 +1337,6 @@ int gfs2_glock_holder_ready(struct gfs2_holder *gh)
 	if (gh->gh_error)
 		gfs2_glock_dq(gh);
 	return gh->gh_error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2016,10 +1348,6 @@ int gfs2_glock_holder_ready(struct gfs2_holder *gh)
 
 int gfs2_glock_wait(struct gfs2_holder *gh)
 {
-<<<<<<< HEAD
-	wait_on_holder(gh);
-	return gh->gh_error;
-=======
 	unsigned long start_time = jiffies;
 
 	might_sleep();
@@ -2120,7 +1448,6 @@ static void handle_callback(struct gfs2_glock *gl, unsigned int state,
 	if (gl->gl_ops->go_callback)
 		gl->gl_ops->go_callback(gl, remote);
 	trace_gfs2_demote_rq(gl, remote);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void gfs2_print_dbg(struct seq_file *seq, const char *fmt, ...)
@@ -2131,29 +1458,17 @@ void gfs2_print_dbg(struct seq_file *seq, const char *fmt, ...)
 	va_start(args, fmt);
 
 	if (seq) {
-<<<<<<< HEAD
-		struct gfs2_glock_iter *gi = seq->private;
-		vsprintf(gi->string, fmt, args);
-		seq_printf(seq, gi->string);
-=======
 		seq_vprintf(seq, fmt, args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		vaf.fmt = fmt;
 		vaf.va = &args;
 
-<<<<<<< HEAD
-		printk(KERN_ERR " %pV", &vaf);
-=======
 		pr_err("%pV", &vaf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	va_end(args);
 }
 
-<<<<<<< HEAD
-=======
 static inline bool pid_is_meaningful(const struct gfs2_holder *gh)
 {
         if (!(gh->gh_flags & GL_NOPID))
@@ -2163,7 +1478,6 @@ static inline bool pid_is_meaningful(const struct gfs2_holder *gh)
         return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * add_to_queue - Add a holder to the wait queue (but look for recursion)
  * @gh: the holder structure to add
@@ -2175,24 +1489,6 @@ static inline bool pid_is_meaningful(const struct gfs2_holder *gh)
  */
 
 static inline void add_to_queue(struct gfs2_holder *gh)
-<<<<<<< HEAD
-__releases(&gl->gl_spin)
-__acquires(&gl->gl_spin)
-{
-	struct gfs2_glock *gl = gh->gh_gl;
-	struct gfs2_sbd *sdp = gl->gl_sbd;
-	struct list_head *insert_pt = NULL;
-	struct gfs2_holder *gh2;
-	int try_lock = 0;
-
-	BUG_ON(gh->gh_owner_pid == NULL);
-	if (test_and_set_bit(HIF_WAIT, &gh->gh_iflags))
-		BUG();
-
-	if (gh->gh_flags & (LM_FLAG_TRY | LM_FLAG_TRY_1CB)) {
-		if (test_bit(GLF_LOCK, &gl->gl_flags))
-			try_lock = 1;
-=======
 __releases(&gl->gl_lockref.lock)
 __acquires(&gl->gl_lockref.lock)
 {
@@ -2213,20 +1509,11 @@ __acquires(&gl->gl_lockref.lock)
 			current_gh = find_first_holder(gl);
 			try_futile = !may_grant(gl, current_gh, gh);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (test_bit(GLF_INVALIDATE_IN_PROGRESS, &gl->gl_flags))
 			goto fail;
 	}
 
 	list_for_each_entry(gh2, &gl->gl_holders, gh_list) {
-<<<<<<< HEAD
-		if (unlikely(gh2->gh_owner_pid == gh->gh_owner_pid &&
-		    (gh->gh_gl->gl_ops->go_type != LM_TYPE_FLOCK)))
-			goto trap_recursive;
-		if (try_lock &&
-		    !(gh2->gh_flags & (LM_FLAG_TRY | LM_FLAG_TRY_1CB)) &&
-		    !may_grant(gl, gh)) {
-=======
 		if (likely(gh2->gh_owner_pid != gh->gh_owner_pid))
 			continue;
 		if (gh->gh_gl->gl_ops->go_type == LM_TYPE_FLOCK)
@@ -2238,7 +1525,6 @@ __acquires(&gl->gl_lockref.lock)
 	list_for_each_entry(gh2, &gl->gl_holders, gh_list) {
 		if (try_futile &&
 		    !(gh2->gh_flags & (LM_FLAG_TRY | LM_FLAG_TRY_1CB))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail:
 			gh->gh_error = GLR_TRYFAILED;
 			gfs2_holder_wake(gh);
@@ -2246,46 +1532,12 @@ fail:
 		}
 		if (test_bit(HIF_HOLDER, &gh2->gh_iflags))
 			continue;
-<<<<<<< HEAD
-		if (unlikely((gh->gh_flags & LM_FLAG_PRIORITY) && !insert_pt))
-			insert_pt = &gh2->gh_list;
 	}
-	set_bit(GLF_QUEUED, &gl->gl_flags);
-=======
-	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace_gfs2_glock_queue(gh, 1);
 	gfs2_glstats_inc(gl, GFS2_LKS_QCOUNT);
 	gfs2_sbstats_inc(gl, GFS2_LKS_QCOUNT);
 	if (likely(insert_pt == NULL)) {
 		list_add_tail(&gh->gh_list, &gl->gl_holders);
-<<<<<<< HEAD
-		if (unlikely(gh->gh_flags & LM_FLAG_PRIORITY))
-			goto do_cancel;
-		return;
-	}
-	list_add_tail(&gh->gh_list, insert_pt);
-do_cancel:
-	gh = list_entry(gl->gl_holders.next, struct gfs2_holder, gh_list);
-	if (!(gh->gh_flags & LM_FLAG_PRIORITY)) {
-		spin_unlock(&gl->gl_spin);
-		if (sdp->sd_lockstruct.ls_ops->lm_cancel)
-			sdp->sd_lockstruct.ls_ops->lm_cancel(gl);
-		spin_lock(&gl->gl_spin);
-	}
-	return;
-
-trap_recursive:
-	print_symbol(KERN_ERR "original: %s\n", gh2->gh_ip);
-	printk(KERN_ERR "pid: %d\n", pid_nr(gh2->gh_owner_pid));
-	printk(KERN_ERR "lock type: %d req lock state : %d\n",
-	       gh2->gh_gl->gl_name.ln_type, gh2->gh_state);
-	print_symbol(KERN_ERR "new: %s\n", gh->gh_ip);
-	printk(KERN_ERR "pid: %d\n", pid_nr(gh->gh_owner_pid));
-	printk(KERN_ERR "lock type: %d req lock state : %d\n",
-	       gh->gh_gl->gl_name.ln_type, gh->gh_state);
-	__dump_glock(NULL, gl);
-=======
 		return;
 	}
 	list_add_tail(&gh->gh_list, insert_pt);
@@ -2305,7 +1557,6 @@ trap_recursive:
 	fs_err(sdp, "lock type: %d req lock state : %d\n",
 	       gh->gh_gl->gl_name.ln_type, gh->gh_state);
 	gfs2_dump_glock(NULL, gl, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG();
 }
 
@@ -2321,25 +1572,6 @@ trap_recursive:
 int gfs2_glock_nq(struct gfs2_holder *gh)
 {
 	struct gfs2_glock *gl = gh->gh_gl;
-<<<<<<< HEAD
-	struct gfs2_sbd *sdp = gl->gl_sbd;
-	int error = 0;
-
-	if (unlikely(test_bit(SDF_SHUTDOWN, &sdp->sd_flags)))
-		return -EIO;
-
-	if (test_bit(GLF_LRU, &gl->gl_flags))
-		gfs2_glock_remove_from_lru(gl);
-
-	spin_lock(&gl->gl_spin);
-	add_to_queue(gh);
-	if ((LM_FLAG_NOEXP & gh->gh_flags) &&
-	    test_and_clear_bit(GLF_FROZEN, &gl->gl_flags))
-		set_bit(GLF_REPLY_PENDING, &gl->gl_flags);
-	run_queue(gl, 1);
-	spin_unlock(&gl->gl_spin);
-
-=======
 	int error;
 
 	if (glock_blocked_by_withdraw(gl) && !(gh->gh_flags & LM_FLAG_NOEXP))
@@ -2380,7 +1612,6 @@ unlock:
 	spin_unlock(&gl->gl_lockref.lock);
 
 	error = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(gh->gh_flags & GL_ASYNC))
 		error = gfs2_glock_wait(gh);
 
@@ -2399,8 +1630,6 @@ int gfs2_glock_poll(struct gfs2_holder *gh)
 	return test_bit(HIF_WAIT, &gh->gh_iflags) ? 0 : 1;
 }
 
-<<<<<<< HEAD
-=======
 static inline bool needs_demote(struct gfs2_glock *gl)
 {
 	return (test_bit(GLF_DEMOTE, &gl->gl_flags) ||
@@ -2447,54 +1676,11 @@ static void __gfs2_glock_dq(struct gfs2_holder *gh)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * gfs2_glock_dq - dequeue a struct gfs2_holder from a glock (release a glock)
  * @gh: the glock holder
  *
  */
-<<<<<<< HEAD
-
-void gfs2_glock_dq(struct gfs2_holder *gh)
-{
-	struct gfs2_glock *gl = gh->gh_gl;
-	const struct gfs2_glock_operations *glops = gl->gl_ops;
-	unsigned delay = 0;
-	int fast_path = 0;
-
-	spin_lock(&gl->gl_spin);
-	if (gh->gh_flags & GL_NOCACHE)
-		handle_callback(gl, LM_ST_UNLOCKED, 0);
-
-	list_del_init(&gh->gh_list);
-	if (find_first_holder(gl) == NULL) {
-		if (glops->go_unlock) {
-			GLOCK_BUG_ON(gl, test_and_set_bit(GLF_LOCK, &gl->gl_flags));
-			spin_unlock(&gl->gl_spin);
-			glops->go_unlock(gh);
-			spin_lock(&gl->gl_spin);
-			clear_bit(GLF_LOCK, &gl->gl_flags);
-		}
-		if (list_empty(&gl->gl_holders) &&
-		    !test_bit(GLF_PENDING_DEMOTE, &gl->gl_flags) &&
-		    !test_bit(GLF_DEMOTE, &gl->gl_flags))
-			fast_path = 1;
-	}
-	if (!test_bit(GLF_LFLUSH, &gl->gl_flags))
-		__gfs2_glock_schedule_for_reclaim(gl);
-	trace_gfs2_glock_queue(gh, 0);
-	spin_unlock(&gl->gl_spin);
-	if (likely(fast_path))
-		return;
-
-	gfs2_glock_hold(gl);
-	if (test_bit(GLF_PENDING_DEMOTE, &gl->gl_flags) &&
-	    !test_bit(GLF_DEMOTE, &gl->gl_flags) &&
-	    gl->gl_name.ln_type == LM_TYPE_INODE)
-		delay = gl->gl_hold_time;
-	if (queue_delayed_work(glock_workqueue, &gl->gl_work, delay) == 0)
-		gfs2_glock_put(gl);
-=======
 void gfs2_glock_dq(struct gfs2_holder *gh)
 {
 	struct gfs2_glock *gl = gh->gh_gl;
@@ -2538,19 +1724,14 @@ void gfs2_glock_dq(struct gfs2_holder *gh)
 	__gfs2_glock_dq(gh);
 out:
 	spin_unlock(&gl->gl_lockref.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void gfs2_glock_dq_wait(struct gfs2_holder *gh)
 {
 	struct gfs2_glock *gl = gh->gh_gl;
 	gfs2_glock_dq(gh);
-<<<<<<< HEAD
-	wait_on_demote(gl);
-=======
 	might_sleep();
 	wait_on_bit(&gl->gl_flags, GLF_DEMOTE, TASK_UNINTERRUPTIBLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2579,11 +1760,7 @@ void gfs2_glock_dq_uninit(struct gfs2_holder *gh)
 
 int gfs2_glock_nq_num(struct gfs2_sbd *sdp, u64 number,
 		      const struct gfs2_glock_operations *glops,
-<<<<<<< HEAD
-		      unsigned int state, int flags, struct gfs2_holder *gh)
-=======
 		      unsigned int state, u16 flags, struct gfs2_holder *gh)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gfs2_glock *gl;
 	int error;
@@ -2620,16 +1797,10 @@ static int glock_compare(const void *arg_a, const void *arg_b)
 }
 
 /**
-<<<<<<< HEAD
- * nq_m_sync - synchonously acquire more than one glock in deadlock free order
- * @num_gh: the number of structures
- * @ghs: an array of struct gfs2_holder structures
-=======
  * nq_m_sync - synchronously acquire more than one glock in deadlock free order
  * @num_gh: the number of structures
  * @ghs: an array of struct gfs2_holder structures
  * @p: placeholder for the holder structure to pass back
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 0 on success (all glocks acquired),
  *          errno on failure (no glocks acquired)
@@ -2647,11 +1818,6 @@ static int nq_m_sync(unsigned int num_gh, struct gfs2_holder *ghs,
 	sort(p, num_gh, sizeof(struct gfs2_holder *), glock_compare, NULL);
 
 	for (x = 0; x < num_gh; x++) {
-<<<<<<< HEAD
-		p[x]->gh_flags &= ~(LM_FLAG_TRY | GL_ASYNC);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = gfs2_glock_nq(p[x]);
 		if (error) {
 			while (x--)
@@ -2668,10 +1834,6 @@ static int nq_m_sync(unsigned int num_gh, struct gfs2_holder *ghs,
  * @num_gh: the number of structures
  * @ghs: an array of struct gfs2_holder structures
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns: 0 on success (all glocks acquired),
  *          errno on failure (no glocks acquired)
  */
@@ -2686,20 +1848,12 @@ int gfs2_glock_nq_m(unsigned int num_gh, struct gfs2_holder *ghs)
 	case 0:
 		return 0;
 	case 1:
-<<<<<<< HEAD
-		ghs->gh_flags &= ~(LM_FLAG_TRY | GL_ASYNC);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return gfs2_glock_nq(ghs);
 	default:
 		if (num_gh <= 4)
 			break;
-<<<<<<< HEAD
-		pph = kmalloc(num_gh * sizeof(struct gfs2_holder *), GFP_NOFS);
-=======
 		pph = kmalloc_array(num_gh, sizeof(struct gfs2_holder *),
 				    GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!pph)
 			return -ENOMEM;
 	}
@@ -2725,22 +1879,6 @@ void gfs2_glock_dq_m(unsigned int num_gh, struct gfs2_holder *ghs)
 		gfs2_glock_dq(&ghs[num_gh]);
 }
 
-<<<<<<< HEAD
-/**
- * gfs2_glock_dq_uninit_m - release multiple glocks
- * @num_gh: the number of structures
- * @ghs: an array of struct gfs2_holder structures
- *
- */
-
-void gfs2_glock_dq_uninit_m(unsigned int num_gh, struct gfs2_holder *ghs)
-{
-	while (num_gh--)
-		gfs2_glock_dq_uninit(&ghs[num_gh]);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void gfs2_glock_cb(struct gfs2_glock *gl, unsigned int state)
 {
 	unsigned long delay = 0;
@@ -2748,32 +1886,18 @@ void gfs2_glock_cb(struct gfs2_glock *gl, unsigned int state)
 	unsigned long now = jiffies;
 
 	gfs2_glock_hold(gl);
-<<<<<<< HEAD
-	holdtime = gl->gl_tchange + gl->gl_hold_time;
-	if (test_bit(GLF_QUEUED, &gl->gl_flags) &&
-=======
 	spin_lock(&gl->gl_lockref.lock);
 	holdtime = gl->gl_tchange + gl->gl_hold_time;
 	if (!list_empty(&gl->gl_holders) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    gl->gl_name.ln_type == LM_TYPE_INODE) {
 		if (time_before(now, holdtime))
 			delay = holdtime - now;
 		if (test_bit(GLF_REPLY_PENDING, &gl->gl_flags))
 			delay = gl->gl_hold_time;
 	}
-<<<<<<< HEAD
-
-	spin_lock(&gl->gl_spin);
-	handle_callback(gl, state, delay);
-	spin_unlock(&gl->gl_spin);
-	if (queue_delayed_work(glock_workqueue, &gl->gl_work, delay) == 0)
-		gfs2_glock_put(gl);
-=======
 	handle_callback(gl, state, delay, true);
 	__gfs2_glock_queue_work(gl, delay);
 	spin_unlock(&gl->gl_lockref.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2811,139 +1935,25 @@ static int gfs2_should_freeze(const struct gfs2_glock *gl)
  * @gl: Pointer to the glock
  * @ret: The return value from the dlm
  *
-<<<<<<< HEAD
- * The gl_reply field is under the gl_spin lock so that it is ok
-=======
  * The gl_reply field is under the gl_lockref.lock lock so that it is ok
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * to use a bitfield shared with other glock state fields.
  */
 
 void gfs2_glock_complete(struct gfs2_glock *gl, int ret)
 {
-<<<<<<< HEAD
-	struct lm_lockstruct *ls = &gl->gl_sbd->sd_lockstruct;
-
-	spin_lock(&gl->gl_spin);
-=======
 	struct lm_lockstruct *ls = &gl->gl_name.ln_sbd->sd_lockstruct;
 
 	spin_lock(&gl->gl_lockref.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gl->gl_reply = ret;
 
 	if (unlikely(test_bit(DFL_BLOCK_LOCKS, &ls->ls_recover_flags))) {
 		if (gfs2_should_freeze(gl)) {
 			set_bit(GLF_FROZEN, &gl->gl_flags);
-<<<<<<< HEAD
-			spin_unlock(&gl->gl_spin);
-=======
 			spin_unlock(&gl->gl_lockref.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
 
-<<<<<<< HEAD
-	spin_unlock(&gl->gl_spin);
-	set_bit(GLF_REPLY_PENDING, &gl->gl_flags);
-	smp_wmb();
-	gfs2_glock_hold(gl);
-	if (queue_delayed_work(glock_workqueue, &gl->gl_work, 0) == 0)
-		gfs2_glock_put(gl);
-}
-
-
-static int gfs2_shrink_glock_memory(struct shrinker *shrink,
-				    struct shrink_control *sc)
-{
-	struct gfs2_glock *gl;
-	int may_demote;
-	int nr_skipped = 0;
-	int nr = sc->nr_to_scan;
-	gfp_t gfp_mask = sc->gfp_mask;
-	LIST_HEAD(skipped);
-
-	if (nr == 0)
-		goto out;
-
-	if (!(gfp_mask & __GFP_FS))
-		return -1;
-
-	spin_lock(&lru_lock);
-	while(nr && !list_empty(&lru_list)) {
-		gl = list_entry(lru_list.next, struct gfs2_glock, gl_lru);
-		list_del_init(&gl->gl_lru);
-		clear_bit(GLF_LRU, &gl->gl_flags);
-		atomic_dec(&lru_count);
-
-		/* Test for being demotable */
-		if (!test_and_set_bit(GLF_LOCK, &gl->gl_flags)) {
-			gfs2_glock_hold(gl);
-			spin_unlock(&lru_lock);
-			spin_lock(&gl->gl_spin);
-			may_demote = demote_ok(gl);
-			if (may_demote) {
-				handle_callback(gl, LM_ST_UNLOCKED, 0);
-				nr--;
-			}
-			clear_bit(GLF_LOCK, &gl->gl_flags);
-			smp_mb__after_clear_bit();
-			if (queue_delayed_work(glock_workqueue, &gl->gl_work, 0) == 0)
-				gfs2_glock_put_nolock(gl);
-			spin_unlock(&gl->gl_spin);
-			spin_lock(&lru_lock);
-			continue;
-		}
-		nr_skipped++;
-		list_add(&gl->gl_lru, &skipped);
-		set_bit(GLF_LRU, &gl->gl_flags);
-	}
-	list_splice(&skipped, &lru_list);
-	atomic_add(nr_skipped, &lru_count);
-	spin_unlock(&lru_lock);
-out:
-	return (atomic_read(&lru_count) / 100) * sysctl_vfs_cache_pressure;
-}
-
-static struct shrinker glock_shrinker = {
-	.shrink = gfs2_shrink_glock_memory,
-	.seeks = DEFAULT_SEEKS,
-};
-
-/**
- * examine_bucket - Call a function for glock in a hash bucket
- * @examiner: the function
- * @sdp: the filesystem
- * @bucket: the bucket
- *
- */
-
-static void examine_bucket(glock_examiner examiner, const struct gfs2_sbd *sdp,
-			  unsigned int hash)
-{
-	struct gfs2_glock *gl;
-	struct hlist_bl_head *head = &gl_hash_table[hash];
-	struct hlist_bl_node *pos;
-
-	rcu_read_lock();
-	hlist_bl_for_each_entry_rcu(gl, pos, head, gl_list) {
-		if ((gl->gl_sbd == sdp) && atomic_read(&gl->gl_ref))
-			examiner(gl);
-	}
-	rcu_read_unlock();
-	cond_resched();
-}
-
-static void glock_hash_walk(glock_examiner examiner, const struct gfs2_sbd *sdp)
-{
-	unsigned x;
-
-	for (x = 0; x < GFS2_GL_HASH_SIZE; x++)
-		examine_bucket(examiner, sdp, x);
-}
-
-=======
 	gl->gl_lockref.count++;
 	set_bit(GLF_REPLY_PENDING, &gl->gl_flags);
 	__gfs2_glock_queue_work(gl, 0);
@@ -3125,34 +2135,21 @@ void gfs2_flush_delete_work(struct gfs2_sbd *sdp)
 	glock_hash_walk(flush_delete_work, sdp);
 	flush_workqueue(sdp->sd_delete_wq);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * thaw_glock - thaw out a glock which has an unprocessed reply waiting
  * @gl: The glock to thaw
  *
-<<<<<<< HEAD
- * N.B. When we freeze a glock, we leave a ref to the glock outstanding,
- * so this has to result in the ref count being dropped by one.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static void thaw_glock(struct gfs2_glock *gl)
 {
 	if (!test_and_clear_bit(GLF_FROZEN, &gl->gl_flags))
 		return;
-<<<<<<< HEAD
-	set_bit(GLF_REPLY_PENDING, &gl->gl_flags);
-	gfs2_glock_hold(gl);
-	if (queue_delayed_work(glock_workqueue, &gl->gl_work, 0) == 0)
-		gfs2_glock_put(gl);
-=======
 	if (!lockref_get_not_dead(&gl->gl_lockref))
 		return;
 	set_bit(GLF_REPLY_PENDING, &gl->gl_flags);
 	gfs2_glock_queue_work(gl, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3165,15 +2162,6 @@ static void clear_glock(struct gfs2_glock *gl)
 {
 	gfs2_glock_remove_from_lru(gl);
 
-<<<<<<< HEAD
-	spin_lock(&gl->gl_spin);
-	if (gl->gl_state != LM_ST_UNLOCKED)
-		handle_callback(gl, LM_ST_UNLOCKED, 0);
-	spin_unlock(&gl->gl_spin);
-	gfs2_glock_hold(gl);
-	if (queue_delayed_work(glock_workqueue, &gl->gl_work, 0) == 0)
-		gfs2_glock_put(gl);
-=======
 	spin_lock(&gl->gl_lockref.lock);
 	if (!__lockref_is_dead(&gl->gl_lockref)) {
 		gl->gl_lockref.count++;
@@ -3182,7 +2170,6 @@ static void clear_glock(struct gfs2_glock *gl)
 		__gfs2_glock_queue_work(gl, 0);
 	}
 	spin_unlock(&gl->gl_lockref.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3196,28 +2183,15 @@ void gfs2_glock_thaw(struct gfs2_sbd *sdp)
 	glock_hash_walk(thaw_glock, sdp);
 }
 
-<<<<<<< HEAD
-static int dump_glock(struct seq_file *seq, struct gfs2_glock *gl)
-{
-	int ret;
-	spin_lock(&gl->gl_spin);
-	ret = __dump_glock(seq, gl);
-	spin_unlock(&gl->gl_spin);
-	return ret;
-=======
 static void dump_glock(struct seq_file *seq, struct gfs2_glock *gl, bool fsid)
 {
 	spin_lock(&gl->gl_lockref.lock);
 	gfs2_dump_glock(seq, gl, fsid);
 	spin_unlock(&gl->gl_lockref.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dump_glock_func(struct gfs2_glock *gl)
 {
-<<<<<<< HEAD
-	dump_glock(NULL, gl);
-=======
 	dump_glock(NULL, gl, true);
 }
 
@@ -3233,44 +2207,17 @@ static void withdraw_dq(struct gfs2_glock *gl)
 void gfs2_gl_dq_holders(struct gfs2_sbd *sdp)
 {
 	glock_hash_walk(withdraw_dq, sdp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * gfs2_gl_hash_clear - Empty out the glock hash table
  * @sdp: the filesystem
-<<<<<<< HEAD
- * @wait: wait until it's all gone
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Called when unmounting the filesystem.
  */
 
 void gfs2_gl_hash_clear(struct gfs2_sbd *sdp)
 {
-<<<<<<< HEAD
-	glock_hash_walk(clear_glock, sdp);
-	flush_workqueue(glock_workqueue);
-	wait_event(sdp->sd_glock_wait, atomic_read(&sdp->sd_glock_disposal) == 0);
-	glock_hash_walk(dump_glock_func, sdp);
-}
-
-void gfs2_glock_finish_truncate(struct gfs2_inode *ip)
-{
-	struct gfs2_glock *gl = ip->i_gl;
-	int ret;
-
-	ret = gfs2_truncatei_resume(ip);
-	gfs2_assert_withdraw(gl->gl_sbd, ret == 0);
-
-	spin_lock(&gl->gl_spin);
-	clear_bit(GLF_LOCK, &gl->gl_flags);
-	run_queue(gl, 1);
-	spin_unlock(&gl->gl_spin);
-}
-
-=======
 	set_bit(SDF_SKIP_DLM_UNLOCK, &sdp->sd_flags);
 	flush_workqueue(glock_workqueue);
 	glock_hash_walk(clear_glock, sdp);
@@ -3281,7 +2228,6 @@ void gfs2_glock_finish_truncate(struct gfs2_inode *ip)
 	glock_hash_walk(dump_glock_func, sdp);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *state2str(unsigned state)
 {
 	switch(state) {
@@ -3297,11 +2243,7 @@ static const char *state2str(unsigned state)
 	return "??";
 }
 
-<<<<<<< HEAD
-static const char *hflags2str(char *buf, unsigned flags, unsigned long iflags)
-=======
 static const char *hflags2str(char *buf, u16 flags, unsigned long iflags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *p = buf;
 	if (flags & LM_FLAG_TRY)
@@ -3312,13 +2254,8 @@ static const char *hflags2str(char *buf, u16 flags, unsigned long iflags)
 		*p++ = 'e';
 	if (flags & LM_FLAG_ANY)
 		*p++ = 'A';
-<<<<<<< HEAD
-	if (flags & LM_FLAG_PRIORITY)
-		*p++ = 'p';
-=======
 	if (flags & LM_FLAG_NODE_SCOPE)
 		*p++ = 'n';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (flags & GL_ASYNC)
 		*p++ = 'a';
 	if (flags & GL_EXACT)
@@ -3329,13 +2266,8 @@ static const char *hflags2str(char *buf, u16 flags, unsigned long iflags)
 		*p++ = 'H';
 	if (test_bit(HIF_WAIT, &iflags))
 		*p++ = 'W';
-<<<<<<< HEAD
-	if (test_bit(HIF_FIRST, &iflags))
-		*p++ = 'F';
-=======
 	if (flags & GL_SKIP)
 		*p++ = 's';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*p = 0;
 	return buf;
 }
@@ -3344,27 +2276,6 @@ static const char *hflags2str(char *buf, u16 flags, unsigned long iflags)
  * dump_holder - print information about a glock holder
  * @seq: the seq_file struct
  * @gh: the glock holder
-<<<<<<< HEAD
- *
- * Returns: 0 on success, -ENOBUFS when we run out of space
- */
-
-static int dump_holder(struct seq_file *seq, const struct gfs2_holder *gh)
-{
-	struct task_struct *gh_owner = NULL;
-	char flags_buf[32];
-
-	if (gh->gh_owner_pid)
-		gh_owner = pid_task(gh->gh_owner_pid, PIDTYPE_PID);
-	gfs2_print_dbg(seq, " H: s:%s f:%s e:%d p:%ld [%s] %pS\n",
-		       state2str(gh->gh_state),
-		       hflags2str(flags_buf, gh->gh_flags, gh->gh_iflags),
-		       gh->gh_error,
-		       gh->gh_owner_pid ? (long)pid_nr(gh->gh_owner_pid) : -1,
-		       gh_owner ? gh_owner->comm : "(ended)",
-		       (void *)gh->gh_ip);
-	return 0;
-=======
  * @fs_id_buf: pointer to file system id (if requested)
  *
  */
@@ -3391,7 +2302,6 @@ static void dump_holder(struct seq_file *seq, const struct gfs2_holder *gh,
 		       hflags2str(flags_buf, gh->gh_flags, gh->gh_iflags),
 		       gh->gh_error, (long)owner_pid, comm, (void *)gh->gh_ip);
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *gflags2str(char *buf, const struct gfs2_glock *gl)
@@ -3419,11 +2329,7 @@ static const char *gflags2str(char *buf, const struct gfs2_glock *gl)
 		*p++ = 'I';
 	if (test_bit(GLF_FROZEN, gflags))
 		*p++ = 'F';
-<<<<<<< HEAD
-	if (test_bit(GLF_QUEUED, gflags))
-=======
 	if (!list_empty(&gl->gl_holders))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*p++ = 'q';
 	if (test_bit(GLF_LRU, gflags))
 		*p++ = 'L';
@@ -3431,8 +2337,6 @@ static const char *gflags2str(char *buf, const struct gfs2_glock *gl)
 		*p++ = 'o';
 	if (test_bit(GLF_BLOCKING, gflags))
 		*p++ = 'b';
-<<<<<<< HEAD
-=======
 	if (test_bit(GLF_FREEING, gflags))
 		*p++ = 'x';
 	if (test_bit(GLF_INSTANTIATE_NEEDED, gflags))
@@ -3443,22 +2347,15 @@ static const char *gflags2str(char *buf, const struct gfs2_glock *gl)
 		*p++ = 'e';
 	if (test_bit(GLF_VERIFY_EVICT, gflags))
 		*p++ = 'E';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*p = 0;
 	return buf;
 }
 
 /**
-<<<<<<< HEAD
- * __dump_glock - print information about a glock
- * @seq: The seq_file struct
- * @gl: the glock
-=======
  * gfs2_dump_glock - print information about a glock
  * @seq: The seq_file struct
  * @gl: the glock
  * @fsid: If true, also dump the file system id
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The file format is as follows:
  * One line per object, capital letters are used to indicate objects
@@ -3470,25 +2367,14 @@ static const char *gflags2str(char *buf, const struct gfs2_glock *gl)
  * example. The field's are n = number (id of the object), f = flags,
  * t = type, s = state, r = refcount, e = error, p = pid.
  *
-<<<<<<< HEAD
- * Returns: 0 on success, -ENOBUFS when we run out of space
- */
-
-static int __dump_glock(struct seq_file *seq, const struct gfs2_glock *gl)
-=======
  */
 
 void gfs2_dump_glock(struct seq_file *seq, struct gfs2_glock *gl, bool fsid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct gfs2_glock_operations *glops = gl->gl_ops;
 	unsigned long long dtime;
 	const struct gfs2_holder *gh;
 	char gflags_buf[32];
-<<<<<<< HEAD
-	int error = 0;
-
-=======
 	struct gfs2_sbd *sdp = gl->gl_name.ln_sbd;
 	char fs_id_buf[sizeof(sdp->sd_fsname) + 7];
 	unsigned long nrpages = 0;
@@ -3501,33 +2387,10 @@ void gfs2_dump_glock(struct seq_file *seq, struct gfs2_glock *gl, bool fsid)
 	memset(fs_id_buf, 0, sizeof(fs_id_buf));
 	if (fsid && sdp) /* safety precaution */
 		sprintf(fs_id_buf, "fsid=%s: ", sdp->sd_fsname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dtime = jiffies - gl->gl_demote_time;
 	dtime *= 1000000/HZ; /* demote time in uSec */
 	if (!test_bit(GLF_DEMOTE, &gl->gl_flags))
 		dtime = 0;
-<<<<<<< HEAD
-	gfs2_print_dbg(seq, "G:  s:%s n:%u/%llx f:%s t:%s d:%s/%llu a:%d v:%d r:%d m:%ld\n",
-		  state2str(gl->gl_state),
-		  gl->gl_name.ln_type,
-		  (unsigned long long)gl->gl_name.ln_number,
-		  gflags2str(gflags_buf, gl),
-		  state2str(gl->gl_target),
-		  state2str(gl->gl_demote_state), dtime,
-		  atomic_read(&gl->gl_ail_count),
-		  atomic_read(&gl->gl_revokes),
-		  atomic_read(&gl->gl_ref), gl->gl_hold_time);
-
-	list_for_each_entry(gh, &gl->gl_holders, gh_list) {
-		error = dump_holder(seq, gh);
-		if (error)
-			goto out;
-	}
-	if (gl->gl_state != LM_ST_UNLOCKED && glops->go_dump)
-		error = glops->go_dump(seq, gl);
-out:
-	return error;
-=======
 	gfs2_print_dbg(seq, "%sG:  s:%s n:%u/%llx f:%s t:%s d:%s/%llu a:%d "
 		       "v:%d r:%d m:%ld p:%lu\n",
 		       fs_id_buf, state2str(gl->gl_state),
@@ -3545,26 +2408,12 @@ out:
 
 	if (gl->gl_state != LM_ST_UNLOCKED && glops->go_dump)
 		glops->go_dump(seq, gl, fs_id_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int gfs2_glstats_seq_show(struct seq_file *seq, void *iter_ptr)
 {
 	struct gfs2_glock *gl = iter_ptr;
 
-<<<<<<< HEAD
-	seq_printf(seq, "G: n:%u/%llx rtt:%lld/%lld rttb:%lld/%lld irt:%lld/%lld dcnt: %lld qcnt: %lld\n",
-		   gl->gl_name.ln_type,
-		   (unsigned long long)gl->gl_name.ln_number,
-		   (long long)gl->gl_stats.stats[GFS2_LKS_SRTT],
-		   (long long)gl->gl_stats.stats[GFS2_LKS_SRTTVAR],
-		   (long long)gl->gl_stats.stats[GFS2_LKS_SRTTB],
-		   (long long)gl->gl_stats.stats[GFS2_LKS_SRTTVARB],
-		   (long long)gl->gl_stats.stats[GFS2_LKS_SIRT],
-		   (long long)gl->gl_stats.stats[GFS2_LKS_SIRTVAR],
-		   (long long)gl->gl_stats.stats[GFS2_LKS_DCOUNT],
-		   (long long)gl->gl_stats.stats[GFS2_LKS_QCOUNT]);
-=======
 	seq_printf(seq, "G: n:%u/%llx rtt:%llu/%llu rttb:%llu/%llu irt:%llu/%llu dcnt: %llu qcnt: %llu\n",
 		   gl->gl_name.ln_type,
 		   (unsigned long long)gl->gl_name.ln_number,
@@ -3576,7 +2425,6 @@ static int gfs2_glstats_seq_show(struct seq_file *seq, void *iter_ptr)
 		   (unsigned long long)gl->gl_stats.stats[GFS2_LKS_SIRTVAR],
 		   (unsigned long long)gl->gl_stats.stats[GFS2_LKS_DCOUNT],
 		   (unsigned long long)gl->gl_stats.stats[GFS2_LKS_QCOUNT]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3609,18 +2457,10 @@ static const char *gfs2_stype[] = {
 
 static int gfs2_sbstats_seq_show(struct seq_file *seq, void *iter_ptr)
 {
-<<<<<<< HEAD
-	struct gfs2_glock_iter *gi = seq->private;
-	struct gfs2_sbd *sdp = gi->sdp;
-	unsigned index = gi->hash >> 3;
-	unsigned subindex = gi->hash & 0x07;
-	s64 value;
-=======
 	struct gfs2_sbd *sdp = seq->private;
 	loff_t pos = *(loff_t *)iter_ptr;
 	unsigned index = pos >> 3;
 	unsigned subindex = pos & 0x07;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (index == 0 && subindex != 0)
@@ -3631,21 +2471,12 @@ static int gfs2_sbstats_seq_show(struct seq_file *seq, void *iter_ptr)
 
 	for_each_possible_cpu(i) {
                 const struct gfs2_pcpu_lkstats *lkstats = per_cpu_ptr(sdp->sd_lkstats, i);
-<<<<<<< HEAD
-		if (index == 0) {
-			value = i;
-		} else {
-			value = lkstats->lkstats[index - 1].stats[subindex];
-		}
-		seq_printf(seq, " %15lld", (long long)value);
-=======
 
 		if (index == 0)
 			seq_printf(seq, " %15u", i);
 		else
 			seq_printf(seq, " %15llu", (unsigned long long)lkstats->
 				   lkstats[index - 1].stats[subindex]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	seq_putc(seq, '\n');
 	return 0;
@@ -3653,26 +2484,6 @@ static int gfs2_sbstats_seq_show(struct seq_file *seq, void *iter_ptr)
 
 int __init gfs2_glock_init(void)
 {
-<<<<<<< HEAD
-	unsigned i;
-	for(i = 0; i < GFS2_GL_HASH_SIZE; i++) {
-		INIT_HLIST_BL_HEAD(&gl_hash_table[i]);
-	}
-
-	glock_workqueue = alloc_workqueue("glock_workqueue", WQ_MEM_RECLAIM |
-					  WQ_HIGHPRI | WQ_FREEZABLE, 0);
-	if (IS_ERR(glock_workqueue))
-		return PTR_ERR(glock_workqueue);
-	gfs2_delete_workqueue = alloc_workqueue("delete_workqueue",
-						WQ_MEM_RECLAIM | WQ_FREEZABLE,
-						0);
-	if (IS_ERR(gfs2_delete_workqueue)) {
-		destroy_workqueue(glock_workqueue);
-		return PTR_ERR(gfs2_delete_workqueue);
-	}
-
-	register_shrinker(&glock_shrinker);
-=======
 	int i, ret;
 
 	ret = rhashtable_init(&gl_hash_table, &ht_parms);
@@ -3700,70 +2511,12 @@ int __init gfs2_glock_init(void)
 
 	for (i = 0; i < GLOCK_WAIT_TABLE_SIZE; i++)
 		init_waitqueue_head(glock_wait_table + i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 void gfs2_glock_exit(void)
 {
-<<<<<<< HEAD
-	unregister_shrinker(&glock_shrinker);
-	destroy_workqueue(glock_workqueue);
-	destroy_workqueue(gfs2_delete_workqueue);
-}
-
-static inline struct gfs2_glock *glock_hash_chain(unsigned hash)
-{
-	return hlist_bl_entry(hlist_bl_first_rcu(&gl_hash_table[hash]),
-			      struct gfs2_glock, gl_list);
-}
-
-static inline struct gfs2_glock *glock_hash_next(struct gfs2_glock *gl)
-{
-	return hlist_bl_entry(rcu_dereference(gl->gl_list.next),
-			      struct gfs2_glock, gl_list);
-}
-
-static int gfs2_glock_iter_next(struct gfs2_glock_iter *gi)
-{
-	struct gfs2_glock *gl;
-
-	do {
-		gl = gi->gl;
-		if (gl) {
-			gi->gl = glock_hash_next(gl);
-		} else {
-			gi->gl = glock_hash_chain(gi->hash);
-		}
-		while (gi->gl == NULL) {
-			gi->hash++;
-			if (gi->hash >= GFS2_GL_HASH_SIZE) {
-				rcu_read_unlock();
-				return 1;
-			}
-			gi->gl = glock_hash_chain(gi->hash);
-		}
-	/* Skip entries for other sb and dead entries */
-	} while (gi->sdp != gi->gl->gl_sbd || atomic_read(&gi->gl->gl_ref) == 0);
-
-	return 0;
-}
-
-static void *gfs2_glock_seq_start(struct seq_file *seq, loff_t *pos)
-{
-	struct gfs2_glock_iter *gi = seq->private;
-	loff_t n = *pos;
-
-	gi->hash = 0;
-	rcu_read_lock();
-
-	do {
-		if (gfs2_glock_iter_next(gi))
-			return NULL;
-	} while (n--);
-
-=======
 	shrinker_free(glock_shrinker);
 	rhashtable_destroy(&gl_hash_table);
 	destroy_workqueue(glock_workqueue);
@@ -3826,7 +2579,6 @@ static void *gfs2_glock_seq_start(struct seq_file *seq, loff_t *pos)
 
 	gfs2_glock_iter_next(gi, n);
 	gi->last_pos = *pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return gi->gl;
 }
 
@@ -3836,81 +2588,40 @@ static void *gfs2_glock_seq_next(struct seq_file *seq, void *iter_ptr,
 	struct gfs2_glock_iter *gi = seq->private;
 
 	(*pos)++;
-<<<<<<< HEAD
-
-	if (gfs2_glock_iter_next(gi))
-		return NULL;
-
-=======
 	gi->last_pos = *pos;
 	gfs2_glock_iter_next(gi, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return gi->gl;
 }
 
 static void gfs2_glock_seq_stop(struct seq_file *seq, void *iter_ptr)
-<<<<<<< HEAD
-{
-	struct gfs2_glock_iter *gi = seq->private;
-
-	if (gi->gl)
-		rcu_read_unlock();
-	gi->gl = NULL;
-=======
 	__releases(RCU)
 {
 	struct gfs2_glock_iter *gi = seq->private;
 
 	rhashtable_walk_stop(&gi->hti);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int gfs2_glock_seq_show(struct seq_file *seq, void *iter_ptr)
 {
-<<<<<<< HEAD
-	return dump_glock(seq, iter_ptr);
-=======
 	dump_glock(seq, iter_ptr, false);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *gfs2_sbstats_seq_start(struct seq_file *seq, loff_t *pos)
 {
-<<<<<<< HEAD
-	struct gfs2_glock_iter *gi = seq->private;
-
-	gi->hash = *pos;
-	if (*pos >= GFS2_NR_SBSTATS)
-		return NULL;
-	preempt_disable();
-	return SEQ_START_TOKEN;
-=======
 	preempt_disable();
 	if (*pos >= GFS2_NR_SBSTATS)
 		return NULL;
 	return pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *gfs2_sbstats_seq_next(struct seq_file *seq, void *iter_ptr,
 				   loff_t *pos)
 {
-<<<<<<< HEAD
-	struct gfs2_glock_iter *gi = seq->private;
-	(*pos)++;
-	gi->hash++;
-	if (gi->hash >= GFS2_NR_SBSTATS) {
-		preempt_enable();
-		return NULL;
-	}
-	return SEQ_START_TOKEN;
-=======
 	(*pos)++;
 	if (*pos >= GFS2_NR_SBSTATS)
 		return NULL;
 	return pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gfs2_sbstats_seq_stop(struct seq_file *seq, void *iter_ptr)
@@ -3932,27 +2643,13 @@ static const struct seq_operations gfs2_glstats_seq_ops = {
 	.show  = gfs2_glstats_seq_show,
 };
 
-<<<<<<< HEAD
-static const struct seq_operations gfs2_sbstats_seq_ops = {
-=======
 static const struct seq_operations gfs2_sbstats_sops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start = gfs2_sbstats_seq_start,
 	.next  = gfs2_sbstats_seq_next,
 	.stop  = gfs2_sbstats_seq_stop,
 	.show  = gfs2_sbstats_seq_show,
 };
 
-<<<<<<< HEAD
-static int gfs2_glocks_open(struct inode *inode, struct file *file)
-{
-	int ret = seq_open_private(file, &gfs2_glock_seq_ops,
-				   sizeof(struct gfs2_glock_iter));
-	if (ret == 0) {
-		struct seq_file *seq = file->private_data;
-		struct gfs2_glock_iter *gi = seq->private;
-		gi->sdp = inode->i_private;
-=======
 #define GFS2_SEQ_GOODSIZE min(PAGE_SIZE << PAGE_ALLOC_COSTLY_ORDER, 65536UL)
 
 static int __gfs2_glocks_open(struct inode *inode, struct file *file,
@@ -3974,35 +2671,10 @@ static int __gfs2_glocks_open(struct inode *inode, struct file *file,
 		gi->last_pos = -1;
 		gi->gl = NULL;
 		rhashtable_walk_enter(&gl_hash_table, &gi->hti);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-static int gfs2_glstats_open(struct inode *inode, struct file *file)
-{
-	int ret = seq_open_private(file, &gfs2_glstats_seq_ops,
-				   sizeof(struct gfs2_glock_iter));
-	if (ret == 0) {
-		struct seq_file *seq = file->private_data;
-		struct gfs2_glock_iter *gi = seq->private;
-		gi->sdp = inode->i_private;
-	}
-	return ret;
-}
-
-static int gfs2_sbstats_open(struct inode *inode, struct file *file)
-{
-	int ret = seq_open_private(file, &gfs2_sbstats_seq_ops,
-				   sizeof(struct gfs2_glock_iter));
-	if (ret == 0) {
-		struct seq_file *seq = file->private_data;
-		struct gfs2_glock_iter *gi = seq->private;
-		gi->sdp = inode->i_private;
-	}
-	return ret;
-=======
 static int gfs2_glocks_open(struct inode *inode, struct file *file)
 {
 	return __gfs2_glocks_open(inode, file, &gfs2_glock_seq_ops);
@@ -4022,7 +2694,6 @@ static int gfs2_glocks_release(struct inode *inode, struct file *file)
 static int gfs2_glstats_open(struct inode *inode, struct file *file)
 {
 	return __gfs2_glocks_open(inode, file, &gfs2_glstats_seq_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations gfs2_glocks_fops = {
@@ -4030,11 +2701,7 @@ static const struct file_operations gfs2_glocks_fops = {
 	.open    = gfs2_glocks_open,
 	.read    = seq_read,
 	.llseek  = seq_lseek,
-<<<<<<< HEAD
-	.release = seq_release_private,
-=======
 	.release = gfs2_glocks_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct file_operations gfs2_glstats_fops = {
@@ -4042,14 +2709,6 @@ static const struct file_operations gfs2_glstats_fops = {
 	.open    = gfs2_glstats_open,
 	.read    = seq_read,
 	.llseek  = seq_lseek,
-<<<<<<< HEAD
-	.release = seq_release_private,
-};
-
-static const struct file_operations gfs2_sbstats_fops = {
-	.owner   = THIS_MODULE,
-	.open	 = gfs2_sbstats_open,
-=======
 	.release = gfs2_glocks_release,
 };
 
@@ -4217,44 +2876,11 @@ static int gfs2_glockfd_open(struct inode *inode, struct file *file)
 static const struct file_operations gfs2_glockfd_fops = {
 	.owner   = THIS_MODULE,
 	.open    = gfs2_glockfd_open,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read    = seq_read,
 	.llseek  = seq_lseek,
 	.release = seq_release_private,
 };
 
-<<<<<<< HEAD
-int gfs2_create_debugfs_file(struct gfs2_sbd *sdp)
-{
-	sdp->debugfs_dir = debugfs_create_dir(sdp->sd_table_name, gfs2_root);
-	if (!sdp->debugfs_dir)
-		return -ENOMEM;
-	sdp->debugfs_dentry_glocks = debugfs_create_file("glocks",
-							 S_IFREG | S_IRUGO,
-							 sdp->debugfs_dir, sdp,
-							 &gfs2_glocks_fops);
-	if (!sdp->debugfs_dentry_glocks)
-		goto fail;
-
-	sdp->debugfs_dentry_glstats = debugfs_create_file("glstats",
-							S_IFREG | S_IRUGO,
-							sdp->debugfs_dir, sdp,
-							&gfs2_glstats_fops);
-	if (!sdp->debugfs_dentry_glstats)
-		goto fail;
-
-	sdp->debugfs_dentry_sbstats = debugfs_create_file("sbstats",
-							S_IFREG | S_IRUGO,
-							sdp->debugfs_dir, sdp,
-							&gfs2_sbstats_fops);
-	if (!sdp->debugfs_dentry_sbstats)
-		goto fail;
-
-	return 0;
-fail:
-	gfs2_delete_debugfs_file(sdp);
-	return -ENOMEM;
-=======
 DEFINE_SEQ_ATTRIBUTE(gfs2_sbstats);
 
 void gfs2_create_debugfs_file(struct gfs2_sbd *sdp)
@@ -4272,35 +2898,10 @@ void gfs2_create_debugfs_file(struct gfs2_sbd *sdp)
 
 	debugfs_create_file("sbstats", S_IFREG | S_IRUGO, sdp->debugfs_dir, sdp,
 			    &gfs2_sbstats_fops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void gfs2_delete_debugfs_file(struct gfs2_sbd *sdp)
 {
-<<<<<<< HEAD
-	if (sdp->debugfs_dir) {
-		if (sdp->debugfs_dentry_glocks) {
-			debugfs_remove(sdp->debugfs_dentry_glocks);
-			sdp->debugfs_dentry_glocks = NULL;
-		}
-		if (sdp->debugfs_dentry_glstats) {
-			debugfs_remove(sdp->debugfs_dentry_glstats);
-			sdp->debugfs_dentry_glstats = NULL;
-		}
-		if (sdp->debugfs_dentry_sbstats) {
-			debugfs_remove(sdp->debugfs_dentry_sbstats);
-			sdp->debugfs_dentry_sbstats = NULL;
-		}
-		debugfs_remove(sdp->debugfs_dir);
-		sdp->debugfs_dir = NULL;
-	}
-}
-
-int gfs2_register_debugfs(void)
-{
-	gfs2_root = debugfs_create_dir("gfs2", NULL);
-	return gfs2_root ? 0 : -ENOMEM;
-=======
 	debugfs_remove_recursive(sdp->debugfs_dir);
 	sdp->debugfs_dir = NULL;
 }
@@ -4308,7 +2909,6 @@ int gfs2_register_debugfs(void)
 void gfs2_register_debugfs(void)
 {
 	gfs2_root = debugfs_create_dir("gfs2", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void gfs2_unregister_debugfs(void)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Prom access routines for the sun3x */
 
 #include <linux/types.h>
@@ -13,19 +10,10 @@
 #include <linux/string.h>
 
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/bootinfo.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/setup.h>
 #include <asm/traps.h>
 #include <asm/sun3xprom.h>
 #include <asm/idprom.h>
-<<<<<<< HEAD
-#include <asm/segment.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sun3ints.h>
 #include <asm/openprom.h>
 #include <asm/machines.h>
@@ -42,11 +30,7 @@ struct linux_romvec *romvec;
 e_vector *sun3x_prom_vbr;
 
 /* Handle returning to the prom */
-<<<<<<< HEAD
-void sun3x_halt(void)
-=======
 static void sun3x_halt(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -121,15 +105,9 @@ void __init sun3x_prom_init(void)
 	idprom_init();
 
 	if (!((idprom->id_machtype & SM_ARCH_MASK) == SM_SUN3X)) {
-<<<<<<< HEAD
-		printk("Warning: machine reports strange type %02x\n",
-			idprom->id_machtype);
-		printk("Pretending it's a 3/80, but very afraid...\n");
-=======
 		pr_warn("Machine reports strange type %02x\n",
 			idprom->id_machtype);
 		pr_warn("Pretending it's a 3/80, but very afraid...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		idprom->id_machtype = SM_SUN3X | SM_3_80;
 	}
 

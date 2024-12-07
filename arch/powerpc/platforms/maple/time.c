@@ -1,19 +1,7 @@
-<<<<<<< HEAD
-/*
- *  (c) Copyright 2004 Benjamin Herrenschmidt (benh@kernel.crashing.org),
- *                     IBM Corp. 
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  (c) Copyright 2004 Benjamin Herrenschmidt (benh@kernel.crashing.org),
  *                     IBM Corp. 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
@@ -31,18 +19,10 @@
 #include <linux/interrupt.h>
 #include <linux/mc146818rtc.h>
 #include <linux/bcd.h>
-<<<<<<< HEAD
-
-#include <asm/sections.h>
-#include <asm/prom.h>
-#include <asm/io.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/of_address.h>
 
 #include <asm/sections.h>
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/time.h>
 
@@ -91,11 +71,7 @@ void maple_get_rtc_time(struct rtc_time *tm)
 	if ((tm->tm_year + 1900) < 1970)
 		tm->tm_year += 100;
 
-<<<<<<< HEAD
-	GregorianDay(tm);
-=======
 	tm->tm_wday = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int maple_set_rtc_time(struct rtc_time *tm)
@@ -152,17 +128,10 @@ int maple_set_rtc_time(struct rtc_time *tm)
 
 static struct resource rtc_iores = {
 	.name = "rtc",
-<<<<<<< HEAD
-	.flags = IORESOURCE_BUSY,
-};
-
-unsigned long __init maple_get_boot_time(void)
-=======
 	.flags = IORESOURCE_IO | IORESOURCE_BUSY,
 };
 
 time64_t __init maple_get_boot_time(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtc_time tm;
 	struct device_node *rtcs;
@@ -184,10 +153,7 @@ time64_t __init maple_get_boot_time(void)
 		       maple_rtc_addr);
 	}
  bail:
-<<<<<<< HEAD
-=======
 	of_node_put(rtcs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (maple_rtc_addr == 0) {
 		maple_rtc_addr = RTC_PORT(0); /* legacy address */
 		printk(KERN_INFO "Maple: No device node for RTC, assuming "
@@ -199,11 +165,6 @@ time64_t __init maple_get_boot_time(void)
 	request_resource(&ioport_resource, &rtc_iores);
 
 	maple_get_rtc_time(&tm);
-<<<<<<< HEAD
-	return mktime(tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday,
-		      tm.tm_hour, tm.tm_min, tm.tm_sec);
-=======
 	return rtc_tm_to_time64(&tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

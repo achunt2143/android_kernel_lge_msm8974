@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2010 IBM Corporation
- * Author: David Safford <safford@us.ibm.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2010 IBM Corporation
  * Author: David Safford <safford@us.ibm.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _KEYS_TRUSTED_TYPE_H
@@ -19,12 +9,6 @@
 
 #include <linux/key.h>
 #include <linux/rcupdate.h>
-<<<<<<< HEAD
-
-#define MIN_KEY_SIZE			32
-#define MAX_KEY_SIZE			128
-#define MAX_BLOB_SIZE			320
-=======
 #include <linux/tpm.h>
 
 #ifdef pr_fmt
@@ -38,25 +22,17 @@
 #define MAX_BLOB_SIZE			512
 #define MAX_PCRINFO_SIZE		64
 #define MAX_DIGEST_SIZE			64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct trusted_key_payload {
 	struct rcu_head rcu;
 	unsigned int key_len;
 	unsigned int blob_len;
 	unsigned char migratable;
-<<<<<<< HEAD
-=======
 	unsigned char old_format;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char key[MAX_KEY_SIZE + 1];
 	unsigned char blob[MAX_BLOB_SIZE];
 };
 
-<<<<<<< HEAD
-extern struct key_type key_type_trusted;
-
-=======
 struct trusted_key_options {
 	uint16_t keytype;
 	uint32_t keyhandle;
@@ -121,5 +97,4 @@ static inline void dump_payload(struct trusted_key_payload *p)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _KEYS_TRUSTED_TYPE_H */

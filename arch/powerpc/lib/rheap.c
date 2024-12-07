@@ -54,11 +54,7 @@ static int grow(rh_info_t * info, int max_blocks)
 
 	new_blocks = max_blocks - info->max_blocks;
 
-<<<<<<< HEAD
-	block = kmalloc(sizeof(rh_block_t) * max_blocks, GFP_ATOMIC);
-=======
 	block = kmalloc_array(max_blocks, sizeof(rh_block_t), GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (block == NULL)
 		return -ENOMEM;
 
@@ -288,11 +284,7 @@ EXPORT_SYMBOL_GPL(rh_create);
  */
 void rh_destroy(rh_info_t * info)
 {
-<<<<<<< HEAD
-	if ((info->flags & RHIF_STATIC_BLOCK) == 0 && info->block != NULL)
-=======
 	if ((info->flags & RHIF_STATIC_BLOCK) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(info->block);
 
 	if ((info->flags & RHIF_STATIC_INFO) == 0)
@@ -333,11 +325,7 @@ void rh_init(rh_info_t * info, unsigned int alignment, int max_blocks,
 }
 EXPORT_SYMBOL_GPL(rh_init);
 
-<<<<<<< HEAD
-/* Attach a free memory region, coalesces regions if adjuscent */
-=======
 /* Attach a free memory region, coalesces regions if adjacent */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int rh_attach_region(rh_info_t * info, unsigned long start, int size)
 {
 	rh_block_t *blk;

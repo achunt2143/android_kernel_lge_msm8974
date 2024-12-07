@@ -1,25 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CAN driver for PEAK System PCAN-USB Pro adapter
  * Derived from the PCAN project file driver/src/pcan_usbpro_fw.h
  *
  * Copyright (C) 2003-2011 PEAK System-Technik GmbH
  * Copyright (C) 2011-2012 Stephane Grosjean <s.grosjean@peak-system.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published
- * by the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef PCAN_USB_PRO_H
 #define PCAN_USB_PRO_H
@@ -34,23 +19,6 @@
 #define PCAN_USBPRO_INFO_BL		0
 #define PCAN_USBPRO_INFO_FW		1
 
-<<<<<<< HEAD
-/* Vendor Request value for XXX_FCT */
-#define PCAN_USBPRO_FCT_DRVLD		5 /* tell device driver is loaded */
-
-/* PCAN_USBPRO_INFO_BL vendor request record type */
-struct __packed pcan_usb_pro_blinfo {
-	u32 ctrl_type;
-	u8  version[4];
-	u8  day;
-	u8  month;
-	u8  year;
-	u8  dummy;
-	u32 serial_num_hi;
-	u32 serial_num_lo;
-	u32 hw_type;
-	u32 hw_rev;
-=======
 /* PCAN-USB Pro (FD) Endpoints */
 #define PCAN_USBPRO_EP_CMDOUT		1
 #define PCAN_USBPRO_EP_CMDIN		(PCAN_USBPRO_EP_CMDOUT | USB_DIR_IN)
@@ -75,20 +43,10 @@ struct __packed pcan_usb_pro_blinfo {
 	__le32 serial_num_lo;
 	__le32 hw_type;
 	__le32 hw_rev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* PCAN_USBPRO_INFO_FW vendor request record type */
 struct __packed pcan_usb_pro_fwinfo {
-<<<<<<< HEAD
-	u32 ctrl_type;
-	u8  version[4];
-	u8  day;
-	u8  month;
-	u8  year;
-	u8  dummy;
-	u32 fw_type;
-=======
 	__le32 ctrl_type;
 	u8 version[4];
 	u8 day;
@@ -96,7 +54,6 @@ struct __packed pcan_usb_pro_fwinfo {
 	u8 year;
 	u8 dummy;
 	__le32 fw_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -105,10 +62,7 @@ struct __packed pcan_usb_pro_fwinfo {
 #define PCAN_USBPRO_SETBTR	0x02
 #define PCAN_USBPRO_SETBUSACT	0x04
 #define PCAN_USBPRO_SETSILENT	0x05
-<<<<<<< HEAD
-=======
 #define PCAN_USBPRO_SETDEVID	0x06
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCAN_USBPRO_SETFILTR	0x0a
 #define PCAN_USBPRO_SETTS	0x10
 #define PCAN_USBPRO_GETDEVID	0x12
@@ -125,61 +79,6 @@ struct __packed pcan_usb_pro_fwinfo {
 
 /* record structures */
 struct __packed pcan_usb_pro_btr {
-<<<<<<< HEAD
-	u8  data_type;
-	u8  channel;
-	u16 dummy;
-	u32 CCBT;
-};
-
-struct __packed pcan_usb_pro_busact {
-	u8  data_type;
-	u8  channel;
-	u16 onoff;
-};
-
-struct __packed pcan_usb_pro_silent {
-	u8  data_type;
-	u8  channel;
-	u16 onoff;
-};
-
-struct __packed pcan_usb_pro_filter {
-	u8  data_type;
-	u8  dummy;
-	u16 filter_mode;
-};
-
-struct __packed pcan_usb_pro_setts {
-	u8  data_type;
-	u8  dummy;
-	u16 mode;
-};
-
-struct __packed pcan_usb_pro_devid {
-	u8  data_type;
-	u8  channel;
-	u16 dummy;
-	u32 serial_num;
-};
-
-struct __packed pcan_usb_pro_setled {
-	u8  data_type;
-	u8  channel;
-	u16 mode;
-	u32 timeout;
-};
-
-struct __packed pcan_usb_pro_rxmsg {
-	u8  data_type;
-	u8  client;
-	u8  flags;
-	u8  len;
-	u32 ts32;
-	u32 id;
-
-	u8  data[8];
-=======
 	u8 data_type;
 	u8 channel;
 	__le16 dummy;
@@ -239,7 +138,6 @@ struct __packed pcan_usb_pro_rxmsg {
 	__le32 id;
 
 	u8 data[8];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define PCAN_USBPRO_STATUS_ERROR	0x0001
@@ -248,28 +146,6 @@ struct __packed pcan_usb_pro_rxmsg {
 #define PCAN_USBPRO_STATUS_QOVERRUN	0x0008
 
 struct __packed pcan_usb_pro_rxstatus {
-<<<<<<< HEAD
-	u8  data_type;
-	u8  channel;
-	u16 status;
-	u32 ts32;
-	u32 err_frm;
-};
-
-struct __packed pcan_usb_pro_rxts {
-	u8  data_type;
-	u8  dummy[3];
-	u32 ts64[2];
-};
-
-struct __packed pcan_usb_pro_txmsg {
-	u8  data_type;
-	u8  client;
-	u8  flags;
-	u8  len;
-	u32 id;
-	u8  data[8];
-=======
 	u8 data_type;
 	u8 channel;
 	__le16 status;
@@ -290,7 +166,6 @@ struct __packed pcan_usb_pro_txmsg {
 	u8 len;
 	__le32 id;
 	u8 data[8];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union pcan_usb_pro_rec {
@@ -308,12 +183,9 @@ union pcan_usb_pro_rec {
 	struct pcan_usb_pro_txmsg	tx_msg;
 };
 
-<<<<<<< HEAD
-=======
 int pcan_usb_pro_probe(struct usb_interface *intf);
 int pcan_usb_pro_send_req(struct peak_usb_device *dev, int req_id,
 			  int req_value, void *req_addr, int req_size);
 void pcan_usb_pro_restart_complete(struct urb *urb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_ARM_IRQFLAGS_H
 #define __ASM_ARM_IRQFLAGS_H
 
@@ -12,10 +9,6 @@
 /*
  * CPU interrupt mask handling.
  */
-<<<<<<< HEAD
-#if __LINUX_ARM_ARCH__ >= 6
-
-=======
 #ifdef CONFIG_CPU_V7M
 #define IRQMASK_REG_NAME_R "primask"
 #define IRQMASK_REG_NAME_W "primask"
@@ -29,26 +22,18 @@
 #if __LINUX_ARM_ARCH__ >= 6
 
 #define arch_local_irq_save arch_local_irq_save
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned long arch_local_irq_save(void)
 {
 	unsigned long flags;
 
 	asm volatile(
-<<<<<<< HEAD
-		"	mrs	%0, cpsr	@ arch_local_irq_save\n"
-=======
 		"	mrs	%0, " IRQMASK_REG_NAME_R "	@ arch_local_irq_save\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"	cpsid	i"
 		: "=r" (flags) : : "memory", "cc");
 	return flags;
 }
 
-<<<<<<< HEAD
-=======
 #define arch_local_irq_enable arch_local_irq_enable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void arch_local_irq_enable(void)
 {
 	asm volatile(
@@ -58,10 +43,7 @@ static inline void arch_local_irq_enable(void)
 		: "memory", "cc");
 }
 
-<<<<<<< HEAD
-=======
 #define arch_local_irq_disable arch_local_irq_disable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void arch_local_irq_disable(void)
 {
 	asm volatile(
@@ -73,8 +55,6 @@ static inline void arch_local_irq_disable(void)
 
 #define local_fiq_enable()  __asm__("cpsie f	@ __stf" : : : "memory", "cc")
 #define local_fiq_disable() __asm__("cpsid f	@ __clf" : : : "memory", "cc")
-<<<<<<< HEAD
-=======
 
 #ifndef CONFIG_CPU_V7M
 #define local_abt_enable()  __asm__("cpsie a	@ __sta" : : : "memory", "cc")
@@ -83,16 +63,12 @@ static inline void arch_local_irq_disable(void)
 #define local_abt_enable()	do { } while (0)
 #define local_abt_disable()	do { } while (0)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 
 /*
  * Save the current interrupt enable state & disable IRQs
  */
-<<<<<<< HEAD
-=======
 #define arch_local_irq_save arch_local_irq_save
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned long arch_local_irq_save(void)
 {
 	unsigned long flags, temp;
@@ -110,10 +86,7 @@ static inline unsigned long arch_local_irq_save(void)
 /*
  * Enable IRQs
  */
-<<<<<<< HEAD
-=======
 #define arch_local_irq_enable arch_local_irq_enable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void arch_local_irq_enable(void)
 {
 	unsigned long temp;
@@ -129,10 +102,7 @@ static inline void arch_local_irq_enable(void)
 /*
  * Disable IRQs
  */
-<<<<<<< HEAD
-=======
 #define arch_local_irq_disable arch_local_irq_disable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void arch_local_irq_disable(void)
 {
 	unsigned long temp;
@@ -175,29 +145,19 @@ static inline void arch_local_irq_disable(void)
 	: "memory", "cc");					\
 	})
 
-<<<<<<< HEAD
-=======
 #define local_abt_enable()	do { } while (0)
 #define local_abt_disable()	do { } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
  * Save the current interrupt enable state.
  */
-<<<<<<< HEAD
-=======
 #define arch_local_save_flags arch_local_save_flags
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned long arch_local_save_flags(void)
 {
 	unsigned long flags;
 	asm volatile(
-<<<<<<< HEAD
-		"	mrs	%0, cpsr	@ local_save_flags"
-=======
 		"	mrs	%0, " IRQMASK_REG_NAME_R "	@ local_save_flags"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=r" (flags) : : "memory", "cc");
 	return flags;
 }
@@ -205,32 +165,16 @@ static inline unsigned long arch_local_save_flags(void)
 /*
  * restore saved IRQ & FIQ state
  */
-<<<<<<< HEAD
-static inline void arch_local_irq_restore(unsigned long flags)
-{
-	asm volatile(
-		"	msr	cpsr_c, %0	@ local_irq_restore"
-=======
 #define arch_local_irq_restore arch_local_irq_restore
 static inline void arch_local_irq_restore(unsigned long flags)
 {
 	asm volatile(
 		"	msr	" IRQMASK_REG_NAME_W ", %0	@ local_irq_restore"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		:
 		: "r" (flags)
 		: "memory", "cc");
 }
 
-<<<<<<< HEAD
-static inline int arch_irqs_disabled_flags(unsigned long flags)
-{
-	return flags & PSR_I_BIT;
-}
-
-#endif
-#endif
-=======
 #define arch_irqs_disabled_flags arch_irqs_disabled_flags
 static inline int arch_irqs_disabled_flags(unsigned long flags)
 {
@@ -241,4 +185,3 @@ static inline int arch_irqs_disabled_flags(unsigned long flags)
 
 #endif /* ifdef __KERNEL__ */
 #endif /* ifndef __ASM_ARM_IRQFLAGS_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

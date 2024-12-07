@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel Implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (C) 1999-2001 Cisco, Motorola
@@ -10,38 +7,6 @@
  *
  * These are the definitions needed for the command object.
  *
-<<<<<<< HEAD
- * This SCTP implementation  is free software;
- * you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This SCTP implementation  is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; without even the implied
- *                 ************************
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GNU CC; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * Please send any bug reports or fixes you make to one of the
- * following email addresses:
- *
- * La Monte H.P. Yarroll <piggy@acm.org>
- * Karl Knutson <karl@athena.chicago.il.us>
- * Ardelle Fan <ardelle.fan@intel.com>
- * Sridhar Samudrala <sri@us.ibm.com>
- *
- * Any bugs reported given to us we will try to fix... any fixes shared will
- * be incorporated into the next SCTP release.
- */
-
-
-=======
  * Please send any bug reports or fixes you make to the
  * email address(es):
  *    lksctp developers <linux-sctp@vger.kernel.org>
@@ -53,7 +18,6 @@
  *   Sridhar Samudrala <sri@us.ibm.com>
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __net_sctp_command_h__
 #define __net_sctp_command_h__
 
@@ -61,11 +25,7 @@
 #include <net/sctp/structs.h>
 
 
-<<<<<<< HEAD
-typedef enum {
-=======
 enum sctp_verb {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_CMD_NOP = 0,	/* Do nothing. */
 	SCTP_CMD_NEW_ASOC,	/* Register a new association.  */
 	SCTP_CMD_DELETE_TCB,	/* Delete the current association. */
@@ -99,10 +59,7 @@ enum sctp_verb {
 	SCTP_CMD_HB_TIMERS_START,    /* Start the heartbeat timers. */
 	SCTP_CMD_HB_TIMER_UPDATE,    /* Update a heartbeat timers.  */
 	SCTP_CMD_HB_TIMERS_STOP,     /* Stop the heartbeat timers.  */
-<<<<<<< HEAD
-=======
 	SCTP_CMD_PROBE_TIMER_UPDATE, /* Update a probe timer.  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_CMD_TRANSPORT_HB_SENT,  /* Reset the status of a transport. */
 	SCTP_CMD_TRANSPORT_IDLE,     /* Do manipulations on idle transport */
 	SCTP_CMD_TRANSPORT_ON,       /* Mark the transport as active. */
@@ -112,10 +69,6 @@ enum sctp_verb {
 	SCTP_CMD_ASSOC_FAILED,	 /* Handle association failure. */
 	SCTP_CMD_DISCARD_PACKET, /* Discard the whole packet. */
 	SCTP_CMD_GEN_SHUTDOWN,   /* Generate a SHUTDOWN chunk. */
-<<<<<<< HEAD
-	SCTP_CMD_UPDATE_ASSOC,   /* Update association information. */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_CMD_PURGE_OUTQUEUE, /* Purge all data waiting to be sent. */
 	SCTP_CMD_SETUP_T2,       /* Hi-level, setup T2-shutdown parms.  */
 	SCTP_CMD_RTO_PENDING,	 /* Set transport's rto_pending. */
@@ -132,44 +85,25 @@ enum sctp_verb {
 	SCTP_CMD_SET_SK_ERR,	 /* Set sk_err */
 	SCTP_CMD_ASSOC_CHANGE,	 /* generate and send assoc_change event */
 	SCTP_CMD_ADAPTATION_IND, /* generate and send adaptation event */
-<<<<<<< HEAD
-=======
 	SCTP_CMD_PEER_NO_AUTH,   /* generate and send authentication event */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_CMD_ASSOC_SHKEY,    /* generate the association shared keys */
 	SCTP_CMD_T1_RETRAN,	 /* Mark for retransmission after T1 timeout  */
 	SCTP_CMD_UPDATE_INITTAG, /* Update peer inittag */
 	SCTP_CMD_SEND_MSG,	 /* Send the whole use message */
-<<<<<<< HEAD
-	SCTP_CMD_SEND_NEXT_ASCONF, /* Send the next ASCONF after ACK */
-	SCTP_CMD_PURGE_ASCONF_QUEUE, /* Purge all asconf queues.*/
-	SCTP_CMD_SET_ASOC,	 /* Restore association context */
-	SCTP_CMD_LAST
-} sctp_verb_t;
-
-/* How many commands can you put in an sctp_cmd_seq_t?
-=======
 	SCTP_CMD_PURGE_ASCONF_QUEUE, /* Purge all asconf queues.*/
 	SCTP_CMD_SET_ASOC,	 /* Restore association context */
 	SCTP_CMD_LAST
 };
 
 /* How many commands can you put in an struct sctp_cmd_seq?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This is a rather arbitrary number, ideally derived from a careful
  * analysis of the state functions, but in reality just taken from
  * thin air in the hopes othat we don't trigger a kernel panic.
  */
-<<<<<<< HEAD
-#define SCTP_MAX_NUM_COMMANDS 14
-
-typedef union {
-=======
 #define SCTP_MAX_NUM_COMMANDS 20
 
 union sctp_arg {
 	void *zero_all;	/* Set to NULL to clear the entire union */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__s32 i32;
 	__u32 u32;
 	__be32 be32;
@@ -177,65 +111,23 @@ union sctp_arg {
 	__u8 u8;
 	int error;
 	__be16 err;
-<<<<<<< HEAD
-	sctp_state_t state;
-	sctp_event_timeout_t to;
-	unsigned long zero;
-	void *ptr;
-=======
 	enum sctp_state state;
 	enum sctp_event_timeout to;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_chunk *chunk;
 	struct sctp_association *asoc;
 	struct sctp_transport *transport;
 	struct sctp_bind_addr *bp;
-<<<<<<< HEAD
-	sctp_init_chunk_t *init;
-	struct sctp_ulpevent *ulpevent;
-	struct sctp_packet *packet;
-	sctp_sackhdr_t *sackh;
-	struct sctp_datamsg *msg;
-} sctp_arg_t;
-=======
 	struct sctp_init_chunk *init;
 	struct sctp_ulpevent *ulpevent;
 	struct sctp_packet *packet;
 	struct sctp_sackhdr *sackh;
 	struct sctp_datamsg *msg;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* We are simulating ML type constructors here.
  *
  * SCTP_ARG_CONSTRUCTOR(NAME, TYPE, ELT) builds a function called
  * SCTP_NAME() which takes an argument of type TYPE and returns an
-<<<<<<< HEAD
- * sctp_arg_t.  It does this by inserting the sole argument into the
- * ELT union element of a local sctp_arg_t.
- *
- * E.g., SCTP_ARG_CONSTRUCTOR(I32, __s32, i32) builds SCTP_I32(arg),
- * which takes an __s32 and returns a sctp_arg_t containing the
- * __s32.  So, after foo = SCTP_I32(arg), foo.i32 == arg.
- */
-static inline sctp_arg_t SCTP_NULL(void)
-{
-	sctp_arg_t retval; retval.ptr = NULL; return retval;
-}
-static inline sctp_arg_t SCTP_NOFORCE(void)
-{
-	sctp_arg_t retval = {.zero = 0UL}; retval.i32 = 0; return retval;
-}
-static inline sctp_arg_t SCTP_FORCE(void)
-{
-	sctp_arg_t retval = {.zero = 0UL}; retval.i32 = 1; return retval;
-}
-
-#define SCTP_ARG_CONSTRUCTOR(name, type, elt) \
-static inline sctp_arg_t	\
-SCTP_## name (type arg)		\
-{ sctp_arg_t retval = {.zero = 0UL}; retval.elt = arg; return retval; }
-=======
  * union sctp_arg.  It does this by inserting the sole argument into
  * the ELT union element of a local union sctp_arg.
  *
@@ -252,7 +144,6 @@ SCTP_## name (type arg)		\
   retval.elt = arg;\
   return retval;\
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SCTP_ARG_CONSTRUCTOR(I32,	__s32, i32)
 SCTP_ARG_CONSTRUCTOR(U32,	__u32, u32)
@@ -261,36 +152,12 @@ SCTP_ARG_CONSTRUCTOR(U16,	__u16, u16)
 SCTP_ARG_CONSTRUCTOR(U8,	__u8, u8)
 SCTP_ARG_CONSTRUCTOR(ERROR,     int, error)
 SCTP_ARG_CONSTRUCTOR(PERR,      __be16, err)	/* protocol error */
-<<<<<<< HEAD
-SCTP_ARG_CONSTRUCTOR(STATE,	sctp_state_t, state)
-SCTP_ARG_CONSTRUCTOR(TO,	sctp_event_timeout_t, to)
-SCTP_ARG_CONSTRUCTOR(PTR,	void *, ptr)
-=======
 SCTP_ARG_CONSTRUCTOR(STATE,	enum sctp_state, state)
 SCTP_ARG_CONSTRUCTOR(TO,	enum sctp_event_timeout, to)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SCTP_ARG_CONSTRUCTOR(CHUNK,	struct sctp_chunk *, chunk)
 SCTP_ARG_CONSTRUCTOR(ASOC,	struct sctp_association *, asoc)
 SCTP_ARG_CONSTRUCTOR(TRANSPORT,	struct sctp_transport *, transport)
 SCTP_ARG_CONSTRUCTOR(BA,	struct sctp_bind_addr *, bp)
-<<<<<<< HEAD
-SCTP_ARG_CONSTRUCTOR(PEER_INIT,	sctp_init_chunk_t *, init)
-SCTP_ARG_CONSTRUCTOR(ULPEVENT,  struct sctp_ulpevent *, ulpevent)
-SCTP_ARG_CONSTRUCTOR(PACKET,	struct sctp_packet *, packet)
-SCTP_ARG_CONSTRUCTOR(SACKH,	sctp_sackhdr_t *, sackh)
-SCTP_ARG_CONSTRUCTOR(DATAMSG,	struct sctp_datamsg *, msg)
-
-typedef struct {
-	sctp_arg_t obj;
-	sctp_verb_t verb;
-} sctp_cmd_t;
-
-typedef struct {
-	sctp_cmd_t cmds[SCTP_MAX_NUM_COMMANDS];
-	__u8 next_free_slot;
-	__u8 next_cmd;
-} sctp_cmd_seq_t;
-=======
 SCTP_ARG_CONSTRUCTOR(PEER_INIT,	struct sctp_init_chunk *, init)
 SCTP_ARG_CONSTRUCTOR(ULPEVENT,  struct sctp_ulpevent *, ulpevent)
 SCTP_ARG_CONSTRUCTOR(PACKET,	struct sctp_packet *, packet)
@@ -324,17 +191,11 @@ struct sctp_cmd_seq {
 	struct sctp_cmd *last_used_slot;
 	struct sctp_cmd *next_cmd;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* Initialize a block of memory as a command sequence.
  * Return 0 if the initialization fails.
  */
-<<<<<<< HEAD
-int sctp_init_cmd_seq(sctp_cmd_seq_t *seq);
-
-/* Add a command to an sctp_cmd_seq_t.
-=======
 static inline int sctp_init_cmd_seq(struct sctp_cmd_seq *seq)
 {
 	/* cmds[] is filled backwards to simplify the overflow BUG() check */
@@ -345,14 +206,10 @@ static inline int sctp_init_cmd_seq(struct sctp_cmd_seq *seq)
 
 
 /* Add a command to an struct sctp_cmd_seq.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Use the SCTP_* constructors defined by SCTP_ARG_CONSTRUCTOR() above
  * to wrap data which goes in the obj argument.
  */
-<<<<<<< HEAD
-void sctp_add_cmd_sf(sctp_cmd_seq_t *seq, sctp_verb_t verb, sctp_arg_t obj);
-=======
 static inline void sctp_add_cmd_sf(struct sctp_cmd_seq *seq,
 				   enum sctp_verb verb, union sctp_arg obj)
 {
@@ -364,17 +221,10 @@ static inline void sctp_add_cmd_sf(struct sctp_cmd_seq *seq,
 	cmd->obj = obj;
 	seq->last_used_slot = cmd;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Return the next command structure in an sctp_cmd_seq.
  * Return NULL at the end of the sequence.
  */
-<<<<<<< HEAD
-sctp_cmd_t *sctp_next_cmd(sctp_cmd_seq_t *seq);
-
-#endif /* __net_sctp_command_h__ */
-
-=======
 static inline struct sctp_cmd *sctp_next_cmd(struct sctp_cmd_seq *seq)
 {
 	if (seq->next_cmd <= seq->last_used_slot)
@@ -384,4 +234,3 @@ static inline struct sctp_cmd *sctp_next_cmd(struct sctp_cmd_seq *seq)
 }
 
 #endif /* __net_sctp_command_h__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

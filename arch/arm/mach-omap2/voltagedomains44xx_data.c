@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP3/OMAP4 Voltage Management Routines
  *
@@ -16,24 +13,13 @@
  *
  * Copyright (C) 2010 Texas Instruments, Inc.
  * Thara Gopinath <thara@ti.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/err.h>
 #include <linux/init.h>
 
 #include "common.h"
-<<<<<<< HEAD
-
-=======
 #include "soc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "prm-regbits-44xx.h"
 #include "prm44xx.h"
 #include "prcm44xx.h"
@@ -45,26 +31,17 @@
 
 static const struct omap_vfsm_instance omap4_vdd_mpu_vfsm = {
 	.voltsetup_reg = OMAP4_PRM_VOLTSETUP_MPU_RET_SLEEP_OFFSET,
-<<<<<<< HEAD
-=======
 	.voltsetup_off_reg = OMAP4_PRM_VOLTSETUP_MPU_OFF_OFFSET,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct omap_vfsm_instance omap4_vdd_iva_vfsm = {
 	.voltsetup_reg = OMAP4_PRM_VOLTSETUP_IVA_RET_SLEEP_OFFSET,
-<<<<<<< HEAD
-=======
 	.voltsetup_off_reg = OMAP4_PRM_VOLTSETUP_IVA_OFF_OFFSET,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct omap_vfsm_instance omap4_vdd_core_vfsm = {
 	.voltsetup_reg = OMAP4_PRM_VOLTSETUP_CORE_RET_SLEEP_OFFSET,
-<<<<<<< HEAD
-=======
 	.voltsetup_off_reg = OMAP4_PRM_VOLTSETUP_CORE_OFF_OFFSET,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct voltagedomain omap4_voltdm_mpu = {
@@ -112,11 +89,7 @@ static struct voltagedomain *voltagedomains_omap4[] __initdata = {
 	NULL,
 };
 
-<<<<<<< HEAD
-static const char *sys_clk_name __initdata = "sys_clkin_ck";
-=======
 static const char *const sys_clk_name __initconst = "sys_clkin_ck";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init omap44xx_voltagedomains_init(void)
 {
@@ -128,13 +101,6 @@ void __init omap44xx_voltagedomains_init(void)
 	 * for the currently-running IC
 	 */
 #ifdef CONFIG_PM_OPP
-<<<<<<< HEAD
-	omap4_voltdm_mpu.volt_data = omap44xx_vdd_mpu_volt_data;
-	omap4_voltdm_iva.volt_data = omap44xx_vdd_iva_volt_data;
-	omap4_voltdm_core.volt_data = omap44xx_vdd_core_volt_data;
-#endif
-
-=======
 	if (cpu_is_omap443x()) {
 		omap4_voltdm_mpu.volt_data = omap443x_vdd_mpu_volt_data;
 		omap4_voltdm_iva.volt_data = omap443x_vdd_iva_volt_data;
@@ -154,7 +120,6 @@ void __init omap44xx_voltagedomains_init(void)
 	omap4_voltdm_iva.vc_param = &omap4_iva_vc_data;
 	omap4_voltdm_core.vc_param = &omap4_core_vc_data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; voltdm = voltagedomains_omap4[i], voltdm; i++)
 		voltdm->sys_clk.name = sys_clk_name;
 

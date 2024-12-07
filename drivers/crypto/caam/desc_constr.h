@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-/*
- * caam descriptor construction helper functions
- *
- * Copyright 2008-2011 Freescale Semiconductor, Inc.
- */
-
-#include "desc.h"
-
-#define IMMEDIATE (1 << 23)
-#define CAAM_CMD_SZ sizeof(u32)
-#define CAAM_PTR_SZ sizeof(dma_addr_t)
-#define CAAM_DESC_BYTES_MAX (CAAM_CMD_SZ * MAX_CAAM_DESCSIZE)
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * caam descriptor construction helper functions
@@ -63,7 +49,6 @@
  * in deco buffer can be used for storing shared descriptor.
  */
 #define MAX_SDLEN	((CAAM_DESC_BYTES_MAX - DESC_JOB_IO_LEN_MIN) / CAAM_CMD_SZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef DEBUG
 #define PRINT_POS do { printk(KERN_DEBUG "%02d: %s\n", desc_len(desc),\
@@ -83,14 +68,6 @@
 			       LDST_SRCDST_WORD_DECOCTRL | \
 			       (LDOFF_ENABLE_AUTO_NFIFO << LDST_OFFSET_SHIFT))
 
-<<<<<<< HEAD
-static inline int desc_len(u32 *desc)
-{
-	return *desc & HDR_DESCLEN_MASK;
-}
-
-static inline int desc_bytes(void *desc)
-=======
 extern bool caam_little_end;
 extern size_t caam_ptr_sz;
 
@@ -110,60 +87,31 @@ static inline int desc_len(u32 * const desc)
 }
 
 static inline int desc_bytes(void * const desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return desc_len(desc) * CAAM_CMD_SZ;
 }
 
-<<<<<<< HEAD
-static inline u32 *desc_end(u32 *desc)
-=======
 static inline u32 *desc_end(u32 * const desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return desc + desc_len(desc);
 }
 
-<<<<<<< HEAD
-static inline void *sh_desc_pdb(u32 *desc)
-=======
 static inline void *sh_desc_pdb(u32 * const desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return desc + 1;
 }
 
-<<<<<<< HEAD
-static inline void init_desc(u32 *desc, u32 options)
-{
-	*desc = options | HDR_ONE | 1;
-}
-
-static inline void init_sh_desc(u32 *desc, u32 options)
-=======
 static inline void init_desc(u32 * const desc, u32 options)
 {
 	*desc = cpu_to_caam32((options | HDR_ONE) + 1);
 }
 
 static inline void init_sh_desc(u32 * const desc, u32 options)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	PRINT_POS;
 	init_desc(desc, CMD_SHARED_DESC_HDR | options);
 }
 
-<<<<<<< HEAD
-static inline void init_sh_desc_pdb(u32 *desc, u32 options, size_t pdb_bytes)
-{
-	u32 pdb_len = pdb_bytes / CAAM_CMD_SZ + 1;
-
-	init_sh_desc(desc, ((pdb_len << HDR_START_IDX_SHIFT) + pdb_len) |
-		     options);
-}
-
-static inline void init_job_desc(u32 *desc, u32 options)
-=======
 static inline void init_sh_desc_pdb(u32 * const desc, u32 options,
 				    size_t pdb_bytes)
 {
@@ -174,24 +122,10 @@ static inline void init_sh_desc_pdb(u32 * const desc, u32 options,
 }
 
 static inline void init_job_desc(u32 * const desc, u32 options)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	init_desc(desc, CMD_DESC_HDR | options);
 }
 
-<<<<<<< HEAD
-static inline void append_ptr(u32 *desc, dma_addr_t ptr)
-{
-	dma_addr_t *offset = (dma_addr_t *)desc_end(desc);
-
-	*offset = ptr;
-
-	(*desc) += CAAM_PTR_SZ / CAAM_CMD_SZ;
-}
-
-static inline void init_job_desc_shared(u32 *desc, dma_addr_t ptr, int len,
-					u32 options)
-=======
 static inline void init_job_desc_pdb(u32 * const desc, u32 options,
 				     size_t pdb_bytes)
 {
@@ -218,7 +152,6 @@ static inline void append_ptr(u32 * const desc, dma_addr_t ptr)
 
 static inline void init_job_desc_shared(u32 * const desc, dma_addr_t ptr,
 					int len, u32 options)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	PRINT_POS;
 	init_job_desc(desc, HDR_SHARED | options |
@@ -226,28 +159,6 @@ static inline void init_job_desc_shared(u32 * const desc, dma_addr_t ptr,
 	append_ptr(desc, ptr);
 }
 
-<<<<<<< HEAD
-static inline void append_data(u32 *desc, void *data, int len)
-{
-	u32 *offset = desc_end(desc);
-
-	if (len) /* avoid sparse warning: memcpy with byte count of 0 */
-		memcpy(offset, data, len);
-
-	(*desc) += (len + CAAM_CMD_SZ - 1) / CAAM_CMD_SZ;
-}
-
-static inline void append_cmd(u32 *desc, u32 command)
-{
-	u32 *cmd = desc_end(desc);
-
-	*cmd = command;
-
-	(*desc)++;
-}
-
-static inline void append_cmd_ptr(u32 *desc, dma_addr_t ptr, int len,
-=======
 static inline void append_data(u32 * const desc, const void *data, int len)
 {
 	u32 *offset = desc_end(desc);
@@ -296,16 +207,12 @@ static inline u32 *write_cmd(u32 * const desc, u32 command)
 }
 
 static inline void append_cmd_ptr(u32 * const desc, dma_addr_t ptr, int len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  u32 command)
 {
 	append_cmd(desc, command | len);
 	append_ptr(desc, ptr);
 }
 
-<<<<<<< HEAD
-static inline void append_cmd_data(u32 *desc, void *data, int len,
-=======
 /* Write length after pointer, rather than inside command */
 static inline void append_cmd_ptr_extlen(u32 * const desc, dma_addr_t ptr,
 					 unsigned int len, u32 command)
@@ -317,32 +224,12 @@ static inline void append_cmd_ptr_extlen(u32 * const desc, dma_addr_t ptr,
 }
 
 static inline void append_cmd_data(u32 * const desc, const void *data, int len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   u32 command)
 {
 	append_cmd(desc, command | IMMEDIATE | len);
 	append_data(desc, data, len);
 }
 
-<<<<<<< HEAD
-static inline u32 *append_jump(u32 *desc, u32 options)
-{
-	u32 *cmd = desc_end(desc);
-
-	PRINT_POS;
-	append_cmd(desc, CMD_JUMP | options);
-
-	return cmd;
-}
-
-static inline void set_jump_tgt_here(u32 *desc, u32 *jump_cmd)
-{
-	*jump_cmd = *jump_cmd | (desc_len(desc) - (jump_cmd - desc));
-}
-
-#define APPEND_CMD(cmd, op) \
-static inline void append_##cmd(u32 *desc, u32 options) \
-=======
 #define APPEND_CMD_RET(cmd, op) \
 static inline u32 *append_##cmd(u32 * const desc, u32 options) \
 { \
@@ -372,60 +259,33 @@ static inline void set_move_tgt_here(u32 * const desc, u32 *move_cmd)
 
 #define APPEND_CMD(cmd, op) \
 static inline void append_##cmd(u32 * const desc, u32 options) \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 { \
 	PRINT_POS; \
 	append_cmd(desc, CMD_##op | options); \
 }
 APPEND_CMD(operation, OPERATION)
-<<<<<<< HEAD
-APPEND_CMD(move, MOVE)
-
-#define APPEND_CMD_LEN(cmd, op) \
-static inline void append_##cmd(u32 *desc, unsigned int len, u32 options) \
-=======
 
 #define APPEND_CMD_LEN(cmd, op) \
 static inline void append_##cmd(u32 * const desc, unsigned int len, \
 				u32 options) \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 { \
 	PRINT_POS; \
 	append_cmd(desc, CMD_##op | len | options); \
 }
-<<<<<<< HEAD
-=======
 
 APPEND_CMD_LEN(seq_load, SEQ_LOAD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 APPEND_CMD_LEN(seq_store, SEQ_STORE)
 APPEND_CMD_LEN(seq_fifo_load, SEQ_FIFO_LOAD)
 APPEND_CMD_LEN(seq_fifo_store, SEQ_FIFO_STORE)
 
 #define APPEND_CMD_PTR(cmd, op) \
-<<<<<<< HEAD
-static inline void append_##cmd(u32 *desc, dma_addr_t ptr, unsigned int len, \
-				u32 options) \
-=======
 static inline void append_##cmd(u32 * const desc, dma_addr_t ptr, \
 				unsigned int len, u32 options) \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 { \
 	PRINT_POS; \
 	append_cmd_ptr(desc, ptr, len, CMD_##op | options); \
 }
 APPEND_CMD_PTR(key, KEY)
-<<<<<<< HEAD
-APPEND_CMD_PTR(seq_in_ptr, SEQ_IN_PTR)
-APPEND_CMD_PTR(seq_out_ptr, SEQ_OUT_PTR)
-APPEND_CMD_PTR(load, LOAD)
-APPEND_CMD_PTR(store, STORE)
-APPEND_CMD_PTR(fifo_load, FIFO_LOAD)
-APPEND_CMD_PTR(fifo_store, FIFO_STORE)
-
-#define APPEND_CMD_PTR_TO_IMM(cmd, op) \
-static inline void append_##cmd##_as_imm(u32 *desc, void *data, \
-=======
 APPEND_CMD_PTR(load, LOAD)
 APPEND_CMD_PTR(fifo_load, FIFO_LOAD)
 APPEND_CMD_PTR(fifo_store, FIFO_STORE)
@@ -464,7 +324,6 @@ APPEND_SEQ_PTR_INTLEN(out, OUT)
 
 #define APPEND_CMD_PTR_TO_IMM(cmd, op) \
 static inline void append_##cmd##_as_imm(u32 * const desc, const void *data, \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 unsigned int len, u32 options) \
 { \
 	PRINT_POS; \
@@ -473,8 +332,6 @@ static inline void append_##cmd##_as_imm(u32 * const desc, const void *data, \
 APPEND_CMD_PTR_TO_IMM(load, LOAD);
 APPEND_CMD_PTR_TO_IMM(fifo_load, FIFO_LOAD);
 
-<<<<<<< HEAD
-=======
 #define APPEND_CMD_PTR_EXTLEN(cmd, op) \
 static inline void append_##cmd##_extlen(u32 * const desc, dma_addr_t ptr, \
 					 unsigned int len, u32 options) \
@@ -502,17 +359,12 @@ static inline void append_##cmd(u32 * const desc, dma_addr_t ptr, \
 APPEND_CMD_PTR_LEN(seq_in_ptr, SEQ_IN_PTR, u32)
 APPEND_CMD_PTR_LEN(seq_out_ptr, SEQ_OUT_PTR, u32)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 2nd variant for commands whose specified immediate length differs
  * from length of immediate data provided, e.g., split keys
  */
 #define APPEND_CMD_PTR_TO_IMM2(cmd, op) \
-<<<<<<< HEAD
-static inline void append_##cmd##_as_imm(u32 *desc, void *data, \
-=======
 static inline void append_##cmd##_as_imm(u32 * const desc, const void *data, \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 unsigned int data_len, \
 					 unsigned int len, u32 options) \
 { \
@@ -523,13 +375,6 @@ static inline void append_##cmd##_as_imm(u32 * const desc, const void *data, \
 APPEND_CMD_PTR_TO_IMM2(key, KEY);
 
 #define APPEND_CMD_RAW_IMM(cmd, op, type) \
-<<<<<<< HEAD
-static inline void append_##cmd##_imm_##type(u32 *desc, type immediate, \
-					     u32 options) \
-{ \
-	PRINT_POS; \
-	append_cmd(desc, CMD_##op | IMMEDIATE | options | sizeof(type)); \
-=======
 static inline void append_##cmd##_imm_##type(u32 * const desc, type immediate, \
 					     u32 options) \
 { \
@@ -539,14 +384,11 @@ static inline void append_##cmd##_imm_##type(u32 * const desc, type immediate, \
 	else \
 		append_cmd(desc, CMD_##op | IMMEDIATE | options | \
 			   sizeof(type)); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	append_cmd(desc, immediate); \
 }
 APPEND_CMD_RAW_IMM(load, LOAD, u32);
 
 /*
-<<<<<<< HEAD
-=======
  * ee - endianness
  * size - size of immediate type in bytes
  */
@@ -564,17 +406,12 @@ static inline void append_##cmd##_imm_##ee##size(u32 *desc, \
 APPEND_CMD_RAW_IMM2(load, LOAD, be, 32);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Append math command. Only the last part of destination and source need to
  * be specified
  */
 #define APPEND_MATH(op, desc, dest, src_0, src_1, len) \
 append_cmd(desc, CMD_MATH | MATH_FUN_##op | MATH_DEST_##dest | \
-<<<<<<< HEAD
-	   MATH_SRC0_##src_0 | MATH_SRC1_##src_1 | (u32) (len & MATH_LEN_MASK));
-=======
 	MATH_SRC0_##src_0 | MATH_SRC1_##src_1 | (u32)len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define append_math_add(desc, dest, src0, src1, len) \
 	APPEND_MATH(ADD, desc, dest, src0, src1, len)
@@ -594,22 +431,15 @@ append_cmd(desc, CMD_MATH | MATH_FUN_##op | MATH_DEST_##dest | \
 	APPEND_MATH(LSHIFT, desc, dest, src0, src1, len)
 #define append_math_rshift(desc, dest, src0, src1, len) \
 	APPEND_MATH(RSHIFT, desc, dest, src0, src1, len)
-<<<<<<< HEAD
-=======
 #define append_math_ldshift(desc, dest, src0, src1, len) \
 	APPEND_MATH(SHLD, desc, dest, src0, src1, len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Exactly one source is IMM. Data is passed in as u32 value */
 #define APPEND_MATH_IMM_u32(op, desc, dest, src_0, src_1, data) \
 do { \
 	APPEND_MATH(op, desc, dest, src_0, src_1, CAAM_CMD_SZ); \
 	append_cmd(desc, data); \
-<<<<<<< HEAD
-} while (0);
-=======
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define append_math_add_imm_u32(desc, dest, src0, src1, data) \
 	APPEND_MATH_IMM_u32(ADD, desc, dest, src0, src1, data)
@@ -629,8 +459,6 @@ do { \
 	APPEND_MATH_IMM_u32(LSHIFT, desc, dest, src0, src1, data)
 #define append_math_rshift_imm_u32(desc, dest, src0, src1, data) \
 	APPEND_MATH_IMM_u32(RSHIFT, desc, dest, src0, src1, data)
-<<<<<<< HEAD
-=======
 
 /* Exactly one source is IMM. Data is passed in as u64 value */
 #define APPEND_MATH_IMM_u64(op, desc, dest, src_0, src_1, data) \
@@ -776,4 +604,3 @@ static inline void append_proto_dkp(u32 * const desc, struct alginfo *adata)
 }
 
 #endif /* DESC_CONSTR_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

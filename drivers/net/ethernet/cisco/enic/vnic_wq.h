@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _VNIC_WQ_H_
@@ -65,14 +45,11 @@ struct vnic_wq_buf {
 	unsigned int index;
 	int sop;
 	void *desc;
-<<<<<<< HEAD
-=======
 	uint64_t wr_id; /* Cookie */
 	uint8_t cq_entry; /* Gets completion event from hw */
 	uint8_t desc_skip_cnt; /* Num descs to occupy */
 	uint8_t compressed_send; /* Both hdr and payload in one desc */
 	struct vnic_wq_buf *prev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Break the vnic_wq_buf allocations into blocks of 32/64 entries */
@@ -98,8 +75,6 @@ struct vnic_wq {
 	unsigned int pkts_outstanding;
 };
 
-<<<<<<< HEAD
-=======
 struct devcmd2_controller {
 	struct vnic_wq_ctrl __iomem *wq_ctrl;
 	struct vnic_devcmd2 *cmd_ring;
@@ -112,7 +87,6 @@ struct devcmd2_controller {
 	u32 posted;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int vnic_wq_desc_avail(struct vnic_wq *wq)
 {
 	/* how many does SW own? */
@@ -130,11 +104,6 @@ static inline void *vnic_wq_next_desc(struct vnic_wq *wq)
 	return wq->to_use->desc;
 }
 
-<<<<<<< HEAD
-static inline void vnic_wq_post(struct vnic_wq *wq,
-	void *os_buf, dma_addr_t dma_addr,
-	unsigned int len, int sop, int eop)
-=======
 static inline void vnic_wq_doorbell(struct vnic_wq *wq)
 {
 	/* Adding write memory barrier prevents compiler and/or CPU
@@ -151,30 +120,10 @@ static inline void vnic_wq_post(struct vnic_wq *wq,
 	unsigned int len, int sop, int eop,
 	uint8_t desc_skip_cnt, uint8_t cq_entry,
 	uint8_t compressed_send, uint64_t wrid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vnic_wq_buf *buf = wq->to_use;
 
 	buf->sop = sop;
-<<<<<<< HEAD
-	buf->os_buf = eop ? os_buf : NULL;
-	buf->dma_addr = dma_addr;
-	buf->len = len;
-
-	buf = buf->next;
-	if (eop) {
-		/* Adding write memory barrier prevents compiler and/or CPU
-		 * reordering, thus avoiding descriptor posting before
-		 * descriptor is initialized. Otherwise, hardware can read
-		 * stale descriptor fields.
-		 */
-		wmb();
-		iowrite32(buf->index, &wq->ctrl->posted_index);
-	}
-	wq->to_use = buf;
-
-	wq->ring.desc_avail--;
-=======
 	buf->cq_entry = cq_entry;
 	buf->compressed_send = compressed_send;
 	buf->desc_skip_cnt = desc_skip_cnt;
@@ -187,7 +136,6 @@ static inline void vnic_wq_post(struct vnic_wq *wq,
 	wq->to_use = buf;
 
 	wq->ring.desc_avail -= desc_skip_cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void vnic_wq_service(struct vnic_wq *wq,
@@ -225,14 +173,11 @@ void vnic_wq_enable(struct vnic_wq *wq);
 int vnic_wq_disable(struct vnic_wq *wq);
 void vnic_wq_clean(struct vnic_wq *wq,
 	void (*buf_clean)(struct vnic_wq *wq, struct vnic_wq_buf *buf));
-<<<<<<< HEAD
-=======
 int enic_wq_devcmd2_alloc(struct vnic_dev *vdev, struct vnic_wq *wq,
 			  unsigned int desc_count, unsigned int desc_size);
 void enic_wq_init_start(struct vnic_wq *wq, unsigned int cq_index,
 			unsigned int fetch_index, unsigned int posted_index,
 			unsigned int error_interrupt_enable,
 			unsigned int error_interrupt_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _VNIC_WQ_H_ */

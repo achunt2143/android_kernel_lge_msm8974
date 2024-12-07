@@ -12,12 +12,8 @@
 
 #undef DEBUG
 
-<<<<<<< HEAD
-#include <asm/pci.h>
-=======
 #include <linux/pci.h>
 #include <linux/of_address.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mpc52xx.h>
 #include <asm/delay.h>
 #include <asm/machdep.h>
@@ -247,11 +243,7 @@ mpc52xx_pci_setup(struct pci_controller *hose,
 	u32 tmp;
 	int iwcr0 = 0, iwcr1 = 0, iwcr2 = 0;
 
-<<<<<<< HEAD
-	pr_debug("mpc52xx_pci_setup(hose=%p, pci_regs=%p)\n", hose, pci_regs);
-=======
 	pr_debug("%s(hose=%p, pci_regs=%p)\n", __func__, hose, pci_regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* pci_process_bridge_OF_ranges() found all our addresses for us;
 	 * now store them in the right places */
@@ -266,15 +258,7 @@ mpc52xx_pci_setup(struct pci_controller *hose,
 	/* Memory windows */
 	res = &hose->mem_resources[0];
 	if (res->flags) {
-<<<<<<< HEAD
-		pr_debug("mem_resource[0] = "
-		         "{.start=%llx, .end=%llx, .flags=%llx}\n",
-		         (unsigned long long)res->start,
-			 (unsigned long long)res->end,
-			 (unsigned long long)res->flags);
-=======
 		pr_debug("mem_resource[0] = %pr\n", res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		out_be32(&pci_regs->iw0btar,
 		         MPC52xx_PCI_IWBTAR_TRANSLATION(res->start, res->start,
 							resource_size(res)));
@@ -287,12 +271,7 @@ mpc52xx_pci_setup(struct pci_controller *hose,
 
 	res = &hose->mem_resources[1];
 	if (res->flags) {
-<<<<<<< HEAD
-		pr_debug("mem_resource[1] = {.start=%x, .end=%x, .flags=%lx}\n",
-		         res->start, res->end, res->flags);
-=======
 		pr_debug("mem_resource[1] = %pr\n", res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		out_be32(&pci_regs->iw1btar,
 		         MPC52xx_PCI_IWBTAR_TRANSLATION(res->start, res->start,
 							resource_size(res)));
@@ -309,16 +288,8 @@ mpc52xx_pci_setup(struct pci_controller *hose,
 		printk(KERN_ERR "%s: Didn't find IO resources\n", __FILE__);
 		return;
 	}
-<<<<<<< HEAD
-	pr_debug(".io_resource={.start=%llx,.end=%llx,.flags=%llx} "
-	         ".io_base_phys=0x%p\n",
-	         (unsigned long long)res->start,
-		 (unsigned long long)res->end,
-		 (unsigned long long)res->flags, (void*)hose->io_base_phys);
-=======
 	pr_debug(".io_resource = %pr .io_base_phys=0x%pa\n",
 		 res, &hose->io_base_phys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	out_be32(&pci_regs->iw2btar,
 	         MPC52xx_PCI_IWBTAR_TRANSLATION(hose->io_base_phys,
 	                                        res->start,
@@ -341,11 +312,7 @@ mpc52xx_pci_setup(struct pci_controller *hose,
 
 	tmp = in_be32(&pci_regs->gscr);
 #if 0
-<<<<<<< HEAD
-	/* Reset the exteral bus ( internal PCI controller is NOT resetted ) */
-=======
 	/* Reset the exteral bus ( internal PCI controller is NOT reset ) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Not necessary and can be a bad thing if for example the bootloader
 	   is displaying a splash screen or ... Just left here for
 	   documentation purpose if anyone need it */
@@ -360,17 +327,6 @@ mpc52xx_pci_setup(struct pci_controller *hose,
 static void
 mpc52xx_pci_fixup_resources(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	int i;
-
-	pr_debug("mpc52xx_pci_fixup_resources() %.4x:%.4x\n",
-	         dev->vendor, dev->device);
-
-	/* We don't rely on boot loader for PCI and resets all
-	   devices */
-	for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
-		struct resource *res = &dev->resource[i];
-=======
 	struct resource *res;
 
 	pr_debug("%s() %.4x:%.4x\n", __func__, dev->vendor, dev->device);
@@ -378,7 +334,6 @@ mpc52xx_pci_fixup_resources(struct pci_dev *dev)
 	/* We don't rely on boot loader for PCI and resets all
 	   devices */
 	pci_dev_for_each_resource(dev, res) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res->end > res->start) {	/* Only valid resources */
 			res->end -= res->start;
 			res->start = 0;
@@ -405,32 +360,19 @@ mpc52xx_add_bridge(struct device_node *node)
 	const int *bus_range;
 	struct resource rsrc;
 
-<<<<<<< HEAD
-	pr_debug("Adding MPC52xx PCI host bridge %s\n", node->full_name);
-=======
 	pr_debug("Adding MPC52xx PCI host bridge %pOF\n", node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_add_flags(PCI_REASSIGN_ALL_BUS);
 
 	if (of_address_to_resource(node, 0, &rsrc) != 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Can't get %s resources\n", node->full_name);
-=======
 		printk(KERN_ERR "Can't get %pOF resources\n", node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	bus_range = of_get_property(node, "bus-range", &len);
 	if (bus_range == NULL || len < 2 * sizeof(int)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Can't get %s bus-range, assume bus 0\n",
-		       node->full_name);
-=======
 		printk(KERN_WARNING "Can't get %pOF bus-range, assume bus 0\n",
 		       node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bus_range = NULL;
 	}
 

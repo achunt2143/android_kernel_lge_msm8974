@@ -186,7 +186,3 @@ extern int qib_refresh_qsfp_cache(struct qib_pportdata *ppd,
 extern int qib_qsfp_mod_present(struct qib_pportdata *ppd);
 extern void qib_qsfp_init(struct qib_qsfp_data *qd,
 			  void (*fevent)(struct work_struct *));
-<<<<<<< HEAD
-extern void qib_qsfp_deinit(struct qib_qsfp_data *qd);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

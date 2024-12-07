@@ -6,10 +6,7 @@
  * Copyright (C) 2006 Felix Fietkau (nbd@openwrt.org)
  * Copyright (C) 2006 Broadcom Corporation.
  * Copyright (C) 2007 Michael Buesch <m@bues.ch>
-<<<<<<< HEAD
-=======
  * Copyright (C) 2013 Hauke Mehrtens <hauke@hauke-m.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Distribute under GPL.
  */
@@ -33,14 +30,9 @@
 #include <linux/dma-mapping.h>
 #include <linux/ssb/ssb.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-=======
 #include <linux/phy.h>
 
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/irq.h>
 
@@ -48,10 +40,6 @@
 #include "b44.h"
 
 #define DRV_MODULE_NAME		"b44"
-<<<<<<< HEAD
-#define DRV_MODULE_VERSION	"2.0"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRV_DESCRIPTION		"Broadcom 44xx/47xx 10/100 PCI ethernet driver"
 
 #define B44_DEF_MSG_ENABLE	  \
@@ -70,13 +58,8 @@
 #define B44_TX_TIMEOUT			(5 * HZ)
 
 /* hardware minimum and maximum for a single frame's data payload */
-<<<<<<< HEAD
-#define B44_MIN_MTU			60
-#define B44_MAX_MTU			1500
-=======
 #define B44_MIN_MTU			ETH_ZLEN
 #define B44_MAX_MTU			ETH_DATA_LEN
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define B44_RX_RING_SIZE		512
 #define B44_DEF_RX_RING_PENDING		200
@@ -113,10 +96,6 @@
 MODULE_AUTHOR("Felix Fietkau, Florian Schirmer, Pekka Pietikainen, David S. Miller");
 MODULE_DESCRIPTION(DRV_DESCRIPTION);
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_VERSION(DRV_MODULE_VERSION);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int b44_debug = -1;	/* -1 == use B44_DEF_MSG_ENABLE as value */
 module_param(b44_debug, int, 0);
@@ -124,11 +103,7 @@ MODULE_PARM_DESC(b44_debug, "B44 bitmapped debugging message enable value");
 
 
 #ifdef CONFIG_B44_PCI
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(b44_pci_tbl) = {
-=======
 static const struct pci_device_id b44_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, PCI_DEVICE_ID_BCM4401) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, PCI_DEVICE_ID_BCM4401B0) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, PCI_DEVICE_ID_BCM4401B1) },
@@ -144,11 +119,7 @@ static struct pci_driver b44_pci_driver = {
 
 static const struct ssb_device_id b44_ssb_tbl[] = {
 	SSB_DEVICE(SSB_VENDOR_BROADCOM, SSB_DEV_ETHERNET, SSB_ANY_REV),
-<<<<<<< HEAD
-	SSB_DEVTABLE_END
-=======
 	{},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 MODULE_DEVICE_TABLE(ssb, b44_ssb_tbl);
 
@@ -225,34 +196,8 @@ static int b44_wait_bit(struct b44 *bp, unsigned long reg,
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline void __b44_cam_read(struct b44 *bp, unsigned char *data, int index)
-{
-	u32 val;
-
-	bw32(bp, B44_CAM_CTRL, (CAM_CTRL_READ |
-			    (index << CAM_CTRL_INDEX_SHIFT)));
-
-	b44_wait_bit(bp, B44_CAM_CTRL, CAM_CTRL_BUSY, 100, 1);
-
-	val = br32(bp, B44_CAM_DATA_LO);
-
-	data[2] = (val >> 24) & 0xFF;
-	data[3] = (val >> 16) & 0xFF;
-	data[4] = (val >> 8) & 0xFF;
-	data[5] = (val >> 0) & 0xFF;
-
-	val = br32(bp, B44_CAM_DATA_HI);
-
-	data[0] = (val >> 8) & 0xFF;
-	data[1] = (val >> 0) & 0xFF;
-}
-
-static inline void __b44_cam_write(struct b44 *bp, unsigned char *data, int index)
-=======
 static inline void __b44_cam_write(struct b44 *bp,
 				   const unsigned char *data, int index)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val;
 
@@ -318,11 +263,7 @@ static int __b44_writephy(struct b44 *bp, int phy_addr, int reg, u32 val)
 
 static inline int b44_readphy(struct b44 *bp, int reg, u32 *val)
 {
-<<<<<<< HEAD
-	if (bp->phy_addr == B44_PHY_ADDR_NO_PHY)
-=======
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return __b44_readphy(bp, bp->phy_addr, reg, val);
@@ -330,22 +271,14 @@ static inline int b44_readphy(struct b44 *bp, int reg, u32 *val)
 
 static inline int b44_writephy(struct b44 *bp, int reg, u32 val)
 {
-<<<<<<< HEAD
-	if (bp->phy_addr == B44_PHY_ADDR_NO_PHY)
-=======
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return __b44_writephy(bp, bp->phy_addr, reg, val);
 }
 
 /* miilib interface */
-<<<<<<< HEAD
-static int b44_mii_read(struct net_device *dev, int phy_id, int location)
-=======
 static int b44_mdio_read_mii(struct net_device *dev, int phy_id, int location)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val;
 	struct b44 *bp = netdev_priv(dev);
@@ -355,20 +288,13 @@ static int b44_mdio_read_mii(struct net_device *dev, int phy_id, int location)
 	return val;
 }
 
-<<<<<<< HEAD
-static void b44_mii_write(struct net_device *dev, int phy_id, int location,
-			 int val)
-=======
 static void b44_mdio_write_mii(struct net_device *dev, int phy_id, int location,
 			       int val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct b44 *bp = netdev_priv(dev);
 	__b44_writephy(bp, phy_id, location, val);
 }
 
-<<<<<<< HEAD
-=======
 static int b44_mdio_read_phylib(struct mii_bus *bus, int phy_id, int location)
 {
 	u32 val;
@@ -386,17 +312,12 @@ static int b44_mdio_write_phylib(struct mii_bus *bus, int phy_id, int location,
 	return __b44_writephy(bp, phy_id, location, val);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int b44_phy_reset(struct b44 *bp)
 {
 	u32 val;
 	int err;
 
-<<<<<<< HEAD
-	if (bp->phy_addr == B44_PHY_ADDR_NO_PHY)
-=======
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	err = b44_writephy(bp, MII_BMCR, BMCR_RESET);
 	if (err)
@@ -456,11 +377,7 @@ static void b44_set_flow_ctrl(struct b44 *bp, u32 local, u32 remote)
 }
 
 #ifdef CONFIG_BCM47XX
-<<<<<<< HEAD
-#include <asm/mach-bcm47xx/nvram.h>
-=======
 #include <linux/bcm47xx_nvram.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void b44_wap54g10_workaround(struct b44 *bp)
 {
 	char buf[20];
@@ -472,11 +389,7 @@ static void b44_wap54g10_workaround(struct b44 *bp)
 	 * see https://dev.openwrt.org/ticket/146
 	 * check and reset bit "isolate"
 	 */
-<<<<<<< HEAD
-	if (nvram_getenv("boardnum", buf, sizeof(buf)) < 0)
-=======
 	if (bcm47xx_nvram_getenv("boardnum", buf, sizeof(buf)) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	if (simple_strtoul(buf, NULL, 0) == 2) {
 		err = __b44_readphy(bp, 0, MII_BMCR, &val);
@@ -491,11 +404,7 @@ static void b44_wap54g10_workaround(struct b44 *bp)
 	}
 	return;
 error:
-<<<<<<< HEAD
-	pr_warning("PHY: cannot reset MII transceiver isolate bit\n");
-=======
 	pr_warn("PHY: cannot reset MII transceiver isolate bit\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 static inline void b44_wap54g10_workaround(struct b44 *bp)
@@ -510,11 +419,7 @@ static int b44_setup_phy(struct b44 *bp)
 
 	b44_wap54g10_workaround(bp);
 
-<<<<<<< HEAD
-	if (bp->phy_addr == B44_PHY_ADDR_NO_PHY)
-=======
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	if ((err = b44_readphy(bp, B44_MII_ALEDCTRL, &val)) != 0)
 		goto out;
@@ -574,35 +479,20 @@ out:
 static void b44_stats_update(struct b44 *bp)
 {
 	unsigned long reg;
-<<<<<<< HEAD
-	u32 *val;
-
-	val = &bp->hw_stats.tx_good_octets;
-=======
 	u64 *val;
 
 	val = &bp->hw_stats.tx_good_octets;
 	u64_stats_update_begin(&bp->hw_stats.syncp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (reg = B44_TX_GOOD_O; reg <= B44_TX_PAUSE; reg += 4UL) {
 		*val++ += br32(bp, reg);
 	}
 
-<<<<<<< HEAD
-	/* Pad */
-	reg += 8*4UL;
-
-	for (reg = B44_RX_GOOD_O; reg <= B44_RX_NPAUSE; reg += 4UL) {
-		*val++ += br32(bp, reg);
-	}
-=======
 	for (reg = B44_RX_GOOD_O; reg <= B44_RX_NPAUSE; reg += 4UL) {
 		*val++ += br32(bp, reg);
 	}
 
 	u64_stats_update_end(&bp->hw_stats.syncp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void b44_link_report(struct b44 *bp)
@@ -624,14 +514,6 @@ static void b44_check_phy(struct b44 *bp)
 {
 	u32 bmsr, aux;
 
-<<<<<<< HEAD
-	if (bp->phy_addr == B44_PHY_ADDR_NO_PHY) {
-		bp->flags |= B44_FLAG_100_BASE_T;
-		bp->flags |= B44_FLAG_FULL_DUPLEX;
-		if (!netif_carrier_ok(bp->dev)) {
-			u32 val = br32(bp, B44_TX_CTRL);
-			val |= TX_CTRL_DUPLEX;
-=======
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY) {
 		bp->flags |= B44_FLAG_100_BASE_T;
 		if (!netif_carrier_ok(bp->dev)) {
@@ -640,7 +522,6 @@ static void b44_check_phy(struct b44 *bp)
 				val |= TX_CTRL_DUPLEX;
 			else
 				val &= ~TX_CTRL_DUPLEX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bw32(bp, B44_TX_CTRL, val);
 			netif_carrier_on(bp->dev);
 			b44_link_report(bp);
@@ -692,15 +573,9 @@ static void b44_check_phy(struct b44 *bp)
 	}
 }
 
-<<<<<<< HEAD
-static void b44_timer(unsigned long __opaque)
-{
-	struct b44 *bp = (struct b44 *) __opaque;
-=======
 static void b44_timer(struct timer_list *t)
 {
 	struct b44 *bp = from_timer(bp, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&bp->lock);
 
@@ -716,10 +591,7 @@ static void b44_timer(struct timer_list *t)
 static void b44_tx(struct b44 *bp)
 {
 	u32 cur, cons;
-<<<<<<< HEAD
-=======
 	unsigned bytes_compl = 0, pkts_compl = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cur  = br32(bp, B44_DMATX_STAT) & DMATX_STAT_CDMASK;
 	cur /= sizeof(struct dma_desc);
@@ -736,11 +608,6 @@ static void b44_tx(struct b44 *bp)
 				 skb->len,
 				 DMA_TO_DEVICE);
 		rp->skb = NULL;
-<<<<<<< HEAD
-		dev_kfree_skb_irq(skb);
-	}
-
-=======
 
 		bytes_compl += skb->len;
 		pkts_compl++;
@@ -749,7 +616,6 @@ static void b44_tx(struct b44 *bp)
 	}
 
 	netdev_completed_queue(bp->dev, pkts_compl, bytes_compl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bp->tx_cons = cons;
 	if (netif_queue_stopped(bp->dev) &&
 	    TX_BUFFS_AVAIL(bp) > B44_TX_WAKEUP_THRESH)
@@ -795,11 +661,7 @@ static int b44_alloc_rx_skb(struct b44 *bp, int src_idx, u32 dest_idx_unmasked)
 			dma_unmap_single(bp->sdev->dma_dev, mapping,
 					     RX_PKT_BUF_SZ, DMA_FROM_DEVICE);
 		dev_kfree_skb_any(skb);
-<<<<<<< HEAD
-		skb = __netdev_alloc_skb(bp->dev, RX_PKT_BUF_SZ, GFP_ATOMIC|GFP_DMA);
-=======
 		skb = alloc_skb(RX_PKT_BUF_SZ, GFP_ATOMIC | GFP_DMA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (skb == NULL)
 			return -ENOMEM;
 		mapping = dma_map_single(bp->sdev->dma_dev, skb->data,
@@ -948,18 +810,10 @@ static int b44_rx(struct b44 *bp, int budget)
 			struct sk_buff *copy_skb;
 
 			b44_recycle_rx(bp, cons, bp->rx_prod);
-<<<<<<< HEAD
-			copy_skb = netdev_alloc_skb(bp->dev, len + 2);
-			if (copy_skb == NULL)
-				goto drop_it_no_recycle;
-
-			skb_reserve(copy_skb, 2);
-=======
 			copy_skb = napi_alloc_skb(&bp->napi, len);
 			if (copy_skb == NULL)
 				goto drop_it_no_recycle;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb_put(copy_skb, len);
 			/* DMA sync done above, copy just the actual packet */
 			skb_copy_from_linear_data_offset(skb, RX_PKT_OFFSET,
@@ -1022,11 +876,7 @@ static int b44_poll(struct napi_struct *napi, int budget)
 	}
 
 	if (work_done < budget) {
-<<<<<<< HEAD
-		napi_complete(napi);
-=======
 		napi_complete_done(napi, work_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		b44_enable_ints(bp);
 	}
 
@@ -1075,11 +925,7 @@ irq_ack:
 	return IRQ_RETVAL(handled);
 }
 
-<<<<<<< HEAD
-static void b44_tx_timeout(struct net_device *dev)
-=======
 static void b44_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct b44 *bp = netdev_priv(dev);
 
@@ -1125,11 +971,7 @@ static netdev_tx_t b44_start_xmit(struct sk_buff *skb, struct net_device *dev)
 			dma_unmap_single(bp->sdev->dma_dev, mapping, len,
 					     DMA_TO_DEVICE);
 
-<<<<<<< HEAD
-		bounce_skb = __netdev_alloc_skb(dev, len, GFP_ATOMIC | GFP_DMA);
-=======
 		bounce_skb = alloc_skb(len, GFP_ATOMIC | GFP_DMA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!bounce_skb)
 			goto err_out;
 
@@ -1144,11 +986,7 @@ static netdev_tx_t b44_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		}
 
 		skb_copy_from_linear_data(skb, skb_put(bounce_skb, len), len);
-<<<<<<< HEAD
-		dev_kfree_skb_any(skb);
-=======
 		dev_consume_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb = bounce_skb;
 	}
 
@@ -1181,11 +1019,8 @@ static netdev_tx_t b44_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (bp->flags & B44_FLAG_REORDER_BUG)
 		br32(bp, B44_DMATX_PTR);
 
-<<<<<<< HEAD
-=======
 	netdev_sent_queue(dev, skb->len);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (TX_BUFFS_AVAIL(bp) < 1)
 		netif_stop_queue(dev);
 
@@ -1203,12 +1038,6 @@ static int b44_change_mtu(struct net_device *dev, int new_mtu)
 {
 	struct b44 *bp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	if (new_mtu < B44_MIN_MTU || new_mtu > B44_MAX_MTU)
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!netif_running(dev)) {
 		/* We'll just catch it later when the
 		 * device is up'd.
@@ -1350,11 +1179,7 @@ static int b44_alloc_consistent(struct b44 *bp, gfp_t gfp)
 	bp->rx_ring = dma_alloc_coherent(bp->sdev->dma_dev, size,
 					 &bp->rx_ring_dma, gfp);
 	if (!bp->rx_ring) {
-<<<<<<< HEAD
-		/* Allocation may have failed due to pci_alloc_consistent
-=======
 		/* Allocation may have failed due to dma_alloc_coherent
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   insisting on use of GFP_DMA, which is more restrictive
 		   than necessary...  */
 		struct dma_desc *rx_ring;
@@ -1482,11 +1307,7 @@ static void b44_chip_reset(struct b44 *bp, int reset_kind)
 	if (!(br32(bp, B44_DEVCTRL) & DEVCTRL_IPP)) {
 		bw32(bp, B44_ENET_CTRL, ENET_CTRL_EPSEL);
 		br32(bp, B44_ENET_CTRL);
-<<<<<<< HEAD
-		bp->flags &= ~B44_FLAG_INTERNAL_PHY;
-=======
 		bp->flags |= B44_FLAG_EXTERNAL_PHY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		u32 val = br32(bp, B44_DEVCTRL);
 
@@ -1495,11 +1316,7 @@ static void b44_chip_reset(struct b44 *bp, int reset_kind)
 			br32(bp, B44_DEVCTRL);
 			udelay(100);
 		}
-<<<<<<< HEAD
-		bp->flags |= B44_FLAG_INTERNAL_PHY;
-=======
 		bp->flags &= ~B44_FLAG_EXTERNAL_PHY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1514,14 +1331,10 @@ static void b44_halt(struct b44 *bp)
 	bw32(bp, B44_MAC_CTRL, MAC_CTRL_PHY_PDOWN);
 	/* now reset the chip, but without enabling the MAC&PHY
 	 * part of it. This has to be done _after_ we shut down the PHY */
-<<<<<<< HEAD
-	b44_chip_reset(bp, B44_CHIP_RESET_PARTIAL);
-=======
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY)
 		b44_chip_reset(bp, B44_CHIP_RESET_FULL);
 	else
 		b44_chip_reset(bp, B44_CHIP_RESET_PARTIAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* bp->lock is held. */
@@ -1549,11 +1362,7 @@ static int b44_set_mac_addr(struct net_device *dev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, addr->sa_data, dev->addr_len);
-=======
 	eth_hw_addr_set(dev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&bp->lock);
 
@@ -1610,11 +1419,8 @@ static void b44_init_hw(struct b44 *bp, int reset_kind)
 
 	val = br32(bp, B44_ENET_CTRL);
 	bw32(bp, B44_ENET_CTRL, (val | ENET_CTRL_ENABLE));
-<<<<<<< HEAD
-=======
 
 	netdev_reset_queue(bp->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int b44_open(struct net_device *dev)
@@ -1642,15 +1448,6 @@ static int b44_open(struct net_device *dev)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	init_timer(&bp->timer);
-	bp->timer.expires = jiffies + HZ;
-	bp->timer.data = (unsigned long) bp;
-	bp->timer.function = b44_timer;
-	add_timer(&bp->timer);
-
-	b44_enable_ints(bp);
-=======
 	timer_setup(&bp->timer, b44_timer, 0);
 	bp->timer.expires = jiffies + HZ;
 	add_timer(&bp->timer);
@@ -1660,7 +1457,6 @@ static int b44_open(struct net_device *dev)
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY)
 		phy_start(dev->phydev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_start_queue(dev);
 out:
 	return err;
@@ -1690,27 +1486,18 @@ static void bwfilter_table(struct b44 *bp, u8 *pp, u32 bytes, u32 table_offset)
 	}
 }
 
-<<<<<<< HEAD
-static int b44_magic_pattern(u8 *macaddr, u8 *ppattern, u8 *pmask, int offset)
-=======
 static int b44_magic_pattern(const u8 *macaddr, u8 *ppattern, u8 *pmask,
 			     int offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int magicsync = 6;
 	int k, j, len = offset;
 	int ethaddr_bytes = ETH_ALEN;
 
 	memset(ppattern + offset, 0xff, magicsync);
-<<<<<<< HEAD
-	for (j = 0; j < magicsync; j++)
-		set_bit(len++, (unsigned long *) pmask);
-=======
 	for (j = 0; j < magicsync; j++) {
 		pmask[len >> 3] |= BIT(len & 7);
 		len++;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (j = 0; j < B44_MAX_PATTERNS; j++) {
 		if ((B44_PATTERN_SIZE - len) >= ETH_ALEN)
@@ -1722,12 +1509,8 @@ static int b44_magic_pattern(const u8 *macaddr, u8 *ppattern, u8 *pmask,
 		for (k = 0; k< ethaddr_bytes; k++) {
 			ppattern[offset + magicsync +
 				(j * ETH_ALEN) + k] = macaddr[k];
-<<<<<<< HEAD
-			set_bit(len++, (unsigned long *) pmask);
-=======
 			pmask[len >> 3] |= BIT(len & 7);
 			len++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return len - 1;
@@ -1745,28 +1528,16 @@ static void b44_setup_pseudo_magicp(struct b44 *bp)
 	u8 pwol_mask[B44_PMASK_SIZE];
 
 	pwol_pattern = kzalloc(B44_PATTERN_SIZE, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!pwol_pattern) {
-		pr_err("Memory not available for WOL\n");
-		return;
-	}
-=======
 	if (!pwol_pattern)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ipv4 magic packet pattern - pattern 0.*/
 	memset(pwol_mask, 0, B44_PMASK_SIZE);
 	plen0 = b44_magic_pattern(bp->dev->dev_addr, pwol_pattern, pwol_mask,
 				  B44_ETHIPV4UDP_HLEN);
 
-<<<<<<< HEAD
-   	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE, B44_PATTERN_BASE);
-   	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE, B44_PMASK_BASE);
-=======
 	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE, B44_PATTERN_BASE);
 	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE, B44_PMASK_BASE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Raw ethernet II magic packet pattern - pattern 1 */
 	memset(pwol_pattern, 0, B44_PATTERN_SIZE);
@@ -1774,15 +1545,9 @@ static void b44_setup_pseudo_magicp(struct b44 *bp)
 	plen1 = b44_magic_pattern(bp->dev->dev_addr, pwol_pattern, pwol_mask,
 				  ETH_HLEN);
 
-<<<<<<< HEAD
-   	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE,
-		       B44_PATTERN_BASE + B44_PATTERN_SIZE);
-  	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE,
-=======
 	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE,
 		       B44_PATTERN_BASE + B44_PATTERN_SIZE);
 	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       B44_PMASK_BASE + B44_PMASK_SIZE);
 
 	/* Ipv6 magic packet pattern - pattern 2 */
@@ -1791,15 +1556,9 @@ static void b44_setup_pseudo_magicp(struct b44 *bp)
 	plen2 = b44_magic_pattern(bp->dev->dev_addr, pwol_pattern, pwol_mask,
 				  B44_ETHIPV6UDP_HLEN);
 
-<<<<<<< HEAD
-   	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE,
-		       B44_PATTERN_BASE + B44_PATTERN_SIZE + B44_PATTERN_SIZE);
-  	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE,
-=======
 	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE,
 		       B44_PATTERN_BASE + B44_PATTERN_SIZE + B44_PATTERN_SIZE);
 	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       B44_PMASK_BASE + B44_PMASK_SIZE + B44_PMASK_SIZE);
 
 	kfree(pwol_pattern);
@@ -1852,15 +1611,9 @@ static void b44_setup_wol(struct b44 *bp)
 		val = br32(bp, B44_DEVCTRL);
 		bw32(bp, B44_DEVCTRL, val | DEVCTRL_MPM | DEVCTRL_PFE);
 
-<<<<<<< HEAD
- 	} else {
- 		b44_setup_pseudo_magicp(bp);
- 	}
-=======
 	} else {
 		b44_setup_pseudo_magicp(bp);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b44_setup_wol_pci(bp);
 }
 
@@ -1870,12 +1623,9 @@ static int b44_close(struct net_device *dev)
 
 	netif_stop_queue(dev);
 
-<<<<<<< HEAD
-=======
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY)
 		phy_stop(dev->phydev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	napi_disable(&bp->napi);
 
 	del_timer_sync(&bp->timer);
@@ -1900,48 +1650,6 @@ static int b44_close(struct net_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct net_device_stats *b44_get_stats(struct net_device *dev)
-{
-	struct b44 *bp = netdev_priv(dev);
-	struct net_device_stats *nstat = &dev->stats;
-	struct b44_hw_stats *hwstat = &bp->hw_stats;
-
-	/* Convert HW stats into netdevice stats. */
-	nstat->rx_packets = hwstat->rx_pkts;
-	nstat->tx_packets = hwstat->tx_pkts;
-	nstat->rx_bytes   = hwstat->rx_octets;
-	nstat->tx_bytes   = hwstat->tx_octets;
-	nstat->tx_errors  = (hwstat->tx_jabber_pkts +
-			     hwstat->tx_oversize_pkts +
-			     hwstat->tx_underruns +
-			     hwstat->tx_excessive_cols +
-			     hwstat->tx_late_cols);
-	nstat->multicast  = hwstat->tx_multicast_pkts;
-	nstat->collisions = hwstat->tx_total_cols;
-
-	nstat->rx_length_errors = (hwstat->rx_oversize_pkts +
-				   hwstat->rx_undersize);
-	nstat->rx_over_errors   = hwstat->rx_missed_pkts;
-	nstat->rx_frame_errors  = hwstat->rx_align_errs;
-	nstat->rx_crc_errors    = hwstat->rx_crc_errs;
-	nstat->rx_errors        = (hwstat->rx_jabber_pkts +
-				   hwstat->rx_oversize_pkts +
-				   hwstat->rx_missed_pkts +
-				   hwstat->rx_crc_align_errs +
-				   hwstat->rx_undersize +
-				   hwstat->rx_crc_errs +
-				   hwstat->rx_align_errs +
-				   hwstat->rx_symbol_errs);
-
-	nstat->tx_aborted_errors = hwstat->tx_underruns;
-#if 0
-	/* Carrier lost counter seems to be broken for some devices */
-	nstat->tx_carrier_errors = hwstat->tx_carrier_lost;
-#endif
-
-	return nstat;
-=======
 static void b44_get_stats64(struct net_device *dev,
 			    struct rtnl_link_stats64 *nstat)
 {
@@ -1986,7 +1694,6 @@ static void b44_get_stats64(struct net_device *dev,
 #endif
 	} while (u64_stats_fetch_retry(&hwstat->syncp, start));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __b44_load_mcast(struct b44 *bp, struct net_device *dev)
@@ -2030,11 +1737,7 @@ static void __b44_set_rx_mode(struct net_device *dev)
 			__b44_cam_write(bp, zero, i);
 
 		bw32(bp, B44_RXCONFIG, val);
-<<<<<<< HEAD
-        	val = br32(bp, B44_CAM_CTRL);
-=======
 		val = br32(bp, B44_CAM_CTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	        bw32(bp, B44_CAM_CTRL, val | CAM_CTRL_ENABLE);
 	}
 }
@@ -2065,16 +1768,6 @@ static void b44_get_drvinfo (struct net_device *dev, struct ethtool_drvinfo *inf
 	struct b44 *bp = netdev_priv(dev);
 	struct ssb_bus *bus = bp->sdev->bus;
 
-<<<<<<< HEAD
-	strlcpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
-	strlcpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
-	switch (bus->bustype) {
-	case SSB_BUSTYPE_PCI:
-		strlcpy(info->bus_info, pci_name(bus->host_pci), sizeof(info->bus_info));
-		break;
-	case SSB_BUSTYPE_SSB:
-		strlcpy(info->bus_info, "SSB", sizeof(info->bus_info));
-=======
 	strscpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
 	switch (bus->bustype) {
 	case SSB_BUSTYPE_PCI:
@@ -2082,7 +1775,6 @@ static void b44_get_drvinfo (struct net_device *dev, struct ethtool_drvinfo *inf
 		break;
 	case SSB_BUSTYPE_SSB:
 		strscpy(info->bus_info, "SSB", sizeof(info->bus_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SSB_BUSTYPE_PCMCIA:
 	case SSB_BUSTYPE_SDIO:
@@ -2101,74 +1793,14 @@ static int b44_nway_reset(struct net_device *dev)
 	b44_readphy(bp, MII_BMCR, &bmcr);
 	b44_readphy(bp, MII_BMCR, &bmcr);
 	r = -EINVAL;
-<<<<<<< HEAD
-	if (bmcr & BMCR_ANENABLE) {
-		b44_writephy(bp, MII_BMCR,
-			     bmcr | BMCR_ANRESTART);
-		r = 0;
-	}
-=======
 	if (bmcr & BMCR_ANENABLE)
 		r = b44_writephy(bp, MII_BMCR,
 				 bmcr | BMCR_ANRESTART);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&bp->lock);
 
 	return r;
 }
 
-<<<<<<< HEAD
-static int b44_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct b44 *bp = netdev_priv(dev);
-
-	cmd->supported = (SUPPORTED_Autoneg);
-	cmd->supported |= (SUPPORTED_100baseT_Half |
-			  SUPPORTED_100baseT_Full |
-			  SUPPORTED_10baseT_Half |
-			  SUPPORTED_10baseT_Full |
-			  SUPPORTED_MII);
-
-	cmd->advertising = 0;
-	if (bp->flags & B44_FLAG_ADV_10HALF)
-		cmd->advertising |= ADVERTISED_10baseT_Half;
-	if (bp->flags & B44_FLAG_ADV_10FULL)
-		cmd->advertising |= ADVERTISED_10baseT_Full;
-	if (bp->flags & B44_FLAG_ADV_100HALF)
-		cmd->advertising |= ADVERTISED_100baseT_Half;
-	if (bp->flags & B44_FLAG_ADV_100FULL)
-		cmd->advertising |= ADVERTISED_100baseT_Full;
-	cmd->advertising |= ADVERTISED_Pause | ADVERTISED_Asym_Pause;
-	ethtool_cmd_speed_set(cmd, ((bp->flags & B44_FLAG_100_BASE_T) ?
-				    SPEED_100 : SPEED_10));
-	cmd->duplex = (bp->flags & B44_FLAG_FULL_DUPLEX) ?
-		DUPLEX_FULL : DUPLEX_HALF;
-	cmd->port = 0;
-	cmd->phy_address = bp->phy_addr;
-	cmd->transceiver = (bp->flags & B44_FLAG_INTERNAL_PHY) ?
-		XCVR_INTERNAL : XCVR_EXTERNAL;
-	cmd->autoneg = (bp->flags & B44_FLAG_FORCE_LINK) ?
-		AUTONEG_DISABLE : AUTONEG_ENABLE;
-	if (cmd->autoneg == AUTONEG_ENABLE)
-		cmd->advertising |= ADVERTISED_Autoneg;
-	if (!netif_running(dev)){
-		ethtool_cmd_speed_set(cmd, 0);
-		cmd->duplex = 0xff;
-	}
-	cmd->maxtxpkt = 0;
-	cmd->maxrxpkt = 0;
-	return 0;
-}
-
-static int b44_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct b44 *bp = netdev_priv(dev);
-	u32 speed = ethtool_cmd_speed(cmd);
-
-	/* We do not support gigabit. */
-	if (cmd->autoneg == AUTONEG_ENABLE) {
-		if (cmd->advertising &
-=======
 static int b44_get_link_ksettings(struct net_device *dev,
 				  struct ethtool_link_ksettings *cmd)
 {
@@ -2252,29 +1884,19 @@ static int b44_set_link_ksettings(struct net_device *dev,
 	/* We do not support gigabit. */
 	if (cmd->base.autoneg == AUTONEG_ENABLE) {
 		if (advertising &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (ADVERTISED_1000baseT_Half |
 		     ADVERTISED_1000baseT_Full))
 			return -EINVAL;
 	} else if ((speed != SPEED_100 &&
 		    speed != SPEED_10) ||
-<<<<<<< HEAD
-		   (cmd->duplex != DUPLEX_HALF &&
-		    cmd->duplex != DUPLEX_FULL)) {
-=======
 		   (cmd->base.duplex != DUPLEX_HALF &&
 		    cmd->base.duplex != DUPLEX_FULL)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 	}
 
 	spin_lock_irq(&bp->lock);
 
-<<<<<<< HEAD
-	if (cmd->autoneg == AUTONEG_ENABLE) {
-=======
 	if (cmd->base.autoneg == AUTONEG_ENABLE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bp->flags &= ~(B44_FLAG_FORCE_LINK |
 			       B44_FLAG_100_BASE_T |
 			       B44_FLAG_FULL_DUPLEX |
@@ -2282,25 +1904,12 @@ static int b44_set_link_ksettings(struct net_device *dev,
 			       B44_FLAG_ADV_10FULL |
 			       B44_FLAG_ADV_100HALF |
 			       B44_FLAG_ADV_100FULL);
-<<<<<<< HEAD
-		if (cmd->advertising == 0) {
-=======
 		if (advertising == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bp->flags |= (B44_FLAG_ADV_10HALF |
 				      B44_FLAG_ADV_10FULL |
 				      B44_FLAG_ADV_100HALF |
 				      B44_FLAG_ADV_100FULL);
 		} else {
-<<<<<<< HEAD
-			if (cmd->advertising & ADVERTISED_10baseT_Half)
-				bp->flags |= B44_FLAG_ADV_10HALF;
-			if (cmd->advertising & ADVERTISED_10baseT_Full)
-				bp->flags |= B44_FLAG_ADV_10FULL;
-			if (cmd->advertising & ADVERTISED_100baseT_Half)
-				bp->flags |= B44_FLAG_ADV_100HALF;
-			if (cmd->advertising & ADVERTISED_100baseT_Full)
-=======
 			if (advertising & ADVERTISED_10baseT_Half)
 				bp->flags |= B44_FLAG_ADV_10HALF;
 			if (advertising & ADVERTISED_10baseT_Full)
@@ -2308,7 +1917,6 @@ static int b44_set_link_ksettings(struct net_device *dev,
 			if (advertising & ADVERTISED_100baseT_Half)
 				bp->flags |= B44_FLAG_ADV_100HALF;
 			if (advertising & ADVERTISED_100baseT_Full)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bp->flags |= B44_FLAG_ADV_100FULL;
 		}
 	} else {
@@ -2316,11 +1924,7 @@ static int b44_set_link_ksettings(struct net_device *dev,
 		bp->flags &= ~(B44_FLAG_100_BASE_T | B44_FLAG_FULL_DUPLEX);
 		if (speed == SPEED_100)
 			bp->flags |= B44_FLAG_100_BASE_T;
-<<<<<<< HEAD
-		if (cmd->duplex == DUPLEX_FULL)
-=======
 		if (cmd->base.duplex == DUPLEX_FULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bp->flags |= B44_FLAG_FULL_DUPLEX;
 	}
 
@@ -2333,13 +1937,9 @@ static int b44_set_link_ksettings(struct net_device *dev,
 }
 
 static void b44_get_ringparam(struct net_device *dev,
-<<<<<<< HEAD
-			      struct ethtool_ringparam *ering)
-=======
 			      struct ethtool_ringparam *ering,
 			      struct kernel_ethtool_ringparam *kernel_ering,
 			      struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct b44 *bp = netdev_priv(dev);
 
@@ -2350,13 +1950,9 @@ static void b44_get_ringparam(struct net_device *dev,
 }
 
 static int b44_set_ringparam(struct net_device *dev,
-<<<<<<< HEAD
-			     struct ethtool_ringparam *ering)
-=======
 			     struct ethtool_ringparam *ering,
 			     struct kernel_ethtool_ringparam *kernel_ering,
 			     struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct b44 *bp = netdev_priv(dev);
 
@@ -2413,14 +2009,6 @@ static int b44_set_pauseparam(struct net_device *dev,
 		bp->flags |= B44_FLAG_TX_PAUSE;
 	else
 		bp->flags &= ~B44_FLAG_TX_PAUSE;
-<<<<<<< HEAD
-	if (bp->flags & B44_FLAG_PAUSE_AUTO) {
-		b44_halt(bp);
-		b44_init_rings(bp);
-		b44_init_hw(bp, B44_FULL_RESET);
-	} else {
-		__b44_set_flow_ctrl(bp, bp->flags);
-=======
 	if (netif_running(dev)) {
 		if (bp->flags & B44_FLAG_PAUSE_AUTO) {
 			b44_halt(bp);
@@ -2429,7 +2017,6 @@ static int b44_set_pauseparam(struct net_device *dev,
 		} else {
 			__b44_set_flow_ctrl(bp, bp->flags);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irq(&bp->lock);
 
@@ -2461,19 +2048,6 @@ static void b44_get_ethtool_stats(struct net_device *dev,
 				  struct ethtool_stats *stats, u64 *data)
 {
 	struct b44 *bp = netdev_priv(dev);
-<<<<<<< HEAD
-	u32 *val = &bp->hw_stats.tx_good_octets;
-	u32 i;
-
-	spin_lock_irq(&bp->lock);
-
-	b44_stats_update(bp);
-
-	for (i = 0; i < ARRAY_SIZE(b44_gstrings); i++)
-		*data++ = *val++;
-
-	spin_unlock_irq(&bp->lock);
-=======
 	struct b44_hw_stats *hwstat = &bp->hw_stats;
 	u64 *data_src, *data_dst;
 	unsigned int start;
@@ -2492,7 +2066,6 @@ static void b44_get_ethtool_stats(struct net_device *dev,
 			*data_dst++ = *data_src++;
 
 	} while (u64_stats_fetch_retry(&hwstat->syncp, start));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void b44_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
@@ -2518,20 +2091,12 @@ static int b44_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 		bp->flags &= ~B44_FLAG_WOL_ENABLE;
 	spin_unlock_irq(&bp->lock);
 
-<<<<<<< HEAD
-=======
 	device_set_wakeup_enable(bp->sdev->dev, wol->wolopts & WAKE_MAGIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static const struct ethtool_ops b44_ethtool_ops = {
 	.get_drvinfo		= b44_get_drvinfo,
-<<<<<<< HEAD
-	.get_settings		= b44_get_settings,
-	.set_settings		= b44_set_settings,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.nway_reset		= b44_nway_reset,
 	.get_link		= ethtool_op_get_link,
 	.get_wol		= b44_get_wol,
@@ -2545,19 +2110,12 @@ static const struct ethtool_ops b44_ethtool_ops = {
 	.get_strings		= b44_get_strings,
 	.get_sset_count		= b44_get_sset_count,
 	.get_ethtool_stats	= b44_get_ethtool_stats,
-<<<<<<< HEAD
-=======
 	.get_link_ksettings	= b44_get_link_ksettings,
 	.set_link_ksettings	= b44_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int b44_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
-<<<<<<< HEAD
-	struct mii_ioctl_data *data = if_mii(ifr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct b44 *bp = netdev_priv(dev);
 	int err = -EINVAL;
 
@@ -2565,26 +2123,18 @@ static int b44_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 		goto out;
 
 	spin_lock_irq(&bp->lock);
-<<<<<<< HEAD
-	err = generic_mii_ioctl(&bp->mii_if, data, cmd, NULL);
-=======
 	if (bp->flags & B44_FLAG_EXTERNAL_PHY) {
 		BUG_ON(!dev->phydev);
 		err = phy_mii_ioctl(dev->phydev, ifr, cmd);
 	} else {
 		err = generic_mii_ioctl(&bp->mii_if, if_mii(ifr), cmd, NULL);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&bp->lock);
 out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit b44_get_invariants(struct b44 *bp)
-=======
 static int b44_get_invariants(struct b44 *bp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ssb_device *sdev = bp->sdev;
 	int err = 0;
@@ -2605,22 +2155,13 @@ static int b44_get_invariants(struct b44 *bp)
 	 * valid PHY address. */
 	bp->phy_addr &= 0x1F;
 
-<<<<<<< HEAD
-	memcpy(bp->dev->dev_addr, addr, 6);
-=======
 	eth_hw_addr_set(bp->dev, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!is_valid_ether_addr(&bp->dev->dev_addr[0])){
 		pr_err("Invalid MAC address found in EEPROM\n");
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	memcpy(bp->dev->perm_addr, bp->dev->dev_addr, bp->dev->addr_len);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bp->imask = IMASK_DEF;
 
 	/* XXX - really required?
@@ -2637,19 +2178,11 @@ static const struct net_device_ops b44_netdev_ops = {
 	.ndo_open		= b44_open,
 	.ndo_stop		= b44_close,
 	.ndo_start_xmit		= b44_start_xmit,
-<<<<<<< HEAD
-	.ndo_get_stats		= b44_get_stats,
-	.ndo_set_rx_mode	= b44_set_rx_mode,
-	.ndo_set_mac_address	= b44_set_mac_addr,
-	.ndo_validate_addr	= eth_validate_addr,
-	.ndo_do_ioctl		= b44_ioctl,
-=======
 	.ndo_get_stats64	= b44_get_stats64,
 	.ndo_set_rx_mode	= b44_set_rx_mode,
 	.ndo_set_mac_address	= b44_set_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_eth_ioctl		= b44_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout		= b44_tx_timeout,
 	.ndo_change_mtu		= b44_change_mtu,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -2657,10 +2190,6 @@ static const struct net_device_ops b44_netdev_ops = {
 #endif
 };
 
-<<<<<<< HEAD
-static int __devinit b44_init_one(struct ssb_device *sdev,
-				  const struct ssb_device_id *ent)
-=======
 static void b44_adjust_link(struct net_device *dev)
 {
 	struct b44 *bp = netdev_priv(dev);
@@ -2792,7 +2321,6 @@ static void b44_unregister_phy_one(struct b44 *bp)
 
 static int b44_init_one(struct ssb_device *sdev,
 			const struct ssb_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct b44 *bp;
@@ -2800,11 +2328,6 @@ static int b44_init_one(struct ssb_device *sdev,
 
 	instance++;
 
-<<<<<<< HEAD
-	pr_info_once("%s version %s\n", DRV_DESCRIPTION, DRV_MODULE_VERSION);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev = alloc_etherdev(sizeof(*bp));
 	if (!dev) {
 		err = -ENOMEM;
@@ -2824,28 +2347,18 @@ static int b44_init_one(struct ssb_device *sdev,
 	bp->msg_enable = netif_msg_init(b44_debug, B44_DEF_MSG_ENABLE);
 
 	spin_lock_init(&bp->lock);
-<<<<<<< HEAD
-=======
 	u64_stats_init(&bp->hw_stats.syncp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bp->rx_pending = B44_DEF_RX_RING_PENDING;
 	bp->tx_pending = B44_DEF_TX_RING_PENDING;
 
 	dev->netdev_ops = &b44_netdev_ops;
-<<<<<<< HEAD
-	netif_napi_add(dev, &bp->napi, b44_poll, 64);
-	dev->watchdog_timeo = B44_TX_TIMEOUT;
-	dev->irq = sdev->irq;
-	SET_ETHTOOL_OPS(dev, &b44_ethtool_ops);
-=======
 	netif_napi_add(dev, &bp->napi, b44_poll);
 	dev->watchdog_timeo = B44_TX_TIMEOUT;
 	dev->min_mtu = B44_MIN_MTU;
 	dev->max_mtu = B44_MAX_MTU;
 	dev->irq = sdev->irq;
 	dev->ethtool_ops = &b44_ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = ssb_bus_powerup(sdev->bus, 0);
 	if (err) {
@@ -2854,13 +2367,8 @@ static int b44_init_one(struct ssb_device *sdev,
 		goto err_out_free_dev;
 	}
 
-<<<<<<< HEAD
-	if (dma_set_mask(sdev->dma_dev, DMA_BIT_MASK(30)) ||
-	    dma_set_coherent_mask(sdev->dma_dev, DMA_BIT_MASK(30))) {
-=======
 	err = dma_set_mask_and_coherent(sdev->dma_dev, DMA_BIT_MASK(30));
 	if (err) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(sdev->dev,
 			"Required 30BIT DMA mask unsupported by the system\n");
 		goto err_out_powerdown;
@@ -2873,11 +2381,6 @@ static int b44_init_one(struct ssb_device *sdev,
 		goto err_out_powerdown;
 	}
 
-<<<<<<< HEAD
-	bp->mii_if.dev = dev;
-	bp->mii_if.mdio_read = b44_mii_read;
-	bp->mii_if.mdio_write = b44_mii_write;
-=======
 	if (bp->phy_addr == B44_PHY_ADDR_NO_PHY) {
 		dev_err(sdev->dev, "No PHY present on this MAC, aborting\n");
 		err = -ENODEV;
@@ -2887,7 +2390,6 @@ static int b44_init_one(struct ssb_device *sdev,
 	bp->mii_if.dev = dev;
 	bp->mii_if.mdio_read = b44_mdio_read_mii;
 	bp->mii_if.mdio_write = b44_mdio_write_mii;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bp->mii_if.phy_id = bp->phy_addr;
 	bp->mii_if.phy_id_mask = 0x1f;
 	bp->mii_if.reg_num_mask = 0x1f;
@@ -2915,11 +2417,6 @@ static int b44_init_one(struct ssb_device *sdev,
 	b44_chip_reset(bp, B44_CHIP_RESET_FULL);
 
 	/* do a phy reset to test if there is an active phy */
-<<<<<<< HEAD
-	if (b44_phy_reset(bp) < 0)
-		bp->phy_addr = B44_PHY_ADDR_NO_PHY;
-
-=======
 	err = b44_phy_reset(bp);
 	if (err < 0) {
 		dev_err(sdev->dev, "phy reset failed\n");
@@ -2935,39 +2432,23 @@ static int b44_init_one(struct ssb_device *sdev,
 	}
 
 	device_set_wakeup_capable(sdev->dev, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netdev_info(dev, "%s %pM\n", DRV_DESCRIPTION, dev->dev_addr);
 
 	return 0;
 
-<<<<<<< HEAD
-=======
 err_out_unregister_netdev:
 	unregister_netdev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_powerdown:
 	ssb_bus_may_powerdown(sdev->bus);
 
 err_out_free_dev:
-<<<<<<< HEAD
-=======
 	netif_napi_del(&bp->napi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_netdev(dev);
 
 out:
 	return err;
 }
 
-<<<<<<< HEAD
-static void __devexit b44_remove_one(struct ssb_device *sdev)
-{
-	struct net_device *dev = ssb_get_drvdata(sdev);
-
-	unregister_netdev(dev);
-	ssb_device_disable(sdev, 0);
-	ssb_bus_may_powerdown(sdev->bus);
-=======
 static void b44_remove_one(struct ssb_device *sdev)
 {
 	struct net_device *dev = ssb_get_drvdata(sdev);
@@ -2979,7 +2460,6 @@ static void b44_remove_one(struct ssb_device *sdev)
 	ssb_device_disable(sdev, 0);
 	ssb_bus_may_powerdown(sdev->bus);
 	netif_napi_del(&bp->napi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_netdev(dev);
 	ssb_pcihost_set_power_state(sdev, PCI_D3hot);
 	ssb_set_drvdata(sdev, NULL);
@@ -3064,11 +2544,7 @@ static struct ssb_driver b44_ssb_driver = {
 	.name		= DRV_MODULE_NAME,
 	.id_table	= b44_ssb_tbl,
 	.probe		= b44_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(b44_remove_one),
-=======
 	.remove		= b44_remove_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= b44_suspend,
 	.resume		= b44_resume,
 };

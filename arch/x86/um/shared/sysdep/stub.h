@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-#include <asm/unistd.h>
-#include <sys/mman.h>
-#include <signal.h>
-#include "as-layout.h"
-#include "stub-data.h"
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #include <asm/unistd.h>
 #include <sys/mman.h>
 #include <signal.h>
 #include <as-layout.h>
 #include <stub-data.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __i386__
 #include "stub_32.h"

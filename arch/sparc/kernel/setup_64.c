@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/sparc64/kernel/setup.c
  *
@@ -18,10 +15,6 @@
 #include <linux/ptrace.h>
 #include <asm/smp.h>
 #include <linux/user.h>
-<<<<<<< HEAD
-#include <linux/screen_info.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/fs.h>
 #include <linux/seq_file.h>
@@ -37,21 +30,14 @@
 #include <linux/cpu.h>
 #include <linux/initrd.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/start_kernel.h>
 #include <linux/memblock.h>
 #include <uapi/linux/mount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <asm/processor.h>
 #include <asm/oplib.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/idprom.h>
 #include <asm/head.h>
 #include <asm/starfire.h>
@@ -65,11 +51,8 @@
 #include <asm/elf.h>
 #include <asm/mdesc.h>
 #include <asm/cacheflush.h>
-<<<<<<< HEAD
-=======
 #include <asm/dma.h>
 #include <asm/irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_IP_PNP
 #include <net/ipconfig.h>
@@ -84,25 +67,8 @@
 DEFINE_SPINLOCK(ns87303_lock);
 EXPORT_SYMBOL(ns87303_lock);
 
-<<<<<<< HEAD
-struct screen_info screen_info = {
-	0, 0,			/* orig-x, orig-y */
-	0,			/* unused */
-	0,			/* orig-video-page */
-	0,			/* orig-video-mode */
-	128,			/* orig-video-cols */
-	0, 0, 0,		/* unused, ega_bx, unused */
-	54,			/* orig-video-lines */
-	0,                      /* orig-video-isVGA */
-	16                      /* orig-video-points */
-};
-
-static void
-prom_console_write(struct console *con, const char *s, unsigned n)
-=======
 static void
 prom_console_write(struct console *con, const char *s, unsigned int n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	prom_write(s, n);
 }
@@ -117,11 +83,7 @@ static struct console prom_early_console = {
 	.index =	-1,
 };
 
-<<<<<<< HEAD
-/* 
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Process kernel command line switches that are specific to the
  * SPARC or that require special low-level processing.
  */
@@ -145,11 +107,7 @@ static void __init process_switch(char c)
 			break;
 		}
 		cheetah_pcache_forced_on = 1;
-<<<<<<< HEAD
-		add_taint(TAINT_MACHINE_CHECK);
-=======
 		add_taint(TAINT_MACHINE_CHECK, LOCKDEP_NOW_UNRELIABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cheetah_enable_pcache();
 		break;
 
@@ -163,11 +121,7 @@ static void __init boot_flags_init(char *commands)
 {
 	while (*commands) {
 		/* Move to the start of the next "argument". */
-<<<<<<< HEAD
-		while (*commands && *commands == ' ')
-=======
 		while (*commands == ' ')
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			commands++;
 
 		/* Process any command switches, otherwise skip it. */
@@ -179,27 +133,9 @@ static void __init boot_flags_init(char *commands)
 				process_switch(*commands++);
 			continue;
 		}
-<<<<<<< HEAD
-		if (!strncmp(commands, "mem=", 4)) {
-			/*
-			 * "mem=XXX[kKmM]" overrides the PROM-reported
-			 * memory size.
-			 */
-			cmdline_memory_size = simple_strtoul(commands + 4,
-							     &commands, 0);
-			if (*commands == 'K' || *commands == 'k') {
-				cmdline_memory_size <<= 10;
-				commands++;
-			} else if (*commands=='M' || *commands=='m') {
-				cmdline_memory_size <<= 20;
-				commands++;
-			}
-		}
-=======
 		if (!strncmp(commands, "mem=", 4))
 			cmdline_memory_size = memparse(commands + 4, &commands);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (*commands && *commands != ' ')
 			commands++;
 	}
@@ -216,13 +152,7 @@ extern int root_mountflags;
 
 char reboot_command[COMMAND_LINE_SIZE];
 
-<<<<<<< HEAD
-static struct pt_regs fake_swapper_regs = { { 0, }, 0, 0, 0, 0 };
-
-void __init per_cpu_patch(void)
-=======
 static void __init per_cpu_patch(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cpuid_patch_entry *p;
 	unsigned long ver;
@@ -314,9 +244,6 @@ void sun4v_patch_2insn_range(struct sun4v_2insn_patch_entry *start,
 	}
 }
 
-<<<<<<< HEAD
-void __init sun4v_patch(void)
-=======
 void sun_m7_patch_2insn_range(struct sun4v_2insn_patch_entry *start,
 			     struct sun4v_2insn_patch_entry *end)
 {
@@ -336,7 +263,6 @@ void sun_m7_patch_2insn_range(struct sun4v_2insn_patch_entry *start,
 }
 
 static void __init sun4v_patch(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	extern void sun4v_hvapi_init(void);
 
@@ -349,8 +275,6 @@ static void __init sun4v_patch(void)
 	sun4v_patch_2insn_range(&__sun4v_2insn_patch,
 				&__sun4v_2insn_patch_end);
 
-<<<<<<< HEAD
-=======
 	switch (sun4v_chip_type) {
 	case SUN4V_CHIP_SPARC_M7:
 	case SUN4V_CHIP_SPARC_M8:
@@ -369,7 +293,6 @@ static void __init sun4v_patch(void)
 					&__fast_win_ctrl_1insn_patch_end);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sun4v_hvapi_init();
 }
 
@@ -407,16 +330,6 @@ static void __init popc_patch(void)
 	}
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-void __init boot_cpu_id_too_large(int cpu)
-{
-	prom_printf("Serious problem, boot cpu id (%d) >= NR_CPUS (%d)\n",
-		    cpu, NR_CPUS);
-	prom_halt();
-}
-#endif
-=======
 static void __init pause_patch(void)
 {
 	struct pause_patch_entry *p;
@@ -457,7 +370,6 @@ void __init start_early_boot(void)
 	prom_init_report();
 	start_kernel();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* On Ultra, we support all of the v8 capabilities. */
 unsigned long sparc64_elf_hwcap = (HWCAP_SPARC_FLUSH | HWCAP_SPARC_STBAR |
@@ -474,9 +386,6 @@ static const char *hwcaps[] = {
 	 */
 	"mul32", "div32", "fsmuld", "v8plus", "popc", "vis", "vis2",
 	"ASIBlkInit", "fmaf", "vis3", "hpc", "random", "trans", "fjfmau",
-<<<<<<< HEAD
-	"ima", "cspare",
-=======
 	"ima", "cspare", "pause", "cbcond", NULL /*reserved for crypto */,
 	"adp",
 };
@@ -484,7 +393,6 @@ static const char *hwcaps[] = {
 static const char *crypto_hwcaps[] = {
 	"aes", "des", "kasumi", "camellia", "md5", "sha1", "sha256",
 	"sha512", "mpmul", "montmul", "montsqr", "crc32c",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void cpucap_info(struct seq_file *m)
@@ -495,21 +403,12 @@ void cpucap_info(struct seq_file *m)
 	seq_puts(m, "cpucaps\t\t: ");
 	for (i = 0; i < ARRAY_SIZE(hwcaps); i++) {
 		unsigned long bit = 1UL << i;
-<<<<<<< HEAD
-		if (caps & bit) {
-=======
 		if (hwcaps[i] && (caps & bit)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			seq_printf(m, "%s%s",
 				   printed ? "," : "", hwcaps[i]);
 			printed++;
 		}
 	}
-<<<<<<< HEAD
-	seq_putc(m, '\n');
-}
-
-=======
 	if (caps & HWCAP_SPARC_CRYPTO) {
 		unsigned long cfr;
 
@@ -552,27 +451,10 @@ static void __init report_crypto_hwcaps(int *printed)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init report_hwcaps(unsigned long caps)
 {
 	int i, printed = 0;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "CPU CAPS: [");
-	for (i = 0; i < ARRAY_SIZE(hwcaps); i++) {
-		unsigned long bit = 1UL << i;
-		if (caps & bit) {
-			printk(KERN_CONT "%s%s",
-			       printed ? "," : "", hwcaps[i]);
-			if (++printed == 8) {
-				printk(KERN_CONT "]\n");
-				printk(KERN_INFO "CPU CAPS: [");
-				printed = 0;
-			}
-		}
-	}
-	printk(KERN_CONT "]\n");
-=======
 	for (i = 0; i < ARRAY_SIZE(hwcaps); i++) {
 		unsigned long bit = 1UL << i;
 		if (hwcaps[i] && (caps & bit))
@@ -582,7 +464,6 @@ static void __init report_hwcaps(unsigned long caps)
 		report_crypto_hwcaps(&printed);
 	if (printed != 0)
 		printk(KERN_CONT "]\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned long __init mdesc_cpu_hwcap_list(void)
@@ -611,22 +492,15 @@ static unsigned long __init mdesc_cpu_hwcap_list(void)
 		for (i = 0; i < ARRAY_SIZE(hwcaps); i++) {
 			unsigned long bit = 1UL << i;
 
-<<<<<<< HEAD
-			if (!strcmp(prop, hwcaps[i])) {
-=======
 			if (hwcaps[i] && !strcmp(prop, hwcaps[i])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				caps |= bit;
 				break;
 			}
 		}
-<<<<<<< HEAD
-=======
 		for (i = 0; i < ARRAY_SIZE(crypto_hwcaps); i++) {
 			if (!strcmp(prop, crypto_hwcaps[i]))
 				caps |= HWCAP_SPARC_CRYPTO;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		plen = strlen(prop) + 1;
 		prop += plen;
@@ -653,30 +527,22 @@ static void __init init_sparc64_elf_hwcap(void)
 		    sun4v_chip_type == SUN4V_CHIP_NIAGARA2 ||
 		    sun4v_chip_type == SUN4V_CHIP_NIAGARA3 ||
 		    sun4v_chip_type == SUN4V_CHIP_NIAGARA4 ||
-<<<<<<< HEAD
-		    sun4v_chip_type == SUN4V_CHIP_NIAGARA5)
-=======
 		    sun4v_chip_type == SUN4V_CHIP_NIAGARA5 ||
 		    sun4v_chip_type == SUN4V_CHIP_SPARC_M6 ||
 		    sun4v_chip_type == SUN4V_CHIP_SPARC_M7 ||
 		    sun4v_chip_type == SUN4V_CHIP_SPARC_M8 ||
 		    sun4v_chip_type == SUN4V_CHIP_SPARC_SN ||
 		    sun4v_chip_type == SUN4V_CHIP_SPARC64X)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cap |= HWCAP_SPARC_BLKINIT;
 		if (sun4v_chip_type == SUN4V_CHIP_NIAGARA2 ||
 		    sun4v_chip_type == SUN4V_CHIP_NIAGARA3 ||
 		    sun4v_chip_type == SUN4V_CHIP_NIAGARA4 ||
-<<<<<<< HEAD
-		    sun4v_chip_type == SUN4V_CHIP_NIAGARA5)
-=======
 		    sun4v_chip_type == SUN4V_CHIP_NIAGARA5 ||
 		    sun4v_chip_type == SUN4V_CHIP_SPARC_M6 ||
 		    sun4v_chip_type == SUN4V_CHIP_SPARC_M7 ||
 		    sun4v_chip_type == SUN4V_CHIP_SPARC_M8 ||
 		    sun4v_chip_type == SUN4V_CHIP_SPARC_SN ||
 		    sun4v_chip_type == SUN4V_CHIP_SPARC64X)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cap |= HWCAP_SPARC_N2;
 	}
 
@@ -702,31 +568,23 @@ static void __init init_sparc64_elf_hwcap(void)
 			if (sun4v_chip_type == SUN4V_CHIP_NIAGARA2 ||
 			    sun4v_chip_type == SUN4V_CHIP_NIAGARA3 ||
 			    sun4v_chip_type == SUN4V_CHIP_NIAGARA4 ||
-<<<<<<< HEAD
-			    sun4v_chip_type == SUN4V_CHIP_NIAGARA5)
-=======
 			    sun4v_chip_type == SUN4V_CHIP_NIAGARA5 ||
 			    sun4v_chip_type == SUN4V_CHIP_SPARC_M6 ||
 			    sun4v_chip_type == SUN4V_CHIP_SPARC_M7 ||
 			    sun4v_chip_type == SUN4V_CHIP_SPARC_M8 ||
 			    sun4v_chip_type == SUN4V_CHIP_SPARC_SN ||
 			    sun4v_chip_type == SUN4V_CHIP_SPARC64X)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cap |= (AV_SPARC_VIS | AV_SPARC_VIS2 |
 					AV_SPARC_ASI_BLK_INIT |
 					AV_SPARC_POPC);
 			if (sun4v_chip_type == SUN4V_CHIP_NIAGARA3 ||
 			    sun4v_chip_type == SUN4V_CHIP_NIAGARA4 ||
-<<<<<<< HEAD
-			    sun4v_chip_type == SUN4V_CHIP_NIAGARA5)
-=======
 			    sun4v_chip_type == SUN4V_CHIP_NIAGARA5 ||
 			    sun4v_chip_type == SUN4V_CHIP_SPARC_M6 ||
 			    sun4v_chip_type == SUN4V_CHIP_SPARC_M7 ||
 			    sun4v_chip_type == SUN4V_CHIP_SPARC_M8 ||
 			    sun4v_chip_type == SUN4V_CHIP_SPARC_SN ||
 			    sun4v_chip_type == SUN4V_CHIP_SPARC64X)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cap |= (AV_SPARC_VIS3 | AV_SPARC_HPC |
 					AV_SPARC_FMAF);
 		}
@@ -737,8 +595,6 @@ static void __init init_sparc64_elf_hwcap(void)
 
 	if (sparc64_elf_hwcap & AV_SPARC_POPC)
 		popc_patch();
-<<<<<<< HEAD
-=======
 	if (sparc64_elf_hwcap & AV_SPARC_PAUSE)
 		pause_patch();
 }
@@ -761,18 +617,13 @@ void __init alloc_irqstack_bootmem(void)
 			panic("%s: Failed to allocate %lu bytes align=%lx nid=%d\n",
 			      __func__, THREAD_SIZE, THREAD_SIZE, node);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init setup_arch(char **cmdline_p)
 {
 	/* Initialize PROM console and command line. */
 	*cmdline_p = prom_getbootargs();
-<<<<<<< HEAD
-	strcpy(boot_command_line, *cmdline_p);
-=======
 	strscpy(boot_command_line, *cmdline_p, COMMAND_LINE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parse_early_param();
 
 	boot_flags_init(*cmdline_p);
@@ -782,19 +633,9 @@ void __init setup_arch(char **cmdline_p)
 		register_console(&prom_early_console);
 
 	if (tlb_type == hypervisor)
-<<<<<<< HEAD
-		printk("ARCH: SUN4V\n");
-	else
-		printk("ARCH: SUN4U\n");
-
-#ifdef CONFIG_DUMMY_CONSOLE
-	conswitchp = &dummy_con;
-#endif
-=======
 		pr_info("ARCH: SUN4V\n");
 	else
 		pr_info("ARCH: SUN4U\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	idprom_init();
 
@@ -803,26 +644,13 @@ void __init setup_arch(char **cmdline_p)
 	ROOT_DEV = old_decode_dev(root_dev);
 #ifdef CONFIG_BLK_DEV_RAM
 	rd_image_start = ram_flags & RAMDISK_IMAGE_START_MASK;
-<<<<<<< HEAD
-	rd_prompt = ((ram_flags & RAMDISK_PROMPT_FLAG) != 0);
-	rd_doload = ((ram_flags & RAMDISK_LOAD_FLAG) != 0);	
 #endif
 
-	task_thread_info(&init_task)->kregs = &fake_swapper_regs;
-
-=======
-#endif
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_IP_PNP
 	if (!ic_set_manually) {
 		phandle chosen = prom_finddevice("/chosen");
 		u32 cl, sv, gw;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cl = prom_getintdefault (chosen, "client-ip", 0);
 		sv = prom_getintdefault (chosen, "server-ip", 0);
 		gw = prom_getintdefault (chosen, "gateway-ip", 0);
@@ -843,8 +671,6 @@ void __init setup_arch(char **cmdline_p)
 
 	paging_init();
 	init_sparc64_elf_hwcap();
-<<<<<<< HEAD
-=======
 	smp_fill_in_cpu_possible_map();
 	/*
 	 * Once the OF device tree and MDESC have been setup and nr_cpus has
@@ -852,7 +678,6 @@ void __init setup_arch(char **cmdline_p)
 	 * allocate the IRQ stacks.
 	 */
 	alloc_irqstack_bootmem();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 extern int stop_a_enabled;

@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/mm/cache-sh2.c
  *
  * Copyright (C) 2002 Paul Mundt
  * Copyright (C) 2008 Yoshinori Sato
-<<<<<<< HEAD
- *
- * Released under the terms of the GNU GPL v2.0.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -70,15 +62,9 @@ static void sh2__flush_invalidate_region(void *start, int size)
 	local_irq_save(flags);
 	jump_to_uncached();
 
-<<<<<<< HEAD
-	ccr = __raw_readl(CCR);
-	ccr |= CCR_CACHE_INVALIDATE;
-	__raw_writel(ccr, CCR);
-=======
 	ccr = __raw_readl(SH_CCR);
 	ccr |= CCR_CACHE_INVALIDATE;
 	__raw_writel(ccr, SH_CCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	back_to_cached();
 	local_irq_restore(flags);

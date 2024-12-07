@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-/*
- *	fs/bfs/file.c
- *	BFS file operations.
- *	Copyright (C) 1999,2000 Tigran Aivazian <tigran@veritas.com>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  *	fs/bfs/file.c
  *	BFS file operations.
  *	Copyright (C) 1999-2018 Tigran Aivazian <aivazian.tigran@gmail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Make the file block allocation algorithm understand the size
  *	of the underlying block device.
@@ -18,10 +11,7 @@
  */
 
 #include <linux/fs.h>
-<<<<<<< HEAD
-=======
 #include <linux/mpage.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/buffer_head.h>
 #include "bfs.h"
 
@@ -35,19 +25,10 @@
 
 const struct file_operations bfs_file_operations = {
 	.llseek 	= generic_file_llseek,
-<<<<<<< HEAD
-	.read		= do_sync_read,
-	.aio_read	= generic_file_aio_read,
-	.write		= do_sync_write,
-	.aio_write	= generic_file_aio_write,
-	.mmap		= generic_file_mmap,
-	.splice_read	= generic_file_splice_read,
-=======
 	.read_iter	= generic_file_read_iter,
 	.write_iter	= generic_file_write_iter,
 	.mmap		= generic_file_mmap,
 	.splice_read	= filemap_splice_read,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int bfs_move_block(unsigned long from, unsigned long to,
@@ -170,20 +151,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int bfs_writepage(struct page *page, struct writeback_control *wbc)
-{
-	return block_write_full_page(page, bfs_get_block, wbc);
-}
-
-static int bfs_readpage(struct file *file, struct page *page)
-{
-	return block_read_full_page(page, bfs_get_block);
-}
-
-static int bfs_write_begin(struct file *file, struct address_space *mapping,
-			loff_t pos, unsigned len, unsigned flags,
-=======
 static int bfs_writepages(struct address_space *mapping,
 		struct writeback_control *wbc)
 {
@@ -205,24 +172,13 @@ static void bfs_write_failed(struct address_space *mapping, loff_t to)
 
 static int bfs_write_begin(struct file *file, struct address_space *mapping,
 			loff_t pos, unsigned len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct page **pagep, void **fsdata)
 {
 	int ret;
 
-<<<<<<< HEAD
-	ret = block_write_begin(mapping, pos, len, flags, pagep,
-				bfs_get_block);
-	if (unlikely(ret)) {
-		loff_t isize = mapping->host->i_size;
-		if (pos + len > isize)
-			vmtruncate(mapping->host, isize);
-	}
-=======
 	ret = block_write_begin(mapping, pos, len, pagep, bfs_get_block);
 	if (unlikely(ret))
 		bfs_write_failed(mapping, pos + len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -233,12 +189,6 @@ static sector_t bfs_bmap(struct address_space *mapping, sector_t block)
 }
 
 const struct address_space_operations bfs_aops = {
-<<<<<<< HEAD
-	.readpage	= bfs_readpage,
-	.writepage	= bfs_writepage,
-	.write_begin	= bfs_write_begin,
-	.write_end	= generic_write_end,
-=======
 	.dirty_folio	= block_dirty_folio,
 	.invalidate_folio = block_invalidate_folio,
 	.read_folio	= bfs_read_folio,
@@ -246,7 +196,6 @@ const struct address_space_operations bfs_aops = {
 	.write_begin	= bfs_write_begin,
 	.write_end	= generic_write_end,
 	.migrate_folio	= buffer_migrate_folio,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bmap		= bfs_bmap,
 };
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: MIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * memory.h
  *
@@ -35,17 +32,10 @@ struct xen_memory_reservation {
      *   OUT: GMFN bases of extents that were allocated
      *   (NB. This command also updates the mach_to_phys translation table)
      */
-<<<<<<< HEAD
-    GUEST_HANDLE(ulong) extent_start;
-
-    /* Number of extents, and size/alignment of each (2^extent_order pages). */
-    unsigned long  nr_extents;
-=======
     GUEST_HANDLE(xen_pfn_t) extent_start;
 
     /* Number of extents, and size/alignment of each (2^extent_order pages). */
     xen_ulong_t  nr_extents;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     unsigned int   extent_order;
 
     /*
@@ -103,11 +93,7 @@ struct xen_memory_exchange {
      *     command will be non-zero.
      *  5. THIS FIELD MUST BE INITIALISED TO ZERO BY THE CALLER!
      */
-<<<<<<< HEAD
-    unsigned long nr_exchanged;
-=======
     xen_ulong_t nr_exchanged;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 DEFINE_GUEST_HANDLE_STRUCT(xen_memory_exchange);
@@ -145,11 +131,7 @@ struct xen_machphys_mfn_list {
      * any large discontiguities in the machine address space, 2MB gaps in
      * the machphys table will be represented by an MFN base of zero.
      */
-<<<<<<< HEAD
-    GUEST_HANDLE(ulong) extent_start;
-=======
     GUEST_HANDLE(xen_pfn_t) extent_start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /*
      * Number of extents written to the above array. This will be smaller
@@ -167,13 +149,6 @@ DEFINE_GUEST_HANDLE_STRUCT(xen_machphys_mfn_list);
  */
 #define XENMEM_machphys_mapping     12
 struct xen_machphys_mapping {
-<<<<<<< HEAD
-    unsigned long v_start, v_end; /* Start and end virtual addresses.   */
-    unsigned long max_mfn;        /* Maximum MFN that can be looked up. */
-};
-DEFINE_GUEST_HANDLE_STRUCT(xen_machphys_mapping_t);
-
-=======
     xen_ulong_t v_start, v_end; /* Start and end virtual addresses.   */
     xen_ulong_t max_mfn;        /* Maximum MFN that can be looked up. */
 };
@@ -188,7 +163,6 @@ DEFINE_GUEST_HANDLE_STRUCT(xen_machphys_mapping_t);
 				    */
 #define XENMAPSPACE_dev_mmio     5 /* device mmio region */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sets the GPFN at which a particular page appears in the specified guest's
  * pseudophysical address space.
@@ -199,43 +173,6 @@ struct xen_add_to_physmap {
     /* Which domain to change the mapping for. */
     domid_t domid;
 
-<<<<<<< HEAD
-    /* Source mapping space. */
-#define XENMAPSPACE_shared_info 0 /* shared info page */
-#define XENMAPSPACE_grant_table 1 /* grant table page */
-    unsigned int space;
-
-    /* Index into source mapping space. */
-    unsigned long idx;
-
-    /* GPFN where the source mapping page should appear. */
-    unsigned long gpfn;
-};
-DEFINE_GUEST_HANDLE_STRUCT(xen_add_to_physmap);
-
-/*
- * Translates a list of domain-specific GPFNs into MFNs. Returns a -ve error
- * code on failure. This call only works for auto-translated guests.
- */
-#define XENMEM_translate_gpfn_list  8
-struct xen_translate_gpfn_list {
-    /* Which domain to translate for? */
-    domid_t domid;
-
-    /* Length of list. */
-    unsigned long nr_gpfns;
-
-    /* List of GPFNs to translate. */
-    GUEST_HANDLE(ulong) gpfn_list;
-
-    /*
-     * Output list to contain MFN translations. May be the same as the input
-     * list (in which case each input GPFN is overwritten with the output MFN).
-     */
-    GUEST_HANDLE(ulong) mfn_list;
-};
-DEFINE_GUEST_HANDLE_STRUCT(xen_translate_gpfn_list);
-=======
     /* Number of pages to go through for gmfn_range */
     uint16_t    size;
 
@@ -276,7 +213,6 @@ struct xen_add_to_physmap_range {
     GUEST_HANDLE(int) errs;
 };
 DEFINE_GUEST_HANDLE_STRUCT(xen_add_to_physmap_range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Returns the pseudo-physical memory map as it was when the domain
@@ -309,12 +245,6 @@ DEFINE_GUEST_HANDLE_STRUCT(xen_memory_map);
 
 
 /*
-<<<<<<< HEAD
- * Prevent the balloon driver from changing the memory reservation
- * during a driver critical region.
- */
-extern spinlock_t xen_reservation_lock;
-=======
  * Unmaps the page appearing at a particular GPFN from the specified guest's
  * pseudophysical address space.
  * arg == addr of xen_remove_from_physmap_t.
@@ -395,5 +325,4 @@ struct xen_mem_acquire_resource {
 };
 DEFINE_GUEST_HANDLE_STRUCT(xen_mem_acquire_resource);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __XEN_PUBLIC_MEMORY_H__ */

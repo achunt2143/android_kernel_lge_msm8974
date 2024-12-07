@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2001 Vojtech Pavlik
  *
@@ -11,43 +8,18 @@
  *
  *  Based on the work of
  *		Donald Becker
-<<<<<<< HEAD
- * 
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Old chipset support added by Simon Evans <spse@secret.org.uk> 2002
  *    - adds support for Belkin F5U011
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or 
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Should you need to contact me, the author, you can do so either by
  * e-mail - mail your message to <vojtech@suse.cz>, or by paper mail:
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -59,11 +31,7 @@
 #include <linux/crc32.h>
 #include <linux/bitops.h>
 #include <linux/gfp.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef DEBUG
 
@@ -86,11 +54,7 @@ static const char driver_name[] = "catc";
 
 /*
  * Some defines.
-<<<<<<< HEAD
- */ 
-=======
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define STATS_UPDATE		(HZ)	/* Time between stats updates */
 #define TX_TIMEOUT		(5*HZ)	/* Max time the queue can be stopped */
@@ -259,12 +223,8 @@ static void catc_rx_done(struct urb *urb)
 	}
 
 	if (status) {
-<<<<<<< HEAD
-		dbg("rx_done, status %d, length %d", status, urb->actual_length);
-=======
 		dev_dbg(&urb->dev->dev, "rx_done, status %d, length %d\n",
 			status, urb->actual_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -303,18 +263,11 @@ static void catc_rx_done(struct urb *urb)
 		if (atomic_read(&catc->recq_sz)) {
 			int state;
 			atomic_dec(&catc->recq_sz);
-<<<<<<< HEAD
-			dbg("getting extra packet");
-			urb->dev = catc->usbdev;
-			if ((state = usb_submit_urb(urb, GFP_ATOMIC)) < 0) {
-				dbg("submit(rx_urb) status %d", state);
-=======
 			netdev_dbg(catc->netdev, "getting extra packet\n");
 			urb->dev = catc->usbdev;
 			if ((state = usb_submit_urb(urb, GFP_ATOMIC)) < 0) {
 				netdev_dbg(catc->netdev,
 					   "submit(rx_urb) status %d\n", state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			clear_bit(RX_RUNNING, &catc->flags);
@@ -327,11 +280,7 @@ static void catc_irq_done(struct urb *urb)
 	struct catc *catc = urb->context;
 	u8 *data = urb->transfer_buffer;
 	int status = urb->status;
-<<<<<<< HEAD
-	unsigned int hasdata = 0, linksts = LinkNoChange;
-=======
 	unsigned int hasdata, linksts = LinkNoChange;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	if (!catc->is_f5u011) {
@@ -357,32 +306,20 @@ static void catc_irq_done(struct urb *urb)
 		return;
 	/* -EPIPE:  should clear the halt */
 	default:		/* error */
-<<<<<<< HEAD
-		dbg("irq_done, status %d, data %02x %02x.", status, data[0], data[1]);
-=======
 		dev_dbg(&urb->dev->dev,
 			"irq_done, status %d, data %02x %02x.\n",
 			status, data[0], data[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto resubmit;
 	}
 
 	if (linksts == LinkGood) {
 		netif_carrier_on(catc->netdev);
-<<<<<<< HEAD
-		dbg("link ok");
-=======
 		netdev_dbg(catc->netdev, "link ok\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (linksts == LinkBad) {
 		netif_carrier_off(catc->netdev);
-<<<<<<< HEAD
-		dbg("link bad");
-=======
 		netdev_dbg(catc->netdev, "link bad\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (hasdata) {
@@ -392,30 +329,18 @@ static void catc_irq_done(struct urb *urb)
 		} else {
 			catc->rx_urb->dev = catc->usbdev;
 			if ((res = usb_submit_urb(catc->rx_urb, GFP_ATOMIC)) < 0) {
-<<<<<<< HEAD
-				err("submit(rx_urb) status %d", res);
-			}
-		} 
-=======
 				dev_err(&catc->usbdev->dev,
 					"submit(rx_urb) status %d\n", res);
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 resubmit:
 	res = usb_submit_urb (urb, GFP_ATOMIC);
 	if (res)
-<<<<<<< HEAD
-		err ("can't resubmit intr, %s-%s, status %d",
-				catc->usbdev->bus->bus_name,
-				catc->usbdev->devpath, res);
-=======
 		dev_err(&catc->usbdev->dev,
 			"can't resubmit intr, %s-%s, status %d\n",
 			catc->usbdev->bus->bus_name,
 			catc->usbdev->devpath, res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -434,21 +359,13 @@ static int catc_tx_run(struct catc *catc)
 	catc->tx_urb->dev = catc->usbdev;
 
 	if ((status = usb_submit_urb(catc->tx_urb, GFP_ATOMIC)) < 0)
-<<<<<<< HEAD
-		err("submit(tx_urb), status %d", status);
-=======
 		dev_err(&catc->usbdev->dev, "submit(tx_urb), status %d\n",
 			status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	catc->tx_idx = !catc->tx_idx;
 	catc->tx_ptr = 0;
 
-<<<<<<< HEAD
-	catc->netdev->trans_start = jiffies;
-=======
 	netif_trans_update(catc->netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -459,15 +376,9 @@ static void catc_tx_done(struct urb *urb)
 	int r, status = urb->status;
 
 	if (status == -ECONNRESET) {
-<<<<<<< HEAD
-		dbg("Tx Reset.");
-		urb->status = 0;
-		catc->netdev->trans_start = jiffies;
-=======
 		dev_dbg(&urb->dev->dev, "Tx Reset.\n");
 		urb->status = 0;
 		netif_trans_update(catc->netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		catc->netdev->stats.tx_errors++;
 		clear_bit(TX_RUNNING, &catc->flags);
 		netif_wake_queue(catc->netdev);
@@ -475,12 +386,8 @@ static void catc_tx_done(struct urb *urb)
 	}
 
 	if (status) {
-<<<<<<< HEAD
-		dbg("tx_done, status %d, length %d", status, urb->actual_length);
-=======
 		dev_dbg(&urb->dev->dev, "tx_done, status %d, length %d\n",
 			status, urb->actual_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -540,11 +447,7 @@ static netdev_tx_t catc_start_xmit(struct sk_buff *skb,
 	return NETDEV_TX_OK;
 }
 
-<<<<<<< HEAD
-static void catc_tx_timeout(struct net_device *netdev)
-=======
 static void catc_tx_timeout(struct net_device *netdev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct catc *catc = netdev_priv(netdev);
 
@@ -588,12 +491,8 @@ static void catc_ctrl_run(struct catc *catc)
 		memcpy(catc->ctrl_buf, q->buf, q->len);
 
 	if ((status = usb_submit_urb(catc->ctrl_urb, GFP_ATOMIC)))
-<<<<<<< HEAD
-		err("submit(ctrl_urb) status %d", status);
-=======
 		dev_err(&catc->usbdev->dev, "submit(ctrl_urb) status %d\n",
 			status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void catc_ctrl_done(struct urb *urb)
@@ -604,12 +503,8 @@ static void catc_ctrl_done(struct urb *urb)
 	int status = urb->status;
 
 	if (status)
-<<<<<<< HEAD
-		dbg("ctrl_done, status %d, len %d.", status, urb->actual_length);
-=======
 		dev_dbg(&urb->dev->dev, "ctrl_done, status %d, len %d.\n",
 			status, urb->actual_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&catc->ctrl_lock, flags);
 
@@ -643,11 +538,7 @@ static int catc_ctrl_async(struct catc *catc, u8 dir, u8 request, u16 value,
 	unsigned long flags;
 
 	spin_lock_irqsave(&catc->ctrl_lock, flags);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	q = catc->ctrl_queue + catc->ctrl_head;
 
 	q->dir = dir;
@@ -661,11 +552,7 @@ static int catc_ctrl_async(struct catc *catc, u8 dir, u8 request, u16 value,
 	catc->ctrl_head = (catc->ctrl_head + 1) & (CTRL_QUEUE - 1);
 
 	if (catc->ctrl_head == catc->ctrl_tail) {
-<<<<<<< HEAD
-		err("ctrl queue full");
-=======
 		dev_err(&catc->usbdev->dev, "ctrl queue full\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		catc->ctrl_tail = (catc->ctrl_tail + 1) & (CTRL_QUEUE - 1);
 		retval = -1;
 	}
@@ -713,15 +600,9 @@ static void catc_stats_done(struct catc *catc, struct ctrl_queue *q)
 	catc->stats_vals[index >> 1] = data;
 }
 
-<<<<<<< HEAD
-static void catc_stats_timer(unsigned long data)
-{
-	struct catc *catc = (void *) data;
-=======
 static void catc_stats_timer(struct timer_list *t)
 {
 	struct catc *catc = from_timer(catc, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < 8; i++)
@@ -734,11 +615,7 @@ static void catc_stats_timer(struct timer_list *t)
  * Receive modes. Broadcast, Multicast, Promisc.
  */
 
-<<<<<<< HEAD
-static void catc_multicast(unsigned char *addr, u8 *multicast)
-=======
 static void catc_multicast(const unsigned char *addr, u8 *multicast)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 crc;
 
@@ -750,17 +627,10 @@ static void catc_set_multicast_list(struct net_device *netdev)
 {
 	struct catc *catc = netdev_priv(netdev);
 	struct netdev_hw_addr *ha;
-<<<<<<< HEAD
-	u8 broadcast[6];
-	u8 rx = RxEnable | RxPolarity | RxMultiCast;
-
-	memset(broadcast, 0xff, 6);
-=======
 	u8 broadcast[ETH_ALEN];
 	u8 rx = RxEnable | RxPolarity | RxMultiCast;
 
 	eth_broadcast_addr(broadcast);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(catc->multicast, 0, 64);
 
 	catc_multicast(broadcast, catc->multicast);
@@ -769,11 +639,7 @@ static void catc_set_multicast_list(struct net_device *netdev)
 	if (netdev->flags & IFF_PROMISC) {
 		memset(catc->multicast, 0xff, 64);
 		rx |= (!catc->is_f5u011) ? RxPromisc : AltRxPromisc;
-<<<<<<< HEAD
-	} 
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netdev->flags & IFF_ALLMULTI) {
 		memset(catc->multicast, 0xff, 64);
@@ -794,13 +660,9 @@ static void catc_set_multicast_list(struct net_device *netdev)
 		f5u011_mchash_async(catc, catc->multicast);
 		if (catc->rxmode[0] != rx) {
 			catc->rxmode[0] = rx;
-<<<<<<< HEAD
-			dbg("Setting RX mode to %2.2X %2.2X", catc->rxmode[0], catc->rxmode[1]);
-=======
 			netdev_dbg(catc->netdev,
 				   "Setting RX mode to %2.2X %2.2X\n",
 				   catc->rxmode[0], catc->rxmode[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			f5u011_rxmode_async(catc, catc->rxmode);
 		}
 	}
@@ -810,14 +672,6 @@ static void catc_get_drvinfo(struct net_device *dev,
 			     struct ethtool_drvinfo *info)
 {
 	struct catc *catc = netdev_priv(dev);
-<<<<<<< HEAD
-	strncpy(info->driver, driver_name, ETHTOOL_BUSINFO_LEN);
-	strncpy(info->version, DRIVER_VERSION, ETHTOOL_BUSINFO_LEN);
-	usb_make_path (catc->usbdev, info->bus_info, sizeof info->bus_info);
-}
-
-static int catc_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-=======
 	strscpy(info->driver, driver_name, sizeof(info->driver));
 	strscpy(info->version, DRIVER_VERSION, sizeof(info->version));
 	usb_make_path(catc->usbdev, info->bus_info, sizeof(info->bus_info));
@@ -825,24 +679,11 @@ static int catc_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 
 static int catc_get_link_ksettings(struct net_device *dev,
 				   struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct catc *catc = netdev_priv(dev);
 	if (!catc->is_f5u011)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	cmd->supported = SUPPORTED_10baseT_Half | SUPPORTED_TP;
-	cmd->advertising = ADVERTISED_10baseT_Half | ADVERTISED_TP;
-	ethtool_cmd_speed_set(cmd, SPEED_10);
-	cmd->duplex = DUPLEX_HALF;
-	cmd->port = PORT_TP; 
-	cmd->phy_address = 0;
-	cmd->transceiver = XCVR_INTERNAL;
-	cmd->autoneg = AUTONEG_DISABLE;
-	cmd->maxtxpkt = 1;
-	cmd->maxrxpkt = 1;
-=======
 	ethtool_link_ksettings_zero_link_mode(cmd, supported);
 	ethtool_link_ksettings_add_link_mode(cmd, supported, 10baseT_Half);
 	ethtool_link_ksettings_add_link_mode(cmd, supported, TP);
@@ -857,19 +698,13 @@ static int catc_get_link_ksettings(struct net_device *dev,
 	cmd->base.phy_address = 0;
 	cmd->base.autoneg = AUTONEG_DISABLE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static const struct ethtool_ops ops = {
 	.get_drvinfo = catc_get_drvinfo,
-<<<<<<< HEAD
-	.get_settings = catc_get_settings,
-	.get_link = ethtool_op_get_link
-=======
 	.get_link = ethtool_op_get_link,
 	.get_link_ksettings = catc_get_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -883,12 +718,8 @@ static int catc_open(struct net_device *netdev)
 
 	catc->irq_urb->dev = catc->usbdev;
 	if ((status = usb_submit_urb(catc->irq_urb, GFP_KERNEL)) < 0) {
-<<<<<<< HEAD
-		err("submit(irq_urb) status %d", status);
-=======
 		dev_err(&catc->usbdev->dev, "submit(irq_urb) status %d\n",
 			status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -924,10 +755,6 @@ static const struct net_device_ops catc_netdev_ops = {
 
 	.ndo_tx_timeout		= catc_tx_timeout,
 	.ndo_set_rx_mode	= catc_set_multicast_list,
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 };
@@ -938,18 +765,6 @@ static const struct net_device_ops catc_netdev_ops = {
 
 static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id)
 {
-<<<<<<< HEAD
-	struct usb_device *usbdev = interface_to_usbdev(intf);
-	struct net_device *netdev;
-	struct catc *catc;
-	u8 broadcast[6];
-	int i, pktsz;
-
-	if (usb_set_interface(usbdev,
-			intf->altsetting->desc.bInterfaceNumber, 1)) {
-                err("Can't set altsetting 1.");
-		return -EIO;
-=======
 	struct device *dev = &intf->dev;
 	struct usb_device *usbdev = interface_to_usbdev(intf);
 	struct net_device *netdev;
@@ -967,26 +782,17 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
 		dev_err(dev, "Can't set altsetting 1.\n");
 		ret = -EIO;
 		goto fail_mem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	netdev = alloc_etherdev(sizeof(struct catc));
 	if (!netdev)
-<<<<<<< HEAD
-		return -ENOMEM;
-=======
 		goto fail_mem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	catc = netdev_priv(netdev);
 
 	netdev->netdev_ops = &catc_netdev_ops;
 	netdev->watchdog_timeo = TX_TIMEOUT;
-<<<<<<< HEAD
-	SET_ETHTOOL_OPS(netdev, &ops);
-=======
 	netdev->ethtool_ops = &ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	catc->usbdev = usbdev;
 	catc->netdev = netdev;
@@ -994,37 +800,12 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
 	spin_lock_init(&catc->tx_lock);
 	spin_lock_init(&catc->ctrl_lock);
 
-<<<<<<< HEAD
-	init_timer(&catc->timer);
-	catc->timer.data = (long) catc;
-	catc->timer.function = catc_stats_timer;
-=======
 	timer_setup(&catc->timer, catc_stats_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	catc->ctrl_urb = usb_alloc_urb(0, GFP_KERNEL);
 	catc->tx_urb = usb_alloc_urb(0, GFP_KERNEL);
 	catc->rx_urb = usb_alloc_urb(0, GFP_KERNEL);
 	catc->irq_urb = usb_alloc_urb(0, GFP_KERNEL);
-<<<<<<< HEAD
-	if ((!catc->ctrl_urb) || (!catc->tx_urb) || 
-	    (!catc->rx_urb) || (!catc->irq_urb)) {
-		err("No free urbs available.");
-		usb_free_urb(catc->ctrl_urb);
-		usb_free_urb(catc->tx_urb);
-		usb_free_urb(catc->rx_urb);
-		usb_free_urb(catc->irq_urb);
-		free_netdev(netdev);
-		return -ENOMEM;
-	}
-
-	/* The F5U011 has the same vendor/product as the netmate but a device version of 0x130 */
-	if (le16_to_cpu(usbdev->descriptor.idVendor) == 0x0423 && 
-	    le16_to_cpu(usbdev->descriptor.idProduct) == 0xa &&
-	    le16_to_cpu(catc->usbdev->descriptor.bcdDevice) == 0x0130) {
-		dbg("Testing for f5u011");
-		catc->is_f5u011 = 1;		
-=======
 	if ((!catc->ctrl_urb) || (!catc->tx_urb) ||
 	    (!catc->rx_urb) || (!catc->irq_urb)) {
 		dev_err(&intf->dev, "No free urbs available.\n");
@@ -1038,17 +819,12 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
 	    le16_to_cpu(catc->usbdev->descriptor.bcdDevice) == 0x0130) {
 		dev_dbg(dev, "Testing for f5u011\n");
 		catc->is_f5u011 = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_set(&catc->recq_sz, 0);
 		pktsz = RX_PKT_SZ;
 	} else {
 		pktsz = RX_MAX_BURST * (PKT_SZ + 2);
 	}
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_fill_control_urb(catc->ctrl_urb, usbdev, usb_sndctrlpipe(usbdev, 0),
 		NULL, NULL, 0, catc_ctrl_done, catc);
 
@@ -1062,21 +838,6 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
                 catc->irq_buf, 2, catc_irq_done, catc, 1);
 
 	if (!catc->is_f5u011) {
-<<<<<<< HEAD
-		dbg("Checking memory size\n");
-
-		i = 0x12345678;
-		catc_write_mem(catc, 0x7a80, &i, 4);
-		i = 0x87654321;	
-		catc_write_mem(catc, 0xfa80, &i, 4);
-		catc_read_mem(catc, 0x7a80, &i, 4);
-	  
-		switch (i) {
-		case 0x12345678:
-			catc_set_reg(catc, TxBufCount, 8);
-			catc_set_reg(catc, RxBufCount, 32);
-			dbg("64k Memory\n");
-=======
 		u32 *buf;
 		int i;
 
@@ -1099,44 +860,10 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
 			catc_set_reg(catc, TxBufCount, 8);
 			catc_set_reg(catc, RxBufCount, 32);
 			dev_dbg(dev, "64k Memory\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			dev_warn(&intf->dev,
 				 "Couldn't detect memory size, assuming 32k\n");
-<<<<<<< HEAD
-		case 0x87654321:
-			catc_set_reg(catc, TxBufCount, 4);
-			catc_set_reg(catc, RxBufCount, 16);
-			dbg("32k Memory\n");
-			break;
-		}
-	  
-		dbg("Getting MAC from SEEROM.");
-	  
-		catc_get_mac(catc, netdev->dev_addr);
-		
-		dbg("Setting MAC into registers.");
-	  
-		for (i = 0; i < 6; i++)
-			catc_set_reg(catc, StationAddr0 - i, netdev->dev_addr[i]);
-		
-		dbg("Filling the multicast list.");
-	  
-		memset(broadcast, 0xff, 6);
-		catc_multicast(broadcast, catc->multicast);
-		catc_multicast(netdev->dev_addr, catc->multicast);
-		catc_write_mem(catc, 0xfa80, catc->multicast, 64);
-		
-		dbg("Clearing error counters.");
-		
-		for (i = 0; i < 8; i++)
-			catc_set_reg(catc, EthStats + i, 0);
-		catc->last_stats = jiffies;
-		
-		dbg("Enabling.");
-		
-=======
 			fallthrough;
 		case 0x87654321:
 			catc_set_reg(catc, TxBufCount, 4);
@@ -1172,53 +899,28 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
 
 		dev_dbg(dev, "Enabling.\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		catc_set_reg(catc, MaxBurst, RX_MAX_BURST);
 		catc_set_reg(catc, OpModes, OpTxMerge | OpRxMerge | OpLenInclude | Op3MemWaits);
 		catc_set_reg(catc, LEDCtrl, LEDLink);
 		catc_set_reg(catc, RxUnit, RxEnable | RxPolarity | RxMultiCast);
 	} else {
-<<<<<<< HEAD
-		dbg("Performing reset\n");
-		catc_reset(catc);
-		catc_get_mac(catc, netdev->dev_addr);
-		
-		dbg("Setting RX Mode");
-=======
 		dev_dbg(dev, "Performing reset\n");
 		catc_reset(catc);
 		catc_get_mac(catc, macbuf);
 		eth_hw_addr_set(netdev, macbuf);
 
 		dev_dbg(dev, "Setting RX Mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		catc->rxmode[0] = RxEnable | RxPolarity | RxMultiCast;
 		catc->rxmode[1] = 0;
 		f5u011_rxmode(catc, catc->rxmode);
 	}
-<<<<<<< HEAD
-	dbg("Init done.");
-=======
 	dev_dbg(dev, "Init done.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO "%s: %s USB Ethernet at usb-%s-%s, %pM.\n",
 	       netdev->name, (catc->is_f5u011) ? "Belkin F5U011" : "CATC EL1210A NetMate",
 	       usbdev->bus->bus_name, usbdev->devpath, netdev->dev_addr);
 	usb_set_intfdata(intf, catc);
 
 	SET_NETDEV_DEV(netdev, &intf->dev);
-<<<<<<< HEAD
-	if (register_netdev(netdev) != 0) {
-		usb_set_intfdata(intf, NULL);
-		usb_free_urb(catc->ctrl_urb);
-		usb_free_urb(catc->tx_urb);
-		usb_free_urb(catc->rx_urb);
-		usb_free_urb(catc->irq_urb);
-		free_netdev(netdev);
-		return -EIO;
-	}
-	return 0;
-=======
 	ret = register_netdev(netdev);
 	if (ret)
 		goto fail_clear_intfdata;
@@ -1238,7 +940,6 @@ fail_mem:
 	kfree(macbuf);
 error:
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void catc_disconnect(struct usb_interface *intf)
@@ -1260,11 +961,7 @@ static void catc_disconnect(struct usb_interface *intf)
  * Module functions and tables.
  */
 
-<<<<<<< HEAD
-static struct usb_device_id catc_id_table [] = {
-=======
 static const struct usb_device_id catc_id_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE(0x0423, 0xa) },	/* CATC Netmate, Belkin F5U011 */
 	{ USB_DEVICE(0x0423, 0xc) },	/* CATC Netmate II, Belkin F5U111 */
 	{ USB_DEVICE(0x08d1, 0x1) },	/* smartBridges smartNIC */
@@ -1278,10 +975,7 @@ static struct usb_driver catc_driver = {
 	.probe =	catc_probe,
 	.disconnect =	catc_disconnect,
 	.id_table =	catc_id_table,
-<<<<<<< HEAD
-=======
 	.disable_hub_initiated_lpm = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(catc_driver);

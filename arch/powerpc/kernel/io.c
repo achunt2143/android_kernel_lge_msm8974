@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * I/O string operations
  *    Copyright (C) 1995-1996 Gary Thomas (gdt@linuxppc.org)
@@ -14,14 +11,6 @@
  * PPC64 updates by Dave Engebretsen (engebret@us.ibm.com)
  *
  * Rewritten in C by Stephen Rothwell.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -32,12 +21,9 @@
 #include <asm/firmware.h>
 #include <asm/bug.h>
 
-<<<<<<< HEAD
-=======
 /* See definition in io.h */
 bool isa_io_special;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void _insb(const volatile u8 __iomem *port, void *buf, long count)
 {
 	u8 *tbuf = buf;
@@ -47,11 +33,7 @@ void _insb(const volatile u8 __iomem *port, void *buf, long count)
 		return;
 	asm volatile("sync");
 	do {
-<<<<<<< HEAD
-		tmp = *port;
-=======
 		tmp = *(const volatile u8 __force *)port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eieio();
 		*tbuf++ = tmp;
 	} while (--count != 0);
@@ -67,11 +49,7 @@ void _outsb(volatile u8 __iomem *port, const void *buf, long count)
 		return;
 	asm volatile("sync");
 	do {
-<<<<<<< HEAD
-		*port = *tbuf++;
-=======
 		*(volatile u8 __force *)port = *tbuf++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (--count != 0);
 	asm volatile("sync");
 }
@@ -86,11 +64,7 @@ void _insw_ns(const volatile u16 __iomem *port, void *buf, long count)
 		return;
 	asm volatile("sync");
 	do {
-<<<<<<< HEAD
-		tmp = *port;
-=======
 		tmp = *(const volatile u16 __force *)port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eieio();
 		*tbuf++ = tmp;
 	} while (--count != 0);
@@ -106,11 +80,7 @@ void _outsw_ns(volatile u16 __iomem *port, const void *buf, long count)
 		return;
 	asm volatile("sync");
 	do {
-<<<<<<< HEAD
-		*port = *tbuf++;
-=======
 		*(volatile u16 __force *)port = *tbuf++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (--count != 0);
 	asm volatile("sync");
 }
@@ -125,11 +95,7 @@ void _insl_ns(const volatile u32 __iomem *port, void *buf, long count)
 		return;
 	asm volatile("sync");
 	do {
-<<<<<<< HEAD
-		tmp = *port;
-=======
 		tmp = *(const volatile u32 __force *)port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eieio();
 		*tbuf++ = tmp;
 	} while (--count != 0);
@@ -145,11 +111,7 @@ void _outsl_ns(volatile u32 __iomem *port, const void *buf, long count)
 		return;
 	asm volatile("sync");
 	do {
-<<<<<<< HEAD
-		*port = *tbuf++;
-=======
 		*(volatile u32 __force *)port = *tbuf++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (--count != 0);
 	asm volatile("sync");
 }

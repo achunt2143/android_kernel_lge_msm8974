@@ -1,26 +1,13 @@
-<<<<<<< HEAD
-/*
- * Driver for the ADB controller in the Mac I/O (Hydra) chip.
- */
-#include <stdarg.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Driver for the ADB controller in the Mac I/O (Hydra) chip.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
 #include <linux/delay.h>
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-#include <linux/adb.h>
-#include <asm/io.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/pgtable.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -28,7 +15,6 @@
 #include <linux/adb.h>
 
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/hydra.h>
 #include <asm/irq.h>
 #include <linux/init.h>
@@ -86,16 +72,6 @@ static void macio_adb_poll(void);
 static int macio_adb_reset_bus(void);
 
 struct adb_driver macio_adb_driver = {
-<<<<<<< HEAD
-	"MACIO",
-	macio_probe,
-	macio_init,
-	macio_send_request,
-	/*macio_write,*/
-	macio_adb_autopoll,
-	macio_adb_poll,
-	macio_adb_reset_bus
-=======
 	.name         = "MACIO",
 	.probe        = macio_probe,
 	.init         = macio_init,
@@ -103,7 +79,6 @@ struct adb_driver macio_adb_driver = {
 	.autopoll     = macio_adb_autopoll,
 	.poll         = macio_adb_poll,
 	.reset_bus    = macio_adb_reset_bus,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int macio_probe(void)
@@ -125,11 +100,7 @@ int macio_init(void)
 	unsigned int irq;
 
 	adbs = of_find_compatible_node(NULL, "adb", "chrp,adb0");
-<<<<<<< HEAD
-	if (adbs == 0)
-=======
 	if (!adbs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 
 	if (of_address_to_resource(adbs, 0, &r)) {
@@ -137,13 +108,10 @@ int macio_init(void)
 		return -ENXIO;
 	}
 	adb = ioremap(r.start, sizeof(struct adb_regs));
-<<<<<<< HEAD
-=======
 	if (!adb) {
 		of_node_put(adbs);
 		return -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	out_8(&adb->ctrl.r, 0);
 	out_8(&adb->intr.r, 0);
@@ -155,10 +123,7 @@ int macio_init(void)
 	irq = irq_of_parse_and_map(adbs, 0);
 	of_node_put(adbs);
 	if (request_irq(irq, macio_adb_interrupt, 0, "ADB", (void *)0)) {
-<<<<<<< HEAD
-=======
 		iounmap(adb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "ADB: can't get irq %d\n", irq);
 		return -EAGAIN;
 	}
@@ -223,11 +188,7 @@ static int macio_send_request(struct adb_request *req, int sync)
 	req->reply_len = 0;
 
 	spin_lock_irqsave(&macio_lock, flags);
-<<<<<<< HEAD
-	if (current_req != 0) {
-=======
 	if (current_req) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		last_req->next = req;
 		last_req = req;
 	} else {
@@ -257,12 +218,8 @@ static irqreturn_t macio_adb_interrupt(int irq, void *arg)
 	spin_lock(&macio_lock);
 	if (in_8(&adb->intr.r) & TAG) {
 		handled = 1;
-<<<<<<< HEAD
-		if ((req = current_req) != 0) {
-=======
 		req = current_req;
 		if (req) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* put the current request in */
 			for (i = 0; i < req->nbytes; ++i)
 				out_8(&adb->data[i].r, req->data[i]);

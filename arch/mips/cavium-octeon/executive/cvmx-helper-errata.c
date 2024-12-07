@@ -33,11 +33,7 @@
  * these functions directly.
  *
  */
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/octeon/octeon.h>
 

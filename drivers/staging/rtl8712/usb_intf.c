@@ -1,29 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * usb_intf.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -44,18 +25,9 @@
 #include "recv_osdep.h"
 #include "xmit_osdep.h"
 #include "rtl8712_efuse.h"
-<<<<<<< HEAD
-#include "usb_vendor_req.h"
 #include "usb_ops.h"
 #include "usb_osintf.h"
 
-#define DRVER  "v7_0.20100831"
-
-=======
-#include "usb_ops.h"
-#include "usb_osintf.h"
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct usb_interface *pintf;
 
 static int r871xu_drv_init(struct usb_interface *pusb_intf,
@@ -63,12 +35,7 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
 
 static void r871xu_dev_remove(struct usb_interface *pusb_intf);
 
-<<<<<<< HEAD
-static struct usb_device_id rtl871x_usb_id_tbl[] = {
-
-=======
 static const struct usb_device_id rtl871x_usb_id_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* RTL8188SU */
 	/* Realtek */
 	{USB_DEVICE(0x0BDA, 0x8171)},
@@ -225,20 +192,11 @@ struct drv_priv {
 static int r871x_suspend(struct usb_interface *pusb_intf, pm_message_t state)
 {
 	struct net_device *pnetdev = usb_get_intfdata(pusb_intf);
-<<<<<<< HEAD
-
-	printk(KERN_INFO "r8712: suspending...\n");
-	if (!pnetdev || !netif_running(pnetdev)) {
-		printk(KERN_INFO "r8712: unable to suspend\n");
-		return 0;
-	}
-=======
 	struct _adapter *padapter = netdev_priv(pnetdev);
 
 	netdev_info(pnetdev, "Suspending...\n");
 	padapter->suspended = true;
 	rtl871x_intf_stop(padapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pnetdev->netdev_ops->ndo_stop)
 		pnetdev->netdev_ops->ndo_stop(pnetdev);
 	mdelay(10);
@@ -246,29 +204,6 @@ static int r871x_suspend(struct usb_interface *pusb_intf, pm_message_t state)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int r871x_resume(struct usb_interface *pusb_intf)
-{
-	struct net_device *pnetdev = usb_get_intfdata(pusb_intf);
-
-	printk(KERN_INFO "r8712: resuming...\n");
-	if (!pnetdev || !netif_running(pnetdev)) {
-		printk(KERN_INFO "r8712: unable to resume\n");
-		return 0;
-	}
-	netif_device_attach(pnetdev);
-	if (pnetdev->netdev_ops->ndo_open)
-		pnetdev->netdev_ops->ndo_open(pnetdev);
-	return 0;
-}
-
-static int r871x_reset_resume(struct usb_interface *pusb_intf)
-{
-	/* dummy routine */
-	return 0;
-}
-
-=======
 static void rtl871x_intf_resume(struct _adapter *padapter)
 {
 	if (padapter->dvobjpriv.inirp_init)
@@ -288,7 +223,6 @@ static int r871x_resume(struct usb_interface *pusb_intf)
 	rtl871x_intf_resume(padapter);
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static struct drv_priv drvpriv = {
@@ -299,57 +233,30 @@ static struct drv_priv drvpriv = {
 #ifdef CONFIG_PM
 	.r871xu_drv.suspend = r871x_suspend,
 	.r871xu_drv.resume = r871x_resume,
-<<<<<<< HEAD
-	.r871xu_drv.reset_resume = r871x_reset_resume,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
 static uint r8712_usb_dvobj_init(struct _adapter *padapter)
 {
 	uint	status = _SUCCESS;
-<<<<<<< HEAD
-	struct	usb_device_descriptor		*pdev_desc;
-	struct	usb_host_config			*phost_conf;
-	struct	usb_config_descriptor		*pconf_desc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct	usb_host_interface		*phost_iface;
 	struct	usb_interface_descriptor	*piface_desc;
 	struct dvobj_priv *pdvobjpriv = &padapter->dvobjpriv;
 	struct usb_device *pusbd = pdvobjpriv->pusbdev;
 
 	pdvobjpriv->padapter = padapter;
-<<<<<<< HEAD
-	padapter->EepromAddressSize = 6;
-	pdev_desc = &pusbd->descriptor;
-	phost_conf = pusbd->actconfig;
-	pconf_desc = &phost_conf->desc;
-	phost_iface = &pintf->altsetting[0];
-=======
 	padapter->eeprom_address_size = 6;
 	phost_iface = pintf->cur_altsetting;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	piface_desc = &phost_iface->desc;
 	pdvobjpriv->nr_endpoint = piface_desc->bNumEndpoints;
 	if (pusbd->speed == USB_SPEED_HIGH) {
 		pdvobjpriv->ishighspeed = true;
-<<<<<<< HEAD
-		printk(KERN_INFO "r8712u: USB_SPEED_HIGH with %d endpoints\n",
-		       pdvobjpriv->nr_endpoint);
-	} else {
-		pdvobjpriv->ishighspeed = false;
-		printk(KERN_INFO "r8712u: USB_SPEED_LOW with %d endpoints\n",
-		       pdvobjpriv->nr_endpoint);
-=======
 		dev_info(&pusbd->dev, "r8712u: USB_SPEED_HIGH with %d endpoints\n",
 			 pdvobjpriv->nr_endpoint);
 	} else {
 		pdvobjpriv->ishighspeed = false;
 		dev_info(&pusbd->dev, "r8712u: USB_SPEED_LOW with %d endpoints\n",
 			 pdvobjpriv->nr_endpoint);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if ((r8712_alloc_io_queue(padapter)) == _FAIL)
 		status = _FAIL;
@@ -358,24 +265,12 @@ static uint r8712_usb_dvobj_init(struct _adapter *padapter)
 
 static void r8712_usb_dvobj_deinit(struct _adapter *padapter)
 {
-<<<<<<< HEAD
-=======
 	r8712_free_io_queue(padapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rtl871x_intf_stop(struct _adapter *padapter)
 {
 	/*disable_hw_interrupt*/
-<<<<<<< HEAD
-	if (padapter->bSurpriseRemoved == false) {
-		/*device still exists, so driver can do i/o operation
-		 * TODO: */
-	}
-
-	/* cancel in irp */
-	if (padapter->dvobjpriv.inirp_deinit != NULL)
-=======
 	if (!padapter->surprise_removed) {
 		/*device still exists, so driver can do i/o operation
 		 * TODO:
@@ -384,7 +279,6 @@ void rtl871x_intf_stop(struct _adapter *padapter)
 
 	/* cancel in irp */
 	if (padapter->dvobjpriv.inirp_deinit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		padapter->dvobjpriv.inirp_deinit(padapter);
 	/* cancel out irp */
 	r8712_usb_write_port_cancel(padapter);
@@ -393,15 +287,9 @@ void rtl871x_intf_stop(struct _adapter *padapter)
 
 void r871x_dev_unload(struct _adapter *padapter)
 {
-<<<<<<< HEAD
-	if (padapter->bup == true) {
-		/*s1.*/
-		padapter->bDriverStopped = true;
-=======
 	if (padapter->bup) {
 		/*s1.*/
 		padapter->driver_stopped = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*s3.*/
 		rtl871x_intf_stop(padapter);
@@ -410,21 +298,11 @@ void r871x_dev_unload(struct _adapter *padapter)
 		r8712_stop_drv_threads(padapter);
 
 		/*s5.*/
-<<<<<<< HEAD
-		if (padapter->bSurpriseRemoved == false) {
-=======
 		if (!padapter->surprise_removed) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			padapter->hw_init_completed = false;
 			rtl8712_hal_deinit(padapter);
 		}
 
-<<<<<<< HEAD
-		/*s6.*/
-		if (padapter->dvobj_deinit)
-			padapter->dvobj_deinit(padapter);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		padapter->bup = false;
 	}
 }
@@ -435,12 +313,7 @@ static void disable_ht_for_spec_devid(const struct usb_device_id *pdid,
 	u16 vid, pid;
 	u32 flags;
 	int i;
-<<<<<<< HEAD
-	int num = sizeof(specific_device_id_tbl) /
-		  sizeof(struct specific_device_id);
-=======
 	int num = ARRAY_SIZE(specific_device_id_tbl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < num; i++) {
 		vid = specific_device_id_tbl[i].idVendor;
@@ -448,11 +321,7 @@ static void disable_ht_for_spec_devid(const struct usb_device_id *pdid,
 		flags = specific_device_id_tbl[i].flags;
 
 		if ((pdid->idVendor == vid) && (pdid->idProduct == pid) &&
-<<<<<<< HEAD
-		    (flags&SPEC_DEV_ID_DISABLE_HT)) {
-=======
 		    (flags & SPEC_DEV_ID_DISABLE_HT)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			padapter->registrypriv.ht_enable = 0;
 			padapter->registrypriv.cbw40_enable = 0;
 			padapter->registrypriv.ampdu_enable = 0;
@@ -460,14 +329,6 @@ static void disable_ht_for_spec_devid(const struct usb_device_id *pdid,
 	}
 }
 
-<<<<<<< HEAD
-static u8 key_2char2num(u8 hch, u8 lch)
-{
-	return (hex_to_bin(hch) << 4) | hex_to_bin(lch);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct device_type wlan_type = {
 	.name = "wlan",
 };
@@ -477,11 +338,7 @@ static const struct device_type wlan_type = {
  *
  * notes: drv_init() is called when the bus driver has located a card for us
  * to support. We accept the new device by returning 0.
-<<<<<<< HEAD
-*/
-=======
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int r871xu_drv_init(struct usb_interface *pusb_intf,
 			   const struct usb_device_id *pdid)
 {
@@ -491,10 +348,6 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
 	struct net_device *pnetdev;
 	struct usb_device *udev;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "r8712u: DriverVersion: %s\n", DRVER);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* In this probe function, O.S. will provide the usb interface pointer
 	 * to driver. We have to increase the reference count of the usb device
 	 * structure by using the usb_get_dev function.
@@ -505,11 +358,7 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
 	/* step 1. */
 	pnetdev = r8712_init_netdev();
 	if (!pnetdev)
-<<<<<<< HEAD
-		goto error;
-=======
 		goto put_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	padapter = netdev_priv(pnetdev);
 	disable_ht_for_spec_devid(pdid, padapter);
 	pdvobjpriv = &padapter->dvobjpriv;
@@ -520,27 +369,6 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
 	SET_NETDEV_DEV(pnetdev, &pusb_intf->dev);
 	pnetdev->dev.type = &wlan_type;
 	/* step 2. */
-<<<<<<< HEAD
-	padapter->dvobj_init = &r8712_usb_dvobj_init;
-	padapter->dvobj_deinit = &r8712_usb_dvobj_deinit;
-	padapter->halpriv.hal_bus_init = &r8712_usb_hal_bus_init;
-	padapter->dvobjpriv.inirp_init = &r8712_usb_inirp_init;
-	padapter->dvobjpriv.inirp_deinit = &r8712_usb_inirp_deinit;
-	/* step 3.
-	 * initialize the dvobj_priv
-	 */
-	if (padapter->dvobj_init == NULL)
-			goto error;
-	else {
-		status = padapter->dvobj_init(padapter);
-		if (status != _SUCCESS)
-			goto error;
-	}
-	/* step 4. */
-	status = r8712_init_drv_sw(padapter);
-	if (status == _FAIL)
-		goto error;
-=======
 	padapter->dvobj_init = r8712_usb_dvobj_init;
 	padapter->dvobj_deinit = r8712_usb_dvobj_deinit;
 	padapter->halpriv.hal_bus_init = r8712_usb_hal_bus_init;
@@ -558,7 +386,6 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
 	status = r8712_init_drv_sw(padapter);
 	if (status)
 		goto dvobj_deinit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* step 5. read efuse/eeprom data and get mac_addr */
 	{
 		int i, offset;
@@ -569,15 +396,9 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
 		tmpU1b = r8712_read8(padapter, EE_9346CR);/*CR9346*/
 
 		/* To check system boot selection.*/
-<<<<<<< HEAD
-		printk(KERN_INFO "r8712u: Boot from %s: Autoload %s\n",
-		       (tmpU1b & _9356SEL) ? "EEPROM" : "EFUSE",
-		       (tmpU1b & _EEPROM_EN) ? "OK" : "Failed");
-=======
 		dev_info(&udev->dev, "r8712u: Boot from %s: Autoload %s\n",
 			 (tmpU1b & _9356SEL) ? "EEPROM" : "EFUSE",
 			 (tmpU1b & _EEPROM_EN) ? "OK" : "Failed");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* To check autoload success or not.*/
 		if (tmpU1b & _EEPROM_EN) {
@@ -585,11 +406,7 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
 			/* The following operations prevent Efuse leakage by
 			 * turning on 2.5V.
 			 */
-<<<<<<< HEAD
-			tmpU1b = r8712_read8(padapter, EFUSE_TEST+3);
-=======
 			tmpU1b = r8712_read8(padapter, EFUSE_TEST + 3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r8712_write8(padapter, EFUSE_TEST + 3, tmpU1b | 0x80);
 			msleep(20);
 			r8712_write8(padapter, EFUSE_TEST + 3,
@@ -621,28 +438,11 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
 				r8712_efuse_pg_packet_read(padapter, offset,
 						     &pdata[i]);
 
-<<<<<<< HEAD
-			if (r8712_initmac) {
-				/* Users specify the mac address */
-				int jj, kk;
-
-				for (jj = 0, kk = 0; jj < ETH_ALEN;
-				     jj++, kk += 3)
-					mac[jj] =
-					   key_2char2num(r8712_initmac[kk],
-					   r8712_initmac[kk + 1]);
-			} else {
-				/* Use the mac address stored in the Efuse
-				 * offset = 0x12 for usb in efuse
-				 */
-				memcpy(mac, &pdata[0x12], ETH_ALEN);
-=======
 			if (!r8712_initmac || !mac_pton(r8712_initmac, mac)) {
 				/* Use the mac address stored in the Efuse
 				 * offset = 0x12 for usb in efuse
 				 */
 				ether_addr_copy(mac, &pdata[0x12]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			eeprom_CustomerID = pdata[0x52];
 			switch (eeprom_CustomerID) {
@@ -697,13 +497,8 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
 						 RT_CID_DEFAULT;
 				break;
 			}
-<<<<<<< HEAD
-			printk(KERN_INFO "r8712u: CustomerID = 0x%.4x\n",
-			     padapter->eeprompriv.CustomerID);
-=======
 			dev_info(&udev->dev, "r8712u: CustomerID = 0x%.4x\n",
 				 padapter->eeprompriv.CustomerID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Led mode */
 			switch (padapter->eeprompriv.CustomerID) {
 			case RT_CID_DEFAULT:
@@ -738,27 +533,16 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
 				padapter->ledpriv.bRegUseLed = false;
 				break;
 			}
-<<<<<<< HEAD
-		} else
-			AutoloadFail = false;
-		if (((mac[0] == 0xff) && (mac[1] == 0xff) &&
-=======
 		} else {
 			AutoloadFail = false;
 		}
 		if ((!AutoloadFail) ||
 		    ((mac[0] == 0xff) && (mac[1] == 0xff) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     (mac[2] == 0xff) && (mac[3] == 0xff) &&
 		     (mac[4] == 0xff) && (mac[5] == 0xff)) ||
 		    ((mac[0] == 0x00) && (mac[1] == 0x00) &&
 		     (mac[2] == 0x00) && (mac[3] == 0x00) &&
-<<<<<<< HEAD
-		     (mac[4] == 0x00) && (mac[5] == 0x00)) ||
-		     (AutoloadFail == false)) {
-=======
 		     (mac[4] == 0x00) && (mac[5] == 0x00))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mac[0] = 0x00;
 			mac[1] = 0xe0;
 			mac[2] = 0x4c;
@@ -771,28 +555,6 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
 			 * address by setting bit 1 of first octet.
 			 */
 			mac[0] &= 0xFE;
-<<<<<<< HEAD
-			printk(KERN_INFO "r8712u: MAC Address from user = "
-			       "%pM\n", mac);
-		} else
-			printk(KERN_INFO "r8712u: MAC Address from efuse = "
-			       "%pM\n", mac);
-		memcpy(pnetdev->dev_addr, mac, ETH_ALEN);
-	}
-	/* step 6. Load the firmware asynchronously */
-	if (rtl871x_load_fw(padapter))
-		goto error;
-	spin_lock_init(&padapter->lockRxFF0Filter);
-	mutex_init(&padapter->mutex_start);
-	return 0;
-error:
-	usb_put_dev(udev);
-	usb_set_intfdata(pusb_intf, NULL);
-	if (padapter->dvobj_deinit != NULL)
-		padapter->dvobj_deinit(padapter);
-	if (pnetdev)
-		free_netdev(pnetdev);
-=======
 			dev_info(&udev->dev,
 				"r8712u: MAC Address from user = %pM\n", mac);
 		} else {
@@ -816,50 +578,10 @@ free_netdev:
 put_dev:
 	usb_put_dev(udev);
 	usb_set_intfdata(pusb_intf, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
 }
 
 /* rmmod module & unplug(SurpriseRemoved) will call r871xu_dev_remove()
-<<<<<<< HEAD
- * => how to recognize both */
-static void r871xu_dev_remove(struct usb_interface *pusb_intf)
-{
-	struct net_device *pnetdev = usb_get_intfdata(pusb_intf);
-	struct _adapter *padapter = netdev_priv(pnetdev);
-	struct usb_device *udev = interface_to_usbdev(pusb_intf);
-
-	usb_set_intfdata(pusb_intf, NULL);
-	if (padapter) {
-		if (padapter->fw_found)
-			release_firmware(padapter->fw);
-		/* never exit with a firmware callback pending */
-		wait_for_completion(&padapter->rtl8712_fw_ready);
-		if (drvpriv.drv_registered == true)
-			padapter->bSurpriseRemoved = true;
-		if (pnetdev != NULL) {
-			/* will call netdev_close() */
-			unregister_netdev(pnetdev);
-		}
-		flush_scheduled_work();
-		udelay(1);
-		/*Stop driver mlme relation timer */
-		if (padapter->fw_found)
-			r8712_stop_drv_timers(padapter);
-		r871x_dev_unload(padapter);
-		r8712_free_drv_sw(padapter);
-	}
-	usb_set_intfdata(pusb_intf, NULL);
-	/* decrease the reference count of the usb device structure
-	 * when disconnect */
-	usb_put_dev(udev);
-	/* If we didn't unplug usb dongle and remove/insert modlue, driver
-	 * fails on sitesurvey for the first time when device is up.
-	 * Reset usb port for sitesurvey fail issue. */
-	if (udev->state != USB_STATE_NOTATTACHED)
-		usb_reset_device(udev);
-	return;
-=======
  * => how to recognize both
  */
 static void r871xu_dev_remove(struct usb_interface *pusb_intf)
@@ -898,7 +620,6 @@ static void r871xu_dev_remove(struct usb_interface *pusb_intf)
 	 */
 	if (udev->state != USB_STATE_NOTATTACHED)
 		usb_reset_device(udev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init r8712u_drv_entry(void)
@@ -911,10 +632,6 @@ static void __exit r8712u_drv_halt(void)
 {
 	drvpriv.drv_registered = false;
 	usb_deregister(&drvpriv.r871xu_drv);
-<<<<<<< HEAD
-	printk(KERN_INFO "r8712u: Driver unloaded\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(r8712u_drv_entry);

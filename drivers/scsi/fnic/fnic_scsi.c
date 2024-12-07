@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/mempool.h>
 #include <linux/errno.h>
@@ -30,10 +11,7 @@
 #include <linux/scatterlist.h>
 #include <linux/skbuff.h>
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-=======
 #include <linux/etherdevice.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/if_ether.h>
 #include <linux/if_vlan.h>
 #include <linux/delay.h>
@@ -58,10 +36,7 @@ const char *fnic_state_str[] = {
 };
 
 static const char *fnic_ioreq_state_str[] = {
-<<<<<<< HEAD
-=======
 	[FNIC_IOREQ_NOT_INITED] = "FNIC_IOREQ_NOT_INITED",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[FNIC_IOREQ_CMD_PENDING] = "FNIC_IOREQ_CMD_PENDING",
 	[FNIC_IOREQ_ABTS_PENDING] = "FNIC_IOREQ_ABTS_PENDING",
 	[FNIC_IOREQ_ABTS_COMPLETE] = "FNIC_IOREQ_ABTS_COMPLETE",
@@ -115,19 +90,7 @@ static const char *fnic_fcpio_status_to_str(unsigned int status)
 	return fcpio_status_str[status];
 }
 
-<<<<<<< HEAD
-static void fnic_cleanup_io(struct fnic *fnic, int exclude_id);
-
-static inline spinlock_t *fnic_io_lock_hash(struct fnic *fnic,
-					    struct scsi_cmnd *sc)
-{
-	u32 hash = sc->request->tag & (FNIC_IO_LOCKS - 1);
-
-	return &fnic->io_req_lock[hash];
-}
-=======
 static void fnic_cleanup_io(struct fnic *fnic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Unmap the data buffer and sense buffer for an io_req,
@@ -138,32 +101,15 @@ static void fnic_release_ioreq_buf(struct fnic *fnic,
 				   struct scsi_cmnd *sc)
 {
 	if (io_req->sgl_list_pa)
-<<<<<<< HEAD
-		pci_unmap_single(fnic->pdev, io_req->sgl_list_pa,
-				 sizeof(io_req->sgl_list[0]) * io_req->sgl_cnt,
-				 PCI_DMA_TODEVICE);
-=======
 		dma_unmap_single(&fnic->pdev->dev, io_req->sgl_list_pa,
 				 sizeof(io_req->sgl_list[0]) * io_req->sgl_cnt,
 				 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_dma_unmap(sc);
 
 	if (io_req->sgl_cnt)
 		mempool_free(io_req->sgl_list_alloc,
 			     fnic->io_sgl_pool[io_req->sgl_type]);
 	if (io_req->sense_buf_pa)
-<<<<<<< HEAD
-		pci_unmap_single(fnic->pdev, io_req->sense_buf_pa,
-				 SCSI_SENSE_BUFFERSIZE, PCI_DMA_FROMDEVICE);
-}
-
-/* Free up Copy Wq descriptors. Called with copy_wq lock held */
-static int free_wq_copy_descs(struct fnic *fnic, struct vnic_wq_copy *wq)
-{
-	/* if no Ack received from firmware, then nothing to clean */
-	if (!fnic->fw_ack_recd[0])
-=======
 		dma_unmap_single(&fnic->pdev->dev, io_req->sense_buf_pa,
 				 SCSI_SENSE_BUFFERSIZE, DMA_FROM_DEVICE);
 }
@@ -173,29 +119,19 @@ static int free_wq_copy_descs(struct fnic *fnic, struct vnic_wq_copy *wq, unsign
 {
 	/* if no Ack received from firmware, then nothing to clean */
 	if (!fnic->fw_ack_recd[hwq])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	/*
 	 * Update desc_available count based on number of freed descriptors
 	 * Account for wraparound
 	 */
-<<<<<<< HEAD
-	if (wq->to_clean_index <= fnic->fw_ack_index[0])
-		wq->ring.desc_avail += (fnic->fw_ack_index[0]
-=======
 	if (wq->to_clean_index <= fnic->fw_ack_index[hwq])
 		wq->ring.desc_avail += (fnic->fw_ack_index[hwq]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					- wq->to_clean_index + 1);
 	else
 		wq->ring.desc_avail += (wq->ring.desc_count
 					- wq->to_clean_index
-<<<<<<< HEAD
-					+ fnic->fw_ack_index[0] + 1);
-=======
 					+ fnic->fw_ack_index[hwq] + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * just bump clean index to ack_index+1 accounting for wraparound
@@ -203,24 +139,15 @@ static int free_wq_copy_descs(struct fnic *fnic, struct vnic_wq_copy *wq, unsign
 	 * to_clean_index and fw_ack_index, both inclusive
 	 */
 	wq->to_clean_index =
-<<<<<<< HEAD
-		(fnic->fw_ack_index[0] + 1) % wq->ring.desc_count;
-
-	/* we have processed the acks received so far */
-	fnic->fw_ack_recd[0] = 0;
-=======
 		(fnic->fw_ack_index[hwq] + 1) % wq->ring.desc_count;
 
 	/* we have processed the acks received so far */
 	fnic->fw_ack_recd[hwq] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 /*
-<<<<<<< HEAD
-=======
  * __fnic_set_state_flags
  * Sets/Clears bits in fnic's state_flags
  **/
@@ -244,39 +171,11 @@ __fnic_set_state_flags(struct fnic *fnic, unsigned long st_flags,
 
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fnic_fw_reset_handler
  * Routine to send reset msg to fw
  */
 int fnic_fw_reset_handler(struct fnic *fnic)
 {
-<<<<<<< HEAD
-	struct vnic_wq_copy *wq = &fnic->wq_copy[0];
-	int ret = 0;
-	unsigned long flags;
-
-	skb_queue_purge(&fnic->frame_queue);
-	skb_queue_purge(&fnic->tx_queue);
-
-	spin_lock_irqsave(&fnic->wq_copy_lock[0], flags);
-
-	if (vnic_wq_copy_desc_avail(wq) <= fnic->wq_copy_desc_low[0])
-		free_wq_copy_descs(fnic, wq);
-
-	if (!vnic_wq_copy_desc_avail(wq))
-		ret = -EAGAIN;
-	else
-		fnic_queue_wq_copy_desc_fw_reset(wq, SCSI_NO_TAG);
-
-	spin_unlock_irqrestore(&fnic->wq_copy_lock[0], flags);
-
-	if (!ret)
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-			      "Issued fw reset\n");
-	else
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-			      "Failed to issue fw reset\n");
-=======
 	struct vnic_wq_copy *wq = &fnic->hw_copy_wq[0];
 	int ret = 0;
 	unsigned long flags;
@@ -320,7 +219,6 @@ int fnic_fw_reset_handler(struct fnic *fnic)
 				"Failed to issue fw reset\n");
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -331,11 +229,7 @@ int fnic_fw_reset_handler(struct fnic *fnic)
  */
 int fnic_flogi_reg_handler(struct fnic *fnic, u32 fc_id)
 {
-<<<<<<< HEAD
-	struct vnic_wq_copy *wq = &fnic->wq_copy[0];
-=======
 	struct vnic_wq_copy *wq = &fnic->hw_copy_wq[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum fcpio_flogi_reg_format_type format;
 	struct fc_lport *lp = fnic->lport;
 	u8 gw_mac[ETH_ALEN];
@@ -345,11 +239,7 @@ int fnic_flogi_reg_handler(struct fnic *fnic, u32 fc_id)
 	spin_lock_irqsave(&fnic->wq_copy_lock[0], flags);
 
 	if (vnic_wq_copy_desc_avail(wq) <= fnic->wq_copy_desc_low[0])
-<<<<<<< HEAD
-		free_wq_copy_descs(fnic, wq);
-=======
 		free_wq_copy_descs(fnic, wq, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!vnic_wq_copy_desc_avail(wq)) {
 		ret = -EAGAIN;
@@ -357,11 +247,7 @@ int fnic_flogi_reg_handler(struct fnic *fnic, u32 fc_id)
 	}
 
 	if (fnic->ctlr.map_dest) {
-<<<<<<< HEAD
-		memset(gw_mac, 0xff, ETH_ALEN);
-=======
 		eth_broadcast_addr(gw_mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		format = FCPIO_FLOGI_REG_DEF_DEST;
 	} else {
 		memcpy(gw_mac, fnic->ctlr.dest_addr, ETH_ALEN);
@@ -373,23 +259,12 @@ int fnic_flogi_reg_handler(struct fnic *fnic, u32 fc_id)
 						fc_id, gw_mac,
 						fnic->data_src_addr,
 						lp->r_a_tov, lp->e_d_tov);
-<<<<<<< HEAD
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-=======
 		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      "FLOGI FIP reg issued fcid %x src %pM dest %pM\n",
 			      fc_id, fnic->data_src_addr, gw_mac);
 	} else {
 		fnic_queue_wq_copy_desc_flogi_reg(wq, SCSI_NO_TAG,
 						  format, fc_id, gw_mac);
-<<<<<<< HEAD
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-			      "FLOGI reg issued fcid %x map %d dest %pM\n",
-			      fc_id, fnic->ctlr.map_dest, gw_mac);
-	}
-
-=======
 		FNIC_SCSI_DBG(KERN_INFO, fnic->lport->host, fnic->fnic_num,
 			"FLOGI reg issued fcid 0x%x map %d dest 0x%p\n",
 			fc_id, fnic->ctlr.map_dest, gw_mac);
@@ -401,7 +276,6 @@ int fnic_flogi_reg_handler(struct fnic *fnic, u32 fc_id)
 		atomic64_set(&fnic->fnic_stats.fw_stats.max_fw_reqs,
 		  atomic64_read(&fnic->fnic_stats.fw_stats.active_fw_reqs));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 flogi_reg_ioreq_end:
 	spin_unlock_irqrestore(&fnic->wq_copy_lock[0], flags);
 	return ret;
@@ -415,33 +289,19 @@ static inline int fnic_queue_wq_copy_desc(struct fnic *fnic,
 					  struct vnic_wq_copy *wq,
 					  struct fnic_io_req *io_req,
 					  struct scsi_cmnd *sc,
-<<<<<<< HEAD
-					  int sg_count)
-=======
 					  int sg_count,
 					  uint32_t mqtag,
 					  uint16_t hwq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scatterlist *sg;
 	struct fc_rport *rport = starget_to_rport(scsi_target(sc->device));
 	struct fc_rport_libfc_priv *rp = rport->dd_data;
 	struct host_sg_desc *desc;
-<<<<<<< HEAD
-	u8 pri_tag = 0;
-	unsigned int i;
-	unsigned long intr_flags;
-	int flags;
-	u8 exch_flags;
-	struct scsi_lun fc_lun;
-	char msg[2];
-=======
 	struct misc_stats *misc_stats = &fnic->fnic_stats.misc_stats;
 	unsigned int i;
 	int flags;
 	u8 exch_flags;
 	struct scsi_lun fc_lun;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sg_count) {
 		/* For each SGE, create a device desc entry */
@@ -453,36 +313,6 @@ static inline int fnic_queue_wq_copy_desc(struct fnic *fnic,
 			desc++;
 		}
 
-<<<<<<< HEAD
-		io_req->sgl_list_pa = pci_map_single
-			(fnic->pdev,
-			 io_req->sgl_list,
-			 sizeof(io_req->sgl_list[0]) * sg_count,
-			 PCI_DMA_TODEVICE);
-	}
-
-	io_req->sense_buf_pa = pci_map_single(fnic->pdev,
-					      sc->sense_buffer,
-					      SCSI_SENSE_BUFFERSIZE,
-					      PCI_DMA_FROMDEVICE);
-
-	int_to_scsilun(sc->device->lun, &fc_lun);
-
-	pri_tag = FCPIO_ICMND_PTA_SIMPLE;
-	msg[0] = MSG_SIMPLE_TAG;
-	scsi_populate_tag_msg(sc, msg);
-	if (msg[0] == MSG_ORDERED_TAG)
-		pri_tag = FCPIO_ICMND_PTA_ORDERED;
-
-	/* Enqueue the descriptor in the Copy WQ */
-	spin_lock_irqsave(&fnic->wq_copy_lock[0], intr_flags);
-
-	if (vnic_wq_copy_desc_avail(wq) <= fnic->wq_copy_desc_low[0])
-		free_wq_copy_descs(fnic, wq);
-
-	if (unlikely(!vnic_wq_copy_desc_avail(wq))) {
-		spin_unlock_irqrestore(&fnic->wq_copy_lock[0], intr_flags);
-=======
 		io_req->sgl_list_pa = dma_map_single(&fnic->pdev->dev,
 				io_req->sgl_list,
 				sizeof(io_req->sgl_list[0]) * sg_count,
@@ -515,7 +345,6 @@ static inline int fnic_queue_wq_copy_desc(struct fnic *fnic,
 		FNIC_SCSI_DBG(KERN_INFO, fnic->lport->host, fnic->fnic_num,
 			  "fnic_queue_wq_copy_desc failure - no descriptors\n");
 		atomic64_inc(&misc_stats->io_cpwq_alloc_failures);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCSI_MLQUEUE_HOST_BUSY;
 	}
 
@@ -530,22 +359,14 @@ static inline int fnic_queue_wq_copy_desc(struct fnic *fnic,
 	    (rp->flags & FC_RP_FLAGS_RETRY))
 		exch_flags |= FCPIO_ICMND_SRFLAG_RETRY;
 
-<<<<<<< HEAD
-	fnic_queue_wq_copy_desc_icmnd_16(wq, sc->request->tag,
-=======
 	fnic_queue_wq_copy_desc_icmnd_16(wq, mqtag,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 0, exch_flags, io_req->sgl_cnt,
 					 SCSI_SENSE_BUFFERSIZE,
 					 io_req->sgl_list_pa,
 					 io_req->sense_buf_pa,
 					 0, /* scsi cmd ref, always 0 */
-<<<<<<< HEAD
-					 pri_tag, /* scsi pri and tag */
-=======
 					 FCPIO_ICMND_PTA_SIMPLE,
 					 	/* scsi pri and tag */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 flags,	/* command flags */
 					 sc->cmnd, sc->cmd_len,
 					 scsi_bufflen(sc),
@@ -553,32 +374,6 @@ static inline int fnic_queue_wq_copy_desc(struct fnic *fnic,
 					 rport->maxframe_size, rp->r_a_tov,
 					 rp->e_d_tov);
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&fnic->wq_copy_lock[0], intr_flags);
-	return 0;
-}
-
-/*
- * fnic_queuecommand
- * Routine to send a scsi cdb
- * Called with host_lock held and interrupts disabled.
- */
-static int fnic_queuecommand_lck(struct scsi_cmnd *sc, void (*done)(struct scsi_cmnd *))
-{
-	struct fc_lport *lp;
-	struct fc_rport *rport;
-	struct fnic_io_req *io_req;
-	struct fnic *fnic;
-	struct vnic_wq_copy *wq;
-	int ret;
-	int sg_count;
-	unsigned long flags;
-	unsigned long ptr;
-
-	rport = starget_to_rport(scsi_target(sc->device));
-	ret = fc_remote_port_chkready(rport);
-	if (ret) {
-=======
 	atomic64_inc(&fnic->fnic_stats.fw_stats.active_fw_reqs);
 	if (atomic64_read(&fnic->fnic_stats.fw_stats.active_fw_reqs) >
 		  atomic64_read(&fnic->fnic_stats.fw_stats.max_fw_reqs))
@@ -643,30 +438,11 @@ int fnic_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *sc)
 		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
 				"rport is not ready\n");
 		atomic64_inc(&fnic_stats->misc_stats.rport_not_ready);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sc->result = ret;
 		done(sc);
 		return 0;
 	}
 
-<<<<<<< HEAD
-	lp = shost_priv(sc->device->host);
-	if (lp->state != LPORT_ST_READY || !(lp->link_up))
-		return SCSI_MLQUEUE_HOST_BUSY;
-
-	/*
-	 * Release host lock, use driver resource specific locks from here.
-	 * Don't re-enable interrupts in case they were disabled prior to the
-	 * caller disabling them.
-	 */
-	spin_unlock(lp->host->host_lock);
-
-	/* Get a new io_req for this SCSI IO */
-	fnic = lport_priv(lp);
-
-	io_req = mempool_alloc(fnic->io_req_pool, GFP_ATOMIC);
-	if (!io_req) {
-=======
 	rp = rport->dd_data;
 	if (!rp || rp->rp_state == RPORT_ST_DELETE) {
 		spin_unlock_irqrestore(&fnic->fnic_lock, flags);
@@ -709,7 +485,6 @@ int fnic_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *sc)
 	io_req = mempool_alloc(fnic->io_req_pool, GFP_ATOMIC);
 	if (!io_req) {
 		atomic64_inc(&fnic_stats->io_stats.alloc_failures);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = SCSI_MLQUEUE_HOST_BUSY;
 		goto out;
 	}
@@ -718,11 +493,8 @@ int fnic_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *sc)
 	/* Map the data buffer */
 	sg_count = scsi_dma_map(sc);
 	if (sg_count < 0) {
-<<<<<<< HEAD
-=======
 		FNIC_TRACE(fnic_queuecommand, sc->device->host->host_no,
 			  mqtag, sc, 0, sc->cmnd[0], sg_count, fnic_priv(sc)->state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mempool_free(io_req, fnic->io_req_pool);
 		goto out;
 	}
@@ -738,10 +510,7 @@ int fnic_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *sc)
 			mempool_alloc(fnic->io_sgl_pool[io_req->sgl_type],
 				      GFP_ATOMIC);
 		if (!io_req->sgl_list) {
-<<<<<<< HEAD
-=======
 			atomic64_inc(&fnic_stats->io_stats.alloc_failures);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = SCSI_MLQUEUE_HOST_BUSY;
 			scsi_dma_unmap(sc);
 			mempool_free(io_req, fnic->io_req_pool);
@@ -759,17 +528,6 @@ int fnic_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *sc)
 		}
 	}
 
-<<<<<<< HEAD
-	/* initialize rest of io_req */
-	io_req->port_id = rport->port_id;
-	CMD_STATE(sc) = FNIC_IOREQ_CMD_PENDING;
-	CMD_SP(sc) = (char *)io_req;
-	sc->scsi_done = done;
-
-	/* create copy wq desc and enqueue it */
-	wq = &fnic->wq_copy[0];
-	ret = fnic_queue_wq_copy_desc(fnic, wq, io_req, sc, sg_count);
-=======
 	/*
 	* Will acquire lock before setting to IO initialized.
 	*/
@@ -799,21 +557,11 @@ int fnic_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *sc)
 	wq = &fnic->hw_copy_wq[hwq];
 	atomic64_inc(&fnic_stats->io_stats.ios[hwq]);
 	ret = fnic_queue_wq_copy_desc(fnic, wq, io_req, sc, sg_count, mqtag, hwq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		/*
 		 * In case another thread cancelled the request,
 		 * refetch the pointer under the lock.
 		 */
-<<<<<<< HEAD
-		spinlock_t *io_lock = fnic_io_lock_hash(fnic, sc);
-
-		spin_lock_irqsave(io_lock, flags);
-		io_req = (struct fnic_io_req *)CMD_SP(sc);
-		CMD_SP(sc) = NULL;
-		CMD_STATE(sc) = FNIC_IOREQ_CMD_COMPLETE;
-		spin_unlock_irqrestore(io_lock, flags);
-=======
 		FNIC_TRACE(fnic_queuecommand, sc->device->host->host_no,
 			  mqtag, sc, 0, 0, 0, fnic_flags_and_state(sc));
 		io_req = fnic_priv(sc)->io_req;
@@ -822,21 +570,10 @@ int fnic_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *sc)
 			fnic->sw_copy_wq[hwq].io_req_table[blk_mq_unique_tag_to_tag(mqtag)] = NULL;
 		fnic_priv(sc)->state = FNIC_IOREQ_CMD_COMPLETE;
 		spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (io_req) {
 			fnic_release_ioreq_buf(fnic, io_req, sc);
 			mempool_free(io_req, fnic->io_req_pool);
 		}
-<<<<<<< HEAD
-	}
-out:
-	/* acquire host lock before returning to SCSI */
-	spin_lock(lp->host->host_lock);
-	return ret;
-}
-
-DEF_SCSI_QCMD(fnic_queuecommand)
-=======
 		atomic_dec(&fnic->in_flight);
 		return ret;
 	} else {
@@ -868,7 +605,6 @@ out:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * fnic_fcpio_fw_reset_cmpl_handler
@@ -882,13 +618,6 @@ static int fnic_fcpio_fw_reset_cmpl_handler(struct fnic *fnic,
 	struct fcpio_tag tag;
 	int ret = 0;
 	unsigned long flags;
-<<<<<<< HEAD
-
-	fcpio_header_dec(&desc->hdr, &type, &hdr_status, &tag);
-
-	/* Clean up all outstanding io requests */
-	fnic_cleanup_io(fnic, SCSI_NO_TAG);
-=======
 	struct reset_stats *reset_stats = &fnic->fnic_stats.reset_stats;
 
 	fcpio_header_dec(&desc->hdr, &type, &hdr_status, &tag);
@@ -901,7 +630,6 @@ static int fnic_fcpio_fw_reset_cmpl_handler(struct fnic *fnic,
 	atomic64_set(&fnic->fnic_stats.fw_stats.active_fw_reqs, 0);
 	atomic64_set(&fnic->fnic_stats.io_stats.active_ios, 0);
 	atomic64_set(&fnic->io_cmpl_skip, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&fnic->fnic_lock, flags);
 
@@ -909,17 +637,6 @@ static int fnic_fcpio_fw_reset_cmpl_handler(struct fnic *fnic,
 	if (fnic->state == FNIC_IN_FC_TRANS_ETH_MODE) {
 		/* Check status of reset completion */
 		if (!hdr_status) {
-<<<<<<< HEAD
-			FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-				      "reset cmpl success\n");
-			/* Ready to send flogi out */
-			fnic->state = FNIC_IN_ETH_MODE;
-		} else {
-			FNIC_SCSI_DBG(KERN_DEBUG,
-				      fnic->lport->host,
-				      "fnic fw_reset : failed %s\n",
-				      fnic_fcpio_status_to_str(hdr_status));
-=======
 			FNIC_SCSI_DBG(KERN_INFO, fnic->lport->host, fnic->fnic_num,
 					"reset cmpl success\n");
 			/* Ready to send flogi out */
@@ -928,7 +645,6 @@ static int fnic_fcpio_fw_reset_cmpl_handler(struct fnic *fnic,
 			FNIC_SCSI_DBG(KERN_ERR, fnic->lport->host, fnic->fnic_num,
 				"reset failed with header status: %s\n",
 				fnic_fcpio_status_to_str(hdr_status));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * Unable to change to eth mode, cannot send out flogi
@@ -937,15 +653,6 @@ static int fnic_fcpio_fw_reset_cmpl_handler(struct fnic *fnic,
 			 * reset the firmware. Free the cached flogi
 			 */
 			fnic->state = FNIC_IN_FC_MODE;
-<<<<<<< HEAD
-			ret = -1;
-		}
-	} else {
-		FNIC_SCSI_DBG(KERN_DEBUG,
-			      fnic->lport->host,
-			      "Unexpected state %s while processing"
-			      " reset cmpl\n", fnic_state_to_str(fnic->state));
-=======
 			atomic64_inc(&reset_stats->fw_reset_failures);
 			ret = -1;
 		}
@@ -954,7 +661,6 @@ static int fnic_fcpio_fw_reset_cmpl_handler(struct fnic *fnic,
 			"Unexpected state while processing reset completion: %s\n",
 			fnic_state_to_str(fnic->state));
 		atomic64_inc(&reset_stats->fw_reset_failures);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -1;
 	}
 
@@ -974,17 +680,11 @@ static int fnic_fcpio_fw_reset_cmpl_handler(struct fnic *fnic,
 
 	spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 
-<<<<<<< HEAD
-	fnic_flush_tx(fnic);
-
- reset_cmpl_handler_end:
-=======
 	queue_work(fnic_event_queue, &fnic->flush_work);
 
  reset_cmpl_handler_end:
 	fnic_clear_state_flags(fnic, FNIC_FLAGS_FWRESET);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1010,31 +710,19 @@ static int fnic_fcpio_flogi_reg_cmpl_handler(struct fnic *fnic,
 
 		/* Check flogi registration completion status */
 		if (!hdr_status) {
-<<<<<<< HEAD
-			FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-=======
 			FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      "flog reg succeeded\n");
 			fnic->state = FNIC_IN_FC_MODE;
 		} else {
 			FNIC_SCSI_DBG(KERN_DEBUG,
-<<<<<<< HEAD
-				      fnic->lport->host,
-=======
 				      fnic->lport->host, fnic->fnic_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      "fnic flogi reg :failed %s\n",
 				      fnic_fcpio_status_to_str(hdr_status));
 			fnic->state = FNIC_IN_ETH_MODE;
 			ret = -1;
 		}
 	} else {
-<<<<<<< HEAD
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-=======
 		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      "Unexpected fnic state %s while"
 			      " processing flogi reg completion\n",
 			      fnic_state_to_str(fnic->state));
@@ -1048,11 +736,7 @@ static int fnic_fcpio_flogi_reg_cmpl_handler(struct fnic *fnic,
 		}
 		spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 
-<<<<<<< HEAD
-		fnic_flush_tx(fnic);
-=======
 		queue_work(fnic_event_queue, &fnic->flush_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		queue_work(fnic_event_queue, &fnic->frame_work);
 	} else {
 		spin_unlock_irqrestore(&fnic->fnic_lock, flags);
@@ -1094,18 +778,6 @@ static inline void fnic_fcpio_ack_handler(struct fnic *fnic,
 	struct vnic_wq_copy *wq;
 	u16 request_out = desc->u.ack.request_out;
 	unsigned long flags;
-<<<<<<< HEAD
-
-	/* mark the ack state */
-	wq = &fnic->wq_copy[cq_index - fnic->raw_wq_count - fnic->rq_count];
-	spin_lock_irqsave(&fnic->wq_copy_lock[0], flags);
-
-	if (is_ack_index_in_range(wq, request_out)) {
-		fnic->fw_ack_index[0] = request_out;
-		fnic->fw_ack_recd[0] = 1;
-	}
-	spin_unlock_irqrestore(&fnic->wq_copy_lock[0], flags);
-=======
 	u64 *ox_id_tag = (u64 *)(void *)desc;
 	unsigned int wq_index = cq_index;
 
@@ -1125,58 +797,23 @@ static inline void fnic_fcpio_ack_handler(struct fnic *fnic,
 	FNIC_TRACE(fnic_fcpio_ack_handler,
 		  fnic->lport->host->host_no, 0, 0, ox_id_tag[2], ox_id_tag[3],
 		  ox_id_tag[4], ox_id_tag[5]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * fnic_fcpio_icmnd_cmpl_handler
  * Routine to handle icmnd completions
  */
-<<<<<<< HEAD
-static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic,
-=======
 static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic, unsigned int cq_index,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 struct fcpio_fw_req *desc)
 {
 	u8 type;
 	u8 hdr_status;
-<<<<<<< HEAD
-	struct fcpio_tag tag;
-=======
 	struct fcpio_tag ftag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 id;
 	u64 xfer_len = 0;
 	struct fcpio_icmnd_cmpl *icmnd_cmpl;
 	struct fnic_io_req *io_req;
 	struct scsi_cmnd *sc;
-<<<<<<< HEAD
-	unsigned long flags;
-	spinlock_t *io_lock;
-
-	/* Decode the cmpl description to get the io_req id */
-	fcpio_header_dec(&desc->hdr, &type, &hdr_status, &tag);
-	fcpio_tag_id_dec(&tag, &id);
-
-	if (id >= FNIC_MAX_IO_REQ)
-		return;
-
-	sc = scsi_host_find_tag(fnic->lport->host, id);
-	WARN_ON_ONCE(!sc);
-	if (!sc)
-		return;
-
-	io_lock = fnic_io_lock_hash(fnic, sc);
-	spin_lock_irqsave(io_lock, flags);
-	io_req = (struct fnic_io_req *)CMD_SP(sc);
-	WARN_ON_ONCE(!io_req);
-	if (!io_req) {
-		spin_unlock_irqrestore(io_lock, flags);
-		return;
-	}
-
-=======
 	struct fnic_stats *fnic_stats = &fnic->fnic_stats;
 	unsigned long flags;
 	u64 cmd_trace;
@@ -1256,18 +893,11 @@ static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic, unsigned int cq_ind
 	}
 	start_time = io_req->start_time;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* firmware completed the io */
 	io_req->io_completed = 1;
 
 	/*
 	 *  if SCSI-ML has already issued abort on this command,
-<<<<<<< HEAD
-	 * ignore completion of the IO. The abts path will clean it up
-	 */
-	if (CMD_STATE(sc) == FNIC_IOREQ_ABTS_PENDING) {
-		spin_unlock_irqrestore(io_lock, flags);
-=======
 	 *  set completion of the IO. The abts path will clean it up
 	 */
 	if (fnic_priv(sc)->state == FNIC_IOREQ_ABTS_PENDING) {
@@ -1290,16 +920,11 @@ static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic, unsigned int cq_ind
 			  id, sc,
 			  icmnd_cmpl->scsi_status,
 			  icmnd_cmpl->residual);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	/* Mark the IO as complete */
-<<<<<<< HEAD
-	CMD_STATE(sc) = FNIC_IOREQ_CMD_COMPLETE;
-=======
 	fnic_priv(sc)->state = FNIC_IOREQ_CMD_COMPLETE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	icmnd_cmpl = &desc->u.icmnd_cmpl;
 
@@ -1307,48 +932,6 @@ static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic, unsigned int cq_ind
 	case FCPIO_SUCCESS:
 		sc->result = (DID_OK << 16) | icmnd_cmpl->scsi_status;
 		xfer_len = scsi_bufflen(sc);
-<<<<<<< HEAD
-		scsi_set_resid(sc, icmnd_cmpl->residual);
-
-		if (icmnd_cmpl->flags & FCPIO_ICMND_CMPL_RESID_UNDER)
-			xfer_len -= icmnd_cmpl->residual;
-
-		/*
-		 * If queue_full, then try to reduce queue depth for all
-		 * LUNS on the target. Todo: this should be accompanied
-		 * by a periodic queue_depth rampup based on successful
-		 * IO completion.
-		 */
-		if (icmnd_cmpl->scsi_status == QUEUE_FULL) {
-			struct scsi_device *t_sdev;
-			int qd = 0;
-
-			shost_for_each_device(t_sdev, sc->device->host) {
-				if (t_sdev->id != sc->device->id)
-					continue;
-
-				if (t_sdev->queue_depth > 1) {
-					qd = scsi_track_queue_full
-						(t_sdev,
-						 t_sdev->queue_depth - 1);
-					if (qd == -1)
-						qd = t_sdev->host->cmd_per_lun;
-					shost_printk(KERN_INFO,
-						     fnic->lport->host,
-						     "scsi[%d:%d:%d:%d"
-						     "] queue full detected,"
-						     "new depth = %d\n",
-						     t_sdev->host->host_no,
-						     t_sdev->channel,
-						     t_sdev->id, t_sdev->lun,
-						     t_sdev->queue_depth);
-				}
-			}
-		}
-		break;
-
-	case FCPIO_TIMEOUT:          /* request was timed out */
-=======
 
 		if (icmnd_cmpl->flags & FCPIO_ICMND_CMPL_RESID_UNDER) {
 			xfer_len -= icmnd_cmpl->residual;
@@ -1364,42 +947,21 @@ static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic, unsigned int cq_ind
 
 	case FCPIO_TIMEOUT:          /* request was timed out */
 		atomic64_inc(&fnic_stats->misc_stats.fcpio_timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sc->result = (DID_TIME_OUT << 16) | icmnd_cmpl->scsi_status;
 		break;
 
 	case FCPIO_ABORTED:          /* request was aborted */
-<<<<<<< HEAD
-=======
 		atomic64_inc(&fnic_stats->misc_stats.fcpio_aborted);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sc->result = (DID_ERROR << 16) | icmnd_cmpl->scsi_status;
 		break;
 
 	case FCPIO_DATA_CNT_MISMATCH: /* recv/sent more/less data than exp. */
-<<<<<<< HEAD
-=======
 		atomic64_inc(&fnic_stats->misc_stats.data_count_mismatch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scsi_set_resid(sc, icmnd_cmpl->residual);
 		sc->result = (DID_ERROR << 16) | icmnd_cmpl->scsi_status;
 		break;
 
 	case FCPIO_OUT_OF_RESOURCE:  /* out of resources to complete request */
-<<<<<<< HEAD
-		sc->result = (DID_REQUEUE << 16) | icmnd_cmpl->scsi_status;
-		break;
-	case FCPIO_INVALID_HEADER:   /* header contains invalid data */
-	case FCPIO_INVALID_PARAM:    /* some parameter in request invalid */
-	case FCPIO_REQ_NOT_SUPPORTED:/* request type is not supported */
-	case FCPIO_IO_NOT_FOUND:     /* requested I/O was not found */
-	case FCPIO_SGL_INVALID:      /* request was aborted due to sgl error */
-	case FCPIO_MSS_INVALID:      /* request was aborted due to mss error */
-	case FCPIO_FW_ERR:           /* request was terminated due fw error */
-	default:
-		shost_printk(KERN_ERR, fnic->lport->host, "hdr status = %s\n",
-			     fnic_fcpio_status_to_str(hdr_status));
-=======
 		atomic64_inc(&fnic_stats->fw_stats.fw_out_of_resources);
 		sc->result = (DID_REQUEUE << 16) | icmnd_cmpl->scsi_status;
 		break;
@@ -1428,21 +990,11 @@ static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic, unsigned int cq_ind
 	case FCPIO_INVALID_PARAM:    /* some parameter in request invalid */
 	case FCPIO_REQ_NOT_SUPPORTED:/* request type is not supported */
 	default:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sc->result = (DID_ERROR << 16) | icmnd_cmpl->scsi_status;
 		break;
 	}
 
 	/* Break link with the SCSI command */
-<<<<<<< HEAD
-	CMD_SP(sc) = NULL;
-
-	spin_unlock_irqrestore(io_lock, flags);
-
-	fnic_release_ioreq_buf(fnic, io_req, sc);
-
-	mempool_free(io_req, fnic->io_req_pool);
-=======
 	fnic_priv(sc)->io_req = NULL;
 	io_req->sc = NULL;
 	fnic_priv(sc)->flags |= FNIC_IO_DONE;
@@ -1470,7 +1022,6 @@ static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic, unsigned int cq_ind
 		  (u64)icmnd_cmpl->_resvd0[0] << 48 |
 		  jiffies_to_msecs(jiffies - start_time)),
 		  desc, cmd_trace, fnic_flags_and_state(sc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sc->sc_data_direction == DMA_FROM_DEVICE) {
 		fnic->lport->host_stats.fcp_input_requests++;
@@ -1482,11 +1033,6 @@ static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic, unsigned int cq_ind
 		fnic->lport->host_stats.fcp_control_requests++;
 
 	/* Call SCSI completion function to complete the IO */
-<<<<<<< HEAD
-	if (sc->scsi_done)
-		sc->scsi_done(sc);
-
-=======
 	scsi_done(sc);
 
 	mempool_free(io_req, fnic->io_req_pool);
@@ -1519,61 +1065,16 @@ static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic, unsigned int cq_ind
 		if(io_duration_time > atomic64_read(&fnic_stats->io_stats.current_max_io_time))
 			atomic64_set(&fnic_stats->io_stats.current_max_io_time, io_duration_time);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* fnic_fcpio_itmf_cmpl_handler
  * Routine to handle itmf completions
  */
-<<<<<<< HEAD
-static void fnic_fcpio_itmf_cmpl_handler(struct fnic *fnic,
-=======
 static void fnic_fcpio_itmf_cmpl_handler(struct fnic *fnic, unsigned int cq_index,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct fcpio_fw_req *desc)
 {
 	u8 type;
 	u8 hdr_status;
-<<<<<<< HEAD
-	struct fcpio_tag tag;
-	u32 id;
-	struct scsi_cmnd *sc;
-	struct fnic_io_req *io_req;
-	unsigned long flags;
-	spinlock_t *io_lock;
-
-	fcpio_header_dec(&desc->hdr, &type, &hdr_status, &tag);
-	fcpio_tag_id_dec(&tag, &id);
-
-	if ((id & FNIC_TAG_MASK) >= FNIC_MAX_IO_REQ)
-		return;
-
-	sc = scsi_host_find_tag(fnic->lport->host, id & FNIC_TAG_MASK);
-	WARN_ON_ONCE(!sc);
-	if (!sc)
-		return;
-
-	io_lock = fnic_io_lock_hash(fnic, sc);
-	spin_lock_irqsave(io_lock, flags);
-	io_req = (struct fnic_io_req *)CMD_SP(sc);
-	WARN_ON_ONCE(!io_req);
-	if (!io_req) {
-		spin_unlock_irqrestore(io_lock, flags);
-		return;
-	}
-
-	if (id & FNIC_TAG_ABORT) {
-		/* Completion of abort cmd */
-		if (CMD_STATE(sc) != FNIC_IOREQ_ABTS_PENDING) {
-			/* This is a late completion. Ignore it */
-			spin_unlock_irqrestore(io_lock, flags);
-			return;
-		}
-		CMD_STATE(sc) = FNIC_IOREQ_ABTS_COMPLETE;
-		CMD_ABTS_STATUS(sc) = hdr_status;
-
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-=======
 	struct fcpio_tag ftag;
 	u32 id;
 	struct scsi_cmnd *sc = NULL;
@@ -1725,7 +1226,6 @@ static void fnic_fcpio_itmf_cmpl_handler(struct fnic *fnic, unsigned int cq_inde
 			atomic64_inc(&misc_stats->no_icmnd_itmf_cmpls);
 
 		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      "abts cmpl recd. id %d status %s\n",
 			      (int)(id & FNIC_TAG_MASK),
 			      fnic_fcpio_status_to_str(hdr_status));
@@ -1737,40 +1237,6 @@ static void fnic_fcpio_itmf_cmpl_handler(struct fnic *fnic, unsigned int cq_inde
 		 */
 		if (io_req->abts_done) {
 			complete(io_req->abts_done);
-<<<<<<< HEAD
-			spin_unlock_irqrestore(io_lock, flags);
-		} else {
-			FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-				      "abts cmpl, completing IO\n");
-			CMD_SP(sc) = NULL;
-			sc->result = (DID_ERROR << 16);
-
-			spin_unlock_irqrestore(io_lock, flags);
-
-			fnic_release_ioreq_buf(fnic, io_req, sc);
-			mempool_free(io_req, fnic->io_req_pool);
-			if (sc->scsi_done)
-				sc->scsi_done(sc);
-		}
-
-	} else if (id & FNIC_TAG_DEV_RST) {
-		/* Completion of device reset */
-		CMD_LR_STATUS(sc) = hdr_status;
-		CMD_STATE(sc) = FNIC_IOREQ_CMD_COMPLETE;
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-			      "dev reset cmpl recd. id %d status %s\n",
-			      (int)(id & FNIC_TAG_MASK),
-			      fnic_fcpio_status_to_str(hdr_status));
-		if (io_req->dr_done)
-			complete(io_req->dr_done);
-		spin_unlock_irqrestore(io_lock, flags);
-
-	} else {
-		shost_printk(KERN_ERR, fnic->lport->host,
-			     "Unexpected itmf io state %s tag %x\n",
-			     fnic_ioreq_state_to_str(CMD_STATE(sc)), id);
-		spin_unlock_irqrestore(io_lock, flags);
-=======
 			spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
 			shost_printk(KERN_INFO, fnic->lport->host,
 					"hwq: %d mqtag: 0x%x tag: 0x%x Waking up abort thread\n",
@@ -1854,7 +1320,6 @@ static void fnic_fcpio_itmf_cmpl_handler(struct fnic *fnic, unsigned int cq_inde
 			"%s: Unexpected itmf io state: hwq: %d tag 0x%x %s\n",
 			__func__, hwq, id, fnic_ioreq_state_to_str(fnic_priv(sc)->state));
 		spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 }
@@ -1868,9 +1333,6 @@ static int fnic_fcpio_cmpl_handler(struct vnic_dev *vdev,
 				   struct fcpio_fw_req *desc)
 {
 	struct fnic *fnic = vnic_dev_priv(vdev);
-<<<<<<< HEAD
-	int ret = 0;
-=======
 
 	switch (desc->hdr.type) {
 	case FCPIO_ICMND_CMPL: /* fw completed a command */
@@ -1885,7 +1347,6 @@ static int fnic_fcpio_cmpl_handler(struct vnic_dev *vdev,
 	}
 
 	cq_index -= fnic->copy_wq_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (desc->hdr.type) {
 	case FCPIO_ACK: /* fw copied copy wq desc to its queue */
@@ -1893,34 +1354,15 @@ static int fnic_fcpio_cmpl_handler(struct vnic_dev *vdev,
 		break;
 
 	case FCPIO_ICMND_CMPL: /* fw completed a command */
-<<<<<<< HEAD
-		fnic_fcpio_icmnd_cmpl_handler(fnic, desc);
-		break;
-
-	case FCPIO_ITMF_CMPL: /* fw completed itmf (abort cmd, lun reset)*/
-		fnic_fcpio_itmf_cmpl_handler(fnic, desc);
-=======
 		fnic_fcpio_icmnd_cmpl_handler(fnic, cq_index, desc);
 		break;
 
 	case FCPIO_ITMF_CMPL: /* fw completed itmf (abort cmd, lun reset)*/
 		fnic_fcpio_itmf_cmpl_handler(fnic, cq_index, desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case FCPIO_FLOGI_REG_CMPL: /* fw completed flogi_reg */
 	case FCPIO_FLOGI_FIP_REG_CMPL: /* fw completed flogi_fip_reg */
-<<<<<<< HEAD
-		ret = fnic_fcpio_flogi_reg_cmpl_handler(fnic, desc);
-		break;
-
-	case FCPIO_RESET_CMPL: /* fw completed reset */
-		ret = fnic_fcpio_fw_reset_cmpl_handler(fnic, desc);
-		break;
-
-	default:
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-=======
 		fnic_fcpio_flogi_reg_cmpl_handler(fnic, desc);
 		break;
 
@@ -1930,85 +1372,18 @@ static int fnic_fcpio_cmpl_handler(struct vnic_dev *vdev,
 
 	default:
 		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      "firmware completion type %d\n",
 			      desc->hdr.type);
 		break;
 	}
 
-<<<<<<< HEAD
-	return ret;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * fnic_wq_copy_cmpl_handler
  * Routine to process wq copy
  */
-<<<<<<< HEAD
-int fnic_wq_copy_cmpl_handler(struct fnic *fnic, int copy_work_to_do)
-{
-	unsigned int wq_work_done = 0;
-	unsigned int i, cq_index;
-	unsigned int cur_work_done;
-
-	for (i = 0; i < fnic->wq_copy_count; i++) {
-		cq_index = i + fnic->raw_wq_count + fnic->rq_count;
-		cur_work_done = vnic_cq_copy_service(&fnic->cq[cq_index],
-						     fnic_fcpio_cmpl_handler,
-						     copy_work_to_do);
-		wq_work_done += cur_work_done;
-	}
-	return wq_work_done;
-}
-
-static void fnic_cleanup_io(struct fnic *fnic, int exclude_id)
-{
-	unsigned int i;
-	struct fnic_io_req *io_req;
-	unsigned long flags = 0;
-	struct scsi_cmnd *sc;
-	spinlock_t *io_lock;
-
-	for (i = 0; i < FNIC_MAX_IO_REQ; i++) {
-		if (i == exclude_id)
-			continue;
-
-		sc = scsi_host_find_tag(fnic->lport->host, i);
-		if (!sc)
-			continue;
-
-		io_lock = fnic_io_lock_hash(fnic, sc);
-		spin_lock_irqsave(io_lock, flags);
-		io_req = (struct fnic_io_req *)CMD_SP(sc);
-		if (!io_req) {
-			spin_unlock_irqrestore(io_lock, flags);
-			goto cleanup_scsi_cmd;
-		}
-
-		CMD_SP(sc) = NULL;
-
-		spin_unlock_irqrestore(io_lock, flags);
-
-		/*
-		 * If there is a scsi_cmnd associated with this io_req, then
-		 * free the corresponding state
-		 */
-		fnic_release_ioreq_buf(fnic, io_req, sc);
-		mempool_free(io_req, fnic->io_req_pool);
-
-cleanup_scsi_cmd:
-		sc->result = DID_TRANSPORT_DISRUPTED << 16;
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, "fnic_cleanup_io:"
-			      " DID_TRANSPORT_DISRUPTED\n");
-
-		/* Complete the command to SCSI */
-		if (sc->scsi_done)
-			sc->scsi_done(sc);
-	}
-=======
 int fnic_wq_copy_cmpl_handler(struct fnic *fnic, int copy_work_to_do, unsigned int cq_index)
 {
 	unsigned int cur_work_done;
@@ -2121,7 +1496,6 @@ static void fnic_cleanup_io(struct fnic *fnic)
 {
 	scsi_host_busy_iter(fnic->lport->host,
 			    fnic_cleanup_io_iter, fnic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void fnic_wq_copy_cleanup_handler(struct vnic_wq_copy *wq,
@@ -2132,55 +1506,29 @@ void fnic_wq_copy_cleanup_handler(struct vnic_wq_copy *wq,
 	struct fnic_io_req *io_req;
 	struct scsi_cmnd *sc;
 	unsigned long flags;
-<<<<<<< HEAD
-	spinlock_t *io_lock;
-=======
 	unsigned long start_time = 0;
 	uint16_t hwq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get the tag reference */
 	fcpio_tag_id_dec(&desc->hdr.tag, &id);
 	id &= FNIC_TAG_MASK;
 
-<<<<<<< HEAD
-	if (id >= FNIC_MAX_IO_REQ)
-=======
 	if (id >= fnic->fnic_max_tag_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	sc = scsi_host_find_tag(fnic->lport->host, id);
 	if (!sc)
 		return;
 
-<<<<<<< HEAD
-	io_lock = fnic_io_lock_hash(fnic, sc);
-	spin_lock_irqsave(io_lock, flags);
-
-	/* Get the IO context which this desc refers to */
-	io_req = (struct fnic_io_req *)CMD_SP(sc);
-=======
 	hwq = blk_mq_unique_tag_to_hwq(id);
 	spin_lock_irqsave(&fnic->wq_copy_lock[hwq], flags);
 
 	/* Get the IO context which this desc refers to */
 	io_req = fnic_priv(sc)->io_req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* fnic interrupts are turned off by now */
 
 	if (!io_req) {
-<<<<<<< HEAD
-		spin_unlock_irqrestore(io_lock, flags);
-		goto wq_copy_cleanup_scsi_cmd;
-	}
-
-	CMD_SP(sc) = NULL;
-
-	spin_unlock_irqrestore(io_lock, flags);
-
-=======
 		spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
 		goto wq_copy_cleanup_scsi_cmd;
 	}
@@ -2192,19 +1540,11 @@ void fnic_wq_copy_cleanup_handler(struct vnic_wq_copy *wq,
 	spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
 
 	start_time = io_req->start_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fnic_release_ioreq_buf(fnic, io_req, sc);
 	mempool_free(io_req, fnic->io_req_pool);
 
 wq_copy_cleanup_scsi_cmd:
 	sc->result = DID_NO_CONNECT << 16;
-<<<<<<< HEAD
-	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, "wq_copy_cleanup_handler:"
-		      " DID_NO_CONNECT\n");
-
-	if (sc->scsi_done)
-		sc->scsi_done(sc);
-=======
 	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num, "wq_copy_cleanup_handler:"
 		      " DID_NO_CONNECT\n");
 
@@ -2217,25 +1557,10 @@ wq_copy_cleanup_scsi_cmd:
 		   fnic_flags_and_state(sc));
 
 	scsi_done(sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int fnic_queue_abort_io_req(struct fnic *fnic, int tag,
 					  u32 task_req, u8 *fc_lun,
-<<<<<<< HEAD
-					  struct fnic_io_req *io_req)
-{
-	struct vnic_wq_copy *wq = &fnic->wq_copy[0];
-	unsigned long flags;
-
-	spin_lock_irqsave(&fnic->wq_copy_lock[0], flags);
-
-	if (vnic_wq_copy_desc_avail(wq) <= fnic->wq_copy_desc_low[0])
-		free_wq_copy_descs(fnic, wq);
-
-	if (!vnic_wq_copy_desc_avail(wq)) {
-		spin_unlock_irqrestore(&fnic->wq_copy_lock[0], flags);
-=======
 					  struct fnic_io_req *io_req,
 					  unsigned int hwq)
 {
@@ -2263,32 +1588,12 @@ static inline int fnic_queue_abort_io_req(struct fnic *fnic, int tag,
 		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
 			"fnic_queue_abort_io_req: failure: no descriptors\n");
 		atomic64_inc(&misc_stats->abts_cpwq_alloc_failures);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 	fnic_queue_wq_copy_desc_itmf(wq, tag | FNIC_TAG_ABORT,
 				     0, task_req, tag, fc_lun, io_req->port_id,
 				     fnic->config.ra_tov, fnic->config.ed_tov);
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&fnic->wq_copy_lock[0], flags);
-	return 0;
-}
-
-void fnic_rport_exch_reset(struct fnic *fnic, u32 port_id)
-{
-	int tag;
-	struct fnic_io_req *io_req;
-	spinlock_t *io_lock;
-	unsigned long flags;
-	struct scsi_cmnd *sc;
-	struct scsi_lun fc_lun;
-	enum fnic_ioreq_state old_ioreq_state;
-
-	FNIC_SCSI_DBG(KERN_DEBUG,
-		      fnic->lport->host,
-		      "fnic_rport_reset_exch called portid 0x%06x\n",
-=======
 	atomic64_inc(&fnic->fnic_stats.fw_stats.active_fw_reqs);
 	if (atomic64_read(&fnic->fnic_stats.fw_stats.active_fw_reqs) >
 		  atomic64_read(&fnic->fnic_stats.fw_stats.max_fw_reqs))
@@ -2424,96 +1729,20 @@ static void fnic_rport_exch_reset(struct fnic *fnic, u32 port_id)
 	FNIC_SCSI_DBG(KERN_DEBUG,
 		      fnic->lport->host, fnic->fnic_num,
 		      "fnic_rport_exch_reset called portid 0x%06x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      port_id);
 
 	if (fnic->in_remove)
 		return;
 
-<<<<<<< HEAD
-	for (tag = 0; tag < FNIC_MAX_IO_REQ; tag++) {
-		sc = scsi_host_find_tag(fnic->lport->host, tag);
-		if (!sc)
-			continue;
-
-		io_lock = fnic_io_lock_hash(fnic, sc);
-		spin_lock_irqsave(io_lock, flags);
-
-		io_req = (struct fnic_io_req *)CMD_SP(sc);
-
-		if (!io_req || io_req->port_id != port_id) {
-			spin_unlock_irqrestore(io_lock, flags);
-			continue;
-		}
-
-		/*
-		 * Found IO that is still pending with firmware and
-		 * belongs to rport that went away
-		 */
-		if (CMD_STATE(sc) == FNIC_IOREQ_ABTS_PENDING) {
-			spin_unlock_irqrestore(io_lock, flags);
-			continue;
-		}
-		old_ioreq_state = CMD_STATE(sc);
-		CMD_STATE(sc) = FNIC_IOREQ_ABTS_PENDING;
-		CMD_ABTS_STATUS(sc) = FCPIO_INVALID_CODE;
-
-		BUG_ON(io_req->abts_done);
-
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-			      "fnic_rport_reset_exch: Issuing abts\n");
-
-		spin_unlock_irqrestore(io_lock, flags);
-
-		/* Now queue the abort command to firmware */
-		int_to_scsilun(sc->device->lun, &fc_lun);
-
-		if (fnic_queue_abort_io_req(fnic, tag,
-					    FCPIO_ITMF_ABT_TASK_TERM,
-					    fc_lun.scsi_lun, io_req)) {
-			/*
-			 * Revert the cmd state back to old state, if
-			 * it hasn't changed in between. This cmd will get
-			 * aborted later by scsi_eh, or cleaned up during
-			 * lun reset
-			 */
-			io_lock = fnic_io_lock_hash(fnic, sc);
-
-			spin_lock_irqsave(io_lock, flags);
-			if (CMD_STATE(sc) == FNIC_IOREQ_ABTS_PENDING)
-				CMD_STATE(sc) = old_ioreq_state;
-			spin_unlock_irqrestore(io_lock, flags);
-		}
-	}
-=======
 	scsi_host_busy_iter(fnic->lport->host, fnic_rport_abort_io_iter,
 			    &iter_data);
 	if (iter_data.term_cnt > atomic64_read(&term_stats->max_terminates))
 		atomic64_set(&term_stats->max_terminates, iter_data.term_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 
 void fnic_terminate_rport_io(struct fc_rport *rport)
 {
-<<<<<<< HEAD
-	int tag;
-	struct fnic_io_req *io_req;
-	spinlock_t *io_lock;
-	unsigned long flags;
-	struct scsi_cmnd *sc;
-	struct scsi_lun fc_lun;
-	struct fc_rport_libfc_priv *rdata = rport->dd_data;
-	struct fc_lport *lport = rdata->local_port;
-	struct fnic *fnic = lport_priv(lport);
-	struct fc_rport *cmd_rport;
-	enum fnic_ioreq_state old_ioreq_state;
-
-	FNIC_SCSI_DBG(KERN_DEBUG,
-		      fnic->lport->host, "fnic_terminate_rport_io called"
-		      " wwpn 0x%llx, wwnn0x%llx, portid 0x%06x\n",
-		      rport->port_name, rport->node_name,
-=======
 	struct fc_rport_libfc_priv *rdata;
 	struct fc_lport *lport;
 	struct fnic *fnic;
@@ -2538,76 +1767,12 @@ void fnic_terminate_rport_io(struct fc_rport *rport)
 	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
 		      "wwpn 0x%llx, wwnn0x%llx, rport 0x%p, portid 0x%06x\n",
 		      rport->port_name, rport->node_name, rport,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      rport->port_id);
 
 	if (fnic->in_remove)
 		return;
 
-<<<<<<< HEAD
-	for (tag = 0; tag < FNIC_MAX_IO_REQ; tag++) {
-		sc = scsi_host_find_tag(fnic->lport->host, tag);
-		if (!sc)
-			continue;
-
-		cmd_rport = starget_to_rport(scsi_target(sc->device));
-		if (rport != cmd_rport)
-			continue;
-
-		io_lock = fnic_io_lock_hash(fnic, sc);
-		spin_lock_irqsave(io_lock, flags);
-
-		io_req = (struct fnic_io_req *)CMD_SP(sc);
-
-		if (!io_req || rport != cmd_rport) {
-			spin_unlock_irqrestore(io_lock, flags);
-			continue;
-		}
-
-		/*
-		 * Found IO that is still pending with firmware and
-		 * belongs to rport that went away
-		 */
-		if (CMD_STATE(sc) == FNIC_IOREQ_ABTS_PENDING) {
-			spin_unlock_irqrestore(io_lock, flags);
-			continue;
-		}
-		old_ioreq_state = CMD_STATE(sc);
-		CMD_STATE(sc) = FNIC_IOREQ_ABTS_PENDING;
-		CMD_ABTS_STATUS(sc) = FCPIO_INVALID_CODE;
-
-		BUG_ON(io_req->abts_done);
-
-		FNIC_SCSI_DBG(KERN_DEBUG,
-			      fnic->lport->host,
-			      "fnic_terminate_rport_io: Issuing abts\n");
-
-		spin_unlock_irqrestore(io_lock, flags);
-
-		/* Now queue the abort command to firmware */
-		int_to_scsilun(sc->device->lun, &fc_lun);
-
-		if (fnic_queue_abort_io_req(fnic, tag,
-					    FCPIO_ITMF_ABT_TASK_TERM,
-					    fc_lun.scsi_lun, io_req)) {
-			/*
-			 * Revert the cmd state back to old state, if
-			 * it hasn't changed in between. This cmd will get
-			 * aborted later by scsi_eh, or cleaned up during
-			 * lun reset
-			 */
-			io_lock = fnic_io_lock_hash(fnic, sc);
-
-			spin_lock_irqsave(io_lock, flags);
-			if (CMD_STATE(sc) == FNIC_IOREQ_ABTS_PENDING)
-				CMD_STATE(sc) = old_ioreq_state;
-			spin_unlock_irqrestore(io_lock, flags);
-		}
-	}
-
-=======
 	fnic_rport_exch_reset(fnic, rport->port_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2617,17 +1782,6 @@ void fnic_terminate_rport_io(struct fc_rport *rport)
  */
 int fnic_abort_cmd(struct scsi_cmnd *sc)
 {
-<<<<<<< HEAD
-	struct fc_lport *lp;
-	struct fnic *fnic;
-	struct fnic_io_req *io_req;
-	struct fc_rport *rport;
-	spinlock_t *io_lock;
-	unsigned long flags;
-	int ret = SUCCESS;
-	u32 task_req;
-	struct scsi_lun fc_lun;
-=======
 	struct request *const rq = scsi_cmd_to_rq(sc);
 	struct fc_lport *lp;
 	struct fnic *fnic;
@@ -2646,7 +1800,6 @@ int fnic_abort_cmd(struct scsi_cmnd *sc)
 	unsigned long abt_issued_time;
 	uint16_t hwq = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DECLARE_COMPLETION_ONSTACK(tm_done);
 
 	/* Wait for rport to unblock */
@@ -2656,18 +1809,6 @@ int fnic_abort_cmd(struct scsi_cmnd *sc)
 	lp = shost_priv(sc->device->host);
 
 	fnic = lport_priv(lp);
-<<<<<<< HEAD
-	rport = starget_to_rport(scsi_target(sc->device));
-	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-			"Abort Cmd called FCID 0x%x, LUN 0x%x TAG %d\n",
-			rport->port_id, sc->device->lun, sc->request->tag);
-
-	if (lp->state != LPORT_ST_READY || !(lp->link_up)) {
-		ret = FAILED;
-		goto fnic_abort_cmd_end;
-	}
-
-=======
 
 	spin_lock_irqsave(&fnic->fnic_lock, flags);
 	fnic_stats = &fnic->fnic_stats;
@@ -2687,7 +1828,6 @@ int fnic_abort_cmd(struct scsi_cmnd *sc)
 	}
 
 	spin_unlock_irqrestore(&fnic->fnic_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Avoid a race between SCSI issuing the abort and the device
 	 * completing the command.
@@ -2698,33 +1838,17 @@ int fnic_abort_cmd(struct scsi_cmnd *sc)
 	 * happened, the completion wont actually complete the command
 	 * and it will be considered as an aborted command
 	 *
-<<<<<<< HEAD
-	 * The CMD_SP will not be cleared except while holding io_req_lock.
-	 */
-	io_lock = fnic_io_lock_hash(fnic, sc);
-	spin_lock_irqsave(io_lock, flags);
-	io_req = (struct fnic_io_req *)CMD_SP(sc);
-	if (!io_req) {
-		spin_unlock_irqrestore(io_lock, flags);
-=======
 	 * .io_req will not be cleared except while holding io_req_lock.
 	 */
 	spin_lock_irqsave(&fnic->wq_copy_lock[hwq], flags);
 	io_req = fnic_priv(sc)->io_req;
 	if (!io_req) {
 		spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fnic_abort_cmd_end;
 	}
 
 	io_req->abts_done = &tm_done;
 
-<<<<<<< HEAD
-	if (CMD_STATE(sc) == FNIC_IOREQ_ABTS_PENDING) {
-		spin_unlock_irqrestore(io_lock, flags);
-		goto wait_pending;
-	}
-=======
 	if (fnic_priv(sc)->state == FNIC_IOREQ_ABTS_PENDING) {
 		spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
 		goto wait_pending;
@@ -2749,25 +1873,17 @@ int fnic_abort_cmd(struct scsi_cmnd *sc)
 	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
 		"CDB Opcode: 0x%02x Abort issued time: %lu msec\n",
 		sc->cmnd[0], abt_issued_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Command is still pending, need to abort it
 	 * If the firmware completes the command after this point,
 	 * the completion wont be done till mid-layer, since abort
 	 * has already started.
 	 */
-<<<<<<< HEAD
-	CMD_STATE(sc) = FNIC_IOREQ_ABTS_PENDING;
-	CMD_ABTS_STATUS(sc) = FCPIO_INVALID_CODE;
-
-	spin_unlock_irqrestore(io_lock, flags);
-=======
 	old_ioreq_state = fnic_priv(sc)->state;
 	fnic_priv(sc)->state = FNIC_IOREQ_ABTS_PENDING;
 	fnic_priv(sc)->abts_status = FCPIO_INVALID_CODE;
 
 	spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check readiness of the remote port. If the path to remote
@@ -2776,31 +1892,14 @@ int fnic_abort_cmd(struct scsi_cmnd *sc)
 	 */
 	if (fc_remote_port_chkready(rport) == 0)
 		task_req = FCPIO_ITMF_ABT_TASK;
-<<<<<<< HEAD
-	else
-		task_req = FCPIO_ITMF_ABT_TASK_TERM;
-=======
 	else {
 		atomic64_inc(&fnic_stats->misc_stats.rport_not_ready);
 		task_req = FCPIO_ITMF_ABT_TASK_TERM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Now queue the abort command to firmware */
 	int_to_scsilun(sc->device->lun, &fc_lun);
 
-<<<<<<< HEAD
-	if (fnic_queue_abort_io_req(fnic, sc->request->tag, task_req,
-				    fc_lun.scsi_lun, io_req)) {
-		spin_lock_irqsave(io_lock, flags);
-		io_req = (struct fnic_io_req *)CMD_SP(sc);
-		if (io_req)
-			io_req->abts_done = NULL;
-		spin_unlock_irqrestore(io_lock, flags);
-		ret = FAILED;
-		goto fnic_abort_cmd_end;
-	}
-=======
 	if (fnic_queue_abort_io_req(fnic, mqtag, task_req, fc_lun.scsi_lun,
 				    io_req, hwq)) {
 		spin_lock_irqsave(&fnic->wq_copy_lock[hwq], flags);
@@ -2820,7 +1919,6 @@ int fnic_abort_cmd(struct scsi_cmnd *sc)
 		fnic_priv(sc)->flags |= FNIC_IO_TERM_ISSUED;
 		atomic64_inc(&fnic_stats->term_stats.terminates);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We queued an abort IO, wait for its completion.
@@ -2834,13 +1932,6 @@ int fnic_abort_cmd(struct scsi_cmnd *sc)
 				     fnic->config.ed_tov));
 
 	/* Check the abort status */
-<<<<<<< HEAD
-	spin_lock_irqsave(io_lock, flags);
-
-	io_req = (struct fnic_io_req *)CMD_SP(sc);
-	if (!io_req) {
-		spin_unlock_irqrestore(io_lock, flags);
-=======
 	spin_lock_irqsave(&fnic->wq_copy_lock[hwq], flags);
 
 	io_req = fnic_priv(sc)->io_req;
@@ -2848,17 +1939,12 @@ int fnic_abort_cmd(struct scsi_cmnd *sc)
 		atomic64_inc(&fnic_stats->io_stats.ioreq_null);
 		spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
 		fnic_priv(sc)->flags |= FNIC_IO_ABT_TERM_REQ_NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = FAILED;
 		goto fnic_abort_cmd_end;
 	}
 	io_req->abts_done = NULL;
 
 	/* fw did not complete abort, timed out */
-<<<<<<< HEAD
-	if (CMD_STATE(sc) == FNIC_IOREQ_ABTS_PENDING) {
-		spin_unlock_irqrestore(io_lock, flags);
-=======
 	if (fnic_priv(sc)->abts_status == FCPIO_INVALID_CODE) {
 		spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
 		if (task_req == FCPIO_ITMF_ABT_TASK) {
@@ -2867,23 +1953,10 @@ int fnic_abort_cmd(struct scsi_cmnd *sc)
 			atomic64_inc(&term_stats->terminate_drv_timeouts);
 		}
 		fnic_priv(sc)->flags |= FNIC_IO_ABT_TERM_TIMED_OUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = FAILED;
 		goto fnic_abort_cmd_end;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * firmware completed the abort, check the status,
-	 * free the io_req irrespective of failure or success
-	 */
-	if (CMD_ABTS_STATUS(sc) != FCPIO_SUCCESS)
-		ret = FAILED;
-
-	CMD_SP(sc) = NULL;
-
-	spin_unlock_irqrestore(io_lock, flags);
-=======
 	/* IO out of order */
 
 	if (!(fnic_priv(sc)->flags & (FNIC_IO_ABORTED | FNIC_IO_DONE))) {
@@ -2915,16 +1988,10 @@ int fnic_abort_cmd(struct scsi_cmnd *sc)
 
 	fnic->sw_copy_wq[hwq].io_req_table[blk_mq_unique_tag_to_tag(mqtag)] = NULL;
 	spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fnic_release_ioreq_buf(fnic, io_req, sc);
 	mempool_free(io_req, fnic->io_req_pool);
 
-<<<<<<< HEAD
-fnic_abort_cmd_end:
-	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-		      "Returning from abort cmd %s\n",
-=======
 	/* Call SCSI completion function to complete the IO */
 	sc->result = DID_ABORT << 16;
 	scsi_done(sc);
@@ -2944,7 +2011,6 @@ fnic_abort_cmd_end:
 
 	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
 		      "Returning from abort cmd type %x %s\n", task_req,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      (ret == SUCCESS) ?
 		      "SUCCESS" : "FAILED");
 	return ret;
@@ -2954,19 +2020,6 @@ static inline int fnic_queue_dr_io_req(struct fnic *fnic,
 				       struct scsi_cmnd *sc,
 				       struct fnic_io_req *io_req)
 {
-<<<<<<< HEAD
-	struct vnic_wq_copy *wq = &fnic->wq_copy[0];
-	struct scsi_lun fc_lun;
-	int ret = 0;
-	unsigned long intr_flags;
-
-	spin_lock_irqsave(&fnic->wq_copy_lock[0], intr_flags);
-
-	if (vnic_wq_copy_desc_avail(wq) <= fnic->wq_copy_desc_low[0])
-		free_wq_copy_descs(fnic, wq);
-
-	if (!vnic_wq_copy_desc_avail(wq)) {
-=======
 	struct vnic_wq_copy *wq;
 	struct misc_stats *misc_stats = &fnic->fnic_stats.misc_stats;
 	struct scsi_lun fc_lun;
@@ -2997,7 +2050,6 @@ static inline int fnic_queue_dr_io_req(struct fnic *fnic,
 		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
 			  "queue_dr_io_req failure - no descriptors\n");
 		atomic64_inc(&misc_stats->devrst_cpwq_alloc_failures);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EAGAIN;
 		goto lr_io_req_end;
 	}
@@ -3005,20 +2057,12 @@ static inline int fnic_queue_dr_io_req(struct fnic *fnic,
 	/* fill in the lun info */
 	int_to_scsilun(sc->device->lun, &fc_lun);
 
-<<<<<<< HEAD
-	fnic_queue_wq_copy_desc_itmf(wq, sc->request->tag | FNIC_TAG_DEV_RST,
-=======
 	tag |= FNIC_TAG_DEV_RST;
 	fnic_queue_wq_copy_desc_itmf(wq, tag,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     0, FCPIO_ITMF_LUN_RESET, SCSI_NO_TAG,
 				     fc_lun.scsi_lun, io_req->port_id,
 				     fnic->config.ra_tov, fnic->config.ed_tov);
 
-<<<<<<< HEAD
-lr_io_req_end:
-	spin_unlock_irqrestore(&fnic->wq_copy_lock[0], intr_flags);
-=======
 	atomic64_inc(&fnic->fnic_stats.fw_stats.active_fw_reqs);
 	if (atomic64_read(&fnic->fnic_stats.fw_stats.active_fw_reqs) >
 		  atomic64_read(&fnic->fnic_stats.fw_stats.max_fw_reqs))
@@ -3028,13 +2072,10 @@ lr_io_req_end:
 lr_io_req_end:
 	spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
 	atomic_dec(&fnic->in_flight);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 struct fnic_pending_aborts_iter_data {
 	struct fnic *fnic;
 	struct scsi_cmnd *lr_sc;
@@ -3187,7 +2228,6 @@ static bool fnic_pending_aborts_iter(struct scsi_cmnd *sc, void *data)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Clean up any pending aborts on the lun
  * For each outstanding IO on this lun, whose abort is not completed by fw,
@@ -3195,97 +2235,6 @@ static bool fnic_pending_aborts_iter(struct scsi_cmnd *sc, void *data)
  * successfully aborted, 1 otherwise
  */
 static int fnic_clean_pending_aborts(struct fnic *fnic,
-<<<<<<< HEAD
-				     struct scsi_cmnd *lr_sc)
-{
-	int tag;
-	struct fnic_io_req *io_req;
-	spinlock_t *io_lock;
-	unsigned long flags;
-	int ret = 0;
-	struct scsi_cmnd *sc;
-	struct scsi_lun fc_lun;
-	struct scsi_device *lun_dev = lr_sc->device;
-	DECLARE_COMPLETION_ONSTACK(tm_done);
-
-	for (tag = 0; tag < FNIC_MAX_IO_REQ; tag++) {
-		sc = scsi_host_find_tag(fnic->lport->host, tag);
-		/*
-		 * ignore this lun reset cmd or cmds that do not belong to
-		 * this lun
-		 */
-		if (!sc || sc == lr_sc || sc->device != lun_dev)
-			continue;
-
-		io_lock = fnic_io_lock_hash(fnic, sc);
-		spin_lock_irqsave(io_lock, flags);
-
-		io_req = (struct fnic_io_req *)CMD_SP(sc);
-
-		if (!io_req || sc->device != lun_dev) {
-			spin_unlock_irqrestore(io_lock, flags);
-			continue;
-		}
-
-		/*
-		 * Found IO that is still pending with firmware and
-		 * belongs to the LUN that we are resetting
-		 */
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-			      "Found IO in %s on lun\n",
-			      fnic_ioreq_state_to_str(CMD_STATE(sc)));
-
-		BUG_ON(CMD_STATE(sc) != FNIC_IOREQ_ABTS_PENDING);
-
-		CMD_ABTS_STATUS(sc) = FCPIO_INVALID_CODE;
-		io_req->abts_done = &tm_done;
-		spin_unlock_irqrestore(io_lock, flags);
-
-		/* Now queue the abort command to firmware */
-		int_to_scsilun(sc->device->lun, &fc_lun);
-
-		if (fnic_queue_abort_io_req(fnic, tag,
-					    FCPIO_ITMF_ABT_TASK_TERM,
-					    fc_lun.scsi_lun, io_req)) {
-			spin_lock_irqsave(io_lock, flags);
-			io_req = (struct fnic_io_req *)CMD_SP(sc);
-			if (io_req)
-				io_req->abts_done = NULL;
-			spin_unlock_irqrestore(io_lock, flags);
-			ret = 1;
-			goto clean_pending_aborts_end;
-		}
-
-		wait_for_completion_timeout(&tm_done,
-					    msecs_to_jiffies
-					    (fnic->config.ed_tov));
-
-		/* Recheck cmd state to check if it is now aborted */
-		spin_lock_irqsave(io_lock, flags);
-		io_req = (struct fnic_io_req *)CMD_SP(sc);
-		if (!io_req) {
-			spin_unlock_irqrestore(io_lock, flags);
-			ret = 1;
-			goto clean_pending_aborts_end;
-		}
-
-		io_req->abts_done = NULL;
-
-		/* if abort is still pending with fw, fail */
-		if (CMD_STATE(sc) == FNIC_IOREQ_ABTS_PENDING) {
-			spin_unlock_irqrestore(io_lock, flags);
-			ret = 1;
-			goto clean_pending_aborts_end;
-		}
-		CMD_SP(sc) = NULL;
-		spin_unlock_irqrestore(io_lock, flags);
-
-		fnic_release_ioreq_buf(fnic, io_req, sc);
-		mempool_free(io_req, fnic->io_req_pool);
-	}
-
-clean_pending_aborts_end:
-=======
 				     struct scsi_cmnd *lr_sc,
 				     bool new_sc)
 
@@ -3314,7 +2263,6 @@ clean_pending_aborts_end:
 clean_pending_aborts_end:
 	FNIC_SCSI_DBG(KERN_INFO, fnic->lport->host, fnic->fnic_num,
 			"exit status: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -3325,17 +2273,6 @@ clean_pending_aborts_end:
  */
 int fnic_device_reset(struct scsi_cmnd *sc)
 {
-<<<<<<< HEAD
-	struct fc_lport *lp;
-	struct fnic *fnic;
-	struct fnic_io_req *io_req;
-	struct fc_rport *rport;
-	int status;
-	int ret = FAILED;
-	spinlock_t *io_lock;
-	unsigned long flags;
-	DECLARE_COMPLETION_ONSTACK(tm_done);
-=======
 	struct request *rq = scsi_cmd_to_rq(sc);
 	struct fc_lport *lp;
 	struct fnic *fnic;
@@ -3352,7 +2289,6 @@ int fnic_device_reset(struct scsi_cmnd *sc)
 	DECLARE_COMPLETION_ONSTACK(tm_done);
 	bool new_sc = 0;
 	uint16_t hwq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait for rport to unblock */
 	fc_block_scsi_eh(sc);
@@ -3361,13 +2297,6 @@ int fnic_device_reset(struct scsi_cmnd *sc)
 	lp = shost_priv(sc->device->host);
 
 	fnic = lport_priv(lp);
-<<<<<<< HEAD
-
-	rport = starget_to_rport(scsi_target(sc->device));
-	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-			"Device reset called FCID 0x%x, LUN 0x%x\n",
-			rport->port_id, sc->device->lun);
-=======
 	fnic_stats = &fnic->fnic_stats;
 	reset_stats = &fnic->fnic_stats.reset_stats;
 
@@ -3378,20 +2307,11 @@ int fnic_device_reset(struct scsi_cmnd *sc)
 		"fcid: 0x%x lun: 0x%llx hwq: %d mqtag: 0x%x flags: 0x%x Device reset\n",
 		rport->port_id, sc->device->lun, hwq, mqtag,
 		fnic_priv(sc)->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lp->state != LPORT_ST_READY || !(lp->link_up))
 		goto fnic_device_reset_end;
 
 	/* Check if remote port up */
-<<<<<<< HEAD
-	if (fc_remote_port_chkready(rport))
-		goto fnic_device_reset_end;
-
-	io_lock = fnic_io_lock_hash(fnic, sc);
-	spin_lock_irqsave(io_lock, flags);
-	io_req = (struct fnic_io_req *)CMD_SP(sc);
-=======
 	if (fc_remote_port_chkready(rport)) {
 		atomic64_inc(&fnic_stats->misc_stats.rport_not_ready);
 		goto fnic_device_reset_end;
@@ -3417,7 +2337,6 @@ int fnic_device_reset(struct scsi_cmnd *sc)
 
 	spin_lock_irqsave(&fnic->wq_copy_lock[hwq], flags);
 	io_req = fnic_priv(sc)->io_req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If there is a io_req attached to this command, then use it,
@@ -3426,26 +2345,11 @@ int fnic_device_reset(struct scsi_cmnd *sc)
 	if (!io_req) {
 		io_req = mempool_alloc(fnic->io_req_pool, GFP_ATOMIC);
 		if (!io_req) {
-<<<<<<< HEAD
-			spin_unlock_irqrestore(io_lock, flags);
-=======
 			spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fnic_device_reset_end;
 		}
 		memset(io_req, 0, sizeof(*io_req));
 		io_req->port_id = rport->port_id;
-<<<<<<< HEAD
-		CMD_SP(sc) = (char *)io_req;
-	}
-	io_req->dr_done = &tm_done;
-	CMD_STATE(sc) = FNIC_IOREQ_CMD_PENDING;
-	CMD_LR_STATUS(sc) = FCPIO_INVALID_CODE;
-	spin_unlock_irqrestore(io_lock, flags);
-
-	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, "TAG %d\n",
-		      sc->request->tag);
-=======
 		io_req->tag = mqtag;
 		fnic_priv(sc)->io_req = io_req;
 		io_req->sc = sc;
@@ -3463,30 +2367,21 @@ int fnic_device_reset(struct scsi_cmnd *sc)
 	spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
 
 	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num, "TAG %x\n", mqtag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * issue the device reset, if enqueue failed, clean up the ioreq
 	 * and break assoc with scsi cmd
 	 */
 	if (fnic_queue_dr_io_req(fnic, sc, io_req)) {
-<<<<<<< HEAD
-		spin_lock_irqsave(io_lock, flags);
-		io_req = (struct fnic_io_req *)CMD_SP(sc);
-=======
 		spin_lock_irqsave(&fnic->wq_copy_lock[hwq], flags);
 		io_req = fnic_priv(sc)->io_req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (io_req)
 			io_req->dr_done = NULL;
 		goto fnic_device_reset_clean;
 	}
-<<<<<<< HEAD
-=======
 	spin_lock_irqsave(&fnic->wq_copy_lock[hwq], flags);
 	fnic_priv(sc)->flags |= FNIC_DEV_RST_ISSUED;
 	spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Wait on the local completion for LUN reset.  The io_req may be
@@ -3495,40 +2390,23 @@ int fnic_device_reset(struct scsi_cmnd *sc)
 	wait_for_completion_timeout(&tm_done,
 				    msecs_to_jiffies(FNIC_LUN_RESET_TIMEOUT));
 
-<<<<<<< HEAD
-	spin_lock_irqsave(io_lock, flags);
-	io_req = (struct fnic_io_req *)CMD_SP(sc);
-	if (!io_req) {
-		spin_unlock_irqrestore(io_lock, flags);
-=======
 	spin_lock_irqsave(&fnic->wq_copy_lock[hwq], flags);
 	io_req = fnic_priv(sc)->io_req;
 	if (!io_req) {
 		spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
 		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
 				"io_req is null mqtag 0x%x sc 0x%p\n", mqtag, sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fnic_device_reset_end;
 	}
 	io_req->dr_done = NULL;
 
-<<<<<<< HEAD
-	status = CMD_LR_STATUS(sc);
-	spin_unlock_irqrestore(io_lock, flags);
-=======
 	status = fnic_priv(sc)->lr_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If lun reset not completed, bail out with failed. io_req
 	 * gets cleaned up during higher levels of EH
 	 */
 	if (status == FCPIO_INVALID_CODE) {
-<<<<<<< HEAD
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-			      "Device reset timed out\n");
-		goto fnic_device_reset_end;
-=======
 		atomic64_inc(&reset_stats->device_reset_timeouts);
 		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
 			      "Device reset timed out\n");
@@ -3579,24 +2457,15 @@ int fnic_device_reset(struct scsi_cmnd *sc)
 		}
 	} else {
 		spin_unlock_irqrestore(&fnic->wq_copy_lock[hwq], flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Completed, but not successful, clean up the io_req, return fail */
 	if (status != FCPIO_SUCCESS) {
-<<<<<<< HEAD
-		spin_lock_irqsave(io_lock, flags);
-		FNIC_SCSI_DBG(KERN_DEBUG,
-			      fnic->lport->host,
-			      "Device reset completed - failed\n");
-		io_req = (struct fnic_io_req *)CMD_SP(sc);
-=======
 		spin_lock_irqsave(&fnic->wq_copy_lock[hwq], flags);
 		FNIC_SCSI_DBG(KERN_DEBUG,
 			      fnic->lport->host, fnic->fnic_num,
 			      "Device reset completed - failed\n");
 		io_req = fnic_priv(sc)->io_req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fnic_device_reset_clean;
 	}
 
@@ -3607,43 +2476,23 @@ int fnic_device_reset(struct scsi_cmnd *sc)
 	 * the lun reset cmd. If all cmds get cleaned, the lun reset
 	 * succeeds
 	 */
-<<<<<<< HEAD
-	if (fnic_clean_pending_aborts(fnic, sc)) {
-		spin_lock_irqsave(io_lock, flags);
-		io_req = (struct fnic_io_req *)CMD_SP(sc);
-		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-=======
 	if (fnic_clean_pending_aborts(fnic, sc, new_sc)) {
 		spin_lock_irqsave(&fnic->wq_copy_lock[hwq], flags);
 		io_req = fnic_priv(sc)->io_req;
 		FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      "Device reset failed"
 			      " since could not abort all IOs\n");
 		goto fnic_device_reset_clean;
 	}
 
 	/* Clean lun reset command */
-<<<<<<< HEAD
-	spin_lock_irqsave(io_lock, flags);
-	io_req = (struct fnic_io_req *)CMD_SP(sc);
-=======
 	spin_lock_irqsave(&fnic->wq_copy_lock[hwq], flags);
 	io_req = fnic_priv(sc)->io_req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (io_req)
 		/* Completed, and successful */
 		ret = SUCCESS;
 
 fnic_device_reset_clean:
-<<<<<<< HEAD
-	if (io_req)
-		CMD_SP(sc) = NULL;
-
-	spin_unlock_irqrestore(io_lock, flags);
-
-	if (io_req) {
-=======
 	if (io_req) {
 		fnic_priv(sc)->io_req = NULL;
 		io_req->sc = NULL;
@@ -3654,18 +2503,11 @@ fnic_device_reset_clean:
 
 	if (io_req) {
 		start_time = io_req->start_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fnic_release_ioreq_buf(fnic, io_req, sc);
 		mempool_free(io_req, fnic->io_req_pool);
 	}
 
 fnic_device_reset_end:
-<<<<<<< HEAD
-	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-		      "Returning from device reset %s\n",
-		      (ret == SUCCESS) ?
-		      "SUCCESS" : "FAILED");
-=======
 	FNIC_TRACE(fnic_device_reset, sc->device->host->host_no, rq->tag, sc,
 		  jiffies_to_msecs(jiffies - start_time),
 		  0, ((u64)sc->cmnd[0] << 32 |
@@ -3686,7 +2528,6 @@ fnic_device_reset_end:
 	if (ret == FAILED)
 		atomic64_inc(&reset_stats->device_reset_failures);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -3695,15 +2536,6 @@ int fnic_reset(struct Scsi_Host *shost)
 {
 	struct fc_lport *lp;
 	struct fnic *fnic;
-<<<<<<< HEAD
-	int ret = SUCCESS;
-
-	lp = shost_priv(shost);
-	fnic = lport_priv(lp);
-
-	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-		      "fnic_reset called\n");
-=======
 	int ret = 0;
 	struct reset_stats *reset_stats;
 
@@ -3715,21 +2547,11 @@ int fnic_reset(struct Scsi_Host *shost)
 			"Issuing fnic reset\n");
 
 	atomic64_inc(&reset_stats->fnic_resets);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Reset local port, this will clean up libFC exchanges,
 	 * reset remote port sessions, and if link is up, begin flogi
 	 */
-<<<<<<< HEAD
-	if (lp->tt.lport_reset(lp))
-		ret = FAILED;
-
-	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-		      "Returning from fnic reset %s\n",
-		      (ret == SUCCESS) ?
-		      "SUCCESS" : "FAILED");
-=======
 	ret = fc_lport_reset(lp);
 
 	FNIC_SCSI_DBG(KERN_INFO, fnic->lport->host, fnic->fnic_num,
@@ -3740,7 +2562,6 @@ int fnic_reset(struct Scsi_Host *shost)
 		atomic64_inc(&reset_stats->fnic_reset_completions);
 	else
 		atomic64_inc(&reset_stats->fnic_reset_failures);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -3760,8 +2581,6 @@ int fnic_host_reset(struct scsi_cmnd *sc)
 	unsigned long wait_host_tmo;
 	struct Scsi_Host *shost = sc->device->host;
 	struct fc_lport *lp = shost_priv(shost);
-<<<<<<< HEAD
-=======
 	struct fnic *fnic = lport_priv(lp);
 	unsigned long flags;
 
@@ -3775,18 +2594,13 @@ int fnic_host_reset(struct scsi_cmnd *sc)
 		return SUCCESS;
 	}
 	spin_unlock_irqrestore(&fnic->fnic_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If fnic_reset is successful, wait for fabric login to complete
 	 * scsi-ml tries to send a TUR to every device if host reset is
 	 * successful, so before returning to scsi, fabric should be up
 	 */
-<<<<<<< HEAD
-	ret = fnic_reset(shost);
-=======
 	ret = (fnic_reset(shost) == 0) ? SUCCESS : FAILED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret == SUCCESS) {
 		wait_host_tmo = jiffies + FNIC_HOST_RESET_SETTLE_TIME * HZ;
 		ret = FAILED;
@@ -3800,12 +2614,9 @@ int fnic_host_reset(struct scsi_cmnd *sc)
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	spin_lock_irqsave(&fnic->fnic_lock, flags);
 	fnic->internal_reset_inprogress = false;
 	spin_unlock_irqrestore(&fnic->fnic_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -3821,9 +2632,6 @@ void fnic_scsi_abort_io(struct fc_lport *lp)
 	DECLARE_COMPLETION_ONSTACK(remove_wait);
 
 	/* Issue firmware reset for fnic, wait for reset to complete */
-<<<<<<< HEAD
-	spin_lock_irqsave(&fnic->fnic_lock, flags);
-=======
 retry_fw_reset:
 	spin_lock_irqsave(&fnic->fnic_lock, flags);
 	if (unlikely(fnic->state == FNIC_IN_FC_TRANS_ETH_MODE) &&
@@ -3834,7 +2642,6 @@ retry_fw_reset:
 		goto retry_fw_reset;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fnic->remove_wait = &remove_wait;
 	old_state = fnic->state;
 	fnic->state = FNIC_IN_FC_TRANS_ETH_MODE;
@@ -3857,11 +2664,7 @@ retry_fw_reset:
 
 	spin_lock_irqsave(&fnic->fnic_lock, flags);
 	fnic->remove_wait = NULL;
-<<<<<<< HEAD
-	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host,
-=======
 	FNIC_SCSI_DBG(KERN_DEBUG, fnic->lport->host, fnic->fnic_num,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      "fnic_scsi_abort_io %s\n",
 		      (fnic->state == FNIC_IN_ETH_MODE) ?
 		      "SUCCESS" : "FAILED");
@@ -3879,9 +2682,6 @@ void fnic_scsi_cleanup(struct fc_lport *lp)
 	struct fnic *fnic = lport_priv(lp);
 
 	/* issue fw reset */
-<<<<<<< HEAD
-	spin_lock_irqsave(&fnic->fnic_lock, flags);
-=======
 retry_fw_reset:
 	spin_lock_irqsave(&fnic->fnic_lock, flags);
 	if (unlikely(fnic->state == FNIC_IN_FC_TRANS_ETH_MODE)) {
@@ -3890,7 +2690,6 @@ retry_fw_reset:
 		schedule_timeout(msecs_to_jiffies(100));
 		goto retry_fw_reset;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	old_state = fnic->state;
 	fnic->state = FNIC_IN_FC_TRANS_ETH_MODE;
 	fnic_update_mac_locked(fnic, fnic->ctlr.ctl_src_addr);
@@ -3936,8 +2735,6 @@ call_fc_exch_mgr_reset:
 	fc_exch_mgr_reset(lp, sid, did);
 
 }
-<<<<<<< HEAD
-=======
 
 static bool fnic_abts_pending_iter(struct scsi_cmnd *sc, void *data)
 {
@@ -4012,4 +2809,3 @@ int fnic_is_abts_pending(struct fnic *fnic, struct scsi_cmnd *lr_sc)
 
 	return iter_data.ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

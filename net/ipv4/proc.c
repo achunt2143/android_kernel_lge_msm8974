@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -29,24 +26,13 @@
  *					split functions for more readibility.
  *	Andi Kleen		:	Add support for /proc/net/netstat
  *	Arnaldo C. Melo		:	Convert to seq_file
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/types.h>
 #include <net/net_namespace.h>
 #include <net/icmp.h>
 #include <net/protocol.h>
 #include <net/tcp.h>
-<<<<<<< HEAD
-=======
 #include <net/mptcp.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/udp.h>
 #include <net/udplite.h>
 #include <linux/bottom_half.h>
@@ -57,11 +43,8 @@
 #include <net/sock.h>
 #include <net/raw.h>
 
-<<<<<<< HEAD
-=======
 #define TCPUDP_MIB_MAX max_t(u32, UDP_MIB_MAX, TCP_MIB_MAX)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Report socket allocation statistics [mea@utu.fi]
  */
@@ -70,26 +53,14 @@ static int sockstat_seq_show(struct seq_file *seq, void *v)
 	struct net *net = seq->private;
 	int orphans, sockets;
 
-<<<<<<< HEAD
-	local_bh_disable();
-	orphans = percpu_counter_sum_positive(&tcp_orphan_count);
-	sockets = proto_sockets_allocated_sum_positive(&tcp_prot);
-	local_bh_enable();
-=======
 	orphans = tcp_orphan_count_sum();
 	sockets = proto_sockets_allocated_sum_positive(&tcp_prot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	socket_seq_show(seq);
 	seq_printf(seq, "TCP: inuse %d orphan %d tw %d alloc %d mem %ld\n",
 		   sock_prot_inuse_get(net, &tcp_prot), orphans,
-<<<<<<< HEAD
-		   tcp_death_row.tw_count, sockets,
-		   proto_memory_allocated(&tcp_prot));
-=======
 		   refcount_read(&net->ipv4.tcp_death_row.tw_refcount) - 1,
 		   sockets, proto_memory_allocated(&tcp_prot));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(seq, "UDP: inuse %d mem %ld\n",
 		   sock_prot_inuse_get(net, &udp_prot),
 		   proto_memory_allocated(&udp_prot));
@@ -97,33 +68,12 @@ static int sockstat_seq_show(struct seq_file *seq, void *v)
 		   sock_prot_inuse_get(net, &udplite_prot));
 	seq_printf(seq, "RAW: inuse %d\n",
 		   sock_prot_inuse_get(net, &raw_prot));
-<<<<<<< HEAD
-	seq_printf(seq,  "FRAG: inuse %d memory %d\n",
-			ip_frag_nqueues(net), ip_frag_mem(net));
-	return 0;
-}
-
-static int sockstat_seq_open(struct inode *inode, struct file *file)
-{
-	return single_open_net(inode, file, sockstat_seq_show);
-}
-
-static const struct file_operations sockstat_seq_fops = {
-	.owner	 = THIS_MODULE,
-	.open	 = sockstat_seq_open,
-	.read	 = seq_read,
-	.llseek	 = seq_lseek,
-	.release = single_release_net,
-};
-
-=======
 	seq_printf(seq,  "FRAG: inuse %u memory %lu\n",
 		   atomic_read(&net->ipv4.fqdir->rhashtable.nelems),
 		   frag_mem_limit(net->ipv4.fqdir));
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* snmp items */
 static const struct snmp_mib snmp4_ipstats_list[] = {
 	SNMP_MIB_ITEM("InReceives", IPSTATS_MIB_INPKTS),
@@ -133,11 +83,7 @@ static const struct snmp_mib snmp4_ipstats_list[] = {
 	SNMP_MIB_ITEM("InUnknownProtos", IPSTATS_MIB_INUNKNOWNPROTOS),
 	SNMP_MIB_ITEM("InDiscards", IPSTATS_MIB_INDISCARDS),
 	SNMP_MIB_ITEM("InDelivers", IPSTATS_MIB_INDELIVERS),
-<<<<<<< HEAD
-	SNMP_MIB_ITEM("OutRequests", IPSTATS_MIB_OUTPKTS),
-=======
 	SNMP_MIB_ITEM("OutRequests", IPSTATS_MIB_OUTREQUESTS),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_ITEM("OutDiscards", IPSTATS_MIB_OUTDISCARDS),
 	SNMP_MIB_ITEM("OutNoRoutes", IPSTATS_MIB_OUTNOROUTES),
 	SNMP_MIB_ITEM("ReasmTimeout", IPSTATS_MIB_REASMTIMEOUT),
@@ -147,18 +93,11 @@ static const struct snmp_mib snmp4_ipstats_list[] = {
 	SNMP_MIB_ITEM("FragOKs", IPSTATS_MIB_FRAGOKS),
 	SNMP_MIB_ITEM("FragFails", IPSTATS_MIB_FRAGFAILS),
 	SNMP_MIB_ITEM("FragCreates", IPSTATS_MIB_FRAGCREATES),
-<<<<<<< HEAD
-	SNMP_MIB_SENTINEL
-};
-
-/* Following RFC4293 items are displayed in /proc/net/netstat */
-=======
 	SNMP_MIB_ITEM("OutTransmits", IPSTATS_MIB_OUTPKTS),
 	SNMP_MIB_SENTINEL
 };
 
 /* Following items are displayed in /proc/net/netstat */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snmp_mib snmp4_ipextstats_list[] = {
 	SNMP_MIB_ITEM("InNoRoutes", IPSTATS_MIB_INNOROUTES),
 	SNMP_MIB_ITEM("InTruncatedPkts", IPSTATS_MIB_INTRUNCATEDPKTS),
@@ -172,8 +111,6 @@ static const struct snmp_mib snmp4_ipextstats_list[] = {
 	SNMP_MIB_ITEM("OutMcastOctets", IPSTATS_MIB_OUTMCASTOCTETS),
 	SNMP_MIB_ITEM("InBcastOctets", IPSTATS_MIB_INBCASTOCTETS),
 	SNMP_MIB_ITEM("OutBcastOctets", IPSTATS_MIB_OUTBCASTOCTETS),
-<<<<<<< HEAD
-=======
 	/* Non RFC4293 fields */
 	SNMP_MIB_ITEM("InCsumErrors", IPSTATS_MIB_CSUMERRORS),
 	SNMP_MIB_ITEM("InNoECTPkts", IPSTATS_MIB_NOECTPKTS),
@@ -181,7 +118,6 @@ static const struct snmp_mib snmp4_ipextstats_list[] = {
 	SNMP_MIB_ITEM("InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
 	SNMP_MIB_ITEM("InCEPkts", IPSTATS_MIB_CEPKTS),
 	SNMP_MIB_ITEM("ReasmOverlaps", IPSTATS_MIB_REASM_OVERLAPS),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_SENTINEL
 };
 
@@ -219,10 +155,7 @@ static const struct snmp_mib snmp4_tcp_list[] = {
 	SNMP_MIB_ITEM("RetransSegs", TCP_MIB_RETRANSSEGS),
 	SNMP_MIB_ITEM("InErrs", TCP_MIB_INERRS),
 	SNMP_MIB_ITEM("OutRsts", TCP_MIB_OUTRSTS),
-<<<<<<< HEAD
-=======
 	SNMP_MIB_ITEM("InCsumErrors", TCP_MIB_CSUMERRORS),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_SENTINEL
 };
 
@@ -233,12 +166,9 @@ static const struct snmp_mib snmp4_udp_list[] = {
 	SNMP_MIB_ITEM("OutDatagrams", UDP_MIB_OUTDATAGRAMS),
 	SNMP_MIB_ITEM("RcvbufErrors", UDP_MIB_RCVBUFERRORS),
 	SNMP_MIB_ITEM("SndbufErrors", UDP_MIB_SNDBUFERRORS),
-<<<<<<< HEAD
-=======
 	SNMP_MIB_ITEM("InCsumErrors", UDP_MIB_CSUMERRORS),
 	SNMP_MIB_ITEM("IgnoredMulti", UDP_MIB_IGNOREDMULTI),
 	SNMP_MIB_ITEM("MemErrors", UDP_MIB_MEMERRORS),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_SENTINEL
 };
 
@@ -256,10 +186,6 @@ static const struct snmp_mib snmp4_net_list[] = {
 	SNMP_MIB_ITEM("TW", LINUX_MIB_TIMEWAITED),
 	SNMP_MIB_ITEM("TWRecycled", LINUX_MIB_TIMEWAITRECYCLED),
 	SNMP_MIB_ITEM("TWKilled", LINUX_MIB_TIMEWAITKILLED),
-<<<<<<< HEAD
-	SNMP_MIB_ITEM("PAWSPassive", LINUX_MIB_PAWSPASSIVEREJECTED),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_ITEM("PAWSActive", LINUX_MIB_PAWSACTIVEREJECTED),
 	SNMP_MIB_ITEM("PAWSEstab", LINUX_MIB_PAWSESTABREJECTED),
 	SNMP_MIB_ITEM("DelayedACKs", LINUX_MIB_DELAYEDACKS),
@@ -267,25 +193,12 @@ static const struct snmp_mib snmp4_net_list[] = {
 	SNMP_MIB_ITEM("DelayedACKLost", LINUX_MIB_DELAYEDACKLOST),
 	SNMP_MIB_ITEM("ListenOverflows", LINUX_MIB_LISTENOVERFLOWS),
 	SNMP_MIB_ITEM("ListenDrops", LINUX_MIB_LISTENDROPS),
-<<<<<<< HEAD
-	SNMP_MIB_ITEM("TCPPrequeued", LINUX_MIB_TCPPREQUEUED),
-	SNMP_MIB_ITEM("TCPDirectCopyFromBacklog", LINUX_MIB_TCPDIRECTCOPYFROMBACKLOG),
-	SNMP_MIB_ITEM("TCPDirectCopyFromPrequeue", LINUX_MIB_TCPDIRECTCOPYFROMPREQUEUE),
-	SNMP_MIB_ITEM("TCPPrequeueDropped", LINUX_MIB_TCPPREQUEUEDROPPED),
 	SNMP_MIB_ITEM("TCPHPHits", LINUX_MIB_TCPHPHITS),
-	SNMP_MIB_ITEM("TCPHPHitsToUser", LINUX_MIB_TCPHPHITSTOUSER),
-=======
-	SNMP_MIB_ITEM("TCPHPHits", LINUX_MIB_TCPHPHITS),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_ITEM("TCPPureAcks", LINUX_MIB_TCPPUREACKS),
 	SNMP_MIB_ITEM("TCPHPAcks", LINUX_MIB_TCPHPACKS),
 	SNMP_MIB_ITEM("TCPRenoRecovery", LINUX_MIB_TCPRENORECOVERY),
 	SNMP_MIB_ITEM("TCPSackRecovery", LINUX_MIB_TCPSACKRECOVERY),
 	SNMP_MIB_ITEM("TCPSACKReneging", LINUX_MIB_TCPSACKRENEGING),
-<<<<<<< HEAD
-	SNMP_MIB_ITEM("TCPFACKReorder", LINUX_MIB_TCPFACKREORDER),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_ITEM("TCPSACKReorder", LINUX_MIB_TCPSACKREORDER),
 	SNMP_MIB_ITEM("TCPRenoReorder", LINUX_MIB_TCPRENOREORDER),
 	SNMP_MIB_ITEM("TCPTSReorder", LINUX_MIB_TCPTSREORDER),
@@ -298,15 +211,6 @@ static const struct snmp_mib snmp4_net_list[] = {
 	SNMP_MIB_ITEM("TCPSackFailures", LINUX_MIB_TCPSACKFAILURES),
 	SNMP_MIB_ITEM("TCPLossFailures", LINUX_MIB_TCPLOSSFAILURES),
 	SNMP_MIB_ITEM("TCPFastRetrans", LINUX_MIB_TCPFASTRETRANS),
-<<<<<<< HEAD
-	SNMP_MIB_ITEM("TCPForwardRetrans", LINUX_MIB_TCPFORWARDRETRANS),
-	SNMP_MIB_ITEM("TCPSlowStartRetrans", LINUX_MIB_TCPSLOWSTARTRETRANS),
-	SNMP_MIB_ITEM("TCPTimeouts", LINUX_MIB_TCPTIMEOUTS),
-	SNMP_MIB_ITEM("TCPRenoRecoveryFail", LINUX_MIB_TCPRENORECOVERYFAIL),
-	SNMP_MIB_ITEM("TCPSackRecoveryFail", LINUX_MIB_TCPSACKRECOVERYFAIL),
-	SNMP_MIB_ITEM("TCPSchedulerFailed", LINUX_MIB_TCPSCHEDULERFAILED),
-	SNMP_MIB_ITEM("TCPRcvCollapsed", LINUX_MIB_TCPRCVCOLLAPSED),
-=======
 	SNMP_MIB_ITEM("TCPSlowStartRetrans", LINUX_MIB_TCPSLOWSTARTRETRANS),
 	SNMP_MIB_ITEM("TCPTimeouts", LINUX_MIB_TCPTIMEOUTS),
 	SNMP_MIB_ITEM("TCPLossProbes", LINUX_MIB_TCPLOSSPROBES),
@@ -315,7 +219,6 @@ static const struct snmp_mib snmp4_net_list[] = {
 	SNMP_MIB_ITEM("TCPSackRecoveryFail", LINUX_MIB_TCPSACKRECOVERYFAIL),
 	SNMP_MIB_ITEM("TCPRcvCollapsed", LINUX_MIB_TCPRCVCOLLAPSED),
 	SNMP_MIB_ITEM("TCPBacklogCoalesce", LINUX_MIB_TCPBACKLOGCOALESCE),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_ITEM("TCPDSACKOldSent", LINUX_MIB_TCPDSACKOLDSENT),
 	SNMP_MIB_ITEM("TCPDSACKOfoSent", LINUX_MIB_TCPDSACKOFOSENT),
 	SNMP_MIB_ITEM("TCPDSACKRecv", LINUX_MIB_TCPDSACKRECV),
@@ -327,28 +230,19 @@ static const struct snmp_mib snmp4_net_list[] = {
 	SNMP_MIB_ITEM("TCPAbortOnLinger", LINUX_MIB_TCPABORTONLINGER),
 	SNMP_MIB_ITEM("TCPAbortFailed", LINUX_MIB_TCPABORTFAILED),
 	SNMP_MIB_ITEM("TCPMemoryPressures", LINUX_MIB_TCPMEMORYPRESSURES),
-<<<<<<< HEAD
-=======
 	SNMP_MIB_ITEM("TCPMemoryPressuresChrono", LINUX_MIB_TCPMEMORYPRESSURESCHRONO),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_ITEM("TCPSACKDiscard", LINUX_MIB_TCPSACKDISCARD),
 	SNMP_MIB_ITEM("TCPDSACKIgnoredOld", LINUX_MIB_TCPDSACKIGNOREDOLD),
 	SNMP_MIB_ITEM("TCPDSACKIgnoredNoUndo", LINUX_MIB_TCPDSACKIGNOREDNOUNDO),
 	SNMP_MIB_ITEM("TCPSpuriousRTOs", LINUX_MIB_TCPSPURIOUSRTOS),
 	SNMP_MIB_ITEM("TCPMD5NotFound", LINUX_MIB_TCPMD5NOTFOUND),
 	SNMP_MIB_ITEM("TCPMD5Unexpected", LINUX_MIB_TCPMD5UNEXPECTED),
-<<<<<<< HEAD
-=======
 	SNMP_MIB_ITEM("TCPMD5Failure", LINUX_MIB_TCPMD5FAILURE),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_ITEM("TCPSackShifted", LINUX_MIB_SACKSHIFTED),
 	SNMP_MIB_ITEM("TCPSackMerged", LINUX_MIB_SACKMERGED),
 	SNMP_MIB_ITEM("TCPSackShiftFallback", LINUX_MIB_SACKSHIFTFALLBACK),
 	SNMP_MIB_ITEM("TCPBacklogDrop", LINUX_MIB_TCPBACKLOGDROP),
-<<<<<<< HEAD
-=======
 	SNMP_MIB_ITEM("PFMemallocDrop", LINUX_MIB_PFMEMALLOCDROP),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_ITEM("TCPMinTTLDrop", LINUX_MIB_TCPMINTTLDROP),
 	SNMP_MIB_ITEM("TCPDeferAcceptDrop", LINUX_MIB_TCPDEFERACCEPTDROP),
 	SNMP_MIB_ITEM("IPReversePathFilter", LINUX_MIB_IPRPFILTER),
@@ -357,10 +251,6 @@ static const struct snmp_mib snmp4_net_list[] = {
 	SNMP_MIB_ITEM("TCPReqQFullDrop", LINUX_MIB_TCPREQQFULLDROP),
 	SNMP_MIB_ITEM("TCPRetransFail", LINUX_MIB_TCPRETRANSFAIL),
 	SNMP_MIB_ITEM("TCPRcvCoalesce", LINUX_MIB_TCPRCVCOALESCE),
-<<<<<<< HEAD
-	SNMP_MIB_ITEM("TCPChallengeACK", LINUX_MIB_TCPCHALLENGEACK),
-	SNMP_MIB_ITEM("TCPSYNChallenge", LINUX_MIB_TCPSYNCHALLENGE),
-=======
 	SNMP_MIB_ITEM("TCPOFOQueue", LINUX_MIB_TCPOFOQUEUE),
 	SNMP_MIB_ITEM("TCPOFODrop", LINUX_MIB_TCPOFODROP),
 	SNMP_MIB_ITEM("TCPOFOMerge", LINUX_MIB_TCPOFOMERGE),
@@ -414,7 +304,6 @@ static const struct snmp_mib snmp4_net_list[] = {
 	SNMP_MIB_ITEM("TCPAOKeyNotFound", LINUX_MIB_TCPAOKEYNOTFOUND),
 	SNMP_MIB_ITEM("TCPAOGood", LINUX_MIB_TCPAOGOOD),
 	SNMP_MIB_ITEM("TCPAODroppedIcmps", LINUX_MIB_TCPAODROPPEDICMPS),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SNMP_MIB_SENTINEL
 };
 
@@ -424,20 +313,12 @@ static void icmpmsg_put_line(struct seq_file *seq, unsigned long *vals,
 	int j;
 
 	if (count) {
-<<<<<<< HEAD
-		seq_printf(seq, "\nIcmpMsg:");
-=======
 		seq_puts(seq, "\nIcmpMsg:");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (j = 0; j < count; ++j)
 			seq_printf(seq, " %sType%u",
 				type[j] & 0x100 ? "Out" : "In",
 				type[j] & 0xff);
-<<<<<<< HEAD
-		seq_printf(seq, "\nIcmpMsg:");
-=======
 		seq_puts(seq, "\nIcmpMsg:");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (j = 0; j < count; ++j)
 			seq_printf(seq, " %lu", vals[j]);
 	}
@@ -475,24 +356,6 @@ static void icmp_put(struct seq_file *seq)
 	struct net *net = seq->private;
 	atomic_long_t *ptr = net->mib.icmpmsg_statistics->mibs;
 
-<<<<<<< HEAD
-	seq_puts(seq, "\nIcmp: InMsgs InErrors");
-	for (i=0; icmpmibmap[i].name != NULL; i++)
-		seq_printf(seq, " In%s", icmpmibmap[i].name);
-	seq_printf(seq, " OutMsgs OutErrors");
-	for (i=0; icmpmibmap[i].name != NULL; i++)
-		seq_printf(seq, " Out%s", icmpmibmap[i].name);
-	seq_printf(seq, "\nIcmp: %lu %lu",
-		snmp_fold_field((void __percpu **) net->mib.icmp_statistics, ICMP_MIB_INMSGS),
-		snmp_fold_field((void __percpu **) net->mib.icmp_statistics, ICMP_MIB_INERRORS));
-	for (i=0; icmpmibmap[i].name != NULL; i++)
-		seq_printf(seq, " %lu",
-			   atomic_long_read(ptr + icmpmibmap[i].index));
-	seq_printf(seq, " %lu %lu",
-		snmp_fold_field((void __percpu **) net->mib.icmp_statistics, ICMP_MIB_OUTMSGS),
-		snmp_fold_field((void __percpu **) net->mib.icmp_statistics, ICMP_MIB_OUTERRORS));
-	for (i=0; icmpmibmap[i].name != NULL; i++)
-=======
 	seq_puts(seq, "\nIcmp: InMsgs InErrors InCsumErrors");
 	for (i = 0; icmpmibmap[i].name; i++)
 		seq_printf(seq, " In%s", icmpmibmap[i].name);
@@ -512,7 +375,6 @@ static void icmp_put(struct seq_file *seq)
 		snmp_fold_field(net->mib.icmp_statistics, ICMP_MIB_RATELIMITGLOBAL),
 		snmp_fold_field(net->mib.icmp_statistics, ICMP_MIB_RATELIMITHOST));
 	for (i = 0; icmpmibmap[i].name; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_printf(seq, " %lu",
 			   atomic_long_read(ptr + (icmpmibmap[i].index | 0x100)));
 }
@@ -520,69 +382,6 @@ static void icmp_put(struct seq_file *seq)
 /*
  *	Called from the PROCfs module. This outputs /proc/net/snmp.
  */
-<<<<<<< HEAD
-static int snmp_seq_show(struct seq_file *seq, void *v)
-{
-	int i;
-	struct net *net = seq->private;
-
-	seq_puts(seq, "Ip: Forwarding DefaultTTL");
-
-	for (i = 0; snmp4_ipstats_list[i].name != NULL; i++)
-		seq_printf(seq, " %s", snmp4_ipstats_list[i].name);
-
-	seq_printf(seq, "\nIp: %d %d",
-		   IPV4_DEVCONF_ALL(net, FORWARDING) ? 1 : 2,
-		   sysctl_ip_default_ttl);
-
-	BUILD_BUG_ON(offsetof(struct ipstats_mib, mibs) != 0);
-	for (i = 0; snmp4_ipstats_list[i].name != NULL; i++)
-		seq_printf(seq, " %llu",
-			   snmp_fold_field64((void __percpu **)net->mib.ip_statistics,
-					     snmp4_ipstats_list[i].entry,
-					     offsetof(struct ipstats_mib, syncp)));
-
-	icmp_put(seq);	/* RFC 2011 compatibility */
-	icmpmsg_put(seq);
-
-	seq_puts(seq, "\nTcp:");
-	for (i = 0; snmp4_tcp_list[i].name != NULL; i++)
-		seq_printf(seq, " %s", snmp4_tcp_list[i].name);
-
-	seq_puts(seq, "\nTcp:");
-	for (i = 0; snmp4_tcp_list[i].name != NULL; i++) {
-		/* MaxConn field is signed, RFC 2012 */
-		if (snmp4_tcp_list[i].entry == TCP_MIB_MAXCONN)
-			seq_printf(seq, " %ld",
-				   snmp_fold_field((void __percpu **)net->mib.tcp_statistics,
-						   snmp4_tcp_list[i].entry));
-		else
-			seq_printf(seq, " %lu",
-				   snmp_fold_field((void __percpu **)net->mib.tcp_statistics,
-						   snmp4_tcp_list[i].entry));
-	}
-
-	seq_puts(seq, "\nUdp:");
-	for (i = 0; snmp4_udp_list[i].name != NULL; i++)
-		seq_printf(seq, " %s", snmp4_udp_list[i].name);
-
-	seq_puts(seq, "\nUdp:");
-	for (i = 0; snmp4_udp_list[i].name != NULL; i++)
-		seq_printf(seq, " %lu",
-			   snmp_fold_field((void __percpu **)net->mib.udp_statistics,
-					   snmp4_udp_list[i].entry));
-
-	/* the UDP and UDP-Lite MIBs are the same */
-	seq_puts(seq, "\nUdpLite:");
-	for (i = 0; snmp4_udp_list[i].name != NULL; i++)
-		seq_printf(seq, " %s", snmp4_udp_list[i].name);
-
-	seq_puts(seq, "\nUdpLite:");
-	for (i = 0; snmp4_udp_list[i].name != NULL; i++)
-		seq_printf(seq, " %lu",
-			   snmp_fold_field((void __percpu **)net->mib.udplite_statistics,
-					   snmp4_udp_list[i].entry));
-=======
 static int snmp_seq_show_ipstats(struct seq_file *seq, void *v)
 {
 	struct net *net = seq->private;
@@ -654,29 +453,11 @@ static int snmp_seq_show_tcp_udp(struct seq_file *seq, void *v)
 	seq_puts(seq, "\nUdpLite:");
 	for (i = 0; snmp4_udp_list[i].name; i++)
 		seq_printf(seq, " %lu", buff[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seq_putc(seq, '\n');
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snmp_seq_open(struct inode *inode, struct file *file)
-{
-	return single_open_net(inode, file, snmp_seq_show);
-}
-
-static const struct file_operations snmp_seq_fops = {
-	.owner	 = THIS_MODULE,
-	.open	 = snmp_seq_open,
-	.read	 = seq_read,
-	.llseek	 = seq_lseek,
-	.release = single_release_net,
-};
-
-
-
-=======
 static int snmp_seq_show(struct seq_file *seq, void *v)
 {
 	snmp_seq_show_ipstats(seq, v);
@@ -689,62 +470,11 @@ static int snmp_seq_show(struct seq_file *seq, void *v)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Output /proc/net/netstat
  */
 static int netstat_seq_show(struct seq_file *seq, void *v)
 {
-<<<<<<< HEAD
-	int i;
-	struct net *net = seq->private;
-
-	seq_puts(seq, "TcpExt:");
-	for (i = 0; snmp4_net_list[i].name != NULL; i++)
-		seq_printf(seq, " %s", snmp4_net_list[i].name);
-
-	seq_puts(seq, "\nTcpExt:");
-	for (i = 0; snmp4_net_list[i].name != NULL; i++)
-		seq_printf(seq, " %lu",
-			   snmp_fold_field((void __percpu **)net->mib.net_statistics,
-					   snmp4_net_list[i].entry));
-
-	seq_puts(seq, "\nIpExt:");
-	for (i = 0; snmp4_ipextstats_list[i].name != NULL; i++)
-		seq_printf(seq, " %s", snmp4_ipextstats_list[i].name);
-
-	seq_puts(seq, "\nIpExt:");
-	for (i = 0; snmp4_ipextstats_list[i].name != NULL; i++)
-		seq_printf(seq, " %llu",
-			   snmp_fold_field64((void __percpu **)net->mib.ip_statistics,
-					     snmp4_ipextstats_list[i].entry,
-					     offsetof(struct ipstats_mib, syncp)));
-
-	seq_putc(seq, '\n');
-	return 0;
-}
-
-static int netstat_seq_open(struct inode *inode, struct file *file)
-{
-	return single_open_net(inode, file, netstat_seq_show);
-}
-
-static const struct file_operations netstat_seq_fops = {
-	.owner	 = THIS_MODULE,
-	.open	 = netstat_seq_open,
-	.read	 = seq_read,
-	.llseek	 = seq_lseek,
-	.release = single_release_net,
-};
-
-static __net_init int ip_proc_init_net(struct net *net)
-{
-	if (!proc_net_fops_create(net, "sockstat", S_IRUGO, &sockstat_seq_fops))
-		goto out_sockstat;
-	if (!proc_net_fops_create(net, "netstat", S_IRUGO, &netstat_seq_fops))
-		goto out_netstat;
-	if (!proc_net_fops_create(net, "snmp", S_IRUGO, &snmp_seq_fops))
-=======
 	const int ip_cnt = ARRAY_SIZE(snmp4_ipextstats_list) - 1;
 	const int tcp_cnt = ARRAY_SIZE(snmp4_net_list) - 1;
 	struct net *net = seq->private;
@@ -806,36 +536,23 @@ static __net_init int ip_proc_init_net(struct net *net)
 		goto out_netstat;
 	if (!proc_create_net_single("snmp", 0444, net->proc_net, snmp_seq_show,
 			NULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_snmp;
 
 	return 0;
 
 out_snmp:
-<<<<<<< HEAD
-	proc_net_remove(net, "netstat");
-out_netstat:
-	proc_net_remove(net, "sockstat");
-=======
 	remove_proc_entry("netstat", net->proc_net);
 out_netstat:
 	remove_proc_entry("sockstat", net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_sockstat:
 	return -ENOMEM;
 }
 
 static __net_exit void ip_proc_exit_net(struct net *net)
 {
-<<<<<<< HEAD
-	proc_net_remove(net, "snmp");
-	proc_net_remove(net, "netstat");
-	proc_net_remove(net, "sockstat");
-=======
 	remove_proc_entry("snmp", net->proc_net);
 	remove_proc_entry("netstat", net->proc_net);
 	remove_proc_entry("sockstat", net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __net_initdata struct pernet_operations ip_proc_ops = {
@@ -847,7 +564,3 @@ int __init ip_misc_proc_init(void)
 {
 	return register_pernet_subsys(&ip_proc_ops);
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2008
  * Guennadi Liakhovetski, DENX Software Engineering, <lg@denx.de>
  *
-<<<<<<< HEAD
- * This file is subject to the terms and conditions of version 2 of
- * the GNU General Public License.  See the file COPYING in the main
- * directory of this archive for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LED driver for the DAC124S085 SPI DAC
  */
 
@@ -20,29 +10,15 @@
 #include <linux/module.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/spinlock.h>
-#include <linux/workqueue.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spi/spi.h>
 
 struct dac124s085_led {
 	struct led_classdev	ldev;
 	struct spi_device	*spi;
 	int			id;
-<<<<<<< HEAD
-	int			brightness;
 	char			name[sizeof("dac124s085-3")];
 
 	struct mutex		mutex;
-	struct work_struct	work;
-	spinlock_t		lock;
-=======
-	char			name[sizeof("dac124s085-3")];
-
-	struct mutex		mutex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dac124s085 {
@@ -54,35 +30,11 @@ struct dac124s085 {
 #define ALL_WRITE_UPDATE	(2 << 12)
 #define POWER_DOWN_OUTPUT	(3 << 12)
 
-<<<<<<< HEAD
-static void dac124s085_led_work(struct work_struct *work)
-{
-	struct dac124s085_led *led = container_of(work, struct dac124s085_led,
-						  work);
-	u16 word;
-
-	mutex_lock(&led->mutex);
-	word = cpu_to_le16(((led->id) << 14) | REG_WRITE_UPDATE |
-			   (led->brightness & 0xfff));
-	spi_write(led->spi, (const u8 *)&word, sizeof(word));
-	mutex_unlock(&led->mutex);
-}
-
-static void dac124s085_set_brightness(struct led_classdev *ldev,
-=======
 static int dac124s085_set_brightness(struct led_classdev *ldev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      enum led_brightness brightness)
 {
 	struct dac124s085_led *led = container_of(ldev, struct dac124s085_led,
 						  ldev);
-<<<<<<< HEAD
-
-	spin_lock(&led->lock);
-	led->brightness = brightness;
-	schedule_work(&led->work);
-	spin_unlock(&led->lock);
-=======
 	u16 word;
 	int ret;
 
@@ -93,7 +45,6 @@ static int dac124s085_set_brightness(struct led_classdev *ldev,
 	mutex_unlock(&led->mutex);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dac124s085_probe(struct spi_device *spi)
@@ -102,11 +53,7 @@ static int dac124s085_probe(struct spi_device *spi)
 	struct dac124s085_led	*led;
 	int i, ret;
 
-<<<<<<< HEAD
-	dac = kzalloc(sizeof(*dac), GFP_KERNEL);
-=======
 	dac = devm_kzalloc(&spi->dev, sizeof(*dac), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dac)
 		return -ENOMEM;
 
@@ -115,25 +62,13 @@ static int dac124s085_probe(struct spi_device *spi)
 	for (i = 0; i < ARRAY_SIZE(dac->leds); i++) {
 		led		= dac->leds + i;
 		led->id		= i;
-<<<<<<< HEAD
-		led->brightness	= LED_OFF;
 		led->spi	= spi;
 		snprintf(led->name, sizeof(led->name), "dac124s085-%d", i);
-		spin_lock_init(&led->lock);
-		INIT_WORK(&led->work, dac124s085_led_work);
-=======
-		led->spi	= spi;
-		snprintf(led->name, sizeof(led->name), "dac124s085-%d", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_init(&led->mutex);
 		led->ldev.name = led->name;
 		led->ldev.brightness = LED_OFF;
 		led->ldev.max_brightness = 0xfff;
-<<<<<<< HEAD
-		led->ldev.brightness_set = dac124s085_set_brightness;
-=======
 		led->ldev.brightness_set_blocking = dac124s085_set_brightness;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = led_classdev_register(&spi->dev, &led->ldev);
 		if (ret < 0)
 			goto eledcr;
@@ -147,37 +82,16 @@ eledcr:
 	while (i--)
 		led_classdev_unregister(&dac->leds[i].ldev);
 
-<<<<<<< HEAD
-	spi_set_drvdata(spi, NULL);
-	kfree(dac);
-	return ret;
-}
-
-static int dac124s085_remove(struct spi_device *spi)
-=======
 	return ret;
 }
 
 static void dac124s085_remove(struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dac124s085	*dac = spi_get_drvdata(spi);
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < ARRAY_SIZE(dac->leds); i++) {
-		led_classdev_unregister(&dac->leds[i].ldev);
-		cancel_work_sync(&dac->leds[i].work);
-	}
-
-	spi_set_drvdata(spi, NULL);
-	kfree(dac);
-
-	return 0;
-=======
 	for (i = 0; i < ARRAY_SIZE(dac->leds); i++)
 		led_classdev_unregister(&dac->leds[i].ldev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver dac124s085_driver = {
@@ -185,10 +99,6 @@ static struct spi_driver dac124s085_driver = {
 	.remove		= dac124s085_remove,
 	.driver = {
 		.name	= "dac124s085",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

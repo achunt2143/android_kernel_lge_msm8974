@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -37,11 +34,7 @@
  *		Andi Kleen	: 	Replace ip_reply with ip_send_reply.
  *		Andi Kleen	:	Split fast and slow ip_build_xmit path
  *					for decreased register pressure on x86
-<<<<<<< HEAD
- *					and more readibility.
-=======
  *					and more readability.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		Marc Boucher	:	When call_out_firewall returns FW_QUEUE,
  *					silently drop skb instead of failing with -EPERM.
  *		Detlev Wengorz	:	Copy protocol for fragments.
@@ -50,11 +43,7 @@
  *		Hirokazu Takahashi:	sendfile() on UDP works now.
  */
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -84,21 +73,6 @@
 #include <net/arp.h>
 #include <net/icmp.h>
 #include <net/checksum.h>
-<<<<<<< HEAD
-#include <net/inetpeer.h>
-#include <linux/igmp.h>
-#include <linux/netfilter_ipv4.h>
-#include <linux/netfilter_bridge.h>
-#include <linux/mroute.h>
-#include <linux/netlink.h>
-#include <linux/tcp.h>
-
-int sysctl_ip_default_ttl __read_mostly = IPDEFTTL;
-EXPORT_SYMBOL(sysctl_ip_default_ttl);
-
-/* Generate a checksum for an outgoing IP datagram. */
-__inline__ void ip_send_check(struct iphdr *iph)
-=======
 #include <net/gso.h>
 #include <net/inetpeer.h>
 #include <net/inet_ecn.h>
@@ -117,32 +91,12 @@ ip_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 
 /* Generate a checksum for an outgoing IP datagram. */
 void ip_send_check(struct iphdr *iph)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iph->check = 0;
 	iph->check = ip_fast_csum((unsigned char *)iph, iph->ihl);
 }
 EXPORT_SYMBOL(ip_send_check);
 
-<<<<<<< HEAD
-int __ip_local_out(struct sk_buff *skb)
-{
-	struct iphdr *iph = ip_hdr(skb);
-
-	iph->tot_len = htons(skb->len);
-	ip_send_check(iph);
-	return nf_hook(NFPROTO_IPV4, NF_INET_LOCAL_OUT, skb, NULL,
-		       skb_dst(skb)->dev, dst_output);
-}
-
-int ip_local_out(struct sk_buff *skb)
-{
-	int err;
-
-	err = __ip_local_out(skb);
-	if (likely(err == 1))
-		err = dst_output(skb);
-=======
 int __ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	struct iphdr *iph = ip_hdr(skb);
@@ -173,35 +127,15 @@ int ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb)
 	err = __ip_local_out(net, sk, skb);
 	if (likely(err == 1))
 		err = dst_output(net, sk, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 EXPORT_SYMBOL_GPL(ip_local_out);
 
-<<<<<<< HEAD
-/* dev_loopback_xmit for use with netfilter. */
-static int ip_dev_loopback_xmit(struct sk_buff *newskb)
-{
-	skb_reset_mac_header(newskb);
-	__skb_pull(newskb, skb_network_offset(newskb));
-	newskb->pkt_type = PACKET_LOOPBACK;
-	newskb->ip_summed = CHECKSUM_UNNECESSARY;
-	WARN_ON(!skb_dst(newskb));
-	skb_dst_force(newskb);
-	netif_rx_ni(newskb);
-	return 0;
-}
-
-static inline int ip_select_ttl(struct inet_sock *inet, struct dst_entry *dst)
-{
-	int ttl = inet->uc_ttl;
-=======
 static inline int ip_select_ttl(const struct inet_sock *inet,
 				const struct dst_entry *dst)
 {
 	int ttl = READ_ONCE(inet->uc_ttl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ttl < 0)
 		ttl = ip4_dst_hoplimit(dst);
@@ -212,13 +146,6 @@ static inline int ip_select_ttl(const struct inet_sock *inet,
  *		Add an ip header to a skbuff and send it out.
  *
  */
-<<<<<<< HEAD
-int ip_build_and_send_pkt(struct sk_buff *skb, struct sock *sk,
-			  __be32 saddr, __be32 daddr, struct ip_options_rcu *opt)
-{
-	struct inet_sock *inet = inet_sk(sk);
-	struct rtable *rt = skb_rtable(skb);
-=======
 int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
 			  __be32 saddr, __be32 daddr, struct ip_options_rcu *opt,
 			  u8 tos)
@@ -226,7 +153,6 @@ int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
 	const struct inet_sock *inet = inet_sk(sk);
 	struct rtable *rt = skb_rtable(skb);
 	struct net *net = sock_net(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iphdr *iph;
 
 	/* Build the IP header. */
@@ -235,37 +161,11 @@ int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
 	iph = ip_hdr(skb);
 	iph->version  = 4;
 	iph->ihl      = 5;
-<<<<<<< HEAD
-	iph->tos      = inet->tos;
-	if (ip_dont_fragment(sk, &rt->dst))
-		iph->frag_off = htons(IP_DF);
-	else
-		iph->frag_off = 0;
-=======
 	iph->tos      = tos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iph->ttl      = ip_select_ttl(inet, &rt->dst);
 	iph->daddr    = (opt && opt->opt.srr ? opt->opt.faddr : daddr);
 	iph->saddr    = saddr;
 	iph->protocol = sk->sk_protocol;
-<<<<<<< HEAD
-	ip_select_ident(skb, sk);
-
-	if (opt && opt->opt.optlen) {
-		iph->ihl += opt->opt.optlen>>2;
-		ip_options_build(skb, &opt->opt, daddr, rt, 0);
-	}
-
-	skb->priority = sk->sk_priority;
-	skb->mark = sk->sk_mark;
-
-	/* Send it out. */
-	return ip_local_out(skb);
-}
-EXPORT_SYMBOL_GPL(ip_build_and_send_pkt);
-
-static inline int ip_finish_output2(struct sk_buff *skb)
-=======
 	/* Do not bother generating IPID for small packets (eg SYNACK) */
 	if (skb->len <= IPV4_MIN_MTU || ip_dont_fragment(sk, &rt->dst)) {
 		iph->frag_off = htons(IP_DF);
@@ -296,41 +196,12 @@ static inline int ip_finish_output2(struct sk_buff *skb)
 EXPORT_SYMBOL_GPL(ip_build_and_send_pkt);
 
 static int ip_finish_output2(struct net *net, struct sock *sk, struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dst_entry *dst = skb_dst(skb);
 	struct rtable *rt = (struct rtable *)dst;
 	struct net_device *dev = dst->dev;
 	unsigned int hh_len = LL_RESERVED_SPACE(dev);
 	struct neighbour *neigh;
-<<<<<<< HEAD
-
-	if (rt->rt_type == RTN_MULTICAST) {
-		IP_UPD_PO_STATS(dev_net(dev), IPSTATS_MIB_OUTMCAST, skb->len);
-	} else if (rt->rt_type == RTN_BROADCAST)
-		IP_UPD_PO_STATS(dev_net(dev), IPSTATS_MIB_OUTBCAST, skb->len);
-
-	/* Be paranoid, rather than too clever. */
-	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
-		struct sk_buff *skb2;
-
-		skb2 = skb_realloc_headroom(skb, LL_RESERVED_SPACE(dev));
-		if (skb2 == NULL) {
-			kfree_skb(skb);
-			return -ENOMEM;
-		}
-		if (skb->sk)
-			skb_set_owner_w(skb2, skb->sk);
-		kfree_skb(skb);
-		skb = skb2;
-	}
-
-	rcu_read_lock();
-	neigh = dst_get_neighbour_noref(dst);
-	if (neigh) {
-		int res = dst_neigh_output(dst, neigh, skb);
-
-=======
 	bool is_v6gw = false;
 
 	if (rt->rt_type == RTN_MULTICAST) {
@@ -362,46 +233,11 @@ static int ip_finish_output2(struct net *net, struct sock *sk, struct sk_buff *s
 		sock_confirm_neigh(skb, neigh);
 		/* if crossing protocols, can not use the cached header */
 		res = neigh_output(neigh, skb, is_v6gw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcu_read_unlock();
 		return res;
 	}
 	rcu_read_unlock();
 
-<<<<<<< HEAD
-	if (net_ratelimit())
-		printk(KERN_DEBUG "ip_finish_output2: No header cache and no neighbour!\n");
-	kfree_skb(skb);
-	return -EINVAL;
-}
-
-static inline int ip_skb_dst_mtu(struct sk_buff *skb)
-{
-	struct inet_sock *inet = skb->sk ? inet_sk(skb->sk) : NULL;
-
-	return (inet && inet->pmtudisc == IP_PMTUDISC_PROBE) ?
-	       skb_dst(skb)->dev->mtu : dst_mtu(skb_dst(skb));
-}
-
-static int ip_finish_output(struct sk_buff *skb)
-{
-#if defined(CONFIG_NETFILTER) && defined(CONFIG_XFRM)
-	/* Policy lookup after SNAT yielded a new policy */
-	if (skb_dst(skb)->xfrm != NULL) {
-		IPCB(skb)->flags |= IPSKB_REROUTED;
-		return dst_output(skb);
-	}
-#endif
-	if (skb->len > ip_skb_dst_mtu(skb) && !skb_is_gso(skb))
-		return ip_fragment(skb, ip_finish_output2);
-	else
-		return ip_finish_output2(skb);
-}
-
-int ip_mc_output(struct sk_buff *skb)
-{
-	struct sock *sk = skb->sk;
-=======
 	net_dbg_ratelimited("%s: No header cache and no neighbour!\n",
 			    __func__);
 	kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_CREATEFAIL);
@@ -529,18 +365,12 @@ static int ip_mc_finish_output(struct net *net, struct sock *sk,
 
 int ip_mc_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rtable *rt = skb_rtable(skb);
 	struct net_device *dev = rt->dst.dev;
 
 	/*
 	 *	If the indicated interface is up and running, send the packet.
 	 */
-<<<<<<< HEAD
-	IP_UPD_PO_STATS(dev_net(dev), IPSTATS_MIB_OUT, skb->len);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->dev = dev;
 	skb->protocol = htons(ETH_P_IP);
 
@@ -567,13 +397,8 @@ int ip_mc_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 			struct sk_buff *newskb = skb_clone(skb, GFP_ATOMIC);
 			if (newskb)
 				NF_HOOK(NFPROTO_IPV4, NF_INET_POST_ROUTING,
-<<<<<<< HEAD
-					newskb, NULL, newskb->dev,
-					ip_dev_loopback_xmit);
-=======
 					net, sk, newskb, NULL, newskb->dev,
 					ip_mc_finish_output);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Multicasts with ttl 0 must not go beyond the host */
@@ -587,22 +412,6 @@ int ip_mc_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 	if (rt->rt_flags&RTCF_BROADCAST) {
 		struct sk_buff *newskb = skb_clone(skb, GFP_ATOMIC);
 		if (newskb)
-<<<<<<< HEAD
-			NF_HOOK(NFPROTO_IPV4, NF_INET_POST_ROUTING, newskb,
-				NULL, newskb->dev, ip_dev_loopback_xmit);
-	}
-
-	return NF_HOOK_COND(NFPROTO_IPV4, NF_INET_POST_ROUTING, skb, NULL,
-			    skb->dev, ip_finish_output,
-			    !(IPCB(skb)->flags & IPSKB_REROUTED));
-}
-
-int ip_output(struct sk_buff *skb)
-{
-	struct net_device *dev = skb_dst(skb)->dev;
-
-	IP_UPD_PO_STATS(dev_net(dev), IPSTATS_MIB_OUT, skb->len);
-=======
 			NF_HOOK(NFPROTO_IPV4, NF_INET_POST_ROUTING,
 				net, sk, newskb, NULL, newskb->dev,
 				ip_mc_finish_output);
@@ -617,24 +426,16 @@ int ip_output(struct sk_buff *skb)
 int ip_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	struct net_device *dev = skb_dst(skb)->dev, *indev = skb->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb->dev = dev;
 	skb->protocol = htons(ETH_P_IP);
 
-<<<<<<< HEAD
-	return NF_HOOK_COND(NFPROTO_IPV4, NF_INET_POST_ROUTING, skb, NULL, dev,
-			    ip_finish_output,
-			    !(IPCB(skb)->flags & IPSKB_REROUTED));
-}
-=======
 	return NF_HOOK_COND(NFPROTO_IPV4, NF_INET_POST_ROUTING,
 			    net, sk, skb, indev, dev,
 			    ip_finish_output,
 			    !(IPCB(skb)->flags & IPSKB_REROUTED));
 }
 EXPORT_SYMBOL(ip_output);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * copy saddr and daddr, possibly using 64bit load/stores
@@ -646,16 +447,6 @@ static void ip_copy_addrs(struct iphdr *iph, const struct flowi4 *fl4)
 {
 	BUILD_BUG_ON(offsetof(typeof(*fl4), daddr) !=
 		     offsetof(typeof(*fl4), saddr) + sizeof(fl4->saddr));
-<<<<<<< HEAD
-	memcpy(&iph->saddr, &fl4->saddr,
-	       sizeof(fl4->saddr) + sizeof(fl4->daddr));
-}
-
-int ip_queue_xmit(struct sk_buff *skb, struct flowi *fl)
-{
-	struct sock *sk = skb->sk;
-	struct inet_sock *inet = inet_sk(sk);
-=======
 
 	iph->saddr = fl4->saddr;
 	iph->daddr = fl4->daddr;
@@ -667,7 +458,6 @@ int __ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl,
 {
 	struct inet_sock *inet = inet_sk(sk);
 	struct net *net = sock_net(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ip_options_rcu *inet_opt;
 	struct flowi4 *fl4;
 	struct rtable *rt;
@@ -681,20 +471,12 @@ int __ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl,
 	inet_opt = rcu_dereference(inet->inet_opt);
 	fl4 = &fl->u.ip4;
 	rt = skb_rtable(skb);
-<<<<<<< HEAD
-	if (rt != NULL)
-=======
 	if (rt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto packet_routed;
 
 	/* Make sure we can route this packet. */
 	rt = (struct rtable *)__sk_dst_check(sk, 0);
-<<<<<<< HEAD
-	if (rt == NULL) {
-=======
 	if (!rt) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__be32 daddr;
 
 		/* Use correct destination address if we have options. */
@@ -706,20 +488,12 @@ int __ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl,
 		 * keep trying until route appears or the connection times
 		 * itself out.
 		 */
-<<<<<<< HEAD
-		rt = ip_route_output_ports(sock_net(sk), fl4, sk,
-=======
 		rt = ip_route_output_ports(net, fl4, sk,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   daddr, inet->inet_saddr,
 					   inet->inet_dport,
 					   inet->inet_sport,
 					   sk->sk_protocol,
-<<<<<<< HEAD
-					   RT_CONN_FLAGS(sk),
-=======
 					   RT_TOS(tos),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   sk->sk_bound_dev_if);
 		if (IS_ERR(rt))
 			goto no_route;
@@ -728,24 +502,15 @@ int __ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl,
 	skb_dst_set_noref(skb, &rt->dst);
 
 packet_routed:
-<<<<<<< HEAD
-	if (inet_opt && inet_opt->opt.is_strictroute && fl4->daddr != rt->rt_gateway)
-=======
 	if (inet_opt && inet_opt->opt.is_strictroute && rt->rt_uses_gateway)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto no_route;
 
 	/* OK, we know where to send it, allocate and build IP header. */
 	skb_push(skb, sizeof(struct iphdr) + (inet_opt ? inet_opt->opt.optlen : 0));
 	skb_reset_network_header(skb);
 	iph = ip_hdr(skb);
-<<<<<<< HEAD
-	*((__be16 *)iph) = htons((4 << 12) | (5 << 8) | (inet->tos & 0xff));
-	if (ip_dont_fragment(sk, &rt->dst) && !skb->local_df)
-=======
 	*((__be16 *)iph) = htons((4 << 12) | (5 << 8) | (tos & 0xff));
 	if (ip_dont_fragment(sk, &rt->dst) && !skb->ignore_df)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iph->frag_off = htons(IP_DF);
 	else
 		iph->frag_off = 0;
@@ -757,17 +522,6 @@ packet_routed:
 
 	if (inet_opt && inet_opt->opt.optlen) {
 		iph->ihl += inet_opt->opt.optlen >> 2;
-<<<<<<< HEAD
-		ip_options_build(skb, &inet_opt->opt, inet->inet_daddr, rt, 0);
-	}
-
-	ip_select_ident_segs(skb, sk, skb_shinfo(skb)->gso_segs ?: 1);
-
-	skb->priority = sk->sk_priority;
-	skb->mark = sk->sk_mark;
-
-	res = ip_local_out(skb);
-=======
 		ip_options_build(skb, &inet_opt->opt, inet->inet_daddr, rt);
 	}
 
@@ -779,20 +533,11 @@ packet_routed:
 	skb->mark = READ_ONCE(sk->sk_mark);
 
 	res = ip_local_out(net, sk, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 	return res;
 
 no_route:
 	rcu_read_unlock();
-<<<<<<< HEAD
-	IP_INC_STATS(sock_net(sk), IPSTATS_MIB_OUTNOROUTES);
-	kfree_skb(skb);
-	return -EHOSTUNREACH;
-}
-EXPORT_SYMBOL(ip_queue_xmit);
-
-=======
 	IP_INC_STATS(net, IPSTATS_MIB_OUTNOROUTES);
 	kfree_skb_reason(skb, SKB_DROP_REASON_IP_OUTNOROUTES);
 	return -EHOSTUNREACH;
@@ -804,49 +549,31 @@ int ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl)
 	return __ip_queue_xmit(sk, skb, fl, READ_ONCE(inet_sk(sk)->tos));
 }
 EXPORT_SYMBOL(ip_queue_xmit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ip_copy_metadata(struct sk_buff *to, struct sk_buff *from)
 {
 	to->pkt_type = from->pkt_type;
 	to->priority = from->priority;
 	to->protocol = from->protocol;
-<<<<<<< HEAD
-=======
 	to->skb_iif = from->skb_iif;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_dst_drop(to);
 	skb_dst_copy(to, from);
 	to->dev = from->dev;
 	to->mark = from->mark;
 
-<<<<<<< HEAD
-	/* Copy the flags to each fragment. */
-	IPCB(to)->flags = IPCB(from)->flags;
-=======
 	skb_copy_hash(to, from);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_NET_SCHED
 	to->tc_index = from->tc_index;
 #endif
 	nf_copy(to, from);
-<<<<<<< HEAD
-#if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE)
-	to->nf_trace = from->nf_trace;
-#endif
-#if defined(CONFIG_IP_VS) || defined(CONFIG_IP_VS_MODULE)
-=======
 	skb_ext_copy(to, from);
 #if IS_ENABLED(CONFIG_IP_VS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	to->ipvs_property = from->ipvs_property;
 #endif
 	skb_copy_secmark(to, from);
 }
 
-<<<<<<< HEAD
-=======
 static int ip_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 		       unsigned int mtu,
 		       int (*output)(struct net *, struct sock *, struct sk_buff *))
@@ -1025,7 +752,6 @@ struct sk_buff *ip_frag_next(struct sk_buff *skb, struct ip_frag_state *state)
 }
 EXPORT_SYMBOL(ip_frag_next);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	This IP datagram is too large to be sent in one piece.  Break it up into
  *	smaller pieces (each of size equal to IP header plus
@@ -1033,21 +759,6 @@ EXPORT_SYMBOL(ip_frag_next);
  *	single device frame, and queue such a frame for sending.
  */
 
-<<<<<<< HEAD
-int ip_fragment(struct sk_buff *skb, int (*output)(struct sk_buff *))
-{
-	struct iphdr *iph;
-	int ptr;
-	struct net_device *dev;
-	struct sk_buff *skb2;
-	unsigned int mtu, hlen, left, len, ll_rs;
-	int offset;
-	__be16 not_last_frag;
-	struct rtable *rt = skb_rtable(skb);
-	int err = 0;
-
-	dev = rt->dst.dev;
-=======
 int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 		   int (*output)(struct net *, struct sock *, struct sk_buff *))
 {
@@ -1065,7 +776,6 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 	if (skb->ip_summed == CHECKSUM_PARTIAL &&
 	    (err = skb_checksum_help(skb)))
 		goto fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Point into the IP datagram header.
@@ -1073,39 +783,18 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 
 	iph = ip_hdr(skb);
 
-<<<<<<< HEAD
-	if (unlikely(((iph->frag_off & htons(IP_DF)) && !skb->local_df) ||
-		     (IPCB(skb)->frag_max_size &&
-		      IPCB(skb)->frag_max_size > dst_mtu(&rt->dst)))) {
-		IP_INC_STATS(dev_net(dev), IPSTATS_MIB_FRAGFAILS);
-		icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
-			  htonl(ip_skb_dst_mtu(skb)));
-		kfree_skb(skb);
-		return -EMSGSIZE;
-	}
-=======
 	mtu = ip_skb_dst_mtu(sk, skb);
 	if (IPCB(skb)->frag_max_size && IPCB(skb)->frag_max_size < mtu)
 		mtu = IPCB(skb)->frag_max_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Setup starting values.
 	 */
 
 	hlen = iph->ihl * 4;
-<<<<<<< HEAD
-	mtu = dst_mtu(&rt->dst) - hlen;	/* Size of data space */
-#ifdef CONFIG_BRIDGE_NETFILTER
-	if (skb->nf_bridge)
-		mtu -= nf_bridge_mtu_reduction(skb);
-#endif
-	IPCB(skb)->flags |= IPSKB_FRAG_COMPLETE;
-=======
 	mtu = mtu - hlen;	/* Size of data space */
 	IPCB(skb)->flags |= IPSKB_FRAG_COMPLETE;
 	ll_rs = LL_RESERVED_SPACE(rt->dst.dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* When frag_list is given, use it. First, check its validity:
 	 * some transformers could create wrong frag_list or break existing
@@ -1116,32 +805,20 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 	 */
 	if (skb_has_frag_list(skb)) {
 		struct sk_buff *frag, *frag2;
-<<<<<<< HEAD
-		int first_len = skb_pagelen(skb);
-=======
 		unsigned int first_len = skb_pagelen(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (first_len - hlen > mtu ||
 		    ((first_len - hlen) & 7) ||
 		    ip_is_fragment(iph) ||
-<<<<<<< HEAD
-		    skb_cloned(skb))
-=======
 		    skb_cloned(skb) ||
 		    skb_headroom(skb) < ll_rs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto slow_path;
 
 		skb_walk_frags(skb, frag) {
 			/* Correct geometry. */
 			if (frag->len > mtu ||
 			    ((frag->len & 7) && frag->next) ||
-<<<<<<< HEAD
-			    skb_headroom(frag) < hlen)
-=======
 			    skb_headroom(frag) < hlen + ll_rs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto slow_path_clean;
 
 			/* Partially cloned skb? */
@@ -1157,68 +834,11 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 		}
 
 		/* Everything is OK. Generate! */
-<<<<<<< HEAD
-
-		err = 0;
-		offset = 0;
-		frag = skb_shinfo(skb)->frag_list;
-		skb_frag_list_init(skb);
-		skb->data_len = first_len - skb_headlen(skb);
-		skb->len = first_len;
-		iph->tot_len = htons(first_len);
-		iph->frag_off = htons(IP_MF);
-		ip_send_check(iph);
-=======
 		ip_fraglist_init(skb, iph, hlen, &iter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (;;) {
 			/* Prepare header of the next frame,
 			 * before previous one went down. */
-<<<<<<< HEAD
-			if (frag) {
-				frag->ip_summed = CHECKSUM_NONE;
-				skb_reset_transport_header(frag);
-				__skb_push(frag, hlen);
-				skb_reset_network_header(frag);
-				memcpy(skb_network_header(frag), iph, hlen);
-				iph = ip_hdr(frag);
-				iph->tot_len = htons(frag->len);
-				ip_copy_metadata(frag, skb);
-				if (offset == 0)
-					ip_options_fragment(frag);
-				offset += skb->len - hlen;
-				iph->frag_off = htons(offset>>3);
-				if (frag->next != NULL)
-					iph->frag_off |= htons(IP_MF);
-				/* Ready, complete checksum */
-				ip_send_check(iph);
-			}
-
-			err = output(skb);
-
-			if (!err)
-				IP_INC_STATS(dev_net(dev), IPSTATS_MIB_FRAGCREATES);
-			if (err || !frag)
-				break;
-
-			skb = frag;
-			frag = skb->next;
-			skb->next = NULL;
-		}
-
-		if (err == 0) {
-			IP_INC_STATS(dev_net(dev), IPSTATS_MIB_FRAGOKS);
-			return 0;
-		}
-
-		while (frag) {
-			skb = frag->next;
-			kfree_skb(frag);
-			frag = skb;
-		}
-		IP_INC_STATS(dev_net(dev), IPSTATS_MIB_FRAGFAILS);
-=======
 			if (iter.frag) {
 				bool first_frag = (iter.offset == 0);
 
@@ -1255,7 +875,6 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 		kfree_skb_list(iter.frag);
 
 		IP_INC_STATS(net, IPSTATS_MIB_FRAGFAILS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 slow_path_clean:
@@ -1269,109 +888,17 @@ slow_path_clean:
 	}
 
 slow_path:
-<<<<<<< HEAD
-	left = skb->len - hlen;		/* Space per frame */
-	ptr = hlen;		/* Where to start from */
-
-	/* for bridged IP traffic encapsulated inside f.e. a vlan header,
-	 * we need to make room for the encapsulating header
-	 */
-	ll_rs = LL_RESERVED_SPACE_EXTRA(rt->dst.dev, nf_bridge_pad(skb));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	Fragment the datagram.
 	 */
 
-<<<<<<< HEAD
-	offset = (ntohs(iph->frag_off) & IP_OFFSET) << 3;
-	not_last_frag = iph->frag_off & htons(IP_MF);
-=======
 	ip_frag_init(skb, hlen, ll_rs, mtu, IPCB(skb)->flags & IPSKB_FRAG_PMTU,
 		     &state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Keep copying data until we run out.
 	 */
 
-<<<<<<< HEAD
-	while (left > 0) {
-		len = left;
-		/* IF: it doesn't fit, use 'mtu' - the data space left */
-		if (len > mtu)
-			len = mtu;
-		/* IF: we are not sending up to and including the packet end
-		   then align the next start on an eight byte boundary */
-		if (len < left)	{
-			len &= ~7;
-		}
-		/*
-		 *	Allocate buffer.
-		 */
-
-		if ((skb2 = alloc_skb(len+hlen+ll_rs, GFP_ATOMIC)) == NULL) {
-			NETDEBUG(KERN_INFO "IP: frag: no memory for new fragment!\n");
-			err = -ENOMEM;
-			goto fail;
-		}
-
-		/*
-		 *	Set up data on packet
-		 */
-
-		ip_copy_metadata(skb2, skb);
-		skb_reserve(skb2, ll_rs);
-		skb_put(skb2, len + hlen);
-		skb_reset_network_header(skb2);
-		skb2->transport_header = skb2->network_header + hlen;
-
-		/*
-		 *	Charge the memory for the fragment to any owner
-		 *	it might possess
-		 */
-
-		if (skb->sk)
-			skb_set_owner_w(skb2, skb->sk);
-
-		/*
-		 *	Copy the packet header into the new buffer.
-		 */
-
-		skb_copy_from_linear_data(skb, skb_network_header(skb2), hlen);
-
-		/*
-		 *	Copy a block of the IP datagram.
-		 */
-		if (skb_copy_bits(skb, ptr, skb_transport_header(skb2), len))
-			BUG();
-		left -= len;
-
-		/*
-		 *	Fill in the new header fields.
-		 */
-		iph = ip_hdr(skb2);
-		iph->frag_off = htons((offset >> 3));
-
-		/* ANK: dirty, but effective trick. Upgrade options only if
-		 * the segment to be fragmented was THE FIRST (otherwise,
-		 * options are already fixed) and make it ONCE
-		 * on the initial skb, so that all the following fragments
-		 * will inherit fixed options.
-		 */
-		if (offset == 0)
-			ip_options_fragment(skb);
-
-		/*
-		 *	Added AC : If we are fragmenting a fragment that's not the
-		 *		   last fragment then keep MF on each bit
-		 */
-		if (left > 0 || not_last_frag)
-			iph->frag_off |= htons(IP_MF);
-		ptr += len;
-		offset += len;
-=======
 	while (state.left > 0) {
 		bool first_frag = (state.offset == 0);
 
@@ -1381,25 +908,10 @@ slow_path:
 			goto fail;
 		}
 		ip_frag_ipcb(skb, skb2, first_frag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 *	Put this fragment into the sending queue.
 		 */
-<<<<<<< HEAD
-		iph->tot_len = htons(len + hlen);
-
-		ip_send_check(iph);
-
-		err = output(skb2);
-		if (err)
-			goto fail;
-
-		IP_INC_STATS(dev_net(dev), IPSTATS_MIB_FRAGCREATES);
-	}
-	kfree_skb(skb);
-	IP_INC_STATS(dev_net(dev), IPSTATS_MIB_FRAGOKS);
-=======
 		skb_set_delivery_time(skb2, tstamp, mono_delivery_time);
 		err = output(net, sk, skb2);
 		if (err)
@@ -1409,36 +921,18 @@ slow_path:
 	}
 	consume_skb(skb);
 	IP_INC_STATS(net, IPSTATS_MIB_FRAGOKS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 
 fail:
 	kfree_skb(skb);
-<<<<<<< HEAD
-	IP_INC_STATS(dev_net(dev), IPSTATS_MIB_FRAGFAILS);
-	return err;
-}
-EXPORT_SYMBOL(ip_fragment);
-=======
 	IP_INC_STATS(net, IPSTATS_MIB_FRAGFAILS);
 	return err;
 }
 EXPORT_SYMBOL(ip_do_fragment);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int
 ip_generic_getfrag(void *from, char *to, int offset, int len, int odd, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	struct iovec *iov = from;
-
-	if (skb->ip_summed == CHECKSUM_PARTIAL) {
-		if (memcpy_fromiovecend(to, iov, offset, len) < 0)
-			return -EFAULT;
-	} else {
-		__wsum csum = 0;
-		if (csum_partial_copy_fromiovecend(to, iov, offset, len, &csum) < 0)
-=======
 	struct msghdr *msg = from;
 
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
@@ -1447,7 +941,6 @@ ip_generic_getfrag(void *from, char *to, int offset, int len, int odd, struct sk
 	} else {
 		__wsum csum = 0;
 		if (!csum_and_copy_from_iter_full(to, len, &csum, &msg->msg_iter))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		skb->csum = csum_block_add(skb->csum, csum, odd);
 	}
@@ -1455,88 +948,19 @@ ip_generic_getfrag(void *from, char *to, int offset, int len, int odd, struct sk
 }
 EXPORT_SYMBOL(ip_generic_getfrag);
 
-<<<<<<< HEAD
-static inline __wsum
-csum_page(struct page *page, int offset, int copy)
-{
-	char *kaddr;
-	__wsum csum;
-	kaddr = kmap(page);
-	csum = csum_partial(kaddr + offset, copy, 0);
-	kunmap(page);
-	return csum;
-}
-
-static inline int ip_ufo_append_data(struct sock *sk,
-			struct sk_buff_head *queue,
-			int getfrag(void *from, char *to, int offset, int len,
-			       int odd, struct sk_buff *skb),
-			void *from, int length, int hh_len, int fragheaderlen,
-			int transhdrlen, int maxfraglen, unsigned int flags)
-{
-	struct sk_buff *skb;
-	int err;
-
-	/* There is support for UDP fragmentation offload by network
-	 * device, so create one single skb packet containing complete
-	 * udp datagram
-	 */
-	if ((skb = skb_peek_tail(queue)) == NULL) {
-		skb = sock_alloc_send_skb(sk,
-			hh_len + fragheaderlen + transhdrlen + 20,
-			(flags & MSG_DONTWAIT), &err);
-
-		if (skb == NULL)
-			return err;
-
-		/* reserve space for Hardware header */
-		skb_reserve(skb, hh_len);
-
-		/* create space for UDP/IP header */
-		skb_put(skb, fragheaderlen + transhdrlen);
-
-		/* initialize network header pointer */
-		skb_reset_network_header(skb);
-
-		/* initialize protocol header pointer */
-		skb->transport_header = skb->network_header + fragheaderlen;
-
-		skb->ip_summed = CHECKSUM_PARTIAL;
-		skb->csum = 0;
-
-		/* specify the length of each IP datagram fragment */
-		skb_shinfo(skb)->gso_size = maxfraglen - fragheaderlen;
-		skb_shinfo(skb)->gso_type = SKB_GSO_UDP;
-		__skb_queue_tail(queue, skb);
-	}
-
-	return skb_append_datato_frags(sk, skb, getfrag, from,
-				       (length - transhdrlen));
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __ip_append_data(struct sock *sk,
 			    struct flowi4 *fl4,
 			    struct sk_buff_head *queue,
 			    struct inet_cork *cork,
-<<<<<<< HEAD
-=======
 			    struct page_frag *pfrag,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    int getfrag(void *from, char *to, int offset,
 					int len, int odd, struct sk_buff *skb),
 			    void *from, int length, int transhdrlen,
 			    unsigned int flags)
 {
 	struct inet_sock *inet = inet_sk(sk);
-<<<<<<< HEAD
-	struct sk_buff *skb;
-
-=======
 	struct ubuf_info *uarg = NULL;
 	struct sk_buff *skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ip_options *opt = cork->opt;
 	int hh_len;
 	int exthdrlen;
@@ -1544,11 +968,6 @@ static int __ip_append_data(struct sock *sk,
 	int copy;
 	int err;
 	int offset = 0;
-<<<<<<< HEAD
-	unsigned int maxfraglen, fragheaderlen;
-	int csummode = CHECKSUM_NONE;
-	struct rtable *rt = (struct rtable *)cork->dst;
-=======
 	bool zc = false;
 	unsigned int maxfraglen, fragheaderlen, maxnonfragsize;
 	int csummode = CHECKSUM_NONE;
@@ -1556,34 +975,22 @@ static int __ip_append_data(struct sock *sk,
 	bool paged, hold_tskey, extra_uref = false;
 	unsigned int wmem_alloc_delta = 0;
 	u32 tskey = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = skb_peek_tail(queue);
 
 	exthdrlen = !skb ? rt->dst.header_len : 0;
-<<<<<<< HEAD
-	mtu = cork->fragsize;
-=======
 	mtu = cork->gso_size ? IP_MAX_MTU : cork->fragsize;
 	paged = !!cork->gso_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hh_len = LL_RESERVED_SPACE(rt->dst.dev);
 
 	fragheaderlen = sizeof(struct iphdr) + (opt ? opt->optlen : 0);
 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen;
-<<<<<<< HEAD
-
-	if (cork->length + length > 0xFFFF - fragheaderlen) {
-		ip_local_error(sk, EMSGSIZE, fl4->daddr, inet->inet_dport,
-			       mtu-exthdrlen);
-=======
 	maxnonfragsize = ip_sk_ignore_df(sk) ? IP_MAX_MTU : mtu;
 
 	if (cork->length + length > maxnonfragsize - fragheaderlen) {
 		ip_local_error(sk, EMSGSIZE, fl4->daddr, inet->inet_dport,
 			       mtu - (opt ? opt->optlen : 0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EMSGSIZE;
 	}
 
@@ -1593,27 +1000,6 @@ static int __ip_append_data(struct sock *sk,
 	 */
 	if (transhdrlen &&
 	    length + fragheaderlen <= mtu &&
-<<<<<<< HEAD
-	    rt->dst.dev->features & NETIF_F_V4_CSUM &&
-	    !exthdrlen)
-		csummode = CHECKSUM_PARTIAL;
-
-	cork->length += length;
-	if ((skb && skb_has_frags(skb)) ||
-	    ((length > mtu) &&
-	    (skb_queue_len(queue) <= 1) &&
-	    (sk->sk_protocol == IPPROTO_UDP) &&
-	    (rt->dst.dev->features & NETIF_F_UFO) && !rt->dst.header_len &&
-	    (sk->sk_type == SOCK_DGRAM))) {
-		err = ip_ufo_append_data(sk, queue, getfrag, from, length,
-					 hh_len, fragheaderlen, transhdrlen,
-					 maxfraglen, flags);
-		if (err)
-			goto error;
-		return 0;
-	}
-
-=======
 	    rt->dst.dev->features & (NETIF_F_HW_CSUM | NETIF_F_IP_CSUM) &&
 	    (!(flags & MSG_MORE) || cork->gso_size) &&
 	    (!exthdrlen || (rt->dst.dev->features & NETIF_F_HW_ESP_TX_CSUM)))
@@ -1667,7 +1053,6 @@ static int __ip_append_data(struct sock *sk,
 	if (hold_tskey)
 		tskey = atomic_inc_return(&sk->sk_tskey) - 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* So, what's going on in the loop below?
 	 *
 	 * We use calculated fragment length to generate chained skb,
@@ -1688,12 +1073,8 @@ static int __ip_append_data(struct sock *sk,
 			unsigned int datalen;
 			unsigned int fraglen;
 			unsigned int fraggap;
-<<<<<<< HEAD
-			unsigned int alloclen;
-=======
 			unsigned int alloclen, alloc_extra;
 			unsigned int pagedlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct sk_buff *skb_prev;
 alloc_new_skb:
 			skb_prev = skb;
@@ -1710,21 +1091,10 @@ alloc_new_skb:
 			if (datalen > mtu - fragheaderlen)
 				datalen = maxfraglen - fragheaderlen;
 			fraglen = datalen + fragheaderlen;
-<<<<<<< HEAD
-
-			if ((flags & MSG_MORE) &&
-			    !(rt->dst.dev->features&NETIF_F_SG))
-				alloclen = mtu;
-			else
-				alloclen = fraglen;
-
-			alloclen += exthdrlen;
-=======
 			pagedlen = 0;
 
 			alloc_extra = hh_len + 15;
 			alloc_extra += exthdrlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* The last fragment gets additional space at tail.
 			 * Note, with MSG_MORE we overallocate on fragments,
@@ -1732,29 +1102,6 @@ alloc_new_skb:
 			 * the last.
 			 */
 			if (datalen == length + fraggap)
-<<<<<<< HEAD
-				alloclen += rt->dst.trailer_len;
-
-			if (transhdrlen) {
-				skb = sock_alloc_send_skb(sk,
-						alloclen + hh_len + 15,
-						(flags & MSG_DONTWAIT), &err);
-			} else {
-				skb = NULL;
-				if (atomic_read(&sk->sk_wmem_alloc) <=
-				    2 * sk->sk_sndbuf)
-					skb = sock_wmalloc(sk,
-							   alloclen + hh_len + 15, 1,
-							   sk->sk_allocation);
-				if (unlikely(skb == NULL))
-					err = -ENOBUFS;
-				else
-					/* only the initial fragment is
-					   time stamped */
-					cork->tx_flags = 0;
-			}
-			if (skb == NULL)
-=======
 				alloc_extra += rt->dst.trailer_len;
 
 			if ((flags & MSG_MORE) &&
@@ -1784,7 +1131,6 @@ alloc_new_skb:
 					err = -ENOBUFS;
 			}
 			if (!skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto error;
 
 			/*
@@ -1793,19 +1139,11 @@ alloc_new_skb:
 			skb->ip_summed = csummode;
 			skb->csum = 0;
 			skb_reserve(skb, hh_len);
-<<<<<<< HEAD
-			skb_shinfo(skb)->tx_flags = cork->tx_flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 *	Find where to start putting bytes.
 			 */
-<<<<<<< HEAD
-			data = skb_put(skb, fraglen + exthdrlen);
-=======
 			data = skb_put(skb, fraglen + exthdrlen - pagedlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb_set_network_header(skb, exthdrlen);
 			skb->transport_header = (skb->network_header +
 						 fragheaderlen);
@@ -1814,51 +1152,31 @@ alloc_new_skb:
 			if (fraggap) {
 				skb->csum = skb_copy_and_csum_bits(
 					skb_prev, maxfraglen,
-<<<<<<< HEAD
-					data + transhdrlen, fraggap, 0);
-=======
 					data + transhdrlen, fraggap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				skb_prev->csum = csum_sub(skb_prev->csum,
 							  skb->csum);
 				data += fraggap;
 				pskb_trim_unique(skb_prev, maxfraglen);
 			}
 
-<<<<<<< HEAD
-			copy = datalen - transhdrlen - fraggap;
-=======
 			copy = datalen - transhdrlen - fraggap - pagedlen;
 			/* [!] NOTE: copy will be negative if pagedlen>0
 			 * because then the equation reduces to -fraggap.
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (copy > 0 && getfrag(from, data + transhdrlen, offset, copy, fraggap, skb) < 0) {
 				err = -EFAULT;
 				kfree_skb(skb);
 				goto error;
-<<<<<<< HEAD
-			}
-
-			offset += copy;
-			length -= datalen - fraggap;
-=======
 			} else if (flags & MSG_SPLICE_PAGES) {
 				copy = 0;
 			}
 
 			offset += copy;
 			length -= copy + transhdrlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			transhdrlen = 0;
 			exthdrlen = 0;
 			csummode = CHECKSUM_NONE;
 
-<<<<<<< HEAD
-			/*
-			 * Put the packet on the pending queue.
-			 */
-=======
 			/* only the initial fragment is time stamped */
 			skb_shinfo(skb)->tx_flags = cork->tx_flags;
 			cork->tx_flags = 0;
@@ -1877,7 +1195,6 @@ alloc_new_skb:
 				skb->sk = sk;
 				wmem_alloc_delta += skb->truesize;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__skb_queue_tail(queue, skb);
 			continue;
 		}
@@ -1885,12 +1202,8 @@ alloc_new_skb:
 		if (copy > length)
 			copy = length;
 
-<<<<<<< HEAD
-		if (!(rt->dst.dev->features&NETIF_F_SG)) {
-=======
 		if (!(rt->dst.dev->features&NETIF_F_SG) &&
 		    skb_tailroom(skb) >= copy) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int off;
 
 			off = skb->len;
@@ -1900,55 +1213,6 @@ alloc_new_skb:
 				err = -EFAULT;
 				goto error;
 			}
-<<<<<<< HEAD
-		} else {
-			int i = skb_shinfo(skb)->nr_frags;
-			skb_frag_t *frag = &skb_shinfo(skb)->frags[i-1];
-			struct page *page = cork->page;
-			int off = cork->off;
-			unsigned int left;
-
-			if (page && (left = PAGE_SIZE - off) > 0) {
-				if (copy >= left)
-					copy = left;
-				if (page != skb_frag_page(frag)) {
-					if (i == MAX_SKB_FRAGS) {
-						err = -EMSGSIZE;
-						goto error;
-					}
-					skb_fill_page_desc(skb, i, page, off, 0);
-					skb_frag_ref(skb, i);
-					frag = &skb_shinfo(skb)->frags[i];
-				}
-			} else if (i < MAX_SKB_FRAGS) {
-				if (copy > PAGE_SIZE)
-					copy = PAGE_SIZE;
-				page = alloc_pages(sk->sk_allocation, 0);
-				if (page == NULL)  {
-					err = -ENOMEM;
-					goto error;
-				}
-				cork->page = page;
-				cork->off = 0;
-
-				skb_fill_page_desc(skb, i, page, 0, 0);
-				frag = &skb_shinfo(skb)->frags[i];
-			} else {
-				err = -EMSGSIZE;
-				goto error;
-			}
-			if (getfrag(from, skb_frag_address(frag)+skb_frag_size(frag),
-				    offset, copy, skb->len, skb) < 0) {
-				err = -EFAULT;
-				goto error;
-			}
-			cork->off += copy;
-			skb_frag_size_add(frag, copy);
-			skb->len += copy;
-			skb->data_len += copy;
-			skb->truesize += copy;
-			atomic_add(copy, &sk->sk_wmem_alloc);
-=======
 		} else if (flags & MSG_SPLICE_PAGES) {
 			struct msghdr *msg = from;
 
@@ -1995,19 +1259,11 @@ alloc_new_skb:
 			err = skb_zerocopy_iter_dgram(skb, from, copy);
 			if (err < 0)
 				goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		offset += copy;
 		length -= copy;
 	}
 
-<<<<<<< HEAD
-	return 0;
-
-error:
-	cork->length -= length;
-	IP_INC_STATS(sock_net(sk), IPSTATS_MIB_OUTDISCARDS);
-=======
 	if (wmem_alloc_delta)
 		refcount_add(wmem_alloc_delta, &sk->sk_wmem_alloc);
 	return 0;
@@ -2021,19 +1277,12 @@ error:
 	refcount_add(wmem_alloc_delta, &sk->sk_wmem_alloc);
 	if (hold_tskey)
 		atomic_dec(&sk->sk_tskey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int ip_setup_cork(struct sock *sk, struct inet_cork *cork,
 			 struct ipcm_cookie *ipc, struct rtable **rtp)
 {
-<<<<<<< HEAD
-	struct inet_sock *inet = inet_sk(sk);
-	struct ip_options_rcu *opt;
-	struct rtable *rt;
-
-=======
 	struct ip_options_rcu *opt;
 	struct rtable *rt;
 
@@ -2047,45 +1296,21 @@ static int ip_setup_cork(struct sock *sk, struct inet_cork *cork,
 	if (!inetdev_valid_mtu(cork->fragsize))
 		return -ENETUNREACH;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * setup for corking.
 	 */
 	opt = ipc->opt;
 	if (opt) {
-<<<<<<< HEAD
-		if (cork->opt == NULL) {
-			cork->opt = kmalloc(sizeof(struct ip_options) + 40,
-					    sk->sk_allocation);
-			if (unlikely(cork->opt == NULL))
-=======
 		if (!cork->opt) {
 			cork->opt = kmalloc(sizeof(struct ip_options) + 40,
 					    sk->sk_allocation);
 			if (unlikely(!cork->opt))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENOBUFS;
 		}
 		memcpy(cork->opt, &opt->opt, sizeof(struct ip_options) + opt->opt.optlen);
 		cork->flags |= IPCORK_OPT;
 		cork->addr = ipc->addr;
 	}
-<<<<<<< HEAD
-	rt = *rtp;
-	if (unlikely(!rt))
-		return -EFAULT;
-	/*
-	 * We steal reference to this route, caller should not release it
-	 */
-	*rtp = NULL;
-	cork->fragsize = inet->pmtudisc == IP_PMTUDISC_PROBE ?
-			 rt->dst.dev->mtu : dst_mtu(&rt->dst);
-	cork->dst = &rt->dst;
-	cork->length = 0;
-	cork->tx_flags = ipc->tx_flags;
-	cork->page = NULL;
-	cork->off = 0;
-=======
 
 	cork->gso_size = ipc->gso_size;
 
@@ -2101,23 +1326,15 @@ static int ip_setup_cork(struct sock *sk, struct inet_cork *cork,
 	cork->transmit_time = ipc->sockc.transmit_time;
 	cork->tx_flags = 0;
 	sock_tx_timestamp(sk, ipc->sockc.tsflags, &cork->tx_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
- *	ip_append_data() and ip_append_page() can make one large IP datagram
- *	from many pieces of data. Each pieces will be holded on the socket
- *	until ip_push_pending_frames() is called. Each piece can be a page
- *	or non-page data.
-=======
  *	ip_append_data() can make one large IP datagram from many pieces of
  *	data.  Each piece will be held on the socket until
  *	ip_push_pending_frames() is called. Each piece can be a page or
  *	non-page data.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Not only UDP, other transport protocols - e.g. raw sockets - can use
  *	this interface potentially.
@@ -2145,164 +1362,11 @@ int ip_append_data(struct sock *sk, struct flowi4 *fl4,
 		transhdrlen = 0;
 	}
 
-<<<<<<< HEAD
-	return __ip_append_data(sk, fl4, &sk->sk_write_queue, &inet->cork.base, getfrag,
-				from, length, transhdrlen, flags);
-}
-
-ssize_t	ip_append_page(struct sock *sk, struct flowi4 *fl4, struct page *page,
-		       int offset, size_t size, int flags)
-{
-	struct inet_sock *inet = inet_sk(sk);
-	struct sk_buff *skb;
-	struct rtable *rt;
-	struct ip_options *opt = NULL;
-	struct inet_cork *cork;
-	int hh_len;
-	int mtu;
-	int len;
-	int err;
-	unsigned int maxfraglen, fragheaderlen, fraggap;
-
-	if (inet->hdrincl)
-		return -EPERM;
-
-	if (flags&MSG_PROBE)
-		return 0;
-
-	if (skb_queue_empty(&sk->sk_write_queue))
-		return -EINVAL;
-
-	cork = &inet->cork.base;
-	rt = (struct rtable *)cork->dst;
-	if (cork->flags & IPCORK_OPT)
-		opt = cork->opt;
-
-	if (!(rt->dst.dev->features&NETIF_F_SG))
-		return -EOPNOTSUPP;
-
-	hh_len = LL_RESERVED_SPACE(rt->dst.dev);
-	mtu = cork->fragsize;
-
-	fragheaderlen = sizeof(struct iphdr) + (opt ? opt->optlen : 0);
-	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen;
-
-	if (cork->length + size > 0xFFFF - fragheaderlen) {
-		ip_local_error(sk, EMSGSIZE, fl4->daddr, inet->inet_dport, mtu);
-		return -EMSGSIZE;
-	}
-
-	if ((skb = skb_peek_tail(&sk->sk_write_queue)) == NULL)
-		return -EINVAL;
-
-	cork->length += size;
-	if ((size + skb->len > mtu) &&
-	    (skb_queue_len(&sk->sk_write_queue) == 1) &&
-	    (sk->sk_protocol == IPPROTO_UDP) &&
-	    (rt->dst.dev->features & NETIF_F_UFO)) {
-		skb_shinfo(skb)->gso_size = mtu - fragheaderlen;
-		skb_shinfo(skb)->gso_type = SKB_GSO_UDP;
-	}
-
-
-	while (size > 0) {
-		int i;
-
-		if (skb_is_gso(skb))
-			len = size;
-		else {
-
-			/* Check if the remaining data fits into current packet. */
-			len = mtu - skb->len;
-			if (len < size)
-				len = maxfraglen - skb->len;
-		}
-		if (len <= 0) {
-			struct sk_buff *skb_prev;
-			int alloclen;
-
-			skb_prev = skb;
-			fraggap = skb_prev->len - maxfraglen;
-
-			alloclen = fragheaderlen + hh_len + fraggap + 15;
-			skb = sock_wmalloc(sk, alloclen, 1, sk->sk_allocation);
-			if (unlikely(!skb)) {
-				err = -ENOBUFS;
-				goto error;
-			}
-
-			/*
-			 *	Fill in the control structures
-			 */
-			skb->ip_summed = CHECKSUM_NONE;
-			skb->csum = 0;
-			skb_reserve(skb, hh_len);
-
-			/*
-			 *	Find where to start putting bytes.
-			 */
-			skb_put(skb, fragheaderlen + fraggap);
-			skb_reset_network_header(skb);
-			skb->transport_header = (skb->network_header +
-						 fragheaderlen);
-			if (fraggap) {
-				skb->csum = skb_copy_and_csum_bits(skb_prev,
-								   maxfraglen,
-						    skb_transport_header(skb),
-								   fraggap, 0);
-				skb_prev->csum = csum_sub(skb_prev->csum,
-							  skb->csum);
-				pskb_trim_unique(skb_prev, maxfraglen);
-			}
-
-			/*
-			 * Put the packet on the pending queue.
-			 */
-			__skb_queue_tail(&sk->sk_write_queue, skb);
-			continue;
-		}
-
-		i = skb_shinfo(skb)->nr_frags;
-		if (len > size)
-			len = size;
-		if (skb_can_coalesce(skb, i, page, offset)) {
-			skb_frag_size_add(&skb_shinfo(skb)->frags[i-1], len);
-		} else if (i < MAX_SKB_FRAGS) {
-			get_page(page);
-			skb_fill_page_desc(skb, i, page, offset, len);
-		} else {
-			err = -EMSGSIZE;
-			goto error;
-		}
-
-		if (skb->ip_summed == CHECKSUM_NONE) {
-			__wsum csum;
-			csum = csum_page(page, offset, len);
-			skb->csum = csum_block_add(skb->csum, csum, skb->len);
-		}
-
-		skb->len += len;
-		skb->data_len += len;
-		skb->truesize += len;
-		atomic_add(len, &sk->sk_wmem_alloc);
-		offset += len;
-		size -= len;
-	}
-	return 0;
-
-error:
-	cork->length -= size;
-	IP_INC_STATS(sock_net(sk), IPSTATS_MIB_OUTDISCARDS);
-	return err;
-}
-
-=======
 	return __ip_append_data(sk, fl4, &sk->sk_write_queue, &inet->cork.base,
 				sk_page_frag(sk), getfrag,
 				from, length, transhdrlen, flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ip_cork_release(struct inet_cork *cork)
 {
 	cork->flags &= ~IPCORK_OPT;
@@ -2328,18 +1392,11 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
 	struct ip_options *opt = NULL;
 	struct rtable *rt = (struct rtable *)cork->dst;
 	struct iphdr *iph;
-<<<<<<< HEAD
-	__be16 df = 0;
-	__u8 ttl;
-
-	if ((skb = __skb_dequeue(queue)) == NULL)
-=======
 	u8 pmtudisc, ttl;
 	__be16 df = 0;
 
 	skb = __skb_dequeue(queue);
 	if (!skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	tail_skb = &(skb_shinfo(skb)->frag_list);
 
@@ -2361,15 +1418,6 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
 	 * to fragment the frame generated here. No matter, what transforms
 	 * how transforms change size of the packet, it will come out.
 	 */
-<<<<<<< HEAD
-	if (inet->pmtudisc < IP_PMTUDISC_DO)
-		skb->local_df = 1;
-
-	/* DF bit is set when we want to see DF on outgoing frames.
-	 * If local_df is set too, we still allow to fragment this frame
-	 * locally. */
-	if (inet->pmtudisc >= IP_PMTUDISC_DO ||
-=======
 	skb->ignore_df = ip_sk_ignore_df(sk);
 
 	/* DF bit is set when we want to see DF on outgoing frames.
@@ -2378,7 +1426,6 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
 	pmtudisc = READ_ONCE(inet->pmtudisc);
 	if (pmtudisc == IP_PMTUDISC_DO ||
 	    pmtudisc == IP_PMTUDISC_PROBE ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (skb->len <= dst_mtu(&rt->dst) &&
 	     ip_dont_fragment(sk, &rt->dst)))
 		df = htons(IP_DF);
@@ -2386,41 +1433,21 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
 	if (cork->flags & IPCORK_OPT)
 		opt = cork->opt;
 
-<<<<<<< HEAD
-	if (rt->rt_type == RTN_MULTICAST)
-		ttl = inet->mc_ttl;
-=======
 	if (cork->ttl != 0)
 		ttl = cork->ttl;
 	else if (rt->rt_type == RTN_MULTICAST)
 		ttl = READ_ONCE(inet->mc_ttl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		ttl = ip_select_ttl(inet, &rt->dst);
 
 	iph = ip_hdr(skb);
 	iph->version = 4;
 	iph->ihl = 5;
-<<<<<<< HEAD
-	iph->tos = inet->tos;
-=======
 	iph->tos = (cork->tos != -1) ? cork->tos : READ_ONCE(inet->tos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iph->frag_off = df;
 	iph->ttl = ttl;
 	iph->protocol = sk->sk_protocol;
 	ip_copy_addrs(iph, fl4);
-<<<<<<< HEAD
-	ip_select_ident(skb, sk);
-
-	if (opt) {
-		iph->ihl += opt->optlen>>2;
-		ip_options_build(skb, opt, cork->addr, rt, 0);
-	}
-
-	skb->priority = sk->sk_priority;
-	skb->mark = sk->sk_mark;
-=======
 	ip_select_ident(net, skb, sk);
 
 	if (opt) {
@@ -2431,7 +1458,6 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
 	skb->priority = (cork->tos != -1) ? cork->priority: READ_ONCE(sk->sk_priority);
 	skb->mark = cork->mark;
 	skb->tstamp = cork->transmit_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Steal rt from cork.dst to avoid a pair of atomic_inc/atomic_dec
 	 * on dst refcount
@@ -2439,11 +1465,6 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
 	cork->dst = NULL;
 	skb_dst_set(skb, &rt->dst);
 
-<<<<<<< HEAD
-	if (iph->protocol == IPPROTO_ICMP)
-		icmp_out_count(net, ((struct icmphdr *)
-			skb_transport_header(skb))->type);
-=======
 	if (iph->protocol == IPPROTO_ICMP) {
 		u8 icmp_type;
 
@@ -2458,27 +1479,17 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
 			icmp_type = icmp_hdr(skb)->type;
 		icmp_out_count(net, icmp_type);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ip_cork_release(cork);
 out:
 	return skb;
 }
 
-<<<<<<< HEAD
-int ip_send_skb(struct sk_buff *skb)
-{
-	struct net *net = sock_net(skb->sk);
-	int err;
-
-	err = ip_local_out(skb);
-=======
 int ip_send_skb(struct net *net, struct sk_buff *skb)
 {
 	int err;
 
 	err = ip_local_out(net, skb->sk, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		if (err > 0)
 			err = net_xmit_errno(err);
@@ -2498,11 +1509,7 @@ int ip_push_pending_frames(struct sock *sk, struct flowi4 *fl4)
 		return 0;
 
 	/* Netfilter gets whole the not fragmented skb. */
-<<<<<<< HEAD
-	return ip_send_skb(skb);
-=======
 	return ip_send_skb(sock_net(sk), skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2531,14 +1538,8 @@ struct sk_buff *ip_make_skb(struct sock *sk,
 					int len, int odd, struct sk_buff *skb),
 			    void *from, int length, int transhdrlen,
 			    struct ipcm_cookie *ipc, struct rtable **rtp,
-<<<<<<< HEAD
-			    unsigned int flags)
-{
-	struct inet_cork cork;
-=======
 			    struct inet_cork *cork, unsigned int flags)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff_head queue;
 	int err;
 
@@ -2547,23 +1548,6 @@ struct sk_buff *ip_make_skb(struct sock *sk,
 
 	__skb_queue_head_init(&queue);
 
-<<<<<<< HEAD
-	cork.flags = 0;
-	cork.addr = 0;
-	cork.opt = NULL;
-	err = ip_setup_cork(sk, &cork, ipc, rtp);
-	if (err)
-		return ERR_PTR(err);
-
-	err = __ip_append_data(sk, fl4, &queue, &cork, getfrag,
-			       from, length, transhdrlen, flags);
-	if (err) {
-		__ip_flush_pending_frames(sk, &queue, &cork);
-		return ERR_PTR(err);
-	}
-
-	return __ip_make_skb(sk, fl4, &queue, &cork);
-=======
 	cork->flags = 0;
 	cork->addr = 0;
 	cork->opt = NULL;
@@ -2580,7 +1564,6 @@ struct sk_buff *ip_make_skb(struct sock *sk,
 	}
 
 	return __ip_make_skb(sk, fl4, &queue, cork);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2591,28 +1574,13 @@ static int ip_reply_glue_bits(void *dptr, char *to, int offset,
 {
 	__wsum csum;
 
-<<<<<<< HEAD
-	csum = csum_partial_copy_nocheck(dptr+offset, to, len, 0);
-=======
 	csum = csum_partial_copy_nocheck(dptr+offset, to, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->csum = csum_block_add(skb->csum, csum, odd);
 	return 0;
 }
 
 /*
  *	Generic function to send a packet as reply to another packet.
-<<<<<<< HEAD
- *	Used to send TCP resets so far. ICMP should use this function too.
- *
- *	Should run single threaded per socket because it uses the sock
- *     	structure to pass arguments.
- */
-void ip_send_reply(struct sock *sk, struct sk_buff *skb, __be32 daddr,
-		   const struct ip_reply_arg *arg, unsigned int len)
-{
-	struct inet_sock *inet = inet_sk(sk);
-=======
  *	Used to send some TCP resets/acks so far.
  */
 void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
@@ -2621,20 +1589,10 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
 			   const struct ip_reply_arg *arg,
 			   unsigned int len, u64 transmit_time, u32 txhash)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ip_options_data replyopts;
 	struct ipcm_cookie ipc;
 	struct flowi4 fl4;
 	struct rtable *rt = skb_rtable(skb);
-<<<<<<< HEAD
-
-	if (ip_options_echo(&replyopts.opt.opt, skb))
-		return;
-
-	ipc.addr = daddr;
-	ipc.opt = NULL;
-	ipc.tx_flags = 0;
-=======
 	struct net *net = sock_net(sk);
 	struct sk_buff *nskb;
 	int err;
@@ -2646,7 +1604,6 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
 	ipcm_init(&ipc);
 	ipc.addr = daddr;
 	ipc.sockc.transmit_time = transmit_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (replyopts.opt.opt.optlen) {
 		ipc.opt = &replyopts.opt;
@@ -2655,45 +1612,6 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
 			daddr = replyopts.opt.opt.faddr;
 	}
 
-<<<<<<< HEAD
-	flowi4_init_output(&fl4, arg->bound_dev_if,
-			   IP4_REPLY_MARK(sock_net(sk), skb->mark),
-			   RT_TOS(arg->tos),
-			   RT_SCOPE_UNIVERSE, sk->sk_protocol,
-			   ip_reply_arg_flowi_flags(arg),
-			   daddr, rt->rt_spec_dst,
-			   tcp_hdr(skb)->source, tcp_hdr(skb)->dest,
-			   arg->uid);
-	security_skb_classify_flow(skb, flowi4_to_flowi(&fl4));
-	rt = ip_route_output_key(sock_net(sk), &fl4);
-	if (IS_ERR(rt))
-		return;
-
-	/* And let IP do all the hard work.
-
-	   This chunk is not reenterable, hence spinlock.
-	   Note that it uses the fact, that this function is called
-	   with locally disabled BH and that sk cannot be already spinlocked.
-	 */
-	bh_lock_sock(sk);
-	inet->tos = arg->tos;
-	sk->sk_priority = skb->priority;
-	sk->sk_protocol = ip_hdr(skb)->protocol;
-	sk->sk_bound_dev_if = arg->bound_dev_if;
-	ip_append_data(sk, &fl4, ip_reply_glue_bits, arg->iov->iov_base, len, 0,
-		       &ipc, &rt, MSG_DONTWAIT);
-	if ((skb = skb_peek(&sk->sk_write_queue)) != NULL) {
-		if (arg->csumoffset >= 0)
-			*((__sum16 *)skb_transport_header(skb) +
-			  arg->csumoffset) = csum_fold(csum_add(skb->csum,
-								arg->csum));
-		skb->ip_summed = CHECKSUM_NONE;
-		ip_push_pending_frames(sk, &fl4);
-	}
-
-	bh_unlock_sock(sk);
-
-=======
 	oif = arg->bound_dev_if;
 	if (!oif && netif_index_is_l3_master(net, skb->skb_iif))
 		oif = skb->skb_iif;
@@ -2737,7 +1655,6 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
 		ip_push_pending_frames(sk, &fl4);
 	}
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ip_rt_put(rt);
 }
 
@@ -2746,12 +1663,7 @@ void __init ip_init(void)
 	ip_rt_init();
 	inet_initpeers();
 
-<<<<<<< HEAD
-#if defined(CONFIG_IP_MULTICAST) && defined(CONFIG_PROC_FS)
-	igmp_mc_proc_init();
-=======
 #if defined(CONFIG_IP_MULTICAST)
 	igmp_mc_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }

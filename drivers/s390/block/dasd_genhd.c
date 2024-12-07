@@ -1,40 +1,16 @@
-<<<<<<< HEAD
-/*
- * File...........: linux/drivers/s390/block/dasd_genhd.c
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author(s)......: Holger Smolinski <Holger.Smolinski@de.ibm.com>
  *		    Horst Hummel <Horst.Hummel@de.ibm.com>
  *		    Carsten Otte <Cotte@de.ibm.com>
  *		    Martin Schwidefsky <schwidefsky@de.ibm.com>
  * Bugreports.to..: <Linux390@de.ibm.com>
-<<<<<<< HEAD
- * (C) IBM Corporation, IBM Deutschland Entwicklung GmbH, 1999-2001
-=======
  * Copyright IBM Corp. 1999, 2001
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * gendisk related functions for the dasd driver.
  *
  */
 
-<<<<<<< HEAD
-#define KMSG_COMPONENT "dasd"
-
-#include <linux/interrupt.h>
-#include <linux/fs.h>
-#include <linux/blkpg.h>
-
-#include <asm/uaccess.h>
-
-/* This is ugly... */
-#define PRINTK_HEADER "dasd_gendisk:"
-
-#include "dasd_int.h"
-
-=======
 #include <linux/interrupt.h>
 #include <linux/major.h>
 #include <linux/fs.h>
@@ -53,17 +29,11 @@ MODULE_PARM_DESC(queue_depth, "Default queue depth for new DASD devices");
 module_param(nr_hw_queues, uint, 0444);
 MODULE_PARM_DESC(nr_hw_queues, "Default number of hardware queues for new DASD devices");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Allocate and register gendisk structure for device.
  */
 int dasd_gendisk_alloc(struct dasd_block *block)
 {
-<<<<<<< HEAD
-	struct gendisk *gdp;
-	struct dasd_device *base;
-	int len;
-=======
 	struct queue_limits lim = {
 		/*
 		 * With page sized segments, each segment can be translated into
@@ -77,18 +47,12 @@ int dasd_gendisk_alloc(struct dasd_block *block)
 	struct gendisk *gdp;
 	struct dasd_device *base;
 	int len, rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Make sure the minor for this device exists. */
 	base = block->base;
 	if (base->devindex >= DASD_PER_MAJOR)
 		return -EBUSY;
 
-<<<<<<< HEAD
-	gdp = alloc_disk(1 << DASD_PARTN_BITS);
-	if (!gdp)
-		return -ENOMEM;
-=======
 	block->tag_set.ops = &dasd_mq_ops;
 	block->tag_set.cmd_size = sizeof(struct dasd_ccw_req);
 	block->tag_set.nr_hw_queues = nr_hw_queues;
@@ -105,18 +69,12 @@ int dasd_gendisk_alloc(struct dasd_block *block)
 		return PTR_ERR(gdp);
 	}
 	blk_queue_flag_set(QUEUE_FLAG_NONROT, gdp->queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize gendisk structure. */
 	gdp->major = DASD_MAJOR;
 	gdp->first_minor = base->devindex << DASD_PARTN_BITS;
-<<<<<<< HEAD
-	gdp->fops = &dasd_device_operations;
-	gdp->driverfs_dev = &base->cdev->dev;
-=======
 	gdp->minors = 1 << DASD_PARTN_BITS;
 	gdp->fops = &dasd_device_operations;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Set device name.
@@ -144,12 +102,6 @@ int dasd_gendisk_alloc(struct dasd_block *block)
 	    test_bit(DASD_FLAG_DEVICE_RO, &base->flags))
 		set_disk_ro(gdp, 1);
 	dasd_add_link_to_gendisk(gdp, base);
-<<<<<<< HEAD
-	gdp->queue = block->request_queue;
-	block->gdp = gdp;
-	set_capacity(block->gdp, 0);
-	add_disk(block->gdp);
-=======
 	block->gdp = gdp;
 	set_capacity(block->gdp, 0);
 
@@ -159,7 +111,6 @@ int dasd_gendisk_alloc(struct dasd_block *block)
 		return rc;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -170,17 +121,10 @@ void dasd_gendisk_free(struct dasd_block *block)
 {
 	if (block->gdp) {
 		del_gendisk(block->gdp);
-<<<<<<< HEAD
-		block->gdp->queue = NULL;
-		block->gdp->private_data = NULL;
-		put_disk(block->gdp);
-		block->gdp = NULL;
-=======
 		block->gdp->private_data = NULL;
 		put_disk(block->gdp);
 		block->gdp = NULL;
 		blk_mq_free_tag_set(&block->tag_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -189,29 +133,6 @@ void dasd_gendisk_free(struct dasd_block *block)
  */
 int dasd_scan_partitions(struct dasd_block *block)
 {
-<<<<<<< HEAD
-	struct block_device *bdev;
-
-	bdev = bdget_disk(block->gdp, 0);
-	if (!bdev || blkdev_get(bdev, FMODE_READ, NULL) < 0)
-		return -ENODEV;
-	/*
-	 * See fs/partition/check.c:register_disk,rescan_partitions
-	 * Can't call rescan_partitions directly. Use ioctl.
-	 */
-	ioctl_by_bdev(bdev, BLKRRPART, 0);
-	/*
-	 * Since the matching blkdev_put call to the blkdev_get in
-	 * this function is not called before dasd_destroy_partitions
-	 * the offline open_count limit needs to be increased from
-	 * 0 to 1. This is done by setting device->bdev (see
-	 * dasd_generic_set_offline). As long as the partition
-	 * detection is running no offline should be allowed. That
-	 * is why the assignment to device->bdev is done AFTER
-	 * the BLKRRPART ioctl.
-	 */
-	block->bdev = bdev;
-=======
 	struct file *bdev_file;
 	int rc;
 
@@ -241,7 +162,6 @@ int dasd_scan_partitions(struct dasd_block *block)
 	 * to block->bdev_file is done AFTER the BLKRRPART ioctl.
 	 */
 	block->bdev_file = bdev_file;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -251,36 +171,6 @@ int dasd_scan_partitions(struct dasd_block *block)
  */
 void dasd_destroy_partitions(struct dasd_block *block)
 {
-<<<<<<< HEAD
-	/* The two structs have 168/176 byte on 31/64 bit. */
-	struct blkpg_partition bpart;
-	struct blkpg_ioctl_arg barg;
-	struct block_device *bdev;
-
-	/*
-	 * Get the bdev pointer from the device structure and clear
-	 * device->bdev to lower the offline open_count limit again.
-	 */
-	bdev = block->bdev;
-	block->bdev = NULL;
-
-	/*
-	 * See fs/partition/check.c:delete_partition
-	 * Can't call delete_partitions directly. Use ioctl.
-	 * The ioctl also does locking and invalidation.
-	 */
-	memset(&bpart, 0, sizeof(struct blkpg_partition));
-	memset(&barg, 0, sizeof(struct blkpg_ioctl_arg));
-	barg.data = (void __force __user *) &bpart;
-	barg.op = BLKPG_DEL_PARTITION;
-	for (bpart.pno = block->gdp->minors - 1; bpart.pno > 0; bpart.pno--)
-		ioctl_by_bdev(bdev, BLKPG, (unsigned long) &barg);
-
-	invalidate_partition(block->gdp, 0);
-	/* Matching blkdev_put to the blkdev_get in dasd_scan_partitions. */
-	blkdev_put(bdev, FMODE_READ);
-	set_capacity(block->gdp, 0);
-=======
 	struct file *bdev_file;
 
 	/*
@@ -296,7 +186,6 @@ void dasd_destroy_partitions(struct dasd_block *block)
 
 	/* Matching blkdev_put to the blkdev_get in dasd_scan_partitions. */
 	fput(bdev_file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int dasd_gendisk_init(void)
@@ -306,13 +195,8 @@ int dasd_gendisk_init(void)
 	/* Register to static dasd major 94 */
 	rc = register_blkdev(DASD_MAJOR, "dasd");
 	if (rc != 0) {
-<<<<<<< HEAD
-		pr_warning("Registering the device driver with major number "
-			   "%d failed\n", DASD_MAJOR);
-=======
 		pr_warn("Registering the device driver with major number %d failed\n",
 			DASD_MAJOR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 	return 0;

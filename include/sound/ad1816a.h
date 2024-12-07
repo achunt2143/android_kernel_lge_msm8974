@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_AD1816A_H
 #define __SOUND_AD1816A_H
 
@@ -9,32 +6,11 @@
     ad1816a.h - definitions for ADI SoundPort AD1816A chip.
     Copyright (C) 1999-2000 by Massimo Piccioni <dafastidio@libero.it>
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-*/
-
-#include "control.h"
-#include "pcm.h"
-#include "timer.h"
-=======
 */
 
 #include <sound/control.h>
 #include <sound/pcm.h>
 #include <sound/timer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AD1816A_REG(r)			(chip->port + r)
 
@@ -159,12 +135,9 @@ struct snd_ad1816a {
 	unsigned int c_dma_size;
 
 	struct snd_timer *timer;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PM
 	unsigned short image[48];
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -183,14 +156,6 @@ struct snd_ad1816a {
 
 extern int snd_ad1816a_create(struct snd_card *card, unsigned long port,
 			      int irq, int dma1, int dma2,
-<<<<<<< HEAD
-			      struct snd_ad1816a **chip);
-
-extern int snd_ad1816a_pcm(struct snd_ad1816a *chip, int device, struct snd_pcm **rpcm);
-extern int snd_ad1816a_mixer(struct snd_ad1816a *chip);
-extern int snd_ad1816a_timer(struct snd_ad1816a *chip, int device,
-			     struct snd_timer **rtimer);
-=======
 			      struct snd_ad1816a *chip);
 
 extern int snd_ad1816a_pcm(struct snd_ad1816a *chip, int device);
@@ -200,6 +165,5 @@ extern int snd_ad1816a_timer(struct snd_ad1816a *chip, int device);
 extern void snd_ad1816a_suspend(struct snd_ad1816a *chip);
 extern void snd_ad1816a_resume(struct snd_ad1816a *chip);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __SOUND_AD1816A_H */

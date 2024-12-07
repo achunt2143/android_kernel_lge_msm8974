@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/device.h>
 #include <linux/gfp.h>
-<<<<<<< HEAD
-=======
 #include <linux/irq.h>
 
 #include "internals.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Device resource management aware IRQ request/free implementation.
@@ -43,20 +37,12 @@ static int devm_irq_match(struct device *dev, void *res, void *data)
  *	@thread_fn: function to be called in a threaded interrupt context. NULL
  *		    for devices which handle everything in @handler
  *	@irqflags: Interrupt type flags
-<<<<<<< HEAD
- *	@devname: An ascii name for the claiming device
-=======
  *	@devname: An ascii name for the claiming device, dev_name(dev) if NULL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@dev_id: A cookie passed back to the handler function
  *
  *	Except for the extra @dev argument, this function takes the
  *	same arguments and performs the same function as
-<<<<<<< HEAD
- *	request_irq().  IRQs requested with this function will be
-=======
  *	request_threaded_irq().  IRQs requested with this function will be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	automatically freed on driver detach.
  *
  *	If an IRQ allocated with this function needs to be freed
@@ -75,12 +61,9 @@ int devm_request_threaded_irq(struct device *dev, unsigned int irq,
 	if (!dr)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	if (!devname)
 		devname = dev_name(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = request_threaded_irq(irq, handler, thread_fn, irqflags, devname,
 				  dev_id);
 	if (rc) {
@@ -97,8 +80,6 @@ int devm_request_threaded_irq(struct device *dev, unsigned int irq,
 EXPORT_SYMBOL(devm_request_threaded_irq);
 
 /**
-<<<<<<< HEAD
-=======
  *	devm_request_any_context_irq - allocate an interrupt line for a managed device
  *	@dev: device to request interrupt for
  *	@irq: Interrupt line to allocate
@@ -145,7 +126,6 @@ int devm_request_any_context_irq(struct device *dev, unsigned int irq,
 EXPORT_SYMBOL(devm_request_any_context_irq);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	devm_free_irq - free an interrupt
  *	@dev: device to free interrupt for
  *	@irq: Interrupt line to free
@@ -165,8 +145,6 @@ void devm_free_irq(struct device *dev, unsigned int irq, void *dev_id)
 	free_irq(irq, dev_id);
 }
 EXPORT_SYMBOL(devm_free_irq);
-<<<<<<< HEAD
-=======
 
 struct irq_desc_devres {
 	unsigned int from;
@@ -304,4 +282,3 @@ int devm_irq_setup_generic_chip(struct device *dev, struct irq_chip_generic *gc,
 }
 EXPORT_SYMBOL_GPL(devm_irq_setup_generic_chip);
 #endif /* CONFIG_GENERIC_IRQ_CHIP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

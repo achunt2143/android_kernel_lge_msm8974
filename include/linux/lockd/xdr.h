@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/linux/lockd/xdr.h
  *
@@ -14,10 +11,7 @@
 #define LOCKD_XDR_H
 
 #include <linux/fs.h>
-<<<<<<< HEAD
-=======
 #include <linux/filelock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/nfs.h>
 #include <linux/sunrpc/xdr.h>
 
@@ -48,11 +42,8 @@ struct nlm_lock {
 	struct nfs_fh		fh;
 	struct xdr_netobj	oh;
 	u32			svid;
-<<<<<<< HEAD
-=======
 	u64			lock_start;
 	u64			lock_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct file_lock	fl;
 };
 
@@ -61,11 +52,7 @@ struct nlm_lock {
  *	FreeBSD uses 16, Apple Mac OS X 10.3 uses 20. Therefore we set it to
  *	32 bytes.
  */
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nlm_cookie
 {
 	unsigned char data[NLM_MAXCOOKIELEN];
@@ -112,27 +99,6 @@ struct nlm_reboot {
  */
 #define NLMSVC_XDRSIZE		sizeof(struct nlm_args)
 
-<<<<<<< HEAD
-int	nlmsvc_decode_testargs(struct svc_rqst *, __be32 *, struct nlm_args *);
-int	nlmsvc_encode_testres(struct svc_rqst *, __be32 *, struct nlm_res *);
-int	nlmsvc_decode_lockargs(struct svc_rqst *, __be32 *, struct nlm_args *);
-int	nlmsvc_decode_cancargs(struct svc_rqst *, __be32 *, struct nlm_args *);
-int	nlmsvc_decode_unlockargs(struct svc_rqst *, __be32 *, struct nlm_args *);
-int	nlmsvc_encode_res(struct svc_rqst *, __be32 *, struct nlm_res *);
-int	nlmsvc_decode_res(struct svc_rqst *, __be32 *, struct nlm_res *);
-int	nlmsvc_encode_void(struct svc_rqst *, __be32 *, void *);
-int	nlmsvc_decode_void(struct svc_rqst *, __be32 *, void *);
-int	nlmsvc_decode_shareargs(struct svc_rqst *, __be32 *, struct nlm_args *);
-int	nlmsvc_encode_shareres(struct svc_rqst *, __be32 *, struct nlm_res *);
-int	nlmsvc_decode_notify(struct svc_rqst *, __be32 *, struct nlm_args *);
-int	nlmsvc_decode_reboot(struct svc_rqst *, __be32 *, struct nlm_reboot *);
-/*
-int	nlmclt_encode_testargs(struct rpc_rqst *, u32 *, struct nlm_args *);
-int	nlmclt_encode_lockargs(struct rpc_rqst *, u32 *, struct nlm_args *);
-int	nlmclt_encode_cancargs(struct rpc_rqst *, u32 *, struct nlm_args *);
-int	nlmclt_encode_unlockargs(struct rpc_rqst *, u32 *, struct nlm_args *);
- */
-=======
 bool	nlmsvc_decode_void(struct svc_rqst *rqstp, struct xdr_stream *xdr);
 bool	nlmsvc_decode_testargs(struct svc_rqst *rqstp, struct xdr_stream *xdr);
 bool	nlmsvc_decode_lockargs(struct svc_rqst *rqstp, struct xdr_stream *xdr);
@@ -147,6 +113,5 @@ bool	nlmsvc_encode_testres(struct svc_rqst *rqstp, struct xdr_stream *xdr);
 bool	nlmsvc_encode_res(struct svc_rqst *rqstp, struct xdr_stream *xdr);
 bool	nlmsvc_encode_void(struct svc_rqst *rqstp, struct xdr_stream *xdr);
 bool	nlmsvc_encode_shareres(struct svc_rqst *rqstp, struct xdr_stream *xdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* LOCKD_XDR_H */

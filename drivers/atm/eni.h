@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* drivers/atm/eni.h - Efficient Networks ENI155P device driver declarations */
  
 /* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */

@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#ifndef __COW_SYS_H__
-#define __COW_SYS_H__
-
-#include "kern_util.h"
-#include "os.h"
-#include "um_malloc.h"
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __COW_SYS_H__
 #define __COW_SYS_H__
@@ -13,7 +5,6 @@
 #include <kern_util.h>
 #include <os.h>
 #include <um_malloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void *cow_malloc(int size)
 {

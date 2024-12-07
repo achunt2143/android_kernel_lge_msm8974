@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for AMBA serial ports
  *
@@ -10,23 +7,6 @@
  *  Copyright 1999 ARM Limited
  *  Copyright (C) 2000 Deep Blue Solutions Ltd.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This is a generic driver for ARM AMBA-type serial ports.  They
  * have a lot of 16550-like features, but are not register compatible.
  * Note that although they do have CTS, DCD and DSR inputs, they do
@@ -35,13 +15,6 @@
  * and hooked into this driver.
  */
 
-<<<<<<< HEAD
-#if defined(CONFIG_SERIAL_AMBA_PL010_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-#define SUPPORT_SYSRQ
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/ioport.h>
 #include <linux/init.h>
@@ -56,12 +29,7 @@
 #include <linux/amba/serial.h>
 #include <linux/clk.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <asm/io.h>
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define UART_NR		8
 
@@ -90,12 +58,8 @@ struct uart_amba_port {
 
 static void pl010_stop_tx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-=======
 	struct uart_amba_port *uap =
 		container_of(port, struct uart_amba_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cr;
 
 	cr = readb(uap->port.membase + UART010_CR);
@@ -105,12 +69,8 @@ static void pl010_stop_tx(struct uart_port *port)
 
 static void pl010_start_tx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-=======
 	struct uart_amba_port *uap =
 		container_of(port, struct uart_amba_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cr;
 
 	cr = readb(uap->port.membase + UART010_CR);
@@ -120,12 +80,8 @@ static void pl010_start_tx(struct uart_port *port)
 
 static void pl010_stop_rx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-=======
 	struct uart_amba_port *uap =
 		container_of(port, struct uart_amba_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cr;
 
 	cr = readb(uap->port.membase + UART010_CR);
@@ -133,18 +89,12 @@ static void pl010_stop_rx(struct uart_port *port)
 	writel(cr, uap->port.membase + UART010_CR);
 }
 
-<<<<<<< HEAD
-static void pl010_enable_ms(struct uart_port *port)
-=======
 static void pl010_disable_ms(struct uart_port *port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
 	unsigned int cr;
 
 	cr = readb(uap->port.membase + UART010_CR);
-<<<<<<< HEAD
-=======
 	cr &= ~UART010_CR_MSIE;
 	writel(cr, uap->port.membase + UART010_CR);
 }
@@ -156,24 +106,10 @@ static void pl010_enable_ms(struct uart_port *port)
 	unsigned int cr;
 
 	cr = readb(uap->port.membase + UART010_CR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cr |= UART010_CR_MSIE;
 	writel(cr, uap->port.membase + UART010_CR);
 }
 
-<<<<<<< HEAD
-static void pl010_rx_chars(struct uart_amba_port *uap)
-{
-	struct tty_struct *tty = uap->port.state->port.tty;
-	unsigned int status, ch, flag, rsr, max_count = 256;
-
-	status = readb(uap->port.membase + UART01x_FR);
-	while (UART_RX_DATA(status) && max_count--) {
-		ch = readb(uap->port.membase + UART01x_DR);
-		flag = TTY_NORMAL;
-
-		uap->port.icount.rx++;
-=======
 static void pl010_rx_chars(struct uart_port *port)
 {
 	unsigned int status, rsr, max_count = 256;
@@ -185,31 +121,11 @@ static void pl010_rx_chars(struct uart_port *port)
 		flag = TTY_NORMAL;
 
 		port->icount.rx++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Note that the error handling code is
 		 * out of the main execution path
 		 */
-<<<<<<< HEAD
-		rsr = readb(uap->port.membase + UART01x_RSR) | UART_DUMMY_RSR_RX;
-		if (unlikely(rsr & UART01x_RSR_ANY)) {
-			writel(0, uap->port.membase + UART01x_ECR);
-
-			if (rsr & UART01x_RSR_BE) {
-				rsr &= ~(UART01x_RSR_FE | UART01x_RSR_PE);
-				uap->port.icount.brk++;
-				if (uart_handle_break(&uap->port))
-					goto ignore_char;
-			} else if (rsr & UART01x_RSR_PE)
-				uap->port.icount.parity++;
-			else if (rsr & UART01x_RSR_FE)
-				uap->port.icount.frame++;
-			if (rsr & UART01x_RSR_OE)
-				uap->port.icount.overrun++;
-
-			rsr &= uap->port.read_status_mask;
-=======
 		rsr = readb(port->membase + UART01x_RSR) | UART_DUMMY_RSR_RX;
 		if (unlikely(rsr & UART01x_RSR_ANY)) {
 			writel(0, port->membase + UART01x_ECR);
@@ -227,7 +143,6 @@ static void pl010_rx_chars(struct uart_port *port)
 				port->icount.overrun++;
 
 			rsr &= port->read_status_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (rsr & UART01x_RSR_BE)
 				flag = TTY_BREAK;
@@ -237,51 +152,6 @@ static void pl010_rx_chars(struct uart_port *port)
 				flag = TTY_FRAME;
 		}
 
-<<<<<<< HEAD
-		if (uart_handle_sysrq_char(&uap->port, ch))
-			goto ignore_char;
-
-		uart_insert_char(&uap->port, rsr, UART01x_RSR_OE, ch, flag);
-
-	ignore_char:
-		status = readb(uap->port.membase + UART01x_FR);
-	}
-	spin_unlock(&uap->port.lock);
-	tty_flip_buffer_push(tty);
-	spin_lock(&uap->port.lock);
-}
-
-static void pl010_tx_chars(struct uart_amba_port *uap)
-{
-	struct circ_buf *xmit = &uap->port.state->xmit;
-	int count;
-
-	if (uap->port.x_char) {
-		writel(uap->port.x_char, uap->port.membase + UART01x_DR);
-		uap->port.icount.tx++;
-		uap->port.x_char = 0;
-		return;
-	}
-	if (uart_circ_empty(xmit) || uart_tx_stopped(&uap->port)) {
-		pl010_stop_tx(&uap->port);
-		return;
-	}
-
-	count = uap->port.fifosize >> 1;
-	do {
-		writel(xmit->buf[xmit->tail], uap->port.membase + UART01x_DR);
-		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-		uap->port.icount.tx++;
-		if (uart_circ_empty(xmit))
-			break;
-	} while (--count > 0);
-
-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-		uart_write_wakeup(&uap->port);
-
-	if (uart_circ_empty(xmit))
-		pl010_stop_tx(&uap->port);
-=======
 		if (uart_handle_sysrq_char(port, ch))
 			goto ignore_char;
 
@@ -301,25 +171,16 @@ static void pl010_tx_chars(struct uart_port *port)
 		true,
 		writel(ch, port->membase + UART01x_DR),
 		({}));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pl010_modem_status(struct uart_amba_port *uap)
 {
-<<<<<<< HEAD
-	unsigned int status, delta;
-
-	writel(0, uap->port.membase + UART010_ICR);
-
-	status = readb(uap->port.membase + UART01x_FR) & UART01x_FR_MODEM_ANY;
-=======
 	struct uart_port *port = &uap->port;
 	unsigned int status, delta;
 
 	writel(0, port->membase + UART010_ICR);
 
 	status = readb(port->membase + UART01x_FR) & UART01x_FR_MODEM_ANY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	delta = status ^ uap->old_status;
 	uap->old_status = status;
@@ -328,17 +189,6 @@ static void pl010_modem_status(struct uart_amba_port *uap)
 		return;
 
 	if (delta & UART01x_FR_DCD)
-<<<<<<< HEAD
-		uart_handle_dcd_change(&uap->port, status & UART01x_FR_DCD);
-
-	if (delta & UART01x_FR_DSR)
-		uap->port.icount.dsr++;
-
-	if (delta & UART01x_FR_CTS)
-		uart_handle_cts_change(&uap->port, status & UART01x_FR_CTS);
-
-	wake_up_interruptible(&uap->port.state->port.delta_msr_wait);
-=======
 		uart_handle_dcd_change(port, status & UART01x_FR_DCD);
 
 	if (delta & UART01x_FR_DSR)
@@ -348,28 +198,11 @@ static void pl010_modem_status(struct uart_amba_port *uap)
 		uart_handle_cts_change(port, status & UART01x_FR_CTS);
 
 	wake_up_interruptible(&port->state->port.delta_msr_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t pl010_int(int irq, void *dev_id)
 {
 	struct uart_amba_port *uap = dev_id;
-<<<<<<< HEAD
-	unsigned int status, pass_counter = AMBA_ISR_PASS_LIMIT;
-	int handled = 0;
-
-	spin_lock(&uap->port.lock);
-
-	status = readb(uap->port.membase + UART010_IIR);
-	if (status) {
-		do {
-			if (status & (UART010_IIR_RTIS | UART010_IIR_RIS))
-				pl010_rx_chars(uap);
-			if (status & UART010_IIR_MIS)
-				pl010_modem_status(uap);
-			if (status & UART010_IIR_TIS)
-				pl010_tx_chars(uap);
-=======
 	struct uart_port *port = &uap->port;
 	unsigned int status, pass_counter = AMBA_ISR_PASS_LIMIT;
 	int handled = 0;
@@ -385,56 +218,34 @@ static irqreturn_t pl010_int(int irq, void *dev_id)
 				pl010_modem_status(uap);
 			if (status & UART010_IIR_TIS)
 				pl010_tx_chars(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (pass_counter-- == 0)
 				break;
 
-<<<<<<< HEAD
-			status = readb(uap->port.membase + UART010_IIR);
-=======
 			status = readb(port->membase + UART010_IIR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} while (status & (UART010_IIR_RTIS | UART010_IIR_RIS |
 				   UART010_IIR_TIS));
 		handled = 1;
 	}
 
-<<<<<<< HEAD
-	spin_unlock(&uap->port.lock);
-=======
 	uart_port_unlock(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_RETVAL(handled);
 }
 
 static unsigned int pl010_tx_empty(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-	unsigned int status = readb(uap->port.membase + UART01x_FR);
-=======
 	unsigned int status = readb(port->membase + UART01x_FR);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status & UART01x_FR_BUSY ? 0 : TIOCSER_TEMT;
 }
 
 static unsigned int pl010_get_mctrl(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-	unsigned int result = 0;
-	unsigned int status;
-
-	status = readb(uap->port.membase + UART01x_FR);
-=======
 	unsigned int result = 0;
 	unsigned int status;
 
 	status = readb(port->membase + UART01x_FR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status & UART01x_FR_DCD)
 		result |= TIOCM_CAR;
 	if (status & UART01x_FR_DSR)
@@ -447,68 +258,30 @@ static unsigned int pl010_get_mctrl(struct uart_port *port)
 
 static void pl010_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
-<<<<<<< HEAD
-	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-
-	if (uap->data)
-		uap->data->set_mctrl(uap->dev, uap->port.membase, mctrl);
-=======
 	struct uart_amba_port *uap =
 		container_of(port, struct uart_amba_port, port);
 
 	if (uap->data)
 		uap->data->set_mctrl(uap->dev, port->membase, mctrl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pl010_break_ctl(struct uart_port *port, int break_state)
 {
-<<<<<<< HEAD
-	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-	unsigned long flags;
-	unsigned int lcr_h;
-
-	spin_lock_irqsave(&uap->port.lock, flags);
-	lcr_h = readb(uap->port.membase + UART010_LCRH);
-=======
 	unsigned long flags;
 	unsigned int lcr_h;
 
 	uart_port_lock_irqsave(port, &flags);
 	lcr_h = readb(port->membase + UART010_LCRH);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (break_state == -1)
 		lcr_h |= UART01x_LCRH_BRK;
 	else
 		lcr_h &= ~UART01x_LCRH_BRK;
-<<<<<<< HEAD
-	writel(lcr_h, uap->port.membase + UART010_LCRH);
-	spin_unlock_irqrestore(&uap->port.lock, flags);
-=======
 	writel(lcr_h, port->membase + UART010_LCRH);
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pl010_startup(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-	int retval;
-
-	retval = clk_prepare(uap->clk);
-	if (retval)
-		goto out;
-
-	/*
-	 * Try to enable the clock producer.
-	 */
-	retval = clk_enable(uap->clk);
-	if (retval)
-		goto clk_unprep;
-
-	uap->port.uartclk = clk_get_rate(uap->clk);
-=======
 	struct uart_amba_port *uap =
 		container_of(port, struct uart_amba_port, port);
 	int retval;
@@ -521,110 +294,63 @@ static int pl010_startup(struct uart_port *port)
 		goto out;
 
 	port->uartclk = clk_get_rate(uap->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Allocate the IRQ
 	 */
-<<<<<<< HEAD
-	retval = request_irq(uap->port.irq, pl010_int, 0, "uart-pl010", uap);
-=======
 	retval = request_irq(port->irq, pl010_int, 0, "uart-pl010", uap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		goto clk_dis;
 
 	/*
 	 * initialise the old status of the modem signals
 	 */
-<<<<<<< HEAD
-	uap->old_status = readb(uap->port.membase + UART01x_FR) & UART01x_FR_MODEM_ANY;
-=======
 	uap->old_status = readb(port->membase + UART01x_FR) & UART01x_FR_MODEM_ANY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Finally, enable interrupts
 	 */
 	writel(UART01x_CR_UARTEN | UART010_CR_RIE | UART010_CR_RTIE,
-<<<<<<< HEAD
-	       uap->port.membase + UART010_CR);
-=======
 	       port->membase + UART010_CR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
  clk_dis:
-<<<<<<< HEAD
-	clk_disable(uap->clk);
- clk_unprep:
-	clk_unprepare(uap->clk);
-=======
 	clk_disable_unprepare(uap->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	return retval;
 }
 
 static void pl010_shutdown(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-=======
 	struct uart_amba_port *uap =
 		container_of(port, struct uart_amba_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Free the interrupt
 	 */
-<<<<<<< HEAD
-	free_irq(uap->port.irq, uap);
-=======
 	free_irq(port->irq, uap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * disable all interrupts, disable the port
 	 */
-<<<<<<< HEAD
-	writel(0, uap->port.membase + UART010_CR);
-
-	/* disable break condition and fifos */
-	writel(readb(uap->port.membase + UART010_LCRH) &
-		~(UART01x_LCRH_BRK | UART01x_LCRH_FEN),
-	       uap->port.membase + UART010_LCRH);
-=======
 	writel(0, port->membase + UART010_CR);
 
 	/* disable break condition and fifos */
 	writel(readb(port->membase + UART010_LCRH) &
 		~(UART01x_LCRH_BRK | UART01x_LCRH_FEN),
 	       port->membase + UART010_LCRH);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Shut down the clock producer
 	 */
-<<<<<<< HEAD
-	clk_disable(uap->clk);
-	clk_unprepare(uap->clk);
-=======
 	clk_disable_unprepare(uap->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 pl010_set_termios(struct uart_port *port, struct ktermios *termios,
-<<<<<<< HEAD
-		     struct ktermios *old)
-{
-	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-=======
 		  const struct ktermios *old)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int lcr_h, old_cr;
 	unsigned long flags;
 	unsigned int baud, quot;
@@ -632,11 +358,7 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
 	/*
 	 * Ask the core to calculate the divisor for us.
 	 */
-<<<<<<< HEAD
-	baud = uart_get_baud_rate(port, termios, old, 0, uap->port.uartclk/16); 
-=======
 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk / 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	quot = uart_get_divisor(port, baud);
 
 	switch (termios->c_cflag & CSIZE) {
@@ -660,117 +382,59 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
 		if (!(termios->c_cflag & PARODD))
 			lcr_h |= UART01x_LCRH_EPS;
 	}
-<<<<<<< HEAD
-	if (uap->port.fifosize > 1)
-		lcr_h |= UART01x_LCRH_FEN;
-
-	spin_lock_irqsave(&uap->port.lock, flags);
-=======
 	if (port->fifosize > 1)
 		lcr_h |= UART01x_LCRH_FEN;
 
 	uart_port_lock_irqsave(port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Update the per-port timeout.
 	 */
 	uart_update_timeout(port, termios->c_cflag, baud);
 
-<<<<<<< HEAD
-	uap->port.read_status_mask = UART01x_RSR_OE;
-	if (termios->c_iflag & INPCK)
-		uap->port.read_status_mask |= UART01x_RSR_FE | UART01x_RSR_PE;
-	if (termios->c_iflag & (BRKINT | PARMRK))
-		uap->port.read_status_mask |= UART01x_RSR_BE;
-=======
 	port->read_status_mask = UART01x_RSR_OE;
 	if (termios->c_iflag & INPCK)
 		port->read_status_mask |= UART01x_RSR_FE | UART01x_RSR_PE;
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
 		port->read_status_mask |= UART01x_RSR_BE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Characters to ignore
 	 */
-<<<<<<< HEAD
-	uap->port.ignore_status_mask = 0;
-	if (termios->c_iflag & IGNPAR)
-		uap->port.ignore_status_mask |= UART01x_RSR_FE | UART01x_RSR_PE;
-	if (termios->c_iflag & IGNBRK) {
-		uap->port.ignore_status_mask |= UART01x_RSR_BE;
-=======
 	port->ignore_status_mask = 0;
 	if (termios->c_iflag & IGNPAR)
 		port->ignore_status_mask |= UART01x_RSR_FE | UART01x_RSR_PE;
 	if (termios->c_iflag & IGNBRK) {
 		port->ignore_status_mask |= UART01x_RSR_BE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If we're ignoring parity and break indicators,
 		 * ignore overruns too (for real raw support).
 		 */
 		if (termios->c_iflag & IGNPAR)
-<<<<<<< HEAD
-			uap->port.ignore_status_mask |= UART01x_RSR_OE;
-=======
 			port->ignore_status_mask |= UART01x_RSR_OE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Ignore all characters if CREAD is not set.
 	 */
 	if ((termios->c_cflag & CREAD) == 0)
-<<<<<<< HEAD
-		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
-
-	/* first, disable everything */
-	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
-=======
 		port->ignore_status_mask |= UART_DUMMY_RSR_RX;
 
 	old_cr = readb(port->membase + UART010_CR) & ~UART010_CR_MSIE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (UART_ENABLE_MS(port, termios->c_cflag))
 		old_cr |= UART010_CR_MSIE;
 
-<<<<<<< HEAD
-	writel(0, uap->port.membase + UART010_CR);
-
-	/* Set baud rate */
-	quot -= 1;
-	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
-	writel(quot & 0xff, uap->port.membase + UART010_LCRL);
-=======
 	/* Set baud rate */
 	quot -= 1;
 	writel((quot & 0xf00) >> 8, port->membase + UART010_LCRM);
 	writel(quot & 0xff, port->membase + UART010_LCRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * ----------v----------v----------v----------v-----
 	 * NOTE: MUST BE WRITTEN AFTER UARTLCR_M & UARTLCR_L
 	 * ----------^----------^----------^----------^-----
 	 */
-<<<<<<< HEAD
-	writel(lcr_h, uap->port.membase + UART010_LCRH);
-	writel(old_cr, uap->port.membase + UART010_CR);
-
-	spin_unlock_irqrestore(&uap->port.lock, flags);
-}
-
-static void pl010_set_ldisc(struct uart_port *port, int new)
-{
-	if (new == N_PPS) {
-		port->flags |= UPF_HARDPPS_CD;
-		pl010_enable_ms(port);
-	} else
-		port->flags &= ~UPF_HARDPPS_CD;
-=======
 	writel(lcr_h, port->membase + UART010_LCRH);
 	writel(old_cr, port->membase + UART010_CR);
 
@@ -792,7 +456,6 @@ static void pl010_set_ldisc(struct uart_port *port, struct ktermios *termios)
 			uart_port_unlock_irq(port);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *pl010_type(struct uart_port *port)
@@ -843,11 +506,7 @@ static int pl010_verify_port(struct uart_port *port, struct serial_struct *ser)
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct uart_ops amba_pl010_pops = {
-=======
 static const struct uart_ops amba_pl010_pops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	= pl010_tx_empty,
 	.set_mctrl	= pl010_set_mctrl,
 	.get_mctrl	= pl010_get_mctrl,
@@ -871,18 +530,6 @@ static struct uart_amba_port *amba_ports[UART_NR];
 
 #ifdef CONFIG_SERIAL_AMBA_PL010_CONSOLE
 
-<<<<<<< HEAD
-static void pl010_console_putchar(struct uart_port *port, int ch)
-{
-	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-	unsigned int status;
-
-	do {
-		status = readb(uap->port.membase + UART01x_FR);
-		barrier();
-	} while (!UART_TX_READY(status));
-	writel(ch, uap->port.membase + UART01x_DR);
-=======
 static void pl010_console_putchar(struct uart_port *port, unsigned char ch)
 {
 	unsigned int status;
@@ -892,17 +539,13 @@ static void pl010_console_putchar(struct uart_port *port, unsigned char ch)
 		barrier();
 	} while (!UART_TX_READY(status));
 	writel(ch, port->membase + UART01x_DR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 pl010_console_write(struct console *co, const char *s, unsigned int count)
 {
 	struct uart_amba_port *uap = amba_ports[co->index];
-<<<<<<< HEAD
-=======
 	struct uart_port *port = &uap->port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int status, old_cr;
 
 	clk_enable(uap->clk);
@@ -910,34 +553,20 @@ pl010_console_write(struct console *co, const char *s, unsigned int count)
 	/*
 	 *	First save the CR then disable the interrupts
 	 */
-<<<<<<< HEAD
-	old_cr = readb(uap->port.membase + UART010_CR);
-	writel(UART01x_CR_UARTEN, uap->port.membase + UART010_CR);
-
-	uart_console_write(&uap->port, s, count, pl010_console_putchar);
-=======
 	old_cr = readb(port->membase + UART010_CR);
 	writel(UART01x_CR_UARTEN, port->membase + UART010_CR);
 
 	uart_console_write(port, s, count, pl010_console_putchar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Finally, wait for transmitter to become empty
 	 *	and restore the TCR
 	 */
 	do {
-<<<<<<< HEAD
-		status = readb(uap->port.membase + UART01x_FR);
-		barrier();
-	} while (status & UART01x_FR_BUSY);
-	writel(old_cr, uap->port.membase + UART010_CR);
-=======
 		status = readb(port->membase + UART01x_FR);
 		barrier();
 	} while (status & UART01x_FR_BUSY);
 	writel(old_cr, port->membase + UART010_CR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clk_disable(uap->clk);
 }
@@ -1019,10 +648,7 @@ static struct console amba_console = {
 #define AMBA_CONSOLE	NULL
 #endif
 
-<<<<<<< HEAD
-=======
 static DEFINE_MUTEX(amba_reg_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct uart_driver amba_reg = {
 	.owner			= THIS_MODULE,
 	.driver_name		= "ttyAM",
@@ -1043,30 +669,6 @@ static int pl010_probe(struct amba_device *dev, const struct amba_id *id)
 		if (amba_ports[i] == NULL)
 			break;
 
-<<<<<<< HEAD
-	if (i == ARRAY_SIZE(amba_ports)) {
-		ret = -EBUSY;
-		goto out;
-	}
-
-	uap = kzalloc(sizeof(struct uart_amba_port), GFP_KERNEL);
-	if (!uap) {
-		ret = -ENOMEM;
-		goto out;
-	}
-
-	base = ioremap(dev->res.start, resource_size(&dev->res));
-	if (!base) {
-		ret = -ENOMEM;
-		goto free;
-	}
-
-	uap->clk = clk_get(&dev->dev, NULL);
-	if (IS_ERR(uap->clk)) {
-		ret = PTR_ERR(uap->clk);
-		goto unmap;
-	}
-=======
 	if (i == ARRAY_SIZE(amba_ports))
 		return -EBUSY;
 
@@ -1083,7 +685,6 @@ static int pl010_probe(struct amba_device *dev, const struct amba_id *id)
 	uap->clk = devm_clk_get(&dev->dev, NULL);
 	if (IS_ERR(uap->clk))
 		return PTR_ERR(uap->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uap->port.dev = &dev->dev;
 	uap->port.mapbase = dev->res.start;
@@ -1091,45 +692,16 @@ static int pl010_probe(struct amba_device *dev, const struct amba_id *id)
 	uap->port.iotype = UPIO_MEM;
 	uap->port.irq = dev->irq[0];
 	uap->port.fifosize = 16;
-<<<<<<< HEAD
-=======
 	uap->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_AMBA_PL010_CONSOLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uap->port.ops = &amba_pl010_pops;
 	uap->port.flags = UPF_BOOT_AUTOCONF;
 	uap->port.line = i;
 	uap->dev = dev;
-<<<<<<< HEAD
-	uap->data = dev->dev.platform_data;
-=======
 	uap->data = dev_get_platdata(&dev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	amba_ports[i] = uap;
 
 	amba_set_drvdata(dev, uap);
-<<<<<<< HEAD
-	ret = uart_add_one_port(&amba_reg, &uap->port);
-	if (ret) {
-		amba_set_drvdata(dev, NULL);
-		amba_ports[i] = NULL;
-		clk_put(uap->clk);
- unmap:
-		iounmap(base);
- free:
-		kfree(uap);
-	}
- out:
-	return ret;
-}
-
-static int pl010_remove(struct amba_device *dev)
-{
-	struct uart_amba_port *uap = amba_get_drvdata(dev);
-	int i;
-
-	amba_set_drvdata(dev, NULL);
-=======
 
 	mutex_lock(&amba_reg_lock);
 	if (!amba_reg.state) {
@@ -1155,25 +727,12 @@ static void pl010_remove(struct amba_device *dev)
 	struct uart_amba_port *uap = amba_get_drvdata(dev);
 	int i;
 	bool busy = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uart_remove_one_port(&amba_reg, &uap->port);
 
 	for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
 		if (amba_ports[i] == uap)
 			amba_ports[i] = NULL;
-<<<<<<< HEAD
-
-	iounmap(uap->port.membase);
-	clk_put(uap->clk);
-	kfree(uap);
-	return 0;
-}
-
-static int pl010_suspend(struct amba_device *dev, pm_message_t state)
-{
-	struct uart_amba_port *uap = amba_get_drvdata(dev);
-=======
 		else if (amba_ports[i])
 			busy = true;
 
@@ -1185,7 +744,6 @@ static int pl010_suspend(struct amba_device *dev, pm_message_t state)
 static int pl010_suspend(struct device *dev)
 {
 	struct uart_amba_port *uap = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (uap)
 		uart_suspend_port(&amba_reg, &uap->port);
@@ -1193,31 +751,20 @@ static int pl010_suspend(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int pl010_resume(struct amba_device *dev)
-{
-	struct uart_amba_port *uap = amba_get_drvdata(dev);
-=======
 static int pl010_resume(struct device *dev)
 {
 	struct uart_amba_port *uap = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (uap)
 		uart_resume_port(&amba_reg, &uap->port);
 
 	return 0;
 }
-<<<<<<< HEAD
-
-static struct amba_id pl010_ids[] = {
-=======
 #endif
 
 static SIMPLE_DEV_PM_OPS(pl010_dev_pm_ops, pl010_suspend, pl010_resume);
 
 static const struct amba_id pl010_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.id	= 0x00041010,
 		.mask	= 0x000fffff,
@@ -1230,49 +777,23 @@ MODULE_DEVICE_TABLE(amba, pl010_ids);
 static struct amba_driver pl010_driver = {
 	.drv = {
 		.name	= "uart-pl010",
-<<<<<<< HEAD
-=======
 		.pm	= &pl010_dev_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.id_table	= pl010_ids,
 	.probe		= pl010_probe,
 	.remove		= pl010_remove,
-<<<<<<< HEAD
-	.suspend	= pl010_suspend,
-	.resume		= pl010_resume,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init pl010_init(void)
 {
-<<<<<<< HEAD
-	int ret;
-
-	printk(KERN_INFO "Serial: AMBA driver\n");
-
-	ret = uart_register_driver(&amba_reg);
-	if (ret == 0) {
-		ret = amba_driver_register(&pl010_driver);
-		if (ret)
-			uart_unregister_driver(&amba_reg);
-	}
-	return ret;
-=======
 	printk(KERN_INFO "Serial: AMBA driver\n");
 
 	return  amba_driver_register(&pl010_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit pl010_exit(void)
 {
 	amba_driver_unregister(&pl010_driver);
-<<<<<<< HEAD
-	uart_unregister_driver(&amba_reg);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(pl010_init);

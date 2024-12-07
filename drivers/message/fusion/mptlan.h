@@ -64,16 +64,6 @@
 #include <linux/if_arp.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/slab.h>
-#include <linux/miscdevice.h>
-#include <linux/spinlock.h>
-#include <linux/workqueue.h>
-#include <linux/delay.h>
-// #include <linux/trdevice.h>
-
-#include <asm/uaccess.h>
-=======
 #include <linux/printk.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
@@ -81,7 +71,6 @@
 #include <linux/delay.h>
 
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
     /* Override mptbase.h by pre-defining these! */
@@ -123,21 +112,13 @@ MODULE_DESCRIPTION(LANAME);
 #ifdef MPT_LAN_IO_DEBUG
 #define dioprintk(x)  printk x
 #else
-<<<<<<< HEAD
-#define dioprintk(x)
-=======
 #define dioprintk(x)  no_printk x
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef MPT_LAN_DEBUG
 #define dlprintk(x)  printk x
 #else
-<<<<<<< HEAD
-#define dlprintk(x)
-=======
 #define dlprintk(x)  no_printk x
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define NETDEV_TO_LANPRIV_PTR(d)	((struct mpt_lan_priv *)netdev_priv(d))

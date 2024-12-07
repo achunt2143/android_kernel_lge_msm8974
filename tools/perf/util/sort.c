@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-#include "sort.h"
-#include "hist.h"
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <errno.h>
 #include <inttypes.h>
@@ -40,25 +36,10 @@
 #ifdef HAVE_LIBTRACEEVENT
 #include <traceevent/event-parse.h>
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 regex_t		parent_regex;
 const char	default_parent_pattern[] = "^sys_|^do_page_fault";
 const char	*parent_pattern = default_parent_pattern;
-<<<<<<< HEAD
-const char	default_sort_order[] = "comm,dso,symbol";
-const char	*sort_order = default_sort_order;
-int		sort__need_collapse = 0;
-int		sort__has_parent = 0;
-int		sort__branch_mode = -1; /* -1 = means not set */
-
-enum sort_type	sort__first_dimension;
-
-char * field_sep;
-
-LIST_HEAD(hist_entry__sort_list);
-
-=======
 const char	*default_sort_order = "comm,dso,symbol";
 const char	default_branch_sort_order[] = "comm,dso_from,symbol_from,symbol_to,cycles";
 const char	default_mem_sort_order[] = "local_weight,mem,sym,dso,symbol_daddr,dso_daddr,snoop,tlb,locked,blocked,local_ins_lat,local_p_stage_cyc";
@@ -89,7 +70,6 @@ bool chk_double_cl;
  * replacing all occurrences of this separator in symbol names (and other
  * output) with a '.' character, that thus it's the only non valid separator.
 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int repsep_snprintf(char *bf, size_t size, const char *fmt, ...)
 {
 	int n;
@@ -97,19 +77,11 @@ static int repsep_snprintf(char *bf, size_t size, const char *fmt, ...)
 
 	va_start(ap, fmt);
 	n = vsnprintf(bf, size, fmt, ap);
-<<<<<<< HEAD
-	if (field_sep && n > 0) {
-		char *sep = bf;
-
-		while (1) {
-			sep = strchr(sep, *field_sep);
-=======
 	if (symbol_conf.field_sep && n > 0) {
 		char *sep = bf;
 
 		while (1) {
 			sep = strchr(sep, *symbol_conf.field_sep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (sep == NULL)
 				break;
 			*sep = '.';
@@ -122,11 +94,7 @@ static int repsep_snprintf(char *bf, size_t size, const char *fmt, ...)
 	return n;
 }
 
-<<<<<<< HEAD
-static int64_t cmp_null(void *l, void *r)
-=======
 static int64_t cmp_null(const void *l, const void *r)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!l && !r)
 		return 0;
@@ -141,31 +109,6 @@ static int64_t cmp_null(const void *l, const void *r)
 static int64_t
 sort__thread_cmp(struct hist_entry *left, struct hist_entry *right)
 {
-<<<<<<< HEAD
-	return right->thread->pid - left->thread->pid;
-}
-
-static int hist_entry__thread_snprintf(struct hist_entry *self, char *bf,
-				       size_t size, unsigned int width)
-{
-	return repsep_snprintf(bf, size, "%*s:%5d", width,
-			      self->thread->comm ?: "", self->thread->pid);
-}
-
-struct sort_entry sort_thread = {
-	.se_header	= "Command:  Pid",
-	.se_cmp		= sort__thread_cmp,
-	.se_snprintf	= hist_entry__thread_snprintf,
-	.se_width_idx	= HISTC_THREAD,
-};
-
-/* --sort comm */
-
-static int64_t
-sort__comm_cmp(struct hist_entry *left, struct hist_entry *right)
-{
-	return right->thread->pid - left->thread->pid;
-=======
 	return thread__tid(right->thread) - thread__tid(left->thread);
 }
 
@@ -254,39 +197,11 @@ static int64_t
 sort__comm_cmp(struct hist_entry *left, struct hist_entry *right)
 {
 	return strcmp(comm__str(right->comm), comm__str(left->comm));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int64_t
 sort__comm_collapse(struct hist_entry *left, struct hist_entry *right)
 {
-<<<<<<< HEAD
-	char *comm_l = left->thread->comm;
-	char *comm_r = right->thread->comm;
-
-	if (!comm_l || !comm_r)
-		return cmp_null(comm_l, comm_r);
-
-	return strcmp(comm_l, comm_r);
-}
-
-static int hist_entry__comm_snprintf(struct hist_entry *self, char *bf,
-				     size_t size, unsigned int width)
-{
-	return repsep_snprintf(bf, size, "%*s", width, self->thread->comm);
-}
-
-static int64_t _sort__dso_cmp(struct map *map_l, struct map *map_r)
-{
-	struct dso *dso_l = map_l ? map_l->dso : NULL;
-	struct dso *dso_r = map_r ? map_r->dso : NULL;
-	const char *dso_name_l, *dso_name_r;
-
-	if (!dso_l || !dso_r)
-		return cmp_null(dso_l, dso_r);
-
-	if (verbose) {
-=======
 	return strcmp(comm__str(right->comm), comm__str(left->comm));
 }
 
@@ -324,7 +239,6 @@ static int64_t _sort__dso_cmp(struct map *map_l, struct map *map_r)
 		return cmp_null(dso_r, dso_l);
 
 	if (verbose > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dso_name_l = dso_l->long_name;
 		dso_name_r = dso_r->long_name;
 	} else {
@@ -335,27 +249,6 @@ static int64_t _sort__dso_cmp(struct map *map_l, struct map *map_r)
 	return strcmp(dso_name_l, dso_name_r);
 }
 
-<<<<<<< HEAD
-struct sort_entry sort_comm = {
-	.se_header	= "Command",
-	.se_cmp		= sort__comm_cmp,
-	.se_collapse	= sort__comm_collapse,
-	.se_snprintf	= hist_entry__comm_snprintf,
-	.se_width_idx	= HISTC_COMM,
-};
-
-/* --sort dso */
-
-static int64_t
-sort__dso_cmp(struct hist_entry *left, struct hist_entry *right)
-{
-	return _sort__dso_cmp(left->ms.map, right->ms.map);
-}
-
-
-static int64_t _sort__sym_cmp(struct symbol *sym_l, struct symbol *sym_r,
-			      u64 ip_l, u64 ip_r)
-=======
 static int64_t
 sort__dso_cmp(struct hist_entry *left, struct hist_entry *right)
 {
@@ -406,7 +299,6 @@ static int64_t _sort__addr_cmp(u64 left_ip, u64 right_ip)
 }
 
 int64_t _sort__sym_cmp(struct symbol *sym_l, struct symbol *sym_r)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!sym_l || !sym_r)
 		return cmp_null(sym_l, sym_r);
@@ -414,57 +306,6 @@ int64_t _sort__sym_cmp(struct symbol *sym_l, struct symbol *sym_r)
 	if (sym_l == sym_r)
 		return 0;
 
-<<<<<<< HEAD
-	if (sym_l)
-		ip_l = sym_l->start;
-	if (sym_r)
-		ip_r = sym_r->start;
-
-	return (int64_t)(ip_r - ip_l);
-}
-
-static int _hist_entry__dso_snprintf(struct map *map, char *bf,
-				     size_t size, unsigned int width)
-{
-	if (map && map->dso) {
-		const char *dso_name = !verbose ? map->dso->short_name :
-			map->dso->long_name;
-		return repsep_snprintf(bf, size, "%-*s", width, dso_name);
-	}
-
-	return repsep_snprintf(bf, size, "%-*s", width, "[unknown]");
-}
-
-static int hist_entry__dso_snprintf(struct hist_entry *self, char *bf,
-				    size_t size, unsigned int width)
-{
-	return _hist_entry__dso_snprintf(self->ms.map, bf, size, width);
-}
-
-static int _hist_entry__sym_snprintf(struct map *map, struct symbol *sym,
-				     u64 ip, char level, char *bf, size_t size,
-				     unsigned int width __used)
-{
-	size_t ret = 0;
-
-	if (verbose) {
-		char o = map ? dso__symtab_origin(map->dso) : '!';
-		ret += repsep_snprintf(bf, size, "%-#*llx %c ",
-				       BITS_PER_LONG / 4, ip, o);
-	}
-
-	ret += repsep_snprintf(bf + ret, size - ret, "[%c] ", level);
-	if (sym)
-		ret += repsep_snprintf(bf + ret, size - ret, "%-*s",
-				       width - ret,
-				       sym->name);
-	else {
-		size_t len = BITS_PER_LONG / 4;
-		ret += repsep_snprintf(bf + ret, size - ret, "%-#.*llx",
-				       len, ip);
-		ret += repsep_snprintf(bf + ret, size - ret, "%-*s",
-				       width - ret, "");
-=======
 	if (sym_l->inlined || sym_r->inlined) {
 		int ret = strcmp(sym_l->name, sym_r->name);
 
@@ -548,48 +389,11 @@ static int _hist_entry__sym_snprintf(struct map_symbol *ms,
 		size_t len = BITS_PER_LONG / 4;
 		ret += repsep_snprintf(bf + ret, size - ret, "%-#.*llx",
 				       len, ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 }
 
-<<<<<<< HEAD
-
-struct sort_entry sort_dso = {
-	.se_header	= "Shared Object",
-	.se_cmp		= sort__dso_cmp,
-	.se_snprintf	= hist_entry__dso_snprintf,
-	.se_width_idx	= HISTC_DSO,
-};
-
-static int hist_entry__sym_snprintf(struct hist_entry *self, char *bf,
-				    size_t size, unsigned int width __used)
-{
-	return _hist_entry__sym_snprintf(self->ms.map, self->ms.sym, self->ip,
-					 self->level, bf, size, width);
-}
-
-/* --sort symbol */
-static int64_t
-sort__sym_cmp(struct hist_entry *left, struct hist_entry *right)
-{
-	u64 ip_l, ip_r;
-
-	if (!left->ms.sym && !right->ms.sym)
-		return right->level - left->level;
-
-	if (!left->ms.sym || !right->ms.sym)
-		return cmp_null(left->ms.sym, right->ms.sym);
-
-	if (left->ms.sym == right->ms.sym)
-		return 0;
-
-	ip_l = left->ms.sym->start;
-	ip_r = right->ms.sym->start;
-
-	return _sort__sym_cmp(left->ms.sym, right->ms.sym, ip_l, ip_r);
-=======
 int hist_entry__sym_snprintf(struct hist_entry *he, char *bf, size_t size, unsigned int width)
 {
 	return _hist_entry__sym_snprintf(&he->ms, he->ip,
@@ -604,18 +408,11 @@ static int hist_entry__sym_filter(struct hist_entry *he, int type, const void *a
 		return -1;
 
 	return sym && (!he->ms.sym || !strstr(he->ms.sym->name, sym));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct sort_entry sort_sym = {
 	.se_header	= "Symbol",
 	.se_cmp		= sort__sym_cmp,
-<<<<<<< HEAD
-	.se_snprintf	= hist_entry__sym_snprintf,
-	.se_width_idx	= HISTC_SYMBOL,
-};
-
-=======
 	.se_sort	= sort__sym_sort,
 	.se_snprintf	= hist_entry__sym_snprintf,
 	.se_filter	= hist_entry__sym_filter,
@@ -949,7 +746,6 @@ struct sort_entry sort_srcfile = {
 	.se_width_idx	= HISTC_SRCFILE,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* --sort parent */
 
 static int64_t
@@ -961,16 +757,6 @@ sort__parent_cmp(struct hist_entry *left, struct hist_entry *right)
 	if (!sym_l || !sym_r)
 		return cmp_null(sym_l, sym_r);
 
-<<<<<<< HEAD
-	return strcmp(sym_l->name, sym_r->name);
-}
-
-static int hist_entry__parent_snprintf(struct hist_entry *self, char *bf,
-				       size_t size, unsigned int width)
-{
-	return repsep_snprintf(bf, size, "%-*s", width,
-			      self->parent ? self->parent->name : "[other]");
-=======
 	return strcmp(sym_r->name, sym_l->name);
 }
 
@@ -979,7 +765,6 @@ static int hist_entry__parent_snprintf(struct hist_entry *he, char *bf,
 {
 	return repsep_snprintf(bf, size, "%-*.*s", width, width,
 			      he->parent ? he->parent->name : "[other]");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct sort_entry sort_parent = {
@@ -997,17 +782,10 @@ sort__cpu_cmp(struct hist_entry *left, struct hist_entry *right)
 	return right->cpu - left->cpu;
 }
 
-<<<<<<< HEAD
-static int hist_entry__cpu_snprintf(struct hist_entry *self, char *bf,
-				       size_t size, unsigned int width)
-{
-	return repsep_snprintf(bf, size, "%-*d", width, self->cpu);
-=======
 static int hist_entry__cpu_snprintf(struct hist_entry *he, char *bf,
 				    size_t size, unsigned int width)
 {
 	return repsep_snprintf(bf, size, "%*.*d", width, width, he->cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct sort_entry sort_cpu = {
@@ -1017,20 +795,6 @@ struct sort_entry sort_cpu = {
 	.se_width_idx	= HISTC_CPU,
 };
 
-<<<<<<< HEAD
-static int64_t
-sort__dso_from_cmp(struct hist_entry *left, struct hist_entry *right)
-{
-	return _sort__dso_cmp(left->branch_info->from.map,
-			      right->branch_info->from.map);
-}
-
-static int hist_entry__dso_from_snprintf(struct hist_entry *self, char *bf,
-				    size_t size, unsigned int width)
-{
-	return _hist_entry__dso_snprintf(self->branch_info->from.map,
-					 bf, size, width);
-=======
 /* --sort cgroup_id */
 
 static int64_t _sort__cgroup_dev_cmp(u64 left_dev, u64 right_dev)
@@ -1382,88 +1146,21 @@ static int hist_entry__sym_to_filter(struct hist_entry *he, int type,
 
 	return sym && !(he->branch_info && he->branch_info->to.ms.sym &&
 		        strstr(he->branch_info->to.ms.sym->name, sym));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct sort_entry sort_dso_from = {
 	.se_header	= "Source Shared Object",
 	.se_cmp		= sort__dso_from_cmp,
 	.se_snprintf	= hist_entry__dso_from_snprintf,
-<<<<<<< HEAD
-	.se_width_idx	= HISTC_DSO_FROM,
-};
-
-static int64_t
-sort__dso_to_cmp(struct hist_entry *left, struct hist_entry *right)
-{
-	return _sort__dso_cmp(left->branch_info->to.map,
-			      right->branch_info->to.map);
-}
-
-static int hist_entry__dso_to_snprintf(struct hist_entry *self, char *bf,
-				       size_t size, unsigned int width)
-{
-	return _hist_entry__dso_snprintf(self->branch_info->to.map,
-					 bf, size, width);
-}
-
-static int64_t
-sort__sym_from_cmp(struct hist_entry *left, struct hist_entry *right)
-{
-	struct addr_map_symbol *from_l = &left->branch_info->from;
-	struct addr_map_symbol *from_r = &right->branch_info->from;
-
-	if (!from_l->sym && !from_r->sym)
-		return right->level - left->level;
-
-	return _sort__sym_cmp(from_l->sym, from_r->sym, from_l->addr,
-			     from_r->addr);
-}
-
-static int64_t
-sort__sym_to_cmp(struct hist_entry *left, struct hist_entry *right)
-{
-	struct addr_map_symbol *to_l = &left->branch_info->to;
-	struct addr_map_symbol *to_r = &right->branch_info->to;
-
-	if (!to_l->sym && !to_r->sym)
-		return right->level - left->level;
-
-	return _sort__sym_cmp(to_l->sym, to_r->sym, to_l->addr, to_r->addr);
-}
-
-static int hist_entry__sym_from_snprintf(struct hist_entry *self, char *bf,
-				    size_t size, unsigned int width __used)
-{
-	struct addr_map_symbol *from = &self->branch_info->from;
-	return _hist_entry__sym_snprintf(from->map, from->sym, from->addr,
-					 self->level, bf, size, width);
-
-}
-
-static int hist_entry__sym_to_snprintf(struct hist_entry *self, char *bf,
-				    size_t size, unsigned int width __used)
-{
-	struct addr_map_symbol *to = &self->branch_info->to;
-	return _hist_entry__sym_snprintf(to->map, to->sym, to->addr,
-					 self->level, bf, size, width);
-
-}
-
-=======
 	.se_filter	= hist_entry__dso_from_filter,
 	.se_width_idx	= HISTC_DSO_FROM,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sort_entry sort_dso_to = {
 	.se_header	= "Target Shared Object",
 	.se_cmp		= sort__dso_to_cmp,
 	.se_snprintf	= hist_entry__dso_to_snprintf,
-<<<<<<< HEAD
-=======
 	.se_filter	= hist_entry__dso_to_filter,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.se_width_idx	= HISTC_DSO_TO,
 };
 
@@ -1471,10 +1168,7 @@ struct sort_entry sort_sym_from = {
 	.se_header	= "Source Symbol",
 	.se_cmp		= sort__sym_from_cmp,
 	.se_snprintf	= hist_entry__sym_from_snprintf,
-<<<<<<< HEAD
-=======
 	.se_filter	= hist_entry__sym_from_filter,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.se_width_idx	= HISTC_SYMBOL_FROM,
 };
 
@@ -1482,34 +1176,6 @@ struct sort_entry sort_sym_to = {
 	.se_header	= "Target Symbol",
 	.se_cmp		= sort__sym_to_cmp,
 	.se_snprintf	= hist_entry__sym_to_snprintf,
-<<<<<<< HEAD
-	.se_width_idx	= HISTC_SYMBOL_TO,
-};
-
-static int64_t
-sort__mispredict_cmp(struct hist_entry *left, struct hist_entry *right)
-{
-	const unsigned char mp = left->branch_info->flags.mispred !=
-					right->branch_info->flags.mispred;
-	const unsigned char p = left->branch_info->flags.predicted !=
-					right->branch_info->flags.predicted;
-
-	return mp || p;
-}
-
-static int hist_entry__mispredict_snprintf(struct hist_entry *self, char *bf,
-				    size_t size, unsigned int width){
-	static const char *out = "N/A";
-
-	if (self->branch_info->flags.predicted)
-		out = "N";
-	else if (self->branch_info->flags.mispred)
-		out = "Y";
-
-	return repsep_snprintf(bf, size, "%-*s", width, out);
-}
-
-=======
 	.se_filter	= hist_entry__sym_to_filter,
 	.se_width_idx	= HISTC_SYMBOL_TO,
 };
@@ -1968,7 +1634,6 @@ static int hist_entry__dcacheline_snprintf(struct hist_entry *he, char *bf,
 	return _hist_entry__sym_snprintf(ms, addr, level, bf, size, width);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sort_entry sort_mispredict = {
 	.se_header	= "Branch Mispredicted",
 	.se_cmp		= sort__mispredict_cmp,
@@ -1976,8 +1641,6 @@ struct sort_entry sort_mispredict = {
 	.se_width_idx	= HISTC_MISPREDICT,
 };
 
-<<<<<<< HEAD
-=======
 static int64_t
 sort__weight_cmp(struct hist_entry *left, struct hist_entry *right)
 {
@@ -2662,41 +2325,12 @@ struct sort_entry sort_type_offset = {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sort_dimension {
 	const char		*name;
 	struct sort_entry	*entry;
 	int			taken;
 };
 
-<<<<<<< HEAD
-#define DIM(d, n, func) [d] = { .name = n, .entry = &(func) }
-
-static struct sort_dimension sort_dimensions[] = {
-	DIM(SORT_PID, "pid", sort_thread),
-	DIM(SORT_COMM, "comm", sort_comm),
-	DIM(SORT_DSO, "dso", sort_dso),
-	DIM(SORT_DSO_FROM, "dso_from", sort_dso_from),
-	DIM(SORT_DSO_TO, "dso_to", sort_dso_to),
-	DIM(SORT_SYM, "symbol", sort_sym),
-	DIM(SORT_SYM_TO, "symbol_from", sort_sym_from),
-	DIM(SORT_SYM_FROM, "symbol_to", sort_sym_to),
-	DIM(SORT_PARENT, "parent", sort_parent),
-	DIM(SORT_CPU, "cpu", sort_cpu),
-	DIM(SORT_MISPREDICT, "mispredict", sort_mispredict),
-};
-
-int sort_dimension__add(const char *tok)
-{
-	unsigned int i;
-
-	for (i = 0; i < ARRAY_SIZE(sort_dimensions); i++) {
-		struct sort_dimension *sd = &sort_dimensions[i];
-
-		if (strncasecmp(tok, sd->name, strlen(tok)))
-			continue;
-		if (sd->entry == &sort_parent) {
-=======
 int __weak arch_support_sort_key(const char *sort_key __maybe_unused)
 {
 	return 0;
@@ -3739,7 +3373,6 @@ int sort_dimension__add(struct perf_hpp_list *list, const char *tok,
 		}
 
 		if (sd->entry == &sort_parent && parent_pattern) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int ret = regcomp(&parent_regex, parent_pattern, REG_EXTENDED);
 			if (ret) {
 				char err[BUFSIZ];
@@ -3748,67 +3381,6 @@ int sort_dimension__add(struct perf_hpp_list *list, const char *tok,
 				pr_err("Invalid regex: %s\n%s", parent_pattern, err);
 				return -EINVAL;
 			}
-<<<<<<< HEAD
-			sort__has_parent = 1;
-		}
-
-		if (sd->taken)
-			return 0;
-
-		if (sd->entry->se_collapse)
-			sort__need_collapse = 1;
-
-		if (list_empty(&hist_entry__sort_list)) {
-			if (!strcmp(sd->name, "pid"))
-				sort__first_dimension = SORT_PID;
-			else if (!strcmp(sd->name, "comm"))
-				sort__first_dimension = SORT_COMM;
-			else if (!strcmp(sd->name, "dso"))
-				sort__first_dimension = SORT_DSO;
-			else if (!strcmp(sd->name, "symbol"))
-				sort__first_dimension = SORT_SYM;
-			else if (!strcmp(sd->name, "parent"))
-				sort__first_dimension = SORT_PARENT;
-			else if (!strcmp(sd->name, "cpu"))
-				sort__first_dimension = SORT_CPU;
-			else if (!strcmp(sd->name, "symbol_from"))
-				sort__first_dimension = SORT_SYM_FROM;
-			else if (!strcmp(sd->name, "symbol_to"))
-				sort__first_dimension = SORT_SYM_TO;
-			else if (!strcmp(sd->name, "dso_from"))
-				sort__first_dimension = SORT_DSO_FROM;
-			else if (!strcmp(sd->name, "dso_to"))
-				sort__first_dimension = SORT_DSO_TO;
-			else if (!strcmp(sd->name, "mispredict"))
-				sort__first_dimension = SORT_MISPREDICT;
-		}
-
-		list_add_tail(&sd->entry->list, &hist_entry__sort_list);
-		sd->taken = 1;
-
-		return 0;
-	}
-	return -ESRCH;
-}
-
-void setup_sorting(const char * const usagestr[], const struct option *opts)
-{
-	char *tmp, *tok, *str = strdup(sort_order);
-
-	for (tok = strtok_r(str, ", ", &tmp);
-			tok; tok = strtok_r(NULL, ", ", &tmp)) {
-		if (sort_dimension__add(tok) < 0) {
-			error("Unknown --sort key: `%s'", tok);
-			usage_with_options(usagestr, opts);
-		}
-	}
-
-	free(str);
-}
-
-void sort_entry__setup_elide(struct sort_entry *self, struct strlist *list,
-			     const char *list_name, FILE *fp)
-=======
 			list->parent = 1;
 		} else if (sd->entry == &sort_sym) {
 			list->sym = 1;
@@ -4092,17 +3664,11 @@ void perf_hpp__set_elide(int idx, bool elide)
 }
 
 static bool __get_elide(struct strlist *list, const char *list_name, FILE *fp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (list && strlist__nr_entries(list) == 1) {
 		if (fp != NULL)
 			fprintf(fp, "# %s: %s\n", list_name,
 				strlist__entry(list, 0)->s);
-<<<<<<< HEAD
-		self->elide = true;
-	}
-}
-=======
 		return true;
 	}
 	return false;
@@ -4402,4 +3968,3 @@ char *sort_help(const char *prefix)
 	strbuf_release(&sb);
 	return s;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

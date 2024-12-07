@@ -25,10 +25,6 @@
 #include <linux/module.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <asm/unaligned.h>
-
-=======
 #include <linux/string_helpers.h>
 
 #include <asm/unaligned.h>
@@ -36,7 +32,6 @@
 #include <drm/drm_device.h>
 #include <drm/drm_util.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATOM_DEBUG
 
 #include "atom.h"
@@ -65,10 +60,7 @@
 typedef struct {
 	struct atom_context *ctx;
 	uint32_t *ps, *ws;
-<<<<<<< HEAD
-=======
 	int ps_size, ws_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ps_shift;
 	uint16_t start;
 	unsigned last_jump;
@@ -77,14 +69,6 @@ typedef struct {
 } atom_exec_context;
 
 int atom_debug = 0;
-<<<<<<< HEAD
-static int atom_execute_table_locked(struct atom_context *ctx, int index, uint32_t * params);
-int atom_execute_table(struct atom_context *ctx, int index, uint32_t * params);
-
-static uint32_t atom_arg_mask[8] =
-    { 0xFFFFFFFF, 0xFFFF, 0xFFFF00, 0xFFFF0000, 0xFF, 0xFF00, 0xFF0000,
-0xFF000000 };
-=======
 static int atom_execute_table_locked(struct atom_context *ctx, int index, uint32_t *params, int params_size);
 int atom_execute_table(struct atom_context *ctx, int index, uint32_t *params, int params_size);
 
@@ -92,7 +76,6 @@ static uint32_t atom_arg_mask[8] = {
 	0xFFFFFFFF, 0x0000FFFF, 0x00FFFF00, 0xFFFF0000,
 	0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int atom_arg_shift[8] = { 0, 0, 8, 16, 0, 8, 16, 24 };
 
 static int atom_dst_to_src[8][4] = {
@@ -181,29 +164,15 @@ static uint32_t atom_iio_execute(struct atom_context *ctx, int base,
 			    ~((0xFFFFFFFF >> (32 - CU8(base + 1))) <<
 			      CU8(base + 3));
 			temp |=
-<<<<<<< HEAD
-			    ((ctx->
-			      io_attr >> CU8(base + 2)) & (0xFFFFFFFF >> (32 -
-									  CU8
-									  (base
-									   +
-									   1))))
-			    << CU8(base + 3);
-=======
 			    ((ctx->io_attr >> CU8(base + 2)) &
 			     (0xFFFFFFFF >> (32 - CU8(base + 1)))) <<
 			     CU8(base + 3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			base += 4;
 			break;
 		case ATOM_IIO_END:
 			return temp;
 		default:
-<<<<<<< HEAD
-			printk(KERN_INFO "Unknown IIO opcode.\n");
-=======
 			pr_info("Unknown IIO opcode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 }
@@ -227,24 +196,6 @@ static uint32_t atom_get_src_int(atom_exec_context *ctx, uint8_t attr,
 			val = gctx->card->reg_read(gctx->card, idx);
 			break;
 		case ATOM_IO_PCI:
-<<<<<<< HEAD
-			printk(KERN_INFO
-			       "PCI registers are not implemented.\n");
-			return 0;
-		case ATOM_IO_SYSIO:
-			printk(KERN_INFO
-			       "SYSIO registers are not implemented.\n");
-			return 0;
-		default:
-			if (!(gctx->io_mode & 0x80)) {
-				printk(KERN_INFO "Bad IO mode.\n");
-				return 0;
-			}
-			if (!gctx->iio[gctx->io_mode & 0x7F]) {
-				printk(KERN_INFO
-				       "Undefined indirect IO read method %d.\n",
-				       gctx->io_mode & 0x7F);
-=======
 			pr_info("PCI registers are not implemented\n");
 			return 0;
 		case ATOM_IO_SYSIO:
@@ -258,7 +209,6 @@ static uint32_t atom_get_src_int(atom_exec_context *ctx, uint8_t attr,
 			if (!gctx->iio[gctx->io_mode & 0x7F]) {
 				pr_info("Undefined indirect IO read method %d\n",
 					gctx->io_mode & 0x7F);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			val =
@@ -272,14 +222,10 @@ static uint32_t atom_get_src_int(atom_exec_context *ctx, uint8_t attr,
 		(*ptr)++;
 		/* get_unaligned_le32 avoids unaligned accesses from atombios
 		 * tables, noticed on a DEC Alpha. */
-<<<<<<< HEAD
-		val = get_unaligned_le32((u32 *)&ctx->ps[idx]);
-=======
 		if (idx < ctx->ps_size)
 			val = get_unaligned_le32((u32 *)&ctx->ps[idx]);
 		else
 			pr_info("PS index out of range: %i > %i\n", idx, ctx->ps_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (print)
 			DEBUG("PS[0x%02X,0x%04X]", idx, val);
 		break;
@@ -317,14 +263,10 @@ static uint32_t atom_get_src_int(atom_exec_context *ctx, uint8_t attr,
 			val = gctx->reg_block;
 			break;
 		default:
-<<<<<<< HEAD
-			val = ctx->ws[idx];
-=======
 			if (idx < ctx->ws_size)
 				val = ctx->ws[idx];
 			else
 				pr_info("WS index out of range: %i > %i\n", idx, ctx->ws_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case ATOM_ARG_ID:
@@ -536,24 +478,6 @@ static void atom_put_dst(atom_exec_context *ctx, int arg, uint8_t attr,
 				gctx->card->reg_write(gctx->card, idx, val);
 			break;
 		case ATOM_IO_PCI:
-<<<<<<< HEAD
-			printk(KERN_INFO
-			       "PCI registers are not implemented.\n");
-			return;
-		case ATOM_IO_SYSIO:
-			printk(KERN_INFO
-			       "SYSIO registers are not implemented.\n");
-			return;
-		default:
-			if (!(gctx->io_mode & 0x80)) {
-				printk(KERN_INFO "Bad IO mode.\n");
-				return;
-			}
-			if (!gctx->iio[gctx->io_mode & 0xFF]) {
-				printk(KERN_INFO
-				       "Undefined indirect IO write method %d.\n",
-				       gctx->io_mode & 0x7F);
-=======
 			pr_info("PCI registers are not implemented\n");
 			return;
 		case ATOM_IO_SYSIO:
@@ -567,7 +491,6 @@ static void atom_put_dst(atom_exec_context *ctx, int arg, uint8_t attr,
 			if (!gctx->iio[gctx->io_mode & 0xFF]) {
 				pr_info("Undefined indirect IO write method %d\n",
 					gctx->io_mode & 0x7F);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return;
 			}
 			atom_iio_execute(gctx, gctx->iio[gctx->io_mode & 0xFF],
@@ -578,13 +501,10 @@ static void atom_put_dst(atom_exec_context *ctx, int arg, uint8_t attr,
 		idx = U8(*ptr);
 		(*ptr)++;
 		DEBUG("PS[0x%02X]", idx);
-<<<<<<< HEAD
-=======
 		if (idx >= ctx->ps_size) {
 			pr_info("PS index out of range: %i > %i\n", idx, ctx->ps_size);
 			return;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ctx->ps[idx] = cpu_to_le32(val);
 		break;
 	case ATOM_ARG_WS:
@@ -617,13 +537,10 @@ static void atom_put_dst(atom_exec_context *ctx, int arg, uint8_t attr,
 			gctx->reg_block = val;
 			break;
 		default:
-<<<<<<< HEAD
-=======
 			if (idx >= ctx->ws_size) {
 				pr_info("WS index out of range: %i > %i\n", idx, ctx->ws_size);
 				return;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ctx->ws[idx] = val;
 		}
 		break;
@@ -721,11 +638,7 @@ static void atom_op_calltable(atom_exec_context *ctx, int *ptr, int arg)
 	else
 		SDEBUG("   table: %d\n", idx);
 	if (U16(ctx->ctx->cmd_table + 4 + 2 * idx))
-<<<<<<< HEAD
-		r = atom_execute_table_locked(ctx->ctx, idx, ctx->ps + ctx->ps_shift);
-=======
 		r = atom_execute_table_locked(ctx->ctx, idx, ctx->ps + ctx->ps_shift, ctx->ps_size - ctx->ps_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r) {
 		ctx->abort = true;
 	}
@@ -821,11 +734,7 @@ static void atom_op_jump(atom_exec_context *ctx, int *ptr, int arg)
 		break;
 	}
 	if (arg != ATOM_COND_ALWAYS)
-<<<<<<< HEAD
-		SDEBUG("   taken: %s\n", execute ? "yes" : "no");
-=======
 		SDEBUG("   taken: %s\n", str_yes_no(execute));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SDEBUG("   target: 0x%04X\n", target);
 	if (execute) {
 		if (ctx->last_jump == (ctx->start + target)) {
@@ -920,29 +829,17 @@ static void atom_op_postcard(atom_exec_context *ctx, int *ptr, int arg)
 
 static void atom_op_repeat(atom_exec_context *ctx, int *ptr, int arg)
 {
-<<<<<<< HEAD
-	printk(KERN_INFO "unimplemented!\n");
-=======
 	pr_info("unimplemented!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void atom_op_restorereg(atom_exec_context *ctx, int *ptr, int arg)
 {
-<<<<<<< HEAD
-	printk(KERN_INFO "unimplemented!\n");
-=======
 	pr_info("unimplemented!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void atom_op_savereg(atom_exec_context *ctx, int *ptr, int arg)
 {
-<<<<<<< HEAD
-	printk(KERN_INFO "unimplemented!\n");
-=======
 	pr_info("unimplemented!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void atom_op_setdatablock(atom_exec_context *ctx, int *ptr, int arg)
@@ -1105,11 +1002,7 @@ static void atom_op_switch(atom_exec_context *ctx, int *ptr, int arg)
 			}
 			(*ptr) += 2;
 		} else {
-<<<<<<< HEAD
-			printk(KERN_INFO "Bad case.\n");
-=======
 			pr_info("Bad case\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	(*ptr) += 2;
@@ -1143,11 +1036,7 @@ static void atom_op_xor(atom_exec_context *ctx, int *ptr, int arg)
 
 static void atom_op_debug(atom_exec_context *ctx, int *ptr, int arg)
 {
-<<<<<<< HEAD
-	printk(KERN_INFO "unimplemented!\n");
-=======
 	pr_info("unimplemented!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct {
@@ -1278,11 +1167,7 @@ static struct {
 	atom_op_shr, ATOM_ARG_MC}, {
 atom_op_debug, 0},};
 
-<<<<<<< HEAD
-static int atom_execute_table_locked(struct atom_context *ctx, int index, uint32_t * params)
-=======
 static int atom_execute_table_locked(struct atom_context *ctx, int index, uint32_t *params, int params_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int base = CU16(ctx->cmd_table + 4 + 2 * index);
 	int len, ws, ps, ptr;
@@ -1304,14 +1189,6 @@ static int atom_execute_table_locked(struct atom_context *ctx, int index, uint32
 	ectx.ps_shift = ps / 4;
 	ectx.start = base;
 	ectx.ps = params;
-<<<<<<< HEAD
-	ectx.abort = false;
-	ectx.last_jump = 0;
-	if (ws)
-		ectx.ws = kzalloc(4 * ws, GFP_KERNEL);
-	else
-		ectx.ws = NULL;
-=======
 	ectx.ps_size = params_size;
 	ectx.abort = false;
 	ectx.last_jump = 0;
@@ -1322,7 +1199,6 @@ static int atom_execute_table_locked(struct atom_context *ctx, int index, uint32
 		ectx.ws = NULL;
 		ectx.ws_size = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	debug_depth++;
 	while (1) {
@@ -1351,20 +1227,11 @@ static int atom_execute_table_locked(struct atom_context *ctx, int index, uint32
 	SDEBUG("<<\n");
 
 free:
-<<<<<<< HEAD
-	if (ws)
-		kfree(ectx.ws);
-	return ret;
-}
-
-int atom_execute_table(struct atom_context *ctx, int index, uint32_t * params)
-=======
 	kfree(ectx.ws);
 	return ret;
 }
 
 int atom_execute_table_scratch_unlocked(struct atom_context *ctx, int index, uint32_t *params, int params_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 
@@ -1380,17 +1247,11 @@ int atom_execute_table_scratch_unlocked(struct atom_context *ctx, int index, uin
 	/* reset divmul */
 	ctx->divmul[0] = 0;
 	ctx->divmul[1] = 0;
-<<<<<<< HEAD
-	r = atom_execute_table_locked(ctx, index, params);
-=======
 	r = atom_execute_table_locked(ctx, index, params, params_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ctx->mutex);
 	return r;
 }
 
-<<<<<<< HEAD
-=======
 int atom_execute_table(struct atom_context *ctx, int index, uint32_t *params, int params_size)
 {
 	int r;
@@ -1400,17 +1261,13 @@ int atom_execute_table(struct atom_context *ctx, int index, uint32_t *params, in
 	return r;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int atom_iio_len[] = { 1, 2, 3, 3, 3, 3, 4, 4, 4, 3 };
 
 static void atom_index_iio(struct atom_context *ctx, int base)
 {
 	ctx->iio = kzalloc(2 * 256, GFP_KERNEL);
-<<<<<<< HEAD
-=======
 	if (!ctx->iio)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (CU8(base) == ATOM_IIO_START) {
 		ctx->iio[CU8(base + 1)] = base + 2;
 		base += 2;
@@ -1436,22 +1293,14 @@ struct atom_context *atom_parse(struct card_info *card, void *bios)
 	ctx->bios = bios;
 
 	if (CU16(0) != ATOM_BIOS_MAGIC) {
-<<<<<<< HEAD
-		printk(KERN_INFO "Invalid BIOS magic.\n");
-=======
 		pr_info("Invalid BIOS magic\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(ctx);
 		return NULL;
 	}
 	if (strncmp
 	    (CSTR(ATOM_ATI_MAGIC_PTR), ATOM_ATI_MAGIC,
 	     strlen(ATOM_ATI_MAGIC))) {
-<<<<<<< HEAD
-		printk(KERN_INFO "Invalid ATI magic.\n");
-=======
 		pr_info("Invalid ATI magic\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(ctx);
 		return NULL;
 	}
@@ -1460,11 +1309,7 @@ struct atom_context *atom_parse(struct card_info *card, void *bios)
 	if (strncmp
 	    (CSTR(base + ATOM_ROM_MAGIC_PTR), ATOM_ROM_MAGIC,
 	     strlen(ATOM_ROM_MAGIC))) {
-<<<<<<< HEAD
-		printk(KERN_INFO "Invalid ATOM magic.\n");
-=======
 		pr_info("Invalid ATOM magic\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(ctx);
 		return NULL;
 	}
@@ -1472,13 +1317,10 @@ struct atom_context *atom_parse(struct card_info *card, void *bios)
 	ctx->cmd_table = CU16(base + ATOM_ROM_CMD_PTR);
 	ctx->data_table = CU16(base + ATOM_ROM_DATA_PTR);
 	atom_index_iio(ctx, CU16(ctx->data_table + ATOM_DATA_IIO_PTR) + 4);
-<<<<<<< HEAD
-=======
 	if (!ctx->iio) {
 		atom_destroy(ctx);
 		return NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	str = CSTR(CU16(base + ATOM_ROM_MSG_PTR));
 	while (*str && ((*str == '\n') || (*str == '\r')))
@@ -1491,11 +1333,7 @@ struct atom_context *atom_parse(struct card_info *card, void *bios)
 			break;
 		}
 	}
-<<<<<<< HEAD
-	printk(KERN_INFO "ATOM BIOS: %s\n", name);
-=======
 	pr_info("ATOM BIOS: %s\n", name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ctx;
 }
@@ -1516,11 +1354,7 @@ int atom_asic_init(struct atom_context *ctx)
 
 	if (!CU16(ctx->cmd_table + 4 + 2 * ATOM_CMD_INIT))
 		return 1;
-<<<<<<< HEAD
-	ret = atom_execute_table(ctx, ATOM_CMD_INIT, ps);
-=======
 	ret = atom_execute_table(ctx, ATOM_CMD_INIT, ps, 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -1528,34 +1362,20 @@ int atom_asic_init(struct atom_context *ctx)
 
 	if (rdev->family < CHIP_R600) {
 		if (CU16(ctx->cmd_table + 4 + 2 * ATOM_CMD_SPDFANCNTL))
-<<<<<<< HEAD
-			atom_execute_table(ctx, ATOM_CMD_SPDFANCNTL, ps);
-=======
 			atom_execute_table(ctx, ATOM_CMD_SPDFANCNTL, ps, 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
 
 void atom_destroy(struct atom_context *ctx)
 {
-<<<<<<< HEAD
-	if (ctx->iio)
-		kfree(ctx->iio);
-=======
 	kfree(ctx->iio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ctx);
 }
 
 bool atom_parse_data_header(struct atom_context *ctx, int index,
-<<<<<<< HEAD
-			    uint16_t * size, uint8_t * frev, uint8_t * crev,
-			    uint16_t * data_start)
-=======
 			    uint16_t *size, uint8_t *frev, uint8_t *crev,
 			    uint16_t *data_start)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int offset = index * 2 + 4;
 	int idx = CU16(ctx->data_table + offset);
@@ -1574,13 +1394,8 @@ bool atom_parse_data_header(struct atom_context *ctx, int index,
 	return true;
 }
 
-<<<<<<< HEAD
-bool atom_parse_cmd_header(struct atom_context *ctx, int index, uint8_t * frev,
-			   uint8_t * crev)
-=======
 bool atom_parse_cmd_header(struct atom_context *ctx, int index, uint8_t *frev,
 			   uint8_t *crev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int offset = index * 2 + 4;
 	int idx = CU16(ctx->cmd_table + offset);

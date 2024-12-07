@@ -1,33 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2003 - 2009 NetXen, Inc.
  * Copyright (C) 2009 - QLogic Corporation.
  * All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston,
- * MA  02111-1307, USA.
- *
- * The full GNU General Public License is included in this distribution
- * in the file called "COPYING".
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -90,15 +65,9 @@ netxen_nic_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *drvinfo)
 	u32 fw_minor = 0;
 	u32 fw_build = 0;
 
-<<<<<<< HEAD
-	strlcpy(drvinfo->driver, netxen_nic_driver_name,
-		sizeof(drvinfo->driver));
-	strlcpy(drvinfo->version, NETXEN_NIC_LINUX_VERSIONID,
-=======
 	strscpy(drvinfo->driver, netxen_nic_driver_name,
 		sizeof(drvinfo->driver));
 	strscpy(drvinfo->version, NETXEN_NIC_LINUX_VERSIONID,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(drvinfo->version));
 	fw_major = NXRD32(adapter, NETXEN_FW_VERSION_MAJOR);
 	fw_minor = NXRD32(adapter, NETXEN_FW_VERSION_MINOR);
@@ -106,23 +75,6 @@ netxen_nic_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *drvinfo)
 	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
 		"%d.%d.%d", fw_major, fw_minor, fw_build);
 
-<<<<<<< HEAD
-	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
-		sizeof(drvinfo->bus_info));
-	drvinfo->regdump_len = NETXEN_NIC_REGS_LEN;
-	drvinfo->eedump_len = netxen_nic_get_eeprom_len(dev);
-}
-
-static int
-netxen_nic_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
-{
-	struct netxen_adapter *adapter = netdev_priv(dev);
-	int check_sfp_module = 0;
-
-	/* read which mode */
-	if (adapter->ahw.port_type == NETXEN_NIC_GBE) {
-		ecmd->supported = (SUPPORTED_10baseT_Half |
-=======
 	strscpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
 }
@@ -138,58 +90,28 @@ netxen_nic_get_link_ksettings(struct net_device *dev,
 	/* read which mode */
 	if (adapter->ahw.port_type == NETXEN_NIC_GBE) {
 		supported = (SUPPORTED_10baseT_Half |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   SUPPORTED_10baseT_Full |
 				   SUPPORTED_100baseT_Half |
 				   SUPPORTED_100baseT_Full |
 				   SUPPORTED_1000baseT_Half |
 				   SUPPORTED_1000baseT_Full);
 
-<<<<<<< HEAD
-		ecmd->advertising = (ADVERTISED_100baseT_Half |
-=======
 		advertising = (ADVERTISED_100baseT_Half |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     ADVERTISED_100baseT_Full |
 				     ADVERTISED_1000baseT_Half |
 				     ADVERTISED_1000baseT_Full);
 
-<<<<<<< HEAD
-		ecmd->port = PORT_TP;
-
-		ethtool_cmd_speed_set(ecmd, adapter->link_speed);
-		ecmd->duplex = adapter->link_duplex;
-		ecmd->autoneg = adapter->link_autoneg;
-=======
 		cmd->base.port = PORT_TP;
 
 		cmd->base.speed = adapter->link_speed;
 		cmd->base.duplex = adapter->link_duplex;
 		cmd->base.autoneg = adapter->link_autoneg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else if (adapter->ahw.port_type == NETXEN_NIC_XGBE) {
 		u32 val;
 
 		val = NXRD32(adapter, NETXEN_PORT_MODE_ADDR);
 		if (val == NETXEN_PORT_MODE_802_3_AP) {
-<<<<<<< HEAD
-			ecmd->supported = SUPPORTED_1000baseT_Full;
-			ecmd->advertising = ADVERTISED_1000baseT_Full;
-		} else {
-			ecmd->supported = SUPPORTED_10000baseT_Full;
-			ecmd->advertising = ADVERTISED_10000baseT_Full;
-		}
-
-		if (netif_running(dev) && adapter->has_link_events) {
-			ethtool_cmd_speed_set(ecmd, adapter->link_speed);
-			ecmd->autoneg = adapter->link_autoneg;
-			ecmd->duplex = adapter->link_duplex;
-			goto skip;
-		}
-
-		ecmd->port = PORT_TP;
-=======
 			supported = SUPPORTED_1000baseT_Full;
 			advertising = ADVERTISED_1000baseT_Full;
 		} else {
@@ -205,21 +127,11 @@ netxen_nic_get_link_ksettings(struct net_device *dev,
 		}
 
 		cmd->base.port = PORT_TP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (NX_IS_REVISION_P3(adapter->ahw.revision_id)) {
 			u16 pcifn = adapter->ahw.pci_func;
 
 			val = NXRD32(adapter, P3_LINK_SPEED_REG(pcifn));
-<<<<<<< HEAD
-			ethtool_cmd_speed_set(ecmd, P3_LINK_SPEED_MHZ *
-					      P3_LINK_SPEED_VAL(pcifn, val));
-		} else
-			ethtool_cmd_speed_set(ecmd, SPEED_10000);
-
-		ecmd->duplex = DUPLEX_FULL;
-		ecmd->autoneg = AUTONEG_DISABLE;
-=======
 			cmd->base.speed = P3_LINK_SPEED_MHZ *
 				P3_LINK_SPEED_VAL(pcifn, val);
 		} else
@@ -227,17 +139,11 @@ netxen_nic_get_link_ksettings(struct net_device *dev,
 
 		cmd->base.duplex = DUPLEX_FULL;
 		cmd->base.autoneg = AUTONEG_DISABLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		return -EIO;
 
 skip:
-<<<<<<< HEAD
-	ecmd->phy_address = adapter->physical_port;
-	ecmd->transceiver = XCVR_EXTERNAL;
-=======
 	cmd->base.phy_address = adapter->physical_port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (adapter->ahw.board_type) {
 	case NETXEN_BRDTYPE_P2_SB35_4G:
@@ -245,30 +151,17 @@ skip:
 	case NETXEN_BRDTYPE_P3_REF_QG:
 	case NETXEN_BRDTYPE_P3_4_GB:
 	case NETXEN_BRDTYPE_P3_4_GB_MM:
-<<<<<<< HEAD
-
-		ecmd->supported |= SUPPORTED_Autoneg;
-		ecmd->advertising |= ADVERTISED_Autoneg;
-=======
 		supported |= SUPPORTED_Autoneg;
 		advertising |= ADVERTISED_Autoneg;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NETXEN_BRDTYPE_P2_SB31_10G_CX4:
 	case NETXEN_BRDTYPE_P3_10G_CX4:
 	case NETXEN_BRDTYPE_P3_10G_CX4_LP:
 	case NETXEN_BRDTYPE_P3_10000_BASE_T:
-<<<<<<< HEAD
-		ecmd->supported |= SUPPORTED_TP;
-		ecmd->advertising |= ADVERTISED_TP;
-		ecmd->port = PORT_TP;
-		ecmd->autoneg = (adapter->ahw.board_type ==
-=======
 		supported |= SUPPORTED_TP;
 		advertising |= ADVERTISED_TP;
 		cmd->base.port = PORT_TP;
 		cmd->base.autoneg = (adapter->ahw.board_type ==
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 NETXEN_BRDTYPE_P2_SB31_10G_CX4) ?
 		    (AUTONEG_DISABLE) : (adapter->link_autoneg);
 		break;
@@ -277,48 +170,14 @@ skip:
 	case NETXEN_BRDTYPE_P3_IMEZ:
 	case NETXEN_BRDTYPE_P3_XG_LOM:
 	case NETXEN_BRDTYPE_P3_HMEZ:
-<<<<<<< HEAD
-		ecmd->supported |= SUPPORTED_MII;
-		ecmd->advertising |= ADVERTISED_MII;
-		ecmd->port = PORT_MII;
-		ecmd->autoneg = AUTONEG_DISABLE;
-=======
 		supported |= SUPPORTED_MII;
 		advertising |= ADVERTISED_MII;
 		cmd->base.port = PORT_MII;
 		cmd->base.autoneg = AUTONEG_DISABLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case NETXEN_BRDTYPE_P3_10G_SFP_PLUS:
 	case NETXEN_BRDTYPE_P3_10G_SFP_CT:
 	case NETXEN_BRDTYPE_P3_10G_SFP_QT:
-<<<<<<< HEAD
-		ecmd->advertising |= ADVERTISED_TP;
-		ecmd->supported |= SUPPORTED_TP;
-		check_sfp_module = netif_running(dev) &&
-			adapter->has_link_events;
-	case NETXEN_BRDTYPE_P2_SB31_10G:
-	case NETXEN_BRDTYPE_P3_10G_XFP:
-		ecmd->supported |= SUPPORTED_FIBRE;
-		ecmd->advertising |= ADVERTISED_FIBRE;
-		ecmd->port = PORT_FIBRE;
-		ecmd->autoneg = AUTONEG_DISABLE;
-		break;
-	case NETXEN_BRDTYPE_P3_10G_TP:
-		if (adapter->ahw.port_type == NETXEN_NIC_XGBE) {
-			ecmd->autoneg = AUTONEG_DISABLE;
-			ecmd->supported |= (SUPPORTED_FIBRE | SUPPORTED_TP);
-			ecmd->advertising |=
-				(ADVERTISED_FIBRE | ADVERTISED_TP);
-			ecmd->port = PORT_FIBRE;
-			check_sfp_module = netif_running(dev) &&
-				adapter->has_link_events;
-		} else {
-			ecmd->supported |= (SUPPORTED_TP |SUPPORTED_Autoneg);
-			ecmd->advertising |=
-				(ADVERTISED_TP | ADVERTISED_Autoneg);
-			ecmd->port = PORT_TP;
-=======
 		advertising |= ADVERTISED_TP;
 		supported |= SUPPORTED_TP;
 		check_sfp_module = netif_running(dev) &&
@@ -345,7 +204,6 @@ skip:
 			advertising |=
 				(ADVERTISED_TP | ADVERTISED_Autoneg);
 			cmd->base.port = PORT_TP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	default:
@@ -360,36 +218,19 @@ skip:
 		case LINKEVENT_MODULE_OPTICAL_SRLR:
 		case LINKEVENT_MODULE_OPTICAL_LRM:
 		case LINKEVENT_MODULE_OPTICAL_SFP_1G:
-<<<<<<< HEAD
-			ecmd->port = PORT_FIBRE;
-=======
 			cmd->base.port = PORT_FIBRE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case LINKEVENT_MODULE_TWINAX_UNSUPPORTED_CABLE:
 		case LINKEVENT_MODULE_TWINAX_UNSUPPORTED_CABLELEN:
 		case LINKEVENT_MODULE_TWINAX:
-<<<<<<< HEAD
-			ecmd->port = PORT_TP;
-			break;
-		default:
-			ecmd->port = -1;
-=======
 			cmd->base.port = PORT_TP;
 			break;
 		default:
 			cmd->base.port = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	if (!netif_running(dev) || !adapter->ahw.linkup) {
-<<<<<<< HEAD
-		ecmd->duplex = DUPLEX_UNKNOWN;
-		ethtool_cmd_speed_set(ecmd, SPEED_UNKNOWN);
-	}
-
-=======
 		cmd->base.duplex = DUPLEX_UNKNOWN;
 		cmd->base.speed = SPEED_UNKNOWN;
 	}
@@ -399,23 +240,15 @@ skip:
 	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
 						advertising);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-netxen_nic_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
-{
-	struct netxen_adapter *adapter = netdev_priv(dev);
-	u32 speed = ethtool_cmd_speed(ecmd);
-=======
 netxen_nic_set_link_ksettings(struct net_device *dev,
 			      const struct ethtool_link_ksettings *cmd)
 {
 	struct netxen_adapter *adapter = netdev_priv(dev);
 	u32 speed = cmd->base.speed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (adapter->ahw.port_type != NETXEN_NIC_GBE)
@@ -424,26 +257,16 @@ netxen_nic_set_link_ksettings(struct net_device *dev,
 	if (!(adapter->capabilities & NX_FW_CAPABILITY_GBE_LINK_CFG))
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	ret = nx_fw_cmd_set_gbe_port(adapter, speed, ecmd->duplex,
-				     ecmd->autoneg);
-=======
 	ret = nx_fw_cmd_set_gbe_port(adapter, speed, cmd->base.duplex,
 				     cmd->base.autoneg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret == NX_RCODE_NOT_SUPPORTED)
 		return -EOPNOTSUPP;
 	else if (ret)
 		return -EIO;
 
 	adapter->link_speed = speed;
-<<<<<<< HEAD
-	adapter->link_duplex = ecmd->duplex;
-	adapter->link_autoneg = ecmd->autoneg;
-=======
 	adapter->link_duplex = cmd->base.duplex;
 	adapter->link_autoneg = cmd->base.autoneg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!netif_running(dev))
 		return 0;
@@ -546,11 +369,7 @@ static u32 netxen_nic_test_link(struct net_device *dev)
 
 static int
 netxen_nic_get_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
-<<<<<<< HEAD
-		      u8 * bytes)
-=======
 		      u8 *bytes)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netxen_adapter *adapter = netdev_priv(dev);
 	int offset;
@@ -573,13 +392,9 @@ netxen_nic_get_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 
 static void
 netxen_nic_get_ringparam(struct net_device *dev,
-<<<<<<< HEAD
-		struct ethtool_ringparam *ring)
-=======
 			 struct ethtool_ringparam *ring,
 			 struct kernel_ethtool_ringparam *kernel_ring,
 			 struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netxen_adapter *adapter = netdev_priv(dev);
 
@@ -617,13 +432,9 @@ netxen_validate_ringparam(u32 val, u32 min, u32 max, char *r_name)
 
 static int
 netxen_nic_set_ringparam(struct net_device *dev,
-<<<<<<< HEAD
-		struct ethtool_ringparam *ring)
-=======
 			 struct ethtool_ringparam *ring,
 			 struct kernel_ethtool_ringparam *kernel_ring,
 			 struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netxen_adapter *adapter = netdev_priv(dev);
 	u16 max_rcv_desc = MAX_RCV_DESCRIPTORS_10G;
@@ -669,39 +480,16 @@ netxen_nic_get_pauseparam(struct net_device *dev,
 	__u32 val;
 	int port = adapter->physical_port;
 
-<<<<<<< HEAD
-	if (adapter->ahw.port_type == NETXEN_NIC_GBE) {
-		if ((port < 0) || (port > NETXEN_NIU_MAX_GBE_PORTS))
-=======
 	pause->autoneg = 0;
 
 	if (adapter->ahw.port_type == NETXEN_NIC_GBE) {
 		if ((port < 0) || (port >= NETXEN_NIU_MAX_GBE_PORTS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		/* get flow control settings */
 		val = NXRD32(adapter, NETXEN_NIU_GB_MAC_CONFIG_0(port));
 		pause->rx_pause = netxen_gb_get_rx_flowctl(val);
 		val = NXRD32(adapter, NETXEN_NIU_GB_PAUSE_CTL);
 		switch (port) {
-<<<<<<< HEAD
-			case 0:
-				pause->tx_pause = !(netxen_gb_get_gb0_mask(val));
-				break;
-			case 1:
-				pause->tx_pause = !(netxen_gb_get_gb1_mask(val));
-				break;
-			case 2:
-				pause->tx_pause = !(netxen_gb_get_gb2_mask(val));
-				break;
-			case 3:
-			default:
-				pause->tx_pause = !(netxen_gb_get_gb3_mask(val));
-				break;
-		}
-	} else if (adapter->ahw.port_type == NETXEN_NIC_XGBE) {
-		if ((port < 0) || (port > NETXEN_NIU_MAX_XG_PORTS))
-=======
 		case 0:
 			pause->tx_pause = !(netxen_gb_get_gb0_mask(val));
 			break;
@@ -718,7 +506,6 @@ netxen_nic_get_pauseparam(struct net_device *dev,
 		}
 	} else if (adapter->ahw.port_type == NETXEN_NIC_XGBE) {
 		if ((port < 0) || (port >= NETXEN_NIU_MAX_XG_PORTS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		pause->rx_pause = 1;
 		val = NXRD32(adapter, NETXEN_NIU_XG_PAUSE_CTL);
@@ -739,11 +526,6 @@ netxen_nic_set_pauseparam(struct net_device *dev,
 	struct netxen_adapter *adapter = netdev_priv(dev);
 	__u32 val;
 	int port = adapter->physical_port;
-<<<<<<< HEAD
-	/* read mode */
-	if (adapter->ahw.port_type == NETXEN_NIC_GBE) {
-		if ((port < 0) || (port > NETXEN_NIU_MAX_GBE_PORTS))
-=======
 
 	/* not supported */
 	if (pause->autoneg)
@@ -752,7 +534,6 @@ netxen_nic_set_pauseparam(struct net_device *dev,
 	/* read mode */
 	if (adapter->ahw.port_type == NETXEN_NIC_GBE) {
 		if ((port < 0) || (port >= NETXEN_NIU_MAX_GBE_PORTS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		/* set flow control */
 		val = NXRD32(adapter, NETXEN_NIU_GB_MAC_CONFIG_0(port));
@@ -767,37 +548,6 @@ netxen_nic_set_pauseparam(struct net_device *dev,
 		/* set autoneg */
 		val = NXRD32(adapter, NETXEN_NIU_GB_PAUSE_CTL);
 		switch (port) {
-<<<<<<< HEAD
-			case 0:
-				if (pause->tx_pause)
-					netxen_gb_unset_gb0_mask(val);
-				else
-					netxen_gb_set_gb0_mask(val);
-				break;
-			case 1:
-				if (pause->tx_pause)
-					netxen_gb_unset_gb1_mask(val);
-				else
-					netxen_gb_set_gb1_mask(val);
-				break;
-			case 2:
-				if (pause->tx_pause)
-					netxen_gb_unset_gb2_mask(val);
-				else
-					netxen_gb_set_gb2_mask(val);
-				break;
-			case 3:
-			default:
-				if (pause->tx_pause)
-					netxen_gb_unset_gb3_mask(val);
-				else
-					netxen_gb_set_gb3_mask(val);
-				break;
-		}
-		NXWR32(adapter, NETXEN_NIU_GB_PAUSE_CTL, val);
-	} else if (adapter->ahw.port_type == NETXEN_NIC_XGBE) {
-		if ((port < 0) || (port > NETXEN_NIU_MAX_XG_PORTS))
-=======
 		case 0:
 			if (pause->tx_pause)
 				netxen_gb_unset_gb0_mask(val);
@@ -827,7 +577,6 @@ netxen_nic_set_pauseparam(struct net_device *dev,
 		NXWR32(adapter, NETXEN_NIU_GB_PAUSE_CTL, val);
 	} else if (adapter->ahw.port_type == NETXEN_NIC_XGBE) {
 		if ((port < 0) || (port >= NETXEN_NIU_MAX_XG_PORTS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		val = NXRD32(adapter, NETXEN_NIU_XG_PAUSE_CTL);
 		if (port == 0) {
@@ -886,11 +635,7 @@ static int netxen_get_sset_count(struct net_device *dev, int sset)
 
 static void
 netxen_nic_diag_test(struct net_device *dev, struct ethtool_test *eth_test,
-<<<<<<< HEAD
-		     u64 * data)
-=======
 		     u64 *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	memset(data, 0, sizeof(uint64_t) * NETXEN_NIC_TEST_LEN);
 	if ((data[0] = netxen_nic_reg_test(dev)))
@@ -901,11 +646,7 @@ netxen_nic_diag_test(struct net_device *dev, struct ethtool_test *eth_test,
 }
 
 static void
-<<<<<<< HEAD
-netxen_nic_get_strings(struct net_device *dev, u32 stringset, u8 * data)
-=======
 netxen_nic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index;
 
@@ -926,11 +667,7 @@ netxen_nic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
 
 static void
 netxen_nic_get_ethtool_stats(struct net_device *dev,
-<<<<<<< HEAD
-			     struct ethtool_stats *stats, u64 * data)
-=======
 			     struct ethtool_stats *stats, u64 *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netxen_adapter *adapter = netdev_priv(dev);
 	int index;
@@ -998,13 +735,9 @@ netxen_nic_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
  * firmware coalescing to default.
  */
 static int netxen_set_intr_coalesce(struct net_device *netdev,
-<<<<<<< HEAD
-			struct ethtool_coalesce *ethcoal)
-=======
 				    struct ethtool_coalesce *ethcoal,
 				    struct kernel_ethtool_coalesce *kernel_coal,
 				    struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netxen_adapter *adapter = netdev_priv(netdev);
 
@@ -1021,28 +754,7 @@ static int netxen_set_intr_coalesce(struct net_device *netdev,
 	if (ethcoal->rx_coalesce_usecs > 0xffff ||
 		ethcoal->rx_max_coalesced_frames > 0xffff ||
 		ethcoal->tx_coalesce_usecs > 0xffff ||
-<<<<<<< HEAD
-		ethcoal->tx_max_coalesced_frames > 0xffff ||
-		ethcoal->rx_coalesce_usecs_irq ||
-		ethcoal->rx_max_coalesced_frames_irq ||
-		ethcoal->tx_coalesce_usecs_irq ||
-		ethcoal->tx_max_coalesced_frames_irq ||
-		ethcoal->stats_block_coalesce_usecs ||
-		ethcoal->use_adaptive_rx_coalesce ||
-		ethcoal->use_adaptive_tx_coalesce ||
-		ethcoal->pkt_rate_low ||
-		ethcoal->rx_coalesce_usecs_low ||
-		ethcoal->rx_max_coalesced_frames_low ||
-		ethcoal->tx_coalesce_usecs_low ||
-		ethcoal->tx_max_coalesced_frames_low ||
-		ethcoal->pkt_rate_high ||
-		ethcoal->rx_coalesce_usecs_high ||
-		ethcoal->rx_max_coalesced_frames_high ||
-		ethcoal->tx_coalesce_usecs_high ||
-		ethcoal->tx_max_coalesced_frames_high)
-=======
 		ethcoal->tx_max_coalesced_frames > 0xffff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (!ethcoal->rx_coalesce_usecs ||
@@ -1069,13 +781,9 @@ static int netxen_set_intr_coalesce(struct net_device *netdev,
 }
 
 static int netxen_get_intr_coalesce(struct net_device *netdev,
-<<<<<<< HEAD
-			struct ethtool_coalesce *ethcoal)
-=======
 				    struct ethtool_coalesce *ethcoal,
 				    struct kernel_ethtool_coalesce *kernel_coal,
 				    struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netxen_adapter *adapter = netdev_priv(netdev);
 
@@ -1104,26 +812,16 @@ netxen_get_dump_flag(struct net_device *netdev, struct ethtool_dump *dump)
 		dump->len = mdump->md_dump_size;
 	else
 		dump->len = 0;
-<<<<<<< HEAD
-	dump->flag = mdump->md_capture_mask;
-=======
 
 	if (!mdump->md_enabled)
 		dump->flag = ETH_FW_DUMP_DISABLE;
 	else
 		dump->flag = mdump->md_capture_mask;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump->version = adapter->fw_version;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int
-netxen_set_dump(struct net_device *netdev, struct ethtool_dump *val)
-{
-	int ret = 0;
-=======
 /* Fw dump levels */
 static const u32 FW_DUMP_LEVELS[] = { 0x3, 0x7, 0xf, 0x1f, 0x3f, 0x7f, 0xff };
 
@@ -1131,19 +829,11 @@ static int
 netxen_set_dump(struct net_device *netdev, struct ethtool_dump *val)
 {
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct netxen_adapter *adapter = netdev_priv(netdev);
 	struct netxen_minidump *mdump = &adapter->mdump;
 
 	switch (val->flag) {
 	case NX_FORCE_FW_DUMP_KEY:
-<<<<<<< HEAD
-		if (!mdump->md_enabled)
-			mdump->md_enabled = 1;
-		if (adapter->fw_mdump_rdy) {
-			netdev_info(netdev, "Previous dump not cleared, not forcing dump\n");
-			return ret;
-=======
 		if (!mdump->md_enabled) {
 			netdev_info(netdev, "FW dump not enabled\n");
 			return 0;
@@ -1151,7 +841,6 @@ netxen_set_dump(struct net_device *netdev, struct ethtool_dump *val)
 		if (adapter->fw_mdump_rdy) {
 			netdev_info(netdev, "Previous dump not cleared, not forcing dump\n");
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		netdev_info(netdev, "Forcing a fw dump\n");
 		nx_dev_request_reset(adapter);
@@ -1174,14 +863,6 @@ netxen_set_dump(struct net_device *netdev, struct ethtool_dump *val)
 		adapter->flags &= ~NETXEN_FW_RESET_OWNER;
 		break;
 	default:
-<<<<<<< HEAD
-		if (val->flag <= NX_DUMP_MASK_MAX &&
-			val->flag >= NX_DUMP_MASK_MIN) {
-			mdump->md_capture_mask = val->flag & 0xff;
-			netdev_info(netdev, "Driver mask changed to: 0x%x\n",
-					mdump->md_capture_mask);
-			break;
-=======
 		for (i = 0; i < ARRAY_SIZE(FW_DUMP_LEVELS); i++) {
 			if (val->flag == FW_DUMP_LEVELS[i]) {
 				mdump->md_capture_mask = val->flag;
@@ -1190,18 +871,13 @@ netxen_set_dump(struct net_device *netdev, struct ethtool_dump *val)
 					mdump->md_capture_mask);
 				return 0;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		netdev_info(netdev,
 			"Invalid dump level: 0x%x\n", val->flag);
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	return ret;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -1241,13 +917,8 @@ netxen_get_dump_data(struct net_device *netdev, struct ethtool_dump *dump,
 }
 
 const struct ethtool_ops netxen_nic_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings = netxen_nic_get_settings,
-	.set_settings = netxen_nic_set_settings,
-=======
 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
 				     ETHTOOL_COALESCE_MAX_FRAMES,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo = netxen_nic_get_drvinfo,
 	.get_regs_len = netxen_nic_get_regs_len,
 	.get_regs = netxen_nic_get_regs,
@@ -1269,9 +940,6 @@ const struct ethtool_ops netxen_nic_ethtool_ops = {
 	.get_dump_flag = netxen_get_dump_flag,
 	.get_dump_data = netxen_get_dump_data,
 	.set_dump = netxen_set_dump,
-<<<<<<< HEAD
-=======
 	.get_link_ksettings = netxen_nic_get_link_ksettings,
 	.set_link_ksettings = netxen_nic_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

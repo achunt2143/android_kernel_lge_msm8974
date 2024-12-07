@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/strncat.S
  * Contributed by Richard Henderson (rth@tamu.edu)
@@ -13,11 +10,7 @@
  * past count, whereas libc may write to count+1.  This follows the generic
  * implementation in lib/string.c and is, IMHO, more sensible.
  */
-<<<<<<< HEAD
-
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.text
 
 	.align 3
@@ -90,7 +83,4 @@ $zerocount:
 	ret
 
 	.end strncat
-<<<<<<< HEAD
-=======
 	EXPORT_SYMBOL(strncat)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

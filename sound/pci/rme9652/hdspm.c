@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for RME Hammerfall DSP MADI audio interface(s)
  *
@@ -27,21 +24,6 @@
  *
  *	Modified 2011-01-25 variable period sizes on RayDAT/AIO by Adrian Knoth
  *
-<<<<<<< HEAD
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
  *      Modified 2019-05-23 fix AIO single speed ADAT capture and playback
  *      by Philippe.Bekaert@uhasselt.be
  */
@@ -134,7 +116,6 @@
  * :7654.3210:7654.3210:7654.3210:7654.3210: 0..31
  * :||||.||||:||||.||||:||||.||||:||||.||||:
  * :8421.8421:8421.8421:8421.8421:8421.8421: hex digit
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 #include <linux/init.h>
@@ -144,12 +125,8 @@
 #include <linux/slab.h>
 #include <linux/pci.h>
 #include <linux/math64.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
 #include <linux/io.h>
 #include <linux/nospec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/control.h>
@@ -188,10 +165,6 @@ MODULE_AUTHOR
 );
 MODULE_DESCRIPTION("RME HDSPM");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{RME HDSPM-MADI}}");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* --- Write registers. ---
   These are defined as byte-offsets from the iobase value.  */
@@ -202,11 +175,7 @@ MODULE_SUPPORTED_DEVICE("{{RME HDSPM-MADI}}");
 #define HDSPM_controlRegister	     64
 #define HDSPM_interruptConfirmation  96
 #define HDSPM_control2Reg	     256  /* not in specs ???????? */
-<<<<<<< HEAD
-#define HDSPM_freqReg                256  /* for AES32 */
-=======
 #define HDSPM_freqReg                256  /* for setting arbitrary clock values (DDS feature) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HDSPM_midiDataOut0	     352  /* just believe in old code */
 #define HDSPM_midiDataOut1	     356
 #define HDSPM_eeprom_wr		     384  /* for AES32 */
@@ -369,8 +338,6 @@ MODULE_SUPPORTED_DEVICE("{{RME HDSPM-MADI}}");
 
 #define HDSPM_wclk_sel (1<<30)
 
-<<<<<<< HEAD
-=======
 /* additional control register bits for AIO*/
 #define HDSPM_c0_Wck48				0x20 /* also RayDAT */
 #define HDSPM_c0_Input0				0x1000
@@ -390,7 +357,6 @@ MODULE_SUPPORTED_DEVICE("{{RME HDSPM-MADI}}");
 #define HDSPM_c0_Sym6db				0x4000000
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* --- bit helper defines */
 #define HDSPM_LatencyMask    (HDSPM_Latency0|HDSPM_Latency1|HDSPM_Latency2)
 #define HDSPM_FrequencyMask  (HDSPM_Frequency0|HDSPM_Frequency1|\
@@ -474,19 +440,11 @@ MODULE_SUPPORTED_DEVICE("{{RME HDSPM-MADI}}");
 #define HDSPM_madiLock           (1<<3)	/* MADI Locked =1, no=0 */
 #define HDSPM_madiSync          (1<<18) /* MADI is in sync */
 
-<<<<<<< HEAD
-#define HDSPM_tcoLock    0x00000020 /* Optional TCO locked status FOR HDSPe MADI! */
-#define HDSPM_tcoSync    0x10000000 /* Optional TCO sync status */
-
-#define HDSPM_syncInLock 0x00010000 /* Sync In lock status FOR HDSPe MADI! */
-#define HDSPM_syncInSync 0x00020000 /* Sync In sync status FOR HDSPe MADI! */
-=======
 #define HDSPM_tcoLockMadi    0x00000020 /* Optional TCO locked status for HDSPe MADI*/
 #define HDSPM_tcoSync    0x10000000 /* Optional TCO sync status for HDSPe MADI and AES32!*/
 
 #define HDSPM_syncInLock 0x00010000 /* Sync In lock status for HDSPe MADI! */
 #define HDSPM_syncInSync 0x00020000 /* Sync In sync status for HDSPe MADI! */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HDSPM_BufferPositionMask 0x000FFC0 /* Bit 6..15 : h/w buffer pointer */
 			/* since 64byte accurate, last 6 bits are not used */
@@ -504,11 +462,7 @@ MODULE_SUPPORTED_DEVICE("{{RME HDSPM-MADI}}");
 					 * Interrupt
 					 */
 #define HDSPM_tco_detect         0x08000000
-<<<<<<< HEAD
-#define HDSPM_tco_lock	         0x20000000
-=======
 #define HDSPM_tcoLockAes         0x20000000 /* Optional TCO locked status for HDSPe AES */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HDSPM_s2_tco_detect      0x00000040
 #define HDSPM_s2_AEBO_D          0x00000080
@@ -545,13 +499,8 @@ MODULE_SUPPORTED_DEVICE("{{RME HDSPM-MADI}}");
 
 #define HDSPM_wc_freq0 (1<<5)	/* input freq detected via autosync  */
 #define HDSPM_wc_freq1 (1<<6)	/* 001=32, 010==44.1, 011=48, */
-<<<<<<< HEAD
-#define HDSPM_wc_freq2 (1<<7)	/* 100=64, 101=88.2, 110=96, */
-/* missing Bit   for               111=128, 1000=176.4, 1001=192 */
-=======
 #define HDSPM_wc_freq2 (1<<7)	/* 100=64, 101=88.2, 110=96, 111=128 */
 #define HDSPM_wc_freq3 0x800	/* 1000=176.4, 1001=192 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HDSPM_SyncRef0 0x10000  /* Sync Reference */
 #define HDSPM_SyncRef1 0x20000
@@ -562,24 +511,17 @@ MODULE_SUPPORTED_DEVICE("{{RME HDSPM-MADI}}");
 
 #define HDSPM_wc_valid (HDSPM_wcLock|HDSPM_wcSync)
 
-<<<<<<< HEAD
-#define HDSPM_wcFreqMask  (HDSPM_wc_freq0|HDSPM_wc_freq1|HDSPM_wc_freq2)
-=======
 #define HDSPM_wcFreqMask  (HDSPM_wc_freq0|HDSPM_wc_freq1|HDSPM_wc_freq2|\
 			    HDSPM_wc_freq3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HDSPM_wcFreq32    (HDSPM_wc_freq0)
 #define HDSPM_wcFreq44_1  (HDSPM_wc_freq1)
 #define HDSPM_wcFreq48    (HDSPM_wc_freq0|HDSPM_wc_freq1)
 #define HDSPM_wcFreq64    (HDSPM_wc_freq2)
 #define HDSPM_wcFreq88_2  (HDSPM_wc_freq0|HDSPM_wc_freq2)
 #define HDSPM_wcFreq96    (HDSPM_wc_freq1|HDSPM_wc_freq2)
-<<<<<<< HEAD
-=======
 #define HDSPM_wcFreq128   (HDSPM_wc_freq0|HDSPM_wc_freq1|HDSPM_wc_freq2)
 #define HDSPM_wcFreq176_4 (HDSPM_wc_freq3)
 #define HDSPM_wcFreq192   (HDSPM_wc_freq0|HDSPM_wc_freq3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HDSPM_status1_F_0 0x0400000
 #define HDSPM_status1_F_1 0x0800000
@@ -602,10 +544,7 @@ MODULE_SUPPORTED_DEVICE("{{RME HDSPM-MADI}}");
 */
 /* status */
 #define HDSPM_AES32_wcLock	0x0200000
-<<<<<<< HEAD
-=======
 #define HDSPM_AES32_wcSync	0x0100000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HDSPM_AES32_wcFreq_bit  22
 /* (status >> HDSPM_AES32_wcFreq_bit) & 0xF gives WC frequency (cf function
   HDSPM_bit2freq */
@@ -621,13 +560,9 @@ MODULE_SUPPORTED_DEVICE("{{RME HDSPM-MADI}}");
 #define HDSPM_AES32_AUTOSYNC_FROM_AES6 6
 #define HDSPM_AES32_AUTOSYNC_FROM_AES7 7
 #define HDSPM_AES32_AUTOSYNC_FROM_AES8 8
-<<<<<<< HEAD
-#define HDSPM_AES32_AUTOSYNC_FROM_NONE 9
-=======
 #define HDSPM_AES32_AUTOSYNC_FROM_TCO 9
 #define HDSPM_AES32_AUTOSYNC_FROM_SYNC_IN 10
 #define HDSPM_AES32_AUTOSYNC_FROM_NONE 11
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*  status2 */
 /* HDSPM_LockAES_bit is given by HDSPM_LockAES >> (AES# - 1) */
@@ -701,23 +636,6 @@ MODULE_SUPPORTED_DEVICE("{{RME HDSPM-MADI}}");
 #define HDSPM_SPEED_QUAD   2
 
 /* names for speed modes */
-<<<<<<< HEAD
-static char *hdspm_speed_names[] = { "single", "double", "quad" };
-
-static char *texts_autosync_aes_tco[] = { "Word Clock",
-					  "AES1", "AES2", "AES3", "AES4",
-					  "AES5", "AES6", "AES7", "AES8",
-					  "TCO" };
-static char *texts_autosync_aes[] = { "Word Clock",
-				      "AES1", "AES2", "AES3", "AES4",
-				      "AES5", "AES6", "AES7", "AES8" };
-static char *texts_autosync_madi_tco[] = { "Word Clock",
-					   "MADI", "TCO", "Sync In" };
-static char *texts_autosync_madi[] = { "Word Clock",
-				       "MADI", "Sync In" };
-
-static char *texts_autosync_raydat_tco[] = {
-=======
 static const char * const hdspm_speed_names[] = { "single", "double", "quad" };
 
 static const char *const texts_autosync_aes_tco[] = { "Word Clock",
@@ -736,30 +654,15 @@ static const char *const texts_autosync_madi[] = { "Word Clock",
 				       "MADI", "Sync In" };
 
 static const char *const texts_autosync_raydat_tco[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Word Clock",
 	"ADAT 1", "ADAT 2", "ADAT 3", "ADAT 4",
 	"AES", "SPDIF", "TCO", "Sync In"
 };
-<<<<<<< HEAD
-static char *texts_autosync_raydat[] = {
-=======
 static const char *const texts_autosync_raydat[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Word Clock",
 	"ADAT 1", "ADAT 2", "ADAT 3", "ADAT 4",
 	"AES", "SPDIF", "Sync In"
 };
-<<<<<<< HEAD
-static char *texts_autosync_aio_tco[] = {
-	"Word Clock",
-	"ADAT", "AES", "SPDIF", "TCO", "Sync In"
-};
-static char *texts_autosync_aio[] = { "Word Clock",
-				      "ADAT", "AES", "SPDIF", "Sync In" };
-
-static char *texts_freq[] = {
-=======
 static const char *const texts_autosync_aio_tco[] = {
 	"Word Clock",
 	"ADAT", "AES", "SPDIF", "TCO", "Sync In"
@@ -768,7 +671,6 @@ static const char *const texts_autosync_aio[] = { "Word Clock",
 				      "ADAT", "AES", "SPDIF", "Sync In" };
 
 static const char *const texts_freq[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"No Lock",
 	"32 kHz",
 	"44.1 kHz",
@@ -781,11 +683,7 @@ static const char *const texts_freq[] = {
 	"192 kHz"
 };
 
-<<<<<<< HEAD
-static char *texts_ports_madi[] = {
-=======
 static const char * const texts_ports_madi[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"MADI.1", "MADI.2", "MADI.3", "MADI.4", "MADI.5", "MADI.6",
 	"MADI.7", "MADI.8", "MADI.9", "MADI.10", "MADI.11", "MADI.12",
 	"MADI.13", "MADI.14", "MADI.15", "MADI.16", "MADI.17", "MADI.18",
@@ -800,11 +698,7 @@ static const char * const texts_ports_madi[] = {
 };
 
 
-<<<<<<< HEAD
-static char *texts_ports_raydat_ss[] = {
-=======
 static const char * const texts_ports_raydat_ss[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"ADAT1.1", "ADAT1.2", "ADAT1.3", "ADAT1.4", "ADAT1.5", "ADAT1.6",
 	"ADAT1.7", "ADAT1.8", "ADAT2.1", "ADAT2.2", "ADAT2.3", "ADAT2.4",
 	"ADAT2.5", "ADAT2.6", "ADAT2.7", "ADAT2.8", "ADAT3.1", "ADAT3.2",
@@ -815,11 +709,7 @@ static const char * const texts_ports_raydat_ss[] = {
 	"SPDIF.L", "SPDIF.R"
 };
 
-<<<<<<< HEAD
-static char *texts_ports_raydat_ds[] = {
-=======
 static const char * const texts_ports_raydat_ds[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"ADAT1.1", "ADAT1.2", "ADAT1.3", "ADAT1.4",
 	"ADAT2.1", "ADAT2.2", "ADAT2.3", "ADAT2.4",
 	"ADAT3.1", "ADAT3.2", "ADAT3.3", "ADAT3.4",
@@ -828,11 +718,7 @@ static const char * const texts_ports_raydat_ds[] = {
 	"SPDIF.L", "SPDIF.R"
 };
 
-<<<<<<< HEAD
-static char *texts_ports_raydat_qs[] = {
-=======
 static const char * const texts_ports_raydat_qs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"ADAT1.1", "ADAT1.2",
 	"ADAT2.1", "ADAT2.2",
 	"ADAT3.1", "ADAT3.2",
@@ -842,37 +728,12 @@ static const char * const texts_ports_raydat_qs[] = {
 };
 
 
-<<<<<<< HEAD
-static char *texts_ports_aio_in_ss[] = {
-	"Analogue.L", "Analogue.R",
-	"AES.L", "AES.R",
-	"SPDIF.L", "SPDIF.R",
-	"ADAT.1", "ADAT.2", "ADAT.3", "ADAT.4", "ADAT.5", "ADAT.6",
-	"ADAT.7", "ADAT.8"
-};
-
-static char *texts_ports_aio_out_ss[] = {
-=======
 static const char * const texts_ports_aio_in_ss[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Analogue.L", "Analogue.R",
 	"AES.L", "AES.R",
 	"SPDIF.L", "SPDIF.R",
 	"ADAT.1", "ADAT.2", "ADAT.3", "ADAT.4", "ADAT.5", "ADAT.6",
 	"ADAT.7", "ADAT.8",
-<<<<<<< HEAD
-	"Phone.L", "Phone.R"
-};
-
-static char *texts_ports_aio_in_ds[] = {
-	"Analogue.L", "Analogue.R",
-	"AES.L", "AES.R",
-	"SPDIF.L", "SPDIF.R",
-	"ADAT.1", "ADAT.2", "ADAT.3", "ADAT.4"
-};
-
-static char *texts_ports_aio_out_ds[] = {
-=======
 	"AEB.1", "AEB.2", "AEB.3", "AEB.4"
 };
 
@@ -887,39 +748,18 @@ static const char * const texts_ports_aio_out_ss[] = {
 };
 
 static const char * const texts_ports_aio_in_ds[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Analogue.L", "Analogue.R",
 	"AES.L", "AES.R",
 	"SPDIF.L", "SPDIF.R",
 	"ADAT.1", "ADAT.2", "ADAT.3", "ADAT.4",
-<<<<<<< HEAD
-	"Phone.L", "Phone.R"
-};
-
-static char *texts_ports_aio_in_qs[] = {
-	"Analogue.L", "Analogue.R",
-	"AES.L", "AES.R",
-	"SPDIF.L", "SPDIF.R",
-	"ADAT.1", "ADAT.2", "ADAT.3", "ADAT.4"
-};
-
-static char *texts_ports_aio_out_qs[] = {
-=======
 	"AEB.1", "AEB.2", "AEB.3", "AEB.4"
 };
 
 static const char * const texts_ports_aio_out_ds[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Analogue.L", "Analogue.R",
 	"AES.L", "AES.R",
 	"SPDIF.L", "SPDIF.R",
 	"ADAT.1", "ADAT.2", "ADAT.3", "ADAT.4",
-<<<<<<< HEAD
-	"Phone.L", "Phone.R"
-};
-
-static char *texts_ports_aes32[] = {
-=======
 	"Phone.L", "Phone.R",
 	"AEB.1", "AEB.2", "AEB.3", "AEB.4"
 };
@@ -942,7 +782,6 @@ static const char * const texts_ports_aio_out_qs[] = {
 };
 
 static const char * const texts_ports_aes32[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"AES.1", "AES.2", "AES.3", "AES.4", "AES.5", "AES.6", "AES.7",
 	"AES.8", "AES.9.", "AES.10", "AES.11", "AES.12", "AES.13", "AES.14",
 	"AES.15", "AES.16"
@@ -956,11 +795,7 @@ static const char * const texts_ports_aes32[] = {
    where the data for that channel can be read/written from/to.
 */
 
-<<<<<<< HEAD
-static char channel_map_unity_ss[HDSPM_MAX_CHANNELS] = {
-=======
 static const char channel_map_unity_ss[HDSPM_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 1, 2, 3, 4, 5, 6, 7,
 	8, 9, 10, 11, 12, 13, 14, 15,
 	16, 17, 18, 19, 20, 21, 22, 23,
@@ -971,11 +806,7 @@ static const char channel_map_unity_ss[HDSPM_MAX_CHANNELS] = {
 	56, 57, 58, 59, 60, 61, 62, 63
 };
 
-<<<<<<< HEAD
-static char channel_map_raydat_ss[HDSPM_MAX_CHANNELS] = {
-=======
 static const char channel_map_raydat_ss[HDSPM_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	4, 5, 6, 7, 8, 9, 10, 11,	/* ADAT 1 */
 	12, 13, 14, 15, 16, 17, 18, 19,	/* ADAT 2 */
 	20, 21, 22, 23, 24, 25, 26, 27,	/* ADAT 3 */
@@ -988,11 +819,7 @@ static const char channel_map_raydat_ss[HDSPM_MAX_CHANNELS] = {
 	-1, -1, -1, -1, -1, -1, -1, -1,
 };
 
-<<<<<<< HEAD
-static char channel_map_raydat_ds[HDSPM_MAX_CHANNELS] = {
-=======
 static const char channel_map_raydat_ds[HDSPM_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	4, 5, 6, 7,		/* ADAT 1 */
 	8, 9, 10, 11,		/* ADAT 2 */
 	12, 13, 14, 15,		/* ADAT 3 */
@@ -1007,11 +834,7 @@ static const char channel_map_raydat_ds[HDSPM_MAX_CHANNELS] = {
 	-1, -1, -1, -1, -1, -1, -1, -1,
 };
 
-<<<<<<< HEAD
-static char channel_map_raydat_qs[HDSPM_MAX_CHANNELS] = {
-=======
 static const char channel_map_raydat_qs[HDSPM_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	4, 5,			/* ADAT 1 */
 	6, 7,			/* ADAT 2 */
 	8, 9,			/* ADAT 3 */
@@ -1027,22 +850,13 @@ static const char channel_map_raydat_qs[HDSPM_MAX_CHANNELS] = {
 	-1, -1, -1, -1, -1, -1, -1, -1,
 };
 
-<<<<<<< HEAD
-static char channel_map_aio_in_ss[HDSPM_MAX_CHANNELS] = {
-=======
 static const char channel_map_aio_in_ss[HDSPM_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 1,			/* line in */
 	8, 9,			/* aes in, */
 	10, 11,			/* spdif in */
 	12, 13, 14, 15, 16, 17, 18, 19,	/* ADAT in */
-<<<<<<< HEAD
-	-1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1,
-=======
 	2, 3, 4, 5,		/* AEB */
 	-1, -1, -1, -1, -1, -1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	-1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1,
@@ -1050,22 +864,14 @@ static const char channel_map_aio_in_ss[HDSPM_MAX_CHANNELS] = {
 	-1, -1, -1, -1, -1, -1, -1, -1,
 };
 
-<<<<<<< HEAD
-static char channel_map_aio_out_ss[HDSPM_MAX_CHANNELS] = {
-=======
 static const char channel_map_aio_out_ss[HDSPM_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 1,			/* line out */
 	8, 9,			/* aes out */
 	10, 11,			/* spdif out */
 	12, 13, 14, 15, 16, 17, 18, 19,	/* ADAT out */
 	6, 7,			/* phone out */
-<<<<<<< HEAD
-	-1, -1, -1, -1, -1, -1, -1, -1,
-=======
 	2, 3, 4, 5,		/* AEB */
 	-1, -1, -1, -1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	-1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1,
@@ -1073,21 +879,13 @@ static const char channel_map_aio_out_ss[HDSPM_MAX_CHANNELS] = {
 	-1, -1, -1, -1, -1, -1, -1, -1,
 };
 
-<<<<<<< HEAD
-static char channel_map_aio_in_ds[HDSPM_MAX_CHANNELS] = {
-=======
 static const char channel_map_aio_in_ds[HDSPM_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 1,			/* line in */
 	8, 9,			/* aes in */
 	10, 11,			/* spdif in */
 	12, 14, 16, 18,		/* adat in */
-<<<<<<< HEAD
-	-1, -1, -1, -1, -1, -1,
-=======
 	2, 3, 4, 5,		/* AEB */
 	-1, -1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	-1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1,
@@ -1096,18 +894,12 @@ static const char channel_map_aio_in_ds[HDSPM_MAX_CHANNELS] = {
 	-1, -1, -1, -1, -1, -1, -1, -1
 };
 
-<<<<<<< HEAD
-static char channel_map_aio_out_ds[HDSPM_MAX_CHANNELS] = {
-=======
 static const char channel_map_aio_out_ds[HDSPM_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 1,			/* line out */
 	8, 9,			/* aes out */
 	10, 11,			/* spdif out */
 	12, 14, 16, 18,		/* adat out */
 	6, 7,			/* phone out */
-<<<<<<< HEAD
-=======
 	2, 3, 4, 5,		/* AEB */
 	-1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1,
@@ -1123,7 +915,6 @@ static const char channel_map_aio_in_qs[HDSPM_MAX_CHANNELS] = {
 	10, 11,			/* spdif in */
 	12, 16,			/* adat in */
 	2, 3, 4, 5,		/* AEB */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	-1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1,
@@ -1133,36 +924,14 @@ static const char channel_map_aio_in_qs[HDSPM_MAX_CHANNELS] = {
 	-1, -1, -1, -1, -1, -1, -1, -1
 };
 
-<<<<<<< HEAD
-static char channel_map_aio_in_qs[HDSPM_MAX_CHANNELS] = {
-	0, 1,			/* line in */
-	8, 9,			/* aes in */
-	10, 11,			/* spdif in */
-	12, 16,			/* adat in */
-	-1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1
-};
-
-static char channel_map_aio_out_qs[HDSPM_MAX_CHANNELS] = {
-=======
 static const char channel_map_aio_out_qs[HDSPM_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 1,			/* line out */
 	8, 9,			/* aes out */
 	10, 11,			/* spdif out */
 	12, 16,			/* adat out */
 	6, 7,			/* phone out */
-<<<<<<< HEAD
-	-1, -1, -1, -1, -1, -1,
-=======
 	2, 3, 4, 5,		/* AEB */
 	-1, -1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	-1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1,
@@ -1171,11 +940,7 @@ static const char channel_map_aio_out_qs[HDSPM_MAX_CHANNELS] = {
 	-1, -1, -1, -1, -1, -1, -1, -1
 };
 
-<<<<<<< HEAD
-static char channel_map_aes32[HDSPM_MAX_CHANNELS] = {
-=======
 static const char channel_map_aes32[HDSPM_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 1, 2, 3, 4, 5, 6, 7,
 	8, 9, 10, 11, 12, 13, 14, 15,
 	-1, -1, -1, -1, -1, -1, -1, -1,
@@ -1205,19 +970,11 @@ struct hdspm_midi {
 };
 
 struct hdspm_tco {
-<<<<<<< HEAD
-	int input;
-	int framerate;
-	int wordclock;
-	int samplerate;
-	int pull;
-=======
 	int input; /* 0: LTC, 1:Video, 2: WC*/
 	int framerate; /* 0=24, 1=25, 2=29.97, 3=29.97d, 4=30, 5=30d */
 	int wordclock; /* 0=1:1, 1=44.1->48, 2=48->44.1 */
 	int samplerate; /* 0=44.1, 1=48, 2= freq from app */
 	int pull; /*   0=0, 1=+0.1%, 2=-0.1%, 3=+4%, 4=-4%*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int term; /* 0 = off, 1 = on */
 };
 
@@ -1236,17 +993,10 @@ struct hdspm {
 
 	u32 control_register;	/* cached value */
 	u32 control2_register;	/* cached value */
-<<<<<<< HEAD
-	u32 settings_register;
-
-	struct hdspm_midi midi[4];
-	struct tasklet_struct midi_tasklet;
-=======
 	u32 settings_register;  /* cached value for AIO / RayDat (sync reference, master/slave) */
 
 	struct hdspm_midi midi[4];
 	struct work_struct midi_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	size_t period_bytes;
 	unsigned char ss_in_channels;
@@ -1259,19 +1009,6 @@ struct hdspm {
 	unsigned char max_channels_in;
 	unsigned char max_channels_out;
 
-<<<<<<< HEAD
-	signed char *channel_map_in;
-	signed char *channel_map_out;
-
-	signed char *channel_map_in_ss, *channel_map_in_ds, *channel_map_in_qs;
-	signed char *channel_map_out_ss, *channel_map_out_ds, *channel_map_out_qs;
-
-	char **port_names_in;
-	char **port_names_out;
-
-	char **port_names_in_ss, **port_names_in_ds, **port_names_in_qs;
-	char **port_names_out_ss, **port_names_out_ds, **port_names_out_qs;
-=======
 	const signed char *channel_map_in;
 	const signed char *channel_map_out;
 
@@ -1287,7 +1024,6 @@ struct hdspm {
 	const char * const *port_names_out_ss;
 	const char * const *port_names_out_ds;
 	const char * const *port_names_out_qs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned char *playback_buffer;	/* suitably aligned address */
 	unsigned char *capture_buffer;	/* suitably aligned address */
@@ -1323,11 +1059,7 @@ struct hdspm {
 
 	struct hdspm_tco *tco;  /* NULL if no TCO detected */
 
-<<<<<<< HEAD
-	char **texts_autosync;
-=======
 	const char *const *texts_autosync;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int texts_autosync_items;
 
 	cycles_t last_interrupt;
@@ -1338,11 +1070,7 @@ struct hdspm {
 };
 
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(snd_hdspm_ids) = {
-=======
 static const struct pci_device_id snd_hdspm_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	 .vendor = PCI_VENDOR_ID_XILINX,
 	 .device = PCI_DEVICE_ID_XILINX_HAMMERFALL_DSP_MADI,
@@ -1357,20 +1085,6 @@ static const struct pci_device_id snd_hdspm_ids[] = {
 MODULE_DEVICE_TABLE(pci, snd_hdspm_ids);
 
 /* prototypes */
-<<<<<<< HEAD
-static int __devinit snd_hdspm_create_alsa_devices(struct snd_card *card,
-						   struct hdspm * hdspm);
-static int __devinit snd_hdspm_create_pcm(struct snd_card *card,
-					  struct hdspm * hdspm);
-
-static inline void snd_hdspm_initialize_midi_flush(struct hdspm *hdspm);
-static int hdspm_update_simple_mixer_controls(struct hdspm *hdspm);
-static int hdspm_autosync_ref(struct hdspm *hdspm);
-static int snd_hdspm_set_defaults(struct hdspm *hdspm);
-static void hdspm_set_sgbuf(struct hdspm *hdspm,
-			    struct snd_pcm_substream *substream,
-			     unsigned int reg, int channels);
-=======
 static int snd_hdspm_create_alsa_devices(struct snd_card *card,
 					 struct hdspm *hdspm);
 static int snd_hdspm_create_pcm(struct snd_card *card,
@@ -1397,7 +1111,6 @@ static int hdspm_get_tco_sample_rate(struct hdspm *hdspm);
 static int hdspm_get_wc_sample_rate(struct hdspm *hdspm);
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int HDSPM_bit2freq(int n)
 {
@@ -1409,15 +1122,12 @@ static inline int HDSPM_bit2freq(int n)
 	return bit2freq_tab[n];
 }
 
-<<<<<<< HEAD
-=======
 static bool hdspm_is_raydat_or_aio(struct hdspm *hdspm)
 {
 	return ((AIO == hdspm->io_type) || (RayDAT == hdspm->io_type));
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Write/read to/from HDSPM with Adresses in Bytes
    not words but only 32Bit writes are allowed */
 
@@ -1506,12 +1216,6 @@ static int snd_hdspm_use_is_exclusive(struct hdspm *hdspm)
 	return ret;
 }
 
-<<<<<<< HEAD
-/* check for external sample rate */
-static int hdspm_external_sample_rate(struct hdspm *hdspm)
-{
-	unsigned int status, status2, timecode;
-=======
 /* round arbitrary sample rates to commonly known rates */
 static int hdspm_round_frequency(int rate)
 {
@@ -1547,29 +1251,12 @@ static int hdspm_rate_multiplier(struct hdspm *hdspm, int rate)
 static int hdspm_external_sample_rate(struct hdspm *hdspm)
 {
 	unsigned int status, status2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int syncref, rate = 0, rate_bits;
 
 	switch (hdspm->io_type) {
 	case AES32:
 		status2 = hdspm_read(hdspm, HDSPM_statusRegister2);
 		status = hdspm_read(hdspm, HDSPM_statusRegister);
-<<<<<<< HEAD
-		timecode = hdspm_read(hdspm, HDSPM_timecodeRegister);
-
-		syncref = hdspm_autosync_ref(hdspm);
-
-		if (syncref == HDSPM_AES32_AUTOSYNC_FROM_WORD &&
-				status & HDSPM_AES32_wcLock)
-			return HDSPM_bit2freq((status >> HDSPM_AES32_wcFreq_bit) & 0xF);
-
-		if (syncref >= HDSPM_AES32_AUTOSYNC_FROM_AES1 &&
-				syncref <= HDSPM_AES32_AUTOSYNC_FROM_AES8 &&
-				status2 & (HDSPM_LockAES >>
-				(syncref - HDSPM_AES32_AUTOSYNC_FROM_AES1)))
-			return HDSPM_bit2freq((timecode >> (4*(syncref-HDSPM_AES32_AUTOSYNC_FROM_AES1))) & 0xF);
-		return 0;
-=======
 
 		syncref = hdspm_autosync_ref(hdspm);
 		switch (syncref) {
@@ -1602,7 +1289,6 @@ static int hdspm_external_sample_rate(struct hdspm *hdspm)
 		default:
 			return 0;
 		} /* end switch(syncref) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case MADIface:
@@ -1670,8 +1356,6 @@ static int hdspm_external_sample_rate(struct hdspm *hdspm)
 			case HDSPM_wcFreq96:
 				rate = 96000;
 				break;
-<<<<<<< HEAD
-=======
 			case HDSPM_wcFreq128:
 				rate = 128000;
 				break;
@@ -1681,7 +1365,6 @@ static int hdspm_external_sample_rate(struct hdspm *hdspm)
 			case HDSPM_wcFreq192:
 				rate = 192000;
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			default:
 				rate = 0;
 				break;
@@ -1693,11 +1376,7 @@ static int hdspm_external_sample_rate(struct hdspm *hdspm)
 		 */
 		if (rate != 0 &&
 		(status2 & HDSPM_SelSyncRefMask) == HDSPM_SelSyncRef_WORD)
-<<<<<<< HEAD
-			return rate;
-=======
 			return hdspm_rate_multiplier(hdspm, rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* maybe a madi input (which is taken if sel sync is madi) */
 		if (status & HDSPM_madiLock) {
@@ -1736,24 +1415,6 @@ static int hdspm_external_sample_rate(struct hdspm *hdspm)
 				break;
 			}
 
-<<<<<<< HEAD
-			/* QS and DS rates normally can not be detected
-			 * automatically by the card. Only exception is MADI
-			 * in 96k frame mode.
-			 *
-			 * So if we read SS values (32 .. 48k), check for
-			 * user-provided DS/QS bits in the control register
-			 * and multiply the base frequency accordingly.
-			 */
-			if (rate <= 48000) {
-				if (hdspm->control_register & HDSPM_QuadSpeed)
-					rate *= 4;
-				else if (hdspm->control_register &
-						HDSPM_DoubleSpeed)
-					rate *= 2;
-			}
-		}
-=======
 		} /* endif HDSPM_madiLock */
 
 		/* check sample rate from TCO or SYNC_IN */
@@ -1780,7 +1441,6 @@ static int hdspm_external_sample_rate(struct hdspm *hdspm)
 
 		rate = hdspm_rate_multiplier(hdspm, rate);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -1854,11 +1514,7 @@ static void hdspm_silence_playback(struct hdspm *hdspm)
 	int n = hdspm->period_bytes;
 	void *buf = hdspm->playback_buffer;
 
-<<<<<<< HEAD
-	if (buf == NULL)
-=======
 	if (!buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	for (i = 0; i < HDSPM_MAX_CHANNELS; i++) {
@@ -1938,12 +1594,9 @@ static void hdspm_set_dds_value(struct hdspm *hdspm, int rate)
 {
 	u64 n;
 
-<<<<<<< HEAD
-=======
 	if (snd_BUG_ON(rate <= 0))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rate >= 112000)
 		rate /= 4;
 	else if (rate >= 56000)
@@ -1993,14 +1646,8 @@ static int hdspm_set_rate(struct hdspm * hdspm, int rate, int called_internally)
 			   just make a warning an remember setting
 			   for future master mode switching */
 
-<<<<<<< HEAD
-			snd_printk(KERN_WARNING "HDSPM: "
-				   "Warning: device is not running "
-				   "as a clock master.\n");
-=======
 			dev_warn(hdspm->card->dev,
 				 "Warning: device is not running as a clock master.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			not_set = 1;
 		} else {
 
@@ -2011,25 +1658,14 @@ static int hdspm_set_rate(struct hdspm * hdspm, int rate, int called_internally)
 			if (hdspm_autosync_ref(hdspm) ==
 			    HDSPM_AUTOSYNC_FROM_NONE) {
 
-<<<<<<< HEAD
-				snd_printk(KERN_WARNING "HDSPM: "
-					   "Detected no Externel Sync \n");
-=======
 				dev_warn(hdspm->card->dev,
 					 "Detected no External Sync\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				not_set = 1;
 
 			} else if (rate != external_freq) {
 
-<<<<<<< HEAD
-				snd_printk(KERN_WARNING "HDSPM: "
-					   "Warning: No AutoSync source for "
-					   "requested rate\n");
-=======
 				dev_warn(hdspm->card->dev,
 					 "Warning: No AutoSync source for requested rate\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				not_set = 1;
 			}
 		}
@@ -2095,21 +1731,11 @@ static int hdspm_set_rate(struct hdspm * hdspm, int rate, int called_internally)
 
 	if (current_speed != target_speed
 	    && (hdspm->capture_pid >= 0 || hdspm->playback_pid >= 0)) {
-<<<<<<< HEAD
-		snd_printk
-		    (KERN_ERR "HDSPM: "
-		     "cannot change from %s speed to %s speed mode "
-		     "(capture PID = %d, playback PID = %d)\n",
-		     hdspm_speed_names[current_speed],
-		     hdspm_speed_names[target_speed],
-		     hdspm->capture_pid, hdspm->playback_pid);
-=======
 		dev_err(hdspm->card->dev,
 			"cannot change from %s speed to %s speed mode (capture PID = %d, playback PID = %d)\n",
 			hdspm_speed_names[current_speed],
 			hdspm_speed_names[target_speed],
 			hdspm->capture_pid, hdspm->playback_pid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -2313,15 +1939,9 @@ snd_hdspm_midi_input_trigger(struct snd_rawmidi_substream *substream, int up)
 	spin_unlock_irqrestore (&hdspm->lock, flags);
 }
 
-<<<<<<< HEAD
-static void snd_hdspm_midi_output_timer(unsigned long data)
-{
-	struct hdspm_midi *hmidi = (struct hdspm_midi *) data;
-=======
 static void snd_hdspm_midi_output_timer(struct timer_list *t)
 {
 	struct hdspm_midi *hmidi = from_timer(hmidi, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	snd_hdspm_midi_output_write(hmidi);
@@ -2333,15 +1953,8 @@ static void snd_hdspm_midi_output_timer(struct timer_list *t)
 	   leaving istimer wherever it was set before.
 	*/
 
-<<<<<<< HEAD
-	if (hmidi->istimer) {
-		hmidi->timer.expires = 1 + jiffies;
-		add_timer(&hmidi->timer);
-	}
-=======
 	if (hmidi->istimer)
 		mod_timer(&hmidi->timer, 1 + jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore (&hmidi->lock, flags);
 }
@@ -2356,17 +1969,9 @@ snd_hdspm_midi_output_trigger(struct snd_rawmidi_substream *substream, int up)
 	spin_lock_irqsave (&hmidi->lock, flags);
 	if (up) {
 		if (!hmidi->istimer) {
-<<<<<<< HEAD
-			init_timer(&hmidi->timer);
-			hmidi->timer.function = snd_hdspm_midi_output_timer;
-			hmidi->timer.data = (unsigned long) hmidi;
-			hmidi->timer.expires = 1 + jiffies;
-			add_timer(&hmidi->timer);
-=======
 			timer_setup(&hmidi->timer,
 				    snd_hdspm_midi_output_timer, 0);
 			mod_timer(&hmidi->timer, 1 + jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hmidi->istimer++;
 		}
 	} else {
@@ -2431,41 +2036,25 @@ static int snd_hdspm_midi_output_close(struct snd_rawmidi_substream *substream)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_hdspm_midi_output =
-=======
 static const struct snd_rawmidi_ops snd_hdspm_midi_output =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_hdspm_midi_output_open,
 	.close =	snd_hdspm_midi_output_close,
 	.trigger =	snd_hdspm_midi_output_trigger,
 };
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_hdspm_midi_input =
-=======
 static const struct snd_rawmidi_ops snd_hdspm_midi_input =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_hdspm_midi_input_open,
 	.close =	snd_hdspm_midi_input_close,
 	.trigger =	snd_hdspm_midi_input_trigger,
 };
 
-<<<<<<< HEAD
-static int __devinit snd_hdspm_create_midi (struct snd_card *card,
-					    struct hdspm *hdspm, int id)
-{
-	int err;
-	char buf[32];
-=======
 static int snd_hdspm_create_midi(struct snd_card *card,
 				 struct hdspm *hdspm, int id)
 {
 	int err;
 	char buf[64];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdspm->midi[id].id = id;
 	hdspm->midi[id].hdspm = hdspm;
@@ -2524,13 +2113,6 @@ static int snd_hdspm_create_midi(struct snd_card *card,
 	if ((id < 2) || ((2 == id) && ((MADI == hdspm->io_type) ||
 					(MADIface == hdspm->io_type)))) {
 		if ((id == 0) && (MADIface == hdspm->io_type)) {
-<<<<<<< HEAD
-			sprintf(buf, "%s MIDIoverMADI", card->shortname);
-		} else if ((id == 2) && (MADI == hdspm->io_type)) {
-			sprintf(buf, "%s MIDIoverMADI", card->shortname);
-		} else {
-			sprintf(buf, "%s MIDI %d", card->shortname, id+1);
-=======
 			snprintf(buf, sizeof(buf), "%s MIDIoverMADI",
 				 card->shortname);
 		} else if ((id == 2) && (MADI == hdspm->io_type)) {
@@ -2539,21 +2121,15 @@ static int snd_hdspm_create_midi(struct snd_card *card,
 		} else {
 			snprintf(buf, sizeof(buf), "%s MIDI %d",
 				 card->shortname, id+1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		err = snd_rawmidi_new(card, buf, id, 1, 1,
 				&hdspm->midi[id].rmidi);
 		if (err < 0)
 			return err;
 
-<<<<<<< HEAD
-		sprintf(hdspm->midi[id].rmidi->name, "%s MIDI %d",
-				card->id, id+1);
-=======
 		snprintf(hdspm->midi[id].rmidi->name,
 			 sizeof(hdspm->midi[id].rmidi->name),
 			 "%s MIDI %d", card->id, id+1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hdspm->midi[id].rmidi->private_data = &hdspm->midi[id];
 
 		snd_rawmidi_set_ops(hdspm->midi[id].rmidi,
@@ -2569,25 +2145,16 @@ static int snd_hdspm_create_midi(struct snd_card *card,
 			SNDRV_RAWMIDI_INFO_DUPLEX;
 	} else {
 		/* TCO MTC, read only */
-<<<<<<< HEAD
-		sprintf(buf, "%s MTC %d", card->shortname, id+1);
-=======
 		snprintf(buf, sizeof(buf), "%s MTC %d",
 			 card->shortname, id+1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = snd_rawmidi_new(card, buf, id, 1, 1,
 				&hdspm->midi[id].rmidi);
 		if (err < 0)
 			return err;
 
-<<<<<<< HEAD
-		sprintf(hdspm->midi[id].rmidi->name,
-				"%s MTC %d", card->id, id+1);
-=======
 		snprintf(hdspm->midi[id].rmidi->name,
 			 sizeof(hdspm->midi[id].rmidi->name),
 			 "%s MTC %d", card->id, id+1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hdspm->midi[id].rmidi->private_data = &hdspm->midi[id];
 
 		snd_rawmidi_set_ops(hdspm->midi[id].rmidi,
@@ -2601,15 +2168,9 @@ static int snd_hdspm_create_midi(struct snd_card *card,
 }
 
 
-<<<<<<< HEAD
-static void hdspm_midi_tasklet(unsigned long arg)
-{
-	struct hdspm *hdspm = (struct hdspm *)arg;
-=======
 static void hdspm_midi_work(struct work_struct *work)
 {
 	struct hdspm *hdspm = container_of(work, struct hdspm, midi_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i = 0;
 
 	while (i < hdspm->midiPorts) {
@@ -2628,15 +2189,7 @@ static void hdspm_midi_work(struct work_struct *work)
 /* get the system sample rate which is set */
 
 
-<<<<<<< HEAD
-/**
- * Calculate the real sample rate from the
- * current DDS value.
- **/
-static int hdspm_get_system_sample_rate(struct hdspm *hdspm)
-=======
 static inline int hdspm_get_pll_freq(struct hdspm *hdspm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int period, rate;
 
@@ -2646,16 +2199,6 @@ static inline int hdspm_get_pll_freq(struct hdspm *hdspm)
 	return rate;
 }
 
-<<<<<<< HEAD
-
-#define HDSPM_SYSTEM_SAMPLE_RATE(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .access = SNDRV_CTL_ELEM_ACCESS_READ, \
-  .info = snd_hdspm_info_system_sample_rate, \
-  .get = snd_hdspm_get_system_sample_rate \
-=======
 /*
  * Calculate the real sample rate from the
  * current DDS value.
@@ -2692,7 +2235,6 @@ static int hdspm_get_system_sample_rate(struct hdspm *hdspm)
 	.info = snd_hdspm_info_system_sample_rate, \
 	.put = snd_hdspm_put_system_sample_rate, \
 	.get = snd_hdspm_get_system_sample_rate \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdspm_info_system_sample_rate(struct snd_kcontrol *kcontrol,
@@ -2717,12 +2259,6 @@ static int snd_hdspm_get_system_sample_rate(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-<<<<<<< HEAD
-
-/**
- * Returns the WordClock sample rate class for the given card.
- **/
-=======
 static int snd_hdspm_put_system_sample_rate(struct snd_kcontrol *kcontrol,
 					    struct snd_ctl_elem_value *
 					    ucontrol)
@@ -2740,7 +2276,6 @@ static int snd_hdspm_put_system_sample_rate(struct snd_kcontrol *kcontrol,
 /*
  * Returns the WordClock sample rate class for the given card.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hdspm_get_wc_sample_rate(struct hdspm *hdspm)
 {
 	int status;
@@ -2750,13 +2285,9 @@ static int hdspm_get_wc_sample_rate(struct hdspm *hdspm)
 	case AIO:
 		status = hdspm_read(hdspm, HDSPM_RD_STATUS_1);
 		return (status >> 16) & 0xF;
-<<<<<<< HEAD
-		break;
-=======
 	case AES32:
 		status = hdspm_read(hdspm, HDSPM_statusRegister);
 		return (status >> HDSPM_AES32_wcFreq_bit) & 0xF;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -2766,15 +2297,9 @@ static int hdspm_get_wc_sample_rate(struct hdspm *hdspm)
 }
 
 
-<<<<<<< HEAD
-/**
- * Returns the TCO sample rate class for the given card.
- **/
-=======
 /*
  * Returns the TCO sample rate class for the given card.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hdspm_get_tco_sample_rate(struct hdspm *hdspm)
 {
 	int status;
@@ -2785,13 +2310,9 @@ static int hdspm_get_tco_sample_rate(struct hdspm *hdspm)
 		case AIO:
 			status = hdspm_read(hdspm, HDSPM_RD_STATUS_1);
 			return (status >> 20) & 0xF;
-<<<<<<< HEAD
-			break;
-=======
 		case AES32:
 			status = hdspm_read(hdspm, HDSPM_statusRegister);
 			return (status >> 1) & 0xF;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			break;
 		}
@@ -2801,15 +2322,9 @@ static int hdspm_get_tco_sample_rate(struct hdspm *hdspm)
 }
 
 
-<<<<<<< HEAD
-/**
- * Returns the SYNC_IN sample rate class for the given card.
- **/
-=======
 /*
  * Returns the SYNC_IN sample rate class for the given card.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hdspm_get_sync_in_sample_rate(struct hdspm *hdspm)
 {
 	int status;
@@ -2820,10 +2335,6 @@ static int hdspm_get_sync_in_sample_rate(struct hdspm *hdspm)
 		case AIO:
 			status = hdspm_read(hdspm, HDSPM_RD_STATUS_2);
 			return (status >> 12) & 0xF;
-<<<<<<< HEAD
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			break;
 		}
@@ -2832,13 +2343,6 @@ static int hdspm_get_sync_in_sample_rate(struct hdspm *hdspm)
 	return 0;
 }
 
-<<<<<<< HEAD
-
-/**
- * Returns the sample rate class for input source <idx> for
- * 'new style' cards like the AIO and RayDAT.
- **/
-=======
 /*
  * Returns the AES sample rate class for the given card.
  */
@@ -2860,7 +2364,6 @@ static int hdspm_get_aes_sample_rate(struct hdspm *hdspm, int index)
  * Returns the sample rate class for input source <idx> for
  * 'new style' cards like the AIO and RayDAT.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hdspm_get_s1_sample_rate(struct hdspm *hdspm, unsigned int idx)
 {
 	int status = hdspm_read(hdspm, HDSPM_RD_STATUS_2);
@@ -2868,8 +2371,6 @@ static int hdspm_get_s1_sample_rate(struct hdspm *hdspm, unsigned int idx)
 	return (status >> (idx*4)) & 0xF;
 }
 
-<<<<<<< HEAD
-=======
 #define ENUMERATED_CTL_INFO(info, texts) \
 	snd_ctl_enum_info(info, 1, ARRAY_SIZE(texts), texts)
 
@@ -2888,7 +2389,6 @@ static int hdspm_external_rate_to_enum(struct hdspm *hdspm)
 		}
 	return selected_rate;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define HDSPM_AUTOSYNC_SAMPLE_RATE(xname, xindex) \
@@ -2904,18 +2404,7 @@ static int hdspm_external_rate_to_enum(struct hdspm *hdspm)
 static int snd_hdspm_info_autosync_sample_rate(struct snd_kcontrol *kcontrol,
 					       struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 10;
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name,
-			texts_freq[uinfo->value.enumerated.item]);
-=======
 	ENUMERATED_CTL_INFO(uinfo, texts_freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2946,10 +2435,7 @@ static int snd_hdspm_get_autosync_sample_rate(struct snd_kcontrol *kcontrol,
 				hdspm_get_s1_sample_rate(hdspm,
 						kcontrol->private_value-1);
 		}
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case AIO:
 		switch (kcontrol->private_value) {
@@ -2968,14 +2454,9 @@ static int snd_hdspm_get_autosync_sample_rate(struct snd_kcontrol *kcontrol,
 		default:
 			ucontrol->value.enumerated.item[0] =
 				hdspm_get_s1_sample_rate(hdspm,
-<<<<<<< HEAD
-						ucontrol->id.index-1);
-		}
-=======
 						kcontrol->private_value-1);
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case AES32:
 
@@ -2992,15 +2473,6 @@ static int snd_hdspm_get_autosync_sample_rate(struct snd_kcontrol *kcontrol,
 			ucontrol->value.enumerated.item[0] =
 				hdspm_get_sync_in_sample_rate(hdspm);
 			break;
-<<<<<<< HEAD
-		default: /* AES1 to AES8 */
-			ucontrol->value.enumerated.item[0] =
-				hdspm_get_s1_sample_rate(hdspm,
-						kcontrol->private_value-1);
-			break;
-
-		}
-=======
 		case 11: /* External Rate */
 			ucontrol->value.enumerated.item[0] =
 				hdspm_external_rate_to_enum(hdspm);
@@ -3019,7 +2491,6 @@ static int snd_hdspm_get_autosync_sample_rate(struct snd_kcontrol *kcontrol,
 		ucontrol->value.enumerated.item[0] =
 			hdspm_external_rate_to_enum(hdspm);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -3040,17 +2511,10 @@ static int snd_hdspm_get_autosync_sample_rate(struct snd_kcontrol *kcontrol,
 }
 
 
-<<<<<<< HEAD
-/**
- * Returns the system clock mode for the given card.
- * @returns 0 - master, 1 - slave
- **/
-=======
 /*
  * Returns the system clock mode for the given card.
  * @returns 0 - master, 1 - slave
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hdspm_system_clock_mode(struct hdspm *hdspm)
 {
 	switch (hdspm->io_type) {
@@ -3069,34 +2533,6 @@ static int hdspm_system_clock_mode(struct hdspm *hdspm)
 }
 
 
-<<<<<<< HEAD
-/**
- * Sets the system clock mode.
- * @param mode 0 - master, 1 - slave
- **/
-static void hdspm_set_system_clock_mode(struct hdspm *hdspm, int mode)
-{
-	switch (hdspm->io_type) {
-	case AIO:
-	case RayDAT:
-		if (0 == mode)
-			hdspm->settings_register |= HDSPM_c0Master;
-		else
-			hdspm->settings_register &= ~HDSPM_c0Master;
-
-		hdspm_write(hdspm, HDSPM_WR_SETTINGS, hdspm->settings_register);
-		break;
-
-	default:
-		if (0 == mode)
-			hdspm->control_register |= HDSPM_ClockModeMaster;
-		else
-			hdspm->control_register &= ~HDSPM_ClockModeMaster;
-
-		hdspm_write(hdspm, HDSPM_controlRegister,
-				hdspm->control_register);
-	}
-=======
 /*
  * Sets the system clock mode.
  * @param mode 0 - master, 1 - slave
@@ -3107,28 +2543,14 @@ static void hdspm_set_system_clock_mode(struct hdspm *hdspm, int mode)
 			(hdspm_is_raydat_or_aio(hdspm)) ?
 			HDSPM_c0Master : HDSPM_ClockModeMaster,
 			(0 == mode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static int snd_hdspm_info_system_clock_mode(struct snd_kcontrol *kcontrol,
 					    struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "Master", "AutoSync" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 2;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-		    uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name,
-	       texts[uinfo->value.enumerated.item]);
-=======
 	static const char *const texts[] = { "Master", "AutoSync" };
 	ENUMERATED_CTL_INFO(uinfo, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3221,22 +2643,7 @@ static int hdspm_set_clock_source(struct hdspm * hdspm, int mode)
 static int snd_hdspm_info_clock_source(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 9;
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-		    uinfo->value.enumerated.items - 1;
-
-	strcpy(uinfo->value.enumerated.name,
-	       texts_freq[uinfo->value.enumerated.item+1]);
-
-	return 0;
-=======
 	return snd_ctl_enum_info(uinfo, 1, 9, texts_freq + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdspm_get_clock_source(struct snd_kcontrol *kcontrol,
@@ -3273,11 +2680,7 @@ static int snd_hdspm_put_clock_source(struct snd_kcontrol *kcontrol,
 
 
 #define HDSPM_PREF_SYNC_REF(xname, xindex) \
-<<<<<<< HEAD
-{.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-=======
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = xname, \
 	.index = xindex, \
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE |\
@@ -3288,19 +2691,11 @@ static int snd_hdspm_put_clock_source(struct snd_kcontrol *kcontrol,
 }
 
 
-<<<<<<< HEAD
-/**
- * Returns the current preferred sync reference setting.
- * The semantics of the return value are depending on the
- * card, please see the comments for clarification.
- **/
-=======
 /*
  * Returns the current preferred sync reference setting.
  * The semantics of the return value are depending on the
  * card, please see the comments for clarification.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hdspm_pref_sync_ref(struct hdspm * hdspm)
 {
 	switch (hdspm->io_type) {
@@ -3399,19 +2794,11 @@ static int hdspm_pref_sync_ref(struct hdspm * hdspm)
 }
 
 
-<<<<<<< HEAD
-/**
- * Set the preferred sync reference to <pref>. The semantics
- * of <pref> are depending on the card type, see the comments
- * for clarification.
- **/
-=======
 /*
  * Set the preferred sync reference to <pref>. The semantics
  * of <pref> are depending on the card type, see the comments
  * for clarification.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hdspm_set_pref_sync_ref(struct hdspm * hdspm, int pref)
 {
 	int p = 0;
@@ -3575,20 +2962,7 @@ static int snd_hdspm_info_pref_sync_ref(struct snd_kcontrol *kcontrol,
 {
 	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
 
-<<<<<<< HEAD
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = hdspm->texts_autosync_items;
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-			uinfo->value.enumerated.items - 1;
-
-	strcpy(uinfo->value.enumerated.name,
-			hdspm->texts_autosync[uinfo->value.enumerated.item]);
-=======
 	snd_ctl_enum_info(uinfo, 1, hdspm->texts_autosync_items, hdspm->texts_autosync);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3633,40 +3007,16 @@ static int snd_hdspm_put_pref_sync_ref(struct snd_kcontrol *kcontrol,
 
 
 #define HDSPM_AUTOSYNC_REF(xname, xindex) \
-<<<<<<< HEAD
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .access = SNDRV_CTL_ELEM_ACCESS_READ, \
-  .info = snd_hdspm_info_autosync_ref, \
-  .get = snd_hdspm_get_autosync_ref, \
-=======
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
 	.name = xname, \
 	.index = xindex, \
 	.access = SNDRV_CTL_ELEM_ACCESS_READ, \
 	.info = snd_hdspm_info_autosync_ref, \
 	.get = snd_hdspm_get_autosync_ref, \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hdspm_autosync_ref(struct hdspm *hdspm)
 {
-<<<<<<< HEAD
-	if (AES32 == hdspm->io_type) {
-		unsigned int status = hdspm_read(hdspm, HDSPM_statusRegister);
-		unsigned int syncref =
-			(status >> HDSPM_AES32_syncref_bit) & 0xF;
-		if (syncref == 0)
-			return HDSPM_AES32_AUTOSYNC_FROM_WORD;
-		if (syncref <= 8)
-			return syncref;
-		return HDSPM_AES32_AUTOSYNC_FROM_NONE;
-	} else if (MADI == hdspm->io_type) {
-		/* This looks at the autosync selected sync reference */
-		unsigned int status2 = hdspm_read(hdspm, HDSPM_statusRegister2);
-
-=======
 	/* This looks at the autosync selected sync reference */
 	if (AES32 == hdspm->io_type) {
 
@@ -3681,7 +3031,6 @@ static int hdspm_autosync_ref(struct hdspm *hdspm)
 	} else if (MADI == hdspm->io_type) {
 
 		unsigned int status2 = hdspm_read(hdspm, HDSPM_statusRegister2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (status2 & HDSPM_SelSyncRefMask) {
 		case HDSPM_SelSyncRef_WORD:
 			return HDSPM_AUTOSYNC_FROM_WORD;
@@ -3694,11 +3043,7 @@ static int hdspm_autosync_ref(struct hdspm *hdspm)
 		case HDSPM_SelSyncRef_NVALID:
 			return HDSPM_AUTOSYNC_FROM_NONE;
 		default:
-<<<<<<< HEAD
-			return 0;
-=======
 			return HDSPM_AUTOSYNC_FROM_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 	}
@@ -3712,33 +3057,6 @@ static int snd_hdspm_info_autosync_ref(struct snd_kcontrol *kcontrol,
 	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
 
 	if (AES32 == hdspm->io_type) {
-<<<<<<< HEAD
-		static char *texts[] = { "WordClock", "AES1", "AES2", "AES3",
-			"AES4",	"AES5", "AES6", "AES7", "AES8", "None"};
-
-		uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-		uinfo->count = 1;
-		uinfo->value.enumerated.items = 10;
-		if (uinfo->value.enumerated.item >=
-		    uinfo->value.enumerated.items)
-			uinfo->value.enumerated.item =
-				uinfo->value.enumerated.items - 1;
-		strcpy(uinfo->value.enumerated.name,
-				texts[uinfo->value.enumerated.item]);
-	} else if (MADI == hdspm->io_type) {
-		static char *texts[] = {"Word Clock", "MADI", "TCO",
-			"Sync In", "None" };
-
-		uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-		uinfo->count = 1;
-		uinfo->value.enumerated.items = 5;
-		if (uinfo->value.enumerated.item >=
-				uinfo->value.enumerated.items)
-			uinfo->value.enumerated.item =
-				uinfo->value.enumerated.items - 1;
-		strcpy(uinfo->value.enumerated.name,
-				texts[uinfo->value.enumerated.item]);
-=======
 		static const char *const texts[] = { "WordClock", "AES1", "AES2", "AES3",
 			"AES4",	"AES5", "AES6", "AES7", "AES8", "TCO", "Sync In", "None"};
 
@@ -3748,7 +3066,6 @@ static int snd_hdspm_info_autosync_ref(struct snd_kcontrol *kcontrol,
 			"Sync In", "None" };
 
 		ENUMERATED_CTL_INFO(uinfo, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -3763,373 +3080,6 @@ static int snd_hdspm_get_autosync_ref(struct snd_kcontrol *kcontrol,
 }
 
 
-<<<<<<< HEAD
-#define HDSPM_LINE_OUT(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdspm_info_line_out, \
-  .get = snd_hdspm_get_line_out, \
-  .put = snd_hdspm_put_line_out \
-}
-
-static int hdspm_line_out(struct hdspm * hdspm)
-{
-	return (hdspm->control_register & HDSPM_LineOut) ? 1 : 0;
-}
-
-
-static int hdspm_set_line_output(struct hdspm * hdspm, int out)
-{
-	if (out)
-		hdspm->control_register |= HDSPM_LineOut;
-	else
-		hdspm->control_register &= ~HDSPM_LineOut;
-	hdspm_write(hdspm, HDSPM_controlRegister, hdspm->control_register);
-
-	return 0;
-}
-
-#define snd_hdspm_info_line_out		snd_ctl_boolean_mono_info
-
-static int snd_hdspm_get_line_out(struct snd_kcontrol *kcontrol,
-				  struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-
-	spin_lock_irq(&hdspm->lock);
-	ucontrol->value.integer.value[0] = hdspm_line_out(hdspm);
-	spin_unlock_irq(&hdspm->lock);
-	return 0;
-}
-
-static int snd_hdspm_put_line_out(struct snd_kcontrol *kcontrol,
-				  struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-	int change;
-	unsigned int val;
-
-	if (!snd_hdspm_use_is_exclusive(hdspm))
-		return -EBUSY;
-	val = ucontrol->value.integer.value[0] & 1;
-	spin_lock_irq(&hdspm->lock);
-	change = (int) val != hdspm_line_out(hdspm);
-	hdspm_set_line_output(hdspm, val);
-	spin_unlock_irq(&hdspm->lock);
-	return change;
-}
-
-
-#define HDSPM_TX_64(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdspm_info_tx_64, \
-  .get = snd_hdspm_get_tx_64, \
-  .put = snd_hdspm_put_tx_64 \
-}
-
-static int hdspm_tx_64(struct hdspm * hdspm)
-{
-	return (hdspm->control_register & HDSPM_TX_64ch) ? 1 : 0;
-}
-
-static int hdspm_set_tx_64(struct hdspm * hdspm, int out)
-{
-	if (out)
-		hdspm->control_register |= HDSPM_TX_64ch;
-	else
-		hdspm->control_register &= ~HDSPM_TX_64ch;
-	hdspm_write(hdspm, HDSPM_controlRegister, hdspm->control_register);
-
-	return 0;
-}
-
-#define snd_hdspm_info_tx_64		snd_ctl_boolean_mono_info
-
-static int snd_hdspm_get_tx_64(struct snd_kcontrol *kcontrol,
-			       struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-
-	spin_lock_irq(&hdspm->lock);
-	ucontrol->value.integer.value[0] = hdspm_tx_64(hdspm);
-	spin_unlock_irq(&hdspm->lock);
-	return 0;
-}
-
-static int snd_hdspm_put_tx_64(struct snd_kcontrol *kcontrol,
-			       struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-	int change;
-	unsigned int val;
-
-	if (!snd_hdspm_use_is_exclusive(hdspm))
-		return -EBUSY;
-	val = ucontrol->value.integer.value[0] & 1;
-	spin_lock_irq(&hdspm->lock);
-	change = (int) val != hdspm_tx_64(hdspm);
-	hdspm_set_tx_64(hdspm, val);
-	spin_unlock_irq(&hdspm->lock);
-	return change;
-}
-
-
-#define HDSPM_C_TMS(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdspm_info_c_tms, \
-  .get = snd_hdspm_get_c_tms, \
-  .put = snd_hdspm_put_c_tms \
-}
-
-static int hdspm_c_tms(struct hdspm * hdspm)
-{
-	return (hdspm->control_register & HDSPM_clr_tms) ? 1 : 0;
-}
-
-static int hdspm_set_c_tms(struct hdspm * hdspm, int out)
-{
-	if (out)
-		hdspm->control_register |= HDSPM_clr_tms;
-	else
-		hdspm->control_register &= ~HDSPM_clr_tms;
-	hdspm_write(hdspm, HDSPM_controlRegister, hdspm->control_register);
-
-	return 0;
-}
-
-#define snd_hdspm_info_c_tms		snd_ctl_boolean_mono_info
-
-static int snd_hdspm_get_c_tms(struct snd_kcontrol *kcontrol,
-			       struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-
-	spin_lock_irq(&hdspm->lock);
-	ucontrol->value.integer.value[0] = hdspm_c_tms(hdspm);
-	spin_unlock_irq(&hdspm->lock);
-	return 0;
-}
-
-static int snd_hdspm_put_c_tms(struct snd_kcontrol *kcontrol,
-			       struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-	int change;
-	unsigned int val;
-
-	if (!snd_hdspm_use_is_exclusive(hdspm))
-		return -EBUSY;
-	val = ucontrol->value.integer.value[0] & 1;
-	spin_lock_irq(&hdspm->lock);
-	change = (int) val != hdspm_c_tms(hdspm);
-	hdspm_set_c_tms(hdspm, val);
-	spin_unlock_irq(&hdspm->lock);
-	return change;
-}
-
-
-#define HDSPM_SAFE_MODE(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdspm_info_safe_mode, \
-  .get = snd_hdspm_get_safe_mode, \
-  .put = snd_hdspm_put_safe_mode \
-}
-
-static int hdspm_safe_mode(struct hdspm * hdspm)
-{
-	return (hdspm->control_register & HDSPM_AutoInp) ? 1 : 0;
-}
-
-static int hdspm_set_safe_mode(struct hdspm * hdspm, int out)
-{
-	if (out)
-		hdspm->control_register |= HDSPM_AutoInp;
-	else
-		hdspm->control_register &= ~HDSPM_AutoInp;
-	hdspm_write(hdspm, HDSPM_controlRegister, hdspm->control_register);
-
-	return 0;
-}
-
-#define snd_hdspm_info_safe_mode	snd_ctl_boolean_mono_info
-
-static int snd_hdspm_get_safe_mode(struct snd_kcontrol *kcontrol,
-				   struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-
-	spin_lock_irq(&hdspm->lock);
-	ucontrol->value.integer.value[0] = hdspm_safe_mode(hdspm);
-	spin_unlock_irq(&hdspm->lock);
-	return 0;
-}
-
-static int snd_hdspm_put_safe_mode(struct snd_kcontrol *kcontrol,
-				   struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-	int change;
-	unsigned int val;
-
-	if (!snd_hdspm_use_is_exclusive(hdspm))
-		return -EBUSY;
-	val = ucontrol->value.integer.value[0] & 1;
-	spin_lock_irq(&hdspm->lock);
-	change = (int) val != hdspm_safe_mode(hdspm);
-	hdspm_set_safe_mode(hdspm, val);
-	spin_unlock_irq(&hdspm->lock);
-	return change;
-}
-
-
-#define HDSPM_EMPHASIS(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdspm_info_emphasis, \
-  .get = snd_hdspm_get_emphasis, \
-  .put = snd_hdspm_put_emphasis \
-}
-
-static int hdspm_emphasis(struct hdspm * hdspm)
-{
-	return (hdspm->control_register & HDSPM_Emphasis) ? 1 : 0;
-}
-
-static int hdspm_set_emphasis(struct hdspm * hdspm, int emp)
-{
-	if (emp)
-		hdspm->control_register |= HDSPM_Emphasis;
-	else
-		hdspm->control_register &= ~HDSPM_Emphasis;
-	hdspm_write(hdspm, HDSPM_controlRegister, hdspm->control_register);
-
-	return 0;
-}
-
-#define snd_hdspm_info_emphasis		snd_ctl_boolean_mono_info
-
-static int snd_hdspm_get_emphasis(struct snd_kcontrol *kcontrol,
-				  struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-
-	spin_lock_irq(&hdspm->lock);
-	ucontrol->value.enumerated.item[0] = hdspm_emphasis(hdspm);
-	spin_unlock_irq(&hdspm->lock);
-	return 0;
-}
-
-static int snd_hdspm_put_emphasis(struct snd_kcontrol *kcontrol,
-				  struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-	int change;
-	unsigned int val;
-
-	if (!snd_hdspm_use_is_exclusive(hdspm))
-		return -EBUSY;
-	val = ucontrol->value.integer.value[0] & 1;
-	spin_lock_irq(&hdspm->lock);
-	change = (int) val != hdspm_emphasis(hdspm);
-	hdspm_set_emphasis(hdspm, val);
-	spin_unlock_irq(&hdspm->lock);
-	return change;
-}
-
-
-#define HDSPM_DOLBY(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdspm_info_dolby, \
-  .get = snd_hdspm_get_dolby, \
-  .put = snd_hdspm_put_dolby \
-}
-
-static int hdspm_dolby(struct hdspm * hdspm)
-{
-	return (hdspm->control_register & HDSPM_Dolby) ? 1 : 0;
-}
-
-static int hdspm_set_dolby(struct hdspm * hdspm, int dol)
-{
-	if (dol)
-		hdspm->control_register |= HDSPM_Dolby;
-	else
-		hdspm->control_register &= ~HDSPM_Dolby;
-	hdspm_write(hdspm, HDSPM_controlRegister, hdspm->control_register);
-
-	return 0;
-}
-
-#define snd_hdspm_info_dolby		snd_ctl_boolean_mono_info
-
-static int snd_hdspm_get_dolby(struct snd_kcontrol *kcontrol,
-			       struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-
-	spin_lock_irq(&hdspm->lock);
-	ucontrol->value.enumerated.item[0] = hdspm_dolby(hdspm);
-	spin_unlock_irq(&hdspm->lock);
-	return 0;
-}
-
-static int snd_hdspm_put_dolby(struct snd_kcontrol *kcontrol,
-			       struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-	int change;
-	unsigned int val;
-
-	if (!snd_hdspm_use_is_exclusive(hdspm))
-		return -EBUSY;
-	val = ucontrol->value.integer.value[0] & 1;
-	spin_lock_irq(&hdspm->lock);
-	change = (int) val != hdspm_dolby(hdspm);
-	hdspm_set_dolby(hdspm, val);
-	spin_unlock_irq(&hdspm->lock);
-	return change;
-}
-
-
-#define HDSPM_PROFESSIONAL(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdspm_info_professional, \
-  .get = snd_hdspm_get_professional, \
-  .put = snd_hdspm_put_professional \
-}
-
-static int hdspm_professional(struct hdspm * hdspm)
-{
-	return (hdspm->control_register & HDSPM_Professional) ? 1 : 0;
-}
-
-static int hdspm_set_professional(struct hdspm * hdspm, int dol)
-{
-	if (dol)
-		hdspm->control_register |= HDSPM_Professional;
-	else
-		hdspm->control_register &= ~HDSPM_Professional;
-	hdspm_write(hdspm, HDSPM_controlRegister, hdspm->control_register);
-
-	return 0;
-}
-
-#define snd_hdspm_info_professional	snd_ctl_boolean_mono_info
-
-static int snd_hdspm_get_professional(struct snd_kcontrol *kcontrol,
-=======
 
 #define HDSPM_TCO_VIDEO_INPUT_FORMAT(xname, xindex) \
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
@@ -4227,15 +3177,10 @@ static int hdspm_tco_ltc_frames(struct hdspm *hdspm)
 }
 
 static int snd_hdspm_get_tco_ltc_frames(struct snd_kcontrol *kcontrol,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      struct snd_ctl_elem_value *ucontrol)
 {
 	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
 
-<<<<<<< HEAD
-	spin_lock_irq(&hdspm->lock);
-	ucontrol->value.enumerated.item[0] = hdspm_professional(hdspm);
-=======
 	ucontrol->value.enumerated.item[0] = hdspm_tco_ltc_frames(hdspm);
 	return 0;
 }
@@ -4294,23 +3239,15 @@ static int snd_hdspm_get_toggle_setting(struct snd_kcontrol *kcontrol,
 
 	spin_lock_irq(&hdspm->lock);
 	ucontrol->value.integer.value[0] = hdspm_toggle_setting(hdspm, regmask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&hdspm->lock);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_hdspm_put_professional(struct snd_kcontrol *kcontrol,
-				      struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
-=======
 static int snd_hdspm_put_toggle_setting(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
 	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
 	u32 regmask = kcontrol->private_value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int change;
 	unsigned int val;
 
@@ -4318,33 +3255,19 @@ static int snd_hdspm_put_toggle_setting(struct snd_kcontrol *kcontrol,
 		return -EBUSY;
 	val = ucontrol->value.integer.value[0] & 1;
 	spin_lock_irq(&hdspm->lock);
-<<<<<<< HEAD
-	change = (int) val != hdspm_professional(hdspm);
-	hdspm_set_professional(hdspm, val);
-=======
 	change = (int) val != hdspm_toggle_setting(hdspm, regmask);
 	hdspm_set_toggle_setting(hdspm, regmask, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&hdspm->lock);
 	return change;
 }
 
 #define HDSPM_INPUT_SELECT(xname, xindex) \
-<<<<<<< HEAD
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdspm_info_input_select, \
-  .get = snd_hdspm_get_input_select, \
-  .put = snd_hdspm_put_input_select \
-=======
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
 	.name = xname, \
 	.index = xindex, \
 	.info = snd_hdspm_info_input_select, \
 	.get = snd_hdspm_get_input_select, \
 	.put = snd_hdspm_put_input_select \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hdspm_input_select(struct hdspm * hdspm)
@@ -4366,23 +3289,8 @@ static int hdspm_set_input_select(struct hdspm * hdspm, int out)
 static int snd_hdspm_info_input_select(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "optical", "coaxial" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 2;
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-		    uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name,
-	       texts[uinfo->value.enumerated.item]);
-
-=======
 	static const char *const texts[] = { "optical", "coaxial" };
 	ENUMERATED_CTL_INFO(uinfo, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4416,21 +3324,12 @@ static int snd_hdspm_put_input_select(struct snd_kcontrol *kcontrol,
 
 
 #define HDSPM_DS_WIRE(xname, xindex) \
-<<<<<<< HEAD
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdspm_info_ds_wire, \
-  .get = snd_hdspm_get_ds_wire, \
-  .put = snd_hdspm_put_ds_wire \
-=======
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
 	.name = xname, \
 	.index = xindex, \
 	.info = snd_hdspm_info_ds_wire, \
 	.get = snd_hdspm_get_ds_wire, \
 	.put = snd_hdspm_put_ds_wire \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hdspm_ds_wire(struct hdspm * hdspm)
@@ -4452,23 +3351,8 @@ static int hdspm_set_ds_wire(struct hdspm * hdspm, int ds)
 static int snd_hdspm_info_ds_wire(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "Single", "Double" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 2;
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-		    uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name,
-	       texts[uinfo->value.enumerated.item]);
-
-=======
 	static const char *const texts[] = { "Single", "Double" };
 	ENUMERATED_CTL_INFO(uinfo, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4502,21 +3386,12 @@ static int snd_hdspm_put_ds_wire(struct snd_kcontrol *kcontrol,
 
 
 #define HDSPM_QS_WIRE(xname, xindex) \
-<<<<<<< HEAD
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdspm_info_qs_wire, \
-  .get = snd_hdspm_get_qs_wire, \
-  .put = snd_hdspm_put_qs_wire \
-=======
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
 	.name = xname, \
 	.index = xindex, \
 	.info = snd_hdspm_info_qs_wire, \
 	.get = snd_hdspm_get_qs_wire, \
 	.put = snd_hdspm_put_qs_wire \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hdspm_qs_wire(struct hdspm * hdspm)
@@ -4549,23 +3424,8 @@ static int hdspm_set_qs_wire(struct hdspm * hdspm, int mode)
 static int snd_hdspm_info_qs_wire(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "Single", "Double", "Quad" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-		    uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name,
-	       texts[uinfo->value.enumerated.item]);
-
-=======
 	static const char *const texts[] = { "Single", "Double", "Quad" };
 	ENUMERATED_CTL_INFO(uinfo, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4601,8 +3461,6 @@ static int snd_hdspm_put_qs_wire(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-<<<<<<< HEAD
-=======
 #define HDSPM_CONTROL_TRISTATE(xname, xindex) \
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
 	.name = xname, \
@@ -4681,7 +3539,6 @@ static int snd_hdspm_put_tristate(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HDSPM_MADI_SPEEDMODE(xname, xindex) \
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
 	.name = xname, \
@@ -4721,23 +3578,8 @@ static int hdspm_set_madi_speedmode(struct hdspm *hdspm, int mode)
 static int snd_hdspm_info_madi_speedmode(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "Single", "Double", "Quad" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-		    uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name,
-	       texts[uinfo->value.enumerated.item]);
-
-=======
 	static const char *const texts[] = { "Single", "Double", "Quad" };
 	ENUMERATED_CTL_INFO(uinfo, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4774,17 +3616,6 @@ static int snd_hdspm_put_madi_speedmode(struct snd_kcontrol *kcontrol,
 }
 
 #define HDSPM_MIXER(xname, xindex) \
-<<<<<<< HEAD
-{ .iface = SNDRV_CTL_ELEM_IFACE_HWDEP, \
-  .name = xname, \
-  .index = xindex, \
-  .device = 0, \
-  .access = SNDRV_CTL_ELEM_ACCESS_READWRITE | \
-		 SNDRV_CTL_ELEM_ACCESS_VOLATILE, \
-  .info = snd_hdspm_info_mixer, \
-  .get = snd_hdspm_get_mixer, \
-  .put = snd_hdspm_put_mixer \
-=======
 {	.iface = SNDRV_CTL_ELEM_IFACE_HWDEP, \
 	.name = xname, \
 	.index = xindex, \
@@ -4794,7 +3625,6 @@ static int snd_hdspm_put_madi_speedmode(struct snd_kcontrol *kcontrol,
 	.info = snd_hdspm_info_mixer, \
 	.get = snd_hdspm_get_mixer, \
 	.put = snd_hdspm_put_mixer \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdspm_info_mixer(struct snd_kcontrol *kcontrol,
@@ -4893,21 +3723,12 @@ static int snd_hdspm_put_mixer(struct snd_kcontrol *kcontrol,
 */
 
 #define HDSPM_PLAYBACK_MIXER \
-<<<<<<< HEAD
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .access = SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_WRITE | \
-		 SNDRV_CTL_ELEM_ACCESS_VOLATILE, \
-  .info = snd_hdspm_info_playback_mixer, \
-  .get = snd_hdspm_get_playback_mixer, \
-  .put = snd_hdspm_put_playback_mixer \
-=======
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
 	.access = SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_WRITE | \
 		SNDRV_CTL_ELEM_ACCESS_VOLATILE, \
 	.info = snd_hdspm_info_playback_mixer, \
 	.get = snd_hdspm_get_playback_mixer, \
 	.put = snd_hdspm_put_playback_mixer \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdspm_info_playback_mixer(struct snd_kcontrol *kcontrol,
@@ -4978,8 +3799,6 @@ static int snd_hdspm_put_playback_mixer(struct snd_kcontrol *kcontrol,
 	.get = snd_hdspm_get_sync_check \
 }
 
-<<<<<<< HEAD
-=======
 #define HDSPM_TCO_LOCK_CHECK(xname, xindex) \
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
 	.name = xname, \
@@ -4990,22 +3809,10 @@ static int snd_hdspm_put_playback_mixer(struct snd_kcontrol *kcontrol,
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int snd_hdspm_info_sync_check(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "No Lock", "Lock", "Sync", "N/A" };
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 4;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-			uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name,
-			texts[uinfo->value.enumerated.item]);
-=======
 	static const char *const texts[] = { "No Lock", "Lock", "Sync", "N/A" };
 	ENUMERATED_CTL_INFO(uinfo, texts);
 	return 0;
@@ -5016,7 +3823,6 @@ static int snd_hdspm_tco_info_lock_check(struct snd_kcontrol *kcontrol,
 {
 	static const char *const texts[] = { "No Lock", "Lock" };
 	ENUMERATED_CTL_INFO(uinfo, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -5027,14 +3833,6 @@ static int hdspm_wc_sync_check(struct hdspm *hdspm)
 	switch (hdspm->io_type) {
 	case AES32:
 		status = hdspm_read(hdspm, HDSPM_statusRegister);
-<<<<<<< HEAD
-		if (status & HDSPM_wcSync)
-			return 2;
-		else if (status & HDSPM_wcLock)
-			return 1;
-		return 0;
-		break;
-=======
 		if (status & HDSPM_AES32_wcLock) {
 			if (status & HDSPM_AES32_wcSync)
 				return 2;
@@ -5042,7 +3840,6 @@ static int hdspm_wc_sync_check(struct hdspm *hdspm)
 				return 1;
 		}
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case MADI:
 		status2 = hdspm_read(hdspm, HDSPM_statusRegister2);
@@ -5053,10 +3850,6 @@ static int hdspm_wc_sync_check(struct hdspm *hdspm)
 				return 1;
 		}
 		return 0;
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case RayDAT:
 	case AIO:
@@ -5068,11 +3861,6 @@ static int hdspm_wc_sync_check(struct hdspm *hdspm)
 			return 1;
 		return 0;
 
-<<<<<<< HEAD
-		break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MADIface:
 		break;
 	}
@@ -5125,25 +3913,17 @@ static int hdspm_sync_in_sync_check(struct hdspm *hdspm)
 		break;
 
 	case MADI:
-<<<<<<< HEAD
-	case AES32:
-		status = hdspm_read(hdspm, HDSPM_statusRegister2);
-=======
 		status = hdspm_read(hdspm, HDSPM_statusRegister);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lock = (status & HDSPM_syncInLock) ? 1 : 0;
 		sync = (status & HDSPM_syncInSync) ? 1 : 0;
 		break;
 
-<<<<<<< HEAD
-=======
 	case AES32:
 		status = hdspm_read(hdspm, HDSPM_statusRegister2);
 		lock = (status & 0x100000) ? 1 : 0;
 		sync = (status & 0x200000) ? 1 : 0;
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MADIface:
 		break;
 	}
@@ -5171,8 +3951,6 @@ static int hdspm_aes_sync_check(struct hdspm *hdspm, int idx)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int hdspm_tco_input_check(struct hdspm *hdspm, u32 mask)
 {
 	u32 status;
@@ -5181,7 +3959,6 @@ static int hdspm_tco_input_check(struct hdspm *hdspm, u32 mask)
 	return (status & mask) ? 1 : 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int hdspm_tco_sync_check(struct hdspm *hdspm)
 {
@@ -5190,11 +3967,6 @@ static int hdspm_tco_sync_check(struct hdspm *hdspm)
 	if (hdspm->tco) {
 		switch (hdspm->io_type) {
 		case MADI:
-<<<<<<< HEAD
-		case AES32:
-			status = hdspm_read(hdspm, HDSPM_statusRegister);
-			if (status & HDSPM_tcoLock) {
-=======
 			status = hdspm_read(hdspm, HDSPM_statusRegister);
 			if (status & HDSPM_tcoLockMadi) {
 				if (status & HDSPM_tcoSync)
@@ -5206,19 +3978,12 @@ static int hdspm_tco_sync_check(struct hdspm *hdspm)
 		case AES32:
 			status = hdspm_read(hdspm, HDSPM_statusRegister);
 			if (status & HDSPM_tcoLockAes) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (status & HDSPM_tcoSync)
 					return 2;
 				else
 					return 1;
 			}
 			return 0;
-<<<<<<< HEAD
-
-			break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case RayDAT:
 		case AIO:
 			status = hdspm_read(hdspm, HDSPM_RD_STATUS_1);
@@ -5228,10 +3993,6 @@ static int hdspm_tco_sync_check(struct hdspm *hdspm)
 			if (status & 0x4000000)
 				return 1; /* Lock */
 			return 0; /* No signal */
-<<<<<<< HEAD
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		default:
 			break;
@@ -5258,15 +4019,10 @@ static int snd_hdspm_get_sync_check(struct snd_kcontrol *kcontrol,
 		case 8: /* SYNC IN */
 			val = hdspm_sync_in_sync_check(hdspm); break;
 		default:
-<<<<<<< HEAD
-			val = hdspm_s1_sync_check(hdspm, ucontrol->id.index-1);
-		}
-=======
 			val = hdspm_s1_sync_check(hdspm,
 					kcontrol->private_value-1);
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case AIO:
 		switch (kcontrol->private_value) {
@@ -5277,15 +4033,10 @@ static int snd_hdspm_get_sync_check(struct snd_kcontrol *kcontrol,
 		case 5: /* SYNC IN */
 			val = hdspm_sync_in_sync_check(hdspm); break;
 		default:
-<<<<<<< HEAD
-			val = hdspm_s1_sync_check(hdspm, ucontrol->id.index-1);
-		}
-=======
 			val = hdspm_s1_sync_check(hdspm,
 					kcontrol->private_value-1);
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case MADI:
 		switch (kcontrol->private_value) {
@@ -5298,10 +4049,7 @@ static int snd_hdspm_get_sync_check(struct snd_kcontrol *kcontrol,
 		case 3: /* SYNC_IN */
 			val = hdspm_sync_in_sync_check(hdspm); break;
 		}
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case MADIface:
 		val = hdspm_madi_sync_check(hdspm); /* MADI */
@@ -5319,11 +4067,6 @@ static int snd_hdspm_get_sync_check(struct snd_kcontrol *kcontrol,
 			 val = hdspm_aes_sync_check(hdspm,
 					 kcontrol->private_value-1);
 		}
-<<<<<<< HEAD
-
-	}
-
-=======
 		break;
 
 	}
@@ -5344,7 +4087,6 @@ static int snd_hdspm_get_sync_check(struct snd_kcontrol *kcontrol,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (-1 == val)
 		val = 3;
 
@@ -5354,15 +4096,9 @@ static int snd_hdspm_get_sync_check(struct snd_kcontrol *kcontrol,
 
 
 
-<<<<<<< HEAD
-/**
- * TCO controls
- **/
-=======
 /*
  * TCO controls
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hdspm_tco_write(struct hdspm *hdspm)
 {
 	unsigned int tc[4] = { 0, 0, 0, 0};
@@ -5466,24 +4202,9 @@ static void hdspm_tco_write(struct hdspm *hdspm)
 static int snd_hdspm_info_tco_sample_rate(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "44.1 kHz", "48 kHz" };
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 2;
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-			uinfo->value.enumerated.items - 1;
-
-	strcpy(uinfo->value.enumerated.name,
-			texts[uinfo->value.enumerated.item]);
-
-=======
 	/* TODO freq from app could be supported here, see tco->samplerate */
 	static const char *const texts[] = { "44.1 kHz", "48 kHz" };
 	ENUMERATED_CTL_INFO(uinfo, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -5528,24 +4249,9 @@ static int snd_hdspm_put_tco_sample_rate(struct snd_kcontrol *kcontrol,
 static int snd_hdspm_info_tco_pull(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "0", "+ 0.1 %", "- 0.1 %", "+ 4 %", "- 4 %" };
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 5;
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-			uinfo->value.enumerated.items - 1;
-
-	strcpy(uinfo->value.enumerated.name,
-			texts[uinfo->value.enumerated.item]);
-
-=======
 	static const char *const texts[] = { "0", "+ 0.1 %", "- 0.1 %",
 		"+ 4 %", "- 4 %" };
 	ENUMERATED_CTL_INFO(uinfo, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -5589,23 +4295,8 @@ static int snd_hdspm_put_tco_pull(struct snd_kcontrol *kcontrol,
 static int snd_hdspm_info_tco_wck_conversion(struct snd_kcontrol *kcontrol,
 					     struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "1:1", "44.1 -> 48", "48 -> 44.1" };
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-			uinfo->value.enumerated.items - 1;
-
-	strcpy(uinfo->value.enumerated.name,
-			texts[uinfo->value.enumerated.item]);
-
-=======
 	static const char *const texts[] = { "1:1", "44.1 -> 48", "48 -> 44.1" };
 	ENUMERATED_CTL_INFO(uinfo, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -5650,25 +4341,9 @@ static int snd_hdspm_put_tco_wck_conversion(struct snd_kcontrol *kcontrol,
 static int snd_hdspm_info_tco_frame_rate(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "24 fps", "25 fps", "29.97fps",
-		"29.97 dfps", "30 fps", "30 dfps" };
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 6;
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-			uinfo->value.enumerated.items - 1;
-
-	strcpy(uinfo->value.enumerated.name,
-			texts[uinfo->value.enumerated.item]);
-
-=======
 	static const char *const texts[] = { "24 fps", "25 fps", "29.97fps",
 		"29.97 dfps", "30 fps", "30 dfps" };
 	ENUMERATED_CTL_INFO(uinfo, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -5713,23 +4388,8 @@ static int snd_hdspm_put_tco_frame_rate(struct snd_kcontrol *kcontrol,
 static int snd_hdspm_info_tco_sync_source(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = { "LTC", "Video", "WCK" };
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-			uinfo->value.enumerated.items - 1;
-
-	strcpy(uinfo->value.enumerated.name,
-			texts[uinfo->value.enumerated.item]);
-
-=======
 	static const char *const texts[] = { "LTC", "Video", "WCK" };
 	ENUMERATED_CTL_INFO(uinfo, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -5788,11 +4448,7 @@ static int snd_hdspm_get_tco_word_term(struct snd_kcontrol *kcontrol,
 {
 	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
 
-<<<<<<< HEAD
-	ucontrol->value.enumerated.item[0] = hdspm->tco->term;
-=======
 	ucontrol->value.integer.value[0] = hdspm->tco->term;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -5803,13 +4459,8 @@ static int snd_hdspm_put_tco_word_term(struct snd_kcontrol *kcontrol,
 {
 	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
 
-<<<<<<< HEAD
-	if (hdspm->tco->term != ucontrol->value.enumerated.item[0]) {
-		hdspm->tco->term = ucontrol->value.enumerated.item[0];
-=======
 	if (hdspm->tco->term != ucontrol->value.integer.value[0]) {
 		hdspm->tco->term = ucontrol->value.integer.value[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hdspm_tco_write(hdspm);
 
@@ -5822,27 +4473,13 @@ static int snd_hdspm_put_tco_word_term(struct snd_kcontrol *kcontrol,
 
 
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_hdspm_controls_madi[] = {
-=======
 static const struct snd_kcontrol_new snd_hdspm_controls_madi[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HDSPM_MIXER("Mixer", 0),
 	HDSPM_INTERNAL_CLOCK("Internal Clock", 0),
 	HDSPM_SYSTEM_CLOCK_MODE("System Clock Mode", 0),
 	HDSPM_PREF_SYNC_REF("Preferred Sync Reference", 0),
 	HDSPM_AUTOSYNC_REF("AutoSync Reference", 0),
 	HDSPM_SYSTEM_SAMPLE_RATE("System Sample Rate", 0),
-<<<<<<< HEAD
-	HDSPM_SYNC_CHECK("WC SyncCheck", 0),
-	HDSPM_SYNC_CHECK("MADI SyncCheck", 1),
-	HDSPM_SYNC_CHECK("TCO SyncCHeck", 2),
-	HDSPM_SYNC_CHECK("SYNC IN SyncCheck", 3),
-	HDSPM_LINE_OUT("Line Out", 0),
-	HDSPM_TX_64("TX 64 channels mode", 0),
-	HDSPM_C_TMS("Clear Track Marker", 0),
-	HDSPM_SAFE_MODE("Safe Mode", 0),
-=======
 	HDSPM_AUTOSYNC_SAMPLE_RATE("External Rate", 0),
 	HDSPM_SYNC_CHECK("WC SyncCheck", 0),
 	HDSPM_SYNC_CHECK("MADI SyncCheck", 1),
@@ -5853,32 +4490,18 @@ static const struct snd_kcontrol_new snd_hdspm_controls_madi[] = {
 	HDSPM_TOGGLE_SETTING("Disable 96K frames", HDSPM_SMUX),
 	HDSPM_TOGGLE_SETTING("Clear Track Marker", HDSPM_clr_tms),
 	HDSPM_TOGGLE_SETTING("Safe Mode", HDSPM_AutoInp),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HDSPM_INPUT_SELECT("Input Select", 0),
 	HDSPM_MADI_SPEEDMODE("MADI Speed Mode", 0)
 };
 
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_hdspm_controls_madiface[] = {
-=======
 static const struct snd_kcontrol_new snd_hdspm_controls_madiface[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HDSPM_MIXER("Mixer", 0),
 	HDSPM_INTERNAL_CLOCK("Internal Clock", 0),
 	HDSPM_SYSTEM_CLOCK_MODE("System Clock Mode", 0),
 	HDSPM_SYSTEM_SAMPLE_RATE("System Sample Rate", 0),
 	HDSPM_AUTOSYNC_SAMPLE_RATE("External Rate", 0),
 	HDSPM_SYNC_CHECK("MADI SyncCheck", 0),
-<<<<<<< HEAD
-	HDSPM_TX_64("TX 64 channels mode", 0),
-	HDSPM_C_TMS("Clear Track Marker", 0),
-	HDSPM_SAFE_MODE("Safe Mode", 0),
-	HDSPM_MADI_SPEEDMODE("MADI Speed Mode", 0)
-};
-
-static struct snd_kcontrol_new snd_hdspm_controls_aio[] = {
-=======
 	HDSPM_TOGGLE_SETTING("TX 64 channels mode", HDSPM_TX_64ch),
 	HDSPM_TOGGLE_SETTING("Clear Track Marker", HDSPM_clr_tms),
 	HDSPM_TOGGLE_SETTING("Safe Mode", HDSPM_AutoInp),
@@ -5886,15 +4509,10 @@ static struct snd_kcontrol_new snd_hdspm_controls_aio[] = {
 };
 
 static const struct snd_kcontrol_new snd_hdspm_controls_aio[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HDSPM_MIXER("Mixer", 0),
 	HDSPM_INTERNAL_CLOCK("Internal Clock", 0),
 	HDSPM_SYSTEM_CLOCK_MODE("System Clock Mode", 0),
 	HDSPM_PREF_SYNC_REF("Preferred Sync Reference", 0),
-<<<<<<< HEAD
-	HDSPM_AUTOSYNC_REF("AutoSync Reference", 0),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HDSPM_SYSTEM_SAMPLE_RATE("System Sample Rate", 0),
 	HDSPM_AUTOSYNC_SAMPLE_RATE("External Rate", 0),
 	HDSPM_SYNC_CHECK("WC SyncCheck", 0),
@@ -5908,9 +4526,6 @@ static const struct snd_kcontrol_new snd_hdspm_controls_aio[] = {
 	HDSPM_AUTOSYNC_SAMPLE_RATE("SPDIF Frequency", 2),
 	HDSPM_AUTOSYNC_SAMPLE_RATE("ADAT Frequency", 3),
 	HDSPM_AUTOSYNC_SAMPLE_RATE("TCO Frequency", 4),
-<<<<<<< HEAD
-	HDSPM_AUTOSYNC_SAMPLE_RATE("SYNC IN Frequency", 5)
-=======
 	HDSPM_AUTOSYNC_SAMPLE_RATE("SYNC IN Frequency", 5),
 	HDSPM_CONTROL_TRISTATE("S/PDIF Input", HDSPM_c0_Input0),
 	HDSPM_TOGGLE_SETTING("S/PDIF Out Optical", HDSPM_c0_Spdif_Opt),
@@ -5921,7 +4536,6 @@ static const struct snd_kcontrol_new snd_hdspm_controls_aio[] = {
 	HDSPM_CONTROL_TRISTATE("Input Level", HDSPM_c0_AD_GAIN0),
 	HDSPM_CONTROL_TRISTATE("Output Level", HDSPM_c0_DA_GAIN0),
 	HDSPM_CONTROL_TRISTATE("Phones Level", HDSPM_c0_PH_GAIN0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		   HDSPM_INPUT_SELECT("Input Select", 0),
@@ -5935,11 +4549,7 @@ static const struct snd_kcontrol_new snd_hdspm_controls_aio[] = {
 		   */
 };
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_hdspm_controls_raydat[] = {
-=======
 static const struct snd_kcontrol_new snd_hdspm_controls_raydat[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HDSPM_MIXER("Mixer", 0),
 	HDSPM_INTERNAL_CLOCK("Internal Clock", 0),
 	HDSPM_SYSTEM_CLOCK_MODE("Clock Mode", 0),
@@ -5962,30 +4572,19 @@ static const struct snd_kcontrol_new snd_hdspm_controls_raydat[] = {
 	HDSPM_AUTOSYNC_SAMPLE_RATE("ADAT3 Frequency", 5),
 	HDSPM_AUTOSYNC_SAMPLE_RATE("ADAT4 Frequency", 6),
 	HDSPM_AUTOSYNC_SAMPLE_RATE("TCO Frequency", 7),
-<<<<<<< HEAD
-	HDSPM_AUTOSYNC_SAMPLE_RATE("SYNC IN Frequency", 8)
-};
-
-static struct snd_kcontrol_new snd_hdspm_controls_aes32[] = {
-=======
 	HDSPM_AUTOSYNC_SAMPLE_RATE("SYNC IN Frequency", 8),
 	HDSPM_TOGGLE_SETTING("S/PDIF Out Professional", HDSPM_c0_Pro),
 	HDSPM_TOGGLE_SETTING("Single Speed WordClock Out", HDSPM_c0_Wck48)
 };
 
 static const struct snd_kcontrol_new snd_hdspm_controls_aes32[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HDSPM_MIXER("Mixer", 0),
 	HDSPM_INTERNAL_CLOCK("Internal Clock", 0),
 	HDSPM_SYSTEM_CLOCK_MODE("System Clock Mode", 0),
 	HDSPM_PREF_SYNC_REF("Preferred Sync Reference", 0),
 	HDSPM_AUTOSYNC_REF("AutoSync Reference", 0),
 	HDSPM_SYSTEM_SAMPLE_RATE("System Sample Rate", 0),
-<<<<<<< HEAD
-	HDSPM_AUTOSYNC_SAMPLE_RATE("External Rate", 0),
-=======
 	HDSPM_AUTOSYNC_SAMPLE_RATE("External Rate", 11),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HDSPM_SYNC_CHECK("WC Sync Check", 0),
 	HDSPM_SYNC_CHECK("AES1 Sync Check", 1),
 	HDSPM_SYNC_CHECK("AES2 Sync Check", 2),
@@ -6008,19 +4607,11 @@ static const struct snd_kcontrol_new snd_hdspm_controls_aes32[] = {
 	HDSPM_AUTOSYNC_SAMPLE_RATE("AES8 Frequency", 8),
 	HDSPM_AUTOSYNC_SAMPLE_RATE("TCO Frequency", 9),
 	HDSPM_AUTOSYNC_SAMPLE_RATE("SYNC IN Frequency", 10),
-<<<<<<< HEAD
-	HDSPM_LINE_OUT("Line Out", 0),
-	HDSPM_EMPHASIS("Emphasis", 0),
-	HDSPM_DOLBY("Non Audio", 0),
-	HDSPM_PROFESSIONAL("Professional", 0),
-	HDSPM_C_TMS("Clear Track Marker", 0),
-=======
 	HDSPM_TOGGLE_SETTING("Line Out", HDSPM_LineOut),
 	HDSPM_TOGGLE_SETTING("Emphasis", HDSPM_Emphasis),
 	HDSPM_TOGGLE_SETTING("Non Audio", HDSPM_Dolby),
 	HDSPM_TOGGLE_SETTING("Professional", HDSPM_Professional),
 	HDSPM_TOGGLE_SETTING("Clear Track Marker", HDSPM_clr_tms),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HDSPM_DS_WIRE("Double Speed Wire Mode", 0),
 	HDSPM_QS_WIRE("Quad Speed Wire Mode", 0),
 };
@@ -6028,25 +4619,17 @@ static const struct snd_kcontrol_new snd_hdspm_controls_aes32[] = {
 
 
 /* Control elements for the optional TCO module */
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_hdspm_controls_tco[] = {
-=======
 static const struct snd_kcontrol_new snd_hdspm_controls_tco[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HDSPM_TCO_SAMPLE_RATE("TCO Sample Rate", 0),
 	HDSPM_TCO_PULL("TCO Pull", 0),
 	HDSPM_TCO_WCK_CONVERSION("TCO WCK Conversion", 0),
 	HDSPM_TCO_FRAME_RATE("TCO Frame Rate", 0),
 	HDSPM_TCO_SYNC_SOURCE("TCO Sync Source", 0),
-<<<<<<< HEAD
-	HDSPM_TCO_WORD_TERM("TCO Word Term", 0)
-=======
 	HDSPM_TCO_WORD_TERM("TCO Word Term", 0),
 	HDSPM_TCO_LOCK_CHECK("TCO Input Check", 11),
 	HDSPM_TCO_LOCK_CHECK("TCO LTC Valid", 12),
 	HDSPM_TCO_LTC_FRAMES("TCO Detected Frame Rate", 0),
 	HDSPM_TCO_VIDEO_INPUT_FORMAT("Video Input Format", 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -6083,11 +4666,7 @@ static int snd_hdspm_create_controls(struct snd_card *card,
 	unsigned int idx, limit;
 	int err;
 	struct snd_kcontrol *kctl;
-<<<<<<< HEAD
-	struct snd_kcontrol_new *list = NULL;
-=======
 	const struct snd_kcontrol_new *list = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hdspm->io_type) {
 	case MADI:
@@ -6112,11 +4691,7 @@ static int snd_hdspm_create_controls(struct snd_card *card,
 		break;
 	}
 
-<<<<<<< HEAD
-	if (NULL != list) {
-=======
 	if (list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (idx = 0; idx < limit; idx++) {
 			err = snd_ctl_add(card,
 					snd_ctl_new1(&list[idx], hdspm));
@@ -6165,94 +4740,22 @@ static int snd_hdspm_create_controls(struct snd_card *card,
  ------------------------------------------------------------*/
 
 static void
-<<<<<<< HEAD
-snd_hdspm_proc_read_madi(struct snd_info_entry * entry,
-			 struct snd_info_buffer *buffer)
-{
-	struct hdspm *hdspm = entry->private_data;
-	unsigned int status, status2, control, freq;
-
-	char *pref_sync_ref;
-	char *autosync_ref;
-	char *system_clock_mode;
-	char *insel;
-	int x, x2;
-
-	/* TCO stuff */
-=======
 snd_hdspm_proc_read_tco(struct snd_info_entry *entry,
 					struct snd_info_buffer *buffer)
 {
 	struct hdspm *hdspm = entry->private_data;
 	unsigned int status, control;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int a, ltc, frames, seconds, minutes, hours;
 	unsigned int period;
 	u64 freq_const = 0;
 	u32 rate;
 
-<<<<<<< HEAD
-	status = hdspm_read(hdspm, HDSPM_statusRegister);
-	status2 = hdspm_read(hdspm, HDSPM_statusRegister2);
-	control = hdspm->control_register;
-	freq = hdspm_read(hdspm, HDSPM_timecodeRegister);
-
-	snd_iprintf(buffer, "%s (Card #%d) Rev.%x Status2first3bits: %x\n",
-			hdspm->card_name, hdspm->card->number + 1,
-			hdspm->firmware_rev,
-			(status2 & HDSPM_version0) |
-			(status2 & HDSPM_version1) | (status2 &
-				HDSPM_version2));
-
-	snd_iprintf(buffer, "HW Serial: 0x%06x%06x\n",
-			(hdspm_read(hdspm, HDSPM_midiStatusIn1)>>8) & 0xFFFFFF,
-			hdspm->serial);
-
-	snd_iprintf(buffer, "IRQ: %d Registers bus: 0x%lx VM: 0x%lx\n",
-			hdspm->irq, hdspm->port, (unsigned long)hdspm->iobase);
-
-	snd_iprintf(buffer, "--- System ---\n");
-
-	snd_iprintf(buffer,
-		"IRQ Pending: Audio=%d, MIDI0=%d, MIDI1=%d, IRQcount=%d\n",
-		status & HDSPM_audioIRQPending,
-		(status & HDSPM_midi0IRQPending) ? 1 : 0,
-		(status & HDSPM_midi1IRQPending) ? 1 : 0,
-		hdspm->irq_count);
-	snd_iprintf(buffer,
-		"HW pointer: id = %d, rawptr = %d (%d->%d) "
-		"estimated= %ld (bytes)\n",
-		((status & HDSPM_BufferID) ? 1 : 0),
-		(status & HDSPM_BufferPositionMask),
-		(status & HDSPM_BufferPositionMask) %
-		(2 * (int)hdspm->period_bytes),
-		((status & HDSPM_BufferPositionMask) - 64) %
-		(2 * (int)hdspm->period_bytes),
-		(long) hdspm_hw_pointer(hdspm) * 4);
-
-	snd_iprintf(buffer,
-		"MIDI FIFO: Out1=0x%x, Out2=0x%x, In1=0x%x, In2=0x%x \n",
-		hdspm_read(hdspm, HDSPM_midiStatusOut0) & 0xFF,
-		hdspm_read(hdspm, HDSPM_midiStatusOut1) & 0xFF,
-		hdspm_read(hdspm, HDSPM_midiStatusIn0) & 0xFF,
-		hdspm_read(hdspm, HDSPM_midiStatusIn1) & 0xFF);
-	snd_iprintf(buffer,
-		"MIDIoverMADI FIFO: In=0x%x, Out=0x%x \n",
-		hdspm_read(hdspm, HDSPM_midiStatusIn2) & 0xFF,
-		hdspm_read(hdspm, HDSPM_midiStatusOut2) & 0xFF);
-	snd_iprintf(buffer,
-		"Register: ctrl1=0x%x, ctrl2=0x%x, status1=0x%x, "
-		"status2=0x%x\n",
-		hdspm->control_register, hdspm->control2_register,
-		status, status2);
-=======
 	snd_iprintf(buffer, "--- TCO ---\n");
 
 	status = hdspm_read(hdspm, HDSPM_statusRegister);
 	control = hdspm->control_register;
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status & HDSPM_tco_detect) {
 		snd_iprintf(buffer, "TCO module detected.\n");
 		a = hdspm_read(hdspm, HDSPM_RD_TCO+4);
@@ -6346,8 +4849,6 @@ snd_hdspm_proc_read_tco(struct snd_info_entry *entry,
 	} else {
 		snd_iprintf(buffer, "No TCO module detected.\n");
 	}
-<<<<<<< HEAD
-=======
 }
 
 static void
@@ -6414,7 +4915,6 @@ snd_hdspm_proc_read_madi(struct snd_info_entry *entry,
 		hdspm->control_register, hdspm->control2_register,
 		status, status2);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_iprintf(buffer, "--- Settings ---\n");
 
@@ -6427,20 +4927,6 @@ snd_hdspm_proc_read_madi(struct snd_info_entry *entry,
 	snd_iprintf(buffer, "Line out: %s\n",
 		(hdspm->control_register & HDSPM_LineOut) ? "on " : "off");
 
-<<<<<<< HEAD
-	switch (hdspm->control_register & HDSPM_InputMask) {
-	case HDSPM_InputOptical:
-		insel = "Optical";
-		break;
-	case HDSPM_InputCoaxial:
-		insel = "Coaxial";
-		break;
-	default:
-		insel = "Unkown";
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer,
 		"ClearTrackMarker = %s, Transmit in %s Channel Mode, "
 		"Auto Input %s\n",
@@ -6521,12 +5007,9 @@ snd_hdspm_proc_read_madi(struct snd_info_entry *entry,
 		(status & HDSPM_RX_64ch) ? "64 channels" :
 		"56 channels");
 
-<<<<<<< HEAD
-=======
 	/* call readout function for TCO specific status */
 	snd_hdspm_proc_read_tco(entry, buffer);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "\n");
 }
 
@@ -6538,10 +5021,7 @@ snd_hdspm_proc_read_aes32(struct snd_info_entry * entry,
 	unsigned int status;
 	unsigned int status2;
 	unsigned int timecode;
-<<<<<<< HEAD
-=======
 	unsigned int wcLock, wcSync;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pref_syncref;
 	char *autosync_ref;
 	int x;
@@ -6635,16 +5115,11 @@ snd_hdspm_proc_read_aes32(struct snd_info_entry * entry,
 
 	snd_iprintf(buffer, "--- Status:\n");
 
-<<<<<<< HEAD
-	snd_iprintf(buffer, "Word: %s  Frequency: %d\n",
-		    (status & HDSPM_AES32_wcLock) ? "Sync   " : "No Lock",
-=======
 	wcLock = status & HDSPM_AES32_wcLock;
 	wcSync = wcLock && (status & HDSPM_AES32_wcSync);
 
 	snd_iprintf(buffer, "Word: %s  Frequency: %d\n",
 		    (wcLock) ? (wcSync ? "Sync   " : "Lock   ") : "No Lock",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    HDSPM_bit2freq((status >> HDSPM_AES32_wcFreq_bit) & 0xF));
 
 	for (x = 0; x < 8; x++) {
@@ -6676,24 +5151,18 @@ snd_hdspm_proc_read_aes32(struct snd_info_entry * entry,
 		autosync_ref = "AES7"; break;
 	case HDSPM_AES32_AUTOSYNC_FROM_AES8:
 		autosync_ref = "AES8"; break;
-<<<<<<< HEAD
-=======
 	case HDSPM_AES32_AUTOSYNC_FROM_TCO:
 		autosync_ref = "TCO"; break;
 	case HDSPM_AES32_AUTOSYNC_FROM_SYNC_IN:
 		autosync_ref = "Sync In"; break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		autosync_ref = "---"; break;
 	}
 	snd_iprintf(buffer, "AutoSync ref = %s\n", autosync_ref);
 
-<<<<<<< HEAD
-=======
 	/* call readout function for TCO specific status */
 	snd_hdspm_proc_read_tco(entry, buffer);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "\n");
 }
 
@@ -6702,22 +5171,13 @@ snd_hdspm_proc_read_raydat(struct snd_info_entry *entry,
 			 struct snd_info_buffer *buffer)
 {
 	struct hdspm *hdspm = entry->private_data;
-<<<<<<< HEAD
-	unsigned int status1, status2, status3, control, i;
-=======
 	unsigned int status1, status2, status3, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int lock, sync;
 
 	status1 = hdspm_read(hdspm, HDSPM_RD_STATUS_1); /* s1 */
 	status2 = hdspm_read(hdspm, HDSPM_RD_STATUS_2); /* freq */
 	status3 = hdspm_read(hdspm, HDSPM_RD_STATUS_3); /* s2 */
 
-<<<<<<< HEAD
-	control = hdspm->control_register;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "STATUS1: 0x%08x\n", status1);
 	snd_iprintf(buffer, "STATUS2: 0x%08x\n", status2);
 	snd_iprintf(buffer, "STATUS3: 0x%08x\n", status3);
@@ -6809,48 +5269,6 @@ static void snd_hdspm_proc_ports_out(struct snd_info_entry *entry,
 }
 
 
-<<<<<<< HEAD
-static void __devinit snd_hdspm_proc_init(struct hdspm *hdspm)
-{
-	struct snd_info_entry *entry;
-
-	if (!snd_card_proc_new(hdspm->card, "hdspm", &entry)) {
-		switch (hdspm->io_type) {
-		case AES32:
-			snd_info_set_text_ops(entry, hdspm,
-					snd_hdspm_proc_read_aes32);
-			break;
-		case MADI:
-			snd_info_set_text_ops(entry, hdspm,
-					snd_hdspm_proc_read_madi);
-			break;
-		case MADIface:
-			/* snd_info_set_text_ops(entry, hdspm,
-			 snd_hdspm_proc_read_madiface); */
-			break;
-		case RayDAT:
-			snd_info_set_text_ops(entry, hdspm,
-					snd_hdspm_proc_read_raydat);
-			break;
-		case AIO:
-			break;
-		}
-	}
-
-	if (!snd_card_proc_new(hdspm->card, "ports.in", &entry)) {
-		snd_info_set_text_ops(entry, hdspm, snd_hdspm_proc_ports_in);
-	}
-
-	if (!snd_card_proc_new(hdspm->card, "ports.out", &entry)) {
-		snd_info_set_text_ops(entry, hdspm, snd_hdspm_proc_ports_out);
-	}
-
-#ifdef CONFIG_SND_DEBUG
-	/* debug file to read all hdspm registers */
-	if (!snd_card_proc_new(hdspm->card, "debug", &entry))
-		snd_info_set_text_ops(entry, hdspm,
-				snd_hdspm_proc_read_debug);
-=======
 static void snd_hdspm_proc_init(struct hdspm *hdspm)
 {
 	void (*read)(struct snd_info_entry *, struct snd_info_buffer *) = NULL;
@@ -6882,7 +5300,6 @@ static void snd_hdspm_proc_init(struct hdspm *hdspm)
 	/* debug file to read all hdspm registers */
 	snd_card_ro_proc_new(hdspm->card, "debug", hdspm,
 			     snd_hdspm_proc_read_debug);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -6918,11 +5335,7 @@ static int snd_hdspm_set_defaults(struct hdspm * hdspm)
 
 	case AES32:
 		hdspm->control_register =
-<<<<<<< HEAD
-			HDSPM_ClockModeMaster |	/* Master Cloack Mode on */
-=======
 			HDSPM_ClockModeMaster |	/* Master Clock Mode on */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hdspm_encode_latency(7) | /* latency max=8192samples */
 			HDSPM_SyncRef0 |	/* AES1 is syncclock */
 			HDSPM_LineOut |	/* Analog output in */
@@ -6948,14 +5361,8 @@ static int snd_hdspm_set_defaults(struct hdspm * hdspm)
 
 	all_in_all_mixer(hdspm, 0 * UNITY_GAIN);
 
-<<<<<<< HEAD
-	if (hdspm->io_type == AIO || hdspm->io_type == RayDAT) {
-		hdspm_write(hdspm, HDSPM_WR_SETTINGS, hdspm->settings_register);
-	}
-=======
 	if (hdspm_is_raydat_or_aio(hdspm))
 		hdspm_write(hdspm, HDSPM_WR_SETTINGS, hdspm->settings_register);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set a default rate so that the channel map is set up. */
 	hdspm_set_rate(hdspm, 48000, 1);
@@ -6982,11 +5389,7 @@ static irqreturn_t snd_hdspm_interrupt(int irq, void *dev_id)
 			HDSPM_midi2IRQPending | HDSPM_midi3IRQPending);
 
 	/* now = get_cycles(); */
-<<<<<<< HEAD
-	/**
-=======
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *   LAT_2..LAT_0 period  counter (win)  counter (mac)
 	 *          6       4096   ~256053425     ~514672358
 	 *          5       2048   ~128024983     ~257373821
@@ -6995,15 +5398,9 @@ static irqreturn_t snd_hdspm_interrupt(int irq, void *dev_id)
 	 *          2        256    ~16003039      ~32260176
 	 *          1        128     ~7998738      ~16194507
 	 *          0         64     ~3998231       ~8191558
-<<<<<<< HEAD
-	 **/
-	/*
-	   snd_printk(KERN_INFO "snd_hdspm_interrupt %llu @ %llx\n",
-=======
 	 */
 	/*
 	  dev_info(hdspm->card->dev, "snd_hdspm_interrupt %llu @ %llx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   now-hdspm->last_interrupt, status & 0xFFC0);
 	   hdspm->last_interrupt = now;
 	*/
@@ -7043,11 +5440,7 @@ static irqreturn_t snd_hdspm_interrupt(int irq, void *dev_id)
 		}
 
 		if (schedule)
-<<<<<<< HEAD
-			tasklet_hi_schedule(&hdspm->midi_tasklet);
-=======
 			queue_work(system_highpri_wq, &hdspm->midi_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return IRQ_HANDLED;
@@ -7144,11 +5537,7 @@ static int snd_hdspm_hw_params(struct snd_pcm_substream *substream,
 	spin_lock_irq(&hdspm->lock);
 	err = hdspm_set_rate(hdspm, params_rate(params), 0);
 	if (err < 0) {
-<<<<<<< HEAD
-		snd_printk(KERN_INFO "err on hdspm_set_rate: %d\n", err);
-=======
 		dev_info(hdspm->card->dev, "err on hdspm_set_rate: %d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irq(&hdspm->lock);
 		_snd_pcm_hw_param_setempty(params,
 				SNDRV_PCM_HW_PARAM_RATE);
@@ -7159,12 +5548,8 @@ static int snd_hdspm_hw_params(struct snd_pcm_substream *substream,
 	err = hdspm_set_interrupt_interval(hdspm,
 			params_period_size(params));
 	if (err < 0) {
-<<<<<<< HEAD
-		snd_printk(KERN_INFO "err on hdspm_set_interrupt_interval: %d\n", err);
-=======
 		dev_info(hdspm->card->dev,
 			 "err on hdspm_set_interrupt_interval: %d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		_snd_pcm_hw_param_setempty(params,
 				SNDRV_PCM_HW_PARAM_PERIOD_SIZE);
 		return err;
@@ -7180,39 +5565,13 @@ static int snd_hdspm_hw_params(struct snd_pcm_substream *substream,
 	err =
 		snd_pcm_lib_malloc_pages(substream, HDSPM_DMA_AREA_BYTES);
 	if (err < 0) {
-<<<<<<< HEAD
-		snd_printk(KERN_INFO "err on snd_pcm_lib_malloc_pages: %d\n", err);
-=======
 		dev_info(hdspm->card->dev,
 			 "err on snd_pcm_lib_malloc_pages: %d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 
-<<<<<<< HEAD
-		hdspm_set_sgbuf(hdspm, substream, HDSPM_pageAddressBufferOut,
-				params_channels(params));
-
-		for (i = 0; i < params_channels(params); ++i)
-			snd_hdspm_enable_out(hdspm, i, 1);
-
-		hdspm->playback_buffer =
-			(unsigned char *) substream->runtime->dma_area;
-		snd_printdd("Allocated sample buffer for playback at %p\n",
-				hdspm->playback_buffer);
-	} else {
-		hdspm_set_sgbuf(hdspm, substream, HDSPM_pageAddressBufferIn,
-				params_channels(params));
-
-		for (i = 0; i < params_channels(params); ++i)
-			snd_hdspm_enable_in(hdspm, i, 1);
-
-		hdspm->capture_buffer =
-			(unsigned char *) substream->runtime->dma_area;
-		snd_printdd("Allocated sample buffer for capture at %p\n",
-=======
 		for (i = 0; i < params_channels(params); ++i) {
 			int c = hdspm->channel_map_out[i];
 
@@ -7245,28 +5604,19 @@ static int snd_hdspm_hw_params(struct snd_pcm_substream *substream,
 			(unsigned char *) substream->runtime->dma_area;
 		dev_dbg(hdspm->card->dev,
 			"Allocated sample buffer for capture at %p\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hdspm->capture_buffer);
 	}
 
 	/*
-<<<<<<< HEAD
-	   snd_printdd("Allocated sample buffer for %s at 0x%08X\n",
-=======
 	   dev_dbg(hdspm->card->dev,
 	   "Allocated sample buffer for %s at 0x%08X\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   substream->stream == SNDRV_PCM_STREAM_PLAYBACK ?
 	   "playback" : "capture",
 	   snd_pcm_sgbuf_get_addr(substream, 0));
 	   */
 	/*
-<<<<<<< HEAD
-	   snd_printdd("set_hwparams: %s %d Hz, %d channels, bs = %d\n",
-=======
 	   dev_dbg(hdspm->card->dev,
 	   "set_hwparams: %s %d Hz, %d channels, bs = %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   substream->stream == SNDRV_PCM_STREAM_PLAYBACK ?
 	   "playback" : "capture",
 	   params_rate(params), params_channels(params),
@@ -7274,12 +5624,6 @@ static int snd_hdspm_hw_params(struct snd_pcm_substream *substream,
 	   */
 
 
-<<<<<<< HEAD
-	/* Switch to native float format if requested */
-	if (SNDRV_PCM_FORMAT_FLOAT_LE == params_format(params)) {
-		if (!(hdspm->control_register & HDSPe_FLOAT_FORMAT))
-			snd_printk(KERN_INFO "hdspm: Switching to native 32bit LE float format.\n");
-=======
 	/*  For AES cards, the float format bit is the same as the
 	 *  preferred sync reference. Since we don't want to break
 	 *  sync settings, we have to skip the remaining part of this
@@ -7295,17 +5639,12 @@ static int snd_hdspm_hw_params(struct snd_pcm_substream *substream,
 		if (!(hdspm->control_register & HDSPe_FLOAT_FORMAT))
 			dev_info(hdspm->card->dev,
 				 "Switching to native 32bit LE float format.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hdspm->control_register |= HDSPe_FLOAT_FORMAT;
 	} else if (SNDRV_PCM_FORMAT_S32_LE == params_format(params)) {
 		if (hdspm->control_register & HDSPe_FLOAT_FORMAT)
-<<<<<<< HEAD
-			snd_printk(KERN_INFO "hdspm: Switching to native 32bit LE integer format.\n");
-=======
 			dev_info(hdspm->card->dev,
 				 "Switching to native 32bit LE integer format.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hdspm->control_register &= ~HDSPe_FLOAT_FORMAT;
 	}
@@ -7320,32 +5659,17 @@ static int snd_hdspm_hw_free(struct snd_pcm_substream *substream)
 	struct hdspm *hdspm = snd_pcm_substream_chip(substream);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-<<<<<<< HEAD
-
-		/* params_channels(params) should be enough,
-		   but to get sure in case of error */
-		for (i = 0; i < hdspm->max_channels_out; ++i)
-=======
 		/* Just disable all channels. The saving when disabling a */
 		/* smaller set is not worth the trouble. */
 		for (i = 0; i < HDSPM_MAX_CHANNELS; ++i)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_hdspm_enable_out(hdspm, i, 0);
 
 		hdspm->playback_buffer = NULL;
 	} else {
-<<<<<<< HEAD
-		for (i = 0; i < hdspm->max_channels_in; ++i)
-			snd_hdspm_enable_in(hdspm, i, 0);
-
-		hdspm->capture_buffer = NULL;
-
-=======
 		for (i = 0; i < HDSPM_MAX_CHANNELS; ++i)
 			snd_hdspm_enable_in(hdspm, i, 0);
 
 		hdspm->capture_buffer = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	snd_pcm_lib_free_pages(substream);
@@ -7358,34 +5682,6 @@ static int snd_hdspm_channel_info(struct snd_pcm_substream *substream,
 		struct snd_pcm_channel_info *info)
 {
 	struct hdspm *hdspm = snd_pcm_substream_chip(substream);
-<<<<<<< HEAD
-
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-		if (snd_BUG_ON(info->channel >= hdspm->max_channels_out)) {
-			snd_printk(KERN_INFO "snd_hdspm_channel_info: output channel out of range (%d)\n", info->channel);
-			return -EINVAL;
-		}
-
-		if (hdspm->channel_map_out[info->channel] < 0) {
-			snd_printk(KERN_INFO "snd_hdspm_channel_info: output channel %d mapped out\n", info->channel);
-			return -EINVAL;
-		}
-
-		info->offset = hdspm->channel_map_out[info->channel] *
-			HDSPM_CHANNEL_BUFFER_BYTES;
-	} else {
-		if (snd_BUG_ON(info->channel >= hdspm->max_channels_in)) {
-			snd_printk(KERN_INFO "snd_hdspm_channel_info: input channel out of range (%d)\n", info->channel);
-			return -EINVAL;
-		}
-
-		if (hdspm->channel_map_in[info->channel] < 0) {
-			snd_printk(KERN_INFO "snd_hdspm_channel_info: input channel %d mapped out\n", info->channel);
-			return -EINVAL;
-		}
-
-		info->offset = hdspm->channel_map_in[info->channel] *
-=======
 	unsigned int channel = info->channel;
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
@@ -7423,7 +5719,6 @@ static int snd_hdspm_channel_info(struct snd_pcm_substream *substream,
 		}
 
 		info->offset = hdspm->channel_map_in[channel] *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			HDSPM_CHANNEL_BUFFER_BYTES;
 	}
 
@@ -7520,11 +5815,7 @@ static int snd_hdspm_prepare(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_hdspm_playback_subinfo = {
-=======
 static const struct snd_pcm_hardware snd_hdspm_playback_subinfo = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = (SNDRV_PCM_INFO_MMAP |
 		 SNDRV_PCM_INFO_MMAP_VALID |
 		 SNDRV_PCM_INFO_NONINTERLEAVED |
@@ -7549,11 +5840,7 @@ static const struct snd_pcm_hardware snd_hdspm_playback_subinfo = {
 	.fifo_size = 0
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_hdspm_capture_subinfo = {
-=======
 static const struct snd_pcm_hardware snd_hdspm_capture_subinfo = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = (SNDRV_PCM_INFO_MMAP |
 		 SNDRV_PCM_INFO_MMAP_VALID |
 		 SNDRV_PCM_INFO_NONINTERLEAVED |
@@ -7746,44 +6033,17 @@ static int snd_hdspm_hw_rule_out_channels(struct snd_pcm_hw_params *params,
 }
 
 
-<<<<<<< HEAD
-static unsigned int hdspm_aes32_sample_rates[] = {
-	32000, 44100, 48000, 64000, 88200, 96000, 128000, 176400, 192000
-};
-
-static struct snd_pcm_hw_constraint_list
-=======
 static const unsigned int hdspm_aes32_sample_rates[] = {
 	32000, 44100, 48000, 64000, 88200, 96000, 128000, 176400, 192000
 };
 
 static const struct snd_pcm_hw_constraint_list
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 hdspm_hw_constraints_aes32_sample_rates = {
 	.count = ARRAY_SIZE(hdspm_aes32_sample_rates),
 	.list = hdspm_aes32_sample_rates,
 	.mask = 0
 };
 
-<<<<<<< HEAD
-static int snd_hdspm_playback_open(struct snd_pcm_substream *substream)
-{
-	struct hdspm *hdspm = snd_pcm_substream_chip(substream);
-	struct snd_pcm_runtime *runtime = substream->runtime;
-
-	spin_lock_irq(&hdspm->lock);
-
-	snd_pcm_set_sync(substream);
-
-
-	runtime->hw = snd_hdspm_playback_subinfo;
-
-	if (hdspm->capture_substream == NULL)
-		hdspm_stop_audio(hdspm);
-
-	hdspm->playback_pid = current->pid;
-	hdspm->playback_substream = substream;
-=======
 static int snd_hdspm_open(struct snd_pcm_substream *substream)
 {
 	struct hdspm *hdspm = snd_pcm_substream_chip(substream);
@@ -7808,7 +6068,6 @@ static int snd_hdspm_open(struct snd_pcm_substream *substream)
 		hdspm->capture_pid = current->pid;
 		hdspm->capture_substream = substream;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irq(&hdspm->lock);
 
@@ -7822,29 +6081,17 @@ static int snd_hdspm_open(struct snd_pcm_substream *substream)
 					     SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
 					     32, 4096);
 		/* RayDAT & AIO have a fixed buffer of 16384 samples per channel */
-<<<<<<< HEAD
-		snd_pcm_hw_constraint_minmax(runtime,
-					     SNDRV_PCM_HW_PARAM_BUFFER_SIZE,
-					     16384, 16384);
-=======
 		snd_pcm_hw_constraint_single(runtime,
 					     SNDRV_PCM_HW_PARAM_BUFFER_SIZE,
 					     16384);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
 		snd_pcm_hw_constraint_minmax(runtime,
 					     SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
 					     64, 8192);
-<<<<<<< HEAD
-		snd_pcm_hw_constraint_minmax(runtime,
-					     SNDRV_PCM_HW_PARAM_PERIODS,
-					     2, 2);
-=======
 		snd_pcm_hw_constraint_single(runtime,
 					     SNDRV_PCM_HW_PARAM_PERIODS, 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -7854,24 +6101,13 @@ static int snd_hdspm_open(struct snd_pcm_substream *substream)
 				&hdspm_hw_constraints_aes32_sample_rates);
 	} else {
 		snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
-<<<<<<< HEAD
-				snd_hdspm_hw_rule_rate_out_channels, hdspm,
-=======
 				(playback ?
 				 snd_hdspm_hw_rule_rate_out_channels :
 				 snd_hdspm_hw_rule_rate_in_channels), hdspm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				SNDRV_PCM_HW_PARAM_CHANNELS, -1);
 	}
 
 	snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
-<<<<<<< HEAD
-			snd_hdspm_hw_rule_out_channels, hdspm,
-			SNDRV_PCM_HW_PARAM_CHANNELS, -1);
-
-	snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
-			snd_hdspm_hw_rule_out_channels_rate, hdspm,
-=======
 			(playback ? snd_hdspm_hw_rule_out_channels :
 			 snd_hdspm_hw_rule_in_channels), hdspm,
 			SNDRV_PCM_HW_PARAM_CHANNELS, -1);
@@ -7879,101 +6115,11 @@ static int snd_hdspm_open(struct snd_pcm_substream *substream)
 	snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
 			(playback ? snd_hdspm_hw_rule_out_channels_rate :
 			 snd_hdspm_hw_rule_in_channels_rate), hdspm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SNDRV_PCM_HW_PARAM_RATE, -1);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_hdspm_playback_release(struct snd_pcm_substream *substream)
-{
-	struct hdspm *hdspm = snd_pcm_substream_chip(substream);
-
-	spin_lock_irq(&hdspm->lock);
-
-	hdspm->playback_pid = -1;
-	hdspm->playback_substream = NULL;
-
-	spin_unlock_irq(&hdspm->lock);
-
-	return 0;
-}
-
-
-static int snd_hdspm_capture_open(struct snd_pcm_substream *substream)
-{
-	struct hdspm *hdspm = snd_pcm_substream_chip(substream);
-	struct snd_pcm_runtime *runtime = substream->runtime;
-
-	spin_lock_irq(&hdspm->lock);
-	snd_pcm_set_sync(substream);
-	runtime->hw = snd_hdspm_capture_subinfo;
-
-	if (hdspm->playback_substream == NULL)
-		hdspm_stop_audio(hdspm);
-
-	hdspm->capture_pid = current->pid;
-	hdspm->capture_substream = substream;
-
-	spin_unlock_irq(&hdspm->lock);
-
-	snd_pcm_hw_constraint_msbits(runtime, 0, 32, 24);
-	snd_pcm_hw_constraint_pow2(runtime, 0, SNDRV_PCM_HW_PARAM_PERIOD_SIZE);
-
-	switch (hdspm->io_type) {
-	case AIO:
-	case RayDAT:
-		snd_pcm_hw_constraint_minmax(runtime,
-					     SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
-					     32, 4096);
-		snd_pcm_hw_constraint_minmax(runtime,
-					     SNDRV_PCM_HW_PARAM_BUFFER_SIZE,
-					     16384, 16384);
-		break;
-
-	default:
-		snd_pcm_hw_constraint_minmax(runtime,
-					     SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
-					     64, 8192);
-		snd_pcm_hw_constraint_minmax(runtime,
-					     SNDRV_PCM_HW_PARAM_PERIODS,
-					     2, 2);
-		break;
-	}
-
-	if (AES32 == hdspm->io_type) {
-		runtime->hw.rates |= SNDRV_PCM_RATE_KNOT;
-		snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
-				&hdspm_hw_constraints_aes32_sample_rates);
-	} else {
-		snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
-				snd_hdspm_hw_rule_rate_in_channels, hdspm,
-				SNDRV_PCM_HW_PARAM_CHANNELS, -1);
-	}
-
-	snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
-			snd_hdspm_hw_rule_in_channels, hdspm,
-			SNDRV_PCM_HW_PARAM_CHANNELS, -1);
-
-	snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
-			snd_hdspm_hw_rule_in_channels_rate, hdspm,
-			SNDRV_PCM_HW_PARAM_RATE, -1);
-
-	return 0;
-}
-
-static int snd_hdspm_capture_release(struct snd_pcm_substream *substream)
-{
-	struct hdspm *hdspm = snd_pcm_substream_chip(substream);
-
-	spin_lock_irq(&hdspm->lock);
-
-	hdspm->capture_pid = -1;
-	hdspm->capture_substream = NULL;
-
-	spin_unlock_irq(&hdspm->lock);
-=======
 static int snd_hdspm_release(struct snd_pcm_substream *substream)
 {
 	struct hdspm *hdspm = snd_pcm_substream_chip(substream);
@@ -7991,7 +6137,6 @@ static int snd_hdspm_release(struct snd_pcm_substream *substream)
 
 	spin_unlock_irq(&hdspm->lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -8001,15 +6146,6 @@ static int snd_hdspm_hwdep_dummy_op(struct snd_hwdep *hw, struct file *file)
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int copy_u32_le(void __user *dest, void __iomem *src)
-{
-	u32 val = readl(src);
-	return copy_to_user(dest, &val, 4);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 		unsigned int cmd, unsigned long arg)
 {
@@ -8066,15 +6202,9 @@ static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 		}
 		levels->status2 = hdspm_read(hdspm, HDSPM_statusRegister2);
 
-<<<<<<< HEAD
-		s = copy_to_user(argp, levels, sizeof(struct hdspm_peak_rms));
-		if (0 != s) {
-			/* snd_printk(KERN_ERR "copy_to_user(.., .., %lu): %lu
-=======
 		s = copy_to_user(argp, levels, sizeof(*levels));
 		if (0 != s) {
 			/* dev_err(hdspm->card->dev, "copy_to_user(.., .., %lu): %lu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 [Levels]\n", sizeof(struct hdspm_peak_rms), s);
 			 */
 			return -EFAULT;
@@ -8097,11 +6227,7 @@ static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 				ltc.format = fps_2997;
 				break;
 			default:
-<<<<<<< HEAD
-				ltc.format = 30;
-=======
 				ltc.format = fps_30;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 			if (i & HDSPM_TCO1_set_drop_frame_flag) {
@@ -8121,17 +6247,10 @@ static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 			ltc.input_format = no_video;
 		}
 
-<<<<<<< HEAD
-		s = copy_to_user(argp, &ltc, sizeof(struct hdspm_ltc));
-		if (0 != s) {
-			/*
-			 snd_printk(KERN_ERR "copy_to_user(.., .., %lu): %lu [LTC]\n", sizeof(struct hdspm_ltc), s); */
-=======
 		s = copy_to_user(argp, &ltc, sizeof(ltc));
 		if (0 != s) {
 			/*
 			  dev_err(hdspm->card->dev, "copy_to_user(.., .., %lu): %lu [LTC]\n", sizeof(struct hdspm_ltc), s); */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		}
 
@@ -8150,11 +6269,7 @@ static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 		info.system_clock_mode = hdspm_system_clock_mode(hdspm);
 		info.clock_source = hdspm_clock_source(hdspm);
 		info.autosync_ref = hdspm_autosync_ref(hdspm);
-<<<<<<< HEAD
-		info.line_out = hdspm_line_out(hdspm);
-=======
 		info.line_out = hdspm_toggle_setting(hdspm, HDSPM_LineOut);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info.passthru = 0;
 		spin_unlock_irq(&hdspm->lock);
 		if (copy_to_user(argp, &info, sizeof(info)))
@@ -8191,10 +6306,7 @@ static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 				(statusregister & HDSPM_RX_64ch) ? 1 : 0;
 			/* TODO: Mac driver sets it when f_s>48kHz */
 			status.card_specific.madi.frame_format = 0;
-<<<<<<< HEAD
-=======
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		default:
 			break;
@@ -8210,11 +6322,7 @@ static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 		memset(&hdspm_version, 0, sizeof(hdspm_version));
 
 		hdspm_version.card_type = hdspm->io_type;
-<<<<<<< HEAD
-		strncpy(hdspm_version.cardname, hdspm->card_name,
-=======
 		strscpy(hdspm_version.cardname, hdspm->card_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sizeof(hdspm_version.cardname));
 		hdspm_version.serial = hdspm->serial;
 		hdspm_version.firmware_rev = hdspm->firmware_rev;
@@ -8231,11 +6339,7 @@ static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 		if (copy_from_user(&mixer, argp, sizeof(mixer)))
 			return -EFAULT;
 		if (copy_to_user((void __user *)mixer.mixer, hdspm->mixer,
-<<<<<<< HEAD
-					sizeof(struct hdspm_mixer)))
-=======
 				 sizeof(*mixer.mixer)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		break;
 
@@ -8245,45 +6349,19 @@ static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_hdspm_playback_ops = {
-	.open = snd_hdspm_playback_open,
-	.close = snd_hdspm_playback_release,
-=======
 static const struct snd_pcm_ops snd_hdspm_ops = {
 	.open = snd_hdspm_open,
 	.close = snd_hdspm_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ioctl = snd_hdspm_ioctl,
 	.hw_params = snd_hdspm_hw_params,
 	.hw_free = snd_hdspm_hw_free,
 	.prepare = snd_hdspm_prepare,
 	.trigger = snd_hdspm_trigger,
 	.pointer = snd_hdspm_hw_pointer,
-<<<<<<< HEAD
-	.page = snd_pcm_sgbuf_ops_page,
-};
-
-static struct snd_pcm_ops snd_hdspm_capture_ops = {
-	.open = snd_hdspm_capture_open,
-	.close = snd_hdspm_capture_release,
-	.ioctl = snd_hdspm_ioctl,
-	.hw_params = snd_hdspm_hw_params,
-	.hw_free = snd_hdspm_hw_free,
-	.prepare = snd_hdspm_prepare,
-	.trigger = snd_hdspm_trigger,
-	.pointer = snd_hdspm_hw_pointer,
-	.page = snd_pcm_sgbuf_ops_page,
-};
-
-static int __devinit snd_hdspm_create_hwdep(struct snd_card *card,
-					    struct hdspm * hdspm)
-=======
 };
 
 static int snd_hdspm_create_hwdep(struct snd_card *card,
 				  struct hdspm *hdspm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_hwdep *hw;
 	int err;
@@ -8308,14 +6386,8 @@ static int snd_hdspm_create_hwdep(struct snd_card *card,
 /*------------------------------------------------------------
    memory interface
  ------------------------------------------------------------*/
-<<<<<<< HEAD
-static int __devinit snd_hdspm_preallocate_memory(struct hdspm *hdspm)
-{
-	int err;
-=======
 static int snd_hdspm_preallocate_memory(struct hdspm *hdspm)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm *pcm;
 	size_t wanted;
 
@@ -8323,35 +6395,6 @@ static int snd_hdspm_preallocate_memory(struct hdspm *hdspm)
 
 	wanted = HDSPM_DMA_AREA_BYTES;
 
-<<<<<<< HEAD
-	err =
-	     snd_pcm_lib_preallocate_pages_for_all(pcm,
-						   SNDRV_DMA_TYPE_DEV_SG,
-						   snd_dma_pci_data(hdspm->pci),
-						   wanted,
-						   wanted);
-	if (err < 0) {
-		snd_printdd("Could not preallocate %zd Bytes\n", wanted);
-
-		return err;
-	} else
-		snd_printdd(" Preallocated %zd Bytes\n", wanted);
-
-	return 0;
-}
-
-
-static void hdspm_set_sgbuf(struct hdspm *hdspm,
-			    struct snd_pcm_substream *substream,
-			     unsigned int reg, int channels)
-{
-	int i;
-
-	/* continuous memory segment */
-	for (i = 0; i < (channels * 16); i++)
-		hdspm_write(hdspm, reg + 4 * i,
-				snd_pcm_sgbuf_get_addr(substream, 4096 * i));
-=======
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV_SG,
 					      &hdspm->pci->dev,
 					      wanted, wanted);
@@ -8370,18 +6413,12 @@ static void hdspm_set_channel_dma_addr(struct hdspm *hdspm,
 	for (i = channel * 16; i < channel * 16 + 16; i++)
 		hdspm_write(hdspm, reg + 4 * i,
 			    snd_pcm_sgbuf_get_addr(substream, 4096 * i));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /* ------------- ALSA Devices ---------------------------- */
-<<<<<<< HEAD
-static int __devinit snd_hdspm_create_pcm(struct snd_card *card,
-					  struct hdspm *hdspm)
-=======
 static int snd_hdspm_create_pcm(struct snd_card *card,
 				struct hdspm *hdspm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -8395,15 +6432,9 @@ static int snd_hdspm_create_pcm(struct snd_card *card,
 	strcpy(pcm->name, hdspm->card_name);
 
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK,
-<<<<<<< HEAD
-			&snd_hdspm_playback_ops);
-	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE,
-			&snd_hdspm_capture_ops);
-=======
 			&snd_hdspm_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE,
 			&snd_hdspm_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcm->info_flags = SNDRV_PCM_INFO_JOINT_DUPLEX;
 
@@ -8422,21 +6453,12 @@ static inline void snd_hdspm_initialize_midi_flush(struct hdspm * hdspm)
 		snd_hdspm_flush_midi_input(hdspm, i);
 }
 
-<<<<<<< HEAD
-static int __devinit snd_hdspm_create_alsa_devices(struct snd_card *card,
-						   struct hdspm * hdspm)
-{
-	int err, i;
-
-	snd_printdd("Create card...\n");
-=======
 static int snd_hdspm_create_alsa_devices(struct snd_card *card,
 					 struct hdspm *hdspm)
 {
 	int err, i;
 
 	dev_dbg(card->dev, "Create card...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = snd_hdspm_create_pcm(card, hdspm);
 	if (err < 0)
 		return err;
@@ -8458,11 +6480,7 @@ static int snd_hdspm_create_alsa_devices(struct snd_card *card,
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	snd_printdd("proc init...\n");
-=======
 	dev_dbg(card->dev, "proc init...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_hdspm_proc_init(hdspm);
 
 	hdspm->system_sample_rate = -1;
@@ -8473,29 +6491,11 @@ static int snd_hdspm_create_alsa_devices(struct snd_card *card,
 	hdspm->capture_substream = NULL;
 	hdspm->playback_substream = NULL;
 
-<<<<<<< HEAD
-	snd_printdd("Set defaults...\n");
-=======
 	dev_dbg(card->dev, "Set defaults...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = snd_hdspm_set_defaults(hdspm);
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	snd_printdd("Update mixer controls...\n");
-	hdspm_update_simple_mixer_controls(hdspm);
-
-	snd_printdd("Initializeing complete ???\n");
-
-	err = snd_card_register(card);
-	if (err < 0) {
-		snd_printk(KERN_ERR "HDSPM: error registering card\n");
-		return err;
-	}
-
-	snd_printdd("... yes now\n");
-=======
 	dev_dbg(card->dev, "Update mixer controls...\n");
 	hdspm_update_simple_mixer_controls(hdspm);
 
@@ -8508,19 +6508,13 @@ static int snd_hdspm_create_alsa_devices(struct snd_card *card,
 	}
 
 	dev_dbg(card->dev, "... yes now\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_hdspm_create(struct snd_card *card,
-		struct hdspm *hdspm) {
-=======
 static int snd_hdspm_create(struct snd_card *card,
 			    struct hdspm *hdspm)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct pci_dev *pci = hdspm->pci;
 	int err;
@@ -8530,10 +6524,7 @@ static int snd_hdspm_create(struct snd_card *card,
 	hdspm->card = card;
 
 	spin_lock_init(&hdspm->lock);
-<<<<<<< HEAD
-=======
 	INIT_WORK(&hdspm->midi_work, hdspm_midi_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_read_config_word(hdspm->pci,
 			PCI_CLASS_REVISION, &hdspm->firmware_rev);
@@ -8571,74 +6562,25 @@ static int snd_hdspm_create(struct snd_card *card,
 			hdspm->card_name = "RME MADI";
 			hdspm->midiPorts = 3;
 		} else {
-<<<<<<< HEAD
-			snd_printk(KERN_ERR
-				"HDSPM: unknown firmware revision %x\n",
-=======
 			dev_err(card->dev,
 				"unknown firmware revision %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hdspm->firmware_rev);
 			return -ENODEV;
 		}
 	}
 
-<<<<<<< HEAD
-	err = pci_enable_device(pci);
-=======
 	err = pcim_enable_device(pci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	pci_set_master(hdspm->pci);
 
-<<<<<<< HEAD
-	err = pci_request_regions(pci, "hdspm");
-=======
 	err = pcim_iomap_regions(pci, 1 << 0, "hdspm");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	hdspm->port = pci_resource_start(pci, 0);
 	io_extent = pci_resource_len(pci, 0);
-<<<<<<< HEAD
-
-	snd_printdd("grabbed memory region 0x%lx-0x%lx\n",
-			hdspm->port, hdspm->port + io_extent - 1);
-
-	hdspm->iobase = ioremap_nocache(hdspm->port, io_extent);
-	if (!hdspm->iobase) {
-		snd_printk(KERN_ERR "HDSPM: "
-				"unable to remap region 0x%lx-0x%lx\n",
-				hdspm->port, hdspm->port + io_extent - 1);
-		return -EBUSY;
-	}
-	snd_printdd("remapped region (0x%lx) 0x%lx-0x%lx\n",
-			(unsigned long)hdspm->iobase, hdspm->port,
-			hdspm->port + io_extent - 1);
-
-	if (request_irq(pci->irq, snd_hdspm_interrupt,
-			IRQF_SHARED, KBUILD_MODNAME, hdspm)) {
-		snd_printk(KERN_ERR "HDSPM: unable to use IRQ %d\n", pci->irq);
-		return -EBUSY;
-	}
-
-	snd_printdd("use IRQ %d\n", pci->irq);
-
-	hdspm->irq = pci->irq;
-
-	snd_printdd("kmalloc Mixer memory of %zd Bytes\n",
-			sizeof(struct hdspm_mixer));
-	hdspm->mixer = kzalloc(sizeof(struct hdspm_mixer), GFP_KERNEL);
-	if (!hdspm->mixer) {
-		snd_printk(KERN_ERR "HDSPM: "
-				"unable to kmalloc Mixer memory of %d Bytes\n",
-				(int)sizeof(struct hdspm_mixer));
-		return err;
-	}
-=======
 	hdspm->iobase = pcim_iomap_table(pci)[0];
 	dev_dbg(card->dev, "remapped region (0x%lx) 0x%lx-0x%lx\n",
 			(unsigned long)hdspm->iobase, hdspm->port,
@@ -8660,7 +6602,6 @@ static int snd_hdspm_create(struct snd_card *card,
 	hdspm->mixer = devm_kzalloc(&pci->dev, sizeof(*hdspm->mixer), GFP_KERNEL);
 	if (!hdspm->mixer)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdspm->port_names_in = NULL;
 	hdspm->port_names_out = NULL;
@@ -8718,13 +6659,6 @@ static int snd_hdspm_create(struct snd_card *card,
 		break;
 
 	case AIO:
-<<<<<<< HEAD
-		if (0 == (hdspm_read(hdspm, HDSPM_statusRegister2) & HDSPM_s2_AEBI_D)) {
-			snd_printk(KERN_INFO "HDSPM: AEB input board found, but not supported\n");
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hdspm->ss_in_channels = AIO_IN_SS_CHANNELS;
 		hdspm->ds_in_channels = AIO_IN_DS_CHANNELS;
 		hdspm->qs_in_channels = AIO_IN_QS_CHANNELS;
@@ -8732,8 +6666,6 @@ static int snd_hdspm_create(struct snd_card *card,
 		hdspm->ds_out_channels = AIO_OUT_DS_CHANNELS;
 		hdspm->qs_out_channels = AIO_OUT_QS_CHANNELS;
 
-<<<<<<< HEAD
-=======
 		if (0 == (hdspm_read(hdspm, HDSPM_statusRegister2) & HDSPM_s2_AEBI_D)) {
 			dev_info(card->dev, "AEB input board found\n");
 			hdspm->ss_in_channels += 4;
@@ -8748,7 +6680,6 @@ static int snd_hdspm_create(struct snd_card *card,
 			hdspm->qs_out_channels += 4;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hdspm->channel_map_out_ss = channel_map_aio_out_ss;
 		hdspm->channel_map_out_ds = channel_map_aio_out_ds;
 		hdspm->channel_map_out_qs = channel_map_aio_out_qs;
@@ -8805,36 +6736,17 @@ static int snd_hdspm_create(struct snd_card *card,
 		if (hdspm_read(hdspm, HDSPM_statusRegister2) &
 				HDSPM_s2_tco_detect) {
 			hdspm->midiPorts++;
-<<<<<<< HEAD
-			hdspm->tco = kzalloc(sizeof(struct hdspm_tco),
-					GFP_KERNEL);
-			if (NULL != hdspm->tco) {
-				hdspm_tco_write(hdspm);
-			}
-			snd_printk(KERN_INFO "HDSPM: AIO/RayDAT TCO module found\n");
-=======
 			hdspm->tco = kzalloc(sizeof(*hdspm->tco), GFP_KERNEL);
 			if (hdspm->tco)
 				hdspm_tco_write(hdspm);
 
 			dev_info(card->dev, "AIO/RayDAT TCO module found\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			hdspm->tco = NULL;
 		}
 		break;
 
 	case MADI:
-<<<<<<< HEAD
-		if (hdspm_read(hdspm, HDSPM_statusRegister) & HDSPM_tco_detect) {
-			hdspm->midiPorts++;
-			hdspm->tco = kzalloc(sizeof(struct hdspm_tco),
-					GFP_KERNEL);
-			if (NULL != hdspm->tco) {
-				hdspm_tco_write(hdspm);
-			}
-			snd_printk(KERN_INFO "HDSPM: MADI TCO module found\n");
-=======
 	case AES32:
 		if (hdspm_read(hdspm, HDSPM_statusRegister) & HDSPM_tco_detect) {
 			hdspm->midiPorts++;
@@ -8843,7 +6755,6 @@ static int snd_hdspm_create(struct snd_card *card,
 				hdspm_tco_write(hdspm);
 
 			dev_info(card->dev, "MADI/AES TCO module found\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			hdspm->tco = NULL;
 		}
@@ -8858,19 +6769,12 @@ static int snd_hdspm_create(struct snd_card *card,
 	case AES32:
 		if (hdspm->tco) {
 			hdspm->texts_autosync = texts_autosync_aes_tco;
-<<<<<<< HEAD
-			hdspm->texts_autosync_items = 10;
-		} else {
-			hdspm->texts_autosync = texts_autosync_aes;
-			hdspm->texts_autosync_items = 9;
-=======
 			hdspm->texts_autosync_items =
 				ARRAY_SIZE(texts_autosync_aes_tco);
 		} else {
 			hdspm->texts_autosync = texts_autosync_aes;
 			hdspm->texts_autosync_items =
 				ARRAY_SIZE(texts_autosync_aes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -8910,13 +6814,6 @@ static int snd_hdspm_create(struct snd_card *card,
 
 	}
 
-<<<<<<< HEAD
-	tasklet_init(&hdspm->midi_tasklet,
-			hdspm_midi_tasklet, (unsigned long) hdspm);
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hdspm->io_type != MADIface) {
 		hdspm->serial = (hdspm_read(hdspm,
 				HDSPM_midiStatusIn0)>>8) & 0xFFFFFF;
@@ -8929,23 +6826,14 @@ static int snd_hdspm_create(struct snd_card *card,
 		 * this case, we don't set card->id to avoid collisions
 		 * when running with multiple cards.
 		 */
-<<<<<<< HEAD
-		if (NULL == id[hdspm->dev] && hdspm->serial != 0xFFFFFF) {
-			sprintf(card->id, "HDSPMx%06x", hdspm->serial);
-=======
 		if (!id[hdspm->dev] && hdspm->serial != 0xFFFFFF) {
 			snprintf(card->id, sizeof(card->id),
 				 "HDSPMx%06x", hdspm->serial);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_card_set_id(card, card->id);
 		}
 	}
 
-<<<<<<< HEAD
-	snd_printdd("create alsa devices.\n");
-=======
 	dev_dbg(card->dev, "create alsa devices.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = snd_hdspm_create_alsa_devices(card, hdspm);
 	if (err < 0)
 		return err;
@@ -8956,19 +6844,12 @@ static int snd_hdspm_create(struct snd_card *card,
 }
 
 
-<<<<<<< HEAD
-static int snd_hdspm_free(struct hdspm * hdspm)
-{
-
-	if (hdspm->port) {
-=======
 static void snd_hdspm_card_free(struct snd_card *card)
 {
 	struct hdspm *hdspm = card->private_data;
 
 	if (hdspm->port) {
 		cancel_work_sync(&hdspm->midi_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* stop th audio, and cancel all interrupts */
 		hdspm->control_register &=
@@ -8978,42 +6859,11 @@ static void snd_hdspm_card_free(struct snd_card *card)
 		hdspm_write(hdspm, HDSPM_controlRegister,
 			    hdspm->control_register);
 	}
-<<<<<<< HEAD
-
-	if (hdspm->irq >= 0)
-		free_irq(hdspm->irq, (void *) hdspm);
-
-	kfree(hdspm->mixer);
-
-	if (hdspm->iobase)
-		iounmap(hdspm->iobase);
-
-	if (hdspm->port)
-		pci_release_regions(hdspm->pci);
-
-	pci_disable_device(hdspm->pci);
-	return 0;
-}
-
-
-static void snd_hdspm_card_free(struct snd_card *card)
-{
-	struct hdspm *hdspm = card->private_data;
-
-	if (hdspm)
-		snd_hdspm_free(hdspm);
-}
-
-
-static int __devinit snd_hdspm_probe(struct pci_dev *pci,
-				     const struct pci_device_id *pci_id)
-=======
 }
 
 
 static int snd_hdspm_probe(struct pci_dev *pci,
 			   const struct pci_device_id *pci_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct hdspm *hdspm;
@@ -9027,13 +6877,8 @@ static int snd_hdspm_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
-<<<<<<< HEAD
-	err = snd_card_create(index[dev], id[dev],
-			THIS_MODULE, sizeof(struct hdspm), &card);
-=======
 	err = snd_devm_card_new(&pci->dev, index[dev], id[dev],
 				THIS_MODULE, sizeof(*hdspm), &card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -9042,35 +6887,6 @@ static int snd_hdspm_probe(struct pci_dev *pci,
 	hdspm->dev = dev;
 	hdspm->pci = pci;
 
-<<<<<<< HEAD
-	snd_card_set_dev(card, &pci->dev);
-
-	err = snd_hdspm_create(card, hdspm);
-	if (err < 0) {
-		snd_card_free(card);
-		return err;
-	}
-
-	if (hdspm->io_type != MADIface) {
-		sprintf(card->shortname, "%s_%x",
-			hdspm->card_name,
-			hdspm->serial);
-		sprintf(card->longname, "%s S/N 0x%x at 0x%lx, irq %d",
-			hdspm->card_name,
-			hdspm->serial,
-			hdspm->port, hdspm->irq);
-	} else {
-		sprintf(card->shortname, "%s", hdspm->card_name);
-		sprintf(card->longname, "%s at 0x%lx, irq %d",
-				hdspm->card_name, hdspm->port, hdspm->irq);
-	}
-
-	err = snd_card_register(card);
-	if (err < 0) {
-		snd_card_free(card);
-		return err;
-	}
-=======
 	err = snd_hdspm_create(card, hdspm);
 	if (err < 0)
 		goto error;
@@ -9093,42 +6909,11 @@ static int snd_hdspm_probe(struct pci_dev *pci,
 	err = snd_card_register(card);
 	if (err < 0)
 		goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pci, card);
 
 	dev++;
 	return 0;
-<<<<<<< HEAD
-}
-
-static void __devexit snd_hdspm_remove(struct pci_dev *pci)
-{
-	snd_card_free(pci_get_drvdata(pci));
-	pci_set_drvdata(pci, NULL);
-}
-
-static struct pci_driver driver = {
-	.name = KBUILD_MODNAME,
-	.id_table = snd_hdspm_ids,
-	.probe = snd_hdspm_probe,
-	.remove = __devexit_p(snd_hdspm_remove),
-};
-
-
-static int __init alsa_card_hdspm_init(void)
-{
-	return pci_register_driver(&driver);
-}
-
-static void __exit alsa_card_hdspm_exit(void)
-{
-	pci_unregister_driver(&driver);
-}
-
-module_init(alsa_card_hdspm_init)
-module_exit(alsa_card_hdspm_exit)
-=======
 
  error:
 	snd_card_free(card);
@@ -9142,4 +6927,3 @@ static struct pci_driver hdspm_driver = {
 };
 
 module_pci_driver(hdspm_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

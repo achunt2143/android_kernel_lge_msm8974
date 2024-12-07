@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -17,14 +14,6 @@
  * Fixes:
  *		Alan Cox	: Turned on udp checksums. I don't want to
  *				  chase 'memory corruption' bugs that aren't!
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _UDP_H
 #define _UDP_H
@@ -32,20 +21,14 @@
 #include <linux/list.h>
 #include <linux/bug.h>
 #include <net/inet_sock.h>
-<<<<<<< HEAD
-=======
 #include <net/gso.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/sock.h>
 #include <net/snmp.h>
 #include <net/ip.h>
 #include <linux/ipv6.h>
 #include <linux/seq_file.h>
 #include <linux/poll.h>
-<<<<<<< HEAD
-=======
 #include <linux/indirect_call_wrapper.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	struct udp_skb_cb  -  UDP(-Lite) private variables
@@ -74,11 +57,7 @@ struct udp_skb_cb {
  *	@lock:	spinlock protecting changes to head/count
  */
 struct udp_hslot {
-<<<<<<< HEAD
-	struct hlist_nulls_head	head;
-=======
 	struct hlist_head	head;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			count;
 	spinlock_t		lock;
 } __attribute__((aligned(2 * sizeof(long))));
@@ -98,15 +77,9 @@ struct udp_table {
 	unsigned int		log;
 };
 extern struct udp_table udp_table;
-<<<<<<< HEAD
-extern void udp_table_init(struct udp_table *, const char *);
-static inline struct udp_hslot *udp_hashslot(struct udp_table *table,
-					     struct net *net, unsigned num)
-=======
 void udp_table_init(struct udp_table *, const char *);
 static inline struct udp_hslot *udp_hashslot(struct udp_table *table,
 					     struct net *net, unsigned int num)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return &table->hash[udp_hashfn(net, num, table->mask)];
 }
@@ -120,25 +93,10 @@ static inline struct udp_hslot *udp_hashslot2(struct udp_table *table,
 	return &table->hash2[hash & table->mask];
 }
 
-<<<<<<< HEAD
-/* Note: this must match 'valbool' in sock_setsockopt */
-#define UDP_CSUM_NOXMIT		1
-
-/* Used by SunRPC/xprt layer. */
-#define UDP_CSUM_NORCV		2
-
-/* Default, as per the RFC, is to always do csums. */
-#define UDP_CSUM_DEFAULT	0
-
-extern struct proto udp_prot;
-
-extern atomic_long_t udp_memory_allocated;
-=======
 extern struct proto udp_prot;
 
 extern atomic_long_t udp_memory_allocated;
 DECLARE_PER_CPU(int, udp_memory_per_cpu_fw_alloc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sysctl variables for udp */
 extern long sysctl_udp_mem[3];
@@ -152,13 +110,9 @@ struct sk_buff;
  */
 static inline __sum16 __udp_lib_checksum_complete(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	return __skb_checksum_complete_head(skb, UDP_SKB_CB(skb)->cscov);
-=======
 	return (UDP_SKB_CB(skb)->cscov == skb->len ?
 		__skb_checksum_complete(skb) :
 		__skb_checksum_complete_head(skb, UDP_SKB_CB(skb)->cscov));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int udp_lib_checksum_complete(struct sk_buff *skb)
@@ -194,16 +148,6 @@ static inline __wsum udp_csum(struct sk_buff *skb)
 	return csum;
 }
 
-<<<<<<< HEAD
-/* hash routines shared between UDPv4/6 and UDP-Litev4/6 */
-static inline void udp_lib_hash(struct sock *sk)
-{
-	BUG();
-}
-
-extern void udp_lib_unhash(struct sock *sk);
-extern void udp_lib_rehash(struct sock *sk, u16 new_hash);
-=======
 static inline __sum16 udp_v4_check(int len, __be32 saddr,
 				   __be32 daddr, __wsum base)
 {
@@ -249,50 +193,12 @@ static inline int udp_lib_hash(struct sock *sk)
 
 void udp_lib_unhash(struct sock *sk);
 void udp_lib_rehash(struct sock *sk, u16 new_hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void udp_lib_close(struct sock *sk, long timeout)
 {
 	sk_common_release(sk);
 }
 
-<<<<<<< HEAD
-extern int udp_lib_get_port(struct sock *sk, unsigned short snum,
-			    int (*)(const struct sock *,const struct sock *),
-			    unsigned int hash2_nulladdr);
-
-/* net/ipv4/udp.c */
-extern int udp_get_port(struct sock *sk, unsigned short snum,
-			int (*saddr_cmp)(const struct sock *,
-					 const struct sock *));
-extern void udp_err(struct sk_buff *, u32);
-extern int udp_sendmsg(struct kiocb *iocb, struct sock *sk,
-			    struct msghdr *msg, size_t len);
-extern int udp_push_pending_frames(struct sock *sk);
-extern void udp_flush_pending_frames(struct sock *sk);
-extern int udp_rcv(struct sk_buff *skb);
-extern int udp_ioctl(struct sock *sk, int cmd, unsigned long arg);
-extern int udp_disconnect(struct sock *sk, int flags);
-extern unsigned int udp_poll(struct file *file, struct socket *sock,
-			     poll_table *wait);
-extern int udp_lib_getsockopt(struct sock *sk, int level, int optname,
-			      char __user *optval, int __user *optlen);
-extern int udp_lib_setsockopt(struct sock *sk, int level, int optname,
-			      char __user *optval, unsigned int optlen,
-			      int (*push_pending_frames)(struct sock *));
-extern struct sock *udp4_lib_lookup(struct net *net, __be32 saddr, __be16 sport,
-				    __be32 daddr, __be16 dport,
-				    int dif);
-extern struct sock *__udp4_lib_lookup(struct net *net, __be32 saddr, __be16 sport,
-				    __be32 daddr, __be16 dport,
-				    int dif, struct udp_table *tbl);
-extern struct sock *udp6_lib_lookup(struct net *net, const struct in6_addr *saddr, __be16 sport,
-				    const struct in6_addr *daddr, __be16 dport,
-				    int dif);
-extern struct sock *__udp6_lib_lookup(struct net *net, const struct in6_addr *saddr, __be16 sport,
-				    const struct in6_addr *daddr, __be16 dport,
-				    int dif, struct udp_table *tbl);
-=======
 int udp_lib_get_port(struct sock *sk, unsigned short snum,
 		     unsigned int hash2_nulladdr);
 
@@ -482,50 +388,10 @@ static inline int copy_linear_skb(struct sk_buff *skb, int len, int off,
 	iov_iter_revert(to, n);
 	return -EFAULT;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 	SNMP statistics for UDP and UDP-Lite
  */
-<<<<<<< HEAD
-#define UDP_INC_STATS_USER(net, field, is_udplite)	      do { \
-	if (is_udplite) SNMP_INC_STATS_USER((net)->mib.udplite_statistics, field);       \
-	else		SNMP_INC_STATS_USER((net)->mib.udp_statistics, field);  }  while(0)
-#define UDP_INC_STATS_BH(net, field, is_udplite) 	      do { \
-	if (is_udplite) SNMP_INC_STATS_BH((net)->mib.udplite_statistics, field);         \
-	else		SNMP_INC_STATS_BH((net)->mib.udp_statistics, field);    }  while(0)
-
-#define UDP6_INC_STATS_BH(net, field, is_udplite) 	    do { \
-	if (is_udplite) SNMP_INC_STATS_BH((net)->mib.udplite_stats_in6, field);\
-	else		SNMP_INC_STATS_BH((net)->mib.udp_stats_in6, field);  \
-} while(0)
-#define UDP6_INC_STATS_USER(net, field, __lite)		    do { \
-	if (__lite) SNMP_INC_STATS_USER((net)->mib.udplite_stats_in6, field);  \
-	else	    SNMP_INC_STATS_USER((net)->mib.udp_stats_in6, field);      \
-} while(0)
-
-#if IS_ENABLED(CONFIG_IPV6)
-#define UDPX_INC_STATS_BH(sk, field) \
-	do { \
-		if ((sk)->sk_family == AF_INET) \
-			UDP_INC_STATS_BH(sock_net(sk), field, 0); \
-		else \
-			UDP6_INC_STATS_BH(sock_net(sk), field, 0); \
-	} while (0);
-#else
-#define UDPX_INC_STATS_BH(sk, field) UDP_INC_STATS_BH(sock_net(sk), field, 0)
-#endif
-
-/* /proc */
-int udp_seq_open(struct inode *inode, struct file *file);
-
-struct udp_seq_afinfo {
-	char				*name;
-	sa_family_t			family;
-	struct udp_table		*udp_table;
-	const struct file_operations	*seq_fops;
-	struct seq_operations		seq_ops;
-=======
 #define UDP_INC_STATS(net, field, is_udplite)		      do { \
 	if (is_udplite) SNMP_INC_STATS((net)->mib.udplite_statistics, field);       \
 	else		SNMP_INC_STATS((net)->mib.udp_statistics, field);  }  while(0)
@@ -565,31 +431,10 @@ struct udp_seq_afinfo {
 struct udp_seq_afinfo {
 	sa_family_t			family;
 	struct udp_table		*udp_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct udp_iter_state {
 	struct seq_net_private  p;
-<<<<<<< HEAD
-	sa_family_t		family;
-	int			bucket;
-	struct udp_table	*udp_table;
-};
-
-#ifdef CONFIG_PROC_FS
-extern int udp_proc_register(struct net *net, struct udp_seq_afinfo *afinfo);
-extern void udp_proc_unregister(struct net *net, struct udp_seq_afinfo *afinfo);
-
-extern int udp4_proc_init(void);
-extern void udp4_proc_exit(void);
-#endif
-
-extern void udp_init(void);
-
-extern int udp4_ufo_send_check(struct sk_buff *skb);
-extern struct sk_buff *udp4_ufo_fragment(struct sk_buff *skb,
-	netdev_features_t features);
-=======
 	int			bucket;
 };
 
@@ -684,5 +529,4 @@ struct sk_psock;
 int udp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _UDP_H */

@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * builtin-probe.c
  *
  * Builtin probe command: Set up probe events by C expression
  *
  * Written by Masami Hiramatsu <mhiramat@redhat.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <sys/utsname.h>
 #include <sys/types.h>
@@ -37,40 +16,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-<<<<<<< HEAD
-#include "perf.h"
-#include "builtin.h"
-#include "util/util.h"
-#include "util/strlist.h"
-#include "util/strfilter.h"
-#include "util/symbol.h"
-#include "util/debug.h"
-#include "util/debugfs.h"
-#include "util/parse-options.h"
-#include "util/probe-finder.h"
-#include "util/probe-event.h"
-
-#define DEFAULT_VAR_FILTER "!__k???tab_* & !__crc_*"
-#define DEFAULT_FUNC_FILTER "!_*"
-
-/* Session management structure */
-static struct {
-	bool list_events;
-	bool force_add;
-	bool show_lines;
-	bool show_vars;
-	bool show_ext_vars;
-	bool show_funcs;
-	bool mod_events;
-	int nevents;
-	struct perf_probe_event events[MAX_PROBES];
-	struct strlist *dellist;
-	struct line_range line_range;
-	const char *target;
-	int max_probe_points;
-	struct strfilter *filter;
-} params;
-=======
 #include "builtin.h"
 #include "namespaces.h"
 #include "util/build-id.h"
@@ -103,30 +48,19 @@ static struct {
 	struct strfilter *filter;
 	struct nsinfo *nsi;
 } *params;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Parse an event definition. Note that any error must die. */
 static int parse_probe_event(const char *str)
 {
-<<<<<<< HEAD
-	struct perf_probe_event *pev = &params.events[params.nevents];
-	int ret;
-
-	pr_debug("probe-definition(%d): %s\n", params.nevents, str);
-	if (++params.nevents == MAX_PROBES) {
-=======
 	struct perf_probe_event *pev = &params->events[params->nevents];
 	int ret;
 
 	pr_debug("probe-definition(%d): %s\n", params->nevents, str);
 	if (++params->nevents == MAX_PROBES) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("Too many probes (> %d) were specified.", MAX_PROBES);
 		return -1;
 	}
 
-<<<<<<< HEAD
-=======
 	pev->uprobes = params->uprobes;
 	if (params->target) {
 		pev->target = strdup(params->target);
@@ -137,7 +71,6 @@ static int parse_probe_event(const char *str)
 
 	pev->nsi = nsinfo__get(params->nsi);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Parse a perf-probe command into event */
 	ret = parse_perf_probe_command(str, pev);
 	pr_debug("%d arguments\n", pev->nargs);
@@ -145,17 +78,6 @@ static int parse_probe_event(const char *str)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int parse_probe_event_argv(int argc, const char **argv)
-{
-	int i, len, ret;
-	char *buf;
-
-	/* Bind up rest arguments */
-	len = 0;
-	for (i = 0; i < argc; i++)
-		len += strlen(argv[i]) + 1;
-=======
 static int params_add_filter(const char *str)
 {
 	const char *err = NULL;
@@ -227,55 +149,21 @@ static int parse_probe_event_argv(int argc, const char **argv)
 
 		len += strlen(argv[i]) + 1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf = zalloc(len + 1);
 	if (buf == NULL)
 		return -ENOMEM;
 	len = 0;
-<<<<<<< HEAD
-	for (i = 0; i < argc; i++)
-		len += sprintf(&buf[len], "%s ", argv[i]);
-	params.mod_events = true;
-=======
 	for (i = 0; i < argc; i++) {
 		if (i == 0 && found_target)
 			continue;
 
 		len += sprintf(&buf[len], "%s ", argv[i]);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = parse_probe_event(buf);
 	free(buf);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int opt_add_probe_event(const struct option *opt __used,
-			      const char *str, int unset __used)
-{
-	if (str) {
-		params.mod_events = true;
-		return parse_probe_event(str);
-	} else
-		return 0;
-}
-
-static int opt_del_probe_event(const struct option *opt __used,
-			       const char *str, int unset __used)
-{
-	if (str) {
-		params.mod_events = true;
-		if (!params.dellist)
-			params.dellist = strlist__new(true, NULL);
-		strlist__add(params.dellist, str);
-	}
-	return 0;
-}
-
-#ifdef DWARF_SUPPORT
-static int opt_show_lines(const struct option *opt __used,
-			  const char *str, int unset __used)
-=======
 static int opt_set_target(const struct option *opt, const char *str,
 			int unset __maybe_unused)
 {
@@ -344,46 +232,28 @@ static int opt_set_target_ns(const struct option *opt __maybe_unused,
 #ifdef HAVE_DWARF_SUPPORT
 static int opt_show_lines(const struct option *opt,
 			  const char *str, int unset __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 
 	if (!str)
 		return 0;
 
-<<<<<<< HEAD
-	if (params.show_lines) {
-=======
 	if (params->command == 'L') {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_warning("Warning: more than one --line options are"
 			   " detected. Only the first one is valid.\n");
 		return 0;
 	}
 
-<<<<<<< HEAD
-	params.show_lines = true;
-	ret = parse_line_range_desc(str, &params.line_range);
-	INIT_LIST_HEAD(&params.line_range.line_list);
-=======
 	params->command = opt->short_name;
 	ret = parse_line_range_desc(str, &params->line_range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int opt_show_vars(const struct option *opt __used,
-			 const char *str, int unset __used)
-{
-	struct perf_probe_event *pev = &params.events[params.nevents];
-=======
 static int opt_show_vars(const struct option *opt,
 			 const char *str, int unset __maybe_unused)
 {
 	struct perf_probe_event *pev = &params->events[params->nevents];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (!str)
@@ -394,30 +264,6 @@ static int opt_show_vars(const struct option *opt,
 		pr_err("  Error: '--vars' doesn't accept arguments.\n");
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	params.show_vars = true;
-
-	return ret;
-}
-#endif
-
-static int opt_set_filter(const struct option *opt __used,
-			  const char *str, int unset __used)
-{
-	const char *err;
-
-	if (str) {
-		pr_debug2("Set filter: %s\n", str);
-		if (params.filter)
-			strfilter__delete(params.filter);
-		params.filter = strfilter__new(str, &err);
-		if (!params.filter) {
-			pr_err("Filter parse error at %td.\n", err - str + 1);
-			pr_err("Source: \"%s\"\n", str);
-			pr_err("         %*c\n", (int)(err - str + 1), '^');
-			return -EINVAL;
-		}
-=======
 	params->command = opt->short_name;
 
 	return ret;
@@ -432,40 +278,11 @@ static int opt_add_probe_event(const struct option *opt,
 	if (str) {
 		params->command = opt->short_name;
 		return parse_probe_event(str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static const char * const probe_usage[] = {
-	"perf probe [<options>] 'PROBEDEF' ['PROBEDEF' ...]",
-	"perf probe [<options>] --add 'PROBEDEF' [--add 'PROBEDEF' ...]",
-	"perf probe [<options>] --del '[GROUP:]EVENT' ...",
-	"perf probe --list",
-#ifdef DWARF_SUPPORT
-	"perf probe [<options>] --line 'LINEDESC'",
-	"perf probe [<options>] --vars 'PROBEPOINT'",
-#endif
-	NULL
-};
-
-static const struct option options[] = {
-	OPT_INCR('v', "verbose", &verbose,
-		    "be more verbose (show parsed arguments, etc)"),
-	OPT_BOOLEAN('l', "list", &params.list_events,
-		    "list up current probe events"),
-	OPT_CALLBACK('d', "del", NULL, "[GROUP:]EVENT", "delete a probe event.",
-		opt_del_probe_event),
-	OPT_CALLBACK('a', "add", NULL,
-#ifdef DWARF_SUPPORT
-		"[EVENT=]FUNC[@SRC][+OFF|%return|:RL|;PT]|SRC:AL|SRC;PT"
-		" [[NAME=]ARG ...]",
-#else
-		"[EVENT=]FUNC[+OFF|%return] [[NAME=]ARG ...]",
-#endif
-=======
 static int opt_set_filter_with_command(const struct option *opt,
 				       const char *str, int unset)
 {
@@ -722,18 +539,13 @@ __cmd_probe(int argc, const char **argv)
 	OPT_CALLBACK('d', "del", NULL, "[GROUP:]EVENT", "delete a probe event.",
 		     opt_set_filter_with_command),
 	OPT_CALLBACK('a', "add", NULL, PROBEDEF_STR,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"probe point definition, where\n"
 		"\t\tGROUP:\tGroup name (optional)\n"
 		"\t\tEVENT:\tEvent name\n"
 		"\t\tFUNC:\tFunction name\n"
 		"\t\tOFF:\tOffset from function entry (in byte)\n"
 		"\t\t%return:\tPut the probe at function return\n"
-<<<<<<< HEAD
-#ifdef DWARF_SUPPORT
-=======
 #ifdef HAVE_DWARF_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"\t\tSRC:\tSource code path\n"
 		"\t\tRL:\tRelative line number from function entry.\n"
 		"\t\tAL:\tAbsolute line number in file.\n"
@@ -744,47 +556,25 @@ __cmd_probe(int argc, const char **argv)
 		"\t\tARG:\tProbe argument (kprobe-tracer argument format.)\n",
 #endif
 		opt_add_probe_event),
-<<<<<<< HEAD
-	OPT_BOOLEAN('f', "force", &params.force_add, "forcibly add events"
-		    " with existing name"),
-#ifdef DWARF_SUPPORT
-=======
 	OPT_CALLBACK('D', "definition", NULL, PROBEDEF_STR,
 		"Show trace event definition of given traceevent for k/uprobe_events.",
 		opt_add_probe_event),
 	OPT_BOOLEAN('f', "force", &probe_conf.force_add, "forcibly add events"
 		    " with existing name"),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OPT_CALLBACK('L', "line", NULL,
 		     "FUNC[:RLN[+NUM|-RLN2]]|SRC:ALN[+NUM|-ALN2]",
 		     "Show source code lines.", opt_show_lines),
 	OPT_CALLBACK('V', "vars", NULL,
 		     "FUNC[@SRC][+OFF|%return|:RL|;PT]|SRC:AL|SRC;PT",
 		     "Show accessible variables on PROBEDEF", opt_show_vars),
-<<<<<<< HEAD
-	OPT_BOOLEAN('\0', "externs", &params.show_ext_vars,
-		    "Show external variables too (with --vars only)"),
-=======
 	OPT_BOOLEAN('\0', "externs", &probe_conf.show_ext_vars,
 		    "Show external variables too (with --vars only)"),
 	OPT_BOOLEAN('\0', "range", &probe_conf.show_location_range,
 		"Show variables location range in scope (with --vars only)"),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OPT_STRING('k', "vmlinux", &symbol_conf.vmlinux_name,
 		   "file", "vmlinux pathname"),
 	OPT_STRING('s', "source", &symbol_conf.source_prefix,
 		   "directory", "path to kernel source"),
-<<<<<<< HEAD
-	OPT_STRING('m', "module", &params.target,
-		   "modname|path",
-		   "target module name (for online) or path (for offline)"),
-#endif
-	OPT__DRY_RUN(&probe_event_dry_run),
-	OPT_INTEGER('\0', "max-probes", &params.max_probe_points,
-		 "Set how many probe points can be found for a probe."),
-	OPT_BOOLEAN('F', "funcs", &params.show_funcs,
-		    "Show potential probe-able functions."),
-=======
 	OPT_BOOLEAN('\0', "no-inlines", &probe_conf.no_inlines,
 		"Don't search inlined functions"),
 	OPT__DRY_RUN(&probe_event_dry_run),
@@ -793,41 +583,11 @@ __cmd_probe(int argc, const char **argv)
 	OPT_CALLBACK_DEFAULT('F', "funcs", NULL, "[FILTER]",
 			     "Show potential probe-able functions.",
 			     opt_set_filter_with_command, DEFAULT_FUNC_FILTER),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OPT_CALLBACK('\0', "filter", NULL,
 		     "[!]FILTER", "Set a filter (with --vars/funcs only)\n"
 		     "\t\t\t(default: \"" DEFAULT_VAR_FILTER "\" for --vars,\n"
 		     "\t\t\t \"" DEFAULT_FUNC_FILTER "\" for --funcs)",
 		     opt_set_filter),
-<<<<<<< HEAD
-	OPT_END()
-};
-
-int cmd_probe(int argc, const char **argv, const char *prefix __used)
-{
-	int ret;
-
-	argc = parse_options(argc, argv, options, probe_usage,
-			     PARSE_OPT_STOP_AT_NON_OPTION);
-	if (argc > 0) {
-		if (strcmp(argv[0], "-") == 0) {
-			pr_warning("  Error: '-' is not supported.\n");
-			usage_with_options(probe_usage, options);
-		}
-		ret = parse_probe_event_argv(argc, argv);
-		if (ret < 0) {
-			pr_err("  Error: Parse Error.  (%d)\n", ret);
-			return ret;
-		}
-	}
-
-	if (params.max_probe_points == 0)
-		params.max_probe_points = MAX_PROBES;
-
-	if ((!params.nevents && !params.dellist && !params.list_events &&
-	     !params.show_lines && !params.show_funcs))
-		usage_with_options(probe_usage, options);
-=======
 	OPT_CALLBACK('x', "exec", NULL, "executable|path",
 			"target executable name or path", opt_set_target),
 	OPT_CALLBACK('m', "module", NULL, "modname|path",
@@ -902,124 +662,12 @@ int cmd_probe(int argc, const char **argv, const char *prefix __used)
 
 	if (probe_conf.max_probes == 0)
 		probe_conf.max_probes = MAX_PROBES;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Only consider the user's kernel image path if given.
 	 */
 	symbol_conf.try_vmlinux_path = (symbol_conf.vmlinux_name == NULL);
 
-<<<<<<< HEAD
-	if (params.list_events) {
-		if (params.mod_events) {
-			pr_err("  Error: Don't use --list with --add/--del.\n");
-			usage_with_options(probe_usage, options);
-		}
-		if (params.show_lines) {
-			pr_err("  Error: Don't use --list with --line.\n");
-			usage_with_options(probe_usage, options);
-		}
-		if (params.show_vars) {
-			pr_err(" Error: Don't use --list with --vars.\n");
-			usage_with_options(probe_usage, options);
-		}
-		if (params.show_funcs) {
-			pr_err("  Error: Don't use --list with --funcs.\n");
-			usage_with_options(probe_usage, options);
-		}
-		ret = show_perf_probe_events();
-		if (ret < 0)
-			pr_err("  Error: Failed to show event list. (%d)\n",
-			       ret);
-		return ret;
-	}
-	if (params.show_funcs) {
-		if (params.nevents != 0 || params.dellist) {
-			pr_err("  Error: Don't use --funcs with"
-			       " --add/--del.\n");
-			usage_with_options(probe_usage, options);
-		}
-		if (params.show_lines) {
-			pr_err("  Error: Don't use --funcs with --line.\n");
-			usage_with_options(probe_usage, options);
-		}
-		if (params.show_vars) {
-			pr_err("  Error: Don't use --funcs with --vars.\n");
-			usage_with_options(probe_usage, options);
-		}
-		if (!params.filter)
-			params.filter = strfilter__new(DEFAULT_FUNC_FILTER,
-						       NULL);
-		ret = show_available_funcs(params.target,
-					   params.filter);
-		strfilter__delete(params.filter);
-		if (ret < 0)
-			pr_err("  Error: Failed to show functions."
-			       " (%d)\n", ret);
-		return ret;
-	}
-
-#ifdef DWARF_SUPPORT
-	if (params.show_lines) {
-		if (params.mod_events) {
-			pr_err("  Error: Don't use --line with"
-			       " --add/--del.\n");
-			usage_with_options(probe_usage, options);
-		}
-		if (params.show_vars) {
-			pr_err(" Error: Don't use --line with --vars.\n");
-			usage_with_options(probe_usage, options);
-		}
-
-		ret = show_line_range(&params.line_range, params.target);
-		if (ret < 0)
-			pr_err("  Error: Failed to show lines. (%d)\n", ret);
-		return ret;
-	}
-	if (params.show_vars) {
-		if (params.mod_events) {
-			pr_err("  Error: Don't use --vars with"
-			       " --add/--del.\n");
-			usage_with_options(probe_usage, options);
-		}
-		if (!params.filter)
-			params.filter = strfilter__new(DEFAULT_VAR_FILTER,
-						       NULL);
-
-		ret = show_available_vars(params.events, params.nevents,
-					  params.max_probe_points,
-					  params.target,
-					  params.filter,
-					  params.show_ext_vars);
-		strfilter__delete(params.filter);
-		if (ret < 0)
-			pr_err("  Error: Failed to show vars. (%d)\n", ret);
-		return ret;
-	}
-#endif
-
-	if (params.dellist) {
-		ret = del_perf_probe_events(params.dellist);
-		strlist__delete(params.dellist);
-		if (ret < 0) {
-			pr_err("  Error: Failed to delete events. (%d)\n", ret);
-			return ret;
-		}
-	}
-
-	if (params.nevents) {
-		ret = add_perf_probe_events(params.events, params.nevents,
-					    params.max_probe_points,
-					    params.target,
-					    params.force_add);
-		if (ret < 0) {
-			pr_err("  Error: Failed to add events. (%d)\n", ret);
-			return ret;
-		}
-	}
-	return 0;
-}
-=======
 	/*
 	 * Except for --list, --del and --add, other command doesn't depend
 	 * nor change running kernel. So if user gives offline vmlinux,
@@ -1121,4 +769,3 @@ int cmd_probe(int argc, const char **argv)
 
 	return ret < 0 ? ret : 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

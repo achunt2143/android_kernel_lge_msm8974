@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -35,14 +32,6 @@
  *				  older network drivers and IFF_ALLMULTI.
  *	Christer Weinigel	: Better rebuild header message.
  *             Andrew Morton    : 26Feb01: kill ether_setup() - use netdev_boot_setup().
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/types.h>
@@ -54,37 +43,25 @@
 #include <linux/inet.h>
 #include <linux/ip.h>
 #include <linux/netdevice.h>
-<<<<<<< HEAD
-=======
 #include <linux/nvmem-consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/if_ether.h>
-<<<<<<< HEAD
-=======
 #include <linux/of_net.h>
 #include <linux/pci.h>
 #include <linux/property.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/dst.h>
 #include <net/arp.h>
 #include <net/sock.h>
 #include <net/ipv6.h>
 #include <net/ip.h>
 #include <net/dsa.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-
-__setup("ether=", netdev_boot_setup);
-=======
 #include <net/flow_dissector.h>
 #include <net/gro.h>
 #include <linux/uaccess.h>
 #include <net/pkt_sched.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * eth_header - create the Ethernet header
@@ -101,15 +78,9 @@ __setup("ether=", netdev_boot_setup);
  */
 int eth_header(struct sk_buff *skb, struct net_device *dev,
 	       unsigned short type,
-<<<<<<< HEAD
-	       const void *daddr, const void *saddr, unsigned len)
-{
-	struct ethhdr *eth = (struct ethhdr *)skb_push(skb, ETH_HLEN);
-=======
 	       const void *daddr, const void *saddr, unsigned int len)
 {
 	struct ethhdr *eth = skb_push(skb, ETH_HLEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (type != ETH_P_802_3 && type != ETH_P_802_2)
 		eth->h_proto = htons(type);
@@ -134,11 +105,7 @@ int eth_header(struct sk_buff *skb, struct net_device *dev,
 	 */
 
 	if (dev->flags & (IFF_LOOPBACK | IFF_NOARP)) {
-<<<<<<< HEAD
-		memset(eth->h_dest, 0, ETH_ALEN);
-=======
 		eth_zero_addr(eth->h_dest);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ETH_HLEN;
 	}
 
@@ -147,39 +114,6 @@ int eth_header(struct sk_buff *skb, struct net_device *dev,
 EXPORT_SYMBOL(eth_header);
 
 /**
-<<<<<<< HEAD
- * eth_rebuild_header- rebuild the Ethernet MAC header.
- * @skb: socket buffer to update
- *
- * This is called after an ARP or IPV6 ndisc it's resolution on this
- * sk_buff. We now let protocol (ARP) fill in the other fields.
- *
- * This routine CANNOT use cached dst->neigh!
- * Really, it is used only when dst->neigh is wrong.
- */
-int eth_rebuild_header(struct sk_buff *skb)
-{
-	struct ethhdr *eth = (struct ethhdr *)skb->data;
-	struct net_device *dev = skb->dev;
-
-	switch (eth->h_proto) {
-#ifdef CONFIG_INET
-	case htons(ETH_P_IP):
-		return arp_find(eth->h_dest, skb);
-#endif
-	default:
-		printk(KERN_DEBUG
-		       "%s: unable to resolve type %X addresses.\n",
-		       dev->name, ntohs(eth->h_proto));
-
-		memcpy(eth->h_source, dev->dev_addr, ETH_ALEN);
-		break;
-	}
-
-	return 0;
-}
-EXPORT_SYMBOL(eth_rebuild_header);
-=======
  * eth_get_headlen - determine the length of header for an ethernet frame
  * @dev: pointer to network device
  * @data: pointer to start of frame
@@ -208,7 +142,6 @@ u32 eth_get_headlen(const struct net_device *dev, const void *data, u32 len)
 	return min_t(u32, __skb_get_poff(NULL, data, &keys, len), len);
 }
 EXPORT_SYMBOL(eth_get_headlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * eth_type_trans - determine the packet's protocol ID.
@@ -221,34 +154,6 @@ EXPORT_SYMBOL(eth_get_headlen);
  */
 __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct ethhdr *eth;
-
-	skb->dev = dev;
-	skb_reset_mac_header(skb);
-	skb_pull_inline(skb, ETH_HLEN);
-	eth = eth_hdr(skb);
-
-	if (unlikely(is_multicast_ether_addr(eth->h_dest))) {
-		if (!compare_ether_addr_64bits(eth->h_dest, dev->broadcast))
-			skb->pkt_type = PACKET_BROADCAST;
-		else
-			skb->pkt_type = PACKET_MULTICAST;
-	}
-
-	/*
-	 *      This ALLMULTI check should be redundant by 1.4
-	 *      so don't forget to remove it.
-	 *
-	 *      Seems, you forgot to remove it. All silly devices
-	 *      seems to set IFF_PROMISC.
-	 */
-
-	else if (1 /*dev->flags&IFF_PROMISC */ ) {
-		if (unlikely(compare_ether_addr_64bits(eth->h_dest, dev->dev_addr)))
-			skb->pkt_type = PACKET_OTHERHOST;
-	}
-=======
 	unsigned short _service_access_point;
 	const unsigned short *sap;
 	const struct ethhdr *eth;
@@ -260,7 +165,6 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
 	skb_pull_inline(skb, ETH_HLEN);
 
 	eth_skb_pkt_type(skb, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Some variants of DSA tagging don't have an ethertype field
@@ -268,19 +172,10 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
 	 * variants has been configured on the receiving interface,
 	 * and if so, set skb->protocol without looking at the packet.
 	 */
-<<<<<<< HEAD
-	if (netdev_uses_dsa_tags(dev))
-		return htons(ETH_P_DSA);
-	if (netdev_uses_trailer_tags(dev))
-		return htons(ETH_P_TRAILER);
-
-	if (ntohs(eth->h_proto) >= 1536)
-=======
 	if (unlikely(netdev_uses_dsa(dev)))
 		return htons(ETH_P_XDSA);
 
 	if (likely(eth_proto_is_802_3(eth->h_proto)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return eth->h_proto;
 
 	/*
@@ -289,12 +184,8 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
 	 *      layer. We look for FFFF which isn't a used 802.2 SSAP/DSAP. This
 	 *      won't work for fault tolerant netware but does for the rest.
 	 */
-<<<<<<< HEAD
-	if (skb->len >= 2 && *(unsigned short *)(skb->data) == 0xFFFF)
-=======
 	sap = skb_header_pointer(skb, 0, sizeof(*sap), &_service_access_point);
 	if (sap && *sap == 0xFFFF)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return htons(ETH_P_802_3);
 
 	/*
@@ -322,10 +213,7 @@ EXPORT_SYMBOL(eth_header_parse);
  * @neigh: source neighbour
  * @hh: destination cache entry
  * @type: Ethernet type field
-<<<<<<< HEAD
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Create an Ethernet header template from the neighbour.
  */
 int eth_header_cache(const struct neighbour *neigh, struct hh_cache *hh, __be16 type)
@@ -342,16 +230,12 @@ int eth_header_cache(const struct neighbour *neigh, struct hh_cache *hh, __be16 
 	eth->h_proto = type;
 	memcpy(eth->h_source, dev->dev_addr, ETH_ALEN);
 	memcpy(eth->h_dest, neigh->ha, ETH_ALEN);
-<<<<<<< HEAD
-	hh->hh_len = ETH_HLEN;
-=======
 
 	/* Pairs with READ_ONCE() in neigh_resolve_output(),
 	 * neigh_hh_output() and neigh_update_hhs().
 	 */
 	smp_store_release(&hh->hh_len, ETH_HLEN);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(eth_header_cache);
@@ -374,11 +258,6 @@ void eth_header_cache_update(struct hh_cache *hh,
 EXPORT_SYMBOL(eth_header_cache_update);
 
 /**
-<<<<<<< HEAD
- * eth_mac_addr - set new Ethernet hardware address
- * @dev: network device
- * @p: socket address
-=======
  * eth_header_parse_protocol - extract protocol from L2 header
  * @skb: packet to extract protocol from
  */
@@ -425,7 +304,6 @@ EXPORT_SYMBOL(eth_commit_mac_addr_change);
  * @dev: network device
  * @p: socket address
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Change hardware address of device.
  *
  * This doesn't change hardware matching, so needs to be overridden
@@ -433,48 +311,16 @@ EXPORT_SYMBOL(eth_commit_mac_addr_change);
  */
 int eth_mac_addr(struct net_device *dev, void *p)
 {
-<<<<<<< HEAD
-	struct sockaddr *addr = p;
-
-	if (netif_running(dev))
-		return -EBUSY;
-	if (!is_valid_ether_addr(addr->sa_data))
-		return -EADDRNOTAVAIL;
-	memcpy(dev->dev_addr, addr->sa_data, ETH_ALEN);
-	/* if device marked as NET_ADDR_RANDOM, reset it */
-	dev->addr_assign_type &= ~NET_ADDR_RANDOM;
-=======
 	int ret;
 
 	ret = eth_prepare_mac_addr_change(dev, p);
 	if (ret < 0)
 		return ret;
 	eth_commit_mac_addr_change(dev, p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(eth_mac_addr);
 
-<<<<<<< HEAD
-/**
- * eth_change_mtu - set new MTU size
- * @dev: network device
- * @new_mtu: new Maximum Transfer Unit
- *
- * Allow changing MTU size. Needs to be overridden for devices
- * supporting jumbo frames.
- */
-int eth_change_mtu(struct net_device *dev, int new_mtu)
-{
-	if (new_mtu < 68 || new_mtu > ETH_DATA_LEN)
-		return -EINVAL;
-	dev->mtu = new_mtu;
-	return 0;
-}
-EXPORT_SYMBOL(eth_change_mtu);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int eth_validate_addr(struct net_device *dev)
 {
 	if (!is_valid_ether_addr(dev->dev_addr))
@@ -487,24 +333,15 @@ EXPORT_SYMBOL(eth_validate_addr);
 const struct header_ops eth_header_ops ____cacheline_aligned = {
 	.create		= eth_header,
 	.parse		= eth_header_parse,
-<<<<<<< HEAD
-	.rebuild	= eth_rebuild_header,
-	.cache		= eth_header_cache,
-	.cache_update	= eth_header_cache_update,
-=======
 	.cache		= eth_header_cache,
 	.cache_update	= eth_header_cache_update,
 	.parse_protocol	= eth_header_parse_protocol,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * ether_setup - setup Ethernet network device
  * @dev: network device
-<<<<<<< HEAD
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Fill in the fields of the device structure with Ethernet-generic values.
  */
 void ether_setup(struct net_device *dev)
@@ -512,15 +349,6 @@ void ether_setup(struct net_device *dev)
 	dev->header_ops		= &eth_header_ops;
 	dev->type		= ARPHRD_ETHER;
 	dev->hard_header_len 	= ETH_HLEN;
-<<<<<<< HEAD
-	dev->mtu		= ETH_DATA_LEN;
-	dev->addr_len		= ETH_ALEN;
-	dev->tx_queue_len	= 1000;	/* Ethernet wants good queues */
-	dev->flags		= IFF_BROADCAST|IFF_MULTICAST;
-	dev->priv_flags		|= IFF_TX_SKB_SHARING;
-
-	memset(dev->broadcast, 0xFF, ETH_ALEN);
-=======
 	dev->min_header_len	= ETH_HLEN;
 	dev->mtu		= ETH_DATA_LEN;
 	dev->min_mtu		= ETH_MIN_MTU;
@@ -531,7 +359,6 @@ void ether_setup(struct net_device *dev)
 	dev->priv_flags		|= IFF_TX_SKB_SHARING;
 
 	eth_broadcast_addr(dev->broadcast);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 EXPORT_SYMBOL(ether_setup);
@@ -554,36 +381,6 @@ EXPORT_SYMBOL(ether_setup);
 struct net_device *alloc_etherdev_mqs(int sizeof_priv, unsigned int txqs,
 				      unsigned int rxqs)
 {
-<<<<<<< HEAD
-	return alloc_netdev_mqs(sizeof_priv, "eth%d", ether_setup, txqs, rxqs);
-}
-EXPORT_SYMBOL(alloc_etherdev_mqs);
-
-static size_t _format_mac_addr(char *buf, int buflen,
-			       const unsigned char *addr, int len)
-{
-	int i;
-	char *cp = buf;
-
-	for (i = 0; i < len; i++) {
-		cp += scnprintf(cp, buflen - (cp - buf), "%02x", addr[i]);
-		if (i == len - 1)
-			break;
-		cp += scnprintf(cp, buflen - (cp - buf), ":");
-	}
-	return cp - buf;
-}
-
-ssize_t sysfs_format_mac(char *buf, const unsigned char *addr, int len)
-{
-	size_t l;
-
-	l = _format_mac_addr(buf, PAGE_SIZE, addr, len);
-	l += scnprintf(buf + l, PAGE_SIZE - l, "\n");
-	return (ssize_t)l;
-}
-EXPORT_SYMBOL(sysfs_format_mac);
-=======
 	return alloc_netdev_mqs(sizeof_priv, "eth%d", NET_NAME_ENUM,
 				ether_setup, txqs, rxqs);
 }
@@ -841,4 +638,3 @@ int device_get_ethdev_address(struct device *dev, struct net_device *netdev)
 	return ret;
 }
 EXPORT_SYMBOL(device_get_ethdev_address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* floppy.h: Sparc specific parts of the Floppy driver.
  *
  * Copyright (C) 1996, 2007, 2008 David S. Miller (davem@davemloft.net)
@@ -14,11 +11,7 @@
 #define __ASM_SPARC64_FLOPPY_H
 
 #include <linux/of.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-=======
 #include <linux/of_platform.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dma-mapping.h>
 
 #include <asm/auxio.h>
@@ -54,14 +47,9 @@ unsigned long fdc_status;
 static struct platform_device *floppy_op = NULL;
 
 struct sun_floppy_ops {
-<<<<<<< HEAD
-	unsigned char	(*fd_inb) (unsigned long port);
-	void		(*fd_outb) (unsigned char value, unsigned long port);
-=======
 	unsigned char	(*fd_inb) (unsigned long port, unsigned int reg);
 	void		(*fd_outb) (unsigned char value, unsigned long base,
 				    unsigned int reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void		(*fd_enable_dma) (void);
 	void		(*fd_disable_dma) (void);
 	void		(*fd_set_dma_mode) (int);
@@ -75,13 +63,8 @@ struct sun_floppy_ops {
 
 static struct sun_floppy_ops sun_fdops;
 
-<<<<<<< HEAD
-#define fd_inb(port)              sun_fdops.fd_inb(port)
-#define fd_outb(value,port)       sun_fdops.fd_outb(value,port)
-=======
 #define fd_inb(base, reg)         sun_fdops.fd_inb(base, reg)
 #define fd_outb(value, base, reg) sun_fdops.fd_outb(value, base, reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define fd_enable_dma()           sun_fdops.fd_enable_dma()
 #define fd_disable_dma()          sun_fdops.fd_disable_dma()
 #define fd_request_dma()          (0) /* nothing... */
@@ -91,10 +74,6 @@ static struct sun_floppy_ops sun_fdops;
 #define fd_set_dma_addr(addr)     sun_fdops.fd_set_dma_addr(addr)
 #define fd_set_dma_count(count)   sun_fdops.fd_set_dma_count(count)
 #define get_dma_residue(x)        sun_fdops.get_dma_residue()
-<<<<<<< HEAD
-#define fd_cacheflush(addr, size) /* nothing... */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define fd_request_irq()          sun_fdops.fd_request_irq()
 #define fd_free_irq()             sun_fdops.fd_free_irq()
 #define fd_eject(drive)           sun_fdops.fd_eject(drive)
@@ -119,20 +98,6 @@ static int sun_floppy_types[2] = { 0, 0 };
 /* No 64k boundary crossing problems on the Sparc. */
 #define CROSS_64KB(a,s) (0)
 
-<<<<<<< HEAD
-static unsigned char sun_82077_fd_inb(unsigned long port)
-{
-	udelay(5);
-	switch(port & 7) {
-	default:
-		printk("floppy: Asked to read unknown port %lx\n", port);
-		panic("floppy: Port bolixed.");
-	case 4: /* FD_STATUS */
-		return sbus_readb(&sun_fdc->status_82077) & ~STATUS_DMA;
-	case 5: /* FD_DATA */
-		return sbus_readb(&sun_fdc->data_82077);
-	case 7: /* FD_DIR */
-=======
 static unsigned char sun_82077_fd_inb(unsigned long base, unsigned int reg)
 {
 	udelay(5);
@@ -145,33 +110,12 @@ static unsigned char sun_82077_fd_inb(unsigned long base, unsigned int reg)
 	case FD_DATA:
 		return sbus_readb(&sun_fdc->data_82077);
 	case FD_DIR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* XXX: Is DCL on 0x80 in sun4m? */
 		return sbus_readb(&sun_fdc->dir_82077);
 	}
 	panic("sun_82072_fd_inb: How did I get here?");
 }
 
-<<<<<<< HEAD
-static void sun_82077_fd_outb(unsigned char value, unsigned long port)
-{
-	udelay(5);
-	switch(port & 7) {
-	default:
-		printk("floppy: Asked to write to unknown port %lx\n", port);
-		panic("floppy: Port bolixed.");
-	case 2: /* FD_DOR */
-		/* Happily, the 82077 has a real DOR register. */
-		sbus_writeb(value, &sun_fdc->dor_82077);
-		break;
-	case 5: /* FD_DATA */
-		sbus_writeb(value, &sun_fdc->data_82077);
-		break;
-	case 7: /* FD_DCR */
-		sbus_writeb(value, &sun_fdc->dcr_82077);
-		break;
-	case 4: /* FD_STATUS */
-=======
 static void sun_82077_fd_outb(unsigned char value, unsigned long base,
 			      unsigned int reg)
 {
@@ -191,7 +135,6 @@ static void sun_82077_fd_outb(unsigned char value, unsigned long base,
 		sbus_writeb(value, &sun_fdc->dcr_82077);
 		break;
 	case FD_DSR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sbus_writeb(value, &sun_fdc->status_82077);
 		break;
 	}
@@ -220,14 +163,7 @@ unsigned long pdma_areasize;
 static void sun_fd_disable_dma(void)
 {
 	doing_pdma = 0;
-<<<<<<< HEAD
-	if (pdma_base) {
-		mmu_unlockarea(pdma_base, pdma_areasize);
-		pdma_base = NULL;
-	}
-=======
 	pdma_base = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sun_fd_set_dma_mode(int mode)
@@ -257,10 +193,6 @@ static void sun_fd_set_dma_count(int length)
 
 static void sun_fd_enable_dma(void)
 {
-<<<<<<< HEAD
-	pdma_vaddr = mmu_lockarea(pdma_vaddr, pdma_size);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdma_base = pdma_vaddr;
 	pdma_areasize = pdma_size;
 }
@@ -324,11 +256,7 @@ static int sun_fd_request_irq(void)
 		once = 1;
 
 		error = request_irq(FLOPPY_IRQ, sparc_floppy_irq,
-<<<<<<< HEAD
-				    IRQF_DISABLED, "floppy", NULL);
-=======
 				    0, "floppy", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return ((error == 0) ? 0 : -1);
 	}
@@ -370,23 +298,6 @@ struct sun_pci_dma_op {
 static struct sun_pci_dma_op sun_pci_dma_current = { -1U, 0, 0, NULL};
 static struct sun_pci_dma_op sun_pci_dma_pending = { -1U, 0, 0, NULL};
 
-<<<<<<< HEAD
-extern irqreturn_t floppy_interrupt(int irq, void *dev_id);
-
-static unsigned char sun_pci_fd_inb(unsigned long port)
-{
-	udelay(5);
-	return inb(port);
-}
-
-static void sun_pci_fd_outb(unsigned char val, unsigned long port)
-{
-	udelay(5);
-	outb(val, port);
-}
-
-static void sun_pci_fd_broken_outb(unsigned char val, unsigned long port)
-=======
 irqreturn_t floppy_interrupt(int irq, void *dev_id);
 
 static unsigned char sun_pci_fd_inb(unsigned long base, unsigned int reg)
@@ -404,7 +315,6 @@ static void sun_pci_fd_outb(unsigned char val, unsigned long base,
 
 static void sun_pci_fd_broken_outb(unsigned char val, unsigned long base,
 				   unsigned int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	udelay(5);
 	/*
@@ -414,29 +324,17 @@ static void sun_pci_fd_broken_outb(unsigned char val, unsigned long base,
 	 *      this does not hurt correct hardware like the AXmp.
 	 *      (Eddie, Sep 12 1998).
 	 */
-<<<<<<< HEAD
-	if (port == ((unsigned long)sun_fdc) + 2) {
-=======
 	if (reg == FD_DOR) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (((val & 0x03) == sun_pci_broken_drive) && (val & 0x20)) {
 			val |= 0x10;
 		}
 	}
-<<<<<<< HEAD
-	outb(val, port);
-}
-
-#ifdef PCI_FDC_SWAP_DRIVES
-static void sun_pci_fd_lde_broken_outb(unsigned char val, unsigned long port)
-=======
 	outb(val, base + reg);
 }
 
 #ifdef PCI_FDC_SWAP_DRIVES
 static void sun_pci_fd_lde_broken_outb(unsigned char val, unsigned long base,
 				       unsigned int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	udelay(5);
 	/*
@@ -446,21 +344,13 @@ static void sun_pci_fd_lde_broken_outb(unsigned char val, unsigned long base,
 	 *      this does not hurt correct hardware like the AXmp.
 	 *      (Eddie, Sep 12 1998).
 	 */
-<<<<<<< HEAD
-	if (port == ((unsigned long)sun_fdc) + 2) {
-=======
 	if (reg == FD_DOR) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (((val & 0x03) == sun_pci_broken_drive) && (val & 0x10)) {
 			val &= ~(0x03);
 			val |= 0x21;
 		}
 	}
-<<<<<<< HEAD
-	outb(val, port);
-=======
 	outb(val, base + reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* PCI_FDC_SWAP_DRIVES */
 
@@ -643,15 +533,9 @@ static int sun_pci_fd_test_drive(unsigned long port, int drive)
 
 static int __init ebus_fdthree_p(struct device_node *dp)
 {
-<<<<<<< HEAD
-	if (!strcmp(dp->name, "fdthree"))
-		return 1;
-	if (!strcmp(dp->name, "floppy")) {
-=======
 	if (of_node_name_eq(dp, "fdthree"))
 		return 1;
 	if (of_node_name_eq(dp, "floppy")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const char *compat;
 
 		compat = of_get_property(dp, "compatible", NULL);
@@ -676,11 +560,7 @@ static unsigned long __init sun_floppy_init(void)
 	op = NULL;
 
 	for_each_node_by_name(dp, "SUNW,fdtwo") {
-<<<<<<< HEAD
-		if (strcmp(dp->parent->name, "sbus"))
-=======
 		if (!of_node_name_eq(dp->parent, "sbus"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		op = of_find_device_by_node(dp);
 		if (op)
@@ -781,11 +661,7 @@ static unsigned long __init sun_floppy_init(void)
 		 */
 		config = 0;
 		for (dp = ebus_dp->child; dp; dp = dp->sibling) {
-<<<<<<< HEAD
-			if (!strcmp(dp->name, "ecpp")) {
-=======
 			if (of_node_name_eq(dp, "ecpp")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct platform_device *ecpp_op;
 
 				ecpp_op = of_find_device_by_node(dp);

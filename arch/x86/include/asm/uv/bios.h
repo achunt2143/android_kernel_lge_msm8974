@@ -1,40 +1,16 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_UV_BIOS_H
 #define _ASM_X86_UV_BIOS_H
 
 /*
  * UV BIOS layer definitions.
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- *  Copyright (c) 2008-2009 Silicon Graphics, Inc.  All Rights Reserved.
- *  Copyright (c) Russ Anderson <rja@sgi.com>
- */
-
-=======
  * (C) Copyright 2020 Hewlett Packard Enterprise Development LP
  * Copyright (C) 2007-2017 Silicon Graphics, Inc. All rights reserved.
  * Copyright (c) Russ Anderson <rja@sgi.com>
  */
 
 #include <linux/efi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/rtc.h>
 
 /*
@@ -53,8 +29,6 @@ enum uv_bios_cmd {
 	UV_BIOS_SET_LEGACY_VGA_TARGET
 };
 
-<<<<<<< HEAD
-=======
 #define UV_BIOS_EXTRA			    0x10000
 #define UV_BIOS_GET_PCI_TOPOLOGY	    0x10001
 #define UV_BIOS_GET_GEOINFO		    0x10003
@@ -69,7 +43,6 @@ enum uv_bios_cmd {
 #define UV_BIOS_EXTRA_ENUM_OBJECTS	    (12|UV_BIOS_EXTRA_OP_MEM_COPYOUT)
 #define UV_BIOS_EXTRA_ENUM_PORTS	    (13|UV_BIOS_EXTRA_OP_MEM_COPYOUT)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Status values returned from a BIOS call.
  */
@@ -78,11 +51,6 @@ enum {
 	BIOS_STATUS_SUCCESS		=  0,
 	BIOS_STATUS_UNIMPLEMENTED	= -ENOSYS,
 	BIOS_STATUS_EINVAL		= -EINVAL,
-<<<<<<< HEAD
-	BIOS_STATUS_UNAVAIL		= -EBUSY
-};
-
-=======
 	BIOS_STATUS_UNAVAIL		= -EBUSY,
 	BIOS_STATUS_ABORT		= -EINTR,
 };
@@ -141,18 +109,11 @@ struct uv_arch_type_entry {
 #define	UV_SYSTAB_TYPE_ARCH_TYPE	3	/* UV arch type */
 #define	UV_SYSTAB_TYPE_MAX		4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The UV system table describes specific firmware
  * capabilities available to the Linux kernel at runtime.
  */
 struct uv_systab {
-<<<<<<< HEAD
-	char signature[4];	/* must be "UVST" */
-	u32 revision;		/* distinguish different firmware revs */
-	u64 function;		/* BIOS runtime callback function ptr */
-};
-=======
 	char signature[4];	/* must be UV_SYSTAB_SIG */
 	u32 revision;		/* distinguish different firmware revs */
 	u64 (__efiapi *function)(enum uv_bios_cmd, ...);
@@ -191,7 +152,6 @@ struct uv_bios_port_info {
 };
 
 /* (... end of definitions from UV BIOS ...) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	BIOS_FREQ_BASE_PLATFORM = 0,
@@ -215,16 +175,6 @@ enum uv_memprotect {
 	UV_MEMPROT_ALLOW_RW
 };
 
-<<<<<<< HEAD
-/*
- * bios calls have 6 parameters
- */
-extern s64 uv_bios_call(enum uv_bios_cmd, u64, u64, u64, u64, u64);
-extern s64 uv_bios_call_irqsave(enum uv_bios_cmd, u64, u64, u64, u64, u64);
-extern s64 uv_bios_call_reentrant(enum uv_bios_cmd, u64, u64, u64, u64, u64);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern s64 uv_bios_get_sn_info(int, int *, long *, long *, long *, long *);
 extern s64 uv_bios_freq_base(u64, u64 *);
 extern int uv_bios_mq_watchlist_alloc(unsigned long, unsigned int,
@@ -234,9 +184,6 @@ extern s64 uv_bios_change_memprotect(u64, u64, enum uv_memprotect);
 extern s64 uv_bios_reserved_page_pa(u64, u64 *, u64 *, u64 *);
 extern int uv_bios_set_legacy_vga_target(bool decode, int domain, int bus);
 
-<<<<<<< HEAD
-extern void uv_bios_init(void);
-=======
 extern s64 uv_bios_get_master_nasid(u64 sz, u64 *nasid);
 extern s64 uv_bios_get_heapsize(u64 nasid, u64 sz, u64 *heap_sz);
 extern s64 uv_bios_install_heap(u64 nasid, u64 sz, u64 *heap);
@@ -248,7 +195,6 @@ extern s64 uv_bios_get_pci_topology(u64 sz, u64 *buf);
 
 extern int uv_bios_init(void);
 extern unsigned long get_uv_systab_phys(bool msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern unsigned long sn_rtc_cycles_per_second;
 extern int uv_type;
@@ -256,12 +202,6 @@ extern long sn_partition_id;
 extern long sn_coherency_id;
 extern long sn_region_size;
 extern long system_serial_number;
-<<<<<<< HEAD
-#define partition_coherence_id()	(sn_coherency_id)
-
-extern struct kobject *sgi_uv_kobj;	/* /sys/firmware/sgi_uv */
-
-=======
 extern ssize_t uv_get_archtype(char *buf, int len);
 extern int uv_get_hubless_system(void);
 
@@ -272,5 +212,4 @@ extern struct kobject *sgi_uv_kobj;	/* /sys/firmware/sgi_uv */
  */
 extern struct semaphore __efi_uv_runtime_lock;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_UV_BIOS_H */

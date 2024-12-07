@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Acer WMI Laptop Extras
  *
@@ -10,23 +7,6 @@
  *  Based on acer_acpi:
  *    Copyright (C) 2005-2007	E.M. Smith
  *    Copyright (C) 2007-2008	Carlos Corbacho <cathectic@gmail.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -40,10 +20,7 @@
 #include <linux/backlight.h>
 #include <linux/leds.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-=======
 #include <linux/platform_profile.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/acpi.h>
 #include <linux/i8042.h>
 #include <linux/rfkill.h>
@@ -52,15 +29,9 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/input/sparse-keymap.h>
-<<<<<<< HEAD
-
-#include <acpi/acpi_drivers.h>
-#include <acpi/video.h>
-=======
 #include <acpi/video.h>
 #include <linux/hwmon.h>
 #include <linux/bitfield.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Carlos Corbacho");
 MODULE_DESCRIPTION("Acer Laptop WMI Extras Driver");
@@ -92,8 +63,6 @@ MODULE_LICENSE("GPL");
 #define ACER_WMID_GET_THREEG_METHODID		10
 #define ACER_WMID_SET_THREEG_METHODID		11
 
-<<<<<<< HEAD
-=======
 #define ACER_WMID_SET_GAMING_LED_METHODID 2
 #define ACER_WMID_GET_GAMING_LED_METHODID 4
 #define ACER_WMID_GET_GAMING_SYS_INFO_METHODID 5
@@ -104,7 +73,6 @@ MODULE_LICENSE("GPL");
 
 #define ACER_PREDATOR_V4_FAN_SPEED_READ_BIT_MASK GENMASK(20, 8)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Acer ACPI method GUIDs
  */
@@ -113,10 +81,7 @@ MODULE_LICENSE("GPL");
 #define WMID_GUID1		"6AF4F258-B401-42FD-BE91-3D4AC2D7C0D3"
 #define WMID_GUID2		"95764E09-FB56-4E83-B31A-37761F60994A"
 #define WMID_GUID3		"61EF69EA-865C-4BC3-A502-A0DEBA0CB531"
-<<<<<<< HEAD
-=======
 #define WMID_GUID4		"7A4DDFE7-5B5D-40B4-8595-4408E0CC7F56"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Acer ACPI event GUIDs
@@ -129,11 +94,6 @@ MODULE_ALIAS("wmi:676AA15E-6A47-4D9F-A2CC-1E6D18D14026");
 
 enum acer_wmi_event_ids {
 	WMID_HOTKEY_EVENT = 0x1,
-<<<<<<< HEAD
-};
-
-static const struct key_entry acer_wmi_keymap[] = {
-=======
 	WMID_ACCEL_OR_KBD_DOCK_EVENT = 0x5,
 	WMID_GAMING_TURBO_KEY_EVENT = 0x7,
 };
@@ -145,7 +105,6 @@ enum acer_wmi_predator_v4_sys_info_command {
 };
 
 static const struct key_entry acer_wmi_keymap[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{KE_KEY, 0x01, {KEY_WLAN} },     /* WiFi */
 	{KE_KEY, 0x03, {KEY_WLAN} },     /* WiFi */
 	{KE_KEY, 0x04, {KEY_WLAN} },     /* WiFi */
@@ -154,10 +113,7 @@ static const struct key_entry acer_wmi_keymap[] __initconst = {
 	{KE_KEY, 0x22, {KEY_PROG2} },    /* Arcade */
 	{KE_KEY, 0x23, {KEY_PROG3} },    /* P_Key */
 	{KE_KEY, 0x24, {KEY_PROG4} },    /* Social networking_Key */
-<<<<<<< HEAD
-=======
 	{KE_KEY, 0x27, {KEY_HELP} },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{KE_KEY, 0x29, {KEY_PROG3} },    /* P_Key for TM8372 */
 	{KE_IGNORE, 0x41, {KEY_MUTE} },
 	{KE_IGNORE, 0x42, {KEY_PREVIOUSSONG} },
@@ -171,9 +127,6 @@ static const struct key_entry acer_wmi_keymap[] __initconst = {
 	{KE_IGNORE, 0x48, {KEY_VOLUMEUP} },
 	{KE_IGNORE, 0x49, {KEY_VOLUMEDOWN} },
 	{KE_IGNORE, 0x4a, {KEY_VOLUMEDOWN} },
-<<<<<<< HEAD
-	{KE_IGNORE, 0x61, {KEY_SWITCHVIDEOMODE} },
-=======
 	/*
 	 * 0x61 is KEY_SWITCHVIDEOMODE. Usually this is a duplicate input event
 	 * with the "Video Bus" input device events. But sometimes it is not
@@ -181,15 +134,10 @@ static const struct key_entry acer_wmi_keymap[] __initconst = {
 	 * udev/hwdb can override it on systems where it is not a dup.
 	 */
 	{KE_KEY, 0x61, {KEY_UNKNOWN} },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{KE_IGNORE, 0x62, {KEY_BRIGHTNESSUP} },
 	{KE_IGNORE, 0x63, {KEY_BRIGHTNESSDOWN} },
 	{KE_KEY, 0x64, {KEY_SWITCHVIDEOMODE} },	/* Display Switch */
 	{KE_IGNORE, 0x81, {KEY_SLEEP} },
-<<<<<<< HEAD
-	{KE_KEY, 0x82, {KEY_TOUCHPAD_TOGGLE} },	/* Touch Pad On/Off */
-	{KE_IGNORE, 0x83, {KEY_TOUCHPAD_TOGGLE} },
-=======
 	{KE_KEY, 0x82, {KEY_TOUCHPAD_TOGGLE} },	/* Touch Pad Toggle */
 	{KE_IGNORE, 0x84, {KEY_KBDILLUMTOGGLE} }, /* Automatic Keyboard background light toggle */
 	{KE_KEY, KEY_TOUCHPAD_ON, {KEY_TOUCHPAD_ON} },
@@ -198,29 +146,20 @@ static const struct key_entry acer_wmi_keymap[] __initconst = {
 	{KE_KEY, 0x85, {KEY_TOUCHPAD_TOGGLE} },
 	{KE_KEY, 0x86, {KEY_WLAN} },
 	{KE_KEY, 0x87, {KEY_POWER} },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{KE_END, 0}
 };
 
 static struct input_dev *acer_wmi_input_dev;
-<<<<<<< HEAD
-=======
 static struct input_dev *acer_wmi_accel_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct event_return_value {
 	u8 function;
 	u8 key_num;
 	u16 device_state;
-<<<<<<< HEAD
-	u32 reserved;
-} __attribute__((packed));
-=======
 	u16 reserved1;
 	u8 kbd_dock_state;
 	u8 reserved2;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * GUID3 Get Device Status device flags
@@ -229,22 +168,6 @@ struct event_return_value {
 #define ACER_WMID3_GDS_THREEG		(1<<6)	/* 3G */
 #define ACER_WMID3_GDS_WIMAX		(1<<7)	/* WiMAX */
 #define ACER_WMID3_GDS_BLUETOOTH	(1<<11)	/* BT */
-<<<<<<< HEAD
-
-struct lm_input_params {
-	u8 function_num;        /* Function Number */
-	u16 commun_devices;     /* Communication type devices default status */
-	u16 devices;            /* Other type devices default status */
-	u8 lm_status;           /* Launch Manager Status */
-	u16 reserved;
-} __attribute__((packed));
-
-struct lm_return_value {
-	u8 error_code;          /* Error Code */
-	u8 ec_return_value;     /* EC Return Value */
-	u16 reserved;
-} __attribute__((packed));
-=======
 #define ACER_WMID3_GDS_RFBTN		(1<<14)	/* RF Button */
 
 #define ACER_WMID3_GDS_TOUCHPAD		(1<<1)	/* Touchpad */
@@ -277,39 +200,26 @@ struct func_return_value {
 	u8 ec_return_value;     /* EC Return Value */
 	u16 reserved;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct wmid3_gds_set_input_param {     /* Set Device Status input parameter */
 	u8 function_num;        /* Function Number */
 	u8 hotkey_number;       /* Hotkey Number */
 	u16 devices;            /* Set Device */
 	u8 volume_value;        /* Volume Value */
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct wmid3_gds_get_input_param {     /* Get Device Status input parameter */
 	u8 function_num;	/* Function Number */
 	u8 hotkey_number;	/* Hotkey Number */
 	u16 devices;		/* Get Device */
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct wmid3_gds_return_value {	/* Get Device Status return value*/
 	u8 error_code;		/* Error Code */
 	u8 ec_return_value;	/* EC Return Value */
 	u16 devices;		/* Current Device Status */
 	u32 reserved;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hotkey_function_type_aa {
 	u8 type;
@@ -321,23 +231,11 @@ struct hotkey_function_type_aa {
 	u16 display_func_bitmap;
 	u16 others_func_bitmap;
 	u8 commun_fn_key_number;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Interface capability flags
  */
-<<<<<<< HEAD
-#define ACER_CAP_MAILLED		(1<<0)
-#define ACER_CAP_WIRELESS		(1<<1)
-#define ACER_CAP_BLUETOOTH		(1<<2)
-#define ACER_CAP_BRIGHTNESS		(1<<3)
-#define ACER_CAP_THREEG			(1<<4)
-#define ACER_CAP_ANY			(0xFFFFFFFF)
-=======
 #define ACER_CAP_MAILLED		BIT(0)
 #define ACER_CAP_WIRELESS		BIT(1)
 #define ACER_CAP_BLUETOOTH		BIT(2)
@@ -350,7 +248,6 @@ struct hotkey_function_type_aa {
 #define ACER_CAP_TURBO_FAN		BIT(9)
 #define ACER_CAP_PLATFORM_PROFILE	BIT(10)
 #define ACER_CAP_FAN_SPEED_READ		BIT(11)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Interface type flags
@@ -373,46 +270,32 @@ static int mailled = -1;
 static int brightness = -1;
 static int threeg = -1;
 static int force_series;
-<<<<<<< HEAD
-=======
 static int force_caps = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool ec_raw_mode;
 static bool has_type_aa;
 static u16 commun_func_bitmap;
 static u8 commun_fn_key_number;
-<<<<<<< HEAD
-=======
 static bool cycle_gaming_thermal_profile = true;
 static bool predator_v4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(mailled, int, 0444);
 module_param(brightness, int, 0444);
 module_param(threeg, int, 0444);
 module_param(force_series, int, 0444);
-<<<<<<< HEAD
-module_param(ec_raw_mode, bool, 0444);
-=======
 module_param(force_caps, int, 0444);
 module_param(ec_raw_mode, bool, 0444);
 module_param(cycle_gaming_thermal_profile, bool, 0644);
 module_param(predator_v4, bool, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(mailled, "Set initial state of Mail LED");
 MODULE_PARM_DESC(brightness, "Set initial LCD backlight brightness");
 MODULE_PARM_DESC(threeg, "Set initial state of 3G hardware");
 MODULE_PARM_DESC(force_series, "Force a different laptop series");
-<<<<<<< HEAD
-MODULE_PARM_DESC(ec_raw_mode, "Enable EC raw mode");
-=======
 MODULE_PARM_DESC(force_caps, "Force the capability bitmask to this value");
 MODULE_PARM_DESC(ec_raw_mode, "Enable EC raw mode");
 MODULE_PARM_DESC(cycle_gaming_thermal_profile,
 	"Set thermal mode key in cycle mode. Disabling it sets the mode key in turbo toggle mode");
 MODULE_PARM_DESC(predator_v4,
 	"Enable features for predator laptops that use predator sense v4");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct acer_data {
 	int mailled;
@@ -422,10 +305,6 @@ struct acer_data {
 
 struct acer_debug {
 	struct dentry *root;
-<<<<<<< HEAD
-	struct dentry *devices;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 wmid_devices;
 };
 
@@ -463,37 +342,21 @@ struct quirk_entry {
 	u8 mailled;
 	s8 brightness;
 	u8 bluetooth;
-<<<<<<< HEAD
-=======
 	u8 turbo;
 	u8 cpu_fans;
 	u8 gpu_fans;
 	u8 predator_v4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct quirk_entry *quirks;
 
-<<<<<<< HEAD
-static void set_quirks(void)
-{
-	if (!interface)
-		return;
-
-=======
 static void __init set_quirks(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (quirks->mailled)
 		interface->capability |= ACER_CAP_MAILLED;
 
 	if (quirks->brightness)
 		interface->capability |= ACER_CAP_BRIGHTNESS;
-<<<<<<< HEAD
-}
-
-static int dmi_matched(const struct dmi_system_id *dmi)
-=======
 
 	if (quirks->turbo)
 		interface->capability |= ACER_CAP_TURBO_OC | ACER_CAP_TURBO_LED
@@ -505,14 +368,11 @@ static int dmi_matched(const struct dmi_system_id *dmi)
 }
 
 static int __init dmi_matched(const struct dmi_system_id *dmi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	quirks = dmi->driver_data;
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 static int __init set_force_caps(const struct dmi_system_id *dmi)
 {
 	if (force_caps == -1) {
@@ -522,7 +382,6 @@ static int __init set_force_caps(const struct dmi_system_id *dmi)
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct quirk_entry quirk_unknown = {
 };
 
@@ -534,8 +393,6 @@ static struct quirk_entry quirk_acer_travelmate_2490 = {
 	.mailled = 1,
 };
 
-<<<<<<< HEAD
-=======
 static struct quirk_entry quirk_acer_predator_ph315_53 = {
 	.turbo = 1,
 	.cpu_fans = 1,
@@ -546,7 +403,6 @@ static struct quirk_entry quirk_acer_predator_v4 = {
 	.predator_v4 = 1,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This AMW0 laptop has no bluetooth */
 static struct quirk_entry quirk_medion_md_98300 = {
 	.wireless = 1,
@@ -561,11 +417,7 @@ static struct quirk_entry quirk_lenovo_ideapad_s205 = {
 };
 
 /* The Aspire One has a dummy ACPI-WMI interface - disable it */
-<<<<<<< HEAD
-static struct dmi_system_id __devinitdata acer_blacklist[] = {
-=======
 static const struct dmi_system_id acer_blacklist[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "Acer Aspire One (SSD)",
 		.matches = {
@@ -583,9 +435,6 @@ static const struct dmi_system_id acer_blacklist[] __initconst = {
 	{}
 };
 
-<<<<<<< HEAD
-static struct dmi_system_id acer_quirks[] = {
-=======
 static const struct dmi_system_id amw0_whitelist[] __initconst = {
 	{
 		.ident = "Acer",
@@ -613,7 +462,6 @@ static const struct dmi_system_id amw0_whitelist[] __initconst = {
  * that those machines are supported by acer-wmi driver.
  */
 static const struct dmi_system_id acer_quirks[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.callback = dmi_matched,
 		.ident = "Acer Aspire 1360",
@@ -724,8 +572,6 @@ static const struct dmi_system_id acer_quirks[] __initconst = {
 	},
 	{
 		.callback = dmi_matched,
-<<<<<<< HEAD
-=======
 		.ident = "Acer Predator PH315-53",
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
@@ -809,7 +655,6 @@ static const struct dmi_system_id acer_quirks[] __initconst = {
 static const struct dmi_system_id non_acer_quirks[] __initconst = {
 	{
 		.callback = dmi_matched,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.ident = "Fujitsu Siemens Amilo Li 1718",
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU SIEMENS"),
@@ -853,46 +698,6 @@ static const struct dmi_system_id non_acer_quirks[] __initconst = {
 		},
 		.driver_data = &quirk_fujitsu_amilo_li_1718,
 	},
-<<<<<<< HEAD
-	{}
-};
-
-static int video_set_backlight_video_vendor(const struct dmi_system_id *d)
-{
-	interface->capability &= ~ACER_CAP_BRIGHTNESS;
-	pr_info("Brightness must be controlled by generic video driver\n");
-	return 0;
-}
-
-static const struct dmi_system_id video_vendor_dmi_table[] = {
-	{
-		.callback = video_set_backlight_video_vendor,
-		.ident = "Acer TravelMate 4750",
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "Acer"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate 4750"),
-		},
-	},
-	{
-		/*
-		 * Note no video_set_backlight_video_vendor, we must use the
-		 * acer interface, as there is no native backlight interface.
-		 */
-		.ident = "Acer KAV80",
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "KAV80"),
-		},
-	},
-	{}
-};
-
-/* Find which quirks are needed for a particular vendor/ model pair */
-static void find_quirks(void)
-{
-	if (!force_series) {
-		dmi_check_system(acer_quirks);
-=======
 	{
 		.callback = dmi_matched,
 		.ident = "Lenovo Ideapad S205-10382JG",
@@ -947,18 +752,12 @@ static void __init find_quirks(void)
 	} else if (!force_series) {
 		dmi_check_system(acer_quirks);
 		dmi_check_system(non_acer_quirks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (force_series == 2490) {
 		quirks = &quirk_acer_travelmate_2490;
 	}
 
 	if (quirks == NULL)
 		quirks = &quirk_unknown;
-<<<<<<< HEAD
-
-	set_quirks();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -967,14 +766,7 @@ static void __init find_quirks(void)
 
 static bool has_cap(u32 cap)
 {
-<<<<<<< HEAD
-	if ((interface->capability & cap) != 0)
-		return 1;
-
-	return 0;
-=======
 	return interface->capability & cap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1003,11 +795,7 @@ struct acpi_buffer *result)
 	input.length = sizeof(struct wmab_args);
 	input.pointer = (u8 *)regbuf;
 
-<<<<<<< HEAD
-	status = wmi_evaluate_method(AMW0_GUID1, 1, 1, &input, result);
-=======
 	status = wmi_evaluate_method(AMW0_GUID1, 0, 1, &input, result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return status;
 }
@@ -1112,10 +900,6 @@ static acpi_status AMW0_set_u32(u32 value, u32 cap)
 		switch (quirks->brightness) {
 		default:
 			return ec_write(0x83, value);
-<<<<<<< HEAD
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	default:
 		return AE_ERROR;
@@ -1125,11 +909,7 @@ static acpi_status AMW0_set_u32(u32 value, u32 cap)
 	return wmab_execute(&args, NULL);
 }
 
-<<<<<<< HEAD
-static acpi_status AMW0_find_mailled(void)
-=======
 static acpi_status __init AMW0_find_mailled(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wmab_args args;
 	struct wmab_ret ret;
@@ -1161,48 +941,20 @@ static acpi_status __init AMW0_find_mailled(void)
 	return AE_OK;
 }
 
-<<<<<<< HEAD
-static int AMW0_set_cap_acpi_check_device_found;
-
-static acpi_status AMW0_set_cap_acpi_check_device_cb(acpi_handle handle,
-	u32 level, void *context, void **retval)
-{
-	AMW0_set_cap_acpi_check_device_found = 1;
-	return AE_OK;
-}
-
-static const struct acpi_device_id norfkill_ids[] = {
-=======
 static const struct acpi_device_id norfkill_ids[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "VPC2004", 0},
 	{ "IBM0068", 0},
 	{ "LEN0068", 0},
 	{ "SNY5001", 0},	/* sony-laptop in charge */
-<<<<<<< HEAD
-	{ "", 0},
-};
-
-static int AMW0_set_cap_acpi_check_device(void)
-=======
 	{ "HPQ6601", 0},
 	{ "", 0},
 };
 
 static int __init AMW0_set_cap_acpi_check_device(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct acpi_device_id *id;
 
 	for (id = norfkill_ids; id->id[0]; id++)
-<<<<<<< HEAD
-		acpi_get_devices(id->id, AMW0_set_cap_acpi_check_device_cb,
-				NULL, NULL);
-	return AMW0_set_cap_acpi_check_device_found;
-}
-
-static acpi_status AMW0_set_capabilities(void)
-=======
 		if (acpi_dev_found(id->id))
 			return true;
 
@@ -1210,7 +962,6 @@ static acpi_status AMW0_set_capabilities(void)
 }
 
 static acpi_status __init AMW0_set_capabilities(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wmab_args args;
 	struct wmab_ret ret;
@@ -1305,32 +1056,15 @@ WMI_execute_u32(u32 method_id, u32 in, u32 *out)
 	struct acpi_buffer input = { (acpi_size) sizeof(u32), (void *)(&in) };
 	struct acpi_buffer result = { ACPI_ALLOCATE_BUFFER, NULL };
 	union acpi_object *obj;
-<<<<<<< HEAD
-	u32 tmp;
-	acpi_status status;
-
-	status = wmi_evaluate_method(WMID_GUID1, 1, method_id, &input, &result);
-=======
 	u32 tmp = 0;
 	acpi_status status;
 
 	status = wmi_evaluate_method(WMID_GUID1, 0, method_id, &input, &result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ACPI_FAILURE(status))
 		return status;
 
 	obj = (union acpi_object *) result.pointer;
-<<<<<<< HEAD
-	if (obj && obj->type == ACPI_TYPE_BUFFER &&
-		(obj->buffer.length == sizeof(u32) ||
-		obj->buffer.length == sizeof(u64))) {
-		tmp = *((u32 *) obj->buffer.pointer);
-	} else if (obj->type == ACPI_TYPE_INTEGER) {
-		tmp = (u32) obj->integer.value;
-	} else {
-		tmp = 0;
-=======
 	if (obj) {
 		if (obj->type == ACPI_TYPE_BUFFER &&
 			(obj->buffer.length == sizeof(u32) ||
@@ -1339,7 +1073,6 @@ WMI_execute_u32(u32 method_id, u32 in, u32 *out)
 		} else if (obj->type == ACPI_TYPE_INTEGER) {
 			tmp = (u32) obj->integer.value;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (out)
@@ -1375,10 +1108,7 @@ static acpi_status WMID_get_u32(u32 *value, u32 cap)
 			*value = tmp & 0x1;
 			return 0;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return AE_ERROR;
 	}
@@ -1608,11 +1338,7 @@ static acpi_status wmid_v2_set_u32(u32 value, u32 cap)
 	return wmid3_set_device_status(value, device);
 }
 
-<<<<<<< HEAD
-static void type_aa_dmi_decode(const struct dmi_header *header, void *dummy)
-=======
 static void __init type_aa_dmi_decode(const struct dmi_header *header, void *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hotkey_function_type_aa *type_aa;
 
@@ -1633,43 +1359,24 @@ static void __init type_aa_dmi_decode(const struct dmi_header *header, void *d)
 		interface->capability |= ACER_CAP_THREEG;
 	if (type_aa->commun_func_bitmap & ACER_WMID3_GDS_BLUETOOTH)
 		interface->capability |= ACER_CAP_BLUETOOTH;
-<<<<<<< HEAD
-=======
 	if (type_aa->commun_func_bitmap & ACER_WMID3_GDS_RFBTN)
 		commun_func_bitmap &= ~ACER_WMID3_GDS_RFBTN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	commun_fn_key_number = type_aa->commun_fn_key_number;
 }
 
-<<<<<<< HEAD
-static acpi_status WMID_set_capabilities(void)
-=======
 static acpi_status __init WMID_set_capabilities(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_buffer out = {ACPI_ALLOCATE_BUFFER, NULL};
 	union acpi_object *obj;
 	acpi_status status;
 	u32 devices;
 
-<<<<<<< HEAD
-	status = wmi_query_block(WMID_GUID2, 1, &out);
-=======
 	status = wmi_query_block(WMID_GUID2, 0, &out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status))
 		return status;
 
 	obj = (union acpi_object *) out.pointer;
-<<<<<<< HEAD
-	if (obj && obj->type == ACPI_TYPE_BUFFER &&
-		(obj->buffer.length == sizeof(u32) ||
-		obj->buffer.length == sizeof(u64))) {
-		devices = *((u32 *) obj->buffer.pointer);
-	} else if (obj->type == ACPI_TYPE_INTEGER) {
-		devices = (u32) obj->integer.value;
-=======
 	if (obj) {
 		if (obj->type == ACPI_TYPE_BUFFER &&
 			(obj->buffer.length == sizeof(u32) ||
@@ -1681,7 +1388,6 @@ static acpi_status __init WMID_set_capabilities(void)
 			kfree(out.pointer);
 			return AE_ERROR;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		kfree(out.pointer);
 		return AE_ERROR;
@@ -1711,8 +1417,6 @@ static struct wmi_interface wmid_v2_interface = {
 };
 
 /*
-<<<<<<< HEAD
-=======
  * WMID Gaming interface
  */
 
@@ -1821,7 +1525,6 @@ static void WMID_gaming_set_fan_mode(u8 fan_mode)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Generic Device (interface-independent)
  */
 
@@ -1838,10 +1541,7 @@ static acpi_status get_u32(u32 *value, u32 cap)
 			status = AMW0_get_u32(value, cap);
 			break;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ACER_WMID:
 		status = WMID_get_u32(value, cap);
 		break;
@@ -1884,10 +1584,7 @@ static acpi_status set_u32(u32 value, u32 cap)
 
 				return AMW0_set_u32(value, cap);
 			}
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ACER_WMID:
 			return WMID_set_u32(value, cap);
 		case ACER_WMID_v2:
@@ -1897,10 +1594,7 @@ static acpi_status set_u32(u32 value, u32 cap)
 				return wmid_v2_set_u32(value, cap);
 			else if (wmi_has_guid(WMID_GUID2))
 				return WMID_set_u32(value, cap);
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			return AE_BAD_PARAMETER;
 		}
@@ -1936,11 +1630,7 @@ static struct led_classdev mail_led = {
 	.brightness_set = mail_led_set,
 };
 
-<<<<<<< HEAD
-static int __devinit acer_led_init(struct device *dev)
-=======
 static int acer_led_init(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return led_classdev_register(dev, &mail_led);
 }
@@ -1965,16 +1655,7 @@ static int read_brightness(struct backlight_device *bd)
 
 static int update_bl_status(struct backlight_device *bd)
 {
-<<<<<<< HEAD
-	int intensity = bd->props.brightness;
-
-	if (bd->props.power != FB_BLANK_UNBLANK)
-		intensity = 0;
-	if (bd->props.fb_blank != FB_BLANK_UNBLANK)
-		intensity = 0;
-=======
 	int intensity = backlight_get_brightness(bd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_u32(intensity, ACER_CAP_BRIGHTNESS);
 
@@ -1986,11 +1667,7 @@ static const struct backlight_ops acer_bl_ops = {
 	.update_status = update_bl_status,
 };
 
-<<<<<<< HEAD
-static int __devinit acer_backlight_init(struct device *dev)
-=======
 static int acer_backlight_init(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct backlight_properties props;
 	struct backlight_device *bd;
@@ -2020,8 +1697,6 @@ static void acer_backlight_exit(void)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Accelerometer device
  */
 static acpi_handle gsensor_handle;
@@ -2390,7 +2065,6 @@ static void acer_kbd_dock_event(const struct event_return_value *event)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Rfkill devices
  */
 static void acer_rfkill_update(struct work_struct *ignored);
@@ -2548,66 +2222,8 @@ static void acer_rfkill_exit(void)
 		rfkill_unregister(threeg_rfkill);
 		rfkill_destroy(threeg_rfkill);
 	}
-<<<<<<< HEAD
-	return;
 }
 
-/*
- * sysfs interface
- */
-static ssize_t show_bool_threeg(struct device *dev,
-	struct device_attribute *attr, char *buf)
-{
-	u32 result; \
-	acpi_status status;
-
-	pr_info("This threeg sysfs will be removed in 2012 - used by: %s\n",
-		current->comm);
-	status = get_u32(&result, ACER_CAP_THREEG);
-	if (ACPI_SUCCESS(status))
-		return sprintf(buf, "%u\n", result);
-	return sprintf(buf, "Read error\n");
-}
-
-static ssize_t set_bool_threeg(struct device *dev,
-	struct device_attribute *attr, const char *buf, size_t count)
-{
-	u32 tmp = simple_strtoul(buf, NULL, 10);
-	acpi_status status = set_u32(tmp, ACER_CAP_THREEG);
-	pr_info("This threeg sysfs will be removed in 2012 - used by: %s\n",
-		current->comm);
-	if (ACPI_FAILURE(status))
-		return -EINVAL;
-	return count;
-}
-static DEVICE_ATTR(threeg, S_IRUGO | S_IWUSR, show_bool_threeg,
-	set_bool_threeg);
-
-static ssize_t show_interface(struct device *dev, struct device_attribute *attr,
-	char *buf)
-{
-	pr_info("This interface sysfs will be removed in 2012 - used by: %s\n",
-		current->comm);
-	switch (interface->type) {
-	case ACER_AMW0:
-		return sprintf(buf, "AMW0\n");
-	case ACER_AMW0_V2:
-		return sprintf(buf, "AMW0 v2\n");
-	case ACER_WMID:
-		return sprintf(buf, "WMID\n");
-	case ACER_WMID_v2:
-		return sprintf(buf, "WMID v2\n");
-	default:
-		return sprintf(buf, "Error!\n");
-	}
-}
-
-static DEVICE_ATTR(interface, S_IRUGO, show_interface, NULL);
-
-=======
-}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void acer_wmi_notify(u32 value, void *context)
 {
 	struct acpi_buffer response = { ACPI_ALLOCATE_BUFFER, NULL };
@@ -2616,10 +2232,7 @@ static void acer_wmi_notify(u32 value, void *context)
 	acpi_status status;
 	u16 device_state;
 	const struct key_entry *key;
-<<<<<<< HEAD
-=======
 	u32 scancode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = wmi_get_event_data(value, &response);
 	if (status != AE_OK) {
@@ -2656,10 +2269,7 @@ static void acer_wmi_notify(u32 value, void *context)
 			pr_warn("Unknown key number - 0x%x\n",
 				return_value.key_num);
 		} else {
-<<<<<<< HEAD
-=======
 			scancode = return_value.key_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (key->keycode) {
 			case KEY_WLAN:
 			case KEY_BLUETOOTH:
@@ -2673,13 +2283,6 @@ static void acer_wmi_notify(u32 value, void *context)
 					rfkill_set_sw_state(bluetooth_rfkill,
 						!(device_state & ACER_WMID3_GDS_BLUETOOTH));
 				break;
-<<<<<<< HEAD
-			}
-			sparse_keymap_report_entry(acer_wmi_input_dev, key,
-						   1, true);
-		}
-		break;
-=======
 			case KEY_TOUCHPAD_TOGGLE:
 				scancode = (device_state & ACER_WMID3_GDS_TOUCHPAD) ?
 						KEY_TOUCHPAD_ON : KEY_TOUCHPAD_OFF;
@@ -2697,7 +2300,6 @@ static void acer_wmi_notify(u32 value, void *context)
 		if (return_value.key_num == 0x5 && has_cap(ACER_CAP_PLATFORM_PROFILE))
 			acer_thermal_profile_change();
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		pr_warn("Unknown function number - %d - %d\n",
 			return_value.function, return_value.key_num);
@@ -2705,24 +2307,14 @@ static void acer_wmi_notify(u32 value, void *context)
 	}
 }
 
-<<<<<<< HEAD
-static acpi_status
-wmid3_set_lm_mode(struct lm_input_params *params,
-		  struct lm_return_value *return_value)
-=======
 static acpi_status __init
 wmid3_set_function_mode(struct func_input_params *params,
 			struct func_return_value *return_value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 	union acpi_object *obj;
 
-<<<<<<< HEAD
-	struct acpi_buffer input = { sizeof(struct lm_input_params), params };
-=======
 	struct acpi_buffer input = { sizeof(struct func_input_params), params };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, NULL };
 
 	status = wmi_evaluate_method(WMID_GUID3, 0, 0x1, &input, &output);
@@ -2743,30 +2335,12 @@ wmid3_set_function_mode(struct func_input_params *params,
 		return AE_ERROR;
 	}
 
-<<<<<<< HEAD
-	*return_value = *((struct lm_return_value *)obj->buffer.pointer);
-=======
 	*return_value = *((struct func_return_value *)obj->buffer.pointer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(obj);
 
 	return status;
 }
 
-<<<<<<< HEAD
-static int acer_wmi_enable_ec_raw(void)
-{
-	struct lm_return_value return_value;
-	acpi_status status;
-	struct lm_input_params params = {
-		.function_num = 0x1,
-		.commun_devices = 0xFFFF,
-		.devices = 0xFFFF,
-		.lm_status = 0x00,            /* Launch Manager Deactive */
-	};
-
-	status = wmid3_set_lm_mode(&params, &return_value);
-=======
 static int __init acer_wmi_enable_ec_raw(void)
 {
 	struct func_return_value return_value;
@@ -2780,7 +2354,6 @@ static int __init acer_wmi_enable_ec_raw(void)
 	};
 
 	status = wmid3_set_function_mode(&params, &return_value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (return_value.error_code || return_value.ec_return_value)
 		pr_warn("Enabling EC raw mode failed: 0x%x - 0x%x\n",
@@ -2792,20 +2365,6 @@ static int __init acer_wmi_enable_ec_raw(void)
 	return status;
 }
 
-<<<<<<< HEAD
-static int acer_wmi_enable_lm(void)
-{
-	struct lm_return_value return_value;
-	acpi_status status;
-	struct lm_input_params params = {
-		.function_num = 0x1,
-		.commun_devices = 0xFFFF,
-		.devices = 0xFFFF,
-		.lm_status = 0x01,            /* Launch Manager Active */
-	};
-
-	status = wmid3_set_lm_mode(&params, &return_value);
-=======
 static int __init acer_wmi_enable_lm(void)
 {
 	struct func_return_value return_value;
@@ -2819,7 +2378,6 @@ static int __init acer_wmi_enable_lm(void)
 	};
 
 	status = wmid3_set_function_mode(&params, &return_value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (return_value.error_code || return_value.ec_return_value)
 		pr_warn("Enabling Launch Manager failed: 0x%x - 0x%x\n",
@@ -2829,8 +2387,6 @@ static int __init acer_wmi_enable_lm(void)
 	return status;
 }
 
-<<<<<<< HEAD
-=======
 static int __init acer_wmi_enable_rf_button(void)
 {
 	struct func_return_value return_value;
@@ -2890,7 +2446,6 @@ err_free_dev:
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init acer_wmi_input_setup(void)
 {
 	acpi_status status;
@@ -2908,28 +2463,19 @@ static int __init acer_wmi_input_setup(void)
 	if (err)
 		goto err_free_dev;
 
-<<<<<<< HEAD
-=======
 	if (has_cap(ACER_CAP_KBD_DOCK))
 		input_set_capability(acer_wmi_input_dev, EV_SW, SW_TABLET_MODE);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = wmi_install_notify_handler(ACERWMID_EVENT_GUID,
 						acer_wmi_notify, NULL);
 	if (ACPI_FAILURE(status)) {
 		err = -EIO;
-<<<<<<< HEAD
-		goto err_free_keymap;
-	}
-
-=======
 		goto err_free_dev;
 	}
 
 	if (has_cap(ACER_CAP_KBD_DOCK))
 		acer_kbd_dock_get_initial_state();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = input_register_device(acer_wmi_input_dev);
 	if (err)
 		goto err_uninstall_notifier;
@@ -2938,11 +2484,6 @@ static int __init acer_wmi_input_setup(void)
 
 err_uninstall_notifier:
 	wmi_remove_notify_handler(ACERWMID_EVENT_GUID);
-<<<<<<< HEAD
-err_free_keymap:
-	sparse_keymap_free(acer_wmi_input_dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free_dev:
 	input_free_device(acer_wmi_input_dev);
 	return err;
@@ -2951,10 +2492,6 @@ err_free_dev:
 static void acer_wmi_input_destroy(void)
 {
 	wmi_remove_notify_handler(ACERWMID_EVENT_GUID);
-<<<<<<< HEAD
-	sparse_keymap_free(acer_wmi_input_dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_unregister_device(acer_wmi_input_dev);
 }
 
@@ -2968,23 +2505,11 @@ static u32 get_wmid_devices(void)
 	acpi_status status;
 	u32 devices = 0;
 
-<<<<<<< HEAD
-	status = wmi_query_block(WMID_GUID2, 1, &out);
-=======
 	status = wmi_query_block(WMID_GUID2, 0, &out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status))
 		return 0;
 
 	obj = (union acpi_object *) out.pointer;
-<<<<<<< HEAD
-	if (obj && obj->type == ACPI_TYPE_BUFFER &&
-		(obj->buffer.length == sizeof(u32) ||
-		obj->buffer.length == sizeof(u64))) {
-		devices = *((u32 *) obj->buffer.pointer);
-	} else if (obj->type == ACPI_TYPE_INTEGER) {
-		devices = (u32) obj->integer.value;
-=======
 	if (obj) {
 		if (obj->type == ACPI_TYPE_BUFFER &&
 			(obj->buffer.length == sizeof(u32) ||
@@ -2993,26 +2518,18 @@ static u32 get_wmid_devices(void)
 		} else if (obj->type == ACPI_TYPE_INTEGER) {
 			devices = (u32) obj->integer.value;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kfree(out.pointer);
 	return devices;
 }
 
-<<<<<<< HEAD
-/*
- * Platform device
- */
-static int __devinit acer_platform_probe(struct platform_device *device)
-=======
 static int acer_wmi_hwmon_init(void);
 
 /*
  * Platform device
  */
 static int acer_platform_probe(struct platform_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -3032,10 +2549,6 @@ static int acer_platform_probe(struct platform_device *device)
 	if (err)
 		goto error_rfkill;
 
-<<<<<<< HEAD
-	return err;
-
-=======
 	if (has_cap(ACER_CAP_PLATFORM_PROFILE)) {
 		err = acer_platform_profile_setup();
 		if (err)
@@ -3055,7 +2568,6 @@ error_hwmon:
 		platform_profile_remove();
 error_platform_profile:
 	acer_rfkill_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error_rfkill:
 	if (has_cap(ACER_CAP_BRIGHTNESS))
 		acer_backlight_exit();
@@ -3066,11 +2578,7 @@ error_mailled:
 	return err;
 }
 
-<<<<<<< HEAD
-static int acer_platform_remove(struct platform_device *device)
-=======
 static void acer_platform_remove(struct platform_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (has_cap(ACER_CAP_MAILLED))
 		acer_led_exit();
@@ -3078,13 +2586,6 @@ static void acer_platform_remove(struct platform_device *device)
 		acer_backlight_exit();
 
 	acer_rfkill_exit();
-<<<<<<< HEAD
-	return 0;
-}
-
-static int acer_platform_suspend(struct platform_device *dev,
-pm_message_t state)
-=======
 
 	if (platform_profile_support)
 		platform_profile_remove();
@@ -3092,7 +2593,6 @@ pm_message_t state)
 
 #ifdef CONFIG_PM_SLEEP
 static int acer_suspend(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 value;
 	struct acer_data *data = &interface->data;
@@ -3114,11 +2614,7 @@ static int acer_suspend(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int acer_platform_resume(struct platform_device *device)
-=======
 static int acer_resume(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acer_data *data = &interface->data;
 
@@ -3131,10 +2627,6 @@ static int acer_resume(struct device *dev)
 	if (has_cap(ACER_CAP_BRIGHTNESS))
 		set_u32(data->brightness, ACER_CAP_BRIGHTNESS);
 
-<<<<<<< HEAD
-	return 0;
-}
-=======
 	if (acer_wmi_accel_dev)
 		acer_gsensor_init();
 
@@ -3146,7 +2638,6 @@ static int acer_resume(struct device *dev)
 #endif
 
 static SIMPLE_DEV_PM_OPS(acer_pm, acer_suspend, acer_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void acer_platform_shutdown(struct platform_device *device)
 {
@@ -3162,84 +2653,15 @@ static void acer_platform_shutdown(struct platform_device *device)
 static struct platform_driver acer_platform_driver = {
 	.driver = {
 		.name = "acer-wmi",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe = acer_platform_probe,
-	.remove = acer_platform_remove,
-	.suspend = acer_platform_suspend,
-	.resume = acer_platform_resume,
-=======
 		.pm = &acer_pm,
 	},
 	.probe = acer_platform_probe,
 	.remove_new = acer_platform_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown = acer_platform_shutdown,
 };
 
 static struct platform_device *acer_platform_device;
 
-<<<<<<< HEAD
-static int remove_sysfs(struct platform_device *device)
-{
-	if (has_cap(ACER_CAP_THREEG))
-		device_remove_file(&device->dev, &dev_attr_threeg);
-
-	device_remove_file(&device->dev, &dev_attr_interface);
-
-	return 0;
-}
-
-static int create_sysfs(void)
-{
-	int retval = -ENOMEM;
-
-	if (has_cap(ACER_CAP_THREEG)) {
-		retval = device_create_file(&acer_platform_device->dev,
-			&dev_attr_threeg);
-		if (retval)
-			goto error_sysfs;
-	}
-
-	retval = device_create_file(&acer_platform_device->dev,
-		&dev_attr_interface);
-	if (retval)
-		goto error_sysfs;
-
-	return 0;
-
-error_sysfs:
-		remove_sysfs(acer_platform_device);
-	return retval;
-}
-
-static void remove_debugfs(void)
-{
-	debugfs_remove(interface->debug.devices);
-	debugfs_remove(interface->debug.root);
-}
-
-static int create_debugfs(void)
-{
-	interface->debug.root = debugfs_create_dir("acer-wmi", NULL);
-	if (!interface->debug.root) {
-		pr_err("Failed to create debugfs directory");
-		return -ENOMEM;
-	}
-
-	interface->debug.devices = debugfs_create_u32("devices", S_IRUGO,
-					interface->debug.root,
-					&interface->debug.wmid_devices);
-	if (!interface->debug.devices)
-		goto error_debugfs;
-
-	return 0;
-
-error_debugfs:
-	remove_debugfs();
-	return -ENOMEM;
-=======
 static void remove_debugfs(void)
 {
 	debugfs_remove_recursive(interface->debug.root);
@@ -3318,7 +2740,6 @@ static int acer_wmi_hwmon_init(void)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init acer_wmi_init(void)
@@ -3335,8 +2756,6 @@ static int __init acer_wmi_init(void)
 	find_quirks();
 
 	/*
-<<<<<<< HEAD
-=======
 	 * The AMW0_GUID1 wmi is not only found on Acer family but also other
 	 * machines like Lenovo, Fujitsu and Medion. In the past days,
 	 * acer-wmi driver handled those non-Acer machines by quirks list.
@@ -3355,7 +2774,6 @@ static int __init acer_wmi_init(void)
 	}
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Detect which ACPI-WMI interface we're using.
 	 */
 	if (wmi_has_guid(AMW0_GUID1) && wmi_has_guid(WMID_GUID1))
@@ -3377,11 +2795,7 @@ static int __init acer_wmi_init(void)
 		}
 		/* WMID always provides brightness methods */
 		interface->capability |= ACER_CAP_BRIGHTNESS;
-<<<<<<< HEAD
-	} else if (!wmi_has_guid(WMID_GUID2) && interface && !has_type_aa) {
-=======
 	} else if (!wmi_has_guid(WMID_GUID2) && interface && !has_type_aa && force_caps == -1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("No WMID device detection method found\n");
 		return -ENODEV;
 	}
@@ -3405,19 +2819,6 @@ static int __init acer_wmi_init(void)
 
 	set_quirks();
 
-<<<<<<< HEAD
-	if (acpi_video_backlight_support()) {
-		if (dmi_check_system(video_vendor_dmi_table)) {
-			acpi_video_unregister();
-		} else {
-			interface->capability &= ~ACER_CAP_BRIGHTNESS;
-			pr_info("Brightness must be controlled by "
-				"acpi video driver\n");
-		}
-	}
-
-	if (wmi_has_guid(WMID_GUID3)) {
-=======
 	if (acpi_video_get_backlight_type() != acpi_backlight_vendor)
 		interface->capability &= ~ACER_CAP_BRIGHTNESS;
 
@@ -3432,7 +2833,6 @@ static int __init acer_wmi_init(void)
 		if (ACPI_FAILURE(acer_wmi_enable_rf_button()))
 			pr_warn("Cannot enable RF Button Driver\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ec_raw_mode) {
 			if (ACPI_FAILURE(acer_wmi_enable_ec_raw())) {
 				pr_err("Cannot enable EC raw mode\n");
@@ -3450,12 +2850,9 @@ static int __init acer_wmi_init(void)
 		err = acer_wmi_input_setup();
 		if (err)
 			return err;
-<<<<<<< HEAD
-=======
 		err = acer_wmi_accel_setup();
 		if (err && err != -ENODEV)
 			pr_warn("Cannot enable accelerometer\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = platform_driver_register(&acer_platform_driver);
@@ -3464,11 +2861,7 @@ static int __init acer_wmi_init(void)
 		goto error_platform_register;
 	}
 
-<<<<<<< HEAD
-	acer_platform_device = platform_device_alloc("acer-wmi", -1);
-=======
 	acer_platform_device = platform_device_alloc("acer-wmi", PLATFORM_DEVID_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!acer_platform_device) {
 		err = -ENOMEM;
 		goto error_device_alloc;
@@ -3478,21 +2871,9 @@ static int __init acer_wmi_init(void)
 	if (err)
 		goto error_device_add;
 
-<<<<<<< HEAD
-	err = create_sysfs();
-	if (err)
-		goto error_create_sys;
-
-	if (wmi_has_guid(WMID_GUID2)) {
-		interface->debug.wmid_devices = get_wmid_devices();
-		err = create_debugfs();
-		if (err)
-			goto error_create_debugfs;
-=======
 	if (wmi_has_guid(WMID_GUID2)) {
 		interface->debug.wmid_devices = get_wmid_devices();
 		create_debugfs();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Override any initial settings with values from the commandline */
@@ -3500,13 +2881,6 @@ static int __init acer_wmi_init(void)
 
 	return 0;
 
-<<<<<<< HEAD
-error_create_debugfs:
-	remove_sysfs(acer_platform_device);
-error_create_sys:
-	platform_device_del(acer_platform_device);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error_device_add:
 	platform_device_put(acer_platform_device);
 error_device_alloc:
@@ -3514,11 +2888,8 @@ error_device_alloc:
 error_platform_register:
 	if (wmi_has_guid(ACERWMID_EVENT_GUID))
 		acer_wmi_input_destroy();
-<<<<<<< HEAD
-=======
 	if (acer_wmi_accel_dev)
 		input_unregister_device(acer_wmi_accel_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -3528,22 +2899,14 @@ static void __exit acer_wmi_exit(void)
 	if (wmi_has_guid(ACERWMID_EVENT_GUID))
 		acer_wmi_input_destroy();
 
-<<<<<<< HEAD
-	remove_sysfs(acer_platform_device);
-=======
 	if (acer_wmi_accel_dev)
 		input_unregister_device(acer_wmi_accel_dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	remove_debugfs();
 	platform_device_unregister(acer_platform_device);
 	platform_driver_unregister(&acer_platform_driver);
 
 	pr_info("Acer Laptop WMI Extras unloaded\n");
-<<<<<<< HEAD
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(acer_wmi_init);

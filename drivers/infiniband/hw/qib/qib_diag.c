@@ -1,11 +1,6 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2010 QLogic Corporation. All rights reserved.
- * Copyright (c) 2006, 2007, 2008, 2009 QLogic Corporation. All rights reserved.
-=======
  * Copyright (c) 2012 Intel Corporation. All rights reserved.
  * Copyright (c) 2006 - 2012 QLogic Corporation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2003, 2004, 2005, 2006 PathScale, Inc. All rights reserved.
  *
  * This software is available to you under a choice of one of two
@@ -58,12 +53,9 @@
 #include "qib.h"
 #include "qib_common.h"
 
-<<<<<<< HEAD
-=======
 #undef pr_fmt
 #define pr_fmt(fmt) QIB_DRV_NAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Each client that opens the diag device must read then write
  * offset 0, to prevent lossage from random cat or od. diag_state
@@ -93,11 +85,7 @@ static struct qib_diag_client *get_client(struct qib_devdata *dd)
 		client_pool = dc->next;
 	else
 		/* None in pool, alloc and init */
-<<<<<<< HEAD
-		dc = kmalloc(sizeof *dc, GFP_KERNEL);
-=======
 		dc = kmalloc(sizeof(*dc), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dc) {
 		dc->next = NULL;
@@ -269,10 +257,7 @@ static u32 __iomem *qib_remap_ioaddr32(struct qib_devdata *dd, u32 offset,
 	if (dd->userbase) {
 		/* If user regs mapped, they are after send, so set limit. */
 		u32 ulim = (dd->cfgctxts * dd->ureg_align) + dd->uregbase;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!dd->piovl15base)
 			snd_lim = dd->uregbase;
 		krb32 = (u32 __iomem *)dd->userbase;
@@ -296,10 +281,7 @@ static u32 __iomem *qib_remap_ioaddr32(struct qib_devdata *dd, u32 offset,
 	snd_bottom = dd->pio2k_bufbase;
 	if (snd_lim == 0) {
 		u32 tot2k = dd->piobcnt2k * ALIGN(dd->piosize2k, dd->palign);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_lim = snd_bottom + tot2k;
 	}
 	/* If 4k buffers exist, account for them by bumping
@@ -418,10 +400,7 @@ static int qib_write_umem64(struct qib_devdata *dd, u32 regoffs,
 	/* not very efficient, but it works for now */
 	while (reg_addr < reg_end) {
 		u64 data;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy_from_user(&data, uaddr, sizeof(data))) {
 			ret = -EFAULT;
 			goto bail;
@@ -570,11 +549,7 @@ static ssize_t qib_diagpkt_write(struct file *fp,
 				 size_t count, loff_t *off)
 {
 	u32 __iomem *piobuf;
-<<<<<<< HEAD
-	u32 plen, clen, pbufn;
-=======
 	u32 plen, pbufn, maxlen_reserve;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qib_diag_xpkt dp;
 	u32 *tmpbuf = NULL;
 	struct qib_devdata *dd;
@@ -618,21 +593,6 @@ static ssize_t qib_diagpkt_write(struct file *fp,
 	}
 	ppd = &dd->pport[dp.port - 1];
 
-<<<<<<< HEAD
-	/* need total length before first word written */
-	/* +1 word is for the qword padding */
-	plen = sizeof(u32) + dp.len;
-	clen = dp.len >> 2;
-
-	if ((plen + 4) > ppd->ibmaxlen) {
-		ret = -EINVAL;
-		goto bail;      /* before writing pbc */
-	}
-	tmpbuf = vmalloc(plen);
-	if (!tmpbuf) {
-		qib_devinfo(dd->pcidev, "Unable to allocate tmp buffer, "
-			 "failing\n");
-=======
 	/*
 	 * need total length before first word written, plus 2 Dwords. One Dword
 	 * is for padding so we get the full user data when not aligned on
@@ -649,17 +609,12 @@ static ssize_t qib_diagpkt_write(struct file *fp,
 
 	tmpbuf = vmalloc(plen);
 	if (!tmpbuf) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto bail;
 	}
 
 	if (copy_from_user(tmpbuf,
-<<<<<<< HEAD
-			   (const void __user *) (unsigned long) dp.data,
-=======
 			   u64_to_user_ptr(dp.data),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   dp.len)) {
 		ret = -EFAULT;
 		goto bail;
@@ -689,19 +644,11 @@ static ssize_t qib_diagpkt_write(struct file *fp,
 	 */
 	if (dd->flags & QIB_PIO_FLUSH_WC) {
 		qib_flush_wc();
-<<<<<<< HEAD
-		qib_pio_copy(piobuf + 2, tmpbuf, clen - 1);
-		qib_flush_wc();
-		__raw_writel(tmpbuf[clen - 1], piobuf + clen + 1);
-	} else
-		qib_pio_copy(piobuf + 2, tmpbuf, clen);
-=======
 		qib_pio_copy(piobuf + 2, tmpbuf, plen - 1);
 		qib_flush_wc();
 		__raw_writel(tmpbuf[plen - 1], piobuf + plen + 1);
 	} else
 		qib_pio_copy(piobuf + 2, tmpbuf, plen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dd->flags & QIB_USE_SPCL_TRIG) {
 		u32 spcl_off = (pbufn >= dd->piobcnt2k) ? 2047 : 1023;
@@ -748,30 +695,6 @@ int qib_register_observer(struct qib_devdata *dd,
 			  const struct diag_observer *op)
 {
 	struct diag_observer_list_elt *olp;
-<<<<<<< HEAD
-	int ret = -EINVAL;
-
-	if (!dd || !op)
-		goto bail;
-	ret = -ENOMEM;
-	olp = vmalloc(sizeof *olp);
-	if (!olp) {
-		printk(KERN_ERR QIB_DRV_NAME ": vmalloc for observer failed\n");
-		goto bail;
-	}
-	if (olp) {
-		unsigned long flags;
-
-		spin_lock_irqsave(&dd->qib_diag_trans_lock, flags);
-		olp->op = op;
-		olp->next = dd->diag_observer_list;
-		dd->diag_observer_list = olp;
-		spin_unlock_irqrestore(&dd->qib_diag_trans_lock, flags);
-		ret = 0;
-	}
-bail:
-	return ret;
-=======
 	unsigned long flags;
 
 	if (!dd || !op)
@@ -787,7 +710,6 @@ bail:
 	spin_unlock_irqrestore(&dd->qib_diag_trans_lock, flags);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Remove all registered observers when device is closed */
@@ -839,10 +761,6 @@ static ssize_t qib_diag_read(struct file *fp, char __user *data,
 {
 	struct qib_diag_client *dc = fp->private_data;
 	struct qib_devdata *dd = dc->dd;
-<<<<<<< HEAD
-	void __iomem *kreg_base;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t ret;
 
 	if (dc->pid != current->pid) {
@@ -850,11 +768,6 @@ static ssize_t qib_diag_read(struct file *fp, char __user *data,
 		goto bail;
 	}
 
-<<<<<<< HEAD
-	kreg_base = dd->kregbase;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (count == 0)
 		ret = 0;
 	else if ((count % 4) || (*off % 4))
@@ -879,10 +792,7 @@ static ssize_t qib_diag_read(struct file *fp, char __user *data,
 		op = diag_get_observer(dd, *off);
 		if (op) {
 			u32 offset = *off;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = op->hook(dd, op, offset, &data64, 0, use_32);
 		}
 		/*
@@ -925,10 +835,6 @@ static ssize_t qib_diag_write(struct file *fp, const char __user *data,
 {
 	struct qib_diag_client *dc = fp->private_data;
 	struct qib_devdata *dd = dc->dd;
-<<<<<<< HEAD
-	void __iomem *kreg_base;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t ret;
 
 	if (dc->pid != current->pid) {
@@ -936,11 +842,6 @@ static ssize_t qib_diag_write(struct file *fp, const char __user *data,
 		goto bail;
 	}
 
-<<<<<<< HEAD
-	kreg_base = dd->kregbase;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (count == 0)
 		ret = 0;
 	else if ((count % 4) || (*off % 4))
@@ -966,10 +867,7 @@ static ssize_t qib_diag_write(struct file *fp, const char __user *data,
 		if (count == 4 || count == 8) {
 			u64 data64;
 			u32 offset = *off;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = copy_from_user(&data64, data, count);
 			if (ret) {
 				ret = -EFAULT;

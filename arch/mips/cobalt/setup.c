@@ -13,28 +13,16 @@
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/ioport.h>
-<<<<<<< HEAD
-=======
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pm.h>
 
 #include <asm/bootinfo.h>
 #include <asm/reboot.h>
-<<<<<<< HEAD
-=======
 #include <asm/setup.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/gt64120.h>
 
 #include <cobalt.h>
 
-<<<<<<< HEAD
-extern void cobalt_machine_restart(char *command);
-extern void cobalt_machine_halt(void);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const char *get_system_type(void)
 {
 	switch (cobalt_board_id) {
@@ -52,13 +40,8 @@ const char *get_system_type(void)
 
 /*
  * Cobalt doesn't have PS/2 keyboard/mouse interfaces,
-<<<<<<< HEAD
- * keyboard conntroller is never used.
- * Also PCI-ISA bridge DMA contoroller is never used.
-=======
  * keyboard controller is never used.
  * Also PCI-ISA bridge DMA controller is never used.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct resource cobalt_reserved_resources[] = {
 	{	/* dma1 */
@@ -127,16 +110,7 @@ void __init prom_init(void)
 			strlcat(arcs_cmdline, " ", COMMAND_LINE_SIZE);
 	}
 
-<<<<<<< HEAD
-	add_memory_region(0x0, memsz, BOOT_MEM_RAM);
-}
-
-void __init prom_free_prom_memory(void)
-{
-	/* Nothing to do! */
-=======
 	memblock_add(0, memsz);
 
 	setup_8250_early_printk_port(CKSEG1ADDR(0x1c800000), 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

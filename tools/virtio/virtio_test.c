@@ -1,12 +1,7 @@
-<<<<<<< HEAD
-#define _GNU_SOURCE
-#include <getopt.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #define _GNU_SOURCE
 #include <getopt.h>
 #include <limits.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <string.h>
 #include <poll.h>
 #include <sys/eventfd.h>
@@ -17,24 +12,18 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
-<<<<<<< HEAD
-=======
 #include <stdbool.h>
 #include <linux/virtio_types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vhost.h>
 #include <linux/virtio.h>
 #include <linux/virtio_ring.h>
 #include "../../drivers/vhost/test.h"
 
-<<<<<<< HEAD
-=======
 #define RANDOM_BATCH -1
 
 /* Unused */
 void *__kmalloc_fake, *__kfree_ignore_start, *__kfree_ignore_end;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vq_info {
 	int kick;
 	int call;
@@ -57,25 +46,18 @@ struct vdev_info {
 	struct vhost_memory *mem;
 };
 
-<<<<<<< HEAD
-void vq_notify(struct virtqueue *vq)
-=======
 static const struct vhost_vring_file no_backend = { .fd = -1 },
 				     backend = { .fd = 1 };
 static const struct vhost_vring_state null_state = {};
 
 bool vq_notify(struct virtqueue *vq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vq_info *info = vq->priv;
 	unsigned long long v = 1;
 	int r;
 	r = write(info->kick, &v, sizeof v);
 	assert(r == sizeof v);
-<<<<<<< HEAD
-=======
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void vq_callback(struct virtqueue *vq)
@@ -87,11 +69,7 @@ void vhost_vq_setup(struct vdev_info *dev, struct vq_info *info)
 {
 	struct vhost_vring_state state = { .index = info->idx };
 	struct vhost_vring_file file = { .index = info->idx };
-<<<<<<< HEAD
-	unsigned long long features = dev->vdev.features[0];
-=======
 	unsigned long long features = dev->vdev.features;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vhost_vring_addr addr = {
 		.index = info->idx,
 		.desc_user_addr = (uint64_t)(unsigned long)info->vring.desc,
@@ -117,8 +95,6 @@ void vhost_vq_setup(struct vdev_info *dev, struct vq_info *info)
 	assert(r >= 0);
 }
 
-<<<<<<< HEAD
-=======
 static void vq_reset(struct vq_info *info, int num, struct virtio_device *vdev)
 {
 	if (info->vq)
@@ -132,7 +108,6 @@ static void vq_reset(struct vq_info *info, int num, struct virtio_device *vdev)
 	info->vq->priv = info;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void vq_info_add(struct vdev_info *dev, int num)
 {
 	struct vq_info *info = &dev->vqs[dev->nvqs];
@@ -142,17 +117,7 @@ static void vq_info_add(struct vdev_info *dev, int num)
 	info->call = eventfd(0, EFD_NONBLOCK);
 	r = posix_memalign(&info->ring, 4096, vring_size(num, 4096));
 	assert(r >= 0);
-<<<<<<< HEAD
-	memset(info->ring, 0, vring_size(num, 4096));
-	vring_init(&info->vring, num, info->ring, 4096);
-	info->vq = vring_new_virtqueue(info->vring.num, 4096, &dev->vdev,
-				       true, info->ring,
-				       vq_notify, vq_callback, "test");
-	assert(info->vq);
-	info->vq->priv = info;
-=======
 	vq_reset(info, num, &dev->vdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vhost_vq_setup(dev, info);
 	dev->fds[info->idx].fd = info->call;
 	dev->fds[info->idx].events = POLLIN;
@@ -163,14 +128,6 @@ static void vdev_info_init(struct vdev_info* dev, unsigned long long features)
 {
 	int r;
 	memset(dev, 0, sizeof *dev);
-<<<<<<< HEAD
-	dev->vdev.features[0] = features;
-	dev->vdev.features[1] = features >> 32;
-	dev->buf_size = 1024;
-	dev->buf = malloc(dev->buf_size);
-	assert(dev->buf);
-        dev->control = open("/dev/vhost-test", O_RDWR);
-=======
 	dev->vdev.features = features;
 	INIT_LIST_HEAD(&dev->vdev.vqs);
 	spin_lock_init(&dev->vdev.vqs_list_lock);
@@ -178,7 +135,6 @@ static void vdev_info_init(struct vdev_info* dev, unsigned long long features)
 	dev->buf = malloc(dev->buf_size);
 	assert(dev->buf);
 	dev->control = open("/dev/vhost-test", O_RDWR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	assert(dev->control >= 0);
 	r = ioctl(dev->control, VHOST_SET_OWNER, NULL);
 	assert(r >= 0);
@@ -210,36 +166,6 @@ static void wait_for_interrupt(struct vdev_info *dev)
 		}
 }
 
-<<<<<<< HEAD
-static void run_test(struct vdev_info *dev, struct vq_info *vq, int bufs)
-{
-	struct scatterlist sl;
-	long started = 0, completed = 0;
-	long completed_before;
-	int r, test = 1;
-	unsigned len;
-	long long spurious = 0;
-	r = ioctl(dev->control, VHOST_TEST_RUN, &test);
-	assert(r >= 0);
-	for (;;) {
-		virtqueue_disable_cb(vq->vq);
-		completed_before = completed;
-		do {
-			if (started < bufs) {
-				sg_init_one(&sl, dev->buf, dev->buf_size);
-				r = virtqueue_add_buf(vq->vq, &sl, 1, 0,
-						      dev->buf + started,
-						      GFP_ATOMIC);
-				if (likely(r >= 0)) {
-					++started;
-					virtqueue_kick(vq->vq);
-				}
-			} else
-				r = -1;
-
-			/* Flush out completed bufs if any */
-			if (virtqueue_get_buf(vq->vq, &len)) {
-=======
 static void run_test(struct vdev_info *dev, struct vq_info *vq,
 		     bool delayed, int batch, int reset_n, int bufs)
 {
@@ -300,15 +226,10 @@ static void run_test(struct vdev_info *dev, struct vq_info *vq,
 
 			/* Flush out completed bufs if any */
 			while (virtqueue_get_buf(vq->vq, &len)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				++completed;
 				r = 0;
 			}
 
-<<<<<<< HEAD
-		} while (r >= 0);
-		if (completed == completed_before)
-=======
 			if (reset) {
 				struct vhost_vring_state s = { .index = 0 };
 
@@ -333,35 +254,25 @@ static void run_test(struct vdev_info *dev, struct vq_info *vq,
 			}
 		} while (r == 0);
 		if (completed == completed_before && started == started_before)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			++spurious;
 		assert(completed <= bufs);
 		assert(started <= bufs);
 		if (completed == bufs)
 			break;
-<<<<<<< HEAD
-		if (virtqueue_enable_cb(vq->vq)) {
-			wait_for_interrupt(dev);
-=======
 		if (delayed) {
 			if (virtqueue_enable_cb_delayed(vq->vq))
 				wait_for_interrupt(dev);
 		} else {
 			if (virtqueue_enable_cb(vq->vq))
 				wait_for_interrupt(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	test = 0;
 	r = ioctl(dev->control, VHOST_TEST_RUN, &test);
 	assert(r >= 0);
-<<<<<<< HEAD
-	fprintf(stderr, "spurious wakeus: 0x%llx\n", spurious);
-=======
 	fprintf(stderr,
 		"spurious wakeups: 0x%llx started=0x%lx completed=0x%lx\n",
 		spurious, started, completed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const char optstring[] = "h";
@@ -387,12 +298,6 @@ const struct option longopts[] = {
 		.val = 'i',
 	},
 	{
-<<<<<<< HEAD
-	}
-};
-
-static void help()
-=======
 		.name = "virtio-1",
 		.val = '1',
 	},
@@ -423,14 +328,10 @@ static void help()
 };
 
 static void help(int status)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	fprintf(stderr, "Usage: virtio_test [--help]"
 		" [--no-indirect]"
 		" [--no-event-idx]"
-<<<<<<< HEAD
-		"\n");
-=======
 		" [--no-virtio-1]"
 		" [--delayed-interrupt]"
 		" [--batch=random/N]"
@@ -438,22 +339,16 @@ static void help(int status)
 		"\n");
 
 	exit(status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int main(int argc, char **argv)
 {
 	struct vdev_info dev;
 	unsigned long long features = (1ULL << VIRTIO_RING_F_INDIRECT_DESC) |
-<<<<<<< HEAD
-		(1ULL << VIRTIO_RING_F_EVENT_IDX);
-	int o;
-=======
 		(1ULL << VIRTIO_RING_F_EVENT_IDX) | (1ULL << VIRTIO_F_VERSION_1);
 	long batch = 1, reset = 0;
 	int o;
 	bool delayed = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (;;) {
 		o = getopt_long(argc, argv, optstring, longopts, NULL);
@@ -461,23 +356,11 @@ int main(int argc, char **argv)
 		case -1:
 			goto done;
 		case '?':
-<<<<<<< HEAD
-			help();
-			exit(2);
-=======
 			help(2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 'e':
 			features &= ~(1ULL << VIRTIO_RING_F_EVENT_IDX);
 			break;
 		case 'h':
-<<<<<<< HEAD
-			help();
-			goto done;
-		case 'i':
-			features &= ~(1ULL << VIRTIO_RING_F_INDIRECT_DESC);
-			break;
-=======
 			help(0);
 		case 'i':
 			features &= ~(1ULL << VIRTIO_RING_F_INDIRECT_DESC);
@@ -506,7 +389,6 @@ int main(int argc, char **argv)
 				assert(reset < (long)INT_MAX + 1);
 			}
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			assert(0);
 			break;
@@ -516,10 +398,6 @@ int main(int argc, char **argv)
 done:
 	vdev_info_init(&dev, features);
 	vq_info_add(&dev, 256);
-<<<<<<< HEAD
-	run_test(&dev, &dev.vqs[0], 0x100000);
-=======
 	run_test(&dev, &dev.vqs[0], delayed, batch, reset, 0x100000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

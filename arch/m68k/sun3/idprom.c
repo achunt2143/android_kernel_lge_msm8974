@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * idprom.c: Routines to load the idprom into kernel addresses and
  *           interpret the data contained within.
@@ -20,11 +17,8 @@
 #include <asm/idprom.h>
 #include <asm/machines.h>  /* Fun with Sun released architectures. */
 
-<<<<<<< HEAD
-=======
 #include "sun3.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct idprom *idprom;
 EXPORT_SYMBOL(idprom);
 
@@ -73,14 +67,6 @@ static void __init display_system_type(unsigned char machtype)
 	for (i = 0; i < NUM_SUN_MACHINES; i++) {
 		if(Sun_Machines[i].id_machtype == machtype) {
 			if (machtype != (SM_SUN4M_OBP | 0x00))
-<<<<<<< HEAD
-				printk("TYPE: %s\n", Sun_Machines[i].name);
-			else {
-#if 0
-				prom_getproperty(prom_root_node, "banner-name",
-						 sysname, sizeof(sysname));
-				printk("TYPE: %s\n", sysname);
-=======
 				pr_info("TYPE: %s\n", Sun_Machines[i].name);
 			else {
 #if 0
@@ -89,7 +75,6 @@ static void __init display_system_type(unsigned char machtype)
 				prom_getproperty(prom_root_node, "banner-name",
 						 sysname, sizeof(sysname));
 				pr_info("TYPE: %s\n", sysname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			}
 			return;
@@ -100,11 +85,7 @@ static void __init display_system_type(unsigned char machtype)
 	prom_halt();
 }
 
-<<<<<<< HEAD
-void sun3_get_model(unsigned char* model)
-=======
 void sun3_get_model(char *model)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	register int i;
 
@@ -149,12 +130,5 @@ void __init idprom_init(void)
 
 	display_system_type(idprom->id_machtype);
 
-<<<<<<< HEAD
-	printk("Ethernet address: %x:%x:%x:%x:%x:%x\n",
-		    idprom->id_ethaddr[0], idprom->id_ethaddr[1],
-		    idprom->id_ethaddr[2], idprom->id_ethaddr[3],
-		    idprom->id_ethaddr[4], idprom->id_ethaddr[5]);
-=======
 	pr_info("Ethernet address: %pM\n", idprom->id_ethaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

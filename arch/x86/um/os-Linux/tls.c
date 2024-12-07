@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <errno.h>
 #include <linux/unistd.h>
 
@@ -9,11 +6,7 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
-<<<<<<< HEAD
-#include "sysdep/tls.h"
-=======
 #include <sysdep/tls.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef PTRACE_GET_THREAD_AREA
 #define PTRACE_GET_THREAD_AREA 25
@@ -45,11 +38,7 @@ void check_host_supports_tls(int *supports_tls, int *tls_min)
 				continue;
 			else if (errno == ENOSYS)
 				*supports_tls = 0;
-<<<<<<< HEAD
-				return;
-=======
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 

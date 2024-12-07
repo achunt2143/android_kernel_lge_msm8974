@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_STRING_H_
-#define _LINUX_STRING_H_
-
-/* We don't want strings.h stuff being used by user stuff by accident */
-
-#ifndef __KERNEL__
-#include <string.h>
-#else
-
-#include <linux/compiler.h>	/* for inline */
-#include <linux/types.h>	/* for size_t */
-#include <linux/stddef.h>	/* for NULL */
-#include <stdarg.h>
-
-extern char *strndup_user(const char __user *, long);
-extern void *memdup_user(const void __user *, size_t);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_STRING_H_
 #define _LINUX_STRING_H_
@@ -73,7 +55,6 @@ static inline void *vmemdup_array_user(const void __user *src, size_t n, size_t 
 
 	return vmemdup_user(src, nbytes);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Include machine specific inline routines
@@ -86,11 +67,6 @@ extern char * strcpy(char *,const char *);
 #ifndef __HAVE_ARCH_STRNCPY
 extern char * strncpy(char *,const char *, __kernel_size_t);
 #endif
-<<<<<<< HEAD
-#ifndef __HAVE_ARCH_STRLCPY
-size_t strlcpy(char *, const char *, size_t);
-#endif
-=======
 ssize_t sized_strscpy(char *, const char *, size_t);
 
 /*
@@ -165,7 +141,6 @@ ssize_t sized_strscpy(char *, const char *, size_t);
 #define strscpy_pad(dst, src, ...)	\
 	CONCATENATE(__strscpy_pad, COUNT_ARGS(__VA_ARGS__))(dst, src, __VA_ARGS__)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HAVE_ARCH_STRCAT
 extern char * strcat(char *, const char *);
 #endif
@@ -181,12 +156,6 @@ extern int strcmp(const char *,const char *);
 #ifndef __HAVE_ARCH_STRNCMP
 extern int strncmp(const char *,const char *,__kernel_size_t);
 #endif
-<<<<<<< HEAD
-#ifndef __HAVE_ARCH_STRNICMP
-extern int strnicmp(const char *, const char *, __kernel_size_t);
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HAVE_ARCH_STRCASECMP
 extern int strcasecmp(const char *s1, const char *s2);
 #endif
@@ -196,13 +165,10 @@ extern int strncasecmp(const char *s1, const char *s2, size_t n);
 #ifndef __HAVE_ARCH_STRCHR
 extern char * strchr(const char *,int);
 #endif
-<<<<<<< HEAD
-=======
 #ifndef __HAVE_ARCH_STRCHRNUL
 extern char * strchrnul(const char *,int);
 #endif
 extern char * strnchrnul(const char *, size_t, int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HAVE_ARCH_STRNCHR
 extern char * strnchr(const char *, size_t, int);
 #endif
@@ -246,8 +212,6 @@ extern __kernel_size_t strcspn(const char *,const char *);
 #ifndef __HAVE_ARCH_MEMSET
 extern void * memset(void *,int,__kernel_size_t);
 #endif
-<<<<<<< HEAD
-=======
 
 #ifndef __HAVE_ARCH_MEMSET16
 extern void *memset16(uint16_t *, uint16_t, __kernel_size_t);
@@ -285,7 +249,6 @@ extern void **__memcat_p(void **a, void **b);
 	(typeof(*a) *)__memcat_p((void **)(a), (void **)(b));	\
 })
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HAVE_ARCH_MEMCPY
 extern void * memcpy(void *,const void *,__kernel_size_t);
 #endif
@@ -298,22 +261,6 @@ extern void * memscan(void *,int,__kernel_size_t);
 #ifndef __HAVE_ARCH_MEMCMP
 extern int memcmp(const void *,const void *,__kernel_size_t);
 #endif
-<<<<<<< HEAD
-#ifndef __HAVE_ARCH_MEMCHR
-extern void * memchr(const void *,int,__kernel_size_t);
-#endif
-void *memchr_inv(const void *s, int c, size_t n);
-
-extern char *kstrdup(const char *s, gfp_t gfp);
-extern char *kstrndup(const char *s, size_t len, gfp_t gfp);
-extern void *kmemdup(const void *src, size_t len, gfp_t gfp);
-
-extern char **argv_split(gfp_t gfp, const char *str, int *argcp);
-extern void argv_free(char **argv);
-
-extern bool sysfs_streq(const char *s1, const char *s2);
-extern int strtobool(const char *s, bool *res);
-=======
 #ifndef __HAVE_ARCH_BCMP
 extern int bcmp(const void *,const void *,__kernel_size_t);
 #endif
@@ -363,7 +310,6 @@ int __sysfs_match_string(const char * const *array, size_t n, const char *s);
  * Helper for __sysfs_match_string(). Calculates the size of @a automatically.
  */
 #define sysfs_match_string(_a, _s) __sysfs_match_string(_a, ARRAY_SIZE(_a), _s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_BINARY_PRINTF
 int vbin_printf(u32 *bin_buf, size_t size, const char *fmt, va_list args);
@@ -374,11 +320,8 @@ int bprintf(u32 *bin_buf, size_t size, const char *fmt, ...) __printf(3, 4);
 extern ssize_t memory_read_from_buffer(void *to, size_t count, loff_t *ppos,
 				       const void *from, size_t available);
 
-<<<<<<< HEAD
-=======
 int ptr_to_hashval(const void *ptr, unsigned long *hashval_out);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * strstarts - does @str start with @prefix?
  * @str: string to examine
@@ -389,10 +332,6 @@ static inline bool strstarts(const char *str, const char *prefix)
 	return strncmp(str, prefix, strlen(prefix)) == 0;
 }
 
-<<<<<<< HEAD
-void memzero_explicit(void *s, size_t count);
-#endif
-=======
 size_t memweight(const void *ptr, size_t bytes);
 
 /**
@@ -539,5 +478,4 @@ static __always_inline size_t str_has_prefix(const char *str, const char *prefix
 	return strncmp(str, prefix, len) == 0 ? len : 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_STRING_H_ */

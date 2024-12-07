@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Maxim8925 Interface
  *
  * Copyright (C) 2009 Marvell International Ltd.
  *	Haojian Zhuang <haojian.zhuang@marvell.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MFD_MAX8925_H
@@ -165,11 +155,6 @@ enum {
 #define TSC_IRQ_MASK			(0x03)
 #define RTC_IRQ_MASK			(0x0c)
 
-<<<<<<< HEAD
-#define MAX8925_MAX_REGULATOR		(23)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX8925_NAME_SIZE		(32)
 
 /* IRQ definitions */
@@ -202,11 +187,8 @@ enum {
 	MAX8925_NR_IRQS,
 };
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct max8925_chip {
 	struct device		*dev;
 	struct i2c_client	*i2c;
@@ -218,10 +200,6 @@ struct max8925_chip {
 	int			irq_base;
 	int			core_irq;
 	int			tsc_irq;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int            wakeup_flag;
 };
 
@@ -254,9 +232,6 @@ struct max8925_platform_data {
 	struct max8925_backlight_pdata	*backlight;
 	struct max8925_touch_pdata	*touch;
 	struct max8925_power_pdata	*power;
-<<<<<<< HEAD
-	struct regulator_init_data	*regulator[MAX8925_MAX_REGULATOR];
-=======
 	struct regulator_init_data	*sd1;
 	struct regulator_init_data	*sd2;
 	struct regulator_init_data	*sd3;
@@ -280,7 +255,6 @@ struct max8925_platform_data {
 	struct regulator_init_data	*ldo18;
 	struct regulator_init_data	*ldo19;
 	struct regulator_init_data	*ldo20;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int		irq_base;
 	int		tsc_irq;

@@ -1,8 +1,6 @@
 /*
  * IO mappings for OMAP2+
  *
-<<<<<<< HEAD
-=======
  * IO definitions for TI OMAP processors and boards
  *
  * Copied from arch/arm/mach-sa1100/include/mach/io.h
@@ -11,7 +9,6 @@
  * Copyright (C) 2009-2012 Texas Instruments
  * Added OMAP4/5 support - Santosh Shilimkar <santosh.shilimkar@ti.com>
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -48,12 +45,6 @@
 #define OMAP4_L3_PER_IO_OFFSET	0xb1100000
 #define OMAP4_L3_PER_IO_ADDRESS(pa)	IOMEM((pa) + OMAP4_L3_PER_IO_OFFSET)
 
-<<<<<<< HEAD
-#define OMAP4_GPMC_IO_OFFSET		0xa9000000
-#define OMAP4_GPMC_IO_ADDRESS(pa)	IOMEM((pa) + OMAP4_GPMC_IO_OFFSET)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OMAP2_EMU_IO_OFFSET		0xaa800000	/* Emulation */
 #define OMAP2_EMU_IO_ADDRESS(pa)	IOMEM((pa) + OMAP2_EMU_IO_OFFSET)
 
@@ -183,34 +174,6 @@
 						/* 0x49000000 --> 0xfb000000 */
 #define L4_ABE_44XX_VIRT	(L4_ABE_44XX_PHYS + OMAP2_L4_IO_OFFSET)
 #define L4_ABE_44XX_SIZE	SZ_1M
-<<<<<<< HEAD
-
-#define L4_EMU_44XX_PHYS	L4_EMU_44XX_BASE
-						/* 0x54000000 --> 0xfe800000 */
-#define L4_EMU_44XX_VIRT	(L4_EMU_44XX_PHYS + OMAP2_EMU_IO_OFFSET)
-#define L4_EMU_44XX_SIZE	SZ_8M
-
-#define OMAP44XX_GPMC_PHYS	OMAP44XX_GPMC_BASE
-						/* 0x50000000 --> 0xf9000000 */
-#define OMAP44XX_GPMC_VIRT	(OMAP44XX_GPMC_PHYS + OMAP4_GPMC_IO_OFFSET)
-#define OMAP44XX_GPMC_SIZE	SZ_1M
-
-
-#define OMAP44XX_EMIF1_PHYS	OMAP44XX_EMIF1_BASE
-						/* 0x4c000000 --> 0xfd100000 */
-#define OMAP44XX_EMIF1_VIRT	(OMAP44XX_EMIF1_PHYS + OMAP4_L3_PER_IO_OFFSET)
-#define OMAP44XX_EMIF1_SIZE	SZ_1M
-
-#define OMAP44XX_EMIF2_PHYS	OMAP44XX_EMIF2_BASE
-						/* 0x4d000000 --> 0xfd200000 */
-#define OMAP44XX_EMIF2_SIZE	SZ_1M
-#define OMAP44XX_EMIF2_VIRT	(OMAP44XX_EMIF1_VIRT + OMAP44XX_EMIF1_SIZE)
-
-#define OMAP44XX_DMM_PHYS	OMAP44XX_DMM_BASE
-						/* 0x4e000000 --> 0xfd300000 */
-#define OMAP44XX_DMM_SIZE	SZ_1M
-#define OMAP44XX_DMM_VIRT	(OMAP44XX_EMIF2_VIRT + OMAP44XX_EMIF2_SIZE)
-=======
 /*
  * ----------------------------------------------------------------------------
  * Omap5 specific IO mapping
@@ -294,4 +257,3 @@
 #define L4_WKUP_DRA7XX_PHYS		L4_WKUP_DRA7XX_BASE
 #define L4_WKUP_DRA7XX_VIRT		(L4_WKUP_DRA7XX_PHYS + OMAP2_L4_IO_OFFSET)
 #define L4_WKUP_DRA7XX_SIZE		SZ_1M
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

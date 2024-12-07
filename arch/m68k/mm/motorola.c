@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/m68k/mm/motorola.c
  *
@@ -21,27 +18,15 @@
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-#include <linux/gfp.h>
-
-#include <asm/setup.h>
-#include <asm/uaccess.h>
-=======
 #include <linux/memblock.h>
 #include <linux/gfp.h>
 
 #include <asm/setup.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm/pgalloc.h>
 #include <asm/machdep.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/dma.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ATARI
 #include <asm/atari_stram.h>
 #endif
@@ -59,33 +44,6 @@ unsigned long mm_cachebits;
 EXPORT_SYMBOL(mm_cachebits);
 #endif
 
-<<<<<<< HEAD
-/* size of memory already mapped in head.S */
-#define INIT_MAPPED_SIZE	(4UL<<20)
-
-extern unsigned long availmem;
-
-static pte_t * __init kernel_page_table(void)
-{
-	pte_t *ptablep;
-
-	ptablep = (pte_t *)alloc_bootmem_low_pages(PAGE_SIZE);
-
-	clear_page(ptablep);
-	__flush_page_to_ram(ptablep);
-	flush_tlb_kernel_page(ptablep);
-	nocache_page(ptablep);
-
-	return ptablep;
-}
-
-static pmd_t *last_pgtable __initdata = NULL;
-pmd_t *zero_pgtable __initdata = NULL;
-
-static pmd_t * __init kernel_ptr_table(void)
-{
-	if (!last_pgtable) {
-=======
 /* Prior to calling these routines, the page should have been flushed
  * from both the cache and ATC, or the CPU might not notice that the
  * cache setting for the page has been changed. -jskov
@@ -290,7 +248,6 @@ static pmd_t *last_pmd_table __initdata = NULL;
 static pmd_t * __init kernel_ptr_table(void)
 {
 	if (!last_pmd_table) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long pmd, last;
 		int i;
 
@@ -300,40 +257,15 @@ static pmd_t * __init kernel_ptr_table(void)
 		 */
 		last = (unsigned long)kernel_pg_dir;
 		for (i = 0; i < PTRS_PER_PGD; i++) {
-<<<<<<< HEAD
-			if (!pgd_present(kernel_pg_dir[i]))
-				continue;
-			pmd = __pgd_page(kernel_pg_dir[i]);
-=======
 			pud_t *pud = (pud_t *)(&kernel_pg_dir[i]);
 
 			if (!pud_present(*pud))
 				continue;
 			pmd = pgd_page_vaddr(kernel_pg_dir[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (pmd > last)
 				last = pmd;
 		}
 
-<<<<<<< HEAD
-		last_pgtable = (pmd_t *)last;
-#ifdef DEBUG
-		printk("kernel_ptr_init: %p\n", last_pgtable);
-#endif
-	}
-
-	last_pgtable += PTRS_PER_PMD;
-	if (((unsigned long)last_pgtable & ~PAGE_MASK) == 0) {
-		last_pgtable = (pmd_t *)alloc_bootmem_low_pages(PAGE_SIZE);
-
-		clear_page(last_pgtable);
-		__flush_page_to_ram(last_pgtable);
-		flush_tlb_kernel_page(last_pgtable);
-		nocache_page(last_pgtable);
-	}
-
-	return last_pgtable;
-=======
 		last_pmd_table = (pmd_t *)last;
 #ifdef DEBUG
 		printk("kernel_ptr_init: %p\n", last_pmd_table);
@@ -352,22 +284,14 @@ static pmd_t * __init kernel_ptr_table(void)
 	}
 
 	return last_pmd_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init map_node(int node)
 {
-<<<<<<< HEAD
-#define PTRTREESIZE (256*1024)
-#define ROOTTREESIZE (32*1024*1024)
-	unsigned long physaddr, virtaddr, size;
-	pgd_t *pgd_dir;
-=======
 	unsigned long physaddr, virtaddr, size;
 	pgd_t *pgd_dir;
 	p4d_t *p4d_dir;
 	pud_t *pud_dir;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmd_t *pmd_dir;
 	pte_t *pte_dir;
 
@@ -381,36 +305,18 @@ static void __init map_node(int node)
 
 	while (size > 0) {
 #ifdef DEBUG
-<<<<<<< HEAD
-		if (!(virtaddr & (PTRTREESIZE-1)))
-=======
 		if (!(virtaddr & (PMD_SIZE-1)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk ("\npa=%#lx va=%#lx ", physaddr & PAGE_MASK,
 				virtaddr);
 #endif
 		pgd_dir = pgd_offset_k(virtaddr);
 		if (virtaddr && CPU_IS_020_OR_030) {
-<<<<<<< HEAD
-			if (!(virtaddr & (ROOTTREESIZE-1)) &&
-			    size >= ROOTTREESIZE) {
-=======
 			if (!(virtaddr & (PGDIR_SIZE-1)) &&
 			    size >= PGDIR_SIZE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG
 				printk ("[very early term]");
 #endif
 				pgd_val(*pgd_dir) = physaddr;
-<<<<<<< HEAD
-				size -= ROOTTREESIZE;
-				virtaddr += ROOTTREESIZE;
-				physaddr += ROOTTREESIZE;
-				continue;
-			}
-		}
-		if (!pgd_present(*pgd_dir)) {
-=======
 				size -= PGDIR_SIZE;
 				virtaddr += PGDIR_SIZE;
 				physaddr += PGDIR_SIZE;
@@ -420,51 +326,26 @@ static void __init map_node(int node)
 		p4d_dir = p4d_offset(pgd_dir, virtaddr);
 		pud_dir = pud_offset(p4d_dir, virtaddr);
 		if (!pud_present(*pud_dir)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pmd_dir = kernel_ptr_table();
 #ifdef DEBUG
 			printk ("[new pointer %p]", pmd_dir);
 #endif
-<<<<<<< HEAD
-			pgd_set(pgd_dir, pmd_dir);
-		} else
-			pmd_dir = pmd_offset(pgd_dir, virtaddr);
-=======
 			pud_set(pud_dir, pmd_dir);
 		} else
 			pmd_dir = pmd_offset(pud_dir, virtaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (CPU_IS_020_OR_030) {
 			if (virtaddr) {
 #ifdef DEBUG
 				printk ("[early term]");
 #endif
-<<<<<<< HEAD
-				pmd_dir->pmd[(virtaddr/PTRTREESIZE) & 15] = physaddr;
-				physaddr += PTRTREESIZE;
-=======
 				pmd_val(*pmd_dir) = physaddr;
 				physaddr += PMD_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				int i;
 #ifdef DEBUG
 				printk ("[zero map]");
 #endif
-<<<<<<< HEAD
-				zero_pgtable = kernel_ptr_table();
-				pte_dir = (pte_t *)zero_pgtable;
-				pmd_dir->pmd[0] = virt_to_phys(pte_dir) |
-					_PAGE_TABLE | _PAGE_ACCESSED;
-				pte_val(*pte_dir++) = 0;
-				physaddr += PAGE_SIZE;
-				for (i = 1; i < 64; physaddr += PAGE_SIZE, i++)
-					pte_val(*pte_dir++) = physaddr;
-			}
-			size -= PTRTREESIZE;
-			virtaddr += PTRTREESIZE;
-=======
 				pte_dir = kernel_page_table();
 				pmd_set(pmd_dir, pte_dir);
 
@@ -475,7 +356,6 @@ static void __init map_node(int node)
 			}
 			size -= PMD_SIZE;
 			virtaddr += PMD_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			if (!pmd_present(*pmd_dir)) {
 #ifdef DEBUG
@@ -503,8 +383,6 @@ static void __init map_node(int node)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Alternate definitions that are compile time constants, for
  * initializing protection_map.  The cachebits are fixed later.
  */
@@ -534,21 +412,14 @@ static pgprot_t protection_map[16] __ro_after_init = {
 DECLARE_VM_GET_PAGE_PROT
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * paging_init() continues the virtual memory environment setup which
  * was begun by the code in arch/head.S.
  */
 void __init paging_init(void)
 {
-<<<<<<< HEAD
-	unsigned long zones_size[MAX_NR_ZONES] = { 0, };
-	unsigned long min_addr, max_addr;
-	unsigned long addr, size, end;
-=======
 	unsigned long max_zone_pfn[MAX_NR_ZONES] = { 0, };
 	unsigned long min_addr, max_addr;
 	unsigned long addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 #ifdef DEBUG
@@ -566,13 +437,9 @@ void __init paging_init(void)
 	}
 
 	min_addr = m68k_memory[0].addr;
-<<<<<<< HEAD
-	max_addr = min_addr + m68k_memory[0].size;
-=======
 	max_addr = min_addr + m68k_memory[0].size - 1;
 	memblock_add_node(m68k_memory[0].addr, m68k_memory[0].size, 0,
 			  MEMBLOCK_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 1; i < m68k_num_memory;) {
 		if (m68k_memory[i].addr < min_addr) {
 			printk("Ignoring memory chunk at 0x%lx:0x%lx before the first chunk\n",
@@ -580,69 +447,22 @@ void __init paging_init(void)
 			printk("Fix your bootloader or use a memfile to make use of this area!\n");
 			m68k_num_memory--;
 			memmove(m68k_memory + i, m68k_memory + i + 1,
-<<<<<<< HEAD
-				(m68k_num_memory - i) * sizeof(struct mem_info));
-			continue;
-		}
-		addr = m68k_memory[i].addr + m68k_memory[i].size;
-=======
 				(m68k_num_memory - i) * sizeof(struct m68k_mem_info));
 			continue;
 		}
 		memblock_add_node(m68k_memory[i].addr, m68k_memory[i].size, i,
 				  MEMBLOCK_NONE);
 		addr = m68k_memory[i].addr + m68k_memory[i].size - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (addr > max_addr)
 			max_addr = addr;
 		i++;
 	}
 	m68k_memoffset = min_addr - PAGE_OFFSET;
-<<<<<<< HEAD
-	m68k_virt_to_node_shift = fls(max_addr - min_addr - 1) - 6;
-=======
 	m68k_virt_to_node_shift = fls(max_addr - min_addr) - 6;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	module_fixup(NULL, __start_fixup, __stop_fixup);
 	flush_icache();
 
-<<<<<<< HEAD
-	high_memory = phys_to_virt(max_addr);
-
-	min_low_pfn = availmem >> PAGE_SHIFT;
-	max_low_pfn = max_addr >> PAGE_SHIFT;
-
-	for (i = 0; i < m68k_num_memory; i++) {
-		addr = m68k_memory[i].addr;
-		end = addr + m68k_memory[i].size;
-		m68k_setup_node(i);
-		availmem = PAGE_ALIGN(availmem);
-		availmem += init_bootmem_node(NODE_DATA(i),
-					      availmem >> PAGE_SHIFT,
-					      addr >> PAGE_SHIFT,
-					      end >> PAGE_SHIFT);
-	}
-
-	/*
-	 * Map the physical memory available into the kernel virtual
-	 * address space. First initialize the bootmem allocator with
-	 * the memory we already mapped, so map_node() has something
-	 * to allocate.
-	 */
-	addr = m68k_memory[0].addr;
-	size = m68k_memory[0].size;
-	free_bootmem_node(NODE_DATA(0), availmem, min(INIT_MAPPED_SIZE, size) - (availmem - addr));
-	map_node(0);
-	if (size > INIT_MAPPED_SIZE)
-		free_bootmem_node(NODE_DATA(0), addr + INIT_MAPPED_SIZE, size - INIT_MAPPED_SIZE);
-
-	for (i = 1; i < m68k_num_memory; i++)
-		map_node(i);
-
-	flush_tlb_all();
-
-=======
 	high_memory = phys_to_virt(max_addr) + 1;
 
 	min_low_pfn = availmem >> PAGE_SHIFT;
@@ -667,57 +487,23 @@ void __init paging_init(void)
 
 	early_memtest(min_addr, max_addr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * initialize the bad page table and bad page to point
 	 * to a couple of allocated pages
 	 */
-<<<<<<< HEAD
-	empty_zero_page = alloc_bootmem_pages(PAGE_SIZE);
-=======
 	empty_zero_page = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
 	if (!empty_zero_page)
 		panic("%s: Failed to allocate %lu bytes align=0x%lx\n",
 		      __func__, PAGE_SIZE, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Set up SFC/DFC registers
 	 */
-<<<<<<< HEAD
-	set_fs(KERNEL_DS);
-=======
 	set_fc(USER_DATA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef DEBUG
 	printk ("before free_area_init\n");
 #endif
-<<<<<<< HEAD
-	for (i = 0; i < m68k_num_memory; i++) {
-		zones_size[ZONE_DMA] = m68k_memory[i].size >> PAGE_SHIFT;
-		free_area_init_node(i, zones_size,
-				    m68k_memory[i].addr >> PAGE_SHIFT, NULL);
-		if (node_present_pages(i))
-			node_set_state(i, N_NORMAL_MEMORY);
-	}
-}
-
-void free_initmem(void)
-{
-	unsigned long addr;
-
-	addr = (unsigned long)__init_begin;
-	for (; addr < (unsigned long)__init_end; addr += PAGE_SIZE) {
-		virt_to_page(addr)->flags &= ~(1 << PG_reserved);
-		init_page_count(virt_to_page(addr));
-		free_page(addr);
-		totalram_pages++;
-	}
-}
-
-
-=======
 	for (i = 0; i < m68k_num_memory; i++)
 		if (node_present_pages(i))
 			node_set_state(i, N_NORMAL_MEMORY);
@@ -725,4 +511,3 @@ void free_initmem(void)
 	max_zone_pfn[ZONE_DMA] = memblock_end_of_DRAM();
 	free_area_init(max_zone_pfn);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

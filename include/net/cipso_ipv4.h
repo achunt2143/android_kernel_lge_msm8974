@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CIPSO - Commercial IP Security Option
  *
@@ -13,32 +10,10 @@
  * de-facto standard for labeled networking.
  *
  * Author: Paul Moore <paul@paul-moore.com>
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * (c) Copyright Hewlett-Packard Development Company, L.P., 2006
-<<<<<<< HEAD
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _CIPSO_IPV4_H
@@ -52,10 +27,7 @@
 #include <net/netlabel.h>
 #include <net/request_sock.h>
 #include <linux/atomic.h>
-<<<<<<< HEAD
-=======
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unaligned.h>
 
 /* known doi values */
@@ -100,11 +72,7 @@ struct cipso_v4_doi {
 	} map;
 	u8 tags[CIPSO_V4_TAG_MAXCNT];
 
-<<<<<<< HEAD
-	atomic_t refcount;
-=======
 	refcount_t refcount;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head list;
 	struct rcu_head rcu;
 };
@@ -140,16 +108,6 @@ extern int cipso_v4_rbm_strictvalid;
 #endif
 
 /*
-<<<<<<< HEAD
- * Helper Functions
- */
-
-#define CIPSO_V4_OPTEXIST(x) (IPCB(x)->opt.cipso != 0)
-#define CIPSO_V4_OPTPTR(x) (skb_network_header(x) + IPCB(x)->opt.cipso)
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * DOI List Functions
  */
 
@@ -192,21 +150,6 @@ static inline int cipso_v4_doi_walk(u32 *skip_cnt,
 {
 	return 0;
 }
-<<<<<<< HEAD
-
-static inline int cipso_v4_doi_domhsh_add(struct cipso_v4_doi *doi_def,
-					  const char *domain)
-{
-	return -ENOSYS;
-}
-
-static inline int cipso_v4_doi_domhsh_remove(struct cipso_v4_doi *doi_def,
-					     const char *domain)
-{
-	return 0;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_NETLABEL */
 
 /*
@@ -215,11 +158,7 @@ static inline int cipso_v4_doi_domhsh_remove(struct cipso_v4_doi *doi_def,
 
 #ifdef CONFIG_NETLABEL
 void cipso_v4_cache_invalidate(void);
-<<<<<<< HEAD
-int cipso_v4_cache_add(const struct sk_buff *skb,
-=======
 int cipso_v4_cache_add(const unsigned char *cipso_ptr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       const struct netlbl_lsm_secattr *secattr);
 #else
 static inline void cipso_v4_cache_invalidate(void)
@@ -227,11 +166,7 @@ static inline void cipso_v4_cache_invalidate(void)
 	return;
 }
 
-<<<<<<< HEAD
-static inline int cipso_v4_cache_add(const struct sk_buff *skb,
-=======
 static inline int cipso_v4_cache_add(const unsigned char *cipso_ptr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     const struct netlbl_lsm_secattr *secattr)
 {
 	return 0;
@@ -244,11 +179,8 @@ static inline int cipso_v4_cache_add(const unsigned char *cipso_ptr,
 
 #ifdef CONFIG_NETLABEL
 void cipso_v4_error(struct sk_buff *skb, int error, u32 gateway);
-<<<<<<< HEAD
-=======
 int cipso_v4_getattr(const unsigned char *cipso,
 		     struct netlbl_lsm_secattr *secattr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int cipso_v4_sock_setattr(struct sock *sk,
 			  const struct cipso_v4_doi *doi_def,
 			  const struct netlbl_lsm_secattr *secattr);
@@ -264,10 +196,7 @@ int cipso_v4_skbuff_setattr(struct sk_buff *skb,
 int cipso_v4_skbuff_delattr(struct sk_buff *skb);
 int cipso_v4_skbuff_getattr(const struct sk_buff *skb,
 			    struct netlbl_lsm_secattr *secattr);
-<<<<<<< HEAD
-=======
 unsigned char *cipso_v4_optptr(const struct sk_buff *skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int cipso_v4_validate(const struct sk_buff *skb, unsigned char **option);
 #else
 static inline void cipso_v4_error(struct sk_buff *skb,
@@ -277,15 +206,12 @@ static inline void cipso_v4_error(struct sk_buff *skb,
 	return;
 }
 
-<<<<<<< HEAD
-=======
 static inline int cipso_v4_getattr(const unsigned char *cipso,
 				   struct netlbl_lsm_secattr *secattr)
 {
 	return -ENOSYS;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int cipso_v4_sock_setattr(struct sock *sk,
 				      const struct cipso_v4_doi *doi_def,
 				      const struct netlbl_lsm_secattr *secattr)
@@ -333,14 +259,11 @@ static inline int cipso_v4_skbuff_getattr(const struct sk_buff *skb,
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-=======
 static inline unsigned char *cipso_v4_optptr(const struct sk_buff *skb)
 {
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int cipso_v4_validate(const struct sk_buff *skb,
 				    unsigned char **option)
 {
@@ -361,17 +284,12 @@ static inline int cipso_v4_validate(const struct sk_buff *skb,
 	}
 
 	for (opt_iter = 6; opt_iter < opt_len;) {
-<<<<<<< HEAD
-		tag_len = opt[opt_iter + 1];
-		if ((tag_len == 0) || (opt[opt_iter + 1] > (opt_len - opt_iter))) {
-=======
 		if (opt_iter + 1 == opt_len) {
 			err_offset = opt_iter;
 			goto out;
 		}
 		tag_len = opt[opt_iter + 1];
 		if ((tag_len == 0) || (tag_len > (opt_len - opt_iter))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err_offset = opt_iter + 1;
 			goto out;
 		}

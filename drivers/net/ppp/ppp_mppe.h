@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MPPE_PAD                4      /* MPPE growth per frame */
 #define MPPE_MAX_KEY_LEN       16      /* largest key length (128-bit) */
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-1.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OHCI HCD (Host Controller Driver) for USB.
  *
@@ -17,13 +14,7 @@
  * This file is licenced under the GPL.
  */
 
-<<<<<<< HEAD
-#include <mach/hardware.h>
 #include <asm/mach-types.h>
-#include <mach/assabet.h>
-=======
-#include <asm/mach-types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/hardware/sa1111.h>
 
 #ifndef CONFIG_SA1111
@@ -52,15 +43,9 @@
 #if 0
 static void dump_hci_status(struct usb_hcd *hcd, const char *label)
 {
-<<<<<<< HEAD
-	unsigned long status = sa1111_readl(hcd->regs + USB_STATUS);
-
-	dbg("%s USB_STATUS = { %s%s%s%s%s}", label,
-=======
 	unsigned long status = readl_relaxed(hcd->regs + USB_STATUS);
 
 	printk(KERN_DEBUG "%s USB_STATUS = { %s%s%s%s%s}\n", label,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     ((status & USB_STATUS_IRQHCIRMTWKUP) ? "IRQHCIRMTWKUP " : ""),
 	     ((status & USB_STATUS_IRQHCIBUFFACC) ? "IRQHCIBUFFACC " : ""),
 	     ((status & USB_STATUS_NIRQHCIM) ? "" : "IRQHCIM "),
@@ -77,11 +62,7 @@ static int ohci_sa1111_reset(struct usb_hcd *hcd)
 	return ohci_init(ohci);
 }
 
-<<<<<<< HEAD
-static int __devinit ohci_sa1111_start(struct usb_hcd *hcd)
-=======
 static int ohci_sa1111_start(struct usb_hcd *hcd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ohci_hcd	*ohci = hcd_to_ohci(hcd);
 	int ret;
@@ -103,11 +84,7 @@ static const struct hc_driver ohci_sa1111_hc_driver = {
 	 * generic hardware linkage
 	 */
 	.irq =			ohci_irq,
-<<<<<<< HEAD
-	.flags =		HCD_USB11 | HCD_MEMORY,
-=======
 	.flags =		HCD_USB11 | HCD_DMA | HCD_MEMORY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * basic lifecycle operations
@@ -148,25 +125,14 @@ static int sa1111_start_hc(struct sa1111_dev *dev)
 
 	dev_dbg(&dev->dev, "starting SA-1111 OHCI USB Controller\n");
 
-<<<<<<< HEAD
-	if (machine_is_xp860() ||
-	    machine_has_neponset() ||
-	    machine_is_pfs168() ||
-	    machine_is_badge4())
-=======
 	if (machine_is_assabet())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_rst = USB_RESET_PWRSENSELOW | USB_RESET_PWRCTRLLOW;
 
 	/*
 	 * Configure the power sense and control lines.  Place the USB
 	 * host controller in reset.
 	 */
-<<<<<<< HEAD
-	sa1111_writel(usb_rst | USB_RESET_FORCEIFRESET | USB_RESET_FORCEHCRESET,
-=======
 	writel_relaxed(usb_rst | USB_RESET_FORCEIFRESET | USB_RESET_FORCEHCRESET,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      dev->mapbase + USB_RESET);
 
 	/*
@@ -176,11 +142,7 @@ static int sa1111_start_hc(struct sa1111_dev *dev)
 	ret = sa1111_enable_device(dev);
 	if (ret == 0) {
 		udelay(11);
-<<<<<<< HEAD
-		sa1111_writel(usb_rst, dev->mapbase + USB_RESET);
-=======
 		writel_relaxed(usb_rst, dev->mapbase + USB_RESET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -195,13 +157,8 @@ static void sa1111_stop_hc(struct sa1111_dev *dev)
 	/*
 	 * Put the USB host controller into reset.
 	 */
-<<<<<<< HEAD
-	usb_rst = sa1111_readl(dev->mapbase + USB_RESET);
-	sa1111_writel(usb_rst | USB_RESET_FORCEIFRESET | USB_RESET_FORCEHCRESET,
-=======
 	usb_rst = readl_relaxed(dev->mapbase + USB_RESET);
 	writel_relaxed(usb_rst | USB_RESET_FORCEIFRESET | USB_RESET_FORCEHCRESET,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      dev->mapbase + USB_RESET);
 
 	/*
@@ -219,24 +176,17 @@ static void sa1111_stop_hc(struct sa1111_dev *dev)
 static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
 {
 	struct usb_hcd *hcd;
-<<<<<<< HEAD
-	int ret;
-=======
 	int ret, irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (usb_disabled())
 		return -ENODEV;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * We don't call dma_set_mask_and_coherent() here because the
 	 * DMA mask has already been appropraitely setup by the core
 	 * SA-1111 bus code (which includes bug workarounds.)
 	 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hcd = usb_create_hcd(&ohci_sa1111_hc_driver, &dev->dev, "sa1111");
 	if (!hcd)
 		return -ENOMEM;
@@ -244,10 +194,6 @@ static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
 	hcd->rsrc_start = dev->res.start;
 	hcd->rsrc_len = resource_size(&dev->res);
 
-<<<<<<< HEAD
-	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
-		dbg("request_mem_region failed");
-=======
 	irq = sa1111_get_irq(dev, 1);
 	if (irq <= 0) {
 		ret = irq ? : -ENXIO;
@@ -281,7 +227,6 @@ static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
 
 	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
 		dev_dbg(&dev->dev, "request_mem_region failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBUSY;
 		goto err1;
 	}
@@ -292,17 +237,11 @@ static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
 	if (ret)
 		goto err2;
 
-<<<<<<< HEAD
-	ret = usb_add_hcd(hcd, dev->irq[1], 0);
-	if (ret == 0)
-		return ret;
-=======
 	ret = usb_add_hcd(hcd, irq, 0);
 	if (ret == 0) {
 		device_wakeup_enable(hcd->self.controller);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sa1111_stop_hc(dev);
  err2:
@@ -319,11 +258,7 @@ static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
  * Reverses the effect of ohci_hcd_sa1111_probe(), first invoking
  * the HCD's stop() method.
  */
-<<<<<<< HEAD
-static int ohci_hcd_sa1111_remove(struct sa1111_dev *dev)
-=======
 static void ohci_hcd_sa1111_remove(struct sa1111_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_hcd *hcd = sa1111_get_drvdata(dev);
 
@@ -331,20 +266,11 @@ static void ohci_hcd_sa1111_remove(struct sa1111_dev *dev)
 	sa1111_stop_hc(dev);
 	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
 	usb_put_hcd(hcd);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-static void ohci_hcd_sa1111_shutdown(struct sa1111_dev *dev)
-{
-=======
 }
 
 static void ohci_hcd_sa1111_shutdown(struct device *_dev)
 {
 	struct sa1111_dev *dev = to_sa1111_device(_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_hcd *hcd = sa1111_get_drvdata(dev);
 
 	if (test_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags)) {
@@ -357,16 +283,9 @@ static struct sa1111_driver ohci_hcd_sa1111_driver = {
 	.drv = {
 		.name	= "sa1111-ohci",
 		.owner	= THIS_MODULE,
-<<<<<<< HEAD
-=======
 		.shutdown = ohci_hcd_sa1111_shutdown,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.devid		= SA1111_DEVID_USB,
 	.probe		= ohci_hcd_sa1111_probe,
 	.remove		= ohci_hcd_sa1111_remove,
-<<<<<<< HEAD
-	.shutdown	= ohci_hcd_sa1111_shutdown,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

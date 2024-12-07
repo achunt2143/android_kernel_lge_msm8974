@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 2004 by Jan-Benedict Glaw <jbglaw@lug-owl.de>
  */
@@ -49,33 +46,10 @@
  * http://www.vt100.net/manx/details?pn=EK-104AA-TM-001;id=21;cp=1
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input.h>
 #include <linux/serio.h>
 #include <linux/workqueue.h>
@@ -382,30 +356,18 @@ static void lkkbd_detection_done(struct lkkbd *lk)
 	 */
 	switch (lk->id[4]) {
 	case 1:
-<<<<<<< HEAD
-		strlcpy(lk->name, "DEC LK201 keyboard", sizeof(lk->name));
-=======
 		strscpy(lk->name, "DEC LK201 keyboard", sizeof(lk->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (lk201_compose_is_alt)
 			lk->keycode[0xb1] = KEY_LEFTALT;
 		break;
 
 	case 2:
-<<<<<<< HEAD
-		strlcpy(lk->name, "DEC LK401 keyboard", sizeof(lk->name));
-		break;
-
-	default:
-		strlcpy(lk->name, "Unknown DEC keyboard", sizeof(lk->name));
-=======
 		strscpy(lk->name, "DEC LK401 keyboard", sizeof(lk->name));
 		break;
 
 	default:
 		strscpy(lk->name, "Unknown DEC keyboard", sizeof(lk->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR
 			"lkkbd: keyboard on %s is unknown, please report to "
 			"Jan-Benedict Glaw <jbglaw@lug-owl.de>\n", lk->phys);
@@ -661,11 +623,7 @@ static int lkkbd_connect(struct serio *serio, struct serio_driver *drv)
 	lk->ctrlclick_volume = ctrlclick_volume;
 	memcpy(lk->keycode, lkkbd_keycode, sizeof(lk->keycode));
 
-<<<<<<< HEAD
-	strlcpy(lk->name, "DEC LK keyboard", sizeof(lk->name));
-=======
 	strscpy(lk->name, "DEC LK keyboard", sizeof(lk->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snprintf(lk->phys, sizeof(lk->phys), "%s/input0", serio->phys);
 
 	input_dev->name = lk->name;
@@ -734,11 +692,7 @@ static void lkkbd_disconnect(struct serio *serio)
 	kfree(lk);
 }
 
-<<<<<<< HEAD
-static struct serio_device_id lkkbd_serio_ids[] = {
-=======
 static const struct serio_device_id lkkbd_serio_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_LKKBD,
@@ -761,23 +715,4 @@ static struct serio_driver lkkbd_drv = {
 	.interrupt	= lkkbd_interrupt,
 };
 
-<<<<<<< HEAD
-/*
- * The functions for insering/removing us as a module.
- */
-static int __init lkkbd_init(void)
-{
-	return serio_register_driver(&lkkbd_drv);
-}
-
-static void __exit lkkbd_exit(void)
-{
-	serio_unregister_driver(&lkkbd_drv);
-}
-
-module_init(lkkbd_init);
-module_exit(lkkbd_exit);
-
-=======
 module_serio_driver(lkkbd_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

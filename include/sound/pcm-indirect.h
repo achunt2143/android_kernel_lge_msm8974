@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Helper functions for indirect PCM data transfer
  *
  *  Copyright (c) by Takashi Iwai <tiwai@suse.de>
  *                   Jaroslav Kysela <perex@perex.cz>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __SOUND_PCM_INDIRECT_H
@@ -50,11 +30,7 @@ typedef void (*snd_pcm_indirect_copy_t)(struct snd_pcm_substream *substream,
 /*
  * helper function for playback ack callback
  */
-<<<<<<< HEAD
-static inline void
-=======
 static inline int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_pcm_indirect_playback_transfer(struct snd_pcm_substream *substream,
 				   struct snd_pcm_indirect *rec,
 				   snd_pcm_indirect_copy_t copy)
@@ -67,11 +43,8 @@ snd_pcm_indirect_playback_transfer(struct snd_pcm_substream *substream,
 	if (diff) {
 		if (diff < -(snd_pcm_sframes_t) (runtime->boundary / 2))
 			diff += runtime->boundary;
-<<<<<<< HEAD
-=======
 		if (diff < 0)
 			return -EPIPE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rec->sw_ready += (int)frames_to_bytes(runtime, diff);
 		rec->appl_ptr = appl_ptr;
 	}
@@ -98,10 +71,7 @@ snd_pcm_indirect_playback_transfer(struct snd_pcm_substream *substream,
 		rec->hw_ready += bytes;
 		rec->sw_ready -= bytes;
 	}
-<<<<<<< HEAD
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -113,11 +83,8 @@ snd_pcm_indirect_playback_pointer(struct snd_pcm_substream *substream,
 				  struct snd_pcm_indirect *rec, unsigned int ptr)
 {
 	int bytes = ptr - rec->hw_io;
-<<<<<<< HEAD
-=======
 	int err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bytes < 0)
 		bytes += rec->hw_buffer_size;
 	rec->hw_io = ptr;
@@ -125,16 +92,11 @@ snd_pcm_indirect_playback_pointer(struct snd_pcm_substream *substream,
 	rec->sw_io += bytes;
 	if (rec->sw_io >= rec->sw_buffer_size)
 		rec->sw_io -= rec->sw_buffer_size;
-<<<<<<< HEAD
-	if (substream->ops->ack)
-		substream->ops->ack(substream);
-=======
 	if (substream->ops->ack) {
 		err = substream->ops->ack(substream);
 		if (err == -EPIPE)
 			return SNDRV_PCM_POS_XRUN;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bytes_to_frames(substream->runtime, rec->sw_io);
 }
 
@@ -142,11 +104,7 @@ snd_pcm_indirect_playback_pointer(struct snd_pcm_substream *substream,
 /*
  * helper function for capture ack callback
  */
-<<<<<<< HEAD
-static inline void
-=======
 static inline int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_pcm_indirect_capture_transfer(struct snd_pcm_substream *substream,
 				  struct snd_pcm_indirect *rec,
 				  snd_pcm_indirect_copy_t copy)
@@ -158,11 +116,8 @@ snd_pcm_indirect_capture_transfer(struct snd_pcm_substream *substream,
 	if (diff) {
 		if (diff < -(snd_pcm_sframes_t) (runtime->boundary / 2))
 			diff += runtime->boundary;
-<<<<<<< HEAD
-=======
 		if (diff < 0)
 			return -EPIPE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rec->sw_ready -= frames_to_bytes(runtime, diff);
 		rec->appl_ptr = appl_ptr;
 	}
@@ -189,10 +144,7 @@ snd_pcm_indirect_capture_transfer(struct snd_pcm_substream *substream,
 		rec->hw_ready -= bytes;
 		rec->sw_ready += bytes;
 	}
-<<<<<<< HEAD
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -205,11 +157,8 @@ snd_pcm_indirect_capture_pointer(struct snd_pcm_substream *substream,
 {
 	int qsize;
 	int bytes = ptr - rec->hw_io;
-<<<<<<< HEAD
-=======
 	int err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bytes < 0)
 		bytes += rec->hw_buffer_size;
 	rec->hw_io = ptr;
@@ -220,16 +169,11 @@ snd_pcm_indirect_capture_pointer(struct snd_pcm_substream *substream,
 	rec->sw_io += bytes;
 	if (rec->sw_io >= rec->sw_buffer_size)
 		rec->sw_io -= rec->sw_buffer_size;
-<<<<<<< HEAD
-	if (substream->ops->ack)
-		substream->ops->ack(substream);
-=======
 	if (substream->ops->ack) {
 		err = substream->ops->ack(substream);
 		if (err == -EPIPE)
 			return SNDRV_PCM_POS_XRUN;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bytes_to_frames(substream->runtime, rec->sw_io);
 }
 

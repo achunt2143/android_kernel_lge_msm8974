@@ -8,12 +8,6 @@
 #include <linux/types.h>
 #include <linux/bitrev.h>
 
-<<<<<<< HEAD
-extern u32  crc32_le(u32 crc, unsigned char const *p, size_t len);
-extern u32  crc32_be(u32 crc, unsigned char const *p, size_t len);
-
-extern u32  __crc32c_le(u32 crc, unsigned char const *p, size_t len);
-=======
 u32 __pure crc32_le(u32 crc, unsigned char const *p, size_t len);
 u32 __pure crc32_be(u32 crc, unsigned char const *p, size_t len);
 
@@ -68,7 +62,6 @@ static inline u32 __crc32c_le_combine(u32 crc1, u32 crc2, size_t len2)
 {
 	return __crc32c_le_shift(crc1, len2) ^ crc2;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define crc32(seed, data, length)  crc32_le(seed, (unsigned char const *)(data), length)
 

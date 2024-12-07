@@ -1,18 +1,11 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Logo configuration
 #
 
 menuconfig LOGO
 	bool "Bootup logo"
-<<<<<<< HEAD
-	depends on FB || SGI_NEWPORT_CONSOLE
-=======
 	depends on FB_CORE || SGI_NEWPORT_CONSOLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Enable and select frame buffer bootup logos.
 
@@ -35,19 +28,6 @@ config LOGO_LINUX_CLUT224
 	bool "Standard 224-color Linux logo"
 	default y
 
-<<<<<<< HEAD
-config LOGO_BLACKFIN_VGA16
-	bool "16-colour Blackfin Processor Linux logo"
-	depends on BLACKFIN
-	default y
-
-config LOGO_BLACKFIN_CLUT224
-	bool "224-colour Blackfin Processor Linux logo"
-	depends on BLACKFIN
-	default y
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config LOGO_DEC_CLUT224
 	bool "224-color Digital Equipment Corporation Linux logo"
 	depends on MACH_DECSTATION || ALPHA
@@ -65,11 +45,7 @@ config LOGO_PARISC_CLUT224
 
 config LOGO_SGI_CLUT224
 	bool "224-color SGI Linux logo"
-<<<<<<< HEAD
-	depends on SGI_IP22 || SGI_IP27 || SGI_IP32 || X86_VISWS
-=======
 	depends on SGI_IP22 || SGI_IP27 || SGI_IP32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 
 config LOGO_SUN_CLUT224
@@ -92,12 +68,4 @@ config LOGO_SUPERH_CLUT224
 	depends on SUPERH
 	default y
 
-<<<<<<< HEAD
-config LOGO_M32R_CLUT224
-	bool "224-color M32R Linux logo"
-	depends on M32R
-	default y
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # LOGO

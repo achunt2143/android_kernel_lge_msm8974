@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_RENESAS_SDK7780_H
 #define __ASM_SH_RENESAS_SDK7780_H
 
@@ -10,16 +7,8 @@
  *
  * Renesas Solutions SH7780 SDK Support
  * Copyright (C) 2008 Nicholas Beck <nbeck@mpc-data.co.uk>
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
-=======
  */
 #include <linux/sh_intc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/addrspace.h>
 
 /* Box specific addresses.  */
@@ -76,15 +65,9 @@
 
 #define SDK7780_NR_IRL			15
 /* IDE/ATA interrupt */
-<<<<<<< HEAD
-#define IRQ_CFCARD				14
-/* SMC interrupt */
-#define IRQ_ETHERNET			6
-=======
 #define IRQ_CFCARD			evt2irq(0x3c0)
 /* SMC interrupt */
 #define IRQ_ETHERNET			evt2irq(0x2c0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* arch/sh/boards/renesas/sdk7780/irq.c */

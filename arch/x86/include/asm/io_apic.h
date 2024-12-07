@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_IO_APIC_H
 #define _ASM_X86_IO_APIC_H
 
@@ -9,38 +6,13 @@
 #include <asm/mpspec.h>
 #include <asm/apicdef.h>
 #include <asm/irq_vectors.h>
-<<<<<<< HEAD
-
-=======
 #include <asm/x86_init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Intel IO-APIC support for SMP and UP systems.
  *
  * Copyright (C) 1997, 1998, 1999, 2000 Ingo Molnar
  */
 
-<<<<<<< HEAD
-/* I/O Unit Redirection Table */
-#define IO_APIC_REDIR_VECTOR_MASK	0x000FF
-#define IO_APIC_REDIR_DEST_LOGICAL	0x00800
-#define IO_APIC_REDIR_DEST_PHYSICAL	0x00000
-#define IO_APIC_REDIR_SEND_PENDING	(1 << 12)
-#define IO_APIC_REDIR_REMOTE_IRR	(1 << 14)
-#define IO_APIC_REDIR_LEVEL_TRIGGER	(1 << 15)
-#define IO_APIC_REDIR_MASKED		(1 << 16)
-
-struct io_apic_ops {
-	void		(*init)  (void);
-	unsigned int	(*read)  (unsigned int apic, unsigned int reg);
-	void		(*write) (unsigned int apic, unsigned int reg, unsigned int value);
-	void		(*modify)(unsigned int apic, unsigned int reg, unsigned int value);
-};
-
-void __init set_io_apic_ops(const struct io_apic_ops *);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The structure of the IO-APIC:
  */
@@ -84,42 +56,6 @@ union IO_APIC_reg_03 {
 };
 
 struct IO_APIC_route_entry {
-<<<<<<< HEAD
-	__u32	vector		:  8,
-		delivery_mode	:  3,	/* 000: FIXED
-					 * 001: lowest prio
-					 * 111: ExtINT
-					 */
-		dest_mode	:  1,	/* 0: physical, 1: logical */
-		delivery_status	:  1,
-		polarity	:  1,
-		irr		:  1,
-		trigger		:  1,	/* 0: edge, 1: level */
-		mask		:  1,	/* 0: enabled, 1: disabled */
-		__reserved_2	: 15;
-
-	__u32	__reserved_3	: 24,
-		dest		:  8;
-} __attribute__ ((packed));
-
-struct IR_IO_APIC_route_entry {
-	__u64	vector		: 8,
-		zero		: 3,
-		index2		: 1,
-		delivery_status : 1,
-		polarity	: 1,
-		irr		: 1,
-		trigger		: 1,
-		mask		: 1,
-		reserved	: 31,
-		format		: 1,
-		index		: 15;
-} __attribute__ ((packed));
-
-#define IOAPIC_AUTO     -1
-#define IOAPIC_EDGE     0
-#define IOAPIC_LEVEL    1
-=======
 	union {
 		struct {
 			u64	vector			:  8,
@@ -156,7 +92,6 @@ struct ioapic_domain_cfg;
 
 #define	IOAPIC_MAP_ALLOC		0x1
 #define	IOAPIC_MAP_CHECK		0x2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_X86_IO_APIC
 
@@ -167,12 +102,6 @@ extern int nr_ioapics;
 
 extern int mpc_ioapic_id(int ioapic);
 extern unsigned int mpc_ioapic_addr(int ioapic);
-<<<<<<< HEAD
-extern struct mp_ioapic_gsi *mp_ioapic_gsi_routing(int ioapic);
-
-#define MP_MAX_IOAPIC_PIN 127
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* # of MP IRQ source entries */
 extern int mp_irq_entries;
@@ -180,19 +109,8 @@ extern int mp_irq_entries;
 /* MP IRQ source entries */
 extern struct mpc_intsrc mp_irqs[MAX_IRQ_SOURCES];
 
-<<<<<<< HEAD
-/* non-0 if default (table-less) MP configuration */
-extern int mpc_default_type;
-
-/* Older SiS APIC requires we rewrite the index register */
-extern int sis_apic_bug;
-
-/* 1 if "noapic" boot option passed */
-extern int skip_ioapic_setup;
-=======
 /* True if "noapic" boot option passed */
 extern bool ioapic_is_disabled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 1 if "noapic" boot option passed */
 extern int noioapicquirk;
@@ -200,62 +118,27 @@ extern int noioapicquirk;
 /* -1 if "noapic" boot option passed */
 extern int noioapicreroute;
 
-<<<<<<< HEAD
-/* 1 if the timer IRQ uses the '8259A Virtual Wire' mode */
-extern int timer_through_8259;
-=======
 extern u32 gsi_top;
 
 extern unsigned long io_apic_irqs;
 
 #define IO_APIC_IRQ(x) (((x) >= NR_IRQS_LEGACY) || ((1 << (x)) & io_apic_irqs))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * If we use the IO-APIC for IRQ routing, disable automatic
  * assignment of PCI IRQ's.
  */
 #define io_apic_assign_pci_irqs \
-<<<<<<< HEAD
-	(mp_irq_entries && !skip_ioapic_setup && io_apic_irqs)
-
-struct io_apic_irq_attr;
-extern int io_apic_set_pci_routing(struct device *dev, int irq,
-		 struct io_apic_irq_attr *irq_attr);
-void setup_IO_APIC_irq_extra(u32 gsi);
-extern void ioapic_and_gsi_init(void);
-extern void ioapic_insert_resources(void);
-
-int io_apic_setup_irq_pin_once(unsigned int irq, int node, struct io_apic_irq_attr *attr);
-=======
 	(mp_irq_entries && !ioapic_is_disabled && io_apic_irqs)
 
 struct irq_cfg;
 extern void ioapic_insert_resources(void);
 extern int arch_early_ioapic_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int save_ioapic_entries(void);
 extern void mask_ioapic_entries(void);
 extern int restore_ioapic_entries(void);
 
-<<<<<<< HEAD
-extern int get_nr_irqs_gsi(void);
-
-extern void setup_ioapic_ids_from_mpc(void);
-extern void setup_ioapic_ids_from_mpc_nocheck(void);
-
-struct mp_ioapic_gsi{
-	u32 gsi_base;
-	u32 gsi_end;
-};
-extern struct mp_ioapic_gsi  mp_gsi_routing[];
-extern u32 gsi_top;
-int mp_find_ioapic(u32 gsi);
-int mp_find_ioapic_pin(int ioapic, u32 gsi);
-void __init mp_register_ioapic(int id, u32 address, u32 gsi_base);
-extern void __init pre_init_apic_IRQ0(void);
-=======
 extern void setup_ioapic_ids_from_mpc(void);
 
 extern int mp_find_ioapic(u32 gsi);
@@ -270,27 +153,11 @@ extern int mp_ioapic_registered(u32 gsi_base);
 
 extern void ioapic_set_alloc_attr(struct irq_alloc_info *info,
 				  int node, int trigger, int polarity);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void mp_save_irq(struct mpc_intsrc *m);
 
 extern void disable_ioapic_support(void);
 
-<<<<<<< HEAD
-#else  /* !CONFIG_X86_IO_APIC */
-
-#define io_apic_assign_pci_irqs 0
-#define setup_ioapic_ids_from_mpc x86_init_noop
-static const int timer_through_8259 = 0;
-static inline void ioapic_and_gsi_init(void) { }
-static inline void ioapic_insert_resources(void) { }
-#define gsi_top (NR_IRQS_LEGACY)
-static inline int mp_find_ioapic(u32 gsi) { return 0; }
-
-struct io_apic_irq_attr;
-static inline int io_apic_set_pci_routing(struct device *dev, int irq,
-		 struct io_apic_irq_attr *irq_attr) { return 0; }
-=======
 extern void __init io_apic_init_mappings(void);
 extern unsigned int native_io_apic_read(unsigned int apic, unsigned int reg);
 extern void native_restore_boot_irq_mode(void);
@@ -324,7 +191,6 @@ static inline int mp_map_gsi_to_irq(u32 gsi, unsigned int flags,
 }
 
 static inline void mp_unmap_irq(int irq) { }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int save_ioapic_entries(void)
 {
@@ -337,10 +203,6 @@ static inline int restore_ioapic_entries(void)
 	return -ENOMEM;
 }
 
-<<<<<<< HEAD
-static inline void mp_save_irq(struct mpc_intsrc *m) { };
-static inline void disable_ioapic_support(void) { }
-=======
 static inline void mp_save_irq(struct mpc_intsrc *m) { }
 static inline void disable_ioapic_support(void) { }
 static inline void io_apic_init_mappings(void) { }
@@ -351,7 +213,6 @@ static inline void setup_IO_APIC(void) { }
 static inline void enable_IO_APIC(void) { }
 static inline void restore_boot_irq_mode(void) { }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* _ASM_X86_IO_APIC_H */

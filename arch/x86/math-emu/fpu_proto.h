@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _FPU_PROTO_H
 #define _FPU_PROTO_H
 
@@ -50,8 +47,6 @@ extern void fstsw_(void);
 extern void fp_nop(void);
 extern void fld_i_(void);
 extern void fxch_i(void);
-<<<<<<< HEAD
-=======
 extern void fcmovb(void);
 extern void fcmove(void);
 extern void fcmovbe(void);
@@ -60,7 +55,6 @@ extern void fcmovnb(void);
 extern void fcmovne(void);
 extern void fcmovnbe(void);
 extern void fcmovnu(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void ffree_(void);
 extern void ffreep(void);
 extern void fst_i_(void);
@@ -123,13 +117,10 @@ extern void fcompp(void);
 extern void fucom_(void);
 extern void fucomp(void);
 extern void fucompp(void);
-<<<<<<< HEAD
-=======
 extern void fcomi_(void);
 extern void fcomip(void);
 extern void fucomi_(void);
 extern void fucomip(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* reg_constant.c */
 extern void fconst(void);
 /* reg_ld_str.c */
@@ -153,11 +144,7 @@ extern int FPU_store_int16(FPU_REG *st0_ptr, u_char st0_tag, short __user *d);
 extern int FPU_store_bcd(FPU_REG *st0_ptr, u_char st0_tag, u_char __user *d);
 extern int FPU_round_to_int(FPU_REG *r, u_char tag);
 extern u_char __user *fldenv(fpu_addr_modes addr_modes, u_char __user *s);
-<<<<<<< HEAD
-extern void frstor(fpu_addr_modes addr_modes, u_char __user *data_address);
-=======
 extern void FPU_frstor(fpu_addr_modes addr_modes, u_char __user *data_address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern u_char __user *fstenv(fpu_addr_modes addr_modes, u_char __user *d);
 extern void fsave(fpu_addr_modes addr_modes, u_char __user *data_address);
 extern int FPU_tagof(FPU_REG *ptr);

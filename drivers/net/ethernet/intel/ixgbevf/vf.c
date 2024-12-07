@@ -1,40 +1,9 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel 82599 Virtual Function driver
-  Copyright(c) 1999 - 2012 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright(c) 1999 - 2018 Intel Corporation. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "vf.h"
 #include "ixgbevf.h"
 
-<<<<<<< HEAD
-=======
 /* On Hyper-V, to reset, we need to read from this offset
  * from the PCI config space. This is the mechanism used on
  * Hyper-V to support PF/VF communication.
@@ -52,7 +21,6 @@ static inline s32 ixgbevf_write_msg_read_ack(struct ixgbe_hw *hw, u32 *msg,
 	return ixgbevf_poll_mbx(hw, retmsg, size);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *  ixgbevf_start_hw_vf - Prepare hardware for Tx/Rx
  *  @hw: pointer to hardware structure
@@ -90,39 +58,26 @@ static s32 ixgbevf_init_hw_vf(struct ixgbe_hw *hw)
  *  ixgbevf_reset_hw_vf - Performs hardware reset
  *  @hw: pointer to hardware structure
  *
-<<<<<<< HEAD
- *  Resets the hardware by reseting the transmit and receive units, masks and
-=======
  *  Resets the hardware by resetting the transmit and receive units, masks and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  clears all interrupts.
  **/
 static s32 ixgbevf_reset_hw_vf(struct ixgbe_hw *hw)
 {
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 	u32 timeout = IXGBE_VF_INIT_TIMEOUT;
-<<<<<<< HEAD
-	s32 ret_val = IXGBE_ERR_INVALID_MAC_ADDR;
-	u32 msgbuf[IXGBE_VF_PERMADDR_MSG_LEN];
-	u8 *addr = (u8 *)(&msgbuf[1]);
-=======
 	u32 msgbuf[IXGBE_VF_PERMADDR_MSG_LEN];
 	u8 *addr = (u8 *)(&msgbuf[1]);
 	s32 ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Call adapter stop to disable tx/rx and clear interrupts */
 	hw->mac.ops.stop_adapter(hw);
 
-<<<<<<< HEAD
-=======
 	/* reset the api version */
 	hw->api_version = ixgbe_mbox_api_10;
 	hw->mbx.ops.init_params(hw);
 	memcpy(&hw->mbx.ops, &ixgbevf_mbx_ops_legacy,
 	       sizeof(struct ixgbe_mbx_operations));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IXGBE_WRITE_REG(hw, IXGBE_VFCTRL, IXGBE_CTRL_RST);
 	IXGBE_WRITE_FLUSH(hw);
 
@@ -139,23 +94,6 @@ static s32 ixgbevf_reset_hw_vf(struct ixgbe_hw *hw)
 	mbx->timeout = IXGBE_VF_MBX_INIT_TIMEOUT;
 
 	msgbuf[0] = IXGBE_VF_RESET;
-<<<<<<< HEAD
-	mbx->ops.write_posted(hw, msgbuf, 1);
-
-	msleep(10);
-
-	/* set our "perm_addr" based on info provided by PF */
-	/* also set up the mc_filter_type which is piggy backed
-	 * on the mac address in word 3 */
-	ret_val = mbx->ops.read_posted(hw, msgbuf, IXGBE_VF_PERMADDR_MSG_LEN);
-	if (ret_val)
-		return ret_val;
-
-	if (msgbuf[0] != (IXGBE_VF_RESET | IXGBE_VT_MSGTYPE_ACK))
-		return IXGBE_ERR_INVALID_MAC_ADDR;
-
-	memcpy(hw->mac.perm_addr, addr, ETH_ALEN);
-=======
 	ixgbevf_write_mbx(hw, msgbuf, 1);
 
 	mdelay(10);
@@ -179,15 +117,12 @@ static s32 ixgbevf_reset_hw_vf(struct ixgbe_hw *hw)
 	if (msgbuf[0] == (IXGBE_VF_RESET | IXGBE_VT_MSGTYPE_SUCCESS))
 		ether_addr_copy(hw->mac.perm_addr, addr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw->mac.mc_filter_type = msgbuf[IXGBE_VF_MC_TYPE_WORD];
 
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ixgbevf_hv_reset_hw_vf - reset via Hyper-V
  * @hw: pointer to private hardware struct
  *
@@ -212,7 +147,6 @@ static s32 ixgbevf_hv_reset_hw_vf(struct ixgbe_hw *hw)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  ixgbevf_stop_hw_vf - Generic stop Tx/Rx units
  *  @hw: pointer to hardware structure
  *
@@ -227,12 +161,7 @@ static s32 ixgbevf_stop_hw_vf(struct ixgbe_hw *hw)
 	u32 reg_val;
 	u16 i;
 
-<<<<<<< HEAD
-	/*
-	 * Set the adapter_stopped flag so other driver functions stop touching
-=======
 	/* Set the adapter_stopped flag so other driver functions stop touching
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the hardware
 	 */
 	hw->adapter_stopped = true;
@@ -275,11 +204,7 @@ static s32 ixgbevf_stop_hw_vf(struct ixgbe_hw *hw)
  *
  *  Extracts the 12 bits, from a multicast address, to determine which
  *  bit-vector to set in the multicast table. The hardware uses 12 bits, from
-<<<<<<< HEAD
- *  incoming rx multicast addresses, to determine the bit-vector to check in
-=======
  *  incoming Rx multicast addresses, to determine the bit-vector to check in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  the MTA. Which of the 4 combination, of 12-bits, the hardware uses is set
  *  by the MO field of the MCSTCTRL. The MO field is set during initialization
  *  to mc_filter_type.
@@ -317,56 +242,25 @@ static s32 ixgbevf_mta_vector(struct ixgbe_hw *hw, u8 *mc_addr)
  **/
 static s32 ixgbevf_get_mac_addr_vf(struct ixgbe_hw *hw, u8 *mac_addr)
 {
-<<<<<<< HEAD
-	memcpy(mac_addr, hw->mac.perm_addr, ETH_ALEN);
-=======
 	ether_addr_copy(mac_addr, hw->mac.perm_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static s32 ixgbevf_set_uc_addr_vf(struct ixgbe_hw *hw, u32 index, u8 *addr)
 {
-<<<<<<< HEAD
-	struct ixgbe_mbx_info *mbx = &hw->mbx;
-	u32 msgbuf[3];
-=======
 	u32 msgbuf[3], msgbuf_chk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *msg_addr = (u8 *)(&msgbuf[1]);
 	s32 ret_val;
 
 	memset(msgbuf, 0, sizeof(msgbuf));
-<<<<<<< HEAD
-	/*
-	 * If index is one then this is the start of a new list and needs
-=======
 	/* If index is one then this is the start of a new list and needs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * indication to the PF so it can do it's own list management.
 	 * If it is zero then that tells the PF to just clear all of
 	 * this VF's macvlans and there is no new list.
 	 */
 	msgbuf[0] |= index << IXGBE_VT_MSGINFO_SHIFT;
 	msgbuf[0] |= IXGBE_VF_SET_MACVLAN;
-<<<<<<< HEAD
-	if (addr)
-		memcpy(msg_addr, addr, 6);
-	ret_val = mbx->ops.write_posted(hw, msgbuf, 3);
-
-	if (!ret_val)
-		ret_val = mbx->ops.read_posted(hw, msgbuf, 3);
-
-	msgbuf[0] &= ~IXGBE_VT_MSGTYPE_CTS;
-
-	if (!ret_val)
-		if (msgbuf[0] ==
-		    (IXGBE_VF_SET_MACVLAN | IXGBE_VT_MSGTYPE_NACK))
-			ret_val = -ENOMEM;
-
-	return ret_val;
-=======
 	msgbuf_chk = msgbuf[0];
 
 	if (addr)
@@ -526,7 +420,6 @@ int ixgbevf_get_rss_key_locked(struct ixgbe_hw *hw, u8 *rss_key)
 	memcpy(rss_key, msgbuf + 1, IXGBEVF_RSS_HASH_KEY_SIZE);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -539,57 +432,28 @@ int ixgbevf_get_rss_key_locked(struct ixgbe_hw *hw, u8 *rss_key)
 static s32 ixgbevf_set_rar_vf(struct ixgbe_hw *hw, u32 index, u8 *addr,
 			      u32 vmdq)
 {
-<<<<<<< HEAD
-	struct ixgbe_mbx_info *mbx = &hw->mbx;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 msgbuf[3];
 	u8 *msg_addr = (u8 *)(&msgbuf[1]);
 	s32 ret_val;
 
 	memset(msgbuf, 0, sizeof(msgbuf));
 	msgbuf[0] = IXGBE_VF_SET_MAC_ADDR;
-<<<<<<< HEAD
-	memcpy(msg_addr, addr, 6);
-	ret_val = mbx->ops.write_posted(hw, msgbuf, 3);
-
-	if (!ret_val)
-		ret_val = mbx->ops.read_posted(hw, msgbuf, 3);
-
-=======
 	ether_addr_copy(msg_addr, addr);
 
 	ret_val = ixgbevf_write_msg_read_ack(hw, msgbuf, msgbuf,
 					     ARRAY_SIZE(msgbuf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msgbuf[0] &= ~IXGBE_VT_MSGTYPE_CTS;
 
 	/* if nacked the address was rejected, use "perm_addr" */
 	if (!ret_val &&
-<<<<<<< HEAD
-	    (msgbuf[0] == (IXGBE_VF_SET_MAC_ADDR | IXGBE_VT_MSGTYPE_NACK)))
-		ixgbevf_get_mac_addr_vf(hw, hw->mac.addr);
-=======
 	    (msgbuf[0] == (IXGBE_VF_SET_MAC_ADDR | IXGBE_VT_MSGTYPE_FAILURE))) {
 		ixgbevf_get_mac_addr_vf(hw, hw->mac.addr);
 		return IXGBE_ERR_MBX;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret_val;
 }
 
-<<<<<<< HEAD
-static void ixgbevf_write_msg_read_ack(struct ixgbe_hw *hw,
-					u32 *msg, u16 size)
-{
-	struct ixgbe_mbx_info *mbx = &hw->mbx;
-	u32 retmsg[IXGBE_VFMAILBOX_SIZE];
-	s32 retval = mbx->ops.write_posted(hw, msg, size);
-
-	if (!retval)
-		mbx->ops.read_posted(hw, retmsg, size);
-=======
 /**
  *  ixgbevf_hv_set_rar_vf - set device MAC address Hyper-V variant
  *  @hw: pointer to hardware structure
@@ -608,7 +472,6 @@ static s32 ixgbevf_hv_set_rar_vf(struct ixgbe_hw *hw, u32 index, u8 *addr,
 		return 0;
 
 	return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -645,12 +508,6 @@ static s32 ixgbevf_update_mc_addr_list_vf(struct ixgbe_hw *hw,
 	netdev_for_each_mc_addr(ha, netdev) {
 		if (i == cnt)
 			break;
-<<<<<<< HEAD
-		vector_list[i++] = ixgbevf_mta_vector(hw, ha->addr);
-	}
-
-	ixgbevf_write_msg_read_ack(hw, msgbuf, IXGBE_VFMAILBOX_SIZE);
-=======
 		if (is_link_local_ether_addr(ha->addr))
 			continue;
 
@@ -711,15 +568,11 @@ static s32 ixgbevf_update_xcast_mode(struct ixgbe_hw *hw, int xcast_mode)
 	msgbuf[0] &= ~IXGBE_VT_MSGTYPE_CTS;
 	if (msgbuf[0] == (IXGBE_VF_UPDATE_XCAST_MODE | IXGBE_VT_MSGTYPE_FAILURE))
 		return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- *  ixgbevf_set_vfta_vf - Set/Unset vlan filter table address
-=======
  * ixgbevf_hv_update_xcast_mode - stub
  * @hw: unused
  * @xcast_mode: unused
@@ -773,7 +626,6 @@ static s32 ixgbevf_hv_get_link_state_vf(struct ixgbe_hw *hw, bool *link_state)
 
 /**
  *  ixgbevf_set_vfta_vf - Set/Unset VLAN filter table address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  @hw: pointer to the HW structure
  *  @vlan: 12 bit VLAN ID
  *  @vind: unused by VF drivers
@@ -783,21 +635,13 @@ static s32 ixgbevf_set_vfta_vf(struct ixgbe_hw *hw, u32 vlan, u32 vind,
 			       bool vlan_on)
 {
 	u32 msgbuf[2];
-<<<<<<< HEAD
-=======
 	s32 err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	msgbuf[0] = IXGBE_VF_SET_VLAN;
 	msgbuf[1] = vlan;
 	/* Setting the 8 bit field MSG INFO to TRUE indicates "add" */
 	msgbuf[0] |= vlan_on << IXGBE_VT_MSGINFO_SHIFT;
 
-<<<<<<< HEAD
-	ixgbevf_write_msg_read_ack(hw, msgbuf, 2);
-
-	return 0;
-=======
 	err = ixgbevf_write_msg_read_ack(hw, msgbuf, msgbuf,
 					 ARRAY_SIZE(msgbuf));
 	if (err)
@@ -825,7 +669,6 @@ static s32 ixgbevf_hv_set_vfta_vf(struct ixgbe_hw *hw, u32 vlan, u32 vind,
 				  bool vlan_on)
 {
 	return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -850,11 +693,7 @@ static s32 ixgbevf_setup_mac_link_vf(struct ixgbe_hw *hw,
  *  @hw: pointer to hardware structure
  *  @speed: pointer to link speed
  *  @link_up: true is link is up, false otherwise
-<<<<<<< HEAD
- *  @autoneg_wait_to_complete: true when waiting for completion is needed
-=======
  *  @autoneg_wait_to_complete: unused
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Reads the links register to determine if link is up and the current speed
  **/
@@ -863,28 +702,6 @@ static s32 ixgbevf_check_mac_link_vf(struct ixgbe_hw *hw,
 				     bool *link_up,
 				     bool autoneg_wait_to_complete)
 {
-<<<<<<< HEAD
-	u32 links_reg;
-
-	if (!(hw->mbx.ops.check_for_rst(hw))) {
-		*link_up = false;
-		*speed = 0;
-		return -1;
-	}
-
-	links_reg = IXGBE_READ_REG(hw, IXGBE_VFLINKS);
-
-	if (links_reg & IXGBE_LINKS_UP)
-		*link_up = true;
-	else
-		*link_up = false;
-
-	if ((links_reg & IXGBE_LINKS_SPEED_82599) ==
-	    IXGBE_LINKS_SPEED_10G_82599)
-		*speed = IXGBE_LINK_SPEED_10GB_FULL;
-	else
-		*speed = IXGBE_LINK_SPEED_1GB_FULL;
-=======
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 	struct ixgbe_mac_info *mac = &hw->mac;
 	s32 ret_val = 0;
@@ -1049,25 +866,10 @@ static s32 ixgbevf_set_rlpml_vf(struct ixgbe_hw *hw, u16 max_size)
 	if ((msgbuf[0] & IXGBE_VF_SET_LPE) &&
 	    (msgbuf[0] & IXGBE_VT_MSGTYPE_FAILURE))
 		return IXGBE_ERR_MBX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct ixgbe_mac_operations ixgbevf_mac_ops = {
-	.init_hw             = ixgbevf_init_hw_vf,
-	.reset_hw            = ixgbevf_reset_hw_vf,
-	.start_hw            = ixgbevf_start_hw_vf,
-	.get_mac_addr        = ixgbevf_get_mac_addr_vf,
-	.stop_adapter        = ixgbevf_stop_hw_vf,
-	.setup_link          = ixgbevf_setup_mac_link_vf,
-	.check_link          = ixgbevf_check_mac_link_vf,
-	.set_rar             = ixgbevf_set_rar_vf,
-	.update_mc_addr_list = ixgbevf_update_mc_addr_list_vf,
-	.set_uc_addr         = ixgbevf_set_uc_addr_vf,
-	.set_vfta            = ixgbevf_set_vfta_vf,
-=======
 /**
  * ixgbevf_hv_set_rlpml_vf - Set the maximum receive packet length
  * @hw: pointer to the HW structure
@@ -1228,7 +1030,6 @@ static const struct ixgbe_mac_operations ixgbevf_hv_mac_ops = {
 	.set_uc_addr		= ixgbevf_hv_set_uc_addr_vf,
 	.set_vfta		= ixgbevf_hv_set_vfta_vf,
 	.set_rlpml		= ixgbevf_hv_set_rlpml_vf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct ixgbevf_info ixgbevf_82599_vf_info = {
@@ -1236,20 +1037,15 @@ const struct ixgbevf_info ixgbevf_82599_vf_info = {
 	.mac_ops = &ixgbevf_mac_ops,
 };
 
-<<<<<<< HEAD
-=======
 const struct ixgbevf_info ixgbevf_82599_vf_hv_info = {
 	.mac = ixgbe_mac_82599_vf,
 	.mac_ops = &ixgbevf_hv_mac_ops,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct ixgbevf_info ixgbevf_X540_vf_info = {
 	.mac = ixgbe_mac_X540_vf,
 	.mac_ops = &ixgbevf_mac_ops,
 };
-<<<<<<< HEAD
-=======
 
 const struct ixgbevf_info ixgbevf_X540_vf_hv_info = {
 	.mac = ixgbe_mac_X540_vf,
@@ -1280,4 +1076,3 @@ const struct ixgbevf_info ixgbevf_x550em_a_vf_info = {
 	.mac = ixgbe_mac_x550em_a_vf,
 	.mac_ops = &ixgbevf_mac_ops,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

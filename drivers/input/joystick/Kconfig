@@ -1,27 +1,17 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Joystick driver configuration
 #
 menuconfig INPUT_JOYSTICK
 	bool "Joysticks/Gamepads"
-<<<<<<< HEAD
-=======
 	depends on !UML
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you have a joystick, 6dof controller, gamepad, steering wheel,
 	  weapon control system or something like that you can say Y here
 	  and the list of supported devices will be displayed. This option
 	  doesn't affect the kernel.
 
-<<<<<<< HEAD
-	  Please read the file <file:Documentation/input/joystick.txt> which
-=======
 	  Please read the file <file:Documentation/input/joydev/joystick.rst> which
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  contains more information.
 
 if INPUT_JOYSTICK
@@ -29,11 +19,7 @@ if INPUT_JOYSTICK
 config JOYSTICK_ANALOG
 	tristate "Classic PC analog joysticks and gamepads"
 	select GAMEPORT
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here if you have a joystick that connects to the PC
 	  gameport. In addition to the usual PC analog joystick, this driver
 	  supports many extensions, including joysticks with throttle control,
@@ -41,11 +27,7 @@ config JOYSTICK_ANALOG
 	  Flightstick Pro, ThrustMaster FCS, 6 and 8 button gamepads, or
 	  Saitek Cyborg joysticks.
 
-<<<<<<< HEAD
-	  Please read the file <file:Documentation/input/joystick.txt> which
-=======
 	  Please read the file <file:Documentation/input/joydev/joystick.rst> which
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  contains more information.
 
 	  To compile this driver as a module, choose M here: the
@@ -61,11 +43,6 @@ config JOYSTICK_A3D
 	  To compile this driver as a module, choose M here: the
 	  module will be called a3d.
 
-<<<<<<< HEAD
-config JOYSTICK_ADI
-	tristate "Logitech ADI digital joysticks and gamepads"
-	select GAMEPORT
-=======
 config JOYSTICK_ADC
 	tristate "Simple joystick connected over ADC"
 	depends on IIO
@@ -81,7 +58,6 @@ config JOYSTICK_ADI
 	tristate "Logitech ADI digital joysticks and gamepads"
 	select GAMEPORT
 	depends on ADI!=m # avoid module name conflict
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you have a Logitech controller using the ADI
 	  protocol over the PC gameport.
@@ -234,10 +210,7 @@ config JOYSTICK_TWIDJOY
 config JOYSTICK_ZHENHUA
 	tristate "5-byte Zhenhua RC transmitter"
 	select SERIO
-<<<<<<< HEAD
-=======
 	select BITREVERSE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you have a Zhen Hua PPM-4CH transmitter which is
 	  supplied with a ready to fly micro electric indoor helicopters
@@ -255,11 +228,7 @@ config JOYSTICK_DB9
 	  gamepad, Sega Saturn gamepad, or a Multisystem -- Atari, Amiga,
 	  Commodore, Amstrad CPC joystick connected to your parallel port.
 	  For more information on how to use the driver please read
-<<<<<<< HEAD
-	  <file:Documentation/input/joystick-parport.txt>.
-=======
 	  <file:Documentation/input/devices/joystick-parport.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called db9.
@@ -268,21 +237,13 @@ config JOYSTICK_GAMECON
 	tristate "Multisystem, NES, SNES, N64, PSX joysticks and gamepads"
 	depends on PARPORT
 	select INPUT_FF_MEMLESS
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here if you have a Nintendo Entertainment System gamepad,
 	  Super Nintendo Entertainment System gamepad, Nintendo 64 gamepad,
 	  Sony PlayStation gamepad or a Multisystem -- Atari, Amiga,
 	  Commodore, Amstrad CPC joystick connected to your parallel port.
 	  For more information on how to use the driver please read
-<<<<<<< HEAD
-	  <file:Documentation/input/joystick-parport.txt>.
-=======
 	  <file:Documentation/input/devices/joystick-parport.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called gamecon.
@@ -294,11 +255,7 @@ config JOYSTICK_TURBOGRAFX
 	  Say Y here if you have the TurboGraFX interface by Steffen Schwenke,
 	  and want to use it with Multisystem -- Atari, Amiga, Commodore,
 	  Amstrad CPC joystick. For more information on how to use the driver
-<<<<<<< HEAD
-	  please read <file:Documentation/input/joystick-parport.txt>.
-=======
 	  please read <file:Documentation/input/devices/joystick-parport.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called turbografx.
@@ -335,18 +292,6 @@ config JOYSTICK_JOYDUMP
 	  module will be called joydump.
 
 config JOYSTICK_XPAD
-<<<<<<< HEAD
-	tristate "X-Box gamepad support"
-	depends on USB_ARCH_HAS_HCD
-	select USB
-	help
-	  Say Y here if you want to use the X-Box pad with your computer.
-	  Make sure to say Y to "Joystick support" (CONFIG_INPUT_JOYDEV)
-	  and/or "Event interface support" (CONFIG_INPUT_EVDEV) as well.
-
-	  For information about how to connect the X-Box pad to USB, see
-	  <file:Documentation/input/xpad.txt>.
-=======
 	tristate "Xbox gamepad support"
 	depends on USB_ARCH_HAS_HCD
 	select USB
@@ -357,26 +302,11 @@ config JOYSTICK_XPAD
 
 	  For information about how to connect the Xbox pad to USB, see
 	  <file:Documentation/input/devices/xpad.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called xpad.
 
 config JOYSTICK_XPAD_FF
-<<<<<<< HEAD
-	bool "X-Box gamepad rumble support"
-	depends on JOYSTICK_XPAD && INPUT
-	select INPUT_FF_MEMLESS
-	---help---
-	  Say Y here if you want to take advantage of xbox 360 rumble features.
-
-config JOYSTICK_XPAD_LEDS
-	bool "LED Support for Xbox360 controller 'BigX' LED"
-	depends on JOYSTICK_XPAD && (LEDS_CLASS=y || LEDS_CLASS=JOYSTICK_XPAD)
-	---help---
-	  This option enables support for the LED which surrounds the Big X on
-	  XBox 360 controller.
-=======
 	bool "Xbox gamepad rumble support"
 	depends on JOYSTICK_XPAD && INPUT
 	select INPUT_FF_MEMLESS
@@ -389,7 +319,6 @@ config JOYSTICK_XPAD_LEDS
 	help
 	  This option enables support for the LED which surrounds the Big X on
 	  Xbox 360 controllers.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config JOYSTICK_WALKERA0701
 	tristate "Walkera WK-0701 RC transmitter"
@@ -398,11 +327,7 @@ config JOYSTICK_WALKERA0701
 	  Say Y or M here if you have a Walkera WK-0701 transmitter which is
 	  supplied with a ready to fly Walkera helicopters such as HM36,
 	  HM37, HM60 and want to use it via parport as a joystick. More
-<<<<<<< HEAD
-	  information is available: <file:Documentation/input/walkera0701.txt>
-=======
 	  information is available: <file:Documentation/input/devices/walkera0701.rst>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called walkera0701.
@@ -419,19 +344,6 @@ config JOYSTICK_MAPLE
 	  To compile this as a module choose M here: the module will be called
 	  maplecontrol.
 
-<<<<<<< HEAD
-config TOUCHDISC_VTD518_SHINETSU
-	tristate "ShinEtsu VTD518 TouchDisc"
-	depends on I2C
-	default n
-	help
-	  Say Y here if you have the ShinEtsu VTD518 Touchdisc connected. It
-	  provides the detection of absolute and relative motions and dpad
-	  like buttons.
-
-	  To compile this as a module choose M here: the module will be called
-	  tdisc_vtd518_shinetsu.
-=======
 config JOYSTICK_PSXPAD_SPI
 	tristate "PlayStation 1/2 joypads via SPI interface"
 	depends on SPI
@@ -510,5 +422,4 @@ config JOYSTICK_SEESAW
 	  To compile this driver as a module, choose M here: the module will be
 	  called adafruit-seesaw.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif

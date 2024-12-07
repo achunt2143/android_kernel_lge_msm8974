@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-/**
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * eCryptfs: Linux filesystem encryption layer
  * This is where eCryptfs coordinates the symmetric encryption and
  * decryption of the file data as it passes between the lower
@@ -13,24 +9,6 @@
  * Copyright (C) 2001-2003 Stony Brook University
  * Copyright (C) 2004-2007 International Business Machines Corp.
  *   Author(s): Michael A. Halcrow <mahalcro@us.ibm.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/pagemap.h>
@@ -38,15 +16,6 @@
 #include <linux/page-flags.h>
 #include <linux/mount.h>
 #include <linux/file.h>
-<<<<<<< HEAD
-#include <linux/crypto.h>
-#include <linux/scatterlist.h>
-#include <linux/slab.h>
-#include <asm/unaligned.h>
-#include "ecryptfs_kernel.h"
-
-/**
-=======
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
 #include <linux/xattr.h>
@@ -54,7 +23,6 @@
 #include "ecryptfs_kernel.h"
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ecryptfs_get_locked_page
  *
  * Get one page from cache or lower f/s, return error otherwise.
@@ -70,43 +38,10 @@ struct page *ecryptfs_get_locked_page(struct inode *inode, loff_t index)
 	return page;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_CRYPTO_DEV_KFIPS
-/**
- * ecryptfs_writepage_complete
- * @page_crypt_req: The encrypt page request that completed
- *
- * Calls when the requested page has been encrypted and written to the lower
- * file system.
- */
-static void ecryptfs_writepage_complete(
-		struct ecryptfs_page_crypt_req *page_crypt_req)
-{
-	struct page *page = page_crypt_req->page;
-	int rc;
-	rc = atomic_read(&page_crypt_req->rc);
-	if (unlikely(rc)) {
-		ecryptfs_printk(KERN_WARNING, "Error encrypting "
-				"page (upper index [0x%.16lx])\n", page->index);
-		ClearPageUptodate(page);
-		SetPageError(page);
-	} else {
-		SetPageUptodate(page);
-	}
-	end_page_writeback(page);
-	ecryptfs_free_page_crypt_req(page_crypt_req);
-}
-
-#endif
-/**
- * ecryptfs_writepage
- * @page: Page that is locked before this call is made
-=======
 /**
  * ecryptfs_writepage
  * @page: Page that is locked before this call is made
  * @wbc: Write-back control structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns zero on success; non-zero otherwise
  *
@@ -116,81 +51,8 @@ static void ecryptfs_writepage_complete(
  */
 static int ecryptfs_writepage(struct page *page, struct writeback_control *wbc)
 {
-<<<<<<< HEAD
-#ifndef CONFIG_CRYPTO_DEV_KFIPS
-	int rc;
-#else
-	struct ecryptfs_page_crypt_req *page_crypt_req;
-	int rc = 0;
-#endif
-#if 1 // FEATURE_SDCARD_ENCRYPTION
-	struct inode *ecryptfs_inode;
-	struct ecryptfs_crypt_stat *crypt_stat =
-		&ecryptfs_inode_to_private(page->mapping->host)->crypt_stat;
-	ecryptfs_inode = page->mapping->host;
-#endif
-
-	/*
-	 * Refuse to write the page out if we are called from reclaim context
-	 * since our writepage() path may potentially allocate memory when
-	 * calling into the lower fs vfs_write() which may in turn invoke
-	 * us again.
-	 */
-	if (current->flags & PF_MEMALLOC) {
-		redirty_page_for_writepage(wbc, page);
-#ifndef CONFIG_CRYPTO_DEV_KFIPS
-		rc = 0;
-#endif
-		goto out;
-	}
-
-#if 1 // FEATURE_SDCARD_ENCRYPTION
-	if (!crypt_stat || !(crypt_stat->flags & ECRYPTFS_ENCRYPTED)) {
-		ecryptfs_printk(KERN_DEBUG,
-				"Passing through unencrypted page\n");
-		rc = ecryptfs_write_lower_page_segment(ecryptfs_inode, page,
-			0, PAGE_CACHE_SIZE);
-		if (rc) {
-			ClearPageUptodate(page);
-			goto out;
-		}
-		SetPageUptodate(page);
-	} else {
-#ifndef CONFIG_CRYPTO_DEV_KFIPS
-	rc = ecryptfs_encrypt_page(page);
-	if (rc) {
-		ecryptfs_printk(KERN_WARNING, "Error encrypting "
-				"page (upper index [0x%.16lx])\n", page->index);
-		ClearPageUptodate(page);
-#else
-//	rc = ecryptfs_encrypt_page(page);
-//	if (rc) {
-//		ecryptfs_printk(KERN_WARNING, "Error encrypting "
-//				"page (upper index [0x%.16lx])\n", page->index);
-//		ClearPageUptodate(page);
-	page_crypt_req = ecryptfs_alloc_page_crypt_req(
-				page, ecryptfs_writepage_complete);
-	if (unlikely(!page_crypt_req)) {
-		rc = -ENOMEM;
-		ecryptfs_printk(KERN_ERR,
-				"Failed to allocate page crypt request "
-				"for encryption\n");
-#endif
-		goto out;
-	}
-#ifndef CONFIG_CRYPTO_DEV_KFIPS
-	SetPageUptodate(page);
-#else
-//	SetPageUptodate(page);
-	set_page_writeback(page);
-	ecryptfs_encrypt_page_async(page_crypt_req);
-#endif
-	}
-#else
-=======
 	int rc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ecryptfs_encrypt_page(page);
 	if (rc) {
 		ecryptfs_printk(KERN_WARNING, "Error encrypting "
@@ -199,10 +61,6 @@ static int ecryptfs_writepage(struct page *page, struct writeback_control *wbc)
 		goto out;
 	}
 	SetPageUptodate(page);
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	unlock_page(page);
 	return rc;
@@ -221,11 +79,7 @@ static void strip_xattr_flag(char *page_virt,
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   Header Extent:
  *     Octets 0-7:        Unencrypted file size (big-endian)
  *     Octets 8-15:       eCryptfs special marker
@@ -256,11 +110,7 @@ ecryptfs_copy_up_encrypted_with_header(struct page *page,
 				       struct ecryptfs_crypt_stat *crypt_stat)
 {
 	loff_t extent_num_in_page = 0;
-<<<<<<< HEAD
-	loff_t num_extents_per_page = (PAGE_CACHE_SIZE
-=======
 	loff_t num_extents_per_page = (PAGE_SIZE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       / crypt_stat->extent_size);
 	int rc = 0;
 
@@ -275,13 +125,8 @@ ecryptfs_copy_up_encrypted_with_header(struct page *page,
 			/* This is a header extent */
 			char *page_virt;
 
-<<<<<<< HEAD
-			page_virt = kmap_atomic(page);
-			memset(page_virt, 0, PAGE_CACHE_SIZE);
-=======
 			page_virt = kmap_local_page(page);
 			memset(page_virt, 0, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* TODO: Support more than one header extent */
 			if (view_extent_num == 0) {
 				size_t written;
@@ -293,11 +138,7 @@ ecryptfs_copy_up_encrypted_with_header(struct page *page,
 							       crypt_stat,
 							       &written);
 			}
-<<<<<<< HEAD
-			kunmap_atomic(page_virt);
-=======
 			kunmap_local(page_virt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			flush_dcache_page(page);
 			if (rc) {
 				printk(KERN_ERR "%s: Error reading xattr "
@@ -311,13 +152,8 @@ ecryptfs_copy_up_encrypted_with_header(struct page *page,
 				 - crypt_stat->metadata_size);
 
 			rc = ecryptfs_read_lower_page_segment(
-<<<<<<< HEAD
-				page, (lower_offset >> PAGE_CACHE_SHIFT),
-				(lower_offset & ~PAGE_CACHE_MASK),
-=======
 				page, (lower_offset >> PAGE_SHIFT),
 				(lower_offset & ~PAGE_MASK),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				crypt_stat->extent_size, page->mapping->host);
 			if (rc) {
 				printk(KERN_ERR "%s: Error attempting to read "
@@ -333,52 +169,6 @@ out:
 	return rc;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_CRYPTO_DEV_KFIPS
-/**
- * ecryptfs_readpage_complete
- * @page_crypt_req: The decrypt page request that completed
- *
- * Calls when the requested page has been read and decrypted.
- */
-static void ecryptfs_readpage_complete(
-		struct ecryptfs_page_crypt_req *page_crypt_req)
-{
-	struct page *page = page_crypt_req->page;
-	int rc;
-	rc = atomic_read(&page_crypt_req->rc);
-	if (unlikely(rc)) {
-		ecryptfs_printk(KERN_ERR, "Error decrypting page; "
-				"rc = [%d]\n", rc);
-		ClearPageUptodate(page);
-		SetPageError(page);
-	} else {
-		SetPageUptodate(page);
-	}
-	ecryptfs_printk(KERN_DEBUG, "Unlocking page with index = [0x%.16lx]\n",
-			page->index);
-	unlock_page(page);
-	ecryptfs_free_page_crypt_req(page_crypt_req);
-}
-#endif
-
-/**
- * ecryptfs_readpage
- * @file: An eCryptfs file
- * @page: Page from eCryptfs inode mapping into which to stick the read data
- *
- * Read in a page, decrypting if necessary.
- *
- * Returns zero on success; non-zero on error.
- */
-static int ecryptfs_readpage(struct file *file, struct page *page)
-{
-	struct ecryptfs_crypt_stat *crypt_stat =
-		&ecryptfs_inode_to_private(page->mapping->host)->crypt_stat;
-#ifdef CONFIG_CRYPTO_DEV_KFIPS
-	struct ecryptfs_page_crypt_req *page_crypt_req = NULL;
-#endif
-=======
 /**
  * ecryptfs_read_folio
  * @file: An eCryptfs file
@@ -393,16 +183,11 @@ static int ecryptfs_read_folio(struct file *file, struct folio *folio)
 	struct page *page = &folio->page;
 	struct ecryptfs_crypt_stat *crypt_stat =
 		&ecryptfs_inode_to_private(page->mapping->host)->crypt_stat;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	if (!crypt_stat || !(crypt_stat->flags & ECRYPTFS_ENCRYPTED)) {
 		rc = ecryptfs_read_lower_page_segment(page, page->index, 0,
-<<<<<<< HEAD
-						      PAGE_CACHE_SIZE,
-=======
 						      PAGE_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      page->mapping->host);
 	} else if (crypt_stat->flags & ECRYPTFS_VIEW_AS_ENCRYPTED) {
 		if (crypt_stat->flags & ECRYPTFS_METADATA_IN_XATTR) {
@@ -419,11 +204,7 @@ static int ecryptfs_read_folio(struct file *file, struct folio *folio)
 
 		} else {
 			rc = ecryptfs_read_lower_page_segment(
-<<<<<<< HEAD
-				page, page->index, 0, PAGE_CACHE_SIZE,
-=======
 				page, page->index, 0, PAGE_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				page->mapping->host);
 			if (rc) {
 				printk(KERN_ERR "Error reading page; rc = "
@@ -432,64 +213,25 @@ static int ecryptfs_read_folio(struct file *file, struct folio *folio)
 			}
 		}
 	} else {
-<<<<<<< HEAD
-#ifndef CONFIG_CRYPTO_DEV_KFIPS
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = ecryptfs_decrypt_page(page);
 		if (rc) {
 			ecryptfs_printk(KERN_ERR, "Error decrypting page; "
 					"rc = [%d]\n", rc);
-<<<<<<< HEAD
-#else
-		page_crypt_req = ecryptfs_alloc_page_crypt_req(
-					page, ecryptfs_readpage_complete);
-		if (!page_crypt_req) {
-			rc = -ENOMEM;
-			ecryptfs_printk(KERN_ERR,
-					"Failed to allocate page crypt request "
-					"for decryption\n");
-#endif
-			goto out;
-		}
-#ifdef CONFIG_CRYPTO_DEV_KFIPS
-		ecryptfs_decrypt_page_async(page_crypt_req);
-		goto out_async_started;
-#endif
-	}
-out:
-#ifndef CONFIG_CRYPTO_DEV_KFIPS
-	if (rc)
-#else
-	if (unlikely(rc))
-#endif
-=======
 			goto out;
 		}
 	}
 out:
 	if (rc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ClearPageUptodate(page);
 	else
 		SetPageUptodate(page);
 	ecryptfs_printk(KERN_DEBUG, "Unlocking page with index = [0x%.16lx]\n",
 			page->index);
 	unlock_page(page);
-<<<<<<< HEAD
-#ifdef CONFIG_CRYPTO_DEV_KFIPS
-out_async_started:
-#endif
-	return rc;
-}
-
-/**
-=======
 	return rc;
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Called with lower inode mutex held.
  */
 static int fill_zeros_to_end_of_page(struct page *page, unsigned int to)
@@ -497,21 +239,12 @@ static int fill_zeros_to_end_of_page(struct page *page, unsigned int to)
 	struct inode *inode = page->mapping->host;
 	int end_byte_in_page;
 
-<<<<<<< HEAD
-	if ((i_size_read(inode) / PAGE_CACHE_SIZE) != page->index)
-		goto out;
-	end_byte_in_page = i_size_read(inode) % PAGE_CACHE_SIZE;
-	if (to > end_byte_in_page)
-		end_byte_in_page = to;
-	zero_user_segment(page, end_byte_in_page, PAGE_CACHE_SIZE);
-=======
 	if ((i_size_read(inode) / PAGE_SIZE) != page->index)
 		goto out;
 	end_byte_in_page = i_size_read(inode) % PAGE_SIZE;
 	if (to > end_byte_in_page)
 		end_byte_in_page = to;
 	zero_user_segment(page, end_byte_in_page, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return 0;
 }
@@ -522,10 +255,6 @@ out:
  * @mapping: The eCryptfs object
  * @pos: The file offset at which to start writing
  * @len: Length of the write
-<<<<<<< HEAD
- * @flags: Various flags
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pagep: Pointer to return the page
  * @fsdata: Pointer to return fs data (unused)
  *
@@ -535,50 +264,29 @@ out:
  */
 static int ecryptfs_write_begin(struct file *file,
 			struct address_space *mapping,
-<<<<<<< HEAD
-			loff_t pos, unsigned len, unsigned flags,
-			struct page **pagep, void **fsdata)
-{
-	pgoff_t index = pos >> PAGE_CACHE_SHIFT;
-=======
 			loff_t pos, unsigned len,
 			struct page **pagep, void **fsdata)
 {
 	pgoff_t index = pos >> PAGE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page *page;
 	loff_t prev_page_end_size;
 	int rc = 0;
 
-<<<<<<< HEAD
-	page = grab_cache_page_write_begin(mapping, index, flags);
-=======
 	page = grab_cache_page_write_begin(mapping, index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!page)
 		return -ENOMEM;
 	*pagep = page;
 
-<<<<<<< HEAD
-	prev_page_end_size = ((loff_t)index << PAGE_CACHE_SHIFT);
-=======
 	prev_page_end_size = ((loff_t)index << PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!PageUptodate(page)) {
 		struct ecryptfs_crypt_stat *crypt_stat =
 			&ecryptfs_inode_to_private(mapping->host)->crypt_stat;
 
 		if (!(crypt_stat->flags & ECRYPTFS_ENCRYPTED)) {
 			rc = ecryptfs_read_lower_page_segment(
-<<<<<<< HEAD
-				page, index, 0, PAGE_CACHE_SIZE, mapping->host);
-			if (rc) {
-				printk(KERN_ERR "%s: Error attemping to read "
-=======
 				page, index, 0, PAGE_SIZE, mapping->host);
 			if (rc) {
 				printk(KERN_ERR "%s: Error attempting to read "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       "lower page segment; rc = [%d]\n",
 				       __func__, rc);
 				ClearPageUptodate(page);
@@ -602,11 +310,7 @@ static int ecryptfs_write_begin(struct file *file,
 				SetPageUptodate(page);
 			} else {
 				rc = ecryptfs_read_lower_page_segment(
-<<<<<<< HEAD
-					page, index, 0, PAGE_CACHE_SIZE,
-=======
 					page, index, 0, PAGE_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					mapping->host);
 				if (rc) {
 					printk(KERN_ERR "%s: Error reading "
@@ -620,14 +324,9 @@ static int ecryptfs_write_begin(struct file *file,
 		} else {
 			if (prev_page_end_size
 			    >= i_size_read(page->mapping->host)) {
-<<<<<<< HEAD
-				zero_user(page, 0, PAGE_CACHE_SIZE);
-			} else {
-=======
 				zero_user(page, 0, PAGE_SIZE);
 				SetPageUptodate(page);
 			} else if (len < PAGE_SIZE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rc = ecryptfs_decrypt_page(page);
 				if (rc) {
 					printk(KERN_ERR "%s: Error decrypting "
@@ -637,13 +336,8 @@ static int ecryptfs_write_begin(struct file *file,
 					ClearPageUptodate(page);
 					goto out;
 				}
-<<<<<<< HEAD
-			}
-			SetPageUptodate(page);
-=======
 				SetPageUptodate(page);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	/* If creating a page or more of holes, zero them out via truncate.
@@ -665,29 +359,17 @@ static int ecryptfs_write_begin(struct file *file,
 	 * of page?  Zero it out. */
 	if ((i_size_read(mapping->host) == prev_page_end_size)
 	    && (pos != 0))
-<<<<<<< HEAD
-		zero_user(page, 0, PAGE_CACHE_SIZE);
-out:
-	if (unlikely(rc)) {
-		unlock_page(page);
-		page_cache_release(page);
-=======
 		zero_user(page, 0, PAGE_SIZE);
 out:
 	if (unlikely(rc)) {
 		unlock_page(page);
 		put_page(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*pagep = NULL;
 	}
 	return rc;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ecryptfs_write_inode_size_to_header
  *
  * Writes the lower file size to the first 8 bytes of the header.
@@ -724,19 +406,11 @@ static int ecryptfs_write_inode_size_to_xattr(struct inode *ecryptfs_inode)
 	ssize_t size;
 	void *xattr_virt;
 	struct dentry *lower_dentry =
-<<<<<<< HEAD
-		ecryptfs_inode_to_private(ecryptfs_inode)->lower_file->f_dentry;
-	struct inode *lower_inode = lower_dentry->d_inode;
-	int rc;
-
-	if (!lower_inode->i_op->getxattr || !lower_inode->i_op->setxattr) {
-=======
 		ecryptfs_inode_to_private(ecryptfs_inode)->lower_file->f_path.dentry;
 	struct inode *lower_inode = d_inode(lower_dentry);
 	int rc;
 
 	if (!(lower_inode->i_opflags & IOP_XATTR)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING
 		       "No support for setting xattr in lower filesystem\n");
 		rc = -ENOSYS;
@@ -744,22 +418,6 @@ static int ecryptfs_write_inode_size_to_xattr(struct inode *ecryptfs_inode)
 	}
 	xattr_virt = kmem_cache_alloc(ecryptfs_xattr_cache, GFP_KERNEL);
 	if (!xattr_virt) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Out of memory whilst attempting to write "
-		       "inode size to xattr\n");
-		rc = -ENOMEM;
-		goto out;
-	}
-	mutex_lock(&lower_inode->i_mutex);
-	size = lower_inode->i_op->getxattr(lower_dentry, ECRYPTFS_XATTR_NAME,
-					   xattr_virt, PAGE_CACHE_SIZE);
-	if (size < 0)
-		size = 8;
-	put_unaligned_be64(i_size_read(ecryptfs_inode), xattr_virt);
-	rc = lower_inode->i_op->setxattr(lower_dentry, ECRYPTFS_XATTR_NAME,
-					 xattr_virt, size, 0);
-	mutex_unlock(&lower_inode->i_mutex);
-=======
 		rc = -ENOMEM;
 		goto out;
 	}
@@ -772,7 +430,6 @@ static int ecryptfs_write_inode_size_to_xattr(struct inode *ecryptfs_inode)
 	rc = __vfs_setxattr(&nop_mnt_idmap, lower_dentry, lower_inode,
 			    ECRYPTFS_XATTR_NAME, xattr_virt, size, 0);
 	inode_unlock(lower_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		printk(KERN_ERR "Error whilst attempting to write inode size "
 		       "to lower file xattr; rc = [%d]\n", rc);
@@ -808,13 +465,8 @@ static int ecryptfs_write_end(struct file *file,
 			loff_t pos, unsigned len, unsigned copied,
 			struct page *page, void *fsdata)
 {
-<<<<<<< HEAD
-	pgoff_t index = pos >> PAGE_CACHE_SHIFT;
-	unsigned from = pos & (PAGE_CACHE_SIZE - 1);
-=======
 	pgoff_t index = pos >> PAGE_SHIFT;
 	unsigned from = pos & (PAGE_SIZE - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned to = from + copied;
 	struct inode *ecryptfs_inode = mapping->host;
 	struct ecryptfs_crypt_stat *crypt_stat =
@@ -833,8 +485,6 @@ static int ecryptfs_write_end(struct file *file,
 		}
 		goto out;
 	}
-<<<<<<< HEAD
-=======
 	if (!PageUptodate(page)) {
 		if (copied < PAGE_SIZE) {
 			rc = 0;
@@ -842,7 +492,6 @@ static int ecryptfs_write_end(struct file *file,
 		}
 		SetPageUptodate(page);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fills in zeros if 'to' goes beyond inode size */
 	rc = fill_zeros_to_end_of_page(page, to);
 	if (rc) {
@@ -870,33 +519,12 @@ static int ecryptfs_write_end(struct file *file,
 		rc = copied;
 out:
 	unlock_page(page);
-<<<<<<< HEAD
-	page_cache_release(page);
-=======
 	put_page(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 static sector_t ecryptfs_bmap(struct address_space *mapping, sector_t block)
 {
-<<<<<<< HEAD
-	int rc = 0;
-	struct inode *inode;
-	struct inode *lower_inode;
-
-	inode = (struct inode *)mapping->host;
-	lower_inode = ecryptfs_inode_to_lower(inode);
-	if (lower_inode->i_mapping->a_ops->bmap)
-		rc = lower_inode->i_mapping->a_ops->bmap(lower_inode->i_mapping,
-							 block);
-	return rc;
-}
-
-const struct address_space_operations ecryptfs_aops = {
-	.writepage = ecryptfs_writepage,
-	.readpage = ecryptfs_readpage,
-=======
 	struct inode *lower_inode = ecryptfs_inode_to_lower(mapping->host);
 	int ret = bmap(lower_inode, &block);
 
@@ -922,7 +550,6 @@ const struct address_space_operations ecryptfs_aops = {
 #endif
 	.writepage = ecryptfs_writepage,
 	.read_folio = ecryptfs_read_folio,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write_begin = ecryptfs_write_begin,
 	.write_end = ecryptfs_write_end,
 	.bmap = ecryptfs_bmap,

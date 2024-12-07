@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-/*
- * OMAP4 SMP source file. It contains platform specific fucntions
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * OMAP4 SMP source file. It contains platform specific functions
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * needed for the linux smp kernel.
  *
  * Copyright (C) 2009 Texas Instruments, Inc.
@@ -16,43 +11,11 @@
  * Platform file needed for the OMAP4 SMP. This file is based on arm
  * realview smp platform.
  * * Copyright (c) 2002 ARM Limited.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/device.h>
 #include <linux/smp.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-
-#include <asm/cacheflush.h>
-#include <asm/hardware/gic.h>
-#include <asm/smp_scu.h>
-
-#include <mach/hardware.h>
-#include <mach/omap-secure.h>
-
-#include "iomap.h"
-#include "common.h"
-#include "clockdomain.h"
-
-/* SCU base address */
-static void __iomem *scu_base;
-
-static DEFINE_SPINLOCK(boot_lock);
-
-void __iomem *omap4_get_scu_base(void)
-{
-	return scu_base;
-}
-
-void __cpuinit platform_secondary_init(unsigned int cpu)
-=======
 #include <linux/irqchip/arm-gic.h>
 
 #include <asm/sections.h>
@@ -181,7 +144,6 @@ static inline void omap5_secondary_harden_predictor(void) { }
 #endif
 
 static void omap4_secondary_init(unsigned int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Configure ACTRL and enable NS SMP bit access on CPU1 on HS device.
@@ -191,48 +153,6 @@ static void omap4_secondary_init(unsigned int cpu)
 	 * OMAP443X GP devices- SMP bit isn't accessible.
 	 * OMAP446X GP devices - SMP bit access is enabled on both CPUs.
 	 */
-<<<<<<< HEAD
-	if (cpu_is_omap443x() && (omap_type() != OMAP2_DEVICE_TYPE_GP))
-		omap_secure_dispatcher(OMAP4_PPA_CPU_ACTRL_SMP_INDEX,
-							4, 0, 0, 0, 0, 0);
-
-	/*
-	 * If any interrupts are already enabled for the primary
-	 * core (e.g. timer irq), then they will not have been enabled
-	 * for us: do so
-	 */
-	gic_secondary_init(0);
-
-	/*
-	 * Synchronise with the boot thread.
-	 */
-	spin_lock(&boot_lock);
-	spin_unlock(&boot_lock);
-}
-
-int __cpuinit boot_secondary(unsigned int cpu, struct task_struct *idle)
-{
-	static struct clockdomain *cpu1_clkdm;
-	static bool booted;
-	/*
-	 * Set synchronisation state between this boot processor
-	 * and the secondary one
-	 */
-	spin_lock(&boot_lock);
-
-	/*
-	 * Update the AuxCoreBoot0 with boot state for secondary core.
-	 * omap_secondary_startup() routine will hold the secondary core till
-	 * the AuxCoreBoot1 register is updated with cpu state
-	 * A barrier is added to ensure that write buffer is drained
-	 */
-	omap_modify_auxcoreboot0(0x200, 0xfffffdff);
-	flush_cache_all();
-	smp_wmb();
-
-	if (!cpu1_clkdm)
-		cpu1_clkdm = clkdm_lookup("mpu1_clkdm");
-=======
 	if (soc_is_omap443x() && (omap_type() != OMAP2_DEVICE_TYPE_GP))
 		omap_secure_dispatcher(OMAP4_PPA_CPU_ACTRL_SMP_INDEX,
 							4, 0, 0, 0, 0, 0);
@@ -273,7 +193,6 @@ static int omap4_boot_secondary(unsigned int cpu, struct task_struct *idle)
 		cpu1_clkdm = clkdm_lookup("mpu1_clkdm");
 		cpu1_pwrdm = pwrdm_lookup("cpu1_pwrdm");
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The SGI(Software Generated Interrupts) are not wakeup capable
@@ -286,11 +205,6 @@ static int omap4_boot_secondary(unsigned int cpu, struct task_struct *idle)
 	 * Section :
 	 *	4.3.4.2 Power States of CPU0 and CPU1
 	 */
-<<<<<<< HEAD
-	if (booted) {
-		clkdm_wakeup(cpu1_clkdm);
-		clkdm_allow_idle(cpu1_clkdm);
-=======
 	if (booted && cpu1_pwrdm && cpu1_clkdm) {
 		/*
 		 * GIC distributor control register has changed between
@@ -328,67 +242,20 @@ static int omap4_boot_secondary(unsigned int cpu, struct task_struct *idle)
 			gic_timer_retrigger();
 			local_irq_enable();
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		dsb_sev();
 		booted = true;
 	}
 
-<<<<<<< HEAD
-	gic_raise_softirq(cpumask_of(cpu), 1);
-
-	/*
-	 * Now the secondary core is starting up let it run its
-	 * calibrations, then wait for it to finish
-	 */
-	spin_unlock(&boot_lock);
-=======
 	arch_send_wakeup_ipi_mask(cpumask_of(cpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __init wakeup_secondary(void)
-{
-	/*
-	 * Write the address of secondary startup routine into the
-	 * AuxCoreBoot1 where ROM code will jump and start executing
-	 * on secondary core once out of WFE
-	 * A barrier is added to ensure that write buffer is drained
-	 */
-	omap_auxcoreboot_addr(virt_to_phys(omap_secondary_startup));
-	smp_wmb();
-
-	/*
-	 * Send a 'sev' to wake the secondary core from WFE.
-	 * Drain the outstanding writes to memory
-	 */
-	dsb_sev();
-	mb();
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Initialise the CPU possible map early - this describes the CPUs
  * which may be present or become present in the system.
  */
-<<<<<<< HEAD
-void __init smp_init_cpus(void)
-{
-	unsigned int i, ncores;
-
-	/*
-	 * Currently we can't call ioremap here because
-	 * SoC detection won't work until after init_early.
-	 */
-	scu_base =  OMAP2_L4_IO_ADDRESS(OMAP44XX_SCU_BASE);
-	BUG_ON(!scu_base);
-
-	ncores = scu_get_core_count(scu_base);
-=======
 static void __init omap4_smp_init_cpus(void)
 {
 	unsigned int i = 0, ncores = 1, cpu_id;
@@ -406,7 +273,6 @@ static void __init omap4_smp_init_cpus(void)
 	} else if (cpu_id == CPU_CORTEX_A15) {
 		ncores = OMAP5_CORE_COUNT;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sanity check */
 	if (ncores > nr_cpu_ids) {
@@ -417,14 +283,6 @@ static void __init omap4_smp_init_cpus(void)
 
 	for (i = 0; i < ncores; i++)
 		set_cpu_possible(i, true);
-<<<<<<< HEAD
-
-	set_smp_cross_call(gic_raise_softirq);
-}
-
-void __init platform_smp_prepare_cpus(unsigned int max_cpus)
-{
-=======
 }
 
 /*
@@ -524,17 +382,11 @@ static void __init omap4_smp_prepare_cpus(unsigned int max_cpus)
 	cfg.cpu1_rstctrl_va = ioremap(cfg.cpu1_rstctrl_pa, 4);
 	if (!cfg.cpu1_rstctrl_va)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Initialise the SCU and wake up the secondary core using
 	 * wakeup_secondary().
 	 */
-<<<<<<< HEAD
-	scu_enable(scu_base);
-	wakeup_secondary();
-}
-=======
 	if (cfg.scu_base)
 		scu_enable(cfg.scu_base);
 
@@ -563,4 +415,3 @@ const struct smp_operations omap4_smp_ops __initconst = {
 	.cpu_kill		= omap4_cpu_kill,
 #endif
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

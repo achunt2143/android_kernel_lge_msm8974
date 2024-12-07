@@ -1,21 +1,9 @@
-<<<<<<< HEAD
-/*
- * arch/sh/kernel/cpu/sh3/entry.S
- *
- *  Copyright (C) 1999, 2000, 2002  Niibe Yutaka
- *  Copyright (C) 2003 - 2006  Paul Mundt
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0
  *
  * arch/sh/kernel/cpu/sh3/entry.S
  *
  *  Copyright (C) 1999, 2000, 2002  Niibe Yutaka
  *  Copyright (C) 2003 - 2012  Paul Mundt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/sys.h>
 #include <linux/errno.h>
@@ -123,38 +111,22 @@ ENTRY(tlb_miss_load)
 	.align	2
 ENTRY(tlb_miss_store)
 	bra	call_handle_tlbmiss
-<<<<<<< HEAD
-	 mov	#1, r5
-=======
 	 mov	#FAULT_CODE_WRITE, r5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.align	2
 ENTRY(initial_page_write)
 	bra	call_handle_tlbmiss
-<<<<<<< HEAD
-	 mov	#2, r5
-=======
 	 mov	#FAULT_CODE_INITIAL, r5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.align	2
 ENTRY(tlb_protection_violation_load)
 	bra	call_do_page_fault
-<<<<<<< HEAD
-	 mov	#0, r5
-=======
 	 mov	#FAULT_CODE_PROT, r5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.align	2
 ENTRY(tlb_protection_violation_store)
 	bra	call_do_page_fault
-<<<<<<< HEAD
-	 mov	#1, r5
-=======
 	 mov	#(FAULT_CODE_PROT | FAULT_CODE_WRITE), r5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 call_handle_tlbmiss:
 	mov.l	1f, r0
@@ -498,15 +470,9 @@ ENTRY(handle_interrupt)
 	mov	r4, r0		! save vector->jmp table offset for later
 
 	shlr2	r4		! vector to IRQ# conversion
-<<<<<<< HEAD
-	add	#-0x10, r4
-
-	cmp/pz	r4		! is it a valid IRQ?
-=======
 
 	mov	#0x10, r5
 	cmp/hs	r5, r4		! is it a valid IRQ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bt	10f
 
 	/*

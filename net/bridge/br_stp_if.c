@@ -1,31 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Spanning tree protocol; interface code
  *	Linux ethernet bridge
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/kmod.h>
 #include <linux/etherdevice.h>
 #include <linux/rtnetlink.h>
-<<<<<<< HEAD
-=======
 #include <net/switchdev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "br_private.h"
 #include "br_private_stp.h"
@@ -46,16 +32,6 @@ static inline port_id br_make_port_id(__u8 priority, __u16 port_no)
 /* called under bridge lock */
 void br_init_port(struct net_bridge_port *p)
 {
-<<<<<<< HEAD
-	p->port_id = br_make_port_id(p->priority, p->port_no);
-	br_become_designated_port(p);
-	p->state = BR_STATE_BLOCKING;
-	p->topology_change_ack = 0;
-	p->config_pending = 0;
-}
-
-/* called under bridge lock */
-=======
 	int err;
 
 	p->port_id = br_make_port_id(p->priority, p->port_no);
@@ -70,29 +46,19 @@ void br_init_port(struct net_bridge_port *p)
 }
 
 /* NO locks held */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void br_stp_enable_bridge(struct net_bridge *br)
 {
 	struct net_bridge_port *p;
 
 	spin_lock_bh(&br->lock);
-<<<<<<< HEAD
-	mod_timer(&br->hello_timer, jiffies + br->hello_time);
-	mod_timer(&br->gc_timer, jiffies + HZ/10);
-=======
 	if (br->stp_enabled == BR_KERNEL_STP)
 		mod_timer(&br->hello_timer, jiffies + br->hello_time);
 	mod_delayed_work(system_long_wq, &br->gc_work, HZ / 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	br_config_bpdu_generation(br);
 
 	list_for_each_entry(p, &br->port_list, list) {
-<<<<<<< HEAD
-		if ((p->dev->flags & IFF_UP) && netif_carrier_ok(p->dev))
-=======
 		if (netif_running(p->dev) && netif_oper_up(p->dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			br_stp_enable_port(p);
 
 	}
@@ -111,22 +77,14 @@ void br_stp_disable_bridge(struct net_bridge *br)
 
 	}
 
-<<<<<<< HEAD
-	br->topology_change = 0;
-=======
 	__br_set_topology_change(br, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	br->topology_change_detected = 0;
 	spin_unlock_bh(&br->lock);
 
 	del_timer_sync(&br->hello_timer);
 	del_timer_sync(&br->topology_change_timer);
 	del_timer_sync(&br->tcn_timer);
-<<<<<<< HEAD
-	del_timer_sync(&br->gc_timer);
-=======
 	cancel_delayed_work_sync(&br->gc_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* called under bridge lock */
@@ -134,12 +92,7 @@ void br_stp_enable_port(struct net_bridge_port *p)
 {
 	br_init_port(p);
 	br_port_state_selection(p->br);
-<<<<<<< HEAD
-	br_log_state(p);
-	br_ifinfo_notify(RTM_NEWLINK, p);
-=======
 	br_ifinfo_notify(RTM_NEWLINK, NULL, p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* called under bridge lock */
@@ -150,31 +103,18 @@ void br_stp_disable_port(struct net_bridge_port *p)
 
 	wasroot = br_is_root_bridge(br);
 	br_become_designated_port(p);
-<<<<<<< HEAD
-	p->state = BR_STATE_DISABLED;
-	p->topology_change_ack = 0;
-	p->config_pending = 0;
-
-	br_log_state(p);
-	br_ifinfo_notify(RTM_NEWLINK, p);
-=======
 	br_set_state(p, BR_STATE_DISABLED);
 	p->topology_change_ack = 0;
 	p->config_pending = 0;
 
 	br_ifinfo_notify(RTM_NEWLINK, NULL, p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	del_timer(&p->message_age_timer);
 	del_timer(&p->forward_delay_timer);
 	del_timer(&p->hold_timer);
 
-<<<<<<< HEAD
-	br_fdb_delete_by_port(br, p, 0);
-=======
 	if (!rcu_access_pointer(p->backup_port))
 		br_fdb_delete_by_port(br, p, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	br_multicast_disable_port(p);
 
 	br_configuration_update(br);
@@ -185,15 +125,6 @@ void br_stp_disable_port(struct net_bridge_port *p)
 		br_become_root_bridge(br);
 }
 
-<<<<<<< HEAD
-static void br_stp_start(struct net_bridge *br)
-{
-	int r;
-	char *argv[] = { BR_STP_PROG, br->dev->name, "start", NULL };
-	char *envp[] = { NULL };
-
-	r = call_usermodehelper(BR_STP_PROG, argv, envp, UMH_WAIT_PROC);
-=======
 static int br_stp_call_user(struct net_bridge *br, char *arg)
 {
 	char *argv[] = { BR_STP_PROG, br->dev->name, arg, NULL };
@@ -223,7 +154,6 @@ static void br_stp_start(struct net_bridge *br)
 
 	if (err && err != -ENOENT)
 		br_err(br, "failed to start userspace STP (%d)\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&br->lock);
 
@@ -232,11 +162,7 @@ static void br_stp_start(struct net_bridge *br)
 	else if (br->bridge_forward_delay > BR_MAX_FORWARD_DELAY)
 		__br_set_forward_delay(br, BR_MAX_FORWARD_DELAY);
 
-<<<<<<< HEAD
-	if (r == 0) {
-=======
 	if (!err) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		br->stp_enabled = BR_USER_STP;
 		br_debug(br, "userspace STP started\n");
 	} else {
@@ -244,11 +170,8 @@ static void br_stp_start(struct net_bridge *br)
 		br_debug(br, "using kernel STP\n");
 
 		/* To start timers on any ports left in blocking */
-<<<<<<< HEAD
-=======
 		if (br->dev->flags & IFF_UP)
 			mod_timer(&br->hello_timer, jiffies + br->hello_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		br_port_state_selection(br);
 	}
 
@@ -257,22 +180,12 @@ static void br_stp_start(struct net_bridge *br)
 
 static void br_stp_stop(struct net_bridge *br)
 {
-<<<<<<< HEAD
-	int r;
-	char *argv[] = { BR_STP_PROG, br->dev->name, "stop", NULL };
-	char *envp[] = { NULL };
-
-	if (br->stp_enabled == BR_USER_STP) {
-		r = call_usermodehelper(BR_STP_PROG, argv, envp, UMH_WAIT_PROC);
-		br_info(br, "userspace STP stopped, return code %d\n", r);
-=======
 	int err;
 
 	if (br->stp_enabled == BR_USER_STP) {
 		err = br_stp_call_user(br, "stop");
 		if (err)
 			br_err(br, "failed to stop userspace STP (%d)\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* To start timers on any ports left in blocking */
 		spin_lock_bh(&br->lock);
@@ -283,12 +196,6 @@ static void br_stp_stop(struct net_bridge *br)
 	br->stp_enabled = BR_NO_STP;
 }
 
-<<<<<<< HEAD
-void br_stp_set_enabled(struct net_bridge *br, unsigned long val)
-{
-	ASSERT_RTNL();
-
-=======
 int br_stp_set_enabled(struct net_bridge *br, unsigned long val,
 		       struct netlink_ext_ack *extack)
 {
@@ -300,7 +207,6 @@ int br_stp_set_enabled(struct net_bridge *br, unsigned long val,
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (val) {
 		if (br->stp_enabled == BR_NO_STP)
 			br_stp_start(br);
@@ -308,21 +214,14 @@ int br_stp_set_enabled(struct net_bridge *br, unsigned long val,
 		if (br->stp_enabled != BR_NO_STP)
 			br_stp_stop(br);
 	}
-<<<<<<< HEAD
-=======
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* called under bridge lock */
 void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
 {
-<<<<<<< HEAD
-	/* should be aligned on 2 bytes for compare_ether_addr() */
-=======
 	/* should be aligned on 2 bytes for ether_addr_equal() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short oldaddr_aligned[ETH_ALEN >> 1];
 	unsigned char *oldaddr = (unsigned char *)oldaddr_aligned;
 	struct net_bridge_port *p;
@@ -330,19 +229,6 @@ void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
 
 	wasroot = br_is_root_bridge(br);
 
-<<<<<<< HEAD
-	memcpy(oldaddr, br->bridge_id.addr, ETH_ALEN);
-	memcpy(br->bridge_id.addr, addr, ETH_ALEN);
-	memcpy(br->dev->dev_addr, addr, ETH_ALEN);
-
-	list_for_each_entry(p, &br->port_list, list) {
-		if (!compare_ether_addr(p->designated_bridge.addr, oldaddr))
-			memcpy(p->designated_bridge.addr, addr, ETH_ALEN);
-
-		if (!compare_ether_addr(p->designated_root.addr, oldaddr))
-			memcpy(p->designated_root.addr, addr, ETH_ALEN);
-
-=======
 	br_fdb_change_mac_address(br, addr);
 
 	memcpy(oldaddr, br->bridge_id.addr, ETH_ALEN);
@@ -355,7 +241,6 @@ void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
 
 		if (ether_addr_equal(p->designated_root.addr, oldaddr))
 			memcpy(p->designated_root.addr, addr, ETH_ALEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	br_configuration_update(br);
@@ -364,11 +249,7 @@ void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
 		br_become_root_bridge(br);
 }
 
-<<<<<<< HEAD
-/* should be aligned on 2 bytes for compare_ether_addr() */
-=======
 /* should be aligned on 2 bytes for ether_addr_equal() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const unsigned short br_mac_zero_aligned[ETH_ALEN >> 1];
 
 /* called under bridge lock */
@@ -380,11 +261,7 @@ bool br_stp_recalculate_bridge_id(struct net_bridge *br)
 	struct net_bridge_port *p;
 
 	/* user has chosen a value so keep it */
-<<<<<<< HEAD
-	if (br->flags & BR_SET_MAC_ADDR)
-=======
 	if (br->dev->addr_assign_type == NET_ADDR_SET)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	list_for_each_entry(p, &br->port_list, list) {
@@ -394,11 +271,7 @@ bool br_stp_recalculate_bridge_id(struct net_bridge *br)
 
 	}
 
-<<<<<<< HEAD
-	if (compare_ether_addr(br->bridge_id.addr, addr) == 0)
-=======
 	if (ether_addr_equal(br->bridge_id.addr, addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;	/* no change */
 
 	br_stp_change_bridge_id(br, addr);
@@ -462,10 +335,7 @@ int br_stp_set_path_cost(struct net_bridge_port *p, unsigned long path_cost)
 	    path_cost > BR_MAX_PATH_COST)
 		return -ERANGE;
 
-<<<<<<< HEAD
-=======
 	p->flags |= BR_ADMIN_COST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p->path_cost = path_cost;
 	br_configuration_update(p->br);
 	br_port_state_selection(p->br);

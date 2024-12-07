@@ -1,21 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright SUSE Linux Products GmbH 2009
  *
@@ -27,13 +11,10 @@
 #include <asm/kvm_book3s.h>
 #include <asm/reg.h>
 #include <asm/switch_to.h>
-<<<<<<< HEAD
-=======
 #include <asm/time.h>
 #include <asm/tm.h>
 #include "book3s.h"
 #include <asm/asm-prototypes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define OP_19_XOP_RFID		18
 #define OP_19_XOP_RFI		50
@@ -44,12 +25,8 @@
 #define OP_31_XOP_MTSR		210
 #define OP_31_XOP_MTSRIN	242
 #define OP_31_XOP_TLBIEL	274
-<<<<<<< HEAD
-#define OP_31_XOP_TLBIE		306
-=======
 /* Opcode is officially reserved, reuse it as sc 1 when sc 1 doesn't trap */
 #define OP_31_XOP_FAKE_SC1	308
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OP_31_XOP_SLBMTE	402
 #define OP_31_XOP_SLBIE		434
 #define OP_31_XOP_SLBIA		498
@@ -59,8 +36,6 @@
 #define OP_31_XOP_SLBMFEV	851
 #define OP_31_XOP_EIOIO		854
 #define OP_31_XOP_SLBMFEE	915
-<<<<<<< HEAD
-=======
 #define OP_31_XOP_SLBFEE	979
 
 #define OP_31_XOP_TBEGIN	654
@@ -68,7 +43,6 @@
 
 #define OP_31_XOP_TRECLAIM	942
 #define OP_31_XOP_TRCHKPT	1006
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* DCBZ is actually 1014, but we patch it to 1010 so we get a trap */
 #define OP_31_XOP_DCBZ		1010
@@ -87,13 +61,6 @@
 #define SPRN_GQR6		918
 #define SPRN_GQR7		919
 
-<<<<<<< HEAD
-/* Book3S_32 defines mfsrin(v) - but that messes up our abstract
- * function pointers, so let's just disable the define. */
-#undef mfsrin
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum priv_level {
 	PRIV_PROBLEM = 0,
 	PRIV_SUPER = 1,
@@ -107,32 +74,12 @@ static bool spr_allowed(struct kvm_vcpu *vcpu, enum priv_level level)
 		return false;
 
 	/* Limit user space to its own small SPR set */
-<<<<<<< HEAD
-	if ((vcpu->arch.shared->msr & MSR_PR) && level > PRIV_PROBLEM)
-=======
 	if ((kvmppc_get_msr(vcpu) & MSR_PR) && level > PRIV_PROBLEM)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	return true;
 }
 
-<<<<<<< HEAD
-int kvmppc_core_emulate_op(struct kvm_run *run, struct kvm_vcpu *vcpu,
-                           unsigned int inst, int *advance)
-{
-	int emulated = EMULATE_DONE;
-
-	switch (get_op(inst)) {
-	case 19:
-		switch (get_xop(inst)) {
-		case OP_19_XOP_RFID:
-		case OP_19_XOP_RFI:
-			kvmppc_set_pc(vcpu, vcpu->arch.shared->srr0);
-			kvmppc_set_msr(vcpu, vcpu->arch.shared->srr1);
-			*advance = 0;
-			break;
-=======
 #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
 static inline void kvmppc_copyto_vcpu_tm(struct kvm_vcpu *vcpu)
 {
@@ -336,7 +283,6 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 			*advance = 0;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		default:
 			emulated = EMULATE_FAIL;
@@ -346,23 +292,6 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 	case 31:
 		switch (get_xop(inst)) {
 		case OP_31_XOP_MFMSR:
-<<<<<<< HEAD
-			kvmppc_set_gpr(vcpu, get_rt(inst),
-				       vcpu->arch.shared->msr);
-			break;
-		case OP_31_XOP_MTMSRD:
-		{
-			ulong rs = kvmppc_get_gpr(vcpu, get_rs(inst));
-			if (inst & 0x10000) {
-				vcpu->arch.shared->msr &= ~(MSR_RI | MSR_EE);
-				vcpu->arch.shared->msr |= rs & (MSR_RI | MSR_EE);
-			} else
-				kvmppc_set_msr(vcpu, rs);
-			break;
-		}
-		case OP_31_XOP_MTMSR:
-			kvmppc_set_msr(vcpu, kvmppc_get_gpr(vcpu, get_rs(inst)));
-=======
 			kvmppc_set_gpr(vcpu, rt, kvmppc_get_msr(vcpu));
 			break;
 		case OP_31_XOP_MTMSRD:
@@ -379,7 +308,6 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 		}
 		case OP_31_XOP_MTMSR:
 			kvmppc_set_msr(vcpu, kvmppc_get_gpr(vcpu, rs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case OP_31_XOP_MFSR:
 		{
@@ -389,11 +317,7 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 			if (vcpu->arch.mmu.mfsrin) {
 				u32 sr;
 				sr = vcpu->arch.mmu.mfsrin(vcpu, srnum);
-<<<<<<< HEAD
-				kvmppc_set_gpr(vcpu, get_rt(inst), sr);
-=======
 				kvmppc_set_gpr(vcpu, rt, sr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		}
@@ -401,51 +325,28 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 		{
 			int srnum;
 
-<<<<<<< HEAD
-			srnum = (kvmppc_get_gpr(vcpu, get_rb(inst)) >> 28) & 0xf;
-			if (vcpu->arch.mmu.mfsrin) {
-				u32 sr;
-				sr = vcpu->arch.mmu.mfsrin(vcpu, srnum);
-				kvmppc_set_gpr(vcpu, get_rt(inst), sr);
-=======
 			srnum = (kvmppc_get_gpr(vcpu, rb) >> 28) & 0xf;
 			if (vcpu->arch.mmu.mfsrin) {
 				u32 sr;
 				sr = vcpu->arch.mmu.mfsrin(vcpu, srnum);
 				kvmppc_set_gpr(vcpu, rt, sr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		}
 		case OP_31_XOP_MTSR:
 			vcpu->arch.mmu.mtsrin(vcpu,
 				(inst >> 16) & 0xf,
-<<<<<<< HEAD
-				kvmppc_get_gpr(vcpu, get_rs(inst)));
-			break;
-		case OP_31_XOP_MTSRIN:
-			vcpu->arch.mmu.mtsrin(vcpu,
-				(kvmppc_get_gpr(vcpu, get_rb(inst)) >> 28) & 0xf,
-				kvmppc_get_gpr(vcpu, get_rs(inst)));
-=======
 				kvmppc_get_gpr(vcpu, rs));
 			break;
 		case OP_31_XOP_MTSRIN:
 			vcpu->arch.mmu.mtsrin(vcpu,
 				(kvmppc_get_gpr(vcpu, rb) >> 28) & 0xf,
 				kvmppc_get_gpr(vcpu, rs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case OP_31_XOP_TLBIE:
 		case OP_31_XOP_TLBIEL:
 		{
 			bool large = (inst & 0x00200000) ? true : false;
-<<<<<<< HEAD
-			ulong addr = kvmppc_get_gpr(vcpu, get_rb(inst));
-			vcpu->arch.mmu.tlbie(vcpu, addr, large);
-			break;
-		}
-=======
 			ulong addr = kvmppc_get_gpr(vcpu, rb);
 			vcpu->arch.mmu.tlbie(vcpu, addr, large);
 			break;
@@ -478,7 +379,6 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 			break;
 		}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case OP_31_XOP_EIOIO:
 			break;
 		case OP_31_XOP_SLBMTE:
@@ -486,24 +386,15 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 				return EMULATE_FAIL;
 
 			vcpu->arch.mmu.slbmte(vcpu,
-<<<<<<< HEAD
-					kvmppc_get_gpr(vcpu, get_rs(inst)),
-					kvmppc_get_gpr(vcpu, get_rb(inst)));
-=======
 					kvmppc_get_gpr(vcpu, rs),
 					kvmppc_get_gpr(vcpu, rb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case OP_31_XOP_SLBIE:
 			if (!vcpu->arch.mmu.slbie)
 				return EMULATE_FAIL;
 
 			vcpu->arch.mmu.slbie(vcpu,
-<<<<<<< HEAD
-					kvmppc_get_gpr(vcpu, get_rb(inst)));
-=======
 					kvmppc_get_gpr(vcpu, rb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case OP_31_XOP_SLBIA:
 			if (!vcpu->arch.mmu.slbia)
@@ -511,8 +402,6 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 
 			vcpu->arch.mmu.slbia(vcpu);
 			break;
-<<<<<<< HEAD
-=======
 		case OP_31_XOP_SLBFEE:
 			if (!(inst & 1) || !vcpu->arch.mmu.slbfee) {
 				return EMULATE_FAIL;
@@ -530,43 +419,26 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 				kvmppc_set_cr(vcpu, cr);
 			}
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case OP_31_XOP_SLBMFEE:
 			if (!vcpu->arch.mmu.slbmfee) {
 				emulated = EMULATE_FAIL;
 			} else {
-<<<<<<< HEAD
-				ulong t, rb;
-
-				rb = kvmppc_get_gpr(vcpu, get_rb(inst));
-				t = vcpu->arch.mmu.slbmfee(vcpu, rb);
-				kvmppc_set_gpr(vcpu, get_rt(inst), t);
-=======
 				ulong t, rb_val;
 
 				rb_val = kvmppc_get_gpr(vcpu, rb);
 				t = vcpu->arch.mmu.slbmfee(vcpu, rb_val);
 				kvmppc_set_gpr(vcpu, rt, t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		case OP_31_XOP_SLBMFEV:
 			if (!vcpu->arch.mmu.slbmfev) {
 				emulated = EMULATE_FAIL;
 			} else {
-<<<<<<< HEAD
-				ulong t, rb;
-
-				rb = kvmppc_get_gpr(vcpu, get_rb(inst));
-				t = vcpu->arch.mmu.slbmfev(vcpu, rb);
-				kvmppc_set_gpr(vcpu, get_rt(inst), t);
-=======
 				ulong t, rb_val;
 
 				rb_val = kvmppc_get_gpr(vcpu, rb);
 				t = vcpu->arch.mmu.slbmfev(vcpu, rb_val);
 				kvmppc_set_gpr(vcpu, rt, t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		case OP_31_XOP_DCBA:
@@ -574,48 +446,26 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 			break;
 		case OP_31_XOP_DCBZ:
 		{
-<<<<<<< HEAD
-			ulong rb = kvmppc_get_gpr(vcpu, get_rb(inst));
-			ulong ra = 0;
-=======
 			ulong rb_val = kvmppc_get_gpr(vcpu, rb);
 			ulong ra_val = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ulong addr, vaddr;
 			u32 zeros[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 			u32 dsisr;
 			int r;
 
-<<<<<<< HEAD
-			if (get_ra(inst))
-				ra = kvmppc_get_gpr(vcpu, get_ra(inst));
-
-			addr = (ra + rb) & ~31ULL;
-			if (!(vcpu->arch.shared->msr & MSR_SF))
-=======
 			if (ra)
 				ra_val = kvmppc_get_gpr(vcpu, ra);
 
 			addr = (ra_val + rb_val) & ~31ULL;
 			if (!(kvmppc_get_msr(vcpu) & MSR_SF))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				addr &= 0xffffffff;
 			vaddr = addr;
 
 			r = kvmppc_st(vcpu, &addr, 32, zeros, true);
 			if ((r == -ENOENT) || (r == -EPERM)) {
-<<<<<<< HEAD
-				struct kvmppc_book3s_shadow_vcpu *svcpu;
-
-				svcpu = svcpu_get(vcpu);
-				*advance = 0;
-				vcpu->arch.shared->dar = vaddr;
-				svcpu->fault_dar = vaddr;
-=======
 				*advance = 0;
 				kvmppc_set_dar(vcpu, vaddr);
 				vcpu->arch.fault_dar = vaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				dsisr = DSISR_ISSTORE;
 				if (r == -ENOENT)
@@ -623,14 +473,8 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 				else if (r == -EPERM)
 					dsisr |= DSISR_PROTFAULT;
 
-<<<<<<< HEAD
-				vcpu->arch.shared->dsisr = dsisr;
-				svcpu->fault_dsisr = dsisr;
-				svcpu_put(svcpu);
-=======
 				kvmppc_set_dsisr(vcpu, dsisr);
 				vcpu->arch.fault_dsisr = dsisr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				kvmppc_book3s_queue_irqprio(vcpu,
 					BOOK3S_INTERRUPT_DATA_STORAGE);
@@ -638,8 +482,6 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 
 			break;
 		}
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
 		case OP_31_XOP_TBEGIN:
 		{
@@ -774,7 +616,6 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 			break;
 		}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			emulated = EMULATE_FAIL;
 		}
@@ -784,11 +625,7 @@ int kvmppc_core_emulate_op_pr(struct kvm_vcpu *vcpu,
 	}
 
 	if (emulated == EMULATE_FAIL)
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_paired_single(run, vcpu);
-=======
 		emulated = kvmppc_emulate_paired_single(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return emulated;
 }
@@ -838,16 +675,9 @@ static struct kvmppc_bat *kvmppc_find_bat(struct kvm_vcpu *vcpu, int sprn)
 	return bat;
 }
 
-<<<<<<< HEAD
-int kvmppc_core_emulate_mtspr(struct kvm_vcpu *vcpu, int sprn, int rs)
-{
-	int emulated = EMULATE_DONE;
-	ulong spr_val = kvmppc_get_gpr(vcpu, rs);
-=======
 int kvmppc_core_emulate_mtspr_pr(struct kvm_vcpu *vcpu, int sprn, ulong spr_val)
 {
 	int emulated = EMULATE_DONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (sprn) {
 	case SPRN_SDR1:
@@ -856,17 +686,10 @@ int kvmppc_core_emulate_mtspr_pr(struct kvm_vcpu *vcpu, int sprn, ulong spr_val)
 		to_book3s(vcpu)->sdr1 = spr_val;
 		break;
 	case SPRN_DSISR:
-<<<<<<< HEAD
-		vcpu->arch.shared->dsisr = spr_val;
-		break;
-	case SPRN_DAR:
-		vcpu->arch.shared->dar = spr_val;
-=======
 		kvmppc_set_dsisr(vcpu, spr_val);
 		break;
 	case SPRN_DAR:
 		kvmppc_set_dar(vcpu, spr_val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SPRN_HIOR:
 		to_book3s(vcpu)->hior = spr_val;
@@ -939,8 +762,6 @@ int kvmppc_core_emulate_mtspr_pr(struct kvm_vcpu *vcpu, int sprn, ulong spr_val)
 	case SPRN_GQR7:
 		to_book3s(vcpu)->gqr[sprn - SPRN_GQR0] = spr_val;
 		break;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC_BOOK3S_64
 	case SPRN_FSCR:
 		kvmppc_set_fscr(vcpu, spr_val);
@@ -991,7 +812,6 @@ int kvmppc_core_emulate_mtspr_pr(struct kvm_vcpu *vcpu, int sprn, ulong spr_val)
 		break;
 #endif
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SPRN_ICTC:
 	case SPRN_THRM1:
 	case SPRN_THRM2:
@@ -999,10 +819,7 @@ int kvmppc_core_emulate_mtspr_pr(struct kvm_vcpu *vcpu, int sprn, ulong spr_val)
 	case SPRN_CTRLF:
 	case SPRN_CTRLT:
 	case SPRN_L2CR:
-<<<<<<< HEAD
-=======
 	case SPRN_DSCR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SPRN_MMCR0_GEKKO:
 	case SPRN_MMCR1_GEKKO:
 	case SPRN_PMC1_GEKKO:
@@ -1010,15 +827,6 @@ int kvmppc_core_emulate_mtspr_pr(struct kvm_vcpu *vcpu, int sprn, ulong spr_val)
 	case SPRN_PMC3_GEKKO:
 	case SPRN_PMC4_GEKKO:
 	case SPRN_WPAR_GEKKO:
-<<<<<<< HEAD
-		break;
-unprivileged:
-	default:
-		printk(KERN_INFO "KVM: invalid SPR write: %d\n", sprn);
-#ifndef DEBUG_SPR
-		emulated = EMULATE_FAIL;
-#endif
-=======
 	case SPRN_MSSSR0:
 	case SPRN_DABR:
 #ifdef CONFIG_PPC_BOOK3S_64
@@ -1047,18 +855,13 @@ unprivileged:
 				emulated = EMULATE_AGAIN;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	return emulated;
 }
 
-<<<<<<< HEAD
-int kvmppc_core_emulate_mfspr(struct kvm_vcpu *vcpu, int sprn, int rt)
-=======
 int kvmppc_core_emulate_mfspr_pr(struct kvm_vcpu *vcpu, int sprn, ulong *spr_val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int emulated = EMULATE_DONE;
 
@@ -1071,54 +874,15 @@ int kvmppc_core_emulate_mfspr_pr(struct kvm_vcpu *vcpu, int sprn, ulong *spr_val
 		struct kvmppc_bat *bat = kvmppc_find_bat(vcpu, sprn);
 
 		if (sprn % 2)
-<<<<<<< HEAD
-			kvmppc_set_gpr(vcpu, rt, bat->raw >> 32);
-		else
-			kvmppc_set_gpr(vcpu, rt, bat->raw);
-=======
 			*spr_val = bat->raw >> 32;
 		else
 			*spr_val = bat->raw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 	}
 	case SPRN_SDR1:
 		if (!spr_allowed(vcpu, PRIV_HYPER))
 			goto unprivileged;
-<<<<<<< HEAD
-		kvmppc_set_gpr(vcpu, rt, to_book3s(vcpu)->sdr1);
-		break;
-	case SPRN_DSISR:
-		kvmppc_set_gpr(vcpu, rt, vcpu->arch.shared->dsisr);
-		break;
-	case SPRN_DAR:
-		kvmppc_set_gpr(vcpu, rt, vcpu->arch.shared->dar);
-		break;
-	case SPRN_HIOR:
-		kvmppc_set_gpr(vcpu, rt, to_book3s(vcpu)->hior);
-		break;
-	case SPRN_HID0:
-		kvmppc_set_gpr(vcpu, rt, to_book3s(vcpu)->hid[0]);
-		break;
-	case SPRN_HID1:
-		kvmppc_set_gpr(vcpu, rt, to_book3s(vcpu)->hid[1]);
-		break;
-	case SPRN_HID2:
-	case SPRN_HID2_GEKKO:
-		kvmppc_set_gpr(vcpu, rt, to_book3s(vcpu)->hid[2]);
-		break;
-	case SPRN_HID4:
-	case SPRN_HID4_GEKKO:
-		kvmppc_set_gpr(vcpu, rt, to_book3s(vcpu)->hid[4]);
-		break;
-	case SPRN_HID5:
-		kvmppc_set_gpr(vcpu, rt, to_book3s(vcpu)->hid[5]);
-		break;
-	case SPRN_CFAR:
-	case SPRN_PURR:
-		kvmppc_set_gpr(vcpu, rt, 0);
-=======
 		*spr_val = to_book3s(vcpu)->sdr1;
 		break;
 	case SPRN_DSISR:
@@ -1168,7 +932,6 @@ int kvmppc_core_emulate_mfspr_pr(struct kvm_vcpu *vcpu, int sprn, ulong *spr_val
 		break;
 	case SPRN_IC:
 		*spr_val = vcpu->arch.ic;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SPRN_GQR0:
 	case SPRN_GQR1:
@@ -1178,11 +941,6 @@ int kvmppc_core_emulate_mfspr_pr(struct kvm_vcpu *vcpu, int sprn, ulong *spr_val
 	case SPRN_GQR5:
 	case SPRN_GQR6:
 	case SPRN_GQR7:
-<<<<<<< HEAD
-		kvmppc_set_gpr(vcpu, rt,
-			       to_book3s(vcpu)->gqr[sprn - SPRN_GQR0]);
-		break;
-=======
 		*spr_val = to_book3s(vcpu)->gqr[sprn - SPRN_GQR0];
 		break;
 #ifdef CONFIG_PPC_BOOK3S_64
@@ -1222,7 +980,6 @@ int kvmppc_core_emulate_mfspr_pr(struct kvm_vcpu *vcpu, int sprn, ulong *spr_val
 		break;
 #endif
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SPRN_THRM1:
 	case SPRN_THRM2:
 	case SPRN_THRM3:
@@ -1236,16 +993,6 @@ int kvmppc_core_emulate_mfspr_pr(struct kvm_vcpu *vcpu, int sprn, ulong *spr_val
 	case SPRN_PMC3_GEKKO:
 	case SPRN_PMC4_GEKKO:
 	case SPRN_WPAR_GEKKO:
-<<<<<<< HEAD
-		kvmppc_set_gpr(vcpu, rt, 0);
-		break;
-	default:
-unprivileged:
-		printk(KERN_INFO "KVM: invalid SPR read: %d\n", sprn);
-#ifndef DEBUG_SPR
-		emulated = EMULATE_FAIL;
-#endif
-=======
 	case SPRN_MSSSR0:
 	case SPRN_DABR:
 #ifdef CONFIG_PPC_BOOK3S_64
@@ -1278,7 +1025,6 @@ unprivileged:
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -1287,56 +1033,11 @@ unprivileged:
 
 u32 kvmppc_alignment_dsisr(struct kvm_vcpu *vcpu, unsigned int inst)
 {
-<<<<<<< HEAD
-	u32 dsisr = 0;
-
-	/*
-	 * This is what the spec says about DSISR bits (not mentioned = 0):
-	 *
-	 * 12:13		[DS]	Set to bits 30:31
-	 * 15:16		[X]	Set to bits 29:30
-	 * 17			[X]	Set to bit 25
-	 *			[D/DS]	Set to bit 5
-	 * 18:21		[X]	Set to bits 21:24
-	 *			[D/DS]	Set to bits 1:4
-	 * 22:26			Set to bits 6:10 (RT/RS/FRT/FRS)
-	 * 27:31			Set to bits 11:15 (RA)
-	 */
-
-	switch (get_op(inst)) {
-	/* D-form */
-	case OP_LFS:
-	case OP_LFD:
-	case OP_STFD:
-	case OP_STFS:
-		dsisr |= (inst >> 12) & 0x4000;	/* bit 17 */
-		dsisr |= (inst >> 17) & 0x3c00; /* bits 18:21 */
-		break;
-	/* X-form */
-	case 31:
-		dsisr |= (inst << 14) & 0x18000; /* bits 15:16 */
-		dsisr |= (inst << 8)  & 0x04000; /* bit 17 */
-		dsisr |= (inst << 3)  & 0x03c00; /* bits 18:21 */
-		break;
-	default:
-		printk(KERN_INFO "KVM: Unaligned instruction 0x%x\n", inst);
-		break;
-	}
-
-	dsisr |= (inst >> 16) & 0x03ff; /* bits 22:31 */
-
-	return dsisr;
-=======
 	return make_dsisr(inst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 ulong kvmppc_alignment_dar(struct kvm_vcpu *vcpu, unsigned int inst)
 {
-<<<<<<< HEAD
-	ulong dar = 0;
-	ulong ra;
-=======
 #ifdef CONFIG_PPC_BOOK3S_64
 	/*
 	 * Linux's fix_alignment() assumes that DAR is valid, so can we
@@ -1346,32 +1047,20 @@ ulong kvmppc_alignment_dar(struct kvm_vcpu *vcpu, unsigned int inst)
 	ulong dar = 0;
 	ulong ra = get_ra(inst);
 	ulong rb = get_rb(inst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (get_op(inst)) {
 	case OP_LFS:
 	case OP_LFD:
 	case OP_STFD:
 	case OP_STFS:
-<<<<<<< HEAD
-		ra = get_ra(inst);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ra)
 			dar = kvmppc_get_gpr(vcpu, ra);
 		dar += (s32)((s16)inst);
 		break;
 	case 31:
-<<<<<<< HEAD
-		ra = get_ra(inst);
-		if (ra)
-			dar = kvmppc_get_gpr(vcpu, ra);
-		dar += kvmppc_get_gpr(vcpu, get_rb(inst));
-=======
 		if (ra)
 			dar = kvmppc_get_gpr(vcpu, ra);
 		dar += kvmppc_get_gpr(vcpu, rb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		printk(KERN_INFO "KVM: Unaligned instruction 0x%x\n", inst);
@@ -1379,8 +1068,5 @@ ulong kvmppc_alignment_dar(struct kvm_vcpu *vcpu, unsigned int inst)
 	}
 
 	return dar;
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

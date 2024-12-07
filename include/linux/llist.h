@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LLIST_H
 #define LLIST_H
 /*
  * Lock-less NULL terminated single linked list
  *
-<<<<<<< HEAD
- * If there are multiple producers and multiple consumers, llist_add
- * can be used in producers and llist_del_all can be used in
- * consumers.  They can work simultaneously without lock.  But
- * llist_del_first can not be used here.  Because llist_del_first
- * depends on list->first->next does not changed if list->first is not
- * changed during its operation, but llist_del_first, llist_add,
- * llist_add (or llist_del_all, llist_add, llist_add) sequence in
- * another consumer may violate that.
- *
- * If there are multiple producers and one consumer, llist_add can be
- * used in producers and llist_del_all or llist_del_first can be used
- * in the consumer.
- *
- * This can be summarized as follow:
-=======
  * Cases where locking is not needed:
  * If there are multiple producers and multiple consumers, llist_add can be
  * used in producers and llist_del_all can be used in consumers simultaneously
@@ -42,20 +23,14 @@
  * consumer may cause violations.
  *
  * This can be summarized as follows:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *           |   add    | del_first |  del_all
  * add       |    -     |     -     |     -
  * del_first |          |     L     |     L
  * del_all   |          |           |     -
  *
-<<<<<<< HEAD
- * Where "-" stands for no lock is needed, while "L" stands for lock
- * is needed.
-=======
  * Where, a particular row's operation can happen concurrently with a column's
  * operation, with "-" being no lock needed, while "L" being lock is needed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The list entries deleted via llist_del_all can be traversed with
  * traversing function such as llist_for_each etc.  But the list
@@ -71,32 +46,12 @@
  *
  * Copyright 2010,2011 Intel Corp.
  *   Author: Huang Ying <ying.huang@intel.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation;
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-#include <linux/kernel.h>
-#include <asm/cmpxchg.h>
-=======
  */
 
 #include <linux/atomic.h>
 #include <linux/container_of.h>
 #include <linux/stddef.h>
 #include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct llist_head {
 	struct llist_node *first;
@@ -119,8 +74,6 @@ static inline void init_llist_head(struct llist_head *list)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * init_llist_node - initialize lock-less list node
  * @node:	the node to be initialised
  *
@@ -148,7 +101,6 @@ static inline bool llist_on_list(const struct llist_node *node)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * llist_entry - get the struct of this entry
  * @ptr:	the &struct llist_node pointer.
  * @type:	the type of the struct this is embedded in.
@@ -158,8 +110,6 @@ static inline bool llist_on_list(const struct llist_node *node)
 	container_of(ptr, type, member)
 
 /**
-<<<<<<< HEAD
-=======
  * member_address_is_nonnull - check whether the member address is not NULL
  * @ptr:	the object pointer (struct type * that contains the llist_node)
  * @member:	the name of the llist_node within the struct.
@@ -177,7 +127,6 @@ static inline bool llist_on_list(const struct llist_node *node)
 	((uintptr_t)(ptr) + offsetof(typeof(*(ptr)), member) != 0)
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * llist_for_each - iterate over some deleted entries of a lock-less list
  * @pos:	the &struct llist_node to use as a loop cursor
  * @node:	the first entry of deleted list entries
@@ -195,8 +144,6 @@ static inline bool llist_on_list(const struct llist_node *node)
 	for ((pos) = (node); pos; (pos) = (pos)->next)
 
 /**
-<<<<<<< HEAD
-=======
  * llist_for_each_safe - iterate over some deleted entries of a lock-less list
  *			 safe against removal of list entry
  * @pos:	the &struct llist_node to use as a loop cursor
@@ -216,7 +163,6 @@ static inline bool llist_on_list(const struct llist_node *node)
 	for ((pos) = (node); (pos) && ((n) = (pos)->next, true); (pos) = (n))
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * llist_for_each_entry - iterate over some deleted entries of lock-less list of given type
  * @pos:	the type * to use as a loop cursor.
  * @node:	the fist entry of deleted list entries.
@@ -233,12 +179,6 @@ static inline bool llist_on_list(const struct llist_node *node)
  */
 #define llist_for_each_entry(pos, node, member)				\
 	for ((pos) = llist_entry((node), typeof(*(pos)), member);	\
-<<<<<<< HEAD
-	     &(pos)->member != NULL;					\
-	     (pos) = llist_entry((pos)->member.next, typeof(*(pos)), member))
-
-/**
-=======
 	     member_address_is_nonnull(pos, member);			\
 	     (pos) = llist_entry((pos)->member.next, typeof(*(pos)), member))
 
@@ -266,7 +206,6 @@ static inline bool llist_on_list(const struct llist_node *node)
 	     pos = n)
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * llist_empty - tests whether a lock-less list is empty
  * @head:	the list to test
  *
@@ -276,11 +215,7 @@ static inline bool llist_on_list(const struct llist_node *node)
  */
 static inline bool llist_empty(const struct llist_head *head)
 {
-<<<<<<< HEAD
-	return ACCESS_ONCE(head->first) == NULL;
-=======
 	return READ_ONCE(head->first) == NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct llist_node *llist_next(struct llist_node *node)
@@ -288,8 +223,6 @@ static inline struct llist_node *llist_next(struct llist_node *node)
 	return node->next;
 }
 
-<<<<<<< HEAD
-=======
 extern bool llist_add_batch(struct llist_node *new_first,
 			    struct llist_node *new_last,
 			    struct llist_head *head);
@@ -303,7 +236,6 @@ static inline bool __llist_add_batch(struct llist_node *new_first,
 	return new_last->next == NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * llist_add - add a new entry
  * @new:	new entry to be added
@@ -313,27 +245,12 @@ static inline bool __llist_add_batch(struct llist_node *new_first,
  */
 static inline bool llist_add(struct llist_node *new, struct llist_head *head)
 {
-<<<<<<< HEAD
-	struct llist_node *entry, *old_entry;
-
-	entry = head->first;
-	for (;;) {
-		old_entry = entry;
-		new->next = entry;
-		entry = cmpxchg(&head->first, old_entry, new);
-		if (entry == old_entry)
-			break;
-	}
-
-	return old_entry == NULL;
-=======
 	return llist_add_batch(new, new, head);
 }
 
 static inline bool __llist_add(struct llist_node *new, struct llist_head *head)
 {
 	return __llist_add_batch(new, new, head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -349,13 +266,6 @@ static inline struct llist_node *llist_del_all(struct llist_head *head)
 	return xchg(&head->first, NULL);
 }
 
-<<<<<<< HEAD
-extern bool llist_add_batch(struct llist_node *new_first,
-			    struct llist_node *new_last,
-			    struct llist_head *head);
-extern struct llist_node *llist_del_first(struct llist_head *head);
-
-=======
 static inline struct llist_node *__llist_del_all(struct llist_head *head)
 {
 	struct llist_node *first = head->first;
@@ -387,5 +297,4 @@ extern bool llist_del_first_this(struct llist_head *head,
 
 struct llist_node *llist_reverse_order(struct llist_node *head);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LLIST_H */

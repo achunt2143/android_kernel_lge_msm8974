@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef SQUASHFS_FS_SB
 #define SQUASHFS_FS_SB
 /*
@@ -10,23 +7,6 @@
  * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008
  * Phillip Lougher <phillip@squashfs.org.uk>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2,
- * or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * squashfs_fs_sb.h
  */
 
@@ -57,10 +37,7 @@ struct squashfs_cache_entry {
 	wait_queue_head_t	wait_queue;
 	struct squashfs_cache	*cache;
 	void			**data;
-<<<<<<< HEAD
-=======
 	struct squashfs_page_actor	*actor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct squashfs_sb_info {
@@ -70,18 +47,11 @@ struct squashfs_sb_info {
 	struct squashfs_cache			*block_cache;
 	struct squashfs_cache			*fragment_cache;
 	struct squashfs_cache			*read_page;
-<<<<<<< HEAD
-=======
 	struct address_space			*cache_mapping;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int					next_meta_index;
 	__le64					*id_table;
 	__le64					*fragment_index;
 	__le64					*xattr_id_table;
-<<<<<<< HEAD
-	struct mutex				read_data_mutex;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex				meta_index_mutex;
 	struct meta_index			*meta_index;
 	void					*stream;
@@ -93,15 +63,11 @@ struct squashfs_sb_info {
 	unsigned short				block_log;
 	long long				bytes_used;
 	unsigned int				inodes;
-<<<<<<< HEAD
-	int					xattr_ids;
-=======
 	unsigned int				fragments;
 	unsigned int				xattr_ids;
 	unsigned int				ids;
 	bool					panic_on_errors;
 	const struct squashfs_decompressor_thread_ops *thread_ops;
 	int					max_thread_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif

@@ -229,11 +229,7 @@
 						};
 						partition@84000 {
 							label = "user";
-<<<<<<< HEAD
-							reg = <0x00000000 0x01f7c000>;
-=======
 							reg = <0x00084000 0x01f7c000>;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						};
 					};
 				};
@@ -410,11 +406,7 @@
 	};
 
 	chosen {
-<<<<<<< HEAD
-		linux,stdout-path = "/plb/opb/serial@ef600300";
-=======
 		stdout-path = "/plb/opb/serial@ef600300";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bootargs = "console=ttyS0,115200";
 	};
 };

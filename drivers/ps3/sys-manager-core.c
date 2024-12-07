@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 System Manager core.
  *
  *  Copyright (C) 2007 Sony Computer Entertainment Inc.
  *  Copyright 2007 Sony Corp.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -50,19 +31,11 @@ void ps3_sys_manager_register_ops(const struct ps3_sys_manager_ops *ops)
 {
 	BUG_ON(!ops);
 	BUG_ON(!ops->dev);
-<<<<<<< HEAD
-	ps3_sys_manager_ops = ops ? *ops : ps3_sys_manager_ops;
-}
-EXPORT_SYMBOL_GPL(ps3_sys_manager_register_ops);
-
-void ps3_sys_manager_power_off(void)
-=======
 	ps3_sys_manager_ops = *ops;
 }
 EXPORT_SYMBOL_GPL(ps3_sys_manager_register_ops);
 
 void __noreturn ps3_sys_manager_power_off(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ps3_sys_manager_ops.power_off)
 		ps3_sys_manager_ops.power_off(ps3_sys_manager_ops.dev);
@@ -70,11 +43,7 @@ void __noreturn ps3_sys_manager_power_off(void)
 	ps3_sys_manager_halt();
 }
 
-<<<<<<< HEAD
-void ps3_sys_manager_restart(void)
-=======
 void __noreturn ps3_sys_manager_restart(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ps3_sys_manager_ops.restart)
 		ps3_sys_manager_ops.restart(ps3_sys_manager_ops.dev);
@@ -82,11 +51,7 @@ void __noreturn ps3_sys_manager_restart(void)
 	ps3_sys_manager_halt();
 }
 
-<<<<<<< HEAD
-void ps3_sys_manager_halt(void)
-=======
 void __noreturn ps3_sys_manager_halt(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pr_emerg("System Halted, OK to turn off power\n");
 	local_irq_disable();

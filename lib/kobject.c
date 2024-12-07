@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kobject.c - library routines for handling generic kernel objects
  *
@@ -9,54 +6,17 @@
  * Copyright (c) 2006-2007 Greg Kroah-Hartman <greg@kroah.com>
  * Copyright (c) 2006-2007 Novell Inc.
  *
-<<<<<<< HEAD
- * This file is released under the GPLv2.
- *
- *
- * Please see the file Documentation/kobject.txt for critical information
- * about using the kobject interface.
- */
-
-=======
  * Please see the file Documentation/core-api/kobject.rst for critical information
  * about using the kobject interface.
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kobject.h>
 #include <linux/string.h>
 #include <linux/export.h>
 #include <linux/stat.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-/*
- * populate_dir - populate directory with attributes.
- * @kobj: object we're working on.
- *
- * Most subsystems have a set of default attributes that are associated
- * with an object that registers with them.  This is a helper called during
- * object registration that loops through the default attributes of the
- * subsystem and creates attributes files for them in sysfs.
- */
-static int populate_dir(struct kobject *kobj)
-{
-	struct kobj_type *t = get_ktype(kobj);
-	struct attribute *attr;
-	int error = 0;
-	int i;
-
-	if (t && t->default_attrs) {
-		for (i = 0; (attr = t->default_attrs[i]) != NULL; i++) {
-			error = sysfs_create_file(kobj, attr);
-			if (error)
-				break;
-		}
-	}
-	return error;
-=======
 #include <linux/random.h>
 
 /**
@@ -102,29 +62,10 @@ static bool kobj_ns_type_is_valid(enum kobj_ns_type type)
 		return false;
 
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int create_dir(struct kobject *kobj)
 {
-<<<<<<< HEAD
-	int error = 0;
-	if (kobject_name(kobj)) {
-		error = sysfs_create_dir(kobj);
-		if (!error) {
-			error = populate_dir(kobj);
-			if (error)
-				sysfs_remove_dir(kobj);
-		}
-	}
-	return error;
-}
-
-static int get_kobj_path_length(struct kobject *kobj)
-{
-	int length = 1;
-	struct kobject *parent = kobj;
-=======
 	const struct kobj_type *ktype = get_ktype(kobj);
 	const struct kobj_ns_type_operations *ops;
 	int error;
@@ -166,7 +107,6 @@ static int get_kobj_path_length(const struct kobject *kobj)
 {
 	int length = 1;
 	const struct kobject *parent = kobj;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* walk up the ancestors until we hit the one pointing to the
 	 * root.
@@ -181,40 +121,15 @@ static int get_kobj_path_length(const struct kobject *kobj)
 	return length;
 }
 
-<<<<<<< HEAD
-static void fill_kobj_path(struct kobject *kobj, char *path, int length)
-{
-	struct kobject *parent;
-=======
 static int fill_kobj_path(const struct kobject *kobj, char *path, int length)
 {
 	const struct kobject *parent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	--length;
 	for (parent = kobj; parent; parent = parent->parent) {
 		int cur = strlen(kobject_name(parent));
 		/* back up enough to print this name with '/' */
 		length -= cur;
-<<<<<<< HEAD
-		strncpy(path + length, kobject_name(parent), cur);
-		*(path + --length) = '/';
-	}
-
-	pr_debug("kobject: '%s' (%p): %s: path = '%s'\n", kobject_name(kobj),
-		 kobj, __func__, path);
-}
-
-/**
- * kobject_get_path - generate and return the path associated with a given kobj and kset pair.
- *
- * @kobj:	kobject in question, with which to build the path
- * @gfp_mask:	the allocation type used to allocate the path
- *
- * The result must be freed by the caller with kfree().
- */
-char *kobject_get_path(struct kobject *kobj, gfp_t gfp_mask)
-=======
 		if (length <= 0)
 			return -EINVAL;
 		memcpy(path + length, kobject_name(parent), cur);
@@ -235,29 +150,21 @@ char *kobject_get_path(struct kobject *kobj, gfp_t gfp_mask)
  * Return: The newly allocated memory, caller must free with kfree().
  */
 char *kobject_get_path(const struct kobject *kobj, gfp_t gfp_mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *path;
 	int len;
 
-<<<<<<< HEAD
-=======
 retry:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len = get_kobj_path_length(kobj);
 	if (len == 0)
 		return NULL;
 	path = kzalloc(len, gfp_mask);
 	if (!path)
 		return NULL;
-<<<<<<< HEAD
-	fill_kobj_path(kobj, path, len);
-=======
 	if (fill_kobj_path(kobj, path, len)) {
 		kfree(path);
 		goto retry;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return path;
 }
@@ -309,14 +216,9 @@ static int kobject_add_internal(struct kobject *kobj)
 		return -ENOENT;
 
 	if (!kobj->name || !kobj->name[0]) {
-<<<<<<< HEAD
-		WARN(1, "kobject: (%p): attempted to be registered with empty "
-			 "name!\n", kobj);
-=======
 		WARN(1,
 		     "kobject: (%p): attempted to be registered with empty name!\n",
 		     kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -330,11 +232,7 @@ static int kobject_add_internal(struct kobject *kobj)
 		kobj->parent = parent;
 	}
 
-<<<<<<< HEAD
-	pr_debug("kobject: '%s' (%p): %s: parent: '%s', set: '%s'\n",
-=======
 	pr_debug("'%s' (%p): %s: parent: '%s', set: '%s'\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 kobject_name(kobj), kobj, __func__,
 		 parent ? kobject_name(parent) : "<NULL>",
 		 kobj->kset ? kobject_name(&kobj->kset->kobj) : "<NULL>");
@@ -347,23 +245,12 @@ static int kobject_add_internal(struct kobject *kobj)
 
 		/* be noisy on error issues */
 		if (error == -EEXIST)
-<<<<<<< HEAD
-			WARN(1, "%s failed for %s with "
-			     "-EEXIST, don't try to register things with "
-			     "the same name in the same directory.\n",
-			     __func__, kobject_name(kobj));
-		else
-			WARN(1, "%s failed for %s (error: %d parent: %s)\n",
-			     __func__, kobject_name(kobj), error,
-			     parent ? kobject_name(parent) : "'none'");
-=======
 			pr_err("%s failed for %s with -EEXIST, don't try to register things with the same name in the same directory.\n",
 			       __func__, kobject_name(kobj));
 		else
 			pr_err("%s failed for %s (error: %d parent: %s)\n",
 			       __func__, kobject_name(kobj), error,
 			       parent ? kobject_name(parent) : "'none'");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		kobj->state_in_sysfs = 1;
 
@@ -371,11 +258,7 @@ static int kobject_add_internal(struct kobject *kobj)
 }
 
 /**
-<<<<<<< HEAD
- * kobject_set_name_vargs - Set the name of an kobject
-=======
  * kobject_set_name_vargs() - Set the name of a kobject.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @kobj: struct kobject to set the name of
  * @fmt: format string used to build the name
  * @vargs: vargs to format the string.
@@ -383,27 +266,11 @@ static int kobject_add_internal(struct kobject *kobj)
 int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
 				  va_list vargs)
 {
-<<<<<<< HEAD
-	const char *old_name = kobj->name;
-	char *s;
-=======
 	const char *s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (kobj->name && !fmt)
 		return 0;
 
-<<<<<<< HEAD
-	kobj->name = kvasprintf(GFP_KERNEL, fmt, vargs);
-	if (!kobj->name)
-		return -ENOMEM;
-
-	/* ewww... some of these buggers have '/' in the name ... */
-	while ((s = strchr(kobj->name, '/')))
-		s[0] = '!';
-
-	kfree(old_name);
-=======
 	s = kvasprintf_const(GFP_KERNEL, fmt, vargs);
 	if (!s)
 		return -ENOMEM;
@@ -426,16 +293,11 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
 	kfree_const(kobj->name);
 	kobj->name = s;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- * kobject_set_name - Set the name of a kobject
-=======
  * kobject_set_name() - Set the name of a kobject.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @kobj: struct kobject to set the name of
  * @fmt: format string used to build the name
  *
@@ -457,11 +319,7 @@ int kobject_set_name(struct kobject *kobj, const char *fmt, ...)
 EXPORT_SYMBOL(kobject_set_name);
 
 /**
-<<<<<<< HEAD
- * kobject_init - initialize a kobject structure
-=======
  * kobject_init() - Initialize a kobject structure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @kobj: pointer to the kobject to initialize
  * @ktype: pointer to the ktype for this kobject.
  *
@@ -472,11 +330,7 @@ EXPORT_SYMBOL(kobject_set_name);
  * to kobject_put(), not by a call to kfree directly to ensure that all of
  * the memory is cleaned up properly.
  */
-<<<<<<< HEAD
-void kobject_init(struct kobject *kobj, struct kobj_type *ktype)
-=======
 void kobject_init(struct kobject *kobj, const struct kobj_type *ktype)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *err_str;
 
@@ -490,15 +344,9 @@ void kobject_init(struct kobject *kobj, const struct kobj_type *ktype)
 	}
 	if (kobj->state_initialized) {
 		/* do not error out as sometimes we can recover */
-<<<<<<< HEAD
-		printk(KERN_ERR "kobject (%p): tried to init an initialized "
-		       "object, something is seriously wrong.\n", kobj);
-		dump_stack();
-=======
 		pr_err("kobject (%p): tried to init an initialized object, something is seriously wrong.\n",
 		       kobj);
 		dump_stack_lvl(KERN_ERR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kobject_init_internal(kobj);
@@ -506,15 +354,6 @@ void kobject_init(struct kobject *kobj, const struct kobj_type *ktype)
 	return;
 
 error:
-<<<<<<< HEAD
-	printk(KERN_ERR "kobject (%p): %s\n", kobj, err_str);
-	dump_stack();
-}
-EXPORT_SYMBOL(kobject_init);
-
-static int kobject_add_varg(struct kobject *kobj, struct kobject *parent,
-			    const char *fmt, va_list vargs)
-=======
 	pr_err("kobject (%p): %s\n", kobj, err_str);
 	dump_stack_lvl(KERN_ERR);
 }
@@ -523,17 +362,12 @@ EXPORT_SYMBOL(kobject_init);
 static __printf(3, 0) int kobject_add_varg(struct kobject *kobj,
 					   struct kobject *parent,
 					   const char *fmt, va_list vargs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 
 	retval = kobject_set_name_vargs(kobj, fmt, vargs);
 	if (retval) {
-<<<<<<< HEAD
-		printk(KERN_ERR "kobject: can not set name properly!\n");
-=======
 		pr_err("can not set name properly!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return retval;
 	}
 	kobj->parent = parent;
@@ -541,11 +375,7 @@ static __printf(3, 0) int kobject_add_varg(struct kobject *kobj,
 }
 
 /**
-<<<<<<< HEAD
- * kobject_add - the main kobject add function
-=======
  * kobject_add() - The main kobject add function.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @kobj: the kobject to add
  * @parent: pointer to the parent of the kobject.
  * @fmt: format to name the kobject with.
@@ -555,28 +385,14 @@ static __printf(3, 0) int kobject_add_varg(struct kobject *kobj,
  *
  * If @parent is set, then the parent of the @kobj will be set to it.
  * If @parent is NULL, then the parent of the @kobj will be set to the
-<<<<<<< HEAD
- * kobject associted with the kset assigned to this kobject.  If no kset
- * is assigned to the kobject, then the kobject will be located in the
- * root of the sysfs tree.
- *
- * If this function returns an error, kobject_put() must be called to
- * properly clean up the memory associated with the object.
- * Under no instance should the kobject that is passed to this function
- * be directly freed with a call to kfree(), that can leak memory.
- *
-=======
  * kobject associated with the kset assigned to this kobject.  If no kset
  * is assigned to the kobject, then the kobject will be located in the
  * root of the sysfs tree.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Note, no "add" uevent will be created with this call, the caller should set
  * up all of the necessary sysfs files for the object and then call
  * kobject_uevent() with the UEVENT_ADD parameter to ensure that
  * userspace is properly notified of this kobject's creation.
-<<<<<<< HEAD
-=======
  *
  * Return: If this function returns an error, kobject_put() must be
  *         called to properly clean up the memory associated with the
@@ -590,7 +406,6 @@ static __printf(3, 0) int kobject_add_varg(struct kobject *kobj,
  *         In short, once this function is called, kobject_put() MUST be called
  *         when the use of the object is finished in order to properly free
  *         everything.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int kobject_add(struct kobject *kobj, struct kobject *parent,
 		const char *fmt, ...)
@@ -602,16 +417,9 @@ int kobject_add(struct kobject *kobj, struct kobject *parent,
 		return -EINVAL;
 
 	if (!kobj->state_initialized) {
-<<<<<<< HEAD
-		printk(KERN_ERR "kobject '%s' (%p): tried to add an "
-		       "uninitialized object, something is seriously wrong.\n",
-		       kobject_name(kobj), kobj);
-		dump_stack();
-=======
 		pr_err("kobject '%s' (%p): tried to add an uninitialized object, something is seriously wrong.\n",
 		       kobject_name(kobj), kobj);
 		dump_stack_lvl(KERN_ERR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	va_start(args, fmt);
@@ -623,24 +431,13 @@ int kobject_add(struct kobject *kobj, struct kobject *parent,
 EXPORT_SYMBOL(kobject_add);
 
 /**
-<<<<<<< HEAD
- * kobject_init_and_add - initialize a kobject structure and add it to the kobject hierarchy
-=======
  * kobject_init_and_add() - Initialize a kobject structure and add it to
  *                          the kobject hierarchy.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @kobj: pointer to the kobject to initialize
  * @ktype: pointer to the ktype for this kobject.
  * @parent: pointer to the parent of this kobject.
  * @fmt: the name of the kobject.
  *
-<<<<<<< HEAD
- * This function combines the call to kobject_init() and
- * kobject_add().  The same type of error handling after a call to
- * kobject_add() and kobject lifetime rules are the same here.
- */
-int kobject_init_and_add(struct kobject *kobj, struct kobj_type *ktype,
-=======
  * This function combines the call to kobject_init() and kobject_add().
  *
  * If this function returns an error, kobject_put() must be called to
@@ -649,7 +446,6 @@ int kobject_init_and_add(struct kobject *kobj, struct kobj_type *ktype,
  * lifetime rules are the same here.
  */
 int kobject_init_and_add(struct kobject *kobj, const struct kobj_type *ktype,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 struct kobject *parent, const char *fmt, ...)
 {
 	va_list args;
@@ -666,11 +462,7 @@ int kobject_init_and_add(struct kobject *kobj, const struct kobj_type *ktype,
 EXPORT_SYMBOL_GPL(kobject_init_and_add);
 
 /**
-<<<<<<< HEAD
- * kobject_rename - change the name of an object
-=======
  * kobject_rename() - Change the name of an object.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @kobj: object in question.
  * @new_name: object's new name
  *
@@ -690,15 +482,10 @@ int kobject_rename(struct kobject *kobj, const char *new_name)
 	kobj = kobject_get(kobj);
 	if (!kobj)
 		return -EINVAL;
-<<<<<<< HEAD
-	if (!kobj->parent)
-		return -EINVAL;
-=======
 	if (!kobj->parent) {
 		kobject_put(kobj);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	devpath = kobject_get_path(kobj, GFP_KERNEL);
 	if (!devpath) {
@@ -714,21 +501,13 @@ int kobject_rename(struct kobject *kobj, const char *new_name)
 	envp[0] = devpath_string;
 	envp[1] = NULL;
 
-<<<<<<< HEAD
-	name = dup_name = kstrdup(new_name, GFP_KERNEL);
-=======
 	name = dup_name = kstrdup_const(new_name, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!name) {
 		error = -ENOMEM;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	error = sysfs_rename_dir(kobj, new_name);
-=======
 	error = sysfs_rename_dir_ns(kobj, new_name, kobject_namespace(kobj));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out;
 
@@ -742,11 +521,7 @@ int kobject_rename(struct kobject *kobj, const char *new_name)
 	kobject_uevent_env(kobj, KOBJ_MOVE, envp);
 
 out:
-<<<<<<< HEAD
-	kfree(dup_name);
-=======
 	kfree_const(dup_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(devpath_string);
 	kfree(devpath);
 	kobject_put(kobj);
@@ -756,11 +531,7 @@ out:
 EXPORT_SYMBOL_GPL(kobject_rename);
 
 /**
-<<<<<<< HEAD
- * kobject_move - move object to another parent
-=======
  * kobject_move() - Move object to another parent.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @kobj: object in question.
  * @new_parent: object's new parent (can be NULL)
  */
@@ -780,10 +551,7 @@ int kobject_move(struct kobject *kobj, struct kobject *new_parent)
 		if (kobj->kset)
 			new_parent = kobject_get(&kobj->kset->kobj);
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* old object path */
 	devpath = kobject_get_path(kobj, GFP_KERNEL);
 	if (!devpath) {
@@ -798,11 +566,7 @@ int kobject_move(struct kobject *kobj, struct kobject *new_parent)
 	sprintf(devpath_string, "DEVPATH_OLD=%s", devpath);
 	envp[0] = devpath_string;
 	envp[1] = NULL;
-<<<<<<< HEAD
-	error = sysfs_move_dir(kobj, new_parent);
-=======
 	error = sysfs_move_dir_ns(kobj, new_parent, kobject_namespace(kobj));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out;
 	old_parent = kobj->parent;
@@ -817,22 +581,6 @@ out:
 	kfree(devpath);
 	return error;
 }
-<<<<<<< HEAD
-
-/**
- * kobject_del - unlink kobject from hierarchy.
- * @kobj: object.
- */
-void kobject_del(struct kobject *kobj)
-{
-	if (!kobj)
-		return;
-
-	sysfs_remove_dir(kobj);
-	kobj->state_in_sysfs = 0;
-	kobj_kset_leave(kobj);
-	kobject_put(kobj->parent);
-=======
 EXPORT_SYMBOL_GPL(kobject_move);
 
 static void __kobject_del(struct kobject *kobj)
@@ -858,14 +606,10 @@ static void __kobject_del(struct kobject *kobj)
 
 	kobj->state_in_sysfs = 0;
 	kobj_kset_leave(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kobj->parent = NULL;
 }
 
 /**
-<<<<<<< HEAD
- * kobject_get - increment refcount for object.
-=======
  * kobject_del() - Unlink kobject from hierarchy.
  * @kobj: object.
  *
@@ -887,20 +631,10 @@ EXPORT_SYMBOL(kobject_del);
 
 /**
  * kobject_get() - Increment refcount for object.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @kobj: object.
  */
 struct kobject *kobject_get(struct kobject *kobj)
 {
-<<<<<<< HEAD
-	if (kobj)
-		kref_get(&kobj->kref);
-	return kobj;
-}
-
-static struct kobject *kobject_get_unless_zero(struct kobject *kobj)
-{
-=======
 	if (kobj) {
 		if (!kobj->state_initialized)
 			WARN(1, KERN_WARNING
@@ -916,15 +650,11 @@ struct kobject * __must_check kobject_get_unless_zero(struct kobject *kobj)
 {
 	if (!kobj)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!kref_get_unless_zero(&kobj->kref))
 		kobj = NULL;
 	return kobj;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(kobject_get_unless_zero);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * kobject_cleanup - free kobject resources.
@@ -932,35 +662,6 @@ EXPORT_SYMBOL(kobject_get_unless_zero);
  */
 static void kobject_cleanup(struct kobject *kobj)
 {
-<<<<<<< HEAD
-	struct kobj_type *t = get_ktype(kobj);
-	const char *name = kobj->name;
-
-	pr_debug("kobject: '%s' (%p): %s\n",
-		 kobject_name(kobj), kobj, __func__);
-
-	if (t && !t->release)
-		pr_debug("kobject: '%s' (%p): does not have a release() "
-			 "function, it is broken and must be fixed.\n",
-			 kobject_name(kobj), kobj);
-
-	/* send "remove" if the caller did not do it but sent "add" */
-	if (kobj->state_add_uevent_sent && !kobj->state_remove_uevent_sent) {
-		pr_debug("kobject: '%s' (%p): auto cleanup 'remove' event\n",
-			 kobject_name(kobj), kobj);
-		kobject_uevent(kobj, KOBJ_REMOVE);
-	}
-
-	/* remove from sysfs if the caller did not do it */
-	if (kobj->state_in_sysfs) {
-		pr_debug("kobject: '%s' (%p): auto cleanup kobject_del\n",
-			 kobject_name(kobj), kobj);
-		kobject_del(kobj);
-	}
-
-	if (t && t->release) {
-		pr_debug("kobject: '%s' (%p): calling ktype release\n",
-=======
 	struct kobject *parent = kobj->parent;
 	const struct kobj_type *t = get_ktype(kobj);
 	const char *name = kobj->name;
@@ -984,27 +685,12 @@ static void kobject_cleanup(struct kobject *kobj)
 
 	if (t && t->release) {
 		pr_debug("'%s' (%p): calling ktype release\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 kobject_name(kobj), kobj);
 		t->release(kobj);
 	}
 
 	/* free name if we allocated it */
 	if (name) {
-<<<<<<< HEAD
-		pr_debug("kobject: '%s': free name\n", name);
-		kfree(name);
-	}
-}
-
-static void kobject_release(struct kref *kref)
-{
-	kobject_cleanup(container_of(kref, struct kobject, kref));
-}
-
-/**
- * kobject_put - decrement refcount for object.
-=======
 		pr_debug("'%s': free name\n", name);
 		kfree_const(name);
 	}
@@ -1037,7 +723,6 @@ static void kobject_release(struct kref *kref)
 
 /**
  * kobject_put() - Decrement refcount for object.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @kobj: object.
  *
  * Decrement the refcount, and if 0, call kobject_cleanup().
@@ -1046,22 +731,6 @@ void kobject_put(struct kobject *kobj)
 {
 	if (kobj) {
 		if (!kobj->state_initialized)
-<<<<<<< HEAD
-			WARN(1, KERN_WARNING "kobject: '%s' (%p): is not "
-			       "initialized, yet kobject_put() is being "
-			       "called.\n", kobject_name(kobj), kobj);
-		kref_put(&kobj->kref, kobject_release);
-	}
-}
-
-static void dynamic_kobj_release(struct kobject *kobj)
-{
-	pr_debug("kobject: (%p): %s\n", kobj, __func__);
-	kfree(kobj);
-}
-
-static struct kobj_type dynamic_kobj_ktype = {
-=======
 			WARN(1, KERN_WARNING
 				"kobject: '%s' (%p): is not initialized, yet kobject_put() is being called.\n",
 			     kobject_name(kobj), kobj);
@@ -1077,17 +746,12 @@ static void dynamic_kobj_release(struct kobject *kobj)
 }
 
 static const struct kobj_type dynamic_kobj_ktype = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.release	= dynamic_kobj_release,
 	.sysfs_ops	= &kobj_sysfs_ops,
 };
 
 /**
-<<<<<<< HEAD
- * kobject_create - create a struct kobject dynamically
-=======
  * kobject_create() - Create a struct kobject dynamically.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function creates a kobject structure dynamically and sets it up
  * to be a "dynamic" kobject with a default release function set up.
@@ -1097,11 +761,7 @@ static const struct kobj_type dynamic_kobj_ktype = {
  * call to kobject_put() and not kfree(), as kobject_init() has
  * already been called on this structure.
  */
-<<<<<<< HEAD
-struct kobject *kobject_create(void)
-=======
 static struct kobject *kobject_create(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kobject *kobj;
 
@@ -1114,15 +774,9 @@ static struct kobject *kobject_create(void)
 }
 
 /**
-<<<<<<< HEAD
- * kobject_create_and_add - create a struct kobject dynamically and register it with sysfs
- *
- * @name: the name for the kset
-=======
  * kobject_create_and_add() - Create a struct kobject dynamically and
  *                            register it with sysfs.
  * @name: the name for the kobject
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @parent: the parent kobject of this kobject, if any.
  *
  * This function creates a kobject structure dynamically and registers it
@@ -1143,12 +797,7 @@ struct kobject *kobject_create_and_add(const char *name, struct kobject *parent)
 
 	retval = kobject_add(kobj, parent, "%s", name);
 	if (retval) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "%s: kobject_add error: %d\n",
-		       __func__, retval);
-=======
 		pr_warn("%s: kobject_add error: %d\n", __func__, retval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kobject_put(kobj);
 		kobj = NULL;
 	}
@@ -1157,11 +806,7 @@ struct kobject *kobject_create_and_add(const char *name, struct kobject *parent)
 EXPORT_SYMBOL_GPL(kobject_create_and_add);
 
 /**
-<<<<<<< HEAD
- * kset_init - initialize a kset for use
-=======
  * kset_init() - Initialize a kset for use.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @k: kset
  */
 void kset_init(struct kset *k)
@@ -1200,12 +845,6 @@ const struct sysfs_ops kobj_sysfs_ops = {
 	.show	= kobj_attr_show,
 	.store	= kobj_attr_store,
 };
-<<<<<<< HEAD
-
-/**
- * kset_register - initialize and add a kset.
- * @k: kset.
-=======
 EXPORT_SYMBOL_GPL(kobj_sysfs_ops);
 
 /**
@@ -1214,7 +853,6 @@ EXPORT_SYMBOL_GPL(kobj_sysfs_ops);
  *
  * NOTE: On error, the kset.kobj.name allocated by() kobj_set_name()
  * is freed, it can not be used any more.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int kset_register(struct kset *k)
 {
@@ -1223,18 +861,6 @@ int kset_register(struct kset *k)
 	if (!k)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	kset_init(k);
-	err = kobject_add_internal(&k->kobj);
-	if (err)
-		return err;
-	kobject_uevent(&k->kobj, KOBJ_ADD);
-	return 0;
-}
-
-/**
- * kset_unregister - remove a kset.
-=======
 	if (!k->kobj.ktype) {
 		pr_err("must have a ktype to be initialized properly!\n");
 		return -EINVAL;
@@ -1255,20 +881,12 @@ EXPORT_SYMBOL(kset_register);
 
 /**
  * kset_unregister() - Remove a kset.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @k: kset.
  */
 void kset_unregister(struct kset *k)
 {
 	if (!k)
 		return;
-<<<<<<< HEAD
-	kobject_put(&k->kobj);
-}
-
-/**
- * kset_find_obj - search for object in kset.
-=======
 	kobject_del(&k->kobj);
 	kobject_put(&k->kobj);
 }
@@ -1276,7 +894,6 @@ EXPORT_SYMBOL(kset_unregister);
 
 /**
  * kset_find_obj() - Search for object in kset.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @kset: kset we're looking in.
  * @name: object's name.
  *
@@ -1301,32 +918,16 @@ struct kobject *kset_find_obj(struct kset *kset, const char *name)
 	spin_unlock(&kset->list_lock);
 	return ret;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(kset_find_obj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void kset_release(struct kobject *kobj)
 {
 	struct kset *kset = container_of(kobj, struct kset, kobj);
-<<<<<<< HEAD
-	pr_debug("kobject: '%s' (%p): %s\n",
-=======
 	pr_debug("'%s' (%p): %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 kobject_name(kobj), kobj, __func__);
 	kfree(kset);
 }
 
-<<<<<<< HEAD
-static struct kobj_type kset_ktype = {
-	.sysfs_ops	= &kobj_sysfs_ops,
-	.release = kset_release,
-};
-
-/**
- * kset_create - create a struct kset dynamically
-=======
 static void kset_get_ownership(const struct kobject *kobj, kuid_t *uid, kgid_t *gid)
 {
 	if (kobj->parent)
@@ -1341,7 +942,6 @@ static const struct kobj_type kset_ktype = {
 
 /**
  * kset_create() - Create a struct kset dynamically.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @name: the name for the kset
  * @uevent_ops: a struct kset_uevent_ops for the kset
@@ -1365,11 +965,7 @@ static struct kset *kset_create(const char *name,
 	kset = kzalloc(sizeof(*kset), GFP_KERNEL);
 	if (!kset)
 		return NULL;
-<<<<<<< HEAD
-	retval = kobject_set_name(&kset->kobj, name);
-=======
 	retval = kobject_set_name(&kset->kobj, "%s", name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval) {
 		kfree(kset);
 		return NULL;
@@ -1389,11 +985,7 @@ static struct kset *kset_create(const char *name,
 }
 
 /**
-<<<<<<< HEAD
- * kset_create_and_add - create a struct kset dynamically and add it to sysfs
-=======
  * kset_create_and_add() - Create a struct kset dynamically and add it to sysfs.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @name: the name for the kset
  * @uevent_ops: a struct kset_uevent_ops for the kset
@@ -1437,15 +1029,7 @@ int kobj_ns_type_register(const struct kobj_ns_type_operations *ops)
 	spin_lock(&kobj_ns_type_lock);
 
 	error = -EINVAL;
-<<<<<<< HEAD
-	if (type >= KOBJ_NS_TYPES)
-		goto out;
-
-	error = -EINVAL;
-	if (type <= KOBJ_NS_TYPE_NONE)
-=======
 	if (!kobj_ns_type_is_valid(type))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	error = -EBUSY;
@@ -1465,46 +1049,28 @@ int kobj_ns_type_registered(enum kobj_ns_type type)
 	int registered = 0;
 
 	spin_lock(&kobj_ns_type_lock);
-<<<<<<< HEAD
-	if ((type > KOBJ_NS_TYPE_NONE) && (type < KOBJ_NS_TYPES))
-=======
 	if (kobj_ns_type_is_valid(type))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		registered = kobj_ns_ops_tbl[type] != NULL;
 	spin_unlock(&kobj_ns_type_lock);
 
 	return registered;
 }
 
-<<<<<<< HEAD
-const struct kobj_ns_type_operations *kobj_child_ns_ops(struct kobject *parent)
-{
-	const struct kobj_ns_type_operations *ops = NULL;
-
-	if (parent && parent->ktype->child_ns_type)
-=======
 const struct kobj_ns_type_operations *kobj_child_ns_ops(const struct kobject *parent)
 {
 	const struct kobj_ns_type_operations *ops = NULL;
 
 	if (parent && parent->ktype && parent->ktype->child_ns_type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ops = parent->ktype->child_ns_type(parent);
 
 	return ops;
 }
 
-<<<<<<< HEAD
-const struct kobj_ns_type_operations *kobj_ns_ops(struct kobject *kobj)
-=======
 const struct kobj_ns_type_operations *kobj_ns_ops(const struct kobject *kobj)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return kobj_child_ns_ops(kobj->parent);
 }
 
-<<<<<<< HEAD
-=======
 bool kobj_ns_current_may_mount(enum kobj_ns_type type)
 {
 	bool may_mount = true;
@@ -1516,40 +1082,26 @@ bool kobj_ns_current_may_mount(enum kobj_ns_type type)
 
 	return may_mount;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void *kobj_ns_grab_current(enum kobj_ns_type type)
 {
 	void *ns = NULL;
 
 	spin_lock(&kobj_ns_type_lock);
-<<<<<<< HEAD
-	if ((type > KOBJ_NS_TYPE_NONE) && (type < KOBJ_NS_TYPES) &&
-	    kobj_ns_ops_tbl[type])
-=======
 	if (kobj_ns_type_is_valid(type) && kobj_ns_ops_tbl[type])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ns = kobj_ns_ops_tbl[type]->grab_current_ns();
 	spin_unlock(&kobj_ns_type_lock);
 
 	return ns;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(kobj_ns_grab_current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const void *kobj_ns_netlink(enum kobj_ns_type type, struct sock *sk)
 {
 	const void *ns = NULL;
 
 	spin_lock(&kobj_ns_type_lock);
-<<<<<<< HEAD
-	if ((type > KOBJ_NS_TYPE_NONE) && (type < KOBJ_NS_TYPES) &&
-	    kobj_ns_ops_tbl[type])
-=======
 	if (kobj_ns_type_is_valid(type) && kobj_ns_ops_tbl[type])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ns = kobj_ns_ops_tbl[type]->netlink_ns(sk);
 	spin_unlock(&kobj_ns_type_lock);
 
@@ -1561,12 +1113,7 @@ const void *kobj_ns_initial(enum kobj_ns_type type)
 	const void *ns = NULL;
 
 	spin_lock(&kobj_ns_type_lock);
-<<<<<<< HEAD
-	if ((type > KOBJ_NS_TYPE_NONE) && (type < KOBJ_NS_TYPES) &&
-	    kobj_ns_ops_tbl[type])
-=======
 	if (kobj_ns_type_is_valid(type) && kobj_ns_ops_tbl[type])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ns = kobj_ns_ops_tbl[type]->initial_ns();
 	spin_unlock(&kobj_ns_type_lock);
 
@@ -1576,23 +1123,9 @@ const void *kobj_ns_initial(enum kobj_ns_type type)
 void kobj_ns_drop(enum kobj_ns_type type, void *ns)
 {
 	spin_lock(&kobj_ns_type_lock);
-<<<<<<< HEAD
-	if ((type > KOBJ_NS_TYPE_NONE) && (type < KOBJ_NS_TYPES) &&
-=======
 	if (kobj_ns_type_is_valid(type) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    kobj_ns_ops_tbl[type] && kobj_ns_ops_tbl[type]->drop_ns)
 		kobj_ns_ops_tbl[type]->drop_ns(ns);
 	spin_unlock(&kobj_ns_type_lock);
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(kobject_get);
-EXPORT_SYMBOL(kobject_put);
-EXPORT_SYMBOL(kobject_del);
-
-EXPORT_SYMBOL(kset_register);
-EXPORT_SYMBOL(kset_unregister);
-=======
 EXPORT_SYMBOL_GPL(kobj_ns_drop);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

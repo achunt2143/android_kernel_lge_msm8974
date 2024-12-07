@@ -37,16 +37,6 @@
 #ifndef _TIPC_DISCOVER_H
 #define _TIPC_DISCOVER_H
 
-<<<<<<< HEAD
-struct tipc_link_req;
-
-int tipc_disc_create(struct tipc_bearer *b_ptr, struct tipc_media_addr *dest,
-		     u32 dest_domain);
-void tipc_disc_delete(struct tipc_link_req *req);
-void tipc_disc_add_dest(struct tipc_link_req *req);
-void tipc_disc_remove_dest(struct tipc_link_req *req);
-void tipc_disc_recv_msg(struct sk_buff *buf, struct tipc_bearer *b_ptr);
-=======
 struct tipc_discoverer;
 
 int tipc_disc_create(struct net *net, struct tipc_bearer *b_ptr,
@@ -57,6 +47,5 @@ void tipc_disc_add_dest(struct tipc_discoverer *req);
 void tipc_disc_remove_dest(struct tipc_discoverer *req);
 void tipc_disc_rcv(struct net *net, struct sk_buff *buf,
 		   struct tipc_bearer *b_ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Apple Onboard Audio driver for Toonie codec
  *
  * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
  *
-<<<<<<< HEAD
- * GPL v2, can be found in COPYING.
- *
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This is a driver for the toonie codec chip. This chip is present
  * on the Mac Mini and is nothing but a DAC.
  */
@@ -39,11 +30,7 @@ static int toonie_dev_register(struct snd_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_device_ops ops = {
-=======
 static const struct snd_device_ops ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dev_register = toonie_dev_register,
 };
 
@@ -103,11 +90,7 @@ static int toonie_init_codec(struct aoa_codec *codec)
 	if (toonie->codec.connected != 1)
 		return -ENOTCONN;
 
-<<<<<<< HEAD
-	if (aoa_snd_device_new(SNDRV_DEV_LOWLEVEL, toonie, &ops)) {
-=======
 	if (aoa_snd_device_new(SNDRV_DEV_CODEC, toonie, &ops)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR PFX "failed to create toonie snd device!\n");
 		return -ENODEV;
 	}
@@ -143,11 +126,7 @@ static int __init toonie_init(void)
 	if (!toonie)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	strlcpy(toonie->codec.name, "toonie", sizeof(toonie->codec.name));
-=======
 	strscpy(toonie->codec.name, "toonie", sizeof(toonie->codec.name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	toonie->codec.owner = THIS_MODULE;
 	toonie->codec.init = toonie_init_codec;
 	toonie->codec.exit = toonie_exit_codec;

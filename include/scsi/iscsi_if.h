@@ -1,28 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * iSCSI User/Kernel Shares (Defines, Constants, Protocol definitions, etc)
  *
  * Copyright (C) 2005 Dmitry Yusupov
  * Copyright (C) 2005 Alex Aizman
  * maintained by open-iscsi@googlegroups.com
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * See the file COPYING included with this distribution for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef ISCSI_IF_H
@@ -70,8 +52,6 @@ enum iscsi_uevent_e {
 	ISCSI_UEVENT_PING		= UEVENT_BASE + 22,
 	ISCSI_UEVENT_GET_CHAP		= UEVENT_BASE + 23,
 	ISCSI_UEVENT_DELETE_CHAP	= UEVENT_BASE + 24,
-<<<<<<< HEAD
-=======
 	ISCSI_UEVENT_SET_FLASHNODE_PARAMS	= UEVENT_BASE + 25,
 	ISCSI_UEVENT_NEW_FLASHNODE	= UEVENT_BASE + 26,
 	ISCSI_UEVENT_DEL_FLASHNODE	= UEVENT_BASE + 27,
@@ -81,7 +61,6 @@ enum iscsi_uevent_e {
 	ISCSI_UEVENT_SET_CHAP		= UEVENT_BASE + 31,
 	ISCSI_UEVENT_GET_HOST_STATS	= UEVENT_BASE + 32,
 	ISCSI_UEVENT_DESTROY_SESSION_ASYNC	= UEVENT_BASE + 33,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* up events */
 	ISCSI_KEVENT_RECV_PDU		= KEVENT_BASE + 1,
@@ -229,8 +208,6 @@ struct iscsi_uevent {
 		       uint32_t        host_no;
 		       uint16_t        chap_tbl_idx;
 		} delete_chap;
-<<<<<<< HEAD
-=======
 		struct msg_set_flashnode_param {
 			uint32_t	host_no;
 			uint32_t	flashnode_idx;
@@ -259,7 +236,6 @@ struct iscsi_uevent {
 		struct msg_get_host_stats {
 			uint32_t host_no;
 		} get_host_stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} u;
 	union {
 		/* messages k -> u */
@@ -317,12 +293,9 @@ struct iscsi_uevent {
 						   with each ping request */
 			uint32_t        data_size;
 		} ping_comp;
-<<<<<<< HEAD
-=======
 		struct msg_new_flashnode_ret {
 			uint32_t	flashnode_idx;
 		} new_flashnode_ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} r;
 } __attribute__ ((aligned (sizeof(uint64_t))));
 
@@ -330,10 +303,6 @@ enum iscsi_param_type {
 	ISCSI_PARAM,		/* iscsi_param (session, conn, target, LU) */
 	ISCSI_HOST_PARAM,	/* iscsi_host_param */
 	ISCSI_NET_PARAM,	/* iscsi_net_param */
-<<<<<<< HEAD
-};
-
-=======
 	ISCSI_FLASHNODE_PARAM,	/* iscsi_flashnode_param */
 	ISCSI_CHAP_PARAM,	/* iscsi_chap_param */
 	ISCSI_IFACE_PARAM,	/* iscsi_iface_param */
@@ -346,18 +315,13 @@ struct iscsi_param_info {
 	uint8_t value[];	/* length sized value follows */
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iscsi_iface_param_info {
 	uint32_t iface_num;	/* iface number, 0 - n */
 	uint32_t len;		/* Actual length of the param */
 	uint16_t param;		/* iscsi param value */
 	uint8_t iface_type;	/* IPv4 or IPv6 */
 	uint8_t param_type;	/* iscsi_param_type */
-<<<<<<< HEAD
-	uint8_t value[0];	/* length sized value follows */
-=======
 	uint8_t value[];	/* length sized value follows */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /*
@@ -414,30 +378,6 @@ struct iscsi_path {
 #define ISCSI_VLAN_DISABLE	0x01
 #define ISCSI_VLAN_ENABLE	0x02
 
-<<<<<<< HEAD
-/* iSCSI network params */
-enum iscsi_net_param {
-	ISCSI_NET_PARAM_IPV4_ADDR		= 1,
-	ISCSI_NET_PARAM_IPV4_SUBNET		= 2,
-	ISCSI_NET_PARAM_IPV4_GW			= 3,
-	ISCSI_NET_PARAM_IPV4_BOOTPROTO		= 4,
-	ISCSI_NET_PARAM_MAC			= 5,
-	ISCSI_NET_PARAM_IPV6_LINKLOCAL		= 6,
-	ISCSI_NET_PARAM_IPV6_ADDR		= 7,
-	ISCSI_NET_PARAM_IPV6_ROUTER		= 8,
-	ISCSI_NET_PARAM_IPV6_ADDR_AUTOCFG	= 9,
-	ISCSI_NET_PARAM_IPV6_LINKLOCAL_AUTOCFG	= 10,
-	ISCSI_NET_PARAM_IPV6_ROUTER_AUTOCFG	= 11,
-	ISCSI_NET_PARAM_IFACE_ENABLE		= 12,
-	ISCSI_NET_PARAM_VLAN_ID			= 13,
-	ISCSI_NET_PARAM_VLAN_PRIORITY		= 14,
-	ISCSI_NET_PARAM_VLAN_ENABLED		= 15,
-	ISCSI_NET_PARAM_VLAN_TAG		= 16,
-	ISCSI_NET_PARAM_IFACE_TYPE		= 17,
-	ISCSI_NET_PARAM_IFACE_NAME		= 18,
-	ISCSI_NET_PARAM_MTU			= 19,
-	ISCSI_NET_PARAM_PORT			= 20,
-=======
 /* iscsi generic enable/disabled setting for various features */
 #define ISCSI_NET_PARAM_DISABLE		0x01
 #define ISCSI_NET_PARAM_ENABLE		0x02
@@ -538,7 +478,6 @@ enum iscsi_iface_param {
 	ISCSI_IFACE_PARAM_DISCOVERY_LOGOUT_EN,
 	ISCSI_IFACE_PARAM_STRICT_LOGIN_COMP_EN,
 	ISCSI_IFACE_PARAM_INITIATOR_NAME,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum iscsi_conn_state {
@@ -578,10 +517,7 @@ enum iscsi_err {
 	ISCSI_ERR_XMIT_FAILED		= ISCSI_ERR_BASE + 19,
 	ISCSI_ERR_TCP_CONN_CLOSE	= ISCSI_ERR_BASE + 20,
 	ISCSI_ERR_SCSI_EH_SESSION_RST	= ISCSI_ERR_BASE + 21,
-<<<<<<< HEAD
-=======
 	ISCSI_ERR_NOP_TIMEDOUT		= ISCSI_ERR_BASE + 22,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -636,8 +572,6 @@ enum iscsi_param {
 
 	ISCSI_PARAM_CHAP_IN_IDX,
 	ISCSI_PARAM_CHAP_OUT_IDX,
-<<<<<<< HEAD
-=======
 
 	ISCSI_PARAM_BOOT_ROOT,
 	ISCSI_PARAM_BOOT_NIC,
@@ -676,7 +610,6 @@ enum iscsi_param {
 	ISCSI_PARAM_DISCOVERY_PARENT_IDX,
 	ISCSI_PARAM_DISCOVERY_PARENT_TYPE,
 	ISCSI_PARAM_LOCAL_IPADDR,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* must always be last */
 	ISCSI_PARAM_MAX,
 };
@@ -692,8 +625,6 @@ enum iscsi_host_param {
 	ISCSI_HOST_PARAM_MAX,
 };
 
-<<<<<<< HEAD
-=======
 /* portal type */
 #define PORTAL_TYPE_IPV4	"ipv4"
 #define PORTAL_TYPE_IPV6	"ipv6"
@@ -776,7 +707,6 @@ enum iscsi_discovery_parent_type {
 	ISCSI_DISC_PARENT_ISNS		= 0x3,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* iSCSI port Speed */
 enum iscsi_port_speed {
 	ISCSI_PORT_SPEED_UNKNOWN	= 0x1,
@@ -784,11 +714,8 @@ enum iscsi_port_speed {
 	ISCSI_PORT_SPEED_100MBPS	= 0x4,
 	ISCSI_PORT_SPEED_1GBPS		= 0x8,
 	ISCSI_PORT_SPEED_10GBPS		= 0x10,
-<<<<<<< HEAD
-=======
 	ISCSI_PORT_SPEED_25GBPS         = 0x20,
 	ISCSI_PORT_SPEED_40GBPS         = 0x40,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* iSCSI port state */
@@ -889,11 +816,7 @@ struct iscsi_stats {
 	 * up to ISCSI_STATS_CUSTOM_MAX
 	 */
 	uint32_t custom_length;
-<<<<<<< HEAD
-	struct iscsi_stats_custom custom[0]
-=======
 	struct iscsi_stats_custom custom[]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__attribute__ ((aligned (sizeof(uint64_t))));
 };
 
@@ -902,8 +825,6 @@ enum chap_type_e {
 	CHAP_TYPE_IN,
 };
 
-<<<<<<< HEAD
-=======
 enum iscsi_chap_param {
 	ISCSI_CHAP_PARAM_INDEX,
 	ISCSI_CHAP_PARAM_CHAP_TYPE,
@@ -912,7 +833,6 @@ enum iscsi_chap_param {
 	ISCSI_CHAP_PARAM_PASSWORD_LEN
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ISCSI_CHAP_AUTH_NAME_MAX_LEN	256
 #define ISCSI_CHAP_AUTH_SECRET_MAX_LEN	256
 struct iscsi_chap_rec {
@@ -923,8 +843,6 @@ struct iscsi_chap_rec {
 	uint8_t password_length;
 };
 
-<<<<<<< HEAD
-=======
 #define ISCSI_HOST_STATS_CUSTOM_MAX             32
 #define ISCSI_HOST_STATS_CUSTOM_DESC_MAX        64
 struct iscsi_host_stats_custom {
@@ -1033,5 +951,4 @@ struct iscsi_offload_host_stats {
 		__aligned(sizeof(uint64_t));
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

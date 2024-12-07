@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/boot/head.S
  *
@@ -31,35 +28,10 @@
 #include <linux/init.h>
 #include <linux/linkage.h>
 #include <asm/segment.h>
-<<<<<<< HEAD
-#include <asm/pgtable_types.h>
-#include <asm/page_types.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/boot.h>
 #include <asm/msr.h>
 #include <asm/processor-flags.h>
 #include <asm/asm-offsets.h>
-<<<<<<< HEAD
-
-	__HEAD
-	.code32
-ENTRY(startup_32)
-	cld
-	/*
-	 * Test KEEP_SEGMENTS flag to see if the bootloader is asking
-	 * us to not reload segments
-	 */
-	testb $(1<<6), BP_loadflags(%esi)
-	jnz 1f
-
-	cli
-	movl	$(__KERNEL_DS), %eax
-	movl	%eax, %ds
-	movl	%eax, %es
-	movl	%eax, %ss
-1:
-=======
 #include <asm/bootparam.h>
 #include <asm/desc_defs.h>
 #include <asm/trapnr.h>
@@ -117,7 +89,6 @@ SYM_FUNC_START(startup_32)
 	 */
 	cld
 	cli
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Calculate the delta between where we were compiled to run
@@ -130,18 +101,6 @@ SYM_FUNC_START(startup_32)
 	leal	(BP_scratch+4)(%esi), %esp
 	call	1f
 1:	popl	%ebp
-<<<<<<< HEAD
-	subl	$1b, %ebp
-
-/* setup a stack and make sure cpu supports long mode. */
-	movl	$boot_stack_end, %eax
-	addl	%ebp, %eax
-	movl	%eax, %esp
-
-	call	verify_cpu
-	testl	%eax, %eax
-	jnz	no_longmode
-=======
 	subl	$ rva(1b), %ebp
 
 	/* Load new GDT with the 64bit segments using 32bit descriptor */
@@ -175,7 +134,6 @@ SYM_FUNC_START(startup_32)
 	call	verify_cpu
 	testl	%eax, %eax
 	jnz	.Lno_longmode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Compute the delta between where we were compiled to run at
@@ -193,14 +151,6 @@ SYM_FUNC_START(startup_32)
 	addl	%eax, %ebx
 	notl	%eax
 	andl	%eax, %ebx
-<<<<<<< HEAD
-#else
-	movl	$LOAD_PHYSICAL_ADDR, %ebx
-#endif
-
-	/* Target address to relocate to for decompression */
-	addl	$z_extract_offset, %ebx
-=======
 	cmpl	$LOAD_PHYSICAL_ADDR, %ebx
 	jae	1f
 #endif
@@ -210,48 +160,19 @@ SYM_FUNC_START(startup_32)
 	/* Target address to relocate to for decompression */
 	addl	BP_init_size(%esi), %ebx
 	subl	$ rva(_end), %ebx
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Prepare for entering 64 bit mode
  */
 
-<<<<<<< HEAD
-	/* Load new GDT with the 64bit segments using 32bit descriptor */
-	leal	gdt(%ebp), %eax
-	movl	%eax, gdt+2(%ebp)
-	lgdt	gdt(%ebp)
-
-	/* Enable PAE mode */
-	movl	$(X86_CR4_PAE), %eax
-=======
 	/* Enable PAE mode */
 	movl	%cr4, %eax
 	orl	$X86_CR4_PAE, %eax
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	%eax, %cr4
 
  /*
   * Build early 4G boot pagetable
   */
-<<<<<<< HEAD
-	/* Initialize Page tables to 0 */
-	leal	pgtable(%ebx), %edi
-	xorl	%eax, %eax
-	movl	$((4096*6)/4), %ecx
-	rep	stosl
-
-	/* Build Level 4 */
-	leal	pgtable + 0(%ebx), %edi
-	leal	0x1007 (%edi), %eax
-	movl	%eax, 0(%edi)
-
-	/* Build Level 3 */
-	leal	pgtable + 0x1000(%ebx), %edi
-	leal	0x1007(%edi), %eax
-	movl	$4, %ecx
-1:	movl	%eax, 0x00(%edi)
-=======
 	/*
 	 * If SEV is active then set the encryption mask in the page tables.
 	 * This will ensure that when the kernel is copied and decompressed
@@ -294,36 +215,24 @@ SYM_FUNC_START(startup_32)
 	movl	$4, %ecx
 1:	movl	%eax, 0x00(%edi)
 	addl	%edx, 0x04(%edi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addl	$0x00001000, %eax
 	addl	$8, %edi
 	decl	%ecx
 	jnz	1b
 
 	/* Build Level 2 */
-<<<<<<< HEAD
-	leal	pgtable + 0x2000(%ebx), %edi
-	movl	$0x00000183, %eax
-	movl	$2048, %ecx
-1:	movl	%eax, 0(%edi)
-=======
 	leal	rva(pgtable + 0x2000)(%ebx), %edi
 	movl	$0x00000183, %eax
 	movl	$2048, %ecx
 1:	movl	%eax, 0(%edi)
 	addl	%edx, 4(%edi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addl	$0x00200000, %eax
 	addl	$8, %edi
 	decl	%ecx
 	jnz	1b
 
 	/* Enable the boot page tables */
-<<<<<<< HEAD
-	leal	pgtable(%ebx), %eax
-=======
 	leal	rva(pgtable)(%ebx), %eax
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	%eax, %cr3
 
 	/* Enable Long mode in EFER (Extended Feature Enable Register) */
@@ -332,12 +241,6 @@ SYM_FUNC_START(startup_32)
 	btsl	$_EFER_LME, %eax
 	wrmsr
 
-<<<<<<< HEAD
-	/*
-	 * Setup for the jump to 64bit mode
-	 *
-	 * When the jump is performend we will be in long mode but
-=======
 	/* After gdt is loaded */
 	xorl	%eax, %eax
 	lldt	%ax
@@ -353,21 +256,12 @@ SYM_FUNC_START(startup_32)
 	 * Setup for the jump to 64bit mode
 	 *
 	 * When the jump is performed we will be in long mode but
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * in 32bit compatibility mode with EFER.LME = 1, CS.L = 0, CS.D = 1
 	 * (and in turn EFER.LMA = 1).	To jump into 64bit mode we use
 	 * the new gdt/idt that has __KERNEL_CS with CS.L = 1.
 	 * We place all of the values on our mini stack so lret can
 	 * used to perform that far jump.
 	 */
-<<<<<<< HEAD
-	pushl	$__KERNEL_CS
-	leal	startup_64(%ebp), %eax
-	pushl	%eax
-
-	/* Enter paged protected Mode, activating Long Mode */
-	movl	$(X86_CR0_PG | X86_CR0_PE), %eax /* Enable Paging and Protected mode */
-=======
 	leal	rva(startup_64)(%ebp), %eax
 #ifdef CONFIG_EFI_MIXED
 	cmpb	$1, rva(efi_is64)(%ebp)
@@ -381,68 +275,10 @@ SYM_FUNC_START(startup_32)
 
 	/* Enter paged protected Mode, activating Long Mode */
 	movl	$CR0_STATE, %eax
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	%eax, %cr0
 
 	/* Jump from 32bit compatibility mode into 64bit mode. */
 	lret
-<<<<<<< HEAD
-ENDPROC(startup_32)
-
-no_longmode:
-	/* This isn't an x86-64 CPU so hang */
-1:
-	hlt
-	jmp     1b
-
-#include "../../kernel/verify_cpu.S"
-
-	/*
-	 * Be careful here startup_64 needs to be at a predictable
-	 * address so I can export it in an ELF header.  Bootloaders
-	 * should look at the ELF header to find this address, as
-	 * it may change in the future.
-	 */
-	.code64
-	.org 0x200
-ENTRY(startup_64)
-	/*
-	 * We come here either from startup_32 or directly from a
-	 * 64bit bootloader.  If we come here from a bootloader we depend on
-	 * an identity mapped page table being provied that maps our
-	 * entire text+data+bss and hopefully all of memory.
-	 */
-#ifdef CONFIG_EFI_STUB
-	/*
-	 * The entry point for the PE/COFF executable is 0x210, so only
-	 * legacy boot loaders will execute this jmp.
-	 */
-	jmp	preferred_addr
-
-	.org 0x210
-	mov	%rcx, %rdi
-	mov	%rdx, %rsi
-	call	efi_main
-	movq	%rax,%rsi
-	cmpq	$0,%rax
-	jne	2f
-1:
-	/* EFI init failed, so hang. */
-	hlt
-	jmp	1b
-2:
-	call	3f
-3:
-	popq	%rax
-	subq	$3b, %rax
-	subq	BP_pref_address(%rsi), %rax
-	add	BP_code32_start(%esi), %eax
-	leaq	preferred_addr(%rax), %rax
-	jmp	*%rax
-
-preferred_addr:
-#endif
-=======
 SYM_FUNC_END(startup_32)
 
 	.code64
@@ -461,7 +297,6 @@ SYM_CODE_START(startup_64)
 
 	cld
 	cli
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup data segments. */
 	xorl	%eax, %eax
@@ -470,12 +305,6 @@ SYM_CODE_START(startup_64)
 	movl	%eax, %ss
 	movl	%eax, %fs
 	movl	%eax, %gs
-<<<<<<< HEAD
-	lldt	%ax
-	movl    $0x20, %eax
-	ltr	%ax
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Compute the decompressed kernel start address.  It is where
@@ -498,17 +327,6 @@ SYM_CODE_START(startup_64)
 	addq	%rax, %rbp
 	notq	%rax
 	andq	%rax, %rbp
-<<<<<<< HEAD
-#else
-	movq	$LOAD_PHYSICAL_ADDR, %rbp
-#endif
-
-	/* Target address to relocate to for decompression */
-	leaq	z_extract_offset(%rbp), %rbx
-
-	/* Set up the stack */
-	leaq	boot_stack_end(%rbx), %rsp
-=======
 	cmpq	$LOAD_PHYSICAL_ADDR, %rbp
 	jae	1f
 #endif
@@ -592,7 +410,6 @@ SYM_CODE_START(startup_64)
 	movq	%r15, %rdi
 	leaq	rva(top_pgtable)(%rbx), %rsi
 	call	configure_5level_paging
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Zero EFLAGS */
 	pushq	$0
@@ -602,17 +419,6 @@ SYM_CODE_START(startup_64)
  * Copy the compressed kernel to the end of our buffer
  * where decompression in place becomes safe.
  */
-<<<<<<< HEAD
-	pushq	%rsi
-	leaq	(_bss-8)(%rip), %rsi
-	leaq	(_bss-8)(%rbx), %rdi
-	movq	$_bss /* - $startup_32 */, %rcx
-	shrq	$3, %rcx
-	std
-	rep	movsq
-	cld
-	popq	%rsi
-=======
 	leaq	(_bss-8)(%rip), %rsi
 	leaq	rva(_bss-8)(%rbx), %rdi
 	movl	$(_bss - startup_32), %ecx
@@ -630,25 +436,16 @@ SYM_CODE_START(startup_64)
 	leaq	rva(gdt)(%rbx), %rdx
 	movq	%rdx, 2(%rax)
 	lgdt	(%rax)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Jump to the relocated address.
  */
-<<<<<<< HEAD
-	leaq	relocated(%rbx), %rax
-	jmp	*%rax
-
-	.text
-relocated:
-=======
 	leaq	rva(.Lrelocated)(%rbx), %rax
 	jmp	*%rax
 SYM_CODE_END(startup_64)
 
 	.text
 SYM_FUNC_START_LOCAL_NOALIGN(.Lrelocated)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Clear BSS (stack is currently empty)
@@ -660,32 +457,6 @@ SYM_FUNC_START_LOCAL_NOALIGN(.Lrelocated)
 	shrq	$3, %rcx
 	rep	stosq
 
-<<<<<<< HEAD
-/*
- * Adjust our own GOT
- */
-	leaq	_got(%rip), %rdx
-	leaq	_egot(%rip), %rcx
-1:
-	cmpq	%rcx, %rdx
-	jae	2f
-	addq	%rbx, (%rdx)
-	addq	$8, %rdx
-	jmp	1b
-2:
-	
-/*
- * Do the decompression, and jump to the new kernel..
- */
-	pushq	%rsi			/* Save the real mode argument */
-	movq	%rsi, %rdi		/* real mode address */
-	leaq	boot_heap(%rip), %rsi	/* malloc area for uncompression */
-	leaq	input_data(%rip), %rdx  /* input_data */
-	movl	$z_input_len, %ecx	/* input_len */
-	movq	%rbp, %r8		/* output target address */
-	call	decompress_kernel
-	popq	%rsi
-=======
 	call	load_stage2_idt
 
 	/* Pass boot_params to initialize_identity_maps() */
@@ -699,21 +470,10 @@ SYM_FUNC_START_LOCAL_NOALIGN(.Lrelocated)
 	movq	%r15, %rdi
 	movq	%rbp, %rsi
 	call	extract_kernel		/* returns kernel entry point in %rax */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Jump to the decompressed kernel.
  */
-<<<<<<< HEAD
-	jmp	*%rbp
-
-	.data
-gdt:
-	.word	gdt_end - gdt
-	.long	gdt
-	.word	0
-	.quad	0x0000000000000000	/* NULL descriptor */
-=======
 	movq	%r15, %rsi
 	jmp	*%rax
 SYM_FUNC_END(.Lrelocated)
@@ -843,14 +603,10 @@ SYM_DATA_START_LOCAL(gdt)
 	.long	0
 	.word	0
 	.quad	0x00cf9a000000ffff	/* __KERNEL32_CS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.quad	0x00af9a000000ffff	/* __KERNEL_CS */
 	.quad	0x00cf92000000ffff	/* __KERNEL_DS */
 	.quad	0x0080890000000000	/* TS descriptor */
 	.quad   0x0000000000000000	/* TS continued */
-<<<<<<< HEAD
-gdt_end:
-=======
 SYM_DATA_END_LABEL(gdt, SYM_L_LOCAL, gdt_end)
 
 SYM_DATA_START(boot_idt_desc)
@@ -864,35 +620,20 @@ SYM_DATA_START(boot_idt)
 	.quad	0
 	.endr
 SYM_DATA_END_LABEL(boot_idt, SYM_L_GLOBAL, boot_idt_end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Stack and heap for uncompression
  */
 	.bss
 	.balign 4
-<<<<<<< HEAD
-boot_heap:
-	.fill BOOT_HEAP_SIZE, 1, 0
-boot_stack:
-	.fill BOOT_STACK_SIZE, 1, 0
-boot_stack_end:
-=======
 SYM_DATA_START_LOCAL(boot_stack)
 	.fill BOOT_STACK_SIZE, 1, 0
 	.balign 16
 SYM_DATA_END_LABEL(boot_stack, SYM_L_LOCAL, boot_stack_end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Space for page tables (not in .bss so not zeroed)
  */
-<<<<<<< HEAD
-	.section ".pgtable","a",@nobits
-	.balign 4096
-pgtable:
-	.fill 6*4096, 1, 0
-=======
 	.section ".pgtable","aw",@nobits
 	.balign 4096
 SYM_DATA_LOCAL(pgtable,		.fill BOOT_PGT_SIZE, 1, 0)
@@ -902,4 +643,3 @@ SYM_DATA_LOCAL(pgtable,		.fill BOOT_PGT_SIZE, 1, 0)
  * memory.
  */
 SYM_DATA_LOCAL(top_pgtable,	.fill PAGE_SIZE, 1, 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

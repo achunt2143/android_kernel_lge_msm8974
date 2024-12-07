@@ -1,27 +1,16 @@
-<<<<<<< HEAD
-/*
- * UHID Example
- *
- * Copyright (c) 2012 David Herrmann <dh.herrmann@googlemail.com>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * UHID Example
  *
  * Copyright (c) 2012-2013 David Herrmann <dh.herrmann@gmail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The code may be used by anyone for any purpose,
  * and can serve as a starting point for developing
  * applications using uhid.
  */
 
-<<<<<<< HEAD
-/* UHID Example
-=======
 /*
  * UHID Example
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This example emulates a basic 3 buttons mouse with wheel over UHID. Run this
  * program as root and then use the following keys to control the mouse:
  *   q: Quit the application
@@ -35,14 +24,11 @@
  *   r: Move wheel up
  *   f: Move wheel down
  *
-<<<<<<< HEAD
-=======
  * Additionally to 3 button mouse, 3 keyboard LEDs are also supported (LED_NUML,
  * LED_CAPSL and LED_SCROLLL). The device doesn't generate any related keyboard
  * events, though. You need to manually write the EV_LED/LED_XY/1 activation
  * input event to the evdev device to see it being sent to this device.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * If uhid is not available as /dev/uhid, then you can pass a different path as
  * first argument.
  * If <linux/uhid.h> is not installed in /usr, then compile this with:
@@ -62,20 +48,12 @@
 #include <unistd.h>
 #include <linux/uhid.h>
 
-<<<<<<< HEAD
-/* HID Report Desciptor
- * We emulate a basic 3 button mouse with wheel. This is the report-descriptor
- * as the kernel will parse it:
- *
- * INPUT[INPUT]
-=======
 /*
  * HID Report Desciptor
  * We emulate a basic 3 button mouse with wheel and 3 keyboard LEDs. This is
  * the report-descriptor as the kernel will parse it:
  *
  * INPUT(1)[INPUT]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   Field(0)
  *     Physical(GenericDesktop.Pointer)
  *     Application(GenericDesktop.Mouse)
@@ -102,8 +80,6 @@
  *     Report Count(3)
  *     Report Offset(8)
  *     Flags( Variable Relative )
-<<<<<<< HEAD
-=======
  * OUTPUT(2)[OUTPUT]
  *   Field(0)
  *     Application(GenericDesktop.Keyboard)
@@ -117,7 +93,6 @@
  *     Report Count(3)
  *     Report Offset(0)
  *     Flags( Variable Absolute )
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is the mapping that we expect:
  *   Button.0001 ---> Key.LeftBtn
@@ -126,27 +101,15 @@
  *   GenericDesktop.X ---> Relative.X
  *   GenericDesktop.Y ---> Relative.Y
  *   GenericDesktop.Wheel ---> Relative.Wheel
-<<<<<<< HEAD
-=======
  *   LED.NumLock ---> LED.NumLock
  *   LED.CapsLock ---> LED.CapsLock
  *   LED.ScrollLock ---> LED.ScrollLock
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This information can be verified by reading /sys/kernel/debug/hid/<dev>/rdesc
  * This file should print the same information as showed above.
  */
 
 static unsigned char rdesc[] = {
-<<<<<<< HEAD
-	0x05, 0x01, 0x09, 0x02, 0xa1, 0x01, 0x09, 0x01,
-	0xa1, 0x00, 0x05, 0x09, 0x19, 0x01, 0x29, 0x03,
-	0x15, 0x00, 0x25, 0x01, 0x95, 0x03, 0x75, 0x01,
-	0x81, 0x02, 0x95, 0x01, 0x75, 0x05, 0x81, 0x01,
-	0x05, 0x01, 0x09, 0x30, 0x09, 0x31, 0x09, 0x38,
-	0x15, 0x80, 0x25, 0x7f, 0x75, 0x08, 0x95, 0x03,
-	0x81, 0x06, 0xc0, 0xc0,
-=======
 	0x05, 0x01,	/* USAGE_PAGE (Generic Desktop) */
 	0x09, 0x02,	/* USAGE (Mouse) */
 	0xa1, 0x01,	/* COLLECTION (Application) */
@@ -191,7 +154,6 @@ static unsigned char rdesc[] = {
 	0x75, 0x05,		/* REPORT_SIZE (5) */
 	0x91, 0x01,		/* Output (Cnst,Var,Abs) */
 	0xc0,		/* END_COLLECTION */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int uhid_write(int fd, const struct uhid_event *ev)
@@ -203,11 +165,7 @@ static int uhid_write(int fd, const struct uhid_event *ev)
 		fprintf(stderr, "Cannot write to uhid: %m\n");
 		return -errno;
 	} else if (ret != sizeof(*ev)) {
-<<<<<<< HEAD
-		fprintf(stderr, "Wrong size written to uhid: %ld != %lu\n",
-=======
 		fprintf(stderr, "Wrong size written to uhid: %zd != %zu\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret, sizeof(ev));
 		return -EFAULT;
 	} else {
@@ -243,8 +201,6 @@ static void destroy(int fd)
 	uhid_write(fd, &ev);
 }
 
-<<<<<<< HEAD
-=======
 /* This parses raw output reports sent by the kernel to the device. A normal
  * uhid program shouldn't do this but instead just forward the raw report.
  * However, for ducomentational purposes, we try to detect LED events here and
@@ -266,7 +222,6 @@ static void handle_output(struct uhid_event *ev)
 		ev->u.output.data[1]);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int event(int fd)
 {
 	struct uhid_event ev;
@@ -281,11 +236,7 @@ static int event(int fd)
 		fprintf(stderr, "Cannot read uhid-cdev: %m\n");
 		return -errno;
 	} else if (ret != sizeof(ev)) {
-<<<<<<< HEAD
-		fprintf(stderr, "Invalid size read from uhid-dev: %ld != %lu\n",
-=======
 		fprintf(stderr, "Invalid size read from uhid-dev: %zd != %zu\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret, sizeof(ev));
 		return -EFAULT;
 	}
@@ -305,10 +256,7 @@ static int event(int fd)
 		break;
 	case UHID_OUTPUT:
 		fprintf(stderr, "UHID_OUTPUT from uhid-dev\n");
-<<<<<<< HEAD
-=======
 		handle_output(&ev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case UHID_OUTPUT_EV:
 		fprintf(stderr, "UHID_OUTPUT_EV from uhid-dev\n");
@@ -333,20 +281,6 @@ static int send_event(int fd)
 
 	memset(&ev, 0, sizeof(ev));
 	ev.type = UHID_INPUT;
-<<<<<<< HEAD
-	ev.u.input.size = 4;
-
-	if (btn1_down)
-		ev.u.input.data[0] |= 0x1;
-	if (btn2_down)
-		ev.u.input.data[0] |= 0x2;
-	if (btn3_down)
-		ev.u.input.data[0] |= 0x4;
-
-	ev.u.input.data[1] = abs_hor;
-	ev.u.input.data[2] = abs_ver;
-	ev.u.input.data[3] = wheel;
-=======
 	ev.u.input.size = 5;
 
 	ev.u.input.data[0] = 0x1;
@@ -360,7 +294,6 @@ static int send_event(int fd)
 	ev.u.input.data[2] = abs_hor;
 	ev.u.input.data[3] = abs_ver;
 	ev.u.input.data[4] = wheel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return uhid_write(fd, &ev);
 }

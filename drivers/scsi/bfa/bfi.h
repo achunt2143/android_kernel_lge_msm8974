@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BFI_H__
@@ -57,10 +39,7 @@
  */
 #define	BFI_FLASH_CHUNK_SZ			256	/*  Flash chunk size */
 #define	BFI_FLASH_CHUNK_SZ_WORDS	(BFI_FLASH_CHUNK_SZ/sizeof(u32))
-<<<<<<< HEAD
-=======
 #define BFI_FLASH_IMAGE_SZ		0x100000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Msg header common to all msgs
@@ -225,12 +204,8 @@ enum bfi_mclass {
 	BFI_MC_PORT		= 21,	/*  Physical port		    */
 	BFI_MC_SFP		= 22,	/*  SFP module	*/
 	BFI_MC_PHY		= 25,   /*  External PHY message class	*/
-<<<<<<< HEAD
-	BFI_MC_MAX		= 32
-=======
 	BFI_MC_FRU		= 34,
 	BFI_MC_MAX		= 35
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define BFI_IOC_MAX_CQS		4
@@ -283,10 +258,7 @@ struct bfi_ioc_getattr_req_s {
 	union bfi_addr_u	attr_addr;
 };
 
-<<<<<<< HEAD
-=======
 #define BFI_IOC_ATTR_UUID_SZ	16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfi_ioc_attr_s {
 	wwn_t		mfg_pwwn;	/*  Mfg port wwn	   */
 	wwn_t		mfg_nwwn;	/*  Mfg node wwn	   */
@@ -312,13 +284,10 @@ struct bfi_ioc_attr_s {
 	char		optrom_version[BFA_VERSION_LEN];
 	struct		bfa_mfg_vpd_s	vpd;
 	u32	card_type;	/*  card type			*/
-<<<<<<< HEAD
-=======
 	u8	mfg_day;	/* manufacturing day */
 	u8	mfg_month;	/* manufacturing month */
 	u16	mfg_year;	/* manufacturing year */
 	u8	uuid[BFI_IOC_ATTR_UUID_SZ];	/*!< chinook uuid */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -349,9 +318,6 @@ struct bfi_ioc_getattr_reply_s {
 #define BFI_IOC_TRC_ENTS	256
 
 #define BFI_IOC_FW_SIGNATURE	(0xbfadbfad)
-<<<<<<< HEAD
-#define BFI_IOC_MD5SUM_SZ	4
-=======
 #define BFA_IOC_FW_INV_SIGN	(0xdeaddead)
 #define BFI_IOC_MD5SUM_SZ	4
 
@@ -375,7 +341,6 @@ struct bfi_ioc_fwver_s {
 #endif
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfi_ioc_image_hdr_s {
 	u32	signature;	/* constant signature		*/
 	u8	asic_gen;	/* asic generation		*/
@@ -383,13 +348,6 @@ struct bfi_ioc_image_hdr_s {
 	u8	port0_mode;	/* device mode for port 0	*/
 	u8	port1_mode;	/* device mode for port 1	*/
 	u32	exec;		/* exec vector			*/
-<<<<<<< HEAD
-	u32	bootenv;	/* fimware boot env		*/
-	u32	rsvd_b[4];
-	u32	md5sum[BFI_IOC_MD5SUM_SZ];
-};
-
-=======
 	u32	bootenv;	/* firmware boot env		*/
 	u32	rsvd_b[2];
 	struct bfi_ioc_fwver_s	fwver;
@@ -403,7 +361,6 @@ enum bfi_ioc_img_ver_cmp_e {
 	BFI_IOC_IMG_VER_BETTER
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BFI_FWBOOT_DEVMODE_OFF		4
 #define BFI_FWBOOT_TYPE_OFF		8
 #define BFI_FWBOOT_ENV_OFF		12
@@ -413,15 +370,12 @@ enum bfi_ioc_img_ver_cmp_e {
 	 ((u32)(__p0_mode)) << 8 |		\
 	 ((u32)(__p1_mode)))
 
-<<<<<<< HEAD
-=======
 enum bfi_fwboot_type {
 	BFI_FWBOOT_TYPE_NORMAL  = 0,
 	BFI_FWBOOT_TYPE_FLASH   = 1,
 	BFI_FWBOOT_TYPE_MEMTEST = 2,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BFI_FWBOOT_TYPE_NORMAL	0
 #define BFI_FWBOOT_TYPE_MEMTEST	2
 #define BFI_FWBOOT_ENV_OS       0
@@ -452,13 +406,10 @@ enum bfi_ioc_state {
 	BFI_IOC_MEMTEST		= 9,	/*  IOC is doing memtest	     */
 };
 
-<<<<<<< HEAD
-=======
 #define BFA_IOC_CB_JOIN_SH	16
 #define BFA_IOC_CB_FWSTATE_MASK	0x0000ffff
 #define BFA_IOC_CB_JOIN_MASK	0xffff0000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BFI_IOC_ENDIAN_SIG  0x12345678
 
 enum {
@@ -776,12 +727,8 @@ struct bfi_ablk_h2i_pf_req_s {
 	u8			pcifn;
 	u8			port;
 	u16			pers;
-<<<<<<< HEAD
-	u32			bw;
-=======
 	u16			bw_min; /* percent BW @ max speed */
 	u16			bw_max; /* percent BW @ max speed */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* BFI_ABLK_H2I_OPTROM_ENABLE, BFI_ABLK_H2I_OPTROM_DISABLE */
@@ -1051,10 +998,7 @@ enum bfi_diag_h2i {
 	BFI_DIAG_H2I_TEMPSENSOR = 4,
 	BFI_DIAG_H2I_LEDTEST = 5,
 	BFI_DIAG_H2I_QTEST      = 6,
-<<<<<<< HEAD
-=======
 	BFI_DIAG_H2I_DPORT	= 7,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum bfi_diag_i2h {
@@ -1064,11 +1008,8 @@ enum bfi_diag_i2h {
 	BFI_DIAG_I2H_TEMPSENSOR = BFA_I2HM(BFI_DIAG_H2I_TEMPSENSOR),
 	BFI_DIAG_I2H_LEDTEST = BFA_I2HM(BFI_DIAG_H2I_LEDTEST),
 	BFI_DIAG_I2H_QTEST      = BFA_I2HM(BFI_DIAG_H2I_QTEST),
-<<<<<<< HEAD
-=======
 	BFI_DIAG_I2H_DPORT	= BFA_I2HM(BFI_DIAG_H2I_DPORT),
 	BFI_DIAG_I2H_DPORT_SCN	= BFA_I2HM(8),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define BFI_DIAG_MAX_SGES	2
@@ -1155,8 +1096,6 @@ struct bfi_diag_qtest_req_s {
 #define bfi_diag_qtest_rsp_t struct bfi_diag_qtest_req_s
 
 /*
-<<<<<<< HEAD
-=======
  *	D-port test
  */
 enum bfi_dport_req {
@@ -1232,7 +1171,6 @@ union bfi_diag_dport_msg_u {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	PHY module specific
  */
 enum bfi_phy_h2i_msgs_e {
@@ -1328,8 +1266,6 @@ struct bfi_phy_write_rsp_s {
 	u32			length;
 };
 
-<<<<<<< HEAD
-=======
 enum bfi_fru_h2i_msgs {
 	BFI_FRUVPD_H2I_WRITE_REQ = 1,
 	BFI_FRUVPD_H2I_READ_REQ = 2,
@@ -1376,7 +1312,6 @@ struct bfi_fru_rsp_s {
 	u32			status;
 	u32			length;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #pragma pack()
 
 #endif /* __BFI_H__ */

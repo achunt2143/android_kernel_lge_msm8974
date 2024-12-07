@@ -8,22 +8,15 @@
 # Copyright (C) 1994 by Linus Torvalds
 #
 
-<<<<<<< HEAD
-hostprogs-y	:= tools/mkbb tools/objstrip
-=======
 hostprogs	:= tools/mkbb tools/objstrip
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 targets		:= vmlinux.gz vmlinux \
 		   vmlinux.nh tools/lxboot tools/bootlx tools/bootph \
 		   tools/bootpzh bootloader bootpheader bootpzheader 
 OBJSTRIP	:= $(obj)/tools/objstrip
 
-<<<<<<< HEAD
-=======
 KBUILD_HOSTCFLAGS := -Wall -I$(objtree)/usr/include
 BOOTCFLAGS	+= -I$(objtree)/$(obj) -I$(srctree)/$(obj)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # SRM bootable image.  Copy to offset 512 of a partition.
 $(obj)/bootimage: $(addprefix $(obj)/tools/,mkbb lxboot bootlx) $(obj)/vmlinux.nh
 	( cat $(obj)/tools/lxboot $(obj)/tools/bootlx $(obj)/vmlinux.nh ) > $@ 
@@ -106,15 +99,6 @@ $(obj)/tools/bootph: $(obj)/bootpheader $(OBJSTRIP) FORCE
 $(obj)/tools/bootpzh: $(obj)/bootpzheader $(OBJSTRIP) FORCE
 	$(call if_changed,objstrip)
 
-<<<<<<< HEAD
-LDFLAGS_bootloader   := -static -uvsprintf -T  #-N -relax
-LDFLAGS_bootpheader  := -static -uvsprintf -T  #-N -relax
-LDFLAGS_bootpzheader := -static -uvsprintf -T  #-N -relax
-
-OBJ_bootlx   := $(obj)/head.o $(obj)/main.o
-OBJ_bootph   := $(obj)/head.o $(obj)/bootp.o
-OBJ_bootpzh  := $(obj)/head.o $(obj)/bootpz.o $(obj)/misc.o
-=======
 LDFLAGS_bootloader   := -static -T # -N -relax
 LDFLAGS_bootloader   := -static -T # -N -relax
 LDFLAGS_bootpheader  := -static -T # -N -relax
@@ -123,7 +107,6 @@ LDFLAGS_bootpzheader := -static -T # -N -relax
 OBJ_bootlx   := $(obj)/head.o $(obj)/stdio.o $(obj)/main.o
 OBJ_bootph   := $(obj)/head.o $(obj)/stdio.o $(obj)/bootp.o
 OBJ_bootpzh  := $(obj)/head.o $(obj)/stdio.o $(obj)/bootpz.o $(obj)/misc.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 $(obj)/bootloader: $(obj)/bootloader.lds $(OBJ_bootlx) $(LIBS_Y) FORCE
 	$(call if_changed,ld)

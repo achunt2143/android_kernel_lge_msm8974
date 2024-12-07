@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-/*
- * wm8960.h  --  WM8960 Soc Audio driver
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * wm8960.h  --  WM8960 Soc Audio driver
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _WM8960_H
@@ -86,14 +77,9 @@
 #define WM8960_SYSCLK_DIV_1		(0 << 1)
 #define WM8960_SYSCLK_DIV_2		(2 << 1)
 
-<<<<<<< HEAD
-#define WM8960_SYSCLK_MCLK		(0 << 0)
-#define WM8960_SYSCLK_PLL		(1 << 0)
-=======
 #define WM8960_SYSCLK_AUTO		(0 << 0)
 #define WM8960_SYSCLK_PLL		(1 << 0)
 #define WM8960_SYSCLK_MCLK		(2 << 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WM8960_DAC_DIV_1		(0 << 3)
 #define WM8960_DAC_DIV_1_5		(1 << 3)

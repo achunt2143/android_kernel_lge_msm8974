@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#include <linux/bitops.h>
-#include <linux/kernel.h>
-#include <linux/init.h>
-
-#include <asm/processor.h>
-#include <asm/e820.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 
 #include <linux/sched.h>
@@ -14,245 +6,11 @@
 #include <asm/cpu.h>
 #include <asm/cpufeature.h>
 #include <asm/e820/api.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mtrr.h>
 #include <asm/msr.h>
 
 #include "cpu.h"
 
-<<<<<<< HEAD
-#ifdef CONFIG_X86_OOSTORE
-
-static u32 __cpuinit power2(u32 x)
-{
-	u32 s = 1;
-
-	while (s <= x)
-		s <<= 1;
-
-	return s >>= 1;
-}
-
-
-/*
- * Set up an actual MCR
- */
-static void __cpuinit centaur_mcr_insert(int reg, u32 base, u32 size, int key)
-{
-	u32 lo, hi;
-
-	hi = base & ~0xFFF;
-	lo = ~(size-1);		/* Size is a power of 2 so this makes a mask */
-	lo &= ~0xFFF;		/* Remove the ctrl value bits */
-	lo |= key;		/* Attribute we wish to set */
-	wrmsr(reg+MSR_IDT_MCR0, lo, hi);
-	mtrr_centaur_report_mcr(reg, lo, hi);	/* Tell the mtrr driver */
-}
-
-/*
- * Figure what we can cover with MCR's
- *
- * Shortcut: We know you can't put 4Gig of RAM on a winchip
- */
-static u32 __cpuinit ramtop(void)
-{
-	u32 clip = 0xFFFFFFFFUL;
-	u32 top = 0;
-	int i;
-
-	for (i = 0; i < e820.nr_map; i++) {
-		unsigned long start, end;
-
-		if (e820.map[i].addr > 0xFFFFFFFFUL)
-			continue;
-		/*
-		 * Don't MCR over reserved space. Ignore the ISA hole
-		 * we frob around that catastrophe already
-		 */
-		if (e820.map[i].type == E820_RESERVED) {
-			if (e820.map[i].addr >= 0x100000UL &&
-			    e820.map[i].addr < clip)
-				clip = e820.map[i].addr;
-			continue;
-		}
-		start = e820.map[i].addr;
-		end = e820.map[i].addr + e820.map[i].size;
-		if (start >= end)
-			continue;
-		if (end > top)
-			top = end;
-	}
-	/*
-	 * Everything below 'top' should be RAM except for the ISA hole.
-	 * Because of the limited MCR's we want to map NV/ACPI into our
-	 * MCR range for gunk in RAM
-	 *
-	 * Clip might cause us to MCR insufficient RAM but that is an
-	 * acceptable failure mode and should only bite obscure boxes with
-	 * a VESA hole at 15Mb
-	 *
-	 * The second case Clip sometimes kicks in is when the EBDA is marked
-	 * as reserved. Again we fail safe with reasonable results
-	 */
-	if (top > clip)
-		top = clip;
-
-	return top;
-}
-
-/*
- * Compute a set of MCR's to give maximum coverage
- */
-static int __cpuinit centaur_mcr_compute(int nr, int key)
-{
-	u32 mem = ramtop();
-	u32 root = power2(mem);
-	u32 base = root;
-	u32 top = root;
-	u32 floor = 0;
-	int ct = 0;
-
-	while (ct < nr) {
-		u32 fspace = 0;
-		u32 high;
-		u32 low;
-
-		/*
-		 * Find the largest block we will fill going upwards
-		 */
-		high = power2(mem-top);
-
-		/*
-		 * Find the largest block we will fill going downwards
-		 */
-		low = base/2;
-
-		/*
-		 * Don't fill below 1Mb going downwards as there
-		 * is an ISA hole in the way.
-		 */
-		if (base <= 1024*1024)
-			low = 0;
-
-		/*
-		 * See how much space we could cover by filling below
-		 * the ISA hole
-		 */
-
-		if (floor == 0)
-			fspace = 512*1024;
-		else if (floor == 512*1024)
-			fspace = 128*1024;
-
-		/* And forget ROM space */
-
-		/*
-		 * Now install the largest coverage we get
-		 */
-		if (fspace > high && fspace > low) {
-			centaur_mcr_insert(ct, floor, fspace, key);
-			floor += fspace;
-		} else if (high > low) {
-			centaur_mcr_insert(ct, top, high, key);
-			top += high;
-		} else if (low > 0) {
-			base -= low;
-			centaur_mcr_insert(ct, base, low, key);
-		} else
-			break;
-		ct++;
-	}
-	/*
-	 * We loaded ct values. We now need to set the mask. The caller
-	 * must do this bit.
-	 */
-	return ct;
-}
-
-static void __cpuinit centaur_create_optimal_mcr(void)
-{
-	int used;
-	int i;
-
-	/*
-	 * Allocate up to 6 mcrs to mark as much of ram as possible
-	 * as write combining and weak write ordered.
-	 *
-	 * To experiment with: Linux never uses stack operations for
-	 * mmio spaces so we could globally enable stack operation wc
-	 *
-	 * Load the registers with type 31 - full write combining, all
-	 * writes weakly ordered.
-	 */
-	used = centaur_mcr_compute(6, 31);
-
-	/*
-	 * Wipe unused MCRs
-	 */
-	for (i = used; i < 8; i++)
-		wrmsr(MSR_IDT_MCR0+i, 0, 0);
-}
-
-static void __cpuinit winchip2_create_optimal_mcr(void)
-{
-	u32 lo, hi;
-	int used;
-	int i;
-
-	/*
-	 * Allocate up to 6 mcrs to mark as much of ram as possible
-	 * as write combining, weak store ordered.
-	 *
-	 * Load the registers with type 25
-	 *	8	-	weak write ordering
-	 *	16	-	weak read ordering
-	 *	1	-	write combining
-	 */
-	used = centaur_mcr_compute(6, 25);
-
-	/*
-	 * Mark the registers we are using.
-	 */
-	rdmsr(MSR_IDT_MCR_CTRL, lo, hi);
-	for (i = 0; i < used; i++)
-		lo |= 1<<(9+i);
-	wrmsr(MSR_IDT_MCR_CTRL, lo, hi);
-
-	/*
-	 * Wipe unused MCRs
-	 */
-
-	for (i = used; i < 8; i++)
-		wrmsr(MSR_IDT_MCR0+i, 0, 0);
-}
-
-/*
- * Handle the MCR key on the Winchip 2.
- */
-static void __cpuinit winchip2_unprotect_mcr(void)
-{
-	u32 lo, hi;
-	u32 key;
-
-	rdmsr(MSR_IDT_MCR_CTRL, lo, hi);
-	lo &= ~0x1C0;	/* blank bits 8-6 */
-	key = (lo>>17) & 7;
-	lo |= key<<6;	/* replace with unlock key */
-	wrmsr(MSR_IDT_MCR_CTRL, lo, hi);
-}
-
-static void __cpuinit winchip2_protect_mcr(void)
-{
-	u32 lo, hi;
-
-	rdmsr(MSR_IDT_MCR_CTRL, lo, hi);
-	lo &= ~0x1C0;	/* blank bits 8-6 */
-	wrmsr(MSR_IDT_MCR_CTRL, lo, hi);
-}
-#endif /* CONFIG_X86_OOSTORE */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACE_PRESENT	(1 << 6)
 #define ACE_ENABLED	(1 << 7)
 #define ACE_FCR		(1 << 28)	/* MSR_VIA_FCR */
@@ -261,11 +19,7 @@ static void __cpuinit winchip2_protect_mcr(void)
 #define RNG_ENABLED	(1 << 3)
 #define RNG_ENABLE	(1 << 6)	/* MSR_VIA_RNG */
 
-<<<<<<< HEAD
-static void __cpuinit init_c3(struct cpuinfo_x86 *c)
-=======
 static void init_c3(struct cpuinfo_x86 *c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32  lo, hi;
 
@@ -278,11 +32,7 @@ static void init_c3(struct cpuinfo_x86 *c)
 			rdmsr(MSR_VIA_FCR, lo, hi);
 			lo |= ACE_FCR;		/* enable ACE unit */
 			wrmsr(MSR_VIA_FCR, lo, hi);
-<<<<<<< HEAD
-			printk(KERN_INFO "CPU: Enabled ACE h/w crypto\n");
-=======
 			pr_info("CPU: Enabled ACE h/w crypto\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* enable RNG unit, if present and disabled */
@@ -290,21 +40,13 @@ static void init_c3(struct cpuinfo_x86 *c)
 			rdmsr(MSR_VIA_RNG, lo, hi);
 			lo |= RNG_ENABLE;	/* enable RNG unit */
 			wrmsr(MSR_VIA_RNG, lo, hi);
-<<<<<<< HEAD
-			printk(KERN_INFO "CPU: Enabled h/w RNG\n");
-=======
 			pr_info("CPU: Enabled h/w RNG\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* store Centaur Extended Feature Flags as
 		 * word 5 of the CPU capability bit array
 		 */
-<<<<<<< HEAD
-		c->x86_capability[5] = cpuid_edx(0xC0000001);
-=======
 		c->x86_capability[CPUID_C000_0001_EDX] = cpuid_edx(0xC0000001);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #ifdef CONFIG_X86_32
 	/* Cyrix III family needs CX8 & PGE explicitly enabled. */
@@ -324,12 +66,8 @@ static void init_c3(struct cpuinfo_x86 *c)
 		set_cpu_cap(c, X86_FEATURE_REP_GOOD);
 	}
 
-<<<<<<< HEAD
-	cpu_detect_cache_sizes(c);
-=======
 	if (c->x86 >= 7)
 		set_cpu_cap(c, X86_FEATURE_REP_GOOD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 enum {
@@ -353,28 +91,6 @@ enum {
 		EAMD3D		= 1<<20,
 };
 
-<<<<<<< HEAD
-static void __cpuinit early_init_centaur(struct cpuinfo_x86 *c)
-{
-	switch (c->x86) {
-#ifdef CONFIG_X86_32
-	case 5:
-		/* Emulate MTRRs using Centaur's MCR. */
-		set_cpu_cap(c, X86_FEATURE_CENTAUR_MCR);
-		break;
-#endif
-	case 6:
-		if (c->x86_model >= 0xf)
-			set_cpu_cap(c, X86_FEATURE_CONSTANT_TSC);
-		break;
-	}
-#ifdef CONFIG_X86_64
-	set_cpu_cap(c, X86_FEATURE_SYSENTER32);
-#endif
-}
-
-static void __cpuinit init_centaur(struct cpuinfo_x86 *c)
-=======
 static void early_init_centaur(struct cpuinfo_x86 *c)
 {
 #ifdef CONFIG_X86_32
@@ -396,7 +112,6 @@ static void early_init_centaur(struct cpuinfo_x86 *c)
 }
 
 static void init_centaur(struct cpuinfo_x86 *c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_X86_32
 	char *name;
@@ -412,11 +127,6 @@ static void init_centaur(struct cpuinfo_x86 *c)
 	clear_cpu_cap(c, 0*32+31);
 #endif
 	early_init_centaur(c);
-<<<<<<< HEAD
-	switch (c->x86) {
-#ifdef CONFIG_X86_32
-	case 5:
-=======
 	init_intel_cacheinfo(c);
 
 	if (c->cpuid_level > 9) {
@@ -433,39 +143,16 @@ static void init_centaur(struct cpuinfo_x86 *c)
 
 #ifdef CONFIG_X86_32
 	if (c->x86 == 5) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (c->x86_model) {
 		case 4:
 			name = "C6";
 			fcr_set = ECX8|DSMC|EDCTLB|EMMX|ERETSTK;
 			fcr_clr = DPDC;
-<<<<<<< HEAD
-			printk(KERN_NOTICE "Disabling bugged TSC.\n");
-			clear_cpu_cap(c, X86_FEATURE_TSC);
-#ifdef CONFIG_X86_OOSTORE
-			centaur_create_optimal_mcr();
-			/*
-			 * Enable:
-			 *	write combining on non-stack, non-string
-			 *	write combining on string, all types
-			 *	weak write ordering
-			 *
-			 * The C6 original lacks weak read order
-			 *
-			 * Note 0x120 is write only on Winchip 1
-			 */
-			wrmsr(MSR_IDT_MCR_CTRL, 0x01F0001F, 0);
-#endif
-			break;
-		case 8:
-			switch (c->x86_mask) {
-=======
 			pr_notice("Disabling bugged TSC.\n");
 			clear_cpu_cap(c, X86_FEATURE_TSC);
 			break;
 		case 8:
 			switch (c->x86_stepping) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			default:
 			name = "2";
 				break;
@@ -479,46 +166,12 @@ static void init_centaur(struct cpuinfo_x86 *c)
 			fcr_set = ECX8|DSMC|DTLOCK|EMMX|EBRPRED|ERETSTK|
 				  E2MMX|EAMD3D;
 			fcr_clr = DPDC;
-<<<<<<< HEAD
-#ifdef CONFIG_X86_OOSTORE
-			winchip2_unprotect_mcr();
-			winchip2_create_optimal_mcr();
-			rdmsr(MSR_IDT_MCR_CTRL, lo, hi);
-			/*
-			 * Enable:
-			 *	write combining on non-stack, non-string
-			 *	write combining on string, all types
-			 *	weak write ordering
-			 */
-			lo |= 31;
-			wrmsr(MSR_IDT_MCR_CTRL, lo, hi);
-			winchip2_protect_mcr();
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 9:
 			name = "3";
 			fcr_set = ECX8|DSMC|DTLOCK|EMMX|EBRPRED|ERETSTK|
 				  E2MMX|EAMD3D;
 			fcr_clr = DPDC;
-<<<<<<< HEAD
-#ifdef CONFIG_X86_OOSTORE
-			winchip2_unprotect_mcr();
-			winchip2_create_optimal_mcr();
-			rdmsr(MSR_IDT_MCR_CTRL, lo, hi);
-			/*
-			 * Enable:
-			 *	write combining on non-stack, non-string
-			 *	write combining on string, all types
-			 *	weak write ordering
-			 */
-			lo |= 31;
-			wrmsr(MSR_IDT_MCR_CTRL, lo, hi);
-			winchip2_protect_mcr();
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			name = "??";
@@ -528,19 +181,11 @@ static void init_centaur(struct cpuinfo_x86 *c)
 		newlo = (lo|fcr_set) & (~fcr_clr);
 
 		if (newlo != lo) {
-<<<<<<< HEAD
-			printk(KERN_INFO "Centaur FCR was 0x%X now 0x%X\n",
-				lo, newlo);
-			wrmsr(MSR_IDT_FCR1, newlo, hi);
-		} else {
-			printk(KERN_INFO "Centaur FCR is 0x%X\n", lo);
-=======
 			pr_info("Centaur FCR was 0x%X now 0x%X\n",
 				lo, newlo);
 			wrmsr(MSR_IDT_FCR1, newlo, hi);
 		} else {
 			pr_info("Centaur FCR is 0x%X\n", lo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* Emulate MTRRs using Centaur's MCR. */
 		set_cpu_cap(c, X86_FEATURE_CENTAUR_MCR);
@@ -557,23 +202,6 @@ static void init_centaur(struct cpuinfo_x86 *c)
 			c->x86_cache_size = (cc>>24)+(dd>>24);
 		}
 		sprintf(c->x86_model_id, "WinChip %s", name);
-<<<<<<< HEAD
-		break;
-#endif
-	case 6:
-		init_c3(c);
-		break;
-	}
-#ifdef CONFIG_X86_64
-	set_cpu_cap(c, X86_FEATURE_LFENCE_RDTSC);
-#endif
-}
-
-static unsigned int __cpuinit
-centaur_size_cache(struct cpuinfo_x86 *c, unsigned int size)
-{
-#ifdef CONFIG_X86_32
-=======
 	}
 #endif
 	if (c->x86 == 6 || c->x86 >= 7)
@@ -589,7 +217,6 @@ centaur_size_cache(struct cpuinfo_x86 *c, unsigned int size)
 static unsigned int
 centaur_size_cache(struct cpuinfo_x86 *c, unsigned int size)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* VIA C3 CPUs (670-68F) need further shifting. */
 	if ((c->x86 == 6) && ((c->x86_model == 7) || (c->x86_model == 8)))
 		size >>= 8;
@@ -600,15 +227,6 @@ centaur_size_cache(struct cpuinfo_x86 *c, unsigned int size)
 	 *  - Note, it seems this may only be in engineering samples.
 	 */
 	if ((c->x86 == 6) && (c->x86_model == 9) &&
-<<<<<<< HEAD
-				(c->x86_mask == 1) && (size == 65))
-		size -= 1;
-#endif
-	return size;
-}
-
-static const struct cpu_dev __cpuinitconst centaur_cpu_dev = {
-=======
 				(c->x86_stepping == 1) && (size == 65))
 		size -= 1;
 	return size;
@@ -616,18 +234,13 @@ static const struct cpu_dev __cpuinitconst centaur_cpu_dev = {
 #endif
 
 static const struct cpu_dev centaur_cpu_dev = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.c_vendor	= "Centaur",
 	.c_ident	= { "CentaurHauls" },
 	.c_early_init	= early_init_centaur,
 	.c_init		= init_centaur,
-<<<<<<< HEAD
-	.c_size_cache	= centaur_size_cache,
-=======
 #ifdef CONFIG_X86_32
 	.legacy_cache_size = centaur_size_cache,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.c_x86_vendor	= X86_VENDOR_CENTAUR,
 };
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	ALSA driver for ICEnsemble VT1724 (Envy24HT)
  *
@@ -10,55 +7,27 @@
  *		Copyright (c) 2006 Guedez Clement <klem.dev@gmail.com>
  *		Some functions are taken from the Prodigy192 driver
  *		source
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
 
-<<<<<<< HEAD
-#include <linux/io.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
 #include <sound/core.h>
-<<<<<<< HEAD
-=======
 #include <sound/tlv.h>
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ice1712.h"
 #include "envy24ht.h"
 #include "wtm.h"
 #include "stac946x.h"
 
-<<<<<<< HEAD
-=======
 struct wtm_spec {
 	/* rate change needs atomic mute/unmute of all dacs*/
 	struct mutex mute_mutex;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	2*ADC 6*DAC no1 ringbuffer r/w on i2c bus
@@ -92,8 +61,6 @@ static inline unsigned char stac9460_2_get(struct snd_ice1712 *ice, int reg)
 /*
  *	DAC mute control
  */
-<<<<<<< HEAD
-=======
 static void stac9460_dac_mute_all(struct snd_ice1712 *ice, unsigned char mute,
 				unsigned short int *change_mask)
 {
@@ -141,25 +108,18 @@ static void stac9460_dac_mute_all(struct snd_ice1712 *ice, unsigned char mute,
 
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define stac9460_dac_mute_info		snd_ctl_boolean_mono_info
 
 static int stac9460_dac_mute_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_ice1712 *ice = snd_kcontrol_chip(kcontrol);
-<<<<<<< HEAD
-	unsigned char val;
-	int idx, id;
-
-=======
 	struct wtm_spec *spec = ice->spec;
 	unsigned char val;
 	int idx, id;
 
 	mutex_lock(&spec->mute_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (kcontrol->private_value) {
 		idx = STAC946X_MASTER_VOLUME;
 		id = 0;
@@ -172,11 +132,8 @@ static int stac9460_dac_mute_get(struct snd_kcontrol *kcontrol,
 	else
 		val = stac9460_2_get(ice, idx - 6);
 	ucontrol->value.integer.value[0] = (~val >> 7) & 0x1;
-<<<<<<< HEAD
-=======
 
 	mutex_unlock(&spec->mute_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -426,10 +383,6 @@ static int stac9460_adc_vol_put(struct snd_kcontrol *kcontrol,
 /*
  * MIC / LINE switch fonction
  */
-<<<<<<< HEAD
-
-#define stac9460_mic_sw_info		snd_ctl_boolean_mono_info
-=======
 static int stac9460_mic_sw_info(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_info *uinfo)
 {
@@ -438,7 +391,6 @@ static int stac9460_mic_sw_info(struct snd_kcontrol *kcontrol,
 	return snd_ctl_enum_info(uinfo, 1, 2, texts);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int stac9460_mic_sw_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
@@ -452,11 +404,7 @@ static int stac9460_mic_sw_get(struct snd_kcontrol *kcontrol,
 		val = stac9460_get(ice, STAC946X_GENERAL_PURPOSE);
 	else
 		val = stac9460_2_get(ice, STAC946X_GENERAL_PURPOSE);
-<<<<<<< HEAD
-	ucontrol->value.integer.value[0] = ~val>>7 & 0x1;
-=======
 	ucontrol->value.enumerated.item[0] = (val >> 7) & 0x1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -472,11 +420,7 @@ static int stac9460_mic_sw_put(struct snd_kcontrol *kcontrol,
 		old = stac9460_get(ice, STAC946X_GENERAL_PURPOSE);
 	else
 		old = stac9460_2_get(ice, STAC946X_GENERAL_PURPOSE);
-<<<<<<< HEAD
-	new = (~ucontrol->value.integer.value[0] << 7 & 0x80) | (old & ~0x80);
-=======
 	new = (ucontrol->value.enumerated.item[0] << 7 & 0x80) | (old & ~0x80);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	change = (new != old);
 	if (change) {
 		if (id == 0)
@@ -487,14 +431,6 @@ static int stac9460_mic_sw_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-<<<<<<< HEAD
-/*
- * Control tabs
- */
-static struct snd_kcontrol_new stac9640_controls[] __devinitdata = {
-	{
-		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
-=======
 
 /*
  * Handler for setting correct codec rate - called when rate change is detected
@@ -546,17 +482,12 @@ static const struct snd_kcontrol_new stac9640_controls[] = {
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.access = (SNDRV_CTL_ELEM_ACCESS_READWRITE |
 			    SNDRV_CTL_ELEM_ACCESS_TLV_READ),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name = "Master Playback Switch",
 		.info = stac9460_dac_mute_info,
 		.get = stac9460_dac_mute_get,
 		.put = stac9460_dac_mute_put,
-<<<<<<< HEAD
-		.private_value = 1
-=======
 		.private_value = 1,
 		.tlv = { .p = db_scale_dac }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
@@ -568,11 +499,7 @@ static const struct snd_kcontrol_new stac9640_controls[] = {
 	},
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
-<<<<<<< HEAD
-		.name = "MIC/Line switch",
-=======
 		.name = "MIC/Line Input Enum",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.count = 2,
 		.info = stac9460_mic_sw_info,
 		.get = stac9460_mic_sw_get,
@@ -589,21 +516,15 @@ static const struct snd_kcontrol_new stac9640_controls[] = {
 	},
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
-<<<<<<< HEAD
-=======
 		.access = (SNDRV_CTL_ELEM_ACCESS_READWRITE |
 			    SNDRV_CTL_ELEM_ACCESS_TLV_READ),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name = "DAC Volume",
 		.count = 8,
 		.info = stac9460_dac_vol_info,
 		.get = stac9460_dac_vol_get,
 		.put = stac9460_dac_vol_put,
-<<<<<<< HEAD
-=======
 		.tlv = { .p = db_scale_dac }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
@@ -615,33 +536,22 @@ static const struct snd_kcontrol_new stac9640_controls[] = {
 	},
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
-<<<<<<< HEAD
-=======
 		.access = (SNDRV_CTL_ELEM_ACCESS_READWRITE |
 			    SNDRV_CTL_ELEM_ACCESS_TLV_READ),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name = "ADC Volume",
 		.count = 2,
 		.info = stac9460_adc_vol_info,
 		.get = stac9460_adc_vol_get,
 		.put = stac9460_adc_vol_put,
-<<<<<<< HEAD
-
-=======
 		.tlv = { .p = db_scale_adc }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
 
 
 /*INIT*/
-<<<<<<< HEAD
-static int __devinit wtm_add_controls(struct snd_ice1712 *ice)
-=======
 static int wtm_add_controls(struct snd_ice1712 *ice)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 	int err;
@@ -655,15 +565,6 @@ static int wtm_add_controls(struct snd_ice1712 *ice)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit wtm_init(struct snd_ice1712 *ice)
-{
-	static unsigned short stac_inits_prodigy[] = {
-		STAC946X_RESET, 0,
-		(unsigned short)-1
-	};
-	unsigned short *p;
-=======
 static int wtm_init(struct snd_ice1712 *ice)
 {
 	static const unsigned short stac_inits_wtm[] = {
@@ -673,17 +574,12 @@ static int wtm_init(struct snd_ice1712 *ice)
 	};
 	const unsigned short *p;
 	struct wtm_spec *spec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*WTM 192M*/
 	ice->num_total_dacs = 8;
 	ice->num_total_adcs = 4;
 	ice->force_rdma1 = 1;
 
-<<<<<<< HEAD
-	/*initialize codec*/
-	p = stac_inits_prodigy;
-=======
 	/*init mutex for dac mute conflict*/
 	spec = kzalloc(sizeof(*spec), GFP_KERNEL);
 	if (!spec)
@@ -694,35 +590,15 @@ static int wtm_init(struct snd_ice1712 *ice)
 
 	/*initialize codec*/
 	p = stac_inits_wtm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (; *p != (unsigned short)-1; p += 2) {
 		stac9460_put(ice, p[0], p[1]);
 		stac9460_2_put(ice, p[0], p[1]);
 	}
-<<<<<<< HEAD
-=======
 	ice->gpio.set_pro_rate = stac9460_set_rate_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
-<<<<<<< HEAD
-static unsigned char wtm_eeprom[] __devinitdata = {
-	0x47,	/*SYSCONF: clock 192KHz, 4ADC, 8DAC */
-	0x80,	/* ACLINK : I2S */
-	0xf8,	/* I2S: vol; 96k, 24bit, 192k */
-	0xc1	/*SPDIF: out-en, spidf ext out*/,
-	0x9f,	/* GPIO_DIR */
-	0xff,	/* GPIO_DIR1 */
-	0x7f,	/* GPIO_DIR2 */
-	0x9f,	/* GPIO_MASK */
-	0xff,	/* GPIO_MASK1 */
-	0x7f,	/* GPIO_MASK2 */
-	0x16,	/* GPIO_STATE */
-	0x80,	/* GPIO_STATE1 */
-	0x00,	/* GPIO_STATE2 */
-=======
 static const unsigned char wtm_eeprom[] = {
 	[ICE_EEP2_SYSCONF]      = 0x67, /*SYSCONF: clock 192KHz, mpu401,
 							4ADC, 8DAC */
@@ -738,16 +614,11 @@ static const unsigned char wtm_eeprom[] = {
 	[ICE_EEP2_GPIO_STATE]   = 0x16,
 	[ICE_EEP2_GPIO_STATE1]  = 0x80,
 	[ICE_EEP2_GPIO_STATE2]  = 0x00,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
 /*entry point*/
-<<<<<<< HEAD
-struct snd_ice1712_card_info snd_vt1724_wtm_cards[] __devinitdata = {
-=======
 struct snd_ice1712_card_info snd_vt1724_wtm_cards[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.subvendor = VT1724_SUBDEVICE_WTM,
 		.name = "ESI Waveterminal 192M",

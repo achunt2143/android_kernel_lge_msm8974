@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #include <linux/linkage.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/reg.h>
 #include <asm/ppc_asm.h>
 #include <asm/processor.h>
@@ -61,11 +58,7 @@ lite5200_low_power:
 	/*
 	 * save stuff BDI overwrites
 	 * 0xf0 (0xe0->0x100 gets overwritten when BDI connected;
-<<<<<<< HEAD
-	 *   even when CONFIG_BDI* is disabled and MMU XLAT commented; heisenbug?))
-=======
 	 *   even when CONFIG_BDI_SWITCH is disabled and MMU XLAT commented; heisenbug?))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * WARNING: self-refresh doesn't seem to work when BDI2000 is connected,
 	 *   possibly because BDI sets SDRAM registers before wakeup code does
 	 */
@@ -187,27 +180,17 @@ sram_code:
 
 
 	/* local udelay in sram is needed */
-<<<<<<< HEAD
-  udelay: /* r11 - tb_ticks_per_usec, r12 - usecs, overwrites r13 */
-	mullw	r12, r12, r11
-	mftb	r13	/* start */
-	addi	r12, r13, r12 /* end */
-=======
 SYM_FUNC_START_LOCAL(udelay)
 	/* r11 - tb_ticks_per_usec, r12 - usecs, overwrites r13 */
 	mullw	r12, r12, r11
 	mftb	r13	/* start */
 	add	r12, r13, r12 /* end */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     1:
 	mftb	r13	/* current */
 	cmp	cr0, r13, r12
 	blt	1b
 	blr
-<<<<<<< HEAD
-=======
 SYM_FUNC_END(udelay)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 sram_code_end:
 
@@ -269,10 +252,7 @@ mmu_on:
 
 
 	blr
-<<<<<<< HEAD
-=======
 _ASM_NOKPROBE_SYMBOL(lite5200_wakeup)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* ---------------------------------------------------------------------- */
@@ -295,11 +275,7 @@ _ASM_NOKPROBE_SYMBOL(lite5200_wakeup)
 	SAVE_SR(n+2, addr+2);	\
 	SAVE_SR(n+3, addr+3);
 
-<<<<<<< HEAD
-save_regs:
-=======
 SYM_FUNC_START_LOCAL(save_regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stw	r0, 0(r4)
 	stw	r1, 0x4(r4)
 	stw	r2, 0x8(r4)
@@ -345,10 +321,7 @@ SYM_FUNC_START_LOCAL(save_regs)
 	SAVE_SPRN(TBRU,  0x5b)
 
 	blr
-<<<<<<< HEAD
-=======
 SYM_FUNC_END(save_regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* restore registers */
@@ -368,11 +341,7 @@ SYM_FUNC_END(save_regs)
 	LOAD_SR(n+2, addr+2);	\
 	LOAD_SR(n+3, addr+3);
 
-<<<<<<< HEAD
-restore_regs:
-=======
 SYM_FUNC_START_LOCAL(restore_regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lis	r4, registers@h
 	ori	r4, r4, registers@l
 
@@ -428,11 +397,8 @@ SYM_FUNC_START_LOCAL(restore_regs)
 	LOAD_SPRN(TBWU,  0x5b);
 
 	blr
-<<<<<<< HEAD
-=======
 _ASM_NOKPROBE_SYMBOL(restore_regs)
 SYM_FUNC_END(restore_regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
@@ -443,11 +409,7 @@ SYM_FUNC_END(restore_regs)
  * Flush data cache
  * Do this by just reading lots of stuff into the cache.
  */
-<<<<<<< HEAD
-flush_data_cache:
-=======
 SYM_FUNC_START_LOCAL(flush_data_cache)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lis	r3,CONFIG_KERNEL_START@h
 	ori	r3,r3,CONFIG_KERNEL_START@l
 	li	r4,NUM_CACHE_LINES
@@ -457,7 +419,4 @@ SYM_FUNC_START_LOCAL(flush_data_cache)
 	addi	r3,r3,L1_CACHE_BYTES	/* Next line, please */
 	bdnz	1b
 	blr
-<<<<<<< HEAD
-=======
 SYM_FUNC_END(flush_data_cache)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

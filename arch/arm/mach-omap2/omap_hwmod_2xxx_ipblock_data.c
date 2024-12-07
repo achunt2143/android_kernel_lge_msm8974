@@ -1,40 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * omap_hwmod_2xxx_ipblock_data.c - common IP block data for OMAP2xxx
  *
  * Copyright (C) 2011 Nokia Corporation
  * Paul Walmsley
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#include <plat/omap_hwmod.h>
-#include <plat/serial.h>
-#include <plat/dma.h>
-#include <plat/dmtimer.h>
-#include <plat/mcspi.h>
-
-#include <mach/irqs.h>
-
-#include "omap_hwmod_common_data.h"
-#include "wd_timer.h"
-
-struct omap_hwmod_irq_info omap2xxx_timer12_mpu_irqs[] = {
-	{ .irq = 48, },
-	{ .irq = -1 }
-};
-
-struct omap_hwmod_dma_info omap2xxx_dss_sdma_chs[] = {
-	{ .name = "dispc", .dma_req = 5 },
-	{ .dma_req = -1 }
-};
-
-=======
  */
 
 #include <linux/types.h>
@@ -45,7 +14,6 @@ struct omap_hwmod_dma_info omap2xxx_dss_sdma_chs[] = {
 #include "prm-regbits-24xx.h"
 #include "wd_timer.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 'dispc' class
  * display controller
@@ -62,11 +30,7 @@ static struct omap_hwmod_class_sysconfig omap2_dispc_sysc = {
 	.sysc_fields	= &omap_hwmod_sysc_type1,
 };
 
-<<<<<<< HEAD
-struct omap_hwmod_class omap2_dispc_hwmod_class = {
-=======
 static struct omap_hwmod_class omap2_dispc_hwmod_class = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name	= "dispc",
 	.sysc	= &omap2_dispc_sysc,
 };
@@ -78,25 +42,14 @@ static struct omap_hwmod_class_sysconfig omap2xxx_timer_sysc = {
 	.syss_offs	= 0x0014,
 	.sysc_flags	= (SYSC_HAS_SIDLEMODE | SYSC_HAS_CLOCKACTIVITY |
 			   SYSC_HAS_ENAWAKEUP | SYSC_HAS_SOFTRESET |
-<<<<<<< HEAD
-			   SYSC_HAS_AUTOIDLE),
-=======
 			   SYSC_HAS_AUTOIDLE | SYSS_HAS_RESET_STATUS),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.idlemodes	= (SIDLE_FORCE | SIDLE_NO | SIDLE_SMART),
 	.sysc_fields	= &omap_hwmod_sysc_type1,
 };
 
-<<<<<<< HEAD
-struct omap_hwmod_class omap2xxx_timer_hwmod_class = {
-	.name	= "timer",
-	.sysc	= &omap2xxx_timer_sysc,
-	.rev	= OMAP_TIMER_IP_VERSION_1,
-=======
 static struct omap_hwmod_class omap2xxx_timer_hwmod_class = {
 	.name	= "timer",
 	.sysc	= &omap2xxx_timer_sysc,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -114,18 +67,11 @@ static struct omap_hwmod_class_sysconfig omap2xxx_wd_timer_sysc = {
 	.sysc_fields	= &omap_hwmod_sysc_type1,
 };
 
-<<<<<<< HEAD
-struct omap_hwmod_class omap2xxx_wd_timer_hwmod_class = {
-	.name		= "wd_timer",
-	.sysc		= &omap2xxx_wd_timer_sysc,
-	.pre_shutdown	= &omap2_wd_timer_disable
-=======
 static struct omap_hwmod_class omap2xxx_wd_timer_hwmod_class = {
 	.name		= "wd_timer",
 	.sysc		= &omap2xxx_wd_timer_sysc,
 	.pre_shutdown	= &omap2_wd_timer_disable,
 	.reset		= &omap2_wd_timer_reset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -146,27 +92,6 @@ static struct omap_hwmod_class_sysconfig omap2xxx_gpio_sysc = {
 struct omap_hwmod_class omap2xxx_gpio_hwmod_class = {
 	.name = "gpio",
 	.sysc = &omap2xxx_gpio_sysc,
-<<<<<<< HEAD
-	.rev = 0,
-};
-
-/* system dma */
-static struct omap_hwmod_class_sysconfig omap2xxx_dma_sysc = {
-	.rev_offs	= 0x0000,
-	.sysc_offs	= 0x002c,
-	.syss_offs	= 0x0028,
-	.sysc_flags	= (SYSC_HAS_SOFTRESET | SYSC_HAS_MIDLEMODE |
-			   SYSC_HAS_CLOCKACTIVITY | SYSC_HAS_EMUFREE |
-			   SYSC_HAS_AUTOIDLE | SYSS_HAS_RESET_STATUS),
-	.idlemodes	= (MSTANDBY_FORCE | MSTANDBY_NO | MSTANDBY_SMART),
-	.sysc_fields	= &omap_hwmod_sysc_type1,
-};
-
-struct omap_hwmod_class omap2xxx_dma_hwmod_class = {
-	.name	= "dma",
-	.sysc	= &omap2xxx_dma_sysc,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -210,9 +135,6 @@ static struct omap_hwmod_class_sysconfig omap2xxx_mcspi_sysc = {
 struct omap_hwmod_class omap2xxx_mcspi_class = {
 	.name	= "mcspi",
 	.sysc	= &omap2xxx_mcspi_sysc,
-<<<<<<< HEAD
-	.rev	= OMAP2_MCSPI_REV,
-=======
 };
 
 /*
@@ -743,5 +665,4 @@ struct omap_hwmod omap2xxx_aes_hwmod = {
 		},
 	},
 	.class		= &omap2xxx_aes_class,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * delay.h: Linux delay routines on the Sparc.
  *
@@ -24,13 +21,8 @@ static inline void __delay(unsigned long loops)
 }
 
 /* This is too messy with inline asm on the Sparc. */
-<<<<<<< HEAD
-extern void __udelay(unsigned long usecs, unsigned long lpj);
-extern void __ndelay(unsigned long nsecs, unsigned long lpj);
-=======
 void __udelay(unsigned long usecs, unsigned long lpj);
 void __ndelay(unsigned long nsecs, unsigned long lpj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 #define __udelay_val	cpu_data(smp_processor_id()).udelay_val

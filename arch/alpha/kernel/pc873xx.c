@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ioport.h>
 #include <asm/io.h>
 
@@ -16,20 +13,12 @@ static char *pc873xx_names[] = {
 static unsigned int base, model;
 
 
-<<<<<<< HEAD
-unsigned int __init pc873xx_get_base()
-=======
 unsigned int __init pc873xx_get_base(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return base;
 }
 
-<<<<<<< HEAD
-char *__init pc873xx_get_model()
-=======
 char *__init pc873xx_get_model(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return pc873xx_names[model];
 }

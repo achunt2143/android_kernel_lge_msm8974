@@ -1,42 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *  Generic Bluetooth USB driver
  *
  *  Copyright (C) 2005-2008  Marcel Holtmann <marcel@holtmann.org>
-<<<<<<< HEAD
- *
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- */
-
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/slab.h>
-#include <linux/types.h>
-#include <linux/sched.h>
-#include <linux/errno.h>
-#include <linux/skbuff.h>
-
-#include <linux/usb.h>
-=======
  */
 
 #include <linux/dmi.h>
@@ -51,40 +18,10 @@
 #include <linux/gpio/consumer.h>
 #include <linux/debugfs.h>
 #include <asm/unaligned.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 
-<<<<<<< HEAD
-#define VERSION "0.6"
-
-static int ignore_dga;
-static int ignore_csr;
-static int ignore_sniffer;
-static int disable_scofix;
-static int force_scofix;
-
-static int reset = 1;
-
-static struct usb_driver btusb_driver;
-
-#define BTUSB_IGNORE		0x01
-#define BTUSB_DIGIANSWER	0x02
-#define BTUSB_CSR		0x04
-#define BTUSB_SNIFFER		0x08
-#define BTUSB_BCM92035		0x10
-#define BTUSB_BROKEN_ISOC	0x20
-#define BTUSB_WRONG_SCO_MTU	0x40
-#define BTUSB_ATH3012		0x80
-
-static struct usb_device_id btusb_table[] = {
-	/* Generic Bluetooth USB device */
-	{ USB_DEVICE_INFO(0xe0, 0x01, 0x01) },
-
-	/* Broadcom SoftSailing reporting vendor specific */
-	{ USB_DEVICE(0x05ac, 0x21e1) },
-=======
 #include "btintel.h"
 #include "btbcm.h"
 #include "btrtl.h"
@@ -148,7 +85,6 @@ static const struct usb_device_id btusb_table[] = {
 
 	/* Broadcom SoftSailing reporting vendor specific */
 	{ USB_DEVICE(0x0a5c, 0x21e1) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Apple MacBookPro 7,1 */
 	{ USB_DEVICE(0x05ac, 0x8213) },
@@ -172,11 +108,7 @@ static const struct usb_device_id btusb_table[] = {
 	{ USB_DEVICE(0x05ac, 0x8281) },
 
 	/* AVM BlueFRITZ! USB v2.0 */
-<<<<<<< HEAD
-	{ USB_DEVICE(0x057c, 0x3800) },
-=======
 	{ USB_DEVICE(0x057c, 0x3800), .driver_info = BTUSB_SWAVE },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Bluetooth Ultraport Module from IBM */
 	{ USB_DEVICE(0x04bf, 0x030a) },
@@ -191,8 +123,6 @@ static const struct usb_device_id btusb_table[] = {
 	/* Canyon CN-BTU1 with HID interfaces */
 	{ USB_DEVICE(0x0c10, 0x0000) },
 
-<<<<<<< HEAD
-=======
 	/* Broadcom BCM20702B0 (Dynex/Insignia) */
 	{ USB_DEVICE(0x19ff, 0x0239), .driver_info = BTUSB_BCM_PATCHRAM },
 
@@ -240,27 +170,18 @@ static const struct usb_device_id btusb_table[] = {
 	{ USB_DEVICE(0x8087, 0x0a5a),
 	  .driver_info = BTUSB_INTEL_BOOT | BTUSB_BROKEN_ISOC },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }	/* Terminating entry */
 };
 
 MODULE_DEVICE_TABLE(usb, btusb_table);
 
-<<<<<<< HEAD
-static struct usb_device_id blacklist_table[] = {
-=======
 static const struct usb_device_id quirks_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* CSR BlueCore devices */
 	{ USB_DEVICE(0x0a12, 0x0001), .driver_info = BTUSB_CSR },
 
 	/* Broadcom BCM2033 without firmware */
 	{ USB_DEVICE(0x0a5c, 0x2033), .driver_info = BTUSB_IGNORE },
 
-<<<<<<< HEAD
-	/* Atheros 3011 with sflash firmware */
-	{ USB_DEVICE(0x0cf3, 0x3002), .driver_info = BTUSB_IGNORE },
-=======
 	/* Broadcom BCM2045 devices */
 	{ USB_DEVICE(0x0a5c, 0x2045), .driver_info = BTUSB_BCM2045 },
 
@@ -272,7 +193,6 @@ static const struct usb_device_id quirks_table[] = {
 	{ USB_DEVICE(0x0cf3, 0x3002), .driver_info = BTUSB_IGNORE },
 	{ USB_DEVICE(0x0cf3, 0xe019), .driver_info = BTUSB_IGNORE },
 	{ USB_DEVICE(0x13d3, 0x3304), .driver_info = BTUSB_IGNORE },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Atheros AR9285 Malbec with sflash firmware */
 	{ USB_DEVICE(0x03f0, 0x311d), .driver_info = BTUSB_IGNORE },
@@ -282,21 +202,14 @@ static const struct usb_device_id quirks_table[] = {
 	{ USB_DEVICE(0x0489, 0xe04e), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0489, 0xe056), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0489, 0xe057), .driver_info = BTUSB_ATH3012 },
-<<<<<<< HEAD
-=======
 	{ USB_DEVICE(0x0489, 0xe05f), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0489, 0xe076), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0489, 0xe078), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0489, 0xe095), .driver_info = BTUSB_ATH3012 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE(0x04c5, 0x1330), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x04ca, 0x3004), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x04ca, 0x3005), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x04ca, 0x3006), .driver_info = BTUSB_ATH3012 },
-<<<<<<< HEAD
-	{ USB_DEVICE(0x04ca, 0x3008), .driver_info = BTUSB_ATH3012 },
-	{ USB_DEVICE(0x0930, 0x0219), .driver_info = BTUSB_ATH3012 },
-=======
 	{ USB_DEVICE(0x04ca, 0x3007), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x04ca, 0x3008), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x04ca, 0x300b), .driver_info = BTUSB_ATH3012 },
@@ -308,23 +221,12 @@ static const struct usb_device_id quirks_table[] = {
 	{ USB_DEVICE(0x0930, 0x0219), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0930, 0x021c), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0930, 0x0220), .driver_info = BTUSB_ATH3012 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE(0x0930, 0x0227), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0b05, 0x17d0), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0x0036), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0x3004), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0x3008), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0x311d), .driver_info = BTUSB_ATH3012 },
-<<<<<<< HEAD
-	{ USB_DEVICE(0x0cf3, 0x3121), .driver_info = BTUSB_ATH3012 },
-	{ USB_DEVICE(0x0cf3, 0x817a), .driver_info = BTUSB_ATH3012 },
-	{ USB_DEVICE(0x0cf3, 0xe003), .driver_info = BTUSB_ATH3012 },
-	{ USB_DEVICE(0x0cf3, 0xe004), .driver_info = BTUSB_ATH3012 },
-	{ USB_DEVICE(0x0cf3, 0xe005), .driver_info = BTUSB_ATH3012 },
-	{ USB_DEVICE(0x13d3, 0x3362), .driver_info = BTUSB_ATH3012 },
-	{ USB_DEVICE(0x13d3, 0x3375), .driver_info = BTUSB_ATH3012 },
-	{ USB_DEVICE(0x13d3, 0x3393), .driver_info = BTUSB_ATH3012 },
-=======
 	{ USB_DEVICE(0x0cf3, 0x311e), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0x311f), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0x3121), .driver_info = BTUSB_ATH3012 },
@@ -338,29 +240,18 @@ static const struct usb_device_id quirks_table[] = {
 	{ USB_DEVICE(0x13d3, 0x3375), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x13d3, 0x3393), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x13d3, 0x3395), .driver_info = BTUSB_ATH3012 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE(0x13d3, 0x3402), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x13d3, 0x3408), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x13d3, 0x3423), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x13d3, 0x3432), .driver_info = BTUSB_ATH3012 },
-<<<<<<< HEAD
-	{ USB_DEVICE(0x13d3, 0x3474), .driver_info = BTUSB_ATH3012 },
-=======
 	{ USB_DEVICE(0x13d3, 0x3472), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x13d3, 0x3474), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x13d3, 0x3487), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x13d3, 0x3490), .driver_info = BTUSB_ATH3012 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Atheros AR5BBU12 with sflash firmware */
 	{ USB_DEVICE(0x0489, 0xe02c), .driver_info = BTUSB_IGNORE },
 
-<<<<<<< HEAD
-	/* Broadcom BCM2035 */
-	{ USB_DEVICE(0x0a5c, 0x2035), .driver_info = BTUSB_WRONG_SCO_MTU },
-	{ USB_DEVICE(0x0a5c, 0x200a), .driver_info = BTUSB_WRONG_SCO_MTU },
-	{ USB_DEVICE(0x0a5c, 0x2009), .driver_info = BTUSB_BCM92035 },
-=======
 	/* Atheros AR5BBU12 with sflash firmware */
 	{ USB_DEVICE(0x0489, 0xe036), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0489, 0xe03c), .driver_info = BTUSB_ATH3012 },
@@ -521,7 +412,6 @@ static const struct usb_device_id quirks_table[] = {
 	{ USB_DEVICE(0x0a5c, 0x2009), .driver_info = BTUSB_BCM92035 },
 	{ USB_DEVICE(0x0a5c, 0x200a), .driver_info = BTUSB_WRONG_SCO_MTU },
 	{ USB_DEVICE(0x0a5c, 0x2035), .driver_info = BTUSB_WRONG_SCO_MTU },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Broadcom BCM2045 */
 	{ USB_DEVICE(0x0a5c, 0x2039), .driver_info = BTUSB_WRONG_SCO_MTU },
@@ -556,27 +446,17 @@ static const struct usb_device_id quirks_table[] = {
 	{ USB_DEVICE(0x0400, 0x080a), .driver_info = BTUSB_BROKEN_ISOC },
 
 	/* CONWISE Technology based adapters with buggy SCO support */
-<<<<<<< HEAD
-	{ USB_DEVICE(0x0e5e, 0x6622), .driver_info = BTUSB_BROKEN_ISOC },
-=======
 	{ USB_DEVICE(0x0e5e, 0x6622),
 	  .driver_info = BTUSB_BROKEN_ISOC | BTUSB_CW6622},
 
 	/* Roper Class 1 Bluetooth Dongle (Silicon Wave based) */
 	{ USB_DEVICE(0x1310, 0x0001), .driver_info = BTUSB_SWAVE },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Digianswer devices */
 	{ USB_DEVICE(0x08fd, 0x0001), .driver_info = BTUSB_DIGIANSWER },
 	{ USB_DEVICE(0x08fd, 0x0002), .driver_info = BTUSB_IGNORE },
 
 	/* CSR BlueCore Bluetooth Sniffer */
-<<<<<<< HEAD
-	{ USB_DEVICE(0x0a12, 0x0002), .driver_info = BTUSB_SNIFFER },
-
-	/* Frontline ComProbe Bluetooth Sniffer */
-	{ USB_DEVICE(0x16d3, 0x0002), .driver_info = BTUSB_SNIFFER },
-=======
 	{ USB_DEVICE(0x0a12, 0x0002),
 	  .driver_info = BTUSB_SNIFFER | BTUSB_BROKEN_ISOC },
 
@@ -861,13 +741,10 @@ static const struct usb_device_id quirks_table[] = {
 
 	/* Silicon Wave based devices */
 	{ USB_DEVICE(0x0c10, 0x0000), .driver_info = BTUSB_SWAVE },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ }	/* Terminating entry */
 };
 
-<<<<<<< HEAD
-=======
 /* The Bluetooth USB module build into some devices needs to be reset on resume,
  * this is a problem with the platform (likely shutting off all power) not with
  * the module itself. So we use a DMI list to match known broken platforms.
@@ -907,7 +784,6 @@ struct qca_dump_info {
 	u16 ram_dump_seqno;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BTUSB_MAX_ISOC_FRAMES	10
 
 #define BTUSB_INTR_RUNNING	0
@@ -915,8 +791,6 @@ struct qca_dump_info {
 #define BTUSB_ISOC_RUNNING	2
 #define BTUSB_SUSPENDING	3
 #define BTUSB_DID_ISO_RESUME	4
-<<<<<<< HEAD
-=======
 #define BTUSB_BOOTLOADER	5
 #define BTUSB_DOWNLOADING	6
 #define BTUSB_FIRMWARE_LOADED	7
@@ -930,30 +804,12 @@ struct qca_dump_info {
 #define BTUSB_USE_ALT3_FOR_WBS	15
 #define BTUSB_ALT6_CONTINUOUS_TX	16
 #define BTUSB_HW_SSR_ACTIVE	17
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct btusb_data {
 	struct hci_dev       *hdev;
 	struct usb_device    *udev;
 	struct usb_interface *intf;
 	struct usb_interface *isoc;
-<<<<<<< HEAD
-
-	spinlock_t lock;
-
-	unsigned long flags;
-
-	struct work_struct work;
-	struct work_struct waker;
-
-	struct usb_anchor tx_anchor;
-	struct usb_anchor intr_anchor;
-	struct usb_anchor bulk_anchor;
-	struct usb_anchor isoc_anchor;
-	struct usb_anchor deferred;
-	int tx_in_flight;
-	spinlock_t txlock;
-=======
 	struct usb_interface *diag;
 	unsigned isoc_ifnum;
 
@@ -982,35 +838,12 @@ struct btusb_data {
 	struct sk_buff *evt_skb;
 	struct sk_buff *acl_skb;
 	struct sk_buff *sco_skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct usb_endpoint_descriptor *intr_ep;
 	struct usb_endpoint_descriptor *bulk_tx_ep;
 	struct usb_endpoint_descriptor *bulk_rx_ep;
 	struct usb_endpoint_descriptor *isoc_tx_ep;
 	struct usb_endpoint_descriptor *isoc_rx_ep;
-<<<<<<< HEAD
-
-	__u8 cmdreq_type;
-
-	unsigned int sco_num;
-	int isoc_altsetting;
-	int suspend_count;
-};
-
-static int inc_tx(struct btusb_data *data)
-{
-	unsigned long flags;
-	int rv;
-
-	spin_lock_irqsave(&data->txlock, flags);
-	rv = test_bit(BTUSB_SUSPENDING, &data->flags);
-	if (!rv)
-		data->tx_in_flight++;
-	spin_unlock_irqrestore(&data->txlock, flags);
-
-	return rv;
-=======
 	struct usb_endpoint_descriptor *diag_tx_ep;
 	struct usb_endpoint_descriptor *diag_rx_ep;
 
@@ -1465,25 +1298,16 @@ static int btusb_recv_isoc(struct btusb_data *data, void *buffer, int count)
 	spin_unlock_irqrestore(&data->rxlock, flags);
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void btusb_intr_complete(struct urb *urb)
 {
 	struct hci_dev *hdev = urb->context;
-<<<<<<< HEAD
-	struct btusb_data *data = hdev->driver_data;
-	int err;
-
-	BT_DBG("%s urb %p status %d count %d", hdev->name,
-					urb, urb->status, urb->actual_length);
-=======
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int err;
 
 	BT_DBG("%s urb %p status %d count %d", hdev->name, urb, urb->status,
 	       urb->actual_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		return;
@@ -1491,14 +1315,6 @@ static void btusb_intr_complete(struct urb *urb)
 	if (urb->status == 0) {
 		hdev->stat.byte_rx += urb->actual_length;
 
-<<<<<<< HEAD
-		if (hci_recv_fragment(hdev, HCI_EVENT_PKT,
-						urb->transfer_buffer,
-						urb->actual_length) < 0) {
-			BT_ERR("%s corrupted event packet", hdev->name);
-			hdev->stat.err_rx++;
-		}
-=======
 		if (btusb_recv_intr(data, urb->transfer_buffer,
 				    urb->actual_length) < 0) {
 			bt_dev_err(hdev, "corrupted event packet");
@@ -1507,7 +1323,6 @@ static void btusb_intr_complete(struct urb *urb)
 	} else if (urb->status == -ENOENT) {
 		/* Avoid suspend failed when usb_kill_urb */
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!test_bit(BTUSB_INTR_RUNNING, &data->flags))
@@ -1518,11 +1333,6 @@ static void btusb_intr_complete(struct urb *urb)
 
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err < 0) {
-<<<<<<< HEAD
-		if (err != -EPERM)
-			BT_ERR("%s urb %p failed to resubmit (%d)",
-						hdev->name, urb, -err);
-=======
 		/* -EPERM: urb is being killed;
 		 * -ENODEV: device got disconnected
 		 */
@@ -1531,18 +1341,13 @@ static void btusb_intr_complete(struct urb *urb)
 				   urb, -err);
 		if (err != -EPERM)
 			hci_cmd_sync_cancel(hdev, -err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_unanchor_urb(urb);
 	}
 }
 
 static int btusb_submit_intr_urb(struct hci_dev *hdev, gfp_t mem_flags)
 {
-<<<<<<< HEAD
-	struct btusb_data *data = hdev->driver_data;
-=======
 	struct btusb_data *data = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct urb *urb;
 	unsigned char *buf;
 	unsigned int pipe;
@@ -1568,12 +1373,7 @@ static int btusb_submit_intr_urb(struct hci_dev *hdev, gfp_t mem_flags)
 	pipe = usb_rcvintpipe(data->udev, data->intr_ep->bEndpointAddress);
 
 	usb_fill_int_urb(urb, data->udev, pipe, buf, size,
-<<<<<<< HEAD
-						btusb_intr_complete, hdev,
-						data->intr_ep->bInterval);
-=======
 			 btusb_intr_complete, hdev, data->intr_ep->bInterval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	urb->transfer_flags |= URB_FREE_BUFFER;
 
@@ -1581,13 +1381,6 @@ static int btusb_submit_intr_urb(struct hci_dev *hdev, gfp_t mem_flags)
 
 	err = usb_submit_urb(urb, mem_flags);
 	if (err < 0) {
-<<<<<<< HEAD
-		BT_ERR("%s urb %p submission failed (%d)",
-						hdev->name, urb, -err);
-		usb_unanchor_urb(urb);
-	}
-
-=======
 		if (err != -EPERM && err != -ENODEV)
 			bt_dev_err(hdev, "urb %p submission failed (%d)",
 				   urb, -err);
@@ -1618,7 +1411,6 @@ static int btusb_submit_intr_urb(struct hci_dev *hdev, gfp_t mem_flags)
 	}
 
 done:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_free_urb(urb);
 
 	return err;
@@ -1627,19 +1419,11 @@ done:
 static void btusb_bulk_complete(struct urb *urb)
 {
 	struct hci_dev *hdev = urb->context;
-<<<<<<< HEAD
-	struct btusb_data *data = hdev->driver_data;
-	int err;
-
-	BT_DBG("%s urb %p status %d count %d", hdev->name,
-					urb, urb->status, urb->actual_length);
-=======
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int err;
 
 	BT_DBG("%s urb %p status %d count %d", hdev->name, urb, urb->status,
 	       urb->actual_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		return;
@@ -1647,14 +1431,6 @@ static void btusb_bulk_complete(struct urb *urb)
 	if (urb->status == 0) {
 		hdev->stat.byte_rx += urb->actual_length;
 
-<<<<<<< HEAD
-		if (hci_recv_fragment(hdev, HCI_ACLDATA_PKT,
-						urb->transfer_buffer,
-						urb->actual_length) < 0) {
-			BT_ERR("%s corrupted ACL packet", hdev->name);
-			hdev->stat.err_rx++;
-		}
-=======
 		if (data->recv_bulk(data, urb->transfer_buffer,
 				    urb->actual_length) < 0) {
 			bt_dev_err(hdev, "corrupted ACL packet");
@@ -1663,7 +1439,6 @@ static void btusb_bulk_complete(struct urb *urb)
 	} else if (urb->status == -ENOENT) {
 		/* Avoid suspend failed when usb_kill_urb */
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!test_bit(BTUSB_BULK_RUNNING, &data->flags))
@@ -1674,29 +1449,19 @@ static void btusb_bulk_complete(struct urb *urb)
 
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err < 0) {
-<<<<<<< HEAD
-		if (err != -EPERM)
-			BT_ERR("%s urb %p failed to resubmit (%d)",
-						hdev->name, urb, -err);
-=======
 		/* -EPERM: urb is being killed;
 		 * -ENODEV: device got disconnected
 		 */
 		if (err != -EPERM && err != -ENODEV)
 			bt_dev_err(hdev, "urb %p failed to resubmit (%d)",
 				   urb, -err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_unanchor_urb(urb);
 	}
 }
 
 static int btusb_submit_bulk_urb(struct hci_dev *hdev, gfp_t mem_flags)
 {
-<<<<<<< HEAD
-	struct btusb_data *data = hdev->driver_data;
-=======
 	struct btusb_data *data = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct urb *urb;
 	unsigned char *buf;
 	unsigned int pipe;
@@ -1719,13 +1484,8 @@ static int btusb_submit_bulk_urb(struct hci_dev *hdev, gfp_t mem_flags)
 
 	pipe = usb_rcvbulkpipe(data->udev, data->bulk_rx_ep->bEndpointAddress);
 
-<<<<<<< HEAD
-	usb_fill_bulk_urb(urb, data->udev, pipe,
-					buf, size, btusb_bulk_complete, hdev);
-=======
 	usb_fill_bulk_urb(urb, data->udev, pipe, buf, size,
 			  btusb_bulk_complete, hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	urb->transfer_flags |= URB_FREE_BUFFER;
 
@@ -1734,14 +1494,9 @@ static int btusb_submit_bulk_urb(struct hci_dev *hdev, gfp_t mem_flags)
 
 	err = usb_submit_urb(urb, mem_flags);
 	if (err < 0) {
-<<<<<<< HEAD
-		BT_ERR("%s urb %p submission failed (%d)",
-						hdev->name, urb, -err);
-=======
 		if (err != -EPERM && err != -ENODEV)
 			bt_dev_err(hdev, "urb %p submission failed (%d)",
 				   urb, -err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_unanchor_urb(urb);
 	}
 
@@ -1753,19 +1508,11 @@ static int btusb_submit_bulk_urb(struct hci_dev *hdev, gfp_t mem_flags)
 static void btusb_isoc_complete(struct urb *urb)
 {
 	struct hci_dev *hdev = urb->context;
-<<<<<<< HEAD
-	struct btusb_data *data = hdev->driver_data;
-	int i, err;
-
-	BT_DBG("%s urb %p status %d count %d", hdev->name,
-					urb, urb->status, urb->actual_length);
-=======
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int i, err;
 
 	BT_DBG("%s urb %p status %d count %d", hdev->name, urb, urb->status,
 	       urb->actual_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		return;
@@ -1780,15 +1527,6 @@ static void btusb_isoc_complete(struct urb *urb)
 
 			hdev->stat.byte_rx += length;
 
-<<<<<<< HEAD
-			if (hci_recv_fragment(hdev, HCI_SCODATA_PKT,
-						urb->transfer_buffer + offset,
-								length) < 0) {
-				BT_ERR("%s corrupted SCO packet", hdev->name);
-				hdev->stat.err_rx++;
-			}
-		}
-=======
 			if (btusb_recv_isoc(data, urb->transfer_buffer + offset,
 					    length) < 0) {
 				bt_dev_err(hdev, "corrupted SCO packet");
@@ -1798,7 +1536,6 @@ static void btusb_isoc_complete(struct urb *urb)
 	} else if (urb->status == -ENOENT) {
 		/* Avoid suspend failed when usb_kill_urb */
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!test_bit(BTUSB_ISOC_RUNNING, &data->flags))
@@ -1808,25 +1545,16 @@ static void btusb_isoc_complete(struct urb *urb)
 
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err < 0) {
-<<<<<<< HEAD
-		if (err != -EPERM)
-			BT_ERR("%s urb %p failed to resubmit (%d)",
-						hdev->name, urb, -err);
-=======
 		/* -EPERM: urb is being killed;
 		 * -ENODEV: device got disconnected
 		 */
 		if (err != -EPERM && err != -ENODEV)
 			bt_dev_err(hdev, "urb %p failed to resubmit (%d)",
 				   urb, -err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_unanchor_urb(urb);
 	}
 }
 
-<<<<<<< HEAD
-static void inline __fill_isoc_descriptor(struct urb *urb, int len, int mtu)
-=======
 static inline void __fill_isoc_descriptor_msbc(struct urb *urb, int len,
 					       int mtu, struct btusb_data *data)
 {
@@ -1871,7 +1599,6 @@ ignore_usb_alt6_packet_flow:
 }
 
 static inline void __fill_isoc_descriptor(struct urb *urb, int len, int mtu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, offset = 0;
 
@@ -1894,11 +1621,7 @@ static inline void __fill_isoc_descriptor(struct urb *urb, int len, int mtu)
 
 static int btusb_submit_isoc_urb(struct hci_dev *hdev, gfp_t mem_flags)
 {
-<<<<<<< HEAD
-	struct btusb_data *data = hdev->driver_data;
-=======
 	struct btusb_data *data = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct urb *urb;
 	unsigned char *buf;
 	unsigned int pipe;
@@ -1924,20 +1647,6 @@ static int btusb_submit_isoc_urb(struct hci_dev *hdev, gfp_t mem_flags)
 
 	pipe = usb_rcvisocpipe(data->udev, data->isoc_rx_ep->bEndpointAddress);
 
-<<<<<<< HEAD
-	urb->dev      = data->udev;
-	urb->pipe     = pipe;
-	urb->context  = hdev;
-	urb->complete = btusb_isoc_complete;
-	urb->interval = data->isoc_rx_ep->bInterval;
-
-	urb->transfer_flags  = URB_FREE_BUFFER | URB_ISO_ASAP;
-	urb->transfer_buffer = buf;
-	urb->transfer_buffer_length = size;
-
-	__fill_isoc_descriptor(urb, size,
-			le16_to_cpu(data->isoc_rx_ep->wMaxPacketSize));
-=======
 	usb_fill_int_urb(urb, data->udev, pipe, buf, size, btusb_isoc_complete,
 			 hdev, data->isoc_rx_ep->bInterval);
 
@@ -1945,16 +1654,11 @@ static int btusb_submit_isoc_urb(struct hci_dev *hdev, gfp_t mem_flags)
 
 	__fill_isoc_descriptor(urb, size,
 			       le16_to_cpu(data->isoc_rx_ep->wMaxPacketSize));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_anchor_urb(urb, &data->isoc_anchor);
 
 	err = usb_submit_urb(urb, mem_flags);
 	if (err < 0) {
-<<<<<<< HEAD
-		BT_ERR("%s urb %p submission failed (%d)",
-						hdev->name, urb, -err);
-=======
 		if (err != -EPERM && err != -ENODEV)
 			bt_dev_err(hdev, "urb %p submission failed (%d)",
 				   urb, -err);
@@ -2045,7 +1749,6 @@ static int btusb_submit_diag_urb(struct hci_dev *hdev, gfp_t mem_flags)
 		if (err != -EPERM && err != -ENODEV)
 			bt_dev_err(hdev, "urb %p submission failed (%d)",
 				   urb, -err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_unanchor_urb(urb);
 	}
 
@@ -2057,35 +1760,16 @@ static int btusb_submit_diag_urb(struct hci_dev *hdev, gfp_t mem_flags)
 static void btusb_tx_complete(struct urb *urb)
 {
 	struct sk_buff *skb = urb->context;
-<<<<<<< HEAD
-	struct hci_dev *hdev = (struct hci_dev *) skb->dev;
-	struct btusb_data *data = hdev->driver_data;
-
-	BT_DBG("%s urb %p status %d count %d", hdev->name,
-					urb, urb->status, urb->actual_length);
-=======
 	struct hci_dev *hdev = (struct hci_dev *)skb->dev;
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	unsigned long flags;
 
 	BT_DBG("%s urb %p status %d count %d", hdev->name, urb, urb->status,
 	       urb->actual_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		goto done;
 
-<<<<<<< HEAD
-	if (!urb->status)
-		hdev->stat.byte_tx += urb->transfer_buffer_length;
-	else
-		hdev->stat.err_tx++;
-
-done:
-	spin_lock(&data->txlock);
-	data->tx_in_flight--;
-	spin_unlock(&data->txlock);
-=======
 	if (!urb->status) {
 		hdev->stat.byte_tx += urb->transfer_buffer_length;
 	} else {
@@ -2098,7 +1782,6 @@ done:
 	spin_lock_irqsave(&data->txlock, flags);
 	data->tx_in_flight--;
 	spin_unlock_irqrestore(&data->txlock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(urb->setup_packet);
 
@@ -2108,17 +1791,10 @@ done:
 static void btusb_isoc_tx_complete(struct urb *urb)
 {
 	struct sk_buff *skb = urb->context;
-<<<<<<< HEAD
-	struct hci_dev *hdev = (struct hci_dev *) skb->dev;
-
-	BT_DBG("%s urb %p status %d count %d", hdev->name,
-					urb, urb->status, urb->actual_length);
-=======
 	struct hci_dev *hdev = (struct hci_dev *)skb->dev;
 
 	BT_DBG("%s urb %p status %d count %d", hdev->name, urb, urb->status,
 	       urb->actual_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		goto done;
@@ -2136,11 +1812,7 @@ done:
 
 static int btusb_open(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	struct btusb_data *data = hdev->driver_data;
-=======
 	struct btusb_data *data = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	BT_DBG("%s", hdev->name);
@@ -2149,12 +1821,6 @@ static int btusb_open(struct hci_dev *hdev)
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	data->intf->needs_remote_wakeup = 1;
-
-	if (test_and_set_bit(HCI_RUNNING, &hdev->flags))
-		goto done;
-=======
 	/* Patching USB firmware files prior to starting any URBs of HCI path
 	 * It is more safe to use USB bulk channel for downloading USB patch
 	 */
@@ -2165,7 +1831,6 @@ static int btusb_open(struct hci_dev *hdev)
 	}
 
 	data->intf->needs_remote_wakeup = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_and_set_bit(BTUSB_INTR_RUNNING, &data->flags))
 		goto done;
@@ -2183,25 +1848,18 @@ static int btusb_open(struct hci_dev *hdev)
 	set_bit(BTUSB_BULK_RUNNING, &data->flags);
 	btusb_submit_bulk_urb(hdev, GFP_KERNEL);
 
-<<<<<<< HEAD
-=======
 	if (data->diag) {
 		if (!btusb_submit_diag_urb(hdev, GFP_KERNEL))
 			set_bit(BTUSB_DIAG_RUNNING, &data->flags);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done:
 	usb_autopm_put_interface(data->intf);
 	return 0;
 
 failed:
 	clear_bit(BTUSB_INTR_RUNNING, &data->flags);
-<<<<<<< HEAD
-	clear_bit(HCI_RUNNING, &hdev->flags);
-=======
 setup_fail:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_autopm_put_interface(data->intf);
 	return err;
 }
@@ -2211,37 +1869,17 @@ static void btusb_stop_traffic(struct btusb_data *data)
 	usb_kill_anchored_urbs(&data->intr_anchor);
 	usb_kill_anchored_urbs(&data->bulk_anchor);
 	usb_kill_anchored_urbs(&data->isoc_anchor);
-<<<<<<< HEAD
-=======
 	usb_kill_anchored_urbs(&data->diag_anchor);
 	usb_kill_anchored_urbs(&data->ctrl_anchor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int btusb_close(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	struct btusb_data *data = hdev->driver_data;
-=======
 	struct btusb_data *data = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	BT_DBG("%s", hdev->name);
 
-<<<<<<< HEAD
-	if (!test_and_clear_bit(HCI_RUNNING, &hdev->flags))
-		return 0;
-
-	cancel_work_sync(&data->work);
-	cancel_work_sync(&data->waker);
-
-	clear_bit(BTUSB_ISOC_RUNNING, &data->flags);
-	clear_bit(BTUSB_BULK_RUNNING, &data->flags);
-	clear_bit(BTUSB_INTR_RUNNING, &data->flags);
-
-	btusb_stop_traffic(data);
-=======
 	cancel_delayed_work(&data->rx_work);
 	cancel_work_sync(&data->work);
 	cancel_work_sync(&data->waker);
@@ -2256,20 +1894,16 @@ static int btusb_close(struct hci_dev *hdev)
 	btusb_stop_traffic(data);
 	btusb_free_frags(data);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = usb_autopm_get_interface(data->intf);
 	if (err < 0)
 		goto failed;
 
 	data->intf->needs_remote_wakeup = 0;
-<<<<<<< HEAD
-=======
 
 	/* Enable remote wake up for auto-suspend */
 	if (test_bit(BTUSB_WAKEUP_AUTOSUSPEND, &data->flags))
 		data->intf->needs_remote_wakeup = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_autopm_put_interface(data->intf);
 
 failed:
@@ -2279,13 +1913,6 @@ failed:
 
 static int btusb_flush(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	struct btusb_data *data = hdev->driver_data;
-
-	BT_DBG("%s", hdev->name);
-
-	usb_kill_anchored_urbs(&data->tx_anchor);
-=======
 	struct btusb_data *data = hci_get_drvdata(hdev);
 
 	BT_DBG("%s", hdev->name);
@@ -2296,111 +1923,10 @@ static int btusb_flush(struct hci_dev *hdev)
 
 	usb_kill_anchored_urbs(&data->tx_anchor);
 	btusb_free_frags(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int btusb_send_frame(struct sk_buff *skb)
-{
-	struct hci_dev *hdev = (struct hci_dev *) skb->dev;
-	struct btusb_data *data = hdev->driver_data;
-	struct usb_ctrlrequest *dr;
-	struct urb *urb;
-	unsigned int pipe;
-	int err;
-
-	BT_DBG("%s", hdev->name);
-
-	if (!test_bit(HCI_RUNNING, &hdev->flags))
-		return -EBUSY;
-
-	switch (bt_cb(skb)->pkt_type) {
-	case HCI_COMMAND_PKT:
-		urb = usb_alloc_urb(0, GFP_ATOMIC);
-		if (!urb)
-			return -ENOMEM;
-
-		dr = kmalloc(sizeof(*dr), GFP_ATOMIC);
-		if (!dr) {
-			usb_free_urb(urb);
-			return -ENOMEM;
-		}
-
-		dr->bRequestType = data->cmdreq_type;
-		dr->bRequest     = 0;
-		dr->wIndex       = 0;
-		dr->wValue       = 0;
-		dr->wLength      = __cpu_to_le16(skb->len);
-
-		pipe = usb_sndctrlpipe(data->udev, 0x00);
-
-		usb_fill_control_urb(urb, data->udev, pipe, (void *) dr,
-				skb->data, skb->len, btusb_tx_complete, skb);
-
-		hdev->stat.cmd_tx++;
-		break;
-
-	case HCI_ACLDATA_PKT:
-		if (!data->bulk_tx_ep)
-			return -ENODEV;
-
-		urb = usb_alloc_urb(0, GFP_ATOMIC);
-		if (!urb)
-			return -ENOMEM;
-
-		pipe = usb_sndbulkpipe(data->udev,
-					data->bulk_tx_ep->bEndpointAddress);
-
-		usb_fill_bulk_urb(urb, data->udev, pipe,
-				skb->data, skb->len, btusb_tx_complete, skb);
-
-		hdev->stat.acl_tx++;
-		break;
-
-	case HCI_SCODATA_PKT:
-		if (!data->isoc_tx_ep || hdev->conn_hash.sco_num < 1)
-			return -ENODEV;
-
-		urb = usb_alloc_urb(BTUSB_MAX_ISOC_FRAMES, GFP_ATOMIC);
-		if (!urb)
-			return -ENOMEM;
-
-		pipe = usb_sndisocpipe(data->udev,
-					data->isoc_tx_ep->bEndpointAddress);
-
-		usb_fill_int_urb(urb, data->udev, pipe,
-				skb->data, skb->len, btusb_isoc_tx_complete,
-				skb, data->isoc_tx_ep->bInterval);
-
-		urb->transfer_flags  = URB_ISO_ASAP;
-
-		__fill_isoc_descriptor(urb, skb->len,
-				le16_to_cpu(data->isoc_tx_ep->wMaxPacketSize));
-
-		hdev->stat.sco_tx++;
-		goto skip_waking;
-
-	default:
-		return -EILSEQ;
-	}
-
-	err = inc_tx(data);
-	if (err) {
-		usb_anchor_urb(urb, &data->deferred);
-		schedule_work(&data->waker);
-		err = 0;
-		goto done;
-	}
-
-skip_waking:
-	usb_anchor_urb(urb, &data->tx_anchor);
-
-	err = usb_submit_urb(urb, GFP_ATOMIC);
-	if (err < 0) {
-		BT_ERR("%s urb %p submission failed", hdev->name, urb);
-=======
 static struct urb *alloc_ctrl_urb(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
@@ -2502,7 +2028,6 @@ static int submit_tx_urb(struct hci_dev *hdev, struct urb *urb)
 		if (err != -EPERM && err != -ENODEV)
 			bt_dev_err(hdev, "urb %p submission failed (%d)",
 				   urb, -err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(urb->setup_packet);
 		usb_unanchor_urb(urb);
 	} else {
@@ -2510,20 +2035,6 @@ static int submit_tx_urb(struct hci_dev *hdev, struct urb *urb)
 	}
 
 	usb_free_urb(urb);
-<<<<<<< HEAD
-
-done:
-	return err;
-}
-
-static void btusb_destruct(struct hci_dev *hdev)
-{
-	struct btusb_data *data = hdev->driver_data;
-
-	BT_DBG("%s", hdev->name);
-
-	kfree(data);
-=======
 	return err;
 }
 
@@ -2592,19 +2103,10 @@ static int btusb_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 	}
 
 	return -EILSEQ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void btusb_notify(struct hci_dev *hdev, unsigned int evt)
 {
-<<<<<<< HEAD
-	struct btusb_data *data = hdev->driver_data;
-
-	BT_DBG("%s evt %d", hdev->name, evt);
-
-	if (hdev->conn_hash.sco_num != data->sco_num) {
-		data->sco_num = hdev->conn_hash.sco_num;
-=======
 	struct btusb_data *data = hci_get_drvdata(hdev);
 
 	BT_DBG("%s evt %d", hdev->name, evt);
@@ -2612,20 +2114,13 @@ static void btusb_notify(struct hci_dev *hdev, unsigned int evt)
 	if (hci_conn_num(hdev, SCO_LINK) != data->sco_num) {
 		data->sco_num = hci_conn_num(hdev, SCO_LINK);
 		data->air_mode = evt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		schedule_work(&data->work);
 	}
 }
 
-<<<<<<< HEAD
-static int inline __set_isoc_interface(struct hci_dev *hdev, int altsetting)
-{
-	struct btusb_data *data = hdev->driver_data;
-=======
 static inline int __set_isoc_interface(struct hci_dev *hdev, int altsetting)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_interface *intf = data->isoc;
 	struct usb_endpoint_descriptor *ep_desc;
 	int i, err;
@@ -2633,15 +2128,9 @@ static inline int __set_isoc_interface(struct hci_dev *hdev, int altsetting)
 	if (!data->isoc)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	err = usb_set_interface(data->udev, 1, altsetting);
-	if (err < 0) {
-		BT_ERR("%s setting interface failed (%d)", hdev->name, -err);
-=======
 	err = usb_set_interface(data->udev, data->isoc_ifnum, altsetting);
 	if (err < 0) {
 		bt_dev_err(hdev, "setting interface failed (%d)", -err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -2665,19 +2154,13 @@ static inline int __set_isoc_interface(struct hci_dev *hdev, int altsetting)
 	}
 
 	if (!data->isoc_tx_ep || !data->isoc_rx_ep) {
-<<<<<<< HEAD
-		BT_ERR("%s invalid SCO descriptors", hdev->name);
-=======
 		bt_dev_err(hdev, "invalid SCO descriptors");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int btusb_switch_alt_setting(struct hci_dev *hdev, int new_alts)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
@@ -2737,21 +2220,14 @@ static struct usb_host_interface *btusb_find_altsetting(struct btusb_data *data,
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void btusb_work(struct work_struct *work)
 {
 	struct btusb_data *data = container_of(work, struct btusb_data, work);
 	struct hci_dev *hdev = data->hdev;
-<<<<<<< HEAD
-	int err;
-
-	if (hdev->conn_hash.sco_num > 0) {
-=======
 	int new_alts = 0;
 	int err;
 
 	if (data->sco_num > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!test_bit(BTUSB_DID_ISO_RESUME, &data->flags)) {
 			err = usb_autopm_get_interface(data->isoc ? data->isoc : data->intf);
 			if (err < 0) {
@@ -2762,27 +2238,6 @@ static void btusb_work(struct work_struct *work)
 
 			set_bit(BTUSB_DID_ISO_RESUME, &data->flags);
 		}
-<<<<<<< HEAD
-		if (data->isoc_altsetting != 2) {
-			clear_bit(BTUSB_ISOC_RUNNING, &data->flags);
-			usb_kill_anchored_urbs(&data->isoc_anchor);
-
-			if (__set_isoc_interface(hdev, 2) < 0)
-				return;
-		}
-
-		if (!test_and_set_bit(BTUSB_ISOC_RUNNING, &data->flags)) {
-			if (btusb_submit_isoc_urb(hdev, GFP_KERNEL) < 0)
-				clear_bit(BTUSB_ISOC_RUNNING, &data->flags);
-			else
-				btusb_submit_isoc_urb(hdev, GFP_KERNEL);
-		}
-	} else {
-		clear_bit(BTUSB_ISOC_RUNNING, &data->flags);
-		usb_kill_anchored_urbs(&data->isoc_anchor);
-
-		__set_isoc_interface(hdev, 0);
-=======
 
 		if (data->air_mode == HCI_NOTIFY_ENABLE_SCO_CVSD) {
 			if (hdev->voice_setting & 0x0020) {
@@ -2820,7 +2275,6 @@ static void btusb_work(struct work_struct *work)
 		if (test_and_clear_bit(BTUSB_ISOC_RUNNING, &data->flags))
 			__set_isoc_interface(hdev, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (test_and_clear_bit(BTUSB_DID_ISO_RESUME, &data->flags))
 			usb_autopm_put_interface(data->isoc ? data->isoc : data->intf);
 	}
@@ -2838,25 +2292,6 @@ static void btusb_waker(struct work_struct *work)
 	usb_autopm_put_interface(data->intf);
 }
 
-<<<<<<< HEAD
-static int btusb_probe(struct usb_interface *intf,
-				const struct usb_device_id *id)
-{
-	struct usb_endpoint_descriptor *ep_desc;
-	struct btusb_data *data;
-	struct hci_dev *hdev;
-	int i, err;
-
-	BT_DBG("intf %p id %p", intf, id);
-
-	/* interface numbers are hardcoded in the spec */
-	if (intf->cur_altsetting->desc.bInterfaceNumber != 0)
-		return -ENODEV;
-
-	if (!id->driver_info) {
-		const struct usb_device_id *match;
-		match = usb_match_id(intf, blacklist_table);
-=======
 static void btusb_rx_work(struct work_struct *work)
 {
 	struct btusb_data *data = container_of(work, struct btusb_data,
@@ -4793,7 +4228,6 @@ static int btusb_probe(struct usb_interface *intf,
 		const struct usb_device_id *match;
 
 		match = usb_match_id(intf, quirks_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (match)
 			id = match;
 	}
@@ -4801,30 +4235,10 @@ static int btusb_probe(struct usb_interface *intf,
 	if (id->driver_info == BTUSB_IGNORE)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (ignore_dga && id->driver_info & BTUSB_DIGIANSWER)
-		return -ENODEV;
-
-	if (ignore_csr && id->driver_info & BTUSB_CSR)
-		return -ENODEV;
-
-	if (ignore_sniffer && id->driver_info & BTUSB_SNIFFER)
-		return -ENODEV;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (id->driver_info & BTUSB_ATH3012) {
 		struct usb_device *udev = interface_to_usbdev(intf);
 
 		/* Old firmware would otherwise let ath3k driver load
-<<<<<<< HEAD
-		 * patch and sysconfig files */
-		if (le16_to_cpu(udev->descriptor.bcdDevice) <= 0x0001)
-			return -ENODEV;
-	}
-
-	data = kzalloc(sizeof(*data), GFP_KERNEL);
-=======
 		 * patch and sysconfig files
 		 */
 		if (le16_to_cpu(udev->descriptor.bcdDevice) <= 0x0001 &&
@@ -4833,7 +4247,6 @@ static int btusb_probe(struct usb_interface *intf,
 	}
 
 	data = devm_kzalloc(&intf->dev, sizeof(*data), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data)
 		return -ENOMEM;
 
@@ -4856,14 +4269,6 @@ static int btusb_probe(struct usb_interface *intf,
 		}
 	}
 
-<<<<<<< HEAD
-	if (!data->intr_ep || !data->bulk_tx_ep || !data->bulk_rx_ep) {
-		kfree(data);
-		return -ENODEV;
-	}
-
-	data->cmdreq_type = USB_TYPE_CLASS;
-=======
 	if (!data->intr_ep || !data->bulk_tx_ep || !data->bulk_rx_ep)
 		return -ENODEV;
 
@@ -4874,33 +4279,10 @@ static int btusb_probe(struct usb_interface *intf,
 		data->cmdreq_type = USB_TYPE_CLASS;
 		data->cmdreq = 0x00;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->udev = interface_to_usbdev(intf);
 	data->intf = intf;
 
-<<<<<<< HEAD
-	spin_lock_init(&data->lock);
-
-	INIT_WORK(&data->work, btusb_work);
-	INIT_WORK(&data->waker, btusb_waker);
-	spin_lock_init(&data->txlock);
-
-	init_usb_anchor(&data->tx_anchor);
-	init_usb_anchor(&data->intr_anchor);
-	init_usb_anchor(&data->bulk_anchor);
-	init_usb_anchor(&data->isoc_anchor);
-	init_usb_anchor(&data->deferred);
-
-	hdev = hci_alloc_dev();
-	if (!hdev) {
-		kfree(data);
-		return -ENOMEM;
-	}
-
-	hdev->bus = HCI_USB;
-	hdev->driver_data = data;
-=======
 	INIT_WORK(&data->work, btusb_work);
 	INIT_WORK(&data->waker, btusb_waker);
 	INIT_DELAYED_WORK(&data->rx_work, btusb_rx_work);
@@ -4953,28 +4335,11 @@ static int btusb_probe(struct usb_interface *intf,
 		hdev->dev_type = HCI_AMP;
 	else
 		hdev->dev_type = HCI_PRIMARY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->hdev = hdev;
 
 	SET_HCIDEV_DEV(hdev, &intf->dev);
 
-<<<<<<< HEAD
-	hdev->open     = btusb_open;
-	hdev->close    = btusb_close;
-	hdev->flush    = btusb_flush;
-	hdev->send     = btusb_send_frame;
-	hdev->destruct = btusb_destruct;
-	hdev->notify   = btusb_notify;
-
-	hdev->owner = THIS_MODULE;
-
-	/* Interface numbers are hardcoded in the specification */
-	data->isoc = usb_ifnum_to_if(data->udev, 1);
-
-	if (!reset)
-		set_bit(HCI_QUIRK_NO_RESET, &hdev->quirks);
-=======
 	reset_gpio = gpiod_get_optional(&data->udev->dev, "reset",
 					GPIOD_OUT_LOW);
 	if (IS_ERR(reset_gpio)) {
@@ -5141,7 +4506,6 @@ static int btusb_probe(struct usb_interface *intf,
 
 	if (!reset)
 		set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (force_scofix || id->driver_info & BTUSB_WRONG_SCO_MTU) {
 		if (!disable_scofix)
@@ -5151,11 +4515,6 @@ static int btusb_probe(struct usb_interface *intf,
 	if (id->driver_info & BTUSB_BROKEN_ISOC)
 		data->isoc = NULL;
 
-<<<<<<< HEAD
-	if (id->driver_info & BTUSB_DIGIANSWER) {
-		data->cmdreq_type = USB_TYPE_VENDOR;
-		set_bit(HCI_QUIRK_NO_RESET, &hdev->quirks);
-=======
 	if (id->driver_info & BTUSB_WIDEBAND_SPEECH)
 		set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED, &hdev->quirks);
 
@@ -5165,17 +4524,10 @@ static int btusb_probe(struct usb_interface *intf,
 	if (id->driver_info & BTUSB_DIGIANSWER) {
 		data->cmdreq_type = USB_TYPE_VENDOR;
 		set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (id->driver_info & BTUSB_CSR) {
 		struct usb_device *udev = data->udev;
-<<<<<<< HEAD
-
-		/* Old firmware would otherwise execute USB reset */
-		if (le16_to_cpu(udev->descriptor.bcdDevice) < 0x117)
-			set_bit(HCI_QUIRK_NO_RESET, &hdev->quirks);
-=======
 		u16 bcdDevice = le16_to_cpu(udev->descriptor.bcdDevice);
 
 		/* Old firmware would otherwise execute USB reset */
@@ -5189,7 +4541,6 @@ static int btusb_probe(struct usb_interface *intf,
 		if (le16_to_cpu(udev->descriptor.idVendor)  == 0x0a12 &&
 		    le16_to_cpu(udev->descriptor.idProduct) == 0x0001)
 			hdev->setup = btusb_setup_csr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (id->driver_info & BTUSB_SNIFFER) {
@@ -5198,20 +4549,6 @@ static int btusb_probe(struct usb_interface *intf,
 		/* New sniffer firmware has crippled HCI interface */
 		if (le16_to_cpu(udev->descriptor.bcdDevice) > 0x997)
 			set_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks);
-<<<<<<< HEAD
-
-		data->isoc = NULL;
-	}
-
-	if (id->driver_info & BTUSB_BCM92035) {
-		unsigned char cmd[] = { 0x3b, 0xfc, 0x01, 0x00 };
-		struct sk_buff *skb;
-
-		skb = bt_skb_alloc(sizeof(cmd), GFP_KERNEL);
-		if (skb) {
-			memcpy(skb_put(skb, sizeof(cmd)), cmd, sizeof(cmd));
-			skb_queue_tail(&hdev->driver_init, skb);
-=======
 	}
 
 	if (id->driver_info & BTUSB_INTEL_BOOT) {
@@ -5222,32 +4559,11 @@ static int btusb_probe(struct usb_interface *intf,
 		if (err < 0) {
 			BT_ERR("failed to set interface 0, alt 0 %d", err);
 			goto out_free_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	if (data->isoc) {
 		err = usb_driver_claim_interface(&btusb_driver,
-<<<<<<< HEAD
-							data->isoc, data);
-		if (err < 0) {
-			hci_free_dev(hdev);
-			kfree(data);
-			return err;
-		}
-	}
-
-	err = hci_register_dev(hdev);
-	if (err < 0) {
-		hci_free_dev(hdev);
-		kfree(data);
-		return err;
-	}
-
-	usb_set_intfdata(intf, data);
-
-	return 0;
-=======
 						 data->isoc, data);
 		if (err < 0)
 			goto out_free_dev;
@@ -5282,7 +4598,6 @@ out_free_dev:
 		gpiod_put(data->reset_gpio);
 	hci_free_dev(hdev);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void btusb_disconnect(struct usb_interface *intf)
@@ -5296,27 +4611,11 @@ static void btusb_disconnect(struct usb_interface *intf)
 		return;
 
 	hdev = data->hdev;
-<<<<<<< HEAD
-
-	__hci_dev_hold(hdev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_set_intfdata(data->intf, NULL);
 
 	if (data->isoc)
 		usb_set_intfdata(data->isoc, NULL);
 
-<<<<<<< HEAD
-	hci_unregister_dev(hdev);
-
-	if (intf == data->isoc)
-		usb_driver_release_interface(&btusb_driver, data->intf);
-	else if (data->isoc)
-		usb_driver_release_interface(&btusb_driver, data->isoc);
-
-	__hci_dev_put(hdev);
-=======
 	if (data->diag)
 		usb_set_intfdata(data->diag, NULL);
 
@@ -5342,7 +4641,6 @@ static void btusb_disconnect(struct usb_interface *intf)
 
 	if (data->reset_gpio)
 		gpiod_put(data->reset_gpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hci_free_dev(hdev);
 }
@@ -5354,22 +4652,15 @@ static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
 
 	BT_DBG("intf %p", intf);
 
-<<<<<<< HEAD
-=======
 	/* Don't suspend if there are connections */
 	if (hci_conn_count(data->hdev))
 		return -EBUSY;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data->suspend_count++)
 		return 0;
 
 	spin_lock_irq(&data->txlock);
-<<<<<<< HEAD
-	if (!((message.event & PM_EVENT_AUTO) && data->tx_in_flight)) {
-=======
 	if (!(PMSG_IS_AUTO(message) && data->tx_in_flight)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(BTUSB_SUSPENDING, &data->flags);
 		spin_unlock_irq(&data->txlock);
 	} else {
@@ -5383,8 +4674,6 @@ static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
 	btusb_stop_traffic(data);
 	usb_kill_anchored_urbs(&data->tx_anchor);
 
-<<<<<<< HEAD
-=======
 	if (data->oob_wake_irq && device_may_wakeup(&data->udev->dev)) {
 		set_bit(BTUSB_OOB_WAKE_ENABLED, &data->flags);
 		enable_irq_wake(data->oob_wake_irq);
@@ -5407,7 +4696,6 @@ static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -5417,15 +4705,6 @@ static void play_deferred(struct btusb_data *data)
 	int err;
 
 	while ((urb = usb_get_from_anchor(&data->deferred))) {
-<<<<<<< HEAD
-		err = usb_submit_urb(urb, GFP_ATOMIC);
-		if (err < 0)
-			break;
-
-		data->tx_in_flight++;
-	}
-	usb_scuttle_anchored_urbs(&data->deferred);
-=======
 		usb_anchor_urb(urb, &data->tx_anchor);
 
 		err = usb_submit_urb(urb, GFP_ATOMIC);
@@ -5448,7 +4727,6 @@ static void play_deferred(struct btusb_data *data)
 		kfree(urb->setup_packet);
 		usb_free_urb(urb);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int btusb_resume(struct usb_interface *intf)
@@ -5462,15 +4740,12 @@ static int btusb_resume(struct usb_interface *intf)
 	if (--data->suspend_count)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	/* Disable only if not already disabled (keep it balanced) */
 	if (test_and_clear_bit(BTUSB_OOB_WAKE_ENABLED, &data->flags)) {
 		disable_irq(data->oob_wake_irq);
 		disable_irq_wake(data->oob_wake_irq);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		goto done;
 
@@ -5518,8 +4793,6 @@ done:
 }
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_DEV_COREDUMP
 static void btusb_coredump(struct device *dev)
 {
@@ -5531,7 +4804,6 @@ static void btusb_coredump(struct device *dev)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct usb_driver btusb_driver = {
 	.name		= "btusb",
 	.probe		= btusb_probe,
@@ -5542,33 +4814,6 @@ static struct usb_driver btusb_driver = {
 #endif
 	.id_table	= btusb_table,
 	.supports_autosuspend = 1,
-<<<<<<< HEAD
-};
-
-static int __init btusb_init(void)
-{
-	BT_INFO("Generic Bluetooth USB driver ver %s", VERSION);
-
-	return usb_register(&btusb_driver);
-}
-
-static void __exit btusb_exit(void)
-{
-	usb_deregister(&btusb_driver);
-}
-
-module_init(btusb_init);
-module_exit(btusb_exit);
-
-module_param(ignore_dga, bool, 0644);
-MODULE_PARM_DESC(ignore_dga, "Ignore devices with id 08fd:0001");
-
-module_param(ignore_csr, bool, 0644);
-MODULE_PARM_DESC(ignore_csr, "Ignore devices with id 0a12:0001");
-
-module_param(ignore_sniffer, bool, 0644);
-MODULE_PARM_DESC(ignore_sniffer, "Ignore devices with id 0a12:0002");
-=======
 	.disable_hub_initiated_lpm = 1,
 
 #ifdef CONFIG_DEV_COREDUMP
@@ -5579,7 +4824,6 @@ MODULE_PARM_DESC(ignore_sniffer, "Ignore devices with id 0a12:0002");
 };
 
 module_usb_driver(btusb_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(disable_scofix, bool, 0644);
 MODULE_PARM_DESC(disable_scofix, "Disable fixup of wrong SCO buffer size");
@@ -5587,12 +4831,9 @@ MODULE_PARM_DESC(disable_scofix, "Disable fixup of wrong SCO buffer size");
 module_param(force_scofix, bool, 0644);
 MODULE_PARM_DESC(force_scofix, "Force fixup of wrong SCO buffers size");
 
-<<<<<<< HEAD
-=======
 module_param(enable_autosuspend, bool, 0644);
 MODULE_PARM_DESC(enable_autosuspend, "Enable USB autosuspend by default");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(reset, bool, 0644);
 MODULE_PARM_DESC(reset, "Send HCI reset command on initialization");
 

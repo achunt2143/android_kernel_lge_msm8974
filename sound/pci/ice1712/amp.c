@@ -1,36 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for ICEnsemble VT1724 (Envy24HT)
  *
  *   Lowlevel functions for Advanced Micro Peripherals Ltd AUDIO2000
  *
  *	Copyright (c) 2000 Jaroslav Kysela <perex@perex.cz>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
  */      
 
-#include <asm/io.h>
-=======
- */      
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -47,11 +23,7 @@ static void wm_put(struct snd_ice1712 *ice, int reg, unsigned short val)
 	snd_vt1724_write_i2c(ice, WM_DEV, cval >> 8, cval & 0xff);
 }
 
-<<<<<<< HEAD
-static int __devinit snd_vt1724_amp_init(struct snd_ice1712 *ice)
-=======
 static int snd_vt1724_amp_init(struct snd_ice1712 *ice)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const unsigned short wm_inits[] = {
 		WM_ATTEN_L,	0x0000,	/* 0 db */
@@ -79,11 +51,7 @@ static int snd_vt1724_amp_init(struct snd_ice1712 *ice)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_vt1724_amp_add_controls(struct snd_ice1712 *ice)
-=======
 static int snd_vt1724_amp_add_controls(struct snd_ice1712 *ice)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ice->ac97)
 		/* we use pins 39 and 41 of the VT1616 for left and right
@@ -95,11 +63,7 @@ static int snd_vt1724_amp_add_controls(struct snd_ice1712 *ice)
 
 
 /* entry point */
-<<<<<<< HEAD
-struct snd_ice1712_card_info snd_vt1724_amp_cards[] __devinitdata = {
-=======
 struct snd_ice1712_card_info snd_vt1724_amp_cards[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.subvendor = VT1724_SUBDEVICE_AV710,
 		.name = "Chaintech AV-710",

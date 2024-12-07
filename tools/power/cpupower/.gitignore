@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-.libs
-libcpupower.so
-libcpupower.so.0
-libcpupower.so.0.0.0
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 .libs
 libcpupower.so
 libcpupower.so.*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 build/ccdv
 cpufreq-info
 cpufreq-set
@@ -27,8 +20,6 @@ utils/cpufreq-set.o
 utils/cpufreq-aperf.o
 cpupower
 bench/cpufreq-bench
-<<<<<<< HEAD
-=======
 debug/kernel/Module.symvers
 debug/i386/centrino-decode
 debug/i386/dump_psb
@@ -36,4 +27,3 @@ debug/i386/intel_gsic
 debug/i386/powernow-k8-decode
 debug/x86_64/centrino-decode
 debug/x86_64/powernow-k8-decode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,29 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * rtl871x_sta_mgt.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -44,18 +25,6 @@
 static void _init_stainfo(struct sta_info *psta)
 {
 	memset((u8 *)psta, 0, sizeof(struct sta_info));
-<<<<<<< HEAD
-	 spin_lock_init(&psta->lock);
-	_init_listhead(&psta->list);
-	_init_listhead(&psta->hash_list);
-	_r8712_init_sta_xmit_priv(&psta->sta_xmitpriv);
-	_r8712_init_sta_recv_priv(&psta->sta_recvpriv);
-	_init_listhead(&psta->asoc_list);
-	_init_listhead(&psta->auth_list);
-}
-
-u32 _r8712_init_sta_priv(struct	sta_priv *pstapriv)
-=======
 	spin_lock_init(&psta->lock);
 	INIT_LIST_HEAD(&psta->list);
 	INIT_LIST_HEAD(&psta->hash_list);
@@ -66,22 +35,14 @@ u32 _r8712_init_sta_priv(struct	sta_priv *pstapriv)
 }
 
 int _r8712_init_sta_priv(struct	sta_priv *pstapriv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sta_info *psta;
 	s32 i;
 
-<<<<<<< HEAD
-	pstapriv->pallocated_stainfo_buf = _malloc(sizeof(struct sta_info) *
-						   NUM_STA + 4);
-	if (pstapriv->pallocated_stainfo_buf == NULL)
-		return _FAIL;
-=======
 	pstapriv->pallocated_stainfo_buf = kmalloc(sizeof(struct sta_info) *
 						   NUM_STA + 4, GFP_ATOMIC);
 	if (!pstapriv->pallocated_stainfo_buf)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pstapriv->pstainfo_buf = pstapriv->pallocated_stainfo_buf + 4 -
 		((addr_t)(pstapriv->pallocated_stainfo_buf) & 3);
 	_init_queue(&pstapriv->free_sta_queue);
@@ -92,16 +53,6 @@ int _r8712_init_sta_priv(struct	sta_priv *pstapriv)
 	psta = (struct sta_info *)(pstapriv->pstainfo_buf);
 	for (i = 0; i < NUM_STA; i++) {
 		_init_stainfo(psta);
-<<<<<<< HEAD
-		_init_listhead(&(pstapriv->sta_hash[i]));
-		list_insert_tail(&psta->list,
-				 get_list_head(&pstapriv->free_sta_queue));
-		psta++;
-	}
-	_init_listhead(&pstapriv->asoc_list);
-	_init_listhead(&pstapriv->auth_list);
-	return _SUCCESS;
-=======
 		INIT_LIST_HEAD(&(pstapriv->sta_hash[i]));
 		list_add_tail(&psta->list, &pstapriv->free_sta_queue.queue);
 		psta++;
@@ -109,7 +60,6 @@ int _r8712_init_sta_priv(struct	sta_priv *pstapriv)
 	INIT_LIST_HEAD(&pstapriv->asoc_list);
 	INIT_LIST_HEAD(&pstapriv->auth_list);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* this function is used to free the memory of lock || sema for all stainfos */
@@ -117,43 +67,16 @@ static void mfree_all_stainfo(struct sta_priv *pstapriv)
 {
 	unsigned long irqL;
 	struct list_head *plist, *phead;
-<<<<<<< HEAD
-	struct sta_info *psta = NULL;
-
-	spin_lock_irqsave(&pstapriv->sta_hash_lock, irqL);
-	phead = get_list_head(&pstapriv->free_sta_queue);
-	plist = get_next(phead);
-	while ((end_of_queue_search(phead, plist)) == false) {
-		psta = LIST_CONTAINOR(plist, struct sta_info, list);
-		plist = get_next(plist);
-	}
-=======
 
 	spin_lock_irqsave(&pstapriv->sta_hash_lock, irqL);
 	phead = &pstapriv->free_sta_queue.queue;
 	plist = phead->next;
 	while (!end_of_queue_search(phead, plist))
 		plist = plist->next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&pstapriv->sta_hash_lock, irqL);
 }
 
-<<<<<<< HEAD
-
-static void mfree_sta_priv_lock(struct	sta_priv *pstapriv)
-{
-	 mfree_all_stainfo(pstapriv); /* be done before free sta_hash_lock */
-}
-
-u32 _r8712_free_sta_priv(struct sta_priv *pstapriv)
-{
-	if (pstapriv) {
-		mfree_sta_priv_lock(pstapriv);
-		kfree(pstapriv->pallocated_stainfo_buf);
-	}
-	return _SUCCESS;
-=======
 void _r8712_free_sta_priv(struct sta_priv *pstapriv)
 {
 	if (pstapriv) {
@@ -161,15 +84,10 @@ void _r8712_free_sta_priv(struct sta_priv *pstapriv)
 		mfree_all_stainfo(pstapriv);
 		kfree(pstapriv->pallocated_stainfo_buf);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 {
-<<<<<<< HEAD
-	uint tmp_aid;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32	index;
 	struct list_head *phash_list;
 	struct sta_info	*psta;
@@ -180,22 +98,11 @@ struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 	unsigned long flags;
 
 	pfree_sta_queue = &pstapriv->free_sta_queue;
-<<<<<<< HEAD
-	spin_lock_irqsave(&(pfree_sta_queue->lock), flags);
-	if (_queue_empty(pfree_sta_queue) == true)
-		psta = NULL;
-	else {
-		psta = LIST_CONTAINOR(get_next(&pfree_sta_queue->queue),
-				      struct sta_info, list);
-		list_delete(&(psta->list));
-		tmp_aid = psta->aid;
-=======
 	spin_lock_irqsave(&pfree_sta_queue->lock, flags);
 	psta = list_first_entry_or_null(&pfree_sta_queue->queue,
 					struct sta_info, list);
 	if (psta) {
 		list_del_init(&psta->list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		_init_stainfo(psta);
 		memcpy(psta->hwaddr, hwaddr, ETH_ALEN);
 		index = wifi_mac_hash(hwaddr);
@@ -203,15 +110,9 @@ struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 			psta = NULL;
 			goto exit;
 		}
-<<<<<<< HEAD
-		phash_list = &(pstapriv->sta_hash[index]);
-		list_insert_tail(&psta->hash_list, phash_list);
-		pstapriv->asoc_sta_count++ ;
-=======
 		phash_list = &pstapriv->sta_hash[index];
 		list_add_tail(&psta->hash_list, phash_list);
 		pstapriv->asoc_sta_count++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* For the SMC router, the sequence number of first packet of WPS handshake
  * will be 0. In this case, this packet will be dropped by recv_decache function
@@ -222,11 +123,7 @@ struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 			memcpy(&psta->sta_recvpriv.rxcache.tid_rxseq[i],
 				&wRxSeqInitialValue, 2);
 		/* for A-MPDU Rx reordering buffer control */
-<<<<<<< HEAD
-		for (i = 0; i < 16 ; i++) {
-=======
 		for (i = 0; i < 16; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			preorder_ctrl = &psta->recvreorder_ctrl[i];
 			preorder_ctrl->padapter = pstapriv->padapter;
 			preorder_ctrl->indicate_seq = 0xffff;
@@ -237,11 +134,7 @@ struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 		}
 	}
 exit:
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&(pfree_sta_queue->lock), flags);
-=======
 	spin_unlock_irqrestore(&pfree_sta_queue->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return psta;
 }
 
@@ -256,33 +149,12 @@ void r8712_free_stainfo(struct _adapter *padapter, struct sta_info *psta)
 	struct	xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct	sta_priv *pstapriv = &padapter->stapriv;
 
-<<<<<<< HEAD
-	if (psta == NULL)
-=======
 	if (!psta)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	pfree_sta_queue = &pstapriv->free_sta_queue;
 	pstaxmitpriv = &psta->sta_xmitpriv;
 	spin_lock_irqsave(&(pxmitpriv->vo_pending.lock), irqL0);
 	r8712_free_xmitframe_queue(pxmitpriv, &pstaxmitpriv->vo_q.sta_pending);
-<<<<<<< HEAD
-	list_delete(&(pstaxmitpriv->vo_q.tx_pending));
-	spin_unlock_irqrestore(&(pxmitpriv->vo_pending.lock), irqL0);
-	spin_lock_irqsave(&(pxmitpriv->vi_pending.lock), irqL0);
-	r8712_free_xmitframe_queue(pxmitpriv, &pstaxmitpriv->vi_q.sta_pending);
-	list_delete(&(pstaxmitpriv->vi_q.tx_pending));
-	spin_unlock_irqrestore(&(pxmitpriv->vi_pending.lock), irqL0);
-	spin_lock_irqsave(&(pxmitpriv->bk_pending.lock), irqL0);
-	r8712_free_xmitframe_queue(pxmitpriv, &pstaxmitpriv->bk_q.sta_pending);
-	list_delete(&(pstaxmitpriv->bk_q.tx_pending));
-	spin_unlock_irqrestore(&(pxmitpriv->bk_pending.lock), irqL0);
-	spin_lock_irqsave(&(pxmitpriv->be_pending.lock), irqL0);
-	r8712_free_xmitframe_queue(pxmitpriv, &pstaxmitpriv->be_q.sta_pending);
-	list_delete(&(pstaxmitpriv->be_q.tx_pending));
-	spin_unlock_irqrestore(&(pxmitpriv->be_pending.lock), irqL0);
-	list_delete(&psta->hash_list);
-=======
 	list_del_init(&(pstaxmitpriv->vo_q.tx_pending));
 	spin_unlock_irqrestore(&(pxmitpriv->vo_pending.lock), irqL0);
 	spin_lock_irqsave(&(pxmitpriv->vi_pending.lock), irqL0);
@@ -298,22 +170,11 @@ void r8712_free_stainfo(struct _adapter *padapter, struct sta_info *psta)
 	list_del_init(&(pstaxmitpriv->be_q.tx_pending));
 	spin_unlock_irqrestore(&(pxmitpriv->be_pending.lock), irqL0);
 	list_del_init(&psta->hash_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pstapriv->asoc_sta_count--;
 	/* re-init sta_info; 20061114 */
 	_r8712_init_sta_xmit_priv(&psta->sta_xmitpriv);
 	_r8712_init_sta_recv_priv(&psta->sta_recvpriv);
 	/* for A-MPDU Rx reordering buffer control,
-<<<<<<< HEAD
-	 * cancel reordering_ctrl_timer */
-	for (i = 0; i < 16; i++) {
-		preorder_ctrl = &psta->recvreorder_ctrl[i];
-		_cancel_timer_ex(&preorder_ctrl->reordering_ctrl_timer);
-	}
-	spin_lock(&(pfree_sta_queue->lock));
-	/* insert into free_sta_queue; 20061114 */
-	list_insert_tail(&psta->list, get_list_head(pfree_sta_queue));
-=======
 	 * cancel reordering_ctrl_timer
 	 */
 	for (i = 0; i < 16; i++) {
@@ -323,7 +184,6 @@ void r8712_free_stainfo(struct _adapter *padapter, struct sta_info *psta)
 	spin_lock(&(pfree_sta_queue->lock));
 	/* insert into free_sta_queue; 20061114 */
 	list_add_tail(&psta->list, &pfree_sta_queue->queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&(pfree_sta_queue->lock));
 }
 
@@ -342,15 +202,6 @@ void r8712_free_all_stainfo(struct _adapter *padapter)
 	spin_lock_irqsave(&pstapriv->sta_hash_lock, irqL);
 	for (index = 0; index < NUM_STA; index++) {
 		phead = &(pstapriv->sta_hash[index]);
-<<<<<<< HEAD
-		plist = get_next(phead);
-		while ((end_of_queue_search(phead, plist)) == false) {
-			psta = LIST_CONTAINOR(plist,
-					      struct sta_info, hash_list);
-			plist = get_next(plist);
-			if (pbcmc_stainfo != psta)
-				r8712_free_stainfo(padapter , psta);
-=======
 		plist = phead->next;
 		while (!end_of_queue_search(phead, plist)) {
 			psta = container_of(plist,
@@ -358,7 +209,6 @@ void r8712_free_all_stainfo(struct _adapter *padapter)
 			plist = plist->next;
 			if (pbcmc_stainfo != psta)
 				r8712_free_stainfo(padapter, psta);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	spin_unlock_irqrestore(&pstapriv->sta_hash_lock, irqL);
@@ -372,34 +222,20 @@ struct sta_info *r8712_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 	struct sta_info *psta = NULL;
 	u32	index;
 
-<<<<<<< HEAD
-	if (hwaddr == NULL)
-=======
 	if (!hwaddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	index = wifi_mac_hash(hwaddr);
 	spin_lock_irqsave(&pstapriv->sta_hash_lock, irqL);
 	phead = &(pstapriv->sta_hash[index]);
-<<<<<<< HEAD
-	plist = get_next(phead);
-	while ((end_of_queue_search(phead, plist)) == false) {
-		psta = LIST_CONTAINOR(plist, struct sta_info, hash_list);
-=======
 	plist = phead->next;
 	while (!end_of_queue_search(phead, plist)) {
 		psta = container_of(plist, struct sta_info, hash_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((!memcmp(psta->hwaddr, hwaddr, ETH_ALEN))) {
 			/* if found the matched address */
 			break;
 		}
 		psta = NULL;
-<<<<<<< HEAD
-		plist = get_next(plist);
-=======
 		plist = plist->next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&pstapriv->sta_hash_lock, irqL);
 	return psta;
@@ -407,44 +243,20 @@ struct sta_info *r8712_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 
 void r8712_init_bcmc_stainfo(struct _adapter *padapter)
 {
-<<<<<<< HEAD
-	struct sta_info	*psta;
-	struct tx_servq	*ptxservq;
-	unsigned char bcast_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-	struct	sta_priv *pstapriv = &padapter->stapriv;
-
-	psta = r8712_alloc_stainfo(pstapriv, bcast_addr);
-	if (psta == NULL)
-		return;
-	ptxservq = &(psta->sta_xmitpriv.be_q);
-=======
 	unsigned char bcast_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 	struct	sta_priv *pstapriv = &padapter->stapriv;
 
 	r8712_alloc_stainfo(pstapriv, bcast_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct sta_info *r8712_get_bcmc_stainfo(struct _adapter *padapter)
 {
-<<<<<<< HEAD
-	struct sta_info *psta;
-	struct sta_priv *pstapriv = &padapter->stapriv;
-	u8 bc_addr[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-
-	psta = r8712_get_stainfo(pstapriv, bc_addr);
-	return psta;
-}
-
-
-=======
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	u8 bc_addr[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 	return r8712_get_stainfo(pstapriv, bc_addr);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u8 r8712_access_ctrl(struct wlan_acl_pool *pacl_list, u8 *mac_addr)
 {
 	return true;

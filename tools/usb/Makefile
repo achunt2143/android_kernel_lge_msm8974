@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-# Makefile for USB tools
-
-CC = $(CROSS_COMPILE)gcc
-PTHREAD_LIBS = -lpthread
-WARNINGS = -Wall -Wextra
-CFLAGS = $(WARNINGS) -g $(PTHREAD_LIBS) -I../include
-
-all: testusb ffs-test
-%: %.c
-	$(CC) $(CFLAGS) -o $@ $^
-
-clean:
-	$(RM) testusb ffs-test
-=======
 # SPDX-License-Identifier: GPL-2.0
 # Makefile for USB tools
 include ../scripts/Makefile.include
@@ -64,4 +49,3 @@ install: $(ALL_PROGRAMS)
 FORCE:
 
 .PHONY: all install clean FORCE prepare
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

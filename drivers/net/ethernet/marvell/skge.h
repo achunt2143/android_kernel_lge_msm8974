@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions for the new Marvell Yukon / SysKonnect driver.
  */
@@ -18,15 +15,6 @@
 #define  PCI_VPD_ROM_SZ	7L<<14	/* VPD ROM size 0=256, 1=512, ... */
 #define  PCI_REV_DESC	1<<2	/* Reverse Descriptor bytes */
 
-<<<<<<< HEAD
-#define PCI_STATUS_ERROR_BITS (PCI_STATUS_DETECTED_PARITY | \
-			       PCI_STATUS_SIG_SYSTEM_ERROR | \
-			       PCI_STATUS_REC_MASTER_ABORT | \
-			       PCI_STATUS_REC_TARGET_ABORT | \
-			       PCI_STATUS_PARITY)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum csr_regs {
 	B0_RAP	= 0x0000,
 	B0_CTST	= 0x0004,
@@ -275,11 +263,7 @@ enum {
 	CHIP_ID_YUKON_LP   = 0xb2, /* Chip ID for YUKON-LP */
 	CHIP_ID_YUKON_XL   = 0xb3, /* Chip ID for YUKON-2 XL */
 	CHIP_ID_YUKON_EC   = 0xb6, /* Chip ID for YUKON-2 EC */
-<<<<<<< HEAD
- 	CHIP_ID_YUKON_FE   = 0xb7, /* Chip ID for YUKON-2 FE */
-=======
 	CHIP_ID_YUKON_FE   = 0xb7, /* Chip ID for YUKON-2 FE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	CHIP_REV_YU_LITE_A1  = 3,	/* Chip Rev. for YUKON-Lite A1,A2 */
 	CHIP_REV_YU_LITE_A3  = 7,	/* Chip Rev. for YUKON-Lite A3 */
@@ -673,13 +657,8 @@ enum {
 	LED_BLK_OFF	= 1<<4,	/* Link LED Blinking Off */
 	LED_SYNC_ON	= 1<<3,	/* Use Sync Wire to switch LED */
 	LED_SYNC_OFF	= 1<<2,	/* Disable Sync Wire Input */
-<<<<<<< HEAD
-	LED_ON	= 1<<1,	/* switch LED on */
-	LED_OFF	= 1<<0,	/* switch LED off */
-=======
 	LED_REG_ON	= 1<<1,	/* switch LED on */
 	LED_REG_OFF	= 1<<0,	/* switch LED off */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Receive GMAC FIFO (YUKON) */
@@ -2441,11 +2420,7 @@ struct skge_hw {
 	spinlock_t	     phy_lock;
 	struct tasklet_struct phy_task;
 
-<<<<<<< HEAD
-	char		     irq_name[0]; /* skge@pci:000:04:00.0 */
-=======
 	char		     irq_name[]; /* skge@pci:000:04:00.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum pause_control {

@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/kernel/xscale-cp0.c
  *
  * XScale DSP and iWMMXt coprocessor context switching and handling
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -22,12 +12,9 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <asm/thread_notify.h>
-<<<<<<< HEAD
-=======
 #include <asm/cputype.h>
 
 asm("	.arch armv5te\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void dsp_save_state(u32 *state)
 {
@@ -165,29 +152,15 @@ static int __init xscale_cp0_init(void)
 {
 	u32 cp_access;
 
-<<<<<<< HEAD
-=======
 	/* do not attempt to probe iwmmxt on non-xscale family CPUs */
 	if (!cpu_is_xscale_family())
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cp_access = xscale_cp_access_read() & ~3;
 	xscale_cp_access_write(cp_access | 1);
 
 	if (cpu_has_iwmmxt()) {
 #ifndef CONFIG_IWMMXT
-<<<<<<< HEAD
-		printk(KERN_WARNING "CAUTION: XScale iWMMXt coprocessor "
-			"detected, but kernel support is missing.\n");
-#else
-		printk(KERN_INFO "XScale iWMMXt coprocessor detected.\n");
-		elf_hwcap |= HWCAP_IWMMXT;
-		thread_register_notifier(&iwmmxt_notifier_block);
-#endif
-	} else {
-		printk(KERN_INFO "XScale DSP coprocessor detected.\n");
-=======
 		pr_warn("CAUTION: XScale iWMMXt coprocessor detected, but kernel support is missing.\n");
 #else
 		pr_info("XScale iWMMXt coprocessor detected.\n");
@@ -197,7 +170,6 @@ static int __init xscale_cp0_init(void)
 #endif
 	} else {
 		pr_info("XScale DSP coprocessor detected.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		thread_register_notifier(&dsp_notifier_block);
 		cp_access |= 1;
 	}

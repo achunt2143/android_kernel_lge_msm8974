@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/parisc/traps.c
  *
@@ -15,10 +12,7 @@
  */
 
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/debug.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/errno.h>
@@ -33,18 +27,12 @@
 #include <linux/interrupt.h>
 #include <linux/console.h>
 #include <linux/bug.h>
-<<<<<<< HEAD
-
-#include <asm/assembly.h>
-#include <asm/uaccess.h>
-=======
 #include <linux/ratelimit.h>
 #include <linux/uaccess.h>
 #include <linux/kdebug.h>
 #include <linux/kfence.h>
 
 #include <asm/assembly.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <asm/traps.h>
@@ -56,20 +44,6 @@
 #include <asm/unwind.h>
 #include <asm/tlbflush.h>
 #include <asm/cacheflush.h>
-<<<<<<< HEAD
-
-#include "../math-emu/math-emu.h"	/* for handle_fpe() */
-
-#define PRINT_USER_FAULTS /* (turn this on if you want user faults to be */
-			  /*  dumped to the console via printk)          */
-
-#if defined(CONFIG_SMP) || defined(CONFIG_DEBUG_SPINLOCK)
-DEFINE_SPINLOCK(pa_dbit_lock);
-#endif
-
-static void parisc_show_stack(struct task_struct *task, unsigned long *sp,
-	struct pt_regs *regs);
-=======
 #include <linux/kgdb.h>
 #include <linux/kprobes.h>
 
@@ -81,7 +55,6 @@ static void parisc_show_stack(struct task_struct *task, unsigned long *sp,
 
 static void parisc_show_stack(struct task_struct *task,
 	struct pt_regs *regs, const char *loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int printbinary(char *buf, unsigned long x, int nbits)
 {
@@ -107,11 +80,7 @@ static int printbinary(char *buf, unsigned long x, int nbits)
 		lvl, f, (x), (x+3), (r)[(x)+0], (r)[(x)+1],		\
 		(r)[(x)+2], (r)[(x)+3])
 
-<<<<<<< HEAD
-static void print_gr(char *level, struct pt_regs *regs)
-=======
 static void print_gr(const char *level, struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	char buf[64];
@@ -125,11 +94,7 @@ static void print_gr(const char *level, struct pt_regs *regs)
 		PRINTREGS(level, regs->gr, "r", RFMT, i);
 }
 
-<<<<<<< HEAD
-static void print_fr(char *level, struct pt_regs *regs)
-=======
 static void print_fr(const char *level, struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	char buf[64];
@@ -159,21 +124,14 @@ static void print_fr(const char *level, struct pt_regs *regs)
 void show_regs(struct pt_regs *regs)
 {
 	int i, user;
-<<<<<<< HEAD
-	char *level;
-=======
 	const char *level;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long cr30, cr31;
 
 	user = user_mode(regs);
 	level = user ? KERN_DEBUG : KERN_CRIT;
 
-<<<<<<< HEAD
-=======
 	show_regs_print_info(level);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	print_gr(level, regs);
 
 	for (i = 0; i < 8; i += 4)
@@ -190,11 +148,7 @@ void show_regs(struct pt_regs *regs)
 	printk("%s IIR: %08lx    ISR: " RFMT "  IOR: " RFMT "\n",
 	       level, regs->iir, regs->isr, regs->ior);
 	printk("%s CPU: %8d   CR30: " RFMT " CR31: " RFMT "\n",
-<<<<<<< HEAD
-	       level, current_thread_info()->cpu, cr30, cr31);
-=======
 	       level, task_cpu(current), cr30, cr31);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("%s ORIG_R28: " RFMT "\n", level, regs->orig_r28);
 
 	if (user) {
@@ -206,26 +160,6 @@ void show_regs(struct pt_regs *regs)
 		printk("%s IAOQ[1]: %pS\n", level, (void *) regs->iaoq[1]);
 		printk("%s RP(r2): %pS\n", level, (void *) regs->gr[2]);
 
-<<<<<<< HEAD
-		parisc_show_stack(current, NULL, regs);
-	}
-}
-
-
-void dump_stack(void)
-{
-	show_stack(NULL, NULL);
-}
-
-EXPORT_SYMBOL(dump_stack);
-
-static void do_show_stack(struct unwind_frame_info *info)
-{
-	int i = 1;
-
-	printk(KERN_CRIT "Backtrace:\n");
-	while (i <= 16) {
-=======
 		parisc_show_stack(current, regs, KERN_DEFAULT);
 	}
 }
@@ -247,59 +181,10 @@ static void do_show_stack(struct unwind_frame_info *info, const char *loglvl)
 
 	printk("%sBacktrace:\n", loglvl);
 	while (i <= MAX_UNWIND_ENTRIES) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unwind_once(info) < 0 || info->ip == 0)
 			break;
 
 		if (__kernel_text_address(info->ip)) {
-<<<<<<< HEAD
-			printk(KERN_CRIT " [<" RFMT ">] %pS\n",
-				info->ip, (void *) info->ip);
-			i++;
-		}
-	}
-	printk(KERN_CRIT "\n");
-}
-
-static void parisc_show_stack(struct task_struct *task, unsigned long *sp,
-	struct pt_regs *regs)
-{
-	struct unwind_frame_info info;
-	struct task_struct *t;
-
-	t = task ? task : current;
-	if (regs) {
-		unwind_frame_init(&info, t, regs);
-		goto show_stack;
-	}
-
-	if (t == current) {
-		unsigned long sp;
-
-HERE:
-		asm volatile ("copy %%r30, %0" : "=r"(sp));
-		{
-			struct pt_regs r;
-
-			memset(&r, 0, sizeof(struct pt_regs));
-			r.iaoq[0] = (unsigned long)&&HERE;
-			r.gr[2] = (unsigned long)__builtin_return_address(0);
-			r.gr[30] = sp;
-
-			unwind_frame_init(&info, current, &r);
-		}
-	} else {
-		unwind_frame_init_from_blocked_task(&info, t);
-	}
-
-show_stack:
-	do_show_stack(&info);
-}
-
-void show_stack(struct task_struct *t, unsigned long *sp)
-{
-	return parisc_show_stack(t, sp, NULL);
-=======
 			printk("%s [<" RFMT ">] %pS\n",
 				loglvl, info->ip, (void *) info->ip);
 			i++;
@@ -321,7 +206,6 @@ static void parisc_show_stack(struct task_struct *task,
 void show_stack(struct task_struct *t, unsigned long *sp, const char *loglvl)
 {
 	parisc_show_stack(t, NULL, loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int is_valid_bugaddr(unsigned long iaoq)
@@ -335,18 +219,6 @@ void die_if_kernel(char *str, struct pt_regs *regs, long err)
 		if (err == 0)
 			return; /* STFU */
 
-<<<<<<< HEAD
-		printk(KERN_CRIT "%s (pid %d): %s (code %ld) at " RFMT "\n",
-			current->comm, task_pid_nr(current), str, err, regs->iaoq[0]);
-#ifdef PRINT_USER_FAULTS
-		/* XXX for debugging only */
-		show_regs(regs);
-#endif
-		return;
-	}
-
-	oops_in_progress = 1;
-=======
 		parisc_printk_ratelimited(1, regs,
 			KERN_CRIT "%s (pid %d): %s (code %ld) at " RFMT "\n",
 			current->comm, task_pid_nr(current), str, err, regs->iaoq[0]);
@@ -355,7 +227,6 @@ void die_if_kernel(char *str, struct pt_regs *regs, long err)
 	}
 
 	bust_spinlocks(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	oops_enter();
 
@@ -372,16 +243,6 @@ void die_if_kernel(char *str, struct pt_regs *regs, long err)
 	/* unlock the pdc lock if necessary */
 	pdc_emergency_unlock();
 
-<<<<<<< HEAD
-	/* maybe the kernel hasn't booted very far yet and hasn't been able 
-	 * to initialize the serial or STI console. In that case we should 
-	 * re-enable the pdc console, so that the user will be able to 
-	 * identify the problem. */
-	if (!console_drivers)
-		pdc_console_restart();
-	
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		printk(KERN_CRIT "%s (pid %d): %s (code %ld)\n",
 			current->comm, task_pid_nr(current), str, err);
@@ -396,54 +257,24 @@ void die_if_kernel(char *str, struct pt_regs *regs, long err)
 
 	show_regs(regs);
 	dump_stack();
-<<<<<<< HEAD
-	add_taint(TAINT_DIE);
-=======
 	add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (in_interrupt())
 		panic("Fatal exception in interrupt");
 
-<<<<<<< HEAD
-	if (panic_on_oops) {
-		printk(KERN_EMERG "Fatal exception: panic in 5 seconds\n");
-		ssleep(5);
-		panic("Fatal exception");
-	}
-
-	oops_exit();
-	do_exit(SIGSEGV);
-}
-
-int syscall_ipi(int (*syscall) (struct pt_regs *), struct pt_regs *regs)
-{
-	return syscall(regs);
-=======
 	if (panic_on_oops)
 		panic("Fatal exception");
 
 	oops_exit();
 	make_task_dead(SIGSEGV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* gdb uses break 4,8 */
 #define GDB_BREAK_INSN 0x10004
 static void handle_gdb_break(struct pt_regs *regs, int wot)
 {
-<<<<<<< HEAD
-	struct siginfo si;
-
-	si.si_signo = SIGTRAP;
-	si.si_errno = 0;
-	si.si_code = wot;
-	si.si_addr = (void __user *) (regs->iaoq[0] & ~3);
-	force_sig_info(SIGTRAP, &si, current);
-=======
 	force_sig_fault(SIGTRAP, wot,
 			(void __user *) (regs->iaoq[0] & ~3));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void handle_break(struct pt_regs *regs)
@@ -463,17 +294,6 @@ static void handle_break(struct pt_regs *regs)
 			(tt == BUG_TRAP_TYPE_NONE) ? 9 : 0);
 	}
 
-<<<<<<< HEAD
-#ifdef PRINT_USER_FAULTS
-	if (unlikely(iir != GDB_BREAK_INSN)) {
-		printk(KERN_DEBUG "break %d,%d: pid=%d command='%s'\n",
-			iir & 31, (iir>>13) & ((1<<13)-1),
-			task_pid_nr(current), current->comm);
-		show_regs(regs);
-	}
-#endif
-
-=======
 #ifdef CONFIG_KPROBES
 	if (unlikely(iir == PARISC_KPROBES_BREAK_INSN && !user_mode(regs))) {
 		parisc_kprobe_break_handler(regs);
@@ -505,7 +325,6 @@ static void handle_break(struct pt_regs *regs)
 			iir & 31, (iir>>13) & ((1<<13)-1),
 			task_pid_nr(current), current->comm);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* send standard GDB signal */
 	handle_gdb_break(regs, TRAP_BRKPT);
 }
@@ -516,14 +335,7 @@ static void default_trap(int code, struct pt_regs *regs)
 	show_regs(regs);
 }
 
-<<<<<<< HEAD
-void (*cpu_lpmc) (int code, struct pt_regs *regs) __read_mostly = default_trap;
-
-
-void transfer_pim_to_trap_frame(struct pt_regs *regs)
-=======
 static void transfer_pim_to_trap_frame(struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     register int i;
     extern unsigned int hpmc_pim_data[];
@@ -607,12 +419,8 @@ void parisc_terminate(char *msg, struct pt_regs *regs, int code, unsigned long o
 {
 	static DEFINE_SPINLOCK(terminate_lock);
 
-<<<<<<< HEAD
-	oops_in_progress = 1;
-=======
 	(void)notify_die(DIE_OOPS, msg, regs, 0, code, SIGTRAP);
 	bust_spinlocks(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_eiem(0);
 	local_irq_disable();
@@ -621,13 +429,6 @@ void parisc_terminate(char *msg, struct pt_regs *regs, int code, unsigned long o
 	/* unlock the pdc lock if necessary */
 	pdc_emergency_unlock();
 
-<<<<<<< HEAD
-	/* restart pdc console if necessary */
-	if (!console_drivers)
-		pdc_console_restart();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Not all paths will gutter the processor... */
 	switch(code){
 
@@ -636,10 +437,6 @@ void parisc_terminate(char *msg, struct pt_regs *regs, int code, unsigned long o
 		break;
 
 	default:
-<<<<<<< HEAD
-		/* Fall through */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	}
@@ -648,21 +445,12 @@ void parisc_terminate(char *msg, struct pt_regs *regs, int code, unsigned long o
 		/* show_stack(NULL, (unsigned long *)regs->gr[30]); */
 		struct unwind_frame_info info;
 		unwind_frame_init(&info, current, regs);
-<<<<<<< HEAD
-		do_show_stack(&info);
-	}
-
-	printk("\n");
-	printk(KERN_CRIT "%s: Code=%d regs=%p (Addr=" RFMT ")\n",
-			msg, code, regs, offset);
-=======
 		do_show_stack(&info, KERN_CRIT);
 	}
 
 	printk("\n");
 	pr_crit("%s: Code=%d (%s) at addr " RFMT "\n",
 		msg, code, trap_name(code), offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	show_regs(regs);
 
 	spin_unlock(&terminate_lock);
@@ -677,11 +465,7 @@ void parisc_terminate(char *msg, struct pt_regs *regs, int code, unsigned long o
 	 * panic notifiers, and we should call panic
 	 * directly from the location that we wish. 
 	 * e.g. We should not call panic from
-<<<<<<< HEAD
-	 * parisc_terminate, but rather the oter way around.
-=======
 	 * parisc_terminate, but rather the other way around.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * This hack works, prints the panic message twice,
 	 * and it enables reboot timers!
 	 */
@@ -692,17 +476,9 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 {
 	unsigned long fault_address = 0;
 	unsigned long fault_space = 0;
-<<<<<<< HEAD
-	struct siginfo si;
-
-	if (code == 1)
-	    pdc_console_restart();  /* switch back to pdc if HPMC */
-	else
-=======
 	int si_code;
 
 	if (!irqs_disabled_flags(regs->gr[0]))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    local_irq_enable();
 
 	/* Security check:
@@ -727,17 +503,10 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 	 */
 	if (((unsigned long)regs->iaoq[0] & 3) &&
 	    ((unsigned long)regs->iasq[0] != (unsigned long)regs->sr[7])) { 
-<<<<<<< HEAD
-	  	/* Kill the user process later */
-	  	regs->iaoq[0] = 0 | 3;
-		regs->iaoq[1] = regs->iaoq[0] + 4;
-	 	regs->iasq[0] = regs->iasq[1] = regs->sr[7];
-=======
 		/* Kill the user process later */
 		regs->iaoq[0] = 0 | 3;
 		regs->iaoq[1] = regs->iaoq[0] + 4;
 		regs->iasq[0] = regs->iasq[1] = regs->sr[7];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regs->gr[0] &= ~PSW_B;
 		return;
 	}
@@ -753,13 +522,8 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 		
 		/* set up a new led state on systems shipped with a LED State panel */
 		pdc_chassis_send_status(PDC_CHASSIS_DIRECT_HPMC);
-<<<<<<< HEAD
-		    
-	    	parisc_terminate("High Priority Machine Check (HPMC)",
-=======
 
 		parisc_terminate("High Priority Machine Check (HPMC)",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				regs, code, 0);
 		/* NOT REACHED */
 		
@@ -771,8 +535,6 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 	case  3:
 		/* Recovery counter trap */
 		regs->gr[0] &= ~PSW_R;
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_KGDB
 		if (kgdb_single_step) {
@@ -781,7 +543,6 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 		}
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (user_space(regs))
 			handle_gdb_break(regs, TRAP_TRACE);
 		/* else this must be the start of a syscall - just let it run */
@@ -793,17 +554,10 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 		
 		flush_cache_all();
 		flush_tlb_all();
-<<<<<<< HEAD
-		cpu_lpmc(5, regs);
-		return;
-
-	case  6:
-=======
 		default_trap(code, regs);
 		return;
 
 	case  PARISC_ITLB_TRAP:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Instruction TLB miss fault/Instruction page fault */
 		fault_address = regs->iaoq[0];
 		fault_space   = regs->iasq[0];
@@ -812,26 +566,13 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 	case  8:
 		/* Illegal instruction trap */
 		die_if_kernel("Illegal instruction", regs, code);
-<<<<<<< HEAD
-		si.si_code = ILL_ILLOPC;
-=======
 		si_code = ILL_ILLOPC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto give_sigill;
 
 	case  9:
 		/* Break instruction trap */
 		handle_break(regs);
 		return;
-<<<<<<< HEAD
-	
-	case 10:
-		/* Privileged operation trap */
-		die_if_kernel("Privileged operation", regs, code);
-		si.si_code = ILL_PRVOPC;
-		goto give_sigill;
-	
-=======
 
 	case 10:
 		/* Privileged operation trap */
@@ -839,7 +580,6 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 		si_code = ILL_PRVOPC;
 		goto give_sigill;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 11:
 		/* Privileged register trap */
 		if ((regs->iir & 0xffdfffe0) == 0x034008a0) {
@@ -860,32 +600,16 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 		}
 
 		die_if_kernel("Privileged register usage", regs, code);
-<<<<<<< HEAD
-		si.si_code = ILL_PRVREG;
-	give_sigill:
-		si.si_signo = SIGILL;
-		si.si_errno = 0;
-		si.si_addr = (void __user *) regs->iaoq[0];
-		force_sig_info(SIGILL, &si, current);
-=======
 		si_code = ILL_PRVREG;
 	give_sigill:
 		force_sig_fault(SIGILL, si_code,
 				(void __user *) regs->iaoq[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	case 12:
 		/* Overflow Trap, let the userland signal handler do the cleanup */
-<<<<<<< HEAD
-		si.si_signo = SIGFPE;
-		si.si_code = FPE_INTOVF;
-		si.si_addr = (void __user *) regs->iaoq[0];
-		force_sig_info(SIGFPE, &si, current);
-=======
 		force_sig_fault(SIGFPE, FPE_INTOVF,
 				(void __user *) regs->iaoq[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 		
 	case 13:
@@ -893,20 +617,11 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 		   The condition succeeds in an instruction which traps
 		   on condition  */
 		if(user_mode(regs)){
-<<<<<<< HEAD
-			si.si_signo = SIGFPE;
-			/* Set to zero, and let the userspace app figure it out from
-		   	   the insn pointed to by si_addr */
-			si.si_code = 0;
-			si.si_addr = (void __user *) regs->iaoq[0];
-			force_sig_info(SIGFPE, &si, current);
-=======
 			/* Let userspace app figure it out from the insn pointed
 			 * to by si_addr.
 			 */
 			force_sig_fault(SIGFPE, FPE_CONDTRAP,
 					(void __user *) regs->iaoq[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		} 
 		/* The kernel doesn't want to handle condition codes */
@@ -915,14 +630,6 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 	case 14:
 		/* Assist Exception Trap, i.e. floating point exception. */
 		die_if_kernel("Floating point exception", regs, 0); /* quiet */
-<<<<<<< HEAD
-		handle_fpe(regs);
-		return;
-		
-	case 15:
-		/* Data TLB miss fault/Data page fault */
-		/* Fall through */
-=======
 		__inc_irq_stat(irq_fpassist_count);
 		handle_fpe(regs);
 		return;
@@ -930,39 +637,25 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 	case 15:
 		/* Data TLB miss fault/Data page fault */
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 16:
 		/* Non-access instruction TLB miss fault */
 		/* The instruction TLB entry needed for the target address of the FIC
 		   is absent, and hardware can't find it, so we get to cleanup */
-<<<<<<< HEAD
-		/* Fall through */
-	case 17:
-		/* Non-access data TLB miss fault/Non-access data page fault */
-		/* FIXME: 
-		 	 Still need to add slow path emulation code here!
-		         If the insn used a non-shadow register, then the tlb
-=======
 		fallthrough;
 	case 17:
 		/* Non-access data TLB miss fault/Non-access data page fault */
 		/* FIXME: 
 			 Still need to add slow path emulation code here!
 			 If the insn used a non-shadow register, then the tlb
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 handlers could not have their side-effect (e.g. probe
 			 writing to a target register) emulated since rfir would
 			 erase the changes to said register. Instead we have to
 			 setup everything, call this function we are in, and emulate
 			 by hand. Technically we need to emulate:
 			 fdc,fdce,pdc,"fic,4f",prober,probeir,probew, probeiw
-<<<<<<< HEAD
-		*/			  
-=======
 		*/
 		if (code == 17 && handle_nadtlb_fault(regs))
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fault_address = regs->ior;
 		fault_space = regs->isr;
 		break;
@@ -974,11 +667,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 			handle_unaligned(regs);
 			return;
 		}
-<<<<<<< HEAD
-		/* Fall Through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 26: 
 		/* PCXL: Data memory access rights trap */
 		fault_address = regs->ior;
@@ -988,11 +677,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 	case 19:
 		/* Data memory break trap */
 		regs->gr[0] |= PSW_X; /* So we can single-step over the trap */
-<<<<<<< HEAD
-		/* fall thru */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 21:
 		/* Page reference trap */
 		handle_gdb_break(regs, TRAP_HWBKPT);
@@ -1026,11 +711,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 		if (user_mode(regs)) {
 			struct vm_area_struct *vma;
 
-<<<<<<< HEAD
-			down_read(&current->mm->mmap_sem);
-=======
 			mmap_read_lock(current->mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vma = find_vma(current->mm,regs->iaoq[0]);
 			if (vma && (regs->iaoq[0] >= vma->vm_start)
 				&& (vma->vm_flags & VM_EXEC)) {
@@ -1038,14 +719,6 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 				fault_address = regs->iaoq[0];
 				fault_space = regs->iasq[0];
 
-<<<<<<< HEAD
-				up_read(&current->mm->mmap_sem);
-				break; /* call do_page_fault() */
-			}
-			up_read(&current->mm->mmap_sem);
-		}
-		/* Fall Through */
-=======
 				mmap_read_unlock(current->mm);
 				break; /* call do_page_fault() */
 			}
@@ -1054,7 +727,6 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 		/* CPU could not fetch instruction, so clear stale IIR value. */
 		regs->iir = 0xbaadf00d;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 27: 
 		/* Data memory protection ID trap */
 		if (code == 27 && !user_mode(regs) &&
@@ -1062,21 +734,10 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 			return;
 
 		die_if_kernel("Protection id trap", regs, code);
-<<<<<<< HEAD
-		si.si_code = SEGV_MAPERR;
-		si.si_signo = SIGSEGV;
-		si.si_errno = 0;
-		if (code == 7)
-		    si.si_addr = (void __user *) regs->iaoq[0];
-		else
-		    si.si_addr = (void __user *) regs->ior;
-		force_sig_info(SIGSEGV, &si, current);
-=======
 		force_sig_fault(SIGSEGV, SEGV_MAPERR,
 				(code == 7)?
 				((void __user *) regs->iaoq[0]) :
 				((void __user *) regs->ior));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	case 28: 
@@ -1086,26 +747,12 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 
 	default:
 		if (user_mode(regs)) {
-<<<<<<< HEAD
-#ifdef PRINT_USER_FAULTS
-			printk(KERN_DEBUG "\nhandle_interruption() pid=%d command='%s'\n",
-			    task_pid_nr(current), current->comm);
-			show_regs(regs);
-#endif
-			/* SIGBUS, for lack of a better one. */
-			si.si_signo = SIGBUS;
-			si.si_code = BUS_OBJERR;
-			si.si_errno = 0;
-			si.si_addr = (void __user *) regs->ior;
-			force_sig_info(SIGBUS, &si, current);
-=======
 			parisc_printk_ratelimited(0, regs, KERN_DEBUG
 				"handle_interruption() pid=%d command='%s'\n",
 				task_pid_nr(current), current->comm);
 			/* SIGBUS, for lack of a better one. */
 			force_sig_fault(SIGBUS, BUS_OBJERR,
 					(void __user *)regs->ior);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		pdc_chassis_send_status(PDC_CHASSIS_DIRECT_PANIC);
@@ -1116,30 +763,12 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 
 	if (user_mode(regs)) {
 	    if ((fault_space >> SPACEID_SHIFT) != (regs->sr[7] >> SPACEID_SHIFT)) {
-<<<<<<< HEAD
-#ifdef PRINT_USER_FAULTS
-		if (fault_space == 0)
-			printk(KERN_DEBUG "User Fault on Kernel Space ");
-		else
-			printk(KERN_DEBUG "User Fault (long pointer) (fault %d) ",
-			       code);
-		printk(KERN_CONT "pid=%d command='%s'\n",
-		       task_pid_nr(current), current->comm);
-		show_regs(regs);
-#endif
-		si.si_signo = SIGSEGV;
-		si.si_errno = 0;
-		si.si_code = SEGV_MAPERR;
-		si.si_addr = (void __user *) regs->ior;
-		force_sig_info(SIGSEGV, &si, current);
-=======
 		parisc_printk_ratelimited(0, regs, KERN_DEBUG
 				"User fault %d on space 0x%08lx, pid=%d command='%s'\n",
 				code, fault_space,
 				task_pid_nr(current), current->comm);
 		force_sig_fault(SIGSEGV, SEGV_MAPERR,
 				(void __user *)regs->ior);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	    }
 	}
@@ -1150,10 +779,6 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 	     * unless pagefault_disable() was called before.
 	     */
 
-<<<<<<< HEAD
-	    if (fault_space == 0 && !in_atomic())
-	    {
-=======
 	    if (faulthandler_disabled() || fault_space == 0)
 	    {
 		/* Clean up and return if in exception table. */
@@ -1163,7 +788,6 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 		if (kfence_handle_page_fault(fault_address,
 			parisc_acctyp(code, regs->iir) == VM_WRITE, regs))
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdc_chassis_send_status(PDC_CHASSIS_DIRECT_PANIC);
 		parisc_terminate("Kernel Fault", regs, code, fault_address);
 	    }
@@ -1173,47 +797,23 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 }
 
 
-<<<<<<< HEAD
-int __init check_ivt(void *iva)
-{
-	extern u32 os_hpmc_size;
-=======
 static void __init initialize_ivt(const void *iva)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	extern const u32 os_hpmc[];
 
 	int i;
 	u32 check = 0;
 	u32 *ivap;
-<<<<<<< HEAD
-	u32 *hpmcp;
-	u32 length;
-
-	if (strcmp((char *)iva, "cows can fly"))
-		return -1;
-=======
 	u32 instr;
 
 	if (strcmp((const char *)iva, "cows can fly"))
 		panic("IVT invalid");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ivap = (u32 *)iva;
 
 	for (i = 0; i < 8; i++)
 	    *ivap++ = 0;
 
-<<<<<<< HEAD
-	/* Compute Checksum for HPMC handler */
-	length = os_hpmc_size;
-	ivap[7] = length;
-
-	hpmcp = (u32 *)os_hpmc;
-
-	for (i=0; i<length/4; i++)
-	    check += *hpmcp++;
-=======
 	/*
 	 * Use PDC_INSTR firmware function to get instruction that invokes
 	 * PDCE_CHECK in HPMC handler.  See programming note at page 1-31 of
@@ -1235,38 +835,11 @@ static void __init initialize_ivt(const void *iva)
 
 	/* Setup IVA and compute checksum for HPMC handler */
 	ivap[6] = (u32)__pa(os_hpmc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i=0; i<8; i++)
 	    check += ivap[i];
 
 	ivap[5] = -check;
-<<<<<<< HEAD
-
-	return 0;
-}
-	
-#ifndef CONFIG_64BIT
-extern const void fault_vector_11;
-#endif
-extern const void fault_vector_20;
-
-void __init trap_init(void)
-{
-	void *iva;
-
-	if (boot_cpu_data.cpu_type >= pcxu)
-		iva = (void *) &fault_vector_20;
-	else
-#ifdef CONFIG_64BIT
-		panic("Can't boot 64-bit OS on PA1.1 processor!");
-#else
-		iva = (void *) &fault_vector_11;
-#endif
-
-	if (check_ivt(iva))
-		panic("IVT invalid");
-=======
 	pr_debug("initialize_ivt: IVA[6] = 0x%08x\n", ivap[6]);
 }
 	
@@ -1283,5 +856,4 @@ void  __init early_trap_init(void)
 #endif
 
 	initialize_ivt(&fault_vector_20);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

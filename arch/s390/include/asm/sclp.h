@@ -1,25 +1,12 @@
-<<<<<<< HEAD
-/*
- *  include/asm-s390/sclp.h
- *
- *    Copyright IBM Corp. 2007
- *    Author(s): Heiko Carstens <heiko.carstens@de.ibm.com>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *    Copyright IBM Corp. 2007
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_S390_SCLP_H
 #define _ASM_S390_SCLP_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <asm/chpid.h>
-
-#define SCLP_CHP_INFO_MASK_SIZE		32
-=======
 
 #define SCLP_CHP_INFO_MASK_SIZE		32
 #define EARLY_SCCB_SIZE		PAGE_SIZE
@@ -33,7 +20,6 @@
 #include <linux/uio.h>
 #include <asm/chpid.h>
 #include <asm/cpu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sclp_chp_info {
 	u8 recognized[SCLP_CHP_INFO_MASK_SIZE];
@@ -49,11 +35,6 @@ struct sclp_ipl_info {
 	char loadparm[LOADPARM_LEN];
 };
 
-<<<<<<< HEAD
-struct sclp_cpu_entry {
-	u8 address;
-	u8 reserved0[13];
-=======
 struct sclp_core_entry {
 	u8 core_id;
 	u8 reserved0;
@@ -72,27 +53,10 @@ struct sclp_core_entry {
 	u8 cei : 1;
 	u8 : 4;
 	u8 reserved3[6];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 type;
 	u8 reserved1;
 } __attribute__((packed));
 
-<<<<<<< HEAD
-struct sclp_cpu_info {
-	unsigned int configured;
-	unsigned int standby;
-	unsigned int combined;
-	int has_cpu_type;
-	struct sclp_cpu_entry cpu[255];
-};
-
-int sclp_get_cpu_info(struct sclp_cpu_info *info);
-int sclp_cpu_configure(u8 cpu);
-int sclp_cpu_deconfigure(u8 cpu);
-void sclp_facilities_detect(void);
-unsigned long long sclp_get_rnmax(void);
-unsigned long long sclp_get_rzm(void);
-=======
 struct sclp_core_info {
 	unsigned int configured;
 	unsigned int standby;
@@ -176,16 +140,11 @@ int sclp_early_get_hsa_size(unsigned long *hsa_size);
 int _sclp_get_core_info(struct sclp_core_info *info);
 int sclp_core_configure(u8 core);
 int sclp_core_deconfigure(u8 core);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sclp_sdias_blk_count(void);
 int sclp_sdias_copy(void *dest, int blk_num, int nr_blks);
 int sclp_chp_configure(struct chp_id chpid);
 int sclp_chp_deconfigure(struct chp_id chpid);
 int sclp_chp_read_info(struct sclp_chp_info *info);
-<<<<<<< HEAD
-void sclp_get_ipl_info(struct sclp_ipl_info *info);
-
-=======
 int sclp_pci_configure(u32 fid);
 int sclp_pci_deconfigure(u32 fid);
 int sclp_ap_configure(u32 apid);
@@ -202,5 +161,4 @@ static inline int sclp_get_core_info(struct sclp_core_info *info, int early)
 }
 
 #endif /* __ASSEMBLY__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_S390_SCLP_H */

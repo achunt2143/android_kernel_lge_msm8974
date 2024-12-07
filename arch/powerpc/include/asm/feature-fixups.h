@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#ifndef __ASM_POWERPC_FEATURE_FIXUPS_H
-#define __ASM_POWERPC_FEATURE_FIXUPS_H
-
-/*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef __ASM_POWERPC_FEATURE_FIXUPS_H
 #define __ASM_POWERPC_FEATURE_FIXUPS_H
@@ -15,7 +5,6 @@
 #include <asm/asm-const.h>
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -29,19 +18,11 @@
  */
 #if defined(CONFIG_PPC64) && !defined(__powerpc64__)
 /* 64 bits kernel, 32 bits code (ie. vdso32) */
-<<<<<<< HEAD
-#define FTR_ENTRY_LONG		.llong
-#define FTR_ENTRY_OFFSET	.long 0xffffffff; .long
-#elif defined(CONFIG_PPC64)
-#define FTR_ENTRY_LONG		.llong
-#define FTR_ENTRY_OFFSET	.llong
-=======
 #define FTR_ENTRY_LONG		.8byte
 #define FTR_ENTRY_OFFSET	.long 0xffffffff; .long
 #elif defined(CONFIG_PPC64)
 #define FTR_ENTRY_LONG		.8byte
 #define FTR_ENTRY_OFFSET	.8byte
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define FTR_ENTRY_LONG		.long
 #define FTR_ENTRY_OFFSET	.long
@@ -55,8 +36,6 @@ label##2:						\
 	.align 2;					\
 label##3:
 
-<<<<<<< HEAD
-=======
 
 #ifndef CONFIG_CC_IS_CLANG
 #define CHECK_ALT_SIZE(else_size, body_size)			\
@@ -75,7 +54,6 @@ label##3:
 	.org . + ((else_size) > (body_size));
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAKE_FTR_SECTION_ENTRY(msk, val, label, sect)		\
 label##4:							\
 	.popsection;						\
@@ -88,13 +66,7 @@ label##5:							\
 	FTR_ENTRY_OFFSET label##2b-label##5b;			\
 	FTR_ENTRY_OFFSET label##3b-label##5b;			\
 	FTR_ENTRY_OFFSET label##4b-label##5b;			\
-<<<<<<< HEAD
-	.ifgt (label##4b- label##3b)-(label##2b- label##1b);	\
-	.error "Feature section else case larger than body";	\
-	.endif;							\
-=======
 	CHECK_ALT_SIZE((label##4b-label##3b), (label##2b-label##1b)); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.popsection;
 
 
@@ -109,12 +81,9 @@ label##5:							\
 #define END_FTR_SECTION(msk, val)		\
 	END_FTR_SECTION_NESTED(msk, val, 97)
 
-<<<<<<< HEAD
-=======
 #define END_FTR_SECTION_NESTED_IFSET(msk, label)	\
 	END_FTR_SECTION_NESTED((msk), (msk), label)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define END_FTR_SECTION_IFSET(msk)	END_FTR_SECTION((msk), (msk))
 #define END_FTR_SECTION_IFCLR(msk)	END_FTR_SECTION((msk), 0)
 
@@ -144,15 +113,12 @@ label##5:							\
 #define END_MMU_FTR_SECTION(msk, val)		\
 	END_MMU_FTR_SECTION_NESTED(msk, val, 97)
 
-<<<<<<< HEAD
-=======
 #define END_MMU_FTR_SECTION_NESTED_IFSET(msk, label)	\
 	END_MMU_FTR_SECTION_NESTED((msk), (msk), label)
 
 #define END_MMU_FTR_SECTION_NESTED_IFCLR(msk, label)	\
 	END_MMU_FTR_SECTION_NESTED((msk), 0, label)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define END_MMU_FTR_SECTION_IFSET(msk)	END_MMU_FTR_SECTION((msk), (msk))
 #define END_MMU_FTR_SECTION_IFCLR(msk)	END_MMU_FTR_SECTION((msk), 0)
 
@@ -242,8 +208,6 @@ label##3:					       	\
 	FTR_ENTRY_OFFSET label##1b-label##3b;		\
 	.popsection;
 
-<<<<<<< HEAD
-=======
 #define STF_ENTRY_BARRIER_FIXUP_SECTION			\
 953:							\
 	.pushsection __stf_entry_barrier_fixup,"a";	\
@@ -332,5 +296,4 @@ void update_mmu_feature_fixups(unsigned long mask);
 void setup_feature_keys(void);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_POWERPC_FEATURE_FIXUPS_H */

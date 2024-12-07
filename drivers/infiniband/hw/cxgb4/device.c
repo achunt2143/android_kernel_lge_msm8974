@@ -32,11 +32,8 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/debugfs.h>
-<<<<<<< HEAD
-=======
 #include <linux/vmalloc.h>
 #include <linux/math64.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <rdma/ib_verbs.h>
 
@@ -45,14 +42,6 @@
 #define DRV_VERSION "0.1"
 
 MODULE_AUTHOR("Steve Wise");
-<<<<<<< HEAD
-MODULE_DESCRIPTION("Chelsio T4 RDMA Driver");
-MODULE_LICENSE("Dual BSD/GPL");
-MODULE_VERSION(DRV_VERSION);
-
-static LIST_HEAD(uld_ctx_list);
-static DEFINE_MUTEX(dev_mutex);
-=======
 MODULE_DESCRIPTION("Chelsio T4/T5 RDMA Driver");
 MODULE_LICENSE("Dual BSD/GPL");
 
@@ -82,7 +71,6 @@ static struct workqueue_struct *reg_workq;
 #define DB_FC_RESUME_SIZE 64
 #define DB_FC_RESUME_DELAY 1
 #define DB_FC_DRAIN_THRESH 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct dentry *c4iw_debugfs_root;
 
@@ -93,17 +81,6 @@ struct c4iw_debugfs_data {
 	int pos;
 };
 
-<<<<<<< HEAD
-static int count_idrs(int id, void *p, void *data)
-{
-	int *countp = data;
-
-	*countp = *countp + 1;
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t debugfs_read(struct file *file, char __user *buf, size_t count,
 			    loff_t *ppos)
 {
@@ -112,15 +89,6 @@ static ssize_t debugfs_read(struct file *file, char __user *buf, size_t count,
 	return simple_read_from_buffer(buf, count, ppos, d->buf, d->pos);
 }
 
-<<<<<<< HEAD
-static int dump_qp(int id, void *p, void *data)
-{
-	struct c4iw_qp *qp = p;
-	struct c4iw_debugfs_data *qpd = data;
-	int space;
-	int cc;
-
-=======
 void c4iw_log_wr_stats(struct t4_wq *wq, struct t4_cqe *cqe)
 {
 	struct wr_log_entry le;
@@ -279,7 +247,6 @@ static int dump_qp(unsigned long id, struct c4iw_qp *qp,
 {
 	int space;
 	int cc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (id != qp->wq.sq.qid)
 		return 0;
 
@@ -287,20 +254,6 @@ static int dump_qp(unsigned long id, struct c4iw_qp *qp,
 	if (space == 0)
 		return 1;
 
-<<<<<<< HEAD
-	if (qp->ep)
-		cc = snprintf(qpd->buf + qpd->pos, space,
-			     "qp sq id %u rq id %u state %u onchip %u "
-			     "ep tid %u state %u %pI4:%u->%pI4:%u\n",
-			     qp->wq.sq.qid, qp->wq.rq.qid, (int)qp->attr.state,
-			     qp->wq.sq.flags & T4_SQ_ONCHIP,
-			     qp->ep->hwtid, (int)qp->ep->com.state,
-			     &qp->ep->com.local_addr.sin_addr.s_addr,
-			     ntohs(qp->ep->com.local_addr.sin_port),
-			     &qp->ep->com.remote_addr.sin_addr.s_addr,
-			     ntohs(qp->ep->com.remote_addr.sin_port));
-	else
-=======
 	if (qp->ep) {
 		struct c4iw_ep *ep = qp->ep;
 
@@ -348,7 +301,6 @@ static int dump_qp(unsigned long id, struct c4iw_qp *qp,
 				      ntohs(m_rsin6->sin6_port));
 		}
 	} else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cc = snprintf(qpd->buf + qpd->pos, space,
 			     "qp sq id %u rq id %u state %u onchip %u\n",
 			      qp->wq.sq.qid, qp->wq.rq.qid,
@@ -363,59 +315,16 @@ static int qp_release(struct inode *inode, struct file *file)
 {
 	struct c4iw_debugfs_data *qpd = file->private_data;
 	if (!qpd) {
-<<<<<<< HEAD
-		printk(KERN_INFO "%s null qpd?\n", __func__);
-		return 0;
-	}
-	kfree(qpd->buf);
-=======
 		pr_info("%s null qpd?\n", __func__);
 		return 0;
 	}
 	vfree(qpd->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(qpd);
 	return 0;
 }
 
 static int qp_open(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	struct c4iw_debugfs_data *qpd;
-	int ret = 0;
-	int count = 1;
-
-	qpd = kmalloc(sizeof *qpd, GFP_KERNEL);
-	if (!qpd) {
-		ret = -ENOMEM;
-		goto out;
-	}
-	qpd->devp = inode->i_private;
-	qpd->pos = 0;
-
-	spin_lock_irq(&qpd->devp->lock);
-	idr_for_each(&qpd->devp->qpidr, count_idrs, &count);
-	spin_unlock_irq(&qpd->devp->lock);
-
-	qpd->bufsize = count * 128;
-	qpd->buf = kmalloc(qpd->bufsize, GFP_KERNEL);
-	if (!qpd->buf) {
-		ret = -ENOMEM;
-		goto err1;
-	}
-
-	spin_lock_irq(&qpd->devp->lock);
-	idr_for_each(&qpd->devp->qpidr, dump_qp, qpd);
-	spin_unlock_irq(&qpd->devp->lock);
-
-	qpd->buf[qpd->pos++] = 0;
-	file->private_data = qpd;
-	goto out;
-err1:
-	kfree(qpd);
-out:
-	return ret;
-=======
 	struct c4iw_qp *qp;
 	struct c4iw_debugfs_data *qpd;
 	unsigned long index;
@@ -450,7 +359,6 @@ out:
 	qpd->buf[qpd->pos++] = 0;
 	file->private_data = qpd;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations qp_debugfs_fops = {
@@ -461,28 +369,17 @@ static const struct file_operations qp_debugfs_fops = {
 	.llseek  = default_llseek,
 };
 
-<<<<<<< HEAD
-static int dump_stag(int id, void *p, void *data)
-{
-	struct c4iw_debugfs_data *stagd = data;
-	int space;
-	int cc;
-=======
 static int dump_stag(unsigned long id, struct c4iw_debugfs_data *stagd)
 {
 	int space;
 	int cc;
 	struct fw_ri_tpte tpte;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	space = stagd->bufsize - stagd->pos - 1;
 	if (space == 0)
 		return 1;
 
-<<<<<<< HEAD
-	cc = snprintf(stagd->buf + stagd->pos, space, "0x%x\n", id<<8);
-=======
 	ret = cxgb4_read_tpte(stagd->devp->rdev.lldi.ports[0], (u32)id<<8,
 			      (__be32 *)&tpte);
 	if (ret) {
@@ -502,7 +399,6 @@ static int dump_stag(unsigned long id, struct c4iw_debugfs_data *stagd)
 		      FW_RI_TPTE_PS_G(ntohl(tpte.locread_to_qpid)),
 		      ((u64)ntohl(tpte.len_hi) << 32) | ntohl(tpte.len_lo),
 		      ((u64)ntohl(tpte.va_hi) << 32) | ntohl(tpte.va_lo_fbo));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cc < space)
 		stagd->pos += cc;
 	return 0;
@@ -512,17 +408,10 @@ static int stag_release(struct inode *inode, struct file *file)
 {
 	struct c4iw_debugfs_data *stagd = file->private_data;
 	if (!stagd) {
-<<<<<<< HEAD
-		printk(KERN_INFO "%s null stagd?\n", __func__);
-		return 0;
-	}
-	kfree(stagd->buf);
-=======
 		pr_info("%s null stagd?\n", __func__);
 		return 0;
 	}
 	vfree(stagd->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(stagd);
 	return 0;
 }
@@ -530,19 +419,12 @@ static int stag_release(struct inode *inode, struct file *file)
 static int stag_open(struct inode *inode, struct file *file)
 {
 	struct c4iw_debugfs_data *stagd;
-<<<<<<< HEAD
-	int ret = 0;
-	int count = 1;
-
-	stagd = kmalloc(sizeof *stagd, GFP_KERNEL);
-=======
 	void *p;
 	unsigned long index;
 	int ret = 0;
 	int count = 1;
 
 	stagd = kmalloc(sizeof(*stagd), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!stagd) {
 		ret = -ENOMEM;
 		goto out;
@@ -550,35 +432,20 @@ static int stag_open(struct inode *inode, struct file *file)
 	stagd->devp = inode->i_private;
 	stagd->pos = 0;
 
-<<<<<<< HEAD
-	spin_lock_irq(&stagd->devp->lock);
-	idr_for_each(&stagd->devp->mmidr, count_idrs, &count);
-	spin_unlock_irq(&stagd->devp->lock);
-
-	stagd->bufsize = count * sizeof("0x12345678\n");
-	stagd->buf = kmalloc(stagd->bufsize, GFP_KERNEL);
-=======
 	xa_for_each(&stagd->devp->mrs, index, p)
 		count++;
 
 	stagd->bufsize = count * 256;
 	stagd->buf = vmalloc(stagd->bufsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!stagd->buf) {
 		ret = -ENOMEM;
 		goto err1;
 	}
 
-<<<<<<< HEAD
-	spin_lock_irq(&stagd->devp->lock);
-	idr_for_each(&stagd->devp->mmidr, dump_stag, stagd);
-	spin_unlock_irq(&stagd->devp->lock);
-=======
 	xa_lock_irq(&stagd->devp->mrs);
 	xa_for_each(&stagd->devp->mrs, index, p)
 		dump_stag(index, stagd);
 	xa_unlock_irq(&stagd->devp->mrs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	stagd->buf[stagd->pos++] = 0;
 	file->private_data = stagd;
@@ -597,27 +464,6 @@ static const struct file_operations stag_debugfs_fops = {
 	.llseek  = default_llseek,
 };
 
-<<<<<<< HEAD
-static int setup_debugfs(struct c4iw_dev *devp)
-{
-	struct dentry *de;
-
-	if (!devp->debugfs_root)
-		return -1;
-
-	de = debugfs_create_file("qps", S_IWUSR, devp->debugfs_root,
-				 (void *)devp, &qp_debugfs_fops);
-	if (de && de->d_inode)
-		de->d_inode->i_size = 4096;
-
-	de = debugfs_create_file("stags", S_IWUSR, devp->debugfs_root,
-				 (void *)devp, &stag_debugfs_fops);
-	if (de && de->d_inode)
-		de->d_inode->i_size = 4096;
-	return 0;
-}
-
-=======
 static char *db_state_str[] = {"NORMAL", "FLOW_CONTROL", "RECOVERY", "STOPPED"};
 
 static int stats_show(struct seq_file *seq, void *v)
@@ -898,7 +744,6 @@ static void setup_debugfs(struct c4iw_dev *devp)
 					 (void *)devp, &wr_log_debugfs_fops, 4096);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void c4iw_release_dev_ucontext(struct c4iw_rdev *rdev,
 			       struct c4iw_dev_ucontext *uctx)
 {
@@ -909,15 +754,6 @@ void c4iw_release_dev_ucontext(struct c4iw_rdev *rdev,
 	list_for_each_safe(pos, nxt, &uctx->qpids) {
 		entry = list_entry(pos, struct c4iw_qid_list, entry);
 		list_del_init(&entry->entry);
-<<<<<<< HEAD
-		if (!(entry->qid & rdev->qpmask))
-			c4iw_put_resource(&rdev->resource.qid_fifo, entry->qid,
-					  &rdev->resource.qid_fifo_lock);
-		kfree(entry);
-	}
-
-	list_for_each_safe(pos, nxt, &uctx->qpids) {
-=======
 		if (!(entry->qid & rdev->qpmask)) {
 			c4iw_put_resource(&rdev->resource.qid_table,
 					  entry->qid);
@@ -929,7 +765,6 @@ void c4iw_release_dev_ucontext(struct c4iw_rdev *rdev,
 	}
 
 	list_for_each_safe(pos, nxt, &uctx->cqids) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		entry = list_entry(pos, struct c4iw_qid_list, entry);
 		list_del_init(&entry->entry);
 		kfree(entry);
@@ -949,77 +784,11 @@ void c4iw_init_dev_ucontext(struct c4iw_rdev *rdev,
 static int c4iw_rdev_open(struct c4iw_rdev *rdev)
 {
 	int err;
-<<<<<<< HEAD
-=======
 	unsigned int factor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	c4iw_init_dev_ucontext(rdev, &rdev->uctx);
 
 	/*
-<<<<<<< HEAD
-	 * qpshift is the number of bits to shift the qpid left in order
-	 * to get the correct address of the doorbell for that qp.
-	 */
-	rdev->qpshift = PAGE_SHIFT - ilog2(rdev->lldi.udb_density);
-	rdev->qpmask = rdev->lldi.udb_density - 1;
-	rdev->cqshift = PAGE_SHIFT - ilog2(rdev->lldi.ucq_density);
-	rdev->cqmask = rdev->lldi.ucq_density - 1;
-	PDBG("%s dev %s stag start 0x%0x size 0x%0x num stags %d "
-	     "pbl start 0x%0x size 0x%0x rq start 0x%0x size 0x%0x "
-	     "qp qid start %u size %u cq qid start %u size %u\n",
-	     __func__, pci_name(rdev->lldi.pdev), rdev->lldi.vr->stag.start,
-	     rdev->lldi.vr->stag.size, c4iw_num_stags(rdev),
-	     rdev->lldi.vr->pbl.start,
-	     rdev->lldi.vr->pbl.size, rdev->lldi.vr->rq.start,
-	     rdev->lldi.vr->rq.size,
-	     rdev->lldi.vr->qp.start,
-	     rdev->lldi.vr->qp.size,
-	     rdev->lldi.vr->cq.start,
-	     rdev->lldi.vr->cq.size);
-	PDBG("udb len 0x%x udb base %p db_reg %p gts_reg %p qpshift %lu "
-	     "qpmask 0x%x cqshift %lu cqmask 0x%x\n",
-	     (unsigned)pci_resource_len(rdev->lldi.pdev, 2),
-	     (void *)pci_resource_start(rdev->lldi.pdev, 2),
-	     rdev->lldi.db_reg,
-	     rdev->lldi.gts_reg,
-	     rdev->qpshift, rdev->qpmask,
-	     rdev->cqshift, rdev->cqmask);
-
-	if (c4iw_num_stags(rdev) == 0) {
-		err = -EINVAL;
-		goto err1;
-	}
-
-	err = c4iw_init_resource(rdev, c4iw_num_stags(rdev), T4_MAX_NUM_PD);
-	if (err) {
-		printk(KERN_ERR MOD "error %d initializing resources\n", err);
-		goto err1;
-	}
-	err = c4iw_pblpool_create(rdev);
-	if (err) {
-		printk(KERN_ERR MOD "error %d initializing pbl pool\n", err);
-		goto err2;
-	}
-	err = c4iw_rqtpool_create(rdev);
-	if (err) {
-		printk(KERN_ERR MOD "error %d initializing rqt pool\n", err);
-		goto err3;
-	}
-	err = c4iw_ocqp_pool_create(rdev);
-	if (err) {
-		printk(KERN_ERR MOD "error %d initializing ocqp pool\n", err);
-		goto err4;
-	}
-	return 0;
-err4:
-	c4iw_rqtpool_destroy(rdev);
-err3:
-	c4iw_pblpool_destroy(rdev);
-err2:
-	c4iw_destroy_resource(&rdev->resource);
-err1:
-=======
 	 * This implementation assumes udb_density == ucq_density!  Eventually
 	 * we might need to support this but for now fail the open. Also the
 	 * cqid and qpid range must match for now.
@@ -1147,32 +916,11 @@ destroy_pblpool:
 	c4iw_pblpool_destroy(rdev);
 destroy_resource:
 	c4iw_destroy_resource(&rdev->resource);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static void c4iw_rdev_close(struct c4iw_rdev *rdev)
 {
-<<<<<<< HEAD
-	c4iw_pblpool_destroy(rdev);
-	c4iw_rqtpool_destroy(rdev);
-	c4iw_destroy_resource(&rdev->resource);
-}
-
-struct uld_ctx {
-	struct list_head entry;
-	struct cxgb4_lld_info lldi;
-	struct c4iw_dev *dev;
-};
-
-static void c4iw_dealloc(struct uld_ctx *ctx)
-{
-	c4iw_rdev_close(&ctx->dev->rdev);
-	idr_destroy(&ctx->dev->cqidr);
-	idr_destroy(&ctx->dev->qpidr);
-	idr_destroy(&ctx->dev->mmidr);
-	iounmap(ctx->dev->rdev.oc_mw_kva);
-=======
 	kfree(rdev->wr_log);
 	c4iw_release_dev_ucontext(rdev, &rdev->uctx);
 	free_page((unsigned long)rdev->status_page);
@@ -1198,19 +946,14 @@ void c4iw_dealloc(struct uld_ctx *ctx)
 		iounmap(ctx->dev->rdev.bar2_kva);
 	if (ctx->dev->rdev.oc_mw_kva)
 		iounmap(ctx->dev->rdev.oc_mw_kva);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ib_dealloc_device(&ctx->dev->ibdev);
 	ctx->dev = NULL;
 }
 
 static void c4iw_remove(struct uld_ctx *ctx)
 {
-<<<<<<< HEAD
-	PDBG("%s c4iw_dev %p\n", __func__,  ctx->dev);
-=======
 	pr_debug("c4iw_dev %p\n", ctx->dev);
 	debugfs_remove_recursive(ctx->dev->debugfs_root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c4iw_unregister_device(ctx->dev);
 	c4iw_dealloc(ctx);
 }
@@ -1219,11 +962,7 @@ static int rdma_supported(const struct cxgb4_lld_info *infop)
 {
 	return infop->vr->stag.size > 0 && infop->vr->pbl.size > 0 &&
 	       infop->vr->rq.size > 0 && infop->vr->qp.size > 0 &&
-<<<<<<< HEAD
-	       infop->vr->cq.size > 0 && infop->vr->ocq.size > 0;
-=======
 	       infop->vr->cq.size > 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct c4iw_dev *c4iw_alloc(const struct cxgb4_lld_info *infop)
@@ -1232,15 +971,6 @@ static struct c4iw_dev *c4iw_alloc(const struct cxgb4_lld_info *infop)
 	int ret;
 
 	if (!rdma_supported(infop)) {
-<<<<<<< HEAD
-		printk(KERN_INFO MOD "%s: RDMA not supported on this device.\n",
-		       pci_name(infop->pdev));
-		return ERR_PTR(-ENOSYS);
-	}
-	devp = (struct c4iw_dev *)ib_alloc_device(sizeof(*devp));
-	if (!devp) {
-		printk(KERN_ERR MOD "Cannot allocate ib device\n");
-=======
 		pr_info("%s: RDMA not supported on this device\n",
 			pci_name(infop->pdev));
 		return ERR_PTR(-ENOSYS);
@@ -1252,27 +982,10 @@ static struct c4iw_dev *c4iw_alloc(const struct cxgb4_lld_info *infop)
 	devp = ib_alloc_device(c4iw_dev, ibdev);
 	if (!devp) {
 		pr_err("Cannot allocate ib device\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(-ENOMEM);
 	}
 	devp->rdev.lldi = *infop;
 
-<<<<<<< HEAD
-	devp->rdev.oc_mw_pa = pci_resource_start(devp->rdev.lldi.pdev, 2) +
-		(pci_resource_len(devp->rdev.lldi.pdev, 2) -
-		 roundup_pow_of_two(devp->rdev.lldi.vr->ocq.size));
-	devp->rdev.oc_mw_kva = ioremap_wc(devp->rdev.oc_mw_pa,
-					       devp->rdev.lldi.vr->ocq.size);
-
-	PDBG(KERN_INFO MOD "ocq memory: "
-	       "hw_start 0x%x size %u mw_pa 0x%lx mw_kva %p\n",
-	       devp->rdev.lldi.vr->ocq.start, devp->rdev.lldi.vr->ocq.size,
-	       devp->rdev.oc_mw_pa, devp->rdev.oc_mw_kva);
-
-	ret = c4iw_rdev_open(&devp->rdev);
-	if (ret) {
-		printk(KERN_ERR MOD "Unable to open CXIO rdev err %d\n", ret);
-=======
 	/* init various hw-queue params based on lld info */
 	pr_debug("Ing. padding boundary is %d, egrsstatuspagesize = %d\n",
 		 devp->rdev.lldi.sge_ingpadboundary,
@@ -1329,17 +1042,10 @@ static struct c4iw_dev *c4iw_alloc(const struct cxgb4_lld_info *infop)
 	ret = c4iw_rdev_open(&devp->rdev);
 	if (ret) {
 		pr_err("Unable to open CXIO rdev err %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ib_dealloc_device(&devp->ibdev);
 		return ERR_PTR(ret);
 	}
 
-<<<<<<< HEAD
-	idr_init(&devp->cqidr);
-	idr_init(&devp->qpidr);
-	idr_init(&devp->mmidr);
-	spin_lock_init(&devp->lock);
-=======
 	xa_init_flags(&devp->cqs, XA_FLAGS_LOCK_IRQ);
 	xa_init_flags(&devp->qps, XA_FLAGS_LOCK_IRQ);
 	xa_init_flags(&devp->mrs, XA_FLAGS_LOCK_IRQ);
@@ -1351,7 +1057,6 @@ static struct c4iw_dev *c4iw_alloc(const struct cxgb4_lld_info *infop)
 	INIT_LIST_HEAD(&devp->db_fc_list);
 	init_waitqueue_head(&devp->wait);
 	devp->avail_ird = devp->rdev.lldi.max_ird_adapter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (c4iw_debugfs_root) {
 		devp->debugfs_root = debugfs_create_dir(
@@ -1359,11 +1064,8 @@ static struct c4iw_dev *c4iw_alloc(const struct cxgb4_lld_info *infop)
 					c4iw_debugfs_root);
 		setup_debugfs(devp);
 	}
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return devp;
 }
 
@@ -1374,51 +1076,31 @@ static void *c4iw_uld_add(const struct cxgb4_lld_info *infop)
 	int i;
 
 	if (!vers_printed++)
-<<<<<<< HEAD
-		printk(KERN_INFO MOD "Chelsio T4 RDMA Driver - version %s\n",
-		       DRV_VERSION);
-
-	ctx = kzalloc(sizeof *ctx, GFP_KERNEL);
-=======
 		pr_info("Chelsio T4/T5 RDMA Driver - version %s\n",
 			DRV_VERSION);
 
 	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ctx) {
 		ctx = ERR_PTR(-ENOMEM);
 		goto out;
 	}
 	ctx->lldi = *infop;
 
-<<<<<<< HEAD
-	PDBG("%s found device %s nchan %u nrxq %u ntxq %u nports %u\n",
-	     __func__, pci_name(ctx->lldi.pdev),
-	     ctx->lldi.nchan, ctx->lldi.nrxq,
-	     ctx->lldi.ntxq, ctx->lldi.nports);
-=======
 	pr_debug("found device %s nchan %u nrxq %u ntxq %u nports %u\n",
 		 pci_name(ctx->lldi.pdev),
 		 ctx->lldi.nchan, ctx->lldi.nrxq,
 		 ctx->lldi.ntxq, ctx->lldi.nports);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&dev_mutex);
 	list_add_tail(&ctx->entry, &uld_ctx_list);
 	mutex_unlock(&dev_mutex);
 
 	for (i = 0; i < ctx->lldi.nrxq; i++)
-<<<<<<< HEAD
-		PDBG("rxqid[%u] %u\n", i, ctx->lldi.rxq_ids[i]);
-=======
 		pr_debug("rxqid[%u] %u\n", i, ctx->lldi.rxq_ids[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ctx;
 }
 
-<<<<<<< HEAD
-=======
 static inline struct sk_buff *copy_gl_to_skb_pkt(const struct pkt_gl *gl,
 						 const __be64 *rsp,
 						 u32 pktshift)
@@ -1481,19 +1163,13 @@ out:
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int c4iw_uld_rx_handler(void *handle, const __be64 *rsp,
 			const struct pkt_gl *gl)
 {
 	struct uld_ctx *ctx = handle;
 	struct c4iw_dev *dev = ctx->dev;
 	struct sk_buff *skb;
-<<<<<<< HEAD
-	const struct cpl_act_establish *rpl;
-	unsigned int opcode;
-=======
 	u8 opcode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (gl == NULL) {
 		/* omit RSS and rsp_ctrl at end of descriptor */
@@ -1510,8 +1186,6 @@ static int c4iw_uld_rx_handler(void *handle, const __be64 *rsp,
 		u32 qid = be32_to_cpu(rc->pldbuflen_qid);
 		c4iw_ev_handler(dev, qid);
 		return 0;
-<<<<<<< HEAD
-=======
 	} else if (unlikely(*(u8 *)rsp != *(u8 *)gl->va)) {
 		if (recv_rx_pkt(dev, gl, rsp))
 			return 0;
@@ -1523,23 +1197,12 @@ static int c4iw_uld_rx_handler(void *handle, const __be64 *rsp,
 			gl->tot_len);
 
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		skb = cxgb4_pktgl_to_skb(gl, 128, 128);
 		if (unlikely(!skb))
 			goto nomem;
 	}
 
-<<<<<<< HEAD
-	rpl = cplhdr(skb);
-	opcode = rpl->ot.opcode;
-
-	if (c4iw_handlers[opcode])
-		c4iw_handlers[opcode](dev, skb);
-	else
-		printk(KERN_INFO "%s no handler opcode 0x%x...\n", __func__,
-		       opcode);
-=======
 	opcode = *(u8 *)rsp;
 	if (c4iw_handlers[opcode]) {
 		c4iw_handlers[opcode](dev, skb);
@@ -1547,7 +1210,6 @@ static int c4iw_uld_rx_handler(void *handle, const __be64 *rsp,
 		pr_info("%s no handler opcode 0x%x...\n", __func__, opcode);
 		kfree_skb(skb);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 nomem:
@@ -1558,19 +1220,6 @@ static int c4iw_uld_state_change(void *handle, enum cxgb4_state new_state)
 {
 	struct uld_ctx *ctx = handle;
 
-<<<<<<< HEAD
-	PDBG("%s new_state %u\n", __func__, new_state);
-	switch (new_state) {
-	case CXGB4_STATE_UP:
-		printk(KERN_INFO MOD "%s: Up\n", pci_name(ctx->lldi.pdev));
-		if (!ctx->dev) {
-			int ret;
-
-			ctx->dev = c4iw_alloc(&ctx->lldi);
-			if (IS_ERR(ctx->dev)) {
-				printk(KERN_ERR MOD
-				       "%s: initialization failed: %ld\n",
-=======
 	pr_debug("new_state %u\n", new_state);
 	switch (new_state) {
 	case CXGB4_STATE_UP:
@@ -1579,37 +1228,11 @@ static int c4iw_uld_state_change(void *handle, enum cxgb4_state new_state)
 			ctx->dev = c4iw_alloc(&ctx->lldi);
 			if (IS_ERR(ctx->dev)) {
 				pr_err("%s: initialization failed: %ld\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       pci_name(ctx->lldi.pdev),
 				       PTR_ERR(ctx->dev));
 				ctx->dev = NULL;
 				break;
 			}
-<<<<<<< HEAD
-			ret = c4iw_register_device(ctx->dev);
-			if (ret) {
-				printk(KERN_ERR MOD
-				       "%s: RDMA registration failed: %d\n",
-				       pci_name(ctx->lldi.pdev), ret);
-				c4iw_dealloc(ctx);
-			}
-		}
-		break;
-	case CXGB4_STATE_DOWN:
-		printk(KERN_INFO MOD "%s: Down\n",
-		       pci_name(ctx->lldi.pdev));
-		if (ctx->dev)
-			c4iw_remove(ctx);
-		break;
-	case CXGB4_STATE_START_RECOVERY:
-		printk(KERN_INFO MOD "%s: Fatal Error\n",
-		       pci_name(ctx->lldi.pdev));
-		if (ctx->dev) {
-			struct ib_event event;
-
-			ctx->dev->rdev.flags |= T4_FATAL_ERROR;
-			memset(&event, 0, sizeof event);
-=======
 
 			INIT_WORK(&ctx->reg_work, c4iw_register_device);
 			queue_work(reg_workq, &ctx->reg_work);
@@ -1627,7 +1250,6 @@ static int c4iw_uld_state_change(void *handle, enum cxgb4_state new_state)
 			struct ib_event event = {};
 
 			ctx->dev->rdev.flags |= T4_FATAL_ERROR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			event.event  = IB_EVENT_DEVICE_FATAL;
 			event.device = &ctx->dev->ibdev;
 			ib_dispatch_event(&event);
@@ -1635,12 +1257,7 @@ static int c4iw_uld_state_change(void *handle, enum cxgb4_state new_state)
 		}
 		break;
 	case CXGB4_STATE_DETACH:
-<<<<<<< HEAD
-		printk(KERN_INFO MOD "%s: Detach\n",
-		       pci_name(ctx->lldi.pdev));
-=======
 		pr_info("%s: Detach\n", pci_name(ctx->lldi.pdev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ctx->dev)
 			c4iw_remove(ctx);
 		break;
@@ -1648,15 +1265,6 @@ static int c4iw_uld_state_change(void *handle, enum cxgb4_state new_state)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct cxgb4_uld_info c4iw_uld_info = {
-	.name = DRV_NAME,
-	.add = c4iw_uld_add,
-	.rx_handler = c4iw_uld_rx_handler,
-	.state_change = c4iw_uld_state_change,
-};
-
-=======
 static void stop_queues(struct uld_ctx *ctx)
 {
 	struct c4iw_qp *qp;
@@ -1922,7 +1530,6 @@ struct c4iw_wr_wait *c4iw_alloc_wr_wait(gfp_t gfp)
 	return wr_waitp;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init c4iw_init_module(void)
 {
 	int err;
@@ -1932,18 +1539,12 @@ static int __init c4iw_init_module(void)
 		return err;
 
 	c4iw_debugfs_root = debugfs_create_dir(DRV_NAME, NULL);
-<<<<<<< HEAD
-	if (!c4iw_debugfs_root)
-		printk(KERN_WARNING MOD
-		       "could not create debugfs entry, continuing\n");
-=======
 
 	reg_workq = create_singlethread_workqueue("Register_iWARP_device");
 	if (!reg_workq) {
 		pr_err("Failed creating workqueue to register iwarp device\n");
 		return -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cxgb4_register_uld(CXGB4_ULD_RDMA, &c4iw_uld_info);
 
@@ -1961,10 +1562,7 @@ static void __exit c4iw_exit_module(void)
 		kfree(ctx);
 	}
 	mutex_unlock(&dev_mutex);
-<<<<<<< HEAD
-=======
 	destroy_workqueue(reg_workq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cxgb4_unregister_uld(CXGB4_ULD_RDMA);
 	c4iw_cm_term();
 	debugfs_remove_recursive(c4iw_debugfs_root);

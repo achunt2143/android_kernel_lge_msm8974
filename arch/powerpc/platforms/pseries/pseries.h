@@ -1,65 +1,25 @@
-<<<<<<< HEAD
-/*
- * Copyright 2006 IBM Corporation.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright 2006 IBM Corporation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _PSERIES_PSERIES_H
 #define _PSERIES_PSERIES_H
 
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-
-struct device_node;
-
-extern void request_event_sources_irqs(struct device_node *np,
-=======
 #include <asm/rtas.h>
 
 struct device_node;
 
 void __init request_event_sources_irqs(struct device_node *np,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       irq_handler_t handler, const char *name);
 
 #include <linux/of.h>
 
-<<<<<<< HEAD
-extern void __init fw_feature_init(const char *hypertas, unsigned long len);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pt_regs;
 
 extern int pSeries_system_reset_exception(struct pt_regs *regs);
 extern int pSeries_machine_check_exception(struct pt_regs *regs);
-<<<<<<< HEAD
-
-#ifdef CONFIG_SMP
-extern void smp_init_pseries_mpic(void);
-extern void smp_init_pseries_xics(void);
-#else
-static inline void smp_init_pseries_mpic(void) { };
-static inline void smp_init_pseries_xics(void) { };
-#endif
-
-#ifdef CONFIG_KEXEC
-extern void setup_kexec_cpu_down_xics(void);
-extern void setup_kexec_cpu_down_mpic(void);
-#else
-static inline void setup_kexec_cpu_down_xics(void) { }
-static inline void setup_kexec_cpu_down_mpic(void) { }
-#endif
-=======
 extern long pseries_machine_check_realmode(struct pt_regs *regs);
 void pSeries_machine_check_log_err(void);
 
@@ -79,27 +39,12 @@ static inline void smp_init_pseries(void) { }
 
 extern void pseries_kexec_cpu_down(int crash_shutdown, int secondary);
 void pseries_machine_kexec(struct kimage *image);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void pSeries_final_fixup(void);
 
 /* Poweron flag used for enabling auto ups restart */
 extern unsigned long rtas_poweron_auto;
 
-<<<<<<< HEAD
-/* Provided by HVC VIO */
-extern void hvc_vio_init_early(void);
-
-/* Dynamic logical Partitioning/Mobility */
-extern void dlpar_free_cc_nodes(struct device_node *);
-extern void dlpar_free_cc_property(struct property *);
-extern struct device_node *dlpar_configure_connector(u32);
-extern int dlpar_attach_node(struct device_node *);
-extern int dlpar_detach_node(struct device_node *);
-
-/* Snooze Delay, pseries_idle */
-DECLARE_PER_CPU(long, smt_snooze_delay);
-=======
 /* Dynamic logical Partitioning/Mobility */
 extern void dlpar_free_cc_nodes(struct device_node *);
 extern void dlpar_free_cc_property(struct property *);
@@ -183,6 +128,5 @@ void pseries_rng_init(void);
 struct iommu_group *pSeries_pci_device_group(struct pci_controller *hose,
 					     struct pci_dev *pdev);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _PSERIES_PSERIES_H */

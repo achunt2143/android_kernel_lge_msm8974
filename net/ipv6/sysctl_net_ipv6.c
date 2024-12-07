@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sysctl_net_ipv6.c: sysctl interface to net IPV6 subsystem.
  *
@@ -19,40 +16,6 @@
 #include <net/ipv6.h>
 #include <net/addrconf.h>
 #include <net/inet_frag.h>
-<<<<<<< HEAD
-
-static struct ctl_table empty[1];
-
-static ctl_table ipv6_static_skeleton[] = {
-	{
-		.procname	= "neigh",
-		.maxlen		= 0,
-		.mode		= 0555,
-		.child		= empty,
-	},
-	{ }
-};
-
-static ctl_table ipv6_table_template[] = {
-	{
-		.procname	= "route",
-		.maxlen		= 0,
-		.mode		= 0555,
-		.child		= ipv6_route_table_template
-	},
-	{
-		.procname	= "icmp",
-		.maxlen		= 0,
-		.mode		= 0555,
-		.child		= ipv6_icmp_table_template
-	},
-	{
-		.procname	= "bindv6only",
-		.data		= &init_net.ipv6.sysctl.bindv6only,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec
-=======
 #include <net/netevent.h>
 #include <net/ip_fib.h>
 #ifdef CONFIG_NETLABEL
@@ -127,13 +90,10 @@ static struct ctl_table ipv6_table_template[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dou8vec_minmax,
 		.extra2		= &auto_flowlabels_max
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.procname	= "fwmark_reflect",
 		.data		= &init_net.ipv6.sysctl.fwmark_reflect,
-<<<<<<< HEAD
-=======
 		.maxlen		= sizeof(u8),
 		.mode		= 0644,
 		.proc_handler	= proc_dou8vec_minmax,
@@ -178,17 +138,10 @@ static struct ctl_table ipv6_table_template[] = {
 	{
 		.procname	= "max_dst_opts_number",
 		.data		= &init_net.ipv6.sysctl.max_dst_opts_cnt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec
 	},
-<<<<<<< HEAD
-	{ }
-};
-
-static ctl_table ipv6_rotable[] = {
-=======
 	{
 		.procname	= "max_hbh_opts_number",
 		.data		= &init_net.ipv6.sysctl.max_hbh_opts_cnt,
@@ -264,7 +217,6 @@ static ctl_table ipv6_rotable[] = {
 };
 
 static struct ctl_table ipv6_rotable[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "mld_max_msf",
 		.data		= &sysctl_mld_max_msf,
@@ -272,18 +224,6 @@ static struct ctl_table ipv6_rotable[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec
 	},
-<<<<<<< HEAD
-	{ }
-};
-
-struct ctl_path net_ipv6_ctl_path[] = {
-	{ .procname = "net", },
-	{ .procname = "ipv6", },
-	{ },
-};
-EXPORT_SYMBOL_GPL(net_ipv6_ctl_path);
-
-=======
 	{
 		.procname	= "mld_qrv",
 		.data		= &sysctl_mld_qrv,
@@ -311,56 +251,29 @@ EXPORT_SYMBOL_GPL(net_ipv6_ctl_path);
 	{ }
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __net_init ipv6_sysctl_net_init(struct net *net)
 {
 	struct ctl_table *ipv6_table;
 	struct ctl_table *ipv6_route_table;
 	struct ctl_table *ipv6_icmp_table;
-<<<<<<< HEAD
-	int err;
-=======
 	int err, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = -ENOMEM;
 	ipv6_table = kmemdup(ipv6_table_template, sizeof(ipv6_table_template),
 			     GFP_KERNEL);
 	if (!ipv6_table)
 		goto out;
-<<<<<<< HEAD
-=======
 	/* Update the variables to point into the current struct net */
 	for (i = 0; i < ARRAY_SIZE(ipv6_table_template) - 1; i++)
 		ipv6_table[i].data += (void *)net - (void *)&init_net;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ipv6_route_table = ipv6_route_sysctl_init(net);
 	if (!ipv6_route_table)
 		goto out_ipv6_table;
-<<<<<<< HEAD
-	ipv6_table[0].child = ipv6_route_table;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ipv6_icmp_table = ipv6_icmp_sysctl_init(net);
 	if (!ipv6_icmp_table)
 		goto out_ipv6_route_table;
-<<<<<<< HEAD
-	ipv6_table[1].child = ipv6_icmp_table;
-
-	ipv6_table[2].data = &net->ipv6.sysctl.bindv6only;
-
-	net->ipv6.sysctl.table = register_net_sysctl_table(net, net_ipv6_ctl_path,
-							   ipv6_table);
-	if (!net->ipv6.sysctl.table)
-		goto out_ipv6_icmp_table;
-
-	err = 0;
-out:
-	return err;
-
-=======
 
 	net->ipv6.sysctl.hdr = register_net_sysctl_sz(net, "net/ipv6",
 						      ipv6_table,
@@ -389,7 +302,6 @@ out_unregister_route_table:
 	unregister_net_sysctl_table(net->ipv6.sysctl.route_hdr);
 out_unregister_ipv6_table:
 	unregister_net_sysctl_table(net->ipv6.sysctl.hdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_ipv6_icmp_table:
 	kfree(ipv6_icmp_table);
 out_ipv6_route_table:
@@ -405,13 +317,6 @@ static void __net_exit ipv6_sysctl_net_exit(struct net *net)
 	struct ctl_table *ipv6_route_table;
 	struct ctl_table *ipv6_icmp_table;
 
-<<<<<<< HEAD
-	ipv6_table = net->ipv6.sysctl.table->ctl_table_arg;
-	ipv6_route_table = ipv6_table[0].child;
-	ipv6_icmp_table = ipv6_table[1].child;
-
-	unregister_net_sysctl_table(net->ipv6.sysctl.table);
-=======
 	ipv6_table = net->ipv6.sysctl.hdr->ctl_table_arg;
 	ipv6_route_table = net->ipv6.sysctl.route_hdr->ctl_table_arg;
 	ipv6_icmp_table = net->ipv6.sysctl.icmp_hdr->ctl_table_arg;
@@ -419,7 +324,6 @@ static void __net_exit ipv6_sysctl_net_exit(struct net *net)
 	unregister_net_sysctl_table(net->ipv6.sysctl.icmp_hdr);
 	unregister_net_sysctl_table(net->ipv6.sysctl.route_hdr);
 	unregister_net_sysctl_table(net->ipv6.sysctl.hdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(ipv6_table);
 	kfree(ipv6_route_table);
@@ -437,13 +341,8 @@ int ipv6_sysctl_register(void)
 {
 	int err = -ENOMEM;
 
-<<<<<<< HEAD
-	ip6_header = register_net_sysctl_rotable(net_ipv6_ctl_path, ipv6_rotable);
-	if (ip6_header == NULL)
-=======
 	ip6_header = register_net_sysctl(&init_net, "net/ipv6", ipv6_rotable);
 	if (!ip6_header)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	err = register_pernet_subsys(&ipv6_sysctl_net_ops);
@@ -462,21 +361,3 @@ void ipv6_sysctl_unregister(void)
 	unregister_net_sysctl_table(ip6_header);
 	unregister_pernet_subsys(&ipv6_sysctl_net_ops);
 }
-<<<<<<< HEAD
-
-static struct ctl_table_header *ip6_base;
-
-int ipv6_static_sysctl_register(void)
-{
-	ip6_base = register_sysctl_paths(net_ipv6_ctl_path, ipv6_static_skeleton);
-	if (ip6_base == NULL)
-		return -ENOMEM;
-	return 0;
-}
-
-void ipv6_static_sysctl_unregister(void)
-{
-	unregister_net_sysctl_table(ip6_base);
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

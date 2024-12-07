@@ -1,32 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCI <-> OF mapping helpers
  *
  * Copyright 2011 IBM Corp.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-
-#include <linux/kernel.h>
-#include <linux/pci.h>
-#include <linux/of.h>
-#include <linux/of_pci.h>
-#include "pci.h"
-
-void pci_set_of_node(struct pci_dev *dev)
-{
-	if (!dev->bus->dev.of_node)
-		return;
-	dev->dev.of_node = of_pci_find_child_device(dev->bus->dev.of_node,
-						    dev->devfn);
-=======
  */
 #define pr_fmt(fmt)	"PCI: OF: " fmt
 
@@ -60,27 +36,16 @@ int pci_set_of_node(struct pci_dev *dev)
 
 	device_set_node(&dev->dev, of_fwnode_handle(node));
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void pci_release_of_node(struct pci_dev *dev)
 {
 	of_node_put(dev->dev.of_node);
-<<<<<<< HEAD
-	dev->dev.of_node = NULL;
-=======
 	device_set_node(&dev->dev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void pci_set_bus_of_node(struct pci_bus *bus)
 {
-<<<<<<< HEAD
-	if (bus->self == NULL)
-		bus->dev.of_node = pcibios_get_phb_of_node(bus);
-	else
-		bus->dev.of_node = of_node_get(bus->self->dev.of_node);
-=======
 	struct device_node *node;
 
 	if (bus->self == NULL) {
@@ -92,17 +57,12 @@ void pci_set_bus_of_node(struct pci_bus *bus)
 	}
 
 	device_set_node(&bus->dev, of_fwnode_handle(node));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void pci_release_bus_of_node(struct pci_bus *bus)
 {
 	of_node_put(bus->dev.of_node);
-<<<<<<< HEAD
-	bus->dev.of_node = NULL;
-=======
 	device_set_node(&bus->dev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct device_node * __weak pcibios_get_phb_of_node(struct pci_bus *bus)
@@ -111,14 +71,9 @@ struct device_node * __weak pcibios_get_phb_of_node(struct pci_bus *bus)
 	if (WARN_ON(bus->self || bus->parent))
 		return NULL;
 
-<<<<<<< HEAD
-	/* Look for a node pointer in either the intermediary device we
-	 * create above the root bus or it's own parent. Normally only
-=======
 	/*
 	 * Look for a node pointer in either the intermediary device we
 	 * create above the root bus or its own parent. Normally only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the later is populated.
 	 */
 	if (bus->bridge->of_node)
@@ -127,8 +82,6 @@ struct device_node * __weak pcibios_get_phb_of_node(struct pci_bus *bus)
 		return of_node_get(bus->bridge->parent->of_node);
 	return NULL;
 }
-<<<<<<< HEAD
-=======
 
 struct irq_domain *pci_host_bridge_of_msi_domain(struct pci_bus *bus)
 {
@@ -833,4 +786,3 @@ u32 of_pci_get_slot_power_limit(struct device_node *node,
 	return slot_power_limit_mw;
 }
 EXPORT_SYMBOL_GPL(of_pci_get_slot_power_limit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

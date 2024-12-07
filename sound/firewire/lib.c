@@ -1,57 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * miscellaneous helper functions
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
-<<<<<<< HEAD
- * Licensed under the terms of the GNU General Public License, version 2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/firewire.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include "lib.h"
-
-#define ERROR_RETRY_DELAY_MS	5
-
-/**
- * rcode_string - convert a firewire result code to a string
- * @rcode: the result
- */
-const char *rcode_string(unsigned int rcode)
-{
-	static const char *const names[] = {
-		[RCODE_COMPLETE]	= "complete",
-		[RCODE_CONFLICT_ERROR]	= "conflict error",
-		[RCODE_DATA_ERROR]	= "data error",
-		[RCODE_TYPE_ERROR]	= "type error",
-		[RCODE_ADDRESS_ERROR]	= "address error",
-		[RCODE_SEND_ERROR]	= "send error",
-		[RCODE_CANCELLED]	= "cancelled",
-		[RCODE_BUSY]		= "busy",
-		[RCODE_GENERATION]	= "generation",
-		[RCODE_NO_ACK]		= "no ack",
-	};
-
-	if (rcode < ARRAY_SIZE(names) && names[rcode])
-		return names[rcode];
-	else
-		return "unknown";
-}
-EXPORT_SYMBOL(rcode_string);
-=======
 #include <linux/slab.h>
 #include "lib.h"
 
 #define ERROR_RETRY_DELAY_MS	20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * snd_fw_transaction - send a request and wait for its completion
@@ -60,12 +21,9 @@ EXPORT_SYMBOL(rcode_string);
  * @offset: the address in the target's address space
  * @buffer: input/output data
  * @length: length of @buffer
-<<<<<<< HEAD
-=======
  * @flags: use %FW_FIXED_GENERATION and add the generation value to attempt the
  *         request only in that generation; use %FW_QUIET to suppress error
  *         messages
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Submits an asynchronous request to the target device, and waits for the
  * response.  The node ID and the current generation are derived from @unit.
@@ -73,28 +31,18 @@ EXPORT_SYMBOL(rcode_string);
  * Returns zero on success, or a negative error code.
  */
 int snd_fw_transaction(struct fw_unit *unit, int tcode,
-<<<<<<< HEAD
-		       u64 offset, void *buffer, size_t length)
-=======
 		       u64 offset, void *buffer, size_t length,
 		       unsigned int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fw_device *device = fw_parent_device(unit);
 	int generation, rcode, tries = 0;
 
-<<<<<<< HEAD
-	for (;;) {
-		generation = device->generation;
-		smp_rmb(); /* node_id vs. generation */
-=======
 	generation = flags & FW_GENERATION_MASK;
 	for (;;) {
 		if (!(flags & FW_FIXED_GENERATION)) {
 			generation = device->generation;
 			smp_rmb(); /* node_id vs. generation */
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcode = fw_run_transaction(device->card, tcode,
 					   device->node_id, generation,
 					   device->max_speed, offset,
@@ -103,11 +51,6 @@ int snd_fw_transaction(struct fw_unit *unit, int tcode,
 		if (rcode == RCODE_COMPLETE)
 			return 0;
 
-<<<<<<< HEAD
-		if (rcode_is_permanent_error(rcode) || ++tries >= 3) {
-			dev_err(&unit->device, "transaction failed: %s\n",
-				rcode_string(rcode));
-=======
 		if (rcode == RCODE_GENERATION && (flags & FW_FIXED_GENERATION))
 			return -EAGAIN;
 
@@ -116,7 +59,6 @@ int snd_fw_transaction(struct fw_unit *unit, int tcode,
 				dev_err(&unit->device,
 					"transaction failed: %s\n",
 					fw_rcode_string(rcode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 
@@ -127,8 +69,4 @@ EXPORT_SYMBOL(snd_fw_transaction);
 
 MODULE_DESCRIPTION("FireWire audio helper functions");
 MODULE_AUTHOR("Clemens Ladisch <clemens@ladisch.de>");
-<<<<<<< HEAD
-MODULE_LICENSE("GPL v2");
-=======
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

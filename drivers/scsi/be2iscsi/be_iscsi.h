@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-/**
- * Copyright (C) 2005 - 2011 Emulex
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.  The full GNU General
- * Public License is included in this distribution in the file called COPYING.
- *
- * Written by: Jayamohan Kallickal (jayamohan.kallickal@emulex.com)
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2017 Broadcom. All Rights Reserved.
@@ -24,7 +5,6 @@
  *
  * Contact Information:
  * linux-drivers@broadcom.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _BE_ISCSI_
@@ -33,12 +13,6 @@
 #include "be_main.h"
 #include "be_mgmt.h"
 
-<<<<<<< HEAD
-#define BE2_IPV4  0x1
-#define BE2_IPV6  0x10
-
-umode_t be2iscsi_attr_is_visible(int param_type, int param);
-=======
 void beiscsi_iface_create_default(struct beiscsi_hba *phba);
 
 void beiscsi_iface_destroy_default(struct beiscsi_hba *phba);
@@ -51,7 +25,6 @@ int beiscsi_iface_set_param(struct Scsi_Host *shost,
 			     void *data, uint32_t count);
 
 umode_t beiscsi_attr_is_visible(int param_type, int param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void beiscsi_offload_connection(struct beiscsi_conn *beiscsi_conn,
 				struct beiscsi_offload_params *params);
@@ -67,11 +40,8 @@ struct iscsi_cls_session *beiscsi_session_create(struct iscsi_endpoint *ep,
 
 void beiscsi_session_destroy(struct iscsi_cls_session *cls_session);
 
-<<<<<<< HEAD
-=======
 void beiscsi_session_fail(struct iscsi_cls_session *cls_session);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iscsi_cls_conn *beiscsi_conn_create(struct iscsi_cls_session
 					   *cls_session, uint32_t cid);
 

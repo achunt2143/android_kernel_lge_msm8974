@@ -1,36 +1,18 @@
-<<<<<<< HEAD
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2007 Cavium Networks
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2007-2017 Cavium, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <asm/asm.h>
 #include <asm/regdef.h>
 
-<<<<<<< HEAD
-#define SAVE_REG(r)	sd $r, -32768+6912-(32-r)*8($0)
-=======
 #define CVMSEG_BASE	-32768
 #define CVMSEG_SIZE	6912
 #define SAVE_REG(r)	sd $r, CVMSEG_BASE + CVMSEG_SIZE - ((32 - r) * 8)($0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         NESTED(octeon_wdt_nmi_stage2, 0, sp)
 	.set 	push
 	.set 	noreorder
 	.set 	noat
-<<<<<<< HEAD
-	/* Save all registers to the top CVMSEG. This shouldn't
-	 * corrupt any state used by the kernel. Also all registers
-	 * should have the value right before the NMI. */
-=======
 	/* Clear Dcache so cvmseg works right. */
 	cache	1,0($0)
 	/* Use K0 to do a read/modify/write of CVMMEMCTL */
@@ -52,7 +34,6 @@
 	 * corrupt any state used by the kernel. Also all registers
 	 * should have the value right before the NMI.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SAVE_REG(0)
 	SAVE_REG(1)
 	SAVE_REG(2)
@@ -85,18 +66,6 @@
 	SAVE_REG(29)
 	SAVE_REG(30)
 	SAVE_REG(31)
-<<<<<<< HEAD
-	/* Set the stack to begin right below the registers */
-	li	sp, -32768+6912-32*8
-	/* Load the address of the third stage handler */
-	dla	a0, octeon_wdt_nmi_stage3
-	/* Call the third stage handler */
-	jal	a0
-	/* a0 is the address of the saved registers */
-	 move	a0, sp
-	/* Loop forvever if we get here. */
-1:	b	1b
-=======
 	/* Write zero to all CVMSEG locations per Core-15169 */
 	dli	a0, CVMSEG_SIZE - (33 * 8)
 1:	sd	zero, CVMSEG_BASE(a0)
@@ -113,7 +82,6 @@
 	 move	a0, sp
 	/* Loop forvever if we get here. */
 2:	b	2b
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nop
 	.set pop
 	END(octeon_wdt_nmi_stage2)

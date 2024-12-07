@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-/*
- * cpu.h: Values of the PRId register used to match up
- *        various MIPS cpu types.
- *
- * Copyright (C) 1996 David S. Miller (davem@davemloft.net)
- * Copyright (C) 2004  Maciej W. Rozycki
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * cpu.h: Values of the PRId register used to match up
@@ -13,22 +5,10 @@
  *
  * Copyright (C) 1996 David S. Miller (davem@davemloft.net)
  * Copyright (C) 2004, 2013  Maciej W. Rozycki
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASM_CPU_H
 #define _ASM_CPU_H
 
-<<<<<<< HEAD
-/* Assigned Company values for bits 23:16 of the PRId Register
-   (CP0 register 15, select 0).  As of the MIPS32 and MIPS64 specs from
-   MTI, the PRId register is defined in this (backwards compatible)
-   way:
-
-  +----------------+----------------+----------------+----------------+
-  | Company Options| Company ID     | Processor ID   | Revision       |
-  +----------------+----------------+----------------+----------------+
-   31            24 23            16 15             8 7
-=======
 #include <linux/bits.h>
 
 /*
@@ -39,15 +19,12 @@
   | Company Options| Company ID	    | Processor ID   | Revision	      |
   +----------------+----------------+----------------+----------------+
    31		 24 23		  16 15		    8 7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    I don't have docs for all the previous processors, but my impression is
    that bits 16-23 have been 0 for all MIPS processors before the MIPS32/64
    spec.
 */
 
-<<<<<<< HEAD
-=======
 #define PRID_OPT_MASK		0xff000000
 
 /*
@@ -56,32 +33,18 @@
 
 #define PRID_COMP_MASK		0xff0000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PRID_COMP_LEGACY	0x000000
 #define PRID_COMP_MIPS		0x010000
 #define PRID_COMP_BROADCOM	0x020000
 #define PRID_COMP_ALCHEMY	0x030000
 #define PRID_COMP_SIBYTE	0x040000
 #define PRID_COMP_SANDCRAFT	0x050000
-<<<<<<< HEAD
-#define PRID_COMP_NXP   	0x060000
-=======
 #define PRID_COMP_NXP		0x060000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PRID_COMP_TOSHIBA	0x070000
 #define PRID_COMP_LSI		0x080000
 #define PRID_COMP_LEXRA		0x0b0000
 #define PRID_COMP_NETLOGIC	0x0c0000
 #define PRID_COMP_CAVIUM	0x0d0000
-<<<<<<< HEAD
-#define PRID_COMP_INGENIC	0xd00000
-
-/*
- * Assigned values for the product ID register.  In order to detect a
- * certain CPU type exactly eventually additional registers may need to
- * be examined.  These are valid when 23:16 == PRID_COMP_LEGACY
- */
-=======
 #define PRID_COMP_LOONGSON	0x140000
 #define PRID_COMP_INGENIC_13	0x130000	/* X2000, X2100 */
 #define PRID_COMP_INGENIC_D0	0xd00000	/* JZ4730, JZ4740, JZ4750, JZ4755, JZ4760, X1830 */
@@ -100,7 +63,6 @@
  * These are valid when 23:16 == PRID_COMP_LEGACY
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PRID_IMP_R2000		0x0100
 #define PRID_IMP_AU1_REV1	0x0100
 #define PRID_IMP_AU1_REV2	0x0200
@@ -112,11 +74,7 @@
 #define PRID_IMP_R4300		0x0b00
 #define PRID_IMP_VR41XX		0x0c00
 #define PRID_IMP_R12000		0x0e00
-<<<<<<< HEAD
-#define PRID_IMP_R14000		0x0f00
-=======
 #define PRID_IMP_R14000		0x0f00		/* R14K && R16K */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PRID_IMP_R8000		0x1000
 #define PRID_IMP_PR4450		0x1200
 #define PRID_IMP_R4600		0x2000
@@ -131,19 +89,12 @@
 #define PRID_IMP_RM7000		0x2700
 #define PRID_IMP_NEVADA		0x2800		/* RM5260 ??? */
 #define PRID_IMP_RM9000		0x3400
-<<<<<<< HEAD
-#define PRID_IMP_LOONGSON1	0x4200
-#define PRID_IMP_R5432		0x5400
-#define PRID_IMP_R5500		0x5500
-#define PRID_IMP_LOONGSON2	0x6300
-=======
 #define PRID_IMP_LOONGSON_32	0x4200  /* Loongson-1 */
 #define PRID_IMP_R5432		0x5400
 #define PRID_IMP_R5500		0x5500
 #define PRID_IMP_LOONGSON_64R	0x6100  /* Reduced Loongson-2 */
 #define PRID_IMP_LOONGSON_64C	0x6300  /* Classic Loongson-2 and Loongson-3 */
 #define PRID_IMP_LOONGSON_64G	0xc000  /* Generic Loongson-2 and Loongson-3 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PRID_IMP_UNKNOWN	0xff00
 
@@ -151,10 +102,7 @@
  * These are the PRID's for when 23:16 == PRID_COMP_MIPS
  */
 
-<<<<<<< HEAD
-=======
 #define PRID_IMP_QEMU_GENERIC	0x0000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PRID_IMP_4KC		0x8000
 #define PRID_IMP_5KC		0x8100
 #define PRID_IMP_20KC		0x8200
@@ -170,8 +118,6 @@
 #define PRID_IMP_24KE		0x9600
 #define PRID_IMP_74K		0x9700
 #define PRID_IMP_1004K		0x9900
-<<<<<<< HEAD
-=======
 #define PRID_IMP_1074K		0x9a00
 #define PRID_IMP_M14KC		0x9c00
 #define PRID_IMP_M14KEC		0x9e00
@@ -185,29 +131,19 @@
 #define PRID_IMP_I6400		0xa900
 #define PRID_IMP_M6250		0xab00
 #define PRID_IMP_I6500		0xb000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are the PRID's for when 23:16 == PRID_COMP_SIBYTE
  */
 
-<<<<<<< HEAD
-#define PRID_IMP_SB1            0x0100
-#define PRID_IMP_SB1A           0x1100
-=======
 #define PRID_IMP_SB1		0x0100
 #define PRID_IMP_SB1A		0x1100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are the PRID's for when 23:16 == PRID_COMP_SANDCRAFT
  */
 
-<<<<<<< HEAD
-#define PRID_IMP_SR71000        0x0400
-=======
 #define PRID_IMP_SR71000	0x0400
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are the PRID's for when 23:16 == PRID_COMP_BROADCOM
@@ -220,10 +156,7 @@
 #define PRID_IMP_BMIPS3300_BUG	0x0000
 #define PRID_IMP_BMIPS43XX	0xa000
 #define PRID_IMP_BMIPS5000	0x5a00
-<<<<<<< HEAD
-=======
 #define PRID_IMP_BMIPS5200	0x5b00
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PRID_REV_BMIPS4380_LO	0x0040
 #define PRID_REV_BMIPS4380_HI	0x006f
@@ -243,14 +176,6 @@
 #define PRID_IMP_CAVIUM_CN68XX 0x9100
 #define PRID_IMP_CAVIUM_CN66XX 0x9200
 #define PRID_IMP_CAVIUM_CN61XX 0x9300
-<<<<<<< HEAD
-
-/*
- * These are the PRID's for when 23:16 == PRID_COMP_INGENIC
- */
-
-#define PRID_IMP_JZRISC        0x0200
-=======
 #define PRID_IMP_CAVIUM_CNF71XX 0x9400
 #define PRID_IMP_CAVIUM_CN78XX 0x9500
 #define PRID_IMP_CAVIUM_CN70XX 0x9600
@@ -264,7 +189,6 @@
 #define PRID_IMP_XBURST_REV1	0x0200	/* XBurst®1 with MXU1.0/MXU1.1 SIMD ISA	*/
 #define PRID_IMP_XBURST_REV2	0x0100	/* XBurst®1 with MXU2.0 SIMD ISA		*/
 #define PRID_IMP_XBURST2		0x2000	/* XBurst®2 with MXU2.1 SIMD ISA		*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are the PRID's for when 23:16 == PRID_COMP_NETLOGIC
@@ -294,8 +218,6 @@
 
 #define PRID_IMP_NETLOGIC_XLP8XX	0x1000
 #define PRID_IMP_NETLOGIC_XLP3XX	0x1100
-<<<<<<< HEAD
-=======
 #define PRID_IMP_NETLOGIC_XLP2XX	0x1200
 #define PRID_IMP_NETLOGIC_XLP9XX	0x1500
 #define PRID_IMP_NETLOGIC_XLP5XX	0x1300
@@ -305,34 +227,11 @@
  */
 
 #define PRID_REV_MASK		0x00ff
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Definitions for 7:0 on legacy processors
  */
 
-<<<<<<< HEAD
-#define PRID_REV_MASK		0x00ff
-
-#define PRID_REV_TX4927		0x0022
-#define PRID_REV_TX4937		0x0030
-#define PRID_REV_R4400		0x0040
-#define PRID_REV_R3000A		0x0030
-#define PRID_REV_R3000		0x0020
-#define PRID_REV_R2000A		0x0010
-#define PRID_REV_TX3912 	0x0010
-#define PRID_REV_TX3922 	0x0030
-#define PRID_REV_TX3927 	0x0040
-#define PRID_REV_VR4111		0x0050
-#define PRID_REV_VR4181		0x0050	/* Same as VR4111 */
-#define PRID_REV_VR4121		0x0060
-#define PRID_REV_VR4122		0x0070
-#define PRID_REV_VR4181A	0x0070	/* Same as VR4122 */
-#define PRID_REV_VR4130		0x0080
-#define PRID_REV_34K_V1_0_2	0x0022
-#define PRID_REV_LOONGSON2E	0x0002
-#define PRID_REV_LOONGSON2F	0x0003
-=======
 #define PRID_REV_TX4927			0x0022
 #define PRID_REV_TX4937			0x0030
 #define PRID_REV_R4400			0x0040
@@ -364,7 +263,6 @@
 #define PRID_REV_LOONGSON3A_R3_0	0x0009
 #define PRID_REV_LOONGSON3A_R2_1	0x000c
 #define PRID_REV_LOONGSON3A_R3_1	0x000d
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Older processors used to encode processor version and revision in two
@@ -381,15 +279,6 @@
  * FPU implementation/revision register (CP1 control register 0).
  *
  * +---------------------------------+----------------+----------------+
-<<<<<<< HEAD
- * | 0                               | Implementation | Revision       |
- * +---------------------------------+----------------+----------------+
- *  31                             16 15             8 7              0
- */
-
-#define FPIR_IMP_NONE		0x0000
-
-=======
  * | 0				     | Implementation | Revision       |
  * +---------------------------------+----------------+----------------+
  *  31				   16 15	     8 7	      0
@@ -401,7 +290,6 @@
 
 #if !defined(__ASSEMBLY__)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum cpu_type_enum {
 	CPU_UNKNOWN,
 
@@ -412,95 +300,41 @@ enum cpu_type_enum {
 	CPU_R3081, CPU_R3081E,
 
 	/*
-<<<<<<< HEAD
-	 * R6000 class processors
-	 */
-	CPU_R6000, CPU_R6000A,
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * R4000 class processors
 	 */
 	CPU_R4000PC, CPU_R4000SC, CPU_R4000MC, CPU_R4200, CPU_R4300, CPU_R4310,
 	CPU_R4400PC, CPU_R4400SC, CPU_R4400MC, CPU_R4600, CPU_R4640, CPU_R4650,
-<<<<<<< HEAD
-	CPU_R4700, CPU_R5000, CPU_R5000A, CPU_R5500, CPU_NEVADA, CPU_R5432,
-	CPU_R10000, CPU_R12000, CPU_R14000, CPU_VR41XX, CPU_VR4111, CPU_VR4121,
-	CPU_VR4122, CPU_VR4131, CPU_VR4133, CPU_VR4181, CPU_VR4181A, CPU_RM7000,
-	CPU_SR71000, CPU_RM9000, CPU_TX49XX,
-
-	/*
-	 * R8000 class processors
-	 */
-	CPU_R8000,
-
-	/*
-	 * TX3900 class processors
-	 */
-	CPU_TX3912, CPU_TX3922, CPU_TX3927,
-=======
 	CPU_R4700, CPU_R5000, CPU_R5500, CPU_NEVADA, CPU_R10000,
 	CPU_R12000, CPU_R14000, CPU_R16000, CPU_RM7000,
 	CPU_SR71000, CPU_TX49XX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * MIPS32 class processors
 	 */
 	CPU_4KC, CPU_4KEC, CPU_4KSC, CPU_24K, CPU_34K, CPU_1004K, CPU_74K,
 	CPU_ALCHEMY, CPU_PR4450, CPU_BMIPS32, CPU_BMIPS3300, CPU_BMIPS4350,
-<<<<<<< HEAD
-	CPU_BMIPS4380, CPU_BMIPS5000, CPU_JZRISC,
-=======
 	CPU_BMIPS4380, CPU_BMIPS5000, CPU_XBURST, CPU_LOONGSON32, CPU_M14KC,
 	CPU_M14KEC, CPU_INTERAPTIV, CPU_P5600, CPU_PROAPTIV, CPU_1074K,
 	CPU_M5150, CPU_I6400, CPU_P6600, CPU_M6250,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * MIPS64 class processors
 	 */
-<<<<<<< HEAD
-	CPU_5KC, CPU_20KC, CPU_25KF, CPU_SB1, CPU_SB1A, CPU_LOONGSON2,
-	CPU_CAVIUM_OCTEON, CPU_CAVIUM_OCTEON_PLUS, CPU_CAVIUM_OCTEON2,
-	CPU_XLR, CPU_XLP,
-=======
 	CPU_5KC, CPU_5KE, CPU_20KC, CPU_25KF, CPU_SB1, CPU_SB1A, CPU_LOONGSON2EF,
 	CPU_LOONGSON64, CPU_CAVIUM_OCTEON, CPU_CAVIUM_OCTEON_PLUS,
 	CPU_CAVIUM_OCTEON2, CPU_CAVIUM_OCTEON3, CPU_I6500,
 
 	CPU_QEMU_GENERIC,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	CPU_LAST
 };
 
-<<<<<<< HEAD
-=======
 #endif /* !__ASSEMBLY */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ISA Level encodings
  *
  */
-<<<<<<< HEAD
-#define MIPS_CPU_ISA_I		0x00000001
-#define MIPS_CPU_ISA_II		0x00000002
-#define MIPS_CPU_ISA_III	0x00000004
-#define MIPS_CPU_ISA_IV		0x00000008
-#define MIPS_CPU_ISA_V		0x00000010
-#define MIPS_CPU_ISA_M32R1	0x00000020
-#define MIPS_CPU_ISA_M32R2	0x00000040
-#define MIPS_CPU_ISA_M64R1	0x00000080
-#define MIPS_CPU_ISA_M64R2	0x00000100
-
-#define MIPS_CPU_ISA_32BIT (MIPS_CPU_ISA_I | MIPS_CPU_ISA_II | \
-	MIPS_CPU_ISA_M32R1 | MIPS_CPU_ISA_M32R2 )
-#define MIPS_CPU_ISA_64BIT (MIPS_CPU_ISA_III | MIPS_CPU_ISA_IV | \
-	MIPS_CPU_ISA_V | MIPS_CPU_ISA_M64R1 | MIPS_CPU_ISA_M64R2)
-=======
 #define MIPS_CPU_ISA_II		0x00000001
 #define MIPS_CPU_ISA_III	0x00000002
 #define MIPS_CPU_ISA_IV		0x00000004
@@ -519,35 +353,10 @@ enum cpu_type_enum {
 #define MIPS_CPU_ISA_64BIT (MIPS_CPU_ISA_III | MIPS_CPU_ISA_IV | \
 	MIPS_CPU_ISA_V | MIPS_CPU_ISA_M64R1 | MIPS_CPU_ISA_M64R2 | \
 	MIPS_CPU_ISA_M64R5 | MIPS_CPU_ISA_M64R6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * CPU Option encodings
  */
-<<<<<<< HEAD
-#define MIPS_CPU_TLB		0x00000001 /* CPU has TLB */
-#define MIPS_CPU_4KEX		0x00000002 /* "R4K" exception model */
-#define MIPS_CPU_3K_CACHE	0x00000004 /* R3000-style caches */
-#define MIPS_CPU_4K_CACHE	0x00000008 /* R4000-style caches */
-#define MIPS_CPU_TX39_CACHE	0x00000010 /* TX3900-style caches */
-#define MIPS_CPU_FPU		0x00000020 /* CPU has FPU */
-#define MIPS_CPU_32FPR		0x00000040 /* 32 dbl. prec. FP registers */
-#define MIPS_CPU_COUNTER	0x00000080 /* Cycle count/compare */
-#define MIPS_CPU_WATCH		0x00000100 /* watchpoint registers */
-#define MIPS_CPU_DIVEC		0x00000200 /* dedicated interrupt vector */
-#define MIPS_CPU_VCE		0x00000400 /* virt. coherence conflict possible */
-#define MIPS_CPU_CACHE_CDEX_P	0x00000800 /* Create_Dirty_Exclusive CACHE op */
-#define MIPS_CPU_CACHE_CDEX_S	0x00001000 /* ... same for seconary cache ... */
-#define MIPS_CPU_MCHECK		0x00002000 /* Machine check exception */
-#define MIPS_CPU_EJTAG		0x00004000 /* EJTAG exception */
-#define MIPS_CPU_NOFPUEX	0x00008000 /* no FPU exception */
-#define MIPS_CPU_LLSC		0x00010000 /* CPU has ll/sc instructions */
-#define MIPS_CPU_INCLUSIVE_CACHES	0x00020000 /* P-cache subset enforced */
-#define MIPS_CPU_PREFETCH	0x00040000 /* CPU has usable prefetch */
-#define MIPS_CPU_VINT		0x00080000 /* CPU supports MIPSR2 vectored interrupts */
-#define MIPS_CPU_VEIC		0x00100000 /* CPU supports MIPSR2 external interrupt controller mode */
-#define MIPS_CPU_ULRI		0x00200000 /* CPU has ULRI feature */
-=======
 #define MIPS_CPU_TLB		BIT_ULL( 0)	/* CPU has TLB */
 #define MIPS_CPU_4KEX		BIT_ULL( 1)	/* "R4K" exception model */
 #define MIPS_CPU_3K_CACHE	BIT_ULL( 2)	/* R3000-style caches */
@@ -612,7 +421,6 @@ enum cpu_type_enum {
 #define MIPS_CPU_MAC_2008_ONLY	BIT_ULL(60)	/* CPU Only support MAC2008 Fused multiply-add instruction */
 #define MIPS_CPU_FTLBPAREX	BIT_ULL(61)	/* CPU has FTLB parity exception */
 #define MIPS_CPU_GSEXCEX	BIT_ULL(62)	/* CPU has GSExc exception */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * CPU ASE encodings
@@ -623,9 +431,6 @@ enum cpu_type_enum {
 #define MIPS_ASE_SMARTMIPS	0x00000008 /* SmartMIPS */
 #define MIPS_ASE_DSP		0x00000010 /* Signal Processing ASE */
 #define MIPS_ASE_MIPSMT		0x00000020 /* CPU supports MIPS MT */
-<<<<<<< HEAD
-
-=======
 #define MIPS_ASE_DSP2P		0x00000040 /* Signal Processing ASE Rev 2 */
 #define MIPS_ASE_VZ		0x00000080 /* Virtualization ASE */
 #define MIPS_ASE_MSA		0x00000100 /* MIPS SIMD Architecture */
@@ -635,6 +440,5 @@ enum cpu_type_enum {
 #define MIPS_ASE_LOONGSON_CAM	0x00001000 /* Loongson CAM */
 #define MIPS_ASE_LOONGSON_EXT	0x00002000 /* Loongson EXTensions */
 #define MIPS_ASE_LOONGSON_EXT2	0x00004000 /* Loongson EXTensions R2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_CPU_H */

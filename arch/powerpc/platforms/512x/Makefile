@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#
-# Makefile for the Freescale PowerPC 512x linux kernel.
-#
-obj-y				+= clock.o mpc512x_shared.o
-obj-$(CONFIG_MPC5121_ADS)	+= mpc5121_ads.o mpc5121_ads_cpld.o
-obj-$(CONFIG_MPC5121_GENERIC)	+= mpc5121_generic.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 #
 # Makefile for the Freescale PowerPC 512x linux kernel.
@@ -15,5 +7,4 @@ obj-y				+= mpc512x_shared.o
 obj-$(CONFIG_MPC5121_ADS)	+= mpc5121_ads.o mpc5121_ads_cpld.o
 obj-$(CONFIG_MPC512x_GENERIC)	+= mpc512x_generic.o
 obj-$(CONFIG_MPC512x_LPBFIFO)	+= mpc512x_lpbfifo.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_PDM360NG)		+= pdm360ng.o

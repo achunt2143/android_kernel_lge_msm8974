@@ -37,14 +37,6 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 {
 	int err;
 
-<<<<<<< HEAD
-	DE_INIT(("init_hw() - Gina20\n"));
-	if (snd_BUG_ON((subdevice_id & 0xfff0) != GINA20))
-		return -ENODEV;
-
-	if ((err = init_dsp_comm_page(chip))) {
-		DE_INIT(("init_hw - could not initialize DSP comm page\n"));
-=======
 	if (snd_BUG_ON((subdevice_id & 0xfff0) != GINA20))
 		return -ENODEV;
 
@@ -52,33 +44,17 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 	if (err) {
 		dev_err(chip->card->dev,
 			"init_hw - could not initialize DSP comm page\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	chip->device_id = device_id;
 	chip->subdevice_id = subdevice_id;
-<<<<<<< HEAD
-	chip->bad_board = TRUE;
-=======
 	chip->bad_board = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->dsp_code_to_load = FW_GINA20_DSP;
 	chip->spdif_status = GD_SPDIF_STATUS_UNDEF;
 	chip->clock_state = GD_CLOCK_UNDEF;
 	/* Since this card has no ASIC, mark it as loaded so everything
 	   works OK */
-<<<<<<< HEAD
-	chip->asic_loaded = TRUE;
-	chip->input_clock_types = ECHO_CLOCK_BIT_INTERNAL |
-		ECHO_CLOCK_BIT_SPDIF;
-
-	if ((err = load_firmware(chip)) < 0)
-		return err;
-	chip->bad_board = FALSE;
-
-	DE_INIT(("init_hw done\n"));
-=======
 	chip->asic_loaded = true;
 	chip->input_clock_types = ECHO_CLOCK_BIT_INTERNAL |
 		ECHO_CLOCK_BIT_SPDIF;
@@ -88,7 +64,6 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 		return err;
 	chip->bad_board = false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -96,11 +71,7 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 
 static int set_mixer_defaults(struct echoaudio *chip)
 {
-<<<<<<< HEAD
-	chip->professional_spdif = FALSE;
-=======
 	chip->professional_spdif = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return init_line_levels(chip);
 }
 
@@ -179,10 +150,6 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 
 static int set_input_clock(struct echoaudio *chip, u16 clock)
 {
-<<<<<<< HEAD
-	DE_ACT(("set_input_clock:\n"));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (clock) {
 	case ECHO_CLOCK_INTERNAL:
@@ -191,10 +158,6 @@ static int set_input_clock(struct echoaudio *chip, u16 clock)
 		chip->spdif_status = GD_SPDIF_STATUS_UNDEF;
 		set_sample_rate(chip, chip->sample_rate);
 		chip->input_clock = clock;
-<<<<<<< HEAD
-		DE_ACT(("Set Gina clock to INTERNAL\n"));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ECHO_CLOCK_SPDIF:
 		chip->comm_page->gd_clock_state = GD_CLOCK_SPDIFIN;
@@ -202,10 +165,6 @@ static int set_input_clock(struct echoaudio *chip, u16 clock)
 		clear_handshake(chip);
 		send_vector(chip, DSP_VC_SET_GD_AUDIO_STATE);
 		chip->clock_state = GD_CLOCK_SPDIFIN;
-<<<<<<< HEAD
-		DE_ACT(("Set Gina20 clock to SPDIF\n"));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->input_clock = clock;
 		break;
 	default:
@@ -247,10 +206,6 @@ static int update_flags(struct echoaudio *chip)
 
 static int set_professional_spdif(struct echoaudio *chip, char prof)
 {
-<<<<<<< HEAD
-	DE_ACT(("set_professional_spdif %d\n", prof));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (prof)
 		chip->comm_page->flags |=
 			cpu_to_le32(DSP_FLAG_PROFESSIONAL_SPDIF);

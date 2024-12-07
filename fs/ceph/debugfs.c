@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/device.h>
@@ -10,11 +7,8 @@
 #include <linux/ctype.h>
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
-<<<<<<< HEAD
-=======
 #include <linux/math64.h>
 #include <linux/ktime.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/ceph/libceph.h>
 #include <linux/ceph/mon_client.h>
@@ -26,33 +20,12 @@
 #ifdef CONFIG_DEBUG_FS
 
 #include "mds_client.h"
-<<<<<<< HEAD
-=======
 #include "metric.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int mdsmap_show(struct seq_file *s, void *p)
 {
 	int i;
 	struct ceph_fs_client *fsc = s->private;
-<<<<<<< HEAD
-
-	if (fsc->mdsc == NULL || fsc->mdsc->mdsmap == NULL)
-		return 0;
-	seq_printf(s, "epoch %d\n", fsc->mdsc->mdsmap->m_epoch);
-	seq_printf(s, "root %d\n", fsc->mdsc->mdsmap->m_root);
-	seq_printf(s, "session_timeout %d\n",
-		       fsc->mdsc->mdsmap->m_session_timeout);
-	seq_printf(s, "session_autoclose %d\n",
-		       fsc->mdsc->mdsmap->m_session_autoclose);
-	for (i = 0; i < fsc->mdsc->mdsmap->m_max_mds; i++) {
-		struct ceph_entity_addr *addr =
-			&fsc->mdsc->mdsmap->m_info[i].addr;
-		int state = fsc->mdsc->mdsmap->m_info[i].state;
-
-		seq_printf(s, "\tmds%d\t%s\t(%s)\n", i,
-			       ceph_pr_addr(&addr->in_addr),
-=======
 	struct ceph_mdsmap *mdsmap;
 
 	if (!fsc->mdsc || !fsc->mdsc->mdsmap)
@@ -68,7 +41,6 @@ static int mdsmap_show(struct seq_file *s, void *p)
 		int state = mdsmap->m_info[i].state;
 		seq_printf(s, "\tmds%d\t%s\t(%s)\n", i,
 			       ceph_pr_addr(addr),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       ceph_mds_state_name(state));
 	}
 	return 0;
@@ -83,11 +55,7 @@ static int mdsc_show(struct seq_file *s, void *p)
 	struct ceph_mds_client *mdsc = fsc->mdsc;
 	struct ceph_mds_request *req;
 	struct rb_node *rp;
-<<<<<<< HEAD
-	int pathlen;
-=======
 	int pathlen = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 pathbase;
 	char *path;
 
@@ -105,46 +73,19 @@ static int mdsc_show(struct seq_file *s, void *p)
 
 		seq_printf(s, "%s", ceph_mds_op_name(req->r_op));
 
-<<<<<<< HEAD
-		if (req->r_got_unsafe)
-			seq_printf(s, "\t(unsafe)");
-		else
-			seq_printf(s, "\t");
-=======
 		if (test_bit(CEPH_MDS_R_GOT_UNSAFE, &req->r_req_flags))
 			seq_puts(s, "\t(unsafe)");
 		else
 			seq_puts(s, "\t");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (req->r_inode) {
 			seq_printf(s, " #%llx", ceph_ino(req->r_inode));
 		} else if (req->r_dentry) {
-<<<<<<< HEAD
-			path = ceph_mdsc_build_path(req->r_dentry, &pathlen,
-=======
 			path = ceph_mdsc_build_path(mdsc, req->r_dentry, &pathlen,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    &pathbase, 0);
 			if (IS_ERR(path))
 				path = NULL;
 			spin_lock(&req->r_dentry->d_lock);
-<<<<<<< HEAD
-			seq_printf(s, " #%llx/%.*s (%s)",
-				   ceph_ino(req->r_dentry->d_parent->d_inode),
-				   req->r_dentry->d_name.len,
-				   req->r_dentry->d_name.name,
-				   path ? path : "");
-			spin_unlock(&req->r_dentry->d_lock);
-			kfree(path);
-		} else if (req->r_path1) {
-			seq_printf(s, " #%llx/%s", req->r_ino1.ino,
-				   req->r_path1);
-		}
-
-		if (req->r_old_dentry) {
-			path = ceph_mdsc_build_path(req->r_old_dentry, &pathlen,
-=======
 			seq_printf(s, " #%llx/%pd (%s)",
 				   ceph_ino(d_inode(req->r_dentry->d_parent)),
 				   req->r_dentry,
@@ -160,21 +101,10 @@ static int mdsc_show(struct seq_file *s, void *p)
 
 		if (req->r_old_dentry) {
 			path = ceph_mdsc_build_path(mdsc, req->r_old_dentry, &pathlen,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    &pathbase, 0);
 			if (IS_ERR(path))
 				path = NULL;
 			spin_lock(&req->r_old_dentry->d_lock);
-<<<<<<< HEAD
-			seq_printf(s, " #%llx/%.*s (%s)",
-			   ceph_ino(req->r_old_dentry_dir),
-				   req->r_old_dentry->d_name.len,
-				   req->r_old_dentry->d_name.name,
-				   path ? path : "");
-			spin_unlock(&req->r_old_dentry->d_lock);
-			kfree(path);
-		} else if (req->r_path2) {
-=======
 			seq_printf(s, " #%llx/%pd (%s)",
 				   req->r_old_dentry_dir ?
 				   ceph_ino(req->r_old_dentry_dir) : 0,
@@ -183,7 +113,6 @@ static int mdsc_show(struct seq_file *s, void *p)
 			spin_unlock(&req->r_old_dentry->d_lock);
 			ceph_mdsc_free_path(path, pathlen);
 		} else if (req->r_path2 && req->r_op != CEPH_MDS_OP_SYMLINK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (req->r_ino2.ino)
 				seq_printf(s, " #%llx/%s", req->r_ino2.ino,
 					   req->r_path2);
@@ -191,23 +120,13 @@ static int mdsc_show(struct seq_file *s, void *p)
 				seq_printf(s, " %s", req->r_path2);
 		}
 
-<<<<<<< HEAD
-		seq_printf(s, "\n");
-=======
 		seq_puts(s, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&mdsc->mutex);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int caps_show(struct seq_file *s, void *p)
-{
-	struct ceph_fs_client *fsc = s->private;
-	int total, avail, used, reserved, min;
-=======
 #define CEPH_LAT_METRIC_SHOW(name, total, avg, min, max, sq) {		\
 	s64 _total, _avg, _min, _max, _sq, _st;				\
 	_avg = ktime_to_us(avg);					\
@@ -352,33 +271,12 @@ static int caps_show(struct seq_file *s, void *p)
 	struct ceph_mds_client *mdsc = fsc->mdsc;
 	int total, avail, used, reserved, min, i;
 	struct cap_wait	*cw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ceph_reservation_status(fsc, &total, &avail, &used, &reserved, &min);
 	seq_printf(s, "total\t\t%d\n"
 		   "avail\t\t%d\n"
 		   "used\t\t%d\n"
 		   "reserved\t%d\n"
-<<<<<<< HEAD
-		   "min\t%d\n",
-		   total, avail, used, reserved, min);
-	return 0;
-}
-
-static int dentry_lru_show(struct seq_file *s, void *ptr)
-{
-	struct ceph_fs_client *fsc = s->private;
-	struct ceph_mds_client *mdsc = fsc->mdsc;
-	struct ceph_dentry_info *di;
-
-	spin_lock(&mdsc->dentry_lru_lock);
-	list_for_each_entry(di, &mdsc->dentry_lru, lru) {
-		struct dentry *dentry = di->dentry;
-		seq_printf(s, "%p %p\t%.*s\n",
-			   di, dentry, dentry->d_name.len, dentry->d_name.name);
-	}
-	spin_unlock(&mdsc->dentry_lru_lock);
-=======
 		   "min\t\t%d\n\n",
 		   total, avail, used, reserved, min);
 	seq_printf(s, "ino              mds  issued           implemented\n");
@@ -447,17 +345,10 @@ static int mds_sessions_show(struct seq_file *s, void *ptr)
 		mutex_lock(&mdsc->mutex);
 	}
 	mutex_unlock(&mdsc->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-CEPH_DEFINE_SHOW_FUNC(mdsmap_show)
-CEPH_DEFINE_SHOW_FUNC(mdsc_show)
-CEPH_DEFINE_SHOW_FUNC(caps_show)
-CEPH_DEFINE_SHOW_FUNC(dentry_lru_show)
-=======
 static int status_show(struct seq_file *s, void *p)
 {
 	struct ceph_fs_client *fsc = s->private;
@@ -480,7 +371,6 @@ DEFINE_SHOW_ATTRIBUTE(metrics_file);
 DEFINE_SHOW_ATTRIBUTE(metrics_latency);
 DEFINE_SHOW_ATTRIBUTE(metrics_size);
 DEFINE_SHOW_ATTRIBUTE(metrics_caps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -508,24 +398,6 @@ DEFINE_SIMPLE_ATTRIBUTE(congestion_kb_fops, congestion_kb_get,
 
 void ceph_fs_debugfs_cleanup(struct ceph_fs_client *fsc)
 {
-<<<<<<< HEAD
-	dout("ceph_fs_debugfs_cleanup\n");
-	debugfs_remove(fsc->debugfs_bdi);
-	debugfs_remove(fsc->debugfs_congestion_kb);
-	debugfs_remove(fsc->debugfs_mdsmap);
-	debugfs_remove(fsc->debugfs_caps);
-	debugfs_remove(fsc->debugfs_mdsc);
-	debugfs_remove(fsc->debugfs_dentry_lru);
-}
-
-int ceph_fs_debugfs_init(struct ceph_fs_client *fsc)
-{
-	char name[100];
-	int err = -ENOMEM;
-
-	dout("ceph_fs_debugfs_init\n");
-	BUG_ON(!fsc->client->debugfs_dir);
-=======
 	doutc(fsc->client, "begin\n");
 	debugfs_remove(fsc->debugfs_bdi);
 	debugfs_remove(fsc->debugfs_congestion_kb);
@@ -543,70 +415,19 @@ void ceph_fs_debugfs_init(struct ceph_fs_client *fsc)
 	char name[100];
 
 	doutc(fsc->client, "begin\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fsc->debugfs_congestion_kb =
 		debugfs_create_file("writeback_congestion_kb",
 				    0600,
 				    fsc->client->debugfs_dir,
 				    fsc,
 				    &congestion_kb_fops);
-<<<<<<< HEAD
-	if (!fsc->debugfs_congestion_kb)
-		goto out;
-
-	snprintf(name, sizeof(name), "../../bdi/%s",
-		 dev_name(fsc->backing_dev_info.dev));
-=======
 
 	snprintf(name, sizeof(name), "../../bdi/%s",
 		 bdi_dev_name(fsc->sb->s_bdi));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fsc->debugfs_bdi =
 		debugfs_create_symlink("bdi",
 				       fsc->client->debugfs_dir,
 				       name);
-<<<<<<< HEAD
-	if (!fsc->debugfs_bdi)
-		goto out;
-
-	fsc->debugfs_mdsmap = debugfs_create_file("mdsmap",
-					0600,
-					fsc->client->debugfs_dir,
-					fsc,
-					&mdsmap_show_fops);
-	if (!fsc->debugfs_mdsmap)
-		goto out;
-
-	fsc->debugfs_mdsc = debugfs_create_file("mdsc",
-						0600,
-						fsc->client->debugfs_dir,
-						fsc,
-						&mdsc_show_fops);
-	if (!fsc->debugfs_mdsc)
-		goto out;
-
-	fsc->debugfs_caps = debugfs_create_file("caps",
-						   0400,
-						   fsc->client->debugfs_dir,
-						   fsc,
-						   &caps_show_fops);
-	if (!fsc->debugfs_caps)
-		goto out;
-
-	fsc->debugfs_dentry_lru = debugfs_create_file("dentry_lru",
-					0600,
-					fsc->client->debugfs_dir,
-					fsc,
-					&dentry_lru_show_fops);
-	if (!fsc->debugfs_dentry_lru)
-		goto out;
-
-	return 0;
-
-out:
-	ceph_fs_debugfs_cleanup(fsc);
-	return err;
-=======
 
 	fsc->debugfs_mdsmap = debugfs_create_file("mdsmap",
 					0400,
@@ -650,20 +471,13 @@ out:
 	debugfs_create_file("caps", 0400, fsc->debugfs_metrics_dir, fsc,
 			    &metrics_caps_fops);
 	doutc(fsc->client, "done\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 #else  /* CONFIG_DEBUG_FS */
 
-<<<<<<< HEAD
-int ceph_fs_debugfs_init(struct ceph_fs_client *fsc)
-{
-	return 0;
-=======
 void ceph_fs_debugfs_init(struct ceph_fs_client *fsc)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ceph_fs_debugfs_cleanup(struct ceph_fs_client *fsc)

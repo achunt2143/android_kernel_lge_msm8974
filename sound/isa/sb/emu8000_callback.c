@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  synth callback routines for the emu8000 (AWE32/64)
  *
  *  Copyright (C) 1999 Steve Ratcliffe
  *  Copyright (C) 1999-2000 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "emu8000_local.h"
@@ -43,11 +23,7 @@ static void reset_voice(struct snd_emux *emu, int ch);
 static void terminate_voice(struct snd_emux_voice *vp);
 static void sysex(struct snd_emux *emu, char *buf, int len, int parsed,
 		  struct snd_midi_channel_set *chset);
-<<<<<<< HEAD
-#ifdef CONFIG_SND_SEQUENCER_OSS
-=======
 #if IS_ENABLED(CONFIG_SND_SEQUENCER_OSS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int oss_ioctl(struct snd_emux *emu, int cmd, int p1, int p2);
 #endif
 static int load_fx(struct snd_emux *emu, int type, int mode,
@@ -73,11 +49,7 @@ static void snd_emu8000_tweak_voice(struct snd_emu8000 *emu, int ch);
 /*
  * set up operators
  */
-<<<<<<< HEAD
-static struct snd_emux_operators emu8000_ops = {
-=======
 static const struct snd_emux_operators emu8000_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner =	THIS_MODULE,
 	.get_voice =	get_voice,
 	.prepare =	start_voice,
@@ -91,11 +63,7 @@ static const struct snd_emux_operators emu8000_ops = {
 	.sample_reset = snd_emu8000_sample_reset,
 	.load_fx =	load_fx,
 	.sysex =	sysex,
-<<<<<<< HEAD
-#ifdef CONFIG_SND_SEQUENCER_OSS
-=======
 #if IS_ENABLED(CONFIG_SND_SEQUENCER_OSS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.oss_ioctl =	oss_ioctl,
 #endif
 };
@@ -194,11 +162,7 @@ get_voice(struct snd_emux *emu, struct snd_emux_port *port)
 	hw = emu->hw;
 
 	for (i = 0; i < END; i++) {
-<<<<<<< HEAD
-		best[i].time = (unsigned int)(-1); /* XXX MAX_?INT really */;
-=======
 		best[i].time = (unsigned int)(-1); /* XXX MAX_?INT really */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		best[i].voice = -1;
 	}
 
@@ -500,11 +464,7 @@ sysex(struct snd_emux *emu, char *buf, int len, int parsed, struct snd_midi_chan
 }
 
 
-<<<<<<< HEAD
-#ifdef CONFIG_SND_SEQUENCER_OSS
-=======
 #if IS_ENABLED(CONFIG_SND_SEQUENCER_OSS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OSS ioctl callback
  */

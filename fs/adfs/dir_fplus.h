@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/adfs/dir_fplus.h
  *
  *  Copyright (C) 1999 Russell King
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Structures of directories on the F+ format disk
  */
 
@@ -32,11 +22,7 @@ struct adfs_bigdirheader {
 	__le32	bigdirnamesize;
 	__le32	bigdirparent;
 	char	bigdirname[1];
-<<<<<<< HEAD
-};
-=======
 } __attribute__((packed, aligned(4)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct adfs_bigdirentry {
 	__le32	bigdirload;
@@ -46,19 +32,11 @@ struct adfs_bigdirentry {
 	__le32	bigdirattr;
 	__le32	bigdirobnamelen;
 	__le32	bigdirobnameptr;
-<<<<<<< HEAD
-};
-=======
 } __attribute__((packed, aligned(4)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct adfs_bigdirtail {
 	__le32	bigdirendname;
 	__u8	bigdirendmasseq;
 	__u8	reserved[2];
 	__u8	bigdircheckbyte;
-<<<<<<< HEAD
-};
-=======
 } __attribute__((packed, aligned(4)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

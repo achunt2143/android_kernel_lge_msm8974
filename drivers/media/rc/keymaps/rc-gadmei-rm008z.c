@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-/* gadmei-rm008z.h - Keytable for gadmei_rm008z Remote Controller
- *
- * keymap imported from ir-keymaps.c
- *
- * Copyright (c) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 // gadmei-rm008z.h - Keytable for gadmei_rm008z Remote Controller
 //
 // keymap imported from ir-keymaps.c
 //
 // Copyright (c) 2010 by Mauro Carvalho Chehab
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -35,18 +21,6 @@ static struct rc_map_table gadmei_rm008z[] = {
 	{ 0x0b, KEY_AUDIO},		/* SV */
 	{ 0x0f, KEY_RADIO},		/* FM */
 
-<<<<<<< HEAD
-	{ 0x00, KEY_1},
-	{ 0x01, KEY_2},
-	{ 0x02, KEY_3},
-	{ 0x03, KEY_4},
-	{ 0x04, KEY_5},
-	{ 0x05, KEY_6},
-	{ 0x06, KEY_7},
-	{ 0x07, KEY_8},
-	{ 0x08, KEY_9},
-	{ 0x09, KEY_0},
-=======
 	{ 0x00, KEY_NUMERIC_1},
 	{ 0x01, KEY_NUMERIC_2},
 	{ 0x02, KEY_NUMERIC_3},
@@ -57,7 +31,6 @@ static struct rc_map_table gadmei_rm008z[] = {
 	{ 0x07, KEY_NUMERIC_8},
 	{ 0x08, KEY_NUMERIC_9},
 	{ 0x09, KEY_NUMERIC_0},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0a, KEY_INFO},		/* OSD */
 	{ 0x1c, KEY_BACKSPACE},		/* LAST */
 
@@ -80,17 +53,10 @@ static struct rc_map_table gadmei_rm008z[] = {
 
 static struct rc_map_list gadmei_rm008z_map = {
 	.map = {
-<<<<<<< HEAD
-		.scan    = gadmei_rm008z,
-		.size    = ARRAY_SIZE(gadmei_rm008z),
-		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
-		.name    = RC_MAP_GADMEI_RM008Z,
-=======
 		.scan     = gadmei_rm008z,
 		.size     = ARRAY_SIZE(gadmei_rm008z),
 		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
 		.name     = RC_MAP_GADMEI_RM008Z,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -108,9 +74,5 @@ module_init(init_rc_map_gadmei_rm008z)
 module_exit(exit_rc_map_gadmei_rm008z)
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
-=======
 MODULE_AUTHOR("Mauro Carvalho Chehab");
 MODULE_DESCRIPTION("GADMEI UTV330+ RM008Z remote controller keytable");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

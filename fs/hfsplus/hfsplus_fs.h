@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/include/linux/hfsplus_fs.h
  *
@@ -14,15 +11,12 @@
 #ifndef _LINUX_HFSPLUS_FS_H
 #define _LINUX_HFSPLUS_FS_H
 
-<<<<<<< HEAD
-=======
 #ifdef pr_fmt
 #undef pr_fmt
 #endif
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/mutex.h>
 #include <linux/buffer_head.h>
@@ -36,10 +30,7 @@
 #define DBG_SUPER	0x00000010
 #define DBG_EXTENT	0x00000020
 #define DBG_BITMAP	0x00000040
-<<<<<<< HEAD
-=======
 #define DBG_ATTR_MOD	0x00000080
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if 0
 #define DBG_MASK	(DBG_EXTENT|DBG_INODE|DBG_BNODE_MOD)
@@ -48,11 +39,6 @@
 #endif
 #define DBG_MASK	(0)
 
-<<<<<<< HEAD
-#define dprint(flg, fmt, args...) \
-	if (flg & DBG_MASK) \
-		printk(fmt , ## args)
-=======
 #define hfs_dbg(flg, fmt, ...)					\
 do {								\
 	if (DBG_##flg & DBG_MASK)				\
@@ -64,7 +50,6 @@ do {								\
 	if (DBG_##flg & DBG_MASK)				\
 		pr_cont(fmt, ##__VA_ARGS__);			\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Runtime config options */
 #define HFSPLUS_DEF_CR_TYPE    0x3F3F3F3F  /* '????' */
@@ -77,8 +62,6 @@ typedef int (*btree_keycmp)(const hfsplus_btree_key *,
 
 #define NODE_HASH_SIZE	256
 
-<<<<<<< HEAD
-=======
 /* B-tree mutex nested subclasses */
 enum hfsplus_btree_mutex_classes {
 	CATALOG_BTREE_MUTEX,
@@ -86,7 +69,6 @@ enum hfsplus_btree_mutex_classes {
 	ATTR_BTREE_MUTEX,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* An HFS+ BTree held in memory */
 struct hfs_btree {
 	struct super_block *sb;
@@ -135,11 +117,7 @@ struct hfs_bnode {
 	wait_queue_head_t lock_wq;
 	atomic_t refcnt;
 	unsigned int page_offset;
-<<<<<<< HEAD
-	struct page *page[0];
-=======
 	struct page *page[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define HFS_BNODE_LOCK		0
@@ -149,8 +127,6 @@ struct hfs_bnode {
 #define HFS_BNODE_DELETED	4
 
 /*
-<<<<<<< HEAD
-=======
  * Attributes file states
  */
 #define HFSPLUS_EMPTY_ATTR_TREE		0
@@ -159,7 +135,6 @@ struct hfs_bnode {
 #define HFSPLUS_FAILED_ATTR_TREE	3
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * HFS+ superblock info (built from Volume Header on disk)
  */
 
@@ -174,10 +149,7 @@ struct hfsplus_sb_info {
 	struct hfs_btree *ext_tree;
 	struct hfs_btree *cat_tree;
 	struct hfs_btree *attr_tree;
-<<<<<<< HEAD
-=======
 	atomic_t attr_tree_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *alloc_file;
 	struct inode *hidden_dir;
 	struct nls_table *nls;
@@ -209,14 +181,6 @@ struct hfsplus_sb_info {
 	u32 type;
 
 	umode_t umask;
-<<<<<<< HEAD
-	uid_t uid;
-	gid_t gid;
-
-	int part, session;
-
-	unsigned long flags;
-=======
 	kuid_t uid;
 	kgid_t gid;
 
@@ -227,7 +191,6 @@ struct hfsplus_sb_info {
 	struct delayed_work sync_work; /* FS sync delayed work */
 	spinlock_t work_lock;          /* protects sync_work and work_queued */
 	struct rcu_head rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define HFSPLUS_SB_WRITEBACKUP	0
@@ -236,11 +199,8 @@ struct hfsplus_sb_info {
 #define HFSPLUS_SB_HFSX		3
 #define HFSPLUS_SB_CASEFOLD	4
 #define HFSPLUS_SB_NOBARRIER	5
-<<<<<<< HEAD
-=======
 #define HFSPLUS_SB_UID		6
 #define HFSPLUS_SB_GID		7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct hfsplus_sb_info *HFSPLUS_SB(struct super_block *sb)
 {
@@ -285,13 +245,9 @@ struct hfsplus_inode_info {
 	 */
 	sector_t fs_blocks;
 	u8 userflags;		/* BSD user file flags */
-<<<<<<< HEAD
-	struct list_head open_dir_list;
-=======
 	u32 subfolders;		/* Subfolder count (HFSX only) */
 	struct list_head open_dir_list;
 	spinlock_t open_dir_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	loff_t phys_size;
 
 	struct inode vfs_inode;
@@ -304,21 +260,14 @@ struct hfsplus_inode_info {
 #define HFSPLUS_I_CAT_DIRTY	1	/* has changes in the catalog tree */
 #define HFSPLUS_I_EXT_DIRTY	2	/* has changes in the extent tree */
 #define HFSPLUS_I_ALLOC_DIRTY	3	/* has changes in the allocation file */
-<<<<<<< HEAD
-=======
 #define HFSPLUS_I_ATTR_DIRTY	4	/* has changes in the attributes tree */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HFSPLUS_IS_RSRC(inode) \
 	test_bit(HFSPLUS_I_RSRC, &HFSPLUS_I(inode)->flags)
 
 static inline struct hfsplus_inode_info *HFSPLUS_I(struct inode *inode)
 {
-<<<<<<< HEAD
-	return list_entry(inode, struct hfsplus_inode_info, vfs_inode);
-=======
 	return container_of(inode, struct hfsplus_inode_info, vfs_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -365,10 +314,7 @@ static inline unsigned short hfsplus_min_io_size(struct super_block *sb)
 #define hfs_btree_open hfsplus_btree_open
 #define hfs_btree_close hfsplus_btree_close
 #define hfs_btree_write hfsplus_btree_write
-<<<<<<< HEAD
-=======
 #define hfs_bmap_reserve hfsplus_bmap_reserve
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define hfs_bmap_alloc hfsplus_bmap_alloc
 #define hfs_bmap_free hfsplus_bmap_free
 #define hfs_bnode_read hfsplus_bnode_read
@@ -395,107 +341,25 @@ static inline unsigned short hfsplus_min_io_size(struct super_block *sb)
 #define hfs_brec_remove hfsplus_brec_remove
 #define hfs_find_init hfsplus_find_init
 #define hfs_find_exit hfsplus_find_exit
-<<<<<<< HEAD
-#define __hfs_brec_find __hplusfs_brec_find
-=======
 #define __hfs_brec_find __hfsplus_brec_find
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define hfs_brec_find hfsplus_brec_find
 #define hfs_brec_read hfsplus_brec_read
 #define hfs_brec_goto hfsplus_brec_goto
 #define hfs_part_find hfsplus_part_find
 
 /*
-<<<<<<< HEAD
- * definitions for ext2 flag ioctls (linux really needs a generic
- * interface for this).
- */
-
-/* ext2 ioctls (EXT2_IOC_GETFLAGS and EXT2_IOC_SETFLAGS) to support
- * chattr/lsattr */
-#define HFSPLUS_IOC_EXT2_GETFLAGS	FS_IOC_GETFLAGS
-#define HFSPLUS_IOC_EXT2_SETFLAGS	FS_IOC_SETFLAGS
-
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * hfs+-specific ioctl for making the filesystem bootable
  */
 #define HFSPLUS_IOC_BLESS _IO('h', 0x80)
 
-<<<<<<< HEAD
-=======
 typedef int (*search_strategy_t)(struct hfs_bnode *,
 				struct hfs_find_data *,
 				int *, int *, int *);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Functions in any *.c used in other files
  */
 
-<<<<<<< HEAD
-/* bitmap.c */
-int hfsplus_block_allocate(struct super_block *, u32, u32, u32 *);
-int hfsplus_block_free(struct super_block *, u32, u32);
-
-/* btree.c */
-struct hfs_btree *hfs_btree_open(struct super_block *, u32);
-void hfs_btree_close(struct hfs_btree *);
-void hfs_btree_write(struct hfs_btree *);
-struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *);
-void hfs_bmap_free(struct hfs_bnode *);
-
-/* bnode.c */
-void hfs_bnode_read(struct hfs_bnode *, void *, int, int);
-u16 hfs_bnode_read_u16(struct hfs_bnode *, int);
-u8 hfs_bnode_read_u8(struct hfs_bnode *, int);
-void hfs_bnode_read_key(struct hfs_bnode *, void *, int);
-void hfs_bnode_write(struct hfs_bnode *, void *, int, int);
-void hfs_bnode_write_u16(struct hfs_bnode *, int, u16);
-void hfs_bnode_clear(struct hfs_bnode *, int, int);
-void hfs_bnode_copy(struct hfs_bnode *, int,
-		    struct hfs_bnode *, int, int);
-void hfs_bnode_move(struct hfs_bnode *, int, int, int);
-void hfs_bnode_dump(struct hfs_bnode *);
-void hfs_bnode_unlink(struct hfs_bnode *);
-struct hfs_bnode *hfs_bnode_findhash(struct hfs_btree *, u32);
-struct hfs_bnode *hfs_bnode_find(struct hfs_btree *, u32);
-void hfs_bnode_unhash(struct hfs_bnode *);
-void hfs_bnode_free(struct hfs_bnode *);
-struct hfs_bnode *hfs_bnode_create(struct hfs_btree *, u32);
-void hfs_bnode_get(struct hfs_bnode *);
-void hfs_bnode_put(struct hfs_bnode *);
-
-/* brec.c */
-u16 hfs_brec_lenoff(struct hfs_bnode *, u16, u16 *);
-u16 hfs_brec_keylen(struct hfs_bnode *, u16);
-int hfs_brec_insert(struct hfs_find_data *, void *, int);
-int hfs_brec_remove(struct hfs_find_data *);
-
-/* bfind.c */
-int hfs_find_init(struct hfs_btree *, struct hfs_find_data *);
-void hfs_find_exit(struct hfs_find_data *);
-int __hfs_brec_find(struct hfs_bnode *, struct hfs_find_data *);
-int hfs_brec_find(struct hfs_find_data *);
-int hfs_brec_read(struct hfs_find_data *, void *, int);
-int hfs_brec_goto(struct hfs_find_data *, int);
-
-/* catalog.c */
-int hfsplus_cat_case_cmp_key(const hfsplus_btree_key *,
-		const hfsplus_btree_key *);
-int hfsplus_cat_bin_cmp_key(const hfsplus_btree_key *,
-		const hfsplus_btree_key *);
-void hfsplus_cat_build_key(struct super_block *sb,
-		hfsplus_btree_key *, u32, struct qstr *);
-int hfsplus_find_cat(struct super_block *, u32, struct hfs_find_data *);
-int hfsplus_create_cat(u32, struct inode *, struct qstr *, struct inode *);
-int hfsplus_delete_cat(u32, struct inode *, struct qstr *);
-int hfsplus_rename_cat(u32, struct inode *, struct qstr *,
-		       struct inode *, struct qstr *);
-void hfsplus_cat_set_perms(struct inode *inode, struct hfsplus_perm *perms);
-=======
 /* attributes.c */
 int __init hfsplus_create_attr_tree_cache(void);
 void hfsplus_destroy_attr_tree_cache(void);
@@ -586,22 +450,12 @@ int hfsplus_create_cat(u32 cnid, struct inode *dir, const struct qstr *str,
 int hfsplus_delete_cat(u32 cnid, struct inode *dir, const struct qstr *str);
 int hfsplus_rename_cat(u32 cnid, struct inode *src_dir, const struct qstr *src_name,
 		       struct inode *dst_dir, const struct qstr *dst_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* dir.c */
 extern const struct inode_operations hfsplus_dir_inode_operations;
 extern const struct file_operations hfsplus_dir_operations;
 
 /* extents.c */
-<<<<<<< HEAD
-int hfsplus_ext_cmp_key(const hfsplus_btree_key *, const hfsplus_btree_key *);
-int hfsplus_ext_write_extent(struct inode *);
-int hfsplus_get_block(struct inode *, sector_t, struct buffer_head *, int);
-int hfsplus_free_fork(struct super_block *, u32,
-		struct hfsplus_fork_raw *, int);
-int hfsplus_file_extend(struct inode *);
-void hfsplus_file_truncate(struct inode *);
-=======
 int hfsplus_ext_cmp_key(const hfsplus_btree_key *k1,
 			const hfsplus_btree_key *k2);
 int hfsplus_ext_write_extent(struct inode *inode);
@@ -611,41 +465,12 @@ int hfsplus_free_fork(struct super_block *sb, u32 cnid,
 		      struct hfsplus_fork_raw *fork, int type);
 int hfsplus_file_extend(struct inode *inode, bool zeroout);
 void hfsplus_file_truncate(struct inode *inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* inode.c */
 extern const struct address_space_operations hfsplus_aops;
 extern const struct address_space_operations hfsplus_btree_aops;
 extern const struct dentry_operations hfsplus_dentry_operations;
 
-<<<<<<< HEAD
-void hfsplus_inode_read_fork(struct inode *, struct hfsplus_fork_raw *);
-void hfsplus_inode_write_fork(struct inode *, struct hfsplus_fork_raw *);
-int hfsplus_cat_read_inode(struct inode *, struct hfs_find_data *);
-int hfsplus_cat_write_inode(struct inode *);
-struct inode *hfsplus_new_inode(struct super_block *, umode_t);
-void hfsplus_delete_inode(struct inode *);
-int hfsplus_file_fsync(struct file *file, loff_t start, loff_t end,
-		       int datasync);
-
-/* ioctl.c */
-long hfsplus_ioctl(struct file *filp, unsigned int cmd, unsigned long arg);
-int hfsplus_setxattr(struct dentry *dentry, const char *name,
-		     const void *value, size_t size, int flags);
-ssize_t hfsplus_getxattr(struct dentry *dentry, const char *name,
-			 void *value, size_t size);
-ssize_t hfsplus_listxattr(struct dentry *dentry, char *buffer, size_t size);
-
-/* options.c */
-int hfsplus_parse_options(char *, struct hfsplus_sb_info *);
-int hfsplus_parse_options_remount(char *input, int *force);
-void hfsplus_fill_defaults(struct hfsplus_sb_info *);
-int hfsplus_show_options(struct seq_file *, struct dentry *);
-
-/* super.c */
-struct inode *hfsplus_iget(struct super_block *, unsigned long);
-int hfsplus_sync_fs(struct super_block *sb, int wait);
-=======
 int hfsplus_write_begin(struct file *file, struct address_space *mapping,
 		loff_t pos, unsigned len, struct page **pagep, void **fsdata);
 struct inode *hfsplus_new_inode(struct super_block *sb, struct inode *dir,
@@ -682,7 +507,6 @@ int hfs_part_find(struct super_block *sb, sector_t *part_start,
 /* super.c */
 struct inode *hfsplus_iget(struct super_block *sb, unsigned long ino);
 void hfsplus_mark_mdb_dirty(struct super_block *sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* tables.c */
 extern u16 hfsplus_case_fold_table[];
@@ -690,37 +514,6 @@ extern u16 hfsplus_decompose_table[];
 extern u16 hfsplus_compose_table[];
 
 /* unicode.c */
-<<<<<<< HEAD
-int hfsplus_strcasecmp(const struct hfsplus_unistr *,
-		const struct hfsplus_unistr *);
-int hfsplus_strcmp(const struct hfsplus_unistr *,
-		const struct hfsplus_unistr *);
-int hfsplus_uni2asc(struct super_block *,
-		const struct hfsplus_unistr *, char *, int *);
-int hfsplus_asc2uni(struct super_block *,
-		struct hfsplus_unistr *, const char *, int);
-int hfsplus_hash_dentry(const struct dentry *dentry,
-		const struct inode *inode, struct qstr *str);
-int hfsplus_compare_dentry(const struct dentry *parent,
-		const struct inode *pinode,
-		const struct dentry *dentry, const struct inode *inode,
-		unsigned int len, const char *str, const struct qstr *name);
-
-/* wrapper.c */
-int hfsplus_read_wrapper(struct super_block *);
-int hfs_part_find(struct super_block *, sector_t *, sector_t *);
-int hfsplus_submit_bio(struct super_block *sb, sector_t sector,
-		void *buf, void **data, int rw);
-
-/* time macros */
-#define __hfsp_mt2ut(t)		(be32_to_cpu(t) - 2082844800U)
-#define __hfsp_ut2mt(t)		(cpu_to_be32(t + 2082844800U))
-
-/* compatibility */
-#define hfsp_mt2ut(t)		(struct timespec){ .tv_sec = __hfsp_mt2ut(t) }
-#define hfsp_ut2mt(t)		__hfsp_ut2mt((t).tv_sec)
-#define hfsp_now2mt()		__hfsp_ut2mt(get_seconds())
-=======
 int hfsplus_strcasecmp(const struct hfsplus_unistr *s1,
 		       const struct hfsplus_unistr *s2);
 int hfsplus_strcmp(const struct hfsplus_unistr *s1,
@@ -764,6 +557,5 @@ static inline __be32 __hfsp_ut2mt(time64_t ut)
 #define hfsp_mt2ut(t)		(struct timespec64){ .tv_sec = __hfsp_mt2ut(t) }
 #define hfsp_ut2mt(t)		__hfsp_ut2mt((t).tv_sec)
 #define hfsp_now2mt()		__hfsp_ut2mt(ktime_get_real_seconds())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

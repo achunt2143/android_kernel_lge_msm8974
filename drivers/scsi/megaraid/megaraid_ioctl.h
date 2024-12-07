@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *			Linux MegaRAID device driver
  *
  * Copyright (c) 2003-2004  LSI Logic Corporation.
  *
-<<<<<<< HEAD
- *	   This program is free software; you can redistribute it and/or
- *	   modify it under the terms of the GNU General Public License
- *	   as published by the Free Software Foundation; either version
- *	   2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FILE		: megaraid_ioctl.h
  *
  * Definitions to interface with user level applications
@@ -26,10 +15,7 @@
 
 #include <linux/types.h>
 #include <linux/semaphore.h>
-<<<<<<< HEAD
-=======
 #include <linux/timer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "mbox_defs.h"
 
@@ -164,14 +150,11 @@ typedef struct uioc {
 
 } __attribute__ ((aligned(1024),packed)) uioc_t;
 
-<<<<<<< HEAD
-=======
 /* For on-stack uioc timers. */
 struct uioc_timeout {
 	struct timer_list timer;
 	uioc_t		  *uioc;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct mraid_hba_info - information about the controller

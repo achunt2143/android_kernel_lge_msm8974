@@ -1,22 +1,12 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001, 2002 Jeff Dike (jdike@karaya.com)
- * Licensed under the GPL
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (C) 2001, 2002 Jeff Dike (jdike@karaya.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MCONSOLE_KERN_H__
 #define __MCONSOLE_KERN_H__
 
-<<<<<<< HEAD
-#include "linux/list.h"
-=======
 #include <linux/list.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "mconsole.h"
 
 struct mconsole_entry {

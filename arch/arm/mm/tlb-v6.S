@@ -1,40 +1,24 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/tlb-v6.S
  *
  *  Copyright (C) 1997-2002 Russell King
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  ARM architecture version 6 TLB handling functions.
  *  These assume a split I/D TLB.
  */
 #include <linux/init.h>
 #include <linux/linkage.h>
 #include <asm/asm-offsets.h>
-<<<<<<< HEAD
-=======
 #include <asm/assembler.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm/tlbflush.h>
 #include "proc-macros.S"
 
 #define HARVARD_TLB
 
-<<<<<<< HEAD
-=======
 .arch armv6
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	v6wbi_flush_user_tlb_range(start, end, vma)
  *
@@ -42,11 +26,7 @@
  *
  *	- start - start address (may not be aligned)
  *	- end   - end address (exclusive, may not be aligned)
-<<<<<<< HEAD
- *	- vma   - vma_struct describing address range
-=======
  *	- vma   - vm_area_struct describing address range
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	It is assumed that:
  *	- the "Invalidate single entry" instruction will invalidate
@@ -75,11 +55,7 @@ ENTRY(v6wbi_flush_user_tlb_range)
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, ip, c7, c10, 4		@ data synchronization barrier
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	v6wbi_flush_kern_tlb_range(start,end)
@@ -108,11 +84,7 @@ ENTRY(v6wbi_flush_kern_tlb_range)
 	blo	1b
 	mcr	p15, 0, r2, c7, c10, 4		@ data synchronization barrier
 	mcr	p15, 0, r2, c7, c5, 4		@ prefetch flush (isb)
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__INIT
 

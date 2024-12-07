@@ -100,21 +100,13 @@ static int gx_fix;
 #include <linux/ethtool.h>
 #include <linux/crc32.h>
 #include <linux/bitops.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h>		/* Processor type for cache alignment. */
 #include <asm/unaligned.h>
 #include <asm/io.h>
 
 /* These identify the driver base version and may not be removed. */
-<<<<<<< HEAD
-static const char version[] __devinitconst =
-=======
 static const char version[] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   KERN_INFO DRV_NAME ".c:v1.05  1/09/2001  Written by Donald Becker <becker@scyld.com>\n"
   "  (unofficial 2.4.x port, " DRV_VERSION ", " DRV_RELDATE ")\n";
 
@@ -199,11 +191,7 @@ IV. Notes
 
 Thanks to Kim Stearns of Packet Engines for providing a pair of G-NIC boards.
 Thanks to Bruce Faust of Digitalscape for providing both their SYM53C885 board
-<<<<<<< HEAD
-and an AlphaStation to verifty the Alpha port!
-=======
 and an AlphaStation to verify the Alpha port!
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 IVb. References
 
@@ -248,11 +236,7 @@ static const struct pci_id_info pci_id_tbl[] = {
 	{ }
 };
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(yellowfin_pci_tbl) = {
-=======
 static const struct pci_device_id yellowfin_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x1000, 0x0702, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
 	{ 0x1000, 0x0701, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 1 },
 	{ }
@@ -359,13 +343,8 @@ static int mdio_read(void __iomem *ioaddr, int phy_id, int location);
 static void mdio_write(void __iomem *ioaddr, int phy_id, int location, int value);
 static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 static int yellowfin_open(struct net_device *dev);
-<<<<<<< HEAD
-static void yellowfin_timer(unsigned long data);
-static void yellowfin_tx_timeout(struct net_device *dev);
-=======
 static void yellowfin_timer(struct timer_list *t);
 static void yellowfin_tx_timeout(struct net_device *dev, unsigned int txqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int yellowfin_init_ring(struct net_device *dev);
 static netdev_tx_t yellowfin_start_xmit(struct sk_buff *skb,
 					struct net_device *dev);
@@ -381,17 +360,6 @@ static const struct net_device_ops netdev_ops = {
 	.ndo_stop 		= yellowfin_close,
 	.ndo_start_xmit 	= yellowfin_start_xmit,
 	.ndo_set_rx_mode	= set_rx_mode,
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu,
-	.ndo_validate_addr	= eth_validate_addr,
-	.ndo_set_mac_address 	= eth_mac_addr,
-	.ndo_do_ioctl 		= netdev_ioctl,
-	.ndo_tx_timeout 	= yellowfin_tx_timeout,
-};
-
-static int __devinit yellowfin_init_one(struct pci_dev *pdev,
-					const struct pci_device_id *ent)
-=======
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_eth_ioctl		= netdev_ioctl,
@@ -400,7 +368,6 @@ static int __devinit yellowfin_init_one(struct pci_dev *pdev,
 
 static int yellowfin_init_one(struct pci_dev *pdev,
 			      const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct yellowfin_private *np;
@@ -417,10 +384,7 @@ static int yellowfin_init_one(struct pci_dev *pdev,
 #else
 	int bar = 1;
 #endif
-<<<<<<< HEAD
-=======
 	u8 addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* when built into the kernel, we only print version if device is found */
 #ifndef MODULE
@@ -453,14 +417,6 @@ static int yellowfin_init_one(struct pci_dev *pdev,
 
 	if (drv_flags & DontUseEeprom)
 		for (i = 0; i < 6; i++)
-<<<<<<< HEAD
-			dev->dev_addr[i] = ioread8(ioaddr + StnAddr + i);
-	else {
-		int ee_offset = (read_eeprom(ioaddr, 6) == 0xff ? 0x100 : 0);
-		for (i = 0; i < 6; i++)
-			dev->dev_addr[i] = read_eeprom(ioaddr, ee_offset + i);
-	}
-=======
 			addr[i] = ioread8(ioaddr + StnAddr + i);
 	else {
 		int ee_offset = (read_eeprom(ioaddr, 6) == 0xff ? 0x100 : 0);
@@ -468,17 +424,10 @@ static int yellowfin_init_one(struct pci_dev *pdev,
 			addr[i] = read_eeprom(ioaddr, ee_offset + i);
 	}
 	eth_hw_addr_set(dev, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reset the chip. */
 	iowrite32(0x80000000, ioaddr + DMACtrl);
 
-<<<<<<< HEAD
-	dev->base_addr = (unsigned long)ioaddr;
-	dev->irq = irq;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_drvdata(pdev, dev);
 	spin_lock_init(&np->lock);
 
@@ -487,34 +436,22 @@ static int yellowfin_init_one(struct pci_dev *pdev,
 	np->drv_flags = drv_flags;
 	np->base = ioaddr;
 
-<<<<<<< HEAD
-	ring_space = pci_alloc_consistent(pdev, TX_TOTAL_SIZE, &ring_dma);
-=======
 	ring_space = dma_alloc_coherent(&pdev->dev, TX_TOTAL_SIZE, &ring_dma,
 					GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ring_space)
 		goto err_out_cleardev;
 	np->tx_ring = ring_space;
 	np->tx_ring_dma = ring_dma;
 
-<<<<<<< HEAD
-	ring_space = pci_alloc_consistent(pdev, RX_TOTAL_SIZE, &ring_dma);
-=======
 	ring_space = dma_alloc_coherent(&pdev->dev, RX_TOTAL_SIZE, &ring_dma,
 					GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ring_space)
 		goto err_out_unmap_tx;
 	np->rx_ring = ring_space;
 	np->rx_ring_dma = ring_dma;
 
-<<<<<<< HEAD
-	ring_space = pci_alloc_consistent(pdev, STATUS_TOTAL_SIZE, &ring_dma);
-=======
 	ring_space = dma_alloc_coherent(&pdev->dev, STATUS_TOTAL_SIZE,
 					&ring_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ring_space)
 		goto err_out_unmap_rx;
 	np->tx_status = ring_space;
@@ -539,11 +476,7 @@ static int yellowfin_init_one(struct pci_dev *pdev,
 
 	/* The Yellowfin-specific entries in the device structure. */
 	dev->netdev_ops = &netdev_ops;
-<<<<<<< HEAD
-	SET_ETHTOOL_OPS(dev, &ethtool_ops);
-=======
 	dev->ethtool_ops = &ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->watchdog_timeo = TX_TIMEOUT;
 
 	if (mtu)
@@ -577,16 +510,6 @@ static int yellowfin_init_one(struct pci_dev *pdev,
 	return 0;
 
 err_out_unmap_status:
-<<<<<<< HEAD
-        pci_free_consistent(pdev, STATUS_TOTAL_SIZE, np->tx_status,
-		np->tx_status_dma);
-err_out_unmap_rx:
-        pci_free_consistent(pdev, RX_TOTAL_SIZE, np->rx_ring, np->rx_ring_dma);
-err_out_unmap_tx:
-        pci_free_consistent(pdev, TX_TOTAL_SIZE, np->tx_ring, np->tx_ring_dma);
-err_out_cleardev:
-	pci_set_drvdata(pdev, NULL);
-=======
 	dma_free_coherent(&pdev->dev, STATUS_TOTAL_SIZE, np->tx_status,
 			  np->tx_status_dma);
 err_out_unmap_rx:
@@ -596,7 +519,6 @@ err_out_unmap_tx:
 	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, np->tx_ring,
 			  np->tx_ring_dma);
 err_out_cleardev:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_iounmap(pdev, ioaddr);
 err_out_free_res:
 	pci_release_regions(pdev);
@@ -605,11 +527,7 @@ err_out_free_netdev:
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static int __devinit read_eeprom(void __iomem *ioaddr, int location)
-=======
 static int read_eeprom(void __iomem *ioaddr, int location)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int bogus_cnt = 10000;		/* Typical 33Mhz: 1050 ticks */
 
@@ -653,33 +571,13 @@ static void mdio_write(void __iomem *ioaddr, int phy_id, int location, int value
 static int yellowfin_open(struct net_device *dev)
 {
 	struct yellowfin_private *yp = netdev_priv(dev);
-<<<<<<< HEAD
-	void __iomem *ioaddr = yp->base;
-	int i, ret;
-=======
 	const int irq = yp->pci_dev->irq;
 	void __iomem *ioaddr = yp->base;
 	int i, rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reset the chip. */
 	iowrite32(0x80000000, ioaddr + DMACtrl);
 
-<<<<<<< HEAD
-	ret = request_irq(dev->irq, yellowfin_interrupt, IRQF_SHARED, dev->name, dev);
-	if (ret)
-		return ret;
-
-	if (yellowfin_debug > 1)
-		netdev_printk(KERN_DEBUG, dev, "%s() irq %d\n",
-			      __func__, dev->irq);
-
-	ret = yellowfin_init_ring(dev);
-	if (ret) {
-		free_irq(dev->irq, dev);
-		return ret;
-	}
-=======
 	rc = request_irq(irq, yellowfin_interrupt, IRQF_SHARED, dev->name, dev);
 	if (rc)
 		return rc;
@@ -687,7 +585,6 @@ static int yellowfin_open(struct net_device *dev)
 	rc = yellowfin_init_ring(dev);
 	if (rc < 0)
 		goto err_free_irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iowrite32(yp->rx_ring_dma, ioaddr + RxPtr);
 	iowrite32(yp->tx_ring_dma, ioaddr + TxPtr);
@@ -742,21 +639,6 @@ static int yellowfin_open(struct net_device *dev)
 	}
 
 	/* Set the timer to check for link beat. */
-<<<<<<< HEAD
-	init_timer(&yp->timer);
-	yp->timer.expires = jiffies + 3*HZ;
-	yp->timer.data = (unsigned long)dev;
-	yp->timer.function = yellowfin_timer;				/* timer handler */
-	add_timer(&yp->timer);
-
-	return 0;
-}
-
-static void yellowfin_timer(unsigned long data)
-{
-	struct net_device *dev = (struct net_device *)data;
-	struct yellowfin_private *yp = netdev_priv(dev);
-=======
 	timer_setup(&yp->timer, yellowfin_timer, 0);
 	yp->timer.expires = jiffies + 3*HZ;
 	add_timer(&yp->timer);
@@ -772,7 +654,6 @@ static void yellowfin_timer(struct timer_list *t)
 {
 	struct yellowfin_private *yp = from_timer(yp, t, timer);
 	struct net_device *dev = pci_get_drvdata(yp->pci_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *ioaddr = yp->base;
 	int next_tick = 60*HZ;
 
@@ -803,11 +684,7 @@ static void yellowfin_timer(struct timer_list *t)
 	add_timer(&yp->timer);
 }
 
-<<<<<<< HEAD
-static void yellowfin_tx_timeout(struct net_device *dev)
-=======
 static void yellowfin_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct yellowfin_private *yp = netdev_priv(dev);
 	void __iomem *ioaddr = yp->base;
@@ -820,19 +697,11 @@ static void yellowfin_tx_timeout(struct net_device *dev, unsigned int txqueue)
 	/* Note: these should be KERN_DEBUG. */
 	if (yellowfin_debug) {
 		int i;
-<<<<<<< HEAD
-		pr_warning("  Rx ring %p: ", yp->rx_ring);
-		for (i = 0; i < RX_RING_SIZE; i++)
-			pr_cont(" %08x", yp->rx_ring[i].result_status);
-		pr_cont("\n");
-		pr_warning("  Tx ring %p: ", yp->tx_ring);
-=======
 		pr_warn("  Rx ring %p: ", yp->rx_ring);
 		for (i = 0; i < RX_RING_SIZE; i++)
 			pr_cont(" %08x", yp->rx_ring[i].result_status);
 		pr_cont("\n");
 		pr_warn("  Tx ring %p: ", yp->tx_ring);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < TX_RING_SIZE; i++)
 			pr_cont(" %04x /%08x",
 			       yp->tx_status[i].tx_errs,
@@ -849,11 +718,7 @@ static void yellowfin_tx_timeout(struct net_device *dev, unsigned int txqueue)
 	if (yp->cur_tx - yp->dirty_tx < TX_QUEUE_SIZE)
 		netif_wake_queue (dev);		/* Typical path */
 
-<<<<<<< HEAD
-	dev->trans_start = jiffies; /* prevent tx timeout */
-=======
 	netif_trans_update(dev); /* prevent tx timeout */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->stats.tx_errors++;
 }
 
@@ -882,15 +747,10 @@ static int yellowfin_init_ring(struct net_device *dev)
 		if (skb == NULL)
 			break;
 		skb_reserve(skb, 2);	/* 16 byte align the IP header. */
-<<<<<<< HEAD
-		yp->rx_ring[i].addr = cpu_to_le32(pci_map_single(yp->pci_dev,
-			skb->data, yp->rx_buf_sz, PCI_DMA_FROMDEVICE));
-=======
 		yp->rx_ring[i].addr = cpu_to_le32(dma_map_single(&yp->pci_dev->dev,
 								 skb->data,
 								 yp->rx_buf_sz,
 								 DMA_FROM_DEVICE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (i != RX_RING_SIZE) {
 		for (j = 0; j < i; j++)
@@ -980,14 +840,9 @@ static netdev_tx_t yellowfin_start_xmit(struct sk_buff *skb,
 	yp->tx_skbuff[entry] = skb;
 
 #ifdef NO_TXSTATS
-<<<<<<< HEAD
-	yp->tx_ring[entry].addr = cpu_to_le32(pci_map_single(yp->pci_dev,
-		skb->data, len, PCI_DMA_TODEVICE));
-=======
 	yp->tx_ring[entry].addr = cpu_to_le32(dma_map_single(&yp->pci_dev->dev,
 							     skb->data,
 							     len, DMA_TO_DEVICE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	yp->tx_ring[entry].result_status = 0;
 	if (entry >= TX_RING_SIZE-1) {
 		/* New stop command. */
@@ -1002,14 +857,9 @@ static netdev_tx_t yellowfin_start_xmit(struct sk_buff *skb,
 	yp->cur_tx++;
 #else
 	yp->tx_ring[entry<<1].request_cnt = len;
-<<<<<<< HEAD
-	yp->tx_ring[entry<<1].addr = cpu_to_le32(pci_map_single(yp->pci_dev,
-		skb->data, len, PCI_DMA_TODEVICE));
-=======
 	yp->tx_ring[entry<<1].addr = cpu_to_le32(dma_map_single(&yp->pci_dev->dev,
 								skb->data,
 								len, DMA_TO_DEVICE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The input_last (status-write) command is constant, but we must
 	   rewrite the subsequent 'stop' command. */
 
@@ -1084,16 +934,10 @@ static irqreturn_t yellowfin_interrupt(int irq, void *dev_instance)
 			dev->stats.tx_packets++;
 			dev->stats.tx_bytes += skb->len;
 			/* Free the original skb. */
-<<<<<<< HEAD
-			pci_unmap_single(yp->pci_dev, le32_to_cpu(yp->tx_ring[entry].addr),
-				skb->len, PCI_DMA_TODEVICE);
-			dev_kfree_skb_irq(skb);
-=======
 			dma_unmap_single(&yp->pci_dev->dev,
 					 le32_to_cpu(yp->tx_ring[entry].addr),
 					 skb->len, DMA_TO_DEVICE);
 			dev_consume_skb_irq(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			yp->tx_skbuff[entry] = NULL;
 		}
 		if (yp->tx_full &&
@@ -1148,17 +992,10 @@ static irqreturn_t yellowfin_interrupt(int irq, void *dev_instance)
 					dev->stats.tx_packets++;
 				}
 				/* Free the original skb. */
-<<<<<<< HEAD
-				pci_unmap_single(yp->pci_dev,
-					yp->tx_ring[entry<<1].addr, skb->len,
-					PCI_DMA_TODEVICE);
-				dev_kfree_skb_irq(skb);
-=======
 				dma_unmap_single(&yp->pci_dev->dev,
 						 yp->tx_ring[entry << 1].addr,
 						 skb->len, DMA_TO_DEVICE);
 				dev_consume_skb_irq(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				yp->tx_skbuff[entry] = 0;
 				/* Mark status as empty. */
 				yp->tx_status[entry].tx_errs = 0;
@@ -1225,23 +1062,14 @@ static int yellowfin_rx(struct net_device *dev)
 		struct sk_buff *rx_skb = yp->rx_skbuff[entry];
 		s16 frame_status;
 		u16 desc_status;
-<<<<<<< HEAD
-		int data_size;
-=======
 		int data_size, __maybe_unused yf_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8 *buf_addr;
 
 		if(!desc->result_status)
 			break;
-<<<<<<< HEAD
-		pci_dma_sync_single_for_cpu(yp->pci_dev, le32_to_cpu(desc->addr),
-			yp->rx_buf_sz, PCI_DMA_FROMDEVICE);
-=======
 		dma_sync_single_for_cpu(&yp->pci_dev->dev,
 					le32_to_cpu(desc->addr),
 					yp->rx_buf_sz, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc_status = le32_to_cpu(desc->result_status) >> 16;
 		buf_addr = rx_skb->data;
 		data_size = (le32_to_cpu(desc->dbdma_cmd) -
@@ -1252,12 +1080,9 @@ static int yellowfin_rx(struct net_device *dev)
 			       __func__, frame_status);
 		if (--boguscnt < 0)
 			break;
-<<<<<<< HEAD
-=======
 
 		yf_size = sizeof(struct yellowfin_desc);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ( ! (desc_status & RX_EOP)) {
 			if (data_size != 0)
 				netdev_warn(dev, "Oversized Ethernet frame spanned multiple buffers, status %04x, data_size %d!\n",
@@ -1284,21 +1109,12 @@ static int yellowfin_rx(struct net_device *dev)
 			if (status2 & 0x80) dev->stats.rx_dropped++;
 #ifdef YF_PROTOTYPE		/* Support for prototype hardware errata. */
 		} else if ((yp->flags & HasMACAddrBug)  &&
-<<<<<<< HEAD
-			memcmp(le32_to_cpu(yp->rx_ring_dma +
-				entry*sizeof(struct yellowfin_desc)),
-				dev->dev_addr, 6) != 0 &&
-			memcmp(le32_to_cpu(yp->rx_ring_dma +
-				entry*sizeof(struct yellowfin_desc)),
-				"\377\377\377\377\377\377", 6) != 0) {
-=======
 			!ether_addr_equal(le32_to_cpu(yp->rx_ring_dma +
 						      entry * yf_size),
 					  dev->dev_addr) &&
 			!ether_addr_equal(le32_to_cpu(yp->rx_ring_dma +
 						      entry * yf_size),
 					  "\377\377\377\377\377\377")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (bogus_rx++ == 0)
 				netdev_warn(dev, "Bad frame to %pM\n",
 					    buf_addr);
@@ -1318,17 +1134,10 @@ static int yellowfin_rx(struct net_device *dev)
 			   without copying to a properly sized skbuff. */
 			if (pkt_len > rx_copybreak) {
 				skb_put(skb = rx_skb, pkt_len);
-<<<<<<< HEAD
-				pci_unmap_single(yp->pci_dev,
-					le32_to_cpu(yp->rx_ring[entry].addr),
-					yp->rx_buf_sz,
-					PCI_DMA_FROMDEVICE);
-=======
 				dma_unmap_single(&yp->pci_dev->dev,
 						 le32_to_cpu(yp->rx_ring[entry].addr),
 						 yp->rx_buf_sz,
 						 DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				yp->rx_skbuff[entry] = NULL;
 			} else {
 				skb = netdev_alloc_skb(dev, pkt_len + 2);
@@ -1337,17 +1146,10 @@ static int yellowfin_rx(struct net_device *dev)
 				skb_reserve(skb, 2);	/* 16 byte align the IP header */
 				skb_copy_to_linear_data(skb, rx_skb->data, pkt_len);
 				skb_put(skb, pkt_len);
-<<<<<<< HEAD
-				pci_dma_sync_single_for_device(yp->pci_dev,
-								le32_to_cpu(desc->addr),
-								yp->rx_buf_sz,
-								PCI_DMA_FROMDEVICE);
-=======
 				dma_sync_single_for_device(&yp->pci_dev->dev,
 							   le32_to_cpu(desc->addr),
 							   yp->rx_buf_sz,
 							   DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			skb->protocol = eth_type_trans(skb, dev);
 			netif_rx(skb);
@@ -1366,15 +1168,10 @@ static int yellowfin_rx(struct net_device *dev)
 				break;				/* Better luck next round. */
 			yp->rx_skbuff[entry] = skb;
 			skb_reserve(skb, 2);	/* Align IP on 16 byte boundaries */
-<<<<<<< HEAD
-			yp->rx_ring[entry].addr = cpu_to_le32(pci_map_single(yp->pci_dev,
-				skb->data, yp->rx_buf_sz, PCI_DMA_FROMDEVICE));
-=======
 			yp->rx_ring[entry].addr = cpu_to_le32(dma_map_single(&yp->pci_dev->dev,
 									     skb->data,
 									     yp->rx_buf_sz,
 									     DMA_FROM_DEVICE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		yp->rx_ring[entry].dbdma_cmd = cpu_to_le32(CMD_STOP);
 		yp->rx_ring[entry].result_status = 0;	/* Clear complete bit. */
@@ -1464,11 +1261,7 @@ static int yellowfin_close(struct net_device *dev)
 	}
 #endif /* __i386__ debugging only */
 
-<<<<<<< HEAD
-	free_irq(dev->irq, dev);
-=======
 	free_irq(yp->pci_dev->irq, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Free all the skbuffs in the Rx queue. */
 	for (i = 0; i < RX_RING_SIZE; i++) {
@@ -1480,12 +1273,7 @@ static int yellowfin_close(struct net_device *dev)
 		yp->rx_skbuff[i] = NULL;
 	}
 	for (i = 0; i < TX_RING_SIZE; i++) {
-<<<<<<< HEAD
-		if (yp->tx_skbuff[i])
-			dev_kfree_skb(yp->tx_skbuff[i]);
-=======
 		dev_kfree_skb(yp->tx_skbuff[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		yp->tx_skbuff[i] = NULL;
 	}
 
@@ -1551,16 +1339,10 @@ static void set_rx_mode(struct net_device *dev)
 static void yellowfin_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
 	struct yellowfin_private *np = netdev_priv(dev);
-<<<<<<< HEAD
-	strcpy(info->driver, DRV_NAME);
-	strcpy(info->version, DRV_VERSION);
-	strcpy(info->bus_info, pci_name(np->pci_dev));
-=======
 
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strscpy(info->version, DRV_VERSION, sizeof(info->version));
 	strscpy(info->bus_info, pci_name(np->pci_dev), sizeof(info->bus_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct ethtool_ops ethtool_ops = {
@@ -1576,11 +1358,7 @@ static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	switch(cmd) {
 	case SIOCGMIIPHY:		/* Get address of MII PHY in use. */
 		data->phy_id = np->phys[0] & 0x1f;
-<<<<<<< HEAD
-		/* Fall Through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case SIOCGMIIREG:		/* Read MII PHY register. */
 		data->val_out = mdio_read(ioaddr, data->phy_id & 0x1f, data->reg_num & 0x1f);
@@ -1608,11 +1386,7 @@ static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 }
 
 
-<<<<<<< HEAD
-static void __devexit yellowfin_remove_one (struct pci_dev *pdev)
-=======
 static void yellowfin_remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct yellowfin_private *np;
@@ -1620,19 +1394,12 @@ static void yellowfin_remove_one(struct pci_dev *pdev)
 	BUG_ON(!dev);
 	np = netdev_priv(dev);
 
-<<<<<<< HEAD
-        pci_free_consistent(pdev, STATUS_TOTAL_SIZE, np->tx_status,
-		np->tx_status_dma);
-	pci_free_consistent(pdev, RX_TOTAL_SIZE, np->rx_ring, np->rx_ring_dma);
-	pci_free_consistent(pdev, TX_TOTAL_SIZE, np->tx_ring, np->tx_ring_dma);
-=======
 	dma_free_coherent(&pdev->dev, STATUS_TOTAL_SIZE, np->tx_status,
 			  np->tx_status_dma);
 	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, np->rx_ring,
 			  np->rx_ring_dma);
 	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, np->tx_ring,
 			  np->tx_ring_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_netdev (dev);
 
 	pci_iounmap(pdev, np->base);
@@ -1640,10 +1407,6 @@ static void yellowfin_remove_one(struct pci_dev *pdev)
 	pci_release_regions (pdev);
 
 	free_netdev (dev);
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1651,11 +1414,7 @@ static struct pci_driver yellowfin_driver = {
 	.name		= DRV_NAME,
 	.id_table	= yellowfin_pci_tbl,
 	.probe		= yellowfin_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(yellowfin_remove_one),
-=======
 	.remove		= yellowfin_remove_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 

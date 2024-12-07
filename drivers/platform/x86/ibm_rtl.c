@@ -1,35 +1,11 @@
-<<<<<<< HEAD
-/*
- * IBM Real-Time Linux driver
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * IBM Real-Time Linux driver
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) IBM Corporation, 2010
  *
  * Author: Keith Mannthey <kmannth@us.ibm.com>
  *         Vernon Mauery <vernux@us.ibm.com>
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -43,11 +19,7 @@
 #include <linux/mutex.h>
 #include <asm/bios_ebda.h>
 
-<<<<<<< HEAD
-#include <asm-generic/io-64-nonatomic-lo-hi.h>
-=======
 #include <linux/io-64-nonatomic-lo-hi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool force;
 module_param(force, bool, 0);
@@ -117,11 +89,7 @@ static void rtl_port_unmap(void __iomem *addr)
 static int ibm_rtl_write(u8 value)
 {
 	int ret = 0, count = 0;
-<<<<<<< HEAD
-	static u32 cmd_port_val;
-=======
 	u32 cmd_port_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	RTL_DEBUG("%s(%d)\n", __func__, value);
 
@@ -211,11 +179,7 @@ static ssize_t rtl_set_state(struct device *dev,
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct bus_type rtl_subsys = {
-=======
 static const struct bus_type rtl_subsys = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "ibm_rtl",
 	.dev_name = "ibm_rtl",
 };
@@ -235,10 +199,6 @@ static int rtl_setup_sysfs(void) {
 
 	ret = subsys_system_register(&rtl_subsys, NULL);
 	if (!ret) {
-<<<<<<< HEAD
-		for (i = 0; rtl_attributes[i]; i ++)
-			device_create_file(rtl_subsys.dev_root, rtl_attributes[i]);
-=======
 		struct device *dev_root = bus_get_dev_root(&rtl_subsys);
 
 		if (dev_root) {
@@ -246,17 +206,11 @@ static int rtl_setup_sysfs(void) {
 				device_create_file(dev_root, rtl_attributes[i]);
 			put_device(dev_root);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
 
 static void rtl_teardown_sysfs(void) {
-<<<<<<< HEAD
-	int i;
-	for (i = 0; rtl_attributes[i]; i ++)
-		device_remove_file(rtl_subsys.dev_root, rtl_attributes[i]);
-=======
 	struct device *dev_root = bus_get_dev_root(&rtl_subsys);
 	int i;
 
@@ -265,16 +219,11 @@ static void rtl_teardown_sysfs(void) {
 			device_remove_file(dev_root, rtl_attributes[i]);
 		put_device(dev_root);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bus_unregister(&rtl_subsys);
 }
 
 
-<<<<<<< HEAD
-static struct dmi_system_id __initdata ibm_rtl_dmi_table[] = {
-=======
 static const struct dmi_system_id ibm_rtl_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{                                                  \
 		.matches = {                               \
 			DMI_MATCH(DMI_SYS_VENDOR, "IBM"),  \

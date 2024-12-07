@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_ARM_CACHETYPE_H
 #define __ASM_ARM_CACHETYPE_H
 
@@ -23,11 +20,8 @@ extern unsigned int cacheid;
 #define icache_is_vipt_aliasing()	cacheid_is(CACHEID_VIPT_I_ALIASING)
 #define icache_is_pipt()		cacheid_is(CACHEID_PIPT)
 
-<<<<<<< HEAD
-=======
 #define cpu_dcache_is_aliasing()	(cache_is_vivt() || cache_is_vipt_aliasing())
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * __LINUX_ARM_ARCH__ is the minimum supported CPU architecture
  * Mask out support which will never be present on newer CPUs.
@@ -65,8 +59,6 @@ static inline unsigned int __attribute__((pure)) cacheid_is(unsigned int mask)
 	       (~__CACHEID_NEVER & __CACHEID_ARCH_MIN & mask & cacheid);
 }
 
-<<<<<<< HEAD
-=======
 #define CSSELR_ICACHE	1
 #define CSSELR_DCACHE	0
 
@@ -106,5 +98,4 @@ static inline unsigned int read_ccsidr(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

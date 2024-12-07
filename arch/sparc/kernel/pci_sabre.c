@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pci_sabre.c: Sabre specific PCI controller support.
  *
  * Copyright (C) 1997, 1998, 1999, 2007 David S. Miller (davem@davemloft.net)
@@ -16,14 +13,10 @@
 #include <linux/export.h>
 #include <linux/slab.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-=======
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
 #include <linux/property.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/apb.h>
 #include <asm/iommu.h>
@@ -414,12 +407,7 @@ static void apb_init(struct pci_bus *sabre_bus)
 	}
 }
 
-<<<<<<< HEAD
-static void __devinit sabre_scan_bus(struct pci_pbm_info *pbm,
-				     struct device *parent)
-=======
 static void sabre_scan_bus(struct pci_pbm_info *pbm, struct device *parent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int once;
 
@@ -458,13 +446,8 @@ static void sabre_scan_bus(struct pci_pbm_info *pbm, struct device *parent)
 	sabre_register_error_handlers(pbm);
 }
 
-<<<<<<< HEAD
-static void __devinit sabre_pbm_init(struct pci_pbm_info *pbm,
-				     struct platform_device *op)
-=======
 static void sabre_pbm_init(struct pci_pbm_info *pbm,
 			   struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	psycho_pbm_init_common(pbm, op, "SABRE", PBM_CHIP_TYPE_SABRE);
 	pbm->pci_afsr = pbm->controller_regs + SABRE_PIOAFSR;
@@ -474,14 +457,8 @@ static void sabre_pbm_init(struct pci_pbm_info *pbm,
 }
 
 static const struct of_device_id sabre_match[];
-<<<<<<< HEAD
-static int __devinit sabre_probe(struct platform_device *op)
-{
-	const struct of_device_id *match;
-=======
 static int sabre_probe(struct platform_device *op)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct linux_prom64_registers *pr_regs;
 	struct device_node *dp = op->dev.of_node;
 	struct pci_pbm_info *pbm;
@@ -491,12 +468,7 @@ static int sabre_probe(struct platform_device *op)
 	const u32 *vdma;
 	u64 clear_irq;
 
-<<<<<<< HEAD
-	match = of_match_device(sabre_match, &op->dev);
-	hummingbird_p = match && (match->data != NULL);
-=======
 	hummingbird_p = (uintptr_t)device_get_match_data(&op->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hummingbird_p) {
 		struct device_node *cpu_dp;
 
@@ -504,11 +476,7 @@ static int sabre_probe(struct platform_device *op)
 		 * different ways, inconsistently.
 		 */
 		for_each_node_by_type(cpu_dp, "cpu") {
-<<<<<<< HEAD
-			if (!strcmp(cpu_dp->name, "SUNW,UltraSPARC-IIe"))
-=======
 			if (of_node_name_eq(cpu_dp, "SUNW,UltraSPARC-IIe"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hummingbird_p = 1;
 		}
 	}
@@ -634,10 +602,6 @@ static const struct of_device_id sabre_match[] = {
 static struct platform_driver sabre_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = sabre_match,
 	},
 	.probe		= sabre_probe,

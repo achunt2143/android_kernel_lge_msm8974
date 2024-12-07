@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-config REISERFS_FS
-	tristate "Reiserfs support"
-	select CRC32
-	help
-	  Stores not just filenames but the files themselves in a balanced
-	  tree.  Uses journalling.
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config REISERFS_FS
 	tristate "Reiserfs support (deprecated)"
@@ -19,7 +11,6 @@ config REISERFS_FS
 
 	  Reiserfs stores not just filenames but the files themselves in a
 	  balanced tree.  Uses journalling.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Balanced trees are more efficient than traditional file system
 	  architectural foundations.
@@ -73,12 +64,7 @@ config REISERFS_FS_XATTR
 	depends on REISERFS_FS
 	help
 	  Extended attributes are name:value pairs associated with inodes by
-<<<<<<< HEAD
-	  the kernel or by users (see the attr(5) manual page, or visit
-	  <http://acl.bestbits.at/> for details).
-=======
 	  the kernel or by users (see the attr(5) manual page for details).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If unsure, say N.
 
@@ -90,12 +76,6 @@ config REISERFS_FS_POSIX_ACL
 	  Posix Access Control Lists (ACLs) support permissions for users and
 	  groups beyond the owner/group/world scheme.
 
-<<<<<<< HEAD
-	  To learn more about Access Control Lists, visit the Posix ACLs for
-	  Linux website <http://acl.bestbits.at/>.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you don't know what Access Control Lists are, say N
 
 config REISERFS_FS_SECURITY

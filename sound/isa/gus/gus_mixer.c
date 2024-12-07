@@ -1,29 +1,7 @@
-<<<<<<< HEAD
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  Routines for control of ICS 2101 chip and "mixer" in GF1 chip
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Routines for control of ICS 2101 chip and "mixer" in GF1 chip
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/time.h>
@@ -116,11 +94,7 @@ static int snd_ics_put_double(struct snd_kcontrol *kcontrol, struct snd_ctl_elem
 	unsigned long flags;
 	int addr = kcontrol->private_value & 0xff;
 	int change;
-<<<<<<< HEAD
-	unsigned char val1, val2, oval1, oval2, tmp;
-=======
 	unsigned char val1, val2, oval1, oval2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	val1 = ucontrol->value.integer.value[0] & 127;
 	val2 = ucontrol->value.integer.value[1] & 127;
@@ -131,16 +105,8 @@ static int snd_ics_put_double(struct snd_kcontrol *kcontrol, struct snd_ctl_elem
 	gus->gf1.ics_regs[addr][0] = val1;
 	gus->gf1.ics_regs[addr][1] = val2;
 	if (gus->ics_flag && gus->ics_flipped &&
-<<<<<<< HEAD
-	    (addr == SNDRV_ICS_GF1_DEV || addr == SNDRV_ICS_MASTER_DEV)) {
-		tmp = val1;
-		val1 = val2;
-		val2 = tmp;
-	}
-=======
 	    (addr == SNDRV_ICS_GF1_DEV || addr == SNDRV_ICS_MASTER_DEV))
 		swap(val1, val2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr <<= 3;
 	outb(addr | 0, GUSP(gus, MIXCNTRLPORT));
 	outb(1, GUSP(gus, MIXDATAPORT));
@@ -154,21 +120,13 @@ static int snd_ics_put_double(struct snd_kcontrol *kcontrol, struct snd_ctl_elem
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_gf1_controls[] = {
-=======
 static const struct snd_kcontrol_new snd_gf1_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 GF1_SINGLE("Master Playback Switch", 0, 1, 1),
 GF1_SINGLE("Line Switch", 0, 0, 1),
 GF1_SINGLE("Mic Switch", 0, 2, 0)
 };
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_ics_controls[] = {
-=======
 static const struct snd_kcontrol_new snd_ics_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 GF1_SINGLE("Master Playback Switch", 0, 1, 1),
 ICS_DOUBLE("Master Playback Volume", 0, SNDRV_ICS_MASTER_DEV),
 ICS_DOUBLE("Synth Playback Volume", 0, SNDRV_ICS_GF1_DEV),
@@ -204,22 +162,14 @@ int snd_gf1_new_mixer(struct snd_gus_card * gus)
 	if (!gus->ics_flag) {
 		max = gus->ess_flag ? 1 : ARRAY_SIZE(snd_gf1_controls);
 		for (idx = 0; idx < max; idx++) {
-<<<<<<< HEAD
-			if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_gf1_controls[idx], gus))) < 0)
-=======
 			err = snd_ctl_add(card, snd_ctl_new1(&snd_gf1_controls[idx], gus));
 			if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 		}
 	} else {
 		for (idx = 0; idx < ARRAY_SIZE(snd_ics_controls); idx++) {
-<<<<<<< HEAD
-			if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_ics_controls[idx], gus))) < 0)
-=======
 			err = snd_ctl_add(card, snd_ctl_new1(&snd_ics_controls[idx], gus));
 			if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 		}
 	}

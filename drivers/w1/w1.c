@@ -1,28 +1,6 @@
-<<<<<<< HEAD
-/*
- *	w1.c
- *
- * Copyright (c) 2004 Evgeniy Polyakov <zbr@ioremap.net>
- *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2004 Evgeniy Polyakov <zbr@ioremap.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -38,28 +16,6 @@
 #include <linux/sched.h>
 #include <linux/kthread.h>
 #include <linux/freezer.h>
-<<<<<<< HEAD
-
-#include <linux/atomic.h>
-
-#include "w1.h"
-#include "w1_log.h"
-#include "w1_int.h"
-#include "w1_family.h"
-#include "w1_netlink.h"
-
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Evgeniy Polyakov <zbr@ioremap.net>");
-MODULE_DESCRIPTION("Driver for 1-wire Dallas network protocol.");
-
-static int w1_timeout = 10;
-int w1_max_slave_count = 10;
-int w1_max_slave_ttl = 10;
-
-module_param_named(timeout, w1_timeout, int, 0);
-module_param_named(max_slave_count, w1_max_slave_count, int, 0);
-module_param_named(slave_ttl, w1_max_slave_ttl, int, 0);
-=======
 #include <linux/hwmon.h>
 #include <linux/of.h>
 
@@ -98,21 +54,10 @@ int w1_max_slave_ttl = 10;
 module_param_named(slave_ttl, w1_max_slave_ttl, int, 0);
 MODULE_PARM_DESC(slave_ttl,
 	"Number of searches not seeing a slave before it will be removed");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DEFINE_MUTEX(w1_mlock);
 LIST_HEAD(w1_masters);
 
-<<<<<<< HEAD
-static int w1_attach_slave_device(struct w1_master *dev, struct w1_reg_num *rn);
-
-static int w1_master_match(struct device *dev, struct device_driver *drv)
-{
-	return 1;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int w1_master_probe(struct device *dev)
 {
 	return -ENODEV;
@@ -131,24 +76,6 @@ static void w1_slave_release(struct device *dev)
 {
 	struct w1_slave *sl = dev_to_w1_slave(dev);
 
-<<<<<<< HEAD
-	dev_dbg(dev, "%s: Releasing %s.\n", __func__, sl->name);
-
-	while (atomic_read(&sl->refcnt)) {
-		dev_dbg(dev, "Waiting for %s to become free: refcnt=%d.\n",
-				sl->name, atomic_read(&sl->refcnt));
-		if (msleep_interruptible(1000))
-			flush_signals(current);
-	}
-
-	w1_family_put(sl->family);
-	sl->master->slave_count--;
-
-	complete(&sl->released);
-}
-
-static ssize_t w1_slave_read_name(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 	dev_dbg(dev, "%s: Releasing %s [%p]\n", __func__, sl->name, sl);
 
 	w1_family_put(sl->family);
@@ -156,20 +83,14 @@ static ssize_t w1_slave_read_name(struct device *dev, struct device_attribute *a
 }
 
 static ssize_t name_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w1_slave *sl = dev_to_w1_slave(dev);
 
 	return sprintf(buf, "%s\n", sl->name);
 }
-<<<<<<< HEAD
-
-static ssize_t w1_slave_read_id(struct device *dev,
-=======
 static DEVICE_ATTR_RO(name);
 
 static ssize_t id_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_attribute *attr, char *buf)
 {
 	struct w1_slave *sl = dev_to_w1_slave(dev);
@@ -178,19 +99,6 @@ static ssize_t id_show(struct device *dev,
 	memcpy(buf, (u8 *)&sl->reg_num, count);
 	return count;
 }
-<<<<<<< HEAD
-
-static struct device_attribute w1_slave_attr_name =
-	__ATTR(name, S_IRUGO, w1_slave_read_name, NULL);
-static struct device_attribute w1_slave_attr_id =
-	__ATTR(id, S_IRUGO, w1_slave_read_id, NULL);
-
-/* Default family */
-
-static ssize_t w1_default_write(struct file *filp, struct kobject *kobj,
-				struct bin_attribute *bin_attr,
-				char *buf, loff_t off, size_t count)
-=======
 static DEVICE_ATTR_RO(id);
 
 static struct attribute *w1_slave_attrs[] = {
@@ -205,7 +113,6 @@ ATTRIBUTE_GROUPS(w1_slave);
 static ssize_t rw_write(struct file *filp, struct kobject *kobj,
 			struct bin_attribute *bin_attr, char *buf, loff_t off,
 			size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 
@@ -222,15 +129,9 @@ out_up:
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t w1_default_read(struct file *filp, struct kobject *kobj,
-			       struct bin_attribute *bin_attr,
-			       char *buf, loff_t off, size_t count)
-=======
 static ssize_t rw_read(struct file *filp, struct kobject *kobj,
 		       struct bin_attribute *bin_attr, char *buf, loff_t off,
 		       size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 
@@ -240,31 +141,6 @@ static ssize_t rw_read(struct file *filp, struct kobject *kobj,
 	return count;
 }
 
-<<<<<<< HEAD
-static struct bin_attribute w1_default_attr = {
-      .attr = {
-              .name = "rw",
-              .mode = S_IRUGO | S_IWUSR,
-      },
-      .size = PAGE_SIZE,
-      .read = w1_default_read,
-      .write = w1_default_write,
-};
-
-static int w1_default_add_slave(struct w1_slave *sl)
-{
-	return sysfs_create_bin_file(&sl->dev.kobj, &w1_default_attr);
-}
-
-static void w1_default_remove_slave(struct w1_slave *sl)
-{
-	sysfs_remove_bin_file(&sl->dev.kobj, &w1_default_attr);
-}
-
-static struct w1_family_ops w1_default_fops = {
-	.add_slave	= w1_default_add_slave,
-	.remove_slave	= w1_default_remove_slave,
-=======
 static BIN_ATTR_RW(rw, PAGE_SIZE);
 
 static struct bin_attribute *w1_slave_bin_attrs[] = {
@@ -283,25 +159,16 @@ static const struct attribute_group *w1_slave_default_groups[] = {
 
 static const struct w1_family_ops w1_default_fops = {
 	.groups		= w1_slave_default_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct w1_family w1_default_family = {
 	.fops = &w1_default_fops,
 };
 
-<<<<<<< HEAD
-static int w1_uevent(struct device *dev, struct kobj_uevent_env *env);
-
-static struct bus_type w1_bus_type = {
-	.name = "w1",
-	.match = w1_master_match,
-=======
 static int w1_uevent(const struct device *dev, struct kobj_uevent_env *env);
 
 static const struct bus_type w1_bus_type = {
 	.name = "w1",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.uevent = w1_uevent,
 };
 
@@ -352,28 +219,18 @@ static ssize_t w1_master_attribute_store_search(struct device * dev,
 {
 	long tmp;
 	struct w1_master *md = dev_to_w1_master(dev);
-<<<<<<< HEAD
-
-	if (strict_strtol(buf, 0, &tmp) == -EINVAL)
-		return -EINVAL;
-=======
 	int ret;
 
 	ret = kstrtol(buf, 0, &tmp);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&md->mutex);
 	md->search_count = tmp;
 	mutex_unlock(&md->mutex);
-<<<<<<< HEAD
-	wake_up_process(md->thread);
-=======
 	/* Only wake if it is going to be searching. */
 	if (tmp)
 		wake_up_process(md->thread);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return count;
 }
@@ -398,25 +255,15 @@ static ssize_t w1_master_attribute_store_pullup(struct device *dev,
 {
 	long tmp;
 	struct w1_master *md = dev_to_w1_master(dev);
-<<<<<<< HEAD
-
-	if (strict_strtol(buf, 0, &tmp) == -EINVAL)
-		return -EINVAL;
-=======
 	int ret;
 
 	ret = kstrtol(buf, 0, &tmp);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&md->mutex);
 	md->enable_pullup = tmp;
 	mutex_unlock(&md->mutex);
-<<<<<<< HEAD
-	wake_up_process(md->thread);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return count;
 }
@@ -448,10 +295,6 @@ static ssize_t w1_master_attribute_show_pointer(struct device *dev, struct devic
 
 static ssize_t w1_master_attribute_show_timeout(struct device *dev, struct device_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
-	ssize_t count;
-	count = sprintf(buf, "%d\n", w1_timeout);
-=======
 	return sprintf(buf, "%d\n", w1_timeout);
 }
 
@@ -476,7 +319,6 @@ static ssize_t w1_master_attribute_store_max_slave_count(struct device *dev,
 	clear_bit(W1_WARN_MAX_COUNT, &md->flags);
 	mutex_unlock(&md->mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return count;
 }
 
@@ -518,25 +360,6 @@ static ssize_t w1_master_attribute_show_slaves(struct device *dev,
 {
 	struct w1_master *md = dev_to_w1_master(dev);
 	int c = PAGE_SIZE;
-<<<<<<< HEAD
-
-	mutex_lock(&md->mutex);
-
-	if (md->slave_count == 0)
-		c -= snprintf(buf + PAGE_SIZE - c, c, "not found.\n");
-	else {
-		struct list_head *ent, *n;
-		struct w1_slave *sl;
-
-		list_for_each_safe(ent, n, &md->slist) {
-			sl = list_entry(ent, struct w1_slave, w1_slave_entry);
-
-			c -= snprintf(buf + PAGE_SIZE - c, c, "%s\n", sl->name);
-		}
-	}
-
-	mutex_unlock(&md->mutex);
-=======
 	struct list_head *ent, *n;
 	struct w1_slave *sl = NULL;
 
@@ -551,7 +374,6 @@ static ssize_t w1_master_attribute_show_slaves(struct device *dev,
 		c -= snprintf(buf + PAGE_SIZE - c, c, "not found.\n");
 
 	mutex_unlock(&md->list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return PAGE_SIZE - c;
 }
@@ -605,14 +427,6 @@ static int w1_atoreg_num(struct device *dev, const char *buf, size_t count,
 }
 
 /* Searches the slaves in the w1_master and returns a pointer or NULL.
-<<<<<<< HEAD
- * Note: must hold the mutex
- */
-static struct w1_slave *w1_slave_search_device(struct w1_master *dev,
-	struct w1_reg_num *rn)
-{
-	struct w1_slave *sl;
-=======
  * Note: must not hold list_mutex
  */
 struct w1_slave *w1_slave_search_device(struct w1_master *dev,
@@ -620,22 +434,15 @@ struct w1_slave *w1_slave_search_device(struct w1_master *dev,
 {
 	struct w1_slave *sl;
 	mutex_lock(&dev->list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(sl, &dev->slist, w1_slave_entry) {
 		if (sl->reg_num.family == rn->family &&
 				sl->reg_num.id == rn->id &&
 				sl->reg_num.crc == rn->crc) {
-<<<<<<< HEAD
-			return sl;
-		}
-	}
-=======
 			mutex_unlock(&dev->list_mutex);
 			return sl;
 		}
 	}
 	mutex_unlock(&dev->list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -684,11 +491,7 @@ static ssize_t w1_master_attribute_store_remove(struct device *dev,
 	struct w1_master *md = dev_to_w1_master(dev);
 	struct w1_reg_num rn;
 	struct w1_slave *sl;
-<<<<<<< HEAD
-	ssize_t result = count;
-=======
 	ssize_t result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (w1_atoreg_num(dev, buf, count, &rn))
 		return -EINVAL;
@@ -696,14 +499,10 @@ static ssize_t w1_master_attribute_store_remove(struct device *dev,
 	mutex_lock(&md->mutex);
 	sl = w1_slave_search_device(md, &rn);
 	if (sl) {
-<<<<<<< HEAD
-		w1_slave_detach(sl);
-=======
 		result = w1_slave_detach(sl);
 		/* refcnt 0 means it was detached in the call */
 		if (result == 0)
 			result = count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		dev_info(dev, "Device %02x-%012llx doesn't exists\n", rn.family,
 			(unsigned long long)rn.id);
@@ -728,16 +527,10 @@ static ssize_t w1_master_attribute_store_remove(struct device *dev,
 static W1_MASTER_ATTR_RO(name, S_IRUGO);
 static W1_MASTER_ATTR_RO(slaves, S_IRUGO);
 static W1_MASTER_ATTR_RO(slave_count, S_IRUGO);
-<<<<<<< HEAD
-static W1_MASTER_ATTR_RO(max_slave_count, S_IRUGO);
-static W1_MASTER_ATTR_RO(attempts, S_IRUGO);
-static W1_MASTER_ATTR_RO(timeout, S_IRUGO);
-=======
 static W1_MASTER_ATTR_RW(max_slave_count, S_IRUGO | S_IWUSR | S_IWGRP);
 static W1_MASTER_ATTR_RO(attempts, S_IRUGO);
 static W1_MASTER_ATTR_RO(timeout, S_IRUGO);
 static W1_MASTER_ATTR_RO(timeout_us, S_IRUGO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static W1_MASTER_ATTR_RO(pointer, S_IRUGO);
 static W1_MASTER_ATTR_RW(search, S_IRUGO | S_IWUSR | S_IWGRP);
 static W1_MASTER_ATTR_RW(pullup, S_IRUGO | S_IWUSR | S_IWGRP);
@@ -751,10 +544,7 @@ static struct attribute *w1_master_default_attrs[] = {
 	&w1_master_attribute_max_slave_count.attr,
 	&w1_master_attribute_attempts.attr,
 	&w1_master_attribute_timeout.attr,
-<<<<<<< HEAD
-=======
 	&w1_master_attribute_timeout_us.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&w1_master_attribute_pointer.attr,
 	&w1_master_attribute_search.attr,
 	&w1_master_attribute_pullup.attr,
@@ -763,11 +553,7 @@ static struct attribute *w1_master_default_attrs[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group w1_master_defattr_group = {
-=======
 static const struct attribute_group w1_master_defattr_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = w1_master_default_attrs,
 };
 
@@ -781,22 +567,12 @@ void w1_destroy_master_attributes(struct w1_master *master)
 	sysfs_remove_group(&master->dev.kobj, &w1_master_defattr_group);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_HOTPLUG
-static int w1_uevent(struct device *dev, struct kobj_uevent_env *env)
-{
-	struct w1_master *md = NULL;
-	struct w1_slave *sl = NULL;
-	char *event_owner, *name;
-	int err;
-=======
 static int w1_uevent(const struct device *dev, struct kobj_uevent_env *env)
 {
 	const struct w1_master *md = NULL;
 	const struct w1_slave *sl = NULL;
 	const char *event_owner, *name;
 	int err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->driver == &w1_master_driver) {
 		md = container_of(dev, struct w1_master, dev);
@@ -815,27 +591,6 @@ static int w1_uevent(const struct device *dev, struct kobj_uevent_env *env)
 			event_owner, name, dev_name(dev));
 
 	if (dev->driver != &w1_slave_driver || !sl)
-<<<<<<< HEAD
-		return 0;
-
-	err = add_uevent_var(env, "W1_FID=%02X", sl->reg_num.family);
-	if (err)
-		return err;
-
-	err = add_uevent_var(env, "W1_SLAVE_ID=%024LX",
-			     (unsigned long long)sl->reg_num.id);
-	if (err)
-		return err;
-
-	return 0;
-};
-#else
-static int w1_uevent(struct device *dev, struct kobj_uevent_env *env)
-{
-	return 0;
-}
-#endif
-=======
 		goto end;
 
 	err = add_uevent_var(env, "W1_FID=%02X", sl->reg_num.family);
@@ -905,7 +660,6 @@ static int w1_family_notify(unsigned long action, struct w1_slave *sl)
 	}
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __w1_attach_slave_device(struct w1_slave *sl)
 {
@@ -915,12 +669,9 @@ static int __w1_attach_slave_device(struct w1_slave *sl)
 	sl->dev.driver = &w1_slave_driver;
 	sl->dev.bus = &w1_bus_type;
 	sl->dev.release = &w1_slave_release;
-<<<<<<< HEAD
-=======
 	sl->dev.groups = w1_slave_groups;
 	sl->dev.of_node = of_find_matching_node(sl->master->dev.of_node,
 						sl->family->of_match_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_set_name(&sl->dev, "%02x-%012llx",
 		 (unsigned int) sl->reg_num.family,
@@ -933,63 +684,14 @@ static int __w1_attach_slave_device(struct w1_slave *sl)
 	dev_dbg(&sl->dev, "%s: registering %s as %p.\n", __func__,
 		dev_name(&sl->dev), sl);
 
-<<<<<<< HEAD
-=======
 	/* suppress for w1_family_notify before sending KOBJ_ADD */
 	dev_set_uevent_suppress(&sl->dev, true);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = device_register(&sl->dev);
 	if (err < 0) {
 		dev_err(&sl->dev,
 			"Device registration [%s] failed. err=%d\n",
 			dev_name(&sl->dev), err);
-<<<<<<< HEAD
-		return err;
-	}
-
-	/* Create "name" entry */
-	err = device_create_file(&sl->dev, &w1_slave_attr_name);
-	if (err < 0) {
-		dev_err(&sl->dev,
-			"sysfs file creation for [%s] failed. err=%d\n",
-			dev_name(&sl->dev), err);
-		goto out_unreg;
-	}
-
-	/* Create "id" entry */
-	err = device_create_file(&sl->dev, &w1_slave_attr_id);
-	if (err < 0) {
-		dev_err(&sl->dev,
-			"sysfs file creation for [%s] failed. err=%d\n",
-			dev_name(&sl->dev), err);
-		goto out_rem1;
-	}
-
-	/* if the family driver needs to initialize something... */
-	if (sl->family->fops && sl->family->fops->add_slave &&
-	    ((err = sl->family->fops->add_slave(sl)) < 0)) {
-		dev_err(&sl->dev,
-			"sysfs file creation for [%s] failed. err=%d\n",
-			dev_name(&sl->dev), err);
-		goto out_rem2;
-	}
-
-	list_add_tail(&sl->w1_slave_entry, &sl->master->slist);
-
-	return 0;
-
-out_rem2:
-	device_remove_file(&sl->dev, &w1_slave_attr_id);
-out_rem1:
-	device_remove_file(&sl->dev, &w1_slave_attr_name);
-out_unreg:
-	device_unregister(&sl->dev);
-	return err;
-}
-
-static int w1_attach_slave_device(struct w1_master *dev, struct w1_reg_num *rn)
-=======
 		of_node_put(sl->dev.of_node);
 		put_device(&sl->dev);
 		return err;
@@ -1007,7 +709,6 @@ static int w1_attach_slave_device(struct w1_master *dev, struct w1_reg_num *rn)
 }
 
 int w1_attach_slave_device(struct w1_master *dev, struct w1_reg_num *rn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w1_slave *sl;
 	struct w1_family *f;
@@ -1025,14 +726,6 @@ int w1_attach_slave_device(struct w1_master *dev, struct w1_reg_num *rn)
 
 	sl->owner = THIS_MODULE;
 	sl->master = dev;
-<<<<<<< HEAD
-	set_bit(W1_SLAVE_ACTIVE, (long *)&sl->flags);
-
-	memset(&msg, 0, sizeof(msg));
-	memcpy(&sl->reg_num, rn, sizeof(sl->reg_num));
-	atomic_set(&sl->refcnt, 0);
-	init_completion(&sl->released);
-=======
 	set_bit(W1_SLAVE_ACTIVE, &sl->flags);
 
 	memset(&msg, 0, sizeof(msg));
@@ -1047,7 +740,6 @@ int w1_attach_slave_device(struct w1_master *dev, struct w1_reg_num *rn)
 	mutex_unlock(&dev->mutex);
 	request_module("w1-family-0x%02X", rn->family);
 	mutex_lock(&dev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&w1_flock);
 	f = w1_family_registered(rn->family);
@@ -1062,30 +754,18 @@ int w1_attach_slave_device(struct w1_master *dev, struct w1_reg_num *rn)
 
 	sl->family = f;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = __w1_attach_slave_device(sl);
 	if (err < 0) {
 		dev_err(&dev->dev, "%s: Attaching %s failed.\n", __func__,
 			 sl->name);
-<<<<<<< HEAD
-		w1_family_put(sl->family);
-=======
 		dev->slave_count--;
 		w1_family_put(sl->family);
 		atomic_dec(&sl->master->refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(sl);
 		return err;
 	}
 
 	sl->ttl = dev->slave_ttl;
-<<<<<<< HEAD
-	dev->slave_count++;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(msg.id.id, rn, sizeof(msg.id));
 	msg.type = W1_SLAVE_ADD;
@@ -1094,30 +774,6 @@ int w1_attach_slave_device(struct w1_master *dev, struct w1_reg_num *rn)
 	return 0;
 }
 
-<<<<<<< HEAD
-void w1_slave_detach(struct w1_slave *sl)
-{
-	struct w1_netlink_msg msg;
-
-	dev_dbg(&sl->dev, "%s: detaching %s [%p].\n", __func__, sl->name, sl);
-
-	list_del(&sl->w1_slave_entry);
-
-	if (sl->family->fops && sl->family->fops->remove_slave)
-		sl->family->fops->remove_slave(sl);
-
-	memset(&msg, 0, sizeof(msg));
-	memcpy(msg.id.id, &sl->reg_num, sizeof(msg.id));
-	msg.type = W1_SLAVE_REMOVE;
-	w1_netlink_send(sl->master, &msg);
-
-	device_remove_file(&sl->dev, &w1_slave_attr_id);
-	device_remove_file(&sl->dev, &w1_slave_attr_name);
-	device_unregister(&sl->dev);
-
-	wait_for_completion(&sl->released);
-	kfree(sl);
-=======
 int w1_unref_slave(struct w1_slave *sl)
 {
 	struct w1_master *dev = sl->master;
@@ -1161,21 +817,10 @@ int w1_slave_detach(struct w1_slave *sl)
 	if (destroy_now)
 		destroy_now = !w1_unref_slave(sl);
 	return destroy_now ? 0 : -EBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct w1_master *w1_search_master_id(u32 id)
 {
-<<<<<<< HEAD
-	struct w1_master *dev;
-	int found = 0;
-
-	mutex_lock(&w1_mlock);
-	list_for_each_entry(dev, &w1_masters, w1_master_entry) {
-		if (dev->id == id) {
-			found = 1;
-			atomic_inc(&dev->refcnt);
-=======
 	struct w1_master *dev = NULL, *iter;
 
 	mutex_lock(&w1_mlock);
@@ -1183,43 +828,17 @@ struct w1_master *w1_search_master_id(u32 id)
 		if (iter->id == id) {
 			dev = iter;
 			atomic_inc(&iter->refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 	mutex_unlock(&w1_mlock);
 
-<<<<<<< HEAD
-	return (found)?dev:NULL;
-=======
 	return dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct w1_slave *w1_search_slave(struct w1_reg_num *id)
 {
 	struct w1_master *dev;
-<<<<<<< HEAD
-	struct w1_slave *sl = NULL;
-	int found = 0;
-
-	mutex_lock(&w1_mlock);
-	list_for_each_entry(dev, &w1_masters, w1_master_entry) {
-		mutex_lock(&dev->mutex);
-		list_for_each_entry(sl, &dev->slist, w1_slave_entry) {
-			if (sl->reg_num.family == id->family &&
-					sl->reg_num.id == id->id &&
-					sl->reg_num.crc == id->crc) {
-				found = 1;
-				atomic_inc(&dev->refcnt);
-				atomic_inc(&sl->refcnt);
-				break;
-			}
-		}
-		mutex_unlock(&dev->mutex);
-
-		if (found)
-=======
 	struct w1_slave *sl = NULL, *iter;
 
 	mutex_lock(&w1_mlock);
@@ -1238,16 +857,11 @@ struct w1_slave *w1_search_slave(struct w1_reg_num *id)
 		mutex_unlock(&dev->list_mutex);
 
 		if (sl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 	mutex_unlock(&w1_mlock);
 
-<<<<<<< HEAD
-	return (found)?sl:NULL;
-=======
 	return sl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void w1_reconnect_slaves(struct w1_family *f, int attach)
@@ -1260,10 +874,7 @@ void w1_reconnect_slaves(struct w1_family *f, int attach)
 		dev_dbg(&dev->dev, "Reconnecting slaves in device %s "
 			"for family %02x.\n", dev->name, f->fid);
 		mutex_lock(&dev->mutex);
-<<<<<<< HEAD
-=======
 		mutex_lock(&dev->list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_for_each_entry_safe(sl, sln, &dev->slist, w1_slave_entry) {
 			/* If it is a new family, slaves with the default
 			 * family driver and are that family will be
@@ -1275,12 +886,6 @@ void w1_reconnect_slaves(struct w1_family *f, int attach)
 				(!attach && sl->family->fid == f->fid)) {
 				struct w1_reg_num rn;
 
-<<<<<<< HEAD
-				memcpy(&rn, &sl->reg_num, sizeof(rn));
-				w1_slave_detach(sl);
-
-				w1_attach_slave_device(dev, &rn);
-=======
 				mutex_unlock(&dev->list_mutex);
 				memcpy(&rn, &sl->reg_num, sizeof(rn));
 				/* If it was already in use let the automatic
@@ -1289,22 +894,16 @@ void w1_reconnect_slaves(struct w1_family *f, int attach)
 				if (!w1_slave_detach(sl))
 					w1_attach_slave_device(dev, &rn);
 				mutex_lock(&dev->list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		dev_dbg(&dev->dev, "Reconnecting slaves in device %s "
 			"has been finished.\n", dev->name);
-<<<<<<< HEAD
-=======
 		mutex_unlock(&dev->list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&dev->mutex);
 	}
 	mutex_unlock(&w1_mlock);
 }
 
-<<<<<<< HEAD
-=======
 static int w1_addr_crc_is_valid(struct w1_master *dev, u64 rn)
 {
 	u64 rn_le = cpu_to_le64(rn);
@@ -1339,15 +938,10 @@ static int w1_addr_crc_is_valid(struct w1_master *dev, u64 rn)
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void w1_slave_found(struct w1_master *dev, u64 rn)
 {
 	struct w1_slave *sl;
 	struct w1_reg_num *tmp;
-<<<<<<< HEAD
-	u64 rn_le = cpu_to_le64(rn);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_inc(&dev->refcnt);
 
@@ -1355,15 +949,9 @@ void w1_slave_found(struct w1_master *dev, u64 rn)
 
 	sl = w1_slave_search_device(dev, tmp);
 	if (sl) {
-<<<<<<< HEAD
-		set_bit(W1_SLAVE_ACTIVE, (long *)&sl->flags);
-	} else {
-		if (rn && tmp->crc == w1_calc_crc8((u8 *)&rn_le, 7))
-=======
 		set_bit(W1_SLAVE_ACTIVE, &sl->flags);
 	} else {
 		if (rn && w1_addr_crc_is_valid(dev, rn))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			w1_attach_slave_device(dev, tmp);
 	}
 
@@ -1371,16 +959,12 @@ void w1_slave_found(struct w1_master *dev, u64 rn)
 }
 
 /**
-<<<<<<< HEAD
- * Performs a ROM Search & registers any devices found.
-=======
  * w1_search() - Performs a ROM Search & registers any devices found.
  * @dev: The master device to search
  * @search_type: W1_SEARCH to search all devices, or W1_ALARM_SEARCH
  * to return only devices in the alarmed state
  * @cb: Function to call when a device is found
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The 1-wire search is a simple binary tree search.
  * For each bit of the address, we read two bits and write one bit.
  * The bit written will put to sleep all devies that don't match that bit.
@@ -1390,11 +974,6 @@ void w1_slave_found(struct w1_master *dev, u64 rn)
  *
  * See "Application note 187 1-wire search algorithm" at www.maxim-ic.com
  *
-<<<<<<< HEAD
- * @dev        The master device to search
- * @cb         Function to call when a device is found
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void w1_search(struct w1_master *dev, u8 search_type, w1_slave_found_callback cb)
 {
@@ -1405,12 +984,8 @@ void w1_search(struct w1_master *dev, u8 search_type, w1_slave_found_callback cb
 	u8  triplet_ret = 0;
 
 	search_bit = 0;
-<<<<<<< HEAD
-	rn = last_rn = 0;
-=======
 	rn = dev->search_id;
 	last_rn = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	last_device = 0;
 	last_zero = -1;
 
@@ -1426,31 +1001,21 @@ void w1_search(struct w1_master *dev, u8 search_type, w1_slave_found_callback cb
 		 *
 		 * Return 0 - device(s) present, 1 - no devices present.
 		 */
-<<<<<<< HEAD
-		if (w1_reset_bus(dev)) {
-=======
 		mutex_lock(&dev->bus_mutex);
 		if (w1_reset_bus(dev)) {
 			mutex_unlock(&dev->bus_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_dbg(&dev->dev, "No devices present on the wire.\n");
 			break;
 		}
 
 		/* Do fast search on single slave bus */
 		if (dev->max_slave_count == 1) {
-<<<<<<< HEAD
-			w1_write_8(dev, W1_READ_ROM);
-
-			if (w1_read_block(dev, (u8 *)&rn, 8) == 8 && rn)
-=======
 			int rv;
 			w1_write_8(dev, W1_READ_ROM);
 			rv = w1_read_block(dev, (u8 *)&rn, 8);
 			mutex_unlock(&dev->bus_mutex);
 
 			if (rv == 8 && rn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cb(dev, rn);
 
 			break;
@@ -1467,11 +1032,7 @@ void w1_search(struct w1_master *dev, u8 search_type, w1_slave_found_callback cb
 			else
 				search_bit = ((last_rn >> i) & 0x1);
 
-<<<<<<< HEAD
-			/** Read two bits and write one bit */
-=======
 			/* Read two bits and write one bit */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			triplet_ret = w1_triplet(dev, search_bit);
 
 			/* quit if no device responded */
@@ -1486,26 +1047,12 @@ void w1_search(struct w1_master *dev, u8 search_type, w1_slave_found_callback cb
 			tmp64 = (triplet_ret >> 2);
 			rn |= (tmp64 << i);
 
-<<<<<<< HEAD
-			/* ensure we're called from kthread and not by netlink callback */
-			if (!dev->priv && kthread_should_stop()) {
-=======
 			if (test_bit(W1_ABORT_SEARCH, &dev->flags)) {
 				mutex_unlock(&dev->bus_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_dbg(&dev->dev, "Abort w1_search\n");
 				return;
 			}
 		}
-<<<<<<< HEAD
-
-		if ( (triplet_ret & 0x03) != 0x03 ) {
-			if ( (desc_bit == last_zero) || (last_zero < 0))
-				last_device = 1;
-			desc_bit = last_zero;
-			cb(dev, rn);
-		}
-=======
 		mutex_unlock(&dev->bus_mutex);
 
 		if ( (triplet_ret & 0x03) != 0x03 ) {
@@ -1533,7 +1080,6 @@ void w1_search(struct w1_master *dev, u8 search_type, w1_slave_found_callback cb
 				dev->max_slave_count);
 			set_bit(W1_WARN_MAX_COUNT, &dev->flags);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1542,19 +1088,6 @@ void w1_search_process_cb(struct w1_master *dev, u8 search_type,
 {
 	struct w1_slave *sl, *sln;
 
-<<<<<<< HEAD
-	list_for_each_entry(sl, &dev->slist, w1_slave_entry)
-		clear_bit(W1_SLAVE_ACTIVE, (long *)&sl->flags);
-
-	w1_search_devices(dev, search_type, cb);
-
-	list_for_each_entry_safe(sl, sln, &dev->slist, w1_slave_entry) {
-		if (!test_bit(W1_SLAVE_ACTIVE, (unsigned long *)&sl->flags) && !--sl->ttl)
-			w1_slave_detach(sl);
-		else if (test_bit(W1_SLAVE_ACTIVE, (unsigned long *)&sl->flags))
-			sl->ttl = dev->slave_ttl;
-	}
-=======
 	mutex_lock(&dev->list_mutex);
 	list_for_each_entry(sl, &dev->slist, w1_slave_entry)
 		clear_bit(W1_SLAVE_ACTIVE, &sl->flags);
@@ -1573,7 +1106,6 @@ void w1_search_process_cb(struct w1_master *dev, u8 search_type,
 			sl->ttl = dev->slave_ttl;
 	}
 	mutex_unlock(&dev->list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->search_count > 0)
 		dev->search_count--;
@@ -1584,8 +1116,6 @@ static void w1_search_process(struct w1_master *dev, u8 search_type)
 	w1_search_process_cb(dev, search_type, w1_slave_found);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * w1_process_callbacks() - execute each dev->async_list callback entry
  * @dev: w1_master device
@@ -1614,19 +1144,12 @@ int w1_process_callbacks(struct w1_master *dev)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int w1_process(void *data)
 {
 	struct w1_master *dev = (struct w1_master *) data;
 	/* As long as w1_timeout is only set by a module parameter the sleep
 	 * time can be calculated in jiffies once.
 	 */
-<<<<<<< HEAD
-	const unsigned long jtime = msecs_to_jiffies(w1_timeout * 1000);
-
-	while (!kthread_should_stop()) {
-		if (dev->search_count) {
-=======
 	const unsigned long jtime =
 	  usecs_to_jiffies(w1_timeout * 1000000 + w1_timeout_us);
 	/* remainder if it woke up early */
@@ -1637,23 +1160,11 @@ int w1_process(void *data)
 	for (;;) {
 
 		if (!jremain && dev->search_count) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mutex_lock(&dev->mutex);
 			w1_search_process(dev, W1_SEARCH);
 			mutex_unlock(&dev->mutex);
 		}
 
-<<<<<<< HEAD
-		try_to_freeze();
-		__set_current_state(TASK_INTERRUPTIBLE);
-
-		if (kthread_should_stop())
-			break;
-
-		/* Only sleep when the search is active. */
-		if (dev->search_count)
-			schedule_timeout(jtime);
-=======
 		mutex_lock(&dev->list_mutex);
 		/* Note, w1_process_callback drops the lock while processing,
 		 * but locks it again before returning.
@@ -1684,7 +1195,6 @@ int w1_process(void *data)
 				jremain = jtime;
 			jremain = schedule_timeout(jremain);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			schedule();
 	}
@@ -1698,44 +1208,26 @@ static int __init w1_init(void)
 {
 	int retval;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "Driver for 1-wire Dallas network protocol.\n");
-=======
 	pr_info("Driver for 1-wire Dallas network protocol.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	w1_init_netlink();
 
 	retval = bus_register(&w1_bus_type);
 	if (retval) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Failed to register bus. err=%d.\n", retval);
-=======
 		pr_err("Failed to register bus. err=%d.\n", retval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_exit_init;
 	}
 
 	retval = driver_register(&w1_master_driver);
 	if (retval) {
-<<<<<<< HEAD
-		printk(KERN_ERR
-			"Failed to register master driver. err=%d.\n",
-=======
 		pr_err("Failed to register master driver. err=%d.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval);
 		goto err_out_bus_unregister;
 	}
 
 	retval = driver_register(&w1_slave_driver);
 	if (retval) {
-<<<<<<< HEAD
-		printk(KERN_ERR
-			"Failed to register master driver. err=%d.\n",
-=======
 		pr_err("Failed to register slave driver. err=%d.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval);
 		goto err_out_master_unregister;
 	}
@@ -1760,17 +1252,10 @@ err_out_exit_init:
 
 static void __exit w1_fini(void)
 {
-<<<<<<< HEAD
-	struct w1_master *dev;
-
-	/* Set netlink removal messages and some cleanup */
-	list_for_each_entry(dev, &w1_masters, w1_master_entry)
-=======
 	struct w1_master *dev, *n;
 
 	/* Set netlink removal messages and some cleanup */
 	list_for_each_entry_safe(dev, n, &w1_masters, w1_master_entry)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__w1_remove_master_device(dev);
 
 	w1_fini_netlink();
@@ -1782,10 +1267,7 @@ static void __exit w1_fini(void)
 
 module_init(w1_init);
 module_exit(w1_fini);
-<<<<<<< HEAD
-=======
 
 MODULE_AUTHOR("Evgeniy Polyakov <zbr@ioremap.net>");
 MODULE_DESCRIPTION("Driver for 1-wire Dallas network protocol.");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

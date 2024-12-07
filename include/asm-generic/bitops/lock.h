@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASM_GENERIC_BITOPS_LOCK_H_
-#define _ASM_GENERIC_BITOPS_LOCK_H_
-
-/**
- * test_and_set_bit_lock - Set a bit and return its old value, for lock
- * @nr: Bit to set
- * @addr: Address to count from
- *
- * This operation is atomic and provides acquire barrier semantics.
- * It can be used to implement bit locks.
- */
-#define test_and_set_bit_lock(nr, addr)	test_and_set_bit(nr, addr)
-
-/**
- * clear_bit_unlock - Clear a bit in memory, for unlock
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_GENERIC_BITOPS_LOCK_H_
 #define _ASM_GENERIC_BITOPS_LOCK_H_
@@ -49,39 +32,11 @@ arch_test_and_set_bit_lock(unsigned int nr, volatile unsigned long *p)
 
 /**
  * arch_clear_bit_unlock - Clear a bit in memory, for unlock
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @nr: the bit to set
  * @addr: the address to start counting from
  *
  * This operation is atomic and provides release barrier semantics.
  */
-<<<<<<< HEAD
-#define clear_bit_unlock(nr, addr)	\
-do {					\
-	smp_mb__before_clear_bit();	\
-	clear_bit(nr, addr);		\
-} while (0)
-
-/**
- * __clear_bit_unlock - Clear a bit in memory, for unlock
- * @nr: the bit to set
- * @addr: the address to start counting from
- *
- * This operation is like clear_bit_unlock, however it is not atomic.
- * It does provide release barrier semantics so it can be used to unlock
- * a bit lock, however it would only be used if no other CPU can modify
- * any bits in the memory until the lock is released (a good example is
- * if the bit lock itself protects access to the other bits in the word).
- */
-#define __clear_bit_unlock(nr, addr)	\
-do {					\
-	smp_mb();			\
-	__clear_bit(nr, addr);		\
-} while (0)
-
-#endif /* _ASM_GENERIC_BITOPS_LOCK_H_ */
-
-=======
 static __always_inline void
 arch_clear_bit_unlock(unsigned int nr, volatile unsigned long *p)
 {
@@ -125,4 +80,3 @@ static inline bool arch_xor_unlock_is_negative_byte(unsigned long mask,
 #include <asm-generic/bitops/instrumented-lock.h>
 
 #endif /* _ASM_GENERIC_BITOPS_LOCK_H_ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

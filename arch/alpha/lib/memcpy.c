@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/alpha/lib/memcpy.c
  *
@@ -20,10 +17,7 @@
  */
 
 #include <linux/types.h>
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This should be done in one go with ldq_u*2/mask/stq_u. Do it
@@ -166,10 +160,4 @@ void * memcpy(void * dest, const void *src, size_t n)
 	__memcpy_unaligned_up ((unsigned long) dest, (unsigned long) src, n);
 	return dest;
 }
-<<<<<<< HEAD
-
-/* For backward modules compatibility, define __memcpy.  */
-asm("__memcpy = memcpy; .globl __memcpy");
-=======
 EXPORT_SYMBOL(memcpy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

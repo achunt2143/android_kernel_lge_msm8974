@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/copy_template.s
  *
@@ -10,13 +7,6 @@
  *  Author:	Nicolas Pitre
  *  Created:	Sep 28, 2005
  *  Copyright:	MontaVista Software, Inc.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -60,15 +50,12 @@
  *	data as needed by the implementation including this code. Called
  *	upon code entry.
  *
-<<<<<<< HEAD
-=======
  * usave reg1 reg2
  *
  *	Unwind annotation macro is corresponding for 'enter' macro.
  *	It tell unwinder that preserved some provided registers on the stack
  *	and additional data by a prior 'enter' macro.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * exit reg1 reg2
  *
  *	Restore registers with the values previously saved with the
@@ -82,15 +69,10 @@
  *	than one 32bit instruction in Thumb-2)
  */
 
-<<<<<<< HEAD
-
-		enter	r4, lr
-=======
 	UNWIND(	.fnstart			)
 		enter	r4, UNWIND(fpreg,) lr
 	UNWIND(	.setfp	fpreg, sp		)
 	UNWIND(	mov	fpreg, sp		)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		subs	r2, r2, #4
 		blt	8f
@@ -101,20 +83,12 @@
 		bne	10f
 
 1:		subs	r2, r2, #(28)
-<<<<<<< HEAD
-		stmfd	sp!, {r5 - r8}
-=======
 		stmfd	sp!, {r5, r6, r8, r9}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		blt	5f
 
 	CALGN(	ands	ip, r0, #31		)
 	CALGN(	rsb	r3, ip, #32		)
-<<<<<<< HEAD
-	CALGN(	sbcnes	r4, r3, r2		)  @ C is always set here
-=======
 	CALGN(	sbcsne	r4, r3, r2		)  @ C is always set here
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CALGN(	bcs	2f			)
 	CALGN(	adr	r4, 6f			)
 	CALGN(	subs	r2, r2, r3		)  @ C gets set
@@ -128,15 +102,9 @@
 	PLD(	pld	[r1, #92]		)
 
 3:	PLD(	pld	[r1, #124]		)
-<<<<<<< HEAD
-4:		ldr8w	r1, r3, r4, r5, r6, r7, r8, ip, lr, abort=20f
-		subs	r2, r2, #32
-		str8w	r0, r3, r4, r5, r6, r7, r8, ip, lr, abort=20f
-=======
 4:		ldr8w	r1, r3, r4, r5, r6, r8, r9, ip, lr, abort=20f
 		subs	r2, r2, #32
 		str8w	r0, r3, r4, r5, r6, r8, r9, ip, lr, abort=20f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bge	3b
 	PLD(	cmn	r2, #96			)
 	PLD(	bge	4b			)
@@ -156,13 +124,8 @@
 		ldr1w	r1, r4, abort=20f
 		ldr1w	r1, r5, abort=20f
 		ldr1w	r1, r6, abort=20f
-<<<<<<< HEAD
-		ldr1w	r1, r7, abort=20f
-		ldr1w	r1, r8, abort=20f
-=======
 		ldr1w	r1, r8, abort=20f
 		ldr1w	r1, r9, abort=20f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ldr1w	r1, lr, abort=20f
 
 #if LDR1W_SHIFT < STR1W_SHIFT
@@ -179,22 +142,13 @@
 		str1w	r0, r4, abort=20f
 		str1w	r0, r5, abort=20f
 		str1w	r0, r6, abort=20f
-<<<<<<< HEAD
-		str1w	r0, r7, abort=20f
-		str1w	r0, r8, abort=20f
-=======
 		str1w	r0, r8, abort=20f
 		str1w	r0, r9, abort=20f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		str1w	r0, lr, abort=20f
 
 	CALGN(	bcs	2b			)
 
-<<<<<<< HEAD
-7:		ldmfd	sp!, {r5 - r8}
-=======
 7:		ldmfd	sp!, {r5, r6, r8, r9}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 8:		movs	r2, r2, lsl #31
 		ldr1b	r1, r3, ne, abort=21f
@@ -204,11 +158,7 @@
 		str1b	r0, r4, cs, abort=21f
 		str1b	r0, ip, cs, abort=21f
 
-<<<<<<< HEAD
-		exit	r4, pc
-=======
 		exit	r4, UNWIND(fpreg,) pc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 9:		rsb	ip, ip, #4
 		cmp	ip, #2
@@ -237,19 +187,11 @@
 
 	CALGN(	ands	ip, r0, #31		)
 	CALGN(	rsb	ip, ip, #32		)
-<<<<<<< HEAD
-	CALGN(	sbcnes	r4, ip, r2		)  @ C is always set here
-	CALGN(	subcc	r2, r2, ip		)
-	CALGN(	bcc	15f			)
-
-11:		stmfd	sp!, {r5 - r9}
-=======
 	CALGN(	sbcsne	r4, ip, r2		)  @ C is always set here
 	CALGN(	subcc	r2, r2, ip		)
 	CALGN(	bcc	15f			)
 
 11:		stmfd	sp!, {r5, r6, r8 - r10}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PLD(	pld	[r1, #0]		)
 	PLD(	subs	r2, r2, #96		)
@@ -259,28 +201,6 @@
 	PLD(	pld	[r1, #92]		)
 
 12:	PLD(	pld	[r1, #124]		)
-<<<<<<< HEAD
-13:		ldr4w	r1, r4, r5, r6, r7, abort=19f
-		mov	r3, lr, pull #\pull
-		subs	r2, r2, #32
-		ldr4w	r1, r8, r9, ip, lr, abort=19f
-		orr	r3, r3, r4, push #\push
-		mov	r4, r4, pull #\pull
-		orr	r4, r4, r5, push #\push
-		mov	r5, r5, pull #\pull
-		orr	r5, r5, r6, push #\push
-		mov	r6, r6, pull #\pull
-		orr	r6, r6, r7, push #\push
-		mov	r7, r7, pull #\pull
-		orr	r7, r7, r8, push #\push
-		mov	r8, r8, pull #\pull
-		orr	r8, r8, r9, push #\push
-		mov	r9, r9, pull #\pull
-		orr	r9, r9, ip, push #\push
-		mov	ip, ip, pull #\pull
-		orr	ip, ip, lr, push #\push
-		str8w	r0, r3, r4, r5, r6, r7, r8, r9, ip, , abort=19f
-=======
 13:		ldr4w	r1, r4, r5, r6, r8, abort=19f
 		mov	r3, lr, lspull #\pull
 		subs	r2, r2, #32
@@ -301,31 +221,19 @@
 		mov	ip, ip, lspull #\pull
 		orr	ip, ip, lr, lspush #\push
 		str8w	r0, r3, r4, r5, r6, r8, r9, r10, ip, abort=19f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bge	12b
 	PLD(	cmn	r2, #96			)
 	PLD(	bge	13b			)
 
-<<<<<<< HEAD
-		ldmfd	sp!, {r5 - r9}
-=======
 		ldmfd	sp!, {r5, r6, r8 - r10}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 14:		ands	ip, r2, #28
 		beq	16f
 
-<<<<<<< HEAD
-15:		mov	r3, lr, pull #\pull
-		ldr1w	r1, lr, abort=21f
-		subs	ip, ip, #4
-		orr	r3, r3, lr, push #\push
-=======
 15:		mov	r3, lr, lspull #\pull
 		ldr1w	r1, lr, abort=21f
 		subs	ip, ip, #4
 		orr	r3, r3, lr, lspush #\push
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		str1w	r0, r3, abort=21f
 		bgt	15b
 	CALGN(	cmp	r2, #0			)
@@ -343,10 +251,7 @@
 
 18:		forward_copy_shift	pull=24	push=8
 
-<<<<<<< HEAD
-=======
 	UNWIND(	.fnend				)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Abort preamble and completion macros.
@@ -356,23 +261,13 @@
  */
 
 	.macro	copy_abort_preamble
-<<<<<<< HEAD
-19:	ldmfd	sp!, {r5 - r9}
-	b	21f
-20:	ldmfd	sp!, {r5 - r8}
-=======
 19:	ldmfd	sp!, {r5, r6, r8 - r10}
 	b	21f
 20:	ldmfd	sp!, {r5, r6, r8, r9}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 21:
 	.endm
 
 	.macro	copy_abort_end
-<<<<<<< HEAD
-	ldmfd	sp!, {r4, pc}
-=======
 	ldmfd	sp!, {r4, UNWIND(fpreg,) pc}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 

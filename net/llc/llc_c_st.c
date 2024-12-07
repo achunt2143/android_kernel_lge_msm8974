@@ -33,11 +33,7 @@
  * LLC_CONN_STATE_AWAIT_REJ states
  */
 /* State transitions for LLC_CONN_EV_DISC_REQ event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_1[] = {
-=======
 static const llc_conn_action_t llc_common_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_disc_cmd_p_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -54,11 +50,7 @@ static struct llc_conn_state_trans llc_common_state_trans_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_RESET_REQ event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_2[] = {
-=======
 static const llc_conn_action_t llc_common_actions_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_sabme_cmd_p_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -75,11 +67,7 @@ static struct llc_conn_state_trans llc_common_state_trans_2 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_SABME_CMD_Pbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_3[] = {
-=======
 static const llc_conn_action_t llc_common_actions_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_stop_all_timers,
 	[1] = llc_conn_ac_set_vs_0,
 	[2] = llc_conn_ac_set_vr_0,
@@ -99,11 +87,7 @@ static struct llc_conn_state_trans llc_common_state_trans_3 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_DISC_CMD_Pbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_4[] = {
-=======
 static const llc_conn_action_t llc_common_actions_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_stop_all_timers,
 	[1] = llc_conn_ac_send_ua_rsp_f_set_p,
 	[2] = llc_conn_ac_disc_ind,
@@ -119,11 +103,7 @@ static struct llc_conn_state_trans llc_common_state_trans_4 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_FRMR_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_5[] = {
-=======
 static const llc_conn_action_t llc_common_actions_5[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_sabme_cmd_p_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -142,11 +122,7 @@ static struct llc_conn_state_trans llc_common_state_trans_5 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_DM_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_6[] = {
-=======
 static const llc_conn_action_t llc_common_actions_6[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_disc_ind,
 	[1] = llc_conn_ac_stop_all_timers,
 	[2] = llc_conn_disc,
@@ -161,11 +137,7 @@ static struct llc_conn_state_trans llc_common_state_trans_6 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_ZZZ_CMD_Pbit_SET_X_INVAL_Nr event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_7a[] = {
-=======
 static const llc_conn_action_t llc_common_actions_7a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_frmr_rsp_f_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -181,11 +153,7 @@ static struct llc_conn_state_trans llc_common_state_trans_7a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_X_INVAL_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_7b[] = {
-=======
 static const llc_conn_action_t llc_common_actions_7b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_frmr_rsp_f_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -201,11 +169,7 @@ static struct llc_conn_state_trans llc_common_state_trans_7b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_ZZZ_RSP_Fbit_SET_X_INVAL_Nr event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_8a[] = {
-=======
 static const llc_conn_action_t llc_common_actions_8a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_frmr_rsp_f_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -221,11 +185,7 @@ static struct llc_conn_state_trans llc_common_state_trans_8a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_X_INVAL_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_8b[] = {
-=======
 static const llc_conn_action_t llc_common_actions_8b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_frmr_rsp_f_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -241,11 +201,7 @@ static struct llc_conn_state_trans llc_common_state_trans_8b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_BAD_PDU event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_8c[] = {
-=======
 static const llc_conn_action_t llc_common_actions_8c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_frmr_rsp_f_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -261,11 +217,7 @@ static struct llc_conn_state_trans llc_common_state_trans_8c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_UA_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_9[] = {
-=======
 static const llc_conn_action_t llc_common_actions_9[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_frmr_rsp_f_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -282,20 +234,12 @@ static struct llc_conn_state_trans llc_common_state_trans_9 = {
 
 /* State transitions for LLC_CONN_EV_RX_XXX_RSP_Fbit_SET_1 event */
 #if 0
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_common_ev_qfyrs_10[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_common_ev_qfyrs_10[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_10[] = {
-=======
 static const llc_conn_action_t llc_common_actions_10[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_frmr_rsp_f_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -312,20 +256,12 @@ static struct llc_conn_state_trans llc_common_state_trans_10 = {
 #endif
 
 /* State transitions for LLC_CONN_EV_P_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_common_ev_qfyrs_11a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_common_ev_qfyrs_11a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_gte_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_11a[] = {
-=======
 static const llc_conn_action_t llc_common_actions_11a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_sabme_cmd_p_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -342,20 +278,12 @@ static struct llc_conn_state_trans llc_common_state_trans_11a = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_common_ev_qfyrs_11b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_common_ev_qfyrs_11b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_gte_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_11b[] = {
-=======
 static const llc_conn_action_t llc_common_actions_11b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_sabme_cmd_p_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -372,20 +300,12 @@ static struct llc_conn_state_trans llc_common_state_trans_11b = {
 };
 
 /* State transitions for LLC_CONN_EV_REJ_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_common_ev_qfyrs_11c[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_common_ev_qfyrs_11c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_gte_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_11c[] = {
-=======
 static const llc_conn_action_t llc_common_actions_11c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_sabme_cmd_p_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -402,20 +322,12 @@ static struct llc_conn_state_trans llc_common_state_trans_11c = {
 };
 
 /* State transitions for LLC_CONN_EV_BUSY_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_common_ev_qfyrs_11d[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_common_ev_qfyrs_11d[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_gte_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_common_actions_11d[] = {
-=======
 static const llc_conn_action_t llc_common_actions_11d[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_sabme_cmd_p_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_stop_other_timers,
@@ -439,11 +351,7 @@ static struct llc_conn_state_trans llc_common_state_trans_end;
 
 /* LLC_CONN_STATE_ADM transitions */
 /* State transitions for LLC_CONN_EV_CONN_REQ event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_adm_actions_1[] = {
-=======
 static const llc_conn_action_t llc_adm_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_sabme_cmd_p_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_set_retry_cnt_0,
@@ -459,11 +367,7 @@ static struct llc_conn_state_trans llc_adm_state_trans_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_SABME_CMD_Pbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_adm_actions_2[] = {
-=======
 static const llc_conn_action_t llc_adm_actions_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_ua_rsp_f_set_p,
 	[1] = llc_conn_ac_set_vs_0,
 	[2] = llc_conn_ac_set_vr_0,
@@ -482,11 +386,7 @@ static struct llc_conn_state_trans llc_adm_state_trans_2 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_DISC_CMD_Pbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_adm_actions_3[] = {
-=======
 static const llc_conn_action_t llc_adm_actions_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_dm_rsp_f_set_p,
 	[1] = llc_conn_disc,
 	[2] = NULL,
@@ -500,11 +400,7 @@ static struct llc_conn_state_trans llc_adm_state_trans_3 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_XXX_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_adm_actions_4[] = {
-=======
 static const llc_conn_action_t llc_adm_actions_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_dm_rsp_f_set_1,
 	[1] = llc_conn_disc,
 	[2] = NULL,
@@ -518,11 +414,7 @@ static struct llc_conn_state_trans llc_adm_state_trans_4 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_XXX_YYY event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_adm_actions_5[] = {
-=======
 static const llc_conn_action_t llc_adm_actions_5[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_disc,
 	[1] = NULL,
 };
@@ -553,11 +445,7 @@ static struct llc_conn_state_trans *llc_adm_state_transitions[] = {
 
 /* LLC_CONN_STATE_SETUP transitions */
 /* State transitions for LLC_CONN_EV_RX_SABME_CMD_Pbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_setup_actions_1[] = {
-=======
 static const llc_conn_action_t llc_setup_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_ua_rsp_f_set_p,
 	[1] = llc_conn_ac_set_vs_0,
 	[2] = llc_conn_ac_set_vr_0,
@@ -573,21 +461,13 @@ static struct llc_conn_state_trans llc_setup_state_trans_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_UA_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_setup_ev_qfyrs_2[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_setup_ev_qfyrs_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_f,
 	[1] = llc_conn_ev_qlfy_set_status_conn,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_setup_actions_2[] = {
-=======
 static const llc_conn_action_t llc_setup_actions_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_stop_ack_timer,
 	[1] = llc_conn_ac_set_vs_0,
 	[2] = llc_conn_ac_set_vr_0,
@@ -605,21 +485,13 @@ static struct llc_conn_state_trans llc_setup_state_trans_2 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_setup_ev_qfyrs_3[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_setup_ev_qfyrs_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_s_flag_eq_1,
 	[1] = llc_conn_ev_qlfy_set_status_conn,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_setup_actions_3[] = {
-=======
 static const llc_conn_action_t llc_setup_actions_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_p_flag_0,
 	[1] = llc_conn_ac_set_remote_busy_0,
 	[2] = llc_conn_ac_conn_confirm,
@@ -634,20 +506,12 @@ static struct llc_conn_state_trans llc_setup_state_trans_3 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_DISC_CMD_Pbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_setup_ev_qfyrs_4[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_setup_ev_qfyrs_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_set_status_disc,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_setup_actions_4[] = {
-=======
 static const llc_conn_action_t llc_setup_actions_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_dm_rsp_f_set_p,
 	[1] = llc_conn_ac_stop_ack_timer,
 	[2] = llc_conn_ac_conn_confirm,
@@ -663,20 +527,12 @@ static struct llc_conn_state_trans llc_setup_state_trans_4 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_DM_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_setup_ev_qfyrs_5[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_setup_ev_qfyrs_5[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_set_status_disc,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_setup_actions_5[] = {
-=======
 static const llc_conn_action_t llc_setup_actions_5[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_stop_ack_timer,
 	[1] = llc_conn_ac_conn_confirm,
 	[2] = llc_conn_disc,
@@ -691,21 +547,13 @@ static struct llc_conn_state_trans llc_setup_state_trans_5 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_setup_ev_qfyrs_7[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_setup_ev_qfyrs_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[1] = llc_conn_ev_qlfy_s_flag_eq_0,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_setup_actions_7[] = {
-=======
 static const llc_conn_action_t llc_setup_actions_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_sabme_cmd_p_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_inc_retry_cnt_by_1,
@@ -720,22 +568,14 @@ static struct llc_conn_state_trans llc_setup_state_trans_7 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_setup_ev_qfyrs_8[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_setup_ev_qfyrs_8[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_gte_n2,
 	[1] = llc_conn_ev_qlfy_s_flag_eq_0,
 	[2] = llc_conn_ev_qlfy_set_status_failed,
 	[3] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_setup_actions_8[] = {
-=======
 static const llc_conn_action_t llc_setup_actions_8[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_conn_confirm,
 	[1] = llc_conn_disc,
 	[2] = NULL,
@@ -769,22 +609,14 @@ static struct llc_conn_state_trans *llc_setup_state_transitions[] = {
 
 /* LLC_CONN_STATE_NORMAL transitions */
 /* State transitions for LLC_CONN_EV_DATA_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_remote_busy_eq_0,
 	[1] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[2] = llc_conn_ev_qlfy_last_frame_eq_0,
 	[3] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_1[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_i_as_ack,
 	[1] = llc_conn_ac_start_ack_tmr_if_not_running,
 	[2] = NULL,
@@ -798,22 +630,14 @@ static struct llc_conn_state_trans llc_normal_state_trans_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_DATA_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_2[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_remote_busy_eq_0,
 	[1] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[2] = llc_conn_ev_qlfy_last_frame_eq_1,
 	[3] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_2[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_i_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = NULL,
@@ -827,22 +651,14 @@ static struct llc_conn_state_trans llc_normal_state_trans_2 = {
 };
 
 /* State transitions for LLC_CONN_EV_DATA_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_2_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_2_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_remote_busy_eq_1,
 	[1] = llc_conn_ev_qlfy_set_status_remote_busy,
 	[2] = NULL,
 };
 
 /* just one member, NULL, .bss zeroes it */
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_2_1[1];
-=======
 static const llc_conn_action_t llc_normal_actions_2_1[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct llc_conn_state_trans llc_normal_state_trans_2_1 = {
 	.ev	       = llc_conn_ev_data_req,
@@ -852,20 +668,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_2_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_DETECTED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_3[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_3[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_rst_sendack_flag,
 	[1] = llc_conn_ac_send_rnr_xxx_x_set_0,
 	[2] = llc_conn_ac_set_data_flag_0,
@@ -880,20 +688,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_3 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_DETECTED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_4[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_4[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_rst_sendack_flag,
 	[1] = llc_conn_ac_send_rnr_xxx_x_set_0,
 	[2] = llc_conn_ac_set_data_flag_0,
@@ -908,20 +708,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_4 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_5a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_5a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_5a[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_5a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_rst_sendack_flag,
 	[1] = llc_conn_ac_send_rej_xxx_x_set_0,
 	[2] = llc_conn_ac_upd_nr_received,
@@ -939,20 +731,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_5a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_5b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_5b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_5b[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_5b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_rst_sendack_flag,
 	[1] = llc_conn_ac_send_rej_xxx_x_set_0,
 	[2] = llc_conn_ac_upd_nr_received,
@@ -970,20 +754,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_5b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_1_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_5c[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_5c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_5c[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_5c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_rst_sendack_flag,
 	[1] = llc_conn_ac_send_rej_xxx_x_set_0,
 	[2] = llc_conn_ac_upd_nr_received,
@@ -1001,20 +777,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_5c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_6a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_6a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_6a[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_6a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_rst_sendack_flag,
 	[1] = llc_conn_ac_send_rej_xxx_x_set_0,
 	[2] = llc_conn_ac_upd_nr_received,
@@ -1030,20 +798,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_6a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_6b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_6b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_6b[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_6b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_rst_sendack_flag,
 	[1] = llc_conn_ac_send_rej_xxx_x_set_0,
 	[2] = llc_conn_ac_upd_nr_received,
@@ -1059,11 +819,7 @@ static struct llc_conn_state_trans llc_normal_state_trans_6b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_1_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_7[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_rst_sendack_flag,
 	[1] = llc_conn_ac_send_rej_rsp_f_set_1,
 	[2] = llc_conn_ac_upd_nr_received,
@@ -1079,20 +835,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_7 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_8a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_8a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_f,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_8[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_8[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_upd_p_flag,
@@ -1110,11 +858,7 @@ static struct llc_conn_state_trans llc_normal_state_trans_8a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_8b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_8b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
@@ -1127,20 +871,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_8b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_9a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_9a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_9a[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_9a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_data_ind,
@@ -1156,20 +892,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_9a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_9b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_9b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_9b[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_9b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_data_ind,
@@ -1185,11 +913,7 @@ static struct llc_conn_state_trans llc_normal_state_trans_9b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_10[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_10[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_send_ack_rsp_f_set_1,
 	[2] = llc_conn_ac_rst_sendack_flag,
@@ -1206,11 +930,7 @@ static struct llc_conn_state_trans llc_normal_state_trans_10 = {
 };
 
 /* State transitions for * LLC_CONN_EV_RX_RR_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_11a[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_11a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -1225,11 +945,7 @@ static struct llc_conn_state_trans llc_normal_state_trans_11a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_11b[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_11b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -1244,20 +960,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_11b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_11c[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_11c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_11c[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_11c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_inc_tx_win_size,
@@ -1273,11 +981,7 @@ static struct llc_conn_state_trans llc_normal_state_trans_11c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_12[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_12[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_ack_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_adjust_npta_by_rr,
@@ -1294,11 +998,7 @@ static struct llc_conn_state_trans llc_normal_state_trans_12 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_13a[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_13a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -1313,11 +1013,7 @@ static struct llc_conn_state_trans llc_normal_state_trans_13a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_13b[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_13b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -1332,20 +1028,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_13b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_13c[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_13c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_13c[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_13c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -1360,11 +1048,7 @@ static struct llc_conn_state_trans llc_normal_state_trans_13c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_14[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_14[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_adjust_npta_by_rnr,
@@ -1381,20 +1065,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_14 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_15a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_15a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_15a[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_15a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_p_flag,
@@ -1412,20 +1088,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_15a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_15b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_15b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_f,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_15b[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_15b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_p_flag,
@@ -1443,20 +1111,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_15b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_16a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_16a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_16a[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_16a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_dec_tx_win_size,
@@ -1473,20 +1133,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_16a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_16b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_16b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_16b[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_16b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_dec_tx_win_size,
@@ -1503,11 +1155,7 @@ static struct llc_conn_state_trans llc_normal_state_trans_16b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_17[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_17[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_dec_tx_win_size,
@@ -1524,20 +1172,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_17 = {
 };
 
 /* State transitions for LLC_CONN_EV_INIT_P_F_CYCLE event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_18[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_18[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_18[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_18[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = NULL,
@@ -1551,20 +1191,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_18 = {
 };
 
 /* State transitions for LLC_CONN_EV_P_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_19[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_19[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_19[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_19[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_rst_sendack_flag,
 	[1] = llc_conn_ac_send_rr_cmd_p_set_1,
 	[2] = llc_conn_ac_rst_vs,
@@ -1581,21 +1213,13 @@ static struct llc_conn_state_trans llc_normal_state_trans_19 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_20a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_20a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_20a[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_20a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_rst_sendack_flag,
 	[1] = llc_conn_ac_send_rr_cmd_p_set_1,
 	[2] = llc_conn_ac_rst_vs,
@@ -1612,21 +1236,13 @@ static struct llc_conn_state_trans llc_normal_state_trans_20a = {
 };
 
 /* State transitions for LLC_CONN_EV_BUSY_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_20b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_20b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_20b[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_20b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_rst_sendack_flag,
 	[1] = llc_conn_ac_send_rr_cmd_p_set_1,
 	[2] = llc_conn_ac_rst_vs,
@@ -1643,20 +1259,12 @@ static struct llc_conn_state_trans llc_normal_state_trans_20b = {
 };
 
 /* State transitions for LLC_CONN_EV_TX_BUFF_FULL event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_21[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_normal_ev_qfyrs_21[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_normal_actions_21[] = {
-=======
 static const llc_conn_action_t llc_normal_actions_21[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = NULL,
@@ -1734,21 +1342,13 @@ static struct llc_conn_state_trans *llc_normal_state_transitions[] = {
 
 /* LLC_CONN_STATE_BUSY transitions */
 /* State transitions for LLC_CONN_EV_DATA_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_remote_busy_eq_0,
 	[1] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_1[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_i_xxx_x_set_0,
 	[1] = llc_conn_ac_start_ack_tmr_if_not_running,
 	[2] = NULL,
@@ -1762,21 +1362,13 @@ static struct llc_conn_state_trans llc_busy_state_trans_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_DATA_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_2[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_remote_busy_eq_0,
 	[1] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_2[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_i_xxx_x_set_0,
 	[1] = llc_conn_ac_start_ack_tmr_if_not_running,
 	[2] = NULL,
@@ -1790,22 +1382,14 @@ static struct llc_conn_state_trans llc_busy_state_trans_2 = {
 };
 
 /* State transitions for LLC_CONN_EV_DATA_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_2_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_2_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_remote_busy_eq_1,
 	[1] = llc_conn_ev_qlfy_set_status_remote_busy,
 	[2] = NULL,
 };
 
 /* just one member, NULL, .bss zeroes it */
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_2_1[1];
-=======
 static const llc_conn_action_t llc_busy_actions_2_1[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct llc_conn_state_trans llc_busy_state_trans_2_1 = {
 	.ev	       = llc_conn_ev_data_req,
@@ -1815,21 +1399,13 @@ static struct llc_conn_state_trans llc_busy_state_trans_2_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_CLEARED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_3[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_data_flag_eq_1,
 	[1] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_3[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rej_xxx_x_set_0,
 	[1] = llc_conn_ac_start_rej_timer,
 	[2] = NULL,
@@ -1843,21 +1419,13 @@ static struct llc_conn_state_trans llc_busy_state_trans_3 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_CLEARED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_4[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_data_flag_eq_1,
 	[1] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_4[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rej_xxx_x_set_0,
 	[1] = llc_conn_ac_start_rej_timer,
 	[2] = NULL,
@@ -1871,21 +1439,13 @@ static struct llc_conn_state_trans llc_busy_state_trans_4 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_CLEARED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_5[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_5[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_data_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_5[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_5[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_xxx_x_set_0,
 	[1] = NULL,
 };
@@ -1898,21 +1458,13 @@ static struct llc_conn_state_trans llc_busy_state_trans_5 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_CLEARED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_6[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_6[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_data_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_6[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_6[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_xxx_x_set_0,
 	[1] = NULL,
 };
@@ -1925,21 +1477,13 @@ static struct llc_conn_state_trans llc_busy_state_trans_6 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_CLEARED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_7[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_data_flag_eq_2,
 	[1] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_7[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_xxx_x_set_0,
 	[1] = NULL,
 };
@@ -1952,21 +1496,13 @@ static struct llc_conn_state_trans llc_busy_state_trans_7 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_CLEARED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_8[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_8[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_data_flag_eq_2,
 	[1] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_8[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_8[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_xxx_x_set_0,
 	[1] = NULL,
 };
@@ -1979,20 +1515,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_8 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_X_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_9a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_9a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_f,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_9a[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_9a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_opt_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_upd_p_flag,
 	[2] = llc_conn_ac_upd_nr_received,
@@ -2009,20 +1537,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_9a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_9b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_9b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_9b[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_9b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_opt_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_upd_p_flag,
 	[2] = llc_conn_ac_upd_nr_received,
@@ -2039,20 +1559,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_9b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_10a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_10a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_10a[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_10a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_opt_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_data_flag_1_if_data_flag_eq_0,
@@ -2067,20 +1579,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_10a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_10b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_10b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_10b[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_10b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_opt_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_data_flag_1_if_data_flag_eq_0,
@@ -2095,11 +1599,7 @@ static struct llc_conn_state_trans llc_busy_state_trans_10b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_1_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_11[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_11[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_data_flag_1_if_data_flag_eq_0,
@@ -2114,11 +1614,7 @@ static struct llc_conn_state_trans llc_busy_state_trans_11 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_12[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_12[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_send_rnr_rsp_f_set_1,
@@ -2136,20 +1632,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_12 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_13a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_13a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_f,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_13a[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_13a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_upd_p_flag,
@@ -2169,20 +1657,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_13a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_13b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_13b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_13b[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_13b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_upd_p_flag,
@@ -2202,20 +1682,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_13b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_14a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_14a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_14a[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_14a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_opt_send_rnr_xxx_x_set_0,
@@ -2233,20 +1705,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_14a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_14b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_14b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_14b[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_14b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_opt_send_rnr_xxx_x_set_0,
@@ -2264,11 +1728,7 @@ static struct llc_conn_state_trans llc_busy_state_trans_14b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_15a[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_15a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -2283,11 +1743,7 @@ static struct llc_conn_state_trans llc_busy_state_trans_15a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_15b[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_15b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -2302,20 +1758,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_15b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_15c[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_15c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_15c[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_15c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -2330,11 +1778,7 @@ static struct llc_conn_state_trans llc_busy_state_trans_15c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_16[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_16[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -2349,11 +1793,7 @@ static struct llc_conn_state_trans llc_busy_state_trans_16 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_17a[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_17a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -2368,11 +1808,7 @@ static struct llc_conn_state_trans llc_busy_state_trans_17a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_17b[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_17b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -2387,20 +1823,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_17b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_17c[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_17c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_17c[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_17c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -2415,11 +1843,7 @@ static struct llc_conn_state_trans llc_busy_state_trans_17c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_18[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_18[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -2434,20 +1858,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_18 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_19a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_19a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_19a[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_19a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_p_flag,
@@ -2464,20 +1880,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_19a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_19b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_19b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_f,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_19b[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_19b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_p_flag,
@@ -2494,20 +1902,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_19b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_20a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_20a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_20a[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_20a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_resend_i_xxx_x_set_0,
@@ -2523,20 +1923,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_20a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_20b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_20b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_20b[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_20b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_resend_i_xxx_x_set_0,
@@ -2552,11 +1944,7 @@ static struct llc_conn_state_trans llc_busy_state_trans_20b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_21[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_21[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_send_rnr_rsp_f_set_1,
@@ -2573,20 +1961,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_21 = {
 };
 
 /* State transitions for LLC_CONN_EV_INIT_P_F_CYCLE event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_22[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_22[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_22[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_22[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = NULL,
@@ -2600,20 +1980,12 @@ static struct llc_conn_state_trans llc_busy_state_trans_22 = {
 };
 
 /* State transitions for LLC_CONN_EV_P_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_23[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_23[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_23[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_23[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_cmd_p_set_1,
 	[1] = llc_conn_ac_rst_vs,
 	[2] = llc_conn_ac_start_p_timer,
@@ -2629,21 +2001,13 @@ static struct llc_conn_state_trans llc_busy_state_trans_23 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_24a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_24a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_24a[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_24a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = llc_conn_ac_inc_retry_cnt_by_1,
@@ -2659,21 +2023,13 @@ static struct llc_conn_state_trans llc_busy_state_trans_24a = {
 };
 
 /* State transitions for LLC_CONN_EV_BUSY_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_24b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_24b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_24b[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_24b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = llc_conn_ac_inc_retry_cnt_by_1,
@@ -2689,21 +2045,13 @@ static struct llc_conn_state_trans llc_busy_state_trans_24b = {
 };
 
 /* State transitions for LLC_CONN_EV_REJ_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_25[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_25[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_25[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_25[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = llc_conn_ac_inc_retry_cnt_by_1,
@@ -2720,21 +2068,13 @@ static struct llc_conn_state_trans llc_busy_state_trans_25 = {
 };
 
 /* State transitions for LLC_CONN_EV_REJ_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_26[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_busy_ev_qfyrs_26[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_busy_actions_26[] = {
-=======
 static const llc_conn_action_t llc_busy_actions_26[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_data_flag_1,
 	[1] = NULL,
 };
@@ -2815,21 +2155,13 @@ static struct llc_conn_state_trans *llc_busy_state_transitions[] = {
 
 /* LLC_CONN_STATE_REJ transitions */
 /* State transitions for LLC_CONN_EV_DATA_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_remote_busy_eq_0,
 	[1] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_1[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_i_xxx_x_set_0,
 	[1] = NULL,
 };
@@ -2842,21 +2174,13 @@ static struct llc_conn_state_trans llc_reject_state_trans_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_DATA_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_2[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_remote_busy_eq_0,
 	[1] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_2[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_i_xxx_x_set_0,
 	[1] = NULL,
 };
@@ -2869,22 +2193,14 @@ static struct llc_conn_state_trans llc_reject_state_trans_2 = {
 };
 
 /* State transitions for LLC_CONN_EV_DATA_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_2_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_2_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_remote_busy_eq_1,
 	[1] = llc_conn_ev_qlfy_set_status_remote_busy,
 	[2] = NULL,
 };
 
 /* just one member, NULL, .bss zeroes it */
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_2_1[1];
-=======
 static const llc_conn_action_t llc_reject_actions_2_1[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct llc_conn_state_trans llc_reject_state_trans_2_1 = {
 	.ev	       = llc_conn_ev_data_req,
@@ -2895,20 +2211,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_2_1 = {
 
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_DETECTED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_3[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_3[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_set_data_flag_2,
 	[2] = NULL,
@@ -2922,20 +2230,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_3 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_DETECTED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_4[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_4[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_set_data_flag_2,
 	[2] = NULL,
@@ -2949,11 +2249,7 @@ static struct llc_conn_state_trans llc_reject_state_trans_4 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_5a[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_5a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_p_flag,
 	[2] = llc_conn_ac_clear_remote_busy_if_f_eq_1,
@@ -2968,11 +2264,7 @@ static struct llc_conn_state_trans llc_reject_state_trans_5a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_5b[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_5b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_p_flag,
 	[2] = llc_conn_ac_clear_remote_busy_if_f_eq_1,
@@ -2987,20 +2279,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_5b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_1_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_5c[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_5c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_5c[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_5c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_p_flag,
 	[2] = llc_conn_ac_clear_remote_busy_if_f_eq_1,
@@ -3015,11 +2299,7 @@ static struct llc_conn_state_trans llc_reject_state_trans_5c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_1_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_6[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_6[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = NULL,
@@ -3033,20 +2313,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_6 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_7a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_7a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_f,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_7a[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_7a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_upd_p_flag,
@@ -3066,20 +2338,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_7a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_7b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_7b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_7b[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_7b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_upd_p_flag,
@@ -3098,20 +2362,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_7b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_8a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_8a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_8a[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_8a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_send_ack_xxx_x_set_0,
@@ -3128,20 +2384,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_8a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_8b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_8b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_8b[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_8b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_send_ack_xxx_x_set_0,
@@ -3158,11 +2406,7 @@ static struct llc_conn_state_trans llc_reject_state_trans_8b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_9[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_9[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_send_ack_rsp_f_set_1,
@@ -3179,11 +2423,7 @@ static struct llc_conn_state_trans llc_reject_state_trans_9 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_10a[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_10a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -3198,11 +2438,7 @@ static struct llc_conn_state_trans llc_reject_state_trans_10a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_10b[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_10b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -3217,20 +2453,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_10b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_10c[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_10c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_10c[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_10c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -3245,11 +2473,7 @@ static struct llc_conn_state_trans llc_reject_state_trans_10c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_11[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_11[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_ack_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -3264,11 +2488,7 @@ static struct llc_conn_state_trans llc_reject_state_trans_11 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_12a[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_12a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -3283,11 +2503,7 @@ static struct llc_conn_state_trans llc_reject_state_trans_12a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_12b[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_12b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -3302,20 +2518,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_12b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_12c[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_12c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_12c[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_12c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_p_flag,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -3330,11 +2538,7 @@ static struct llc_conn_state_trans llc_reject_state_trans_12c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_13[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_13[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -3349,20 +2553,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_13 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_14a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_14a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_14a[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_14a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_p_flag,
@@ -3379,20 +2575,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_14a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_14b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_14b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_f,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_14b[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_14b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_p_flag,
@@ -3409,20 +2597,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_14b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_15a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_15a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_15a[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_15a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_resend_i_xxx_x_set_0,
@@ -3438,20 +2618,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_15a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_15b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_15b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_15b[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_15b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_resend_i_xxx_x_set_0,
@@ -3467,11 +2639,7 @@ static struct llc_conn_state_trans llc_reject_state_trans_15b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_16[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_16[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_nr,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_resend_i_rsp_f_set_1,
@@ -3487,20 +2655,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_16 = {
 };
 
 /* State transitions for LLC_CONN_EV_INIT_P_F_CYCLE event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_17[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_17[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_17[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_17[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = NULL,
@@ -3514,21 +2674,13 @@ static struct llc_conn_state_trans llc_reject_state_trans_17 = {
 };
 
 /* State transitions for LLC_CONN_EV_REJ_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_18[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_18[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_18[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_18[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rej_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = llc_conn_ac_start_rej_timer,
@@ -3544,20 +2696,12 @@ static struct llc_conn_state_trans llc_reject_state_trans_18 = {
 };
 
 /* State transitions for LLC_CONN_EV_P_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_19[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_19[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_19[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_19[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = llc_conn_ac_start_rej_timer,
@@ -3574,21 +2718,13 @@ static struct llc_conn_state_trans llc_reject_state_trans_19 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_20a[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_20a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_20a[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_20a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = llc_conn_ac_start_rej_timer,
@@ -3605,21 +2741,13 @@ static struct llc_conn_state_trans llc_reject_state_trans_20a = {
 };
 
 /* State transitions for LLC_CONN_EV_BUSY_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_20b[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_reject_ev_qfyrs_20b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_reject_actions_20b[] = {
-=======
 static const llc_conn_action_t llc_reject_actions_20b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = llc_conn_ac_start_rej_timer,
@@ -3698,21 +2826,13 @@ static struct llc_conn_state_trans *llc_reject_state_transitions[] = {
 
 /* LLC_CONN_STATE_AWAIT transitions */
 /* State transitions for LLC_CONN_EV_DATA_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_await_ev_qfyrs_1_0[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_await_ev_qfyrs_1_0[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_set_status_refuse,
 	[1] = NULL,
 };
 
 /* just one member, NULL, .bss zeroes it */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_1_0[1];
-=======
 static const llc_conn_action_t llc_await_actions_1_0[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct llc_conn_state_trans llc_await_state_trans_1_0 = {
 	.ev	       = llc_conn_ev_data_req,
@@ -3722,11 +2842,7 @@ static struct llc_conn_state_trans llc_await_state_trans_1_0 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_DETECTED event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_1[] = {
-=======
 static const llc_conn_action_t llc_await_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_set_data_flag_0,
 	[2] = NULL,
@@ -3740,11 +2856,7 @@ static struct llc_conn_state_trans llc_await_state_trans_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_1_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_2[] = {
-=======
 static const llc_conn_action_t llc_await_actions_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rej_xxx_x_set_0,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -3763,11 +2875,7 @@ static struct llc_conn_state_trans llc_await_state_trans_2 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_3a[] = {
-=======
 static const llc_conn_action_t llc_await_actions_3a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rej_xxx_x_set_0,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -3783,11 +2891,7 @@ static struct llc_conn_state_trans llc_await_state_trans_3a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_3b[] = {
-=======
 static const llc_conn_action_t llc_await_actions_3b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rej_xxx_x_set_0,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -3803,11 +2907,7 @@ static struct llc_conn_state_trans llc_await_state_trans_3b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_1_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_4[] = {
-=======
 static const llc_conn_action_t llc_await_actions_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rej_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -3824,11 +2924,7 @@ static struct llc_conn_state_trans llc_await_state_trans_4 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_5[] = {
-=======
 static const llc_conn_action_t llc_await_actions_5[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_stop_p_timer,
@@ -3847,11 +2943,7 @@ static struct llc_conn_state_trans llc_await_state_trans_5 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_6a[] = {
-=======
 static const llc_conn_action_t llc_await_actions_6a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_send_rr_xxx_x_set_0,
@@ -3868,11 +2960,7 @@ static struct llc_conn_state_trans llc_await_state_trans_6a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_6b[] = {
-=======
 static const llc_conn_action_t llc_await_actions_6b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_send_rr_xxx_x_set_0,
@@ -3889,11 +2977,7 @@ static struct llc_conn_state_trans llc_await_state_trans_6b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_7[] = {
-=======
 static const llc_conn_action_t llc_await_actions_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_send_rr_rsp_f_set_1,
@@ -3910,11 +2994,7 @@ static struct llc_conn_state_trans llc_await_state_trans_7 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_8a[] = {
-=======
 static const llc_conn_action_t llc_await_actions_8a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_stop_p_timer,
@@ -3931,11 +3011,7 @@ static struct llc_conn_state_trans llc_await_state_trans_8a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_8b[] = {
-=======
 static const llc_conn_action_t llc_await_actions_8b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_stop_p_timer,
@@ -3952,11 +3028,7 @@ static struct llc_conn_state_trans llc_await_state_trans_8b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_9a[] = {
-=======
 static const llc_conn_action_t llc_await_actions_9a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -3971,11 +3043,7 @@ static struct llc_conn_state_trans llc_await_state_trans_9a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_9b[] = {
-=======
 static const llc_conn_action_t llc_await_actions_9b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -3990,11 +3058,7 @@ static struct llc_conn_state_trans llc_await_state_trans_9b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_9c[] = {
-=======
 static const llc_conn_action_t llc_await_actions_9c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -4009,11 +3073,7 @@ static struct llc_conn_state_trans llc_await_state_trans_9c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_9d[] = {
-=======
 static const llc_conn_action_t llc_await_actions_9d[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -4028,11 +3088,7 @@ static struct llc_conn_state_trans llc_await_state_trans_9d = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_10a[] = {
-=======
 static const llc_conn_action_t llc_await_actions_10a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -4048,11 +3104,7 @@ static struct llc_conn_state_trans llc_await_state_trans_10a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_10b[] = {
-=======
 static const llc_conn_action_t llc_await_actions_10b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -4068,11 +3120,7 @@ static struct llc_conn_state_trans llc_await_state_trans_10b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_11[] = {
-=======
 static const llc_conn_action_t llc_await_actions_11[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_stop_p_timer,
@@ -4088,11 +3136,7 @@ static struct llc_conn_state_trans llc_await_state_trans_11 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_12a[] = {
-=======
 static const llc_conn_action_t llc_await_actions_12a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -4107,11 +3151,7 @@ static struct llc_conn_state_trans llc_await_state_trans_12a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_12b[] = {
-=======
 static const llc_conn_action_t llc_await_actions_12b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -4126,11 +3166,7 @@ static struct llc_conn_state_trans llc_await_state_trans_12b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_13[] = {
-=======
 static const llc_conn_action_t llc_await_actions_13[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -4146,20 +3182,12 @@ static struct llc_conn_state_trans llc_await_state_trans_13 = {
 };
 
 /* State transitions for LLC_CONN_EV_P_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_await_ev_qfyrs_14[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_await_ev_qfyrs_14[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_actions_14[] = {
-=======
 static const llc_conn_action_t llc_await_actions_14[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = llc_conn_ac_inc_retry_cnt_by_1,
@@ -4227,21 +3255,13 @@ static struct llc_conn_state_trans *llc_await_state_transitions[] = {
 
 /* LLC_CONN_STATE_AWAIT_BUSY transitions */
 /* State transitions for LLC_CONN_EV_DATA_CONN_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_await_busy_ev_qfyrs_1_0[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_await_busy_ev_qfyrs_1_0[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_set_status_refuse,
 	[1] = NULL,
 };
 
 /* just one member, NULL, .bss zeroes it */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_1_0[1];
-=======
 static const llc_conn_action_t llc_await_busy_actions_1_0[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct llc_conn_state_trans llc_await_busy_state_trans_1_0 = {
 	.ev	       = llc_conn_ev_data_req,
@@ -4251,20 +3271,12 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_1_0 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_CLEARED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_await_busy_ev_qfyrs_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_await_busy_ev_qfyrs_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_data_flag_eq_1,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_1[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rej_xxx_x_set_0,
 	[1] = llc_conn_ac_start_rej_timer,
 	[2] = NULL,
@@ -4278,20 +3290,12 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_CLEARED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_await_busy_ev_qfyrs_2[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_await_busy_ev_qfyrs_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_data_flag_eq_0,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_2[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_xxx_x_set_0,
 	[1] = NULL,
 };
@@ -4304,20 +3308,12 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_2 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_CLEARED event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_await_busy_ev_qfyrs_3[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_await_busy_ev_qfyrs_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_data_flag_eq_2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_3[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_xxx_x_set_0,
 	[1] = NULL,
 };
@@ -4330,11 +3326,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_3 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_1_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_4[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_opt_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -4353,11 +3345,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_4 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_5a[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_5a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_opt_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -4373,11 +3361,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_5a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_5b[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_5b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_opt_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -4393,11 +3377,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_5b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_1_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_6[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_6[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -4413,11 +3393,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_6 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_7[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_opt_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_inc_vr_by_1,
 	[2] = llc_conn_ac_data_ind,
@@ -4438,11 +3414,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_7 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_8a[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_8a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_opt_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_inc_vr_by_1,
 	[2] = llc_conn_ac_data_ind,
@@ -4460,11 +3432,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_8a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_8b[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_8b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_opt_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_inc_vr_by_1,
 	[2] = llc_conn_ac_data_ind,
@@ -4482,11 +3450,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_8b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_9[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_9[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_rsp_f_set_1,
 	[1] = llc_conn_ac_inc_vr_by_1,
 	[2] = llc_conn_ac_data_ind,
@@ -4504,11 +3468,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_9 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_10a[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_10a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_stop_p_timer,
@@ -4525,11 +3485,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_10a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_10b[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_10b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_stop_p_timer,
@@ -4546,11 +3502,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_10b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_11a[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_11a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -4565,11 +3517,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_11a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_11b[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_11b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -4584,11 +3532,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_11b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_11c[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_11c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -4603,11 +3547,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_11c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_11d[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_11d[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -4622,11 +3562,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_11d = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_12a[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_12a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -4642,11 +3578,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_12a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_12b[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_12b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -4662,11 +3594,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_12b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_13[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_13[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_stop_p_timer,
@@ -4682,11 +3610,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_13 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_14a[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_14a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -4701,11 +3625,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_14a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_14b[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_14b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -4720,11 +3640,7 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_14b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_15[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_15[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -4740,20 +3656,12 @@ static struct llc_conn_state_trans llc_await_busy_state_trans_15 = {
 };
 
 /* State transitions for LLC_CONN_EV_P_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_await_busy_ev_qfyrs_16[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_await_busy_ev_qfyrs_16[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_busy_actions_16[] = {
-=======
 static const llc_conn_action_t llc_await_busy_actions_16[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_cmd_p_set_1,
 	[1] = llc_conn_ac_start_p_timer,
 	[2] = llc_conn_ac_inc_retry_cnt_by_1,
@@ -4823,21 +3731,13 @@ static struct llc_conn_state_trans *llc_await_busy_state_transitions[] = {
 
 /* ----------------- LLC_CONN_STATE_AWAIT_REJ transitions --------------- */
 /* State transitions for LLC_CONN_EV_DATA_CONN_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_await_reject_ev_qfyrs_1_0[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_await_reject_ev_qfyrs_1_0[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_set_status_refuse,
 	[1] = NULL,
 };
 
 /* just one member, NULL, .bss zeroes it */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_reject_actions_1_0[1];
-=======
 static const llc_conn_action_t llc_await_reject_actions_1_0[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct llc_conn_state_trans llc_await_reject_state_trans_1_0 = {
 	.ev	       = llc_conn_ev_data_req,
@@ -4847,11 +3747,7 @@ static struct llc_conn_state_trans llc_await_reject_state_trans_1_0 = {
 };
 
 /* State transitions for LLC_CONN_EV_LOCAL_BUSY_DETECTED event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_1[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rnr_xxx_x_set_0,
 	[1] = llc_conn_ac_set_data_flag_2,
 	[2] = NULL
@@ -4865,11 +3761,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_2a[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_2a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = NULL
@@ -4883,11 +3775,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_2a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_2b[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_2b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = NULL
@@ -4901,11 +3789,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_2b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_1_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_3[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -4920,11 +3804,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_3 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_4[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_stop_p_timer,
@@ -4944,11 +3824,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_4 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_5a[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_5a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_send_rr_xxx_x_set_0,
@@ -4966,11 +3842,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_5a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_5b[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_5b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_send_rr_xxx_x_set_0,
@@ -4988,11 +3860,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_5b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_6[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_6[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_inc_vr_by_1,
 	[1] = llc_conn_ac_data_ind,
 	[2] = llc_conn_ac_send_rr_rsp_f_set_1,
@@ -5010,11 +3878,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_6 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_7a[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_7a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_stop_p_timer,
@@ -5031,11 +3895,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_7a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_7b[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_7b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_stop_p_timer,
@@ -5052,11 +3912,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_7b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_I_RSP_Fbit_SET_1_UNEXPD_Ns event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_7c[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_7c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_stop_p_timer,
@@ -5073,11 +3929,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_7c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_8a[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_8a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -5092,11 +3944,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_8a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_8b[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_8b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -5111,11 +3959,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_8b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_8c[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_8c[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -5130,11 +3974,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_8c = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_8d[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_8d[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_clear_remote_busy,
@@ -5149,11 +3989,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_8d = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RR_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_9a[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_9a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -5169,11 +4005,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_9a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_REJ_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_9b[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_9b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -5189,11 +4021,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_9b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_RSP_Fbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_10[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_10[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_stop_p_timer,
@@ -5209,11 +4037,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_10 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_CMD_Pbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_11a[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_11a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -5228,11 +4052,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_11a = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_RSP_Fbit_SET_0 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_11b[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_11b[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_upd_nr_received,
 	[1] = llc_conn_ac_upd_vs,
 	[2] = llc_conn_ac_set_remote_busy,
@@ -5247,11 +4067,7 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_11b = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_RNR_CMD_Pbit_SET_1 event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_12[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_12[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rr_rsp_f_set_1,
 	[1] = llc_conn_ac_upd_nr_received,
 	[2] = llc_conn_ac_upd_vs,
@@ -5267,20 +4083,12 @@ static struct llc_conn_state_trans llc_await_rejct_state_trans_12 = {
 };
 
 /* State transitions for LLC_CONN_EV_P_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_await_rejct_ev_qfyrs_13[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_await_rejct_ev_qfyrs_13[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_await_rejct_actions_13[] = {
-=======
 static const llc_conn_action_t llc_await_rejct_actions_13[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_rej_cmd_p_set_1,
 	[1] = llc_conn_ac_stop_p_timer,
 	[2] = llc_conn_ac_inc_retry_cnt_by_1,
@@ -5349,21 +4157,13 @@ static struct llc_conn_state_trans *llc_await_rejct_state_transitions[] = {
 /* LLC_CONN_STATE_D_CONN transitions */
 /* State transitions for LLC_CONN_EV_RX_SABME_CMD_Pbit_SET_X event,
  * cause_flag = 1 */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_cause_flag_eq_1,
 	[1] = llc_conn_ev_qlfy_set_status_conflict,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_d_conn_actions_1[] = {
-=======
 static const llc_conn_action_t llc_d_conn_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_dm_rsp_f_set_p,
 	[1] = llc_conn_ac_stop_ack_timer,
 	[2] = llc_conn_ac_disc_confirm,
@@ -5381,21 +4181,13 @@ static struct llc_conn_state_trans llc_d_conn_state_trans_1 = {
 /* State transitions for LLC_CONN_EV_RX_SABME_CMD_Pbit_SET_X event,
  * cause_flag = 0
  */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_1_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_1_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_cause_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_set_status_conflict,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_d_conn_actions_1_1[] = {
-=======
 static const llc_conn_action_t llc_d_conn_actions_1_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_dm_rsp_f_set_p,
 	[1] = llc_conn_ac_stop_ack_timer,
 	[2] = llc_conn_disc,
@@ -5412,22 +4204,14 @@ static struct llc_conn_state_trans llc_d_conn_state_trans_1_1 = {
 /* State transitions for LLC_CONN_EV_RX_UA_RSP_Fbit_SET_X event,
  * cause_flag = 1
  */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_2[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_f,
 	[1] = llc_conn_ev_qlfy_cause_flag_eq_1,
 	[2] = llc_conn_ev_qlfy_set_status_disc,
 	[3] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_d_conn_actions_2[] = {
-=======
 static const llc_conn_action_t llc_d_conn_actions_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_stop_ack_timer,
 	[1] = llc_conn_ac_disc_confirm,
 	[2] = llc_conn_disc,
@@ -5444,22 +4228,14 @@ static struct llc_conn_state_trans llc_d_conn_state_trans_2 = {
 /* State transitions for LLC_CONN_EV_RX_UA_RSP_Fbit_SET_X event,
  * cause_flag = 0
  */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_2_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_2_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_f,
 	[1] = llc_conn_ev_qlfy_cause_flag_eq_0,
 	[2] = llc_conn_ev_qlfy_set_status_disc,
 	[3] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_d_conn_actions_2_1[] = {
-=======
 static const llc_conn_action_t llc_d_conn_actions_2_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_stop_ack_timer,
 	[1] = llc_conn_disc,
 	[2] = NULL,
@@ -5473,11 +4249,7 @@ static struct llc_conn_state_trans llc_d_conn_state_trans_2_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_DISC_CMD_Pbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_d_conn_actions_3[] = {
-=======
 static const llc_conn_action_t llc_d_conn_actions_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_ua_rsp_f_set_p,
 	[1] = NULL,
 };
@@ -5492,21 +4264,13 @@ static struct llc_conn_state_trans llc_d_conn_state_trans_3 = {
 /* State transitions for LLC_CONN_EV_RX_DM_RSP_Fbit_SET_X event,
  * cause_flag = 1
  */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_4[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_cause_flag_eq_1,
 	[1] = llc_conn_ev_qlfy_set_status_disc,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_d_conn_actions_4[] = {
-=======
 static const llc_conn_action_t llc_d_conn_actions_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_stop_ack_timer,
 	[1] = llc_conn_ac_disc_confirm,
 	[2] = llc_conn_disc,
@@ -5523,21 +4287,13 @@ static struct llc_conn_state_trans llc_d_conn_state_trans_4 = {
 /* State transitions for LLC_CONN_EV_RX_DM_RSP_Fbit_SET_X event,
  * cause_flag = 0
  */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_4_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_4_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_cause_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_set_status_disc,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_d_conn_actions_4_1[] = {
-=======
 static const llc_conn_action_t llc_d_conn_actions_4_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_stop_ack_timer,
 	[1] = llc_conn_disc,
 	[2] = NULL,
@@ -5554,21 +4310,13 @@ static struct llc_conn_state_trans llc_d_conn_state_trans_4_1 = {
  * State transition for
  * LLC_CONN_EV_DATA_CONN_REQ event
  */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_5[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_5[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_set_status_refuse,
 	[1] = NULL,
 };
 
 /* just one member, NULL, .bss zeroes it */
-<<<<<<< HEAD
-static llc_conn_action_t llc_d_conn_actions_5[1];
-=======
 static const llc_conn_action_t llc_d_conn_actions_5[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct llc_conn_state_trans llc_d_conn_state_trans_5 = {
 	.ev	       = llc_conn_ev_data_req,
@@ -5578,20 +4326,12 @@ static struct llc_conn_state_trans llc_d_conn_state_trans_5 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_6[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_6[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_d_conn_actions_6[] = {
-=======
 static const llc_conn_action_t llc_d_conn_actions_6[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_disc_cmd_p_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_inc_retry_cnt_by_1,
@@ -5606,22 +4346,14 @@ static struct llc_conn_state_trans llc_d_conn_state_trans_6 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event, cause_flag = 1 */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_7[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_gte_n2,
 	[1] = llc_conn_ev_qlfy_cause_flag_eq_1,
 	[2] = llc_conn_ev_qlfy_set_status_failed,
 	[3] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_d_conn_actions_7[] = {
-=======
 static const llc_conn_action_t llc_d_conn_actions_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_disc_confirm,
 	[1] = llc_conn_disc,
 	[2] = NULL,
@@ -5635,22 +4367,14 @@ static struct llc_conn_state_trans llc_d_conn_state_trans_7 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event, cause_flag = 0 */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_8[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_d_conn_ev_qfyrs_8[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_gte_n2,
 	[1] = llc_conn_ev_qlfy_cause_flag_eq_0,
 	[2] = llc_conn_ev_qlfy_set_status_failed,
 	[3] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_d_conn_actions_8[] = {
-=======
 static const llc_conn_action_t llc_d_conn_actions_8[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_disc,
 	[1] = NULL,
 };
@@ -5687,11 +4411,7 @@ static struct llc_conn_state_trans *llc_d_conn_state_transitions[] = {
 
 /* LLC_CONN_STATE_RESET transitions */
 /* State transitions for LLC_CONN_EV_RX_SABME_CMD_Pbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_rst_actions_1[] = {
-=======
 static const llc_conn_action_t llc_rst_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_0,
 	[1] = llc_conn_ac_set_vr_0,
 	[2] = llc_conn_ac_set_s_flag_1,
@@ -5709,22 +4429,14 @@ static struct llc_conn_state_trans llc_rst_state_trans_1 = {
 /* State transitions for LLC_CONN_EV_RX_UA_RSP_Fbit_SET_X event,
  * cause_flag = 1
  */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_2[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_f,
 	[1] = llc_conn_ev_qlfy_cause_flag_eq_1,
 	[2] = llc_conn_ev_qlfy_set_status_conn,
 	[3] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_rst_actions_2[] = {
-=======
 static const llc_conn_action_t llc_rst_actions_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_stop_ack_timer,
 	[1] = llc_conn_ac_set_vs_0,
 	[2] = llc_conn_ac_set_vr_0,
@@ -5745,22 +4457,14 @@ static struct llc_conn_state_trans llc_rst_state_trans_2 = {
 /* State transitions for LLC_CONN_EV_RX_UA_RSP_Fbit_SET_X event,
  * cause_flag = 0
  */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_2_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_2_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_p_flag_eq_f,
 	[1] = llc_conn_ev_qlfy_cause_flag_eq_0,
 	[2] = llc_conn_ev_qlfy_set_status_rst_done,
 	[3] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_rst_actions_2_1[] = {
-=======
 static const llc_conn_action_t llc_rst_actions_2_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_stop_ack_timer,
 	[1] = llc_conn_ac_set_vs_0,
 	[2] = llc_conn_ac_set_vr_0,
@@ -5779,21 +4483,13 @@ static struct llc_conn_state_trans llc_rst_state_trans_2_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_3[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_s_flag_eq_1,
 	[1] = llc_conn_ev_qlfy_set_status_rst_done,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_rst_actions_3[] = {
-=======
 static const llc_conn_action_t llc_rst_actions_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_p_flag_0,
 	[1] = llc_conn_ac_set_remote_busy_0,
 	[2] = NULL,
@@ -5809,20 +4505,12 @@ static struct llc_conn_state_trans llc_rst_state_trans_3 = {
 /* State transitions for LLC_CONN_EV_RX_DISC_CMD_Pbit_SET_X event,
  * cause_flag = 1
  */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_4[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_cause_flag_eq_1,
 	[1] = llc_conn_ev_qlfy_set_status_disc,
 	[2] = NULL,
 };
-<<<<<<< HEAD
-static llc_conn_action_t llc_rst_actions_4[] = {
-=======
 static const llc_conn_action_t llc_rst_actions_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_dm_rsp_f_set_p,
 	[1] = llc_conn_ac_disc_ind,
 	[2] = llc_conn_ac_stop_ack_timer,
@@ -5840,21 +4528,13 @@ static struct llc_conn_state_trans llc_rst_state_trans_4 = {
 /* State transitions for LLC_CONN_EV_RX_DISC_CMD_Pbit_SET_X event,
  * cause_flag = 0
  */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_4_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_4_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_cause_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_set_status_refuse,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_rst_actions_4_1[] = {
-=======
 static const llc_conn_action_t llc_rst_actions_4_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_dm_rsp_f_set_p,
 	[1] = llc_conn_ac_stop_ack_timer,
 	[2] = llc_conn_disc,
@@ -5871,21 +4551,13 @@ static struct llc_conn_state_trans llc_rst_state_trans_4_1 = {
 /* State transitions for LLC_CONN_EV_RX_DM_RSP_Fbit_SET_X event,
  * cause_flag = 1
  */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_5[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_5[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_cause_flag_eq_1,
 	[1] = llc_conn_ev_qlfy_set_status_disc,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_rst_actions_5[] = {
-=======
 static const llc_conn_action_t llc_rst_actions_5[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_disc_ind,
 	[1] = llc_conn_ac_stop_ack_timer,
 	[2] = llc_conn_disc,
@@ -5902,21 +4574,13 @@ static struct llc_conn_state_trans llc_rst_state_trans_5 = {
 /* State transitions for LLC_CONN_EV_RX_DM_RSP_Fbit_SET_X event,
  * cause_flag = 0
  */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_5_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_5_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_cause_flag_eq_0,
 	[1] = llc_conn_ev_qlfy_set_status_refuse,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_rst_actions_5_1[] = {
-=======
 static const llc_conn_action_t llc_rst_actions_5_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_stop_ack_timer,
 	[1] = llc_conn_disc,
 	[2] = NULL,
@@ -5930,21 +4594,13 @@ static struct llc_conn_state_trans llc_rst_state_trans_5_1 = {
 };
 
 /* State transitions for DATA_CONN_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_6[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_6[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_set_status_refuse,
 	[1] = NULL,
 };
 
 /* just one member, NULL, .bss zeroes it */
-<<<<<<< HEAD
-static llc_conn_action_t llc_rst_actions_6[1];
-=======
 static const llc_conn_action_t llc_rst_actions_6[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct llc_conn_state_trans llc_rst_state_trans_6 = {
 	.ev	       = llc_conn_ev_data_req,
@@ -5954,21 +4610,13 @@ static struct llc_conn_state_trans llc_rst_state_trans_6 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_7[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[1] = llc_conn_ev_qlfy_s_flag_eq_0,
 	[2] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_rst_actions_7[] = {
-=======
 static const llc_conn_action_t llc_rst_actions_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_sabme_cmd_p_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_inc_retry_cnt_by_1,
@@ -5983,22 +4631,14 @@ static struct llc_conn_state_trans llc_rst_state_trans_7 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_8[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_8[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_gte_n2,
 	[1] = llc_conn_ev_qlfy_s_flag_eq_0,
 	[2] = llc_conn_ev_qlfy_cause_flag_eq_1,
 	[3] = llc_conn_ev_qlfy_set_status_failed,
 	[4] = NULL,
 };
-<<<<<<< HEAD
-static llc_conn_action_t llc_rst_actions_8[] = {
-=======
 static const llc_conn_action_t llc_rst_actions_8[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_disc_ind,
 	[1] = llc_conn_disc,
 	[2] = NULL,
@@ -6012,22 +4652,14 @@ static struct llc_conn_state_trans llc_rst_state_trans_8 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_8_1[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_rst_ev_qfyrs_8_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_gte_n2,
 	[1] = llc_conn_ev_qlfy_s_flag_eq_0,
 	[2] = llc_conn_ev_qlfy_cause_flag_eq_0,
 	[3] = llc_conn_ev_qlfy_set_status_failed,
 	[4] = NULL,
 };
-<<<<<<< HEAD
-static llc_conn_action_t llc_rst_actions_8_1[] = {
-=======
 static const llc_conn_action_t llc_rst_actions_8_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_disc_ind,
 	[1] = llc_conn_disc,
 	[2] = NULL,
@@ -6066,11 +4698,7 @@ static struct llc_conn_state_trans *llc_rst_state_transitions[] = {
 
 /* LLC_CONN_STATE_ERROR transitions */
 /* State transitions for LLC_CONN_EV_RX_SABME_CMD_Pbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_error_actions_1[] = {
-=======
 static const llc_conn_action_t llc_error_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_set_vs_0,
 	[1] = llc_conn_ac_set_vr_0,
 	[2] = llc_conn_ac_send_ua_rsp_f_set_p,
@@ -6090,11 +4718,7 @@ static struct llc_conn_state_trans llc_error_state_trans_1 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_DISC_CMD_Pbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_error_actions_2[] = {
-=======
 static const llc_conn_action_t llc_error_actions_2[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_ua_rsp_f_set_p,
 	[1] = llc_conn_ac_disc_ind,
 	[2] = llc_conn_ac_stop_ack_timer,
@@ -6110,11 +4734,7 @@ static struct llc_conn_state_trans llc_error_state_trans_2 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_DM_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_error_actions_3[] = {
-=======
 static const llc_conn_action_t llc_error_actions_3[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_disc_ind,
 	[1] = llc_conn_ac_stop_ack_timer,
 	[2] = llc_conn_disc,
@@ -6129,11 +4749,7 @@ static struct llc_conn_state_trans llc_error_state_trans_3 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_FRMR_RSP_Fbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_error_actions_4[] = {
-=======
 static const llc_conn_action_t llc_error_actions_4[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_sabme_cmd_p_set_x,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_set_retry_cnt_0,
@@ -6149,11 +4765,7 @@ static struct llc_conn_state_trans llc_error_state_trans_4 = {
 };
 
 /* State transitions for LLC_CONN_EV_RX_XXX_CMD_Pbit_SET_X event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_error_actions_5[] = {
-=======
 static const llc_conn_action_t llc_error_actions_5[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_resend_frmr_rsp_f_set_p,
 	[1] = NULL,
 };
@@ -6174,20 +4786,12 @@ static struct llc_conn_state_trans llc_error_state_trans_6 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_error_ev_qfyrs_7[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_error_ev_qfyrs_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_lt_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_error_actions_7[] = {
-=======
 static const llc_conn_action_t llc_error_actions_7[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_resend_frmr_rsp_f_set_0,
 	[1] = llc_conn_ac_start_ack_timer,
 	[2] = llc_conn_ac_inc_retry_cnt_by_1,
@@ -6202,20 +4806,12 @@ static struct llc_conn_state_trans llc_error_state_trans_7 = {
 };
 
 /* State transitions for LLC_CONN_EV_ACK_TMR_EXP event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_error_ev_qfyrs_8[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_error_ev_qfyrs_8[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_retry_cnt_gte_n2,
 	[1] = NULL,
 };
 
-<<<<<<< HEAD
-static llc_conn_action_t llc_error_actions_8[] = {
-=======
 static const llc_conn_action_t llc_error_actions_8[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_send_sabme_cmd_p_set_x,
 	[1] = llc_conn_ac_set_s_flag_0,
 	[2] = llc_conn_ac_start_ack_timer,
@@ -6232,21 +4828,13 @@ static struct llc_conn_state_trans llc_error_state_trans_8 = {
 };
 
 /* State transitions for LLC_CONN_EV_DATA_CONN_REQ event */
-<<<<<<< HEAD
-static llc_conn_ev_qfyr_t llc_error_ev_qfyrs_9[] = {
-=======
 static const llc_conn_ev_qfyr_t llc_error_ev_qfyrs_9[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ev_qlfy_set_status_refuse,
 	[1] = NULL,
 };
 
 /* just one member, NULL, .bss zeroes it */
-<<<<<<< HEAD
-static llc_conn_action_t llc_error_actions_9[1];
-=======
 static const llc_conn_action_t llc_error_actions_9[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct llc_conn_state_trans llc_error_state_trans_9 = {
 	.ev	       = llc_conn_ev_data_req,
@@ -6278,11 +4866,7 @@ static struct llc_conn_state_trans *llc_error_state_transitions[] = {
 
 /* LLC_CONN_STATE_TEMP transitions */
 /* State transitions for LLC_CONN_EV_DISC_REQ event */
-<<<<<<< HEAD
-static llc_conn_action_t llc_temp_actions_1[] = {
-=======
 static const llc_conn_action_t llc_temp_actions_1[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = llc_conn_ac_stop_all_timers,
 	[1] = llc_conn_ac_send_disc_cmd_p_set_x,
 	[2] = llc_conn_disc,

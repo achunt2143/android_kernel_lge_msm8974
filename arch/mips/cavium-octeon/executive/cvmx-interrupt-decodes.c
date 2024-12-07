@@ -46,13 +46,9 @@
 
 
 /**
-<<<<<<< HEAD
- * __cvmx_interrupt_gmxx_rxx_int_en_enable enables all interrupt bits in cvmx_gmxx_rxx_int_en_t
-=======
  * __cvmx_interrupt_gmxx_rxx_int_en_enable - enable all interrupt bits in cvmx_gmxx_rxx_int_en_t
  * @index: interrupt register offset
  * @block: interrupt register block_id
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void __cvmx_interrupt_gmxx_rxx_int_en_enable(int index, int block)
 {
@@ -74,11 +70,7 @@ void __cvmx_interrupt_gmxx_rxx_int_en_enable(int index, int block)
 		gmx_rx_int_en.s.pause_drp = 1;
 		/* Skipping gmx_rx_int_en.s.reserved_16_18 */
 		/*gmx_rx_int_en.s.ifgerr = 1; */
-<<<<<<< HEAD
-		/*gmx_rx_int_en.s.coldet = 1; // Collsion detect */
-=======
 		/*gmx_rx_int_en.s.coldet = 1; // Collision detect */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*gmx_rx_int_en.s.falerr = 1; // False carrier error or extend error after slottime */
 		/*gmx_rx_int_en.s.rsverr = 1; // RGMII reserved opcodes */
 		/*gmx_rx_int_en.s.pcterr = 1; // Bad Preamble / Protocol */
@@ -99,11 +91,7 @@ void __cvmx_interrupt_gmxx_rxx_int_en_enable(int index, int block)
 		/*gmx_rx_int_en.s.phy_spd = 1; */
 		/*gmx_rx_int_en.s.phy_link = 1; */
 		/*gmx_rx_int_en.s.ifgerr = 1; */
-<<<<<<< HEAD
-		/*gmx_rx_int_en.s.coldet = 1; // Collsion detect */
-=======
 		/*gmx_rx_int_en.s.coldet = 1; // Collision detect */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*gmx_rx_int_en.s.falerr = 1; // False carrier error or extend error after slottime */
 		/*gmx_rx_int_en.s.rsverr = 1; // RGMII reserved opcodes */
 		/*gmx_rx_int_en.s.pcterr = 1; // Bad Preamble / Protocol */
@@ -126,11 +114,7 @@ void __cvmx_interrupt_gmxx_rxx_int_en_enable(int index, int block)
 		/*gmx_rx_int_en.s.phy_spd = 1; */
 		/*gmx_rx_int_en.s.phy_link = 1; */
 		/*gmx_rx_int_en.s.ifgerr = 1; */
-<<<<<<< HEAD
-		/*gmx_rx_int_en.s.coldet = 1; // Collsion detect */
-=======
 		/*gmx_rx_int_en.s.coldet = 1; // Collision detect */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*gmx_rx_int_en.s.falerr = 1; // False carrier error or extend error after slottime */
 		/*gmx_rx_int_en.s.rsverr = 1; // RGMII reserved opcodes */
 		/*gmx_rx_int_en.s.pcterr = 1; // Bad Preamble / Protocol */
@@ -152,11 +136,7 @@ void __cvmx_interrupt_gmxx_rxx_int_en_enable(int index, int block)
 		/*gmx_rx_int_en.s.phy_spd = 1; */
 		/*gmx_rx_int_en.s.phy_link = 1; */
 		/*gmx_rx_int_en.s.ifgerr = 1; */
-<<<<<<< HEAD
-		/*gmx_rx_int_en.s.coldet = 1; // Collsion detect */
-=======
 		/*gmx_rx_int_en.s.coldet = 1; // Collision detect */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*gmx_rx_int_en.s.falerr = 1; // False carrier error or extend error after slottime */
 		/*gmx_rx_int_en.s.rsverr = 1; // RGMII reserved opcodes */
 		/*gmx_rx_int_en.s.pcterr = 1; // Bad Preamble / Protocol */
@@ -178,11 +158,7 @@ void __cvmx_interrupt_gmxx_rxx_int_en_enable(int index, int block)
 		/*gmx_rx_int_en.s.phy_spd = 1; */
 		/*gmx_rx_int_en.s.phy_link = 1; */
 		/*gmx_rx_int_en.s.ifgerr = 1; */
-<<<<<<< HEAD
-		/*gmx_rx_int_en.s.coldet = 1; // Collsion detect */
-=======
 		/*gmx_rx_int_en.s.coldet = 1; // Collision detect */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*gmx_rx_int_en.s.falerr = 1; // False carrier error or extend error after slottime */
 		/*gmx_rx_int_en.s.rsverr = 1; // RGMII reserved opcodes */
 		/*gmx_rx_int_en.s.pcterr = 1; // Bad Preamble / Protocol */
@@ -205,11 +181,7 @@ void __cvmx_interrupt_gmxx_rxx_int_en_enable(int index, int block)
 		/*gmx_rx_int_en.s.phy_spd = 1; */
 		/*gmx_rx_int_en.s.phy_link = 1; */
 		/*gmx_rx_int_en.s.ifgerr = 1; */
-<<<<<<< HEAD
-		/*gmx_rx_int_en.s.coldet = 1; // Collsion detect */
-=======
 		/*gmx_rx_int_en.s.coldet = 1; // Collision detect */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*gmx_rx_int_en.s.falerr = 1; // False carrier error or extend error after slottime */
 		/*gmx_rx_int_en.s.rsverr = 1; // RGMII reserved opcodes */
 		/*gmx_rx_int_en.s.pcterr = 1; // Bad Preamble / Protocol */
@@ -239,11 +211,7 @@ void __cvmx_interrupt_gmxx_rxx_int_en_enable(int index, int block)
 		gmx_rx_int_en.s.pause_drp = 1;
 		/* Skipping gmx_rx_int_en.s.reserved_16_18 */
 		/*gmx_rx_int_en.s.ifgerr = 1; */
-<<<<<<< HEAD
-		/*gmx_rx_int_en.s.coldet = 1; // Collsion detect */
-=======
 		/*gmx_rx_int_en.s.coldet = 1; // Collision detect */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*gmx_rx_int_en.s.falerr = 1; // False carrier error or extend error after slottime */
 		/*gmx_rx_int_en.s.rsverr = 1; // RGMII reserved opcodes */
 		/*gmx_rx_int_en.s.pcterr = 1; // Bad Preamble / Protocol */
@@ -261,13 +229,9 @@ void __cvmx_interrupt_gmxx_rxx_int_en_enable(int index, int block)
 	cvmx_write_csr(CVMX_GMXX_RXX_INT_EN(index, block), gmx_rx_int_en.u64);
 }
 /**
-<<<<<<< HEAD
- * __cvmx_interrupt_pcsx_intx_en_reg_enable enables all interrupt bits in cvmx_pcsx_intx_en_reg_t
-=======
  * __cvmx_interrupt_pcsx_intx_en_reg_enable - enable all interrupt bits in cvmx_pcsx_intx_en_reg_t
  * @index: interrupt register offset
  * @block: interrupt register block_id
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void __cvmx_interrupt_pcsx_intx_en_reg_enable(int index, int block)
 {
@@ -308,12 +272,8 @@ void __cvmx_interrupt_pcsx_intx_en_reg_enable(int index, int block)
 	cvmx_write_csr(CVMX_PCSX_INTX_EN_REG(index, block), pcs_int_en_reg.u64);
 }
 /**
-<<<<<<< HEAD
- * __cvmx_interrupt_pcsxx_int_en_reg_enable enables all interrupt bits in cvmx_pcsxx_int_en_reg_t
-=======
  * __cvmx_interrupt_pcsxx_int_en_reg_enable - enable all interrupt bits in cvmx_pcsxx_int_en_reg_t
  * @index: interrupt register block_id
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void __cvmx_interrupt_pcsxx_int_en_reg_enable(int index)
 {
@@ -343,12 +303,8 @@ void __cvmx_interrupt_pcsxx_int_en_reg_enable(int index)
 }
 
 /**
-<<<<<<< HEAD
- * __cvmx_interrupt_spxx_int_msk_enable enables all interrupt bits in cvmx_spxx_int_msk_t
-=======
  * __cvmx_interrupt_spxx_int_msk_enable - enable all interrupt bits in cvmx_spxx_int_msk_t
  * @index: interrupt register block_id
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void __cvmx_interrupt_spxx_int_msk_enable(int index)
 {
@@ -387,12 +343,8 @@ void __cvmx_interrupt_spxx_int_msk_enable(int index)
 	cvmx_write_csr(CVMX_SPXX_INT_MSK(index), spx_int_msk.u64);
 }
 /**
-<<<<<<< HEAD
- * __cvmx_interrupt_stxx_int_msk_enable enables all interrupt bits in cvmx_stxx_int_msk_t
-=======
  * __cvmx_interrupt_stxx_int_msk_enable - enable all interrupt bits in cvmx_stxx_int_msk_t
  * @index: interrupt register block_id
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void __cvmx_interrupt_stxx_int_msk_enable(int index)
 {

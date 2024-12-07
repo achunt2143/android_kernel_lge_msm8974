@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-config VIDEO_SAA7146
-	tristate
-	depends on I2C && PCI
-
-config VIDEO_SAA7146_VV
-	tristate
-	depends on VIDEO_V4L2
-	select VIDEOBUF_DMA_SG
-	select VIDEO_SAA7146
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 # Used by common drivers, when they need to ask questions
 config MEDIA_COMMON_OPTIONS
@@ -40,4 +29,3 @@ source "drivers/media/common/saa7146/Kconfig"
 source "drivers/media/common/siano/Kconfig"
 source "drivers/media/common/v4l2-tpg/Kconfig"
 source "drivers/media/common/videobuf2/Kconfig"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

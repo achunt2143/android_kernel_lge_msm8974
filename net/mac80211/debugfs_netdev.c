@@ -1,27 +1,14 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2006	Jiri Benc <jbenc@suse.cz>
- * Copyright 2007	Johannes Berg <johannes@sipsolutions.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2006	Jiri Benc <jbenc@suse.cz>
  * Copyright 2007	Johannes Berg <johannes@sipsolutions.net>
  * Copyright (C) 2020-2023 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/device.h>
 #include <linux/if.h>
-<<<<<<< HEAD
-=======
 #include <linux/if_ether.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/netdevice.h>
 #include <linux/rtnetlink.h>
@@ -35,70 +22,6 @@
 #include "debugfs_netdev.h"
 #include "driver-ops.h"
 
-<<<<<<< HEAD
-static ssize_t ieee80211_if_read(
-	struct ieee80211_sub_if_data *sdata,
-	char __user *userbuf,
-	size_t count, loff_t *ppos,
-	ssize_t (*format)(const struct ieee80211_sub_if_data *, char *, int))
-{
-	char buf[70];
-	ssize_t ret = -EINVAL;
-
-	read_lock(&dev_base_lock);
-	ret = (*format)(sdata, buf, sizeof(buf));
-	read_unlock(&dev_base_lock);
-
-	if (ret >= 0)
-		ret = simple_read_from_buffer(userbuf, count, ppos, buf, ret);
-
-	return ret;
-}
-
-static ssize_t ieee80211_if_write(
-	struct ieee80211_sub_if_data *sdata,
-	const char __user *userbuf,
-	size_t count, loff_t *ppos,
-	ssize_t (*write)(struct ieee80211_sub_if_data *, const char *, int))
-{
-	char buf[64];
-	ssize_t ret;
-
-	if (count >= sizeof(buf))
-		return -E2BIG;
-
-	if (copy_from_user(buf, userbuf, count))
-		return -EFAULT;
-	buf[count] = '\0';
-
-	ret = -ENODEV;
-	rtnl_lock();
-	ret = (*write)(sdata, buf, count);
-	rtnl_unlock();
-
-	return ret;
-}
-
-#define IEEE80211_IF_FMT(name, field, format_string)			\
-static ssize_t ieee80211_if_fmt_##name(					\
-	const struct ieee80211_sub_if_data *sdata, char *buf,		\
-	int buflen)							\
-{									\
-	return scnprintf(buf, buflen, format_string, sdata->field);	\
-}
-#define IEEE80211_IF_FMT_DEC(name, field)				\
-		IEEE80211_IF_FMT(name, field, "%d\n")
-#define IEEE80211_IF_FMT_HEX(name, field)				\
-		IEEE80211_IF_FMT(name, field, "%#x\n")
-#define IEEE80211_IF_FMT_LHEX(name, field)				\
-		IEEE80211_IF_FMT(name, field, "%#lx\n")
-#define IEEE80211_IF_FMT_SIZE(name, field)				\
-		IEEE80211_IF_FMT(name, field, "%zd\n")
-
-#define IEEE80211_IF_FMT_HEXARRAY(name, field)				\
-static ssize_t ieee80211_if_fmt_##name(					\
-	const struct ieee80211_sub_if_data *sdata,			\
-=======
 struct ieee80211_if_read_sdata_data {
 	ssize_t (*format)(const struct ieee80211_sub_if_data *, char *, int);
 	struct ieee80211_sub_if_data *sdata;
@@ -260,62 +183,18 @@ static ssize_t ieee80211_if_fmt_##name(					\
 #define IEEE80211_IF_FMT_HEXARRAY(name, type, field)			\
 static ssize_t ieee80211_if_fmt_##name(					\
 	const type *data,						\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *buf, int buflen)						\
 {									\
 	char *p = buf;							\
 	int i;								\
-<<<<<<< HEAD
-	for (i = 0; i < sizeof(sdata->field); i++) {			\
-		p += scnprintf(p, buflen + buf - p, "%.2x ",		\
-				 sdata->field[i]);			\
-=======
 	for (i = 0; i < sizeof(data->field); i++) {			\
 		p += scnprintf(p, buflen + buf - p, "%.2x ",		\
 				 data->field[i]);			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}								\
 	p += scnprintf(p, buflen + buf - p, "\n");			\
 	return p - buf;							\
 }
 
-<<<<<<< HEAD
-#define IEEE80211_IF_FMT_ATOMIC(name, field)				\
-static ssize_t ieee80211_if_fmt_##name(					\
-	const struct ieee80211_sub_if_data *sdata,			\
-	char *buf, int buflen)						\
-{									\
-	return scnprintf(buf, buflen, "%d\n", atomic_read(&sdata->field));\
-}
-
-#define IEEE80211_IF_FMT_MAC(name, field)				\
-static ssize_t ieee80211_if_fmt_##name(					\
-	const struct ieee80211_sub_if_data *sdata, char *buf,		\
-	int buflen)							\
-{									\
-	return scnprintf(buf, buflen, "%pM\n", sdata->field);		\
-}
-
-#define IEEE80211_IF_FMT_DEC_DIV_16(name, field)			\
-static ssize_t ieee80211_if_fmt_##name(					\
-	const struct ieee80211_sub_if_data *sdata,			\
-	char *buf, int buflen)						\
-{									\
-	return scnprintf(buf, buflen, "%d\n", sdata->field / 16);	\
-}
-
-#define __IEEE80211_IF_FILE(name, _write)				\
-static ssize_t ieee80211_if_read_##name(struct file *file,		\
-					char __user *userbuf,		\
-					size_t count, loff_t *ppos)	\
-{									\
-	return ieee80211_if_read(file->private_data,			\
-				 userbuf, count, ppos,			\
-				 ieee80211_if_fmt_##name);		\
-}									\
-static const struct file_operations name##_ops = {			\
-	.read = ieee80211_if_read_##name,				\
-=======
 #define IEEE80211_IF_FMT_ATOMIC(name, type, field)			\
 static ssize_t ieee80211_if_fmt_##name(					\
 	const type *data,						\
@@ -344,15 +223,11 @@ static ssize_t ieee80211_if_fmt_##name(					\
 #define _IEEE80211_IF_FILE_OPS(name, _read, _write)			\
 static const struct file_operations name##_ops = {			\
 	.read = (_read),						\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write = (_write),						\
 	.open = simple_open,						\
 	.llseek = generic_file_llseek,					\
 }
 
-<<<<<<< HEAD
-#define __IEEE80211_IF_FILE_W(name)					\
-=======
 #define _IEEE80211_IF_FILE_R_FN(name)					\
 static ssize_t ieee80211_if_read_##name(struct file *file,		\
 					char __user *userbuf,		\
@@ -364,51 +239,10 @@ static ssize_t ieee80211_if_read_##name(struct file *file,		\
 }
 
 #define _IEEE80211_IF_FILE_W_FN(name)					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t ieee80211_if_write_##name(struct file *file,		\
 					 const char __user *userbuf,	\
 					 size_t count, loff_t *ppos)	\
 {									\
-<<<<<<< HEAD
-	return ieee80211_if_write(file->private_data, userbuf, count,	\
-				  ppos, ieee80211_if_parse_##name);	\
-}									\
-__IEEE80211_IF_FILE(name, ieee80211_if_write_##name)
-
-
-#define IEEE80211_IF_FILE(name, field, format)				\
-		IEEE80211_IF_FMT_##format(name, field)			\
-		__IEEE80211_IF_FILE(name, NULL)
-
-/* common attributes */
-IEEE80211_IF_FILE(drop_unencrypted, drop_unencrypted, DEC);
-IEEE80211_IF_FILE(rc_rateidx_mask_2ghz, rc_rateidx_mask[IEEE80211_BAND_2GHZ],
-		  HEX);
-IEEE80211_IF_FILE(rc_rateidx_mask_5ghz, rc_rateidx_mask[IEEE80211_BAND_5GHZ],
-		  HEX);
-IEEE80211_IF_FILE(rc_rateidx_mcs_mask_2ghz,
-		  rc_rateidx_mcs_mask[IEEE80211_BAND_2GHZ], HEXARRAY);
-IEEE80211_IF_FILE(rc_rateidx_mcs_mask_5ghz,
-		  rc_rateidx_mcs_mask[IEEE80211_BAND_5GHZ], HEXARRAY);
-
-IEEE80211_IF_FILE(flags, flags, HEX);
-IEEE80211_IF_FILE(state, state, LHEX);
-IEEE80211_IF_FILE(channel_type, vif.bss_conf.channel_type, DEC);
-
-/* STA attributes */
-IEEE80211_IF_FILE(bssid, u.mgd.bssid, MAC);
-IEEE80211_IF_FILE(aid, u.mgd.aid, DEC);
-IEEE80211_IF_FILE(last_beacon, u.mgd.last_beacon_signal, DEC);
-IEEE80211_IF_FILE(ave_beacon, u.mgd.ave_beacon_signal, DEC_DIV_16);
-
-static int ieee80211_set_smps(struct ieee80211_sub_if_data *sdata,
-			      enum ieee80211_smps_mode smps_mode)
-{
-	struct ieee80211_local *local = sdata->local;
-	int err;
-
-	if (!(local->hw.flags & IEEE80211_HW_SUPPORTS_STATIC_SMPS) &&
-=======
 	return ieee80211_if_write_sdata(file, userbuf,			\
 					count, ppos,			\
 					ieee80211_if_parse_##name);	\
@@ -556,36 +390,19 @@ static int ieee80211_set_smps(struct ieee80211_link_data *link,
 		return -EOPNOTSUPP;
 
 	if (!(local->hw.wiphy->features & NL80211_FEATURE_STATIC_SMPS) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    smps_mode == IEEE80211_SMPS_STATIC)
 		return -EINVAL;
 
 	/* auto should be dynamic if in PS mode */
-<<<<<<< HEAD
-	if (!(local->hw.flags & IEEE80211_HW_SUPPORTS_DYNAMIC_SMPS) &&
-=======
 	if (!(local->hw.wiphy->features & NL80211_FEATURE_DYNAMIC_SMPS) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (smps_mode == IEEE80211_SMPS_DYNAMIC ||
 	     smps_mode == IEEE80211_SMPS_AUTOMATIC))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	/* supported only on managed interfaces for now */
-	if (sdata->vif.type != NL80211_IFTYPE_STATION)
-		return -EOPNOTSUPP;
-
-	mutex_lock(&sdata->u.mgd.mtx);
-	err = __ieee80211_request_smps(sdata, smps_mode);
-	mutex_unlock(&sdata->u.mgd.mtx);
-
-	return err;
-=======
 	if (sdata->vif.type != NL80211_IFTYPE_STATION)
 		return -EOPNOTSUPP;
 
 	return __ieee80211_request_smps_mgd(link->sdata, link, smps_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *smps_modes[IEEE80211_SMPS_NUM_MODES] = {
@@ -595,20 +412,6 @@ static const char *smps_modes[IEEE80211_SMPS_NUM_MODES] = {
 	[IEEE80211_SMPS_DYNAMIC] = "dynamic",
 };
 
-<<<<<<< HEAD
-static ssize_t ieee80211_if_fmt_smps(const struct ieee80211_sub_if_data *sdata,
-				     char *buf, int buflen)
-{
-	if (sdata->vif.type != NL80211_IFTYPE_STATION)
-		return -EOPNOTSUPP;
-
-	return snprintf(buf, buflen, "request: %s\nused: %s\n",
-			smps_modes[sdata->u.mgd.req_smps],
-			smps_modes[sdata->u.mgd.ap_smps]);
-}
-
-static ssize_t ieee80211_if_parse_smps(struct ieee80211_sub_if_data *sdata,
-=======
 static ssize_t ieee80211_if_fmt_smps(const struct ieee80211_link_data *link,
 				     char *buf, int buflen)
 {
@@ -620,18 +423,13 @@ static ssize_t ieee80211_if_fmt_smps(const struct ieee80211_link_data *link,
 }
 
 static ssize_t ieee80211_if_parse_smps(struct ieee80211_link_data *link,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       const char *buf, int buflen)
 {
 	enum ieee80211_smps_mode mode;
 
 	for (mode = 0; mode < IEEE80211_SMPS_NUM_MODES; mode++) {
 		if (strncmp(buf, smps_modes[mode], buflen) == 0) {
-<<<<<<< HEAD
-			int err = ieee80211_set_smps(sdata, mode);
-=======
 			int err = ieee80211_set_smps(link, mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!err)
 				return buflen;
 			return err;
@@ -640,39 +438,7 @@ static ssize_t ieee80211_if_parse_smps(struct ieee80211_link_data *link,
 
 	return -EINVAL;
 }
-<<<<<<< HEAD
-
-__IEEE80211_IF_FILE_W(smps);
-
-static ssize_t ieee80211_if_fmt_tkip_mic_test(
-	const struct ieee80211_sub_if_data *sdata, char *buf, int buflen)
-{
-	return -EOPNOTSUPP;
-}
-
-static int hwaddr_aton(const char *txt, u8 *addr)
-{
-	int i;
-
-	for (i = 0; i < ETH_ALEN; i++) {
-		int a, b;
-
-		a = hex_to_bin(*txt++);
-		if (a < 0)
-			return -1;
-		b = hex_to_bin(*txt++);
-		if (b < 0)
-			return -1;
-		*addr++ = (a << 4) | b;
-		if (i < 5 && *txt++ != ':')
-			return -1;
-	}
-
-	return 0;
-}
-=======
 IEEE80211_IF_LINK_FILE_RW(smps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t ieee80211_if_parse_tkip_mic_test(
 	struct ieee80211_sub_if_data *sdata, const char *buf, int buflen)
@@ -683,17 +449,7 @@ static ssize_t ieee80211_if_parse_tkip_mic_test(
 	struct ieee80211_hdr *hdr;
 	__le16 fc;
 
-<<<<<<< HEAD
-	/*
-	 * Assume colon-delimited MAC address with possible white space
-	 * following.
-	 */
-	if (buflen < 3 * ETH_ALEN - 1)
-		return -EINVAL;
-	if (hwaddr_aton(buf, addr) < 0)
-=======
 	if (!mac_pton(buf, addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (!ieee80211_sdata_running(sdata))
@@ -704,12 +460,7 @@ static ssize_t ieee80211_if_parse_tkip_mic_test(
 		return -ENOMEM;
 	skb_reserve(skb, local->hw.extra_tx_headroom);
 
-<<<<<<< HEAD
-	hdr = (struct ieee80211_hdr *) skb_put(skb, 24);
-	memset(hdr, 0, 24);
-=======
 	hdr = skb_put_zero(skb, 24);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc = cpu_to_le16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA);
 
 	switch (sdata->vif.type) {
@@ -723,19 +474,11 @@ static ssize_t ieee80211_if_parse_tkip_mic_test(
 	case NL80211_IFTYPE_STATION:
 		fc |= cpu_to_le16(IEEE80211_FCTL_TODS);
 		/* BSSID SA DA */
-<<<<<<< HEAD
-		if (sdata->vif.bss_conf.bssid == NULL) {
-			dev_kfree_skb(skb);
-			return -ENOTCONN;
-		}
-		memcpy(hdr->addr1, sdata->vif.bss_conf.bssid, ETH_ALEN);
-=======
 		if (!sdata->u.mgd.associated) {
 			dev_kfree_skb(skb);
 			return -ENOTCONN;
 		}
 		memcpy(hdr->addr1, sdata->deflink.u.mgd.bssid, ETH_ALEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(hdr->addr2, sdata->vif.addr, ETH_ALEN);
 		memcpy(hdr->addr3, addr, ETH_ALEN);
 		break;
@@ -750,11 +493,7 @@ static ssize_t ieee80211_if_parse_tkip_mic_test(
 	 * The exact contents does not matter since the recipient is required
 	 * to drop this because of the Michael MIC failure.
 	 */
-<<<<<<< HEAD
-	memset(skb_put(skb, 50), 0, 50);
-=======
 	skb_put_zero(skb, 50);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	IEEE80211_SKB_CB(skb)->flags |= IEEE80211_TX_INTFL_TKIP_MIC_FAILURE;
 
@@ -762,10 +501,6 @@ static ssize_t ieee80211_if_parse_tkip_mic_test(
 
 	return buflen;
 }
-<<<<<<< HEAD
-
-__IEEE80211_IF_FILE_W(tkip_mic_test);
-=======
 IEEE80211_IF_FILE_W(tkip_mic_test);
 
 static ssize_t ieee80211_if_parse_beacon_loss(
@@ -779,7 +514,6 @@ static ssize_t ieee80211_if_parse_beacon_loss(
 	return buflen;
 }
 IEEE80211_IF_FILE_W(beacon_loss);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t ieee80211_if_fmt_uapsd_queues(
 	const struct ieee80211_sub_if_data *sdata, char *buf, int buflen)
@@ -807,11 +541,7 @@ static ssize_t ieee80211_if_parse_uapsd_queues(
 
 	return buflen;
 }
-<<<<<<< HEAD
-__IEEE80211_IF_FILE_W(uapsd_queues);
-=======
 IEEE80211_IF_FILE_RW(uapsd_queues);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t ieee80211_if_fmt_uapsd_max_sp_len(
 	const struct ieee80211_sub_if_data *sdata, char *buf, int buflen)
@@ -839,14 +569,6 @@ static ssize_t ieee80211_if_parse_uapsd_max_sp_len(
 
 	return buflen;
 }
-<<<<<<< HEAD
-__IEEE80211_IF_FILE_W(uapsd_max_sp_len);
-
-/* AP attributes */
-IEEE80211_IF_FILE(num_sta_authorized, u.ap.num_sta_authorized, ATOMIC);
-IEEE80211_IF_FILE(num_sta_ps, u.ap.num_sta_ps, ATOMIC);
-IEEE80211_IF_FILE(dtim_count, u.ap.dtim_count, DEC);
-=======
 IEEE80211_IF_FILE_RW(uapsd_max_sp_len);
 
 static ssize_t ieee80211_if_fmt_tdls_wider_bw(
@@ -882,17 +604,11 @@ IEEE80211_IF_FILE(num_mcast_sta, u.ap.num_mcast_sta, ATOMIC);
 IEEE80211_IF_FILE(num_sta_ps, u.ap.ps.num_sta_ps, ATOMIC);
 IEEE80211_IF_FILE(dtim_count, u.ap.ps.dtim_count, DEC);
 IEEE80211_IF_FILE(num_mcast_sta_vlan, u.vlan.num_mcast_sta, ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t ieee80211_if_fmt_num_buffered_multicast(
 	const struct ieee80211_sub_if_data *sdata, char *buf, int buflen)
 {
 	return scnprintf(buf, buflen, "%u\n",
-<<<<<<< HEAD
-			 skb_queue_len(&sdata->u.ap.ps_bc_buf));
-}
-__IEEE80211_IF_FILE(num_buffered_multicast, NULL);
-=======
 			 skb_queue_len(&sdata->u.ap.ps.bc_buf));
 }
 IEEE80211_IF_FILE_R(num_buffered_multicast);
@@ -935,7 +651,6 @@ static ssize_t ieee80211_if_fmt_aqm(
 IEEE80211_IF_FILE_R(aqm);
 
 IEEE80211_IF_FILE(multicast_to_unicast, u.ap.multicast_to_unicast, HEX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* IBSS attributes */
 static ssize_t ieee80211_if_fmt_tsf(
@@ -955,10 +670,7 @@ static ssize_t ieee80211_if_parse_tsf(
 	struct ieee80211_local *local = sdata->local;
 	unsigned long long tsf;
 	int ret;
-<<<<<<< HEAD
-=======
 	int tsf_is_delta = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (strncmp(buf, "reset", 5) == 0) {
 		if (local->ops->reset_tsf) {
@@ -966,12 +678,6 @@ static ssize_t ieee80211_if_parse_tsf(
 			wiphy_info(local->hw.wiphy, "debugfs reset TSF\n");
 		}
 	} else {
-<<<<<<< HEAD
-		ret = kstrtoull(buf, 10, &tsf);
-		if (ret < 0)
-			return -EINVAL;
-		if (local->ops->set_tsf) {
-=======
 		if (buflen > 10 && buf[1] == '=') {
 			if (buf[0] == '+')
 				tsf_is_delta = 1;
@@ -993,24 +699,12 @@ static ssize_t ieee80211_if_parse_tsf(
 			if (tsf_is_delta)
 				tsf = drv_get_tsf(local, sdata) +
 				      tsf_is_delta * tsf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			drv_set_tsf(local, sdata, tsf);
 			wiphy_info(local->hw.wiphy,
 				   "debugfs set TSF to %#018llx\n", tsf);
 		}
 	}
 
-<<<<<<< HEAD
-	return buflen;
-}
-__IEEE80211_IF_FILE_W(tsf);
-
-
-/* WDS attributes */
-IEEE80211_IF_FILE(peer, u.wds.remote_addr, MAC);
-
-#ifdef CONFIG_MAC80211_MESH
-=======
 	ieee80211_recalc_dtim(local, sdata);
 	return buflen;
 }
@@ -1046,29 +740,11 @@ IEEE80211_IF_LINK_FILE(addr, conf->addr, MAC);
 #ifdef CONFIG_MAC80211_MESH
 IEEE80211_IF_FILE(estab_plinks, u.mesh.estab_plinks, ATOMIC);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Mesh stats attributes */
 IEEE80211_IF_FILE(fwded_mcast, u.mesh.mshstats.fwded_mcast, DEC);
 IEEE80211_IF_FILE(fwded_unicast, u.mesh.mshstats.fwded_unicast, DEC);
 IEEE80211_IF_FILE(fwded_frames, u.mesh.mshstats.fwded_frames, DEC);
 IEEE80211_IF_FILE(dropped_frames_ttl, u.mesh.mshstats.dropped_frames_ttl, DEC);
-<<<<<<< HEAD
-IEEE80211_IF_FILE(dropped_frames_congestion,
-		u.mesh.mshstats.dropped_frames_congestion, DEC);
-IEEE80211_IF_FILE(dropped_frames_no_route,
-		u.mesh.mshstats.dropped_frames_no_route, DEC);
-IEEE80211_IF_FILE(estab_plinks, u.mesh.mshstats.estab_plinks, ATOMIC);
-
-/* Mesh parameters */
-IEEE80211_IF_FILE(dot11MeshMaxRetries,
-		u.mesh.mshcfg.dot11MeshMaxRetries, DEC);
-IEEE80211_IF_FILE(dot11MeshRetryTimeout,
-		u.mesh.mshcfg.dot11MeshRetryTimeout, DEC);
-IEEE80211_IF_FILE(dot11MeshConfirmTimeout,
-		u.mesh.mshcfg.dot11MeshConfirmTimeout, DEC);
-IEEE80211_IF_FILE(dot11MeshHoldingTimeout,
-		u.mesh.mshcfg.dot11MeshHoldingTimeout, DEC);
-=======
 IEEE80211_IF_FILE(dropped_frames_no_route,
 		  u.mesh.mshstats.dropped_frames_no_route, DEC);
 
@@ -1081,53 +757,10 @@ IEEE80211_IF_FILE(dot11MeshConfirmTimeout,
 		  u.mesh.mshcfg.dot11MeshConfirmTimeout, DEC);
 IEEE80211_IF_FILE(dot11MeshHoldingTimeout,
 		  u.mesh.mshcfg.dot11MeshHoldingTimeout, DEC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 IEEE80211_IF_FILE(dot11MeshTTL, u.mesh.mshcfg.dot11MeshTTL, DEC);
 IEEE80211_IF_FILE(element_ttl, u.mesh.mshcfg.element_ttl, DEC);
 IEEE80211_IF_FILE(auto_open_plinks, u.mesh.mshcfg.auto_open_plinks, DEC);
 IEEE80211_IF_FILE(dot11MeshMaxPeerLinks,
-<<<<<<< HEAD
-		u.mesh.mshcfg.dot11MeshMaxPeerLinks, DEC);
-IEEE80211_IF_FILE(dot11MeshHWMPactivePathTimeout,
-		u.mesh.mshcfg.dot11MeshHWMPactivePathTimeout, DEC);
-IEEE80211_IF_FILE(dot11MeshHWMPpreqMinInterval,
-		u.mesh.mshcfg.dot11MeshHWMPpreqMinInterval, DEC);
-IEEE80211_IF_FILE(dot11MeshHWMPperrMinInterval,
-		u.mesh.mshcfg.dot11MeshHWMPperrMinInterval, DEC);
-IEEE80211_IF_FILE(dot11MeshHWMPnetDiameterTraversalTime,
-		u.mesh.mshcfg.dot11MeshHWMPnetDiameterTraversalTime, DEC);
-IEEE80211_IF_FILE(dot11MeshHWMPmaxPREQretries,
-		u.mesh.mshcfg.dot11MeshHWMPmaxPREQretries, DEC);
-IEEE80211_IF_FILE(path_refresh_time,
-		u.mesh.mshcfg.path_refresh_time, DEC);
-IEEE80211_IF_FILE(min_discovery_timeout,
-		u.mesh.mshcfg.min_discovery_timeout, DEC);
-IEEE80211_IF_FILE(dot11MeshHWMPRootMode,
-		u.mesh.mshcfg.dot11MeshHWMPRootMode, DEC);
-IEEE80211_IF_FILE(dot11MeshGateAnnouncementProtocol,
-		u.mesh.mshcfg.dot11MeshGateAnnouncementProtocol, DEC);
-IEEE80211_IF_FILE(dot11MeshHWMPRannInterval,
-		u.mesh.mshcfg.dot11MeshHWMPRannInterval, DEC);
-IEEE80211_IF_FILE(dot11MeshForwarding, u.mesh.mshcfg.dot11MeshForwarding, DEC);
-IEEE80211_IF_FILE(rssi_threshold, u.mesh.mshcfg.rssi_threshold, DEC);
-#endif
-
-
-#define DEBUGFS_ADD(name) \
-	debugfs_create_file(#name, 0400, sdata->debugfs.dir, \
-			    sdata, &name##_ops);
-
-#define DEBUGFS_ADD_MODE(name, mode) \
-	debugfs_create_file(#name, mode, sdata->debugfs.dir, \
-			    sdata, &name##_ops);
-
-static void add_sta_files(struct ieee80211_sub_if_data *sdata)
-{
-	DEBUGFS_ADD(drop_unencrypted);
-	DEBUGFS_ADD(flags);
-	DEBUGFS_ADD(state);
-	DEBUGFS_ADD(channel_type);
-=======
 		  u.mesh.mshcfg.dot11MeshMaxPeerLinks, DEC);
 IEEE80211_IF_FILE(dot11MeshHWMPactivePathTimeout,
 		  u.mesh.mshcfg.dot11MeshHWMPactivePathTimeout, DEC);
@@ -1189,22 +822,10 @@ IEEE80211_IF_FILE(dot11MeshConnectedToAuthServer,
 
 static void add_common_files(struct ieee80211_sub_if_data *sdata)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEBUGFS_ADD(rc_rateidx_mask_2ghz);
 	DEBUGFS_ADD(rc_rateidx_mask_5ghz);
 	DEBUGFS_ADD(rc_rateidx_mcs_mask_2ghz);
 	DEBUGFS_ADD(rc_rateidx_mcs_mask_5ghz);
-<<<<<<< HEAD
-
-	DEBUGFS_ADD(bssid);
-	DEBUGFS_ADD(aid);
-	DEBUGFS_ADD(last_beacon);
-	DEBUGFS_ADD(ave_beacon);
-	DEBUGFS_ADD_MODE(smps, 0600);
-	DEBUGFS_ADD_MODE(tkip_mic_test, 0200);
-	DEBUGFS_ADD_MODE(uapsd_queues, 0600);
-	DEBUGFS_ADD_MODE(uapsd_max_sp_len, 0600);
-=======
 	DEBUGFS_ADD(rc_rateidx_vht_mcs_mask_2ghz);
 	DEBUGFS_ADD(rc_rateidx_vht_mcs_mask_5ghz);
 	DEBUGFS_ADD(hw_queues);
@@ -1227,79 +848,20 @@ static void add_sta_files(struct ieee80211_sub_if_data *sdata)
 	DEBUGFS_ADD_MODE(valid_links, 0400);
 	DEBUGFS_ADD_MODE(active_links, 0600);
 	DEBUGFS_ADD_X16(dormant_links, 0400);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void add_ap_files(struct ieee80211_sub_if_data *sdata)
 {
-<<<<<<< HEAD
-	DEBUGFS_ADD(drop_unencrypted);
-	DEBUGFS_ADD(flags);
-	DEBUGFS_ADD(state);
-	DEBUGFS_ADD(channel_type);
-	DEBUGFS_ADD(rc_rateidx_mask_2ghz);
-	DEBUGFS_ADD(rc_rateidx_mask_5ghz);
-	DEBUGFS_ADD(rc_rateidx_mcs_mask_2ghz);
-	DEBUGFS_ADD(rc_rateidx_mcs_mask_5ghz);
-
-	DEBUGFS_ADD(num_sta_authorized);
-=======
 	DEBUGFS_ADD(num_mcast_sta);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEBUGFS_ADD(num_sta_ps);
 	DEBUGFS_ADD(dtim_count);
 	DEBUGFS_ADD(num_buffered_multicast);
 	DEBUGFS_ADD_MODE(tkip_mic_test, 0200);
-<<<<<<< HEAD
-}
-
-static void add_ibss_files(struct ieee80211_sub_if_data *sdata)
-{
-	DEBUGFS_ADD(channel_type);
-	DEBUGFS_ADD(rc_rateidx_mask_2ghz);
-	DEBUGFS_ADD(rc_rateidx_mask_5ghz);
-	DEBUGFS_ADD(rc_rateidx_mcs_mask_2ghz);
-	DEBUGFS_ADD(rc_rateidx_mcs_mask_5ghz);
-
-	DEBUGFS_ADD_MODE(tsf, 0600);
-}
-
-static void add_wds_files(struct ieee80211_sub_if_data *sdata)
-{
-	DEBUGFS_ADD(drop_unencrypted);
-	DEBUGFS_ADD(flags);
-	DEBUGFS_ADD(state);
-	DEBUGFS_ADD(channel_type);
-	DEBUGFS_ADD(rc_rateidx_mask_2ghz);
-	DEBUGFS_ADD(rc_rateidx_mask_5ghz);
-	DEBUGFS_ADD(rc_rateidx_mcs_mask_2ghz);
-	DEBUGFS_ADD(rc_rateidx_mcs_mask_5ghz);
-
-	DEBUGFS_ADD(peer);
-=======
 	DEBUGFS_ADD_MODE(multicast_to_unicast, 0600);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void add_vlan_files(struct ieee80211_sub_if_data *sdata)
 {
-<<<<<<< HEAD
-	DEBUGFS_ADD(drop_unencrypted);
-	DEBUGFS_ADD(flags);
-	DEBUGFS_ADD(state);
-	DEBUGFS_ADD(channel_type);
-	DEBUGFS_ADD(rc_rateidx_mask_2ghz);
-	DEBUGFS_ADD(rc_rateidx_mask_5ghz);
-	DEBUGFS_ADD(rc_rateidx_mcs_mask_2ghz);
-	DEBUGFS_ADD(rc_rateidx_mcs_mask_5ghz);
-}
-
-static void add_monitor_files(struct ieee80211_sub_if_data *sdata)
-{
-	DEBUGFS_ADD(flags);
-	DEBUGFS_ADD(state);
-	DEBUGFS_ADD(channel_type);
-=======
 	/* add num_mcast_sta_vlan using name num_mcast_sta */
 	debugfs_create_file("num_mcast_sta", 0400, sdata->vif.debugfs_dir,
 			    sdata, &num_mcast_sta_vlan_ops);
@@ -1308,7 +870,6 @@ static void add_monitor_files(struct ieee80211_sub_if_data *sdata)
 static void add_ibss_files(struct ieee80211_sub_if_data *sdata)
 {
 	DEBUGFS_ADD_MODE(tsf, 0600);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_MAC80211_MESH
@@ -1316,52 +877,31 @@ static void add_ibss_files(struct ieee80211_sub_if_data *sdata)
 static void add_mesh_files(struct ieee80211_sub_if_data *sdata)
 {
 	DEBUGFS_ADD_MODE(tsf, 0600);
-<<<<<<< HEAD
-=======
 	DEBUGFS_ADD_MODE(estab_plinks, 0400);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void add_mesh_stats(struct ieee80211_sub_if_data *sdata)
 {
 	struct dentry *dir = debugfs_create_dir("mesh_stats",
-<<<<<<< HEAD
-						sdata->debugfs.dir);
-#define MESHSTATS_ADD(name)\
-	debugfs_create_file(#name, 0400, dir, sdata, &name##_ops);
-=======
 						sdata->vif.debugfs_dir);
 #define MESHSTATS_ADD(name)\
 	debugfs_create_file(#name, 0400, dir, sdata, &name##_ops)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	MESHSTATS_ADD(fwded_mcast);
 	MESHSTATS_ADD(fwded_unicast);
 	MESHSTATS_ADD(fwded_frames);
 	MESHSTATS_ADD(dropped_frames_ttl);
 	MESHSTATS_ADD(dropped_frames_no_route);
-<<<<<<< HEAD
-	MESHSTATS_ADD(dropped_frames_congestion);
-	MESHSTATS_ADD(estab_plinks);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef MESHSTATS_ADD
 }
 
 static void add_mesh_config(struct ieee80211_sub_if_data *sdata)
 {
 	struct dentry *dir = debugfs_create_dir("mesh_config",
-<<<<<<< HEAD
-						sdata->debugfs.dir);
-
-#define MESHPARAMS_ADD(name) \
-	debugfs_create_file(#name, 0600, dir, sdata, &name##_ops);
-=======
 						sdata->vif.debugfs_dir);
 
 #define MESHPARAMS_ADD(name) \
 	debugfs_create_file(#name, 0600, dir, sdata, &name##_ops)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	MESHPARAMS_ADD(dot11MeshMaxRetries);
 	MESHPARAMS_ADD(dot11MeshRetryTimeout);
@@ -1380,10 +920,6 @@ static void add_mesh_config(struct ieee80211_sub_if_data *sdata)
 	MESHPARAMS_ADD(min_discovery_timeout);
 	MESHPARAMS_ADD(dot11MeshHWMPRootMode);
 	MESHPARAMS_ADD(dot11MeshHWMPRannInterval);
-<<<<<<< HEAD
-	MESHPARAMS_ADD(dot11MeshGateAnnouncementProtocol);
-	MESHPARAMS_ADD(rssi_threshold);
-=======
 	MESHPARAMS_ADD(dot11MeshForwarding);
 	MESHPARAMS_ADD(dot11MeshGateAnnouncementProtocol);
 	MESHPARAMS_ADD(rssi_threshold);
@@ -1396,18 +932,12 @@ static void add_mesh_config(struct ieee80211_sub_if_data *sdata)
 	MESHPARAMS_ADD(dot11MeshConnectedToMeshGate);
 	MESHPARAMS_ADD(dot11MeshNolearn);
 	MESHPARAMS_ADD(dot11MeshConnectedToAuthServer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef MESHPARAMS_ADD
 }
 #endif
 
 static void add_files(struct ieee80211_sub_if_data *sdata)
 {
-<<<<<<< HEAD
-	if (!sdata->debugfs.dir)
-		return;
-
-=======
 	if (!sdata->vif.debugfs_dir)
 		return;
 
@@ -1417,7 +947,6 @@ static void add_files(struct ieee80211_sub_if_data *sdata)
 	if (sdata->vif.type != NL80211_IFTYPE_MONITOR)
 		add_common_files(sdata);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (sdata->vif.type) {
 	case NL80211_IFTYPE_MESH_POINT:
 #ifdef CONFIG_MAC80211_MESH
@@ -1435,15 +964,6 @@ static void add_files(struct ieee80211_sub_if_data *sdata)
 	case NL80211_IFTYPE_AP:
 		add_ap_files(sdata);
 		break;
-<<<<<<< HEAD
-	case NL80211_IFTYPE_WDS:
-		add_wds_files(sdata);
-		break;
-	case NL80211_IFTYPE_MONITOR:
-		add_monitor_files(sdata);
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NL80211_IFTYPE_AP_VLAN:
 		add_vlan_files(sdata);
 		break;
@@ -1452,9 +972,6 @@ static void add_files(struct ieee80211_sub_if_data *sdata)
 	}
 }
 
-<<<<<<< HEAD
-void ieee80211_debugfs_add_netdev(struct ieee80211_sub_if_data *sdata)
-=======
 #undef DEBUGFS_ADD_MODE
 #undef DEBUGFS_ADD
 
@@ -1482,19 +999,10 @@ static void add_link_files(struct ieee80211_link_data *link,
 
 static void ieee80211_debugfs_add_netdev(struct ieee80211_sub_if_data *sdata,
 					 bool mld_vif)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char buf[10+IFNAMSIZ];
 
 	sprintf(buf, "netdev:%s", sdata->name);
-<<<<<<< HEAD
-	sdata->debugfs.dir = debugfs_create_dir(buf,
-		sdata->local->hw.wiphy->debugfsdir);
-	if (sdata->debugfs.dir)
-		sdata->debugfs.subdir_stations = debugfs_create_dir("stations",
-			sdata->debugfs.dir);
-	add_files(sdata);
-=======
 	sdata->vif.debugfs_dir = debugfs_create_dir(buf,
 		sdata->local->hw.wiphy->debugfsdir);
 	/* deflink also has this */
@@ -1504,24 +1012,15 @@ static void ieee80211_debugfs_add_netdev(struct ieee80211_sub_if_data *sdata,
 	add_files(sdata);
 	if (!mld_vif)
 		add_link_files(&sdata->deflink, sdata->vif.debugfs_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ieee80211_debugfs_remove_netdev(struct ieee80211_sub_if_data *sdata)
 {
-<<<<<<< HEAD
-	if (!sdata->debugfs.dir)
-		return;
-
-	debugfs_remove_recursive(sdata->debugfs.dir);
-	sdata->debugfs.dir = NULL;
-=======
 	if (!sdata->vif.debugfs_dir)
 		return;
 
 	debugfs_remove_recursive(sdata->vif.debugfs_dir);
 	sdata->vif.debugfs_dir = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sdata->debugfs.subdir_stations = NULL;
 }
 
@@ -1530,17 +1029,6 @@ void ieee80211_debugfs_rename_netdev(struct ieee80211_sub_if_data *sdata)
 	struct dentry *dir;
 	char buf[10 + IFNAMSIZ];
 
-<<<<<<< HEAD
-	dir = sdata->debugfs.dir;
-
-	if (!dir)
-		return;
-
-	sprintf(buf, "netdev:%s", sdata->name);
-	if (!debugfs_rename(dir->d_parent, dir, dir->d_parent, buf))
-		printk(KERN_ERR "mac80211: debugfs: failed to rename debugfs "
-		       "dir to %s\n", buf);
-=======
 	dir = sdata->vif.debugfs_dir;
 
 	if (IS_ERR_OR_NULL(dir))
@@ -1625,5 +1113,4 @@ void ieee80211_link_debugfs_drv_remove(struct ieee80211_link_data *link)
 	link->debugfs_dir = NULL;
 
 	ieee80211_link_debugfs_add(link);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

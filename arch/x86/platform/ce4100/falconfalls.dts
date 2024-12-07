@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CE4100 on Falcon Falls
  *
  * (c) Copyright 2010 Intel Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; version 2 of the License.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /dts-v1/;
 / {
@@ -259,11 +249,7 @@
 
 						gpio@26 {
 							#gpio-cells = <2>;
-<<<<<<< HEAD
-							compatible = "ti,pcf8575";
-=======
 							compatible = "nxp,pcf8575";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							reg = <0x26>;
 							gpio-controller;
 						};
@@ -277,11 +263,7 @@
 
 						gpio@26 {
 							#gpio-cells = <2>;
-<<<<<<< HEAD
-							compatible = "ti,pcf8575";
-=======
 							compatible = "nxp,pcf8575";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							reg = <0x26>;
 							gpio-controller;
 						};

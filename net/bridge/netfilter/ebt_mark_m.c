@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ebt_mark_m
  *
@@ -40,11 +37,7 @@ static int ebt_mark_mt_check(const struct xt_mtchk_param *par)
 }
 
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct compat_ebt_mark_m_info {
 	compat_ulong_t mark, mask;
 	uint8_t invert, bitmask;
@@ -82,11 +75,7 @@ static struct xt_match ebt_mark_mt_reg __read_mostly = {
 	.match		= ebt_mark_mt,
 	.checkentry	= ebt_mark_mt_check,
 	.matchsize	= sizeof(struct ebt_mark_m_info),
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.compatsize	= sizeof(struct compat_ebt_mark_m_info),
 	.compat_from_user = mark_mt_compat_from_user,
 	.compat_to_user	= mark_mt_compat_to_user,

@@ -1,29 +1,16 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Pin-multiplex helper macros for TI DaVinci family devices
  *
  * Author: Vladimir Barinov, MontaVista Software, Inc. <source@mvista.com>
  *
-<<<<<<< HEAD
- * 2007 (c) MontaVista Software, Inc. This file is licensed under
- * the terms of the GNU General Public License version 2. This program
- * is licensed "as is" without any warranty of any kind, whether express
- * or implied.
-=======
  * 2007 (c) MontaVista Software, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 2008 Texas Instruments.
  */
 #ifndef _MACH_DAVINCI_MUX_H_
 #define _MACH_DAVINCI_MUX_H_
 
-<<<<<<< HEAD
-#include <mach/mux.h>
-=======
 struct mux_config {
 	const char *name;
 	const char *mux_reg_name;
@@ -677,7 +664,6 @@ static inline int davinci_cfg_reg_list(const short pins[])
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MUX_CFG(soc, desc, muxreg, mode_offset, mode_mask, mux_mode, dbg)\
 [soc##_##desc] = {							\

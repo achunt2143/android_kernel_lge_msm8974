@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PISMO memory driver - http://www.pismoworld.org/
  *
  * For ARM Realview and Versatile platforms
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/module.h>
@@ -65,11 +55,7 @@ static void pismo_set_vpp(struct platform_device *pdev, int on)
 	pismo->vpp(pismo->vpp_data, on);
 }
 
-<<<<<<< HEAD
-static unsigned int __devinit pismo_width_to_bytes(unsigned int width)
-=======
 static unsigned int pismo_width_to_bytes(unsigned int width)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	width &= 15;
 	if (width > 2)
@@ -77,13 +63,8 @@ static unsigned int pismo_width_to_bytes(unsigned int width)
 	return 1 << width;
 }
 
-<<<<<<< HEAD
-static int __devinit pismo_eeprom_read(struct i2c_client *client, void *buf,
-	u8 addr, size_t size)
-=======
 static int pismo_eeprom_read(struct i2c_client *client, void *buf, u8 addr,
 			     size_t size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct i2c_msg msg[] = {
@@ -104,14 +85,9 @@ static int pismo_eeprom_read(struct i2c_client *client, void *buf, u8 addr,
 	return ret == ARRAY_SIZE(msg) ? size : -EIO;
 }
 
-<<<<<<< HEAD
-static int __devinit pismo_add_device(struct pismo_data *pismo, int i,
-	struct pismo_mem *region, const char *name, void *pdata, size_t psize)
-=======
 static int pismo_add_device(struct pismo_data *pismo, int i,
 			    struct pismo_mem *region, const char *name,
 			    void *pdata, size_t psize)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *dev;
 	struct resource res = { };
@@ -151,13 +127,8 @@ static int pismo_add_device(struct pismo_data *pismo, int i,
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devinit pismo_add_nor(struct pismo_data *pismo, int i,
-	struct pismo_mem *region)
-=======
 static int pismo_add_nor(struct pismo_data *pismo, int i,
 			 struct pismo_mem *region)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct physmap_flash_data data = {
 		.width = region->width,
@@ -170,13 +141,8 @@ static int pismo_add_nor(struct pismo_data *pismo, int i,
 		&data, sizeof(data));
 }
 
-<<<<<<< HEAD
-static int __devinit pismo_add_sram(struct pismo_data *pismo, int i,
-	struct pismo_mem *region)
-=======
 static int pismo_add_sram(struct pismo_data *pismo, int i,
 			  struct pismo_mem *region)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platdata_mtd_ram data = {
 		.bankwidth = region->width,
@@ -186,13 +152,8 @@ static int pismo_add_sram(struct pismo_data *pismo, int i,
 		&data, sizeof(data));
 }
 
-<<<<<<< HEAD
-static void __devinit pismo_add_one(struct pismo_data *pismo, int i,
-	const struct pismo_cs_block *cs, phys_addr_t base)
-=======
 static void pismo_add_one(struct pismo_data *pismo, int i,
 			  const struct pismo_cs_block *cs, phys_addr_t base)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = &pismo->client->dev;
 	struct pismo_mem region;
@@ -234,11 +195,7 @@ static void pismo_add_one(struct pismo_data *pismo, int i,
 	}
 }
 
-<<<<<<< HEAD
-static int __devexit pismo_remove(struct i2c_client *client)
-=======
 static void pismo_remove(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pismo_data *pismo = i2c_get_clientdata(client);
 	int i;
@@ -247,31 +204,16 @@ static void pismo_remove(struct i2c_client *client)
 		platform_device_unregister(pismo->dev[i]);
 
 	kfree(pismo);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-static int __devinit pismo_probe(struct i2c_client *client,
-				 const struct i2c_device_id *id)
-{
-	struct i2c_adapter *adapter = to_i2c_adapter(client->dev.parent);
-=======
 }
 
 static int pismo_probe(struct i2c_client *client)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pismo_pdata *pdata = client->dev.platform_data;
 	struct pismo_eeprom eeprom;
 	struct pismo_data *pismo;
 	int ret, i;
 
-<<<<<<< HEAD
-	if (!i2c_check_functionality(adapter, I2C_FUNC_I2C)) {
-=======
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&client->dev, "functionality mismatch\n");
 		return -EIO;
 	}
@@ -316,16 +258,9 @@ MODULE_DEVICE_TABLE(i2c, pismo_id);
 static struct i2c_driver pismo_driver = {
 	.driver	= {
 		.name	= "pismo",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= pismo_probe,
-	.remove		= __devexit_p(pismo_remove),
-=======
 	},
 	.probe		= pismo_probe,
 	.remove		= pismo_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= pismo_id,
 };
 

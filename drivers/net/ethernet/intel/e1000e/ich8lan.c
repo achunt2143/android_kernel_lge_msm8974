@@ -1,40 +1,7 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel PRO/1000 Linux driver
-  Copyright(c) 1999 - 2012 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  Linux NICS <linux.nics@intel.com>
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-
-/*
- * 82562G 10/100 Network Connection
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright(c) 1999 - 2018 Intel Corporation. */
 
 /* 82562G 10/100 Network Connection
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 82562G-2 10/100 Network Connection
  * 82562GT 10/100 Network Connection
  * 82562GT-2 10/100 Network Connection
@@ -61,8 +28,6 @@
  * 82578DC Gigabit Network Connection
  * 82579LM Gigabit Network Connection
  * 82579V Gigabit Network Connection
-<<<<<<< HEAD
-=======
  * Ethernet Connection I217-LM
  * Ethernet Connection I217-V
  * Ethernet Connection I218-V
@@ -71,142 +36,14 @@
  * Ethernet Connection (2) I218-V
  * Ethernet Connection (3) I218-LM
  * Ethernet Connection (3) I218-V
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "e1000.h"
 
-<<<<<<< HEAD
-#define ICH_FLASH_GFPREG		0x0000
-#define ICH_FLASH_HSFSTS		0x0004
-#define ICH_FLASH_HSFCTL		0x0006
-#define ICH_FLASH_FADDR			0x0008
-#define ICH_FLASH_FDATA0		0x0010
-#define ICH_FLASH_PR0			0x0074
-
-#define ICH_FLASH_READ_COMMAND_TIMEOUT	500
-#define ICH_FLASH_WRITE_COMMAND_TIMEOUT	500
-#define ICH_FLASH_ERASE_COMMAND_TIMEOUT	3000000
-#define ICH_FLASH_LINEAR_ADDR_MASK	0x00FFFFFF
-#define ICH_FLASH_CYCLE_REPEAT_COUNT	10
-
-#define ICH_CYCLE_READ			0
-#define ICH_CYCLE_WRITE			2
-#define ICH_CYCLE_ERASE			3
-
-#define FLASH_GFPREG_BASE_MASK		0x1FFF
-#define FLASH_SECTOR_ADDR_SHIFT		12
-
-#define ICH_FLASH_SEG_SIZE_256		256
-#define ICH_FLASH_SEG_SIZE_4K		4096
-#define ICH_FLASH_SEG_SIZE_8K		8192
-#define ICH_FLASH_SEG_SIZE_64K		65536
-
-
-#define E1000_ICH_FWSM_RSPCIPHY	0x00000040 /* Reset PHY on PCI Reset */
-/* FW established a valid mode */
-#define E1000_ICH_FWSM_FW_VALID		0x00008000
-
-#define E1000_ICH_MNG_IAMT_MODE		0x2
-
-#define ID_LED_DEFAULT_ICH8LAN  ((ID_LED_DEF1_DEF2 << 12) | \
-				 (ID_LED_DEF1_OFF2 <<  8) | \
-				 (ID_LED_DEF1_ON2  <<  4) | \
-				 (ID_LED_DEF1_DEF2))
-
-#define E1000_ICH_NVM_SIG_WORD		0x13
-#define E1000_ICH_NVM_SIG_MASK		0xC000
-#define E1000_ICH_NVM_VALID_SIG_MASK    0xC0
-#define E1000_ICH_NVM_SIG_VALUE         0x80
-
-#define E1000_ICH8_LAN_INIT_TIMEOUT	1500
-
-#define E1000_FEXTNVM_SW_CONFIG		1
-#define E1000_FEXTNVM_SW_CONFIG_ICH8M (1 << 27) /* Bit redefined for ICH8M :/ */
-
-#define E1000_FEXTNVM4_BEACON_DURATION_MASK    0x7
-#define E1000_FEXTNVM4_BEACON_DURATION_8USEC   0x7
-#define E1000_FEXTNVM4_BEACON_DURATION_16USEC  0x3
-
-#define PCIE_ICH8_SNOOP_ALL		PCIE_NO_SNOOP_ALL
-
-#define E1000_ICH_RAR_ENTRIES		7
-
-#define PHY_PAGE_SHIFT 5
-#define PHY_REG(page, reg) (((page) << PHY_PAGE_SHIFT) | \
-			   ((reg) & MAX_PHY_REG_ADDRESS))
-#define IGP3_KMRN_DIAG  PHY_REG(770, 19) /* KMRN Diagnostic */
-#define IGP3_VR_CTRL    PHY_REG(776, 18) /* Voltage Regulator Control */
-
-#define IGP3_KMRN_DIAG_PCS_LOCK_LOSS	0x0002
-#define IGP3_VR_CTRL_DEV_POWERDOWN_MODE_MASK 0x0300
-#define IGP3_VR_CTRL_MODE_SHUTDOWN	0x0200
-
-#define HV_LED_CONFIG		PHY_REG(768, 30) /* LED Configuration */
-
-#define SW_FLAG_TIMEOUT    1000 /* SW Semaphore flag timeout in milliseconds */
-
-/* SMBus Address Phy Register */
-#define HV_SMB_ADDR            PHY_REG(768, 26)
-#define HV_SMB_ADDR_MASK       0x007F
-#define HV_SMB_ADDR_PEC_EN     0x0200
-#define HV_SMB_ADDR_VALID      0x0080
-
-/* PHY Power Management Control */
-#define HV_PM_CTRL		PHY_REG(770, 17)
-
-/* PHY Low Power Idle Control */
-#define I82579_LPI_CTRL				PHY_REG(772, 20)
-#define I82579_LPI_CTRL_ENABLE_MASK		0x6000
-#define I82579_LPI_CTRL_FORCE_PLL_LOCK_COUNT	0x80
-
-/* EMI Registers */
-#define I82579_EMI_ADDR         0x10
-#define I82579_EMI_DATA         0x11
-#define I82579_LPI_UPDATE_TIMER 0x4805	/* in 40ns units + 40 ns base value */
-#define I82579_MSE_THRESHOLD    0x084F	/* Mean Square Error Threshold */
-#define I82579_MSE_LINK_DOWN    0x2411	/* MSE count before dropping link */
-
-/* Strapping Option Register - RO */
-#define E1000_STRAP                     0x0000C
-#define E1000_STRAP_SMBUS_ADDRESS_MASK  0x00FE0000
-#define E1000_STRAP_SMBUS_ADDRESS_SHIFT 17
-
-/* OEM Bits Phy Register */
-#define HV_OEM_BITS            PHY_REG(768, 25)
-#define HV_OEM_BITS_LPLU       0x0004 /* Low Power Link Up */
-#define HV_OEM_BITS_GBE_DIS    0x0040 /* Gigabit Disable */
-#define HV_OEM_BITS_RESTART_AN 0x0400 /* Restart Auto-negotiation */
-
-#define E1000_NVM_K1_CONFIG 0x1B /* NVM K1 Config Word */
-#define E1000_NVM_K1_ENABLE 0x1  /* NVM Enable K1 bit */
-
-/* KMRN Mode Control */
-#define HV_KMRN_MODE_CTRL      PHY_REG(769, 16)
-#define HV_KMRN_MDIO_SLOW      0x0400
-
-/* KMRN FIFO Control and Status */
-#define HV_KMRN_FIFO_CTRLSTA                  PHY_REG(770, 16)
-#define HV_KMRN_FIFO_CTRLSTA_PREAMBLE_MASK    0x7000
-#define HV_KMRN_FIFO_CTRLSTA_PREAMBLE_SHIFT   12
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ICH GbE Flash Hardware Sequencing Flash Status Register bit breakdown */
 /* Offset 04h HSFSTS */
 union ich8_hws_flash_status {
 	struct ich8_hsfsts {
-<<<<<<< HEAD
-		u16 flcdone    :1; /* bit 0 Flash Cycle Done */
-		u16 flcerr     :1; /* bit 1 Flash Cycle Error */
-		u16 dael       :1; /* bit 2 Direct Access error Log */
-		u16 berasesz   :2; /* bit 4:3 Sector Erase Size */
-		u16 flcinprog  :1; /* bit 5 flash cycle in Progress */
-		u16 reserved1  :2; /* bit 13:6 Reserved */
-		u16 reserved2  :6; /* bit 13:6 Reserved */
-		u16 fldesvalid :1; /* bit 14 Flash Descriptor Valid */
-		u16 flockdn    :1; /* bit 15 Flash Config Lock-Down */
-=======
 		u16 flcdone:1;	/* bit 0 Flash Cycle Done */
 		u16 flcerr:1;	/* bit 1 Flash Cycle Error */
 		u16 dael:1;	/* bit 2 Direct Access error Log */
@@ -216,7 +53,6 @@ union ich8_hws_flash_status {
 		u16 reserved2:6;	/* bit 13:6 Reserved */
 		u16 fldesvalid:1;	/* bit 14 Flash Descriptor Valid */
 		u16 flockdn:1;	/* bit 15 Flash Config Lock-Down */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} hsf_status;
 	u16 regval;
 };
@@ -225,19 +61,11 @@ union ich8_hws_flash_status {
 /* Offset 06h FLCTL */
 union ich8_hws_flash_ctrl {
 	struct ich8_hsflctl {
-<<<<<<< HEAD
-		u16 flcgo      :1;   /* 0 Flash Cycle Go */
-		u16 flcycle    :2;   /* 2:1 Flash Cycle */
-		u16 reserved   :5;   /* 7:3 Reserved  */
-		u16 fldbcount  :2;   /* 9:8 Flash Data Byte Count */
-		u16 flockdn    :6;   /* 15:10 Reserved */
-=======
 		u16 flcgo:1;	/* 0 Flash Cycle Go */
 		u16 flcycle:2;	/* 2:1 Flash Cycle */
 		u16 reserved:5;	/* 7:3 Reserved  */
 		u16 fldbcount:2;	/* 9:8 Flash Data Byte Count */
 		u16 flockdn:6;	/* 15:10 Reserved */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} hsf_ctrl;
 	u16 regval;
 };
@@ -245,17 +73,10 @@ union ich8_hws_flash_ctrl {
 /* ICH Flash Region Access Permissions */
 union ich8_hws_flash_regacc {
 	struct ich8_flracc {
-<<<<<<< HEAD
-		u32 grra      :8; /* 0:7 GbE region Read Access */
-		u32 grwa      :8; /* 8:15 GbE region Write Access */
-		u32 gmrag     :8; /* 23:16 GbE Master Read Access Grant */
-		u32 gmwag     :8; /* 31:24 GbE Master Write Access Grant */
-=======
 		u32 grra:8;	/* 0:7 GbE region Read Access */
 		u32 grwa:8;	/* 8:15 GbE region Write Access */
 		u32 gmrag:8;	/* 23:16 GbE Master Read Access Grant */
 		u32 gmwag:8;	/* 31:24 GbE Master Write Access Grant */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} hsf_flregacc;
 	u16 regval;
 };
@@ -263,29 +84,16 @@ union ich8_hws_flash_regacc {
 /* ICH Flash Protected Region */
 union ich8_flash_protected_range {
 	struct ich8_pr {
-<<<<<<< HEAD
-		u32 base:13;     /* 0:12 Protected Range Base */
-		u32 reserved1:2; /* 13:14 Reserved */
-		u32 rpe:1;       /* 15 Read Protection Enable */
-		u32 limit:13;    /* 16:28 Protected Range Limit */
-		u32 reserved2:2; /* 29:30 Reserved */
-		u32 wpe:1;       /* 31 Write Protection Enable */
-=======
 		u32 base:13;	/* 0:12 Protected Range Base */
 		u32 reserved1:2;	/* 13:14 Reserved */
 		u32 rpe:1;	/* 15 Read Protection Enable */
 		u32 limit:13;	/* 16:28 Protected Range Limit */
 		u32 reserved2:2;	/* 29:30 Reserved */
 		u32 wpe:1;	/* 31 Write Protection Enable */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} range;
 	u32 regval;
 };
 
-<<<<<<< HEAD
-static s32 e1000_setup_link_ich8lan(struct e1000_hw *hw);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void e1000_clear_hw_cntrs_ich8lan(struct e1000_hw *hw);
 static void e1000_initialize_hw_bits_ich8lan(struct e1000_hw *hw);
 static s32 e1000_erase_flash_bank_ich8lan(struct e1000_hw *hw, u32 bank);
@@ -297,11 +105,6 @@ static s32 e1000_read_flash_word_ich8lan(struct e1000_hw *hw, u32 offset,
 					 u16 *data);
 static s32 e1000_read_flash_data_ich8lan(struct e1000_hw *hw, u32 offset,
 					 u8 size, u16 *data);
-<<<<<<< HEAD
-static s32 e1000_setup_copper_link_ich8lan(struct e1000_hw *hw);
-static s32 e1000_kmrn_lock_loss_workaround_ich8lan(struct e1000_hw *hw);
-static s32 e1000_get_cfg_done_ich8lan(struct e1000_hw *hw);
-=======
 static s32 e1000_read_flash_data32_ich8lan(struct e1000_hw *hw, u32 offset,
 					   u32 *data);
 static s32 e1000_read_flash_dword_ich8lan(struct e1000_hw *hw,
@@ -311,7 +114,6 @@ static s32 e1000_write_flash_data32_ich8lan(struct e1000_hw *hw,
 static s32 e1000_retry_write_flash_dword_ich8lan(struct e1000_hw *hw,
 						 u32 offset, u32 dword);
 static s32 e1000_kmrn_lock_loss_workaround_ich8lan(struct e1000_hw *hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static s32 e1000_cleanup_led_ich8lan(struct e1000_hw *hw);
 static s32 e1000_led_on_ich8lan(struct e1000_hw *hw);
 static s32 e1000_led_off_ich8lan(struct e1000_hw *hw);
@@ -323,14 +125,6 @@ static s32 e1000_led_off_pchlan(struct e1000_hw *hw);
 static s32 e1000_set_lplu_state_pchlan(struct e1000_hw *hw, bool active);
 static void e1000_power_down_phy_copper_ich8lan(struct e1000_hw *hw);
 static void e1000_lan_init_done_ich8lan(struct e1000_hw *hw);
-<<<<<<< HEAD
-static s32  e1000_k1_gig_workaround_hv(struct e1000_hw *hw, bool link);
-static s32 e1000_set_mdio_slow_mode_hv(struct e1000_hw *hw);
-static bool e1000_check_mng_mode_ich8lan(struct e1000_hw *hw);
-static bool e1000_check_mng_mode_pchlan(struct e1000_hw *hw);
-static s32 e1000_k1_workaround_lv(struct e1000_hw *hw);
-static void e1000_gate_hw_phy_config_ich8lan(struct e1000_hw *hw, bool gate);
-=======
 static s32 e1000_k1_gig_workaround_hv(struct e1000_hw *hw, bool link);
 static s32 e1000_set_mdio_slow_mode_hv(struct e1000_hw *hw);
 static bool e1000_check_mng_mode_ich8lan(struct e1000_hw *hw);
@@ -343,7 +137,6 @@ static void e1000_gate_hw_phy_config_ich8lan(struct e1000_hw *hw, bool gate);
 static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force);
 static s32 e1000_setup_copper_link_pch_lpt(struct e1000_hw *hw);
 static s32 e1000_oem_bits_config_ich8lan(struct e1000_hw *hw, bool d0_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u16 __er16flash(struct e1000_hw *hw, unsigned long reg)
 {
@@ -370,20 +163,6 @@ static inline void __ew32flash(struct e1000_hw *hw, unsigned long reg, u32 val)
 #define ew16flash(reg, val)	__ew16flash(hw, (reg), (val))
 #define ew32flash(reg, val)	__ew32flash(hw, (reg), (val))
 
-<<<<<<< HEAD
-static void e1000_toggle_lanphypc_value_ich8lan(struct e1000_hw *hw)
-{
-	u32 ctrl;
-
-	ctrl = er32(CTRL);
-	ctrl |= E1000_CTRL_LANPHYPC_OVERRIDE;
-	ctrl &= ~E1000_CTRL_LANPHYPC_VALUE;
-	ew32(CTRL, ctrl);
-	e1e_flush();
-	udelay(10);
-	ctrl &= ~E1000_CTRL_LANPHYPC_OVERRIDE;
-	ew32(CTRL, ctrl);
-=======
 /**
  *  e1000_phy_is_accessible_pchlan - Check if able to access PHY registers
  *  @hw: pointer to the HW structure
@@ -653,7 +432,6 @@ out:
 	}
 
 	return ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -665,85 +443,6 @@ out:
 static s32 e1000_init_phy_params_pchlan(struct e1000_hw *hw)
 {
 	struct e1000_phy_info *phy = &hw->phy;
-<<<<<<< HEAD
-	s32 ret_val = 0;
-
-	phy->addr                     = 1;
-	phy->reset_delay_us           = 100;
-
-	phy->ops.set_page             = e1000_set_page_igp;
-	phy->ops.read_reg             = e1000_read_phy_reg_hv;
-	phy->ops.read_reg_locked      = e1000_read_phy_reg_hv_locked;
-	phy->ops.read_reg_page        = e1000_read_phy_reg_page_hv;
-	phy->ops.set_d0_lplu_state    = e1000_set_lplu_state_pchlan;
-	phy->ops.set_d3_lplu_state    = e1000_set_lplu_state_pchlan;
-	phy->ops.write_reg            = e1000_write_phy_reg_hv;
-	phy->ops.write_reg_locked     = e1000_write_phy_reg_hv_locked;
-	phy->ops.write_reg_page       = e1000_write_phy_reg_page_hv;
-	phy->ops.power_up             = e1000_power_up_phy_copper;
-	phy->ops.power_down           = e1000_power_down_phy_copper_ich8lan;
-	phy->autoneg_mask             = AUTONEG_ADVERTISE_SPEED_DEFAULT;
-
-	if (!hw->phy.ops.check_reset_block(hw)) {
-		u32 fwsm = er32(FWSM);
-
-		/*
-		 * The MAC-PHY interconnect may still be in SMBus mode after
-		 * Sx->S0.  If resetting the PHY is not blocked, toggle the
-		 * LANPHYPC Value bit to force the interconnect to PCIe mode.
-		 */
-		e1000_toggle_lanphypc_value_ich8lan(hw);
-		msleep(50);
-
-		/*
-		 * Gate automatic PHY configuration by hardware on
-		 * non-managed 82579
-		 */
-		if ((hw->mac.type == e1000_pch2lan) &&
-		    !(fwsm & E1000_ICH_FWSM_FW_VALID))
-			e1000_gate_hw_phy_config_ich8lan(hw, true);
-
-		/*
-		 * Reset the PHY before any access to it.  Doing so, ensures
-		 * that the PHY is in a known good state before we read/write
-		 * PHY registers.  The generic reset is sufficient here,
-		 * because we haven't determined the PHY type yet.
-		 */
-		ret_val = e1000e_phy_hw_reset_generic(hw);
-		if (ret_val)
-			return ret_val;
-
-		/* Ungate automatic PHY configuration on non-managed 82579 */
-		if ((hw->mac.type == e1000_pch2lan) &&
-		    !(fwsm & E1000_ICH_FWSM_FW_VALID)) {
-			usleep_range(10000, 20000);
-			e1000_gate_hw_phy_config_ich8lan(hw, false);
-		}
-	}
-
-	phy->id = e1000_phy_unknown;
-	switch (hw->mac.type) {
-	default:
-		ret_val = e1000e_get_phy_id(hw);
-		if (ret_val)
-			return ret_val;
-		if ((phy->id != 0) && (phy->id != PHY_REVISION_MASK))
-			break;
-		/* fall-through */
-	case e1000_pch2lan:
-		/*
-		 * In case the PHY needs to be in mdio slow mode,
-		 * set slow mode and try to get the PHY id again.
-		 */
-		ret_val = e1000_set_mdio_slow_mode_hv(hw);
-		if (ret_val)
-			return ret_val;
-		ret_val = e1000e_get_phy_id(hw);
-		if (ret_val)
-			return ret_val;
-		break;
-	}
-=======
 	s32 ret_val;
 
 	phy->addr = 1;
@@ -803,16 +502,12 @@ static s32 e1000_init_phy_params_pchlan(struct e1000_hw *hw)
 				return ret_val;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phy->type = e1000e_get_phy_type_from_id(phy->id);
 
 	switch (phy->type) {
 	case e1000_phy_82577:
 	case e1000_phy_82579:
-<<<<<<< HEAD
-=======
 	case e1000_phy_i217:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phy->ops.check_polarity = e1000_check_polarity_82577;
 		phy->ops.force_speed_duplex =
 		    e1000_phy_force_speed_duplex_82577;
@@ -846,16 +541,6 @@ static s32 e1000_init_phy_params_ich8lan(struct e1000_hw *hw)
 	s32 ret_val;
 	u16 i = 0;
 
-<<<<<<< HEAD
-	phy->addr			= 1;
-	phy->reset_delay_us		= 100;
-
-	phy->ops.power_up               = e1000_power_up_phy_copper;
-	phy->ops.power_down             = e1000_power_down_phy_copper_ich8lan;
-
-	/*
-	 * We may need to do this twice - once for IGP and if that fails,
-=======
 	phy->addr = 1;
 	phy->reset_delay_us = 100;
 
@@ -863,17 +548,12 @@ static s32 e1000_init_phy_params_ich8lan(struct e1000_hw *hw)
 	phy->ops.power_down = e1000_power_down_phy_copper_ich8lan;
 
 	/* We may need to do this twice - once for IGP and if that fails,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * we'll set BM func pointers and try again
 	 */
 	ret_val = e1000e_determine_phy_address(hw);
 	if (ret_val) {
 		phy->ops.write_reg = e1000e_write_phy_reg_bm;
-<<<<<<< HEAD
-		phy->ops.read_reg  = e1000e_read_phy_reg_bm;
-=======
 		phy->ops.read_reg = e1000e_read_phy_reg_bm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = e1000e_determine_phy_address(hw);
 		if (ret_val) {
 			e_dbg("Cannot determine PHY addr. Erroring out\n");
@@ -884,11 +564,7 @@ static s32 e1000_init_phy_params_ich8lan(struct e1000_hw *hw)
 	phy->id = 0;
 	while ((e1000_phy_unknown == e1000e_get_phy_type_from_id(phy->id)) &&
 	       (i++ < 100)) {
-<<<<<<< HEAD
-		usleep_range(1000, 2000);
-=======
 		usleep_range(1000, 1100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = e1000e_get_phy_id(hw);
 		if (ret_val)
 			return ret_val;
@@ -926,10 +602,6 @@ static s32 e1000_init_phy_params_ich8lan(struct e1000_hw *hw)
 		break;
 	default:
 		return -E1000_ERR_PHY;
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -948,39 +620,6 @@ static s32 e1000_init_nvm_params_ich8lan(struct e1000_hw *hw)
 	struct e1000_dev_spec_ich8lan *dev_spec = &hw->dev_spec.ich8lan;
 	u32 gfpreg, sector_base_addr, sector_end_addr;
 	u16 i;
-<<<<<<< HEAD
-
-	/* Can't read flash registers if the register set isn't mapped. */
-	if (!hw->flash_address) {
-		e_dbg("ERROR: Flash registers not mapped\n");
-		return -E1000_ERR_CONFIG;
-	}
-
-	nvm->type = e1000_nvm_flash_sw;
-
-	gfpreg = er32flash(ICH_FLASH_GFPREG);
-
-	/*
-	 * sector_X_addr is a "sector"-aligned address (4096 bytes)
-	 * Add 1 to sector_end_addr since this sector is included in
-	 * the overall size.
-	 */
-	sector_base_addr = gfpreg & FLASH_GFPREG_BASE_MASK;
-	sector_end_addr = ((gfpreg >> 16) & FLASH_GFPREG_BASE_MASK) + 1;
-
-	/* flash_base_addr is byte-aligned */
-	nvm->flash_base_addr = sector_base_addr << FLASH_SECTOR_ADDR_SHIFT;
-
-	/*
-	 * find total size of the NVM, then cut in half since the total
-	 * size represents two separate NVM banks.
-	 */
-	nvm->flash_bank_size = (sector_end_addr - sector_base_addr)
-				<< FLASH_SECTOR_ADDR_SHIFT;
-	nvm->flash_bank_size /= 2;
-	/* Adjust to word count */
-	nvm->flash_bank_size /= sizeof(u16);
-=======
 	u32 nvm_size;
 
 	nvm->type = e1000_nvm_flash_sw;
@@ -1029,18 +668,13 @@ static s32 e1000_init_nvm_params_ich8lan(struct e1000_hw *hw)
 		/* Adjust to word count */
 		nvm->flash_bank_size /= sizeof(u16);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nvm->word_size = E1000_ICH8_SHADOW_RAM_WORDS;
 
 	/* Clear shadow ram */
 	for (i = 0; i < nvm->word_size; i++) {
 		dev_spec->shadow_ram[i].modified = false;
-<<<<<<< HEAD
-		dev_spec->shadow_ram[i].value    = 0xFFFF;
-=======
 		dev_spec->shadow_ram[i].value = 0xFFFF;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1073,11 +707,7 @@ static s32 e1000_init_mac_params_ich8lan(struct e1000_hw *hw)
 	/* Adaptive IFS supported */
 	mac->adaptive_ifs = true;
 
-<<<<<<< HEAD
-	/* LED operations */
-=======
 	/* LED and other operations */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (mac->type) {
 	case e1000_ich8lan:
 	case e1000_ich9lan:
@@ -1096,10 +726,6 @@ static s32 e1000_init_mac_params_ich8lan(struct e1000_hw *hw)
 		mac->ops.led_on = e1000_led_on_ich8lan;
 		mac->ops.led_off = e1000_led_off_ich8lan;
 		break;
-<<<<<<< HEAD
-	case e1000_pchlan:
-	case e1000_pch2lan:
-=======
 	case e1000_pch2lan:
 		mac->rar_entry_count = E1000_PCH2_RAR_ENTRIES;
 		mac->ops.rar_set = e1000_rar_set_pch2lan;
@@ -1114,7 +740,6 @@ static s32 e1000_init_mac_params_ich8lan(struct e1000_hw *hw)
 	case e1000_pch_ptp:
 	case e1000_pch_nvp:
 	case e1000_pchlan:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* check management mode */
 		mac->ops.check_mng_mode = e1000_check_mng_mode_pchlan;
 		/* ID LED init */
@@ -1131,8 +756,6 @@ static s32 e1000_init_mac_params_ich8lan(struct e1000_hw *hw)
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 	if (mac->type >= e1000_pch_lpt) {
 		mac->rar_entry_count = E1000_PCH_LPT_RAR_ENTRIES;
 		mac->ops.rar_set = e1000_rar_set_pch_lpt;
@@ -1141,49 +764,14 @@ static s32 e1000_init_mac_params_ich8lan(struct e1000_hw *hw)
 		mac->ops.rar_get_count = e1000_rar_get_count_pch_lpt;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable PCS Lock-loss workaround for ICH8 */
 	if (mac->type == e1000_ich8lan)
 		e1000e_set_kmrn_lock_loss_workaround_ich8lan(hw, true);
 
-<<<<<<< HEAD
-	/* Gate automatic PHY configuration by hardware on managed 82579 */
-	if ((mac->type == e1000_pch2lan) &&
-	    (er32(FWSM) & E1000_ICH_FWSM_FW_VALID))
-		e1000_gate_hw_phy_config_ich8lan(hw, true);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- *  e1000_set_eee_pchlan - Enable/disable EEE support
- *  @hw: pointer to the HW structure
- *
- *  Enable/disable EEE based on setting in dev_spec structure.  The bits in
- *  the LPI Control register will remain set only if/when link is up.
- **/
-static s32 e1000_set_eee_pchlan(struct e1000_hw *hw)
-{
-	s32 ret_val = 0;
-	u16 phy_reg;
-
-	if (hw->phy.type != e1000_phy_82579)
-		return 0;
-
-	ret_val = e1e_rphy(hw, I82579_LPI_CTRL, &phy_reg);
-	if (ret_val)
-		return ret_val;
-
-	if (hw->dev_spec.ich8lan.eee_disable)
-		phy_reg &= ~I82579_LPI_CTRL_ENABLE_MASK;
-	else
-		phy_reg |= I82579_LPI_CTRL_ENABLE_MASK;
-
-	return e1e_wphy(hw, I82579_LPI_CTRL, phy_reg);
-=======
  *  __e1000_access_emi_reg_locked - Read/write EMI register
  *  @hw: pointer to the HW structure
  *  @address: EMI address to program
@@ -1809,7 +1397,6 @@ out:
 		hw->dev_spec.ich8lan.ulp_state = e1000_ulp_state_off;
 
 	return ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1823,59 +1410,31 @@ out:
 static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
 {
 	struct e1000_mac_info *mac = &hw->mac;
-<<<<<<< HEAD
-	s32 ret_val;
-	bool link;
-	u16 phy_reg;
-
-	/*
-	 * We only want to go out to the PHY registers to see if Auto-Neg
-=======
 	s32 ret_val, tipg_reg = 0;
 	u16 emi_addr, emi_val = 0;
 	bool link;
 	u16 phy_reg;
 
 	/* We only want to go out to the PHY registers to see if Auto-Neg
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * has completed and/or if our link status has changed.  The
 	 * get_link_status flag is set upon receiving a Link Status
 	 * Change or Rx Sequence Error interrupt.
 	 */
 	if (!mac->get_link_status)
 		return 0;
-<<<<<<< HEAD
-
-	/*
-	 * First we want to see if the MII Status Register reports
-=======
 	mac->get_link_status = false;
 
 	/* First we want to see if the MII Status Register reports
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * link.  If so, then we want to get the current speed/duplex
 	 * of the PHY.
 	 */
 	ret_val = e1000e_phy_has_link_generic(hw, 1, 0, &link);
 	if (ret_val)
-<<<<<<< HEAD
-		return ret_val;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hw->mac.type == e1000_pchlan) {
 		ret_val = e1000_k1_gig_workaround_hv(hw, link);
 		if (ret_val)
-<<<<<<< HEAD
-			return ret_val;
-	}
-
-	if (!link)
-		return 0; /* No link detected */
-
-	mac->get_link_status = false;
-=======
 			goto out;
 	}
 
@@ -2041,18 +1600,13 @@ static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
 
 	if (!link)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hw->mac.type) {
 	case e1000_pch2lan:
 		ret_val = e1000_k1_workaround_lv(hw);
 		if (ret_val)
 			return ret_val;
-<<<<<<< HEAD
-		/* fall-thru */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case e1000_pchlan:
 		if (hw->phy.type == e1000_phy_82578) {
 			ret_val = e1000_link_stall_workaround_hv(hw);
@@ -2060,12 +1614,7 @@ static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
 				return ret_val;
 		}
 
-<<<<<<< HEAD
-		/*
-		 * Workaround for PCHx parts in half-duplex:
-=======
 		/* Workaround for PCHx parts in half-duplex:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * Set the number of preambles removed from the packet
 		 * when it is passed from the PHY to the MAC to prevent
 		 * the MAC from misinterpreting the packet type.
@@ -2074,11 +1623,7 @@ static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
 		phy_reg &= ~HV_KMRN_FIFO_CTRLSTA_PREAMBLE_MASK;
 
 		if ((er32(STATUS) & E1000_STATUS_FD) != E1000_STATUS_FD)
-<<<<<<< HEAD
-			phy_reg |= (1 << HV_KMRN_FIFO_CTRLSTA_PREAMBLE_SHIFT);
-=======
 			phy_reg |= BIT(HV_KMRN_FIFO_CTRLSTA_PREAMBLE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		e1e_wphy(hw, HV_KMRN_FIFO_CTRLSTA, phy_reg);
 		break;
@@ -2086,25 +1631,12 @@ static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
 		break;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Check if there was DownShift, must be checked
-=======
 	/* Check if there was DownShift, must be checked
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * immediately after link-up
 	 */
 	e1000e_check_downshift(hw);
 
 	/* Enable/Disable EEE after link up */
-<<<<<<< HEAD
-	ret_val = e1000_set_eee_pchlan(hw);
-	if (ret_val)
-		return ret_val;
-
-	/*
-	 * If we are forcing speed/duplex, then we simply return since
-=======
 	if (hw->phy.type > e1000_phy_82579) {
 		ret_val = e1000_set_eee_pchlan(hw);
 		if (ret_val)
@@ -2112,29 +1644,18 @@ static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
 	}
 
 	/* If we are forcing speed/duplex, then we simply return since
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * we have already determined whether we have link or not.
 	 */
 	if (!mac->autoneg)
 		return -E1000_ERR_CONFIG;
 
-<<<<<<< HEAD
-	/*
-	 * Auto-Neg is enabled.  Auto Speed Detection takes care
-=======
 	/* Auto-Neg is enabled.  Auto Speed Detection takes care
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * of MAC speed/duplex configuration.  So we only need to
 	 * configure Collision Distance in the MAC.
 	 */
 	mac->ops.config_collision_dist(hw);
 
-<<<<<<< HEAD
-	/*
-	 * Configure Flow Control now that Auto-Neg has completed.
-=======
 	/* Configure Flow Control now that Auto-Neg has completed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * First, we need to restore the desired flow control
 	 * settings because we may have had to re-autoneg with a
 	 * different link partner.
@@ -2144,13 +1665,10 @@ static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
 		e_dbg("Error configuring flow control\n");
 
 	return ret_val;
-<<<<<<< HEAD
-=======
 
 out:
 	mac->get_link_status = true;
 	return ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static s32 e1000_get_variants_ich8lan(struct e1000_adapter *adapter)
@@ -2174,8 +1692,6 @@ static s32 e1000_get_variants_ich8lan(struct e1000_adapter *adapter)
 		break;
 	case e1000_pchlan:
 	case e1000_pch2lan:
-<<<<<<< HEAD
-=======
 	case e1000_pch_lpt:
 	case e1000_pch_spt:
 	case e1000_pch_cnp:
@@ -2185,7 +1701,6 @@ static s32 e1000_get_variants_ich8lan(struct e1000_adapter *adapter)
 	case e1000_pch_lnp:
 	case e1000_pch_ptp:
 	case e1000_pch_nvp:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = e1000_init_phy_params_pchlan(hw);
 		break;
 	default:
@@ -2194,23 +1709,14 @@ static s32 e1000_get_variants_ich8lan(struct e1000_adapter *adapter)
 	if (rc)
 		return rc;
 
-<<<<<<< HEAD
-	/*
-	 * Disable Jumbo Frame support on parts with Intel 10/100 PHY or
-=======
 	/* Disable Jumbo Frame support on parts with Intel 10/100 PHY or
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * on parts with MACsec enabled in NVM (reflected in CTRL_EXT).
 	 */
 	if ((adapter->hw.phy.type == e1000_phy_ife) ||
 	    ((adapter->hw.mac.type >= e1000_pch2lan) &&
 	     (!(er32(CTRL_EXT) & E1000_CTRL_EXT_LSECCK)))) {
 		adapter->flags &= ~FLAG_HAS_JUMBO_FRAMES;
-<<<<<<< HEAD
-		adapter->max_hw_frame_size = ETH_FRAME_LEN + ETH_FCS_LEN;
-=======
 		adapter->max_hw_frame_size = VLAN_ETH_FRAME_LEN + ETH_FCS_LEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hw->mac.ops.blink_led = NULL;
 	}
@@ -2224,13 +1730,6 @@ static s32 e1000_get_variants_ich8lan(struct e1000_adapter *adapter)
 	    (er32(FWSM) & E1000_ICH_FWSM_FW_VALID))
 		adapter->flags2 |= FLAG2_PCIM2PCI_ARBITER_WA;
 
-<<<<<<< HEAD
-	/* Disable EEE by default until IEEE802.3az spec is finalized */
-	if (adapter->flags2 & FLAG2_HAS_EEE)
-		adapter->hw.dev_spec.ich8lan.eee_disable = true;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2242,11 +1741,7 @@ static DEFINE_MUTEX(nvm_mutex);
  *
  *  Acquires the mutex for performing NVM operations.
  **/
-<<<<<<< HEAD
-static s32 e1000_acquire_nvm_ich8lan(struct e1000_hw *hw)
-=======
 static s32 e1000_acquire_nvm_ich8lan(struct e1000_hw __always_unused *hw)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&nvm_mutex);
 
@@ -2259,11 +1754,7 @@ static s32 e1000_acquire_nvm_ich8lan(struct e1000_hw __always_unused *hw)
  *
  *  Releases the mutex used while performing NVM operations.
  **/
-<<<<<<< HEAD
-static void e1000_release_nvm_ich8lan(struct e1000_hw *hw)
-=======
 static void e1000_release_nvm_ich8lan(struct e1000_hw __always_unused *hw)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_unlock(&nvm_mutex);
 }
@@ -2368,13 +1859,8 @@ static bool e1000_check_mng_mode_ich8lan(struct e1000_hw *hw)
 
 	fwsm = er32(FWSM);
 	return (fwsm & E1000_ICH_FWSM_FW_VALID) &&
-<<<<<<< HEAD
-	       ((fwsm & E1000_FWSM_MODE_MASK) ==
-		(E1000_ICH_MNG_IAMT_MODE << E1000_FWSM_MODE_SHIFT));
-=======
 		((fwsm & E1000_FWSM_MODE_MASK) ==
 		 (E1000_ICH_MNG_IAMT_MODE << E1000_FWSM_MODE_SHIFT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2391,9 +1877,6 @@ static bool e1000_check_mng_mode_pchlan(struct e1000_hw *hw)
 
 	fwsm = er32(FWSM);
 	return (fwsm & E1000_ICH_FWSM_FW_VALID) &&
-<<<<<<< HEAD
-	       (fwsm & (E1000_ICH_MNG_IAMT_MODE << E1000_FWSM_MODE_SHIFT));
-=======
 	    (fwsm & (E1000_ICH_MNG_IAMT_MODE << E1000_FWSM_MODE_SHIFT));
 }
 
@@ -2572,7 +2055,6 @@ static int e1000_rar_set_pch_lpt(struct e1000_hw *hw, u8 *addr, u32 index)
 out:
 	e_dbg("Failed to write receive address at index %d\n", index);
 	return -E1000_ERR_CONFIG;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2585,13 +2067,6 @@ out:
  **/
 static s32 e1000_check_reset_block_ich8lan(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	u32 fwsm;
-
-	fwsm = er32(FWSM);
-
-	return (fwsm & E1000_ICH_FWSM_RSPCIPHY) ? 0 : E1000_BLK_PHY_RESET;
-=======
 	bool blocked = false;
 	int i = 0;
 
@@ -2599,7 +2074,6 @@ static s32 e1000_check_reset_block_ich8lan(struct e1000_hw *hw)
 	       (i++ < 30))
 		usleep_range(10000, 11000);
 	return blocked ? E1000_BLK_PHY_RESET : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2613,12 +2087,8 @@ static s32 e1000_write_smbus_addr(struct e1000_hw *hw)
 {
 	u16 phy_data;
 	u32 strap = er32(STRAP);
-<<<<<<< HEAD
-	s32 ret_val = 0;
-=======
 	u32 freq = FIELD_GET(E1000_STRAP_SMT_FREQ_MASK, strap);
 	s32 ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strap &= E1000_STRAP_SMBUS_ADDRESS_MASK;
 
@@ -2630,8 +2100,6 @@ static s32 e1000_write_smbus_addr(struct e1000_hw *hw)
 	phy_data |= (strap >> E1000_STRAP_SMBUS_ADDRESS_SHIFT);
 	phy_data |= HV_SMB_ADDR_PEC_EN | HV_SMB_ADDR_VALID;
 
-<<<<<<< HEAD
-=======
 	if (hw->phy.type == e1000_phy_i217) {
 		/* Restore SMBus frequency */
 		if (freq--) {
@@ -2645,7 +2113,6 @@ static s32 e1000_write_smbus_addr(struct e1000_hw *hw)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return e1000_write_phy_reg_hv_locked(hw, HV_SMB_ADDR, phy_data);
 }
 
@@ -2663,12 +2130,7 @@ static s32 e1000_sw_lcd_config_ich8lan(struct e1000_hw *hw)
 	s32 ret_val = 0;
 	u16 word_addr, reg_data, reg_addr, phy_page = 0;
 
-<<<<<<< HEAD
-	/*
-	 * Initialize the PHY from the NVM on ICH platforms.  This
-=======
 	/* Initialize the PHY from the NVM on ICH platforms.  This
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * is needed due to an issue where the NVM configuration is
 	 * not properly autoloaded after power transitions.
 	 * Therefore, after each PHY reset, we will load the
@@ -2684,11 +2146,6 @@ static s32 e1000_sw_lcd_config_ich8lan(struct e1000_hw *hw)
 			sw_cfg_mask = E1000_FEXTNVM_SW_CONFIG;
 			break;
 		}
-<<<<<<< HEAD
-		/* Fall-thru */
-	case e1000_pchlan:
-	case e1000_pch2lan:
-=======
 		fallthrough;
 	case e1000_pchlan:
 	case e1000_pch2lan:
@@ -2701,7 +2158,6 @@ static s32 e1000_sw_lcd_config_ich8lan(struct e1000_hw *hw)
 	case e1000_pch_lnp:
 	case e1000_pch_ptp:
 	case e1000_pch_nvp:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sw_cfg_mask = E1000_FEXTNVM_SW_CONFIG_ICH8M;
 		break;
 	default:
@@ -2716,17 +2172,6 @@ static s32 e1000_sw_lcd_config_ich8lan(struct e1000_hw *hw)
 	if (!(data & sw_cfg_mask))
 		goto release;
 
-<<<<<<< HEAD
-	/*
-	 * Make sure HW does not configure LCD from PHY
-	 * extended configuration before SW configuration
-	 */
-	data = er32(EXTCNF_CTRL);
-	if (!(hw->mac.type == e1000_pch2lan)) {
-		if (data & E1000_EXTCNF_CTRL_LCD_WRITE_ENABLE)
-			goto release;
-	}
-=======
 	/* Make sure HW does not configure LCD from PHY
 	 * extended configuration before SW configuration
 	 */
@@ -2734,7 +2179,6 @@ static s32 e1000_sw_lcd_config_ich8lan(struct e1000_hw *hw)
 	if ((hw->mac.type < e1000_pch2lan) &&
 	    (data & E1000_EXTCNF_CTRL_LCD_WRITE_ENABLE))
 		goto release;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cnf_size = er32(EXTCNF_SIZE);
 	cnf_size &= E1000_EXTCNF_SIZE_EXT_PCIE_LENGTH_MASK;
@@ -2745,18 +2189,10 @@ static s32 e1000_sw_lcd_config_ich8lan(struct e1000_hw *hw)
 	cnf_base_addr = data & E1000_EXTCNF_CTRL_EXT_CNF_POINTER_MASK;
 	cnf_base_addr >>= E1000_EXTCNF_CTRL_EXT_CNF_POINTER_SHIFT;
 
-<<<<<<< HEAD
-	if ((!(data & E1000_EXTCNF_CTRL_OEM_WRITE_ENABLE) &&
-	    (hw->mac.type == e1000_pchlan)) ||
-	     (hw->mac.type == e1000_pch2lan)) {
-		/*
-		 * HW configures the SMBus address and LEDs when the
-=======
 	if (((hw->mac.type == e1000_pchlan) &&
 	     !(data & E1000_EXTCNF_CTRL_OEM_WRITE_ENABLE)) ||
 	    (hw->mac.type > e1000_pchlan)) {
 		/* HW configures the SMBus address and LEDs when the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * OEM and LCD Write Enable bits are set in the NVM.
 		 * When both NVM bits are cleared, SW will configure
 		 * them instead.
@@ -2778,12 +2214,7 @@ static s32 e1000_sw_lcd_config_ich8lan(struct e1000_hw *hw)
 	word_addr = (u16)(cnf_base_addr << 1);
 
 	for (i = 0; i < cnf_size; i++) {
-<<<<<<< HEAD
-		ret_val = e1000_read_nvm(hw, (word_addr + i * 2), 1,
-					 &reg_data);
-=======
 		ret_val = e1000_read_nvm(hw, (word_addr + i * 2), 1, &reg_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			goto release;
 
@@ -2801,12 +2232,7 @@ static s32 e1000_sw_lcd_config_ich8lan(struct e1000_hw *hw)
 		reg_addr &= PHY_REG_MASK;
 		reg_addr |= phy_page;
 
-<<<<<<< HEAD
-		ret_val = phy->ops.write_reg_locked(hw, (u32)reg_addr,
-						    reg_data);
-=======
 		ret_val = e1e_wphy_locked(hw, (u32)reg_addr, reg_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			goto release;
 	}
@@ -2843,20 +2269,6 @@ static s32 e1000_k1_gig_workaround_hv(struct e1000_hw *hw, bool link)
 	/* Disable K1 when link is 1Gbps, otherwise use the NVM setting */
 	if (link) {
 		if (hw->phy.type == e1000_phy_82578) {
-<<<<<<< HEAD
-			ret_val = hw->phy.ops.read_reg_locked(hw, BM_CS_STATUS,
-			                                          &status_reg);
-			if (ret_val)
-				goto release;
-
-			status_reg &= BM_CS_STATUS_LINK_UP |
-			              BM_CS_STATUS_RESOLVED |
-			              BM_CS_STATUS_SPEED_MASK;
-
-			if (status_reg == (BM_CS_STATUS_LINK_UP |
-			                   BM_CS_STATUS_RESOLVED |
-			                   BM_CS_STATUS_SPEED_1000))
-=======
 			ret_val = e1e_rphy_locked(hw, BM_CS_STATUS,
 						  &status_reg);
 			if (ret_val)
@@ -2869,25 +2281,10 @@ static s32 e1000_k1_gig_workaround_hv(struct e1000_hw *hw, bool link)
 			if (status_reg == (BM_CS_STATUS_LINK_UP |
 					   BM_CS_STATUS_RESOLVED |
 					   BM_CS_STATUS_SPEED_1000))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				k1_enable = false;
 		}
 
 		if (hw->phy.type == e1000_phy_82577) {
-<<<<<<< HEAD
-			ret_val = hw->phy.ops.read_reg_locked(hw, HV_M_STATUS,
-			                                          &status_reg);
-			if (ret_val)
-				goto release;
-
-			status_reg &= HV_M_STATUS_LINK_UP |
-			              HV_M_STATUS_AUTONEG_COMPLETE |
-			              HV_M_STATUS_SPEED_MASK;
-
-			if (status_reg == (HV_M_STATUS_LINK_UP |
-			                   HV_M_STATUS_AUTONEG_COMPLETE |
-			                   HV_M_STATUS_SPEED_1000))
-=======
 			ret_val = e1e_rphy_locked(hw, HV_M_STATUS, &status_reg);
 			if (ret_val)
 				goto release;
@@ -2899,28 +2296,17 @@ static s32 e1000_k1_gig_workaround_hv(struct e1000_hw *hw, bool link)
 			if (status_reg == (HV_M_STATUS_LINK_UP |
 					   HV_M_STATUS_AUTONEG_COMPLETE |
 					   HV_M_STATUS_SPEED_1000))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				k1_enable = false;
 		}
 
 		/* Link stall fix for link up */
-<<<<<<< HEAD
-		ret_val = hw->phy.ops.write_reg_locked(hw, PHY_REG(770, 19),
-		                                           0x0100);
-=======
 		ret_val = e1e_wphy_locked(hw, PHY_REG(770, 19), 0x0100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			goto release;
 
 	} else {
 		/* Link stall fix for link down */
-<<<<<<< HEAD
-		ret_val = hw->phy.ops.write_reg_locked(hw, PHY_REG(770, 19),
-		                                           0x4100);
-=======
 		ret_val = e1e_wphy_locked(hw, PHY_REG(770, 19), 0x4100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			goto release;
 	}
@@ -2936,11 +2322,7 @@ release:
 /**
  *  e1000_configure_k1_ich8lan - Configure K1 power state
  *  @hw: pointer to the HW structure
-<<<<<<< HEAD
- *  @enable: K1 state to configure
-=======
  *  @k1_enable: K1 state to configure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Configure the K1 power state based on the provided parameter.
  *  Assumes semaphore already acquired.
@@ -2949,11 +2331,7 @@ release:
  **/
 s32 e1000_configure_k1_ich8lan(struct e1000_hw *hw, bool k1_enable)
 {
-<<<<<<< HEAD
-	s32 ret_val = 0;
-=======
 	s32 ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ctrl_reg = 0;
 	u32 ctrl_ext = 0;
 	u32 reg = 0;
@@ -2974,11 +2352,7 @@ s32 e1000_configure_k1_ich8lan(struct e1000_hw *hw, bool k1_enable)
 	if (ret_val)
 		return ret_val;
 
-<<<<<<< HEAD
-	udelay(20);
-=======
 	usleep_range(20, 40);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctrl_ext = er32(CTRL_EXT);
 	ctrl_reg = er32(CTRL);
 
@@ -2988,19 +2362,11 @@ s32 e1000_configure_k1_ich8lan(struct e1000_hw *hw, bool k1_enable)
 
 	ew32(CTRL_EXT, ctrl_ext | E1000_CTRL_EXT_SPD_BYPS);
 	e1e_flush();
-<<<<<<< HEAD
-	udelay(20);
-	ew32(CTRL, ctrl_reg);
-	ew32(CTRL_EXT, ctrl_ext);
-	e1e_flush();
-	udelay(20);
-=======
 	usleep_range(20, 40);
 	ew32(CTRL, ctrl_reg);
 	ew32(CTRL_EXT, ctrl_ext);
 	e1e_flush();
 	usleep_range(20, 40);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3020,22 +2386,14 @@ static s32 e1000_oem_bits_config_ich8lan(struct e1000_hw *hw, bool d0_state)
 	u32 mac_reg;
 	u16 oem_reg;
 
-<<<<<<< HEAD
-	if ((hw->mac.type != e1000_pch2lan) && (hw->mac.type != e1000_pchlan))
-=======
 	if (hw->mac.type < e1000_pchlan)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret_val;
 
 	ret_val = hw->phy.ops.acquire(hw);
 	if (ret_val)
 		return ret_val;
 
-<<<<<<< HEAD
-	if (!(hw->mac.type == e1000_pch2lan)) {
-=======
 	if (hw->mac.type == e1000_pchlan) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mac_reg = er32(EXTCNF_CTRL);
 		if (mac_reg & E1000_EXTCNF_CTRL_OEM_WRITE_ENABLE)
 			goto release;
@@ -3047,11 +2405,7 @@ static s32 e1000_oem_bits_config_ich8lan(struct e1000_hw *hw, bool d0_state)
 
 	mac_reg = er32(PHY_CTRL);
 
-<<<<<<< HEAD
-	ret_val = hw->phy.ops.read_reg_locked(hw, HV_OEM_BITS, &oem_reg);
-=======
 	ret_val = e1e_rphy_locked(hw, HV_OEM_BITS, &oem_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		goto release;
 
@@ -3078,11 +2432,7 @@ static s32 e1000_oem_bits_config_ich8lan(struct e1000_hw *hw, bool d0_state)
 	    !hw->phy.ops.check_reset_block(hw))
 		oem_reg |= HV_OEM_BITS_RESTART_AN;
 
-<<<<<<< HEAD
-	ret_val = hw->phy.ops.write_reg_locked(hw, HV_OEM_BITS, oem_reg);
-=======
 	ret_val = e1e_wphy_locked(hw, HV_OEM_BITS, oem_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 release:
 	hw->phy.ops.release(hw);
@@ -3090,10 +2440,6 @@ release:
 	return ret_val;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *  e1000_set_mdio_slow_mode_hv - Set slow MDIO access mode
  *  @hw:   pointer to the HW structure
@@ -3115,15 +2461,10 @@ static s32 e1000_set_mdio_slow_mode_hv(struct e1000_hw *hw)
 }
 
 /**
-<<<<<<< HEAD
- *  e1000_hv_phy_workarounds_ich8lan - A series of Phy workarounds to be
- *  done after every PHY reset.
-=======
  *  e1000_hv_phy_workarounds_ich8lan - apply PHY workarounds
  *  @hw: pointer to the HW structure
  *
  *  A series of PHY workarounds to be done after every PHY reset.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static s32 e1000_hv_phy_workarounds_ich8lan(struct e1000_hw *hw)
 {
@@ -3155,23 +2496,14 @@ static s32 e1000_hv_phy_workarounds_ich8lan(struct e1000_hw *hw)
 	}
 
 	if (hw->phy.type == e1000_phy_82578) {
-<<<<<<< HEAD
-		/*
-		 * Return registers to default by doing a soft reset then
-=======
 		/* Return registers to default by doing a soft reset then
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * writing 0x3140 to the control register.
 		 */
 		if (hw->phy.revision < 2) {
 			e1000e_phy_sw_reset(hw);
-<<<<<<< HEAD
-			ret_val = e1e_wphy(hw, PHY_CONTROL, 0x3140);
-=======
 			ret_val = e1e_wphy(hw, MII_BMCR, 0x3140);
 			if (ret_val)
 				return ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -3186,12 +2518,7 @@ static s32 e1000_hv_phy_workarounds_ich8lan(struct e1000_hw *hw)
 	if (ret_val)
 		return ret_val;
 
-<<<<<<< HEAD
-	/*
-	 * Configure the K1 Si workaround during phy reset assuming there is
-=======
 	/* Configure the K1 Si workaround during phy reset assuming there is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * link so that it disables K1 if link is in 1Gbps.
 	 */
 	ret_val = e1000_k1_gig_workaround_hv(hw, true);
@@ -3202,13 +2529,6 @@ static s32 e1000_hv_phy_workarounds_ich8lan(struct e1000_hw *hw)
 	ret_val = hw->phy.ops.acquire(hw);
 	if (ret_val)
 		return ret_val;
-<<<<<<< HEAD
-	ret_val = hw->phy.ops.read_reg_locked(hw, BM_PORT_GEN_CFG, &phy_data);
-	if (ret_val)
-		goto release;
-	ret_val = hw->phy.ops.write_reg_locked(hw, BM_PORT_GEN_CFG,
-					       phy_data & 0x00FF);
-=======
 	ret_val = e1e_rphy_locked(hw, BM_PORT_GEN_CFG, &phy_data);
 	if (ret_val)
 		goto release;
@@ -3218,7 +2538,6 @@ static s32 e1000_hv_phy_workarounds_ich8lan(struct e1000_hw *hw)
 
 	/* set MSE higher to enable link to stay up when noise is high */
 	ret_val = e1000_write_emi_reg_locked(hw, I82577_MSE_THRESHOLD, 0x0034);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 release:
 	hw->phy.ops.release(hw);
 
@@ -3242,13 +2561,8 @@ void e1000_copy_rx_addrs_to_phy_ich8lan(struct e1000_hw *hw)
 	if (ret_val)
 		goto release;
 
-<<<<<<< HEAD
-	/* Copy both RAL/H (rar_entry_count) and SHRAL/H (+4) to PHY */
-	for (i = 0; i < (hw->mac.rar_entry_count + 4); i++) {
-=======
 	/* Copy both RAL/H (rar_entry_count) and SHRAL/H to PHY */
 	for (i = 0; i < (hw->mac.rar_entry_count); i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mac_reg = er32(RAL(i));
 		hw->phy.ops.write_reg_page(hw, BM_RAR_L(i),
 					   (u16)(mac_reg & 0xFFFF));
@@ -3259,12 +2573,7 @@ void e1000_copy_rx_addrs_to_phy_ich8lan(struct e1000_hw *hw)
 		hw->phy.ops.write_reg_page(hw, BM_RAR_H(i),
 					   (u16)(mac_reg & 0xFFFF));
 		hw->phy.ops.write_reg_page(hw, BM_RAR_CTRL(i),
-<<<<<<< HEAD
-					   (u16)((mac_reg & E1000_RAH_AV)
-						 >> 16));
-=======
 					   (u16)((mac_reg & E1000_RAH_AV) >> 16));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	e1000_disable_phy_wakeup_reg_access_bm(hw, &phy_reg);
@@ -3286,38 +2595,21 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 	u32 mac_reg;
 	u16 i;
 
-<<<<<<< HEAD
-	if (hw->mac.type != e1000_pch2lan)
-=======
 	if (hw->mac.type < e1000_pch2lan)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* disable Rx path while enabling/disabling workaround */
 	e1e_rphy(hw, PHY_REG(769, 20), &phy_reg);
-<<<<<<< HEAD
-	ret_val = e1e_wphy(hw, PHY_REG(769, 20), phy_reg | (1 << 14));
-=======
 	ret_val = e1e_wphy(hw, PHY_REG(769, 20), phy_reg | BIT(14));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		return ret_val;
 
 	if (enable) {
-<<<<<<< HEAD
-		/*
-		 * Write Rx addresses (rar_entry_count for RAL/H, +4 for
-		 * SHRAL/H) and initial CRC values to the MAC
-		 */
-		for (i = 0; i < (hw->mac.rar_entry_count + 4); i++) {
-			u8 mac_addr[ETH_ALEN] = {0};
-=======
 		/* Write Rx addresses (rar_entry_count for RAL/H, and
 		 * SHRAL/H) and initial CRC values to the MAC
 		 */
 		for (i = 0; i < hw->mac.rar_entry_count; i++) {
 			u8 mac_addr[ETH_ALEN] = { 0 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u32 addr_high, addr_low;
 
 			addr_high = er32(RAH(i));
@@ -3339,11 +2631,7 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 
 		/* Enable jumbo frame workaround in the MAC */
 		mac_reg = er32(FFLT_DBG);
-<<<<<<< HEAD
-		mac_reg &= ~(1 << 14);
-=======
 		mac_reg &= ~BIT(14);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mac_reg |= (7 << 15);
 		ew32(FFLT_DBG, mac_reg);
 
@@ -3352,32 +2640,18 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 		ew32(RCTL, mac_reg);
 
 		ret_val = e1000e_read_kmrn_reg(hw,
-<<<<<<< HEAD
-						E1000_KMRNCTRLSTA_CTRL_OFFSET,
-						&data);
-=======
 					       E1000_KMRNCTRLSTA_CTRL_OFFSET,
 					       &data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 		ret_val = e1000e_write_kmrn_reg(hw,
 						E1000_KMRNCTRLSTA_CTRL_OFFSET,
-<<<<<<< HEAD
-						data | (1 << 0));
-		if (ret_val)
-			return ret_val;
-		ret_val = e1000e_read_kmrn_reg(hw,
-						E1000_KMRNCTRLSTA_HD_CTRL,
-						&data);
-=======
 						data | BIT(0));
 		if (ret_val)
 			return ret_val;
 		ret_val = e1000e_read_kmrn_reg(hw,
 					       E1000_KMRNCTRLSTA_HD_CTRL,
 					       &data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 		data &= ~(0xF << 8);
@@ -3396,21 +2670,13 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 		if (ret_val)
 			return ret_val;
 		e1e_rphy(hw, PHY_REG(769, 16), &data);
-<<<<<<< HEAD
-		data &= ~(1 << 13);
-=======
 		data &= ~BIT(13);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = e1e_wphy(hw, PHY_REG(769, 16), data);
 		if (ret_val)
 			return ret_val;
 		e1e_rphy(hw, PHY_REG(776, 20), &data);
 		data &= ~(0x3FF << 2);
-<<<<<<< HEAD
-		data |= (0x1A << 2);
-=======
 		data |= (E1000_TX_PTR_GAP << 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = e1e_wphy(hw, PHY_REG(776, 20), data);
 		if (ret_val)
 			return ret_val;
@@ -3418,11 +2684,7 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 		if (ret_val)
 			return ret_val;
 		e1e_rphy(hw, HV_PM_CTRL, &data);
-<<<<<<< HEAD
-		ret_val = e1e_wphy(hw, HV_PM_CTRL, data | (1 << 10));
-=======
 		ret_val = e1e_wphy(hw, HV_PM_CTRL, data | BIT(10));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 	} else {
@@ -3436,32 +2698,18 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 		ew32(RCTL, mac_reg);
 
 		ret_val = e1000e_read_kmrn_reg(hw,
-<<<<<<< HEAD
-						E1000_KMRNCTRLSTA_CTRL_OFFSET,
-						&data);
-=======
 					       E1000_KMRNCTRLSTA_CTRL_OFFSET,
 					       &data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 		ret_val = e1000e_write_kmrn_reg(hw,
 						E1000_KMRNCTRLSTA_CTRL_OFFSET,
-<<<<<<< HEAD
-						data & ~(1 << 0));
-		if (ret_val)
-			return ret_val;
-		ret_val = e1000e_read_kmrn_reg(hw,
-						E1000_KMRNCTRLSTA_HD_CTRL,
-						&data);
-=======
 						data & ~BIT(0));
 		if (ret_val)
 			return ret_val;
 		ret_val = e1000e_read_kmrn_reg(hw,
 					       E1000_KMRNCTRLSTA_HD_CTRL,
 					       &data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 		data &= ~(0xF << 8);
@@ -3479,11 +2727,7 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 		if (ret_val)
 			return ret_val;
 		e1e_rphy(hw, PHY_REG(769, 16), &data);
-<<<<<<< HEAD
-		data |= (1 << 13);
-=======
 		data |= BIT(13);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = e1e_wphy(hw, PHY_REG(769, 16), data);
 		if (ret_val)
 			return ret_val;
@@ -3497,24 +2741,12 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 		if (ret_val)
 			return ret_val;
 		e1e_rphy(hw, HV_PM_CTRL, &data);
-<<<<<<< HEAD
-		ret_val = e1e_wphy(hw, HV_PM_CTRL, data & ~(1 << 10));
-=======
 		ret_val = e1e_wphy(hw, HV_PM_CTRL, data & ~BIT(10));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 	}
 
 	/* re-enable Rx path after enabling/disabling workaround */
-<<<<<<< HEAD
-	return e1e_wphy(hw, PHY_REG(769, 20), phy_reg & ~(1 << 14));
-}
-
-/**
- *  e1000_lv_phy_workarounds_ich8lan - A series of Phy workarounds to be
- *  done after every PHY reset.
-=======
 	return e1e_wphy(hw, PHY_REG(769, 20), phy_reg & ~BIT(14));
 }
 
@@ -3523,7 +2755,6 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
  *  @hw: pointer to the HW structure
  *
  *  A series of PHY workarounds to be done after every PHY reset.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static s32 e1000_lv_phy_workarounds_ich8lan(struct e1000_hw *hw)
 {
@@ -3534,38 +2765,18 @@ static s32 e1000_lv_phy_workarounds_ich8lan(struct e1000_hw *hw)
 
 	/* Set MDIO slow mode before any other MDIO access */
 	ret_val = e1000_set_mdio_slow_mode_hv(hw);
-<<<<<<< HEAD
-=======
 	if (ret_val)
 		return ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret_val = hw->phy.ops.acquire(hw);
 	if (ret_val)
 		return ret_val;
-<<<<<<< HEAD
-	ret_val = hw->phy.ops.write_reg_locked(hw, I82579_EMI_ADDR,
-					       I82579_MSE_THRESHOLD);
-	if (ret_val)
-		goto release;
-	/* set MSE higher to enable link to stay up when noise is high */
-	ret_val = hw->phy.ops.write_reg_locked(hw, I82579_EMI_DATA, 0x0034);
-	if (ret_val)
-		goto release;
-	ret_val = hw->phy.ops.write_reg_locked(hw, I82579_EMI_ADDR,
-					       I82579_MSE_LINK_DOWN);
-	if (ret_val)
-		goto release;
-	/* drop link after 5 times MSE threshold was reached */
-	ret_val = hw->phy.ops.write_reg_locked(hw, I82579_EMI_DATA, 0x0005);
-=======
 	/* set MSE higher to enable link to stay up when noise is high */
 	ret_val = e1000_write_emi_reg_locked(hw, I82579_MSE_THRESHOLD, 0x0034);
 	if (ret_val)
 		goto release;
 	/* drop link after 5 times MSE threshold was reached */
 	ret_val = e1000_write_emi_reg_locked(hw, I82579_MSE_LINK_DOWN, 0x0005);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 release:
 	hw->phy.ops.release(hw);
 
@@ -3573,61 +2784,27 @@ release:
 }
 
 /**
-<<<<<<< HEAD
- *  e1000_k1_gig_workaround_lv - K1 Si workaround
- *  @hw:   pointer to the HW structure
- *
- *  Workaround to set the K1 beacon duration for 82579 parts
-=======
  *  e1000_k1_workaround_lv - K1 Si workaround
  *  @hw:   pointer to the HW structure
  *
  *  Workaround to set the K1 beacon duration for 82579 parts in 10Mbps
  *  Disable K1 in 1000Mbps and 100Mbps
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static s32 e1000_k1_workaround_lv(struct e1000_hw *hw)
 {
 	s32 ret_val = 0;
 	u16 status_reg = 0;
-<<<<<<< HEAD
-	u32 mac_reg;
-	u16 phy_reg;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hw->mac.type != e1000_pch2lan)
 		return 0;
 
-<<<<<<< HEAD
-	/* Set K1 beacon duration based on 1Gbps speed or otherwise */
-=======
 	/* Set K1 beacon duration based on 10Mbs speed */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret_val = e1e_rphy(hw, HV_M_STATUS, &status_reg);
 	if (ret_val)
 		return ret_val;
 
 	if ((status_reg & (HV_M_STATUS_LINK_UP | HV_M_STATUS_AUTONEG_COMPLETE))
 	    == (HV_M_STATUS_LINK_UP | HV_M_STATUS_AUTONEG_COMPLETE)) {
-<<<<<<< HEAD
-		mac_reg = er32(FEXTNVM4);
-		mac_reg &= ~E1000_FEXTNVM4_BEACON_DURATION_MASK;
-
-		ret_val = e1e_rphy(hw, I82579_LPI_CTRL, &phy_reg);
-		if (ret_val)
-			return ret_val;
-
-		if (status_reg & HV_M_STATUS_SPEED_1000) {
-			mac_reg |= E1000_FEXTNVM4_BEACON_DURATION_8USEC;
-			phy_reg &= ~I82579_LPI_CTRL_FORCE_PLL_LOCK_COUNT;
-		} else {
-			mac_reg |= E1000_FEXTNVM4_BEACON_DURATION_16USEC;
-			phy_reg |= I82579_LPI_CTRL_FORCE_PLL_LOCK_COUNT;
-		}
-		ew32(FEXTNVM4, mac_reg);
-		ret_val = e1e_wphy(hw, I82579_LPI_CTRL, phy_reg);
-=======
 		if (status_reg &
 		    (HV_M_STATUS_SPEED_1000 | HV_M_STATUS_SPEED_100)) {
 			u16 pm_phy_reg;
@@ -3648,7 +2825,6 @@ static s32 e1000_k1_workaround_lv(struct e1000_hw *hw)
 			mac_reg |= E1000_FEXTNVM4_BEACON_DURATION_16USEC;
 			ew32(FEXTNVM4, mac_reg);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret_val;
@@ -3666,11 +2842,7 @@ static void e1000_gate_hw_phy_config_ich8lan(struct e1000_hw *hw, bool gate)
 {
 	u32 extcnf_ctrl;
 
-<<<<<<< HEAD
-	if (hw->mac.type != e1000_pch2lan)
-=======
 	if (hw->mac.type < e1000_pch2lan)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	extcnf_ctrl = er32(EXTCNF_CTRL);
@@ -3698,18 +2870,10 @@ static void e1000_lan_init_done_ich8lan(struct e1000_hw *hw)
 	do {
 		data = er32(STATUS);
 		data &= E1000_STATUS_LAN_INIT_DONE;
-<<<<<<< HEAD
-		udelay(100);
-	} while ((!data) && --loop);
-
-	/*
-	 * If basic configuration is incomplete before the above loop
-=======
 		usleep_range(100, 200);
 	} while ((!data) && --loop);
 
 	/* If basic configuration is incomplete before the above loop
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * count reaches 0, loading the configuration from NVM will
 	 * leave the PHY in a bad state possibly resulting in no link.
 	 */
@@ -3735,11 +2899,7 @@ static s32 e1000_post_phy_reset_ich8lan(struct e1000_hw *hw)
 		return 0;
 
 	/* Allow time for h/w to get to quiescent state after reset */
-<<<<<<< HEAD
-	usleep_range(10000, 20000);
-=======
 	usleep_range(10000, 11000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Perform any necessary post-reset workarounds */
 	switch (hw->mac.type) {
@@ -3775,11 +2935,7 @@ static s32 e1000_post_phy_reset_ich8lan(struct e1000_hw *hw)
 	if (hw->mac.type == e1000_pch2lan) {
 		/* Ungate automatic PHY configuration on non-managed 82579 */
 		if (!(er32(FWSM) & E1000_ICH_FWSM_FW_VALID)) {
-<<<<<<< HEAD
-			usleep_range(10000, 20000);
-=======
 			usleep_range(10000, 11000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			e1000_gate_hw_phy_config_ich8lan(hw, false);
 		}
 
@@ -3787,18 +2943,9 @@ static s32 e1000_post_phy_reset_ich8lan(struct e1000_hw *hw)
 		ret_val = hw->phy.ops.acquire(hw);
 		if (ret_val)
 			return ret_val;
-<<<<<<< HEAD
-		ret_val = hw->phy.ops.write_reg_locked(hw, I82579_EMI_ADDR,
-						       I82579_LPI_UPDATE_TIMER);
-		if (!ret_val)
-			ret_val = hw->phy.ops.write_reg_locked(hw,
-							       I82579_EMI_DATA,
-							       0x1387);
-=======
 		ret_val = e1000_write_emi_reg_locked(hw,
 						     I82579_LPI_UPDATE_TIMER,
 						     0x1387);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->phy.ops.release(hw);
 	}
 
@@ -3842,11 +2989,7 @@ static s32 e1000_phy_hw_reset_ich8lan(struct e1000_hw *hw)
  **/
 static s32 e1000_set_lplu_state_pchlan(struct e1000_hw *hw, bool active)
 {
-<<<<<<< HEAD
-	s32 ret_val = 0;
-=======
 	s32 ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 oem_reg;
 
 	ret_val = e1e_rphy(hw, HV_OEM_BITS, &oem_reg);
@@ -3896,12 +3039,7 @@ static s32 e1000_set_d0_lplu_state_ich8lan(struct e1000_hw *hw, bool active)
 		if (phy->type != e1000_phy_igp_3)
 			return 0;
 
-<<<<<<< HEAD
-		/*
-		 * Call gig speed drop workaround on LPLU before accessing
-=======
 		/* Call gig speed drop workaround on LPLU before accessing
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * any PHY registers
 		 */
 		if (hw->mac.type == e1000_ich8lan)
@@ -3909,11 +3047,8 @@ static s32 e1000_set_d0_lplu_state_ich8lan(struct e1000_hw *hw, bool active)
 
 		/* When LPLU is enabled, we should disable SmartSpeed */
 		ret_val = e1e_rphy(hw, IGP01E1000_PHY_PORT_CONFIG, &data);
-<<<<<<< HEAD
-=======
 		if (ret_val)
 			return ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data &= ~IGP01E1000_PSCFR_SMART_SPEED;
 		ret_val = e1e_wphy(hw, IGP01E1000_PHY_PORT_CONFIG, data);
 		if (ret_val)
@@ -3925,12 +3060,7 @@ static s32 e1000_set_d0_lplu_state_ich8lan(struct e1000_hw *hw, bool active)
 		if (phy->type != e1000_phy_igp_3)
 			return 0;
 
-<<<<<<< HEAD
-		/*
-		 * LPLU and SmartSpeed are mutually exclusive.  LPLU is used
-=======
 		/* LPLU and SmartSpeed are mutually exclusive.  LPLU is used
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * during Dx states where the power conservation is most
 		 * important.  During driver activity we should enable
 		 * SmartSpeed, so performance is maintained.
@@ -3992,12 +3122,7 @@ static s32 e1000_set_d3_lplu_state_ich8lan(struct e1000_hw *hw, bool active)
 		if (phy->type != e1000_phy_igp_3)
 			return 0;
 
-<<<<<<< HEAD
-		/*
-		 * LPLU and SmartSpeed are mutually exclusive.  LPLU is used
-=======
 		/* LPLU and SmartSpeed are mutually exclusive.  LPLU is used
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * during Dx states where the power conservation is most
 		 * important.  During driver activity we should enable
 		 * SmartSpeed, so performance is maintained.
@@ -4034,12 +3159,7 @@ static s32 e1000_set_d3_lplu_state_ich8lan(struct e1000_hw *hw, bool active)
 		if (phy->type != e1000_phy_igp_3)
 			return 0;
 
-<<<<<<< HEAD
-		/*
-		 * Call gig speed drop workaround on LPLU before accessing
-=======
 		/* Call gig speed drop workaround on LPLU before accessing
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * any PHY registers
 		 */
 		if (hw->mac.type == e1000_ich8lan)
@@ -4071,16 +3191,11 @@ static s32 e1000_valid_nvm_bank_detect_ich8lan(struct e1000_hw *hw, u32 *bank)
 	struct e1000_nvm_info *nvm = &hw->nvm;
 	u32 bank1_offset = nvm->flash_bank_size * sizeof(u16);
 	u32 act_offset = E1000_ICH_NVM_SIG_WORD * 2 + 1;
-<<<<<<< HEAD
-=======
 	u32 nvm_dword = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 sig_byte = 0;
 	s32 ret_val;
 
 	switch (hw->mac.type) {
-<<<<<<< HEAD
-=======
 	case e1000_pch_spt:
 	case e1000_pch_cnp:
 	case e1000_pch_tgp:
@@ -4122,7 +3237,6 @@ static s32 e1000_valid_nvm_bank_detect_ich8lan(struct e1000_hw *hw, u32 *bank)
 
 		e_dbg("ERROR: No valid NVM bank present\n");
 		return -E1000_ERR_NVM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case e1000_ich8lan:
 	case e1000_ich9lan:
 		eecd = er32(EECD);
@@ -4136,22 +3250,14 @@ static s32 e1000_valid_nvm_bank_detect_ich8lan(struct e1000_hw *hw, u32 *bank)
 			return 0;
 		}
 		e_dbg("Unable to determine valid NVM bank via EEC - reading flash signature\n");
-<<<<<<< HEAD
-		/* fall-thru */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		/* set bank to 0 in case flash read fails */
 		*bank = 0;
 
 		/* Check bank 0 */
 		ret_val = e1000_read_flash_byte_ich8lan(hw, act_offset,
-<<<<<<< HEAD
-		                                        &sig_byte);
-=======
 							&sig_byte);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 		if ((sig_byte & E1000_ICH_NVM_VALID_SIG_MASK) ==
@@ -4162,13 +3268,8 @@ static s32 e1000_valid_nvm_bank_detect_ich8lan(struct e1000_hw *hw, u32 *bank)
 
 		/* Check bank 1 */
 		ret_val = e1000_read_flash_byte_ich8lan(hw, act_offset +
-<<<<<<< HEAD
-		                                        bank1_offset,
-		                                        &sig_byte);
-=======
 							bank1_offset,
 							&sig_byte);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 		if ((sig_byte & E1000_ICH_NVM_VALID_SIG_MASK) ==
@@ -4183,8 +3284,6 @@ static s32 e1000_valid_nvm_bank_detect_ich8lan(struct e1000_hw *hw, u32 *bank)
 }
 
 /**
-<<<<<<< HEAD
-=======
  *  e1000_read_nvm_spt - NVM access for SPT
  *  @hw: pointer to the HW structure
  *  @offset: The offset (in bytes) of the word(s) to read.
@@ -4278,7 +3377,6 @@ out:
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  e1000_read_nvm_ich8lan - Read word(s) from the NVM
  *  @hw: pointer to the HW structure
  *  @offset: The offset (in bytes) of the word(s) to read.
@@ -4317,13 +3415,8 @@ static s32 e1000_read_nvm_ich8lan(struct e1000_hw *hw, u16 offset, u16 words,
 
 	ret_val = 0;
 	for (i = 0; i < words; i++) {
-<<<<<<< HEAD
-		if (dev_spec->shadow_ram[offset+i].modified) {
-			data[i] = dev_spec->shadow_ram[offset+i].value;
-=======
 		if (dev_spec->shadow_ram[offset + i].modified) {
 			data[i] = dev_spec->shadow_ram[offset + i].value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			ret_val = e1000_read_flash_word_ich8lan(hw,
 								act_offset + i,
@@ -4358,11 +3451,7 @@ static s32 e1000_flash_cycle_init_ich8lan(struct e1000_hw *hw)
 	hsfsts.regval = er16flash(ICH_FLASH_HSFSTS);
 
 	/* Check if the flash descriptor is valid */
-<<<<<<< HEAD
-	if (hsfsts.hsf_status.fldesvalid == 0) {
-=======
 	if (!hsfsts.hsf_status.fldesvalid) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		e_dbg("Flash descriptor invalid.  SW Sequencing must be used.\n");
 		return -E1000_ERR_NVM;
 	}
@@ -4370,20 +3459,12 @@ static s32 e1000_flash_cycle_init_ich8lan(struct e1000_hw *hw)
 	/* Clear FCERR and DAEL in hw status by writing 1 */
 	hsfsts.hsf_status.flcerr = 1;
 	hsfsts.hsf_status.dael = 1;
-<<<<<<< HEAD
-
-	ew16flash(ICH_FLASH_HSFSTS, hsfsts.regval);
-
-	/*
-	 * Either we should have a hardware SPI cycle in progress
-=======
 	if (hw->mac.type >= e1000_pch_spt)
 		ew32flash(ICH_FLASH_HSFSTS, hsfsts.regval & 0xFFFF);
 	else
 		ew16flash(ICH_FLASH_HSFSTS, hsfsts.regval);
 
 	/* Either we should have a hardware SPI cycle in progress
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * bit to check against, in order to start a new cycle or
 	 * FDONE bit should be changed in the hardware so that it
 	 * is 1 after hardware reset, which can then be used as an
@@ -4391,59 +3472,32 @@ static s32 e1000_flash_cycle_init_ich8lan(struct e1000_hw *hw)
 	 * completed.
 	 */
 
-<<<<<<< HEAD
-	if (hsfsts.hsf_status.flcinprog == 0) {
-		/*
-		 * There is no cycle running at present,
-=======
 	if (!hsfsts.hsf_status.flcinprog) {
 		/* There is no cycle running at present,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * so we can start a cycle.
 		 * Begin by setting Flash Cycle Done.
 		 */
 		hsfsts.hsf_status.flcdone = 1;
-<<<<<<< HEAD
-		ew16flash(ICH_FLASH_HSFSTS, hsfsts.regval);
-=======
 		if (hw->mac.type >= e1000_pch_spt)
 			ew32flash(ICH_FLASH_HSFSTS, hsfsts.regval & 0xFFFF);
 		else
 			ew16flash(ICH_FLASH_HSFSTS, hsfsts.regval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = 0;
 	} else {
 		s32 i;
 
-<<<<<<< HEAD
-		/*
-		 * Otherwise poll for sometime so the current
-=======
 		/* Otherwise poll for sometime so the current
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * cycle has a chance to end before giving up.
 		 */
 		for (i = 0; i < ICH_FLASH_READ_COMMAND_TIMEOUT; i++) {
 			hsfsts.regval = er16flash(ICH_FLASH_HSFSTS);
-<<<<<<< HEAD
-			if (hsfsts.hsf_status.flcinprog == 0) {
-=======
 			if (!hsfsts.hsf_status.flcinprog) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret_val = 0;
 				break;
 			}
 			udelay(1);
 		}
 		if (!ret_val) {
-<<<<<<< HEAD
-			/*
-			 * Successful in waiting for previous cycle to timeout,
-			 * now set the Flash Cycle Done.
-			 */
-			hsfsts.hsf_status.flcdone = 1;
-			ew16flash(ICH_FLASH_HSFSTS, hsfsts.regval);
-=======
 			/* Successful in waiting for previous cycle to timeout,
 			 * now set the Flash Cycle Done.
 			 */
@@ -4453,7 +3507,6 @@ static s32 e1000_flash_cycle_init_ich8lan(struct e1000_hw *hw)
 					  hsfsts.regval & 0xFFFF);
 			else
 				ew16flash(ICH_FLASH_HSFSTS, hsfsts.regval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			e_dbg("Flash controller busy, cannot get access\n");
 		}
@@ -4476,11 +3529,6 @@ static s32 e1000_flash_cycle_ich8lan(struct e1000_hw *hw, u32 timeout)
 	u32 i = 0;
 
 	/* Start a cycle by writing 1 in Flash Cycle Go in Hw Flash Control */
-<<<<<<< HEAD
-	hsflctl.regval = er16flash(ICH_FLASH_HSFCTL);
-	hsflctl.hsf_ctrl.flcgo = 1;
-	ew16flash(ICH_FLASH_HSFCTL, hsflctl.regval);
-=======
 	if (hw->mac.type >= e1000_pch_spt)
 		hsflctl.regval = er32flash(ICH_FLASH_HSFSTS) >> 16;
 	else
@@ -4491,33 +3539,22 @@ static s32 e1000_flash_cycle_ich8lan(struct e1000_hw *hw, u32 timeout)
 		ew32flash(ICH_FLASH_HSFSTS, hsflctl.regval << 16);
 	else
 		ew16flash(ICH_FLASH_HSFCTL, hsflctl.regval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* wait till FDONE bit is set to 1 */
 	do {
 		hsfsts.regval = er16flash(ICH_FLASH_HSFSTS);
-<<<<<<< HEAD
-		if (hsfsts.hsf_status.flcdone == 1)
-=======
 		if (hsfsts.hsf_status.flcdone)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		udelay(1);
 	} while (i++ < timeout);
 
-<<<<<<< HEAD
-	if (hsfsts.hsf_status.flcdone == 1 && hsfsts.hsf_status.flcerr == 0)
-=======
 	if (hsfsts.hsf_status.flcdone && !hsfsts.hsf_status.flcerr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return -E1000_ERR_NVM;
 }
 
 /**
-<<<<<<< HEAD
-=======
  *  e1000_read_flash_dword_ich8lan - Read dword from flash
  *  @hw: pointer to the HW structure
  *  @offset: offset to data location
@@ -4535,7 +3572,6 @@ static s32 e1000_read_flash_dword_ich8lan(struct e1000_hw *hw, u32 offset,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  e1000_read_flash_word_ich8lan - Read word from flash
  *  @hw: pointer to the HW structure
  *  @offset: offset to data location
@@ -4567,9 +3603,6 @@ static s32 e1000_read_flash_byte_ich8lan(struct e1000_hw *hw, u32 offset,
 	s32 ret_val;
 	u16 word = 0;
 
-<<<<<<< HEAD
-	ret_val = e1000_read_flash_data_ich8lan(hw, offset, 1, &word);
-=======
 	/* In SPT, only 32 bits access is supported,
 	 * so this function should not be called.
 	 */
@@ -4578,7 +3611,6 @@ static s32 e1000_read_flash_byte_ich8lan(struct e1000_hw *hw, u32 offset,
 	else
 		ret_val = e1000_read_flash_data_ich8lan(hw, offset, 1, &word);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		return ret_val;
 
@@ -4606,19 +3638,11 @@ static s32 e1000_read_flash_data_ich8lan(struct e1000_hw *hw, u32 offset,
 	s32 ret_val = -E1000_ERR_NVM;
 	u8 count = 0;
 
-<<<<<<< HEAD
-	if (size < 1  || size > 2 || offset > ICH_FLASH_LINEAR_ADDR_MASK)
-		return -E1000_ERR_NVM;
-
-	flash_linear_addr = (ICH_FLASH_LINEAR_ADDR_MASK & offset) +
-			    hw->nvm.flash_base_addr;
-=======
 	if (size < 1 || size > 2 || offset > ICH_FLASH_LINEAR_ADDR_MASK)
 		return -E1000_ERR_NVM;
 
 	flash_linear_addr = ((ICH_FLASH_LINEAR_ADDR_MASK & offset) +
 			     hw->nvm.flash_base_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		udelay(1);
@@ -4635,19 +3659,11 @@ static s32 e1000_read_flash_data_ich8lan(struct e1000_hw *hw, u32 offset,
 
 		ew32flash(ICH_FLASH_FADDR, flash_linear_addr);
 
-<<<<<<< HEAD
-		ret_val = e1000_flash_cycle_ich8lan(hw,
-						ICH_FLASH_READ_COMMAND_TIMEOUT);
-
-		/*
-		 * Check if FCERR is set to 1, if set to 1, clear it
-=======
 		ret_val =
 		    e1000_flash_cycle_ich8lan(hw,
 					      ICH_FLASH_READ_COMMAND_TIMEOUT);
 
 		/* Check if FCERR is set to 1, if set to 1, clear it
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * and try the whole sequence a few more times, else
 		 * read in (shift in) the Flash Data0, the order is
 		 * least significant byte first msb to lsb
@@ -4660,23 +3676,12 @@ static s32 e1000_read_flash_data_ich8lan(struct e1000_hw *hw, u32 offset,
 				*data = (u16)(flash_data & 0x0000FFFF);
 			break;
 		} else {
-<<<<<<< HEAD
-			/*
-			 * If we've gotten here, then things are probably
-=======
 			/* If we've gotten here, then things are probably
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * completely hosed, but if the error condition is
 			 * detected, it won't hurt to give it another try...
 			 * ICH_FLASH_CYCLE_REPEAT_COUNT times.
 			 */
 			hsfsts.regval = er16flash(ICH_FLASH_HSFSTS);
-<<<<<<< HEAD
-			if (hsfsts.hsf_status.flcerr == 1) {
-				/* Repeat for some time before giving up. */
-				continue;
-			} else if (hsfsts.hsf_status.flcdone == 0) {
-=======
 			if (hsfsts.hsf_status.flcerr) {
 				/* Repeat for some time before giving up. */
 				continue;
@@ -4756,7 +3761,6 @@ static s32 e1000_read_flash_data32_ich8lan(struct e1000_hw *hw, u32 offset,
 				/* Repeat for some time before giving up. */
 				continue;
 			} else if (!hsfsts.hsf_status.flcdone) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				e_dbg("Timeout error - flash cycle did not complete.\n");
 				break;
 			}
@@ -4791,13 +3795,8 @@ static s32 e1000_write_nvm_ich8lan(struct e1000_hw *hw, u16 offset, u16 words,
 	nvm->ops.acquire(hw);
 
 	for (i = 0; i < words; i++) {
-<<<<<<< HEAD
-		dev_spec->shadow_ram[offset+i].modified = true;
-		dev_spec->shadow_ram[offset+i].value = data[i];
-=======
 		dev_spec->shadow_ram[offset + i].modified = true;
 		dev_spec->shadow_ram[offset + i].value = data[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	nvm->ops.release(hw);
@@ -4806,8 +3805,6 @@ static s32 e1000_write_nvm_ich8lan(struct e1000_hw *hw, u16 offset, u16 words,
 }
 
 /**
-<<<<<<< HEAD
-=======
  *  e1000_update_nvm_checksum_spt - Update the checksum for NVM
  *  @hw: pointer to the HW structure
  *
@@ -4969,7 +3966,6 @@ out:
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  e1000_update_nvm_checksum_ich8lan - Update the checksum for NVM
  *  @hw: pointer to the HW structure
  *
@@ -4986,11 +3982,7 @@ static s32 e1000_update_nvm_checksum_ich8lan(struct e1000_hw *hw)
 	struct e1000_dev_spec_ich8lan *dev_spec = &hw->dev_spec.ich8lan;
 	u32 i, act_offset, new_bank_offset, old_bank_offset, bank;
 	s32 ret_val;
-<<<<<<< HEAD
-	u16 data;
-=======
 	u16 data = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret_val = e1000e_update_nvm_checksum_generic(hw);
 	if (ret_val)
@@ -5001,20 +3993,11 @@ static s32 e1000_update_nvm_checksum_ich8lan(struct e1000_hw *hw)
 
 	nvm->ops.acquire(hw);
 
-<<<<<<< HEAD
-	/*
-	 * We're writing to the opposite bank so if we're on bank 1,
-	 * write to bank 0 etc.  We also need to erase the segment that
-	 * is going to be written
-	 */
-	ret_val =  e1000_valid_nvm_bank_detect_ich8lan(hw, &bank);
-=======
 	/* We're writing to the opposite bank so if we're on bank 1,
 	 * write to bank 0 etc.  We also need to erase the segment that
 	 * is going to be written
 	 */
 	ret_val = e1000_valid_nvm_bank_detect_ich8lan(hw, &bank);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val) {
 		e_dbg("Could not detect valid bank, assuming bank 0\n");
 		bank = 0;
@@ -5033,38 +4016,18 @@ static s32 e1000_update_nvm_checksum_ich8lan(struct e1000_hw *hw)
 		if (ret_val)
 			goto release;
 	}
-<<<<<<< HEAD
-
 	for (i = 0; i < E1000_ICH8_SHADOW_RAM_WORDS; i++) {
-		/*
-		 * Determine whether to write the value stored
-		 * in the other NVM bank or a modified value stored
-		 * in the shadow RAM
-		 */
-=======
-	for (i = 0; i < E1000_ICH8_SHADOW_RAM_WORDS; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dev_spec->shadow_ram[i].modified) {
 			data = dev_spec->shadow_ram[i].value;
 		} else {
 			ret_val = e1000_read_flash_word_ich8lan(hw, i +
-<<<<<<< HEAD
-			                                        old_bank_offset,
-			                                        &data);
-=======
 								old_bank_offset,
 								&data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret_val)
 				break;
 		}
 
-<<<<<<< HEAD
-		/*
-		 * If the word is 0x13, then make sure the signature bits
-=======
 		/* If the word is 0x13, then make sure the signature bits
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * (15:14) are 11b until the commit has completed.
 		 * This will allow us to write 10b which indicates the
 		 * signature is valid.  We want to do this after the write
@@ -5077,11 +4040,7 @@ static s32 e1000_update_nvm_checksum_ich8lan(struct e1000_hw *hw)
 		/* Convert offset to bytes. */
 		act_offset = (i + new_bank_offset) << 1;
 
-<<<<<<< HEAD
-		udelay(100);
-=======
 		usleep_range(100, 200);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Write the bytes to the new bank. */
 		ret_val = e1000_retry_write_flash_byte_ich8lan(hw,
 							       act_offset,
@@ -5089,27 +4048,15 @@ static s32 e1000_update_nvm_checksum_ich8lan(struct e1000_hw *hw)
 		if (ret_val)
 			break;
 
-<<<<<<< HEAD
-		udelay(100);
-		ret_val = e1000_retry_write_flash_byte_ich8lan(hw,
-							  act_offset + 1,
-							  (u8)(data >> 8));
-=======
 		usleep_range(100, 200);
 		ret_val = e1000_retry_write_flash_byte_ich8lan(hw,
 							       act_offset + 1,
 							       (u8)(data >> 8));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			break;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Don't bother writing the segment valid bits if sector
-=======
 	/* Don't bother writing the segment valid bits if sector
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * programming failed.
 	 */
 	if (ret_val) {
@@ -5118,12 +4065,7 @@ static s32 e1000_update_nvm_checksum_ich8lan(struct e1000_hw *hw)
 		goto release;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Finally validate the new segment by setting bit 15:14
-=======
 	/* Finally validate the new segment by setting bit 15:14
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * to 10b in word 0x13 , this can be done without an
 	 * erase as well since these bits are 11 to start with
 	 * and we need to change bit 14 to 0b
@@ -5140,12 +4082,7 @@ static s32 e1000_update_nvm_checksum_ich8lan(struct e1000_hw *hw)
 	if (ret_val)
 		goto release;
 
-<<<<<<< HEAD
-	/*
-	 * And invalidate the previously valid segment by setting
-=======
 	/* And invalidate the previously valid segment by setting
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * its signature word (0x13) high_byte to 0b. This can be
 	 * done without an erase because flash erase sets all bits
 	 * to 1's. We can write 1's to 0's without an erase
@@ -5164,21 +4101,12 @@ static s32 e1000_update_nvm_checksum_ich8lan(struct e1000_hw *hw)
 release:
 	nvm->ops.release(hw);
 
-<<<<<<< HEAD
-	/*
-	 * Reload the EEPROM, or else modifications will not appear
-=======
 	/* Reload the EEPROM, or else modifications will not appear
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * until after the next adapter reset.
 	 */
 	if (!ret_val) {
 		nvm->ops.reload(hw);
-<<<<<<< HEAD
-		usleep_range(10000, 20000);
-=======
 		usleep_range(10000, 11000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
@@ -5200,27 +4128,6 @@ static s32 e1000_validate_nvm_checksum_ich8lan(struct e1000_hw *hw)
 {
 	s32 ret_val;
 	u16 data;
-<<<<<<< HEAD
-
-	/*
-	 * Read 0x19 and check bit 6.  If this bit is 0, the checksum
-	 * needs to be fixed.  This bit is an indication that the NVM
-	 * was prepared by OEM software and did not calculate the
-	 * checksum...a likely scenario.
-	 */
-	ret_val = e1000_read_nvm(hw, 0x19, 1, &data);
-	if (ret_val)
-		return ret_val;
-
-	if ((data & 0x40) == 0) {
-		data |= 0x40;
-		ret_val = e1000_write_nvm(hw, 0x19, 1, &data);
-		if (ret_val)
-			return ret_val;
-		ret_val = e1000e_update_nvm_checksum(hw);
-		if (ret_val)
-			return ret_val;
-=======
 	u16 word;
 	u16 valid_csum_mask;
 
@@ -5264,7 +4171,6 @@ static s32 e1000_validate_nvm_checksum_ich8lan(struct e1000_hw *hw)
 			if (ret_val)
 				return ret_val;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return e1000e_validate_nvm_checksum_generic(hw);
@@ -5298,12 +4204,7 @@ void e1000e_write_protect_nvm_ich8lan(struct e1000_hw *hw)
 	pr0.range.wpe = true;
 	ew32flash(ICH_FLASH_PR0, pr0.regval);
 
-<<<<<<< HEAD
-	/*
-	 * Lock down a subset of GbE Flash Control Registers, e.g.
-=======
 	/* Lock down a subset of GbE Flash Control Registers, e.g.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * PR0 to prevent the write-protection from being lifted.
 	 * Once FLOCKDN is set, the registers protected by it cannot
 	 * be written until FLOCKDN is cleared by a hardware reset.
@@ -5334,14 +4235,6 @@ static s32 e1000_write_flash_data_ich8lan(struct e1000_hw *hw, u32 offset,
 	s32 ret_val;
 	u8 count = 0;
 
-<<<<<<< HEAD
-	if (size < 1 || size > 2 || data > size * 0xff ||
-	    offset > ICH_FLASH_LINEAR_ADDR_MASK)
-		return -E1000_ERR_NVM;
-
-	flash_linear_addr = (ICH_FLASH_LINEAR_ADDR_MASK & offset) +
-			    hw->nvm.flash_base_addr;
-=======
 	if (hw->mac.type >= e1000_pch_spt) {
 		if (size != 4 || offset > ICH_FLASH_LINEAR_ADDR_MASK)
 			return -E1000_ERR_NVM;
@@ -5352,7 +4245,6 @@ static s32 e1000_write_flash_data_ich8lan(struct e1000_hw *hw, u32 offset,
 
 	flash_linear_addr = ((ICH_FLASH_LINEAR_ADDR_MASK & offset) +
 			     hw->nvm.flash_base_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		udelay(1);
@@ -5360,14 +4252,6 @@ static s32 e1000_write_flash_data_ich8lan(struct e1000_hw *hw, u32 offset,
 		ret_val = e1000_flash_cycle_init_ich8lan(hw);
 		if (ret_val)
 			break;
-<<<<<<< HEAD
-
-		hsflctl.regval = er16flash(ICH_FLASH_HSFCTL);
-		/* 0b/1b corresponds to 1 or 2 byte size, respectively. */
-		hsflctl.hsf_ctrl.fldbcount = size -1;
-		hsflctl.hsf_ctrl.flcycle = ICH_CYCLE_WRITE;
-		ew16flash(ICH_FLASH_HSFCTL, hsflctl.regval);
-=======
 		/* In SPT, This register is in Lan memory space, not
 		 * flash.  Therefore, only 32 bit access is supported
 		 */
@@ -5387,7 +4271,6 @@ static s32 e1000_write_flash_data_ich8lan(struct e1000_hw *hw, u32 offset,
 			ew32flash(ICH_FLASH_HSFSTS, hsflctl.regval << 16);
 		else
 			ew16flash(ICH_FLASH_HSFCTL, hsflctl.regval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ew32flash(ICH_FLASH_FADDR, flash_linear_addr);
 
@@ -5398,19 +4281,6 @@ static s32 e1000_write_flash_data_ich8lan(struct e1000_hw *hw, u32 offset,
 
 		ew32flash(ICH_FLASH_FDATA0, flash_data);
 
-<<<<<<< HEAD
-		/*
-		 * check if FCERR is set to 1 , if set to 1, clear it
-		 * and try the whole sequence a few more times else done
-		 */
-		ret_val = e1000_flash_cycle_ich8lan(hw,
-					       ICH_FLASH_WRITE_COMMAND_TIMEOUT);
-		if (!ret_val)
-			break;
-
-		/*
-		 * If we're here, then things are most likely
-=======
 		/* check if FCERR is set to 1 , if set to 1, clear it
 		 * and try the whole sequence a few more times else done
 		 */
@@ -5421,18 +4291,11 @@ static s32 e1000_write_flash_data_ich8lan(struct e1000_hw *hw, u32 offset,
 			break;
 
 		/* If we're here, then things are most likely
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * completely hosed, but if the error condition
 		 * is detected, it won't hurt to give it another
 		 * try...ICH_FLASH_CYCLE_REPEAT_COUNT times.
 		 */
 		hsfsts.regval = er16flash(ICH_FLASH_HSFSTS);
-<<<<<<< HEAD
-		if (hsfsts.hsf_status.flcerr == 1)
-			/* Repeat for some time before giving up. */
-			continue;
-		if (hsfsts.hsf_status.flcdone == 0) {
-=======
 		if (hsfsts.hsf_status.flcerr)
 			/* Repeat for some time before giving up. */
 			continue;
@@ -5521,7 +4384,6 @@ static s32 e1000_write_flash_data32_ich8lan(struct e1000_hw *hw, u32 offset,
 			/* Repeat for some time before giving up. */
 			continue;
 		if (!hsfsts.hsf_status.flcdone) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			e_dbg("Timeout error - flash cycle did not complete.\n");
 			break;
 		}
@@ -5547,8 +4409,6 @@ static s32 e1000_write_flash_byte_ich8lan(struct e1000_hw *hw, u32 offset,
 }
 
 /**
-<<<<<<< HEAD
-=======
 *  e1000_retry_write_flash_dword_ich8lan - Writes a dword to NVM
 *  @hw: pointer to the HW structure
 *  @offset: The offset of the word to write.
@@ -5583,7 +4443,6 @@ static s32 e1000_retry_write_flash_dword_ich8lan(struct e1000_hw *hw,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  e1000_retry_write_flash_byte_ich8lan - Writes a single byte to NVM
  *  @hw: pointer to the HW structure
  *  @offset: The offset of the byte to write.
@@ -5604,11 +4463,7 @@ static s32 e1000_retry_write_flash_byte_ich8lan(struct e1000_hw *hw,
 
 	for (program_retries = 0; program_retries < 100; program_retries++) {
 		e_dbg("Retrying Byte %2.2X at offset %u\n", byte, offset);
-<<<<<<< HEAD
-		udelay(100);
-=======
 		usleep_range(100, 200);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = e1000_write_flash_byte_ich8lan(hw, offset, byte);
 		if (!ret_val)
 			break;
@@ -5641,12 +4496,7 @@ static s32 e1000_erase_flash_bank_ich8lan(struct e1000_hw *hw, u32 bank)
 
 	hsfsts.regval = er16flash(ICH_FLASH_HSFSTS);
 
-<<<<<<< HEAD
-	/*
-	 * Determine HW Sector size: Read BERASE bits of hw flash status
-=======
 	/* Determine HW Sector size: Read BERASE bits of hw flash status
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * register
 	 * 00: The Hw sector is 256 bytes, hence we need to erase 16
 	 *     consecutive sectors.  The start index for the nth Hw sector
@@ -5684,32 +4534,15 @@ static s32 e1000_erase_flash_bank_ich8lan(struct e1000_hw *hw, u32 bank)
 	flash_linear_addr = hw->nvm.flash_base_addr;
 	flash_linear_addr += (bank) ? flash_bank_size : 0;
 
-<<<<<<< HEAD
-	for (j = 0; j < iteration ; j++) {
-		do {
-=======
 	for (j = 0; j < iteration; j++) {
 		do {
 			u32 timeout = ICH_FLASH_ERASE_COMMAND_TIMEOUT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Steps */
 			ret_val = e1000_flash_cycle_init_ich8lan(hw);
 			if (ret_val)
 				return ret_val;
 
-<<<<<<< HEAD
-			/*
-			 * Write a value 11 (block Erase) in Flash
-			 * Cycle field in hw flash control
-			 */
-			hsflctl.regval = er16flash(ICH_FLASH_HSFCTL);
-			hsflctl.hsf_ctrl.flcycle = ICH_CYCLE_ERASE;
-			ew16flash(ICH_FLASH_HSFCTL, hsflctl.regval);
-
-			/*
-			 * Write the last 24 bits of an index within the
-=======
 			/* Write a value 11 (block Erase) in Flash
 			 * Cycle field in hw flash control
 			 */
@@ -5727,43 +4560,25 @@ static s32 e1000_erase_flash_bank_ich8lan(struct e1000_hw *hw, u32 bank)
 				ew16flash(ICH_FLASH_HSFCTL, hsflctl.regval);
 
 			/* Write the last 24 bits of an index within the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * block into Flash Linear address field in Flash
 			 * Address.
 			 */
 			flash_linear_addr += (j * sector_size);
 			ew32flash(ICH_FLASH_FADDR, flash_linear_addr);
 
-<<<<<<< HEAD
-			ret_val = e1000_flash_cycle_ich8lan(hw,
-					       ICH_FLASH_ERASE_COMMAND_TIMEOUT);
-			if (!ret_val)
-				break;
-
-			/*
-			 * Check if FCERR is set to 1.  If 1,
-=======
 			ret_val = e1000_flash_cycle_ich8lan(hw, timeout);
 			if (!ret_val)
 				break;
 
 			/* Check if FCERR is set to 1.  If 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * clear it and try the whole sequence
 			 * a few more times else Done
 			 */
 			hsfsts.regval = er16flash(ICH_FLASH_HSFSTS);
-<<<<<<< HEAD
-			if (hsfsts.hsf_status.flcerr == 1)
-				/* repeat for some time before giving up */
-				continue;
-			else if (hsfsts.hsf_status.flcdone == 0)
-=======
 			if (hsfsts.hsf_status.flcerr)
 				/* repeat for some time before giving up */
 				continue;
 			else if (!hsfsts.hsf_status.flcdone)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return ret_val;
 		} while (++count < ICH_FLASH_CYCLE_REPEAT_COUNT);
 	}
@@ -5790,12 +4605,7 @@ static s32 e1000_valid_led_default_ich8lan(struct e1000_hw *hw, u16 *data)
 		return ret_val;
 	}
 
-<<<<<<< HEAD
-	if (*data == ID_LED_RESERVED_0000 ||
-	    *data == ID_LED_RESERVED_FFFF)
-=======
 	if (*data == ID_LED_RESERVED_0000 || *data == ID_LED_RESERVED_FFFF)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*data = ID_LED_DEFAULT_ICH8LAN;
 
 	return 0;
@@ -5878,11 +4688,7 @@ static s32 e1000_id_led_init_pchlan(struct e1000_hw *hw)
  *  @hw: pointer to the HW structure
  *
  *  ICH8 use the PCI Express bus, but does not contain a PCI Express Capability
-<<<<<<< HEAD
- *  register, so the the bus width is hard coded.
-=======
  *  register, so the bus width is hard coded.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static s32 e1000_get_bus_info_ich8lan(struct e1000_hw *hw)
 {
@@ -5891,12 +4697,7 @@ static s32 e1000_get_bus_info_ich8lan(struct e1000_hw *hw)
 
 	ret_val = e1000e_get_bus_info_pcie(hw);
 
-<<<<<<< HEAD
-	/*
-	 * ICH devices are "PCI Express"-ish.  They have
-=======
 	/* ICH devices are "PCI Express"-ish.  They have
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * a configuration space, but do not contain
 	 * PCI Express Capability registers, so bus width
 	 * must be hardcoded.
@@ -5917,20 +4718,11 @@ static s32 e1000_get_bus_info_ich8lan(struct e1000_hw *hw)
 static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
 {
 	struct e1000_dev_spec_ich8lan *dev_spec = &hw->dev_spec.ich8lan;
-<<<<<<< HEAD
-	u16 reg;
-	u32 ctrl, kab;
-	s32 ret_val;
-
-	/*
-	 * Prevent the PCI-E bus from sticking if there is no TLP connection
-=======
 	u16 kum_cfg;
 	u32 ctrl, reg;
 	s32 ret_val;
 
 	/* Prevent the PCI-E bus from sticking if there is no TLP connection
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * on the last TLP read/write transaction when MAC is reset.
 	 */
 	ret_val = e1000e_disable_pcie_master(hw);
@@ -5940,12 +4732,7 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
 	e_dbg("Masking off all interrupts\n");
 	ew32(IMC, 0xffffffff);
 
-<<<<<<< HEAD
-	/*
-	 * Disable the Transmit and Receive units.  Then delay to allow
-=======
 	/* Disable the Transmit and Receive units.  Then delay to allow
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * any pending transactions to complete before we hit the MAC
 	 * with the global reset.
 	 */
@@ -5953,11 +4740,7 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
 	ew32(TCTL, E1000_TCTL_PSP);
 	e1e_flush();
 
-<<<<<<< HEAD
-	usleep_range(10000, 20000);
-=======
 	usleep_range(10000, 11000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Workaround for ICH8 bit corruption issue in FIFO memory */
 	if (hw->mac.type == e1000_ich8lan) {
@@ -5968,21 +4751,12 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
 	}
 
 	if (hw->mac.type == e1000_pchlan) {
-<<<<<<< HEAD
-		/* Save the NVM K1 bit setting*/
-		ret_val = e1000_read_nvm(hw, E1000_NVM_K1_CONFIG, 1, &reg);
-		if (ret_val)
-			return ret_val;
-
-		if (reg & E1000_NVM_K1_ENABLE)
-=======
 		/* Save the NVM K1 bit setting */
 		ret_val = e1000_read_nvm(hw, E1000_NVM_K1_CONFIG, 1, &kum_cfg);
 		if (ret_val)
 			return ret_val;
 
 		if (kum_cfg & E1000_NVM_K1_ENABLE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_spec->nvm_k1_enabled = true;
 		else
 			dev_spec->nvm_k1_enabled = false;
@@ -5991,23 +4765,13 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
 	ctrl = er32(CTRL);
 
 	if (!hw->phy.ops.check_reset_block(hw)) {
-<<<<<<< HEAD
-		/*
-		 * Full-chip reset requires MAC and PHY reset at the same
-=======
 		/* Full-chip reset requires MAC and PHY reset at the same
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * time to make sure the interface between MAC and the
 		 * external PHY is reset.
 		 */
 		ctrl |= E1000_CTRL_PHY_RST;
 
-<<<<<<< HEAD
-		/*
-		 * Gate automatic PHY configuration by hardware on
-=======
 		/* Gate automatic PHY configuration by hardware on
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * non-managed 82579
 		 */
 		if ((hw->mac.type == e1000_pch2lan) &&
@@ -6020,8 +4784,6 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
 	/* cannot issue a flush here because it hangs the hardware */
 	msleep(20);
 
-<<<<<<< HEAD
-=======
 	/* Set Phy Config Counter to 50msec */
 	if (hw->mac.type == e1000_pch2lan) {
 		reg = er32(FEXTNVM3);
@@ -6030,7 +4792,6 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
 		ew32(FEXTNVM3, reg);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret_val)
 		clear_bit(__E1000_ACCESS_SHARED_RESOURCE, &hw->adapter->state);
 
@@ -6044,12 +4805,7 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
 			return ret_val;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * For PCH, this write will make sure that any noise
-=======
 	/* For PCH, this write will make sure that any noise
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * will be detected as a CRC error and be dropped rather than show up
 	 * as a bad packet to the DMA engine.
 	 */
@@ -6059,15 +4815,9 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
 	ew32(IMC, 0xffffffff);
 	er32(ICR);
 
-<<<<<<< HEAD
-	kab = er32(KABGTXD);
-	kab |= E1000_KABGTXD_BGSQLBIAS;
-	ew32(KABGTXD, kab);
-=======
 	reg = er32(KABGTXD);
 	reg |= E1000_KABGTXD_BGSQLBIAS;
 	ew32(KABGTXD, reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -6087,11 +4837,7 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
 static s32 e1000_init_hw_ich8lan(struct e1000_hw *hw)
 {
 	struct e1000_mac_info *mac = &hw->mac;
-<<<<<<< HEAD
-	u32 ctrl_ext, txdctl, snoop;
-=======
 	u32 ctrl_ext, txdctl, snoop, fflt_dbg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32 ret_val;
 	u16 i;
 
@@ -6099,15 +4845,9 @@ static s32 e1000_init_hw_ich8lan(struct e1000_hw *hw)
 
 	/* Initialize identification LED */
 	ret_val = mac->ops.id_led_init(hw);
-<<<<<<< HEAD
-	if (ret_val)
-		e_dbg("Error initializing identification LED\n");
-		/* This is not fatal and we should not stop init due to this */
-=======
 	/* An error is not fatal and we should not stop init due to this */
 	if (ret_val)
 		e_dbg("Error initializing identification LED\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup the receive address. */
 	e1000e_init_rx_addrs(hw, mac->rar_entry_count);
@@ -6117,12 +4857,7 @@ static s32 e1000_init_hw_ich8lan(struct e1000_hw *hw)
 	for (i = 0; i < mac->mta_reg_count; i++)
 		E1000_WRITE_REG_ARRAY(hw, E1000_MTA, i, 0);
 
-<<<<<<< HEAD
-	/*
-	 * The 82578 Rx buffer will stall if wakeup is enabled in host and
-=======
 	/* The 82578 Rx buffer will stall if wakeup is enabled in host and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the ME.  Disable wakeup by clearing the host wakeup bit.
 	 * Reset the phy after disabling host wakeup to reset the Rx buffer.
 	 */
@@ -6140,22 +4875,6 @@ static s32 e1000_init_hw_ich8lan(struct e1000_hw *hw)
 
 	/* Set the transmit descriptor write-back policy for both queues */
 	txdctl = er32(TXDCTL(0));
-<<<<<<< HEAD
-	txdctl = (txdctl & ~E1000_TXDCTL_WTHRESH) |
-		 E1000_TXDCTL_FULL_TX_DESC_WB;
-	txdctl = (txdctl & ~E1000_TXDCTL_PTHRESH) |
-		 E1000_TXDCTL_MAX_TX_DESC_PREFETCH;
-	ew32(TXDCTL(0), txdctl);
-	txdctl = er32(TXDCTL(1));
-	txdctl = (txdctl & ~E1000_TXDCTL_WTHRESH) |
-		 E1000_TXDCTL_FULL_TX_DESC_WB;
-	txdctl = (txdctl & ~E1000_TXDCTL_PTHRESH) |
-		 E1000_TXDCTL_MAX_TX_DESC_PREFETCH;
-	ew32(TXDCTL(1), txdctl);
-
-	/*
-	 * ICH8 has opposite polarity of no_snoop bits.
-=======
 	txdctl = ((txdctl & ~E1000_TXDCTL_WTHRESH) |
 		  E1000_TXDCTL_FULL_TX_DESC_WB);
 	txdctl = ((txdctl & ~E1000_TXDCTL_PTHRESH) |
@@ -6169,17 +4888,11 @@ static s32 e1000_init_hw_ich8lan(struct e1000_hw *hw)
 	ew32(TXDCTL(1), txdctl);
 
 	/* ICH8 has opposite polarity of no_snoop bits.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * By default, we should use snoop behavior.
 	 */
 	if (mac->type == e1000_ich8lan)
 		snoop = PCIE_ICH8_SNOOP_ALL;
 	else
-<<<<<<< HEAD
-		snoop = (u32) ~(PCIE_NO_SNOOP_ALL);
-	e1000e_set_pcie_no_snoop(hw, snoop);
-
-=======
 		snoop = (u32)~(PCIE_NO_SNOOP_ALL);
 	e1000e_set_pcie_no_snoop(hw, snoop);
 
@@ -6192,17 +4905,11 @@ static s32 e1000_init_hw_ich8lan(struct e1000_hw *hw)
 		ew32(FFLT_DBG, fflt_dbg);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctrl_ext = er32(CTRL_EXT);
 	ctrl_ext |= E1000_CTRL_EXT_RO_DIS;
 	ew32(CTRL_EXT, ctrl_ext);
 
-<<<<<<< HEAD
-	/*
-	 * Clear all of the statistics registers (clear on read).  It is
-=======
 	/* Clear all of the statistics registers (clear on read).  It is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * important that we do this after we have tried to establish link
 	 * because the symbol error count will increment wildly if there
 	 * is no link.
@@ -6211,10 +4918,7 @@ static s32 e1000_init_hw_ich8lan(struct e1000_hw *hw)
 
 	return ret_val;
 }
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *  e1000_initialize_hw_bits_ich8lan - Initialize required hardware bits
  *  @hw: pointer to the HW structure
@@ -6228,11 +4932,7 @@ static void e1000_initialize_hw_bits_ich8lan(struct e1000_hw *hw)
 
 	/* Extended Device Control */
 	reg = er32(CTRL_EXT);
-<<<<<<< HEAD
-	reg |= (1 << 22);
-=======
 	reg |= BIT(22);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable PHY low-power state when MAC is at D3 w/o WoL */
 	if (hw->mac.type >= e1000_pchlan)
 		reg |= E1000_CTRL_EXT_PHYPDEN;
@@ -6240,74 +4940,42 @@ static void e1000_initialize_hw_bits_ich8lan(struct e1000_hw *hw)
 
 	/* Transmit Descriptor Control 0 */
 	reg = er32(TXDCTL(0));
-<<<<<<< HEAD
-	reg |= (1 << 22);
-=======
 	reg |= BIT(22);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(TXDCTL(0), reg);
 
 	/* Transmit Descriptor Control 1 */
 	reg = er32(TXDCTL(1));
-<<<<<<< HEAD
-	reg |= (1 << 22);
-=======
 	reg |= BIT(22);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(TXDCTL(1), reg);
 
 	/* Transmit Arbitration Control 0 */
 	reg = er32(TARC(0));
 	if (hw->mac.type == e1000_ich8lan)
-<<<<<<< HEAD
-		reg |= (1 << 28) | (1 << 29);
-	reg |= (1 << 23) | (1 << 24) | (1 << 26) | (1 << 27);
-=======
 		reg |= BIT(28) | BIT(29);
 	reg |= BIT(23) | BIT(24) | BIT(26) | BIT(27);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(TARC(0), reg);
 
 	/* Transmit Arbitration Control 1 */
 	reg = er32(TARC(1));
 	if (er32(TCTL) & E1000_TCTL_MULR)
-<<<<<<< HEAD
-		reg &= ~(1 << 28);
-	else
-		reg |= (1 << 28);
-	reg |= (1 << 24) | (1 << 26) | (1 << 30);
-=======
 		reg &= ~BIT(28);
 	else
 		reg |= BIT(28);
 	reg |= BIT(24) | BIT(26) | BIT(30);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(TARC(1), reg);
 
 	/* Device Status */
 	if (hw->mac.type == e1000_ich8lan) {
 		reg = er32(STATUS);
-<<<<<<< HEAD
-		reg &= ~(1 << 31);
-		ew32(STATUS, reg);
-	}
-
-	/*
-	 * work-around descriptor data corruption issue during nfs v2 udp
-=======
 		reg &= ~BIT(31);
 		ew32(STATUS, reg);
 	}
 
 	/* work-around descriptor data corruption issue during nfs v2 udp
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * traffic, just disable the nfs filtering capability
 	 */
 	reg = er32(RFCTL);
 	reg |= (E1000_RFCTL_NFSW_DIS | E1000_RFCTL_NFSR_DIS);
-<<<<<<< HEAD
-	ew32(RFCTL, reg);
-=======
 
 	/* Disable IPv6 extension header parsing because some malformed
 	 * IPv6 headers can hang the Rx.
@@ -6326,7 +4994,6 @@ static void e1000_initialize_hw_bits_ich8lan(struct e1000_hw *hw)
 		reg |= E1000_CTRL_MEHE;
 		ew32(CTRL, reg);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -6346,12 +5013,7 @@ static s32 e1000_setup_link_ich8lan(struct e1000_hw *hw)
 	if (hw->phy.ops.check_reset_block(hw))
 		return 0;
 
-<<<<<<< HEAD
-	/*
-	 * ICH parts do not have a word in the NVM to determine
-=======
 	/* ICH parts do not have a word in the NVM to determine
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the default flow control setting, so we explicitly
 	 * set it to full.
 	 */
@@ -6363,22 +5025,12 @@ static s32 e1000_setup_link_ich8lan(struct e1000_hw *hw)
 			hw->fc.requested_mode = e1000_fc_full;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Save off the requested flow control mode for use later.  Depending
-=======
 	/* Save off the requested flow control mode for use later.  Depending
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * on the link partner's capabilities, we may or may not use this mode.
 	 */
 	hw->fc.current_mode = hw->fc.requested_mode;
 
-<<<<<<< HEAD
-	e_dbg("After fix-ups FlowControl is now = %x\n",
-		hw->fc.current_mode);
-=======
 	e_dbg("After fix-ups FlowControl is now = %x\n", hw->fc.current_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Continue to configure the copper link. */
 	ret_val = hw->mac.ops.setup_physical_interface(hw);
@@ -6388,10 +5040,7 @@ static s32 e1000_setup_link_ich8lan(struct e1000_hw *hw)
 	ew32(FCTTV, hw->fc.pause_time);
 	if ((hw->phy.type == e1000_phy_82578) ||
 	    (hw->phy.type == e1000_phy_82579) ||
-<<<<<<< HEAD
-=======
 	    (hw->phy.type == e1000_phy_i217) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (hw->phy.type == e1000_phy_82577)) {
 		ew32(FCRTV_PCH, hw->fc.refresh_time);
 
@@ -6423,12 +5072,7 @@ static s32 e1000_setup_copper_link_ich8lan(struct e1000_hw *hw)
 	ctrl &= ~(E1000_CTRL_FRCSPD | E1000_CTRL_FRCDPX);
 	ew32(CTRL, ctrl);
 
-<<<<<<< HEAD
-	/*
-	 * Set the mac to wait the maximum time between each iteration
-=======
 	/* Set the mac to wait the maximum time between each iteration
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and increase the max iterations when polling the phy;
 	 * this fixes erroneous timeouts at 10Mbps.
 	 */
@@ -6436,20 +5080,12 @@ static s32 e1000_setup_copper_link_ich8lan(struct e1000_hw *hw)
 	if (ret_val)
 		return ret_val;
 	ret_val = e1000e_read_kmrn_reg(hw, E1000_KMRNCTRLSTA_INBAND_PARAM,
-<<<<<<< HEAD
-	                               &reg_data);
-=======
 				       &reg_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		return ret_val;
 	reg_data |= 0x3F;
 	ret_val = e1000e_write_kmrn_reg(hw, E1000_KMRNCTRLSTA_INBAND_PARAM,
-<<<<<<< HEAD
-	                                reg_data);
-=======
 					reg_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		return ret_val;
 
@@ -6502,8 +5138,6 @@ static s32 e1000_setup_copper_link_ich8lan(struct e1000_hw *hw)
 }
 
 /**
-<<<<<<< HEAD
-=======
  *  e1000_setup_copper_link_pch_lpt - Configure MAC/PHY interface
  *  @hw: pointer to the HW structure
  *
@@ -6529,7 +5163,6 @@ static s32 e1000_setup_copper_link_pch_lpt(struct e1000_hw *hw)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  e1000_get_link_up_info_ich8lan - Get current link speed and duplex
  *  @hw: pointer to the HW structure
  *  @speed: pointer to store current link speed
@@ -6549,12 +5182,7 @@ static s32 e1000_get_link_up_info_ich8lan(struct e1000_hw *hw, u16 *speed,
 		return ret_val;
 
 	if ((hw->mac.type == e1000_ich8lan) &&
-<<<<<<< HEAD
-	    (hw->phy.type == e1000_phy_igp_3) &&
-	    (*speed == SPEED_1000)) {
-=======
 	    (hw->phy.type == e1000_phy_igp_3) && (*speed == SPEED_1000)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = e1000_kmrn_lock_loss_workaround_ich8lan(hw);
 	}
 
@@ -6587,12 +5215,7 @@ static s32 e1000_kmrn_lock_loss_workaround_ich8lan(struct e1000_hw *hw)
 	if (!dev_spec->kmrn_lock_loss_workaround_enabled)
 		return 0;
 
-<<<<<<< HEAD
-	/*
-	 * Make sure link is up before proceeding.  If not just return.
-=======
 	/* Make sure link is up before proceeding.  If not just return.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Attempting this while link is negotiating fouled up link
 	 * stability
 	 */
@@ -6624,12 +5247,7 @@ static s32 e1000_kmrn_lock_loss_workaround_ich8lan(struct e1000_hw *hw)
 		     E1000_PHY_CTRL_NOND0A_GBE_DISABLE);
 	ew32(PHY_CTRL, phy_ctrl);
 
-<<<<<<< HEAD
-	/*
-	 * Call gig speed drop workaround on Gig disable before accessing
-=======
 	/* Call gig speed drop workaround on Gig disable before accessing
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * any PHY registers
 	 */
 	e1000e_gig_downshift_workaround_ich8lan(hw);
@@ -6647,11 +5265,7 @@ static s32 e1000_kmrn_lock_loss_workaround_ich8lan(struct e1000_hw *hw)
  *  /disabled - false).
  **/
 void e1000e_set_kmrn_lock_loss_workaround_ich8lan(struct e1000_hw *hw,
-<<<<<<< HEAD
-						 bool state)
-=======
 						  bool state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_dev_spec_ich8lan *dev_spec = &hw->dev_spec.ich8lan;
 
@@ -6664,11 +5278,7 @@ void e1000e_set_kmrn_lock_loss_workaround_ich8lan(struct e1000_hw *hw,
 }
 
 /**
-<<<<<<< HEAD
- *  e1000_ipg3_phy_powerdown_workaround_ich8lan - Power down workaround on D3
-=======
  *  e1000e_igp3_phy_powerdown_workaround_ich8lan - Power down workaround on D3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  @hw: pointer to the HW structure
  *
  *  Workaround for 82566 power-down on D3 entry:
@@ -6681,11 +5291,7 @@ void e1000e_igp3_phy_powerdown_workaround_ich8lan(struct e1000_hw *hw)
 {
 	u32 reg;
 	u16 data;
-<<<<<<< HEAD
-	u8  retry = 0;
-=======
 	u8 retry = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hw->phy.type != e1000_phy_igp_3)
 		return;
@@ -6698,12 +5304,7 @@ void e1000e_igp3_phy_powerdown_workaround_ich8lan(struct e1000_hw *hw)
 			E1000_PHY_CTRL_NOND0A_GBE_DISABLE);
 		ew32(PHY_CTRL, reg);
 
-<<<<<<< HEAD
-		/*
-		 * Call gig speed drop workaround on Gig disable before
-=======
 		/* Call gig speed drop workaround on Gig disable before
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * accessing any PHY registers
 		 */
 		if (hw->mac.type == e1000_ich8lan)
@@ -6746,29 +5347,16 @@ void e1000e_gig_downshift_workaround_ich8lan(struct e1000_hw *hw)
 		return;
 
 	ret_val = e1000e_read_kmrn_reg(hw, E1000_KMRNCTRLSTA_DIAG_OFFSET,
-<<<<<<< HEAD
-				      &reg_data);
-=======
 				       &reg_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		return;
 	reg_data |= E1000_KMRNCTRLSTA_DIAG_NELPBK;
 	ret_val = e1000e_write_kmrn_reg(hw, E1000_KMRNCTRLSTA_DIAG_OFFSET,
-<<<<<<< HEAD
-				       reg_data);
-	if (ret_val)
-		return;
-	reg_data &= ~E1000_KMRNCTRLSTA_DIAG_NELPBK;
-	ret_val = e1000e_write_kmrn_reg(hw, E1000_KMRNCTRLSTA_DIAG_OFFSET,
-				       reg_data);
-=======
 					reg_data);
 	if (ret_val)
 		return;
 	reg_data &= ~E1000_KMRNCTRLSTA_DIAG_NELPBK;
 	e1000e_write_kmrn_reg(hw, E1000_KMRNCTRLSTA_DIAG_OFFSET, reg_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -6781,11 +5369,6 @@ void e1000e_gig_downshift_workaround_ich8lan(struct e1000_hw *hw)
  *  the LPLU setting in the NVM or custom setting.  For PCH and newer parts,
  *  the OEM bits PHY register (LED, GbE disable and LPLU configurations) also
  *  needs to be written.
-<<<<<<< HEAD
- **/
-void e1000_suspend_workarounds_ich8lan(struct e1000_hw *hw)
-{
-=======
  *  Parts that support (and are linked to a partner which support) EEE in
  *  100Mbps should disable LPLU since 100Mbps w/ EEE requires less power
  *  than 10Mbps w/o EEE.
@@ -6793,14 +5376,11 @@ void e1000_suspend_workarounds_ich8lan(struct e1000_hw *hw)
 void e1000_suspend_workarounds_ich8lan(struct e1000_hw *hw)
 {
 	struct e1000_dev_spec_ich8lan *dev_spec = &hw->dev_spec.ich8lan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 phy_ctrl;
 	s32 ret_val;
 
 	phy_ctrl = er32(PHY_CTRL);
 	phy_ctrl |= E1000_PHY_CTRL_GBE_DISABLE;
-<<<<<<< HEAD
-=======
 
 	if (hw->phy.type == e1000_phy_i217) {
 		u16 phy_reg, device_id = hw->adapter->pdev->device;
@@ -6887,7 +5467,6 @@ release:
 		hw->phy.ops.release(hw);
 	}
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(PHY_CTRL, phy_ctrl);
 
 	if (hw->mac.type == e1000_ich8lan)
@@ -6916,46 +5495,6 @@ out:
  *  on which PHY resets are not blocked, if the PHY registers cannot be
  *  accessed properly by the s/w toggle the LANPHYPC value to power cycle
  *  the PHY.
-<<<<<<< HEAD
- **/
-void e1000_resume_workarounds_pchlan(struct e1000_hw *hw)
-{
-	u16 phy_id1, phy_id2;
-	s32 ret_val;
-
-	if ((hw->mac.type != e1000_pch2lan) ||
-	    hw->phy.ops.check_reset_block(hw))
-		return;
-
-	ret_val = hw->phy.ops.acquire(hw);
-	if (ret_val) {
-		e_dbg("Failed to acquire PHY semaphore in resume\n");
-		return;
-	}
-
-	/* Test access to the PHY registers by reading the ID regs */
-	ret_val = hw->phy.ops.read_reg_locked(hw, PHY_ID1, &phy_id1);
-	if (ret_val)
-		goto release;
-	ret_val = hw->phy.ops.read_reg_locked(hw, PHY_ID2, &phy_id2);
-	if (ret_val)
-		goto release;
-
-	if (hw->phy.id == ((u32)(phy_id1 << 16) |
-			   (u32)(phy_id2 & PHY_REVISION_MASK)))
-		goto release;
-
-	e1000_toggle_lanphypc_value_ich8lan(hw);
-
-	hw->phy.ops.release(hw);
-	msleep(50);
-	e1000_phy_hw_reset(hw);
-	msleep(50);
-	return;
-
-release:
-	hw->phy.ops.release(hw);
-=======
  *  On i217, setup Intel Rapid Start Technology.
  **/
 void e1000_resume_workarounds_pchlan(struct e1000_hw *hw)
@@ -7014,7 +5553,6 @@ release:
 			e_dbg("Error %d in resume workarounds\n", ret_val);
 		hw->phy.ops.release(hw);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -7098,12 +5636,7 @@ static s32 e1000_led_on_pchlan(struct e1000_hw *hw)
 	u16 data = (u16)hw->mac.ledctl_mode2;
 	u32 i, led;
 
-<<<<<<< HEAD
-	/*
-	 * If no link, then turn LED on by setting the invert bit
-=======
 	/* If no link, then turn LED on by setting the invert bit
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * for each LED that's mode is "link_up" in ledctl_mode2.
 	 */
 	if (!(er32(STATUS) & E1000_STATUS_LU)) {
@@ -7133,12 +5666,7 @@ static s32 e1000_led_off_pchlan(struct e1000_hw *hw)
 	u16 data = (u16)hw->mac.ledctl_mode1;
 	u32 i, led;
 
-<<<<<<< HEAD
-	/*
-	 * If no link, then turn LED off by clearing the invert bit
-=======
 	/* If no link, then turn LED off by clearing the invert bit
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * for each LED that's mode is "link_up" in ledctl_mode1.
 	 */
 	if (!(er32(STATUS) & E1000_STATUS_LU)) {
@@ -7175,11 +5703,7 @@ static s32 e1000_get_cfg_done_ich8lan(struct e1000_hw *hw)
 	u32 bank = 0;
 	u32 status;
 
-<<<<<<< HEAD
-	e1000e_get_cfg_done(hw);
-=======
 	e1000e_get_cfg_done_generic(hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait for indication from h/w that it has completed basic config */
 	if (hw->mac.type >= e1000_ich10lan) {
@@ -7187,12 +5711,7 @@ static s32 e1000_get_cfg_done_ich8lan(struct e1000_hw *hw)
 	} else {
 		ret_val = e1000e_get_auto_rd_done(hw);
 		if (ret_val) {
-<<<<<<< HEAD
-			/*
-			 * When auto config read does not complete, do not
-=======
 			/* When auto config read does not complete, do not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * return with an error. This can happen in situations
 			 * where there is no eeprom and prevents getting link.
 			 */
@@ -7210,11 +5729,7 @@ static s32 e1000_get_cfg_done_ich8lan(struct e1000_hw *hw)
 
 	/* If EEPROM is not marked present, init the IGP 3 PHY manually */
 	if (hw->mac.type <= e1000_ich9lan) {
-<<<<<<< HEAD
-		if (((er32(EECD) & E1000_EECD_PRES) == 0) &&
-=======
 		if (!(er32(EECD) & E1000_EECD_PRES) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (hw->phy.type == e1000_phy_igp_3)) {
 			e1000e_phy_init_script_igp3(hw);
 		}
@@ -7275,10 +5790,7 @@ static void e1000_clear_hw_cntrs_ich8lan(struct e1000_hw *hw)
 	/* Clear PHY statistics registers */
 	if ((hw->phy.type == e1000_phy_82578) ||
 	    (hw->phy.type == e1000_phy_82579) ||
-<<<<<<< HEAD
-=======
 	    (hw->phy.type == e1000_phy_i217) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (hw->phy.type == e1000_phy_82577)) {
 		ret_val = hw->phy.ops.acquire(hw);
 		if (ret_val)
@@ -7320,17 +5832,11 @@ static const struct e1000_mac_operations ich8_mac_ops = {
 	.reset_hw		= e1000_reset_hw_ich8lan,
 	.init_hw		= e1000_init_hw_ich8lan,
 	.setup_link		= e1000_setup_link_ich8lan,
-<<<<<<< HEAD
-	.setup_physical_interface= e1000_setup_copper_link_ich8lan,
-	/* id_led_init dependent on mac type */
-	.config_collision_dist	= e1000e_config_collision_dist_generic,
-=======
 	.setup_physical_interface = e1000_setup_copper_link_ich8lan,
 	/* id_led_init dependent on mac type */
 	.config_collision_dist	= e1000e_config_collision_dist_generic,
 	.rar_set		= e1000e_rar_set_generic,
 	.rar_get_count		= e1000e_rar_get_count_generic,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct e1000_phy_operations ich8_phy_ops = {
@@ -7349,11 +5855,7 @@ static const struct e1000_phy_operations ich8_phy_ops = {
 
 static const struct e1000_nvm_operations ich8_nvm_ops = {
 	.acquire		= e1000_acquire_nvm_ich8lan,
-<<<<<<< HEAD
-	.read		 	= e1000_read_nvm_ich8lan,
-=======
 	.read			= e1000_read_nvm_ich8lan,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.release		= e1000_release_nvm_ich8lan,
 	.reload			= e1000e_reload_nvm_generic,
 	.update			= e1000_update_nvm_checksum_ich8lan,
@@ -7362,8 +5864,6 @@ static const struct e1000_nvm_operations ich8_nvm_ops = {
 	.write			= e1000_write_nvm_ich8lan,
 };
 
-<<<<<<< HEAD
-=======
 static const struct e1000_nvm_operations spt_nvm_ops = {
 	.acquire		= e1000_acquire_nvm_ich8lan,
 	.release		= e1000_release_nvm_ich8lan,
@@ -7375,7 +5875,6 @@ static const struct e1000_nvm_operations spt_nvm_ops = {
 	.write			= e1000_write_nvm_ich8lan,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct e1000_info e1000_ich8_info = {
 	.mac			= e1000_ich8lan,
 	.flags			= FLAG_HAS_WOL
@@ -7385,11 +5884,7 @@ const struct e1000_info e1000_ich8_info = {
 				  | FLAG_HAS_FLASH
 				  | FLAG_APME_IN_WUC,
 	.pba			= 8,
-<<<<<<< HEAD
-	.max_hw_frame_size	= ETH_FRAME_LEN + ETH_FCS_LEN,
-=======
 	.max_hw_frame_size	= VLAN_ETH_FRAME_LEN + ETH_FCS_LEN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_variants		= e1000_get_variants_ich8lan,
 	.mac_ops		= &ich8_mac_ops,
 	.phy_ops		= &ich8_phy_ops,
@@ -7453,8 +5948,6 @@ const struct e1000_info e1000_pch2_info = {
 	.mac			= e1000_pch2lan,
 	.flags			= FLAG_IS_ICH
 				  | FLAG_HAS_WOL
-<<<<<<< HEAD
-=======
 				  | FLAG_HAS_HW_TIMESTAMP
 				  | FLAG_HAS_CTRLEXT_ON_LOAD
 				  | FLAG_HAS_AMT
@@ -7498,7 +5991,6 @@ const struct e1000_info e1000_pch_spt_info = {
 	.flags			= FLAG_IS_ICH
 				  | FLAG_HAS_WOL
 				  | FLAG_HAS_HW_TIMESTAMP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  | FLAG_HAS_CTRLEXT_ON_LOAD
 				  | FLAG_HAS_AMT
 				  | FLAG_HAS_FLASH
@@ -7507,13 +5999,6 @@ const struct e1000_info e1000_pch_spt_info = {
 	.flags2			= FLAG2_HAS_PHY_STATS
 				  | FLAG2_HAS_EEE,
 	.pba			= 26,
-<<<<<<< HEAD
-	.max_hw_frame_size	= DEFAULT_JUMBO,
-	.get_variants		= e1000_get_variants_ich8lan,
-	.mac_ops		= &ich8_mac_ops,
-	.phy_ops		= &ich8_phy_ops,
-	.nvm_ops		= &ich8_nvm_ops,
-=======
 	.max_hw_frame_size	= 9022,
 	.get_variants		= e1000_get_variants_ich8lan,
 	.mac_ops		= &ich8_mac_ops,
@@ -7599,5 +6084,4 @@ const struct e1000_info e1000_pch_mtp_info = {
 	.mac_ops		= &ich8_mac_ops,
 	.phy_ops		= &ich8_phy_ops,
 	.nvm_ops		= &spt_nvm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CEPH_CRUSH_MAPPER_H
 #define CEPH_CRUSH_MAPPER_H
 
@@ -15,13 +12,6 @@
 #include "crush.h"
 
 extern int crush_find_rule(const struct crush_map *map, int ruleset, int type, int size);
-<<<<<<< HEAD
-extern int crush_do_rule(const struct crush_map *map,
-			 int ruleno,
-			 int x, int *result, int result_max,
-			 int forcefeed,    /* -1 for none */
-			 const __u32 *weights);
-=======
 int crush_do_rule(const struct crush_map *map,
 		  int ruleno, int x, int *result, int result_max,
 		  const __u32 *weight, int weight_max,
@@ -40,6 +30,5 @@ static inline size_t crush_work_size(const struct crush_map *map,
 }
 
 void crush_init_workspace(const struct crush_map *map, void *v);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * twl4030_keypad.c - driver for 8x8 keypad controller in twl4030 chips
  *
@@ -13,42 +10,16 @@
  *
  * Initial Code:
  * Manjunatha G K <manjugk@ti.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/interrupt.h>
-#include <linux/input.h>
-#include <linux/platform_device.h>
-#include <linux/i2c/twl.h>
-#include <linux/slab.h>
-=======
 #include <linux/interrupt.h>
 #include <linux/input.h>
 #include <linux/platform_device.h>
 #include <linux/mfd/twl.h>
 #include <linux/slab.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The TWL4030 family chips include a keypad controller that supports
@@ -76,16 +47,10 @@
 struct twl4030_keypad {
 	unsigned short	keymap[TWL4030_KEYMAP_SIZE];
 	u16		kp_state[TWL4030_MAX_ROWS];
-<<<<<<< HEAD
-	unsigned	n_rows;
-	unsigned	n_cols;
-	unsigned	irq;
-=======
 	bool		autorepeat;
 	unsigned int	n_rows;
 	unsigned int	n_cols;
 	int		irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct device *dbg_dev;
 	struct input_dev *input;
@@ -132,11 +97,7 @@ struct twl4030_keypad {
 #define KEYP_CTRL_KBD_ON		BIT(6)
 
 /* KEYP_DEB, KEYP_LONG_KEY, KEYP_TIMEOUT_x*/
-<<<<<<< HEAD
-#define KEYP_PERIOD_US(t, prescale)	((t) / (31 << (prescale + 1)) - 1)
-=======
 #define KEYP_PERIOD_US(t, prescale)	((t) / (31 << ((prescale) + 1)) - 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* KEYP_LK_PTV_REG Fields */
 #define KEYP_LK_PTV_PTV_SHIFT		5
@@ -188,16 +149,10 @@ static int twl4030_kpwrite_u8(struct twl4030_keypad *kp, u8 data, u32 reg)
 
 static inline u16 twl4030_col_xlate(struct twl4030_keypad *kp, u8 col)
 {
-<<<<<<< HEAD
-	/* If all bits in a row are active for all coloumns then
-	 * we have that row line connected to gnd. Mark this
-	 * key on as if it was on matrix position n_cols (ie
-=======
 	/*
 	 * If all bits in a row are active for all columns then
 	 * we have that row line connected to gnd. Mark this
 	 * key on as if it was on matrix position n_cols (i.e.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * one higher than the size of the matrix).
 	 */
 	if (col == 0xFF)
@@ -242,15 +197,9 @@ static void twl4030_kp_scan(struct twl4030_keypad *kp, bool release_all)
 	u16 new_state[TWL4030_MAX_ROWS];
 	int col, row;
 
-<<<<<<< HEAD
-	if (release_all)
-		memset(new_state, 0, sizeof(new_state));
-	else {
-=======
 	if (release_all) {
 		memset(new_state, 0, sizeof(new_state));
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* check for any changes */
 		int ret = twl4030_read_kp_matrix_state(kp, new_state);
 
@@ -301,15 +250,10 @@ static irqreturn_t do_kp_irq(int irq, void *_kp)
 	/* Read & Clear TWL4030 pending interrupt */
 	ret = twl4030_kpread(kp, &reg, KEYP_ISR1, 1);
 
-<<<<<<< HEAD
-	/* Release all keys if I2C has gone bad or
-	 * the KEYP has gone to idle state */
-=======
 	/*
 	 * Release all keys if I2C has gone bad or
 	 * the KEYP has gone to idle state.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret >= 0 && (reg & KEYP_IMR1_KP))
 		twl4030_kp_scan(kp, false);
 	else
@@ -318,11 +262,7 @@ static irqreturn_t do_kp_irq(int irq, void *_kp)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit twl4030_kp_program(struct twl4030_keypad *kp)
-=======
 static int twl4030_kp_program(struct twl4030_keypad *kp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 reg;
 	int i;
@@ -333,12 +273,8 @@ static int twl4030_kp_program(struct twl4030_keypad *kp)
 	if (twl4030_kpwrite_u8(kp, reg, KEYP_CTRL) < 0)
 		return -EIO;
 
-<<<<<<< HEAD
-	/* NOTE:  we could use sih_setup() here to package keypad
-=======
 	/*
 	 * NOTE: we could use sih_setup() here to package keypad
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * event sources as four different IRQs ... but we don't.
 	 */
 
@@ -367,11 +303,7 @@ static int twl4030_kp_program(struct twl4030_keypad *kp)
 
 	/*
 	 * Enable Clear-on-Read; disable remembering events that fire
-<<<<<<< HEAD
-	 * after the IRQ but before our handler acks (reads) them,
-=======
 	 * after the IRQ but before our handler acks (reads) them.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	reg = TWL4030_SIH_CTRL_COR_MASK | TWL4030_SIH_CTRL_PENDDIS_MASK;
 	if (twl4030_kpwrite_u8(kp, reg, KEYP_SIH_CTRL) < 0)
@@ -388,59 +320,15 @@ static int twl4030_kp_program(struct twl4030_keypad *kp)
  * Registers keypad device with input subsystem
  * and configures TWL4030 keypad registers
  */
-<<<<<<< HEAD
-static int __devinit twl4030_kp_probe(struct platform_device *pdev)
-{
-	struct twl4030_keypad_data *pdata = pdev->dev.platform_data;
-	const struct matrix_keymap_data *keymap_data;
-=======
 static int twl4030_kp_probe(struct platform_device *pdev)
 {
 	struct twl4030_keypad_data *pdata = dev_get_platdata(&pdev->dev);
 	const struct matrix_keymap_data *keymap_data = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct twl4030_keypad *kp;
 	struct input_dev *input;
 	u8 reg;
 	int error;
 
-<<<<<<< HEAD
-	if (!pdata || !pdata->rows || !pdata->cols || !pdata->keymap_data ||
-	    pdata->rows > TWL4030_MAX_ROWS || pdata->cols > TWL4030_MAX_COLS) {
-		dev_err(&pdev->dev, "Invalid platform_data\n");
-		return -EINVAL;
-	}
-
-	keymap_data = pdata->keymap_data;
-
-	kp = kzalloc(sizeof(*kp), GFP_KERNEL);
-	input = input_allocate_device();
-	if (!kp || !input) {
-		error = -ENOMEM;
-		goto err1;
-	}
-
-	/* Get the debug Device */
-	kp->dbg_dev = &pdev->dev;
-	kp->input = input;
-
-	kp->n_rows = pdata->rows;
-	kp->n_cols = pdata->cols;
-	kp->irq = platform_get_irq(pdev, 0);
-
-	/* setup input device */
-	__set_bit(EV_KEY, input->evbit);
-
-	/* Enable auto repeat feature of Linux input subsystem */
-	if (pdata->rep)
-		__set_bit(EV_REP, input->evbit);
-
-	input_set_capability(input, EV_MSC, MSC_SCAN);
-
-	input->name		= "TWL4030 Keypad";
-	input->phys		= "twl4030_keypad/input0";
-	input->dev.parent	= &pdev->dev;
-=======
 	kp = devm_kzalloc(&pdev->dev, sizeof(*kp), GFP_KERNEL);
 	if (!kp)
 		return -ENOMEM;
@@ -456,21 +344,12 @@ static int twl4030_kp_probe(struct platform_device *pdev)
 	/* setup input device */
 	input->name		= "TWL4030 Keypad";
 	input->phys		= "twl4030_keypad/input0";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input->id.bustype	= BUS_HOST;
 	input->id.vendor	= 0x0001;
 	input->id.product	= 0x0001;
 	input->id.version	= 0x0003;
 
-<<<<<<< HEAD
-	input->keycode		= kp->keymap;
-	input->keycodesize	= sizeof(kp->keymap[0]);
-	input->keycodemax	= ARRAY_SIZE(kp->keymap);
-
-	matrix_keypad_build_keymap(keymap_data, TWL4030_ROW_SHIFT,
-				   input->keycode, input->keybit);
-=======
 	if (pdata) {
 		if (!pdata->rows || !pdata->cols || !pdata->keymap_data) {
 			dev_err(&pdev->dev, "Missing platform_data\n");
@@ -513,26 +392,17 @@ static int twl4030_kp_probe(struct platform_device *pdev)
 	/* Enable auto repeat feature of Linux input subsystem */
 	if (kp->autorepeat)
 		__set_bit(EV_REP, input->evbit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = input_register_device(input);
 	if (error) {
 		dev_err(kp->dbg_dev,
 			"Unable to register twl4030 keypad device\n");
-<<<<<<< HEAD
-		goto err1;
-=======
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = twl4030_kp_program(kp);
 	if (error)
-<<<<<<< HEAD
-		goto err2;
-=======
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This ISR will always execute in kernel thread context because of
@@ -540,60 +410,17 @@ static int twl4030_kp_probe(struct platform_device *pdev)
 	 *
 	 * NOTE:  we assume this host is wired to TWL4040 INT1, not INT2 ...
 	 */
-<<<<<<< HEAD
-	error = request_threaded_irq(kp->irq, NULL, do_kp_irq,
-			0, pdev->name, kp);
-	if (error) {
-		dev_info(kp->dbg_dev, "request_irq failed for irq no=%d\n",
-			kp->irq);
-		goto err2;
-=======
 	error = devm_request_threaded_irq(&pdev->dev, kp->irq, NULL, do_kp_irq,
 					  0, pdev->name, kp);
 	if (error) {
 		dev_info(kp->dbg_dev, "request_irq failed for irq no=%d: %d\n",
 			kp->irq, error);
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Enable KP and TO interrupts now. */
 	reg = (u8) ~(KEYP_IMR1_KP | KEYP_IMR1_TO);
 	if (twl4030_kpwrite_u8(kp, reg, KEYP_IMR1)) {
-<<<<<<< HEAD
-		error = -EIO;
-		goto err3;
-	}
-
-	platform_set_drvdata(pdev, kp);
-	return 0;
-
-err3:
-	/* mask all events - we don't care about the result */
-	(void) twl4030_kpwrite_u8(kp, 0xff, KEYP_IMR1);
-	free_irq(kp->irq, NULL);
-err2:
-	input_unregister_device(input);
-	input = NULL;
-err1:
-	input_free_device(input);
-	kfree(kp);
-	return error;
-}
-
-static int __devexit twl4030_kp_remove(struct platform_device *pdev)
-{
-	struct twl4030_keypad *kp = platform_get_drvdata(pdev);
-
-	free_irq(kp->irq, kp);
-	input_unregister_device(kp->input);
-	platform_set_drvdata(pdev, NULL);
-	kfree(kp);
-
-	return 0;
-}
-
-=======
 		/* mask all events - we don't care about the result */
 		(void) twl4030_kpwrite_u8(kp, 0xff, KEYP_IMR1);
 		return -EIO;
@@ -610,7 +437,6 @@ static const struct of_device_id twl4030_keypad_dt_match_table[] = {
 MODULE_DEVICE_TABLE(of, twl4030_keypad_dt_match_table);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NOTE: twl4030 are multi-function devices connected via I2C.
  * So this device is a child of an I2C parent, thus it needs to
@@ -619,16 +445,9 @@ MODULE_DEVICE_TABLE(of, twl4030_keypad_dt_match_table);
 
 static struct platform_driver twl4030_kp_driver = {
 	.probe		= twl4030_kp_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(twl4030_kp_remove),
-	.driver		= {
-		.name	= "twl4030_keypad",
-		.owner	= THIS_MODULE,
-=======
 	.driver		= {
 		.name	= "twl4030_keypad",
 		.of_match_table = of_match_ptr(twl4030_keypad_dt_match_table),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(twl4030_kp_driver);

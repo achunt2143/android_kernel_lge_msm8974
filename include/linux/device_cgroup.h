@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-#include <linux/fs.h>
-
-#ifdef CONFIG_CGROUP_DEVICE
-extern int __devcgroup_inode_permission(struct inode *inode, int mask);
-extern int devcgroup_inode_mknod(int mode, dev_t dev);
-static inline int devcgroup_inode_permission(struct inode *inode, int mask)
-{
-	if (likely(!inode->i_rdev))
-		return 0;
-	if (!S_ISBLK(inode->i_mode) && !S_ISCHR(inode->i_mode))
-		return 0;
-	return __devcgroup_inode_permission(inode, mask);
-}
-#else
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #include <linux/fs.h>
 
@@ -76,7 +60,6 @@ static inline int devcgroup_inode_mknod(int mode, dev_t dev)
 static inline int devcgroup_check_permission(short type, u32 major, u32 minor,
 			       short access)
 { return 0; }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int devcgroup_inode_permission(struct inode *inode, int mask)
 { return 0; }
 static inline int devcgroup_inode_mknod(int mode, dev_t dev)

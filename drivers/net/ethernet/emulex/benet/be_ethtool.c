@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2005 - 2011 Emulex
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.  The full GNU General
- * Public License is included in this distribution in the file called COPYING.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2005 - 2016 Broadcom
  * All rights reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Contact Information:
  * linux-drivers@emulex.com
  *
@@ -35,11 +23,7 @@ struct be_ethtool_stat {
 };
 
 enum {DRVSTAT_TX, DRVSTAT_RX, DRVSTAT};
-<<<<<<< HEAD
-#define FIELDINFO(_struct, field) FIELD_SIZEOF(_struct, field), \
-=======
 #define FIELDINFO(_struct, field) sizeof_field(_struct, field), \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					offsetof(_struct, field)
 #define DRVSTAT_TX_INFO(field)	#field, DRVSTAT_TX,\
 					FIELDINFO(struct be_tx_stats, field)
@@ -66,11 +50,7 @@ static const struct be_ethtool_stat et_stats[] = {
 	/* Received packets dropped when they don't pass the unicast or
 	 * multicast address filtering.
 	 */
-<<<<<<< HEAD
-	{DRVSTAT_INFO(rx_address_mismatch_drops)},
-=======
 	{DRVSTAT_INFO(rx_address_filtered)},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Received packets dropped when IP packet length field is less than
 	 * the IP header length field.
 	 */
@@ -94,14 +74,11 @@ static const struct be_ethtool_stat et_stats[] = {
 	 * fifo must never overflow.
 	 */
 	{DRVSTAT_INFO(rxpp_fifo_overflow_drop)},
-<<<<<<< HEAD
-=======
 	/* Received packets dropped when the RX block runs out of space in
 	 * one of its input FIFOs. This could happen due a long burst of
 	 * minimum-sized (64b) frames in the receive path.
 	 * This counter may also be erroneously incremented rarely.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{DRVSTAT_INFO(rx_input_fifo_overflow_drop)},
 	{DRVSTAT_INFO(rx_ip_checksum_errs)},
 	{DRVSTAT_INFO(rx_tcp_checksum_errs)},
@@ -109,10 +86,7 @@ static const struct be_ethtool_stat et_stats[] = {
 	{DRVSTAT_INFO(tx_pauseframes)},
 	{DRVSTAT_INFO(tx_controlframes)},
 	{DRVSTAT_INFO(rx_priority_pause_frames)},
-<<<<<<< HEAD
-=======
 	{DRVSTAT_INFO(tx_priority_pauseframes)},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Received packets dropped when an internal fifo going into
 	 * main packet buffer tank (PMEM) overflows.
 	 */
@@ -141,12 +115,6 @@ static const struct be_ethtool_stat et_stats[] = {
 	 * is more than 9018 bytes
 	 */
 	{DRVSTAT_INFO(rx_drops_mtu)},
-<<<<<<< HEAD
-	/* Number of packets dropped due to random early drop function */
-	{DRVSTAT_INFO(eth_red_drops)},
-	{DRVSTAT_INFO(be_on_die_temperature)}
-};
-=======
 	/* Number of dma mapping errors */
 	{DRVSTAT_INFO(dma_map_errors)},
 	/* Number of packets dropped due to random early drop function */
@@ -158,7 +126,6 @@ static const struct be_ethtool_stat et_stats[] = {
 	{DRVSTAT_INFO(roce_drops_crc)}
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ETHTOOL_STATS_NUM ARRAY_SIZE(et_stats)
 
 /* Stats related to multi RX queues: get_stats routine assumes bytes, pkts
@@ -167,13 +134,9 @@ static const struct be_ethtool_stat et_stats[] = {
 static const struct be_ethtool_stat et_rx_stats[] = {
 	{DRVSTAT_RX_INFO(rx_bytes)},/* If moving this member see above note */
 	{DRVSTAT_RX_INFO(rx_pkts)}, /* If moving this member see above note */
-<<<<<<< HEAD
-	{DRVSTAT_RX_INFO(rx_compl)},
-=======
 	{DRVSTAT_RX_INFO(rx_vxlan_offload_pkts)},
 	{DRVSTAT_RX_INFO(rx_compl)},
 	{DRVSTAT_RX_INFO(rx_compl_err)},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{DRVSTAT_RX_INFO(rx_mcast_pkts)},
 	/* Number of page allocation failures while posting receive buffers
 	 * to HW.
@@ -186,10 +149,7 @@ static const struct be_ethtool_stat et_rx_stats[] = {
 	 */
 	{DRVSTAT_RX_INFO(rx_drops_no_frags)}
 };
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ETHTOOL_RXSTATS_NUM (ARRAY_SIZE(et_rx_stats))
 
 /* Stats related to multi TX queues: get_stats routine assumes compl is the
@@ -197,19 +157,6 @@ static const struct be_ethtool_stat et_rx_stats[] = {
  */
 static const struct be_ethtool_stat et_tx_stats[] = {
 	{DRVSTAT_TX_INFO(tx_compl)}, /* If moving this member see above note */
-<<<<<<< HEAD
-	{DRVSTAT_TX_INFO(tx_bytes)},
-	{DRVSTAT_TX_INFO(tx_pkts)},
-	/* Number of skbs queued for trasmission by the driver */
-	{DRVSTAT_TX_INFO(tx_reqs)},
-	/* Number of TX work request blocks DMAed to HW */
-	{DRVSTAT_TX_INFO(tx_wrbs)},
-	/* Number of times the TX queue was stopped due to lack
-	 * of spaces in the TXQ.
-	 */
-	{DRVSTAT_TX_INFO(tx_stops)}
-};
-=======
 	/* This counter is incremented when the HW encounters an error while
 	 * parsing the packet header of an outgoing TX request. This counter is
 	 * applicable only for BE2, BE3 and Skyhawk based adapters.
@@ -252,7 +199,6 @@ static const struct be_ethtool_stat et_tx_stats[] = {
 	{DRVSTAT_TX_INFO(tx_drv_drops)}
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ETHTOOL_TXSTATS_NUM (ARRAY_SIZE(et_tx_stats))
 
 static const char et_self_tests[][ETH_GSTRING_LEN] = {
@@ -270,34 +216,6 @@ static const char et_self_tests[][ETH_GSTRING_LEN] = {
 #define BE_NO_LOOPBACK 0xff
 
 static void be_get_drvinfo(struct net_device *netdev,
-<<<<<<< HEAD
-				struct ethtool_drvinfo *drvinfo)
-{
-	struct be_adapter *adapter = netdev_priv(netdev);
-	char fw_on_flash[FW_VER_LEN];
-
-	memset(fw_on_flash, 0 , sizeof(fw_on_flash));
-	be_cmd_get_fw_ver(adapter, adapter->fw_ver, fw_on_flash);
-
-	strlcpy(drvinfo->driver, DRV_NAME, sizeof(drvinfo->driver));
-	strlcpy(drvinfo->version, DRV_VER, sizeof(drvinfo->version));
-	strncpy(drvinfo->fw_version, adapter->fw_ver, FW_VER_LEN);
-	if (memcmp(adapter->fw_ver, fw_on_flash, FW_VER_LEN) != 0) {
-		strcat(drvinfo->fw_version, " [");
-		strcat(drvinfo->fw_version, fw_on_flash);
-		strcat(drvinfo->fw_version, "]");
-	}
-
-	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
-		sizeof(drvinfo->bus_info));
-	drvinfo->testinfo_len = 0;
-	drvinfo->regdump_len = 0;
-	drvinfo->eedump_len = 0;
-}
-
-static u32
-lancer_cmd_get_file_len(struct be_adapter *adapter, u8 *file_name)
-=======
 			   struct ethtool_drvinfo *drvinfo)
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
@@ -315,34 +233,19 @@ lancer_cmd_get_file_len(struct be_adapter *adapter, u8 *file_name)
 }
 
 static u32 lancer_cmd_get_file_len(struct be_adapter *adapter, u8 *file_name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 data_read = 0, eof;
 	u8 addn_status;
 	struct be_dma_mem data_len_cmd;
-<<<<<<< HEAD
-	int status;
-
-	memset(&data_len_cmd, 0, sizeof(data_len_cmd));
-	/* data_offset and data_size should be 0 to get reg len */
-	status = lancer_cmd_read_object(adapter, &data_len_cmd, 0, 0,
-				file_name, &data_read, &eof, &addn_status);
-=======
 
 	memset(&data_len_cmd, 0, sizeof(data_len_cmd));
 	/* data_offset and data_size should be 0 to get reg len */
 	lancer_cmd_read_object(adapter, &data_len_cmd, 0, 0, file_name,
 			       &data_read, &eof, &addn_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return data_read;
 }
 
-<<<<<<< HEAD
-static int
-lancer_cmd_read_file(struct be_adapter *adapter, u8 *file_name,
-		u32 buf_len, void *buf)
-=======
 static int be_get_dump_len(struct be_adapter *adapter)
 {
 	u32 dump_size = 0;
@@ -358,7 +261,6 @@ static int be_get_dump_len(struct be_adapter *adapter)
 
 static int lancer_cmd_read_file(struct be_adapter *adapter, u8 *file_name,
 				u32 buf_len, void *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_dma_mem read_cmd;
 	u32 read_len = 0, total_read_len = 0, chunk_size;
@@ -367,39 +269,22 @@ static int lancer_cmd_read_file(struct be_adapter *adapter, u8 *file_name,
 	int status = 0;
 
 	read_cmd.size = LANCER_READ_FILE_CHUNK;
-<<<<<<< HEAD
-	read_cmd.va = pci_alloc_consistent(adapter->pdev, read_cmd.size,
-			&read_cmd.dma);
-
-	if (!read_cmd.va) {
-		dev_err(&adapter->pdev->dev,
-				"Memory allocation failure while reading dump\n");
-=======
 	read_cmd.va = dma_alloc_coherent(&adapter->pdev->dev, read_cmd.size,
 					 &read_cmd.dma, GFP_ATOMIC);
 
 	if (!read_cmd.va) {
 		dev_err(&adapter->pdev->dev,
 			"Memory allocation failure while reading dump\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	while ((total_read_len < buf_len) && !eof) {
 		chunk_size = min_t(u32, (buf_len - total_read_len),
-<<<<<<< HEAD
-				LANCER_READ_FILE_CHUNK);
-		chunk_size = ALIGN(chunk_size, 4);
-		status = lancer_cmd_read_object(adapter, &read_cmd, chunk_size,
-				total_read_len, file_name, &read_len,
-				&eof, &addn_status);
-=======
 				   LANCER_READ_FILE_CHUNK);
 		chunk_size = ALIGN(chunk_size, 4);
 		status = lancer_cmd_read_object(adapter, &read_cmd, chunk_size,
 						total_read_len, file_name,
 						&read_len, &eof, &addn_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!status) {
 			memcpy(buf + total_read_len, read_cmd.va, read_len);
 			total_read_len += read_len;
@@ -409,67 +294,12 @@ static int lancer_cmd_read_file(struct be_adapter *adapter, u8 *file_name,
 			break;
 		}
 	}
-<<<<<<< HEAD
-	pci_free_consistent(adapter->pdev, read_cmd.size, read_cmd.va,
-			read_cmd.dma);
-=======
 	dma_free_coherent(&adapter->pdev->dev, read_cmd.size, read_cmd.va,
 			  read_cmd.dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return status;
 }
 
-<<<<<<< HEAD
-static int
-be_get_reg_len(struct net_device *netdev)
-{
-	struct be_adapter *adapter = netdev_priv(netdev);
-	u32 log_size = 0;
-
-	if (be_physfn(adapter)) {
-		if (lancer_chip(adapter))
-			log_size = lancer_cmd_get_file_len(adapter,
-					LANCER_FW_DUMP_FILE);
-		else
-			be_cmd_get_reg_len(adapter, &log_size);
-	}
-	return log_size;
-}
-
-static void
-be_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *buf)
-{
-	struct be_adapter *adapter = netdev_priv(netdev);
-
-	if (be_physfn(adapter)) {
-		memset(buf, 0, regs->len);
-		if (lancer_chip(adapter))
-			lancer_cmd_read_file(adapter, LANCER_FW_DUMP_FILE,
-					regs->len, buf);
-		else
-			be_cmd_get_regs(adapter, regs->len, buf);
-	}
-}
-
-static int be_get_coalesce(struct net_device *netdev,
-			   struct ethtool_coalesce *et)
-{
-	struct be_adapter *adapter = netdev_priv(netdev);
-	struct be_eq_obj *eqo = &adapter->eq_obj[0];
-
-
-	et->rx_coalesce_usecs = eqo->cur_eqd;
-	et->rx_coalesce_usecs_high = eqo->max_eqd;
-	et->rx_coalesce_usecs_low = eqo->min_eqd;
-
-	et->tx_coalesce_usecs = eqo->cur_eqd;
-	et->tx_coalesce_usecs_high = eqo->max_eqd;
-	et->tx_coalesce_usecs_low = eqo->min_eqd;
-
-	et->use_adaptive_rx_coalesce = eqo->enable_aic;
-	et->use_adaptive_tx_coalesce = eqo->enable_aic;
-=======
 static int be_read_dump_data(struct be_adapter *adapter, u32 dump_len,
 			     void *buf)
 {
@@ -502,7 +332,6 @@ static int be_get_coalesce(struct net_device *netdev,
 
 	et->use_adaptive_rx_coalesce = adapter->aic_enabled;
 	et->use_adaptive_tx_coalesce = adapter->aic_enabled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -511,27 +340,6 @@ static int be_get_coalesce(struct net_device *netdev,
  * eqd cmd is issued in the worker thread.
  */
 static int be_set_coalesce(struct net_device *netdev,
-<<<<<<< HEAD
-			   struct ethtool_coalesce *et)
-{
-	struct be_adapter *adapter = netdev_priv(netdev);
-	struct be_eq_obj *eqo;
-	int i;
-
-	for_all_evt_queues(adapter, eqo, i) {
-		eqo->enable_aic = et->use_adaptive_rx_coalesce;
-		eqo->max_eqd = min(et->rx_coalesce_usecs_high, BE_MAX_EQD);
-		eqo->min_eqd = min(et->rx_coalesce_usecs_low, eqo->max_eqd);
-		eqo->eqd = et->rx_coalesce_usecs;
-	}
-
-	return 0;
-}
-
-static void
-be_get_ethtool_stats(struct net_device *netdev,
-		struct ethtool_stats *stats, uint64_t *data)
-=======
 			   struct ethtool_coalesce *et,
 			   struct kernel_ethtool_coalesce *kernel_coal,
 			   struct netlink_ext_ack *extack)
@@ -564,7 +372,6 @@ be_get_ethtool_stats(struct net_device *netdev,
 
 static void be_get_ethtool_stats(struct net_device *netdev,
 				 struct ethtool_stats *stats, uint64_t *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
 	struct be_rx_obj *rxo;
@@ -582,17 +389,10 @@ static void be_get_ethtool_stats(struct net_device *netdev,
 		struct be_rx_stats *stats = rx_stats(rxo);
 
 		do {
-<<<<<<< HEAD
-			start = u64_stats_fetch_begin_irq(&stats->sync);
-			data[base] = stats->rx_bytes;
-			data[base + 1] = stats->rx_pkts;
-		} while (u64_stats_fetch_retry_irq(&stats->sync, start));
-=======
 			start = u64_stats_fetch_begin(&stats->sync);
 			data[base] = stats->rx_bytes;
 			data[base + 1] = stats->rx_pkts;
 		} while (u64_stats_fetch_retry(&stats->sync, start));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (i = 2; i < ETHTOOL_RXSTATS_NUM; i++) {
 			p = (u8 *)stats + et_rx_stats[i].offset;
@@ -605,48 +405,29 @@ static void be_get_ethtool_stats(struct net_device *netdev,
 		struct be_tx_stats *stats = tx_stats(txo);
 
 		do {
-<<<<<<< HEAD
-			start = u64_stats_fetch_begin_irq(&stats->sync_compl);
-			data[base] = stats->tx_compl;
-		} while (u64_stats_fetch_retry_irq(&stats->sync_compl, start));
-
-		do {
-			start = u64_stats_fetch_begin_irq(&stats->sync);
-=======
 			start = u64_stats_fetch_begin(&stats->sync_compl);
 			data[base] = stats->tx_compl;
 		} while (u64_stats_fetch_retry(&stats->sync_compl, start));
 
 		do {
 			start = u64_stats_fetch_begin(&stats->sync);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (i = 1; i < ETHTOOL_TXSTATS_NUM; i++) {
 				p = (u8 *)stats + et_tx_stats[i].offset;
 				data[base + i] =
 					(et_tx_stats[i].size == sizeof(u64)) ?
 						*(u64 *)p : *(u32 *)p;
 			}
-<<<<<<< HEAD
-		} while (u64_stats_fetch_retry_irq(&stats->sync, start));
-=======
 		} while (u64_stats_fetch_retry(&stats->sync, start));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		base += ETHTOOL_TXSTATS_NUM;
 	}
 }
 
-<<<<<<< HEAD
-static void
-be_get_stat_strings(struct net_device *netdev, uint32_t stringset,
-		uint8_t *data)
-=======
 static const char be_priv_flags[][ETH_GSTRING_LEN] = {
 	"disable-tpe-recovery"
 };
 
 static void be_get_stat_strings(struct net_device *netdev, uint32_t stringset,
 				uint8_t *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
 	int i, j;
@@ -678,13 +459,10 @@ static void be_get_stat_strings(struct net_device *netdev, uint32_t stringset,
 			data += ETH_GSTRING_LEN;
 		}
 		break;
-<<<<<<< HEAD
-=======
 	case ETH_SS_PRIV_FLAGS:
 		for (i = 0; i < ARRAY_SIZE(be_priv_flags); i++)
 			strcpy(data + i * ETH_GSTRING_LEN, be_priv_flags[i]);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -699,114 +477,13 @@ static int be_get_sset_count(struct net_device *netdev, int stringset)
 		return ETHTOOL_STATS_NUM +
 			adapter->num_rx_qs * ETHTOOL_RXSTATS_NUM +
 			adapter->num_tx_qs * ETHTOOL_TXSTATS_NUM;
-<<<<<<< HEAD
-=======
 	case ETH_SS_PRIV_FLAGS:
 		return ARRAY_SIZE(be_priv_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EINVAL;
 	}
 }
 
-<<<<<<< HEAD
-static int be_get_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
-{
-	struct be_adapter *adapter = netdev_priv(netdev);
-	struct be_phy_info phy_info;
-	u8 mac_speed = 0;
-	u16 link_speed = 0;
-	u8 link_status;
-	int status;
-
-	if ((adapter->link_speed < 0) || (!(netdev->flags & IFF_UP))) {
-		status = be_cmd_link_status_query(adapter, &mac_speed,
-						  &link_speed, &link_status, 0);
-		if (!status)
-			be_link_status_update(adapter, link_status);
-
-		/* link_speed is in units of 10 Mbps */
-		if (link_speed) {
-			ethtool_cmd_speed_set(ecmd, link_speed*10);
-		} else {
-			switch (mac_speed) {
-			case PHY_LINK_SPEED_10MBPS:
-				ethtool_cmd_speed_set(ecmd, SPEED_10);
-				break;
-			case PHY_LINK_SPEED_100MBPS:
-				ethtool_cmd_speed_set(ecmd, SPEED_100);
-				break;
-			case PHY_LINK_SPEED_1GBPS:
-				ethtool_cmd_speed_set(ecmd, SPEED_1000);
-				break;
-			case PHY_LINK_SPEED_10GBPS:
-				ethtool_cmd_speed_set(ecmd, SPEED_10000);
-				break;
-			case PHY_LINK_SPEED_ZERO:
-				ethtool_cmd_speed_set(ecmd, 0);
-				break;
-			}
-		}
-
-		status = be_cmd_get_phy_info(adapter, &phy_info);
-		if (!status) {
-			switch (phy_info.interface_type) {
-			case PHY_TYPE_XFP_10GB:
-			case PHY_TYPE_SFP_1GB:
-			case PHY_TYPE_SFP_PLUS_10GB:
-				ecmd->port = PORT_FIBRE;
-				break;
-			default:
-				ecmd->port = PORT_TP;
-				break;
-			}
-
-			switch (phy_info.interface_type) {
-			case PHY_TYPE_KR_10GB:
-			case PHY_TYPE_KX4_10GB:
-				ecmd->autoneg = AUTONEG_ENABLE;
-			ecmd->transceiver = XCVR_INTERNAL;
-				break;
-			default:
-				ecmd->autoneg = AUTONEG_DISABLE;
-				ecmd->transceiver = XCVR_EXTERNAL;
-				break;
-			}
-		}
-
-		/* Save for future use */
-		adapter->link_speed = ethtool_cmd_speed(ecmd);
-		adapter->port_type = ecmd->port;
-		adapter->transceiver = ecmd->transceiver;
-		adapter->autoneg = ecmd->autoneg;
-	} else {
-		ethtool_cmd_speed_set(ecmd, adapter->link_speed);
-		ecmd->port = adapter->port_type;
-		ecmd->transceiver = adapter->transceiver;
-		ecmd->autoneg = adapter->autoneg;
-	}
-
-	ecmd->duplex = DUPLEX_FULL;
-	ecmd->phy_address = adapter->port_num;
-	switch (ecmd->port) {
-	case PORT_FIBRE:
-		ecmd->supported = (SUPPORTED_10000baseT_Full | SUPPORTED_FIBRE);
-		break;
-	case PORT_TP:
-		ecmd->supported = (SUPPORTED_10000baseT_Full | SUPPORTED_TP);
-		break;
-	case PORT_AUI:
-		ecmd->supported = (SUPPORTED_10000baseT_Full | SUPPORTED_AUI);
-		break;
-	}
-
-	if (ecmd->autoneg) {
-		ecmd->supported |= SUPPORTED_1000baseT_Full;
-		ecmd->supported |= SUPPORTED_Autoneg;
-		ecmd->advertising |= (ADVERTISED_10000baseT_Full |
-				ADVERTISED_1000baseT_Full);
-	}
-=======
 static u32 be_get_port_type(struct be_adapter *adapter)
 {
 	u32 port;
@@ -1001,20 +678,11 @@ static int be_get_link_ksettings(struct net_device *netdev,
 						supported);
 	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
 						advertising);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static void be_get_ringparam(struct net_device *netdev,
-<<<<<<< HEAD
-			     struct ethtool_ringparam *ring)
-{
-	struct be_adapter *adapter = netdev_priv(netdev);
-
-	ring->rx_max_pending = ring->rx_pending = adapter->rx_obj[0].q.len;
-	ring->tx_max_pending = ring->tx_pending = adapter->tx_obj[0].q.len;
-=======
 			     struct ethtool_ringparam *ring,
 			     struct kernel_ethtool_ringparam *kernel_ring,
 			     struct netlink_ext_ack *extack)
@@ -1025,7 +693,6 @@ static void be_get_ringparam(struct net_device *netdev,
 	ring->rx_pending = adapter->rx_obj[0].q.len;
 	ring->tx_max_pending = adapter->tx_obj[0].q.len;
 	ring->tx_pending = adapter->tx_obj[0].q.len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1034,11 +701,7 @@ be_get_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *ecmd)
 	struct be_adapter *adapter = netdev_priv(netdev);
 
 	be_cmd_get_flow_control(adapter, &ecmd->tx_pause, &ecmd->rx_pause);
-<<<<<<< HEAD
-	ecmd->autoneg = 0;
-=======
 	ecmd->autoneg = adapter->phy.fc_autoneg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -1047,69 +710,6 @@ be_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *ecmd)
 	struct be_adapter *adapter = netdev_priv(netdev);
 	int status;
 
-<<<<<<< HEAD
-	if (ecmd->autoneg != 0)
-		return -EINVAL;
-	adapter->tx_fc = ecmd->tx_pause;
-	adapter->rx_fc = ecmd->rx_pause;
-
-	status = be_cmd_set_flow_control(adapter,
-					adapter->tx_fc, adapter->rx_fc);
-	if (status)
-		dev_warn(&adapter->pdev->dev, "Pause param set failed.\n");
-
-	return status;
-}
-
-static int
-be_set_phys_id(struct net_device *netdev,
-	       enum ethtool_phys_id_state state)
-{
-	struct be_adapter *adapter = netdev_priv(netdev);
-
-	switch (state) {
-	case ETHTOOL_ID_ACTIVE:
-		be_cmd_get_beacon_state(adapter, adapter->hba_port_num,
-					&adapter->beacon_state);
-		return 1;	/* cycle on/off once per second */
-
-	case ETHTOOL_ID_ON:
-		be_cmd_set_beacon_state(adapter, adapter->hba_port_num, 0, 0,
-					BEACON_STATE_ENABLED);
-		break;
-
-	case ETHTOOL_ID_OFF:
-		be_cmd_set_beacon_state(adapter, adapter->hba_port_num, 0, 0,
-					BEACON_STATE_DISABLED);
-		break;
-
-	case ETHTOOL_ID_INACTIVE:
-		be_cmd_set_beacon_state(adapter, adapter->hba_port_num, 0, 0,
-					adapter->beacon_state);
-	}
-
-	return 0;
-}
-
-
-static void
-be_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
-{
-	struct be_adapter *adapter = netdev_priv(netdev);
-
-	if (be_is_wol_supported(adapter)) {
-		wol->supported |= WAKE_MAGIC;
-		wol->wolopts |= WAKE_MAGIC;
-	} else
-		wol->wolopts = 0;
-	memset(&wol->sopass, 0, sizeof(wol->sopass));
-}
-
-static int
-be_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
-{
-	struct be_adapter *adapter = netdev_priv(netdev);
-=======
 	if (ecmd->autoneg != adapter->phy.fc_autoneg)
 		return -EINVAL;
 
@@ -1207,32 +807,15 @@ static int be_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 	u8 mac[ETH_ALEN];
 	bool enable;
 	int status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (wol->wolopts & ~WAKE_MAGIC)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	if (!be_is_wol_supported(adapter)) {
-=======
 	if (!(adapter->wol_cap & BE_WOL_CAP)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_warn(&adapter->pdev->dev, "WOL not supported\n");
 		return -EOPNOTSUPP;
 	}
 
-<<<<<<< HEAD
-	if (wol->wolopts & WAKE_MAGIC)
-		adapter->wol = true;
-	else
-		adapter->wol = false;
-
-	return 0;
-}
-
-static int
-be_test_ddr_dma(struct be_adapter *adapter)
-=======
 	cmd.size = sizeof(struct be_cmd_req_acpi_wol_magic_config);
 	cmd.va = dma_alloc_coherent(dev, cmd.size, &cmd.dma, GFP_KERNEL);
 	if (!cmd.va)
@@ -1262,7 +845,6 @@ err:
 }
 
 static int be_test_ddr_dma(struct be_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret, i;
 	struct be_dma_mem ddrdma_cmd;
@@ -1271,18 +853,6 @@ static int be_test_ddr_dma(struct be_adapter *adapter)
 	};
 
 	ddrdma_cmd.size = sizeof(struct be_cmd_req_ddrdma_test);
-<<<<<<< HEAD
-	ddrdma_cmd.va = dma_alloc_coherent(&adapter->pdev->dev, ddrdma_cmd.size,
-					   &ddrdma_cmd.dma, GFP_KERNEL);
-	if (!ddrdma_cmd.va) {
-		dev_err(&adapter->pdev->dev, "Memory allocation failure\n");
-		return -ENOMEM;
-	}
-
-	for (i = 0; i < 2; i++) {
-		ret = be_cmd_ddr_dma_test(adapter, pattern[i],
-					4096, &ddrdma_cmd);
-=======
 	ddrdma_cmd.va = dma_alloc_coherent(&adapter->pdev->dev,
 					   ddrdma_cmd.size, &ddrdma_cmd.dma,
 					   GFP_KERNEL);
@@ -1292,7 +862,6 @@ static int be_test_ddr_dma(struct be_adapter *adapter)
 	for (i = 0; i < 2; i++) {
 		ret = be_cmd_ddr_dma_test(adapter, pattern[i],
 					  4096, &ddrdma_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret != 0)
 			goto err;
 	}
@@ -1300,49 +869,6 @@ static int be_test_ddr_dma(struct be_adapter *adapter)
 err:
 	dma_free_coherent(&adapter->pdev->dev, ddrdma_cmd.size, ddrdma_cmd.va,
 			  ddrdma_cmd.dma);
-<<<<<<< HEAD
-	return ret;
-}
-
-static u64 be_loopback_test(struct be_adapter *adapter, u8 loopback_type,
-				u64 *status)
-{
-	be_cmd_set_loopback(adapter, adapter->hba_port_num,
-				loopback_type, 1);
-	*status = be_cmd_loopback_test(adapter, adapter->hba_port_num,
-				loopback_type, 1500,
-				2, 0xabc);
-	be_cmd_set_loopback(adapter, adapter->hba_port_num,
-				BE_NO_LOOPBACK, 1);
-	return *status;
-}
-
-static void
-be_self_test(struct net_device *netdev, struct ethtool_test *test, u64 *data)
-{
-	struct be_adapter *adapter = netdev_priv(netdev);
-	u8 mac_speed = 0;
-	u16 qos_link_speed = 0;
-
-	memset(data, 0, sizeof(u64) * ETHTOOL_TESTS_NUM);
-
-	if (test->flags & ETH_TEST_FL_OFFLINE) {
-		if (be_loopback_test(adapter, BE_MAC_LOOPBACK,
-						&data[0]) != 0) {
-			test->flags |= ETH_TEST_FL_FAILED;
-		}
-		if (be_loopback_test(adapter, BE_PHY_LOOPBACK,
-						&data[1]) != 0) {
-			test->flags |= ETH_TEST_FL_FAILED;
-		}
-		if (be_loopback_test(adapter, BE_ONE_PORT_EXT_LOOPBACK,
-						&data[2]) != 0) {
-			test->flags |= ETH_TEST_FL_FAILED;
-		}
-	}
-
-	if (be_test_ddr_dma(adapter) != 0) {
-=======
 	return be_cmd_status(ret);
 }
 
@@ -1401,25 +927,10 @@ static void be_self_test(struct net_device *netdev, struct ethtool_test *test,
 	}
 
 	if (!lancer_chip(adapter) && be_test_ddr_dma(adapter) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data[3] = 1;
 		test->flags |= ETH_TEST_FL_FAILED;
 	}
 
-<<<<<<< HEAD
-	if (be_cmd_link_status_query(adapter, &mac_speed,
-				     &qos_link_speed, NULL, 0) != 0) {
-		test->flags |= ETH_TEST_FL_FAILED;
-		data[4] = -1;
-	} else if (!mac_speed) {
-		test->flags |= ETH_TEST_FL_FAILED;
-		data[4] = 1;
-	}
-}
-
-static int
-be_do_flash(struct net_device *netdev, struct ethtool_flash *efl)
-=======
 	/* link status was down prior to test */
 	if (!link_status) {
 		test->flags |= ETH_TEST_FL_FAILED;
@@ -1444,7 +955,6 @@ be_do_flash(struct net_device *netdev, struct ethtool_flash *efl)
 }
 
 static int be_do_flash(struct net_device *netdev, struct ethtool_flash *efl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
 
@@ -1452,18 +962,6 @@ static int be_do_flash(struct net_device *netdev, struct ethtool_flash *efl)
 }
 
 static int
-<<<<<<< HEAD
-be_get_eeprom_len(struct net_device *netdev)
-{
-	struct be_adapter *adapter = netdev_priv(netdev);
-	if (lancer_chip(adapter)) {
-		if (be_physfn(adapter))
-			return lancer_cmd_get_file_len(adapter,
-					LANCER_VPD_PF_FILE);
-		else
-			return lancer_cmd_get_file_len(adapter,
-					LANCER_VPD_VF_FILE);
-=======
 be_get_dump_flag(struct net_device *netdev, struct ethtool_dump *dump)
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
@@ -1505,20 +1003,13 @@ static int be_get_eeprom_len(struct net_device *netdev)
 		else
 			return lancer_cmd_get_file_len(adapter,
 						       LANCER_VPD_VF_FILE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		return BE_READ_SEEPROM_LEN;
 	}
 }
 
-<<<<<<< HEAD
-static int
-be_read_eeprom(struct net_device *netdev, struct ethtool_eeprom *eeprom,
-			uint8_t *data)
-=======
 static int be_read_eeprom(struct net_device *netdev,
 			  struct ethtool_eeprom *eeprom, uint8_t *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_adapter *adapter = netdev_priv(netdev);
 	struct be_dma_mem eeprom_cmd;
@@ -1531,40 +1022,22 @@ static int be_read_eeprom(struct net_device *netdev,
 	if (lancer_chip(adapter)) {
 		if (be_physfn(adapter))
 			return lancer_cmd_read_file(adapter, LANCER_VPD_PF_FILE,
-<<<<<<< HEAD
-					eeprom->len, data);
-		else
-			return lancer_cmd_read_file(adapter, LANCER_VPD_VF_FILE,
-					eeprom->len, data);
-=======
 						    eeprom->len, data);
 		else
 			return lancer_cmd_read_file(adapter, LANCER_VPD_VF_FILE,
 						    eeprom->len, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	eeprom->magic = BE_VENDOR_ID | (adapter->pdev->device<<16);
 
 	memset(&eeprom_cmd, 0, sizeof(struct be_dma_mem));
 	eeprom_cmd.size = sizeof(struct be_cmd_req_seeprom_read);
-<<<<<<< HEAD
-	eeprom_cmd.va = dma_alloc_coherent(&adapter->pdev->dev, eeprom_cmd.size,
-					   &eeprom_cmd.dma, GFP_KERNEL);
-
-	if (!eeprom_cmd.va) {
-		dev_err(&adapter->pdev->dev,
-			"Memory allocation failure. Could not read eeprom\n");
-		return -ENOMEM;
-	}
-=======
 	eeprom_cmd.va = dma_alloc_coherent(&adapter->pdev->dev,
 					   eeprom_cmd.size, &eeprom_cmd.dma,
 					   GFP_KERNEL);
 
 	if (!eeprom_cmd.va)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = be_cmd_get_seeprom_data(adapter, &eeprom_cmd);
 
@@ -1575,13 +1048,6 @@ static int be_read_eeprom(struct net_device *netdev,
 	dma_free_coherent(&adapter->pdev->dev, eeprom_cmd.size, eeprom_cmd.va,
 			  eeprom_cmd.dma);
 
-<<<<<<< HEAD
-	return status;
-}
-
-const struct ethtool_ops be_ethtool_ops = {
-	.get_settings = be_get_settings,
-=======
 	return be_cmd_status(status);
 }
 
@@ -1960,7 +1426,6 @@ const struct ethtool_ops be_ethtool_ops = {
 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
 				     ETHTOOL_COALESCE_USE_ADAPTIVE |
 				     ETHTOOL_COALESCE_USECS_LOW_HIGH,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo = be_get_drvinfo,
 	.get_wol = be_get_wol,
 	.set_wol = be_set_wol,
@@ -1972,16 +1437,6 @@ const struct ethtool_ops be_ethtool_ops = {
 	.get_ringparam = be_get_ringparam,
 	.get_pauseparam = be_get_pauseparam,
 	.set_pauseparam = be_set_pauseparam,
-<<<<<<< HEAD
-	.get_strings = be_get_stat_strings,
-	.set_phys_id = be_set_phys_id,
-	.get_sset_count = be_get_sset_count,
-	.get_ethtool_stats = be_get_ethtool_stats,
-	.get_regs_len = be_get_reg_len,
-	.get_regs = be_get_regs,
-	.flash_device = be_do_flash,
-	.self_test = be_self_test,
-=======
 	.set_priv_flags = be_set_priv_flags,
 	.get_priv_flags = be_get_priv_flags,
 	.get_strings = be_get_stat_strings,
@@ -2006,5 +1461,4 @@ const struct ethtool_ops be_ethtool_ops = {
 	.get_module_info = be_get_module_info,
 	.get_module_eeprom = be_get_module_eeprom,
 	.get_link_ksettings = be_get_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

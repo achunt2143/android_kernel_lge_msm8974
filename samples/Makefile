@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-# Makefile for Linux samples code
-
-obj-$(CONFIG_SAMPLES)	+= kobject/ kprobes/ tracepoints/ trace_events/ \
-			   hw_breakpoint/ kfifo/ kdb/ hidraw/ rpmsg/ seccomp/
-=======
 # SPDX-License-Identifier: GPL-2.0
 # Makefile for Linux samples code
 
@@ -45,4 +39,3 @@ obj-$(CONFIG_SAMPLE_KMEMLEAK)		+= kmemleak/
 obj-$(CONFIG_SAMPLE_CORESIGHT_SYSCFG)	+= coresight/
 obj-$(CONFIG_SAMPLE_FPROBE)		+= fprobe/
 obj-$(CONFIG_SAMPLES_RUST)		+= rust/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

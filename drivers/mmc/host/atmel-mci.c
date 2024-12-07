@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Atmel MultiMedia Card Interface driver
  *
  * Copyright (C) 2004-2008 Atmel Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/blkdev.h>
 #include <linux/clk.h>
@@ -21,13 +11,6 @@
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-#include <linux/init.h>
-#include <linux/interrupt.h>
-#include <linux/ioport.h>
-#include <linux/module.h>
-=======
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -36,7 +19,6 @@
 #include <linux/of.h>
 #include <linux/irq.h>
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/scatterlist.h>
 #include <linux/seq_file.h>
@@ -47,19 +29,6 @@
 #include <linux/mmc/host.h>
 #include <linux/mmc/sdio.h>
 
-<<<<<<< HEAD
-#include <mach/atmel-mci.h>
-#include <linux/atmel-mci.h>
-#include <linux/atmel_pdc.h>
-
-#include <asm/io.h>
-#include <asm/unaligned.h>
-
-#include <mach/cpu.h>
-#include <mach/board.h>
-
-#include "atmel-mci-regs.h"
-=======
 #include <linux/atmel_pdc.h>
 #include <linux/pm.h>
 #include <linux/pm_runtime.h>
@@ -202,38 +171,24 @@
 
 #define ATMCI_CMD_TIMEOUT_MS	2000
 #define AUTOSUSPEND_DELAY	50
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ATMCI_DATA_ERROR_FLAGS	(ATMCI_DCRCE | ATMCI_DTOE | ATMCI_OVRE | ATMCI_UNRE)
 #define ATMCI_DMA_THRESHOLD	16
 
 enum {
-<<<<<<< HEAD
-	EVENT_CMD_COMPLETE = 0,
-	EVENT_XFER_COMPLETE,
-	EVENT_DATA_COMPLETE,
-=======
 	EVENT_CMD_RDY = 0,
 	EVENT_XFER_COMPLETE,
 	EVENT_NOTBUSY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	EVENT_DATA_ERROR,
 };
 
 enum atmel_mci_state {
 	STATE_IDLE = 0,
 	STATE_SENDING_CMD,
-<<<<<<< HEAD
-	STATE_SENDING_DATA,
-	STATE_DATA_BUSY,
-	STATE_SENDING_STOP,
-	STATE_DATA_ERROR,
-=======
 	STATE_DATA_XFER,
 	STATE_WAITING_NOTBUSY,
 	STATE_SENDING_STOP,
 	STATE_END_REQUEST,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum atmci_xfer_dir {
@@ -246,10 +201,6 @@ enum atmci_pdc_buf {
 	PDC_SECOND_BUF,
 };
 
-<<<<<<< HEAD
-struct atmel_mci_caps {
-	bool    has_dma;
-=======
 /**
  * struct mci_slot_pdata - board-specific per-slot configuration
  * @bus_width: Number of data lines wired up the slot
@@ -287,20 +238,16 @@ struct mci_platform_data {
 
 struct atmel_mci_caps {
 	bool    has_dma_conf_reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool    has_pdc;
 	bool    has_cfg_reg;
 	bool    has_cstor_reg;
 	bool    has_highspeed;
 	bool    has_rwproof;
 	bool	has_odd_clk_div;
-<<<<<<< HEAD
-=======
 	bool	has_bad_data_ordering;
 	bool	need_reset_after_xfer;
 	bool	need_blksz_mul_4;
 	bool	need_notbusy_for_read_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct atmel_mci_dma {
@@ -313,9 +260,6 @@ struct atmel_mci_dma {
  * @lock: Spinlock protecting the queue and associated data.
  * @regs: Pointer to MMIO registers.
  * @sg: Scatterlist entry currently being processed by PIO or PDC code.
-<<<<<<< HEAD
- * @pio_offset: Offset into the current scatterlist entry.
-=======
  * @sg_len: Size of the scatterlist
  * @pio_offset: Offset into the current scatterlist entry.
  * @buffer: Buffer used if we don't have the r/w proof capability. We
@@ -323,7 +267,6 @@ struct atmel_mci_dma {
  *      one buffer for the full transaction.
  * @buf_size: size of the buffer.
  * @buf_phys_addr: buffer address needed for pdc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cur_slot: The slot which is currently using the controller.
  * @mrq: The request currently being processed on @cur_slot,
  *	or NULL if the controller is idle.
@@ -333,10 +276,7 @@ struct atmel_mci_dma {
  * @data_size: just data->blocks * data->blksz.
  * @dma: DMA client state.
  * @data_chan: DMA channel being used for the current data transfer.
-<<<<<<< HEAD
-=======
  * @dma_conf: Configuration for the DMA slave
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cmd_status: Snapshot of SR taken upon completion of the current
  *	command. Only valid when EVENT_CMD_COMPLETE is pending.
  * @data_status: Snapshot of SR taken upon completion of the current
@@ -353,10 +293,7 @@ struct atmel_mci_dma {
  * @queue: List of slots waiting for access to the controller.
  * @need_clock_update: Update the clock rate before the next request.
  * @need_reset: Reset controller before next request.
-<<<<<<< HEAD
-=======
  * @timer: Timer to balance the data timeout error flag which cannot rise.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mode_reg: Value of the MR register.
  * @cfg_reg: Value of the CFG register.
  * @bus_hz: The rate of @mck in Hz. This forms the basis for MMC bus
@@ -408,12 +345,9 @@ struct atmel_mci {
 	struct scatterlist	*sg;
 	unsigned int		sg_len;
 	unsigned int		pio_offset;
-<<<<<<< HEAD
-=======
 	unsigned int		*buffer;
 	unsigned int		buf_size;
 	dma_addr_t		buf_phys_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct atmel_mci_slot	*cur_slot;
 	struct mmc_request	*mrq;
@@ -437,10 +371,7 @@ struct atmel_mci {
 
 	bool			need_clock_update;
 	bool			need_reset;
-<<<<<<< HEAD
-=======
 	struct timer_list	timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			mode_reg;
 	u32			cfg_reg;
 	unsigned long		bus_hz;
@@ -473,10 +404,6 @@ struct atmel_mci {
  *	available.
  * @wp_pin: GPIO pin used for card write protect sending, or negative
  *	if not available.
-<<<<<<< HEAD
- * @detect_is_active_high: The state of the detect pin when it is active.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @detect_timer: Timer used for debouncing @detect_pin interrupts.
  */
 struct atmel_mci_slot {
@@ -494,17 +421,9 @@ struct atmel_mci_slot {
 #define ATMCI_CARD_PRESENT	0
 #define ATMCI_CARD_NEED_INIT	1
 #define ATMCI_SHUTDOWN		2
-<<<<<<< HEAD
-#define ATMCI_SUSPENDED		3
-
-	int			detect_pin;
-	int			wp_pin;
-	bool			detect_is_active_high;
-=======
 
 	struct gpio_desc        *detect_pin;
 	struct gpio_desc	*wp_pin;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct timer_list	detect_timer;
 };
@@ -560,22 +479,7 @@ static int atmci_req_show(struct seq_file *s, void *v)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int atmci_req_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, atmci_req_show, inode->i_private);
-}
-
-static const struct file_operations atmci_req_fops = {
-	.owner		= THIS_MODULE,
-	.open		= atmci_req_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-=======
 DEFINE_SHOW_ATTRIBUTE(atmci_req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void atmci_show_status_reg(struct seq_file *s,
 		const char *regname, u32 value)
@@ -627,39 +531,21 @@ static int atmci_regs_show(struct seq_file *s, void *v)
 {
 	struct atmel_mci	*host = s->private;
 	u32			*buf;
-<<<<<<< HEAD
-=======
 	int			ret = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf = kmalloc(ATMCI_REGS_SIZE, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	pm_runtime_get_sync(&host->pdev->dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Grab a more or less consistent snapshot. Note that we're
 	 * not disabling interrupts, so IMR and SR may not be
 	 * consistent.
 	 */
 	spin_lock_bh(&host->lock);
-<<<<<<< HEAD
-	clk_enable(host->mck);
-	memcpy_fromio(buf, host->regs, ATMCI_REGS_SIZE);
-	clk_disable(host->mck);
-	spin_unlock_bh(&host->lock);
-
-	seq_printf(s, "MR:\t0x%08x%s%s CLKDIV=%u\n",
-			buf[ATMCI_MR / 4],
-			buf[ATMCI_MR / 4] & ATMCI_MR_RDPROOF ? " RDPROOF" : "",
-			buf[ATMCI_MR / 4] & ATMCI_MR_WRPROOF ? " WRPROOF" : "",
-			buf[ATMCI_MR / 4] & 0xff);
-=======
 	memcpy_fromio(buf, host->regs, ATMCI_REGS_SIZE);
 	spin_unlock_bh(&host->lock);
 
@@ -677,7 +563,6 @@ static int atmci_regs_show(struct seq_file *s, void *v)
 	else
 		seq_printf(s, "CLKDIV=%u\n",
 				(buf[ATMCI_MR / 4] & 0xff));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(s, "DTOR:\t0x%08x\n", buf[ATMCI_DTOR / 4]);
 	seq_printf(s, "SDCR:\t0x%08x\n", buf[ATMCI_SDCR / 4]);
 	seq_printf(s, "ARGR:\t0x%08x\n", buf[ATMCI_ARGR / 4]);
@@ -693,11 +578,7 @@ static int atmci_regs_show(struct seq_file *s, void *v)
 	atmci_show_status_reg(s, "SR", buf[ATMCI_SR / 4]);
 	atmci_show_status_reg(s, "IMR", buf[ATMCI_IMR / 4]);
 
-<<<<<<< HEAD
-	if (host->caps.has_dma) {
-=======
 	if (host->caps.has_dma_conf_reg) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 val;
 
 		val = buf[ATMCI_DMA / 4];
@@ -721,74 +602,21 @@ static int atmci_regs_show(struct seq_file *s, void *v)
 
 	kfree(buf);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-static int atmci_regs_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, atmci_regs_show, inode->i_private);
-}
-
-static const struct file_operations atmci_regs_fops = {
-	.owner		= THIS_MODULE,
-	.open		= atmci_regs_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-=======
 	return ret;
 }
 
 DEFINE_SHOW_ATTRIBUTE(atmci_regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void atmci_init_debugfs(struct atmel_mci_slot *slot)
 {
 	struct mmc_host		*mmc = slot->mmc;
 	struct atmel_mci	*host = slot->host;
 	struct dentry		*root;
-<<<<<<< HEAD
-	struct dentry		*node;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	root = mmc->debugfs_root;
 	if (!root)
 		return;
 
-<<<<<<< HEAD
-	node = debugfs_create_file("regs", S_IRUSR, root, host,
-			&atmci_regs_fops);
-	if (IS_ERR(node))
-		return;
-	if (!node)
-		goto err;
-
-	node = debugfs_create_file("req", S_IRUSR, root, slot, &atmci_req_fops);
-	if (!node)
-		goto err;
-
-	node = debugfs_create_u32("state", S_IRUSR, root, (u32 *)&host->state);
-	if (!node)
-		goto err;
-
-	node = debugfs_create_x32("pending_events", S_IRUSR, root,
-				     (u32 *)&host->pending_events);
-	if (!node)
-		goto err;
-
-	node = debugfs_create_x32("completed_events", S_IRUSR, root,
-				     (u32 *)&host->completed_events);
-	if (!node)
-		goto err;
-
-	return;
-
-err:
-	dev_err(&mmc->class_dev, "failed to initialize debugfs for slot\n");
-=======
 	debugfs_create_file("regs", S_IRUSR, root, host, &atmci_regs_fops);
 	debugfs_create_file("req", S_IRUSR, root, slot, &atmci_req_fops);
 	debugfs_create_u32("state", S_IRUSR, root, &host->state);
@@ -934,7 +762,6 @@ static void atmci_timeout_timer(struct timer_list *t)
 	host->state = STATE_END_REQUEST;
 	smp_wmb();
 	tasklet_schedule(&host->tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned int atmci_ns_to_clocks(struct atmel_mci *host,
@@ -1017,13 +844,7 @@ static u32 atmci_prepare_command(struct mmc_host *mmc,
 		if (cmd->opcode == SD_IO_RW_EXTENDED) {
 			cmdr |= ATMCI_CMDR_SDIO_BLOCK;
 		} else {
-<<<<<<< HEAD
-			if (data->flags & MMC_DATA_STREAM)
-				cmdr |= ATMCI_CMDR_STREAM;
-			else if (data->blocks > 1)
-=======
 			if (data->blocks > 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cmdr |= ATMCI_CMDR_MULTI_BLOCK;
 			else
 				cmdr |= ATMCI_CMDR_BLOCK;
@@ -1039,12 +860,9 @@ static u32 atmci_prepare_command(struct mmc_host *mmc,
 static void atmci_send_command(struct atmel_mci *host,
 		struct mmc_command *cmd, u32 cmd_flags)
 {
-<<<<<<< HEAD
-=======
 	unsigned int timeout_ms = cmd->busy_timeout ? cmd->busy_timeout :
 		ATMCI_CMD_TIMEOUT_MS;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON(host->cmd);
 	host->cmd = cmd;
 
@@ -1054,19 +872,13 @@ static void atmci_send_command(struct atmel_mci *host,
 
 	atmci_writel(host, ATMCI_ARGR, cmd->arg);
 	atmci_writel(host, ATMCI_CMDR, cmd_flags);
-<<<<<<< HEAD
-=======
 
 	mod_timer(&host->timer, jiffies + msecs_to_jiffies(timeout_ms));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void atmci_send_stop_cmd(struct atmel_mci *host, struct mmc_data *data)
 {
-<<<<<<< HEAD
-=======
 	dev_dbg(&host->pdev->dev, "send stop command\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atmci_send_command(host, data->stop, host->stop_cmdr);
 	atmci_writel(host, ATMCI_IER, ATMCI_CMDRDY);
 }
@@ -1079,10 +891,7 @@ static void atmci_pdc_set_single_buf(struct atmel_mci *host,
 	enum atmci_xfer_dir dir, enum atmci_pdc_buf buf_nb)
 {
 	u32 pointer_reg, counter_reg;
-<<<<<<< HEAD
-=======
 	unsigned int buf_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dir == XFER_RECEIVE) {
 		pointer_reg = ATMEL_PDC_RPR;
@@ -1097,10 +906,6 @@ static void atmci_pdc_set_single_buf(struct atmel_mci *host,
 		counter_reg += ATMEL_PDC_SCND_BUF_OFF;
 	}
 
-<<<<<<< HEAD
-	atmci_writel(host, pointer_reg, sg_dma_address(host->sg));
-	if (host->data_size <= sg_dma_len(host->sg)) {
-=======
 	if (!host->caps.has_rwproof) {
 		buf_size = host->buf_size;
 		atmci_writel(host, pointer_reg, host->buf_phys_addr);
@@ -1110,7 +915,6 @@ static void atmci_pdc_set_single_buf(struct atmel_mci *host,
 	}
 
 	if (host->data_size <= buf_size) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (host->data_size & 0x3) {
 			/* If size is different from modulo 4, transfer bytes */
 			atmci_writel(host, counter_reg, host->data_size);
@@ -1151,12 +955,7 @@ static void atmci_pdc_cleanup(struct atmel_mci *host)
 	if (data)
 		dma_unmap_sg(&host->pdev->dev,
 				data->sg, data->sg_len,
-<<<<<<< HEAD
-				((data->flags & MMC_DATA_WRITE)
-				 ? DMA_TO_DEVICE : DMA_FROM_DEVICE));
-=======
 				mmc_get_dma_dir(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1166,20 +965,6 @@ static void atmci_pdc_cleanup(struct atmel_mci *host)
  */
 static void atmci_pdc_complete(struct atmel_mci *host)
 {
-<<<<<<< HEAD
-	atmci_writel(host, ATMEL_PDC_PTCR, ATMEL_PDC_RXTDIS | ATMEL_PDC_TXTDIS);
-	atmci_pdc_cleanup(host);
-
-	/*
-	 * If the card was removed, data will be NULL. No point trying
-	 * to send the stop command or waiting for NBUSY in this case.
-	 */
-	if (host->data) {
-		atmci_set_pending(host, EVENT_XFER_COMPLETE);
-		tasklet_schedule(&host->tasklet);
-		atmci_writel(host, ATMCI_IER, ATMCI_NOTBUSY);
-	}
-=======
 	int transfer_size = host->data->blocks * host->data->blksz;
 	int i;
 
@@ -1199,7 +984,6 @@ static void atmci_pdc_complete(struct atmel_mci *host)
 	dev_dbg(&host->pdev->dev, "(%s) set pending xfer complete\n", __func__);
 	atmci_set_pending(host, EVENT_XFER_COMPLETE);
 	tasklet_schedule(&host->tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void atmci_dma_cleanup(struct atmel_mci *host)
@@ -1209,12 +993,7 @@ static void atmci_dma_cleanup(struct atmel_mci *host)
 	if (data)
 		dma_unmap_sg(host->dma.chan->device->dev,
 				data->sg, data->sg_len,
-<<<<<<< HEAD
-				((data->flags & MMC_DATA_WRITE)
-				 ? DMA_TO_DEVICE : DMA_FROM_DEVICE));
-=======
 				mmc_get_dma_dir(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1227,11 +1006,7 @@ static void atmci_dma_complete(void *arg)
 
 	dev_vdbg(&host->pdev->dev, "DMA complete\n");
 
-<<<<<<< HEAD
-	if (host->caps.has_dma)
-=======
 	if (host->caps.has_dma_conf_reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Disable DMA hardware handshaking on MCI */
 		atmci_writel(host, ATMCI_DMA, atmci_readl(host, ATMCI_DMA) & ~ATMCI_DMAEN);
 
@@ -1242,11 +1017,8 @@ static void atmci_dma_complete(void *arg)
 	 * to send the stop command or waiting for NBUSY in this case.
 	 */
 	if (data) {
-<<<<<<< HEAD
-=======
 		dev_dbg(&host->pdev->dev,
 		        "(%s) set pending xfer complete\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atmci_set_pending(host, EVENT_XFER_COMPLETE);
 		tasklet_schedule(&host->tasklet);
 
@@ -1321,12 +1093,7 @@ static u32
 atmci_prepare_data_pdc(struct atmel_mci *host, struct mmc_data *data)
 {
 	u32 iflags, tmp;
-<<<<<<< HEAD
-	unsigned int sg_len;
-	enum dma_data_direction dir;
-=======
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->error = -EINPROGRESS;
 
@@ -1337,20 +1104,10 @@ atmci_prepare_data_pdc(struct atmel_mci *host, struct mmc_data *data)
 	/* Enable pdc mode */
 	atmci_writel(host, ATMCI_MR, host->mode_reg | ATMCI_MR_PDCMODE);
 
-<<<<<<< HEAD
-	if (data->flags & MMC_DATA_READ) {
-		dir = DMA_FROM_DEVICE;
-		iflags |= ATMCI_ENDRX | ATMCI_RXBUFF;
-	} else {
-		dir = DMA_TO_DEVICE;
-		iflags |= ATMCI_ENDTX | ATMCI_TXBUFE;
-	}
-=======
 	if (data->flags & MMC_DATA_READ)
 		iflags |= ATMCI_ENDRX | ATMCI_RXBUFF;
 	else
 		iflags |= ATMCI_ENDTX | ATMCI_TXBUFE | ATMCI_BLKE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set BLKLEN */
 	tmp = atmci_readl(host, ATMCI_MR);
@@ -1360,13 +1117,6 @@ atmci_prepare_data_pdc(struct atmel_mci *host, struct mmc_data *data)
 
 	/* Configure PDC */
 	host->data_size = data->blocks * data->blksz;
-<<<<<<< HEAD
-	sg_len = dma_map_sg(&host->pdev->dev, data->sg, data->sg_len, dir);
-	if (host->data_size)
-		atmci_pdc_set_both_buf(host,
-			((dir == DMA_FROM_DEVICE) ? XFER_RECEIVE : XFER_TRANSMIT));
-
-=======
 	dma_map_sg(&host->pdev->dev, data->sg, data->sg_len,
 		   mmc_get_dma_dir(data));
 
@@ -1382,7 +1132,6 @@ atmci_prepare_data_pdc(struct atmel_mci *host, struct mmc_data *data)
 	if (host->data_size)
 		atmci_pdc_set_both_buf(host, data->flags & MMC_DATA_READ ?
 				       XFER_RECEIVE : XFER_TRANSMIT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return iflags;
 }
 
@@ -1393,15 +1142,9 @@ atmci_prepare_data_dma(struct atmel_mci *host, struct mmc_data *data)
 	struct dma_async_tx_descriptor	*desc;
 	struct scatterlist		*sg;
 	unsigned int			i;
-<<<<<<< HEAD
-	enum dma_data_direction		direction;
-	enum dma_transfer_direction	slave_dirn;
-	unsigned int			sglen;
-=======
 	enum dma_transfer_direction	slave_dirn;
 	unsigned int			sglen;
 	u32				maxburst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 iflags;
 
 	data->error = -EINPROGRESS;
@@ -1428,28 +1171,6 @@ atmci_prepare_data_dma(struct atmel_mci *host, struct mmc_data *data)
 	}
 
 	/* If we don't have a channel, we can't do DMA */
-<<<<<<< HEAD
-	chan = host->dma.chan;
-	if (chan)
-		host->data_chan = chan;
-
-	if (!chan)
-		return -ENODEV;
-
-	if (host->caps.has_dma)
-		atmci_writel(host, ATMCI_DMA, ATMCI_DMA_CHKSIZE(3) | ATMCI_DMAEN);
-
-	if (data->flags & MMC_DATA_READ) {
-		direction = DMA_FROM_DEVICE;
-		host->dma_conf.direction = slave_dirn = DMA_DEV_TO_MEM;
-	} else {
-		direction = DMA_TO_DEVICE;
-		host->dma_conf.direction = slave_dirn = DMA_MEM_TO_DEV;
-	}
-
-	sglen = dma_map_sg(chan->device->dev, data->sg,
-			data->sg_len, direction);
-=======
 	if (!host->dma.chan)
 		return -ENODEV;
 
@@ -1472,7 +1193,6 @@ atmci_prepare_data_dma(struct atmel_mci *host, struct mmc_data *data)
 
 	sglen = dma_map_sg(chan->device->dev, data->sg,
 			data->sg_len, mmc_get_dma_dir(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dmaengine_slave_config(chan, &host->dma_conf);
 	desc = dmaengine_prep_slave_sg(chan,
@@ -1487,12 +1207,8 @@ atmci_prepare_data_dma(struct atmel_mci *host, struct mmc_data *data)
 
 	return iflags;
 unmap_exit:
-<<<<<<< HEAD
-	dma_unmap_sg(chan->device->dev, data->sg, data->sg_len, direction);
-=======
 	dma_unmap_sg(chan->device->dev, data->sg, data->sg_len,
 		     mmc_get_dma_dir(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
@@ -1528,30 +1244,18 @@ atmci_submit_data_dma(struct atmel_mci *host, struct mmc_data *data)
 
 static void atmci_stop_transfer(struct atmel_mci *host)
 {
-<<<<<<< HEAD
-=======
 	dev_dbg(&host->pdev->dev,
 	        "(%s) set pending xfer complete\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atmci_set_pending(host, EVENT_XFER_COMPLETE);
 	atmci_writel(host, ATMCI_IER, ATMCI_NOTBUSY);
 }
 
 /*
-<<<<<<< HEAD
- * Stop data transfer because error(s) occured.
- */
-static void atmci_stop_transfer_pdc(struct atmel_mci *host)
-{
-	atmci_set_pending(host, EVENT_XFER_COMPLETE);
-	atmci_writel(host, ATMCI_IER, ATMCI_NOTBUSY);
-=======
  * Stop data transfer because error(s) occurred.
  */
 static void atmci_stop_transfer_pdc(struct atmel_mci *host)
 {
 	atmci_writel(host, ATMEL_PDC_PTCR, ATMEL_PDC_RXTDIS | ATMEL_PDC_TXTDIS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void atmci_stop_transfer_dma(struct atmel_mci *host)
@@ -1563,11 +1267,8 @@ static void atmci_stop_transfer_dma(struct atmel_mci *host)
 		atmci_dma_cleanup(host);
 	} else {
 		/* Data transfer was stopped by the interrupt handler */
-<<<<<<< HEAD
-=======
 		dev_dbg(&host->pdev->dev,
 		        "(%s) set pending xfer complete\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atmci_set_pending(host, EVENT_XFER_COMPLETE);
 		atmci_writel(host, ATMCI_IER, ATMCI_NOTBUSY);
 	}
@@ -1592,18 +1293,12 @@ static void atmci_start_request(struct atmel_mci *host,
 
 	host->pending_events = 0;
 	host->completed_events = 0;
-<<<<<<< HEAD
-	host->data_status = 0;
-
-	if (host->need_reset) {
-=======
 	host->cmd_status = 0;
 	host->data_status = 0;
 
 	dev_dbg(&host->pdev->dev, "start request: cmd %u\n", mrq->cmd->opcode);
 
 	if (host->need_reset || host->caps.need_reset_after_xfer) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iflags = atmci_readl(host, ATMCI_IMR);
 		iflags &= (ATMCI_SDIOIRQA | ATMCI_SDIOIRQB);
 		atmci_writel(host, ATMCI_CR, ATMCI_CR_SWRST);
@@ -1618,11 +1313,7 @@ static void atmci_start_request(struct atmel_mci *host,
 
 	iflags = atmci_readl(host, ATMCI_IMR);
 	if (iflags & ~(ATMCI_SDIOIRQA | ATMCI_SDIOIRQB))
-<<<<<<< HEAD
-		dev_warn(&slot->mmc->class_dev, "WARNING: IMR=0x%08x\n",
-=======
 		dev_dbg(&slot->mmc->class_dev, "WARNING: IMR=0x%08x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				iflags);
 
 	if (unlikely(test_and_clear_bit(ATMCI_CARD_NEED_INIT, &slot->flags))) {
@@ -1669,14 +1360,7 @@ static void atmci_start_request(struct atmel_mci *host,
 		host->stop_cmdr |= ATMCI_CMDR_STOP_XFER;
 		if (!(data->flags & MMC_DATA_WRITE))
 			host->stop_cmdr |= ATMCI_CMDR_TRDIR_READ;
-<<<<<<< HEAD
-		if (data->flags & MMC_DATA_STREAM)
-			host->stop_cmdr |= ATMCI_CMDR_STREAM;
-		else
-			host->stop_cmdr |= ATMCI_CMDR_MULTI_BLOCK;
-=======
 		host->stop_cmdr |= ATMCI_CMDR_MULTI_BLOCK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1700,10 +1384,7 @@ static void atmci_queue_request(struct atmel_mci *host,
 		host->state = STATE_SENDING_CMD;
 		atmci_start_request(host, slot);
 	} else {
-<<<<<<< HEAD
-=======
 		dev_dbg(&host->pdev->dev, "queue request\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&slot->queue_node, &host->queue);
 	}
 	spin_unlock_bh(&host->lock);
@@ -1716,10 +1397,7 @@ static void atmci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	struct mmc_data		*data;
 
 	WARN_ON(slot->mrq);
-<<<<<<< HEAD
-=======
 	dev_dbg(&host->pdev->dev, "MRQ: cmd %u\n", mrq->cmd->opcode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We may "know" the card is gone even though there's still an
@@ -1759,12 +1437,9 @@ static void atmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	case MMC_BUS_WIDTH_4:
 		slot->sdc_reg |= ATMCI_SDCBUS_4BIT;
 		break;
-<<<<<<< HEAD
-=======
 	case MMC_BUS_WIDTH_8:
 		slot->sdc_reg |= ATMCI_SDCBUS_8BIT;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ios->clock) {
@@ -1773,10 +1448,6 @@ static void atmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 		spin_lock_bh(&host->lock);
 		if (!host->mode_reg) {
-<<<<<<< HEAD
-			clk_enable(host->mck);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atmci_writel(host, ATMCI_CR, ATMCI_CR_SWRST);
 			atmci_writel(host, ATMCI_CR, ATMCI_CR_MCIEN);
 			if (host->caps.has_cfg_reg)
@@ -1861,10 +1532,6 @@ static void atmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 			atmci_writel(host, ATMCI_CR, ATMCI_CR_MCIDIS);
 			if (host->mode_reg) {
 				atmci_readl(host, ATMCI_MR);
-<<<<<<< HEAD
-				clk_disable(host->mck);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			host->mode_reg = 0;
 		}
@@ -1872,24 +1539,6 @@ static void atmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	}
 
 	switch (ios->power_mode) {
-<<<<<<< HEAD
-	case MMC_POWER_UP:
-		set_bit(ATMCI_CARD_NEED_INIT, &slot->flags);
-		break;
-	default:
-		/*
-		 * TODO: None of the currently available AVR32-based
-		 * boards allow MMC power to be turned off. Implement
-		 * power control when this can be tested properly.
-		 *
-		 * We also need to hook this into the clock management
-		 * somehow so that newly inserted cards aren't
-		 * subjected to a fast clock before we have a chance
-		 * to figure out what the maximum rate is. Currently,
-		 * there's no way to avoid this, and there never will
-		 * be for boards that don't support power control.
-		 */
-=======
 	case MMC_POWER_OFF:
 		if (!IS_ERR(mmc->supply.vmmc))
 			mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, 0);
@@ -1900,7 +1549,6 @@ static void atmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 			mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, ios->vdd);
 		break;
 	default:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -1910,13 +1558,8 @@ static int atmci_get_ro(struct mmc_host *mmc)
 	int			read_only = -ENOSYS;
 	struct atmel_mci_slot	*slot = mmc_priv(mmc);
 
-<<<<<<< HEAD
-	if (gpio_is_valid(slot->wp_pin)) {
-		read_only = gpio_get_value(slot->wp_pin);
-=======
 	if (slot->wp_pin) {
 		read_only = gpiod_get_value(slot->wp_pin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(&mmc->class_dev, "card is %s\n",
 				read_only ? "read-only" : "read-write");
 	}
@@ -1929,14 +1572,8 @@ static int atmci_get_cd(struct mmc_host *mmc)
 	int			present = -ENOSYS;
 	struct atmel_mci_slot	*slot = mmc_priv(mmc);
 
-<<<<<<< HEAD
-	if (gpio_is_valid(slot->detect_pin)) {
-		present = !(gpio_get_value(slot->detect_pin) ^
-			    slot->detect_is_active_high);
-=======
 	if (slot->detect_pin) {
 		present = gpiod_get_value_cansleep(slot->detect_pin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(&mmc->class_dev, "card is %spresent\n",
 				present ? "" : "not ");
 	}
@@ -1973,11 +1610,8 @@ static void atmci_request_end(struct atmel_mci *host, struct mmc_request *mrq)
 
 	WARN_ON(host->cmd || host->data);
 
-<<<<<<< HEAD
-=======
 	del_timer(&host->timer);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Update the MMC clock rate if necessary. This may be
 	 * necessary if set_ios() is called when a different slot is
@@ -2026,28 +1660,6 @@ static void atmci_command_complete(struct atmel_mci *host,
 		cmd->error = -EILSEQ;
 	else if (status & (ATMCI_RINDE | ATMCI_RDIRE | ATMCI_RENDE))
 		cmd->error = -EIO;
-<<<<<<< HEAD
-	else
-		cmd->error = 0;
-
-	if (cmd->error) {
-		dev_dbg(&host->pdev->dev,
-			"command error: status=0x%08x\n", status);
-
-		if (cmd->data) {
-			host->stop_transfer(host);
-			host->data = NULL;
-			atmci_writel(host, ATMCI_IDR, ATMCI_NOTBUSY
-					| ATMCI_TXRDY | ATMCI_RXRDY
-					| ATMCI_DATA_ERROR_FLAGS);
-		}
-	}
-}
-
-static void atmci_detect_change(unsigned long data)
-{
-	struct atmel_mci_slot	*slot = (struct atmel_mci_slot *)data;
-=======
 	else if (host->mrq->data && (host->mrq->data->blksz & 3)) {
 		if (host->caps.need_blksz_mul_4) {
 			cmd->error = -EINVAL;
@@ -2060,7 +1672,6 @@ static void atmci_detect_change(unsigned long data)
 static void atmci_detect_change(struct timer_list *t)
 {
 	struct atmel_mci_slot	*slot = from_timer(slot, t, detect_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool			present;
 	bool			present_old;
 
@@ -2074,14 +1685,8 @@ static void atmci_detect_change(struct timer_list *t)
 	if (test_bit(ATMCI_SHUTDOWN, &slot->flags))
 		return;
 
-<<<<<<< HEAD
-	enable_irq(gpio_to_irq(slot->detect_pin));
-	present = !(gpio_get_value(slot->detect_pin) ^
-		    slot->detect_is_active_high);
-=======
 	enable_irq(gpiod_to_irq(slot->detect_pin));
 	present = gpiod_get_value_cansleep(slot->detect_pin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	present_old = test_bit(ATMCI_CARD_PRESENT, &slot->flags);
 
 	dev_vdbg(&slot->mmc->class_dev, "detect change: %d (was %d)\n",
@@ -2123,25 +1728,6 @@ static void atmci_detect_change(struct timer_list *t)
 					break;
 				case STATE_SENDING_CMD:
 					mrq->cmd->error = -ENOMEDIUM;
-<<<<<<< HEAD
-					if (!mrq->data)
-						break;
-					/* fall through */
-				case STATE_SENDING_DATA:
-					mrq->data->error = -ENOMEDIUM;
-					host->stop_transfer(host);
-					break;
-				case STATE_DATA_BUSY:
-				case STATE_DATA_ERROR:
-					if (mrq->data->error == -EINPROGRESS)
-						mrq->data->error = -ENOMEDIUM;
-					if (!mrq->stop)
-						break;
-					/* fall through */
-				case STATE_SENDING_STOP:
-					mrq->stop->error = -ENOMEDIUM;
-					break;
-=======
 					if (mrq->data)
 						host->stop_transfer(host);
 					break;
@@ -2157,7 +1743,6 @@ static void atmci_detect_change(struct timer_list *t)
 					break;
 				case STATE_END_REQUEST:
 					break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 
 				atmci_request_end(host, mrq);
@@ -2180,20 +1765,11 @@ static void atmci_detect_change(struct timer_list *t)
 	}
 }
 
-<<<<<<< HEAD
-static void atmci_tasklet_func(unsigned long priv)
-{
-	struct atmel_mci	*host = (struct atmel_mci *)priv;
-	struct mmc_request	*mrq = host->mrq;
-	struct mmc_data		*data = host->data;
-	struct mmc_command	*cmd = host->cmd;
-=======
 static void atmci_tasklet_func(struct tasklet_struct *t)
 {
 	struct atmel_mci        *host = from_tasklet(host, t, tasklet);
 	struct mmc_request	*mrq = host->mrq;
 	struct mmc_data		*data = host->data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum atmel_mci_state	state = host->state;
 	enum atmel_mci_state	prev_state;
 	u32			status;
@@ -2209,43 +1785,13 @@ static void atmci_tasklet_func(struct tasklet_struct *t)
 
 	do {
 		prev_state = state;
-<<<<<<< HEAD
-=======
 		dev_dbg(&host->pdev->dev, "FSM: state=%d\n", state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (state) {
 		case STATE_IDLE:
 			break;
 
 		case STATE_SENDING_CMD:
-<<<<<<< HEAD
-			if (!atmci_test_and_clear_pending(host,
-						EVENT_CMD_COMPLETE))
-				break;
-
-			host->cmd = NULL;
-			atmci_set_completed(host, EVENT_CMD_COMPLETE);
-			atmci_command_complete(host, mrq->cmd);
-			if (!mrq->data || cmd->error) {
-				atmci_request_end(host, host->mrq);
-				goto unlock;
-			}
-
-			prev_state = state = STATE_SENDING_DATA;
-			/* fall through */
-
-		case STATE_SENDING_DATA:
-			if (atmci_test_and_clear_pending(host,
-						EVENT_DATA_ERROR)) {
-				host->stop_transfer(host);
-				if (data->stop)
-					atmci_send_stop_cmd(host, data);
-				state = STATE_DATA_ERROR;
-				break;
-			}
-
-=======
 			/*
 			 * Command has been sent, we are waiting for command
 			 * ready. Then we have three next states possible:
@@ -2304,72 +1850,10 @@ static void atmci_tasklet_func(struct tasklet_struct *t)
 			 * case and directly SENDING_STOP in read case.
 			 */
 			dev_dbg(&host->pdev->dev, "FSM: xfer complete?\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!atmci_test_and_clear_pending(host,
 						EVENT_XFER_COMPLETE))
 				break;
 
-<<<<<<< HEAD
-			atmci_set_completed(host, EVENT_XFER_COMPLETE);
-			prev_state = state = STATE_DATA_BUSY;
-			/* fall through */
-
-		case STATE_DATA_BUSY:
-			if (!atmci_test_and_clear_pending(host,
-						EVENT_DATA_COMPLETE))
-				break;
-
-			host->data = NULL;
-			atmci_set_completed(host, EVENT_DATA_COMPLETE);
-			status = host->data_status;
-			if (unlikely(status & ATMCI_DATA_ERROR_FLAGS)) {
-				if (status & ATMCI_DTOE) {
-					dev_dbg(&host->pdev->dev,
-							"data timeout error\n");
-					data->error = -ETIMEDOUT;
-				} else if (status & ATMCI_DCRCE) {
-					dev_dbg(&host->pdev->dev,
-							"data CRC error\n");
-					data->error = -EILSEQ;
-				} else {
-					dev_dbg(&host->pdev->dev,
-						"data FIFO error (status=%08x)\n",
-						status);
-					data->error = -EIO;
-				}
-			} else {
-				data->bytes_xfered = data->blocks * data->blksz;
-				data->error = 0;
-				atmci_writel(host, ATMCI_IDR, ATMCI_DATA_ERROR_FLAGS);
-			}
-
-			if (!data->stop) {
-				atmci_request_end(host, host->mrq);
-				goto unlock;
-			}
-
-			prev_state = state = STATE_SENDING_STOP;
-			if (!data->error)
-				atmci_send_stop_cmd(host, data);
-			/* fall through */
-
-		case STATE_SENDING_STOP:
-			if (!atmci_test_and_clear_pending(host,
-						EVENT_CMD_COMPLETE))
-				break;
-
-			host->cmd = NULL;
-			atmci_command_complete(host, mrq->stop);
-			atmci_request_end(host, host->mrq);
-			goto unlock;
-
-		case STATE_DATA_ERROR:
-			if (!atmci_test_and_clear_pending(host,
-						EVENT_XFER_COMPLETE))
-				break;
-
-			state = STATE_DATA_BUSY;
-=======
 			dev_dbg(&host->pdev->dev,
 			        "(%s) set completed xfer complete\n",
 				__func__);
@@ -2475,7 +1959,6 @@ static void atmci_tasklet_func(struct tasklet_struct *t)
 
 			atmci_request_end(host, host->mrq);
 			goto unlock; /* atmci_request_end() sets host->state */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	} while (state != prev_state);
@@ -2489,10 +1972,6 @@ unlock:
 static void atmci_read_data_pio(struct atmel_mci *host)
 {
 	struct scatterlist	*sg = host->sg;
-<<<<<<< HEAD
-	void			*buf = sg_virt(sg);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		offset = host->pio_offset;
 	struct mmc_data		*data = host->data;
 	u32			value;
@@ -2502,11 +1981,7 @@ static void atmci_read_data_pio(struct atmel_mci *host)
 	do {
 		value = atmci_readl(host, ATMCI_RDR);
 		if (likely(offset + 4 <= sg->length)) {
-<<<<<<< HEAD
-			put_unaligned(value, (u32 *)(buf + offset));
-=======
 			sg_pcopy_from_buffer(sg, 1, &value, sizeof(u32), offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			offset += 4;
 			nbytes += 4;
@@ -2519,19 +1994,11 @@ static void atmci_read_data_pio(struct atmel_mci *host)
 					goto done;
 
 				offset = 0;
-<<<<<<< HEAD
-				buf = sg_virt(sg);
-			}
-		} else {
-			unsigned int remaining = sg->length - offset;
-			memcpy(buf + offset, &value, remaining);
-=======
 			}
 		} else {
 			unsigned int remaining = sg->length - offset;
 
 			sg_pcopy_from_buffer(sg, 1, &value, remaining, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nbytes += remaining;
 
 			flush_dcache_page(sg_page(sg));
@@ -2541,13 +2008,8 @@ static void atmci_read_data_pio(struct atmel_mci *host)
 				goto done;
 
 			offset = 4 - remaining;
-<<<<<<< HEAD
-			buf = sg_virt(sg);
-			memcpy(buf, (u8 *)&value + remaining, offset);
-=======
 			sg_pcopy_from_buffer(sg, 1, (u8 *)&value + remaining,
 					offset, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nbytes += offset;
 		}
 
@@ -2557,12 +2019,6 @@ static void atmci_read_data_pio(struct atmel_mci *host)
 						| ATMCI_DATA_ERROR_FLAGS));
 			host->data_status = status;
 			data->bytes_xfered += nbytes;
-<<<<<<< HEAD
-			smp_wmb();
-			atmci_set_pending(host, EVENT_DATA_ERROR);
-			tasklet_schedule(&host->tasklet);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	} while (status & ATMCI_RXRDY);
@@ -2583,10 +2039,6 @@ done:
 static void atmci_write_data_pio(struct atmel_mci *host)
 {
 	struct scatterlist	*sg = host->sg;
-<<<<<<< HEAD
-	void			*buf = sg_virt(sg);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		offset = host->pio_offset;
 	struct mmc_data		*data = host->data;
 	u32			value;
@@ -2595,11 +2047,7 @@ static void atmci_write_data_pio(struct atmel_mci *host)
 
 	do {
 		if (likely(offset + 4 <= sg->length)) {
-<<<<<<< HEAD
-			value = get_unaligned((u32 *)(buf + offset));
-=======
 			sg_pcopy_to_buffer(sg, 1, &value, sizeof(u32), offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atmci_writel(host, ATMCI_TDR, value);
 
 			offset += 4;
@@ -2611,20 +2059,12 @@ static void atmci_write_data_pio(struct atmel_mci *host)
 					goto done;
 
 				offset = 0;
-<<<<<<< HEAD
-				buf = sg_virt(sg);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			unsigned int remaining = sg->length - offset;
 
 			value = 0;
-<<<<<<< HEAD
-			memcpy(&value, buf + offset, remaining);
-=======
 			sg_pcopy_to_buffer(sg, 1, &value, remaining, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nbytes += remaining;
 
 			host->sg = sg = sg_next(sg);
@@ -2635,13 +2075,8 @@ static void atmci_write_data_pio(struct atmel_mci *host)
 			}
 
 			offset = 4 - remaining;
-<<<<<<< HEAD
-			buf = sg_virt(sg);
-			memcpy((u8 *)&value + remaining, buf, offset);
-=======
 			sg_pcopy_to_buffer(sg, 1, (u8 *)&value + remaining,
 					offset, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atmci_writel(host, ATMCI_TDR, value);
 			nbytes += offset;
 		}
@@ -2652,12 +2087,6 @@ static void atmci_write_data_pio(struct atmel_mci *host)
 						| ATMCI_DATA_ERROR_FLAGS));
 			host->data_status = status;
 			data->bytes_xfered += nbytes;
-<<<<<<< HEAD
-			smp_wmb();
-			atmci_set_pending(host, EVENT_DATA_ERROR);
-			tasklet_schedule(&host->tasklet);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	} while (status & ATMCI_TXRDY);
@@ -2675,19 +2104,6 @@ done:
 	atmci_set_pending(host, EVENT_XFER_COMPLETE);
 }
 
-<<<<<<< HEAD
-static void atmci_cmd_interrupt(struct atmel_mci *host, u32 status)
-{
-	atmci_writel(host, ATMCI_IDR, ATMCI_CMDRDY);
-
-	host->cmd_status = status;
-	smp_wmb();
-	atmci_set_pending(host, EVENT_CMD_COMPLETE);
-	tasklet_schedule(&host->tasklet);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void atmci_sdio_interrupt(struct atmel_mci *host, u32 status)
 {
 	int	i;
@@ -2715,13 +2131,6 @@ static irqreturn_t atmci_interrupt(int irq, void *dev_id)
 			break;
 
 		if (pending & ATMCI_DATA_ERROR_FLAGS) {
-<<<<<<< HEAD
-			atmci_writel(host, ATMCI_IDR, ATMCI_DATA_ERROR_FLAGS
-					| ATMCI_RXRDY | ATMCI_TXRDY);
-			pending &= atmci_readl(host, ATMCI_IMR);
-
-			host->data_status = status;
-=======
 			dev_dbg(&host->pdev->dev, "IRQ: data error\n");
 			atmci_writel(host, ATMCI_IDR, ATMCI_DATA_ERROR_FLAGS
 					| ATMCI_RXRDY | ATMCI_TXRDY
@@ -2730,17 +2139,13 @@ static irqreturn_t atmci_interrupt(int irq, void *dev_id)
 
 			host->data_status = status;
 			dev_dbg(&host->pdev->dev, "set pending data error\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			smp_wmb();
 			atmci_set_pending(host, EVENT_DATA_ERROR);
 			tasklet_schedule(&host->tasklet);
 		}
 
 		if (pending & ATMCI_TXBUFE) {
-<<<<<<< HEAD
-=======
 			dev_dbg(&host->pdev->dev, "IRQ: tx buffer empty\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atmci_writel(host, ATMCI_IDR, ATMCI_TXBUFE);
 			atmci_writel(host, ATMCI_IDR, ATMCI_ENDTX);
 			/*
@@ -2756,10 +2161,7 @@ static irqreturn_t atmci_interrupt(int irq, void *dev_id)
 				atmci_pdc_complete(host);
 			}
 		} else if (pending & ATMCI_ENDTX) {
-<<<<<<< HEAD
-=======
 			dev_dbg(&host->pdev->dev, "IRQ: end of tx buffer\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atmci_writel(host, ATMCI_IDR, ATMCI_ENDTX);
 
 			if (host->data_size) {
@@ -2770,10 +2172,7 @@ static irqreturn_t atmci_interrupt(int irq, void *dev_id)
 		}
 
 		if (pending & ATMCI_RXBUFF) {
-<<<<<<< HEAD
-=======
 			dev_dbg(&host->pdev->dev, "IRQ: rx buffer full\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atmci_writel(host, ATMCI_IDR, ATMCI_RXBUFF);
 			atmci_writel(host, ATMCI_IDR, ATMCI_ENDRX);
 			/*
@@ -2789,10 +2188,7 @@ static irqreturn_t atmci_interrupt(int irq, void *dev_id)
 				atmci_pdc_complete(host);
 			}
 		} else if (pending & ATMCI_ENDRX) {
-<<<<<<< HEAD
-=======
 			dev_dbg(&host->pdev->dev, "IRQ: end of rx buffer\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atmci_writel(host, ATMCI_IDR, ATMCI_ENDRX);
 
 			if (host->data_size) {
@@ -2802,18 +2198,6 @@ static irqreturn_t atmci_interrupt(int irq, void *dev_id)
 			}
 		}
 
-<<<<<<< HEAD
-
-		if (pending & ATMCI_NOTBUSY) {
-			atmci_writel(host, ATMCI_IDR,
-					ATMCI_DATA_ERROR_FLAGS | ATMCI_NOTBUSY);
-			if (!host->data_status)
-				host->data_status = status;
-			smp_wmb();
-			atmci_set_pending(host, EVENT_DATA_COMPLETE);
-			tasklet_schedule(&host->tasklet);
-		}
-=======
 		/*
 		 * First mci IPs, so mainly the ones having pdc, have some
 		 * issues with the notbusy signal. You can't get it after
@@ -2838,16 +2222,11 @@ static irqreturn_t atmci_interrupt(int irq, void *dev_id)
 			tasklet_schedule(&host->tasklet);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pending & ATMCI_RXRDY)
 			atmci_read_data_pio(host);
 		if (pending & ATMCI_TXRDY)
 			atmci_write_data_pio(host);
 
-<<<<<<< HEAD
-		if (pending & ATMCI_CMDRDY)
-			atmci_cmd_interrupt(host, status);
-=======
 		if (pending & ATMCI_CMDRDY) {
 			dev_dbg(&host->pdev->dev, "IRQ: cmd ready\n");
 			atmci_writel(host, ATMCI_IDR, ATMCI_CMDRDY);
@@ -2857,7 +2236,6 @@ static irqreturn_t atmci_interrupt(int irq, void *dev_id)
 			atmci_set_pending(host, EVENT_CMD_RDY);
 			tasklet_schedule(&host->tasklet);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (pending & (ATMCI_SDIOIRQA | ATMCI_SDIOIRQB))
 			atmci_sdio_interrupt(host, status);
@@ -2882,20 +2260,13 @@ static irqreturn_t atmci_detect_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __init atmci_init_slot(struct atmel_mci *host,
-=======
 static int atmci_init_slot(struct atmel_mci *host,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct mci_slot_pdata *slot_data, unsigned int id,
 		u32 sdc_reg, u32 sdio_irq)
 {
 	struct mmc_host			*mmc;
 	struct atmel_mci_slot		*slot;
-<<<<<<< HEAD
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmc = mmc_alloc_host(sizeof(struct atmel_mci_slot), &host->pdev->dev);
 	if (!mmc)
@@ -2906,12 +2277,6 @@ static int atmci_init_slot(struct atmel_mci *host,
 	slot->host = host;
 	slot->detect_pin = slot_data->detect_pin;
 	slot->wp_pin = slot_data->wp_pin;
-<<<<<<< HEAD
-	slot->detect_is_active_high = slot_data->detect_is_active_high;
-	slot->sdc_reg = sdc_reg;
-	slot->sdio_irq = sdio_irq;
-
-=======
 	slot->sdc_reg = sdc_reg;
 	slot->sdio_irq = sdio_irq;
 
@@ -2922,7 +2287,6 @@ static int atmci_init_slot(struct atmel_mci *host,
 		!gpiod_is_active_low(slot_data->detect_pin) ? "true" : "false",
 		desc_to_gpio(slot_data->wp_pin));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mmc->ops = &atmci_ops;
 	mmc->f_min = DIV_ROUND_UP(host->bus_hz, 512);
 	mmc->f_max = host->bus_hz / 2;
@@ -2931,57 +2295,6 @@ static int atmci_init_slot(struct atmel_mci *host,
 		mmc->caps |= MMC_CAP_SDIO_IRQ;
 	if (host->caps.has_highspeed)
 		mmc->caps |= MMC_CAP_SD_HIGHSPEED;
-<<<<<<< HEAD
-	if (slot_data->bus_width >= 4)
-		mmc->caps |= MMC_CAP_4_BIT_DATA;
-
-	mmc->max_segs = 64;
-	mmc->max_req_size = 32768 * 512;
-	mmc->max_blk_size = 32768;
-	mmc->max_blk_count = 512;
-
-	/* Assume card is present initially */
-	set_bit(ATMCI_CARD_PRESENT, &slot->flags);
-	if (gpio_is_valid(slot->detect_pin)) {
-		if (gpio_request(slot->detect_pin, "mmc_detect")) {
-			dev_dbg(&mmc->class_dev, "no detect pin available\n");
-			slot->detect_pin = -EBUSY;
-		} else if (gpio_get_value(slot->detect_pin) ^
-				slot->detect_is_active_high) {
-			clear_bit(ATMCI_CARD_PRESENT, &slot->flags);
-		}
-	}
-
-	if (!gpio_is_valid(slot->detect_pin))
-		mmc->caps |= MMC_CAP_NEEDS_POLL;
-
-	if (gpio_is_valid(slot->wp_pin)) {
-		if (gpio_request(slot->wp_pin, "mmc_wp")) {
-			dev_dbg(&mmc->class_dev, "no WP pin available\n");
-			slot->wp_pin = -EBUSY;
-		}
-	}
-
-	host->slot[id] = slot;
-	mmc_add_host(mmc);
-
-	if (gpio_is_valid(slot->detect_pin)) {
-		int ret;
-
-		setup_timer(&slot->detect_timer, atmci_detect_change,
-				(unsigned long)slot);
-
-		ret = request_irq(gpio_to_irq(slot->detect_pin),
-				atmci_detect_interrupt,
-				IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING,
-				"mmc-detect", slot);
-		if (ret) {
-			dev_dbg(&mmc->class_dev,
-				"could not request IRQ %d for detect pin\n",
-				gpio_to_irq(slot->detect_pin));
-			gpio_free(slot->detect_pin);
-			slot->detect_pin = -EBUSY;
-=======
 	/*
 	 * Without the read/write proof capability, it is strongly suggested to
 	 * use only one bit for data to prevent fifo underruns and overruns
@@ -3045,7 +2358,6 @@ static int atmci_init_slot(struct atmel_mci *host,
 				"could not request IRQ %d for detect pin\n",
 				gpiod_to_irq(slot->detect_pin));
 			slot->detect_pin = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -3054,11 +2366,7 @@ static int atmci_init_slot(struct atmel_mci *host,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __exit atmci_cleanup_slot(struct atmel_mci_slot *slot,
-=======
 static void atmci_cleanup_slot(struct atmel_mci_slot *slot,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int id)
 {
 	/* Debugfs stuff is cleaned up by mmc core */
@@ -3068,81 +2376,15 @@ static void atmci_cleanup_slot(struct atmel_mci_slot *slot,
 
 	mmc_remove_host(slot->mmc);
 
-<<<<<<< HEAD
-	if (gpio_is_valid(slot->detect_pin)) {
-		int pin = slot->detect_pin;
-
-		free_irq(gpio_to_irq(pin), slot);
-		del_timer_sync(&slot->detect_timer);
-		gpio_free(pin);
-	}
-	if (gpio_is_valid(slot->wp_pin))
-		gpio_free(slot->wp_pin);
-=======
 	if (slot->detect_pin) {
 		free_irq(gpiod_to_irq(slot->detect_pin), slot);
 		del_timer_sync(&slot->detect_timer);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	slot->host->slot[id] = NULL;
 	mmc_free_host(slot->mmc);
 }
 
-<<<<<<< HEAD
-static bool atmci_filter(struct dma_chan *chan, void *slave)
-{
-	struct mci_dma_data	*sl = slave;
-
-	if (sl && find_slave_dev(sl) == chan->device->dev) {
-		chan->private = slave_data_ptr(sl);
-		return true;
-	} else {
-		return false;
-	}
-}
-
-static bool atmci_configure_dma(struct atmel_mci *host)
-{
-	struct mci_platform_data	*pdata;
-
-	if (host == NULL)
-		return false;
-
-	pdata = host->pdev->dev.platform_data;
-
-	if (pdata && find_slave_dev(pdata->dma_slave)) {
-		dma_cap_mask_t mask;
-
-		/* Try to grab a DMA channel */
-		dma_cap_zero(mask);
-		dma_cap_set(DMA_SLAVE, mask);
-		host->dma.chan =
-			dma_request_channel(mask, atmci_filter, pdata->dma_slave);
-	}
-	if (!host->dma.chan) {
-		dev_warn(&host->pdev->dev, "no DMA channel available\n");
-		return false;
-	} else {
-		dev_info(&host->pdev->dev,
-					"using %s for DMA transfers\n",
-					dma_chan_name(host->dma.chan));
-
-		host->dma_conf.src_addr = host->mapbase + ATMCI_RDR;
-		host->dma_conf.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
-		host->dma_conf.src_maxburst = 1;
-		host->dma_conf.dst_addr = host->mapbase + ATMCI_TDR;
-		host->dma_conf.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
-		host->dma_conf.dst_maxburst = 1;
-		host->dma_conf.device_fc = false;
-		return true;
-	}
-}
-
-static inline unsigned int atmci_get_version(struct atmel_mci *host)
-{
-	return atmci_readl(host, ATMCI_VERSION) & 0x00000fff;
-=======
 static int atmci_configure_dma(struct atmel_mci *host)
 {
 	host->dma.chan = dma_request_chan(&host->pdev->dev, "rxtx");
@@ -3178,7 +2420,6 @@ static int atmci_configure_dma(struct atmel_mci *host)
 	host->dma_conf.device_fc = false;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3186,11 +2427,7 @@ static int atmci_configure_dma(struct atmel_mci *host)
  * HSMCI provides DMA support and a new config register but no more supports
  * PDC.
  */
-<<<<<<< HEAD
-static void __init atmci_get_cap(struct atmel_mci *host)
-=======
 static void atmci_get_cap(struct atmel_mci *host)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int version;
 
@@ -3198,38 +2435,6 @@ static void atmci_get_cap(struct atmel_mci *host)
 	dev_info(&host->pdev->dev,
 			"version: 0x%x\n", version);
 
-<<<<<<< HEAD
-	host->caps.has_dma = 0;
-	host->caps.has_pdc = 1;
-	host->caps.has_cfg_reg = 0;
-	host->caps.has_cstor_reg = 0;
-	host->caps.has_highspeed = 0;
-	host->caps.has_rwproof = 0;
-	host->caps.has_odd_clk_div = 0;
-
-	/* keep only major version number */
-	switch (version & 0xf00) {
-	case 0x500:
-		host->caps.has_odd_clk_div = 1;
-	case 0x400:
-	case 0x300:
-#ifdef CONFIG_AT_HDMAC
-		host->caps.has_dma = 1;
-#else
-		dev_info(&host->pdev->dev,
-			"has dma capability but dma engine is not selected, then use pio\n");
-#endif
-		host->caps.has_pdc = 0;
-		host->caps.has_cfg_reg = 1;
-		host->caps.has_cstor_reg = 1;
-		host->caps.has_highspeed = 1;
-	case 0x200:
-		host->caps.has_rwproof = 1;
-	case 0x100:
-		break;
-	default:
-		host->caps.has_pdc = 0;
-=======
 	host->caps.has_dma_conf_reg = false;
 	host->caps.has_pdc = true;
 	host->caps.has_cfg_reg = false;
@@ -3269,38 +2474,25 @@ static void atmci_get_cap(struct atmel_mci *host)
 		break;
 	default:
 		host->caps.has_pdc = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_warn(&host->pdev->dev,
 				"Unmanaged mci version, set minimum capabilities\n");
 		break;
 	}
 }
 
-<<<<<<< HEAD
-static int __init atmci_probe(struct platform_device *pdev)
-=======
 static int atmci_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mci_platform_data	*pdata;
 	struct atmel_mci		*host;
 	struct resource			*regs;
 	unsigned int			nr_slots;
 	int				irq;
-<<<<<<< HEAD
-	int				ret;
-=======
 	int				ret, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!regs)
 		return -ENXIO;
 	pdata = pdev->dev.platform_data;
-<<<<<<< HEAD
-	if (!pdata)
-		return -ENXIO;
-=======
 	if (!pdata) {
 		pdata = atmci_of_init(pdev);
 		if (IS_ERR(pdata)) {
@@ -3309,16 +2501,11 @@ static int atmci_probe(struct platform_device *pdev)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
 
-<<<<<<< HEAD
-	host = kzalloc(sizeof(struct atmel_mci), GFP_KERNEL);
-=======
 	host = devm_kzalloc(&pdev->dev, sizeof(*host), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!host)
 		return -ENOMEM;
 
@@ -3326,35 +2513,6 @@ static int atmci_probe(struct platform_device *pdev)
 	spin_lock_init(&host->lock);
 	INIT_LIST_HEAD(&host->queue);
 
-<<<<<<< HEAD
-	host->mck = clk_get(&pdev->dev, "mci_clk");
-	if (IS_ERR(host->mck)) {
-		ret = PTR_ERR(host->mck);
-		goto err_clk_get;
-	}
-
-	ret = -ENOMEM;
-	host->regs = ioremap(regs->start, resource_size(regs));
-	if (!host->regs)
-		goto err_ioremap;
-
-	clk_enable(host->mck);
-	atmci_writel(host, ATMCI_CR, ATMCI_CR_SWRST);
-	host->bus_hz = clk_get_rate(host->mck);
-	clk_disable(host->mck);
-
-	host->mapbase = regs->start;
-
-	tasklet_init(&host->tasklet, atmci_tasklet_func, (unsigned long)host);
-
-	ret = request_irq(irq, atmci_interrupt, 0, dev_name(&pdev->dev), host);
-	if (ret)
-		goto err_request_irq;
-
-	/* Get MCI capabilities and set operations according to it */
-	atmci_get_cap(host);
-	if (host->caps.has_dma && atmci_configure_dma(host)) {
-=======
 	host->mck = devm_clk_get(&pdev->dev, "mci_clk");
 	if (IS_ERR(host->mck))
 		return PTR_ERR(host->mck);
@@ -3386,7 +2544,6 @@ static int atmci_probe(struct platform_device *pdev)
 	if (ret == -EPROBE_DEFER)
 		goto err_dma_probe_defer;
 	if (ret == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		host->prepare_data = &atmci_prepare_data_dma;
 		host->submit_data = &atmci_submit_data_dma;
 		host->stop_transfer = &atmci_stop_transfer_dma;
@@ -3404,8 +2561,6 @@ static int atmci_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, host);
 
-<<<<<<< HEAD
-=======
 	timer_setup(&host->timer, atmci_timeout_timer, 0);
 
 	pm_runtime_get_noresume(&pdev->dev);
@@ -3414,37 +2569,26 @@ static int atmci_probe(struct platform_device *pdev)
 	pm_runtime_use_autosuspend(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We need at least one slot to succeed */
 	nr_slots = 0;
 	ret = -ENODEV;
 	if (pdata->slot[0].bus_width) {
 		ret = atmci_init_slot(host, &pdata->slot[0],
 				0, ATMCI_SDCSEL_SLOT_A, ATMCI_SDIOIRQA);
-<<<<<<< HEAD
-		if (!ret)
-			nr_slots++;
-=======
 		if (!ret) {
 			nr_slots++;
 			host->buf_size = host->slot[0]->mmc->max_req_size;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (pdata->slot[1].bus_width) {
 		ret = atmci_init_slot(host, &pdata->slot[1],
 				1, ATMCI_SDCSEL_SLOT_B, ATMCI_SDIOIRQB);
-<<<<<<< HEAD
-		if (!ret)
-			nr_slots++;
-=======
 		if (!ret) {
 			nr_slots++;
 			if (host->slot[1]->mmc->max_req_size > host->buf_size)
 				host->buf_size =
 					host->slot[1]->mmc->max_req_size;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!nr_slots) {
@@ -3452,8 +2596,6 @@ static int atmci_probe(struct platform_device *pdev)
 		goto err_init_slot;
 	}
 
-<<<<<<< HEAD
-=======
 	if (!host->caps.has_rwproof) {
 		host->buffer = dma_alloc_coherent(&pdev->dev, host->buf_size,
 		                                  &host->buf_phys_addr,
@@ -3465,29 +2607,10 @@ static int atmci_probe(struct platform_device *pdev)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(&pdev->dev,
 			"Atmel MCI controller at 0x%08lx irq %d, %u slots\n",
 			host->mapbase, irq, nr_slots);
 
-<<<<<<< HEAD
-	return 0;
-
-err_init_slot:
-	if (host->dma.chan)
-		dma_release_channel(host->dma.chan);
-	free_irq(irq, host);
-err_request_irq:
-	iounmap(host->regs);
-err_ioremap:
-	clk_put(host->mck);
-err_clk_get:
-	kfree(host);
-	return ret;
-}
-
-static int __exit atmci_remove(struct platform_device *pdev)
-=======
 	pm_runtime_mark_last_busy(&host->pdev->dev);
 	pm_runtime_put_autosuspend(&pdev->dev);
 
@@ -3513,73 +2636,21 @@ err_dma_probe_defer:
 }
 
 static void atmci_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atmel_mci	*host = platform_get_drvdata(pdev);
 	unsigned int		i;
 
-<<<<<<< HEAD
-	platform_set_drvdata(pdev, NULL);
-=======
 	pm_runtime_get_sync(&pdev->dev);
 
 	if (host->buffer)
 		dma_free_coherent(&pdev->dev, host->buf_size,
 		                  host->buffer, host->buf_phys_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ATMCI_MAX_NR_SLOTS; i++) {
 		if (host->slot[i])
 			atmci_cleanup_slot(host->slot[i], i);
 	}
 
-<<<<<<< HEAD
-	clk_enable(host->mck);
-	atmci_writel(host, ATMCI_IDR, ~0UL);
-	atmci_writel(host, ATMCI_CR, ATMCI_CR_MCIDIS);
-	atmci_readl(host, ATMCI_SR);
-	clk_disable(host->mck);
-
-	if (host->dma.chan)
-		dma_release_channel(host->dma.chan);
-
-	free_irq(platform_get_irq(pdev, 0), host);
-	iounmap(host->regs);
-
-	clk_put(host->mck);
-	kfree(host);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-static int atmci_suspend(struct device *dev)
-{
-	struct atmel_mci *host = dev_get_drvdata(dev);
-	int i;
-
-	 for (i = 0; i < ATMCI_MAX_NR_SLOTS; i++) {
-		struct atmel_mci_slot *slot = host->slot[i];
-		int ret;
-
-		if (!slot)
-			continue;
-		ret = mmc_suspend_host(slot->mmc);
-		if (ret < 0) {
-			while (--i >= 0) {
-				slot = host->slot[i];
-				if (slot
-				&& test_bit(ATMCI_SUSPENDED, &slot->flags)) {
-					mmc_resume_host(host->slot[i]->mmc);
-					clear_bit(ATMCI_SUSPENDED, &slot->flags);
-				}
-			}
-			return ret;
-		} else {
-			set_bit(ATMCI_SUSPENDED, &slot->flags);
-		}
-	}
-=======
 	atmci_writel(host, ATMCI_IDR, ~0UL);
 	atmci_writel(host, ATMCI_CR, ATMCI_CR_MCIDIS);
 	atmci_readl(host, ATMCI_SR);
@@ -3604,63 +2675,10 @@ static int atmci_runtime_suspend(struct device *dev)
 	clk_disable_unprepare(host->mck);
 
 	pinctrl_pm_select_sleep_state(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int atmci_resume(struct device *dev)
-{
-	struct atmel_mci *host = dev_get_drvdata(dev);
-	int i;
-	int ret = 0;
-
-	for (i = 0; i < ATMCI_MAX_NR_SLOTS; i++) {
-		struct atmel_mci_slot *slot = host->slot[i];
-		int err;
-
-		slot = host->slot[i];
-		if (!slot)
-			continue;
-		if (!test_bit(ATMCI_SUSPENDED, &slot->flags))
-			continue;
-		err = mmc_resume_host(slot->mmc);
-		if (err < 0)
-			ret = err;
-		else
-			clear_bit(ATMCI_SUSPENDED, &slot->flags);
-	}
-
-	return ret;
-}
-static SIMPLE_DEV_PM_OPS(atmci_pm, atmci_suspend, atmci_resume);
-#define ATMCI_PM_OPS	(&atmci_pm)
-#else
-#define ATMCI_PM_OPS	NULL
-#endif
-
-static struct platform_driver atmci_driver = {
-	.remove		= __exit_p(atmci_remove),
-	.driver		= {
-		.name		= "atmel_mci",
-		.pm		= ATMCI_PM_OPS,
-	},
-};
-
-static int __init atmci_init(void)
-{
-	return platform_driver_probe(&atmci_driver, atmci_probe);
-}
-
-static void __exit atmci_exit(void)
-{
-	platform_driver_unregister(&atmci_driver);
-}
-
-late_initcall(atmci_init); /* try to load after dma driver when built-in */
-module_exit(atmci_exit);
-=======
 static int atmci_runtime_resume(struct device *dev)
 {
 	struct atmel_mci *host = dev_get_drvdata(dev);
@@ -3688,7 +2706,6 @@ static struct platform_driver atmci_driver = {
 	},
 };
 module_platform_driver(atmci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Atmel Multimedia Card Interface driver");
 MODULE_AUTHOR("Haavard Skinnemoen (Atmel)");

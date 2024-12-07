@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * rrunner.c: Linux driver for the Essential RoadRunner HIPPI board.
  *
@@ -13,14 +10,6 @@
  * for sorting out the legal issues, with the NDA, allowing the code to
  * be released under the GPL.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Thanks to Jayaram Bhat from ODS/Essential for fixing some of the
  * stupid bugs in my code.
  *
@@ -44,10 +33,6 @@
 #include <linux/netdevice.h>
 #include <linux/hippidevice.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
@@ -57,11 +42,7 @@
 #include <asm/byteorder.h>
 #include <asm/io.h>
 #include <asm/irq.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define rr_if_busy(dev)     netif_queue_stopped(dev)
 #define rr_if_running(dev)  netif_running(dev)
@@ -75,25 +56,15 @@ MODULE_AUTHOR("Jes Sorensen <jes@wildopensource.com>");
 MODULE_DESCRIPTION("Essential RoadRunner HIPPI driver");
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-static char version[] __devinitdata = "rrunner.c: v0.50 11/11/2002  Jes Sorensen (jes@wildopensource.com)\n";
-=======
 static const char version[] =
 "rrunner.c: v0.50 11/11/2002  Jes Sorensen (jes@wildopensource.com)\n";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static const struct net_device_ops rr_netdev_ops = {
 	.ndo_open 		= rr_open,
 	.ndo_stop		= rr_close,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= rr_ioctl,
-	.ndo_start_xmit		= rr_start_xmit,
-	.ndo_change_mtu		= hippi_change_mtu,
-=======
 	.ndo_siocdevprivate	= rr_siocdevprivate,
 	.ndo_start_xmit		= rr_start_xmit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address	= hippi_mac_addr,
 };
 
@@ -112,12 +83,7 @@ static const struct net_device_ops rr_netdev_ops = {
  * stack will need to know about I/O vectors or something similar.
  */
 
-<<<<<<< HEAD
-static int __devinit rr_init_one(struct pci_dev *pdev,
-	const struct pci_device_id *ent)
-=======
 static int rr_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	static int version_disp;
@@ -141,16 +107,9 @@ static int rr_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	SET_NETDEV_DEV(dev, &pdev->dev);
 
-<<<<<<< HEAD
-	if (pci_request_regions(pdev, "rrunner")) {
-		ret = -EIO;
-		goto out;
-	}
-=======
 	ret = pci_request_regions(pdev, "rrunner");
 	if (ret < 0)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pdev, dev);
 
@@ -158,16 +117,8 @@ static int rr_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	spin_lock_init(&rrpriv->lock);
 
-<<<<<<< HEAD
-	dev->irq = pdev->irq;
 	dev->netdev_ops = &rr_netdev_ops;
 
-	dev->base_addr = pci_resource_start(pdev, 0);
-
-=======
-	dev->netdev_ops = &rr_netdev_ops;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* display version info if adapter is found */
 	if (!version_disp) {
 		/* set display flag to TRUE so that */
@@ -185,18 +136,6 @@ static int rr_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	pci_set_master(pdev);
 
 	printk(KERN_INFO "%s: Essential RoadRunner serial HIPPI "
-<<<<<<< HEAD
-	       "at 0x%08lx, irq %i, PCI latency %i\n", dev->name,
-	       dev->base_addr, dev->irq, pci_latency);
-
-	/*
-	 * Remap the regs into kernel space.
-	 */
-
-	rrpriv->regs = ioremap(dev->base_addr, 0x1000);
-
-	if (!rrpriv->regs){
-=======
 	       "at 0x%llx, irq %i, PCI latency %i\n", dev->name,
 	       (unsigned long long)pci_resource_start(pdev, 0),
 	       pdev->irq, pci_latency);
@@ -206,19 +145,14 @@ static int rr_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	 */
 	rrpriv->regs = pci_iomap(pdev, 0, 0x1000);
 	if (!rrpriv->regs) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "%s:  Unable to map I/O register, "
 			"RoadRunner will be disabled.\n", dev->name);
 		ret = -EIO;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	tmpptr = pci_alloc_consistent(pdev, TX_TOTAL_SIZE, &ring_dma);
-=======
 	tmpptr = dma_alloc_coherent(&pdev->dev, TX_TOTAL_SIZE, &ring_dma,
 				    GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rrpriv->tx_ring = tmpptr;
 	rrpriv->tx_ring_dma = ring_dma;
 
@@ -227,12 +161,8 @@ static int rr_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	tmpptr = pci_alloc_consistent(pdev, RX_TOTAL_SIZE, &ring_dma);
-=======
 	tmpptr = dma_alloc_coherent(&pdev->dev, RX_TOTAL_SIZE, &ring_dma,
 				    GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rrpriv->rx_ring = tmpptr;
 	rrpriv->rx_ring_dma = ring_dma;
 
@@ -241,12 +171,8 @@ static int rr_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	tmpptr = pci_alloc_consistent(pdev, EVT_RING_SIZE, &ring_dma);
-=======
 	tmpptr = dma_alloc_coherent(&pdev->dev, EVT_RING_SIZE, &ring_dma,
 				    GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rrpriv->evt_ring = tmpptr;
 	rrpriv->evt_ring_dma = ring_dma;
 
@@ -268,31 +194,12 @@ static int rr_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	rr_init(dev);
 
-<<<<<<< HEAD
-	dev->base_addr = 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = register_netdev(dev);
 	if (ret)
 		goto out;
 	return 0;
 
  out:
-<<<<<<< HEAD
-	if (rrpriv->rx_ring)
-		pci_free_consistent(pdev, RX_TOTAL_SIZE, rrpriv->rx_ring,
-				    rrpriv->rx_ring_dma);
-	if (rrpriv->tx_ring)
-		pci_free_consistent(pdev, TX_TOTAL_SIZE, rrpriv->tx_ring,
-				    rrpriv->tx_ring_dma);
-	if (rrpriv->regs)
-		iounmap(rrpriv->regs);
-	if (pdev) {
-		pci_release_regions(pdev);
-		pci_set_drvdata(pdev, NULL);
-	}
-=======
 	if (rrpriv->evt_ring)
 		dma_free_coherent(&pdev->dev, EVT_RING_SIZE, rrpriv->evt_ring,
 				  rrpriv->evt_ring_dma);
@@ -307,41 +214,12 @@ static int rr_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (pdev)
 		pci_release_regions(pdev);
 	pci_disable_device(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out2:
 	free_netdev(dev);
  out3:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __devexit rr_remove_one (struct pci_dev *pdev)
-{
-	struct net_device *dev = pci_get_drvdata(pdev);
-
-	if (dev) {
-		struct rr_private *rr = netdev_priv(dev);
-
-		if (!(readl(&rr->regs->HostCtrl) & NIC_HALTED)){
-			printk(KERN_ERR "%s: trying to unload running NIC\n",
-			       dev->name);
-			writel(HALT_NIC, &rr->regs->HostCtrl);
-		}
-
-		pci_free_consistent(pdev, EVT_RING_SIZE, rr->evt_ring,
-				    rr->evt_ring_dma);
-		pci_free_consistent(pdev, RX_TOTAL_SIZE, rr->rx_ring,
-				    rr->rx_ring_dma);
-		pci_free_consistent(pdev, TX_TOTAL_SIZE, rr->tx_ring,
-				    rr->tx_ring_dma);
-		unregister_netdev(dev);
-		iounmap(rr->regs);
-		free_netdev(dev);
-		pci_release_regions(pdev);
-		pci_disable_device(pdev);
-		pci_set_drvdata(pdev, NULL);
-	}
-=======
 static void rr_remove_one(struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
@@ -364,7 +242,6 @@ static void rr_remove_one(struct pci_dev *pdev)
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
 	free_netdev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -624,14 +501,9 @@ static unsigned int write_eeprom(struct rr_private *rrpriv,
 }
 
 
-<<<<<<< HEAD
-static int __devinit rr_init(struct net_device *dev)
-{
-=======
 static int rr_init(struct net_device *dev)
 {
 	u8 addr[HIPPI_ALEN] __aligned(4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rr_private *rrpriv;
 	struct rr_regs __iomem *regs;
 	u32 sram_size, rev;
@@ -667,18 +539,11 @@ static int rr_init(struct net_device *dev)
 	 * other method I've seen.  -VAL
 	 */
 
-<<<<<<< HEAD
-	*(__be16 *)(dev->dev_addr) =
-	  htons(rr_read_eeprom_word(rrpriv, offsetof(struct eeprom, manf.BoardULA)));
-	*(__be32 *)(dev->dev_addr+2) =
-	  htonl(rr_read_eeprom_word(rrpriv, offsetof(struct eeprom, manf.BoardULA[4])));
-=======
 	*(__be16 *)(addr) =
 	  htons(rr_read_eeprom_word(rrpriv, offsetof(struct eeprom, manf.BoardULA)));
 	*(__be32 *)(addr+2) =
 	  htonl(rr_read_eeprom_word(rrpriv, offsetof(struct eeprom, manf.BoardULA[4])));
 	dev_addr_set(dev, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk("  MAC: %pM\n", dev->dev_addr);
 
@@ -789,13 +654,8 @@ static int rr_init1(struct net_device *dev)
 			goto error;
 		}
 		rrpriv->rx_skbuff[i] = skb;
-<<<<<<< HEAD
-	        addr = pci_map_single(rrpriv->pci_dev, skb->data,
-			dev->mtu + HIPPI_HLEN, PCI_DMA_FROMDEVICE);
-=======
 		addr = dma_map_single(&rrpriv->pci_dev->dev, skb->data,
 				      dev->mtu + HIPPI_HLEN, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Sanity test to see if we conflict with the DMA
 		 * limitations of the Roadrunner.
@@ -845,17 +705,10 @@ static int rr_init1(struct net_device *dev)
 		struct sk_buff *skb = rrpriv->rx_skbuff[i];
 
 		if (skb) {
-<<<<<<< HEAD
-	        	pci_unmap_single(rrpriv->pci_dev,
-					 rrpriv->rx_ring[i].addr.addrlo,
-					 dev->mtu + HIPPI_HLEN,
-					 PCI_DMA_FROMDEVICE);
-=======
 			dma_unmap_single(&rrpriv->pci_dev->dev,
 					 rrpriv->rx_ring[i].addr.addrlo,
 					 dev->mtu + HIPPI_HLEN,
 					 DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rrpriv->rx_ring[i].size = 0;
 			set_rraddr(&rrpriv->rx_ring[i].addr, 0);
 			dev_kfree_skb(skb);
@@ -1016,11 +869,7 @@ static u32 rr_handle_event(struct net_device *dev, u32 prodidx, u32 eidx)
 			       dev->name);
 			goto drop;
 		case E_FRM_ERR:
-<<<<<<< HEAD
-			printk(KERN_WARNING "%s: Framming Error\n",
-=======
 			printk(KERN_WARNING "%s: Framing Error\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       dev->name);
 			goto drop;
 		case E_FLG_SYN_ERR:
@@ -1110,20 +959,6 @@ static void rx_int(struct net_device *dev, u32 rxlimit, u32 index)
 					dev->stats.rx_dropped++;
 					goto defer;
 				} else {
-<<<<<<< HEAD
-					pci_dma_sync_single_for_cpu(rrpriv->pci_dev,
-								    desc->addr.addrlo,
-								    pkt_len,
-								    PCI_DMA_FROMDEVICE);
-
-					memcpy(skb_put(skb, pkt_len),
-					       rx_skb->data, pkt_len);
-
-					pci_dma_sync_single_for_device(rrpriv->pci_dev,
-								       desc->addr.addrlo,
-								       pkt_len,
-								       PCI_DMA_FROMDEVICE);
-=======
 					dma_sync_single_for_cpu(&rrpriv->pci_dev->dev,
 								desc->addr.addrlo,
 								pkt_len,
@@ -1136,7 +971,6 @@ static void rx_int(struct net_device *dev, u32 rxlimit, u32 index)
 								   desc->addr.addrlo,
 								   pkt_len,
 								   DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}else{
 				struct sk_buff *newskb;
@@ -1146,18 +980,6 @@ static void rx_int(struct net_device *dev, u32 rxlimit, u32 index)
 				if (newskb){
 					dma_addr_t addr;
 
-<<<<<<< HEAD
-	        			pci_unmap_single(rrpriv->pci_dev,
-						desc->addr.addrlo, dev->mtu +
-						HIPPI_HLEN, PCI_DMA_FROMDEVICE);
-					skb = rx_skb;
-					skb_put(skb, pkt_len);
-					rrpriv->rx_skbuff[index] = newskb;
-	        			addr = pci_map_single(rrpriv->pci_dev,
-						newskb->data,
-						dev->mtu + HIPPI_HLEN,
-						PCI_DMA_FROMDEVICE);
-=======
 					dma_unmap_single(&rrpriv->pci_dev->dev,
 							 desc->addr.addrlo,
 							 dev->mtu + HIPPI_HLEN,
@@ -1169,7 +991,6 @@ static void rx_int(struct net_device *dev, u32 rxlimit, u32 index)
 							      newskb->data,
 							      dev->mtu + HIPPI_HLEN,
 							      DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					set_rraddr(&desc->addr, addr);
 				} else {
 					printk("%s: Out of memory, deferring "
@@ -1254,15 +1075,9 @@ static irqreturn_t rr_interrupt(int irq, void *dev_id)
 				dev->stats.tx_packets++;
 				dev->stats.tx_bytes += skb->len;
 
-<<<<<<< HEAD
-				pci_unmap_single(rrpriv->pci_dev,
-						 desc->addr.addrlo, skb->len,
-						 PCI_DMA_TODEVICE);
-=======
 				dma_unmap_single(&rrpriv->pci_dev->dev,
 						 desc->addr.addrlo, skb->len,
 						 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_kfree_skb_irq(skb);
 
 				rrpriv->tx_skbuff[txcon] = NULL;
@@ -1302,14 +1117,9 @@ static inline void rr_raz_tx(struct rr_private *rrpriv,
 		if (skb) {
 			struct tx_desc *desc = &(rrpriv->tx_ring[i]);
 
-<<<<<<< HEAD
-	        	pci_unmap_single(rrpriv->pci_dev, desc->addr.addrlo,
-				skb->len, PCI_DMA_TODEVICE);
-=======
 			dma_unmap_single(&rrpriv->pci_dev->dev,
 					 desc->addr.addrlo, skb->len,
 					 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			desc->size = 0;
 			set_rraddr(&desc->addr, 0);
 			dev_kfree_skb(skb);
@@ -1330,15 +1140,10 @@ static inline void rr_raz_rx(struct rr_private *rrpriv,
 		if (skb) {
 			struct rx_desc *desc = &(rrpriv->rx_ring[i]);
 
-<<<<<<< HEAD
-	        	pci_unmap_single(rrpriv->pci_dev, desc->addr.addrlo,
-				dev->mtu + HIPPI_HLEN, PCI_DMA_FROMDEVICE);
-=======
 			dma_unmap_single(&rrpriv->pci_dev->dev,
 					 desc->addr.addrlo,
 					 dev->mtu + HIPPI_HLEN,
 					 DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			desc->size = 0;
 			set_rraddr(&desc->addr, 0);
 			dev_kfree_skb(skb);
@@ -1347,17 +1152,10 @@ static inline void rr_raz_rx(struct rr_private *rrpriv,
 	}
 }
 
-<<<<<<< HEAD
-static void rr_timer(unsigned long data)
-{
-	struct net_device *dev = (struct net_device *)data;
-	struct rr_private *rrpriv = netdev_priv(dev);
-=======
 static void rr_timer(struct timer_list *t)
 {
 	struct rr_private *rrpriv = from_timer(rrpriv, t, timer);
 	struct net_device *dev = pci_get_drvdata(rrpriv->pci_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rr_regs __iomem *regs = rrpriv->regs;
 	unsigned long flags;
 
@@ -1400,39 +1198,22 @@ static int rr_open(struct net_device *dev)
 		goto error;
 	}
 
-<<<<<<< HEAD
-	rrpriv->rx_ctrl = pci_alloc_consistent(pdev,
-					       256 * sizeof(struct ring_ctrl),
-					       &dma_addr);
-=======
 	rrpriv->rx_ctrl = dma_alloc_coherent(&pdev->dev,
 					     256 * sizeof(struct ring_ctrl),
 					     &dma_addr, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rrpriv->rx_ctrl) {
 		ecode = -ENOMEM;
 		goto error;
 	}
 	rrpriv->rx_ctrl_dma = dma_addr;
-<<<<<<< HEAD
-	memset(rrpriv->rx_ctrl, 0, 256*sizeof(struct ring_ctrl));
-
-	rrpriv->info = pci_alloc_consistent(pdev, sizeof(struct rr_info),
-					    &dma_addr);
-=======
 
 	rrpriv->info = dma_alloc_coherent(&pdev->dev, sizeof(struct rr_info),
 					  &dma_addr, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rrpriv->info) {
 		ecode = -ENOMEM;
 		goto error;
 	}
 	rrpriv->info_dma = dma_addr;
-<<<<<<< HEAD
-	memset(rrpriv->info, 0, sizeof(struct rr_info));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();
 
 	spin_lock_irqsave(&rrpriv->lock, flags);
@@ -1440,15 +1221,9 @@ static int rr_open(struct net_device *dev)
 	readl(&regs->HostCtrl);
 	spin_unlock_irqrestore(&rrpriv->lock, flags);
 
-<<<<<<< HEAD
-	if (request_irq(dev->irq, rr_interrupt, IRQF_SHARED, dev->name, dev)) {
-		printk(KERN_WARNING "%s: Requested IRQ %d is busy\n",
-		       dev->name, dev->irq);
-=======
 	if (request_irq(pdev->irq, rr_interrupt, IRQF_SHARED, dev->name, dev)) {
 		printk(KERN_WARNING "%s: Requested IRQ %d is busy\n",
 		       dev->name, pdev->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ecode = -EAGAIN;
 		goto error;
 	}
@@ -1458,15 +1233,8 @@ static int rr_open(struct net_device *dev)
 
 	/* Set the timer to switch to check for link beat and perhaps switch
 	   to an alternate media type. */
-<<<<<<< HEAD
-	init_timer(&rrpriv->timer);
-	rrpriv->timer.expires = RUN_AT(5*HZ);           /* 5 sec. watchdog */
-	rrpriv->timer.data = (unsigned long)dev;
-	rrpriv->timer.function = rr_timer;               /* timer handler */
-=======
 	timer_setup(&rrpriv->timer, rr_timer, 0);
 	rrpriv->timer.expires = RUN_AT(5*HZ);           /* 5 sec. watchdog */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_timer(&rrpriv->timer);
 
 	netif_start_queue(dev);
@@ -1479,15 +1247,6 @@ static int rr_open(struct net_device *dev)
 	spin_unlock_irqrestore(&rrpriv->lock, flags);
 
 	if (rrpriv->info) {
-<<<<<<< HEAD
-		pci_free_consistent(pdev, sizeof(struct rr_info), rrpriv->info,
-				    rrpriv->info_dma);
-		rrpriv->info = NULL;
-	}
-	if (rrpriv->rx_ctrl) {
-		pci_free_consistent(pdev, sizeof(struct ring_ctrl),
-				    rrpriv->rx_ctrl, rrpriv->rx_ctrl_dma);
-=======
 		dma_free_coherent(&pdev->dev, sizeof(struct rr_info),
 				  rrpriv->info, rrpriv->info_dma);
 		rrpriv->info = NULL;
@@ -1495,7 +1254,6 @@ static int rr_open(struct net_device *dev)
 	if (rrpriv->rx_ctrl) {
 		dma_free_coherent(&pdev->dev, 256 * sizeof(struct ring_ctrl),
 				  rrpriv->rx_ctrl, rrpriv->rx_ctrl_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rrpriv->rx_ctrl = NULL;
 	}
 
@@ -1544,19 +1302,11 @@ static void rr_dump(struct net_device *dev)
 	if (rrpriv->tx_skbuff[cons]){
 		len = min_t(int, 0x80, rrpriv->tx_skbuff[cons]->len);
 		printk("skbuff for cons %i is valid - dumping data (0x%x bytes - skbuff len 0x%x)\n", cons, len, rrpriv->tx_skbuff[cons]->len);
-<<<<<<< HEAD
-		printk("mode 0x%x, size 0x%x,\n phys %08Lx, skbuff-addr %08lx, truesize 0x%x\n",
-		       rrpriv->tx_ring[cons].mode,
-		       rrpriv->tx_ring[cons].size,
-		       (unsigned long long) rrpriv->tx_ring[cons].addr.addrlo,
-		       (unsigned long)rrpriv->tx_skbuff[cons]->data,
-=======
 		printk("mode 0x%x, size 0x%x,\n phys %08Lx, skbuff-addr %p, truesize 0x%x\n",
 		       rrpriv->tx_ring[cons].mode,
 		       rrpriv->tx_ring[cons].size,
 		       (unsigned long long) rrpriv->tx_ring[cons].addr.addrlo,
 		       rrpriv->tx_skbuff[cons]->data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       (unsigned int)rrpriv->tx_skbuff[cons]->truesize);
 		for (i = 0; i < len; i++){
 			if (!(i & 7))
@@ -1578,25 +1328,15 @@ static void rr_dump(struct net_device *dev)
 
 static int rr_close(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct rr_private *rrpriv;
-	struct rr_regs __iomem *regs;
-=======
 	struct rr_private *rrpriv = netdev_priv(dev);
 	struct rr_regs __iomem *regs = rrpriv->regs;
 	struct pci_dev *pdev = rrpriv->pci_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	u32 tmp;
 	short i;
 
 	netif_stop_queue(dev);
 
-<<<<<<< HEAD
-	rrpriv = netdev_priv(dev);
-	regs = rrpriv->regs;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Lock to make sure we are not cleaning up while another CPU
@@ -1616,13 +1356,9 @@ static int rr_close(struct net_device *dev)
 
 	rrpriv->fw_running = 0;
 
-<<<<<<< HEAD
-	del_timer_sync(&rrpriv->timer);
-=======
 	spin_unlock_irqrestore(&rrpriv->lock, flags);
 	del_timer_sync(&rrpriv->timer);
 	spin_lock_irqsave(&rrpriv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writel(0, &regs->TxPi);
 	writel(0, &regs->IpRxPi);
@@ -1641,18 +1377,6 @@ static int rr_close(struct net_device *dev)
 	rr_raz_tx(rrpriv, dev);
 	rr_raz_rx(rrpriv, dev);
 
-<<<<<<< HEAD
-	pci_free_consistent(rrpriv->pci_dev, 256 * sizeof(struct ring_ctrl),
-			    rrpriv->rx_ctrl, rrpriv->rx_ctrl_dma);
-	rrpriv->rx_ctrl = NULL;
-
-	pci_free_consistent(rrpriv->pci_dev, sizeof(struct rr_info),
-			    rrpriv->info, rrpriv->info_dma);
-	rrpriv->info = NULL;
-
-	free_irq(dev->irq, dev);
-	spin_unlock_irqrestore(&rrpriv->lock, flags);
-=======
 	dma_free_coherent(&pdev->dev, 256 * sizeof(struct ring_ctrl),
 			  rrpriv->rx_ctrl, rrpriv->rx_ctrl_dma);
 	rrpriv->rx_ctrl = NULL;
@@ -1663,7 +1387,6 @@ static int rr_close(struct net_device *dev)
 
 	spin_unlock_irqrestore(&rrpriv->lock, flags);
 	free_irq(pdev->irq, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1703,11 +1426,7 @@ static netdev_tx_t rr_start_xmit(struct sk_buff *skb,
 		skb = new_skb;
 	}
 
-<<<<<<< HEAD
-	ifield = (u32 *)skb_push(skb, 8);
-=======
 	ifield = skb_push(skb, 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ifield[0] = 0;
 	ifield[1] = hcb->ifield;
@@ -1723,13 +1442,8 @@ static netdev_tx_t rr_start_xmit(struct sk_buff *skb,
 	index = txctrl->pi;
 
 	rrpriv->tx_skbuff[index] = skb;
-<<<<<<< HEAD
-	set_rraddr(&rrpriv->tx_ring[index].addr, pci_map_single(
-		rrpriv->pci_dev, skb->data, len + 8, PCI_DMA_TODEVICE));
-=======
 	set_rraddr(&rrpriv->tx_ring[index].addr,
 		   dma_map_single(&rrpriv->pci_dev->dev, skb->data, len + 8, DMA_TO_DEVICE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rrpriv->tx_ring[index].size = len + 8; /* include IFIELD */
 	rrpriv->tx_ring[index].mode = PACKET_START | PACKET_END;
 	txctrl->pi = (index + 1) % TX_RING_ENTRIES;
@@ -1859,12 +1573,8 @@ out:
 }
 
 
-<<<<<<< HEAD
-static int rr_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
-=======
 static int rr_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 			     void __user *data, int cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rr_private *rrpriv;
 	unsigned char *image, *oldimage;
@@ -1880,11 +1590,7 @@ static int rr_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 			return -EPERM;
 		}
 
-<<<<<<< HEAD
-		image = kmalloc(EEPROM_WORDS * sizeof(u32), GFP_KERNEL);
-=======
 		image = kmalloc_array(EEPROM_WORDS, sizeof(u32), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!image)
 			return -ENOMEM;
 
@@ -1903,11 +1609,7 @@ static int rr_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 			error = -EFAULT;
 			goto gf_out;
 		}
-<<<<<<< HEAD
-		error = copy_to_user(rq->ifr_data, image, EEPROM_BYTES);
-=======
 		error = copy_to_user(data, image, EEPROM_BYTES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			error = -EFAULT;
 	gf_out:
@@ -1919,19 +1621,6 @@ static int rr_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 			return -EPERM;
 		}
 
-<<<<<<< HEAD
-		image = kmalloc(EEPROM_WORDS * sizeof(u32), GFP_KERNEL);
-		oldimage = kmalloc(EEPROM_WORDS * sizeof(u32), GFP_KERNEL);
-		if (!image || !oldimage) {
-			error = -ENOMEM;
-			goto wf_out;
-		}
-
-		error = copy_from_user(image, rq->ifr_data, EEPROM_BYTES);
-		if (error) {
-			error = -EFAULT;
-			goto wf_out;
-=======
 		image = memdup_user(data, EEPROM_BYTES);
 		if (IS_ERR(image))
 			return PTR_ERR(image);
@@ -1940,7 +1629,6 @@ static int rr_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 		if (!oldimage) {
 			kfree(image);
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (rrpriv->fw_running){
@@ -1976,21 +1664,13 @@ static int rr_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 		return error;
 
 	case SIOCRRID:
-<<<<<<< HEAD
-		return put_user(0x52523032, (int __user *)rq->ifr_data);
-=======
 		return put_user(0x52523032, (int __user *)data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return error;
 	}
 }
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(rr_pci_tbl) = {
-=======
 static const struct pci_device_id rr_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_ESSENTIAL, PCI_DEVICE_ID_ESSENTIAL_ROADRUNNER,
 		PCI_ANY_ID, PCI_ANY_ID, },
 	{ 0,}
@@ -2001,25 +1681,7 @@ static struct pci_driver rr_driver = {
 	.name		= "rrunner",
 	.id_table	= rr_pci_tbl,
 	.probe		= rr_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(rr_remove_one),
-};
-
-static int __init rr_init_module(void)
-{
-	return pci_register_driver(&rr_driver);
-}
-
-static void __exit rr_cleanup_module(void)
-{
-	pci_unregister_driver(&rr_driver);
-}
-
-module_init(rr_init_module);
-module_exit(rr_cleanup_module);
-=======
 	.remove		= rr_remove_one,
 };
 
 module_pci_driver(rr_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

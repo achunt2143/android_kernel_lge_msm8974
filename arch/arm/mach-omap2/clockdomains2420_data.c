@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP2420 clockdomains
  *
@@ -39,10 +36,7 @@
 #include <linux/kernel.h>
 #include <linux/io.h>
 
-<<<<<<< HEAD
-=======
 #include "soc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "clockdomain.h"
 #include "prm2xxx_3xxx.h"
 #include "cm2xxx_3xxx.h"
@@ -139,11 +133,6 @@ static struct clockdomain dss_2420_clkdm = {
 
 static struct clockdomain *clockdomains_omap242x[] __initdata = {
 	&wkup_common_clkdm,
-<<<<<<< HEAD
-	&cm_common_clkdm,
-	&prm_common_clkdm,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&mpu_2420_clkdm,
 	&iva1_2420_clkdm,
 	&dsp_2420_clkdm,

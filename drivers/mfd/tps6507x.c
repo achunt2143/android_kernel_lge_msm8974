@@ -19,18 +19,11 @@
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <linux/mfd/core.h>
-#include <linux/mfd/tps6507x.h>
-
-static struct mfd_cell tps6507x_devs[] = {
-=======
 #include <linux/of.h>
 #include <linux/mfd/core.h>
 #include <linux/mfd/tps6507x.h>
 
 static const struct mfd_cell tps6507x_devs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "tps6507x-pmic",
 	},
@@ -90,22 +83,12 @@ static int tps6507x_i2c_write_device(struct tps6507x_dev *tps6507x, char reg,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int tps6507x_i2c_probe(struct i2c_client *i2c,
-			    const struct i2c_device_id *id)
-{
-	struct tps6507x_dev *tps6507x;
-	int ret = 0;
-
-	tps6507x = kzalloc(sizeof(struct tps6507x_dev), GFP_KERNEL);
-=======
 static int tps6507x_i2c_probe(struct i2c_client *i2c)
 {
 	struct tps6507x_dev *tps6507x;
 
 	tps6507x = devm_kzalloc(&i2c->dev, sizeof(struct tps6507x_dev),
 				GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tps6507x == NULL)
 		return -ENOMEM;
 
@@ -115,39 +98,6 @@ static int tps6507x_i2c_probe(struct i2c_client *i2c)
 	tps6507x->read_dev = tps6507x_i2c_read_device;
 	tps6507x->write_dev = tps6507x_i2c_write_device;
 
-<<<<<<< HEAD
-	ret = mfd_add_devices(tps6507x->dev, -1,
-			      tps6507x_devs, ARRAY_SIZE(tps6507x_devs),
-			      NULL, 0);
-
-	if (ret < 0)
-		goto err;
-
-	return ret;
-
-err:
-	mfd_remove_devices(tps6507x->dev);
-	kfree(tps6507x);
-	return ret;
-}
-
-static int tps6507x_i2c_remove(struct i2c_client *i2c)
-{
-	struct tps6507x_dev *tps6507x = i2c_get_clientdata(i2c);
-
-	mfd_remove_devices(tps6507x->dev);
-	kfree(tps6507x);
-
-	return 0;
-}
-
-static const struct i2c_device_id tps6507x_i2c_id[] = {
-       { "tps6507x", 0 },
-       { }
-};
-MODULE_DEVICE_TABLE(i2c, tps6507x_i2c_id);
-
-=======
 	return devm_mfd_add_devices(tps6507x->dev, -1, tps6507x_devs,
 				    ARRAY_SIZE(tps6507x_devs), NULL, 0, NULL);
 }
@@ -165,21 +115,13 @@ static const struct of_device_id tps6507x_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, tps6507x_of_match);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_driver tps6507x_i2c_driver = {
 	.driver = {
 		   .name = "tps6507x",
-<<<<<<< HEAD
-		   .owner = THIS_MODULE,
-	},
-	.probe = tps6507x_i2c_probe,
-	.remove = tps6507x_i2c_remove,
-=======
 		   .of_match_table = of_match_ptr(tps6507x_of_match),
 	},
 	.probe = tps6507x_i2c_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = tps6507x_i2c_id,
 };
 

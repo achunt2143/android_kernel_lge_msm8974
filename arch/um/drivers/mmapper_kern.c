@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/um/drivers/mmapper_kern.c
  *
@@ -21,13 +18,8 @@
 #include <linux/module.h>
 #include <linux/mm.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include "mem_user.h"
-=======
 #include <linux/uaccess.h>
 #include <mem_user.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* These are set in mmapper_init, which is called at boot time */
 static unsigned long mmapper_size;
@@ -130,11 +122,7 @@ static int __init mmapper_init(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void mmapper_exit(void)
-=======
 static void __exit mmapper_exit(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	misc_deregister(&mmapper_dev);
 }

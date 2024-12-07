@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-config GFS2_FS
-	tristate "GFS2 file system support"
-	depends on (64BIT || LBDAF)
-	select FS_POSIX_ACL
-	select CRC32
-	select QUOTACTL
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config GFS2_FS
 	tristate "GFS2 file system support"
@@ -15,7 +7,6 @@ config GFS2_FS
 	select LIBCRC32C
 	select QUOTACTL
 	select FS_IOMAP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  A cluster filesystem.
 
@@ -32,21 +23,12 @@ config GFS2_FS
 	  be found here: http://sources.redhat.com/cluster
 
 	  The "nolock" lock module is now built in to GFS2 by default. If
-<<<<<<< HEAD
-	  you want to use the DLM, be sure to enable HOTPLUG and IPv4/6
-	  networking.
-=======
 	  you want to use the DLM, be sure to enable IPv4/6 networking.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config GFS2_FS_LOCKING_DLM
 	bool "GFS2 DLM locking"
 	depends on (GFS2_FS!=n) && NET && INET && (IPV6 || IPV6=n) && \
-<<<<<<< HEAD
-		HOTPLUG && DLM && CONFIGFS_FS && SYSFS
-=======
 		CONFIGFS_FS && SYSFS && (DLM=y || DLM=GFS2_FS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Multiple node locking module for GFS2
 

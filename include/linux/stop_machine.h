@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_STOP_MACHINE
 #define _LINUX_STOP_MACHINE
 
@@ -27,21 +24,12 @@ typedef int (*cpu_stop_fn_t)(void *arg);
 struct cpu_stop_work {
 	struct list_head	list;		/* cpu_stopper->works */
 	cpu_stop_fn_t		fn;
-<<<<<<< HEAD
-=======
 	unsigned long		caller;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			*arg;
 	struct cpu_stop_done	*done;
 };
 
 int stop_one_cpu(unsigned int cpu, cpu_stop_fn_t fn, void *arg);
-<<<<<<< HEAD
-void stop_one_cpu_nowait(unsigned int cpu, cpu_stop_fn_t fn, void *arg,
-			 struct cpu_stop_work *work_buf);
-int stop_cpus(const struct cpumask *cpumask, cpu_stop_fn_t fn, void *arg);
-int try_stop_cpus(const struct cpumask *cpumask, cpu_stop_fn_t fn, void *arg);
-=======
 int stop_two_cpus(unsigned int cpu1, unsigned int cpu2, cpu_stop_fn_t fn, void *arg);
 bool stop_one_cpu_nowait(unsigned int cpu, cpu_stop_fn_t fn, void *arg,
 			 struct cpu_stop_work *work_buf);
@@ -50,7 +38,6 @@ void stop_machine_unpark(int cpu);
 void stop_machine_yield(const struct cpumask *cpumask);
 
 extern void print_stop_info(const char *log_lvl, struct task_struct *task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else	/* CONFIG_SMP */
 
@@ -81,11 +68,7 @@ static void stop_one_cpu_nowait_workfn(struct work_struct *work)
 	preempt_enable();
 }
 
-<<<<<<< HEAD
-static inline void stop_one_cpu_nowait(unsigned int cpu,
-=======
 static inline bool stop_one_cpu_nowait(unsigned int cpu,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       cpu_stop_fn_t fn, void *arg,
 				       struct cpu_stop_work *work_buf)
 {
@@ -94,24 +77,6 @@ static inline bool stop_one_cpu_nowait(unsigned int cpu,
 		work_buf->fn = fn;
 		work_buf->arg = arg;
 		schedule_work(&work_buf->work);
-<<<<<<< HEAD
-	}
-}
-
-static inline int stop_cpus(const struct cpumask *cpumask,
-			    cpu_stop_fn_t fn, void *arg)
-{
-	if (cpumask_test_cpu(raw_smp_processor_id(), cpumask))
-		return stop_one_cpu(raw_smp_processor_id(), fn, arg);
-	return -ENOENT;
-}
-
-static inline int try_stop_cpus(const struct cpumask *cpumask,
-				cpu_stop_fn_t fn, void *arg)
-{
-	return stop_cpus(cpumask, fn, arg);
-}
-=======
 		return true;
 	}
 
@@ -119,7 +84,6 @@ static inline int try_stop_cpus(const struct cpumask *cpumask,
 }
 
 static inline void print_stop_info(const char *log_lvl, struct task_struct *task) { }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* CONFIG_SMP */
 
@@ -129,11 +93,7 @@ static inline void print_stop_info(const char *log_lvl, struct task_struct *task
  * grabbing every spinlock (and more).  So the "read" side to such a
  * lock is anything which disables preemption.
  */
-<<<<<<< HEAD
-#if defined(CONFIG_STOP_MACHINE) && defined(CONFIG_SMP)
-=======
 #if defined(CONFIG_SMP) || defined(CONFIG_HOTPLUG_CPU)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * stop_machine: freeze the machine on all CPUs and run this function
@@ -147,29 +107,6 @@ static inline void print_stop_info(const char *log_lvl, struct task_struct *task
  * @fn() runs.
  *
  * This can be thought of as a very heavy write lock, equivalent to
-<<<<<<< HEAD
- * grabbing every spinlock in the kernel. */
-int stop_machine(int (*fn)(void *), void *data, const struct cpumask *cpus);
-
-/**
- * __stop_machine: freeze the machine on all CPUs and run this function
- * @fn: the function to run
- * @data: the data ptr for the @fn
- * @cpus: the cpus to run the @fn() on (NULL = any online cpu)
- *
- * Description: This is a special version of the above, which assumes cpus
- * won't come or go while it's being called.  Used by hotplug cpu.
- */
-int __stop_machine(int (*fn)(void *), void *data, const struct cpumask *cpus);
-
-int stop_machine_from_inactive_cpu(int (*fn)(void *), void *data,
-				   const struct cpumask *cpus);
-
-#else	 /* CONFIG_STOP_MACHINE && CONFIG_SMP */
-
-static inline int __stop_machine(int (*fn)(void *), void *data,
-				 const struct cpumask *cpus)
-=======
  * grabbing every spinlock in the kernel.
  *
  * Protects against CPU hotplug.
@@ -209,7 +146,6 @@ int stop_machine_from_inactive_cpu(cpu_stop_fn_t fn, void *data,
 
 static __always_inline int stop_machine_cpuslocked(cpu_stop_fn_t fn, void *data,
 					  const struct cpumask *cpus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	int ret;
@@ -219,21 +155,6 @@ static __always_inline int stop_machine_cpuslocked(cpu_stop_fn_t fn, void *data,
 	return ret;
 }
 
-<<<<<<< HEAD
-static inline int stop_machine(int (*fn)(void *), void *data,
-			       const struct cpumask *cpus)
-{
-	return __stop_machine(fn, data, cpus);
-}
-
-static inline int stop_machine_from_inactive_cpu(int (*fn)(void *), void *data,
-						 const struct cpumask *cpus)
-{
-	return __stop_machine(fn, data, cpus);
-}
-
-#endif	/* CONFIG_STOP_MACHINE && CONFIG_SMP */
-=======
 static __always_inline int
 stop_machine(cpu_stop_fn_t fn, void *data, const struct cpumask *cpus)
 {
@@ -248,5 +169,4 @@ stop_machine_from_inactive_cpu(cpu_stop_fn_t fn, void *data,
 }
 
 #endif	/* CONFIG_SMP || CONFIG_HOTPLUG_CPU */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _LINUX_STOP_MACHINE */

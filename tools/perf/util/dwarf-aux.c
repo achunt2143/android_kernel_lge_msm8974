@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-/*
- * dwarf-aux.c : libdw auxiliary interfaces
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- */
-
-#include <stdbool.h>
-#include "util.h"
-#include "debug.h"
-#include "dwarf-aux.h"
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * dwarf-aux.c : libdw auxiliary interfaces
@@ -36,7 +11,6 @@
 #include "dwarf-aux.h"
 #include "strbuf.h"
 #include "string2.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * cu_find_realpath - Find the realpath of the target file
@@ -85,8 +59,6 @@ const char *cu_get_comp_dir(Dwarf_Die *cu_die)
 	return dwarf_formstring(&attr);
 }
 
-<<<<<<< HEAD
-=======
 /* Unlike dwarf_getsrc_die(), cu_getsrc_die() only returns statement line */
 static Dwarf_Line *cu_getsrc_die(Dwarf_Die *cu_die, Dwarf_Addr addr)
 {
@@ -132,7 +104,6 @@ static Dwarf_Line *cu_getsrc_die(Dwarf_Die *cu_die, Dwarf_Addr addr)
 	return line;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * cu_find_lineinfo - Get a line number and file name for given address
  * @cu_die: a CU DIE
@@ -142,17 +113,6 @@ static Dwarf_Line *cu_getsrc_die(Dwarf_Die *cu_die, Dwarf_Addr addr)
  *
  * Find a line number and file name for @addr in @cu_die.
  */
-<<<<<<< HEAD
-int cu_find_lineinfo(Dwarf_Die *cu_die, unsigned long addr,
-		    const char **fname, int *lineno)
-{
-	Dwarf_Line *line;
-	Dwarf_Addr laddr;
-
-	line = dwarf_getsrc_die(cu_die, (Dwarf_Addr)addr);
-	if (line && dwarf_lineaddr(line, &laddr) == 0 &&
-	    addr == (unsigned long)laddr && dwarf_lineno(line, lineno) == 0) {
-=======
 int cu_find_lineinfo(Dwarf_Die *cu_die, Dwarf_Addr addr,
 		     const char **fname, int *lineno)
 {
@@ -170,19 +130,14 @@ int cu_find_lineinfo(Dwarf_Die *cu_die, Dwarf_Addr addr,
 
 	line = cu_getsrc_die(cu_die, addr);
 	if (line && dwarf_lineno(line, lineno) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*fname = dwarf_linesrc(line, NULL, NULL);
 		if (!*fname)
 			/* line number is useless without filename */
 			*lineno = 0;
 	}
 
-<<<<<<< HEAD
-	return *lineno ?: -ENOENT;
-=======
 out:
 	return (*lineno && *fname) ? *lineno : -ENOENT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __die_find_inline_cb(Dwarf_Die *die_mem, void *data);
@@ -219,8 +174,6 @@ int cu_walk_functions_at(Dwarf_Die *cu_die, Dwarf_Addr addr,
 }
 
 /**
-<<<<<<< HEAD
-=======
  * die_get_linkage_name - Get the linkage name of the object
  * @dw_die: A DIE of the object
  *
@@ -237,7 +190,6 @@ const char *die_get_linkage_name(Dwarf_Die *dw_die)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * die_compare_name - Compare diename and tname
  * @dw_die: a DIE
  * @tname: a string of target name
@@ -247,17 +199,12 @@ const char *die_get_linkage_name(Dwarf_Die *dw_die)
 bool die_compare_name(Dwarf_Die *dw_die, const char *tname)
 {
 	const char *name;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	name = dwarf_diename(dw_die);
 	return name ? (strcmp(tname, name) == 0) : false;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * die_match_name - Match diename/linkage name and glob
  * @dw_die: a DIE
  * @glob: a string of target glob pattern
@@ -281,7 +228,6 @@ bool die_match_name(Dwarf_Die *dw_die, const char *glob)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * die_get_call_lineno - Get callsite line number of inline-function instance
  * @in_die: a DIE of an inlined function instance
  *
@@ -362,33 +308,13 @@ static int die_get_attr_udata(Dwarf_Die *tp_die, unsigned int attr_name,
 {
 	Dwarf_Attribute attr;
 
-<<<<<<< HEAD
-	if (dwarf_attr(tp_die, attr_name, &attr) == NULL ||
-=======
 	if (dwarf_attr_integrate(tp_die, attr_name, &attr) == NULL ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    dwarf_formudata(&attr, result) != 0)
 		return -ENOENT;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* Get attribute and translate it as a sdata */
-static int die_get_attr_sdata(Dwarf_Die *tp_die, unsigned int attr_name,
-			      Dwarf_Sword *result)
-{
-	Dwarf_Attribute attr;
-
-	if (dwarf_attr(tp_die, attr_name, &attr) == NULL ||
-	    dwarf_formsdata(&attr, result) != 0)
-		return -ENOENT;
-
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * die_is_signed_type - Check whether a type DIE is signed or not
  * @tp_die: a DIE of a type
@@ -408,8 +334,6 @@ bool die_is_signed_type(Dwarf_Die *tp_die)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * die_is_func_def - Ensure that this DIE is a subprogram and definition
  * @dw_die: a DIE
  *
@@ -494,7 +418,6 @@ bool die_is_func_instance(Dwarf_Die *dw_die)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * die_get_data_member_location - Get the data-member offset
  * @mb_die: a DIE of a member of a data structure
  * @offs: The offset of the member in the data structure
@@ -531,15 +454,9 @@ int die_get_data_member_location(Dwarf_Die *mb_die, Dwarf_Word *offs)
 /* Get the call file index number in CU DIE */
 static int die_get_call_fileno(Dwarf_Die *in_die)
 {
-<<<<<<< HEAD
-	Dwarf_Sword idx;
-
-	if (die_get_attr_sdata(in_die, DW_AT_call_file, &idx) == 0)
-=======
 	Dwarf_Word idx;
 
 	if (die_get_attr_udata(in_die, DW_AT_call_file, &idx) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (int)idx;
 	else
 		return -ENOENT;
@@ -548,22 +465,14 @@ static int die_get_call_fileno(Dwarf_Die *in_die)
 /* Get the declared file index number in CU DIE */
 static int die_get_decl_fileno(Dwarf_Die *pdie)
 {
-<<<<<<< HEAD
-	Dwarf_Sword idx;
-
-	if (die_get_attr_sdata(pdie, DW_AT_decl_file, &idx) == 0)
-=======
 	Dwarf_Word idx;
 
 	if (die_get_attr_udata(pdie, DW_AT_decl_file, &idx) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (int)idx;
 	else
 		return -ENOENT;
 }
 
-<<<<<<< HEAD
-=======
 /* Return the file name by index */
 static const char *die_get_file_name(Dwarf_Die *dw_die, int idx)
 {
@@ -579,7 +488,6 @@ static const char *die_get_file_name(Dwarf_Die *dw_die, int idx)
 	return dwarf_filesrc(files, idx, NULL, NULL);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * die_get_call_file - Get callsite file name of inlined function instance
  * @in_die: a DIE of an inlined function instance
@@ -589,20 +497,6 @@ static const char *die_get_file_name(Dwarf_Die *dw_die, int idx)
  */
 const char *die_get_call_file(Dwarf_Die *in_die)
 {
-<<<<<<< HEAD
-	Dwarf_Die cu_die;
-	Dwarf_Files *files;
-	int idx;
-
-	idx = die_get_call_fileno(in_die);
-	if (idx < 0 || !dwarf_diecu(in_die, &cu_die, NULL, NULL) ||
-	    dwarf_getsrcfiles(&cu_die, &files, NULL) != 0)
-		return NULL;
-
-	return dwarf_filesrc(files, idx, NULL, NULL);
-}
-
-=======
 	return die_get_file_name(in_die, die_get_call_fileno(in_die));
 }
 
@@ -619,7 +513,6 @@ const char *die_get_decl_file(Dwarf_Die *dw_die)
 {
 	return die_get_file_name(dw_die, die_get_decl_fileno(dw_die));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * die_find_child - Generic DIE search function in DIE tree
@@ -668,8 +561,6 @@ struct __addr_die_search_param {
 	Dwarf_Die	*die_mem;
 };
 
-<<<<<<< HEAD
-=======
 static int __die_search_func_tail_cb(Dwarf_Die *fn_die, void *data)
 {
 	struct __addr_die_search_param *ad = data;
@@ -707,19 +598,15 @@ Dwarf_Die *die_find_tailfunc(Dwarf_Die *cu_die, Dwarf_Addr addr,
 		return die_mem;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* die_find callback for non-inlined function search */
 static int __die_search_func_cb(Dwarf_Die *fn_die, void *data)
 {
 	struct __addr_die_search_param *ad = data;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Since a declaration entry doesn't has given pc, this always returns
 	 * function definition entry.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dwarf_tag(fn_die) == DW_TAG_subprogram &&
 	    dwarf_haspc(fn_die, ad->addr)) {
 		memcpy(ad->die_mem, fn_die, sizeof(Dwarf_Die));
@@ -735,11 +622,7 @@ static int __die_search_func_cb(Dwarf_Die *fn_die, void *data)
  * @die_mem: a buffer for result DIE
  *
  * Search a non-inlined function DIE which includes @addr. Stores the
-<<<<<<< HEAD
- * DIE to @die_mem and returns it if found. Returns NULl if failed.
-=======
  * DIE to @die_mem and returns it if found. Returns NULL if failed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 Dwarf_Die *die_find_realfunc(Dwarf_Die *cu_die, Dwarf_Addr addr,
 				    Dwarf_Die *die_mem)
@@ -767,22 +650,12 @@ static int __die_find_inline_cb(Dwarf_Die *die_mem, void *data)
 }
 
 /**
-<<<<<<< HEAD
- * die_find_inlinefunc - Search an inlined function at given address
- * @cu_die: a CU DIE which including @addr
-=======
  * die_find_top_inlinefunc - Search the top inlined function at given address
  * @sp_die: a subprogram DIE which including @addr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @addr: target address
  * @die_mem: a buffer for result DIE
  *
  * Search an inlined function DIE which includes @addr. Stores the
-<<<<<<< HEAD
- * DIE to @die_mem and returns it if found. Returns NULl if failed.
- * If several inlined functions are expanded recursively, this trace
- * it and returns deepest one.
-=======
  * DIE to @die_mem and returns it if found. Returns NULL if failed.
  * Even if several inlined functions are expanded recursively, this
  * doesn't trace it down, and returns the topmost one.
@@ -803,7 +676,6 @@ Dwarf_Die *die_find_top_inlinefunc(Dwarf_Die *sp_die, Dwarf_Addr addr,
  * DIE to @die_mem and returns it if found. Returns NULL if failed.
  * If several inlined functions are expanded recursively, this trace
  * it down and returns deepest one.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 Dwarf_Die *die_find_inlinefunc(Dwarf_Die *sp_die, Dwarf_Addr addr,
 			       Dwarf_Die *die_mem)
@@ -840,12 +712,9 @@ static int __die_walk_instances_cb(Dwarf_Die *inst, void *data)
 	Dwarf_Die *origin;
 	int tmp;
 
-<<<<<<< HEAD
-=======
 	if (!die_is_func_instance(inst))
 		return DIE_FIND_CB_CONTINUE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	attr = dwarf_attr(inst, DW_AT_abstract_origin, &attr_mem);
 	if (attr == NULL)
 		return DIE_FIND_CB_CONTINUE;
@@ -876,11 +745,7 @@ static int __die_walk_instances_cb(Dwarf_Die *inst, void *data)
  * @data: user data
  *
  * Walk on the instances of give @in_die. @in_die must be an inlined function
-<<<<<<< HEAD
- * declartion. This returns the return value of @callback if it returns
-=======
  * declaration. This returns the return value of @callback if it returns
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * non-zero value, or -ENOENT if there is no instance.
  */
 int die_walk_instances(Dwarf_Die *or_die, int (*callback)(Dwarf_Die *, void *),
@@ -921,31 +786,17 @@ static int __die_walk_funclines_cb(Dwarf_Die *in_die, void *data)
 	if (dwarf_tag(in_die) == DW_TAG_inlined_subroutine) {
 		fname = die_get_call_file(in_die);
 		lineno = die_get_call_lineno(in_die);
-<<<<<<< HEAD
-		if (fname && lineno > 0 && dwarf_entrypc(in_die, &addr) == 0) {
-=======
 		if (fname && lineno > 0 && die_entrypc(in_die, &addr) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lw->retval = lw->callback(fname, lineno, addr, lw->data);
 			if (lw->retval != 0)
 				return DIE_FIND_CB_END;
 		}
-<<<<<<< HEAD
-	}
-	if (!lw->recursive)
-		/* Don't need to search recursively */
-		return DIE_FIND_CB_SIBLING;
-
-	if (addr) {
-		fname = dwarf_decl_file(in_die);
-=======
 		if (!lw->recursive)
 			return DIE_FIND_CB_SIBLING;
 	}
 
 	if (addr) {
 		fname = die_get_decl_file(in_die);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fname && dwarf_decl_line(in_die, &lineno) == 0) {
 			lw->retval = lw->callback(fname, lineno, addr, lw->data);
 			if (lw->retval != 0)
@@ -973,15 +824,9 @@ static int __die_walk_funclines(Dwarf_Die *sp_die, bool recursive,
 	int lineno;
 
 	/* Handle function declaration line */
-<<<<<<< HEAD
-	fname = dwarf_decl_file(sp_die);
-	if (fname && dwarf_decl_line(sp_die, &lineno) == 0 &&
-	    dwarf_entrypc(sp_die, &addr) == 0) {
-=======
 	fname = die_get_decl_file(sp_die);
 	if (fname && dwarf_decl_line(sp_die, &lineno) == 0 &&
 	    die_entrypc(sp_die, &addr) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lw.retval = callback(fname, lineno, addr, data);
 		if (lw.retval != 0)
 			goto done;
@@ -995,13 +840,10 @@ static int __die_walk_culines_cb(Dwarf_Die *sp_die, void *data)
 {
 	struct __line_walk_param *lw = data;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Since inlined function can include another inlined function in
 	 * the same file, we need to walk in it recursively.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lw->retval = __die_walk_funclines(sp_die, true, lw->callback, lw->data);
 	if (lw->retval != 0)
 		return DWARF_CB_ABORT;
@@ -1026,17 +868,6 @@ int die_walk_lines(Dwarf_Die *rt_die, line_walk_callback_t callback, void *data)
 	Dwarf_Lines *lines;
 	Dwarf_Line *line;
 	Dwarf_Addr addr;
-<<<<<<< HEAD
-	const char *fname;
-	int lineno, ret = 0;
-	Dwarf_Die die_mem, *cu_die;
-	size_t nlines, i;
-
-	/* Get the CU die */
-	if (dwarf_tag(rt_die) != DW_TAG_compile_unit)
-		cu_die = dwarf_diecu(rt_die, &die_mem, NULL, NULL);
-	else
-=======
 	const char *fname, *decf = NULL, *inf = NULL;
 	int lineno, ret = 0;
 	int decl = 0, inl;
@@ -1055,7 +886,6 @@ int die_walk_lines(Dwarf_Die *rt_die, line_walk_callback_t callback, void *data)
 			return -EINVAL;
 		}
 	} else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cu_die = rt_die;
 	if (!cu_die) {
 		pr_debug2("Failed to get CU from given DIE.\n");
@@ -1079,10 +909,6 @@ int die_walk_lines(Dwarf_Die *rt_die, line_walk_callback_t callback, void *data)
 				  "Possible error in debuginfo.\n");
 			continue;
 		}
-<<<<<<< HEAD
-		/* Filter lines based on address */
-		if (rt_die != cu_die)
-=======
 		/* Skip end-of-sequence */
 		if (dwarf_lineendsequence(line, &flag) != 0 || flag)
 			continue;
@@ -1091,17 +917,11 @@ int die_walk_lines(Dwarf_Die *rt_die, line_walk_callback_t callback, void *data)
 			continue;
 		/* Filter lines based on address */
 		if (rt_die != cu_die) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Address filtering
 			 * The line is included in given function, and
 			 * no inline block includes it.
 			 */
-<<<<<<< HEAD
-			if (!dwarf_haspc(rt_die, addr) ||
-			    die_find_inlinefunc(rt_die, addr, &die_mem))
-				continue;
-=======
 			if (!dwarf_haspc(rt_die, addr))
 				continue;
 
@@ -1119,7 +939,6 @@ int die_walk_lines(Dwarf_Die *rt_die, line_walk_callback_t callback, void *data)
 			}
 		}
 found:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Get source line */
 		fname = dwarf_linesrc(line, NULL, NULL);
 
@@ -1134,14 +953,9 @@ found:
 	 */
 	if (rt_die != cu_die)
 		/*
-<<<<<<< HEAD
-		 * Don't need walk functions recursively, because nested
-		 * inlined functions don't have lines of the specified DIE.
-=======
 		 * Don't need walk inlined functions recursively, because
 		 * inner inlined functions don't have the lines of the
 		 * specified function.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		ret = __die_walk_funclines(rt_die, false, callback, data);
 	else {
@@ -1165,20 +979,12 @@ struct __find_variable_param {
 static int __die_find_variable_cb(Dwarf_Die *die_mem, void *data)
 {
 	struct __find_variable_param *fvp = data;
-<<<<<<< HEAD
-=======
 	Dwarf_Attribute attr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int tag;
 
 	tag = dwarf_tag(die_mem);
 	if ((tag == DW_TAG_formal_parameter ||
 	     tag == DW_TAG_variable) &&
-<<<<<<< HEAD
-	    die_compare_name(die_mem, fvp->name))
-		return DIE_FIND_CB_END;
-
-=======
 	    die_compare_name(die_mem, fvp->name) &&
 	/*
 	 * Does the DIE have location information or const value
@@ -1188,7 +994,6 @@ static int __die_find_variable_cb(Dwarf_Die *die_mem, void *data)
 	     dwarf_attr(die_mem, DW_AT_location, &attr) ||
 	     dwarf_attr(die_mem, DW_AT_const_value, &attr)))
 		return DIE_FIND_CB_END;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dwarf_haspc(die_mem, fvp->addr))
 		return DIE_FIND_CB_CONTINUE;
 	else
@@ -1217,12 +1022,6 @@ static int __die_find_member_cb(Dwarf_Die *die_mem, void *data)
 {
 	const char *name = data;
 
-<<<<<<< HEAD
-	if ((dwarf_tag(die_mem) == DW_TAG_member) &&
-	    die_compare_name(die_mem, name))
-		return DIE_FIND_CB_END;
-
-=======
 	if (dwarf_tag(die_mem) == DW_TAG_member) {
 		if (die_compare_name(die_mem, name))
 			return DIE_FIND_CB_END;
@@ -1233,7 +1032,6 @@ static int __die_find_member_cb(Dwarf_Die *die_mem, void *data)
 				return DIE_FIND_CB_END;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return DIE_FIND_CB_SIBLING;
 }
 
@@ -1253,29 +1051,6 @@ Dwarf_Die *die_find_member(Dwarf_Die *st_die, const char *name,
 }
 
 /**
-<<<<<<< HEAD
- * die_get_typename - Get the name of given variable DIE
- * @vr_die: a variable DIE
- * @buf: a buffer for result type name
- * @len: a max-length of @buf
- *
- * Get the name of @vr_die and stores it to @buf. Return the actual length
- * of type name if succeeded. Return -E2BIG if @len is not enough long, and
- * Return -ENOENT if failed to find type name.
- * Note that the result will stores typedef name if possible, and stores
- * "*(function_type)" if the type is a function pointer.
- */
-int die_get_typename(Dwarf_Die *vr_die, char *buf, int len)
-{
-	Dwarf_Die type;
-	int tag, ret, ret2;
-	const char *tmp = "";
-
-	if (__die_get_real_type(vr_die, &type) == NULL)
-		return -ENOENT;
-
-	tag = dwarf_tag(&type);
-=======
  * die_get_typename_from_type - Get the name of given type DIE
  * @type_die: a type DIE
  * @buf: a strbuf for result type name
@@ -1291,39 +1066,18 @@ int die_get_typename_from_type(Dwarf_Die *type_die, struct strbuf *buf)
 	const char *tmp = "";
 
 	tag = dwarf_tag(type_die);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tag == DW_TAG_array_type || tag == DW_TAG_pointer_type)
 		tmp = "*";
 	else if (tag == DW_TAG_subroutine_type) {
 		/* Function pointer */
-<<<<<<< HEAD
-		ret = snprintf(buf, len, "(function_type)");
-		return (ret >= len) ? -E2BIG : ret;
-	} else {
-		if (!dwarf_diename(&type))
-			return -ENOENT;
-=======
 		return strbuf_add(buf, "(function_type)", 15);
 	} else {
 		const char *name = dwarf_diename(type_die);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tag == DW_TAG_union_type)
 			tmp = "union ";
 		else if (tag == DW_TAG_structure_type)
 			tmp = "struct ";
-<<<<<<< HEAD
-		/* Write a base name */
-		ret = snprintf(buf, len, "%s%s", tmp, dwarf_diename(&type));
-		return (ret >= len) ? -E2BIG : ret;
-	}
-	ret = die_get_typename(&type, buf, len);
-	if (ret > 0) {
-		ret2 = snprintf(buf + ret, len - ret, "%s", tmp);
-		ret = (ret2 >= len - ret) ? -E2BIG : ret2 + ret;
-	}
-	return ret;
-=======
 		else if (tag == DW_TAG_enumeration_type)
 			tmp = "enum ";
 		else if (name == NULL)
@@ -1360,36 +1114,11 @@ int die_get_typename(Dwarf_Die *vr_die, struct strbuf *buf)
 		return -ENOENT;
 
 	return die_get_typename_from_type(&type, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * die_get_varname - Get the name and type of given variable DIE
  * @vr_die: a variable DIE
-<<<<<<< HEAD
- * @buf: a buffer for type and variable name
- * @len: the max-length of @buf
- *
- * Get the name and type of @vr_die and stores it in @buf as "type\tname".
- */
-int die_get_varname(Dwarf_Die *vr_die, char *buf, int len)
-{
-	int ret, ret2;
-
-	ret = die_get_typename(vr_die, buf, len);
-	if (ret < 0) {
-		pr_debug("Failed to get type, make it unknown.\n");
-		ret = snprintf(buf, len, "(unknown_type)");
-	}
-	if (ret > 0) {
-		ret2 = snprintf(buf + ret, len - ret, "\t%s",
-				dwarf_diename(vr_die));
-		ret = (ret2 >= len - ret) ? -E2BIG : ret2 + ret;
-	}
-	return ret;
-}
-
-=======
  * @buf: a strbuf for type and variable name
  *
  * Get the name and type of @vr_die and stores it in @buf as "type\tname".
@@ -2050,4 +1779,3 @@ int die_get_scopes(Dwarf_Die *cu_die, Dwarf_Addr pc, Dwarf_Die **scopes)
 	*scopes = data.scopes;
 	return data.nr;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

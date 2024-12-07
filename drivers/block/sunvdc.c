@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sunvdc.c: Sun LDOM Virtual Disk Client.
  *
  * Copyright (C) 2007, 2008 David S. Miller <davem@davemloft.net>
@@ -10,15 +7,9 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/blkdev.h>
-#include <linux/hdreg.h>
-#include <linux/genhd.h>
-=======
 #include <linux/blk-mq.h>
 #include <linux/hdreg.h>
 #include <linux/cdrom.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/completion.h>
@@ -32,48 +23,32 @@
 
 #define DRV_MODULE_NAME		"sunvdc"
 #define PFX DRV_MODULE_NAME	": "
-<<<<<<< HEAD
-#define DRV_MODULE_VERSION	"1.0"
-#define DRV_MODULE_RELDATE	"June 25, 2007"
-
-static char version[] __devinitdata =
-	DRV_MODULE_NAME ".c:v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
-MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
-=======
 #define DRV_MODULE_VERSION	"1.2"
 #define DRV_MODULE_RELDATE	"November 24, 2014"
 
 static char version[] =
 	DRV_MODULE_NAME ".c:v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
 MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Sun LDOM virtual disk client driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
 
-<<<<<<< HEAD
-#define VDC_TX_RING_SIZE	256
-=======
 #define VDC_TX_RING_SIZE	512
 #define VDC_DEFAULT_BLK_SIZE	512
 
 #define MAX_XFER_BLKS		(128 * 1024)
 #define MAX_XFER_SIZE		(MAX_XFER_BLKS / VDC_DEFAULT_BLK_SIZE)
 #define MAX_RING_COOKIES	((MAX_XFER_BLKS / PAGE_SIZE) + 2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WAITING_FOR_LINK_UP	0x01
 #define WAITING_FOR_TX_SPACE	0x02
 #define WAITING_FOR_GEN_CMD	0x04
 #define WAITING_FOR_ANY		-1
 
-<<<<<<< HEAD
-=======
 #define	VDC_MAX_RETRIES	10
 
 static struct workqueue_struct *sunvdc_wq;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vdc_req_entry {
 	struct request		*req;
 };
@@ -93,14 +68,11 @@ struct vdc_port {
 
 	u64			max_xfer_size;
 	u32			vdisk_block_size;
-<<<<<<< HEAD
-=======
 	u32			drain;
 
 	u64			ldc_timeout;
 	struct delayed_work	ldc_reset_timer_work;
 	struct work_struct	ldc_reset_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The server fills these in for us in the disk attribute
 	 * ACK packet.
@@ -108,15 +80,6 @@ struct vdc_port {
 	u64			operations;
 	u32			vdisk_size;
 	u8			vdisk_type;
-<<<<<<< HEAD
-
-	char			disk_name[32];
-
-	struct vio_disk_geom	geom;
-	struct vio_disk_vtoc	label;
-};
-
-=======
 	u8			vdisk_mtype;
 	u32			vdisk_phys_blksz;
 
@@ -129,7 +92,6 @@ static void vdc_ldc_reset(struct vdc_port *port);
 static void vdc_ldc_reset_work(struct work_struct *work);
 static void vdc_ldc_reset_timer_work(struct work_struct *work);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct vdc_port *to_vdc_port(struct vio_driver_state *vio)
 {
 	return container_of(vio, struct vdc_port, vio);
@@ -137,11 +99,6 @@ static inline struct vdc_port *to_vdc_port(struct vio_driver_state *vio)
 
 /* Ordered from largest major to lowest */
 static struct vio_version vdc_versions[] = {
-<<<<<<< HEAD
-	{ .major = 1, .minor = 0 },
-};
-
-=======
 	{ .major = 1, .minor = 2 },
 	{ .major = 1, .minor = 1 },
 	{ .major = 1, .minor = 0 },
@@ -153,7 +110,6 @@ static inline int vdc_version_supported(struct vdc_port *port,
 	return port->vio.ver.major == major && port->vio.ver.minor >= minor;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VDCBLK_NAME	"vdisk"
 static int vdc_major;
 #define PARTITION_SHIFT	3
@@ -166,13 +122,6 @@ static inline u32 vdc_tx_dring_avail(struct vio_dring_state *dr)
 static int vdc_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 {
 	struct gendisk *disk = bdev->bd_disk;
-<<<<<<< HEAD
-	struct vdc_port *port = disk->private_data;
-
-	geo->heads = (u8) port->geom.num_hd;
-	geo->sectors = (u8) port->geom.num_sec;
-	geo->cylinders = port->geom.num_cyl;
-=======
 	sector_t nsect = get_capacity(disk);
 	sector_t cylinders = nsect;
 
@@ -182,18 +131,10 @@ static int vdc_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 	geo->cylinders = cylinders;
 	if ((sector_t)(geo->cylinders + 1) * geo->heads * geo->sectors < nsect)
 		geo->cylinders = 0xffff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct block_device_operations vdc_fops = {
-	.owner		= THIS_MODULE,
-	.getgeo		= vdc_getgeo,
-};
-
-=======
 /* Add ioctl/CDROM_GET_CAPABILITY to support cdrom_id in udev
  * when vdisk_mtype is VD_MEDIA_TYPE_CD or VD_MEDIA_TYPE_DVD.
  * Needed to be able to install inside an ldom from an iso image.
@@ -247,7 +188,6 @@ static void vdc_blk_queue_start(struct vdc_port *port)
 		blk_mq_start_stopped_hw_queues(port->disk->queue, true);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void vdc_finish(struct vio_driver_state *vio, int err, int waiting_for)
 {
 	if (vio->cmp &&
@@ -261,15 +201,11 @@ static void vdc_finish(struct vio_driver_state *vio, int err, int waiting_for)
 
 static void vdc_handshake_complete(struct vio_driver_state *vio)
 {
-<<<<<<< HEAD
-	vdc_finish(vio, 0, WAITING_FOR_LINK_UP);
-=======
 	struct vdc_port *port = to_vdc_port(vio);
 
 	cancel_delayed_work(&port->ldc_reset_timer_work);
 	vdc_finish(vio, 0, WAITING_FOR_LINK_UP);
 	vdc_blk_queue_start(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vdc_handle_unknown(struct vdc_port *port, void *arg)
@@ -313,15 +249,9 @@ static int vdc_handle_attr(struct vio_driver_state *vio, void *arg)
 	struct vio_disk_attr_info *pkt = arg;
 
 	viodbg(HS, "GOT ATTR stype[0x%x] ops[%llx] disk_size[%llu] disk_type[%x] "
-<<<<<<< HEAD
-	       "xfer_mode[0x%x] blksz[%u] max_xfer[%llu]\n",
-	       pkt->tag.stype, pkt->operations,
-	       pkt->vdisk_size, pkt->vdisk_type,
-=======
 	       "mtype[0x%x] xfer_mode[0x%x] blksz[%u] max_xfer[%llu]\n",
 	       pkt->tag.stype, pkt->operations,
 	       pkt->vdisk_size, pkt->vdisk_type, pkt->vdisk_mtype,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       pkt->xfer_mode, pkt->vdisk_block_size,
 	       pkt->max_xfer_size);
 
@@ -346,13 +276,6 @@ static int vdc_handle_attr(struct vio_driver_state *vio, void *arg)
 		}
 
 		port->operations = pkt->operations;
-<<<<<<< HEAD
-		port->vdisk_size = pkt->vdisk_size;
-		port->vdisk_type = pkt->vdisk_type;
-		if (pkt->max_xfer_size < port->max_xfer_size)
-			port->max_xfer_size = pkt->max_xfer_size;
-		port->vdisk_block_size = pkt->vdisk_block_size;
-=======
 		port->vdisk_type = pkt->vdisk_type;
 		if (vdc_version_supported(port, 1, 1)) {
 			port->vdisk_size = pkt->vdisk_size;
@@ -366,7 +289,6 @@ static int vdc_handle_attr(struct vio_driver_state *vio, void *arg)
 		if (vdc_version_supported(port, 1, 2))
 			port->vdisk_phys_blksz = pkt->phys_block_size;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	} else {
 		printk(KERN_ERR PFX "%s: Attribute NACK\n", vio->name);
@@ -394,11 +316,7 @@ static void vdc_end_one(struct vdc_port *port, struct vio_dring_state *dr,
 
 	ldc_unmap(port->vio.lp, desc->cookies, desc->ncookies);
 	desc->hdr.state = VIO_DESC_FREE;
-<<<<<<< HEAD
-	dr->cons = (index + 1) & (VDC_TX_RING_SIZE - 1);
-=======
 	dr->cons = vio_dring_next(dr, index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req = rqe->req;
 	if (req == NULL) {
@@ -408,16 +326,9 @@ static void vdc_end_one(struct vdc_port *port, struct vio_dring_state *dr,
 
 	rqe->req = NULL;
 
-<<<<<<< HEAD
-	__blk_end_request(req, (desc->status ? -EIO : 0), desc->size);
-
-	if (blk_queue_stopped(port->disk->queue))
-		blk_start_queue(port->disk->queue);
-=======
 	blk_mq_end_request(req, desc->status ? BLK_STS_IOERR : 0);
 
 	vdc_blk_queue_start(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vdc_ack(struct vdc_port *port, void *msgbuf)
@@ -450,19 +361,6 @@ static void vdc_event(void *arg, int event)
 
 	spin_lock_irqsave(&vio->lock, flags);
 
-<<<<<<< HEAD
-	if (unlikely(event == LDC_EVENT_RESET ||
-		     event == LDC_EVENT_UP)) {
-		vio_link_state_change(vio, event);
-		spin_unlock_irqrestore(&vio->lock, flags);
-		return;
-	}
-
-	if (unlikely(event != LDC_EVENT_DATA_READY)) {
-		printk(KERN_WARNING PFX "Unexpected LDC event %d\n", event);
-		spin_unlock_irqrestore(&vio->lock, flags);
-		return;
-=======
 	if (unlikely(event == LDC_EVENT_RESET)) {
 		vio_link_state_change(vio, event);
 		queue_work(sunvdc_wq, &port->ldc_reset_work);
@@ -477,7 +375,6 @@ static void vdc_event(void *arg, int event)
 	if (unlikely(event != LDC_EVENT_DATA_READY)) {
 		pr_warn(PFX "Unexpected LDC event %d\n", event);
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = 0;
@@ -521,10 +418,7 @@ static void vdc_event(void *arg, int event)
 	}
 	if (err < 0)
 		vdc_finish(&port->vio, err, WAITING_FOR_ANY);
-<<<<<<< HEAD
-=======
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&vio->lock, flags);
 }
 
@@ -543,10 +437,7 @@ static int __vdc_tx_trigger(struct vdc_port *port)
 		.end_idx		= dr->prod,
 	};
 	int err, delay;
-<<<<<<< HEAD
-=======
 	int retries = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdr.seq = dr->snd_nxt;
 	delay = 1;
@@ -559,31 +450,20 @@ static int __vdc_tx_trigger(struct vdc_port *port)
 		udelay(delay);
 		if ((delay <<= 1) > 128)
 			delay = 128;
-<<<<<<< HEAD
-	} while (err == -EAGAIN);
-
-=======
 		if (retries++ > VDC_MAX_RETRIES)
 			break;
 	} while (err == -EAGAIN);
 
 	if (err == -ENOTCONN)
 		vdc_ldc_reset(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int __send_request(struct request *req)
 {
-<<<<<<< HEAD
-	struct vdc_port *port = req->rq_disk->private_data;
-	struct vio_dring_state *dr = &port->vio.drings[VIO_DRIVER_TX_RING];
-	struct scatterlist sg[port->ring_cookies];
-=======
 	struct vdc_port *port = req->q->disk->private_data;
 	struct vio_dring_state *dr = &port->vio.drings[VIO_DRIVER_TX_RING];
 	struct scatterlist sg[MAX_RING_COOKIES];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vdc_req_entry *rqe;
 	struct vio_disk_desc *desc;
 	unsigned int map_perm;
@@ -591,12 +471,9 @@ static int __send_request(struct request *req)
 	u64 len;
 	u8 op;
 
-<<<<<<< HEAD
-=======
 	if (WARN_ON(port->ring_cookies > MAX_RING_COOKIES))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	map_perm = LDC_MAP_SHADOW | LDC_MAP_DIRECT | LDC_MAP_IO;
 
 	if (rq_data_dir(req) == READ) {
@@ -614,15 +491,6 @@ static int __send_request(struct request *req)
 	for (i = 0; i < nsg; i++)
 		len += sg[i].length;
 
-<<<<<<< HEAD
-	if (unlikely(vdc_tx_dring_avail(dr) < 1)) {
-		blk_stop_queue(port->disk->queue);
-		err = -ENOMEM;
-		goto out;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc = vio_dring_cur(dr);
 
 	err = ldc_map_sg(port->vio.lp, sg, nsg,
@@ -660,31 +528,12 @@ static int __send_request(struct request *req)
 		printk(KERN_ERR PFX "vdc_tx_trigger() failure, err=%d\n", err);
 	} else {
 		port->req_id++;
-<<<<<<< HEAD
-		dr->prod = (dr->prod + 1) & (VDC_TX_RING_SIZE - 1);
-	}
-out:
-=======
 		dr->prod = vio_dring_next(dr, dr->prod);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-static void do_vdc_request(struct request_queue *q)
-{
-	while (1) {
-		struct request *req = blk_fetch_request(q);
-
-		if (!req)
-			break;
-
-		if (__send_request(req) < 0)
-			__blk_end_request_all(req, -EIO);
-	}
-=======
 static blk_status_t vdc_queue_rq(struct blk_mq_hw_ctx *hctx,
 				 const struct blk_mq_queue_data *bd)
 {
@@ -719,7 +568,6 @@ static blk_status_t vdc_queue_rq(struct blk_mq_hw_ctx *hctx,
 
 	spin_unlock_irqrestore(&port->vio.lock, flags);
 	return BLK_STS_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int generic_request(struct vdc_port *port, u8 op, void *buf, int len)
@@ -789,12 +637,7 @@ static int generic_request(struct vdc_port *port, u8 op, void *buf, int len)
 	case VD_OP_GET_EFI:
 	case VD_OP_SET_EFI:
 		return -EOPNOTSUPP;
-<<<<<<< HEAD
-		break;
-	};
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	map_perm |= LDC_MAP_SHADOW | LDC_MAP_DIRECT | LDC_MAP_IO;
 
@@ -849,11 +692,7 @@ static int generic_request(struct vdc_port *port, u8 op, void *buf, int len)
 	err = __vdc_tx_trigger(port);
 	if (err >= 0) {
 		port->req_id++;
-<<<<<<< HEAD
-		dr->prod = (dr->prod + 1) & (VDC_TX_RING_SIZE - 1);
-=======
 		dr->prod = vio_dring_next(dr, dr->prod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&port->vio.lock, flags);
 
 		wait_for_completion(&comp.com);
@@ -871,11 +710,7 @@ static int generic_request(struct vdc_port *port, u8 op, void *buf, int len)
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit vdc_alloc_tx_ring(struct vdc_port *port)
-=======
 static int vdc_alloc_tx_ring(struct vdc_port *port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vio_dring_state *dr = &port->vio.drings[VIO_DRIVER_TX_RING];
 	unsigned long len, entry_size;
@@ -921,18 +756,9 @@ static void vdc_free_tx_ring(struct vdc_port *port)
 	}
 }
 
-<<<<<<< HEAD
-static int probe_disk(struct vdc_port *port)
-{
-	struct vio_completion comp;
-	struct request_queue *q;
-	struct gendisk *g;
-	int err;
-=======
 static int vdc_port_up(struct vdc_port *port)
 {
 	struct vio_completion comp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_completion(&comp.com);
 	comp.err = 0;
@@ -940,52 +766,6 @@ static int vdc_port_up(struct vdc_port *port)
 	port->vio.cmp = &comp;
 
 	vio_port_up(&port->vio);
-<<<<<<< HEAD
-
-	wait_for_completion(&comp.com);
-	if (comp.err)
-		return comp.err;
-
-	err = generic_request(port, VD_OP_GET_VTOC,
-			      &port->label, sizeof(port->label));
-	if (err < 0) {
-		printk(KERN_ERR PFX "VD_OP_GET_VTOC returns error %d\n", err);
-		return err;
-	}
-
-	err = generic_request(port, VD_OP_GET_DISKGEOM,
-			      &port->geom, sizeof(port->geom));
-	if (err < 0) {
-		printk(KERN_ERR PFX "VD_OP_GET_DISKGEOM returns "
-		       "error %d\n", err);
-		return err;
-	}
-
-	port->vdisk_size = ((u64)port->geom.num_cyl *
-			    (u64)port->geom.num_hd *
-			    (u64)port->geom.num_sec);
-
-	q = blk_init_queue(do_vdc_request, &port->vio.lock);
-	if (!q) {
-		printk(KERN_ERR PFX "%s: Could not allocate queue.\n",
-		       port->vio.name);
-		return -ENOMEM;
-	}
-	g = alloc_disk(1 << PARTITION_SHIFT);
-	if (!g) {
-		printk(KERN_ERR PFX "%s: Could not allocate gendisk.\n",
-		       port->vio.name);
-		blk_cleanup_queue(q);
-		return -ENOMEM;
-	}
-
-	port->disk = g;
-
-	blk_queue_max_segments(q, port->ring_cookies);
-	blk_queue_max_hw_sectors(q, port->max_xfer_size);
-	g->major = vdc_major;
-	g->first_minor = port->vio.vdev->dev_no << PARTITION_SHIFT;
-=======
 	wait_for_completion(&comp.com);
 	return comp.err;
 }
@@ -1066,25 +846,11 @@ static int probe_disk(struct vdc_port *port)
 	g->major = vdc_major;
 	g->first_minor = port->vio.vdev->dev_no << PARTITION_SHIFT;
 	g->minors = 1 << PARTITION_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcpy(g->disk_name, port->disk_name);
 
 	g->fops = &vdc_fops;
 	g->queue = q;
 	g->private_data = port;
-<<<<<<< HEAD
-	g->driverfs_dev = &port->vio.vdev->dev;
-
-	set_capacity(g, port->vdisk_size);
-
-	printk(KERN_INFO PFX "%s: %u sectors (%u MB)\n",
-	       g->disk_name,
-	       port->vdisk_size, (port->vdisk_size >> (20 - 9)));
-
-	add_disk(g);
-
-	return 0;
-=======
 
 	set_capacity(g, port->vdisk_size);
 
@@ -1124,7 +890,6 @@ out_cleanup_disk:
 out_free_tag:
 	blk_mq_free_tag_set(&port->tag_set);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct ldc_channel_config vdc_ldc_cfg = {
@@ -1139,11 +904,7 @@ static struct vio_driver_ops vdc_vio_ops = {
 	.handshake_complete	= vdc_handshake_complete,
 };
 
-<<<<<<< HEAD
-static void __devinit print_version(void)
-=======
 static void print_version(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int version_printed;
 
@@ -1151,10 +912,6 @@ static void print_version(void)
 		printk(KERN_INFO "%s", version);
 }
 
-<<<<<<< HEAD
-static int __devinit vdc_port_probe(struct vio_dev *vdev,
-				    const struct vio_device_id *id)
-=======
 struct vdc_check_port_data {
 	int	dev_no;
 	char	*type;
@@ -1206,24 +963,17 @@ static bool vdc_port_mpgroup_check(struct vio_dev *vdev)
 }
 
 static int vdc_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mdesc_handle *hp;
 	struct vdc_port *port;
 	int err;
-<<<<<<< HEAD
-=======
 	const u64 *ldc_timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	print_version();
 
 	hp = mdesc_grab();
-<<<<<<< HEAD
-=======
 	if (!hp)
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = -ENODEV;
 	if ((vdev->dev_no << PARTITION_SHIFT) & ~(u64)MINORMASK) {
@@ -1232,12 +982,6 @@ static int vdc_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 		goto err_out_release_mdesc;
 	}
 
-<<<<<<< HEAD
-	port = kzalloc(sizeof(*port), GFP_KERNEL);
-	err = -ENOMEM;
-	if (!port) {
-		printk(KERN_ERR PFX "Cannot allocate vdc_port.\n");
-=======
 	/* Check if this device is part of an mpgroup */
 	if (vdc_port_mpgroup_check(vdev)) {
 		printk(KERN_WARNING
@@ -1249,7 +993,6 @@ static int vdc_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 	port = kzalloc(sizeof(*port), GFP_KERNEL);
 	if (!port) {
 		err = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_release_mdesc;
 	}
 
@@ -1261,8 +1004,6 @@ static int vdc_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 	else
 		snprintf(port->disk_name, sizeof(port->disk_name),
 			 VDCBLK_NAME "%c", 'a' + ((int)vdev->dev_no % 26));
-<<<<<<< HEAD
-=======
 	port->vdisk_size = -1;
 
 	/* Actual wall time may be double due to do_generic_file_read() doing
@@ -1273,7 +1014,6 @@ static int vdc_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 	port->ldc_timeout = ldc_timeout ? *ldc_timeout : 0;
 	INIT_DELAYED_WORK(&port->ldc_reset_timer_work, vdc_ldc_reset_timer_work);
 	INIT_WORK(&port->ldc_reset_work, vdc_ldc_reset_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = vio_driver_init(&port->vio, vdev, VDEV_DISK,
 			      vdc_versions, ARRAY_SIZE(vdc_versions),
@@ -1281,16 +1021,9 @@ static int vdc_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 	if (err)
 		goto err_out_free_port;
 
-<<<<<<< HEAD
-	port->vdisk_block_size = 512;
-	port->max_xfer_size = ((128 * 1024) / port->vdisk_block_size);
-	port->ring_cookies = ((port->max_xfer_size *
-			       port->vdisk_block_size) / PAGE_SIZE) + 2;
-=======
 	port->vdisk_block_size = VDC_DEFAULT_BLK_SIZE;
 	port->max_xfer_size = MAX_XFER_SIZE;
 	port->ring_cookies = MAX_RING_COOKIES;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = vio_ldc_alloc(&port->vio, &vdc_ldc_cfg, port);
 	if (err)
@@ -1304,12 +1037,9 @@ static int vdc_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 	if (err)
 		goto err_out_free_tx_ring;
 
-<<<<<<< HEAD
-=======
 	/* Note that the device driver_data is used to determine
 	 * whether the port has been probed.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_drvdata(&vdev->dev, port);
 
 	mdesc_release(hp);
@@ -1330,19 +1060,11 @@ err_out_release_mdesc:
 	return err;
 }
 
-<<<<<<< HEAD
-static int vdc_port_remove(struct vio_dev *vdev)
-=======
 static void vdc_port_remove(struct vio_dev *vdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vdc_port *port = dev_get_drvdata(&vdev->dev);
 
 	if (port) {
-<<<<<<< HEAD
-		del_timer_sync(&port->vio.timer);
-
-=======
 		blk_mq_stop_hw_queues(port->disk->queue);
 
 		flush_work(&port->ldc_reset_work);
@@ -1353,7 +1075,6 @@ static void vdc_port_remove(struct vio_dev *vdev)
 		put_disk(port->disk);
 		blk_mq_free_tag_set(&port->tag_set);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vdc_free_tx_ring(port);
 		vio_ldc_free(&port->vio);
 
@@ -1361,9 +1082,6 @@ static void vdc_port_remove(struct vio_dev *vdev)
 
 		kfree(port);
 	}
-<<<<<<< HEAD
-	return 0;
-=======
 }
 
 static void vdc_requeue_inflight(struct vdc_port *port)
@@ -1474,7 +1192,6 @@ static void vdc_ldc_reset(struct vdc_port *port)
 
 err_free_ldc:
 	vio_ldc_free(&port->vio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct vio_device_id vdc_port_match[] = {
@@ -1496,11 +1213,6 @@ static int __init vdc_init(void)
 {
 	int err;
 
-<<<<<<< HEAD
-	err = register_blkdev(0, VDCBLK_NAME);
-	if (err < 0)
-		goto out_err;
-=======
 	sunvdc_wq = alloc_workqueue("sunvdc", 0, 0);
 	if (!sunvdc_wq)
 		return -ENOMEM;
@@ -1508,7 +1220,6 @@ static int __init vdc_init(void)
 	err = register_blkdev(0, VDCBLK_NAME);
 	if (err < 0)
 		goto out_free_wq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vdc_major = err;
 
@@ -1522,12 +1233,8 @@ out_unregister_blkdev:
 	unregister_blkdev(vdc_major, VDCBLK_NAME);
 	vdc_major = 0;
 
-<<<<<<< HEAD
-out_err:
-=======
 out_free_wq:
 	destroy_workqueue(sunvdc_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1535,10 +1242,7 @@ static void __exit vdc_exit(void)
 {
 	vio_unregister_driver(&vdc_port_driver);
 	unregister_blkdev(vdc_major, VDCBLK_NAME);
-<<<<<<< HEAD
-=======
 	destroy_workqueue(sunvdc_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(vdc_init);

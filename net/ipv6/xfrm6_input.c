@@ -1,19 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xfrm6_input.c: based on net/ipv4/xfrm4_input.c
  *
  * Authors:
  *	Mitsuru KANDA @USAGI
-<<<<<<< HEAD
- * 	Kazunori MIYAZAWA @USAGI
- * 	Kunihiro Ishiguro <kunihiro@ipinfusion.com>
-=======
  *	Kazunori MIYAZAWA @USAGI
  *	Kunihiro Ishiguro <kunihiro@ipinfusion.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	YOSHIFUJI Hideaki @USAGI
  *		IPv6 support
  */
@@ -24,16 +16,6 @@
 #include <linux/netfilter_ipv6.h>
 #include <net/ipv6.h>
 #include <net/xfrm.h>
-<<<<<<< HEAD
-
-int xfrm6_extract_input(struct xfrm_state *x, struct sk_buff *skb)
-{
-	return xfrm6_extract_header(skb);
-}
-
-int xfrm6_rcv_spi(struct sk_buff *skb, int nexthdr, __be32 spi)
-{
-=======
 #include <net/protocol.h>
 #include <net/gro.h>
 
@@ -41,17 +23,12 @@ int xfrm6_rcv_spi(struct sk_buff *skb, int nexthdr, __be32 spi,
 		  struct ip6_tnl *t)
 {
 	XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6 = t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	XFRM_SPI_SKB_CB(skb)->family = AF_INET6;
 	XFRM_SPI_SKB_CB(skb)->daddroff = offsetof(struct ipv6hdr, daddr);
 	return xfrm_input(skb, nexthdr, spi, 0);
 }
 EXPORT_SYMBOL(xfrm6_rcv_spi);
 
-<<<<<<< HEAD
-int xfrm6_transport_finish(struct sk_buff *skb, int async)
-{
-=======
 static int xfrm6_transport_finish2(struct net *net, struct sock *sk,
 				   struct sk_buff *skb)
 {
@@ -68,7 +45,6 @@ int xfrm6_transport_finish(struct sk_buff *skb, int async)
 	struct xfrm_offload *xo = xfrm_offload(skb);
 	int nhlen = -skb_network_offset(skb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_network_header(skb)[IP6CB(skb)->nhoff] =
 		XFRM_MODE_SKB_CB(skb)->protocol;
 
@@ -77,24 +53,6 @@ int xfrm6_transport_finish(struct sk_buff *skb, int async)
 		return 1;
 #endif
 
-<<<<<<< HEAD
-	ipv6_hdr(skb)->payload_len = htons(skb->len);
-	__skb_push(skb, skb->data - skb_network_header(skb));
-
-	NF_HOOK(NFPROTO_IPV6, NF_INET_PRE_ROUTING, skb, skb->dev, NULL,
-		ip6_rcv_finish);
-	return -1;
-}
-
-int xfrm6_rcv(struct sk_buff *skb)
-{
-	return xfrm6_rcv_spi(skb, skb_network_header(skb)[IP6CB(skb)->nhoff],
-			     0);
-}
-
-EXPORT_SYMBOL(xfrm6_rcv);
-
-=======
 	__skb_push(skb, nhlen);
 	ipv6_hdr(skb)->payload_len = htons(skb->len - sizeof(struct ipv6hdr));
 	skb_postpush_rcsum(skb, skb_network_header(skb), nhlen);
@@ -282,31 +240,11 @@ int xfrm6_rcv(struct sk_buff *skb)
 	return xfrm6_rcv_tnl(skb, NULL);
 }
 EXPORT_SYMBOL(xfrm6_rcv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xfrm6_input_addr(struct sk_buff *skb, xfrm_address_t *daddr,
 		     xfrm_address_t *saddr, u8 proto)
 {
 	struct net *net = dev_net(skb->dev);
 	struct xfrm_state *x = NULL;
-<<<<<<< HEAD
-	int i = 0;
-
-	/* Allocate new secpath or COW existing one. */
-	if (!skb->sp || atomic_read(&skb->sp->refcnt) != 1) {
-		struct sec_path *sp;
-
-		sp = secpath_dup(skb->sp);
-		if (!sp) {
-			XFRM_INC_STATS(net, LINUX_MIB_XFRMINERROR);
-			goto drop;
-		}
-		if (skb->sp)
-			secpath_put(skb->sp);
-		skb->sp = sp;
-	}
-
-	if (1 + skb->sp->len == XFRM_MAX_DEPTH) {
-=======
 	struct sec_path *sp;
 	int i = 0;
 
@@ -317,7 +255,6 @@ int xfrm6_input_addr(struct sk_buff *skb, xfrm_address_t *daddr,
 	}
 
 	if (1 + sp->len == XFRM_MAX_DEPTH) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		XFRM_INC_STATS(net, LINUX_MIB_XFRMINBUFFERERROR);
 		goto drop;
 	}
@@ -369,11 +306,7 @@ int xfrm6_input_addr(struct sk_buff *skb, xfrm_address_t *daddr,
 		goto drop;
 	}
 
-<<<<<<< HEAD
-	skb->sp->xvec[skb->sp->len++] = x;
-=======
 	sp->xvec[sp->len++] = x;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&x->lock);
 
@@ -387,8 +320,4 @@ int xfrm6_input_addr(struct sk_buff *skb, xfrm_address_t *daddr,
 drop:
 	return -1;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(xfrm6_input_addr);

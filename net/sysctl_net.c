@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*-
  * sysctl_net.c: sysctl interface to net subsystem.
  *
@@ -30,21 +27,10 @@
 #include <linux/if_ether.h>
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_TR
-#include <linux/if_tr.h>
-#endif
-
-static struct ctl_table_set *
-net_ctl_header_lookup(struct ctl_table_root *root, struct nsproxy *namespaces)
-{
-	return &namespaces->net_ns->sysctls;
-=======
 static struct ctl_table_set *
 net_ctl_header_lookup(struct ctl_table_root *root)
 {
 	return &current->nsproxy->net_ns->sysctls;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int is_seen(struct ctl_table_set *set)
@@ -53,36 +39,6 @@ static int is_seen(struct ctl_table_set *set)
 }
 
 /* Return standard mode bits for table entry. */
-<<<<<<< HEAD
-static int net_ctl_permissions(struct ctl_table_root *root,
-			       struct nsproxy *nsproxy,
-			       struct ctl_table *table)
-{
-	/* Allow network administrator to have same access as root. */
-	if (capable(CAP_NET_ADMIN)) {
-		int mode = (table->mode >> 6) & 7;
-		return (mode << 6) | (mode << 3) | mode;
-	}
-	return table->mode;
-}
-
-static struct ctl_table_root net_sysctl_root = {
-	.lookup = net_ctl_header_lookup,
-	.permissions = net_ctl_permissions,
-};
-
-static int net_ctl_ro_header_perms(struct ctl_table_root *root,
-		struct nsproxy *namespaces, struct ctl_table *table)
-{
-	if (net_eq(namespaces->net_ns, &init_net))
-		return table->mode;
-	else
-		return table->mode & ~0222;
-}
-
-static struct ctl_table_root net_sysctl_ro_root = {
-	.permissions = net_ctl_ro_header_perms,
-=======
 static int net_ctl_permissions(struct ctl_table_header *head,
 			       struct ctl_table *table)
 {
@@ -118,7 +74,6 @@ static struct ctl_table_root net_sysctl_root = {
 	.lookup = net_ctl_header_lookup,
 	.permissions = net_ctl_permissions,
 	.set_ownership = net_ctl_set_ownership,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __net_init sysctl_net_init(struct net *net)
@@ -137,36 +92,6 @@ static struct pernet_operations sysctl_pernet_ops = {
 	.exit = sysctl_net_exit,
 };
 
-<<<<<<< HEAD
-static __init int net_sysctl_init(void)
-{
-	int ret;
-	ret = register_pernet_subsys(&sysctl_pernet_ops);
-	if (ret)
-		goto out;
-	setup_sysctl_set(&net_sysctl_ro_root.default_set, &net_sysctl_ro_root, NULL);
-	register_sysctl_root(&net_sysctl_ro_root);
-	register_sysctl_root(&net_sysctl_root);
-out:
-	return ret;
-}
-subsys_initcall(net_sysctl_init);
-
-struct ctl_table_header *register_net_sysctl_table(struct net *net,
-	const struct ctl_path *path, struct ctl_table *table)
-{
-	return __register_sysctl_paths(&net->sysctls, path, table);
-}
-EXPORT_SYMBOL_GPL(register_net_sysctl_table);
-
-struct ctl_table_header *register_net_sysctl_rotable(const
-		struct ctl_path *path, struct ctl_table *table)
-{
-	return __register_sysctl_paths(&net_sysctl_ro_root.default_set,
-					path, table);
-}
-EXPORT_SYMBOL_GPL(register_net_sysctl_rotable);
-=======
 static struct ctl_table_header *net_header;
 __init int net_sysctl_init(void)
 {
@@ -254,7 +179,6 @@ struct ctl_table_header *register_net_sysctl_sz(struct net *net,
 	return __register_sysctl_table(&net->sysctls, path, table, count);
 }
 EXPORT_SYMBOL_GPL(register_net_sysctl_sz);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void unregister_net_sysctl_table(struct ctl_table_header *header)
 {

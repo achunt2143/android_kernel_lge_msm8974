@@ -1,23 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap1/serial.c
  *
  * OMAP1 serial support.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#include <linux/gpio.h>
-=======
  */
 #include <linux/gpio/machine.h>
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -32,19 +20,11 @@
 
 #include <asm/mach-types.h>
 
-<<<<<<< HEAD
-#include <plat/board.h>
-#include <plat/mux.h>
-#include <plat/fpga.h>
-
-#include "pm.h"
-=======
 #include "common.h"
 #include "serial.h"
 #include "mux.h"
 #include "pm.h"
 #include "soc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct clk * uart1_ck;
 static struct clk * uart2_ck;
@@ -128,16 +108,6 @@ void __init omap_serial_init(void)
 {
 	int i;
 
-<<<<<<< HEAD
-	if (cpu_is_omap7xx()) {
-		serial_platform_data[0].regshift = 0;
-		serial_platform_data[1].regshift = 0;
-		serial_platform_data[0].irq = INT_7XX_UART_MODEM_1;
-		serial_platform_data[1].irq = INT_7XX_UART_MODEM_IRDA_2;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cpu_is_omap15xx()) {
 		serial_platform_data[0].uartclk = OMAP1510_BASE_BAUD * 16;
 		serial_platform_data[1].uartclk = OMAP1510_BASE_BAUD * 16;
@@ -145,17 +115,6 @@ void __init omap_serial_init(void)
 	}
 
 	for (i = 0; i < ARRAY_SIZE(serial_platform_data) - 1; i++) {
-<<<<<<< HEAD
-
-		/* Don't look at UARTs higher than 2 for omap7xx */
-		if (cpu_is_omap7xx() && i > 1) {
-			serial_platform_data[i].membase = NULL;
-			serial_platform_data[i].mapbase = 0;
-			continue;
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Static mapping, never released */
 		serial_platform_data[i].membase =
 			ioremap(serial_platform_data[i].mapbase, SZ_2K);
@@ -169,11 +128,7 @@ void __init omap_serial_init(void)
 			if (IS_ERR(uart1_ck))
 				printk("Could not get uart1_ck\n");
 			else {
-<<<<<<< HEAD
-				clk_enable(uart1_ck);
-=======
 				clk_prepare_enable(uart1_ck);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (cpu_is_omap15xx())
 					clk_set_rate(uart1_ck, 12000000);
 			}
@@ -183,11 +138,7 @@ void __init omap_serial_init(void)
 			if (IS_ERR(uart2_ck))
 				printk("Could not get uart2_ck\n");
 			else {
-<<<<<<< HEAD
-				clk_enable(uart2_ck);
-=======
 				clk_prepare_enable(uart2_ck);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (cpu_is_omap15xx())
 					clk_set_rate(uart2_ck, 12000000);
 				else
@@ -199,11 +150,7 @@ void __init omap_serial_init(void)
 			if (IS_ERR(uart3_ck))
 				printk("Could not get uart3_ck\n");
 			else {
-<<<<<<< HEAD
-				clk_enable(uart3_ck);
-=======
 				clk_prepare_enable(uart3_ck);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (cpu_is_omap15xx())
 					clk_set_rate(uart3_ck, 12000000);
 			}
@@ -251,31 +198,6 @@ void omap_serial_wake_trigger(int enable)
 	}
 }
 
-<<<<<<< HEAD
-static void __init omap_serial_set_port_wakeup(int gpio_nr)
-{
-	int ret;
-
-	ret = gpio_request(gpio_nr, "UART wake");
-	if (ret < 0) {
-		printk(KERN_ERR "Could not request UART wake GPIO: %i\n",
-		       gpio_nr);
-		return;
-	}
-	gpio_direction_input(gpio_nr);
-	ret = request_irq(gpio_to_irq(gpio_nr), &omap_serial_wake_interrupt,
-			  IRQF_TRIGGER_RISING, "serial wakeup", NULL);
-	if (ret) {
-		gpio_free(gpio_nr);
-		printk(KERN_ERR "No interrupt for UART wake GPIO: %i\n",
-		       gpio_nr);
-		return;
-	}
-	enable_irq_wake(gpio_to_irq(gpio_nr));
-}
-
-static int __init omap_serial_wakeup_init(void)
-=======
 static void __init omap_serial_set_port_wakeup(int idx)
 {
 	struct gpio_desc *d;
@@ -298,23 +220,11 @@ static void __init omap_serial_set_port_wakeup(int idx)
 
 
 int __init omap_serial_wakeup_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!cpu_is_omap16xx())
 		return 0;
 
 	if (uart1_ck != NULL)
-<<<<<<< HEAD
-		omap_serial_set_port_wakeup(37);
-	if (uart2_ck != NULL)
-		omap_serial_set_port_wakeup(18);
-	if (uart3_ck != NULL)
-		omap_serial_set_port_wakeup(49);
-
-	return 0;
-}
-late_initcall(omap_serial_wakeup_init);
-=======
 		omap_serial_set_port_wakeup(0);
 	if (uart2_ck != NULL)
 		omap_serial_set_port_wakeup(1);
@@ -323,7 +233,6 @@ late_initcall(omap_serial_wakeup_init);
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* CONFIG_OMAP_SERIAL_WAKE */
 

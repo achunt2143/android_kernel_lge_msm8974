@@ -1,14 +1,6 @@
-<<<<<<< HEAD
-/*
- *  drivers/s390/char/sclp_config.c
- *
- *    Copyright IBM Corp. 2007
- *    Author(s): Heiko Carstens <heiko.carstens@de.ibm.com>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  *    Copyright IBM Corp. 2007
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT "sclp_config"
@@ -19,11 +11,8 @@
 #include <linux/cpu.h>
 #include <linux/device.h>
 #include <linux/workqueue.h>
-<<<<<<< HEAD
-=======
 #include <linux/slab.h>
 #include <linux/sysfs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/smp.h>
 
 #include "sclp.h"
@@ -33,10 +22,6 @@ struct conf_mgm_data {
 	u8 ev_qualifier;
 } __attribute__((packed));
 
-<<<<<<< HEAD
-#define EV_QUAL_CPU_CHANGE	1
-#define EV_QUAL_CAP_CHANGE	3
-=======
 #define OFB_DATA_MAX 64
 
 struct sclp_ofb_evbuf {
@@ -53,7 +38,6 @@ struct sclp_ofb_sccb {
 #define EV_QUAL_CPU_CHANGE	1
 #define EV_QUAL_CAP_CHANGE	3
 #define EV_QUAL_OPEN4BUSINESS	5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct work_struct sclp_cpu_capability_work;
 static struct work_struct sclp_cpu_change_work;
@@ -63,35 +47,21 @@ static void sclp_cpu_capability_notify(struct work_struct *work)
 	int cpu;
 	struct device *dev;
 
-<<<<<<< HEAD
-	s390_adjust_jiffies();
-	pr_warning("cpu capability changed.\n");
-	get_online_cpus();
-=======
 	s390_update_cpu_mhz();
 	pr_info("CPU capability may have changed\n");
 	cpus_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for_each_online_cpu(cpu) {
 		dev = get_cpu_device(cpu);
 		kobject_uevent(&dev->kobj, KOBJ_CHANGE);
 	}
-<<<<<<< HEAD
-	put_online_cpus();
-=======
 	cpus_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __ref sclp_cpu_change_notify(struct work_struct *work)
 {
-<<<<<<< HEAD
-	smp_rescan_cpus();
-=======
 	lock_device_hotplug();
 	smp_rescan_cpus();
 	unlock_device_hotplug();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sclp_conf_receiver_fn(struct evbuf_header *evbuf)
@@ -111,23 +81,13 @@ static void sclp_conf_receiver_fn(struct evbuf_header *evbuf)
 
 static struct sclp_register sclp_conf_register =
 {
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SCLP_OFB
 	.send_mask    = EVTYP_CONFMGMDATA_MASK,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.receive_mask = EVTYP_CONFMGMDATA_MASK,
 	.receiver_fn  = sclp_conf_receiver_fn,
 };
 
-<<<<<<< HEAD
-static int __init sclp_conf_init(void)
-{
-	INIT_WORK(&sclp_cpu_capability_work, sclp_cpu_capability_notify);
-	INIT_WORK(&sclp_cpu_change_work, sclp_cpu_change_notify);
-	return sclp_register(&sclp_conf_register);
-=======
 #ifdef CONFIG_SCLP_OFB
 static int sclp_ofb_send_req(char *ev_data, size_t len)
 {
@@ -214,7 +174,6 @@ static int __init sclp_conf_init(void)
 	if (rc)
 		return rc;
 	return sclp_ofb_setup();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __initcall(sclp_conf_init);

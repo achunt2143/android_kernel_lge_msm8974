@@ -1,28 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ------------------------------------------------------------------------- */
 /* i2c-iop3xx.c i2c driver algorithms for Intel XScale IOP3xx & IXP46x       */
 /* ------------------------------------------------------------------------- */
 /* Copyright (C) 2003 Peter Milne, D-TACQ Solutions Ltd
  *                    <Peter dot Milne at D hyphen TACQ dot com>
  *
-<<<<<<< HEAD
- * With acknowledgements to i2c-algo-ibm_ocp.c by 
-=======
  * With acknowledgements to i2c-algo-ibm_ocp.c by
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Ian DaSilva, MontaVista Software, Inc. idasilva@mvista.com
  *
  * And i2c-algo-pcf.c, which was created by Simon G. Vogl and Hans Berglund:
  *
  * Copyright (C) 1995-1997 Simon G. Vogl, 1998-2000 Hans Berglund
-<<<<<<< HEAD
- *  
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * And which acknowledged Kyösti Mälkki <kmalkki@cc.hut.fi>,
  * Frodo Looijaard <frodol@dds.nl>, Martin Bailey<mbailey@littlefeet-inc.com>
  *
@@ -35,13 +24,6 @@
  *
  * - writing to slave address causes latchup on iop331.
  *	fix: driver refuses to address self.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/interrupt.h>
@@ -49,40 +31,17 @@
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/platform_device.h>
 #include <linux/i2c.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "i2c-iop3xx.h"
 
 /* global unit counter */
 static int i2c_id;
 
-<<<<<<< HEAD
-static inline unsigned char 
-iic_cook_addr(struct i2c_msg *msg) 
-{
-	unsigned char addr;
-
-	addr = (msg->addr << 1);
-
-	if (msg->flags & I2C_M_RD)
-		addr |= 1;
-
-	return addr;   
-}
-
-static void 
-=======
 static inline unsigned char
 iic_cook_addr(struct i2c_msg *msg)
 {
@@ -94,43 +53,19 @@ iic_cook_addr(struct i2c_msg *msg)
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iop3xx_i2c_reset(struct i2c_algo_iop3xx_data *iop3xx_adap)
 {
 	/* Follows devman 9.3 */
 	__raw_writel(IOP3XX_ICR_UNIT_RESET, iop3xx_adap->ioaddr + CR_OFFSET);
 	__raw_writel(IOP3XX_ISR_CLEARBITS, iop3xx_adap->ioaddr + SR_OFFSET);
 	__raw_writel(0, iop3xx_adap->ioaddr + CR_OFFSET);
-<<<<<<< HEAD
-} 
-
-static void 
-=======
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iop3xx_i2c_enable(struct i2c_algo_iop3xx_data *iop3xx_adap)
 {
 	u32 cr = IOP3XX_ICR_GCD | IOP3XX_ICR_SCLEN | IOP3XX_ICR_UE;
 
-<<<<<<< HEAD
-	/* 
-	 * Every time unit enable is asserted, GPOD needs to be cleared
-	 * on IOP3XX to avoid data corruption on the bus.
-	 */
-#if defined(CONFIG_ARCH_IOP32X) || defined(CONFIG_ARCH_IOP33X)
-	if (iop3xx_adap->id == 0) {
-		gpio_line_set(IOP3XX_GPIO_LINE(7), GPIO_LOW);
-		gpio_line_set(IOP3XX_GPIO_LINE(6), GPIO_LOW);
-	} else {
-		gpio_line_set(IOP3XX_GPIO_LINE(5), GPIO_LOW);
-		gpio_line_set(IOP3XX_GPIO_LINE(4), GPIO_LOW);
-	}
-#endif
-	/* NB SR bits not same position as CR IE bits :-( */
-	iop3xx_adap->SR_enabled = 
-=======
 	/*
 	 * Every time unit enable is asserted, GPOD needs to be cleared
 	 * on IOP3XX to avoid data corruption on the bus. We use the
@@ -145,7 +80,6 @@ iop3xx_i2c_enable(struct i2c_algo_iop3xx_data *iop3xx_adap)
 
 	/* NB SR bits not same position as CR IE bits :-( */
 	iop3xx_adap->SR_enabled =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		IOP3XX_ISR_ALD | IOP3XX_ISR_BERRD |
 		IOP3XX_ISR_RXFULL | IOP3XX_ISR_TXEMPTY;
 
@@ -155,41 +89,23 @@ iop3xx_i2c_enable(struct i2c_algo_iop3xx_data *iop3xx_adap)
 	__raw_writel(cr, iop3xx_adap->ioaddr + CR_OFFSET);
 }
 
-<<<<<<< HEAD
-static void 
-iop3xx_i2c_transaction_cleanup(struct i2c_algo_iop3xx_data *iop3xx_adap)
-{
-	unsigned long cr = __raw_readl(iop3xx_adap->ioaddr + CR_OFFSET);
-	
-	cr &= ~(IOP3XX_ICR_MSTART | IOP3XX_ICR_TBYTE | 
-=======
 static void
 iop3xx_i2c_transaction_cleanup(struct i2c_algo_iop3xx_data *iop3xx_adap)
 {
 	unsigned long cr = __raw_readl(iop3xx_adap->ioaddr + CR_OFFSET);
 
 	cr &= ~(IOP3XX_ICR_MSTART | IOP3XX_ICR_TBYTE |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		IOP3XX_ICR_MSTOP | IOP3XX_ICR_SCLEN);
 
 	__raw_writel(cr, iop3xx_adap->ioaddr + CR_OFFSET);
 }
 
-<<<<<<< HEAD
-/* 
- * NB: the handler has to clear the source of the interrupt! 
- * Then it passes the SR flags of interest to BH via adap data
- */
-static irqreturn_t 
-iop3xx_i2c_irq_handler(int this_irq, void *dev_id) 
-=======
 /*
  * NB: the handler has to clear the source of the interrupt!
  * Then it passes the SR flags of interest to BH via adap data
  */
 static irqreturn_t
 iop3xx_i2c_irq_handler(int this_irq, void *dev_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i2c_algo_iop3xx_data *iop3xx_adap = dev_id;
 	u32 sr = __raw_readl(iop3xx_adap->ioaddr + SR_OFFSET);
@@ -203,27 +119,12 @@ iop3xx_i2c_irq_handler(int this_irq, void *dev_id)
 }
 
 /* check all error conditions, clear them , report most important */
-<<<<<<< HEAD
-static int 
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iop3xx_i2c_error(u32 sr)
 {
 	int rc = 0;
 
 	if ((sr & IOP3XX_ISR_BERRD)) {
-<<<<<<< HEAD
-		if ( !rc ) rc = -I2C_ERR_BERR;
-	}
-	if ((sr & IOP3XX_ISR_ALD)) {
-		if ( !rc ) rc = -I2C_ERR_ALD;		
-	}
-	return rc;	
-}
-
-static inline u32 
-=======
 		if (!rc)
 			rc = -I2C_ERR_BERR;
 	}
@@ -235,7 +136,6 @@ static inline u32
 }
 
 static inline u32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iop3xx_i2c_get_srstat(struct i2c_algo_iop3xx_data *iop3xx_adap)
 {
 	unsigned long flags;
@@ -253,21 +153,12 @@ iop3xx_i2c_get_srstat(struct i2c_algo_iop3xx_data *iop3xx_adap)
  * sleep until interrupted, then recover and analyse the SR
  * saved by handler
  */
-<<<<<<< HEAD
-typedef int (* compare_func)(unsigned test, unsigned mask);
-/* returns 1 on correct comparison */
-
-static int 
-iop3xx_i2c_wait_event(struct i2c_algo_iop3xx_data *iop3xx_adap, 
-			  unsigned flags, unsigned* status,
-=======
 typedef int (*compare_func)(unsigned test, unsigned mask);
 /* returns 1 on correct comparison */
 
 static int
 iop3xx_i2c_wait_event(struct i2c_algo_iop3xx_data *iop3xx_adap,
 			  unsigned flags, unsigned *status,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  compare_func compare)
 {
 	unsigned sr = 0;
@@ -278,13 +169,8 @@ iop3xx_i2c_wait_event(struct i2c_algo_iop3xx_data *iop3xx_adap,
 	do {
 		interrupted = wait_event_interruptible_timeout (
 			iop3xx_adap->waitq,
-<<<<<<< HEAD
-			(done = compare( sr = iop3xx_i2c_get_srstat(iop3xx_adap) ,flags )),
-			1 * HZ;
-=======
 			(done = compare(sr = iop3xx_i2c_get_srstat(iop3xx_adap), flags)),
 			1 * HZ
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			);
 		if ((rc = iop3xx_i2c_error(sr)) < 0) {
 			*status = sr;
@@ -293,11 +179,7 @@ iop3xx_i2c_wait_event(struct i2c_algo_iop3xx_data *iop3xx_adap,
 			*status = sr;
 			return -ETIMEDOUT;
 		}
-<<<<<<< HEAD
-	} while(!done);
-=======
 	} while (!done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*status = sr;
 
@@ -305,46 +187,20 @@ iop3xx_i2c_wait_event(struct i2c_algo_iop3xx_data *iop3xx_adap,
 }
 
 /*
-<<<<<<< HEAD
- * Concrete compare_funcs 
- */
-static int 
-=======
  * Concrete compare_funcs
  */
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 all_bits_clear(unsigned test, unsigned mask)
 {
 	return (test & mask) == 0;
 }
 
-<<<<<<< HEAD
-static int 
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 any_bits_set(unsigned test, unsigned mask)
 {
 	return (test & mask) != 0;
 }
 
-<<<<<<< HEAD
-static int 
-iop3xx_i2c_wait_tx_done(struct i2c_algo_iop3xx_data *iop3xx_adap, int *status)
-{
-	return iop3xx_i2c_wait_event( 
-		iop3xx_adap, 
-	        IOP3XX_ISR_TXEMPTY | IOP3XX_ISR_ALD | IOP3XX_ISR_BERRD,
-		status, any_bits_set);
-}
-
-static int 
-iop3xx_i2c_wait_rx_done(struct i2c_algo_iop3xx_data *iop3xx_adap, int *status)
-{
-	return iop3xx_i2c_wait_event( 
-		iop3xx_adap, 
-=======
 static int
 iop3xx_i2c_wait_tx_done(struct i2c_algo_iop3xx_data *iop3xx_adap, int *status)
 {
@@ -359,23 +215,10 @@ iop3xx_i2c_wait_rx_done(struct i2c_algo_iop3xx_data *iop3xx_adap, int *status)
 {
 	return iop3xx_i2c_wait_event(
 		iop3xx_adap,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		IOP3XX_ISR_RXFULL | IOP3XX_ISR_ALD | IOP3XX_ISR_BERRD,
 		status,	any_bits_set);
 }
 
-<<<<<<< HEAD
-static int 
-iop3xx_i2c_wait_idle(struct i2c_algo_iop3xx_data *iop3xx_adap, int *status)
-{
-	return iop3xx_i2c_wait_event( 
-		iop3xx_adap, IOP3XX_ISR_UNITBUSY, status, all_bits_clear);
-}
-
-static int 
-iop3xx_i2c_send_target_addr(struct i2c_algo_iop3xx_data *iop3xx_adap, 
-				struct i2c_msg* msg)
-=======
 static int
 iop3xx_i2c_wait_idle(struct i2c_algo_iop3xx_data *iop3xx_adap, int *status)
 {
@@ -386,7 +229,6 @@ iop3xx_i2c_wait_idle(struct i2c_algo_iop3xx_data *iop3xx_adap, int *status)
 static int
 iop3xx_i2c_send_target_addr(struct i2c_algo_iop3xx_data *iop3xx_adap,
 				struct i2c_msg *msg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long cr = __raw_readl(iop3xx_adap->ioaddr + CR_OFFSET);
 	int status;
@@ -400,11 +242,7 @@ iop3xx_i2c_send_target_addr(struct i2c_algo_iop3xx_data *iop3xx_adap,
 	}
 
 	__raw_writel(iic_cook_addr(msg), iop3xx_adap->ioaddr + DBR_OFFSET);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cr &= ~(IOP3XX_ICR_MSTOP | IOP3XX_ICR_NACK);
 	cr |= IOP3XX_ICR_MSTART | IOP3XX_ICR_TBYTE;
 
@@ -414,13 +252,8 @@ iop3xx_i2c_send_target_addr(struct i2c_algo_iop3xx_data *iop3xx_adap,
 	return rc;
 }
 
-<<<<<<< HEAD
-static int 
-iop3xx_i2c_write_byte(struct i2c_algo_iop3xx_data *iop3xx_adap, char byte, 
-=======
 static int
 iop3xx_i2c_write_byte(struct i2c_algo_iop3xx_data *iop3xx_adap, char byte,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				int stop)
 {
 	unsigned long cr = __raw_readl(iop3xx_adap->ioaddr + CR_OFFSET);
@@ -439,17 +272,10 @@ iop3xx_i2c_write_byte(struct i2c_algo_iop3xx_data *iop3xx_adap, char byte,
 	rc = iop3xx_i2c_wait_tx_done(iop3xx_adap, &status);
 
 	return rc;
-<<<<<<< HEAD
-} 
-
-static int 
-iop3xx_i2c_read_byte(struct i2c_algo_iop3xx_data *iop3xx_adap, char* byte, 
-=======
 }
 
 static int
 iop3xx_i2c_read_byte(struct i2c_algo_iop3xx_data *iop3xx_adap, char *byte,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				int stop)
 {
 	unsigned long cr = __raw_readl(iop3xx_adap->ioaddr + CR_OFFSET);
@@ -473,32 +299,19 @@ iop3xx_i2c_read_byte(struct i2c_algo_iop3xx_data *iop3xx_adap, char *byte,
 	return rc;
 }
 
-<<<<<<< HEAD
-static int 
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iop3xx_i2c_writebytes(struct i2c_adapter *i2c_adap, const char *buf, int count)
 {
 	struct i2c_algo_iop3xx_data *iop3xx_adap = i2c_adap->algo_data;
 	int ii;
 	int rc = 0;
 
-<<<<<<< HEAD
-	for (ii = 0; rc == 0 && ii != count; ++ii) 
-		rc = iop3xx_i2c_write_byte(iop3xx_adap, buf[ii], ii==count-1);
-	return rc;
-}
-
-static int 
-=======
 	for (ii = 0; rc == 0 && ii != count; ++ii)
 		rc = iop3xx_i2c_write_byte(iop3xx_adap, buf[ii], ii == count-1);
 	return rc;
 }
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iop3xx_i2c_readbytes(struct i2c_adapter *i2c_adap, char *buf, int count)
 {
 	struct i2c_algo_iop3xx_data *iop3xx_adap = i2c_adap->algo_data;
@@ -506,13 +319,8 @@ iop3xx_i2c_readbytes(struct i2c_adapter *i2c_adap, char *buf, int count)
 	int rc = 0;
 
 	for (ii = 0; rc == 0 && ii != count; ++ii)
-<<<<<<< HEAD
-		rc = iop3xx_i2c_read_byte(iop3xx_adap, &buf[ii], ii==count-1);
-	
-=======
 		rc = iop3xx_i2c_read_byte(iop3xx_adap, &buf[ii], ii == count-1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -523,13 +331,8 @@ iop3xx_i2c_readbytes(struct i2c_adapter *i2c_adap, char *buf, int count)
  * Each transfer (i.e. a read or a write) is separated by a repeated start
  * condition.
  */
-<<<<<<< HEAD
-static int 
-iop3xx_i2c_handle_msg(struct i2c_adapter *i2c_adap, struct i2c_msg* pmsg) 
-=======
 static int
 iop3xx_i2c_handle_msg(struct i2c_adapter *i2c_adap, struct i2c_msg *pmsg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i2c_algo_iop3xx_data *iop3xx_adap = i2c_adap->algo_data;
 	int rc;
@@ -549,13 +352,8 @@ iop3xx_i2c_handle_msg(struct i2c_adapter *i2c_adap, struct i2c_msg *pmsg)
 /*
  * master_xfer() - main read/write entry
  */
-<<<<<<< HEAD
-static int 
-iop3xx_i2c_master_xfer(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs, 
-=======
 static int
 iop3xx_i2c_master_xfer(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				int num)
 {
 	struct i2c_algo_iop3xx_data *iop3xx_adap = i2c_adap->algo_data;
@@ -572,16 +370,6 @@ iop3xx_i2c_master_xfer(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs,
 	}
 
 	iop3xx_i2c_transaction_cleanup(iop3xx_adap);
-<<<<<<< HEAD
-	
-	if(ret)
-		return ret;
-
-	return im;   
-}
-
-static u32 
-=======
 
 	if (ret)
 		return ret;
@@ -590,7 +378,6 @@ static u32
 }
 
 static u32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iop3xx_i2c_func(struct i2c_adapter *adap)
 {
 	return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL;
@@ -601,19 +388,11 @@ static const struct i2c_algorithm iop3xx_i2c_algo = {
 	.functionality	= iop3xx_i2c_func,
 };
 
-<<<<<<< HEAD
-static int 
-iop3xx_i2c_remove(struct platform_device *pdev)
-{
-	struct i2c_adapter *padapter = platform_get_drvdata(pdev);
-	struct i2c_algo_iop3xx_data *adapter_data = 
-=======
 static void
 iop3xx_i2c_remove(struct platform_device *pdev)
 {
 	struct i2c_adapter *padapter = platform_get_drvdata(pdev);
 	struct i2c_algo_iop3xx_data *adapter_data =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(struct i2c_algo_iop3xx_data *)padapter->algo_data;
 	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	unsigned long cr = __raw_readl(adapter_data->ioaddr + CR_OFFSET);
@@ -629,19 +408,9 @@ iop3xx_i2c_remove(struct platform_device *pdev)
 	release_mem_region(res->start, IOP3XX_I2C_IO_SIZE);
 	kfree(adapter_data);
 	kfree(padapter);
-<<<<<<< HEAD
-
-	platform_set_drvdata(pdev, NULL);
-
-	return 0;
-}
-
-static int 
-=======
 }
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iop3xx_i2c_probe(struct platform_device *pdev)
 {
 	struct resource *res;
@@ -661,8 +430,6 @@ iop3xx_i2c_probe(struct platform_device *pdev)
 		goto free_adapter;
 	}
 
-<<<<<<< HEAD
-=======
 	adapter_data->gpio_scl = devm_gpiod_get_optional(&pdev->dev,
 							 "scl",
 							 GPIOD_ASIS);
@@ -678,7 +445,6 @@ iop3xx_i2c_probe(struct platform_device *pdev)
 		goto free_both;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		ret = -ENODEV;
@@ -701,27 +467,12 @@ iop3xx_i2c_probe(struct platform_device *pdev)
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
-<<<<<<< HEAD
-		ret = -ENXIO;
-=======
 		ret = irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unmap;
 	}
 	ret = request_irq(irq, iop3xx_i2c_irq_handler, 0,
 				pdev->name, adapter_data);
 
-<<<<<<< HEAD
-	if (ret) {
-		ret = -EIO;
-		goto unmap;
-	}
-
-	memcpy(new_adapter->name, pdev->name, strlen(pdev->name));
-	new_adapter->owner = THIS_MODULE;
-	new_adapter->class = I2C_CLASS_HWMON | I2C_CLASS_SPD;
-	new_adapter->dev.parent = &pdev->dev;
-=======
 	if (ret)
 		goto unmap;
 
@@ -730,7 +481,6 @@ iop3xx_i2c_probe(struct platform_device *pdev)
 	new_adapter->class = I2C_CLASS_HWMON;
 	new_adapter->dev.parent = &pdev->dev;
 	new_adapter->dev.of_node = pdev->dev.of_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new_adapter->nr = pdev->id;
 
 	/*
@@ -768,15 +518,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-
-static struct platform_driver iop3xx_i2c_driver = {
-	.probe		= iop3xx_i2c_probe,
-	.remove		= iop3xx_i2c_remove,
-	.driver		= {
-		.owner	= THIS_MODULE,
-		.name	= "IOP3xx-I2C",
-=======
 static const struct of_device_id i2c_iop3xx_match[] = {
 	{ .compatible = "intel,iop3xx-i2c", },
 	{ .compatible = "intel,ixp4xx-i2c", },
@@ -790,7 +531,6 @@ static struct platform_driver iop3xx_i2c_driver = {
 	.driver		= {
 		.name	= "IOP3xx-I2C",
 		.of_match_table = i2c_iop3xx_match,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

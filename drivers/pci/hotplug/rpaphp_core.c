@@ -1,67 +1,34 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCI Hot Plug Controller Driver for RPA-compliant PPC64 platform.
  * Copyright (C) 2003 Linda Xie <lxie@us.ibm.com>
  *
  * All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- * NON INFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <lxie@us.ibm.com>
  *
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/pci_hotplug.h>
 #include <linux/smp.h>
 #include <linux/init.h>
 #include <linux/vmalloc.h>
-<<<<<<< HEAD
-#include <asm/eeh.h>       /* for eeh_add_device() */
-#include <asm/rtas.h>		/* rtas_call */
-#include <asm/pci-bridge.h>	/* for pci_controller */
-=======
 #include <asm/firmware.h>
 #include <asm/eeh.h>       /* for eeh_add_device() */
 #include <asm/rtas.h>		/* rtas_call */
 #include <asm/pci-bridge.h>	/* for pci_controller */
 #include <asm/prom.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "../pci.h"		/* for pci_add_new_bus */
 				/* and pci_do_scan_bus */
 #include "rpaphp.h"
 
 bool rpaphp_debug;
 LIST_HEAD(rpaphp_slot_head);
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(rpaphp_slot_head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_VERSION	"0.1"
 #define DRIVER_AUTHOR	"Linda Xie <lxie@us.ibm.com>"
@@ -87,11 +54,7 @@ module_param_named(debug, rpaphp_debug, bool, 0644);
 static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 value)
 {
 	int rc;
-<<<<<<< HEAD
-	struct slot *slot = (struct slot *)hotplug_slot->private;
-=======
 	struct slot *slot = to_slot(hotplug_slot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (value) {
 	case 0:
@@ -105,11 +68,7 @@ static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 value)
 
 	rc = rtas_set_indicator(DR_INDICATOR, slot->index, value);
 	if (!rc)
-<<<<<<< HEAD
-		hotplug_slot->info->attention_status = value;
-=======
 		slot->attention_status = value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -119,21 +78,12 @@ static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 value)
  * @hotplug_slot: slot to get status
  * @value: pointer to store status
  */
-<<<<<<< HEAD
-static int get_power_status(struct hotplug_slot *hotplug_slot, u8 * value)
-{
-	int retval, level;
-	struct slot *slot = (struct slot *)hotplug_slot->private;
-
-	retval = rtas_get_power_level (slot->power_domain, &level);
-=======
 static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
 	int retval, level;
 	struct slot *slot = to_slot(hotplug_slot);
 
 	retval = rtas_get_power_level(slot->power_domain, &level);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!retval)
 		*value = level;
 	return retval;
@@ -144,18 +94,6 @@ static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
  * @hotplug_slot: slot to get status
  * @value: pointer to store status
  */
-<<<<<<< HEAD
-static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 * value)
-{
-	struct slot *slot = (struct slot *)hotplug_slot->private;
-	*value = slot->hotplug_slot->info->attention_status;
-	return 0;
-}
-
-static int get_adapter_status(struct hotplug_slot *hotplug_slot, u8 * value)
-{
-	struct slot *slot = (struct slot *)hotplug_slot->private;
-=======
 static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
 	struct slot *slot = to_slot(hotplug_slot);
@@ -166,7 +104,6 @@ static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
 static int get_adapter_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
 	struct slot *slot = to_slot(hotplug_slot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc, state;
 
 	rc = rpaphp_get_sensor_state(slot, &state);
@@ -219,19 +156,11 @@ static enum pci_bus_speed get_max_bus_speed(struct slot *slot)
 	return speed;
 }
 
-<<<<<<< HEAD
-static int get_children_props(struct device_node *dn, const int **drc_indexes,
-		const int **drc_names, const int **drc_types,
-		const int **drc_power_domains)
-{
-	const int *indexes, *names, *types, *domains;
-=======
 static int get_children_props(struct device_node *dn, const __be32 **drc_indexes,
 			      const __be32 **drc_names, const __be32 **drc_types,
 			      const __be32 **drc_power_domains)
 {
 	const __be32 *indexes, *names, *types, *domains;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	indexes = of_get_property(dn, "ibm,drc-indexes", NULL);
 	names = of_get_property(dn, "ibm,drc-names", NULL);
@@ -256,26 +185,6 @@ static int get_children_props(struct device_node *dn, const __be32 **drc_indexes
 	return 0;
 }
 
-<<<<<<< HEAD
-/* To get the DRC props describing the current node, first obtain it's
- * my-drc-index property.  Next obtain the DRC list from it's parent.  Use
- * the my-drc-index for correlation, and obtain the requested properties.
- */
-int rpaphp_get_drc_props(struct device_node *dn, int *drc_index,
-		char **drc_name, char **drc_type, int *drc_power_domain)
-{
-	const int *indexes, *names;
-	const int *types, *domains;
-	const unsigned int *my_index;
-	char *name_tmp, *type_tmp;
-	int i, rc;
-
-	my_index = of_get_property(dn, "ibm,my-drc-index", NULL);
-	if (!my_index) {
-		/* Node isn't DLPAR/hotplug capable */
-		return -EINVAL;
-	}
-=======
 
 /* Verify the existence of 'drc_name' and/or 'drc_type' within the
  * current node.  First obtain its my-drc-index property.  Next,
@@ -290,7 +199,6 @@ static int rpaphp_check_drc_props_v1(struct device_node *dn, char *drc_name,
 	const __be32 *indexes, *names;
 	const __be32 *types, *domains;
 	int i, rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = get_children_props(dn->parent, &indexes, &names, &types, &domains);
 	if (rc < 0) {
@@ -301,41 +209,14 @@ static int rpaphp_check_drc_props_v1(struct device_node *dn, char *drc_name,
 	type_tmp = (char *) &types[1];
 
 	/* Iterate through parent properties, looking for my-drc-index */
-<<<<<<< HEAD
-	for (i = 0; i < indexes[0]; i++) {
-		if ((unsigned int) indexes[i + 1] == *my_index) {
-			if (drc_name)
-                		*drc_name = name_tmp;
-			if (drc_type)
-				*drc_type = type_tmp;
-			if (drc_index)
-				*drc_index = *my_index;
-			if (drc_power_domain)
-				*drc_power_domain = domains[i+1];
-			return 0;
-		}
-=======
 	for (i = 0; i < be32_to_cpu(indexes[0]); i++) {
 		if (be32_to_cpu(indexes[i + 1]) == my_index)
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		name_tmp += (strlen(name_tmp) + 1);
 		type_tmp += (strlen(type_tmp) + 1);
 	}
 
-<<<<<<< HEAD
-	return -EINVAL;
-}
-
-static int is_php_type(char *drc_type)
-{
-	unsigned long value;
-	char *endptr;
-
-	/* PCI Hotplug nodes have an integer for drc_type */
-	value = simple_strtoul(drc_type, &endptr, 10);
-=======
 	if (((drc_name == NULL) || (drc_name && !strcmp(drc_name, name_tmp))) &&
 	    ((drc_type == NULL) || (drc_type && !strcmp(drc_type, type_tmp))))
 		return 0;
@@ -413,7 +294,6 @@ static int is_php_type(char *drc_type)
 
 	/* PCI Hotplug nodes have an integer for drc_type */
 	simple_strtoul(drc_type, &endptr, 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (endptr == drc_type)
 		return 0;
 
@@ -433,18 +313,11 @@ static int is_php_type(char *drc_type)
  * for built-in pci slots (even when the built-in slots are
  * dlparable.)
  */
-<<<<<<< HEAD
-static int is_php_dn(struct device_node *dn, const int **indexes,
-		const int **names, const int **types, const int **power_domains)
-{
-	const int *drc_types;
-=======
 static int is_php_dn(struct device_node *dn, const __be32 **indexes,
 		     const __be32 **names, const __be32 **types,
 		     const __be32 **power_domains)
 {
 	const __be32 *drc_types;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = get_children_props(dn, indexes, names, &drc_types, power_domains);
@@ -458,25 +331,6 @@ static int is_php_dn(struct device_node *dn, const __be32 **indexes,
 	return 1;
 }
 
-<<<<<<< HEAD
-/**
- * rpaphp_add_slot -- declare a hotplug slot to the hotplug subsystem.
- * @dn: device node of slot
- *
- * This subroutine will register a hotplugable slot with the
- * PCI hotplug infrastructure. This routine is typically called
- * during boot time, if the hotplug slots are present at boot time,
- * or is called later, by the dlpar add code, if the slot is
- * being dynamically added during runtime.
- *
- * If the device node points at an embedded (built-in) slot, this
- * routine will just return without doing anything, since embedded
- * slots cannot be hotplugged.
- *
- * To remove a slot, it suffices to call rpaphp_deregister_slot().
- */
-int rpaphp_add_slot(struct device_node *dn)
-=======
 static int rpaphp_drc_info_add_slot(struct device_node *dn)
 {
 	struct slot *slot;
@@ -519,61 +373,35 @@ static int rpaphp_drc_info_add_slot(struct device_node *dn)
 }
 
 static int rpaphp_drc_add_slot(struct device_node *dn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slot *slot;
 	int retval = 0;
 	int i;
-<<<<<<< HEAD
-	const int *indexes, *names, *types, *power_domains;
-	char *name, *type;
-
-	if (!dn->name || strcmp(dn->name, "pci"))
-		return 0;
-
-=======
 	const __be32 *indexes, *names, *types, *power_domains;
 	char *name, *type;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If this is not a hotplug slot, return without doing anything. */
 	if (!is_php_dn(dn, &indexes, &names, &types, &power_domains))
 		return 0;
 
-<<<<<<< HEAD
-	dbg("Entry %s: dn->full_name=%s\n", __func__, dn->full_name);
-=======
 	dbg("Entry %s: dn=%pOF\n", __func__, dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* register PCI devices */
 	name = (char *) &names[1];
 	type = (char *) &types[1];
-<<<<<<< HEAD
-	for (i = 0; i < indexes[0]; i++) {
-
-		slot = alloc_slot_struct(dn, indexes[i + 1], name, power_domains[i + 1]);
-=======
 	for (i = 0; i < be32_to_cpu(indexes[0]); i++) {
 		int index;
 
 		index = be32_to_cpu(indexes[i + 1]);
 		slot = alloc_slot_struct(dn, index, name,
 					 be32_to_cpu(power_domains[i + 1]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!slot)
 			return -ENOMEM;
 
 		slot->type = simple_strtoul(type, NULL, 10);
-<<<<<<< HEAD
-				
-		dbg("Found drc-index:0x%x drc-name:%s drc-type:%s\n",
-				indexes[i + 1], name, type);
-=======
 
 		dbg("Found drc-index:0x%x drc-name:%s drc-type:%s\n",
 				index, name, type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		retval = rpaphp_enable_slot(slot);
 		if (!retval)
@@ -591,12 +419,6 @@ static int rpaphp_drc_add_slot(struct device_node *dn)
 	return retval;
 }
 
-<<<<<<< HEAD
-static void __exit cleanup_slots(void)
-{
-	struct list_head *tmp, *n;
-	struct slot *slot;
-=======
 /**
  * rpaphp_add_slot -- declare a hotplug slot to the hotplug subsystem.
  * @dn: device node of slot
@@ -628,22 +450,10 @@ EXPORT_SYMBOL_GPL(rpaphp_add_slot);
 static void __exit cleanup_slots(void)
 {
 	struct slot *slot, *next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Unregister all of our slots with the pci_hotplug subsystem,
 	 * and free up all memory that we had allocated.
-<<<<<<< HEAD
-	 * memory will be freed in release_slot callback. 
-	 */
-
-	list_for_each_safe(tmp, n, &rpaphp_slot_head) {
-		slot = list_entry(tmp, struct slot, rpaphp_slot_list);
-		list_del(&slot->rpaphp_slot_list);
-		pci_hp_deregister(slot->hotplug_slot);
-	}
-	return;
-=======
 	 */
 
 	list_for_each_entry_safe(slot, next, &rpaphp_slot_head,
@@ -652,24 +462,15 @@ static void __exit cleanup_slots(void)
 		pci_hp_deregister(&slot->hotplug_slot);
 		dealloc_slot_struct(slot);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init rpaphp_init(void)
 {
-<<<<<<< HEAD
-	struct device_node *dn = NULL;
-
-	info(DRIVER_DESC " version: " DRIVER_VERSION "\n");
-
-	while ((dn = of_find_node_by_name(dn, "pci")))
-=======
 	struct device_node *dn;
 
 	info(DRIVER_DESC " version: " DRIVER_VERSION "\n");
 
 	for_each_node_by_name(dn, "pci")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rpaphp_add_slot(dn);
 
 	return 0;
@@ -682,11 +483,7 @@ static void __exit rpaphp_exit(void)
 
 static int enable_slot(struct hotplug_slot *hotplug_slot)
 {
-<<<<<<< HEAD
-	struct slot *slot = (struct slot *)hotplug_slot->private;
-=======
 	struct slot *slot = to_slot(hotplug_slot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int state;
 	int retval;
 
@@ -698,15 +495,11 @@ static int enable_slot(struct hotplug_slot *hotplug_slot)
 		return retval;
 
 	if (state == PRESENT) {
-<<<<<<< HEAD
-		pcibios_add_pci_devices(slot->bus);
-=======
 		pseries_eeh_init_edev_recursive(PCI_DN(slot->dn));
 
 		pci_lock_rescan_remove();
 		pci_hp_add_devices(slot->bus);
 		pci_unlock_rescan_remove();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		slot->state = CONFIGURED;
 	} else if (state == EMPTY) {
 		slot->state = EMPTY;
@@ -722,13 +515,6 @@ static int enable_slot(struct hotplug_slot *hotplug_slot)
 
 static int disable_slot(struct hotplug_slot *hotplug_slot)
 {
-<<<<<<< HEAD
-	struct slot *slot = (struct slot *)hotplug_slot->private;
-	if (slot->state == NOT_CONFIGURED)
-		return -EINVAL;
-
-	pcibios_remove_pci_devices(slot->bus);
-=======
 	struct slot *slot = to_slot(hotplug_slot);
 	if (slot->state == NOT_CONFIGURED)
 		return -EINVAL;
@@ -736,18 +522,13 @@ static int disable_slot(struct hotplug_slot *hotplug_slot)
 	pci_lock_rescan_remove();
 	pci_hp_remove_devices(slot->bus);
 	pci_unlock_rescan_remove();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vm_unmap_aliases();
 
 	slot->state = NOT_CONFIGURED;
 	return 0;
 }
 
-<<<<<<< HEAD
-struct hotplug_slot_ops rpaphp_hotplug_slot_ops = {
-=======
 const struct hotplug_slot_ops rpaphp_hotplug_slot_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable_slot = enable_slot,
 	.disable_slot = disable_slot,
 	.set_attention_status = set_attention_status,
@@ -758,10 +539,3 @@ const struct hotplug_slot_ops rpaphp_hotplug_slot_ops = {
 
 module_init(rpaphp_init);
 module_exit(rpaphp_exit);
-<<<<<<< HEAD
-
-EXPORT_SYMBOL_GPL(rpaphp_add_slot);
-EXPORT_SYMBOL_GPL(rpaphp_slot_head);
-EXPORT_SYMBOL_GPL(rpaphp_get_drc_props);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

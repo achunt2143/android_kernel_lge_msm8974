@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/
 
 /*
@@ -17,11 +14,6 @@
 #define	FEC_H
 /****************************************************************************/
 
-<<<<<<< HEAD
-#if defined(CONFIG_M523x) || defined(CONFIG_M527x) || defined(CONFIG_M528x) || \
-    defined(CONFIG_M520x) || defined(CONFIG_M532x) || \
-    defined(CONFIG_ARCH_MXC) || defined(CONFIG_SOC_IMX28)
-=======
 #include <linux/clocksource.h>
 #include <linux/net_tstamp.h>
 #include <linux/pm_qos.h>
@@ -35,7 +27,6 @@
 #if defined(CONFIG_M523x) || defined(CONFIG_M527x) || defined(CONFIG_M528x) || \
     defined(CONFIG_M520x) || defined(CONFIG_M532x) || defined(CONFIG_ARM) || \
     defined(CONFIG_ARM64) || defined(CONFIG_COMPILE_TEST)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Just figures, Motorola would have to change the offsets for
  *	registers in the same peripheral device on different models
@@ -43,13 +34,8 @@
  */
 #define FEC_IEVENT		0x004 /* Interrupt event reg */
 #define FEC_IMASK		0x008 /* Interrupt mask reg */
-<<<<<<< HEAD
-#define FEC_R_DES_ACTIVE	0x010 /* Receive descriptor reg */
-#define FEC_X_DES_ACTIVE	0x014 /* Transmit descriptor reg */
-=======
 #define FEC_R_DES_ACTIVE_0	0x010 /* Receive descriptor reg */
 #define FEC_X_DES_ACTIVE_0	0x014 /* Transmit descriptor reg */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FEC_ECNTRL		0x024 /* Ethernet control reg */
 #define FEC_MII_DATA		0x040 /* MII manage frame reg */
 #define FEC_MII_SPEED		0x044 /* MII speed control reg */
@@ -59,15 +45,12 @@
 #define FEC_ADDR_LOW		0x0e4 /* Low 32bits MAC address */
 #define FEC_ADDR_HIGH		0x0e8 /* High 16bits MAC address */
 #define FEC_OPD			0x0ec /* Opcode + Pause duration */
-<<<<<<< HEAD
-=======
 #define FEC_TXIC0		0x0f0 /* Tx Interrupt Coalescing for ring 0 */
 #define FEC_TXIC1		0x0f4 /* Tx Interrupt Coalescing for ring 1 */
 #define FEC_TXIC2		0x0f8 /* Tx Interrupt Coalescing for ring 2 */
 #define FEC_RXIC0		0x100 /* Rx Interrupt Coalescing for ring 0 */
 #define FEC_RXIC1		0x104 /* Rx Interrupt Coalescing for ring 1 */
 #define FEC_RXIC2		0x108 /* Rx Interrupt Coalescing for ring 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FEC_HASH_TABLE_HIGH	0x118 /* High 32bits hash table */
 #define FEC_HASH_TABLE_LOW	0x11c /* Low 32bits hash table */
 #define FEC_GRP_HASH_TABLE_HIGH	0x120 /* High 32bits hash table */
@@ -75,11 +58,6 @@
 #define FEC_X_WMRK		0x144 /* FIFO transmit water mark */
 #define FEC_R_BOUND		0x14c /* FIFO receive bound reg */
 #define FEC_R_FSTART		0x150 /* FIFO receive start reg */
-<<<<<<< HEAD
-#define FEC_R_DES_START		0x180 /* Receive descriptor ring */
-#define FEC_X_DES_START		0x184 /* Transmit descriptor ring */
-#define FEC_R_BUFF_SIZE		0x188 /* Maximum receive buff size */
-=======
 #define FEC_R_DES_START_1	0x160 /* Receive descriptor ring 1 */
 #define FEC_X_DES_START_1	0x164 /* Transmit descriptor ring 1 */
 #define FEC_R_BUFF_SIZE_1	0x168 /* Maximum receive buff ring1 size */
@@ -106,7 +84,6 @@
 #define FEC_QOS_SCHEME		0x1f0 /* Set multi queues Qos scheme */
 #define FEC_LPI_SLEEP		0x1f4 /* Set IEEE802.3az LPI Sleep Ts time */
 #define FEC_LPI_WAKE		0x1f8 /* Set IEEE802.3az LPI Wake Tw time */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FEC_MIIGSK_CFGR		0x300 /* MIIGSK Configuration reg */
 #define FEC_MIIGSK_ENR		0x308 /* MIIGSK Enable reg */
 
@@ -114,8 +91,6 @@
 #define BM_MIIGSK_CFGR_RMII		0x01
 #define BM_MIIGSK_CFGR_FRCONT_10M	0x40
 
-<<<<<<< HEAD
-=======
 #define RMON_T_DROP		0x200 /* Count of frames not cntd correctly */
 #define RMON_T_PACKETS		0x204 /* RMON TX packet count */
 #define RMON_T_BC_PKT		0x208 /* RMON TX broadcast pkts */
@@ -171,24 +146,18 @@
 #define IEEE_R_FDXFC		0x2dc /* Flow control pause frames rx'd */
 #define IEEE_R_OCTETS_OK	0x2e0 /* Octet cnt for frames rx'd w/o err */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 
 #define FEC_ECNTRL		0x000 /* Ethernet control reg */
 #define FEC_IEVENT		0x004 /* Interrupt even reg */
 #define FEC_IMASK		0x008 /* Interrupt mask reg */
 #define FEC_IVEC		0x00c /* Interrupt vec status reg */
-<<<<<<< HEAD
-#define FEC_R_DES_ACTIVE	0x010 /* Receive descriptor reg */
-#define FEC_X_DES_ACTIVE	0x014 /* Transmit descriptor reg */
-=======
 #define FEC_R_DES_ACTIVE_0	0x010 /* Receive descriptor reg */
 #define FEC_R_DES_ACTIVE_1	FEC_R_DES_ACTIVE_0
 #define FEC_R_DES_ACTIVE_2	FEC_R_DES_ACTIVE_0
 #define FEC_X_DES_ACTIVE_0	0x014 /* Transmit descriptor reg */
 #define FEC_X_DES_ACTIVE_1	FEC_X_DES_ACTIVE_0
 #define FEC_X_DES_ACTIVE_2	FEC_X_DES_ACTIVE_0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FEC_MII_DATA		0x040 /* MII manage frame reg */
 #define FEC_MII_SPEED		0x044 /* MII speed control reg */
 #define FEC_R_BOUND		0x08c /* FIFO receive bound reg */
@@ -202,13 +171,6 @@
 #define FEC_ADDR_HIGH		0x3c4 /* High 16bits MAC address */
 #define FEC_GRP_HASH_TABLE_HIGH	0x3c8 /* High 32bits hash table */
 #define FEC_GRP_HASH_TABLE_LOW	0x3cc /* Low 32bits hash table */
-<<<<<<< HEAD
-#define FEC_R_DES_START		0x3d0 /* Receive descriptor ring */
-#define FEC_X_DES_START		0x3d4 /* Transmit descriptor ring */
-#define FEC_R_BUFF_SIZE		0x3d8 /* Maximum receive buff size */
-#define FEC_FIFO_RAM		0x400 /* FIFO RAM buffer */
-
-=======
 #define FEC_R_DES_START_0	0x3d0 /* Receive descriptor ring */
 #define FEC_R_DES_START_1	FEC_R_DES_START_0
 #define FEC_R_DES_START_2	FEC_R_DES_START_0
@@ -234,29 +196,11 @@
 #define FEC_RXIC2		0xfff
 #define FEC_LPI_SLEEP		0xfff
 #define FEC_LPI_WAKE		0xfff
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_M5272 */
 
 
 /*
  *	Define the buffer descriptor structure.
-<<<<<<< HEAD
- */
-#if defined(CONFIG_ARCH_MXC) || defined(CONFIG_SOC_IMX28)
-struct bufdesc {
-	unsigned short cbd_datlen;	/* Data length */
-	unsigned short cbd_sc;	/* Control and status info */
-	unsigned long cbd_bufaddr;	/* Buffer address */
-};
-#else
-struct bufdesc {
-	unsigned short	cbd_sc;			/* Control and status info */
-	unsigned short	cbd_datlen;		/* Data length */
-	unsigned long	cbd_bufaddr;		/* Buffer address */
-};
-#endif
-
-=======
  *
  *	Evidently, ARM SoCs have the FEC block generated in a
  *	little endian mode so adjust endianness accordingly.
@@ -298,59 +242,10 @@ struct bufdesc_ex {
 	__fec16 res0[4];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	The following definitions courtesy of commproc.h, which where
  *	Copyright (c) 1997 Dan Malek (dmalek@jlc.net).
  */
-<<<<<<< HEAD
-#define BD_SC_EMPTY     ((ushort)0x8000)        /* Receive is empty */
-#define BD_SC_READY     ((ushort)0x8000)        /* Transmit is ready */
-#define BD_SC_WRAP      ((ushort)0x2000)        /* Last buffer descriptor */
-#define BD_SC_INTRPT    ((ushort)0x1000)        /* Interrupt on change */
-#define BD_SC_CM        ((ushort)0x0200)        /* Continuous mode */
-#define BD_SC_ID        ((ushort)0x0100)        /* Rec'd too many idles */
-#define BD_SC_P         ((ushort)0x0100)        /* xmt preamble */
-#define BD_SC_BR        ((ushort)0x0020)        /* Break received */
-#define BD_SC_FR        ((ushort)0x0010)        /* Framing error */
-#define BD_SC_PR        ((ushort)0x0008)        /* Parity error */
-#define BD_SC_OV        ((ushort)0x0002)        /* Overrun */
-#define BD_SC_CD        ((ushort)0x0001)        /* ?? */
-
-/* Buffer descriptor control/status used by Ethernet receive.
-*/
-#define BD_ENET_RX_EMPTY        ((ushort)0x8000)
-#define BD_ENET_RX_WRAP         ((ushort)0x2000)
-#define BD_ENET_RX_INTR         ((ushort)0x1000)
-#define BD_ENET_RX_LAST         ((ushort)0x0800)
-#define BD_ENET_RX_FIRST        ((ushort)0x0400)
-#define BD_ENET_RX_MISS         ((ushort)0x0100)
-#define BD_ENET_RX_LG           ((ushort)0x0020)
-#define BD_ENET_RX_NO           ((ushort)0x0010)
-#define BD_ENET_RX_SH           ((ushort)0x0008)
-#define BD_ENET_RX_CR           ((ushort)0x0004)
-#define BD_ENET_RX_OV           ((ushort)0x0002)
-#define BD_ENET_RX_CL           ((ushort)0x0001)
-#define BD_ENET_RX_STATS        ((ushort)0x013f)        /* All status bits */
-
-/* Buffer descriptor control/status used by Ethernet transmit.
-*/
-#define BD_ENET_TX_READY        ((ushort)0x8000)
-#define BD_ENET_TX_PAD          ((ushort)0x4000)
-#define BD_ENET_TX_WRAP         ((ushort)0x2000)
-#define BD_ENET_TX_INTR         ((ushort)0x1000)
-#define BD_ENET_TX_LAST         ((ushort)0x0800)
-#define BD_ENET_TX_TC           ((ushort)0x0400)
-#define BD_ENET_TX_DEF          ((ushort)0x0200)
-#define BD_ENET_TX_HB           ((ushort)0x0100)
-#define BD_ENET_TX_LC           ((ushort)0x0080)
-#define BD_ENET_TX_RL           ((ushort)0x0040)
-#define BD_ENET_TX_RCMASK       ((ushort)0x003c)
-#define BD_ENET_TX_UN           ((ushort)0x0002)
-#define BD_ENET_TX_CSL          ((ushort)0x0001)
-#define BD_ENET_TX_STATS        ((ushort)0x03ff)        /* All status bits */
-
-=======
 #define BD_SC_EMPTY	((ushort)0x8000)	/* Receive is empty */
 #define BD_SC_READY	((ushort)0x8000)	/* Transmit is ready */
 #define BD_SC_WRAP	((ushort)0x2000)	/* Last buffer descriptor */
@@ -805,7 +700,6 @@ void fec_ptp_start_cyclecounter(struct net_device *ndev);
 int fec_ptp_set(struct net_device *ndev, struct kernel_hwtstamp_config *config,
 		struct netlink_ext_ack *extack);
 void fec_ptp_get(struct net_device *ndev, struct kernel_hwtstamp_config *config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /****************************************************************************/
 #endif /* FEC_H */

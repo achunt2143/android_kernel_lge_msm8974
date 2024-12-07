@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/linkage.h>
 
@@ -9,11 +6,8 @@
 #include <asm/asm-offsets.h>
 #include <asm/errno.h>
 #include <asm/thread_info.h>
-<<<<<<< HEAD
-=======
 #include <asm/uaccess-asm.h>
 #include <asm/v7m.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 @ Bad Abort numbers
 @ -----------------
@@ -45,16 +39,6 @@
 #endif
 	.endm
 
-<<<<<<< HEAD
-	.macro	alignment_trap, rtemp
-#ifdef CONFIG_ALIGNMENT_TRAP
-	ldr	\rtemp, .LCcralign
-	ldr	\rtemp, [\rtemp]
-	mcr	p15, 0, \rtemp, c1, c0
-#endif
-	.endm
-
-=======
 #ifdef CONFIG_ALIGNMENT_TRAP
 #define ATRAP(x...) x
 #else
@@ -185,7 +169,6 @@
 	.endm
 #endif	/* CONFIG_CPU_V7M */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	@
 	@ Store/load the USER SP and LR registers by switching to the SYS
 	@ mode. Useful in Thumb-2 mode where "stm/ldm rd, {sp, lr}^" is not
@@ -215,10 +198,6 @@
 	msr	cpsr_c, \rtemp			@ switch back to the SVC mode
 	.endm
 
-<<<<<<< HEAD
-#ifndef CONFIG_THUMB2_KERNEL
-	.macro	svc_exit, rpsr
-=======
 
 	.macro	svc_exit, rpsr, irq = 0
 	.if	\irq != 0
@@ -242,7 +221,6 @@
 
 #ifndef CONFIG_THUMB2_KERNEL
 	@ ARM mode SVC restore
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msr	spsr_cxsf, \rpsr
 #if defined(CONFIG_CPU_V6) || defined(CONFIG_CPU_32v6K)
 	@ We must avoid clrex due to Cortex-A15 erratum #830321
@@ -250,45 +228,8 @@
 	strex	r1, r2, [r0]			@ clear the exclusive monitor
 #endif
 	ldmia	sp, {r0 - pc}^			@ load r0 - pc, cpsr
-<<<<<<< HEAD
-	.endm
-
-	.macro	restore_user_regs, fast = 0, offset = 0
-	ldr	r1, [sp, #\offset + S_PSR]	@ get calling cpsr
-	ldr	lr, [sp, #\offset + S_PC]!	@ get pc
-	msr	spsr_cxsf, r1			@ save in spsr_svc
-#if defined(CONFIG_CPU_V6) || defined(CONFIG_CPU_32v6K)
-	@ We must avoid clrex due to Cortex-A15 erratum #830321
-	strex	r1, r2, [sp]			@ clear the exclusive monitor
-#endif
-	.if	\fast
-	ldmdb	sp, {r1 - lr}^			@ get calling r1 - lr
-	.else
-	ldmdb	sp, {r0 - lr}^			@ get calling r0 - lr
-	.endif
-	mov	r0, r0				@ ARMv5T and earlier require a nop
-						@ after ldm {}^
-	add	sp, sp, #S_FRAME_SIZE - S_PC
-	movs	pc, lr				@ return & move spsr_svc into cpsr
-	.endm
-
-	.macro	get_thread_info, rd
-	mov	\rd, sp, lsr #13
-	mov	\rd, \rd, lsl #13
-	.endm
-
-	@
-	@ 32-bit wide "mov pc, reg"
-	@
-	.macro	movw_pc, reg
-	mov	pc, \reg
-	.endm
-#else	/* CONFIG_THUMB2_KERNEL */
-	.macro	svc_exit, rpsr
-=======
 #else
 	@ Thumb mode SVC restore
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldr	lr, [sp, #S_SP]			@ top of the stack
 	ldrd	r0, r1, [sp, #S_LR]		@ calling lr and pc
 
@@ -300,11 +241,6 @@
 	mov	sp, lr
 	ldr	lr, [sp], #4
 	rfeia	sp!
-<<<<<<< HEAD
-	.endm
-
-	.macro	restore_user_regs, fast = 0, offset = 0
-=======
 #endif
 	.endm
 
@@ -402,17 +338,13 @@ ALT_UP_B(.L1_\@)
 	v7m_exception_slow_exit ret_r0 = \fast
 #else
 	@ Thumb mode restore
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov	r2, sp
 	load_user_sp_lr r2, r3, \offset + S_SP	@ calling sp, lr
 	ldr	r1, [sp, #\offset + S_PSR]	@ get calling cpsr
 	ldr	lr, [sp, #\offset + S_PC]	@ get pc
 	add	sp, sp, #\offset + S_SP
-<<<<<<< HEAD
-=======
 	tst	r1, #PSR_I_BIT | 0x0f
 	bne	1f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msr	spsr_cxsf, r1			@ save in spsr_svc
 
 	@ We must avoid clrex due to Cortex-A15 erratum #830321
@@ -423,26 +355,6 @@ ALT_UP_B(.L1_\@)
 	.else
 	ldmdb	sp, {r0 - r12}			@ get calling r0 - r12
 	.endif
-<<<<<<< HEAD
-	add	sp, sp, #S_FRAME_SIZE - S_SP
-	movs	pc, lr				@ return & move spsr_svc into cpsr
-	.endm
-
-	.macro	get_thread_info, rd
-	mov	\rd, sp
-	lsr	\rd, \rd, #13
-	mov	\rd, \rd, lsl #13
-	.endm
-
-	@
-	@ 32-bit wide "mov pc, reg"
-	@
-	.macro	movw_pc, reg
-	mov	pc, \reg
-	nop
-	.endm
-#endif	/* !CONFIG_THUMB2_KERNEL */
-=======
 	add	sp, sp, #PT_REGS_SIZE - S_SP
 	movs	pc, lr				@ return & move spsr_svc into cpsr
 1:	bug	"Returning to usermode but unexpected PSR bits set?", \@
@@ -501,7 +413,6 @@ ALT_UP_B(.L1_\@)
 	ldrcc	pc, [\table, \nr, lsl #2]	@ call sys_* routine
 #endif
 	.endm
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are the registers used in the syscall handler, and allow us to
@@ -517,8 +428,6 @@ scno	.req	r7		@ syscall number
 tbl	.req	r8		@ syscall table pointer
 why	.req	r8		@ Linux syscall (!= 0)
 tsk	.req	r9		@ current thread_info
-<<<<<<< HEAD
-=======
 
 	.macro	do_overflow_check, frame_size:req
 #ifdef CONFIG_VMAP_STACK
@@ -556,4 +465,3 @@ THUMB(	sub	sp, r1			)	@ Restore original SP
 .Lout\@:
 #endif
 	.endm
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

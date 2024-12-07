@@ -1,18 +1,7 @@
-<<<<<<< HEAD
-/*
- * net/sched/em_nbyte.c	N-Byte ematch
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * net/sched/em_nbyte.c	N-Byte ematch
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Thomas Graf <tgraf@suug.ch>
  */
 
@@ -27,17 +16,10 @@
 
 struct nbyte_data {
 	struct tcf_em_nbyte	hdr;
-<<<<<<< HEAD
-	char			pattern[0];
-};
-
-static int em_nbyte_change(struct tcf_proto *tp, void *data, int data_len,
-=======
 	char			pattern[];
 };
 
 static int em_nbyte_change(struct net *net, void *data, int data_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   struct tcf_ematch *em)
 {
 	struct tcf_em_nbyte *nbyte = data;
@@ -49,11 +31,7 @@ static int em_nbyte_change(struct net *net, void *data, int data_len,
 	em->datalen = sizeof(*nbyte) + nbyte->len;
 	em->data = (unsigned long)kmemdup(data, em->datalen, GFP_KERNEL);
 	if (em->data == 0UL)
-<<<<<<< HEAD
-		return -ENOBUFS;
-=======
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -69,11 +47,7 @@ static int em_nbyte_match(struct sk_buff *skb, struct tcf_ematch *em,
 	if (!tcf_valid_offset(skb, ptr, nbyte->hdr.len))
 		return 0;
 
-<<<<<<< HEAD
-	return !memcmp(ptr + nbyte->hdr.off, nbyte->pattern, nbyte->hdr.len);
-=======
 	return !memcmp(ptr, nbyte->pattern, nbyte->hdr.len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct tcf_ematch_ops em_nbyte_ops = {
@@ -94,10 +68,7 @@ static void __exit exit_em_nbyte(void)
 	tcf_em_unregister(&em_nbyte_ops);
 }
 
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("ematch classifier for arbitrary skb multi-bytes");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 module_init(init_em_nbyte);

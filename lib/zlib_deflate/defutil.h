@@ -1,12 +1,7 @@
-<<<<<<< HEAD
-
-
-=======
 #ifndef DEFUTIL_H
 #define DEFUTIL_H
 
 #include <linux/zutil.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define Assert(err, str) 
 #define Trace(dummy) 
@@ -245,19 +240,6 @@ typedef struct deflate_state {
 
 } deflate_state;
 
-<<<<<<< HEAD
-typedef struct deflate_workspace {
-    /* State memory for the deflator */
-    deflate_state deflate_memory;
-    Byte *window_memory;
-    Pos *prev_memory;
-    Pos *head_memory;
-    char *overlay_memory;
-} deflate_workspace;
-
-#define zlib_deflate_window_memsize(windowBits) \
-	(2 * (1 << (windowBits)) * sizeof(Byte))
-=======
 #ifdef CONFIG_ZLIB_DFLTCC
 #define zlib_deflate_window_memsize(windowBits) \
 	(2 * (1 << (windowBits)) * sizeof(Byte) + PAGE_SIZE)
@@ -265,7 +247,6 @@ typedef struct deflate_workspace {
 #define zlib_deflate_window_memsize(windowBits) \
 	(2 * (1 << (windowBits)) * sizeof(Byte))
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define zlib_deflate_prev_memsize(windowBits) \
 	((1 << (windowBits)) * sizeof(Pos))
 #define zlib_deflate_head_memsize(memLevel) \
@@ -314,15 +295,10 @@ void zlib_tr_stored_type_only (deflate_state *);
  * method would use a table)
  * IN assertion: 1 <= len <= 15
  */
-<<<<<<< HEAD
-static inline unsigned bi_reverse(unsigned code, /* the value to invert */
-				  int len)       /* its bit length */
-=======
 static inline unsigned  bi_reverse(
     unsigned code, /* the value to invert */
     int len        /* its bit length */
 )
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     register unsigned res = 0;
     do {
@@ -365,8 +341,6 @@ static inline void bi_windup(deflate_state *s)
 #endif
 }
 
-<<<<<<< HEAD
-=======
 typedef enum {
     need_more,      /* block not completed, need more input or more output */
     block_done,     /* block flush performed */
@@ -467,4 +441,3 @@ static inline void flush_pending(
     }
 }
 #endif /* DEFUTIL_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

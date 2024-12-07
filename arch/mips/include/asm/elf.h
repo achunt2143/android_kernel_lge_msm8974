@@ -8,18 +8,6 @@
 #ifndef _ASM_ELF_H
 #define _ASM_ELF_H
 
-<<<<<<< HEAD
-
-/* ELF header e_flags defines. */
-/* MIPS architecture level. */
-#define EF_MIPS_ARCH_1		0x00000000	/* -mips1 code.  */
-#define EF_MIPS_ARCH_2		0x10000000	/* -mips2 code.  */
-#define EF_MIPS_ARCH_3		0x20000000	/* -mips3 code.  */
-#define EF_MIPS_ARCH_4		0x30000000	/* -mips4 code.  */
-#define EF_MIPS_ARCH_5		0x40000000	/* -mips5 code.  */
-#define EF_MIPS_ARCH_32		0x50000000	/* MIPS32 code.  */
-#define EF_MIPS_ARCH_64		0x60000000	/* MIPS64 code.  */
-=======
 #include <linux/auxvec.h>
 #include <linux/fs.h>
 #include <linux/mm_types.h>
@@ -37,7 +25,6 @@
 #define EF_MIPS_ARCH_5		0x40000000	/* -mips5 code.	 */
 #define EF_MIPS_ARCH_32		0x50000000	/* MIPS32 code.	 */
 #define EF_MIPS_ARCH_64		0x60000000	/* MIPS64 code.	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EF_MIPS_ARCH_32R2	0x70000000	/* MIPS32 R2 code.  */
 #define EF_MIPS_ARCH_64R2	0x80000000	/* MIPS64 R2 code.  */
 
@@ -48,10 +35,7 @@
 #define PT_MIPS_REGINFO		0x70000000
 #define PT_MIPS_RTPROC		0x70000001
 #define PT_MIPS_OPTIONS		0x70000002
-<<<<<<< HEAD
-=======
 #define PT_MIPS_ABIFLAGS	0x70000003
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flags in the e_flags field of the header */
 #define EF_MIPS_NOREORDER	0x00000001
@@ -60,11 +44,8 @@
 #define EF_MIPS_ABI2		0x00000020
 #define EF_MIPS_OPTIONS_FIRST	0x00000080
 #define EF_MIPS_32BITMODE	0x00000100
-<<<<<<< HEAD
-=======
 #define EF_MIPS_FP64		0x00000200
 #define EF_MIPS_NAN2008		0x00000400
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EF_MIPS_ABI		0x0000f000
 #define EF_MIPS_ARCH		0xf0000000
 
@@ -103,11 +84,7 @@
 #define R_MIPS_CALL16		11
 #define R_MIPS_GPREL32		12
 /* The remaining relocs are defined on Irix, although they are not
-<<<<<<< HEAD
-   in the MIPS ELF ABI.  */
-=======
    in the MIPS ELF ABI.	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define R_MIPS_UNUSED1		13
 #define R_MIPS_UNUSED2		14
 #define R_MIPS_UNUSED3		15
@@ -136,14 +113,11 @@
 #define R_MIPS_CALLHI16		30
 #define R_MIPS_CALLLO16		31
 /*
-<<<<<<< HEAD
-=======
  * Introduced for MIPSr6.
  */
 #define R_MIPS_PC21_S2		60
 #define R_MIPS_PC26_S2		61
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This range is reserved for vendor specific relocations.
  */
 #define R_MIPS_LOVENDOR		100
@@ -203,9 +177,6 @@
 #define SHF_MIPS_NAMES		0x02000000
 #define SHF_MIPS_NODUPES	0x01000000
 
-<<<<<<< HEAD
-#ifndef ELF_ARCH
-=======
 #define MIPS_ABI_FP_ANY		0	/* FP ABI doesn't matter */
 #define MIPS_ABI_FP_DOUBLE	1	/* -mdouble-float */
 #define MIPS_ABI_FP_SINGLE	2	/* -msingle-float */
@@ -230,7 +201,6 @@ struct mips_elf_abiflags_v0 {
 	uint32_t flags2;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ELF register definitions */
 #define ELF_NGREG	45
 #define ELF_NFPREG	33
@@ -241,30 +211,6 @@ typedef elf_greg_t elf_gregset_t[ELF_NGREG];
 typedef double elf_fpreg_t;
 typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 
-<<<<<<< HEAD
-#ifdef CONFIG_32BIT
-
-/*
- * This is used to ensure we don't load something for the wrong architecture.
- */
-#define elf_check_arch(hdr)						\
-({									\
-	int __res = 1;							\
-	struct elfhdr *__h = (hdr);					\
-									\
-	if (__h->e_machine != EM_MIPS)					\
-		__res = 0;						\
-	if (__h->e_ident[EI_CLASS] != ELFCLASS32)			\
-		__res = 0;						\
-	if ((__h->e_flags & EF_MIPS_ABI2) != 0)				\
-		__res = 0;						\
-	if (((__h->e_flags & EF_MIPS_ABI) != 0) &&			\
-	    ((__h->e_flags & EF_MIPS_ABI) != EF_MIPS_ABI_O32))		\
-		__res = 0;						\
-									\
-	__res;								\
-})
-=======
 void mips_dump_regs32(u32 *uregs, const struct pt_regs *regs);
 void mips_dump_regs64(u64 *uregs, const struct pt_regs *regs);
 
@@ -273,54 +219,32 @@ void mips_dump_regs64(u64 *uregs, const struct pt_regs *regs);
  * This is used to ensure we don't load something for the wrong architecture.
  */
 #define elf_check_arch elf32_check_arch
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are used to set parameters in the core dumps.
  */
 #define ELF_CLASS	ELFCLASS32
 
-<<<<<<< HEAD
-=======
 #define ELF_CORE_COPY_REGS(dest, regs) \
 	mips_dump_regs32((u32 *)&(dest), (regs));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_32BIT */
 
 #ifdef CONFIG_64BIT
 /*
  * This is used to ensure we don't load something for the wrong architecture.
  */
-<<<<<<< HEAD
-#define elf_check_arch(hdr)						\
-({									\
-	int __res = 1;							\
-	struct elfhdr *__h = (hdr);					\
-									\
-	if (__h->e_machine != EM_MIPS)					\
-		__res = 0;						\
-	if (__h->e_ident[EI_CLASS] != ELFCLASS64) 			\
-		__res = 0;						\
-									\
-	__res;								\
-})
-=======
 #define elf_check_arch elf64_check_arch
 #define compat_elf_check_arch elf32_check_arch
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are used to set parameters in the core dumps.
  */
 #define ELF_CLASS	ELFCLASS64
 
-<<<<<<< HEAD
-=======
 #define ELF_CORE_COPY_REGS(dest, regs) \
 	mips_dump_regs64((u64 *)&(dest), (regs));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_64BIT */
 
 /*
@@ -333,9 +257,6 @@ void mips_dump_regs64(u64 *uregs, const struct pt_regs *regs);
 #endif
 #define ELF_ARCH	EM_MIPS
 
-<<<<<<< HEAD
-#endif /* !defined(ELF_ARCH) */
-=======
 /*
  * In order to be sure that we don't attempt to execute an O32 binary which
  * requires 64 bit FP (FR=1) on a system which does not support it we refuse
@@ -396,7 +317,6 @@ void mips_dump_regs64(u64 *uregs, const struct pt_regs *regs);
 									\
 	__res;								\
 })
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mips_abi;
 
@@ -406,14 +326,6 @@ extern struct mips_abi mips_abi_n32;
 
 #ifdef CONFIG_32BIT
 
-<<<<<<< HEAD
-#define SET_PERSONALITY(ex)						\
-do {									\
-	if (personality(current->personality) != PER_LINUX)		\
-		set_personality(PER_LINUX);				\
-									\
-	current->thread.abi = &mips_abi;				\
-=======
 #define SET_PERSONALITY2(ex, state)					\
 do {									\
 	clear_thread_flag(TIF_HYBRID_FPREGS);				\
@@ -426,7 +338,6 @@ do {									\
 									\
 	if (personality(current->personality) != PER_LINUX)		\
 		set_personality(PER_LINUX);				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 
 #endif /* CONFIG_32BIT */
@@ -437,10 +348,7 @@ do {									\
 #define __SET_PERSONALITY32_N32()					\
 	do {								\
 		set_thread_flag(TIF_32BIT_ADDR);			\
-<<<<<<< HEAD
-=======
 									\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		current->thread.abi = &mips_abi_n32;			\
 	} while (0)
 #else
@@ -449,16 +357,6 @@ do {									\
 #endif
 
 #ifdef CONFIG_MIPS32_O32
-<<<<<<< HEAD
-#define __SET_PERSONALITY32_O32()					\
-	do {								\
-		set_thread_flag(TIF_32BIT_REGS);			\
-		set_thread_flag(TIF_32BIT_ADDR);			\
-		current->thread.abi = &mips_abi_32;			\
-	} while (0)
-#else
-#define __SET_PERSONALITY32_O32()					\
-=======
 #define __SET_PERSONALITY32_O32(ex, state)				\
 	do {								\
 		set_thread_flag(TIF_32BIT_REGS);			\
@@ -472,30 +370,16 @@ do {									\
 	} while (0)
 #else
 #define __SET_PERSONALITY32_O32(ex, state)				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do { } while (0)
 #endif
 
 #ifdef CONFIG_MIPS32_COMPAT
-<<<<<<< HEAD
-#define __SET_PERSONALITY32(ex)						\
-=======
 #define __SET_PERSONALITY32(ex, state)					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 do {									\
 	if ((((ex).e_flags & EF_MIPS_ABI2) != 0) &&			\
 	     ((ex).e_flags & EF_MIPS_ABI) == 0)				\
 		__SET_PERSONALITY32_N32();				\
 	else								\
-<<<<<<< HEAD
-		__SET_PERSONALITY32_O32();				\
-} while (0)
-#else
-#define __SET_PERSONALITY32(ex)	do { } while (0)
-#endif
-
-#define SET_PERSONALITY(ex)						\
-=======
 		__SET_PERSONALITY32_O32(ex, state);			\
 } while (0)
 #else
@@ -503,20 +387,10 @@ do {									\
 #endif
 
 #define SET_PERSONALITY2(ex, state)					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 do {									\
 	unsigned int p;							\
 									\
 	clear_thread_flag(TIF_32BIT_REGS);				\
-<<<<<<< HEAD
-	clear_thread_flag(TIF_32BIT_ADDR);				\
-									\
-	if ((ex).e_ident[EI_CLASS] == ELFCLASS32)			\
-		__SET_PERSONALITY32(ex);				\
-	else								\
-		current->thread.abi = &mips_abi;			\
-									\
-=======
 	clear_thread_flag(TIF_32BIT_FPREGS);				\
 	clear_thread_flag(TIF_HYBRID_FPREGS);				\
 	clear_thread_flag(TIF_32BIT_ADDR);				\
@@ -529,7 +403,6 @@ do {									\
 									\
 	mips_set_personality_nan(state);				\
 									\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = personality(current->personality);				\
 	if (p != PER_LINUX32 && p != PER_LINUX)				\
 		set_personality(PER_LINUX);				\
@@ -537,40 +410,13 @@ do {									\
 
 #endif /* CONFIG_64BIT */
 
-<<<<<<< HEAD
-struct pt_regs;
-struct task_struct;
-
-extern void elf_dump_regs(elf_greg_t *, struct pt_regs *regs);
-extern int dump_task_regs(struct task_struct *, elf_gregset_t *);
-extern int dump_task_fpu(struct task_struct *, elf_fpregset_t *);
-
-#ifndef ELF_CORE_COPY_REGS
-#define ELF_CORE_COPY_REGS(elf_regs, regs)			\
-	elf_dump_regs((elf_greg_t *)&(elf_regs), regs);
-#endif
-#ifndef ELF_CORE_COPY_TASK_REGS
-#define ELF_CORE_COPY_TASK_REGS(tsk, elf_regs) dump_task_regs(tsk, elf_regs)
-#endif
-#define ELF_CORE_COPY_FPREGS(tsk, elf_fpregs)			\
-	dump_task_fpu(tsk, elf_fpregs)
-
-=======
 #define CORE_DUMP_USE_REGSET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ELF_EXEC_PAGESIZE	PAGE_SIZE
 
 /* This yields a mask that user programs can use to figure out what
    instruction set this cpu supports.  This could be done in userspace,
    but it's not easy, and we've already done it here.  */
 
-<<<<<<< HEAD
-#define ELF_HWCAP       (0)
-
-/*
- * This yields a string that ld.so will use to load implementation
- * specific libraries for optimization.  This is more specific in
-=======
 #define ELF_HWCAP	(elf_hwcap)
 extern unsigned int elf_hwcap;
 #include <asm/hwcap.h>
@@ -578,19 +424,15 @@ extern unsigned int elf_hwcap;
 /*
  * This yields a string that ld.so will use to load implementation
  * specific libraries for optimization.	 This is more specific in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * intent than poking at uname or /proc/cpuinfo.
  */
 
 #define ELF_PLATFORM  __elf_platform
 extern const char *__elf_platform;
 
-<<<<<<< HEAD
-=======
 #define ELF_BASE_PLATFORM  __elf_base_platform
 extern const char *__elf_base_platform;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * See comments in asm-alpha/elf.h, this is the same thing
  * on the MIPS.
@@ -608,14 +450,6 @@ extern const char *__elf_base_platform;
 
 /* This is the location that an ET_DYN program is loaded if exec'ed.  Typical
    use of this is to invoke "./ld.so someprog" to test out a new version of
-<<<<<<< HEAD
-   the loader.  We need to make sure that it is out of the way of the program
-   that it will "exec", and that there is sufficient room for the brk.  */
-
-#ifndef ELF_ET_DYN_BASE
-#define ELF_ET_DYN_BASE         (TASK_SIZE / 3 * 2)
-#endif
-=======
    the loader.	We need to make sure that it is out of the way of the program
    that it will "exec", and that there is sufficient room for the brk.	*/
 
@@ -627,18 +461,12 @@ do {									\
 	NEW_AUX_ENT(AT_SYSINFO_EHDR,					\
 		    (unsigned long)current->mm->context.vdso);		\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ARCH_HAS_SETUP_ADDITIONAL_PAGES 1
 struct linux_binprm;
 extern int arch_setup_additional_pages(struct linux_binprm *bprm,
 				       int uses_interp);
 
-<<<<<<< HEAD
-struct mm_struct;
-extern unsigned long arch_randomize_brk(struct mm_struct *mm);
-#define arch_randomize_brk arch_randomize_brk
-=======
 #ifdef CONFIG_MIPS_FP_SUPPORT
 
 struct arch_elf_state {
@@ -688,6 +516,5 @@ static inline void mips_set_personality_fp(struct arch_elf_state *state)
 
 #define elf_read_implies_exec(ex, stk) mips_elf_read_implies_exec(&(ex), stk)
 extern int mips_elf_read_implies_exec(void *elf_ex, int exstack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_ELF_H */

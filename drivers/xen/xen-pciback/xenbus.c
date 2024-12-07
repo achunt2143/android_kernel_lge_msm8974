@@ -1,38 +1,23 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCI Backend Xenbus Setup - handles setup with frontend and xend
  *
  *   Author: Ryan Wilson <hap9@epoch.ncsc.mil>
  */
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/moduleparam.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/list.h>
 #include <linux/vmalloc.h>
 #include <linux/workqueue.h>
 #include <xen/xenbus.h>
 #include <xen/events.h>
-<<<<<<< HEAD
-#include <asm/xen/pci.h>
-#include "pciback.h"
-
-#define INVALID_EVTCHN_IRQ  (-1)
-struct workqueue_struct *xen_pcibk_wq;
-=======
 #include <xen/pci.h>
 #include "pciback.h"
 
 #define INVALID_EVTCHN_IRQ  (-1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool __read_mostly passthrough;
 module_param(passthrough, bool, S_IRUGO);
@@ -46,11 +31,7 @@ MODULE_PARM_DESC(passthrough,
 	"   frontend (for example, a device at 06:01.b will still appear at\n"\
 	"   06:01.b to the frontend). This is similar to how Xen 2.0.x\n"\
 	"   exposed PCI devices to its driver domains. This may be required\n"\
-<<<<<<< HEAD
-	"   for drivers which depend on finding their hardward in certain\n"\
-=======
 	"   for drivers which depend on finding their hardware in certain\n"\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"   bus/slot locations.");
 
 static struct xen_pcibk_device *alloc_pdev(struct xenbus_device *xdev)
@@ -63,10 +44,6 @@ static struct xen_pcibk_device *alloc_pdev(struct xenbus_device *xdev)
 	dev_dbg(&xdev->dev, "allocated pdev @ 0x%p\n", pdev);
 
 	pdev->xdev = xdev;
-<<<<<<< HEAD
-	dev_set_drvdata(&xdev->dev, pdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_init(&pdev->dev_lock);
 
@@ -80,12 +57,9 @@ static struct xen_pcibk_device *alloc_pdev(struct xenbus_device *xdev)
 		kfree(pdev);
 		pdev = NULL;
 	}
-<<<<<<< HEAD
-=======
 
 	dev_set_drvdata(&xdev->dev, pdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return pdev;
 }
@@ -102,12 +76,7 @@ static void xen_pcibk_disconnect(struct xen_pcibk_device *pdev)
 	/* If the driver domain started an op, make sure we complete it
 	 * before releasing the shared memory */
 
-<<<<<<< HEAD
-	/* Note, the workqueue does not use spinlocks at all.*/
-	flush_workqueue(xen_pcibk_wq);
-=======
 	flush_work(&pdev->op_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdev->sh_info != NULL) {
 		xenbus_unmap_ring_vfree(pdev->xdev, pdev->sh_info);
@@ -125,11 +94,8 @@ static void free_pdev(struct xen_pcibk_device *pdev)
 
 	xen_pcibk_disconnect(pdev);
 
-<<<<<<< HEAD
-=======
 	/* N.B. This calls pcistub_put_pci_dev which does the FLR on all
 	 * of the PCIe devices. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xen_pcibk_release_devices(pdev);
 
 	dev_set_drvdata(&pdev->xdev->dev, NULL);
@@ -139,27 +105,16 @@ static void free_pdev(struct xen_pcibk_device *pdev)
 }
 
 static int xen_pcibk_do_attach(struct xen_pcibk_device *pdev, int gnt_ref,
-<<<<<<< HEAD
-			     int remote_evtchn)
-=======
 			     evtchn_port_t remote_evtchn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 	void *vaddr;
 
 	dev_dbg(&pdev->xdev->dev,
-<<<<<<< HEAD
-		"Attaching to frontend resources - gnt_ref=%d evtchn=%d\n",
-		gnt_ref, remote_evtchn);
-
-	err = xenbus_map_ring_valloc(pdev->xdev, gnt_ref, &vaddr);
-=======
 		"Attaching to frontend resources - gnt_ref=%d evtchn=%u\n",
 		gnt_ref, remote_evtchn);
 
 	err = xenbus_map_ring_valloc(pdev->xdev, &gnt_ref, 1, &vaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		xenbus_dev_fatal(pdev->xdev, err,
 				"Error mapping other domain page in ours.");
@@ -168,13 +123,8 @@ static int xen_pcibk_do_attach(struct xen_pcibk_device *pdev, int gnt_ref,
 
 	pdev->sh_info = vaddr;
 
-<<<<<<< HEAD
-	err = bind_interdomain_evtchn_to_irqhandler(
-		pdev->xdev->otherend_id, remote_evtchn, xen_pcibk_handle_event,
-=======
 	err = bind_interdomain_evtchn_to_irqhandler_lateeoi(
 		pdev->xdev, remote_evtchn, xen_pcibk_handle_event,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		0, DRV_NAME, pdev);
 	if (err < 0) {
 		xenbus_dev_fatal(pdev->xdev, err,
@@ -192,12 +142,8 @@ out:
 static int xen_pcibk_attach(struct xen_pcibk_device *pdev)
 {
 	int err = 0;
-<<<<<<< HEAD
-	int gnt_ref, remote_evtchn;
-=======
 	int gnt_ref;
 	evtchn_port_t remote_evtchn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *magic = NULL;
 
 
@@ -230,10 +176,7 @@ static int xen_pcibk_attach(struct xen_pcibk_device *pdev)
 				 "version mismatch (%s/%s) with pcifront - "
 				 "halting " DRV_NAME,
 				 magic, XEN_PCI_MAGIC);
-<<<<<<< HEAD
-=======
 		err = -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -306,11 +249,7 @@ static int xen_pcibk_export_device(struct xen_pcibk_device *pdev,
 	if (err)
 		goto out;
 
-<<<<<<< HEAD
-	dev_dbg(&dev->dev, "registering for %d\n", pdev->xdev->otherend_id);
-=======
 	dev_info(&dev->dev, "registering for %d\n", pdev->xdev->otherend_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (xen_register_device_domain_owner(dev,
 					     pdev->xdev->otherend_id) != 0) {
 		dev_err(&dev->dev, "Stealing ownership from dom%d.\n",
@@ -352,13 +291,9 @@ static int xen_pcibk_remove_device(struct xen_pcibk_device *pdev,
 	dev_dbg(&dev->dev, "unregistering for %d\n", pdev->xdev->otherend_id);
 	xen_unregister_device_domain_owner(dev);
 
-<<<<<<< HEAD
-	xen_pcibk_release_pci_dev(pdev, dev);
-=======
 	/* N.B. This ends up calling pcistub_put_pci_dev which ends up
 	 * doing the FLR. */
 	xen_pcibk_release_pci_dev(pdev, dev, true /* use the lock. */);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return err;
@@ -424,21 +359,13 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int xen_pcibk_reconfigure(struct xen_pcibk_device *pdev)
-=======
 static int xen_pcibk_reconfigure(struct xen_pcibk_device *pdev,
 				 enum xenbus_state state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 	int num_devs;
 	int domain, bus, slot, func;
-<<<<<<< HEAD
-	int substate;
-=======
 	unsigned int substate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, len;
 	char state_str[64];
 	char dev_str[64];
@@ -447,13 +374,7 @@ static int xen_pcibk_reconfigure(struct xen_pcibk_device *pdev,
 	dev_dbg(&pdev->xdev->dev, "Reconfiguring device ...\n");
 
 	mutex_lock(&pdev->dev_lock);
-<<<<<<< HEAD
-	/* Make sure we only reconfigure once */
-	if (xenbus_read_driver_state(pdev->xdev->nodename) !=
-	    XenbusStateReconfiguring)
-=======
 	if (xenbus_read_driver_state(pdev->xdev->nodename) != state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	err = xenbus_scanf(XBT_NIL, pdev->xdev->nodename, "num_devs", "%d",
@@ -475,15 +396,8 @@ static int xen_pcibk_reconfigure(struct xen_pcibk_device *pdev,
 					 "configuration");
 			goto out;
 		}
-<<<<<<< HEAD
-		err = xenbus_scanf(XBT_NIL, pdev->xdev->nodename, state_str,
-				   "%d", &substate);
-		if (err != 1)
-			substate = XenbusStateUnknown;
-=======
 		substate = xenbus_read_unsigned(pdev->xdev->nodename, state_str,
 						XenbusStateUnknown);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (substate) {
 		case XenbusStateInitialising:
@@ -585,13 +499,10 @@ static int xen_pcibk_reconfigure(struct xen_pcibk_device *pdev,
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	if (state != XenbusStateReconfiguring)
 		/* Make sure we only reconfigure once. */
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = xenbus_switch_state(pdev->xdev, XenbusStateReconfigured);
 	if (err) {
 		xenbus_dev_fatal(pdev->xdev, err,
@@ -617,11 +528,7 @@ static void xen_pcibk_frontend_changed(struct xenbus_device *xdev,
 		break;
 
 	case XenbusStateReconfiguring:
-<<<<<<< HEAD
-		xen_pcibk_reconfigure(pdev);
-=======
 		xen_pcibk_reconfigure(pdev, XenbusStateReconfiguring);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case XenbusStateConnected:
@@ -641,11 +548,7 @@ static void xen_pcibk_frontend_changed(struct xenbus_device *xdev,
 		xenbus_switch_state(xdev, XenbusStateClosed);
 		if (xenbus_dev_is_online(xdev))
 			break;
-<<<<<<< HEAD
-		/* fall through if not online */
-=======
 		fallthrough;	/* if not online */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case XenbusStateUnknown:
 		dev_dbg(&xdev->dev, "frontend is gone! unregister device\n");
 		device_unregister(&xdev->dev);
@@ -754,11 +657,7 @@ out:
 }
 
 static void xen_pcibk_be_watch(struct xenbus_watch *watch,
-<<<<<<< HEAD
-			     const char **vec, unsigned int len)
-=======
 			       const char *path, const char *token)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xen_pcibk_device *pdev =
 	    container_of(watch, struct xen_pcibk_device, be_watch);
@@ -768,8 +667,6 @@ static void xen_pcibk_be_watch(struct xenbus_watch *watch,
 		xen_pcibk_setup_backend(pdev);
 		break;
 
-<<<<<<< HEAD
-=======
 	case XenbusStateInitialised:
 		/*
 		 * We typically move to Initialised when the first device was
@@ -779,7 +676,6 @@ static void xen_pcibk_be_watch(struct xenbus_watch *watch,
 		xen_pcibk_reconfigure(pdev, XenbusStateInitialised);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -805,11 +701,7 @@ static int xen_pcibk_xenbus_probe(struct xenbus_device *dev,
 
 	/* watch the backend node for backend configuration information */
 	err = xenbus_watch_path(dev, dev->nodename, &pdev->be_watch,
-<<<<<<< HEAD
-				xen_pcibk_be_watch);
-=======
 				NULL, xen_pcibk_be_watch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
@@ -818,31 +710,18 @@ static int xen_pcibk_xenbus_probe(struct xenbus_device *dev,
 	/* We need to force a call to our callback here in case
 	 * xend already configured us!
 	 */
-<<<<<<< HEAD
-	xen_pcibk_be_watch(&pdev->be_watch, NULL, 0);
-=======
 	xen_pcibk_be_watch(&pdev->be_watch, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int xen_pcibk_xenbus_remove(struct xenbus_device *dev)
-=======
 static void xen_pcibk_xenbus_remove(struct xenbus_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xen_pcibk_device *pdev = dev_get_drvdata(&dev->dev);
 
 	if (pdev != NULL)
 		free_pdev(pdev);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct xenbus_device_id xen_pcibk_ids[] = {
@@ -850,13 +729,6 @@ static const struct xenbus_device_id xen_pcibk_ids[] = {
 	{""},
 };
 
-<<<<<<< HEAD
-static DEFINE_XENBUS_DRIVER(xen_pcibk, DRV_NAME,
-	.probe			= xen_pcibk_xenbus_probe,
-	.remove			= xen_pcibk_xenbus_remove,
-	.otherend_changed	= xen_pcibk_frontend_changed,
-);
-=======
 static struct xenbus_driver xen_pcibk_driver = {
 	.name                   = DRV_NAME,
 	.ids                    = xen_pcibk_ids,
@@ -864,24 +736,11 @@ static struct xenbus_driver xen_pcibk_driver = {
 	.remove			= xen_pcibk_xenbus_remove,
 	.otherend_changed	= xen_pcibk_frontend_changed,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const struct xen_pcibk_backend *__read_mostly xen_pcibk_backend;
 
 int __init xen_pcibk_xenbus_register(void)
 {
-<<<<<<< HEAD
-	xen_pcibk_wq = create_workqueue("xen_pciback_workqueue");
-	if (!xen_pcibk_wq) {
-		printk(KERN_ERR "%s: create"
-			"xen_pciback_workqueue failed\n", __func__);
-		return -EFAULT;
-	}
-	xen_pcibk_backend = &xen_pcibk_vpci_backend;
-	if (passthrough)
-		xen_pcibk_backend = &xen_pcibk_passthrough_backend;
-	pr_info(DRV_NAME ": backend is %s\n", xen_pcibk_backend->name);
-=======
 	if (!xen_pcibk_pv_support())
 		return 0;
 
@@ -889,17 +748,11 @@ int __init xen_pcibk_xenbus_register(void)
 	if (passthrough)
 		xen_pcibk_backend = &xen_pcibk_passthrough_backend;
 	pr_info("backend is %s\n", xen_pcibk_backend->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return xenbus_register_backend(&xen_pcibk_driver);
 }
 
 void __exit xen_pcibk_xenbus_unregister(void)
 {
-<<<<<<< HEAD
-	destroy_workqueue(xen_pcibk_wq);
-	xenbus_unregister_driver(&xen_pcibk_driver);
-=======
 	if (xen_pcibk_pv_support())
 		xenbus_unregister_driver(&xen_pcibk_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

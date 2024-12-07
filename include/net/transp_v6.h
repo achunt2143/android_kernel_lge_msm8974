@@ -1,22 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _TRANSP_V6_H
 #define _TRANSP_V6_H
 
 #include <net/checksum.h>
-<<<<<<< HEAD
-
-/*
- *	IPv6 transport protocols
- */
-
-=======
 #include <net/sock.h>
 
 /* IPv6 transport protocols */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct proto rawv6_prot;
 extern struct proto udpv6_prot;
 extern struct proto udplitev6_prot;
@@ -24,51 +13,6 @@ extern struct proto tcpv6_prot;
 extern struct proto pingv6_prot;
 
 struct flowi6;
-<<<<<<< HEAD
-
-/* extension headers */
-extern int				ipv6_exthdrs_init(void);
-extern void				ipv6_exthdrs_exit(void);
-extern int				ipv6_frag_init(void);
-extern void				ipv6_frag_exit(void);
-
-/* transport protocols */
-extern int				pingv6_init(void);
-extern void				pingv6_exit(void);
-extern int				rawv6_init(void);
-extern void				rawv6_exit(void);
-extern int				udpv6_init(void);
-extern void				udpv6_exit(void);
-extern int 				udplitev6_init(void);
-extern void 				udplitev6_exit(void);
-extern int				tcpv6_init(void);
-extern void				tcpv6_exit(void);
-
-extern int				udpv6_connect(struct sock *sk,
-						      struct sockaddr *uaddr,
-						      int addr_len);
-
-extern int			datagram_recv_ctl(struct sock *sk,
-						  struct msghdr *msg,
-						  struct sk_buff *skb);
-
-extern int			datagram_send_ctl(struct net *net,
-						  struct sock *sk,
-						  struct msghdr *msg,
-						  struct flowi6 *fl6,
-						  struct ipv6_txoptions *opt,
-						  int *hlimit, int *tclass,
-						  int *dontfrag);
-
-#define		LOOPBACK4_IPV6		cpu_to_be32(0x7f000006)
-
-/*
- *	address family specific functions
- */
-extern const struct inet_connection_sock_af_ops ipv4_specific;
-
-extern void inet6_destroy_sock(struct sock *sk);
-=======
 struct ipcm6_cookie;
 
 /* extension headers */
@@ -118,6 +62,5 @@ ip6_dgram_sock_seq_show(struct seq_file *seq, struct sock *sp, __u16 srcp,
 	"remote_address                        "		       \
 	"st tx_queue rx_queue tr tm->when retrnsmt"		       \
 	"   uid  timeout inode ref pointer drops\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

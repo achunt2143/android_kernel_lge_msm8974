@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM powerpc
 
@@ -12,11 +9,7 @@
 
 struct pt_regs;
 
-<<<<<<< HEAD
-TRACE_EVENT(irq_entry,
-=======
 DECLARE_EVENT_CLASS(ppc64_interrupt_class,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_PROTO(struct pt_regs *regs),
 
@@ -33,64 +26,6 @@ DECLARE_EVENT_CLASS(ppc64_interrupt_class,
 	TP_printk("pt_regs=%p", __entry->regs)
 );
 
-<<<<<<< HEAD
-TRACE_EVENT(irq_exit,
-
-	TP_PROTO(struct pt_regs *regs),
-
-	TP_ARGS(regs),
-
-	TP_STRUCT__entry(
-		__field(struct pt_regs *, regs)
-	),
-
-	TP_fast_assign(
-		__entry->regs = regs;
-	),
-
-	TP_printk("pt_regs=%p", __entry->regs)
-);
-
-TRACE_EVENT(timer_interrupt_entry,
-
-	TP_PROTO(struct pt_regs *regs),
-
-	TP_ARGS(regs),
-
-	TP_STRUCT__entry(
-		__field(struct pt_regs *, regs)
-	),
-
-	TP_fast_assign(
-		__entry->regs = regs;
-	),
-
-	TP_printk("pt_regs=%p", __entry->regs)
-);
-
-TRACE_EVENT(timer_interrupt_exit,
-
-	TP_PROTO(struct pt_regs *regs),
-
-	TP_ARGS(regs),
-
-	TP_STRUCT__entry(
-		__field(struct pt_regs *, regs)
-	),
-
-	TP_fast_assign(
-		__entry->regs = regs;
-	),
-
-	TP_printk("pt_regs=%p", __entry->regs)
-);
-
-#ifdef CONFIG_PPC_PSERIES
-extern void hcall_tracepoint_regfunc(void);
-extern void hcall_tracepoint_unregfunc(void);
-
-TRACE_EVENT_FN(hcall_entry,
-=======
 DEFINE_EVENT(ppc64_interrupt_class, irq_entry,
 
 	TP_PROTO(struct pt_regs *regs),
@@ -292,7 +227,6 @@ extern int opal_tracepoint_regfunc(void);
 extern void opal_tracepoint_unregfunc(void);
 
 TRACE_EVENT_FN(opal_entry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_PROTO(unsigned long opcode, unsigned long *args),
 
@@ -308,17 +242,6 @@ TRACE_EVENT_FN(opal_entry,
 
 	TP_printk("opcode=%lu", __entry->opcode),
 
-<<<<<<< HEAD
-	hcall_tracepoint_regfunc, hcall_tracepoint_unregfunc
-);
-
-TRACE_EVENT_FN(hcall_exit,
-
-	TP_PROTO(unsigned long opcode, unsigned long retval,
-		unsigned long *retbuf),
-
-	TP_ARGS(opcode, retval, retbuf),
-=======
 	opal_tracepoint_regfunc, opal_tracepoint_unregfunc
 );
 
@@ -327,7 +250,6 @@ TRACE_EVENT_FN(opal_exit,
 	TP_PROTO(unsigned long opcode, unsigned long retval),
 
 	TP_ARGS(opcode, retval),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(unsigned long, opcode)
@@ -341,12 +263,6 @@ TRACE_EVENT_FN(opal_exit,
 
 	TP_printk("opcode=%lu retval=%lu", __entry->opcode, __entry->retval),
 
-<<<<<<< HEAD
-	hcall_tracepoint_regfunc, hcall_tracepoint_unregfunc
-);
-#endif
-
-=======
 	opal_tracepoint_regfunc, opal_tracepoint_unregfunc
 );
 #endif
@@ -420,7 +336,6 @@ TRACE_EVENT(tlbia,
 	TP_printk("ctx.id=0x%lx", __entry->id)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _TRACE_POWERPC_H */
 
 #undef TRACE_INCLUDE_PATH

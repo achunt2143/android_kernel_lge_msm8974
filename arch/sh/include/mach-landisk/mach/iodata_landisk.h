@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_IODATA_LANDISK_H
 #define __ASM_SH_IODATA_LANDISK_H
 
@@ -12,10 +9,7 @@
  *
  * IO-DATA LANDISK support
  */
-<<<<<<< HEAD
-=======
 #include <linux/sh_intc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Box specific addresses.  */
 
@@ -33,17 +27,6 @@
 #define PA_PIDE_OFFSET	0x40		/* CF IDE Offset */
 #define PA_SIDE_OFFSET	0x40		/* HDD IDE Offset */
 
-<<<<<<< HEAD
-#define IRQ_PCIINTA	5		/* PCI INTA IRQ */
-#define IRQ_PCIINTB	6		/* PCI INTB IRQ */
-#define IRQ_PCIINTC	7		/* PCI INTC IRQ */
-#define IRQ_PCIINTD	8		/* PCI INTD IRQ */
-#define IRQ_ATA		9		/* ATA IRQ */
-#define IRQ_FATA	10		/* FATA IRQ */
-#define IRQ_POWER	11		/* Power Switch IRQ */
-#define IRQ_BUTTON	12		/* USL-5P Button IRQ */
-#define IRQ_FAULT	13		/* USL-5P Fault  IRQ */
-=======
 #define IRQ_PCIINTA	evt2irq(0x2a0)	/* PCI INTA IRQ */
 #define IRQ_PCIINTB	evt2irq(0x2c0)	/* PCI INTB IRQ */
 #define IRQ_PCIINTC	evt2irq(0x2e0)	/* PCI INTC IRQ */
@@ -53,7 +36,6 @@
 #define IRQ_POWER	evt2irq(0x360)	/* Power Switch IRQ */
 #define IRQ_BUTTON	evt2irq(0x380)	/* USL-5P Button IRQ */
 #define IRQ_FAULT	evt2irq(0x3a0)	/* USL-5P Fault  IRQ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void init_landisk_IRQ(void);
 

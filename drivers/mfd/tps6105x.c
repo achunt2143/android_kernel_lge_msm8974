@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Core driver for TPS61050/61052 boost converters, used for while LED
  * driving, audio power amplification, white LED flash, and generic
@@ -13,98 +10,16 @@
  * Written on behalf of Linaro for ST-Ericsson
  *
  * Author: Linus Walleij <linus.walleij@linaro.org>
-<<<<<<< HEAD
- *
- * License terms: GNU General Public License (GPL) version 2
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <linux/mutex.h>
-=======
 #include <linux/regmap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gpio.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-#include <linux/regulator/driver.h>
-#include <linux/mfd/core.h>
-#include <linux/mfd/tps6105x.h>
-
-int tps6105x_set(struct tps6105x *tps6105x, u8 reg, u8 value)
-{
-	int ret;
-
-	ret = mutex_lock_interruptible(&tps6105x->lock);
-	if (ret)
-		return ret;
-	ret = i2c_smbus_write_byte_data(tps6105x->client, reg, value);
-	mutex_unlock(&tps6105x->lock);
-	if (ret < 0)
-		return ret;
-
-	return 0;
-}
-EXPORT_SYMBOL(tps6105x_set);
-
-int tps6105x_get(struct tps6105x *tps6105x, u8 reg, u8 *buf)
-{
-	int ret;
-
-	ret = mutex_lock_interruptible(&tps6105x->lock);
-	if (ret)
-		return ret;
-	ret = i2c_smbus_read_byte_data(tps6105x->client, reg);
-	mutex_unlock(&tps6105x->lock);
-	if (ret < 0)
-		return ret;
-
-	*buf = ret;
-	return 0;
-}
-EXPORT_SYMBOL(tps6105x_get);
-
-/*
- * Masks off the bits in the mask and sets the bits in the bitvalues
- * parameter in one atomic operation
- */
-int tps6105x_mask_and_set(struct tps6105x *tps6105x, u8 reg,
-			  u8 bitmask, u8 bitvalues)
-{
-	int ret;
-	u8 regval;
-
-	ret = mutex_lock_interruptible(&tps6105x->lock);
-	if (ret)
-		return ret;
-	ret = i2c_smbus_read_byte_data(tps6105x->client, reg);
-	if (ret < 0)
-		goto fail;
-	regval = ret;
-	regval = (~bitmask & regval) | (bitmask & bitvalues);
-	ret = i2c_smbus_write_byte_data(tps6105x->client, reg, regval);
-fail:
-	mutex_unlock(&tps6105x->lock);
-	if (ret < 0)
-		return ret;
-
-	return 0;
-}
-EXPORT_SYMBOL(tps6105x_mask_and_set);
-
-static int __devinit tps6105x_startup(struct tps6105x *tps6105x)
-{
-	int ret;
-	u8 regval;
-
-	ret = tps6105x_get(tps6105x, TPS6105X_REG_0, &regval);
-=======
 #include <linux/mfd/core.h>
 #include <linux/mfd/tps6105x.h>
 
@@ -120,7 +35,6 @@ static int tps6105x_startup(struct tps6105x *tps6105x)
 	unsigned int regval;
 
 	ret = regmap_read(tps6105x->regmap, TPS6105X_REG_0, &regval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 	switch (regval >> TPS6105X_REG0_MODE_SHIFT) {
@@ -148,24 +62,6 @@ static int tps6105x_startup(struct tps6105x *tps6105x)
 }
 
 /*
-<<<<<<< HEAD
- * MFD cells - we have one cell which is selected operation
- * mode, and we always have a GPIO cell.
- */
-static struct mfd_cell tps6105x_cells[] = {
-	{
-		/* name will be runtime assigned */
-		.id = -1,
-	},
-	{
-		.name = "tps6105x-gpio",
-		.id = -1,
-	},
-};
-
-static int __devinit tps6105x_probe(struct i2c_client *client,
-			const struct i2c_device_id *id)
-=======
  * MFD cells - we always have a GPIO cell and we have one cell
  * which is selected operation mode.
  */
@@ -222,24 +118,10 @@ static struct tps6105x_platform_data *tps6105x_parse_dt(struct device *dev)
 }
 
 static int tps6105x_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tps6105x			*tps6105x;
 	struct tps6105x_platform_data	*pdata;
 	int ret;
-<<<<<<< HEAD
-	int i;
-
-	tps6105x = kmalloc(sizeof(*tps6105x), GFP_KERNEL);
-	if (!tps6105x)
-		return -ENOMEM;
-
-	i2c_set_clientdata(client, tps6105x);
-	tps6105x->client = client;
-	pdata = client->dev.platform_data;
-	tps6105x->pdata = pdata;
-	mutex_init(&tps6105x->lock);
-=======
 
 	pdata = dev_get_platdata(&client->dev);
 	if (!pdata)
@@ -260,17 +142,10 @@ static int tps6105x_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, tps6105x);
 	tps6105x->client = client;
 	tps6105x->pdata = pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = tps6105x_startup(tps6105x);
 	if (ret) {
 		dev_err(&client->dev, "chip initialization failed\n");
-<<<<<<< HEAD
-		goto fail;
-	}
-
-	/* Remove warning texts when you implement new cell drivers */
-=======
 		return ret;
 	}
 
@@ -278,51 +153,12 @@ static int tps6105x_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (pdata->mode) {
 	case TPS6105X_MODE_SHUTDOWN:
 		dev_info(&client->dev,
 			 "present, not used for anything, only GPIO\n");
 		break;
 	case TPS6105X_MODE_TORCH:
-<<<<<<< HEAD
-		tps6105x_cells[0].name = "tps6105x-leds";
-		dev_warn(&client->dev,
-			 "torch mode is unsupported\n");
-		break;
-	case TPS6105X_MODE_TORCH_FLASH:
-		tps6105x_cells[0].name = "tps6105x-flash";
-		dev_warn(&client->dev,
-			 "flash mode is unsupported\n");
-		break;
-	case TPS6105X_MODE_VOLTAGE:
-		tps6105x_cells[0].name ="tps6105x-regulator";
-		break;
-	default:
-		break;
-	}
-
-	/* Set up and register the platform devices. */
-	for (i = 0; i < ARRAY_SIZE(tps6105x_cells); i++) {
-		/* One state holder for all drivers, this is simple */
-		tps6105x_cells[i].platform_data = tps6105x;
-		tps6105x_cells[i].pdata_size = sizeof(*tps6105x);
-	}
-
-	ret = mfd_add_devices(&client->dev, 0, tps6105x_cells,
-		ARRAY_SIZE(tps6105x_cells), NULL, 0);
-	if (ret)
-		goto fail;
-
-	return 0;
-
-fail:
-	kfree(tps6105x);
-	return ret;
-}
-
-static int __devexit tps6105x_remove(struct i2c_client *client)
-=======
 		ret = tps6105x_add_device(tps6105x, &tps6105x_leds_cell);
 		break;
 	case TPS6105X_MODE_TORCH_FLASH:
@@ -343,25 +179,15 @@ static int __devexit tps6105x_remove(struct i2c_client *client)
 }
 
 static void tps6105x_remove(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tps6105x *tps6105x = i2c_get_clientdata(client);
 
 	mfd_remove_devices(&client->dev);
 
 	/* Put chip in shutdown mode */
-<<<<<<< HEAD
-	tps6105x_mask_and_set(tps6105x, TPS6105X_REG_0,
-		TPS6105X_REG0_MODE_MASK,
-		TPS6105X_MODE_SHUTDOWN << TPS6105X_REG0_MODE_SHIFT);
-
-	kfree(tps6105x);
-	return 0;
-=======
 	regmap_update_bits(tps6105x->regmap, TPS6105X_REG_0,
 		TPS6105X_REG0_MODE_MASK,
 		TPS6105X_MODE_SHUTDOWN << TPS6105X_REG0_MODE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id tps6105x_id[] = {
@@ -371,14 +197,6 @@ static const struct i2c_device_id tps6105x_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, tps6105x_id);
 
-<<<<<<< HEAD
-static struct i2c_driver tps6105x_driver = {
-	.driver = {
-		.name	= "tps6105x",
-	},
-	.probe		= tps6105x_probe,
-	.remove		= __devexit_p(tps6105x_remove),
-=======
 static const struct of_device_id tps6105x_of_match[] = {
 	{ .compatible = "ti,tps61050" },
 	{ .compatible = "ti,tps61052" },
@@ -393,7 +211,6 @@ static struct i2c_driver tps6105x_driver = {
 	},
 	.probe		= tps6105x_probe,
 	.remove		= tps6105x_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= tps6105x_id,
 };
 

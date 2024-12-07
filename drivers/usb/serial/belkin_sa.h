@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions for Belkin USB Serial Adapter Driver
  *
@@ -12,16 +9,7 @@
  *  and associated source files.  Please see the usb/serial files for
  *  individual credits and copyrights.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- * See Documentation/usb/usb-serial.txt for more information on using this
-=======
  * See Documentation/usb/usb-serial.rst for more information on using this
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * driver
  *
  * 12-Mar-2001 gkh

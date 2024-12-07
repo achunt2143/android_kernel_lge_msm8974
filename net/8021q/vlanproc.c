@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * vlanproc.c	VLAN Module. /proc filesystem interface.
  *
@@ -13,13 +10,6 @@
  *
  * Copyright:	(c) 1998 Ben Greear
  *
-<<<<<<< HEAD
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ============================================================================
  * Jan 20, 1998        Ben Greear     Initial Version
  *****************************************************************************/
@@ -80,44 +70,8 @@ static const struct seq_operations vlan_seq_ops = {
 	.show = vlan_seq_show,
 };
 
-<<<<<<< HEAD
-static int vlan_seq_open(struct inode *inode, struct file *file)
-{
-	return seq_open_net(inode, file, &vlan_seq_ops,
-			sizeof(struct seq_net_private));
-}
-
-static const struct file_operations vlan_fops = {
-	.owner	 = THIS_MODULE,
-	.open    = vlan_seq_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = seq_release_net,
-};
-
-/*
- *	/proc/net/vlan/<device> file and inode operations
- */
-
-static int vlandev_seq_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, vlandev_seq_show, PDE(inode)->data);
-}
-
-static const struct file_operations vlandev_fops = {
-	.owner = THIS_MODULE,
-	.open    = vlandev_seq_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = single_release,
-};
-
-/*
- * Proc filesystem derectory entries.
-=======
 /*
  * Proc filesystem directory entries.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Strings */
@@ -143,11 +97,7 @@ void vlan_proc_cleanup(struct net *net)
 		remove_proc_entry(name_conf, vn->proc_vlan_dir);
 
 	if (vn->proc_vlan_dir)
-<<<<<<< HEAD
-		proc_net_remove(net, name_root);
-=======
 		remove_proc_entry(name_root, net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Dynamically added entries should be cleaned up as their vlan_device
 	 * is removed, so we should not have to take care of it here...
@@ -166,14 +116,9 @@ int __net_init vlan_proc_init(struct net *net)
 	if (!vn->proc_vlan_dir)
 		goto err;
 
-<<<<<<< HEAD
-	vn->proc_vlan_conf = proc_create(name_conf, S_IFREG|S_IRUSR|S_IWUSR,
-				     vn->proc_vlan_dir, &vlan_fops);
-=======
 	vn->proc_vlan_conf = proc_create_net(name_conf, S_IFREG | 0600,
 			vn->proc_vlan_dir, &vlan_seq_ops,
 			sizeof(struct seq_net_private));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!vn->proc_vlan_conf)
 		goto err;
 	return 0;
@@ -193,16 +138,10 @@ int vlan_proc_add_dev(struct net_device *vlandev)
 	struct vlan_dev_priv *vlan = vlan_dev_priv(vlandev);
 	struct vlan_net *vn = net_generic(dev_net(vlandev), vlan_net_id);
 
-<<<<<<< HEAD
-	vlan->dent =
-		proc_create_data(vlandev->name, S_IFREG|S_IRUSR|S_IWUSR,
-				 vn->proc_vlan_dir, &vlandev_fops, vlandev);
-=======
 	if (!strcmp(vlandev->name, name_conf))
 		return -EINVAL;
 	vlan->dent = proc_create_single_data(vlandev->name, S_IFREG | 0600,
 			vn->proc_vlan_dir, vlandev_seq_show, vlandev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!vlan->dent)
 		return -ENOBUFS;
 	return 0;
@@ -211,25 +150,11 @@ int vlan_proc_add_dev(struct net_device *vlandev)
 /*
  *	Delete directory entry for VLAN device.
  */
-<<<<<<< HEAD
-int vlan_proc_rem_dev(struct net_device *vlandev)
-{
-	struct vlan_net *vn = net_generic(dev_net(vlandev), vlan_net_id);
-
-	/** NOTE:  This will consume the memory pointed to by dent, it seems. */
-	if (vlan_dev_priv(vlandev)->dent) {
-		remove_proc_entry(vlan_dev_priv(vlandev)->dent->name,
-				  vn->proc_vlan_dir);
-		vlan_dev_priv(vlandev)->dent = NULL;
-	}
-	return 0;
-=======
 void vlan_proc_rem_dev(struct net_device *vlandev)
 {
 	/** NOTE:  This will consume the memory pointed to by dent, it seems. */
 	proc_remove(vlan_dev_priv(vlandev)->dent);
 	vlan_dev_priv(vlandev)->dent = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****** Proc filesystem entry points ****************************************/
@@ -238,16 +163,6 @@ void vlan_proc_rem_dev(struct net_device *vlandev)
  * The following few functions build the content of /proc/net/vlan/config
  */
 
-<<<<<<< HEAD
-/* start read of /proc/net/vlan/config */
-static void *vlan_seq_start(struct seq_file *seq, loff_t *pos)
-	__acquires(rcu)
-{
-	struct net_device *dev;
-	struct net *net = seq_file_net(seq);
-	loff_t i = 1;
-
-=======
 static void *vlan_seq_from_index(struct seq_file *seq, loff_t *pos)
 {
 	unsigned long ifindex = *pos;
@@ -265,50 +180,17 @@ static void *vlan_seq_from_index(struct seq_file *seq, loff_t *pos)
 static void *vlan_seq_start(struct seq_file *seq, loff_t *pos)
 	__acquires(rcu)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_lock();
 	if (*pos == 0)
 		return SEQ_START_TOKEN;
 
-<<<<<<< HEAD
-	for_each_netdev_rcu(net, dev) {
-		if (!is_vlan_dev(dev))
-			continue;
-
-		if (i++ == *pos)
-			return dev;
-	}
-
-	return  NULL;
-=======
 	return vlan_seq_from_index(seq, pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *vlan_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 {
-<<<<<<< HEAD
-	struct net_device *dev;
-	struct net *net = seq_file_net(seq);
-
-	++*pos;
-
-	dev = v;
-	if (v == SEQ_START_TOKEN)
-		dev = net_device_entry(&net->dev_base_head);
-
-	for_each_netdev_continue_rcu(net, dev) {
-		if (!is_vlan_dev(dev))
-			continue;
-
-		return dev;
-	}
-
-	return NULL;
-=======
 	++*pos;
 	return vlan_seq_from_index(seq, pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vlan_seq_stop(struct seq_file *seq, void *v)
@@ -356,11 +238,7 @@ static int vlandev_seq_show(struct seq_file *seq, void *offset)
 
 	stats = dev_get_stats(vlandev, &temp);
 	seq_printf(seq,
-<<<<<<< HEAD
-		   "%s  VID: %d	 REORDER_HDR: %i  dev->priv_flags: %hx\n",
-=======
 		   "%s  VID: %d	 REORDER_HDR: %i  dev->priv_flags: %llx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   vlandev->name, vlan->vlan_id,
 		   (int)(vlan->flags & 1), vlandev->priv_flags);
 
@@ -388,11 +266,7 @@ static int vlandev_seq_show(struct seq_file *seq, void *offset)
 		const struct vlan_priority_tci_mapping *mp
 			= vlan->egress_priority_map[i];
 		while (mp) {
-<<<<<<< HEAD
-			seq_printf(seq, "%u:%hu ",
-=======
 			seq_printf(seq, "%u:%d ",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   mp->priority, ((mp->vlan_qos >> 13) & 0x7));
 			mp = mp->next;
 		}

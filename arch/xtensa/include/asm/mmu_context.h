@@ -1,20 +1,11 @@
 /*
-<<<<<<< HEAD
- * include/asm-xtensa/mmu_context.h
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Switch an MMU context.
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
-<<<<<<< HEAD
- * Copyright (C) 2001 - 2005 Tensilica Inc.
-=======
  * Copyright (C) 2001 - 2013 Tensilica Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _XTENSA_MMU_CONTEXT_H
@@ -26,15 +17,6 @@
 
 #include <linux/stringify.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-
-#include <variant/core.h>
-
-#include <asm/pgtable.h>
-#include <asm/cacheflush.h>
-#include <asm/tlbflush.h>
-#include <asm-generic/mm_hooks.h>
-=======
 #include <linux/mm_types.h>
 #include <linux/pgtable.h>
 
@@ -44,19 +26,11 @@
 #include <asm/tlbflush.h>
 #include <asm-generic/mm_hooks.h>
 #include <asm-generic/percpu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if (XCHAL_HAVE_TLBS != 1)
 # error "Linux must have an MMU!"
 #endif
 
-<<<<<<< HEAD
-extern unsigned long asid_cache;
-
-/*
- * NO_CONTEXT is the invalid ASID value that we don't ever assign to
- * any user or kernel context.
-=======
 DECLARE_PER_CPU(unsigned long, asid_cache);
 #define cpu_asid_cache(cpu) per_cpu(asid_cache, cpu)
 
@@ -64,7 +38,6 @@ DECLARE_PER_CPU(unsigned long, asid_cache);
  * NO_CONTEXT is the invalid ASID value that we don't ever assign to
  * any user or kernel context.  We use the reserved values in the
  * ASID_INSERT macro below.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * 0 invalid
  * 1 kernel
@@ -78,45 +51,18 @@ DECLARE_PER_CPU(unsigned long, asid_cache);
 #define ASID_MASK	((1 << XCHAL_MMU_ASID_BITS) - 1)
 #define ASID_INSERT(x)	(0x03020001 | (((x) & ASID_MASK) << 8))
 
-<<<<<<< HEAD
-static inline void set_rasid_register (unsigned long val)
-{
-	__asm__ __volatile__ (" wsr %0, "__stringify(RASID)"\n\t"
-=======
 void init_mmu(void);
 void init_kio(void);
 
 static inline void set_rasid_register (unsigned long val)
 {
 	__asm__ __volatile__ (" wsr %0, rasid\n\t"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      " isync\n" : : "a" (val));
 }
 
 static inline unsigned long get_rasid_register (void)
 {
 	unsigned long tmp;
-<<<<<<< HEAD
-	__asm__ __volatile__ (" rsr %0,"__stringify(RASID)"\n\t" : "=a" (tmp));
-	return tmp;
-}
-
-static inline void
-__get_new_mmu_context(struct mm_struct *mm)
-{
-	extern void flush_tlb_all(void);
-	if (! (++asid_cache & ASID_MASK) ) {
-		flush_tlb_all(); /* start new asid cycle */
-		asid_cache += ASID_USER_FIRST;
-	}
-	mm->context = asid_cache;
-}
-
-static inline void
-__load_mmu_context(struct mm_struct *mm)
-{
-	set_rasid_register(ASID_INSERT(mm->context));
-=======
 	__asm__ __volatile__ (" rsr %0, rasid\n\t" : "=a" (tmp));
 	return tmp;
 }
@@ -156,53 +102,11 @@ static inline void activate_context(struct mm_struct *mm, unsigned int cpu)
 {
 	get_mmu_context(mm, cpu);
 	set_rasid_register(ASID_INSERT(mm->context.asid[cpu]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	invalidate_page_directory();
 }
 
 /*
  * Initialize the context related info for a new mm_struct
-<<<<<<< HEAD
- * instance.
- */
-
-static inline int
-init_new_context(struct task_struct *tsk, struct mm_struct *mm)
-{
-	mm->context = NO_CONTEXT;
-	return 0;
-}
-
-/*
- * After we have set current->mm to a new value, this activates
- * the context for the new mm so we see the new mappings.
- */
-static inline void
-activate_mm(struct mm_struct *prev, struct mm_struct *next)
-{
-	/* Unconditionally get a new ASID.  */
-
-	__get_new_mmu_context(next);
-	__load_mmu_context(next);
-}
-
-
-static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
-                             struct task_struct *tsk)
-{
-	unsigned long asid = asid_cache;
-
-	/* Check if our ASID is of an older version and thus invalid */
-
-	if (next->context == NO_CONTEXT || ((next->context^asid) & ~ASID_MASK))
-		__get_new_mmu_context(next);
-
-	__load_mmu_context(next);
-}
-
-#define deactivate_mm(tsk, mm)	do { } while(0)
-
-=======
  * instance.  Valid cpu values are 0..(NR_CPUS-1), so initializing
  * to -1 says the process has never run on any core.
  */
@@ -233,30 +137,18 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
 		activate_context(next, cpu);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Destroy context related info for an mm_struct that is about
  * to be put to rest.
  */
-<<<<<<< HEAD
-=======
 #define destroy_context destroy_context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void destroy_context(struct mm_struct *mm)
 {
 	invalidate_page_directory();
 }
 
 
-<<<<<<< HEAD
-static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
-{
-	/* Nothing to do. */
-
-}
-=======
 #include <asm-generic/mmu_context.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_MMU */
 #endif /* _XTENSA_MMU_CONTEXT_H */

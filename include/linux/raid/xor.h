@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _XOR_H
 #define _XOR_H
 
@@ -14,15 +11,6 @@ struct xor_block_template {
         struct xor_block_template *next;
         const char *name;
         int speed;
-<<<<<<< HEAD
-	void (*do_2)(unsigned long, unsigned long *, unsigned long *);
-	void (*do_3)(unsigned long, unsigned long *, unsigned long *,
-		     unsigned long *);
-	void (*do_4)(unsigned long, unsigned long *, unsigned long *,
-		     unsigned long *, unsigned long *);
-	void (*do_5)(unsigned long, unsigned long *, unsigned long *,
-		     unsigned long *, unsigned long *, unsigned long *);
-=======
 	void (*do_2)(unsigned long, unsigned long * __restrict,
 		     const unsigned long * __restrict);
 	void (*do_3)(unsigned long, unsigned long * __restrict,
@@ -37,7 +25,6 @@ struct xor_block_template {
 		     const unsigned long * __restrict,
 		     const unsigned long * __restrict,
 		     const unsigned long * __restrict);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

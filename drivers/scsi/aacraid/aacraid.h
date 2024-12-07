@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  *	Adaptec AAC series RAID controller driver
@@ -20,7 +18,6 @@
 
 #ifndef _AACRAID_H_
 #define _AACRAID_H_
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef dprintk
 # define dprintk(x)
 #endif
@@ -29,23 +26,15 @@
 #define nblank(x) _nblank(x)[0]
 
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-=======
 #include <linux/completion.h>
 #include <linux/pci.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_cmnd.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*------------------------------------------------------------------------------
  *              D E F I N E S
  *----------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-#ifndef AAC_DRIVER_BUILD
-# define AAC_DRIVER_BUILD 28900
-# define AAC_DRIVER_BRANCH "-ms"
-=======
 #define AAC_MAX_MSIX		32	/* vectors */
 #define AAC_PCI_MSI_ENABLE	0x8000
 
@@ -99,30 +88,20 @@ enum {
 #ifndef AAC_DRIVER_BUILD
 # define AAC_DRIVER_BUILD 50983
 # define AAC_DRIVER_BRANCH "-custom"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #define MAXIMUM_NUM_CONTAINERS	32
 
 #define AAC_NUM_MGT_FIB         8
-<<<<<<< HEAD
-#define AAC_NUM_IO_FIB		(512 - AAC_NUM_MGT_FIB)
-#define AAC_NUM_FIB		(AAC_NUM_IO_FIB + AAC_NUM_MGT_FIB)
-
-#define AAC_MAX_LUN		(8)
-=======
 #define AAC_NUM_IO_FIB		(1024 - AAC_NUM_MGT_FIB)
 #define AAC_NUM_FIB		(AAC_NUM_IO_FIB + AAC_NUM_MGT_FIB)
 
 #define AAC_MAX_LUN		256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AAC_MAX_HOSTPHYSMEMPAGES (0xfffff)
 #define AAC_MAX_32BIT_SGBCOUNT	((unsigned short)256)
 
 #define AAC_DEBUG_INSTRUMENT_AIF_DELETE
 
-<<<<<<< HEAD
-=======
 #define AAC_MAX_NATIVE_TARGETS		1024
 /* Thor: 5 phys. buses: #0: empty, 1-4: 256 targets each */
 #define AAC_MAX_BUSES			5
@@ -427,16 +406,10 @@ struct aac_ciss_identify_pd {
 	u8  padto_2K[17];
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * These macros convert from physical channels to virtual channels
  */
 #define CONTAINER_CHANNEL		(0)
-<<<<<<< HEAD
-#define CONTAINER_TO_CHANNEL(cont)	(CONTAINER_CHANNEL)
-#define CONTAINER_TO_ID(cont)		(cont)
-#define CONTAINER_TO_LUN(cont)		(0)
-=======
 #define NATIVE_CHANNEL			(1)
 #define CONTAINER_TO_CHANNEL(cont)	(CONTAINER_CHANNEL)
 #define CONTAINER_TO_ID(cont)		(cont)
@@ -446,13 +419,10 @@ struct aac_ciss_identify_pd {
 #define PMC_DEVICE_S6	0x28b
 #define PMC_DEVICE_S7	0x28c
 #define PMC_DEVICE_S8	0x28d
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define aac_phys_to_logical(x)  ((x)+1)
 #define aac_logical_to_phys(x)  ((x)?(x)-1:0)
 
-<<<<<<< HEAD
-=======
 /*
  * These macros are for keeping track of
  * character device state.
@@ -460,7 +430,6 @@ struct aac_ciss_identify_pd {
 #define AAC_CHARDEV_UNREGISTERED	(-1)
 #define AAC_CHARDEV_NEEDS_REINIT	(-2)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* #define AAC_DETAILED_STATUS_INFO */
 
 struct diskparm
@@ -522,8 +491,6 @@ struct user_sgentryraw {
 	u32		flags;	/* reserved for F/W use */
 };
 
-<<<<<<< HEAD
-=======
 struct sge_ieee1212 {
 	u32	addrLow;
 	u32	addrHigh;
@@ -531,7 +498,6 @@ struct sge_ieee1212 {
 	u32	flags;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	SGMAP
  *
@@ -702,11 +668,8 @@ enum aac_queue_types {
  */
 
 #define		FIB_MAGIC	0x0001
-<<<<<<< HEAD
-=======
 #define		FIB_MAGIC2	0x0004
 #define		FIB_MAGIC2_64	0x0005
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Define the priority levels the FSA communication routines support.
@@ -716,17 +679,10 @@ enum aac_queue_types {
 
 /* transport FIB header (PMC) */
 struct aac_fib_xporthdr {
-<<<<<<< HEAD
-	u64	HostAddress;	/* FIB host address w/o xport header */
-	u32	Size;		/* FIB size excluding xport header */
-	u32	Handle;		/* driver handle to reference the FIB */
-	u64	Reserved[2];
-=======
 	__le64	HostAddress;	/* FIB host address w/o xport header */
 	__le32	Size;		/* FIB size excluding xport header */
 	__le32	Handle;		/* driver handle to reference the FIB */
 	__le64	Reserved[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define		ALIGN32		32
@@ -740,28 +696,11 @@ struct aac_fibhdr {
 	__le32 XferState;	/* Current transfer state for this CCB */
 	__le16 Command;		/* Routing information for the destination */
 	u8 StructType;		/* Type FIB */
-<<<<<<< HEAD
-	u8 Flags;		/* Flags for FIB */
-=======
 	u8 Unused;		/* Unused */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16 Size;		/* Size of this FIB in bytes */
 	__le16 SenderSize;	/* Size of the FIB in the sender
 				   (for response sizing) */
 	__le32 SenderFibAddress;  /* Host defined data in the FIB */
-<<<<<<< HEAD
-	__le32 ReceiverFibAddress;/* Logical address of this FIB for
-				     the adapter */
-	u32 SenderData;		/* Place holder for the sender to store data */
-	union {
-		struct {
-		    __le32 _ReceiverTimeStart;	/* Timestamp for
-						   receipt of fib */
-		    __le32 _ReceiverTimeDone;	/* Timestamp for
-						   completion of fib */
-		} _s;
-	} _u;
-=======
 	union {
 		__le32 ReceiverFibAddress;/* Logical address of this FIB for
 				     the adapter (old) */
@@ -771,7 +710,6 @@ struct aac_fibhdr {
 	__le32 Handle;		/* FIB handle used for MSGU commnunication */
 	u32 Previous;		/* FW internal use */
 	u32 Next;		/* FW internal use */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct hw_fib {
@@ -821,10 +759,7 @@ struct hw_fib {
 #define		ContainerCommand		500
 #define		ContainerCommand64		501
 #define		ContainerRawIo			502
-<<<<<<< HEAD
-=======
 #define		ContainerRawIo2			503
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Scsi Port commands (scsi passthrough)
  */
@@ -881,41 +816,6 @@ enum fib_xfer_state {
 #define ADAPTER_INIT_STRUCT_REVISION		3
 #define ADAPTER_INIT_STRUCT_REVISION_4		4 // rocket science
 #define ADAPTER_INIT_STRUCT_REVISION_6		6 /* PMC src */
-<<<<<<< HEAD
-
-struct aac_init
-{
-	__le32	InitStructRevision;
-	__le32	MiniPortRevision;
-	__le32	fsrev;
-	__le32	CommHeaderAddress;
-	__le32	FastIoCommAreaAddress;
-	__le32	AdapterFibsPhysicalAddress;
-	__le32	AdapterFibsVirtualAddress;
-	__le32	AdapterFibsSize;
-	__le32	AdapterFibAlign;
-	__le32	printfbuf;
-	__le32	printfbufsiz;
-	__le32	HostPhysMemPages;   /* number of 4k pages of host
-				       physical memory */
-	__le32	HostElapsedSeconds; /* number of seconds since 1970. */
-	/*
-	 * ADAPTER_INIT_STRUCT_REVISION_4 begins here
-	 */
-	__le32	InitFlags;	/* flags for supported features */
-#define INITFLAGS_NEW_COMM_SUPPORTED	0x00000001
-#define INITFLAGS_DRIVER_USES_UTC_TIME	0x00000010
-#define INITFLAGS_DRIVER_SUPPORTS_PM	0x00000020
-#define INITFLAGS_NEW_COMM_TYPE1_SUPPORTED	0x00000041
-	__le32	MaxIoCommands;	/* max outstanding commands */
-	__le32	MaxIoSize;	/* largest I/O command */
-	__le32	MaxFibSize;	/* largest FIB to adapter */
-	/* ADAPTER_INIT_STRUCT_REVISION_5 begins here */
-	__le32	MaxNumAif;	/* max number of aif */
-	/* ADAPTER_INIT_STRUCT_REVISION_6 begins here */
-	__le32	HostRRQ_AddrLow;
-	__le32	HostRRQ_AddrHigh;	/* Host RRQ (response queue) for SRC */
-=======
 #define ADAPTER_INIT_STRUCT_REVISION_7		7 /* Denali */
 #define ADAPTER_INIT_STRUCT_REVISION_8		8 // Thor
 
@@ -975,7 +875,6 @@ union aac_init
 			__le16	unused;
 		} rrq[1];		/* up to 64 RRQ addresses */
 	} r8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum aac_log_level {
@@ -1006,12 +905,8 @@ struct adapter_ops
 	void (*adapter_enable_int)(struct aac_dev *dev);
 	int  (*adapter_sync_cmd)(struct aac_dev *dev, u32 command, u32 p1, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 *status, u32 *r1, u32 *r2, u32 *r3, u32 *r4);
 	int  (*adapter_check_health)(struct aac_dev *dev);
-<<<<<<< HEAD
-	int  (*adapter_restart)(struct aac_dev *dev, int bled);
-=======
 	int  (*adapter_restart)(struct aac_dev *dev, int bled, u8 reset_type);
 	void (*adapter_start)(struct aac_dev *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Transport operations */
 	int  (*adapter_ioremap)(struct aac_dev * dev, u32 size);
 	irq_handler_t adapter_intr;
@@ -1077,14 +972,11 @@ struct aac_driver_ident
 #define AAC_QUIRK_SCSI_32	0x0020
 
 /*
-<<<<<<< HEAD
-=======
  * SRC based adapters support the AifReqEvent functions
  */
 #define AAC_QUIRK_SRC 0x0040
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The adapter interface specs all queues to be located in the same
  *	physically contiguous block. The host structure that defines the
  *	commuication queues will assume they are each a separate physically
@@ -1106,12 +998,8 @@ struct aac_queue {
 	spinlock_t		lockdata;	/* Actual lock (used only on one side of the lock) */
 	struct list_head	cmdq;		/* A queue of FIBs which need to be prcessed by the FS thread. This is */
 						/* only valid for command queues which receive entries from the adapter. */
-<<<<<<< HEAD
-	u32			numpending;	/* Number of entries on outstanding queue. */
-=======
 	/* Number of entries on outstanding queue. */
 	atomic_t		numpending;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct aac_dev *	dev;		/* Back pointer to adapter structure */
 };
 
@@ -1189,12 +1077,8 @@ struct sa_registers {
 };
 
 
-<<<<<<< HEAD
-#define Sa_MINIPORT_REVISION			1
-=======
 #define SA_INIT_NUM_MSIXVECTORS		1
 #define SA_MINIPORT_REVISION		SA_INIT_NUM_MSIXVECTORS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define sa_readw(AEP, CSR)		readl(&((AEP)->regs.sa->CSR))
 #define sa_readl(AEP, CSR)		readl(&((AEP)->regs.sa->CSR))
@@ -1288,32 +1172,6 @@ struct rkt_registers {
 #define src_inbound rx_inbound
 
 struct src_mu_registers {
-<<<<<<< HEAD
-				/*	PCI*| Name */
-	__le32	reserved0[8];	/*	00h | Reserved */
-	__le32	IDR;		/*	20h | Inbound Doorbell Register */
-	__le32	IISR;		/*	24h | Inbound Int. Status Register */
-	__le32	reserved1[3];	/*	28h | Reserved */
-	__le32	OIMR;		/*	34h | Outbound Int. Mask Register */
-	__le32	reserved2[25];	/*	38h | Reserved */
-	__le32	ODR_R;		/*	9ch | Outbound Doorbell Read */
-	__le32	ODR_C;		/*	a0h | Outbound Doorbell Clear */
-	__le32	reserved3[6];	/*	a4h | Reserved */
-	__le32	OMR;		/*	bch | Outbound Message Register */
-	__le32	IQ_L;		/*  c0h | Inbound Queue (Low address) */
-	__le32	IQ_H;		/*  c4h | Inbound Queue (High address) */
-};
-
-struct src_registers {
-	struct src_mu_registers MUnit;	/* 00h - c7h */
-	union {
-		struct {
-			__le32 reserved1[130790];	/* c8h - 7fc5fh */
-			struct src_inbound IndexRegs;	/* 7fc60h */
-		} tupelo;
-		struct {
-			__le32 reserved1[974];		/* c8h - fffh */
-=======
 				/*  PCI*| Name */
 	__le32	reserved0[6];	/*  00h | Reserved */
 	__le32	IOAR[2];	/*  18h | IOA->host interrupt register */
@@ -1345,7 +1203,6 @@ struct src_registers {
 		} tupelo;
 		struct {
 			__le32 reserved1[970];		/* d8h - fffh */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct src_inbound IndexRegs;	/* 1000h */
 		} denali;
 	} u;
@@ -1357,11 +1214,6 @@ struct src_registers {
 						&((AEP)->regs.src.bar0->CSR))
 #define src_writel(AEP, CSR, value)	writel(value, \
 						&((AEP)->regs.src.bar0->CSR))
-<<<<<<< HEAD
-
-#define SRC_ODR_SHIFT		12
-#define SRC_IDR_SHIFT		9
-=======
 #if defined(writeq)
 #define	src_writeq(AEP, CSR, value)	writeq(value, \
 						&((AEP)->regs.src.bar0->CSR))
@@ -1370,7 +1222,6 @@ struct src_registers {
 #define SRC_ODR_SHIFT		12
 #define SRC_IDR_SHIFT		9
 #define SRC_MSI_READ_MASK	0x1000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef void (*fib_callback)(void *ctxt, struct fib *fibctx);
 
@@ -1380,11 +1231,7 @@ struct aac_fib_context {
 	u32			unique;		// unique value representing this context
 	ulong			jiffies;	// used for cleanup - dmb changed to ulong
 	struct list_head	next;		// used to link context's into a linked list
-<<<<<<< HEAD
-	struct semaphore	wait_sem;	// this is used to wait for the next fib to arrive.
-=======
 	struct completion	completion;	// this is used to wait for the next fib to arrive.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			wait;		// Set to true when thread is in WaitForSingleObject
 	unsigned long		count;		// total number of FIBs on FibList
 	struct list_head	fib_list;	// this holds fibs and their attachd hw_fibs
@@ -1440,11 +1287,8 @@ struct fsa_dev_info {
 	u8		deleted;
 	char		devname[8];
 	struct sense_data sense_data;
-<<<<<<< HEAD
-=======
 	u32		block_size;
 	u8		identifier[16];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct fib {
@@ -1459,11 +1303,7 @@ struct fib {
 	 *	This is the event the sendfib routine will wait on if the
 	 *	caller did not pass one and this is synch io.
 	 */
-<<<<<<< HEAD
-	struct semaphore	event_wait;
-=======
 	struct completion	event_wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t		event_lock;
 
 	u32			done;	/* gets set to 1 when fib is complete */
@@ -1476,10 +1316,6 @@ struct fib {
 	 */
 	struct list_head	fiblink;
 	void			*data;
-<<<<<<< HEAD
-	struct hw_fib		*hw_fib_va;		/* Actual shared object */
-	dma_addr_t		hw_fib_pa;		/* physical address of hw_fib*/
-=======
 	u32			vector_no;
 	struct hw_fib		*hw_fib_va;	/* also used for native */
 	dma_addr_t		hw_fib_pa;	/* physical address of hw_fib*/
@@ -1505,7 +1341,6 @@ struct aac_hba_map_info {
 	u16		qd_limit;
 	u32		scan_counter;
 	struct aac_ciss_identify_pd  *safw_identify_resp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1541,39 +1376,6 @@ struct aac_adapter_info
 
 struct aac_supplement_adapter_info
 {
-<<<<<<< HEAD
-	u8	AdapterTypeText[17+1];
-	u8	Pad[2];
-	__le32	FlashMemoryByteSize;
-	__le32	FlashImageId;
-	__le32	MaxNumberPorts;
-	__le32	Version;
-	__le32	FeatureBits;
-	u8	SlotNumber;
-	u8	ReservedPad0[3];
-	u8	BuildDate[12];
-	__le32	CurrentNumberPorts;
-	struct {
-		u8	AssemblyPn[8];
-		u8	FruPn[8];
-		u8	BatteryFruPn[8];
-		u8	EcVersionString[8];
-		u8	Tsid[12];
-	}	VpdInfo;
-	__le32	FlashFirmwareRevision;
-	__le32	FlashFirmwareBuild;
-	__le32	RaidTypeMorphOptions;
-	__le32	FlashFirmwareBootRevision;
-	__le32	FlashFirmwareBootBuild;
-	u8	MfgPcbaSerialNo[12];
-	u8	MfgWWNName[8];
-	__le32	SupportedOptions2;
-	__le32	StructExpansion;
-	/* StructExpansion == 1 */
-	__le32	FeatureBits3;
-	__le32	SupportedPerformanceModes;
-	__le32	ReservedForFutureGrowth[80];
-=======
 	u8	adapter_type_text[17+1];
 	u8	pad[2];
 	__le32	flash_memory_byte_size;
@@ -1626,7 +1428,6 @@ struct aac_supplement_adapter_info
 	__le16	unused;
 	__le32	reserved_for_future_growth[68];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define AAC_FEATURE_FALCON	cpu_to_le32(0x00000010)
 #define AAC_FEATURE_JBOD	cpu_to_le32(0x08000000)
@@ -1635,8 +1436,6 @@ struct aac_supplement_adapter_info
 #define AAC_OPTION_IGNORE_RESET		cpu_to_le32(0x00000002)
 #define AAC_OPTION_POWER_MANAGEMENT	cpu_to_le32(0x00000004)
 #define AAC_OPTION_DOORBELL_RESET	cpu_to_le32(0x00004000)
-<<<<<<< HEAD
-=======
 /* 4KB sector size */
 #define AAC_OPTION_VARIABLE_BLOCK_SIZE	cpu_to_le32(0x00040000)
 /* 240 simple volume support */
@@ -1645,7 +1444,6 @@ struct aac_supplement_adapter_info
  * Supports FIB dump sync command send prior to IOP_RESET
  */
 #define AAC_OPTION_SUPPORTED3_IOP_RESET_FIB_DUMP	cpu_to_le32(0x00004000)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AAC_SIS_VERSION_V3	3
 #define AAC_SIS_SLOT_UNKNOWN	0xFF
 
@@ -1707,18 +1505,13 @@ struct aac_bus_info_response {
 #define AAC_OPT_SUPPLEMENT_ADAPTER_INFO	cpu_to_le32(1<<16)
 #define AAC_OPT_NEW_COMM		cpu_to_le32(1<<17)
 #define AAC_OPT_NEW_COMM_64		cpu_to_le32(1<<18)
-<<<<<<< HEAD
-=======
 #define AAC_OPT_EXTENDED		cpu_to_le32(1<<23)
 #define AAC_OPT_NATIVE_HBA		cpu_to_le32(1<<25)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AAC_OPT_NEW_COMM_TYPE1		cpu_to_le32(1<<28)
 #define AAC_OPT_NEW_COMM_TYPE2		cpu_to_le32(1<<29)
 #define AAC_OPT_NEW_COMM_TYPE3		cpu_to_le32(1<<30)
 #define AAC_OPT_NEW_COMM_TYPE4		cpu_to_le32(1<<31)
 
-<<<<<<< HEAD
-=======
 #define AAC_COMM_PRODUCER		0
 #define AAC_COMM_MESSAGE		1
 #define AAC_COMM_MESSAGE_TYPE1		3
@@ -1733,7 +1526,6 @@ struct aac_msix_ctx {
 	int		vector_no;
 	struct aac_dev	*dev;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct aac_dev
 {
@@ -1744,28 +1536,17 @@ struct aac_dev
 	/*
 	 *	negotiated FIB settings
 	 */
-<<<<<<< HEAD
-	unsigned		max_fib_size;
-	unsigned		sg_tablesize;
-	unsigned		max_num_aif;
-=======
 	unsigned int		max_fib_size;
 	unsigned int		sg_tablesize;
 	unsigned int		max_num_aif;
 
 	unsigned int		max_cmd_size;	/* max_fib_size or MAX_NATIVE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Map for 128 fib objects (64k)
 	 */
-<<<<<<< HEAD
-	dma_addr_t		hw_fib_pa;
-	struct hw_fib		*hw_fib_va;
-=======
 	dma_addr_t		hw_fib_pa;	/* also used for native cmd */
 	struct hw_fib		*hw_fib_va;	/* also used for native cmd */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hw_fib		*aif_base_va;
 	/*
 	 *	Fib Headers
@@ -1775,11 +1556,8 @@ struct aac_dev
 	struct fib		*free_fib;
 	spinlock_t		fib_lock;
 
-<<<<<<< HEAD
-=======
 	struct mutex		ioctl_mutex;
 	struct mutex		scan_mutex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct aac_queue_block *queues;
 	/*
 	 *	The user API will use an IOCTL to register itself to receive
@@ -1793,26 +1571,6 @@ struct aac_dev
 	struct adapter_ops	a_ops;
 	unsigned long		fsrev;		/* Main driver's revision number */
 
-<<<<<<< HEAD
-	unsigned long		dbg_base;	/* address of UART
-						 * debug buffer */
-
-	unsigned		base_size, dbg_size;	/* Size of
-							 *  mapped in region */
-
-	struct aac_init		*init;		/* Holds initialization info to communicate with adapter */
-	dma_addr_t		init_pa;	/* Holds physical address of the init struct */
-
-	u32			*host_rrq;	/* response queue
-						 * if AAC_COMM_MESSAGE_TYPE1 */
-
-	dma_addr_t		host_rrq_pa;	/* phys. address */
-	u32			host_rrq_idx;	/* index into rrq buffer */
-
-	struct pci_dev		*pdev;		/* Our PCI interface */
-	void *			printfbuf;	/* pointer to buffer used for printf's from the adapter */
-	void *			comm_addr;	/* Base address of Comm area */
-=======
 	resource_size_t		base_start;	/* main IO base */
 	resource_size_t		dbg_base;	/* address of UART
 						 * debug buffer */
@@ -1836,7 +1594,6 @@ struct aac_dev
 	/* pointer to buffer used for printf's from the adapter */
 	void			*printfbuf;
 	void			*comm_addr;	/* Base address of Comm area */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t		comm_phys;	/* Physical Address of Comm area */
 	size_t			comm_size;
 
@@ -1846,9 +1603,6 @@ struct aac_dev
 	int			maximum_num_channels;
 	struct fsa_dev_info	*fsa_dev;
 	struct task_struct	*thread;
-<<<<<<< HEAD
-	int			cardtype;
-=======
 	struct delayed_work	safw_rescan_work;
 	struct delayed_work	src_reinit_aif_worker;
 	int			cardtype;
@@ -1857,7 +1611,6 @@ struct aac_dev
 	 *writes to the Inbound Queue
 	 */
 	spinlock_t		iq_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	The following is the device specific extension.
@@ -1898,31 +1651,19 @@ struct aac_dev
 	u8			needs_dac;
 	u8			raid_scsi_mode;
 	u8			comm_interface;
-<<<<<<< HEAD
-#	define AAC_COMM_PRODUCER 0
-#	define AAC_COMM_MESSAGE  1
-#	define AAC_COMM_MESSAGE_TYPE1	3
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			raw_io_interface;
 	u8			raw_io_64;
 	u8			printf_enabled;
 	u8			in_reset;
-<<<<<<< HEAD
-	u8			msi;
-=======
 	u8			in_soft_reset;
 	u8			msi;
 	u8			sa_firmware;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			management_fib_count;
 	spinlock_t		manage_lock;
 	spinlock_t		sync_lock;
 	int			sync_mode;
 	struct fib		*sync_fib;
 	struct list_head	sync_fib_list;
-<<<<<<< HEAD
-=======
 	u32			doorbell_mask;
 	u32			max_msix;	/* max. MSI-X vectors */
 	u32			vector_cap;	/* MSI-X vector capab.*/
@@ -1937,7 +1678,6 @@ struct aac_dev
 	u32			handle_pci_error;
 	bool			init_reset;
 	u8			soft_reset_support;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define aac_adapter_interrupt(dev) \
@@ -1955,19 +1695,11 @@ struct aac_dev
 #define aac_adapter_sync_cmd(dev, command, p1, p2, p3, p4, p5, p6, status, r1, r2, r3, r4) \
 	(dev)->a_ops.adapter_sync_cmd(dev, command, p1, p2, p3, p4, p5, p6, status, r1, r2, r3, r4)
 
-<<<<<<< HEAD
-#define aac_adapter_check_health(dev) \
-	(dev)->a_ops.adapter_check_health(dev)
-
-#define aac_adapter_restart(dev,bled) \
-	(dev)->a_ops.adapter_restart(dev,bled)
-=======
 #define aac_adapter_restart(dev, bled, reset_type) \
 	((dev)->a_ops.adapter_restart(dev, bled, reset_type))
 
 #define aac_adapter_start(dev) \
 	((dev)->a_ops.adapter_start(dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define aac_adapter_ioremap(dev, size) \
 	(dev)->a_ops.adapter_ioremap(dev, size)
@@ -1993,14 +1725,11 @@ struct aac_dev
 #define FIB_CONTEXT_FLAG_TIMED_OUT		(0x00000001)
 #define FIB_CONTEXT_FLAG			(0x00000002)
 #define FIB_CONTEXT_FLAG_WAIT			(0x00000004)
-<<<<<<< HEAD
-=======
 #define FIB_CONTEXT_FLAG_FASTRESP		(0x00000008)
 #define FIB_CONTEXT_FLAG_NATIVE_HBA		(0x00000010)
 #define FIB_CONTEXT_FLAG_NATIVE_HBA_TMF	(0x00000020)
 #define FIB_CONTEXT_FLAG_SCSI_CMD	(0x00000040)
 #define FIB_CONTEXT_FLAG_EH_RESET	(0x00000080)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Define the command values
@@ -2059,10 +1788,7 @@ struct aac_dev
 #define		ST_IO		5
 #define		ST_NXIO		6
 #define		ST_E2BIG	7
-<<<<<<< HEAD
-=======
 #define		ST_MEDERR	8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define		ST_ACCES	13
 #define		ST_EXIST	17
 #define		ST_XDEV		18
@@ -2111,8 +1837,6 @@ struct aac_dev
 #define CMDATA_SYNCH		4
 #define CMUNSTABLE		5
 
-<<<<<<< HEAD
-=======
 #define	RIO_TYPE_WRITE 			0x0000
 #define	RIO_TYPE_READ			0x0001
 #define	RIO_SUREWRITE			0x0008
@@ -2129,7 +1853,6 @@ struct aac_dev
 #define RIO2_SG_FORMAT_SRL		0x1000
 #define RIO2_SG_FORMAT_IEEE1212		0x2000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct aac_read
 {
 	__le32		command;
@@ -2174,12 +1897,6 @@ struct aac_write64
 	__le32		block;
 	__le16		pad;
 	__le16		flags;
-<<<<<<< HEAD
-#define	IO_TYPE_WRITE 0x00000000
-#define	IO_TYPE_READ  0x00000001
-#define	IO_SUREWRITE  0x00000008
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sgmap64	sg;	// Must be last in struct because it is variable
 };
 struct aac_write_reply
@@ -2200,8 +1917,6 @@ struct aac_raw_io
 	struct sgmapraw	sg;
 };
 
-<<<<<<< HEAD
-=======
 struct aac_raw_io2 {
 	__le32		blockLow;
 	__le32		blockHigh;
@@ -2218,7 +1933,6 @@ struct aac_raw_io2 {
 	struct sge_ieee1212	sge[];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CT_FLUSH_CACHE 129
 struct aac_synchronize {
 	__le32		command;	/* VM_ContainerConfig */
@@ -2313,15 +2027,12 @@ struct aac_srb_reply
 	__le32		sense_data_size;
 	u8		sense_data[AAC_SENSE_BUFFERSIZE]; // Can this be SCSI_SENSE_BUFFERSIZE
 };
-<<<<<<< HEAD
-=======
 
 struct aac_srb_unit {
 	struct aac_srb		srb;
 	struct aac_srb_reply	srb_reply;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SRB Flags
  */
@@ -2416,10 +2127,7 @@ struct aac_srb_unit {
 #define		VM_CtHostWrite64	20
 #define		VM_DrvErrTblLog		21
 #define		VM_NameServe64		22
-<<<<<<< HEAD
-=======
 #define		VM_NameServeAllBlk	30
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define		MAX_VMCOMMAND_NUM	23	/* used for sizing stats array - leave last */
 
@@ -2442,10 +2150,6 @@ struct aac_fsinfo {
 	__le32  fsInodeDensity;
 };	/* valid iff ObjType == FT_FILESYS && !(ContentState & FSCS_NOTCLEAN) */
 
-<<<<<<< HEAD
-union aac_contentinfo {
-	struct aac_fsinfo filesys;	/* valid iff ObjType == FT_FILESYS && !(ContentState & FSCS_NOTCLEAN) */
-=======
 struct  aac_blockdevinfo {
 	__le32	block_size;
 	__le32  logical_phys_map;
@@ -2455,7 +2159,6 @@ struct  aac_blockdevinfo {
 union aac_contentinfo {
 	struct	aac_fsinfo		filesys;
 	struct	aac_blockdevinfo	bdevinfo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -2520,10 +2223,7 @@ struct aac_get_container_count_resp {
 	__le32		MaxContainers;
 	__le32		ContainerSwitchEntries;
 	__le32		MaxPartitions;
-<<<<<<< HEAD
-=======
 	__le32		MaxSimpleVolumes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -2587,11 +2287,7 @@ struct aac_get_name_resp {
 	__le32		parm3;
 	__le32		parm4;
 	__le32		parm5;
-<<<<<<< HEAD
-	u8		data[16];
-=======
 	u8		data[17];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define CT_CID_TO_32BITS_UID 165
@@ -2683,8 +2379,6 @@ struct revision
 #define FSACTL_FORCE_DELETE_DISK		CTL_CODE(2120, METHOD_NEITHER)
 #define FSACTL_GET_CONTAINERS			2131
 #define FSACTL_SEND_LARGE_FIB			CTL_CODE(2138, METHOD_BUFFERED)
-<<<<<<< HEAD
-=======
 #define FSACTL_RESET_IOP			CTL_CODE(2140, METHOD_BUFFERED)
 #define FSACTL_GET_HBA_INFO			CTL_CODE(2150, METHOD_BUFFERED)
 /* flags defined for IOP & HW SOFT RESET */
@@ -2695,7 +2389,6 @@ struct revision
 #define IBW_SWR_OFFSET				0x4000
 #define SOFT_RESET_TIME			60
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 struct aac_common
@@ -2714,11 +2407,8 @@ struct aac_common
 #ifdef DBG
 	u32 FibsSent;
 	u32 FibRecved;
-<<<<<<< HEAD
-=======
 	u32 NativeSent;
 	u32 NativeRecved;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 NoResponseSent;
 	u32 NoResponseRecved;
 	u32 AsyncSent;
@@ -2730,8 +2420,6 @@ struct aac_common
 
 extern struct aac_common aac_config;
 
-<<<<<<< HEAD
-=======
 /*
  * This is for management ioctl purpose only.
  */
@@ -2782,7 +2470,6 @@ struct aac_hba_info {
 	u32	reserved3[10];
 
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	The following macro is used when sending and receiving FIBs. It is
@@ -2811,11 +2498,6 @@ struct aac_hba_info {
 #define GET_DRIVER_BUFFER_PROPERTIES	0x00000023
 #define RCV_TEMP_READINGS		0x00000025
 #define GET_COMM_PREFERRED_SETTINGS	0x00000026
-<<<<<<< HEAD
-#define IOP_RESET			0x00001000
-#define IOP_RESET_ALWAYS		0x00001001
-#define RE_INIT_ADAPTER			0x000000ee
-=======
 #define IOP_RESET_FW_FIB_DUMP		0x00000034
 #define DROP_IO			0x00000035
 #define IOP_RESET			0x00001000
@@ -2823,7 +2505,6 @@ struct aac_hba_info {
 #define RE_INIT_ADAPTER		0x000000ee
 
 #define IOP_SRC_RESET_MASK		0x00000100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Adapter Status Register
@@ -2848,10 +2529,6 @@ struct aac_hba_info {
 
 #define	SELF_TEST_FAILED		0x00000004
 #define	MONITOR_PANIC			0x00000020
-<<<<<<< HEAD
-#define	KERNEL_UP_AND_RUNNING		0x00000080
-#define	KERNEL_PANIC			0x00000100
-=======
 #define	KERNEL_BOOTING			0x00000040
 #define	KERNEL_UP_AND_RUNNING		0x00000080
 #define	KERNEL_PANIC			0x00000100
@@ -2860,7 +2537,6 @@ struct aac_hba_info {
 #define	FLASH_UPD_FAILED		0x00008000
 #define	INVALID_OMR			0xffffffff
 #define	FWUPD_TIMEOUT			(5 * 60)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Doorbell bit defines
@@ -2890,11 +2566,8 @@ struct aac_hba_info {
 #define			AifEnEnclosureManagement 13	/* EM_DRIVE_* */
 #define				EM_DRIVE_INSERTION	31
 #define				EM_DRIVE_REMOVAL	32
-<<<<<<< HEAD
-=======
 #define			EM_SES_DRIVE_INSERTION	33
 #define			EM_SES_DRIVE_REMOVAL	26
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define			AifEnBatteryEvent	14	/* Change in Battery State */
 #define			AifEnAddContainer	15	/* A new array was created */
 #define			AifEnDeleteContainer	16	/* A container was deleted */
@@ -2904,13 +2577,10 @@ struct aac_hba_info {
 #define			AifEnAddJBOD		30	/* JBOD created */
 #define			AifEnDeleteJBOD		31	/* JBOD deleted */
 
-<<<<<<< HEAD
-=======
 #define			AifBuManagerEvent		42 /* Bu management*/
 #define			AifBuCacheDataLoss		10
 #define			AifBuCacheDataRecover	11
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define		AifCmdJobProgress	2	/* Progress report */
 #define			AifJobCtrZero	101	/* Array Zero progress */
 #define			AifJobStsSuccess 1	/* Job completes */
@@ -2933,13 +2603,10 @@ struct aac_hba_info {
 
 /* PMC NEW COMM: Request the event data */
 #define		AifReqEvent		200
-<<<<<<< HEAD
-=======
 #define		AifRawDeviceRemove	203	/* RAW device deleted */
 #define		AifNativeDeviceAdd	204	/* native HBA device added */
 #define		AifNativeDeviceRemove	205	/* native HBA device removed */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Adapter Initiated FIB command structures. Start with the adapter
@@ -2950,11 +2617,7 @@ struct aac_hba_info {
 struct aac_aifcmd {
 	__le32 command;		/* Tell host what type of notify this is */
 	__le32 seqnum;		/* To allow ordering of reports (if necessary) */
-<<<<<<< HEAD
-	u8 data[1];		/* Undefined length (from kernel viewpoint) */
-=======
 	u8 data[];		/* Undefined length (from kernel viewpoint) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -2968,16 +2631,6 @@ static inline unsigned int cap_to_cyls(sector_t capacity, unsigned divisor)
 	return capacity;
 }
 
-<<<<<<< HEAD
-/* SCp.phase values */
-#define AAC_OWNER_MIDLEVEL	0x101
-#define AAC_OWNER_LOWLEVEL	0x102
-#define AAC_OWNER_ERROR_HANDLER	0x103
-#define AAC_OWNER_FIRMWARE	0x106
-
-const char *aac_driverinfo(struct Scsi_Host *);
-struct fib *aac_fib_alloc(struct aac_dev *dev);
-=======
 static inline int aac_pci_offline(struct aac_dev *dev)
 {
 	return pci_channel_offline(dev->pdev) || dev->handle_pci_error;
@@ -3049,24 +2702,12 @@ const char *aac_driverinfo(struct Scsi_Host *);
 void aac_fib_vector_assign(struct aac_dev *dev);
 struct fib *aac_fib_alloc(struct aac_dev *dev);
 struct fib *aac_fib_alloc_tag(struct aac_dev *dev, struct scsi_cmnd *scmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int aac_fib_setup(struct aac_dev *dev);
 void aac_fib_map_free(struct aac_dev *dev);
 void aac_fib_free(struct fib * context);
 void aac_fib_init(struct fib * context);
 void aac_printf(struct aac_dev *dev, u32 val);
 int aac_fib_send(u16 command, struct fib * context, unsigned long size, int priority, int wait, int reply, fib_callback callback, void *ctxt);
-<<<<<<< HEAD
-int aac_consumer_get(struct aac_dev * dev, struct aac_queue * q, struct aac_entry **entry);
-void aac_consumer_free(struct aac_dev * dev, struct aac_queue * q, u32 qnum);
-int aac_fib_complete(struct fib * context);
-#define fib_data(fibctx) ((void *)(fibctx)->hw_fib_va->data)
-struct aac_dev *aac_init_adapter(struct aac_dev *dev);
-int aac_get_config_status(struct aac_dev *dev, int commit_flag);
-int aac_get_containers(struct aac_dev *dev);
-int aac_scsi_cmd(struct scsi_cmnd *cmd);
-int aac_dev_ioctl(struct aac_dev *dev, int cmd, void __user *arg);
-=======
 int aac_hba_send(u8 command, struct fib *context,
 		fib_callback callback, void *ctxt);
 int aac_consumer_get(struct aac_dev * dev, struct aac_queue * q, struct aac_entry **entry);
@@ -3081,16 +2722,11 @@ int aac_get_config_status(struct aac_dev *dev, int commit_flag);
 int aac_get_containers(struct aac_dev *dev);
 int aac_scsi_cmd(struct scsi_cmnd *cmd);
 int aac_dev_ioctl(struct aac_dev *dev, unsigned int cmd, void __user *arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef shost_to_class
 #define shost_to_class(shost) &shost->shost_dev
 #endif
 ssize_t aac_get_serial_number(struct device *dev, char *buf);
-<<<<<<< HEAD
-int aac_do_ioctl(struct aac_dev * dev, int cmd, void __user *arg);
-=======
 int aac_do_ioctl(struct aac_dev *dev, unsigned int cmd, void __user *arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int aac_rx_init(struct aac_dev *dev);
 int aac_rkt_init(struct aac_dev *dev);
 int aac_nark_init(struct aac_dev *dev);
@@ -3098,20 +2734,13 @@ int aac_sa_init(struct aac_dev *dev);
 int aac_src_init(struct aac_dev *dev);
 int aac_srcv_init(struct aac_dev *dev);
 int aac_queue_get(struct aac_dev * dev, u32 * index, u32 qid, struct hw_fib * hw_fib, int wait, struct fib * fibptr, unsigned long *nonotify);
-<<<<<<< HEAD
-=======
 void aac_define_int_mode(struct aac_dev *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int aac_response_normal(struct aac_queue * q);
 unsigned int aac_command_normal(struct aac_queue * q);
 unsigned int aac_intr_normal(struct aac_dev *dev, u32 Index,
 			int isAif, int isFastResponse,
 			struct hw_fib *aif_fib);
-<<<<<<< HEAD
-int aac_reset_adapter(struct aac_dev * dev, int forced);
-=======
 int aac_reset_adapter(struct aac_dev *dev, int forced, u8 reset_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int aac_check_health(struct aac_dev * dev);
 int aac_command_thread(void *data);
 int aac_close_fib_context(struct aac_dev * dev, struct aac_fib_context *fibctx);
@@ -3123,11 +2752,6 @@ int aac_probe_container(struct aac_dev *dev, int cid);
 int _aac_rx_init(struct aac_dev *dev);
 int aac_rx_select_comm(struct aac_dev *dev, int comm);
 int aac_rx_deliver_producer(struct fib * fib);
-<<<<<<< HEAD
-char * get_container_type(unsigned type);
-extern int numacb;
-extern int acbsize;
-=======
 void aac_reinit_aif(struct aac_dev *aac, unsigned int index);
 
 static inline int aac_is_src(struct aac_dev *dev)
@@ -3148,7 +2772,6 @@ static inline int aac_supports_2T(struct aac_dev *dev)
 
 char * get_container_type(unsigned type);
 extern int numacb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern char aac_driver_version[];
 extern int startup_timeout;
 extern int aif_timeout;
@@ -3159,8 +2782,5 @@ extern int aac_commit;
 extern int update_interval;
 extern int check_interval;
 extern int aac_check_reset;
-<<<<<<< HEAD
-=======
 extern int aac_fib_dump;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

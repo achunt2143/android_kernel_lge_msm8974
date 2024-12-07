@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001 Dave Engebretsen IBM Corporation
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2001 Dave Engebretsen IBM Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/sched.h>
@@ -28,40 +9,23 @@
 #include <linux/of.h>
 #include <linux/fs.h>
 #include <linux/reboot.h>
-<<<<<<< HEAD
-=======
 #include <linux/irq_work.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/machdep.h>
 #include <asm/rtas.h>
 #include <asm/firmware.h>
-<<<<<<< HEAD
-=======
 #include <asm/mce.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "pseries.h"
 
 static unsigned char ras_log_buf[RTAS_ERROR_LOG_MAX];
 static DEFINE_SPINLOCK(ras_log_buf_lock);
 
-<<<<<<< HEAD
-static char global_mce_data_buf[RTAS_ERROR_LOG_MAX];
-static DEFINE_PER_CPU(__u64, mce_data_buf);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ras_check_exception_token;
 
 #define EPOW_SENSOR_TOKEN	9
 #define EPOW_SENSOR_INDEX	0
 
-<<<<<<< HEAD
-static irqreturn_t ras_epow_interrupt(int irq, void *dev_id);
-static irqreturn_t ras_error_interrupt(int irq, void *dev_id);
-
-=======
 /* EPOW events counter variable */
 static int num_epow_events;
 
@@ -182,7 +146,6 @@ static int __init init_ras_hotplug_IRQ(void)
 	return 0;
 }
 machine_late_initcall(pseries, init_ras_hotplug_IRQ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Initialize handlers for the set of interrupts caused by hardware errors
@@ -192,11 +155,7 @@ static int __init init_ras_IRQ(void)
 {
 	struct device_node *np;
 
-<<<<<<< HEAD
-	ras_check_exception_token = rtas_token("check-exception");
-=======
 	ras_check_exception_token = rtas_function_token(RTAS_FN_CHECK_EXCEPTION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Internal Errors */
 	np = of_find_node_by_path("/event-sources/internal-errors");
@@ -215,11 +174,7 @@ static int __init init_ras_IRQ(void)
 
 	return 0;
 }
-<<<<<<< HEAD
-subsys_initcall(init_ras_IRQ);
-=======
 machine_subsys_initcall(pseries, init_ras_IRQ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EPOW_SHUTDOWN_NORMAL				1
 #define EPOW_SHUTDOWN_ON_UPS				2
@@ -230,32 +185,6 @@ static void handle_system_shutdown(char event_modifier)
 {
 	switch (event_modifier) {
 	case EPOW_SHUTDOWN_NORMAL:
-<<<<<<< HEAD
-		pr_emerg("Firmware initiated power off");
-		orderly_poweroff(1);
-		break;
-
-	case EPOW_SHUTDOWN_ON_UPS:
-		pr_emerg("Loss of power reported by firmware, system is "
-			"running on UPS/battery");
-		break;
-
-	case EPOW_SHUTDOWN_LOSS_OF_CRITICAL_FUNCTIONS:
-		pr_emerg("Loss of system critical functions reported by "
-			"firmware");
-		pr_emerg("Check RTAS error log for details");
-		orderly_poweroff(1);
-		break;
-
-	case EPOW_SHUTDOWN_AMBIENT_TEMPERATURE_TOO_HIGH:
-		pr_emerg("Ambient temperature too high reported by firmware");
-		pr_emerg("Check RTAS error log for details");
-		orderly_poweroff(1);
-		break;
-
-	default:
-		pr_err("Unknown power/cooling shutdown event (modifier %d)",
-=======
 		pr_emerg("Power off requested\n");
 		orderly_poweroff(true);
 		break;
@@ -279,7 +208,6 @@ static void handle_system_shutdown(char event_modifier)
 
 	default:
 		pr_err("Unknown power/cooling shutdown event (modifier = %d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			event_modifier);
 	}
 }
@@ -300,11 +228,7 @@ struct epow_errorlog {
 #define EPOW_MAIN_ENCLOSURE		5
 #define EPOW_POWER_OFF			7
 
-<<<<<<< HEAD
-void rtas_parse_epow_errlog(struct rtas_error_log *log)
-=======
 static void rtas_parse_epow_errlog(struct rtas_error_log *log)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pseries_errorlog *pseries_log;
 	struct epow_errorlog *epow_log;
@@ -321,28 +245,6 @@ static void rtas_parse_epow_errlog(struct rtas_error_log *log)
 
 	switch (action_code) {
 	case EPOW_RESET:
-<<<<<<< HEAD
-		pr_err("Non critical power or cooling issue cleared");
-		break;
-
-	case EPOW_WARN_COOLING:
-		pr_err("Non critical cooling issue reported by firmware");
-		pr_err("Check RTAS error log for details");
-		break;
-
-	case EPOW_WARN_POWER:
-		pr_err("Non critical power issue reported by firmware");
-		pr_err("Check RTAS error log for details");
-		break;
-
-	case EPOW_SYSTEM_SHUTDOWN:
-		handle_system_shutdown(epow_log->event_modifier);
-		break;
-
-	case EPOW_SYSTEM_HALT:
-		pr_emerg("Firmware initiated power off");
-		orderly_poweroff(1);
-=======
 		if (num_epow_events) {
 			pr_info("Non critical power/cooling issue cleared\n");
 			num_epow_events--;
@@ -367,29 +269,17 @@ static void rtas_parse_epow_errlog(struct rtas_error_log *log)
 		pr_emerg("Critical power/cooling issue detected. Check RTAS"
 			 " error log for details. Powering off.\n");
 		orderly_poweroff(true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case EPOW_MAIN_ENCLOSURE:
 	case EPOW_POWER_OFF:
-<<<<<<< HEAD
-		pr_emerg("Critical power/cooling issue reported by firmware");
-		pr_emerg("Check RTAS error log for details");
-		pr_emerg("Immediate power off");
-=======
 		pr_emerg("System about to lose power. Check RTAS error log "
 			 " for details. Powering off immediately.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		emergency_sync();
 		kernel_power_off();
 		break;
 
 	default:
-<<<<<<< HEAD
-		pr_err("Unknown power/cooling event (action code %d)",
-			action_code);
-	}
-=======
 		pr_err("Unknown power/cooling event (action code  = %d)\n",
 			action_code);
 	}
@@ -428,25 +318,15 @@ static irqreturn_t ras_hotplug_interrupt(int irq, void *dev_id)
 
 	spin_unlock(&ras_log_buf_lock);
 	return IRQ_HANDLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Handle environmental and power warning (EPOW) interrupts. */
 static irqreturn_t ras_epow_interrupt(int irq, void *dev_id)
 {
-<<<<<<< HEAD
-	int status;
-	int state;
-	int critical;
-
-	status = rtas_get_sensor_fast(EPOW_SENSOR_TOKEN, EPOW_SENSOR_INDEX,
-				      &state);
-=======
 	int state;
 	int critical;
 
 	rtas_get_sensor_fast(EPOW_SENSOR_TOKEN, EPOW_SENSOR_INDEX, &state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (state > 3)
 		critical = 1;		/* Time Critical */
@@ -455,18 +335,9 @@ static irqreturn_t ras_epow_interrupt(int irq, void *dev_id)
 
 	spin_lock(&ras_log_buf_lock);
 
-<<<<<<< HEAD
-	status = rtas_call(ras_check_exception_token, 6, 1, NULL,
-			   RTAS_VECTOR_EXTERNAL_INTERRUPT,
-			   virq_to_hw(irq),
-			   RTAS_EPOW_WARNING,
-			   critical, __pa(&ras_log_buf),
-				rtas_get_error_log_max());
-=======
 	rtas_call(ras_check_exception_token, 6, 1, NULL, RTAS_VECTOR_EXTERNAL_INTERRUPT,
 		  virq_to_hw(irq), RTAS_EPOW_WARNING, critical, __pa(&ras_log_buf),
 		  rtas_get_error_log_max());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	log_error(ras_log_buf, ERR_TYPE_RTAS_LOG, 0);
 
@@ -501,12 +372,8 @@ static irqreturn_t ras_error_interrupt(int irq, void *dev_id)
 
 	rtas_elog = (struct rtas_error_log *)ras_log_buf;
 
-<<<<<<< HEAD
-	if ((status == 0) && (rtas_elog->severity >= RTAS_SEVERITY_ERROR_SYNC))
-=======
 	if (status == 0 &&
 	    rtas_error_severity(rtas_elog) >= RTAS_SEVERITY_ERROR_SYNC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fatal = 1;
 	else
 		fatal = 0;
@@ -515,22 +382,12 @@ static irqreturn_t ras_error_interrupt(int irq, void *dev_id)
 	log_error(ras_log_buf, ERR_TYPE_RTAS_LOG, fatal);
 
 	if (fatal) {
-<<<<<<< HEAD
-		pr_emerg("Fatal hardware error reported by firmware");
-		pr_emerg("Check RTAS error log for details");
-		pr_emerg("Immediate power off");
-		emergency_sync();
-		kernel_power_off();
-	} else {
-		pr_err("Recoverable hardware error reported by firmware");
-=======
 		pr_emerg("Fatal hardware error detected. Check RTAS error"
 			 " log for details. Powering off immediately\n");
 		emergency_sync();
 		kernel_power_off();
 	} else {
 		pr_err("Recoverable hardware error detected\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock(&ras_log_buf_lock);
@@ -540,12 +397,6 @@ static irqreturn_t ras_error_interrupt(int irq, void *dev_id)
 /*
  * Some versions of FWNMI place the buffer inside the 4kB page starting at
  * 0x7000. Other versions place it inside the rtas buffer. We check both.
-<<<<<<< HEAD
- */
-#define VALID_FWNMI_BUFFER(A) \
-	((((A) >= 0x7000) && ((A) < 0x7ff0)) || \
-	(((A) >= rtas.base) && ((A) < (rtas.base + rtas.size - 16))))
-=======
  * Minimum size of the buffer is 16 bytes.
  */
 #define VALID_FWNMI_BUFFER(A) \
@@ -570,7 +421,6 @@ static __be64 *fwnmi_get_savep(struct pt_regs *regs)
 
 	return __va(savep_ra);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Get the error information for errors coming through the
@@ -578,16 +428,9 @@ static __be64 *fwnmi_get_savep(struct pt_regs *regs)
  * the actual r3 if possible, and a ptr to the error log entry
  * will be returned if found.
  *
-<<<<<<< HEAD
- * If the RTAS error is not of the extended type, then we put it in a per
- * cpu 64bit buffer. If it is the extended type we use global_mce_data_buf.
- *
- * The global_mce_data_buf does not have any locks or protection around it,
-=======
  * Use one buffer mce_data_buf per cpu to store RTAS error.
  *
  * The mce_data_buf does not have any locks or protection around it,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * if a second machine check comes in, or a system reset is done
  * before we have logged the error, then we will get corruption in the
  * error log.  This is preferable over holding off on calling
@@ -596,34 +439,6 @@ static __be64 *fwnmi_get_savep(struct pt_regs *regs)
  */
 static struct rtas_error_log *fwnmi_get_errinfo(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	unsigned long *savep;
-	struct rtas_error_log *h, *errhdr = NULL;
-
-	if (!VALID_FWNMI_BUFFER(regs->gpr[3])) {
-		printk(KERN_ERR "FWNMI: corrupt r3 0x%016lx\n", regs->gpr[3]);
-		return NULL;
-	}
-
-	savep = __va(regs->gpr[3]);
-	regs->gpr[3] = savep[0];	/* restore original r3 */
-
-	/* If it isn't an extended log we can use the per cpu 64bit buffer */
-	h = (struct rtas_error_log *)&savep[1];
-	if (!h->extended) {
-		memcpy(&__get_cpu_var(mce_data_buf), h, sizeof(__u64));
-		errhdr = (struct rtas_error_log *)&__get_cpu_var(mce_data_buf);
-	} else {
-		int len;
-
-		len = max_t(int, 8+h->extended_log_length, RTAS_ERROR_LOG_MAX);
-		memset(global_mce_data_buf, 0, RTAS_ERROR_LOG_MAX);
-		memcpy(global_mce_data_buf, h, len);
-		errhdr = (struct rtas_error_log *)global_mce_data_buf;
-	}
-
-	return errhdr;
-=======
 	struct rtas_error_log *h;
 	__be64 *savep;
 
@@ -647,7 +462,6 @@ static struct rtas_error_log *fwnmi_get_errinfo(struct pt_regs *regs)
 	}
 
 	return (struct rtas_error_log *)local_paca->mce_data_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Call this when done with the data returned by FWNMI_get_errinfo.
@@ -656,9 +470,6 @@ static struct rtas_error_log *fwnmi_get_errinfo(struct pt_regs *regs)
  */
 static void fwnmi_release_errinfo(void)
 {
-<<<<<<< HEAD
-	int ret = rtas_call(rtas_token("ibm,nmi-interlock"), 0, 1, NULL);
-=======
 	struct rtas_args rtas_args;
 	int ret;
 
@@ -668,25 +479,12 @@ static void fwnmi_release_errinfo(void)
 	 */
 	rtas_call_unlocked(&rtas_args, ibm_nmi_interlock_token, 0, 1, NULL);
 	ret = be32_to_cpu(rtas_args.rets[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0)
 		printk(KERN_ERR "FWNMI: nmi-interlock failed: %d\n", ret);
 }
 
 int pSeries_system_reset_exception(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	if (fwnmi_active) {
-		struct rtas_error_log *errhdr = fwnmi_get_errinfo(regs);
-		if (errhdr) {
-			/* XXX Should look at FWNMI information */
-		}
-		fwnmi_release_errinfo();
-	}
-	return 0; /* need to perform reset */
-}
-
-=======
 #ifdef __LITTLE_ENDIAN__
 	/*
 	 * Some firmware byteswaps SRR registers and gives incorrect SRR1. Try
@@ -972,7 +770,6 @@ void pSeries_machine_check_log_err(void)
 	log_error((char *)err, ERR_TYPE_RTAS_LOG, 0);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * See if we can recover from a machine check exception.
  * This is only called on power4 (or above) and only via
@@ -982,43 +779,6 @@ void pSeries_machine_check_log_err(void)
  * Return 1 if corrected (or delivered a signal).
  * Return 0 if there is nothing we can do.
  */
-<<<<<<< HEAD
-static int recover_mce(struct pt_regs *regs, struct rtas_error_log *err)
-{
-	int recovered = 0;
-
-	if (!(regs->msr & MSR_RI)) {
-		/* If MSR_RI isn't set, we cannot recover */
-		recovered = 0;
-
-	} else if (err->disposition == RTAS_DISP_FULLY_RECOVERED) {
-		/* Platform corrected itself */
-		recovered = 1;
-
-	} else if (err->disposition == RTAS_DISP_LIMITED_RECOVERY) {
-		/* Platform corrected itself but could be degraded */
-		printk(KERN_ERR "MCE: limited recovery, system may "
-		       "be degraded\n");
-		recovered = 1;
-
-	} else if (user_mode(regs) && !is_global_init(current) &&
-		   err->severity == RTAS_SEVERITY_ERROR_SYNC) {
-
-		/*
-		 * If we received a synchronous error when in userspace
-		 * kill the task. Firmware may report details of the fail
-		 * asynchronously, so we can't rely on the target and type
-		 * fields being valid here.
-		 */
-		printk(KERN_ERR "MCE: uncorrectable error, killing task "
-		       "%s:%d\n", current->comm, current->pid);
-
-		_exception(SIGBUS, regs, BUS_MCEERR_AR, regs->nip);
-		recovered = 1;
-	}
-
-	log_error((char *)err, ERR_TYPE_RTAS_LOG, 0);
-=======
 static int recover_mce(struct pt_regs *regs, struct machine_check_event *evt)
 {
 	int recovered = 0;
@@ -1063,7 +823,6 @@ static int recover_mce(struct pt_regs *regs, struct machine_check_event *evt)
 			recovered = 1;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return recovered;
 }
@@ -1080,14 +839,6 @@ static int recover_mce(struct pt_regs *regs, struct machine_check_event *evt)
  */
 int pSeries_machine_check_exception(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	struct rtas_error_log *errp;
-
-	if (fwnmi_active) {
-		errp = fwnmi_get_errinfo(regs);
-		fwnmi_release_errinfo();
-		if (errp && recover_mce(regs, errp))
-=======
 	struct machine_check_event evt;
 
 	if (!get_mce_event(&evt, MCE_EVENT_RELEASE))
@@ -1124,7 +875,6 @@ long pseries_machine_check_realmode(struct pt_regs *regs)
 		fwnmi_release_errinfo();
 
 		if (disposition == RTAS_DISP_FULLY_RECOVERED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 	}
 

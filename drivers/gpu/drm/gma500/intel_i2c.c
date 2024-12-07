@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright © 2006-2007 Intel Corporation
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Authors:
- *	Eric Anholt <eric@anholt.net>
- */
-#include <linux/export.h>
-#include <linux/i2c.h>
-#include <linux/i2c-algo-bit.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright © 2006-2007 Intel Corporation
@@ -34,7 +10,6 @@
 #include <linux/export.h>
 #include <linux/i2c-algo-bit.h>
 #include <linux/i2c.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "psb_drv.h"
 #include "psb_intel_reg.h"
@@ -47,11 +22,7 @@
 
 static int get_clock(void *data)
 {
-<<<<<<< HEAD
-	struct psb_intel_i2c_chan *chan = data;
-=======
 	struct gma_i2c_chan *chan = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct drm_device *dev = chan->drm_dev;
 	u32 val;
 
@@ -61,11 +32,7 @@ static int get_clock(void *data)
 
 static int get_data(void *data)
 {
-<<<<<<< HEAD
-	struct psb_intel_i2c_chan *chan = data;
-=======
 	struct gma_i2c_chan *chan = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct drm_device *dev = chan->drm_dev;
 	u32 val;
 
@@ -75,11 +42,7 @@ static int get_data(void *data)
 
 static void set_clock(void *data, int state_high)
 {
-<<<<<<< HEAD
-	struct psb_intel_i2c_chan *chan = data;
-=======
 	struct gma_i2c_chan *chan = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct drm_device *dev = chan->drm_dev;
 	u32 reserved = 0, clock_bits;
 
@@ -99,11 +62,7 @@ static void set_clock(void *data, int state_high)
 
 static void set_data(void *data, int state_high)
 {
-<<<<<<< HEAD
-	struct psb_intel_i2c_chan *chan = data;
-=======
 	struct gma_i2c_chan *chan = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct drm_device *dev = chan->drm_dev;
 	u32 reserved = 0, data_bits;
 
@@ -124,14 +83,8 @@ static void set_data(void *data, int state_high)
 }
 
 /**
-<<<<<<< HEAD
- * psb_intel_i2c_create - instantiate an Intel i2c bus using the specified GPIO reg
- * @dev: DRM device
- * @output: driver specific output device
-=======
  * gma_i2c_create - instantiate an Intel i2c bus using the specified GPIO reg
  * @dev: DRM device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg: GPIO reg to use
  * @name: name for this bus
  *
@@ -149,37 +102,21 @@ static void set_data(void *data, int state_high)
  *   %GPIOH
  * see PRM for details on how these different busses are used.
  */
-<<<<<<< HEAD
-struct psb_intel_i2c_chan *psb_intel_i2c_create(struct drm_device *dev,
-					const u32 reg, const char *name)
-{
-	struct psb_intel_i2c_chan *chan;
-
-	chan = kzalloc(sizeof(struct psb_intel_i2c_chan), GFP_KERNEL);
-=======
 struct gma_i2c_chan *gma_i2c_create(struct drm_device *dev, const u32 reg,
 				    const char *name)
 {
 	struct gma_i2c_chan *chan;
 
 	chan = kzalloc(sizeof(struct gma_i2c_chan), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!chan)
 		goto out_free;
 
 	chan->drm_dev = dev;
 	chan->reg = reg;
-<<<<<<< HEAD
-	snprintf(chan->adapter.name, I2C_NAME_SIZE, "intel drm %s", name);
-	chan->adapter.owner = THIS_MODULE;
-	chan->adapter.algo_data = &chan->algo;
-	chan->adapter.dev.parent = &dev->pdev->dev;
-=======
 	snprintf(chan->base.name, I2C_NAME_SIZE, "intel drm %s", name);
 	chan->base.owner = THIS_MODULE;
 	chan->base.algo_data = &chan->algo;
 	chan->base.dev.parent = dev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chan->algo.setsda = set_data;
 	chan->algo.setscl = set_clock;
 	chan->algo.getsda = get_data;
@@ -188,15 +125,9 @@ struct gma_i2c_chan *gma_i2c_create(struct drm_device *dev, const u32 reg,
 	chan->algo.timeout = usecs_to_jiffies(2200);
 	chan->algo.data = chan;
 
-<<<<<<< HEAD
-	i2c_set_adapdata(&chan->adapter, chan);
-
-	if (i2c_bit_add_bus(&chan->adapter))
-=======
 	i2c_set_adapdata(&chan->base, chan);
 
 	if (i2c_bit_add_bus(&chan->base))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free;
 
 	/* JJJ:  raise SCL and SDA? */
@@ -212,29 +143,16 @@ out_free:
 }
 
 /**
-<<<<<<< HEAD
- * psb_intel_i2c_destroy - unregister and free i2c bus resources
- * @output: channel to free
- *
- * Unregister the adapter from the i2c layer, then free the structure.
- */
-void psb_intel_i2c_destroy(struct psb_intel_i2c_chan *chan)
-=======
  * gma_i2c_destroy - unregister and free i2c bus resources
  * @chan: channel to free
  *
  * Unregister the adapter from the i2c layer, then free the structure.
  */
 void gma_i2c_destroy(struct gma_i2c_chan *chan)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!chan)
 		return;
 
-<<<<<<< HEAD
-	i2c_del_adapter(&chan->adapter);
-=======
 	i2c_del_adapter(&chan->base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(chan);
 }

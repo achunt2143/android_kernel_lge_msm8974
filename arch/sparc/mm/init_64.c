@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/sparc64/mm/init.c
  *
@@ -9,20 +6,12 @@
  *  Copyright (C) 1997-1999 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
  */
  
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/extable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/string.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/hugetlb.h>
 #include <linux/initrd.h>
@@ -34,34 +23,19 @@
 #include <linux/kprobes.h>
 #include <linux/cache.h>
 #include <linux/sort.h>
-<<<<<<< HEAD
-#include <linux/percpu.h>
-#include <linux/memblock.h>
-#include <linux/mmzone.h>
-#include <linux/gfp.h>
-=======
 #include <linux/ioport.h>
 #include <linux/percpu.h>
 #include <linux/mmzone.h>
 #include <linux/gfp.h>
 #include <linux/bootmem_info.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/head.h>
 #include <asm/page.h>
 #include <asm/pgalloc.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/oplib.h>
-#include <asm/iommu.h>
-#include <asm/io.h>
-#include <asm/uaccess.h>
-=======
 #include <asm/oplib.h>
 #include <asm/iommu.h>
 #include <asm/io.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mmu_context.h>
 #include <asm/tlbflush.h>
 #include <asm/dma.h>
@@ -74,36 +48,11 @@
 #include <asm/prom.h>
 #include <asm/mdesc.h>
 #include <asm/cpudata.h>
-<<<<<<< HEAD
-=======
 #include <asm/setup.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 
 #include "init_64.h"
 
-<<<<<<< HEAD
-unsigned long kern_linear_pte_xor[2] __read_mostly;
-
-/* A bitmap, one bit for every 256MB of physical memory.  If the bit
- * is clear, we should use a 4MB page (via kern_linear_pte_xor[0]) else
- * if set we should use a 256MB page (via kern_linear_pte_xor[1]).
- */
-unsigned long kpte_linear_bitmap[KPTE_BITMAP_BYTES / sizeof(unsigned long)];
-
-#ifndef CONFIG_DEBUG_PAGEALLOC
-/* A special kernel TSB for 4MB and 256MB linear mappings.
- * Space is allocated for this right after the trap table
- * in arch/sparc64/kernel/head.S
- */
-extern struct tsb swapper_4m_tsb[KERNEL_TSB4M_NENTRIES];
-#endif
-
-#define MAX_BANKS	32
-
-static struct linux_prom64_registers pavail[MAX_BANKS] __devinitdata;
-static int pavail_ents __devinitdata;
-=======
 unsigned long kern_linear_pte_xor[4] __read_mostly;
 static unsigned long page_cache4v_flag;
 
@@ -145,7 +94,6 @@ static struct linux_prom64_registers pavail[MAX_BANKS];
 static int pavail_ents;
 
 u64 numa_latency[MAX_NUMNODES][MAX_NUMNODES];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int cmp_p64(const void *a, const void *b)
 {
@@ -176,12 +124,8 @@ static void __init read_obp_memory(const char *property,
 
 	ret = prom_getproperty(node, property, (char *) regs, prop_size);
 	if (ret == -1) {
-<<<<<<< HEAD
-		prom_printf("Couldn't get %s property from /memory.\n");
-=======
 		prom_printf("Couldn't get %s property from /memory.\n",
 				property);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		prom_halt();
 	}
 
@@ -224,13 +168,6 @@ static void __init read_obp_memory(const char *property,
 	     cmp_p64, NULL);
 }
 
-<<<<<<< HEAD
-unsigned long sparc64_valid_addr_bitmap[VALID_ADDR_BITMAP_BYTES /
-					sizeof(unsigned long)];
-EXPORT_SYMBOL(sparc64_valid_addr_bitmap);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Kernel physical address base and size in bytes.  */
 unsigned long kern_base __read_mostly;
 unsigned long kern_size __read_mostly;
@@ -258,30 +195,16 @@ atomic_t dcpage_flushes_xcall = ATOMIC_INIT(0);
 #endif
 #endif
 
-<<<<<<< HEAD
-inline void flush_dcache_page_impl(struct page *page)
-{
-=======
 inline void flush_dcache_folio_impl(struct folio *folio)
 {
 	unsigned int i, nr = folio_nr_pages(folio);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(tlb_type == hypervisor);
 #ifdef CONFIG_DEBUG_DCFLUSH
 	atomic_inc(&dcpage_flushes);
 #endif
 
 #ifdef DCACHE_ALIASING_POSSIBLE
-<<<<<<< HEAD
-	__flush_dcache_page(page_address(page),
-			    ((tlb_type == spitfire) &&
-			     page_mapping(page) != NULL));
-#else
-	if (page_mapping(page) != NULL &&
-	    tlb_type == spitfire)
-		__flush_icache_page(__pa(page_address(page)));
-=======
 	for (i = 0; i < nr; i++)
 		__flush_dcache_page(folio_address(folio) + i * PAGE_SIZE,
 				    ((tlb_type == spitfire) &&
@@ -292,7 +215,6 @@ inline void flush_dcache_folio_impl(struct folio *folio)
 		for (i = 0; i < nr; i++)
 			__flush_icache_page((pfn + i) * PAGE_SIZE);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -301,17 +223,10 @@ inline void flush_dcache_folio_impl(struct folio *folio)
 #define PG_dcache_cpu_mask	\
 	((1UL<<ilog2(roundup_pow_of_two(NR_CPUS)))-1UL)
 
-<<<<<<< HEAD
-#define dcache_dirty_cpu(page) \
-	(((page)->flags >> PG_dcache_cpu_shift) & PG_dcache_cpu_mask)
-
-static inline void set_dcache_dirty(struct page *page, int this_cpu)
-=======
 #define dcache_dirty_cpu(folio) \
 	(((folio)->flags >> PG_dcache_cpu_shift) & PG_dcache_cpu_mask)
 
 static inline void set_dcache_dirty(struct folio *folio, int this_cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long mask = this_cpu;
 	unsigned long non_cpu_bits;
@@ -328,19 +243,11 @@ static inline void set_dcache_dirty(struct folio *folio, int this_cpu)
 			     "bne,pn	%%xcc, 1b\n\t"
 			     " nop"
 			     : /* no outputs */
-<<<<<<< HEAD
-			     : "r" (mask), "r" (non_cpu_bits), "r" (&page->flags)
-			     : "g1", "g7");
-}
-
-static inline void clear_dcache_dirty_cpu(struct page *page, unsigned long cpu)
-=======
 			     : "r" (mask), "r" (non_cpu_bits), "r" (&folio->flags)
 			     : "g1", "g7");
 }
 
 static inline void clear_dcache_dirty_cpu(struct folio *folio, unsigned long cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long mask = (1UL << PG_dcache_dirty);
 
@@ -358,11 +265,7 @@ static inline void clear_dcache_dirty_cpu(struct folio *folio, unsigned long cpu
 			     " nop\n"
 			     "2:"
 			     : /* no outputs */
-<<<<<<< HEAD
-			     : "r" (cpu), "r" (mask), "r" (&page->flags),
-=======
 			     : "r" (cpu), "r" (mask), "r" (&folio->flags),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "i" (PG_dcache_cpu_mask),
 			       "i" (PG_dcache_cpu_shift)
 			     : "g1", "g7");
@@ -379,10 +282,6 @@ static inline void tsb_insert(struct tsb *ent, unsigned long tag, unsigned long 
 }
 
 unsigned long _PAGE_ALL_SZ_BITS __read_mostly;
-<<<<<<< HEAD
-unsigned long _PAGE_SZBITS __read_mostly;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void flush_dcache(unsigned long pfn)
 {
@@ -390,16 +289,10 @@ static void flush_dcache(unsigned long pfn)
 
 	page = pfn_to_page(pfn);
 	if (page) {
-<<<<<<< HEAD
-		unsigned long pg_flags;
-
-		pg_flags = page->flags;
-=======
 		struct folio *folio = page_folio(page);
 		unsigned long pg_flags;
 
 		pg_flags = folio->flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pg_flags & (1UL << PG_dcache_dirty)) {
 			int cpu = ((pg_flags >> PG_dcache_cpu_shift) &
 				   PG_dcache_cpu_mask);
@@ -409,34 +302,17 @@ static void flush_dcache(unsigned long pfn)
 			 * in the SMP case.
 			 */
 			if (cpu == this_cpu)
-<<<<<<< HEAD
-				flush_dcache_page_impl(page);
-			else
-				smp_flush_dcache_page_impl(page, cpu);
-
-			clear_dcache_dirty_cpu(page, cpu);
-=======
 				flush_dcache_folio_impl(folio);
 			else
 				smp_flush_dcache_folio_impl(folio, cpu);
 
 			clear_dcache_dirty_cpu(folio, cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			put_cpu();
 		}
 	}
 }
 
-<<<<<<< HEAD
-void update_mmu_cache(struct vm_area_struct *vma, unsigned long address, pte_t *ptep)
-{
-	struct mm_struct *mm;
-	struct tsb *tsb;
-	unsigned long tag, flags;
-	unsigned long tsb_index, tsb_hash_shift;
-	pte_t pte = *ptep;
-=======
 /* mm->context.lock must be held */
 static void __update_mmu_tsb_insert(struct mm_struct *mm, unsigned long tsb_index,
 				    unsigned long tsb_hash_shift, unsigned long address,
@@ -526,7 +402,6 @@ void update_mmu_cache_range(struct vm_fault *vmf, struct vm_area_struct *vma,
 	bool is_huge_tsb;
 	pte_t pte = *ptep;
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tlb_type != hypervisor) {
 		unsigned long pfn = pte_pfn(pte);
@@ -537,39 +412,12 @@ void update_mmu_cache_range(struct vm_fault *vmf, struct vm_area_struct *vma,
 
 	mm = vma->vm_mm;
 
-<<<<<<< HEAD
-	tsb_index = MM_TSB_BASE;
-	tsb_hash_shift = PAGE_SHIFT;
-
-	/* Don't insert a non-valid PTE into the TSB, we'll deadlock.  */
-	if (!(pte_val(pte) & _PAGE_VALID))
-=======
 	/* Don't insert a non-valid PTE into the TSB, we'll deadlock.  */
 	if (!pte_accessible(mm, pte))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	spin_lock_irqsave(&mm->context.lock, flags);
 
-<<<<<<< HEAD
-#ifdef CONFIG_HUGETLB_PAGE
-	if (mm->context.tsb_block[MM_TSB_HUGE].tsb != NULL) {
-		if ((tlb_type == hypervisor &&
-		     (pte_val(pte) & _PAGE_SZALL_4V) == _PAGE_SZHUGE_4V) ||
-		    (tlb_type != hypervisor &&
-		     (pte_val(pte) & _PAGE_SZALL_4U) == _PAGE_SZHUGE_4U)) {
-			tsb_index = MM_TSB_HUGE;
-			tsb_hash_shift = HPAGE_SHIFT;
-		}
-	}
-#endif
-
-	tsb = mm->context.tsb_block[tsb_index].tsb;
-	tsb += ((address >> tsb_hash_shift) &
-		(mm->context.tsb_block[tsb_index].tsb_nentries - 1UL));
-	tag = (address >> 22UL);
-	tsb_insert(tsb, tag, pte_val(pte));
-=======
 	is_huge_tsb = false;
 #if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
 	if (mm->context.hugetlb_pte_count || mm->context.thp_pte_count) {
@@ -608,19 +456,13 @@ void update_mmu_cache_range(struct vm_fault *vmf, struct vm_area_struct *vma,
 			pte_val(pte) += PAGE_SIZE;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&mm->context.lock, flags);
 }
 
-<<<<<<< HEAD
-void flush_dcache_page(struct page *page)
-{
-=======
 void flush_dcache_folio(struct folio *folio)
 {
 	unsigned long pfn = folio_pfn(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct address_space *mapping;
 	int this_cpu;
 
@@ -631,28 +473,11 @@ void flush_dcache_folio(struct folio *folio)
 	 * is merely the zero page.  The 'bigcore' testcase in GDB
 	 * causes this case to run millions of times.
 	 */
-<<<<<<< HEAD
-	if (page == ZERO_PAGE(0))
-=======
 	if (is_zero_pfn(pfn))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	this_cpu = get_cpu();
 
-<<<<<<< HEAD
-	mapping = page_mapping(page);
-	if (mapping && !mapping_mapped(mapping)) {
-		int dirty = test_bit(PG_dcache_dirty, &page->flags);
-		if (dirty) {
-			int dirty_cpu = dcache_dirty_cpu(page);
-
-			if (dirty_cpu == this_cpu)
-				goto out;
-			smp_flush_dcache_page_impl(page, dirty_cpu);
-		}
-		set_dcache_dirty(page, this_cpu);
-=======
 	mapping = folio_flush_mapping(folio);
 	if (mapping && !mapping_mapped(mapping)) {
 		bool dirty = test_bit(PG_dcache_dirty, &folio->flags);
@@ -664,28 +489,19 @@ void flush_dcache_folio(struct folio *folio)
 			smp_flush_dcache_folio_impl(folio, dirty_cpu);
 		}
 		set_dcache_dirty(folio, this_cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* We could delay the flush for the !page_mapping
 		 * case too.  But that case is for exec env/arg
 		 * pages and those are %99 certainly going to get
 		 * faulted into the tlb (and thus flushed) anyways.
 		 */
-<<<<<<< HEAD
-		flush_dcache_page_impl(page);
-=======
 		flush_dcache_folio_impl(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
 	put_cpu();
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(flush_dcache_page);
-=======
 EXPORT_SYMBOL(flush_dcache_folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __kprobes flush_icache_range(unsigned long start, unsigned long end)
 {
@@ -702,14 +518,7 @@ void __kprobes flush_icache_range(unsigned long start, unsigned long end)
 			if (kaddr >= PAGE_OFFSET)
 				paddr = kaddr & mask;
 			else {
-<<<<<<< HEAD
-				pgd_t *pgdp = pgd_offset_k(kaddr);
-				pud_t *pudp = pud_offset(pgdp, kaddr);
-				pmd_t *pmdp = pmd_offset(pudp, kaddr);
-				pte_t *ptep = pte_offset_kernel(pmdp, kaddr);
-=======
 				pte_t *ptep = virt_to_kpte(kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				paddr = pte_val(*ptep) & mask;
 			}
@@ -721,15 +530,12 @@ EXPORT_SYMBOL(flush_icache_range);
 
 void mmu_info(struct seq_file *m)
 {
-<<<<<<< HEAD
-=======
 	static const char *pgsz_strings[] = {
 		"8K", "64K", "512K", "4MB", "32MB",
 		"256MB", "2GB", "16GB",
 	};
 	int i, printed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tlb_type == cheetah)
 		seq_printf(m, "MMU Type\t: Cheetah\n");
 	else if (tlb_type == cheetah_plus)
@@ -741,8 +547,6 @@ void mmu_info(struct seq_file *m)
 	else
 		seq_printf(m, "MMU Type\t: ???\n");
 
-<<<<<<< HEAD
-=======
 	seq_printf(m, "MMU PGSZs\t: ");
 	printed = 0;
 	for (i = 0; i < ARRAY_SIZE(pgsz_strings); i++) {
@@ -754,7 +558,6 @@ void mmu_info(struct seq_file *m)
 	}
 	seq_putc(m, '\n');
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DEBUG_DCFLUSH
 	seq_printf(m, "DCPageFlushes\t: %d\n",
 		   atomic_read(&dcpage_flushes));
@@ -803,11 +606,7 @@ static void __init read_obp_translations(void)
 		prom_halt();
 	}
 	if (unlikely(n > sizeof(prom_trans))) {
-<<<<<<< HEAD
-		prom_printf("prom_mappings: Size %Zd is too big.\n", n);
-=======
 		prom_printf("prom_mappings: Size %d is too big.\n", n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		prom_halt();
 	}
 
@@ -869,11 +668,7 @@ static void __init hypervisor_tlb_lock(unsigned long vaddr,
 	unsigned long ret = sun4v_mmu_map_perm_addr(vaddr, 0, pte, mmu);
 
 	if (ret != 0) {
-<<<<<<< HEAD
-		prom_printf("hypervisor_tlb_lock[%lx:%lx:%lx:%lx]: "
-=======
 		prom_printf("hypervisor_tlb_lock[%lx:%x:%lx:%lx]: "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    "errors with %lx\n", vaddr, 0, pte, mmu, ret);
 		prom_halt();
 	}
@@ -887,11 +682,7 @@ static void __init remap_kernel(void)
 	int i, tlb_ent = sparc64_highest_locked_tlbent();
 
 	tte_vaddr = (unsigned long) KERNBASE;
-<<<<<<< HEAD
-	phys_page = (prom_boot_mapping_phys_low >> 22UL) << 22UL;
-=======
 	phys_page = (prom_boot_mapping_phys_low >> ILOG2_4MB) << ILOG2_4MB;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tte_data = kern_large_tte(phys_page);
 
 	kern_locked_tte_data = tte_data;
@@ -932,16 +723,10 @@ static void __init inherit_prom_mappings(void)
 
 void prom_world(int enter)
 {
-<<<<<<< HEAD
-	if (!enter)
-		set_fs((mm_segment_t) { get_thread_current_ds() });
-
-=======
 	/*
 	 * No need to change the address space any more, just flush
 	 * the register windows
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__asm__ __volatile__("flushw");
 }
 
@@ -972,12 +757,6 @@ EXPORT_SYMBOL(__flush_dcache_range);
 
 /* get_new_mmu_context() uses "cache + 1".  */
 DEFINE_SPINLOCK(ctx_alloc_lock);
-<<<<<<< HEAD
-unsigned long tlb_context_cache = CTX_FIRST_VERSION - 1;
-#define MAX_CTX_NR	(1UL << CTX_NR_BITS)
-#define CTX_BMAP_SLOTS	BITS_TO_LONGS(MAX_CTX_NR)
-DECLARE_BITMAP(mmu_context_bmap, MAX_CTX_NR);
-=======
 unsigned long tlb_context_cache = CTX_FIRST_VERSION;
 #define MAX_CTX_NR	(1UL << CTX_NR_BITS)
 #define CTX_BMAP_SLOTS	BITS_TO_LONGS(MAX_CTX_NR)
@@ -1030,7 +809,6 @@ static void mmu_context_wrap(void)
 		}
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Caller does TLB context flushing on local CPU if necessary.
  * The caller also ensures that CTX_VALID(mm->context) is false.
@@ -1046,51 +824,6 @@ void get_new_mmu_context(struct mm_struct *mm)
 {
 	unsigned long ctx, new_ctx;
 	unsigned long orig_pgsz_bits;
-<<<<<<< HEAD
-	unsigned long flags;
-	int new_version;
-
-	spin_lock_irqsave(&ctx_alloc_lock, flags);
-	orig_pgsz_bits = (mm->context.sparc64_ctx_val & CTX_PGSZ_MASK);
-	ctx = (tlb_context_cache + 1) & CTX_NR_MASK;
-	new_ctx = find_next_zero_bit(mmu_context_bmap, 1 << CTX_NR_BITS, ctx);
-	new_version = 0;
-	if (new_ctx >= (1 << CTX_NR_BITS)) {
-		new_ctx = find_next_zero_bit(mmu_context_bmap, ctx, 1);
-		if (new_ctx >= ctx) {
-			int i;
-			new_ctx = (tlb_context_cache & CTX_VERSION_MASK) +
-				CTX_FIRST_VERSION;
-			if (new_ctx == 1)
-				new_ctx = CTX_FIRST_VERSION;
-
-			/* Don't call memset, for 16 entries that's just
-			 * plain silly...
-			 */
-			mmu_context_bmap[0] = 3;
-			mmu_context_bmap[1] = 0;
-			mmu_context_bmap[2] = 0;
-			mmu_context_bmap[3] = 0;
-			for (i = 4; i < CTX_BMAP_SLOTS; i += 4) {
-				mmu_context_bmap[i + 0] = 0;
-				mmu_context_bmap[i + 1] = 0;
-				mmu_context_bmap[i + 2] = 0;
-				mmu_context_bmap[i + 3] = 0;
-			}
-			new_version = 1;
-			goto out;
-		}
-	}
-	mmu_context_bmap[new_ctx>>6] |= (1UL << (new_ctx & 63));
-	new_ctx |= (tlb_context_cache & CTX_VERSION_MASK);
-out:
-	tlb_context_cache = new_ctx;
-	mm->context.sparc64_ctx_val = new_ctx | orig_pgsz_bits;
-	spin_unlock_irqrestore(&ctx_alloc_lock, flags);
-
-	if (unlikely(new_version))
-		smp_new_mmu_context_version();
-=======
 
 	spin_lock(&ctx_alloc_lock);
 retry:
@@ -1115,7 +848,6 @@ retry:
 	mm->context.sparc64_ctx_val = new_ctx | orig_pgsz_bits;
 out:
 	spin_unlock(&ctx_alloc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int numa_enabled = 1;
@@ -1182,23 +914,11 @@ static void __init find_ramdisk(unsigned long phys_base)
 
 struct node_mem_mask {
 	unsigned long mask;
-<<<<<<< HEAD
-	unsigned long val;
-	unsigned long bootmem_paddr;
-=======
 	unsigned long match;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 static struct node_mem_mask node_masks[MAX_NUMNODES];
 static int num_node_masks;
 
-<<<<<<< HEAD
-int numa_cpu_lookup_table[NR_CPUS];
-cpumask_t numa_cpumask_lookup_table[MAX_NUMNODES];
-
-#ifdef CONFIG_NEED_MULTIPLE_NODES
-
-=======
 #ifdef CONFIG_NUMA
 
 struct mdesc_mlgroup {
@@ -1214,7 +934,6 @@ static int num_mlgroups;
 int numa_cpu_lookup_table[NR_CPUS];
 cpumask_t numa_cpumask_lookup_table[MAX_NUMNODES];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mdesc_mblock {
 	u64	base;
 	u64	size;
@@ -1223,60 +942,6 @@ struct mdesc_mblock {
 static struct mdesc_mblock *mblocks;
 static int num_mblocks;
 
-<<<<<<< HEAD
-static unsigned long ra_to_pa(unsigned long addr)
-{
-	int i;
-
-	for (i = 0; i < num_mblocks; i++) {
-		struct mdesc_mblock *m = &mblocks[i];
-
-		if (addr >= m->base &&
-		    addr < (m->base + m->size)) {
-			addr += m->offset;
-			break;
-		}
-	}
-	return addr;
-}
-
-static int find_node(unsigned long addr)
-{
-	int i;
-
-	addr = ra_to_pa(addr);
-	for (i = 0; i < num_node_masks; i++) {
-		struct node_mem_mask *p = &node_masks[i];
-
-		if ((addr & p->mask) == p->val)
-			return i;
-	}
-	return -1;
-}
-
-static u64 memblock_nid_range(u64 start, u64 end, int *nid)
-{
-	*nid = find_node(start);
-	start += PAGE_SIZE;
-	while (start < end) {
-		int n = find_node(start);
-
-		if (n != *nid)
-			break;
-		start += PAGE_SIZE;
-	}
-
-	if (start > end)
-		start = end;
-
-	return start;
-}
-#else
-static u64 memblock_nid_range(u64 start, u64 end, int *nid)
-{
-	*nid = 0;
-	return end;
-=======
 static struct mdesc_mblock * __init addr_to_mblock(unsigned long addr)
 {
 	struct mdesc_mblock *m = NULL;
@@ -1399,7 +1064,6 @@ static u64 __init memblock_nid_range(u64 start, u64 end, int *nid)
 done:
 	*nid = _nid;
 	return ret_end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -1409,21 +1073,6 @@ done:
  */
 static void __init allocate_node_data(int nid)
 {
-<<<<<<< HEAD
-	unsigned long paddr, num_pages, start_pfn, end_pfn;
-	struct pglist_data *p;
-
-#ifdef CONFIG_NEED_MULTIPLE_NODES
-	paddr = memblock_alloc_try_nid(sizeof(struct pglist_data), SMP_CACHE_BYTES, nid);
-	if (!paddr) {
-		prom_printf("Cannot allocate pglist_data for nid[%d]\n", nid);
-		prom_halt();
-	}
-	NODE_DATA(nid) = __va(paddr);
-	memset(NODE_DATA(nid), 0, sizeof(struct pglist_data));
-
-	NODE_DATA(nid)->bdata = &bootmem_node_data[nid];
-=======
 	struct pglist_data *p;
 	unsigned long start_pfn, end_pfn;
 #ifdef CONFIG_NUMA
@@ -1436,7 +1085,6 @@ static void __init allocate_node_data(int nid)
 	}
 
 	NODE_DATA(nid)->node_id = nid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	p = NODE_DATA(nid);
@@ -1444,34 +1092,10 @@ static void __init allocate_node_data(int nid)
 	get_pfn_range_for_nid(nid, &start_pfn, &end_pfn);
 	p->node_start_pfn = start_pfn;
 	p->node_spanned_pages = end_pfn - start_pfn;
-<<<<<<< HEAD
-
-	if (p->node_spanned_pages) {
-		num_pages = bootmem_bootmap_pages(p->node_spanned_pages);
-
-		paddr = memblock_alloc_try_nid(num_pages << PAGE_SHIFT, PAGE_SIZE, nid);
-		if (!paddr) {
-			prom_printf("Cannot allocate bootmap for nid[%d]\n",
-				  nid);
-			prom_halt();
-		}
-		node_masks[nid].bootmem_paddr = paddr;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void init_node_masks_nonnuma(void)
 {
-<<<<<<< HEAD
-	int i;
-
-	numadbg("Initializing tables for non-numa.\n");
-
-	node_masks[0].mask = node_masks[0].val = 0;
-	num_node_masks = 1;
-
-=======
 #ifdef CONFIG_NUMA
 	int i;
 #endif
@@ -1483,39 +1107,20 @@ static void init_node_masks_nonnuma(void)
 	num_node_masks = 1;
 
 #ifdef CONFIG_NUMA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < NR_CPUS; i++)
 		numa_cpu_lookup_table[i] = 0;
 
 	cpumask_setall(&numa_cpumask_lookup_table[0]);
-<<<<<<< HEAD
-}
-
-#ifdef CONFIG_NEED_MULTIPLE_NODES
-=======
 #endif
 }
 
 #ifdef CONFIG_NUMA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pglist_data *node_data[MAX_NUMNODES];
 
 EXPORT_SYMBOL(numa_cpu_lookup_table);
 EXPORT_SYMBOL(numa_cpumask_lookup_table);
 EXPORT_SYMBOL(node_data);
 
-<<<<<<< HEAD
-struct mdesc_mlgroup {
-	u64	node;
-	u64	latency;
-	u64	match;
-	u64	mask;
-};
-static struct mdesc_mlgroup *mlgroups;
-static int num_mlgroups;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int scan_pio_for_cfg_handle(struct mdesc_handle *md, u64 pio,
 				   u32 cfg_handle)
 {
@@ -1587,11 +1192,7 @@ int of_node_to_nid(struct device_node *dp)
 	md = mdesc_grab();
 
 	count = 0;
-<<<<<<< HEAD
-	nid = -1;
-=======
 	nid = NUMA_NO_NODE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mdesc_for_each_node_by_name(md, grp, "group") {
 		if (!scan_arcs_for_cfg_handle(md, grp, cfg_handle)) {
 			nid = count;
@@ -1607,16 +1208,6 @@ int of_node_to_nid(struct device_node *dp)
 
 static void __init add_node_ranges(void)
 {
-<<<<<<< HEAD
-	struct memblock_region *reg;
-
-	for_each_memblock(memory, reg) {
-		unsigned long size = reg->size;
-		unsigned long start, end;
-
-		start = reg->base;
-		end = start + size;
-=======
 	phys_addr_t start, end;
 	unsigned long prev_max;
 	u64 i;
@@ -1625,7 +1216,6 @@ memblock_resized:
 	prev_max = memblock.memory.max;
 
 	for_each_mem_range(i, &start, &end) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (start < end) {
 			unsigned long this_end;
 			int nid;
@@ -1633,12 +1223,6 @@ memblock_resized:
 			this_end = memblock_nid_range(start, end, &nid);
 
 			numadbg("Setting memblock NUMA node nid[%d] "
-<<<<<<< HEAD
-				"start[%lx] end[%lx]\n",
-				nid, start, this_end);
-
-			memblock_set_node(start, this_end - start, nid);
-=======
 				"start[%llx] end[%lx]\n",
 				nid, start, this_end);
 
@@ -1646,7 +1230,6 @@ memblock_resized:
 					  &memblock.memory, nid);
 			if (memblock.memory.max != prev_max)
 				goto memblock_resized;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start = this_end;
 		}
 	}
@@ -1663,13 +1246,8 @@ static int __init grab_mlgroups(struct mdesc_handle *md)
 	if (!count)
 		return -ENOENT;
 
-<<<<<<< HEAD
-	paddr = memblock_alloc(count * sizeof(struct mdesc_mlgroup),
-			  SMP_CACHE_BYTES);
-=======
 	paddr = memblock_phys_alloc(count * sizeof(struct mdesc_mlgroup),
 				    SMP_CACHE_BYTES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!paddr)
 		return -ENOMEM;
 
@@ -1709,13 +1287,8 @@ static int __init grab_mblocks(struct mdesc_handle *md)
 	if (!count)
 		return -ENOENT;
 
-<<<<<<< HEAD
-	paddr = memblock_alloc(count * sizeof(struct mdesc_mblock),
-			  SMP_CACHE_BYTES);
-=======
 	paddr = memblock_phys_alloc(count * sizeof(struct mdesc_mblock),
 				    SMP_CACHE_BYTES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!paddr)
 		return -ENOMEM;
 
@@ -1781,8 +1354,6 @@ static struct mdesc_mlgroup * __init find_mlgroup(u64 node)
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 int __node_distance(int from, int to)
 {
 	if ((from >= MAX_NUMNODES) || (to >= MAX_NUMNODES)) {
@@ -1826,7 +1397,6 @@ static void __init find_numa_latencies_for_group(struct mdesc_handle *md,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init numa_attach_mlgroup(struct mdesc_handle *md, u64 grp,
 				      int index)
 {
@@ -1857,17 +1427,10 @@ static int __init numa_attach_mlgroup(struct mdesc_handle *md, u64 grp,
 	n = &node_masks[num_node_masks++];
 
 	n->mask = candidate->mask;
-<<<<<<< HEAD
-	n->val = candidate->match;
-
-	numadbg("NUMA NODE[%d]: mask[%lx] val[%lx] (latency[%llx])\n",
-		index, n->mask, n->val, candidate->latency);
-=======
 	n->match = candidate->match;
 
 	numadbg("NUMA NODE[%d]: mask[%lx] match[%lx] (latency[%llx])\n",
 		index, n->mask, n->match, candidate->latency);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1897,11 +1460,7 @@ static int __init numa_parse_mdesc_group(struct mdesc_handle *md, u64 grp,
 static int __init numa_parse_mdesc(void)
 {
 	struct mdesc_handle *md = mdesc_grab();
-<<<<<<< HEAD
-	int i, err, count;
-=======
 	int i, j, err, count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 node;
 
 	node = mdesc_node_by_name(md, MDESC_NODE_NULL, "latency-groups");
@@ -1926,8 +1485,6 @@ static int __init numa_parse_mdesc(void)
 		count++;
 	}
 
-<<<<<<< HEAD
-=======
 	count = 0;
 	mdesc_for_each_node_by_name(md, node, "group") {
 		find_numa_latencies_for_group(md, node, count);
@@ -1945,7 +1502,6 @@ static int __init numa_parse_mdesc(void)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_node_ranges();
 
 	for (i = 0; i < num_node_masks; i++) {
@@ -1971,11 +1527,7 @@ static int __init numa_parse_jbus(void)
 		numa_cpu_lookup_table[cpu] = index;
 		cpumask_copy(&numa_cpumask_lookup_table[index], cpumask_of(cpu));
 		node_masks[index].mask = ~((1UL << 36UL) - 1UL);
-<<<<<<< HEAD
-		node_masks[index].val = cpu << 36UL;
-=======
 		node_masks[index].match = cpu << 36UL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		index++;
 	}
@@ -2006,16 +1558,11 @@ static int __init numa_parse_sun4u(void)
 
 static int __init bootmem_init_numa(void)
 {
-<<<<<<< HEAD
-=======
 	int i, j;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = -1;
 
 	numadbg("bootmem_init_numa()\n");
 
-<<<<<<< HEAD
-=======
 	/* Some sane defaults for numa latency values */
 	for (i = 0; i < MAX_NUMNODES; i++) {
 		for (j = 0; j < MAX_NUMNODES; j++)
@@ -2023,7 +1570,6 @@ static int __init bootmem_init_numa(void)
 				LOCAL_DISTANCE : REMOTE_DISTANCE;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (numa_enabled) {
 		if (tlb_type == hypervisor)
 			err = numa_parse_mdesc();
@@ -2055,90 +1601,14 @@ static void __init bootmem_init_nonnuma(void)
 	       (top_of_ram - total_ram) >> 20);
 
 	init_node_masks_nonnuma();
-<<<<<<< HEAD
-	memblock_set_node(0, (phys_addr_t)ULLONG_MAX, 0);
-=======
 	memblock_set_node(0, PHYS_ADDR_MAX, &memblock.memory, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	allocate_node_data(0);
 	node_set_online(0);
 }
 
-<<<<<<< HEAD
-static void __init reserve_range_in_node(int nid, unsigned long start,
-					 unsigned long end)
-{
-	numadbg("    reserve_range_in_node(nid[%d],start[%lx],end[%lx]\n",
-		nid, start, end);
-	while (start < end) {
-		unsigned long this_end;
-		int n;
-
-		this_end = memblock_nid_range(start, end, &n);
-		if (n == nid) {
-			numadbg("      MATCH reserving range [%lx:%lx]\n",
-				start, this_end);
-			reserve_bootmem_node(NODE_DATA(nid), start,
-					     (this_end - start), BOOTMEM_DEFAULT);
-		} else
-			numadbg("      NO MATCH, advancing start to %lx\n",
-				this_end);
-
-		start = this_end;
-	}
-}
-
-static void __init trim_reserved_in_node(int nid)
-{
-	struct memblock_region *reg;
-
-	numadbg("  trim_reserved_in_node(%d)\n", nid);
-
-	for_each_memblock(reserved, reg)
-		reserve_range_in_node(nid, reg->base, reg->base + reg->size);
-}
-
-static void __init bootmem_init_one_node(int nid)
-{
-	struct pglist_data *p;
-
-	numadbg("bootmem_init_one_node(%d)\n", nid);
-
-	p = NODE_DATA(nid);
-
-	if (p->node_spanned_pages) {
-		unsigned long paddr = node_masks[nid].bootmem_paddr;
-		unsigned long end_pfn;
-
-		end_pfn = p->node_start_pfn + p->node_spanned_pages;
-
-		numadbg("  init_bootmem_node(%d, %lx, %lx, %lx)\n",
-			nid, paddr >> PAGE_SHIFT, p->node_start_pfn, end_pfn);
-
-		init_bootmem_node(p, paddr >> PAGE_SHIFT,
-				  p->node_start_pfn, end_pfn);
-
-		numadbg("  free_bootmem_with_active_regions(%d, %lx)\n",
-			nid, end_pfn);
-		free_bootmem_with_active_regions(nid, end_pfn);
-
-		trim_reserved_in_node(nid);
-
-		numadbg("  sparse_memory_present_with_active_regions(%d)\n",
-			nid);
-		sparse_memory_present_with_active_regions(nid);
-	}
-}
-
 static unsigned long __init bootmem_init(unsigned long phys_base)
 {
 	unsigned long end_pfn;
-	int nid;
-=======
-static unsigned long __init bootmem_init(unsigned long phys_base)
-{
-	unsigned long end_pfn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	end_pfn = memblock_end_of_DRAM() >> PAGE_SHIFT;
 	max_pfn = max_low_pfn = end_pfn;
@@ -2147,17 +1617,10 @@ static unsigned long __init bootmem_init(unsigned long phys_base)
 	if (bootmem_init_numa() < 0)
 		bootmem_init_nonnuma();
 
-<<<<<<< HEAD
-	/* XXX cpu notifier XXX */
-
-	for_each_online_node(nid)
-		bootmem_init_one_node(nid);
-=======
 	/* Dump memblock with node info. */
 	memblock_dump_all();
 
 	/* XXX cpu notifier XXX */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sparse_init();
 
@@ -2167,11 +1630,6 @@ static unsigned long __init bootmem_init(unsigned long phys_base)
 static struct linux_prom64_registers pall[MAX_BANKS] __initdata;
 static int pall_ents __initdata;
 
-<<<<<<< HEAD
-#ifdef CONFIG_DEBUG_PAGEALLOC
-static unsigned long __ref kernel_map_range(unsigned long pstart,
-					    unsigned long pend, pgprot_t prot)
-=======
 static unsigned long max_phys_bits = 40;
 
 bool kern_addr_valid(unsigned long addr)
@@ -2314,7 +1772,6 @@ static bool kernel_can_map_hugepmd(unsigned long vstart, unsigned long vend,
 static unsigned long __ref kernel_map_range(unsigned long pstart,
 					    unsigned long pend, pgprot_t prot,
 					    bool use_huge)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long vstart = PAGE_OFFSET + pstart;
 	unsigned long vend = PAGE_OFFSET + pend;
@@ -2329,21 +1786,11 @@ static unsigned long __ref kernel_map_range(unsigned long pstart,
 	while (vstart < vend) {
 		unsigned long this_end, paddr = __pa(vstart);
 		pgd_t *pgd = pgd_offset_k(vstart);
-<<<<<<< HEAD
-=======
 		p4d_t *p4d;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pud_t *pud;
 		pmd_t *pmd;
 		pte_t *pte;
 
-<<<<<<< HEAD
-		pud = pud_offset(pgd, vstart);
-		if (pud_none(*pud)) {
-			pmd_t *new;
-
-			new = __alloc_bootmem(PAGE_SIZE, PAGE_SIZE, PAGE_SIZE);
-=======
 		if (pgd_none(*pgd)) {
 			pud_t *new;
 
@@ -2379,18 +1826,11 @@ static unsigned long __ref kernel_map_range(unsigned long pstart,
 						  PAGE_SIZE);
 			if (!new)
 				goto err_alloc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			alloc_bytes += PAGE_SIZE;
 			pud_populate(&init_mm, pud, new);
 		}
 
 		pmd = pmd_offset(pud, vstart);
-<<<<<<< HEAD
-		if (!pmd_present(*pmd)) {
-			pte_t *new;
-
-			new = __alloc_bootmem(PAGE_SIZE, PAGE_SIZE, PAGE_SIZE);
-=======
 		if (pmd_none(*pmd)) {
 			pte_t *new;
 
@@ -2402,7 +1842,6 @@ static unsigned long __ref kernel_map_range(unsigned long pstart,
 						  PAGE_SIZE);
 			if (!new)
 				goto err_alloc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			alloc_bytes += PAGE_SIZE;
 			pmd_populate_kernel(&init_mm, pmd, new);
 		}
@@ -2422,61 +1861,6 @@ static unsigned long __ref kernel_map_range(unsigned long pstart,
 	}
 
 	return alloc_bytes;
-<<<<<<< HEAD
-}
-
-extern unsigned int kvmap_linear_patch[1];
-#endif /* CONFIG_DEBUG_PAGEALLOC */
-
-static void __init mark_kpte_bitmap(unsigned long start, unsigned long end)
-{
-	const unsigned long shift_256MB = 28;
-	const unsigned long mask_256MB = ((1UL << shift_256MB) - 1UL);
-	const unsigned long size_256MB = (1UL << shift_256MB);
-
-	while (start < end) {
-		long remains;
-
-		remains = end - start;
-		if (remains < size_256MB)
-			break;
-
-		if (start & mask_256MB) {
-			start = (start + size_256MB) & ~mask_256MB;
-			continue;
-		}
-
-		while (remains >= size_256MB) {
-			unsigned long index = start >> shift_256MB;
-
-			__set_bit(index, kpte_linear_bitmap);
-
-			start += size_256MB;
-			remains -= size_256MB;
-		}
-	}
-}
-
-static void __init init_kpte_bitmap(void)
-{
-	unsigned long i;
-
-	for (i = 0; i < pall_ents; i++) {
-		unsigned long phys_start, phys_end;
-
-		phys_start = pall[i].phys_addr;
-		phys_end = phys_start + pall[i].reg_size;
-
-		mark_kpte_bitmap(phys_start, phys_end);
-	}
-}
-
-static void __init kernel_physical_mapping_init(void)
-{
-#ifdef CONFIG_DEBUG_PAGEALLOC
-	unsigned long i, mem_alloced = 0UL;
-
-=======
 
 err_alloc:
 	panic("%s: Failed to allocate %lu bytes align=%lx from=%lx\n",
@@ -2512,7 +1896,6 @@ static void __init kernel_physical_mapping_init(void)
 #ifdef CONFIG_DEBUG_PAGEALLOC
 	use_huge = false;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < pall_ents; i++) {
 		unsigned long phys_start, phys_end;
 
@@ -2520,11 +1903,7 @@ static void __init kernel_physical_mapping_init(void)
 		phys_end = phys_start + pall[i].reg_size;
 
 		mem_alloced += kernel_map_range(phys_start, phys_end,
-<<<<<<< HEAD
-						PAGE_KERNEL);
-=======
 						PAGE_KERNEL, use_huge);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	printk("Allocated %ld bytes for kernel page tables.\n",
@@ -2533,14 +1912,6 @@ static void __init kernel_physical_mapping_init(void)
 	kvmap_linear_patch[0] = 0x01000000; /* nop */
 	flushi(&kvmap_linear_patch[0]);
 
-<<<<<<< HEAD
-	__flush_tlb_all();
-#endif
-}
-
-#ifdef CONFIG_DEBUG_PAGEALLOC
-void kernel_map_pages(struct page *page, int numpages, int enable)
-=======
 	flush_all_kernel_tsbs();
 
 	__flush_tlb_all();
@@ -2548,17 +1919,12 @@ void kernel_map_pages(struct page *page, int numpages, int enable)
 
 #ifdef CONFIG_DEBUG_PAGEALLOC
 void __kernel_map_pages(struct page *page, int numpages, int enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long phys_start = page_to_pfn(page) << PAGE_SHIFT;
 	unsigned long phys_end = phys_start + (numpages * PAGE_SIZE);
 
 	kernel_map_range(phys_start, phys_end,
-<<<<<<< HEAD
-			 (enable ? PAGE_KERNEL : __pgprot(0)));
-=======
 			 (enable ? PAGE_KERNEL : __pgprot(0)), false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	flush_tsb_kernel_range(PAGE_OFFSET + phys_start,
 			       PAGE_OFFSET + phys_end);
@@ -2583,8 +1949,6 @@ unsigned long __init find_ecache_flush_span(unsigned long size)
 	return ~0UL;
 }
 
-<<<<<<< HEAD
-=======
 unsigned long PAGE_OFFSET;
 EXPORT_SYMBOL(PAGE_OFFSET);
 
@@ -2670,7 +2034,6 @@ static void __init setup_page_offset(void)
 		VMEMMAP_BASE, VMEMMAP_BASE << 1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init tsb_phys_patch(void)
 {
 	struct tsb_ldquad_phys_patch_entry *pquad;
@@ -2713,13 +2076,6 @@ static void __init tsb_phys_patch(void)
 #define NUM_KTSB_DESCR	1
 #endif
 static struct hv_tsb_descr ktsb_descr[NUM_KTSB_DESCR];
-<<<<<<< HEAD
-extern struct tsb swapper_tsb[KERNEL_TSB_NENTRIES];
-
-static void patch_one_ktsb_phys(unsigned int *start, unsigned int *end, unsigned long pa)
-{
-	pa >>= KTSB_PHYS_SHIFT;
-=======
 
 /* The swapper TSBs are loaded with a base sequence of:
  *
@@ -2740,19 +2096,10 @@ static void patch_one_ktsb_phys(unsigned int *start, unsigned int *end, unsigned
 
 	high_bits = (pa >> 32) & 0xffffffff;
 	low_bits = (pa >> 0) & 0xffffffff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (start < end) {
 		unsigned int *ia = (unsigned int *)(unsigned long)*start;
 
-<<<<<<< HEAD
-		ia[0] = (ia[0] & ~0x3fffff) | (pa >> 10);
-		__asm__ __volatile__("flush	%0" : : "r" (ia));
-
-		ia[1] = (ia[1] & ~0x3ff) | (pa & 0x3ff);
-		__asm__ __volatile__("flush	%0" : : "r" (ia + 1));
-
-=======
 		ia[0] = (ia[0] & ~0x3fffff) | (high_bits >> 10);
 		__asm__ __volatile__("flush	%0" : : "r" (ia));
 
@@ -2765,7 +2112,6 @@ static void patch_one_ktsb_phys(unsigned int *start, unsigned int *end, unsigned
 		ia[3] = (ia[3] & ~0x1fff) | (low_bits & 0x3ff);
 		__asm__ __volatile__("flush	%0" : : "r" (ia + 3));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		start++;
 	}
 }
@@ -2828,25 +2174,16 @@ static void __init sun4v_ktsb_init(void)
 	ktsb_descr[0].resv = 0;
 
 #ifndef CONFIG_DEBUG_PAGEALLOC
-<<<<<<< HEAD
-	/* Second KTSB for 4MB/256MB mappings.  */
-=======
 	/* Second KTSB for 4MB/256MB/2GB/16GB mappings.  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ktsb_pa = (kern_base +
 		   ((unsigned long)&swapper_4m_tsb[0] - KERNBASE));
 
 	ktsb_descr[1].pgsz_idx = HV_PGSZ_IDX_4MB;
-<<<<<<< HEAD
-	ktsb_descr[1].pgsz_mask = (HV_PGSZ_MASK_4MB |
-				   HV_PGSZ_MASK_256MB);
-=======
 	ktsb_descr[1].pgsz_mask = ((HV_PGSZ_MASK_4MB |
 				    HV_PGSZ_MASK_256MB |
 				    HV_PGSZ_MASK_2GB |
 				    HV_PGSZ_MASK_16GB) &
 				   cpu_pgsz_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ktsb_descr[1].assoc = 1;
 	ktsb_descr[1].num_ttes = KERNEL_TSB4M_NENTRIES;
 	ktsb_descr[1].ctx_idx = 0;
@@ -2855,11 +2192,7 @@ static void __init sun4v_ktsb_init(void)
 #endif
 }
 
-<<<<<<< HEAD
-void __cpuinit sun4v_ktsb_register(void)
-=======
 void sun4v_ktsb_register(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long pa, ret;
 
@@ -2873,12 +2206,6 @@ void sun4v_ktsb_register(void)
 	}
 }
 
-<<<<<<< HEAD
-/* paging_init() sets up the page tables */
-
-static unsigned long last_valid_pfn;
-pgd_t swapper_pg_dir[2048];
-=======
 static void __init sun4u_linear_pte_xor_finalize(void)
 {
 #ifndef CONFIG_DEBUG_PAGEALLOC
@@ -2938,13 +2265,10 @@ static void __init sun4v_linear_pte_xor_finalize(void)
 /* paging_init() sets up the page tables */
 
 static unsigned long last_valid_pfn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void sun4u_pgprot_init(void);
 static void sun4v_pgprot_init(void);
 
-<<<<<<< HEAD
-=======
 #define _PAGE_CACHE_4U	(_PAGE_CP_4U | _PAGE_CV_4U)
 #define _PAGE_CACHE_4V	(_PAGE_CP_4V | _PAGE_CV_4V)
 #define __DIRTY_BITS_4U	 (_PAGE_MODIFIED_4U | _PAGE_WRITE_4U | _PAGE_W_4U)
@@ -2962,19 +2286,11 @@ static void __init reduce_memory(phys_addr_t limit_ram)
 	memblock_enforce_memory_limit(limit_ram);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init paging_init(void)
 {
 	unsigned long end_pfn, shift, phys_base;
 	unsigned long real_end, i;
 
-<<<<<<< HEAD
-	/* These build time checkes make sure that the dcache_dirty_cpu()
-	 * page->flags usage will work.
-	 *
-	 * When a page gets marked as dcache-dirty, we store the
-	 * cpu number starting at bit 32 in the page->flags.  Also,
-=======
 	setup_page_offset();
 
 	/* These build time checkes make sure that the dcache_dirty_cpu()
@@ -2982,7 +2298,6 @@ void __init paging_init(void)
 	 *
 	 * When a page gets marked as dcache-dirty, we store the
 	 * cpu number starting at bit 32 in the folio->flags.  Also,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * functions like clear_dcache_dirty_cpu use the cpu mask
 	 * in 13-bit signed-immediate instruction fields.
 	 */
@@ -3003,11 +2318,7 @@ void __init paging_init(void)
 
 	BUILD_BUG_ON(NR_CPUS > 4096);
 
-<<<<<<< HEAD
-	kern_base = (prom_boot_mapping_phys_low >> 22UL) << 22UL;
-=======
 	kern_base = (prom_boot_mapping_phys_low >> ILOG2_4MB) << ILOG2_4MB;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kern_size = (unsigned long)&_end - (unsigned long)KERNBASE;
 
 	/* Invalidate both kernel TSBs.  */
@@ -3016,8 +2327,6 @@ void __init paging_init(void)
 	memset(swapper_4m_tsb, 0x40, sizeof(swapper_4m_tsb));
 #endif
 
-<<<<<<< HEAD
-=======
 	/* TTE.cv bit on sparc v9 occupies the same position as TTE.mcde
 	 * bit on M7 processor. This is a conflicting usage of the same
 	 * bit. Enabling TTE.cv on M7 would turn on Memory Corruption
@@ -3039,7 +2348,6 @@ void __init paging_init(void)
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tlb_type == hypervisor)
 		sun4v_pgprot_init();
 	else
@@ -3051,15 +2359,8 @@ void __init paging_init(void)
 		ktsb_phys_patch();
 	}
 
-<<<<<<< HEAD
-	if (tlb_type == hypervisor) {
-		sun4v_patch_tlb_handlers();
-		sun4v_ktsb_init();
-	}
-=======
 	if (tlb_type == hypervisor)
 		sun4v_patch_tlb_handlers();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Find available physical memory...
 	 *
@@ -3084,12 +2385,8 @@ void __init paging_init(void)
 
 	find_ramdisk(phys_base);
 
-<<<<<<< HEAD
-	memblock_enforce_memory_limit(cmdline_memory_size);
-=======
 	if (cmdline_memory_size)
 		reduce_memory(cmdline_memory_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memblock_allow_resize();
 	memblock_dump_all();
@@ -3099,11 +2396,7 @@ void __init paging_init(void)
 	shift = kern_base + PAGE_OFFSET - ((unsigned long)KERNBASE);
 
 	real_end = (unsigned long)_end;
-<<<<<<< HEAD
-	num_kernel_image_mappings = DIV_ROUND_UP(real_end - KERNBASE, 1 << 22);
-=======
 	num_kernel_image_mappings = DIV_ROUND_UP(real_end - KERNBASE, 1 << ILOG2_4MB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("Kernel: Using %d locked TLB entries for main kernel image.\n",
 	       num_kernel_image_mappings);
 
@@ -3112,34 +2405,15 @@ void __init paging_init(void)
 	 */
 	init_mm.pgd += ((shift) / (sizeof(pgd_t)));
 	
-<<<<<<< HEAD
-	memset(swapper_low_pmd_dir, 0, sizeof(swapper_low_pmd_dir));
-
-	/* Now can init the kernel/bad page tables. */
-	pud_set(pud_offset(&swapper_pg_dir[0], 0),
-		swapper_low_pmd_dir + (shift / sizeof(pgd_t)));
-	
-	inherit_prom_mappings();
-	
-	init_kpte_bitmap();
-
-=======
 	memset(swapper_pg_dir, 0, sizeof(swapper_pg_dir));
 
 	inherit_prom_mappings();
 	
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Ok, we can use our TLB miss and window trap handlers safely.  */
 	setup_tba();
 
 	__flush_tlb_all();
 
-<<<<<<< HEAD
-	if (tlb_type == hypervisor)
-		sun4v_ktsb_register();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prom_build_devicetree();
 	of_populate_present_mask();
 #ifndef CONFIG_SMP
@@ -3152,19 +2426,6 @@ void __init paging_init(void)
 #ifndef CONFIG_SMP
 		mdesc_fill_in_cpu_data(cpu_all_mask);
 #endif
-<<<<<<< HEAD
-	}
-
-	/* Once the OF device tree and MDESC have been setup, we know
-	 * the list of possible cpus.  Therefore we can allocate the
-	 * IRQ stacks.
-	 */
-	for_each_possible_cpu(i) {
-		/* XXX Use node local allocations... XXX */
-		softirq_stack[i] = __va(memblock_alloc(THREAD_SIZE, THREAD_SIZE));
-		hardirq_stack[i] = __va(memblock_alloc(THREAD_SIZE, THREAD_SIZE));
-	}
-=======
 		mdesc_get_page_sizes(cpu_all_mask, &cpu_pgsz_mask);
 
 		sun4v_linear_pte_xor_finalize();
@@ -3194,17 +2455,10 @@ void __init paging_init(void)
 	memset(swapper_4m_tsb, 0x40, sizeof(swapper_4m_tsb));
 #endif
 	__flush_tlb_all();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup bootmem... */
 	last_valid_pfn = end_pfn = bootmem_init(phys_base);
 
-<<<<<<< HEAD
-#ifndef CONFIG_NEED_MULTIPLE_NODES
-	max_mapnr = last_valid_pfn;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kernel_physical_mapping_init();
 
 	{
@@ -3214,21 +2468,13 @@ void __init paging_init(void)
 
 		max_zone_pfns[ZONE_NORMAL] = end_pfn;
 
-<<<<<<< HEAD
-		free_area_init_nodes(max_zone_pfns);
-=======
 		free_area_init(max_zone_pfns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	printk("Booting Linux...\n");
 }
 
-<<<<<<< HEAD
-int __devinit page_in_phys_avail(unsigned long paddr)
-=======
 int page_in_phys_avail(unsigned long paddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -3254,108 +2500,6 @@ int page_in_phys_avail(unsigned long paddr)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct linux_prom64_registers pavail_rescan[MAX_BANKS] __initdata;
-static int pavail_rescan_ents __initdata;
-
-/* Certain OBP calls, such as fetching "available" properties, can
- * claim physical memory.  So, along with initializing the valid
- * address bitmap, what we do here is refetch the physical available
- * memory list again, and make sure it provides at least as much
- * memory as 'pavail' does.
- */
-static void __init setup_valid_addr_bitmap_from_pavail(unsigned long *bitmap)
-{
-	int i;
-
-	read_obp_memory("available", &pavail_rescan[0], &pavail_rescan_ents);
-
-	for (i = 0; i < pavail_ents; i++) {
-		unsigned long old_start, old_end;
-
-		old_start = pavail[i].phys_addr;
-		old_end = old_start + pavail[i].reg_size;
-		while (old_start < old_end) {
-			int n;
-
-			for (n = 0; n < pavail_rescan_ents; n++) {
-				unsigned long new_start, new_end;
-
-				new_start = pavail_rescan[n].phys_addr;
-				new_end = new_start +
-					pavail_rescan[n].reg_size;
-
-				if (new_start <= old_start &&
-				    new_end >= (old_start + PAGE_SIZE)) {
-					set_bit(old_start >> 22, bitmap);
-					goto do_next_page;
-				}
-			}
-
-			prom_printf("mem_init: Lost memory in pavail\n");
-			prom_printf("mem_init: OLD start[%lx] size[%lx]\n",
-				    pavail[i].phys_addr,
-				    pavail[i].reg_size);
-			prom_printf("mem_init: NEW start[%lx] size[%lx]\n",
-				    pavail_rescan[i].phys_addr,
-				    pavail_rescan[i].reg_size);
-			prom_printf("mem_init: Cannot continue, aborting.\n");
-			prom_halt();
-
-		do_next_page:
-			old_start += PAGE_SIZE;
-		}
-	}
-}
-
-static void __init patch_tlb_miss_handler_bitmap(void)
-{
-	extern unsigned int valid_addr_bitmap_insn[];
-	extern unsigned int valid_addr_bitmap_patch[];
-
-	valid_addr_bitmap_insn[1] = valid_addr_bitmap_patch[1];
-	mb();
-	valid_addr_bitmap_insn[0] = valid_addr_bitmap_patch[0];
-	flushi(&valid_addr_bitmap_insn[0]);
-}
-
-void __init mem_init(void)
-{
-	unsigned long codepages, datapages, initpages;
-	unsigned long addr, last;
-
-	addr = PAGE_OFFSET + kern_base;
-	last = PAGE_ALIGN(kern_size) + addr;
-	while (addr < last) {
-		set_bit(__pa(addr) >> 22, sparc64_valid_addr_bitmap);
-		addr += PAGE_SIZE;
-	}
-
-	setup_valid_addr_bitmap_from_pavail(sparc64_valid_addr_bitmap);
-	patch_tlb_miss_handler_bitmap();
-
-	high_memory = __va(last_valid_pfn << PAGE_SHIFT);
-
-#ifdef CONFIG_NEED_MULTIPLE_NODES
-	{
-		int i;
-		for_each_online_node(i) {
-			if (NODE_DATA(i)->node_spanned_pages != 0) {
-				totalram_pages +=
-					free_all_bootmem_node(NODE_DATA(i));
-			}
-		}
-	}
-#else
-	totalram_pages = free_all_bootmem();
-#endif
-
-	/* We subtract one to account for the mem_map_zero page
-	 * allocated below.
-	 */
-	totalram_pages -= 1;
-	num_physpages = totalram_pages;
-=======
 static void __init register_page_bootmem_info(void)
 {
 #ifdef CONFIG_NUMA
@@ -3379,7 +2523,6 @@ void __init mem_init(void)
 	 * deferred pages for us.
 	 */
 	register_page_bootmem_info();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Set up the zero page, mark it reserved, so that page count
@@ -3390,26 +2533,8 @@ void __init mem_init(void)
 		prom_printf("paging_init: Cannot alloc zero page.\n");
 		prom_halt();
 	}
-<<<<<<< HEAD
-	SetPageReserved(mem_map_zero);
-
-	codepages = (((unsigned long) _etext) - ((unsigned long) _start));
-	codepages = PAGE_ALIGN(codepages) >> PAGE_SHIFT;
-	datapages = (((unsigned long) _edata) - ((unsigned long) _etext));
-	datapages = PAGE_ALIGN(datapages) >> PAGE_SHIFT;
-	initpages = (((unsigned long) __init_end) - ((unsigned long) __init_begin));
-	initpages = PAGE_ALIGN(initpages) >> PAGE_SHIFT;
-
-	printk("Memory: %luk available (%ldk kernel code, %ldk data, %ldk init) [%016lx,%016lx]\n",
-	       nr_free_pages() << (PAGE_SHIFT-10),
-	       codepages << (PAGE_SHIFT-10),
-	       datapages << (PAGE_SHIFT-10), 
-	       initpages << (PAGE_SHIFT-10), 
-	       PAGE_OFFSET, (last_valid_pfn << PAGE_SHIFT));
-=======
 	mark_page_reserved(mem_map_zero);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tlb_type == cheetah || tlb_type == cheetah_plus)
 		cheetah_ecache_flush_init();
@@ -3435,60 +2560,17 @@ void free_initmem(void)
 	initend = (unsigned long)(__init_end) & PAGE_MASK;
 	for (; addr < initend; addr += PAGE_SIZE) {
 		unsigned long page;
-<<<<<<< HEAD
-		struct page *p;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		page = (addr +
 			((unsigned long) __va(kern_base)) -
 			((unsigned long) KERNBASE));
 		memset((void *)addr, POISON_FREE_INITMEM, PAGE_SIZE);
 
-<<<<<<< HEAD
-		if (do_free) {
-			p = virt_to_page(page);
-
-			ClearPageReserved(p);
-			init_page_count(p);
-			__free_page(p);
-			num_physpages++;
-			totalram_pages++;
-		}
-	}
-}
-
-#ifdef CONFIG_BLK_DEV_INITRD
-void free_initrd_mem(unsigned long start, unsigned long end)
-{
-	if (start < end)
-		printk ("Freeing initrd memory: %ldk freed\n", (end - start) >> 10);
-	for (; start < end; start += PAGE_SIZE) {
-		struct page *p = virt_to_page(start);
-
-		ClearPageReserved(p);
-		init_page_count(p);
-		__free_page(p);
-		num_physpages++;
-		totalram_pages++;
-	}
-}
-#endif
-
-#define _PAGE_CACHE_4U	(_PAGE_CP_4U | _PAGE_CV_4U)
-#define _PAGE_CACHE_4V	(_PAGE_CP_4V | _PAGE_CV_4V)
-#define __DIRTY_BITS_4U	 (_PAGE_MODIFIED_4U | _PAGE_WRITE_4U | _PAGE_W_4U)
-#define __DIRTY_BITS_4V	 (_PAGE_MODIFIED_4V | _PAGE_WRITE_4V | _PAGE_W_4V)
-#define __ACCESS_BITS_4U (_PAGE_ACCESSED_4U | _PAGE_READ_4U | _PAGE_R)
-#define __ACCESS_BITS_4V (_PAGE_ACCESSED_4V | _PAGE_READ_4V | _PAGE_R)
-
-=======
 		if (do_free)
 			free_reserved_page(virt_to_page(page));
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 pgprot_t PAGE_KERNEL __read_mostly;
 EXPORT_SYMBOL(PAGE_KERNEL);
 
@@ -3510,25 +2592,9 @@ unsigned long _PAGE_CACHE __read_mostly;
 EXPORT_SYMBOL(_PAGE_CACHE);
 
 #ifdef CONFIG_SPARSEMEM_VMEMMAP
-<<<<<<< HEAD
-unsigned long vmemmap_table[VMEMMAP_SIZE];
-
-static long __meminitdata addr_start, addr_end;
-static int __meminitdata node_start;
-
-int __meminit vmemmap_populate(struct page *start, unsigned long nr, int node)
-{
-	unsigned long vstart = (unsigned long) start;
-	unsigned long vend = (unsigned long) (start + nr);
-	unsigned long phys_start = (vstart - VMEMMAP_BASE);
-	unsigned long phys_end = (vend - VMEMMAP_BASE);
-	unsigned long addr = phys_start & VMEMMAP_CHUNK_MASK;
-	unsigned long end = VMEMMAP_ALIGN(phys_end);
-=======
 int __meminit vmemmap_populate(unsigned long vstart, unsigned long vend,
 			       int node, struct vmem_altmap *altmap)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long pte_base;
 
 	pte_base = (_PAGE_VALID | _PAGE_SZ4MB_4U |
@@ -3536,49 +2602,6 @@ int __meminit vmemmap_populate(unsigned long vstart, unsigned long vend,
 		    _PAGE_P_4U | _PAGE_W_4U);
 	if (tlb_type == hypervisor)
 		pte_base = (_PAGE_VALID | _PAGE_SZ4MB_4V |
-<<<<<<< HEAD
-			    _PAGE_CP_4V | _PAGE_CV_4V |
-			    _PAGE_P_4V | _PAGE_W_4V);
-
-	for (; addr < end; addr += VMEMMAP_CHUNK) {
-		unsigned long *vmem_pp =
-			vmemmap_table + (addr >> VMEMMAP_CHUNK_SHIFT);
-		void *block;
-
-		if (!(*vmem_pp & _PAGE_VALID)) {
-			block = vmemmap_alloc_block(1UL << 22, node);
-			if (!block)
-				return -ENOMEM;
-
-			*vmem_pp = pte_base | __pa(block);
-
-			/* check to see if we have contiguous blocks */
-			if (addr_end != addr || node_start != node) {
-				if (addr_start)
-					printk(KERN_DEBUG " [%lx-%lx] on node %d\n",
-					       addr_start, addr_end-1, node_start);
-				addr_start = addr;
-				node_start = node;
-			}
-			addr_end = addr + VMEMMAP_CHUNK;
-		}
-	}
-	return 0;
-}
-
-void __meminit vmemmap_populate_print_last(void)
-{
-	if (addr_start) {
-		printk(KERN_DEBUG " [%lx-%lx] on node %d\n",
-		       addr_start, addr_end-1, node_start);
-		addr_start = 0;
-		addr_end = 0;
-		node_start = 0;
-	}
-}
-#endif /* CONFIG_SPARSEMEM_VMEMMAP */
-
-=======
 			    page_cache4v_flag | _PAGE_P_4V | _PAGE_W_4V);
 
 	pte_base |= _PAGE_PMD_HUGE;
@@ -3627,7 +2650,6 @@ void vmemmap_free(unsigned long start, unsigned long end,
 /* These are actually filled in at boot time by sun4{u,v}_pgprot_init() */
 static pgprot_t protection_map[16] __ro_after_init;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void prot_init_common(unsigned long page_none,
 			     unsigned long page_shared,
 			     unsigned long page_copy,
@@ -3659,10 +2681,7 @@ static void __init sun4u_pgprot_init(void)
 {
 	unsigned long page_none, page_shared, page_copy, page_readonly;
 	unsigned long page_exec_bit;
-<<<<<<< HEAD
-=======
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PAGE_KERNEL = __pgprot (_PAGE_PRESENT_4U | _PAGE_VALID |
 				_PAGE_CACHE_4U | _PAGE_P_4U |
@@ -3681,32 +2700,17 @@ static void __init sun4u_pgprot_init(void)
 		     __ACCESS_BITS_4U | _PAGE_E_4U);
 
 #ifdef CONFIG_DEBUG_PAGEALLOC
-<<<<<<< HEAD
-	kern_linear_pte_xor[0] = (_PAGE_VALID | _PAGE_SZBITS_4U) ^
-		0xfffff80000000000UL;
-#else
-	kern_linear_pte_xor[0] = (_PAGE_VALID | _PAGE_SZ4MB_4U) ^
-		0xfffff80000000000UL;
-=======
 	kern_linear_pte_xor[0] = _PAGE_VALID ^ PAGE_OFFSET;
 #else
 	kern_linear_pte_xor[0] = (_PAGE_VALID | _PAGE_SZ4MB_4U) ^
 		PAGE_OFFSET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	kern_linear_pte_xor[0] |= (_PAGE_CP_4U | _PAGE_CV_4U |
 				   _PAGE_P_4U | _PAGE_W_4U);
 
-<<<<<<< HEAD
-	/* XXX Should use 256MB on Panther. XXX */
-	kern_linear_pte_xor[1] = kern_linear_pte_xor[0];
-
-	_PAGE_SZBITS = _PAGE_SZBITS_4U;
-=======
 	for (i = 1; i < 4; i++)
 		kern_linear_pte_xor[i] = kern_linear_pte_xor[0];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_PAGE_ALL_SZ_BITS =  (_PAGE_SZ4MB_4U | _PAGE_SZ512K_4U |
 			      _PAGE_SZ64K_4U | _PAGE_SZ8K_4U |
 			      _PAGE_SZ32MB_4U | _PAGE_SZ256MB_4U);
@@ -3730,45 +2734,16 @@ static void __init sun4v_pgprot_init(void)
 {
 	unsigned long page_none, page_shared, page_copy, page_readonly;
 	unsigned long page_exec_bit;
-<<<<<<< HEAD
-
-	PAGE_KERNEL = __pgprot (_PAGE_PRESENT_4V | _PAGE_VALID |
-				_PAGE_CACHE_4V | _PAGE_P_4V |
-=======
 	int i;
 
 	PAGE_KERNEL = __pgprot (_PAGE_PRESENT_4V | _PAGE_VALID |
 				page_cache4v_flag | _PAGE_P_4V |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__ACCESS_BITS_4V | __DIRTY_BITS_4V |
 				_PAGE_EXEC_4V);
 	PAGE_KERNEL_LOCKED = PAGE_KERNEL;
 
 	_PAGE_IE = _PAGE_IE_4V;
 	_PAGE_E = _PAGE_E_4V;
-<<<<<<< HEAD
-	_PAGE_CACHE = _PAGE_CACHE_4V;
-
-#ifdef CONFIG_DEBUG_PAGEALLOC
-	kern_linear_pte_xor[0] = (_PAGE_VALID | _PAGE_SZBITS_4V) ^
-		0xfffff80000000000UL;
-#else
-	kern_linear_pte_xor[0] = (_PAGE_VALID | _PAGE_SZ4MB_4V) ^
-		0xfffff80000000000UL;
-#endif
-	kern_linear_pte_xor[0] |= (_PAGE_CP_4V | _PAGE_CV_4V |
-				   _PAGE_P_4V | _PAGE_W_4V);
-
-#ifdef CONFIG_DEBUG_PAGEALLOC
-	kern_linear_pte_xor[1] = (_PAGE_VALID | _PAGE_SZBITS_4V) ^
-		0xfffff80000000000UL;
-#else
-	kern_linear_pte_xor[1] = (_PAGE_VALID | _PAGE_SZ256MB_4V) ^
-		0xfffff80000000000UL;
-#endif
-	kern_linear_pte_xor[1] |= (_PAGE_CP_4V | _PAGE_CV_4V |
-				   _PAGE_P_4V | _PAGE_W_4V);
-=======
 	_PAGE_CACHE = page_cache4v_flag;
 
 #ifdef CONFIG_DEBUG_PAGEALLOC
@@ -3782,35 +2757,21 @@ static void __init sun4v_pgprot_init(void)
 
 	for (i = 1; i < 4; i++)
 		kern_linear_pte_xor[i] = kern_linear_pte_xor[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pg_iobits = (_PAGE_VALID | _PAGE_PRESENT_4V | __DIRTY_BITS_4V |
 		     __ACCESS_BITS_4V | _PAGE_E_4V);
 
-<<<<<<< HEAD
-	_PAGE_SZBITS = _PAGE_SZBITS_4V;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_PAGE_ALL_SZ_BITS = (_PAGE_SZ16GB_4V | _PAGE_SZ2GB_4V |
 			     _PAGE_SZ256MB_4V | _PAGE_SZ32MB_4V |
 			     _PAGE_SZ4MB_4V | _PAGE_SZ512K_4V |
 			     _PAGE_SZ64K_4V | _PAGE_SZ8K_4V);
 
-<<<<<<< HEAD
-	page_none = _PAGE_PRESENT_4V | _PAGE_ACCESSED_4V | _PAGE_CACHE_4V;
-	page_shared = (_PAGE_VALID | _PAGE_PRESENT_4V | _PAGE_CACHE_4V |
-		       __ACCESS_BITS_4V | _PAGE_WRITE_4V | _PAGE_EXEC_4V);
-	page_copy   = (_PAGE_VALID | _PAGE_PRESENT_4V | _PAGE_CACHE_4V |
-		       __ACCESS_BITS_4V | _PAGE_EXEC_4V);
-	page_readonly = (_PAGE_VALID | _PAGE_PRESENT_4V | _PAGE_CACHE_4V |
-=======
 	page_none = _PAGE_PRESENT_4V | _PAGE_ACCESSED_4V | page_cache4v_flag;
 	page_shared = (_PAGE_VALID | _PAGE_PRESENT_4V | page_cache4v_flag |
 		       __ACCESS_BITS_4V | _PAGE_WRITE_4V | _PAGE_EXEC_4V);
 	page_copy   = (_PAGE_VALID | _PAGE_PRESENT_4V | page_cache4v_flag |
 		       __ACCESS_BITS_4V | _PAGE_EXEC_4V);
 	page_readonly = (_PAGE_VALID | _PAGE_PRESENT_4V | page_cache4v_flag |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 __ACCESS_BITS_4V | _PAGE_EXEC_4V);
 
 	page_exec_bit = _PAGE_EXEC_4V;
@@ -3868,11 +2829,7 @@ static unsigned long kern_large_tte(unsigned long paddr)
 	       _PAGE_EXEC_4U | _PAGE_L_4U | _PAGE_W_4U);
 	if (tlb_type == hypervisor)
 		val = (_PAGE_VALID | _PAGE_SZ4MB_4V |
-<<<<<<< HEAD
-		       _PAGE_CP_4V | _PAGE_CV_4V | _PAGE_P_4V |
-=======
 		       page_cache4v_flag | _PAGE_P_4V |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       _PAGE_EXEC_4V | _PAGE_W_4V);
 
 	return val | paddr;
@@ -3937,8 +2894,6 @@ void __flush_tlb_all(void)
 			     : : "r" (pstate));
 }
 
-<<<<<<< HEAD
-=======
 pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
 {
 	struct page *page = alloc_page(GFP_KERNEL | __GFP_ZERO);
@@ -4171,7 +3126,6 @@ static int __init report_memory(void)
 }
 arch_initcall(report_memory);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 #define do_flush_tlb_kernel_range	smp_flush_tlb_kernel_range
 #else
@@ -4186,21 +3140,14 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
 			do_flush_tlb_kernel_range(start, LOW_OBP_ADDRESS);
 		}
 		if (end > HI_OBP_ADDRESS) {
-<<<<<<< HEAD
-			flush_tsb_kernel_range(end, HI_OBP_ADDRESS);
-			do_flush_tlb_kernel_range(end, HI_OBP_ADDRESS);
-=======
 			flush_tsb_kernel_range(HI_OBP_ADDRESS, end);
 			do_flush_tlb_kernel_range(HI_OBP_ADDRESS, end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		flush_tsb_kernel_range(start, end);
 		do_flush_tlb_kernel_range(start, end);
 	}
 }
-<<<<<<< HEAD
-=======
 
 void copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
@@ -4282,4 +3229,3 @@ pgprot_t vm_get_page_prot(unsigned long vm_flags)
 	return __pgprot(prot);
 }
 EXPORT_SYMBOL(vm_get_page_prot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

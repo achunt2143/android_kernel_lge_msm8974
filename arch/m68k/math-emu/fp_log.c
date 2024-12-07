@@ -1,10 +1,6 @@
 /*
 
-<<<<<<< HEAD
-  fp_trig.c: floating-point math routines for the Linux-m68k
-=======
   fp_log.c: floating-point math routines for the Linux-m68k
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   floating point emulator.
 
   Copyright (c) 1998-1999 David Huggins-Daines / Roman Zippel.
@@ -19,20 +15,6 @@
 
 */
 
-<<<<<<< HEAD
-#include "fp_emu.h"
-
-static const struct fp_ext fp_one =
-{
-	.exp = 0x3fff,
-};
-
-extern struct fp_ext *fp_fadd(struct fp_ext *dest, const struct fp_ext *src);
-extern struct fp_ext *fp_fdiv(struct fp_ext *dest, const struct fp_ext *src);
-
-struct fp_ext *
-fp_fsqrt(struct fp_ext *dest, struct fp_ext *src)
-=======
 #include "fp_arith.h"
 #include "fp_emu.h"
 #include "fp_log.h"
@@ -42,7 +24,6 @@ static const struct fp_ext fp_one = {
 };
 
 struct fp_ext *fp_fsqrt(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fp_ext tmp, src2;
 	int i, exp;
@@ -66,11 +47,7 @@ struct fp_ext *fp_fsqrt(struct fp_ext *dest, struct fp_ext *src)
 	 * sqrt(m*2^e) =
 	 *		 sqrt(2*m) * 2^(p)	, if e = 2*p + 1
 	 *
-<<<<<<< HEAD
-	 * So we use the last bit of the exponent to decide wether to
-=======
 	 * So we use the last bit of the exponent to decide whether to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * use the m or 2*m.
 	 *
 	 * Since only the fractional part of the mantissa is stored and
@@ -90,12 +67,8 @@ struct fp_ext *fp_fsqrt(struct fp_ext *dest, struct fp_ext *src)
 	 *	sqrt(x) = 1 + 1/2*(x-1)
 	 *		= 1/2*(1+x)
 	 */
-<<<<<<< HEAD
-	fp_fadd(dest, &fp_one);
-=======
 	/* It is safe to cast away the constness, as fp_one is normalized */
 	fp_fadd(dest, (struct fp_ext *)&fp_one);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dest->exp--;		/* * 1/2 */
 
 	/*
@@ -123,12 +96,7 @@ struct fp_ext *fp_fsqrt(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fetoxm1(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fetoxm1(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uprint("fetoxm1\n");
 
@@ -137,12 +105,7 @@ struct fp_ext *fp_fetoxm1(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fetox(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fetox(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uprint("fetox\n");
 
@@ -151,12 +114,7 @@ struct fp_ext *fp_fetox(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_ftwotox(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_ftwotox(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uprint("ftwotox\n");
 
@@ -165,12 +123,7 @@ struct fp_ext *fp_ftwotox(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_ftentox(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_ftentox(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uprint("ftentox\n");
 
@@ -179,12 +132,7 @@ struct fp_ext *fp_ftentox(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_flogn(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_flogn(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uprint("flogn\n");
 
@@ -193,12 +141,7 @@ struct fp_ext *fp_flogn(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_flognp1(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_flognp1(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uprint("flognp1\n");
 
@@ -207,12 +150,7 @@ struct fp_ext *fp_flognp1(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_flog10(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_flog10(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uprint("flog10\n");
 
@@ -221,12 +159,7 @@ struct fp_ext *fp_flog10(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_flog2(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_flog2(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uprint("flog2\n");
 
@@ -235,12 +168,7 @@ struct fp_ext *fp_flog2(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fgetexp(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fgetexp(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dprint(PINSTR, "fgetexp\n");
 
@@ -260,12 +188,7 @@ struct fp_ext *fp_fgetexp(struct fp_ext *dest, struct fp_ext *src)
 	return dest;
 }
 
-<<<<<<< HEAD
-struct fp_ext *
-fp_fgetman(struct fp_ext *dest, struct fp_ext *src)
-=======
 struct fp_ext *fp_fgetman(struct fp_ext *dest, struct fp_ext *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dprint(PINSTR, "fgetman\n");
 

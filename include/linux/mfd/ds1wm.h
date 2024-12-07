@@ -1,26 +1,13 @@
-<<<<<<< HEAD
-/* MFD cell driver data for the DS1WM driver */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /* MFD cell driver data for the DS1WM driver
  *
  * to be defined in the MFD device that is
  * using this driver for one of his sub devices
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ds1wm_driver_data {
 	int active_high;
 	int clock_rate;
-<<<<<<< HEAD
-	/* in milliseconds, the amount of time to */
-	/* sleep following a reset pulse. Zero    */
-	/* should work if your bus devices recover*/
-	/* time respects the 1-wire spec since the*/
-	/* ds1wm implements the precise timings of*/
-	/* a reset pulse/presence detect sequence.*/
-	unsigned int reset_recover_delay;
-=======
 	/* in milliseconds, the amount of time to
 	 * sleep following a reset pulse. Zero
 	 * should work if your bus devices recover
@@ -39,5 +26,4 @@ struct ds1wm_driver_data {
 	 * Only 0,1,2 allowed for 8,16 or 32 bit bus width respectively
 	 */
 	unsigned int bus_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

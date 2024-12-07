@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/ev6-divide.S
  *
@@ -59,10 +56,7 @@
  * Try not to change the actual algorithm if possible for consistency.
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define halt .long 0
 
 /*
@@ -213,10 +207,7 @@ ufunction:
 	addq	$30,STACK,$30		# E :
 	ret	$31,($23),1		# L0 : L U U L
 	.end	ufunction
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(ufunction)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Uhh.. Ugly signed division. I'd rather not have it at all, but
@@ -269,7 +260,4 @@ sfunction:
 	addq	$30,STACK,$30		# E :
 	ret	$31,($23),1		# L0 : L U U L
 	.end	sfunction
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(sfunction)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

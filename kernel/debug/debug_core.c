@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Kernel Debug Core
  *
@@ -26,15 +23,6 @@
  *
  * Original KGDB stub: David Grothe <dave@gcom.com>,
  * Tigran Aivazian <tigran@sco.com>
-<<<<<<< HEAD
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2. This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
-#include <linux/pid_namespace.h>
-#include <linux/clocksource.h>
-=======
  */
 
 #define pr_fmt(fmt) "KGDB: " fmt
@@ -42,7 +30,6 @@
 #include <linux/pid_namespace.h>
 #include <linux/clocksource.h>
 #include <linux/serial_core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/spinlock.h>
 #include <linux/console.h>
@@ -59,19 +46,13 @@
 #include <linux/init.h>
 #include <linux/kgdb.h>
 #include <linux/kdb.h>
-<<<<<<< HEAD
-=======
 #include <linux/nmi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pid.h>
 #include <linux/smp.h>
 #include <linux/mm.h>
 #include <linux/rcupdate.h>
-<<<<<<< HEAD
-=======
 #include <linux/irq.h>
 #include <linux/security.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/cacheflush.h>
 #include <asm/byteorder.h>
@@ -83,13 +64,7 @@ static int kgdb_break_asap;
 
 struct debuggerinfo_struct kgdb_info[NR_CPUS];
 
-<<<<<<< HEAD
-/**
- * kgdb_connected - Is a host GDB connected to us?
- */
-=======
 /* kgdb_connected - Is a host GDB connected to us? */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int				kgdb_connected;
 EXPORT_SYMBOL_GPL(kgdb_connected);
 
@@ -102,11 +77,7 @@ static int			exception_level;
 struct kgdb_io		*dbg_io_ops;
 static DEFINE_SPINLOCK(kgdb_registration_lock);
 
-<<<<<<< HEAD
-/* Action for the reboot notifiter, a global allow kdb to change it */
-=======
 /* Action for the reboot notifier, a global allow kdb to change it */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int kgdbreboot;
 /* kgdb console driver is loaded */
 static int kgdb_con_registered;
@@ -116,34 +87,12 @@ static int kgdb_use_con;
 bool dbg_is_early = true;
 /* Next cpu to become the master debug core */
 int dbg_switch_cpu;
-<<<<<<< HEAD
-/* Flag for entering kdb when a panic occurs */
-static bool break_on_panic = true;
-/* Flag for entering kdb when an exception occurs */
-static bool break_on_exception = true;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Use kdb or gdbserver mode */
 int dbg_kdb_mode = 1;
 
-<<<<<<< HEAD
-static int __init opt_kgdb_con(char *str)
-{
-	kgdb_use_con = 1;
-	return 0;
-}
-
-early_param("kgdbcon", opt_kgdb_con);
-
 module_param(kgdb_use_con, int, 0644);
 module_param(kgdbreboot, int, 0644);
-module_param(break_on_panic, bool, 0644);
-module_param(break_on_exception, bool, 0644);
-=======
-module_param(kgdb_use_con, int, 0644);
-module_param(kgdbreboot, int, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Holds information about breakpoints in a kernel. These breakpoints are
@@ -167,10 +116,6 @@ static DEFINE_RAW_SPINLOCK(dbg_slave_lock);
  */
 static atomic_t			masters_in_kgdb;
 static atomic_t			slaves_in_kgdb;
-<<<<<<< HEAD
-static atomic_t			kgdb_break_tasklet_var;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 atomic_t			kgdb_setting_breakpoint;
 
 struct task_struct		*kgdb_usethread;
@@ -206,32 +151,12 @@ early_param("nokgdbroundup", opt_nokgdbroundup);
 
 /*
  * Weak aliases for breakpoint management,
-<<<<<<< HEAD
- * can be overriden by architectures when needed:
-=======
  * can be overridden by architectures when needed:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int __weak kgdb_arch_set_breakpoint(struct kgdb_bkpt *bpt)
 {
 	int err;
 
-<<<<<<< HEAD
-	err = probe_kernel_read(bpt->saved_instr, (char *)bpt->bpt_addr,
-				BREAK_INSTR_SIZE);
-	if (err)
-		return err;
-	err = probe_kernel_write((char *)bpt->bpt_addr,
-				 arch_kgdb_ops.gdb_bpt_instr, BREAK_INSTR_SIZE);
-	return err;
-}
-
-int __weak kgdb_arch_remove_breakpoint(struct kgdb_bkpt *bpt)
-{
-	return probe_kernel_write((char *)bpt->bpt_addr,
-				  (char *)bpt->saved_instr, BREAK_INSTR_SIZE);
-}
-=======
 	err = copy_from_kernel_nofault(bpt->saved_instr, (char *)bpt->bpt_addr,
 				BREAK_INSTR_SIZE);
 	if (err)
@@ -248,19 +173,15 @@ int __weak kgdb_arch_remove_breakpoint(struct kgdb_bkpt *bpt)
 				  (char *)bpt->saved_instr, BREAK_INSTR_SIZE);
 }
 NOKPROBE_SYMBOL(kgdb_arch_remove_breakpoint);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int __weak kgdb_validate_break_address(unsigned long addr)
 {
 	struct kgdb_bkpt tmp;
 	int err;
-<<<<<<< HEAD
-=======
 
 	if (kgdb_within_blocklist(addr))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Validate setting the breakpoint and then removing it.  If the
 	 * remove fails, the kernel needs to emit a bad message because we
 	 * are deep trouble not being able to put things back the way we
@@ -272,13 +193,8 @@ int __weak kgdb_validate_break_address(unsigned long addr)
 		return err;
 	err = kgdb_arch_remove_breakpoint(&tmp);
 	if (err)
-<<<<<<< HEAD
-		printk(KERN_ERR "KGDB: Critical breakpoint error, kernel "
-		   "memory destroyed at: %lx", addr);
-=======
 		pr_err("Critical breakpoint error, kernel memory destroyed at: %lx\n",
 		       addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -286,10 +202,7 @@ unsigned long __weak kgdb_arch_pc(int exception, struct pt_regs *regs)
 {
 	return instruction_pointer(regs);
 }
-<<<<<<< HEAD
-=======
 NOKPROBE_SYMBOL(kgdb_arch_pc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int __weak kgdb_arch_init(void)
 {
@@ -300,8 +213,6 @@ int __weak kgdb_skipexception(int exception, struct pt_regs *regs)
 {
 	return 0;
 }
-<<<<<<< HEAD
-=======
 NOKPROBE_SYMBOL(kgdb_skipexception);
 
 #ifdef CONFIG_SMP
@@ -361,7 +272,6 @@ void __weak kgdb_roundup_cpus(void)
 NOKPROBE_SYMBOL(kgdb_roundup_cpus);
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Some architectures need cache flushes when we set/clear a
@@ -372,20 +282,10 @@ static void kgdb_flush_swbreak_addr(unsigned long addr)
 	if (!CACHE_FLUSH_IS_SAFE)
 		return;
 
-<<<<<<< HEAD
-	if (current->mm && current->mm->mmap_cache) {
-		flush_cache_range(current->mm->mmap_cache,
-				  addr, addr + BREAK_INSTR_SIZE);
-	}
-	/* Force flush instruction cache if it was outside the mm */
-	flush_icache_range(addr, addr + BREAK_INSTR_SIZE);
-}
-=======
 	/* Force flush instruction cache if it was outside the mm */
 	flush_icache_range(addr, addr + BREAK_INSTR_SIZE);
 }
 NOKPROBE_SYMBOL(kgdb_flush_swbreak_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * SW breakpoint management:
@@ -403,13 +303,8 @@ int dbg_activate_sw_breakpoints(void)
 		error = kgdb_arch_set_breakpoint(&kgdb_break[i]);
 		if (error) {
 			ret = error;
-<<<<<<< HEAD
-			printk(KERN_INFO "KGDB: BP install failed: %lx",
-			       kgdb_break[i].bpt_addr);
-=======
 			pr_info("BP install failed: %lx\n",
 				kgdb_break[i].bpt_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -418,10 +313,7 @@ int dbg_activate_sw_breakpoints(void)
 	}
 	return ret;
 }
-<<<<<<< HEAD
-=======
 NOKPROBE_SYMBOL(dbg_activate_sw_breakpoints);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int dbg_set_sw_break(unsigned long addr)
 {
@@ -475,13 +367,8 @@ int dbg_deactivate_sw_breakpoints(void)
 			continue;
 		error = kgdb_arch_remove_breakpoint(&kgdb_break[i]);
 		if (error) {
-<<<<<<< HEAD
-			printk(KERN_INFO "KGDB: BP remove failed: %lx\n",
-			       kgdb_break[i].bpt_addr);
-=======
 			pr_info("BP remove failed: %lx\n",
 				kgdb_break[i].bpt_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = error;
 		}
 
@@ -490,10 +377,7 @@ int dbg_deactivate_sw_breakpoints(void)
 	}
 	return ret;
 }
-<<<<<<< HEAD
-=======
 NOKPROBE_SYMBOL(dbg_deactivate_sw_breakpoints);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int dbg_remove_sw_break(unsigned long addr)
 {
@@ -521,8 +405,6 @@ int kgdb_isremovedbreak(unsigned long addr)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 int kgdb_has_hit_break(unsigned long addr)
 {
 	int i;
@@ -535,7 +417,6 @@ int kgdb_has_hit_break(unsigned long addr)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int dbg_remove_all_break(void)
 {
 	int error;
@@ -547,11 +428,7 @@ int dbg_remove_all_break(void)
 			goto setundefined;
 		error = kgdb_arch_remove_breakpoint(&kgdb_break[i]);
 		if (error)
-<<<<<<< HEAD
-			printk(KERN_ERR "KGDB: breakpoint remove failed: %lx\n",
-=======
 			pr_err("breakpoint remove failed: %lx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       kgdb_break[i].bpt_addr);
 setundefined:
 		kgdb_break[i].state = BP_UNDEFINED;
@@ -564,8 +441,6 @@ setundefined:
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 void kgdb_free_init_mem(void)
 {
 	int i;
@@ -608,7 +483,6 @@ void kdb_dump_stack_on_cpu(int cpu)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Return true if there is a valid kgdb I/O module.  Also if no
  * debugger is attached a message can be printed to the console about
@@ -629,23 +503,14 @@ static int kgdb_io_ready(int print_wait)
 	if (print_wait) {
 #ifdef CONFIG_KGDB_KDB
 		if (!dbg_kdb_mode)
-<<<<<<< HEAD
-			printk(KERN_CRIT "KGDB: waiting... or $3#33 for KDB\n");
-#else
-		printk(KERN_CRIT "KGDB: Waiting for remote debugger\n");
-=======
 			pr_crit("waiting... or $3#33 for KDB\n");
 #else
 		pr_crit("Waiting for remote debugger\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	}
 	return 1;
 }
-<<<<<<< HEAD
-=======
 NOKPROBE_SYMBOL(kgdb_io_ready);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int kgdb_reenter_check(struct kgdb_state *ks)
 {
@@ -669,12 +534,7 @@ static int kgdb_reenter_check(struct kgdb_state *ks)
 		exception_level = 0;
 		kgdb_skipexception(ks->ex_vector, ks->linux_regs);
 		dbg_activate_sw_breakpoints();
-<<<<<<< HEAD
-		printk(KERN_CRIT "KGDB: re-enter error: breakpoint removed %lx\n",
-			addr);
-=======
 		pr_crit("re-enter error: breakpoint removed %lx\n", addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		WARN_ON_ONCE(1);
 
 		return 1;
@@ -684,18 +544,11 @@ static int kgdb_reenter_check(struct kgdb_state *ks)
 
 	if (exception_level > 1) {
 		dump_stack();
-<<<<<<< HEAD
-		panic("Recursive entry to debugger");
-	}
-
-	printk(KERN_CRIT "KGDB: re-enter exception: ALL breakpoints killed\n");
-=======
 		kgdb_io_module_registered = false;
 		panic("Recursive entry to debugger");
 	}
 
 	pr_crit("re-enter exception: ALL breakpoints killed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_KGDB_KDB
 	/* Allow kdb to debug itself one level */
 	return 0;
@@ -705,10 +558,7 @@ static int kgdb_reenter_check(struct kgdb_state *ks)
 
 	return 1;
 }
-<<<<<<< HEAD
-=======
 NOKPROBE_SYMBOL(kgdb_reenter_check);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void dbg_touch_watchdogs(void)
 {
@@ -716,10 +566,7 @@ static void dbg_touch_watchdogs(void)
 	clocksource_touch_watchdog();
 	rcu_cpu_stall_reset();
 }
-<<<<<<< HEAD
-=======
 NOKPROBE_SYMBOL(dbg_touch_watchdogs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int kgdb_cpu_enter(struct kgdb_state *ks, struct pt_regs *regs,
 		int exception_state)
@@ -730,10 +577,7 @@ static int kgdb_cpu_enter(struct kgdb_state *ks, struct pt_regs *regs,
 	int cpu;
 	int trace_on = 0;
 	int online_cpus = num_online_cpus();
-<<<<<<< HEAD
-=======
 	u64 time_left;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kgdb_info[ks->cpu].enter_kgdb++;
 	kgdb_info[ks->cpu].exception_state |= exception_state;
@@ -747,10 +591,7 @@ static int kgdb_cpu_enter(struct kgdb_state *ks, struct pt_regs *regs,
 		arch_kgdb_ops.disable_hw_break(regs);
 
 acquirelock:
-<<<<<<< HEAD
-=======
 	rcu_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Interrupts will be restored by the 'trap return' code, except when
 	 * single stepping.
@@ -786,12 +627,9 @@ cpu_loop:
 				atomic_xchg(&kgdb_active, cpu);
 				break;
 			}
-<<<<<<< HEAD
-=======
 		} else if (kgdb_info[cpu].exception_state & DCPU_WANT_BT) {
 			dump_stack();
 			kgdb_info[cpu].exception_state &= ~DCPU_WANT_BT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (kgdb_info[cpu].exception_state & DCPU_IS_SLAVE) {
 			if (!raw_spin_is_locked(&dbg_slave_lock))
 				goto return_normal;
@@ -804,15 +642,6 @@ return_normal:
 				arch_kgdb_ops.correct_hw_break();
 			if (trace_on)
 				tracing_on();
-<<<<<<< HEAD
-			kgdb_info[cpu].exception_state &=
-				~(DCPU_WANT_MASTER | DCPU_IS_SLAVE);
-			kgdb_info[cpu].enter_kgdb--;
-			smp_mb__before_atomic_dec();
-			atomic_dec(&slaves_in_kgdb);
-			dbg_touch_watchdogs();
-			local_irq_restore(flags);
-=======
 			kgdb_info[cpu].debuggerinfo = NULL;
 			kgdb_info[cpu].task = NULL;
 			kgdb_info[cpu].exception_state &=
@@ -823,7 +652,6 @@ return_normal:
 			dbg_touch_watchdogs();
 			local_irq_restore(flags);
 			rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 		cpu_relax();
@@ -842,10 +670,7 @@ return_normal:
 		raw_spin_unlock(&dbg_master_lock);
 		dbg_touch_watchdogs();
 		local_irq_restore(flags);
-<<<<<<< HEAD
-=======
 		rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		goto acquirelock;
 	}
@@ -861,11 +686,8 @@ return_normal:
 	if (kgdb_skipexception(ks->ex_vector, ks->linux_regs))
 		goto kgdb_restore;
 
-<<<<<<< HEAD
-=======
 	atomic_inc(&ignore_console_lock_warning);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Call the I/O driver's pre_exception routine */
 	if (dbg_io_ops->pre_exception)
 		dbg_io_ops->pre_exception();
@@ -878,11 +700,6 @@ return_normal:
 		raw_spin_lock(&dbg_slave_lock);
 
 #ifdef CONFIG_SMP
-<<<<<<< HEAD
-	/* Signal the other CPUs to enter kgdb_wait() */
-	if ((!kgdb_single_step) && kgdb_do_roundup)
-		kgdb_roundup_cpus(flags);
-=======
 	/* If send_ready set, slaves are already waiting */
 	if (ks->send_ready)
 		atomic_set(ks->send_ready, 1);
@@ -890,17 +707,11 @@ return_normal:
 	/* Signal the other CPUs to enter kgdb_wait() */
 	else if ((!kgdb_single_step) && kgdb_do_roundup)
 		kgdb_roundup_cpus();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/*
 	 * Wait for the other CPUs to be notified and be waiting for us:
 	 */
-<<<<<<< HEAD
-	while (kgdb_do_roundup && (atomic_read(&masters_in_kgdb) +
-				atomic_read(&slaves_in_kgdb)) != online_cpus)
-		cpu_relax();
-=======
 	time_left = MSEC_PER_SEC;
 	while (kgdb_do_roundup && --time_left &&
 	       (atomic_read(&masters_in_kgdb) + atomic_read(&slaves_in_kgdb)) !=
@@ -908,7 +719,6 @@ return_normal:
 		udelay(1000);
 	if (!time_left)
 		pr_crit("Timed out waiting for secondary CPUs.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * At this point the primary processor is completely
@@ -931,8 +741,6 @@ cpu_master_loop:
 				continue;
 			kgdb_connected = 0;
 		} else {
-<<<<<<< HEAD
-=======
 			/*
 			 * This is a brutal way to interfere with the debugger
 			 * and prevent gdb being used to poke at kernel memory.
@@ -956,7 +764,6 @@ cpu_master_loop:
 					break;
 				}
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = gdb_serial_stub(ks);
 		}
 
@@ -972,20 +779,14 @@ cpu_master_loop:
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	dbg_activate_sw_breakpoints();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Call the I/O driver's post_exception routine */
 	if (dbg_io_ops->post_exception)
 		dbg_io_ops->post_exception();
 
-<<<<<<< HEAD
-=======
 	atomic_dec(&ignore_console_lock_warning);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!kgdb_single_step) {
 		raw_spin_unlock(&dbg_slave_lock);
 		/* Wait till all the CPUs have quit from the debugger. */
@@ -1006,36 +807,23 @@ kgdb_restore:
 	if (trace_on)
 		tracing_on();
 
-<<<<<<< HEAD
-	kgdb_info[cpu].exception_state &=
-		~(DCPU_WANT_MASTER | DCPU_IS_SLAVE);
-	kgdb_info[cpu].enter_kgdb--;
-	smp_mb__before_atomic_dec();
-=======
 	kgdb_info[cpu].debuggerinfo = NULL;
 	kgdb_info[cpu].task = NULL;
 	kgdb_info[cpu].exception_state &=
 		~(DCPU_WANT_MASTER | DCPU_IS_SLAVE);
 	kgdb_info[cpu].enter_kgdb--;
 	smp_mb__before_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_dec(&masters_in_kgdb);
 	/* Free kgdb_active */
 	atomic_set(&kgdb_active, -1);
 	raw_spin_unlock(&dbg_master_lock);
 	dbg_touch_watchdogs();
 	local_irq_restore(flags);
-<<<<<<< HEAD
-
-	return kgdb_info[cpu].ret_state;
-}
-=======
 	rcu_read_unlock();
 
 	return kgdb_info[cpu].ret_state;
 }
 NOKPROBE_SYMBOL(kgdb_cpu_enter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * kgdb_handle_exception() - main entry point from a kernel exception
@@ -1049,12 +837,6 @@ kgdb_handle_exception(int evector, int signo, int ecode, struct pt_regs *regs)
 {
 	struct kgdb_state kgdb_var;
 	struct kgdb_state *ks = &kgdb_var;
-<<<<<<< HEAD
-
-	if (unlikely(signo != SIGTRAP && !break_on_exception))
-		return 1;
-
-=======
 	int ret = 0;
 
 	if (arch_kgdb_ops.enable_nmi)
@@ -1069,23 +851,10 @@ kgdb_handle_exception(int evector, int signo, int ecode, struct pt_regs *regs)
 		return 1;
 
 	memset(ks, 0, sizeof(struct kgdb_state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ks->cpu			= raw_smp_processor_id();
 	ks->ex_vector		= evector;
 	ks->signo		= signo;
 	ks->err_code		= ecode;
-<<<<<<< HEAD
-	ks->kgdb_usethreadid	= 0;
-	ks->linux_regs		= regs;
-
-	if (kgdb_reenter_check(ks))
-		return 0; /* Ouch, double exception ! */
-	if (kgdb_info[ks->cpu].enter_kgdb != 0)
-		return 0;
-
-	return kgdb_cpu_enter(ks, regs, DCPU_WANT_MASTER);
-}
-=======
 	ks->linux_regs		= regs;
 
 	if (kgdb_reenter_check(ks))
@@ -1113,7 +882,6 @@ static int module_event(struct notifier_block *self, unsigned long val,
 static struct notifier_block dbg_module_load_nb = {
 	.notifier_call	= module_event,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int kgdb_nmicallback(int cpu, void *regs)
 {
@@ -1121,11 +889,8 @@ int kgdb_nmicallback(int cpu, void *regs)
 	struct kgdb_state kgdb_var;
 	struct kgdb_state *ks = &kgdb_var;
 
-<<<<<<< HEAD
-=======
 	kgdb_info[cpu].rounding_up = false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(ks, 0, sizeof(struct kgdb_state));
 	ks->cpu			= cpu;
 	ks->linux_regs		= regs;
@@ -1138,8 +903,6 @@ int kgdb_nmicallback(int cpu, void *regs)
 #endif
 	return 1;
 }
-<<<<<<< HEAD
-=======
 NOKPROBE_SYMBOL(kgdb_nmicallback);
 
 int kgdb_nmicallin(int cpu, int trapnr, void *regs, int err_code,
@@ -1167,7 +930,6 @@ int kgdb_nmicallin(int cpu, int trapnr, void *regs, int err_code,
 	return 1;
 }
 NOKPROBE_SYMBOL(kgdb_nmicallin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void kgdb_console_write(struct console *co, const char *s,
    unsigned count)
@@ -1191,13 +953,6 @@ static struct console kgdbcons = {
 	.index		= -1,
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_MAGIC_SYSRQ
-static void sysrq_handle_dbg(int key)
-{
-	if (!dbg_io_ops) {
-		printk(KERN_CRIT "ERROR: No KGDB I/O module available\n");
-=======
 static int __init opt_kgdb_con(char *str)
 {
 	kgdb_use_con = 1;
@@ -1217,59 +972,27 @@ static void sysrq_handle_dbg(u8 key)
 {
 	if (!dbg_io_ops) {
 		pr_crit("ERROR: No KGDB I/O module available\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	if (!kgdb_connected) {
 #ifdef CONFIG_KGDB_KDB
 		if (!dbg_kdb_mode)
-<<<<<<< HEAD
-			printk(KERN_CRIT "KGDB or $3#33 for KDB\n");
-#else
-		printk(KERN_CRIT "Entering KGDB\n");
-=======
 			pr_crit("KGDB or $3#33 for KDB\n");
 #else
 		pr_crit("Entering KGDB\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	}
 
 	kgdb_breakpoint();
 }
 
-<<<<<<< HEAD
-static struct sysrq_key_op sysrq_dbg_op = {
-	.handler	= sysrq_handle_dbg,
-	.help_msg	= "debug(G)",
-=======
 static const struct sysrq_key_op sysrq_dbg_op = {
 	.handler	= sysrq_handle_dbg,
 	.help_msg	= "debug(g)",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.action_msg	= "DEBUG",
 };
 #endif
 
-<<<<<<< HEAD
-static int kgdb_panic_event(struct notifier_block *self,
-			    unsigned long val,
-			    void *data)
-{
-	if (!break_on_panic)
-		return NOTIFY_DONE;
-
-	if (dbg_kdb_mode)
-		kdb_printf("PANIC: %s\n", (char *)data);
-	kgdb_breakpoint();
-	return NOTIFY_DONE;
-}
-
-static struct notifier_block kgdb_panic_event_nb = {
-       .notifier_call	= kgdb_panic_event,
-       .priority	= INT_MAX,
-};
-=======
 void kgdb_panic(const char *msg)
 {
 	if (!kgdb_io_module_registered)
@@ -1299,7 +1022,6 @@ static void kgdb_initial_breakpoint(void)
 	pr_crit("Waiting for connection from remote gdb...\n");
 	kgdb_breakpoint();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __weak kgdb_arch_late(void)
 {
@@ -1311,12 +1033,9 @@ void __init dbg_late_init(void)
 	if (kgdb_io_module_registered)
 		kgdb_arch_late();
 	kdb_init(KDB_INIT_FULL);
-<<<<<<< HEAD
-=======
 
 	if (kgdb_io_module_registered && kgdb_break_asap)
 		kgdb_initial_breakpoint();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -1325,20 +1044,13 @@ dbg_notify_reboot(struct notifier_block *this, unsigned long code, void *x)
 	/*
 	 * Take the following action on reboot notify depending on value:
 	 *    1 == Enter debugger
-<<<<<<< HEAD
-	 *    0 == [the default] detatch debug client
-=======
 	 *    0 == [the default] detach debug client
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *   -1 == Do nothing... and use this until the board resets
 	 */
 	switch (kgdbreboot) {
 	case 1:
 		kgdb_breakpoint();
-<<<<<<< HEAD
-=======
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case -1:
 		goto done;
 	}
@@ -1361,14 +1073,8 @@ static void kgdb_register_callbacks(void)
 		kgdb_arch_init();
 		if (!dbg_is_early)
 			kgdb_arch_late();
-<<<<<<< HEAD
-		register_reboot_notifier(&dbg_reboot_notifier);
-		atomic_notifier_chain_register(&panic_notifier_list,
-					       &kgdb_panic_event_nb);
-=======
 		register_module_notifier(&dbg_module_load_nb);
 		register_reboot_notifier(&dbg_reboot_notifier);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_MAGIC_SYSRQ
 		register_sysrq_key('g', &sysrq_dbg_op);
 #endif
@@ -1382,24 +1088,14 @@ static void kgdb_register_callbacks(void)
 static void kgdb_unregister_callbacks(void)
 {
 	/*
-<<<<<<< HEAD
-	 * When this routine is called KGDB should unregister from the
-	 * panic handler and clean up, making sure it is not handling any
-=======
 	 * When this routine is called KGDB should unregister from
 	 * handlers and clean up, making sure it is not handling any
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * break exceptions at the time.
 	 */
 	if (kgdb_io_module_registered) {
 		kgdb_io_module_registered = 0;
 		unregister_reboot_notifier(&dbg_reboot_notifier);
-<<<<<<< HEAD
-		atomic_notifier_chain_unregister(&panic_notifier_list,
-					       &kgdb_panic_event_nb);
-=======
 		unregister_module_notifier(&dbg_module_load_nb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kgdb_arch_exit();
 #ifdef CONFIG_MAGIC_SYSRQ
 		unregister_sysrq_key('g', &sysrq_dbg_op);
@@ -1411,42 +1107,6 @@ static void kgdb_unregister_callbacks(void)
 	}
 }
 
-<<<<<<< HEAD
-/*
- * There are times a tasklet needs to be used vs a compiled in
- * break point so as to cause an exception outside a kgdb I/O module,
- * such as is the case with kgdboe, where calling a breakpoint in the
- * I/O driver itself would be fatal.
- */
-static void kgdb_tasklet_bpt(unsigned long ing)
-{
-	kgdb_breakpoint();
-	atomic_set(&kgdb_break_tasklet_var, 0);
-}
-
-static DECLARE_TASKLET(kgdb_tasklet_breakpoint, kgdb_tasklet_bpt, 0);
-
-void kgdb_schedule_breakpoint(void)
-{
-	if (atomic_read(&kgdb_break_tasklet_var) ||
-		atomic_read(&kgdb_active) != -1 ||
-		atomic_read(&kgdb_setting_breakpoint))
-		return;
-	atomic_inc(&kgdb_break_tasklet_var);
-	tasklet_schedule(&kgdb_tasklet_breakpoint);
-}
-EXPORT_SYMBOL_GPL(kgdb_schedule_breakpoint);
-
-static void kgdb_initial_breakpoint(void)
-{
-	kgdb_break_asap = 0;
-
-	printk(KERN_CRIT "kgdb: Waiting for connection from remote gdb...\n");
-	kgdb_breakpoint();
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	kgdb_register_io_module - register KGDB IO module
  *	@new_dbg_io_ops: the io ops vector
@@ -1455,22 +1115,11 @@ static void kgdb_initial_breakpoint(void)
  */
 int kgdb_register_io_module(struct kgdb_io *new_dbg_io_ops)
 {
-<<<<<<< HEAD
-=======
 	struct kgdb_io *old_dbg_io_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	spin_lock(&kgdb_registration_lock);
 
-<<<<<<< HEAD
-	if (dbg_io_ops) {
-		spin_unlock(&kgdb_registration_lock);
-
-		printk(KERN_ERR "kgdb: Another I/O driver is already "
-				"registered with KGDB.\n");
-		return -EBUSY;
-=======
 	old_dbg_io_ops = dbg_io_ops;
 	if (old_dbg_io_ops) {
 		if (!old_dbg_io_ops->deinit) {
@@ -1482,7 +1131,6 @@ int kgdb_register_io_module(struct kgdb_io *new_dbg_io_ops)
 		}
 		pr_info("Replacing I/O driver %s with %s\n",
 			old_dbg_io_ops->name, new_dbg_io_ops->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (new_dbg_io_ops->init) {
@@ -1497,27 +1145,18 @@ int kgdb_register_io_module(struct kgdb_io *new_dbg_io_ops)
 
 	spin_unlock(&kgdb_registration_lock);
 
-<<<<<<< HEAD
-	printk(KERN_INFO "kgdb: Registered I/O driver %s.\n",
-	       new_dbg_io_ops->name);
-=======
 	if (old_dbg_io_ops) {
 		old_dbg_io_ops->deinit();
 		return 0;
 	}
 
 	pr_info("Registered I/O driver %s\n", new_dbg_io_ops->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Arm KGDB now. */
 	kgdb_register_callbacks();
 
-<<<<<<< HEAD
-	if (kgdb_break_asap)
-=======
 	if (kgdb_break_asap &&
 	    (!dbg_is_early || IS_ENABLED(CONFIG_ARCH_HAS_EARLY_DEBUG)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kgdb_initial_breakpoint();
 
 	return 0;
@@ -1525,11 +1164,7 @@ int kgdb_register_io_module(struct kgdb_io *new_dbg_io_ops)
 EXPORT_SYMBOL_GPL(kgdb_register_io_module);
 
 /**
-<<<<<<< HEAD
- *	kkgdb_unregister_io_module - unregister KGDB IO module
-=======
  *	kgdb_unregister_io_module - unregister KGDB IO module
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@old_dbg_io_ops: the io ops vector
  *
  *	Unregister it with the KGDB core.
@@ -1551,15 +1186,10 @@ void kgdb_unregister_io_module(struct kgdb_io *old_dbg_io_ops)
 
 	spin_unlock(&kgdb_registration_lock);
 
-<<<<<<< HEAD
-	printk(KERN_INFO
-		"kgdb: Unregistered I/O driver %s, debugger disabled.\n",
-=======
 	if (old_dbg_io_ops->deinit)
 		old_dbg_io_ops->deinit();
 
 	pr_info("Unregistered I/O driver %s, debugger disabled\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		old_dbg_io_ops->name);
 }
 EXPORT_SYMBOL_GPL(kgdb_unregister_io_module);
@@ -1584,11 +1214,7 @@ int dbg_io_get_char(void)
  * otherwise as a quick means to stop program execution and "break" into
  * the debugger.
  */
-<<<<<<< HEAD
-void kgdb_breakpoint(void)
-=======
 noinline void kgdb_breakpoint(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	atomic_inc(&kgdb_setting_breakpoint);
 	wmb(); /* Sync point before breakpoint */
@@ -1603,12 +1229,8 @@ static int __init opt_kgdb_wait(char *str)
 	kgdb_break_asap = 1;
 
 	kdb_init(KDB_INIT_EARLY);
-<<<<<<< HEAD
-	if (kgdb_io_module_registered)
-=======
 	if (kgdb_io_module_registered &&
 	    IS_ENABLED(CONFIG_ARCH_HAS_EARLY_DEBUG))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kgdb_initial_breakpoint();
 
 	return 0;

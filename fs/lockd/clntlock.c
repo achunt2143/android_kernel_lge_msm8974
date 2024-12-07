@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/lockd/clntlock.c
  *
@@ -15,13 +12,6 @@
 #include <linux/slab.h>
 #include <linux/time.h>
 #include <linux/nfs_fs.h>
-<<<<<<< HEAD
-#include <linux/sunrpc/clnt.h>
-#include <linux/sunrpc/svc.h>
-#include <linux/lockd/lockd.h>
-#include <linux/kthread.h>
-
-=======
 #include <linux/sunrpc/addr.h>
 #include <linux/sunrpc/svc.h>
 #include <linux/sunrpc/svc_xprt.h>
@@ -30,7 +20,6 @@
 
 #include "trace.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NLMDBG_FACILITY		NLMDBG_CLIENT
 
 /*
@@ -43,21 +32,6 @@ static int			reclaimer(void *ptr);
  * client perspective.
  */
 
-<<<<<<< HEAD
-/*
- * This is the representation of a blocked client lock.
- */
-struct nlm_wait {
-	struct list_head	b_list;		/* linked list */
-	wait_queue_head_t	b_wait;		/* where to wait on */
-	struct nlm_host *	b_host;
-	struct file_lock *	b_lock;		/* local file lock */
-	unsigned short		b_reclaim;	/* got to reclaim lock */
-	__be32			b_status;	/* grant callback status */
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(nlm_blocked);
 static DEFINE_SPINLOCK(nlm_blocked_lock);
 
@@ -74,26 +48,13 @@ struct nlm_host *nlmclnt_init(const struct nlmclnt_initdata *nlm_init)
 	u32 nlm_version = (nlm_init->nfs_version == 2) ? 1 : 4;
 	int status;
 
-<<<<<<< HEAD
-	status = lockd_up(nlm_init->net);
-=======
 	status = lockd_up(nlm_init->net, nlm_init->cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0)
 		return ERR_PTR(status);
 
 	host = nlmclnt_lookup_host(nlm_init->address, nlm_init->addrlen,
 				   nlm_init->protocol, nlm_version,
 				   nlm_init->hostname, nlm_init->noresvport,
-<<<<<<< HEAD
-				   nlm_init->net);
-	if (host == NULL) {
-		lockd_down(nlm_init->net);
-		return ERR_PTR(-ENOLCK);
-	}
-
-	return host;
-=======
 				   nlm_init->net, nlm_init->cred);
 	if (host == NULL)
 		goto out_nohost;
@@ -107,7 +68,6 @@ out_nobind:
 out_nohost:
 	lockd_down(nlm_init->net);
 	return ERR_PTR(-ENOLCK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(nlmclnt_init);
 
@@ -125,37 +85,6 @@ void nlmclnt_done(struct nlm_host *host)
 }
 EXPORT_SYMBOL_GPL(nlmclnt_done);
 
-<<<<<<< HEAD
-/*
- * Queue up a lock for blocking so that the GRANTED request can see it
- */
-struct nlm_wait *nlmclnt_prepare_block(struct nlm_host *host, struct file_lock *fl)
-{
-	struct nlm_wait *block;
-
-	block = kmalloc(sizeof(*block), GFP_KERNEL);
-	if (block != NULL) {
-		block->b_host = host;
-		block->b_lock = fl;
-		init_waitqueue_head(&block->b_wait);
-		block->b_status = nlm_lck_blocked;
-
-		spin_lock(&nlm_blocked_lock);
-		list_add(&block->b_list, &nlm_blocked);
-		spin_unlock(&nlm_blocked_lock);
-	}
-	return block;
-}
-
-void nlmclnt_finish_block(struct nlm_wait *block)
-{
-	if (block == NULL)
-		return;
-	spin_lock(&nlm_blocked_lock);
-	list_del(&block->b_list);
-	spin_unlock(&nlm_blocked_lock);
-	kfree(block);
-=======
 void nlmclnt_prepare_block(struct nlm_wait *block, struct nlm_host *host, struct file_lock *fl)
 {
 	block->b_host = host;
@@ -192,17 +121,12 @@ __be32 nlmclnt_dequeue_block(struct nlm_wait *block)
 	status = block->b_status;
 	spin_unlock(&nlm_blocked_lock);
 	return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Block on a lock
  */
-<<<<<<< HEAD
-int nlmclnt_block(struct nlm_wait *block, struct nlm_rqst *req, long timeout)
-=======
 int nlmclnt_wait(struct nlm_wait *block, struct nlm_rqst *req, long timeout)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long ret;
 
@@ -228,10 +152,6 @@ int nlmclnt_wait(struct nlm_wait *block, struct nlm_rqst *req, long timeout)
 	/* Reset the lock status after a server reboot so we resend */
 	if (block->b_status == nlm_lck_denied_grace_period)
 		block->b_status = nlm_lck_blocked;
-<<<<<<< HEAD
-	req->a_res.status = block->b_status;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -265,11 +185,7 @@ __be32 nlmclnt_grant(const struct sockaddr *addr, const struct nlm_lock *lock)
 			continue;
 		if (!rpc_cmp_addr(nlm_addr(block->b_host), addr))
 			continue;
-<<<<<<< HEAD
-		if (nfs_compare_fh(NFS_FH(fl_blocked->fl_file->f_path.dentry->d_inode) ,fh) != 0)
-=======
 		if (nfs_compare_fh(NFS_FH(file_inode(fl_blocked->c.flc_file)), fh) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		/* Alright, we found a lock. Set the return status
 		 * and wake up the caller
@@ -279,10 +195,7 @@ __be32 nlmclnt_grant(const struct sockaddr *addr, const struct nlm_lock *lock)
 		res = nlm_granted;
 	}
 	spin_unlock(&nlm_blocked_lock);
-<<<<<<< HEAD
-=======
 	trace_nlmclnt_grant(lock, addr, svc_addr_len(addr), res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
@@ -315,20 +228,11 @@ reclaimer(void *ptr)
 {
 	struct nlm_host	  *host = (struct nlm_host *) ptr;
 	struct nlm_wait	  *block;
-<<<<<<< HEAD
-=======
 	struct nlm_rqst   *req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct file_lock *fl, *next;
 	u32 nsmstate;
 	struct net *net = host->net;
 
-<<<<<<< HEAD
-	allow_signal(SIGKILL);
-
-	down_write(&host->h_rwsem);
-	lockd_up(net);	/* note: this cannot fail as lockd is already running */
-=======
 	req = kmalloc(sizeof(*req), GFP_KERNEL);
 	if (!req)
 		return 0;
@@ -337,7 +241,6 @@ reclaimer(void *ptr)
 
 	down_write(&host->h_rwsem);
 	lockd_up(net, NULL);	/* note: this cannot fail as lockd is already running */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("lockd: reclaiming locks for host %s\n", host->h_name);
 
@@ -363,11 +266,7 @@ restart:
 		 */
 		if (signalled())
 			continue;
-<<<<<<< HEAD
-		if (nlmclnt_reclaim(host, fl) != 0)
-=======
 		if (nlmclnt_reclaim(host, fl, req) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		list_add_tail(&fl->fl_u.nfs_fl.list, &host->h_granted);
 		if (host->h_nsmstate != nsmstate) {
@@ -393,9 +292,6 @@ restart:
 	/* Release host handle after use */
 	nlmclnt_release_host(host);
 	lockd_down(net);
-<<<<<<< HEAD
-=======
 	kfree(req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-/* CacheFiles security management
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public Licence
- * as published by the Free Software Foundation; either version
- * 2 of the Licence, or (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* CacheFiles security management
  *
  * Copyright (C) 2007, 2021 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -42,13 +30,7 @@ int cachefiles_get_security_ID(struct cachefiles_cache *cache)
 		ret = set_security_override_from_ctx(new, cache->secctx);
 		if (ret < 0) {
 			put_cred(new);
-<<<<<<< HEAD
-			printk(KERN_ERR "CacheFiles:"
-			       " Security denies permission to nominate"
-			       " security context: error %d\n",
-=======
 			pr_err("Security denies permission to nominate security context: error %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       ret);
 			goto error;
 		}
@@ -69,30 +51,16 @@ static int cachefiles_check_cache_dir(struct cachefiles_cache *cache,
 {
 	int ret;
 
-<<<<<<< HEAD
-	ret = security_inode_mkdir(root->d_inode, root, 0);
-	if (ret < 0) {
-		printk(KERN_ERR "CacheFiles:"
-		       " Security denies permission to make dirs: error %d",
-=======
 	ret = security_inode_mkdir(d_backing_inode(root), root, 0);
 	if (ret < 0) {
 		pr_err("Security denies permission to make dirs: error %d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       ret);
 		return ret;
 	}
 
-<<<<<<< HEAD
-	ret = security_inode_create(root->d_inode, root, 0);
-	if (ret < 0)
-		printk(KERN_ERR "CacheFiles:"
-		       " Security denies permission to create files: error %d",
-=======
 	ret = security_inode_create(d_backing_inode(root), root, 0);
 	if (ret < 0)
 		pr_err("Security denies permission to create files: error %d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       ret);
 
 	return ret;
@@ -123,11 +91,7 @@ int cachefiles_determine_cache_security(struct cachefiles_cache *cache,
 
 	/* use the cache root dir's security context as the basis with
 	 * which create files */
-<<<<<<< HEAD
-	ret = set_create_files_as(new, root->d_inode);
-=======
 	ret = set_create_files_as(new, d_backing_inode(root));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		abort_creds(new);
 		cachefiles_begin_secure(cache, _saved_cred);

@@ -11,12 +11,8 @@
 #ifndef _XTENSA_ASMMACRO_H
 #define _XTENSA_ASMMACRO_H
 
-<<<<<<< HEAD
-#include <variant/core.h>
-=======
 #include <linux/export.h>
 #include <asm/core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Some little helpers for loops. Use zero-overhead-loops
@@ -40,16 +36,10 @@
  * __loop  as
  *	   restart loop. 'as' register must not have been modified!
  *
-<<<<<<< HEAD
- * __endla ar, at, incr
- *	   ar	start address (modified)
- *	   as	scratch register used by macro
-=======
  * __endla ar, as, incr
  *	   ar	start address (modified)
  *	   as	scratch register used by __loops/__loopi macros or
  *		end address used by __loopt macro
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	   inc	increment
  */
 
@@ -109,11 +99,7 @@
 	.endm
 
 /*
-<<<<<<< HEAD
- * loop from ar to ax
-=======
  * loop from ar to as
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 	.macro	__loopt	ar, as, at, incr_log2
@@ -165,8 +151,6 @@
 		__endl	\ar \as
 	.endm
 
-<<<<<<< HEAD
-=======
 /* Load or store instructions that may cause exceptions use the EX macro. */
 
 #define EX(handler)				\
@@ -352,6 +336,5 @@
 #endif
 
 #define __XTENSA_HANDLER	.section ".exception.text", "ax"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _XTENSA_ASMMACRO_H */

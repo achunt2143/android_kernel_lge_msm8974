@@ -1,10 +1,6 @@
 /*
  * Linux ARCnet driver - COM90xx chipset (memory-mapped buffers)
-<<<<<<< HEAD
- * 
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Written 1994-1999 by Avery Pennarun.
  * Written 1999 by Martin Mares <mj@ucw.cz>.
  * Derived from skeleton.c by Donald Becker.
@@ -28,12 +24,9 @@
  *
  * **********************
  */
-<<<<<<< HEAD
-=======
 
 #define pr_fmt(fmt) "arcnet:" KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
@@ -42,19 +35,10 @@
 #include <linux/delay.h>
 #include <linux/netdevice.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-#include <linux/arcdevice.h>
-
-
-#define VERSION "arcnet: COM90xx chipset support\n"
-
-=======
 #include <linux/io.h>
 
 #include "arcdevice.h"
 #include "com9026.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Define this to speed up the autoprobe by assuming if only one io port and
  * shmem are left in the list at Stage 5, they must correspond to each
@@ -70,10 +54,6 @@
  */
 #undef FAST_PROBE
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Internal function declarations */
 static int com90xx_found(int ioaddr, int airq, u_long shmem, void __iomem *);
 static void com90xx_command(struct net_device *dev, int command);
@@ -82,13 +62,8 @@ static void com90xx_setmask(struct net_device *dev, int mask);
 static int com90xx_reset(struct net_device *dev, int really_reset);
 static void com90xx_copy_to_card(struct net_device *dev, int bufnum, int offset,
 				 void *buf, int count);
-<<<<<<< HEAD
-static void com90xx_copy_from_card(struct net_device *dev, int bufnum, int offset,
-				   void *buf, int count);
-=======
 static void com90xx_copy_from_card(struct net_device *dev, int bufnum,
 				   int offset, void *buf, int count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Known ARCnet cards */
 
@@ -102,30 +77,7 @@ static int numcards;
 
 /* Amount of I/O memory used by the card */
 #define BUFFER_SIZE (512)
-<<<<<<< HEAD
-#define MIRROR_SIZE (BUFFER_SIZE*4)
-
-/* COM 9026 controller chip --> ARCnet register addresses */
-#define _INTMASK (ioaddr+0)	/* writable */
-#define _STATUS  (ioaddr+0)	/* readable */
-#define _COMMAND (ioaddr+1)	/* writable, returns random vals on read (?) */
-#define _CONFIG  (ioaddr+2)	/* Configuration register */
-#define _RESET   (ioaddr+8)	/* software reset (on read) */
-#define _MEMDATA (ioaddr+12)	/* Data port for IO-mapped memory */
-#define _ADDR_HI (ioaddr+15)	/* Control registers for said */
-#define _ADDR_LO (ioaddr+14)
-
-#undef ASTATUS
-#undef ACOMMAND
-#undef AINTMASK
-
-#define ASTATUS()	inb(_STATUS)
-#define ACOMMAND(cmd) 	outb((cmd),_COMMAND)
-#define AINTMASK(msk)	outb((msk),_INTMASK)
-
-=======
 #define MIRROR_SIZE (BUFFER_SIZE * 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int com90xx_skip_probe __initdata = 0;
 
@@ -136,13 +88,8 @@ static int irq;
 static int shmem;
 static char device[9];		/* use eg. device=arc1 to change name */
 
-<<<<<<< HEAD
-module_param(io, int, 0);
-module_param(irq, int, 0);
-=======
 module_param_hw(io, int, ioport, 0);
 module_param_hw(irq, int, irq, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(shmem, int, 0);
 module_param_string(device, device, sizeof(device), 0);
 
@@ -150,12 +97,7 @@ static void __init com90xx_probe(void)
 {
 	int count, status, ioaddr, numprint, airq, openparen = 0;
 	unsigned long airqmask;
-<<<<<<< HEAD
-	int ports[(0x3f0 - 0x200) / 16 + 1] =
-	{0};
-=======
 	int ports[(0x3f0 - 0x200) / 16 + 1] = {	0 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long *shmems;
 	void __iomem **iomem;
 	int numports, numshmems, *port;
@@ -165,32 +107,19 @@ static void __init com90xx_probe(void)
 	if (!io && !irq && !shmem && !*device && com90xx_skip_probe)
 		return;
 
-<<<<<<< HEAD
-	shmems = kzalloc(((0x100000-0xa0000) / 0x800) * sizeof(unsigned long),
-			 GFP_KERNEL);
-	if (!shmems)
-		return;
-	iomem = kzalloc(((0x100000-0xa0000) / 0x800) * sizeof(void __iomem *),
-			 GFP_KERNEL);
-=======
 	shmems = kzalloc(((0x100000 - 0xa0000) / 0x800) * sizeof(unsigned long),
 			 GFP_KERNEL);
 	if (!shmems)
 		return;
 	iomem = kzalloc(((0x100000 - 0xa0000) / 0x800) * sizeof(void __iomem *),
 			GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!iomem) {
 		kfree(shmems);
 		return;
 	}
 
-<<<<<<< HEAD
-	BUGLVL(D_NORMAL) printk(VERSION);
-=======
 	if (BUGLVL(D_NORMAL))
 		pr_info("%s\n", "COM90xx chipset support");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set up the arrays where we'll store the possible probe addresses */
 	numports = numshmems = 0;
@@ -213,26 +142,6 @@ static void __init com90xx_probe(void)
 		numprint++;
 		numprint %= 8;
 		if (!numprint) {
-<<<<<<< HEAD
-			BUGMSG2(D_INIT, "\n");
-			BUGMSG2(D_INIT, "S1: ");
-		}
-		BUGMSG2(D_INIT, "%Xh ", *port);
-
-		ioaddr = *port;
-
-		if (!request_region(*port, ARCNET_TOTAL_SIZE, "arcnet (90xx)")) {
-			BUGMSG2(D_INIT_REASONS, "(request_region)\n");
-			BUGMSG2(D_INIT_REASONS, "S1: ");
-			BUGLVL(D_INIT_REASONS) numprint = 0;
-			*port-- = ports[--numports];
-			continue;
-		}
-		if (ASTATUS() == 0xFF) {
-			BUGMSG2(D_INIT_REASONS, "(empty)\n");
-			BUGMSG2(D_INIT_REASONS, "S1: ");
-			BUGLVL(D_INIT_REASONS) numprint = 0;
-=======
 			arc_cont(D_INIT, "\n");
 			arc_cont(D_INIT, "S1: ");
 		}
@@ -254,23 +163,10 @@ static void __init com90xx_probe(void)
 			arc_cont(D_INIT_REASONS, "S1: ");
 			if (BUGLVL(D_INIT_REASONS))
 				numprint = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			release_region(*port, ARCNET_TOTAL_SIZE);
 			*port-- = ports[--numports];
 			continue;
 		}
-<<<<<<< HEAD
-		inb(_RESET);	/* begin resetting card */
-
-		BUGMSG2(D_INIT_REASONS, "\n");
-		BUGMSG2(D_INIT_REASONS, "S1: ");
-		BUGLVL(D_INIT_REASONS) numprint = 0;
-	}
-	BUGMSG2(D_INIT, "\n");
-
-	if (!numports) {
-		BUGMSG2(D_NORMAL, "S1: No ARCnet cards found.\n");
-=======
 		/* begin resetting card */
 		arcnet_inb(ioaddr, COM9026_REG_R_RESET);
 
@@ -283,7 +179,6 @@ static void __init com90xx_probe(void)
 
 	if (!numports) {
 		arc_cont(D_NORMAL, "S1: No ARCnet cards found.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(shmems);
 		kfree(iomem);
 		return;
@@ -297,21 +192,12 @@ static void __init com90xx_probe(void)
 		numprint++;
 		numprint %= 8;
 		if (!numprint) {
-<<<<<<< HEAD
-			BUGMSG2(D_INIT, "\n");
-			BUGMSG2(D_INIT, "S2: ");
-		}
-		BUGMSG2(D_INIT, "%Xh ", *port);
-	}
-	BUGMSG2(D_INIT, "\n");
-=======
 			arc_cont(D_INIT, "\n");
 			arc_cont(D_INIT, "S2: ");
 		}
 		arc_cont(D_INIT, "%Xh ", *port);
 	}
 	arc_cont(D_INIT, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mdelay(RESETtime);
 
 	/* Stage 3: abandon any shmem addresses that don't have the signature
@@ -324,17 +210,6 @@ static void __init com90xx_probe(void)
 		numprint++;
 		numprint %= 8;
 		if (!numprint) {
-<<<<<<< HEAD
-			BUGMSG2(D_INIT, "\n");
-			BUGMSG2(D_INIT, "S3: ");
-		}
-		BUGMSG2(D_INIT, "%lXh ", *p);
-
-		if (!request_mem_region(*p, MIRROR_SIZE, "arcnet (90xx)")) {
-			BUGMSG2(D_INIT_REASONS, "(request_mem_region)\n");
-			BUGMSG2(D_INIT_REASONS, "Stage 3: ");
-			BUGLVL(D_INIT_REASONS) numprint = 0;
-=======
 			arc_cont(D_INIT, "\n");
 			arc_cont(D_INIT, "S3: ");
 		}
@@ -345,23 +220,10 @@ static void __init com90xx_probe(void)
 			arc_cont(D_INIT_REASONS, "Stage 3: ");
 			if (BUGLVL(D_INIT_REASONS))
 				numprint = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 		base = ioremap(*p, MIRROR_SIZE);
 		if (!base) {
-<<<<<<< HEAD
-			BUGMSG2(D_INIT_REASONS, "(ioremap)\n");
-			BUGMSG2(D_INIT_REASONS, "Stage 3: ");
-			BUGLVL(D_INIT_REASONS) numprint = 0;
-			goto out1;
-		}
-		if (readb(base) != TESTvalue) {
-			BUGMSG2(D_INIT_REASONS, "(%02Xh != %02Xh)\n",
-				readb(base), TESTvalue);
-			BUGMSG2(D_INIT_REASONS, "S3: ");
-			BUGLVL(D_INIT_REASONS) numprint = 0;
-=======
 			arc_cont(D_INIT_REASONS, "(ioremap)\n");
 			arc_cont(D_INIT_REASONS, "Stage 3: ");
 			if (BUGLVL(D_INIT_REASONS))
@@ -375,7 +237,6 @@ static void __init com90xx_probe(void)
 			arc_cont(D_INIT_REASONS, "S3: ");
 			if (BUGLVL(D_INIT_REASONS))
 				numprint = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out2;
 		}
 		/* By writing 0x42 to the TESTvalue location, we also make
@@ -383,17 +244,6 @@ static void __init com90xx_probe(void)
 		 * in another pass through this loop, they will be discarded
 		 * because *cptr != TESTvalue.
 		 */
-<<<<<<< HEAD
-		writeb(0x42, base);
-		if (readb(base) != 0x42) {
-			BUGMSG2(D_INIT_REASONS, "(read only)\n");
-			BUGMSG2(D_INIT_REASONS, "S3: ");
-			goto out2;
-		}
-		BUGMSG2(D_INIT_REASONS, "\n");
-		BUGMSG2(D_INIT_REASONS, "S3: ");
-		BUGLVL(D_INIT_REASONS) numprint = 0;
-=======
 		arcnet_writeb(0x42, base, COM9026_REG_W_INTMASK);
 		if (arcnet_readb(base, COM9026_REG_R_STATUS) != 0x42) {
 			arc_cont(D_INIT_REASONS, "(read only)\n");
@@ -404,7 +254,6 @@ static void __init com90xx_probe(void)
 		arc_cont(D_INIT_REASONS, "S3: ");
 		if (BUGLVL(D_INIT_REASONS))
 			numprint = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iomem[index] = base;
 		continue;
 	out2:
@@ -415,17 +264,10 @@ static void __init com90xx_probe(void)
 		*p-- = shmems[--numshmems];
 		index--;
 	}
-<<<<<<< HEAD
-	BUGMSG2(D_INIT, "\n");
-
-	if (!numshmems) {
-		BUGMSG2(D_NORMAL, "S3: No ARCnet cards found.\n");
-=======
 	arc_cont(D_INIT, "\n");
 
 	if (!numshmems) {
 		arc_cont(D_NORMAL, "S3: No ARCnet cards found.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (port = &ports[0]; port < ports + numports; port++)
 			release_region(*port, ARCNET_TOTAL_SIZE);
 		kfree(shmems);
@@ -440,21 +282,12 @@ static void __init com90xx_probe(void)
 		numprint++;
 		numprint %= 8;
 		if (!numprint) {
-<<<<<<< HEAD
-			BUGMSG2(D_INIT, "\n");
-			BUGMSG2(D_INIT, "S4: ");
-		}
-		BUGMSG2(D_INIT, "%lXh ", *p);
-	}
-	BUGMSG2(D_INIT, "\n");
-=======
 			arc_cont(D_INIT, "\n");
 			arc_cont(D_INIT, "S4: ");
 		}
 		arc_cont(D_INIT, "%lXh ", *p);
 	}
 	arc_cont(D_INIT, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Stage 5: for any ports that have the correct status, can disable
 	 * the RESET flag, and (if no irq is given) generate an autoirq,
@@ -466,24 +299,6 @@ static void __init com90xx_probe(void)
 	numprint = -1;
 	for (port = &ports[0]; port < ports + numports; port++) {
 		int found = 0;
-<<<<<<< HEAD
-		numprint++;
-		numprint %= 8;
-		if (!numprint) {
-			BUGMSG2(D_INIT, "\n");
-			BUGMSG2(D_INIT, "S5: ");
-		}
-		BUGMSG2(D_INIT, "%Xh ", *port);
-
-		ioaddr = *port;
-		status = ASTATUS();
-
-		if ((status & 0x9D)
-		    != (NORXflag | RECONflag | TXFREEflag | RESETflag)) {
-			BUGMSG2(D_INIT_REASONS, "(status=%Xh)\n", status);
-			BUGMSG2(D_INIT_REASONS, "S5: ");
-			BUGLVL(D_INIT_REASONS) numprint = 0;
-=======
 
 		numprint++;
 		numprint %= 8;
@@ -502,20 +317,10 @@ static void __init com90xx_probe(void)
 			arc_cont(D_INIT_REASONS, "S5: ");
 			if (BUGLVL(D_INIT_REASONS))
 				numprint = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			release_region(*port, ARCNET_TOTAL_SIZE);
 			*port-- = ports[--numports];
 			continue;
 		}
-<<<<<<< HEAD
-		ACOMMAND(CFLAGScmd | RESETclear | CONFIGclear);
-		status = ASTATUS();
-		if (status & RESETflag) {
-			BUGMSG2(D_INIT_REASONS, " (eternal reset, status=%Xh)\n",
-				status);
-			BUGMSG2(D_INIT_REASONS, "S5: ");
-			BUGLVL(D_INIT_REASONS) numprint = 0;
-=======
 		arcnet_outb(CFLAGScmd | RESETclear | CONFIGclear,
 			    ioaddr, COM9026_REG_W_COMMAND);
 		status = arcnet_inb(ioaddr, COM9026_REG_R_STATUS);
@@ -525,7 +330,6 @@ static void __init com90xx_probe(void)
 			arc_cont(D_INIT_REASONS, "S5: ");
 			if (BUGLVL(D_INIT_REASONS))
 				numprint = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			release_region(*port, ARCNET_TOTAL_SIZE);
 			*port-- = ports[--numports];
 			continue;
@@ -539,17 +343,6 @@ static void __init com90xx_probe(void)
 			 * we tell it to start receiving.
 			 */
 			airqmask = probe_irq_on();
-<<<<<<< HEAD
-			AINTMASK(NORXflag);
-			udelay(1);
-			AINTMASK(0);
-			airq = probe_irq_off(airqmask);
-
-			if (airq <= 0) {
-				BUGMSG2(D_INIT_REASONS, "(airq=%d)\n", airq);
-				BUGMSG2(D_INIT_REASONS, "S5: ");
-				BUGLVL(D_INIT_REASONS) numprint = 0;
-=======
 			arcnet_outb(NORXflag, ioaddr, COM9026_REG_W_INTMASK);
 			udelay(1);
 			arcnet_outb(0, ioaddr, COM9026_REG_W_INTMASK);
@@ -560,7 +353,6 @@ static void __init com90xx_probe(void)
 				arc_cont(D_INIT_REASONS, "S5: ");
 				if (BUGLVL(D_INIT_REASONS))
 					numprint = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				release_region(*port, ARCNET_TOTAL_SIZE);
 				*port-- = ports[--numports];
 				continue;
@@ -569,11 +361,7 @@ static void __init com90xx_probe(void)
 			airq = irq;
 		}
 
-<<<<<<< HEAD
-		BUGMSG2(D_INIT, "(%d,", airq);
-=======
 		arc_cont(D_INIT, "(%d,", airq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		openparen = 1;
 
 		/* Everything seems okay.  But which shmem, if any, puts
@@ -584,16 +372,6 @@ static void __init com90xx_probe(void)
 		 */
 #ifdef FAST_PROBE
 		if (numports > 1 || numshmems > 1) {
-<<<<<<< HEAD
-			inb(_RESET);
-			mdelay(RESETtime);
-		} else {
-			/* just one shmem and port, assume they match */
-			writeb(TESTvalue, iomem[0]);
-		}
-#else
-		inb(_RESET);
-=======
 			arcnet_inb(ioaddr, COM9026_REG_R_RESET);
 			mdelay(RESETtime);
 		} else {
@@ -603,7 +381,6 @@ static void __init com90xx_probe(void)
 		}
 #else
 		arcnet_inb(ioaddr, COM9026_REG_R_RESET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdelay(RESETtime);
 #endif
 
@@ -611,13 +388,8 @@ static void __init com90xx_probe(void)
 			u_long ptr = shmems[index];
 			void __iomem *base = iomem[index];
 
-<<<<<<< HEAD
-			if (readb(base) == TESTvalue) {	/* found one */
-				BUGMSG2(D_INIT, "%lXh)\n", *p);
-=======
 			if (arcnet_readb(base, COM9026_REG_R_STATUS) == TESTvalue) {	/* found one */
 				arc_cont(D_INIT, "%lXh)\n", *p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				openparen = 0;
 
 				/* register the card */
@@ -630,48 +402,30 @@ static void __init com90xx_probe(void)
 				iomem[index] = iomem[numshmems];
 				break;	/* go to the next I/O port */
 			} else {
-<<<<<<< HEAD
-				BUGMSG2(D_INIT_REASONS, "%Xh-", readb(base));
-=======
 				arc_cont(D_INIT_REASONS, "%Xh-",
 					 arcnet_readb(base, COM9026_REG_R_STATUS));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
 		if (openparen) {
-<<<<<<< HEAD
-			BUGLVL(D_INIT) printk("no matching shmem)\n");
-			BUGLVL(D_INIT_REASONS) printk("S5: ");
-			BUGLVL(D_INIT_REASONS) numprint = 0;
-=======
 			if (BUGLVL(D_INIT))
 				pr_cont("no matching shmem)\n");
 			if (BUGLVL(D_INIT_REASONS)) {
 				pr_cont("S5: ");
 				numprint = 0;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (!found)
 			release_region(*port, ARCNET_TOTAL_SIZE);
 		*port-- = ports[--numports];
 	}
 
-<<<<<<< HEAD
-	BUGLVL(D_INIT_REASONS) printk("\n");
-
-	/* Now put back TESTvalue on all leftover shmems. */
-	for (index = 0; index < numshmems; index++) {
-		writeb(TESTvalue, iomem[index]);
-=======
 	if (BUGLVL(D_INIT_REASONS))
 		pr_cont("\n");
 
 	/* Now put back TESTvalue on all leftover shmems. */
 	for (index = 0; index < numshmems; index++) {
 		arcnet_writeb(TESTvalue, iomem[index], COM9026_REG_W_INTMASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iounmap(iomem[index]);
 		release_mem_region(shmems[index], MIRROR_SIZE);
 	}
@@ -679,11 +433,7 @@ static void __init com90xx_probe(void)
 	kfree(iomem);
 }
 
-<<<<<<< HEAD
-static int check_mirror(unsigned long addr, size_t size)
-=======
 static int __init check_mirror(unsigned long addr, size_t size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *p;
 	int res = -1;
@@ -693,11 +443,7 @@ static int __init check_mirror(unsigned long addr, size_t size)
 
 	p = ioremap(addr, size);
 	if (p) {
-<<<<<<< HEAD
-		if (readb(p) == TESTvalue)
-=======
 		if (arcnet_readb(p, COM9026_REG_R_STATUS) == TESTvalue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res = 1;
 		else
 			res = 0;
@@ -711,12 +457,8 @@ static int __init check_mirror(unsigned long addr, size_t size)
 /* Set up the struct net_device associated with this card.  Called after
  * probing succeeds.
  */
-<<<<<<< HEAD
-static int __init com90xx_found(int ioaddr, int airq, u_long shmem, void __iomem *p)
-=======
 static int __init com90xx_found(int ioaddr, int airq, u_long shmem,
 				void __iomem *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = NULL;
 	struct arcnet_local *lp;
@@ -726,11 +468,7 @@ static int __init com90xx_found(int ioaddr, int airq, u_long shmem,
 	/* allocate struct net_device */
 	dev = alloc_arcdev(device);
 	if (!dev) {
-<<<<<<< HEAD
-		BUGMSG2(D_NORMAL, "com90xx: Can't allocate device!\n");
-=======
 		arc_cont(D_NORMAL, "com90xx: Can't allocate device!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iounmap(p);
 		release_mem_region(shmem, MIRROR_SIZE);
 		return -ENOMEM;
@@ -743,11 +481,7 @@ static int __init com90xx_found(int ioaddr, int airq, u_long shmem,
 	 * 2k (or there are no mirrors at all) but on some, it's 4k.
 	 */
 	mirror_size = MIRROR_SIZE;
-<<<<<<< HEAD
-	if (readb(p) == TESTvalue &&
-=======
 	if (arcnet_readb(p, COM9026_REG_R_STATUS) == TESTvalue &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    check_mirror(shmem - MIRROR_SIZE, MIRROR_SIZE) == 0 &&
 	    check_mirror(shmem - 2 * MIRROR_SIZE, MIRROR_SIZE) == 1)
 		mirror_size = 2 * MIRROR_SIZE;
@@ -768,22 +502,14 @@ static int __init com90xx_found(int ioaddr, int airq, u_long shmem,
 	iounmap(p);
 	release_mem_region(shmem, MIRROR_SIZE);
 
-<<<<<<< HEAD
-	if (!request_mem_region(dev->mem_start, dev->mem_end - dev->mem_start + 1, "arcnet (90xx)"))
-=======
 	if (!request_mem_region(dev->mem_start,
 				dev->mem_end - dev->mem_start + 1,
 				"arcnet (90xx)"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free_dev;
 
 	/* reserve the irq */
 	if (request_irq(airq, arcnet_interrupt, 0, "arcnet (90xx)", dev)) {
-<<<<<<< HEAD
-		BUGMSG(D_NORMAL, "Can't get IRQ %d!\n", airq);
-=======
 		arc_printk(D_NORMAL, dev, "Can't get IRQ %d!\n", airq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_release_mem;
 	}
 	dev->irq = airq;
@@ -797,31 +523,14 @@ static int __init com90xx_found(int ioaddr, int airq, u_long shmem,
 	lp->hw.owner = THIS_MODULE;
 	lp->hw.copy_to_card = com90xx_copy_to_card;
 	lp->hw.copy_from_card = com90xx_copy_from_card;
-<<<<<<< HEAD
-	lp->mem_start = ioremap(dev->mem_start, dev->mem_end - dev->mem_start + 1);
-	if (!lp->mem_start) {
-		BUGMSG(D_NORMAL, "Can't remap device memory!\n");
-=======
 	lp->mem_start = ioremap(dev->mem_start,
 				dev->mem_end - dev->mem_start + 1);
 	if (!lp->mem_start) {
 		arc_printk(D_NORMAL, dev, "Can't remap device memory!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free_irq;
 	}
 
 	/* get and check the station ID from offset 1 in shmem */
-<<<<<<< HEAD
-	dev->dev_addr[0] = readb(lp->mem_start + 1);
-
-	dev->base_addr = ioaddr;
-
-	BUGMSG(D_NORMAL, "COM90xx station %02Xh found at %03lXh, IRQ %d, "
-	       "ShMem %lXh (%ld*%xh).\n",
-	       dev->dev_addr[0],
-	       dev->base_addr, dev->irq, dev->mem_start,
-	 (dev->mem_end - dev->mem_start + 1) / mirror_size, mirror_size);
-=======
 	arcnet_set_addr(dev, arcnet_readb(lp->mem_start,
 					  COM9026_REG_R_STATION));
 
@@ -832,7 +541,6 @@ static int __init com90xx_found(int ioaddr, int airq, u_long shmem,
 		   dev->base_addr, dev->irq, dev->mem_start,
 		   (dev->mem_end - dev->mem_start + 1) / mirror_size,
 		   mirror_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (register_netdev(dev))
 		goto err_unmap;
@@ -847,65 +555,33 @@ err_free_irq:
 err_release_mem:
 	release_mem_region(dev->mem_start, dev->mem_end - dev->mem_start + 1);
 err_free_dev:
-<<<<<<< HEAD
-	free_netdev(dev);
-	return -EIO;
-}
-
-
-=======
 	free_arcdev(dev);
 	return -EIO;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void com90xx_command(struct net_device *dev, int cmd)
 {
 	short ioaddr = dev->base_addr;
 
-<<<<<<< HEAD
-	ACOMMAND(cmd);
-}
-
-
-=======
 	arcnet_outb(cmd, ioaddr, COM9026_REG_W_COMMAND);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int com90xx_status(struct net_device *dev)
 {
 	short ioaddr = dev->base_addr;
 
-<<<<<<< HEAD
-	return ASTATUS();
-}
-
-
-=======
 	return arcnet_inb(ioaddr, COM9026_REG_R_STATUS);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void com90xx_setmask(struct net_device *dev, int mask)
 {
 	short ioaddr = dev->base_addr;
 
-<<<<<<< HEAD
-	AINTMASK(mask);
-}
-
-
-/*
- * Do a hardware reset on the card, and set up necessary registers.
- * 
-=======
 	arcnet_outb(mask, ioaddr, COM9026_REG_W_INTMASK);
 }
 
 /* Do a hardware reset on the card, and set up necessary registers.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This should be called as little as possible, because it disrupts the
  * token on the network (causes a RECON) and requires a significant delay.
  *
@@ -916,33 +592,6 @@ static int com90xx_reset(struct net_device *dev, int really_reset)
 	struct arcnet_local *lp = netdev_priv(dev);
 	short ioaddr = dev->base_addr;
 
-<<<<<<< HEAD
-	BUGMSG(D_INIT, "Resetting (status=%02Xh)\n", ASTATUS());
-
-	if (really_reset) {
-		/* reset the card */
-		inb(_RESET);
-		mdelay(RESETtime);
-	}
-	ACOMMAND(CFLAGScmd | RESETclear);	/* clear flags & end reset */
-	ACOMMAND(CFLAGScmd | CONFIGclear);
-
-	/* don't do this until we verify that it doesn't hurt older cards! */
-	/* outb(inb(_CONFIG) | ENABLE16flag, _CONFIG); */
-
-	/* verify that the ARCnet signature byte is present */
-	if (readb(lp->mem_start) != TESTvalue) {
-		if (really_reset)
-			BUGMSG(D_NORMAL, "reset failed: TESTvalue not present.\n");
-		return 1;
-	}
-	/* enable extended (512-byte) packets */
-	ACOMMAND(CONFIGcmd | EXTconf);
-
-	/* clean out all the memory to make debugging make more sense :) */
-	BUGLVL(D_DURING)
-	    memset_io(lp->mem_start, 0x42, 2048);
-=======
 	arc_printk(D_INIT, dev, "Resetting (status=%02Xh)\n",
 		   arcnet_inb(ioaddr, COM9026_REG_R_STATUS));
 
@@ -973,32 +622,11 @@ static int com90xx_reset(struct net_device *dev, int really_reset)
 	/* clean out all the memory to make debugging make more sense :) */
 	if (BUGLVL(D_DURING))
 		memset_io(lp->mem_start, 0x42, 2048);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* done!  return success. */
 	return 0;
 }
 
-<<<<<<< HEAD
-static void com90xx_copy_to_card(struct net_device *dev, int bufnum, int offset,
-				 void *buf, int count)
-{
-	struct arcnet_local *lp = netdev_priv(dev);
-	void __iomem *memaddr = lp->mem_start + bufnum * 512 + offset;
-	TIME("memcpy_toio", count, memcpy_toio(memaddr, buf, count));
-}
-
-
-static void com90xx_copy_from_card(struct net_device *dev, int bufnum, int offset,
-				   void *buf, int count)
-{
-	struct arcnet_local *lp = netdev_priv(dev);
-	void __iomem *memaddr = lp->mem_start + bufnum * 512 + offset;
-	TIME("memcpy_fromio", count, memcpy_fromio(buf, memaddr, count));
-}
-
-
-=======
 static void com90xx_copy_to_card(struct net_device *dev, int bufnum,
 				 int offset, void *buf, int count)
 {
@@ -1018,7 +646,6 @@ static void com90xx_copy_from_card(struct net_device *dev, int bufnum,
 }
 
 MODULE_DESCRIPTION("ARCnet COM90xx normal chipset driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 static int __init com90xx_init(void)
@@ -1045,14 +672,9 @@ static void __exit com90xx_exit(void)
 		free_irq(dev->irq, dev);
 		iounmap(lp->mem_start);
 		release_region(dev->base_addr, ARCNET_TOTAL_SIZE);
-<<<<<<< HEAD
-		release_mem_region(dev->mem_start, dev->mem_end - dev->mem_start + 1);
-		free_netdev(dev);
-=======
 		release_mem_region(dev->mem_start,
 				   dev->mem_end - dev->mem_start + 1);
 		free_arcdev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1066,23 +688,12 @@ static int __init com90xx_setup(char *s)
 
 	s = get_options(s, 8, ints);
 	if (!ints[0] && !*s) {
-<<<<<<< HEAD
-		printk("com90xx: Disabled.\n");
-=======
 		pr_notice("Disabled\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
 	switch (ints[0]) {
 	default:		/* ERROR */
-<<<<<<< HEAD
-		printk("com90xx: Too many arguments.\n");
-	case 3:		/* Mem address */
-		shmem = ints[3];
-	case 2:		/* IRQ */
-		irq = ints[2];
-=======
 		pr_err("Too many arguments\n");
 		fallthrough;
 	case 3:		/* Mem address */
@@ -1091,7 +702,6 @@ static int __init com90xx_setup(char *s)
 	case 2:		/* IRQ */
 		irq = ints[2];
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:		/* IO address */
 		io = ints[1];
 	}

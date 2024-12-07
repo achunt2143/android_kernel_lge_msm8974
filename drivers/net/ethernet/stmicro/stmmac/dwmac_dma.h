@@ -1,40 +1,16 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
   DWMAC DMA Header file.
 
   Copyright (C) 2007-2009  STMicroelectronics Ltd
 
-<<<<<<< HEAD
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
 *******************************************************************************/
 
-<<<<<<< HEAD
-=======
 #ifndef __DWMAC_DMA_H__
 #define __DWMAC_DMA_H__
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* DMA CRS Control and Status Register Mapping */
 #define DMA_BUS_MODE		0x00001000	/* Bus Mode */
 #define DMA_XMT_POLL_DEMAND	0x00001004	/* Transmit Poll Demand */
@@ -45,8 +21,6 @@
 #define DMA_CONTROL		0x00001018	/* Ctrl (Operational Mode) */
 #define DMA_INTR_ENA		0x0000101c	/* Interrupt Enable */
 #define DMA_MISSED_FRAME_CTR	0x00001020	/* Missed Frame Counter */
-<<<<<<< HEAD
-=======
 
 /* SW Reset */
 #define DMA_BUS_MODE_SFT_RESET	0x00000001	/* Software Reset */
@@ -87,7 +61,6 @@
 
 #define DMA_AXI_BURST_LEN_MASK	0x000000FE
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DMA_CUR_TX_BUF_ADDR	0x00001050	/* Current Host Tx Buffer */
 #define DMA_CUR_RX_BUF_ADDR	0x00001054	/* Current Host Rx Buffer */
 #define DMA_HW_FEATURE		0x00001058	/* HW Feature Register */
@@ -123,15 +96,6 @@
 
 /* DMA default interrupt mask */
 #define DMA_INTR_DEFAULT_MASK	(DMA_INTR_NORMAL | DMA_INTR_ABNORMAL)
-<<<<<<< HEAD
-
-/* DMA Status register defines */
-#define DMA_STATUS_GPI		0x10000000	/* PMT interrupt */
-#define DMA_STATUS_GMI		0x08000000	/* MMC interrupt */
-#define DMA_STATUS_GLI		0x04000000	/* GMAC Line interface int */
-#define DMA_STATUS_GMI		0x08000000
-#define DMA_STATUS_GLI		0x04000000
-=======
 #define DMA_INTR_DEFAULT_RX	(DMA_INTR_ENA_RIE)
 #define DMA_INTR_DEFAULT_TX	(DMA_INTR_ENA_TIE)
 
@@ -140,7 +104,6 @@
 #define DMA_STATUS_GPI		0x10000000	/* PMT interrupt */
 #define DMA_STATUS_GMI		0x08000000	/* MMC interrupt */
 #define DMA_STATUS_GLI		0x04000000	/* GMAC Line interface int */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DMA_STATUS_EB_MASK	0x00380000	/* Error Bits Mask */
 #define DMA_STATUS_EB_TX_ABORT	0x00080000	/* Error Bits - TX Abort */
 #define DMA_STATUS_EB_RX_ABORT	0x00100000	/* Error Bits - RX Abort */
@@ -163,19 +126,6 @@
 #define DMA_STATUS_TU	0x00000004	/* Transmit Buffer Unavailable */
 #define DMA_STATUS_TPS	0x00000002	/* Transmit Process Stopped */
 #define DMA_STATUS_TI	0x00000001	/* Transmit Interrupt */
-<<<<<<< HEAD
-#define DMA_CONTROL_FTF		0x00100000 /* Flush transmit FIFO */
-
-extern void dwmac_enable_dma_transmission(void __iomem *ioaddr);
-extern void dwmac_enable_dma_irq(void __iomem *ioaddr);
-extern void dwmac_disable_dma_irq(void __iomem *ioaddr);
-extern void dwmac_dma_start_tx(void __iomem *ioaddr);
-extern void dwmac_dma_stop_tx(void __iomem *ioaddr);
-extern void dwmac_dma_start_rx(void __iomem *ioaddr);
-extern void dwmac_dma_stop_rx(void __iomem *ioaddr);
-extern int dwmac_dma_interrupt(void __iomem *ioaddr,
-				struct stmmac_extra_stats *x);
-=======
 #define DMA_CONTROL_FTF		0x00100000	/* Flush transmit FIFO */
 
 #define DMA_STATUS_MSK_COMMON		(DMA_STATUS_NIS | \
@@ -220,4 +170,3 @@ int dwmac_dma_interrupt(struct stmmac_priv *priv, void __iomem *ioaddr,
 int dwmac_dma_reset(void __iomem *ioaddr);
 
 #endif /* __DWMAC_DMA_H__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

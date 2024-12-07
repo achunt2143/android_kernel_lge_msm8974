@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* asmmacro.h: Assembler macros.
  *
  * Copyright (C) 1996 David S. Miller (davem@caipfs.rutgers.edu)
@@ -10,20 +7,6 @@
 #ifndef _SPARC_ASMMACRO_H
 #define _SPARC_ASMMACRO_H
 
-<<<<<<< HEAD
-#include <asm/btfixup.h>
-#include <asm/asi.h>
-
-#define GET_PROCESSOR4M_ID(reg) \
-	rd	%tbr, %reg; \
-	srl	%reg, 12, %reg; \
-	and	%reg, 3, %reg;
-
-#define GET_PROCESSOR4D_ID(reg) \
-	lda	[%g0] ASI_M_VIKING_TMP1, %reg;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* All trap entry points _must_ begin with this macro or else you
  * lose.  It makes sure the kernel has a proper window so that
  * c-code can be called.
@@ -38,13 +21,6 @@
 /* All traps low-level code here must end with this macro. */
 #define RESTORE_ALL b ret_trap_entry; clr %l6;
 
-<<<<<<< HEAD
-/* sun4 probably wants half word accesses to ASI_SEGMAP, while sun4c+
-   likes byte accesses. These are to avoid ifdef mania. */
-
-#define lduXa	lduba
-#define stXa	stba
-=======
 /* Support for run-time patching of single instructions.
  * This is used to handle the differences in the ASI for
  * MMUREGS for LEON and SUN.
@@ -66,6 +42,5 @@
 	.word 662b;				\
 	__VA_ARGS__;				\
 	.previous
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* !(_SPARC_ASMMACRO_H) */

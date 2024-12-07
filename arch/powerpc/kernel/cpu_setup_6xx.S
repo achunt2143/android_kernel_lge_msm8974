@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-/*
- * This file contains low level CPU setup functions.
- *    Copyright (C) 2003 Benjamin Herrenschmidt (benh@kernel.crashing.org)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- *
- */
-
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * This file contains low level CPU setup functions.
@@ -19,7 +6,6 @@
 
 #include <linux/linkage.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h>
 #include <asm/page.h>
 #include <asm/cputable.h>
@@ -27,10 +13,7 @@
 #include <asm/asm-offsets.h>
 #include <asm/cache.h>
 #include <asm/mmu.h>
-<<<<<<< HEAD
-=======
 #include <asm/feature-fixups.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 _GLOBAL(__setup_cpu_603)
 	mflr	r5
@@ -38,16 +21,11 @@ BEGIN_MMU_FTR_SECTION
 	li	r10,0
 	mtspr	SPRN_SPRG_603_LRU,r10		/* init SW LRU tracking */
 END_MMU_FTR_SECTION_IFSET(MMU_FTR_NEED_DTLB_SW_LRU)
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 BEGIN_FTR_SECTION
 	bl	__init_fpu_registers
 END_FTR_SECTION_IFCLR(CPU_FTR_FPU_UNAVAILABLE)
 	bl	setup_common_caches
-<<<<<<< HEAD
-=======
 
 	/*
 	 * This assumes that all cores using __setup_cpu_603 with
@@ -57,7 +35,6 @@ BEGIN_MMU_FTR_SECTION
 	bl      setup_g2_le_hid2
 END_MMU_FTR_SECTION_IFSET(MMU_FTR_USE_HIGH_BATS)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtlr	r5
 	blr
 _GLOBAL(__setup_cpu_604)
@@ -115,11 +92,7 @@ _GLOBAL(__setup_cpu_745x)
 	blr
 
 /* Enable caches for 603's, 604, 750 & 7400 */
-<<<<<<< HEAD
-setup_common_caches:
-=======
 SYM_FUNC_START_LOCAL(setup_common_caches)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfspr	r11,SPRN_HID0
 	andi.	r0,r11,HID0_DCE
 	ori	r11,r11,HID0_ICE|HID0_DCE
@@ -133,19 +106,12 @@ SYM_FUNC_START_LOCAL(setup_common_caches)
 	sync
 	isync
 	blr
-<<<<<<< HEAD
-=======
 SYM_FUNC_END(setup_common_caches)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 604, 604e, 604ev, ...
  * Enable superscalar execution & branch history table
  */
-<<<<<<< HEAD
-setup_604_hid0:
-=======
 SYM_FUNC_START_LOCAL(setup_604_hid0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfspr	r11,SPRN_HID0
 	ori	r11,r11,HID0_SIED|HID0_BHTE
 	ori	r8,r11,HID0_BTCD
@@ -156,8 +122,6 @@ SYM_FUNC_START_LOCAL(setup_604_hid0)
 	sync
 	isync
 	blr
-<<<<<<< HEAD
-=======
 SYM_FUNC_END(setup_604_hid0)
 
 /* Enable high BATs for G2_LE and derivatives like e300cX */
@@ -169,7 +133,6 @@ SYM_FUNC_START_LOCAL(setup_g2_le_hid2)
 	isync
 	blr
 SYM_FUNC_END(setup_g2_le_hid2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 7400 <= rev 2.7 and 7410 rev = 1.0 suffer from some
  * erratas we work around here.
@@ -185,22 +148,14 @@ SYM_FUNC_END(setup_g2_le_hid2)
  * needed once we have applied workaround #5 (though it's
  * not set by Apple's firmware at least).
  */
-<<<<<<< HEAD
-setup_7400_workarounds:
-=======
 SYM_FUNC_START_LOCAL(setup_7400_workarounds)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfpvr	r3
 	rlwinm	r3,r3,0,20,31
 	cmpwi	0,r3,0x0207
 	ble	1f
 	blr
-<<<<<<< HEAD
-setup_7410_workarounds:
-=======
 SYM_FUNC_END(setup_7400_workarounds)
 SYM_FUNC_START_LOCAL(setup_7410_workarounds)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfpvr	r3
 	rlwinm	r3,r3,0,20,31
 	cmpwi	0,r3,0x0100
@@ -220,25 +175,15 @@ SYM_FUNC_START_LOCAL(setup_7410_workarounds)
 	sync
 	isync
 	blr
-<<<<<<< HEAD
-
-/* 740/750/7400/7410
- * Enable Store Gathering (SGE), Address Brodcast (ABE),
-=======
 SYM_FUNC_END(setup_7410_workarounds)
 
 /* 740/750/7400/7410
  * Enable Store Gathering (SGE), Address Broadcast (ABE),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Branch History Table (BHTE), Branch Target ICache (BTIC)
  * Dynamic Power Management (DPM), Speculative (SPD)
  * Clear Instruction cache throttling (ICTC)
  */
-<<<<<<< HEAD
-setup_750_7400_hid0:
-=======
 SYM_FUNC_START_LOCAL(setup_750_7400_hid0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfspr	r11,SPRN_HID0
 	ori	r11,r11,HID0_SGE | HID0_ABE | HID0_BHTE | HID0_BTIC
 	oris	r11,r11,HID0_DPM@h
@@ -257,20 +202,13 @@ END_FTR_SECTION_IFSET(CPU_FTR_NO_DPM)
 	sync
 	isync
 	blr
-<<<<<<< HEAD
-=======
 SYM_FUNC_END(setup_750_7400_hid0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 750cx specific
  * Looks like we have to disable NAP feature for some PLL settings...
  * (waiting for confirmation)
  */
-<<<<<<< HEAD
-setup_750cx:
-=======
 SYM_FUNC_START_LOCAL(setup_750cx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfspr	r10, SPRN_HID1
 	rlwinm	r10,r10,4,28,31
 	cmpwi	cr0,r10,7
@@ -284,13 +222,6 @@ SYM_FUNC_START_LOCAL(setup_750cx)
 	andc	r6,r6,r7
 	stw	r6,CPU_SPEC_FEATURES(r4)
 	blr
-<<<<<<< HEAD
-
-/* 750fx specific
- */
-setup_750fx:
-	blr
-=======
 SYM_FUNC_END(setup_750cx)
 
 /* 750fx specific
@@ -298,7 +229,6 @@ SYM_FUNC_END(setup_750cx)
 SYM_FUNC_START_LOCAL(setup_750fx)
 	blr
 SYM_FUNC_END(setup_750fx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* MPC 745x
  * Enable Store Gathering (SGE), Branch Folding (FOLD)
@@ -310,11 +240,7 @@ SYM_FUNC_END(setup_750fx)
  * Clear Instruction cache throttling (ICTC)
  * Enable L2 HW prefetch
  */
-<<<<<<< HEAD
-setup_745x_specifics:
-=======
 SYM_FUNC_START_LOCAL(setup_745x_specifics)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We check for the presence of an L3 cache setup by
 	 * the firmware. If any, we disable NAP capability as
 	 * it's known to be bogus on rev 2.1 and earlier
@@ -325,11 +251,7 @@ BEGIN_FTR_SECTION
 	beq	1f
 END_FTR_SECTION_IFSET(CPU_FTR_L3CR)
 	lwz	r6,CPU_SPEC_FEATURES(r4)
-<<<<<<< HEAD
-	andi.	r0,r6,CPU_FTR_L3_DISABLE_NAP
-=======
 	andis.	r0,r6,CPU_FTR_L3_DISABLE_NAP@h
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	beq	1f
 	li	r7,CPU_FTR_CAN_NAP
 	andc	r6,r6,r7
@@ -376,10 +298,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_NO_DPM)
 	sync
 	isync
 	blr
-<<<<<<< HEAD
-=======
 SYM_FUNC_END(setup_745x_specifics)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Initialize the FPU registers. This is needed to work around an errata
@@ -398,10 +317,7 @@ _GLOBAL(__init_fpu_registers)
 	mtmsr	r10
 	isync
 	blr
-<<<<<<< HEAD
-=======
 _ASM_NOKPROBE_SYMBOL(__init_fpu_registers)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* Definitions for the table use to save CPU states */
@@ -436,11 +352,7 @@ _GLOBAL(__save_cpu_setup)
 	lis	r5,cpu_state_storage@h
 	ori	r5,r5,cpu_state_storage@l
 
-<<<<<<< HEAD
-	/* Save HID0 (common to all CONFIG_6xx cpus) */
-=======
 	/* Save HID0 (common to all CONFIG_PPC_BOOK3S_32 cpus) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfspr	r3,SPRN_HID0
 	stw	r3,CS_HID0(r5)
 
@@ -601,8 +513,4 @@ _GLOBAL(__restore_cpu_setup)
 1:
 	mtcr	r7
 	blr
-<<<<<<< HEAD
-
-=======
 _ASM_NOKPROBE_SYMBOL(__restore_cpu_setup)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

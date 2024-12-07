@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
   * icom.c
   *
@@ -10,27 +7,7 @@
   * Serial device driver.
   *
   * Based on code from serial.c
-<<<<<<< HEAD
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation; either version 2 of the License, or
-  * (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU General Public License for more details.
-  *
-  * You should have received a copy of the GNU General Public License
-  * along with this program; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-  *
   */
-#define SERIAL_DO_RESTART
-=======
-  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -42,10 +19,7 @@
 #include <linux/fs.h>
 #include <linux/tty_flip.h>
 #include <linux/serial.h>
-<<<<<<< HEAD
-=======
 #include <linux/serial_core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_reg.h>
 #include <linux/major.h>
 #include <linux/string.h>
@@ -64,27 +38,13 @@
 #include <linux/firmware.h>
 #include <linux/bitops.h>
 
-<<<<<<< HEAD
-#include <asm/io.h>
-#include <asm/irq.h>
-#include <asm/uaccess.h>
-
-#include "icom.h"
-=======
 #include <linux/io.h>
 #include <asm/irq.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*#define ICOM_TRACE		 enable port trace capabilities */
 
 #define ICOM_DRIVER_NAME "icom"
-<<<<<<< HEAD
-#define ICOM_VERSION_STR "1.3.1"
-#define NR_PORTS	       128
-#define ICOM_PORT ((struct icom_port *)port)
-#define to_icom_adapter(d) container_of(d, struct icom_adapter, kref)
-=======
 #define NR_PORTS	       128
 
 static const unsigned int icom_acfg_baud[] = {
@@ -349,7 +309,6 @@ static inline struct icom_port *to_icom_port(struct uart_port *port)
 {
 	return container_of(port, struct icom_port, uart_port);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct pci_device_id icom_pci_table[] = {
 	{
@@ -390,11 +349,7 @@ static const struct pci_device_id icom_pci_table[] = {
 	{}
 };
 
-<<<<<<< HEAD
-struct lookup_proc_table start_proc[4] = {
-=======
 static struct lookup_proc_table start_proc[4] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{NULL, ICOM_CONTROL_START_A},
 	{NULL, ICOM_CONTROL_START_B},
 	{NULL, ICOM_CONTROL_START_C},
@@ -402,22 +357,14 @@ static struct lookup_proc_table start_proc[4] = {
 };
 
 
-<<<<<<< HEAD
-struct lookup_proc_table stop_proc[4] = {
-=======
 static struct lookup_proc_table stop_proc[4] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{NULL, ICOM_CONTROL_STOP_A},
 	{NULL, ICOM_CONTROL_STOP_B},
 	{NULL, ICOM_CONTROL_STOP_C},
 	{NULL, ICOM_CONTROL_STOP_D}
 };
 
-<<<<<<< HEAD
-struct lookup_int_table int_mask_tbl[4] = {
-=======
 static struct lookup_int_table int_mask_tbl[4] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{NULL, ICOM_INT_MASK_PRC_A},
 	{NULL, ICOM_INT_MASK_PRC_B},
 	{NULL, ICOM_INT_MASK_PRC_C},
@@ -430,11 +377,7 @@ MODULE_DEVICE_TABLE(pci, icom_pci_table);
 static LIST_HEAD(icom_adapter_head);
 
 /* spinlock for adapter initialization and changing adapter operations */
-<<<<<<< HEAD
-static spinlock_t icom_lock;
-=======
 static DEFINE_SPINLOCK(icom_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef ICOM_TRACE
 static inline void trace(struct icom_port *icom_port, char *trace_pt,
@@ -454,20 +397,6 @@ static void free_port_memory(struct icom_port *icom_port)
 
 	trace(icom_port, "RET_PORT_MEM", 0);
 	if (icom_port->recv_buf) {
-<<<<<<< HEAD
-		pci_free_consistent(dev, 4096, icom_port->recv_buf,
-				    icom_port->recv_buf_pci);
-		icom_port->recv_buf = NULL;
-	}
-	if (icom_port->xmit_buf) {
-		pci_free_consistent(dev, 4096, icom_port->xmit_buf,
-				    icom_port->xmit_buf_pci);
-		icom_port->xmit_buf = NULL;
-	}
-	if (icom_port->statStg) {
-		pci_free_consistent(dev, 4096, icom_port->statStg,
-				    icom_port->statStg_pci);
-=======
 		dma_free_coherent(&dev->dev, 4096, icom_port->recv_buf,
 				  icom_port->recv_buf_pci);
 		icom_port->recv_buf = NULL;
@@ -480,27 +409,17 @@ static void free_port_memory(struct icom_port *icom_port)
 	if (icom_port->statStg) {
 		dma_free_coherent(&dev->dev, 4096, icom_port->statStg,
 				  icom_port->statStg_pci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		icom_port->statStg = NULL;
 	}
 
 	if (icom_port->xmitRestart) {
-<<<<<<< HEAD
-		pci_free_consistent(dev, 4096, icom_port->xmitRestart,
-				    icom_port->xmitRestart_pci);
-=======
 		dma_free_coherent(&dev->dev, 4096, icom_port->xmitRestart,
 				  icom_port->xmitRestart_pci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		icom_port->xmitRestart = NULL;
 	}
 }
 
-<<<<<<< HEAD
-static int __devinit get_port_memory(struct icom_port *icom_port)
-=======
 static int get_port_memory(struct icom_port *icom_port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index;
 	unsigned long stgAddr;
@@ -509,12 +428,8 @@ static int get_port_memory(struct icom_port *icom_port)
 	struct pci_dev *dev = icom_port->adapter->pci_dev;
 
 	icom_port->xmit_buf =
-<<<<<<< HEAD
-	    pci_alloc_consistent(dev, 4096, &icom_port->xmit_buf_pci);
-=======
 	    dma_alloc_coherent(&dev->dev, 4096, &icom_port->xmit_buf_pci,
 			       GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!icom_port->xmit_buf) {
 		dev_err(&dev->dev, "Can not allocate Transmit buffer\n");
 		return -ENOMEM;
@@ -524,12 +439,8 @@ static int get_port_memory(struct icom_port *icom_port)
 	      (unsigned long) icom_port->xmit_buf);
 
 	icom_port->recv_buf =
-<<<<<<< HEAD
-	    pci_alloc_consistent(dev, 4096, &icom_port->recv_buf_pci);
-=======
 	    dma_alloc_coherent(&dev->dev, 4096, &icom_port->recv_buf_pci,
 			       GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!icom_port->recv_buf) {
 		dev_err(&dev->dev, "Can not allocate Receive buffer\n");
 		free_port_memory(icom_port);
@@ -539,12 +450,8 @@ static int get_port_memory(struct icom_port *icom_port)
 	      (unsigned long) icom_port->recv_buf);
 
 	icom_port->statStg =
-<<<<<<< HEAD
-	    pci_alloc_consistent(dev, 4096, &icom_port->statStg_pci);
-=======
 	    dma_alloc_coherent(&dev->dev, 4096, &icom_port->statStg_pci,
 			       GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!icom_port->statStg) {
 		dev_err(&dev->dev, "Can not allocate Status buffer\n");
 		free_port_memory(icom_port);
@@ -554,12 +461,8 @@ static int get_port_memory(struct icom_port *icom_port)
 	      (unsigned long) icom_port->statStg);
 
 	icom_port->xmitRestart =
-<<<<<<< HEAD
-	    pci_alloc_consistent(dev, 4096, &icom_port->xmitRestart_pci);
-=======
 	    dma_alloc_coherent(&dev->dev, 4096, &icom_port->xmitRestart_pci,
 			       GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!icom_port->xmitRestart) {
 		dev_err(&dev->dev,
 			"Can not allocate xmit Restart buffer\n");
@@ -567,11 +470,6 @@ static int get_port_memory(struct icom_port *icom_port)
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	memset(icom_port->statStg, 0, 4096);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* FODs: Frame Out Descriptor Queue, this is a FIFO queue that
            indicates that frames are to be transmitted
 	*/
@@ -583,11 +481,7 @@ static int get_port_memory(struct icom_port *icom_port)
 		if (index < (NUM_XBUFFS - 1)) {
 			memset(&icom_port->statStg->xmit[index], 0, sizeof(struct xmit_status_area));
 			icom_port->statStg->xmit[index].leLengthASD =
-<<<<<<< HEAD
-			    (unsigned short int) cpu_to_le16(XMIT_BUFF_SZ);
-=======
 			    cpu_to_le16(XMIT_BUFF_SZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			trace(icom_port, "FOD_ADDR", stgAddr);
 			trace(icom_port, "FOD_XBUFF",
 			      (unsigned long) icom_port->xmit_buf);
@@ -596,11 +490,7 @@ static int get_port_memory(struct icom_port *icom_port)
 		} else if (index == (NUM_XBUFFS - 1)) {
 			memset(&icom_port->statStg->xmit[index], 0, sizeof(struct xmit_status_area));
 			icom_port->statStg->xmit[index].leLengthASD =
-<<<<<<< HEAD
-			    (unsigned short int) cpu_to_le16(XMIT_BUFF_SZ);
-=======
 			    cpu_to_le16(XMIT_BUFF_SZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			trace(icom_port, "FOD_XBUFF",
 			      (unsigned long) icom_port->xmit_buf);
 			icom_port->statStg->xmit[index].leBuffer =
@@ -618,11 +508,7 @@ static int get_port_memory(struct icom_port *icom_port)
 		stgAddr = stgAddr + sizeof(icom_port->statStg->rcv[0]);
 		icom_port->statStg->rcv[index].leLength = 0;
 		icom_port->statStg->rcv[index].WorkingLength =
-<<<<<<< HEAD
-		    (unsigned short int) cpu_to_le16(RCV_BUFF_SZ);
-=======
 		    cpu_to_le16(RCV_BUFF_SZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (index < (NUM_RBUFFS - 1) ) {
 			offset = stgAddr - (unsigned long) icom_port->statStg;
 			icom_port->statStg->rcv[index].leNext =
@@ -657,36 +543,17 @@ static void stop_processor(struct icom_port *icom_port)
 	spin_lock_irqsave(&icom_lock, flags);
 
 	port = icom_port->port;
-<<<<<<< HEAD
-=======
 	if (port >= ARRAY_SIZE(stop_proc)) {
 		dev_err(&icom_port->adapter->pci_dev->dev,
 			"Invalid port assignment\n");
 		goto unlock;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (port == 0 || port == 1)
 		stop_proc[port].global_control_reg = &icom_port->global_reg->control;
 	else
 		stop_proc[port].global_control_reg = &icom_port->global_reg->control_2;
 
-<<<<<<< HEAD
-
-	if (port < 4) {
-		temp = readl(stop_proc[port].global_control_reg);
-		temp =
-			(temp & ~start_proc[port].processor_id) | stop_proc[port].processor_id;
-		writel(temp, stop_proc[port].global_control_reg);
-
-		/* write flush */
-		readl(stop_proc[port].global_control_reg);
-	} else {
-		dev_err(&icom_port->adapter->pci_dev->dev,
-                        "Invalid port assignment\n");
-	}
-
-=======
 	temp = readl(stop_proc[port].global_control_reg);
 	temp = (temp & ~start_proc[port].processor_id) | stop_proc[port].processor_id;
 	writel(temp, stop_proc[port].global_control_reg);
@@ -695,7 +562,6 @@ static void stop_processor(struct icom_port *icom_port)
 	readl(stop_proc[port].global_control_reg);
 
 unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&icom_lock, flags);
 }
 
@@ -708,34 +574,16 @@ static void start_processor(struct icom_port *icom_port)
 	spin_lock_irqsave(&icom_lock, flags);
 
 	port = icom_port->port;
-<<<<<<< HEAD
-=======
 	if (port >= ARRAY_SIZE(start_proc)) {
 		dev_err(&icom_port->adapter->pci_dev->dev,
 			"Invalid port assignment\n");
 		goto unlock;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (port == 0 || port == 1)
 		start_proc[port].global_control_reg = &icom_port->global_reg->control;
 	else
 		start_proc[port].global_control_reg = &icom_port->global_reg->control_2;
-<<<<<<< HEAD
-	if (port < 4) {
-		temp = readl(start_proc[port].global_control_reg);
-		temp =
-			(temp & ~stop_proc[port].processor_id) | start_proc[port].processor_id;
-		writel(temp, start_proc[port].global_control_reg);
-
-		/* write flush */
-		readl(start_proc[port].global_control_reg);
-	} else {
-		dev_err(&icom_port->adapter->pci_dev->dev,
-                        "Invalid port assignment\n");
-	}
-
-=======
 
 	temp = readl(start_proc[port].global_control_reg);
 	temp = (temp & ~stop_proc[port].processor_id) | start_proc[port].processor_id;
@@ -745,7 +593,6 @@ static void start_processor(struct icom_port *icom_port)
 	readl(start_proc[port].global_control_reg);
 
 unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&icom_lock, flags);
 }
 
@@ -830,11 +677,7 @@ static void load_code(struct icom_port *icom_port)
 	/*Set up data in icom DRAM to indicate where personality
 	 *code is located and its length.
 	 */
-<<<<<<< HEAD
-	new_page = pci_alloc_consistent(dev, 4096, &temp_pci);
-=======
 	new_page = dma_alloc_coherent(&dev->dev, 4096, &temp_pci, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!new_page) {
 		dev_err(&dev->dev, "Can not allocate DMA buffer\n");
@@ -858,19 +701,11 @@ static void load_code(struct icom_port *icom_port)
 	for (index = 0; index < fw->size; index++)
 		new_page[index] = fw->data[index];
 
-<<<<<<< HEAD
-	release_firmware(fw);
-
-	writeb((char) ((fw->size + 16)/16), &icom_port->dram->mac_length);
-	writel(temp_pci, &icom_port->dram->mac_load_addr);
-
-=======
 	writeb((char) ((fw->size + 16)/16), &icom_port->dram->mac_length);
 	writel(temp_pci, &icom_port->dram->mac_load_addr);
 
 	release_firmware(fw);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*Setting the syncReg to 0x80 causes adapter to start downloading
 	   the personality code into adapter instruction RAM.
 	   Once code is loaded, it will begin executing and, based on
@@ -918,19 +753,11 @@ static void load_code(struct icom_port *icom_port)
 		/* Stop processor */
 		stop_processor(icom_port);
 
-<<<<<<< HEAD
-		dev_err(&icom_port->adapter->pci_dev->dev,"Port not opertional\n");
-	}
-
-	if (new_page != NULL)
-		pci_free_consistent(dev, 4096, new_page, temp_pci);
-=======
 		dev_err(&icom_port->adapter->pci_dev->dev,"Port not operational\n");
 	}
 
 	if (new_page != NULL)
 		dma_free_coherent(&dev->dev, 4096, new_page, temp_pci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int startup(struct icom_port *icom_port)
@@ -978,15 +805,12 @@ static int startup(struct icom_port *icom_port)
 	 */
 	spin_lock_irqsave(&icom_lock, flags);
 	port = icom_port->port;
-<<<<<<< HEAD
-=======
 	if (port >= ARRAY_SIZE(int_mask_tbl)) {
 		dev_err(&icom_port->adapter->pci_dev->dev,
 			"Invalid port assignment\n");
 		goto unlock;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (port == 0 || port == 1)
 		int_mask_tbl[port].global_int_mask = &icom_port->global_reg->int_mask;
 	else
@@ -996,19 +820,6 @@ static int startup(struct icom_port *icom_port)
 		writew(0x00FF, icom_port->int_reg);
 	else
 		writew(0x3F00, icom_port->int_reg);
-<<<<<<< HEAD
-	if (port < 4) {
-		temp = readl(int_mask_tbl[port].global_int_mask);
-		writel(temp & ~int_mask_tbl[port].processor_id, int_mask_tbl[port].global_int_mask);
-
-		/* write flush */
-		readl(int_mask_tbl[port].global_int_mask);
-	} else {
-		dev_err(&icom_port->adapter->pci_dev->dev,
-                        "Invalid port assignment\n");
-	}
-
-=======
 
 	temp = readl(int_mask_tbl[port].global_int_mask);
 	writel(temp & ~int_mask_tbl[port].processor_id, int_mask_tbl[port].global_int_mask);
@@ -1017,7 +828,6 @@ static int startup(struct icom_port *icom_port)
 	readl(int_mask_tbl[port].global_int_mask);
 
 unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&icom_lock, flags);
 	return 0;
 }
@@ -1036,31 +846,16 @@ static void shutdown(struct icom_port *icom_port)
 	 * disable all interrupts
 	 */
 	port = icom_port->port;
-<<<<<<< HEAD
-=======
 	if (port >= ARRAY_SIZE(int_mask_tbl)) {
 		dev_err(&icom_port->adapter->pci_dev->dev,
 			"Invalid port assignment\n");
 		goto unlock;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (port == 0 || port == 1)
 		int_mask_tbl[port].global_int_mask = &icom_port->global_reg->int_mask;
 	else
 		int_mask_tbl[port].global_int_mask = &icom_port->global_reg->int_mask_2;
 
-<<<<<<< HEAD
-	if (port < 4) {
-		temp = readl(int_mask_tbl[port].global_int_mask);
-		writel(temp | int_mask_tbl[port].processor_id, int_mask_tbl[port].global_int_mask);
-
-		/* write flush */
-		readl(int_mask_tbl[port].global_int_mask);
-	} else {
-		dev_err(&icom_port->adapter->pci_dev->dev,
-                        "Invalid port assignment\n");
-	}
-=======
 	temp = readl(int_mask_tbl[port].global_int_mask);
 	writel(temp | int_mask_tbl[port].processor_id, int_mask_tbl[port].global_int_mask);
 
@@ -1068,7 +863,6 @@ static void shutdown(struct icom_port *icom_port)
 	readl(int_mask_tbl[port].global_int_mask);
 
 unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&icom_lock, flags);
 
 	/*
@@ -1082,28 +876,17 @@ unlock:
 
 static int icom_write(struct uart_port *port)
 {
-<<<<<<< HEAD
-=======
 	struct icom_port *icom_port = to_icom_port(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long data_count;
 	unsigned char cmdReg;
 	unsigned long offset;
 	int temp_tail = port->state->xmit.tail;
 
-<<<<<<< HEAD
-	trace(ICOM_PORT, "WRITE", 0);
-
-	if (cpu_to_le16(ICOM_PORT->statStg->xmit[0].flags) &
-	    SA_FLAGS_READY_TO_XMIT) {
-		trace(ICOM_PORT, "WRITE_FULL", 0);
-=======
 	trace(icom_port, "WRITE", 0);
 
 	if (le16_to_cpu(icom_port->statStg->xmit[0].flags) &
 	    SA_FLAGS_READY_TO_XMIT) {
 		trace(icom_port, "WRITE_FULL", 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -1111,11 +894,7 @@ static int icom_write(struct uart_port *port)
 	while ((port->state->xmit.head != temp_tail) &&
 	       (data_count <= XMIT_BUFF_SZ)) {
 
-<<<<<<< HEAD
-		ICOM_PORT->xmit_buf[data_count++] =
-=======
 		icom_port->xmit_buf[data_count++] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    port->state->xmit.buf[temp_tail];
 
 		temp_tail++;
@@ -1123,24 +902,6 @@ static int icom_write(struct uart_port *port)
 	}
 
 	if (data_count) {
-<<<<<<< HEAD
-		ICOM_PORT->statStg->xmit[0].flags =
-		    cpu_to_le16(SA_FLAGS_READY_TO_XMIT);
-		ICOM_PORT->statStg->xmit[0].leLength =
-		    cpu_to_le16(data_count);
-		offset =
-		    (unsigned long) &ICOM_PORT->statStg->xmit[0] -
-		    (unsigned long) ICOM_PORT->statStg;
-		*ICOM_PORT->xmitRestart =
-		    cpu_to_le32(ICOM_PORT->statStg_pci + offset);
-		cmdReg = readb(&ICOM_PORT->dram->CmdReg);
-		writeb(cmdReg | CMD_XMIT_RCV_ENABLE,
-		       &ICOM_PORT->dram->CmdReg);
-		writeb(START_XMIT, &ICOM_PORT->dram->StartXmitCmd);
-		trace(ICOM_PORT, "WRITE_START", data_count);
-		/* write flush */
-		readb(&ICOM_PORT->dram->StartXmitCmd);
-=======
 		icom_port->statStg->xmit[0].flags =
 		    cpu_to_le16(SA_FLAGS_READY_TO_XMIT);
 		icom_port->statStg->xmit[0].leLength =
@@ -1157,7 +918,6 @@ static int icom_write(struct uart_port *port)
 		trace(icom_port, "WRITE_START", data_count);
 		/* write flush */
 		readb(&icom_port->dram->StartXmitCmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return data_count;
@@ -1169,11 +929,7 @@ static inline void check_modem_status(struct icom_port *icom_port)
 	char delta_status;
 	unsigned char status;
 
-<<<<<<< HEAD
-	spin_lock(&icom_port->uart_port.lock);
-=======
 	uart_port_lock(&icom_port->uart_port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*modem input register */
 	status = readb(&icom_port->dram->isr);
@@ -1195,21 +951,12 @@ static inline void check_modem_status(struct icom_port *icom_port)
 				      port.delta_msr_wait);
 		old_status = status;
 	}
-<<<<<<< HEAD
-	spin_unlock(&icom_port->uart_port.lock);
-=======
 	uart_port_unlock(&icom_port->uart_port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void xmit_interrupt(u16 port_int_reg, struct icom_port *icom_port)
 {
-<<<<<<< HEAD
-	unsigned short int count;
-	int i;
-=======
 	u16 count, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (port_int_reg & (INT_XMIT_COMPLETED)) {
 		trace(icom_port, "XMIT_COMPLETE", 0);
@@ -1218,12 +965,7 @@ static void xmit_interrupt(u16 port_int_reg, struct icom_port *icom_port)
 		icom_port->statStg->xmit[0].flags &=
 			cpu_to_le16(~SA_FLAGS_READY_TO_XMIT);
 
-<<<<<<< HEAD
-		count = (unsigned short int)
-			cpu_to_le16(icom_port->statStg->xmit[0].leLength);
-=======
 		count = le16_to_cpu(icom_port->statStg->xmit[0].leLength);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		icom_port->uart_port.icount.tx += count;
 
 		for (i=0; i<count &&
@@ -1244,13 +986,8 @@ static void xmit_interrupt(u16 port_int_reg, struct icom_port *icom_port)
 static void recv_interrupt(u16 port_int_reg, struct icom_port *icom_port)
 {
 	short int count, rcv_buff;
-<<<<<<< HEAD
-	struct tty_struct *tty = icom_port->uart_port.state->port.tty;
-	unsigned short int status;
-=======
 	struct tty_port *port = &icom_port->uart_port.state->port;
 	u16 status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct uart_icount *icount;
 	unsigned long offset;
 	unsigned char flag;
@@ -1258,41 +995,24 @@ static void recv_interrupt(u16 port_int_reg, struct icom_port *icom_port)
 	trace(icom_port, "RCV_COMPLETE", 0);
 	rcv_buff = icom_port->next_rcv;
 
-<<<<<<< HEAD
-	status = cpu_to_le16(icom_port->statStg->rcv[rcv_buff].flags);
-=======
 	status = le16_to_cpu(icom_port->statStg->rcv[rcv_buff].flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (status & SA_FL_RCV_DONE) {
 		int first = -1;
 
 		trace(icom_port, "FID_STATUS", status);
-<<<<<<< HEAD
-		count = cpu_to_le16(icom_port->statStg->rcv[rcv_buff].leLength);
-=======
 		count = le16_to_cpu(icom_port->statStg->rcv[rcv_buff].leLength);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		trace(icom_port, "RCV_COUNT", count);
 
 		trace(icom_port, "REAL_COUNT", count);
 
-<<<<<<< HEAD
-		offset =
-			cpu_to_le32(icom_port->statStg->rcv[rcv_buff].leBuffer) -
-=======
 		offset = le32_to_cpu(icom_port->statStg->rcv[rcv_buff].leBuffer) -
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			icom_port->recv_buf_pci;
 
 		/* Block copy all but the last byte as this may have status */
 		if (count > 0) {
 			first = icom_port->recv_buf[offset];
-<<<<<<< HEAD
-			tty_insert_flip_string(tty, icom_port->recv_buf + offset, count - 1);
-=======
 			tty_insert_flip_string(port, icom_port->recv_buf + offset, count - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		icount = &icom_port->uart_port.icount;
@@ -1343,11 +1063,7 @@ static void recv_interrupt(u16 port_int_reg, struct icom_port *icom_port)
 
 		}
 
-<<<<<<< HEAD
-		tty_insert_flip_char(tty, *(icom_port->recv_buf + offset + count - 1), flag);
-=======
 		tty_insert_flip_char(port, *(icom_port->recv_buf + offset + count - 1), flag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (status & SA_FLAGS_OVERRUN)
 			/*
@@ -1355,48 +1071,29 @@ static void recv_interrupt(u16 port_int_reg, struct icom_port *icom_port)
 			 * reported immediately, and doesn't
 			 * affect the current character
 			 */
-<<<<<<< HEAD
-			tty_insert_flip_char(tty, 0, TTY_OVERRUN);
-=======
 			tty_insert_flip_char(port, 0, TTY_OVERRUN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ignore_char:
 		icom_port->statStg->rcv[rcv_buff].flags = 0;
 		icom_port->statStg->rcv[rcv_buff].leLength = 0;
 		icom_port->statStg->rcv[rcv_buff].WorkingLength =
-<<<<<<< HEAD
-			(unsigned short int) cpu_to_le16(RCV_BUFF_SZ);
-=======
 			cpu_to_le16(RCV_BUFF_SZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rcv_buff++;
 		if (rcv_buff == NUM_RBUFFS)
 			rcv_buff = 0;
 
-<<<<<<< HEAD
-		status = cpu_to_le16(icom_port->statStg->rcv[rcv_buff].flags);
-	}
-	icom_port->next_rcv = rcv_buff;
-	tty_flip_buffer_push(tty);
-=======
 		status = le16_to_cpu(icom_port->statStg->rcv[rcv_buff].flags);
 	}
 	icom_port->next_rcv = rcv_buff;
 
 	tty_flip_buffer_push(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void process_interrupt(u16 port_int_reg,
 			      struct icom_port *icom_port)
 {
 
-<<<<<<< HEAD
-	spin_lock(&icom_port->uart_port.lock);
-=======
 	uart_port_lock(&icom_port->uart_port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace(icom_port, "INTERRUPT", port_int_reg);
 
 	if (port_int_reg & (INT_XMIT_COMPLETED | INT_XMIT_DISABLED))
@@ -1405,11 +1102,7 @@ static void process_interrupt(u16 port_int_reg,
 	if (port_int_reg & INT_RCV_COMPLETED)
 		recv_interrupt(port_int_reg, icom_port);
 
-<<<<<<< HEAD
-	spin_unlock(&icom_port->uart_port.lock);
-=======
 	uart_port_unlock(&icom_port->uart_port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t icom_interrupt(int irq, void *dev_id)
@@ -1489,47 +1182,23 @@ static irqreturn_t icom_interrupt(int irq, void *dev_id)
  */
 static unsigned int icom_tx_empty(struct uart_port *port)
 {
-<<<<<<< HEAD
-	int ret;
-	unsigned long flags;
-
-	spin_lock_irqsave(&port->lock, flags);
-	if (cpu_to_le16(ICOM_PORT->statStg->xmit[0].flags) &
-=======
 	struct icom_port *icom_port = to_icom_port(port);
 	int ret;
 	unsigned long flags;
 
 	uart_port_lock_irqsave(port, &flags);
 	if (le16_to_cpu(icom_port->statStg->xmit[0].flags) &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    SA_FLAGS_READY_TO_XMIT)
 		ret = TIOCSER_TEMT;
 	else
 		ret = 0;
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static void icom_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
-<<<<<<< HEAD
-	unsigned char local_osr;
-
-	trace(ICOM_PORT, "SET_MODEM", 0);
-	local_osr = readb(&ICOM_PORT->dram->osr);
-
-	if (mctrl & TIOCM_RTS) {
-		trace(ICOM_PORT, "RAISE_RTS", 0);
-		local_osr |= ICOM_RTS;
-	} else {
-		trace(ICOM_PORT, "LOWER_RTS", 0);
-=======
 	struct icom_port *icom_port = to_icom_port(port);
 	unsigned char local_osr;
 
@@ -1541,21 +1210,10 @@ static void icom_set_mctrl(struct uart_port *port, unsigned int mctrl)
 		local_osr |= ICOM_RTS;
 	} else {
 		trace(icom_port, "LOWER_RTS", 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local_osr &= ~ICOM_RTS;
 	}
 
 	if (mctrl & TIOCM_DTR) {
-<<<<<<< HEAD
-		trace(ICOM_PORT, "RAISE_DTR", 0);
-		local_osr |= ICOM_DTR;
-	} else {
-		trace(ICOM_PORT, "LOWER_DTR", 0);
-		local_osr &= ~ICOM_DTR;
-	}
-
-	writeb(local_osr, &ICOM_PORT->dram->osr);
-=======
 		trace(icom_port, "RAISE_DTR", 0);
 		local_osr |= ICOM_DTR;
 	} else {
@@ -1564,19 +1222,10 @@ static void icom_set_mctrl(struct uart_port *port, unsigned int mctrl)
 	}
 
 	writeb(local_osr, &icom_port->dram->osr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int icom_get_mctrl(struct uart_port *port)
 {
-<<<<<<< HEAD
-	unsigned char status;
-	unsigned int result;
-
-	trace(ICOM_PORT, "GET_MODEM", 0);
-
-	status = readb(&ICOM_PORT->dram->isr);
-=======
 	struct icom_port *icom_port = to_icom_port(port);
 	unsigned char status;
 	unsigned int result;
@@ -1584,7 +1233,6 @@ static unsigned int icom_get_mctrl(struct uart_port *port)
 	trace(icom_port, "GET_MODEM", 0);
 
 	status = readb(&icom_port->dram->isr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = ((status & ICOM_DCD) ? TIOCM_CAR : 0)
 	    | ((status & ICOM_RI) ? TIOCM_RNG : 0)
@@ -1595,33 +1243,16 @@ static unsigned int icom_get_mctrl(struct uart_port *port)
 
 static void icom_stop_tx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	unsigned char cmdReg;
-
-	trace(ICOM_PORT, "STOP", 0);
-	cmdReg = readb(&ICOM_PORT->dram->CmdReg);
-	writeb(cmdReg | CMD_HOLD_XMIT, &ICOM_PORT->dram->CmdReg);
-=======
 	struct icom_port *icom_port = to_icom_port(port);
 	unsigned char cmdReg;
 
 	trace(icom_port, "STOP", 0);
 	cmdReg = readb(&icom_port->dram->CmdReg);
 	writeb(cmdReg | CMD_HOLD_XMIT, &icom_port->dram->CmdReg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void icom_start_tx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	unsigned char cmdReg;
-
-	trace(ICOM_PORT, "START", 0);
-	cmdReg = readb(&ICOM_PORT->dram->CmdReg);
-	if ((cmdReg & CMD_HOLD_XMIT) == CMD_HOLD_XMIT)
-		writeb(cmdReg & ~CMD_HOLD_XMIT,
-		       &ICOM_PORT->dram->CmdReg);
-=======
 	struct icom_port *icom_port = to_icom_port(port);
 	unsigned char cmdReg;
 
@@ -1630,39 +1261,17 @@ static void icom_start_tx(struct uart_port *port)
 	if ((cmdReg & CMD_HOLD_XMIT) == CMD_HOLD_XMIT)
 		writeb(cmdReg & ~CMD_HOLD_XMIT,
 		       &icom_port->dram->CmdReg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	icom_write(port);
 }
 
 static void icom_send_xchar(struct uart_port *port, char ch)
 {
-<<<<<<< HEAD
-=======
 	struct icom_port *icom_port = to_icom_port(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char xdata;
 	int index;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	trace(ICOM_PORT, "SEND_XCHAR", ch);
-
-	/* wait .1 sec to send char */
-	for (index = 0; index < 10; index++) {
-		spin_lock_irqsave(&port->lock, flags);
-		xdata = readb(&ICOM_PORT->dram->xchar);
-		if (xdata == 0x00) {
-			trace(ICOM_PORT, "QUICK_WRITE", 0);
-			writeb(ch, &ICOM_PORT->dram->xchar);
-
-			/* flush write operation */
-			xdata = readb(&ICOM_PORT->dram->xchar);
-			spin_unlock_irqrestore(&port->lock, flags);
-			break;
-		}
-		spin_unlock_irqrestore(&port->lock, flags);
-=======
 	trace(icom_port, "SEND_XCHAR", ch);
 
 	/* wait .1 sec to send char */
@@ -1679,48 +1288,21 @@ static void icom_send_xchar(struct uart_port *port, char ch)
 			break;
 		}
 		uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(10);
 	}
 }
 
 static void icom_stop_rx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	unsigned char cmdReg;
-
-	cmdReg = readb(&ICOM_PORT->dram->CmdReg);
-	writeb(cmdReg & ~CMD_RCV_ENABLE, &ICOM_PORT->dram->CmdReg);
-}
-
-static void icom_enable_ms(struct uart_port *port)
-{
-	/* no-op */
-=======
 	struct icom_port *icom_port = to_icom_port(port);
 	unsigned char cmdReg;
 
 	cmdReg = readb(&icom_port->dram->CmdReg);
 	writeb(cmdReg & ~CMD_RCV_ENABLE, &icom_port->dram->CmdReg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void icom_break(struct uart_port *port, int break_state)
 {
-<<<<<<< HEAD
-	unsigned char cmdReg;
-	unsigned long flags;
-
-	spin_lock_irqsave(&port->lock, flags);
-	trace(ICOM_PORT, "BREAK", 0);
-	cmdReg = readb(&ICOM_PORT->dram->CmdReg);
-	if (break_state == -1) {
-		writeb(cmdReg | CMD_SND_BREAK, &ICOM_PORT->dram->CmdReg);
-	} else {
-		writeb(cmdReg & ~CMD_SND_BREAK, &ICOM_PORT->dram->CmdReg);
-	}
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	struct icom_port *icom_port = to_icom_port(port);
 	unsigned char cmdReg;
 	unsigned long flags;
@@ -1734,21 +1316,10 @@ static void icom_break(struct uart_port *port, int break_state)
 		writeb(cmdReg & ~CMD_SND_BREAK, &icom_port->dram->CmdReg);
 	}
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int icom_open(struct uart_port *port)
 {
-<<<<<<< HEAD
-	int retval;
-
-	kref_get(&ICOM_PORT->adapter->kref);
-	retval = startup(ICOM_PORT);
-
-	if (retval) {
-		kref_put(&ICOM_PORT->adapter->kref, icom_kref_release);
-		trace(ICOM_PORT, "STARTUP_ERROR", 0);
-=======
 	struct icom_port *icom_port = to_icom_port(port);
 	int retval;
 
@@ -1758,7 +1329,6 @@ static int icom_open(struct uart_port *port)
 	if (retval) {
 		kref_put(&icom_port->adapter->kref, icom_kref_release);
 		trace(icom_port, "STARTUP_ERROR", 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return retval;
 	}
 
@@ -1767,26 +1337,6 @@ static int icom_open(struct uart_port *port)
 
 static void icom_close(struct uart_port *port)
 {
-<<<<<<< HEAD
-	unsigned char cmdReg;
-
-	trace(ICOM_PORT, "CLOSE", 0);
-
-	/* stop receiver */
-	cmdReg = readb(&ICOM_PORT->dram->CmdReg);
-	writeb(cmdReg & (unsigned char) ~CMD_RCV_ENABLE,
-	       &ICOM_PORT->dram->CmdReg);
-
-	shutdown(ICOM_PORT);
-
-	kref_put(&ICOM_PORT->adapter->kref, icom_kref_release);
-}
-
-static void icom_set_termios(struct uart_port *port,
-			     struct ktermios *termios,
-			     struct ktermios *old_termios)
-{
-=======
 	struct icom_port *icom_port = to_icom_port(port);
 	unsigned char cmdReg;
 
@@ -1805,7 +1355,6 @@ static void icom_set_termios(struct uart_port *port, struct ktermios *termios,
 			     const struct ktermios *old_termios)
 {
 	struct icom_port *icom_port = to_icom_port(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int baud;
 	unsigned cflag, iflag;
 	char new_config2;
@@ -1816,13 +1365,8 @@ static void icom_set_termios(struct uart_port *port, struct ktermios *termios,
 	unsigned long offset;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&port->lock, flags);
-	trace(ICOM_PORT, "CHANGE_SPEED", 0);
-=======
 	uart_port_lock_irqsave(port, &flags);
 	trace(icom_port, "CHANGE_SPEED", 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cflag = termios->c_cflag;
 	iflag = termios->c_iflag;
@@ -1853,20 +1397,12 @@ static void icom_set_termios(struct uart_port *port, struct ktermios *termios,
 	if (cflag & PARENB) {
 		/* parity bit enabled */
 		new_config2 |= ICOM_ACFG_PARITY_ENAB;
-<<<<<<< HEAD
-		trace(ICOM_PORT, "PARENB", 0);
-=======
 		trace(icom_port, "PARENB", 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (cflag & PARODD) {
 		/* odd parity */
 		new_config2 |= ICOM_ACFG_PARITY_ODD;
-<<<<<<< HEAD
-		trace(ICOM_PORT, "PARODD", 0);
-=======
 		trace(icom_port, "PARODD", 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Determine divisor based on baud rate */
@@ -1886,33 +1422,16 @@ static void icom_set_termios(struct uart_port *port, struct ktermios *termios,
 	uart_update_timeout(port, cflag, baud);
 
 	/* CTS flow control flag and modem status interrupts */
-<<<<<<< HEAD
-	tmp_byte = readb(&(ICOM_PORT->dram->HDLCConfigReg));
-=======
 	tmp_byte = readb(&(icom_port->dram->HDLCConfigReg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cflag & CRTSCTS)
 		tmp_byte |= HDLC_HDW_FLOW;
 	else
 		tmp_byte &= ~HDLC_HDW_FLOW;
-<<<<<<< HEAD
-	writeb(tmp_byte, &(ICOM_PORT->dram->HDLCConfigReg));
-=======
 	writeb(tmp_byte, &(icom_port->dram->HDLCConfigReg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Set up parity check flag
 	 */
-<<<<<<< HEAD
-	ICOM_PORT->read_status_mask = SA_FLAGS_OVERRUN | SA_FL_RCV_DONE;
-	if (iflag & INPCK)
-		ICOM_PORT->read_status_mask |=
-		    SA_FLAGS_FRAME_ERROR | SA_FLAGS_PARITY_ERROR;
-
-	if ((iflag & BRKINT) || (iflag & PARMRK))
-		ICOM_PORT->read_status_mask |= SA_FLAGS_BREAK_DET;
-=======
 	icom_port->read_status_mask = SA_FLAGS_OVERRUN | SA_FL_RCV_DONE;
 	if (iflag & INPCK)
 		icom_port->read_status_mask |=
@@ -1920,51 +1439,28 @@ static void icom_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	if ((iflag & BRKINT) || (iflag & PARMRK))
 		icom_port->read_status_mask |= SA_FLAGS_BREAK_DET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Characters to ignore
 	 */
-<<<<<<< HEAD
-	ICOM_PORT->ignore_status_mask = 0;
-	if (iflag & IGNPAR)
-		ICOM_PORT->ignore_status_mask |=
-		    SA_FLAGS_PARITY_ERROR | SA_FLAGS_FRAME_ERROR;
-	if (iflag & IGNBRK) {
-		ICOM_PORT->ignore_status_mask |= SA_FLAGS_BREAK_DET;
-=======
 	icom_port->ignore_status_mask = 0;
 	if (iflag & IGNPAR)
 		icom_port->ignore_status_mask |=
 		    SA_FLAGS_PARITY_ERROR | SA_FLAGS_FRAME_ERROR;
 	if (iflag & IGNBRK) {
 		icom_port->ignore_status_mask |= SA_FLAGS_BREAK_DET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If we're ignore parity and break indicators, ignore
 		 * overruns too.  (For real raw support).
 		 */
 		if (iflag & IGNPAR)
-<<<<<<< HEAD
-			ICOM_PORT->ignore_status_mask |= SA_FLAGS_OVERRUN;
-=======
 			icom_port->ignore_status_mask |= SA_FLAGS_OVERRUN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * !!! ignore all characters if CREAD is not set
 	 */
 	if ((cflag & CREAD) == 0)
-<<<<<<< HEAD
-		ICOM_PORT->ignore_status_mask |= SA_FL_RCV_DONE;
-
-	/* Turn off Receiver to prepare for reset */
-	writeb(CMD_RCV_DISABLE, &ICOM_PORT->dram->CmdReg);
-
-	for (index = 0; index < 10; index++) {
-		if (readb(&ICOM_PORT->dram->PrevCmdReg) == 0x00) {
-=======
 		icom_port->ignore_status_mask |= SA_FL_RCV_DONE;
 
 	/* Turn off Receiver to prepare for reset */
@@ -1972,23 +1468,12 @@ static void icom_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	for (index = 0; index < 10; index++) {
 		if (readb(&icom_port->dram->PrevCmdReg) == 0x00) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
 	/* clear all current buffers of data */
 	for (rcv_buff = 0; rcv_buff < NUM_RBUFFS; rcv_buff++) {
-<<<<<<< HEAD
-		ICOM_PORT->statStg->rcv[rcv_buff].flags = 0;
-		ICOM_PORT->statStg->rcv[rcv_buff].leLength = 0;
-		ICOM_PORT->statStg->rcv[rcv_buff].WorkingLength =
-		    (unsigned short int) cpu_to_le16(RCV_BUFF_SZ);
-	}
-
-	for (xmit_buff = 0; xmit_buff < NUM_XBUFFS; xmit_buff++) {
-		ICOM_PORT->statStg->xmit[xmit_buff].flags = 0;
-=======
 		icom_port->statStg->rcv[rcv_buff].flags = 0;
 		icom_port->statStg->rcv[rcv_buff].leLength = 0;
 		icom_port->statStg->rcv[rcv_buff].WorkingLength =
@@ -1997,26 +1482,10 @@ static void icom_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	for (xmit_buff = 0; xmit_buff < NUM_XBUFFS; xmit_buff++) {
 		icom_port->statStg->xmit[xmit_buff].flags = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* activate changes and start xmit and receiver here */
 	/* Enable the receiver */
-<<<<<<< HEAD
-	writeb(new_config3, &(ICOM_PORT->dram->async_config3));
-	writeb(new_config2, &(ICOM_PORT->dram->async_config2));
-	tmp_byte = readb(&(ICOM_PORT->dram->HDLCConfigReg));
-	tmp_byte |= HDLC_PPP_PURE_ASYNC | HDLC_FF_FILL;
-	writeb(tmp_byte, &(ICOM_PORT->dram->HDLCConfigReg));
-	writeb(0x04, &(ICOM_PORT->dram->FlagFillIdleTimer));	/* 0.5 seconds */
-	writeb(0xFF, &(ICOM_PORT->dram->ier));	/* enable modem signal interrupts */
-
-	/* reset processor */
-	writeb(CMD_RESTART, &ICOM_PORT->dram->CmdReg);
-
-	for (index = 0; index < 10; index++) {
-		if (readb(&ICOM_PORT->dram->CmdReg) == 0x00) {
-=======
 	writeb(new_config3, &(icom_port->dram->async_config3));
 	writeb(new_config2, &(icom_port->dram->async_config2));
 	tmp_byte = readb(&(icom_port->dram->HDLCConfigReg));
@@ -2030,28 +1499,12 @@ static void icom_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	for (index = 0; index < 10; index++) {
 		if (readb(&icom_port->dram->CmdReg) == 0x00) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
 	/* Enable Transmitter and Receiver */
 	offset =
-<<<<<<< HEAD
-	    (unsigned long) &ICOM_PORT->statStg->rcv[0] -
-	    (unsigned long) ICOM_PORT->statStg;
-	writel(ICOM_PORT->statStg_pci + offset,
-	       &ICOM_PORT->dram->RcvStatusAddr);
-	ICOM_PORT->next_rcv = 0;
-	ICOM_PORT->put_length = 0;
-	*ICOM_PORT->xmitRestart = 0;
-	writel(ICOM_PORT->xmitRestart_pci,
-	       &ICOM_PORT->dram->XmitStatusAddr);
-	trace(ICOM_PORT, "XR_ENAB", 0);
-	writeb(CMD_XMIT_RCV_ENABLE, &ICOM_PORT->dram->CmdReg);
-
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	    (unsigned long) &icom_port->statStg->rcv[0] -
 	    (unsigned long) icom_port->statStg;
 	writel(icom_port->statStg_pci + offset,
@@ -2064,7 +1517,6 @@ static void icom_set_termios(struct uart_port *port, struct ktermios *termios,
 	writeb(CMD_XMIT_RCV_ENABLE, &icom_port->dram->CmdReg);
 
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *icom_type(struct uart_port *port)
@@ -2072,28 +1524,12 @@ static const char *icom_type(struct uart_port *port)
 	return "icom";
 }
 
-<<<<<<< HEAD
-static void icom_release_port(struct uart_port *port)
-{
-}
-
-static int icom_request_port(struct uart_port *port)
-{
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void icom_config_port(struct uart_port *port, int flags)
 {
 	port->type = PORT_ICOM;
 }
 
-<<<<<<< HEAD
-static struct uart_ops icom_ops = {
-=======
 static const struct uart_ops icom_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty = icom_tx_empty,
 	.set_mctrl = icom_set_mctrl,
 	.get_mctrl = icom_get_mctrl,
@@ -2101,20 +1537,11 @@ static const struct uart_ops icom_ops = {
 	.start_tx = icom_start_tx,
 	.send_xchar = icom_send_xchar,
 	.stop_rx = icom_stop_rx,
-<<<<<<< HEAD
-	.enable_ms = icom_enable_ms,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.break_ctl = icom_break,
 	.startup = icom_open,
 	.shutdown = icom_close,
 	.set_termios = icom_set_termios,
 	.type = icom_type,
-<<<<<<< HEAD
-	.release_port = icom_release_port,
-	.request_port = icom_request_port,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.config_port = icom_config_port,
 };
 
@@ -2130,11 +1557,7 @@ static struct uart_driver icom_uart_driver = {
 	.cons = ICOM_CONSOLE,
 };
 
-<<<<<<< HEAD
-static int __devinit icom_init_ports(struct icom_adapter *icom_adapter)
-=======
 static int icom_init_ports(struct icom_adapter *icom_adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 subsystem_id = icom_adapter->subsystem_id;
 	int i;
@@ -2147,10 +1570,6 @@ static int icom_init_ports(struct icom_adapter *icom_adapter)
 			icom_port = &icom_adapter->port_info[i];
 			icom_port->port = i;
 			icom_port->status = ICOM_PORT_ACTIVE;
-<<<<<<< HEAD
-			icom_port->imbed_modem = ICOM_UNKNOWN;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		if (subsystem_id == PCI_DEVICE_ID_IBM_ICOM_FOUR_PORT_MODEL) {
@@ -2161,35 +1580,15 @@ static int icom_init_ports(struct icom_adapter *icom_adapter)
 
 				icom_port->port = i;
 				icom_port->status = ICOM_PORT_ACTIVE;
-<<<<<<< HEAD
-				icom_port->imbed_modem = ICOM_IMBED_MODEM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			icom_adapter->numb_ports = 4;
 
 			icom_adapter->port_info[0].port = 0;
 			icom_adapter->port_info[0].status = ICOM_PORT_ACTIVE;
-<<<<<<< HEAD
-
-			if (subsystem_id ==
-			    PCI_DEVICE_ID_IBM_ICOM_V2_ONE_PORT_RVX_ONE_PORT_MDM) {
-				icom_adapter->port_info[0].imbed_modem = ICOM_IMBED_MODEM;
-			} else {
-				icom_adapter->port_info[0].imbed_modem = ICOM_RVX;
-			}
-
-			icom_adapter->port_info[1].status = ICOM_PORT_OFF;
-
-			icom_adapter->port_info[2].port = 2;
-			icom_adapter->port_info[2].status = ICOM_PORT_ACTIVE;
-			icom_adapter->port_info[2].imbed_modem = ICOM_RVX;
-=======
 			icom_adapter->port_info[1].status = ICOM_PORT_OFF;
 			icom_adapter->port_info[2].port = 2;
 			icom_adapter->port_info[2].status = ICOM_PORT_ACTIVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			icom_adapter->port_info[3].status = ICOM_PORT_OFF;
 		}
 	}
@@ -2213,11 +1612,7 @@ static void icom_port_active(struct icom_port *icom_port, struct icom_adapter *i
 			    0x8024 + 2 - 2 * (icom_port->port - 2);
 	}
 }
-<<<<<<< HEAD
-static int __devinit icom_load_ports(struct icom_adapter *icom_adapter)
-=======
 static int icom_load_ports(struct icom_adapter *icom_adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct icom_port *icom_port;
 	int port_num;
@@ -2243,39 +1638,21 @@ static int icom_load_ports(struct icom_adapter *icom_adapter)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit icom_alloc_adapter(struct icom_adapter
-=======
 static int icom_alloc_adapter(struct icom_adapter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					**icom_adapter_ref)
 {
 	int adapter_count = 0;
 	struct icom_adapter *icom_adapter;
 	struct icom_adapter *cur_adapter_entry;
-<<<<<<< HEAD
-	struct list_head *tmp;
-
-	icom_adapter = (struct icom_adapter *)
-	    kzalloc(sizeof(struct icom_adapter), GFP_KERNEL);
-=======
 
 	icom_adapter = kzalloc(sizeof(struct icom_adapter), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!icom_adapter) {
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	list_for_each(tmp, &icom_adapter_head) {
-		cur_adapter_entry =
-		    list_entry(tmp, struct icom_adapter,
-			       icom_adapter_entry);
-=======
 	list_for_each_entry(cur_adapter_entry, &icom_adapter_head,
 			icom_adapter_entry) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cur_adapter_entry->index != adapter_count) {
 			break;
 		}
@@ -2283,12 +1660,8 @@ static int icom_alloc_adapter(struct icom_adapter
 	}
 
 	icom_adapter->index = adapter_count;
-<<<<<<< HEAD
-	list_add_tail(&icom_adapter->icom_adapter_entry, tmp);
-=======
 	list_add_tail(&icom_adapter->icom_adapter_entry,
 			&cur_adapter_entry->icom_adapter_entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*icom_adapter_ref = icom_adapter;
 	return 0;
@@ -2300,15 +1673,10 @@ static void icom_free_adapter(struct icom_adapter *icom_adapter)
 	kfree(icom_adapter);
 }
 
-<<<<<<< HEAD
-static void icom_remove_adapter(struct icom_adapter *icom_adapter)
-{
-=======
 static void icom_kref_release(struct kref *kref)
 {
 	struct icom_adapter *icom_adapter = container_of(kref,
 			struct icom_adapter, kref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct icom_port *icom_port;
 	int index;
 
@@ -2341,19 +1709,7 @@ static void icom_kref_release(struct kref *kref)
 	icom_free_adapter(icom_adapter);
 }
 
-<<<<<<< HEAD
-static void icom_kref_release(struct kref *kref)
-{
-	struct icom_adapter *icom_adapter;
-
-	icom_adapter = to_icom_adapter(kref);
-	icom_remove_adapter(icom_adapter);
-}
-
-static int __devinit icom_probe(struct pci_dev *dev,
-=======
 static int icom_probe(struct pci_dev *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				const struct pci_device_id *ent)
 {
 	int index;
@@ -2368,12 +1724,8 @@ static int icom_probe(struct pci_dev *dev,
 		return retval;
 	}
 
-<<<<<<< HEAD
-	if ( (retval = pci_request_regions(dev, "icom"))) {
-=======
 	retval = pci_request_regions(dev, "icom");
 	if (retval) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 dev_err(&dev->dev, "pci_request_regions FAILED\n");
 		 pci_disable_device(dev);
 		 return retval;
@@ -2381,16 +1733,10 @@ static int icom_probe(struct pci_dev *dev,
 
 	pci_set_master(dev);
 
-<<<<<<< HEAD
-	if ( (retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg))) {
-		dev_err(&dev->dev, "PCI Config read FAILED\n");
-		return retval;
-=======
 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
 	if (retval) {
 		dev_err(&dev->dev, "PCI Config read FAILED\n");
 		goto probe_exit0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pci_write_config_dword(dev, PCI_COMMAND,
@@ -2426,15 +1772,6 @@ static int icom_probe(struct pci_dev *dev,
 
 	icom_adapter->base_addr = pci_ioremap_bar(dev, 0);
 
-<<<<<<< HEAD
-	if (!icom_adapter->base_addr)
-		goto probe_exit1;
-
-	 /* save off irq and request irq line */
-	 if ( (retval = request_irq(dev->irq, icom_interrupt,
-				   IRQF_SHARED, ICOM_DRIVER_NAME,
-				   (void *) icom_adapter))) {
-=======
 	if (!icom_adapter->base_addr) {
 		retval = -ENOMEM;
 		goto probe_exit1;
@@ -2443,7 +1780,6 @@ static int icom_probe(struct pci_dev *dev,
 	 /* save off irq and request irq line */
 	 retval = request_irq(dev->irq, icom_interrupt, IRQF_SHARED, ICOM_DRIVER_NAME, (void *)icom_adapter);
 	 if (retval) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  goto probe_exit2;
 	 }
 
@@ -2457,11 +1793,7 @@ static int icom_probe(struct pci_dev *dev,
 			icom_port->uart_port.type = PORT_ICOM;
 			icom_port->uart_port.iotype = UPIO_MEM;
 			icom_port->uart_port.membase =
-<<<<<<< HEAD
-					       (char *) icom_adapter->base_addr_pci;
-=======
 				(unsigned char __iomem *)icom_adapter->base_addr_pci;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			icom_port->uart_port.fifosize = 16;
 			icom_port->uart_port.ops = &icom_ops;
 			icom_port->uart_port.line =
@@ -2489,23 +1821,12 @@ probe_exit0:
 	return retval;
 }
 
-<<<<<<< HEAD
-static void __devexit icom_remove(struct pci_dev *dev)
-{
-	struct icom_adapter *icom_adapter;
-	struct list_head *tmp;
-
-	list_for_each(tmp, &icom_adapter_head) {
-		icom_adapter = list_entry(tmp, struct icom_adapter,
-					  icom_adapter_entry);
-=======
 static void icom_remove(struct pci_dev *dev)
 {
 	struct icom_adapter *icom_adapter;
 
 	list_for_each_entry(icom_adapter, &icom_adapter_head,
 			icom_adapter_entry) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (icom_adapter->pci_dev == dev) {
 			kref_put(&icom_adapter->kref, icom_kref_release);
 			return;
@@ -2519,22 +1840,13 @@ static struct pci_driver icom_pci_driver = {
 	.name = ICOM_DRIVER_NAME,
 	.id_table = icom_pci_table,
 	.probe = icom_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(icom_remove),
-=======
 	.remove = icom_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init icom_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	spin_lock_init(&icom_lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = uart_register_driver(&icom_uart_driver);
 	if (ret)
 		return ret;
@@ -2558,11 +1870,6 @@ module_exit(icom_exit);
 
 MODULE_AUTHOR("Michael Anderson <mjanders@us.ibm.com>");
 MODULE_DESCRIPTION("IBM iSeries Serial IOA driver");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE
-    ("IBM iSeries 2745, 2771, 2772, 2742, 2793 and 2805 Communications adapters");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_FIRMWARE("icom_call_setup.bin");
 MODULE_FIRMWARE("icom_res_dce.bin");

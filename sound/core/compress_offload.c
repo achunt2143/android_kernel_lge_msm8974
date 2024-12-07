@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  compress_core.c - compress offload core
  *
@@ -10,25 +7,7 @@
  *		Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
  *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
-=======
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define FORMAT(fmt) "%s: %d: " fmt, __func__, __LINE__
 #define pr_fmt(fmt) KBUILD_MODNAME ": " FORMAT(fmt)
@@ -46,21 +25,14 @@
 #include <linux/uio.h>
 #include <linux/uaccess.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <sound/core.h>
-#include <sound/initval.h>
-=======
 #include <linux/compat.h>
 #include <sound/core.h>
 #include <sound/initval.h>
 #include <sound/info.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/compress_params.h>
 #include <sound/compress_offload.h>
 #include <sound/compress_driver.h>
 
-<<<<<<< HEAD
-=======
 /* struct snd_compr_codec_caps overflows the ioctl bit size for some
  * architectures, so we need to disable the relevant ioctls.
  */
@@ -68,7 +40,6 @@
 #define COMPR_CODEC_CAPS_OVERFLOW
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* TODO:
  * - add substream support for multiple devices in case of
  *	SND_DYNAMIC_MINORS is not used
@@ -76,25 +47,11 @@
  *	driver should be able to register multiple nodes
  */
 
-<<<<<<< HEAD
-static DEFINE_MUTEX(device_mutex);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct snd_compr_file {
 	unsigned long caps;
 	struct snd_compr_stream stream;
 };
 
-<<<<<<< HEAD
-/*
- * a note on stream states used:
- * we use follwing states in the compressed core
- * SNDRV_PCM_STATE_OPEN: When stream has been opened.
- * SNDRV_PCM_STATE_SETUP: When stream has been initialized. This is done by
- *	calling SNDRV_COMPRESS_SET_PARAMS. running streams will come to this
- *	state at stop by calling SNDRV_COMPRESS_STOP, or at end of drain.
-=======
 static void error_delayed_work(struct work_struct *work);
 
 /*
@@ -107,7 +64,6 @@ static void error_delayed_work(struct work_struct *work);
  * SNDRV_PCM_STATE_PREPARED: When a stream has been written to (for
  *	playback only). User after setting up stream writes the data buffer
  *	before starting the stream.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SNDRV_PCM_STATE_RUNNING: When stream has been started and is
  *	decoding/encoding and rendering/capturing data.
  * SNDRV_PCM_STATE_DRAINING: When stream is draining current data. This is done
@@ -154,12 +110,9 @@ static int snd_compr_open(struct inode *inode, struct file *f)
 		snd_card_unref(compr->card);
 		return -ENOMEM;
 	}
-<<<<<<< HEAD
-=======
 
 	INIT_DELAYED_WORK(&data->stream.error_work, error_delayed_work);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->stream.ops = compr->ops;
 	data->stream.direction = dirn;
 	data->stream.private_data = compr->private_data;
@@ -174,14 +127,8 @@ static int snd_compr_open(struct inode *inode, struct file *f)
 	init_waitqueue_head(&runtime->sleep);
 	data->stream.runtime = runtime;
 	f->private_data = (void *)data;
-<<<<<<< HEAD
-	mutex_lock(&compr->lock);
-	ret = compr->ops->open(&data->stream);
-	mutex_unlock(&compr->lock);
-=======
 	scoped_guard(mutex, &compr->lock)
 		ret = compr->ops->open(&data->stream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		kfree(runtime);
 		kfree(data);
@@ -195,11 +142,8 @@ static int snd_compr_free(struct inode *inode, struct file *f)
 	struct snd_compr_file *data = f->private_data;
 	struct snd_compr_runtime *runtime = data->stream.runtime;
 
-<<<<<<< HEAD
-=======
 	cancel_delayed_work_sync(&data->stream.error_work);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (runtime->state) {
 	case SNDRV_PCM_STATE_RUNNING:
 	case SNDRV_PCM_STATE_DRAINING:
@@ -211,12 +155,8 @@ static int snd_compr_free(struct inode *inode, struct file *f)
 	}
 
 	data->stream.ops->free(&data->stream);
-<<<<<<< HEAD
-	kfree(data->stream.runtime->buffer);
-=======
 	if (!data->stream.runtime->dma_buffer_p)
 		kfree(data->stream.runtime->buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(data->stream.runtime);
 	kfree(data);
 	return 0;
@@ -225,18 +165,9 @@ static int snd_compr_free(struct inode *inode, struct file *f)
 static int snd_compr_update_tstamp(struct snd_compr_stream *stream,
 		struct snd_compr_tstamp *tstamp)
 {
-<<<<<<< HEAD
-	int err = 0;
-	if (!stream->ops->pointer)
-		return -ENOTSUPP;
-	err = stream->ops->pointer(stream, tstamp);
-	if (err)
-		return err;
-=======
 	if (!stream->ops->pointer)
 		return -ENOTSUPP;
 	stream->ops->pointer(stream, tstamp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("dsp consumed till %d total %d bytes\n",
 		tstamp->byte_offset, tstamp->copied_total);
 	if (stream->direction == SND_COMPRESS_PLAYBACK)
@@ -298,8 +229,6 @@ snd_compr_ioctl_avail(struct snd_compr_stream *stream, unsigned long arg)
 	avail = snd_compr_calc_avail(stream, &ioctl_avail);
 	ioctl_avail.avail = avail;
 
-<<<<<<< HEAD
-=======
 	switch (stream->runtime->state) {
 	case SNDRV_PCM_STATE_OPEN:
 		return -EBADFD;
@@ -309,7 +238,6 @@ snd_compr_ioctl_avail(struct snd_compr_stream *stream, unsigned long arg)
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_to_user((__u64 __user *)arg,
 				&ioctl_avail, sizeof(ioctl_avail)))
 		return -EFAULT;
@@ -329,13 +257,8 @@ static int snd_compr_write_data(struct snd_compr_stream *stream,
 		      (app_pointer * runtime->buffer_size);
 
 	dstn = runtime->buffer + app_pointer;
-<<<<<<< HEAD
-	pr_debug("copying %zu at %lld\n",
-			count, app_pointer);
-=======
 	pr_debug("copying %ld at %lld\n",
 			(unsigned long)count, app_pointer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (count < runtime->buffer_size - app_pointer) {
 		if (copy_from_user(dstn, buf, count))
 			return -EFAULT;
@@ -364,13 +287,6 @@ static ssize_t snd_compr_write(struct file *f, const char __user *buf,
 		return -EFAULT;
 
 	stream = &data->stream;
-<<<<<<< HEAD
-	mutex_lock(&stream->device->lock);
-	/* write is allowed when stream is running or has been steup */
-	if (stream->runtime->state != SNDRV_PCM_STATE_SETUP &&
-			stream->runtime->state != SNDRV_PCM_STATE_RUNNING) {
-		mutex_unlock(&stream->device->lock);
-=======
 	guard(mutex)(&stream->device->lock);
 	/* write is allowed when stream is running or has been steup */
 	switch (stream->runtime->state) {
@@ -379,16 +295,11 @@ static ssize_t snd_compr_write(struct file *f, const char __user *buf,
 	case SNDRV_PCM_STATE_RUNNING:
 		break;
 	default:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBADFD;
 	}
 
 	avail = snd_compr_get_avail(stream);
-<<<<<<< HEAD
-	pr_debug("avail returned %zu\n", avail);
-=======
 	pr_debug("avail returned %ld\n", (unsigned long)avail);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* calculate how much we can write to buffer */
 	if (avail > count)
 		avail = count;
@@ -409,10 +320,6 @@ static ssize_t snd_compr_write(struct file *f, const char __user *buf,
 		pr_debug("stream prepared, Houston we are good to go\n");
 	}
 
-<<<<<<< HEAD
-	mutex_unlock(&stream->device->lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -429,18 +336,6 @@ static ssize_t snd_compr_read(struct file *f, char __user *buf,
 		return -EFAULT;
 
 	stream = &data->stream;
-<<<<<<< HEAD
-	mutex_lock(&stream->device->lock);
-
-	/* read is allowed when stream is running */
-	if (stream->runtime->state != SNDRV_PCM_STATE_RUNNING) {
-		retval = -EBADFD;
-		goto out;
-	}
-
-	avail = snd_compr_get_avail(stream);
-	pr_debug("avail returned %zu\n", avail);
-=======
 	guard(mutex)(&stream->device->lock);
 
 	/* read is allowed when stream is running, paused, draining and setup
@@ -459,24 +354,10 @@ static ssize_t snd_compr_read(struct file *f, char __user *buf,
 
 	avail = snd_compr_get_avail(stream);
 	pr_debug("avail returned %ld\n", (unsigned long)avail);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* calculate how much we can read from buffer */
 	if (avail > count)
 		avail = count;
 
-<<<<<<< HEAD
-	if (stream->ops->copy) {
-		retval = stream->ops->copy(stream, buf, avail);
-	} else {
-		retval = -ENXIO;
-		goto out;
-	}
-	if (retval > 0)
-		stream->runtime->total_bytes_transferred += retval;
-
-out:
-	mutex_unlock(&stream->device->lock);
-=======
 	if (stream->ops->copy)
 		retval = stream->ops->copy(stream, buf, avail);
 	else
@@ -484,7 +365,6 @@ out:
 	if (retval > 0)
 		stream->runtime->total_bytes_transferred += retval;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -493,17 +373,6 @@ static int snd_compr_mmap(struct file *f, struct vm_area_struct *vma)
 	return -ENXIO;
 }
 
-<<<<<<< HEAD
-static inline int snd_compr_get_poll(struct snd_compr_stream *stream)
-{
-	if (stream->direction == SND_COMPRESS_PLAYBACK)
-		return POLLOUT | POLLWRNORM;
-	else
-		return POLLIN | POLLRDNORM;
-}
-
-static unsigned int snd_compr_poll(struct file *f, poll_table *wait)
-=======
 static __poll_t snd_compr_get_poll(struct snd_compr_stream *stream)
 {
 	if (stream->direction == SND_COMPRESS_PLAYBACK)
@@ -513,31 +382,10 @@ static __poll_t snd_compr_get_poll(struct snd_compr_stream *stream)
 }
 
 static __poll_t snd_compr_poll(struct file *f, poll_table *wait)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_compr_file *data = f->private_data;
 	struct snd_compr_stream *stream;
 	size_t avail;
-<<<<<<< HEAD
-	int retval = 0;
-
-	if (snd_BUG_ON(!data))
-		return -EFAULT;
-	stream = &data->stream;
-	if (snd_BUG_ON(!stream))
-		return -EFAULT;
-
-	mutex_lock(&stream->device->lock);
-	if (stream->runtime->state == SNDRV_PCM_STATE_PAUSED ||
-			stream->runtime->state == SNDRV_PCM_STATE_OPEN) {
-		retval = -EBADFD;
-		goto out;
-	}
-	poll_wait(f, &stream->runtime->sleep, wait);
-
-	avail = snd_compr_get_avail(stream);
-	pr_debug("avail is %zu\n", avail);
-=======
 	__poll_t retval = 0;
 
 	if (snd_BUG_ON(!data))
@@ -559,7 +407,6 @@ static __poll_t snd_compr_poll(struct file *f, poll_table *wait)
 
 	avail = snd_compr_get_avail(stream);
 	pr_debug("avail is %ld\n", (unsigned long)avail);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* check if we have at least one fragment to fill */
 	switch (stream->runtime->state) {
 	case SNDRV_PCM_STATE_DRAINING:
@@ -576,20 +423,9 @@ static __poll_t snd_compr_poll(struct file *f, poll_table *wait)
 			retval = snd_compr_get_poll(stream);
 		break;
 	default:
-<<<<<<< HEAD
-		if (stream->direction == SND_COMPRESS_PLAYBACK)
-			retval = POLLOUT | POLLWRNORM | POLLERR;
-		else
-			retval = POLLIN | POLLRDNORM | POLLERR;
-		break;
-	}
-out:
-	mutex_unlock(&stream->device->lock);
-=======
 		return snd_compr_get_poll(stream) | EPOLLERR;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -612,19 +448,12 @@ out:
 	return retval;
 }
 
-<<<<<<< HEAD
-=======
 #ifndef COMPR_CODEC_CAPS_OVERFLOW
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 snd_compr_get_codec_caps(struct snd_compr_stream *stream, unsigned long arg)
 {
 	int retval;
-<<<<<<< HEAD
-	struct snd_compr_codec_caps *caps;
-=======
 	struct snd_compr_codec_caps *caps __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!stream->ops->get_codec_caps)
 		return -ENXIO;
@@ -635,16 +464,6 @@ snd_compr_get_codec_caps(struct snd_compr_stream *stream, unsigned long arg)
 
 	retval = stream->ops->get_codec_caps(stream, caps);
 	if (retval)
-<<<<<<< HEAD
-		goto out;
-	if (copy_to_user((void __user *)arg, caps, sizeof(*caps)))
-		retval = -EFAULT;
-
-out:
-	kfree(caps);
-	return retval;
-}
-=======
 		return retval;
 	if (copy_to_user((void __user *)arg, caps, sizeof(*caps)))
 		return -EFAULT;
@@ -694,18 +513,13 @@ int snd_compr_free_pages(struct snd_compr_stream *stream)
 	return 0;
 }
 EXPORT_SYMBOL(snd_compr_free_pages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* revisit this with snd_pcm_preallocate_xxx */
 static int snd_compr_allocate_buffer(struct snd_compr_stream *stream,
 		struct snd_compr_params *params)
 {
 	unsigned int buffer_size;
-<<<<<<< HEAD
-	void *buffer;
-=======
 	void *buffer = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buffer_size = params->buffer.fragment_size * params->buffer.fragments;
 	if (stream->ops->copy) {
@@ -714,9 +528,6 @@ static int snd_compr_allocate_buffer(struct snd_compr_stream *stream,
 		 * the data from core
 		 */
 	} else {
-<<<<<<< HEAD
-		buffer = kmalloc(buffer_size, GFP_KERNEL);
-=======
 		if (stream->runtime->dma_buffer_p) {
 
 			if (buffer_size > stream->runtime->dma_buffer_p->bytes)
@@ -729,7 +540,6 @@ static int snd_compr_allocate_buffer(struct snd_compr_stream *stream,
 			buffer = kmalloc(buffer_size, GFP_KERNEL);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!buffer)
 			return -ENOMEM;
 	}
@@ -744,12 +554,8 @@ static int snd_compress_check_input(struct snd_compr_params *params)
 {
 	/* first let's check the buffer parameter's */
 	if (params->buffer.fragment_size == 0 ||
-<<<<<<< HEAD
-			params->buffer.fragments > INT_MAX / params->buffer.fragment_size)
-=======
 	    params->buffer.fragments > U32_MAX / params->buffer.fragment_size ||
 	    params->buffer.fragments == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* now codec parameters */
@@ -765,44 +571,14 @@ static int snd_compress_check_input(struct snd_compr_params *params)
 static int
 snd_compr_set_params(struct snd_compr_stream *stream, unsigned long arg)
 {
-<<<<<<< HEAD
-	struct snd_compr_params *params;
-	int retval;
-
-	if (stream->runtime->state == SNDRV_PCM_STATE_OPEN) {
-=======
 	struct snd_compr_params *params __free(kfree) = NULL;
 	int retval;
 
 	if (stream->runtime->state == SNDRV_PCM_STATE_OPEN || stream->next_track) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * we should allow parameter change only when stream has been
 		 * opened not in other cases
 		 */
-<<<<<<< HEAD
-		params = kmalloc(sizeof(*params), GFP_KERNEL);
-		if (!params)
-			return -ENOMEM;
-		if (copy_from_user(params, (void __user *)arg, sizeof(*params))) {
-			retval = -EFAULT;
-			goto out;
-		}
-
-		retval = snd_compress_check_input(params);
-		if (retval)
-			goto out;
-
-		retval = snd_compr_allocate_buffer(stream, params);
-		if (retval) {
-			retval = -ENOMEM;
-			goto out;
-		}
-
-		retval = stream->ops->set_params(stream, params);
-		if (retval)
-			goto out;
-=======
 		params = memdup_user((void __user *)arg, sizeof(*params));
 		if (IS_ERR(params))
 			return PTR_ERR(no_free_ptr(params));
@@ -821,38 +597,21 @@ snd_compr_set_params(struct snd_compr_stream *stream, unsigned long arg)
 
 		if (stream->next_track)
 			return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		stream->metadata_set = false;
 		stream->next_track = false;
 
-<<<<<<< HEAD
-		if (stream->direction == SND_COMPRESS_PLAYBACK)
-			stream->runtime->state = SNDRV_PCM_STATE_SETUP;
-		else
-			stream->runtime->state = SNDRV_PCM_STATE_PREPARED;
-	} else {
-		return -EPERM;
-	}
-out:
-	kfree(params);
-=======
 		stream->runtime->state = SNDRV_PCM_STATE_SETUP;
 	} else {
 		return -EPERM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
 static int
 snd_compr_get_params(struct snd_compr_stream *stream, unsigned long arg)
 {
-<<<<<<< HEAD
-	struct snd_codec *params;
-=======
 	struct snd_codec *params __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 
 	if (!stream->ops->get_params)
@@ -863,18 +622,9 @@ snd_compr_get_params(struct snd_compr_stream *stream, unsigned long arg)
 		return -ENOMEM;
 	retval = stream->ops->get_params(stream, params);
 	if (retval)
-<<<<<<< HEAD
-		goto out;
-	if (copy_to_user((char __user *)arg, params, sizeof(*params)))
-		retval = -EFAULT;
-
-out:
-	kfree(params);
-=======
 		return retval;
 	if (copy_to_user((char __user *)arg, params, sizeof(*params)))
 		return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -924,16 +674,9 @@ snd_compr_set_metadata(struct snd_compr_stream *stream, unsigned long arg)
 static inline int
 snd_compr_tstamp(struct snd_compr_stream *stream, unsigned long arg)
 {
-<<<<<<< HEAD
-	struct snd_compr_tstamp tstamp;
-	int ret;
-
-	memset(&tstamp, 0, sizeof(tstamp));
-=======
 	struct snd_compr_tstamp tstamp = {0};
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = snd_compr_update_tstamp(stream, &tstamp);
 	if (ret == 0)
 		ret = copy_to_user((struct snd_compr_tstamp __user *)arg,
@@ -945,13 +688,6 @@ static int snd_compr_pause(struct snd_compr_stream *stream)
 {
 	int retval;
 
-<<<<<<< HEAD
-	if (stream->runtime->state != SNDRV_PCM_STATE_RUNNING)
-		return -EPERM;
-	retval = stream->ops->trigger(stream, SNDRV_PCM_TRIGGER_PAUSE_PUSH);
-	if (!retval)
-		stream->runtime->state = SNDRV_PCM_STATE_PAUSED;
-=======
 	switch (stream->runtime->state) {
 	case SNDRV_PCM_STATE_RUNNING:
 		retval = stream->ops->trigger(stream, SNDRV_PCM_TRIGGER_PAUSE_PUSH);
@@ -968,7 +704,6 @@ static int snd_compr_pause(struct snd_compr_stream *stream)
 	default:
 		return -EPERM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -976,13 +711,6 @@ static int snd_compr_resume(struct snd_compr_stream *stream)
 {
 	int retval;
 
-<<<<<<< HEAD
-	if (stream->runtime->state != SNDRV_PCM_STATE_PAUSED)
-		return -EPERM;
-	retval = stream->ops->trigger(stream, SNDRV_PCM_TRIGGER_PAUSE_RELEASE);
-	if (!retval)
-		stream->runtime->state = SNDRV_PCM_STATE_RUNNING;
-=======
 	switch (stream->runtime->state) {
 	case SNDRV_PCM_STATE_PAUSED:
 		retval = stream->ops->trigger(stream, SNDRV_PCM_TRIGGER_PAUSE_RELEASE);
@@ -999,7 +727,6 @@ static int snd_compr_resume(struct snd_compr_stream *stream)
 	default:
 		return -EPERM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -1007,10 +734,6 @@ static int snd_compr_start(struct snd_compr_stream *stream)
 {
 	int retval;
 
-<<<<<<< HEAD
-	if (stream->runtime->state != SNDRV_PCM_STATE_PREPARED)
-		return -EPERM;
-=======
 	switch (stream->runtime->state) {
 	case SNDRV_PCM_STATE_SETUP:
 		if (stream->direction != SND_COMPRESS_CAPTURE)
@@ -1022,7 +745,6 @@ static int snd_compr_start(struct snd_compr_stream *stream)
 		return -EPERM;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = stream->ops->trigger(stream, SNDRV_PCM_TRIGGER_START);
 	if (!retval)
 		stream->runtime->state = SNDRV_PCM_STATE_RUNNING;
@@ -1033,15 +755,6 @@ static int snd_compr_stop(struct snd_compr_stream *stream)
 {
 	int retval;
 
-<<<<<<< HEAD
-	if (stream->runtime->state == SNDRV_PCM_STATE_PREPARED ||
-			stream->runtime->state == SNDRV_PCM_STATE_SETUP)
-		return -EPERM;
-	retval = stream->ops->trigger(stream, SNDRV_PCM_TRIGGER_STOP);
-	if (!retval) {
-		stream->runtime->state = SNDRV_PCM_STATE_SETUP;
-		wake_up(&stream->runtime->sleep);
-=======
 	switch (stream->runtime->state) {
 	case SNDRV_PCM_STATE_OPEN:
 	case SNDRV_PCM_STATE_SETUP:
@@ -1058,19 +771,12 @@ static int snd_compr_stop(struct snd_compr_stream *stream)
 		stream->metadata_set = false;
 		stream->pause_in_draining = false;
 		snd_compr_drain_notify(stream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stream->runtime->total_bytes_available = 0;
 		stream->runtime->total_bytes_transferred = 0;
 	}
 	return retval;
 }
 
-<<<<<<< HEAD
-/* this fn is called without lock being held and we change stream states here
- * so while using the stream state auquire the lock but relase before invoking
- * DSP as the call will possibly take a while
- */
-=======
 static void error_delayed_work(struct work_struct *work)
 {
 	struct snd_compr_stream *stream;
@@ -1145,29 +851,10 @@ static int snd_compress_wait_for_drain(struct snd_compr_stream *stream)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_compr_drain(struct snd_compr_stream *stream)
 {
 	int retval;
 
-<<<<<<< HEAD
-	mutex_lock(&stream->device->lock);
-	if (stream->runtime->state == SNDRV_PCM_STATE_PREPARED ||
-			stream->runtime->state == SNDRV_PCM_STATE_SETUP) {
-		retval = -EPERM;
-		goto ret;
-	}
-	mutex_unlock(&stream->device->lock);
-	retval = stream->ops->trigger(stream, SND_COMPR_TRIGGER_DRAIN);
-	mutex_lock(&stream->device->lock);
-	if (!retval) {
-		stream->runtime->state = SNDRV_PCM_STATE_DRAINING;
-		wake_up(&stream->runtime->sleep);
-	}
-ret:
-	mutex_unlock(&stream->device->lock);
-	return retval;
-=======
 	switch (stream->runtime->state) {
 	case SNDRV_PCM_STATE_OPEN:
 	case SNDRV_PCM_STATE_SETUP:
@@ -1188,7 +875,6 @@ ret:
 	}
 
 	return snd_compress_wait_for_drain(stream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_compr_next_track(struct snd_compr_stream *stream)
@@ -1199,15 +885,11 @@ static int snd_compr_next_track(struct snd_compr_stream *stream)
 	if (stream->runtime->state != SNDRV_PCM_STATE_RUNNING)
 		return -EPERM;
 
-<<<<<<< HEAD
-	/* you can signal next track isf this is intended to be a gapless stream
-=======
 	/* next track doesn't have any meaning for capture streams */
 	if (stream->direction == SND_COMPRESS_CAPTURE)
 		return -EPERM;
 
 	/* you can signal next track if this is intended to be a gapless stream
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and current track metadata is set
 	 */
 	if (stream->metadata_set == false)
@@ -1225,15 +907,6 @@ static int snd_compr_partial_drain(struct snd_compr_stream *stream)
 {
 	int retval;
 
-<<<<<<< HEAD
-	mutex_lock(&stream->device->lock);
-	if (stream->runtime->state == SNDRV_PCM_STATE_PREPARED ||
-			stream->runtime->state == SNDRV_PCM_STATE_SETUP) {
-		mutex_unlock(&stream->device->lock);
-		return -EPERM;
-	}
-	mutex_unlock(&stream->device->lock);
-=======
 	switch (stream->runtime->state) {
 	case SNDRV_PCM_STATE_OPEN:
 	case SNDRV_PCM_STATE_SETUP:
@@ -1250,63 +923,10 @@ static int snd_compr_partial_drain(struct snd_compr_stream *stream)
 	if (stream->direction == SND_COMPRESS_CAPTURE)
 		return -EPERM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* stream can be drained only when next track has been signalled */
 	if (stream->next_track == false)
 		return -EPERM;
 
-<<<<<<< HEAD
-	retval = stream->ops->trigger(stream, SND_COMPR_TRIGGER_PARTIAL_DRAIN);
-
-	stream->next_track = false;
-	return retval;
-}
-
-static int snd_compress_simple_ioctls(struct file *file,
-				struct snd_compr_stream *stream,
-				unsigned int cmd, unsigned long arg)
-{
-	int retval = -ENOTTY;
-
-	switch (_IOC_NR(cmd)) {
-	case _IOC_NR(SNDRV_COMPRESS_IOCTL_VERSION):
-		retval = put_user(SNDRV_COMPRESS_VERSION,
-				(int __user *)arg) ? -EFAULT : 0;
-		break;
-
-	case _IOC_NR(SNDRV_COMPRESS_GET_CAPS):
-		retval = snd_compr_get_caps(stream, arg);
-		break;
-
-	case _IOC_NR(SNDRV_COMPRESS_GET_CODEC_CAPS):
-		retval = snd_compr_get_codec_caps(stream, arg);
-		break;
-
-
-	case _IOC_NR(SNDRV_COMPRESS_TSTAMP):
-		retval = snd_compr_tstamp(stream, arg);
-		break;
-
-	case _IOC_NR(SNDRV_COMPRESS_AVAIL):
-		retval = snd_compr_ioctl_avail(stream, arg);
-		break;
-
-		/* drain and partial drain need special handling
-	 * we need to drop the locks here as the streams would get blocked on the
-	 * dsp to get drained. The locking would be handled in respective
-	 * function here
-	 */
-	case _IOC_NR(SNDRV_COMPRESS_DRAIN):
-		retval = snd_compr_drain(stream);
-		break;
-
-	case _IOC_NR(SNDRV_COMPRESS_PARTIAL_DRAIN):
-		retval = snd_compr_partial_drain(stream);
-		break;
-	}
-
-	return retval;
-=======
 	stream->partial_drain = true;
 	retval = stream->ops->trigger(stream, SND_COMPR_TRIGGER_PARTIAL_DRAIN);
 	if (retval) {
@@ -1317,81 +937,12 @@ static int snd_compress_simple_ioctls(struct file *file,
 
 	stream->next_track = false;
 	return snd_compress_wait_for_drain(stream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static long snd_compr_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 {
 	struct snd_compr_file *data = f->private_data;
 	struct snd_compr_stream *stream;
-<<<<<<< HEAD
-	int retval = -ENOTTY;
-
-	if (snd_BUG_ON(!data))
-		return -EFAULT;
-	stream = &data->stream;
-	if (snd_BUG_ON(!stream))
-		return -EFAULT;
-
-	mutex_lock(&stream->device->lock);
-	switch (_IOC_NR(cmd)) {
-	case _IOC_NR(SNDRV_COMPRESS_SET_PARAMS):
-		retval = snd_compr_set_params(stream, arg);
-		break;
-
-	case _IOC_NR(SNDRV_COMPRESS_GET_PARAMS):
-		retval = snd_compr_get_params(stream, arg);
-		break;
-
-	case _IOC_NR(SNDRV_COMPRESS_SET_METADATA):
-		retval = snd_compr_set_metadata(stream, arg);
-		break;
-
-	case _IOC_NR(SNDRV_COMPRESS_GET_METADATA):
-		retval = snd_compr_get_metadata(stream, arg);
-		break;
-
-	case _IOC_NR(SNDRV_COMPRESS_PAUSE):
-		retval = snd_compr_pause(stream);
-		break;
-
-	case _IOC_NR(SNDRV_COMPRESS_RESUME):
-		retval = snd_compr_resume(stream);
-		break;
-
-	case _IOC_NR(SNDRV_COMPRESS_START):
-		retval = snd_compr_start(stream);
-		break;
-
-	case _IOC_NR(SNDRV_COMPRESS_STOP):
-		retval = snd_compr_stop(stream);
-		break;
-
-	case _IOC_NR(SNDRV_COMPRESS_NEXT_TRACK):
-		retval = snd_compr_next_track(stream);
-		break;
-
-	default:
-		mutex_unlock(&stream->device->lock);
-		return snd_compress_simple_ioctls(f, stream, cmd, arg);
-
-	}
-
-	mutex_unlock(&stream->device->lock);
-	return retval;
-}
-
-static const struct file_operations snd_compr_file_ops = {
-		.owner =          THIS_MODULE,
-		.open =           snd_compr_open,
-		.release =        snd_compr_free,
-		.write =          snd_compr_write,
-		.read =           snd_compr_read,
-		.unlocked_ioctl = snd_compr_ioctl,
-		.compat_ioctl   = snd_compr_ioctl,
-		.mmap =           snd_compr_mmap,
-		.poll =           snd_compr_poll,
-=======
 
 	if (snd_BUG_ON(!data))
 		return -EFAULT;
@@ -1461,33 +1012,17 @@ static const struct file_operations snd_compr_file_ops = {
 #endif
 		.mmap =		snd_compr_mmap,
 		.poll =		snd_compr_poll,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int snd_compress_dev_register(struct snd_device *device)
 {
-<<<<<<< HEAD
-	int ret = -EINVAL;
-	char str[16];
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_compr *compr;
 
 	if (snd_BUG_ON(!device || !device->device_data))
 		return -EBADFD;
 	compr = device->device_data;
 
-<<<<<<< HEAD
-	sprintf(str, "comprC%iD%i", compr->card->number, compr->device);
-	pr_debug("reg %s for device %s, direction %d\n", str, compr->name,
-			compr->direction);
-	/* register compressed device */
-	ret = snd_register_device(SNDRV_DEVICE_TYPE_COMPRESS, compr->card,
-			compr->device, &snd_compr_file_ops, compr, str);
-	if (ret < 0) {
-		pr_err("snd_register_device failed\n %d", ret);
-=======
 	pr_debug("reg device %s, direction %d\n", compr->name,
 			compr->direction);
 	/* register compressed device */
@@ -1496,7 +1031,6 @@ static int snd_compress_dev_register(struct snd_device *device)
 				  &snd_compr_file_ops, compr, compr->dev);
 	if (ret < 0) {
 		pr_err("snd_register_device failed %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	return ret;
@@ -1508,14 +1042,6 @@ static int snd_compress_dev_disconnect(struct snd_device *device)
 	struct snd_compr *compr;
 
 	compr = device->device_data;
-<<<<<<< HEAD
-	snd_unregister_device(SNDRV_DEVICE_TYPE_COMPRESS, compr->card,
-		compr->device);
-	return 0;
-}
-
-/*
-=======
 	snd_unregister_device(compr->dev);
 	return 0;
 }
@@ -1595,23 +1121,10 @@ static int snd_compress_dev_free(struct snd_device *device)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * snd_compress_new: create new compress device
  * @card: sound card pointer
  * @device: device number
  * @dirn: device direction, should be of type enum snd_compr_direction
-<<<<<<< HEAD
- * @compr: compress device pointer
- */
-int snd_compress_new(struct snd_card *card, int device,
-			int dirn, struct snd_compr *compr)
-{
-	static struct snd_device_ops ops = {
-		.dev_free = NULL,
-		.dev_register = snd_compress_dev_register,
-		.dev_disconnect = snd_compress_dev_disconnect,
-	};
-=======
  * @id: ID string
  * @compr: compress device pointer
  *
@@ -1626,106 +1139,10 @@ int snd_compress_new(struct snd_card *card, int device,
 		.dev_disconnect = snd_compress_dev_disconnect,
 	};
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	compr->card = card;
 	compr->device = device;
 	compr->direction = dirn;
-<<<<<<< HEAD
-	return snd_device_new(card, SNDRV_DEV_COMPRESS, compr, &ops);
-}
-EXPORT_SYMBOL_GPL(snd_compress_new);
-
-/*
- * snd_compress_free: free compress device
- * @card: sound card pointer
- * @compr: compress device pointer
- */
-void snd_compress_free(struct snd_card *card, struct snd_compr *compr)
-{
-	snd_device_free(card, compr);
-}
-EXPORT_SYMBOL_GPL(snd_compress_free);
-
-static int snd_compress_add_device(struct snd_compr *device)
-{
-	int ret;
-
-	if (!device->card)
-		return -EINVAL;
-
-	/* register the card */
-	ret = snd_card_register(device->card);
-	if (ret)
-		goto out;
-	return 0;
-
-out:
-	pr_err("failed with %d\n", ret);
-	return ret;
-
-}
-
-static int snd_compress_remove_device(struct snd_compr *device)
-{
-	return snd_card_free(device->card);
-}
-
-/**
- * snd_compress_register - register compressed device
- *
- * @device: compressed device to register
- */
-int snd_compress_register(struct snd_compr *device)
-{
-	int retval;
-
-	if (device->name == NULL || device->dev == NULL || device->ops == NULL)
-		return -EINVAL;
-
-	pr_debug("Registering compressed device %s\n", device->name);
-	if (snd_BUG_ON(!device->ops->open))
-		return -EINVAL;
-	if (snd_BUG_ON(!device->ops->free))
-		return -EINVAL;
-	if (snd_BUG_ON(!device->ops->set_params))
-		return -EINVAL;
-	if (snd_BUG_ON(!device->ops->trigger))
-		return -EINVAL;
-
-	mutex_init(&device->lock);
-
-	/* register a compressed card */
-	mutex_lock(&device_mutex);
-	retval = snd_compress_add_device(device);
-	mutex_unlock(&device_mutex);
-	return retval;
-}
-EXPORT_SYMBOL_GPL(snd_compress_register);
-
-int snd_compress_deregister(struct snd_compr *device)
-{
-	pr_debug("Removing compressed device %s\n", device->name);
-	mutex_lock(&device_mutex);
-	snd_compress_remove_device(device);
-	mutex_unlock(&device_mutex);
-	return 0;
-}
-EXPORT_SYMBOL_GPL(snd_compress_deregister);
-
-static int __init snd_compress_init(void)
-{
-	return 0;
-}
-
-static void __exit snd_compress_exit(void)
-{
-}
-
-module_init(snd_compress_init);
-module_exit(snd_compress_exit);
-
-=======
 	mutex_init(&compr->lock);
 
 	snd_compress_set_id(compr, id);
@@ -1745,7 +1162,6 @@ module_exit(snd_compress_exit);
 }
 EXPORT_SYMBOL_GPL(snd_compress_new);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("ALSA Compressed offload framework");
 MODULE_AUTHOR("Vinod Koul <vinod.koul@linux.intel.com>");
 MODULE_LICENSE("GPL v2");

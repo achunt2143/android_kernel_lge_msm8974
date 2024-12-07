@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-/*
- * Hexagon VM page table entry definitions
- *
- * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Hexagon VM page table entry definitions
  *
  * Copyright (c) 2010-2011,2013 The Linux Foundation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_VM_MMU_H
@@ -76,20 +55,6 @@
 
 #define __HEXAGON_C_WB		0x0	/* Write-back, no L2 */
 #define	__HEXAGON_C_WT		0x1	/* Write-through, no L2 */
-<<<<<<< HEAD
-#define	__HEXAGON_C_DEV		0x4	/* Device register space */
-#define	__HEXAGON_C_WT_L2	0x5	/* Write-through, with L2 */
-/* this really should be #if CONFIG_HEXAGON_ARCH = 2 but that's not defined */
-#if defined(CONFIG_HEXAGON_COMET) || defined(CONFIG_QDSP6_ST1)
-#define __HEXAGON_C_UNC		__HEXAGON_C_DEV
-#else
-#define	__HEXAGON_C_UNC		0x6	/* Uncached memory */
-#endif
-#define	__HEXAGON_C_WB_L2	0x7	/* Write-back, with L2 */
-
-/*
- * This can be overriden, but we're defaulting to the most aggressive
-=======
 #define	__HEXAGON_C_UNC		0x6	/* Uncached memory */
 #if CONFIG_HEXAGON_ARCH_VERSION >= 2
 #define	__HEXAGON_C_DEV		0x4	/* Device register space */
@@ -101,7 +66,6 @@
 
 /*
  * This can be overridden, but we're defaulting to the most aggressive
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * cache policy, the better to find bugs sooner.
  */
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SPARC64_PGALLOC_H
 #define _SPARC64_PGALLOC_H
 
@@ -19,8 +16,6 @@
 
 extern struct kmem_cache *pgtable_cache;
 
-<<<<<<< HEAD
-=======
 static inline void __p4d_populate(p4d_t *p4d, pud_t *pud)
 {
 	p4d_set(p4d, pud);
@@ -28,7 +23,6 @@ static inline void __p4d_populate(p4d_t *p4d, pud_t *pud)
 
 #define p4d_populate(MM, P4D, PUD)	__p4d_populate(P4D, PUD)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline pgd_t *pgd_alloc(struct mm_struct *mm)
 {
 	return kmem_cache_alloc(pgtable_cache, GFP_KERNEL);
@@ -39,14 +33,6 @@ static inline void pgd_free(struct mm_struct *mm, pgd_t *pgd)
 	kmem_cache_free(pgtable_cache, pgd);
 }
 
-<<<<<<< HEAD
-#define pud_populate(MM, PUD, PMD)	pud_set(PUD, PMD)
-
-static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long addr)
-{
-	return kmem_cache_alloc(pgtable_cache,
-				GFP_KERNEL|__GFP_REPEAT);
-=======
 static inline void __pud_populate(pud_t *pud, pmd_t *pmd)
 {
 	pud_set(pud, pmd);
@@ -67,7 +53,6 @@ static inline void pud_free(struct mm_struct *mm, pud_t *pud)
 static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long addr)
 {
 	return kmem_cache_alloc(pgtable_cache, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void pmd_free(struct mm_struct *mm, pmd_t *pmd)
@@ -75,53 +60,6 @@ static inline void pmd_free(struct mm_struct *mm, pmd_t *pmd)
 	kmem_cache_free(pgtable_cache, pmd);
 }
 
-<<<<<<< HEAD
-static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm,
-					  unsigned long address)
-{
-	return (pte_t *)__get_free_page(GFP_KERNEL | __GFP_REPEAT | __GFP_ZERO);
-}
-
-static inline pgtable_t pte_alloc_one(struct mm_struct *mm,
-					unsigned long address)
-{
-	struct page *page;
-	pte_t *pte;
-
-	pte = pte_alloc_one_kernel(mm, address);
-	if (!pte)
-		return NULL;
-	page = virt_to_page(pte);
-	pgtable_page_ctor(page);
-	return page;
-}
-
-static inline void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
-{
-	free_page((unsigned long)pte);
-}
-
-static inline void pte_free(struct mm_struct *mm, pgtable_t ptepage)
-{
-	pgtable_page_dtor(ptepage);
-	__free_page(ptepage);
-}
-
-#define pmd_populate_kernel(MM, PMD, PTE)	pmd_set(PMD, PTE)
-#define pmd_populate(MM,PMD,PTE_PAGE)		\
-	pmd_populate_kernel(MM,PMD,page_address(PTE_PAGE))
-#define pmd_pgtable(pmd) pmd_page(pmd)
-
-#define check_pgt_cache()	do { } while (0)
-
-static inline void pgtable_free(void *table, bool is_page)
-{
-	if (is_page)
-		free_page((unsigned long)table);
-	else
-		kmem_cache_free(pgtable_cache, table);
-}
-=======
 pte_t *pte_alloc_one_kernel(struct mm_struct *mm);
 pgtable_t pte_alloc_one(struct mm_struct *mm);
 void pte_free_kernel(struct mm_struct *mm, pte_t *pte);
@@ -135,16 +73,11 @@ void pte_free_defer(struct mm_struct *mm, pgtable_t pgtable);
 #define pmd_populate(MM, PMD, PTE)		pmd_set(MM, PMD, PTE)
 
 void pgtable_free(void *table, bool is_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 
 struct mmu_gather;
-<<<<<<< HEAD
-extern void tlb_remove_table(struct mmu_gather *, void *);
-=======
 void tlb_remove_table(struct mmu_gather *, void *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void pgtable_free_tlb(struct mmu_gather *tlb, void *table, bool is_page)
 {
@@ -170,27 +103,16 @@ static inline void pgtable_free_tlb(struct mmu_gather *tlb, void *table, bool is
 }
 #endif /* !CONFIG_SMP */
 
-<<<<<<< HEAD
-static inline void __pte_free_tlb(struct mmu_gather *tlb, struct page *ptepage,
-				  unsigned long address)
-{
-	pgtable_page_dtor(ptepage);
-	pgtable_free_tlb(tlb, page_address(ptepage), true);
-=======
 static inline void __pte_free_tlb(struct mmu_gather *tlb, pte_t *pte,
 				  unsigned long address)
 {
 	pgtable_free_tlb(tlb, pte, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define __pmd_free_tlb(tlb, pmd, addr)		      \
 	pgtable_free_tlb(tlb, pmd, false)
 
-<<<<<<< HEAD
-=======
 #define __pud_free_tlb(tlb, pud, addr)		      \
 	pgtable_free_tlb(tlb, pud, false)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _SPARC64_PGALLOC_H */

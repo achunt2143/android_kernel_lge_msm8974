@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2010 QLogic Corporation
- *
- * See LICENSE.qla4xxx for copyright and licensing details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * QLogic iSCSI HBA Driver
  * Copyright (c)  2003-2013 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __QLA_NX_H
 #define __QLA_NX_H
@@ -32,11 +24,8 @@
 #define CRB_RCVPEG_STATE		QLA82XX_REG(0x13c)
 #define CRB_DMA_SHIFT			QLA82XX_REG(0xcc)
 #define CRB_TEMP_STATE			QLA82XX_REG(0x1b4)
-<<<<<<< HEAD
-=======
 #define CRB_CMDPEG_CHECK_RETRY_COUNT	60
 #define CRB_CMDPEG_CHECK_DELAY		500
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define qla82xx_get_temp_val(x)		((x) >> 16)
 #define qla82xx_get_temp_state(x)	((x) & 0xffff)
@@ -502,13 +491,8 @@ enum {
  * Base addresses of major components on-chip.
  * ====================== BASE ADDRESSES ON-CHIP ======================
  */
-<<<<<<< HEAD
-#define QLA82XX_ADDR_DDR_NET		(0x0000000000000000ULL)
-#define QLA82XX_ADDR_DDR_NET_MAX	(0x000000000fffffffULL)
-=======
 #define QLA8XXX_ADDR_DDR_NET		(0x0000000000000000ULL)
 #define QLA8XXX_ADDR_DDR_NET_MAX	(0x000000000fffffffULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Imbus address bit used to indicate a host address. This bit is
  * eliminated by the pcie bar and bar select before presentation
@@ -517,16 +501,6 @@ enum {
 #define QLA82XX_P2_ADDR_PCIE	(0x0000000800000000ULL)
 #define QLA82XX_P3_ADDR_PCIE	(0x0000008000000000ULL)
 #define QLA82XX_ADDR_PCIE_MAX	(0x0000000FFFFFFFFFULL)
-<<<<<<< HEAD
-#define QLA82XX_ADDR_OCM0	(0x0000000200000000ULL)
-#define QLA82XX_ADDR_OCM0_MAX	(0x00000002000fffffULL)
-#define QLA82XX_ADDR_OCM1	(0x0000000200400000ULL)
-#define QLA82XX_ADDR_OCM1_MAX	(0x00000002004fffffULL)
-#define QLA82XX_ADDR_QDR_NET	(0x0000000300000000ULL)
-
-#define QLA82XX_P2_ADDR_QDR_NET_MAX	(0x00000003001fffffULL)
-#define QLA82XX_P3_ADDR_QDR_NET_MAX	(0x0000000303ffffffULL)
-=======
 #define QLA8XXX_ADDR_OCM0	(0x0000000200000000ULL)
 #define QLA8XXX_ADDR_OCM0_MAX	(0x00000002000fffffULL)
 #define QLA8XXX_ADDR_OCM1	(0x0000000200400000ULL)
@@ -536,7 +510,6 @@ enum {
 #define QLA82XX_P2_ADDR_QDR_NET_MAX	(0x00000003001fffffULL)
 #define QLA82XX_P3_ADDR_QDR_NET_MAX	(0x0000000303ffffffULL)
 #define QLA8XXX_ADDR_QDR_NET_MAX	(0x0000000307ffffffULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define QLA82XX_PCI_CRBSPACE		(unsigned long)0x06000000
 #define QLA82XX_PCI_DIRECT_CRB		(unsigned long)0x04400000
@@ -546,13 +519,10 @@ enum {
 #define QLA82XX_PCI_QDR_NET		(unsigned long)0x04000000
 #define QLA82XX_PCI_QDR_NET_MAX		(unsigned long)0x043fffff
 
-<<<<<<< HEAD
-=======
 /*  PCI Windowing for DDR regions.  */
 #define QLA8XXX_ADDR_IN_RANGE(addr, low, high)            \
 	(((addr) <= (high)) && ((addr) >= (low)))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   Register offsets for MN
  */
@@ -576,14 +546,11 @@ enum {
 #define MIU_TA_CTL_WRITE	4
 #define MIU_TA_CTL_BUSY		8
 
-<<<<<<< HEAD
-=======
 #define MIU_TA_CTL_WRITE_ENABLE		(MIU_TA_CTL_WRITE | MIU_TA_CTL_ENABLE)
 #define MIU_TA_CTL_WRITE_START		(MIU_TA_CTL_WRITE | MIU_TA_CTL_ENABLE |\
 					 MIU_TA_CTL_START)
 #define MIU_TA_CTL_START_ENABLE		(MIU_TA_CTL_START | MIU_TA_CTL_ENABLE)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*CAM RAM */
 # define QLA82XX_CAM_RAM_BASE	(QLA82XX_CRB_CAM + 0x02000)
 # define QLA82XX_CAM_RAM(reg)	(QLA82XX_CAM_RAM_BASE + (reg))
@@ -609,22 +576,6 @@ enum {
 /* Driver Coexistence Defines */
 #define QLA82XX_CRB_DRV_ACTIVE		(QLA82XX_CAM_RAM(0x138))
 #define QLA82XX_CRB_DEV_STATE		(QLA82XX_CAM_RAM(0x140))
-<<<<<<< HEAD
-#define QLA82XX_CRB_DEV_PART_INFO	(QLA82XX_CAM_RAM(0x14c))
-#define QLA82XX_CRB_DRV_IDC_VERSION	(QLA82XX_CAM_RAM(0x174))
-#define QLA82XX_CRB_DRV_STATE		(QLA82XX_CAM_RAM(0x144))
-#define QLA82XX_CRB_DRV_SCRATCH		(QLA82XX_CAM_RAM(0x148))
-#define QLA82XX_CRB_DEV_PART_INFO	(QLA82XX_CAM_RAM(0x14c))
-
-/* Every driver should use these Device State */
-#define QLA82XX_DEV_COLD		1
-#define QLA82XX_DEV_INITIALIZING	2
-#define QLA82XX_DEV_READY		3
-#define QLA82XX_DEV_NEED_RESET		4
-#define QLA82XX_DEV_NEED_QUIESCENT	5
-#define QLA82XX_DEV_FAILED		6
-#define QLA82XX_DEV_QUIESCENT		7
-=======
 #define QLA82XX_CRB_DRV_STATE		(QLA82XX_CAM_RAM(0x144))
 #define QLA82XX_CRB_DRV_SCRATCH		(QLA82XX_CAM_RAM(0x148))
 #define QLA82XX_CRB_DEV_PART_INFO	(QLA82XX_CAM_RAM(0x14c))
@@ -655,7 +606,6 @@ enum qla_regs {
 #define QLA8XXX_DEV_NEED_QUIESCENT	5
 #define QLA8XXX_DEV_FAILED		6
 #define QLA8XXX_DEV_QUIESCENT		7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_STATES			8 /* Increment if new state added */
 
 #define QLA82XX_IDC_VERSION		0x1
@@ -869,8 +819,6 @@ struct crb_addr_pair {
 #define MIU_TEST_AGT_WRDATA_UPPER_LO	(0x0b0)
 #define	MIU_TEST_AGT_WRDATA_UPPER_HI	(0x0b4)
 
-<<<<<<< HEAD
-=======
 /* Minidump related */
 
 /* Entry Type Defines */
@@ -1056,5 +1004,4 @@ struct qla8xxx_minidump_entry_queue {
 #define MD_MIU_TEST_AGT_WRDATA_ULO		0x410000B0
 #define MD_MIU_TEST_AGT_WRDATA_UHI		0x410000B4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASMm68k_ELF_H
 #define __ASMm68k_ELF_H
 
@@ -63,8 +60,6 @@ typedef struct user_m68kfp_struct elf_fpregset_t;
    is actually used on ASV.  */
 #define ELF_PLAT_INIT(_r, load_addr)	_r->a1 = 0
 
-<<<<<<< HEAD
-=======
 #define ELF_FDPIC_PLAT_INIT(_r, _exec_map_addr, _interp_map_addr, dynamic_addr) \
         do { \
                 (_r)->d3 = _exec_map_addr; \
@@ -72,7 +67,6 @@ typedef struct user_m68kfp_struct elf_fpregset_t;
                 (_r)->d5 = dynamic_addr; \
         } while(0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_SUN3) || defined(CONFIG_COLDFIRE)
 #define ELF_EXEC_PAGESIZE	8192
 #else
@@ -127,10 +121,6 @@ typedef struct user_m68kfp_struct elf_fpregset_t;
 
 #define ELF_PLATFORM  (NULL)
 
-<<<<<<< HEAD
-#define SET_PERSONALITY(ex) set_personality(PER_LINUX)
-=======
 #define ELF_FDPIC_CORE_EFLAGS  0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

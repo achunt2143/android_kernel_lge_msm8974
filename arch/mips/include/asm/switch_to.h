@@ -15,16 +15,6 @@
 #include <asm/cpu-features.h>
 #include <asm/watch.h>
 #include <asm/dsp.h>
-<<<<<<< HEAD
-
-struct task_struct;
-
-/*
- * switch_to(n) should switch tasks to task nr n, first
- * checking that n isn't the current task, in which case it does nothing.
- */
-extern asmlinkage void *resume(void *last, void *next, void *next_ti);
-=======
 #include <asm/cop2.h>
 #include <asm/fpu.h>
 
@@ -41,7 +31,6 @@ struct task_struct;
  */
 extern asmlinkage struct task_struct *resume(struct task_struct *prev,
 		struct task_struct *next, struct thread_info *next_ti);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern unsigned int ll_bit;
 extern struct task_struct *ll_task;
@@ -49,19 +38,11 @@ extern struct task_struct *ll_task;
 #ifdef CONFIG_MIPS_MT_FPAFF
 
 /*
-<<<<<<< HEAD
- * Handle the scheduler resume end of FPU affinity management.  We do this
- * inline to try to keep the overhead down. If we have been forced to run on
- * a "CPU" with an FPU because of a previous high level of FP computation,
- * but did not actually use the FPU during the most recent time-slice (CU1
- * isn't set), we undo the restriction on cpus_allowed.
-=======
  * Handle the scheduler resume end of FPU affinity management.	We do this
  * inline to try to keep the overhead down. If we have been forced to run on
  * a "CPU" with an FPU because of a previous high level of FP computation,
  * but did not actually use the FPU during the most recent time-slice (CU1
  * isn't set), we undo the restriction on cpus_mask.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * We're not calling set_cpus_allowed() here, because we have no need to
  * force prompt migration - we're already switching the current CPU to a
@@ -76,11 +57,7 @@ do {									\
 	    test_ti_thread_flag(__prev_ti, TIF_FPUBOUND) &&		\
 	    (!(KSTK_STATUS(prev) & ST0_CU1))) {				\
 		clear_ti_thread_flag(__prev_ti, TIF_FPUBOUND);		\
-<<<<<<< HEAD
-		prev->cpus_allowed = prev->thread.user_cpus_allowed;	\
-=======
 		prev->cpus_mask = prev->thread.user_cpus_allowed;	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}								\
 	next->thread.emulated_fp = 0;					\
 } while(0)
@@ -89,10 +66,6 @@ do {									\
 #define __mips_mt_fpaff_switch_to(prev) do { (void) (prev); } while (0)
 #endif
 
-<<<<<<< HEAD
-#define __clear_software_ll_bit()					\
-do {									\
-=======
 /*
  * Clear LLBit during context switches on MIPSr5+ such that eretnc can be used
  * unconditionally when returning to userland in entry.S.
@@ -103,31 +76,10 @@ do {									\
 } while (0)
 
 #define __clear_software_ll_bit() do {					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!__builtin_constant_p(cpu_has_llsc) || !cpu_has_llsc)	\
 		ll_bit = 0;						\
 } while (0)
 
-<<<<<<< HEAD
-#define switch_to(prev, next, last)					\
-do {									\
-	__mips_mt_fpaff_switch_to(prev);				\
-	if (cpu_has_dsp)						\
-		__save_dsp(prev);					\
-	__clear_software_ll_bit();					\
-	(last) = resume(prev, next, task_thread_info(next));		\
-} while (0)
-
-#define finish_arch_switch(prev)					\
-do {									\
-	if (cpu_has_dsp)						\
-		__restore_dsp(current);					\
-	if (cpu_has_userlocal)						\
-		write_c0_userlocal(current_thread_info()->tp_value);	\
-	__restore_watch();						\
-} while (0)
-
-=======
 /*
  * Check FCSR for any unmasked exceptions pending set with `ptrace',
  * clear them and send a signal.
@@ -187,5 +139,4 @@ do {									\
 	(last) = resume(prev, next, task_thread_info(next));		\
 } while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_SWITCH_TO_H */

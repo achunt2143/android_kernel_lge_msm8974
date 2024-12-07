@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Functions related to segment and merge handling
  */
@@ -9,115 +6,6 @@
 #include <linux/module.h>
 #include <linux/bio.h>
 #include <linux/blkdev.h>
-<<<<<<< HEAD
-#include <linux/scatterlist.h>
-#include <linux/security.h>
-
-#include "blk.h"
-
-static unsigned int __blk_recalc_rq_segments(struct request_queue *q,
-					     struct bio *bio)
-{
-	struct bio_vec *bv, *bvprv = NULL;
-	int cluster, i, high, highprv = 1;
-	unsigned int seg_size, nr_phys_segs;
-	struct bio *fbio, *bbio;
-
-	if (!bio)
-		return 0;
-
-	fbio = bio;
-	cluster = blk_queue_cluster(q);
-	seg_size = 0;
-	nr_phys_segs = 0;
-	for_each_bio(bio) {
-		bio_for_each_segment(bv, bio, i) {
-			/*
-			 * the trick here is making sure that a high page is
-			 * never considered part of another segment, since that
-			 * might change with the bounce page.
-			 */
-			high = page_to_pfn(bv->bv_page) > queue_bounce_pfn(q);
-			if (high || highprv)
-				goto new_segment;
-			if (cluster) {
-				if (seg_size + bv->bv_len
-				    > queue_max_segment_size(q))
-					goto new_segment;
-				if (!BIOVEC_PHYS_MERGEABLE(bvprv, bv))
-					goto new_segment;
-				if (!BIOVEC_SEG_BOUNDARY(q, bvprv, bv))
-					goto new_segment;
-				if ((bvprv->bv_page != bv->bv_page) &&
-				    (bvprv->bv_page + 1) != bv->bv_page)
-					goto new_segment;
-
-				seg_size += bv->bv_len;
-				bvprv = bv;
-				continue;
-			}
-new_segment:
-			if (nr_phys_segs == 1 && seg_size >
-			    fbio->bi_seg_front_size)
-				fbio->bi_seg_front_size = seg_size;
-
-			nr_phys_segs++;
-			bvprv = bv;
-			seg_size = bv->bv_len;
-			highprv = high;
-		}
-		bbio = bio;
-	}
-
-	if (nr_phys_segs == 1 && seg_size > fbio->bi_seg_front_size)
-		fbio->bi_seg_front_size = seg_size;
-	if (seg_size > bbio->bi_seg_back_size)
-		bbio->bi_seg_back_size = seg_size;
-
-	return nr_phys_segs;
-}
-
-void blk_recalc_rq_segments(struct request *rq)
-{
-	rq->nr_phys_segments = __blk_recalc_rq_segments(rq->q, rq->bio);
-}
-
-void blk_recount_segments(struct request_queue *q, struct bio *bio)
-{
-	struct bio *nxt = bio->bi_next;
-
-	bio->bi_next = NULL;
-	bio->bi_phys_segments = __blk_recalc_rq_segments(q, bio);
-	bio->bi_next = nxt;
-	bio->bi_flags |= (1 << BIO_SEG_VALID);
-}
-EXPORT_SYMBOL(blk_recount_segments);
-
-static int blk_phys_contig_segment(struct request_queue *q, struct bio *bio,
-				   struct bio *nxt)
-{
-	if (!blk_queue_cluster(q))
-		return 0;
-
-	if (bio->bi_seg_back_size + nxt->bi_seg_front_size >
-	    queue_max_segment_size(q))
-		return 0;
-
-	if (!bio_has_data(bio))
-		return 1;
-
-	if (!BIOVEC_PHYS_MERGEABLE(__BVEC_END(bio), __BVEC_START(nxt)))
-		return 0;
-
-	/*
-	 * bio and nxt are contiguous in memory; check if the queue allows
-	 * these two to be merged into one
-	 */
-	if (BIO_SEG_BOUNDARY(q, bio, nxt))
-		return 1;
-
-	return 0;
-=======
 #include <linux/blk-integrity.h>
 #include <linux/scatterlist.h>
 #include <linux/part_stat.h>
@@ -666,113 +554,12 @@ static int __blk_bios_map_sg(struct request_queue *q, struct bio *bio,
 	}
 
 	return nsegs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * map a request to scatterlist, return number of sg entries setup. Caller
  * must make sure sg can hold rq->nr_phys_segments entries
  */
-<<<<<<< HEAD
-int blk_rq_map_sg(struct request_queue *q, struct request *rq,
-		  struct scatterlist *sglist)
-{
-	struct bio_vec *bvec, *bvprv;
-	struct req_iterator iter;
-	struct scatterlist *sg;
-	int nsegs, cluster;
-
-	nsegs = 0;
-	cluster = blk_queue_cluster(q);
-
-	/*
-	 * for each bio in rq
-	 */
-	bvprv = NULL;
-	sg = NULL;
-	rq_for_each_segment(bvec, rq, iter) {
-		int nbytes = bvec->bv_len;
-
-		if (bvprv && cluster) {
-			if (sg->length + nbytes > queue_max_segment_size(q))
-				goto new_segment;
-
-			if (!BIOVEC_PHYS_MERGEABLE(bvprv, bvec))
-				goto new_segment;
-			if (!BIOVEC_SEG_BOUNDARY(q, bvprv, bvec))
-				goto new_segment;
-			if ((bvprv->bv_page != bvec->bv_page) &&
-			    ((bvprv->bv_page + 1) != bvec->bv_page))
-				goto new_segment;
-
-			sg->length += nbytes;
-		} else {
-new_segment:
-			if (!sg)
-				sg = sglist;
-			else {
-				/*
-				 * If the driver previously mapped a shorter
-				 * list, we could see a termination bit
-				 * prematurely unless it fully inits the sg
-				 * table on each mapping. We KNOW that there
-				 * must be more entries here or the driver
-				 * would be buggy, so force clear the
-				 * termination bit to avoid doing a full
-				 * sg_init_table() in drivers for each command.
-				 */
-				sg->page_link &= ~0x02;
-				sg = sg_next(sg);
-			}
-
-			sg_set_page(sg, bvec->bv_page, nbytes, bvec->bv_offset);
-			nsegs++;
-		}
-		bvprv = bvec;
-	} /* segments in rq */
-
-
-	if (unlikely(rq->cmd_flags & REQ_COPY_USER) &&
-	    (blk_rq_bytes(rq) & q->dma_pad_mask)) {
-		unsigned int pad_len =
-			(q->dma_pad_mask & ~blk_rq_bytes(rq)) + 1;
-
-		sg->length += pad_len;
-		rq->extra_len += pad_len;
-	}
-
-	if (q->dma_drain_size && q->dma_drain_needed(rq)) {
-		if (rq->cmd_flags & REQ_WRITE)
-			memset(q->dma_drain_buffer, 0, q->dma_drain_size);
-
-		sg->page_link &= ~0x02;
-		sg = sg_next(sg);
-		sg_set_page(sg, virt_to_page(q->dma_drain_buffer),
-			    q->dma_drain_size,
-			    ((unsigned long)q->dma_drain_buffer) &
-			    (PAGE_SIZE - 1));
-		nsegs++;
-		rq->extra_len += q->dma_drain_size;
-	}
-
-	if (sg)
-		sg_mark_end(sg);
-
-	return nsegs;
-}
-EXPORT_SYMBOL(blk_rq_map_sg);
-
-static inline int ll_new_hw_segment(struct request_queue *q,
-				    struct request *req,
-				    struct bio *bio)
-{
-	int nr_phys_segs = bio_phys_segments(q, bio);
-
-	if (req->nr_phys_segments + nr_phys_segs > queue_max_segments(q))
-		goto no_merge;
-
-	if (bio_integrity(bio) && blk_integrity_merge_bio(q, req, bio))
-=======
 int __blk_rq_map_sg(struct request_queue *q, struct request *rq,
 		struct scatterlist *sglist, struct scatterlist **last_sg)
 {
@@ -828,7 +615,6 @@ static inline int ll_new_hw_segment(struct request *req, struct bio *bio,
 		return 1;
 
 	if (req->nr_phys_segments + nr_phys_segs > blk_rq_get_max_segments(req))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto no_merge;
 
 	/*
@@ -839,61 +625,6 @@ static inline int ll_new_hw_segment(struct request *req, struct bio *bio,
 	return 1;
 
 no_merge:
-<<<<<<< HEAD
-	req->cmd_flags |= REQ_NOMERGE;
-	if (req == q->last_merge)
-		q->last_merge = NULL;
-	return 0;
-}
-
-int ll_back_merge_fn(struct request_queue *q, struct request *req,
-		     struct bio *bio)
-{
-	unsigned short max_sectors;
-
-	if (unlikely(req->cmd_type == REQ_TYPE_BLOCK_PC))
-		max_sectors = queue_max_hw_sectors(q);
-	else
-		max_sectors = queue_max_sectors(q);
-
-	if (blk_rq_sectors(req) + bio_sectors(bio) > max_sectors) {
-		req->cmd_flags |= REQ_NOMERGE;
-		if (req == q->last_merge)
-			q->last_merge = NULL;
-		return 0;
-	}
-	if (!bio_flagged(req->biotail, BIO_SEG_VALID))
-		blk_recount_segments(q, req->biotail);
-	if (!bio_flagged(bio, BIO_SEG_VALID))
-		blk_recount_segments(q, bio);
-
-	return ll_new_hw_segment(q, req, bio);
-}
-
-int ll_front_merge_fn(struct request_queue *q, struct request *req,
-		      struct bio *bio)
-{
-	unsigned short max_sectors;
-
-	if (unlikely(req->cmd_type == REQ_TYPE_BLOCK_PC))
-		max_sectors = queue_max_hw_sectors(q);
-	else
-		max_sectors = queue_max_sectors(q);
-
-
-	if (blk_rq_sectors(req) + bio_sectors(bio) > max_sectors) {
-		req->cmd_flags |= REQ_NOMERGE;
-		if (req == q->last_merge)
-			q->last_merge = NULL;
-		return 0;
-	}
-	if (!bio_flagged(bio, BIO_SEG_VALID))
-		blk_recount_segments(q, bio);
-	if (!bio_flagged(req->bio, BIO_SEG_VALID))
-		blk_recount_segments(q, req->bio);
-
-	return ll_new_hw_segment(q, req, bio);
-=======
 	req_set_nomerge(req->q, req);
 	return 0;
 }
@@ -951,49 +682,19 @@ static bool req_attempt_discard_merge(struct request_queue *q, struct request *r
 no_merge:
 	req_set_nomerge(q, req);
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ll_merge_requests_fn(struct request_queue *q, struct request *req,
 				struct request *next)
 {
 	int total_phys_segments;
-<<<<<<< HEAD
-	unsigned int seg_size =
-		req->biotail->bi_seg_back_size + next->bio->bi_seg_front_size;
-
-	/*
-	 * First check if the either of the requests are re-queued
-	 * requests.  Can't merge them if they are.
-	 */
-	if (req->special || next->special)
-=======
 
 	if (req_gap_back_merge(req, next->bio))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/*
 	 * Will it become too large?
 	 */
-<<<<<<< HEAD
-	if ((blk_rq_sectors(req) + blk_rq_sectors(next)) > queue_max_sectors(q))
-		return 0;
-
-	total_phys_segments = req->nr_phys_segments + next->nr_phys_segments;
-	if (blk_phys_contig_segment(q, req->biotail, next->bio)) {
-		if (req->nr_phys_segments == 1)
-			req->bio->bi_seg_front_size = seg_size;
-		if (next->nr_phys_segments == 1)
-			next->biotail->bi_seg_back_size = seg_size;
-		total_phys_segments--;
-	}
-
-	if (total_phys_segments > queue_max_segments(q))
-		return 0;
-
-	if (blk_integrity_rq(req) && blk_integrity_merge_rq(q, req, next))
-=======
 	if ((blk_rq_sectors(req) + blk_rq_sectors(next)) >
 	    blk_rq_get_max_sectors(req, blk_rq_pos(req)))
 		return 0;
@@ -1009,7 +710,6 @@ static int ll_merge_requests_fn(struct request_queue *q, struct request *req,
 		return 0;
 
 	if (!bio_crypt_ctx_merge_rq(req, next))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* Merge is OK... */
@@ -1026,21 +726,12 @@ static int ll_merge_requests_fn(struct request_queue *q, struct request *req,
  *     which can be mixed are set in each bio and mark @rq as mixed
  *     merged.
  */
-<<<<<<< HEAD
-void blk_rq_set_mixed_merge(struct request *rq)
-{
-	unsigned int ff = rq->cmd_flags & REQ_FAILFAST_MASK;
-	struct bio *bio;
-
-	if (rq->cmd_flags & REQ_MIXED_MERGE)
-=======
 static void blk_rq_set_mixed_merge(struct request *rq)
 {
 	blk_opf_t ff = rq->cmd_flags & REQ_FAILFAST_MASK;
 	struct bio *bio;
 
 	if (rq->rq_flags & RQF_MIXED_MERGE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/*
@@ -1049,28 +740,6 @@ static void blk_rq_set_mixed_merge(struct request *rq)
 	 * Distributes the attributs to each bio.
 	 */
 	for (bio = rq->bio; bio; bio = bio->bi_next) {
-<<<<<<< HEAD
-		WARN_ON_ONCE((bio->bi_rw & REQ_FAILFAST_MASK) &&
-			     (bio->bi_rw & REQ_FAILFAST_MASK) != ff);
-		bio->bi_rw |= ff;
-	}
-	rq->cmd_flags |= REQ_MIXED_MERGE;
-}
-
-static void blk_account_io_merge(struct request *req)
-{
-	if (blk_do_io_stat(req)) {
-		struct hd_struct *part;
-		int cpu;
-
-		cpu = part_stat_lock();
-		part = req->part;
-
-		part_round_stats(cpu, part);
-		part_dec_in_flight(part, rq_data_dir(req));
-
-		hd_struct_put(part);
-=======
 		WARN_ON_ONCE((bio->bi_opf & REQ_FAILFAST_MASK) &&
 			     (bio->bi_opf & REQ_FAILFAST_MASK) != ff);
 		bio->bi_opf |= ff;
@@ -1110,50 +779,10 @@ static void blk_account_io_merge_request(struct request *req)
 	if (blk_do_io_stat(req)) {
 		part_stat_lock();
 		part_stat_inc(req->part, merges[op_stat_group(req_op(req))]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		part_stat_unlock();
 	}
 }
 
-<<<<<<< HEAD
-/*
- * Has to be called with the request spinlock acquired
- */
-static int attempt_merge(struct request_queue *q, struct request *req,
-			  struct request *next)
-{
-	if (!rq_mergeable(req) || !rq_mergeable(next))
-		return 0;
-
-	/*
-	 * Don't merge file system requests and discard requests
-	 */
-	if ((req->cmd_flags & REQ_DISCARD) != (next->cmd_flags & REQ_DISCARD))
-		return 0;
-
-	/*
-	 * Don't merge discard requests and secure discard requests
-	 */
-	if ((req->cmd_flags & REQ_SECURE) != (next->cmd_flags & REQ_SECURE))
-		return 0;
-
-	/*
-	 * Don't merge file system requests and sanitize requests
-	 */
-	if ((req->cmd_flags & REQ_SANITIZE) != (next->cmd_flags & REQ_SANITIZE))
-		return 0;
-
-	/*
-	 * not contiguous
-	 */
-	if (blk_rq_pos(req) + blk_rq_sectors(req) != blk_rq_pos(next))
-		return 0;
-
-	if (rq_data_dir(req) != rq_data_dir(next)
-	    || req->rq_disk != next->rq_disk
-	    || next->special)
-		return 0;
-=======
 static enum elv_merge blk_try_req_merge(struct request *req,
 					struct request *next)
 {
@@ -1187,18 +816,11 @@ static struct request *attempt_merge(struct request_queue *q,
 
 	if (req->ioprio != next->ioprio)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we are allowed to merge, then append bio list
 	 * from next to rq and release next. merge_requests_fn
 	 * will have updated segment counts, update sector
-<<<<<<< HEAD
-	 * counts here.
-	 */
-	if (!ll_merge_requests_fn(q, req, next))
-		return 0;
-=======
 	 * counts here. Handle DISCARDs separately, as they
 	 * have separate settings.
 	 */
@@ -1215,7 +837,6 @@ static struct request *attempt_merge(struct request_queue *q,
 	default:
 		return NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If failfast settings disagree or any of the two is already
@@ -1223,11 +844,7 @@ static struct request *attempt_merge(struct request_queue *q,
 	 * makes sure that all involved bios have mixable attributes
 	 * set properly.
 	 */
-<<<<<<< HEAD
-	if ((req->cmd_flags | next->cmd_flags) & REQ_MIXED_MERGE ||
-=======
 	if (((req->rq_flags | next->rq_flags) & RQF_MIXED_MERGE) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (req->cmd_flags & REQ_FAILFAST_MASK) !=
 	    (next->cmd_flags & REQ_FAILFAST_MASK)) {
 		blk_rq_set_mixed_merge(req);
@@ -1235,55 +852,26 @@ static struct request *attempt_merge(struct request_queue *q,
 	}
 
 	/*
-<<<<<<< HEAD
-	 * At this point we have either done a back merge
-	 * or front merge. We need the smaller start_time of
-	 * the merged requests to be the current request
-	 * for accounting purposes.
-	 */
-	if (time_after(req->start_time, next->start_time))
-		req->start_time = next->start_time;
-=======
 	 * At this point we have either done a back merge or front merge. We
 	 * need the smaller start_time_ns of the merged requests to be the
 	 * current request for accounting purposes.
 	 */
 	if (next->start_time_ns < req->start_time_ns)
 		req->start_time_ns = next->start_time_ns;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->biotail->bi_next = next->bio;
 	req->biotail = next->biotail;
 
 	req->__data_len += blk_rq_bytes(next);
 
-<<<<<<< HEAD
-	elv_merge_requests(q, req, next);
-=======
 	if (!blk_discard_mergable(req))
 		elv_merge_requests(q, req, next);
 
 	blk_crypto_rq_put_keyslot(next);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * 'next' is going away, so update stats accordingly
 	 */
-<<<<<<< HEAD
-	blk_account_io_merge(next);
-
-	req->ioprio = ioprio_best(req->ioprio, next->ioprio);
-	if (blk_rq_cpu_valid(next))
-		req->cpu = next->cpu;
-
-	/* owner-ship of bio passed from next to req */
-	next->bio = NULL;
-	__blk_put_request(q, next);
-	return 1;
-}
-
-int attempt_back_merge(struct request_queue *q, struct request *rq)
-=======
 	blk_account_io_merge_request(next);
 
 	trace_block_rq_merge(next);
@@ -1298,38 +886,23 @@ int attempt_back_merge(struct request_queue *q, struct request *rq)
 
 static struct request *attempt_back_merge(struct request_queue *q,
 		struct request *rq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct request *next = elv_latter_request(q, rq);
 
 	if (next)
 		return attempt_merge(q, rq, next);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-int attempt_front_merge(struct request_queue *q, struct request *rq)
-=======
 	return NULL;
 }
 
 static struct request *attempt_front_merge(struct request_queue *q,
 		struct request *rq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct request *prev = elv_former_request(q, rq);
 
 	if (prev)
 		return attempt_merge(q, prev, rq);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-int blk_attempt_req_merge(struct request_queue *q, struct request *rq,
-			  struct request *next)
-=======
 	return NULL;
 }
 
@@ -1340,47 +913,22 @@ int blk_attempt_req_merge(struct request_queue *q, struct request *rq,
  */
 bool blk_attempt_req_merge(struct request_queue *q, struct request *rq,
 			   struct request *next)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return attempt_merge(q, rq, next);
 }
 
 bool blk_rq_merge_ok(struct request *rq, struct bio *bio)
 {
-<<<<<<< HEAD
-	if (!rq_mergeable(rq))
-		return false;
-
-	/* don't merge file system requests and discard requests */
-	if ((bio->bi_rw & REQ_DISCARD) != (rq->bio->bi_rw & REQ_DISCARD))
-		return false;
-
-	/* don't merge discard requests and secure discard requests */
-	if ((bio->bi_rw & REQ_SECURE) != (rq->bio->bi_rw & REQ_SECURE))
-=======
 	if (!rq_mergeable(rq) || !bio_mergeable(bio))
 		return false;
 
 	if (req_op(rq) != bio_op(bio))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	/* different data direction or already started, don't merge */
 	if (bio_data_dir(bio) != rq_data_dir(rq))
 		return false;
 
-<<<<<<< HEAD
-	/* must be same device and not a special request */
-	if (rq->rq_disk != bio->bi_bdev->bd_disk || rq->special)
-		return false;
-
-	/* only merge integrity protected bio into ditto rq */
-	if (bio_integrity(bio) != blk_integrity_rq(rq))
-		return false;
-
-	/* Don't merge bios of files with different encryption */
-	if (!security_allow_merge_bio(rq->bio, bio))
-=======
 	/* don't merge across cgroup boundaries */
 	if (!blk_cgroup_mergeable(rq, bio))
 		return false;
@@ -1398,22 +946,11 @@ bool blk_rq_merge_ok(struct request *rq, struct bio *bio)
 		return false;
 
 	if (rq->ioprio != bio_prio(bio))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	return true;
 }
 
-<<<<<<< HEAD
-int blk_try_merge(struct request *rq, struct bio *bio)
-{
-	if (blk_rq_pos(rq) + blk_rq_sectors(rq) == bio->bi_sector)
-		return ELEVATOR_BACK_MERGE;
-	else if (blk_rq_pos(rq) - bio_sectors(bio) == bio->bi_sector)
-		return ELEVATOR_FRONT_MERGE;
-	return ELEVATOR_NO_MERGE;
-}
-=======
 enum elv_merge blk_try_merge(struct request *rq, struct bio *bio)
 {
 	if (blk_discard_mergable(rq))
@@ -1655,4 +1192,3 @@ bool blk_mq_sched_try_merge(struct request_queue *q, struct bio *bio,
 	}
 }
 EXPORT_SYMBOL_GPL(blk_mq_sched_try_merge);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

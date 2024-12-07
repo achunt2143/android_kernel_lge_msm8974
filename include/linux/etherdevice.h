@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  NET  is implemented using the  BSD Socket
@@ -14,21 +11,8 @@
  * Authors:	Ross Biro
  *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
  *
-<<<<<<< HEAD
- *		Relocated to include/linux where it belongs by Alan Cox 
- *							<gw4pts@gw4pts.ampr.org>
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
- *	WARNING: This move may well be temporary. This file will get merged with others RSN.
- *
-=======
  *		Relocated to include/linux where it belongs by Alan Cox
  *							<gw4pts@gw4pts.ampr.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_ETHERDEVICE_H
 #define _LINUX_ETHERDEVICE_H
@@ -36,30 +20,6 @@
 #include <linux/if_ether.h>
 #include <linux/netdevice.h>
 #include <linux/random.h>
-<<<<<<< HEAD
-#include <asm/unaligned.h>
-
-#ifdef __KERNEL__
-extern __be16		eth_type_trans(struct sk_buff *skb, struct net_device *dev);
-extern const struct header_ops eth_header_ops;
-
-extern int eth_header(struct sk_buff *skb, struct net_device *dev,
-		      unsigned short type,
-		      const void *daddr, const void *saddr, unsigned len);
-extern int eth_rebuild_header(struct sk_buff *skb);
-extern int eth_header_parse(const struct sk_buff *skb, unsigned char *haddr);
-extern int eth_header_cache(const struct neighbour *neigh, struct hh_cache *hh, __be16 type);
-extern void eth_header_cache_update(struct hh_cache *hh,
-				    const struct net_device *dev,
-				    const unsigned char *haddr);
-extern int eth_mac_addr(struct net_device *dev, void *p);
-extern int eth_change_mtu(struct net_device *dev, int new_mtu);
-extern int eth_validate_addr(struct net_device *dev);
-
-
-
-extern struct net_device *alloc_etherdev_mqs(int sizeof_priv, unsigned int txqs,
-=======
 #include <linux/crc32.h>
 #include <asm/unaligned.h>
 #include <asm/bitsperlong.h>
@@ -94,13 +54,10 @@ int eth_mac_addr(struct net_device *dev, void *p);
 int eth_validate_addr(struct net_device *dev);
 
 struct net_device *alloc_etherdev_mqs(int sizeof_priv, unsigned int txqs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    unsigned int rxqs);
 #define alloc_etherdev(sizeof_priv) alloc_etherdev_mq(sizeof_priv, 1)
 #define alloc_etherdev_mq(sizeof_priv, count) alloc_etherdev_mqs(sizeof_priv, count, count)
 
-<<<<<<< HEAD
-=======
 struct net_device *devm_alloc_etherdev_mqs(struct device *dev, int sizeof_priv,
 					   unsigned int txqs,
 					   unsigned int rxqs);
@@ -137,18 +94,11 @@ static inline bool is_link_local_ether_addr(const u8 *addr)
 #endif
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * is_zero_ether_addr - Determine if give Ethernet address is all zeros.
  * @addr: Pointer to a six-byte array containing the Ethernet address
  *
  * Return true if the address is all zeroes.
-<<<<<<< HEAD
- */
-static inline int is_zero_ether_addr(const u8 *addr)
-{
-	return !(addr[0] | addr[1] | addr[2] | addr[3] | addr[4] | addr[5]);
-=======
  *
  * Please note: addr must be aligned to u16.
  */
@@ -161,7 +111,6 @@ static inline bool is_zero_ether_addr(const u8 *addr)
 		*(const u16 *)(addr + 2) |
 		*(const u16 *)(addr + 4)) == 0;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -171,11 +120,6 @@ static inline bool is_zero_ether_addr(const u8 *addr)
  * Return true if the address is a multicast address.
  * By definition the broadcast address is also a multicast address.
  */
-<<<<<<< HEAD
-static inline int is_multicast_ether_addr(const u8 *addr)
-{
-	return 0x01 & addr[0];
-=======
 static inline bool is_multicast_ether_addr(const u8 *addr)
 {
 #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)
@@ -201,7 +145,6 @@ static inline bool is_multicast_ether_addr_64bits(const u8 *addr)
 #else
 	return is_multicast_ether_addr(addr);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -210,11 +153,7 @@ static inline bool is_multicast_ether_addr_64bits(const u8 *addr)
  *
  * Return true if the address is a local address.
  */
-<<<<<<< HEAD
-static inline int is_local_ether_addr(const u8 *addr)
-=======
 static inline bool is_local_ether_addr(const u8 *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0x02 & addr[0];
 }
@@ -224,12 +163,6 @@ static inline bool is_local_ether_addr(const u8 *addr)
  * @addr: Pointer to a six-byte array containing the Ethernet address
  *
  * Return true if the address is the broadcast address.
-<<<<<<< HEAD
- */
-static inline int is_broadcast_ether_addr(const u8 *addr)
-{
-	return (addr[0] & addr[1] & addr[2] & addr[3] & addr[4] & addr[5]) == 0xff;
-=======
  *
  * Please note: addr must be aligned to u16.
  */
@@ -238,7 +171,6 @@ static inline bool is_broadcast_ether_addr(const u8 *addr)
 	return (*(const u16 *)(addr + 0) &
 		*(const u16 *)(addr + 2) &
 		*(const u16 *)(addr + 4)) == 0xffff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -247,11 +179,7 @@ static inline bool is_broadcast_ether_addr(const u8 *addr)
  *
  * Return true if the address is a unicast address.
  */
-<<<<<<< HEAD
-static inline int is_unicast_ether_addr(const u8 *addr)
-=======
 static inline bool is_unicast_ether_addr(const u8 *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return !is_multicast_ether_addr(addr);
 }
@@ -264,15 +192,10 @@ static inline bool is_unicast_ether_addr(const u8 *addr)
  * a multicast address, and is not FF:FF:FF:FF:FF:FF.
  *
  * Return true if the address is valid.
-<<<<<<< HEAD
- */
-static inline int is_valid_ether_addr(const u8 *addr)
-=======
  *
  * Please note: addr must be aligned to u16.
  */
 static inline bool is_valid_ether_addr(const u8 *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* FF:FF:FF:FF:FF:FF is a multicast address so we don't need to
 	 * explicitly check for it here. */
@@ -280,9 +203,6 @@ static inline bool is_valid_ether_addr(const u8 *addr)
 }
 
 /**
-<<<<<<< HEAD
- * random_ether_addr - Generate software assigned random Ethernet address
-=======
  * eth_proto_is_802_3 - Determine if a given Ethertype/length is a protocol
  * @proto: Ethertype/length value to be tested
  *
@@ -302,19 +222,11 @@ static inline bool eth_proto_is_802_3(__be16 proto)
 
 /**
  * eth_random_addr - Generate software assigned random Ethernet address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @addr: Pointer to a six-byte array containing the Ethernet address
  *
  * Generate a random Ethernet address (MAC) that is not multicast
  * and has the local assigned bit set.
  */
-<<<<<<< HEAD
-static inline void random_ether_addr(u8 *addr)
-{
-	get_random_bytes (addr, ETH_ALEN);
-	addr [0] &= 0xfe;	/* clear multicast bit */
-	addr [0] |= 0x02;	/* set local assignment bit (IEEE802) */
-=======
 static inline void eth_random_addr(u8 *addr)
 {
 	get_random_bytes(addr, ETH_ALEN);
@@ -342,7 +254,6 @@ static inline void eth_broadcast_addr(u8 *addr)
 static inline void eth_zero_addr(u8 *addr)
 {
 	memset(addr, 0x00, ETH_ALEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -356,35 +267,6 @@ static inline void eth_zero_addr(u8 *addr)
  */
 static inline void eth_hw_addr_random(struct net_device *dev)
 {
-<<<<<<< HEAD
-	dev->addr_assign_type |= NET_ADDR_RANDOM;
-	random_ether_addr(dev->dev_addr);
-}
-
-/**
- * compare_ether_addr - Compare two Ethernet addresses
- * @addr1: Pointer to a six-byte array containing the Ethernet address
- * @addr2: Pointer other six-byte array containing the Ethernet address
- *
- * Compare two ethernet addresses, returns 0 if equal, non-zero otherwise.
- * Unlike memcmp(), it doesn't return a value suitable for sorting.
- */
-static inline unsigned compare_ether_addr(const u8 *addr1, const u8 *addr2)
-{
-	const u16 *a = (const u16 *) addr1;
-	const u16 *b = (const u16 *) addr2;
-
-	BUILD_BUG_ON(ETH_ALEN != 6);
-	return ((a[0] ^ b[0]) | (a[1] ^ b[1]) | (a[2] ^ b[2])) != 0;
-}
-
-static inline unsigned long zap_last_2bytes(unsigned long value)
-{
-#ifdef __BIG_ENDIAN
-	return value >> 16;
-#else
-	return value << 16;
-=======
 	u8 addr[ETH_ALEN];
 
 	eth_random_addr(addr);
@@ -473,42 +355,10 @@ static inline bool ether_addr_equal(const u8 *addr1, const u8 *addr2)
 	const u16 *b = (const u16 *)addr2;
 
 	return ((a[0] ^ b[0]) | (a[1] ^ b[1]) | (a[2] ^ b[2])) == 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
 /**
-<<<<<<< HEAD
- * compare_ether_addr_64bits - Compare two Ethernet addresses
- * @addr1: Pointer to an array of 8 bytes
- * @addr2: Pointer to an other array of 8 bytes
- *
- * Compare two ethernet addresses, returns 0 if equal, non-zero otherwise.
- * Unlike memcmp(), it doesn't return a value suitable for sorting.
- * The function doesn't need any conditional branches and possibly uses
- * word memory accesses on CPU allowing cheap unaligned memory reads.
- * arrays = { byte1, byte2, byte3, byte4, byte6, byte7, pad1, pad2}
- *
- * Please note that alignment of addr1 & addr2 is only guaranted to be 16 bits.
- */
-
-static inline unsigned compare_ether_addr_64bits(const u8 addr1[6+2],
-						 const u8 addr2[6+2])
-{
-#ifdef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
-	unsigned long fold = ((*(unsigned long *)addr1) ^
-			      (*(unsigned long *)addr2));
-
-	if (sizeof(fold) == 8)
-		return zap_last_2bytes(fold) != 0;
-
-	fold |= zap_last_2bytes((*(unsigned long *)(addr1 + 4)) ^
-				(*(unsigned long *)(addr2 + 4)));
-	return fold != 0;
-#else
-	return compare_ether_addr(addr1, addr2);
-#endif
-=======
  * ether_addr_equal_64bits - Compare two Ethernet addresses
  * @addr1: Pointer to an array of 8 bytes
  * @addr2: Pointer to an other array of 8 bytes
@@ -669,7 +519,6 @@ static inline void eth_addr_add(u8 *addr, long offset)
 
 	u += offset;
 	u64_to_ether_addr(u, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -680,29 +529,13 @@ static inline void eth_addr_add(u8 *addr, long offset)
  * Compare passed address with all addresses of the device. Return true if the
  * address if one of the device addresses.
  *
-<<<<<<< HEAD
- * Note that this function calls compare_ether_addr_64bits() so take care of
-=======
  * Note that this function calls ether_addr_equal_64bits() so take care of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * the right padding.
  */
 static inline bool is_etherdev_addr(const struct net_device *dev,
 				    const u8 addr[6 + 2])
 {
 	struct netdev_hw_addr *ha;
-<<<<<<< HEAD
-	int res = 1;
-
-	rcu_read_lock();
-	for_each_dev_addr(dev, ha) {
-		res = compare_ether_addr_64bits(addr, ha->addr);
-		if (!res)
-			break;
-	}
-	rcu_read_unlock();
-	return !res;
-=======
 	bool res = false;
 
 	rcu_read_lock();
@@ -713,7 +546,6 @@ static inline bool is_etherdev_addr(const struct net_device *dev,
 	}
 	rcu_read_unlock();
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif	/* __KERNEL__ */
 
@@ -722,11 +554,7 @@ static inline bool is_etherdev_addr(const struct net_device *dev,
  * @a: Pointer to Ethernet header
  * @b: Pointer to Ethernet header
  *
-<<<<<<< HEAD
- * Compare two ethernet headers, returns 0 if equal.
-=======
  * Compare two Ethernet headers, returns 0 if equal.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This assumes that the network header (i.e., IP header) is 4-byte
  * aligned OR the platform can handle unaligned access.  This is the
  * case for all packets coming into netif_receive_skb or similar
@@ -758,8 +586,6 @@ static inline unsigned long compare_ether_header(const void *a, const void *b)
 #endif
 }
 
-<<<<<<< HEAD
-=======
 /**
  * eth_hw_addr_gen - Generate and assign Ethernet address to a port
  * @dev: pointer to port's net_device structure
@@ -818,5 +644,4 @@ static inline int eth_skb_pad(struct sk_buff *skb)
 	return skb_put_padto(skb, ETH_ZLEN);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _LINUX_ETHERDEVICE_H */

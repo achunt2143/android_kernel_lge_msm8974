@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Device driver for the SYMBIOS/LSILOGIC 53C8XX and 53C1010 family 
  * of PCI-SCSI IO processors.
@@ -26,23 +23,6 @@
  * Copyright (C) 1997 Richard Waltham <dormouse@farsrobt.demon.co.uk>
  *
  *-----------------------------------------------------------------------------
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/ctype.h>
 #include <linux/init.h>
@@ -138,11 +118,7 @@ struct sym_ucmd {		/* Override the SCSI pointer structure */
 	struct completion *eh_done;		/* SCSI error handling */
 };
 
-<<<<<<< HEAD
-#define SYM_UCMD_PTR(cmd)  ((struct sym_ucmd *)(&(cmd)->SCp))
-=======
 #define SYM_UCMD_PTR(cmd)  ((struct sym_ucmd *)scsi_cmd_priv(cmd))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SYM_SOFTC_PTR(cmd) sym_get_hcb(cmd->device->host)
 
 /*
@@ -151,20 +127,12 @@ struct sym_ucmd {		/* Override the SCSI pointer structure */
 void sym_xpt_done(struct sym_hcb *np, struct scsi_cmnd *cmd)
 {
 	struct sym_ucmd *ucmd = SYM_UCMD_PTR(cmd);
-<<<<<<< HEAD
-	BUILD_BUG_ON(sizeof(struct scsi_pointer) < sizeof(struct sym_ucmd));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ucmd->eh_done)
 		complete(ucmd->eh_done);
 
 	scsi_dma_unmap(cmd);
-<<<<<<< HEAD
-	cmd->scsi_done(cmd);
-=======
 	scsi_done(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -187,17 +155,8 @@ void sym_xpt_async_bus_reset(struct sym_hcb *np)
 static int sym_xerr_cam_status(int cam_status, int x_status)
 {
 	if (x_status) {
-<<<<<<< HEAD
-		if	(x_status & XE_PARITY_ERR)
-			cam_status = DID_PARITY;
-		else if	(x_status &(XE_EXTRA_DATA|XE_SODL_UNRUN|XE_SWIDE_OVRUN))
-			cam_status = DID_ERROR;
-		else if	(x_status & XE_BAD_PHASE)
-			cam_status = DID_ERROR;
-=======
 		if (x_status & XE_PARITY_ERR)
 			cam_status = DID_PARITY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			cam_status = DID_ERROR;
 	}
@@ -210,14 +169,8 @@ static int sym_xerr_cam_status(int cam_status, int x_status)
 void sym_set_cam_result_error(struct sym_hcb *np, struct sym_ccb *cp, int resid)
 {
 	struct scsi_cmnd *cmd = cp->cmd;
-<<<<<<< HEAD
-	u_int cam_status, scsi_status, drv_status;
-
-	drv_status  = 0;
-=======
 	u_int cam_status, scsi_status;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cam_status  = DID_OK;
 	scsi_status = cp->ssss_status;
 
@@ -231,10 +184,6 @@ void sym_set_cam_result_error(struct sym_hcb *np, struct sym_ccb *cp, int resid)
 		    cp->xerr_status == 0) {
 			cam_status = sym_xerr_cam_status(DID_OK,
 							 cp->sv_xerr_status);
-<<<<<<< HEAD
-			drv_status = DRIVER_SENSE;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 *  Bounce back the sense data to user.
 			 */
@@ -283,11 +232,7 @@ void sym_set_cam_result_error(struct sym_hcb *np, struct sym_ccb *cp, int resid)
 		cam_status = sym_xerr_cam_status(DID_ERROR, cp->xerr_status);
 	}
 	scsi_set_resid(cmd, resid);
-<<<<<<< HEAD
-	cmd->result = (drv_status << 24) + (cam_status << 16) + scsi_status;
-=======
 	cmd->result = (cam_status << 16) | scsi_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sym_scatter(struct sym_hcb *np, struct sym_ccb *cp, struct scsi_cmnd *cmd)
@@ -540,34 +485,20 @@ void sym_log_bus_error(struct Scsi_Host *shost)
  * queuecommand method.  Entered with the host adapter lock held and
  * interrupts disabled.
  */
-<<<<<<< HEAD
-static int sym53c8xx_queue_command_lck(struct scsi_cmnd *cmd,
-					void (*done)(struct scsi_cmnd *))
-=======
 static int sym53c8xx_queue_command_lck(struct scsi_cmnd *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sym_hcb *np = SYM_SOFTC_PTR(cmd);
 	struct sym_ucmd *ucp = SYM_UCMD_PTR(cmd);
 	int sts = 0;
 
-<<<<<<< HEAD
-	cmd->scsi_done = done;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(ucp, 0, sizeof(*ucp));
 
 	/*
 	 *  Shorten our settle_time if needed for 
 	 *  this command not to time out.
 	 */
-<<<<<<< HEAD
-	if (np->s.settle_time_valid && cmd->request->timeout) {
-		unsigned long tlimit = jiffies + cmd->request->timeout;
-=======
 	if (np->s.settle_time_valid && scsi_cmd_to_rq(cmd)->timeout) {
 		unsigned long tlimit = jiffies + scsi_cmd_to_rq(cmd)->timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tlimit -= SYM_CONF_TIMER_INTERVAL*2;
 		if (time_after(np->s.settle_time, tlimit)) {
 			np->s.settle_time = tlimit;
@@ -612,15 +543,9 @@ static irqreturn_t sym53c8xx_intr(int irq, void *dev_id)
 /*
  *  Linux entry point of the timer handler
  */
-<<<<<<< HEAD
-static void sym53c8xx_timer(unsigned long npref)
-{
-	struct sym_hcb *np = (struct sym_hcb *)npref;
-=======
 static void sym53c8xx_timer(struct timer_list *t)
 {
 	struct sym_hcb *np = from_timer(np, t, s.timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(np->s.host->host_lock, flags);
@@ -634,24 +559,15 @@ static void sym53c8xx_timer(struct timer_list *t)
  */
 #define SYM_EH_ABORT		0
 #define SYM_EH_DEVICE_RESET	1
-<<<<<<< HEAD
-#define SYM_EH_BUS_RESET	2
-#define SYM_EH_HOST_RESET	3
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Generic method for our eh processing.
  *  The 'op' argument tells what we have to do.
  */
-<<<<<<< HEAD
-static int sym_eh_handler(int op, char *opname, struct scsi_cmnd *cmd)
-=======
 /*
  * Error handlers called from the eh thread (one thread per HBA).
  */
 static int sym53c8xx_eh_abort_handler(struct scsi_cmnd *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sym_ucmd *ucmd = SYM_UCMD_PTR(cmd);
 	struct Scsi_Host *shost = cmd->device->host;
@@ -663,39 +579,6 @@ static int sym53c8xx_eh_abort_handler(struct scsi_cmnd *cmd)
 	int sts = -1;
 	struct completion eh_done;
 
-<<<<<<< HEAD
-	scmd_printk(KERN_WARNING, cmd, "%s operation started\n", opname);
-
-	/* We may be in an error condition because the PCI bus
-	 * went down. In this case, we need to wait until the
-	 * PCI bus is reset, the card is reset, and only then
-	 * proceed with the scsi error recovery.  There's no
-	 * point in hurrying; take a leisurely wait.
-	 */
-#define WAIT_FOR_PCI_RECOVERY	35
-	if (pci_channel_offline(pdev)) {
-		int finished_reset = 0;
-		init_completion(&eh_done);
-		spin_lock_irq(shost->host_lock);
-		/* Make sure we didn't race */
-		if (pci_channel_offline(pdev)) {
-			BUG_ON(sym_data->io_reset);
-			sym_data->io_reset = &eh_done;
-		} else {
-			finished_reset = 1;
-		}
-		spin_unlock_irq(shost->host_lock);
-		if (!finished_reset)
-			finished_reset = wait_for_completion_timeout
-						(sym_data->io_reset,
-						WAIT_FOR_PCI_RECOVERY*HZ);
-		spin_lock_irq(shost->host_lock);
-		sym_data->io_reset = NULL;
-		spin_unlock_irq(shost->host_lock);
-		if (!finished_reset)
-			return SCSI_FAILED;
-	}
-=======
 	scmd_printk(KERN_WARNING, cmd, "ABORT operation started\n");
 
 	/*
@@ -703,7 +586,6 @@ static int sym53c8xx_eh_abort_handler(struct scsi_cmnd *cmd)
 	 */
 	if (pci_channel_offline(pdev))
 		return SCSI_FAILED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(shost->host_lock);
 	/* This one is queued in some place -> to wait for completion */
@@ -715,32 +597,7 @@ static int sym53c8xx_eh_abort_handler(struct scsi_cmnd *cmd)
 		}
 	}
 
-<<<<<<< HEAD
-	/* Try to proceed the operation we have been asked for */
-	sts = -1;
-	switch(op) {
-	case SYM_EH_ABORT:
-		sts = sym_abort_scsiio(np, cmd, 1);
-		break;
-	case SYM_EH_DEVICE_RESET:
-		sts = sym_reset_scsi_target(np, cmd->device->id);
-		break;
-	case SYM_EH_BUS_RESET:
-		sym_reset_scsi_bus(np, 1);
-		sts = 0;
-		break;
-	case SYM_EH_HOST_RESET:
-		sym_reset_scsi_bus(np, 0);
-		sym_start_up(shost, 1);
-		sts = 0;
-		break;
-	default:
-		break;
-	}
-
-=======
 	sts = sym_abort_scsiio(np, cmd, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* On error, restore everything and cross fingers :) */
 	if (sts)
 		cmd_queued = 0;
@@ -757,29 +614,11 @@ static int sym53c8xx_eh_abort_handler(struct scsi_cmnd *cmd)
 		spin_unlock_irq(shost->host_lock);
 	}
 
-<<<<<<< HEAD
-	dev_warn(&cmd->device->sdev_gendev, "%s operation %s.\n", opname,
-=======
 	dev_warn(&cmd->device->sdev_gendev, "ABORT operation %s.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sts==0 ? "complete" :sts==-2 ? "timed-out" : "failed");
 	return sts ? SCSI_FAILED : SCSI_SUCCESS;
 }
 
-<<<<<<< HEAD
-
-/*
- * Error handlers called from the eh thread (one thread per HBA).
- */
-static int sym53c8xx_eh_abort_handler(struct scsi_cmnd *cmd)
-{
-	return sym_eh_handler(SYM_EH_ABORT, "ABORT", cmd);
-}
-
-static int sym53c8xx_eh_device_reset_handler(struct scsi_cmnd *cmd)
-{
-	return sym_eh_handler(SYM_EH_DEVICE_RESET, "DEVICE RESET", cmd);
-=======
 static int sym53c8xx_eh_target_reset_handler(struct scsi_cmnd *cmd)
 {
 	struct scsi_target *starget = scsi_target(cmd->device);
@@ -829,14 +668,10 @@ static int sym53c8xx_eh_target_reset_handler(struct scsi_cmnd *cmd)
 	starget_printk(KERN_WARNING, starget, "TARGET RESET operation %s.\n",
 			sts==0 ? "complete" :sts==-2 ? "timed-out" : "failed");
 	return SCSI_SUCCESS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sym53c8xx_eh_bus_reset_handler(struct scsi_cmnd *cmd)
 {
-<<<<<<< HEAD
-	return sym_eh_handler(SYM_EH_BUS_RESET, "BUS RESET", cmd);
-=======
 	struct Scsi_Host *shost = cmd->device->host;
 	struct sym_data *sym_data = shost_priv(shost);
 	struct pci_dev *pdev = sym_data->pdev;
@@ -856,14 +691,10 @@ static int sym53c8xx_eh_bus_reset_handler(struct scsi_cmnd *cmd)
 
 	dev_warn(&cmd->device->sdev_gendev, "BUS RESET operation complete.\n");
 	return SCSI_SUCCESS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sym53c8xx_eh_host_reset_handler(struct scsi_cmnd *cmd)
 {
-<<<<<<< HEAD
-	return sym_eh_handler(SYM_EH_HOST_RESET, "HOST RESET", cmd);
-=======
 	struct Scsi_Host *shost = cmd->device->host;
 	struct sym_data *sym_data = shost_priv(shost);
 	struct pci_dev *pdev = sym_data->pdev;
@@ -907,7 +738,6 @@ static int sym53c8xx_eh_host_reset_handler(struct scsi_cmnd *cmd)
 	shost_printk(KERN_WARNING, shost, "HOST RESET operation %s.\n",
 			finished_reset==1 ? "complete" : "failed");
 	return finished_reset ? SCSI_SUCCESS : SCSI_FAILED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1021,13 +851,7 @@ static int sym53c8xx_slave_configure(struct scsi_device *sdev)
 	if (reqtags > SYM_CONF_MAX_TAG)
 		reqtags = SYM_CONF_MAX_TAG;
 	depth_to_use = reqtags ? reqtags : 1;
-<<<<<<< HEAD
-	scsi_adjust_queue_depth(sdev,
-				sdev->tagged_supported ? MSG_SIMPLE_TAG : 0,
-				depth_to_use);
-=======
 	scsi_change_queue_depth(sdev, depth_to_use);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lp->s.scdev_depth = depth_to_use;
 	sym_tune_dev_queuing(tp, sdev->lun, reqtags);
 
@@ -1056,11 +880,7 @@ static void sym53c8xx_slave_destroy(struct scsi_device *sdev)
 		 * so let's try to stop all on-going I/O.
 		 */
 		starget_printk(KERN_WARNING, tp->starget,
-<<<<<<< HEAD
-			       "Removing busy LCB (%d)\n", sdev->lun);
-=======
 			       "Removing busy LCB (%d)\n", (u8)sdev->lun);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sym_reset_scsi_bus(np, 1);
 	}
 
@@ -1380,114 +1200,6 @@ printk("sym_user_command: data=%ld\n", uc->data);
 #endif	/* SYM_LINUX_USER_COMMAND_SUPPORT */
 
 
-<<<<<<< HEAD
-#ifdef SYM_LINUX_USER_INFO_SUPPORT
-/*
- *  Informations through the proc file system.
- */
-struct info_str {
-	char *buffer;
-	int length;
-	int offset;
-	int pos;
-};
-
-static void copy_mem_info(struct info_str *info, char *data, int len)
-{
-	if (info->pos + len > info->length)
-		len = info->length - info->pos;
-
-	if (info->pos + len < info->offset) {
-		info->pos += len;
-		return;
-	}
-	if (info->pos < info->offset) {
-		data += (info->offset - info->pos);
-		len  -= (info->offset - info->pos);
-	}
-
-	if (len > 0) {
-		memcpy(info->buffer + info->pos, data, len);
-		info->pos += len;
-	}
-}
-
-static int copy_info(struct info_str *info, char *fmt, ...)
-{
-	va_list args;
-	char buf[81];
-	int len;
-
-	va_start(args, fmt);
-	len = vsprintf(buf, fmt, args);
-	va_end(args);
-
-	copy_mem_info(info, buf, len);
-	return len;
-}
-
-/*
- *  Copy formatted information into the input buffer.
- */
-static int sym_host_info(struct Scsi_Host *shost, char *ptr, off_t offset, int len)
-{
-	struct sym_data *sym_data = shost_priv(shost);
-	struct pci_dev *pdev = sym_data->pdev;
-	struct sym_hcb *np = sym_data->ncb;
-	struct info_str info;
-
-	info.buffer	= ptr;
-	info.length	= len;
-	info.offset	= offset;
-	info.pos	= 0;
-
-	copy_info(&info, "Chip " NAME53C "%s, device id 0x%x, "
-			 "revision id 0x%x\n", np->s.chip_name,
-			 pdev->device, pdev->revision);
-	copy_info(&info, "At PCI address %s, IRQ %u\n",
-			 pci_name(pdev), pdev->irq);
-	copy_info(&info, "Min. period factor %d, %s SCSI BUS%s\n",
-			 (int) (np->minsync_dt ? np->minsync_dt : np->minsync),
-			 np->maxwide ? "Wide" : "Narrow",
-			 np->minsync_dt ? ", DT capable" : "");
-
-	copy_info(&info, "Max. started commands %d, "
-			 "max. commands per LUN %d\n",
-			 SYM_CONF_MAX_START, SYM_CONF_MAX_TAG);
-
-	return info.pos > info.offset? info.pos - info.offset : 0;
-}
-#endif /* SYM_LINUX_USER_INFO_SUPPORT */
-
-/*
- *  Entry point of the scsi proc fs of the driver.
- *  - func = 0 means read  (returns adapter infos)
- *  - func = 1 means write (not yet merget from sym53c8xx)
- */
-static int sym53c8xx_proc_info(struct Scsi_Host *shost, char *buffer,
-			char **start, off_t offset, int length, int func)
-{
-	int retv;
-
-	if (func) {
-#ifdef	SYM_LINUX_USER_COMMAND_SUPPORT
-		retv = sym_user_command(shost, buffer, length);
-#else
-		retv = -EINVAL;
-#endif
-	} else {
-		if (start)
-			*start = buffer;
-#ifdef SYM_LINUX_USER_INFO_SUPPORT
-		retv = sym_host_info(shost, buffer, offset, length);
-#else
-		retv = -EINVAL;
-#endif
-	}
-
-	return retv;
-}
-=======
 /*
  *  Copy formatted information into the input buffer.
  */
@@ -1518,7 +1230,6 @@ static int sym_show_info(struct seq_file *m, struct Scsi_Host *shost)
 #endif /* SYM_LINUX_USER_INFO_SUPPORT */
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* SYM_LINUX_PROC_INFO_SUPPORT */
 
 /*
@@ -1526,12 +1237,7 @@ static int sym_show_info(struct seq_file *m, struct Scsi_Host *shost)
  * sym_free_resources() should be used instead of this function after calling
  * sym_attach().
  */
-<<<<<<< HEAD
-static void __devinit
-sym_iounmap_device(struct sym_device *device)
-=======
 static void sym_iounmap_device(struct sym_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (device->s.ioaddr)
 		pci_iounmap(device->pdev, device->s.ioaddr);
@@ -1571,13 +1277,8 @@ static void sym_free_resources(struct sym_hcb *np, struct pci_dev *pdev,
  *  If all is OK, install interrupt handling and
  *  start the timer daemon.
  */
-<<<<<<< HEAD
-static struct Scsi_Host * __devinit sym_attach(struct scsi_host_template *tpnt,
-		int unit, struct sym_device *dev)
-=======
 static struct Scsi_Host *sym_attach(const struct scsi_host_template *tpnt, int unit,
 				    struct sym_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sym_data *sym_data;
 	struct sym_hcb *np = NULL;
@@ -1638,15 +1339,6 @@ static struct Scsi_Host *sym_attach(const struct scsi_host_template *tpnt, int u
 	/*
 	 *  Edit its name.
 	 */
-<<<<<<< HEAD
-	strlcpy(np->s.chip_name, dev->chip.name, sizeof(np->s.chip_name));
-	sprintf(np->s.inst_name, "sym%d", np->s.unit);
-
-	if ((SYM_CONF_DMA_ADDRESSING_MODE > 0) && (np->features & FE_DAC) &&
-			!pci_set_dma_mask(pdev, DMA_DAC_MASK)) {
-		set_dac(np);
-	} else if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
-=======
 	strscpy(np->s.chip_name, dev->chip.name, sizeof(np->s.chip_name));
 	sprintf(np->s.inst_name, "sym%d", np->s.unit);
 
@@ -1654,7 +1346,6 @@ static struct Scsi_Host *sym_attach(const struct scsi_host_template *tpnt, int u
 			!dma_set_mask(&pdev->dev, DMA_DAC_MASK)) {
 		set_dac(np);
 	} else if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printf_warning("%s: No suitable DMA available\n", sym_name(np));
 		goto attach_failed;
 	}
@@ -1691,13 +1382,7 @@ static struct Scsi_Host *sym_attach(const struct scsi_host_template *tpnt, int u
 	/*
 	 *  Start the timer daemon
 	 */
-<<<<<<< HEAD
-	init_timer(&np->s.timer);
-	np->s.timer.data     = (unsigned long) np;
-	np->s.timer.function = sym53c8xx_timer;
-=======
 	timer_setup(&np->s.timer, sym53c8xx_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np->s.lasttime=0;
 	sym_timer (np);
 
@@ -1739,22 +1424,14 @@ static struct Scsi_Host *sym_attach(const struct scsi_host_template *tpnt, int u
 		scsi_host_put(shost);
 
 	return NULL;
-<<<<<<< HEAD
- }
-=======
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
  *    Detect and try to read SYMBIOS and TEKRAM NVRAM.
  */
 #if SYM_CONF_NVRAM_SUPPORT
-<<<<<<< HEAD
-static void __devinit sym_get_nvram(struct sym_device *devp, struct sym_nvram *nvp)
-=======
 static void sym_get_nvram(struct sym_device *devp, struct sym_nvram *nvp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	devp->nvram = nvp;
 	nvp->type = 0;
@@ -1767,11 +1444,7 @@ static inline void sym_get_nvram(struct sym_device *devp, struct sym_nvram *nvp)
 }
 #endif	/* SYM_CONF_NVRAM_SUPPORT */
 
-<<<<<<< HEAD
-static int __devinit sym_check_supported(struct sym_device *device)
-=======
 static int sym_check_supported(struct sym_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sym_chip *chip;
 	struct pci_dev *pdev = device->pdev;
@@ -1808,11 +1481,7 @@ static int sym_check_supported(struct sym_device *device)
  * Ignore Symbios chips controlled by various RAID controllers.
  * These controllers set value 0x52414944 at RAM end - 16.
  */
-<<<<<<< HEAD
-static int __devinit sym_check_raid(struct sym_device *device)
-=======
 static int sym_check_raid(struct sym_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int ram_size, ram_val;
 
@@ -1833,11 +1502,7 @@ static int sym_check_raid(struct sym_device *device)
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static int __devinit sym_set_workarounds(struct sym_device *device)
-=======
 static int sym_set_workarounds(struct sym_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sym_chip *chip = &device->chip;
 	struct pci_dev *pdev = device->pdev;
@@ -1887,12 +1552,7 @@ static int sym_set_workarounds(struct sym_device *device)
 /*
  * Map HBA registers and on-chip SRAM (if present).
  */
-<<<<<<< HEAD
-static int __devinit
-sym_iomap_device(struct sym_device *device)
-=======
 static int sym_iomap_device(struct sym_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = device->pdev;
 	struct pci_bus_region bus_addr;
@@ -2018,33 +1678,16 @@ static int sym_detach(struct Scsi_Host *shost, struct pci_dev *pdev)
 /*
  * Driver host template.
  */
-<<<<<<< HEAD
-static struct scsi_host_template sym2_template = {
-	.module			= THIS_MODULE,
-	.name			= "sym53c8xx",
-	.info			= sym53c8xx_info, 
-=======
 static const struct scsi_host_template sym2_template = {
 	.module			= THIS_MODULE,
 	.name			= "sym53c8xx",
 	.info			= sym53c8xx_info, 
 	.cmd_size		= sizeof(struct sym_ucmd),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.queuecommand		= sym53c8xx_queue_command,
 	.slave_alloc		= sym53c8xx_slave_alloc,
 	.slave_configure	= sym53c8xx_slave_configure,
 	.slave_destroy		= sym53c8xx_slave_destroy,
 	.eh_abort_handler	= sym53c8xx_eh_abort_handler,
-<<<<<<< HEAD
-	.eh_device_reset_handler = sym53c8xx_eh_device_reset_handler,
-	.eh_bus_reset_handler	= sym53c8xx_eh_bus_reset_handler,
-	.eh_host_reset_handler	= sym53c8xx_eh_host_reset_handler,
-	.this_id		= 7,
-	.use_clustering		= ENABLE_CLUSTERING,
-	.max_sectors		= 0xFFFF,
-#ifdef SYM_LINUX_PROC_INFO_SUPPORT
-	.proc_info		= sym53c8xx_proc_info,
-=======
 	.eh_target_reset_handler = sym53c8xx_eh_target_reset_handler,
 	.eh_bus_reset_handler	= sym53c8xx_eh_bus_reset_handler,
 	.eh_host_reset_handler	= sym53c8xx_eh_host_reset_handler,
@@ -2055,19 +1698,13 @@ static const struct scsi_host_template sym2_template = {
 #ifdef	SYM_LINUX_USER_COMMAND_SUPPORT
 	.write_info		= sym_user_command,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.proc_name		= NAME53C8XX,
 #endif
 };
 
 static int attach_count;
 
-<<<<<<< HEAD
-static int __devinit sym2_probe(struct pci_dev *pdev,
-				const struct pci_device_id *ent)
-=======
 static int sym2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sym_device sym_dev;
 	struct sym_nvram nvram;
@@ -2151,11 +1788,7 @@ static void sym2_remove(struct pci_dev *pdev)
  * @state: current state of the PCI slot
  */
 static pci_ers_result_t sym2_io_error_detected(struct pci_dev *pdev,
-<<<<<<< HEAD
-                                         enum pci_channel_state state)
-=======
                                          pci_channel_state_t state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* If slot is permanently frozen, turn everything off */
 	if (state == pci_channel_io_perm_failure) {
@@ -2186,10 +1819,7 @@ static pci_ers_result_t sym2_io_slot_dump(struct pci_dev *pdev)
 
 /**
  * sym2_reset_workarounds - hardware-specific work-arounds
-<<<<<<< HEAD
-=======
  * @pdev: pointer to PCI device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is similar to sym_set_workarounds(), except
  * that, at this point, we already know that the device was
@@ -2274,11 +1904,7 @@ static void sym2_io_resume(struct pci_dev *pdev)
 
 	spin_lock_irq(shost->host_lock);
 	if (sym_data->io_reset)
-<<<<<<< HEAD
-		complete_all(sym_data->io_reset);
-=======
 		complete(sym_data->io_reset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(shost->host_lock);
 }
 
@@ -2404,11 +2030,7 @@ static struct spi_function_template sym2_transport_functions = {
 	.get_signalling	= sym2_get_signalling,
 };
 
-<<<<<<< HEAD
-static struct pci_device_id sym2_id_table[] __devinitdata = {
-=======
 static struct pci_device_id sym2_id_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_NCR_53C810,
 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0UL },
 	{ PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_NCR_53C820,
@@ -2448,11 +2070,7 @@ static struct pci_device_id sym2_id_table[] = {
 
 MODULE_DEVICE_TABLE(pci, sym2_id_table);
 
-<<<<<<< HEAD
-static struct pci_error_handlers sym2_err_handler = {
-=======
 static const struct pci_error_handlers sym2_err_handler = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.error_detected	= sym2_io_error_detected,
 	.mmio_enabled	= sym2_io_slot_dump,
 	.slot_reset	= sym2_io_slot_reset,

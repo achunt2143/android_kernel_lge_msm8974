@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # NetLabel configuration
 #
@@ -9,23 +6,14 @@
 config NETLABEL
 	bool "NetLabel subsystem support"
 	depends on SECURITY
-<<<<<<< HEAD
-	default n
-	---help---
-=======
 	select CRC_CCITT if IPV6
 	default n
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  NetLabel provides support for explicit network packet labeling
 	  protocols such as CIPSO and RIPSO.  For more information see
 	  Documentation/netlabel as well as the NetLabel SourceForge project
 	  for configuration tools and additional documentation.
 
-<<<<<<< HEAD
-	   * http://netlabel.sf.net
-=======
 	   * https://github.com/netlabel/netlabel_tools
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If you are unsure, say N.

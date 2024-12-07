@@ -1,14 +1,9 @@
 *.a
 *.aux
-<<<<<<< HEAD
-*.bin
-*.bz2
-=======
 *.bc
 *.bin
 *.bz2
 *.c.[012]*.*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *.cis
 *.cpio
 *.csp
@@ -28,20 +23,14 @@
 *.i
 *.jpeg
 *.ko
-<<<<<<< HEAD
-=======
 *.ll
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *.log
 *.lst
 *.lzma
 *.lzo
 *.mo
 *.moc
-<<<<<<< HEAD
-=======
 *.mod
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *.mod.c
 *.o
 *.o.*
@@ -50,10 +39,7 @@
 *.out
 *.patch
 *.pdf
-<<<<<<< HEAD
-=======
 *.plist
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *.png
 *.pot
 *.ps
@@ -69,10 +55,7 @@
 *.ver
 *.xml
 *.xz
-<<<<<<< HEAD
-=======
 *.zst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *_MODULES
 *_vga16.c
 *~
@@ -108,10 +91,6 @@ asm_offsets.h
 autoconf.h*
 av_permissions.h
 bbootsect
-<<<<<<< HEAD
-bin2c
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 binkernel.spec
 bootsect
 bounds.h
@@ -128,10 +107,6 @@ compile.h*
 conf
 config
 config-*
-<<<<<<< HEAD
-config_data.h*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config.mak
 config.mak.autogen
 conmakehash
@@ -141,16 +116,10 @@ crc32table.h*
 cscope.*
 defkeymap.c
 devlist.h*
-<<<<<<< HEAD
-dnotify_test
-docproc
-dslm
-=======
 devicetable-offsets.h
 dnotify_test
 dslm
 dtc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 elf2ecoff
 elfconfig.h*
 evergreen_reg_safe.h
@@ -159,11 +128,7 @@ flask.h
 fore200e_mkfirm
 fore200e_pca_fw.c*
 gconf
-<<<<<<< HEAD
-gconf.glade.h
-=======
 gconf-cfg
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 gen-devlist
 gen_crc32table
 gen_init_cpio
@@ -175,10 +140,6 @@ hpet_example
 hugepage-mmap
 hugepage-shm
 ihex2fw
-<<<<<<< HEAD
-ikconfig.h*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 inat-tables.c
 initramfs_list
 int16.c
@@ -188,43 +149,22 @@ int32.c
 int4.c
 int8.c
 kallsyms
-<<<<<<< HEAD
-kconfig
-keywords.c
-ksym.c*
-ksym.h*
-kxgettext
-lkc_defs.h
-lex.c
-lex.*.c
-=======
 keywords.c
 ksym.c*
 ksym.h*
 *lex.c
 *lex.*.c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 linux
 logo_*.c
 logo_*_clut224.c
 logo_*_mono.c
-<<<<<<< HEAD
-lxdialog
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 mach-types
 mach-types.h
 machtypes.h
 map
 map_hugetlb
-<<<<<<< HEAD
-maui_boot.h
-media
-mconf
-=======
 mconf
 mconf-cfg
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 miboot*
 mk_elfconfig
 mkboot
@@ -235,16 +175,6 @@ mkprep
 mkregtable
 mktables
 mktree
-<<<<<<< HEAD
-modpost
-modules.builtin
-modules.order
-modversions.h*
-nconf
-ncscope.*
-offset.h
-offsets.h
-=======
 mkutf8data
 modpost
 modules-only.symvers
@@ -257,7 +187,6 @@ nconf
 nconf-cfg
 ncscope.*
 offset.h
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 oui.c*
 page-types
 parse.c
@@ -275,21 +204,15 @@ pnmtologo
 ppc_defs.h*
 pss_boot.h
 qconf
-<<<<<<< HEAD
-=======
 qconf-cfg
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 r100_reg_safe.h
 r200_reg_safe.h
 r300_reg_safe.h
 r420_reg_safe.h
 r600_reg_safe.h
-<<<<<<< HEAD
-=======
 randstruct.seed
 randomize_layout_hash.h
 randomize_layout_seed.h
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 recordmcount
 relocs
 rlim_names.h
@@ -300,10 +223,7 @@ series
 setup
 setup.bin
 setup.elf
-<<<<<<< HEAD
-=======
 sortextable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sImage
 sm_tbl*
 split-include
@@ -333,11 +253,8 @@ vmlinux-*
 vmlinux.aout
 vmlinux.bin.all
 vmlinux.lds
-<<<<<<< HEAD
-=======
 vmlinux.map
 vmlinux.symvers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 vmlinuz
 voffset.h
 vsyscall.lds
@@ -345,16 +262,9 @@ vsyscall_32.lds
 wanxlfw.inc
 uImage
 unifdef
-<<<<<<< HEAD
-=======
 utf8data.h
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 wakeup.bin
 wakeup.elf
 wakeup.lds
 zImage*
-<<<<<<< HEAD
-zconf.hash.c
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 zoffset.h

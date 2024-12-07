@@ -1,43 +1,14 @@
-<<<<<<< HEAD
-/*
- * Platform level USB initialization for FS USB OTG controller on omap1 and 24xx
- *
- * Copyright (C) 2004 Texas Instruments, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Platform level USB initialization for FS USB OTG controller on omap1
  *
  * Copyright (C) 2004 Texas Instruments, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/io.h>
-
-#include <asm/irq.h>
-
-#include <plat/mux.h>
-#include <plat/usb.h>
-=======
 #include <linux/dma-map-ops.h>
 #include <linux/io.h>
 #include <linux/delay.h>
@@ -49,7 +20,6 @@
 #include "mux.h"
 #include "usb.h"
 #include "common.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* These routines should handle the standard chip-specific modes
  * for usb0/1/2 ports, covering basic mux and transceiver setup.
@@ -75,9 +45,6 @@
 #define INT_USB_IRQ_HGEN	INT_USB_HHC_1
 #define INT_USB_IRQ_OTG		IH2_BASE + 8
 
-<<<<<<< HEAD
-#ifdef	CONFIG_USB_GADGET_OMAP
-=======
 #ifdef	CONFIG_ARCH_OMAP_OTG
 
 static void __init
@@ -189,7 +156,6 @@ static void omap_otg_init(struct omap_usb_config *config) {}
 #endif
 
 #if IS_ENABLED(CONFIG_USB_OMAP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct resource udc_resources[] = {
 	/* order is significant! */
@@ -224,15 +190,6 @@ static struct platform_device udc_device = {
 
 static inline void udc_device_init(struct omap_usb_config *pdata)
 {
-<<<<<<< HEAD
-	/* IRQ numbers for omap7xx */
-	if(cpu_is_omap7xx()) {
-		udc_resources[1].start = INT_7XX_USB_GENI;
-		udc_resources[2].start = INT_7XX_USB_NON_ISO;
-		udc_resources[3].start = INT_7XX_USB_ISO;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdata->udc_device = &udc_device;
 }
 
@@ -244,11 +201,6 @@ static inline void udc_device_init(struct omap_usb_config *pdata)
 
 #endif
 
-<<<<<<< HEAD
-#if	defined(CONFIG_USB_OHCI_HCD) || defined(CONFIG_USB_OHCI_HCD_MODULE)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The dmamask must be set for OHCI to work */
 static u64 ohci_dmamask = ~(u32)0;
 
@@ -277,21 +229,6 @@ static struct platform_device ohci_device = {
 
 static inline void ohci_device_init(struct omap_usb_config *pdata)
 {
-<<<<<<< HEAD
-	if (cpu_is_omap7xx())
-		ohci_resources[1].start = INT_7XX_USB_HHC_1;
-	pdata->ohci_device = &ohci_device;
-}
-
-#else
-
-static inline void ohci_device_init(struct omap_usb_config *pdata)
-{
-}
-
-#endif
-
-=======
 	if (!IS_ENABLED(CONFIG_USB_OHCI_HCD))
 		return;
 
@@ -299,7 +236,6 @@ static inline void ohci_device_init(struct omap_usb_config *pdata)
 	pdata->ocpi_enable = &ocpi_enable;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if	defined(CONFIG_USB_OTG) && defined(CONFIG_ARCH_OMAP_OTG)
 
 static struct resource otg_resources[] = {
@@ -323,11 +259,6 @@ static struct platform_device otg_device = {
 
 static inline void otg_device_init(struct omap_usb_config *pdata)
 {
-<<<<<<< HEAD
-	if (cpu_is_omap7xx())
-		otg_resources[1].start = INT_7XX_USB_OTG;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdata->otg_device = &otg_device;
 }
 
@@ -339,11 +270,7 @@ static inline void otg_device_init(struct omap_usb_config *pdata)
 
 #endif
 
-<<<<<<< HEAD
-u32 __init omap1_usb0_init(unsigned nwires, unsigned is_device)
-=======
 static u32 __init omap1_usb0_init(unsigned nwires, unsigned is_device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32	syscon1 = 0;
 
@@ -360,18 +287,7 @@ static u32 __init omap1_usb0_init(unsigned nwires, unsigned is_device)
 	}
 
 	if (is_device) {
-<<<<<<< HEAD
-		if (cpu_is_omap7xx()) {
-			omap_cfg_reg(AA17_7XX_USB_DM);
-			omap_cfg_reg(W16_7XX_USB_PU_EN);
-			omap_cfg_reg(W17_7XX_USB_VBUSI);
-			omap_cfg_reg(W18_7XX_USB_DMCK_OUT);
-			omap_cfg_reg(W19_7XX_USB_DCRST);
-		} else
-			omap_cfg_reg(W4_USB_PUEN);
-=======
 		omap_cfg_reg(W4_USB_PUEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (nwires == 2) {
@@ -391,22 +307,11 @@ static u32 __init omap1_usb0_init(unsigned nwires, unsigned is_device)
 		 *  - OTG support on this port not yet written
 		 */
 
-<<<<<<< HEAD
-		/* Don't do this for omap7xx -- it causes USB to not work correctly */
-		if (!cpu_is_omap7xx()) {
-			l = omap_readl(USB_TRANSCEIVER_CTRL);
-			l &= ~(7 << 4);
-			if (!is_device)
-				l |= (3 << 1);
-			omap_writel(l, USB_TRANSCEIVER_CTRL);
-		}
-=======
 		l = omap_readl(USB_TRANSCEIVER_CTRL);
 		l &= ~(7 << 4);
 		if (!is_device)
 			l |= (3 << 1);
 		omap_writel(l, USB_TRANSCEIVER_CTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return 3 << 16;
 	}
@@ -463,11 +368,7 @@ static u32 __init omap1_usb0_init(unsigned nwires, unsigned is_device)
 	return syscon1 << 16;
 }
 
-<<<<<<< HEAD
-u32 __init omap1_usb1_init(unsigned nwires)
-=======
 static u32 __init omap1_usb1_init(unsigned nwires)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32	syscon1 = 0;
 
@@ -533,11 +434,7 @@ bad:
 	return syscon1 << 20;
 }
 
-<<<<<<< HEAD
-u32 __init omap1_usb2_init(unsigned nwires, unsigned alt_pingroup)
-=======
 static u32 __init omap1_usb2_init(unsigned nwires, unsigned alt_pingroup)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32	syscon1 = 0;
 
@@ -611,8 +508,6 @@ bad:
 }
 
 #ifdef	CONFIG_ARCH_OMAP15XX
-<<<<<<< HEAD
-=======
 /* OMAP-1510 OHCI has its own MMU for DMA */
 #define OMAP1510_LB_MEMSIZE	32	/* Should be same as SDRAM size */
 #define OMAP1510_LB_CLOCK_DIV	0xfffec10c
@@ -686,7 +581,6 @@ static void omap_1510_local_bus_reset(void)
 	omap_1510_local_bus_power(1);
 	omap_1510_local_bus_init();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ULPD_DPLL_CTRL */
 #define DPLL_IOB		(1 << 13)
@@ -711,15 +605,6 @@ static void __init omap_1510_usb_init(struct omap_usb_config *config)
 
 	printk("USB: hmc %d", config->hmc_mode);
 	if (config->pins[0])
-<<<<<<< HEAD
-		printk(", usb0 %d wires%s", config->pins[0],
-			is_usb0_device(config) ? " (dev)" : "");
-	if (config->pins[1])
-		printk(", usb1 %d wires", config->pins[1]);
-	if (config->pins[2])
-		printk(", usb2 %d wires", config->pins[2]);
-	printk("\n");
-=======
 		pr_cont(", usb0 %d wires%s", config->pins[0],
 			is_usb0_device(config) ? " (dev)" : "");
 	if (config->pins[1])
@@ -727,7 +612,6 @@ static void __init omap_1510_usb_init(struct omap_usb_config *config)
 	if (config->pins[2])
 		pr_cont(", usb2 %d wires", config->pins[2]);
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* use DPLL for 48 MHz function clock */
 	pr_debug("APLL %04x DPLL %04x REQ %04x\n", omap_readw(ULPD_APLL_CTRL),
@@ -748,11 +632,7 @@ static void __init omap_1510_usb_init(struct omap_usb_config *config)
 	while (!(omap_readw(ULPD_DPLL_CTRL) & DPLL_LOCK))
 		cpu_relax();
 
-<<<<<<< HEAD
-#ifdef	CONFIG_USB_GADGET_OMAP
-=======
 #if IS_ENABLED(CONFIG_USB_OMAP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (config->register_dev) {
 		int status;
 
@@ -764,42 +644,25 @@ static void __init omap_1510_usb_init(struct omap_usb_config *config)
 	}
 #endif
 
-<<<<<<< HEAD
-#if	defined(CONFIG_USB_OHCI_HCD) || defined(CONFIG_USB_OHCI_HCD_MODULE)
-	if (config->register_host) {
-		int status;
-
-		ohci_device.dev.platform_data = config;
-=======
 	if (IS_ENABLED(CONFIG_USB_OHCI_HCD) && config->register_host) {
 		int status;
 
 		ohci_device.dev.platform_data = config;
 		dma_direct_set_offset(&ohci_device.dev, PHYS_OFFSET,
 				      OMAP1510_LB_OFFSET, (u64)-1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = platform_device_register(&ohci_device);
 		if (status)
 			pr_debug("can't register OHCI device, %d\n", status);
 		/* hcd explicitly gates 48MHz */
-<<<<<<< HEAD
-	}
-#endif
-=======
 
 		config->lb_reset = omap_1510_local_bus_reset;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
 static inline void omap_1510_usb_init(struct omap_usb_config *config) {}
 #endif
 
-<<<<<<< HEAD
-void __init omap1_usb_init(struct omap_usb_config *pdata)
-{
-=======
 void __init omap1_usb_init(struct omap_usb_config *_pdata)
 {
 	struct omap_usb_config *pdata;
@@ -808,7 +671,6 @@ void __init omap1_usb_init(struct omap_usb_config *_pdata)
 	if (!pdata)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdata->usb0_init = omap1_usb0_init;
 	pdata->usb1_init = omap1_usb1_init;
 	pdata->usb2_init = omap1_usb2_init;
@@ -816,11 +678,7 @@ void __init omap1_usb_init(struct omap_usb_config *_pdata)
 	ohci_device_init(pdata);
 	otg_device_init(pdata);
 
-<<<<<<< HEAD
-	if (cpu_is_omap7xx() || cpu_is_omap16xx())
-=======
 	if (cpu_is_omap16xx())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		omap_otg_init(pdata);
 	else if (cpu_is_omap15xx())
 		omap_1510_usb_init(pdata);

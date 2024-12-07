@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/types.h>
 #include <linux/module.h>
 #include <net/ip.h>
 #include <linux/ipv6.h>
-<<<<<<< HEAD
-=======
 #include <linux/icmp.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/ipv6.h>
 #include <net/tcp.h>
 #include <net/udp.h>
@@ -27,11 +21,8 @@ MODULE_ALIAS("ipt_udp");
 MODULE_ALIAS("ipt_tcp");
 MODULE_ALIAS("ip6t_udp");
 MODULE_ALIAS("ip6t_tcp");
-<<<<<<< HEAD
-=======
 MODULE_ALIAS("ipt_icmp");
 MODULE_ALIAS("ip6t_icmp6");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Returns 1 if the port is matched by the range, 0 otherwise */
 static inline bool
@@ -96,11 +87,6 @@ static bool tcp_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		return false;
 	}
 
-<<<<<<< HEAD
-#define FWINVTCP(bool, invflg) ((bool) ^ !!(tcpinfo->invflags & (invflg)))
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	th = skb_header_pointer(skb, par->thoff, sizeof(_tcph), &_tcph);
 	if (th == NULL) {
 		/* We've been asked to examine this packet, and we
@@ -118,14 +104,8 @@ static bool tcp_mt(const struct sk_buff *skb, struct xt_action_param *par)
 			ntohs(th->dest),
 			!!(tcpinfo->invflags & XT_TCP_INV_DSTPT)))
 		return false;
-<<<<<<< HEAD
-	if (!FWINVTCP((((unsigned char *)th)[13] & tcpinfo->flg_mask)
-		      == tcpinfo->flg_cmp,
-		      XT_TCP_INV_FLAGS))
-=======
 	if (!NF_INVF(tcpinfo, XT_TCP_INV_FLAGS,
 		     (((unsigned char *)th)[13] & tcpinfo->flg_mask) == tcpinfo->flg_cmp))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	if (tcpinfo->option) {
 		if (th->doff * 4 < sizeof(_tcph)) {
@@ -184,8 +164,6 @@ static int udp_mt_check(const struct xt_mtchk_param *par)
 	return (udpinfo->invflags & ~XT_UDP_INV_MASK) ? -EINVAL : 0;
 }
 
-<<<<<<< HEAD
-=======
 /* Returns 1 if the type and code is matched by the range, 0 otherwise */
 static bool type_code_in_range(u8 test_type, u8 min_code, u8 max_code,
 			       u8 type, u8 code)
@@ -275,7 +253,6 @@ static int icmp6_checkentry(const struct xt_mtchk_param *par)
 	return (icmpinfo->invflags & ~IP6T_ICMP_INV) ? -EINVAL : 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct xt_match tcpudp_mt_reg[] __read_mostly = {
 	{
 		.name		= "tcp",
@@ -331,8 +308,6 @@ static struct xt_match tcpudp_mt_reg[] __read_mostly = {
 		.proto		= IPPROTO_UDPLITE,
 		.me		= THIS_MODULE,
 	},
-<<<<<<< HEAD
-=======
 	{
 		.name       = "icmp",
 		.match      = icmp_match,
@@ -351,7 +326,6 @@ static struct xt_match tcpudp_mt_reg[] __read_mostly = {
 		.family     = NFPROTO_IPV6,
 		.me	    = THIS_MODULE,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init tcpudp_mt_init(void)

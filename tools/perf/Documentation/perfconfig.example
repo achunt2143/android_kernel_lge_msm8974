@@ -5,12 +5,8 @@
 	medium = green, lightgray
 	normal = black, lightgray
 	selected = lightgray, magenta
-<<<<<<< HEAD
-	code = blue, lightgray
-=======
 	jump_arrows = blue, lightgray
 	addr = magenta, lightgray
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 [tui]
 
@@ -23,8 +19,6 @@
 
 	# Default, disable using /dev/null
 	dir = /root/.debug
-<<<<<<< HEAD
-=======
 
 [annotate]
 
@@ -42,4 +36,3 @@
 	queue-size = 0
 	children = true
 	group = true
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

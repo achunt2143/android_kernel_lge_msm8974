@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
   File: fs/xattr.c
 
@@ -12,29 +9,18 @@
   Copyright (c) 2004 Red Hat, Inc., James Morris <jmorris@redhat.com>
  */
 #include <linux/fs.h>
-<<<<<<< HEAD
-=======
 #include <linux/filelock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/file.h>
 #include <linux/xattr.h>
 #include <linux/mount.h>
 #include <linux/namei.h>
 #include <linux/security.h>
-<<<<<<< HEAD
-#include <linux/evm.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/syscalls.h>
 #include <linux/export.h>
 #include <linux/fsnotify.h>
 #include <linux/audit.h>
 #include <linux/vmalloc.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-=======
 #include <linux/posix_acl_xattr.h>
 
 #include <linux/uaccess.h>
@@ -118,24 +104,12 @@ int may_write_xattr(struct mnt_idmap *idmap, struct inode *inode)
 		return -EPERM;
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Check permissions for extended attribute access.  This is a bit complicated
  * because different namespaces have very different rules.
  */
 static int
-<<<<<<< HEAD
-xattr_permission(struct inode *inode, const char *name, int mask)
-{
-	/*
-	 * We can never set or remove an extended attribute on a read-only
-	 * filesystem  or on an immutable / append-only inode.
-	 */
-	if (mask & MAY_WRITE) {
-		if (IS_IMMUTABLE(inode) || IS_APPEND(inode))
-			return -EPERM;
-=======
 xattr_permission(struct mnt_idmap *idmap, struct inode *inode,
 		 const char *name, int mask)
 {
@@ -145,7 +119,6 @@ xattr_permission(struct mnt_idmap *idmap, struct inode *inode,
 		ret = may_write_xattr(idmap, inode);
 		if (ret)
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -174,15 +147,6 @@ xattr_permission(struct mnt_idmap *idmap, struct inode *inode,
 		if (!S_ISREG(inode->i_mode) && !S_ISDIR(inode->i_mode))
 			return (mask & MAY_WRITE) ? -EPERM : -ENODATA;
 		if (S_ISDIR(inode->i_mode) && (inode->i_mode & S_ISVTX) &&
-<<<<<<< HEAD
-		    (mask & MAY_WRITE) && !inode_owner_or_capable(inode))
-			return -EPERM;
-	}
-
-	return inode_permission2(ERR_PTR(-EOPNOTSUPP), inode, mask);
-}
-
-=======
 		    (mask & MAY_WRITE) &&
 		    !inode_owner_or_capable(idmap, inode))
 			return -EPERM;
@@ -238,25 +202,16 @@ __vfs_setxattr(struct mnt_idmap *idmap, struct dentry *dentry,
 }
 EXPORT_SYMBOL(__vfs_setxattr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *  __vfs_setxattr_noperm - perform setxattr operation without performing
  *  permission checks.
  *
-<<<<<<< HEAD
- *  @dentry - object to perform setxattr on
- *  @name - xattr name to set
- *  @value - value to set @name to
- *  @size - size of @value
- *  @flags - flags to pass into filesystem operations
-=======
  *  @idmap: idmap of the mount the inode was found from
  *  @dentry: object to perform setxattr on
  *  @name: xattr name to set
  *  @value: value to set @name to
  *  @size: size of @value
  *  @flags: flags to pass into filesystem operations
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  returns the result of the internal setxattr or setsecurity operations.
  *
@@ -264,46 +219,25 @@ EXPORT_SYMBOL(__vfs_setxattr);
  *  is executed. It also assumes that the caller will make the appropriate
  *  permission checks.
  */
-<<<<<<< HEAD
-int __vfs_setxattr_noperm(struct dentry *dentry, const char *name,
-		const void *value, size_t size, int flags)
-{
-	struct inode *inode = dentry->d_inode;
-	int error = -EOPNOTSUPP;
-=======
 int __vfs_setxattr_noperm(struct mnt_idmap *idmap,
 			  struct dentry *dentry, const char *name,
 			  const void *value, size_t size, int flags)
 {
 	struct inode *inode = dentry->d_inode;
 	int error = -EAGAIN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int issec = !strncmp(name, XATTR_SECURITY_PREFIX,
 				   XATTR_SECURITY_PREFIX_LEN);
 
 	if (issec)
 		inode->i_flags &= ~S_NOSEC;
-<<<<<<< HEAD
-	if (inode->i_op->setxattr) {
-		error = inode->i_op->setxattr(dentry, name, value, size, flags);
-=======
 	if (inode->i_opflags & IOP_XATTR) {
 		error = __vfs_setxattr(idmap, dentry, inode, name, value,
 				       size, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!error) {
 			fsnotify_xattr(dentry);
 			security_inode_post_setxattr(dentry, name, value,
 						     size, flags);
 		}
-<<<<<<< HEAD
-	} else if (issec) {
-		const char *suffix = name + XATTR_SECURITY_PREFIX_LEN;
-		error = security_inode_setsecurity(inode, suffix, value,
-						   size, flags);
-		if (!error)
-			fsnotify_xattr(dentry);
-=======
 	} else {
 		if (unlikely(is_bad_inode(inode)))
 			return -EIO;
@@ -319,18 +253,11 @@ int __vfs_setxattr_noperm(struct mnt_idmap *idmap,
 			if (!error)
 				fsnotify_xattr(dentry);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return error;
 }
 
-<<<<<<< HEAD
-
-int
-vfs_setxattr(struct dentry *dentry, const char *name, const void *value,
-		size_t size, int flags)
-=======
 /**
  * __vfs_setxattr_locked - set an extended attribute while holding the inode
  * lock
@@ -348,26 +275,10 @@ int
 __vfs_setxattr_locked(struct mnt_idmap *idmap, struct dentry *dentry,
 		      const char *name, const void *value, size_t size,
 		      int flags, struct inode **delegated_inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode = dentry->d_inode;
 	int error;
 
-<<<<<<< HEAD
-	error = xattr_permission(inode, name, MAY_WRITE);
-	if (error)
-		return error;
-
-	mutex_lock(&inode->i_mutex);
-	error = security_inode_setxattr(dentry, name, value, size, flags);
-	if (error)
-		goto out;
-
-	error = __vfs_setxattr_noperm(dentry, name, value, size, flags);
-
-out:
-	mutex_unlock(&inode->i_mutex);
-=======
 	error = xattr_permission(idmap, inode, name, MAY_WRITE);
 	if (error)
 		return error;
@@ -419,32 +330,18 @@ retry_deleg:
 	if (value != orig_value)
 		kfree(value);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 EXPORT_SYMBOL_GPL(vfs_setxattr);
 
-<<<<<<< HEAD
-ssize_t
-xattr_getsecurity(struct inode *inode, const char *name, void *value,
-			size_t size)
-=======
 static ssize_t
 xattr_getsecurity(struct mnt_idmap *idmap, struct inode *inode,
 		  const char *name, void *value, size_t size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *buffer = NULL;
 	ssize_t len;
 
 	if (!value || !size) {
-<<<<<<< HEAD
-		len = security_inode_getsecurity(inode, name, &buffer, false);
-		goto out_noalloc;
-	}
-
-	len = security_inode_getsecurity(inode, name, &buffer, true);
-=======
 		len = security_inode_getsecurity(idmap, inode, name,
 						 &buffer, false);
 		goto out_noalloc;
@@ -452,7 +349,6 @@ xattr_getsecurity(struct mnt_idmap *idmap, struct inode *inode,
 
 	len = security_inode_getsecurity(idmap, inode, name, &buffer,
 					 true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len < 0)
 		return len;
 	if (size < len) {
@@ -461,33 +357,15 @@ xattr_getsecurity(struct mnt_idmap *idmap, struct inode *inode,
 	}
 	memcpy(value, buffer, len);
 out:
-<<<<<<< HEAD
-	security_release_secctx(buffer, len);
-out_noalloc:
-	return len;
-}
-EXPORT_SYMBOL_GPL(xattr_getsecurity);
-=======
 	kfree(buffer);
 out_noalloc:
 	return len;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * vfs_getxattr_alloc - allocate memory, if necessary, before calling getxattr
  *
  * Allocate memory, if not already allocated, or re-allocate correct size,
-<<<<<<< HEAD
- * before retrieving the extended attribute.
- *
- * Returns the result of alloc, if failed, or the getxattr operation.
- */
-ssize_t
-vfs_getxattr_alloc(struct dentry *dentry, const char *name, char **xattr_value,
-		   size_t xattr_size, gfp_t flags)
-{
-=======
  * before retrieving the extended attribute.  The xattr value buffer should
  * always be freed by the caller, even on error.
  *
@@ -499,21 +377,10 @@ vfs_getxattr_alloc(struct mnt_idmap *idmap, struct dentry *dentry,
 		   gfp_t flags)
 {
 	const struct xattr_handler *handler;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *inode = dentry->d_inode;
 	char *value = *xattr_value;
 	int error;
 
-<<<<<<< HEAD
-	error = xattr_permission(inode, name, MAY_READ);
-	if (error)
-		return error;
-
-	if (!inode->i_op->getxattr)
-		return -EOPNOTSUPP;
-
-	error = inode->i_op->getxattr(dentry, name, NULL, 0);
-=======
 	error = xattr_permission(idmap, inode, name, MAY_READ);
 	if (error)
 		return error;
@@ -524,7 +391,6 @@ vfs_getxattr_alloc(struct mnt_idmap *idmap, struct dentry *dentry,
 	if (!handler->get)
 		return -EOPNOTSUPP;
 	error = handler->get(handler, dentry, inode, name, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0)
 		return error;
 
@@ -535,38 +401,11 @@ vfs_getxattr_alloc(struct mnt_idmap *idmap, struct dentry *dentry,
 		memset(value, 0, error + 1);
 	}
 
-<<<<<<< HEAD
-	error = inode->i_op->getxattr(dentry, name, value, error);
-=======
 	error = handler->get(handler, dentry, inode, name, value, error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*xattr_value = value;
 	return error;
 }
 
-<<<<<<< HEAD
-/* Compare an extended attribute value with the given value */
-int vfs_xattr_cmp(struct dentry *dentry, const char *xattr_name,
-		  const char *value, size_t size, gfp_t flags)
-{
-	char *xattr_value = NULL;
-	int rc;
-
-	rc = vfs_getxattr_alloc(dentry, xattr_name, &xattr_value, 0, flags);
-	if (rc < 0)
-		return rc;
-
-	if ((rc != size) || (memcmp(xattr_value, value, rc) != 0))
-		rc = -EINVAL;
-	else
-		rc = 0;
-	kfree(xattr_value);
-	return rc;
-}
-
-ssize_t
-vfs_getxattr(struct dentry *dentry, const char *name, void *value, size_t size)
-=======
 ssize_t
 __vfs_getxattr(struct dentry *dentry, struct inode *inode, const char *name,
 	       void *value, size_t size)
@@ -588,16 +427,11 @@ EXPORT_SYMBOL(__vfs_getxattr);
 ssize_t
 vfs_getxattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	     const char *name, void *value, size_t size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode = dentry->d_inode;
 	int error;
 
-<<<<<<< HEAD
-	error = xattr_permission(inode, name, MAY_READ);
-=======
 	error = xattr_permission(idmap, inode, name, MAY_READ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
@@ -608,12 +442,8 @@ vfs_getxattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	if (!strncmp(name, XATTR_SECURITY_PREFIX,
 				XATTR_SECURITY_PREFIX_LEN)) {
 		const char *suffix = name + XATTR_SECURITY_PREFIX_LEN;
-<<<<<<< HEAD
-		int ret = xattr_getsecurity(inode, suffix, value, size);
-=======
 		int ret = xattr_getsecurity(idmap, inode, suffix, value,
 					    size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Only overwrite the return value if a security module
 		 * is actually active.
@@ -623,30 +453,6 @@ vfs_getxattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		return ret;
 	}
 nolsm:
-<<<<<<< HEAD
-	if (inode->i_op->getxattr)
-		error = inode->i_op->getxattr(dentry, name, value, size);
-	else
-		error = -EOPNOTSUPP;
-
-	return error;
-}
-EXPORT_SYMBOL_GPL(vfs_getxattr);
-
-ssize_t
-vfs_listxattr(struct dentry *d, char *list, size_t size)
-{
-	ssize_t error;
-
-	error = security_inode_listxattr(d);
-	if (error)
-		return error;
-	error = -EOPNOTSUPP;
-	if (d->d_inode->i_op->listxattr) {
-		error = d->d_inode->i_op->listxattr(d, list, size);
-	} else {
-		error = security_inode_listsecurity(d->d_inode, list, size);
-=======
 	return __vfs_getxattr(dentry, inode, name, value, size);
 }
 EXPORT_SYMBOL_GPL(vfs_getxattr);
@@ -687,7 +493,6 @@ vfs_listxattr(struct dentry *dentry, char *list, size_t size)
 		error = inode->i_op->listxattr(dentry, list, size);
 	} else {
 		error = security_inode_listsecurity(inode, list, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (size && error > size)
 			error = -ERANGE;
 	}
@@ -696,9 +501,6 @@ vfs_listxattr(struct dentry *dentry, char *list, size_t size)
 EXPORT_SYMBOL_GPL(vfs_listxattr);
 
 int
-<<<<<<< HEAD
-vfs_removexattr(struct dentry *dentry, const char *name)
-=======
 __vfs_removexattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		  const char *name)
 {
@@ -732,32 +534,10 @@ int
 __vfs_removexattr_locked(struct mnt_idmap *idmap,
 			 struct dentry *dentry, const char *name,
 			 struct inode **delegated_inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode = dentry->d_inode;
 	int error;
 
-<<<<<<< HEAD
-	if (!inode->i_op->removexattr)
-		return -EOPNOTSUPP;
-
-	error = xattr_permission(inode, name, MAY_WRITE);
-	if (error)
-		return error;
-
-	error = security_inode_removexattr(dentry, name);
-	if (error)
-		return error;
-
-	mutex_lock(&inode->i_mutex);
-	error = inode->i_op->removexattr(dentry, name);
-	mutex_unlock(&inode->i_mutex);
-
-	if (!error) {
-		fsnotify_xattr(dentry);
-		evm_inode_post_removexattr(dentry, name);
-	}
-=======
 	error = xattr_permission(idmap, inode, name, MAY_WRITE);
 	if (error)
 		return error;
@@ -802,57 +582,10 @@ retry_deleg:
 			goto retry_deleg;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 EXPORT_SYMBOL_GPL(vfs_removexattr);
 
-<<<<<<< HEAD
-
-/*
- * Extended attribute SET operations
- */
-static long
-setxattr(struct dentry *d, const char __user *name, const void __user *value,
-	 size_t size, int flags)
-{
-	int error;
-	void *kvalue = NULL;
-	void *vvalue = NULL;	/* If non-NULL, we used vmalloc() */
-	char kname[XATTR_NAME_MAX + 1];
-
-	if (flags & ~(XATTR_CREATE|XATTR_REPLACE))
-		return -EINVAL;
-
-	error = strncpy_from_user(kname, name, sizeof(kname));
-	if (error == 0 || error == sizeof(kname))
-		error = -ERANGE;
-	if (error < 0)
-		return error;
-
-	if (size) {
-		if (size > XATTR_SIZE_MAX)
-			return -E2BIG;
-		kvalue = kmalloc(size, GFP_KERNEL | __GFP_NOWARN);
-		if (!kvalue) {
-			vvalue = vmalloc(size);
-			if (!vvalue)
-				return -ENOMEM;
-			kvalue = vvalue;
-		}
-		if (copy_from_user(kvalue, value, size)) {
-			error = -EFAULT;
-			goto out;
-		}
-	}
-
-	error = vfs_setxattr(d, kname, kvalue, size, flags);
-out:
-	if (vvalue)
-		vfree(vvalue);
-	else
-		kfree(kvalue);
-=======
 /*
  * Extended attribute SET operations
  */
@@ -944,7 +677,6 @@ retry:
 		lookup_flags |= LOOKUP_REVAL;
 		goto retry;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -952,68 +684,19 @@ SYSCALL_DEFINE5(setxattr, const char __user *, pathname,
 		const char __user *, name, const void __user *, value,
 		size_t, size, int, flags)
 {
-<<<<<<< HEAD
-	struct path path;
-	int error;
-
-	error = user_path(pathname, &path);
-	if (error)
-		return error;
-	error = mnt_want_write(path.mnt);
-	if (!error) {
-		error = setxattr(path.dentry, name, value, size, flags);
-		mnt_drop_write(path.mnt);
-	}
-	path_put(&path);
-	return error;
-=======
 	return path_setxattr(pathname, name, value, size, flags, LOOKUP_FOLLOW);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE5(lsetxattr, const char __user *, pathname,
 		const char __user *, name, const void __user *, value,
 		size_t, size, int, flags)
 {
-<<<<<<< HEAD
-	struct path path;
-	int error;
-
-	error = user_lpath(pathname, &path);
-	if (error)
-		return error;
-	error = mnt_want_write(path.mnt);
-	if (!error) {
-		error = setxattr(path.dentry, name, value, size, flags);
-		mnt_drop_write(path.mnt);
-	}
-	path_put(&path);
-	return error;
-=======
 	return path_setxattr(pathname, name, value, size, flags, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE5(fsetxattr, int, fd, const char __user *, name,
 		const void __user *,value, size_t, size, int, flags)
 {
-<<<<<<< HEAD
-	struct file *f;
-	struct dentry *dentry;
-	int error = -EBADF;
-
-	f = fget(fd);
-	if (!f)
-		return error;
-	dentry = f->f_path.dentry;
-	audit_inode(NULL, dentry);
-	error = mnt_want_write_file(f);
-	if (!error) {
-		error = setxattr(dentry, name, value, size, flags);
-		mnt_drop_write_file(f);
-	}
-	fput(f);
-=======
 	struct fd f = fdget(fd);
 	int error = -EBADF;
 
@@ -1028,42 +711,12 @@ SYSCALL_DEFINE5(fsetxattr, int, fd, const char __user *, name,
 		mnt_drop_write_file(f.file);
 	}
 	fdput(f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 /*
  * Extended attribute GET operations
  */
-<<<<<<< HEAD
-static ssize_t
-getxattr(struct dentry *d, const char __user *name, void __user *value,
-	 size_t size)
-{
-	ssize_t error;
-	void *kvalue = NULL;
-	char kname[XATTR_NAME_MAX + 1];
-
-	error = strncpy_from_user(kname, name, sizeof(kname));
-	if (error == 0 || error == sizeof(kname))
-		error = -ERANGE;
-	if (error < 0)
-		return error;
-
-	if (size) {
-		if (size > XATTR_SIZE_MAX)
-			size = XATTR_SIZE_MAX;
-		kvalue = kzalloc(size, GFP_KERNEL);
-		if (!kvalue)
-			return -ENOMEM;
-	}
-
-	error = vfs_getxattr(d, kname, kvalue, size);
-	if (error > 0) {
-		if (size && copy_to_user(value, kvalue, error))
-			error = -EFAULT;
-	} else if (error == -ERANGE && size >= XATTR_SIZE_MAX) {
-=======
 ssize_t
 do_getxattr(struct mnt_idmap *idmap, struct dentry *d,
 	struct xattr_ctx *ctx)
@@ -1087,14 +740,10 @@ do_getxattr(struct mnt_idmap *idmap, struct dentry *d,
 		if (ctx->size && copy_to_user(ctx->value, ctx->kvalue, error))
 			error = -EFAULT;
 	} else if (error == -ERANGE && ctx->size >= XATTR_SIZE_MAX) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* The file system tried to returned a value bigger
 		   than XATTR_SIZE_MAX bytes. Not possible. */
 		error = -E2BIG;
 	}
-<<<<<<< HEAD
-	kfree(kvalue);
-=======
 
 	return error;
 }
@@ -1141,60 +790,24 @@ retry:
 		lookup_flags |= LOOKUP_REVAL;
 		goto retry;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 SYSCALL_DEFINE4(getxattr, const char __user *, pathname,
 		const char __user *, name, void __user *, value, size_t, size)
 {
-<<<<<<< HEAD
-	struct path path;
-	ssize_t error;
-
-	error = user_path(pathname, &path);
-	if (error)
-		return error;
-	error = getxattr(path.dentry, name, value, size);
-	path_put(&path);
-	return error;
-=======
 	return path_getxattr(pathname, name, value, size, LOOKUP_FOLLOW);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE4(lgetxattr, const char __user *, pathname,
 		const char __user *, name, void __user *, value, size_t, size)
 {
-<<<<<<< HEAD
-	struct path path;
-	ssize_t error;
-
-	error = user_lpath(pathname, &path);
-	if (error)
-		return error;
-	error = getxattr(path.dentry, name, value, size);
-	path_put(&path);
-	return error;
-=======
 	return path_getxattr(pathname, name, value, size, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE4(fgetxattr, int, fd, const char __user *, name,
 		void __user *, value, size_t, size)
 {
-<<<<<<< HEAD
-	struct file *f;
-	ssize_t error = -EBADF;
-
-	f = fget(fd);
-	if (!f)
-		return error;
-	audit_inode(NULL, f->f_path.dentry);
-	error = getxattr(f->f_path.dentry, name, value, size);
-	fput(f);
-=======
 	struct fd f = fdget(fd);
 	ssize_t error = -EBADF;
 
@@ -1204,7 +817,6 @@ SYSCALL_DEFINE4(fgetxattr, int, fd, const char __user *, name,
 	error = getxattr(file_mnt_idmap(f.file), f.file->f_path.dentry,
 			 name, value, size);
 	fdput(f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1216,27 +828,13 @@ listxattr(struct dentry *d, char __user *list, size_t size)
 {
 	ssize_t error;
 	char *klist = NULL;
-<<<<<<< HEAD
-	char *vlist = NULL;	/* If non-NULL, we used vmalloc() */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (size) {
 		if (size > XATTR_LIST_MAX)
 			size = XATTR_LIST_MAX;
-<<<<<<< HEAD
-		klist = kmalloc(size, __GFP_NOWARN | GFP_KERNEL);
-		if (!klist) {
-			vlist = vmalloc(size);
-			if (!vlist)
-				return -ENOMEM;
-			klist = vlist;
-		}
-=======
 		klist = kvmalloc(size, GFP_KERNEL);
 		if (!klist)
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = vfs_listxattr(d, klist, size);
@@ -1248,12 +846,6 @@ listxattr(struct dentry *d, char __user *list, size_t size)
 		   than XATTR_LIST_MAX bytes. Not possible. */
 		error = -E2BIG;
 	}
-<<<<<<< HEAD
-	if (vlist)
-		vfree(vlist);
-	else
-		kfree(klist);
-=======
 
 	kvfree(klist);
 
@@ -1275,59 +867,23 @@ retry:
 		lookup_flags |= LOOKUP_REVAL;
 		goto retry;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 SYSCALL_DEFINE3(listxattr, const char __user *, pathname, char __user *, list,
 		size_t, size)
 {
-<<<<<<< HEAD
-	struct path path;
-	ssize_t error;
-
-	error = user_path(pathname, &path);
-	if (error)
-		return error;
-	error = listxattr(path.dentry, list, size);
-	path_put(&path);
-	return error;
-=======
 	return path_listxattr(pathname, list, size, LOOKUP_FOLLOW);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE3(llistxattr, const char __user *, pathname, char __user *, list,
 		size_t, size)
 {
-<<<<<<< HEAD
-	struct path path;
-	ssize_t error;
-
-	error = user_lpath(pathname, &path);
-	if (error)
-		return error;
-	error = listxattr(path.dentry, list, size);
-	path_put(&path);
-	return error;
-=======
 	return path_listxattr(pathname, list, size, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE3(flistxattr, int, fd, char __user *, list, size_t, size)
 {
-<<<<<<< HEAD
-	struct file *f;
-	ssize_t error = -EBADF;
-
-	f = fget(fd);
-	if (!f)
-		return error;
-	audit_inode(NULL, f->f_path.dentry);
-	error = listxattr(f->f_path.dentry, list, size);
-	fput(f);
-=======
 	struct fd f = fdget(fd);
 	ssize_t error = -EBADF;
 
@@ -1336,7 +892,6 @@ SYSCALL_DEFINE3(flistxattr, int, fd, char __user *, list, size_t, size)
 	audit_file(f.file);
 	error = listxattr(f.file->f_path.dentry, list, size);
 	fdput(f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1344,12 +899,8 @@ SYSCALL_DEFINE3(flistxattr, int, fd, char __user *, list, size_t, size)
  * Extended attribute REMOVE operations
  */
 static long
-<<<<<<< HEAD
-removexattr(struct dentry *d, const char __user *name)
-=======
 removexattr(struct mnt_idmap *idmap, struct dentry *d,
 	    const char __user *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 	char kname[XATTR_NAME_MAX + 1];
@@ -1360,9 +911,6 @@ removexattr(struct mnt_idmap *idmap, struct dentry *d,
 	if (error < 0)
 		return error;
 
-<<<<<<< HEAD
-	return vfs_removexattr(d, kname);
-=======
 	if (is_posix_acl_xattr(kname))
 		return vfs_remove_acl(idmap, d, kname);
 
@@ -1389,138 +937,22 @@ retry:
 		goto retry;
 	}
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE2(removexattr, const char __user *, pathname,
 		const char __user *, name)
 {
-<<<<<<< HEAD
-	struct path path;
-	int error;
-
-	error = user_path(pathname, &path);
-	if (error)
-		return error;
-	error = mnt_want_write(path.mnt);
-	if (!error) {
-		error = removexattr(path.dentry, name);
-		mnt_drop_write(path.mnt);
-	}
-	path_put(&path);
-	return error;
-=======
 	return path_removexattr(pathname, name, LOOKUP_FOLLOW);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE2(lremovexattr, const char __user *, pathname,
 		const char __user *, name)
 {
-<<<<<<< HEAD
-	struct path path;
-	int error;
-
-	error = user_lpath(pathname, &path);
-	if (error)
-		return error;
-	error = mnt_want_write(path.mnt);
-	if (!error) {
-		error = removexattr(path.dentry, name);
-		mnt_drop_write(path.mnt);
-	}
-	path_put(&path);
-	return error;
-=======
 	return path_removexattr(pathname, name, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE2(fremovexattr, int, fd, const char __user *, name)
 {
-<<<<<<< HEAD
-	struct file *f;
-	struct dentry *dentry;
-	int error = -EBADF;
-
-	f = fget(fd);
-	if (!f)
-		return error;
-	dentry = f->f_path.dentry;
-	audit_inode(NULL, dentry);
-	error = mnt_want_write_file(f);
-	if (!error) {
-		error = removexattr(dentry, name);
-		mnt_drop_write_file(f);
-	}
-	fput(f);
-	return error;
-}
-
-
-static const char *
-strcmp_prefix(const char *a, const char *a_prefix)
-{
-	while (*a_prefix && *a == *a_prefix) {
-		a++;
-		a_prefix++;
-	}
-	return *a_prefix ? NULL : a;
-}
-
-/*
- * In order to implement different sets of xattr operations for each xattr
- * prefix with the generic xattr API, a filesystem should create a
- * null-terminated array of struct xattr_handler (one for each prefix) and
- * hang a pointer to it off of the s_xattr field of the superblock.
- *
- * The generic_fooxattr() functions will use this list to dispatch xattr
- * operations to the correct xattr_handler.
- */
-#define for_each_xattr_handler(handlers, handler)		\
-		for ((handler) = *(handlers)++;			\
-			(handler) != NULL;			\
-			(handler) = *(handlers)++)
-
-/*
- * Find the xattr_handler with the matching prefix.
- */
-static const struct xattr_handler *
-xattr_resolve_name(const struct xattr_handler **handlers, const char **name)
-{
-	const struct xattr_handler *handler;
-
-	if (!*name)
-		return NULL;
-
-	for_each_xattr_handler(handlers, handler) {
-		const char *n = strcmp_prefix(*name, handler->prefix);
-		if (n) {
-			*name = n;
-			break;
-		}
-	}
-	return handler;
-}
-
-/*
- * Find the handler for the prefix and dispatch its get() operation.
- */
-ssize_t
-generic_getxattr(struct dentry *dentry, const char *name, void *buffer, size_t size)
-{
-	const struct xattr_handler *handler;
-
-	handler = xattr_resolve_name(dentry->d_sb->s_xattr, &name);
-	if (!handler)
-		return -EOPNOTSUPP;
-	return handler->get(dentry, name, buffer, size, handler->flags);
-}
-
-/*
- * Combine the results of the list() operation from every xattr_handler in the
- * list.
-=======
 	struct fd f = fdget(fd);
 	int error = -EBADF;
 
@@ -1562,73 +994,10 @@ int xattr_list_one(char **buffer, ssize_t *remaining_size, const char *name)
  * xattr_handler stack.
  *
  * Note that this will not include the entries for POSIX ACLs.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 ssize_t
 generic_listxattr(struct dentry *dentry, char *buffer, size_t buffer_size)
 {
-<<<<<<< HEAD
-	const struct xattr_handler *handler, **handlers = dentry->d_sb->s_xattr;
-	unsigned int size = 0;
-
-	if (!buffer) {
-		for_each_xattr_handler(handlers, handler) {
-			size += handler->list(dentry, NULL, 0, NULL, 0,
-					      handler->flags);
-		}
-	} else {
-		char *buf = buffer;
-
-		for_each_xattr_handler(handlers, handler) {
-			size = handler->list(dentry, buf, buffer_size,
-					     NULL, 0, handler->flags);
-			if (size > buffer_size)
-				return -ERANGE;
-			buf += size;
-			buffer_size -= size;
-		}
-		size = buf - buffer;
-	}
-	return size;
-}
-
-/*
- * Find the handler for the prefix and dispatch its set() operation.
- */
-int
-generic_setxattr(struct dentry *dentry, const char *name, const void *value, size_t size, int flags)
-{
-	const struct xattr_handler *handler;
-
-	if (size == 0)
-		value = "";  /* empty EA, do not remove */
-	handler = xattr_resolve_name(dentry->d_sb->s_xattr, &name);
-	if (!handler)
-		return -EOPNOTSUPP;
-	return handler->set(dentry, name, value, size, flags, handler->flags);
-}
-
-/*
- * Find the handler for the prefix and dispatch its set() operation to remove
- * any associated extended attribute.
- */
-int
-generic_removexattr(struct dentry *dentry, const char *name)
-{
-	const struct xattr_handler *handler;
-
-	handler = xattr_resolve_name(dentry->d_sb->s_xattr, &name);
-	if (!handler)
-		return -EOPNOTSUPP;
-	return handler->set(dentry, name, NULL, 0,
-			    XATTR_REPLACE, handler->flags);
-}
-
-EXPORT_SYMBOL(generic_getxattr);
-EXPORT_SYMBOL(generic_listxattr);
-EXPORT_SYMBOL(generic_setxattr);
-EXPORT_SYMBOL(generic_removexattr);
-=======
 	const struct xattr_handler *handler, * const *handlers = dentry->d_sb->s_xattr;
 	ssize_t remaining_size = buffer_size;
 	int err = 0;
@@ -2039,4 +1408,3 @@ void simple_xattrs_free(struct simple_xattrs *xattrs, size_t *freed_space)
 		rbp = rbp_next;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

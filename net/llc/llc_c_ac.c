@@ -372,10 +372,7 @@ int llc_conn_ac_send_i_cmd_p_set_1(struct sock *sk, struct sk_buff *skb)
 	llc_pdu_init_as_i_cmd(skb, 1, llc->vS, llc->vR);
 	rc = llc_mac_hdr_init(skb, llc->dev->dev_addr, llc->daddr.mac);
 	if (likely(!rc)) {
-<<<<<<< HEAD
-=======
 		skb_get(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		llc_conn_send_pdu(sk, skb);
 		llc_conn_ac_inc_vs_by_1(sk, skb);
 	}
@@ -393,10 +390,7 @@ static int llc_conn_ac_send_i_cmd_p_set_0(struct sock *sk, struct sk_buff *skb)
 	llc_pdu_init_as_i_cmd(skb, 0, llc->vS, llc->vR);
 	rc = llc_mac_hdr_init(skb, llc->dev->dev_addr, llc->daddr.mac);
 	if (likely(!rc)) {
-<<<<<<< HEAD
-=======
 		skb_get(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		llc_conn_send_pdu(sk, skb);
 		llc_conn_ac_inc_vs_by_1(sk, skb);
 	}
@@ -414,10 +408,7 @@ int llc_conn_ac_send_i_xxx_x_set_0(struct sock *sk, struct sk_buff *skb)
 	llc_pdu_init_as_i_cmd(skb, 0, llc->vS, llc->vR);
 	rc = llc_mac_hdr_init(skb, llc->dev->dev_addr, llc->daddr.mac);
 	if (likely(!rc)) {
-<<<<<<< HEAD
-=======
 		skb_get(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		llc_conn_send_pdu(sk, skb);
 		llc_conn_ac_inc_vs_by_1(sk, skb);
 	}
@@ -790,11 +781,7 @@ int llc_conn_ac_send_sabme_cmd_p_set_x(struct sock *sk, struct sk_buff *skb)
 
 	if (nskb) {
 		struct llc_sap *sap = llc->sap;
-<<<<<<< HEAD
-		u8 *dmac = llc->daddr.mac;
-=======
 		const u8 *dmac = llc->daddr.mac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (llc->dev->flags & IFF_LOOPBACK)
 			dmac = llc->dev->dev_addr;
@@ -932,10 +919,7 @@ static int llc_conn_ac_send_i_rsp_f_set_ackpf(struct sock *sk,
 	llc_pdu_init_as_i_cmd(skb, llc->ack_pf, llc->vS, llc->vR);
 	rc = llc_mac_hdr_init(skb, llc->dev->dev_addr, llc->daddr.mac);
 	if (likely(!rc)) {
-<<<<<<< HEAD
-=======
 		skb_get(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		llc_conn_send_pdu(sk, skb);
 		llc_conn_ac_inc_vs_by_1(sk, skb);
 	}
@@ -955,16 +939,6 @@ static int llc_conn_ac_send_i_rsp_f_set_ackpf(struct sock *sk,
 int llc_conn_ac_send_i_as_ack(struct sock *sk, struct sk_buff *skb)
 {
 	struct llc_sock *llc = llc_sk(sk);
-<<<<<<< HEAD
-
-	if (llc->ack_must_be_send) {
-		llc_conn_ac_send_i_rsp_f_set_ackpf(sk, skb);
-		llc->ack_must_be_send = 0 ;
-		llc->ack_pf = 0;
-	} else
-		llc_conn_ac_send_i_cmd_p_set_0(sk, skb);
-	return 0;
-=======
 	int ret;
 
 	if (llc->ack_must_be_send) {
@@ -976,7 +950,6 @@ int llc_conn_ac_send_i_as_ack(struct sock *sk, struct sk_buff *skb)
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1130,18 +1103,7 @@ int llc_conn_ac_inc_tx_win_size(struct sock *sk, struct sk_buff *skb)
 
 int llc_conn_ac_stop_all_timers(struct sock *sk, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	struct llc_sock *llc = llc_sk(sk);
-
-	del_timer(&llc->pf_cycle_timer.timer);
-	del_timer(&llc->ack_timer.timer);
-	del_timer(&llc->rej_sent_timer.timer);
-	del_timer(&llc->busy_state_timer.timer);
-	llc->ack_must_be_send = 0;
-	llc->ack_pf = 0;
-=======
 	llc_sk_stop_all_timers(sk, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1356,14 +1318,8 @@ static int llc_conn_ac_inc_vs_by_1(struct sock *sk, struct sk_buff *skb)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void llc_conn_tmr_common_cb(unsigned long timeout_data, u8 type)
-{
-	struct sock *sk = (struct sock *)timeout_data;
-=======
 static void llc_conn_tmr_common_cb(struct sock *sk, u8 type)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb = alloc_skb(0, GFP_ATOMIC);
 
 	bh_lock_sock(sk);
@@ -1377,26 +1333,6 @@ static void llc_conn_tmr_common_cb(struct sock *sk, u8 type)
 	bh_unlock_sock(sk);
 }
 
-<<<<<<< HEAD
-void llc_conn_pf_cycle_tmr_cb(unsigned long timeout_data)
-{
-	llc_conn_tmr_common_cb(timeout_data, LLC_CONN_EV_TYPE_P_TMR);
-}
-
-void llc_conn_busy_tmr_cb(unsigned long timeout_data)
-{
-	llc_conn_tmr_common_cb(timeout_data, LLC_CONN_EV_TYPE_BUSY_TMR);
-}
-
-void llc_conn_ack_tmr_cb(unsigned long timeout_data)
-{
-	llc_conn_tmr_common_cb(timeout_data, LLC_CONN_EV_TYPE_ACK_TMR);
-}
-
-void llc_conn_rej_tmr_cb(unsigned long timeout_data)
-{
-	llc_conn_tmr_common_cb(timeout_data, LLC_CONN_EV_TYPE_REJ_TMR);
-=======
 void llc_conn_pf_cycle_tmr_cb(struct timer_list *t)
 {
 	struct llc_sock *llc = from_timer(llc, t, pf_cycle_timer.timer);
@@ -1423,7 +1359,6 @@ void llc_conn_rej_tmr_cb(struct timer_list *t)
 	struct llc_sock *llc = from_timer(llc, t, rej_sent_timer.timer);
 
 	llc_conn_tmr_common_cb(&llc->sk, LLC_CONN_EV_TYPE_REJ_TMR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int llc_conn_ac_rst_vs(struct sock *sk, struct sk_buff *skb)

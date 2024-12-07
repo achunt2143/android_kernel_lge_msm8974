@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-#ifndef __CGROUP_H__
-#define __CGROUP_H__
-
-struct option;
-
-struct cgroup_sel {
-	char *name;
-	int fd;
-	int refcnt;
-};
-
-
-extern int nr_cgroups; /* number of explicit cgroups defined */
-extern void close_cgroup(struct cgroup_sel *cgrp);
-extern int parse_cgroups(const struct option *opt, const char *str, int unset);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __CGROUP_H__
 #define __CGROUP_H__
@@ -72,6 +55,5 @@ static inline int read_cgroup_id(struct cgroup *cgrp __maybe_unused)
 void read_all_cgroups(struct rb_root *root);
 
 int cgroup_is_v2(const char *subsys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __CGROUP_H__ */

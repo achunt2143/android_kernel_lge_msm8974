@@ -150,14 +150,10 @@
 
 /* Structure of the hardware registers */
 struct mpc52xx_psc {
-<<<<<<< HEAD
-	u8		mode;		/* PSC + 0x00 */
-=======
 	union {
 		u8	mode;		/* PSC + 0x00 */
 		u8	mr2;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8		reserved0[3];
 	union {				/* PSC + 0x04 */
 		u16	status;
@@ -265,11 +261,6 @@ struct mpc52xx_psc_fifo {
 #define MPC512x_PSC_FIFO_FULL		0x2
 #define MPC512x_PSC_FIFO_ALARM		0x4
 #define MPC512x_PSC_FIFO_URERR		0x8
-<<<<<<< HEAD
-#define MPC512x_PSC_FIFO_ORERR		0x01
-#define MPC512x_PSC_FIFO_MEMERROR	0x02
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mpc512x_psc_fifo {
 	u32		reserved1[10];
@@ -309,8 +300,6 @@ struct mpc512x_psc_fifo {
 #define rxdata_32 rxdata.rxdata_32
 };
 
-<<<<<<< HEAD
-=======
 struct mpc5125_psc {
 	u8		mr1;			/* PSC + 0x00 */
 	u8		reserved0[3];
@@ -360,5 +349,4 @@ struct mpc5125_psc {
 	u8		reserved15[4];	/* make eq. sizeof(mpc52xx_psc) */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif  /* __ASM_MPC52xx_PSC_H__ */

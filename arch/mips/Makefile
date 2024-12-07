@@ -8,13 +8,6 @@
 # Copyright (C) 2002, 2003, 2004  Maciej W. Rozycki
 #
 # This file is included by the global makefile so that you can add your own
-<<<<<<< HEAD
-# architecture-specific flags and dependencies. Remember to do have actions
-# for "archclean" cleaning up for this architecture.
-#
-
-KBUILD_DEFCONFIG := ip22_defconfig
-=======
 # architecture-specific flags and dependencies.
 #
 
@@ -27,7 +20,6 @@ endif
 
 KBUILD_DEFCONFIG := 32r2el_defconfig
 KBUILD_DTBS      := dtbs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Select the object file format to substitute into the linker script.
@@ -57,11 +49,7 @@ tool-archpref		= $(64bit-tool-archpref)
 UTS_MACHINE		:= mips64
 endif
 
-<<<<<<< HEAD
-ifneq ($(SUBARCH),$(ARCH))
-=======
 ifdef cross_compiling
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   ifeq ($(CROSS_COMPILE),)
     CROSS_COMPILE := $(call cc-cross-prefix, $(tool-archpref)-linux-  $(tool-archpref)-linux-gnu-  $(tool-archpref)-unknown-linux-gnu-)
   endif
@@ -107,38 +95,11 @@ all-$(CONFIG_SYS_SUPPORTS_ZBOOT)+= vmlinuz
 # crossformat linking we rely on the elf2ecoff tool for format conversion.
 #
 cflags-y			+= -G 0 -mno-abicalls -fno-pic -pipe
-<<<<<<< HEAD
-cflags-y			+= -msoft-float
-=======
 cflags-y			+= -msoft-float -Wa,-msoft-float
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 LDFLAGS_vmlinux			+= -G 0 -static -n -nostdlib
 KBUILD_AFLAGS_MODULE		+= -mlong-calls
 KBUILD_CFLAGS_MODULE		+= -mlong-calls
 
-<<<<<<< HEAD
-cflags-y += -ffreestanding
-
-#
-# We explicitly add the endianness specifier if needed, this allows
-# to compile kernels with a toolchain for the other endianness. We
-# carefully avoid to add it redundantly because gcc 3.3/3.4 complains
-# when fed the toolchain default!
-#
-# Certain gcc versions up to gcc 4.1.1 (probably 4.2-subversion as of
-# 2006-10-10 don't properly change the predefined symbols if -EB / -EL
-# are used, so we kludge that here.  A bug has been filed at
-# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29413.
-#
-undef-all += -UMIPSEB -U_MIPSEB -U__MIPSEB -U__MIPSEB__
-undef-all += -UMIPSEL -U_MIPSEL -U__MIPSEL -U__MIPSEL__
-predef-be += -DMIPSEB -D_MIPSEB -D__MIPSEB -D__MIPSEB__
-predef-le += -DMIPSEL -D_MIPSEL -D__MIPSEL -D__MIPSEL__
-cflags-$(CONFIG_CPU_BIG_ENDIAN)		+= $(shell $(CC) -dumpmachine |grep -q 'mips.*el-.*' && echo -EB $(undef-all) $(predef-be))
-cflags-$(CONFIG_CPU_LITTLE_ENDIAN)	+= $(shell $(CC) -dumpmachine |grep -q 'mips.*el-.*' || echo -EL $(undef-all) $(predef-le))
-
-cflags-$(CONFIG_CPU_HAS_SMARTMIPS)	+= $(call cc-option,-msmartmips)
-=======
 ifeq ($(CONFIG_RELOCATABLE),y)
 LDFLAGS_vmlinux			+= --emit-relocs
 endif
@@ -147,53 +108,10 @@ cflags-y += -ffreestanding
 
 cflags-$(CONFIG_CPU_BIG_ENDIAN)		+= -EB
 cflags-$(CONFIG_CPU_LITTLE_ENDIAN)	+= -EL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 cflags-$(CONFIG_SB1XXX_CORELIS)	+= $(call cc-option,-mno-sched-prolog) \
 				   -fno-omit-frame-pointer
 
-<<<<<<< HEAD
-#
-# CPU-dependent compiler/assembler options for optimization.
-#
-cflags-$(CONFIG_CPU_R3000)	+= -march=r3000
-cflags-$(CONFIG_CPU_TX39XX)	+= -march=r3900
-cflags-$(CONFIG_CPU_R6000)	+= -march=r6000 -Wa,--trap
-cflags-$(CONFIG_CPU_R4300)	+= -march=r4300 -Wa,--trap
-cflags-$(CONFIG_CPU_VR41XX)	+= -march=r4100 -Wa,--trap
-cflags-$(CONFIG_CPU_R4X00)	+= -march=r4600 -Wa,--trap
-cflags-$(CONFIG_CPU_TX49XX)	+= -march=r4600 -Wa,--trap
-cflags-$(CONFIG_CPU_MIPS32_R1)	+= $(call cc-option,-march=mips32,-mips32 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS32) \
-			-Wa,-mips32 -Wa,--trap
-cflags-$(CONFIG_CPU_MIPS32_R2)	+= $(call cc-option,-march=mips32r2,-mips32r2 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS32) \
-			-Wa,-mips32r2 -Wa,--trap
-cflags-$(CONFIG_CPU_MIPS64_R1)	+= $(call cc-option,-march=mips64,-mips64 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS64) \
-			-Wa,-mips64 -Wa,--trap
-cflags-$(CONFIG_CPU_MIPS64_R2)	+= $(call cc-option,-march=mips64r2,-mips64r2 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS64) \
-			-Wa,-mips64r2 -Wa,--trap
-cflags-$(CONFIG_CPU_R5000)	+= -march=r5000 -Wa,--trap
-cflags-$(CONFIG_CPU_R5432)	+= $(call cc-option,-march=r5400,-march=r5000) \
-			-Wa,--trap
-cflags-$(CONFIG_CPU_R5500)	+= $(call cc-option,-march=r5500,-march=r5000) \
-			-Wa,--trap
-cflags-$(CONFIG_CPU_NEVADA)	+= $(call cc-option,-march=rm5200,-march=r5000) \
-			-Wa,--trap
-cflags-$(CONFIG_CPU_RM7000)	+= $(call cc-option,-march=rm7000,-march=r5000) \
-			-Wa,--trap
-cflags-$(CONFIG_CPU_RM9000)	+= $(call cc-option,-march=rm9000,-march=r5000) \
-			-Wa,--trap
-cflags-$(CONFIG_CPU_SB1)	+= $(call cc-option,-march=sb1,-march=r5000) \
-			-Wa,--trap
-cflags-$(CONFIG_CPU_R8000)	+= -march=r8000 -Wa,--trap
-cflags-$(CONFIG_CPU_R10000)	+= $(call cc-option,-march=r10000,-march=r8000) \
-			-Wa,--trap
-cflags-$(CONFIG_CPU_CAVIUM_OCTEON) += $(call cc-option,-march=octeon) -Wa,--trap
-ifeq (,$(findstring march=octeon, $(cflags-$(CONFIG_CPU_CAVIUM_OCTEON))))
-cflags-$(CONFIG_CPU_CAVIUM_OCTEON) += -Wa,-march=octeon
-endif
-cflags-$(CONFIG_CAVIUM_CN63XXP1) += -Wa,-mfix-cn63xxp1
-cflags-$(CONFIG_CPU_BMIPS)	+= -march=mips32 -Wa,-mips32 -Wa,--trap
-=======
 # Some distribution-specific toolchains might pass the -fstack-check
 # option during the build, which adds a simple stack-probe at the beginning
 # of every function.  This stack probe is to ensure that there is enough
@@ -272,20 +190,10 @@ cflags-$(CONFIG_CPU_LOONGSON2EF) += $(call cc-option,-mno-loongson-mmi)
 cflags-$(CONFIG_CPU_LOONGSON64)	+= \
 			$(call cc-option,-march=loongson3a,-march=mips64r2) -Wa,--trap
 cflags-$(CONFIG_CPU_LOONGSON64) += $(call cc-option,-mno-loongson-mmi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 cflags-$(CONFIG_CPU_R4000_WORKAROUNDS)	+= $(call cc-option,-mfix-r4000,)
 cflags-$(CONFIG_CPU_R4400_WORKAROUNDS)	+= $(call cc-option,-mfix-r4400,)
 cflags-$(CONFIG_CPU_DADDI_WORKAROUNDS)	+= $(call cc-option,-mno-daddi,)
-<<<<<<< HEAD
-
-ifdef CONFIG_CPU_SB1
-ifdef CONFIG_SB1_PASS_1_WORKAROUNDS
-KBUILD_AFLAGS_MODULE += -msb1-pass1-workarounds
-KBUILD_CFLAGS_MODULE += -msb1-pass1-workarounds
-endif
-endif
-=======
 ifdef CONFIG_CPU_LOONGSON2F_WORKAROUNDS
 cflags-$(CONFIG_CPU_NOP_WORKAROUNDS) += -Wa,-mfix-loongson2f-nop
 cflags-$(CONFIG_CPU_JUMP_WORKAROUNDS) += -Wa,-mfix-loongson2f-jump
@@ -349,30 +257,19 @@ toolchain-dsp				:= $(call cc-option-yn,$(mips-cflags) -Wa$(comma)-mdsp)
 cflags-$(toolchain-dsp)			+= -DTOOLCHAIN_SUPPORTS_DSP
 toolchain-ginv				:= $(call cc-option-yn,$(mips-cflags) -Wa$(comma)-mginv)
 cflags-$(toolchain-ginv)		+= -DTOOLCHAIN_SUPPORTS_GINV
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Firmware support
 #
-<<<<<<< HEAD
-libs-$(CONFIG_ARC)		+= arch/mips/fw/arc/
-libs-$(CONFIG_CFE)		+= arch/mips/fw/cfe/
-libs-$(CONFIG_SNIPROM)		+= arch/mips/fw/sni/
-=======
 libs-$(CONFIG_FW_ARC)		+= arch/mips/fw/arc/
 libs-$(CONFIG_FW_CFE)		+= arch/mips/fw/cfe/
 libs-$(CONFIG_FW_SNIPROM)	+= arch/mips/fw/sni/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 libs-y				+= arch/mips/fw/lib/
 
 #
 # Kernel compression
 #
-<<<<<<< HEAD
-ifdef SYS_SUPPORTS_ZBOOT
-=======
 ifdef CONFIG_SYS_SUPPORTS_ZBOOT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 COMPRESSION_FNAME		= vmlinuz
 else
 COMPRESSION_FNAME		= vmlinux
@@ -383,14 +280,11 @@ endif
 #
 include $(srctree)/arch/mips/Kbuild.platforms
 
-<<<<<<< HEAD
-=======
 ifdef CONFIG_PHYSICAL_START
 load-y					= $(CONFIG_PHYSICAL_START)
 endif
 
 entry-y				= $(shell $(objtree)/arch/mips/tools/elf-entry vmlinux)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cflags-y			+= -I$(srctree)/arch/mips/include/asm/mach-generic
 drivers-$(CONFIG_PCI)		+= arch/mips/pci/
 
@@ -403,21 +297,12 @@ drivers-$(CONFIG_PCI)		+= arch/mips/pci/
 ifdef CONFIG_64BIT
   ifndef KBUILD_SYM32
     ifeq ($(shell expr $(load-y) \< 0xffffffff80000000), 0)
-<<<<<<< HEAD
-      KBUILD_SYM32 = y
-    endif
-  endif
-
-  ifeq ($(KBUILD_SYM32)$(call cc-option-yn,-msym32), yy)
-    cflags-y += -msym32 -DKBUILD_64BIT_SYM32
-=======
       KBUILD_SYM32 = $(call cc-option-yn, -msym32)
     endif
   endif
 
   ifeq ($(KBUILD_SYM32), y)
     cflags-$(KBUILD_SYM32) += -msym32 -DKBUILD_64BIT_SYM32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   else
     ifeq ($(CONFIG_CPU_DADDI_WORKAROUNDS), y)
       $(error CONFIG_CPU_DADDI_WORKAROUNDS unsupported without -msym32)
@@ -425,22 +310,6 @@ ifdef CONFIG_64BIT
   endif
 endif
 
-<<<<<<< HEAD
-KBUILD_AFLAGS	+= $(cflags-y)
-KBUILD_CFLAGS	+= $(cflags-y)
-KBUILD_CPPFLAGS += -D"VMLINUX_LOAD_ADDRESS=$(load-y)"
-KBUILD_CPPFLAGS += -D"DATAOFFSET=$(if $(dataoffset-y),$(dataoffset-y),0)"
-
-LDFLAGS			+= -m $(ld-emul)
-
-ifdef CONFIG_MIPS
-CHECKFLAGS += $(shell $(CC) $(KBUILD_CFLAGS) -dM -E -x c /dev/null | \
-	egrep -vw '__GNUC_(|MINOR_|PATCHLEVEL_)_' | \
-	sed -e "s/^\#define /-D'/" -e "s/ /'='/" -e "s/$$/'/")
-ifdef CONFIG_64BIT
-CHECKFLAGS		+= -m64
-endif
-=======
 # When linking a 32-bit executable the LLVM linker cannot cope with a
 # 32-bit load address that has been sign-extended to 64 bits.  Simply
 # remove the upper 32 bits then, as it is safe to do so with other
@@ -478,36 +347,18 @@ ifdef need-compiler
 CHECKFLAGS += $(shell $(CC) $(KBUILD_CPPFLAGS) $(KBUILD_CFLAGS) -dM -E -x c /dev/null | \
 	grep -E -vw '__GNUC_(MINOR_|PATCHLEVEL_)?_' | \
 	sed -e "s/^\#define /-D'/" -e "s/ /'='/" -e "s/$$/'/" -e 's/\$$/&&/g')
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif
 
 OBJCOPYFLAGS		+= --remove-section=.reginfo
 
-<<<<<<< HEAD
-head-y := arch/mips/kernel/head.o arch/mips/kernel/init_task.o
-
-libs-y			+= arch/mips/lib/
-
-# See arch/mips/Kbuild for content of core part of the kernel
-core-y += arch/mips/
-
-drivers-$(CONFIG_OPROFILE)	+= arch/mips/oprofile/
-=======
 libs-y			+= arch/mips/lib/
 libs-$(CONFIG_MIPS_FP_SUPPORT) += arch/mips/math-emu/
 
 drivers-y			+= arch/mips/crypto/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # suspend and hibernation support
 drivers-$(CONFIG_PM)	+= arch/mips/power/
 
-<<<<<<< HEAD
-ifdef CONFIG_LASAT
-rom.bin rom.sw: vmlinux
-	$(Q)$(MAKE) $(build)=arch/mips/lasat/image $@
-endif
-=======
 # boot image targets (arch/mips/boot/)
 boot-y			:= vmlinux.bin
 boot-y			+= vmlinux.ecoff
@@ -531,45 +382,21 @@ bootz-y			+= vmlinuz.ecoff
 bootz-y			+= vmlinuz.srec
 bootz-y			+= uzImage.bin
 bootz-y			+= vmlinuz.itb
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Some machines like the Indy need 32-bit ELF binaries for booting purposes.
 # Other need ECOFF, so we build a 32-bit ELF binary for them which we then
 # convert to ECOFF using elf2ecoff.
 #
-<<<<<<< HEAD
-vmlinux.32: vmlinux
-	$(OBJCOPY) -O $(32bit-bfd) $(OBJCOPYFLAGS) $< $@
-
-
-#obj-$(CONFIG_KPROBES)		+= kprobes.o
-=======
 quiet_cmd_32 = OBJCOPY $@
 	cmd_32 = $(OBJCOPY) -O $(32bit-bfd) $(OBJCOPYFLAGS) $< $@
 vmlinux.32: vmlinux
 	$(call cmd,32)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # The 64-bit ELF tools are pretty broken so at this time we generate 64-bit
 # ELF files from 32-bit files by conversion.
 #
-<<<<<<< HEAD
-vmlinux.64: vmlinux
-	$(OBJCOPY) -O $(64bit-bfd) $(OBJCOPYFLAGS) $< $@
-
-all:	$(all-y)
-
-# boot
-vmlinux.bin vmlinux.ecoff vmlinux.srec: $(vmlinux-32) FORCE
-	$(Q)$(MAKE) $(build)=arch/mips/boot VMLINUX=$(vmlinux-32) arch/mips/boot/$@
-
-# boot/compressed
-vmlinuz vmlinuz.bin vmlinuz.ecoff vmlinuz.srec: $(vmlinux-32) FORCE
-	$(Q)$(MAKE) $(build)=arch/mips/boot/compressed \
-	   VMLINUX_LOAD_ADDRESS=$(load-y) 32bit-bfd=$(32bit-bfd) $@
-=======
 quiet_cmd_64 = OBJCOPY $@
 	cmd_64 = $(OBJCOPY) -O $(64bit-bfd) $(OBJCOPYFLAGS) $< $@
 vmlinux.64: vmlinux
@@ -592,20 +419,10 @@ vmlinuz: FORCE
 	@echo '   CONFIG_SYS_SUPPORTS_ZBOOT is not enabled'
 	/bin/false
 endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 CLEAN_FILES += vmlinux.32 vmlinux.64
 
-<<<<<<< HEAD
-archprepare:
-ifdef CONFIG_MIPS32_N32
-	@echo '  Checking missing-syscalls for N32'
-	$(Q)$(MAKE) $(build)=. missing-syscalls missing_syscalls_flags="-mabi=n32"
-endif
-ifdef CONFIG_MIPS32_O32
-	@echo '  Checking missing-syscalls for O32'
-=======
 # device-trees
 core-y += arch/mips/boot/dts/
 
@@ -616,7 +433,6 @@ ifdef CONFIG_MIPS32_N32
 endif
 ifdef CONFIG_MIPS32_O32
 	@$(kecho) '  Checking missing-syscalls for O32'
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$(Q)$(MAKE) $(build)=. missing-syscalls missing_syscalls_flags="-mabi=32"
 endif
 
@@ -628,34 +444,19 @@ endif
 	$(Q)install -D -m 644 .config $(INSTALL_PATH)/config-$(KERNELRELEASE)
 	$(Q)install -D -m 644 System.map $(INSTALL_PATH)/System.map-$(KERNELRELEASE)
 
-<<<<<<< HEAD
-archclean:
-	$(Q)$(MAKE) $(clean)=arch/mips/boot
-	$(Q)$(MAKE) $(clean)=arch/mips/boot/compressed
-	$(Q)$(MAKE) $(clean)=arch/mips/lasat
-=======
 archheaders:
 	$(Q)$(MAKE) $(build)=arch/mips/kernel/syscalls all
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 define archhelp
 	echo '  install              - install kernel into $(INSTALL_PATH)'
 	echo '  vmlinux.ecoff        - ECOFF boot image'
 	echo '  vmlinux.bin          - Raw binary boot image'
 	echo '  vmlinux.srec         - SREC boot image'
-<<<<<<< HEAD
-=======
 	echo '  vmlinux.32           - 64-bit boot image wrapped in 32bits (IP22/IP32)'
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	echo '  vmlinuz              - Compressed boot(zboot) image'
 	echo '  vmlinuz.ecoff        - ECOFF zboot image'
 	echo '  vmlinuz.bin          - Raw binary zboot image'
 	echo '  vmlinuz.srec         - SREC zboot image'
-<<<<<<< HEAD
-	echo
-	echo '  These will be default as appropriate for a configured platform.'
-endef
-=======
 	echo '  uImage               - U-Boot image'
 	echo '  uImage.bin           - U-Boot image (uncompressed)'
 	echo '  uImage.bz2           - U-Boot image (bz2)'
@@ -778,4 +579,3 @@ pistachio_defconfig-y		:= 32r2el_defconfig BOARDS=marduk
 .PHONY: $(legacy_defconfigs)
 $(legacy_defconfigs):
 	$(Q)$(MAKE) -f $(srctree)/Makefile $($@-y)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

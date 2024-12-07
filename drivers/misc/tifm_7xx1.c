@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  tifm_7xx1.c - TI FlashMedia driver
  *
  *  Copyright (C) 2006 Alex Dubov <oakad@yahoo.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/tifm.h>
@@ -201,11 +190,7 @@ static void tifm_7xx1_switch_media(struct work_struct *work)
 				spin_unlock_irqrestore(&fm->lock, flags);
 			}
 			if (sock)
-<<<<<<< HEAD
-				tifm_free_device(&sock->dev);
-=======
 				put_device(&sock->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		spin_lock_irqsave(&fm->lock, flags);
 	}
@@ -222,16 +207,9 @@ static void tifm_7xx1_switch_media(struct work_struct *work)
 	spin_unlock_irqrestore(&fm->lock, flags);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-
-static int tifm_7xx1_suspend(struct pci_dev *dev, pm_message_t state)
-{
-=======
 static int __maybe_unused tifm_7xx1_suspend(struct device *dev_d)
 {
 	struct pci_dev *dev = to_pci_dev(dev_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tifm_adapter *fm = pci_get_drvdata(dev);
 	int cnt;
 
@@ -242,29 +220,6 @@ static int __maybe_unused tifm_7xx1_suspend(struct device *dev_d)
 			tifm_7xx1_sock_power_off(fm->sockets[cnt]->addr);
 	}
 
-<<<<<<< HEAD
-	pci_save_state(dev);
-	pci_enable_wake(dev, pci_choose_state(dev, state), 0);
-	pci_disable_device(dev);
-	pci_set_power_state(dev, pci_choose_state(dev, state));
-	return 0;
-}
-
-static int tifm_7xx1_resume(struct pci_dev *dev)
-{
-	struct tifm_adapter *fm = pci_get_drvdata(dev);
-	int rc;
-	unsigned int good_sockets = 0, bad_sockets = 0;
-	unsigned long flags;
-	unsigned char new_ids[fm->num_sockets];
-	DECLARE_COMPLETION_ONSTACK(finish_resume);
-
-	pci_set_power_state(dev, PCI_D0);
-	pci_restore_state(dev);
-	rc = pci_enable_device(dev);
-	if (rc)
-		return rc;
-=======
 	device_wakeup_disable(dev_d);
 	return 0;
 }
@@ -284,7 +239,6 @@ static int __maybe_unused tifm_7xx1_resume(struct device *dev_d)
 	if (WARN_ON(fm->num_sockets > ARRAY_SIZE(new_ids)))
 		return -ENXIO;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_master(dev);
 
 	dev_dbg(&dev->dev, "resuming host\n");
@@ -311,13 +265,8 @@ static int __maybe_unused tifm_7xx1_resume(struct device *dev_d)
 	if (good_sockets) {
 		fm->finish_me = &finish_resume;
 		spin_unlock_irqrestore(&fm->lock, flags);
-<<<<<<< HEAD
-		rc = wait_for_completion_timeout(&finish_resume, HZ);
-		dev_dbg(&dev->dev, "wait returned %d\n", rc);
-=======
 		timeout = wait_for_completion_timeout(&finish_resume, HZ);
 		dev_dbg(&dev->dev, "wait returned %lu\n", timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(TIFM_IRQ_FIFOMASK(good_sockets)
 		       | TIFM_IRQ_CARDMASK(good_sockets),
 		       fm->addr + FM_CLEAR_INTERRUPT_ENABLE);
@@ -340,16 +289,6 @@ static int __maybe_unused tifm_7xx1_resume(struct device *dev_d)
 	return 0;
 }
 
-<<<<<<< HEAD
-#else
-
-#define tifm_7xx1_suspend NULL
-#define tifm_7xx1_resume NULL
-
-#endif /* CONFIG_PM */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tifm_7xx1_dummy_has_ms_pif(struct tifm_adapter *fm,
 				      struct tifm_dev *sock)
 {
@@ -372,11 +311,7 @@ static int tifm_7xx1_probe(struct pci_dev *dev,
 	int pci_dev_busy = 0;
 	int rc;
 
-<<<<<<< HEAD
-	rc = pci_set_dma_mask(dev, DMA_BIT_MASK(32));
-=======
 	rc = dma_set_mask(&dev->dev, DMA_BIT_MASK(32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -407,15 +342,10 @@ static int tifm_7xx1_probe(struct pci_dev *dev,
 	pci_set_drvdata(dev, fm);
 
 	fm->addr = pci_ioremap_bar(dev, 0);
-<<<<<<< HEAD
-	if (!fm->addr)
-		goto err_out_free;
-=======
 	if (!fm->addr) {
 		rc = -ENODEV;
 		goto err_out_free;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = request_irq(dev->irq, tifm_7xx1_isr, IRQF_SHARED, DRIVER_NAME, fm);
 	if (rc)
@@ -436,10 +366,6 @@ err_out_irq:
 err_out_unmap:
 	iounmap(fm->addr);
 err_out_free:
-<<<<<<< HEAD
-	pci_set_drvdata(dev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tifm_free_adapter(fm);
 err_out_int:
 	pci_intx(dev, 0);
@@ -458,10 +384,6 @@ static void tifm_7xx1_remove(struct pci_dev *dev)
 	fm->eject = tifm_7xx1_dummy_eject;
 	fm->has_ms_pif = tifm_7xx1_dummy_has_ms_pif;
 	writel(TIFM_IRQ_SETALL, fm->addr + FM_CLEAR_INTERRUPT_ENABLE);
-<<<<<<< HEAD
-	mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_irq(dev->irq, fm);
 
 	tifm_remove_adapter(fm);
@@ -469,11 +391,6 @@ static void tifm_7xx1_remove(struct pci_dev *dev)
 	for (cnt = 0; cnt < fm->num_sockets; cnt++)
 		tifm_7xx1_sock_power_off(tifm_7xx1_sock_addr(fm->addr, cnt));
 
-<<<<<<< HEAD
-	pci_set_drvdata(dev, NULL);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iounmap(fm->addr);
 	pci_intx(dev, 0);
 	pci_release_regions(dev);
@@ -482,11 +399,7 @@ static void tifm_7xx1_remove(struct pci_dev *dev)
 	tifm_free_adapter(fm);
 }
 
-<<<<<<< HEAD
-static struct pci_device_id tifm_7xx1_pci_tbl [] = {
-=======
 static const struct pci_device_id tifm_7xx1_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_XX21_XX11_FM, PCI_ANY_ID,
 	  PCI_ANY_ID, 0, 0, 0 }, /* xx21 - the one I have */
         { PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_XX12_FM, PCI_ANY_ID,
@@ -496,45 +409,19 @@ static const struct pci_device_id tifm_7xx1_pci_tbl[] = {
 	{ }
 };
 
-<<<<<<< HEAD
-=======
 static SIMPLE_DEV_PM_OPS(tifm_7xx1_pm_ops, tifm_7xx1_suspend, tifm_7xx1_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver tifm_7xx1_driver = {
 	.name = DRIVER_NAME,
 	.id_table = tifm_7xx1_pci_tbl,
 	.probe = tifm_7xx1_probe,
 	.remove = tifm_7xx1_remove,
-<<<<<<< HEAD
-	.suspend = tifm_7xx1_suspend,
-	.resume = tifm_7xx1_resume,
-};
-
-static int __init tifm_7xx1_init(void)
-{
-	return pci_register_driver(&tifm_7xx1_driver);
-}
-
-static void __exit tifm_7xx1_exit(void)
-{
-	pci_unregister_driver(&tifm_7xx1_driver);
-}
-
-=======
 	.driver.pm = &tifm_7xx1_pm_ops,
 };
 
 module_pci_driver(tifm_7xx1_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Alex Dubov");
 MODULE_DESCRIPTION("TI FlashMedia host driver");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, tifm_7xx1_pci_tbl);
 MODULE_VERSION(DRIVER_VERSION);
-<<<<<<< HEAD
-
-module_init(tifm_7xx1_init);
-module_exit(tifm_7xx1_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * auxio.h:  Definitions and code for the Auxiliary I/O register.
  *
@@ -38,13 +35,8 @@
  * NOTE: these routines are implementation dependent--
  * understand the hardware you are querying!
  */
-<<<<<<< HEAD
-extern void set_auxio(unsigned char bits_on, unsigned char bits_off);
-extern unsigned char get_auxio(void); /* .../asm/floppy.h */
-=======
 void set_auxio(unsigned char bits_on, unsigned char bits_off);
 unsigned char get_auxio(void); /* .../asm/floppy.h */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The following routines are provided for driver-compatibility
@@ -87,11 +79,7 @@ do { \
 
 
 /* AUXIO2 (Power Off Control) */
-<<<<<<< HEAD
-extern __volatile__ unsigned char * auxio_power_register;
-=======
 extern volatile u8 __iomem *auxio_power_register;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	AUXIO_POWER_DETECT_FAILURE	32
 #define	AUXIO_POWER_CLEAR_FAILURE	2

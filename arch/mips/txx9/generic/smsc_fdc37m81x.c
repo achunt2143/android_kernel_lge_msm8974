@@ -18,37 +18,6 @@
 /* Common Registers */
 #define SMSC_FDC37M81X_CONFIG_INDEX  0x00
 #define SMSC_FDC37M81X_CONFIG_DATA   0x01
-<<<<<<< HEAD
-#define SMSC_FDC37M81X_CONF          0x02
-#define SMSC_FDC37M81X_INDEX         0x03
-#define SMSC_FDC37M81X_DNUM          0x07
-#define SMSC_FDC37M81X_DID           0x20
-#define SMSC_FDC37M81X_DREV          0x21
-#define SMSC_FDC37M81X_PCNT          0x22
-#define SMSC_FDC37M81X_PMGT          0x23
-#define SMSC_FDC37M81X_OSC           0x24
-#define SMSC_FDC37M81X_CONFPA0       0x26
-#define SMSC_FDC37M81X_CONFPA1       0x27
-#define SMSC_FDC37M81X_TEST4         0x2B
-#define SMSC_FDC37M81X_TEST5         0x2C
-#define SMSC_FDC37M81X_TEST1         0x2D
-#define SMSC_FDC37M81X_TEST2         0x2E
-#define SMSC_FDC37M81X_TEST3         0x2F
-
-/* Logical device numbers */
-#define SMSC_FDC37M81X_FDD           0x00
-#define SMSC_FDC37M81X_SERIAL1       0x04
-#define SMSC_FDC37M81X_SERIAL2       0x05
-#define SMSC_FDC37M81X_KBD           0x07
-
-/* Logical device Config Registers */
-#define SMSC_FDC37M81X_ACTIVE        0x30
-#define SMSC_FDC37M81X_BASEADDR0     0x60
-#define SMSC_FDC37M81X_BASEADDR1     0x61
-#define SMSC_FDC37M81X_INT           0x70
-#define SMSC_FDC37M81X_INT2          0x72
-#define SMSC_FDC37M81X_MODE          0xF0
-=======
 #define SMSC_FDC37M81X_CONF	     0x02
 #define SMSC_FDC37M81X_INDEX	     0x03
 #define SMSC_FDC37M81X_DNUM	     0x07
@@ -78,16 +47,11 @@
 #define SMSC_FDC37M81X_INT	     0x70
 #define SMSC_FDC37M81X_INT2	     0x72
 #define SMSC_FDC37M81X_MODE	     0xF0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Chip Config Values */
 #define SMSC_FDC37M81X_CONFIG_ENTER  0x55
 #define SMSC_FDC37M81X_CONFIG_EXIT   0xaa
-<<<<<<< HEAD
-#define SMSC_FDC37M81X_CHIP_ID       0x4d
-=======
 #define SMSC_FDC37M81X_CHIP_ID	     0x4d
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned long g_smsc_fdc37m81x_base;
 
@@ -141,14 +105,8 @@ unsigned long __init smsc_fdc37m81x_init(unsigned long port)
 	u8 chip_id;
 
 	if (g_smsc_fdc37m81x_base)
-<<<<<<< HEAD
-		printk(KERN_WARNING "%s: stepping on old base=0x%0*lx\n",
-		       __func__,
-		       field, g_smsc_fdc37m81x_base);
-=======
 		pr_warn("%s: stepping on old base=0x%0*lx\n", __func__, field,
 			g_smsc_fdc37m81x_base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	g_smsc_fdc37m81x_base = port;
 
@@ -158,12 +116,7 @@ unsigned long __init smsc_fdc37m81x_init(unsigned long port)
 	if (chip_id == SMSC_FDC37M81X_CHIP_ID)
 		smsc_fdc37m81x_config_end();
 	else {
-<<<<<<< HEAD
-		printk(KERN_WARNING "%s: unknown chip id 0x%02x\n", __func__,
-		       chip_id);
-=======
 		pr_warn("%s: unknown chip id 0x%02x\n", __func__, chip_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		g_smsc_fdc37m81x_base = 0;
 	}
 
@@ -173,14 +126,8 @@ unsigned long __init smsc_fdc37m81x_init(unsigned long port)
 #ifdef DEBUG
 static void smsc_fdc37m81x_config_dump_one(const char *key, u8 dev, u8 reg)
 {
-<<<<<<< HEAD
-	printk(KERN_INFO "%s: dev=0x%02x reg=0x%02x val=0x%02x\n",
-	       key, dev, reg,
-	       smsc_fdc37m81x_rd(reg));
-=======
 	pr_info("%s: dev=0x%02x reg=0x%02x val=0x%02x\n", key, dev, reg,
 		smsc_fdc37m81x_rd(reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void smsc_fdc37m81x_config_dump(void)
@@ -192,11 +139,7 @@ void smsc_fdc37m81x_config_dump(void)
 
 	orig = smsc_fdc37m81x_rd(SMSC_FDC37M81X_DNUM);
 
-<<<<<<< HEAD
-	printk(KERN_INFO "%s: common\n", fname);
-=======
 	pr_info("%s: common\n", fname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smsc_fdc37m81x_config_dump_one(fname, SMSC_FDC37M81X_NONE,
 				       SMSC_FDC37M81X_DNUM);
 	smsc_fdc37m81x_config_dump_one(fname, SMSC_FDC37M81X_NONE,
@@ -208,11 +151,7 @@ void smsc_fdc37m81x_config_dump(void)
 	smsc_fdc37m81x_config_dump_one(fname, SMSC_FDC37M81X_NONE,
 				       SMSC_FDC37M81X_PMGT);
 
-<<<<<<< HEAD
-	printk(KERN_INFO "%s: keyboard\n", fname);
-=======
 	pr_info("%s: keyboard\n", fname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smsc_dc37m81x_wr(SMSC_FDC37M81X_DNUM, SMSC_FDC37M81X_KBD);
 	smsc_fdc37m81x_config_dump_one(fname, SMSC_FDC37M81X_KBD,
 				       SMSC_FDC37M81X_ACTIVE);

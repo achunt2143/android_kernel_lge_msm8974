@@ -1,24 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2009, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2009, Intel Corporation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __PSB_INTEL_REG_H__
 #define __PSB_INTEL_REG_H__
@@ -97,12 +79,9 @@
 
 #define BLC_PWM_CTL		0x61254
 #define BLC_PWM_CTL2		0x61250
-<<<<<<< HEAD
-=======
 #define  PWM_ENABLE		(1 << 31)
 #define  PWM_LEGACY_MODE	(1 << 30)
 #define  PWM_PIPE_B		(1 << 29)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BLC_PWM_CTL_C		0x62254
 #define BLC_PWM_CTL2_C		0x62250
 #define BACKLIGHT_MODULATION_FREQ_SHIFT		(17)
@@ -182,11 +161,6 @@
 #define PP_SEQUENCE_ON			(1 << 28)
 #define PP_SEQUENCE_OFF			(2 << 28)
 #define PP_SEQUENCE_MASK		0x30000000
-<<<<<<< HEAD
-#define PP_CONTROL		0x61204
-#define POWER_TARGET_ON			(1 << 0)
-
-=======
 #define	PP_CYCLE_DELAY_ACTIVE		(1 << 27)
 #define	PP_SEQUENCE_STATE_ON_IDLE	(1 << 3)
 #define	PP_SEQUENCE_STATE_MASK		0x0000000f
@@ -202,15 +176,10 @@
 #define	PANEL_POWER_ON			(1 << 0)
 
 /* Poulsbo/Oaktrail */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LVDSPP_ON		0x61208
 #define LVDSPP_OFF		0x6120c
 #define PP_CYCLE		0x61210
 
-<<<<<<< HEAD
-#define PP_ON_DELAYS		0x61208		/* Cedartrail */
-#define PP_OFF_DELAYS		0x6120c		/* Cedartrail */
-=======
 /* Cedartrail */
 #define PP_ON_DELAYS		0x61208		/* Cedartrail */
 #define PANEL_PORT_SELECT_MASK 		(3 << 30)
@@ -232,7 +201,6 @@
 #define  PP_REFERENCE_DIVIDER_SHIFT	8
 #define  PANEL_POWER_CYCLE_DELAY_MASK	(0x1f)
 #define  PANEL_POWER_CYCLE_DELAY_SHIFT	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PFIT_CONTROL		0x61230
 #define PFIT_ENABLE			(1 << 31)
@@ -270,11 +238,7 @@
 #define DPLLB_LVDS_P2_CLOCK_DIV_14	(0 << 24)	/* i915 */
 #define DPLLB_LVDS_P2_CLOCK_DIV_7	(1 << 24)	/* i915 */
 #define DPLL_P2_CLOCK_DIV_MASK		0x03000000	/* i915 */
-<<<<<<< HEAD
-#define DPLL_FPA01_P1_POST_DIV_MASK	0x00ff0000	/* i915 */
-=======
 #define DPLL_FPA0h1_P1_POST_DIV_MASK	0x00ff0000	/* i915 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DPLL_LOCK			(1 << 15)	/* CDV */
 
 /*
@@ -401,12 +365,9 @@
 #define FP_M2_DIV_SHIFT			0
 
 #define PORT_HOTPLUG_EN		0x61110
-<<<<<<< HEAD
-=======
 #define HDMIB_HOTPLUG_INT_EN		(1 << 29)
 #define HDMIC_HOTPLUG_INT_EN		(1 << 28)
 #define HDMID_HOTPLUG_INT_EN		(1 << 27)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SDVOB_HOTPLUG_INT_EN		(1 << 26)
 #define SDVOC_HOTPLUG_INT_EN		(1 << 25)
 #define TV_HOTPLUG_INT_EN		(1 << 18)
@@ -520,10 +481,6 @@
 #define PIPEACONF_DISABLE		0
 #define PIPEACONF_DOUBLE_WIDE		(1 << 30)
 #define PIPECONF_ACTIVE			(1 << 30)
-<<<<<<< HEAD
-#define I965_PIPECONF_ACTIVE		(1 << 30)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PIPECONF_DSIPLL_LOCK		(1 << 29)
 #define PIPEACONF_SINGLE_WIDE		0
 #define PIPEACONF_PIPE_UNLOCKED		0
@@ -568,18 +525,12 @@
 #define PIPE_VBLANK_INTERRUPT_ENABLE		(1UL << 17)
 #define PIPE_START_VBLANK_INTERRUPT_ENABLE	(1UL << 18)
 #define PIPE_TE_ENABLE				(1UL << 22)
-<<<<<<< HEAD
-=======
 #define PIPE_LEGACY_BLC_EVENT_ENABLE		(1UL << 22)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PIPE_DPST_EVENT_ENABLE			(1UL << 23)
 #define PIPE_VSYNC_ENABL			(1UL << 25)
 #define PIPE_HDMI_AUDIO_UNDERRUN		(1UL << 26)
 #define PIPE_HDMI_AUDIO_BUFFER_DONE		(1UL << 27)
-<<<<<<< HEAD
-=======
 #define PIPE_FIFO_UNDERRUN			(1UL << 31)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PIPE_HDMI_AUDIO_INT_MASK		(PIPE_HDMI_AUDIO_UNDERRUN | \
 						PIPE_HDMI_AUDIO_BUFFER_DONE)
 #define PIPE_EVENT_MASK ((1 << 29)|(1 << 28)|(1 << 27)|(1 << 26)|(1 << 24)|(1 << 23)|(1 << 22)|(1 << 21)|(1 << 20)|(1 << 16))
@@ -599,41 +550,6 @@
 #define HISTOGRAM_INT_CTRL_CLEAR		(1UL << 30)
 #define DPST_YUV_LUMA_MODE			0
 
-<<<<<<< HEAD
-struct dpst_ie_histogram_control {
-	union {
-		uint32_t data;
-		struct {
-			uint32_t bin_reg_index:7;
-			uint32_t reserved:4;
-			uint32_t bin_reg_func_select:1;
-			uint32_t sync_to_phase_in:1;
-			uint32_t alt_enhancement_mode:2;
-			uint32_t reserved1:1;
-			uint32_t sync_to_phase_in_count:8;
-			uint32_t histogram_mode_select:1;
-			uint32_t reserved2:4;
-			uint32_t ie_pipe_assignment:1;
-			uint32_t ie_mode_table_enabled:1;
-			uint32_t ie_histogram_enable:1;
-		};
-	};
-};
-
-struct dpst_guardband {
-	union {
-		uint32_t data;
-		struct {
-			uint32_t guardband:22;
-			uint32_t guardband_interrupt_delay:8;
-			uint32_t interrupt_status:1;
-			uint32_t interrupt_enable:1;
-		};
-	};
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PIPEAFRAMEHIGH		0x70040
 #define PIPEAFRAMEPIXEL		0x70044
 #define PIPEBFRAMEHIGH		0x71040
@@ -647,14 +563,6 @@ struct dpst_guardband {
 #define PIPE_PIXEL_MASK		0x00ffffff
 #define PIPE_PIXEL_SHIFT	0
 
-<<<<<<< HEAD
-#define DSPARB			0x70030
-#define DSPFW1			0x70034
-#define DSPFW2			0x70038
-#define DSPFW3			0x7003c
-#define DSPFW4			0x70050
-#define DSPFW5			0x70054
-=======
 #define FW_BLC_SELF		0x20e0
 #define FW_BLC_SELF_EN          (1<<15)
 
@@ -676,7 +584,6 @@ struct dpst_guardband {
 #define DSP_PLANE_A_FIFO_WM1_SHIFT	16
 #define CURSOR_B_FIFO_WM1_SHIFT		8
 #define CURSOR_FIFO_SR_WM1_SHIFT	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DSPFW6			0x70058
 #define DSPCHICKENBIT		0x70400
 #define DSPACNTR		0x70180
@@ -850,23 +757,9 @@ struct dpst_guardband {
  * MOORESTOWN delta registers
  */
 #define MRST_DPLL_A		0x0f014
-<<<<<<< HEAD
-#define MDFLD_DPLL_B		0x0f018
-#define MDFLD_INPUT_REF_SEL		(1 << 14)
-#define MDFLD_VCO_SEL			(1 << 16)
-#define DPLLA_MODE_LVDS			(2 << 26)	/* mrst */
-#define MDFLD_PLL_LATCHEN		(1 << 28)
-#define MDFLD_PWR_GATE_EN		(1 << 30)
-#define MDFLD_P1_MASK			(0x1FF << 17)
-#define MRST_FPA0		0x0f040
-#define MRST_FPA1		0x0f044
-#define MDFLD_DPLL_DIV0		0x0f048
-#define MDFLD_DPLL_DIV1		0x0f04c
-=======
 #define DPLLA_MODE_LVDS			(2 << 26)	/* mrst */
 #define MRST_FPA0		0x0f040
 #define MRST_FPA1		0x0f044
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MRST_PERF_MODE		0x020f4
 
 /*
@@ -915,10 +808,6 @@ struct dpst_guardband {
 
 #define MRST_DSPABASE		0x7019c
 #define MRST_DSPBBASE		0x7119c
-<<<<<<< HEAD
-#define MDFLD_DSPCBASE		0x7219c
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Moorestown registers.
@@ -1000,10 +889,6 @@ struct dpst_guardband {
 #define DEVICE_RESET_REG		0xb01C
 #define DPI_RESOLUTION_REG		0xb020
 #define RES_V_POS				0x10
-<<<<<<< HEAD
-#define DBI_RESOLUTION_REG		0xb024 /* Reserved for MDFLD */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HORIZ_SYNC_PAD_COUNT_REG	0xb028
 #define HORIZ_BACK_PORCH_COUNT_REG	0xb02C
 #define HORIZ_FRONT_PORCH_COUNT_REG	0xb030
@@ -1373,13 +1258,10 @@ No status bits are changed.
 # define VRHUNIT_CLOCK_GATE_DISABLE		(1 << 28) /* Fixed value on CDV */
 # define DPOUNIT_CLOCK_GATE_DISABLE		(1 << 11)
 # define DPIOUNIT_CLOCK_GATE_DISABLE		(1 << 6)
-<<<<<<< HEAD
-=======
 # define DPUNIT_PIPEB_GATE_DISABLE		(1 << 30)
 # define DPUNIT_PIPEA_GATE_DISABLE		(1 << 25)
 # define DPCUNIT_CLOCK_GATE_DISABLE		(1 << 24)
 # define DPLSUNIT_CLOCK_GATE_DISABLE		(1 << 13)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RAMCLK_GATE_D		0x6210
 
@@ -1411,8 +1293,6 @@ No status bits are changed.
 #define SB_N_CB_TUNE_MASK			PSB_MASK(25, 24)
 #define SB_N_CB_TUNE_SHIFT			24
 
-<<<<<<< HEAD
-=======
 /* the bit 14:13 is used to select between the different reference clock for Pipe A/B */
 #define SB_REF_DPLLA		0x8010
 #define SB_REF_DPLLB		0x8030
@@ -1422,7 +1302,6 @@ No status bits are changed.
 #define REF_CLK_DPLLA		(2 << 13)
 /* For the DPLL B, it will use the reference clk from DPLL A when using (2 << 13) */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _SB_REF_A		0x8018
 #define _SB_REF_B		0x8038
 #define SB_REF_SFR(pipe)	_PIPE(pipe, _SB_REF_A, _SB_REF_B)
@@ -1446,9 +1325,6 @@ No status bits are changed.
 
 #define LANE_PLL_MASK		(0x7 << 20)
 #define LANE_PLL_ENABLE		(0x3 << 20)
-<<<<<<< HEAD
-
-=======
 #define LANE_PLL_PIPE(p)	(((p) == 0) ? (1 << 21) : (0 << 21))
 
 #define DP_B				0x64100
@@ -1611,6 +1487,5 @@ No status bits are changed.
 #define   PIPE_8BPC				(0 << 5)
 #define   PIPE_10BPC				(1 << 5)
 #define   PIPE_6BPC				(2 << 5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

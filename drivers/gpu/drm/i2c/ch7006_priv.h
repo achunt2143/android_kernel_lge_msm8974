@@ -27,16 +27,9 @@
 #ifndef __DRM_I2C_CH7006_PRIV_H__
 #define __DRM_I2C_CH7006_PRIV_H__
 
-<<<<<<< HEAD
-#include "drmP.h"
-#include "drm_crtc_helper.h"
-#include "drm_encoder_slave.h"
-#include "i2c/ch7006.h"
-=======
 #include <drm/drm_encoder_slave.h>
 #include <drm/drm_probe_helper.h>
 #include <drm/i2c/ch7006.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef int64_t fixed;
 #define fixed1 (1LL << 32)
@@ -84,11 +77,7 @@ struct ch7006_state {
 
 struct ch7006_priv {
 	struct ch7006_encoder_params params;
-<<<<<<< HEAD
-	struct ch7006_mode *mode;
-=======
 	const struct ch7006_mode *mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ch7006_state state;
 	struct ch7006_state saved_state;
@@ -116,21 +105,12 @@ extern int ch7006_debug;
 extern char *ch7006_tv_norm;
 extern int ch7006_scale;
 
-<<<<<<< HEAD
-extern char *ch7006_tv_norm_names[];
-extern struct ch7006_tv_norm_info ch7006_tv_norms[];
-extern struct ch7006_mode ch7006_modes[];
-
-struct ch7006_mode *ch7006_lookup_mode(struct drm_encoder *encoder,
-				       struct drm_display_mode *drm_mode);
-=======
 extern const char * const ch7006_tv_norm_names[];
 extern const struct ch7006_tv_norm_info ch7006_tv_norms[];
 extern const struct ch7006_mode ch7006_modes[];
 
 const struct ch7006_mode *ch7006_lookup_mode(struct drm_encoder *encoder,
 					     const struct drm_display_mode *drm_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ch7006_setup_levels(struct drm_encoder *encoder);
 void ch7006_setup_subcarrier(struct drm_encoder *encoder);

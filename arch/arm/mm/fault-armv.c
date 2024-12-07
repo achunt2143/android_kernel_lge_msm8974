@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/fault-armv.c
  *
  *  Copyright (C) 1995  Linus Torvalds
  *  Modifications for ARM processor (c) 1995-2002 Russell King
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/sched.h>
 #include <linux/kernel.h>
@@ -27,10 +17,6 @@
 #include <asm/bugs.h>
 #include <asm/cacheflush.h>
 #include <asm/cachetype.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tlbflush.h>
 
 #include "mm.h"
@@ -75,11 +61,7 @@ static int do_adjust_pte(struct vm_area_struct *vma, unsigned long address,
 	return ret;
 }
 
-<<<<<<< HEAD
-#if USE_SPLIT_PTLOCKS
-=======
 #if USE_SPLIT_PTE_PTLOCKS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * If we are using split PTE locks, then we need to take the page
  * lock here.  Otherwise we are using shared mm->page_table_lock
@@ -98,27 +80,17 @@ static inline void do_pte_unlock(spinlock_t *ptl)
 {
 	spin_unlock(ptl);
 }
-<<<<<<< HEAD
-#else /* !USE_SPLIT_PTLOCKS */
-static inline void do_pte_lock(spinlock_t *ptl) {}
-static inline void do_pte_unlock(spinlock_t *ptl) {}
-#endif /* USE_SPLIT_PTLOCKS */
-=======
 #else /* !USE_SPLIT_PTE_PTLOCKS */
 static inline void do_pte_lock(spinlock_t *ptl) {}
 static inline void do_pte_unlock(spinlock_t *ptl) {}
 #endif /* USE_SPLIT_PTE_PTLOCKS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int adjust_pte(struct vm_area_struct *vma, unsigned long address,
 	unsigned long pfn)
 {
 	spinlock_t *ptl;
 	pgd_t *pgd;
-<<<<<<< HEAD
-=======
 	p4d_t *p4d;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pud_t *pud;
 	pmd_t *pmd;
 	pte_t *pte;
@@ -128,15 +100,11 @@ static int adjust_pte(struct vm_area_struct *vma, unsigned long address,
 	if (pgd_none_or_clear_bad(pgd))
 		return 0;
 
-<<<<<<< HEAD
-	pud = pud_offset(pgd, address);
-=======
 	p4d = p4d_offset(pgd, address);
 	if (p4d_none_or_clear_bad(p4d))
 		return 0;
 
 	pud = pud_offset(p4d, address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pud_none_or_clear_bad(pud))
 		return 0;
 
@@ -149,15 +117,10 @@ static int adjust_pte(struct vm_area_struct *vma, unsigned long address,
 	 * must use the nested version.  This also means we need to
 	 * open-code the spin-locking.
 	 */
-<<<<<<< HEAD
-	ptl = pte_lockptr(vma->vm_mm, pmd);
-	pte = pte_offset_map(pmd, address);
-=======
 	pte = pte_offset_map_nolock(vma->vm_mm, pmd, address, &ptl);
 	if (!pte)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do_pte_lock(ptl);
 
 	ret = do_adjust_pte(vma, address, pfn, pte);
@@ -174,10 +137,6 @@ make_coherent(struct address_space *mapping, struct vm_area_struct *vma,
 {
 	struct mm_struct *mm = vma->vm_mm;
 	struct vm_area_struct *mpnt;
-<<<<<<< HEAD
-	struct prio_tree_iter iter;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long offset;
 	pgoff_t pgoff;
 	int aliases = 0;
@@ -190,11 +149,7 @@ make_coherent(struct address_space *mapping, struct vm_area_struct *vma,
 	 * cache coherency.
 	 */
 	flush_dcache_mmap_lock(mapping);
-<<<<<<< HEAD
-	vma_prio_tree_foreach(mpnt, &iter, &mapping->i_mmap, pgoff, pgoff) {
-=======
 	vma_interval_tree_foreach(mpnt, &mapping->i_mmap, pgoff, pgoff) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If this VMA is not in our MM, we can ignore it.
 		 * Note that we intentionally mask out the VMA
@@ -225,21 +180,12 @@ make_coherent(struct address_space *mapping, struct vm_area_struct *vma,
  *
  * Note that the pte lock will be held.
  */
-<<<<<<< HEAD
-void update_mmu_cache(struct vm_area_struct *vma, unsigned long addr,
-	pte_t *ptep)
-{
-	unsigned long pfn = pte_pfn(*ptep);
-	struct address_space *mapping;
-	struct page *page;
-=======
 void update_mmu_cache_range(struct vm_fault *vmf, struct vm_area_struct *vma,
 		unsigned long addr, pte_t *ptep, unsigned int nr)
 {
 	unsigned long pfn = pte_pfn(*ptep);
 	struct address_space *mapping;
 	struct folio *folio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pfn_valid(pfn))
 		return;
@@ -248,15 +194,6 @@ void update_mmu_cache_range(struct vm_fault *vmf, struct vm_area_struct *vma,
 	 * The zero page is never written to, so never has any dirty
 	 * cache lines, and therefore never needs to be flushed.
 	 */
-<<<<<<< HEAD
-	page = pfn_to_page(pfn);
-	if (page == ZERO_PAGE(0))
-		return;
-
-	mapping = page_mapping(page);
-	if (!test_and_set_bit(PG_dcache_clean, &page->flags))
-		__flush_dcache_page(mapping, page);
-=======
 	if (is_zero_pfn(pfn))
 		return;
 
@@ -264,7 +201,6 @@ void update_mmu_cache_range(struct vm_fault *vmf, struct vm_area_struct *vma,
 	mapping = folio_flush_mapping(folio);
 	if (!test_and_set_bit(PG_dcache_clean, &folio->flags))
 		__flush_dcache_folio(mapping, folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mapping) {
 		if (cache_is_vivt())
 			make_coherent(mapping, vma, addr, ptep, pfn);
@@ -302,11 +238,7 @@ void __init check_writebuffer_bugs(void)
 	const char *reason;
 	unsigned long v = 1;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "CPU: Testing write buffer coherency: ");
-=======
 	pr_info("CPU: Testing write buffer coherency: ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	page = alloc_page(GFP_KERNEL);
 	if (page) {
@@ -332,16 +264,9 @@ void __init check_writebuffer_bugs(void)
 	}
 
 	if (v) {
-<<<<<<< HEAD
-		printk("failed, %s\n", reason);
-		shared_pte_mask = L_PTE_MT_UNCACHED;
-	} else {
-		printk("ok\n");
-=======
 		pr_cont("failed, %s\n", reason);
 		shared_pte_mask = L_PTE_MT_UNCACHED;
 	} else {
 		pr_cont("ok\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }

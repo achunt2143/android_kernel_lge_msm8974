@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PC Watchdog Driver
  * by Ken Hollis (khollis@bitgate.com)
@@ -65,11 +62,7 @@
 #include <linux/delay.h>	/* For mdelay function */
 #include <linux/timer.h>	/* For timer related operations */
 #include <linux/jiffies.h>	/* For jiffies stuff */
-<<<<<<< HEAD
-#include <linux/miscdevice.h>	/* For MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR) */
-=======
 #include <linux/miscdevice.h>	/* For struct miscdevice */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/watchdog.h>	/* For the watchdog specific items */
 #include <linux/reboot.h>	/* For kernel_power_off() */
 #include <linux/init.h>		/* For __init/__exit/... */
@@ -375,11 +368,7 @@ static void pcwd_show_card_info(void)
 		pr_info("No previous trip detected - Cold boot or reset\n");
 }
 
-<<<<<<< HEAD
-static void pcwd_timer_ping(unsigned long data)
-=======
 static void pcwd_timer_ping(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int wdrst_stat;
 
@@ -662,11 +651,7 @@ static long pcwd_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			return -EINVAL;
 
 		pcwd_keepalive();
-<<<<<<< HEAD
-		/* Fall */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case WDIOC_GETTIMEOUT:
 		return put_user(heartbeat, argp);
@@ -711,11 +696,7 @@ static int pcwd_open(struct inode *inode, struct file *file)
 	/* Activate */
 	pcwd_start();
 	pcwd_keepalive();
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcwd_close(struct inode *inode, struct file *file)
@@ -754,11 +735,7 @@ static int pcwd_temp_open(struct inode *inode, struct file *file)
 	if (!pcwd_private.supports_temp)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcwd_temp_close(struct inode *inode, struct file *file)
@@ -775,10 +752,7 @@ static const struct file_operations pcwd_fops = {
 	.llseek		= no_llseek,
 	.write		= pcwd_write,
 	.unlocked_ioctl	= pcwd_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= pcwd_open,
 	.release	= pcwd_close,
 };
@@ -829,11 +803,7 @@ static inline int get_revision(void)
  *  The initial rate is once per second at board start up, then twice
  *  per second for normal operation.
  */
-<<<<<<< HEAD
-static int __devinit pcwd_isa_match(struct device *dev, unsigned int id)
-=======
 static int pcwd_isa_match(struct device *dev, unsigned int id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int base_addr = pcwd_ioports[id];
 	int port0, last_port0;	/* Reg 0, in case it's REV A */
@@ -878,11 +848,7 @@ static int pcwd_isa_match(struct device *dev, unsigned int id)
 	return retval;
 }
 
-<<<<<<< HEAD
-static int __devinit pcwd_isa_probe(struct device *dev, unsigned int id)
-=======
 static int pcwd_isa_probe(struct device *dev, unsigned int id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -929,11 +895,7 @@ static int pcwd_isa_probe(struct device *dev, unsigned int id)
 	/* clear the "card caused reboot" flag */
 	pcwd_clear_status();
 
-<<<<<<< HEAD
-	setup_timer(&pcwd_private.timer, pcwd_timer_ping, 0);
-=======
 	timer_setup(&pcwd_private.timer, pcwd_timer_ping, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*  Disable the board  */
 	pcwd_stop();
@@ -989,21 +951,11 @@ error_request_region:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit pcwd_isa_remove(struct device *dev, unsigned int id)
-=======
 static void pcwd_isa_remove(struct device *dev, unsigned int id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (debug >= DEBUG)
 		pr_debug("pcwd_isa_remove id=%d\n", id);
 
-<<<<<<< HEAD
-	if (!pcwd_private.io_addr)
-		return 1;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*  Disable the board  */
 	if (!nowayout)
 		pcwd_stop();
@@ -1016,11 +968,6 @@ static void pcwd_isa_remove(struct device *dev, unsigned int id)
 			(pcwd_private.revision == PCWD_REVISION_A) ? 2 : 4);
 	pcwd_private.io_addr = 0x0000;
 	cards_found--;
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pcwd_isa_shutdown(struct device *dev, unsigned int id)
@@ -1034,11 +981,7 @@ static void pcwd_isa_shutdown(struct device *dev, unsigned int id)
 static struct isa_driver pcwd_isa_driver = {
 	.match		= pcwd_isa_match,
 	.probe		= pcwd_isa_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(pcwd_isa_remove),
-=======
 	.remove		= pcwd_isa_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown	= pcwd_isa_shutdown,
 	.driver		= {
 		.owner	= THIS_MODULE,
@@ -1046,31 +989,10 @@ static struct isa_driver pcwd_isa_driver = {
 	},
 };
 
-<<<<<<< HEAD
-static int __init pcwd_init_module(void)
-{
-	return isa_register_driver(&pcwd_isa_driver, PCWD_ISA_NR_CARDS);
-}
-
-static void __exit pcwd_cleanup_module(void)
-{
-	isa_unregister_driver(&pcwd_isa_driver);
-	pr_info("Watchdog Module Unloaded\n");
-}
-
-module_init(pcwd_init_module);
-module_exit(pcwd_cleanup_module);
-=======
 module_isa_driver(pcwd_isa_driver, PCWD_ISA_NR_CARDS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Ken Hollis <kenji@bitgate.com>, "
 		"Wim Van Sebroeck <wim@iguana.be>");
 MODULE_DESCRIPTION("Berkshire ISA-PC Watchdog driver");
 MODULE_VERSION(WATCHDOG_VERSION);
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-MODULE_ALIAS_MISCDEV(TEMP_MINOR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

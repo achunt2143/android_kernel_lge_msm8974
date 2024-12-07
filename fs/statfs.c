@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/syscalls.h>
 #include <linux/export.h>
 #include <linux/fs.h>
@@ -11,10 +8,7 @@
 #include <linux/statfs.h>
 #include <linux/security.h>
 #include <linux/uaccess.h>
-<<<<<<< HEAD
-=======
 #include <linux/compat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "internal.h"
 
 static int flags_by_mnt(int mnt_flags)
@@ -35,30 +29,20 @@ static int flags_by_mnt(int mnt_flags)
 		flags |= ST_NODIRATIME;
 	if (mnt_flags & MNT_RELATIME)
 		flags |= ST_RELATIME;
-<<<<<<< HEAD
-=======
 	if (mnt_flags & MNT_NOSYMFOLLOW)
 		flags |= ST_NOSYMFOLLOW;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return flags;
 }
 
 static int flags_by_sb(int s_flags)
 {
 	int flags = 0;
-<<<<<<< HEAD
-	if (s_flags & MS_SYNCHRONOUS)
-		flags |= ST_SYNCHRONOUS;
-	if (s_flags & MS_MANDLOCK)
-		flags |= ST_MANDLOCK;
-=======
 	if (s_flags & SB_SYNCHRONOUS)
 		flags |= ST_SYNCHRONOUS;
 	if (s_flags & SB_MANDLOCK)
 		flags |= ST_MANDLOCK;
 	if (s_flags & SB_RDONLY)
 		flags |= ST_RDONLY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return flags;
 }
 
@@ -85,9 +69,6 @@ static int statfs_by_dentry(struct dentry *dentry, struct kstatfs *buf)
 	return retval;
 }
 
-<<<<<<< HEAD
-int vfs_statfs(struct path *path, struct kstatfs *buf)
-=======
 int vfs_get_fsid(struct dentry *dentry, __kernel_fsid_t *fsid)
 {
 	struct kstatfs st;
@@ -103,7 +84,6 @@ int vfs_get_fsid(struct dentry *dentry, __kernel_fsid_t *fsid)
 EXPORT_SYMBOL(vfs_get_fsid);
 
 int vfs_statfs(const struct path *path, struct kstatfs *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 
@@ -117,12 +97,6 @@ EXPORT_SYMBOL(vfs_statfs);
 int user_statfs(const char __user *pathname, struct kstatfs *st)
 {
 	struct path path;
-<<<<<<< HEAD
-	int error = user_path_at(AT_FDCWD, pathname, LOOKUP_FOLLOW|LOOKUP_AUTOMOUNT, &path);
-	if (!error) {
-		error = vfs_statfs(&path, st);
-		path_put(&path);
-=======
 	int error;
 	unsigned int lookup_flags = LOOKUP_FOLLOW|LOOKUP_AUTOMOUNT;
 retry:
@@ -134,26 +108,17 @@ retry:
 			lookup_flags |= LOOKUP_REVAL;
 			goto retry;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return error;
 }
 
 int fd_statfs(int fd, struct kstatfs *st)
 {
-<<<<<<< HEAD
-	struct file *file = fget_raw(fd);
-	int error = -EBADF;
-	if (file) {
-		error = vfs_statfs(&file->f_path, st);
-		fput(file);
-=======
 	struct fd f = fdget_raw(fd);
 	int error = -EBADF;
 	if (f.file) {
 		error = vfs_statfs(&f.file->f_path, st);
 		fdput(f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return error;
 }
@@ -165,10 +130,7 @@ static int do_statfs_native(struct kstatfs *st, struct statfs __user *p)
 	if (sizeof(buf) == sizeof(*st))
 		memcpy(&buf, st, sizeof(*st));
 	else {
-<<<<<<< HEAD
-=======
 		memset(&buf, 0, sizeof(buf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sizeof buf.f_blocks == 4) {
 			if ((st->f_blocks | st->f_bfree | st->f_bavail |
 			     st->f_bsize | st->f_frsize) &
@@ -197,10 +159,6 @@ static int do_statfs_native(struct kstatfs *st, struct statfs __user *p)
 		buf.f_namelen = st->f_namelen;
 		buf.f_frsize = st->f_frsize;
 		buf.f_flags = st->f_flags;
-<<<<<<< HEAD
-		memset(buf.f_spare, 0, sizeof(buf.f_spare));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (copy_to_user(p, &buf, sizeof(buf)))
 		return -EFAULT;
@@ -213,10 +171,7 @@ static int do_statfs64(struct kstatfs *st, struct statfs64 __user *p)
 	if (sizeof(buf) == sizeof(*st))
 		memcpy(&buf, st, sizeof(*st));
 	else {
-<<<<<<< HEAD
-=======
 		memset(&buf, 0, sizeof(buf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		buf.f_type = st->f_type;
 		buf.f_bsize = st->f_bsize;
 		buf.f_blocks = st->f_blocks;
@@ -228,10 +183,6 @@ static int do_statfs64(struct kstatfs *st, struct statfs64 __user *p)
 		buf.f_namelen = st->f_namelen;
 		buf.f_frsize = st->f_frsize;
 		buf.f_flags = st->f_flags;
-<<<<<<< HEAD
-		memset(buf.f_spare, 0, sizeof(buf.f_spare));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (copy_to_user(p, &buf, sizeof(buf)))
 		return -EFAULT;
@@ -282,15 +233,9 @@ SYSCALL_DEFINE3(fstatfs64, unsigned int, fd, size_t, sz, struct statfs64 __user 
 	return error;
 }
 
-<<<<<<< HEAD
-int vfs_ustat(dev_t dev, struct kstatfs *sbuf)
-{
-	struct super_block *s = user_get_super(dev);
-=======
 static int vfs_ustat(dev_t dev, struct kstatfs *sbuf)
 {
 	struct super_block *s = user_get_super(dev, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	if (!s)
 		return -EINVAL;
@@ -310,12 +255,6 @@ SYSCALL_DEFINE2(ustat, unsigned, dev, struct ustat __user *, ubuf)
 
 	memset(&tmp,0,sizeof(struct ustat));
 	tmp.f_tfree = sbuf.f_bfree;
-<<<<<<< HEAD
-	tmp.f_tinode = sbuf.f_ffree;
-
-	return copy_to_user(ubuf, &tmp, sizeof(struct ustat)) ? -EFAULT : 0;
-}
-=======
 	if (IS_ENABLED(CONFIG_ARCH_32BIT_USTAT_F_TINODE))
 		tmp.f_tinode = min_t(u64, sbuf.f_ffree, UINT_MAX);
 	else
@@ -465,4 +404,3 @@ COMPAT_SYSCALL_DEFINE2(ustat, unsigned, dev, struct compat_ustat __user *, u)
 	return 0;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

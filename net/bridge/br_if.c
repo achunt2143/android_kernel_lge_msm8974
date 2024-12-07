@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Userspace interface
  *	Linux ethernet bridge
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -29,15 +18,11 @@
 #include <linux/rtnetlink.h>
 #include <linux/if_ether.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <net/sock.h>
-=======
 #include <net/dsa.h>
 #include <net/sock.h>
 #include <linux/if_vlan.h>
 #include <net/switchdev.h>
 #include <net/net_namespace.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "br_private.h"
 
@@ -49,16 +34,6 @@
  */
 static int port_cost(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct ethtool_cmd ecmd;
-
-	if (!__ethtool_get_settings(dev, &ecmd)) {
-		switch (ethtool_cmd_speed(&ecmd)) {
-		case SPEED_10000:
-			return 2;
-		case SPEED_1000:
-			return 4;
-=======
 	struct ethtool_link_ksettings ecmd;
 
 	if (!__ethtool_get_link_ksettings(dev, &ecmd)) {
@@ -71,19 +46,15 @@ static int port_cost(struct net_device *dev)
 			return 4;
 		case SPEED_1000:
 			return 5;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SPEED_100:
 			return 19;
 		case SPEED_10:
 			return 100;
-<<<<<<< HEAD
-=======
 		case SPEED_UNKNOWN:
 			return 100;
 		default:
 			if (ecmd.base.speed > SPEED_10000)
 				return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -98,40 +69,21 @@ static int port_cost(struct net_device *dev)
 }
 
 
-<<<<<<< HEAD
-/* Check for port carrier transistions. */
-void br_port_carrier_check(struct net_bridge_port *p)
-=======
 /* Check for port carrier transitions. */
 void br_port_carrier_check(struct net_bridge_port *p, bool *notified)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = p->dev;
 	struct net_bridge *br = p->br;
 
-<<<<<<< HEAD
-	if (netif_running(dev) && netif_carrier_ok(dev))
-		p->path_cost = port_cost(dev);
-
-=======
 	if (!(p->flags & BR_ADMIN_COST) &&
 	    netif_running(dev) && netif_oper_up(dev))
 		p->path_cost = port_cost(dev);
 
 	*notified = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!netif_running(br->dev))
 		return;
 
 	spin_lock_bh(&br->lock);
-<<<<<<< HEAD
-	if (netif_running(dev) && netif_carrier_ok(dev)) {
-		if (p->state == BR_STATE_DISABLED)
-			br_stp_enable_port(p);
-	} else {
-		if (p->state != BR_STATE_DISABLED)
-			br_stp_disable_port(p);
-=======
 	if (netif_running(dev) && netif_oper_up(dev)) {
 		if (p->state == BR_STATE_DISABLED) {
 			br_stp_enable_port(p);
@@ -142,13 +94,10 @@ void br_port_carrier_check(struct net_bridge_port *p, bool *notified)
 			br_stp_disable_port(p);
 			*notified = true;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_bh(&br->lock);
 }
 
-<<<<<<< HEAD
-=======
 static void br_port_set_promisc(struct net_bridge_port *p)
 {
 	int err = 0;
@@ -307,7 +256,6 @@ static void nbp_delete_promisc(struct net_bridge_port *p)
 		br_fdb_unsync_static(p->br, p);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void release_nbp(struct kobject *kobj)
 {
 	struct net_bridge_port *p
@@ -315,9 +263,6 @@ static void release_nbp(struct kobject *kobj)
 	kfree(p);
 }
 
-<<<<<<< HEAD
-static struct kobj_type brport_ktype = {
-=======
 static void brport_get_ownership(const struct kobject *kobj, kuid_t *uid, kgid_t *gid)
 {
 	struct net_bridge_port *p = kobj_to_brport(kobj);
@@ -326,15 +271,11 @@ static void brport_get_ownership(const struct kobject *kobj, kuid_t *uid, kgid_t
 }
 
 static const struct kobj_type brport_ktype = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SYSFS
 	.sysfs_ops = &brport_sysfs_ops,
 #endif
 	.release = release_nbp,
-<<<<<<< HEAD
-=======
 	.get_ownership = brport_get_ownership,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void destroy_nbp(struct net_bridge_port *p)
@@ -343,11 +284,7 @@ static void destroy_nbp(struct net_bridge_port *p)
 
 	p->br = NULL;
 	p->dev = NULL;
-<<<<<<< HEAD
-	dev_put(dev);
-=======
 	netdev_put(dev, &p->dev_tracker);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kobject_put(&p->kobj);
 }
@@ -359,8 +296,6 @@ static void destroy_nbp_rcu(struct rcu_head *head)
 	destroy_nbp(p);
 }
 
-<<<<<<< HEAD
-=======
 static unsigned get_max_headroom(struct net_bridge *br)
 {
 	unsigned max_headroom = 0;
@@ -386,7 +321,6 @@ static void update_headroom(struct net_bridge *br, int new_hr)
 	br->dev->needed_headroom = new_hr;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Delete port(interface) from bridge is done in two steps.
  * via RCU. First step, marks device as down. That deletes
  * all the timers and stops new packets from flowing through.
@@ -403,23 +337,12 @@ static void del_nbp(struct net_bridge_port *p)
 
 	sysfs_remove_link(br->ifobj, p->dev->name);
 
-<<<<<<< HEAD
-	dev_set_promiscuity(dev, -1);
-=======
 	nbp_delete_promisc(p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&br->lock);
 	br_stp_disable_port(p);
 	spin_unlock_bh(&br->lock);
 
-<<<<<<< HEAD
-	br_ifinfo_notify(RTM_DELLINK, p);
-
-	br_fdb_delete_by_port(br, p, 1);
-
-	list_del_rcu(&p->list);
-=======
 	br_mrp_port_del(br, p);
 	br_cfm_port_del(br, p);
 
@@ -438,17 +361,10 @@ static void del_nbp(struct net_bridge_port *p)
 	nbp_update_port_count(br);
 
 	netdev_upper_dev_unlink(dev, br->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->priv_flags &= ~IFF_BRIDGE_PORT;
 
 	netdev_rx_handler_unregister(dev);
-<<<<<<< HEAD
-	synchronize_net();
-
-	netdev_set_master(dev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	br_multicast_del_port(p);
 
@@ -470,17 +386,11 @@ void br_dev_delete(struct net_device *dev, struct list_head *head)
 		del_nbp(p);
 	}
 
-<<<<<<< HEAD
-	br_fdb_delete_by_port(br, NULL, 1);
-
-	del_timer_sync(&br->gc_timer);
-=======
 	br_recalculate_neigh_suppress_enabled(br);
 
 	br_fdb_delete_by_port(br, NULL, 0, 1);
 
 	cancel_delayed_work_sync(&br->gc_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	br_sysfs_delbr(br->dev);
 	unregister_netdevice_queue(br->dev, head);
@@ -493,19 +403,6 @@ static int find_portno(struct net_bridge *br)
 	struct net_bridge_port *p;
 	unsigned long *inuse;
 
-<<<<<<< HEAD
-	inuse = kcalloc(BITS_TO_LONGS(BR_MAX_PORTS), sizeof(unsigned long),
-			GFP_KERNEL);
-	if (!inuse)
-		return -ENOMEM;
-
-	set_bit(0, inuse);	/* zero is reserved */
-	list_for_each_entry(p, &br->port_list, list) {
-		set_bit(p->port_no, inuse);
-	}
-	index = find_first_zero_bit(inuse, BR_MAX_PORTS);
-	kfree(inuse);
-=======
 	inuse = bitmap_zalloc(BR_MAX_PORTS, GFP_KERNEL);
 	if (!inuse)
 		return -ENOMEM;
@@ -516,7 +413,6 @@ static int find_portno(struct net_bridge *br)
 
 	index = find_first_zero_bit(inuse, BR_MAX_PORTS);
 	bitmap_free(inuse);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (index >= BR_MAX_PORTS) ? -EXFULL : index;
 }
@@ -525,13 +421,8 @@ static int find_portno(struct net_bridge *br)
 static struct net_bridge_port *new_nbp(struct net_bridge *br,
 				       struct net_device *dev)
 {
-<<<<<<< HEAD
-	int index;
-	struct net_bridge_port *p;
-=======
 	struct net_bridge_port *p;
 	int index, err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	index = find_portno(br);
 	if (index < 0)
@@ -542,22 +433,11 @@ static struct net_bridge_port *new_nbp(struct net_bridge *br,
 		return ERR_PTR(-ENOMEM);
 
 	p->br = br;
-<<<<<<< HEAD
-	dev_hold(dev);
-=======
 	netdev_hold(dev, &p->dev_tracker, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p->dev = dev;
 	p->path_cost = port_cost(dev);
 	p->priority = 0x8000 >> BR_PORT_BITS;
 	p->port_no = index;
-<<<<<<< HEAD
-	p->flags = 0;
-	br_init_port(p);
-	p->state = BR_STATE_DISABLED;
-	br_stp_port_timer_init(p);
-	br_multicast_add_port(p);
-=======
 	p->flags = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
 	br_init_port(p);
 	br_set_state(p, BR_STATE_DISABLED);
@@ -568,7 +448,6 @@ static struct net_bridge_port *new_nbp(struct net_bridge *br,
 		kfree(p);
 		p = ERR_PTR(err);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return p;
 }
@@ -578,11 +457,7 @@ int br_add_bridge(struct net *net, const char *name)
 	struct net_device *dev;
 	int res;
 
-<<<<<<< HEAD
-	dev = alloc_netdev(sizeof(struct net_bridge), name,
-=======
 	dev = alloc_netdev(sizeof(struct net_bridge), name, NET_NAME_UNKNOWN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   br_dev_setup);
 
 	if (!dev)
@@ -591,11 +466,7 @@ int br_add_bridge(struct net *net, const char *name)
 	dev_net_set(dev, net);
 	dev->rtnl_link_ops = &br_link_ops;
 
-<<<<<<< HEAD
-	res = register_netdev(dev);
-=======
 	res = register_netdevice(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res)
 		free_netdev(dev);
 	return res;
@@ -606,19 +477,11 @@ int br_del_bridge(struct net *net, const char *name)
 	struct net_device *dev;
 	int ret = 0;
 
-<<<<<<< HEAD
-	rtnl_lock();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev = __dev_get_by_name(net, name);
 	if (dev == NULL)
 		ret =  -ENXIO; 	/* Could not find device */
 
-<<<<<<< HEAD
-	else if (!(dev->priv_flags & IFF_EBRIDGE)) {
-=======
 	else if (!netif_is_bridge_master(dev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Attempt to delete non bridge device! */
 		ret = -EPERM;
 	}
@@ -631,32 +494,10 @@ int br_del_bridge(struct net *net, const char *name)
 	else
 		br_dev_delete(dev, NULL);
 
-<<<<<<< HEAD
-	rtnl_unlock();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /* MTU of the bridge pseudo-device: ETH_DATA_LEN or the minimum of the ports */
-<<<<<<< HEAD
-int br_min_mtu(const struct net_bridge *br)
-{
-	const struct net_bridge_port *p;
-	int mtu = 0;
-
-	ASSERT_RTNL();
-
-	if (list_empty(&br->port_list))
-		mtu = ETH_DATA_LEN;
-	else {
-		list_for_each_entry(p, &br->port_list, list) {
-			if (!mtu  || p->dev->mtu < mtu)
-				mtu = p->dev->mtu;
-		}
-	}
-	return mtu;
-=======
 static int br_mtu_min(const struct net_bridge *br)
 {
 	const struct net_bridge_port *p;
@@ -696,7 +537,6 @@ static void br_set_gso_limits(struct net_bridge *br)
 	}
 	netif_set_tso_max_size(br->dev, tso_max_size);
 	netif_set_tso_max_segs(br->dev, tso_max_segs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -718,24 +558,12 @@ netdev_features_t br_features_recompute(struct net_bridge *br,
 		features = netdev_increment_features(features,
 						     p->dev->features, mask);
 	}
-<<<<<<< HEAD
-=======
 	features = netdev_add_tso_features(features, mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return features;
 }
 
 /* called with RTNL */
-<<<<<<< HEAD
-int br_add_if(struct net_bridge *br, struct net_device *dev)
-{
-	struct net_bridge_port *p;
-	int err = 0;
-	bool changed_addr;
-
-	/* Don't allow bridging non-ethernet like devices */
-=======
 int br_add_if(struct net_bridge *br, struct net_device *dev,
 	      struct netlink_ext_ack *extack)
 {
@@ -745,25 +573,12 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
 	bool changed_addr, fdb_synced = false;
 
 	/* Don't allow bridging non-ethernet like devices. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((dev->flags & IFF_LOOPBACK) ||
 	    dev->type != ARPHRD_ETHER || dev->addr_len != ETH_ALEN ||
 	    !is_valid_ether_addr(dev->dev_addr))
 		return -EINVAL;
 
 	/* No bridging of bridges */
-<<<<<<< HEAD
-	if (dev->netdev_ops->ndo_start_xmit == br_dev_xmit)
-		return -ELOOP;
-
-	/* Device is already being bridged */
-	if (br_port_exists(dev))
-		return -EBUSY;
-
-	/* No bridging devices that dislike that (e.g. wireless) */
-	if (dev->priv_flags & IFF_DONT_BRIDGE)
-		return -EOPNOTSUPP;
-=======
 	if (dev->netdev_ops->ndo_start_xmit == br_dev_xmit) {
 		NL_SET_ERR_MSG(extack,
 			       "Can not enslave a bridge to a bridge");
@@ -780,7 +595,6 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
 			       "Device does not allow enslaving to a bridge");
 		return -EOPNOTSUPP;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = new_nbp(br, dev);
 	if (IS_ERR(p))
@@ -788,11 +602,6 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
 
 	call_netdevice_notifiers(NETDEV_JOIN, dev);
 
-<<<<<<< HEAD
-	err = dev_set_promiscuity(dev, 1);
-	if (err)
-		goto put_back;
-=======
 	err = dev_set_allmulti(dev, 1);
 	if (err) {
 		br_multicast_del_port(p);
@@ -800,61 +609,34 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
 		kfree(p);	/* kobject not yet init'd, manually free */
 		goto err1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = kobject_init_and_add(&p->kobj, &brport_ktype, &(dev->dev.kobj),
 				   SYSFS_BRIDGE_PORT_ATTR);
 	if (err)
-<<<<<<< HEAD
-		goto err1;
-=======
 		goto err2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = br_sysfs_addif(p);
 	if (err)
 		goto err2;
 
-<<<<<<< HEAD
-	if (br_netpoll_info(br) && ((err = br_netpoll_enable(p))))
-		goto err3;
-
-	err = netdev_set_master(dev, br->dev);
-	if (err)
-		goto err3;
-
-	err = netdev_rx_handler_register(dev, br_handle_frame, p);
-=======
 	err = br_netpoll_enable(p);
 	if (err)
 		goto err3;
 
 	err = netdev_rx_handler_register(dev, br_get_rx_handler(dev), p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto err4;
 
 	dev->priv_flags |= IFF_BRIDGE_PORT;
 
-<<<<<<< HEAD
-=======
 	err = netdev_master_upper_dev_link(dev, br->dev, NULL, NULL, extack);
 	if (err)
 		goto err5;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_disable_lro(dev);
 
 	list_add_rcu(&p->list, &br->port_list);
 
-<<<<<<< HEAD
-	netdev_update_features(br->dev);
-
-	spin_lock_bh(&br->lock);
-	changed_addr = br_stp_recalculate_bridge_id(br);
-
-	if ((dev->flags & IFF_UP) && netif_carrier_ok(dev) &&
-=======
 	nbp_update_port_count(br);
 	if (!br_promisc_port(p) && (p->dev->priv_flags & IFF_UNICAST_FLT)) {
 		/* When updating the port count we also update all ports'
@@ -901,48 +683,22 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
 	changed_addr = br_stp_recalculate_bridge_id(br);
 
 	if (netif_running(dev) && netif_oper_up(dev) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (br->dev->flags & IFF_UP))
 		br_stp_enable_port(p);
 	spin_unlock_bh(&br->lock);
 
-<<<<<<< HEAD
-	br_ifinfo_notify(RTM_NEWLINK, p);
-=======
 	br_ifinfo_notify(RTM_NEWLINK, NULL, p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (changed_addr)
 		call_netdevice_notifiers(NETDEV_CHANGEADDR, br->dev);
 
-<<<<<<< HEAD
-	dev_set_mtu(br->dev, br_min_mtu(br));
-
-	if (br_fdb_insert(br, p, dev->dev_addr))
-		netdev_err(dev, "failed insert local address bridge forwarding table\n");
-=======
 	br_mtu_auto_adjust(br);
 	br_set_gso_limits(br);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kobject_uevent(&p->kobj, KOBJ_ADD);
 
 	return 0;
 
-<<<<<<< HEAD
-err4:
-	netdev_set_master(dev, NULL);
-err3:
-	sysfs_remove_link(br->ifobj, p->dev->name);
-err2:
-	kobject_put(&p->kobj);
-	p = NULL; /* kobject_put frees */
-err1:
-	dev_set_promiscuity(dev, -1);
-put_back:
-	dev_put(dev);
-	kfree(p);
-=======
 err6:
 	if (fdb_synced)
 		br_fdb_unsync_static(br, p);
@@ -963,7 +719,6 @@ err2:
 	kobject_put(&p->kobj);
 	dev_set_allmulti(dev, -1);
 err1:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -977,10 +732,6 @@ int br_del_if(struct net_bridge *br, struct net_device *dev)
 	if (!p || p->br != br)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	del_nbp(p);
-
-=======
 	/* Since more than one interface can be attached to a bridge,
 	 * there still maybe an alternate path for netconsole to use;
 	 * therefore there is no reason for a NETDEV_RELEASE event.
@@ -990,7 +741,6 @@ int br_del_if(struct net_bridge *br, struct net_device *dev)
 	br_mtu_auto_adjust(br);
 	br_set_gso_limits(br);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_bh(&br->lock);
 	changed_addr = br_stp_recalculate_bridge_id(br);
 	spin_unlock_bh(&br->lock);
@@ -1003,22 +753,6 @@ int br_del_if(struct net_bridge *br, struct net_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-void __net_exit br_net_exit(struct net *net)
-{
-	struct net_device *dev;
-	LIST_HEAD(list);
-
-	rtnl_lock();
-	for_each_netdev(net, dev)
-		if (dev->priv_flags & IFF_EBRIDGE)
-			br_dev_delete(dev, &list);
-
-	unregister_netdevice_many(&list);
-	rtnl_unlock();
-
-}
-=======
 void br_port_flags_change(struct net_bridge_port *p, unsigned long mask)
 {
 	struct net_bridge *br = p->br;
@@ -1041,4 +775,3 @@ bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag)
 	return p->flags & flag;
 }
 EXPORT_SYMBOL_GPL(br_port_flag_is_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

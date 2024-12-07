@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_SCATTERLIST_H
 #define _LINUX_SCATTERLIST_H
 
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/bug.h>
-#include <linux/mm.h>
-
-#include <asm/types.h>
-#include <asm/scatterlist.h>
-#include <asm/io.h>
-
-=======
 #include <linux/types.h>
 #include <linux/bug.h>
 #include <linux/mm.h>
@@ -48,22 +36,12 @@ struct scatterlist {
 #define sg_dma_len(sg)		((sg)->length)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sg_table {
 	struct scatterlist *sgl;	/* the list */
 	unsigned int nents;		/* number of mapped entries */
 	unsigned int orig_nents;	/* original size of list */
 };
 
-<<<<<<< HEAD
-/*
- * Notes on SG table design.
- *
- * Architectures must provide an unsigned long page_link field in the
- * scatterlist struct. We use that to place the page pointer AND encode
- * information about the sg table as well. The two lower bits are reserved
- * for this information.
-=======
 struct sg_append_table {
 	struct sg_table sgt;		/* The scatter list table */
 	struct scatterlist *prv;	/* last populated sge in the table */
@@ -76,7 +54,6 @@ struct sg_append_table {
  * We use the unsigned long page_link field in the scatterlist struct to place
  * the page pointer AND encode information about the sg table as well. The two
  * lower bits are reserved for this information.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If bit 0 is set, then the page_link contains a pointer to the next sg
  * table list. Otherwise the next entry is at sg + 1.
@@ -87,24 +64,14 @@ struct sg_append_table {
  *
  */
 
-<<<<<<< HEAD
-#define SG_MAGIC	0x87654321
-=======
 #define SG_CHAIN	0x01UL
 #define SG_END		0x02UL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We overload the LSB of the page pointer to indicate whether it's
  * a valid sg entry, or whether it points to the start of a new scatterlist.
  * Those low bits are there for everyone! (thanks mason :-)
  */
-<<<<<<< HEAD
-#define sg_is_chain(sg)		((sg)->page_link & 0x01)
-#define sg_is_last(sg)		((sg)->page_link & 0x02)
-#define sg_chain_ptr(sg)	\
-	((struct scatterlist *) ((sg)->page_link & ~0x03))
-=======
 #define SG_PAGE_LINK_MASK (SG_CHAIN | SG_END)
 
 static inline unsigned int __sg_flags(struct scatterlist *sg)
@@ -126,7 +93,6 @@ static inline bool sg_is_last(struct scatterlist *sg)
 {
 	return __sg_flags(sg) & SG_END;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * sg_assign_page - Assign a given page to an SG entry
@@ -140,24 +106,14 @@ static inline bool sg_is_last(struct scatterlist *sg)
  **/
 static inline void sg_assign_page(struct scatterlist *sg, struct page *page)
 {
-<<<<<<< HEAD
-	unsigned long page_link = sg->page_link & 0x3;
-=======
 	unsigned long page_link = sg->page_link & (SG_CHAIN | SG_END);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * In order for the low bit stealing approach to work, pages
 	 * must be aligned at a 32-bit boundary as a minimum.
 	 */
-<<<<<<< HEAD
-	BUG_ON((unsigned long) page & 0x03);
-#ifdef CONFIG_DEBUG_SG
-	BUG_ON(sg->sg_magic != SG_MAGIC);
-=======
 	BUG_ON((unsigned long)page & SG_PAGE_LINK_MASK);
 #ifdef CONFIG_DEBUG_SG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(sg_is_chain(sg));
 #endif
 	sg->page_link = page_link | (unsigned long) page;
@@ -185,15 +141,6 @@ static inline void sg_set_page(struct scatterlist *sg, struct page *page,
 	sg->length = len;
 }
 
-<<<<<<< HEAD
-static inline struct page *sg_page(struct scatterlist *sg)
-{
-#ifdef CONFIG_DEBUG_SG
-	BUG_ON(sg->sg_magic != SG_MAGIC);
-	BUG_ON(sg_is_chain(sg));
-#endif
-	return (struct page *)((sg)->page_link & ~0x3);
-=======
 /**
  * sg_set_folio - Set sg entry to point at given folio
  * @sg:		 SG entry
@@ -224,7 +171,6 @@ static inline struct page *sg_page(struct scatterlist *sg)
 	BUG_ON(sg_is_chain(sg));
 #endif
 	return (struct page *)((sg)->page_link & ~SG_PAGE_LINK_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -237,12 +183,9 @@ static inline struct page *sg_page(struct scatterlist *sg)
 static inline void sg_set_buf(struct scatterlist *sg, const void *buf,
 			      unsigned int buflen)
 {
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_DEBUG_SG
 	BUG_ON(!virt_addr_valid(buf));
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sg_set_page(sg, virt_to_page(buf), buflen, offset_in_page(buf));
 }
 
@@ -252,8 +195,6 @@ static inline void sg_set_buf(struct scatterlist *sg, const void *buf,
 #define for_each_sg(sglist, sg, nr, __i)	\
 	for (__i = 0, sg = (sglist); __i < (nr); __i++, sg = sg_next(sg))
 
-<<<<<<< HEAD
-=======
 /*
  * Loop over each sg element in the given sg_table object.
  */
@@ -284,7 +225,6 @@ static inline void __sg_chain(struct scatterlist *chain_sg,
 	chain_sg->page_link = ((unsigned long) sgl | SG_CHAIN) & ~SG_END;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * sg_chain - Chain two sglists together
  * @prv:	First scatterlist
@@ -298,25 +238,7 @@ static inline void __sg_chain(struct scatterlist *chain_sg,
 static inline void sg_chain(struct scatterlist *prv, unsigned int prv_nents,
 			    struct scatterlist *sgl)
 {
-<<<<<<< HEAD
-#ifndef ARCH_HAS_SG_CHAIN
-	BUG();
-#endif
-
-	/*
-	 * offset and length are unused for chain entry.  Clear them.
-	 */
-	prv[prv_nents - 1].offset = 0;
-	prv[prv_nents - 1].length = 0;
-
-	/*
-	 * Set lowest bit to indicate a link pointer, and make sure to clear
-	 * the termination bit if it happens to be set.
-	 */
-	prv[prv_nents - 1].page_link = ((unsigned long) sgl | 0x01) & ~0x02;
-=======
 	__sg_chain(&prv[prv_nents - 1], sgl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -330,19 +252,6 @@ static inline void sg_chain(struct scatterlist *prv, unsigned int prv_nents,
  **/
 static inline void sg_mark_end(struct scatterlist *sg)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_DEBUG_SG
-	BUG_ON(sg->sg_magic != SG_MAGIC);
-#endif
-	/*
-	 * Set termination bit, clear potential chain bit
-	 */
-	sg->page_link |= 0x02;
-	sg->page_link &= ~0x01;
-}
-
-/**
-=======
 	/*
 	 * Set termination bit, clear potential chain bit
 	 */
@@ -466,7 +375,6 @@ static inline void sg_dma_mark_swiotlb(struct scatterlist *sg)
 #endif	/* CONFIG_NEED_SG_DMA_FLAGS */
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * sg_phys - Return physical address of an sg entry
  * @sg:	     SG entry
  *
@@ -496,8 +404,6 @@ static inline void *sg_virt(struct scatterlist *sg)
 	return page_address(sg_page(sg)) + sg->offset;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * sg_init_marker - Initialize markers in sg table
  * @sgl:	   The SG table
@@ -512,36 +418,19 @@ static inline void sg_init_marker(struct scatterlist *sgl,
 
 int sg_nents(struct scatterlist *sg);
 int sg_nents_for_len(struct scatterlist *sg, u64 len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct scatterlist *sg_next(struct scatterlist *);
 struct scatterlist *sg_last(struct scatterlist *s, unsigned int);
 void sg_init_table(struct scatterlist *, unsigned int);
 void sg_init_one(struct scatterlist *, const void *, unsigned int);
-<<<<<<< HEAD
-=======
 int sg_split(struct scatterlist *in, const int in_mapped_nents,
 	     const off_t skip, const int nb_splits,
 	     const size_t *split_sizes,
 	     struct scatterlist **out, int *out_mapped_nents,
 	     gfp_t gfp_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct scatterlist *(sg_alloc_fn)(unsigned int, gfp_t);
 typedef void (sg_free_fn)(struct scatterlist *, unsigned int);
 
-<<<<<<< HEAD
-void __sg_free_table(struct sg_table *, unsigned int, sg_free_fn *);
-void sg_free_table(struct sg_table *);
-int __sg_alloc_table(struct sg_table *, unsigned int, unsigned int, gfp_t,
-		     sg_alloc_fn *);
-int sg_alloc_table(struct sg_table *, unsigned int, gfp_t);
-
-size_t sg_copy_from_buffer(struct scatterlist *sgl, unsigned int nents,
-			   void *buf, size_t buflen);
-size_t sg_copy_to_buffer(struct scatterlist *sgl, unsigned int nents,
-			 void *buf, size_t buflen);
-
-=======
 void __sg_free_table(struct sg_table *, unsigned int, unsigned int,
 		     sg_free_fn *, unsigned int);
 void sg_free_table(struct sg_table *);
@@ -615,15 +504,12 @@ size_t sg_pcopy_to_buffer(struct scatterlist *sgl, unsigned int nents,
 size_t sg_zero_buffer(struct scatterlist *sgl, unsigned int nents,
 		       size_t buflen, off_t skip);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Maximum number of entries that will be allocated in one piece, if
  * a list larger than this is required then chaining will be utilized.
  */
 #define SG_MAX_SINGLE_ALLOC		(PAGE_SIZE / sizeof(struct scatterlist))
 
-<<<<<<< HEAD
-=======
 /*
  * The maximum number of SG segments that we will put inside a
  * scatterlist (unless chaining is used). Should ideally fit inside a
@@ -765,7 +651,6 @@ sg_page_iter_dma_address(struct sg_dma_page_iter *dma_iter)
 #define for_each_sgtable_dma_page(sgt, dma_iter, pgoffset)	\
 	for_each_sg_dma_page((sgt)->sgl, dma_iter, (sgt)->nents, pgoffset)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Mapping sg iterator
@@ -773,11 +658,7 @@ sg_page_iter_dma_address(struct sg_dma_page_iter *dma_iter)
  * Iterates over sg entries mapping page-by-page.  On each successful
  * iteration, @miter->page points to the mapped page and
  * @miter->length bytes of data can be accessed at @miter->addr.  As
-<<<<<<< HEAD
- * long as an interation is enclosed between start and stop, the user
-=======
  * long as an iteration is enclosed between start and stop, the user
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * is free to choose control structure and when to stop.
  *
  * @miter->consumed is set to @miter->length on each iteration.  It
@@ -797,28 +678,17 @@ struct sg_mapping_iter {
 	void			*addr;		/* pointer to the mapped area */
 	size_t			length;		/* length of the mapped area */
 	size_t			consumed;	/* number of consumed bytes */
-<<<<<<< HEAD
-
-	/* these are internal states, keep away */
-	struct scatterlist	*__sg;		/* current entry */
-	unsigned int		__nents;	/* nr of remaining entries */
-	unsigned int		__offset;	/* offset within sg */
-=======
 	struct sg_page_iter	piter;		/* page iterator */
 
 	/* these are internal states, keep away */
 	unsigned int		__offset;	/* offset within page */
 	unsigned int		__remaining;	/* remaining bytes on page */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		__flags;
 };
 
 void sg_miter_start(struct sg_mapping_iter *miter, struct scatterlist *sgl,
 		    unsigned int nents, unsigned int flags);
-<<<<<<< HEAD
-=======
 bool sg_miter_skip(struct sg_mapping_iter *miter, off_t offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool sg_miter_next(struct sg_mapping_iter *miter);
 void sg_miter_stop(struct sg_mapping_iter *miter);
 

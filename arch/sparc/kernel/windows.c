@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* windows.c: Routines to deal with register window management
  *            at the C-code level.
  *
@@ -14,14 +11,10 @@
 #include <linux/mm.h>
 #include <linux/smp.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <asm/cacheflush.h>
 #include <linux/uaccess.h>
 
 #include "kernel.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Do save's until all user register windows are out of the cpu. */
 void flush_user_windows(void)
@@ -128,15 +121,10 @@ void try_to_clear_window_buffer(struct pt_regs *regs, int who)
 
 		if ((sp & 7) ||
 		    copy_to_user((char __user *) sp, &tp->reg_window[window],
-<<<<<<< HEAD
-				 sizeof(struct reg_window32)))
-			do_exit(SIGILL);
-=======
 				 sizeof(struct reg_window32))) {
 			force_exit_sig(SIGILL);
 			return;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	tp->w_saved = 0;
 }

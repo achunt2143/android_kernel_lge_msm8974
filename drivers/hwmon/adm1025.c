@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * adm1025.c
  *
  * Copyright (C) 2000       Chen-Yuan Wu <gwu@esoft.com>
-<<<<<<< HEAD
- * Copyright (C) 2003-2009  Jean Delvare <khali@linux-fr.org>
-=======
  * Copyright (C) 2003-2009  Jean Delvare <jdelvare@suse.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The ADM1025 is a sensor chip made by Analog Devices. It reports up to 6
  * voltages (including its own power source) and up to two temperatures
@@ -20,11 +13,7 @@
  * resolution of about 0.5% of the nominal value). Temperature values are
  * reported with a 1 deg resolution and a 3 deg accuracy. Complete
  * datasheet can be obtained from Analog's website at:
-<<<<<<< HEAD
- *   http://www.onsemi.com/PowerSolutions/product.do?id=ADM1025
-=======
  *   https://www.onsemi.com/PowerSolutions/product.do?id=ADM1025
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This driver also supports the ADM1025A, which differs from the ADM1025
  * only in that it has "open-drain VID inputs while the ADM1025 has
@@ -41,23 +30,6 @@
  * Since the ADM1025 was the first chipset supported by this driver, most
  * comments will refer to this chipset, but are actually general and
  * concern all supported chipsets, unless mentioned otherwise.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -108,11 +80,7 @@ static const int in_scale[6] = { 2500, 2250, 3300, 5000, 12000, 3300 };
 
 #define IN_FROM_REG(reg, scale)	(((reg) * (scale) + 96) / 192)
 #define IN_TO_REG(val, scale)	((val) <= 0 ? 0 : \
-<<<<<<< HEAD
-				 (val) * 192 >= (scale) * 255 ? 255 : \
-=======
 				 (val) >= (scale) * 255 / 192 ? 255 : \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 ((val) * 192 + (scale) / 2) / (scale))
 
 #define TEMP_FROM_REG(reg)	((reg) * 1000)
@@ -122,58 +90,14 @@ static const int in_scale[6] = { 2500, 2250, 3300, 5000, 12000, 3300 };
 				   (val) + 500) / 1000))
 
 /*
-<<<<<<< HEAD
- * Functions declaration
- */
-
-static int adm1025_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id);
-static int adm1025_detect(struct i2c_client *client,
-			  struct i2c_board_info *info);
-static void adm1025_init_client(struct i2c_client *client);
-static int adm1025_remove(struct i2c_client *client);
-static struct adm1025_data *adm1025_update_device(struct device *dev);
-
-/*
- * Driver data (common to all clients)
- */
-
-static const struct i2c_device_id adm1025_id[] = {
-	{ "adm1025", adm1025 },
-	{ "ne1619", ne1619 },
-	{ }
-};
-MODULE_DEVICE_TABLE(i2c, adm1025_id);
-
-static struct i2c_driver adm1025_driver = {
-	.class		= I2C_CLASS_HWMON,
-	.driver = {
-		.name	= "adm1025",
-	},
-	.probe		= adm1025_probe,
-	.remove		= adm1025_remove,
-	.id_table	= adm1025_id,
-	.detect		= adm1025_detect,
-	.address_list	= normal_i2c,
-};
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Client data (each client gets its own)
  */
 
 struct adm1025_data {
-<<<<<<< HEAD
-	struct device *hwmon_dev;
-	struct mutex update_lock;
-	char valid; /* zero until following fields are valid */
-=======
 	struct i2c_client *client;
 	const struct attribute_group *groups[3];
 	struct mutex update_lock;
 	bool valid; /* false until following fields are valid */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated; /* in jiffies */
 
 	u8 in[6];		/* register value */
@@ -187,8 +111,6 @@ struct adm1025_data {
 	u8 vrm;
 };
 
-<<<<<<< HEAD
-=======
 static struct adm1025_data *adm1025_update_device(struct device *dev)
 {
 	struct adm1025_data *data = dev_get_drvdata(dev);
@@ -234,17 +156,12 @@ static struct adm1025_data *adm1025_update_device(struct device *dev)
 	return data;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sysfs stuff
  */
 
 static ssize_t
-<<<<<<< HEAD
-show_in(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 in_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(attr)->index;
 	struct adm1025_data *data = adm1025_update_device(dev);
@@ -253,11 +170,7 @@ in_show(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-<<<<<<< HEAD
-show_in_min(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 in_min_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(attr)->index;
 	struct adm1025_data *data = adm1025_update_device(dev);
@@ -266,11 +179,7 @@ in_min_show(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-<<<<<<< HEAD
-show_in_max(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 in_max_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(attr)->index;
 	struct adm1025_data *data = adm1025_update_device(dev);
@@ -279,11 +188,7 @@ in_max_show(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-<<<<<<< HEAD
-show_temp(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 temp_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(attr)->index;
 	struct adm1025_data *data = adm1025_update_device(dev);
@@ -291,11 +196,7 @@ temp_show(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-<<<<<<< HEAD
-show_temp_min(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 temp_min_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(attr)->index;
 	struct adm1025_data *data = adm1025_update_device(dev);
@@ -303,32 +204,19 @@ temp_min_show(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-<<<<<<< HEAD
-show_temp_max(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 temp_max_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(attr)->index;
 	struct adm1025_data *data = adm1025_update_device(dev);
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp_max[index]));
 }
 
-<<<<<<< HEAD
-static ssize_t set_in_min(struct device *dev, struct device_attribute *attr,
-			  const char *buf, size_t count)
-{
-	int index = to_sensor_dev_attr(attr)->index;
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adm1025_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t in_min_store(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
 	int index = to_sensor_dev_attr(attr)->index;
 	struct adm1025_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long val;
 	int err;
 
@@ -344,21 +232,12 @@ static ssize_t in_min_store(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t set_in_max(struct device *dev, struct device_attribute *attr,
-			  const char *buf, size_t count)
-{
-	int index = to_sensor_dev_attr(attr)->index;
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adm1025_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t in_max_store(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
 	int index = to_sensor_dev_attr(attr)->index;
 	struct adm1025_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long val;
 	int err;
 
@@ -374,28 +253,6 @@ static ssize_t in_max_store(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-<<<<<<< HEAD
-#define set_in(offset) \
-static SENSOR_DEVICE_ATTR(in##offset##_input, S_IRUGO, \
-	show_in, NULL, offset); \
-static SENSOR_DEVICE_ATTR(in##offset##_min, S_IWUSR | S_IRUGO, \
-	show_in_min, set_in_min, offset); \
-static SENSOR_DEVICE_ATTR(in##offset##_max, S_IWUSR | S_IRUGO, \
-	show_in_max, set_in_max, offset)
-set_in(0);
-set_in(1);
-set_in(2);
-set_in(3);
-set_in(4);
-set_in(5);
-
-static ssize_t set_temp_min(struct device *dev, struct device_attribute *attr,
-			    const char *buf, size_t count)
-{
-	int index = to_sensor_dev_attr(attr)->index;
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adm1025_data *data = i2c_get_clientdata(client);
-=======
 static SENSOR_DEVICE_ATTR_RO(in0_input, in, 0);
 static SENSOR_DEVICE_ATTR_RW(in0_min, in_min, 0);
 static SENSOR_DEVICE_ATTR_RW(in0_max, in_max, 0);
@@ -422,7 +279,6 @@ static ssize_t temp_min_store(struct device *dev,
 	int index = to_sensor_dev_attr(attr)->index;
 	struct adm1025_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long val;
 	int err;
 
@@ -438,14 +294,6 @@ static ssize_t temp_min_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t set_temp_max(struct device *dev, struct device_attribute *attr,
-	const char *buf, size_t count)
-{
-	int index = to_sensor_dev_attr(attr)->index;
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adm1025_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t temp_max_store(struct device *dev,
 			      struct device_attribute *attr, const char *buf,
 			      size_t count)
@@ -453,7 +301,6 @@ static ssize_t temp_max_store(struct device *dev,
 	int index = to_sensor_dev_attr(attr)->index;
 	struct adm1025_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long val;
 	int err;
 
@@ -469,20 +316,6 @@ static ssize_t temp_max_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-#define set_temp(offset) \
-static SENSOR_DEVICE_ATTR(temp##offset##_input, S_IRUGO, \
-	show_temp, NULL, offset - 1); \
-static SENSOR_DEVICE_ATTR(temp##offset##_min, S_IWUSR | S_IRUGO, \
-	show_temp_min, set_temp_min, offset - 1); \
-static SENSOR_DEVICE_ATTR(temp##offset##_max, S_IWUSR | S_IRUGO, \
-	show_temp_max, set_temp_max, offset - 1)
-set_temp(1);
-set_temp(2);
-
-static ssize_t
-show_alarms(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 static SENSOR_DEVICE_ATTR_RO(temp1_input, temp, 0);
 static SENSOR_DEVICE_ATTR_RW(temp1_min, temp_min, 0);
 static SENSOR_DEVICE_ATTR_RW(temp1_max, temp_max, 0);
@@ -492,41 +325,19 @@ static SENSOR_DEVICE_ATTR_RW(temp2_max, temp_max, 1);
 
 static ssize_t
 alarms_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adm1025_data *data = adm1025_update_device(dev);
 	return sprintf(buf, "%u\n", data->alarms);
 }
-<<<<<<< HEAD
-static DEVICE_ATTR(alarms, S_IRUGO, show_alarms, NULL);
-
-static ssize_t
-show_alarm(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 static DEVICE_ATTR_RO(alarms);
 
 static ssize_t
 alarm_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int bitnr = to_sensor_dev_attr(attr)->index;
 	struct adm1025_data *data = adm1025_update_device(dev);
 	return sprintf(buf, "%u\n", (data->alarms >> bitnr) & 1);
 }
-<<<<<<< HEAD
-static SENSOR_DEVICE_ATTR(in0_alarm, S_IRUGO, show_alarm, NULL, 0);
-static SENSOR_DEVICE_ATTR(in1_alarm, S_IRUGO, show_alarm, NULL, 1);
-static SENSOR_DEVICE_ATTR(in2_alarm, S_IRUGO, show_alarm, NULL, 2);
-static SENSOR_DEVICE_ATTR(in3_alarm, S_IRUGO, show_alarm, NULL, 3);
-static SENSOR_DEVICE_ATTR(in4_alarm, S_IRUGO, show_alarm, NULL, 8);
-static SENSOR_DEVICE_ATTR(in5_alarm, S_IRUGO, show_alarm, NULL, 9);
-static SENSOR_DEVICE_ATTR(temp1_alarm, S_IRUGO, show_alarm, NULL, 5);
-static SENSOR_DEVICE_ATTR(temp2_alarm, S_IRUGO, show_alarm, NULL, 4);
-static SENSOR_DEVICE_ATTR(temp1_fault, S_IRUGO, show_alarm, NULL, 14);
-
-static ssize_t
-show_vid(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 static SENSOR_DEVICE_ATTR_RO(in0_alarm, alarm, 0);
 static SENSOR_DEVICE_ATTR_RO(in1_alarm, alarm, 1);
 static SENSOR_DEVICE_ATTR_RO(in2_alarm, alarm, 2);
@@ -539,33 +350,20 @@ static SENSOR_DEVICE_ATTR_RO(temp1_fault, alarm, 14);
 
 static ssize_t
 cpu0_vid_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adm1025_data *data = adm1025_update_device(dev);
 	return sprintf(buf, "%u\n", vid_from_reg(data->vid, data->vrm));
 }
-<<<<<<< HEAD
-static DEVICE_ATTR(cpu0_vid, S_IRUGO, show_vid, NULL);
-
-static ssize_t
-show_vrm(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 static DEVICE_ATTR_RO(cpu0_vid);
 
 static ssize_t
 vrm_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adm1025_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%u\n", data->vrm);
 }
-<<<<<<< HEAD
-static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
-		       const char *buf, size_t count)
-=======
 static ssize_t vrm_store(struct device *dev, struct device_attribute *attr,
 			 const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adm1025_data *data = dev_get_drvdata(dev);
 	unsigned long val;
@@ -575,12 +373,6 @@ static ssize_t vrm_store(struct device *dev, struct device_attribute *attr,
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	data->vrm = val;
-	return count;
-}
-static DEVICE_ATTR(vrm, S_IRUGO | S_IWUSR, show_vrm, set_vrm);
-=======
 	if (val > 255)
 		return -EINVAL;
 
@@ -588,7 +380,6 @@ static DEVICE_ATTR(vrm, S_IRUGO | S_IWUSR, show_vrm, set_vrm);
 	return count;
 }
 static DEVICE_ATTR_RW(vrm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Real code
@@ -679,67 +470,11 @@ static int adm1025_detect(struct i2c_client *client,
 	else
 		return -ENODEV;
 
-<<<<<<< HEAD
-	strlcpy(info->type, name, I2C_NAME_SIZE);
-=======
 	strscpy(info->type, name, I2C_NAME_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int adm1025_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id)
-{
-	struct adm1025_data *data;
-	int err;
-	u8 config;
-
-	data = kzalloc(sizeof(struct adm1025_data), GFP_KERNEL);
-	if (!data) {
-		err = -ENOMEM;
-		goto exit;
-	}
-
-	i2c_set_clientdata(client, data);
-	mutex_init(&data->update_lock);
-
-	/* Initialize the ADM1025 chip */
-	adm1025_init_client(client);
-
-	/* Register sysfs hooks */
-	err = sysfs_create_group(&client->dev.kobj, &adm1025_group);
-	if (err)
-		goto exit_free;
-
-	/* Pin 11 is either in4 (+12V) or VID4 */
-	config = i2c_smbus_read_byte_data(client, ADM1025_REG_CONFIG);
-	if (!(config & 0x20)) {
-		err = sysfs_create_group(&client->dev.kobj, &adm1025_group_in4);
-		if (err)
-			goto exit_remove;
-	}
-
-	data->hwmon_dev = hwmon_device_register(&client->dev);
-	if (IS_ERR(data->hwmon_dev)) {
-		err = PTR_ERR(data->hwmon_dev);
-		goto exit_remove;
-	}
-
-	return 0;
-
-exit_remove:
-	sysfs_remove_group(&client->dev.kobj, &adm1025_group);
-	sysfs_remove_group(&client->dev.kobj, &adm1025_group_in4);
-exit_free:
-	kfree(data);
-exit:
-	return err;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void adm1025_init_client(struct i2c_client *client)
 {
 	u8 reg;
@@ -782,68 +517,6 @@ static void adm1025_init_client(struct i2c_client *client)
 					  (reg&0x7E)|0x01);
 }
 
-<<<<<<< HEAD
-static int adm1025_remove(struct i2c_client *client)
-{
-	struct adm1025_data *data = i2c_get_clientdata(client);
-
-	hwmon_device_unregister(data->hwmon_dev);
-	sysfs_remove_group(&client->dev.kobj, &adm1025_group);
-	sysfs_remove_group(&client->dev.kobj, &adm1025_group_in4);
-
-	kfree(data);
-	return 0;
-}
-
-static struct adm1025_data *adm1025_update_device(struct device *dev)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	struct adm1025_data *data = i2c_get_clientdata(client);
-
-	mutex_lock(&data->update_lock);
-
-	if (time_after(jiffies, data->last_updated + HZ * 2) || !data->valid) {
-		int i;
-
-		dev_dbg(&client->dev, "Updating data.\n");
-		for (i = 0; i < 6; i++) {
-			data->in[i] = i2c_smbus_read_byte_data(client,
-				      ADM1025_REG_IN(i));
-			data->in_min[i] = i2c_smbus_read_byte_data(client,
-					  ADM1025_REG_IN_MIN(i));
-			data->in_max[i] = i2c_smbus_read_byte_data(client,
-					  ADM1025_REG_IN_MAX(i));
-		}
-		for (i = 0; i < 2; i++) {
-			data->temp[i] = i2c_smbus_read_byte_data(client,
-					ADM1025_REG_TEMP(i));
-			data->temp_min[i] = i2c_smbus_read_byte_data(client,
-					    ADM1025_REG_TEMP_LOW(i));
-			data->temp_max[i] = i2c_smbus_read_byte_data(client,
-					    ADM1025_REG_TEMP_HIGH(i));
-		}
-		data->alarms = i2c_smbus_read_byte_data(client,
-			       ADM1025_REG_STATUS1)
-			     | (i2c_smbus_read_byte_data(client,
-				ADM1025_REG_STATUS2) << 8);
-		data->vid = (i2c_smbus_read_byte_data(client,
-			     ADM1025_REG_VID) & 0x0f)
-			  | ((i2c_smbus_read_byte_data(client,
-			      ADM1025_REG_VID4) & 0x01) << 4);
-
-		data->last_updated = jiffies;
-		data->valid = 1;
-	}
-
-	mutex_unlock(&data->update_lock);
-
-	return data;
-}
-
-module_i2c_driver(adm1025_driver);
-
-MODULE_AUTHOR("Jean Delvare <khali@linux-fr.org>");
-=======
 static int adm1025_probe(struct i2c_client *client)
 {
 	struct device *dev = &client->dev;
@@ -895,6 +568,5 @@ static struct i2c_driver adm1025_driver = {
 module_i2c_driver(adm1025_driver);
 
 MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("ADM1025 driver");
 MODULE_LICENSE("GPL");

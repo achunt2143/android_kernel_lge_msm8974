@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#include "util.h"
-#include "string.h"
-
-#define K 1024LL
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include "string2.h"
 #include <linux/kernel.h>
@@ -21,7 +15,6 @@ const char *dots =
 	"....................................................................."
 	".....................................................................";
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * perf_atoll()
  * Parse (\d+)(b|B|kb|KB|mb|MB|gb|GB|tb|TB) (e.g. "256MB")
@@ -29,187 +22,13 @@ const char *dots =
  */
 s64 perf_atoll(const char *str)
 {
-<<<<<<< HEAD
-	unsigned int i;
-	s64 length = -1, unit = 1;
-=======
 	s64 length;
 	char *p;
 	char c;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!isdigit(str[0]))
 		goto out_err;
 
-<<<<<<< HEAD
-	for (i = 1; i < strlen(str); i++) {
-		switch (str[i]) {
-		case 'B':
-		case 'b':
-			break;
-		case 'K':
-			if (str[i + 1] != 'B')
-				goto out_err;
-			else
-				goto kilo;
-		case 'k':
-			if (str[i + 1] != 'b')
-				goto out_err;
-kilo:
-			unit = K;
-			break;
-		case 'M':
-			if (str[i + 1] != 'B')
-				goto out_err;
-			else
-				goto mega;
-		case 'm':
-			if (str[i + 1] != 'b')
-				goto out_err;
-mega:
-			unit = K * K;
-			break;
-		case 'G':
-			if (str[i + 1] != 'B')
-				goto out_err;
-			else
-				goto giga;
-		case 'g':
-			if (str[i + 1] != 'b')
-				goto out_err;
-giga:
-			unit = K * K * K;
-			break;
-		case 'T':
-			if (str[i + 1] != 'B')
-				goto out_err;
-			else
-				goto tera;
-		case 't':
-			if (str[i + 1] != 'b')
-				goto out_err;
-tera:
-			unit = K * K * K * K;
-			break;
-		case '\0':	/* only specified figures */
-			unit = 1;
-			break;
-		default:
-			if (!isdigit(str[i]))
-				goto out_err;
-			break;
-		}
-	}
-
-	length = atoll(str) * unit;
-	goto out;
-
-out_err:
-	length = -1;
-out:
-	return length;
-}
-
-/*
- * Helper function for splitting a string into an argv-like array.
- * originally copied from lib/argv_split.c
- */
-static const char *skip_sep(const char *cp)
-{
-	while (*cp && isspace(*cp))
-		cp++;
-
-	return cp;
-}
-
-static const char *skip_arg(const char *cp)
-{
-	while (*cp && !isspace(*cp))
-		cp++;
-
-	return cp;
-}
-
-static int count_argc(const char *str)
-{
-	int count = 0;
-
-	while (*str) {
-		str = skip_sep(str);
-		if (*str) {
-			count++;
-			str = skip_arg(str);
-		}
-	}
-
-	return count;
-}
-
-/**
- * argv_free - free an argv
- * @argv - the argument vector to be freed
- *
- * Frees an argv and the strings it points to.
- */
-void argv_free(char **argv)
-{
-	char **p;
-	for (p = argv; *p; p++)
-		free(*p);
-
-	free(argv);
-}
-
-/**
- * argv_split - split a string at whitespace, returning an argv
- * @str: the string to be split
- * @argcp: returned argument count
- *
- * Returns an array of pointers to strings which are split out from
- * @str.  This is performed by strictly splitting on white-space; no
- * quote processing is performed.  Multiple whitespace characters are
- * considered to be a single argument separator.  The returned array
- * is always NULL-terminated.  Returns NULL on memory allocation
- * failure.
- */
-char **argv_split(const char *str, int *argcp)
-{
-	int argc = count_argc(str);
-	char **argv = zalloc(sizeof(*argv) * (argc+1));
-	char **argvp;
-
-	if (argv == NULL)
-		goto out;
-
-	if (argcp)
-		*argcp = argc;
-
-	argvp = argv;
-
-	while (*str) {
-		str = skip_sep(str);
-
-		if (*str) {
-			const char *p = str;
-			char *t;
-
-			str = skip_arg(str);
-
-			t = strndup(p, str-p);
-			if (t == NULL)
-				goto fail;
-			*argvp++ = t;
-		}
-	}
-	*argvp = NULL;
-
-out:
-	return argv;
-
-fail:
-	argv_free(argv);
-	return NULL;
-=======
 	length = strtoll(str, &p, 10);
 	switch (c = *p++) {
 		case 'b': case 'B':
@@ -247,7 +66,6 @@ fail:
 
 out_err:
 	return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Character class matching */
@@ -289,12 +107,8 @@ error:
 }
 
 /* Glob/lazy pattern matching */
-<<<<<<< HEAD
-static bool __match_glob(const char *str, const char *pat, bool ignore_space)
-=======
 static bool __match_glob(const char *str, const char *pat, bool ignore_space,
 			bool case_ins)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (*str && *pat && *pat != '*') {
 		if (ignore_space) {
@@ -320,10 +134,6 @@ static bool __match_glob(const char *str, const char *pat, bool ignore_space,
 				return false;
 		else if (*pat == '\\') /* Escaped char match as normal char */
 			pat++;
-<<<<<<< HEAD
-		if (*str++ != *pat++)
-			return false;
-=======
 		if (case_ins) {
 			if (tolower(*str) != tolower(*pat))
 				return false;
@@ -331,7 +141,6 @@ static bool __match_glob(const char *str, const char *pat, bool ignore_space,
 			return false;
 		str++;
 		pat++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Check wild card */
 	if (*pat == '*') {
@@ -340,11 +149,7 @@ static bool __match_glob(const char *str, const char *pat, bool ignore_space,
 		if (!*pat)	/* Tail wild card matches all */
 			return true;
 		while (*str)
-<<<<<<< HEAD
-			if (__match_glob(str++, pat, ignore_space))
-=======
 			if (__match_glob(str++, pat, ignore_space, case_ins))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return true;
 	}
 	return !*str && !*pat;
@@ -364,16 +169,12 @@ static bool __match_glob(const char *str, const char *pat, bool ignore_space,
  */
 bool strglobmatch(const char *str, const char *pat)
 {
-<<<<<<< HEAD
-	return __match_glob(str, pat, false);
-=======
 	return __match_glob(str, pat, false, false);
 }
 
 bool strglobmatch_nocase(const char *str, const char *pat)
 {
 	return __match_glob(str, pat, false, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -386,11 +187,7 @@ bool strglobmatch_nocase(const char *str, const char *pat)
  */
 bool strlazymatch(const char *str, const char *pat)
 {
-<<<<<<< HEAD
-	return __match_glob(str, pat, true);
-=======
 	return __match_glob(str, pat, true, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -411,8 +208,6 @@ int strtailcmp(const char *s1, const char *s2)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 char *asprintf_expr_inout_ints(const char *var, bool in, size_t nints, int *ints)
 {
 	/*
@@ -554,4 +349,3 @@ char *strreplace_chars(char needle, const char *haystack, const char *replace)
 
 	return new_s;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

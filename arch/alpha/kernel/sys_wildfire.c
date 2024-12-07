@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/alpha/kernel/sys_wildfire.c
  *
@@ -23,10 +20,6 @@
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_wildfire.h>
 #include <asm/hwrpb.h>
 #include <asm/tlbflush.h>
@@ -162,13 +155,6 @@ static void __init
 wildfire_init_irq_per_pca(int qbbno, int pcano)
 {
 	int i, irq_bias;
-<<<<<<< HEAD
-	static struct irqaction isa_enable = {
-		.handler	= no_action,
-		.name		= "isa_enable",
-	};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	irq_bias = qbbno * (WILDFIRE_PCA_PER_QBB * WILDFIRE_IRQ_PER_PCA)
 		 + pcano * WILDFIRE_IRQ_PER_PCA;
@@ -207,12 +193,8 @@ wildfire_init_irq_per_pca(int qbbno, int pcano)
 		irq_set_status_flags(i + irq_bias, IRQ_LEVEL);
 	}
 
-<<<<<<< HEAD
-	setup_irq(32+irq_bias, &isa_enable);
-=======
 	if (request_irq(32 + irq_bias, no_action, 0, "isa_enable", NULL))
 		pr_err("Failed to register isa_enable interrupt\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init
@@ -303,17 +285,10 @@ wildfire_device_interrupt(unsigned long vector)
  *   7	 64 bit PCI 1 option slot 7
  */
 
-<<<<<<< HEAD
-static int __init
-wildfire_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	static char irq_tab[8][5] __initdata = {
-=======
 static int
 wildfire_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[8][5] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		{ -1,    -1,    -1,    -1,    -1}, /* IdSel 0 ISA Bridge */
 		{ 36,    36,    36+1, 36+2, 36+3}, /* IdSel 1 SCSI builtin */
@@ -362,13 +337,5 @@ struct alpha_machine_vector wildfire_mv __initmv = {
 	.kill_arch		= wildfire_kill_arch,
 	.pci_map_irq		= wildfire_map_irq,
 	.pci_swizzle		= common_swizzle,
-<<<<<<< HEAD
-
-	.pa_to_nid		= wildfire_pa_to_nid,
-	.cpuid_to_nid		= wildfire_cpuid_to_nid,
-	.node_mem_start		= wildfire_node_mem_start,
-	.node_mem_size		= wildfire_node_mem_size,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 ALIAS_MV(wildfire)

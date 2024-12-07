@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-/* General netfs cache on cache files internal defs
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public Licence
- * as published by the Free Software Foundation; either version
- * 2 of the Licence, or (at your option) any later version.
- */
-
-#include <linux/fscache-cache.h>
-#include <linux/timer.h>
-#include <linux/wait.h>
-#include <linux/workqueue.h>
-#include <linux/security.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* General netfs cache on cache files internal defs
  *
@@ -37,38 +19,10 @@
 #include <linux/cachefiles.h>
 
 #define CACHEFILES_DIO_BLOCK_SIZE 4096
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cachefiles_cache;
 struct cachefiles_object;
 
-<<<<<<< HEAD
-extern unsigned cachefiles_debug;
-#define CACHEFILES_DEBUG_KENTER	1
-#define CACHEFILES_DEBUG_KLEAVE	2
-#define CACHEFILES_DEBUG_KDEBUG	4
-
-/*
- * node records
- */
-struct cachefiles_object {
-	struct fscache_object		fscache;	/* fscache handle */
-	struct cachefiles_lookup_data	*lookup_data;	/* cached lookup data */
-	struct dentry			*dentry;	/* the file/dir representing this object */
-	struct dentry			*backer;	/* backing file */
-	loff_t				i_size;		/* object size */
-	unsigned long			flags;
-#define CACHEFILES_OBJECT_ACTIVE	0		/* T if marked active */
-#define CACHEFILES_OBJECT_BURIED	1		/* T if preemptively buried */
-	atomic_t			usage;		/* object usage count */
-	uint8_t				type;		/* object type */
-	uint8_t				new;		/* T if object new */
-	spinlock_t			work_lock;
-	struct rb_node			active_node;	/* link in active tree (dentry is key) */
-};
-
-extern struct kmem_cache *cachefiles_object_jar;
-=======
 enum cachefiles_content {
 	/* These values are saved on disk */
 	CACHEFILES_CONTENT_NO_DATA	= 0, /* No content stored */
@@ -125,24 +79,11 @@ struct cachefiles_object {
 };
 
 #define CACHEFILES_ONDEMAND_ID_CLOSED	-1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Cache files cache definition
  */
 struct cachefiles_cache {
-<<<<<<< HEAD
-	struct fscache_cache		cache;		/* FS-Cache record */
-	struct vfsmount			*mnt;		/* mountpoint holding the cache */
-	struct dentry			*graveyard;	/* directory into which dead objects go */
-	struct file			*cachefilesd;	/* manager daemon handle */
-	const struct cred		*cache_cred;	/* security override for accessing cache */
-	struct mutex			daemon_mutex;	/* command serialisation mutex */
-	wait_queue_head_t		daemon_pollwq;	/* poll waitqueue for daemon */
-	struct rb_root			active_nodes;	/* active nodes (can't be culled) */
-	rwlock_t			active_lock;	/* lock for active_nodes */
-	atomic_t			gravecounter;	/* graveyard uniquifier */
-=======
 	struct fscache_cache		*cache;		/* Cache cookie */
 	struct vfsmount			*mnt;		/* mountpoint holding the cache */
 	struct dentry			*store;		/* Directory into which live objects go */
@@ -158,7 +99,6 @@ struct cachefiles_cache {
 	atomic_t			f_released;	/* number of objects released lately */
 	atomic_long_t			b_released;	/* number of blocks released lately */
 	atomic_long_t			b_writing;	/* Number of blocks being written */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned			frun_percent;	/* when to stop culling (% files) */
 	unsigned			fcull_percent;	/* when to start culling (% files) */
 	unsigned			fstop_percent;	/* when to stop allocating (% files) */
@@ -166,11 +106,7 @@ struct cachefiles_cache {
 	unsigned			bcull_percent;	/* when to start culling (% blocks) */
 	unsigned			bstop_percent;	/* when to stop allocating (% blocks) */
 	unsigned			bsize;		/* cache's block size */
-<<<<<<< HEAD
-	unsigned			bshift;		/* min(ilog2(PAGE_SIZE / bsize), 0) */
-=======
 	unsigned			bshift;		/* ilog2(bsize) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint64_t			frun;		/* when to stop culling */
 	uint64_t			fcull;		/* when to start culling */
 	uint64_t			fstop;		/* when to stop allocating */
@@ -182,43 +118,6 @@ struct cachefiles_cache {
 #define CACHEFILES_DEAD			1	/* T if cache dead */
 #define CACHEFILES_CULLING		2	/* T if cull engaged */
 #define CACHEFILES_STATE_CHANGED	3	/* T if state changed (poll trigger) */
-<<<<<<< HEAD
-	char				*rootdirname;	/* name of cache root directory */
-	char				*secctx;	/* LSM security context */
-	char				*tag;		/* cache binding tag */
-};
-
-/*
- * backing file read tracking
- */
-struct cachefiles_one_read {
-	wait_queue_t			monitor;	/* link into monitored waitqueue */
-	struct page			*back_page;	/* backing file page we're waiting for */
-	struct page			*netfs_page;	/* netfs page we're going to fill */
-	struct fscache_retrieval	*op;		/* retrieval op covering this */
-	struct list_head		op_link;	/* link in op's todo list */
-};
-
-/*
- * backing file write tracking
- */
-struct cachefiles_one_write {
-	struct page			*netfs_page;	/* netfs page to copy */
-	struct cachefiles_object	*object;
-	struct list_head		obj_link;	/* link in object's lists */
-	fscache_rw_complete_t		end_io_func;
-	void				*context;
-};
-
-/*
- * auxiliary data xattr buffer
- */
-struct cachefiles_xattr {
-	uint16_t			len;
-	uint8_t				type;
-	uint8_t				data[];
-};
-=======
 #define CACHEFILES_ONDEMAND_MODE	4	/* T if in on-demand read mode */
 	char				*rootdirname;	/* name of cache root directory */
 	char				*secctx;	/* LSM security context */
@@ -258,7 +157,6 @@ struct cachefiles_object *cachefiles_cres_object(struct netfs_cache_resources *c
 {
 	return fscache_cres_cookie(cres)->cache_priv;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * note change of state for daemon
@@ -270,12 +168,6 @@ static inline void cachefiles_state_changed(struct cachefiles_cache *cache)
 }
 
 /*
-<<<<<<< HEAD
- * bind.c
- */
-extern int cachefiles_daemon_bind(struct cachefiles_cache *cache, char *args);
-extern void cachefiles_daemon_unbind(struct cachefiles_cache *cache);
-=======
  * cache.c
  */
 extern int cachefiles_add_cache(struct cachefiles_cache *cache);
@@ -289,17 +181,11 @@ enum cachefiles_has_space_for {
 extern int cachefiles_has_space(struct cachefiles_cache *cache,
 				unsigned fnr, unsigned bnr,
 				enum cachefiles_has_space_for reason);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * daemon.c
  */
 extern const struct file_operations cachefiles_daemon_fops;
-<<<<<<< HEAD
-
-extern int cachefiles_has_space(struct cachefiles_cache *cache,
-				unsigned fnr, unsigned bnr);
-=======
 extern void cachefiles_get_unbind_pincount(struct cachefiles_cache *cache);
 extern void cachefiles_put_unbind_pincount(struct cachefiles_cache *cache);
 
@@ -341,14 +227,11 @@ static inline int cachefiles_inject_remove_error(void)
 {
 	return cachefiles_error_injection_state & 2 ? -EIO : 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * interface.c
  */
 extern const struct fscache_cache_ops cachefiles_cache_ops;
-<<<<<<< HEAD
-=======
 extern void cachefiles_see_object(struct cachefiles_object *object,
 				  enum cachefiles_obj_ref_trace why);
 extern struct cachefiles_object *cachefiles_grab_object(struct cachefiles_object *object,
@@ -371,36 +254,20 @@ extern int __cachefiles_write(struct cachefiles_object *object,
 			      struct iov_iter *iter,
 			      netfs_io_terminated_t term_func,
 			      void *term_func_priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * key.c
  */
-<<<<<<< HEAD
-extern char *cachefiles_cook_key(const u8 *raw, int keylen, uint8_t type);
-=======
 extern bool cachefiles_cook_key(struct cachefiles_object *object);
 
 /*
  * main.c
  */
 extern struct kmem_cache *cachefiles_object_jar;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * namei.c
  */
-<<<<<<< HEAD
-extern int cachefiles_delete_object(struct cachefiles_cache *cache,
-				    struct cachefiles_object *object);
-extern int cachefiles_walk_to_object(struct cachefiles_object *parent,
-				     struct cachefiles_object *object,
-				     const char *key,
-				     struct cachefiles_xattr *auxdata);
-extern struct dentry *cachefiles_get_directory(struct cachefiles_cache *cache,
-					       struct dentry *dir,
-					       const char *name);
-=======
 extern void cachefiles_unmark_inode_in_use(struct cachefiles_object *object,
 					   struct file *file);
 extern int cachefiles_bury_object(struct cachefiles_cache *cache,
@@ -416,55 +283,12 @@ extern struct dentry *cachefiles_get_directory(struct cachefiles_cache *cache,
 					       const char *name,
 					       bool *_is_new);
 extern void cachefiles_put_directory(struct dentry *dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int cachefiles_cull(struct cachefiles_cache *cache, struct dentry *dir,
 			   char *filename);
 
 extern int cachefiles_check_in_use(struct cachefiles_cache *cache,
 				   struct dentry *dir, char *filename);
-<<<<<<< HEAD
-
-/*
- * proc.c
- */
-#ifdef CONFIG_CACHEFILES_HISTOGRAM
-extern atomic_t cachefiles_lookup_histogram[HZ];
-extern atomic_t cachefiles_mkdir_histogram[HZ];
-extern atomic_t cachefiles_create_histogram[HZ];
-
-extern int __init cachefiles_proc_init(void);
-extern void cachefiles_proc_cleanup(void);
-static inline
-void cachefiles_hist(atomic_t histogram[], unsigned long start_jif)
-{
-	unsigned long jif = jiffies - start_jif;
-	if (jif >= HZ)
-		jif = HZ - 1;
-	atomic_inc(&histogram[jif]);
-}
-
-#else
-#define cachefiles_proc_init()		(0)
-#define cachefiles_proc_cleanup()	do {} while (0)
-#define cachefiles_hist(hist, start_jif) do {} while (0)
-#endif
-
-/*
- * rdwr.c
- */
-extern int cachefiles_read_or_alloc_page(struct fscache_retrieval *,
-					 struct page *, gfp_t);
-extern int cachefiles_read_or_alloc_pages(struct fscache_retrieval *,
-					  struct list_head *, unsigned *,
-					  gfp_t);
-extern int cachefiles_allocate_page(struct fscache_retrieval *, struct page *,
-				    gfp_t);
-extern int cachefiles_allocate_pages(struct fscache_retrieval *,
-				     struct list_head *, unsigned *, gfp_t);
-extern int cachefiles_write_page(struct fscache_storage *, struct page *);
-extern void cachefiles_uncache_page(struct fscache_object *, struct page *);
-=======
 extern struct file *cachefiles_create_tmpfile(struct cachefiles_object *object);
 extern bool cachefiles_commit_tmpfile(struct cachefiles_cache *cache,
 				      struct cachefiles_object *object);
@@ -551,7 +375,6 @@ static inline bool cachefiles_ondemand_is_reopening_read(struct cachefiles_req *
 	return false;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * security.c
@@ -574,30 +397,6 @@ static inline void cachefiles_end_secure(struct cachefiles_cache *cache,
 }
 
 /*
-<<<<<<< HEAD
- * xattr.c
- */
-extern int cachefiles_check_object_type(struct cachefiles_object *object);
-extern int cachefiles_set_object_xattr(struct cachefiles_object *object,
-				       struct cachefiles_xattr *auxdata);
-extern int cachefiles_update_object_xattr(struct cachefiles_object *object,
-					  struct cachefiles_xattr *auxdata);
-extern int cachefiles_check_object_xattr(struct cachefiles_object *object,
-					 struct cachefiles_xattr *auxdata);
-extern int cachefiles_remove_object_xattr(struct cachefiles_cache *cache,
-					  struct dentry *dentry);
-
-
-/*
- * error handling
- */
-#define kerror(FMT, ...) printk(KERN_ERR "CacheFiles: "FMT"\n", ##__VA_ARGS__)
-
-#define cachefiles_io_error(___cache, FMT, ...)		\
-do {							\
-	kerror("I/O Error: " FMT, ##__VA_ARGS__);	\
-	fscache_io_error(&(___cache)->cache);		\
-=======
  * volume.c
  */
 void cachefiles_acquire_volume(struct fscache_volume *volume);
@@ -624,7 +423,6 @@ extern int cachefiles_check_volume_xattr(struct cachefiles_volume *volume);
 do {							\
 	pr_err("I/O Error: " FMT"\n", ##__VA_ARGS__);	\
 	fscache_io_error((___cache)->cache);		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(CACHEFILES_DEAD, &(___cache)->flags);	\
 } while (0)
 
@@ -632,23 +430,13 @@ do {							\
 do {									\
 	struct cachefiles_cache *___cache;				\
 									\
-<<<<<<< HEAD
-	___cache = container_of((object)->fscache.cache,		\
-				struct cachefiles_cache, cache);	\
-	cachefiles_io_error(___cache, FMT, ##__VA_ARGS__);		\
-=======
 	___cache = (object)->volume->cache;				\
 	cachefiles_io_error(___cache, FMT " [o=%08x]", ##__VA_ARGS__,	\
 			    (object)->debug_id);			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 
 
 /*
-<<<<<<< HEAD
- * debug tracing
- */
-=======
  * Debug tracing
  */
 extern unsigned cachefiles_debug;
@@ -656,7 +444,6 @@ extern unsigned cachefiles_debug;
 #define CACHEFILES_DEBUG_KLEAVE	2
 #define CACHEFILES_DEBUG_KDEBUG	4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define dbgprintk(FMT, ...) \
 	printk(KERN_DEBUG "[%-6.6s] "FMT"\n", current->comm, ##__VA_ARGS__)
 
@@ -700,13 +487,8 @@ do {							\
 #define ASSERT(X)							\
 do {									\
 	if (unlikely(!(X))) {						\
-<<<<<<< HEAD
-		printk(KERN_ERR "\n");					\
-		printk(KERN_ERR "CacheFiles: Assertion failed\n");	\
-=======
 		pr_err("\n");						\
 		pr_err("Assertion failed\n");		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG();							\
 	}								\
 } while (0)
@@ -714,15 +496,9 @@ do {									\
 #define ASSERTCMP(X, OP, Y)						\
 do {									\
 	if (unlikely(!((X) OP (Y)))) {					\
-<<<<<<< HEAD
-		printk(KERN_ERR "\n");					\
-		printk(KERN_ERR "CacheFiles: Assertion failed\n");	\
-		printk(KERN_ERR "%lx " #OP " %lx is false\n",		\
-=======
 		pr_err("\n");						\
 		pr_err("Assertion failed\n");		\
 		pr_err("%lx " #OP " %lx is false\n",			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       (unsigned long)(X), (unsigned long)(Y));		\
 		BUG();							\
 	}								\
@@ -731,13 +507,8 @@ do {									\
 #define ASSERTIF(C, X)							\
 do {									\
 	if (unlikely((C) && !(X))) {					\
-<<<<<<< HEAD
-		printk(KERN_ERR "\n");					\
-		printk(KERN_ERR "CacheFiles: Assertion failed\n");	\
-=======
 		pr_err("\n");						\
 		pr_err("Assertion failed\n");		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG();							\
 	}								\
 } while (0)
@@ -745,15 +516,9 @@ do {									\
 #define ASSERTIFCMP(C, X, OP, Y)					\
 do {									\
 	if (unlikely((C) && !((X) OP (Y)))) {				\
-<<<<<<< HEAD
-		printk(KERN_ERR "\n");					\
-		printk(KERN_ERR "CacheFiles: Assertion failed\n");	\
-		printk(KERN_ERR "%lx " #OP " %lx is false\n",		\
-=======
 		pr_err("\n");						\
 		pr_err("Assertion failed\n");		\
 		pr_err("%lx " #OP " %lx is false\n",			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       (unsigned long)(X), (unsigned long)(Y));		\
 		BUG();							\
 	}								\

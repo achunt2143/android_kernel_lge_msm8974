@@ -1,36 +1,11 @@
-<<<<<<< HEAD
-/*
- * linux/fs/9p/trans_fd.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Fd transport layer.  Includes deprecated socket layer.
  *
  *  Copyright (C) 2006 by Russ Cox <rsc@swtch.com>
  *  Copyright (C) 2004-2005 by Latchesar Ionkov <lucho@ionkov.net>
  *  Copyright (C) 2004-2008 by Eric Van Hensbergen <ericvh@gmail.com>
  *  Copyright (C) 1997-2002 by Ron Minnich <rminnich@sarnoff.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2
- *  as published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to:
- *  Free Software Foundation
- *  51 Franklin Street, Fifth Floor
- *  Boston, MA  02111-1301  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -45,17 +20,10 @@
 #include <linux/un.h>
 #include <linux/uaccess.h>
 #include <linux/inet.h>
-<<<<<<< HEAD
-#include <linux/idr.h>
-#include <linux/file.h>
-#include <linux/parser.h>
-#include <linux/slab.h>
-=======
 #include <linux/file.h>
 #include <linux/parser.h>
 #include <linux/slab.h>
 #include <linux/seq_file.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/9p/9p.h>
 #include <net/9p/client.h>
 #include <net/9p/transport.h>
@@ -63,52 +31,25 @@
 #include <linux/syscalls.h> /* killme */
 
 #define P9_PORT 564
-<<<<<<< HEAD
-#define MAX_SOCK_BUF (64*1024)
-#define MAXPOLLWADDR	2
-
-=======
 #define MAX_SOCK_BUF (1024*1024)
 #define MAXPOLLWADDR	2
 
 static struct p9_trans_module p9_tcp_trans;
 static struct p9_trans_module p9_fd_trans;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct p9_fd_opts - per-transport options
  * @rfd: file descriptor for reading (trans=fd)
  * @wfd: file descriptor for writing (trans=fd)
  * @port: port to connect to (trans=tcp)
-<<<<<<< HEAD
- *
-=======
  * @privport: port is privileged
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 struct p9_fd_opts {
 	int rfd;
 	int wfd;
 	u16 port;
-<<<<<<< HEAD
-};
-
-/**
- * struct p9_trans_fd - transport state
- * @rd: reference to file to read from
- * @wr: reference of file to write to
- * @conn: connection state reference
- *
- */
-
-struct p9_trans_fd {
-	struct file *rd;
-	struct file *wr;
-	struct p9_conn *conn;
-=======
 	bool privport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -119,21 +60,15 @@ struct p9_trans_fd {
 enum {
 	/* Options that take integer arguments */
 	Opt_port, Opt_rfdno, Opt_wfdno, Opt_err,
-<<<<<<< HEAD
-=======
 	/* Options that take no arguments */
 	Opt_privport,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const match_table_t tokens = {
 	{Opt_port, "port=%u"},
 	{Opt_rfdno, "rfdno=%u"},
 	{Opt_wfdno, "wfdno=%u"},
-<<<<<<< HEAD
-=======
 	{Opt_privport, "privport"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{Opt_err, NULL},
 };
 
@@ -146,11 +81,7 @@ enum {
 
 struct p9_poll_wait {
 	struct p9_conn *conn;
-<<<<<<< HEAD
-	wait_queue_t wait;
-=======
 	wait_queue_entry_t wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_queue_head_t *wait_addr;
 };
 
@@ -159,15 +90,6 @@ struct p9_poll_wait {
  * @mux_list: list link for mux to manage multiple connections (?)
  * @client: reference to client instance for this connection
  * @err: error state
-<<<<<<< HEAD
- * @req_list: accounting for requests which have been sent
- * @unsent_req_list: accounting for requests that haven't been sent
- * @req: current request being processed (if any)
- * @tmp_buf: temporary buffer to read in header
- * @rsize: amount to read for current frame
- * @rpos: read position in current frame
- * @rbuf: current read buffer
-=======
  * @req_lock: lock protecting req_list and requests statuses
  * @req_list: accounting for requests which have been sent
  * @unsent_req_list: accounting for requests that haven't been sent
@@ -175,7 +97,6 @@ struct p9_poll_wait {
  * @wreq: write request
  * @tmp_buf: temporary buffer to read in header
  * @rc: temporary fcall for reading current frame
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @wpos: write position for current frame
  * @wsize: amount of data to write for current frame
  * @wbuf: current write buffer
@@ -192,15 +113,6 @@ struct p9_conn {
 	struct list_head mux_list;
 	struct p9_client *client;
 	int err;
-<<<<<<< HEAD
-	struct list_head req_list;
-	struct list_head unsent_req_list;
-	struct p9_req_t *req;
-	char tmp_buf[7];
-	int rsize;
-	int rpos;
-	char *rbuf;
-=======
 	spinlock_t req_lock;
 	struct list_head req_list;
 	struct list_head unsent_req_list;
@@ -208,7 +120,6 @@ struct p9_conn {
 	struct p9_req_t *wreq;
 	char tmp_buf[P9_HDRSZ];
 	struct p9_fcall rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int wpos;
 	int wsize;
 	char *wbuf;
@@ -220,8 +131,6 @@ struct p9_conn {
 	unsigned long wsched;
 };
 
-<<<<<<< HEAD
-=======
 /**
  * struct p9_trans_fd - transport state
  * @rd: reference to file to read from
@@ -236,19 +145,15 @@ struct p9_trans_fd {
 	struct p9_conn conn;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void p9_poll_workfn(struct work_struct *work);
 
 static DEFINE_SPINLOCK(p9_poll_lock);
 static LIST_HEAD(p9_poll_pending_list);
 static DECLARE_WORK(p9_poll_work, p9_poll_workfn);
 
-<<<<<<< HEAD
-=======
 static unsigned int p9_ipport_resv_min = P9_DEF_MIN_RESVPORT;
 static unsigned int p9_ipport_resv_max = P9_DEF_MAX_RESVPORT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void p9_mux_poll_stop(struct p9_conn *m)
 {
 	unsigned long flags;
@@ -266,11 +171,8 @@ static void p9_mux_poll_stop(struct p9_conn *m)
 	spin_lock_irqsave(&p9_poll_lock, flags);
 	list_del_init(&m->poll_pending_link);
 	spin_unlock_irqrestore(&p9_poll_lock, flags);
-<<<<<<< HEAD
-=======
 
 	flush_work(&p9_poll_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -283,45 +185,20 @@ static void p9_mux_poll_stop(struct p9_conn *m)
 static void p9_conn_cancel(struct p9_conn *m, int err)
 {
 	struct p9_req_t *req, *rtmp;
-<<<<<<< HEAD
-	unsigned long flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LIST_HEAD(cancel_list);
 
 	p9_debug(P9_DEBUG_ERROR, "mux %p err %d\n", m, err);
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&m->client->lock, flags);
-
-	if (m->err) {
-		spin_unlock_irqrestore(&m->client->lock, flags);
-=======
 	spin_lock(&m->req_lock);
 
 	if (m->err) {
 		spin_unlock(&m->req_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	m->err = err;
 
 	list_for_each_entry_safe(req, rtmp, &m->req_list, req_list) {
-<<<<<<< HEAD
-		req->status = REQ_STATUS_ERROR;
-		if (!req->t_err)
-			req->t_err = err;
-		list_move(&req->req_list, &cancel_list);
-	}
-	list_for_each_entry_safe(req, rtmp, &m->unsent_req_list, req_list) {
-		req->status = REQ_STATUS_ERROR;
-		if (!req->t_err)
-			req->t_err = err;
-		list_move(&req->req_list, &cancel_list);
-	}
-	spin_unlock_irqrestore(&m->client->lock, flags);
-=======
 		list_move(&req->req_list, &cancel_list);
 		WRITE_ONCE(req->status, REQ_STATUS_ERROR);
 	}
@@ -331,21 +208,10 @@ static void p9_conn_cancel(struct p9_conn *m, int err)
 	}
 
 	spin_unlock(&m->req_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry_safe(req, rtmp, &cancel_list, req_list) {
 		p9_debug(P9_DEBUG_ERROR, "call back req %p\n", req);
 		list_del(&req->req_list);
-<<<<<<< HEAD
-		p9_client_cb(m->client, req);
-	}
-}
-
-static int
-p9_fd_poll(struct p9_client *client, struct poll_table_struct *pt)
-{
-	int ret, n;
-=======
 		if (!req->t_err)
 			req->t_err = err;
 		p9_client_cb(m->client, req, REQ_STATUS_ERROR);
@@ -356,34 +222,11 @@ static __poll_t
 p9_fd_poll(struct p9_client *client, struct poll_table_struct *pt, int *err)
 {
 	__poll_t ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct p9_trans_fd *ts = NULL;
 
 	if (client && client->status == Connected)
 		ts = client->trans;
 
-<<<<<<< HEAD
-	if (!ts)
-		return -EREMOTEIO;
-
-	if (!ts->rd->f_op || !ts->rd->f_op->poll)
-		return -EIO;
-
-	if (!ts->wr->f_op || !ts->wr->f_op->poll)
-		return -EIO;
-
-	ret = ts->rd->f_op->poll(ts->rd, pt);
-	if (ret < 0)
-		return ret;
-
-	if (ts->rd != ts->wr) {
-		n = ts->wr->f_op->poll(ts->wr, pt);
-		if (n < 0)
-			return n;
-		ret = (ret & ~POLLOUT) | (n & ~POLLIN);
-	}
-
-=======
 	if (!ts) {
 		if (err)
 			*err = -EREMOTEIO;
@@ -393,7 +236,6 @@ p9_fd_poll(struct p9_client *client, struct poll_table_struct *pt, int *err)
 	ret = vfs_poll(ts->rd, pt);
 	if (ts->rd != ts->wr)
 		ret = (ret & ~EPOLLOUT) | (vfs_poll(ts->wr, pt) & ~EPOLLIN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -409,10 +251,7 @@ static int p9_fd_read(struct p9_client *client, void *v, int len)
 {
 	int ret;
 	struct p9_trans_fd *ts = NULL;
-<<<<<<< HEAD
-=======
 	loff_t pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (client && client->status != Disconnected)
 		ts = client->trans;
@@ -423,12 +262,8 @@ static int p9_fd_read(struct p9_client *client, void *v, int len)
 	if (!(ts->rd->f_flags & O_NONBLOCK))
 		p9_debug(P9_DEBUG_ERROR, "blocking read ...\n");
 
-<<<<<<< HEAD
-	ret = kernel_read(ts->rd, ts->rd->f_pos, v, len);
-=======
 	pos = ts->rd->f_pos;
 	ret = kernel_read(ts->rd, v, len, &pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret <= 0 && ret != -ERESTARTSYS && ret != -EAGAIN)
 		client->status = Disconnected;
 	return ret;
@@ -442,12 +277,8 @@ static int p9_fd_read(struct p9_client *client, void *v, int len)
 
 static void p9_read_work(struct work_struct *work)
 {
-<<<<<<< HEAD
-	int n, err;
-=======
 	__poll_t n;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct p9_conn *m;
 
 	m = container_of(work, struct p9_conn, rq);
@@ -455,26 +286,6 @@ static void p9_read_work(struct work_struct *work)
 	if (m->err < 0)
 		return;
 
-<<<<<<< HEAD
-	p9_debug(P9_DEBUG_TRANS, "start mux %p pos %d\n", m, m->rpos);
-
-	if (!m->rbuf) {
-		m->rbuf = m->tmp_buf;
-		m->rpos = 0;
-		m->rsize = 7; /* start by reading header */
-	}
-
-	clear_bit(Rpending, &m->wsched);
-	p9_debug(P9_DEBUG_TRANS, "read mux %p pos %d size: %d = %d\n",
-		 m, m->rpos, m->rsize, m->rsize-m->rpos);
-	err = p9_fd_read(m->client, m->rbuf + m->rpos,
-						m->rsize - m->rpos);
-	p9_debug(P9_DEBUG_TRANS, "mux %p got %d bytes\n", m, err);
-	if (err == -EAGAIN) {
-		clear_bit(Rworksched, &m->wsched);
-		return;
-	}
-=======
 	p9_debug(P9_DEBUG_TRANS, "start mux %p pos %zd\n", m, m->rc.offset);
 
 	if (!m->rc.sdata) {
@@ -492,36 +303,10 @@ static void p9_read_work(struct work_struct *work)
 	p9_debug(P9_DEBUG_TRANS, "mux %p got %d bytes\n", m, err);
 	if (err == -EAGAIN)
 		goto end_clear;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (err <= 0)
 		goto error;
 
-<<<<<<< HEAD
-	m->rpos += err;
-
-	if ((!m->req) && (m->rpos == m->rsize)) { /* header read in */
-		u16 tag;
-		p9_debug(P9_DEBUG_TRANS, "got new header\n");
-
-		n = le32_to_cpu(*(__le32 *) m->rbuf); /* read packet size */
-		if (n >= m->client->msize) {
-			p9_debug(P9_DEBUG_ERROR,
-				 "requested packet size too big: %d\n", n);
-			err = -EIO;
-			goto error;
-		}
-
-		tag = le16_to_cpu(*(__le16 *) (m->rbuf+5)); /* read tag */
-		p9_debug(P9_DEBUG_TRANS,
-			 "mux %p pkt: size: %d bytes tag: %d\n", m, n, tag);
-
-		m->req = p9_tag_lookup(m->client, tag);
-		if (!m->req || (m->req->status != REQ_STATUS_SENT &&
-					m->req->status != REQ_STATUS_FLSH)) {
-			p9_debug(P9_DEBUG_ERROR, "Unexpected packet tag %d\n",
-				 tag);
-=======
 	m->rc.offset += err;
 
 	/* header read in */
@@ -545,55 +330,10 @@ static void p9_read_work(struct work_struct *work)
 		if (!m->rreq || (m->rreq->status != REQ_STATUS_SENT)) {
 			p9_debug(P9_DEBUG_ERROR, "Unexpected packet tag %d\n",
 				 m->rc.tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EIO;
 			goto error;
 		}
 
-<<<<<<< HEAD
-		if (m->req->rc == NULL) {
-			m->req->rc = kmalloc(sizeof(struct p9_fcall) +
-						m->client->msize, GFP_NOFS);
-			if (!m->req->rc) {
-				m->req = NULL;
-				err = -ENOMEM;
-				goto error;
-			}
-		}
-		m->rbuf = (char *)m->req->rc + sizeof(struct p9_fcall);
-		memcpy(m->rbuf, m->tmp_buf, m->rsize);
-		m->rsize = n;
-	}
-
-	/* not an else because some packets (like clunk) have no payload */
-	if ((m->req) && (m->rpos == m->rsize)) { /* packet is read in */
-		p9_debug(P9_DEBUG_TRANS, "got new packet\n");
-		spin_lock(&m->client->lock);
-		if (m->req->status != REQ_STATUS_ERROR)
-			m->req->status = REQ_STATUS_RCVD;
-		list_del(&m->req->req_list);
-		spin_unlock(&m->client->lock);
-		p9_client_cb(m->client, m->req);
-		m->rbuf = NULL;
-		m->rpos = 0;
-		m->rsize = 0;
-		m->req = NULL;
-	}
-
-	if (!list_empty(&m->req_list)) {
-		if (test_and_clear_bit(Rpending, &m->wsched))
-			n = POLLIN;
-		else
-			n = p9_fd_poll(m->client, NULL);
-
-		if (n & POLLIN) {
-			p9_debug(P9_DEBUG_TRANS, "sched read work %p\n", m);
-			schedule_work(&m->rq);
-		} else
-			clear_bit(Rworksched, &m->wsched);
-	} else
-		clear_bit(Rworksched, &m->wsched);
-=======
 		if (m->rc.size > m->rreq->rc.capacity) {
 			p9_debug(P9_DEBUG_ERROR,
 				 "requested packet size too big: %d for tag %d with capacity %zd\n",
@@ -660,7 +400,6 @@ end_clear:
 			schedule_work(&m->rq);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 error:
@@ -678,12 +417,7 @@ error:
 
 static int p9_fd_write(struct p9_client *client, void *v, int len)
 {
-<<<<<<< HEAD
-	int ret;
-	mm_segment_t oldfs;
-=======
 	ssize_t ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct p9_trans_fd *ts = NULL;
 
 	if (client && client->status != Disconnected)
@@ -695,16 +429,7 @@ static int p9_fd_write(struct p9_client *client, void *v, int len)
 	if (!(ts->wr->f_flags & O_NONBLOCK))
 		p9_debug(P9_DEBUG_ERROR, "blocking write ...\n");
 
-<<<<<<< HEAD
-	oldfs = get_fs();
-	set_fs(get_ds());
-	/* The cast to a user pointer is valid due to the set_fs() */
-	ret = vfs_write(ts->wr, (__force void __user *)v, len, &ts->wr->f_pos);
-	set_fs(oldfs);
-
-=======
 	ret = kernel_write(ts->wr, v, len, &ts->wr->f_pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret <= 0 && ret != -ERESTARTSYS && ret != -EAGAIN)
 		client->status = Disconnected;
 	return ret;
@@ -718,12 +443,8 @@ static int p9_fd_write(struct p9_client *client, void *v, int len)
 
 static void p9_write_work(struct work_struct *work)
 {
-<<<<<<< HEAD
-	int n, err;
-=======
 	__poll_t n;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct p9_conn *m;
 	struct p9_req_t *req;
 
@@ -735,24 +456,6 @@ static void p9_write_work(struct work_struct *work)
 	}
 
 	if (!m->wsize) {
-<<<<<<< HEAD
-		if (list_empty(&m->unsent_req_list)) {
-			clear_bit(Wworksched, &m->wsched);
-			return;
-		}
-
-		spin_lock(&m->client->lock);
-		req = list_entry(m->unsent_req_list.next, struct p9_req_t,
-			       req_list);
-		req->status = REQ_STATUS_SENT;
-		p9_debug(P9_DEBUG_TRANS, "move req %p\n", req);
-		list_move_tail(&req->req_list, &m->req_list);
-
-		m->wbuf = req->tc->sdata;
-		m->wsize = req->tc->size;
-		m->wpos = 0;
-		spin_unlock(&m->client->lock);
-=======
 		spin_lock(&m->req_lock);
 		if (list_empty(&m->unsent_req_list)) {
 			clear_bit(Wworksched, &m->wsched);
@@ -772,7 +475,6 @@ static void p9_write_work(struct work_struct *work)
 		p9_req_get(req);
 		m->wreq = req;
 		spin_unlock(&m->req_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	p9_debug(P9_DEBUG_TRANS, "mux %p pos %d size %d\n",
@@ -780,16 +482,9 @@ static void p9_write_work(struct work_struct *work)
 	clear_bit(Wpending, &m->wsched);
 	err = p9_fd_write(m->client, m->wbuf + m->wpos, m->wsize - m->wpos);
 	p9_debug(P9_DEBUG_TRANS, "mux %p sent %d bytes\n", m, err);
-<<<<<<< HEAD
-	if (err == -EAGAIN) {
-		clear_bit(Wworksched, &m->wsched);
-		return;
-	}
-=======
 	if (err == -EAGAIN)
 		goto end_clear;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (err < 0)
 		goto error;
@@ -799,24 +494,6 @@ static void p9_write_work(struct work_struct *work)
 	}
 
 	m->wpos += err;
-<<<<<<< HEAD
-	if (m->wpos == m->wsize)
-		m->wpos = m->wsize = 0;
-
-	if (m->wsize == 0 && !list_empty(&m->unsent_req_list)) {
-		if (test_and_clear_bit(Wpending, &m->wsched))
-			n = POLLOUT;
-		else
-			n = p9_fd_poll(m->client, NULL);
-
-		if (n & POLLOUT) {
-			p9_debug(P9_DEBUG_TRANS, "sched write work %p\n", m);
-			schedule_work(&m->wq);
-		} else
-			clear_bit(Wworksched, &m->wsched);
-	} else
-		clear_bit(Wworksched, &m->wsched);
-=======
 	if (m->wpos == m->wsize) {
 		m->wpos = m->wsize = 0;
 		p9_req_put(m->client, m->wreq);
@@ -838,7 +515,6 @@ end_clear:
 			schedule_work(&m->wq);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 
@@ -847,11 +523,7 @@ error:
 	clear_bit(Wworksched, &m->wsched);
 }
 
-<<<<<<< HEAD
-static int p9_pollwake(wait_queue_t *wait, unsigned mode, int sync, void *key)
-=======
 static int p9_pollwake(wait_queue_entry_t *wait, unsigned int mode, int sync, void *key)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct p9_poll_wait *pwait =
 		container_of(wait, struct p9_poll_wait, wait);
@@ -902,27 +574,12 @@ p9_pollwait(struct file *filp, wait_queue_head_t *wait_address, poll_table *p)
 }
 
 /**
-<<<<<<< HEAD
- * p9_conn_create - allocate and initialize the per-session mux data
-=======
  * p9_conn_create - initialize the per-session mux data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @client: client instance
  *
  * Note: Creates the polling task if this is the first session.
  */
 
-<<<<<<< HEAD
-static struct p9_conn *p9_conn_create(struct p9_client *client)
-{
-	int n;
-	struct p9_conn *m;
-
-	p9_debug(P9_DEBUG_TRANS, "client %p msize %d\n", client, client->msize);
-	m = kzalloc(sizeof(struct p9_conn), GFP_KERNEL);
-	if (!m)
-		return ERR_PTR(-ENOMEM);
-=======
 static void p9_conn_create(struct p9_client *client)
 {
 	__poll_t n;
@@ -930,15 +587,11 @@ static void p9_conn_create(struct p9_client *client)
 	struct p9_conn *m = &ts->conn;
 
 	p9_debug(P9_DEBUG_TRANS, "client %p msize %d\n", client, client->msize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&m->mux_list);
 	m->client = client;
 
-<<<<<<< HEAD
-=======
 	spin_lock_init(&m->req_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&m->req_list);
 	INIT_LIST_HEAD(&m->unsent_req_list);
 	INIT_WORK(&m->rq, p9_read_work);
@@ -946,30 +599,16 @@ static void p9_conn_create(struct p9_client *client)
 	INIT_LIST_HEAD(&m->poll_pending_link);
 	init_poll_funcptr(&m->pt, p9_pollwait);
 
-<<<<<<< HEAD
-	n = p9_fd_poll(client, &m->pt);
-	if (n & POLLIN) {
-=======
 	n = p9_fd_poll(client, &m->pt, NULL);
 	if (n & EPOLLIN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p9_debug(P9_DEBUG_TRANS, "mux %p can read\n", m);
 		set_bit(Rpending, &m->wsched);
 	}
 
-<<<<<<< HEAD
-	if (n & POLLOUT) {
-		p9_debug(P9_DEBUG_TRANS, "mux %p can write\n", m);
-		set_bit(Wpending, &m->wsched);
-	}
-
-	return m;
-=======
 	if (n & EPOLLOUT) {
 		p9_debug(P9_DEBUG_TRANS, "mux %p can write\n", m);
 		set_bit(Wpending, &m->wsched);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -980,27 +619,12 @@ static void p9_conn_create(struct p9_client *client)
 
 static void p9_poll_mux(struct p9_conn *m)
 {
-<<<<<<< HEAD
-	int n;
-=======
 	__poll_t n;
 	int err = -ECONNRESET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (m->err < 0)
 		return;
 
-<<<<<<< HEAD
-	n = p9_fd_poll(m->client, NULL);
-	if (n < 0 || n & (POLLERR | POLLHUP | POLLNVAL)) {
-		p9_debug(P9_DEBUG_TRANS, "error mux %p err %d\n", m, n);
-		if (n >= 0)
-			n = -ECONNRESET;
-		p9_conn_cancel(m, n);
-	}
-
-	if (n & POLLIN) {
-=======
 	n = p9_fd_poll(m->client, NULL, &err);
 	if (n & (EPOLLERR | EPOLLHUP | EPOLLNVAL)) {
 		p9_debug(P9_DEBUG_TRANS, "error mux %p err %d\n", m, n);
@@ -1008,7 +632,6 @@ static void p9_poll_mux(struct p9_conn *m)
 	}
 
 	if (n & EPOLLIN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(Rpending, &m->wsched);
 		p9_debug(P9_DEBUG_TRANS, "mux %p can read\n", m);
 		if (!test_and_set_bit(Rworksched, &m->wsched)) {
@@ -1017,11 +640,7 @@ static void p9_poll_mux(struct p9_conn *m)
 		}
 	}
 
-<<<<<<< HEAD
-	if (n & POLLOUT) {
-=======
 	if (n & EPOLLOUT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(Wpending, &m->wsched);
 		p9_debug(P9_DEBUG_TRANS, "mux %p can write\n", m);
 		if ((m->wsize || !list_empty(&m->unsent_req_list)) &&
@@ -1045,28 +664,6 @@ static void p9_poll_mux(struct p9_conn *m)
 
 static int p9_fd_request(struct p9_client *client, struct p9_req_t *req)
 {
-<<<<<<< HEAD
-	int n;
-	struct p9_trans_fd *ts = client->trans;
-	struct p9_conn *m = ts->conn;
-
-	p9_debug(P9_DEBUG_TRANS, "mux %p task %p tcall %p id %d\n",
-		 m, current, req->tc, req->tc->id);
-	if (m->err < 0)
-		return m->err;
-
-	spin_lock(&client->lock);
-	req->status = REQ_STATUS_UNSENT;
-	list_add_tail(&req->req_list, &m->unsent_req_list);
-	spin_unlock(&client->lock);
-
-	if (test_and_clear_bit(Wpending, &m->wsched))
-		n = POLLOUT;
-	else
-		n = p9_fd_poll(m->client, NULL);
-
-	if (n & POLLOUT && !test_and_set_bit(Wworksched, &m->wsched))
-=======
 	__poll_t n;
 	struct p9_trans_fd *ts = client->trans;
 	struct p9_conn *m = &ts->conn;
@@ -1091,7 +688,6 @@ static int p9_fd_request(struct p9_client *client, struct p9_req_t *req)
 		n = p9_fd_poll(m->client, NULL, NULL);
 
 	if (n & EPOLLOUT && !test_and_set_bit(Wworksched, &m->wsched))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		schedule_work(&m->wq);
 
 	return 0;
@@ -1099,27 +695,12 @@ static int p9_fd_request(struct p9_client *client, struct p9_req_t *req)
 
 static int p9_fd_cancel(struct p9_client *client, struct p9_req_t *req)
 {
-<<<<<<< HEAD
-=======
 	struct p9_trans_fd *ts = client->trans;
 	struct p9_conn *m = &ts->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 1;
 
 	p9_debug(P9_DEBUG_TRANS, "client %p req %p\n", client, req);
 
-<<<<<<< HEAD
-	spin_lock(&client->lock);
-
-	if (req->status == REQ_STATUS_UNSENT) {
-		list_del(&req->req_list);
-		req->status = REQ_STATUS_FLSHD;
-		ret = 0;
-	} else if (req->status == REQ_STATUS_SENT)
-		req->status = REQ_STATUS_FLSH;
-
-	spin_unlock(&client->lock);
-=======
 	spin_lock(&m->req_lock);
 
 	if (req->status == REQ_STATUS_UNSENT) {
@@ -1129,13 +710,10 @@ static int p9_fd_cancel(struct p9_client *client, struct p9_req_t *req)
 		ret = 0;
 	}
 	spin_unlock(&m->req_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int p9_fd_cancelled(struct p9_client *client, struct p9_req_t *req)
 {
 	struct p9_trans_fd *ts = client->trans;
@@ -1178,7 +756,6 @@ static int p9_fd_show_options(struct seq_file *m, struct p9_client *clnt)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * parse_opts - parse mount options into p9_fd_opts structure
  * @params: options string passed from mount
@@ -1197,10 +774,7 @@ static int parse_opts(char *params, struct p9_fd_opts *opts)
 	opts->port = P9_PORT;
 	opts->rfd = ~0;
 	opts->wfd = ~0;
-<<<<<<< HEAD
-=======
 	opts->privport = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!params)
 		return 0;
@@ -1219,11 +793,7 @@ static int parse_opts(char *params, struct p9_fd_opts *opts)
 		if (!*p)
 			continue;
 		token = match_token(p, tokens, args);
-<<<<<<< HEAD
-		if (token != Opt_err) {
-=======
 		if ((token != Opt_err) && (token != Opt_privport)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = match_int(&args[0], &option);
 			if (r < 0) {
 				p9_debug(P9_DEBUG_ERROR,
@@ -1241,12 +811,9 @@ static int parse_opts(char *params, struct p9_fd_opts *opts)
 		case Opt_wfdno:
 			opts->wfd = option;
 			break;
-<<<<<<< HEAD
-=======
 		case Opt_privport:
 			opts->privport = true;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			continue;
 		}
@@ -1258,27 +825,12 @@ static int parse_opts(char *params, struct p9_fd_opts *opts)
 
 static int p9_fd_open(struct p9_client *client, int rfd, int wfd)
 {
-<<<<<<< HEAD
-	struct p9_trans_fd *ts = kmalloc(sizeof(struct p9_trans_fd),
-=======
 	struct p9_trans_fd *ts = kzalloc(sizeof(struct p9_trans_fd),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   GFP_KERNEL);
 	if (!ts)
 		return -ENOMEM;
 
 	ts->rd = fget(rfd);
-<<<<<<< HEAD
-	ts->wr = fget(wfd);
-	if (!ts->rd || !ts->wr) {
-		if (ts->rd)
-			fput(ts->rd);
-		if (ts->wr)
-			fput(ts->wr);
-		kfree(ts);
-		return -EIO;
-	}
-=======
 	if (!ts->rd)
 		goto out_free_ts;
 	if (!(ts->rd->f_mode & FMODE_READ))
@@ -1298,14 +850,11 @@ static int p9_fd_open(struct p9_client *client, int rfd, int wfd)
 	if (!(ts->wr->f_mode & FMODE_WRITE))
 		goto out_put_wr;
 	data_race(ts->wr->f_flags |= O_NONBLOCK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	client->trans = ts;
 	client->status = Connected;
 
 	return 0;
-<<<<<<< HEAD
-=======
 
 out_put_wr:
 	fput(ts->wr);
@@ -1314,49 +863,11 @@ out_put_rd:
 out_free_ts:
 	kfree(ts);
 	return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int p9_socket_open(struct p9_client *client, struct socket *csocket)
 {
 	struct p9_trans_fd *p;
-<<<<<<< HEAD
-	int ret, fd;
-
-	p = kmalloc(sizeof(struct p9_trans_fd), GFP_KERNEL);
-	if (!p)
-		return -ENOMEM;
-
-	csocket->sk->sk_allocation = GFP_NOIO;
-	fd = sock_map_fd(csocket, 0);
-	if (fd < 0) {
-		pr_err("%s (%d): failed to map fd\n",
-		       __func__, task_pid_nr(current));
-		sock_release(csocket);
-		kfree(p);
-		return fd;
-	}
-
-	get_file(csocket->file);
-	get_file(csocket->file);
-	p->wr = p->rd = csocket->file;
-	client->trans = p;
-	client->status = Connected;
-
-	sys_close(fd);	/* still racy */
-
-	p->rd->f_flags |= O_NONBLOCK;
-
-	p->conn = p9_conn_create(client);
-	if (IS_ERR(p->conn)) {
-		ret = PTR_ERR(p->conn);
-		p->conn = NULL;
-		kfree(p);
-		sockfd_put(csocket);
-		sockfd_put(csocket);
-		return ret;
-	}
-=======
 	struct file *file;
 
 	p = kzalloc(sizeof(struct p9_trans_fd), GFP_KERNEL);
@@ -1383,16 +894,11 @@ static int p9_socket_open(struct p9_client *client, struct socket *csocket)
 	p->rd->f_flags |= O_NONBLOCK;
 
 	p9_conn_create(client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- * p9_mux_destroy - cancels all pending requests and frees mux resources
-=======
  * p9_conn_destroy - cancels all pending requests of mux
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @m: mux to destroy
  *
  */
@@ -1404,9 +910,6 @@ static void p9_conn_destroy(struct p9_conn *m)
 
 	p9_mux_poll_stop(m);
 	cancel_work_sync(&m->rq);
-<<<<<<< HEAD
-	cancel_work_sync(&m->wq);
-=======
 	if (m->rreq) {
 		p9_req_put(m->client, m->rreq);
 		m->rreq = NULL;
@@ -1416,15 +919,10 @@ static void p9_conn_destroy(struct p9_conn *m)
 		p9_req_put(m->client, m->wreq);
 		m->wreq = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p9_conn_cancel(m, -ECONNRESET);
 
 	m->client = NULL;
-<<<<<<< HEAD
-	kfree(m);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1446,11 +944,7 @@ static void p9_fd_close(struct p9_client *client)
 
 	client->status = Disconnected;
 
-<<<<<<< HEAD
-	p9_conn_destroy(ts->conn);
-=======
 	p9_conn_destroy(&ts->conn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ts->rd)
 		fput(ts->rd);
@@ -1477,8 +971,6 @@ static inline int valid_ipaddr4(const char *buf)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int p9_bind_privport(struct socket *sock)
 {
 	struct sockaddr_in cl;
@@ -1497,7 +989,6 @@ static int p9_bind_privport(struct socket *sock)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 p9_fd_create_tcp(struct p9_client *client, const char *addr, char *args)
 {
@@ -1510,28 +1001,17 @@ p9_fd_create_tcp(struct p9_client *client, const char *addr, char *args)
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	if (valid_ipaddr4(addr) < 0)
-=======
 	if (addr == NULL || valid_ipaddr4(addr) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	csocket = NULL;
 
-<<<<<<< HEAD
-	sin_server.sin_family = AF_INET;
-	sin_server.sin_addr.s_addr = in_aton(addr);
-	sin_server.sin_port = htons(opts.port);
-	err = __sock_create(read_pnet(&current->nsproxy->net_ns), PF_INET,
-=======
 	client->trans_opts.tcp.port = opts.port;
 	client->trans_opts.tcp.privport = opts.privport;
 	sin_server.sin_family = AF_INET;
 	sin_server.sin_addr.s_addr = in_aton(addr);
 	sin_server.sin_port = htons(opts.port);
 	err = __sock_create(current->nsproxy->net_ns, PF_INET,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    SOCK_STREAM, IPPROTO_TCP, &csocket, 1);
 	if (err) {
 		pr_err("%s (%d): problem creating socket\n",
@@ -1539,9 +1019,6 @@ p9_fd_create_tcp(struct p9_client *client, const char *addr, char *args)
 		return err;
 	}
 
-<<<<<<< HEAD
-	err = csocket->ops->connect(csocket,
-=======
 	if (opts.privport) {
 		err = p9_bind_privport(csocket);
 		if (err < 0) {
@@ -1553,7 +1030,6 @@ p9_fd_create_tcp(struct p9_client *client, const char *addr, char *args)
 	}
 
 	err = READ_ONCE(csocket->ops)->connect(csocket,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    (struct sockaddr *)&sin_server,
 				    sizeof(struct sockaddr_in), 0);
 	if (err < 0) {
@@ -1575,12 +1051,9 @@ p9_fd_create_unix(struct p9_client *client, const char *addr, char *args)
 
 	csocket = NULL;
 
-<<<<<<< HEAD
-=======
 	if (!addr || !strlen(addr))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (strlen(addr) >= UNIX_PATH_MAX) {
 		pr_err("%s (%d): address too long: %s\n",
 		       __func__, task_pid_nr(current), addr);
@@ -1589,11 +1062,7 @@ p9_fd_create_unix(struct p9_client *client, const char *addr, char *args)
 
 	sun_server.sun_family = PF_UNIX;
 	strcpy(sun_server.sun_path, addr);
-<<<<<<< HEAD
-	err = __sock_create(read_pnet(&current->nsproxy->net_ns), PF_UNIX,
-=======
 	err = __sock_create(current->nsproxy->net_ns, PF_UNIX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    SOCK_STREAM, 0, &csocket, 1);
 	if (err < 0) {
 		pr_err("%s (%d): problem creating socket\n",
@@ -1601,11 +1070,7 @@ p9_fd_create_unix(struct p9_client *client, const char *addr, char *args)
 
 		return err;
 	}
-<<<<<<< HEAD
-	err = csocket->ops->connect(csocket, (struct sockaddr *)&sun_server,
-=======
 	err = READ_ONCE(csocket->ops)->connect(csocket, (struct sockaddr *)&sun_server,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(struct sockaddr_un) - 1, 0);
 	if (err < 0) {
 		pr_err("%s (%d): problem connecting socket: %s: %d\n",
@@ -1622,18 +1087,12 @@ p9_fd_create(struct p9_client *client, const char *addr, char *args)
 {
 	int err;
 	struct p9_fd_opts opts;
-<<<<<<< HEAD
-	struct p9_trans_fd *p;
-
-	parse_opts(args, &opts);
-=======
 
 	err = parse_opts(args, &opts);
 	if (err < 0)
 		return err;
 	client->trans_opts.fd.rfd = opts.rfd;
 	client->trans_opts.fd.wfd = opts.wfd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (opts.rfd == ~0 || opts.wfd == ~0) {
 		pr_err("Insufficient options for proto=fd\n");
@@ -1644,19 +1103,7 @@ p9_fd_create(struct p9_client *client, const char *addr, char *args)
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	p = (struct p9_trans_fd *) client->trans;
-	p->conn = p9_conn_create(client);
-	if (IS_ERR(p->conn)) {
-		err = PTR_ERR(p->conn);
-		p->conn = NULL;
-		fput(p->rd);
-		fput(p->wr);
-		return err;
-	}
-=======
 	p9_conn_create(client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1664,26 +1111,17 @@ p9_fd_create(struct p9_client *client, const char *addr, char *args)
 static struct p9_trans_module p9_tcp_trans = {
 	.name = "tcp",
 	.maxsize = MAX_SOCK_BUF,
-<<<<<<< HEAD
-	.def = 1,
-=======
 	.pooled_rbuffers = false,
 	.def = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.create = p9_fd_create_tcp,
 	.close = p9_fd_close,
 	.request = p9_fd_request,
 	.cancel = p9_fd_cancel,
-<<<<<<< HEAD
-	.owner = THIS_MODULE,
-};
-=======
 	.cancelled = p9_fd_cancelled,
 	.show_options = p9_fd_show_options,
 	.owner = THIS_MODULE,
 };
 MODULE_ALIAS_9P("tcp");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct p9_trans_module p9_unix_trans = {
 	.name = "unix",
@@ -1693,16 +1131,11 @@ static struct p9_trans_module p9_unix_trans = {
 	.close = p9_fd_close,
 	.request = p9_fd_request,
 	.cancel = p9_fd_cancel,
-<<<<<<< HEAD
-	.owner = THIS_MODULE,
-};
-=======
 	.cancelled = p9_fd_cancelled,
 	.show_options = p9_fd_show_options,
 	.owner = THIS_MODULE,
 };
 MODULE_ALIAS_9P("unix");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct p9_trans_module p9_fd_trans = {
 	.name = "fd",
@@ -1712,14 +1145,6 @@ static struct p9_trans_module p9_fd_trans = {
 	.close = p9_fd_close,
 	.request = p9_fd_request,
 	.cancel = p9_fd_cancel,
-<<<<<<< HEAD
-	.owner = THIS_MODULE,
-};
-
-/**
- * p9_poll_proc - poll worker thread
- * @a: thread state and arguments
-=======
 	.cancelled = p9_fd_cancelled,
 	.show_options = p9_fd_show_options,
 	.owner = THIS_MODULE,
@@ -1729,7 +1154,6 @@ MODULE_ALIAS_9P("fd");
 /**
  * p9_poll_workfn - poll worker thread
  * @work: work queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * polls all v9fs transports for new events and queues the appropriate
  * work to the work queue
@@ -1759,11 +1183,7 @@ static void p9_poll_workfn(struct work_struct *work)
 	p9_debug(P9_DEBUG_TRANS, "finish\n");
 }
 
-<<<<<<< HEAD
-int p9_trans_fd_init(void)
-=======
 static int __init p9_trans_fd_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	v9fs_register_trans(&p9_tcp_trans);
 	v9fs_register_trans(&p9_unix_trans);
@@ -1772,21 +1192,13 @@ static int __init p9_trans_fd_init(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-void p9_trans_fd_exit(void)
-{
-	flush_work_sync(&p9_poll_work);
-=======
 static void __exit p9_trans_fd_exit(void)
 {
 	flush_work(&p9_poll_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v9fs_unregister_trans(&p9_tcp_trans);
 	v9fs_unregister_trans(&p9_unix_trans);
 	v9fs_unregister_trans(&p9_fd_trans);
 }
-<<<<<<< HEAD
-=======
 
 module_init(p9_trans_fd_init);
 module_exit(p9_trans_fd_exit);
@@ -1794,4 +1206,3 @@ module_exit(p9_trans_fd_exit);
 MODULE_AUTHOR("Eric Van Hensbergen <ericvh@gmail.com>");
 MODULE_DESCRIPTION("Filedescriptor Transport for 9P");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

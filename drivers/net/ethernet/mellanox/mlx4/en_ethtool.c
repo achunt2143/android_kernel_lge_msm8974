@@ -34,21 +34,16 @@
 #include <linux/kernel.h>
 #include <linux/ethtool.h>
 #include <linux/netdevice.h>
-<<<<<<< HEAD
-=======
 #include <linux/mlx4/driver.h>
 #include <linux/mlx4/device.h>
 #include <linux/in.h>
 #include <net/ip.h>
 #include <linux/bitmap.h>
 #include <linux/mii.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "mlx4_en.h"
 #include "en_port.h"
 
-<<<<<<< HEAD
-=======
 #define EN_ETHTOOL_QP_ATTACH (1ull << 63)
 #define EN_ETHTOOL_SHORT_MASK cpu_to_be16(0xffff)
 #define EN_ETHTOOL_WORD_MASK  cpu_to_be32(0xffffffff)
@@ -87,7 +82,6 @@ int mlx4_en_moderation_update(struct mlx4_en_priv *priv)
 
 	return err;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 mlx4_en_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *drvinfo)
@@ -95,29 +89,14 @@ mlx4_en_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *drvinfo)
 	struct mlx4_en_priv *priv = netdev_priv(dev);
 	struct mlx4_en_dev *mdev = priv->mdev;
 
-<<<<<<< HEAD
-	strlcpy(drvinfo->driver, DRV_NAME, sizeof(drvinfo->driver));
-	strlcpy(drvinfo->version, DRV_VERSION " (" DRV_RELDATE ")",
-=======
 	strscpy(drvinfo->driver, DRV_NAME, sizeof(drvinfo->driver));
 	strscpy(drvinfo->version, DRV_VERSION,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(drvinfo->version));
 	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
 		"%d.%d.%d",
 		(u16) (mdev->dev->caps.fw_ver >> 32),
 		(u16) ((mdev->dev->caps.fw_ver >> 16) & 0xffff),
 		(u16) (mdev->dev->caps.fw_ver & 0xffff));
-<<<<<<< HEAD
-	strlcpy(drvinfo->bus_info, pci_name(mdev->dev->pdev),
-		sizeof(drvinfo->bus_info));
-	drvinfo->n_stats = 0;
-	drvinfo->regdump_len = 0;
-	drvinfo->eedump_len = 0;
-}
-
-static const char main_strings[][ETH_GSTRING_LEN] = {
-=======
 	strscpy(drvinfo->bus_info, pci_name(mdev->dev->persist->pdev),
 		sizeof(drvinfo->bus_info));
 }
@@ -129,7 +108,6 @@ static const char mlx4_en_priv_flags[][ETH_GSTRING_LEN] = {
 
 static const char main_strings[][ETH_GSTRING_LEN] = {
 	/* main statistics */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"rx_packets", "tx_packets", "rx_bytes", "tx_bytes", "rx_errors",
 	"tx_errors", "rx_dropped", "tx_dropped", "multicast", "collisions",
 	"rx_length_errors", "rx_over_errors", "rx_crc_errors",
@@ -139,22 +117,6 @@ static const char main_strings[][ETH_GSTRING_LEN] = {
 
 	/* port statistics */
 	"tso_packets",
-<<<<<<< HEAD
-	"queue_stopped", "wake_queue", "tx_timeout", "rx_alloc_failed",
-	"rx_csum_good", "rx_csum_none", "tx_chksum_offload",
-
-	/* packet statistics */
-	"broadcast", "rx_prio_0", "rx_prio_1", "rx_prio_2", "rx_prio_3",
-	"rx_prio_4", "rx_prio_5", "rx_prio_6", "rx_prio_7", "tx_prio_0",
-	"tx_prio_1", "tx_prio_2", "tx_prio_3", "tx_prio_4", "tx_prio_5",
-	"tx_prio_6", "tx_prio_7",
-};
-#define NUM_MAIN_STATS	21
-#define NUM_ALL_STATS	(NUM_MAIN_STATS + NUM_PORT_STATS + NUM_PKT_STATS + NUM_PERF_STATS)
-
-static const char mlx4_en_test_names[][ETH_GSTRING_LEN]= {
-	"Interupt Test",
-=======
 	"xmit_more",
 	"queue_stopped", "wake_queue", "tx_timeout", "rx_alloc_pages",
 	"rx_csum_good", "rx_csum_none", "rx_csum_complete", "tx_chksum_offload",
@@ -248,7 +210,6 @@ static const char mlx4_en_test_names[][ETH_GSTRING_LEN]= {
 
 static const char mlx4_en_test_names[][ETH_GSTRING_LEN]= {
 	"Interrupt Test",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Link Test",
 	"Speed Test",
 	"Register Test",
@@ -269,10 +230,7 @@ static void mlx4_en_get_wol(struct net_device *netdev,
 			    struct ethtool_wolinfo *wol)
 {
 	struct mlx4_en_priv *priv = netdev_priv(netdev);
-<<<<<<< HEAD
-=======
 	struct mlx4_caps *caps = &priv->mdev->dev->caps;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 	u64 config = 0;
 	u64 mask;
@@ -285,40 +243,24 @@ static void mlx4_en_get_wol(struct net_device *netdev,
 	mask = (priv->port == 1) ? MLX4_DEV_CAP_FLAG_WOL_PORT1 :
 		MLX4_DEV_CAP_FLAG_WOL_PORT2;
 
-<<<<<<< HEAD
-	if (!(priv->mdev->dev->caps.flags & mask)) {
-=======
 	if (!(caps->flags & mask)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wol->supported = 0;
 		wol->wolopts = 0;
 		return;
 	}
 
-<<<<<<< HEAD
-=======
 	if (caps->wol_port[priv->port])
 		wol->supported = WAKE_MAGIC;
 	else
 		wol->supported = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = mlx4_wol_read(priv->mdev->dev, &config, priv->port);
 	if (err) {
 		en_err(priv, "Failed to get WoL information\n");
 		return;
 	}
 
-<<<<<<< HEAD
-	if (config & MLX4_EN_WOL_MAGIC)
-		wol->supported = WAKE_MAGIC;
-	else
-		wol->supported = 0;
-
-	if (config & MLX4_EN_WOL_ENABLED)
-=======
 	if ((config & MLX4_EN_WOL_ENABLED) && (config & MLX4_EN_WOL_MAGIC))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wol->wolopts = WAKE_MAGIC;
 	else
 		wol->wolopts = 0;
@@ -365,20 +307,6 @@ static int mlx4_en_set_wol(struct net_device *netdev,
 	return err;
 }
 
-<<<<<<< HEAD
-static int mlx4_en_get_sset_count(struct net_device *dev, int sset)
-{
-	struct mlx4_en_priv *priv = netdev_priv(dev);
-	int bit_count = hweight64(priv->stats_bitmap);
-
-	switch (sset) {
-	case ETH_SS_STATS:
-		return (priv->stats_bitmap ? bit_count : NUM_ALL_STATS) +
-			(priv->tx_ring_num + priv->rx_ring_num) * 2;
-	case ETH_SS_TEST:
-		return MLX4_EN_NUM_SELF_TEST - !(priv->mdev->dev->caps.flags
-					& MLX4_DEV_CAP_FLAG_UC_LOOPBACK) * 2;
-=======
 struct bitmap_iterator {
 	unsigned long *stats_bitmap;
 	unsigned int count;
@@ -430,7 +358,6 @@ static int mlx4_en_get_sset_count(struct net_device *dev, int sset)
 					& MLX4_DEV_CAP_FLAG_UC_LOOPBACK) * 2;
 	case ETH_SS_PRIV_FLAGS:
 		return ARRAY_SIZE(mlx4_en_priv_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EOPNOTSUPP;
 	}
@@ -441,43 +368,6 @@ static void mlx4_en_get_ethtool_stats(struct net_device *dev,
 {
 	struct mlx4_en_priv *priv = netdev_priv(dev);
 	int index = 0;
-<<<<<<< HEAD
-	int i, j = 0;
-
-	spin_lock_bh(&priv->stats_lock);
-
-	if (!(priv->stats_bitmap)) {
-		for (i = 0; i < NUM_MAIN_STATS; i++)
-			data[index++] =
-				((unsigned long *) &priv->stats)[i];
-		for (i = 0; i < NUM_PORT_STATS; i++)
-			data[index++] =
-				((unsigned long *) &priv->port_stats)[i];
-		for (i = 0; i < NUM_PKT_STATS; i++)
-			data[index++] =
-				((unsigned long *) &priv->pkstats)[i];
-	} else {
-		for (i = 0; i < NUM_MAIN_STATS; i++) {
-			if ((priv->stats_bitmap >> j) & 1)
-				data[index++] =
-				((unsigned long *) &priv->stats)[i];
-			j++;
-		}
-		for (i = 0; i < NUM_PORT_STATS; i++) {
-			if ((priv->stats_bitmap >> j) & 1)
-				data[index++] =
-				((unsigned long *) &priv->port_stats)[i];
-			j++;
-		}
-	}
-	for (i = 0; i < priv->tx_ring_num; i++) {
-		data[index++] = priv->tx_ring[i].packets;
-		data[index++] = priv->tx_ring[i].bytes;
-	}
-	for (i = 0; i < priv->rx_ring_num; i++) {
-		data[index++] = priv->rx_ring[i].packets;
-		data[index++] = priv->rx_ring[i].bytes;
-=======
 	int i;
 	struct bitmap_iterator it;
 
@@ -545,7 +435,6 @@ static void mlx4_en_get_ethtool_stats(struct net_device *dev,
 		data[index++] = priv->rx_ring[i]->xdp_redirect_fail;
 		data[index++] = priv->rx_ring[i]->xdp_tx;
 		data[index++] = priv->rx_ring[i]->xdp_tx_full;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_bh(&priv->stats_lock);
 
@@ -562,14 +451,10 @@ static void mlx4_en_get_strings(struct net_device *dev,
 {
 	struct mlx4_en_priv *priv = netdev_priv(dev);
 	int index = 0;
-<<<<<<< HEAD
-	int i;
-=======
 	int i, strings = 0;
 	struct bitmap_iterator it;
 
 	bitmap_iterator_init(&it, priv->stats_bitmap.bitmap, NUM_ALL_STATS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (stringset) {
 	case ETH_SS_TEST:
@@ -582,32 +467,6 @@ static void mlx4_en_get_strings(struct net_device *dev,
 
 	case ETH_SS_STATS:
 		/* Add main counters */
-<<<<<<< HEAD
-		if (!priv->stats_bitmap) {
-			for (i = 0; i < NUM_MAIN_STATS; i++)
-				strcpy(data + (index++) * ETH_GSTRING_LEN,
-					main_strings[i]);
-			for (i = 0; i < NUM_PORT_STATS; i++)
-				strcpy(data + (index++) * ETH_GSTRING_LEN,
-					main_strings[i +
-					NUM_MAIN_STATS]);
-			for (i = 0; i < NUM_PKT_STATS; i++)
-				strcpy(data + (index++) * ETH_GSTRING_LEN,
-					main_strings[i +
-					NUM_MAIN_STATS +
-					NUM_PORT_STATS]);
-		} else
-			for (i = 0; i < NUM_MAIN_STATS + NUM_PORT_STATS; i++) {
-				if ((priv->stats_bitmap >> i) & 1) {
-					strcpy(data +
-					       (index++) * ETH_GSTRING_LEN,
-					       main_strings[i]);
-				}
-				if (!(priv->stats_bitmap >> i))
-					break;
-			}
-		for (i = 0; i < priv->tx_ring_num; i++) {
-=======
 		for (i = 0; i < NUM_MAIN_STATS; i++, strings++,
 		     bitmap_iterator_inc(&it))
 			if (bitmap_iterator_test(&it))
@@ -651,7 +510,6 @@ static void mlx4_en_get_strings(struct net_device *dev,
 				       main_strings[strings]);
 
 		for (i = 0; i < priv->tx_ring_num[TX]; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sprintf(data + (index++) * ETH_GSTRING_LEN,
 				"tx%d_packets", i);
 			sprintf(data + (index++) * ETH_GSTRING_LEN,
@@ -662,14 +520,6 @@ static void mlx4_en_get_strings(struct net_device *dev,
 				"rx%d_packets", i);
 			sprintf(data + (index++) * ETH_GSTRING_LEN,
 				"rx%d_bytes", i);
-<<<<<<< HEAD
-		}
-		break;
-	}
-}
-
-static int mlx4_en_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-=======
 			sprintf(data + (index++) * ETH_GSTRING_LEN,
 				"rx%d_dropped", i);
 			sprintf(data + (index++) * ETH_GSTRING_LEN,
@@ -983,16 +833,10 @@ ethtool_get_ptys_link_ksettings(struct net_device *dev,
 static void
 ethtool_get_default_link_ksettings(
 	struct net_device *dev, struct ethtool_link_ksettings *link_ksettings)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_en_priv *priv = netdev_priv(dev);
 	int trans_type;
 
-<<<<<<< HEAD
-	cmd->autoneg = AUTONEG_DISABLE;
-	cmd->supported = SUPPORTED_10000baseT_Full;
-	cmd->advertising = ADVERTISED_10000baseT_Full;
-=======
 	link_ksettings->base.autoneg = AUTONEG_DISABLE;
 
 	ethtool_link_ksettings_zero_link_mode(link_ksettings, supported);
@@ -1027,35 +871,10 @@ mlx4_en_get_link_ksettings(struct net_device *dev,
 {
 	struct mlx4_en_priv *priv = netdev_priv(dev);
 	int ret = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mlx4_en_QUERY_PORT(priv->mdev, priv->port))
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	trans_type = priv->port_state.transciver;
-	if (netif_carrier_ok(dev)) {
-		ethtool_cmd_speed_set(cmd, priv->port_state.link_speed);
-		cmd->duplex = DUPLEX_FULL;
-	} else {
-		ethtool_cmd_speed_set(cmd, -1);
-		cmd->duplex = -1;
-	}
-
-	if (trans_type > 0 && trans_type <= 0xC) {
-		cmd->port = PORT_FIBRE;
-		cmd->transceiver = XCVR_EXTERNAL;
-		cmd->supported |= SUPPORTED_FIBRE;
-		cmd->advertising |= ADVERTISED_FIBRE;
-	} else if (trans_type == 0x80 || trans_type == 0) {
-		cmd->port = PORT_TP;
-		cmd->transceiver = XCVR_INTERNAL;
-		cmd->supported |= SUPPORTED_TP;
-		cmd->advertising |= ADVERTISED_TP;
-	} else  {
-		cmd->port = -1;
-		cmd->transceiver = -1;
-=======
 	en_dbg(DRV, priv, "query port state.flags ANC(%x) ANE(%x)\n",
 	       priv->port_state.flags & MLX4_EN_PORT_ANC,
 	       priv->port_state.flags & MLX4_EN_PORT_ANE);
@@ -1071,21 +890,10 @@ mlx4_en_get_link_ksettings(struct net_device *dev,
 	} else {
 		link_ksettings->base.speed = SPEED_UNKNOWN;
 		link_ksettings->base.duplex = DUPLEX_UNKNOWN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int mlx4_en_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	if ((cmd->autoneg == AUTONEG_ENABLE) ||
-	    (ethtool_cmd_speed(cmd) != SPEED_10000) ||
-	    (cmd->duplex != DUPLEX_FULL))
-		return -EINVAL;
-
-	/* Nothing to change */
-=======
 /* Calculate PTYS admin according ethtool speed (SPEED_XXX) */
 static __be32 speed_set_ptys_admin(struct mlx4_en_priv *priv, u32 speed,
 				   __be32 proto_cap)
@@ -1189,19 +997,10 @@ mlx4_en_set_link_ksettings(struct net_device *dev,
 			en_err(priv, "Failed restarting port %d\n", priv->port);
 	}
 	mutex_unlock(&priv->mdev->state_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int mlx4_en_get_coalesce(struct net_device *dev,
-<<<<<<< HEAD
-			      struct ethtool_coalesce *coal)
-{
-	struct mlx4_en_priv *priv = netdev_priv(dev);
-
-	coal->tx_coalesce_usecs = 0;
-	coal->tx_max_coalesced_frames = 0;
-=======
 				struct ethtool_coalesce *coal,
 				struct kernel_ethtool_coalesce *kernel_coal,
 				struct netlink_ext_ack *extack)
@@ -1212,7 +1011,6 @@ static int mlx4_en_get_coalesce(struct net_device *dev,
 	coal->tx_max_coalesced_frames = priv->tx_frames;
 	coal->tx_max_coalesced_frames_irq = priv->tx_work_limit;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	coal->rx_coalesce_usecs = priv->rx_usecs;
 	coal->rx_max_coalesced_frames = priv->rx_frames;
 
@@ -1222,20 +1020,11 @@ static int mlx4_en_get_coalesce(struct net_device *dev,
 	coal->rx_coalesce_usecs_high = priv->rx_usecs_high;
 	coal->rate_sample_interval = priv->sample_interval;
 	coal->use_adaptive_rx_coalesce = priv->adaptive_rx_coal;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int mlx4_en_set_coalesce(struct net_device *dev,
-<<<<<<< HEAD
-			      struct ethtool_coalesce *coal)
-{
-	struct mlx4_en_priv *priv = netdev_priv(dev);
-	int err, i;
-=======
 				struct ethtool_coalesce *coal,
 				struct kernel_ethtool_coalesce *kernel_coal,
 				struct netlink_ext_ack *extack)
@@ -1260,7 +1049,6 @@ static int mlx4_en_set_coalesce(struct net_device *dev,
 			    __func__, MLX4_EN_MAX_COAL_PKTS);
 		return -ERANGE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->rx_frames = (coal->rx_max_coalesced_frames ==
 			   MLX4_EN_AUTO_CONF) ?
@@ -1271,8 +1059,6 @@ static int mlx4_en_set_coalesce(struct net_device *dev,
 				MLX4_EN_RX_COAL_TIME :
 				coal->rx_coalesce_usecs;
 
-<<<<<<< HEAD
-=======
 	/* Setting TX coalescing parameters */
 	if (coal->tx_coalesce_usecs != priv->tx_usecs ||
 	    coal->tx_max_coalesced_frames != priv->tx_frames) {
@@ -1280,7 +1066,6 @@ static int mlx4_en_set_coalesce(struct net_device *dev,
 		priv->tx_frames = coal->tx_max_coalesced_frames;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set adaptive coalescing params */
 	priv->pkt_rate_low = coal->pkt_rate_low;
 	priv->rx_usecs_low = coal->rx_coalesce_usecs_low;
@@ -1288,24 +1073,9 @@ static int mlx4_en_set_coalesce(struct net_device *dev,
 	priv->rx_usecs_high = coal->rx_coalesce_usecs_high;
 	priv->sample_interval = coal->rate_sample_interval;
 	priv->adaptive_rx_coal = coal->use_adaptive_rx_coalesce;
-<<<<<<< HEAD
-	if (priv->adaptive_rx_coal)
-		return 0;
-
-	for (i = 0; i < priv->rx_ring_num; i++) {
-		priv->rx_cq[i].moder_cnt = priv->rx_frames;
-		priv->rx_cq[i].moder_time = priv->rx_usecs;
-		priv->last_moder_time[i] = MLX4_EN_AUTO_CONF;
-		err = mlx4_en_set_cq_moder(priv, &priv->rx_cq[i]);
-		if (err)
-			return err;
-	}
-	return 0;
-=======
 	priv->tx_work_limit = coal->tx_max_coalesced_frames_irq;
 
 	return mlx4_en_moderation_update(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mlx4_en_set_pauseparam(struct net_device *dev,
@@ -1313,20 +1083,6 @@ static int mlx4_en_set_pauseparam(struct net_device *dev,
 {
 	struct mlx4_en_priv *priv = netdev_priv(dev);
 	struct mlx4_en_dev *mdev = priv->mdev;
-<<<<<<< HEAD
-	int err;
-
-	priv->prof->tx_pause = pause->tx_pause != 0;
-	priv->prof->rx_pause = pause->rx_pause != 0;
-	err = mlx4_SET_PORT_general(mdev->dev, priv->port,
-				    priv->rx_skb_size + ETH_FCS_LEN,
-				    priv->prof->tx_pause,
-				    priv->prof->tx_ppp,
-				    priv->prof->rx_pause,
-				    priv->prof->rx_ppp);
-	if (err)
-		en_err(priv, "Failed setting pause params\n");
-=======
 	u8 tx_pause, tx_ppp, rx_pause, rx_ppp;
 	int err;
 
@@ -1353,13 +1109,10 @@ static int mlx4_en_set_pauseparam(struct net_device *dev,
 	priv->prof->rx_pause = rx_pause;
 	priv->prof->tx_ppp = tx_ppp;
 	priv->prof->rx_ppp = rx_ppp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static void mlx4_en_get_pause_stats(struct net_device *dev,
 				    struct ethtool_pause_stats *stats)
 {
@@ -1378,7 +1131,6 @@ static void mlx4_en_get_pause_stats(struct net_device *dev,
 	spin_unlock_bh(&priv->stats_lock);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mlx4_en_get_pauseparam(struct net_device *dev,
 				 struct ethtool_pauseparam *pause)
 {
@@ -1389,16 +1141,6 @@ static void mlx4_en_get_pauseparam(struct net_device *dev,
 }
 
 static int mlx4_en_set_ringparam(struct net_device *dev,
-<<<<<<< HEAD
-				 struct ethtool_ringparam *param)
-{
-	struct mlx4_en_priv *priv = netdev_priv(dev);
-	struct mlx4_en_dev *mdev = priv->mdev;
-	u32 rx_size, tx_size;
-	int port_up = 0;
-	int err = 0;
-	int i;
-=======
 				 struct ethtool_ringparam *param,
 				 struct kernel_ethtool_ringparam *kernel_param,
 				 struct netlink_ext_ack *extack)
@@ -1410,41 +1152,10 @@ static int mlx4_en_set_ringparam(struct net_device *dev,
 	u32 rx_size, tx_size;
 	int port_up = 0;
 	int err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (param->rx_jumbo_pending || param->rx_mini_pending)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	rx_size = roundup_pow_of_two(param->rx_pending);
-	rx_size = max_t(u32, rx_size, MLX4_EN_MIN_RX_SIZE);
-	rx_size = min_t(u32, rx_size, MLX4_EN_MAX_RX_SIZE);
-	tx_size = roundup_pow_of_two(param->tx_pending);
-	tx_size = max_t(u32, tx_size, MLX4_EN_MIN_TX_SIZE);
-	tx_size = min_t(u32, tx_size, MLX4_EN_MAX_TX_SIZE);
-
-	if (rx_size == (priv->port_up ? priv->rx_ring[0].actual_size :
-					priv->rx_ring[0].size) &&
-	    tx_size == priv->tx_ring[0].size)
-		return 0;
-
-	mutex_lock(&mdev->state_lock);
-	if (priv->port_up) {
-		port_up = 1;
-		mlx4_en_stop_port(dev);
-	}
-
-	mlx4_en_free_resources(priv);
-
-	priv->prof->tx_ring_size = tx_size;
-	priv->prof->rx_ring_size = rx_size;
-
-	err = mlx4_en_alloc_resources(priv);
-	if (err) {
-		en_err(priv, "Failed reallocating port resources\n");
-		goto out;
-	}
-=======
 	if (param->rx_pending < MLX4_EN_MIN_RX_SIZE) {
 		en_warn(priv, "%s: rx_pending (%d) < min (%d)\n",
 			__func__, param->rx_pending,
@@ -1485,41 +1196,23 @@ static int mlx4_en_set_ringparam(struct net_device *dev,
 
 	mlx4_en_safe_replace_resources(priv, tmp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (port_up) {
 		err = mlx4_en_start_port(dev);
 		if (err)
 			en_err(priv, "Failed starting port\n");
 	}
 
-<<<<<<< HEAD
-	for (i = 0; i < priv->rx_ring_num; i++) {
-		priv->rx_cq[i].moder_cnt = priv->rx_frames;
-		priv->rx_cq[i].moder_time = priv->rx_usecs;
-		priv->last_moder_time[i] = MLX4_EN_AUTO_CONF;
-		err = mlx4_en_set_cq_moder(priv, &priv->rx_cq[i]);
-		if (err)
-			goto out;
-	}
-
-out:
-=======
 	err = mlx4_en_moderation_update(priv);
 out:
 	kfree(tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&mdev->state_lock);
 	return err;
 }
 
 static void mlx4_en_get_ringparam(struct net_device *dev,
-<<<<<<< HEAD
-				  struct ethtool_ringparam *param)
-=======
 				  struct ethtool_ringparam *param,
 				  struct kernel_ethtool_ringparam *kernel_param,
 				  struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_en_priv *priv = netdev_priv(dev);
 
@@ -1527,46 +1220,14 @@ static void mlx4_en_get_ringparam(struct net_device *dev,
 	param->rx_max_pending = MLX4_EN_MAX_RX_SIZE;
 	param->tx_max_pending = MLX4_EN_MAX_TX_SIZE;
 	param->rx_pending = priv->port_up ?
-<<<<<<< HEAD
-		priv->rx_ring[0].actual_size : priv->rx_ring[0].size;
-	param->tx_pending = priv->tx_ring[0].size;
-=======
 		priv->rx_ring[0]->actual_size : priv->rx_ring[0]->size;
 	param->tx_pending = priv->tx_ring[TX][0]->size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 mlx4_en_get_rxfh_indir_size(struct net_device *dev)
 {
 	struct mlx4_en_priv *priv = netdev_priv(dev);
 
-<<<<<<< HEAD
-	return priv->rx_ring_num;
-}
-
-static int mlx4_en_get_rxfh_indir(struct net_device *dev, u32 *ring_index)
-{
-	struct mlx4_en_priv *priv = netdev_priv(dev);
-	struct mlx4_en_rss_map *rss_map = &priv->rss_map;
-	int rss_rings;
-	size_t n = priv->rx_ring_num;
-	int err = 0;
-
-	rss_rings = priv->prof->rss_rings ?: priv->rx_ring_num;
-
-	while (n--) {
-		ring_index[n] = rss_map->qps[n % rss_rings].qpn -
-			rss_map->base_qpn;
-	}
-
-	return err;
-}
-
-static int mlx4_en_set_rxfh_indir(struct net_device *dev,
-		const u32 *ring_index)
-{
-	struct mlx4_en_priv *priv = netdev_priv(dev);
-=======
 	return rounddown_pow_of_two(priv->rx_ring_num);
 }
 
@@ -1624,7 +1285,6 @@ static int mlx4_en_set_rxfh(struct net_device *dev,
 {
 	struct mlx4_en_priv *priv = netdev_priv(dev);
 	u32 n = mlx4_en_get_rxfh_indir_size(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlx4_en_dev *mdev = priv->mdev;
 	int port_up = 0;
 	int err = 0;
@@ -1634,13 +1294,6 @@ static int mlx4_en_set_rxfh(struct net_device *dev,
 	/* Calculate RSS table size and make sure flows are spread evenly
 	 * between rings
 	 */
-<<<<<<< HEAD
-	for (i = 0; i < priv->rx_ring_num; i++) {
-		if (i > 0 && !ring_index[i] && !rss_rings)
-			rss_rings = i;
-
-		if (ring_index[i] != (i % (rss_rings ?: priv->rx_ring_num)))
-=======
 	for (i = 0; i < n; i++) {
 		if (!rxfh->indir)
 			break;
@@ -1648,30 +1301,16 @@ static int mlx4_en_set_rxfh(struct net_device *dev,
 			rss_rings = i;
 
 		if (rxfh->indir[i] != (i % (rss_rings ?: n)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 	}
 
 	if (!rss_rings)
-<<<<<<< HEAD
-		rss_rings = priv->rx_ring_num;
-=======
 		rss_rings = n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* RSS table size must be an order of 2 */
 	if (!is_power_of_2(rss_rings))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	mutex_lock(&mdev->state_lock);
-	if (priv->port_up) {
-		port_up = 1;
-		mlx4_en_stop_port(dev);
-	}
-
-	priv->prof->rss_rings = rss_rings;
-=======
 	if (rxfh->hfunc != ETH_RSS_HASH_NO_CHANGE) {
 		err = mlx4_en_check_rxfh_func(dev, rxfh->hfunc);
 		if (err)
@@ -1690,7 +1329,6 @@ static int mlx4_en_set_rxfh(struct net_device *dev,
 		memcpy(priv->rss_key, rxfh->key, MLX4_EN_RSS_KEY_SIZE);
 	if (rxfh->hfunc !=  ETH_RSS_HASH_NO_CHANGE)
 		priv->rss_hash_fn = rxfh->hfunc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (port_up) {
 		err = mlx4_en_start_port(dev);
@@ -1702,8 +1340,6 @@ static int mlx4_en_set_rxfh(struct net_device *dev,
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 #define all_zeros_or_all_ones(field)		\
 	((field) == 0 || (field) == (__force typeof(field))-1)
 
@@ -2110,14 +1746,10 @@ static int mlx4_en_get_num_flows(struct mlx4_en_priv *priv)
 
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mlx4_en_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
 			     u32 *rule_locs)
 {
 	struct mlx4_en_priv *priv = netdev_priv(dev);
-<<<<<<< HEAD
-	int err = 0;
-=======
 	struct mlx4_en_dev *mdev = priv->mdev;
 	int err = 0;
 	int i = 0, priority = 0;
@@ -2128,14 +1760,11 @@ static int mlx4_en_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
 	    (mdev->dev->caps.steering_mode !=
 	     MLX4_STEERING_MODE_DEVICE_MANAGED || !priv->port_up))
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd->cmd) {
 	case ETHTOOL_GRXRINGS:
 		cmd->data = priv->rx_ring_num;
 		break;
-<<<<<<< HEAD
-=======
 	case ETHTOOL_GRXCLSRLCNT:
 		cmd->rule_cnt = mlx4_en_get_num_flows(priv);
 		break;
@@ -2152,7 +1781,6 @@ static int mlx4_en_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
 		}
 		err = 0;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		err = -EOPNOTSUPP;
 		break;
@@ -2161,12 +1789,6 @@ static int mlx4_en_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
 	return err;
 }
 
-<<<<<<< HEAD
-const struct ethtool_ops mlx4_en_ethtool_ops = {
-	.get_drvinfo = mlx4_en_get_drvinfo,
-	.get_settings = mlx4_en_get_settings,
-	.set_settings = mlx4_en_set_settings,
-=======
 static int mlx4_en_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
 {
 	int err = 0;
@@ -2531,36 +2153,24 @@ const struct ethtool_ops mlx4_en_ethtool_ops = {
 	.get_drvinfo = mlx4_en_get_drvinfo,
 	.get_link_ksettings = mlx4_en_get_link_ksettings,
 	.set_link_ksettings = mlx4_en_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_link = ethtool_op_get_link,
 	.get_strings = mlx4_en_get_strings,
 	.get_sset_count = mlx4_en_get_sset_count,
 	.get_ethtool_stats = mlx4_en_get_ethtool_stats,
 	.self_test = mlx4_en_self_test,
-<<<<<<< HEAD
-=======
 	.set_phys_id = mlx4_en_set_phys_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_wol = mlx4_en_get_wol,
 	.set_wol = mlx4_en_set_wol,
 	.get_msglevel = mlx4_en_get_msglevel,
 	.set_msglevel = mlx4_en_set_msglevel,
 	.get_coalesce = mlx4_en_get_coalesce,
 	.set_coalesce = mlx4_en_set_coalesce,
-<<<<<<< HEAD
-=======
 	.get_pause_stats = mlx4_en_get_pause_stats,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_pauseparam = mlx4_en_get_pauseparam,
 	.set_pauseparam = mlx4_en_set_pauseparam,
 	.get_ringparam = mlx4_en_get_ringparam,
 	.set_ringparam = mlx4_en_set_ringparam,
 	.get_rxnfc = mlx4_en_get_rxnfc,
-<<<<<<< HEAD
-	.get_rxfh_indir_size = mlx4_en_get_rxfh_indir_size,
-	.get_rxfh_indir = mlx4_en_get_rxfh_indir,
-	.set_rxfh_indir = mlx4_en_set_rxfh_indir,
-=======
 	.set_rxnfc = mlx4_en_set_rxnfc,
 	.get_rxfh_indir_size = mlx4_en_get_rxfh_indir_size,
 	.get_rxfh_key_size = mlx4_en_get_rxfh_key_size,
@@ -2575,7 +2185,6 @@ const struct ethtool_ops mlx4_en_ethtool_ops = {
 	.set_tunable		= mlx4_en_set_tunable,
 	.get_module_info = mlx4_en_get_module_info,
 	.get_module_eeprom = mlx4_en_get_module_eeprom
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 

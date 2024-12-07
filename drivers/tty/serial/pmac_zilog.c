@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for PowerMac Z85c30 based ESCC cell found in the
  * "macio" ASICs of various PowerMac models
@@ -17,23 +14,6 @@
  * and once done, I expect that driver to remain fairly stable in
  * the long term, unless we change the driver model again...
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 2004-08-06 Harald Welte <laforge@gnumonks.org>
  *	- Enable BREAK interrupt
  *	- Add support for sysreq
@@ -44,10 +24,6 @@
  */
 
 #undef DEBUG
-<<<<<<< HEAD
-#undef DEBUG_HARD
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef USE_CTRL_O_SYSRQ
 
 #include <linux/module.h>
@@ -67,17 +43,6 @@
 #include <linux/bitops.h>
 #include <linux/sysrq.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <asm/sections.h>
-#include <asm/io.h>
-#include <asm/irq.h>
-
-#ifdef CONFIG_PPC_PMAC
-#include <asm/prom.h>
-#include <asm/machdep.h>
-#include <asm/pmac_feature.h>
-#include <asm/dbdma.h>
-=======
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 #include <asm/sections.h>
@@ -87,32 +52,17 @@
 #ifdef CONFIG_PPC_PMAC
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/macio.h>
 #else
 #include <linux/platform_device.h>
 #define of_machine_is_compatible(x) (0)
 #endif
 
-<<<<<<< HEAD
-#if defined (CONFIG_SERIAL_PMACZILOG_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-#define SUPPORT_SYSRQ
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial.h>
 #include <linux/serial_core.h>
 
 #include "pmac_zilog.h"
 
-<<<<<<< HEAD
-/* Not yet implemented */
-#undef HAS_DBDMA
-
-static char version[] __initdata = "pmac_zilog: 0.6 (Benjamin Herrenschmidt <benh@kernel.crashing.org>)";
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Benjamin Herrenschmidt <benh@kernel.crashing.org>");
 MODULE_DESCRIPTION("Driver for the Mac and PowerMac serial ports.");
 MODULE_LICENSE("GPL");
@@ -255,24 +205,6 @@ static void pmz_interrupt_control(struct uart_pmac_port *uap, int enable)
 	write_zsreg(uap, R1, uap->curregs[1]);
 }
 
-<<<<<<< HEAD
-static struct tty_struct *pmz_receive_chars(struct uart_pmac_port *uap)
-{
-	struct tty_struct *tty = NULL;
-	unsigned char ch, r1, drop, error, flag;
-	int loops = 0;
-
-	/* Sanity check, make sure the old bug is no longer happening */
-	if (uap->port.state == NULL || uap->port.state->port.tty == NULL) {
-		WARN_ON(1);
-		(void)read_zsdata(uap);
-		return NULL;
-	}
-	tty = uap->port.state->port.tty;
-
-	while (1) {
-		error = 0;
-=======
 static bool pmz_receive_chars(struct uart_pmac_port *uap)
 	__must_hold(&uap->port.lock)
 {
@@ -288,7 +220,6 @@ static bool pmz_receive_chars(struct uart_pmac_port *uap)
 	port = &uap->port.state->port;
 
 	while (1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drop = 0;
 
 		r1 = read_zsreg(uap, R1);
@@ -314,15 +245,9 @@ static bool pmz_receive_chars(struct uart_pmac_port *uap)
 #endif /* USE_CTRL_O_SYSRQ */
 		if (uap->port.sysrq) {
 			int swallow;
-<<<<<<< HEAD
-			spin_unlock(&uap->port.lock);
-			swallow = uart_handle_sysrq_char(&uap->port, ch);
-			spin_lock(&uap->port.lock);
-=======
 			uart_port_unlock(&uap->port);
 			swallow = uart_handle_sysrq_char(&uap->port, ch);
 			uart_port_lock(&uap->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (swallow)
 				goto next_char;
 		}
@@ -336,10 +261,6 @@ static bool pmz_receive_chars(struct uart_pmac_port *uap)
 		uap->port.icount.rx++;
 
 		if (r1 & (PAR_ERR | Rx_OVR | CRC_ERR | BRK_ABRT)) {
-<<<<<<< HEAD
-			error = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r1 & BRK_ABRT) {
 				pmz_debug("pmz: got break !\n");
 				r1 &= ~(PAR_ERR | CRC_ERR);
@@ -364,42 +285,17 @@ static bool pmz_receive_chars(struct uart_pmac_port *uap)
 
 		if (uap->port.ignore_status_mask == 0xff ||
 		    (r1 & uap->port.ignore_status_mask) == 0) {
-<<<<<<< HEAD
-			tty_insert_flip_char(tty, ch, flag);
-		}
-		if (r1 & Rx_OVR)
-			tty_insert_flip_char(tty, 0, TTY_OVERRUN);
-	next_char:
-		/* We can get stuck in an infinite loop getting char 0 when the
-		 * line is in a wrong HW state, we break that here.
-		 * When that happens, I disable the receive side of the driver.
-		 * Note that what I've been experiencing is a real irq loop where
-		 * I'm getting flooded regardless of the actual port speed.
-		 * Something strange is going on with the HW
-		 */
-		if ((++loops) > 1000)
-			goto flood;
-=======
 			tty_insert_flip_char(port, ch, flag);
 		}
 		if (r1 & Rx_OVR)
 			tty_insert_flip_char(port, 0, TTY_OVERRUN);
 	next_char:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ch = read_zsreg(uap, R0);
 		if (!(ch & Rx_CH_AV))
 			break;
 	}
 
-<<<<<<< HEAD
-	return tty;
- flood:
-	pmz_interrupt_control(uap, 0);
-	pmz_error("pmz: rx irq flood !\n");
-	return tty;
-=======
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pmz_status_handle(struct uart_pmac_port *uap)
@@ -500,12 +396,7 @@ static void pmz_transmit_chars(struct uart_pmac_port *uap)
 	write_zsdata(uap, xmit->buf[xmit->tail]);
 	zssync(uap);
 
-<<<<<<< HEAD
-	xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-	uap->port.icount.tx++;
-=======
 	uart_xmit_advance(&uap->port, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 		uart_write_wakeup(&uap->port);
@@ -524,32 +415,17 @@ static irqreturn_t pmz_interrupt(int irq, void *dev_id)
 	struct uart_pmac_port *uap_a;
 	struct uart_pmac_port *uap_b;
 	int rc = IRQ_NONE;
-<<<<<<< HEAD
-	struct tty_struct *tty;
-=======
 	bool push;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 r3;
 
 	uap_a = pmz_get_port_A(uap);
 	uap_b = uap_a->mate;
 
-<<<<<<< HEAD
-	spin_lock(&uap_a->port.lock);
-	r3 = read_zsreg(uap_a, R3);
-
-#ifdef DEBUG_HARD
-	pmz_debug("irq, r3: %x\n", r3);
-#endif
-	/* Channel A */
-	tty = NULL;
-=======
 	uart_port_lock(&uap_a->port);
 	r3 = read_zsreg(uap_a, R3);
 
 	/* Channel A */
 	push = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r3 & (CHAEXT | CHATxIP | CHARxIP)) {
 		if (!ZS_IS_OPEN(uap_a)) {
 			pmz_debug("ChanA interrupt while not open !\n");
@@ -560,36 +436,21 @@ static irqreturn_t pmz_interrupt(int irq, void *dev_id)
 		if (r3 & CHAEXT)
 			pmz_status_handle(uap_a);
 		if (r3 & CHARxIP)
-<<<<<<< HEAD
-			tty = pmz_receive_chars(uap_a);
-=======
 			push = pmz_receive_chars(uap_a);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r3 & CHATxIP)
 			pmz_transmit_chars(uap_a);
 		rc = IRQ_HANDLED;
 	}
  skip_a:
-<<<<<<< HEAD
-	spin_unlock(&uap_a->port.lock);
-	if (tty != NULL)
-		tty_flip_buffer_push(tty);
-=======
 	uart_port_unlock(&uap_a->port);
 	if (push)
 		tty_flip_buffer_push(&uap->port.state->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!uap_b)
 		goto out;
 
-<<<<<<< HEAD
-	spin_lock(&uap_b->port.lock);
-	tty = NULL;
-=======
 	uart_port_lock(&uap_b->port);
 	push = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r3 & (CHBEXT | CHBTxIP | CHBRxIP)) {
 		if (!ZS_IS_OPEN(uap_b)) {
 			pmz_debug("ChanB interrupt while not open !\n");
@@ -600,25 +461,15 @@ static irqreturn_t pmz_interrupt(int irq, void *dev_id)
 		if (r3 & CHBEXT)
 			pmz_status_handle(uap_b);
 		if (r3 & CHBRxIP)
-<<<<<<< HEAD
-			tty = pmz_receive_chars(uap_b);
-=======
 			push = pmz_receive_chars(uap_b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r3 & CHBTxIP)
 			pmz_transmit_chars(uap_b);
 		rc = IRQ_HANDLED;
 	}
  skip_b:
-<<<<<<< HEAD
-	spin_unlock(&uap_b->port.lock);
-	if (tty != NULL)
-		tty_flip_buffer_push(tty);
-=======
 	uart_port_unlock(&uap_b->port);
 	if (push)
 		tty_flip_buffer_push(&uap->port.state->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  out:
 	return rc;
@@ -632,15 +483,9 @@ static inline u8 pmz_peek_status(struct uart_pmac_port *uap)
 	unsigned long flags;
 	u8 status;
 	
-<<<<<<< HEAD
-	spin_lock_irqsave(&uap->port.lock, flags);
-	status = read_zsreg(uap, R0);
-	spin_unlock_irqrestore(&uap->port.lock, flags);
-=======
 	uart_port_lock_irqsave(&uap->port, &flags);
 	status = read_zsreg(uap, R0);
 	uart_port_unlock_irqrestore(&uap->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return status;
 }
@@ -743,11 +588,6 @@ static void pmz_start_tx(struct uart_port *port)
 	struct uart_pmac_port *uap = to_pmz(port);
 	unsigned char status;
 
-<<<<<<< HEAD
-	pmz_debug("pmz: start_tx()\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uap->flags |= PMACZILOG_FLAG_TX_ACTIVE;
 	uap->flags &= ~PMACZILOG_FLAG_TX_STOPPED;
 
@@ -768,26 +608,15 @@ static void pmz_start_tx(struct uart_port *port)
 	} else {
 		struct circ_buf *xmit = &port->state->xmit;
 
-<<<<<<< HEAD
-		write_zsdata(uap, xmit->buf[xmit->tail]);
-		zssync(uap);
-		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-		port->icount.tx++;
-=======
 		if (uart_circ_empty(xmit))
 			return;
 		write_zsdata(uap, xmit->buf[xmit->tail]);
 		zssync(uap);
 		uart_xmit_advance(port, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 			uart_write_wakeup(&uap->port);
 	}
-<<<<<<< HEAD
-	pmz_debug("pmz: start_tx() done.\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* 
@@ -800,19 +629,9 @@ static void pmz_stop_rx(struct uart_port *port)
 {
 	struct uart_pmac_port *uap = to_pmz(port);
 
-<<<<<<< HEAD
-	pmz_debug("pmz: stop_rx()()\n");
-
 	/* Disable all RX interrupts.  */
 	uap->curregs[R1] &= ~RxINT_MASK;
 	pmz_maybe_update_regs(uap);
-
-	pmz_debug("pmz: stop_rx() done.\n");
-=======
-	/* Disable all RX interrupts.  */
-	uap->curregs[R1] &= ~RxINT_MASK;
-	pmz_maybe_update_regs(uap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* 
@@ -852,11 +671,7 @@ static void pmz_break_ctl(struct uart_port *port, int break_state)
 	else
 		clear_bits |= SND_BRK;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&port->lock, flags);
-=======
 	uart_port_lock_irqsave(port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	new_reg = (uap->curregs[R5] | set_bits) & ~clear_bits;
 	if (new_reg != uap->curregs[R5]) {
@@ -864,11 +679,7 @@ static void pmz_break_ctl(struct uart_port *port, int break_state)
 		write_zsreg(uap, R5, uap->curregs[R5]);
 	}
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PPC_PMAC
@@ -1040,20 +851,6 @@ static void pmz_irda_reset(struct uart_pmac_port *uap)
 {
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&uap->port.lock, flags);
-	uap->curregs[R5] |= DTR;
-	write_zsreg(uap, R5, uap->curregs[R5]);
-	zssync(uap);
-	spin_unlock_irqrestore(&uap->port.lock, flags);
-	msleep(110);
-
-	spin_lock_irqsave(&uap->port.lock, flags);
-	uap->curregs[R5] &= ~DTR;
-	write_zsreg(uap, R5, uap->curregs[R5]);
-	zssync(uap);
-	spin_unlock_irqrestore(&uap->port.lock, flags);
-=======
 	uart_port_lock_irqsave(&uap->port, &flags);
 	uap->curregs[R5] |= DTR;
 	write_zsreg(uap, R5, uap->curregs[R5]);
@@ -1066,7 +863,6 @@ static void pmz_irda_reset(struct uart_pmac_port *uap)
 	write_zsreg(uap, R5, uap->curregs[R5]);
 	zssync(uap);
 	uart_port_unlock_irqrestore(&uap->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(10);
 }
 
@@ -1080,26 +876,15 @@ static int pmz_startup(struct uart_port *port)
 	unsigned long flags;
 	int pwr_delay = 0;
 
-<<<<<<< HEAD
-	pmz_debug("pmz: startup()\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uap->flags |= PMACZILOG_FLAG_IS_OPEN;
 
 	/* A console is never powered down. Else, power up and
 	 * initialize the chip
 	 */
 	if (!ZS_IS_CONS(uap)) {
-<<<<<<< HEAD
-		spin_lock_irqsave(&port->lock, flags);
-		pwr_delay = __pmz_startup(uap);
-		spin_unlock_irqrestore(&port->lock, flags);
-=======
 		uart_port_lock_irqsave(port, &flags);
 		pwr_delay = __pmz_startup(uap);
 		uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}	
 	sprintf(uap->irq_name, PMACZILOG_NAME"%d", uap->port.line);
 	if (request_irq(uap->port.irq, pmz_interrupt, IRQF_SHARED,
@@ -1122,17 +907,9 @@ static int pmz_startup(struct uart_port *port)
 		pmz_irda_reset(uap);
 
 	/* Enable interrupt requests for the channel */
-<<<<<<< HEAD
-	spin_lock_irqsave(&port->lock, flags);
-	pmz_interrupt_control(uap, 1);
-	spin_unlock_irqrestore(&port->lock, flags);
-
-	pmz_debug("pmz: startup() done.\n");
-=======
 	uart_port_lock_irqsave(port, &flags);
 	pmz_interrupt_control(uap, 1);
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1142,13 +919,7 @@ static void pmz_shutdown(struct uart_port *port)
 	struct uart_pmac_port *uap = to_pmz(port);
 	unsigned long flags;
 
-<<<<<<< HEAD
-	pmz_debug("pmz: shutdown()\n");
-
-	spin_lock_irqsave(&port->lock, flags);
-=======
 	uart_port_lock_irqsave(port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable interrupt requests for the channel */
 	pmz_interrupt_control(uap, 0);
@@ -1163,33 +934,19 @@ static void pmz_shutdown(struct uart_port *port)
 		pmz_maybe_update_regs(uap);
 	}
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Release interrupt handler */
 	free_irq(uap->port.irq, uap);
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&port->lock, flags);
-=======
 	uart_port_lock_irqsave(port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uap->flags &= ~PMACZILOG_FLAG_IS_OPEN;
 
 	if (!ZS_IS_CONS(uap))
 		pmz_set_scc_power(uap, 0);	/* Shut the chip down */
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&port->lock, flags);
-
-	pmz_debug("pmz: shutdown() done.\n");
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Shared by TTY driver and serial console setup.  The port lock is held
@@ -1260,11 +1017,7 @@ static void pmz_convert_to_zs(struct uart_pmac_port *uap, unsigned int cflag,
 		uap->curregs[5] |= Tx8;
 		uap->parity_mask = 0xff;
 		break;
-<<<<<<< HEAD
-	};
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uap->curregs[4] &= ~(SB_MASK);
 	if (cflag & CSTOPB)
 		uap->curregs[4] |= SB2;
@@ -1282,11 +1035,7 @@ static void pmz_convert_to_zs(struct uart_pmac_port *uap, unsigned int cflag,
 	uap->port.read_status_mask = Rx_OVR;
 	if (iflag & INPCK)
 		uap->port.read_status_mask |= CRC_ERR | PAR_ERR;
-<<<<<<< HEAD
-	if (iflag & (BRKINT | PARMRK))
-=======
 	if (iflag & (IGNBRK | BRKINT | PARMRK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uap->port.read_status_mask |= BRK_ABRT;
 
 	uap->port.ignore_status_mask = 0;
@@ -1437,22 +1186,11 @@ static void pmz_irda_setup(struct uart_pmac_port *uap, unsigned long *baud)
 
 
 static void __pmz_set_termios(struct uart_port *port, struct ktermios *termios,
-<<<<<<< HEAD
-			      struct ktermios *old)
-=======
 			      const struct ktermios *old)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uart_pmac_port *uap = to_pmz(port);
 	unsigned long baud;
 
-<<<<<<< HEAD
-	pmz_debug("pmz: set_termios()\n");
-
-	memcpy(&uap->termios_cache, termios, sizeof(struct ktermios));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* XXX Check which revs of machines actually allow 1 and 4Mb speeds
 	 * on the IR dongle. Note that the IRTTY driver currently doesn't know
 	 * about the FIR mode and high speed modes. So these are unused. For
@@ -1486,29 +1224,16 @@ static void __pmz_set_termios(struct uart_port *port, struct ktermios *termios,
 		pmz_maybe_update_regs(uap);
 	}
 	uart_update_timeout(port, termios->c_cflag, baud);
-<<<<<<< HEAD
-
-	pmz_debug("pmz: set_termios() done.\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* The port lock is not held.  */
 static void pmz_set_termios(struct uart_port *port, struct ktermios *termios,
-<<<<<<< HEAD
-			    struct ktermios *old)
-=======
 			    const struct ktermios *old)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uart_pmac_port *uap = to_pmz(port);
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&port->lock, flags);	
-=======
 	uart_port_lock_irqsave(port, &flags);	
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable IRQs on the port */
 	pmz_interrupt_control(uap, 0);
@@ -1520,11 +1245,7 @@ static void pmz_set_termios(struct uart_port *port, struct ktermios *termios,
 	if (ZS_IS_OPEN(uap))
 		pmz_interrupt_control(uap, 1);
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *pmz_type(struct uart_port *port)
@@ -1565,12 +1286,8 @@ static int pmz_verify_port(struct uart_port *port, struct serial_struct *ser)
 
 static int pmz_poll_get_char(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_pmac_port *uap = (struct uart_pmac_port *)port;
-=======
 	struct uart_pmac_port *uap =
 		container_of(port, struct uart_pmac_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int tries = 2;
 
 	while (tries) {
@@ -1585,12 +1302,8 @@ static int pmz_poll_get_char(struct uart_port *port)
 
 static void pmz_poll_put_char(struct uart_port *port, unsigned char c)
 {
-<<<<<<< HEAD
-	struct uart_pmac_port *uap = (struct uart_pmac_port *)port;
-=======
 	struct uart_pmac_port *uap =
 		container_of(port, struct uart_pmac_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait for the transmit buffer to empty. */
 	while ((read_zsreg(uap, R0) & Tx_BUF_EMP) == 0)
@@ -1600,11 +1313,7 @@ static void pmz_poll_put_char(struct uart_port *port, unsigned char c)
 
 #endif /* CONFIG_CONSOLE_POLL */
 
-<<<<<<< HEAD
-static struct uart_ops pmz_pops = {
-=======
 static const struct uart_ops pmz_pops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	=	pmz_tx_empty,
 	.set_mctrl	=	pmz_set_mctrl,
 	.get_mctrl	=	pmz_get_mctrl,
@@ -1643,11 +1352,7 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
 		char	name[1];
 	} *slots;
 	int len;
-<<<<<<< HEAD
-	struct resource r_ports, r_rxdma, r_txdma;
-=======
 	struct resource r_ports;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Request & map chip registers
@@ -1659,38 +1364,6 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
 
 	uap->control_reg = uap->port.membase;
 	uap->data_reg = uap->control_reg + 0x10;
-<<<<<<< HEAD
-	
-	/*
-	 * Request & map DBDMA registers
-	 */
-#ifdef HAS_DBDMA
-	if (of_address_to_resource(np, 1, &r_txdma) == 0 &&
-	    of_address_to_resource(np, 2, &r_rxdma) == 0)
-		uap->flags |= PMACZILOG_FLAG_HAS_DMA;
-#else
-	memset(&r_txdma, 0, sizeof(struct resource));
-	memset(&r_rxdma, 0, sizeof(struct resource));
-#endif	
-	if (ZS_HAS_DMA(uap)) {
-		uap->tx_dma_regs = ioremap(r_txdma.start, 0x100);
-		if (uap->tx_dma_regs == NULL) {	
-			uap->flags &= ~PMACZILOG_FLAG_HAS_DMA;
-			goto no_dma;
-		}
-		uap->rx_dma_regs = ioremap(r_rxdma.start, 0x100);
-		if (uap->rx_dma_regs == NULL) {	
-			iounmap(uap->tx_dma_regs);
-			uap->tx_dma_regs = NULL;
-			uap->flags &= ~PMACZILOG_FLAG_HAS_DMA;
-			goto no_dma;
-		}
-		uap->tx_dma_irq = irq_of_parse_and_map(np, 1);
-		uap->rx_dma_irq = irq_of_parse_and_map(np, 2);
-	}
-no_dma:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Detect port type
@@ -1756,11 +1429,6 @@ no_dma:
 	    of_device_is_compatible(np->parent->parent, "gatwick")) {
 		/* IRQs on gatwick are offset by 64 */
 		uap->port.irq = irq_create_mapping(NULL, 64 + 15);
-<<<<<<< HEAD
-		uap->tx_dma_irq = irq_create_mapping(NULL, 64 + 4);
-		uap->rx_dma_irq = irq_create_mapping(NULL, 64 + 5);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Setup some valid baud rate information in the register
@@ -1780,11 +1448,6 @@ static void pmz_dispose_port(struct uart_pmac_port *uap)
 	struct device_node *np;
 
 	np = uap->node;
-<<<<<<< HEAD
-	iounmap(uap->rx_dma_regs);
-	iounmap(uap->tx_dma_regs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iounmap(uap->control_reg);
 	uap->node = NULL;
 	of_node_put(np);
@@ -1817,15 +1480,9 @@ static int pmz_attach(struct macio_dev *mdev, const struct of_device_id *match)
 	 * to work around bugs in ancient Apple device-trees
 	 */
 	if (macio_request_resources(uap->dev, "pmac_zilog"))
-<<<<<<< HEAD
-		printk(KERN_WARNING "%s: Failed to request resource"
-		       ", port still active\n",
-		       uap->node->name);
-=======
 		printk(KERN_WARNING "%pOFn: Failed to request resource"
 		       ", port still active\n",
 		       uap->node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		uap->flags |= PMACZILOG_FLAG_RSRC_REQUESTED;
 
@@ -1836,20 +1493,12 @@ static int pmz_attach(struct macio_dev *mdev, const struct of_device_id *match)
  * That one should not be called, macio isn't really a hotswap device,
  * we don't expect one of those serial ports to go away...
  */
-<<<<<<< HEAD
-static int pmz_detach(struct macio_dev *mdev)
-=======
 static void pmz_detach(struct macio_dev *mdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uart_pmac_port	*uap = dev_get_drvdata(&mdev->ofdev.dev);
 	
 	if (!uap)
-<<<<<<< HEAD
-		return -ENODEV;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uart_remove_one_port(&pmz_uart_reg, &uap->port);
 
@@ -1860,16 +1509,8 @@ static void pmz_detach(struct macio_dev *mdev)
 	dev_set_drvdata(&mdev->ofdev.dev, NULL);
 	uap->dev = NULL;
 	uap->port.dev = NULL;
-<<<<<<< HEAD
-	
-	return 0;
 }
 
-
-=======
-}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pmz_suspend(struct macio_dev *mdev, pm_message_t pm_state)
 {
 	struct uart_pmac_port *uap = dev_get_drvdata(&mdev->ofdev.dev);
@@ -1912,43 +1553,25 @@ static int __init pmz_probe(void)
 	/*
 	 * Find all escc chips in the system
 	 */
-<<<<<<< HEAD
-	node_p = of_find_node_by_name(NULL, "escc");
-	while (node_p) {
-=======
 	for_each_node_by_name(node_p, "escc") {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * First get channel A/B node pointers
 		 * 
 		 * TODO: Add routines with proper locking to do that...
 		 */
 		node_a = node_b = NULL;
-<<<<<<< HEAD
-		for (np = NULL; (np = of_get_next_child(node_p, np)) != NULL;) {
-			if (strncmp(np->name, "ch-a", 4) == 0)
-				node_a = of_node_get(np);
-			else if (strncmp(np->name, "ch-b", 4) == 0)
-=======
 		for_each_child_of_node(node_p, np) {
 			if (of_node_name_prefix(np, "ch-a"))
 				node_a = of_node_get(np);
 			else if (of_node_name_prefix(np, "ch-b"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				node_b = of_node_get(np);
 		}
 		if (!node_a && !node_b) {
 			of_node_put(node_a);
 			of_node_put(node_b);
-<<<<<<< HEAD
-			printk(KERN_ERR "pmac_zilog: missing node %c for escc %s\n",
-				(!node_a) ? 'a' : 'b', node_p->full_name);
-			goto next;
-=======
 			printk(KERN_ERR "pmac_zilog: missing node %c for escc %pOF\n",
 				(!node_a) ? 'a' : 'b', node_p);
 			continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/*
@@ -1975,17 +1598,9 @@ static int __init pmz_probe(void)
 			of_node_put(node_b);
 			memset(&pmz_ports[count], 0, sizeof(struct uart_pmac_port));
 			memset(&pmz_ports[count+1], 0, sizeof(struct uart_pmac_port));
-<<<<<<< HEAD
-			goto next;
-		}
-		count += 2;
-next:
-		node_p = of_find_node_by_name(node_p, "escc");
-=======
 			continue;
 		}
 		count += 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pmz_ports_count = count;
 
@@ -1994,14 +1609,11 @@ next:
 
 #else
 
-<<<<<<< HEAD
-=======
 /* On PCI PowerMacs, pmz_probe() does an explicit search of the OpenFirmware
  * tree to obtain the device_nodes needed to start the console before the
  * macio driver. On Macs without OpenFirmware, global platform_devices take
  * the place of those device_nodes.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct platform_device scc_a_pdev, scc_b_pdev;
 
 static int __init pmz_init_port(struct uart_pmac_port *uap)
@@ -2010,12 +1622,6 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
 	int irq;
 
 	r_ports = platform_get_resource(uap->pdev, IORESOURCE_MEM, 0);
-<<<<<<< HEAD
-	irq = platform_get_irq(uap->pdev, 0);
-	if (!r_ports || !irq)
-		return -ENODEV;
-
-=======
 	if (!r_ports)
 		return -ENODEV;
 
@@ -2023,7 +1629,6 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
 	if (irq < 0)
 		return irq;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uap->port.mapbase  = r_ports->start;
 	uap->port.membase  = (unsigned char __iomem *) r_ports->start;
 	uap->port.iotype   = UPIO_MEM;
@@ -2037,10 +1642,7 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
 	uap->control_reg   = uap->port.membase;
 	uap->data_reg      = uap->control_reg + 4;
 	uap->port_type     = 0;
-<<<<<<< HEAD
-=======
 	uap->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_PMACZILOG_CONSOLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pmz_convert_to_zs(uap, CS8, 0, 9600);
 
@@ -2098,21 +1700,6 @@ static int __init pmz_attach(struct platform_device *pdev)
 	return uart_add_one_port(&pmz_uart_reg, &uap->port);
 }
 
-<<<<<<< HEAD
-static int __exit pmz_detach(struct platform_device *pdev)
-{
-	struct uart_pmac_port *uap = platform_get_drvdata(pdev);
-
-	if (!uap)
-		return -ENODEV;
-
-	uart_remove_one_port(&pmz_uart_reg, &uap->port);
-
-	platform_set_drvdata(pdev, NULL);
-	uap->port.dev = NULL;
-
-	return 0;
-=======
 static void __exit pmz_detach(struct platform_device *pdev)
 {
 	struct uart_pmac_port *uap = platform_get_drvdata(pdev);
@@ -2120,7 +1707,6 @@ static void __exit pmz_detach(struct platform_device *pdev)
 	uart_remove_one_port(&pmz_uart_reg, &uap->port);
 
 	uap->port.dev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* !CONFIG_PPC_PMAC */
@@ -2162,11 +1748,7 @@ static int __init pmz_register(void)
 
 #ifdef CONFIG_PPC_PMAC
 
-<<<<<<< HEAD
-static struct of_device_id pmz_match[] = 
-=======
 static const struct of_device_id pmz_match[] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{
 	.name		= "ch-a",
@@ -2193,16 +1775,9 @@ static struct macio_driver pmz_driver = {
 #else
 
 static struct platform_driver pmz_driver = {
-<<<<<<< HEAD
-	.remove		= __exit_p(pmz_detach),
-	.driver		= {
-		.name		= "scc",
-		.owner		= THIS_MODULE,
-=======
 	.remove_new	= __exit_p(pmz_detach),
 	.driver		= {
 		.name		= "scc",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -2211,10 +1786,6 @@ static struct platform_driver pmz_driver = {
 static int __init init_pmz(void)
 {
 	int rc, i;
-<<<<<<< HEAD
-	printk(KERN_INFO "%s\n", version);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 
 	 * First, we need to do a direct OF-based probe pass. We
@@ -2283,16 +1854,10 @@ static void __exit exit_pmz(void)
 
 #ifdef CONFIG_SERIAL_PMACZILOG_CONSOLE
 
-<<<<<<< HEAD
-static void pmz_console_putchar(struct uart_port *port, int ch)
-{
-	struct uart_pmac_port *uap = (struct uart_pmac_port *)port;
-=======
 static void pmz_console_putchar(struct uart_port *port, unsigned char ch)
 {
 	struct uart_pmac_port *uap =
 		container_of(port, struct uart_pmac_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait for the transmit buffer to empty. */
 	while ((read_zsreg(uap, R0) & Tx_BUF_EMP) == 0)
@@ -2309,11 +1874,7 @@ static void pmz_console_write(struct console *con, const char *s, unsigned int c
 	struct uart_pmac_port *uap = &pmz_ports[con->index];
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&uap->port.lock, flags);
-=======
 	uart_port_lock_irqsave(&uap->port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Turn of interrupts and enable the transmitter. */
 	write_zsreg(uap, R1, uap->curregs[1] & ~TxINT_ENAB);
@@ -2325,11 +1886,7 @@ static void pmz_console_write(struct console *con, const char *s, unsigned int c
 	write_zsreg(uap, R1, uap->curregs[1]);
 	/* Don't disable the transmitter. */
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&uap->port.lock, flags);
-=======
 	uart_port_unlock_irqrestore(&uap->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*

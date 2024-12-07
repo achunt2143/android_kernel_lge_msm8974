@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SN Platform GRU Driver
  *
@@ -10,26 +7,8 @@
  * This file supports the user system call for file open, close, mmap, etc.
  * This also incudes the driver initialization code.
  *
-<<<<<<< HEAD
- *  Copyright (c) 2008 Silicon Graphics, Inc.  All Rights Reserved.
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
  *  (C) Copyright 2020 Hewlett Packard Enterprise Development LP
  *  Copyright (c) 2008-2014 Silicon Graphics, Inc.  All Rights Reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -67,14 +46,11 @@ static int max_user_cbrs, max_user_dsr_bytes;
 
 static struct miscdevice gru_miscdev;
 
-<<<<<<< HEAD
-=======
 static int gru_supported(void)
 {
 	return is_uv_system() &&
 		(uv_hub_info->hub_revision < UV3_HUB_REVISION_BASE);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * gru_vma_close
@@ -125,14 +101,8 @@ static int gru_file_mmap(struct file *file, struct vm_area_struct *vma)
 				vma->vm_end & (GRU_GSEG_PAGESIZE - 1))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	vma->vm_flags |=
-	    (VM_IO | VM_DONTCOPY | VM_LOCKED | VM_DONTEXPAND | VM_PFNMAP |
-			VM_RESERVED);
-=======
 	vm_flags_set(vma, VM_IO | VM_PFNMAP | VM_LOCKED |
 			 VM_DONTCOPY | VM_DONTEXPAND | VM_DONTDUMP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma->vm_page_prot = PAGE_SHARED;
 	vma->vm_ops = &gru_vm_ops;
 
@@ -166,11 +136,7 @@ static int gru_create_new_context(unsigned long arg)
 	if (!(req.options & GRU_OPT_MISS_MASK))
 		req.options |= GRU_OPT_MISS_FMM_INTR;
 
-<<<<<<< HEAD
-	down_write(&current->mm->mmap_sem);
-=======
 	mmap_write_lock(current->mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma = gru_find_vma(req.gseg);
 	if (vma) {
 		vdata = vma->vm_private_data;
@@ -181,11 +147,7 @@ static int gru_create_new_context(unsigned long arg)
 		vdata->vd_tlb_preload_count = req.tlb_preload_count;
 		ret = 0;
 	}
-<<<<<<< HEAD
-	up_write(&current->mm->mmap_sem);
-=======
 	mmap_write_unlock(current->mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -203,10 +165,7 @@ static long gru_get_config_info(unsigned long arg)
 		nodesperblade = 2;
 	else
 		nodesperblade = 1;
-<<<<<<< HEAD
-=======
 	memset(&info, 0, sizeof(info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info.cpus = num_online_cpus();
 	info.nodes = num_online_nodes();
 	info.blades = info.nodes / nodesperblade;
@@ -378,75 +337,6 @@ static unsigned long gru_chiplet_cpu_to_mmr(int chiplet, int cpu, int *corep)
 	return mmr;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_IA64
-
-static int gru_irq_count[GRU_CHIPLETS_PER_BLADE];
-
-static void gru_noop(struct irq_data *d)
-{
-}
-
-static struct irq_chip gru_chip[GRU_CHIPLETS_PER_BLADE] = {
-	[0 ... GRU_CHIPLETS_PER_BLADE - 1] {
-		.irq_mask	= gru_noop,
-		.irq_unmask	= gru_noop,
-		.irq_ack	= gru_noop
-	}
-};
-
-static int gru_chiplet_setup_tlb_irq(int chiplet, char *irq_name,
-			irq_handler_t irq_handler, int cpu, int blade)
-{
-	unsigned long mmr;
-	int irq = IRQ_GRU + chiplet;
-	int ret, core;
-
-	mmr = gru_chiplet_cpu_to_mmr(chiplet, cpu, &core);
-	if (mmr == 0)
-		return 0;
-
-	if (gru_irq_count[chiplet] == 0) {
-		gru_chip[chiplet].name = irq_name;
-		ret = irq_set_chip(irq, &gru_chip[chiplet]);
-		if (ret) {
-			printk(KERN_ERR "%s: set_irq_chip failed, errno=%d\n",
-			       GRU_DRIVER_ID_STR, -ret);
-			return ret;
-		}
-
-		ret = request_irq(irq, irq_handler, 0, irq_name, NULL);
-		if (ret) {
-			printk(KERN_ERR "%s: request_irq failed, errno=%d\n",
-			       GRU_DRIVER_ID_STR, -ret);
-			return ret;
-		}
-	}
-	gru_irq_count[chiplet]++;
-
-	return 0;
-}
-
-static void gru_chiplet_teardown_tlb_irq(int chiplet, int cpu, int blade)
-{
-	unsigned long mmr;
-	int core, irq = IRQ_GRU + chiplet;
-
-	if (gru_irq_count[chiplet] == 0)
-		return;
-
-	mmr = gru_chiplet_cpu_to_mmr(chiplet, cpu, &core);
-	if (mmr == 0)
-		return;
-
-	if (--gru_irq_count[chiplet] == 0)
-		free_irq(irq, NULL);
-}
-
-#elif defined CONFIG_X86_64
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int gru_chiplet_setup_tlb_irq(int chiplet, char *irq_name,
 			irq_handler_t irq_handler, int cpu, int blade)
 {
@@ -491,11 +381,6 @@ static void gru_chiplet_teardown_tlb_irq(int chiplet, int cpu, int blade)
 	}
 }
 
-<<<<<<< HEAD
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void gru_teardown_tlb_irqs(void)
 {
 	int blade;
@@ -558,23 +443,11 @@ static int __init gru_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	if (!is_uv_system())
-		return 0;
-
-#if defined CONFIG_IA64
-	gru_start_paddr = 0xd000000000UL; /* ZZZZZZZZZZZZZZZZZZZ fixme */
-#else
-	gru_start_paddr = uv_read_local_mmr(UVH_RH_GAM_GRU_OVERLAY_CONFIG_MMR) &
-				0x7fffffffffffUL;
-#endif
-=======
 	if (!gru_supported())
 		return 0;
 
 	gru_start_paddr = uv_read_local_mmr(UVH_RH_GAM_GRU_OVERLAY_CONFIG) &
 				0x7fffffffffffUL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gru_start_vaddr = __va(gru_start_paddr);
 	gru_end_paddr = gru_start_paddr + GRU_MAX_BLADES * GRU_SIZE;
 	printk(KERN_INFO "GRU space: 0x%lx - 0x%lx\n",
@@ -621,11 +494,7 @@ exit0:
 
 static void __exit gru_exit(void)
 {
-<<<<<<< HEAD
-	if (!is_uv_system())
-=======
 	if (!gru_supported())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	gru_teardown_tlb_irqs();
@@ -633,10 +502,7 @@ static void __exit gru_exit(void)
 	gru_free_tables();
 	misc_deregister(&gru_miscdev);
 	gru_proc_exit();
-<<<<<<< HEAD
-=======
 	mmu_notifier_synchronize();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations gru_fops = {

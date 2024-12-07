@@ -1,37 +1,3 @@
-<<<<<<< HEAD
-/* 
- * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
- */
-
-#include "linux/sched.h"
-#include "linux/slab.h"
-#include "kern_util.h"
-#include "os.h"
-#include "skas.h"
-
-void (*pm_power_off)(void);
-
-static void kill_off_processes(void)
-{
-	if (proc_mm)
-		/*
-		 * FIXME: need to loop over userspace_pids
-		 */
-		os_kill_ptraced_process(userspace_pid[0], 1);
-	else {
-		struct task_struct *p;
-		int pid;
-
-		for_each_process(p) {
-			if (p->mm == NULL)
-				continue;
-
-			pid = p->mm->context.id.u.pid;
-			os_kill_ptraced_process(pid, 1);
-		}
-	}
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* 
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
@@ -67,7 +33,6 @@ static void kill_off_processes(void)
 		os_kill_ptraced_process(pid, 1);
 	}
 	read_unlock(&tasklist_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void uml_cleanup(void)

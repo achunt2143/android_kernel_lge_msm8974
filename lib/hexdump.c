@@ -1,27 +1,10 @@
-<<<<<<< HEAD
-/*
- * lib/hexdump.c
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation. See README and COPYING for
- * more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * lib/hexdump.c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 #include <linux/ctype.h>
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/export.h>
-
-const char hex_asc[] = "0123456789abcdef";
-EXPORT_SYMBOL(hex_asc);
-=======
 #include <linux/errno.h>
 #include <linux/kernel.h>
 #include <linux/minmax.h>
@@ -32,7 +15,6 @@ const char hex_asc[] = "0123456789abcdef";
 EXPORT_SYMBOL(hex_asc);
 const char hex_asc_upper[] = "0123456789ABCDEF";
 EXPORT_SYMBOL(hex_asc_upper);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * hex_to_bin - convert a hex digit to its real value
@@ -40,17 +22,6 @@ EXPORT_SYMBOL(hex_asc_upper);
  *
  * hex_to_bin() converts one hex digit to its actual value or -1 in case of bad
  * input.
-<<<<<<< HEAD
- */
-int hex_to_bin(char ch)
-{
-	if ((ch >= '0') && (ch <= '9'))
-		return ch - '0';
-	ch = tolower(ch);
-	if ((ch >= 'a') && (ch <= 'f'))
-		return ch - 'a' + 10;
-	return -1;
-=======
  *
  * This function is used to load cryptographic keys, so it is coded in such a
  * way that there are no conditions or memory accesses that depend on data.
@@ -78,7 +49,6 @@ int hex_to_bin(unsigned char ch)
 	return -1 +
 		((ch - '0' +  1) & (unsigned)((ch - '9' - 1) & ('0' - 1 - ch)) >> 8) +
 		((cu - 'A' + 11) & (unsigned)((cu - 'F' - 1) & ('A' - 1 - cu)) >> 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(hex_to_bin);
 
@@ -88,22 +58,11 @@ EXPORT_SYMBOL(hex_to_bin);
  * @src: ascii hexadecimal string
  * @count: result length
  *
-<<<<<<< HEAD
- * Return 0 on success, -1 in case of bad input.
-=======
  * Return 0 on success, -EINVAL in case of bad input.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int hex2bin(u8 *dst, const char *src, size_t count)
 {
 	while (count--) {
-<<<<<<< HEAD
-		int hi = hex_to_bin(*src++);
-		int lo = hex_to_bin(*src++);
-
-		if ((hi < 0) || (lo < 0))
-			return -1;
-=======
 		int hi, lo;
 
 		hi = hex_to_bin(*src++);
@@ -112,7 +71,6 @@ int hex2bin(u8 *dst, const char *src, size_t count)
 		lo = hex_to_bin(*src++);
 		if (unlikely(lo < 0))
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*dst++ = (hi << 4) | lo;
 	}
@@ -121,8 +79,6 @@ int hex2bin(u8 *dst, const char *src, size_t count)
 EXPORT_SYMBOL(hex2bin);
 
 /**
-<<<<<<< HEAD
-=======
  * bin2hex - convert binary data to an ascii hexadecimal string
  * @dst: ascii hexadecimal result
  * @src: binary data
@@ -139,7 +95,6 @@ char *bin2hex(char *dst, const void *src, size_t count)
 EXPORT_SYMBOL(bin2hex);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * hex_dump_to_buffer - convert a blob of data to "hex ASCII" in memory
  * @buf: data blob to dump
  * @len: number of bytes in the @buf
@@ -162,17 +117,6 @@ EXPORT_SYMBOL(bin2hex);
  *
  * example output buffer:
  * 40 41 42 43 44 45 46 47 48 49 4a 4b 4c 4d 4e 4f  @ABCDEFGHIJKLMNO
-<<<<<<< HEAD
- */
-void hex_dump_to_buffer(const void *buf, size_t len, int rowsize,
-			int groupsize, char *linebuf, size_t linebuflen,
-			bool ascii)
-{
-	const u8 *ptr = buf;
-	u8 ch;
-	int j, lx = 0;
-	int ascii_column;
-=======
  *
  * Return:
  * The amount of bytes placed in the buffer without terminating NUL. If the
@@ -189,60 +133,10 @@ int hex_dump_to_buffer(const void *buf, size_t len, int rowsize, int groupsize,
 	int j, lx = 0;
 	int ascii_column;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rowsize != 16 && rowsize != 32)
 		rowsize = 16;
 
-<<<<<<< HEAD
-	if (!len)
-		goto nil;
-	if (len > rowsize)		/* limit to one line at a time */
-		len = rowsize;
-	if ((len % groupsize) != 0)	/* no mixed size output */
-		groupsize = 1;
-
-	switch (groupsize) {
-	case 8: {
-		const u64 *ptr8 = buf;
-		int ngroups = len / groupsize;
-
-		for (j = 0; j < ngroups; j++)
-			lx += scnprintf(linebuf + lx, linebuflen - lx,
-					"%s%16.16llx", j ? " " : "",
-					(unsigned long long)*(ptr8 + j));
-		ascii_column = 17 * ngroups + 2;
-		break;
-	}
-
-	case 4: {
-		const u32 *ptr4 = buf;
-		int ngroups = len / groupsize;
-
-		for (j = 0; j < ngroups; j++)
-			lx += scnprintf(linebuf + lx, linebuflen - lx,
-					"%s%8.8x", j ? " " : "", *(ptr4 + j));
-		ascii_column = 9 * ngroups + 2;
-		break;
-	}
-
-	case 2: {
-		const u16 *ptr2 = buf;
-		int ngroups = len / groupsize;
-
-		for (j = 0; j < ngroups; j++)
-			lx += scnprintf(linebuf + lx, linebuflen - lx,
-					"%s%4.4x", j ? " " : "", *(ptr2 + j));
-		ascii_column = 5 * ngroups + 2;
-		break;
-	}
-
-	default:
-		for (j = 0; (j < len) && (lx + 3) <= linebuflen; j++) {
-			ch = ptr[j];
-			linebuf[lx++] = hex_asc_hi(ch);
-			linebuf[lx++] = hex_asc_lo(ch);
-=======
 	if (len > rowsize)		/* limit to one line at a time */
 		len = rowsize;
 	if (!is_power_of_2(groupsize) || groupsize > 8)
@@ -303,26 +197,14 @@ int hex_dump_to_buffer(const void *buf, size_t len, int rowsize, int groupsize,
 			linebuf[lx++] = hex_asc_lo(ch);
 			if (linebuflen < lx + 2)
 				goto overflow2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			linebuf[lx++] = ' ';
 		}
 		if (j)
 			lx--;
-<<<<<<< HEAD
-
-		ascii_column = 3 * rowsize + 2;
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!ascii)
 		goto nil;
 
-<<<<<<< HEAD
-	while (lx < (linebuflen - 1) && lx < (ascii_column - 1))
-		linebuf[lx++] = ' ';
-	for (j = 0; (j < len) && (lx + 2) < linebuflen; j++) {
-=======
 	while (lx < ascii_column) {
 		if (linebuflen < lx + 2)
 			goto overflow2;
@@ -331,21 +213,16 @@ int hex_dump_to_buffer(const void *buf, size_t len, int rowsize, int groupsize,
 	for (j = 0; j < len; j++) {
 		if (linebuflen < lx + 2)
 			goto overflow2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ch = ptr[j];
 		linebuf[lx++] = (isascii(ch) && isprint(ch)) ? ch : '.';
 	}
 nil:
-<<<<<<< HEAD
-	linebuf[lx++] = '\0';
-=======
 	linebuf[lx] = '\0';
 	return lx;
 overflow2:
 	linebuf[lx++] = '\0';
 overflow1:
 	return ascii ? ascii_column + len : (groupsize * 2 + 1) * ngroups - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(hex_dump_to_buffer);
 
@@ -415,27 +292,4 @@ void print_hex_dump(const char *level, const char *prefix_str, int prefix_type,
 }
 EXPORT_SYMBOL(print_hex_dump);
 
-<<<<<<< HEAD
-/**
- * print_hex_dump_bytes - shorthand form of print_hex_dump() with default params
- * @prefix_str: string to prefix each line with;
- *  caller supplies trailing spaces for alignment if desired
- * @prefix_type: controls whether prefix of an offset, address, or none
- *  is printed (%DUMP_PREFIX_OFFSET, %DUMP_PREFIX_ADDRESS, %DUMP_PREFIX_NONE)
- * @buf: data blob to dump
- * @len: number of bytes in the @buf
- *
- * Calls print_hex_dump(), with log level of KERN_DEBUG,
- * rowsize of 16, groupsize of 1, and ASCII output included.
- */
-void print_hex_dump_bytes(const char *prefix_str, int prefix_type,
-			  const void *buf, size_t len)
-{
-	print_hex_dump(KERN_DEBUG, prefix_str, prefix_type, 16, 1,
-		       buf, len, true);
-}
-EXPORT_SYMBOL(print_hex_dump_bytes);
-#endif
-=======
 #endif /* defined(CONFIG_PRINTK) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

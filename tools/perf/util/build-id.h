@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#ifndef PERF_BUILD_ID_H_
-#define PERF_BUILD_ID_H_ 1
-
-#include "session.h"
-
-extern struct perf_tool build_id__mark_dso_hit_ops;
-
-char *dso__build_id_filename(struct dso *self, char *bf, size_t size);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef PERF_BUILD_ID_H_
 #define PERF_BUILD_ID_H_ 1
@@ -94,6 +84,5 @@ extern char buildid_dir[];
 
 void set_buildid_dir(const char *dir);
 void disable_buildid_cache(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

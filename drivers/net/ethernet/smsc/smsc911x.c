@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /***************************************************************************
  *
  * Copyright (C) 2004-2008 SMSC
  * Copyright (C) 2005-2008 ARM
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ***************************************************************************
  * Rewritten, heavily based on smsc911x simple driver by SMSC.
  * Partly uses io macros from smc91x.c by Nicolas Pitre
@@ -33,21 +13,13 @@
  *   LAN9215, LAN9216, LAN9217, LAN9218
  *   LAN9210, LAN9211
  *   LAN9220, LAN9221
-<<<<<<< HEAD
- *   LAN89218
- *
-=======
  *   LAN89218,LAN9250
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/crc32.h>
-<<<<<<< HEAD
-=======
 #include <linux/clk.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/errno.h>
 #include <linux/etherdevice.h>
@@ -59,10 +31,6 @@
 #include <linux/module.h>
 #include <linux/netdevice.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/regulator/consumer.h>
 #include <linux/sched.h>
 #include <linux/timer.h>
@@ -75,11 +43,6 @@
 #include <linux/smsc911x.h>
 #include <linux/device.h>
 #include <linux/of.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-#include <linux/of_gpio.h>
-#include <linux/of_net.h>
-=======
 #include <linux/of_gpio.h>
 #include <linux/of_net.h>
 #include <linux/acpi.h>
@@ -87,17 +50,13 @@
 #include <linux/property.h>
 #include <linux/gpio/consumer.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "smsc911x.h"
 
 #define SMSC_CHIPNAME		"smsc911x"
 #define SMSC_MDIONAME		"smsc911x-mdio"
 #define SMSC_DRV_VERSION	"2008-10-21"
 
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("SMSC LAN911x/LAN921x Ethernet driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_VERSION(SMSC_DRV_VERSION);
 MODULE_ALIAS("platform:smsc911x");
@@ -143,13 +102,7 @@ struct smsc911x_data {
 	/* spinlock to ensure register accesses are serialised */
 	spinlock_t dev_lock;
 
-<<<<<<< HEAD
-	struct phy_device *phy_dev;
 	struct mii_bus *mii_bus;
-	int phy_irq[PHY_MAX_ADDR];
-=======
-	struct mii_bus *mii_bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int using_extphy;
 	int last_duplex;
 	int last_carrier;
@@ -181,15 +134,12 @@ struct smsc911x_data {
 
 	/* regulators */
 	struct regulator_bulk_data supplies[SMSC911X_NUM_SUPPLIES];
-<<<<<<< HEAD
-=======
 
 	/* Reset GPIO */
 	struct gpio_desc *reset_gpiod;
 
 	/* clock */
 	struct clk *clk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Easy access to information */
@@ -299,11 +249,7 @@ smsc911x_tx_writefifo(struct smsc911x_data *pdata, unsigned int *buf,
 	}
 
 	if (pdata->config.flags & SMSC911X_USE_32BIT) {
-<<<<<<< HEAD
-		writesl(pdata->ioaddr + TX_DATA_FIFO, buf, wordcount);
-=======
 		iowrite32_rep(pdata->ioaddr + TX_DATA_FIFO, buf, wordcount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -335,11 +281,7 @@ smsc911x_tx_writefifo_shift(struct smsc911x_data *pdata, unsigned int *buf,
 	}
 
 	if (pdata->config.flags & SMSC911X_USE_32BIT) {
-<<<<<<< HEAD
-		writesl(pdata->ioaddr + __smsc_shift(pdata,
-=======
 		iowrite32_rep(pdata->ioaddr + __smsc_shift(pdata,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						TX_DATA_FIFO), buf, wordcount);
 		goto out;
 	}
@@ -373,11 +315,7 @@ smsc911x_rx_readfifo(struct smsc911x_data *pdata, unsigned int *buf,
 	}
 
 	if (pdata->config.flags & SMSC911X_USE_32BIT) {
-<<<<<<< HEAD
-		readsl(pdata->ioaddr + RX_DATA_FIFO, buf, wordcount);
-=======
 		ioread32_rep(pdata->ioaddr + RX_DATA_FIFO, buf, wordcount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -409,11 +347,7 @@ smsc911x_rx_readfifo_shift(struct smsc911x_data *pdata, unsigned int *buf,
 	}
 
 	if (pdata->config.flags & SMSC911X_USE_32BIT) {
-<<<<<<< HEAD
-		readsl(pdata->ioaddr + __smsc_shift(pdata,
-=======
 		ioread32_rep(pdata->ioaddr + __smsc_shift(pdata,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						RX_DATA_FIFO), buf, wordcount);
 		goto out;
 	}
@@ -431,11 +365,7 @@ out:
 }
 
 /*
-<<<<<<< HEAD
- * enable resources, currently just regulators.
-=======
  * enable regulator and clock resources.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int smsc911x_enable_resources(struct platform_device *pdev)
 {
@@ -448,8 +378,6 @@ static int smsc911x_enable_resources(struct platform_device *pdev)
 	if (ret)
 		netdev_err(ndev, "failed to enable regulators %d\n",
 				ret);
-<<<<<<< HEAD
-=======
 
 	if (!IS_ERR(pdata->clk)) {
 		ret = clk_prepare_enable(pdata->clk);
@@ -457,7 +385,6 @@ static int smsc911x_enable_resources(struct platform_device *pdev)
 			netdev_err(ndev, "failed to enable clock %d\n", ret);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -472,13 +399,10 @@ static int smsc911x_disable_resources(struct platform_device *pdev)
 
 	ret = regulator_bulk_disable(ARRAY_SIZE(pdata->supplies),
 			pdata->supplies);
-<<<<<<< HEAD
-=======
 
 	if (!IS_ERR(pdata->clk))
 		clk_disable_unprepare(pdata->clk);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -501,11 +425,6 @@ static int smsc911x_request_resources(struct platform_device *pdev)
 	ret = regulator_bulk_get(&pdev->dev,
 			ARRAY_SIZE(pdata->supplies),
 			pdata->supplies);
-<<<<<<< HEAD
-	if (ret)
-		netdev_err(ndev, "couldn't get regulators %d\n",
-				ret);
-=======
 	if (ret) {
 		/*
 		 * Retry on deferrals, else just report the error
@@ -528,7 +447,6 @@ static int smsc911x_request_resources(struct platform_device *pdev)
 		dev_dbg(&pdev->dev, "couldn't get clock %li\n",
 			PTR_ERR(pdata->clk));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -544,15 +462,12 @@ static void smsc911x_free_resources(struct platform_device *pdev)
 	/* Free regulators */
 	regulator_bulk_free(ARRAY_SIZE(pdata->supplies),
 			pdata->supplies);
-<<<<<<< HEAD
-=======
 
 	/* Free clock */
 	if (!IS_ERR(pdata->clk)) {
 		clk_put(pdata->clk);
 		pdata->clk = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* waits for MAC not busy, with timeout.  Only called by smsc911x_mac_read
@@ -637,19 +552,12 @@ static void smsc911x_mac_write(struct smsc911x_data *pdata,
 /* Get a phy register */
 static int smsc911x_mii_read(struct mii_bus *bus, int phyaddr, int regidx)
 {
-<<<<<<< HEAD
-	struct smsc911x_data *pdata = (struct smsc911x_data *)bus->priv;
-=======
 	struct smsc911x_data *pdata = bus->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	unsigned int addr;
 	int i, reg;
 
-<<<<<<< HEAD
-=======
 	pm_runtime_get_sync(bus->parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&pdata->mac_lock, flags);
 
 	/* Confirm MII not busy */
@@ -675,10 +583,7 @@ static int smsc911x_mii_read(struct mii_bus *bus, int phyaddr, int regidx)
 
 out:
 	spin_unlock_irqrestore(&pdata->mac_lock, flags);
-<<<<<<< HEAD
-=======
 	pm_runtime_put(bus->parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return reg;
 }
 
@@ -686,19 +591,12 @@ out:
 static int smsc911x_mii_write(struct mii_bus *bus, int phyaddr, int regidx,
 			   u16 val)
 {
-<<<<<<< HEAD
-	struct smsc911x_data *pdata = (struct smsc911x_data *)bus->priv;
-=======
 	struct smsc911x_data *pdata = bus->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	unsigned int addr;
 	int i, reg;
 
-<<<<<<< HEAD
-=======
 	pm_runtime_get_sync(bus->parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&pdata->mac_lock, flags);
 
 	/* Confirm MII not busy */
@@ -728,10 +626,7 @@ static int smsc911x_mii_write(struct mii_bus *bus, int phyaddr, int regidx,
 
 out:
 	spin_unlock_irqrestore(&pdata->mac_lock, flags);
-<<<<<<< HEAD
-=======
 	pm_runtime_put(bus->parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return reg;
 }
 
@@ -919,24 +814,6 @@ static int smsc911x_phy_check_loopbackpkt(struct smsc911x_data *pdata)
 
 static int smsc911x_phy_reset(struct smsc911x_data *pdata)
 {
-<<<<<<< HEAD
-	struct phy_device *phy_dev = pdata->phy_dev;
-	unsigned int temp;
-	unsigned int i = 100000;
-
-	BUG_ON(!phy_dev);
-	BUG_ON(!phy_dev->bus);
-
-	SMSC_TRACE(pdata, hw, "Performing PHY BCR Reset");
-	smsc911x_mii_write(phy_dev->bus, phy_dev->addr, MII_BMCR, BMCR_RESET);
-	do {
-		msleep(1);
-		temp = smsc911x_mii_read(phy_dev->bus, phy_dev->addr,
-			MII_BMCR);
-	} while ((i--) && (temp & BMCR_RESET));
-
-	if (temp & BMCR_RESET) {
-=======
 	unsigned int temp;
 	unsigned int i = 100000;
 
@@ -948,7 +825,6 @@ static int smsc911x_phy_reset(struct smsc911x_data *pdata)
 	} while ((i--) && (temp & PMT_CTRL_PHY_RST_));
 
 	if (unlikely(temp & PMT_CTRL_PHY_RST_)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SMSC_WARN(pdata, hw, "PHY reset failed to complete");
 		return -EIO;
 	}
@@ -963,21 +839,13 @@ static int smsc911x_phy_reset(struct smsc911x_data *pdata)
 static int smsc911x_phy_loopbacktest(struct net_device *dev)
 {
 	struct smsc911x_data *pdata = netdev_priv(dev);
-<<<<<<< HEAD
-	struct phy_device *phy_dev = pdata->phy_dev;
-=======
 	struct phy_device *phy_dev = dev->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result = -EIO;
 	unsigned int i, val;
 	unsigned long flags;
 
 	/* Initialise tx packet using broadcast destination address */
-<<<<<<< HEAD
-	memset(pdata->loopback_tx_pkt, 0xff, ETH_ALEN);
-=======
 	eth_broadcast_addr(pdata->loopback_tx_pkt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Use incrementing source address */
 	for (i = 6; i < 12; i++)
@@ -1001,13 +869,8 @@ static int smsc911x_phy_loopbacktest(struct net_device *dev)
 
 	for (i = 0; i < 10; i++) {
 		/* Set PHY to 10/FD, no ANEG, and loopback mode */
-<<<<<<< HEAD
-		smsc911x_mii_write(phy_dev->bus, phy_dev->addr,	MII_BMCR,
-			BMCR_LOOPBACK | BMCR_FULLDPLX);
-=======
 		smsc911x_mii_write(phy_dev->mdio.bus, phy_dev->mdio.addr,
 				   MII_BMCR, BMCR_LOOPBACK | BMCR_FULLDPLX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Enable MAC tx/rx, FD */
 		spin_lock_irqsave(&pdata->mac_lock, flags);
@@ -1035,11 +898,7 @@ static int smsc911x_phy_loopbacktest(struct net_device *dev)
 	spin_unlock_irqrestore(&pdata->mac_lock, flags);
 
 	/* Cancel PHY loopback mode */
-<<<<<<< HEAD
-	smsc911x_mii_write(phy_dev->bus, phy_dev->addr, MII_BMCR, 0);
-=======
 	smsc911x_mii_write(phy_dev->mdio.bus, phy_dev->mdio.addr, MII_BMCR, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	smsc911x_reg_write(pdata, TX_CFG, 0);
 	smsc911x_reg_write(pdata, RX_CFG, 0);
@@ -1050,12 +909,8 @@ static int smsc911x_phy_loopbacktest(struct net_device *dev)
 
 static void smsc911x_phy_update_flowcontrol(struct smsc911x_data *pdata)
 {
-<<<<<<< HEAD
-	struct phy_device *phy_dev = pdata->phy_dev;
-=======
 	struct net_device *ndev = pdata->dev;
 	struct phy_device *phy_dev = ndev->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 afc = smsc911x_reg_read(pdata, AFC_CFG);
 	u32 flow;
 	unsigned long flags;
@@ -1096,11 +951,7 @@ static void smsc911x_phy_update_flowcontrol(struct smsc911x_data *pdata)
 static void smsc911x_phy_adjust_link(struct net_device *dev)
 {
 	struct smsc911x_data *pdata = netdev_priv(dev);
-<<<<<<< HEAD
-	struct phy_device *phy_dev = pdata->phy_dev;
-=======
 	struct phy_device *phy_dev = dev->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int carrier;
 
@@ -1135,11 +986,7 @@ static void smsc911x_phy_adjust_link(struct net_device *dev)
 			    (!pdata->using_extphy)) {
 				/* Restore original GPIO configuration */
 				pdata->gpio_setting = pdata->gpio_orig_setting;
-<<<<<<< HEAD
-				smsc911x_reg_write(pdata, SMSC_GPIO_CFG,
-=======
 				smsc911x_reg_write(pdata, GPIO_CFG,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					pdata->gpio_setting);
 			}
 		} else {
@@ -1147,11 +994,7 @@ static void smsc911x_phy_adjust_link(struct net_device *dev)
 			/* Check global setting that LED1
 			 * usage is 10/100 indicator */
 			pdata->gpio_setting = smsc911x_reg_read(pdata,
-<<<<<<< HEAD
-				SMSC_GPIO_CFG);
-=======
 				GPIO_CFG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((pdata->gpio_setting & GPIO_CFG_LED1_EN_) &&
 			    (!pdata->using_extphy)) {
 				/* Force 10/100 LED off, after saving
@@ -1162,11 +1005,7 @@ static void smsc911x_phy_adjust_link(struct net_device *dev)
 				pdata->gpio_setting |= (GPIO_CFG_GPIOBUF0_
 							| GPIO_CFG_GPIODIR0_
 							| GPIO_CFG_GPIOD0_);
-<<<<<<< HEAD
-				smsc911x_reg_write(pdata, SMSC_GPIO_CFG,
-=======
 				smsc911x_reg_write(pdata, GPIO_CFG,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					pdata->gpio_setting);
 			}
 		}
@@ -1177,11 +1016,7 @@ static void smsc911x_phy_adjust_link(struct net_device *dev)
 static int smsc911x_mii_probe(struct net_device *dev)
 {
 	struct smsc911x_data *pdata = netdev_priv(dev);
-<<<<<<< HEAD
-	struct phy_device *phydev = NULL;
-=======
 	struct phy_device *phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/* find the first phy */
@@ -1192,36 +1027,16 @@ static int smsc911x_mii_probe(struct net_device *dev)
 	}
 
 	SMSC_TRACE(pdata, probe, "PHY: addr %d, phy_id 0x%08X",
-<<<<<<< HEAD
-		   phydev->addr, phydev->phy_id);
-
-	ret = phy_connect_direct(dev, phydev,
-			&smsc911x_phy_adjust_link, 0,
-			pdata->config.phy_interface);
-=======
 		   phydev->mdio.addr, phydev->phy_id);
 
 	ret = phy_connect_direct(dev, phydev, &smsc911x_phy_adjust_link,
 				 pdata->config.phy_interface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret) {
 		netdev_err(dev, "Could not attach to PHY\n");
 		return ret;
 	}
 
-<<<<<<< HEAD
-	netdev_info(dev,
-		    "attached PHY driver [%s] (mii_bus:phy_addr=%s, irq=%d)\n",
-		    phydev->drv->name, dev_name(&phydev->dev), phydev->irq);
-
-	/* mask with MAC supported features */
-	phydev->supported &= (PHY_BASIC_FEATURES | SUPPORTED_Pause |
-			      SUPPORTED_Asym_Pause);
-	phydev->advertising = phydev->supported;
-
-	pdata->phy_dev = phydev;
-=======
 	phy_attached_info(phydev);
 
 	phy_set_max_speed(phydev, SPEED_100);
@@ -1229,17 +1044,13 @@ static int smsc911x_mii_probe(struct net_device *dev)
 	/* mask with MAC supported features */
 	phy_support_asym_pause(phydev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdata->last_duplex = -1;
 	pdata->last_carrier = -1;
 
 #ifdef USE_PHY_WORK_AROUND
 	if (smsc911x_phy_loopbacktest(dev) < 0) {
 		SMSC_WARN(pdata, hw, "Failed Loop Back Test");
-<<<<<<< HEAD
-=======
 		phy_disconnect(phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	SMSC_TRACE(pdata, hw, "Passed Loop Back Test");
@@ -1249,20 +1060,12 @@ static int smsc911x_mii_probe(struct net_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit smsc911x_mii_init(struct platform_device *pdev,
-				       struct net_device *dev)
-{
-	struct smsc911x_data *pdata = netdev_priv(dev);
-	int err = -ENXIO, i;
-=======
 static int smsc911x_mii_init(struct platform_device *pdev,
 			     struct net_device *dev)
 {
 	struct smsc911x_data *pdata = netdev_priv(dev);
 	struct phy_device *phydev;
 	int err = -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata->mii_bus = mdiobus_alloc();
 	if (!pdata->mii_bus) {
@@ -1276,12 +1079,6 @@ static int smsc911x_mii_init(struct platform_device *pdev,
 	pdata->mii_bus->priv = pdata;
 	pdata->mii_bus->read = smsc911x_mii_read;
 	pdata->mii_bus->write = smsc911x_mii_write;
-<<<<<<< HEAD
-	pdata->mii_bus->irq = pdata->phy_irq;
-	for (i = 0; i < PHY_MAX_ADDR; ++i)
-		pdata->mii_bus->irq[i] = PHY_POLL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata->mii_bus->parent = &pdev->dev;
 
@@ -1310,24 +1107,12 @@ static int smsc911x_mii_init(struct platform_device *pdev,
 		goto err_out_free_bus_2;
 	}
 
-<<<<<<< HEAD
-	if (smsc911x_mii_probe(dev) < 0) {
-		SMSC_WARN(pdata, probe, "Error registering mii bus");
-		goto err_out_unregister_bus_3;
-	}
-
-	return 0;
-
-err_out_unregister_bus_3:
-	mdiobus_unregister(pdata->mii_bus);
-=======
 	phydev = phy_find_first(pdata->mii_bus);
 	if (phydev)
 		phydev->mac_managed_pm = true;
 
 	return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_free_bus_2:
 	mdiobus_free(pdata->mii_bus);
 err_out_1:
@@ -1420,14 +1205,8 @@ smsc911x_rx_fastforward(struct smsc911x_data *pdata, unsigned int pktwords)
 			SMSC_WARN(pdata, hw, "Timed out waiting for "
 				  "RX FFWD to finish, RX_DP_CTRL: 0x%08X", val);
 	} else {
-<<<<<<< HEAD
-		unsigned int temp;
-		while (pktwords--)
-			temp = smsc911x_reg_read(pdata, RX_DATA_FIFO);
-=======
 		while (pktwords--)
 			smsc911x_reg_read(pdata, RX_DATA_FIFO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1560,16 +1339,6 @@ static void smsc911x_rx_multicast_update_workaround(struct smsc911x_data *pdata)
 	spin_unlock(&pdata->mac_lock);
 }
 
-<<<<<<< HEAD
-static int smsc911x_phy_disable_energy_detect(struct smsc911x_data *pdata)
-{
-	int rc = 0;
-
-	if (!pdata->phy_dev)
-		return rc;
-
-	rc = phy_read(pdata->phy_dev, MII_LAN83C185_CTRL_STATUS);
-=======
 static int smsc911x_phy_general_power_up(struct smsc911x_data *pdata)
 {
 	struct net_device *ndev = pdata->dev;
@@ -1618,41 +1387,24 @@ static int smsc911x_phy_disable_energy_detect(struct smsc911x_data *pdata)
 		return rc;
 
 	rc = phy_read(phy_dev, MII_LAN83C185_CTRL_STATUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rc < 0) {
 		SMSC_WARN(pdata, drv, "Failed reading PHY control reg");
 		return rc;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * If energy is detected the PHY is already awake so is not necessary
-	 * to disable the energy detect power-down mode.
-	 */
-	if ((rc & MII_LAN83C185_EDPWRDOWN) &&
-	    !(rc & MII_LAN83C185_ENERGYON)) {
-		/* Disable energy detect mode for this SMSC Transceivers */
-		rc = phy_write(pdata->phy_dev, MII_LAN83C185_CTRL_STATUS,
-=======
 	/* Only disable if energy detect mode is already enabled */
 	if (rc & MII_LAN83C185_EDPWRDOWN) {
 		/* Disable energy detect mode for this SMSC Transceivers */
 		rc = phy_write(phy_dev, MII_LAN83C185_CTRL_STATUS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       rc & (~MII_LAN83C185_EDPWRDOWN));
 
 		if (rc < 0) {
 			SMSC_WARN(pdata, drv, "Failed writing PHY control reg");
 			return rc;
 		}
-<<<<<<< HEAD
-
-		mdelay(1);
-=======
 		/* Allow PHY to wakeup */
 		mdelay(2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1660,14 +1412,6 @@ static int smsc911x_phy_disable_energy_detect(struct smsc911x_data *pdata)
 
 static int smsc911x_phy_enable_energy_detect(struct smsc911x_data *pdata)
 {
-<<<<<<< HEAD
-	int rc = 0;
-
-	if (!pdata->phy_dev)
-		return rc;
-
-	rc = phy_read(pdata->phy_dev, MII_LAN83C185_CTRL_STATUS);
-=======
 	struct net_device *ndev = pdata->dev;
 	struct phy_device *phy_dev = ndev->phydev;
 	int rc = 0;
@@ -1676,7 +1420,6 @@ static int smsc911x_phy_enable_energy_detect(struct smsc911x_data *pdata)
 		return rc;
 
 	rc = phy_read(phy_dev, MII_LAN83C185_CTRL_STATUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rc < 0) {
 		SMSC_WARN(pdata, drv, "Failed reading PHY control reg");
@@ -1685,25 +1428,14 @@ static int smsc911x_phy_enable_energy_detect(struct smsc911x_data *pdata)
 
 	/* Only enable if energy detect mode is already disabled */
 	if (!(rc & MII_LAN83C185_EDPWRDOWN)) {
-<<<<<<< HEAD
-		mdelay(100);
-		/* Enable energy detect mode for this SMSC Transceivers */
-		rc = phy_write(pdata->phy_dev, MII_LAN83C185_CTRL_STATUS,
-=======
 		/* Enable energy detect mode for this SMSC Transceivers */
 		rc = phy_write(phy_dev, MII_LAN83C185_CTRL_STATUS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       rc | MII_LAN83C185_EDPWRDOWN);
 
 		if (rc < 0) {
 			SMSC_WARN(pdata, drv, "Failed writing PHY control reg");
 			return rc;
 		}
-<<<<<<< HEAD
-
-		mdelay(1);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1713,8 +1445,6 @@ static int smsc911x_soft_reset(struct smsc911x_data *pdata)
 	unsigned int timeout;
 	unsigned int temp;
 	int ret;
-<<<<<<< HEAD
-=======
 	unsigned int reset_offset = HW_CFG;
 	unsigned int reset_mask = HW_CFG_SRST_;
 
@@ -1727,7 +1457,6 @@ static int smsc911x_soft_reset(struct smsc911x_data *pdata)
 		SMSC_WARN(pdata, drv, "Failed to power-up the PHY chip");
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * LAN9210/LAN9211/LAN9220/LAN9221 chips have an internal PHY that
@@ -1744,17 +1473,6 @@ static int smsc911x_soft_reset(struct smsc911x_data *pdata)
 		}
 	}
 
-<<<<<<< HEAD
-	/* Reset the LAN911x */
-	smsc911x_reg_write(pdata, HW_CFG, HW_CFG_SRST_);
-	timeout = 10;
-	do {
-		udelay(10);
-		temp = smsc911x_reg_read(pdata, HW_CFG);
-	} while ((--timeout) && (temp & HW_CFG_SRST_));
-
-	if (unlikely(temp & HW_CFG_SRST_)) {
-=======
 	if ((pdata->idrev & 0xFFFF0000) == LAN9250) {
 		/* special reset for  LAN9250 */
 		reset_offset = RESET_CTL;
@@ -1772,7 +1490,6 @@ static int smsc911x_soft_reset(struct smsc911x_data *pdata)
 	} while ((--timeout) && (temp & reset_mask));
 
 	if (unlikely(temp & reset_mask)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SMSC_WARN(pdata, drv, "Failed to complete reset");
 		return -EIO;
 	}
@@ -1791,11 +1508,7 @@ static int smsc911x_soft_reset(struct smsc911x_data *pdata)
 
 /* Sets the device MAC address to dev_addr, called with mac_lock held */
 static void
-<<<<<<< HEAD
-smsc911x_set_hw_mac_address(struct smsc911x_data *pdata, u8 dev_addr[6])
-=======
 smsc911x_set_hw_mac_address(struct smsc911x_data *pdata, const u8 dev_addr[6])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 mac_high16 = (dev_addr[5] << 8) | dev_addr[4];
 	u32 mac_low32 = (dev_addr[3] << 24) | (dev_addr[2] << 16) |
@@ -1807,8 +1520,6 @@ smsc911x_set_hw_mac_address(struct smsc911x_data *pdata, const u8 dev_addr[6])
 	smsc911x_mac_write(pdata, ADDRL, mac_low32);
 }
 
-<<<<<<< HEAD
-=======
 static void smsc911x_disable_irq_chip(struct net_device *dev)
 {
 	struct smsc911x_data *pdata = netdev_priv(dev);
@@ -1878,31 +1589,12 @@ static irqreturn_t smsc911x_irqhandler(int irq, void *dev_id)
 	return serviced;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int smsc911x_open(struct net_device *dev)
 {
 	struct smsc911x_data *pdata = netdev_priv(dev);
 	unsigned int timeout;
 	unsigned int temp;
 	unsigned int intcfg;
-<<<<<<< HEAD
-
-	/* if the phy is not yet registered, retry later*/
-	if (!pdata->phy_dev) {
-		SMSC_WARN(pdata, hw, "phy_dev is NULL");
-		return -EAGAIN;
-	}
-
-	if (!is_valid_ether_addr(dev->dev_addr)) {
-		SMSC_WARN(pdata, hw, "dev_addr is not a valid MAC address");
-		return -EADDRNOTAVAIL;
-	}
-
-	/* Reset the LAN911x */
-	if (smsc911x_soft_reset(pdata)) {
-		SMSC_WARN(pdata, hw, "soft reset failed");
-		return -EIO;
-=======
 	int retval;
 	int irq_flags;
 
@@ -1922,7 +1614,6 @@ static int smsc911x_open(struct net_device *dev)
 	if (retval) {
 		SMSC_WARN(pdata, hw, "soft reset failed");
 		goto mii_free_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	smsc911x_reg_write(pdata, HW_CFG, 0x00050000);
@@ -1944,11 +1635,7 @@ static int smsc911x_open(struct net_device *dev)
 		SMSC_WARN(pdata, ifup,
 			  "Timed out waiting for EEPROM busy bit to clear");
 
-<<<<<<< HEAD
-	smsc911x_reg_write(pdata, SMSC_GPIO_CFG, 0x70070000);
-=======
 	smsc911x_reg_write(pdata, GPIO_CFG, 0x70070000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The soft reset above cleared the device's MAC address,
 	 * restore it from local copy (set in probe) */
@@ -1957,12 +1644,7 @@ static int smsc911x_open(struct net_device *dev)
 	spin_unlock_irq(&pdata->mac_lock);
 
 	/* Initialise irqs, but leave all sources disabled */
-<<<<<<< HEAD
-	smsc911x_reg_write(pdata, INT_EN, 0);
-	smsc911x_reg_write(pdata, INT_STS, 0xFFFFFFFF);
-=======
 	smsc911x_disable_irq_chip(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set interrupt deassertion to 100uS */
 	intcfg = ((10 << 24) | INT_CFG_IRQ_EN_);
@@ -1987,8 +1669,6 @@ static int smsc911x_open(struct net_device *dev)
 	pdata->software_irq_signal = 0;
 	smp_wmb();
 
-<<<<<<< HEAD
-=======
 	irq_flags = irq_get_trigger_type(dev->irq);
 	retval = request_irq(dev->irq, smsc911x_irqhandler,
 			     irq_flags | IRQF_SHARED, dev->name, dev);
@@ -1998,7 +1678,6 @@ static int smsc911x_open(struct net_device *dev)
 		goto mii_free_out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	temp = smsc911x_reg_read(pdata, INT_EN);
 	temp |= INT_EN_SW_INT_EN_;
 	smsc911x_reg_write(pdata, INT_EN, temp);
@@ -2013,12 +1692,8 @@ static int smsc911x_open(struct net_device *dev)
 	if (!pdata->software_irq_signal) {
 		netdev_warn(dev, "ISR failed signaling test (IRQ %d)\n",
 			    dev->irq);
-<<<<<<< HEAD
-		return -ENODEV;
-=======
 		retval = -ENODEV;
 		goto irq_stop_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	SMSC_TRACE(pdata, ifup, "IRQ handler passed test using IRQ %d",
 		   dev->irq);
@@ -2031,11 +1706,7 @@ static int smsc911x_open(struct net_device *dev)
 	pdata->last_carrier = -1;
 
 	/* Bring the PHY up */
-<<<<<<< HEAD
-	phy_start(pdata->phy_dev);
-=======
 	phy_start(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	temp = smsc911x_reg_read(pdata, HW_CFG);
 	/* Preserve TX FIFO size and external PHY configuration */
@@ -2068,8 +1739,6 @@ static int smsc911x_open(struct net_device *dev)
 
 	netif_start_queue(dev);
 	return 0;
-<<<<<<< HEAD
-=======
 
 irq_stop_out:
 	free_irq(dev->irq, dev);
@@ -2078,7 +1747,6 @@ mii_free_out:
 out:
 	pm_runtime_put(dev->dev.parent);
 	return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Entry point for stopping the interface */
@@ -2100,11 +1768,6 @@ static int smsc911x_stop(struct net_device *dev)
 	dev->stats.rx_dropped += smsc911x_reg_read(pdata, RX_DROP);
 	smsc911x_tx_update_txcounters(dev);
 
-<<<<<<< HEAD
-	/* Bring the PHY down */
-	if (pdata->phy_dev)
-		phy_stop(pdata->phy_dev);
-=======
 	free_irq(dev->irq, dev);
 
 	/* Bring the PHY down */
@@ -2114,19 +1777,14 @@ static int smsc911x_stop(struct net_device *dev)
 	}
 	netif_carrier_off(dev);
 	pm_runtime_put(dev->dev.parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SMSC_TRACE(pdata, ifdown, "Interface stopped");
 	return 0;
 }
 
 /* Entry point for transmitting a packet */
-<<<<<<< HEAD
-static int smsc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
-=======
 static netdev_tx_t
 smsc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct smsc911x_data *pdata = netdev_priv(dev);
 	unsigned int freespace;
@@ -2161,11 +1819,7 @@ smsc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	pdata->ops->tx_writefifo(pdata, (unsigned int *)bufp, wrsz);
 	freespace -= (skb->len + 32);
 	skb_tx_timestamp(skb);
-<<<<<<< HEAD
-	dev_kfree_skb(skb);
-=======
 	dev_consume_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(smsc911x_tx_get_txstatcount(pdata) >= 30))
 		smsc911x_tx_update_txcounters(dev);
@@ -2265,70 +1919,6 @@ static void smsc911x_set_multicast_list(struct net_device *dev)
 	spin_unlock_irqrestore(&pdata->mac_lock, flags);
 }
 
-<<<<<<< HEAD
-static irqreturn_t smsc911x_irqhandler(int irq, void *dev_id)
-{
-	struct net_device *dev = dev_id;
-	struct smsc911x_data *pdata = netdev_priv(dev);
-	u32 intsts = smsc911x_reg_read(pdata, INT_STS);
-	u32 inten = smsc911x_reg_read(pdata, INT_EN);
-	int serviced = IRQ_NONE;
-	u32 temp;
-
-	if (unlikely(intsts & inten & INT_STS_SW_INT_)) {
-		temp = smsc911x_reg_read(pdata, INT_EN);
-		temp &= (~INT_EN_SW_INT_EN_);
-		smsc911x_reg_write(pdata, INT_EN, temp);
-		smsc911x_reg_write(pdata, INT_STS, INT_STS_SW_INT_);
-		pdata->software_irq_signal = 1;
-		smp_wmb();
-		serviced = IRQ_HANDLED;
-	}
-
-	if (unlikely(intsts & inten & INT_STS_RXSTOP_INT_)) {
-		/* Called when there is a multicast update scheduled and
-		 * it is now safe to complete the update */
-		SMSC_TRACE(pdata, intr, "RX Stop interrupt");
-		smsc911x_reg_write(pdata, INT_STS, INT_STS_RXSTOP_INT_);
-		if (pdata->multicast_update_pending)
-			smsc911x_rx_multicast_update_workaround(pdata);
-		serviced = IRQ_HANDLED;
-	}
-
-	if (intsts & inten & INT_STS_TDFA_) {
-		temp = smsc911x_reg_read(pdata, FIFO_INT);
-		temp |= FIFO_INT_TX_AVAIL_LEVEL_;
-		smsc911x_reg_write(pdata, FIFO_INT, temp);
-		smsc911x_reg_write(pdata, INT_STS, INT_STS_TDFA_);
-		netif_wake_queue(dev);
-		serviced = IRQ_HANDLED;
-	}
-
-	if (unlikely(intsts & inten & INT_STS_RXE_)) {
-		SMSC_TRACE(pdata, intr, "RX Error interrupt");
-		smsc911x_reg_write(pdata, INT_STS, INT_STS_RXE_);
-		serviced = IRQ_HANDLED;
-	}
-
-	if (likely(intsts & inten & INT_STS_RSFL_)) {
-		if (likely(napi_schedule_prep(&pdata->napi))) {
-			/* Disable Rx interrupts */
-			temp = smsc911x_reg_read(pdata, INT_EN);
-			temp &= (~INT_EN_RSFL_EN_);
-			smsc911x_reg_write(pdata, INT_EN, temp);
-			/* Schedule a NAPI poll */
-			__napi_schedule(&pdata->napi);
-		} else {
-			SMSC_WARN(pdata, rx_err, "napi_schedule_prep failed");
-		}
-		serviced = IRQ_HANDLED;
-	}
-
-	return serviced;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 static void smsc911x_poll_controller(struct net_device *dev)
 {
@@ -2352,12 +1942,7 @@ static int smsc911x_set_mac_address(struct net_device *dev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
-<<<<<<< HEAD
-	dev->addr_assign_type &= ~NET_ADDR_RANDOM;
-	memcpy(dev->dev_addr, addr->sa_data, ETH_ALEN);
-=======
 	eth_hw_addr_set(dev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&pdata->mac_lock);
 	smsc911x_set_hw_mac_address(pdata, dev->dev_addr);
@@ -2368,53 +1953,6 @@ static int smsc911x_set_mac_address(struct net_device *dev, void *p)
 	return 0;
 }
 
-<<<<<<< HEAD
-/* Standard ioctls for mii-tool */
-static int smsc911x_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-{
-	struct smsc911x_data *pdata = netdev_priv(dev);
-
-	if (!netif_running(dev) || !pdata->phy_dev)
-		return -EINVAL;
-
-	return phy_mii_ioctl(pdata->phy_dev, ifr, cmd);
-}
-
-static int
-smsc911x_ethtool_getsettings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct smsc911x_data *pdata = netdev_priv(dev);
-
-	cmd->maxtxpkt = 1;
-	cmd->maxrxpkt = 1;
-	return phy_ethtool_gset(pdata->phy_dev, cmd);
-}
-
-static int
-smsc911x_ethtool_setsettings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct smsc911x_data *pdata = netdev_priv(dev);
-
-	return phy_ethtool_sset(pdata->phy_dev, cmd);
-}
-
-static void smsc911x_ethtool_getdrvinfo(struct net_device *dev,
-					struct ethtool_drvinfo *info)
-{
-	strlcpy(info->driver, SMSC_CHIPNAME, sizeof(info->driver));
-	strlcpy(info->version, SMSC_DRV_VERSION, sizeof(info->version));
-	strlcpy(info->bus_info, dev_name(dev->dev.parent),
-		sizeof(info->bus_info));
-}
-
-static int smsc911x_ethtool_nwayreset(struct net_device *dev)
-{
-	struct smsc911x_data *pdata = netdev_priv(dev);
-
-	return phy_start_aneg(pdata->phy_dev);
-}
-
-=======
 static void smsc911x_ethtool_getdrvinfo(struct net_device *dev,
 					struct ethtool_drvinfo *info)
 {
@@ -2424,7 +1962,6 @@ static void smsc911x_ethtool_getdrvinfo(struct net_device *dev,
 		sizeof(info->bus_info));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 smsc911x_ethtool_getmsglevel(struct net_device *dev)
 {
 	struct smsc911x_data *pdata = netdev_priv(dev);
@@ -2448,11 +1985,7 @@ smsc911x_ethtool_getregs(struct net_device *dev, struct ethtool_regs *regs,
 			 void *buf)
 {
 	struct smsc911x_data *pdata = netdev_priv(dev);
-<<<<<<< HEAD
-	struct phy_device *phy_dev = pdata->phy_dev;
-=======
 	struct phy_device *phy_dev = dev->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	unsigned int i;
 	unsigned int j = 0;
@@ -2469,25 +2002,15 @@ smsc911x_ethtool_getregs(struct net_device *dev, struct ethtool_regs *regs,
 	}
 
 	for (i = 0; i <= 31; i++)
-<<<<<<< HEAD
-		data[j++] = smsc911x_mii_read(phy_dev->bus, phy_dev->addr, i);
-=======
 		data[j++] = smsc911x_mii_read(phy_dev->mdio.bus,
 					      phy_dev->mdio.addr, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void smsc911x_eeprom_enable_access(struct smsc911x_data *pdata)
 {
-<<<<<<< HEAD
-	unsigned int temp = smsc911x_reg_read(pdata, SMSC_GPIO_CFG);
-	temp &= ~GPIO_CFG_EEPR_EN_;
-	smsc911x_reg_write(pdata, SMSC_GPIO_CFG, temp);
-=======
 	unsigned int temp = smsc911x_reg_read(pdata, GPIO_CFG);
 	temp &= ~GPIO_CFG_EEPR_EN_;
 	smsc911x_reg_write(pdata, GPIO_CFG, temp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(1);
 }
 
@@ -2542,10 +2065,6 @@ static int smsc911x_eeprom_write_location(struct smsc911x_data *pdata,
 					  u8 address, u8 data)
 {
 	u32 op = E2P_CMD_EPC_CMD_ERASE_ | address;
-<<<<<<< HEAD
-	u32 temp;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	SMSC_TRACE(pdata, drv, "address 0x%x, data 0x%x", address, data);
@@ -2556,11 +2075,7 @@ static int smsc911x_eeprom_write_location(struct smsc911x_data *pdata,
 		smsc911x_reg_write(pdata, E2P_DATA, (u32)data);
 
 		/* Workaround for hardware read-after-write restriction */
-<<<<<<< HEAD
-		temp = smsc911x_reg_read(pdata, BYTE_TEST);
-=======
 		smsc911x_reg_read(pdata, BYTE_TEST);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = smsc911x_eeprom_send_cmd(pdata, op);
 	}
@@ -2615,17 +2130,9 @@ static int smsc911x_ethtool_set_eeprom(struct net_device *dev,
 }
 
 static const struct ethtool_ops smsc911x_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings = smsc911x_ethtool_getsettings,
-	.set_settings = smsc911x_ethtool_setsettings,
-	.get_link = ethtool_op_get_link,
-	.get_drvinfo = smsc911x_ethtool_getdrvinfo,
-	.nway_reset = smsc911x_ethtool_nwayreset,
-=======
 	.get_link = ethtool_op_get_link,
 	.get_drvinfo = smsc911x_ethtool_getdrvinfo,
 	.nway_reset = phy_ethtool_nway_reset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_msglevel = smsc911x_ethtool_getmsglevel,
 	.set_msglevel = smsc911x_ethtool_setmsglevel,
 	.get_regs_len = smsc911x_ethtool_getregslen,
@@ -2633,12 +2140,9 @@ static const struct ethtool_ops smsc911x_ethtool_ops = {
 	.get_eeprom_len = smsc911x_ethtool_get_eeprom_len,
 	.get_eeprom = smsc911x_ethtool_get_eeprom,
 	.set_eeprom = smsc911x_ethtool_set_eeprom,
-<<<<<<< HEAD
-=======
 	.get_ts_info = ethtool_op_get_ts_info,
 	.get_link_ksettings = phy_ethtool_get_link_ksettings,
 	.set_link_ksettings = phy_ethtool_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct net_device_ops smsc911x_netdev_ops = {
@@ -2647,12 +2151,7 @@ static const struct net_device_ops smsc911x_netdev_ops = {
 	.ndo_start_xmit		= smsc911x_hard_start_xmit,
 	.ndo_get_stats		= smsc911x_get_stats,
 	.ndo_set_rx_mode	= smsc911x_set_multicast_list,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= smsc911x_do_ioctl,
-	.ndo_change_mtu		= eth_change_mtu,
-=======
 	.ndo_eth_ioctl		= phy_do_ioctl_running,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address 	= smsc911x_set_mac_address,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -2661,31 +2160,11 @@ static const struct net_device_ops smsc911x_netdev_ops = {
 };
 
 /* copies the current mac address from hardware to dev->dev_addr */
-<<<<<<< HEAD
-static void __devinit smsc911x_read_mac_address(struct net_device *dev)
-=======
 static void smsc911x_read_mac_address(struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct smsc911x_data *pdata = netdev_priv(dev);
 	u32 mac_high16 = smsc911x_mac_read(pdata, ADDRH);
 	u32 mac_low32 = smsc911x_mac_read(pdata, ADDRL);
-<<<<<<< HEAD
-
-	dev->dev_addr[0] = (u8)(mac_low32);
-	dev->dev_addr[1] = (u8)(mac_low32 >> 8);
-	dev->dev_addr[2] = (u8)(mac_low32 >> 16);
-	dev->dev_addr[3] = (u8)(mac_low32 >> 24);
-	dev->dev_addr[4] = (u8)(mac_high16);
-	dev->dev_addr[5] = (u8)(mac_high16 >> 8);
-}
-
-/* Initializing private device structures, only called from probe */
-static int __devinit smsc911x_init(struct net_device *dev)
-{
-	struct smsc911x_data *pdata = netdev_priv(dev);
-	unsigned int byte_test;
-=======
 	u8 addr[ETH_ALEN];
 
 	addr[0] = (u8)(mac_low32);
@@ -2702,7 +2181,6 @@ static int smsc911x_init(struct net_device *dev)
 {
 	struct smsc911x_data *pdata = netdev_priv(dev);
 	unsigned int byte_test, mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int to = 100;
 
 	SMSC_TRACE(pdata, probe, "Driver Parameters:");
@@ -2714,11 +2192,7 @@ static int smsc911x_init(struct net_device *dev)
 	spin_lock_init(&pdata->dev_lock);
 	spin_lock_init(&pdata->mac_lock);
 
-<<<<<<< HEAD
-	if (pdata->ioaddr == 0) {
-=======
 	if (pdata->ioaddr == NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SMSC_WARN(pdata, probe, "pdata->ioaddr: 0x00000000");
 		return -ENODEV;
 	}
@@ -2726,13 +2200,6 @@ static int smsc911x_init(struct net_device *dev)
 	/*
 	 * poll the READY bit in PMT_CTRL. Any other access to the device is
 	 * forbidden while this bit isn't set. Try for 100ms
-<<<<<<< HEAD
-	 */
-	while (!(smsc911x_reg_read(pdata, PMT_CTRL) & PMT_CTRL_READY_) && --to)
-		udelay(1000);
-	if (to == 0) {
-		pr_err("Device not READY in 100ms aborting\n");
-=======
 	 *
 	 * Note that this test is done before the WORD_SWAP register is
 	 * programmed. So in some configurations the READY bit is at 16 before
@@ -2751,7 +2218,6 @@ static int smsc911x_init(struct net_device *dev)
 
 	if (to == 0) {
 		netdev_err(dev, "Device not READY in 100ms aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -2787,52 +2253,29 @@ static int smsc911x_init(struct net_device *dev)
 
 	pdata->idrev = smsc911x_reg_read(pdata, ID_REV);
 	switch (pdata->idrev & 0xFFFF0000) {
-<<<<<<< HEAD
-	case 0x01180000:
-	case 0x01170000:
-	case 0x01160000:
-	case 0x01150000:
-	case 0x218A0000:
-=======
 	case LAN9118:
 	case LAN9117:
 	case LAN9116:
 	case LAN9115:
 	case LAN89218:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* LAN911[5678] family */
 		pdata->generation = pdata->idrev & 0x0000FFFF;
 		break;
 
-<<<<<<< HEAD
-	case 0x118A0000:
-	case 0x117A0000:
-	case 0x116A0000:
-	case 0x115A0000:
-=======
 	case LAN9218:
 	case LAN9217:
 	case LAN9216:
 	case LAN9215:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* LAN921[5678] family */
 		pdata->generation = 3;
 		break;
 
-<<<<<<< HEAD
-	case 0x92100000:
-	case 0x92110000:
-	case 0x92200000:
-	case 0x92210000:
-		/* LAN9210/LAN9211/LAN9220/LAN9221 */
-=======
 	case LAN9210:
 	case LAN9211:
 	case LAN9220:
 	case LAN9221:
 	case LAN9250:
 		/* LAN9210/LAN9211/LAN9220/LAN9221/LAN9250 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdata->generation = 4;
 		break;
 
@@ -2860,35 +2303,19 @@ static int smsc911x_init(struct net_device *dev)
 	}
 
 	/* Reset the LAN911x */
-<<<<<<< HEAD
-	if (smsc911x_soft_reset(pdata))
-		return -ENODEV;
-
-	/* Disable all interrupt sources until we bring the device up */
-	smsc911x_reg_write(pdata, INT_EN, 0);
-
-	ether_setup(dev);
-	dev->flags |= IFF_MULTICAST;
-	netif_napi_add(dev, &pdata->napi, smsc911x_poll, SMSC_NAPI_WEIGHT);
-=======
 	if (smsc911x_phy_reset(pdata) || smsc911x_soft_reset(pdata))
 		return -ENODEV;
 
 	dev->flags |= IFF_MULTICAST;
 	netif_napi_add_weight(dev, &pdata->napi, smsc911x_poll,
 			      SMSC_NAPI_WEIGHT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->netdev_ops = &smsc911x_netdev_ops;
 	dev->ethtool_ops = &smsc911x_ethtool_ops;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit smsc911x_drv_remove(struct platform_device *pdev)
-=======
 static void smsc911x_drv_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct smsc911x_data *pdata;
@@ -2899,26 +2326,6 @@ static void smsc911x_drv_remove(struct platform_device *pdev)
 	pdata = netdev_priv(dev);
 	BUG_ON(!pdata);
 	BUG_ON(!pdata->ioaddr);
-<<<<<<< HEAD
-	BUG_ON(!pdata->phy_dev);
-
-	SMSC_TRACE(pdata, ifdown, "Stopping driver");
-
-	if (pdata->config.has_reset_gpio) {
-		gpio_set_value_cansleep(pdata->config.reset_gpio, 0);
-		gpio_free(pdata->config.reset_gpio);
-	}
-
-
-	phy_disconnect(pdata->phy_dev);
-	pdata->phy_dev = NULL;
-	mdiobus_unregister(pdata->mii_bus);
-	mdiobus_free(pdata->mii_bus);
-
-	platform_set_drvdata(pdev, NULL);
-	unregister_netdev(dev);
-	free_irq(dev->irq, dev);
-=======
 
 	SMSC_TRACE(pdata, ifdown, "Stopping driver");
 
@@ -2927,7 +2334,6 @@ static void smsc911x_drv_remove(struct platform_device *pdev)
 	mdiobus_unregister(pdata->mii_bus);
 	mdiobus_free(pdata->mii_bus);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
 					   "smsc911x-memory");
 	if (!res)
@@ -2942,11 +2348,7 @@ static void smsc911x_drv_remove(struct platform_device *pdev)
 
 	free_netdev(dev);
 
-<<<<<<< HEAD
-	return 0;
-=======
 	pm_runtime_disable(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* standard register acces */
@@ -2965,29 +2367,6 @@ static const struct smsc911x_ops shifted_smsc911x_ops = {
 	.tx_writefifo = smsc911x_tx_writefifo_shift,
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_OF
-static int __devinit smsc911x_probe_config_dt(
-				struct smsc911x_platform_config *config,
-				struct device_node *np)
-{
-	const char *mac;
-	u32 width = 0;
-
-	if (!np)
-		return -ENODEV;
-
-	config->phy_interface = of_get_phy_mode(np);
-
-	mac = of_get_mac_address(np);
-	if (mac)
-		memcpy(config->mac, mac, ETH_ALEN);
-
-	of_property_read_u32(np, "reg-shift", &config->shift);
-
-	of_property_read_u32(np, "reg-io-width", &width);
-	if (width == 4)
-=======
 static int smsc911x_probe_config(struct smsc911x_platform_config *config,
 				 struct device *dev)
 {
@@ -3006,26 +2385,10 @@ static int smsc911x_probe_config(struct smsc911x_platform_config *config,
 	if (err == -ENXIO)
 		return err;
 	if (!err && width == 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		config->flags |= SMSC911X_USE_32BIT;
 	else
 		config->flags |= SMSC911X_USE_16BIT;
 
-<<<<<<< HEAD
-	if (of_get_property(np, "smsc,irq-active-high", NULL))
-		config->irq_polarity = SMSC911X_IRQ_POLARITY_ACTIVE_HIGH;
-
-	if (of_get_property(np, "smsc,irq-push-pull", NULL))
-		config->irq_type = SMSC911X_IRQ_TYPE_PUSH_PULL;
-
-	if (of_get_property(np, "smsc,force-internal-phy", NULL))
-		config->flags |= SMSC911X_FORCE_INTERNAL_PHY;
-
-	if (of_get_property(np, "smsc,force-external-phy", NULL))
-		config->flags |= SMSC911X_FORCE_EXTERNAL_PHY;
-
-	if (of_get_property(np, "smsc,save-mac-address", NULL))
-=======
 	device_property_read_u32(dev, "reg-shift", &config->shift);
 
 	if (device_property_present(dev, "smsc,irq-active-high"))
@@ -3041,35 +2404,10 @@ static int smsc911x_probe_config(struct smsc911x_platform_config *config,
 		config->flags |= SMSC911X_FORCE_EXTERNAL_PHY;
 
 	if (device_property_present(dev, "smsc,save-mac-address"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		config->flags |= SMSC911X_SAVE_MAC_ADDRESS;
 
 	return 0;
 }
-<<<<<<< HEAD
-#else
-static inline int smsc911x_probe_config_dt(
-				struct smsc911x_platform_config *config,
-				struct device_node *np)
-{
-	return -ENODEV;
-}
-#endif /* CONFIG_OF */
-
-static int __devinit smsc911x_drv_probe(struct platform_device *pdev)
-{
-	struct device_node *np = pdev->dev.of_node;
-	struct net_device *dev;
-	struct smsc911x_data *pdata;
-	struct smsc911x_platform_config *config = pdev->dev.platform_data;
-	struct resource *res, *irq_res;
-	unsigned int intcfg = 0;
-	int res_size, irq_flags;
-	int retval;
-
-	pr_info("Driver version %s\n", SMSC_DRV_VERSION);
-
-=======
 
 static int smsc911x_drv_probe(struct platform_device *pdev)
 {
@@ -3080,7 +2418,6 @@ static int smsc911x_drv_probe(struct platform_device *pdev)
 	int res_size, irq;
 	int retval;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
 					   "smsc911x-memory");
 	if (!res)
@@ -3092,16 +2429,11 @@ static int smsc911x_drv_probe(struct platform_device *pdev)
 	}
 	res_size = resource_size(res);
 
-<<<<<<< HEAD
-	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-	if (!irq_res) {
-=======
 	irq = platform_get_irq(pdev, 0);
 	if (irq == -EPROBE_DEFER) {
 		retval = -EPROBE_DEFER;
 		goto out_0;
 	} else if (irq < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_warn("Could not allocate irq resource\n");
 		retval = -ENODEV;
 		goto out_0;
@@ -3121,18 +2453,12 @@ static int smsc911x_drv_probe(struct platform_device *pdev)
 	SET_NETDEV_DEV(dev, &pdev->dev);
 
 	pdata = netdev_priv(dev);
-<<<<<<< HEAD
-	dev->irq = irq_res->start;
-	irq_flags = irq_res->flags & IRQF_TRIGGER_MASK;
-	pdata->ioaddr = ioremap_nocache(res->start, res_size);
-=======
 	dev->irq = irq;
 	pdata->ioaddr = ioremap(res->start, res_size);
 	if (!pdata->ioaddr) {
 		retval = -ENOMEM;
 		goto out_ioremap_fail;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata->dev = dev;
 	pdata->msg_enable = ((1 << debug) - 1);
@@ -3141,19 +2467,11 @@ static int smsc911x_drv_probe(struct platform_device *pdev)
 
 	retval = smsc911x_request_resources(pdev);
 	if (retval)
-<<<<<<< HEAD
-		goto out_return_resources;
-
-	retval = smsc911x_enable_resources(pdev);
-	if (retval)
-		goto out_disable_resources;
-=======
 		goto out_request_resources_fail;
 
 	retval = smsc911x_enable_resources(pdev);
 	if (retval)
 		goto out_enable_resources_fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdata->ioaddr == NULL) {
 		SMSC_WARN(pdata, probe, "Error smsc911x base address invalid");
@@ -3161,11 +2479,7 @@ static int smsc911x_drv_probe(struct platform_device *pdev)
 		goto out_disable_resources;
 	}
 
-<<<<<<< HEAD
-	retval = smsc911x_probe_config_dt(&pdata->config, np);
-=======
 	retval = smsc911x_probe_config(&pdata->config, &pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval && config) {
 		/* copy config parameters across to pdata */
 		memcpy(&pdata->config, config, sizeof(pdata->config));
@@ -3183,32 +2497,6 @@ static int smsc911x_drv_probe(struct platform_device *pdev)
 	if (pdata->config.shift)
 		pdata->ops = &shifted_smsc911x_ops;
 
-<<<<<<< HEAD
-	retval = smsc911x_init(dev);
-	if (retval < 0)
-		goto out_disable_resources;
-
-	/* configure irq polarity and type before connecting isr */
-	if (pdata->config.irq_polarity == SMSC911X_IRQ_POLARITY_ACTIVE_HIGH)
-		intcfg |= INT_CFG_IRQ_POL_;
-
-	if (pdata->config.irq_type == SMSC911X_IRQ_TYPE_PUSH_PULL)
-		intcfg |= INT_CFG_IRQ_TYPE_;
-
-	smsc911x_reg_write(pdata, INT_CFG, intcfg);
-
-	/* Ensure interrupts are globally disabled before connecting ISR */
-	smsc911x_reg_write(pdata, INT_EN, 0);
-	smsc911x_reg_write(pdata, INT_STS, 0xFFFFFFFF);
-
-	retval = request_any_context_irq(dev->irq, smsc911x_irqhandler,
-					 irq_flags | IRQF_SHARED, dev->name,
-					 dev);
-	if (retval < 0) {
-		SMSC_WARN(pdata, probe,
-			  "Unable to claim requested irq: %d", dev->irq);
-		goto out_disable_resources;
-=======
 	pm_runtime_enable(&pdev->dev);
 	pm_runtime_get_sync(&pdev->dev);
 
@@ -3222,31 +2510,17 @@ static int smsc911x_drv_probe(struct platform_device *pdev)
 	if (retval) {
 		SMSC_WARN(pdata, probe, "Error %i initialising mii", retval);
 		goto out_init_fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	retval = register_netdev(dev);
 	if (retval) {
 		SMSC_WARN(pdata, probe, "Error %i registering device", retval);
-<<<<<<< HEAD
-		goto out_free_irq;
-=======
 		goto out_init_fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		SMSC_TRACE(pdata, probe,
 			   "Network interface: \"%s\"", dev->name);
 	}
 
-<<<<<<< HEAD
-	retval = smsc911x_mii_init(pdev, dev);
-	if (retval) {
-		SMSC_WARN(pdata, probe, "Error %i initialising mii", retval);
-		goto out_unregister_netdev_5;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&pdata->mac_lock);
 
 	/* Check if mac address has been specified when bringing interface up */
@@ -3255,11 +2529,7 @@ static int smsc911x_drv_probe(struct platform_device *pdev)
 		SMSC_TRACE(pdata, probe,
 			   "MAC Address is specified by configuration");
 	} else if (is_valid_ether_addr(pdata->config.mac)) {
-<<<<<<< HEAD
-		memcpy(dev->dev_addr, pdata->config.mac, 6);
-=======
 		eth_hw_addr_set(dev, pdata->config.mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SMSC_TRACE(pdata, probe,
 			   "MAC Address specified by platform data");
 	} else {
@@ -3276,36 +2546,17 @@ static int smsc911x_drv_probe(struct platform_device *pdev)
 			eth_hw_addr_random(dev);
 			smsc911x_set_hw_mac_address(pdata, dev->dev_addr);
 			SMSC_TRACE(pdata, probe,
-<<<<<<< HEAD
-				   "MAC Address is set to random_ether_addr");
-=======
 				   "MAC Address is set to eth_random_addr");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	spin_unlock_irq(&pdata->mac_lock);
-<<<<<<< HEAD
-=======
 	pm_runtime_put(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev_info(dev, "MAC Address: %pM\n", dev->dev_addr);
 
 	return 0;
 
-<<<<<<< HEAD
-out_unregister_netdev_5:
-	unregister_netdev(dev);
-out_free_irq:
-	free_irq(dev->irq, dev);
-out_disable_resources:
-	(void)smsc911x_disable_resources(pdev);
-out_return_resources:
-	smsc911x_free_resources(pdev);
-	platform_set_drvdata(pdev, NULL);
-	iounmap(pdata->ioaddr);
-=======
 out_init_fail:
 	pm_runtime_put(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
@@ -3316,7 +2567,6 @@ out_enable_resources_fail:
 out_request_resources_fail:
 	iounmap(pdata->ioaddr);
 out_ioremap_fail:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_netdev(dev);
 out_release_io_1:
 	release_mem_region(res->start, resource_size(res));
@@ -3335,8 +2585,6 @@ static int smsc911x_suspend(struct device *dev)
 	struct net_device *ndev = dev_get_drvdata(dev);
 	struct smsc911x_data *pdata = netdev_priv(ndev);
 
-<<<<<<< HEAD
-=======
 	if (netif_running(ndev)) {
 		netif_stop_queue(ndev);
 		netif_device_detach(ndev);
@@ -3344,21 +2592,14 @@ static int smsc911x_suspend(struct device *dev)
 			phy_stop(ndev->phydev);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable wake on LAN, energy detection and the external PME
 	 * signal. */
 	smsc911x_reg_write(pdata, PMT_CTRL,
 		PMT_CTRL_PM_MODE_D1_ | PMT_CTRL_WOL_EN_ |
 		PMT_CTRL_ED_EN_ | PMT_CTRL_PME_EN_);
 
-<<<<<<< HEAD
-	/* Drive the GPIO Ethernet_Reset Line low to Suspend */
-	if (pdata->config.has_reset_gpio)
-		gpio_set_value_cansleep(pdata->config.reset_gpio, 0);
-=======
 	pm_runtime_disable(dev);
 	pm_runtime_set_suspended(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3369,14 +2610,8 @@ static int smsc911x_resume(struct device *dev)
 	struct smsc911x_data *pdata = netdev_priv(ndev);
 	unsigned int to = 100;
 
-<<<<<<< HEAD
-	if (pdata->config.has_reset_gpio)
-		gpio_set_value_cansleep(pdata->config.reset_gpio, 1);
-
-=======
 	pm_runtime_enable(dev);
 	pm_runtime_resume(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Note 3.11 from the datasheet:
 	 * 	"When the LAN9220 is in a power saving state, a write of any
@@ -3390,9 +2625,6 @@ static int smsc911x_resume(struct device *dev)
 	while (!(smsc911x_reg_read(pdata, PMT_CTRL) & PMT_CTRL_READY_) && --to)
 		udelay(1000);
 
-<<<<<<< HEAD
-	return (to == 0) ? -EIO : 0;
-=======
 	if (to == 0)
 		return -EIO;
 
@@ -3404,7 +2636,6 @@ static int smsc911x_resume(struct device *dev)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct dev_pm_ops smsc911x_pm_ops = {
@@ -3418,26 +2649,12 @@ static const struct dev_pm_ops smsc911x_pm_ops = {
 #define SMSC911X_PM_OPS NULL
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_OF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct of_device_id smsc911x_dt_ids[] = {
 	{ .compatible = "smsc,lan9115", },
 	{ /* sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, smsc911x_dt_ids);
-<<<<<<< HEAD
-
-static struct platform_driver smsc911x_driver = {
-	.probe = smsc911x_drv_probe,
-	.remove = __devexit_p(smsc911x_drv_remove),
-	.driver = {
-		.name	= SMSC_CHIPNAME,
-		.owner	= THIS_MODULE,
-		.pm	= SMSC911X_PM_OPS,
-		.of_match_table = smsc911x_dt_ids,
-=======
 #endif
 
 #ifdef CONFIG_ACPI
@@ -3456,7 +2673,6 @@ static struct platform_driver smsc911x_driver = {
 		.pm	= SMSC911X_PM_OPS,
 		.of_match_table = of_match_ptr(smsc911x_dt_ids),
 		.acpi_match_table = ACPI_PTR(smsc911x_acpi_match),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

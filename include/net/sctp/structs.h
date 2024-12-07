@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
@@ -10,35 +7,9 @@
  *
  * This file is part of the SCTP kernel implementation
  *
-<<<<<<< HEAD
- * This SCTP implementation is free software;
- * you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This SCTP implementation is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; without even the implied
- *		   ************************
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GNU CC; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * Please send any bug reports or fixes you make to the
- * email addresses:
- *    lksctp developers <lksctp-developers@lists.sourceforge.net>
- *
- * Or submit a bug report through the following website:
- *    http://www.sf.net/projects/lksctp
-=======
  * Please send any bug reports or fixes you make to the
  * email addresses:
  *    lksctp developers <linux-sctp@vger.kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *    Randall Stewart	    <randall@sctp.chicago.il.us>
@@ -56,24 +27,14 @@
  *    Ryan Layer	    <rmlayer@us.ibm.com>
  *    Anup Pemmaiah	    <pemmaiah@cc.usu.edu>
  *    Kevin Gao             <kevin.gao@intel.com>
-<<<<<<< HEAD
- *
- * Any bugs reported given to us we will try to fix... any fixes shared will
- * be incorporated into the next SCTP release.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __sctp_structs_h__
 #define __sctp_structs_h__
 
-<<<<<<< HEAD
-#include <linux/time.h>		/* We get struct timespec.    */
-=======
 #include <linux/ktime.h>
 #include <linux/generic-radix-tree.h>
 #include <linux/rhashtable-types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/socket.h>	/* linux/in.h needs this!!    */
 #include <linux/in.h>		/* We get struct sockaddr_in. */
 #include <linux/in6.h>		/* We get struct in6_addr     */
@@ -84,10 +45,7 @@
 #include <linux/workqueue.h>	/* We need tq_struct.	 */
 #include <linux/sctp.h>		/* We need sctp* header structs.  */
 #include <net/sctp/auth.h>	/* We need auth specific structs */
-<<<<<<< HEAD
-=======
 #include <net/ip.h>		/* For inet_skb_parm */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* A convenience structure for handling sockaddr structures.
  * We should wean ourselves off this.
@@ -110,39 +68,25 @@ struct sctp_outq;
 struct sctp_bind_addr;
 struct sctp_ulpq;
 struct sctp_ep_common;
-<<<<<<< HEAD
-struct sctp_ssnmap;
-struct crypto_hash;
-=======
 struct crypto_shash;
 struct sctp_stream;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #include <net/sctp/tsnmap.h>
 #include <net/sctp/ulpevent.h>
 #include <net/sctp/ulpqueue.h>
-<<<<<<< HEAD
-=======
 #include <net/sctp/stream_interleave.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Structures useful for managing bind/connect. */
 
 struct sctp_bind_bucket {
 	unsigned short	port;
-<<<<<<< HEAD
-	unsigned short	fastreuse;
-	struct hlist_node	node;
-	struct hlist_head	owner;
-=======
 	signed char	fastreuse;
 	signed char	fastreuseport;
 	kuid_t		fastuid;
 	struct hlist_node	node;
 	struct hlist_head	owner;
 	struct net	*net;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sctp_bind_hashbucket {
@@ -159,126 +103,12 @@ struct sctp_hashbucket {
 
 /* The SCTP globals structure. */
 extern struct sctp_globals {
-<<<<<<< HEAD
-	/* RFC2960 Section 14. Suggested SCTP Protocol Parameter Values
-	 *
-	 * The following protocol parameters are RECOMMENDED:
-	 *
-	 * RTO.Initial		    - 3	 seconds
-	 * RTO.Min		    - 1	 second
-	 * RTO.Max		   -  60 seconds
-	 * RTO.Alpha		    - 1/8  (3 when converted to right shifts.)
-	 * RTO.Beta		    - 1/4  (2 when converted to right shifts.)
-	 */
-	unsigned int rto_initial;
-	unsigned int rto_min;
-	unsigned int rto_max;
-
-	/* Note: rto_alpha and rto_beta are really defined as inverse
-	 * powers of two to facilitate integer operations.
-	 */
-	int rto_alpha;
-	int rto_beta;
-
-	/* Max.Burst		    - 4 */
-	int max_burst;
-
-	/* Whether Cookie Preservative is enabled(1) or not(0) */
-	int cookie_preserve_enable;
-
-	/* Valid.Cookie.Life	    - 60  seconds  */
-	unsigned int valid_cookie_life;
-
-	/* Delayed SACK timeout  200ms default*/
-	unsigned int sack_timeout;
-
-	/* HB.interval		    - 30 seconds  */
-	unsigned int hb_interval;
-
-	/* Association.Max.Retrans  - 10 attempts
-	 * Path.Max.Retrans	    - 5	 attempts (per destination address)
-	 * Max.Init.Retransmits	    - 8	 attempts
-	 */
-	int max_retrans_association;
-	int max_retrans_path;
-	int max_retrans_init;
-
-	/*
-	 * Policy for preforming sctp/socket accounting
-	 * 0   - do socket level accounting, all assocs share sk_sndbuf
-	 * 1   - do sctp accounting, each asoc may use sk_sndbuf bytes
-	 */
-	int sndbuf_policy;
-
-	/*
-	 * Policy for preforming sctp/socket accounting
-	 * 0   - do socket level accounting, all assocs share sk_rcvbuf
-	 * 1   - do sctp accounting, each asoc may use sk_rcvbuf bytes
-	 */
-	int rcvbuf_policy;
-
-	/* The following variables are implementation specific.	 */
-
-	/* Default initialization values to be applied to new associations. */
-	__u16 max_instreams;
-	__u16 max_outstreams;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* This is a list of groups of functions for each address
 	 * family that we support.
 	 */
 	struct list_head address_families;
 
 	/* This is the hash of all endpoints. */
-<<<<<<< HEAD
-	int ep_hashsize;
-	struct sctp_hashbucket *ep_hashtable;
-
-	/* This is the hash of all associations. */
-	int assoc_hashsize;
-	struct sctp_hashbucket *assoc_hashtable;
-
-	/* This is the sctp port control hash.	*/
-	int port_hashsize;
-	struct sctp_bind_hashbucket *port_hashtable;
-
-	/* This is the global local address list.
-	 * We actively maintain this complete list of addresses on
-	 * the system by catching address add/delete events.
-	 *
-	 * It is a list of sctp_sockaddr_entry.
-	 */
-	struct list_head local_addr_list;
-	int default_auto_asconf;
-	struct list_head addr_waitq;
-	struct timer_list addr_wq_timer;
-	struct list_head auto_asconf_splist;
-	/* Lock that protects both addr_waitq and auto_asconf_splist */
-	spinlock_t addr_wq_lock;
-
-	/* Lock that protects the local_addr_list writers */
-	spinlock_t addr_list_lock;
-	
-	/* Flag to indicate if addip is enabled. */
-	int addip_enable;
-	int addip_noauth_enable;
-
-	/* Flag to indicate if PR-SCTP is enabled. */
-	int prsctp_enable;
-
-	/* Flag to idicate if SCTP-AUTH is enabled */
-	int auth_enable;
-
-	/*
-	 * Policy to control SCTP IPv4 address scoping
-	 * 0   - Disable IPv4 address scoping
-	 * 1   - Enable IPv4 address scoping
-	 * 2   - Selectively allow only IPv4 private addresses
-	 * 3   - Selectively allow only IPv4 link local address
-	 */
-	int ipv4_scope_policy;
-=======
 	struct sctp_hashbucket *ep_hashtable;
 	/* This is the sctp port control hash.	*/
 	struct sctp_bind_hashbucket *port_hashtable;
@@ -292,74 +122,17 @@ extern struct sctp_globals {
 	/* Default initialization values to be applied to new associations. */
 	__u16 max_instreams;
 	__u16 max_outstreams;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Flag to indicate whether computing and verifying checksum
 	 * is disabled. */
         bool checksum_disable;
-<<<<<<< HEAD
-
-	/* Threshold for rwnd update SACKS.  Receive buffer shifted this many
-	 * bits is an indicator of when to send and window update SACK.
-	 */
-	int rwnd_update_shift;
-
-	/* Threshold for autoclose timeout, in seconds. */
-	unsigned long max_autoclose;
 } sctp_globals;
 
-#define sctp_rto_initial		(sctp_globals.rto_initial)
-#define sctp_rto_min			(sctp_globals.rto_min)
-#define sctp_rto_max			(sctp_globals.rto_max)
-#define sctp_rto_alpha			(sctp_globals.rto_alpha)
-#define sctp_rto_beta			(sctp_globals.rto_beta)
-#define sctp_max_burst			(sctp_globals.max_burst)
-#define sctp_valid_cookie_life		(sctp_globals.valid_cookie_life)
-#define sctp_cookie_preserve_enable	(sctp_globals.cookie_preserve_enable)
-#define sctp_max_retrans_association	(sctp_globals.max_retrans_association)
-#define sctp_sndbuf_policy	 	(sctp_globals.sndbuf_policy)
-#define sctp_rcvbuf_policy	 	(sctp_globals.rcvbuf_policy)
-#define sctp_max_retrans_path		(sctp_globals.max_retrans_path)
-#define sctp_max_retrans_init		(sctp_globals.max_retrans_init)
-#define sctp_sack_timeout		(sctp_globals.sack_timeout)
-#define sctp_hb_interval		(sctp_globals.hb_interval)
-=======
-} sctp_globals;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define sctp_max_instreams		(sctp_globals.max_instreams)
 #define sctp_max_outstreams		(sctp_globals.max_outstreams)
 #define sctp_address_families		(sctp_globals.address_families)
 #define sctp_ep_hashsize		(sctp_globals.ep_hashsize)
 #define sctp_ep_hashtable		(sctp_globals.ep_hashtable)
-<<<<<<< HEAD
-#define sctp_assoc_hashsize		(sctp_globals.assoc_hashsize)
-#define sctp_assoc_hashtable		(sctp_globals.assoc_hashtable)
-#define sctp_port_hashsize		(sctp_globals.port_hashsize)
-#define sctp_port_hashtable		(sctp_globals.port_hashtable)
-#define sctp_local_addr_list		(sctp_globals.local_addr_list)
-#define sctp_local_addr_lock		(sctp_globals.addr_list_lock)
-#define sctp_auto_asconf_splist		(sctp_globals.auto_asconf_splist)
-#define sctp_addr_waitq			(sctp_globals.addr_waitq)
-#define sctp_addr_wq_timer		(sctp_globals.addr_wq_timer)
-#define sctp_addr_wq_lock		(sctp_globals.addr_wq_lock)
-#define sctp_default_auto_asconf	(sctp_globals.default_auto_asconf)
-#define sctp_scope_policy		(sctp_globals.ipv4_scope_policy)
-#define sctp_addip_enable		(sctp_globals.addip_enable)
-#define sctp_addip_noauth		(sctp_globals.addip_noauth_enable)
-#define sctp_prsctp_enable		(sctp_globals.prsctp_enable)
-#define sctp_auth_enable		(sctp_globals.auth_enable)
-#define sctp_checksum_disable		(sctp_globals.checksum_disable)
-#define sctp_rwnd_upd_shift		(sctp_globals.rwnd_update_shift)
-#define sctp_max_autoclose		(sctp_globals.max_autoclose)
-
-/* SCTP Socket type: UDP or TCP style. */
-typedef enum {
-	SCTP_SOCKET_UDP = 0,
-	SCTP_SOCKET_UDP_HIGH_BANDWIDTH,
-	SCTP_SOCKET_TCP
-} sctp_socket_type_t;
-=======
 #define sctp_port_hashsize		(sctp_globals.port_hashsize)
 #define sctp_port_hashtable		(sctp_globals.port_hashtable)
 #define sctp_transport_hashtable	(sctp_globals.transport_hashtable)
@@ -371,29 +144,20 @@ enum sctp_socket_type {
 	SCTP_SOCKET_UDP_HIGH_BANDWIDTH,
 	SCTP_SOCKET_TCP
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Per socket SCTP information. */
 struct sctp_sock {
 	/* inet_sock has to be the first member of sctp_sock */
 	struct inet_sock inet;
 	/* What kind of a socket is this? */
-<<<<<<< HEAD
-	sctp_socket_type_t type;
-=======
 	enum sctp_socket_type type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PF_ family specific functions.  */
 	struct sctp_pf *pf;
 
 	/* Access to HMAC transform. */
-<<<<<<< HEAD
-	struct crypto_hash *hmac;
-=======
 	struct crypto_shash *hmac;
 	char *sctp_hmac_alg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* What is our base endpointer? */
 	struct sctp_endpoint *ep;
@@ -413,26 +177,20 @@ struct sctp_sock {
 	 * will be inherited by all new associations.
 	 */
 	__u32 hbinterval;
-<<<<<<< HEAD
-=======
 	__u32 probe_interval;
 
 	__be16 udp_port;
 	__be16 encap_port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This is the max_retrans value for new associations. */
 	__u16 pathmaxrxt;
 
-<<<<<<< HEAD
-=======
 	__u32 flowlabel;
 	__u8  dscp;
 
 	__u16 pf_retrans;
 	__u16 ps_retrans;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The initial Path MTU to use for new associations. */
 	__u32 pathmtu;
 
@@ -443,29 +201,6 @@ struct sctp_sock {
 	/* Flags controlling Heartbeat, SACK delay, and Path MTU Discovery. */
 	__u32 param_flags;
 
-<<<<<<< HEAD
-	struct sctp_initmsg initmsg;
-	struct sctp_rtoinfo rtoinfo;
-	struct sctp_paddrparams paddrparam;
-	struct sctp_event_subscribe subscribe;
-	struct sctp_assocparams assocparams;
-	int user_frag;
-	__u32 autoclose;
-	__u8 nodelay;
-	__u8 disable_fragments;
-	__u8 v4mapped;
-	__u8 frag_interleave;
-	__u32 adaptation_ind;
-	__u32 pd_point;
-
-	atomic_t pd_mode;
-	/* Receive to here while partial delivery is in effect. */
-	struct sk_buff_head pd_lobby;
-
-	/* These must be the last fields, as they will skipped on copies,
-	 * like on accept and peeloff operations
-	 */
-=======
 	__u32 default_ss;
 
 	struct sctp_rtoinfo rtoinfo;
@@ -503,19 +238,11 @@ struct sctp_sock {
 	/* Receive to here while partial delivery is in effect. */
 	struct sk_buff_head pd_lobby;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head auto_asconf_list;
 	int do_auto_asconf;
 };
 
-<<<<<<< HEAD
-static inline struct sctp_sock *sctp_sk(const struct sock *sk)
-{
-       return (struct sctp_sock *)sk;
-}
-=======
 #define sctp_sk(ptr) container_of_const(ptr, struct sctp_sock, inet.sk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct sock *sctp_opt2sk(const struct sctp_sock *sp)
 {
@@ -564,11 +291,7 @@ struct sctp_cookie {
 	__u32 peer_ttag;
 
 	/* When does this cookie expire? */
-<<<<<<< HEAD
-	struct timeval expiration;
-=======
 	ktime_t expiration;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Number of inbound/outbound streams which are set
 	 * and negotiated during the INIT process.
@@ -594,16 +317,10 @@ struct sctp_cookie {
 
 	__u32 adaptation_ind;
 
-<<<<<<< HEAD
-	__u8 auth_random[sizeof(sctp_paramhdr_t) + SCTP_AUTH_RANDOM_LENGTH];
-	__u8 auth_hmacs[SCTP_AUTH_NUM_HMACS * sizeof(__u16) + 2];
-	__u8 auth_chunks[sizeof(sctp_paramhdr_t) + SCTP_AUTH_MAX_CHUNKS];
-=======
 	__u8 auth_random[sizeof(struct sctp_paramhdr) +
 			 SCTP_AUTH_RANDOM_LENGTH];
 	__u8 auth_hmacs[SCTP_AUTH_NUM_HMACS * sizeof(__u16) + 2];
 	__u8 auth_chunks[sizeof(struct sctp_paramhdr) + SCTP_AUTH_MAX_CHUNKS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This is a shim for my peer's INIT packet, followed by
 	 * a copy of the raw address list of the association.
@@ -612,11 +329,7 @@ struct sctp_cookie {
 	 * the association TCB is re-constructed from the cookie.
 	 */
 	__u32 raw_addr_list_len;
-<<<<<<< HEAD
-	struct sctp_init_chunk peer_init[0];
-=======
 	/* struct sctp_init_chunk peer_init[]; */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -665,68 +378,11 @@ union sctp_params {
  *    chunk is sent and the destination transport address to which this
  *    HEARTBEAT is sent (see Section 8.3).
  */
-<<<<<<< HEAD
-typedef struct sctp_sender_hb_info {
-=======
 struct sctp_sender_hb_info {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_paramhdr param_hdr;
 	union sctp_addr daddr;
 	unsigned long sent_at;
 	__u64 hb_nonce;
-<<<<<<< HEAD
-} __packed sctp_sender_hb_info_t;
-
-/*
- *  RFC 2960 1.3.2 Sequenced Delivery within Streams
- *
- *  The term "stream" is used in SCTP to refer to a sequence of user
- *  messages that are to be delivered to the upper-layer protocol in
- *  order with respect to other messages within the same stream.  This is
- *  in contrast to its usage in TCP, where it refers to a sequence of
- *  bytes (in this document a byte is assumed to be eight bits).
- *  ...
- *
- *  This is the structure we use to track both our outbound and inbound
- *  SSN, or Stream Sequence Numbers.
- */
-
-struct sctp_stream {
-	__u16 *ssn;
-	unsigned int len;
-};
-
-struct sctp_ssnmap {
-	struct sctp_stream in;
-	struct sctp_stream out;
-	int malloced;
-};
-
-struct sctp_ssnmap *sctp_ssnmap_new(__u16 in, __u16 out,
-				    gfp_t gfp);
-void sctp_ssnmap_free(struct sctp_ssnmap *map);
-void sctp_ssnmap_clear(struct sctp_ssnmap *map);
-
-/* What is the current SSN number for this stream? */
-static inline __u16 sctp_ssn_peek(struct sctp_stream *stream, __u16 id)
-{
-	return stream->ssn[id];
-}
-
-/* Return the next SSN number for this stream.	*/
-static inline __u16 sctp_ssn_next(struct sctp_stream *stream, __u16 id)
-{
-	return stream->ssn[id]++;
-}
-
-/* Skip over this ssn and all below. */
-static inline void sctp_ssn_skip(struct sctp_stream *stream, __u16 id, 
-				 __u16 ssn)
-{
-	stream->ssn[id] = ssn+1;
-}
-              
-=======
 	__u32 probe_size;
 };
 
@@ -769,7 +425,6 @@ void sctp_stream_update(struct sctp_stream *stream, struct sctp_stream *new);
 #define sctp_mid_uo_next(stream, type, sid) \
 	(sctp_stream_##type((stream), (sid))->mid_uo++)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Pointers to address related SCTP functions.
  * (i.e. things that depend on the address family.)
@@ -780,30 +435,13 @@ struct sctp_af {
 	int		(*setsockopt)	(struct sock *sk,
 					 int level,
 					 int optname,
-<<<<<<< HEAD
-					 char __user *optval,
-=======
 					 sockptr_t optval,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 unsigned int optlen);
 	int		(*getsockopt)	(struct sock *sk,
 					 int level,
 					 int optname,
 					 char __user *optval,
 					 int __user *optlen);
-<<<<<<< HEAD
-	int		(*compat_setsockopt)	(struct sock *sk,
-					 int level,
-					 int optname,
-					 char __user *optval,
-					 unsigned int optlen);
-	int		(*compat_getsockopt)	(struct sock *sk,
-					 int level,
-					 int optname,
-					 char __user *optval,
-					 int __user *optlen);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void		(*get_dst)	(struct sctp_transport *t,
 					 union sctp_addr *saddr,
 					 struct flowi *fl,
@@ -822,15 +460,7 @@ struct sctp_af {
 					 int saddr);
 	void		(*from_sk)	(union sctp_addr *,
 					 struct sock *sk);
-<<<<<<< HEAD
-	void		(*to_sk_saddr)	(union sctp_addr *,
-					 struct sock *sk);
-	void		(*to_sk_daddr)	(union sctp_addr *,
-					 struct sock *sk);
-	void		(*from_addr_param) (union sctp_addr *,
-=======
 	bool		(*from_addr_param) (union sctp_addr *,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    union sctp_addr_param *,
 					    __be16 port, int iif);
 	int		(*to_addr_param) (const union sctp_addr *,
@@ -838,30 +468,20 @@ struct sctp_af {
 	int		(*addr_valid)	(union sctp_addr *,
 					 struct sctp_sock *,
 					 const struct sk_buff *);
-<<<<<<< HEAD
-	sctp_scope_t	(*scope) (union sctp_addr *);
-=======
 	enum sctp_scope	(*scope)(union sctp_addr *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void		(*inaddr_any)	(union sctp_addr *, __be16);
 	int		(*is_any)	(const union sctp_addr *);
 	int		(*available)	(union sctp_addr *,
 					 struct sctp_sock *);
 	int		(*skb_iif)	(const struct sk_buff *sk);
-<<<<<<< HEAD
-=======
 	int		(*skb_sdif)(const struct sk_buff *sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		(*is_ce)	(const struct sk_buff *sk);
 	void		(*seq_dump_addr)(struct seq_file *seq,
 					 union sctp_addr *addr);
 	void		(*ecn_capable)(struct sock *sk);
 	__u16		net_header_len;
 	int		sockaddr_len;
-<<<<<<< HEAD
-=======
 	int		(*ip_options_len)(struct sock *sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sa_family_t	sa_family;
 	struct list_head list;
 };
@@ -881,17 +501,12 @@ struct sctp_pf {
 	int  (*send_verify) (struct sctp_sock *, union sctp_addr *);
 	int  (*supported_addrs)(const struct sctp_sock *, __be16 *);
 	struct sock *(*create_accept_sk) (struct sock *sk,
-<<<<<<< HEAD
-					  struct sctp_association *asoc);
-	void (*addr_v4map) (struct sctp_sock *, union sctp_addr *);
-=======
 					  struct sctp_association *asoc,
 					  bool kern);
 	int (*addr_to_user)(struct sctp_sock *sk, union sctp_addr *addr);
 	void (*to_sk_saddr)(union sctp_addr *, struct sock *sk);
 	void (*to_sk_daddr)(union sctp_addr *, struct sock *sk);
 	void (*copy_ip_options)(struct sock *sk, struct sock *newsk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_af *af;
 };
 
@@ -903,32 +518,19 @@ struct sctp_datamsg {
 	/* Chunks waiting to be submitted to lower layer. */
 	struct list_head chunks;
 	/* Reference counting. */
-<<<<<<< HEAD
-	atomic_t refcnt;
-=======
 	refcount_t refcnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* When is this message no longer interesting to the peer? */
 	unsigned long expires_at;
 	/* Did the messenge fail to send? */
 	int send_error;
 	u8 send_failed:1,
-<<<<<<< HEAD
-	   can_abandon:1,   /* can chunks from this message can be abandoned. */
-	   can_delay;	    /* should this message be Nagle delayed */
-=======
 	   can_delay:1,	/* should this message be Nagle delayed */
 	   abandoned:1;	/* should this message be abandoned */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sctp_datamsg *sctp_datamsg_from_user(struct sctp_association *,
 					    struct sctp_sndrcvinfo *,
-<<<<<<< HEAD
-					    struct msghdr *, int len);
-=======
 					    struct iov_iter *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sctp_datamsg_free(struct sctp_datamsg *);
 void sctp_datamsg_put(struct sctp_datamsg *);
 void sctp_chunk_fail(struct sctp_chunk *, int error);
@@ -945,12 +547,6 @@ int sctp_chunk_abandoned(struct sctp_chunk *);
 struct sctp_chunk {
 	struct list_head list;
 
-<<<<<<< HEAD
-	atomic_t refcnt;
-
-	/* This is our link to the per-transport transmitted list.  */
-	struct list_head transmitted_list;
-=======
 	refcount_t refcnt;
 
 	/* How many times this chunk have been sent, for prsctp RTX policy */
@@ -962,7 +558,6 @@ struct sctp_chunk {
 		/* List in specific stream outq */
 		struct list_head stream_list;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This field is used by chunks that hold fragmented data.
 	 * For the first fragment this is the list that holds the rest of
@@ -974,8 +569,6 @@ struct sctp_chunk {
 	/* This points to the sk_buff containing the actual data.  */
 	struct sk_buff *skb;
 
-<<<<<<< HEAD
-=======
 	union {
 		/* In case of GSO packets, this will store the head one */
 		struct sk_buff *head_skb;
@@ -983,7 +576,6 @@ struct sctp_chunk {
 		struct sctp_shared_key *shkey;
 	};
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* These are the SCTP headers by reverse order in a packet.
 	 * Note that some of these may happen more than once.  In that
 	 * case, we point at the "current" one, whatever that means
@@ -1007,11 +599,8 @@ struct sctp_chunk {
 		struct sctp_addiphdr *addip_hdr;
 		struct sctp_fwdtsn_hdr *fwdtsn_hdr;
 		struct sctp_authhdr *auth_hdr;
-<<<<<<< HEAD
-=======
 		struct sctp_idatahdr *idata_hdr;
 		struct sctp_ifwdtsn_hdr *ifwdtsn_hdr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} subh;
 
 	__u8 *chunk_end;
@@ -1058,10 +647,7 @@ struct sctp_chunk {
 	__u16	rtt_in_progress:1,	/* This chunk used for RTT calc? */
 		has_tsn:1,		/* Does this chunk have a TSN yet? */
 		has_ssn:1,		/* Does this chunk have a SSN yet? */
-<<<<<<< HEAD
-=======
 #define has_mid has_ssn
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		singleton:1,		/* Only chunk in the packet? */
 		end_of_packet:1,	/* Last chunk in the packet? */
 		ecn_ce_done:1,		/* Have we processed the ECN CE bit? */
@@ -1070,26 +656,11 @@ struct sctp_chunk {
 		data_accepted:1,	/* At least 1 chunk accepted */
 		auth:1,			/* IN: was auth'ed | OUT: needs auth */
 		has_asconf:1,		/* IN: have seen an asconf before */
-<<<<<<< HEAD
-=======
 		pmtu_probe:1,		/* Used by PLPMTUD, can be set in s HB chunk */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tsn_missing_report:2,	/* Data chunk missing counter. */
 		fast_retransmit:2;	/* Is this chunk fast retransmitted? */
 };
 
-<<<<<<< HEAD
-void sctp_chunk_hold(struct sctp_chunk *);
-void sctp_chunk_put(struct sctp_chunk *);
-int sctp_user_addto_chunk(struct sctp_chunk *chunk, int off, int len,
-			  struct iovec *data);
-void sctp_chunk_free(struct sctp_chunk *);
-void  *sctp_addto_chunk(struct sctp_chunk *, int len, const void *data);
-void  *sctp_addto_chunk_fixed(struct sctp_chunk *, int len, const void *data);
-struct sctp_chunk *sctp_chunkify(struct sk_buff *,
-				 const struct sctp_association *,
-				 struct sock *);
-=======
 #define sctp_chunk_retransmitted(chunk)	(chunk->sent_count > 1)
 void sctp_chunk_hold(struct sctp_chunk *);
 void sctp_chunk_put(struct sctp_chunk *);
@@ -1100,19 +671,15 @@ void  *sctp_addto_chunk(struct sctp_chunk *, int len, const void *data);
 struct sctp_chunk *sctp_chunkify(struct sk_buff *,
 				 const struct sctp_association *,
 				 struct sock *, gfp_t gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sctp_init_addrs(struct sctp_chunk *, union sctp_addr *,
 		     union sctp_addr *);
 const union sctp_addr *sctp_source(const struct sctp_chunk *chunk);
 
-<<<<<<< HEAD
-=======
 static inline __u16 sctp_chunk_stream_no(struct sctp_chunk *ch)
 {
 	return ntohs(ch->subh.data_hdr->stream);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	SCTP_ADDR_NEW,		/* new address added to assoc/ep */
 	SCTP_ADDR_SRC,		/* address can be used as source */
@@ -1130,11 +697,6 @@ struct sctp_sockaddr_entry {
 
 #define SCTP_ADDRESS_TICK_DELAY	500
 
-<<<<<<< HEAD
-typedef struct sctp_chunk *(sctp_packet_phandler_t)(struct sctp_association *);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This structure holds lists of chunks as we are assembling for
  * transmission.
  */
@@ -1151,11 +713,8 @@ struct sctp_packet {
 	size_t overhead;
 	/* This is the total size of all chunks INCLUDING padding.  */
 	size_t size;
-<<<<<<< HEAD
-=======
 	/* This is the maximum size this packet may have */
 	size_t max_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The packet is destined for this transport address.
 	 * The function we finally use to pass down to the next lower
@@ -1170,21 +729,6 @@ struct sctp_packet {
 	    has_sack:1,		/* This packet contains a SACK chunk. */
 	    has_auth:1,		/* This packet contains an AUTH chunk */
 	    has_data:1,		/* This packet contains at least 1 DATA chunk */
-<<<<<<< HEAD
-	    ipfragok:1,		/* So let ip fragment this packet */
-	    malloced:1;		/* Is it malloced? */
-};
-
-struct sctp_packet *sctp_packet_init(struct sctp_packet *,
-				     struct sctp_transport *,
-				     __u16 sport, __u16 dport);
-struct sctp_packet *sctp_packet_config(struct sctp_packet *, __u32 vtag, int);
-sctp_xmit_t sctp_packet_transmit_chunk(struct sctp_packet *,
-                                       struct sctp_chunk *, int);
-sctp_xmit_t sctp_packet_append_chunk(struct sctp_packet *,
-                                     struct sctp_chunk *);
-int sctp_packet_transmit(struct sctp_packet *);
-=======
 	    ipfragok:1;		/* So let ip fragment this packet */
 };
 
@@ -1197,7 +741,6 @@ enum sctp_xmit sctp_packet_transmit_chunk(struct sctp_packet *packet,
 enum sctp_xmit sctp_packet_append_chunk(struct sctp_packet *packet,
 					struct sctp_chunk *chunk);
 int sctp_packet_transmit(struct sctp_packet *, gfp_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sctp_packet_free(struct sctp_packet *);
 
 static inline int sctp_packet_empty(struct sctp_packet *packet)
@@ -1228,17 +771,10 @@ static inline int sctp_packet_empty(struct sctp_packet *packet)
 struct sctp_transport {
 	/* A list of transports. */
 	struct list_head transports;
-<<<<<<< HEAD
-
-	/* Reference counting. */
-	atomic_t refcnt;
-	__u32	 dead:1,
-=======
 	struct rhlist_head node;
 
 	/* Reference counting. */
 	refcount_t refcnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* RTO-Pending : A flag used to track if one of the DATA
 		 *		chunks sent to this address is currently being
 		 *		used to compute a RTT. If this flag is 0,
@@ -1248,11 +784,7 @@ struct sctp_transport {
 		 *		calculation completes (i.e. the DATA chunk
 		 *		is SACK'd) clear this flag.
 		 */
-<<<<<<< HEAD
-		 rto_pending:1,
-=======
 	__u32	rto_pending:1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * hb_sent : a flag that signals that we have a pending
@@ -1263,16 +795,11 @@ struct sctp_transport {
 		/* Is the Path MTU update pending on this tranport */
 		pmtu_pending:1,
 
-<<<<<<< HEAD
-		/* Is this structure kfree()able? */
-		malloced:1;
-=======
 		dst_pending_confirm:1,	/* need to confirm neighbour */
 
 		/* Has this transport moved the ctsn since we last sacked */
 		sack_generation:1;
 	u32 dst_cookie;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct flowi fl;
 
@@ -1332,21 +859,12 @@ struct sctp_transport {
 	 * the destination address every heartbeat interval.
 	 */
 	unsigned long hbinterval;
-<<<<<<< HEAD
-=======
 	unsigned long probe_interval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SACK delay timeout */
 	unsigned long sackdelay;
 	__u32 sackfreq;
 
-<<<<<<< HEAD
-	/* When was the last time (in jiffies) that we heard from this
-	 * transport?  We use this to pick new active and retran paths.
-	 */
-	unsigned long last_time_heard;
-=======
 	atomic_t mtu_info;
 
 	/* When was the last time that we heard from this transport? We use
@@ -1358,21 +876,12 @@ struct sctp_transport {
 	 * transport? We use this to check for idle transports
 	 */
 	unsigned long last_time_sent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Last time(in jiffies) when cwnd is reduced due to the congestion
 	 * indication based on ECNE chunk.
 	 */
 	unsigned long last_time_ecne_reduced;
 
-<<<<<<< HEAD
-	/* This is the max_retrans value for the transport and will
-	 * be initialized from the assocs value.  This can be changed
-	 * using SCTP_SET_PEER_ADDR_PARAMS socket option.
-	 */
-	__u16 pathmaxrxt;
-
-=======
 	__be16 encap_port;
 
 	/* This is the max_retrans value for the transport and will
@@ -1391,7 +900,6 @@ struct sctp_transport {
 	__u16 pf_retrans;
 	/* Used for primary path switchover. */
 	__u16 ps_retrans;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* PMTU	      : The current known path MTU.  */
 	__u32 pathmtu;
 
@@ -1425,15 +933,12 @@ struct sctp_transport {
 	/* Timer to handle ICMP proto unreachable envets */
 	struct timer_list proto_unreach_timer;
 
-<<<<<<< HEAD
-=======
 	/* Timer to handler reconf chunk rtx */
 	struct timer_list reconf_timer;
 
 	/* Timer to send a probe HB packet for PLPMTUD */
 	struct timer_list probe_timer;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Since we're using per-destination retransmission timers
 	 * (see above), we're also using per-destination "transmitted"
 	 * queues.  This probably ought to be a private struct
@@ -1476,13 +981,6 @@ struct sctp_transport {
 		char cacc_saw_newack;
 	} cacc;
 
-<<<<<<< HEAD
-	/* 64-bit random number sent with heartbeat. */
-	__u64 hb_nonce;
-};
-
-struct sctp_transport *sctp_transport_new(const union sctp_addr *,
-=======
 	struct {
 		__u16 pmtu;
 		__u16 probe_size;
@@ -1498,7 +996,6 @@ struct sctp_transport *sctp_transport_new(const union sctp_addr *,
 };
 
 struct sctp_transport *sctp_transport_new(struct net *, const union sctp_addr *,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  gfp_t);
 void sctp_transport_set_owner(struct sctp_transport *,
 			      struct sctp_association *);
@@ -1506,20 +1003,6 @@ void sctp_transport_route(struct sctp_transport *, union sctp_addr *,
 			  struct sctp_sock *);
 void sctp_transport_pmtu(struct sctp_transport *, struct sock *sk);
 void sctp_transport_free(struct sctp_transport *);
-<<<<<<< HEAD
-void sctp_transport_reset_timers(struct sctp_transport *);
-void sctp_transport_hold(struct sctp_transport *);
-void sctp_transport_put(struct sctp_transport *);
-void sctp_transport_update_rto(struct sctp_transport *, __u32);
-void sctp_transport_raise_cwnd(struct sctp_transport *, __u32, __u32);
-void sctp_transport_lower_cwnd(struct sctp_transport *, sctp_lower_cwnd_t);
-void sctp_transport_burst_limited(struct sctp_transport *);
-void sctp_transport_burst_reset(struct sctp_transport *);
-unsigned long sctp_transport_timeout(struct sctp_transport *);
-void sctp_transport_reset(struct sctp_transport *);
-void sctp_transport_update_pmtu(struct sctp_transport *, u32);
-void sctp_transport_immediate_rtx(struct sctp_transport *);
-=======
 void sctp_transport_reset_t3_rtx(struct sctp_transport *);
 void sctp_transport_reset_hb_timer(struct sctp_transport *);
 void sctp_transport_reset_reconf_timer(struct sctp_transport *transport);
@@ -1541,7 +1024,6 @@ void sctp_transport_dst_release(struct sctp_transport *t);
 void sctp_transport_dst_confirm(struct sctp_transport *t);
 void sctp_transport_pl_send(struct sctp_transport *t);
 bool sctp_transport_pl_recv(struct sctp_transport *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* This is the structure we use to queue packets as they come into
@@ -1561,11 +1043,6 @@ struct sctp_inq {
 	 * messages.
 	 */
 	struct work_struct immediate;
-<<<<<<< HEAD
-
-	int malloced;	     /* Is this structure kfree()able?	*/
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void sctp_inq_init(struct sctp_inq *);
@@ -1600,12 +1077,6 @@ struct sctp_outq {
 	/* Data pending that has never been transmitted.  */
 	struct list_head out_chunk_list;
 
-<<<<<<< HEAD
-	unsigned out_qlen;	/* Total length of queued data chunks. */
-
-	/* Error of send failed, may used in SCTP_SEND_FAILED event. */
-	unsigned error;
-=======
 	/* Stream scheduler being used */
 	struct sctp_sched_ops *sched;
 
@@ -1613,7 +1084,6 @@ struct sctp_outq {
 
 	/* Error of send failed, may used in SCTP_SEND_FAILED event. */
 	unsigned int error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* These are control chunks we want to send.  */
 	struct list_head control_chunk_list;
@@ -1641,31 +1111,11 @@ struct sctp_outq {
 
 	/* Corked? */
 	char cork;
-<<<<<<< HEAD
-
-	/* Is this structure empty?  */
-	char empty;
-
-	/* Are we kfree()able? */
-	char malloced;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void sctp_outq_init(struct sctp_association *, struct sctp_outq *);
 void sctp_outq_teardown(struct sctp_outq *);
 void sctp_outq_free(struct sctp_outq*);
-<<<<<<< HEAD
-int sctp_outq_tail(struct sctp_outq *, struct sctp_chunk *chunk);
-int sctp_outq_sack(struct sctp_outq *, struct sctp_sackhdr *);
-int sctp_outq_is_empty(const struct sctp_outq *);
-void sctp_outq_restart(struct sctp_outq *);
-
-void sctp_retransmit(struct sctp_outq *, struct sctp_transport *,
-		     sctp_retransmit_reason_t);
-void sctp_retransmit_mark(struct sctp_outq *, struct sctp_transport *, __u8);
-int sctp_outq_uncork(struct sctp_outq *);
-=======
 void sctp_outq_tail(struct sctp_outq *, struct sctp_chunk *chunk, gfp_t);
 int sctp_outq_sack(struct sctp_outq *, struct sctp_chunk *);
 int sctp_outq_is_empty(const struct sctp_outq *);
@@ -1676,15 +1126,12 @@ void sctp_outq_uncork(struct sctp_outq *, gfp_t gfp);
 void sctp_prsctp_prune(struct sctp_association *asoc,
 		       struct sctp_sndrcvinfo *sinfo, int msg_len);
 void sctp_generate_fwdtsn(struct sctp_outq *q, __u32 sack_ctsn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Uncork and flush an outqueue.  */
 static inline void sctp_outq_cork(struct sctp_outq *q)
 {
 	q->cork = 1;
 }
 
-<<<<<<< HEAD
-=======
 /* SCTP skb control block.
  * sctp_input_cb is currently used on rx and sock rx queue
  */
@@ -1713,7 +1160,6 @@ static inline const struct sk_buff *sctp_gso_headskb(const struct sk_buff *skb)
 	return chunk->head_skb ? : skb;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* These bind address data fields common between endpoints and associations */
 struct sctp_bind_addr {
 
@@ -1731,34 +1177,19 @@ struct sctp_bind_addr {
 	 *	peer(s) in INIT and INIT ACK chunks.
 	 */
 	struct list_head address_list;
-<<<<<<< HEAD
-
-	int malloced;	     /* Are we kfree()able?  */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void sctp_bind_addr_init(struct sctp_bind_addr *, __u16 port);
 void sctp_bind_addr_free(struct sctp_bind_addr *);
-<<<<<<< HEAD
-int sctp_bind_addr_copy(struct sctp_bind_addr *dest,
-			const struct sctp_bind_addr *src,
-			sctp_scope_t scope, gfp_t gfp,
-=======
 int sctp_bind_addr_copy(struct net *net, struct sctp_bind_addr *dest,
 			const struct sctp_bind_addr *src,
 			enum sctp_scope scope, gfp_t gfp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int flags);
 int sctp_bind_addr_dup(struct sctp_bind_addr *dest,
 			const struct sctp_bind_addr *src,
 			gfp_t gfp);
 int sctp_add_bind_addr(struct sctp_bind_addr *, union sctp_addr *,
-<<<<<<< HEAD
-		       __u8 addr_state, gfp_t gfp);
-=======
 		       int new_size, __u8 addr_state, gfp_t gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sctp_del_bind_addr(struct sctp_bind_addr *, union sctp_addr *);
 int sctp_bind_addr_match(struct sctp_bind_addr *, const union sctp_addr *,
 			 struct sctp_sock *);
@@ -1766,11 +1197,8 @@ int sctp_bind_addr_conflict(struct sctp_bind_addr *, const union sctp_addr *,
 			 struct sctp_sock *, struct sctp_sock *);
 int sctp_bind_addr_state(const struct sctp_bind_addr *bp,
 			 const union sctp_addr *addr);
-<<<<<<< HEAD
-=======
 int sctp_bind_addrs_check(struct sctp_sock *sp,
 			  struct sctp_sock *sp2, int cnt2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 union sctp_addr *sctp_find_unmatch_addr(struct sctp_bind_addr	*bp,
 					const union sctp_addr	*addrs,
 					int			addrcnt,
@@ -1781,32 +1209,18 @@ union sctp_params sctp_bind_addrs_to_raw(const struct sctp_bind_addr *bp,
 int sctp_raw_to_bind_addrs(struct sctp_bind_addr *bp, __u8 *raw, int len,
 			   __u16 port, gfp_t gfp);
 
-<<<<<<< HEAD
-sctp_scope_t sctp_scope(const union sctp_addr *);
-int sctp_in_scope(const union sctp_addr *addr, const sctp_scope_t scope);
-int sctp_is_any(struct sock *sk, const union sctp_addr *addr);
-int sctp_addr_is_valid(const union sctp_addr *addr);
-=======
 enum sctp_scope sctp_scope(const union sctp_addr *addr);
 int sctp_in_scope(struct net *net, const union sctp_addr *addr,
 		  const enum sctp_scope scope);
 int sctp_is_any(struct sock *sk, const union sctp_addr *addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sctp_is_ep_boundall(struct sock *sk);
 
 
 /* What type of endpoint?  */
-<<<<<<< HEAD
-typedef enum {
-	SCTP_EP_TYPE_SOCKET,
-	SCTP_EP_TYPE_ASSOCIATION,
-} sctp_endpoint_type_t;
-=======
 enum sctp_endpoint_type {
 	SCTP_EP_TYPE_SOCKET,
 	SCTP_EP_TYPE_ASSOCIATION,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * A common base class to bridge the implmentation view of a
@@ -1825,42 +1239,22 @@ enum sctp_endpoint_type {
  */
 
 struct sctp_ep_common {
-<<<<<<< HEAD
-	/* Fields to help us manage our entries in the hash tables. */
-	struct hlist_node node;
-	int hashent;
-
-	/* Runtime type information.  What kind of endpoint is this? */
-	sctp_endpoint_type_t type;
-=======
 	/* Runtime type information.  What kind of endpoint is this? */
 	enum sctp_endpoint_type type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Some fields to help us manage this object.
 	 *   refcnt   - Reference count access to this object.
 	 *   dead     - Do not attempt to use this object.
-<<<<<<< HEAD
-	 *   malloced - Do we need to kfree this object?
-	 */
-	atomic_t    refcnt;
-	char	    dead;
-	char	    malloced;
-=======
 	 */
 	refcount_t    refcnt;
 	bool	    dead;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* What socket does this endpoint belong to?  */
 	struct sock *sk;
 
-<<<<<<< HEAD
-=======
 	/* Cache netns and it won't change once set */
 	struct net *net;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* This is where we receive inbound chunks.  */
 	struct sctp_inq	  inqueue;
 
@@ -1896,13 +1290,10 @@ struct sctp_endpoint {
 	/* Common substructure for endpoint and association. */
 	struct sctp_ep_common base;
 
-<<<<<<< HEAD
-=======
 	/* Fields to help us manage our entries in the hash tables. */
 	struct hlist_node node;
 	int hashent;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Associations: A list of current associations and mappings
 	 *	      to the data consumers for each association. This
 	 *	      may be in the form of a hash table or other
@@ -1921,14 +1312,7 @@ struct sctp_endpoint {
 	 *	      Discussion in [RFC1750] can be helpful in
 	 *	      selection of the key.
 	 */
-<<<<<<< HEAD
-	__u8 secret_key[SCTP_HOW_MANY_SECRETS][SCTP_SECRET_SIZE];
-	int current_key;
-	int last_key;
-	int key_changed_at;
-=======
 	__u8 secret_key[SCTP_SECRET_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  	/* digest:  This is a digest of the sctp cookie.  This field is
  	 * 	    only used on the receive path when we try to validate
@@ -1947,11 +1331,7 @@ struct sctp_endpoint {
 	/* SCTP AUTH: array of the HMACs that will be allocated
 	 * we need this per association so that we don't serialize
 	 */
-<<<<<<< HEAD
-	struct crypto_hash **auth_hmacs;
-=======
 	struct crypto_shash **auth_hmacs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SCTP-AUTH: hmacs for the endpoint encoded into parameter */
 	 struct sctp_hmac_algo_param *auth_hmacs_list;
@@ -1962,8 +1342,6 @@ struct sctp_endpoint {
 	/* SCTP-AUTH: endpoint shared keys */
 	struct list_head endpoint_shared_keys;
 	__u16 active_key_id;
-<<<<<<< HEAD
-=======
 	__u8  ecn_enable:1,
 	      auth_enable:1,
 	      intl_enable:1,
@@ -1973,7 +1351,6 @@ struct sctp_endpoint {
 
 	__u8  strreset_enable;
 	struct rcu_head rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Recover the outter endpoint structure. */
@@ -1989,31 +1366,12 @@ static inline struct sctp_endpoint *sctp_ep(struct sctp_ep_common *base)
 struct sctp_endpoint *sctp_endpoint_new(struct sock *, gfp_t);
 void sctp_endpoint_free(struct sctp_endpoint *);
 void sctp_endpoint_put(struct sctp_endpoint *);
-<<<<<<< HEAD
-void sctp_endpoint_hold(struct sctp_endpoint *);
-=======
 int sctp_endpoint_hold(struct sctp_endpoint *ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sctp_endpoint_add_asoc(struct sctp_endpoint *, struct sctp_association *);
 struct sctp_association *sctp_endpoint_lookup_assoc(
 	const struct sctp_endpoint *ep,
 	const union sctp_addr *paddr,
 	struct sctp_transport **);
-<<<<<<< HEAD
-int sctp_endpoint_is_peeled_off(struct sctp_endpoint *,
-				const union sctp_addr *);
-struct sctp_endpoint *sctp_endpoint_is_match(struct sctp_endpoint *,
-					const union sctp_addr *);
-int sctp_has_association(const union sctp_addr *laddr,
-			 const union sctp_addr *paddr);
-
-int sctp_verify_init(const struct sctp_association *asoc, sctp_cid_t,
-		     sctp_init_chunk_t *peer_init, struct sctp_chunk *chunk,
-		     struct sctp_chunk **err_chunk);
-int sctp_process_init(struct sctp_association *, struct sctp_chunk *chunk,
-		      const union sctp_addr *peer,
-		      sctp_init_chunk_t *init, gfp_t gfp);
-=======
 bool sctp_endpoint_is_peeled_off(struct sctp_endpoint *ep,
 				 const union sctp_addr *paddr);
 struct sctp_endpoint *sctp_endpoint_is_match(struct sctp_endpoint *ep,
@@ -2030,7 +1388,6 @@ int sctp_verify_init(struct net *net, const struct sctp_endpoint *ep,
 int sctp_process_init(struct sctp_association *, struct sctp_chunk *chunk,
 		      const union sctp_addr *peer,
 		      struct sctp_init_chunk *init, gfp_t gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __u32 sctp_generate_tag(const struct sctp_endpoint *);
 __u32 sctp_generate_tsn(const struct sctp_endpoint *);
 
@@ -2042,8 +1399,6 @@ struct sctp_inithdr_host {
 	__u32 initial_tsn;
 };
 
-<<<<<<< HEAD
-=======
 struct sctp_stream_priorities {
 	/* List of priorities scheduled */
 	struct list_head prio_sched;
@@ -2201,7 +1556,6 @@ struct sctp_priv_assoc_stats {
 	__u64 ictrlchunks;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* RFC2960
  *
  * 12. Recommended Transmission Control Block (TCB) Parameters
@@ -2238,15 +1592,6 @@ struct sctp_association {
 
 	/* This is all information about our peer.  */
 	struct {
-<<<<<<< HEAD
-		/* rwnd
-		 *
-		 * Peer Rwnd   : Current calculated value of the peer's rwnd.
-		 */
-		__u32 rwnd;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* transport_addr_list
 		 *
 		 * Peer	       : A list of SCTP transport addresses that the
@@ -2264,15 +1609,12 @@ struct sctp_association {
 		 */
 		struct list_head transport_addr_list;
 
-<<<<<<< HEAD
-=======
 		/* rwnd
 		 *
 		 * Peer Rwnd   : Current calculated value of the peer's rwnd.
 		 */
 		__u32 rwnd;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* transport_count
 		 *
 		 * Peer        : A count of the number of peer addresses
@@ -2355,44 +1697,11 @@ struct sctp_association {
 		 */
 		struct sctp_tsnmap tsn_map;
 
-<<<<<<< HEAD
-		/* Ack State   : This flag indicates if the next received
-		 *             : packet is to be responded to with a
-		 *             : SACK. This is initializedto 0.  When a packet
-		 *             : is received it is incremented. If this value
-		 *             : reaches 2 or more, a SACK is sent and the
-		 *             : value is reset to 0. Note: This is used only
-		 *             : when no DATA chunks are received out of
-		 *             : order.  When DATA chunks are out of order,
-		 *             : SACK's are not delayed (see Section 6).
-		 */
-		__u8    sack_needed:1,     /* Do we need to sack the peer? */
-			zero_window_announced:1;
-		__u32	sack_cnt;
-
-		/* These are capabilities which our peer advertised.  */
-		__u8	ecn_capable:1,	    /* Can peer do ECN? */
-			ipv4_address:1,	    /* Peer understands IPv4 addresses? */
-			ipv6_address:1,	    /* Peer understands IPv6 addresses? */
-			hostname_address:1, /* Peer understands DNS addresses? */
-			asconf_capable:1,   /* Does peer support ADDIP? */
-			prsctp_capable:1,   /* Can peer do PR-SCTP? */
-			auth_capable:1;	    /* Is peer doing SCTP-AUTH? */
-
-		__u32   adaptation_ind;	 /* Adaptation Code point. */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* This mask is used to disable sending the ASCONF chunk
 		 * with specified parameter to peer.
 		 */
 		__be16 addip_disabled_mask;
 
-<<<<<<< HEAD
-		struct sctp_inithdr_host i;
-		int cookie_len;
-		void *cookie;
-=======
 		/* These are capabilities which our peer advertised.  */
 		__u16	ecn_capable:1,      /* Can peer do ECN? */
 			ipv4_address:1,     /* Peer understands IPv4 addresses? */
@@ -2424,7 +1733,6 @@ struct sctp_association {
 		struct sctp_inithdr_host i;
 		void *cookie;
 		int cookie_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* ADDIP Section 4.2 Upon reception of an ASCONF Chunk.
 		 * C1) ... "Peer-Serial-Number'. This value MUST be initialized to the
@@ -2436,15 +1744,9 @@ struct sctp_association {
 		 * and authenticated chunk list.  All that is part of the
 		 * cookie and these are just pointers to those locations
 		 */
-<<<<<<< HEAD
-		sctp_random_param_t *peer_random;
-		sctp_chunks_param_t *peer_chunks;
-		sctp_hmac_algo_param_t *peer_hmacs;
-=======
 		struct sctp_random_param *peer_random;
 		struct sctp_chunks_param *peer_chunks;
 		struct sctp_hmac_algo_param *peer_hmacs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} peer;
 
 	/* State       : A state variable indicating what state the
@@ -2460,26 +1762,16 @@ struct sctp_association {
 	 *
 	 *		State takes values from SCTP_STATE_*.
 	 */
-<<<<<<< HEAD
-	sctp_state_t state;
-
-	/* The cookie life I award for any cookie.  */
-	struct timeval cookie_life;
-=======
 	enum sctp_state state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Overall     : The overall association error count.
 	 * Error Count : [Clear this any time I get something.]
 	 */
 	int overall_error_count;
 
-<<<<<<< HEAD
-=======
 	/* The cookie life I award for any cookie.  */
 	ktime_t cookie_life;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* These are the association's initial, max, and min RTO values.
 	 * These values will be initialized by system defaults, but can
 	 * be modified via the SCTP_RTOINFO socket option.
@@ -2492,17 +1784,11 @@ struct sctp_association {
 	int max_burst;
 
 	/* This is the max_retrans value for the association.  This value will
-<<<<<<< HEAD
-	 * be initialized initialized from system defaults, but can be
-=======
 	 * be initialized from system defaults, but can be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * modified by the SCTP_ASSOCINFO socket option.
 	 */
 	int max_retrans;
 
-<<<<<<< HEAD
-=======
 	/* This is the partially failed retrans value for the transport
 	 * and will be initialized from the assocs value.  This can be
 	 * changed using the SCTP_PEER_ADDR_THLDS socket option
@@ -2511,7 +1797,6 @@ struct sctp_association {
 	/* Used for primary path switchover. */
 	__u16 ps_retrans;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Maximum number of times the endpoint will retransmit INIT  */
 	__u16 max_init_attempts;
 
@@ -2526,24 +1811,18 @@ struct sctp_association {
 	 * will be inherited by all new transports.
 	 */
 	unsigned long hbinterval;
-<<<<<<< HEAD
-=======
 	unsigned long probe_interval;
 
 	__be16 encap_port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This is the max_retrans value for new transports in the
 	 * association.
 	 */
 	__u16 pathmaxrxt;
 
-<<<<<<< HEAD
-=======
 	__u32 flowlabel;
 	__u8  dscp;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Flag that path mtu update is pending */
 	__u8   pmtu_pending;
 
@@ -2555,16 +1834,9 @@ struct sctp_association {
 	/* Flags controlling Heartbeat, SACK delay, and Path MTU Discovery. */
 	__u32 param_flags;
 
-<<<<<<< HEAD
-	/* SACK delay timeout */
-	unsigned long sackdelay;
-	__u32 sackfreq;
-
-=======
 	__u32 sackfreq;
 	/* SACK delay timeout */
 	unsigned long sackdelay;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long timeouts[SCTP_NUM_TIMEOUT_TYPES];
 	struct timer_list timers[SCTP_NUM_TIMEOUT_TYPES];
@@ -2572,21 +1844,12 @@ struct sctp_association {
 	/* Transport to which SHUTDOWN chunk was last sent.  */
 	struct sctp_transport *shutdown_last_sent_to;
 
-<<<<<<< HEAD
-	/* How many times have we resent a SHUTDOWN */
-	int shutdown_retries;
-
-	/* Transport to which INIT chunk was last sent.  */
-	struct sctp_transport *init_last_sent_to;
-
-=======
 	/* Transport to which INIT chunk was last sent.  */
 	struct sctp_transport *init_last_sent_to;
 
 	/* How many times have we resent a SHUTDOWN */
 	int shutdown_retries;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Next TSN    : The next TSN number to be assigned to a new
 	 *	       : DATA chunk.  This is sent in the INIT or INIT
 	 *	       : ACK chunk to the peer and incremented each
@@ -2684,13 +1947,8 @@ struct sctp_association {
 	/* Default receive parameters */
 	__u32 default_rcv_context;
 
-<<<<<<< HEAD
-	/* This tracks outbound ssn for a given stream.	 */
-	struct sctp_ssnmap *ssnmap;
-=======
 	/* Stream arrays */
 	struct sctp_stream stream;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* All outbound chunks go through this structure.  */
 	struct sctp_outq outqueue;
@@ -2709,15 +1967,6 @@ struct sctp_association {
 	/* How many duplicated TSNs have we seen?  */
 	int numduptsns;
 
-<<<<<<< HEAD
-	/* Number of seconds of idle time before an association is closed.
-	 * In the association context, this is really used as a boolean
-	 * since the real timeout is stored in the timeouts array
-	 */
-	__u32 autoclose;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* These are to support
 	 * "SCTP Extensions for Dynamic Reconfiguration of IP Addresses
 	 *  and Enforcement of Flow and Message Limits"
@@ -2805,13 +2054,8 @@ struct sctp_association {
 	 * after reaching 4294967295.
 	 */
 	__u32 addip_serial;
-<<<<<<< HEAD
-	union sctp_addr *asconf_addr_del_pending;
-	int src_out_of_asoc_ok;
-=======
 	int src_out_of_asoc_ok;
 	union sctp_addr *asconf_addr_del_pending;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_transport *new_transport;
 
 	/* SCTP AUTH: list of the endpoint shared keys.  These
@@ -2824,10 +2068,7 @@ struct sctp_association {
 	 * The current generated assocaition shared key (secret)
 	 */
 	struct sctp_auth_bytes *asoc_shared_key;
-<<<<<<< HEAD
-=======
 	struct sctp_shared_key *shkey;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SCTP AUTH: hmac id of the first peer requested algorithm
 	 * that we support.
@@ -2837,9 +2078,6 @@ struct sctp_association {
 	__u16 active_key_id;
 
 	__u8 need_ecne:1,	/* Need to send an ECNE Chunk? */
-<<<<<<< HEAD
-	     temp:1;		/* Is it a temporary association? */
-=======
 	     temp:1,		/* Is it a temporary association? */
 	     pf_expose:2,       /* Expose pf state? */
 	     force_delay:1;
@@ -2873,7 +2111,6 @@ struct sctp_association {
 	u32 peer_secid;
 
 	struct rcu_head rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -2897,13 +2134,8 @@ static inline struct sctp_association *sctp_assoc(struct sctp_ep_common *base)
 
 
 struct sctp_association *
-<<<<<<< HEAD
-sctp_association_new(const struct sctp_endpoint *, const struct sock *,
-		     sctp_scope_t scope, gfp_t gfp);
-=======
 sctp_association_new(const struct sctp_endpoint *ep, const struct sock *sk,
 		     enum sctp_scope scope, gfp_t gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sctp_association_free(struct sctp_association *);
 void sctp_association_put(struct sctp_association *);
 void sctp_association_hold(struct sctp_association *);
@@ -2923,24 +2155,6 @@ void sctp_assoc_del_peer(struct sctp_association *asoc,
 			 const union sctp_addr *addr);
 void sctp_assoc_rm_peer(struct sctp_association *asoc,
 			 struct sctp_transport *peer);
-<<<<<<< HEAD
-void sctp_assoc_control_transport(struct sctp_association *,
-				  struct sctp_transport *,
-				  sctp_transport_cmd_t, sctp_sn_error_t);
-struct sctp_transport *sctp_assoc_lookup_tsn(struct sctp_association *, __u32);
-struct sctp_transport *sctp_assoc_is_match(struct sctp_association *,
-					   const union sctp_addr *,
-					   const union sctp_addr *);
-void sctp_assoc_migrate(struct sctp_association *, struct sock *);
-void sctp_assoc_update(struct sctp_association *old,
-		       struct sctp_association *new);
-
-__u32 sctp_association_get_next_tsn(struct sctp_association *);
-
-void sctp_assoc_sync_pmtu(struct sctp_association *);
-void sctp_assoc_rwnd_increase(struct sctp_association *, unsigned);
-void sctp_assoc_rwnd_decrease(struct sctp_association *, unsigned);
-=======
 void sctp_assoc_control_transport(struct sctp_association *asoc,
 				  struct sctp_transport *transport,
 				  enum sctp_transport_cmd command,
@@ -2957,18 +2171,12 @@ void sctp_assoc_set_pmtu(struct sctp_association *asoc, __u32 pmtu);
 void sctp_assoc_sync_pmtu(struct sctp_association *asoc);
 void sctp_assoc_rwnd_increase(struct sctp_association *, unsigned int);
 void sctp_assoc_rwnd_decrease(struct sctp_association *, unsigned int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sctp_assoc_set_primary(struct sctp_association *,
 			    struct sctp_transport *);
 void sctp_assoc_del_nonprimary_peers(struct sctp_association *,
 				    struct sctp_transport *);
-<<<<<<< HEAD
-int sctp_assoc_set_bind_addr_from_ep(struct sctp_association *,
-				     sctp_scope_t, gfp_t);
-=======
 int sctp_assoc_set_bind_addr_from_ep(struct sctp_association *asoc,
 				     enum sctp_scope scope, gfp_t gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sctp_assoc_set_bind_addr_from_cookie(struct sctp_association *,
 					 struct sctp_cookie*,
 					 gfp_t gfp);
@@ -2984,18 +2192,6 @@ int sctp_cmp_addr_exact(const union sctp_addr *ss1,
 struct sctp_chunk *sctp_get_ecne_prepend(struct sctp_association *asoc);
 
 /* A convenience structure to parse out SCTP specific CMSGs. */
-<<<<<<< HEAD
-typedef struct sctp_cmsgs {
-	struct sctp_initmsg *init;
-	struct sctp_sndrcvinfo *info;
-} sctp_cmsgs_t;
-
-/* Structure for tracking memory objects */
-typedef struct {
-	char *label;
-	atomic_t *counter;
-} sctp_dbg_objcnt_entry_t;
-=======
 struct sctp_cmsgs {
 	struct sctp_initmsg *init;
 	struct sctp_sndrcvinfo *srinfo;
@@ -3010,6 +2206,5 @@ struct sctp_dbg_objcnt_entry {
 	char *label;
 	atomic_t *counter;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __sctp_structs_h__ */

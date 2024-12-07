@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-/*
- * General MIPS MT support routines, usable in AP/SP, SMVP, or SMTC kernels
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * General MIPS MT support routines, usable in AP/SP and SMVP.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2005 Mips Technologies, Inc
  */
 #include <linux/cpu.h>
@@ -15,18 +10,12 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <linux/security.h>
-#include <linux/types.h>
-#include <asm/uaccess.h>
-=======
 #include <linux/sched/task.h>
 #include <linux/cred.h>
 #include <linux/security.h>
 #include <linux/types.h>
 #include <linux/uaccess.h>
 #include <asm/syscalls.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * CPU mask used to set process affinity for MT VPEs/TCs with FPUs
@@ -42,20 +31,12 @@ unsigned long mt_fpemul_threshold;
  * FPU affinity with the user's requested processor affinity.
  * This code is 98% identical with the sys_sched_setaffinity()
  * and sys_sched_getaffinity() system calls, and should be
-<<<<<<< HEAD
- * updated when kernel/sched.c changes.
-=======
  * updated when kernel/sched/core.c changes.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * find_process_by_pid - find a process with a matching PID value.
-<<<<<<< HEAD
- * used in sys_sched_set/getaffinity() in kernel/sched.c, so
-=======
  * used in sys_sched_set/getaffinity() in kernel/sched/core.c, so
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * cloned here.
  */
 static inline struct task_struct *find_process_by_pid(pid_t pid)
@@ -73,13 +54,8 @@ static bool check_same_owner(struct task_struct *p)
 
 	rcu_read_lock();
 	pcred = __task_cred(p);
-<<<<<<< HEAD
-	match = (cred->euid == pcred->euid ||
-		 cred->euid == pcred->uid);
-=======
 	match = (uid_eq(cred->euid, pcred->euid) ||
 		 uid_eq(cred->euid, pcred->uid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 	return match;
 }
@@ -101,21 +77,13 @@ asmlinkage long mipsmt_sys_sched_setaffinity(pid_t pid, unsigned int len,
 	if (copy_from_user(&new_mask, user_mask_ptr, sizeof(new_mask)))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	get_online_cpus();
-=======
 	cpus_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_lock();
 
 	p = find_process_by_pid(pid);
 	if (!p) {
 		rcu_read_unlock();
-<<<<<<< HEAD
-		put_online_cpus();
-=======
 		cpus_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ESRCH;
 	}
 
@@ -135,16 +103,10 @@ asmlinkage long mipsmt_sys_sched_setaffinity(pid_t pid, unsigned int len,
 		retval = -ENOMEM;
 		goto out_free_new_mask;
 	}
-<<<<<<< HEAD
-	retval = -EPERM;
-	if (!check_same_owner(p) && !capable(CAP_SYS_NICE))
-		goto out_unlock;
-=======
 	if (!check_same_owner(p) && !capable(CAP_SYS_NICE)) {
 		retval = -EPERM;
 		goto out_unlock;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = security_task_setscheduler(p);
 	if (retval)
@@ -157,13 +119,8 @@ asmlinkage long mipsmt_sys_sched_setaffinity(pid_t pid, unsigned int len,
 	/* Compute new global allowed CPU set if necessary */
 	ti = task_thread_info(p);
 	if (test_ti_thread_flag(ti, TIF_FPUBOUND) &&
-<<<<<<< HEAD
-	    cpus_intersects(*new_mask, mt_fpu_cpumask)) {
-		cpus_and(*effective_mask, *new_mask, mt_fpu_cpumask);
-=======
 	    cpumask_intersects(new_mask, &mt_fpu_cpumask)) {
 		cpumask_and(effective_mask, new_mask, &mt_fpu_cpumask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = set_cpus_allowed_ptr(p, effective_mask);
 	} else {
 		cpumask_copy(effective_mask, new_mask);
@@ -191,11 +148,7 @@ out_free_cpus_allowed:
 	free_cpumask_var(cpus_allowed);
 out_put_task:
 	put_task_struct(p);
-<<<<<<< HEAD
-	put_online_cpus();
-=======
 	cpus_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -214,13 +167,8 @@ asmlinkage long mipsmt_sys_sched_getaffinity(pid_t pid, unsigned int len,
 	if (len < real_len)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	get_online_cpus();
-	read_lock(&tasklist_lock);
-=======
 	cpus_read_lock();
 	rcu_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = -ESRCH;
 	p = find_process_by_pid(pid);
@@ -230,21 +178,12 @@ asmlinkage long mipsmt_sys_sched_getaffinity(pid_t pid, unsigned int len,
 	if (retval)
 		goto out_unlock;
 
-<<<<<<< HEAD
-	cpumask_or(&allowed, &p->thread.user_cpus_allowed, &p->cpus_allowed);
-	cpumask_and(&mask, &allowed, cpu_active_mask);
-
-out_unlock:
-	read_unlock(&tasklist_lock);
-	put_online_cpus();
-=======
 	cpumask_or(&allowed, &p->thread.user_cpus_allowed, p->cpus_ptr);
 	cpumask_and(&mask, &allowed, cpu_active_mask);
 
 out_unlock:
 	rcu_read_unlock();
 	cpus_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		return retval;
 	if (copy_to_user(user_mask_ptr, &mask, real_len))

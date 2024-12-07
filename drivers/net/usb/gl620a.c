@@ -1,38 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * GeneSys GL620USB-A based links
  * Copyright (C) 2001 by Jiun-Jie Huang <huangjj@genesyslogic.com.tw>
  * Copyright (C) 2001 by Stanislav Brabec <utx@penguin.cz>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 // #define	DEBUG			// error path messages, extra info
 // #define	VERBOSE			// more; success messages
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -80,11 +56,7 @@
 
 struct gl_packet {
 	__le32		packet_length;
-<<<<<<< HEAD
-	char		packet_data [1];
-=======
 	char		packet_data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct gl_header {
@@ -109,13 +81,9 @@ static int genelink_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 	// get the packet count of the received skb
 	count = le32_to_cpu(header->packet_count);
 	if (count > GL_MAX_TRANSMIT_PACKETS) {
-<<<<<<< HEAD
-		dbg("genelink: invalid received packet count %u", count);
-=======
 		netdev_dbg(dev->net,
 			   "genelink: invalid received packet count %u\n",
 			   count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -131,12 +99,8 @@ static int genelink_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 
 		// this may be a broken packet
 		if (size > GL_MAX_PACKET_LEN) {
-<<<<<<< HEAD
-			dbg("genelink: invalid rx length %d", size);
-=======
 			netdev_dbg(dev->net, "genelink: invalid rx length %d\n",
 				   size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 
@@ -145,12 +109,7 @@ static int genelink_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 		if (gl_skb) {
 
 			// copy the packet data to the new skb
-<<<<<<< HEAD
-			memcpy(skb_put(gl_skb, size),
-					packet->packet_data, size);
-=======
 			skb_put_data(gl_skb, packet->packet_data, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			usbnet_skb_return(dev, gl_skb);
 		}
 
@@ -166,12 +125,8 @@ static int genelink_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 	skb_pull(skb, 4);
 
 	if (skb->len > GL_MAX_PACKET_LEN) {
-<<<<<<< HEAD
-		dbg("genelink: invalid rx length %d", skb->len);
-=======
 		netdev_dbg(dev->net, "genelink: invalid rx length %d\n",
 			   skb->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	return 1;
@@ -207,11 +162,7 @@ genelink_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags)
 	}
 
 	// attach the packet count to the header
-<<<<<<< HEAD
-	packet_count = (__le32 *) skb_push(skb, (4 + 4*1));
-=======
 	packet_count = skb_push(skb, (4 + 4 * 1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	packet_len = packet_count + 1;
 
 	*packet_count = cpu_to_le32(1);
@@ -267,10 +218,7 @@ static struct usb_driver gl620a_driver = {
 	.disconnect =	usbnet_disconnect,
 	.suspend =	usbnet_suspend,
 	.resume =	usbnet_resume,
-<<<<<<< HEAD
-=======
 	.disable_hub_initiated_lpm = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(gl620a_driver);

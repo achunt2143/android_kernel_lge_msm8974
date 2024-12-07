@@ -17,21 +17,12 @@
 #include <asm/pdc.h>
 	
 #include <asm/assembly.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-
-#include <linux/linkage.h>
-#include <linux/init.h>
-
-	.level	LEVEL
-=======
 
 #include <linux/linkage.h>
 #include <linux/init.h>
 #include <linux/pgtable.h>
 
 	.level	1.1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__INITDATA
 ENTRY(boot_args)
@@ -44,24 +35,14 @@ END(boot_args)
 	__HEAD
 
 	.align	4
-<<<<<<< HEAD
-	.import init_thread_union,data
-=======
 	.import init_task,data
 	.import init_stack,data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.import fault_vector_20,code    /* IVA parisc 2.0 32 bit */
 #ifndef CONFIG_64BIT
         .import fault_vector_11,code    /* IVA parisc 1.1 32 bit */
 	.import	$global$		/* forward declaration */
 #endif /*!CONFIG_64BIT*/
-<<<<<<< HEAD
-	.export _stext,data		/* Kernel want it this way! */
-_stext:
-ENTRY(stext)
-=======
 ENTRY(parisc_kernel_start)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.proc
 	.callinfo
 
@@ -89,9 +70,6 @@ $bss_loop:
 	stw,ma          %arg2,4(%r1)
 	stw,ma          %arg3,4(%r1)
 
-<<<<<<< HEAD
-	/* Initialize startup VM. Just map first 8/16 MB of memory */
-=======
 #if defined(CONFIG_PA20)
 	/* check for 64-bit capable CPU as required by current kernel */
 	ldi		32,%r10
@@ -133,16 +111,11 @@ $cpu_ok:
 	.level	PA_ASM_LEVEL
 
 	/* Initialize startup VM. Just map first 16/32 MB of memory */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	load32		PA(swapper_pg_dir),%r4
 	mtctl		%r4,%cr24	/* Initialize kernel root pointer */
 	mtctl		%r4,%cr25	/* Initialize user root pointer */
 
-<<<<<<< HEAD
-#if PT_NLEVELS == 3
-=======
 #if CONFIG_PGTABLE_LEVELS == 3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set pmd in pgd */
 	load32		PA(pmd0),%r5
 	shrd            %r5,PxD_VALUE_SHIFT,%r3	
@@ -165,11 +138,7 @@ $cpu_ok:
 	stw		%r3,0(%r4)
 	ldo		(PAGE_SIZE >> PxD_VALUE_SHIFT)(%r3),%r3
 	addib,>		-1,%r1,1b
-<<<<<<< HEAD
-#if PT_NLEVELS == 3
-=======
 #if CONFIG_PGTABLE_LEVELS == 3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldo             ASM_PMD_ENTRY_SIZE(%r4),%r4
 #else
 	ldo             ASM_PGD_ENTRY_SIZE(%r4),%r4
@@ -179,11 +148,7 @@ $cpu_ok:
 	/* Now initialize the PTEs themselves.  We use RWX for
 	 * everything ... it will get remapped correctly later */
 	ldo		0+_PAGE_KERNEL_RWX(%r0),%r3 /* Hardwired 0 phys addr start */
-<<<<<<< HEAD
-	ldi		(1<<(KERNEL_INITIAL_ORDER-PAGE_SHIFT)),%r11 /* PFN count */
-=======
 	load32		(1<<(KERNEL_INITIAL_ORDER-PAGE_SHIFT)),%r11 /* PFN count */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	load32		PA(pg0),%r1
 
 $pgt_fill_loop:
@@ -199,13 +164,6 @@ $pgt_fill_loop:
 	load32		start_parisc,%r11
 
 	/* And the initial task pointer */
-<<<<<<< HEAD
-	load32		init_thread_union,%r6
-	mtctl           %r6,%cr30
-
-	/* And the stack pointer too */
-	ldo             THREAD_SZ_ALGN(%r6),%sp
-=======
 	load32		init_task,%r6
 	mtctl           %r6,%cr30
 
@@ -230,7 +188,6 @@ $pgt_fill_loop:
 	depd            %r10, 31, 32, %r3        /* move to upper word */
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 	/* Set the smp rendezvous address into page zero.
@@ -245,8 +202,6 @@ $pgt_fill_loop:
 	/* FALLTHROUGH */
 	.procend
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_HOTPLUG_CPU
 	/* common_stext is far away in another section... jump there */
 	load32		PA(common_stext), %rp
@@ -256,7 +211,6 @@ $pgt_fill_loop:
 	.text
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	** Code Common to both Monarch and Slave processors.
 	** Entry:
@@ -282,20 +236,11 @@ common_stext:
 #endif /*CONFIG_SMP*/
 
 #ifdef CONFIG_64BIT
-<<<<<<< HEAD
-	tophys_r1	%sp
-
-	/* Save the rfi target address */
-	ldd             TI_TASK-THREAD_SZ_ALGN(%sp), %r10
-	tophys_r1       %r10
-	std             %r11,  TASK_PT_GR11(%r10)
-=======
 	mfctl		%cr30,%r6		/* PCX-W2 firmware bug */
 	tophys_r1	%r6
 
 	/* Save the rfi target address */
 	STREG		%r11,  TASK_PT_GR11(%r6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Switch to wide mode Superdome doesn't support narrow PDC
 	** calls.
 	*/
@@ -310,16 +255,6 @@ common_stext:
         ** Someday, palo might not do this for the Monarch either.
         */
 2:
-<<<<<<< HEAD
-#define MEM_PDC_LO 0x388
-#define MEM_PDC_HI 0x35C
-	ldw             MEM_PDC_LO(%r0),%r3
-	ldw             MEM_PDC_HI(%r0),%r6
-	depd            %r6, 31, 32, %r3        /* move to upper word */
-
-	mfctl		%cr30,%r6		/* PCX-W2 firmware bug */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ldo             PDC_PSW(%r0),%arg0              /* 21 */
 	ldo             PDC_PSW_SET_DEFAULTS(%r0),%arg1 /* 2 */
@@ -329,17 +264,6 @@ common_stext:
 	copy            %r0,%arg3
 
 stext_pdc_ret:
-<<<<<<< HEAD
-	mtctl		%r6,%cr30		/* restore task thread info */
-
-	/* restore rfi target address*/
-	ldd             TI_TASK-THREAD_SZ_ALGN(%sp), %r10
-	tophys_r1       %r10
-	ldd             TASK_PT_GR11(%r10), %r11
-	tovirt_r1       %sp
-#endif
-	
-=======
 	LDREG		TASK_PT_GR11(%r6), %r11
 	tovirt_r1	%r6
 	mtctl		%r6,%cr30		/* restore task thread info */
@@ -355,7 +279,6 @@ stext_pdc_ret:
 stext_pdc_btlb_ret:
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* PARANOID: clear user scratch/user space SR's */
 	mtsp	%r0,%sr0
 	mtsp	%r0,%sr1
@@ -389,11 +312,7 @@ stext_pdc_btlb_ret:
 	ldo		R%PA(fault_vector_11)(%r10),%r10
 
 $is_pa20:
-<<<<<<< HEAD
-	.level		LEVEL /* restore 1.1 || 2.0w */
-=======
 	.level		PA_ASM_LEVEL /* restore 1.1 || 2.0w */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /*!CONFIG_64BIT*/
 	load32		PA(fault_vector_20),%r10
 
@@ -407,11 +326,8 @@ $install_iva:
 aligned_rfi:
 	pcxt_ssm_bug
 
-<<<<<<< HEAD
-=======
 	copy		%r3, %arg0	/* PDCE_PROC for smp_callin() */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rsm		PSW_SM_QUIET,%r0	/* off troublesome PSW bits */
 	/* Don't need NOPs, have 8 compliant insn before rfi */
 
@@ -425,13 +341,9 @@ aligned_rfi:
 
 	load32		KERNEL_PSW,%r10
 	mtctl		%r10,%ipsw
-<<<<<<< HEAD
-	
-=======
 
 	tovirt_r1	%sp
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Jump through hyperspace to Virt Mode */
 	rfi
 	nop
@@ -473,15 +385,6 @@ smp_slave_stext:
 	mtsp	   %r0,%sr6
 	mtsp	   %r0,%sr7
 
-<<<<<<< HEAD
-	/*  Initialize the SP - monarch sets up smp_init_current_idle_task */
-	load32		PA(smp_init_current_idle_task),%sp
-	LDREG		0(%sp),%sp	/* load task address */
-	tophys_r1	%sp
-	LDREG		TASK_THREAD_INFO(%sp),%sp
-	mtctl           %sp,%cr30       /* store in cr30 */
-	ldo             THREAD_SZ_ALGN(%sp),%sp
-=======
 #ifdef CONFIG_64BIT
 	/*
 	 *  Enable Wide mode early, in case the task_struct for the idle
@@ -503,7 +406,6 @@ smp_slave_stext:
 	LDREG           TASK_STACK(%r6),%sp
 	tophys_r1	%sp
 	ldo		FRAME_SIZE(%sp),%sp
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* point CPU to kernel page tables */
 	load32		PA(swapper_pg_dir),%r4
@@ -528,15 +430,8 @@ smp_slave_stext:
 	.procend
 #endif /* CONFIG_SMP */
 
-<<<<<<< HEAD
-ENDPROC(stext)
-
-#ifndef CONFIG_64BIT
-	.section .data..read_mostly
-=======
 #ifndef CONFIG_64BIT
 	.section .data..ro_after_init
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.align	4
 	.export	$global$,data

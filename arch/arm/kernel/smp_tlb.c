@@ -1,23 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/smp_tlb.c
  *
  *  Copyright (C) 2002 ARM Limited, All Rights Reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#include <linux/preempt.h>
-#include <linux/smp.h>
-
-#include <asm/smp_plat.h>
-#include <asm/tlbflush.h>
-=======
  */
 #include <linux/preempt.h>
 #include <linux/smp.h>
@@ -26,7 +11,6 @@
 #include <asm/smp_plat.h>
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**********************************************************************/
 
@@ -54,16 +38,11 @@ static inline void ipi_flush_tlb_mm(void *arg)
 static inline void ipi_flush_tlb_page(void *arg)
 {
 	struct tlb_args *ta = (struct tlb_args *)arg;
-<<<<<<< HEAD
-
-	local_flush_tlb_page(ta->ta_vma, ta->ta_start);
-=======
 	unsigned int __ua_flags = uaccess_save_and_enable();
 
 	local_flush_tlb_page(ta->ta_vma, ta->ta_start);
 
 	uaccess_restore(__ua_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ipi_flush_tlb_kernel_page(void *arg)
@@ -76,16 +55,11 @@ static inline void ipi_flush_tlb_kernel_page(void *arg)
 static inline void ipi_flush_tlb_range(void *arg)
 {
 	struct tlb_args *ta = (struct tlb_args *)arg;
-<<<<<<< HEAD
-
-	local_flush_tlb_range(ta->ta_vma, ta->ta_start, ta->ta_end);
-=======
 	unsigned int __ua_flags = uaccess_save_and_enable();
 
 	local_flush_tlb_range(ta->ta_vma, ta->ta_start, ta->ta_end);
 
 	uaccess_restore(__ua_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ipi_flush_tlb_kernel_range(void *arg)
@@ -95,8 +69,6 @@ static inline void ipi_flush_tlb_kernel_range(void *arg)
 	local_flush_tlb_kernel_range(ta->ta_start, ta->ta_end);
 }
 
-<<<<<<< HEAD
-=======
 static inline void ipi_flush_bp_all(void *ignored)
 {
 	local_flush_bp_all();
@@ -203,18 +175,13 @@ static void broadcast_tlb_mm_a15_erratum(struct mm_struct *mm)
 	put_cpu();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void flush_tlb_all(void)
 {
 	if (tlb_ops_need_broadcast())
 		on_each_cpu(ipi_flush_tlb_all, NULL, 1);
 	else
-<<<<<<< HEAD
-		local_flush_tlb_all();
-=======
 		__flush_tlb_all();
 	broadcast_tlb_a15_erratum();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void flush_tlb_mm(struct mm_struct *mm)
@@ -222,12 +189,8 @@ void flush_tlb_mm(struct mm_struct *mm)
 	if (tlb_ops_need_broadcast())
 		on_each_cpu_mask(mm_cpumask(mm), ipi_flush_tlb_mm, mm, 1);
 	else
-<<<<<<< HEAD
-		local_flush_tlb_mm(mm);
-=======
 		__flush_tlb_mm(mm);
 	broadcast_tlb_mm_a15_erratum(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void flush_tlb_page(struct vm_area_struct *vma, unsigned long uaddr)
@@ -239,12 +202,8 @@ void flush_tlb_page(struct vm_area_struct *vma, unsigned long uaddr)
 		on_each_cpu_mask(mm_cpumask(vma->vm_mm), ipi_flush_tlb_page,
 					&ta, 1);
 	} else
-<<<<<<< HEAD
-		local_flush_tlb_page(vma, uaddr);
-=======
 		__flush_tlb_page(vma, uaddr);
 	broadcast_tlb_mm_a15_erratum(vma->vm_mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void flush_tlb_kernel_page(unsigned long kaddr)
@@ -254,12 +213,8 @@ void flush_tlb_kernel_page(unsigned long kaddr)
 		ta.ta_start = kaddr;
 		on_each_cpu(ipi_flush_tlb_kernel_page, &ta, 1);
 	} else
-<<<<<<< HEAD
-		local_flush_tlb_kernel_page(kaddr);
-=======
 		__flush_tlb_kernel_page(kaddr);
 	broadcast_tlb_a15_erratum();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void flush_tlb_range(struct vm_area_struct *vma,
@@ -274,10 +229,7 @@ void flush_tlb_range(struct vm_area_struct *vma,
 					&ta, 1);
 	} else
 		local_flush_tlb_range(vma, start, end);
-<<<<<<< HEAD
-=======
 	broadcast_tlb_mm_a15_erratum(vma->vm_mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void flush_tlb_kernel_range(unsigned long start, unsigned long end)
@@ -289,10 +241,6 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
 		on_each_cpu(ipi_flush_tlb_kernel_range, &ta, 1);
 	} else
 		local_flush_tlb_kernel_range(start, end);
-<<<<<<< HEAD
-}
-
-=======
 	broadcast_tlb_a15_erratum();
 }
 
@@ -303,4 +251,3 @@ void flush_bp_all(void)
 	else
 		__flush_bp_all();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

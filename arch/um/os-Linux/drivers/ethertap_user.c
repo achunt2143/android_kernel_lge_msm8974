@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Copyright (C) 2001 Lennert Buytenhek (buytenh@gnu.org) and
  * James Leu (jleu@mindspring.net).
  * Copyright (C) 2001 by various other people who didn't put their name here.
-<<<<<<< HEAD
- * Licensed under the GPL.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdio.h>
@@ -20,15 +13,9 @@
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include "etap.h"
-<<<<<<< HEAD
-#include "os.h"
-#include "net_user.h"
-#include "um_malloc.h"
-=======
 #include <os.h>
 #include <net_user.h>
 #include <um_malloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_PACKET ETH_MAX_PACKET
 
@@ -118,11 +105,7 @@ static int etap_tramp(char *dev, char *gate, int control_me,
 	sprintf(data_fd_buf, "%d", data_remote);
 	sprintf(version_buf, "%d", UML_NET_VERSION);
 	if (gate != NULL) {
-<<<<<<< HEAD
-		strcpy(gate_buf, gate);
-=======
 		strscpy(gate_buf, gate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		args = setup_args;
 	}
 	else args = nosetup_args;

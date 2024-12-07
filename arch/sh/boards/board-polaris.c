@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-/*
- * June 2006 steve.glendinning@smsc.com
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * June 2006 Steve Glendinning <steve.glendinning@shawell.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Polaris-specific resource declaration
  *
@@ -15,11 +10,8 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-=======
 #include <linux/regulator/fixed.h>
 #include <linux/regulator/machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smsc911x.h>
 #include <linux/io.h>
 #include <asm/irq.h>
@@ -33,15 +25,12 @@
 #define AREA5_WAIT_CTRL	(0x1C00)
 #define WAIT_STATES_10	(0x7)
 
-<<<<<<< HEAD
-=======
 /* Dummy supplies, where voltage doesn't matter */
 static struct regulator_consumer_supply dummy_supplies[] = {
 	REGULATOR_SUPPLY("vddvario", "smsc911x.0"),
 	REGULATOR_SUPPLY("vdd33a", "smsc911x.0"),
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource smsc911x_resources[] = {
 	[0] = {
 		.name		= "smsc911x-memory",
@@ -108,11 +97,8 @@ static int __init polaris_initialise(void)
 
 	printk(KERN_INFO "Configuring Polaris external bus\n");
 
-<<<<<<< HEAD
-=======
 	regulator_register_fixed(0, dummy_supplies, ARRAY_SIZE(dummy_supplies));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Configure area 5 with 2 wait states */
 	wcr = __raw_readw(WCR2);
 	wcr &= (~AREA5_WAIT_CTRL);
@@ -166,9 +152,5 @@ static void __init init_polaris_irq(void)
 
 static struct sh_machine_vector mv_polaris __initmv = {
 	.mv_name		= "Polaris",
-<<<<<<< HEAD
-	.mv_nr_irqs		= 61,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mv_init_irq		= init_polaris_irq,
 };

@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-boot/compressed/vmlinux
-tools/test_get_len
-tools/insn_sanity
-
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 boot/compressed/vmlinux
 tools/test_get_len
 tools/insn_sanity
 tools/insn_decoder_test
 purgatory/purgatory.ro
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

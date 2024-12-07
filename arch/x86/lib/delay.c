@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Precise Delay Loops for i386
  *
@@ -15,37 +12,21 @@
  *	we have to worry about.
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/timex.h>
 #include <linux/preempt.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/processor.h>
 #include <asm/delay.h>
 #include <asm/timer.h>
-<<<<<<< HEAD
-=======
 #include <asm/mwait.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 # include <asm/smp.h>
 #endif
 
-<<<<<<< HEAD
-/* simple loop based delay: */
-static void delay_loop(unsigned long loops)
-{
-=======
 static void delay_loop(u64 __loops);
 
 /*
@@ -60,7 +41,6 @@ static void delay_loop(u64 __loops)
 {
 	unsigned long loops = (unsigned long)__loops;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asm volatile(
 		"	test %0,%0	\n"
 		"	jz 3f		\n"
@@ -74,43 +54,23 @@ static void delay_loop(u64 __loops)
 		"	jnz 2b		\n"
 		"3:	dec %0		\n"
 
-<<<<<<< HEAD
-		: /* we don't need output */
-		:"a" (loops)
-=======
 		: "+a" (loops)
 		:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	);
 }
 
 /* TSC based delay: */
-<<<<<<< HEAD
-static void delay_tsc(unsigned long __loops)
-{
-	u32 bclock, now, loops = __loops;
-=======
 static void delay_tsc(u64 cycles)
 {
 	u64 bclock, now;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cpu;
 
 	preempt_disable();
 	cpu = smp_processor_id();
-<<<<<<< HEAD
-	rdtsc_barrier();
-	rdtscl(bclock);
-	for (;;) {
-		rdtsc_barrier();
-		rdtscl(now);
-		if ((now - bclock) >= loops)
-=======
 	bclock = rdtsc_ordered();
 	for (;;) {
 		now = rdtsc_ordered();
 		if ((now - bclock) >= cycles)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		/* Allow RT tasks to run */
@@ -128,38 +88,15 @@ static void delay_tsc(u64 cycles)
 		 * counter for this CPU.
 		 */
 		if (unlikely(cpu != smp_processor_id())) {
-<<<<<<< HEAD
-			loops -= (now - bclock);
-			cpu = smp_processor_id();
-			rdtsc_barrier();
-			rdtscl(bclock);
-=======
 			cycles -= (now - bclock);
 			cpu = smp_processor_id();
 			bclock = rdtsc_ordered();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	preempt_enable();
 }
 
 /*
-<<<<<<< HEAD
- * Since we calibrate only once at boot, this
- * function should be set once at boot and not changed
- */
-static void (*delay_fn)(unsigned long) = delay_loop;
-
-void use_tsc_delay(void)
-{
-	delay_fn = delay_tsc;
-}
-
-int __devinit read_current_timer(unsigned long *timer_val)
-{
-	if (delay_fn == delay_tsc) {
-		rdtscll(*timer_val);
-=======
  * On Intel the TPAUSE instruction waits until any of:
  * 1) the TSC counter exceeds the value provided in EDX:EAX
  * 2) global timeout in IA32_UMWAIT_CONTROL is exceeded
@@ -256,7 +193,6 @@ int read_current_timer(unsigned long *timer_val)
 {
 	if (delay_fn == delay_tsc) {
 		*timer_val = rdtsc();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	return -1;
@@ -268,25 +204,15 @@ void __delay(unsigned long loops)
 }
 EXPORT_SYMBOL(__delay);
 
-<<<<<<< HEAD
-inline void __const_udelay(unsigned long xloops)
-{
-=======
 noinline void __const_udelay(unsigned long xloops)
 {
 	unsigned long lpj = this_cpu_read(cpu_info.loops_per_jiffy) ? : loops_per_jiffy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int d0;
 
 	xloops *= 4;
 	asm("mull %%edx"
 		:"=d" (xloops), "=&a" (d0)
-<<<<<<< HEAD
-		:"1" (xloops), "0"
-		(this_cpu_read(cpu_info.loops_per_jiffy) * (HZ/4)));
-=======
 		:"1" (xloops), "0" (lpj * (HZ / 4)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__delay(++xloops);
 }

@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 2000 Takashi Iwai <tiwai@suse.de>
  *
  *  Routines for control of EMU10K1 WaveTable synth
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "emu10k1_synth_local.h"
@@ -36,21 +16,12 @@ MODULE_LICENSE("GPL");
 /*
  * create a new hardware dependent device for Emu10k1
  */
-<<<<<<< HEAD
-static int snd_emu10k1_synth_new_device(struct snd_seq_device *dev)
-{
-	struct snd_emux *emux;
-	struct snd_emu10k1 *hw;
-	struct snd_emu10k1_synth_arg *arg;
-	unsigned long flags;
-=======
 static int snd_emu10k1_synth_probe(struct device *_dev)
 {
 	struct snd_seq_device *dev = to_seq_dev(_dev);
 	struct snd_emux *emux;
 	struct snd_emu10k1 *hw;
 	struct snd_emu10k1_synth_arg *arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	arg = SNDRV_SEQ_DEVICE_ARGPTR(dev);
 	if (arg == NULL)
@@ -71,10 +42,6 @@ static int snd_emu10k1_synth_probe(struct device *_dev)
 	emux->hw = hw;
 	emux->max_voices = arg->max_voices;
 	emux->num_ports = arg->seq_ports;
-<<<<<<< HEAD
-	emux->pitch_shift = -501;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	emux->memhdr = hw->memhdr;
 	/* maximum two ports */
 	emux->midi_ports = arg->seq_ports < 2 ? arg->seq_ports : 2;
@@ -88,36 +55,21 @@ static int snd_emu10k1_synth_probe(struct device *_dev)
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&hw->voice_lock, flags);
-	hw->synth = emux;
-	hw->get_synth_voice = snd_emu10k1_synth_get_voice;
-	spin_unlock_irqrestore(&hw->voice_lock, flags);
-=======
 	spin_lock_irq(&hw->voice_lock);
 	hw->synth = emux;
 	hw->get_synth_voice = snd_emu10k1_synth_get_voice;
 	spin_unlock_irq(&hw->voice_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->driver_data = emux;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_emu10k1_synth_delete_device(struct snd_seq_device *dev)
-{
-	struct snd_emux *emux;
-	struct snd_emu10k1 *hw;
-	unsigned long flags;
-=======
 static int snd_emu10k1_synth_remove(struct device *_dev)
 {
 	struct snd_seq_device *dev = to_seq_dev(_dev);
 	struct snd_emux *emux;
 	struct snd_emu10k1 *hw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->driver_data == NULL)
 		return 0; /* not registered actually */
@@ -125,17 +77,10 @@ static int snd_emu10k1_synth_remove(struct device *_dev)
 	emux = dev->driver_data;
 
 	hw = emux->hw;
-<<<<<<< HEAD
-	spin_lock_irqsave(&hw->voice_lock, flags);
-	hw->synth = NULL;
-	hw->get_synth_voice = NULL;
-	spin_unlock_irqrestore(&hw->voice_lock, flags);
-=======
 	spin_lock_irq(&hw->voice_lock);
 	hw->synth = NULL;
 	hw->get_synth_voice = NULL;
 	spin_unlock_irq(&hw->voice_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_emux_free(emux);
 	return 0;
@@ -145,26 +90,6 @@ static int snd_emu10k1_synth_remove(struct device *_dev)
  *  INIT part
  */
 
-<<<<<<< HEAD
-static int __init alsa_emu10k1_synth_init(void)
-{
-	
-	static struct snd_seq_dev_ops ops = {
-		snd_emu10k1_synth_new_device,
-		snd_emu10k1_synth_delete_device,
-	};
-	return snd_seq_device_register_driver(SNDRV_SEQ_DEV_ID_EMU10K1_SYNTH, &ops,
-					      sizeof(struct snd_emu10k1_synth_arg));
-}
-
-static void __exit alsa_emu10k1_synth_exit(void)
-{
-	snd_seq_device_unregister_driver(SNDRV_SEQ_DEV_ID_EMU10K1_SYNTH);
-}
-
-module_init(alsa_emu10k1_synth_init)
-module_exit(alsa_emu10k1_synth_exit)
-=======
 static struct snd_seq_driver emu10k1_synth_driver = {
 	.driver = {
 		.name = KBUILD_MODNAME,
@@ -176,4 +101,3 @@ static struct snd_seq_driver emu10k1_synth_driver = {
 };
 
 module_snd_seq_driver(emu10k1_synth_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

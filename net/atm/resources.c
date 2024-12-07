@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* net/atm/resources.c - Statically allocated resources */
 
 /* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
@@ -55,15 +52,8 @@ static struct atm_dev *__alloc_atm_dev(const char *type)
 static struct atm_dev *__atm_dev_lookup(int number)
 {
 	struct atm_dev *dev;
-<<<<<<< HEAD
-	struct list_head *p;
-
-	list_for_each(p, &atm_devs) {
-		dev = list_entry(p, struct atm_dev, dev_list);
-=======
 
 	list_for_each_entry(dev, &atm_devs, dev_list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dev->number == number) {
 			atm_dev_hold(dev);
 			return dev;
@@ -118,11 +108,7 @@ struct atm_dev *atm_dev_register(const char *type, struct device *parent,
 	else
 		memset(&dev->flags, 0, sizeof(dev->flags));
 	memset(&dev->stats, 0, sizeof(dev->stats));
-<<<<<<< HEAD
-	atomic_set(&dev->refcnt, 1);
-=======
 	refcount_set(&dev->refcnt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (atm_proc_dev_register(dev) < 0) {
 		pr_err("atm_proc_dev_register failed for dev %s\n", type);
@@ -205,94 +191,6 @@ static int fetch_stats(struct atm_dev *dev, struct atm_dev_stats __user *arg,
 	return error ? -EFAULT : 0;
 }
 
-<<<<<<< HEAD
-int atm_dev_ioctl(unsigned int cmd, void __user *arg, int compat)
-{
-	void __user *buf;
-	int error, len, number, size = 0;
-	struct atm_dev *dev;
-	struct list_head *p;
-	int *tmp_buf, *tmp_p;
-	int __user *sioc_len;
-	int __user *iobuf_len;
-
-#ifndef CONFIG_COMPAT
-	compat = 0; /* Just so the compiler _knows_ */
-#endif
-
-	switch (cmd) {
-	case ATM_GETNAMES:
-		if (compat) {
-#ifdef CONFIG_COMPAT
-			struct compat_atm_iobuf __user *ciobuf = arg;
-			compat_uptr_t cbuf;
-			iobuf_len = &ciobuf->length;
-			if (get_user(cbuf, &ciobuf->buffer))
-				return -EFAULT;
-			buf = compat_ptr(cbuf);
-#endif
-		} else {
-			struct atm_iobuf __user *iobuf = arg;
-			iobuf_len = &iobuf->length;
-			if (get_user(buf, &iobuf->buffer))
-				return -EFAULT;
-		}
-		if (get_user(len, iobuf_len))
-			return -EFAULT;
-		mutex_lock(&atm_dev_mutex);
-		list_for_each(p, &atm_devs)
-			size += sizeof(int);
-		if (size > len) {
-			mutex_unlock(&atm_dev_mutex);
-			return -E2BIG;
-		}
-		tmp_buf = kmalloc(size, GFP_ATOMIC);
-		if (!tmp_buf) {
-			mutex_unlock(&atm_dev_mutex);
-			return -ENOMEM;
-		}
-		tmp_p = tmp_buf;
-		list_for_each(p, &atm_devs) {
-			dev = list_entry(p, struct atm_dev, dev_list);
-			*tmp_p++ = dev->number;
-		}
-		mutex_unlock(&atm_dev_mutex);
-		error = ((copy_to_user(buf, tmp_buf, size)) ||
-			 put_user(size, iobuf_len))
-			? -EFAULT : 0;
-		kfree(tmp_buf);
-		return error;
-	default:
-		break;
-	}
-
-	if (compat) {
-#ifdef CONFIG_COMPAT
-		struct compat_atmif_sioc __user *csioc = arg;
-		compat_uptr_t carg;
-
-		sioc_len = &csioc->length;
-		if (get_user(carg, &csioc->arg))
-			return -EFAULT;
-		buf = compat_ptr(carg);
-
-		if (get_user(len, &csioc->length))
-			return -EFAULT;
-		if (get_user(number, &csioc->number))
-			return -EFAULT;
-#endif
-	} else {
-		struct atmif_sioc __user *sioc = arg;
-
-		sioc_len = &sioc->length;
-		if (get_user(buf, &sioc->arg))
-			return -EFAULT;
-		if (get_user(len, &sioc->length))
-			return -EFAULT;
-		if (get_user(number, &sioc->number))
-			return -EFAULT;
-	}
-=======
 int atm_getnames(void __user *buf, int __user *iobuf_len)
 {
 	int error, len, size = 0;
@@ -334,7 +232,6 @@ int atm_dev_ioctl(unsigned int cmd, void __user *buf, int __user *sioc_len,
 
 	if (get_user(len, sioc_len))
 		return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = try_then_request_module(atm_dev_lookup(number), "atm-device-%d",
 				      number);
@@ -366,11 +263,7 @@ int atm_dev_ioctl(unsigned int cmd, void __user *buf, int __user *sioc_len,
 				goto done;
 			}
 	}
-<<<<<<< HEAD
-	/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATM_SETESIF:
 	{
 		unsigned char esi[ESI_LEN];
@@ -392,11 +285,7 @@ int atm_dev_ioctl(unsigned int cmd, void __user *buf, int __user *sioc_len,
 			error = -EPERM;
 			goto done;
 		}
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATM_GETSTAT:
 		size = sizeof(struct atm_dev_stats);
 		error = fetch_stats(dev, buf, cmd == ATM_GETSTATZ);
@@ -469,11 +358,7 @@ int atm_dev_ioctl(unsigned int cmd, void __user *buf, int __user *sioc_len,
 			error = -EINVAL;
 			goto done;
 		}
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATM_SETCIRANGE:
 	case SONET_GETSTATZ:
 	case SONET_SETDIAG:
@@ -483,15 +368,9 @@ int atm_dev_ioctl(unsigned int cmd, void __user *buf, int __user *sioc_len,
 			error = -EPERM;
 			goto done;
 		}
-<<<<<<< HEAD
-		/* fall through */
-	default:
-		if (compat) {
-=======
 		fallthrough;
 	default:
 		if (IS_ENABLED(CONFIG_COMPAT) && compat) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_COMPAT
 			if (!dev->ops->compat_ioctl) {
 				error = -EINVAL;
@@ -507,11 +386,7 @@ int atm_dev_ioctl(unsigned int cmd, void __user *buf, int __user *sioc_len,
 			size = dev->ops->ioctl(dev, cmd, buf);
 		}
 		if (size < 0) {
-<<<<<<< HEAD
-			error = (size == -ENOIOCTLCMD ? -EINVAL : size);
-=======
 			error = (size == -ENOIOCTLCMD ? -ENOTTY : size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto done;
 		}
 	}
@@ -525,10 +400,7 @@ done:
 	return error;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void *atm_dev_seq_start(struct seq_file *seq, loff_t *pos)
 {
 	mutex_lock(&atm_dev_mutex);
@@ -544,7 +416,4 @@ void *atm_dev_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 {
 	return seq_list_next(v, &atm_devs, pos);
 }
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

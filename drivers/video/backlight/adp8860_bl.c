@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Backlight driver for Analog Devices ADP8860 Backlight Devices
  *
  * Copyright 2009-2010 Analog Devices Inc.
-<<<<<<< HEAD
- *
- * Licensed under the GPL-2 or later.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -25,11 +17,7 @@
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 
-<<<<<<< HEAD
-#include <linux/i2c/adp8860.h>
-=======
 #include <linux/platform_data/adp8860.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ADP8860_EXT_FEATURES
 #define ADP8860_USE_LEDS
 
@@ -192,10 +180,7 @@ static int adp8860_clr_bits(struct i2c_client *client, int reg, uint8_t bit_mask
 static void adp8860_led_work(struct work_struct *work)
 {
 	struct adp8860_led *led = container_of(work, struct adp8860_led, work);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adp8860_write(led->client, ADP8860_ISC1 - led->id + 1,
 			 led->new_brightness >> 1);
 }
@@ -228,34 +213,19 @@ static int adp8860_led_setup(struct adp8860_led *led)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devinit adp8860_led_probe(struct i2c_client *client)
-{
-	struct adp8860_backlight_platform_data *pdata =
-		client->dev.platform_data;
-=======
 static int adp8860_led_probe(struct i2c_client *client)
 {
 	struct adp8860_backlight_platform_data *pdata =
 		dev_get_platdata(&client->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct adp8860_bl *data = i2c_get_clientdata(client);
 	struct adp8860_led *led, *led_dat;
 	struct led_info *cur_led;
 	int ret, i;
 
-<<<<<<< HEAD
-	led = kzalloc(sizeof(*led) * pdata->num_leds, GFP_KERNEL);
-	if (led == NULL) {
-		dev_err(&client->dev, "failed to alloc memory\n");
-		return -ENOMEM;
-	}
-=======
 	led = devm_kcalloc(&client->dev, pdata->num_leds, sizeof(*led),
 				GFP_KERNEL);
 	if (led == NULL)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = adp8860_write(client, ADP8860_ISCFR, pdata->led_fade_law);
 	ret = adp8860_write(client, ADP8860_ISCT1,
@@ -265,11 +235,7 @@ static int adp8860_led_probe(struct i2c_client *client)
 
 	if (ret) {
 		dev_err(&client->dev, "failed to write\n");
-<<<<<<< HEAD
-		goto err_free;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < pdata->num_leds; ++i) {
@@ -281,20 +247,14 @@ static int adp8860_led_probe(struct i2c_client *client)
 		if (led_dat->id > 7 || led_dat->id < 1) {
 			dev_err(&client->dev, "Invalid LED ID %d\n",
 				led_dat->id);
-<<<<<<< HEAD
-=======
 			ret = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err;
 		}
 
 		if (pdata->bl_led_assign & (1 << (led_dat->id - 1))) {
 			dev_err(&client->dev, "LED %d used by Backlight\n",
 				led_dat->id);
-<<<<<<< HEAD
-=======
 			ret = -EBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err;
 		}
 
@@ -332,18 +292,6 @@ static int adp8860_led_probe(struct i2c_client *client)
 		cancel_work_sync(&led[i].work);
 	}
 
-<<<<<<< HEAD
- err_free:
-	kfree(led);
-
-	return ret;
-}
-
-static int __devexit adp8860_led_remove(struct i2c_client *client)
-{
-	struct adp8860_backlight_platform_data *pdata =
-		client->dev.platform_data;
-=======
 	return ret;
 }
 
@@ -351,7 +299,6 @@ static int adp8860_led_remove(struct i2c_client *client)
 {
 	struct adp8860_backlight_platform_data *pdata =
 		dev_get_platdata(&client->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct adp8860_bl *data = i2c_get_clientdata(client);
 	int i;
 
@@ -360,27 +307,15 @@ static int adp8860_led_remove(struct i2c_client *client)
 		cancel_work_sync(&data->led[i].work);
 	}
 
-<<<<<<< HEAD
-	kfree(data->led);
-	return 0;
-}
-#else
-static int __devinit adp8860_led_probe(struct i2c_client *client)
-=======
 	return 0;
 }
 #else
 static int adp8860_led_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit adp8860_led_remove(struct i2c_client *client)
-=======
 static int adp8860_led_remove(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
@@ -426,18 +361,7 @@ static int adp8860_bl_set(struct backlight_device *bl, int brightness)
 
 static int adp8860_bl_update_status(struct backlight_device *bl)
 {
-<<<<<<< HEAD
-	int brightness = bl->props.brightness;
-	if (bl->props.power != FB_BLANK_UNBLANK)
-		brightness = 0;
-
-	if (bl->props.fb_blank != FB_BLANK_UNBLANK)
-		brightness = 0;
-
-	return adp8860_bl_set(bl, brightness);
-=======
 	return adp8860_bl_set(bl, backlight_get_brightness(bl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int adp8860_bl_get_brightness(struct backlight_device *bl)
@@ -517,11 +441,7 @@ static ssize_t adp8860_store(struct device *dev, const char *buf,
 	unsigned long val;
 	int ret;
 
-<<<<<<< HEAD
-	ret = strict_strtoul(buf, 10, &val);
-=======
 	ret = kstrtoul(buf, 10, &val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -571,12 +491,8 @@ static ssize_t adp8860_bl_l1_daylight_max_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct adp8860_bl *data = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	int ret = strict_strtoul(buf, 10, &data->cached_daylight_max);
-=======
 	int ret = kstrtoul(buf, 10, &data->cached_daylight_max);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -641,13 +557,6 @@ static ssize_t adp8860_bl_ambient_light_level_show(struct device *dev,
 
 	mutex_lock(&data->lock);
 	error = adp8860_read(data->client, ADP8860_PH1LEVL, &reg_val);
-<<<<<<< HEAD
-	ret_val = reg_val;
-	error |= adp8860_read(data->client, ADP8860_PH1LEVH, &reg_val);
-	mutex_unlock(&data->lock);
-
-	if (error < 0)
-=======
 	if (!error) {
 		ret_val = reg_val;
 		error = adp8860_read(data->client, ADP8860_PH1LEVH, &reg_val);
@@ -655,7 +564,6 @@ static ssize_t adp8860_bl_ambient_light_level_show(struct device *dev,
 	mutex_unlock(&data->lock);
 
 	if (error)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return error;
 
 	/* Return 13-bit conversion value for the first light sensor */
@@ -693,11 +601,7 @@ static ssize_t adp8860_bl_ambient_light_zone_store(struct device *dev,
 	uint8_t reg_val;
 	int ret;
 
-<<<<<<< HEAD
-	ret = strict_strtoul(buf, 10, &val);
-=======
 	ret = kstrtoul(buf, 10, &val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -710,19 +614,12 @@ static ssize_t adp8860_bl_ambient_light_zone_store(struct device *dev,
 
 		/* Set user supplied ambient light zone */
 		mutex_lock(&data->lock);
-<<<<<<< HEAD
-		adp8860_read(data->client, ADP8860_CFGR, &reg_val);
-		reg_val &= ~(CFGR_BLV_MASK << CFGR_BLV_SHIFT);
-		reg_val |= (val - 1) << CFGR_BLV_SHIFT;
-		adp8860_write(data->client, ADP8860_CFGR, reg_val);
-=======
 		ret = adp8860_read(data->client, ADP8860_CFGR, &reg_val);
 		if (!ret) {
 			reg_val &= ~(CFGR_BLV_MASK << CFGR_BLV_SHIFT);
 			reg_val |= (val - 1) << CFGR_BLV_SHIFT;
 			adp8860_write(data->client, ADP8860_CFGR, reg_val);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&data->lock);
 	}
 
@@ -751,15 +648,6 @@ static const struct attribute_group adp8860_bl_attr_group = {
 	.attrs = adp8860_bl_attributes,
 };
 
-<<<<<<< HEAD
-static int __devinit adp8860_probe(struct i2c_client *client,
-					const struct i2c_device_id *id)
-{
-	struct backlight_device *bl;
-	struct adp8860_bl *data;
-	struct adp8860_backlight_platform_data *pdata =
-		client->dev.platform_data;
-=======
 static int adp8860_probe(struct i2c_client *client)
 {
 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
@@ -767,7 +655,6 @@ static int adp8860_probe(struct i2c_client *client)
 	struct adp8860_bl *data;
 	struct adp8860_backlight_platform_data *pdata =
 		dev_get_platdata(&client->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct backlight_properties props;
 	uint8_t reg_val;
 	int ret;
@@ -783,29 +670,18 @@ static int adp8860_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	data = kzalloc(sizeof(*data), GFP_KERNEL);
-=======
 	data = devm_kzalloc(&client->dev, sizeof(*data), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data == NULL)
 		return -ENOMEM;
 
 	ret = adp8860_read(client, ADP8860_MFDVID, &reg_val);
 	if (ret < 0)
-<<<<<<< HEAD
-		goto out2;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (ADP8860_MANID(reg_val)) {
 	case ADP8863_MANUFID:
 		data->gdwn_dis = !!pdata->gdwn_dis;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ADP8860_MANUFID:
 		data->en_ambl_sens = !!pdata->en_ambl_sens;
 		break;
@@ -814,12 +690,7 @@ static int adp8860_probe(struct i2c_client *client)
 		break;
 	default:
 		dev_err(&client->dev, "failed to probe\n");
-<<<<<<< HEAD
-		ret = -ENODEV;
-		goto out2;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* It's confirmed that the DEVID field is actually a REVID */
@@ -837,21 +708,12 @@ static int adp8860_probe(struct i2c_client *client)
 
 	mutex_init(&data->lock);
 
-<<<<<<< HEAD
-	bl = backlight_device_register(dev_driver_string(&client->dev),
-			&client->dev, data, &adp8860_bl_ops, &props);
-	if (IS_ERR(bl)) {
-		dev_err(&client->dev, "failed to register backlight\n");
-		ret = PTR_ERR(bl);
-		goto out2;
-=======
 	bl = devm_backlight_device_register(&client->dev,
 				dev_driver_string(&client->dev),
 				&client->dev, data, &adp8860_bl_ops, &props);
 	if (IS_ERR(bl)) {
 		dev_err(&client->dev, "failed to register backlight\n");
 		return PTR_ERR(bl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	bl->props.brightness = ADP8860_MAX_BRIGHTNESS;
@@ -864,11 +726,7 @@ static int adp8860_probe(struct i2c_client *client)
 
 	if (ret) {
 		dev_err(&client->dev, "failed to register sysfs\n");
-<<<<<<< HEAD
-		goto out1;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = adp8860_bl_setup(bl);
@@ -891,22 +749,11 @@ out:
 	if (data->en_ambl_sens)
 		sysfs_remove_group(&data->bl->dev.kobj,
 			&adp8860_bl_attr_group);
-<<<<<<< HEAD
-out1:
-	backlight_device_unregister(bl);
-out2:
-	kfree(data);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit adp8860_remove(struct i2c_client *client)
-=======
 static void adp8860_remove(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adp8860_bl *data = i2c_get_clientdata(client);
 
@@ -918,18 +765,6 @@ static void adp8860_remove(struct i2c_client *client)
 	if (data->en_ambl_sens)
 		sysfs_remove_group(&data->bl->dev.kobj,
 			&adp8860_bl_attr_group);
-<<<<<<< HEAD
-
-	backlight_device_unregister(data->bl);
-	kfree(data);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-static int adp8860_i2c_suspend(struct i2c_client *client, pm_message_t message)
-{
-=======
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -937,38 +772,24 @@ static int adp8860_i2c_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adp8860_clr_bits(client, ADP8860_MDCR, NSTBY);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int adp8860_i2c_resume(struct i2c_client *client)
-{
-=======
 static int adp8860_i2c_resume(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adp8860_set_bits(client, ADP8860_MDCR, NSTBY | BLEN);
 
 	return 0;
 }
-<<<<<<< HEAD
-#else
-#define adp8860_i2c_suspend NULL
-#define adp8860_i2c_resume NULL
-#endif
-
-=======
 #endif
 
 static SIMPLE_DEV_PM_OPS(adp8860_i2c_pm_ops, adp8860_i2c_suspend,
 			adp8860_i2c_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id adp8860_id[] = {
 	{ "adp8860", adp8860 },
 	{ "adp8861", adp8861 },
@@ -979,31 +800,16 @@ MODULE_DEVICE_TABLE(i2c, adp8860_id);
 
 static struct i2c_driver adp8860_driver = {
 	.driver = {
-<<<<<<< HEAD
-		.name = KBUILD_MODNAME,
-	},
-	.probe    = adp8860_probe,
-	.remove   = __devexit_p(adp8860_remove),
-	.suspend = adp8860_i2c_suspend,
-	.resume  = adp8860_i2c_resume,
-=======
 		.name	= KBUILD_MODNAME,
 		.pm	= &adp8860_i2c_pm_ops,
 	},
 	.probe = adp8860_probe,
 	.remove = adp8860_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = adp8860_id,
 };
 
 module_i2c_driver(adp8860_driver);
 
 MODULE_LICENSE("GPL v2");
-<<<<<<< HEAD
-MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
-MODULE_DESCRIPTION("ADP8860 Backlight driver");
-MODULE_ALIAS("i2c:adp8860-backlight");
-=======
 MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
 MODULE_DESCRIPTION("ADP8860 Backlight driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

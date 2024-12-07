@@ -48,11 +48,8 @@
  * grant operation.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 #include <linux/module.h>
 #include <linux/miscdevice.h>
@@ -127,16 +124,6 @@ static int add_grefs(struct ioctl_gntalloc_alloc_gref *op,
 	int i, rc, readonly;
 	LIST_HEAD(queue_gref);
 	LIST_HEAD(queue_file);
-<<<<<<< HEAD
-	struct gntalloc_gref *gref;
-
-	readonly = !(op->flags & GNTALLOC_FLAG_WRITABLE);
-	rc = -ENOMEM;
-	for (i = 0; i < op->count; i++) {
-		gref = kzalloc(sizeof(*gref), GFP_KERNEL);
-		if (!gref)
-			goto undo;
-=======
 	struct gntalloc_gref *gref, *next;
 
 	readonly = !(op->flags & GNTALLOC_FLAG_WRITABLE);
@@ -146,25 +133,11 @@ static int add_grefs(struct ioctl_gntalloc_alloc_gref *op,
 			rc = -ENOMEM;
 			goto undo;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&gref->next_gref, &queue_gref);
 		list_add_tail(&gref->next_file, &queue_file);
 		gref->users = 1;
 		gref->file_index = op->index + i * PAGE_SIZE;
 		gref->page = alloc_page(GFP_KERNEL|__GFP_ZERO);
-<<<<<<< HEAD
-		if (!gref->page)
-			goto undo;
-
-		/* Grant foreign access to the page. */
-		gref->gref_id = gnttab_grant_foreign_access(op->domid,
-			pfn_to_mfn(page_to_pfn(gref->page)), readonly);
-		if ((int)gref->gref_id < 0) {
-			rc = gref->gref_id;
-			goto undo;
-		}
-		gref_ids[i] = gref->gref_id;
-=======
 		if (!gref->page) {
 			rc = -ENOMEM;
 			goto undo;
@@ -177,7 +150,6 @@ static int add_grefs(struct ioctl_gntalloc_alloc_gref *op,
 		if (rc < 0)
 			goto undo;
 		gref_ids[i] = gref->gref_id = rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Add to gref lists. */
@@ -192,27 +164,11 @@ undo:
 	mutex_lock(&gref_mutex);
 	gref_size -= (op->count - i);
 
-<<<<<<< HEAD
-	list_for_each_entry(gref, &queue_file, next_file) {
-		/* __del_gref does not remove from queue_file */
-		__del_gref(gref);
-	}
-
-	/* It's possible for the target domain to map the just-allocated grant
-	 * references by blindly guessing their IDs; if this is done, then
-	 * __del_gref will leave them in the queue_gref list. They need to be
-	 * added to the global list so that we can free them when they are no
-	 * longer referenced.
-	 */
-	if (unlikely(!list_empty(&queue_gref)))
-		list_splice_tail(&queue_gref, &gref_list);
-=======
 	list_for_each_entry_safe(gref, next, &queue_file, next_file) {
 		list_del(&gref->next_file);
 		__del_gref(gref);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&gref_mutex);
 	return rc;
 }
@@ -220,15 +176,9 @@ undo:
 static void __del_gref(struct gntalloc_gref *gref)
 {
 	if (gref->notify.flags & UNMAP_NOTIFY_CLEAR_BYTE) {
-<<<<<<< HEAD
-		uint8_t *tmp = kmap(gref->page);
-		tmp[gref->notify.pgoff] = 0;
-		kunmap(gref->page);
-=======
 		uint8_t *tmp = kmap_local_page(gref->page);
 		tmp[gref->notify.pgoff] = 0;
 		kunmap_local(tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (gref->notify.flags & UNMAP_NOTIFY_SEND_EVENT) {
 		notify_remote_via_evtchn(gref->notify.event);
@@ -237,33 +187,16 @@ static void __del_gref(struct gntalloc_gref *gref)
 
 	gref->notify.flags = 0;
 
-<<<<<<< HEAD
-	if (gref->gref_id > 0) {
-		if (gnttab_query_foreign_access(gref->gref_id))
-			return;
-
-		if (!gnttab_end_foreign_access_ref(gref->gref_id, 0))
-			return;
-
-		gnttab_free_grant_reference(gref->gref_id);
-=======
 	if (gref->gref_id) {
 		if (gref->page)
 			gnttab_end_foreign_access(gref->gref_id, gref->page);
 		else
 			gnttab_free_grant_reference(gref->gref_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	gref_size--;
 	list_del(&gref->next_gref);
 
-<<<<<<< HEAD
-	if (gref->page)
-		__free_page(gref->page);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(gref);
 }
 
@@ -347,11 +280,7 @@ static long gntalloc_ioctl_alloc(struct gntalloc_file_private_data *priv,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	gref_ids = kcalloc(op.count, sizeof(gref_ids[0]), GFP_TEMPORARY);
-=======
 	gref_ids = kcalloc(op.count, sizeof(gref_ids[0]), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!gref_ids) {
 		rc = -ENOMEM;
 		goto out;
@@ -388,11 +317,7 @@ static long gntalloc_ioctl_alloc(struct gntalloc_file_private_data *priv,
 		rc = -EFAULT;
 		goto out_free;
 	}
-<<<<<<< HEAD
-	if (copy_to_user(arg->gref_ids, gref_ids,
-=======
 	if (copy_to_user(arg->gref_ids_flex, gref_ids,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(gref_ids[0]) * op.count)) {
 		rc = -EFAULT;
 		goto out_free;
@@ -558,11 +483,7 @@ static void gntalloc_vma_close(struct vm_area_struct *vma)
 	mutex_unlock(&gref_mutex);
 }
 
-<<<<<<< HEAD
-static struct vm_operations_struct gntalloc_vmops = {
-=======
 static const struct vm_operations_struct gntalloc_vmops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = gntalloc_vma_open,
 	.close = gntalloc_vma_close,
 };
@@ -572,19 +493,11 @@ static int gntalloc_mmap(struct file *filp, struct vm_area_struct *vma)
 	struct gntalloc_file_private_data *priv = filp->private_data;
 	struct gntalloc_vma_private_data *vm_priv;
 	struct gntalloc_gref *gref;
-<<<<<<< HEAD
-	int count = (vma->vm_end - vma->vm_start) >> PAGE_SHIFT;
-	int rv, i;
-
-	if (!(vma->vm_flags & VM_SHARED)) {
-		printk(KERN_ERR "%s: Mapping must be shared.\n", __func__);
-=======
 	int count = vma_pages(vma);
 	int rv, i;
 
 	if (!(vma->vm_flags & VM_SHARED)) {
 		pr_err("%s: Mapping must be shared\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -612,11 +525,7 @@ static int gntalloc_mmap(struct file *filp, struct vm_area_struct *vma)
 
 	vma->vm_private_data = vm_priv;
 
-<<<<<<< HEAD
-	vma->vm_flags |= VM_RESERVED | VM_DONTEXPAND;
-=======
 	vm_flags_set(vma, VM_DONTEXPAND | VM_DONTDUMP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vma->vm_ops = &gntalloc_vmops;
 
@@ -665,11 +574,7 @@ static int __init gntalloc_init(void)
 
 	err = misc_register(&gntalloc_miscdev);
 	if (err != 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Could not register misc gntalloc device\n");
-=======
 		pr_err("Could not register misc gntalloc device\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 

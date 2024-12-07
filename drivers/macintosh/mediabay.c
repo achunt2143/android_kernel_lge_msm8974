@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the media bay on the PowerBook 3400 and 2400.
  *
  * Copyright (C) 1998 Paul Mackerras.
  *
  * Various evolutions by Benjamin Herrenschmidt & Henry Worth
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -27,13 +16,8 @@
 #include <linux/init.h>
 #include <linux/kthread.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/pgtable.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
@@ -75,11 +59,7 @@ struct media_bay_info {
 	int				value_count;
 	int				timer;
 	struct macio_dev		*mdev;
-<<<<<<< HEAD
-	struct mb_ops*			ops;
-=======
 	const struct mb_ops*		ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int				index;
 	int				cached_gpio;
 	int				sleeping;
@@ -572,12 +552,8 @@ static int media_bay_task(void *x)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit media_bay_attach(struct macio_dev *mdev, const struct of_device_id *match)
-=======
 static int media_bay_attach(struct macio_dev *mdev,
 			    const struct of_device_id *match)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct media_bay_info* bay;
 	u32 __iomem *regbase;
@@ -690,11 +666,7 @@ static int media_bay_resume(struct macio_dev *mdev)
 
 /* Definitions of "ops" structures.
  */
-<<<<<<< HEAD
-static struct mb_ops ohare_mb_ops = {
-=======
 static const struct mb_ops ohare_mb_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "Ohare",
 	.content	= ohare_mb_content,
 	.power		= ohare_mb_power,
@@ -703,11 +675,7 @@ static const struct mb_ops ohare_mb_ops = {
 	.un_reset_ide	= ohare_mb_un_reset_ide,
 };
 
-<<<<<<< HEAD
-static struct mb_ops heathrow_mb_ops = {
-=======
 static const struct mb_ops heathrow_mb_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "Heathrow",
 	.content	= heathrow_mb_content,
 	.power		= heathrow_mb_power,
@@ -716,11 +684,7 @@ static const struct mb_ops heathrow_mb_ops = {
 	.un_reset_ide	= heathrow_mb_un_reset_ide,
 };
 
-<<<<<<< HEAD
-static struct mb_ops keylargo_mb_ops = {
-=======
 static const struct mb_ops keylargo_mb_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "KeyLargo",
 	.init		= keylargo_mb_init,
 	.content	= keylargo_mb_content,
@@ -739,11 +703,7 @@ static const struct mb_ops keylargo_mb_ops = {
  * Therefore we do it all by polling the media bay once each tick.
  */
 
-<<<<<<< HEAD
-static struct of_device_id media_bay_match[] =
-=======
 static const struct of_device_id media_bay_match[] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{
 	.name		= "media-bay",

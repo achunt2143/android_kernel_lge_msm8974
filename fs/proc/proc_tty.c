@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * proc_tty.c -- handles /proc/tty
  *
  * Copyright 1997, Theodore Ts'o
  */
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/errno.h>
@@ -21,19 +13,12 @@
 #include <linux/tty.h>
 #include <linux/seq_file.h>
 #include <linux/bitops.h>
-<<<<<<< HEAD
-=======
 #include "internal.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The /proc/tty directory inodes...
  */
-<<<<<<< HEAD
-static struct proc_dir_entry *proc_tty_ldisc, *proc_tty_driver;
-=======
 static struct proc_dir_entry *proc_tty_driver;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is the handler for /proc/tty/drivers
@@ -139,21 +124,6 @@ static const struct seq_operations tty_drivers_op = {
 	.show	= show_tty_driver
 };
 
-<<<<<<< HEAD
-static int tty_drivers_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &tty_drivers_op);
-}
-
-static const struct file_operations proc_tty_drivers_operations = {
-	.open		= tty_drivers_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This function is called by tty_register_driver() to handle
  * registering the driver's /proc handler into /proc/tty/driver/<foo>
@@ -163,19 +133,11 @@ void proc_tty_register_driver(struct tty_driver *driver)
 	struct proc_dir_entry *ent;
 		
 	if (!driver->driver_name || driver->proc_entry ||
-<<<<<<< HEAD
-	    !driver->ops->proc_fops)
-		return;
-
-	ent = proc_create_data(driver->driver_name, 0, proc_tty_driver,
-			       driver->ops->proc_fops, driver);
-=======
 	    !driver->ops->proc_show)
 		return;
 
 	ent = proc_create_single_data(driver->driver_name, 0, proc_tty_driver,
 			       driver->ops->proc_show, driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	driver->proc_entry = ent;
 }
 
@@ -190,11 +152,7 @@ void proc_tty_unregister_driver(struct tty_driver *driver)
 	if (!ent)
 		return;
 		
-<<<<<<< HEAD
-	remove_proc_entry(driver->driver_name, proc_tty_driver);
-=======
 	remove_proc_entry(ent->name, proc_tty_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	driver->proc_entry = NULL;
 }
@@ -206,11 +164,7 @@ void __init proc_tty_init(void)
 {
 	if (!proc_mkdir("tty", NULL))
 		return;
-<<<<<<< HEAD
-	proc_tty_ldisc = proc_mkdir("tty/ldisc", NULL);
-=======
 	proc_mkdir("tty/ldisc", NULL);	/* Preserved: it's userspace visible */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * /proc/tty/driver/serial reveals the exact character counts for
 	 * serial links which is just too easy to abuse for inferring
@@ -218,11 +172,6 @@ void __init proc_tty_init(void)
 	 * entry.
 	 */
 	proc_tty_driver = proc_mkdir_mode("tty/driver", S_IRUSR|S_IXUSR, NULL);
-<<<<<<< HEAD
-	proc_create("tty/ldiscs", 0, NULL, &tty_ldiscs_proc_fops);
-	proc_create("tty/drivers", 0, NULL, &proc_tty_drivers_operations);
-=======
 	proc_create_seq("tty/ldiscs", 0, NULL, &tty_ldiscs_seq_ops);
 	proc_create_seq("tty/drivers", 0, NULL, &tty_drivers_op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Roccat driver for Linux
  *
@@ -9,13 +6,6 @@
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -32,11 +22,7 @@
 
 #include <linux/cdev.h>
 #include <linux/poll.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hid-roccat.h>
 #include <linux/module.h>
 
@@ -148,24 +134,14 @@ exit_unlock:
 	return retval;
 }
 
-<<<<<<< HEAD
-static unsigned int roccat_poll(struct file *file, poll_table *wait)
-=======
 static __poll_t roccat_poll(struct file *file, poll_table *wait)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct roccat_reader *reader = file->private_data;
 	poll_wait(file, &reader->device->wait, wait);
 	if (reader->cbuf_start != reader->device->cbuf_end)
-<<<<<<< HEAD
-		return POLLIN | POLLRDNORM;
-	if (!reader->device->exist)
-		return POLLERR | POLLHUP;
-=======
 		return EPOLLIN | EPOLLRDNORM;
 	if (!reader->device->exist)
 		return EPOLLERR | EPOLLHUP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -263,10 +239,6 @@ static int roccat_release(struct inode *inode, struct file *file)
  * roccat_report_event() - output data to readers
  * @minor: minor device number returned by roccat_connect()
  * @data: pointer to data
-<<<<<<< HEAD
- * @len: size of data
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value is zero on success, a negative error code on failure.
  *
@@ -285,11 +257,8 @@ int roccat_report_event(int minor, u8 const *data)
 	if (!new_value)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	mutex_lock(&device->cbuf_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	report = &device->cbuf[device->cbuf_end];
 
 	/* passing NULL is safe */
@@ -309,11 +278,8 @@ int roccat_report_event(int minor, u8 const *data)
 			reader->cbuf_start = (reader->cbuf_start + 1) % ROCCAT_CBUF_SIZE;
 	}
 
-<<<<<<< HEAD
-=======
 	mutex_unlock(&device->cbuf_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up_interruptible(&device->wait);
 	return 0;
 }
@@ -324,19 +290,12 @@ EXPORT_SYMBOL_GPL(roccat_report_event);
  * @class: the class thats used to create the device. Meant to hold device
  * specific sysfs attributes.
  * @hid: the hid device the char device should be connected to.
-<<<<<<< HEAD
-=======
  * @report_size: size of reports
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value is minor device number in Range [0, ROCCAT_MAX_DEVICES] on
  * success, a negative error code on failure.
  */
-<<<<<<< HEAD
-int roccat_connect(struct class *klass, struct hid_device *hid, int report_size)
-=======
 int roccat_connect(const struct class *klass, struct hid_device *hid, int report_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int minor;
 	struct roccat_device *device;
@@ -408,11 +367,7 @@ void roccat_disconnect(int minor)
 	mutex_lock(&devices_lock);
 	devices[minor] = NULL;
 	mutex_unlock(&devices_lock);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (device->open) {
 		hid_hw_close(device->hid);
 		wake_up_interruptible(&device->wait);
@@ -424,11 +379,7 @@ EXPORT_SYMBOL_GPL(roccat_disconnect);
 
 static long roccat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-=======
 	struct inode *inode = file_inode(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct roccat_device *device;
 	unsigned int minor = iminor(inode);
 	long retval = 0;
@@ -471,20 +422,6 @@ static int __init roccat_init(void)
 
 	retval = alloc_chrdev_region(&dev_id, ROCCAT_FIRST_MINOR,
 			ROCCAT_MAX_DEVICES, "roccat");
-<<<<<<< HEAD
-
-	roccat_major = MAJOR(dev_id);
-
-	if (retval < 0) {
-		pr_warn("can't get major number\n");
-		return retval;
-	}
-
-	cdev_init(&roccat_cdev, &roccat_ops);
-	cdev_add(&roccat_cdev, dev_id, ROCCAT_MAX_DEVICES);
-
-	return 0;
-=======
 	if (retval < 0) {
 		pr_warn("can't get major number\n");
 		goto error;
@@ -506,7 +443,6 @@ static int __init roccat_init(void)
 	unregister_chrdev_region(dev_id, ROCCAT_MAX_DEVICES);
  error:
 	return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit roccat_exit(void)

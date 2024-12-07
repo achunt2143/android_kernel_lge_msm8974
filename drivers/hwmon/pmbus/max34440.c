@@ -1,34 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Hardware monitoring driver for Maxim MAX34440/MAX34441
  *
  * Copyright (c) 2011 Ericsson AB.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
-=======
  * Copyright (c) 2012 Guenter Roeck
  */
 
 #include <linux/bitops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -36,11 +14,7 @@
 #include <linux/i2c.h>
 #include "pmbus.h"
 
-<<<<<<< HEAD
-enum chips { max34440, max34441, max34446 };
-=======
 enum chips { max34440, max34441, max34446, max34451, max34460, max34461 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX34440_MFR_VOUT_PEAK		0xd4
 #define MAX34440_MFR_IOUT_PEAK		0xd5
@@ -52,12 +26,6 @@ enum chips { max34440, max34441, max34446, max34451, max34460, max34461 };
 #define MAX34446_MFR_IOUT_AVG		0xe2
 #define MAX34446_MFR_TEMPERATURE_AVG	0xe3
 
-<<<<<<< HEAD
-#define MAX34440_STATUS_OC_WARN		(1 << 0)
-#define MAX34440_STATUS_OC_FAULT	(1 << 1)
-#define MAX34440_STATUS_OT_FAULT	(1 << 5)
-#define MAX34440_STATUS_OT_WARN		(1 << 6)
-=======
 #define MAX34440_STATUS_OC_WARN		BIT(0)
 #define MAX34440_STATUS_OC_FAULT	BIT(1)
 #define MAX34440_STATUS_OT_FAULT	BIT(5)
@@ -72,7 +40,6 @@ enum chips { max34440, max34441, max34446, max34451, max34460, max34461 };
 
 #define MAX34451_MFR_CHANNEL_CONFIG	0xe4
 #define MAX34451_MFR_CHANNEL_CONFIG_SEL_MASK	0x3f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct max34440_data {
 	int id;
@@ -81,38 +48,16 @@ struct max34440_data {
 
 #define to_max34440_data(x)  container_of(x, struct max34440_data, info)
 
-<<<<<<< HEAD
-static int max34440_read_word_data(struct i2c_client *client, int page, int reg)
-=======
 static const struct i2c_device_id max34440_id[];
 
 static int max34440_read_word_data(struct i2c_client *client, int page,
 				   int phase, int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	const struct pmbus_driver_info *info = pmbus_get_driver_info(client);
 	const struct max34440_data *data = to_max34440_data(info);
 
 	switch (reg) {
-<<<<<<< HEAD
-	case PMBUS_VIRT_READ_VOUT_MIN:
-		ret = pmbus_read_word_data(client, page,
-					   MAX34440_MFR_VOUT_MIN);
-		break;
-	case PMBUS_VIRT_READ_VOUT_MAX:
-		ret = pmbus_read_word_data(client, page,
-					   MAX34440_MFR_VOUT_PEAK);
-		break;
-	case PMBUS_VIRT_READ_IOUT_AVG:
-		if (data->id != max34446)
-			return -ENXIO;
-		ret = pmbus_read_word_data(client, page,
-					   MAX34446_MFR_IOUT_AVG);
-		break;
-	case PMBUS_VIRT_READ_IOUT_MAX:
-		ret = pmbus_read_word_data(client, page,
-=======
 	case PMBUS_IOUT_OC_FAULT_LIMIT:
 		ret = pmbus_read_word_data(client, page, phase,
 					   MAX34440_IOUT_OC_FAULT_LIMIT);
@@ -137,35 +82,17 @@ static int max34440_read_word_data(struct i2c_client *client, int page,
 		break;
 	case PMBUS_VIRT_READ_IOUT_MAX:
 		ret = pmbus_read_word_data(client, page, phase,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   MAX34440_MFR_IOUT_PEAK);
 		break;
 	case PMBUS_VIRT_READ_POUT_AVG:
 		if (data->id != max34446)
 			return -ENXIO;
-<<<<<<< HEAD
-		ret = pmbus_read_word_data(client, page,
-=======
 		ret = pmbus_read_word_data(client, page, phase,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   MAX34446_MFR_POUT_AVG);
 		break;
 	case PMBUS_VIRT_READ_POUT_MAX:
 		if (data->id != max34446)
 			return -ENXIO;
-<<<<<<< HEAD
-		ret = pmbus_read_word_data(client, page,
-					   MAX34446_MFR_POUT_PEAK);
-		break;
-	case PMBUS_VIRT_READ_TEMP_AVG:
-		if (data->id != max34446)
-			return -ENXIO;
-		ret = pmbus_read_word_data(client, page,
-					   MAX34446_MFR_TEMPERATURE_AVG);
-		break;
-	case PMBUS_VIRT_READ_TEMP_MAX:
-		ret = pmbus_read_word_data(client, page,
-=======
 		ret = pmbus_read_word_data(client, page, phase,
 					   MAX34446_MFR_POUT_PEAK);
 		break;
@@ -178,7 +105,6 @@ static int max34440_read_word_data(struct i2c_client *client, int page,
 		break;
 	case PMBUS_VIRT_READ_TEMP_MAX:
 		ret = pmbus_read_word_data(client, page, phase,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   MAX34440_MFR_TEMPERATURE_PEAK);
 		break;
 	case PMBUS_VIRT_RESET_POUT_HISTORY:
@@ -206,8 +132,6 @@ static int max34440_write_word_data(struct i2c_client *client, int page,
 	int ret;
 
 	switch (reg) {
-<<<<<<< HEAD
-=======
 	case PMBUS_IOUT_OC_FAULT_LIMIT:
 		ret = pmbus_write_word_data(client, page, MAX34440_IOUT_OC_FAULT_LIMIT,
 					    word);
@@ -216,7 +140,6 @@ static int max34440_write_word_data(struct i2c_client *client, int page,
 		ret = pmbus_write_word_data(client, page, MAX34440_IOUT_OC_WARN_LIMIT,
 					    word);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PMBUS_VIRT_RESET_POUT_HISTORY:
 		ret = pmbus_write_word_data(client, page,
 					    MAX34446_MFR_POUT_PEAK, 0);
@@ -236,11 +159,7 @@ static int max34440_write_word_data(struct i2c_client *client, int page,
 	case PMBUS_VIRT_RESET_IOUT_HISTORY:
 		ret = pmbus_write_word_data(client, page,
 					    MAX34440_MFR_IOUT_PEAK, 0);
-<<<<<<< HEAD
-		if (!ret && data->id == max34446)
-=======
 		if (!ret && (data->id == max34446 || data->id == max34451))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = pmbus_write_word_data(client, page,
 					MAX34446_MFR_IOUT_AVG, 0);
 
@@ -266,22 +185,14 @@ static int max34440_read_byte_data(struct i2c_client *client, int page, int reg)
 	int mfg_status;
 
 	if (page >= 0) {
-<<<<<<< HEAD
-		ret = pmbus_set_page(client, page);
-=======
 		ret = pmbus_set_page(client, page, 0xff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return ret;
 	}
 
 	switch (reg) {
 	case PMBUS_STATUS_IOUT:
-<<<<<<< HEAD
-		mfg_status = pmbus_read_word_data(client, 0,
-=======
 		mfg_status = pmbus_read_word_data(client, 0, 0xff,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  PMBUS_STATUS_MFR_SPECIFIC);
 		if (mfg_status < 0)
 			return mfg_status;
@@ -291,11 +202,7 @@ static int max34440_read_byte_data(struct i2c_client *client, int page, int reg)
 			ret |= PB_IOUT_OC_FAULT;
 		break;
 	case PMBUS_STATUS_TEMPERATURE:
-<<<<<<< HEAD
-		mfg_status = pmbus_read_word_data(client, 0,
-=======
 		mfg_status = pmbus_read_word_data(client, 0, 0xff,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  PMBUS_STATUS_MFR_SPECIFIC);
 		if (mfg_status < 0)
 			return mfg_status;
@@ -311,8 +218,6 @@ static int max34440_read_byte_data(struct i2c_client *client, int page, int reg)
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int max34451_set_supported_funcs(struct i2c_client *client,
 					 struct max34440_data *data)
 {
@@ -365,7 +270,6 @@ static int max34451_set_supported_funcs(struct i2c_client *client,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pmbus_driver_info max34440_info[] = {
 	[max34440] = {
 		.pages = 14,
@@ -489,14 +393,6 @@ static struct pmbus_driver_info max34440_info[] = {
 		.read_word_data = max34440_read_word_data,
 		.write_word_data = max34440_write_word_data,
 	},
-<<<<<<< HEAD
-};
-
-static int max34440_probe(struct i2c_client *client,
-			  const struct i2c_device_id *id)
-{
-	struct max34440_data *data;
-=======
 	[max34451] = {
 		.pages = 21,
 		.format[PSC_VOLTAGE_OUT] = direct,
@@ -591,18 +487,11 @@ static int max34440_probe(struct i2c_client *client)
 {
 	struct max34440_data *data;
 	int rv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data = devm_kzalloc(&client->dev, sizeof(struct max34440_data),
 			    GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
-<<<<<<< HEAD
-	data->id = id->driver_data;
-	data->info = max34440_info[id->driver_data];
-
-	return pmbus_do_probe(client, id, &data->info);
-=======
 	data->id = i2c_match_id(max34440_id, client)->driver_data;
 	data->info = max34440_info[data->id];
 
@@ -613,19 +502,15 @@ static int max34440_probe(struct i2c_client *client)
 	}
 
 	return pmbus_do_probe(client, &data->info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id max34440_id[] = {
 	{"max34440", max34440},
 	{"max34441", max34441},
 	{"max34446", max34446},
-<<<<<<< HEAD
-=======
 	{"max34451", max34451},
 	{"max34460", max34460},
 	{"max34461", max34461},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 MODULE_DEVICE_TABLE(i2c, max34440_id);
@@ -636,10 +521,6 @@ static struct i2c_driver max34440_driver = {
 		   .name = "max34440",
 		   },
 	.probe = max34440_probe,
-<<<<<<< HEAD
-	.remove = pmbus_do_remove,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = max34440_id,
 };
 
@@ -648,7 +529,4 @@ module_i2c_driver(max34440_driver);
 MODULE_AUTHOR("Guenter Roeck");
 MODULE_DESCRIPTION("PMBus driver for Maxim MAX34440/MAX34441");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_IMPORT_NS(PMBUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

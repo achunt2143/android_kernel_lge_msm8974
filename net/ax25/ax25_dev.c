@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
  */
@@ -28,11 +20,7 @@
 #include <linux/if_arp.h>
 #include <linux/skbuff.h>
 #include <net/sock.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fcntl.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
@@ -47,14 +35,9 @@ ax25_dev *ax25_addr_ax25dev(ax25_address *addr)
 
 	spin_lock_bh(&ax25_dev_lock);
 	for (ax25_dev = ax25_dev_list; ax25_dev != NULL; ax25_dev = ax25_dev->next)
-<<<<<<< HEAD
-		if (ax25cmp(addr, (ax25_address *)ax25_dev->dev->dev_addr) == 0) {
-			res = ax25_dev;
-=======
 		if (ax25cmp(addr, (const ax25_address *)ax25_dev->dev->dev_addr) == 0) {
 			res = ax25_dev;
 			ax25_dev_hold(ax25_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	spin_unlock_bh(&ax25_dev_lock);
 
@@ -69,31 +52,18 @@ void ax25_dev_device_up(struct net_device *dev)
 {
 	ax25_dev *ax25_dev;
 
-<<<<<<< HEAD
-	if ((ax25_dev = kzalloc(sizeof(*ax25_dev), GFP_ATOMIC)) == NULL) {
-=======
 	ax25_dev = kzalloc(sizeof(*ax25_dev), GFP_KERNEL);
 	if (!ax25_dev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "AX.25: ax25_dev_device_up - out of memory\n");
 		return;
 	}
 
-<<<<<<< HEAD
-	ax25_unregister_sysctl();
-
-	dev->ax25_ptr     = ax25_dev;
-	ax25_dev->dev     = dev;
-	dev_hold(dev);
-	ax25_dev->forward = NULL;
-=======
 	refcount_set(&ax25_dev->refcount, 1);
 	dev->ax25_ptr     = ax25_dev;
 	ax25_dev->dev     = dev;
 	netdev_hold(dev, &ax25_dev->dev_tracker, GFP_KERNEL);
 	ax25_dev->forward = NULL;
 	ax25_dev->device_up = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ax25_dev->values[AX25_VALUES_IPDEFMODE] = AX25_DEF_IPDEFMODE;
 	ax25_dev->values[AX25_VALUES_AXDEFMODE] = AX25_DEF_AXDEFMODE;
@@ -118,14 +88,9 @@ void ax25_dev_device_up(struct net_device *dev)
 	ax25_dev->next = ax25_dev_list;
 	ax25_dev_list  = ax25_dev;
 	spin_unlock_bh(&ax25_dev_lock);
-<<<<<<< HEAD
-
-	ax25_register_sysctl();
-=======
 	ax25_dev_hold(ax25_dev);
 
 	ax25_register_dev_sysctl(ax25_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ax25_dev_device_down(struct net_device *dev)
@@ -135,20 +100,12 @@ void ax25_dev_device_down(struct net_device *dev)
 	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
 		return;
 
-<<<<<<< HEAD
-	ax25_unregister_sysctl();
-=======
 	ax25_unregister_dev_sysctl(ax25_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&ax25_dev_lock);
 
 #ifdef CONFIG_AX25_DAMA_SLAVE
-<<<<<<< HEAD
-	ax25_ds_del_timer(ax25_dev);
-=======
 	timer_shutdown_sync(&ax25_dev->dama.slave_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/*
@@ -160,39 +117,19 @@ void ax25_dev_device_down(struct net_device *dev)
 
 	if ((s = ax25_dev_list) == ax25_dev) {
 		ax25_dev_list = s->next;
-<<<<<<< HEAD
-		spin_unlock_bh(&ax25_dev_lock);
-		dev_put(dev);
-		kfree(ax25_dev);
-		ax25_register_sysctl();
-		return;
-=======
 		goto unlock_put;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	while (s != NULL && s->next != NULL) {
 		if (s->next == ax25_dev) {
 			s->next = ax25_dev->next;
-<<<<<<< HEAD
-			spin_unlock_bh(&ax25_dev_lock);
-			dev_put(dev);
-			kfree(ax25_dev);
-			ax25_register_sysctl();
-			return;
-=======
 			goto unlock_put;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		s = s->next;
 	}
 	spin_unlock_bh(&ax25_dev_lock);
 	dev->ax25_ptr = NULL;
-<<<<<<< HEAD
-
-	ax25_register_sysctl();
-=======
 	ax25_dev_put(ax25_dev);
 	return;
 
@@ -202,7 +139,6 @@ unlock_put:
 	dev->ax25_ptr = NULL;
 	netdev_put(dev, &ax25_dev->dev_tracker);
 	ax25_dev_put(ax25_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
@@ -214,22 +150,6 @@ int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
 
 	switch (cmd) {
 	case SIOCAX25ADDFWD:
-<<<<<<< HEAD
-		if ((fwd_dev = ax25_addr_ax25dev(&fwd->port_to)) == NULL)
-			return -EINVAL;
-		if (ax25_dev->forward != NULL)
-			return -EINVAL;
-		ax25_dev->forward = fwd_dev->dev;
-		break;
-
-	case SIOCAX25DELFWD:
-		if (ax25_dev->forward == NULL)
-			return -EINVAL;
-		ax25_dev->forward = NULL;
-		break;
-
-	default:
-=======
 		fwd_dev = ax25_addr_ax25dev(&fwd->port_to);
 		if (!fwd_dev) {
 			ax25_dev_put(ax25_dev);
@@ -256,7 +176,6 @@ int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
 
 	default:
 		ax25_dev_put(ax25_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -287,11 +206,7 @@ void __exit ax25_dev_free(void)
 	ax25_dev = ax25_dev_list;
 	while (ax25_dev != NULL) {
 		s        = ax25_dev;
-<<<<<<< HEAD
-		dev_put(ax25_dev->dev);
-=======
 		netdev_put(ax25_dev->dev, &ax25_dev->dev_tracker);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ax25_dev = ax25_dev->next;
 		kfree(s);
 	}

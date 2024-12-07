@@ -1,24 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Export the iSCSI boot info to userland via sysfs.
  *
  * Copyright (C) 2010 Red Hat, Inc.  All rights reserved.
  * Copyright (C) 2010 Mike Christie
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License v2.0 as published by
- * the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ISCSI_BOOT_SYSFS_
 #define _ISCSI_BOOT_SYSFS_
@@ -30,10 +15,7 @@ enum iscsi_boot_eth_properties_enum {
 	ISCSI_BOOT_ETH_INDEX,
 	ISCSI_BOOT_ETH_FLAGS,
 	ISCSI_BOOT_ETH_IP_ADDR,
-<<<<<<< HEAD
-=======
 	ISCSI_BOOT_ETH_PREFIX_LEN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ISCSI_BOOT_ETH_SUBNET_MASK,
 	ISCSI_BOOT_ETH_ORIGIN,
 	ISCSI_BOOT_ETH_GATEWAY,
@@ -74,15 +56,12 @@ enum iscsi_boot_initiator_properties_enum {
 	ISCSI_BOOT_INI_END_MARKER,
 };
 
-<<<<<<< HEAD
-=======
 enum iscsi_boot_acpitbl_properties_enum {
 	ISCSI_BOOT_ACPITBL_SIGNATURE,
 	ISCSI_BOOT_ACPITBL_OEM_ID,
 	ISCSI_BOOT_ACPITBL_OEM_TABLE_ID,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct attribute_group;
 
 struct iscsi_boot_kobj {
@@ -146,8 +125,6 @@ iscsi_boot_create_target(struct iscsi_boot_kset *boot_kset, int index,
 			 umode_t (*is_visible) (void *data, int type),
 			 void (*release) (void *data));
 
-<<<<<<< HEAD
-=======
 struct iscsi_boot_kobj *
 iscsi_boot_create_acpitbl(struct iscsi_boot_kset *boot_kset, int index,
 			  void *data,
@@ -155,7 +132,6 @@ iscsi_boot_create_acpitbl(struct iscsi_boot_kset *boot_kset, int index,
 			  umode_t (*is_visible)(void *data, int type),
 			  void (*release)(void *data));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iscsi_boot_kset *iscsi_boot_create_kset(const char *set_name);
 struct iscsi_boot_kset *iscsi_boot_create_host_kset(unsigned int hostno);
 void iscsi_boot_destroy_kset(struct iscsi_boot_kset *boot_kset);

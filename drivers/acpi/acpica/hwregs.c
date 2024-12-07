@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
@@ -10,51 +6,8 @@
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
 #include <acpi/acpi.h>
 #include "accommon.h"
-#include "acnamesp.h"
-=======
-#include <acpi/acpi.h>
-#include "accommon.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "acevents.h"
 
 #define _COMPONENT          ACPI_HARDWARE
@@ -62,14 +15,11 @@ ACPI_MODULE_NAME("hwregs")
 
 #if (!ACPI_REDUCED_HARDWARE)
 /* Local Prototypes */
-<<<<<<< HEAD
-=======
 static u8
 acpi_hw_get_access_bit_width(u64 address,
 			     struct acpi_generic_address *reg,
 			     u8 max_bit_width);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static acpi_status
 acpi_hw_read_multiple(u32 *value,
 		      struct acpi_generic_address *register_a,
@@ -84,13 +34,6 @@ acpi_hw_write_multiple(u32 value,
 
 /******************************************************************************
  *
-<<<<<<< HEAD
- * FUNCTION:    acpi_hw_validate_register
- *
- * PARAMETERS:  Reg                 - GAS register structure
- *              max_bit_width       - Max bit_width supported (32 or 64)
- *              Address             - Pointer to where the gas->address
-=======
  * FUNCTION:    acpi_hw_get_access_bit_width
  *
  * PARAMETERS:  address             - GAS register address
@@ -166,7 +109,6 @@ acpi_hw_get_access_bit_width(u64 address,
  * PARAMETERS:  reg                 - GAS register structure
  *              max_bit_width       - Max bit_width supported (32 or 64)
  *              address             - Pointer to where the gas->address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                    is returned
  *
  * RETURN:      Status
@@ -180,11 +122,8 @@ acpi_status
 acpi_hw_validate_register(struct acpi_generic_address *reg,
 			  u8 max_bit_width, u64 *address)
 {
-<<<<<<< HEAD
-=======
 	u8 bit_width;
 	u8 access_width;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Must have a valid pointer to a GAS structure */
 
@@ -202,11 +141,7 @@ acpi_hw_validate_register(struct acpi_generic_address *reg,
 		return (AE_BAD_ADDRESS);
 	}
 
-<<<<<<< HEAD
-	/* Validate the space_iD */
-=======
 	/* Validate the space_ID */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((reg->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY) &&
 	    (reg->space_id != ACPI_ADR_SPACE_SYSTEM_IO)) {
@@ -215,25 +150,6 @@ acpi_hw_validate_register(struct acpi_generic_address *reg,
 		return (AE_SUPPORT);
 	}
 
-<<<<<<< HEAD
-	/* Validate the bit_width */
-
-	if ((reg->bit_width != 8) &&
-	    (reg->bit_width != 16) &&
-	    (reg->bit_width != 32) && (reg->bit_width != max_bit_width)) {
-		ACPI_ERROR((AE_INFO,
-			    "Unsupported register bit width: 0x%X",
-			    reg->bit_width));
-		return (AE_SUPPORT);
-	}
-
-	/* Validate the bit_offset. Just a warning for now. */
-
-	if (reg->bit_offset != 0) {
-		ACPI_WARNING((AE_INFO,
-			      "Unsupported register bit offset: 0x%X",
-			      reg->bit_offset));
-=======
 	/* Validate the access_width */
 
 	if (reg->access_width > 4) {
@@ -254,7 +170,6 @@ acpi_hw_validate_register(struct acpi_generic_address *reg,
 			      "Requested bit width 0x%X is smaller than register bit width 0x%X",
 			      max_bit_width, bit_width));
 		return (AE_SUPPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return (AE_OK);
@@ -264,29 +179,6 @@ acpi_hw_validate_register(struct acpi_generic_address *reg,
  *
  * FUNCTION:    acpi_hw_read
  *
-<<<<<<< HEAD
- * PARAMETERS:  Value               - Where the value is returned
- *              Reg                 - GAS register structure
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Read from either memory or IO space. This is a 32-bit max
- *              version of acpi_read, used internally since the overhead of
- *              64-bit values is not needed.
- *
- * LIMITATIONS: <These limitations also apply to acpi_hw_write>
- *      bit_width must be exactly 8, 16, or 32.
- *      space_iD must be system_memory or system_iO.
- *      bit_offset and access_width are currently ignored, as there has
- *          not been a need to implement these.
- *
- ******************************************************************************/
-
-acpi_status acpi_hw_read(u32 *value, struct acpi_generic_address *reg)
-{
-	u64 address;
-	u64 value64;
-=======
  * PARAMETERS:  value               - Where the value is returned
  *              reg                 - GAS register structure
  *
@@ -309,27 +201,17 @@ acpi_status acpi_hw_read(u64 *value, struct acpi_generic_address *reg)
 	u64 value64;
 	u32 value32;
 	u8 index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_status status;
 
 	ACPI_FUNCTION_NAME(hw_read);
 
 	/* Validate contents of the GAS register */
 
-<<<<<<< HEAD
-	status = acpi_hw_validate_register(reg, 32, &address);
-=======
 	status = acpi_hw_validate_register(reg, 64, &address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return (status);
 	}
 
-<<<<<<< HEAD
-	/* Initialize entire 32-bit return value to zero */
-
-	*value = 0;
-=======
 	/*
 	 * Initialize entire 64-bit return value to zero, convert access_width
 	 * into number of bits based
@@ -338,28 +220,11 @@ acpi_status acpi_hw_read(u64 *value, struct acpi_generic_address *reg)
 	access_width = acpi_hw_get_access_bit_width(address, reg, 64);
 	bit_width = reg->bit_offset + reg->bit_width;
 	bit_offset = reg->bit_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Two address spaces supported: Memory or IO. PCI_Config is
 	 * not supported here because the GAS structure is insufficient
 	 */
-<<<<<<< HEAD
-	if (reg->space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY) {
-		status = acpi_os_read_memory((acpi_physical_address)
-					     address, &value64, reg->bit_width);
-
-		*value = (u32)value64;
-	} else {		/* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
-
-		status = acpi_hw_read_port((acpi_io_address)
-					   address, value, reg->bit_width);
-	}
-
-	ACPI_DEBUG_PRINT((ACPI_DB_IO,
-			  "Read:  %8.8X width %2d from %8.8X%8.8X (%s)\n",
-			  *value, reg->bit_width, ACPI_FORMAT_UINT64(address),
-=======
 	index = 0;
 	while (bit_width) {
 		if (bit_offset >= access_width) {
@@ -403,7 +268,6 @@ acpi_status acpi_hw_read(u64 *value, struct acpi_generic_address *reg)
 			  "Read:  %8.8X%8.8X width %2d from %8.8X%8.8X (%s)\n",
 			  ACPI_FORMAT_UINT64(*value), access_width,
 			  ACPI_FORMAT_UINT64(address),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  acpi_ut_get_region_name(reg->space_id)));
 
 	return (status);
@@ -413,22 +277,6 @@ acpi_status acpi_hw_read(u64 *value, struct acpi_generic_address *reg)
  *
  * FUNCTION:    acpi_hw_write
  *
-<<<<<<< HEAD
- * PARAMETERS:  Value               - Value to be written
- *              Reg                 - GAS register structure
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Write to either memory or IO space. This is a 32-bit max
- *              version of acpi_write, used internally since the overhead of
- *              64-bit values is not needed.
- *
- ******************************************************************************/
-
-acpi_status acpi_hw_write(u32 value, struct acpi_generic_address *reg)
-{
-	u64 address;
-=======
  * PARAMETERS:  value               - Value to be written
  *              reg                 - GAS register structure
  *
@@ -447,50 +295,27 @@ acpi_status acpi_hw_write(u64 value, struct acpi_generic_address *reg)
 	u8 bit_offset;
 	u64 value64;
 	u8 index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_status status;
 
 	ACPI_FUNCTION_NAME(hw_write);
 
 	/* Validate contents of the GAS register */
 
-<<<<<<< HEAD
-	status = acpi_hw_validate_register(reg, 32, &address);
-=======
 	status = acpi_hw_validate_register(reg, 64, &address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return (status);
 	}
 
-<<<<<<< HEAD
-=======
 	/* Convert access_width into number of bits based */
 
 	access_width = acpi_hw_get_access_bit_width(address, reg, 64);
 	bit_width = reg->bit_offset + reg->bit_width;
 	bit_offset = reg->bit_offset;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Two address spaces supported: Memory or IO. PCI_Config is
 	 * not supported here because the GAS structure is insufficient
 	 */
-<<<<<<< HEAD
-	if (reg->space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY) {
-		status = acpi_os_write_memory((acpi_physical_address)
-					      address, (u64)value,
-					      reg->bit_width);
-	} else {		/* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
-
-		status = acpi_hw_write_port((acpi_io_address)
-					    address, value, reg->bit_width);
-	}
-
-	ACPI_DEBUG_PRINT((ACPI_DB_IO,
-			  "Wrote: %8.8X width %2d   to %8.8X%8.8X (%s)\n",
-			  value, reg->bit_width, ACPI_FORMAT_UINT64(address),
-=======
 	index = 0;
 	while (bit_width) {
 		/*
@@ -536,7 +361,6 @@ acpi_status acpi_hw_write(u64 value, struct acpi_generic_address *reg)
 			  "Wrote: %8.8X%8.8X width %2d   to %8.8X%8.8X (%s)\n",
 			  ACPI_FORMAT_UINT64(value), access_width,
 			  ACPI_FORMAT_UINT64(address),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  acpi_ut_get_region_name(reg->space_id)));
 
 	return (status);
@@ -566,29 +390,18 @@ acpi_status acpi_hw_clear_acpi_status(void)
 			  ACPI_BITMASK_ALL_FIXED_STATUS,
 			  ACPI_FORMAT_UINT64(acpi_gbl_xpm1a_status.address)));
 
-<<<<<<< HEAD
-	lock_flags = acpi_os_acquire_lock(acpi_gbl_hardware_lock);
-=======
 	lock_flags = acpi_os_acquire_raw_lock(acpi_gbl_hardware_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the fixed events in PM1 A/B */
 
 	status = acpi_hw_register_write(ACPI_REGISTER_PM1_STATUS,
 					ACPI_BITMASK_ALL_FIXED_STATUS);
 
-<<<<<<< HEAD
-	acpi_os_release_lock(acpi_gbl_hardware_lock, lock_flags);
-
-	if (ACPI_FAILURE(status))
-		goto exit;
-=======
 	acpi_os_release_raw_lock(acpi_gbl_hardware_lock, lock_flags);
 
 	if (ACPI_FAILURE(status)) {
 		goto exit;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the GPE Bits in all GPE registers in all GPE blocks */
 
@@ -633,11 +446,7 @@ struct acpi_bit_register_info *acpi_hw_get_bit_register_info(u32 register_id)
  * RETURN:      Status
  *
  * DESCRIPTION: Write the PM1 A/B control registers. These registers are
-<<<<<<< HEAD
- *              different than than the PM1 A/B status and enable registers
-=======
  *              different than the PM1 A/B status and enable registers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              in that different values can be written to the A/B registers.
  *              Most notably, the SLP_TYP bits can be different, as per the
  *              values returned from the _Sx predefined methods.
@@ -676,17 +485,10 @@ acpi_status acpi_hw_write_pm1_control(u32 pm1a_control, u32 pm1b_control)
  * DESCRIPTION: Read from the specified ACPI register
  *
  ******************************************************************************/
-<<<<<<< HEAD
-acpi_status
-acpi_hw_register_read(u32 register_id, u32 * return_value)
-{
-	u32 value = 0;
-=======
 acpi_status acpi_hw_register_read(u32 register_id, u32 *return_value)
 {
 	u32 value = 0;
 	u64 value64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_status status;
 
 	ACPI_FUNCTION_TRACE(hw_register_read);
@@ -725,27 +527,19 @@ acpi_status acpi_hw_register_read(u32 register_id, u32 *return_value)
 	case ACPI_REGISTER_PM2_CONTROL:	/* 8-bit access */
 
 		status =
-<<<<<<< HEAD
-		    acpi_hw_read(&value, &acpi_gbl_FADT.xpm2_control_block);
-=======
 		    acpi_hw_read(&value64, &acpi_gbl_FADT.xpm2_control_block);
 		if (ACPI_SUCCESS(status)) {
 			value = (u32)value64;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_REGISTER_PM_TIMER:	/* 32-bit access */
 
-<<<<<<< HEAD
-		status = acpi_hw_read(&value, &acpi_gbl_FADT.xpm_timer_block);
-=======
 		status = acpi_hw_read(&value64, &acpi_gbl_FADT.xpm_timer_block);
 		if (ACPI_SUCCESS(status)) {
 			value = (u32)value64;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_REGISTER_SMI_COMMAND_BLOCK:	/* 8-bit access */
@@ -755,21 +549,14 @@ acpi_status acpi_hw_register_read(u32 register_id, u32 *return_value)
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ACPI_ERROR((AE_INFO, "Unknown Register ID: 0x%X", register_id));
 		status = AE_BAD_PARAMETER;
 		break;
 	}
 
 	if (ACPI_SUCCESS(status)) {
-<<<<<<< HEAD
-		*return_value = value;
-=======
 		*return_value = (u32)value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return_ACPI_STATUS(status);
@@ -780,11 +567,7 @@ acpi_status acpi_hw_register_read(u32 register_id, u32 *return_value)
  * FUNCTION:    acpi_hw_register_write
  *
  * PARAMETERS:  register_id         - ACPI Register ID
-<<<<<<< HEAD
- *              Value               - The value to write
-=======
  *              value               - The value to write
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -809,10 +592,7 @@ acpi_status acpi_hw_register_write(u32 register_id, u32 value)
 {
 	acpi_status status;
 	u32 read_value;
-<<<<<<< HEAD
-=======
 	u64 read_value64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(hw_register_write);
 
@@ -835,11 +615,7 @@ acpi_status acpi_hw_register_write(u32 register_id, u32 value)
 						&acpi_gbl_xpm1b_status);
 		break;
 
-<<<<<<< HEAD
-	case ACPI_REGISTER_PM1_ENABLE:	/* PM1 A/B: 16-bit access */
-=======
 	case ACPI_REGISTER_PM1_ENABLE:	/* PM1 A/B: 16-bit access each */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		status = acpi_hw_write_multiple(value,
 						&acpi_gbl_xpm1a_enable,
@@ -847,10 +623,6 @@ acpi_status acpi_hw_register_write(u32 register_id, u32 value)
 		break;
 
 	case ACPI_REGISTER_PM1_CONTROL:	/* PM1 A/B: 16-bit access each */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Perform a read first to preserve certain bits (per ACPI spec)
 		 * Note: This includes SCI_EN, we never want to change this bit
@@ -879,28 +651,17 @@ acpi_status acpi_hw_register_write(u32 register_id, u32 value)
 		break;
 
 	case ACPI_REGISTER_PM2_CONTROL:	/* 8-bit access */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * For control registers, all reserved bits must be preserved,
 		 * as per the ACPI spec.
 		 */
 		status =
-<<<<<<< HEAD
-		    acpi_hw_read(&read_value,
-=======
 		    acpi_hw_read(&read_value64,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 &acpi_gbl_FADT.xpm2_control_block);
 		if (ACPI_FAILURE(status)) {
 			goto exit;
 		}
-<<<<<<< HEAD
-=======
 		read_value = (u32)read_value64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Insert the bits to be preserved */
 
@@ -925,20 +686,13 @@ acpi_status acpi_hw_register_write(u32 register_id, u32 value)
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ACPI_ERROR((AE_INFO, "Unknown Register ID: 0x%X", register_id));
 		status = AE_BAD_PARAMETER;
 		break;
 	}
 
-<<<<<<< HEAD
-      exit:
-=======
 exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -946,11 +700,7 @@ exit:
  *
  * FUNCTION:    acpi_hw_read_multiple
  *
-<<<<<<< HEAD
- * PARAMETERS:  Value               - Where the register value is returned
-=======
  * PARAMETERS:  value               - Where the register value is returned
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              register_a           - First ACPI register (required)
  *              register_b           - Second ACPI register (optional)
  *
@@ -967,42 +717,25 @@ acpi_hw_read_multiple(u32 *value,
 {
 	u32 value_a = 0;
 	u32 value_b = 0;
-<<<<<<< HEAD
-=======
 	u64 value64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_status status;
 
 	/* The first register is always required */
 
-<<<<<<< HEAD
-	status = acpi_hw_read(&value_a, register_a);
-	if (ACPI_FAILURE(status)) {
-		return (status);
-	}
-=======
 	status = acpi_hw_read(&value64, register_a);
 	if (ACPI_FAILURE(status)) {
 		return (status);
 	}
 	value_a = (u32)value64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Second register is optional */
 
 	if (register_b->address) {
-<<<<<<< HEAD
-		status = acpi_hw_read(&value_b, register_b);
-		if (ACPI_FAILURE(status)) {
-			return (status);
-		}
-=======
 		status = acpi_hw_read(&value64, register_b);
 		if (ACPI_FAILURE(status)) {
 			return (status);
 		}
 		value_b = (u32)value64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1023,11 +756,7 @@ acpi_hw_read_multiple(u32 *value,
  *
  * FUNCTION:    acpi_hw_write_multiple
  *
-<<<<<<< HEAD
- * PARAMETERS:  Value               - The value to write
-=======
  * PARAMETERS:  value               - The value to write
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              register_a           - First ACPI register (required)
  *              register_b           - Second ACPI register (optional)
  *

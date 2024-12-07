@@ -1,39 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005 Voltaire Inc.  All rights reserved.
- * Copyright (c) 2005 Intel Corporation.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
-#if !defined(RDMA_CM_H)
-=======
 /* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
 /*
  * Copyright (c) 2005 Voltaire Inc.  All rights reserved.
@@ -41,17 +5,13 @@
  */
 
 #ifndef RDMA_CM_H
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RDMA_CM_H
 
 #include <linux/socket.h>
 #include <linux/in6.h>
 #include <rdma/ib_addr.h>
 #include <rdma/ib_sa.h>
-<<<<<<< HEAD
-=======
 #include <uapi/rdma/rdma_user_cm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Upon receiving a device removal event, users must destroy the associated
@@ -76,22 +36,12 @@ enum rdma_cm_event_type {
 	RDMA_CM_EVENT_TIMEWAIT_EXIT
 };
 
-<<<<<<< HEAD
-enum rdma_port_space {
-	RDMA_PS_SDP   = 0x0001,
-	RDMA_PS_IPOIB = 0x0002,
-	RDMA_PS_IB    = 0x013F,
-	RDMA_PS_TCP   = 0x0106,
-	RDMA_PS_UDP   = 0x0111,
-};
-=======
 const char *__attribute_const__ rdma_event_msg(enum rdma_cm_event_type event);
 
 #define RDMA_IB_IP_PS_MASK   0xFFFFFFFFFFFF0000ULL
 #define RDMA_IB_IP_PS_TCP    0x0000000001060000ULL
 #define RDMA_IB_IP_PS_UDP    0x0000000001110000ULL
 #define RDMA_IB_IP_PS_IB     0x00000000013F0000ULL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct rdma_addr {
 	struct sockaddr_storage src_addr;
@@ -101,10 +51,6 @@ struct rdma_addr {
 
 struct rdma_route {
 	struct rdma_addr addr;
-<<<<<<< HEAD
-	struct ib_sa_path_rec *path_rec;
-	int num_paths;
-=======
 	struct sa_path_rec *path_rec;
 
 	/* Optional path records of primary path */
@@ -117,7 +63,6 @@ struct rdma_route {
 	 * 2 - Both primary and alternate path are available
 	 */
 	int num_pri_alt_paths;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct rdma_conn_param {
@@ -131,20 +76,13 @@ struct rdma_conn_param {
 	/* Fields below ignored if a QP is created on the rdma_cm_id. */
 	u8 srq;
 	u32 qp_num;
-<<<<<<< HEAD
-=======
 	u32 qkey;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct rdma_ud_param {
 	const void *private_data;
 	u8 private_data_len;
-<<<<<<< HEAD
-	struct ib_ah_attr ah_attr;
-=======
 	struct rdma_ah_attr ah_attr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 qp_num;
 	u32 qkey;
 };
@@ -156,24 +94,7 @@ struct rdma_cm_event {
 		struct rdma_conn_param	conn;
 		struct rdma_ud_param	ud;
 	} param;
-<<<<<<< HEAD
-};
-
-enum rdma_cm_state {
-	RDMA_CM_IDLE,
-	RDMA_CM_ADDR_QUERY,
-	RDMA_CM_ADDR_RESOLVED,
-	RDMA_CM_ROUTE_QUERY,
-	RDMA_CM_ROUTE_RESOLVED,
-	RDMA_CM_CONNECT,
-	RDMA_CM_DISCONNECT,
-	RDMA_CM_ADDR_BOUND,
-	RDMA_CM_LISTEN,
-	RDMA_CM_DEVICE_REMOVAL,
-	RDMA_CM_DESTROYING
-=======
 	struct rdma_ucm_ece ece;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct rdma_cm_id;
@@ -194,16 +115,6 @@ struct rdma_cm_id {
 	struct ib_qp		*qp;
 	rdma_cm_event_handler	 event_handler;
 	struct rdma_route	 route;
-<<<<<<< HEAD
-	enum rdma_port_space	 ps;
-	enum ib_qp_type		 qp_type;
-	u8			 port_num;
-};
-
-/**
- * rdma_create_id - Create an RDMA identifier.
- *
-=======
 	enum rdma_ucm_port_space ps;
 	enum ib_qp_type		 qp_type;
 	u32			 port_num;
@@ -223,18 +134,11 @@ struct rdma_cm_id *rdma_create_user_id(rdma_cm_event_handler event_handler,
  * rdma_create_id - Create an RDMA identifier.
  *
  * @net: The network namespace in which to create the new id.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @event_handler: User callback invoked to report events associated with the
  *   returned rdma_id.
  * @context: User specified context associated with the id.
  * @ps: RDMA port space.
  * @qp_type: type of queue pair associated with the id.
-<<<<<<< HEAD
- */
-struct rdma_cm_id *rdma_create_id(rdma_cm_event_handler event_handler,
-				  void *context, enum rdma_port_space ps,
-				  enum ib_qp_type qp_type);
-=======
  *
  * Returns a new rdma_cm_id. The id holds a reference on the network
  * namespace until it is destroyed.
@@ -245,7 +149,6 @@ struct rdma_cm_id *rdma_create_id(rdma_cm_event_handler event_handler,
 #define rdma_create_id(net, event_handler, context, ps, qp_type)               \
 	__rdma_create_kernel_id(net, event_handler, context, ps, qp_type,      \
 				KBUILD_MODNAME)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
   * rdma_destroy_id - Destroys an RDMA identifier.
@@ -281,12 +184,8 @@ int rdma_bind_addr(struct rdma_cm_id *id, struct sockaddr *addr);
  * @timeout_ms: Time to wait for resolution to complete.
  */
 int rdma_resolve_addr(struct rdma_cm_id *id, struct sockaddr *src_addr,
-<<<<<<< HEAD
-		      struct sockaddr *dst_addr, int timeout_ms);
-=======
 		      const struct sockaddr *dst_addr,
 		      unsigned long timeout_ms);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rdma_resolve_route - Resolve the RDMA address bound to the RDMA identifier
@@ -296,11 +195,7 @@ int rdma_resolve_addr(struct rdma_cm_id *id, struct sockaddr *src_addr,
  * Users must have first called rdma_resolve_addr to resolve a dst_addr
  * into an RDMA address before calling this routine.
  */
-<<<<<<< HEAD
-int rdma_resolve_route(struct rdma_cm_id *id, int timeout_ms);
-=======
 int rdma_resolve_route(struct rdma_cm_id *id, unsigned long timeout_ms);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rdma_create_qp - Allocate a QP and associate it with the specified RDMA
@@ -343,28 +238,12 @@ void rdma_destroy_qp(struct rdma_cm_id *id);
 int rdma_init_qp_attr(struct rdma_cm_id *id, struct ib_qp_attr *qp_attr,
 		       int *qp_attr_mask);
 
-<<<<<<< HEAD
-/**
- * rdma_connect - Initiate an active connection request.
- * @id: Connection identifier to connect.
- * @conn_param: Connection information used for connected QPs.
- *
- * Users must have resolved a route for the rdma_cm_id to connect with
- * by having called rdma_resolve_route before calling this routine.
- *
- * This call will either connect to a remote QP or obtain remote QP
- * information for unconnected rdma_cm_id's.  The actual operation is
- * based on the rdma_cm_id's port space.
- */
-int rdma_connect(struct rdma_cm_id *id, struct rdma_conn_param *conn_param);
-=======
 int rdma_connect(struct rdma_cm_id *id, struct rdma_conn_param *conn_param);
 int rdma_connect_locked(struct rdma_cm_id *id,
 			struct rdma_conn_param *conn_param);
 
 int rdma_connect_ece(struct rdma_cm_id *id, struct rdma_conn_param *conn_param,
 		     struct rdma_ucm_ece *ece);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rdma_listen - This function is called by the passive side to
@@ -375,25 +254,6 @@ int rdma_connect_ece(struct rdma_cm_id *id, struct rdma_conn_param *conn_param,
  */
 int rdma_listen(struct rdma_cm_id *id, int backlog);
 
-<<<<<<< HEAD
-/**
- * rdma_accept - Called to accept a connection request or response.
- * @id: Connection identifier associated with the request.
- * @conn_param: Information needed to establish the connection.  This must be
- *   provided if accepting a connection request.  If accepting a connection
- *   response, this parameter must be NULL.
- *
- * Typically, this routine is only called by the listener to accept a connection
- * request.  It must also be called on the active side of a connection if the
- * user is performing their own QP transitions.
- *
- * In the case of error, a reject message is sent to the remote side and the
- * state of the qp associated with the id is modified to error, such that any
- * previously posted receive buffers would be flushed.
- */
-int rdma_accept(struct rdma_cm_id *id, struct rdma_conn_param *conn_param);
-
-=======
 int rdma_accept(struct rdma_cm_id *id, struct rdma_conn_param *conn_param);
 
 void rdma_lock_handler(struct rdma_cm_id *id);
@@ -401,7 +261,6 @@ void rdma_unlock_handler(struct rdma_cm_id *id);
 int rdma_accept_ece(struct rdma_cm_id *id, struct rdma_conn_param *conn_param,
 		    struct rdma_ucm_ece *ece);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * rdma_notify - Notifies the RDMA CM of an asynchronous event that has
  * occurred on the connection.
@@ -421,11 +280,7 @@ int rdma_notify(struct rdma_cm_id *id, enum ib_event_type event);
  * rdma_reject - Called to reject a connection request or response.
  */
 int rdma_reject(struct rdma_cm_id *id, const void *private_data,
-<<<<<<< HEAD
-		u8 private_data_len);
-=======
 		u8 private_data_len, u8 reason);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rdma_disconnect - This function disconnects the associated QP and
@@ -438,20 +293,13 @@ int rdma_disconnect(struct rdma_cm_id *id);
  *   address.
  * @id: Communication identifier associated with the request.
  * @addr: Multicast address identifying the group to join.
-<<<<<<< HEAD
-=======
  * @join_state: Multicast JoinState bitmap requested by port.
  *		Bitmap is based on IB_SA_MCMEMBER_REC_JOIN_STATE bits.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @context: User-defined context associated with the join request, returned
  * to the user through the private_data pointer in multicast events.
  */
 int rdma_join_multicast(struct rdma_cm_id *id, struct sockaddr *addr,
-<<<<<<< HEAD
-			void *context);
-=======
 			u8 join_state, void *context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rdma_leave_multicast - Leave the multicast group specified by the given
@@ -483,8 +331,6 @@ void rdma_set_service_type(struct rdma_cm_id *id, int tos);
  */
 int rdma_set_reuseaddr(struct rdma_cm_id *id, int reuse);
 
-<<<<<<< HEAD
-=======
 /**
  * rdma_set_afonly - Specify that listens are restricted to the
  *    bound address family only.
@@ -544,5 +390,4 @@ void rdma_read_gids(struct rdma_cm_id *cm_id, union ib_gid *sgid,
 struct iw_cm_id *rdma_iw_cm_id(struct rdma_cm_id *cm_id);
 struct rdma_cm_id *rdma_res_to_id(struct rdma_restrack_entry *res);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* RDMA_CM_H */

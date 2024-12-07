@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP2-specific DPLL control functions
  *
  * Copyright (C) 2011 Nokia Corporation
  * Paul Walmsley
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -21,15 +11,8 @@
 #include <linux/clk.h>
 #include <linux/io.h>
 
-<<<<<<< HEAD
-#include <plat/clock.h>
-
-#include "clock.h"
-#include "cm2xxx_3xxx.h"
-=======
 #include "clock.h"
 #include "cm2xxx.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "cm-regbits-24xx.h"
 
 /* Private functions */
@@ -43,11 +26,7 @@
  * REVISIT: DPLL can optionally enter low-power bypass by writing 0x1
  * instead.  Add some mechanism to optionally enter this mode.
  */
-<<<<<<< HEAD
-static void _allow_idle(struct clk *clk)
-=======
 static void _allow_idle(struct clk_hw_omap *clk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!clk || !clk->dpll_data)
 		return;
@@ -61,11 +40,7 @@ static void _allow_idle(struct clk_hw_omap *clk)
  *
  * Disable DPLL automatic idle control.  No return value.
  */
-<<<<<<< HEAD
-static void _deny_idle(struct clk *clk)
-=======
 static void _deny_idle(struct clk_hw_omap *clk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!clk || !clk->dpll_data)
 		return;
@@ -75,16 +50,7 @@ static void _deny_idle(struct clk_hw_omap *clk)
 
 
 /* Public data */
-<<<<<<< HEAD
-
-const struct clkops clkops_omap2xxx_dpll_ops = {
-	.allow_idle	= _allow_idle,
-	.deny_idle	= _deny_idle,
-};
-
-=======
 const struct clk_hw_omap_ops clkhwops_omap2xxx_dpll = {
 	.allow_idle	= _allow_idle,
 	.deny_idle	= _deny_idle,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

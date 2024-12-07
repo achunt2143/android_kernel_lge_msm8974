@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef NET_COMPAT_H
 #define NET_COMPAT_H
 
 
 struct sock;
 
-<<<<<<< HEAD
-#if defined(CONFIG_COMPAT)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/compat.h>
 
 struct compat_msghdr {
@@ -36,38 +28,6 @@ struct compat_cmsghdr {
 	compat_int_t	cmsg_type;
 };
 
-<<<<<<< HEAD
-extern int compat_sock_get_timestamp(struct sock *, struct timeval __user *);
-extern int compat_sock_get_timestampns(struct sock *, struct timespec __user *);
-
-#else /* defined(CONFIG_COMPAT) */
-/*
- * To avoid compiler warnings:
- */
-#define compat_msghdr	msghdr
-#define compat_mmsghdr	mmsghdr
-#endif /* defined(CONFIG_COMPAT) */
-
-extern int get_compat_msghdr(struct msghdr *, struct compat_msghdr __user *);
-extern int verify_compat_iovec(struct msghdr *, struct iovec *, struct sockaddr_storage *, int);
-extern asmlinkage long compat_sys_sendmsg(int,struct compat_msghdr __user *,unsigned);
-extern asmlinkage long compat_sys_sendmmsg(int, struct compat_mmsghdr __user *,
-					   unsigned, unsigned);
-extern asmlinkage long compat_sys_recvmsg(int,struct compat_msghdr __user *,unsigned);
-extern asmlinkage long compat_sys_recvmmsg(int, struct compat_mmsghdr __user *,
-					   unsigned, unsigned,
-					   struct compat_timespec __user *);
-extern asmlinkage long compat_sys_getsockopt(int, int, int, char __user *, int __user *);
-extern int put_cmsg_compat(struct msghdr*, int, int, int, void *);
-
-extern int cmsghdr_from_user_compat_to_kern(struct msghdr *, struct sock *, unsigned char *, int);
-
-extern int compat_mc_setsockopt(struct sock *, int, int, char __user *, unsigned int,
-	int (*)(struct sock *, int, int, char __user *, unsigned int));
-extern int compat_mc_getsockopt(struct sock *, int, int, char __user *,
-	int __user *, int (*)(struct sock *, int, int, char __user *,
-				int __user *));
-=======
 struct compat_rtentry {
 	u32		rt_pad1;
 	struct sockaddr rt_dst;         /* target address               */
@@ -131,6 +91,5 @@ struct compat_group_filter {
 		} __packed;
 	};
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* NET_COMPAT_H */

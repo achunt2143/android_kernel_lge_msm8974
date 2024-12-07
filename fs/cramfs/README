@@ -49,8 +49,6 @@ same as the start of the (i+1)'th <block> if there is one).  The first
 <block> immediately follows the last <block_pointer> for the file.
 <block_pointer>s are each 32 bits long.
 
-<<<<<<< HEAD
-=======
 When the CRAMFS_FLAG_EXT_BLOCK_POINTERS capability bit is set, each
 <block_pointer>'s top bits may contain special flags as follows:
 
@@ -67,20 +65,12 @@ CRAMFS_BLK_FLAG_DIRECT_PTR (bit 30):
 	and specific data block alignments e.g. for XIP applications.
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 The order of <file_data>'s is a depth-first descent of the directory
 tree, i.e. the same order as `find -size +0 \( -type f -o -type l \)
 -print'.
 
 
 <block>: The i'th <block> is the output of zlib's compress function
-<<<<<<< HEAD
-applied to the i'th blksize-sized chunk of the input data.
-(For the last <block> of the file, the input may of course be smaller.)
-Each <block> may be a different size.  (See <block_pointer> above.)
-<block>s are merely byte-aligned, not generally u32-aligned.
-
-=======
 applied to the i'th blksize-sized chunk of the input data if the
 corresponding CRAMFS_BLK_FLAG_UNCOMPRESSED <block_ptr> bit is not set,
 otherwise it is the input data directly.
@@ -99,7 +89,6 @@ is not set then the first 2 bytes of the block contains the size of the
 remaining block data as this cannot be determined from the placement of
 logically adjacent blocks.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Holes
 -----
@@ -126,17 +115,6 @@ Block Size
 
 (Block size in cramfs refers to the size of input data that is
 compressed at a time.  It's intended to be somewhere around
-<<<<<<< HEAD
-PAGE_CACHE_SIZE for cramfs_readpage's convenience.)
-
-The superblock ought to indicate the block size that the fs was
-written for, since comments in <linux/pagemap.h> indicate that
-PAGE_CACHE_SIZE may grow in future (if I interpret the comment
-correctly).
-
-Currently, mkcramfs #define's PAGE_CACHE_SIZE as 4096 and uses that
-for blksize, whereas Linux-2.3.39 uses its PAGE_CACHE_SIZE, which in
-=======
 PAGE_SIZE for cramfs_read_folio's convenience.)
 
 The superblock ought to indicate the block size that the fs was
@@ -146,20 +124,10 @@ correctly).
 
 Currently, mkcramfs #define's PAGE_SIZE as 4096 and uses that
 for blksize, whereas Linux-2.3.39 uses its PAGE_SIZE, which in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 turn is defined as PAGE_SIZE (which can be as large as 32KB on arm).
 This discrepancy is a bug, though it's not clear which should be
 changed.
 
-<<<<<<< HEAD
-One option is to change mkcramfs to take its PAGE_CACHE_SIZE from
-<asm/page.h>.  Personally I don't like this option, but it does
-require the least amount of change: just change `#define
-PAGE_CACHE_SIZE (4096)' to `#include <asm/page.h>'.  The disadvantage
-is that the generated cramfs cannot always be shared between different
-kernels, not even necessarily kernels of the same architecture if
-PAGE_CACHE_SIZE is subject to change between kernel versions
-=======
 One option is to change mkcramfs to take its PAGE_SIZE from
 <asm/page.h>.  Personally I don't like this option, but it does
 require the least amount of change: just change `#define
@@ -167,7 +135,6 @@ PAGE_SIZE (4096)' to `#include <asm/page.h>'.  The disadvantage
 is that the generated cramfs cannot always be shared between different
 kernels, not even necessarily kernels of the same architecture if
 PAGE_SIZE is subject to change between kernel versions
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 (currently possible with arm and ia64).
 
 The remaining options try to make cramfs more sharable.
@@ -188,17 +155,6 @@ size.  The options are:
   1. Always 4096 bytes.
 
   2. Writer chooses blocksize; kernel adapts but rejects blocksize >
-<<<<<<< HEAD
-     PAGE_CACHE_SIZE.
-
-  3. Writer chooses blocksize; kernel adapts even to blocksize >
-     PAGE_CACHE_SIZE.
-
-It's easy enough to change the kernel to use a smaller value than
-PAGE_CACHE_SIZE: just make cramfs_readpage read multiple blocks.
-
-The cost of option 1 is that kernels with a larger PAGE_CACHE_SIZE
-=======
      PAGE_SIZE.
 
   3. Writer chooses blocksize; kernel adapts even to blocksize >
@@ -208,21 +164,10 @@ It's easy enough to change the kernel to use a smaller value than
 PAGE_SIZE: just make cramfs_read_folio read multiple blocks.
 
 The cost of option 1 is that kernels with a larger PAGE_SIZE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 value don't get as good compression as they can.
 
 The cost of option 2 relative to option 1 is that the code uses
 variables instead of #define'd constants.  The gain is that people
-<<<<<<< HEAD
-with kernels having larger PAGE_CACHE_SIZE can make use of that if
-they don't mind their cramfs being inaccessible to kernels with
-smaller PAGE_CACHE_SIZE values.
-
-Option 3 is easy to implement if we don't mind being CPU-inefficient:
-e.g. get readpage to decompress to a buffer of size MAX_BLKSIZE (which
-must be no larger than 32KB) and discard what it doesn't need.
-Getting readpage to read into all the covered pages is harder.
-=======
 with kernels having larger PAGE_SIZE can make use of that if
 they don't mind their cramfs being inaccessible to kernels with
 smaller PAGE_SIZE values.
@@ -231,7 +176,6 @@ Option 3 is easy to implement if we don't mind being CPU-inefficient:
 e.g. get read_folio to decompress to a buffer of size MAX_BLKSIZE (which
 must be no larger than 32KB) and discard what it doesn't need.
 Getting read_folio to read into all the covered pages is harder.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 The main advantage of option 3 over 1, 2, is better compression.  The
 cost is greater complexity.  Probably not worth it, but I hope someone

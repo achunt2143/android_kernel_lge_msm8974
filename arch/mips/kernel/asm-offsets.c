@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-/*
- * offset.c: Calculate pt_regs and task_struct offsets.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * asm-offsets.c: Calculate pt_regs and task_struct offsets.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 1996 David S. Miller
  * Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003 Ralf Baechle
@@ -18,14 +13,6 @@
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/mm.h>
-<<<<<<< HEAD
-#include <linux/interrupt.h>
-#include <linux/kbuild.h>
-#include <linux/suspend.h>
-#include <asm/ptrace.h>
-#include <asm/processor.h>
-
-=======
 #include <linux/kbuild.h>
 #include <linux/suspend.h>
 #include <asm/cpu-info.h>
@@ -37,7 +24,6 @@
 #include <linux/kvm_host.h>
 
 void output_ptreg_defines(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void output_ptreg_defines(void)
 {
 	COMMENT("MIPS pt_regs offsets.");
@@ -82,12 +68,6 @@ void output_ptreg_defines(void)
 	OFFSET(PT_BVADDR, pt_regs, cp0_badvaddr);
 	OFFSET(PT_STATUS, pt_regs, cp0_status);
 	OFFSET(PT_CAUSE, pt_regs, cp0_cause);
-<<<<<<< HEAD
-#ifdef CONFIG_MIPS_MT_SMTC
-	OFFSET(PT_TCSTATUS, pt_regs, cp0_tcstatus);
-#endif /* CONFIG_MIPS_MT_SMTC */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CPU_CAVIUM_OCTEON
 	OFFSET(PT_MPL, pt_regs, mpl);
 	OFFSET(PT_MTP, pt_regs, mtp);
@@ -96,57 +76,30 @@ void output_ptreg_defines(void)
 	BLANK();
 }
 
-<<<<<<< HEAD
-void output_task_defines(void)
-{
-	COMMENT("MIPS task_struct offsets.");
-	OFFSET(TASK_STATE, task_struct, state);
-=======
 void output_task_defines(void);
 void output_task_defines(void)
 {
 	COMMENT("MIPS task_struct offsets.");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OFFSET(TASK_THREAD_INFO, task_struct, stack);
 	OFFSET(TASK_FLAGS, task_struct, flags);
 	OFFSET(TASK_MM, task_struct, mm);
 	OFFSET(TASK_PID, task_struct, pid);
-<<<<<<< HEAD
-=======
 #if defined(CONFIG_STACKPROTECTOR)
 	OFFSET(TASK_STACK_CANARY, task_struct, stack_canary);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEFINE(TASK_STRUCT_SIZE, sizeof(struct task_struct));
 	BLANK();
 }
 
-<<<<<<< HEAD
-=======
 void output_thread_info_defines(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void output_thread_info_defines(void)
 {
 	COMMENT("MIPS thread_info offsets.");
 	OFFSET(TI_TASK, thread_info, task);
-<<<<<<< HEAD
-	OFFSET(TI_EXEC_DOMAIN, thread_info, exec_domain);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OFFSET(TI_FLAGS, thread_info, flags);
 	OFFSET(TI_TP_VALUE, thread_info, tp_value);
 	OFFSET(TI_CPU, thread_info, cpu);
 	OFFSET(TI_PRE_COUNT, thread_info, preempt_count);
-<<<<<<< HEAD
-	OFFSET(TI_ADDR_LIMIT, thread_info, addr_limit);
-	OFFSET(TI_RESTART_BLOCK, thread_info, restart_block);
-	OFFSET(TI_REGS, thread_info, regs);
-	DEFINE(_THREAD_SIZE, THREAD_SIZE);
-	DEFINE(_THREAD_MASK, THREAD_MASK);
-	BLANK();
-}
-
-=======
 	OFFSET(TI_REGS, thread_info, regs);
 	OFFSET(TI_SYSCALL, thread_info, syscall);
 	DEFINE(_THREAD_SIZE, THREAD_SIZE);
@@ -157,7 +110,6 @@ void output_thread_info_defines(void)
 }
 
 void output_thread_defines(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void output_thread_defines(void)
 {
 	COMMENT("MIPS specific thread_struct offsets.");
@@ -174,10 +126,6 @@ void output_thread_defines(void)
 	OFFSET(THREAD_REG31, task_struct, thread.reg31);
 	OFFSET(THREAD_STATUS, task_struct,
 	       thread.cp0_status);
-<<<<<<< HEAD
-	OFFSET(THREAD_FPU, task_struct, thread.fpu);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	OFFSET(THREAD_BVADDR, task_struct, \
 	       thread.cp0_badvaddr);
@@ -185,17 +133,6 @@ void output_thread_defines(void)
 	       thread.cp0_baduaddr);
 	OFFSET(THREAD_ECODE, task_struct, \
 	       thread.error_code);
-<<<<<<< HEAD
-	OFFSET(THREAD_TRAMP, task_struct, \
-	       thread.irix_trampoline);
-	OFFSET(THREAD_OLDCTX, task_struct, \
-	       thread.irix_oldctx);
-	BLANK();
-}
-
-void output_thread_fpu_defines(void)
-{
-=======
 	OFFSET(THREAD_TRAPNO, task_struct, thread.trap_nr);
 	BLANK();
 }
@@ -206,7 +143,6 @@ void output_thread_fpu_defines(void)
 {
 	OFFSET(THREAD_FPU, task_struct, thread.fpu);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OFFSET(THREAD_FPR0, task_struct, thread.fpu.fpr[0]);
 	OFFSET(THREAD_FPR1, task_struct, thread.fpu.fpr[1]);
 	OFFSET(THREAD_FPR2, task_struct, thread.fpu.fpr[2]);
@@ -241,18 +177,12 @@ void output_thread_fpu_defines(void)
 	OFFSET(THREAD_FPR31, task_struct, thread.fpu.fpr[31]);
 
 	OFFSET(THREAD_FCR31, task_struct, thread.fpu.fcr31);
-<<<<<<< HEAD
-	BLANK();
-}
-
-=======
 	OFFSET(THREAD_MSA_CSR, task_struct, thread.fpu.msacsr);
 	BLANK();
 }
 #endif
 
 void output_mm_defines(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void output_mm_defines(void)
 {
 	COMMENT("Size of struct page");
@@ -273,14 +203,6 @@ void output_mm_defines(void)
 #endif
 	DEFINE(_PTE_T_LOG2, PTE_T_LOG2);
 	BLANK();
-<<<<<<< HEAD
-	DEFINE(_PGD_ORDER, PGD_ORDER);
-#ifndef __PAGETABLE_PMD_FOLDED
-	DEFINE(_PMD_ORDER, PMD_ORDER);
-#endif
-	DEFINE(_PTE_ORDER, PTE_ORDER);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BLANK();
 	DEFINE(_PMD_SHIFT, PMD_SHIFT);
 	DEFINE(_PGDIR_SHIFT, PGDIR_SHIFT);
@@ -289,11 +211,6 @@ void output_mm_defines(void)
 	DEFINE(_PTRS_PER_PMD, PTRS_PER_PMD);
 	DEFINE(_PTRS_PER_PTE, PTRS_PER_PTE);
 	BLANK();
-<<<<<<< HEAD
-}
-
-#ifdef CONFIG_32BIT
-=======
 	DEFINE(_PAGE_SHIFT, PAGE_SHIFT);
 	DEFINE(_PAGE_SIZE, PAGE_SIZE);
 	BLANK();
@@ -301,7 +218,6 @@ void output_mm_defines(void)
 
 #ifdef CONFIG_32BIT
 void output_sc_defines(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void output_sc_defines(void)
 {
 	COMMENT("Linux sigcontext offsets.");
@@ -324,10 +240,7 @@ void output_sc_defines(void)
 #endif
 
 #ifdef CONFIG_64BIT
-<<<<<<< HEAD
-=======
 void output_sc_defines(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void output_sc_defines(void)
 {
 	COMMENT("Linux sigcontext offsets.");
@@ -341,21 +254,7 @@ void output_sc_defines(void)
 }
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_MIPS32_COMPAT
-void output_sc32_defines(void)
-{
-	COMMENT("Linux 32-bit sigcontext offsets.");
-	OFFSET(SC32_FPREGS, sigcontext32, sc_fpregs);
-	OFFSET(SC32_FPC_CSR, sigcontext32, sc_fpc_csr);
-	OFFSET(SC32_FPC_EIR, sigcontext32, sc_fpc_eir);
-	BLANK();
-}
-#endif
-
-=======
 void output_signal_defined(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void output_signal_defined(void)
 {
 	COMMENT("Linux signal numbers.");
@@ -394,21 +293,8 @@ void output_signal_defined(void)
 	BLANK();
 }
 
-<<<<<<< HEAD
-void output_irq_cpustat_t_defines(void)
-{
-	COMMENT("Linux irq_cpustat_t offsets.");
-	DEFINE(IC_SOFTIRQ_PENDING,
-			offsetof(irq_cpustat_t, __softirq_pending));
-	DEFINE(IC_IRQ_CPUSTAT_T, sizeof(irq_cpustat_t));
-	BLANK();
-}
-
-#ifdef CONFIG_CPU_CAVIUM_OCTEON
-=======
 #ifdef CONFIG_CPU_CAVIUM_OCTEON
 void output_octeon_cop2_state_defines(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void output_octeon_cop2_state_defines(void)
 {
 	COMMENT("Octeon specific octeon_cop2_state offsets.");
@@ -429,26 +315,18 @@ void output_octeon_cop2_state_defines(void)
 	OFFSET(OCTEON_CP2_GFM_RESULT,	octeon_cop2_state, cop2_gfm_result);
 	OFFSET(OCTEON_CP2_HSH_DATW,	octeon_cop2_state, cop2_hsh_datw);
 	OFFSET(OCTEON_CP2_HSH_IVW,	octeon_cop2_state, cop2_hsh_ivw);
-<<<<<<< HEAD
-	OFFSET(THREAD_CP2,	task_struct, thread.cp2);
-	OFFSET(THREAD_CVMSEG,	task_struct, thread.cvmseg.cvmseg);
-=======
 	OFFSET(OCTEON_CP2_SHA3,		octeon_cop2_state, cop2_sha3);
 	OFFSET(THREAD_CP2,	task_struct, thread.cp2);
 #if defined(CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE) && \
     CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE > 0
 	OFFSET(THREAD_CVMSEG,	task_struct, thread.cvmseg.cvmseg);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BLANK();
 }
 #endif
 
 #ifdef CONFIG_HIBERNATION
-<<<<<<< HEAD
-=======
 void output_pbe_defines(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void output_pbe_defines(void)
 {
 	COMMENT(" Linux struct pbe offsets. ");
@@ -459,8 +337,6 @@ void output_pbe_defines(void)
 	BLANK();
 }
 #endif
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_CPU_PM
 void output_pm_defines(void);
@@ -538,4 +414,3 @@ void output_cps_defines(void)
 	DEFINE(VPEBOOTCFG_SIZE, sizeof(struct vpe_boot_config));
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

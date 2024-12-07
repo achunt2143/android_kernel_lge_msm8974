@@ -1,36 +1,20 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
  * Copyright (C) 2011 Richard Zhao, Linaro <richard.zhao@linaro.org>
  * Copyright (C) 2011-2012 Mike Turquette, Linaro Ltd <mturquette@linaro.org>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Adjustable divider clock implementation
  */
 
 #include <linux/clk-provider.h>
-<<<<<<< HEAD
-=======
 #include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/io.h>
 #include <linux/err.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-=======
 #include <linux/log2.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * DOC: basic adjustable divider clock that cannot gate
@@ -38,15 +22,6 @@
  * Traits of this clock:
  * prepare - clk_prepare only ensures that parents are prepared
  * enable - clk_enable only ensures that parents are enabled
-<<<<<<< HEAD
- * rate - rate is adjustable.  clk->rate = parent->rate / divisor
- * parent - fixed parent.  No clk_set_parent support
- */
-
-#define to_clk_divider(_hw) container_of(_hw, struct clk_divider, hw)
-
-#define div_mask(d)	((1 << (d->width)) - 1)
-=======
  * rate - rate is adjustable.  clk->rate = ceiling(parent->rate / divisor)
  * parent - fixed parent.  No clk_set_parent support
  */
@@ -170,38 +145,11 @@ unsigned long divider_recalc_rate(struct clk_hw *hw, unsigned long parent_rate,
 	return DIV_ROUND_UP_ULL((u64)parent_rate, div);
 }
 EXPORT_SYMBOL_GPL(divider_recalc_rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned long clk_divider_recalc_rate(struct clk_hw *hw,
 		unsigned long parent_rate)
 {
 	struct clk_divider *divider = to_clk_divider(hw);
-<<<<<<< HEAD
-	unsigned int div;
-
-	div = readl(divider->reg) >> divider->shift;
-	div &= div_mask(divider);
-
-	if (!(divider->flags & CLK_DIVIDER_ONE_BASED))
-		div++;
-
-	return parent_rate / div;
-}
-EXPORT_SYMBOL_GPL(clk_divider_recalc_rate);
-
-/*
- * The reverse of DIV_ROUND_UP: The maximum number which
- * divided by m is r
- */
-#define MULT_ROUND_UP(r, m) ((r) * (m) + (m) - 1)
-
-static int clk_divider_bestdiv(struct clk_hw *hw, unsigned long rate,
-		unsigned long *best_parent_rate)
-{
-	struct clk_divider *divider = to_clk_divider(hw);
-	int i, bestdiv = 0;
-	unsigned long parent_rate, best = 0, now, maxdiv;
-=======
 	unsigned int val;
 
 	val = clk_div_readl(divider) >> divider->shift;
@@ -347,27 +295,15 @@ static int clk_divider_bestdiv(struct clk_hw *hw, struct clk_hw *parent,
 	int i, bestdiv = 0;
 	unsigned long parent_rate, best = 0, now, maxdiv;
 	unsigned long parent_rate_saved = *best_parent_rate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!rate)
 		rate = 1;
 
-<<<<<<< HEAD
-	maxdiv = (1 << divider->width);
-
-	if (divider->flags & CLK_DIVIDER_ONE_BASED)
-		maxdiv--;
-
-	if (!best_parent_rate) {
-		parent_rate = __clk_get_rate(__clk_get_parent(hw->clk));
-		bestdiv = DIV_ROUND_UP(parent_rate, rate);
-=======
 	maxdiv = _get_maxdiv(table, width, flags);
 
 	if (!(clk_hw_get_flags(hw) & CLK_SET_RATE_PARENT)) {
 		parent_rate = *best_parent_rate;
 		bestdiv = _div_round(table, parent_rate, rate, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bestdiv = bestdiv == 0 ? 1 : bestdiv;
 		bestdiv = bestdiv > maxdiv ? maxdiv : bestdiv;
 		return bestdiv;
@@ -379,13 +315,6 @@ static int clk_divider_bestdiv(struct clk_hw *hw, struct clk_hw *parent,
 	 */
 	maxdiv = min(ULONG_MAX / rate, maxdiv);
 
-<<<<<<< HEAD
-	for (i = 1; i <= maxdiv; i++) {
-		parent_rate = __clk_round_rate(__clk_get_parent(hw->clk),
-				MULT_ROUND_UP(rate, i));
-		now = parent_rate / i;
-		if (now <= rate && now > best) {
-=======
 	for (i = _next_div(table, 0, flags); i <= maxdiv;
 					     i = _next_div(table, i, flags)) {
 		if (rate * i == parent_rate_saved) {
@@ -400,7 +329,6 @@ static int clk_divider_bestdiv(struct clk_hw *hw, struct clk_hw *parent,
 		parent_rate = clk_hw_round_rate(parent, rate * i);
 		now = DIV_ROUND_UP_ULL((u64)parent_rate, i);
 		if (_is_best_div(rate, now, best, flags)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bestdiv = i;
 			best = now;
 			*best_parent_rate = parent_rate;
@@ -408,71 +336,13 @@ static int clk_divider_bestdiv(struct clk_hw *hw, struct clk_hw *parent,
 	}
 
 	if (!bestdiv) {
-<<<<<<< HEAD
-		bestdiv = (1 << divider->width);
-		if (divider->flags & CLK_DIVIDER_ONE_BASED)
-			bestdiv--;
-		*best_parent_rate = __clk_round_rate(__clk_get_parent(hw->clk), 1);
-=======
 		bestdiv = _get_maxdiv(table, width, flags);
 		*best_parent_rate = clk_hw_round_rate(parent, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return bestdiv;
 }
 
-<<<<<<< HEAD
-static long clk_divider_round_rate(struct clk_hw *hw, unsigned long rate,
-				unsigned long *prate)
-{
-	int div;
-	div = clk_divider_bestdiv(hw, rate, prate);
-
-	if (prate)
-		return *prate / div;
-	else {
-		unsigned long r;
-		r = __clk_get_rate(__clk_get_parent(hw->clk));
-		return r / div;
-	}
-}
-EXPORT_SYMBOL_GPL(clk_divider_round_rate);
-
-static int clk_divider_set_rate(struct clk_hw *hw, unsigned long rate)
-{
-	struct clk_divider *divider = to_clk_divider(hw);
-	unsigned int div;
-	unsigned long flags = 0;
-	u32 val;
-
-	div = __clk_get_rate(__clk_get_parent(hw->clk)) / rate;
-
-	if (!(divider->flags & CLK_DIVIDER_ONE_BASED))
-		div--;
-
-	if (div > div_mask(divider))
-		div = div_mask(divider);
-
-	if (divider->lock)
-		spin_lock_irqsave(divider->lock, flags);
-
-	val = readl(divider->reg);
-	val &= ~(div_mask(divider) << divider->shift);
-	val |= div << divider->shift;
-	writel(val, divider->reg);
-
-	if (divider->lock)
-		spin_unlock_irqrestore(divider->lock, flags);
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(clk_divider_set_rate);
-
-struct clk_ops clk_divider_ops = {
-	.recalc_rate = clk_divider_recalc_rate,
-	.round_rate = clk_divider_round_rate,
-=======
 int divider_determine_rate(struct clk_hw *hw, struct clk_rate_request *req,
 			   const struct clk_div_table *table, u8 width,
 			   unsigned long flags)
@@ -653,28 +523,10 @@ const struct clk_ops clk_divider_ops = {
 	.recalc_rate = clk_divider_recalc_rate,
 	.round_rate = clk_divider_round_rate,
 	.determine_rate = clk_divider_determine_rate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_rate = clk_divider_set_rate,
 };
 EXPORT_SYMBOL_GPL(clk_divider_ops);
 
-<<<<<<< HEAD
-struct clk *clk_register_divider(struct device *dev, const char *name,
-		const char *parent_name, unsigned long flags,
-		void __iomem *reg, u8 shift, u8 width,
-		u8 clk_divider_flags, spinlock_t *lock)
-{
-	struct clk_divider *div;
-	struct clk *clk;
-
-	div = kzalloc(sizeof(struct clk_divider), GFP_KERNEL);
-
-	if (!div) {
-		pr_err("%s: could not allocate divider clk\n", __func__);
-		return NULL;
-	}
-
-=======
 const struct clk_ops clk_divider_ro_ops = {
 	.recalc_rate = clk_divider_recalc_rate,
 	.round_rate = clk_divider_round_rate,
@@ -720,36 +572,12 @@ struct clk_hw *__clk_hw_register_divider(struct device *dev,
 	else
 		init.num_parents = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* struct clk_divider assignments */
 	div->reg = reg;
 	div->shift = shift;
 	div->width = width;
 	div->flags = clk_divider_flags;
 	div->lock = lock;
-<<<<<<< HEAD
-
-	if (parent_name) {
-		div->parent[0] = kstrdup(parent_name, GFP_KERNEL);
-		if (!div->parent[0])
-			goto out;
-	}
-
-	clk = clk_register(dev, name,
-			&clk_divider_ops, &div->hw,
-			div->parent,
-			(parent_name ? 1 : 0),
-			flags);
-	if (clk)
-		return clk;
-
-out:
-	kfree(div->parent[0]);
-	kfree(div);
-
-	return NULL;
-}
-=======
 	div->hw.init = &init;
 	div->table = table;
 
@@ -859,4 +687,3 @@ struct clk_hw *__devm_clk_hw_register_divider(struct device *dev,
 	return hw;
 }
 EXPORT_SYMBOL_GPL(__devm_clk_hw_register_divider);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

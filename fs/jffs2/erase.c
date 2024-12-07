@@ -21,17 +21,6 @@
 #include <linux/pagemap.h>
 #include "nodelist.h"
 
-<<<<<<< HEAD
-struct erase_priv_struct {
-	struct jffs2_eraseblock *jeb;
-	struct jffs2_sb_info *c;
-};
-
-#ifndef __ECOS
-static void jffs2_erase_callback(struct erase_info *);
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void jffs2_erase_failed(struct jffs2_sb_info *c, struct jffs2_eraseblock *jeb, uint32_t bad_offset);
 static void jffs2_erase_succeeded(struct jffs2_sb_info *c, struct jffs2_eraseblock *jeb);
 static void jffs2_mark_erased_block(struct jffs2_sb_info *c, struct jffs2_eraseblock *jeb);
@@ -54,15 +43,9 @@ static void jffs2_erase_block(struct jffs2_sb_info *c,
 	jffs2_dbg(1, "%s(): erase block %#08x (range %#08x-%#08x)\n",
 		  __func__,
 		  jeb->offset, jeb->offset, jeb->offset + c->sector_size);
-<<<<<<< HEAD
-	instr = kmalloc(sizeof(struct erase_info) + sizeof(struct erase_priv_struct), GFP_KERNEL);
-	if (!instr) {
-		pr_warn("kmalloc for struct erase_info in jffs2_erase_block failed. Refiling block for later\n");
-=======
 	instr = kzalloc(sizeof(struct erase_info), GFP_KERNEL);
 	if (!instr) {
 		pr_warn("kzalloc for struct erase_info in jffs2_erase_block failed. Refiling block for later\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_lock(&c->erase_free_sem);
 		spin_lock(&c->erase_completion_lock);
 		list_move(&jeb->list, &c->erase_pending_list);
@@ -74,22 +57,6 @@ static void jffs2_erase_block(struct jffs2_sb_info *c,
 		return;
 	}
 
-<<<<<<< HEAD
-	memset(instr, 0, sizeof(*instr));
-
-	instr->mtd = c->mtd;
-	instr->addr = jeb->offset;
-	instr->len = c->sector_size;
-	instr->callback = jffs2_erase_callback;
-	instr->priv = (unsigned long)(&instr[1]);
-
-	((struct erase_priv_struct *)instr->priv)->jeb = jeb;
-	((struct erase_priv_struct *)instr->priv)->c = c;
-
-	ret = mtd_erase(c->mtd, instr);
-	if (!ret)
-		return;
-=======
 	instr->addr = jeb->offset;
 	instr->len = c->sector_size;
 
@@ -99,7 +66,6 @@ static void jffs2_erase_block(struct jffs2_sb_info *c,
 		kfree(instr);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bad_offset = instr->fail_addr;
 	kfree(instr);
@@ -235,25 +201,6 @@ static void jffs2_erase_failed(struct jffs2_sb_info *c, struct jffs2_eraseblock 
 	wake_up(&c->erase_wait);
 }
 
-<<<<<<< HEAD
-#ifndef __ECOS
-static void jffs2_erase_callback(struct erase_info *instr)
-{
-	struct erase_priv_struct *priv = (void *)instr->priv;
-
-	if(instr->state != MTD_ERASE_DONE) {
-		pr_warn("Erase at 0x%08llx finished, but state != MTD_ERASE_DONE. State is 0x%x instead.\n",
-			(unsigned long long)instr->addr, instr->state);
-		jffs2_erase_failed(priv->c, priv->jeb, instr->fail_addr);
-	} else {
-		jffs2_erase_succeeded(priv->c, priv->jeb);
-	}
-	kfree(instr);
-}
-#endif /* !__ECOS */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Hmmm. Maybe we should accept the extra space it takes and make
    this a standard doubly-linked list? */
 static inline void jffs2_remove_node_refs_from_ino_list(struct jffs2_sb_info *c,
@@ -452,11 +399,7 @@ static void jffs2_mark_erased_block(struct jffs2_sb_info *c, struct jffs2_eraseb
 {
 	size_t retlen;
 	int ret;
-<<<<<<< HEAD
-	uint32_t uninitialized_var(bad_offset);
-=======
 	uint32_t bad_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (jffs2_block_check_erase(c, jeb, &bad_offset)) {
 	case -EAGAIN:	goto refile;

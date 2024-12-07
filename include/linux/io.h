@@ -1,83 +1,47 @@
-<<<<<<< HEAD
-/*
- * Copyright 2006 PathScale, Inc.  All Rights Reserved.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of version 2 of the GNU General Public License
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2006 PathScale, Inc.  All Rights Reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_IO_H
 #define _LINUX_IO_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-=======
 #include <linux/init.h>
 #include <linux/bug.h>
 #include <linux/err.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/page.h>
 
 struct device;
-<<<<<<< HEAD
-
-void __iowrite32_copy(void __iomem *to, const void *from, size_t count);
-=======
 struct resource;
 
 __visible void __iowrite32_copy(void __iomem *to, const void *from, size_t count);
 void __ioread32_copy(void *to, const void __iomem *from, size_t count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __iowrite64_copy(void __iomem *to, const void *from, size_t count);
 
 #ifdef CONFIG_MMU
 int ioremap_page_range(unsigned long addr, unsigned long end,
 		       phys_addr_t phys_addr, pgprot_t prot);
-<<<<<<< HEAD
-=======
 int vmap_page_range(unsigned long addr, unsigned long end,
 		    phys_addr_t phys_addr, pgprot_t prot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline int ioremap_page_range(unsigned long addr, unsigned long end,
 				     phys_addr_t phys_addr, pgprot_t prot)
 {
 	return 0;
 }
-<<<<<<< HEAD
-=======
 static inline int vmap_page_range(unsigned long addr, unsigned long end,
 				  phys_addr_t phys_addr, pgprot_t prot)
 {
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
  * Managed iomap interface
  */
-<<<<<<< HEAD
-#ifdef CONFIG_HAS_IOPORT
-=======
 #ifdef CONFIG_HAS_IOPORT_MAP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __iomem * devm_ioport_map(struct device *dev, unsigned long port,
 			       unsigned int nr);
 void devm_ioport_unmap(struct device *dev, void __iomem *addr);
@@ -94,12 +58,6 @@ static inline void devm_ioport_unmap(struct device *dev, void __iomem *addr)
 }
 #endif
 
-<<<<<<< HEAD
-void __iomem *devm_ioremap(struct device *dev, resource_size_t offset,
-			    unsigned long size);
-void __iomem *devm_ioremap_nocache(struct device *dev, resource_size_t offset,
-				    unsigned long size);
-=======
 #define IOMEM_ERR_PTR(err) (__force void __iomem *)ERR_PTR(err)
 
 void __iomem *devm_ioremap(struct device *dev, resource_size_t offset,
@@ -108,14 +66,11 @@ void __iomem *devm_ioremap_uc(struct device *dev, resource_size_t offset,
 				   resource_size_t size);
 void __iomem *devm_ioremap_wc(struct device *dev, resource_size_t offset,
 				   resource_size_t size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void devm_iounmap(struct device *dev, void __iomem *addr);
 int check_signature(const volatile void __iomem *io_addr,
 			const unsigned char *signature, int length);
 void devm_ioremap_release(struct device *dev, void *res);
 
-<<<<<<< HEAD
-=======
 void *devm_memremap(struct device *dev, resource_size_t offset,
 		size_t size, unsigned long flags);
 void devm_memunmap(struct device *dev, void *addr);
@@ -226,5 +181,4 @@ static inline void arch_io_free_memtype_wc(resource_size_t base,
 int devm_arch_io_reserve_memtype_wc(struct device *dev, resource_size_t start,
 				    resource_size_t size);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_IO_H */

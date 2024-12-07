@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Cirrus network device configuration
 #
@@ -9,17 +6,9 @@
 config NET_VENDOR_CIRRUS
 	bool "Cirrus devices"
 	default y
-<<<<<<< HEAD
-	depends on ISA || EISA || ARM || MAC
-	---help---
-	  If you have a network (Ethernet) card belonging to this class, say Y
-	  and read the Ethernet-HOWTO, available from
-	  <http://www.tldp.org/docs.html#howto>.
-=======
 	depends on ISA || EISA || ARM || MAC || COMPILE_TEST
 	help
 	  If you have a network (Ethernet) card belonging to this class, say Y.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -29,16 +18,6 @@ config NET_VENDOR_CIRRUS
 if NET_VENDOR_CIRRUS
 
 config CS89x0
-<<<<<<< HEAD
-	tristate "CS89x0 support"
-	depends on ISA || EISA || ARM
-	---help---
-	  Support for CS89x0 chipset based Ethernet cards. If you have a
-	  network (Ethernet) card of this type, say Y and read the
-	  Ethernet-HOWTO, available from
-	  <http://www.tldp.org/docs.html#howto> as well as
-	  <file:Documentation/networking/cs89x0.txt>.
-=======
 	tristate
 
 config CS89x0_ISA
@@ -53,27 +32,11 @@ config CS89x0_ISA
 	  Support for CS89x0 chipset based Ethernet cards. If you have a
 	  network (Ethernet) card of this type, say Y and read the file
 	  <file:Documentation/networking/device_drivers/ethernet/cirrus/cs89x0.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here. The module
 	  will be called cs89x0.
 
 config CS89x0_PLATFORM
-<<<<<<< HEAD
-	bool "CS89x0 platform driver support"
-	depends on CS89x0
-	help
-	  Say Y to compile the cs89x0 driver as a platform driver. This
-	  makes this driver suitable for use on certain evaluation boards
-	  such as the iMX21ADS.
-
-	  If you are unsure, say N.
-
-config EP93XX_ETH
-	tristate "EP93xx Ethernet support"
-	depends on ARM && ARCH_EP93XX
-	select NET_CORE
-=======
 	tristate "CS89x0 platform driver support"
 	depends on ARM || (COMPILE_TEST && !PPC)
 	select CS89x0
@@ -87,7 +50,6 @@ config EP93XX_ETH
 config EP93XX_ETH
 	tristate "EP93xx Ethernet support"
 	depends on (ARM && ARCH_EP93XX) || COMPILE_TEST
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select MII
 	help
 	  This is a driver for the ethernet hardware included in EP93xx CPUs.
@@ -96,17 +58,9 @@ config EP93XX_ETH
 config MAC89x0
 	tristate "Macintosh CS89x0 based ethernet cards"
 	depends on MAC
-<<<<<<< HEAD
-	---help---
-	  Support for CS89x0 chipset based Ethernet cards.  If you have a
-	  Nubus or LC-PDS network (Ethernet) card of this type, say Y and
-	  read the Ethernet-HOWTO, available from
-	  <http://www.tldp.org/docs.html#howto>.
-=======
 	help
 	  Support for CS89x0 chipset based Ethernet cards.  If you have a
 	  Nubus or LC-PDS network (Ethernet) card of this type, say Y here.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here. This module will
 	  be called mac89x0.

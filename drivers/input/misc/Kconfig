@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Input misc drivers configuration
 #
@@ -26,8 +23,6 @@ config INPUT_88PM860X_ONKEY
 	  To compile this driver as a module, choose M here: the module
 	  will be called 88pm860x_onkey.
 
-<<<<<<< HEAD
-=======
 config INPUT_88PM80X_ONKEY
 	tristate "88PM80x ONKEY support"
 	depends on MFD_88PM800
@@ -38,7 +33,6 @@ config INPUT_88PM80X_ONKEY
 	  To compile this driver as a module, choose M here: the module
 	  will be called 88pm80x_onkey.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config INPUT_AB8500_PONKEY
 	tristate "AB8500 Pon (PowerOn) Key"
 	depends on AB8500_CORE
@@ -79,12 +73,6 @@ config INPUT_AD714X_SPI
 	  To compile this driver as a module, choose M here: the
 	  module will be called ad714x-spi.
 
-<<<<<<< HEAD
-config INPUT_BMA150
-	tristate "BMA150/SMB380 acceleration sensor support"
-	depends on I2C
-	select INPUT_POLLDEV
-=======
 config INPUT_ARIEL_PWRBUTTON
 	tristate "Dell Wyse 3020 Power Button Driver"
 	depends on SPI
@@ -145,7 +133,6 @@ config INPUT_BBNSM_PWRKEY
 config INPUT_BMA150
 	tristate "BMA150/SMB380 acceleration sensor support"
 	depends on I2C
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you have Bosch Sensortec's BMA150 or SMB380
 	  acceleration sensor hooked to an I2C bus.
@@ -153,15 +140,6 @@ config INPUT_BMA150
 	  To compile this driver as a module, choose M here: the
 	  module will be called bma150.
 
-<<<<<<< HEAD
-config INPUT_HBTP_INPUT
-	tristate "HBTP input driver support"
-	help
-	  Say Y to enable HBTP input driver.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called hbtp_input.
-=======
 config INPUT_E3X0_BUTTON
 	tristate "NI Ettus Research USRP E3xx Button support."
 	default n
@@ -171,7 +149,6 @@ config INPUT_E3X0_BUTTON
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called e3x0_button.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config INPUT_PCSPKR
 	tristate "PC Speaker support"
@@ -185,11 +162,6 @@ config INPUT_PCSPKR
 	  To compile this driver as a module, choose M here: the
 	  module will be called pcspkr.
 
-<<<<<<< HEAD
-config INPUT_PM8XXX_VIBRATOR
-	tristate "Qualcomm PM8XXX vibrator support"
-	depends on MFD_PM8XXX
-=======
 config INPUT_PM8941_PWRKEY
 	tristate "Qualcomm PM8941 power key support"
 	depends on MFD_SPMI_PMIC
@@ -205,7 +177,6 @@ config INPUT_PM8941_PWRKEY
 config INPUT_PM8XXX_VIBRATOR
 	tristate "Qualcomm PM8XXX vibrator support"
 	depends on MFD_PM8XXX || MFD_SPMI_PMIC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select INPUT_FF_MEMLESS
 	help
 	  This option enables device driver support for the vibrator
@@ -242,8 +213,6 @@ config INPUT_M68K_BEEP
 	tristate "M68k Beeper support"
 	depends on M68K
 
-<<<<<<< HEAD
-=======
 config INPUT_MAX77650_ONKEY
 	tristate "Maxim MAX77650 ONKEY support"
 	depends on MFD_MAX77650
@@ -264,7 +233,6 @@ config INPUT_MAX77693_HAPTIC
 	  To compile this driver as module, choose M here: the
 	  module will be called max77693-haptic.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config INPUT_MAX8925_ONKEY
 	tristate "MAX8925 ONKEY support"
 	depends on MFD_MAX8925
@@ -277,11 +245,7 @@ config INPUT_MAX8925_ONKEY
 
 config INPUT_MAX8997_HAPTIC
 	tristate "MAXIM MAX8997 haptic controller support"
-<<<<<<< HEAD
-	depends on HAVE_PWM && MFD_MAX8997
-=======
 	depends on PWM && MFD_MAX8997
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select INPUT_FF_MEMLESS
 	help
 	  This option enables device driver support for the haptic controller
@@ -293,11 +257,7 @@ config INPUT_MAX8997_HAPTIC
 
 config INPUT_MC13783_PWRBUTTON
 	tristate "MC13783 ON buttons"
-<<<<<<< HEAD
-	depends on MFD_MC13783
-=======
 	depends on MFD_MC13XXX
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Support the ON buttons of MC13783 PMIC as an input device
 	  reporting power button status.
@@ -308,10 +268,6 @@ config INPUT_MC13783_PWRBUTTON
 config INPUT_MMA8450
 	tristate "MMA8450 - Freescale's 3-Axis, 8/12-bit Digital Accelerometer"
 	depends on I2C
-<<<<<<< HEAD
-	select INPUT_POLLDEV
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to support Freescale's MMA8450 Accelerometer
 	  through I2C interface.
@@ -319,26 +275,9 @@ config INPUT_MMA8450
 	  To compile this driver as a module, choose M here: the
 	  module will be called mma8450.
 
-<<<<<<< HEAD
-config INPUT_MPU3050
-	tristate "MPU3050 Triaxial gyroscope sensor"
-	depends on I2C
-	help
-	  Say Y here if you want to support InvenSense MPU3050
-	  connected via an I2C bus.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called mpu3050.
-
 config INPUT_APANEL
 	tristate "Fujitsu Lifebook Application Panel buttons"
 	depends on X86 && I2C && LEDS_CLASS
-	select INPUT_POLLDEV
-=======
-config INPUT_APANEL
-	tristate "Fujitsu Lifebook Application Panel buttons"
-	depends on X86 && I2C && LEDS_CLASS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CHECK_SIGNATURE
 	help
 	 Say Y here for support of the Application Panel buttons, used on
@@ -349,44 +288,6 @@ config INPUT_APANEL
 	 To compile this driver as a module, choose M here: the module will
 	 be called apanel.
 
-<<<<<<< HEAD
-config INPUT_GP2A
-	tristate "Sharp GP2AP002A00F I2C Proximity/Opto sensor driver"
-	depends on I2C
-	depends on GENERIC_GPIO
-	help
-	  Say Y here if you have a Sharp GP2AP002A00F proximity/als combo-chip
-	  hooked to an I2C bus.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called gp2ap002a00f.
-
-config INPUT_GPIO_TILT_POLLED
-	tristate "Polled GPIO tilt switch"
-	depends on GENERIC_GPIO
-	select INPUT_POLLDEV
-	help
-	  This driver implements support for tilt switches connected
-	  to GPIO pins that are not capable of generating interrupts.
-
-	  The list of gpios to use and the mapping of their states
-	  to specific angles is done via platform data.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called gpio_tilt_polled.
-
-config INPUT_IXP4XX_BEEPER
-	tristate "IXP4XX Beeper support"
-	depends on ARCH_IXP4XX
-	help
-	  If you say yes here, you can connect a beeper to the
-	  ixp4xx gpio pins. This is used by the LinkSys NSLU2.
-
-	  If unsure, say Y.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called ixp4xx-beeper.
-=======
 config INPUT_GPIO_BEEPER
 	tristate "Generic GPIO Beeper support"
 	depends on GPIOLIB || COMPILE_TEST
@@ -418,27 +319,16 @@ config INPUT_GPIO_VIBRA
 
 	  To compile this driver as a module, choose M here: the module will be
 	  called gpio-vibra.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config INPUT_COBALT_BTNS
 	tristate "Cobalt button interface"
 	depends on MIPS_COBALT
-<<<<<<< HEAD
-	select INPUT_POLLDEV
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to support MIPS Cobalt button interface.
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called cobalt_btns.
 
-<<<<<<< HEAD
-config INPUT_WISTRON_BTNS
-	tristate "x86 Wistron laptop button interface"
-	depends on X86 && !X86_64
-	select INPUT_POLLDEV
-=======
 config INPUT_CPCAP_PWRBUTTON
 	tristate "CPCAP OnKey"
 	depends on MFD_CPCAP
@@ -452,7 +342,6 @@ config INPUT_CPCAP_PWRBUTTON
 config INPUT_WISTRON_BTNS
 	tristate "x86 Wistron laptop button interface"
 	depends on X86_32 && !UML
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select INPUT_SPARSEKMAP
 	select NEW_LEDS
 	select LEDS_CLASS
@@ -490,25 +379,8 @@ config INPUT_ATI_REMOTE2
 	  To compile this driver as a module, choose M here: the module will be
 	  called ati_remote2.
 
-<<<<<<< HEAD
-config INPUT_KEYCHORD
-	tristate "Key chord input driver support"
-	help
-	  Say Y here if you want to enable the key chord driver
-	  accessible at /dev/keychord.  This driver can be used
-	  for receiving notifications when client specified key
-	  combinations are pressed.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called keychord.
-
-config INPUT_KEYSPAN_REMOTE
-	tristate "Keyspan DMR USB remote control (EXPERIMENTAL)"
-	depends on EXPERIMENTAL
-=======
 config INPUT_KEYSPAN_REMOTE
 	tristate "Keyspan DMR USB remote control"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on USB_ARCH_HAS_HCD
 	select USB
 	help
@@ -532,16 +404,6 @@ config INPUT_KXTJ9
 	  To compile this driver as a module, choose M here: the module will
 	  be called kxtj9.
 
-<<<<<<< HEAD
-config INPUT_KXTJ9_POLLED_MODE
-	bool "Enable polling mode support"
-	depends on INPUT_KXTJ9
-	select INPUT_POLLDEV
-	help
-	  Say Y here if you need accelerometer to work in polling mode.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config INPUT_POWERMATE
 	tristate "Griffin PowerMate and Contour Jog support"
 	depends on USB_ARCH_HAS_HCD
@@ -560,10 +422,6 @@ config INPUT_POWERMATE
 
 config INPUT_YEALINK
 	tristate "Yealink usb-p1k voip phone"
-<<<<<<< HEAD
-	depends on EXPERIMENTAL
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on USB_ARCH_HAS_HCD
 	select USB
 	help
@@ -572,21 +430,13 @@ config INPUT_YEALINK
 	  usb sound driver, so you might want to enable that as well.
 
 	  For information about how to use these additional functions, see
-<<<<<<< HEAD
-	  <file:Documentation/input/yealink.txt>.
-=======
 	  <file:Documentation/input/devices/yealink.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module will be
 	  called yealink.
 
 config INPUT_CM109
 	tristate "C-Media CM109 USB I/O Controller"
-<<<<<<< HEAD
-	depends on EXPERIMENTAL
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on USB_ARCH_HAS_HCD
 	select USB
 	help
@@ -597,8 +447,6 @@ config INPUT_CM109
 	  To compile this driver as a module, choose M here: the module will be
 	  called cm109.
 
-<<<<<<< HEAD
-=======
 config INPUT_REGULATOR_HAPTIC
 	tristate "Regulator haptics support"
 	depends on REGULATOR
@@ -652,7 +500,6 @@ config INPUT_AXP20X_PEK
 	  be called axp20x-pek.
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config INPUT_TWL4030_PWRBUTTON
 	tristate "TWL4030 Power button Driver"
 	depends on TWL4030_CORE
@@ -696,36 +543,12 @@ config INPUT_UINPUT
 config INPUT_SGI_BTNS
 	tristate "SGI Indy/O2 volume button interface"
 	depends on SGI_IP22 || SGI_IP32
-<<<<<<< HEAD
-	select INPUT_POLLDEV
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to support SGI Indy/O2 volume button interface.
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called sgi_btns.
 
-<<<<<<< HEAD
-config INPUT_GPIO
-	tristate "GPIO driver support"
-	help
-	  Say Y here if you want to support gpio based keys, wheels etc...
-
-config INPUT_ISA1200_FF_MEMLESS
-	tristate "ISA1200 haptic ff-memless support"
-	depends on I2C
-	select INPUT_FF_MEMLESS
-	help
-	  ISA1200 is a high performance enhanced haptic chip.
-	  Say Y here if you want to support ISA1200 connected via I2C,
-	  and select N if you are unsure.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called isa1200-ff-memless.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config HP_SDC_RTC
 	tristate "HP SDC Real Time Clock"
 	depends on (GSC || HP300) && SERIO
@@ -734,8 +557,6 @@ config HP_SDC_RTC
 	  Say Y here if you want to support the built-in real time clock
 	  of the HP SDC controller.
 
-<<<<<<< HEAD
-=======
 config INPUT_PALMAS_PWRBUTTON
 	tristate "Palmas Power button Driver"
 	depends on MFD_PALMAS
@@ -746,7 +567,6 @@ config INPUT_PALMAS_PWRBUTTON
 	  To compile this driver as a module, choose M here. The module will
 	  be called palmas_pwrbutton.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config INPUT_PCF50633_PMU
 	tristate "PCF50633 PMU events"
 	depends on MFD_PCF50633
@@ -756,11 +576,7 @@ config INPUT_PCF50633_PMU
 
 config INPUT_PCF8574
 	tristate "PCF8574 Keypad input device"
-<<<<<<< HEAD
-	depends on I2C && EXPERIMENTAL
-=======
 	depends on I2C
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to support a keypad connected via I2C
 	  with a PCF8574.
@@ -770,11 +586,7 @@ config INPUT_PCF8574
 
 config INPUT_PWM_BEEPER
 	tristate "PWM beeper support"
-<<<<<<< HEAD
-	depends on HAVE_PWM
-=======
 	depends on PWM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to get support for PWM based beeper devices.
 
@@ -783,14 +595,6 @@ config INPUT_PWM_BEEPER
 	  To compile this driver as a module, choose M here: the module will be
 	  called pwm-beeper.
 
-<<<<<<< HEAD
-config INPUT_GPIO_ROTARY_ENCODER
-	tristate "Rotary encoders connected to GPIO pins"
-	depends on GPIOLIB && GENERIC_GPIO
-	help
-	  Say Y here to add support for rotary encoders connected to GPIO lines.
-	  Check file:Documentation/input/rotary-encoder.txt for more
-=======
 config INPUT_PWM_VIBRA
 	tristate "PWM vibrator support"
 	depends on PWM
@@ -820,7 +624,6 @@ config INPUT_GPIO_ROTARY_ENCODER
 	help
 	  Say Y here to add support for rotary encoders connected to GPIO lines.
 	  Check file:Documentation/input/devices/rotary-encoder.rst for more
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  information.
 
 	  To compile this driver as a module, choose M here: the
@@ -829,12 +632,7 @@ config INPUT_GPIO_ROTARY_ENCODER
 config INPUT_RB532_BUTTON
 	tristate "Mikrotik Routerboard 532 button interface"
 	depends on MIKROTIK_RB532
-<<<<<<< HEAD
-	depends on GPIOLIB && GENERIC_GPIO
-	select INPUT_POLLDEV
-=======
 	depends on GPIOLIB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want support for the S1 button built into
 	  Mikrotik's Routerboard 532.
@@ -842,8 +640,6 @@ config INPUT_RB532_BUTTON
 	  To compile this driver as a module, choose M here: the
 	  module will be called rb532_button.
 
-<<<<<<< HEAD
-=======
 config INPUT_DA7280_HAPTICS
 	tristate "Dialog Semiconductor DA7280 haptics support"
 	depends on INPUT && I2C
@@ -856,7 +652,6 @@ config INPUT_DA7280_HAPTICS
 	  To compile this driver as a module, choose M here: the
 	  module will be called da7280.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config INPUT_DA9052_ONKEY
 	tristate "Dialog DA9052/DA9053 Onkey"
 	depends on PMIC_DA9052
@@ -867,27 +662,6 @@ config INPUT_DA9052_ONKEY
 	  To compile this driver as a module, choose M here: the
 	  module will be called da9052_onkey.
 
-<<<<<<< HEAD
-config INPUT_DM355EVM
-	tristate "TI DaVinci DM355 EVM Keypad and IR Remote"
-	depends on MFD_DM355EVM_MSP
-	select INPUT_SPARSEKMAP
-	help
-	  Supports the pushbuttons and IR remote used with
-	  the DM355 EVM board.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called dm355evm_keys.
-
-config INPUT_BFIN_ROTARY
-	tristate "Blackfin Rotary support"
-	depends on BF54x || BF52x
-	help
-	  Say Y here if you want to use the Blackfin Rotary.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called bfin-rotary.
-=======
 config INPUT_DA9055_ONKEY
 	tristate "Dialog Semiconductor DA9055 ONKEY"
 	depends on MFD_DA9055
@@ -908,7 +682,6 @@ config INPUT_DA9063_ONKEY
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called da9063_onkey.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config INPUT_WM831X_ON
 	tristate "WM831X ON pin"
@@ -967,8 +740,6 @@ config INPUT_ADXL34X_SPI
 	  To compile this driver as a module, choose M here: the
 	  module will be called adxl34x-spi.
 
-<<<<<<< HEAD
-=======
 config INPUT_IBM_PANEL
 	tristate "IBM Operation Panel driver"
 	depends on I2C && I2C_SLAVE
@@ -1029,7 +800,6 @@ config INPUT_IQS7222
 	  To compile this driver as a module, choose M here: the
 	  module will be called iqs7222.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config INPUT_CMA3000
 	tristate "VTI CMA3000 Tri-axis accelerometer"
 	help
@@ -1067,104 +837,6 @@ config INPUT_XEN_KBDDEV_FRONTEND
 	  To compile this driver as a module, choose M here: the
 	  module will be called xen-kbdfront.
 
-<<<<<<< HEAD
-config PMIC8058_OTHC
-        tristate "Qualcomm PMIC8058 OTHC support"
-        default n
-        depends on PMIC8058
-        help
-          Say Y here if you want support PMIC8058 OTHC.
-
-          To compile this driver as a module, choose M here: the
-          module will be called pmic8058-othc.
-
-config INPUT_PMIC8058_VIBRA_MEMLESS
-	tristate "Qualcomm PM8058 vibrator support (ff-memless)"
-	depends on PMIC8058 && INPUT_FF_MEMLESS
-	default n
-	help
-	  This option enables device driver support for the vibrator
-	  on Qualcomm PM8058 chip. This driver supports ff-memless interface
-	  from input framework.
-
-	  To compile this driver as module, choose M here: the
-	  module will be called pmic8058-vib-memless.
-
-config BOSCH_BMA150
-        tristate "SMB380/BMA150 acceleration sensor support"
-        depends on I2C=y
-        help
-          If you say yes here you get support for Bosch Sensortec's
-          acceleration sensors SMB380/BMA150.
-
-config STM_LIS3DH
-        tristate "STM LIS3DH acceleration sensor support"
-        depends on I2C=y
-        help
-          If you say yes here you get support for STMicroelectronics's
-          acceleration sensors LIS3DH.
-
-config BMP18X
-       tristate "BMP18X digital pressure sensor"
-       depends on (I2C ) && SYSFS
-       help
-         If you say yes here you get support for Bosch Sensortec
-	 digital pressure sensors BMP085, BMP180.
-
-         To compile this driver as a module, choose M here: the
-         module will be called bmp18x-core.
-
-config BMP18X_I2C
-       tristate "support I2C bus connection"
-       depends on BMP18X && I2C
-       help
-         Say Y here if you want to support Bosch Sensortec digital pressure
-         sensor hooked to an I2C bus.
-
-         To compile this driver as a module, choose M here: the
-         module will be called bmp18x-i2c.
-
-config SENSORS_MMA8X5X
-	tristate "MMA8451/MMA8452/MMA8453/MMA8652/MMA8653 device driver"
-	depends on I2C && SYSFS
-	select INPUT_POLLDEV
-	default n
-	help
-	  If you say yes here you get support for the Freescale MMA8451/
-	  MMA8452/MMA8453/MMA8652/MMA8653  sensors.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called mma8x5x.
-
-config SENSORS_MMA_POSITION
-	int "MMA8x5x Accelerate Sensor Position Setting"
-	depends on SENSORS_MMA8X5X
-	default "0"
-	help
-	  this provide the sensor position setting , value is between 0~7
-
-config SENSORS_STK3X1X
-	tristate "STK3X1X device driver"
-	depends on I2C
-	default n
-	help
-	  Say Y here you want to enable for the sitronix stk3x1x
-	  light and proximity sensors driver.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called stk3x1x.
-
-config SENSORS_CAPELLA_CM36283
-	tristate "CM36283 proximity and light sensor"
-	depends on I2C
-	default n
-	help
-	  Say Y here to enable the CM36283 Proximity
-	  Sensor with Ambient Light Sensor.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called CM36283.
-=======
 config INPUT_IDEAPAD_SLIDEBAR
 	tristate "IdeaPad Laptop Slidebar"
 	depends on INPUT
@@ -1266,6 +938,5 @@ config INPUT_STPMIC1_ONKEY
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called stpmic1_onkey.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif

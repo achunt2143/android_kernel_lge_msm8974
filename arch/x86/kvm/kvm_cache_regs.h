@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-#ifndef ASM_KVM_CACHE_REGS_H
-#define ASM_KVM_CACHE_REGS_H
-
-#define KVM_POSSIBLE_CR0_GUEST_BITS X86_CR0_TS
-#define KVM_POSSIBLE_CR4_GUEST_BITS				  \
-	(X86_CR4_PVI | X86_CR4_DE | X86_CR4_PCE | X86_CR4_OSFXSR  \
-	 | X86_CR4_OSXMMEXCPT | X86_CR4_PGE)
-
-static inline unsigned long kvm_register_read(struct kvm_vcpu *vcpu,
-					      enum kvm_reg reg)
-{
-	if (!test_bit(reg, (unsigned long *)&vcpu->arch.regs_avail))
-		kvm_x86_ops->cache_reg(vcpu, reg);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef ASM_KVM_CACHE_REGS_H
 #define ASM_KVM_CACHE_REGS_H
@@ -114,20 +99,10 @@ static inline unsigned long kvm_register_read_raw(struct kvm_vcpu *vcpu, int reg
 
 	if (!kvm_register_is_available(vcpu, reg))
 		static_call(kvm_x86_cache_reg)(vcpu, reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return vcpu->arch.regs[reg];
 }
 
-<<<<<<< HEAD
-static inline void kvm_register_write(struct kvm_vcpu *vcpu,
-				      enum kvm_reg reg,
-				      unsigned long val)
-{
-	vcpu->arch.regs[reg] = val;
-	__set_bit(reg, (unsigned long *)&vcpu->arch.regs_dirty);
-	__set_bit(reg, (unsigned long *)&vcpu->arch.regs_avail);
-=======
 static inline void kvm_register_write_raw(struct kvm_vcpu *vcpu, int reg,
 					  unsigned long val)
 {
@@ -136,23 +111,15 @@ static inline void kvm_register_write_raw(struct kvm_vcpu *vcpu, int reg,
 
 	vcpu->arch.regs[reg] = val;
 	kvm_register_mark_dirty(vcpu, reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned long kvm_rip_read(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	return kvm_register_read(vcpu, VCPU_REGS_RIP);
-=======
 	return kvm_register_read_raw(vcpu, VCPU_REGS_RIP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void kvm_rip_write(struct kvm_vcpu *vcpu, unsigned long val)
 {
-<<<<<<< HEAD
-	kvm_register_write(vcpu, VCPU_REGS_RIP, val);
-=======
 	kvm_register_write_raw(vcpu, VCPU_REGS_RIP, val);
 }
 
@@ -164,35 +131,18 @@ static inline unsigned long kvm_rsp_read(struct kvm_vcpu *vcpu)
 static inline void kvm_rsp_write(struct kvm_vcpu *vcpu, unsigned long val)
 {
 	kvm_register_write_raw(vcpu, VCPU_REGS_RSP, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u64 kvm_pdptr_read(struct kvm_vcpu *vcpu, int index)
 {
 	might_sleep();  /* on svm */
 
-<<<<<<< HEAD
-	if (!test_bit(VCPU_EXREG_PDPTR,
-		      (unsigned long *)&vcpu->arch.regs_avail))
-		kvm_x86_ops->cache_reg(vcpu, VCPU_EXREG_PDPTR);
-=======
 	if (!kvm_register_is_available(vcpu, VCPU_EXREG_PDPTR))
 		static_call(kvm_x86_cache_reg)(vcpu, VCPU_EXREG_PDPTR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return vcpu->arch.walk_mmu->pdptrs[index];
 }
 
-<<<<<<< HEAD
-static inline ulong kvm_read_cr0_bits(struct kvm_vcpu *vcpu, ulong mask)
-{
-	ulong tmask = mask & KVM_POSSIBLE_CR0_GUEST_BITS;
-	if (tmask & vcpu->arch.cr0_guest_owned_bits)
-		kvm_x86_ops->decache_cr0_guest_bits(vcpu);
-	return vcpu->arch.cr0 & mask;
-}
-
-=======
 static inline void kvm_pdptr_write(struct kvm_vcpu *vcpu, int index, u64 value)
 {
 	vcpu->arch.walk_mmu->pdptrs[index] = value;
@@ -215,7 +165,6 @@ static __always_inline bool kvm_is_cr0_bit_set(struct kvm_vcpu *vcpu,
 	return !!kvm_read_cr0_bits(vcpu, cr0_bit);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline ulong kvm_read_cr0(struct kvm_vcpu *vcpu)
 {
 	return kvm_read_cr0_bits(vcpu, ~0UL);
@@ -224,17 +173,6 @@ static inline ulong kvm_read_cr0(struct kvm_vcpu *vcpu)
 static inline ulong kvm_read_cr4_bits(struct kvm_vcpu *vcpu, ulong mask)
 {
 	ulong tmask = mask & KVM_POSSIBLE_CR4_GUEST_BITS;
-<<<<<<< HEAD
-	if (tmask & vcpu->arch.cr4_guest_owned_bits)
-		kvm_x86_ops->decache_cr4_guest_bits(vcpu);
-	return vcpu->arch.cr4 & mask;
-}
-
-static inline ulong kvm_read_cr3(struct kvm_vcpu *vcpu)
-{
-	if (!test_bit(VCPU_EXREG_CR3, (ulong *)&vcpu->arch.regs_avail))
-		kvm_x86_ops->decache_cr3(vcpu);
-=======
 	if ((tmask & vcpu->arch.cr4_guest_owned_bits) &&
 	    !kvm_register_is_available(vcpu, VCPU_EXREG_CR4))
 		static_call(kvm_x86_cache_reg)(vcpu, VCPU_EXREG_CR4);
@@ -253,7 +191,6 @@ static inline ulong kvm_read_cr3(struct kvm_vcpu *vcpu)
 {
 	if (!kvm_register_is_available(vcpu, VCPU_EXREG_CR3))
 		static_call(kvm_x86_cache_reg)(vcpu, VCPU_EXREG_CR3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return vcpu->arch.cr3;
 }
 
@@ -264,29 +201,19 @@ static inline ulong kvm_read_cr4(struct kvm_vcpu *vcpu)
 
 static inline u64 kvm_read_edx_eax(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	return (kvm_register_read(vcpu, VCPU_REGS_RAX) & -1u)
-		| ((u64)(kvm_register_read(vcpu, VCPU_REGS_RDX) & -1u) << 32);
-=======
 	return (kvm_rax_read(vcpu) & -1u)
 		| ((u64)(kvm_rdx_read(vcpu) & -1u) << 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void enter_guest_mode(struct kvm_vcpu *vcpu)
 {
 	vcpu->arch.hflags |= HF_GUEST_MASK;
-<<<<<<< HEAD
-=======
 	vcpu->stat.guest_mode = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void leave_guest_mode(struct kvm_vcpu *vcpu)
 {
 	vcpu->arch.hflags &= ~HF_GUEST_MASK;
-<<<<<<< HEAD
-=======
 
 	if (vcpu->arch.load_eoi_exitmap_pending) {
 		vcpu->arch.load_eoi_exitmap_pending = false;
@@ -294,7 +221,6 @@ static inline void leave_guest_mode(struct kvm_vcpu *vcpu)
 	}
 
 	vcpu->stat.guest_mode = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool is_guest_mode(struct kvm_vcpu *vcpu)

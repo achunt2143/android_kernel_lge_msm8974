@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright 2011 Freescale Semiconductor, Inc.
- * Copyright 2011 Linaro Ltd.
- *
- * The code contained herein is licensed under the GNU General Public
- * License. You may obtain a copy of the GNU General Public License
- * Version 2 or later at the following locations:
- *
- * http://www.opensource.org/licenses/gpl-license.html
- * http://www.gnu.org/copyleft/gpl.html
- */
-
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2017 NXP
@@ -24,34 +9,21 @@
 #include <linux/hrtimer.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-=======
 #include <linux/platform_device.h>
 #include <linux/property.h>
 #include <linux/perf_event.h>
 #include <linux/slab.h>
 
 #include "common.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MMDC_MAPSR		0x404
 #define BP_MMDC_MAPSR_PSD	0
 #define BP_MMDC_MAPSR_PSS	4
 
-<<<<<<< HEAD
-static int __devinit imx_mmdc_probe(struct platform_device *pdev)
-{
-	struct device_node *np = pdev->dev.of_node;
-	void __iomem *mmdc_base, *reg;
-	u32 val;
-	int timeout = 0x400;
-=======
 #define MMDC_MDMISC		0x18
 #define BM_MMDC_MDMISC_DDR_TYPE	0x18
 #define BP_MMDC_MDMISC_DDR_TYPE	0x3
@@ -586,20 +558,16 @@ static int imx_mmdc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Unable to enable mmdc ipg clock.\n");
 		return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmdc_base = of_iomap(np, 0);
 	WARN_ON(!mmdc_base);
 
-<<<<<<< HEAD
-=======
 	reg = mmdc_base + MMDC_MDMISC;
 	/* Get ddr type */
 	val = readl_relaxed(reg);
 	ddr_type = (val & BM_MMDC_MDMISC_DDR_TYPE) >>
 		 BP_MMDC_MDMISC_DDR_TYPE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg = mmdc_base + MMDC_MAPSR;
 
 	/* Enable automatic power saving */
@@ -607,25 +575,6 @@ static int imx_mmdc_probe(struct platform_device *pdev)
 	val &= ~(1 << BP_MMDC_MAPSR_PSD);
 	writel_relaxed(val, reg);
 
-<<<<<<< HEAD
-	/* Ensure it's successfully enabled */
-	while (!(readl_relaxed(reg) & 1 << BP_MMDC_MAPSR_PSS) && --timeout)
-		cpu_relax();
-
-	if (unlikely(!timeout)) {
-		pr_warn("%s: failed to enable automatic power saving\n",
-			__func__);
-		return -EBUSY;
-	}
-
-	return 0;
-}
-
-static struct of_device_id imx_mmdc_dt_ids[] = {
-	{ .compatible = "fsl,imx6q-mmdc", },
-	{ /* sentinel */ }
-};
-=======
 	err = imx_mmdc_perf_init(pdev, mmdc_base, mmdc_ipg_clk);
 	if (err) {
 		iounmap(mmdc_base);
@@ -639,22 +588,14 @@ int imx_mmdc_get_ddr_type(void)
 {
 	return ddr_type;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver imx_mmdc_driver = {
 	.driver		= {
 		.name	= "imx-mmdc",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-		.of_match_table = imx_mmdc_dt_ids,
-	},
-	.probe		= imx_mmdc_probe,
-=======
 		.of_match_table = imx_mmdc_dt_ids,
 	},
 	.probe		= imx_mmdc_probe,
 	.remove_new	= imx_mmdc_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init imx_mmdc_init(void)

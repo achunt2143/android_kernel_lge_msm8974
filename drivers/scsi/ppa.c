@@ -37,10 +37,7 @@ typedef struct {
 	unsigned long recon_tmo;	/* How many usecs to wait for reconnection (6th bit) */
 	unsigned int failed:1;	/* Failure flag                 */
 	unsigned wanted:1;	/* Parport sharing busy flag    */
-<<<<<<< HEAD
-=======
 	unsigned int dev_no;	/* Device number		*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_queue_head_t *waiting;
 	struct Scsi_Host *host;
 	struct list_head list;
@@ -48,8 +45,6 @@ typedef struct {
 
 #include  "ppa.h"
 
-<<<<<<< HEAD
-=======
 static unsigned int mode = PPA_AUTODETECT;
 module_param(mode, uint, 0644);
 MODULE_PARM_DESC(mode, "Transfer mode (0 = Autodetect, 1 = SPP 4-bit, "
@@ -60,7 +55,6 @@ static struct scsi_pointer *ppa_scsi_pointer(struct scsi_cmnd *cmd)
 	return scsi_cmd_priv(cmd);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline ppa_struct *ppa_dev(struct Scsi_Host *host)
 {
 	return *(ppa_struct **)&host->hostdata;
@@ -72,11 +66,7 @@ static void got_it(ppa_struct *dev)
 {
 	dev->base = dev->dev->port->base;
 	if (dev->cur_cmd)
-<<<<<<< HEAD
-		dev->cur_cmd->SCp.phase = 1;
-=======
 		ppa_scsi_pointer(dev->cur_cmd)->phase = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		wake_up(dev->waiting);
 }
@@ -139,14 +129,9 @@ static inline void ppa_pb_release(ppa_struct *dev)
  * Also gives a method to use a script to obtain optimum timings (TODO)
  */
 
-<<<<<<< HEAD
-static inline int ppa_proc_write(ppa_struct *dev, char *buffer, int length)
-{
-=======
 static inline int ppa_write_info(struct Scsi_Host *host, char *buffer, int length)
 {
 	ppa_struct *dev = ppa_dev(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long x;
 
 	if ((length > 5) && (strncmp(buffer, "mode=", 5) == 0)) {
@@ -164,40 +149,6 @@ static inline int ppa_write_info(struct Scsi_Host *host, char *buffer, int lengt
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static int ppa_proc_info(struct Scsi_Host *host, char *buffer, char **start, off_t offset, int length, int inout)
-{
-	int len = 0;
-	ppa_struct *dev = ppa_dev(host);
-
-	if (inout)
-		return ppa_proc_write(dev, buffer, length);
-
-	len += sprintf(buffer + len, "Version : %s\n", PPA_VERSION);
-	len +=
-	    sprintf(buffer + len, "Parport : %s\n",
-		    dev->dev->port->name);
-	len +=
-	    sprintf(buffer + len, "Mode    : %s\n",
-		    PPA_MODE_STRING[dev->mode]);
-#if PPA_DEBUG > 0
-	len +=
-	    sprintf(buffer + len, "recon_tmo : %lu\n", dev->recon_tmo);
-#endif
-
-	/* Request for beyond end of buffer */
-	if (offset > length)
-		return 0;
-
-	*start = buffer + offset;
-	len -= offset;
-	if (len > length)
-		len = length;
-	return len;
-}
-
-static int device_check(ppa_struct *dev);
-=======
 static int ppa_show_info(struct seq_file *m, struct Scsi_Host *host)
 {
 	ppa_struct *dev = ppa_dev(host);
@@ -212,7 +163,6 @@ static int ppa_show_info(struct seq_file *m, struct Scsi_Host *host)
 }
 
 static int device_check(ppa_struct *dev, bool autodetect);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if PPA_DEBUG > 0
 #define ppa_fail(x,y) printk("ppa: ppa_fail(%i) from %s at line %d\n",\
@@ -357,20 +307,10 @@ static int ppa_out(ppa_struct *dev, char *buffer, int len)
 	case PPA_EPP_8:
 		epp_reset(ppb);
 		w_ctr(ppb, 0x4);
-<<<<<<< HEAD
-#ifdef CONFIG_SCSI_IZIP_EPP16
-		if (!(((long) buffer | len) & 0x01))
-			outsw(ppb + 4, buffer, len >> 1);
-#else
-		if (!(((long) buffer | len) & 0x03))
-			outsl(ppb + 4, buffer, len >> 2);
-#endif
-=======
 		if (dev->mode == PPA_EPP_32 && !(((long) buffer | len) & 0x03))
 			outsl(ppb + 4, buffer, len >> 2);
 		else if (dev->mode == PPA_EPP_16 && !(((long) buffer | len) & 0x01))
 			outsw(ppb + 4, buffer, len >> 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			outsb(ppb + 4, buffer, len);
 		w_ctr(ppb, 0xc);
@@ -417,20 +357,10 @@ static int ppa_in(ppa_struct *dev, char *buffer, int len)
 	case PPA_EPP_8:
 		epp_reset(ppb);
 		w_ctr(ppb, 0x24);
-<<<<<<< HEAD
-#ifdef CONFIG_SCSI_IZIP_EPP16
-		if (!(((long) buffer | len) & 0x01))
-			insw(ppb + 4, buffer, len >> 1);
-#else
-		if (!(((long) buffer | len) & 0x03))
-			insl(ppb + 4, buffer, len >> 2);
-#endif
-=======
 		if (dev->mode == PPA_EPP_32 && !(((long) buffer | len) & 0x03))
 			insl(ppb + 4, buffer, len >> 2);
 		else if (dev->mode == PPA_EPP_16 && !(((long) buffer | len) & 0x01))
 			insw(ppb + 4, buffer, len >> 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			insb(ppb + 4, buffer, len);
 		w_ctr(ppb, 0x2c);
@@ -538,8 +468,6 @@ static int ppa_init(ppa_struct *dev)
 {
 	int retv;
 	unsigned short ppb = dev->base;
-<<<<<<< HEAD
-=======
 	bool autodetect = dev->mode == PPA_AUTODETECT;
 
 	if (autodetect) {
@@ -561,7 +489,6 @@ static int ppa_init(ppa_struct *dev)
 		if ((modes & PARPORT_MODE_EPP) && (modes & PARPORT_MODE_ECP))
 			w_ecr(ppb_hi, 0x80);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ppa_disconnect(dev);
 	ppa_connect(dev, CONNECT_NORMAL);
@@ -585,11 +512,7 @@ static int ppa_init(ppa_struct *dev)
 	if (retv)
 		return -EIO;
 
-<<<<<<< HEAD
-	return device_check(dev);
-=======
 	return device_check(dev, autodetect);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int ppa_send_command(struct scsi_cmnd *cmd)
@@ -613,21 +536,14 @@ static inline int ppa_send_command(struct scsi_cmnd *cmd)
  * The driver appears to remain stable if we speed up the parallel port
  * i/o in this function, but not elsewhere.
  */
-<<<<<<< HEAD
-static int ppa_completion(struct scsi_cmnd *cmd)
-=======
 static int ppa_completion(struct scsi_cmnd *const cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Return codes:
 	 * -1     Error
 	 *  0     Told to schedule
 	 *  1     Finished data transfer
 	 */
-<<<<<<< HEAD
-=======
 	struct scsi_pointer *scsi_pointer = ppa_scsi_pointer(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ppa_struct *dev = ppa_dev(cmd->device->host);
 	unsigned short ppb = dev->base;
 	unsigned long start_jiffies = jiffies;
@@ -653,11 +569,7 @@ static int ppa_completion(struct scsi_cmnd *const cmd)
 		if (time_after(jiffies, start_jiffies + 1))
 			return 0;
 
-<<<<<<< HEAD
-		if ((cmd->SCp.this_residual <= 0)) {
-=======
 		if (scsi_pointer->this_residual <= 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ppa_fail(dev, DID_ERROR);
 			return -1;	/* ERROR_RETURN */
 		}
@@ -686,18 +598,6 @@ static int ppa_completion(struct scsi_cmnd *const cmd)
 		}
 
 		/* determine if we should use burst I/O */
-<<<<<<< HEAD
-		fast = (bulk && (cmd->SCp.this_residual >= PPA_BURST_SIZE))
-		    ? PPA_BURST_SIZE : 1;
-
-		if (r == (unsigned char) 0xc0)
-			status = ppa_out(dev, cmd->SCp.ptr, fast);
-		else
-			status = ppa_in(dev, cmd->SCp.ptr, fast);
-
-		cmd->SCp.ptr += fast;
-		cmd->SCp.this_residual -= fast;
-=======
 		fast = bulk && scsi_pointer->this_residual >= PPA_BURST_SIZE ?
 			PPA_BURST_SIZE : 1;
 
@@ -708,21 +608,11 @@ static int ppa_completion(struct scsi_cmnd *const cmd)
 
 		scsi_pointer->ptr += fast;
 		scsi_pointer->this_residual -= fast;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!status) {
 			ppa_fail(dev, DID_BUS_BUSY);
 			return -1;	/* ERROR_RETURN */
 		}
-<<<<<<< HEAD
-		if (cmd->SCp.buffer && !cmd->SCp.this_residual) {
-			/* if scatter/gather, advance to the next segment */
-			if (cmd->SCp.buffers_residual--) {
-				cmd->SCp.buffer++;
-				cmd->SCp.this_residual =
-				    cmd->SCp.buffer->length;
-				cmd->SCp.ptr = sg_virt(cmd->SCp.buffer);
-=======
 		if (scsi_pointer->buffer && !scsi_pointer->this_residual) {
 			/* if scatter/gather, advance to the next segment */
 			if (scsi_pointer->buffers_residual--) {
@@ -732,7 +622,6 @@ static int ppa_completion(struct scsi_cmnd *const cmd)
 				    scsi_pointer->buffer->length;
 				scsi_pointer->ptr =
 					sg_virt(scsi_pointer->buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		/* Now check to see if the drive is ready to comunicate */
@@ -768,11 +657,7 @@ static void ppa_interrupt(struct work_struct *work)
 	case DID_OK:
 		break;
 	case DID_NO_CONNECT:
-<<<<<<< HEAD
-		printk(KERN_DEBUG "ppa: no device at SCSI ID %i\n", cmd->device->target);
-=======
 		printk(KERN_DEBUG "ppa: no device at SCSI ID %i\n", scmd_id(cmd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case DID_BUS_BUSY:
 		printk(KERN_DEBUG "ppa: BUS BUSY - EPP timeout detected\n");
@@ -801,30 +686,19 @@ static void ppa_interrupt(struct work_struct *work)
 	}
 #endif
 
-<<<<<<< HEAD
-	if (cmd->SCp.phase > 1)
-=======
 	if (ppa_scsi_pointer(cmd)->phase > 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ppa_disconnect(dev);
 
 	ppa_pb_dismiss(dev);
 
 	dev->cur_cmd = NULL;
 
-<<<<<<< HEAD
-	cmd->scsi_done(cmd);
-=======
 	scsi_done(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ppa_engine(ppa_struct *dev, struct scsi_cmnd *cmd)
 {
-<<<<<<< HEAD
-=======
 	struct scsi_pointer *scsi_pointer = ppa_scsi_pointer(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short ppb = dev->base;
 	unsigned char l = 0, h = 0;
 	int retv;
@@ -835,11 +709,7 @@ static int ppa_engine(ppa_struct *dev, struct scsi_cmnd *cmd)
 	if (dev->failed)
 		return 0;
 
-<<<<<<< HEAD
-	switch (cmd->SCp.phase) {
-=======
 	switch (scsi_pointer->phase) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0:		/* Phase 0 - Waiting for parport */
 		if (time_after(jiffies, dev->jstart + HZ)) {
 			/*
@@ -874,26 +744,17 @@ static int ppa_engine(ppa_struct *dev, struct scsi_cmnd *cmd)
 					return 1;	/* Try again in a jiffy */
 				}
 			}
-<<<<<<< HEAD
-			cmd->SCp.phase++;
-		}
-=======
 			scsi_pointer->phase++;
 		}
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case 2:		/* Phase 2 - We are now talking to the scsi bus */
 		if (!ppa_select(dev, scmd_id(cmd))) {
 			ppa_fail(dev, DID_NO_CONNECT);
 			return 0;
 		}
-<<<<<<< HEAD
-		cmd->SCp.phase++;
-=======
 		scsi_pointer->phase++;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case 3:		/* Phase 3 - Ready to accept a command */
 		w_ctr(ppb, 0x0c);
@@ -902,22 +763,6 @@ static int ppa_engine(ppa_struct *dev, struct scsi_cmnd *cmd)
 
 		if (!ppa_send_command(cmd))
 			return 0;
-<<<<<<< HEAD
-		cmd->SCp.phase++;
-
-	case 4:		/* Phase 4 - Setup scatter/gather buffers */
-		if (scsi_bufflen(cmd)) {
-			cmd->SCp.buffer = scsi_sglist(cmd);
-			cmd->SCp.this_residual = cmd->SCp.buffer->length;
-			cmd->SCp.ptr = sg_virt(cmd->SCp.buffer);
-		} else {
-			cmd->SCp.buffer = NULL;
-			cmd->SCp.this_residual = 0;
-			cmd->SCp.ptr = NULL;
-		}
-		cmd->SCp.buffers_residual = scsi_sg_count(cmd) - 1;
-		cmd->SCp.phase++;
-=======
 		scsi_pointer->phase++;
 		fallthrough;
 
@@ -935,7 +780,6 @@ static int ppa_engine(ppa_struct *dev, struct scsi_cmnd *cmd)
 		scsi_pointer->buffers_residual = scsi_sg_count(cmd) - 1;
 		scsi_pointer->phase++;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case 5:		/* Phase 5 - Data transfer stage */
 		w_ctr(ppb, 0x0c);
@@ -947,12 +791,8 @@ static int ppa_engine(ppa_struct *dev, struct scsi_cmnd *cmd)
 			return 0;
 		if (retv == 0)
 			return 1;
-<<<<<<< HEAD
-		cmd->SCp.phase++;
-=======
 		scsi_pointer->phase++;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case 6:		/* Phase 6 - Read status/message */
 		cmd->result = DID_OK << 16;
@@ -969,10 +809,6 @@ static int ppa_engine(ppa_struct *dev, struct scsi_cmnd *cmd)
 			    (DID_OK << 16) + (h << 8) + (l & STATUS_MASK);
 		}
 		return 0;	/* Finished */
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		printk(KERN_ERR "ppa: Invalid scsi phase\n");
@@ -980,12 +816,7 @@ static int ppa_engine(ppa_struct *dev, struct scsi_cmnd *cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ppa_queuecommand_lck(struct scsi_cmnd *cmd,
-		void (*done) (struct scsi_cmnd *))
-=======
 static int ppa_queuecommand_lck(struct scsi_cmnd *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ppa_struct *dev = ppa_dev(cmd->device->host);
 
@@ -996,14 +827,8 @@ static int ppa_queuecommand_lck(struct scsi_cmnd *cmd)
 	dev->failed = 0;
 	dev->jstart = jiffies;
 	dev->cur_cmd = cmd;
-<<<<<<< HEAD
-	cmd->scsi_done = done;
-	cmd->result = DID_ERROR << 16;	/* default return code */
-	cmd->SCp.phase = 0;	/* bus free */
-=======
 	cmd->result = DID_ERROR << 16;	/* default return code */
 	ppa_scsi_pointer(cmd)->phase = 0;	/* bus free */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	schedule_delayed_work(&dev->ppa_tq, 0);
 
@@ -1044,24 +869,13 @@ static int ppa_abort(struct scsi_cmnd *cmd)
 	 * have tied the SCSI_MESSAGE line high in the interface
 	 */
 
-<<<<<<< HEAD
-	switch (cmd->SCp.phase) {
-=======
 	switch (ppa_scsi_pointer(cmd)->phase) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0:		/* Do not have access to parport */
 	case 1:		/* Have not connected to interface */
 		dev->cur_cmd = NULL;	/* Forget the problem */
 		return SUCCESS;
-<<<<<<< HEAD
-		break;
 	default:		/* SCSI command sent, can not abort */
 		return FAILED;
-		break;
-=======
-	default:		/* SCSI command sent, can not abort */
-		return FAILED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1077,11 +891,7 @@ static int ppa_reset(struct scsi_cmnd *cmd)
 {
 	ppa_struct *dev = ppa_dev(cmd->device->host);
 
-<<<<<<< HEAD
-	if (cmd->SCp.phase)
-=======
 	if (ppa_scsi_pointer(cmd)->phase)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ppa_disconnect(dev);
 	dev->cur_cmd = NULL;	/* Forget the problem */
 
@@ -1093,11 +903,7 @@ static int ppa_reset(struct scsi_cmnd *cmd)
 	return SUCCESS;
 }
 
-<<<<<<< HEAD
-static int device_check(ppa_struct *dev)
-=======
 static int device_check(ppa_struct *dev, bool autodetect)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* This routine looks for a device and then attempts to use EPP
 	   to send a command. If all goes as planned then EPP is available. */
@@ -1109,13 +915,8 @@ static int device_check(ppa_struct *dev, bool autodetect)
 	old_mode = dev->mode;
 	for (loop = 0; loop < 8; loop++) {
 		/* Attempt to use EPP for Test Unit Ready */
-<<<<<<< HEAD
-		if ((ppb & 0x0007) == 0x0000)
-			dev->mode = PPA_EPP_32;
-=======
 		if (autodetect && (ppb & 0x0007) == 0x0000)
 			dev->mode = PPA_EPP_8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 second_pass:
 		ppa_connect(dev, CONNECT_EPP_MAYBE);
@@ -1143,11 +944,7 @@ second_pass:
 			udelay(1000);
 			ppa_disconnect(dev);
 			udelay(1000);
-<<<<<<< HEAD
-			if (dev->mode == PPA_EPP_32) {
-=======
 			if (dev->mode != old_mode) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->mode = old_mode;
 				goto second_pass;
 			}
@@ -1170,11 +967,7 @@ second_pass:
 			udelay(1000);
 			ppa_disconnect(dev);
 			udelay(1000);
-<<<<<<< HEAD
-			if (dev->mode == PPA_EPP_32) {
-=======
 			if (dev->mode != old_mode) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->mode = old_mode;
 				goto second_pass;
 			}
@@ -1199,16 +992,6 @@ static int ppa_adjust_queue(struct scsi_device *device)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template ppa_template = {
-	.module			= THIS_MODULE,
-	.proc_name		= "ppa",
-	.proc_info		= ppa_proc_info,
-	.name			= "Iomega VPI0 (ppa) interface",
-	.queuecommand		= ppa_queuecommand,
-	.eh_abort_handler	= ppa_abort,
-	.eh_bus_reset_handler	= ppa_reset,
-=======
 static const struct scsi_host_template ppa_template = {
 	.module			= THIS_MODULE,
 	.proc_name		= "ppa",
@@ -1217,21 +1000,13 @@ static const struct scsi_host_template ppa_template = {
 	.name			= "Iomega VPI0 (ppa) interface",
 	.queuecommand		= ppa_queuecommand,
 	.eh_abort_handler	= ppa_abort,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eh_host_reset_handler	= ppa_reset,
 	.bios_param		= ppa_biosparam,
 	.this_id		= -1,
 	.sg_tablesize		= SG_ALL,
-<<<<<<< HEAD
-	.cmd_per_lun		= 1,
-	.use_clustering		= ENABLE_CLUSTERING,
-	.can_queue		= 1,
-	.slave_alloc		= ppa_adjust_queue,
-=======
 	.can_queue		= 1,
 	.slave_alloc		= ppa_adjust_queue,
 	.cmd_size		= sizeof(struct scsi_pointer),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /***************************************************************************
@@ -1240,8 +1015,6 @@ static const struct scsi_host_template ppa_template = {
 
 static LIST_HEAD(ppa_hosts);
 
-<<<<<<< HEAD
-=======
 /*
  * Finds the first available device number that can be alloted to the
  * new ppa device and returns the address of the previous node so that
@@ -1266,35 +1039,20 @@ static inline ppa_struct *find_parent(void)
 	return par;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __ppa_attach(struct parport *pb)
 {
 	struct Scsi_Host *host;
 	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(waiting);
 	DEFINE_WAIT(wait);
-<<<<<<< HEAD
-	ppa_struct *dev;
-	int ports;
-	int modes, ppb, ppb_hi;
-	int err = -ENOMEM;
-=======
 	ppa_struct *dev, *temp;
 	int ports;
 	int err = -ENOMEM;
 	struct pardev_cb ppa_cb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = kzalloc(sizeof(ppa_struct), GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
 	dev->base = -1;
-<<<<<<< HEAD
-	dev->mode = PPA_AUTODETECT;
-	dev->recon_tmo = PPA_RECON_TMO;
-	init_waitqueue_head(&waiting);
-	dev->dev = parport_register_device(pb, "ppa", NULL, ppa_wakeup,
-					    NULL, 0, dev);
-=======
 	dev->mode = mode < PPA_UNKNOWN ? mode : PPA_AUTODETECT;
 	dev->recon_tmo = PPA_RECON_TMO;
 	init_waitqueue_head(&waiting);
@@ -1307,7 +1065,6 @@ static int __ppa_attach(struct parport *pb)
 	ppa_cb.wakeup = ppa_wakeup;
 
 	dev->dev = parport_register_dev_model(pb, "ppa", &ppa_cb, dev->dev_no);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev->dev)
 		goto out;
@@ -1331,30 +1088,8 @@ static int __ppa_attach(struct parport *pb)
 	}
 	dev->waiting = NULL;
 	finish_wait(&waiting, &wait);
-<<<<<<< HEAD
-	ppb = dev->base = dev->dev->port->base;
-	ppb_hi = dev->dev->port->base_hi;
-	w_ctr(ppb, 0x0c);
-	modes = dev->dev->port->modes;
-
-	/* Mode detection works up the chain of speed
-	 * This avoids a nasty if-then-else-if-... tree
-	 */
-	dev->mode = PPA_NIBBLE;
-
-	if (modes & PARPORT_MODE_TRISTATE)
-		dev->mode = PPA_PS2;
-
-	if (modes & PARPORT_MODE_ECP) {
-		w_ecr(ppb_hi, 0x20);
-		dev->mode = PPA_PS2;
-	}
-	if ((modes & PARPORT_MODE_EPP) && (modes & PARPORT_MODE_ECP))
-		w_ecr(ppb_hi, 0x80);
-=======
 	dev->base = dev->dev->port->base;
 	w_ctr(dev->base, 0x0c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Done configuration */
 
@@ -1419,26 +1154,6 @@ static void ppa_detach(struct parport *pb)
 }
 
 static struct parport_driver ppa_driver = {
-<<<<<<< HEAD
-	.name	= "ppa",
-	.attach	= ppa_attach,
-	.detach	= ppa_detach,
-};
-
-static int __init ppa_driver_init(void)
-{
-	printk(KERN_INFO "ppa: Version %s\n", PPA_VERSION);
-	return parport_register_driver(&ppa_driver);
-}
-
-static void __exit ppa_driver_exit(void)
-{
-	parport_unregister_driver(&ppa_driver);
-}
-
-module_init(ppa_driver_init);
-module_exit(ppa_driver_exit);
-=======
 	.name		= "ppa",
 	.match_port	= ppa_attach,
 	.detach		= ppa_detach,
@@ -1446,5 +1161,4 @@ module_exit(ppa_driver_exit);
 };
 module_parport_driver(ppa_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
@@ -13,35 +10,9 @@
  *
  * These are the state tables for the SCTP state machine.
  *
-<<<<<<< HEAD
- * This SCTP implementation is free software;
- * you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This SCTP implementation is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; without even the implied
- *                 ************************
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GNU CC; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <lksctp-developers@lists.sourceforge.net>
- *
- * Or submit a bug report through the following website:
- *    http://www.sf.net/projects/lksctp
-=======
  * Please send any bug reports or fixes you make to the
  * email address(es):
  *    lksctp developers <linux-sctp@vger.kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -51,12 +22,6 @@
  *    Daisy Chang	    <daisyc@us.ibm.com>
  *    Ardelle Fan	    <ardelle.fan@intel.com>
  *    Sridhar Samudrala	    <sri@us.ibm.com>
-<<<<<<< HEAD
- *
- * Any bugs reported given to us we will try to fix... any fixes shared will
- * be incorporated into the next SCTP release.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -65,20 +30,6 @@
 #include <net/sctp/sctp.h>
 #include <net/sctp/sm.h>
 
-<<<<<<< HEAD
-static const sctp_sm_table_entry_t
-primitive_event_table[SCTP_NUM_PRIMITIVE_TYPES][SCTP_STATE_NUM_STATES];
-static const sctp_sm_table_entry_t
-other_event_table[SCTP_NUM_OTHER_TYPES][SCTP_STATE_NUM_STATES];
-static const sctp_sm_table_entry_t
-timeout_event_table[SCTP_NUM_TIMEOUT_TYPES][SCTP_STATE_NUM_STATES];
-
-static const sctp_sm_table_entry_t *sctp_chunk_event_lookup(sctp_cid_t cid,
-							    sctp_state_t state);
-
-
-static const sctp_sm_table_entry_t bug = {
-=======
 static const struct sctp_sm_table_entry
 primitive_event_table[SCTP_NUM_PRIMITIVE_TYPES][SCTP_STATE_NUM_STATES];
 static const struct sctp_sm_table_entry
@@ -93,42 +44,24 @@ static const struct sctp_sm_table_entry *sctp_chunk_event_lookup(
 
 
 static const struct sctp_sm_table_entry bug = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fn = sctp_sf_bug,
 	.name = "sctp_sf_bug"
 };
 
 #define DO_LOOKUP(_max, _type, _table)					\
 ({									\
-<<<<<<< HEAD
-	const sctp_sm_table_entry_t *rtn;				\
-=======
 	const struct sctp_sm_table_entry *rtn;				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 									\
 	if ((event_subtype._type > (_max))) {				\
 		pr_warn("table %p possible attack: event %d exceeds max %d\n", \
 			_table, event_subtype._type, _max);		\
-<<<<<<< HEAD
-	        rtn = &bug;						\
-=======
 		rtn = &bug;						\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else								\
 		rtn = &_table[event_subtype._type][(int)state];		\
 									\
 	rtn;								\
 })
 
-<<<<<<< HEAD
-const sctp_sm_table_entry_t *sctp_sm_lookup_event(sctp_event_t event_type,
-						  sctp_state_t state,
-						  sctp_subtype_t event_subtype)
-{
-	switch (event_type) {
-	case SCTP_EVENT_T_CHUNK:
-		return sctp_chunk_event_lookup(event_subtype.chunk, state);
-=======
 const struct sctp_sm_table_entry *sctp_sm_lookup_event(
 					struct net *net,
 					enum sctp_event_type event_type,
@@ -138,7 +71,6 @@ const struct sctp_sm_table_entry *sctp_sm_lookup_event(
 	switch (event_type) {
 	case SCTP_EVENT_T_CHUNK:
 		return sctp_chunk_event_lookup(net, event_subtype.chunk, state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SCTP_EVENT_T_TIMEOUT:
 		return DO_LOOKUP(SCTP_EVENT_TIMEOUT_MAX, timeout,
 				 timeout_event_table);
@@ -447,12 +379,8 @@ const struct sctp_sm_table_entry *sctp_sm_lookup_event(
  *
  * For base protocol (RFC 2960).
  */
-<<<<<<< HEAD
-static const sctp_sm_table_entry_t chunk_event_table[SCTP_NUM_BASE_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
-=======
 static const struct sctp_sm_table_entry
 chunk_event_table[SCTP_NUM_BASE_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TYPE_SCTP_DATA,
 	TYPE_SCTP_INIT,
 	TYPE_SCTP_INIT_ACK,
@@ -511,12 +439,8 @@ chunk_event_table[SCTP_NUM_BASE_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
 /* The primary index for this table is the chunk type.
  * The secondary index for this table is the state.
  */
-<<<<<<< HEAD
-static const sctp_sm_table_entry_t addip_chunk_event_table[SCTP_NUM_ADDIP_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
-=======
 static const struct sctp_sm_table_entry
 addip_chunk_event_table[SCTP_NUM_ADDIP_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TYPE_SCTP_ASCONF,
 	TYPE_SCTP_ASCONF_ACK,
 }; /*state_fn_t addip_chunk_event_table[][] */
@@ -543,12 +467,6 @@ addip_chunk_event_table[SCTP_NUM_ADDIP_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
 /* The primary index for this table is the chunk type.
  * The secondary index for this table is the state.
  */
-<<<<<<< HEAD
-static const sctp_sm_table_entry_t prsctp_chunk_event_table[SCTP_NUM_PRSCTP_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
-	TYPE_SCTP_FWD_TSN,
-}; /*state_fn_t prsctp_chunk_event_table[][] */
-
-=======
 static const struct sctp_sm_table_entry
 prsctp_chunk_event_table[SCTP_NUM_PRSCTP_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
 	TYPE_SCTP_FWD_TSN,
@@ -581,7 +499,6 @@ reconf_chunk_event_table[SCTP_NUM_RECONF_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
 	TYPE_SCTP_RECONF,
 }; /*state_fn_t reconf_chunk_event_table[][] */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TYPE_SCTP_AUTH { \
 	/* SCTP_STATE_CLOSED */ \
 	TYPE_SCTP_FUNC(sctp_sf_ootb), \
@@ -604,13 +521,6 @@ reconf_chunk_event_table[SCTP_NUM_RECONF_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
 /* The primary index for this table is the chunk type.
  * The secondary index for this table is the state.
  */
-<<<<<<< HEAD
-static const sctp_sm_table_entry_t auth_chunk_event_table[SCTP_NUM_AUTH_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
-	TYPE_SCTP_AUTH,
-}; /*state_fn_t auth_chunk_event_table[][] */
-
-static const sctp_sm_table_entry_t
-=======
 static const struct sctp_sm_table_entry
 auth_chunk_event_table[SCTP_NUM_AUTH_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
 	TYPE_SCTP_AUTH,
@@ -637,7 +547,6 @@ pad_chunk_event_table[SCTP_STATE_NUM_STATES] = {
 };	/* chunk pad */
 
 static const struct sctp_sm_table_entry
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 chunk_event_table_unknown[SCTP_STATE_NUM_STATES] = {
 	/* SCTP_STATE_CLOSED */
 	TYPE_SCTP_FUNC(sctp_sf_ootb),
@@ -772,12 +681,6 @@ chunk_event_table_unknown[SCTP_STATE_NUM_STATES] = {
 	TYPE_SCTP_FUNC(sctp_sf_error_shutdown), \
 } /* TYPE_SCTP_PRIMITIVE_ASCONF */
 
-<<<<<<< HEAD
-/* The primary index for this table is the primitive type.
- * The secondary index for this table is the state.
- */
-static const sctp_sm_table_entry_t primitive_event_table[SCTP_NUM_PRIMITIVE_TYPES][SCTP_STATE_NUM_STATES] = {
-=======
 #define TYPE_SCTP_PRIMITIVE_RECONF { \
 	/* SCTP_STATE_CLOSED */ \
 	TYPE_SCTP_FUNC(sctp_sf_error_closed), \
@@ -802,17 +705,13 @@ static const sctp_sm_table_entry_t primitive_event_table[SCTP_NUM_PRIMITIVE_TYPE
  */
 static const struct sctp_sm_table_entry
 primitive_event_table[SCTP_NUM_PRIMITIVE_TYPES][SCTP_STATE_NUM_STATES] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TYPE_SCTP_PRIMITIVE_ASSOCIATE,
 	TYPE_SCTP_PRIMITIVE_SHUTDOWN,
 	TYPE_SCTP_PRIMITIVE_ABORT,
 	TYPE_SCTP_PRIMITIVE_SEND,
 	TYPE_SCTP_PRIMITIVE_REQUESTHEARTBEAT,
 	TYPE_SCTP_PRIMITIVE_ASCONF,
-<<<<<<< HEAD
-=======
 	TYPE_SCTP_PRIMITIVE_RECONF,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define TYPE_SCTP_OTHER_NO_PENDING_TSN  { \
@@ -853,12 +752,8 @@ primitive_event_table[SCTP_NUM_PRIMITIVE_TYPES][SCTP_STATE_NUM_STATES] = {
 	TYPE_SCTP_FUNC(sctp_sf_ignore_other), \
 }
 
-<<<<<<< HEAD
-static const sctp_sm_table_entry_t other_event_table[SCTP_NUM_OTHER_TYPES][SCTP_STATE_NUM_STATES] = {
-=======
 static const struct sctp_sm_table_entry
 other_event_table[SCTP_NUM_OTHER_TYPES][SCTP_STATE_NUM_STATES] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TYPE_SCTP_OTHER_NO_PENDING_TSN,
 	TYPE_SCTP_OTHER_ICMP_PROTO_UNREACH,
 };
@@ -1053,9 +948,6 @@ other_event_table[SCTP_NUM_OTHER_TYPES][SCTP_STATE_NUM_STATES] = {
 	TYPE_SCTP_FUNC(sctp_sf_timer_ignore), \
 }
 
-<<<<<<< HEAD
-static const sctp_sm_table_entry_t timeout_event_table[SCTP_NUM_TIMEOUT_TYPES][SCTP_STATE_NUM_STATES] = {
-=======
 #define TYPE_SCTP_EVENT_TIMEOUT_RECONF { \
 	/* SCTP_STATE_CLOSED */ \
 	TYPE_SCTP_FUNC(sctp_sf_timer_ignore), \
@@ -1096,7 +988,6 @@ static const sctp_sm_table_entry_t timeout_event_table[SCTP_NUM_TIMEOUT_TYPES][S
 
 static const struct sctp_sm_table_entry
 timeout_event_table[SCTP_NUM_TIMEOUT_TYPES][SCTP_STATE_NUM_STATES] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TYPE_SCTP_EVENT_TIMEOUT_NONE,
 	TYPE_SCTP_EVENT_TIMEOUT_T1_COOKIE,
 	TYPE_SCTP_EVENT_TIMEOUT_T1_INIT,
@@ -1105,49 +996,20 @@ timeout_event_table[SCTP_NUM_TIMEOUT_TYPES][SCTP_STATE_NUM_STATES] = {
 	TYPE_SCTP_EVENT_TIMEOUT_T4_RTO,
 	TYPE_SCTP_EVENT_TIMEOUT_T5_SHUTDOWN_GUARD,
 	TYPE_SCTP_EVENT_TIMEOUT_HEARTBEAT,
-<<<<<<< HEAD
-=======
 	TYPE_SCTP_EVENT_TIMEOUT_RECONF,
 	TYPE_SCTP_EVENT_TIMEOUT_PROBE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TYPE_SCTP_EVENT_TIMEOUT_SACK,
 	TYPE_SCTP_EVENT_TIMEOUT_AUTOCLOSE,
 };
 
-<<<<<<< HEAD
-static const sctp_sm_table_entry_t *sctp_chunk_event_lookup(sctp_cid_t cid,
-							    sctp_state_t state)
-=======
 static const struct sctp_sm_table_entry *sctp_chunk_event_lookup(
 						struct net *net,
 						enum sctp_cid cid,
 						enum sctp_state state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (state > SCTP_STATE_MAX)
 		return &bug;
 
-<<<<<<< HEAD
-	if (cid <= SCTP_CID_BASE_MAX)
-		return &chunk_event_table[cid][state];
-
-	if (sctp_prsctp_enable) {
-		if (cid == SCTP_CID_FWD_TSN)
-			return &prsctp_chunk_event_table[0][state];
-	}
-
-	if (sctp_addip_enable) {
-		if (cid == SCTP_CID_ASCONF)
-			return &addip_chunk_event_table[0][state];
-
-		if (cid == SCTP_CID_ASCONF_ACK)
-			return &addip_chunk_event_table[1][state];
-	}
-
-	if (sctp_auth_enable) {
-		if (cid == SCTP_CID_AUTH)
-			return &auth_chunk_event_table[0][state];
-=======
 	if (cid == SCTP_CID_I_DATA)
 		cid = SCTP_CID_DATA;
 
@@ -1173,7 +1035,6 @@ static const struct sctp_sm_table_entry *sctp_chunk_event_lookup(
 
 	case SCTP_CID_PAD:
 		return &pad_chunk_event_table[state];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return &chunk_event_table_unknown[state];

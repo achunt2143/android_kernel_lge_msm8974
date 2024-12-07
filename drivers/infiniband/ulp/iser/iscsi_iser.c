@@ -5,10 +5,7 @@
  * Copyright (C) 2004 Alex Aizman
  * Copyright (C) 2005 Mike Christie
  * Copyright (c) 2005, 2006 Voltaire, Inc. All rights reserved.
-<<<<<<< HEAD
-=======
  * Copyright (c) 2013-2014 Mellanox Technologies. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * maintained by openib-general@openib.org
  *
  * This software is available to you under a choice of one of two
@@ -65,11 +62,7 @@
 
 #include <net/sock.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
@@ -81,34 +74,6 @@
 
 #include "iscsi_iser.h"
 
-<<<<<<< HEAD
-static struct scsi_host_template iscsi_iser_sht;
-static struct iscsi_transport iscsi_iser_transport;
-static struct scsi_transport_template *iscsi_iser_scsi_transport;
-
-static unsigned int iscsi_max_lun = 512;
-module_param_named(max_lun, iscsi_max_lun, uint, S_IRUGO);
-
-int iser_debug_level = 0;
-
-MODULE_DESCRIPTION("iSER (iSCSI Extensions for RDMA) Datamover "
-		   "v" DRV_VER " (" DRV_DATE ")");
-MODULE_LICENSE("Dual BSD/GPL");
-MODULE_AUTHOR("Alex Nezhinsky, Dan Bar Dov, Or Gerlitz");
-
-module_param_named(debug_level, iser_debug_level, int, 0644);
-MODULE_PARM_DESC(debug_level, "Enable debug tracing if > 0 (default:disabled)");
-
-struct iser_global ig;
-
-void
-iscsi_iser_recv(struct iscsi_conn *conn,
-		struct iscsi_hdr *hdr, char *rx_data, int rx_data_len)
-{
-	int rc = 0;
-	int datalen;
-	int ahslen;
-=======
 MODULE_DESCRIPTION("iSER (iSCSI Extensions for RDMA) Datamover");
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Alex Nezhinsky, Dan Bar Dov, Or Gerlitz");
@@ -175,7 +140,6 @@ void iscsi_iser_recv(struct iscsi_conn *conn, struct iscsi_hdr *hdr,
 {
 	int rc = 0;
 	int datalen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* verify PDU length */
 	datalen = ntoh24(hdr->dlength);
@@ -190,12 +154,6 @@ void iscsi_iser_recv(struct iscsi_conn *conn, struct iscsi_hdr *hdr,
 		iser_dbg("aligned datalen (%d) hdr, %d (IB)\n",
 			datalen, rx_data_len);
 
-<<<<<<< HEAD
-	/* read AHS */
-	ahslen = hdr->hlength * 4;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = iscsi_complete_pdu(conn, hdr, rx_data, rx_data_len);
 	if (rc && rc != ISCSI_ERR_NO_SCSI_CMD)
 		goto error;
@@ -205,8 +163,6 @@ error:
 	iscsi_conn_failure(conn, rc);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * iscsi_iser_pdu_alloc() - allocate an iscsi-iser PDU
  * @task:     iscsi task
@@ -215,26 +171,12 @@ error:
  * Netes: This routine can't fail, just assign iscsi task
  *        hdr and max hdr size.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int iscsi_iser_pdu_alloc(struct iscsi_task *task, uint8_t opcode)
 {
 	struct iscsi_iser_task *iser_task = task->dd_data;
 
 	task->hdr = (struct iscsi_hdr *)&iser_task->desc.iscsi_header;
 	task->hdr_max = sizeof(iser_task->desc.iscsi_header);
-<<<<<<< HEAD
-	return 0;
-}
-
-int iser_initialize_task_headers(struct iscsi_task *task,
-						struct iser_tx_desc *tx_desc)
-{
-	struct iscsi_iser_conn *iser_conn = task->conn->dd_data;
-	struct iser_device     *device    = iser_conn->ib_conn->device;
-	struct iscsi_iser_task *iser_task = task->dd_data;
-	u64 dma_addr;
-
-=======
 
 	return 0;
 }
@@ -261,35 +203,11 @@ int iser_initialize_task_headers(struct iscsi_task *task,
 	if (unlikely(iser_conn->state != ISER_CONN_UP))
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr = ib_dma_map_single(device->ib_device, (void *)tx_desc,
 				ISER_HEADERS_LEN, DMA_TO_DEVICE);
 	if (ib_dma_mapping_error(device->ib_device, dma_addr))
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	tx_desc->dma_addr = dma_addr;
-	tx_desc->tx_sg[0].addr   = tx_desc->dma_addr;
-	tx_desc->tx_sg[0].length = ISER_HEADERS_LEN;
-	tx_desc->tx_sg[0].lkey   = device->mr->lkey;
-
-	iser_task->iser_conn		= iser_conn;
-	return 0;
-}
-/**
- * iscsi_iser_task_init - Initialize task
- * @task: iscsi task
- *
- * Initialize the task for the scsi command or mgmt command.
- */
-static int
-iscsi_iser_task_init(struct iscsi_task *task)
-{
-	struct iscsi_iser_task *iser_task = task->dd_data;
-
-	if (iser_initialize_task_headers(task, &iser_task->desc))
-			return -ENOMEM;
-=======
 	tx_desc->inv_wr.next = NULL;
 	tx_desc->reg_wr.wr.next = NULL;
 	tx_desc->mapped = true;
@@ -323,7 +241,6 @@ static int iscsi_iser_task_init(struct iscsi_task *task)
 			 iser_task, ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* mgmt task */
 	if (!task->sc)
@@ -331,20 +248,13 @@ static int iscsi_iser_task_init(struct iscsi_task *task)
 
 	iser_task->command_sent = 0;
 	iser_task_rdma_init(iser_task);
-<<<<<<< HEAD
-=======
 	iser_task->sc = task->sc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- * iscsi_iser_mtask_xmit - xmit management(immediate) task
-=======
  * iscsi_iser_mtask_xmit() - xmit management (immediate) task
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @conn: iscsi connection
  * @task: task management task
  *
@@ -354,13 +264,8 @@ static int iscsi_iser_task_init(struct iscsi_task *task)
  *	xmit.
  *
  **/
-<<<<<<< HEAD
-static int
-iscsi_iser_mtask_xmit(struct iscsi_conn *conn, struct iscsi_task *task)
-=======
 static int iscsi_iser_mtask_xmit(struct iscsi_conn *conn,
 				 struct iscsi_task *task)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error = 0;
 
@@ -377,14 +282,8 @@ static int iscsi_iser_mtask_xmit(struct iscsi_conn *conn,
 	return error;
 }
 
-<<<<<<< HEAD
-static int
-iscsi_iser_task_xmit_unsol_data(struct iscsi_conn *conn,
-				 struct iscsi_task *task)
-=======
 static int iscsi_iser_task_xmit_unsol_data(struct iscsi_conn *conn,
 					   struct iscsi_task *task)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_r2t_info *r2t = &task->unsol_r2t;
 	struct iscsi_data hdr;
@@ -412,10 +311,6 @@ iscsi_iser_task_xmit_unsol_data_exit:
 	return error;
 }
 
-<<<<<<< HEAD
-static int
-iscsi_iser_task_xmit(struct iscsi_task *task)
-=======
 /**
  * iscsi_iser_task_xmit() - xmit iscsi-iser task
  * @task: iscsi task
@@ -423,7 +318,6 @@ iscsi_iser_task_xmit(struct iscsi_task *task)
  * Return: zero on success or escalates $error on failure.
  */
 static int iscsi_iser_task_xmit(struct iscsi_task *task)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_conn *conn = task->conn;
 	struct iscsi_iser_task *iser_task = task->dd_data;
@@ -459,18 +353,6 @@ static int iscsi_iser_task_xmit(struct iscsi_task *task)
 	return error;
 }
 
-<<<<<<< HEAD
-static void iscsi_iser_cleanup_task(struct iscsi_task *task)
-{
-	struct iscsi_iser_task *iser_task = task->dd_data;
-	struct iser_tx_desc	*tx_desc = &iser_task->desc;
-
-	struct iscsi_iser_conn *iser_conn = task->conn->dd_data;
-	struct iser_device     *device    = iser_conn->ib_conn->device;
-
-	ib_dma_unmap_single(device->ib_device,
-		tx_desc->dma_addr, ISER_HEADERS_LEN, DMA_TO_DEVICE);
-=======
 /**
  * iscsi_iser_cleanup_task() - cleanup an iscsi-iser task
  * @task: iscsi task
@@ -495,7 +377,6 @@ static void iscsi_iser_cleanup_task(struct iscsi_task *task)
 				    ISER_HEADERS_LEN, DMA_TO_DEVICE);
 		tx_desc->mapped = false;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* mgmt tasks do not need special cleanup */
 	if (!task->sc)
@@ -507,16 +388,6 @@ static void iscsi_iser_cleanup_task(struct iscsi_task *task)
 	}
 }
 
-<<<<<<< HEAD
-static struct iscsi_cls_conn *
-iscsi_iser_conn_create(struct iscsi_cls_session *cls_session, uint32_t conn_idx)
-{
-	struct iscsi_conn *conn;
-	struct iscsi_cls_conn *cls_conn;
-	struct iscsi_iser_conn *iser_conn;
-
-	cls_conn = iscsi_conn_setup(cls_session, sizeof(*iser_conn), conn_idx);
-=======
 /**
  * iscsi_iser_check_protection() - check protection information status of task.
  * @task:     iscsi task
@@ -554,7 +425,6 @@ iscsi_iser_conn_create(struct iscsi_cls_session *cls_session,
 	struct iscsi_cls_conn *cls_conn;
 
 	cls_conn = iscsi_conn_setup(cls_session, 0, conn_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cls_conn)
 		return NULL;
 	conn = cls_conn->dd_data;
@@ -565,42 +435,6 @@ iscsi_iser_conn_create(struct iscsi_cls_session *cls_session,
 	 */
 	conn->max_recv_dlength = ISER_RECV_DATA_SEG_LEN;
 
-<<<<<<< HEAD
-	iser_conn = conn->dd_data;
-	conn->dd_data = iser_conn;
-	iser_conn->iscsi_conn = conn;
-
-	return cls_conn;
-}
-
-static void
-iscsi_iser_conn_destroy(struct iscsi_cls_conn *cls_conn)
-{
-	struct iscsi_conn *conn = cls_conn->dd_data;
-	struct iscsi_iser_conn *iser_conn = conn->dd_data;
-	struct iser_conn *ib_conn = iser_conn->ib_conn;
-
-	iscsi_conn_teardown(cls_conn);
-	/*
-	 * Userspace will normally call the stop callback and
-	 * already have freed the ib_conn, but if it goofed up then
-	 * we free it here.
-	 */
-	if (ib_conn) {
-		ib_conn->iser_conn = NULL;
-		iser_conn_put(ib_conn, 1); /* deref iscsi/ib conn unbinding */
-	}
-}
-
-static int
-iscsi_iser_conn_bind(struct iscsi_cls_session *cls_session,
-		     struct iscsi_cls_conn *cls_conn, uint64_t transport_eph,
-		     int is_leading)
-{
-	struct iscsi_conn *conn = cls_conn->dd_data;
-	struct iscsi_iser_conn *iser_conn;
-	struct iser_conn *ib_conn;
-=======
 	return cls_conn;
 }
 
@@ -621,7 +455,6 @@ static int iscsi_iser_conn_bind(struct iscsi_cls_session *cls_session,
 {
 	struct iscsi_conn *conn = cls_conn->dd_data;
 	struct iser_conn *iser_conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_endpoint *ep;
 	int error;
 
@@ -637,12 +470,6 @@ static int iscsi_iser_conn_bind(struct iscsi_cls_session *cls_session,
 			 (unsigned long long)transport_eph);
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	ib_conn = ep->dd_data;
-
-	if (iser_alloc_rx_descriptors(ib_conn))
-		return -ENOMEM;
-=======
 	iser_conn = ep->dd_data;
 
 	mutex_lock(&iser_conn->state_mutex);
@@ -656,28 +483,10 @@ static int iscsi_iser_conn_bind(struct iscsi_cls_session *cls_session,
 	error = iser_alloc_rx_descriptors(iser_conn, conn->session);
 	if (error)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* binds the iSER connection retrieved from the previously
 	 * connected ep_handle to the iSCSI layer connection. exchanges
 	 * connection pointers */
-<<<<<<< HEAD
-	iser_err("binding iscsi/iser conn %p %p to ib_conn %p\n",
-					conn, conn->dd_data, ib_conn);
-	iser_conn = conn->dd_data;
-	ib_conn->iser_conn = iser_conn;
-	iser_conn->ib_conn  = ib_conn;
-	iser_conn_get(ib_conn); /* ref iscsi/ib conn binding */
-	return 0;
-}
-
-static void
-iscsi_iser_conn_stop(struct iscsi_cls_conn *cls_conn, int flag)
-{
-	struct iscsi_conn *conn = cls_conn->dd_data;
-	struct iscsi_iser_conn *iser_conn = conn->dd_data;
-	struct iser_conn *ib_conn = iser_conn->ib_conn;
-=======
 	iser_info("binding iscsi conn %p to iser_conn %p\n", conn, iser_conn);
 
 	conn->dd_data = iser_conn;
@@ -725,25 +534,11 @@ static void iscsi_iser_conn_stop(struct iscsi_cls_conn *cls_conn, int flag)
 	struct iser_conn *iser_conn = conn->dd_data;
 
 	iser_info("stopping iscsi_conn: %p, iser_conn: %p\n", conn, iser_conn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Userspace may have goofed up and not bound the connection or
 	 * might have only partially setup the connection.
 	 */
-<<<<<<< HEAD
-	if (ib_conn) {
-		iscsi_conn_stop(cls_conn, flag);
-		/*
-		 * There is no unbind event so the stop callback
-		 * must release the ref from the bind.
-		 */
-		iser_conn_put(ib_conn, 1); /* deref iscsi/ib conn unbinding */
-	}
-	iser_conn->ib_conn = NULL;
-}
-
-=======
 	if (iser_conn) {
 		mutex_lock(&iser_conn->state_mutex);
 		mutex_lock(&unbind_iser_conn_mutex);
@@ -768,18 +563,11 @@ static void iscsi_iser_conn_stop(struct iscsi_cls_conn *cls_conn, int flag)
  *
  * Removes and free iscsi host.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void iscsi_iser_session_destroy(struct iscsi_cls_session *cls_session)
 {
 	struct Scsi_Host *shost = iscsi_session_to_shost(cls_session);
 
 	iscsi_session_teardown(cls_session);
-<<<<<<< HEAD
-	iscsi_host_remove(shost);
-	iscsi_host_free(shost);
-}
-
-=======
 	iscsi_host_remove(shost, false);
 	iscsi_host_free(shost);
 }
@@ -812,33 +600,23 @@ static inline unsigned int iser_dif_prot_caps(int prot_caps)
  * Allocates and adds a scsi host, expose DIF supprot if
  * exists, and sets up an iscsi session.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct iscsi_cls_session *
 iscsi_iser_session_create(struct iscsi_endpoint *ep,
 			  uint16_t cmds_max, uint16_t qdepth,
 			  uint32_t initial_cmdsn)
 {
 	struct iscsi_cls_session *cls_session;
-<<<<<<< HEAD
-	struct iscsi_session *session;
-	struct Scsi_Host *shost;
-	struct iser_conn *ib_conn;
-=======
 	struct Scsi_Host *shost;
 	struct iser_conn *iser_conn = NULL;
 	struct ib_conn *ib_conn;
 	struct ib_device *ib_dev;
 	u32 max_fr_sectors;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	shost = iscsi_host_alloc(&iscsi_iser_sht, 0, 0);
 	if (!shost)
 		return NULL;
 	shost->transportt = iscsi_iser_scsi_transport;
-<<<<<<< HEAD
-=======
 	shost->cmd_per_lun = qdepth;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	shost->max_lun = iscsi_max_lun;
 	shost->max_id = 0;
 	shost->max_channel = 0;
@@ -848,21 +626,6 @@ iscsi_iser_session_create(struct iscsi_endpoint *ep,
 	 * older userspace tools (before 2.0-870) did not pass us
 	 * the leading conn's ep so this will be NULL;
 	 */
-<<<<<<< HEAD
-	if (ep)
-		ib_conn = ep->dd_data;
-
-	if (iscsi_host_add(shost,
-			   ep ? ib_conn->device->ib_device->dma_device : NULL))
-		goto free_host;
-
-	/*
-	 * we do not support setting can_queue cmd_per_lun from userspace yet
-	 * because we preallocate so many resources
-	 */
-	cls_session = iscsi_session_setup(&iscsi_iser_transport, shost,
-					  ISCSI_DEF_XMIT_CMDS_MAX, 0,
-=======
 	if (ep) {
 		iser_conn = ep->dd_data;
 		shost->sg_tablesize = iser_conn->scsi_sg_tablesize;
@@ -914,39 +677,22 @@ iscsi_iser_session_create(struct iscsi_endpoint *ep,
 
 	cls_session = iscsi_session_setup(&iscsi_iser_transport, shost,
 					  shost->can_queue, 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  sizeof(struct iscsi_iser_task),
 					  initial_cmdsn, 0);
 	if (!cls_session)
 		goto remove_host;
-<<<<<<< HEAD
-	session = cls_session->dd_data;
-
-	shost->can_queue = session->scsi_cmds_max;
-	return cls_session;
-
-remove_host:
-	iscsi_host_remove(shost);
-=======
 
 	return cls_session;
 
 remove_host:
 	iscsi_host_remove(shost, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_host:
 	iscsi_host_free(shost);
 	return NULL;
 }
 
-<<<<<<< HEAD
-static int
-iscsi_iser_set_param(struct iscsi_cls_conn *cls_conn,
-		     enum iscsi_param param, char *buf, int buflen)
-=======
 static int iscsi_iser_set_param(struct iscsi_cls_conn *cls_conn,
 				enum iscsi_param param, char *buf, int buflen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int value;
 
@@ -957,44 +703,28 @@ static int iscsi_iser_set_param(struct iscsi_cls_conn *cls_conn,
 	case ISCSI_PARAM_HDRDGST_EN:
 		sscanf(buf, "%d", &value);
 		if (value) {
-<<<<<<< HEAD
-			printk(KERN_ERR "DataDigest wasn't negotiated to None");
-=======
 			iser_err("DataDigest wasn't negotiated to None\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EPROTO;
 		}
 		break;
 	case ISCSI_PARAM_DATADGST_EN:
 		sscanf(buf, "%d", &value);
 		if (value) {
-<<<<<<< HEAD
-			printk(KERN_ERR "DataDigest wasn't negotiated to None");
-=======
 			iser_err("DataDigest wasn't negotiated to None\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EPROTO;
 		}
 		break;
 	case ISCSI_PARAM_IFMARKER_EN:
 		sscanf(buf, "%d", &value);
 		if (value) {
-<<<<<<< HEAD
-			printk(KERN_ERR "IFMarker wasn't negotiated to No");
-=======
 			iser_err("IFMarker wasn't negotiated to No\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EPROTO;
 		}
 		break;
 	case ISCSI_PARAM_OFMARKER_EN:
 		sscanf(buf, "%d", &value);
 		if (value) {
-<<<<<<< HEAD
-			printk(KERN_ERR "OFMarker wasn't negotiated to No");
-=======
 			iser_err("OFMarker wasn't negotiated to No\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EPROTO;
 		}
 		break;
@@ -1005,10 +735,6 @@ static int iscsi_iser_set_param(struct iscsi_cls_conn *cls_conn,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void
-iscsi_iser_conn_get_stats(struct iscsi_cls_conn *cls_conn, struct iscsi_stats *stats)
-=======
 /**
  * iscsi_iser_conn_get_stats() - get iscsi connection statistics
  * @cls_conn:    iscsi class connection
@@ -1018,7 +744,6 @@ iscsi_iser_conn_get_stats(struct iscsi_cls_conn *cls_conn, struct iscsi_stats *s
  */
 static void iscsi_iser_conn_get_stats(struct iscsi_cls_conn *cls_conn,
 				      struct iscsi_stats *stats)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_conn *conn = cls_conn->dd_data;
 
@@ -1031,96 +756,17 @@ static void iscsi_iser_conn_get_stats(struct iscsi_cls_conn *cls_conn,
 	stats->r2t_pdus = conn->r2t_pdus_cnt; /* always 0 */
 	stats->tmfcmd_pdus = conn->tmfcmd_pdus_cnt;
 	stats->tmfrsp_pdus = conn->tmfrsp_pdus_cnt;
-<<<<<<< HEAD
-	stats->custom_length = 4;
-	strcpy(stats->custom[0].desc, "qp_tx_queue_full");
-	stats->custom[0].value = 0; /* TB iser_conn->qp_tx_queue_full; */
-	strcpy(stats->custom[1].desc, "fmr_map_not_avail");
-	stats->custom[1].value = 0; /* TB iser_conn->fmr_map_not_avail */;
-	strcpy(stats->custom[2].desc, "eh_abort_cnt");
-	stats->custom[2].value = conn->eh_abort_cnt;
-	strcpy(stats->custom[3].desc, "fmr_unalign_cnt");
-	stats->custom[3].value = conn->fmr_unalign_cnt;
-=======
 	stats->custom_length = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int iscsi_iser_get_ep_param(struct iscsi_endpoint *ep,
 				   enum iscsi_param param, char *buf)
 {
-<<<<<<< HEAD
-	struct iser_conn *ib_conn = ep->dd_data;
-	int len;
-=======
 	struct iser_conn *iser_conn = ep->dd_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (param) {
 	case ISCSI_PARAM_CONN_PORT:
 	case ISCSI_PARAM_CONN_ADDRESS:
-<<<<<<< HEAD
-		if (!ib_conn || !ib_conn->cma_id)
-			return -ENOTCONN;
-
-		return iscsi_conn_get_addr_param((struct sockaddr_storage *)
-					&ib_conn->cma_id->route.addr.dst_addr,
-					param, buf);
-		break;
-	default:
-		return -ENOSYS;
-	}
-
-	return len;
-}
-
-static struct iscsi_endpoint *
-iscsi_iser_ep_connect(struct Scsi_Host *shost, struct sockaddr *dst_addr,
-		      int non_blocking)
-{
-	int err;
-	struct iser_conn *ib_conn;
-	struct iscsi_endpoint *ep;
-
-	ep = iscsi_create_endpoint(sizeof(*ib_conn));
-	if (!ep)
-		return ERR_PTR(-ENOMEM);
-
-	ib_conn = ep->dd_data;
-	ib_conn->ep = ep;
-	iser_conn_init(ib_conn);
-
-	err = iser_connect(ib_conn, NULL, (struct sockaddr_in *)dst_addr,
-			   non_blocking);
-	if (err) {
-		iscsi_destroy_endpoint(ep);
-		return ERR_PTR(err);
-	}
-	return ep;
-}
-
-static int
-iscsi_iser_ep_poll(struct iscsi_endpoint *ep, int timeout_ms)
-{
-	struct iser_conn *ib_conn;
-	int rc;
-
-	ib_conn = ep->dd_data;
-	rc = wait_event_interruptible_timeout(ib_conn->wait,
-			     ib_conn->state == ISER_CONN_UP,
-			     msecs_to_jiffies(timeout_ms));
-
-	/* if conn establishment failed, return error code to iscsi */
-	if (!rc &&
-	    (ib_conn->state == ISER_CONN_TERMINATING ||
-	     ib_conn->state == ISER_CONN_DOWN))
-		rc = -1;
-
-	iser_err("ib conn %p rc = %d\n", ib_conn, rc);
-
-	if (rc > 0)
-		return 1; /* success, this is the equivalent of POLLOUT */
-=======
 		if (!iser_conn || !iser_conn->ib_conn.cma_id)
 			return -ENOTCONN;
 
@@ -1213,34 +859,12 @@ static int iscsi_iser_ep_poll(struct iscsi_endpoint *ep, int timeout_ms)
 
 	if (rc > 0)
 		return 1; /* success, this is the equivalent of EPOLLOUT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (!rc)
 		return 0; /* timeout */
 	else
 		return rc; /* signal */
 }
 
-<<<<<<< HEAD
-static void
-iscsi_iser_ep_disconnect(struct iscsi_endpoint *ep)
-{
-	struct iser_conn *ib_conn;
-
-	ib_conn = ep->dd_data;
-	if (ib_conn->iser_conn)
-		/*
-		 * Must suspend xmit path if the ep is bound to the
-		 * iscsi_conn, so we know we are not accessing the ib_conn
-		 * when we free it.
-		 *
-		 * This may not be bound if the ep poll failed.
-		 */
-		iscsi_suspend_tx(ib_conn->iser_conn->iscsi_conn);
-
-
-	iser_err("ib conn %p state %d\n",ib_conn, ib_conn->state);
-	iser_conn_terminate(ib_conn);
-=======
 /**
  * iscsi_iser_ep_disconnect() - Initiate connection teardown process
  * @ep:    iscsi endpoint handle
@@ -1276,7 +900,6 @@ static void iscsi_iser_ep_disconnect(struct iscsi_endpoint *ep)
 	}
 
 	iscsi_destroy_endpoint(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static umode_t iser_attr_is_visible(int param_type, int param)
@@ -1323,10 +946,7 @@ static umode_t iser_attr_is_visible(int param_type, int param)
 		case ISCSI_PARAM_TGT_RESET_TMO:
 		case ISCSI_PARAM_IFACE_NAME:
 		case ISCSI_PARAM_INITIATOR_NAME:
-<<<<<<< HEAD
-=======
 		case ISCSI_PARAM_DISCOVERY_SESS:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return S_IRUGO;
 		default:
 			return 0;
@@ -1336,16 +956,6 @@ static umode_t iser_attr_is_visible(int param_type, int param)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template iscsi_iser_sht = {
-	.module                 = THIS_MODULE,
-	.name                   = "iSCSI Initiator over iSER, v." DRV_VER,
-	.queuecommand           = iscsi_queuecommand,
-	.change_queue_depth	= iscsi_change_queue_depth,
-	.sg_tablesize           = ISCSI_ISER_SG_TABLESIZE,
-	.max_sectors		= 1024,
-	.cmd_per_lun            = ISER_DEF_CMD_PER_LUN,
-=======
 static const struct scsi_host_template iscsi_iser_sht = {
 	.module                 = THIS_MODULE,
 	.name                   = "iSCSI Initiator over iSER",
@@ -1354,53 +964,34 @@ static const struct scsi_host_template iscsi_iser_sht = {
 	.sg_tablesize           = ISCSI_ISER_DEF_SG_TABLESIZE,
 	.cmd_per_lun            = ISER_DEF_CMD_PER_LUN,
 	.eh_timed_out		= iscsi_eh_cmd_timed_out,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eh_abort_handler       = iscsi_eh_abort,
 	.eh_device_reset_handler= iscsi_eh_device_reset,
 	.eh_target_reset_handler = iscsi_eh_recover_target,
 	.target_alloc		= iscsi_target_alloc,
-<<<<<<< HEAD
-	.use_clustering         = DISABLE_CLUSTERING,
-	.proc_name              = "iscsi_iser",
-	.this_id                = -1,
-=======
 	.proc_name              = "iscsi_iser",
 	.this_id                = -1,
 	.track_queue_depth	= 1,
 	.cmd_size		= sizeof(struct iscsi_cmd),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct iscsi_transport iscsi_iser_transport = {
 	.owner                  = THIS_MODULE,
 	.name                   = "iser",
-<<<<<<< HEAD
-	.caps                   = CAP_RECOVERY_L0 | CAP_MULTI_R2T,
-=======
 	.caps                   = CAP_RECOVERY_L0 | CAP_MULTI_R2T | CAP_TEXT_NEGO,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* session management */
 	.create_session         = iscsi_iser_session_create,
 	.destroy_session        = iscsi_iser_session_destroy,
 	/* connection management */
 	.create_conn            = iscsi_iser_conn_create,
 	.bind_conn              = iscsi_iser_conn_bind,
-<<<<<<< HEAD
-	.destroy_conn           = iscsi_iser_conn_destroy,
-=======
 	.unbind_conn		= iscsi_conn_unbind,
 	.destroy_conn           = iscsi_conn_teardown,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attr_is_visible	= iser_attr_is_visible,
 	.set_param              = iscsi_iser_set_param,
 	.get_conn_param		= iscsi_conn_get_param,
 	.get_ep_param		= iscsi_iser_get_ep_param,
 	.get_session_param	= iscsi_session_get_param,
-<<<<<<< HEAD
-	.start_conn             = iscsi_conn_start,
-=======
 	.start_conn             = iscsi_iser_conn_start,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.stop_conn              = iscsi_iser_conn_stop,
 	/* iscsi host params */
 	.get_host_param		= iscsi_host_get_param,
@@ -1412,10 +1003,7 @@ static struct iscsi_transport iscsi_iser_transport = {
 	.xmit_task		= iscsi_iser_task_xmit,
 	.cleanup_task		= iscsi_iser_cleanup_task,
 	.alloc_pdu		= iscsi_iser_pdu_alloc,
-<<<<<<< HEAD
-=======
 	.check_protection	= iscsi_iser_check_protection,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* recovery */
 	.session_recovery_timedout = iscsi_session_recovery_timedout,
 
@@ -1430,14 +1018,6 @@ static int __init iser_init(void)
 
 	iser_dbg("Starting iSER datamover...\n");
 
-<<<<<<< HEAD
-	if (iscsi_max_lun < 1) {
-		printk(KERN_ERR "Invalid max_lun value of %u\n", iscsi_max_lun);
-		return -EINVAL;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(&ig, 0, sizeof(struct iser_global));
 
 	ig.desc_cache = kmem_cache_create("iser_descriptors",
@@ -1453,8 +1033,6 @@ static int __init iser_init(void)
 	mutex_init(&ig.connlist_mutex);
 	INIT_LIST_HEAD(&ig.connlist);
 
-<<<<<<< HEAD
-=======
 	release_wq = alloc_workqueue("release workqueue", 0, 0);
 	if (!release_wq) {
 		iser_err("failed to allocate release workqueue\n");
@@ -1462,28 +1040,19 @@ static int __init iser_init(void)
 		goto err_alloc_wq;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iscsi_iser_scsi_transport = iscsi_register_transport(
 							&iscsi_iser_transport);
 	if (!iscsi_iser_scsi_transport) {
 		iser_err("iscsi_register_transport failed\n");
 		err = -EINVAL;
-<<<<<<< HEAD
-		goto register_transport_failure;
-=======
 		goto err_reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
-<<<<<<< HEAD
-register_transport_failure:
-=======
 err_reg:
 	destroy_workqueue(release_wq);
 err_alloc_wq:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(ig.desc_cache);
 
 	return err;
@@ -1491,9 +1060,6 @@ err_alloc_wq:
 
 static void __exit iser_exit(void)
 {
-<<<<<<< HEAD
-	iser_dbg("Removing iSER datamover...\n");
-=======
 	struct iser_conn *iser_conn, *n;
 	int connlist_empty;
 
@@ -1513,7 +1079,6 @@ static void __exit iser_exit(void)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iscsi_unregister_transport(&iscsi_iser_transport);
 	kmem_cache_destroy(ig.desc_cache);
 }

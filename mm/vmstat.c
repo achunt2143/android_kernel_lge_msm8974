@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/mm/vmstat.c
  *
@@ -11,10 +8,7 @@
  *  zoned VM statistics
  *  Copyright (C) 2006 Silicon Graphics, Inc.,
  *		Christoph Lameter <christoph@lameter.com>
-<<<<<<< HEAD
-=======
  *  Copyright (C) 2008-2014 Christoph Lameter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/fs.h>
 #include <linux/mm.h>
@@ -22,25 +16,16 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/cpu.h>
-<<<<<<< HEAD
-#include <linux/vmstat.h>
-=======
 #include <linux/cpumask.h>
 #include <linux/vmstat.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/debugfs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/math64.h>
 #include <linux/writeback.h>
 #include <linux/compaction.h>
 #include <linux/mm_inline.h>
-<<<<<<< HEAD
-
-#include "internal.h"
-
-=======
 #include <linux/page_owner.h>
 #include <linux/sched/isolation.h>
 
@@ -118,7 +103,6 @@ out:
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_VM_EVENT_COUNTERS
 DEFINE_PER_CPU(struct vm_event_state, vm_event_states) = {{0}};
 EXPORT_PER_CPU_SYMBOL(vm_event_states);
@@ -145,22 +129,12 @@ static void sum_vm_events(unsigned long *ret)
 */
 void all_vm_events(unsigned long *ret)
 {
-<<<<<<< HEAD
-	get_online_cpus();
-	sum_vm_events(ret);
-	put_online_cpus();
-}
-EXPORT_SYMBOL_GPL(all_vm_events);
-
-#ifdef CONFIG_HOTPLUG
-=======
 	cpus_read_lock();
 	sum_vm_events(ret);
 	cpus_read_unlock();
 }
 EXPORT_SYMBOL_GPL(all_vm_events);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Fold the foreign cpu events into our own.
  *
@@ -177,10 +151,6 @@ void vm_events_fold_cpu(int cpu)
 		fold_state->event[i] = 0;
 	}
 }
-<<<<<<< HEAD
-#endif /* CONFIG_HOTPLUG */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_VM_EVENT_COUNTERS */
 
@@ -189,10 +159,6 @@ void vm_events_fold_cpu(int cpu)
  *
  * vm_stat contains the global counters
  */
-<<<<<<< HEAD
-atomic_long_t vm_stat[NR_VM_ZONE_STAT_ITEMS] __cacheline_aligned_in_smp;
-EXPORT_SYMBOL(vm_stat);
-=======
 atomic_long_t vm_zone_stat[NR_VM_ZONE_STAT_ITEMS] __cacheline_aligned_in_smp;
 atomic_long_t vm_node_stat[NR_VM_NODE_STAT_ITEMS] __cacheline_aligned_in_smp;
 atomic_long_t vm_numa_event[NR_VM_NUMA_EVENT_ITEMS] __cacheline_aligned_in_smp;
@@ -226,7 +192,6 @@ void fold_vm_numa_events(void)
 		fold_vm_zone_numa_events(zone);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 
@@ -267,11 +232,7 @@ int calculate_normal_threshold(struct zone *zone)
 	 *
 	 * Some sample thresholds:
 	 *
-<<<<<<< HEAD
-	 * Threshold	Processors	(fls)	Zonesize	fls(mem+1)
-=======
 	 * Threshold	Processors	(fls)	Zonesize	fls(mem)+1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * ------------------------------------------------------------------
 	 * 8		1		1	0.9-1 GB	4
 	 * 16		2		2	0.9-1 GB	4
@@ -293,11 +254,7 @@ int calculate_normal_threshold(struct zone *zone)
 	 * 125		1024		10	16-32 GB	9
 	 */
 
-<<<<<<< HEAD
-	mem = zone->present_pages >> (27 - PAGE_SHIFT);
-=======
 	mem = zone_managed_pages(zone) >> (27 - PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	threshold = 2 * fls(num_online_cpus()) * (1 + fls(mem));
 
@@ -314,17 +271,11 @@ int calculate_normal_threshold(struct zone *zone)
  */
 void refresh_zone_stat_thresholds(void)
 {
-<<<<<<< HEAD
-=======
 	struct pglist_data *pgdat;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zone *zone;
 	int cpu;
 	int threshold;
 
-<<<<<<< HEAD
-	for_each_populated_zone(zone) {
-=======
 	/* Zero current pgdat thresholds */
 	for_each_online_pgdat(pgdat) {
 		for_each_online_cpu(cpu) {
@@ -334,17 +285,10 @@ void refresh_zone_stat_thresholds(void)
 
 	for_each_populated_zone(zone) {
 		struct pglist_data *pgdat = zone->zone_pgdat;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long max_drift, tolerate_drift;
 
 		threshold = calculate_normal_threshold(zone);
 
-<<<<<<< HEAD
-		for_each_online_cpu(cpu)
-			per_cpu_ptr(zone->pageset, cpu)->stat_threshold
-							= threshold;
-
-=======
 		for_each_online_cpu(cpu) {
 			int pgdat_threshold;
 
@@ -357,7 +301,6 @@ void refresh_zone_stat_thresholds(void)
 				= max(threshold, pgdat_threshold);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Only set percpu_drift_mark if there is a danger that
 		 * NR_FREE_PAGES reports the low watermark is ok when in fact
@@ -385,26 +328,13 @@ void set_pgdat_percpu_threshold(pg_data_t *pgdat,
 			continue;
 
 		threshold = (*calculate_pressure)(zone);
-<<<<<<< HEAD
-		for_each_possible_cpu(cpu)
-			per_cpu_ptr(zone->pageset, cpu)->stat_threshold
-=======
 		for_each_online_cpu(cpu)
 			per_cpu_ptr(zone->per_cpu_zonestats, cpu)->stat_threshold
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							= threshold;
 	}
 }
 
 /*
-<<<<<<< HEAD
- * For use when we know that interrupts are disabled.
- */
-void __mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
-				int delta)
-{
-	struct per_cpu_pageset __percpu *pcp = zone->pageset;
-=======
  * For use when we know that interrupts are disabled,
  * or when we know that preemption is disabled and that
  * particular counter cannot be updated from interrupt context.
@@ -413,13 +343,10 @@ void __mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
 			   long delta)
 {
 	struct per_cpu_zonestat __percpu *pcp = zone->per_cpu_zonestats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s8 __percpu *p = pcp->vm_stat_diff + item;
 	long x;
 	long t;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Accurate vmstat updates require a RMW. On !PREEMPT_RT kernels,
 	 * atomicity is provided by IRQs being disabled -- either explicitly
@@ -429,25 +356,15 @@ void __mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
 	 */
 	preempt_disable_nested();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	x = delta + __this_cpu_read(*p);
 
 	t = __this_cpu_read(pcp->stat_threshold);
 
-<<<<<<< HEAD
-	if (unlikely(x > t || x < -t)) {
-=======
 	if (unlikely(abs(x) > t)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		zone_page_state_add(x, zone, item);
 		x = 0;
 	}
 	__this_cpu_write(*p, x);
-<<<<<<< HEAD
-}
-EXPORT_SYMBOL(__mod_zone_page_state);
-
-=======
 
 	preempt_enable_nested();
 }
@@ -489,7 +406,6 @@ void __mod_node_page_state(struct pglist_data *pgdat, enum node_stat_item item,
 }
 EXPORT_SYMBOL(__mod_node_page_state);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Optimized increment and decrement functions.
  *
@@ -515,12 +431,6 @@ EXPORT_SYMBOL(__mod_node_page_state);
  */
 void __inc_zone_state(struct zone *zone, enum zone_stat_item item)
 {
-<<<<<<< HEAD
-	struct per_cpu_pageset __percpu *pcp = zone->pageset;
-	s8 __percpu *p = pcp->vm_stat_diff + item;
-	s8 v, t;
-
-=======
 	struct per_cpu_zonestat __percpu *pcp = zone->per_cpu_zonestats;
 	s8 __percpu *p = pcp->vm_stat_diff + item;
 	s8 v, t;
@@ -528,7 +438,6 @@ void __inc_zone_state(struct zone *zone, enum zone_stat_item item)
 	/* See __mod_node_page_state */
 	preempt_disable_nested();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v = __this_cpu_inc_return(*p);
 	t = __this_cpu_read(pcp->stat_threshold);
 	if (unlikely(v > t)) {
@@ -537,8 +446,6 @@ void __inc_zone_state(struct zone *zone, enum zone_stat_item item)
 		zone_page_state_add(v + overstep, zone, item);
 		__this_cpu_write(*p, -overstep);
 	}
-<<<<<<< HEAD
-=======
 
 	preempt_enable_nested();
 }
@@ -564,7 +471,6 @@ void __inc_node_state(struct pglist_data *pgdat, enum node_stat_item item)
 	}
 
 	preempt_enable_nested();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __inc_zone_page_state(struct page *page, enum zone_stat_item item)
@@ -573,14 +479,6 @@ void __inc_zone_page_state(struct page *page, enum zone_stat_item item)
 }
 EXPORT_SYMBOL(__inc_zone_page_state);
 
-<<<<<<< HEAD
-void __dec_zone_state(struct zone *zone, enum zone_stat_item item)
-{
-	struct per_cpu_pageset __percpu *pcp = zone->pageset;
-	s8 __percpu *p = pcp->vm_stat_diff + item;
-	s8 v, t;
-
-=======
 void __inc_node_page_state(struct page *page, enum node_stat_item item)
 {
 	__inc_node_state(page_pgdat(page), item);
@@ -596,7 +494,6 @@ void __dec_zone_state(struct zone *zone, enum zone_stat_item item)
 	/* See __mod_node_page_state */
 	preempt_disable_nested();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v = __this_cpu_dec_return(*p);
 	t = __this_cpu_read(pcp->stat_threshold);
 	if (unlikely(v < - t)) {
@@ -605,8 +502,6 @@ void __dec_zone_state(struct zone *zone, enum zone_stat_item item)
 		zone_page_state_add(v - overstep, zone, item);
 		__this_cpu_write(*p, overstep);
 	}
-<<<<<<< HEAD
-=======
 
 	preempt_enable_nested();
 }
@@ -632,7 +527,6 @@ void __dec_node_state(struct pglist_data *pgdat, enum node_stat_item item)
 	}
 
 	preempt_enable_nested();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __dec_zone_page_state(struct page *page, enum zone_stat_item item)
@@ -641,15 +535,12 @@ void __dec_zone_page_state(struct page *page, enum zone_stat_item item)
 }
 EXPORT_SYMBOL(__dec_zone_page_state);
 
-<<<<<<< HEAD
-=======
 void __dec_node_page_state(struct page *page, enum node_stat_item item)
 {
 	__dec_node_state(page_pgdat(page), item);
 }
 EXPORT_SYMBOL(__dec_node_page_state);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_HAVE_CMPXCHG_LOCAL
 /*
  * If we have cmpxchg_local support then we do not need to incur the overhead
@@ -663,15 +554,6 @@ EXPORT_SYMBOL(__dec_node_page_state);
  *     1       Overstepping half of threshold
  *     -1      Overstepping minus half of threshold
 */
-<<<<<<< HEAD
-static inline void mod_state(struct zone *zone,
-       enum zone_stat_item item, int delta, int overstep_mode)
-{
-	struct per_cpu_pageset __percpu *pcp = zone->pageset;
-	s8 __percpu *p = pcp->vm_stat_diff + item;
-	long o, n, t, z;
-
-=======
 static inline void mod_zone_state(struct zone *zone,
        enum zone_stat_item item, long delta, int overstep_mode)
 {
@@ -681,7 +563,6 @@ static inline void mod_zone_state(struct zone *zone,
 	s8 o;
 
 	o = this_cpu_read(*p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		z = 0;  /* overflow to zone counters */
 
@@ -697,49 +578,22 @@ static inline void mod_zone_state(struct zone *zone,
 		 */
 		t = this_cpu_read(pcp->stat_threshold);
 
-<<<<<<< HEAD
-		o = this_cpu_read(*p);
-		n = delta + o;
-
-		if (n > t || n < -t) {
-=======
 		n = delta + (long)o;
 
 		if (abs(n) > t) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int os = overstep_mode * (t >> 1) ;
 
 			/* Overflow must be added to zone counters */
 			z = n + os;
 			n = -os;
 		}
-<<<<<<< HEAD
-	} while (this_cpu_cmpxchg(*p, o, n) != o);
-=======
 	} while (!this_cpu_try_cmpxchg(*p, &o, n));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (z)
 		zone_page_state_add(z, zone, item);
 }
 
 void mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
-<<<<<<< HEAD
-					int delta)
-{
-	mod_state(zone, item, delta, 0);
-}
-EXPORT_SYMBOL(mod_zone_page_state);
-
-void inc_zone_state(struct zone *zone, enum zone_stat_item item)
-{
-	mod_state(zone, item, 1, 1);
-}
-
-void inc_zone_page_state(struct page *page, enum zone_stat_item item)
-{
-	mod_state(page_zone(page), item, 1, 1);
-=======
 			 long delta)
 {
 	mod_zone_state(zone, item, delta, 0);
@@ -749,17 +603,11 @@ EXPORT_SYMBOL(mod_zone_page_state);
 void inc_zone_page_state(struct page *page, enum zone_stat_item item)
 {
 	mod_zone_state(page_zone(page), item, 1, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(inc_zone_page_state);
 
 void dec_zone_page_state(struct page *page, enum zone_stat_item item)
 {
-<<<<<<< HEAD
-	mod_state(page_zone(page), item, -1, -1);
-}
-EXPORT_SYMBOL(dec_zone_page_state);
-=======
 	mod_zone_state(page_zone(page), item, -1, -1);
 }
 EXPORT_SYMBOL(dec_zone_page_state);
@@ -837,17 +685,12 @@ void dec_node_page_state(struct page *page, enum node_stat_item item)
 	mod_node_state(page_pgdat(page), item, -1, -1);
 }
 EXPORT_SYMBOL(dec_node_page_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 /*
  * Use interrupt disable to serialize counter updates
  */
 void mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
-<<<<<<< HEAD
-					int delta)
-=======
 			 long delta)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -857,18 +700,6 @@ void mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
 }
 EXPORT_SYMBOL(mod_zone_page_state);
 
-<<<<<<< HEAD
-void inc_zone_state(struct zone *zone, enum zone_stat_item item)
-{
-	unsigned long flags;
-
-	local_irq_save(flags);
-	__inc_zone_state(zone, item);
-	local_irq_restore(flags);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void inc_zone_page_state(struct page *page, enum zone_stat_item item)
 {
 	unsigned long flags;
@@ -890,16 +721,6 @@ void dec_zone_page_state(struct page *page, enum zone_stat_item item)
 	local_irq_restore(flags);
 }
 EXPORT_SYMBOL(dec_zone_page_state);
-<<<<<<< HEAD
-#endif
-
-/*
- * Update the zone counters for one cpu.
- *
- * The cpu specified must be either the current cpu or a processor that
- * is not online. If it is the current cpu then the execution thread must
- * be pinned to the current cpu.
-=======
 
 void inc_node_state(struct pglist_data *pgdat, enum node_stat_item item)
 {
@@ -970,7 +791,6 @@ static int fold_diff(int *zone_diff, int *node_diff)
 
 /*
  * Update the zone counters for the current cpu.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note that refresh_cpu_vm_stats strives to only access
  * node local memory. The per cpu pagesets on remote zones are placed
@@ -982,70 +802,6 @@ static int fold_diff(int *zone_diff, int *node_diff)
  * statistics in the remote zone struct as well as the global cachelines
  * with the global counters. These could cause remote node cache line
  * bouncing and will have to be only done when necessary.
-<<<<<<< HEAD
- */
-void refresh_cpu_vm_stats(int cpu)
-{
-	struct zone *zone;
-	int i;
-	int global_diff[NR_VM_ZONE_STAT_ITEMS] = { 0, };
-
-	for_each_populated_zone(zone) {
-		struct per_cpu_pageset *p;
-
-		p = per_cpu_ptr(zone->pageset, cpu);
-
-		for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
-			if (p->vm_stat_diff[i]) {
-				unsigned long flags;
-				int v;
-
-				local_irq_save(flags);
-				v = p->vm_stat_diff[i];
-				p->vm_stat_diff[i] = 0;
-				local_irq_restore(flags);
-				atomic_long_add(v, &zone->vm_stat[i]);
-				global_diff[i] += v;
-#ifdef CONFIG_NUMA
-				/* 3 seconds idle till flush */
-				p->expire = 3;
-#endif
-			}
-		cond_resched();
-#ifdef CONFIG_NUMA
-		/*
-		 * Deal with draining the remote pageset of this
-		 * processor
-		 *
-		 * Check if there are pages remaining in this pageset
-		 * if not then there is nothing to expire.
-		 */
-		if (!p->expire || !p->pcp.count)
-			continue;
-
-		/*
-		 * We never drain zones local to this processor.
-		 */
-		if (zone_to_nid(zone) == numa_node_id()) {
-			p->expire = 0;
-			continue;
-		}
-
-		p->expire--;
-		if (p->expire)
-			continue;
-
-		if (p->pcp.count)
-			drain_zone_pages(zone, &p->pcp);
-#endif
-	}
-
-	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
-		if (global_diff[i])
-			atomic_long_add(global_diff[i], &vm_stat[i]);
-}
-
-=======
  *
  * The function returns the number of global counters updated.
  */
@@ -1219,35 +975,10 @@ void drain_zonestat(struct zone *zone, struct per_cpu_zonestat *pzstats)
 	}
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_NUMA
 /*
-<<<<<<< HEAD
- * zonelist = the list of zones passed to the allocator
- * z 	    = the zone from which the allocation occurred.
- *
- * Must be called with interrupts disabled.
- *
- * When __GFP_OTHER_NODE is set assume the node of the preferred
- * zone is the local node. This is useful for daemons who allocate
- * memory on behalf of other processes.
- */
-void zone_statistics(struct zone *preferred_zone, struct zone *z, gfp_t flags)
-{
-	if (z->zone_pgdat == preferred_zone->zone_pgdat) {
-		__inc_zone_state(z, NUMA_HIT);
-	} else {
-		__inc_zone_state(z, NUMA_MISS);
-		__inc_zone_state(preferred_zone, NUMA_FOREIGN);
-	}
-	if (z->node == ((flags & __GFP_OTHER_NODE) ?
-			preferred_zone->node : numa_node_id()))
-		__inc_zone_state(z, NUMA_LOCAL);
-	else
-		__inc_zone_state(z, NUMA_OTHER);
-=======
  * Determine the per node value of a stat item. This function
  * is called frequently in a NUMA machine, so try to be as
  * frugal as possible.
@@ -1299,7 +1030,6 @@ unsigned long node_page_state(struct pglist_data *pgdat,
 	VM_WARN_ON_ONCE(vmstat_item_in_bytes(item));
 
 	return node_page_state_pages(pgdat, item);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -1329,13 +1059,6 @@ static void fill_contig_page_info(struct zone *zone,
 	info->free_blocks_total = 0;
 	info->free_blocks_suitable = 0;
 
-<<<<<<< HEAD
-	for (order = 0; order < MAX_ORDER; order++) {
-		unsigned long blocks;
-
-		/* Count number of free blocks */
-		blocks = zone->free_area[order].nr_free;
-=======
 	for (order = 0; order < NR_PAGE_ORDERS; order++) {
 		unsigned long blocks;
 
@@ -1346,7 +1069,6 @@ static void fill_contig_page_info(struct zone *zone,
 		 * diagnostic purposes. Use data_race to avoid KCSAN warning.
 		 */
 		blocks = data_race(zone->free_area[order].nr_free);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->free_blocks_total += blocks;
 
 		/* Count free base pages */
@@ -1370,12 +1092,9 @@ static int __fragmentation_index(unsigned int order, struct contig_page_info *in
 {
 	unsigned long requested = 1UL << order;
 
-<<<<<<< HEAD
-=======
 	if (WARN_ON_ONCE(order > MAX_PAGE_ORDER))
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info->free_blocks_total)
 		return 0;
 
@@ -1392,8 +1111,6 @@ static int __fragmentation_index(unsigned int order, struct contig_page_info *in
 	return 1000 - div_u64( (1000+(div_u64(info->free_pages * 1000ULL, requested))), info->free_blocks_total);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Calculates external fragmentation within a zone wrt the given order.
  * It is defined as the percentage of pages found in blocks of size
@@ -1412,7 +1129,6 @@ unsigned int extfrag_for_order(struct zone *zone, unsigned int order)
 			info.free_pages);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Same as __fragmentation index but allocs contig_page_info on stack */
 int fragmentation_index(struct zone *zone, unsigned int order)
 {
@@ -1423,23 +1139,6 @@ int fragmentation_index(struct zone *zone, unsigned int order)
 }
 #endif
 
-<<<<<<< HEAD
-#if defined(CONFIG_PROC_FS) || defined(CONFIG_COMPACTION)
-#include <linux/proc_fs.h>
-#include <linux/seq_file.h>
-
-static char * const migratetype_names[MIGRATE_TYPES] = {
-	"Unmovable",
-	"Reclaimable",
-	"Movable",
-	"Reserve",
-#ifdef CONFIG_CMA
-	"CMA",
-#endif
-	"Isolate",
-};
-
-=======
 #if defined(CONFIG_PROC_FS) || defined(CONFIG_SYSFS) || \
     defined(CONFIG_NUMA) || defined(CONFIG_MEMCG)
 #ifdef CONFIG_ZONE_DMA
@@ -1720,15 +1419,11 @@ const char * const vmstat_text[] = {
 
 #if (defined(CONFIG_DEBUG_FS) && defined(CONFIG_COMPACTION)) || \
      defined(CONFIG_PROC_FS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *frag_start(struct seq_file *m, loff_t *pos)
 {
 	pg_data_t *pgdat;
 	loff_t node = *pos;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (pgdat = first_online_pgdat();
 	     pgdat && node;
 	     pgdat = next_online_pgdat(pgdat))
@@ -1749,17 +1444,12 @@ static void frag_stop(struct seq_file *m, void *arg)
 {
 }
 
-<<<<<<< HEAD
-/* Walk all the zones in a node and print using a callback */
-static void walk_zones_in_node(struct seq_file *m, pg_data_t *pgdat,
-=======
 /*
  * Walk zones in a node and print using a callback.
  * If @assert_populated is true, only use callback for zones that are populated.
  */
 static void walk_zones_in_node(struct seq_file *m, pg_data_t *pgdat,
 		bool assert_populated, bool nolock,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void (*print)(struct seq_file *m, pg_data_t *, struct zone *))
 {
 	struct zone *zone;
@@ -1767,14 +1457,6 @@ static void walk_zones_in_node(struct seq_file *m, pg_data_t *pgdat,
 	unsigned long flags;
 
 	for (zone = node_zones; zone - node_zones < MAX_NR_ZONES; ++zone) {
-<<<<<<< HEAD
-		if (!populated_zone(zone))
-			continue;
-
-		spin_lock_irqsave(&zone->lock, flags);
-		print(m, pgdat, zone);
-		spin_unlock_irqrestore(&zone->lock, flags);
-=======
 		if (assert_populated && !populated_zone(zone))
 			continue;
 
@@ -1783,153 +1465,10 @@ static void walk_zones_in_node(struct seq_file *m, pg_data_t *pgdat,
 		print(m, pgdat, zone);
 		if (!nolock)
 			spin_unlock_irqrestore(&zone->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #endif
 
-<<<<<<< HEAD
-#if defined(CONFIG_PROC_FS) || defined(CONFIG_SYSFS) || defined(CONFIG_NUMA)
-#ifdef CONFIG_ZONE_DMA
-#define TEXT_FOR_DMA(xx) xx "_dma",
-#else
-#define TEXT_FOR_DMA(xx)
-#endif
-
-#ifdef CONFIG_ZONE_DMA32
-#define TEXT_FOR_DMA32(xx) xx "_dma32",
-#else
-#define TEXT_FOR_DMA32(xx)
-#endif
-
-#ifdef CONFIG_HIGHMEM
-#define TEXT_FOR_HIGHMEM(xx) xx "_high",
-#else
-#define TEXT_FOR_HIGHMEM(xx)
-#endif
-
-#define TEXTS_FOR_ZONES(xx) TEXT_FOR_DMA(xx) TEXT_FOR_DMA32(xx) xx "_normal", \
-					TEXT_FOR_HIGHMEM(xx) xx "_movable",
-
-const char * const vmstat_text[] = {
-	/* Zoned VM counters */
-	"nr_free_pages",
-	"nr_inactive_anon",
-	"nr_active_anon",
-	"nr_inactive_file",
-	"nr_active_file",
-	"nr_unevictable",
-	"nr_mlock",
-	"nr_anon_pages",
-	"nr_mapped",
-	"nr_file_pages",
-	"nr_dirty",
-	"nr_writeback",
-	"nr_slab_reclaimable",
-	"nr_slab_unreclaimable",
-	"nr_page_table_pages",
-	"nr_kernel_stack",
-	"nr_unstable",
-	"nr_bounce",
-	"nr_vmscan_write",
-	"nr_vmscan_immediate_reclaim",
-	"nr_writeback_temp",
-	"nr_isolated_anon",
-	"nr_isolated_file",
-	"nr_shmem",
-	"nr_dirtied",
-	"nr_written",
-
-#ifdef CONFIG_NUMA
-	"numa_hit",
-	"numa_miss",
-	"numa_foreign",
-	"numa_interleave",
-	"numa_local",
-	"numa_other",
-#endif
-	"nr_anon_transparent_hugepages",
-	"nr_free_cma",
-	"nr_swapcache",
-	"nr_dirty_threshold",
-	"nr_dirty_background_threshold",
-
-#ifdef CONFIG_VM_EVENT_COUNTERS
-	"pgpgin",
-	"pgpgout",
-	"pswpin",
-	"pswpout",
-
-	TEXTS_FOR_ZONES("pgalloc")
-
-	"pgfree",
-	"pgactivate",
-	"pgdeactivate",
-
-	"pgfault",
-	"pgmajfault",
-
-	TEXTS_FOR_ZONES("pgrefill")
-	TEXTS_FOR_ZONES("pgsteal_kswapd")
-	TEXTS_FOR_ZONES("pgsteal_direct")
-	TEXTS_FOR_ZONES("pgscan_kswapd")
-	TEXTS_FOR_ZONES("pgscan_direct")
-
-#ifdef CONFIG_NUMA
-	"zone_reclaim_failed",
-#endif
-	"pginodesteal",
-	"slabs_scanned",
-	"kswapd_inodesteal",
-	"kswapd_low_wmark_hit_quickly",
-	"kswapd_high_wmark_hit_quickly",
-	"kswapd_skip_congestion_wait",
-	"pageoutrun",
-	"allocstall",
-
-	"pgrotated",
-
-#ifdef CONFIG_MIGRATION
-	"pgmigrate_success",
-	"pgmigrate_fail",
-#endif
-#ifdef CONFIG_COMPACTION
-	"compact_migrate_scanned",
-	"compact_free_scanned",
-	"compact_isolated",
-	"compact_stall",
-	"compact_fail",
-	"compact_success",
-#endif
-
-#ifdef CONFIG_HUGETLB_PAGE
-	"htlb_buddy_alloc_success",
-	"htlb_buddy_alloc_fail",
-#endif
-	"unevictable_pgs_culled",
-	"unevictable_pgs_scanned",
-	"unevictable_pgs_rescued",
-	"unevictable_pgs_mlocked",
-	"unevictable_pgs_munlocked",
-	"unevictable_pgs_cleared",
-	"unevictable_pgs_stranded",
-	"unevictable_pgs_mlockfreed",
-
-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
-	"thp_fault_alloc",
-	"thp_fault_fallback",
-	"thp_collapse_alloc",
-	"thp_collapse_alloc_failed",
-	"thp_split",
-#endif
-
-#endif /* CONFIG_VM_EVENTS_COUNTERS */
-};
-#endif /* CONFIG_PROC_FS || CONFIG_SYSFS || CONFIG_NUMA */
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PROC_FS
 static void frag_show_print(struct seq_file *m, pg_data_t *pgdat,
 						struct zone *zone)
@@ -1937,17 +1476,12 @@ static void frag_show_print(struct seq_file *m, pg_data_t *pgdat,
 	int order;
 
 	seq_printf(m, "Node %d, zone %8s ", pgdat->node_id, zone->name);
-<<<<<<< HEAD
-	for (order = 0; order < MAX_ORDER; ++order)
-		seq_printf(m, "%6lu ", zone->free_area[order].nr_free);
-=======
 	for (order = 0; order < NR_PAGE_ORDERS; ++order)
 		/*
 		 * Access to nr_free is lockless as nr_free is used only for
 		 * printing purposes. Use data_race to avoid KCSAN warning.
 		 */
 		seq_printf(m, "%6lu ", data_race(zone->free_area[order].nr_free));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_putc(m, '\n');
 }
 
@@ -1957,11 +1491,7 @@ static void frag_show_print(struct seq_file *m, pg_data_t *pgdat,
 static int frag_show(struct seq_file *m, void *arg)
 {
 	pg_data_t *pgdat = (pg_data_t *)arg;
-<<<<<<< HEAD
-	walk_zones_in_node(m, pgdat, frag_show_print);
-=======
 	walk_zones_in_node(m, pgdat, true, false, frag_show_print);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1975,18 +1505,6 @@ static void pagetypeinfo_showfree_print(struct seq_file *m,
 					pgdat->node_id,
 					zone->name,
 					migratetype_names[mtype]);
-<<<<<<< HEAD
-		for (order = 0; order < MAX_ORDER; ++order) {
-			unsigned long freecount = 0;
-			struct free_area *area;
-			struct list_head *curr;
-
-			area = &(zone->free_area[order]);
-
-			list_for_each(curr, &area->free_list[mtype])
-				freecount++;
-			seq_printf(m, "%6lu ", freecount);
-=======
 		for (order = 0; order < NR_PAGE_ORDERS; ++order) {
 			unsigned long freecount = 0;
 			struct free_area *area;
@@ -2014,39 +1532,24 @@ static void pagetypeinfo_showfree_print(struct seq_file *m,
 			spin_unlock_irq(&zone->lock);
 			cond_resched();
 			spin_lock_irq(&zone->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		seq_putc(m, '\n');
 	}
 }
 
 /* Print out the free pages at each order for each migatetype */
-<<<<<<< HEAD
-static int pagetypeinfo_showfree(struct seq_file *m, void *arg)
-=======
 static void pagetypeinfo_showfree(struct seq_file *m, void *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int order;
 	pg_data_t *pgdat = (pg_data_t *)arg;
 
 	/* Print header */
 	seq_printf(m, "%-43s ", "Free pages count per migrate type at order");
-<<<<<<< HEAD
-	for (order = 0; order < MAX_ORDER; ++order)
-		seq_printf(m, "%6d ", order);
-	seq_putc(m, '\n');
-
-	walk_zones_in_node(m, pgdat, pagetypeinfo_showfree_print);
-
-	return 0;
-=======
 	for (order = 0; order < NR_PAGE_ORDERS; ++order)
 		seq_printf(m, "%6d ", order);
 	seq_putc(m, '\n');
 
 	walk_zones_in_node(m, pgdat, true, false, pagetypeinfo_showfree_print);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pagetypeinfo_showblockcount_print(struct seq_file *m,
@@ -2055,31 +1558,17 @@ static void pagetypeinfo_showblockcount_print(struct seq_file *m,
 	int mtype;
 	unsigned long pfn;
 	unsigned long start_pfn = zone->zone_start_pfn;
-<<<<<<< HEAD
-	unsigned long end_pfn = start_pfn + zone->spanned_pages;
-=======
 	unsigned long end_pfn = zone_end_pfn(zone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long count[MIGRATE_TYPES] = { 0, };
 
 	for (pfn = start_pfn; pfn < end_pfn; pfn += pageblock_nr_pages) {
 		struct page *page;
 
-<<<<<<< HEAD
-		if (!pfn_valid(pfn))
-			continue;
-
-		page = pfn_to_page(pfn);
-
-		/* Watch for unexpected holes punched in the memmap */
-		if (!memmap_valid_within(pfn, page, zone))
-=======
 		page = pfn_to_online_page(pfn);
 		if (!page)
 			continue;
 
 		if (page_zone(page) != zone)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		mtype = get_pageblock_migratetype(page);
@@ -2095,13 +1584,8 @@ static void pagetypeinfo_showblockcount_print(struct seq_file *m,
 	seq_putc(m, '\n');
 }
 
-<<<<<<< HEAD
-/* Print out the free pages at each order for each migratetype */
-static int pagetypeinfo_showblockcount(struct seq_file *m, void *arg)
-=======
 /* Print out the number of pageblocks for each migratetype */
 static void pagetypeinfo_showblockcount(struct seq_file *m, void *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int mtype;
 	pg_data_t *pgdat = (pg_data_t *)arg;
@@ -2110,11 +1594,6 @@ static void pagetypeinfo_showblockcount(struct seq_file *m, void *arg)
 	for (mtype = 0; mtype < MIGRATE_TYPES; mtype++)
 		seq_printf(m, "%12s ", migratetype_names[mtype]);
 	seq_putc(m, '\n');
-<<<<<<< HEAD
-	walk_zones_in_node(m, pgdat, pagetypeinfo_showblockcount_print);
-
-	return 0;
-=======
 	walk_zones_in_node(m, pgdat, true, false,
 		pagetypeinfo_showblockcount_print);
 }
@@ -2143,7 +1622,6 @@ static void pagetypeinfo_showmixedcount(struct seq_file *m, pg_data_t *pgdat)
 	walk_zones_in_node(m, pgdat, true, true,
 		pagetypeinfo_showmixedcount_print);
 #endif /* CONFIG_PAGE_OWNER */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2155,11 +1633,7 @@ static int pagetypeinfo_show(struct seq_file *m, void *arg)
 	pg_data_t *pgdat = (pg_data_t *)arg;
 
 	/* check memoryless node */
-<<<<<<< HEAD
-	if (!node_state(pgdat->node_id, N_HIGH_MEMORY))
-=======
 	if (!node_state(pgdat->node_id, N_MEMORY))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	seq_printf(m, "Page block order: %d\n", pageblock_order);
@@ -2167,10 +1641,7 @@ static int pagetypeinfo_show(struct seq_file *m, void *arg)
 	seq_putc(m, '\n');
 	pagetypeinfo_showfree(m, pgdat);
 	pagetypeinfo_showblockcount(m, pgdat);
-<<<<<<< HEAD
-=======
 	pagetypeinfo_showmixedcount(m, pgdat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2182,21 +1653,6 @@ static const struct seq_operations fragmentation_op = {
 	.show	= frag_show,
 };
 
-<<<<<<< HEAD
-static int fragmentation_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &fragmentation_op);
-}
-
-static const struct file_operations fragmentation_file_operations = {
-	.open		= fragmentation_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct seq_operations pagetypeinfo_op = {
 	.start	= frag_start,
 	.next	= frag_next,
@@ -2204,19 +1660,6 @@ static const struct seq_operations pagetypeinfo_op = {
 	.show	= pagetypeinfo_show,
 };
 
-<<<<<<< HEAD
-static int pagetypeinfo_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &pagetypeinfo_op);
-}
-
-static const struct file_operations pagetypeinfo_file_ops = {
-	.open		= pagetypeinfo_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-=======
 static bool is_zone_first_populated(pg_data_t *pgdat, struct zone *zone)
 {
 	int zid;
@@ -2230,47 +1673,12 @@ static bool is_zone_first_populated(pg_data_t *pgdat, struct zone *zone)
 
 	return false;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void zoneinfo_show_print(struct seq_file *m, pg_data_t *pgdat,
 							struct zone *zone)
 {
 	int i;
 	seq_printf(m, "Node %d, zone %8s", pgdat->node_id, zone->name);
-<<<<<<< HEAD
-	seq_printf(m,
-		   "\n  pages free     %lu"
-		   "\n        min      %lu"
-		   "\n        low      %lu"
-		   "\n        high     %lu"
-		   "\n        scanned  %lu"
-		   "\n        spanned  %lu"
-		   "\n        present  %lu",
-		   zone_page_state(zone, NR_FREE_PAGES),
-		   min_wmark_pages(zone),
-		   low_wmark_pages(zone),
-		   high_wmark_pages(zone),
-		   zone->pages_scanned,
-		   zone->spanned_pages,
-		   zone->present_pages);
-
-	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
-		seq_printf(m, "\n    %-12s %lu", vmstat_text[i],
-				zone_page_state(zone, i));
-
-	seq_printf(m,
-		   "\n        protection: (%lu",
-		   zone->lowmem_reserve[0]);
-	for (i = 1; i < ARRAY_SIZE(zone->lowmem_reserve); i++)
-		seq_printf(m, ", %lu", zone->lowmem_reserve[i]);
-	seq_printf(m,
-		   ")"
-		   "\n  pagesets");
-	for_each_online_cpu(i) {
-		struct per_cpu_pageset *pageset;
-
-		pageset = per_cpu_ptr(zone->pageset, i);
-=======
 	if (is_zone_first_populated(pgdat, zone)) {
 		seq_printf(m, "\n  per-node stats");
 		for (i = 0; i < NR_VM_NODE_STAT_ITEMS; i++) {
@@ -2331,30 +1739,12 @@ static void zoneinfo_show_print(struct seq_file *m, pg_data_t *pgdat,
 		struct per_cpu_zonestat __maybe_unused *pzstats;
 
 		pcp = per_cpu_ptr(zone->per_cpu_pageset, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_printf(m,
 			   "\n    cpu: %i"
 			   "\n              count: %i"
 			   "\n              high:  %i"
 			   "\n              batch: %i",
 			   i,
-<<<<<<< HEAD
-			   pageset->pcp.count,
-			   pageset->pcp.high,
-			   pageset->pcp.batch);
-#ifdef CONFIG_SMP
-		seq_printf(m, "\n  vm stats threshold: %d",
-				pageset->stat_threshold);
-#endif
-	}
-	seq_printf(m,
-		   "\n  all_unreclaimable: %u"
-		   "\n  start_pfn:         %lu"
-		   "\n  inactive_ratio:    %u",
-		   !zone_reclaimable(zone),
-		   zone->zone_start_pfn,
-		   zone->inactive_ratio);
-=======
 			   pcp->count,
 			   pcp->high,
 			   pcp->batch);
@@ -2369,28 +1759,19 @@ static void zoneinfo_show_print(struct seq_file *m, pg_data_t *pgdat,
 		   "\n  start_pfn:           %lu",
 		   pgdat->kswapd_failures >= MAX_RECLAIM_RETRIES,
 		   zone->zone_start_pfn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_putc(m, '\n');
 }
 
 /*
-<<<<<<< HEAD
- * Output information about zones in @pgdat.
-=======
  * Output information about zones in @pgdat.  All zones are printed regardless
  * of whether they are populated or not: lowmem_reserve_ratio operates on the
  * set of all zones and userspace would not be aware of such zones if they are
  * suppressed here (zoneinfo displays the effect of lowmem_reserve_ratio).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int zoneinfo_show(struct seq_file *m, void *arg)
 {
 	pg_data_t *pgdat = (pg_data_t *)arg;
-<<<<<<< HEAD
-	walk_zones_in_node(m, pgdat, zoneinfo_show_print);
-=======
 	walk_zones_in_node(m, pgdat, false, false, zoneinfo_show_print);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2402,50 +1783,16 @@ static const struct seq_operations zoneinfo_op = {
 	.show	= zoneinfo_show,
 };
 
-<<<<<<< HEAD
-static int zoneinfo_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &zoneinfo_op);
-}
-
-static const struct file_operations proc_zoneinfo_file_operations = {
-	.open		= zoneinfo_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-
-enum writeback_stat_item {
-	NR_DIRTY_THRESHOLD,
-	NR_DIRTY_BG_THRESHOLD,
-	NR_VM_WRITEBACK_STAT_ITEMS,
-};
-=======
 #define NR_VMSTAT_ITEMS (NR_VM_ZONE_STAT_ITEMS + \
 			 NR_VM_NUMA_EVENT_ITEMS + \
 			 NR_VM_NODE_STAT_ITEMS + \
 			 NR_VM_WRITEBACK_STAT_ITEMS + \
 			 (IS_ENABLED(CONFIG_VM_EVENT_COUNTERS) ? \
 			  NR_VM_EVENT_ITEMS : 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void *vmstat_start(struct seq_file *m, loff_t *pos)
 {
 	unsigned long *v;
-<<<<<<< HEAD
-	int i, stat_items_size;
-
-	if (*pos >= ARRAY_SIZE(vmstat_text))
-		return NULL;
-	stat_items_size = NR_VM_ZONE_STAT_ITEMS * sizeof(unsigned long) +
-			  NR_VM_WRITEBACK_STAT_ITEMS * sizeof(unsigned long);
-
-#ifdef CONFIG_VM_EVENT_COUNTERS
-	stat_items_size += sizeof(struct vm_event_state);
-#endif
-
-	v = kmalloc(stat_items_size, GFP_KERNEL);
-=======
 	int i;
 
 	if (*pos >= NR_VMSTAT_ITEMS)
@@ -2454,16 +1801,10 @@ static void *vmstat_start(struct seq_file *m, loff_t *pos)
 	BUILD_BUG_ON(ARRAY_SIZE(vmstat_text) < NR_VMSTAT_ITEMS);
 	fold_vm_numa_events();
 	v = kmalloc_array(NR_VMSTAT_ITEMS, sizeof(unsigned long), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	m->private = v;
 	if (!v)
 		return ERR_PTR(-ENOMEM);
 	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
-<<<<<<< HEAD
-		v[i] = global_page_state(i);
-	v += NR_VM_ZONE_STAT_ITEMS;
-
-=======
 		v[i] = global_zone_page_state(i);
 	v += NR_VM_ZONE_STAT_ITEMS;
 
@@ -2480,7 +1821,6 @@ static void *vmstat_start(struct seq_file *m, loff_t *pos)
 	}
 	v += NR_VM_NODE_STAT_ITEMS;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	global_dirty_limits(v + NR_DIRTY_BG_THRESHOLD,
 			    v + NR_DIRTY_THRESHOLD);
 	v += NR_VM_WRITEBACK_STAT_ITEMS;
@@ -2496,11 +1836,7 @@ static void *vmstat_start(struct seq_file *m, loff_t *pos)
 static void *vmstat_next(struct seq_file *m, void *arg, loff_t *pos)
 {
 	(*pos)++;
-<<<<<<< HEAD
-	if (*pos >= ARRAY_SIZE(vmstat_text))
-=======
 	if (*pos >= NR_VMSTAT_ITEMS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	return (unsigned long *)m->private + *pos;
 }
@@ -2510,9 +1846,6 @@ static int vmstat_show(struct seq_file *m, void *arg)
 	unsigned long *l = arg;
 	unsigned long off = l - (unsigned long *)m->private;
 
-<<<<<<< HEAD
-	seq_printf(m, "%s %lu\n", vmstat_text[off], *l);
-=======
 	seq_puts(m, vmstat_text[off]);
 	seq_put_decimal_ull(m, " ", *l);
 	seq_putc(m, '\n');
@@ -2524,7 +1857,6 @@ static int vmstat_show(struct seq_file *m, void *arg)
 		 */
 		seq_puts(m, "nr_unstable 0\n");
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2540,107 +1872,6 @@ static const struct seq_operations vmstat_op = {
 	.stop	= vmstat_stop,
 	.show	= vmstat_show,
 };
-<<<<<<< HEAD
-
-static int vmstat_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &vmstat_op);
-}
-
-static const struct file_operations proc_vmstat_file_operations = {
-	.open		= vmstat_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-#endif /* CONFIG_PROC_FS */
-
-#ifdef CONFIG_SMP
-static struct workqueue_struct *vmstat_wq;
-static DEFINE_PER_CPU(struct delayed_work, vmstat_work);
-int sysctl_stat_interval __read_mostly = HZ;
-
-static void vmstat_update(struct work_struct *w)
-{
-	refresh_cpu_vm_stats(smp_processor_id());
-	queue_delayed_work(vmstat_wq, &__get_cpu_var(vmstat_work),
-		round_jiffies_relative(sysctl_stat_interval));
-}
-
-static void __cpuinit start_cpu_timer(int cpu)
-{
-	struct delayed_work *work = &per_cpu(vmstat_work, cpu);
-
-	INIT_DELAYED_WORK_DEFERRABLE(work, vmstat_update);
-	queue_delayed_work_on(cpu, vmstat_wq, work, __round_jiffies_relative(HZ, cpu));
-}
-
-/*
- * Use the cpu notifier to insure that the thresholds are recalculated
- * when necessary.
- */
-static int __cpuinit vmstat_cpuup_callback(struct notifier_block *nfb,
-		unsigned long action,
-		void *hcpu)
-{
-	long cpu = (long)hcpu;
-
-	switch (action) {
-	case CPU_ONLINE:
-	case CPU_ONLINE_FROZEN:
-		refresh_zone_stat_thresholds();
-		start_cpu_timer(cpu);
-		node_set_state(cpu_to_node(cpu), N_CPU);
-		break;
-	case CPU_DOWN_PREPARE:
-	case CPU_DOWN_PREPARE_FROZEN:
-		cancel_delayed_work_sync(&per_cpu(vmstat_work, cpu));
-		per_cpu(vmstat_work, cpu).work.func = NULL;
-		break;
-	case CPU_DOWN_FAILED:
-	case CPU_DOWN_FAILED_FROZEN:
-		start_cpu_timer(cpu);
-		break;
-	case CPU_DEAD:
-	case CPU_DEAD_FROZEN:
-		refresh_zone_stat_thresholds();
-		break;
-	default:
-		break;
-	}
-	return NOTIFY_OK;
-}
-
-static struct notifier_block __cpuinitdata vmstat_notifier =
-	{ &vmstat_cpuup_callback, NULL, 0 };
-#endif
-
-static int __init setup_vmstat(void)
-{
-#ifdef CONFIG_SMP
-	int cpu;
-
-	register_cpu_notifier(&vmstat_notifier);
-
-	vmstat_wq = alloc_workqueue("vmstat", WQ_FREEZABLE|WQ_MEM_RECLAIM, 0);
-	for_each_online_cpu(cpu)
-		start_cpu_timer(cpu);
-#endif
-#ifdef CONFIG_PROC_FS
-	proc_create("buddyinfo", S_IRUGO, NULL, &fragmentation_file_operations);
-	proc_create("pagetypeinfo", S_IRUGO, NULL, &pagetypeinfo_file_ops);
-	proc_create("vmstat", S_IRUGO, NULL, &proc_vmstat_file_operations);
-	proc_create("zoneinfo", S_IRUGO, NULL, &proc_zoneinfo_file_operations);
-#endif
-	return 0;
-}
-module_init(setup_vmstat)
-
-#if defined(CONFIG_DEBUG_FS) && defined(CONFIG_COMPACTION)
-#include <linux/debugfs.h>
-
-static struct dentry *extfrag_debug_root;
-=======
 #endif /* CONFIG_PROC_FS */
 
 #ifdef CONFIG_SMP
@@ -2917,7 +2148,6 @@ void __init init_mm_internals(void)
 }
 
 #if defined(CONFIG_DEBUG_FS) && defined(CONFIG_COMPACTION)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Return an index indicating how much of the available free memory is
@@ -2951,11 +2181,7 @@ static void unusable_show_print(struct seq_file *m,
 	seq_printf(m, "Node %d, zone %8s ",
 				pgdat->node_id,
 				zone->name);
-<<<<<<< HEAD
-	for (order = 0; order < MAX_ORDER; ++order) {
-=======
 	for (order = 0; order < NR_PAGE_ORDERS; ++order) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fill_contig_page_info(zone, order, &info);
 		index = unusable_free_index(order, &info);
 		seq_printf(m, "%d.%03d ", index / 1000, index % 1000);
@@ -2978,47 +2204,22 @@ static int unusable_show(struct seq_file *m, void *arg)
 	pg_data_t *pgdat = (pg_data_t *)arg;
 
 	/* check memoryless node */
-<<<<<<< HEAD
-	if (!node_state(pgdat->node_id, N_HIGH_MEMORY))
-		return 0;
-
-	walk_zones_in_node(m, pgdat, unusable_show_print);
-=======
 	if (!node_state(pgdat->node_id, N_MEMORY))
 		return 0;
 
 	walk_zones_in_node(m, pgdat, true, false, unusable_show_print);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct seq_operations unusable_op = {
-=======
 static const struct seq_operations unusable_sops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start	= frag_start,
 	.next	= frag_next,
 	.stop	= frag_stop,
 	.show	= unusable_show,
 };
 
-<<<<<<< HEAD
-static int unusable_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &unusable_op);
-}
-
-static const struct file_operations unusable_file_ops = {
-	.open		= unusable_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-=======
 DEFINE_SEQ_ATTRIBUTE(unusable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void extfrag_show_print(struct seq_file *m,
 					pg_data_t *pgdat, struct zone *zone)
@@ -3032,17 +2233,10 @@ static void extfrag_show_print(struct seq_file *m,
 	seq_printf(m, "Node %d, zone %8s ",
 				pgdat->node_id,
 				zone->name);
-<<<<<<< HEAD
-	for (order = 0; order < MAX_ORDER; ++order) {
-		fill_contig_page_info(zone, order, &info);
-		index = __fragmentation_index(order, &info);
-		seq_printf(m, "%d.%03d ", index / 1000, index % 1000);
-=======
 	for (order = 0; order < NR_PAGE_ORDERS; ++order) {
 		fill_contig_page_info(zone, order, &info);
 		index = __fragmentation_index(order, &info);
 		seq_printf(m, "%2d.%03d ", index / 1000, index % 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	seq_putc(m, '\n');
@@ -3055,53 +2249,18 @@ static int extfrag_show(struct seq_file *m, void *arg)
 {
 	pg_data_t *pgdat = (pg_data_t *)arg;
 
-<<<<<<< HEAD
-	walk_zones_in_node(m, pgdat, extfrag_show_print);
-=======
 	walk_zones_in_node(m, pgdat, true, false, extfrag_show_print);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct seq_operations extfrag_op = {
-=======
 static const struct seq_operations extfrag_sops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start	= frag_start,
 	.next	= frag_next,
 	.stop	= frag_stop,
 	.show	= extfrag_show,
 };
 
-<<<<<<< HEAD
-static int extfrag_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &extfrag_op);
-}
-
-static const struct file_operations extfrag_file_ops = {
-	.open		= extfrag_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-
-static int __init extfrag_debug_init(void)
-{
-	extfrag_debug_root = debugfs_create_dir("extfrag", NULL);
-	if (!extfrag_debug_root)
-		return -ENOMEM;
-
-	if (!debugfs_create_file("unusable_index", 0444,
-			extfrag_debug_root, NULL, &unusable_file_ops))
-		return -ENOMEM;
-
-	if (!debugfs_create_file("extfrag_index", 0444,
-			extfrag_debug_root, NULL, &extfrag_file_ops))
-		return -ENOMEM;
-=======
 DEFINE_SEQ_ATTRIBUTE(extfrag);
 
 static int __init extfrag_debug_init(void)
@@ -3115,7 +2274,6 @@ static int __init extfrag_debug_init(void)
 
 	debugfs_create_file("extfrag_index", 0444, extfrag_debug_root, NULL,
 			    &extfrag_fops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

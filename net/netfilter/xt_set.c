@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-/* Copyright (C) 2000-2002 Joakim Axelsson <gozem@linux.nu>
- *                         Patrick Schaaf <bof@bof.de>
- *                         Martin Josefsson <gandalf@wlug.westbo.se>
- * Copyright (C) 2003-2011 Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-/* Kernel module which implements the set match and SET target
- * for netfilter/iptables. */
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* Copyright (C) 2000-2002 Joakim Axelsson <gozem@linux.nu>
  *                         Patrick Schaaf <bof@bof.de>
@@ -22,25 +8,16 @@
 /* Kernel module which implements the set match and SET target
  * for netfilter/iptables.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/skbuff.h>
 
 #include <linux/netfilter/x_tables.h>
-<<<<<<< HEAD
-#include <linux/netfilter/xt_set.h>
-#include <linux/netfilter/ipset/ip_set_timeout.h>
-
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>");
-=======
 #include <linux/netfilter/ipset/ip_set.h>
 #include <uapi/linux/netfilter/xt_set.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@netfilter.org>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Xtables: IP set match and target module");
 MODULE_ALIAS("xt_SET");
 MODULE_ALIAS("ipt_set");
@@ -51,34 +28,13 @@ MODULE_ALIAS("ip6t_SET");
 static inline int
 match_set(ip_set_id_t index, const struct sk_buff *skb,
 	  const struct xt_action_param *par,
-<<<<<<< HEAD
-	  const struct ip_set_adt_opt *opt, int inv)
-=======
 	  struct ip_set_adt_opt *opt, int inv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ip_set_test(index, skb, par, opt))
 		inv = !inv;
 	return inv;
 }
 
-<<<<<<< HEAD
-#define ADT_OPT(n, f, d, fs, cfs, t)	\
-const struct ip_set_adt_opt n = {	\
-	.family	= f,			\
-	.dim = d,			\
-	.flags = fs,			\
-	.cmdflags = cfs,		\
-	.timeout = t,			\
-}
-#define ADT_MOPT(n, f, d, fs, cfs, t)	\
-struct ip_set_adt_opt n = {		\
-	.family	= f,			\
-	.dim = d,			\
-	.flags = fs,			\
-	.cmdflags = cfs,		\
-	.timeout = t,			\
-=======
 #define ADT_OPT(n, f, d, fs, cfs, t, p, b, po, bo)	\
 struct ip_set_adt_opt n = {				\
 	.family	= f,					\
@@ -90,7 +46,6 @@ struct ip_set_adt_opt n = {				\
 	.ext.bytes = b,					\
 	.ext.packets_op = po,				\
 	.ext.bytes_op = bo,				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Revision 0 interface: backward compatible with netfilter/iptables */
@@ -99,15 +54,10 @@ static bool
 set_match_v0(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	const struct xt_set_info_match_v0 *info = par->matchinfo;
-<<<<<<< HEAD
-	ADT_OPT(opt, par->family, info->match_set.u.compat.dim,
-		info->match_set.u.compat.flags, 0, UINT_MAX);
-=======
 
 	ADT_OPT(opt, xt_family(par), info->match_set.u.compat.dim,
 		info->match_set.u.compat.flags, 0, UINT_MAX,
 		0, 0, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return match_set(info->match_set.index, skb, par, &opt,
 			 info->match_set.u.compat.flags & IPSET_INV_MATCH);
@@ -122,17 +72,10 @@ compat_flags(struct xt_set_info_v0 *info)
 	info->u.compat.dim = IPSET_DIM_ZERO;
 	if (info->u.flags[0] & IPSET_MATCH_INV)
 		info->u.compat.flags |= IPSET_INV_MATCH;
-<<<<<<< HEAD
-	for (i = 0; i < IPSET_DIM_MAX-1 && info->u.flags[i]; i++) {
-		info->u.compat.dim++;
-		if (info->u.flags[i] & IPSET_SRC)
-			info->u.compat.flags |= (1<<info->u.compat.dim);
-=======
 	for (i = 0; i < IPSET_DIM_MAX - 1 && info->u.flags[i]; i++) {
 		info->u.compat.dim++;
 		if (info->u.flags[i] & IPSET_SRC)
 			info->u.compat.flags |= (1 << info->u.compat.dim);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -142,19 +85,6 @@ set_match_v0_checkentry(const struct xt_mtchk_param *par)
 	struct xt_set_info_match_v0 *info = par->matchinfo;
 	ip_set_id_t index;
 
-<<<<<<< HEAD
-	index = ip_set_nfnl_get_byindex(info->match_set.index);
-
-	if (index == IPSET_INVALID_ID) {
-		pr_warning("Cannot find set indentified by id %u to match\n",
-			   info->match_set.index);
-		return -ENOENT;
-	}
-	if (info->match_set.u.flags[IPSET_DIM_MAX-1] != 0) {
-		pr_warning("Protocol error: set match dimension "
-			   "is over the limit!\n");
-		ip_set_nfnl_put(info->match_set.index);
-=======
 	index = ip_set_nfnl_get_byindex(par->net, info->match_set.index);
 
 	if (index == IPSET_INVALID_ID) {
@@ -165,7 +95,6 @@ set_match_v0_checkentry(const struct xt_mtchk_param *par)
 	if (info->match_set.u.flags[IPSET_DIM_MAX - 1] != 0) {
 		pr_info_ratelimited("set match dimension is over the limit!\n");
 		ip_set_nfnl_put(par->net, info->match_set.index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	}
 
@@ -180,11 +109,6 @@ set_match_v0_destroy(const struct xt_mtdtor_param *par)
 {
 	struct xt_set_info_match_v0 *info = par->matchinfo;
 
-<<<<<<< HEAD
-	ip_set_nfnl_put(info->match_set.index);
-}
-
-=======
 	ip_set_nfnl_put(par->net, info->match_set.index);
 }
 
@@ -284,17 +208,10 @@ set_match_v4(const struct sk_buff *skb, struct xt_action_param *par)
 
 /* Revision 0 interface: backward compatible with netfilter/iptables */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int
 set_target_v0(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct xt_set_info_target_v0 *info = par->targinfo;
-<<<<<<< HEAD
-	ADT_OPT(add_opt, par->family, info->add_set.u.compat.dim,
-		info->add_set.u.compat.flags, 0, UINT_MAX);
-	ADT_OPT(del_opt, par->family, info->del_set.u.compat.dim,
-		info->del_set.u.compat.flags, 0, UINT_MAX);
-=======
 
 	ADT_OPT(add_opt, xt_family(par), info->add_set.u.compat.dim,
 		info->add_set.u.compat.flags, 0, UINT_MAX,
@@ -302,7 +219,6 @@ set_target_v0(struct sk_buff *skb, const struct xt_action_param *par)
 	ADT_OPT(del_opt, xt_family(par), info->del_set.u.compat.dim,
 		info->del_set.u.compat.flags, 0, UINT_MAX,
 		0, 0, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->add_set.index != IPSET_INVALID_ID)
 		ip_set_add(info->add_set.index, skb, par, &add_opt);
@@ -319,41 +235,15 @@ set_target_v0_checkentry(const struct xt_tgchk_param *par)
 	ip_set_id_t index;
 
 	if (info->add_set.index != IPSET_INVALID_ID) {
-<<<<<<< HEAD
-		index = ip_set_nfnl_get_byindex(info->add_set.index);
-		if (index == IPSET_INVALID_ID) {
-			pr_warning("Cannot find add_set index %u as target\n",
-				   info->add_set.index);
-=======
 		index = ip_set_nfnl_get_byindex(par->net, info->add_set.index);
 		if (index == IPSET_INVALID_ID) {
 			pr_info_ratelimited("Cannot find add_set index %u as target\n",
 					    info->add_set.index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOENT;
 		}
 	}
 
 	if (info->del_set.index != IPSET_INVALID_ID) {
-<<<<<<< HEAD
-		index = ip_set_nfnl_get_byindex(info->del_set.index);
-		if (index == IPSET_INVALID_ID) {
-			pr_warning("Cannot find del_set index %u as target\n",
-				   info->del_set.index);
-			if (info->add_set.index != IPSET_INVALID_ID)
-				ip_set_nfnl_put(info->add_set.index);
-			return -ENOENT;
-		}
-	}
-	if (info->add_set.u.flags[IPSET_DIM_MAX-1] != 0 ||
-	    info->del_set.u.flags[IPSET_DIM_MAX-1] != 0) {
-		pr_warning("Protocol error: SET target dimension "
-			   "is over the limit!\n");
-		if (info->add_set.index != IPSET_INVALID_ID)
-			ip_set_nfnl_put(info->add_set.index);
-		if (info->del_set.index != IPSET_INVALID_ID)
-			ip_set_nfnl_put(info->del_set.index);
-=======
 		index = ip_set_nfnl_get_byindex(par->net, info->del_set.index);
 		if (index == IPSET_INVALID_ID) {
 			pr_info_ratelimited("Cannot find del_set index %u as target\n",
@@ -370,7 +260,6 @@ set_target_v0_checkentry(const struct xt_tgchk_param *par)
 			ip_set_nfnl_put(par->net, info->add_set.index);
 		if (info->del_set.index != IPSET_INVALID_ID)
 			ip_set_nfnl_put(par->net, info->del_set.index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	}
 
@@ -387,74 +276,17 @@ set_target_v0_destroy(const struct xt_tgdtor_param *par)
 	const struct xt_set_info_target_v0 *info = par->targinfo;
 
 	if (info->add_set.index != IPSET_INVALID_ID)
-<<<<<<< HEAD
-		ip_set_nfnl_put(info->add_set.index);
-	if (info->del_set.index != IPSET_INVALID_ID)
-		ip_set_nfnl_put(info->del_set.index);
-}
-
-/* Revision 1 match and target */
-
-static bool
-set_match_v1(const struct sk_buff *skb, struct xt_action_param *par)
-{
-	const struct xt_set_info_match_v1 *info = par->matchinfo;
-	ADT_OPT(opt, par->family, info->match_set.dim,
-		info->match_set.flags, 0, UINT_MAX);
-
-	return match_set(info->match_set.index, skb, par, &opt,
-			 info->match_set.flags & IPSET_INV_MATCH);
-}
-
-static int
-set_match_v1_checkentry(const struct xt_mtchk_param *par)
-{
-	struct xt_set_info_match_v1 *info = par->matchinfo;
-	ip_set_id_t index;
-
-	index = ip_set_nfnl_get_byindex(info->match_set.index);
-
-	if (index == IPSET_INVALID_ID) {
-		pr_warning("Cannot find set indentified by id %u to match\n",
-			   info->match_set.index);
-		return -ENOENT;
-	}
-	if (info->match_set.dim > IPSET_DIM_MAX) {
-		pr_warning("Protocol error: set match dimension "
-			   "is over the limit!\n");
-		ip_set_nfnl_put(info->match_set.index);
-		return -ERANGE;
-	}
-
-	return 0;
-}
-
-static void
-set_match_v1_destroy(const struct xt_mtdtor_param *par)
-{
-	struct xt_set_info_match_v1 *info = par->matchinfo;
-
-	ip_set_nfnl_put(info->match_set.index);
-}
-=======
 		ip_set_nfnl_put(par->net, info->add_set.index);
 	if (info->del_set.index != IPSET_INVALID_ID)
 		ip_set_nfnl_put(par->net, info->del_set.index);
 }
 
 /* Revision 1 target */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int
 set_target_v1(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct xt_set_info_target_v1 *info = par->targinfo;
-<<<<<<< HEAD
-	ADT_OPT(add_opt, par->family, info->add_set.dim,
-		info->add_set.flags, 0, UINT_MAX);
-	ADT_OPT(del_opt, par->family, info->del_set.dim,
-		info->del_set.flags, 0, UINT_MAX);
-=======
 
 	ADT_OPT(add_opt, xt_family(par), info->add_set.dim,
 		info->add_set.flags, 0, UINT_MAX,
@@ -462,7 +294,6 @@ set_target_v1(struct sk_buff *skb, const struct xt_action_param *par)
 	ADT_OPT(del_opt, xt_family(par), info->del_set.dim,
 		info->del_set.flags, 0, UINT_MAX,
 		0, 0, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->add_set.index != IPSET_INVALID_ID)
 		ip_set_add(info->add_set.index, skb, par, &add_opt);
@@ -479,56 +310,31 @@ set_target_v1_checkentry(const struct xt_tgchk_param *par)
 	ip_set_id_t index;
 
 	if (info->add_set.index != IPSET_INVALID_ID) {
-<<<<<<< HEAD
-		index = ip_set_nfnl_get_byindex(info->add_set.index);
-		if (index == IPSET_INVALID_ID) {
-			pr_warning("Cannot find add_set index %u as target\n",
-				   info->add_set.index);
-=======
 		index = ip_set_nfnl_get_byindex(par->net, info->add_set.index);
 		if (index == IPSET_INVALID_ID) {
 			pr_info_ratelimited("Cannot find add_set index %u as target\n",
 					    info->add_set.index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOENT;
 		}
 	}
 
 	if (info->del_set.index != IPSET_INVALID_ID) {
-<<<<<<< HEAD
-		index = ip_set_nfnl_get_byindex(info->del_set.index);
-		if (index == IPSET_INVALID_ID) {
-			pr_warning("Cannot find del_set index %u as target\n",
-				   info->del_set.index);
-			if (info->add_set.index != IPSET_INVALID_ID)
-				ip_set_nfnl_put(info->add_set.index);
-=======
 		index = ip_set_nfnl_get_byindex(par->net, info->del_set.index);
 		if (index == IPSET_INVALID_ID) {
 			pr_info_ratelimited("Cannot find del_set index %u as target\n",
 					    info->del_set.index);
 			if (info->add_set.index != IPSET_INVALID_ID)
 				ip_set_nfnl_put(par->net, info->add_set.index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOENT;
 		}
 	}
 	if (info->add_set.dim > IPSET_DIM_MAX ||
 	    info->del_set.dim > IPSET_DIM_MAX) {
-<<<<<<< HEAD
-		pr_warning("Protocol error: SET target dimension "
-			   "is over the limit!\n");
-		if (info->add_set.index != IPSET_INVALID_ID)
-			ip_set_nfnl_put(info->add_set.index);
-		if (info->del_set.index != IPSET_INVALID_ID)
-			ip_set_nfnl_put(info->del_set.index);
-=======
 		pr_info_ratelimited("SET target dimension over the limit!\n");
 		if (info->add_set.index != IPSET_INVALID_ID)
 			ip_set_nfnl_put(par->net, info->add_set.index);
 		if (info->del_set.index != IPSET_INVALID_ID)
 			ip_set_nfnl_put(par->net, info->del_set.index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	}
 
@@ -541,15 +347,9 @@ set_target_v1_destroy(const struct xt_tgdtor_param *par)
 	const struct xt_set_info_target_v1 *info = par->targinfo;
 
 	if (info->add_set.index != IPSET_INVALID_ID)
-<<<<<<< HEAD
-		ip_set_nfnl_put(info->add_set.index);
-	if (info->del_set.index != IPSET_INVALID_ID)
-		ip_set_nfnl_put(info->del_set.index);
-=======
 		ip_set_nfnl_put(par->net, info->add_set.index);
 	if (info->del_set.index != IPSET_INVALID_ID)
 		ip_set_nfnl_put(par->net, info->del_set.index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Revision 2 target */
@@ -558,17 +358,6 @@ static unsigned int
 set_target_v2(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct xt_set_info_target_v2 *info = par->targinfo;
-<<<<<<< HEAD
-	ADT_MOPT(add_opt, par->family, info->add_set.dim,
-		 info->add_set.flags, info->flags, info->timeout);
-	ADT_OPT(del_opt, par->family, info->del_set.dim,
-		info->del_set.flags, 0, UINT_MAX);
-
-	/* Normalize to fit into jiffies */
-	if (add_opt.timeout != IPSET_NO_TIMEOUT &&
-	    add_opt.timeout > UINT_MAX/MSEC_PER_SEC)
-		add_opt.timeout = UINT_MAX/MSEC_PER_SEC;
-=======
 
 	ADT_OPT(add_opt, xt_family(par), info->add_set.dim,
 		info->add_set.flags, info->flags, info->timeout,
@@ -581,7 +370,6 @@ set_target_v2(struct sk_buff *skb, const struct xt_action_param *par)
 	if (add_opt.ext.timeout != IPSET_NO_TIMEOUT &&
 	    add_opt.ext.timeout > IPSET_MAX_TIMEOUT)
 		add_opt.ext.timeout = IPSET_MAX_TIMEOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info->add_set.index != IPSET_INVALID_ID)
 		ip_set_add(info->add_set.index, skb, par, &add_opt);
 	if (info->del_set.index != IPSET_INVALID_ID)
@@ -593,8 +381,6 @@ set_target_v2(struct sk_buff *skb, const struct xt_action_param *par)
 #define set_target_v2_checkentry	set_target_v1_checkentry
 #define set_target_v2_destroy		set_target_v1_destroy
 
-<<<<<<< HEAD
-=======
 /* Revision 3 target */
 
 #define MOPT(opt, member)	((opt).ext.skbinfo.member)
@@ -731,7 +517,6 @@ set_target_v3_destroy(const struct xt_tgdtor_param *par)
 		ip_set_nfnl_put(par->net, info->map_set.index);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct xt_match set_matches[] __read_mostly = {
 	{
 		.name		= "set",
@@ -763,8 +548,6 @@ static struct xt_match set_matches[] __read_mostly = {
 		.destroy	= set_match_v1_destroy,
 		.me		= THIS_MODULE
 	},
-<<<<<<< HEAD
-=======
 	/* --return-nomatch flag support */
 	{
 		.name		= "set",
@@ -828,7 +611,6 @@ static struct xt_match set_matches[] __read_mostly = {
 		.destroy	= set_match_v4_destroy,
 		.me		= THIS_MODULE
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct xt_target set_targets[] __read_mostly = {
@@ -862,10 +644,7 @@ static struct xt_target set_targets[] __read_mostly = {
 		.destroy	= set_target_v1_destroy,
 		.me		= THIS_MODULE
 	},
-<<<<<<< HEAD
-=======
 	/* --timeout and --exist flags support */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name		= "SET",
 		.revision	= 2,
@@ -886,8 +665,6 @@ static struct xt_target set_targets[] __read_mostly = {
 		.destroy	= set_target_v2_destroy,
 		.me		= THIS_MODULE
 	},
-<<<<<<< HEAD
-=======
 	/* --map-set support */
 	{
 		.name		= "SET",
@@ -909,7 +686,6 @@ static struct xt_target set_targets[] __read_mostly = {
 		.destroy	= set_target_v3_destroy,
 		.me		= THIS_MODULE
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init xt_set_init(void)

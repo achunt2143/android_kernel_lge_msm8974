@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999 by Uros Bizjak <uros@kss-loka.si>
  *                        Takashi Iwai <tiwai@suse.de>
@@ -10,24 +7,6 @@
  *
  *  CSP microcode loader:
  *   alsa-tools/sb16_csp/ 
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify 
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -67,32 +46,18 @@ MODULE_FIRMWARE("sb16/ima_adpcm_capture.csp");
  * RIFF data format
  */
 struct riff_header {
-<<<<<<< HEAD
-	__u32 name;
-	__u32 len;
-=======
 	__le32 name;
 	__le32 len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct desc_header {
 	struct riff_header info;
-<<<<<<< HEAD
-	__u16 func_nr;
-	__u16 VOC_type;
-	__u16 flags_play_rec;
-	__u16 flags_16bit_8bit;
-	__u16 flags_stereo_mono;
-	__u16 flags_rates;
-=======
 	__le16 func_nr;
 	__le16 VOC_type;
 	__le16 flags_play_rec;
 	__le16 flags_16bit_8bit;
 	__le16 flags_stereo_mono;
 	__le16 flags_rates;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -114,11 +79,7 @@ static int snd_sb_csp_riff_load(struct snd_sb_csp * p,
 				struct snd_sb_csp_microcode __user * code);
 static int snd_sb_csp_unload(struct snd_sb_csp * p);
 static int snd_sb_csp_load_user(struct snd_sb_csp * p, const unsigned char __user *buf, int size, int load_flags);
-<<<<<<< HEAD
-static int snd_sb_csp_autoload(struct snd_sb_csp * p, int pcm_sfmt, int play_rec_mode);
-=======
 static int snd_sb_csp_autoload(struct snd_sb_csp * p, snd_pcm_format_t pcm_sfmt, int play_rec_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_sb_csp_check_version(struct snd_sb_csp * p);
 
 static int snd_sb_csp_use(struct snd_sb_csp * p);
@@ -141,11 +102,7 @@ static void info_read(struct snd_info_entry *entry, struct snd_info_buffer *buff
 int snd_sb_csp_new(struct snd_sb *chip, int device, struct snd_hwdep ** rhwdep)
 {
 	struct snd_sb_csp *p;
-<<<<<<< HEAD
-	int uninitialized_var(version);
-=======
 	int version;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	struct snd_hwdep *hw;
 
@@ -155,19 +112,12 @@ int snd_sb_csp_new(struct snd_sb *chip, int device, struct snd_hwdep ** rhwdep)
 	if (csp_detect(chip, &version))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if ((err = snd_hwdep_new(chip->card, "SB16-CSP", device, &hw)) < 0)
-		return err;
-
-	if ((p = kzalloc(sizeof(*p), GFP_KERNEL)) == NULL) {
-=======
 	err = snd_hwdep_new(chip->card, "SB16-CSP", device, &hw);
 	if (err < 0)
 		return err;
 
 	p = kzalloc(sizeof(*p), GFP_KERNEL);
 	if (!p) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_device_free(chip->card, hw);
 		return -ENOMEM;
 	}
@@ -246,10 +196,7 @@ static int snd_sb_csp_ioctl(struct snd_hwdep * hw, struct file *file, unsigned i
 	switch (cmd) {
 		/* get information */
 	case SNDRV_SB_CSP_IOCTL_INFO:
-<<<<<<< HEAD
-=======
 		memset(&info, 0, sizeof(info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*info.codec_name = *p->codec_name;
 		info.func_nr = p->func_nr;
 		info.acc_format = p->acc_format;
@@ -355,11 +302,7 @@ static int snd_sb_csp_riff_load(struct snd_sb_csp * p,
 	unsigned short func_nr = 0;
 
 	struct riff_header file_h, item_h, code_h;
-<<<<<<< HEAD
-	__u32 item_type;
-=======
 	__le32 item_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct desc_header funcdesc_h;
 
 	unsigned long flags;
@@ -371,11 +314,7 @@ static int snd_sb_csp_riff_load(struct snd_sb_csp * p,
 
 	if (copy_from_user(&file_h, data_ptr, sizeof(file_h)))
 		return -EFAULT;
-<<<<<<< HEAD
-	if ((file_h.name != RIFF_HEADER) ||
-=======
 	if ((le32_to_cpu(file_h.name) != RIFF_HEADER) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (le32_to_cpu(file_h.len) >= SNDRV_SB_CSP_MAX_MICROCODE_FILE_SIZE - sizeof(file_h))) {
 		snd_printd("%s: Invalid RIFF header\n", __func__);
 		return -EINVAL;
@@ -385,11 +324,7 @@ static int snd_sb_csp_riff_load(struct snd_sb_csp * p,
 
 	if (copy_from_user(&item_type, data_ptr, sizeof(item_type)))
 		return -EFAULT;
-<<<<<<< HEAD
-	if (item_type != CSP__HEADER) {
-=======
 	if (le32_to_cpu(item_type) != CSP__HEADER) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printd("%s: Invalid RIFF file type\n", __func__);
 		return -EINVAL;
 	}
@@ -399,20 +334,12 @@ static int snd_sb_csp_riff_load(struct snd_sb_csp * p,
 		if (copy_from_user(&item_h, data_ptr, sizeof(item_h)))
 			return -EFAULT;
 		data_ptr += sizeof(item_h);
-<<<<<<< HEAD
-		if (item_h.name != LIST_HEADER)
-=======
 		if (le32_to_cpu(item_h.name) != LIST_HEADER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		if (copy_from_user(&item_type, data_ptr, sizeof(item_type)))
 			 return -EFAULT;
-<<<<<<< HEAD
-		switch (item_type) {
-=======
 		switch (le32_to_cpu(item_type)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case FUNC_HEADER:
 			if (copy_from_user(&funcdesc_h, data_ptr + sizeof(item_type), sizeof(funcdesc_h)))
 				return -EFAULT;
@@ -439,11 +366,7 @@ static int snd_sb_csp_riff_load(struct snd_sb_csp * p,
 					return -EFAULT;
 
 				/* init microcode blocks */
-<<<<<<< HEAD
-				if (code_h.name != INIT_HEADER)
-=======
 				if (le32_to_cpu(code_h.name) != INIT_HEADER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				data_ptr += sizeof(code_h);
 				err = snd_sb_csp_load_user(p, data_ptr, le32_to_cpu(code_h.len),
@@ -456,11 +379,7 @@ static int snd_sb_csp_riff_load(struct snd_sb_csp * p,
 			if (copy_from_user(&code_h, data_ptr, sizeof(code_h)))
 				return -EFAULT;
 
-<<<<<<< HEAD
-			if (code_h.name != MAIN_HEADER) {
-=======
 			if (le32_to_cpu(code_h.name) != MAIN_HEADER) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snd_printd("%s: Missing 'main' microcode\n", __func__);
 				return -EINVAL;
 			}
@@ -471,11 +390,7 @@ static int snd_sb_csp_riff_load(struct snd_sb_csp * p,
 				return err;
 
 			/* fill in codec header */
-<<<<<<< HEAD
-			strlcpy(p->codec_name, info.codec_name, sizeof(p->codec_name));
-=======
 			strscpy(p->codec_name, info.codec_name, sizeof(p->codec_name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			p->func_nr = func_nr;
 			p->mode = le16_to_cpu(funcdesc_h.flags_play_rec);
 			switch (le16_to_cpu(funcdesc_h.VOC_type)) {
@@ -799,11 +714,7 @@ static int snd_sb_csp_firmware_load(struct snd_sb_csp *p, int index, int flags)
  * autoload hardware codec if necessary
  * return 0 if CSP is loaded and ready to run (p->running != 0)
  */
-<<<<<<< HEAD
-static int snd_sb_csp_autoload(struct snd_sb_csp * p, int pcm_sfmt, int play_rec_mode)
-=======
 static int snd_sb_csp_autoload(struct snd_sb_csp * p, snd_pcm_format_t pcm_sfmt, int play_rec_mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	int err = 0;
@@ -813,11 +724,7 @@ static int snd_sb_csp_autoload(struct snd_sb_csp * p, snd_pcm_format_t pcm_sfmt,
 		return -EBUSY;
 
 	/* autoload microcode only if requested hardware codec is not already loaded */
-<<<<<<< HEAD
-	if (((1 << pcm_sfmt) & p->acc_format) && (play_rec_mode & p->mode)) {
-=======
 	if (((1U << (__force int)pcm_sfmt) & p->acc_format) && (play_rec_mode & p->mode)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p->running = SNDRV_SB_CSP_ST_AUTO;
 	} else {
 		switch (pcm_sfmt) {
@@ -909,10 +816,7 @@ static int snd_sb_csp_start(struct snd_sb_csp * p, int sample_width, int channel
 	mixR = snd_sbmixer_read(p->chip, SB_DSP4_PCM_DEV + 1);
 	snd_sbmixer_write(p->chip, SB_DSP4_PCM_DEV, mixL & 0x7);
 	snd_sbmixer_write(p->chip, SB_DSP4_PCM_DEV + 1, mixR & 0x7);
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&p->chip->mixer_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&p->chip->reg_lock);
 	set_mode_register(p->chip, 0xc0);	/* c0 = STOP */
@@ -952,10 +856,7 @@ static int snd_sb_csp_start(struct snd_sb_csp * p, int sample_width, int channel
 	spin_unlock(&p->chip->reg_lock);
 
 	/* restore PCM volume */
-<<<<<<< HEAD
-=======
 	spin_lock_irqsave(&p->chip->mixer_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_sbmixer_write(p->chip, SB_DSP4_PCM_DEV, mixL);
 	snd_sbmixer_write(p->chip, SB_DSP4_PCM_DEV + 1, mixR);
 	spin_unlock_irqrestore(&p->chip->mixer_lock, flags);
@@ -981,10 +882,7 @@ static int snd_sb_csp_stop(struct snd_sb_csp * p)
 	mixR = snd_sbmixer_read(p->chip, SB_DSP4_PCM_DEV + 1);
 	snd_sbmixer_write(p->chip, SB_DSP4_PCM_DEV, mixL & 0x7);
 	snd_sbmixer_write(p->chip, SB_DSP4_PCM_DEV + 1, mixR & 0x7);
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&p->chip->mixer_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&p->chip->reg_lock);
 	if (p->running & SNDRV_SB_CSP_ST_QSOUND) {
@@ -999,10 +897,7 @@ static int snd_sb_csp_stop(struct snd_sb_csp * p)
 	spin_unlock(&p->chip->reg_lock);
 
 	/* restore PCM volume */
-<<<<<<< HEAD
-=======
 	spin_lock_irqsave(&p->chip->mixer_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_sbmixer_write(p->chip, SB_DSP4_PCM_DEV, mixL);
 	snd_sbmixer_write(p->chip, SB_DSP4_PCM_DEV + 1, mixR);
 	spin_unlock_irqrestore(&p->chip->mixer_lock, flags);
@@ -1126,11 +1021,7 @@ static int snd_sb_qsound_space_put(struct snd_kcontrol *kcontrol, struct snd_ctl
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_sb_qsound_switch = {
-=======
 static const struct snd_kcontrol_new snd_sb_qsound_switch = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "3D Control - Switch",
 	.info = snd_sb_qsound_switch_info,
@@ -1138,11 +1029,7 @@ static const struct snd_kcontrol_new snd_sb_qsound_switch = {
 	.put = snd_sb_qsound_switch_put
 };
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_sb_qsound_space = {
-=======
 static const struct snd_kcontrol_new snd_sb_qsound_space = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "3D Control - Space",
 	.info = snd_sb_qsound_space_info,
@@ -1153,10 +1040,7 @@ static const struct snd_kcontrol_new snd_sb_qsound_space = {
 static int snd_sb_qsound_build(struct snd_sb_csp * p)
 {
 	struct snd_card *card;
-<<<<<<< HEAD
-=======
 	struct snd_kcontrol *kctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (snd_BUG_ON(!p))
@@ -1168,12 +1052,6 @@ static int snd_sb_qsound_build(struct snd_sb_csp * p)
 
 	spin_lock_init(&p->q_lock);
 
-<<<<<<< HEAD
-	if ((err = snd_ctl_add(card, p->qsound_switch = snd_ctl_new1(&snd_sb_qsound_switch, p))) < 0)
-		goto __error;
-	if ((err = snd_ctl_add(card, p->qsound_space = snd_ctl_new1(&snd_sb_qsound_space, p))) < 0)
-		goto __error;
-=======
 	kctl = snd_ctl_new1(&snd_sb_qsound_switch, p);
 	err = snd_ctl_add(card, kctl);
 	if (err < 0)
@@ -1184,7 +1062,6 @@ static int snd_sb_qsound_build(struct snd_sb_csp * p)
 	if (err < 0)
 		goto __error;
 	p->qsound_space = kctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -1203,14 +1080,6 @@ static void snd_sb_qsound_destroy(struct snd_sb_csp * p)
 
 	card = p->chip->card;	
 	
-<<<<<<< HEAD
-	down_write(&card->controls_rwsem);
-	if (p->qsound_switch)
-		snd_ctl_remove(card, p->qsound_switch);
-	if (p->qsound_space)
-		snd_ctl_remove(card, p->qsound_space);
-	up_write(&card->controls_rwsem);
-=======
 	if (p->qsound_switch) {
 		snd_ctl_remove(card, p->qsound_switch);
 		p->qsound_switch = NULL;
@@ -1219,7 +1088,6 @@ static void snd_sb_qsound_destroy(struct snd_sb_csp * p)
 		snd_ctl_remove(card, p->qsound_space);
 		p->qsound_space = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* cancel pending transfer of QSound parameters */
 	spin_lock_irqsave (&p->q_lock, flags);
@@ -1259,16 +1127,9 @@ static int snd_sb_csp_qsound_transfer(struct snd_sb_csp * p)
 static int init_proc_entry(struct snd_sb_csp * p, int device)
 {
 	char name[16];
-<<<<<<< HEAD
-	struct snd_info_entry *entry;
-	sprintf(name, "cspD%d", device);
-	if (! snd_card_proc_new(p->chip->card, name, &entry))
-		snd_info_set_text_ops(entry, p, info_read);
-=======
 
 	sprintf(name, "cspD%d", device);
 	snd_card_ro_proc_new(p->chip->card, name, p, info_read);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1324,22 +1185,3 @@ static void info_read(struct snd_info_entry *entry, struct snd_info_buffer *buff
 /* */
 
 EXPORT_SYMBOL(snd_sb_csp_new);
-<<<<<<< HEAD
-
-/*
- * INIT part
- */
-
-static int __init alsa_sb_csp_init(void)
-{
-	return 0;
-}
-
-static void __exit alsa_sb_csp_exit(void)
-{
-}
-
-module_init(alsa_sb_csp_init)
-module_exit(alsa_sb_csp_exit)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

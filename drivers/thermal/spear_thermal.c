@@ -1,25 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SPEAr thermal driver.
  *
  * Copyright (C) 2011-2012 ST Microelectronics
  * Author: Vincenzo Frascino <vincenzo.frascino@st.com>
-<<<<<<< HEAD
- *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/clk.h>
@@ -27,15 +11,9 @@
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/platform_device.h>
-#include <linux/platform_data/spear_thermal.h>
-=======
 #include <linux/of.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/thermal.h>
 
 #define MD_FACTOR	1000
@@ -51,15 +29,9 @@ struct spear_thermal_dev {
 };
 
 static inline int thermal_get_temp(struct thermal_zone_device *thermal,
-<<<<<<< HEAD
-				unsigned long *temp)
-{
-	struct spear_thermal_dev *stdev = thermal->devdata;
-=======
 				int *temp)
 {
 	struct spear_thermal_dev *stdev = thermal_zone_device_priv(thermal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Data are ready to be read after 628 usec from POWERDOWN signal
@@ -73,19 +45,10 @@ static struct thermal_zone_device_ops ops = {
 	.get_temp = thermal_get_temp,
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int spear_thermal_suspend(struct device *dev)
-{
-	struct platform_device *pdev = to_platform_device(dev);
-	struct thermal_zone_device *spear_thermal = platform_get_drvdata(pdev);
-	struct spear_thermal_dev *stdev = spear_thermal->devdata;
-=======
 static int __maybe_unused spear_thermal_suspend(struct device *dev)
 {
 	struct thermal_zone_device *spear_thermal = dev_get_drvdata(dev);
 	struct spear_thermal_dev *stdev = thermal_zone_device_priv(spear_thermal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int actual_mask = 0;
 
 	/* Disable SPEAr Thermal Sensor */
@@ -98,28 +61,16 @@ static int __maybe_unused spear_thermal_suspend(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int spear_thermal_resume(struct device *dev)
-{
-	struct platform_device *pdev = to_platform_device(dev);
-	struct thermal_zone_device *spear_thermal = platform_get_drvdata(pdev);
-	struct spear_thermal_dev *stdev = spear_thermal->devdata;
-=======
 static int __maybe_unused spear_thermal_resume(struct device *dev)
 {
 	struct thermal_zone_device *spear_thermal = dev_get_drvdata(dev);
 	struct spear_thermal_dev *stdev = thermal_zone_device_priv(spear_thermal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int actual_mask = 0;
 	int ret = 0;
 
 	ret = clk_enable(stdev->clk);
 	if (ret) {
-<<<<<<< HEAD
-		dev_err(&pdev->dev, "Can't enable clock\n");
-=======
 		dev_err(dev, "Can't enable clock\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -131,10 +82,6 @@ static int __maybe_unused spear_thermal_resume(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static SIMPLE_DEV_PM_OPS(spear_thermal_pm_ops, spear_thermal_suspend,
 		spear_thermal_resume);
@@ -143,46 +90,15 @@ static int spear_thermal_probe(struct platform_device *pdev)
 {
 	struct thermal_zone_device *spear_thermal = NULL;
 	struct spear_thermal_dev *stdev;
-<<<<<<< HEAD
-	struct spear_thermal_pdata *pdata;
-	int ret = 0;
-	struct resource *stres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-
-	if (!stres) {
-		dev_err(&pdev->dev, "memory resource missing\n");
-		return -ENODEV;
-	}
-
-	pdata = dev_get_platdata(&pdev->dev);
-	if (!pdata) {
-		dev_err(&pdev->dev, "platform data is NULL\n");
-=======
 	struct device_node *np = pdev->dev.of_node;
 	int ret = 0, val;
 
 	if (!np || !of_property_read_u32(np, "st,thermal-flags", &val)) {
 		dev_err(&pdev->dev, "Failed: DT Pdata not passed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	stdev = devm_kzalloc(&pdev->dev, sizeof(*stdev), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!stdev) {
-		dev_err(&pdev->dev, "kzalloc fail\n");
-		return -ENOMEM;
-	}
-
-	/* Enable thermal sensor */
-	stdev->thermal_base = devm_ioremap(&pdev->dev, stres->start,
-			resource_size(stres));
-	if (!stdev->thermal_base) {
-		dev_err(&pdev->dev, "ioremap failed\n");
-		return -ENOMEM;
-	}
-
-	stdev->clk = clk_get(&pdev->dev, NULL);
-=======
 	if (!stdev)
 		return -ENOMEM;
 
@@ -192,7 +108,6 @@ static int spear_thermal_probe(struct platform_device *pdev)
 		return PTR_ERR(stdev->thermal_base);
 
 	stdev->clk = devm_clk_get(&pdev->dev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(stdev->clk)) {
 		dev_err(&pdev->dev, "Can't get clock\n");
 		return PTR_ERR(stdev->clk);
@@ -201,16 +116,6 @@ static int spear_thermal_probe(struct platform_device *pdev)
 	ret = clk_enable(stdev->clk);
 	if (ret) {
 		dev_err(&pdev->dev, "Can't enable clock\n");
-<<<<<<< HEAD
-		goto put_clk;
-	}
-
-	stdev->flags = pdata->thermal_flags;
-	writel_relaxed(stdev->flags, stdev->thermal_base);
-
-	spear_thermal = thermal_zone_device_register("spear_thermal", 0,
-				stdev, &ops, 0, 0, 0, 0);
-=======
 		return ret;
 	}
 
@@ -219,18 +124,11 @@ static int spear_thermal_probe(struct platform_device *pdev)
 
 	spear_thermal = thermal_tripless_zone_device_register("spear_thermal",
 							      stdev, &ops, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(spear_thermal)) {
 		dev_err(&pdev->dev, "thermal zone device is NULL\n");
 		ret = PTR_ERR(spear_thermal);
 		goto disable_clk;
 	}
-<<<<<<< HEAD
-
-	platform_set_drvdata(pdev, spear_thermal);
-
-	dev_info(&spear_thermal->device, "Thermal Sensor Loaded at: 0x%p.\n",
-=======
 	ret = thermal_zone_device_enable(spear_thermal);
 	if (ret) {
 		dev_err(&pdev->dev, "Cannot enable thermal zone\n");
@@ -240,36 +138,18 @@ static int spear_thermal_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, spear_thermal);
 
 	dev_info(&pdev->dev, "Thermal Sensor Loaded at: 0x%p.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			stdev->thermal_base);
 
 	return 0;
 
-<<<<<<< HEAD
-disable_clk:
-	clk_disable(stdev->clk);
-put_clk:
-	clk_put(stdev->clk);
-=======
 unregister_tzd:
 	thermal_zone_device_unregister(spear_thermal);
 disable_clk:
 	clk_disable(stdev->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int spear_thermal_exit(struct platform_device *pdev)
-{
-	unsigned int actual_mask = 0;
-	struct thermal_zone_device *spear_thermal = platform_get_drvdata(pdev);
-	struct spear_thermal_dev *stdev = spear_thermal->devdata;
-
-	thermal_zone_device_unregister(spear_thermal);
-	platform_set_drvdata(pdev, NULL);
-=======
 static void spear_thermal_exit(struct platform_device *pdev)
 {
 	unsigned int actual_mask = 0;
@@ -277,27 +157,12 @@ static void spear_thermal_exit(struct platform_device *pdev)
 	struct spear_thermal_dev *stdev = thermal_zone_device_priv(spear_thermal);
 
 	thermal_zone_device_unregister(spear_thermal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable SPEAr Thermal Sensor */
 	actual_mask = readl_relaxed(stdev->thermal_base);
 	writel_relaxed(actual_mask & ~stdev->flags, stdev->thermal_base);
 
 	clk_disable(stdev->clk);
-<<<<<<< HEAD
-	clk_put(stdev->clk);
-
-	return 0;
-}
-
-static struct platform_driver spear_thermal_driver = {
-	.probe = spear_thermal_probe,
-	.remove = spear_thermal_exit,
-	.driver = {
-		.name = "spear_thermal",
-		.owner = THIS_MODULE,
-		.pm = &spear_thermal_pm_ops,
-=======
 }
 
 static const struct of_device_id spear_thermal_id_table[] = {
@@ -313,7 +178,6 @@ static struct platform_driver spear_thermal_driver = {
 		.name = "spear_thermal",
 		.pm = &spear_thermal_pm_ops,
 		.of_match_table = spear_thermal_id_table,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

@@ -10,11 +10,7 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/bootinfo.h>
 #include <asm/io.h>
 #include <asm/mipsregs.h>
@@ -22,11 +18,8 @@
 #include <asm/ip32/crime.h>
 #include <asm/ip32/mace.h>
 
-<<<<<<< HEAD
-=======
 #include "ip32-common.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sgi_crime __iomem *crime;
 struct sgi_mace __iomem *mace;
 
@@ -48,11 +41,7 @@ void __init crime_init(void)
 	       id, rev, field, (unsigned long) CRIME_BASE);
 }
 
-<<<<<<< HEAD
-irqreturn_t crime_memerr_intr(unsigned int irq, void *dev_id)
-=======
 irqreturn_t crime_memerr_intr(int irq, void *dev_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long stat, addr;
 	int fatal = 0;
@@ -103,11 +92,7 @@ irqreturn_t crime_memerr_intr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-irqreturn_t crime_cpuerr_intr(unsigned int irq, void *dev_id)
-=======
 irqreturn_t crime_cpuerr_intr(int irq, void *dev_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long stat = crime->cpu_error_stat & CRIME_CPU_ERROR_MASK;
 	unsigned long addr = crime->cpu_error_addr & CRIME_CPU_ERROR_ADDR_MASK;

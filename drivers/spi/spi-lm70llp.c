@@ -1,34 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for LM70EVAL-LLP board for the LM70 sensor
  *
  * Copyright (C) 2006 Kaiwan N Billimoria <kaiwan@designergraphix.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -38,46 +16,25 @@
 #include <linux/sysfs.h>
 #include <linux/workqueue.h>
 
-<<<<<<< HEAD
-
 #include <linux/spi/spi.h>
 #include <linux/spi/spi_bitbang.h>
 
-
-=======
-#include <linux/spi/spi.h>
-#include <linux/spi/spi_bitbang.h>
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The LM70 communicates with a host processor using a 3-wire variant of
  * the SPI/Microwire bus interface. This driver specifically supports an
  * NS LM70 LLP Evaluation Board, interfacing to a PC using its parallel
  * port to bitbang an SPI-parport bridge.  Accordingly, this is an SPI
-<<<<<<< HEAD
- * master controller driver.  The hwmon/lm70 driver is a "SPI protocol
-=======
  * host controller driver.  The hwmon/lm70 driver is a "SPI protocol
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * driver", layered on top of this one and usable without the lm70llp.
  *
  * Datasheet and Schematic:
  * The LM70 is a temperature sensor chip from National Semiconductor; its
-<<<<<<< HEAD
- * datasheet is available at http://www.national.com/pf/LM/LM70.html
- * The schematic for this particular board (the LM70EVAL-LLP) is
- * available (on page 4) here:
- *  http://www.national.com/appinfo/tempsensors/files/LM70LLPEVALmanual.pdf
- *
- * Also see Documentation/spi/spi-lm70llp.  The SPI<->parport code here is
-=======
  * datasheet is available at https://www.ti.com/lit/gpn/lm70
  * The schematic for this particular board (the LM70EVAL-LLP) is
  * available (on page 4) here:
  *  https://download.datasheets.com/pdfs/documentation/nat/kit&board/lm70llpevalmanual.pdf
  *
  * Also see Documentation/spi/spi-lm70llp.rst.  The SPI<->parport code here is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (heavily) based on spi-butterfly by David Brownell.
  *
  * The LM70 LLP connects to the PC parallel port in the following manner:
@@ -122,10 +79,6 @@ struct spi_lm70llp {
 /* REVISIT : ugly global ; provides "exclusive open" facility */
 static struct spi_lm70llp *lm70llp;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------*/
 
 static inline struct spi_lm70llp *spidev_to_pp(struct spi_device *spi)
@@ -159,20 +112,14 @@ static inline void assertCS(struct spi_lm70llp *pp)
 static inline void clkHigh(struct spi_lm70llp *pp)
 {
 	u8 data = parport_read_data(pp->port);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parport_write_data(pp->port, data | SCLK);
 }
 
 static inline void clkLow(struct spi_lm70llp *pp)
 {
 	u8 data = parport_read_data(pp->port);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parport_write_data(pp->port, data & ~SCLK);
 }
 
@@ -211,15 +158,10 @@ static inline void setmosi(struct spi_device *s, int is_on)
 static inline int getmiso(struct spi_device *s)
 {
 	struct spi_lm70llp *pp = spidev_to_pp(s);
-<<<<<<< HEAD
-	return ((SIO == (parport_read_status(pp->port) & SIO)) ? 0 : 1 );
-}
-=======
 
 	return ((SIO == (parport_read_status(pp->port) & SIO)) ? 0 : 1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*--------------------------------------------------------------------*/
 
 #include "spi-bitbang-txrx.h"
@@ -237,38 +179,22 @@ static void lm70_chipselect(struct spi_device *spi, int value)
 /*
  * Our actual bitbanger routine.
  */
-<<<<<<< HEAD
-static u32 lm70_txrx(struct spi_device *spi, unsigned nsecs, u32 word, u8 bits)
-{
-	return bitbang_txrx_be_cpha0(spi, nsecs, 0, 0, word, bits);
-=======
 static u32 lm70_txrx(struct spi_device *spi, unsigned nsecs, u32 word, u8 bits,
 		     unsigned flags)
 {
 	return bitbang_txrx_be_cpha0(spi, nsecs, 0, flags, word, bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void spi_lm70llp_attach(struct parport *p)
 {
 	struct pardevice	*pd;
 	struct spi_lm70llp	*pp;
-<<<<<<< HEAD
-	struct spi_master	*master;
-	int			status;
-
-	if (lm70llp) {
-		printk(KERN_WARNING
-			"%s: spi_lm70llp instance already loaded. Aborting.\n",
-			DRVNAME);
-=======
 	struct spi_controller	*host;
 	int			status;
 	struct pardev_cb	lm70llp_cb;
 
 	if (lm70llp) {
 		pr_warn("spi_lm70llp instance already loaded. Aborting.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -276,33 +202,17 @@ static void spi_lm70llp_attach(struct parport *p)
 	 * the lm70 driver could verify it, reading the manf ID.
 	 */
 
-<<<<<<< HEAD
-	master = spi_alloc_master(p->physport->dev, sizeof *pp);
-	if (!master) {
-		status = -ENOMEM;
-		goto out_fail;
-	}
-	pp = spi_master_get_devdata(master);
-
-	master->bus_num = -1;	/* dynamic alloc of a bus number */
-	master->num_chipselect = 1;
-=======
 	host = spi_alloc_host(p->physport->dev, sizeof(*pp));
 	if (!host) {
 		status = -ENOMEM;
 		goto out_fail;
 	}
 	pp = spi_controller_get_devdata(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * SPI and bitbang hookup.
 	 */
-<<<<<<< HEAD
-	pp->bitbang.master = spi_master_get(master);
-=======
 	pp->bitbang.ctlr = host;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pp->bitbang.chipselect = lm70_chipselect;
 	pp->bitbang.txrx_word[SPI_MODE_0] = lm70_txrx;
 	pp->bitbang.flags = SPI_3WIRE;
@@ -311,14 +221,6 @@ static void spi_lm70llp_attach(struct parport *p)
 	 * Parport hookup
 	 */
 	pp->port = p;
-<<<<<<< HEAD
-	pd = parport_register_device(p, DRVNAME,
-			NULL, NULL, NULL,
-			PARPORT_FLAG_EXCL, pp);
-	if (!pd) {
-		status = -ENOMEM;
-		goto out_free_master;
-=======
 	memset(&lm70llp_cb, 0, sizeof(lm70llp_cb));
 	lm70llp_cb.private = pp;
 	lm70llp_cb.flags = PARPORT_FLAG_EXCL;
@@ -327,7 +229,6 @@ static void spi_lm70llp_attach(struct parport *p)
 	if (!pd) {
 		status = -ENOMEM;
 		goto out_free_host;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pp->pd = pd;
 
@@ -340,14 +241,8 @@ static void spi_lm70llp_attach(struct parport *p)
 	 */
 	status = spi_bitbang_start(&pp->bitbang);
 	if (status < 0) {
-<<<<<<< HEAD
-		printk(KERN_WARNING
-			"%s: spi_bitbang_start failed with status %d\n",
-			DRVNAME, status);
-=======
 		dev_warn(&pd->dev, "spi_bitbang_start failed with status %d\n",
 			 status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_off_and_release;
 	}
 
@@ -369,21 +264,12 @@ static void spi_lm70llp_attach(struct parport *p)
 	 * the board info's (void *)controller_data.
 	 */
 	pp->info.controller_data = pp;
-<<<<<<< HEAD
-	pp->spidev_lm70 = spi_new_device(pp->bitbang.master, &pp->info);
-	if (pp->spidev_lm70)
-		dev_dbg(&pp->spidev_lm70->dev, "spidev_lm70 at %s\n",
-				dev_name(&pp->spidev_lm70->dev));
-	else {
-		printk(KERN_WARNING "%s: spi_new_device failed\n", DRVNAME);
-=======
 	pp->spidev_lm70 = spi_new_device(pp->bitbang.ctlr, &pp->info);
 	if (pp->spidev_lm70)
 		dev_dbg(&pp->spidev_lm70->dev, "spidev_lm70 at %s\n",
 			dev_name(&pp->spidev_lm70->dev));
 	else {
 		dev_warn(&pd->dev, "spi_new_device failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = -ENODEV;
 		goto out_bitbang_stop;
 	}
@@ -401,17 +287,10 @@ out_off_and_release:
 	parport_release(pp->pd);
 out_parport_unreg:
 	parport_unregister_device(pd);
-<<<<<<< HEAD
-out_free_master:
-	(void) spi_master_put(master);
-out_fail:
-	pr_info("%s: spi_lm70llp probe fail, status %d\n", DRVNAME, status);
-=======
 out_free_host:
 	spi_controller_put(host);
 out_fail:
 	pr_info("spi_lm70llp probe fail, status %d\n", status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void spi_lm70llp_detach(struct parport *p)
@@ -430,35 +309,11 @@ static void spi_lm70llp_detach(struct parport *p)
 	parport_release(pp->pd);
 	parport_unregister_device(pp->pd);
 
-<<<<<<< HEAD
-	(void) spi_master_put(pp->bitbang.master);
-=======
 	spi_controller_put(pp->bitbang.ctlr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lm70llp = NULL;
 }
 
-<<<<<<< HEAD
-
-static struct parport_driver spi_lm70llp_drv = {
-	.name =		DRVNAME,
-	.attach =	spi_lm70llp_attach,
-	.detach =	spi_lm70llp_detach,
-};
-
-static int __init init_spi_lm70llp(void)
-{
-	return parport_register_driver(&spi_lm70llp_drv);
-}
-module_init(init_spi_lm70llp);
-
-static void __exit cleanup_spi_lm70llp(void)
-{
-	parport_unregister_driver(&spi_lm70llp_drv);
-}
-module_exit(cleanup_spi_lm70llp);
-=======
 static struct parport_driver spi_lm70llp_drv = {
 	.name =		DRVNAME,
 	.match_port =	spi_lm70llp_attach,
@@ -466,7 +321,6 @@ static struct parport_driver spi_lm70llp_drv = {
 	.devmodel =	true,
 };
 module_parport_driver(spi_lm70llp_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Kaiwan N Billimoria <kaiwan@designergraphix.com>");
 MODULE_DESCRIPTION(

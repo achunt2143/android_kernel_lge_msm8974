@@ -1,18 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * zfcp device driver
  *
  * Tracking of manually configured LUNs and helper functions to
  * register the LUNs with the SCSI midlayer.
  *
-<<<<<<< HEAD
- * Copyright IBM Corporation 2010
-=======
  * Copyright IBM Corp. 2010
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "zfcp_def.h"
@@ -29,21 +22,13 @@
 void zfcp_unit_scsi_scan(struct zfcp_unit *unit)
 {
 	struct fc_rport *rport = unit->port->rport;
-<<<<<<< HEAD
-	unsigned int lun;
-=======
 	u64 lun;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lun = scsilun_to_int((struct scsi_lun *) &unit->fcp_lun);
 
 	if (rport && rport->port_state == FC_PORTSTATE_ONLINE)
-<<<<<<< HEAD
-		scsi_scan_target(&rport->dev, 0, rport->scsi_target_id, lun, 1);
-=======
 		scsi_scan_target(&rport->dev, 0, rport->scsi_target_id, lun,
 				 SCSI_SCAN_MANUAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void zfcp_unit_scsi_scan_work(struct work_struct *work)
@@ -126,15 +111,9 @@ static void zfcp_unit_release(struct device *dev)
 }
 
 /**
-<<<<<<< HEAD
- * zfcp_unit_enqueue - enqueue unit to unit list of a port.
- * @port: pointer to port where unit is added
- * @fcp_lun: FCP LUN of unit to be enqueued
-=======
  * zfcp_unit_add - add unit to unit list of a port.
  * @port: pointer to port where unit is added
  * @fcp_lun: FCP LUN of unit to be added
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns: 0 success
  *
  * Sets up some unit internal structures and creates sysfs entry.
@@ -145,11 +124,7 @@ int zfcp_unit_add(struct zfcp_port *port, u64 fcp_lun)
 	int retval = 0;
 
 	mutex_lock(&zfcp_sysfs_port_units_mutex);
-<<<<<<< HEAD
-	if (atomic_read(&port->units) == -1) {
-=======
 	if (zfcp_sysfs_port_is_removing(port)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* port is already gone */
 		retval = -ENODEV;
 		goto out;
@@ -172,10 +147,7 @@ int zfcp_unit_add(struct zfcp_port *port, u64 fcp_lun)
 	unit->fcp_lun = fcp_lun;
 	unit->dev.parent = &port->dev;
 	unit->dev.release = zfcp_unit_release;
-<<<<<<< HEAD
-=======
 	unit->dev.groups = zfcp_unit_attr_groups;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_WORK(&unit->scsi_work, zfcp_unit_scsi_scan_work);
 
 	if (dev_set_name(&unit->dev, "0x%016llx",
@@ -191,24 +163,11 @@ int zfcp_unit_add(struct zfcp_port *port, u64 fcp_lun)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	if (sysfs_create_group(&unit->dev.kobj, &zfcp_sysfs_unit_attrs)) {
-		device_unregister(&unit->dev);
-		retval = -EINVAL;
-		goto out;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_inc(&port->units); /* under zfcp_sysfs_port_units_mutex ! */
 
 	write_lock_irq(&port->unit_list_lock);
 	list_add_tail(&unit->list, &port->unit_list);
 	write_unlock_irq(&port->unit_list_lock);
-<<<<<<< HEAD
-
-	zfcp_unit_scsi_scan(unit);
-=======
 	/*
 	 * lock order: shost->scan_mutex before zfcp_sysfs_port_units_mutex
 	 * due to      zfcp_unit_scsi_scan() => zfcp_scsi_slave_alloc()
@@ -217,7 +176,6 @@ int zfcp_unit_add(struct zfcp_port *port, u64 fcp_lun)
 
 	zfcp_unit_scsi_scan(unit);
 	return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	mutex_unlock(&zfcp_sysfs_port_units_mutex);
@@ -238,11 +196,7 @@ struct scsi_device *zfcp_unit_sdev(struct zfcp_unit *unit)
 {
 	struct Scsi_Host *shost;
 	struct zfcp_port *port;
-<<<<<<< HEAD
-	unsigned int lun;
-=======
 	u64 lun;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lun = scsilun_to_int((struct scsi_lun *) &unit->fcp_lun);
 	port = unit->port;
@@ -301,15 +255,9 @@ int zfcp_unit_remove(struct zfcp_port *port, u64 fcp_lun)
 		scsi_device_put(sdev);
 	}
 
-<<<<<<< HEAD
-	put_device(&unit->dev);
-
-	zfcp_device_unregister(&unit->dev, &zfcp_sysfs_unit_attrs);
-=======
 	device_unregister(&unit->dev);
 
 	put_device(&unit->dev); /* undo _zfcp_unit_find() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

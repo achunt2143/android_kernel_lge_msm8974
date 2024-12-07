@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for SiS7019 Audio Accelerator
  *
@@ -10,22 +7,6 @@
  *  Inspired by the Trident 4D-WaveDX/NX driver.
  *
  *  All rights reserved.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, version 2.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -43,10 +24,6 @@
 MODULE_AUTHOR("David Dillow <dave@thedillows.org>");
 MODULE_DESCRIPTION("SiS7019");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{SiS,SiS7019 Audio Accelerator}}");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index = SNDRV_DEFAULT_IDX1;	/* Index 0-MAX */
 static char *id = SNDRV_DEFAULT_STR1;	/* ID for this card */
@@ -62,11 +39,7 @@ MODULE_PARM_DESC(enable, "Enable SiS7019 Audio Accelerator.");
 module_param(codecs, int, 0444);
 MODULE_PARM_DESC(codecs, "Set bit to indicate that codec number is expected to be present (default 1)");
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(snd_sis7019_ids) = {
-=======
 static const struct pci_device_id snd_sis7019_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_SI, 0x7019) },
 	{ 0, }
 };
@@ -117,15 +90,7 @@ struct voice {
  * we're not doing power management, we still need to allocate a page
  * for the silence buffer.
  */
-<<<<<<< HEAD
-#ifdef CONFIG_PM
 #define SIS_SUSPEND_PAGES	4
-#else
-#define SIS_SUSPEND_PAGES	1
-#endif
-=======
-#define SIS_SUSPEND_PAGES	4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sis7019 {
 	unsigned long ioport;
@@ -177,11 +142,7 @@ struct sis7019 {
  * We'll add a constraint upon open that limits the period and buffer sample
  * size to values that are legal for the hardware.
  */
-<<<<<<< HEAD
-static struct snd_pcm_hardware sis_playback_hw_info = {
-=======
 static const struct snd_pcm_hardware sis_playback_hw_info = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = (SNDRV_PCM_INFO_MMAP |
 		 SNDRV_PCM_INFO_MMAP_VALID |
 		 SNDRV_PCM_INFO_INTERLEAVED |
@@ -202,11 +163,7 @@ static const struct snd_pcm_hardware sis_playback_hw_info = {
 	.periods_max = (0xfff9 / 9),
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware sis_capture_hw_info = {
-=======
 static const struct snd_pcm_hardware sis_capture_hw_info = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = (SNDRV_PCM_INFO_MMAP |
 		 SNDRV_PCM_INFO_MMAP_VALID |
 		 SNDRV_PCM_INFO_INTERLEAVED |
@@ -401,11 +358,7 @@ static u32 sis_rate_to_delta(unsigned int rate)
 	else if (rate == 48000)
 		delta = 0x1000;
 	else
-<<<<<<< HEAD
-		delta = (((rate << 12) + 24000) / 48000) & 0x0000ffff;
-=======
 		delta = DIV_ROUND_CLOSEST(rate << 12, 48000) & 0x0000ffff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return delta;
 }
 
@@ -413,15 +366,9 @@ static void __sis_map_silence(struct sis7019 *sis)
 {
 	/* Helper function: must hold sis->voice_lock on entry */
 	if (!sis->silence_users)
-<<<<<<< HEAD
-		sis->silence_dma_addr = pci_map_single(sis->pci,
-						sis->suspend_state[0],
-						4096, PCI_DMA_TODEVICE);
-=======
 		sis->silence_dma_addr = dma_map_single(&sis->pci->dev,
 						sis->suspend_state[0],
 						4096, DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sis->silence_users++;
 }
 
@@ -430,13 +377,8 @@ static void __sis_unmap_silence(struct sis7019 *sis)
 	/* Helper function: must hold sis->voice_lock on entry */
 	sis->silence_users--;
 	if (!sis->silence_users)
-<<<<<<< HEAD
-		pci_unmap_single(sis->pci, sis->silence_dma_addr, 4096,
-					PCI_DMA_TODEVICE);
-=======
 		dma_unmap_single(&sis->pci->dev, sis->silence_dma_addr, 4096,
 					DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sis_free_voice(struct sis7019 *sis, struct voice *voice)
@@ -552,21 +494,6 @@ static int sis_substream_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sis_playback_hw_params(struct snd_pcm_substream *substream,
-					struct snd_pcm_hw_params *hw_params)
-{
-	return snd_pcm_lib_malloc_pages(substream,
-					params_buffer_bytes(hw_params));
-}
-
-static int sis_hw_free(struct snd_pcm_substream *substream)
-{
-	return snd_pcm_lib_free_pages(substream);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sis_pcm_playback_prepare(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -757,14 +684,6 @@ static int sis_capture_hw_params(struct snd_pcm_substream *substream,
 	if (rc)
 		goto out;
 
-<<<<<<< HEAD
-	rc = snd_pcm_lib_malloc_pages(substream,
-					params_buffer_bytes(hw_params));
-	if (rc < 0)
-		goto out;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = sis_alloc_timing_voice(substream, hw_params);
 
 out:
@@ -919,46 +838,24 @@ static int sis_pcm_capture_prepare(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_ops sis_playback_ops = {
-	.open = sis_playback_open,
-	.close = sis_substream_close,
-	.ioctl = snd_pcm_lib_ioctl,
-	.hw_params = sis_playback_hw_params,
-	.hw_free = sis_hw_free,
-=======
 static const struct snd_pcm_ops sis_playback_ops = {
 	.open = sis_playback_open,
 	.close = sis_substream_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare = sis_pcm_playback_prepare,
 	.trigger = sis_pcm_trigger,
 	.pointer = sis_pcm_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops sis_capture_ops = {
-	.open = sis_capture_open,
-	.close = sis_substream_close,
-	.ioctl = snd_pcm_lib_ioctl,
-	.hw_params = sis_capture_hw_params,
-	.hw_free = sis_hw_free,
-=======
 static const struct snd_pcm_ops sis_capture_ops = {
 	.open = sis_capture_open,
 	.close = sis_substream_close,
 	.hw_params = sis_capture_hw_params,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare = sis_pcm_capture_prepare,
 	.trigger = sis_pcm_trigger,
 	.pointer = sis_pcm_pointer,
 };
 
-<<<<<<< HEAD
-static int __devinit sis_pcm_create(struct sis7019 *sis)
-=======
 static int sis_pcm_create(struct sis7019 *sis)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int rc;
@@ -980,13 +877,8 @@ static int sis_pcm_create(struct sis7019 *sis)
 	/* Try to preallocate some memory, but it's not the end of the
 	 * world if this fails.
 	 */
-<<<<<<< HEAD
-	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
-				snd_dma_pci_data(sis->pci), 64*1024, 128*1024);
-=======
 	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
 				       &sis->pci->dev, 64*1024, 128*1024);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1082,19 +974,11 @@ static unsigned short sis_ac97_read(struct snd_ac97 *ac97, unsigned short reg)
 					(reg << 8) | cmd[ac97->num]);
 }
 
-<<<<<<< HEAD
-static int __devinit sis_mixer_create(struct sis7019 *sis)
-{
-	struct snd_ac97_bus *bus;
-	struct snd_ac97_template ac97;
-	static struct snd_ac97_bus_ops ops = {
-=======
 static int sis_mixer_create(struct sis7019 *sis)
 {
 	struct snd_ac97_bus *bus;
 	struct snd_ac97_template ac97;
 	static const struct snd_ac97_bus_ops ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = sis_ac97_write,
 		.read = sis_ac97_read,
 	};
@@ -1119,23 +1003,10 @@ static int sis_mixer_create(struct sis7019 *sis)
 	return rc;
 }
 
-<<<<<<< HEAD
-static void sis_free_suspend(struct sis7019 *sis)
-{
-	int i;
-
-	for (i = 0; i < SIS_SUSPEND_PAGES; i++)
-		kfree(sis->suspend_state[i]);
-}
-
-static int sis_chip_free(struct sis7019 *sis)
-{
-=======
 static void sis_chip_free(struct snd_card *card)
 {
 	struct sis7019 *sis = card->private_data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Reset the chip, and disable all interrputs.
 	 */
 	outl(SIS_GCR_SOFTWARE_RESET, sis->ioport + SIS_GCR);
@@ -1147,24 +1018,6 @@ static void sis_chip_free(struct snd_card *card)
 	 */
 	if (sis->irq >= 0)
 		free_irq(sis->irq, sis);
-<<<<<<< HEAD
-
-	if (sis->ioaddr)
-		iounmap(sis->ioaddr);
-
-	pci_release_regions(sis->pci);
-	pci_disable_device(sis->pci);
-
-	sis_free_suspend(sis);
-	return 0;
-}
-
-static int sis_dev_free(struct snd_device *dev)
-{
-	struct sis7019 *sis = dev->device_data;
-	return sis_chip_free(sis);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sis_chip_init(struct sis7019 *sis)
@@ -1258,11 +1111,7 @@ static int sis_chip_init(struct sis7019 *sis)
 	outl(SIS_DMA_CSR_PCI_SETTINGS, io + SIS_DMA_CSR);
 
 	/* Reset the synchronization groups for all of the channels
-<<<<<<< HEAD
-	 * to be asyncronous. If we start doing SPDIF or 5.1 sound, etc.
-=======
 	 * to be asynchronous. If we start doing SPDIF or 5.1 sound, etc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * we'll need to change how we handle these. Until then, we just
 	 * assign sub-mixer 0 to all playback channels, and avoid any
 	 * attenuation on the audio.
@@ -1299,25 +1148,14 @@ static int sis_chip_init(struct sis7019 *sis)
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int sis_suspend(struct pci_dev *pci, pm_message_t state)
-{
-	struct snd_card *card = pci_get_drvdata(pci);
-=======
 static int sis_suspend(struct device *dev)
 {
 	struct snd_card *card = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sis7019 *sis = card->private_data;
 	void __iomem *ioaddr = sis->ioaddr;
 	int i;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
-<<<<<<< HEAD
-	snd_pcm_suspend_all(sis->pcm);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sis->codecs_present & SIS_PRIMARY_CODEC_PRESENT)
 		snd_ac97_suspend(sis->ac97[0]);
 	if (sis->codecs_present & SIS_SECONDARY_CODEC_PRESENT)
@@ -1339,17 +1177,6 @@ static int sis_suspend(struct device *dev)
 		ioaddr += 4096;
 	}
 
-<<<<<<< HEAD
-	pci_disable_device(pci);
-	pci_save_state(pci);
-	pci_set_power_state(pci, pci_choose_state(pci, state));
-	return 0;
-}
-
-static int sis_resume(struct pci_dev *pci)
-{
-	struct snd_card *card = pci_get_drvdata(pci);
-=======
 	return 0;
 }
 
@@ -1357,22 +1184,10 @@ static int sis_resume(struct device *dev)
 {
 	struct pci_dev *pci = to_pci_dev(dev);
 	struct snd_card *card = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sis7019 *sis = card->private_data;
 	void __iomem *ioaddr = sis->ioaddr;
 	int i;
 
-<<<<<<< HEAD
-	pci_set_power_state(pci, PCI_D0);
-	pci_restore_state(pci);
-
-	if (pci_enable_device(pci) < 0) {
-		dev_err(&pci->dev, "unable to re-enable device\n");
-		goto error;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sis_chip_init(sis)) {
 		dev_err(&pci->dev, "unable to re-init controller\n");
 		goto error;
@@ -1395,10 +1210,6 @@ static int sis_resume(struct device *dev)
 	memset(sis->suspend_state[0], 0, 4096);
 
 	sis->irq = pci->irq;
-<<<<<<< HEAD
-	pci_set_master(pci);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sis->codecs_present & SIS_PRIMARY_CODEC_PRESENT)
 		snd_ac97_resume(sis->ac97[0]);
@@ -1414,12 +1225,8 @@ error:
 	snd_card_disconnect(card);
 	return -EIO;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_PM */
-=======
 
 static DEFINE_SIMPLE_DEV_PM_OPS(sis_pm, sis_suspend, sis_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int sis_alloc_suspend(struct sis7019 *sis)
 {
@@ -1431,12 +1238,8 @@ static int sis_alloc_suspend(struct sis7019 *sis)
 	 * buffer.
 	 */
 	for (i = 0; i < SIS_SUSPEND_PAGES; i++) {
-<<<<<<< HEAD
-		sis->suspend_state[i] = kmalloc(4096, GFP_KERNEL);
-=======
 		sis->suspend_state[i] = devm_kmalloc(&sis->pci->dev, 4096,
 						     GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!sis->suspend_state[i])
 			return -ENOMEM;
 	}
@@ -1445,29 +1248,6 @@ static int sis_alloc_suspend(struct sis7019 *sis)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit sis_chip_create(struct snd_card *card,
-					struct pci_dev *pci)
-{
-	struct sis7019 *sis = card->private_data;
-	struct voice *voice;
-	static struct snd_device_ops ops = {
-		.dev_free = sis_dev_free,
-	};
-	int rc;
-	int i;
-
-	rc = pci_enable_device(pci);
-	if (rc)
-		goto error_out;
-
-	if (pci_set_dma_mask(pci, DMA_BIT_MASK(30)) < 0) {
-		dev_err(&pci->dev, "architecture does not support 30-bit PCI busmaster DMA");
-		goto error_out_enabled;
-	}
-
-	memset(sis, 0, sizeof(*sis));
-=======
 static int sis_chip_create(struct snd_card *card,
 			   struct pci_dev *pci)
 {
@@ -1486,7 +1266,6 @@ static int sis_chip_create(struct snd_card *card,
 		return -ENXIO;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&sis->ac97_mutex);
 	spin_lock_init(&sis->voice_lock);
 	sis->card = card;
@@ -1497,16 +1276,6 @@ static int sis_chip_create(struct snd_card *card,
 	rc = pci_request_regions(pci, "SiS7019");
 	if (rc) {
 		dev_err(&pci->dev, "unable request regions\n");
-<<<<<<< HEAD
-		goto error_out_enabled;
-	}
-
-	rc = -EIO;
-	sis->ioaddr = ioremap_nocache(pci_resource_start(pci, 1), 0x4000);
-	if (!sis->ioaddr) {
-		dev_err(&pci->dev, "unable to remap MMIO, aborting\n");
-		goto error_out_cleanup;
-=======
 		return rc;
 	}
 
@@ -1514,32 +1283,16 @@ static int sis_chip_create(struct snd_card *card,
 	if (!sis->ioaddr) {
 		dev_err(&pci->dev, "unable to remap MMIO, aborting\n");
 		return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rc = sis_alloc_suspend(sis);
 	if (rc < 0) {
 		dev_err(&pci->dev, "unable to allocate state storage\n");
-<<<<<<< HEAD
-		goto error_out_cleanup;
-=======
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rc = sis_chip_init(sis);
 	if (rc)
-<<<<<<< HEAD
-		goto error_out_cleanup;
-
-	if (request_irq(pci->irq, sis_interrupt, IRQF_SHARED, KBUILD_MODNAME,
-			sis)) {
-		dev_err(&pci->dev, "unable to allocate irq %d\n", sis->irq);
-		goto error_out_cleanup;
-	}
-
-	sis->irq = pci->irq;
-=======
 		return rc;
 	card->private_free = sis_chip_free;
 
@@ -1552,7 +1305,6 @@ static int sis_chip_create(struct snd_card *card,
 
 	sis->irq = pci->irq;
 	card->sync_irq = sis->irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_master(pci);
 
 	for (i = 0; i < 64; i++) {
@@ -1567,47 +1319,18 @@ static int sis_chip_create(struct snd_card *card,
 	voice->num = SIS_CAPTURE_CHAN_AC97_PCM_IN;
 	voice->ctrl_base = SIS_CAPTURE_DMA_ADDR(sis->ioaddr, voice->num);
 
-<<<<<<< HEAD
-	rc = snd_device_new(card, SNDRV_DEV_LOWLEVEL, sis, &ops);
-	if (rc)
-		goto error_out_cleanup;
-
-	snd_card_set_dev(card, &pci->dev);
-
-	return 0;
-
-error_out_cleanup:
-	sis_chip_free(sis);
-
-error_out_enabled:
-	pci_disable_device(pci);
-
-error_out:
-	return rc;
-}
-
-static int __devinit snd_sis7019_probe(struct pci_dev *pci,
-					const struct pci_device_id *pci_id)
-=======
 	return 0;
 }
 
 static int __snd_sis7019_probe(struct pci_dev *pci,
 			       const struct pci_device_id *pci_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct sis7019 *sis;
 	int rc;
 
-<<<<<<< HEAD
-	rc = -ENOENT;
-	if (!enable)
-		goto error_out;
-=======
 	if (!enable)
 		return -ENOENT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The user can specify which codecs should be present so that we
 	 * can wait for them to show up if they are slow to recover from
@@ -1620,44 +1343,26 @@ static int __snd_sis7019_probe(struct pci_dev *pci,
 	if (!codecs)
 		codecs = SIS_PRIMARY_CODEC_PRESENT;
 
-<<<<<<< HEAD
-	rc = snd_card_create(index, id, THIS_MODULE, sizeof(*sis), &card);
-	if (rc < 0)
-		goto error_out;
-=======
 	rc = snd_devm_card_new(&pci->dev, index, id, THIS_MODULE,
 			       sizeof(*sis), &card);
 	if (rc < 0)
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, "SiS7019");
 	strcpy(card->shortname, "SiS7019");
 	rc = sis_chip_create(card, pci);
 	if (rc)
-<<<<<<< HEAD
-		goto card_error_out;
-=======
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sis = card->private_data;
 
 	rc = sis_mixer_create(sis);
 	if (rc)
-<<<<<<< HEAD
-		goto card_error_out;
-
-	rc = sis_pcm_create(sis);
-	if (rc)
-		goto card_error_out;
-=======
 		return rc;
 
 	rc = sis_pcm_create(sis);
 	if (rc)
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snprintf(card->longname, sizeof(card->longname),
 			"%s Audio Accelerator with %s at 0x%lx, irq %d",
@@ -1666,24 +1371,6 @@ static int __snd_sis7019_probe(struct pci_dev *pci,
 
 	rc = snd_card_register(card);
 	if (rc)
-<<<<<<< HEAD
-		goto card_error_out;
-
-	pci_set_drvdata(pci, card);
-	return 0;
-
-card_error_out:
-	snd_card_free(card);
-
-error_out:
-	return rc;
-}
-
-static void __devexit snd_sis7019_remove(struct pci_dev *pci)
-{
-	snd_card_free(pci_get_drvdata(pci));
-	pci_set_drvdata(pci, NULL);
-=======
 		return rc;
 
 	pci_set_drvdata(pci, card);
@@ -1694,39 +1381,15 @@ static int snd_sis7019_probe(struct pci_dev *pci,
 			     const struct pci_device_id *pci_id)
 {
 	return snd_card_free_on_error(&pci->dev, __snd_sis7019_probe(pci, pci_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pci_driver sis7019_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = snd_sis7019_ids,
 	.probe = snd_sis7019_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(snd_sis7019_remove),
-
-#ifdef CONFIG_PM
-	.suspend = sis_suspend,
-	.resume = sis_resume,
-#endif
-};
-
-static int __init sis7019_init(void)
-{
-	return pci_register_driver(&sis7019_driver);
-}
-
-static void __exit sis7019_exit(void)
-{
-	pci_unregister_driver(&sis7019_driver);
-}
-
-module_init(sis7019_init);
-module_exit(sis7019_exit);
-=======
 	.driver = {
 		.pm = &sis_pm,
 	},
 };
 
 module_pci_driver(sis7019_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

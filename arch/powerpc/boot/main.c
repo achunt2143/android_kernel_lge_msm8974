@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) Paul Mackerras 1997.
  *
  * Updates for PPC64 by Todd Inglett, Dave Engebretsen & Peter Bergner.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <stdarg.h>
 #include <stddef.h>
@@ -22,16 +11,8 @@
 #include "string.h"
 #include "stdio.h"
 #include "ops.h"
-<<<<<<< HEAD
-#include "gunzip_util.h"
 #include "reg.h"
 
-static struct gunzip_state gzstate;
-
-=======
-#include "reg.h"
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct addr_range {
 	void *addr;
 	unsigned long size;
@@ -42,17 +23,6 @@ struct addr_range {
 static struct addr_range prep_kernel(void)
 {
 	char elfheader[256];
-<<<<<<< HEAD
-	void *vmlinuz_addr = _vmlinux_start;
-	unsigned long vmlinuz_size = _vmlinux_end - _vmlinux_start;
-	void *addr = 0;
-	struct elf_info ei;
-	int len;
-
-	/* gunzip the ELF header of the kernel */
-	gunzip_start(&gzstate, vmlinuz_addr, vmlinuz_size);
-	gunzip_exactly(&gzstate, elfheader, sizeof(elfheader));
-=======
 	unsigned char *vmlinuz_addr = (unsigned char *)_vmlinux_start;
 	unsigned long vmlinuz_size = _vmlinux_end - _vmlinux_start;
 	void *addr = 0;
@@ -68,7 +38,6 @@ static struct addr_range prep_kernel(void)
 		memcpy(elfheader, vmlinuz_addr, sizeof(elfheader));
 		printf("No valid compressed data found, assume uncompressed data\n\r");
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!parse_elf64(elfheader, &ei) && !parse_elf32(elfheader, &ei))
 		fatal("Error: not a valid PPC32 or PPC64 ELF file!\n\r");
@@ -81,11 +50,7 @@ static struct addr_range prep_kernel(void)
 	 * the kernel bss must be claimed (it will be zero'd by the
 	 * kernel itself)
 	 */
-<<<<<<< HEAD
-	printf("Allocating 0x%lx bytes for kernel ...\n\r", ei.memsize);
-=======
 	printf("Allocating 0x%lx bytes for kernel...\n\r", ei.memsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (platform_ops.vmlinux_alloc) {
 		addr = platform_ops.vmlinux_alloc(ei.memsize);
@@ -105,19 +70,6 @@ static struct addr_range prep_kernel(void)
 					"device tree\n\r");
 	}
 
-<<<<<<< HEAD
-	/* Finally, gunzip the kernel */
-	printf("gunzipping (0x%p <- 0x%p:0x%p)...", addr,
-	       vmlinuz_addr, vmlinuz_addr+vmlinuz_size);
-	/* discard up to the actual load data */
-	gunzip_discard(&gzstate, ei.elfoffset - sizeof(elfheader));
-	len = gunzip_finish(&gzstate, addr, ei.loadsize);
-	if (len != ei.loadsize)
-		fatal("ran out of data!  only got 0x%x of 0x%lx bytes.\n\r",
-				len, ei.loadsize);
-	printf("done 0x%x bytes\n\r", len);
-
-=======
 	if (uncompressed_image) {
 		memcpy(addr, vmlinuz_addr + ei.elfoffset, ei.loadsize);
 		printf("0x%lx bytes of uncompressed data copied\n\r",
@@ -141,7 +93,6 @@ static struct addr_range prep_kernel(void)
 
 	printf("Done! Decompressed 0x%lx bytes\n\r", len);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_cache(addr, ei.loadsize);
 
 	return (struct addr_range){addr, ei.memsize};
@@ -153,11 +104,7 @@ static struct addr_range prep_initrd(struct addr_range vmlinux, void *chosen,
 {
 	/* If we have an image attached to us, it overrides anything
 	 * supplied by the loader. */
-<<<<<<< HEAD
-	if (_initrd_end > _initrd_start) {
-=======
 	if (&_initrd_end > &_initrd_start) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printf("Attached initrd image at 0x%p-0x%p\n\r",
 		       _initrd_start, _initrd_end);
 		initrd_addr = (unsigned long)_initrd_start;
@@ -199,8 +146,6 @@ static struct addr_range prep_initrd(struct addr_range vmlinux, void *chosen,
 	return (struct addr_range){(void *)initrd_addr, initrd_size};
 }
 
-<<<<<<< HEAD
-=======
 #ifdef __powerpc64__
 static void prep_esm_blob(struct addr_range vmlinux, void *chosen)
 {
@@ -241,29 +186,15 @@ static void prep_esm_blob(struct addr_range vmlinux, void *chosen)
 static inline void prep_esm_blob(struct addr_range vmlinux, void *chosen) { }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* A buffer that may be edited by tools operating on a zImage binary so as to
  * edit the command line passed to vmlinux (by setting /chosen/bootargs).
  * The buffer is put in it's own section so that tools may locate it easier.
  */
-<<<<<<< HEAD
-static char cmdline[COMMAND_LINE_SIZE]
-=======
 static char cmdline[BOOT_COMMAND_LINE_SIZE]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__attribute__((__section__("__builtin_cmdline")));
 
 static void prep_cmdline(void *chosen)
 {
-<<<<<<< HEAD
-	if (cmdline[0] == '\0')
-		getprop(chosen, "bootargs", cmdline, COMMAND_LINE_SIZE-1);
-
-	printf("\n\rLinux/PowerPC load: %s", cmdline);
-	/* If possible, edit the command line */
-	if (console_ops.edit_cmdline)
-		console_ops.edit_cmdline(cmdline, COMMAND_LINE_SIZE);
-=======
 	unsigned int getline_timeout = 5000;
 	int v;
 	int n;
@@ -282,7 +213,6 @@ static void prep_cmdline(void *chosen)
 	if (console_ops.edit_cmdline && getline_timeout)
 		console_ops.edit_cmdline(cmdline, BOOT_COMMAND_LINE_SIZE, getline_timeout);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printf("\n\r");
 
 	/* Put the command line back into the devtree for the kernel */
@@ -306,11 +236,7 @@ void start(void)
 	 * built-in command line wasn't set by an external tool */
 	if ((loader_info.cmdline_len > 0) && (cmdline[0] == '\0'))
 		memmove(cmdline, loader_info.cmdline,
-<<<<<<< HEAD
-			min(loader_info.cmdline_len, COMMAND_LINE_SIZE-1));
-=======
 			min(loader_info.cmdline_len, BOOT_COMMAND_LINE_SIZE-1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (console_ops.open && (console_ops.open() < 0))
 		exit();
@@ -328,10 +254,7 @@ void start(void)
 	vmlinux = prep_kernel();
 	initrd = prep_initrd(vmlinux, chosen,
 			     loader_info.initrd_addr, loader_info.initrd_size);
-<<<<<<< HEAD
-=======
 	prep_esm_blob(vmlinux, chosen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prep_cmdline(chosen);
 
 	printf("Finalizing device tree...");
@@ -346,17 +269,12 @@ void start(void)
 		console_ops.close();
 
 	kentry = (kernel_entry_t) vmlinux.addr;
-<<<<<<< HEAD
-	if (ft_addr)
-		kentry(ft_addr, 0, NULL);
-=======
 	if (ft_addr) {
 		if(platform_ops.kentry)
 			platform_ops.kentry(ft_addr, vmlinux.addr);
 		else
 			kentry(ft_addr, 0, NULL);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		kentry((unsigned long)initrd.addr, initrd.size,
 		       loader_info.promptr);

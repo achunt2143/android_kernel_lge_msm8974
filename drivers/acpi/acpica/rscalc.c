@@ -1,53 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acresrc.h"
@@ -91,11 +48,7 @@ static u8 acpi_rs_count_set_bits(u16 bit_field)
 		bit_field &= (u16) (bit_field - 1);
 	}
 
-<<<<<<< HEAD
-	return bits_set;
-=======
 	return (bits_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
@@ -123,11 +76,7 @@ acpi_rs_struct_option_length(struct acpi_resource_source *resource_source)
 	 * resource_source_index (1).
 	 */
 	if (resource_source->string_ptr) {
-<<<<<<< HEAD
-		return ((acpi_rs_length) (resource_source->string_length + 1));
-=======
 		return ((acpi_rs_length)(resource_source->string_length + 1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return (0);
@@ -158,18 +107,6 @@ acpi_rs_stream_option_length(u32 resource_length,
 	ACPI_FUNCTION_ENTRY();
 
 	/*
-<<<<<<< HEAD
-	 * The resource_source_index and resource_source are optional elements of some
-	 * Large-type resource descriptors.
-	 */
-
-	/*
-	 * If the length of the actual resource descriptor is greater than the ACPI
-	 * spec-defined minimum length, it means that a resource_source_index exists
-	 * and is followed by a (required) null terminated string. The string length
-	 * (including the null terminator) is the resource length minus the minimum
-	 * length, minus one byte for the resource_source_index itself.
-=======
 	 * The resource_source_index and resource_source are optional elements of
 	 * some Large-type resource descriptors.
 	 */
@@ -181,7 +118,6 @@ acpi_rs_stream_option_length(u32 resource_length,
 	 * string length (including the null terminator) is the resource length
 	 * minus the minimum length, minus one byte for the resource_source_index
 	 * itself.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (resource_length > minimum_aml_resource_length) {
 
@@ -202,12 +138,8 @@ acpi_rs_stream_option_length(u32 resource_length,
  *
  * FUNCTION:    acpi_rs_get_aml_length
  *
-<<<<<<< HEAD
- * PARAMETERS:  Resource            - Pointer to the resource linked list
-=======
  * PARAMETERS:  resource            - Pointer to the resource linked list
  *              resource_list_size  - Size of the resource linked list
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              size_needed         - Where the required size is returned
  *
  * RETURN:      Status
@@ -219,30 +151,20 @@ acpi_rs_stream_option_length(u32 resource_length,
  ******************************************************************************/
 
 acpi_status
-<<<<<<< HEAD
-acpi_rs_get_aml_length(struct acpi_resource * resource, acpi_size * size_needed)
-{
-	acpi_size aml_size_needed = 0;
-=======
 acpi_rs_get_aml_length(struct acpi_resource *resource,
 		       acpi_size resource_list_size, acpi_size *size_needed)
 {
 	acpi_size aml_size_needed = 0;
 	struct acpi_resource *resource_end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_rs_length total_size;
 
 	ACPI_FUNCTION_TRACE(rs_get_aml_length);
 
 	/* Traverse entire list of internal resource descriptors */
 
-<<<<<<< HEAD
-	while (resource) {
-=======
 	resource_end =
 	    ACPI_ADD_PTR(struct acpi_resource, resource, resource_list_size);
 	while (resource < resource_end) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Validate the descriptor type */
 
@@ -250,15 +172,12 @@ acpi_rs_get_aml_length(struct acpi_resource *resource,
 			return_ACPI_STATUS(AE_AML_INVALID_RESOURCE_TYPE);
 		}
 
-<<<<<<< HEAD
-=======
 		/* Sanity check the length. It must not be zero, or we loop forever */
 
 		if (!resource->length) {
 			return_ACPI_STATUS(AE_AML_BAD_RESOURCE_LENGTH);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Get the base size of the (external stream) resource descriptor */
 
 		total_size = acpi_gbl_aml_resource_sizes[resource->type];
@@ -323,19 +242,11 @@ acpi_rs_get_aml_length(struct acpi_resource *resource,
 			 * 16-Bit Address Resource:
 			 * Add the size of the optional resource_source info
 			 */
-<<<<<<< HEAD
-			total_size = (acpi_rs_length)
-			    (total_size +
-			     acpi_rs_struct_option_length(&resource->data.
-							  address16.
-							  resource_source));
-=======
 			total_size = (acpi_rs_length)(total_size +
 						      acpi_rs_struct_option_length
 						      (&resource->data.
 						       address16.
 						       resource_source));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_RESOURCE_TYPE_ADDRESS32:
@@ -343,19 +254,11 @@ acpi_rs_get_aml_length(struct acpi_resource *resource,
 			 * 32-Bit Address Resource:
 			 * Add the size of the optional resource_source info
 			 */
-<<<<<<< HEAD
-			total_size = (acpi_rs_length)
-			    (total_size +
-			     acpi_rs_struct_option_length(&resource->data.
-							  address32.
-							  resource_source));
-=======
 			total_size = (acpi_rs_length)(total_size +
 						      acpi_rs_struct_option_length
 						      (&resource->data.
 						       address32.
 						       resource_source));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_RESOURCE_TYPE_ADDRESS64:
@@ -363,19 +266,11 @@ acpi_rs_get_aml_length(struct acpi_resource *resource,
 			 * 64-Bit Address Resource:
 			 * Add the size of the optional resource_source info
 			 */
-<<<<<<< HEAD
-			total_size = (acpi_rs_length)
-			    (total_size +
-			     acpi_rs_struct_option_length(&resource->data.
-							  address64.
-							  resource_source));
-=======
 			total_size = (acpi_rs_length)(total_size +
 						      acpi_rs_struct_option_length
 						      (&resource->data.
 						       address64.
 						       resource_source));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
@@ -384,16 +279,6 @@ acpi_rs_get_aml_length(struct acpi_resource *resource,
 			 * Add the size of each additional optional interrupt beyond the
 			 * required 1 (4 bytes for each u32 interrupt number)
 			 */
-<<<<<<< HEAD
-			total_size = (acpi_rs_length)
-			    (total_size +
-			     ((resource->data.extended_irq.interrupt_count -
-			       1) * 4) +
-			     /* Add the size of the optional resource_source info */
-			     acpi_rs_struct_option_length(&resource->data.
-							  extended_irq.
-							  resource_source));
-=======
 			total_size = (acpi_rs_length)(total_size +
 						      ((resource->data.
 							extended_irq.
@@ -404,21 +289,10 @@ acpi_rs_get_aml_length(struct acpi_resource *resource,
 						      (&resource->data.
 						       extended_irq.
 						       resource_source));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_RESOURCE_TYPE_GPIO:
 
-<<<<<<< HEAD
-			total_size =
-			    (acpi_rs_length) (total_size +
-					      (resource->data.gpio.
-					       pin_table_length * 2) +
-					      resource->data.gpio.
-					      resource_source.string_length +
-					      resource->data.gpio.
-					      vendor_length);
-=======
 			total_size = (acpi_rs_length)(total_size +
 						      (resource->data.gpio.
 						       pin_table_length * 2) +
@@ -453,7 +327,6 @@ acpi_rs_get_aml_length(struct acpi_resource *resource,
 						      clock_input.
 						      resource_source.
 						      string_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			break;
 
@@ -465,16 +338,6 @@ acpi_rs_get_aml_length(struct acpi_resource *resource,
 								   common_serial_bus.
 								   type];
 
-<<<<<<< HEAD
-			total_size = (acpi_rs_length) (total_size +
-						       resource->data.
-						       i2c_serial_bus.
-						       resource_source.
-						       string_length +
-						       resource->data.
-						       i2c_serial_bus.
-						       vendor_length);
-=======
 			total_size = (acpi_rs_length)(total_size +
 						      resource->data.
 						      i2c_serial_bus.
@@ -544,15 +407,11 @@ acpi_rs_get_aml_length(struct acpi_resource *resource,
 						      resource->data.
 						      pin_group_config.
 						      vendor_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			break;
 
 		default:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -589,13 +448,8 @@ acpi_rs_get_aml_length(struct acpi_resource *resource,
  ******************************************************************************/
 
 acpi_status
-<<<<<<< HEAD
-acpi_rs_get_list_length(u8 * aml_buffer,
-			u32 aml_buffer_length, acpi_size * size_needed)
-=======
 acpi_rs_get_list_length(u8 *aml_buffer,
 			u32 aml_buffer_length, acpi_size *size_needed)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 	u8 *end_aml;
@@ -619,13 +473,9 @@ acpi_rs_get_list_length(u8 *aml_buffer,
 
 		/* Validate the Resource Type and Resource Length */
 
-<<<<<<< HEAD
-		status = acpi_ut_validate_resource(aml_buffer, &resource_index);
-=======
 		status =
 		    acpi_ut_validate_resource(NULL, aml_buffer,
 					      &resource_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ACPI_FAILURE(status)) {
 			/*
 			 * Exit on failure. Cannot continue because the descriptor length
@@ -675,8 +525,6 @@ acpi_rs_get_list_length(u8 *aml_buffer,
 			 * Get the number of vendor data bytes
 			 */
 			extra_struct_bytes = resource_length;
-<<<<<<< HEAD
-=======
 
 			/*
 			 * There is already one byte included in the minimum
@@ -686,7 +534,6 @@ acpi_rs_get_list_length(u8 *aml_buffer,
 			if (extra_struct_bytes) {
 				extra_struct_bytes--;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_RESOURCE_NAME_END_TAG:
@@ -741,19 +588,6 @@ acpi_rs_get_list_length(u8 *aml_buffer,
 			}
 			break;
 
-<<<<<<< HEAD
-		case ACPI_RESOURCE_NAME_SERIAL_BUS:
-
-			minimum_aml_resource_length =
-			    acpi_gbl_resource_aml_serial_bus_sizes
-			    [aml_resource->common_serial_bus.type];
-			extra_struct_bytes +=
-			    aml_resource->common_serial_bus.resource_length -
-			    minimum_aml_resource_length;
-			break;
-
-		default:
-=======
 		case ACPI_RESOURCE_NAME_PIN_FUNCTION:
 
 			/* Vendor data is optional */
@@ -843,7 +677,6 @@ acpi_rs_get_list_length(u8 *aml_buffer,
 
 		default:
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -855,12 +688,6 @@ acpi_rs_get_list_length(u8 *aml_buffer,
 		 */
 		if (acpi_ut_get_resource_type(aml_buffer) ==
 		    ACPI_RESOURCE_NAME_SERIAL_BUS) {
-<<<<<<< HEAD
-			buffer_size =
-			    acpi_gbl_resource_struct_serial_bus_sizes
-			    [aml_resource->common_serial_bus.type] +
-			    extra_struct_bytes;
-=======
 
 			/* Avoid undefined behavior: member access within misaligned address */
 
@@ -871,23 +698,11 @@ acpi_rs_get_list_length(u8 *aml_buffer,
 			buffer_size =
 			    acpi_gbl_resource_struct_serial_bus_sizes
 			    [common_serial_bus.type] + extra_struct_bytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			buffer_size =
 			    acpi_gbl_resource_struct_sizes[resource_index] +
 			    extra_struct_bytes;
 		}
-<<<<<<< HEAD
-		buffer_size = (u32)ACPI_ROUND_UP_TO_NATIVE_WORD(buffer_size);
-
-		*size_needed += buffer_size;
-
-		ACPI_DEBUG_PRINT((ACPI_DB_RESOURCES,
-				  "Type %.2X, AmlLength %.2X InternalLength %.2X\n",
-				  acpi_ut_get_resource_type(aml_buffer),
-				  acpi_ut_get_descriptor_length(aml_buffer),
-				  buffer_size));
-=======
 
 		buffer_size = (u32)ACPI_ROUND_UP_TO_NATIVE_WORD(buffer_size);
 		*size_needed += buffer_size;
@@ -897,7 +712,6 @@ acpi_rs_get_list_length(u8 *aml_buffer,
 				  acpi_ut_get_resource_type(aml_buffer),
 				  acpi_ut_get_descriptor_length(aml_buffer),
 				  ACPI_FORMAT_UINT64(*size_needed)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Point to the next resource within the AML stream using the length
@@ -930,11 +744,7 @@ acpi_rs_get_list_length(u8 *aml_buffer,
 
 acpi_status
 acpi_rs_get_pci_routing_table_length(union acpi_operand_object *package_object,
-<<<<<<< HEAD
-				     acpi_size * buffer_size_needed)
-=======
 				     acpi_size *buffer_size_needed)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 number_of_elements;
 	acpi_size temp_size_needed = 0;
@@ -952,11 +762,7 @@ acpi_rs_get_pci_routing_table_length(union acpi_operand_object *package_object,
 	/*
 	 * Calculate the size of the return buffer.
 	 * The base size is the number of elements * the sizes of the
-<<<<<<< HEAD
-	 * structures.  Additional space for the strings is added below.
-=======
 	 * structures. Additional space for the strings is added below.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * The minus one is to subtract the size of the u8 Source[1]
 	 * member because it is added below.
 	 *
@@ -967,11 +773,7 @@ acpi_rs_get_pci_routing_table_length(union acpi_operand_object *package_object,
 
 	for (index = 0; index < number_of_elements; index++) {
 
-<<<<<<< HEAD
-		/* Dereference the sub-package */
-=======
 		/* Dereference the subpackage */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		package_element = *top_object_list;
 
@@ -992,14 +794,9 @@ acpi_rs_get_pci_routing_table_length(union acpi_operand_object *package_object,
 
 		name_found = FALSE;
 
-<<<<<<< HEAD
-		for (table_index = 0; table_index < 4 && !name_found;
-		     table_index++) {
-=======
 		for (table_index = 0;
 		     table_index < package_element->package.count
 		     && !name_found; table_index++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (*sub_object_list &&	/* Null object allowed */
 			    ((ACPI_TYPE_STRING ==
 			      (*sub_object_list)->common.type) ||
@@ -1029,12 +826,7 @@ acpi_rs_get_pci_routing_table_length(union acpi_operand_object *package_object,
 						     (*sub_object_list)->string.
 						     length + 1);
 			} else {
-<<<<<<< HEAD
-				temp_size_needed +=
-				    acpi_ns_get_pathname_length((*sub_object_list)->reference.node);
-=======
 				temp_size_needed += acpi_ns_get_pathname_length((*sub_object_list)->reference.node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			/*

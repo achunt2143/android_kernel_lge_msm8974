@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#include <asm/asm-offsets.h>
-#include <asm/page.h>
-#include <asm/thread_info.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #include <asm/asm-offsets.h>
 #include <asm/thread_info.h>
@@ -22,7 +17,6 @@
 
 #define RUNTIME_DISCARD_EXIT
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/vmlinux.lds.h>
 
 #undef mips
@@ -31,32 +25,19 @@ OUTPUT_ARCH(mips)
 ENTRY(kernel_entry)
 PHDRS {
 	text PT_LOAD FLAGS(7);	/* RWX */
-<<<<<<< HEAD
-	note PT_NOTE FLAGS(4);	/* R__ */
-=======
 #ifndef CONFIG_CAVIUM_OCTEON_SOC
 	note PT_NOTE FLAGS(4);	/* R__ */
 #endif /* CAVIUM_OCTEON_SOC */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_32BIT
 	#ifdef CONFIG_CPU_LITTLE_ENDIAN
-<<<<<<< HEAD
-		jiffies  = jiffies_64;
-	#else
-		jiffies  = jiffies_64 + 4;
-	#endif
-#else
-	jiffies  = jiffies_64;
-=======
 		jiffies	 = jiffies_64;
 	#else
 		jiffies	 = jiffies_64 + 4;
 	#endif
 #else
 	jiffies	 = jiffies_64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 SECTIONS
@@ -76,11 +57,7 @@ SECTIONS
 	/* . = 0xa800000000300000; */
 	. = 0xffffffff80300000;
 #endif
-<<<<<<< HEAD
-	. = VMLINUX_LOAD_ADDRESS;
-=======
 	. = LINKER_LOAD_ADDRESS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* read-only */
 	_text = .;	/* Text and read-only data */
 	.text : {
@@ -89,17 +66,11 @@ SECTIONS
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
-<<<<<<< HEAD
-		*(.text.*)
-		*(.fixup)
-		*(.gnu.warning)
-=======
 		SOFTIRQENTRY_TEXT
 		*(.fixup)
 		*(.gnu.warning)
 		. = ALIGN(16);
 		*(.got)	/* Global offset table */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} :text = 0
 	_etext = .;	/* End of text section */
 
@@ -108,24 +79,12 @@ SECTIONS
 	/* Exception table for data bus errors */
 	__dbe_table : {
 		__start___dbe_table = .;
-<<<<<<< HEAD
-		*(__dbe_table)
-		__stop___dbe_table = .;
-	}
-
-	NOTES :text :note
-	.dummy : { *(.dummy) } :text
-
-	_sdata = .;			/* Start of data section */
-	RODATA
-=======
 		KEEP(*(__dbe_table))
 		__stop___dbe_table = .;
 	}
 
 	_sdata = .;			/* Start of data section */
 	RO_DATA(4096)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* writeable */
 	.data : {	/* Data */
@@ -133,19 +92,13 @@ SECTIONS
 
 		INIT_TASK_DATA(THREAD_SIZE)
 		NOSAVE_DATA
-<<<<<<< HEAD
-=======
 		PAGE_ALIGNED_DATA(PAGE_SIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		CACHELINE_ALIGNED_DATA(1 << CONFIG_MIPS_L1_CACHE_SHIFT)
 		READ_MOSTLY_DATA(1 << CONFIG_MIPS_L1_CACHE_SHIFT)
 		DATA_DATA
 		CONSTRUCTORS
 	}
-<<<<<<< HEAD
-=======
 	BUG_TABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_gp = . + 0x8000;
 	.lit8 : {
 		*(.lit8)
@@ -170,11 +123,7 @@ SECTIONS
 	. = ALIGN(4);
 	.mips.machines.init : AT(ADDR(.mips.machines.init) - LOAD_OFFSET) {
 		__mips_machines_start = .;
-<<<<<<< HEAD
-		*(.mips.machines.init)
-=======
 		KEEP(*(.mips.machines.init))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__mips_machines_end = .;
 	}
 
@@ -187,15 +136,6 @@ SECTIONS
 	.exit.data : {
 		EXIT_DATA
 	}
-<<<<<<< HEAD
-
-	PERCPU_SECTION(1 << CONFIG_MIPS_L1_CACHE_SHIFT)
-	. = ALIGN(PAGE_SIZE);
-	__init_end = .;
-	/* freed after init ends here */
-
-	BSS_SECTION(0, 0, 0)
-=======
 #ifdef CONFIG_SMP
 	PERCPU_SECTION(1 << CONFIG_MIPS_L1_CACHE_SHIFT)
 #endif
@@ -258,7 +198,6 @@ SECTIONS
 	 * gets that alignment.	 .sbss should be empty, so there will be
 	 * no holes after __init_end. */
 	BSS_SECTION(0, 0x10000, 8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	_end = . ;
 
@@ -277,10 +216,7 @@ SECTIONS
 
 	STABS_DEBUG
 	DWARF_DEBUG
-<<<<<<< HEAD
-=======
 	ELF_DETAILS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* These must appear regardless of  .  */
 	.gptab.sdata : {
@@ -296,13 +232,9 @@ SECTIONS
 	DISCARDS
 	/DISCARD/ : {
 		/* ABI crap starts here */
-<<<<<<< HEAD
-		*(.MIPS.options)
-=======
 		*(.MIPS.abiflags)
 		*(.MIPS.options)
 		*(.gnu.attributes)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*(.options)
 		*(.pdr)
 		*(.reginfo)

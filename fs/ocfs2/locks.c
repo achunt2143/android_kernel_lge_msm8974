@@ -1,41 +1,14 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * locks.c
  *
  * Userspace file locking support
  *
  * Copyright (C) 2007 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
- */
-
-#include <linux/fs.h>
-=======
  */
 
 #include <linux/fs.h>
 #include <linux/filelock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fcntl.h>
 
 #include <cluster/masklog.h>
@@ -54,11 +27,7 @@ static int ocfs2_do_flock(struct file *file, struct inode *inode,
 	struct ocfs2_file_private *fp = file->private_data;
 	struct ocfs2_lock_res *lockres = &fp->fp_flock;
 
-<<<<<<< HEAD
-	if (fl->fl_type == F_WRLCK)
-=======
 	if (lock_is_write(fl))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		level = 1;
 	if (!IS_SETLKW(cmd))
 		trylock = 1;
@@ -68,10 +37,7 @@ static int ocfs2_do_flock(struct file *file, struct inode *inode,
 	if (lockres->l_flags & OCFS2_LOCK_ATTACHED &&
 	    lockres->l_level > LKM_NLMODE) {
 		int old_level = 0;
-<<<<<<< HEAD
-=======
 		struct file_lock request;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (lockres->l_level == LKM_EXMODE)
 			old_level = 1;
@@ -86,15 +52,10 @@ static int ocfs2_do_flock(struct file *file, struct inode *inode,
 		 * level.
 		 */
 
-<<<<<<< HEAD
-		flock_lock_file_wait(file,
-				     &(struct file_lock){.fl_type = F_UNLCK});
-=======
 		locks_init_lock(&request);
 		request.c.flc_type = F_UNLCK;
 		request.c.flc_flags = FL_FLOCK;
 		locks_lock_file_wait(file, &request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ocfs2_file_unlock(file);
 	}
@@ -108,13 +69,9 @@ static int ocfs2_do_flock(struct file *file, struct inode *inode,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ret = flock_lock_file_wait(file, fl);
-=======
 	ret = locks_lock_file_wait(file, fl);
 	if (ret)
 		ocfs2_file_unlock(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	mutex_unlock(&fp->fp_mutex);
@@ -129,11 +86,7 @@ static int ocfs2_do_funlock(struct file *file, int cmd, struct file_lock *fl)
 
 	mutex_lock(&fp->fp_mutex);
 	ocfs2_file_unlock(file);
-<<<<<<< HEAD
-	ret = flock_lock_file_wait(file, fl);
-=======
 	ret = locks_lock_file_wait(file, fl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&fp->fp_mutex);
 
 	return ret;
@@ -147,26 +100,14 @@ int ocfs2_flock(struct file *file, int cmd, struct file_lock *fl)
 	struct inode *inode = file->f_mapping->host;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
-<<<<<<< HEAD
-	if (!(fl->fl_flags & FL_FLOCK))
-		return -ENOLCK;
-	if (__mandatory_lock(inode))
-=======
 	if (!(fl->c.flc_flags & FL_FLOCK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOLCK;
 
 	if ((osb->s_mount_opt & OCFS2_MOUNT_LOCALFLOCKS) ||
 	    ocfs2_mount_local(osb))
-<<<<<<< HEAD
-		return flock_lock_file_wait(file, fl);
-
-	if (fl->fl_type == F_UNLCK)
-=======
 		return locks_lock_file_wait(file, fl);
 
 	if (lock_is_unlock(fl))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ocfs2_do_funlock(file, cmd, fl);
 	else
 		return ocfs2_do_flock(file, inode, cmd, fl);
@@ -177,13 +118,7 @@ int ocfs2_lock(struct file *file, int cmd, struct file_lock *fl)
 	struct inode *inode = file->f_mapping->host;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
-<<<<<<< HEAD
-	if (!(fl->fl_flags & FL_POSIX))
-		return -ENOLCK;
-	if (__mandatory_lock(inode) && fl->fl_type != F_UNLCK)
-=======
 	if (!(fl->c.flc_flags & FL_POSIX))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOLCK;
 
 	return ocfs2_plock(osb->cconn, OCFS2_I(inode)->ip_blkno, file, cmd, fl);

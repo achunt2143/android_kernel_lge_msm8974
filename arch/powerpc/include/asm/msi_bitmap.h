@@ -1,21 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _POWERPC_SYSDEV_MSI_BITMAP_H
 #define _POWERPC_SYSDEV_MSI_BITMAP_H
 
 /*
  * Copyright 2008, Michael Ellerman, IBM Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; version 2 of the
- * License.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/of.h>
@@ -26,10 +14,7 @@ struct msi_bitmap {
 	unsigned long		*bitmap;
 	spinlock_t		lock;
 	unsigned int		irq_count;
-<<<<<<< HEAD
-=======
 	bool		 	bitmap_from_slab;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int msi_bitmap_alloc_hwirqs(struct msi_bitmap *bmp, int num);

@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Intersil ISL1208 rtc class driver
  *
  * Copyright 2005,2006 Hebert Valerio Riedel <hvr@gnu.org>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
- */
-
-#include <linux/module.h>
-#include <linux/i2c.h>
-#include <linux/bcd.h>
-#include <linux/rtc.h>
-
-#define DRV_VERSION "0.3"
-
-=======
  */
 
 #include <linux/bcd.h>
@@ -33,7 +13,6 @@
 #include <linux/of_irq.h>
 #include <linux/rtc.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Register map */
 /* rtc section */
 #define ISL1208_REG_SC  0x00
@@ -52,23 +31,16 @@
 #define ISL1208_REG_SR_ARST    (1<<7)	/* auto reset */
 #define ISL1208_REG_SR_XTOSCB  (1<<6)	/* crystal oscillator */
 #define ISL1208_REG_SR_WRTC    (1<<4)	/* write rtc */
-<<<<<<< HEAD
-=======
 #define ISL1208_REG_SR_EVT     (1<<3)	/* event */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ISL1208_REG_SR_ALM     (1<<2)	/* alarm */
 #define ISL1208_REG_SR_BAT     (1<<1)	/* battery */
 #define ISL1208_REG_SR_RTCF    (1<<0)	/* rtc fail */
 #define ISL1208_REG_INT 0x08
 #define ISL1208_REG_INT_ALME   (1<<6)   /* alarm enable */
 #define ISL1208_REG_INT_IM     (1<<7)   /* interrupt/alarm mode */
-<<<<<<< HEAD
-#define ISL1208_REG_09  0x09	/* reserved */
-=======
 #define ISL1219_REG_EV  0x09
 #define ISL1219_REG_EV_EVEN    (1<<4)   /* event detection enable */
 #define ISL1219_REG_EV_EVIENB  (1<<7)   /* event in pull-up disable */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ISL1208_REG_ATR 0x0a
 #define ISL1208_REG_DTR 0x0b
 
@@ -86,10 +58,6 @@
 #define ISL1208_REG_USR2 0x13
 #define ISL1208_USR_SECTION_LEN 2
 
-<<<<<<< HEAD
-static struct i2c_driver isl1208_driver;
-
-=======
 /* event section */
 #define ISL1219_REG_SCT 0x14
 #define ISL1219_REG_MNT 0x15
@@ -166,29 +134,11 @@ struct isl1208_state {
 	const struct isl1208_config *config;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* block read */
 static int
 isl1208_i2c_read_regs(struct i2c_client *client, u8 reg, u8 buf[],
 		      unsigned len)
 {
-<<<<<<< HEAD
-	u8 reg_addr[1] = { reg };
-	struct i2c_msg msgs[2] = {
-		{client->addr, 0, sizeof(reg_addr), reg_addr}
-		,
-		{client->addr, I2C_M_RD, len, buf}
-	};
-	int ret;
-
-	BUG_ON(reg > ISL1208_REG_USR2);
-	BUG_ON(reg + len > ISL1208_REG_USR2 + 1);
-
-	ret = i2c_transfer(client->adapter, msgs, 2);
-	if (ret > 0)
-		ret = 0;
-	return ret;
-=======
 	int ret;
 
 	WARN_ON(reg > ISL1219_REG_YRT);
@@ -196,7 +146,6 @@ isl1208_i2c_read_regs(struct i2c_client *client, u8 reg, u8 buf[],
 
 	ret = i2c_smbus_read_i2c_block_data(client, reg, len, buf);
 	return (ret < 0) ? ret : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* block write */
@@ -204,27 +153,6 @@ static int
 isl1208_i2c_set_regs(struct i2c_client *client, u8 reg, u8 const buf[],
 		     unsigned len)
 {
-<<<<<<< HEAD
-	u8 i2c_buf[ISL1208_REG_USR2 + 2];
-	struct i2c_msg msgs[1] = {
-		{client->addr, 0, len + 1, i2c_buf}
-	};
-	int ret;
-
-	BUG_ON(reg > ISL1208_REG_USR2);
-	BUG_ON(reg + len > ISL1208_REG_USR2 + 1);
-
-	i2c_buf[0] = reg;
-	memcpy(&i2c_buf[1], &buf[0], len);
-
-	ret = i2c_transfer(client->adapter, msgs, 1);
-	if (ret > 0)
-		ret = 0;
-	return ret;
-}
-
-/* simple check to see wether we have a isl1208 */
-=======
 	int ret;
 
 	WARN_ON(reg > ISL1219_REG_YRT);
@@ -235,7 +163,6 @@ isl1208_i2c_set_regs(struct i2c_client *client, u8 reg, u8 const buf[],
 }
 
 /* simple check to see whether we have a isl1208 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 isl1208_i2c_validate_client(struct i2c_client *client)
 {
@@ -258,16 +185,6 @@ isl1208_i2c_validate_client(struct i2c_client *client)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int
-isl1208_i2c_get_sr(struct i2c_client *client)
-{
-	int sr = i2c_smbus_read_byte_data(client, ISL1208_REG_SR);
-	if (sr < 0)
-		return -EIO;
-
-	return sr;
-=======
 static int isl1208_set_xtoscb(struct i2c_client *client, int sr, int xtosb_val)
 {
 	/* Do nothing if bit is already set to desired value */
@@ -286,7 +203,6 @@ static int
 isl1208_i2c_get_sr(struct i2c_client *client)
 {
 	return i2c_smbus_read_byte_data(client, ISL1208_REG_SR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -314,10 +230,7 @@ isl1208_i2c_get_atr(struct i2c_client *client)
 	return atr;
 }
 
-<<<<<<< HEAD
-=======
 /* returns adjustment value + 100 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 isl1208_i2c_get_dtr(struct i2c_client *client)
 {
@@ -328,11 +241,7 @@ isl1208_i2c_get_dtr(struct i2c_client *client)
 	/* dtr encodes adjustments of {-60,-40,-20,0,20,40,60} ppm */
 	dtr = ((dtr & 0x3) * 20) * (dtr & (1 << 2) ? -1 : 1);
 
-<<<<<<< HEAD
-	return dtr;
-=======
 	return dtr + 100;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -409,13 +318,8 @@ isl1208_rtc_proc(struct device *dev, struct seq_file *seq)
 		   (sr & ISL1208_REG_SR_RTCF) ? "bad" : "okay");
 
 	dtr = isl1208_i2c_get_dtr(client);
-<<<<<<< HEAD
-	if (dtr >= 0 - 1)
-		seq_printf(seq, "digital_trim\t: %d ppm\n", dtr);
-=======
 	if (dtr >= 0)
 		seq_printf(seq, "digital_trim\t: %d ppm\n", dtr - 100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atr = isl1208_i2c_get_atr(client);
 	if (atr >= 0)
@@ -525,31 +429,15 @@ isl1208_i2c_set_alarm(struct i2c_client *client, struct rtc_wkalrm *alarm)
 	struct rtc_time *alarm_tm = &alarm->time;
 	u8 regs[ISL1208_ALARM_SECTION_LEN] = { 0, };
 	const int offs = ISL1208_REG_SCA;
-<<<<<<< HEAD
-	unsigned long rtc_secs, alarm_secs;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rtc_time rtc_tm;
 	int err, enable;
 
 	err = isl1208_i2c_read_time(client, &rtc_tm);
 	if (err)
 		return err;
-<<<<<<< HEAD
-	err = rtc_tm_to_time(&rtc_tm, &rtc_secs);
-	if (err)
-		return err;
-	err = rtc_tm_to_time(alarm_tm, &alarm_secs);
-	if (err)
-		return err;
-
-	/* If the alarm time is before the current time disable the alarm */
-	if (!alarm->enabled || alarm_secs <= rtc_secs)
-=======
 
 	/* If the alarm time is before the current time disable the alarm */
 	if (!alarm->enabled || rtc_tm_sub(alarm_tm, &rtc_tm) <= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		enable = 0x00;
 	else
 		enable = 0x80;
@@ -632,14 +520,11 @@ isl1208_i2c_set_time(struct i2c_client *client, struct rtc_time const *tm)
 	}
 
 	/* clear WRTC again */
-<<<<<<< HEAD
-=======
 	sr = isl1208_i2c_get_sr(client);
 	if (sr < 0) {
 		dev_err(&client->dev, "%s: reading SR failed\n", __func__);
 		return sr;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sr = i2c_smbus_write_byte_data(client, ISL1208_REG_SR,
 				       sr & ~ISL1208_REG_SR_WRTC);
 	if (sr < 0) {
@@ -650,10 +535,6 @@ isl1208_i2c_set_time(struct i2c_client *client, struct rtc_time const *tm)
 	return 0;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 isl1208_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
@@ -672,8 +553,6 @@ isl1208_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	return isl1208_i2c_set_alarm(to_i2c_client(dev), alarm);
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t timestamp0_store(struct device *dev,
 				struct device_attribute *attr,
 				const char *buf, size_t count)
@@ -741,17 +620,12 @@ static ssize_t timestamp0_show(struct device *dev,
 
 static DEVICE_ATTR_RW(timestamp0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t
 isl1208_rtc_interrupt(int irq, void *data)
 {
 	unsigned long timeout = jiffies + msecs_to_jiffies(1000);
 	struct i2c_client *client = data;
-<<<<<<< HEAD
-	struct rtc_device *rtc = i2c_get_clientdata(client);
-=======
 	struct isl1208_state *isl1208 = i2c_get_clientdata(client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int handled = 0, sr, err;
 
 	/*
@@ -774,11 +648,7 @@ isl1208_rtc_interrupt(int irq, void *data)
 	if (sr & ISL1208_REG_SR_ALM) {
 		dev_dbg(&client->dev, "alarm!\n");
 
-<<<<<<< HEAD
-		rtc_update_irq(rtc, 1, RTC_IRQF | RTC_AF);
-=======
 		rtc_update_irq(isl1208->rtc, 1, RTC_IRQF | RTC_AF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Clear the alarm */
 		sr &= ~ISL1208_REG_SR_ALM;
@@ -795,8 +665,6 @@ isl1208_rtc_interrupt(int irq, void *data)
 			return err;
 	}
 
-<<<<<<< HEAD
-=======
 	if (isl1208->config->has_tamper && (sr & ISL1208_REG_SR_EVT)) {
 		dev_warn(&client->dev, "event detected");
 		handled = 1;
@@ -805,7 +673,6 @@ isl1208_rtc_interrupt(int irq, void *data)
 				     dev_attr_timestamp0.attr.name);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return handled ? IRQ_HANDLED : IRQ_NONE;
 }
 
@@ -823,11 +690,7 @@ static ssize_t
 isl1208_sysfs_show_atrim(struct device *dev,
 			 struct device_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
-	int atr = isl1208_i2c_get_atr(to_i2c_client(dev));
-=======
 	int atr = isl1208_i2c_get_atr(to_i2c_client(dev->parent));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (atr < 0)
 		return atr;
 
@@ -840,19 +703,11 @@ static ssize_t
 isl1208_sysfs_show_dtrim(struct device *dev,
 			 struct device_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
-	int dtr = isl1208_i2c_get_dtr(to_i2c_client(dev));
-	if (dtr < 0)
-		return dtr;
-
-	return sprintf(buf, "%d ppm\n", dtr);
-=======
 	int dtr = isl1208_i2c_get_dtr(to_i2c_client(dev->parent));
 	if (dtr < 0)
 		return dtr;
 
 	return sprintf(buf, "%d ppm\n", dtr - 100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(dtrim, S_IRUGO, isl1208_sysfs_show_dtrim, NULL);
@@ -861,11 +716,7 @@ static ssize_t
 isl1208_sysfs_show_usr(struct device *dev,
 		       struct device_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
-	int usr = isl1208_i2c_get_usr(to_i2c_client(dev));
-=======
 	int usr = isl1208_i2c_get_usr(to_i2c_client(dev->parent));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (usr < 0)
 		return usr;
 
@@ -890,14 +741,10 @@ isl1208_sysfs_store_usr(struct device *dev,
 	if (usr < 0 || usr > 0xffff)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	return isl1208_i2c_set_usr(to_i2c_client(dev), usr) ? -EIO : count;
-=======
 	if (isl1208_i2c_set_usr(to_i2c_client(dev->parent), usr))
 		return -EIO;
 
 	return count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(usr, S_IRUGO | S_IWUSR, isl1208_sysfs_show_usr,
@@ -914,13 +761,6 @@ static const struct attribute_group isl1208_rtc_sysfs_files = {
 	.attrs	= isl1208_rtc_attrs,
 };
 
-<<<<<<< HEAD
-static int
-isl1208_probe(struct i2c_client *client, const struct i2c_device_id *id)
-{
-	int rc = 0;
-	struct rtc_device *rtc;
-=======
 static struct attribute *isl1219_rtc_attrs[] = {
 	&dev_attr_timestamp0.attr,
 	NULL
@@ -1008,7 +848,6 @@ isl1208_probe(struct i2c_client *client)
 	int xtosb_val = 0;
 	int rc = 0;
 	int sr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		return -ENODEV;
@@ -1016,87 +855,6 @@ isl1208_probe(struct i2c_client *client)
 	if (isl1208_i2c_validate_client(client) < 0)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	dev_info(&client->dev,
-		 "chip found, driver version " DRV_VERSION "\n");
-
-	if (client->irq > 0) {
-		rc = request_threaded_irq(client->irq, NULL,
-					  isl1208_rtc_interrupt,
-					  IRQF_SHARED,
-					  isl1208_driver.driver.name, client);
-		if (!rc) {
-			device_init_wakeup(&client->dev, 1);
-			enable_irq_wake(client->irq);
-		} else {
-			dev_err(&client->dev,
-				"Unable to request irq %d, no alarm support\n",
-				client->irq);
-			client->irq = 0;
-		}
-	}
-
-	rtc = rtc_device_register(isl1208_driver.driver.name,
-				  &client->dev, &isl1208_rtc_ops,
-				  THIS_MODULE);
-	if (IS_ERR(rtc)) {
-		rc = PTR_ERR(rtc);
-		goto exit_free_irq;
-	}
-
-	i2c_set_clientdata(client, rtc);
-
-	rc = isl1208_i2c_get_sr(client);
-	if (rc < 0) {
-		dev_err(&client->dev, "reading status failed\n");
-		goto exit_unregister;
-	}
-
-	if (rc & ISL1208_REG_SR_RTCF)
-		dev_warn(&client->dev, "rtc power failure detected, "
-			 "please set clock.\n");
-
-	rc = sysfs_create_group(&client->dev.kobj, &isl1208_rtc_sysfs_files);
-	if (rc)
-		goto exit_unregister;
-
-	return 0;
-
-exit_unregister:
-	rtc_device_unregister(rtc);
-exit_free_irq:
-	if (client->irq)
-		free_irq(client->irq, client);
-
-	return rc;
-}
-
-static int
-isl1208_remove(struct i2c_client *client)
-{
-	struct rtc_device *rtc = i2c_get_clientdata(client);
-
-	sysfs_remove_group(&client->dev.kobj, &isl1208_rtc_sysfs_files);
-	rtc_device_unregister(rtc);
-	if (client->irq)
-		free_irq(client->irq, client);
-
-	return 0;
-}
-
-static const struct i2c_device_id isl1208_id[] = {
-	{ "isl1208", 0 },
-	{ }
-};
-MODULE_DEVICE_TABLE(i2c, isl1208_id);
-
-static struct i2c_driver isl1208_driver = {
-	.driver = {
-		   .name = "rtc-isl1208",
-		   },
-	.probe = isl1208_probe,
-	.remove = isl1208_remove,
-=======
 	/* Allocate driver state, point i2c client data to it */
 	isl1208 = devm_kzalloc(&client->dev, sizeof(*isl1208), GFP_KERNEL);
 	if (!isl1208)
@@ -1208,7 +966,6 @@ static struct i2c_driver isl1208_driver = {
 		.of_match_table = of_match_ptr(isl1208_of_match),
 	},
 	.probe = isl1208_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = isl1208_id,
 };
 
@@ -1217,7 +974,3 @@ module_i2c_driver(isl1208_driver);
 MODULE_AUTHOR("Herbert Valerio Riedel <hvr@gnu.org>");
 MODULE_DESCRIPTION("Intersil ISL1208 RTC driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_VERSION(DRV_VERSION);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

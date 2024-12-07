@@ -25,16 +25,6 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
-<<<<<<< HEAD
-#include <linux/console.h>
-#include <linux/slab.h>
-#include <drm/drmP.h>
-#include <drm/drm_crtc_helper.h>
-#include <drm/radeon_drm.h>
-#include <linux/vgaarb.h>
-#include <linux/vga_switcheroo.h>
-#include <linux/efi.h>
-=======
 
 #include <linux/console.h>
 #include <linux/efi.h>
@@ -53,7 +43,6 @@
 #include <drm/radeon_drm.h>
 
 #include "radeon_device.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "radeon_reg.h"
 #include "radeon.h"
 #include "atom.h"
@@ -114,13 +103,6 @@ static const char radeon_family_name[][16] = {
 	"TAHITI",
 	"PITCAIRN",
 	"VERDE",
-<<<<<<< HEAD
-	"LAST",
-};
-
-/*
- * Clear GPU surface registers.
-=======
 	"OLAND",
 	"HAINAN",
 	"BONAIRE",
@@ -254,7 +236,6 @@ void radeon_pci_config_reset(struct radeon_device *rdev)
  * @rdev: radeon_device pointer
  *
  * Clear GPU surface registers (r1xx-r5xx).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void radeon_surface_init(struct radeon_device *rdev)
 {
@@ -276,8 +257,6 @@ void radeon_surface_init(struct radeon_device *rdev)
 /*
  * GPU scratch registers helpers function.
  */
-<<<<<<< HEAD
-=======
 /**
  * radeon_scratch_init - Init scratch register driver information.
  *
@@ -285,7 +264,6 @@ void radeon_surface_init(struct radeon_device *rdev)
  *
  * Init CP scratch register driver information (r1xx-r5xx)
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_scratch_init(struct radeon_device *rdev)
 {
 	int i;
@@ -303,8 +281,6 @@ void radeon_scratch_init(struct radeon_device *rdev)
 	}
 }
 
-<<<<<<< HEAD
-=======
 /**
  * radeon_scratch_get - Allocate a scratch register
  *
@@ -314,7 +290,6 @@ void radeon_scratch_init(struct radeon_device *rdev)
  * Allocate a CP scratch register for use by the driver (all asics).
  * Returns 0 on success or -EINVAL on failure.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_scratch_get(struct radeon_device *rdev, uint32_t *reg)
 {
 	int i;
@@ -329,8 +304,6 @@ int radeon_scratch_get(struct radeon_device *rdev, uint32_t *reg)
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * radeon_scratch_free - Free a scratch register
  *
@@ -339,7 +312,6 @@ int radeon_scratch_get(struct radeon_device *rdev, uint32_t *reg)
  *
  * Free a CP scratch register allocated for use by the driver (all asics)
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_scratch_free(struct radeon_device *rdev, uint32_t reg)
 {
 	int i;
@@ -352,23 +324,6 @@ void radeon_scratch_free(struct radeon_device *rdev, uint32_t reg)
 	}
 }
 
-<<<<<<< HEAD
-void radeon_wb_disable(struct radeon_device *rdev)
-{
-	int r;
-
-	if (rdev->wb.wb_obj) {
-		r = radeon_bo_reserve(rdev->wb.wb_obj, false);
-		if (unlikely(r != 0))
-			return;
-		radeon_bo_kunmap(rdev->wb.wb_obj);
-		radeon_bo_unpin(rdev->wb.wb_obj);
-		radeon_bo_unreserve(rdev->wb.wb_obj);
-	}
-	rdev->wb.enabled = false;
-}
-
-=======
 /*
  * GPU doorbell aperture helpers function.
  */
@@ -477,27 +432,21 @@ void radeon_wb_disable(struct radeon_device *rdev)
  * Disables Writeback and frees the Writeback memory (all asics).
  * Used at driver shutdown.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_wb_fini(struct radeon_device *rdev)
 {
 	radeon_wb_disable(rdev);
 	if (rdev->wb.wb_obj) {
-<<<<<<< HEAD
-=======
 		if (!radeon_bo_reserve(rdev->wb.wb_obj, false)) {
 			radeon_bo_kunmap(rdev->wb.wb_obj);
 			radeon_bo_unpin(rdev->wb.wb_obj);
 			radeon_bo_unreserve(rdev->wb.wb_obj);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_bo_unref(&rdev->wb.wb_obj);
 		rdev->wb.wb = NULL;
 		rdev->wb.wb_obj = NULL;
 	}
 }
 
-<<<<<<< HEAD
-=======
 /**
  * radeon_wb_init- Init Writeback driver info and allocate memory
  *
@@ -507,45 +456,18 @@ void radeon_wb_fini(struct radeon_device *rdev)
  * Used at driver startup.
  * Returns 0 on success or an -error on failure.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_wb_init(struct radeon_device *rdev)
 {
 	int r;
 
 	if (rdev->wb.wb_obj == NULL) {
 		r = radeon_bo_create(rdev, RADEON_GPU_PAGE_SIZE, PAGE_SIZE, true,
-<<<<<<< HEAD
-				RADEON_GEM_DOMAIN_GTT, &rdev->wb.wb_obj);
-=======
 				     RADEON_GEM_DOMAIN_GTT, 0, NULL, NULL,
 				     &rdev->wb.wb_obj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(rdev->dev, "(%d) create WB bo failed\n", r);
 			return r;
 		}
-<<<<<<< HEAD
-	}
-	r = radeon_bo_reserve(rdev->wb.wb_obj, false);
-	if (unlikely(r != 0)) {
-		radeon_wb_fini(rdev);
-		return r;
-	}
-	r = radeon_bo_pin(rdev->wb.wb_obj, RADEON_GEM_DOMAIN_GTT,
-			  &rdev->wb.gpu_addr);
-	if (r) {
-		radeon_bo_unreserve(rdev->wb.wb_obj);
-		dev_warn(rdev->dev, "(%d) pin WB bo failed\n", r);
-		radeon_wb_fini(rdev);
-		return r;
-	}
-	r = radeon_bo_kmap(rdev->wb.wb_obj, (void **)&rdev->wb.wb);
-	radeon_bo_unreserve(rdev->wb.wb_obj);
-	if (r) {
-		dev_warn(rdev->dev, "(%d) map WB bo failed\n", r);
-		radeon_wb_fini(rdev);
-		return r;
-=======
 		r = radeon_bo_reserve(rdev->wb.wb_obj, false);
 		if (unlikely(r != 0)) {
 			radeon_wb_fini(rdev);
@@ -566,7 +488,6 @@ int radeon_wb_init(struct radeon_device *rdev)
 			radeon_wb_fini(rdev);
 			return r;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* clear wb memory */
@@ -574,15 +495,9 @@ int radeon_wb_init(struct radeon_device *rdev)
 	/* disable event_write fences */
 	rdev->wb.use_event = false;
 	/* disabled via module param */
-<<<<<<< HEAD
-	if (radeon_no_wb == 1)
-		rdev->wb.enabled = false;
-	else {
-=======
 	if (radeon_no_wb == 1) {
 		rdev->wb.enabled = false;
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rdev->flags & RADEON_IS_AGP) {
 			/* often unreliable on AGP */
 			rdev->wb.enabled = false;
@@ -592,14 +507,9 @@ int radeon_wb_init(struct radeon_device *rdev)
 		} else {
 			rdev->wb.enabled = true;
 			/* event_write fences are only available on r600+ */
-<<<<<<< HEAD
-			if (rdev->family >= CHIP_R600)
-				rdev->wb.use_event = true;
-=======
 			if (rdev->family >= CHIP_R600) {
 				rdev->wb.use_event = true;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	/* always use writeback/events on NI, APUs */
@@ -635,52 +545,31 @@ int radeon_wb_init(struct radeon_device *rdev)
  * Note: GTT start, end, size should be initialized before calling this
  * function on AGP platform.
  *
-<<<<<<< HEAD
- * Note: We don't explicitly enforce VRAM start to be aligned on VRAM size,
-=======
  * Note 1: We don't explicitly enforce VRAM start to be aligned on VRAM size,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * this shouldn't be a problem as we are using the PCI aperture as a reference.
  * Otherwise this would be needed for rv280, all r3xx, and all r4xx, but
  * not IGP.
  *
-<<<<<<< HEAD
- * Note: we use mc_vram_size as on some board we need to program the mc to
- * cover the whole aperture even if VRAM size is inferior to aperture size
- * Novell bug 204882 + along with lots of ubuntu ones
- *
- * Note: when limiting vram it's safe to overwritte real_vram_size because
-=======
  * Note 2: we use mc_vram_size as on some board we need to program the mc to
  * cover the whole aperture even if VRAM size is inferior to aperture size
  * Novell bug 204882 + along with lots of ubuntu ones
  *
  * Note 3: when limiting vram it's safe to overwritte real_vram_size because
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * we are not in case where real_vram_size is inferior to mc_vram_size (ie
  * note afected by bogus hw of Novell bug 204882 + along with lots of ubuntu
  * ones)
  *
-<<<<<<< HEAD
- * Note: IGP TOM addr should be the same as the aperture addr, we don't
-=======
  * Note 4: IGP TOM addr should be the same as the aperture addr, we don't
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * explicitly check for that thought.
  *
  * FIXME: when reducing VRAM size align new size on power of 2.
  */
 void radeon_vram_location(struct radeon_device *rdev, struct radeon_mc *mc, u64 base)
 {
-<<<<<<< HEAD
-	mc->vram_start = base;
-	if (mc->mc_vram_size > (0xFFFFFFFF - base + 1)) {
-=======
 	uint64_t limit = (uint64_t)radeon_vram_limit << 20;
 
 	mc->vram_start = base;
 	if (mc->mc_vram_size > (rdev->mc.mc_mask - base + 1)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_warn(rdev->dev, "limiting VRAM to PCI aperture size\n");
 		mc->real_vram_size = mc->aper_size;
 		mc->mc_vram_size = mc->aper_size;
@@ -692,13 +581,8 @@ void radeon_vram_location(struct radeon_device *rdev, struct radeon_mc *mc, u64 
 		mc->mc_vram_size = mc->aper_size;
 	}
 	mc->vram_end = mc->vram_start + mc->mc_vram_size - 1;
-<<<<<<< HEAD
-	if (radeon_vram_limit && radeon_vram_limit < mc->real_vram_size)
-		mc->real_vram_size = radeon_vram_limit;
-=======
 	if (limit && limit < mc->real_vram_size)
 		mc->real_vram_size = limit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(rdev->dev, "VRAM: %lluM 0x%016llX - 0x%016llX (%lluM used)\n",
 			mc->mc_vram_size >> 20, mc->vram_start,
 			mc->vram_end, mc->real_vram_size >> 20);
@@ -720,11 +604,7 @@ void radeon_gtt_location(struct radeon_device *rdev, struct radeon_mc *mc)
 {
 	u64 size_af, size_bf;
 
-<<<<<<< HEAD
-	size_af = ((0xFFFFFFFF - mc->vram_end) + mc->gtt_base_align) & ~mc->gtt_base_align;
-=======
 	size_af = ((rdev->mc.mc_mask - mc->vram_end) + mc->gtt_base_align) & ~mc->gtt_base_align;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_bf = mc->vram_start & ~mc->gtt_base_align;
 	if (size_bf > size_af) {
 		if (mc->gtt_size > size_bf) {
@@ -747,8 +627,6 @@ void radeon_gtt_location(struct radeon_device *rdev, struct radeon_mc *mc)
 /*
  * GPU helpers function.
  */
-<<<<<<< HEAD
-=======
 
 /*
  * radeon_device_is_virtual - check if we are running is a virtual environment
@@ -775,17 +653,10 @@ bool radeon_device_is_virtual(void)
  * Used at driver startup.
  * Returns true if initialized or false if not.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool radeon_card_posted(struct radeon_device *rdev)
 {
 	uint32_t reg;
 
-<<<<<<< HEAD
-	if (efi_enabled(EFI_BOOT) &&
-	    rdev->pdev->subsystem_vendor == PCI_VENDOR_ID_APPLE)
-		return false;
-
-=======
 	/* for pass through, always force asic_init for CI */
 	if (rdev->family >= CHIP_BONAIRE &&
 	    radeon_device_is_virtual())
@@ -800,7 +671,6 @@ bool radeon_card_posted(struct radeon_device *rdev)
 	if (ASIC_IS_NODCE(rdev))
 		goto check_memsize;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* first check CRTCs */
 	if (ASIC_IS_DCE4(rdev)) {
 		reg = RREG32(EVERGREEN_CRTC_CONTROL + EVERGREEN_CRTC0_REGISTER_OFFSET) |
@@ -829,10 +699,7 @@ bool radeon_card_posted(struct radeon_device *rdev)
 		}
 	}
 
-<<<<<<< HEAD
-=======
 check_memsize:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* then check MEM_SIZE, in case the crtcs are off */
 	if (rdev->family >= CHIP_R600)
 		reg = RREG32(R600_CONFIG_MEMSIZE);
@@ -846,8 +713,6 @@ check_memsize:
 
 }
 
-<<<<<<< HEAD
-=======
 /**
  * radeon_update_bandwidth_info - update display bandwidth params
  *
@@ -856,7 +721,6 @@ check_memsize:
  * Used when sclk/mclk are switched or display modes are set.
  * params are used to calculate display watermarks (all asics)
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_update_bandwidth_info(struct radeon_device *rdev)
 {
 	fixed20_12 a;
@@ -877,8 +741,6 @@ void radeon_update_bandwidth_info(struct radeon_device *rdev)
 	}
 }
 
-<<<<<<< HEAD
-=======
 /**
  * radeon_boot_test_post_card - check and possibly initialize the hw
  *
@@ -888,7 +750,6 @@ void radeon_update_bandwidth_info(struct radeon_device *rdev)
  * it (all asics).
  * Returns true if initialized or false if not.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool radeon_boot_test_post_card(struct radeon_device *rdev)
 {
 	if (radeon_card_posted(rdev))
@@ -907,8 +768,6 @@ bool radeon_boot_test_post_card(struct radeon_device *rdev)
 	}
 }
 
-<<<<<<< HEAD
-=======
 /**
  * radeon_dummy_page_init - init dummy page used by the driver
  *
@@ -919,7 +778,6 @@ bool radeon_boot_test_post_card(struct radeon_device *rdev)
  * when pages are taken out of the GART
  * Returns 0 on sucess, -ENOMEM on failure.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_dummy_page_init(struct radeon_device *rdev)
 {
 	if (rdev->dummy_page.page)
@@ -927,25 +785,14 @@ int radeon_dummy_page_init(struct radeon_device *rdev)
 	rdev->dummy_page.page = alloc_page(GFP_DMA32 | GFP_KERNEL | __GFP_ZERO);
 	if (rdev->dummy_page.page == NULL)
 		return -ENOMEM;
-<<<<<<< HEAD
-	rdev->dummy_page.addr = pci_map_page(rdev->pdev, rdev->dummy_page.page,
-					0, PAGE_SIZE, PCI_DMA_BIDIRECTIONAL);
-	if (pci_dma_mapping_error(rdev->pdev, rdev->dummy_page.addr)) {
-=======
 	rdev->dummy_page.addr = dma_map_page(&rdev->pdev->dev, rdev->dummy_page.page,
 					0, PAGE_SIZE, DMA_BIDIRECTIONAL);
 	if (dma_mapping_error(&rdev->pdev->dev, rdev->dummy_page.addr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&rdev->pdev->dev, "Failed to DMA MAP the dummy page\n");
 		__free_page(rdev->dummy_page.page);
 		rdev->dummy_page.page = NULL;
 		return -ENOMEM;
 	}
-<<<<<<< HEAD
-	return 0;
-}
-
-=======
 	rdev->dummy_page.entry = radeon_gart_get_page_entry(rdev->dummy_page.addr,
 							    RADEON_GART_PAGE_DUMMY);
 	return 0;
@@ -958,26 +805,18 @@ int radeon_dummy_page_init(struct radeon_device *rdev)
  *
  * Frees the dummy page used by the driver (all asics).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_dummy_page_fini(struct radeon_device *rdev)
 {
 	if (rdev->dummy_page.page == NULL)
 		return;
-<<<<<<< HEAD
-	pci_unmap_page(rdev->pdev, rdev->dummy_page.addr,
-			PAGE_SIZE, PCI_DMA_BIDIRECTIONAL);
-=======
 	dma_unmap_page(&rdev->pdev->dev, rdev->dummy_page.addr, PAGE_SIZE,
 		       DMA_BIDIRECTIONAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__free_page(rdev->dummy_page.page);
 	rdev->dummy_page.page = NULL;
 }
 
 
 /* ATOM accessor methods */
-<<<<<<< HEAD
-=======
 /*
  * ATOM is an interpreted byte code stored in tables in the vbios.  The
  * driver registers callbacks to access registers and the interpreter
@@ -995,7 +834,6 @@ void radeon_dummy_page_fini(struct radeon_device *rdev)
  * Provides a PLL register accessor for the atom interpreter (r4xx+).
  * Returns the value of the PLL register.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static uint32_t cail_pll_read(struct card_info *info, uint32_t reg)
 {
 	struct radeon_device *rdev = info->dev->dev_private;
@@ -1005,8 +843,6 @@ static uint32_t cail_pll_read(struct card_info *info, uint32_t reg)
 	return r;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * cail_pll_write - write PLL register
  *
@@ -1016,7 +852,6 @@ static uint32_t cail_pll_read(struct card_info *info, uint32_t reg)
  *
  * Provides a PLL register accessor for the atom interpreter (r4xx+).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void cail_pll_write(struct card_info *info, uint32_t reg, uint32_t val)
 {
 	struct radeon_device *rdev = info->dev->dev_private;
@@ -1024,8 +859,6 @@ static void cail_pll_write(struct card_info *info, uint32_t reg, uint32_t val)
 	rdev->pll_wreg(rdev, reg, val);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * cail_mc_read - read MC (Memory Controller) register
  *
@@ -1035,7 +868,6 @@ static void cail_pll_write(struct card_info *info, uint32_t reg, uint32_t val)
  * Provides an MC register accessor for the atom interpreter (r4xx+).
  * Returns the value of the MC register.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static uint32_t cail_mc_read(struct card_info *info, uint32_t reg)
 {
 	struct radeon_device *rdev = info->dev->dev_private;
@@ -1045,8 +877,6 @@ static uint32_t cail_mc_read(struct card_info *info, uint32_t reg)
 	return r;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * cail_mc_write - write MC (Memory Controller) register
  *
@@ -1056,7 +886,6 @@ static uint32_t cail_mc_read(struct card_info *info, uint32_t reg)
  *
  * Provides a MC register accessor for the atom interpreter (r4xx+).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void cail_mc_write(struct card_info *info, uint32_t reg, uint32_t val)
 {
 	struct radeon_device *rdev = info->dev->dev_private;
@@ -1064,8 +893,6 @@ static void cail_mc_write(struct card_info *info, uint32_t reg, uint32_t val)
 	rdev->mc_wreg(rdev, reg, val);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * cail_reg_write - write MMIO register
  *
@@ -1075,7 +902,6 @@ static void cail_mc_write(struct card_info *info, uint32_t reg, uint32_t val)
  *
  * Provides a MMIO register accessor for the atom interpreter (r4xx+).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void cail_reg_write(struct card_info *info, uint32_t reg, uint32_t val)
 {
 	struct radeon_device *rdev = info->dev->dev_private;
@@ -1083,8 +909,6 @@ static void cail_reg_write(struct card_info *info, uint32_t reg, uint32_t val)
 	WREG32(reg*4, val);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * cail_reg_read - read MMIO register
  *
@@ -1094,7 +918,6 @@ static void cail_reg_write(struct card_info *info, uint32_t reg, uint32_t val)
  * Provides an MMIO register accessor for the atom interpreter (r4xx+).
  * Returns the value of the MMIO register.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static uint32_t cail_reg_read(struct card_info *info, uint32_t reg)
 {
 	struct radeon_device *rdev = info->dev->dev_private;
@@ -1104,8 +927,6 @@ static uint32_t cail_reg_read(struct card_info *info, uint32_t reg)
 	return r;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * cail_ioreg_write - write IO register
  *
@@ -1115,7 +936,6 @@ static uint32_t cail_reg_read(struct card_info *info, uint32_t reg)
  *
  * Provides a IO register accessor for the atom interpreter (r4xx+).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void cail_ioreg_write(struct card_info *info, uint32_t reg, uint32_t val)
 {
 	struct radeon_device *rdev = info->dev->dev_private;
@@ -1123,8 +943,6 @@ static void cail_ioreg_write(struct card_info *info, uint32_t reg, uint32_t val)
 	WREG32_IO(reg*4, val);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * cail_ioreg_read - read IO register
  *
@@ -1134,7 +952,6 @@ static void cail_ioreg_write(struct card_info *info, uint32_t reg, uint32_t val)
  * Provides an IO register accessor for the atom interpreter (r4xx+).
  * Returns the value of the IO register.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static uint32_t cail_ioreg_read(struct card_info *info, uint32_t reg)
 {
 	struct radeon_device *rdev = info->dev->dev_private;
@@ -1144,8 +961,6 @@ static uint32_t cail_ioreg_read(struct card_info *info, uint32_t reg)
 	return r;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * radeon_atombios_init - init the driver info and callbacks for atombios
  *
@@ -1156,7 +971,6 @@ static uint32_t cail_ioreg_read(struct card_info *info, uint32_t reg)
  * Returns 0 on sucess, -ENOMEM on failure.
  * Called at driver startup.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_atombios_init(struct radeon_device *rdev)
 {
 	struct card_info *atom_card_info =
@@ -1184,9 +998,6 @@ int radeon_atombios_init(struct radeon_device *rdev)
 	atom_card_info->pll_write = cail_pll_write;
 
 	rdev->mode_info.atom_context = atom_parse(atom_card_info, rdev->bios);
-<<<<<<< HEAD
-	mutex_init(&rdev->mode_info.atom_context->mutex);
-=======
 	if (!rdev->mode_info.atom_context) {
 		radeon_atombios_fini(rdev);
 		return -ENOMEM;
@@ -1194,14 +1005,11 @@ int radeon_atombios_init(struct radeon_device *rdev)
 
 	mutex_init(&rdev->mode_info.atom_context->mutex);
 	mutex_init(&rdev->mode_info.atom_context->scratch_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_atom_initialize_bios_scratch_regs(rdev->ddev);
 	atom_allocate_fb_scratch(rdev->mode_info.atom_context);
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * radeon_atombios_fini - free the driver info and callbacks for atombios
  *
@@ -1211,18 +1019,10 @@ int radeon_atombios_init(struct radeon_device *rdev)
  * interpreter (r4xx+).
  * Called at driver shutdown.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_atombios_fini(struct radeon_device *rdev)
 {
 	if (rdev->mode_info.atom_context) {
 		kfree(rdev->mode_info.atom_context->scratch);
-<<<<<<< HEAD
-		kfree(rdev->mode_info.atom_context);
-	}
-	kfree(rdev->mode_info.atom_card_info);
-}
-
-=======
 		kfree(rdev->mode_info.atom_context->iio);
 	}
 	kfree(rdev->mode_info.atom_context);
@@ -1247,15 +1047,12 @@ void radeon_atombios_fini(struct radeon_device *rdev)
  * Returns 0 on sucess.
  * Called at driver startup.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_combios_init(struct radeon_device *rdev)
 {
 	radeon_combios_initialize_bios_scratch_regs(rdev->ddev);
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * radeon_combios_fini - free the driver info for combios
  *
@@ -1264,17 +1061,10 @@ int radeon_combios_init(struct radeon_device *rdev)
  * Frees the driver info for combios (r1xx-r3xx).
  * Called at driver shutdown.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_combios_fini(struct radeon_device *rdev)
 {
 }
 
-<<<<<<< HEAD
-/* if we get transitioned to only one device, tak VGA back */
-static unsigned int radeon_vga_set_decode(void *cookie, bool state)
-{
-	struct radeon_device *rdev = cookie;
-=======
 /* if we get transitioned to only one device, take VGA back */
 /**
  * radeon_vga_set_decode - enable/disable vga decode
@@ -1289,7 +1079,6 @@ static unsigned int radeon_vga_set_decode(struct pci_dev *pdev, bool state)
 {
 	struct drm_device *dev = pci_get_drvdata(pdev);
 	struct radeon_device *rdev = dev->dev_private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_vga_set_state(rdev, state);
 	if (state)
 		return VGA_RSRC_LEGACY_IO | VGA_RSRC_LEGACY_MEM |
@@ -1298,57 +1087,6 @@ static unsigned int radeon_vga_set_decode(struct pci_dev *pdev, bool state)
 		return VGA_RSRC_NORMAL_IO | VGA_RSRC_NORMAL_MEM;
 }
 
-<<<<<<< HEAD
-void radeon_check_arguments(struct radeon_device *rdev)
-{
-	/* vramlimit must be a power of two */
-	switch (radeon_vram_limit) {
-	case 0:
-	case 4:
-	case 8:
-	case 16:
-	case 32:
-	case 64:
-	case 128:
-	case 256:
-	case 512:
-	case 1024:
-	case 2048:
-	case 4096:
-		break;
-	default:
-		dev_warn(rdev->dev, "vram limit (%d) must be a power of 2\n",
-				radeon_vram_limit);
-		radeon_vram_limit = 0;
-		break;
-	}
-	radeon_vram_limit = radeon_vram_limit << 20;
-	/* gtt size must be power of two and greater or equal to 32M */
-	switch (radeon_gart_size) {
-	case 4:
-	case 8:
-	case 16:
-		dev_warn(rdev->dev, "gart size (%d) too small forcing to 512M\n",
-				radeon_gart_size);
-		radeon_gart_size = 512;
-		break;
-	case 32:
-	case 64:
-	case 128:
-	case 256:
-	case 512:
-	case 1024:
-	case 2048:
-	case 4096:
-		break;
-	default:
-		dev_warn(rdev->dev, "gart size (%d) must be a power of 2\n",
-				radeon_gart_size);
-		radeon_gart_size = 512;
-		break;
-	}
-	rdev->mc.gtt_size = radeon_gart_size * 1024 * 1024;
-=======
 /**
  * radeon_gart_size_auto - Determine a sensible default GART size
  *                         according to ASIC family.
@@ -1398,7 +1136,6 @@ static void radeon_check_arguments(struct radeon_device *rdev)
 	}
 	rdev->mc.gtt_size = (uint64_t)radeon_gart_size << 20;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* AGP mode can only be -1, 1, 2, 4, 8 */
 	switch (radeon_agpmode) {
 	case -1:
@@ -1414,26 +1151,6 @@ static void radeon_check_arguments(struct radeon_device *rdev)
 		radeon_agpmode = 0;
 		break;
 	}
-<<<<<<< HEAD
-}
-
-static void radeon_switcheroo_set_state(struct pci_dev *pdev, enum vga_switcheroo_state state)
-{
-	struct drm_device *dev = pci_get_drvdata(pdev);
-	pm_message_t pmm = { .event = PM_EVENT_SUSPEND };
-	if (state == VGA_SWITCHEROO_ON) {
-		printk(KERN_INFO "radeon: switched on\n");
-		/* don't suspend or resume card normally */
-		dev->switch_power_state = DRM_SWITCH_POWER_CHANGING;
-		radeon_resume_kms(dev);
-		dev->switch_power_state = DRM_SWITCH_POWER_ON;
-		drm_kms_helper_poll_enable(dev);
-	} else {
-		printk(KERN_INFO "radeon: switched off\n");
-		drm_kms_helper_poll_disable(dev);
-		dev->switch_power_state = DRM_SWITCH_POWER_CHANGING;
-		radeon_suspend_kms(dev, pmm);
-=======
 
 	if (!is_power_of_2(radeon_vm_size)) {
 		dev_warn(rdev->dev, "VM size (%d) must be a power of 2\n",
@@ -1515,25 +1232,10 @@ static void radeon_switcheroo_set_state(struct pci_dev *pdev, enum vga_switchero
 		drm_kms_helper_poll_disable(dev);
 		dev->switch_power_state = DRM_SWITCH_POWER_CHANGING;
 		radeon_suspend_kms(dev, true, true, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->switch_power_state = DRM_SWITCH_POWER_OFF;
 	}
 }
 
-<<<<<<< HEAD
-static bool radeon_switcheroo_can_switch(struct pci_dev *pdev)
-{
-	struct drm_device *dev = pci_get_drvdata(pdev);
-	bool can_switch;
-
-	spin_lock(&dev->count_lock);
-	can_switch = (dev->open_count == 0);
-	spin_unlock(&dev->count_lock);
-	return can_switch;
-}
-
-
-=======
 /**
  * radeon_switcheroo_can_switch - see if switcheroo state can change
  *
@@ -1573,7 +1275,6 @@ static const struct vga_switcheroo_client_ops radeon_switcheroo_ops = {
  * Returns 0 for success or an error on failure.
  * Called at driver startup.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_device_init(struct radeon_device *rdev,
 		       struct drm_device *ddev,
 		       struct pci_dev *pdev,
@@ -1581,10 +1282,7 @@ int radeon_device_init(struct radeon_device *rdev,
 {
 	int r, i;
 	int dma_bits;
-<<<<<<< HEAD
-=======
 	bool runtime = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rdev->shutdown = false;
 	rdev->dev = &pdev->dev;
@@ -1594,38 +1292,6 @@ int radeon_device_init(struct radeon_device *rdev,
 	rdev->family = flags & RADEON_FAMILY_MASK;
 	rdev->is_atom_bios = false;
 	rdev->usec_timeout = RADEON_MAX_USEC_TIMEOUT;
-<<<<<<< HEAD
-	rdev->mc.gtt_size = radeon_gart_size * 1024 * 1024;
-	rdev->gpu_lockup = false;
-	rdev->accel_working = false;
-
-	DRM_INFO("initializing kernel modesetting (%s 0x%04X:0x%04X 0x%04X:0x%04X).\n",
-		radeon_family_name[rdev->family], pdev->vendor, pdev->device,
-		pdev->subsystem_vendor, pdev->subsystem_device);
-
-	/* mutex initialization are all done here so we
-	 * can recall function without having locking issues */
-	radeon_mutex_init(&rdev->cs_mutex);
-	radeon_mutex_init(&rdev->ib_pool.mutex);
-	for (i = 0; i < RADEON_NUM_RINGS; ++i)
-		mutex_init(&rdev->ring[i].mutex);
-	mutex_init(&rdev->dc_hw_i2c_mutex);
-	if (rdev->family >= CHIP_R600)
-		spin_lock_init(&rdev->ih.lock);
-	mutex_init(&rdev->gem.mutex);
-	mutex_init(&rdev->pm.mutex);
-	mutex_init(&rdev->vram_mutex);
-	rwlock_init(&rdev->fence_lock);
-	rwlock_init(&rdev->semaphore_drv.lock);
-	INIT_LIST_HEAD(&rdev->gem.objects);
-	init_waitqueue_head(&rdev->irq.vblank_queue);
-	init_waitqueue_head(&rdev->irq.idle_queue);
-	INIT_LIST_HEAD(&rdev->semaphore_drv.bo);
-	/* initialize vm here */
-	rdev->vm_manager.use_bitmap = 1;
-	rdev->vm_manager.max_pfn = 1 << 20;
-	INIT_LIST_HEAD(&rdev->vm_manager.lru_vm);
-=======
 	rdev->mc.gtt_size = 512 * 1024 * 1024;
 	rdev->accel_working = false;
 	/* set up ring ids */
@@ -1660,16 +1326,11 @@ int radeon_device_init(struct radeon_device *rdev,
 	 * Max GPUVM size for cayman+ is 40 bits.
 	 */
 	rdev->vm_manager.max_pfn = radeon_vm_size << 18;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set asic functions */
 	r = radeon_asic_init(rdev);
 	if (r)
 		return r;
-<<<<<<< HEAD
-	radeon_check_arguments(rdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* all of the newer IGP chips have an internal gart
 	 * However some rs4xx report as AGP, so remove that here.
@@ -1683,9 +1344,6 @@ int radeon_device_init(struct radeon_device *rdev,
 		radeon_agp_disable(rdev);
 	}
 
-<<<<<<< HEAD
-	/* set DMA mask + need_dma32 flags.
-=======
 	/* Set the internal MC address mask
 	 * This is the max address of the GPU's
 	 * internal address space.
@@ -1698,44 +1356,11 @@ int radeon_device_init(struct radeon_device *rdev,
 		rdev->mc.mc_mask = 0xffffffffULL; /* 32 bit MC */
 
 	/* set DMA mask.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * PCIE - can handle 40-bits.
 	 * IGP - can handle 40-bits
 	 * AGP - generally dma32 is safest
 	 * PCI - dma32 for legacy pci gart, 40 bits on newer asics
 	 */
-<<<<<<< HEAD
-	rdev->need_dma32 = false;
-	if (rdev->flags & RADEON_IS_AGP)
-		rdev->need_dma32 = true;
-	if ((rdev->flags & RADEON_IS_PCI) &&
-	    (rdev->family <= CHIP_RS740))
-		rdev->need_dma32 = true;
-
-	dma_bits = rdev->need_dma32 ? 32 : 40;
-	r = pci_set_dma_mask(rdev->pdev, DMA_BIT_MASK(dma_bits));
-	if (r) {
-		rdev->need_dma32 = true;
-		dma_bits = 32;
-		printk(KERN_WARNING "radeon: No suitable DMA available.\n");
-	}
-	r = pci_set_consistent_dma_mask(rdev->pdev, DMA_BIT_MASK(dma_bits));
-	if (r) {
-		pci_set_consistent_dma_mask(rdev->pdev, DMA_BIT_MASK(32));
-		printk(KERN_WARNING "radeon: No coherent DMA available.\n");
-	}
-
-	/* Registers mapping */
-	/* TODO: block userspace mapping of io register */
-	rdev->rmmio_base = pci_resource_start(rdev->pdev, 2);
-	rdev->rmmio_size = pci_resource_len(rdev->pdev, 2);
-	rdev->rmmio = ioremap(rdev->rmmio_base, rdev->rmmio_size);
-	if (rdev->rmmio == NULL) {
-		return -ENOMEM;
-	}
-	DRM_INFO("register mmio base: 0x%08X\n", (uint32_t)rdev->rmmio_base);
-	DRM_INFO("register mmio size: %u\n", (unsigned)rdev->rmmio_size);
-=======
 	dma_bits = 40;
 	if (rdev->flags & RADEON_IS_AGP)
 		dma_bits = 32;
@@ -1782,7 +1407,6 @@ int radeon_device_init(struct radeon_device *rdev,
 	/* doorbell bar mapping */
 	if (rdev->family >= CHIP_BONAIRE)
 		radeon_doorbell_init(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* io port mapping */
 	for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
@@ -1795,20 +1419,6 @@ int radeon_device_init(struct radeon_device *rdev,
 	if (rdev->rio_mem == NULL)
 		DRM_ERROR("Unable to find PCI I/O BAR\n");
 
-<<<<<<< HEAD
-	/* if we have > 1 VGA cards, then disable the radeon VGA resources */
-	/* this will fail for cards that aren't VGA class devices, just
-	 * ignore it */
-	vga_client_register(rdev->pdev, rdev, NULL, radeon_vga_set_decode);
-	vga_switcheroo_register_client(rdev->pdev,
-				       radeon_switcheroo_set_state,
-				       NULL,
-				       radeon_switcheroo_can_switch);
-
-	r = radeon_init(rdev);
-	if (r)
-		return r;
-=======
 	if (rdev->flags & RADEON_IS_PX)
 		radeon_device_handle_px_quirks(rdev);
 
@@ -1830,7 +1440,6 @@ int radeon_device_init(struct radeon_device *rdev,
 		goto failed;
 
 	radeon_gem_debugfs_init(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rdev->flags & RADEON_IS_AGP && !rdev->accel_working) {
 		/* Acceleration not working on AGP card try again
@@ -1841,10 +1450,6 @@ int radeon_device_init(struct radeon_device *rdev,
 		radeon_agp_disable(rdev);
 		r = radeon_init(rdev);
 		if (r)
-<<<<<<< HEAD
-			return r;
-	}
-=======
 			goto failed;
 	}
 
@@ -1869,7 +1474,6 @@ int radeon_device_init(struct radeon_device *rdev,
 		mutex_unlock(&rdev->pm.mutex);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((radeon_testing & 1)) {
 		if (rdev->accel_working)
 			radeon_test_moves(rdev);
@@ -1889,12 +1493,6 @@ int radeon_device_init(struct radeon_device *rdev,
 			DRM_INFO("radeon: acceleration disabled, skipping benchmarks\n");
 	}
 	return 0;
-<<<<<<< HEAD
-}
-
-static void radeon_debugfs_remove_files(struct radeon_device *rdev);
-
-=======
 
 failed:
 	/* balance pm_runtime_get_sync() in radeon_driver_unload_kms() */
@@ -1913,18 +1511,12 @@ failed:
  * Tear down the driver info (all asics).
  * Called at driver shutdown.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_device_fini(struct radeon_device *rdev)
 {
 	DRM_INFO("radeon: finishing device.\n");
 	rdev->shutdown = true;
 	/* evict vram memory */
 	radeon_bo_evict_vram(rdev);
-<<<<<<< HEAD
-	radeon_fini(rdev);
-	vga_switcheroo_unregister_client(rdev->pdev);
-	vga_client_register(rdev->pdev, NULL, NULL, NULL);
-=======
 	radeon_audio_component_fini(rdev);
 	radeon_fini(rdev);
 	if (!pci_is_thunderbolt_attached(rdev->pdev))
@@ -1932,29 +1524,19 @@ void radeon_device_fini(struct radeon_device *rdev)
 	if (rdev->flags & RADEON_IS_PX)
 		vga_switcheroo_fini_domain_pm_ops(rdev->dev);
 	vga_client_unregister(rdev->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdev->rio_mem)
 		pci_iounmap(rdev->pdev, rdev->rio_mem);
 	rdev->rio_mem = NULL;
 	iounmap(rdev->rmmio);
 	rdev->rmmio = NULL;
-<<<<<<< HEAD
-	radeon_debugfs_remove_files(rdev);
-=======
 	if (rdev->family >= CHIP_BONAIRE)
 		radeon_doorbell_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /*
  * Suspend & resume.
  */
-<<<<<<< HEAD
-int radeon_suspend_kms(struct drm_device *dev, pm_message_t state)
-{
-	struct radeon_device *rdev;
-=======
 /*
  * radeon_suspend_kms - initiate device suspend
  *
@@ -1967,7 +1549,6 @@ int radeon_suspend_kms(struct drm_device *dev, bool suspend,
 {
 	struct radeon_device *rdev;
 	struct pci_dev *pdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct drm_crtc *crtc;
 	struct drm_connector *connector;
 	int i, r;
@@ -1975,42 +1556,20 @@ int radeon_suspend_kms(struct drm_device *dev, bool suspend,
 	if (dev == NULL || dev->dev_private == NULL) {
 		return -ENODEV;
 	}
-<<<<<<< HEAD
-	if (state.event == PM_EVENT_PRETHAW) {
-		return 0;
-	}
-	rdev = dev->dev_private;
-=======
 
 	rdev = dev->dev_private;
 	pdev = to_pci_dev(dev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->switch_power_state == DRM_SWITCH_POWER_OFF)
 		return 0;
 
 	drm_kms_helper_poll_disable(dev);
 
-<<<<<<< HEAD
-=======
 	drm_modeset_lock_all(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* turn off display hw */
 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
 		drm_helper_connector_dpms(connector, DRM_MODE_DPMS_OFF);
 	}
-<<<<<<< HEAD
-
-	/* unpin the front buffers */
-	list_for_each_entry(crtc, &dev->mode_config.crtc_list, head) {
-		struct radeon_framebuffer *rfb = to_radeon_framebuffer(crtc->fb);
-		struct radeon_bo *robj;
-
-		if (rfb == NULL || rfb->obj == NULL) {
-			continue;
-		}
-		robj = gem_to_radeon_bo(rfb->obj);
-=======
 	drm_modeset_unlock_all(dev);
 
 	/* unpin the front buffers and cursors */
@@ -2032,7 +1591,6 @@ int radeon_suspend_kms(struct drm_device *dev, bool suspend,
 			continue;
 		}
 		robj = gem_to_radeon_bo(fb->obj[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* don't unpin kernel fb objects */
 		if (!radeon_fbdev_robj_is_fb(rdev, robj)) {
 			r = radeon_bo_reserve(robj, false);
@@ -2044,18 +1602,6 @@ int radeon_suspend_kms(struct drm_device *dev, bool suspend,
 	}
 	/* evict vram memory */
 	radeon_bo_evict_vram(rdev);
-<<<<<<< HEAD
-	/* wait for gpu to finish processing current batch */
-	for (i = 0; i < RADEON_NUM_RINGS; i++)
-		radeon_fence_wait_last(rdev, i);
-
-	radeon_save_bios_scratch_regs(rdev);
-
-	radeon_pm_suspend(rdev);
-	radeon_suspend(rdev);
-	radeon_hpd_fini(rdev);
-	/* evict remaining vram memory */
-=======
 
 	/* wait for gpu to finish processing current batch */
 	for (i = 0; i < RADEON_NUM_RINGS; i++) {
@@ -2077,29 +1623,10 @@ int radeon_suspend_kms(struct drm_device *dev, bool suspend,
 	 * This second call to evict vram is to evict the gart page table
 	 * using the CPU.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_bo_evict_vram(rdev);
 
 	radeon_agp_suspend(rdev);
 
-<<<<<<< HEAD
-	pci_save_state(dev->pdev);
-	if (state.event == PM_EVENT_SUSPEND) {
-		/* Shut down the device */
-		pci_disable_device(dev->pdev);
-		pci_set_power_state(dev->pdev, PCI_D3hot);
-	}
-	console_lock();
-	radeon_fbdev_set_suspend(rdev, 1);
-	console_unlock();
-	return 0;
-}
-
-int radeon_resume_kms(struct drm_device *dev)
-{
-	struct drm_connector *connector;
-	struct radeon_device *rdev = dev->dev_private;
-=======
 	pci_save_state(pdev);
 	if (freeze && rdev->family >= CHIP_CEDAR && !(rdev->flags & RADEON_IS_IGP)) {
 		rdev->asic->asic_reset(rdev, true);
@@ -2132,29 +1659,10 @@ int radeon_resume_kms(struct drm_device *dev, bool resume, bool fbcon)
 	struct pci_dev *pdev = to_pci_dev(dev->dev);
 	struct drm_crtc *crtc;
 	int r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->switch_power_state == DRM_SWITCH_POWER_OFF)
 		return 0;
 
-<<<<<<< HEAD
-	console_lock();
-	pci_set_power_state(dev->pdev, PCI_D0);
-	pci_restore_state(dev->pdev);
-	if (pci_enable_device(dev->pdev)) {
-		console_unlock();
-		return -1;
-	}
-	pci_set_master(dev->pdev);
-	/* resume AGP if in use */
-	radeon_agp_resume(rdev);
-	radeon_resume(rdev);
-	radeon_pm_resume(rdev);
-	radeon_restore_bios_scratch_regs(rdev);
-
-	radeon_fbdev_set_suspend(rdev, 0);
-	console_unlock();
-=======
 	if (fbcon) {
 		console_lock();
 	}
@@ -2209,14 +1717,11 @@ int radeon_resume_kms(struct drm_device *dev, bool resume, bool fbcon)
 			}
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* init dig PHYs, disp eng pll */
 	if (rdev->is_atom_bios) {
 		radeon_atom_encoder_init(rdev);
 		radeon_atom_disp_eng_pll_init(rdev);
-<<<<<<< HEAD
-=======
 		/* turn on the BL */
 		if (rdev->mode_info.bl_encoder) {
 			u8 bl_level = radeon_get_backlight_level(rdev,
@@ -2224,48 +1729,10 @@ int radeon_resume_kms(struct drm_device *dev, bool resume, bool fbcon)
 			radeon_set_backlight_level(rdev, rdev->mode_info.bl_encoder,
 						   bl_level);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* reset hpd state */
 	radeon_hpd_init(rdev);
 	/* blat the mode back in */
-<<<<<<< HEAD
-	drm_helper_resume_force_mode(dev);
-	/* turn on display hw */
-	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
-		drm_helper_connector_dpms(connector, DRM_MODE_DPMS_ON);
-	}
-
-	drm_kms_helper_poll_enable(dev);
-	return 0;
-}
-
-int radeon_gpu_reset(struct radeon_device *rdev)
-{
-	int r;
-	int resched;
-
-	/* Prevent CS ioctl from interfering */
-	radeon_mutex_lock(&rdev->cs_mutex);
-
-	radeon_save_bios_scratch_regs(rdev);
-	/* block TTM */
-	resched = ttm_bo_lock_delayed_workqueue(&rdev->mman.bdev);
-	radeon_suspend(rdev);
-
-	r = radeon_asic_reset(rdev);
-	if (!r) {
-		dev_info(rdev->dev, "GPU reset succeed\n");
-		radeon_resume(rdev);
-		radeon_restore_bios_scratch_regs(rdev);
-		drm_helper_resume_force_mode(rdev->ddev);
-		ttm_bo_unlock_delayed_workqueue(&rdev->mman.bdev, resched);
-	}
-
-	radeon_mutex_unlock(&rdev->cs_mutex);
-
-	if (r) {
-=======
 	if (fbcon) {
 		drm_helper_resume_force_mode(dev);
 		/* turn on display hw */
@@ -2391,84 +1858,13 @@ int radeon_gpu_reset(struct radeon_device *rdev)
 		if (r && saved)
 			r = -EAGAIN;
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* bad news, how to tell it to userspace ? */
 		dev_info(rdev->dev, "GPU reset failed\n");
 	}
 
-<<<<<<< HEAD
-	return r;
-}
-
-
-/*
- * Debugfs
- */
-int radeon_debugfs_add_files(struct radeon_device *rdev,
-			     struct drm_info_list *files,
-			     unsigned nfiles)
-{
-	unsigned i;
-
-	for (i = 0; i < rdev->debugfs_count; i++) {
-		if (rdev->debugfs[i].files == files) {
-			/* Already registered */
-			return 0;
-		}
-	}
-
-	i = rdev->debugfs_count + 1;
-	if (i > RADEON_DEBUGFS_MAX_COMPONENTS) {
-		DRM_ERROR("Reached maximum number of debugfs components.\n");
-		DRM_ERROR("Report so we increase "
-		          "RADEON_DEBUGFS_MAX_COMPONENTS.\n");
-		return -EINVAL;
-	}
-	rdev->debugfs[rdev->debugfs_count].files = files;
-	rdev->debugfs[rdev->debugfs_count].num_files = nfiles;
-	rdev->debugfs_count = i;
-#if defined(CONFIG_DEBUG_FS)
-	drm_debugfs_create_files(files, nfiles,
-				 rdev->ddev->control->debugfs_root,
-				 rdev->ddev->control);
-	drm_debugfs_create_files(files, nfiles,
-				 rdev->ddev->primary->debugfs_root,
-				 rdev->ddev->primary);
-#endif
-	return 0;
-}
-
-static void radeon_debugfs_remove_files(struct radeon_device *rdev)
-{
-#if defined(CONFIG_DEBUG_FS)
-	unsigned i;
-
-	for (i = 0; i < rdev->debugfs_count; i++) {
-		drm_debugfs_remove_files(rdev->debugfs[i].files,
-					 rdev->debugfs[i].num_files,
-					 rdev->ddev->control);
-		drm_debugfs_remove_files(rdev->debugfs[i].files,
-					 rdev->debugfs[i].num_files,
-					 rdev->ddev->primary);
-	}
-#endif
-}
-
-#if defined(CONFIG_DEBUG_FS)
-int radeon_debugfs_init(struct drm_minor *minor)
-{
-	return 0;
-}
-
-void radeon_debugfs_cleanup(struct drm_minor *minor)
-{
-}
-#endif
-=======
 	rdev->needs_reset = r == -EAGAIN;
 	rdev->in_reset = false;
 
 	up_read(&rdev->exclusive_lock);
 	return r;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

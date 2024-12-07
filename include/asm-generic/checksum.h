@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-#ifndef __ASM_GENERIC_CHECKSUM_H
-#define __ASM_GENERIC_CHECKSUM_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_GENERIC_CHECKSUM_H
 #define __ASM_GENERIC_CHECKSUM_H
 
 #include <linux/bitops.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * computes the checksum of a memory block at buff, length len,
  * and adds in "sum" (32-bit)
@@ -24,61 +18,24 @@
  */
 extern __wsum csum_partial(const void *buff, int len, __wsum sum);
 
-<<<<<<< HEAD
-/*
- * the same as csum_partial, but copies from src while it
- * checksums
- *
- * here even more important to align src and dst on a 32-bit (or even
- * better 64-bit) boundary
- */
-extern __wsum csum_partial_copy(const void *src, void *dst, int len, __wsum sum);
-
-/*
- * the same as csum_partial_copy, but copies from user space.
- *
- * here even more important to align src and dst on a 32-bit (or even
- * better 64-bit) boundary
- */
-extern __wsum csum_partial_copy_from_user(const void __user *src, void *dst,
-					int len, __wsum sum, int *csum_err);
-
-#ifndef csum_partial_copy_nocheck
-#define csum_partial_copy_nocheck(src, dst, len, sum)	\
-	csum_partial_copy((src), (dst), (len), (sum))
-#endif
-
-=======
 #ifndef ip_fast_csum
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is a version of ip_compute_csum() optimized for IP headers,
  * which always checksum on 4 octet boundaries.
  */
 extern __sum16 ip_fast_csum(const void *iph, unsigned int ihl);
-<<<<<<< HEAD
-
-=======
 #endif
 
 #ifndef csum_fold
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Fold a partial checksum
  */
 static inline __sum16 csum_fold(__wsum csum)
 {
 	u32 sum = (__force u32)csum;
-<<<<<<< HEAD
-	sum = (sum & 0xffff) + (sum >> 16);
-	sum = (sum & 0xffff) + (sum >> 16);
-	return (__force __sum16)~sum;
-}
-=======
 	return (__force __sum16)((~sum - ror32(sum, 16)) >> 16);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef csum_tcpudp_nofold
 /*
@@ -86,24 +43,14 @@ static inline __sum16 csum_fold(__wsum csum)
  * returns a 16-bit checksum, already complemented
  */
 extern __wsum
-<<<<<<< HEAD
-csum_tcpudp_nofold(__be32 saddr, __be32 daddr, unsigned short len,
-		unsigned short proto, __wsum sum);
-=======
 csum_tcpudp_nofold(__be32 saddr, __be32 daddr, __u32 len,
 		   __u8 proto, __wsum sum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifndef csum_tcpudp_magic
 static inline __sum16
-<<<<<<< HEAD
-csum_tcpudp_magic(__be32 saddr, __be32 daddr, unsigned short len,
-		  unsigned short proto, __wsum sum)
-=======
 csum_tcpudp_magic(__be32 saddr, __be32 daddr, __u32 len,
 		  __u8 proto, __wsum sum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return csum_fold(csum_tcpudp_nofold(saddr, daddr, len, proto, sum));
 }

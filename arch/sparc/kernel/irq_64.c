@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* irq.c: UltraSparc IRQ handling/init/registry.
  *
  * Copyright (C) 1997, 2007, 2008 David S. Miller (davem@davemloft.net)
@@ -25,10 +22,6 @@
 #include <linux/seq_file.h>
 #include <linux/ftrace.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-#include <linux/kmemleak.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/ptrace.h>
 #include <asm/processor.h>
@@ -42,31 +35,19 @@
 #include <asm/timer.h>
 #include <asm/smp.h>
 #include <asm/starfire.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cache.h>
 #include <asm/cpudata.h>
 #include <asm/auxio.h>
 #include <asm/head.h>
 #include <asm/hypervisor.h>
 #include <asm/cacheflush.h>
-<<<<<<< HEAD
-=======
 #include <asm/softirq_stack.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "entry.h"
 #include "cpumap.h"
 #include "kstack.h"
 
-<<<<<<< HEAD
-#define NUM_IVECS	(IMAP_INR + 1)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ino_bucket *ivector_table;
 unsigned long ivector_table_pa;
 
@@ -125,57 +106,6 @@ static void bucket_set_irq(unsigned long bucket_pa, unsigned int irq)
 
 #define irq_work_pa(__cpu)	&(trap_block[(__cpu)].irq_worklist_pa)
 
-<<<<<<< HEAD
-static struct {
-	unsigned int dev_handle;
-	unsigned int dev_ino;
-	unsigned int in_use;
-} irq_table[NR_IRQS];
-static DEFINE_SPINLOCK(irq_alloc_lock);
-
-unsigned char irq_alloc(unsigned int dev_handle, unsigned int dev_ino)
-{
-	unsigned long flags;
-	unsigned char ent;
-
-	BUILD_BUG_ON(NR_IRQS >= 256);
-
-	spin_lock_irqsave(&irq_alloc_lock, flags);
-
-	for (ent = 1; ent < NR_IRQS; ent++) {
-		if (!irq_table[ent].in_use)
-			break;
-	}
-	if (ent >= NR_IRQS) {
-		printk(KERN_ERR "IRQ: Out of virtual IRQs.\n");
-		ent = 0;
-	} else {
-		irq_table[ent].dev_handle = dev_handle;
-		irq_table[ent].dev_ino = dev_ino;
-		irq_table[ent].in_use = 1;
-	}
-
-	spin_unlock_irqrestore(&irq_alloc_lock, flags);
-
-	return ent;
-}
-
-#ifdef CONFIG_PCI_MSI
-void irq_free(unsigned int irq)
-{
-	unsigned long flags;
-
-	if (irq >= NR_IRQS)
-		return;
-
-	spin_lock_irqsave(&irq_alloc_lock, flags);
-
-	irq_table[irq].in_use = 0;
-
-	spin_unlock_irqrestore(&irq_alloc_lock, flags);
-}
-#endif
-=======
 static unsigned long hvirq_major __initdata;
 static int __init early_hvirq_major(char *p)
 {
@@ -366,7 +296,6 @@ void irq_install_pre_handler(int irq,
 {
 	pr_warn("IRQ pre handler NOT supported.\n");
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * /proc/interrupts printing:
@@ -417,18 +346,6 @@ static unsigned int sun4u_compute_tid(unsigned long imap, unsigned long cpuid)
 	return tid;
 }
 
-<<<<<<< HEAD
-struct irq_handler_data {
-	unsigned long	iclr;
-	unsigned long	imap;
-
-	void		(*pre_handler)(unsigned int, void *, void *);
-	void		*arg1;
-	void		*arg2;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 static int irq_choose_cpu(unsigned int irq, const struct cpumask *affinity)
 {
@@ -454,24 +371,15 @@ static int irq_choose_cpu(unsigned int irq, const struct cpumask *affinity)
 
 static void sun4u_irq_enable(struct irq_data *data)
 {
-<<<<<<< HEAD
-	struct irq_handler_data *handler_data = data->handler_data;
-
-=======
 	struct irq_handler_data *handler_data;
 
 	handler_data = irq_data_get_irq_handler_data(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(handler_data)) {
 		unsigned long cpuid, imap, val;
 		unsigned int tid;
 
-<<<<<<< HEAD
-		cpuid = irq_choose_cpu(data->irq, data->affinity);
-=======
 		cpuid = irq_choose_cpu(data->irq,
 				       irq_data_get_affinity_mask(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		imap = handler_data->imap;
 
 		tid = sun4u_compute_tid(imap, cpuid);
@@ -488,14 +396,9 @@ static void sun4u_irq_enable(struct irq_data *data)
 static int sun4u_set_affinity(struct irq_data *data,
 			       const struct cpumask *mask, bool force)
 {
-<<<<<<< HEAD
-	struct irq_handler_data *handler_data = data->handler_data;
-
-=======
 	struct irq_handler_data *handler_data;
 
 	handler_data = irq_data_get_irq_handler_data(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(handler_data)) {
 		unsigned long cpuid, imap, val;
 		unsigned int tid;
@@ -539,28 +442,18 @@ static void sun4u_irq_disable(struct irq_data *data)
 
 static void sun4u_irq_eoi(struct irq_data *data)
 {
-<<<<<<< HEAD
-	struct irq_handler_data *handler_data = data->handler_data;
-
-=======
 	struct irq_handler_data *handler_data;
 
 	handler_data = irq_data_get_irq_handler_data(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(handler_data))
 		upa_writeq(ICLR_IDLE, handler_data->iclr);
 }
 
 static void sun4v_irq_enable(struct irq_data *data)
 {
-<<<<<<< HEAD
-	unsigned int ino = irq_table[data->irq].dev_ino;
-	unsigned long cpuid = irq_choose_cpu(data->irq, data->affinity);
-=======
 	unsigned long cpuid = irq_choose_cpu(data->irq,
 					     irq_data_get_affinity_mask(data));
 	unsigned int ino = irq_data_to_sysino(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = sun4v_intr_settarget(ino, cpuid);
@@ -580,13 +473,8 @@ static void sun4v_irq_enable(struct irq_data *data)
 static int sun4v_set_affinity(struct irq_data *data,
 			       const struct cpumask *mask, bool force)
 {
-<<<<<<< HEAD
-	unsigned int ino = irq_table[data->irq].dev_ino;
-	unsigned long cpuid = irq_choose_cpu(data->irq, mask);
-=======
 	unsigned long cpuid = irq_choose_cpu(data->irq, mask);
 	unsigned int ino = irq_data_to_sysino(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = sun4v_intr_settarget(ino, cpuid);
@@ -599,11 +487,7 @@ static int sun4v_set_affinity(struct irq_data *data,
 
 static void sun4v_irq_disable(struct irq_data *data)
 {
-<<<<<<< HEAD
-	unsigned int ino = irq_table[data->irq].dev_ino;
-=======
 	unsigned int ino = irq_data_to_sysino(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = sun4v_intr_setenabled(ino, HV_INTR_DISABLED);
@@ -614,11 +498,7 @@ static void sun4v_irq_disable(struct irq_data *data)
 
 static void sun4v_irq_eoi(struct irq_data *data)
 {
-<<<<<<< HEAD
-	unsigned int ino = irq_table[data->irq].dev_ino;
-=======
 	unsigned int ino = irq_data_to_sysino(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = sun4v_intr_setstate(ino, HV_INTR_STATE_IDLE);
@@ -629,22 +509,12 @@ static void sun4v_irq_eoi(struct irq_data *data)
 
 static void sun4v_virq_enable(struct irq_data *data)
 {
-<<<<<<< HEAD
-	unsigned long cpuid, dev_handle, dev_ino;
-	int err;
-
-	cpuid = irq_choose_cpu(data->irq, data->affinity);
-
-	dev_handle = irq_table[data->irq].dev_handle;
-	dev_ino = irq_table[data->irq].dev_ino;
-=======
 	unsigned long dev_handle = irq_data_to_handle(data);
 	unsigned long dev_ino = irq_data_to_ino(data);
 	unsigned long cpuid;
 	int err;
 
 	cpuid = irq_choose_cpu(data->irq, irq_data_get_affinity_mask(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = sun4v_vintr_set_target(dev_handle, dev_ino, cpuid);
 	if (err != HV_EOK)
@@ -668,23 +538,13 @@ static void sun4v_virq_enable(struct irq_data *data)
 static int sun4v_virt_set_affinity(struct irq_data *data,
 				    const struct cpumask *mask, bool force)
 {
-<<<<<<< HEAD
-	unsigned long cpuid, dev_handle, dev_ino;
-=======
 	unsigned long dev_handle = irq_data_to_handle(data);
 	unsigned long dev_ino = irq_data_to_ino(data);
 	unsigned long cpuid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	cpuid = irq_choose_cpu(data->irq, mask);
 
-<<<<<<< HEAD
-	dev_handle = irq_table[data->irq].dev_handle;
-	dev_ino = irq_table[data->irq].dev_ino;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = sun4v_vintr_set_target(dev_handle, dev_ino, cpuid);
 	if (err != HV_EOK)
 		printk(KERN_ERR "sun4v_vintr_set_target(%lx,%lx,%lu): "
@@ -696,18 +556,10 @@ static int sun4v_virt_set_affinity(struct irq_data *data,
 
 static void sun4v_virq_disable(struct irq_data *data)
 {
-<<<<<<< HEAD
-	unsigned long dev_handle, dev_ino;
-	int err;
-
-	dev_handle = irq_table[data->irq].dev_handle;
-	dev_ino = irq_table[data->irq].dev_ino;
-=======
 	unsigned long dev_handle = irq_data_to_handle(data);
 	unsigned long dev_ino = irq_data_to_ino(data);
 	int err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = sun4v_vintr_set_valid(dev_handle, dev_ino,
 				    HV_INTR_DISABLED);
@@ -719,19 +571,10 @@ static void sun4v_virq_disable(struct irq_data *data)
 
 static void sun4v_virq_eoi(struct irq_data *data)
 {
-<<<<<<< HEAD
-	unsigned long dev_handle, dev_ino;
-	int err;
-
-	dev_handle = irq_table[data->irq].dev_handle;
-	dev_ino = irq_table[data->irq].dev_ino;
-
-=======
 	unsigned long dev_handle = irq_data_to_handle(data);
 	unsigned long dev_ino = irq_data_to_ino(data);
 	int err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = sun4v_vintr_set_state(dev_handle, dev_ino,
 				    HV_INTR_STATE_IDLE);
 	if (err != HV_EOK)
@@ -767,38 +610,10 @@ static struct irq_chip sun4v_virq = {
 	.flags			= IRQCHIP_EOI_IF_HANDLED,
 };
 
-<<<<<<< HEAD
-static void pre_flow_handler(struct irq_data *d)
-{
-	struct irq_handler_data *handler_data = irq_data_get_irq_handler_data(d);
-	unsigned int ino = irq_table[d->irq].dev_ino;
-
-	handler_data->pre_handler(ino, handler_data->arg1, handler_data->arg2);
-}
-
-void irq_install_pre_handler(int irq,
-			     void (*func)(unsigned int, void *, void *),
-			     void *arg1, void *arg2)
-{
-	struct irq_handler_data *handler_data = irq_get_handler_data(irq);
-
-	handler_data->pre_handler = func;
-	handler_data->arg1 = arg1;
-	handler_data->arg2 = arg2;
-
-	__irq_set_preflow_handler(irq, pre_flow_handler);
-}
-
-unsigned int build_irq(int inofixup, unsigned long iclr, unsigned long imap)
-{
-	struct ino_bucket *bucket;
-	struct irq_handler_data *handler_data;
-=======
 unsigned int build_irq(int inofixup, unsigned long iclr, unsigned long imap)
 {
 	struct irq_handler_data *handler_data;
 	struct ino_bucket *bucket;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int irq;
 	int ino;
 
@@ -832,44 +647,6 @@ out:
 	return irq;
 }
 
-<<<<<<< HEAD
-static unsigned int sun4v_build_common(unsigned long sysino,
-				       struct irq_chip *chip)
-{
-	struct ino_bucket *bucket;
-	struct irq_handler_data *handler_data;
-	unsigned int irq;
-
-	BUG_ON(tlb_type != hypervisor);
-
-	bucket = &ivector_table[sysino];
-	irq = bucket_get_irq(__pa(bucket));
-	if (!irq) {
-		irq = irq_alloc(0, sysino);
-		bucket_set_irq(__pa(bucket), irq);
-		irq_set_chip_and_handler_name(irq, chip, handle_fasteoi_irq,
-					      "IVEC");
-	}
-
-	handler_data = irq_get_handler_data(irq);
-	if (unlikely(handler_data))
-		goto out;
-
-	handler_data = kzalloc(sizeof(struct irq_handler_data), GFP_ATOMIC);
-	if (unlikely(!handler_data)) {
-		prom_printf("IRQ: kzalloc(irq_handler_data) failed.\n");
-		prom_halt();
-	}
-	irq_set_handler_data(irq, handler_data);
-
-	/* Catch accidental accesses to these things.  IMAP/ICLR handling
-	 * is done by hypervisor calls on sun4v platforms, not by direct
-	 * register accesses.
-	 */
-	handler_data->imap = ~0UL;
-	handler_data->iclr = ~0UL;
-
-=======
 static unsigned int sun4v_build_common(u32 devhandle, unsigned int devino,
 		void (*handler_data_init)(struct irq_handler_data *data,
 		u32 devhandle, unsigned int devino),
@@ -1000,95 +777,22 @@ static int sun4v_build_sysino(u32 devhandle, unsigned int devino)
 		goto out;
 
 	irq = sysino_build_irq(devhandle, devino, &sun4v_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return irq;
 }
 
 unsigned int sun4v_build_irq(u32 devhandle, unsigned int devino)
 {
-<<<<<<< HEAD
-	unsigned long sysino = sun4v_devino_to_sysino(devhandle, devino);
-
-	return sun4v_build_common(sysino, &sun4v_irq);
-}
-
-unsigned int sun4v_build_virq(u32 devhandle, unsigned int devino)
-{
-	struct irq_handler_data *handler_data;
-	unsigned long hv_err, cookie;
-	struct ino_bucket *bucket;
-	unsigned int irq;
-
-	bucket = kzalloc(sizeof(struct ino_bucket), GFP_ATOMIC);
-	if (unlikely(!bucket))
-		return 0;
-
-	/* The only reference we store to the IRQ bucket is
-	 * by physical address which kmemleak can't see, tell
-	 * it that this object explicitly is not a leak and
-	 * should be scanned.
-	 */
-	kmemleak_not_leak(bucket);
-
-	__flush_dcache_range((unsigned long) bucket,
-			     ((unsigned long) bucket +
-			      sizeof(struct ino_bucket)));
-
-	irq = irq_alloc(devhandle, devino);
-	bucket_set_irq(__pa(bucket), irq);
-
-	irq_set_chip_and_handler_name(irq, &sun4v_virq, handle_fasteoi_irq,
-				      "IVEC");
-
-	handler_data = kzalloc(sizeof(struct irq_handler_data), GFP_ATOMIC);
-	if (unlikely(!handler_data))
-		return 0;
-
-	/* In order to make the LDC channel startup sequence easier,
-	 * especially wrt. locking, we do not let request_irq() enable
-	 * the interrupt.
-	 */
-	irq_set_status_flags(irq, IRQ_NOAUTOEN);
-	irq_set_handler_data(irq, handler_data);
-
-	/* Catch accidental accesses to these things.  IMAP/ICLR handling
-	 * is done by hypervisor calls on sun4v platforms, not by direct
-	 * register accesses.
-	 */
-	handler_data->imap = ~0UL;
-	handler_data->iclr = ~0UL;
-
-	cookie = ~__pa(bucket);
-	hv_err = sun4v_vintr_set_cookie(devhandle, devino, cookie);
-	if (hv_err) {
-		prom_printf("IRQ: Fatal, cannot set cookie for [%x:%x] "
-			    "err=%lu\n", devhandle, devino, hv_err);
-		prom_halt();
-	}
-=======
 	unsigned int irq;
 
 	if (sun4v_cookie_only_virqs())
 		irq = sun4v_build_cookie(devhandle, devino);
 	else
 		irq = sun4v_build_sysino(devhandle, devino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return irq;
 }
 
-<<<<<<< HEAD
-void ack_bad_irq(unsigned int irq)
-{
-	unsigned int ino = irq_table[irq].dev_ino;
-
-	if (!ino)
-		ino = 0xdeadbeef;
-
-	printk(KERN_CRIT "Unexpected IRQ from ino[%x] irq[%u]\n",
-	       ino, irq);
-=======
 unsigned int sun4v_build_virq(u32 devhandle, unsigned int devino)
 {
 	int irq;
@@ -1103,7 +807,6 @@ unsigned int sun4v_build_virq(u32 devhandle, unsigned int devino)
 
 out:
 	return irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void *hardirq_stack[NR_CPUS];
@@ -1152,33 +855,6 @@ void __irq_entry handler_irq(int pil, struct pt_regs *regs)
 	set_irq_regs(old_regs);
 }
 
-<<<<<<< HEAD
-void do_softirq(void)
-{
-	unsigned long flags;
-
-	if (in_interrupt())
-		return;
-
-	local_irq_save(flags);
-
-	if (local_softirq_pending()) {
-		void *orig_sp, *sp = softirq_stack[smp_processor_id()];
-
-		sp += THREAD_SIZE - 192 - STACK_BIAS;
-
-		__asm__ __volatile__("mov %%sp, %0\n\t"
-				     "mov %1, %%sp"
-				     : "=&r" (orig_sp)
-				     : "r" (sp));
-		__do_softirq();
-		__asm__ __volatile__("mov %0, %%sp"
-				     : : "r" (orig_sp));
-	}
-
-	local_irq_restore(flags);
-}
-=======
 #ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
 void do_softirq_own_stack(void)
 {
@@ -1195,7 +871,6 @@ void do_softirq_own_stack(void)
 			     : : "r" (orig_sp));
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_HOTPLUG_CPU
 void fixup_irqs(void)
@@ -1204,29 +879,18 @@ void fixup_irqs(void)
 
 	for (irq = 0; irq < NR_IRQS; irq++) {
 		struct irq_desc *desc = irq_to_desc(irq);
-<<<<<<< HEAD
-		struct irq_data *data = irq_desc_get_irq_data(desc);
-		unsigned long flags;
-
-=======
 		struct irq_data *data;
 		unsigned long flags;
 
 		if (!desc)
 			continue;
 		data = irq_desc_get_irq_data(desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		raw_spin_lock_irqsave(&desc->lock, flags);
 		if (desc->action && !irqd_is_per_cpu(data)) {
 			if (data->chip->irq_set_affinity)
 				data->chip->irq_set_affinity(data,
-<<<<<<< HEAD
-							     data->affinity,
-							     false);
-=======
 					irq_data_get_affinity_mask(data),
 					false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		raw_spin_unlock_irqrestore(&desc->lock, flags);
 	}
@@ -1254,11 +918,7 @@ static void map_prom_timers(void)
 	dp = of_find_node_by_path("/");
 	dp = dp->child;
 	while (dp) {
-<<<<<<< HEAD
-		if (!strcmp(dp->name, "counter-timer"))
-=======
 		if (of_node_name_eq(dp, "counter-timer"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		dp = dp->sibling;
 	}
@@ -1290,11 +950,7 @@ static void kill_prom_timer(void)
 	prom_limit0 = prom_timers->limit0;
 	prom_limit1 = prom_timers->limit1;
 
-<<<<<<< HEAD
-	/* Just as in sun4c/sun4m PROM uses timer which ticks at IRQ 14.
-=======
 	/* Just as in sun4c PROM uses timer which ticks at IRQ 14.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * We turn both off here just to be paranoid.
 	 */
 	prom_timers->limit0 = 0;
@@ -1324,22 +980,14 @@ void notrace init_irqwork_curcpu(void)
  *
  * On SMP this gets invoked from the CPU trampoline before
  * the cpu has fully taken over the trap table from OBP,
-<<<<<<< HEAD
- * and it's kernel stack + %g6 thread register state is
-=======
  * and its kernel stack + %g6 thread register state is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * not fully cooked yet.
  *
  * Therefore you cannot make any OBP calls, not even prom_printf,
  * from these two routines.
  */
-<<<<<<< HEAD
-static void __cpuinit notrace register_one_mondo(unsigned long paddr, unsigned long type, unsigned long qmask)
-=======
 static void notrace register_one_mondo(unsigned long paddr, unsigned long type,
 				       unsigned long qmask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long num_entries = (qmask + 1) / 64;
 	unsigned long status;
@@ -1352,11 +1000,7 @@ static void notrace register_one_mondo(unsigned long paddr, unsigned long type,
 	}
 }
 
-<<<<<<< HEAD
-void __cpuinit notrace sun4v_register_mondo_queues(int this_cpu)
-=======
 void notrace sun4v_register_mondo_queues(int this_cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct trap_per_cpu *tb = &trap_block[this_cpu];
 
@@ -1380,11 +1024,7 @@ static void __init alloc_one_queue(unsigned long *pa_ptr, unsigned long qmask)
 	unsigned long order = get_order(size);
 	unsigned long p;
 
-<<<<<<< HEAD
-	p = __get_free_pages(GFP_KERNEL, order);
-=======
 	p = __get_free_pages(GFP_KERNEL | __GFP_ZERO, order);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!p) {
 		prom_printf("SUN4V: Error, cannot allocate queue.\n");
 		prom_halt();
@@ -1397,19 +1037,6 @@ static void __init init_cpu_send_mondo_info(struct trap_per_cpu *tb)
 {
 #ifdef CONFIG_SMP
 	unsigned long page;
-<<<<<<< HEAD
-
-	BUILD_BUG_ON((NR_CPUS * sizeof(u16)) > (PAGE_SIZE - 64));
-
-	page = get_zeroed_page(GFP_KERNEL);
-	if (!page) {
-		prom_printf("SUN4V: Error, cannot allocate cpu mondo page.\n");
-		prom_halt();
-	}
-
-	tb->cpu_mondo_block_pa = __pa(page);
-	tb->cpu_list_pa = __pa(page + 64);
-=======
 	void *mondo, *p;
 
 	BUILD_BUG_ON((NR_CPUS * sizeof(u16)) > PAGE_SIZE);
@@ -1430,7 +1057,6 @@ static void __init init_cpu_send_mondo_info(struct trap_per_cpu *tb)
 	}
 
 	tb->cpu_list_pa = __pa(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -1467,18 +1093,6 @@ static struct irqaction timer_irq_action = {
 	.name = "timer",
 };
 
-<<<<<<< HEAD
-/* Only invoked on boot processor. */
-void __init init_IRQ(void)
-{
-	unsigned long size;
-
-	map_prom_timers();
-	kill_prom_timer();
-
-	size = sizeof(struct ino_bucket) * NUM_IVECS;
-	ivector_table = kzalloc(size, GFP_KERNEL);
-=======
 static void __init irq_ivector_init(void)
 {
 	unsigned long size, order;
@@ -1495,7 +1109,6 @@ static void __init irq_ivector_init(void)
 	order = get_order(size);
 	ivector_table = (struct ino_bucket *)
 		__get_free_pages(GFP_KERNEL | __GFP_ZERO, order);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ivector_table) {
 		prom_printf("Fatal error, cannot allocate ivector_table\n");
 		prom_halt();
@@ -1504,8 +1117,6 @@ static void __init irq_ivector_init(void)
 			     ((unsigned long) ivector_table) + size);
 
 	ivector_table_pa = __pa(ivector_table);
-<<<<<<< HEAD
-=======
 }
 
 /* Only invoked on boot processor.*/
@@ -1515,7 +1126,6 @@ void __init init_IRQ(void)
 	irq_ivector_init();
 	map_prom_timers();
 	kill_prom_timer();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tlb_type == hypervisor)
 		sun4v_init_mondo_queues();

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/sysv/inode.c
  *
@@ -38,65 +35,28 @@
 static int sysv_sync_fs(struct super_block *sb, int wait)
 {
 	struct sysv_sb_info *sbi = SYSV_SB(sb);
-<<<<<<< HEAD
-	unsigned long time = get_seconds(), old_time;
-
-	lock_super(sb);
-=======
 	u32 time = (u32)ktime_get_real_seconds(), old_time;
 
 	mutex_lock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we are going to write out the super block,
 	 * then attach current time stamp.
 	 * But if the filesystem was marked clean, keep it clean.
 	 */
-<<<<<<< HEAD
-	sb->s_dirt = 0;
-	old_time = fs32_to_cpu(sbi, *sbi->s_sb_time);
-	if (sbi->s_type == FSTYPE_SYSV4) {
-		if (*sbi->s_sb_state == cpu_to_fs32(sbi, 0x7c269d38 - old_time))
-			*sbi->s_sb_state = cpu_to_fs32(sbi, 0x7c269d38 - time);
-=======
 	old_time = fs32_to_cpu(sbi, *sbi->s_sb_time);
 	if (sbi->s_type == FSTYPE_SYSV4) {
 		if (*sbi->s_sb_state == cpu_to_fs32(sbi, 0x7c269d38u - old_time))
 			*sbi->s_sb_state = cpu_to_fs32(sbi, 0x7c269d38u - time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*sbi->s_sb_time = cpu_to_fs32(sbi, time);
 		mark_buffer_dirty(sbi->s_bh2);
 	}
 
-<<<<<<< HEAD
-	unlock_super(sb);
-=======
 	mutex_unlock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void sysv_write_super(struct super_block *sb)
-{
-	if (!(sb->s_flags & MS_RDONLY))
-		sysv_sync_fs(sb, 1);
-	else
-		sb->s_dirt = 0;
-}
-
-static int sysv_remount(struct super_block *sb, int *flags, char *data)
-{
-	struct sysv_sb_info *sbi = SYSV_SB(sb);
-	lock_super(sb);
-	if (sbi->s_forced_ro)
-		*flags |= MS_RDONLY;
-	if (*flags & MS_RDONLY)
-		sysv_write_super(sb);
-	unlock_super(sb);
-=======
 static int sysv_remount(struct super_block *sb, int *flags, char *data)
 {
 	struct sysv_sb_info *sbi = SYSV_SB(sb);
@@ -104,7 +64,6 @@ static int sysv_remount(struct super_block *sb, int *flags, char *data)
 	sync_filesystem(sb);
 	if (sbi->s_forced_ro)
 		*flags |= SB_RDONLY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -112,14 +71,7 @@ static void sysv_put_super(struct super_block *sb)
 {
 	struct sysv_sb_info *sbi = SYSV_SB(sb);
 
-<<<<<<< HEAD
-	if (sb->s_dirt)
-		sysv_write_super(sb);
-
-	if (!(sb->s_flags & MS_RDONLY)) {
-=======
 	if (!sb_rdonly(sb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* XXX ext2 also updates the state here */
 		mark_buffer_dirty(sbi->s_bh1);
 		if (sbi->s_bh1 != sbi->s_bh2)
@@ -146,12 +98,7 @@ static int sysv_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_files = sbi->s_ninodes;
 	buf->f_ffree = sysv_count_free_inodes(sb);
 	buf->f_namelen = SYSV_NAMELEN;
-<<<<<<< HEAD
-	buf->f_fsid.val[0] = (u32)id;
-	buf->f_fsid.val[1] = (u32)(id >> 32);
-=======
 	buf->f_fsid = u64_to_fsid(id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -198,13 +145,7 @@ static inline void write3byte(struct sysv_sb_info *sbi,
 }
 
 static const struct inode_operations sysv_symlink_inode_operations = {
-<<<<<<< HEAD
-	.readlink	= generic_readlink,
-	.follow_link	= page_follow_link_light,
-	.put_link	= page_put_link,
-=======
 	.get_link	= page_get_link,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.getattr	= sysv_getattr,
 };
 
@@ -220,10 +161,7 @@ void sysv_set_inode(struct inode *inode, dev_t rdev)
 		inode->i_mapping->a_ops = &sysv_aops;
 	} else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &sysv_symlink_inode_operations;
-<<<<<<< HEAD
-=======
 		inode_nohighmem(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode->i_mapping->a_ops = &sysv_aops;
 	} else
 		init_special_inode(inode, inode->i_mode, rdev);
@@ -258,18 +196,6 @@ struct inode *sysv_iget(struct super_block *sb, unsigned int ino)
 	}
 	/* SystemV FS: kludge permissions if ino==SYSV_ROOT_INO ?? */
 	inode->i_mode = fs16_to_cpu(sbi, raw_inode->i_mode);
-<<<<<<< HEAD
-	inode->i_uid = (uid_t)fs16_to_cpu(sbi, raw_inode->i_uid);
-	inode->i_gid = (gid_t)fs16_to_cpu(sbi, raw_inode->i_gid);
-	set_nlink(inode, fs16_to_cpu(sbi, raw_inode->i_nlink));
-	inode->i_size = fs32_to_cpu(sbi, raw_inode->i_size);
-	inode->i_atime.tv_sec = fs32_to_cpu(sbi, raw_inode->i_atime);
-	inode->i_mtime.tv_sec = fs32_to_cpu(sbi, raw_inode->i_mtime);
-	inode->i_ctime.tv_sec = fs32_to_cpu(sbi, raw_inode->i_ctime);
-	inode->i_ctime.tv_nsec = 0;
-	inode->i_atime.tv_nsec = 0;
-	inode->i_mtime.tv_nsec = 0;
-=======
 	i_uid_write(inode, (uid_t)fs16_to_cpu(sbi, raw_inode->i_uid));
 	i_gid_write(inode, (gid_t)fs16_to_cpu(sbi, raw_inode->i_gid));
 	set_nlink(inode, fs16_to_cpu(sbi, raw_inode->i_nlink));
@@ -277,7 +203,6 @@ struct inode *sysv_iget(struct super_block *sb, unsigned int ino)
 	inode_set_atime(inode, fs32_to_cpu(sbi, raw_inode->i_atime), 0);
 	inode_set_mtime(inode, fs32_to_cpu(sbi, raw_inode->i_mtime), 0);
 	inode_set_ctime(inode, fs32_to_cpu(sbi, raw_inode->i_ctime), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_blocks = 0;
 
 	si = SYSV_I(inode);
@@ -322,15 +247,6 @@ static int __sysv_write_inode(struct inode *inode, int wait)
 	}
 
 	raw_inode->i_mode = cpu_to_fs16(sbi, inode->i_mode);
-<<<<<<< HEAD
-	raw_inode->i_uid = cpu_to_fs16(sbi, fs_high2lowuid(inode->i_uid));
-	raw_inode->i_gid = cpu_to_fs16(sbi, fs_high2lowgid(inode->i_gid));
-	raw_inode->i_nlink = cpu_to_fs16(sbi, inode->i_nlink);
-	raw_inode->i_size = cpu_to_fs32(sbi, inode->i_size);
-	raw_inode->i_atime = cpu_to_fs32(sbi, inode->i_atime.tv_sec);
-	raw_inode->i_mtime = cpu_to_fs32(sbi, inode->i_mtime.tv_sec);
-	raw_inode->i_ctime = cpu_to_fs32(sbi, inode->i_ctime.tv_sec);
-=======
 	raw_inode->i_uid = cpu_to_fs16(sbi, fs_high2lowuid(i_uid_read(inode)));
 	raw_inode->i_gid = cpu_to_fs16(sbi, fs_high2lowgid(i_gid_read(inode)));
 	raw_inode->i_nlink = cpu_to_fs16(sbi, inode->i_nlink);
@@ -338,7 +254,6 @@ static int __sysv_write_inode(struct inode *inode, int wait)
 	raw_inode->i_atime = cpu_to_fs32(sbi, inode_get_atime_sec(inode));
 	raw_inode->i_mtime = cpu_to_fs32(sbi, inode_get_mtime_sec(inode));
 	raw_inode->i_ctime = cpu_to_fs32(sbi, inode_get_ctime_sec(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	si = SYSV_I(inode);
 	if (S_ISCHR(inode->i_mode) || S_ISBLK(inode->i_mode))
@@ -356,11 +271,7 @@ static int __sysv_write_inode(struct inode *inode, int wait)
                 }
         }
 	brelse(bh);
-<<<<<<< HEAD
-	return 0;
-=======
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int sysv_write_inode(struct inode *inode, struct writeback_control *wbc)
@@ -375,21 +286,13 @@ int sysv_sync_inode(struct inode *inode)
 
 static void sysv_evict_inode(struct inode *inode)
 {
-<<<<<<< HEAD
-	truncate_inode_pages(&inode->i_data, 0);
-=======
 	truncate_inode_pages_final(&inode->i_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!inode->i_nlink) {
 		inode->i_size = 0;
 		sysv_truncate(inode);
 	}
 	invalidate_inode_buffers(inode);
-<<<<<<< HEAD
-	end_writeback(inode);
-=======
 	clear_inode(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!inode->i_nlink)
 		sysv_free_inode(inode);
 }
@@ -400,35 +303,17 @@ static struct inode *sysv_alloc_inode(struct super_block *sb)
 {
 	struct sysv_inode_info *si;
 
-<<<<<<< HEAD
-	si = kmem_cache_alloc(sysv_inode_cachep, GFP_KERNEL);
-=======
 	si = alloc_inode_sb(sb, sysv_inode_cachep, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!si)
 		return NULL;
 	return &si->vfs_inode;
 }
 
-<<<<<<< HEAD
-static void sysv_i_callback(struct rcu_head *head)
-{
-	struct inode *inode = container_of(head, struct inode, i_rcu);
-	kmem_cache_free(sysv_inode_cachep, SYSV_I(inode));
-}
-
-static void sysv_destroy_inode(struct inode *inode)
-{
-	call_rcu(&inode->i_rcu, sysv_i_callback);
-}
-
-=======
 static void sysv_free_in_core_inode(struct inode *inode)
 {
 	kmem_cache_free(sysv_inode_cachep, SYSV_I(inode));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void init_once(void *p)
 {
 	struct sysv_inode_info *si = (struct sysv_inode_info *)p;
@@ -438,18 +323,10 @@ static void init_once(void *p)
 
 const struct super_operations sysv_sops = {
 	.alloc_inode	= sysv_alloc_inode,
-<<<<<<< HEAD
-	.destroy_inode	= sysv_destroy_inode,
-	.write_inode	= sysv_write_inode,
-	.evict_inode	= sysv_evict_inode,
-	.put_super	= sysv_put_super,
-	.write_super	= sysv_write_super,
-=======
 	.free_inode	= sysv_free_in_core_inode,
 	.write_inode	= sysv_write_inode,
 	.evict_inode	= sysv_evict_inode,
 	.put_super	= sysv_put_super,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sync_fs	= sysv_sync_fs,
 	.remount_fs	= sysv_remount,
 	.statfs		= sysv_statfs,
@@ -459,11 +336,7 @@ int __init sysv_init_icache(void)
 {
 	sysv_inode_cachep = kmem_cache_create("sysv_inode_cache",
 			sizeof(struct sysv_inode_info), 0,
-<<<<<<< HEAD
-			SLAB_RECLAIM_ACCOUNT|SLAB_MEM_SPREAD,
-=======
 			SLAB_RECLAIM_ACCOUNT|SLAB_ACCOUNT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			init_once);
 	if (!sysv_inode_cachep)
 		return -ENOMEM;

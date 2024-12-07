@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_PARISC_COMPAT_H
 #define _ASM_PARISC_COMPAT_H
 /*
@@ -11,47 +8,6 @@
 #include <linux/sched.h>
 #include <linux/thread_info.h>
 
-<<<<<<< HEAD
-#define COMPAT_USER_HZ 		100
-#define COMPAT_UTS_MACHINE	"parisc\0\0"
-
-typedef u32	compat_size_t;
-typedef s32	compat_ssize_t;
-typedef s32	compat_time_t;
-typedef s32	compat_clock_t;
-typedef s32	compat_pid_t;
-typedef u32	__compat_uid_t;
-typedef u32	__compat_gid_t;
-typedef u32	__compat_uid32_t;
-typedef u32	__compat_gid32_t;
-typedef u16	compat_mode_t;
-typedef u32	compat_ino_t;
-typedef u32	compat_dev_t;
-typedef s32	compat_off_t;
-typedef s64	compat_loff_t;
-typedef u16	compat_nlink_t;
-typedef u16	compat_ipc_pid_t;
-typedef s32	compat_daddr_t;
-typedef u32	compat_caddr_t;
-typedef s32	compat_timer_t;
-
-typedef s32	compat_int_t;
-typedef s32	compat_long_t;
-typedef s64	compat_s64;
-typedef u32	compat_uint_t;
-typedef u32	compat_ulong_t;
-typedef u64	compat_u64;
-
-struct compat_timespec {
-	compat_time_t		tv_sec;
-	s32			tv_nsec;
-};
-
-struct compat_timeval {
-	compat_time_t		tv_sec;
-	s32			tv_usec;
-};
-=======
 #define compat_mode_t compat_mode_t
 typedef u16	compat_mode_t;
 
@@ -65,7 +21,6 @@ typedef u16	compat_ipc_pid_t;
 #define COMPAT_UTS_MACHINE	"parisc\0\0"
 
 typedef u16	compat_nlink_t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct compat_stat {
 	compat_dev_t		st_dev;	/* dev_t is 32 bits on parisc */
@@ -76,19 +31,11 @@ struct compat_stat {
 	u16			st_reserved2;	/* old st_gid */
 	compat_dev_t		st_rdev;
 	compat_off_t		st_size;
-<<<<<<< HEAD
-	compat_time_t		st_atime;
-	u32			st_atime_nsec;
-	compat_time_t		st_mtime;
-	u32			st_mtime_nsec;
-	compat_time_t		st_ctime;
-=======
 	old_time32_t		st_atime;
 	u32			st_atime_nsec;
 	old_time32_t		st_mtime;
 	u32			st_mtime_nsec;
 	old_time32_t		st_ctime;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			st_ctime_nsec;
 	s32			st_blksize;
 	s32			st_blocks;
@@ -106,40 +53,6 @@ struct compat_stat {
 	u32			st_spare4[3];
 };
 
-<<<<<<< HEAD
-struct compat_flock {
-	short			l_type;
-	short			l_whence;
-	compat_off_t		l_start;
-	compat_off_t		l_len;
-	compat_pid_t		l_pid;
-};
-
-struct compat_flock64 {
-	short			l_type;
-	short			l_whence;
-	compat_loff_t		l_start;
-	compat_loff_t		l_len;
-	compat_pid_t		l_pid;
-};
-
-struct compat_statfs {
-	s32		f_type;
-	s32		f_bsize;
-	s32		f_blocks;
-	s32		f_bfree;
-	s32		f_bavail;
-	s32		f_files;
-	s32		f_ffree;
-	__kernel_fsid_t	f_fsid;
-	s32		f_namelen;
-	s32		f_frsize;
-	s32		f_flags;
-	s32		f_spare[4];
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct compat_sigcontext {
 	compat_int_t sc_flags;
 	compat_int_t sc_gr[32]; /* PSW in sc_gr[0] */
@@ -149,47 +62,6 @@ struct compat_sigcontext {
 	compat_int_t sc_sar; /* cr11 */
 };
 
-<<<<<<< HEAD
-#define COMPAT_RLIM_INFINITY 0xffffffff
-
-typedef u32		compat_old_sigset_t;	/* at least 32 bits */
-
-#define _COMPAT_NSIG		64
-#define _COMPAT_NSIG_BPW	32
-
-typedef u32		compat_sigset_word;
-
-#define COMPAT_OFF_T_MAX	0x7fffffff
-#define COMPAT_LOFF_T_MAX	0x7fffffffffffffffL
-
-/*
- * A pointer passed in from user mode. This should not
- * be used for syscall parameters, just declare them
- * as pointers because the syscall entry code will have
- * appropriately converted them already.
- */
-typedef	u32		compat_uptr_t;
-
-static inline void __user *compat_ptr(compat_uptr_t uptr)
-{
-	return (void __user *)(unsigned long)uptr;
-}
-
-static inline compat_uptr_t ptr_to_compat(void __user *uptr)
-{
-	return (u32)(unsigned long)uptr;
-}
-
-static __inline__ void __user *arch_compat_alloc_user_space(long len)
-{
-	struct pt_regs *regs = &current->thread.regs;
-	return (void __user *)regs->gr[30];
-}
-
-static inline int __is_compat_task(struct task_struct *t)
-{
-	return test_ti_thread_flag(task_thread_info(t), TIF_32BIT);
-=======
 struct compat_ipc64_perm {
 	compat_key_t key;
 	__compat_uid_t uid;
@@ -259,7 +131,6 @@ typedef compat_ulong_t compat_elf_gregset_t[COMPAT_ELF_NGREG];
 static inline int __is_compat_task(struct task_struct *t)
 {
 	return test_tsk_thread_flag(t, TIF_32BIT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int is_compat_task(void)

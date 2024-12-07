@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .text
 #include <linux/linkage.h>
 #include <asm/segment.h>
@@ -80,11 +77,7 @@ save_registers:
 	pushfl
 	popl saved_context_eflags
 
-<<<<<<< HEAD
-	ret
-=======
 	RET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 restore_registers:
 	movl saved_context_ebp, %ebp
@@ -95,15 +88,9 @@ restore_registers:
 	pushl saved_context_eflags
 	popfl
 
-<<<<<<< HEAD
-	ret
-
-ENTRY(do_olpc_suspend_lowlevel)
-=======
 	RET
 
 SYM_CODE_START(do_olpc_suspend_lowlevel)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	call	save_processor_state
 	call	save_registers
 
@@ -122,12 +109,8 @@ ret_point:
 
 	call	restore_registers
 	call	restore_processor_state
-<<<<<<< HEAD
-	ret
-=======
 	RET
 SYM_CODE_END(do_olpc_suspend_lowlevel)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .data
 saved_gdt:             .long   0,0

@@ -1,43 +1,17 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ocfs2_fs.h
  *
  * On-disk structures for OCFS2.
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License, version 2,  as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _OCFS2_FS_H
 #define _OCFS2_FS_H
 
-<<<<<<< HEAD
-=======
 #include <linux/magic.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Version */
 #define OCFS2_MAJOR_REV_LEVEL		0
 #define OCFS2_MINOR_REV_LEVEL          	90
@@ -69,12 +43,6 @@
 #define OCFS2_MIN_BLOCKSIZE		512
 #define OCFS2_MAX_BLOCKSIZE		OCFS2_MIN_CLUSTERSIZE
 
-<<<<<<< HEAD
-/* Filesystem magic number */
-#define OCFS2_SUPER_MAGIC		0x7461636f
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Object signatures */
 #define OCFS2_SUPER_BLOCK_SIGNATURE	"OCFSV2"
 #define OCFS2_INODE_SIGNATURE		"INODE01"
@@ -118,12 +86,8 @@
 					 | OCFS2_FEATURE_INCOMPAT_INDEXED_DIRS \
 					 | OCFS2_FEATURE_INCOMPAT_REFCOUNT_TREE \
 					 | OCFS2_FEATURE_INCOMPAT_DISCONTIG_BG	\
-<<<<<<< HEAD
-					 | OCFS2_FEATURE_INCOMPAT_CLUSTERINFO)
-=======
 					 | OCFS2_FEATURE_INCOMPAT_CLUSTERINFO \
 					 | OCFS2_FEATURE_INCOMPAT_APPEND_DIO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OCFS2_FEATURE_RO_COMPAT_SUPP	(OCFS2_FEATURE_RO_COMPAT_UNWRITTEN \
 					 | OCFS2_FEATURE_RO_COMPAT_USRQUOTA \
 					 | OCFS2_FEATURE_RO_COMPAT_GRPQUOTA)
@@ -188,11 +152,7 @@
 /* Refcount tree support */
 #define OCFS2_FEATURE_INCOMPAT_REFCOUNT_TREE	0x1000
 
-<<<<<<< HEAD
-/* Discontigous block groups */
-=======
 /* Discontiguous block groups */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OCFS2_FEATURE_INCOMPAT_DISCONTIG_BG	0x2000
 
 /*
@@ -203,14 +163,11 @@
 #define OCFS2_FEATURE_INCOMPAT_CLUSTERINFO	0x4000
 
 /*
-<<<<<<< HEAD
-=======
  * Append Direct IO support
  */
 #define OCFS2_FEATURE_INCOMPAT_APPEND_DIO	0x8000
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * backup superblock flag is used to indicate that this volume
  * has backup superblocks.
  */
@@ -232,10 +189,7 @@
 #define OCFS2_FEATURE_RO_COMPAT_USRQUOTA	0x0002
 #define OCFS2_FEATURE_RO_COMPAT_GRPQUOTA	0x0004
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The byte offset of the first backup block will be 1G.
  * The following will be 4G, 16G, 64G, 256G and 1T.
  */
@@ -266,11 +220,8 @@
 #define OCFS2_CHAIN_FL		(0x00000400)	/* Chain allocator */
 #define OCFS2_DEALLOC_FL	(0x00000800)	/* Truncate log */
 #define OCFS2_QUOTA_FL		(0x00001000)	/* Quota file */
-<<<<<<< HEAD
-=======
 #define OCFS2_DIO_ORPHANED_FL	(0X00002000)	/* On the orphan list especially
 						 * for dio */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Flags on ocfs2_dinode.i_dyn_features
@@ -337,11 +288,7 @@
 #define OCFS2_MAX_SLOTS			255
 
 /* Slot map indicator for an empty slot */
-<<<<<<< HEAD
-#define OCFS2_INVALID_SLOT		-1
-=======
 #define OCFS2_INVALID_SLOT		((u16)-1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define OCFS2_VOL_UUID_LEN		16
 #define OCFS2_MAX_VOL_LABEL_LEN		64
@@ -377,13 +324,8 @@ struct ocfs2_system_inode_info {
 enum {
 	BAD_BLOCK_SYSTEM_INODE = 0,
 	GLOBAL_INODE_ALLOC_SYSTEM_INODE,
-<<<<<<< HEAD
-	SLOT_MAP_SYSTEM_INODE,
-#define OCFS2_FIRST_ONLINE_SYSTEM_INODE SLOT_MAP_SYSTEM_INODE
-=======
 #define OCFS2_FIRST_ONLINE_SYSTEM_INODE GLOBAL_INODE_ALLOC_SYSTEM_INODE
 	SLOT_MAP_SYSTEM_INODE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HEARTBEAT_SYSTEM_INODE,
 	GLOBAL_BITMAP_SYSTEM_INODE,
 	USER_QUOTA_SYSTEM_INODE,
@@ -435,24 +377,6 @@ static struct ocfs2_system_inode_info ocfs2_system_inodes[NUM_SYSTEM_INODES] = {
 #define OCFS2_HB_GLOBAL			"heartbeat=global"
 
 /*
-<<<<<<< HEAD
- * OCFS2 directory file types.  Only the low 3 bits are used.  The
- * other bits are reserved for now.
- */
-#define OCFS2_FT_UNKNOWN	0
-#define OCFS2_FT_REG_FILE	1
-#define OCFS2_FT_DIR		2
-#define OCFS2_FT_CHRDEV		3
-#define OCFS2_FT_BLKDEV		4
-#define OCFS2_FT_FIFO		5
-#define OCFS2_FT_SOCK		6
-#define OCFS2_FT_SYMLINK	7
-
-#define OCFS2_FT_MAX		8
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * OCFS2_DIR_PAD defines the directory entries boundaries
  *
  * NOTE: It must be a multiple of 4
@@ -470,20 +394,6 @@ static struct ocfs2_system_inode_info ocfs2_system_inodes[NUM_SYSTEM_INODES] = {
 #define	OCFS2_LINKS_HI_SHIFT	16
 #define	OCFS2_DX_ENTRIES_MAX	(0xffffffffU)
 
-<<<<<<< HEAD
-#define S_SHIFT			12
-static unsigned char ocfs2_type_by_mode[S_IFMT >> S_SHIFT] = {
-	[S_IFREG >> S_SHIFT]  = OCFS2_FT_REG_FILE,
-	[S_IFDIR >> S_SHIFT]  = OCFS2_FT_DIR,
-	[S_IFCHR >> S_SHIFT]  = OCFS2_FT_CHRDEV,
-	[S_IFBLK >> S_SHIFT]  = OCFS2_FT_BLKDEV,
-	[S_IFIFO >> S_SHIFT]  = OCFS2_FT_FIFO,
-	[S_IFSOCK >> S_SHIFT] = OCFS2_FT_SOCK,
-	[S_IFLNK >> S_SHIFT]  = OCFS2_FT_SYMLINK,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Convenience casts
@@ -558,11 +468,7 @@ struct ocfs2_extent_list {
 	__le16 l_reserved1;
 	__le64 l_reserved2;		/* Pad to
 					   sizeof(ocfs2_extent_rec) */
-<<<<<<< HEAD
-/*10*/	struct ocfs2_extent_rec l_recs[0];	/* Extent records */
-=======
 /*10*/	struct ocfs2_extent_rec l_recs[];	/* Extent records */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -576,11 +482,7 @@ struct ocfs2_chain_list {
 	__le16 cl_count;		/* Total chains in this list */
 	__le16 cl_next_free_rec;	/* Next unused chain slot */
 	__le64 cl_reserved1;
-<<<<<<< HEAD
-/*10*/	struct ocfs2_chain_rec cl_recs[0];	/* Chain records */
-=======
 /*10*/	struct ocfs2_chain_rec cl_recs[];	/* Chain records */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -592,11 +494,7 @@ struct ocfs2_truncate_log {
 /*00*/	__le16 tl_count;		/* Total records in this log */
 	__le16 tl_used;			/* Number of records in use */
 	__le32 tl_reserved1;
-<<<<<<< HEAD
-/*08*/	struct ocfs2_truncate_rec tl_recs[0];	/* Truncate records */
-=======
 /*08*/	struct ocfs2_truncate_rec tl_recs[];	/* Truncate records */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -629,11 +527,7 @@ struct ocfs2_extent_block
  * value -1 (0xFFFF) is OCFS2_INVALID_SLOT.  This marks a slot empty.
  */
 struct ocfs2_slot_map {
-<<<<<<< HEAD
-/*00*/	__le16 sm_slots[0];
-=======
 /*00*/	DECLARE_FLEX_ARRAY(__le16, sm_slots);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Actual on-disk size is one block.  OCFS2_MAX_SLOTS is 255,
  * 255 * sizeof(__le16) == 512B, within the 512B block minimum blocksize.
@@ -644,11 +538,7 @@ struct ocfs2_extended_slot {
 /*00*/	__u8	es_valid;
 	__u8	es_reserved1[3];
 	__le32	es_node_num;
-<<<<<<< HEAD
-/*10*/
-=======
 /*08*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -658,11 +548,7 @@ struct ocfs2_extended_slot {
  * i_size.
  */
 struct ocfs2_slot_map_extended {
-<<<<<<< HEAD
-/*00*/	struct ocfs2_extended_slot se_slots[0];
-=======
 /*00*/	DECLARE_FLEX_ARRAY(struct ocfs2_extended_slot, se_slots);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Actual size is i_size of the slot_map system file.  It should
  * match s_max_slots * sizeof(struct ocfs2_extended_slot)
@@ -752,11 +638,7 @@ struct ocfs2_local_alloc
 	__le16 la_size;		/* Size of included bitmap, in bytes */
 	__le16 la_reserved1;
 	__le64 la_reserved2;
-<<<<<<< HEAD
-/*10*/	__u8   la_bitmap[0];
-=======
 /*10*/	__u8   la_bitmap[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -769,11 +651,7 @@ struct ocfs2_inline_data
 				 * for data, starting at id_data */
 	__le16	id_reserved0;
 	__le32	id_reserved1;
-<<<<<<< HEAD
-	__u8	id_data[0];	/* Start of user data */
-=======
 	__u8	id_data[];	/* Start of user data */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -818,13 +696,9 @@ struct ocfs2_dinode {
 					   inode belongs to.  Only valid
 					   if allocated from a
 					   discontiguous block group */
-<<<<<<< HEAD
-/*A0*/	__le64 i_reserved2[3];
-=======
 /*A0*/	__le16 i_dio_orphaned_slot;	/* only used for append dio write */
 	__le16 i_reserved1[3];
 	__le64 i_reserved2[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*B8*/	union {
 		__le64 i_pad1;		/* Generic way to refer to this
 					   64bit union */
@@ -853,11 +727,7 @@ struct ocfs2_dinode {
 		struct ocfs2_extent_list	i_list;
 		struct ocfs2_truncate_log	i_dealloc;
 		struct ocfs2_inline_data	i_data;
-<<<<<<< HEAD
-		__u8               		i_symlink[0];
-=======
 		DECLARE_FLEX_ARRAY(__u8,	i_symlink);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} id2;
 /* Actual on-disk size is one block */
 };
@@ -896,19 +766,11 @@ struct ocfs2_dir_block_trailer {
 						 * in this block. (unused) */
 /*10*/	__u8		db_signature[8];	/* Signature for verification */
 	__le64		db_reserved2;
-<<<<<<< HEAD
-	__le64		db_free_next;		/* Next block in list (unused) */
-/*20*/	__le64		db_blkno;		/* Offset on disk, in blocks */
-	__le64		db_parent_dinode;	/* dinode which owns me, in
-						   blocks */
-/*30*/	struct ocfs2_block_check db_check;	/* Error checking */
-=======
 /*20*/	__le64		db_free_next;		/* Next block in list (unused) */
 	__le64		db_blkno;		/* Offset on disk, in blocks */
 /*30*/	__le64		db_parent_dinode;	/* dinode which owns me, in
 						   blocks */
 	struct ocfs2_block_check db_check;	/* Error checking */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*40*/
 };
 
@@ -934,11 +796,7 @@ struct ocfs2_dx_entry_list {
 					 * possible in de_entries */
 	__le16		de_num_used;	/* Current number of
 					 * de_entries entries */
-<<<<<<< HEAD
-	struct	ocfs2_dx_entry		de_entries[0];	/* Indexed dir entries
-=======
 	struct	ocfs2_dx_entry		de_entries[];	/* Indexed dir entries
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							 * in a packed array of
 							 * length de_num_used */
 };
@@ -1034,20 +892,12 @@ struct ocfs2_group_desc
 /*30*/	struct ocfs2_block_check bg_check;	/* Error checking */
 	__le64   bg_reserved2;
 /*40*/	union {
-<<<<<<< HEAD
-		__u8    bg_bitmap[0];
-=======
 		DECLARE_FLEX_ARRAY(__u8, bg_bitmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct {
 			/*
 			 * Block groups may be discontiguous when
 			 * OCFS2_FEATURE_INCOMPAT_DISCONTIG_BG is set.
-<<<<<<< HEAD
-			 * The extents of a discontigous block group are
-=======
 			 * The extents of a discontiguous block group are
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * stored in bg_list.  It is a flat list.
 			 * l_tree_depth must always be zero.  A
 			 * discontiguous group is signified by a non-zero
@@ -1083,11 +933,7 @@ struct ocfs2_refcount_list {
 	__le16 rl_used;		/* Current number of used records */
 	__le32 rl_reserved2;
 	__le64 rl_reserved1;	/* Pad to sizeof(ocfs2_refcount_record) */
-<<<<<<< HEAD
-/*10*/	struct ocfs2_refcount_rec rl_recs[0];	/* Refcount records */
-=======
 /*10*/	struct ocfs2_refcount_rec rl_recs[];	/* Refcount records */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -1173,11 +1019,7 @@ struct ocfs2_xattr_header {
 						    buckets.  A block uses
 						    xb_check and sets
 						    this field to zero.) */
-<<<<<<< HEAD
-	struct ocfs2_xattr_entry xh_entries[0]; /* xattr entry list. */
-=======
 	struct ocfs2_xattr_entry xh_entries[]; /* xattr entry list. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1363,11 +1205,7 @@ struct ocfs2_local_disk_dqinfo {
 /* Header of one chunk of a quota file */
 struct ocfs2_local_disk_chunk {
 	__le32 dqc_free;	/* Number of free entries in the bitmap */
-<<<<<<< HEAD
-	__u8 dqc_bitmap[0];	/* Bitmap of entries in the corresponding
-=======
 	__u8 dqc_bitmap[];	/* Bitmap of entries in the corresponding
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 * chunk of quota file */
 };
 
@@ -1750,11 +1588,7 @@ static inline int ocfs2_sprintf_system_inode_name(char *buf, int len,
 static inline void ocfs2_set_de_type(struct ocfs2_dir_entry *de,
 				    umode_t mode)
 {
-<<<<<<< HEAD
-	de->file_type = ocfs2_type_by_mode[(mode & S_IFMT)>>S_SHIFT];
-=======
 	de->file_type = fs_umode_to_ftype(mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int ocfs2_gd_is_discontig(struct ocfs2_group_desc *gd)

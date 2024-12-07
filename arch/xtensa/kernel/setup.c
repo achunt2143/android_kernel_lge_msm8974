@@ -7,10 +7,7 @@
  *
  * Copyright (C) 1995  Linus Torvalds
  * Copyright (C) 2001 - 2005  Tensilica Inc.
-<<<<<<< HEAD
-=======
  * Copyright (C) 2014 - 2016  Cadence Design Systems Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Chris Zankel	<chris@zankel.net>
  * Joe Taylor	<joe@tensilica.com, joetylr@yahoo.com>
@@ -22,69 +19,22 @@
 #include <linux/init.h>
 #include <linux/mm.h>
 #include <linux/proc_fs.h>
-<<<<<<< HEAD
-#include <linux/screen_info.h>
-#include <linux/bootmem.h>
-#include <linux/kernel.h>
-=======
 #include <linux/kernel.h>
 #include <linux/percpu.h>
 #include <linux/reboot.h>
 #include <linux/cpu.h>
 #include <linux/of.h>
 #include <linux/of_fdt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_VGA_CONSOLE) || defined(CONFIG_DUMMY_CONSOLE)
 # include <linux/console.h>
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_RTC
-# include <linux/timex.h>
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PROC_FS
 # include <linux/seq_file.h>
 #endif
 
 #include <asm/bootparam.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/processor.h>
-#include <asm/timex.h>
-#include <asm/platform.h>
-#include <asm/page.h>
-#include <asm/setup.h>
-#include <asm/param.h>
-
-#include <platform/hardware.h>
-
-#if defined(CONFIG_VGA_CONSOLE) || defined(CONFIG_DUMMY_CONSOLE)
-struct screen_info screen_info = { 0, 24, 0, 0, 0, 80, 0, 0, 0, 24, 1, 16};
-#endif
-
-#ifdef CONFIG_BLK_DEV_FD
-extern struct fd_ops no_fd_ops;
-struct fd_ops *fd_ops;
-#endif
-
-extern struct rtc_ops no_rtc_ops;
-struct rtc_ops *rtc_ops;
-
-#ifdef CONFIG_BLK_DEV_INITRD
-extern void *initrd_start;
-extern void *initrd_end;
-extern void *__initrd_start;
-extern void *__initrd_end;
-int initrd_is_mapped = 0;
-extern int initrd_below_start_ok;
-#endif
-
-unsigned char aux_device_present;
-=======
 #include <asm/kasan.h>
 #include <asm/mmu_context.h>
 #include <asm/page.h>
@@ -108,7 +58,6 @@ extern int initrd_below_start_ok;
 void *dtb_start = __dtb_start;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned long loops_per_jiffy;
 
 /* Command line specified as configuration option. */
@@ -119,24 +68,7 @@ static char __initdata command_line[COMMAND_LINE_SIZE];
 static char default_command_line[COMMAND_LINE_SIZE] __initdata = CONFIG_CMDLINE;
 #endif
 
-<<<<<<< HEAD
-sysmem_info_t __initdata sysmem;
-
-#ifdef CONFIG_BLK_DEV_INITRD
-int initrd_is_mapped;
-#endif
-
-#ifdef CONFIG_MMU
-extern void init_mmu(void);
-#else
-static inline void init_mmu(void) { }
-#endif
-
-extern void zones_init(void);
-
-=======
 #ifdef CONFIG_PARSE_BOOTPARAM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Boot parameter parsing.
  *
@@ -152,42 +84,18 @@ typedef struct tagtable {
 } tagtable_t;
 
 #define __tagtable(tag, fn) static tagtable_t __tagtable_##fn 		\
-<<<<<<< HEAD
-	__attribute__((unused, __section__(".taglist"))) = { tag, fn }
-=======
 	__section(".taglist") __attribute__((used)) = { tag, fn }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* parse current tag */
 
 static int __init parse_tag_mem(const bp_tag_t *tag)
 {
-<<<<<<< HEAD
-	meminfo_t *mi = (meminfo_t*)(tag->data);
-=======
 	struct bp_meminfo *mi = (struct bp_meminfo *)(tag->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mi->type != MEMORY_TYPE_CONVENTIONAL)
 		return -1;
 
-<<<<<<< HEAD
-	if (sysmem.nr_banks >= SYSMEM_BANKS_MAX) {
-		printk(KERN_WARNING
-		       "Ignoring memory bank 0x%08lx size %ldKB\n",
-		       (unsigned long)mi->start,
-		       (unsigned long)mi->end - (unsigned long)mi->start);
-		return -EINVAL;
-	}
-	sysmem.bank[sysmem.nr_banks].type  = mi->type;
-	sysmem.bank[sysmem.nr_banks].start = PAGE_ALIGN(mi->start);
-	sysmem.bank[sysmem.nr_banks].end   = mi->end & PAGE_SIZE;
-	sysmem.nr_banks++;
-
-	return 0;
-=======
 	return memblock_add(mi->start, mi->end - mi->start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __tagtable(BP_TAG_MEMORY, parse_tag_mem);
@@ -196,17 +104,10 @@ __tagtable(BP_TAG_MEMORY, parse_tag_mem);
 
 static int __init parse_tag_initrd(const bp_tag_t* tag)
 {
-<<<<<<< HEAD
-	meminfo_t* mi;
-	mi = (meminfo_t*)(tag->data);
-	initrd_start = (void*)(mi->start);
-	initrd_end = (void*)(mi->end);
-=======
 	struct bp_meminfo *mi = (struct bp_meminfo *)(tag->data);
 
 	initrd_start = (unsigned long)__va(mi->start);
 	initrd_end = (unsigned long)__va(mi->end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -215,12 +116,6 @@ __tagtable(BP_TAG_INITRD, parse_tag_initrd);
 
 #endif /* CONFIG_BLK_DEV_INITRD */
 
-<<<<<<< HEAD
-static int __init parse_tag_cmdline(const bp_tag_t* tag)
-{
-	strncpy(command_line, (char*)(tag->data), COMMAND_LINE_SIZE);
-	command_line[COMMAND_LINE_SIZE - 1] = '\0';
-=======
 #ifdef CONFIG_USE_OF
 
 static int __init parse_tag_fdt(const bp_tag_t *tag)
@@ -236,7 +131,6 @@ __tagtable(BP_TAG_FDT, parse_tag_fdt);
 static int __init parse_tag_cmdline(const bp_tag_t* tag)
 {
 	strscpy(command_line, (char *)(tag->data), COMMAND_LINE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -250,11 +144,7 @@ static int __init parse_bootparam(const bp_tag_t* tag)
 	/* Boot parameters must start with a BP_TAG_FIRST tag. */
 
 	if (tag->id != BP_TAG_FIRST) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Invalid boot parameters!\n");
-=======
 		pr_warn("Invalid boot parameters!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -263,30 +153,19 @@ static int __init parse_bootparam(const bp_tag_t* tag)
 	/* Parse all tags. */
 
 	while (tag != NULL && tag->id != BP_TAG_LAST) {
-<<<<<<< HEAD
-	 	for (t = &__tagtable_begin; t < &__tagtable_end; t++) {
-=======
 		for (t = &__tagtable_begin; t < &__tagtable_end; t++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (tag->id == t->tag) {
 				t->parse(tag);
 				break;
 			}
 		}
 		if (t == &__tagtable_end)
-<<<<<<< HEAD
-			printk(KERN_WARNING "Ignoring tag "
-			       "0x%08x\n", tag->id);
-=======
 			pr_warn("Ignoring tag 0x%08x\n", tag->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tag = (bp_tag_t*)((unsigned long)(tag + 1) + tag->size);
 	}
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 #else
 static int __init parse_bootparam(const bp_tag_t *tag)
 {
@@ -345,7 +224,6 @@ void __init early_init_devtree(void *params)
 }
 
 #endif /* CONFIG_USE_OF */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Initialize architecture. (Early stage)
@@ -353,47 +231,15 @@ void __init early_init_devtree(void *params)
 
 void __init init_arch(bp_tag_t *bp_start)
 {
-<<<<<<< HEAD
-
-#ifdef CONFIG_BLK_DEV_INITRD
-	initrd_start = &__initrd_start;
-	initrd_end = &__initrd_end;
-#endif
-
-	sysmem.nr_banks = 0;
-
-#ifdef CONFIG_CMDLINE_BOOL
-	strcpy(command_line, default_command_line);
-#endif
-
-	/* Parse boot parameters */
-
-        if (bp_start)
-	  parse_bootparam(bp_start);
-
-	if (sysmem.nr_banks == 0) {
-		sysmem.nr_banks = 1;
-		sysmem.bank[0].start = PLATFORM_DEFAULT_MEM_START;
-		sysmem.bank[0].end = PLATFORM_DEFAULT_MEM_START
-				     + PLATFORM_DEFAULT_MEM_SIZE;
-	}
-
-	/* Early hook for platforms */
-
-	platform_init(bp_start);
-=======
 	/* Initialize basic exception handling if configuration may need it */
 
 	if (IS_ENABLED(CONFIG_KASAN) ||
 	    IS_ENABLED(CONFIG_XTENSA_LOAD_STORE))
 		early_trap_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize MMU. */
 
 	init_mmu();
-<<<<<<< HEAD
-=======
 
 	/* Initialize initial KASAN shadow map */
 
@@ -416,36 +262,12 @@ void __init init_arch(bp_tag_t *bp_start)
 	/* Early hook for platforms */
 
 	platform_init(bp_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Initialize system. Setup memory and reserve regions.
  */
 
-<<<<<<< HEAD
-extern char _end;
-extern char _stext;
-extern char _WindowVectors_text_start;
-extern char _WindowVectors_text_end;
-extern char _DebugInterruptVector_literal_start;
-extern char _DebugInterruptVector_text_end;
-extern char _KernelExceptionVector_literal_start;
-extern char _KernelExceptionVector_text_end;
-extern char _UserExceptionVector_literal_start;
-extern char _UserExceptionVector_text_end;
-extern char _DoubleExceptionVector_literal_start;
-extern char _DoubleExceptionVector_text_end;
-
-void __init setup_arch(char **cmdline_p)
-{
-	extern int mem_reserve(unsigned long, unsigned long, int);
-	extern void bootmem_init(void);
-
-	memcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
-	boot_command_line[COMMAND_LINE_SIZE-1] = '\0';
-	*cmdline_p = command_line;
-=======
 static inline int __init_memblock mem_reserve(unsigned long start,
 					      unsigned long end)
 {
@@ -464,43 +286,10 @@ void __init setup_arch(char **cmdline_p)
 	*cmdline_p = command_line;
 	platform_setup(cmdline_p);
 	strscpy(boot_command_line, *cmdline_p, COMMAND_LINE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reserve some memory regions */
 
 #ifdef CONFIG_BLK_DEV_INITRD
-<<<<<<< HEAD
-	if (initrd_start < initrd_end) {
-		initrd_is_mapped = mem_reserve(__pa(initrd_start),
-					       __pa(initrd_end), 0);
-		initrd_below_start_ok = 1;
- 	} else {
-		initrd_start = 0;
-	}
-#endif
-
-	mem_reserve(__pa(&_stext),__pa(&_end), 1);
-
-	mem_reserve(__pa(&_WindowVectors_text_start),
-		    __pa(&_WindowVectors_text_end), 0);
-
-	mem_reserve(__pa(&_DebugInterruptVector_literal_start),
-		    __pa(&_DebugInterruptVector_text_end), 0);
-
-	mem_reserve(__pa(&_KernelExceptionVector_literal_start),
-		    __pa(&_KernelExceptionVector_text_end), 0);
-
-	mem_reserve(__pa(&_UserExceptionVector_literal_start),
-		    __pa(&_UserExceptionVector_text_end), 0);
-
-	mem_reserve(__pa(&_DoubleExceptionVector_literal_start),
-		    __pa(&_DoubleExceptionVector_text_end), 0);
-
-	bootmem_init();
-
-	platform_setup(cmdline_p);
-
-=======
 	if (initrd_start < initrd_end &&
 	    !mem_reserve(__pa(initrd_start), __pa(initrd_end)))
 		initrd_below_start_ok = 1;
@@ -571,7 +360,6 @@ void __init setup_arch(char **cmdline_p)
 #ifdef CONFIG_SMP
 	smp_init_cpus();
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	paging_init();
 	zones_init();
@@ -579,16 +367,6 @@ void __init setup_arch(char **cmdline_p)
 #ifdef CONFIG_VT
 # if defined(CONFIG_VGA_CONSOLE)
 	conswitchp = &vga_con;
-<<<<<<< HEAD
-# elif defined(CONFIG_DUMMY_CONSOLE)
-	conswitchp = &dummy_con;
-# endif
-#endif
-
-#ifdef CONFIG_PCI
-	platform_pcibios_init();
-#endif
-=======
 # endif
 #endif
 }
@@ -739,49 +517,34 @@ void cpu_reset(void)
 			      : "a2");
 	for (;;)
 		;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void machine_restart(char * cmd)
 {
-<<<<<<< HEAD
-	platform_restart();
-=======
 	local_irq_disable();
 	smp_send_stop();
 	do_kernel_restart(cmd);
 	pr_err("Reboot failed -- System halted\n");
 	while (1)
 		cpu_relax();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void machine_halt(void)
 {
-<<<<<<< HEAD
-	platform_halt();
-	while (1);
-=======
 	local_irq_disable();
 	smp_send_stop();
 	do_kernel_power_off();
 	while (1)
 		cpu_relax();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void machine_power_off(void)
 {
-<<<<<<< HEAD
-	platform_power_off();
-	while (1);
-=======
 	local_irq_disable();
 	smp_send_stop();
 	do_kernel_power_off();
 	while (1)
 		cpu_relax();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #ifdef CONFIG_PROC_FS
 
@@ -793,24 +556,6 @@ static int
 c_show(struct seq_file *f, void *slot)
 {
 	/* high-level stuff */
-<<<<<<< HEAD
-	seq_printf(f,"processor\t: 0\n"
-		     "vendor_id\t: Tensilica\n"
-		     "model\t\t: Xtensa " XCHAL_HW_VERSION_NAME "\n"
-		     "core ID\t\t: " XCHAL_CORE_ID "\n"
-		     "build ID\t: 0x%x\n"
-		     "byte order\t: %s\n"
- 		     "cpu MHz\t\t: %lu.%02lu\n"
-		     "bogomips\t: %lu.%02lu\n",
-		     XCHAL_BUILD_UNIQUE_ID,
-		     XCHAL_HAVE_BE ?  "big" : "little",
-		     CCOUNT_PER_JIFFY/(1000000/HZ),
-		     (CCOUNT_PER_JIFFY/(10000/HZ)) % 100,
-		     loops_per_jiffy/(500000/HZ),
-		     (loops_per_jiffy/(5000/HZ)) % 100);
-
-	seq_printf(f,"flags\t\t: "
-=======
 	seq_printf(f, "CPU count\t: %u\n"
 		      "CPU list\t: %*pbl\n"
 		      "vendor_id\t: Tensilica\n"
@@ -831,7 +576,6 @@ c_show(struct seq_file *f, void *slot)
 		      loops_per_jiffy/(500000/HZ),
 		      (loops_per_jiffy/(5000/HZ)) % 100);
 	seq_puts(f, "flags\t\t: "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if XCHAL_HAVE_NMI
 		     "nmi "
 #endif
@@ -840,15 +584,12 @@ c_show(struct seq_file *f, void *slot)
 # if XCHAL_HAVE_OCD
 		     "ocd "
 # endif
-<<<<<<< HEAD
-=======
 #if XCHAL_HAVE_TRAX
 		     "trax "
 #endif
 #if XCHAL_NUM_PERF_COUNTERS
 		     "perf "
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #if XCHAL_HAVE_DENSITY
 	    	     "density "
@@ -886,28 +627,18 @@ c_show(struct seq_file *f, void *slot)
 #if XCHAL_HAVE_FP
 		     "fpu "
 #endif
-<<<<<<< HEAD
-=======
 #if XCHAL_HAVE_S32C1I
 		     "s32c1i "
 #endif
 #if XCHAL_HAVE_EXCLUSIVE
 		     "exclusive "
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     "\n");
 
 	/* Registers. */
 	seq_printf(f,"physical aregs\t: %d\n"
 		     "misc regs\t: %d\n"
 		     "ibreak\t\t: %d\n"
-<<<<<<< HEAD
-		     "dbreak\t\t: %d\n",
-		     XCHAL_NUM_AREGS,
-		     XCHAL_NUM_MISC_REGS,
-		     XCHAL_NUM_IBREAK,
-		     XCHAL_NUM_DBREAK);
-=======
 		     "dbreak\t\t: %d\n"
 		     "perf counters\t: %d\n",
 		     XCHAL_NUM_AREGS,
@@ -915,7 +646,6 @@ c_show(struct seq_file *f, void *slot)
 		     XCHAL_NUM_IBREAK,
 		     XCHAL_NUM_DBREAK,
 		     XCHAL_NUM_PERF_COUNTERS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/* Interrupt. */
@@ -936,11 +666,7 @@ c_show(struct seq_file *f, void *slot)
 		     "icache size\t: %d\n"
 		     "icache flags\t: "
 #if XCHAL_ICACHE_LINE_LOCKABLE
-<<<<<<< HEAD
-		     "lock"
-=======
 		     "lock "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		     "\n"
 		     "dcache line size: %d\n"
@@ -948,17 +674,10 @@ c_show(struct seq_file *f, void *slot)
 		     "dcache size\t: %d\n"
 		     "dcache flags\t: "
 #if XCHAL_DCACHE_IS_WRITEBACK
-<<<<<<< HEAD
-		     "writeback"
-#endif
-#if XCHAL_DCACHE_LINE_LOCKABLE
-		     "lock"
-=======
 		     "writeback "
 #endif
 #if XCHAL_DCACHE_LINE_LOCKABLE
 		     "lock "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		     "\n",
 		     XCHAL_ICACHE_LINESIZE,
@@ -977,22 +696,14 @@ c_show(struct seq_file *f, void *slot)
 static void *
 c_start(struct seq_file *f, loff_t *pos)
 {
-<<<<<<< HEAD
-	return (void *) ((*pos == 0) ? (void *)1 : NULL);
-=======
 	return (*pos == 0) ? (void *)1 : NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *
 c_next(struct seq_file *f, void *v, loff_t *pos)
 {
-<<<<<<< HEAD
-	return NULL;
-=======
 	++*pos;
 	return c_start(f, pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1002,16 +713,6 @@ c_stop(struct seq_file *f, void *v)
 
 const struct seq_operations cpuinfo_op =
 {
-<<<<<<< HEAD
-	start:  c_start,
-	next:   c_next,
-	stop:   c_stop,
-	show:   c_show
-};
-
-#endif /* CONFIG_PROC_FS */
-
-=======
 	.start	= c_start,
 	.next	= c_next,
 	.stop	= c_stop,
@@ -1019,4 +720,3 @@ const struct seq_operations cpuinfo_op =
 };
 
 #endif /* CONFIG_PROC_FS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fschmd.c
  *
  * Copyright (C) 2007 - 2009 Hans de Goede <hdegoede@redhat.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -112,11 +92,7 @@ static const u8 FSCHMD_REG_VOLT[7][6] = {
 static const int FSCHMD_NO_VOLT_SENSORS[7] = { 3, 3, 3, 3, 3, 3, 6 };
 
 /*
-<<<<<<< HEAD
- * minimum pwm at which the fan is driven (pwm can by increased depending on
-=======
  * minimum pwm at which the fan is driven (pwm can be increased depending on
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * the temp. Notice that for the scy some fans share there minimum speed.
  * Also notice that with the scy the sensor order is different than with the
  * other chips, this order was in the 2.4 driver and kept for consistency.
@@ -238,18 +214,10 @@ static const int FSCHMD_NO_TEMP_SENSORS[7] = { 3, 3, 4, 3, 5, 5, 11 };
  * Functions declarations
  */
 
-<<<<<<< HEAD
-static int fschmd_probe(struct i2c_client *client,
-			const struct i2c_device_id *id);
-static int fschmd_detect(struct i2c_client *client,
-			 struct i2c_board_info *info);
-static int fschmd_remove(struct i2c_client *client);
-=======
 static int fschmd_probe(struct i2c_client *client);
 static int fschmd_detect(struct i2c_client *client,
 			 struct i2c_board_info *info);
 static void fschmd_remove(struct i2c_client *client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct fschmd_data *fschmd_update_device(struct device *dev);
 
 /*
@@ -296,11 +264,7 @@ struct fschmd_data {
 	unsigned long watchdog_is_open;
 	char watchdog_expect_close;
 	char watchdog_name[10]; /* must be unique to avoid sysfs conflict */
-<<<<<<< HEAD
-	char valid; /* zero until following fields are valid */
-=======
 	bool valid; /* false until following fields are valid */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated; /* in jiffies */
 
 	/* register values */
@@ -353,13 +317,8 @@ static void fschmd_release_resources(struct kref *ref)
  * Sysfs attr show / store functions
  */
 
-<<<<<<< HEAD
-static ssize_t show_in_value(struct device *dev,
-	struct device_attribute *devattr, char *buf)
-=======
 static ssize_t in_value_show(struct device *dev,
 			     struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const int max_reading[3] = { 14200, 6600, 3300 };
 	int index = to_sensor_dev_attr(devattr)->index;
@@ -376,13 +335,8 @@ static ssize_t in_value_show(struct device *dev,
 
 #define TEMP_FROM_REG(val)	(((val) - 128) * 1000)
 
-<<<<<<< HEAD
-static ssize_t show_temp_value(struct device *dev,
-	struct device_attribute *devattr, char *buf)
-=======
 static ssize_t temp_value_show(struct device *dev,
 			       struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
 	struct fschmd_data *data = fschmd_update_device(dev);
@@ -390,13 +344,8 @@ static ssize_t temp_value_show(struct device *dev,
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp_act[index]));
 }
 
-<<<<<<< HEAD
-static ssize_t show_temp_max(struct device *dev,
-	struct device_attribute *devattr, char *buf)
-=======
 static ssize_t temp_max_show(struct device *dev,
 			     struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
 	struct fschmd_data *data = fschmd_update_device(dev);
@@ -404,14 +353,9 @@ static ssize_t temp_max_show(struct device *dev,
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp_max[index]));
 }
 
-<<<<<<< HEAD
-static ssize_t store_temp_max(struct device *dev, struct device_attribute
-	*devattr, const char *buf, size_t count)
-=======
 static ssize_t temp_max_store(struct device *dev,
 			      struct device_attribute *devattr,
 			      const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
 	struct fschmd_data *data = dev_get_drvdata(dev);
@@ -422,11 +366,7 @@ static ssize_t temp_max_store(struct device *dev,
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	v = SENSORS_LIMIT(v / 1000, -128, 127) + 128;
-=======
 	v = clamp_val(v / 1000, -128, 127) + 128;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->update_lock);
 	i2c_smbus_write_byte_data(to_i2c_client(dev),
@@ -437,13 +377,8 @@ static ssize_t temp_max_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_temp_fault(struct device *dev,
-	struct device_attribute *devattr, char *buf)
-=======
 static ssize_t temp_fault_show(struct device *dev,
 			       struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
 	struct fschmd_data *data = fschmd_update_device(dev);
@@ -455,13 +390,8 @@ static ssize_t temp_fault_show(struct device *dev,
 		return sprintf(buf, "1\n");
 }
 
-<<<<<<< HEAD
-static ssize_t show_temp_alarm(struct device *dev,
-	struct device_attribute *devattr, char *buf)
-=======
 static ssize_t temp_alarm_show(struct device *dev,
 			       struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
 	struct fschmd_data *data = fschmd_update_device(dev);
@@ -476,13 +406,8 @@ static ssize_t temp_alarm_show(struct device *dev,
 
 #define RPM_FROM_REG(val)	((val) * 60)
 
-<<<<<<< HEAD
-static ssize_t show_fan_value(struct device *dev,
-	struct device_attribute *devattr, char *buf)
-=======
 static ssize_t fan_value_show(struct device *dev,
 			      struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
 	struct fschmd_data *data = fschmd_update_device(dev);
@@ -490,13 +415,8 @@ static ssize_t fan_value_show(struct device *dev,
 	return sprintf(buf, "%u\n", RPM_FROM_REG(data->fan_act[index]));
 }
 
-<<<<<<< HEAD
-static ssize_t show_fan_div(struct device *dev,
-	struct device_attribute *devattr, char *buf)
-=======
 static ssize_t fan_div_show(struct device *dev,
 			    struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
 	struct fschmd_data *data = fschmd_update_device(dev);
@@ -505,14 +425,9 @@ static ssize_t fan_div_show(struct device *dev,
 	return sprintf(buf, "%d\n", 1 << (data->fan_ripple[index] & 3));
 }
 
-<<<<<<< HEAD
-static ssize_t store_fan_div(struct device *dev, struct device_attribute
-	*devattr, const char *buf, size_t count)
-=======
 static ssize_t fan_div_store(struct device *dev,
 			     struct device_attribute *devattr,
 			     const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 reg;
 	int index = to_sensor_dev_attr(devattr)->index;
@@ -536,14 +451,9 @@ static ssize_t fan_div_store(struct device *dev,
 		v = 3;
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(dev, "fan_div value %lu not supported. "
-			"Choose one of 2, 4 or 8!\n", v);
-=======
 		dev_err(dev,
 			"fan_div value %lu not supported. Choose one of 2, 4 or 8!\n",
 			v);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -566,13 +476,8 @@ static ssize_t fan_div_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_fan_alarm(struct device *dev,
-	struct device_attribute *devattr, char *buf)
-=======
 static ssize_t fan_alarm_show(struct device *dev,
 			      struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
 	struct fschmd_data *data = fschmd_update_device(dev);
@@ -583,13 +488,8 @@ static ssize_t fan_alarm_show(struct device *dev,
 		return sprintf(buf, "0\n");
 }
 
-<<<<<<< HEAD
-static ssize_t show_fan_fault(struct device *dev,
-	struct device_attribute *devattr, char *buf)
-=======
 static ssize_t fan_fault_show(struct device *dev,
 			      struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
 	struct fschmd_data *data = fschmd_update_device(dev);
@@ -601,14 +501,9 @@ static ssize_t fan_fault_show(struct device *dev,
 }
 
 
-<<<<<<< HEAD
-static ssize_t show_pwm_auto_point1_pwm(struct device *dev,
-	struct device_attribute *devattr, char *buf)
-=======
 static ssize_t pwm_auto_point1_pwm_show(struct device *dev,
 					struct device_attribute *devattr,
 					char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
 	struct fschmd_data *data = fschmd_update_device(dev);
@@ -621,14 +516,9 @@ static ssize_t pwm_auto_point1_pwm_show(struct device *dev,
 	return sprintf(buf, "%d\n", val);
 }
 
-<<<<<<< HEAD
-static ssize_t store_pwm_auto_point1_pwm(struct device *dev,
-	struct device_attribute *devattr, const char *buf, size_t count)
-=======
 static ssize_t pwm_auto_point1_pwm_store(struct device *dev,
 					 struct device_attribute *devattr,
 					 const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
 	struct fschmd_data *data = dev_get_drvdata(dev);
@@ -641,11 +531,7 @@ static ssize_t pwm_auto_point1_pwm_store(struct device *dev,
 
 	/* reg: 0 = allow turning off (except on the syl), 1-255 = 50-100% */
 	if (v || data->kind == fscsyl) {
-<<<<<<< HEAD
-		v = SENSORS_LIMIT(v, 128, 255);
-=======
 		v = clamp_val(v, 128, 255);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		v = (v - 128) * 2 + 1;
 	}
 
@@ -665,11 +551,7 @@ static ssize_t pwm_auto_point1_pwm_store(struct device *dev,
  * The FSC hwmon family has the ability to force an attached alert led to flash
  * from software, we export this as an alert_led sysfs attr
  */
-<<<<<<< HEAD
-static ssize_t show_alert_led(struct device *dev,
-=======
 static ssize_t alert_led_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_attribute *devattr, char *buf)
 {
 	struct fschmd_data *data = fschmd_update_device(dev);
@@ -680,11 +562,7 @@ static ssize_t alert_led_show(struct device *dev,
 		return sprintf(buf, "0\n");
 }
 
-<<<<<<< HEAD
-static ssize_t store_alert_led(struct device *dev,
-=======
 static ssize_t alert_led_store(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_attribute *devattr, const char *buf, size_t count)
 {
 	u8 reg;
@@ -714,109 +592,6 @@ static ssize_t alert_led_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(alert_led, 0644, show_alert_led, store_alert_led);
-
-static struct sensor_device_attribute fschmd_attr[] = {
-	SENSOR_ATTR(in0_input, 0444, show_in_value, NULL, 0),
-	SENSOR_ATTR(in1_input, 0444, show_in_value, NULL, 1),
-	SENSOR_ATTR(in2_input, 0444, show_in_value, NULL, 2),
-	SENSOR_ATTR(in3_input, 0444, show_in_value, NULL, 3),
-	SENSOR_ATTR(in4_input, 0444, show_in_value, NULL, 4),
-	SENSOR_ATTR(in5_input, 0444, show_in_value, NULL, 5),
-};
-
-static struct sensor_device_attribute fschmd_temp_attr[] = {
-	SENSOR_ATTR(temp1_input, 0444, show_temp_value, NULL, 0),
-	SENSOR_ATTR(temp1_max,   0644, show_temp_max, store_temp_max, 0),
-	SENSOR_ATTR(temp1_fault, 0444, show_temp_fault, NULL, 0),
-	SENSOR_ATTR(temp1_alarm, 0444, show_temp_alarm, NULL, 0),
-	SENSOR_ATTR(temp2_input, 0444, show_temp_value, NULL, 1),
-	SENSOR_ATTR(temp2_max,   0644, show_temp_max, store_temp_max, 1),
-	SENSOR_ATTR(temp2_fault, 0444, show_temp_fault, NULL, 1),
-	SENSOR_ATTR(temp2_alarm, 0444, show_temp_alarm, NULL, 1),
-	SENSOR_ATTR(temp3_input, 0444, show_temp_value, NULL, 2),
-	SENSOR_ATTR(temp3_max,   0644, show_temp_max, store_temp_max, 2),
-	SENSOR_ATTR(temp3_fault, 0444, show_temp_fault, NULL, 2),
-	SENSOR_ATTR(temp3_alarm, 0444, show_temp_alarm, NULL, 2),
-	SENSOR_ATTR(temp4_input, 0444, show_temp_value, NULL, 3),
-	SENSOR_ATTR(temp4_max,   0644, show_temp_max, store_temp_max, 3),
-	SENSOR_ATTR(temp4_fault, 0444, show_temp_fault, NULL, 3),
-	SENSOR_ATTR(temp4_alarm, 0444, show_temp_alarm, NULL, 3),
-	SENSOR_ATTR(temp5_input, 0444, show_temp_value, NULL, 4),
-	SENSOR_ATTR(temp5_max,   0644, show_temp_max, store_temp_max, 4),
-	SENSOR_ATTR(temp5_fault, 0444, show_temp_fault, NULL, 4),
-	SENSOR_ATTR(temp5_alarm, 0444, show_temp_alarm, NULL, 4),
-	SENSOR_ATTR(temp6_input, 0444, show_temp_value, NULL, 5),
-	SENSOR_ATTR(temp6_max,   0644, show_temp_max, store_temp_max, 5),
-	SENSOR_ATTR(temp6_fault, 0444, show_temp_fault, NULL, 5),
-	SENSOR_ATTR(temp6_alarm, 0444, show_temp_alarm, NULL, 5),
-	SENSOR_ATTR(temp7_input, 0444, show_temp_value, NULL, 6),
-	SENSOR_ATTR(temp7_max,   0644, show_temp_max, store_temp_max, 6),
-	SENSOR_ATTR(temp7_fault, 0444, show_temp_fault, NULL, 6),
-	SENSOR_ATTR(temp7_alarm, 0444, show_temp_alarm, NULL, 6),
-	SENSOR_ATTR(temp8_input, 0444, show_temp_value, NULL, 7),
-	SENSOR_ATTR(temp8_max,   0644, show_temp_max, store_temp_max, 7),
-	SENSOR_ATTR(temp8_fault, 0444, show_temp_fault, NULL, 7),
-	SENSOR_ATTR(temp8_alarm, 0444, show_temp_alarm, NULL, 7),
-	SENSOR_ATTR(temp9_input, 0444, show_temp_value, NULL, 8),
-	SENSOR_ATTR(temp9_max,   0644, show_temp_max, store_temp_max, 8),
-	SENSOR_ATTR(temp9_fault, 0444, show_temp_fault, NULL, 8),
-	SENSOR_ATTR(temp9_alarm, 0444, show_temp_alarm, NULL, 8),
-	SENSOR_ATTR(temp10_input, 0444, show_temp_value, NULL, 9),
-	SENSOR_ATTR(temp10_max,   0644, show_temp_max, store_temp_max, 9),
-	SENSOR_ATTR(temp10_fault, 0444, show_temp_fault, NULL, 9),
-	SENSOR_ATTR(temp10_alarm, 0444, show_temp_alarm, NULL, 9),
-	SENSOR_ATTR(temp11_input, 0444, show_temp_value, NULL, 10),
-	SENSOR_ATTR(temp11_max,   0644, show_temp_max, store_temp_max, 10),
-	SENSOR_ATTR(temp11_fault, 0444, show_temp_fault, NULL, 10),
-	SENSOR_ATTR(temp11_alarm, 0444, show_temp_alarm, NULL, 10),
-};
-
-static struct sensor_device_attribute fschmd_fan_attr[] = {
-	SENSOR_ATTR(fan1_input, 0444, show_fan_value, NULL, 0),
-	SENSOR_ATTR(fan1_div,   0644, show_fan_div, store_fan_div, 0),
-	SENSOR_ATTR(fan1_alarm, 0444, show_fan_alarm, NULL, 0),
-	SENSOR_ATTR(fan1_fault, 0444, show_fan_fault, NULL, 0),
-	SENSOR_ATTR(pwm1_auto_point1_pwm, 0644, show_pwm_auto_point1_pwm,
-		store_pwm_auto_point1_pwm, 0),
-	SENSOR_ATTR(fan2_input, 0444, show_fan_value, NULL, 1),
-	SENSOR_ATTR(fan2_div,   0644, show_fan_div, store_fan_div, 1),
-	SENSOR_ATTR(fan2_alarm, 0444, show_fan_alarm, NULL, 1),
-	SENSOR_ATTR(fan2_fault, 0444, show_fan_fault, NULL, 1),
-	SENSOR_ATTR(pwm2_auto_point1_pwm, 0644, show_pwm_auto_point1_pwm,
-		store_pwm_auto_point1_pwm, 1),
-	SENSOR_ATTR(fan3_input, 0444, show_fan_value, NULL, 2),
-	SENSOR_ATTR(fan3_div,   0644, show_fan_div, store_fan_div, 2),
-	SENSOR_ATTR(fan3_alarm, 0444, show_fan_alarm, NULL, 2),
-	SENSOR_ATTR(fan3_fault, 0444, show_fan_fault, NULL, 2),
-	SENSOR_ATTR(pwm3_auto_point1_pwm, 0644, show_pwm_auto_point1_pwm,
-		store_pwm_auto_point1_pwm, 2),
-	SENSOR_ATTR(fan4_input, 0444, show_fan_value, NULL, 3),
-	SENSOR_ATTR(fan4_div,   0644, show_fan_div, store_fan_div, 3),
-	SENSOR_ATTR(fan4_alarm, 0444, show_fan_alarm, NULL, 3),
-	SENSOR_ATTR(fan4_fault, 0444, show_fan_fault, NULL, 3),
-	SENSOR_ATTR(pwm4_auto_point1_pwm, 0644, show_pwm_auto_point1_pwm,
-		store_pwm_auto_point1_pwm, 3),
-	SENSOR_ATTR(fan5_input, 0444, show_fan_value, NULL, 4),
-	SENSOR_ATTR(fan5_div,   0644, show_fan_div, store_fan_div, 4),
-	SENSOR_ATTR(fan5_alarm, 0444, show_fan_alarm, NULL, 4),
-	SENSOR_ATTR(fan5_fault, 0444, show_fan_fault, NULL, 4),
-	SENSOR_ATTR(pwm5_auto_point1_pwm, 0644, show_pwm_auto_point1_pwm,
-		store_pwm_auto_point1_pwm, 4),
-	SENSOR_ATTR(fan6_input, 0444, show_fan_value, NULL, 5),
-	SENSOR_ATTR(fan6_div,   0644, show_fan_div, store_fan_div, 5),
-	SENSOR_ATTR(fan6_alarm, 0444, show_fan_alarm, NULL, 5),
-	SENSOR_ATTR(fan6_fault, 0444, show_fan_fault, NULL, 5),
-	SENSOR_ATTR(pwm6_auto_point1_pwm, 0644, show_pwm_auto_point1_pwm,
-		store_pwm_auto_point1_pwm, 5),
-	SENSOR_ATTR(fan7_input, 0444, show_fan_value, NULL, 6),
-	SENSOR_ATTR(fan7_div,   0644, show_fan_div, store_fan_div, 6),
-	SENSOR_ATTR(fan7_alarm, 0444, show_fan_alarm, NULL, 6),
-	SENSOR_ATTR(fan7_fault, 0444, show_fan_fault, NULL, 6),
-	SENSOR_ATTR(pwm7_auto_point1_pwm, 0644, show_pwm_auto_point1_pwm,
-		store_pwm_auto_point1_pwm, 6),
-=======
 static DEVICE_ATTR_RW(alert_led);
 
 static struct sensor_device_attribute fschmd_attr[] = {
@@ -911,7 +686,6 @@ static struct sensor_device_attribute fschmd_fan_attr[] = {
 	SENSOR_ATTR_RO(fan7_alarm, fan_alarm, 6),
 	SENSOR_ATTR_RO(fan7_fault, fan_fault, 6),
 	SENSOR_ATTR_RW(pwm7_auto_point1_pwm, pwm_auto_point1_pwm, 6),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -1049,11 +823,7 @@ static int watchdog_open(struct inode *inode, struct file *filp)
 	watchdog_trigger(data);
 	filp->private_data = data;
 
-<<<<<<< HEAD
-	return nonseekable_open(inode, filp);
-=======
 	return stream_open(inode, filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int watchdog_release(struct inode *inode, struct file *filp)
@@ -1183,10 +953,7 @@ static const struct file_operations watchdog_fops = {
 	.release = watchdog_release,
 	.write = watchdog_write,
 	.unlocked_ioctl = watchdog_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl = compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -1308,26 +1075,11 @@ static int fschmd_detect(struct i2c_client *client,
 	else
 		return -ENODEV;
 
-<<<<<<< HEAD
-	strlcpy(info->type, fschmd_id[kind].name, I2C_NAME_SIZE);
-=======
 	strscpy(info->type, fschmd_id[kind].name, I2C_NAME_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int fschmd_probe(struct i2c_client *client,
-			const struct i2c_device_id *id)
-{
-	struct fschmd_data *data;
-	const char * const names[7] = { "Poseidon", "Hermes", "Scylla",
-				"Heracles", "Heimdall", "Hades", "Syleus" };
-	const int watchdog_minors[] = { WATCHDOG_MINOR, 212, 213, 214, 215 };
-	int i, err;
-	enum chips kind = id->driver_data;
-=======
 static int fschmd_probe(struct i2c_client *client)
 {
 	struct fschmd_data *data;
@@ -1336,7 +1088,6 @@ static int fschmd_probe(struct i2c_client *client)
 	static const int watchdog_minors[] = { WATCHDOG_MINOR, 212, 213, 214, 215 };
 	int i, err;
 	enum chips kind = i2c_match_id(fschmd_id, client)->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data = kzalloc(sizeof(struct fschmd_data), GFP_KERNEL);
 	if (!data)
@@ -1401,11 +1152,7 @@ static int fschmd_probe(struct i2c_client *client)
 	for (i = 0; i < (FSCHMD_NO_TEMP_SENSORS[data->kind] * 4); i++) {
 		/* Poseidon doesn't have TEMP_LIMIT registers */
 		if (kind == fscpos && fschmd_temp_attr[i].dev_attr.show ==
-<<<<<<< HEAD
-				show_temp_max)
-=======
 				temp_max_show)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		if (kind == fscsyl) {
@@ -1486,13 +1233,8 @@ static int fschmd_probe(struct i2c_client *client)
 	}
 	if (i == ARRAY_SIZE(watchdog_minors)) {
 		data->watchdog_miscdev.minor = 0;
-<<<<<<< HEAD
-		dev_warn(&client->dev, "Couldn't register watchdog chardev "
-			"(due to no free minor)\n");
-=======
 		dev_warn(&client->dev,
 			 "Couldn't register watchdog chardev (due to no free minor)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&watchdog_data_mutex);
 
@@ -1506,11 +1248,7 @@ exit_detach:
 	return err;
 }
 
-<<<<<<< HEAD
-static int fschmd_remove(struct i2c_client *client)
-=======
 static void fschmd_remove(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fschmd_data *data = i2c_get_clientdata(client);
 	int i;
@@ -1553,11 +1291,6 @@ static void fschmd_remove(struct i2c_client *client)
 	mutex_lock(&watchdog_data_mutex);
 	kref_put(&data->kref, fschmd_release_resources);
 	mutex_unlock(&watchdog_data_mutex);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct fschmd_data *fschmd_update_device(struct device *dev)
@@ -1621,11 +1354,7 @@ static struct fschmd_data *fschmd_update_device(struct device *dev)
 					       FSCHMD_REG_VOLT[data->kind][i]);
 
 		data->last_updated = jiffies;
-<<<<<<< HEAD
-		data->valid = 1;
-=======
 		data->valid = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);

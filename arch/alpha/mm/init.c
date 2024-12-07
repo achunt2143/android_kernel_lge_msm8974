@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/alpha/mm/init.c
  *
@@ -22,20 +19,11 @@
 #include <linux/mm.h>
 #include <linux/swap.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h> /* max_low_pfn */
-#include <linux/vmalloc.h>
-#include <linux/gfp.h>
-
-#include <asm/uaccess.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/memblock.h> /* max_low_pfn */
 #include <linux/vmalloc.h>
 #include <linux/gfp.h>
 
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pgalloc.h>
 #include <asm/hwrpb.h>
 #include <asm/dma.h>
@@ -43,10 +31,7 @@
 #include <asm/console.h>
 #include <asm/tlb.h>
 #include <asm/setup.h>
-<<<<<<< HEAD
-=======
 #include <asm/sections.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void die_if_kernel(char *,struct pt_regs *,long);
 
@@ -91,22 +76,14 @@ pgd_alloc(struct mm_struct *mm)
 pmd_t *
 __bad_pagetable(void)
 {
-<<<<<<< HEAD
-	memset((void *) EMPTY_PGT, 0, PAGE_SIZE);
-=======
 	memset(absolute_pointer(EMPTY_PGT), 0, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (pmd_t *) EMPTY_PGT;
 }
 
 pte_t
 __bad_page(void)
 {
-<<<<<<< HEAD
-	memset((void *) EMPTY_PGE, 0, PAGE_SIZE);
-=======
 	memset(absolute_pointer(EMPTY_PGE), 0, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pte_mkdirty(mk_pte(virt_to_page(EMPTY_PGE), PAGE_SHARED));
 }
 
@@ -168,11 +145,8 @@ callback_init(void * kernel_end)
 {
 	struct crb_struct * crb;
 	pgd_t *pgd;
-<<<<<<< HEAD
-=======
 	p4d_t *p4d;
 	pud_t *pud;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmd_t *pmd;
 	void *two_pages;
 
@@ -211,15 +185,10 @@ callback_init(void * kernel_end)
 	memset(two_pages, 0, 2*PAGE_SIZE);
 
 	pgd = pgd_offset_k(VMALLOC_START);
-<<<<<<< HEAD
-	pgd_set(pgd, (pmd_t *)two_pages);
-	pmd = pmd_offset(pgd, VMALLOC_START);
-=======
 	p4d = p4d_offset(pgd, VMALLOC_START);
 	pud = pud_offset(p4d, VMALLOC_START);
 	pud_set(pud, (pmd_t *)two_pages);
 	pmd = pmd_offset(pud, VMALLOC_START);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmd_set(pmd, (pte_t *)(two_pages + PAGE_SIZE));
 
 	if (alpha_using_srm) {
@@ -248,15 +217,9 @@ callback_init(void * kernel_end)
 				/* Newer consoles (especially on larger
 				   systems) may require more pages of
 				   PTEs. Grab additional pages as needed. */
-<<<<<<< HEAD
-				if (pmd != pmd_offset(pgd, vaddr)) {
-					memset(kernel_end, 0, PAGE_SIZE);
-					pmd = pmd_offset(pgd, vaddr);
-=======
 				if (pmd != pmd_offset(pud, vaddr)) {
 					memset(kernel_end, 0, PAGE_SIZE);
 					pmd = pmd_offset(pud, vaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					pmd_set(pmd, (pte_t *)kernel_end);
 					kernel_end += PAGE_SIZE;
 				}
@@ -272,38 +235,11 @@ callback_init(void * kernel_end)
 	return kernel_end;
 }
 
-<<<<<<< HEAD
-
-#ifndef CONFIG_DISCONTIGMEM
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * paging_init() sets up the memory map.
  */
 void __init paging_init(void)
 {
-<<<<<<< HEAD
-	unsigned long zones_size[MAX_NR_ZONES] = {0, };
-	unsigned long dma_pfn, high_pfn;
-
-	dma_pfn = virt_to_phys((char *)MAX_DMA_ADDRESS) >> PAGE_SHIFT;
-	high_pfn = max_pfn = max_low_pfn;
-
-	if (dma_pfn >= high_pfn)
-		zones_size[ZONE_DMA] = high_pfn;
-	else {
-		zones_size[ZONE_DMA] = dma_pfn;
-		zones_size[ZONE_NORMAL] = high_pfn - dma_pfn;
-	}
-
-	/* Initialize mem_map[].  */
-	free_area_init(zones_size);
-
-	/* Initialize the kernel's ZERO_PGE. */
-	memset((void *)ZERO_PGE, 0, PAGE_SIZE);
-}
-#endif /* CONFIG_DISCONTIGMEM */
-=======
 	unsigned long max_zone_pfn[MAX_NR_ZONES] = {0, };
 	unsigned long dma_pfn;
 
@@ -319,7 +255,6 @@ void __init paging_init(void)
 	/* Initialize the kernel's ZERO_PGE. */
 	memset(absolute_pointer(ZERO_PGE), 0, PAGE_SIZE);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_ALPHA_GENERIC) || defined(CONFIG_ALPHA_SRM)
 void
@@ -338,80 +273,6 @@ srm_paging_stop (void)
 }
 #endif
 
-<<<<<<< HEAD
-#ifndef CONFIG_DISCONTIGMEM
-static void __init
-printk_memory_info(void)
-{
-	unsigned long codesize, reservedpages, datasize, initsize, tmp;
-	extern int page_is_ram(unsigned long) __init;
-	extern char _text, _etext, _data, _edata;
-	extern char __init_begin, __init_end;
-
-	/* printk all informations */
-	reservedpages = 0;
-	for (tmp = 0; tmp < max_low_pfn; tmp++)
-		/*
-		 * Only count reserved RAM pages
-		 */
-		if (page_is_ram(tmp) && PageReserved(mem_map+tmp))
-			reservedpages++;
-
-	codesize =  (unsigned long) &_etext - (unsigned long) &_text;
-	datasize =  (unsigned long) &_edata - (unsigned long) &_data;
-	initsize =  (unsigned long) &__init_end - (unsigned long) &__init_begin;
-
-	printk("Memory: %luk/%luk available (%luk kernel code, %luk reserved, %luk data, %luk init)\n",
-	       nr_free_pages() << (PAGE_SHIFT-10),
-	       max_mapnr << (PAGE_SHIFT-10),
-	       codesize >> 10,
-	       reservedpages << (PAGE_SHIFT-10),
-	       datasize >> 10,
-	       initsize >> 10);
-}
-
-void __init
-mem_init(void)
-{
-	max_mapnr = num_physpages = max_low_pfn;
-	totalram_pages += free_all_bootmem();
-	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
-
-	printk_memory_info();
-}
-#endif /* CONFIG_DISCONTIGMEM */
-
-void
-free_reserved_mem(void *start, void *end)
-{
-	void *__start = start;
-	for (; __start < end; __start += PAGE_SIZE) {
-		ClearPageReserved(virt_to_page(__start));
-		init_page_count(virt_to_page(__start));
-		free_page((long)__start);
-		totalram_pages++;
-	}
-}
-
-void
-free_initmem(void)
-{
-	extern char __init_begin, __init_end;
-
-	free_reserved_mem(&__init_begin, &__init_end);
-	printk ("Freeing unused kernel memory: %ldk freed\n",
-		(&__init_end - &__init_begin) >> 10);
-}
-
-#ifdef CONFIG_BLK_DEV_INITRD
-void
-free_initrd_mem(unsigned long start, unsigned long end)
-{
-	free_reserved_mem((void *)start, (void *)end);
-	printk ("Freeing initrd memory: %ldk freed\n", (end - start) >> 10);
-}
-#endif
-=======
 void __init
 mem_init(void)
 {
@@ -441,4 +302,3 @@ static const pgprot_t protection_map[16] = {
 	[VM_SHARED | VM_EXEC | VM_WRITE | VM_READ]	= _PAGE_S(0)
 };
 DECLARE_VM_GET_PAGE_PROT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

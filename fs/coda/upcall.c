@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Mostly platform independent upcall operations to Venus:
  *  -- upcalls
@@ -19,11 +16,7 @@
  */
 
 #include <linux/signal.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
@@ -35,20 +28,12 @@
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vmalloc.h>
 #include <linux/vfs.h>
 
 #include <linux/coda.h>
-<<<<<<< HEAD
-#include <linux/coda_psdev.h>
-=======
 #include "coda_psdev.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "coda_linux.h"
 #include "coda_cache.h"
 
@@ -61,24 +46,14 @@ static void *alloc_upcall(int opcode, int size)
 {
 	union inputArgs *inp;
 
-<<<<<<< HEAD
-	CODA_ALLOC(inp, union inputArgs *, size);
-=======
 	inp = kvzalloc(size, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         if (!inp)
 		return ERR_PTR(-ENOMEM);
 
         inp->ih.opcode = opcode;
-<<<<<<< HEAD
-	inp->ih.pid = current->pid;
-	inp->ih.pgid = task_pgrp_nr(current);
-	inp->ih.uid = current_fsuid();
-=======
 	inp->ih.pid = task_pid_nr_ns(current, &init_pid_ns);
 	inp->ih.pgid = task_pgrp_nr_ns(current, &init_pid_ns);
 	inp->ih.uid = from_kuid(&init_user_ns, current_fsuid());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (void*)inp;
 }
@@ -110,11 +85,7 @@ int venus_rootfid(struct super_block *sb, struct CodaFid *fidp)
 	if (!error)
 		*fidp = outp->coda_root.VFid;
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -133,11 +104,7 @@ int venus_getattr(struct super_block *sb, struct CodaFid *fid,
 	if (!error)
 		*attr = outp->coda_getattr.attr;
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         return error;
 }
 
@@ -156,11 +123,7 @@ int venus_setattr(struct super_block *sb, struct CodaFid *fid,
 
 	error = coda_upcall(coda_vcp(sb), insize, &outsize, inp);
 
-<<<<<<< HEAD
-        CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         return error;
 }
 
@@ -190,20 +153,12 @@ int venus_lookup(struct super_block *sb, struct CodaFid *fid,
 		*type = outp->coda_lookup.vtype;
 	}
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 int venus_close(struct super_block *sb, struct CodaFid *fid, int flags,
-<<<<<<< HEAD
-		vuid_t uid)
-=======
 		kuid_t uid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union inputArgs *inp;
 	union outputArgs *outp;
@@ -212,21 +167,13 @@ int venus_close(struct super_block *sb, struct CodaFid *fid, int flags,
 	insize = SIZE(release);
 	UPARG(CODA_CLOSE);
 	
-<<<<<<< HEAD
-	inp->ih.uid = uid;
-=======
 	inp->ih.uid = from_kuid(&init_user_ns, uid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         inp->coda_close.VFid = *fid;
         inp->coda_close.flags = flags;
 
 	error = coda_upcall(coda_vcp(sb), insize, &outsize, inp);
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         return error;
 }
 
@@ -247,11 +194,7 @@ int venus_open(struct super_block *sb, struct CodaFid *fid,
 	if (!error)
 		*fh = outp->coda_open_by_fd.fh;
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }	
 
@@ -281,11 +224,7 @@ int venus_mkdir(struct super_block *sb, struct CodaFid *dirfid,
 		*newfid = outp->coda_mkdir.VFid;
 	}
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;        
 }
 
@@ -323,11 +262,7 @@ int venus_rename(struct super_block *sb, struct CodaFid *old_fid,
 
 	error = coda_upcall(coda_vcp(sb), insize, &outsize, inp);
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -360,11 +295,7 @@ int venus_create(struct super_block *sb, struct CodaFid *dirfid,
 		*newfid = outp->coda_create.VFid;
 	}
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;        
 }
 
@@ -387,11 +318,7 @@ int venus_rmdir(struct super_block *sb, struct CodaFid *dirfid,
 
 	error = coda_upcall(coda_vcp(sb), insize, &outsize, inp);
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -413,11 +340,7 @@ int venus_remove(struct super_block *sb, struct CodaFid *dirfid,
 
 	error = coda_upcall(coda_vcp(sb), insize, &outsize, inp);
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -431,11 +354,7 @@ int venus_readlink(struct super_block *sb, struct CodaFid *fid,
         char *result;
         
 	insize = max_t(unsigned int,
-<<<<<<< HEAD
-		     INSIZE(readlink), OUTSIZE(readlink)+ *length + 1);
-=======
 		     INSIZE(readlink), OUTSIZE(readlink)+ *length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	UPARG(CODA_READLINK);
 
         inp->coda_readlink.VFid = *fid;
@@ -443,24 +362,15 @@ int venus_readlink(struct super_block *sb, struct CodaFid *fid,
 	error = coda_upcall(coda_vcp(sb), insize, &outsize, inp);
 	if (!error) {
 		retlen = outp->coda_readlink.count;
-<<<<<<< HEAD
-		if ( retlen > *length )
-			retlen = *length;
-=======
 		if (retlen >= *length)
 			retlen = *length - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*length = retlen;
 		result =  (char *)outp + (long)outp->coda_readlink.data;
 		memcpy(buffer, result, retlen);
 		*(buffer + retlen) = '\0';
 	}
 
-<<<<<<< HEAD
-        CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         return error;
 }
 
@@ -488,11 +398,7 @@ int venus_link(struct super_block *sb, struct CodaFid *fid,
 
 	error = coda_upcall(coda_vcp(sb), insize, &outsize, inp);
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         return error;
 }
 
@@ -527,11 +433,7 @@ int venus_symlink(struct super_block *sb, struct CodaFid *fid,
 
 	error = coda_upcall(coda_vcp(sb), insize, &outsize, inp);
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         return error;
 }
 
@@ -545,16 +447,9 @@ int venus_fsync(struct super_block *sb, struct CodaFid *fid)
 	UPARG(CODA_FSYNC);
 
 	inp->coda_fsync.VFid = *fid;
-<<<<<<< HEAD
-	error = coda_upcall(coda_vcp(sb), sizeof(union inputArgs),
-			    &outsize, inp);
-
-	CODA_FREE(inp, insize);
-=======
 	error = coda_upcall(coda_vcp(sb), insize, &outsize, inp);
 
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -572,11 +467,7 @@ int venus_access(struct super_block *sb, struct CodaFid *fid, int mask)
 
 	error = coda_upcall(coda_vcp(sb), insize, &outsize, inp);
 
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -617,13 +508,8 @@ int venus_pioctl(struct super_block *sb, struct CodaFid *fid,
         inp->coda_ioctl.data = (char *)(INSIZE(ioctl));
      
         /* get the data out of user space */
-<<<<<<< HEAD
-        if ( copy_from_user((char*)inp + (long)inp->coda_ioctl.data,
-			    data->vi.in, data->vi.in_size) ) {
-=======
 	if (copy_from_user((char *)inp + (long)inp->coda_ioctl.data,
 			   data->vi.in, data->vi.in_size)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = -EINVAL;
 	        goto exit;
 	}
@@ -632,13 +518,8 @@ int venus_pioctl(struct super_block *sb, struct CodaFid *fid,
 			    &outsize, inp);
 
         if (error) {
-<<<<<<< HEAD
-	        printk("coda_pioctl: Venus returns: %d for %s\n", 
-		       error, coda_f2s(fid));
-=======
 		pr_warn("%s: Venus returns: %d for %s\n",
 			__func__, error, coda_f2s(fid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit; 
 	}
 
@@ -662,11 +543,7 @@ int venus_pioctl(struct super_block *sb, struct CodaFid *fid,
 	}
 
  exit:
-<<<<<<< HEAD
-	CODA_FREE(inp, insize);
-=======
 	kvfree(inp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -676,11 +553,7 @@ int venus_statfs(struct dentry *dentry, struct kstatfs *sfs)
         union outputArgs *outp;
         int insize, outsize, error;
         
-<<<<<<< HEAD
-	insize = max_t(unsigned int, INSIZE(statfs), OUTSIZE(statfs));
-=======
 	insize = SIZE(statfs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	UPARG(CODA_STATFS);
 
 	error = coda_upcall(coda_vcp(dentry->d_sb), insize, &outsize, inp);
@@ -692,12 +565,6 @@ int venus_statfs(struct dentry *dentry, struct kstatfs *sfs)
 		sfs->f_ffree  = outp->coda_statfs.stat.f_ffree;
 	}
 
-<<<<<<< HEAD
-        CODA_FREE(inp, insize);
-        return error;
-}
-
-=======
 	kvfree(inp);
         return error;
 }
@@ -743,7 +610,6 @@ int venus_access_intent(struct super_block *sb, struct CodaFid *fid,
 	return error;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * coda_upcall and coda_downcall routines.
  */
@@ -773,18 +639,12 @@ static void coda_unblock_signals(sigset_t *old)
  * has seen them,
  * - CODA_CLOSE or CODA_RELEASE upcall  (to avoid reference count problems)
  * - CODA_STORE				(to avoid data loss)
-<<<<<<< HEAD
-=======
  * - CODA_ACCESS_INTENT                 (to avoid reference count problems)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define CODA_INTERRUPTIBLE(r) (!coda_hard && \
 			       (((r)->uc_opcode != CODA_CLOSE && \
 				 (r)->uc_opcode != CODA_STORE && \
-<<<<<<< HEAD
-=======
 				 (r)->uc_opcode != CODA_ACCESS_INTENT && \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 (r)->uc_opcode != CODA_RELEASE) || \
 				(r)->uc_flags & CODA_REQ_READ))
 
@@ -858,11 +718,7 @@ static int coda_upcall(struct venus_comm *vcp,
 	mutex_lock(&vcp->vc_mutex);
 
 	if (!vcp->vc_inuse) {
-<<<<<<< HEAD
-		printk(KERN_NOTICE "coda: Venus dead, not sending upcall\n");
-=======
 		pr_notice("Venus dead, not sending upcall\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = -ENXIO;
 		goto exit;
 	}
@@ -874,23 +730,6 @@ static int coda_upcall(struct venus_comm *vcp,
 		goto exit;
 	}
 
-<<<<<<< HEAD
-	req->uc_data = (void *)buffer;
-	req->uc_flags = 0;
-	req->uc_inSize = inSize;
-	req->uc_outSize = *outSize ? *outSize : inSize;
-	req->uc_opcode = ((union inputArgs *)buffer)->ih.opcode;
-	req->uc_unique = ++vcp->vc_seq;
-	init_waitqueue_head(&req->uc_sleep);
-
-	/* Fill in the common input args. */
-	((union inputArgs *)buffer)->ih.unique = req->uc_unique;
-
-	/* Append msg to pending queue and poke Venus. */
-	list_add_tail(&req->uc_chain, &vcp->vc_pending);
-
-	wake_up_interruptible(&vcp->vc_waitq);
-=======
 	buffer->ih.unique = ++vcp->vc_seq;
 
 	req->uc_data = (void *)buffer;
@@ -911,7 +750,6 @@ static int coda_upcall(struct venus_comm *vcp,
 		return 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We can be interrupted while we wait for Venus to process
 	 * our request.  If the interrupt occurs before Venus has read
 	 * the request, we dequeue and return. If it occurs after the
@@ -935,11 +773,7 @@ static int coda_upcall(struct venus_comm *vcp,
 
 	error = -EINTR;
 	if ((req->uc_flags & CODA_REQ_ABORT) || !signal_pending(current)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "coda: Unexpected interruption.\n");
-=======
 		pr_warn("Unexpected interruption.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
@@ -949,11 +783,7 @@ static int coda_upcall(struct venus_comm *vcp,
 
 	/* Venus saw the upcall, make sure we can send interrupt signal */
 	if (!vcp->vc_inuse) {
-<<<<<<< HEAD
-		printk(KERN_INFO "coda: Venus dead, not sending signal.\n");
-=======
 		pr_info("Venus dead, not sending signal.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
@@ -961,32 +791,20 @@ static int coda_upcall(struct venus_comm *vcp,
 	sig_req = kmalloc(sizeof(struct upc_req), GFP_KERNEL);
 	if (!sig_req) goto exit;
 
-<<<<<<< HEAD
-	CODA_ALLOC((sig_req->uc_data), char *, sizeof(struct coda_in_hdr));
-	if (!sig_req->uc_data) {
-=======
 	sig_inputArgs = kvzalloc(sizeof(*sig_inputArgs), GFP_KERNEL);
 	if (!sig_inputArgs) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(sig_req);
 		goto exit;
 	}
 
 	error = -EINTR;
-<<<<<<< HEAD
-	sig_inputArgs = (union inputArgs *)sig_req->uc_data;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sig_inputArgs->ih.opcode = CODA_SIGNAL;
 	sig_inputArgs->ih.unique = req->uc_unique;
 
 	sig_req->uc_flags = CODA_REQ_ASYNC;
 	sig_req->uc_opcode = sig_inputArgs->ih.opcode;
 	sig_req->uc_unique = sig_inputArgs->ih.unique;
-<<<<<<< HEAD
-=======
 	sig_req->uc_data = (void *)sig_inputArgs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sig_req->uc_inSize = sizeof(struct coda_in_hdr);
 	sig_req->uc_outSize = sizeof(struct coda_in_hdr);
 
@@ -1034,19 +852,13 @@ exit:
  *
  * CODA_REPLACE -- replace one CodaFid with another throughout the name cache */
 
-<<<<<<< HEAD
-int coda_downcall(struct venus_comm *vcp, int opcode, union outputArgs *out)
-=======
 int coda_downcall(struct venus_comm *vcp, int opcode, union outputArgs *out,
 		  size_t nbytes)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode = NULL;
 	struct CodaFid *fid = NULL, *newfid;
 	struct super_block *sb;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Make sure we have received enough data from the cache
 	 * manager to populate the necessary fields in the buffer
@@ -1078,7 +890,6 @@ int coda_downcall(struct venus_comm *vcp, int opcode, union outputArgs *out,
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Handle invalidation requests. */
 	mutex_lock(&vcp->vc_mutex);
 	sb = vcp->vc_sb;
@@ -1089,13 +900,8 @@ int coda_downcall(struct venus_comm *vcp, int opcode, union outputArgs *out,
 	case CODA_FLUSH:
 		coda_cache_clear_all(sb);
 		shrink_dcache_sb(sb);
-<<<<<<< HEAD
-		if (sb->s_root->d_inode)
-			coda_flag_inode(sb->s_root->d_inode, C_FLUSH);
-=======
 		if (d_really_is_positive(sb->s_root))
 			coda_flag_inode(d_inode(sb->s_root), C_FLUSH);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case CODA_PURGEUSER:
@@ -1153,7 +959,3 @@ unlock_out:
 	iput(inode);
 	return 0;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

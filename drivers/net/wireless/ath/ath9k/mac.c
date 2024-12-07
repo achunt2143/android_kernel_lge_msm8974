@@ -133,10 +133,6 @@ EXPORT_SYMBOL(ath9k_hw_updatetxtriglevel);
 
 void ath9k_hw_abort_tx_dma(struct ath_hw *ah)
 {
-<<<<<<< HEAD
-	int i, q;
-
-=======
 	int maxdelay = 1000;
 	int i, q;
 
@@ -147,7 +143,6 @@ void ath9k_hw_abort_tx_dma(struct ath_hw *ah)
 			maxdelay *= 4;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	REG_WRITE(ah, AR_Q_TXD, AR_Q_TXD_M);
 
 	REG_SET_BIT(ah, AR_PCU_MISC, AR_PCU_FORCE_QUIET_COLL | AR_PCU_CLEAR_VMF);
@@ -155,11 +150,7 @@ void ath9k_hw_abort_tx_dma(struct ath_hw *ah)
 	REG_SET_BIT(ah, AR_D_GBL_IFS_MISC, AR_D_GBL_IFS_MISC_IGNORE_BACKOFF);
 
 	for (q = 0; q < AR_NUM_QCU; q++) {
-<<<<<<< HEAD
-		for (i = 0; i < 1000; i++) {
-=======
 		for (i = 0; i < maxdelay; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i)
 				udelay(5);
 
@@ -376,10 +367,6 @@ EXPORT_SYMBOL(ath9k_hw_releasetxqueue);
 bool ath9k_hw_resettxqueue(struct ath_hw *ah, u32 q)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
-<<<<<<< HEAD
-	struct ath9k_channel *chan = ah->curchan;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath9k_tx_queue_info *qi;
 	u32 cwMin, chanCwMin, value;
 
@@ -392,14 +379,7 @@ bool ath9k_hw_resettxqueue(struct ath_hw *ah, u32 q)
 	ath_dbg(common, QUEUE, "Reset TX queue: %u\n", q);
 
 	if (qi->tqi_cwmin == ATH9K_TXQ_USEDEFAULT) {
-<<<<<<< HEAD
-		if (chan && IS_CHAN_B(chan))
-			chanCwMin = INIT_CWMIN_11B;
-		else
-			chanCwMin = INIT_CWMIN;
-=======
 		chanCwMin = INIT_CWMIN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (cwMin = 1; cwMin < chanCwMin; cwMin = (cwMin << 1) | 1);
 	} else
@@ -419,11 +399,7 @@ bool ath9k_hw_resettxqueue(struct ath_hw *ah, u32 q)
 
 	REG_WRITE(ah, AR_QMISC(q), AR_Q_MISC_DCU_EARLY_TERM_REQ);
 
-<<<<<<< HEAD
-	if (AR_SREV_9340(ah))
-=======
 	if (AR_SREV_9340(ah) && !AR_SREV_9340_13_OR_LATER(ah))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		REG_WRITE(ah, AR_DMISC(q),
 			  AR_D_MISC_CW_BKOFF_EN | AR_D_MISC_FRAG_WAIT_EN | 0x1);
 	else
@@ -498,12 +474,7 @@ bool ath9k_hw_resettxqueue(struct ath_hw *ah, u32 q)
 			    | AR_Q_MISC_CBR_INCR_DIS0);
 		value = (qi->tqi_readyTime -
 			 (ah->config.sw_beacon_response_time -
-<<<<<<< HEAD
-			  ah->config.dma_beacon_response_time) -
-			 ah->config.additional_swba_backoff) * 1024;
-=======
 			  ah->config.dma_beacon_response_time)) * 1024;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		REG_WRITE(ah, AR_QRDYTIMECFG(q),
 			  value | AR_Q_RDYTIMECFG_EN);
 		REG_SET_BIT(ah, AR_DMISC(q),
@@ -564,38 +535,14 @@ int ath9k_hw_rxprocdesc(struct ath_hw *ah, struct ath_desc *ds,
 
 	rs->rs_status = 0;
 	rs->rs_flags = 0;
-<<<<<<< HEAD
-=======
 	rs->enc_flags = 0;
 	rs->bw = RATE_INFO_BW_20;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rs->rs_datalen = ads.ds_rxstatus1 & AR_DataLen;
 	rs->rs_tstamp = ads.AR_RcvTimestamp;
 
 	if (ads.ds_rxstatus8 & AR_PostDelimCRCErr) {
 		rs->rs_rssi = ATH9K_RSSI_BAD;
-<<<<<<< HEAD
-		rs->rs_rssi_ctl0 = ATH9K_RSSI_BAD;
-		rs->rs_rssi_ctl1 = ATH9K_RSSI_BAD;
-		rs->rs_rssi_ctl2 = ATH9K_RSSI_BAD;
-		rs->rs_rssi_ext0 = ATH9K_RSSI_BAD;
-		rs->rs_rssi_ext1 = ATH9K_RSSI_BAD;
-		rs->rs_rssi_ext2 = ATH9K_RSSI_BAD;
-	} else {
-		rs->rs_rssi = MS(ads.ds_rxstatus4, AR_RxRSSICombined);
-		rs->rs_rssi_ctl0 = MS(ads.ds_rxstatus0,
-						AR_RxRSSIAnt00);
-		rs->rs_rssi_ctl1 = MS(ads.ds_rxstatus0,
-						AR_RxRSSIAnt01);
-		rs->rs_rssi_ctl2 = MS(ads.ds_rxstatus0,
-						AR_RxRSSIAnt02);
-		rs->rs_rssi_ext0 = MS(ads.ds_rxstatus4,
-						AR_RxRSSIAnt10);
-		rs->rs_rssi_ext1 = MS(ads.ds_rxstatus4,
-						AR_RxRSSIAnt11);
-		rs->rs_rssi_ext2 = MS(ads.ds_rxstatus4,
-=======
 		rs->rs_rssi_ctl[0] = ATH9K_RSSI_BAD;
 		rs->rs_rssi_ctl[1] = ATH9K_RSSI_BAD;
 		rs->rs_rssi_ctl[2] = ATH9K_RSSI_BAD;
@@ -615,7 +562,6 @@ int ath9k_hw_rxprocdesc(struct ath_hw *ah, struct ath_desc *ds,
 		rs->rs_rssi_ext[1] = MS(ads.ds_rxstatus4,
 						AR_RxRSSIAnt11);
 		rs->rs_rssi_ext[2] = MS(ads.ds_rxstatus4,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						AR_RxRSSIAnt12);
 	}
 	if (ads.ds_rxstatus8 & AR_RxKeyIdxValid)
@@ -626,16 +572,6 @@ int ath9k_hw_rxprocdesc(struct ath_hw *ah, struct ath_desc *ds,
 	rs->rs_rate = MS(ads.ds_rxstatus0, AR_RxRate);
 	rs->rs_more = (ads.ds_rxstatus1 & AR_RxMore) ? 1 : 0;
 
-<<<<<<< HEAD
-	rs->rs_isaggr = (ads.ds_rxstatus8 & AR_RxAggr) ? 1 : 0;
-	rs->rs_moreaggr =
-		(ads.ds_rxstatus8 & AR_RxMoreAggr) ? 1 : 0;
-	rs->rs_antenna = MS(ads.ds_rxstatus3, AR_RxAntenna);
-	rs->rs_flags =
-		(ads.ds_rxstatus3 & AR_GI) ? ATH9K_RX_GI : 0;
-	rs->rs_flags |=
-		(ads.ds_rxstatus3 & AR_2040) ? ATH9K_RX_2040 : 0;
-=======
 	rs->rs_firstaggr = (ads.ds_rxstatus8 & AR_RxFirstAggr) ? 1 : 0;
 	rs->rs_isaggr = (ads.ds_rxstatus8 & AR_RxAggr) ? 1 : 0;
 	rs->rs_moreaggr = (ads.ds_rxstatus8 & AR_RxMoreAggr) ? 1 : 0;
@@ -651,7 +587,6 @@ int ath9k_hw_rxprocdesc(struct ath_hw *ah, struct ath_desc *ds,
 			(ads.ds_rxstatus3 & AR_STBC) ?
 				/* we can only Nss=1 STBC */
 				(1 << RX_ENC_FLAG_STBC_SHIFT) : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ads.ds_rxstatus8 & AR_PreDelimCRCErr)
 		rs->rs_flags |= ATH9K_RX_DELIM_CRC_PRE;
@@ -667,18 +602,6 @@ int ath9k_hw_rxprocdesc(struct ath_hw *ah, struct ath_desc *ds,
 		 * reported, then decryption and MIC errors are irrelevant,
 		 * the frame is going to be dropped either way
 		 */
-<<<<<<< HEAD
-		if (ads.ds_rxstatus8 & AR_CRCErr)
-			rs->rs_status |= ATH9K_RXERR_CRC;
-		else if (ads.ds_rxstatus8 & AR_PHYErr) {
-			rs->rs_status |= ATH9K_RXERR_PHY;
-			phyerr = MS(ads.ds_rxstatus8, AR_PHYErrCode);
-			rs->rs_phyerr = phyerr;
-		} else if (ads.ds_rxstatus8 & AR_DecryptCRCErr)
-			rs->rs_status |= ATH9K_RXERR_DECRYPT;
-		else if (ads.ds_rxstatus8 & AR_MichaelErr)
-			rs->rs_status |= ATH9K_RXERR_MIC;
-=======
 		if (ads.ds_rxstatus8 & AR_PHYErr) {
 			rs->rs_status |= ATH9K_RXERR_PHY;
 			phyerr = MS(ads.ds_rxstatus8, AR_PHYErrCode);
@@ -697,7 +620,6 @@ int ath9k_hw_rxprocdesc(struct ath_hw *ah, struct ath_desc *ds,
 		/* Only up to MCS16 supported, everything above is invalid */
 		if (rs->rs_rate >= 0x90)
 			rs->rs_status |= ATH9K_RXERR_CORRUPT_DESC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ads.ds_rxstatus8 & AR_KeyMiss)
@@ -785,11 +707,7 @@ bool ath9k_hw_stopdmarecv(struct ath_hw *ah, bool *reset)
 
 	/* Wait for rx enable bit to go low */
 	for (i = AH_RX_STOP_DMA_TIMEOUT / AH_TIME_QUANTUM; i != 0; i--) {
-<<<<<<< HEAD
-		if ((REG_READ(ah, AR_CR) & AR_CR_RXE) == 0)
-=======
 		if ((REG_READ(ah, AR_CR) & AR_CR_RXE(ah)) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		if (!AR_SREV_9300_20_OR_LATER(ah)) {
@@ -844,22 +762,14 @@ bool ath9k_hw_intrpend(struct ath_hw *ah)
 	if (AR_SREV_9100(ah))
 		return true;
 
-<<<<<<< HEAD
-	host_isr = REG_READ(ah, AR_INTR_ASYNC_CAUSE);
-=======
 	host_isr = REG_READ(ah, AR_INTR_ASYNC_CAUSE(ah));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (((host_isr & AR_INTR_MAC_IRQ) ||
 	     (host_isr & AR_INTR_ASYNC_MASK_MCI)) &&
 	    (host_isr != AR_INTR_SPURIOUS))
 		return true;
 
-<<<<<<< HEAD
-	host_isr = REG_READ(ah, AR_INTR_SYNC_CAUSE);
-=======
 	host_isr = REG_READ(ah, AR_INTR_SYNC_CAUSE(ah));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((host_isr & AR_INTR_SYNC_DEFAULT)
 	    && (host_isr != AR_INTR_SPURIOUS))
 		return true;
@@ -868,38 +778,14 @@ bool ath9k_hw_intrpend(struct ath_hw *ah)
 }
 EXPORT_SYMBOL(ath9k_hw_intrpend);
 
-<<<<<<< HEAD
-void ath9k_hw_disable_interrupts(struct ath_hw *ah)
-{
-	struct ath_common *common = ath9k_hw_common(ah);
-
-	if (!(ah->imask & ATH9K_INT_GLOBAL))
-		atomic_set(&ah->intr_ref_cnt, -1);
-	else
-		atomic_dec(&ah->intr_ref_cnt);
-
-=======
 void ath9k_hw_kill_interrupts(struct ath_hw *ah)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath_dbg(common, INTERRUPT, "disable IER\n");
 	REG_WRITE(ah, AR_IER, AR_IER_DISABLE);
 	(void) REG_READ(ah, AR_IER);
 	if (!AR_SREV_9100(ah)) {
-<<<<<<< HEAD
-		REG_WRITE(ah, AR_INTR_ASYNC_ENABLE, 0);
-		(void) REG_READ(ah, AR_INTR_ASYNC_ENABLE);
-
-		REG_WRITE(ah, AR_INTR_SYNC_ENABLE, 0);
-		(void) REG_READ(ah, AR_INTR_SYNC_ENABLE);
-	}
-}
-EXPORT_SYMBOL(ath9k_hw_disable_interrupts);
-
-void ath9k_hw_enable_interrupts(struct ath_hw *ah)
-=======
 		REG_WRITE(ah, AR_INTR_ASYNC_ENABLE(ah), 0);
 		(void) REG_READ(ah, AR_INTR_ASYNC_ENABLE(ah));
 
@@ -921,27 +807,13 @@ void ath9k_hw_disable_interrupts(struct ath_hw *ah)
 EXPORT_SYMBOL(ath9k_hw_disable_interrupts);
 
 static void __ath9k_hw_enable_interrupts(struct ath_hw *ah)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
 	u32 sync_default = AR_INTR_SYNC_DEFAULT;
 	u32 async_mask;
 
-<<<<<<< HEAD
-	if (!(ah->imask & ATH9K_INT_GLOBAL))
-		return;
-
-	if (!atomic_inc_and_test(&ah->intr_ref_cnt)) {
-		ath_dbg(common, INTERRUPT, "Do not enable IER ref count %d\n",
-			atomic_read(&ah->intr_ref_cnt));
-		return;
-	}
-
-	if (AR_SREV_9340(ah))
-=======
 	if (AR_SREV_9340(ah) || AR_SREV_9550(ah) || AR_SREV_9531(ah) ||
 	    AR_SREV_9561(ah))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sync_default &= ~AR_INTR_SYNC_HOST1_FATAL;
 
 	async_mask = AR_INTR_MAC_IRQ;
@@ -952,16 +824,6 @@ static void __ath9k_hw_enable_interrupts(struct ath_hw *ah)
 	ath_dbg(common, INTERRUPT, "enable IER\n");
 	REG_WRITE(ah, AR_IER, AR_IER_ENABLE);
 	if (!AR_SREV_9100(ah)) {
-<<<<<<< HEAD
-		REG_WRITE(ah, AR_INTR_ASYNC_ENABLE, async_mask);
-		REG_WRITE(ah, AR_INTR_ASYNC_MASK, async_mask);
-
-		REG_WRITE(ah, AR_INTR_SYNC_ENABLE, sync_default);
-		REG_WRITE(ah, AR_INTR_SYNC_MASK, sync_default);
-	}
-	ath_dbg(common, INTERRUPT, "AR_IMR 0x%x IER 0x%x\n",
-		REG_READ(ah, AR_IMR), REG_READ(ah, AR_IER));
-=======
 		REG_WRITE(ah, AR_INTR_ASYNC_ENABLE(ah), async_mask);
 		REG_WRITE(ah, AR_INTR_ASYNC_MASK(ah), async_mask);
 
@@ -1040,7 +902,6 @@ void ath9k_hw_enable_interrupts(struct ath_hw *ah)
 	}
 
 	__ath9k_hw_enable_interrupts(ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ath9k_hw_enable_interrupts);
 
@@ -1054,8 +915,6 @@ void ath9k_hw_set_interrupts(struct ath_hw *ah)
 	if (!(ints & ATH9K_INT_GLOBAL))
 		ath9k_hw_disable_interrupts(ah);
 
-<<<<<<< HEAD
-=======
 	if (ah->msi_enabled) {
 		ath_dbg(common, INTERRUPT, "Clearing AR_INTR_PRIO_ASYNC_ENABLE\n");
 
@@ -1063,19 +922,14 @@ void ath9k_hw_set_interrupts(struct ath_hw *ah)
 		REG_READ(ah, AR_INTR_PRIO_ASYNC_ENABLE(ah));
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath_dbg(common, INTERRUPT, "New interrupt mask 0x%x\n", ints);
 
 	mask = ints & ATH9K_INT_COMMON;
 	mask2 = 0;
 
-<<<<<<< HEAD
-	if (ints & ATH9K_INT_TX) {
-=======
 	ah->msi_mask = 0;
 	if (ints & ATH9K_INT_TX) {
 		ah->msi_mask |= AR_INTR_PRIO_TX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ah->config.tx_intr_mitigation)
 			mask |= AR_IMR_TXMINTR | AR_IMR_TXINTM;
 		else {
@@ -1090,10 +944,7 @@ void ath9k_hw_set_interrupts(struct ath_hw *ah)
 			mask |= AR_IMR_TXEOL;
 	}
 	if (ints & ATH9K_INT_RX) {
-<<<<<<< HEAD
-=======
 		ah->msi_mask |= AR_INTR_PRIO_RXLP | AR_INTR_PRIO_RXHP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (AR_SREV_9300_20_OR_LATER(ah)) {
 			mask |= AR_IMR_RXERR | AR_IMR_RXOK_HP;
 			if (ah->config.rx_intr_mitigation) {
@@ -1137,13 +988,6 @@ void ath9k_hw_set_interrupts(struct ath_hw *ah)
 			mask2 |= AR_IMR_S2_CST;
 	}
 
-<<<<<<< HEAD
-	ath_dbg(common, INTERRUPT, "new IMR 0x%x\n", mask);
-	REG_WRITE(ah, AR_IMR, mask);
-	ah->imrs2_reg &= ~(AR_IMR_S2_TIM | AR_IMR_S2_DTIM | AR_IMR_S2_DTIMSYNC |
-			   AR_IMR_S2_CABEND | AR_IMR_S2_CABTO |
-			   AR_IMR_S2_TSFOOR | AR_IMR_S2_GTT | AR_IMR_S2_CST);
-=======
 	if (ah->config.hw_hang_checks & HW_BB_WATCHDOG) {
 		if (ints & ATH9K_INT_BB_WATCHDOG) {
 			mask |= AR_IMR_BCNMISC;
@@ -1167,7 +1011,6 @@ void ath9k_hw_set_interrupts(struct ath_hw *ah)
 			ah->imrs2_reg &= ~AR_IMR_S2_BB_WATCHDOG;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ah->imrs2_reg |= mask2;
 	REG_WRITE(ah, AR_IMR_S2, ah->imrs2_reg);
 
@@ -1181,8 +1024,6 @@ void ath9k_hw_set_interrupts(struct ath_hw *ah)
 	return;
 }
 EXPORT_SYMBOL(ath9k_hw_set_interrupts);
-<<<<<<< HEAD
-=======
 
 #define ATH9K_HW_MAX_DCU       10
 #define ATH9K_HW_SLICE_PER_DCU 16
@@ -1205,4 +1046,3 @@ void ath9k_hw_set_tx_filter(struct ath_hw *ah, u8 destidx, bool set)
 	}
 }
 EXPORT_SYMBOL(ath9k_hw_set_tx_filter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

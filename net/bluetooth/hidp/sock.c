@@ -20,27 +20,6 @@
    SOFTWARE IS DISCLAIMED.
 */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-
-#include <linux/types.h>
-#include <linux/capability.h>
-#include <linux/errno.h>
-#include <linux/kernel.h>
-#include <linux/poll.h>
-#include <linux/fcntl.h>
-#include <linux/skbuff.h>
-#include <linux/socket.h>
-#include <linux/ioctl.h>
-#include <linux/file.h>
-#include <linux/init.h>
-#include <linux/compat.h>
-#include <linux/gfp.h>
-#include <net/sock.h>
-
-#include "hidp.h"
-
-=======
 #include <linux/compat.h>
 #include <linux/export.h>
 #include <linux/file.h>
@@ -51,7 +30,6 @@ static struct bt_sock_list hidp_sk_list = {
 	.lock = __RW_LOCK_UNLOCKED(hidp_sk_list.lock)
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hidp_sock_release(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
@@ -61,25 +39,16 @@ static int hidp_sock_release(struct socket *sock)
 	if (!sk)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	bt_sock_unlink(&hidp_sk_list, sk);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sock_orphan(sk);
 	sock_put(sk);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int hidp_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
-{
-	void __user *argp = (void __user *) arg;
-=======
 static int do_hidp_sock_ioctl(struct socket *sock, unsigned int cmd, void __user *argp)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hidp_connadd_req ca;
 	struct hidp_conndel_req cd;
 	struct hidp_connlist_req cl;
@@ -88,20 +57,12 @@ static int do_hidp_sock_ioctl(struct socket *sock, unsigned int cmd, void __user
 	struct socket *isock;
 	int err;
 
-<<<<<<< HEAD
-	BT_DBG("cmd %x arg %lx", cmd, arg);
-=======
 	BT_DBG("cmd %x arg %p", cmd, argp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case HIDPCONNADD:
 		if (!capable(CAP_NET_ADMIN))
-<<<<<<< HEAD
-			return -EACCES;
-=======
 			return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (copy_from_user(&ca, argp, sizeof(ca)))
 			return -EFAULT;
@@ -115,24 +76,6 @@ static int do_hidp_sock_ioctl(struct socket *sock, unsigned int cmd, void __user
 			sockfd_put(csock);
 			return err;
 		}
-<<<<<<< HEAD
-
-		if (csock->sk->sk_state != BT_CONNECTED ||
-				isock->sk->sk_state != BT_CONNECTED) {
-			sockfd_put(csock);
-			sockfd_put(isock);
-			return -EBADFD;
-		}
-
-		err = hidp_add_connection(&ca, csock, isock);
-		if (!err) {
-			if (copy_to_user(argp, &ca, sizeof(ca)))
-				err = -EFAULT;
-		} else {
-			sockfd_put(csock);
-			sockfd_put(isock);
-		}
-=======
 		ca.name[sizeof(ca.name)-1] = 0;
 
 		err = hidp_connection_add(&ca, csock, isock);
@@ -141,26 +84,17 @@ static int do_hidp_sock_ioctl(struct socket *sock, unsigned int cmd, void __user
 
 		sockfd_put(csock);
 		sockfd_put(isock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return err;
 
 	case HIDPCONNDEL:
 		if (!capable(CAP_NET_ADMIN))
-<<<<<<< HEAD
-			return -EACCES;
-=======
 			return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (copy_from_user(&cd, argp, sizeof(cd)))
 			return -EFAULT;
 
-<<<<<<< HEAD
-		return hidp_del_connection(&cd);
-=======
 		return hidp_connection_del(&cd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case HIDPGETCONNLIST:
 		if (copy_from_user(&cl, argp, sizeof(cl)))
@@ -189,14 +123,11 @@ static int do_hidp_sock_ioctl(struct socket *sock, unsigned int cmd, void __user
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 static int hidp_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 {
 	return do_hidp_sock_ioctl(sock, cmd, (void __user *)arg);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_COMPAT
 struct compat_hidp_connadd_req {
 	int   ctrl_sock;	/* Connected control socket */
@@ -216,15 +147,6 @@ struct compat_hidp_connadd_req {
 
 static int hidp_sock_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 {
-<<<<<<< HEAD
-	if (cmd == HIDPGETCONNLIST) {
-		struct hidp_connlist_req cl;
-		uint32_t uci;
-		int err;
-
-		if (get_user(cl.cnum, (uint32_t __user *) arg) ||
-				get_user(uci, (u32 __user *) (arg + 4)))
-=======
 	void __user *argp = compat_ptr(arg);
 	int err;
 
@@ -234,7 +156,6 @@ static int hidp_sock_compat_ioctl(struct socket *sock, unsigned int cmd, unsigne
 		u32 uci;
 
 		if (get_user(cl.cnum, p) || get_user(uci, p + 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 
 		cl.ci = compat_ptr(uci);
@@ -244,45 +165,11 @@ static int hidp_sock_compat_ioctl(struct socket *sock, unsigned int cmd, unsigne
 
 		err = hidp_get_connlist(&cl);
 
-<<<<<<< HEAD
-		if (!err && put_user(cl.cnum, (uint32_t __user *) arg))
-=======
 		if (!err && put_user(cl.cnum, p))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EFAULT;
 
 		return err;
 	} else if (cmd == HIDPCONNADD) {
-<<<<<<< HEAD
-		struct compat_hidp_connadd_req ca;
-		struct hidp_connadd_req __user *uca;
-
-		uca = compat_alloc_user_space(sizeof(*uca));
-
-		if (copy_from_user(&ca, (void __user *) arg, sizeof(ca)))
-			return -EFAULT;
-
-		if (put_user(ca.ctrl_sock, &uca->ctrl_sock) ||
-				put_user(ca.intr_sock, &uca->intr_sock) ||
-				put_user(ca.parser, &uca->parser) ||
-				put_user(ca.rd_size, &uca->rd_size) ||
-				put_user(compat_ptr(ca.rd_data), &uca->rd_data) ||
-				put_user(ca.country, &uca->country) ||
-				put_user(ca.subclass, &uca->subclass) ||
-				put_user(ca.vendor, &uca->vendor) ||
-				put_user(ca.product, &uca->product) ||
-				put_user(ca.version, &uca->version) ||
-				put_user(ca.flags, &uca->flags) ||
-				put_user(ca.idle_to, &uca->idle_to) ||
-				copy_to_user(&uca->name[0], &ca.name[0], 128))
-			return -EFAULT;
-
-		arg = (unsigned long) uca;
-
-		/* Fall through. We don't actually write back any _changes_
-		   to the structure anyway, so there's no need to copy back
-		   into the original compat version */
-=======
 		struct compat_hidp_connadd_req ca32;
 		struct hidp_connadd_req ca;
 		struct socket *csock;
@@ -327,7 +214,6 @@ static int hidp_sock_compat_ioctl(struct socket *sock, unsigned int cmd, unsigne
 		sockfd_put(isock);
 
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return hidp_sock_ioctl(sock, cmd, arg);
@@ -346,16 +232,8 @@ static const struct proto_ops hidp_sock_ops = {
 	.getname	= sock_no_getname,
 	.sendmsg	= sock_no_sendmsg,
 	.recvmsg	= sock_no_recvmsg,
-<<<<<<< HEAD
-	.poll		= sock_no_poll,
 	.listen		= sock_no_listen,
 	.shutdown	= sock_no_shutdown,
-	.setsockopt	= sock_no_setsockopt,
-	.getsockopt	= sock_no_getsockopt,
-=======
-	.listen		= sock_no_listen,
-	.shutdown	= sock_no_shutdown,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.connect	= sock_no_connect,
 	.socketpair	= sock_no_socketpair,
 	.accept		= sock_no_accept,
@@ -378,22 +256,6 @@ static int hidp_sock_create(struct net *net, struct socket *sock, int protocol,
 	if (sock->type != SOCK_RAW)
 		return -ESOCKTNOSUPPORT;
 
-<<<<<<< HEAD
-	sk = sk_alloc(net, PF_BLUETOOTH, GFP_ATOMIC, &hidp_proto);
-	if (!sk)
-		return -ENOMEM;
-
-	sock_init_data(sock, sk);
-
-	sock->ops = &hidp_sock_ops;
-
-	sock->state = SS_UNCONNECTED;
-
-	sock_reset_flag(sk, SOCK_ZAPPED);
-
-	sk->sk_protocol = protocol;
-	sk->sk_state	= BT_OPEN;
-=======
 	sk = bt_sock_alloc(net, sock, &hidp_proto, protocol, GFP_ATOMIC, kern);
 	if (!sk)
 		return -ENOMEM;
@@ -402,7 +264,6 @@ static int hidp_sock_create(struct net *net, struct socket *sock, int protocol,
 	sock->state = SS_UNCONNECTED;
 
 	bt_sock_link(&hidp_sk_list, sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -422,10 +283,6 @@ int __init hidp_init_sockets(void)
 		return err;
 
 	err = bt_sock_register(BTPROTO_HIDP, &hidp_sock_family_ops);
-<<<<<<< HEAD
-	if (err < 0)
-		goto error;
-=======
 	if (err < 0) {
 		BT_ERR("Can't register HIDP socket");
 		goto error;
@@ -439,28 +296,17 @@ int __init hidp_init_sockets(void)
 	}
 
 	BT_INFO("HIDP socket layer initialized");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 error:
-<<<<<<< HEAD
-	BT_ERR("Can't register HIDP socket");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	proto_unregister(&hidp_proto);
 	return err;
 }
 
 void __exit hidp_cleanup_sockets(void)
 {
-<<<<<<< HEAD
-	if (bt_sock_unregister(BTPROTO_HIDP) < 0)
-		BT_ERR("Can't unregister HIDP socket");
-
-=======
 	bt_procfs_cleanup(&init_net, "hidp");
 	bt_sock_unregister(BTPROTO_HIDP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	proto_unregister(&hidp_proto);
 }

@@ -22,10 +22,7 @@
 #include "target.h"
 #include "hif-ops.h"
 #include "debug.h"
-<<<<<<< HEAD
-=======
 #include "trace.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAILBOX_FOR_BLOCK_SIZE          1
 
@@ -40,10 +37,6 @@ static int ath6kl_hif_cp_scat_dma_buf(struct hif_scatter_req *req,
 	buf = req->virt_dma_buf;
 
 	for (i = 0; i < req->scat_entries; i++) {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (from_dma)
 			memcpy(req->scat_list[i].buf, buf,
 			       req->scat_list[i].len);
@@ -71,11 +64,7 @@ int ath6kl_hif_rw_comp_handler(void *context, int status)
 }
 EXPORT_SYMBOL(ath6kl_hif_rw_comp_handler);
 
-<<<<<<< HEAD
-#define REG_DUMP_COUNT_AR6003   60
-=======
 #define REGISTER_DUMP_COUNT     60
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REGISTER_DUMP_LEN_MAX   60
 
 static void ath6kl_hif_dump_fw_crash(struct ath6kl *ar)
@@ -84,12 +73,6 @@ static void ath6kl_hif_dump_fw_crash(struct ath6kl *ar)
 	u32 i, address, regdump_addr = 0;
 	int ret;
 
-<<<<<<< HEAD
-	if (ar->target_type != TARGET_TYPE_AR6003)
-		return;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* the reg dump pointer is copied to the host interest area */
 	address = ath6kl_get_hi_item_addr(ar, HI_ITEM(hi_failure_state));
 	address = TARG_VTOP(ar->target_type, address);
@@ -109,11 +92,7 @@ static void ath6kl_hif_dump_fw_crash(struct ath6kl *ar)
 
 	/* fetch register dump data */
 	ret = ath6kl_diag_read(ar, regdump_addr, (u8 *)&regdump_val[0],
-<<<<<<< HEAD
-				  REG_DUMP_COUNT_AR6003 * (sizeof(u32)));
-=======
 				  REGISTER_DUMP_COUNT * (sizeof(u32)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		ath6kl_warn("failed to get register dump: %d\n", ret);
 		return;
@@ -123,15 +102,9 @@ static void ath6kl_hif_dump_fw_crash(struct ath6kl *ar)
 	ath6kl_info("hw 0x%x fw %s\n", ar->wiphy->hw_version,
 		    ar->wiphy->fw_version);
 
-<<<<<<< HEAD
-	BUILD_BUG_ON(REG_DUMP_COUNT_AR6003 % 4);
-
-	for (i = 0; i < REG_DUMP_COUNT_AR6003; i += 4) {
-=======
 	BUILD_BUG_ON(REGISTER_DUMP_COUNT % 4);
 
 	for (i = 0; i < REGISTER_DUMP_COUNT; i += 4) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath6kl_info("%d: 0x%8.8x 0x%8.8x 0x%8.8x 0x%8.8x\n",
 			    i,
 			    le32_to_cpu(regdump_val[i]),
@@ -139,10 +112,6 @@ static void ath6kl_hif_dump_fw_crash(struct ath6kl *ar)
 			    le32_to_cpu(regdump_val[i + 2]),
 			    le32_to_cpu(regdump_val[i + 3]));
 	}
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath6kl_hif_proc_dbg_intr(struct ath6kl_device *dev)
@@ -163,10 +132,7 @@ static int ath6kl_hif_proc_dbg_intr(struct ath6kl_device *dev)
 
 	ath6kl_hif_dump_fw_crash(dev->ar);
 	ath6kl_read_fwlogs(dev->ar);
-<<<<<<< HEAD
-=======
 	ath6kl_recovery_err_notify(dev->ar, ATH6KL_FW_ASSERT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -369,12 +335,7 @@ static int ath6kl_hif_proc_err_intr(struct ath6kl_device *dev)
 	status = hif_read_write_sync(dev->ar, ERROR_INT_STATUS_ADDRESS,
 				     reg_buf, 4, HIF_WR_SYNC_BYTE_FIX);
 
-<<<<<<< HEAD
-	if (status)
-		WARN_ON(1);
-=======
 	WARN_ON(status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return status;
 }
@@ -418,12 +379,7 @@ static int ath6kl_hif_proc_cpu_intr(struct ath6kl_device *dev)
 	status = hif_read_write_sync(dev->ar, CPU_INT_STATUS_ADDRESS,
 				     reg_buf, 4, HIF_WR_SYNC_BYTE_FIX);
 
-<<<<<<< HEAD
-	if (status)
-		WARN_ON(1);
-=======
 	WARN_ON(status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return status;
 }
@@ -476,11 +432,8 @@ static int proc_pending_irqs(struct ath6kl_device *dev, bool *done)
 
 		ath6kl_dump_registers(dev, &dev->irq_proc_reg,
 				      &dev->irq_en_reg);
-<<<<<<< HEAD
-=======
 		trace_ath6kl_sdio_irq(&dev->irq_en_reg,
 				      sizeof(dev->irq_en_reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Update only those registers that are enabled */
 		host_int_status = dev->irq_proc_reg.host_int_status &
@@ -739,20 +692,8 @@ int ath6kl_hif_setup(struct ath6kl_device *dev)
 	ath6kl_dbg(ATH6KL_DBG_HIF, "hif block size %d mbox addr 0x%x\n",
 		   dev->htc_cnxt->block_sz, dev->ar->mbox_info.htc_addr);
 
-<<<<<<< HEAD
-	/* usb doesn't support enabling interrupts */
-	/* FIXME: remove check once USB support is implemented */
-	if (dev->ar->hif_type == ATH6KL_HIF_TYPE_USB)
-		return 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = ath6kl_hif_disable_intrs(dev);
 
 fail_setup:
 	return status;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

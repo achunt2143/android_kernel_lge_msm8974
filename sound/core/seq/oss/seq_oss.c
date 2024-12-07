@@ -1,39 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OSS compatible sequencer driver
  *
  * registration of device and proc
  *
  * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-=======
 #include <linux/compat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/minors.h>
 #include <sound/initval.h>
@@ -50,26 +27,13 @@ MODULE_LICENSE("GPL");
 MODULE_ALIAS_SNDRV_MINOR(SNDRV_MINOR_OSS_SEQUENCER);
 MODULE_ALIAS_SNDRV_MINOR(SNDRV_MINOR_OSS_MUSIC);
 
-<<<<<<< HEAD
-#ifdef SNDRV_SEQ_OSS_DEBUG
-module_param(seq_oss_debug, int, 0644);
-MODULE_PARM_DESC(seq_oss_debug, "debug option");
-int seq_oss_debug = 0;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * prototypes
  */
 static int register_device(void);
 static void unregister_device(void);
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-=======
 #ifdef CONFIG_SND_PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int register_proc(void);
 static void unregister_proc(void);
 #else
@@ -82,35 +46,13 @@ static int odev_release(struct inode *inode, struct file *file);
 static ssize_t odev_read(struct file *file, char __user *buf, size_t count, loff_t *offset);
 static ssize_t odev_write(struct file *file, const char __user *buf, size_t count, loff_t *offset);
 static long odev_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
-<<<<<<< HEAD
-static unsigned int odev_poll(struct file *file, poll_table * wait);
-=======
 static __poll_t odev_poll(struct file *file, poll_table * wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
  * module interface
  */
 
-<<<<<<< HEAD
-static int __init alsa_seq_oss_init(void)
-{
-	int rc;
-	static struct snd_seq_dev_ops ops = {
-		snd_seq_oss_synth_register,
-		snd_seq_oss_synth_unregister,
-	};
-
-	snd_seq_autoload_lock();
-	if ((rc = register_device()) < 0)
-		goto error;
-	if ((rc = register_proc()) < 0) {
-		unregister_device();
-		goto error;
-	}
-	if ((rc = snd_seq_oss_create_client()) < 0) {
-=======
 static struct snd_seq_driver seq_oss_synth_driver = {
 	.driver = {
 		.name = KBUILD_MODNAME,
@@ -135,19 +77,13 @@ static int __init alsa_seq_oss_init(void)
 	}
 	rc = snd_seq_oss_create_client();
 	if (rc < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unregister_proc();
 		unregister_device();
 		goto error;
 	}
 
-<<<<<<< HEAD
-	if ((rc = snd_seq_device_register_driver(SNDRV_SEQ_DEV_ID_OSS, &ops,
-						 sizeof(struct snd_seq_oss_reg))) < 0) {
-=======
 	rc = snd_seq_driver_register(&seq_oss_synth_driver);
 	if (rc < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_seq_oss_delete_client();
 		unregister_proc();
 		unregister_device();
@@ -158,20 +94,12 @@ static int __init alsa_seq_oss_init(void)
 	snd_seq_oss_synth_init();
 
  error:
-<<<<<<< HEAD
-	snd_seq_autoload_unlock();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 static void __exit alsa_seq_oss_exit(void)
 {
-<<<<<<< HEAD
-	snd_seq_device_unregister_driver(SNDRV_SEQ_DEV_ID_OSS);
-=======
 	snd_seq_driver_unregister(&seq_oss_synth_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_seq_oss_delete_client();
 	unregister_proc();
 	unregister_device();
@@ -208,18 +136,10 @@ odev_release(struct inode *inode, struct file *file)
 {
 	struct seq_oss_devinfo *dp;
 
-<<<<<<< HEAD
-	if ((dp = file->private_data) == NULL)
-		return 0;
-
-	snd_seq_oss_drain_write(dp);
-
-=======
 	dp = file->private_data;
 	if (!dp)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&register_mutex);
 	snd_seq_oss_release(dp);
 	mutex_unlock(&register_mutex);
@@ -252,16 +172,6 @@ static long
 odev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	struct seq_oss_devinfo *dp;
-<<<<<<< HEAD
-	dp = file->private_data;
-	if (snd_BUG_ON(!dp))
-		return -ENXIO;
-	return snd_seq_oss_ioctl(dp, cmd, arg);
-}
-
-#ifdef CONFIG_COMPAT
-#define odev_ioctl_compat	odev_ioctl
-=======
 	long rc;
 
 	dp = file->private_data;
@@ -283,26 +193,17 @@ static long odev_ioctl_compat(struct file *file, unsigned int cmd,
 {
 	return odev_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define odev_ioctl_compat	NULL
 #endif
 
-<<<<<<< HEAD
-static unsigned int
-=======
 static __poll_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 odev_poll(struct file *file, poll_table * wait)
 {
 	struct seq_oss_devinfo *dp;
 	dp = file->private_data;
 	if (snd_BUG_ON(!dp))
-<<<<<<< HEAD
-		return -ENXIO;
-=======
 		return EPOLLERR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return snd_seq_oss_poll(dp, file, wait);
 }
 
@@ -329,21 +230,6 @@ register_device(void)
 	int rc;
 
 	mutex_lock(&register_mutex);
-<<<<<<< HEAD
-	if ((rc = snd_register_oss_device(SNDRV_OSS_DEVICE_TYPE_SEQUENCER,
-					  NULL, 0,
-					  &seq_oss_f_ops, NULL,
-					  SNDRV_SEQ_OSS_DEVNAME)) < 0) {
-		snd_printk(KERN_ERR "can't register device seq\n");
-		mutex_unlock(&register_mutex);
-		return rc;
-	}
-	if ((rc = snd_register_oss_device(SNDRV_OSS_DEVICE_TYPE_MUSIC,
-					  NULL, 0,
-					  &seq_oss_f_ops, NULL,
-					  SNDRV_SEQ_OSS_DEVNAME)) < 0) {
-		snd_printk(KERN_ERR "can't register device music\n");
-=======
 	rc = snd_register_oss_device(SNDRV_OSS_DEVICE_TYPE_SEQUENCER,
 				     NULL, 0,
 				     &seq_oss_f_ops, NULL);
@@ -357,15 +243,10 @@ register_device(void)
 				     &seq_oss_f_ops, NULL);
 	if (rc < 0) {
 		pr_err("ALSA: seq_oss: can't register device music\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_unregister_oss_device(SNDRV_OSS_DEVICE_TYPE_SEQUENCER, NULL, 0);
 		mutex_unlock(&register_mutex);
 		return rc;
 	}
-<<<<<<< HEAD
-	debug_printk(("device registered\n"));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&register_mutex);
 	return 0;
 }
@@ -374,18 +255,10 @@ static void
 unregister_device(void)
 {
 	mutex_lock(&register_mutex);
-<<<<<<< HEAD
-	debug_printk(("device unregistered\n"));
-	if (snd_unregister_oss_device(SNDRV_OSS_DEVICE_TYPE_MUSIC, NULL, 0) < 0)		
-		snd_printk(KERN_ERR "error unregister device music\n");
-	if (snd_unregister_oss_device(SNDRV_OSS_DEVICE_TYPE_SEQUENCER, NULL, 0) < 0)
-		snd_printk(KERN_ERR "error unregister device seq\n");
-=======
 	if (snd_unregister_oss_device(SNDRV_OSS_DEVICE_TYPE_MUSIC, NULL, 0) < 0)		
 		pr_err("ALSA: seq_oss: error unregister device music\n");
 	if (snd_unregister_oss_device(SNDRV_OSS_DEVICE_TYPE_SEQUENCER, NULL, 0) < 0)
 		pr_err("ALSA: seq_oss: error unregister device seq\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&register_mutex);
 }
 
@@ -393,11 +266,7 @@ unregister_device(void)
  * /proc interface
  */
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-=======
 #ifdef CONFIG_SND_PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct snd_info_entry *info_entry;
 
@@ -439,8 +308,4 @@ unregister_proc(void)
 	snd_info_free_entry(info_entry);
 	info_entry = NULL;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_PROC_FS */
-=======
 #endif /* CONFIG_SND_PROC_FS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

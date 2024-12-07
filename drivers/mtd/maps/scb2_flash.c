@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MTD map driver for BIOS Flash on Intel SCB2 boards
  * Copyright (C) 2002 Sun Microsystems, Inc.
@@ -51,10 +48,6 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/map.h>
@@ -76,12 +69,7 @@ static struct map_info scb2_map = {
 };
 static int region_fail;
 
-<<<<<<< HEAD
-static int __devinit
-scb2_fixup_mtd(struct mtd_info *mtd)
-=======
 static int scb2_fixup_mtd(struct mtd_info *mtd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	int done = 0;
@@ -144,13 +132,8 @@ static int scb2_fixup_mtd(struct mtd_info *mtd)
 /* CSB5's 'Function Control Register' has bits for decoding @ >= 0xffc00000 */
 #define CSB5_FCR	0x41
 #define CSB5_FCR_DECODE_ALL 0x0e
-<<<<<<< HEAD
-static int __devinit
-scb2_flash_probe(struct pci_dev *dev, const struct pci_device_id *ent)
-=======
 static int scb2_flash_probe(struct pci_dev *dev,
 			    const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 reg;
 
@@ -169,11 +152,7 @@ static int scb2_flash_probe(struct pci_dev *dev,
 	}
 
 	/* remap the IO window (w/o caching) */
-<<<<<<< HEAD
-	scb2_ioaddr = ioremap_nocache(SCB2_ADDR, SCB2_WINDOW);
-=======
 	scb2_ioaddr = ioremap(SCB2_ADDR, SCB2_WINDOW);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!scb2_ioaddr) {
 		printk(KERN_ERR MODNAME ": Failed to ioremap window!\n");
 		if (!region_fail)
@@ -217,12 +196,7 @@ static int scb2_flash_probe(struct pci_dev *dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit
-scb2_flash_remove(struct pci_dev *dev)
-=======
 static void scb2_flash_remove(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!scb2_mtd)
 		return;
@@ -238,10 +212,6 @@ static void scb2_flash_remove(struct pci_dev *dev)
 
 	if (!region_fail)
 		release_mem_region(SCB2_ADDR, SCB2_WINDOW);
-<<<<<<< HEAD
-	pci_set_drvdata(dev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pci_device_id scb2_flash_pci_ids[] = {
@@ -258,30 +228,10 @@ static struct pci_driver scb2_flash_driver = {
 	.name =     "Intel SCB2 BIOS Flash",
 	.id_table = scb2_flash_pci_ids,
 	.probe =    scb2_flash_probe,
-<<<<<<< HEAD
-	.remove =   __devexit_p(scb2_flash_remove),
-};
-
-static int __init
-scb2_flash_init(void)
-{
-	return pci_register_driver(&scb2_flash_driver);
-}
-
-static void __exit
-scb2_flash_exit(void)
-{
-	pci_unregister_driver(&scb2_flash_driver);
-}
-
-module_init(scb2_flash_init);
-module_exit(scb2_flash_exit);
-=======
 	.remove =   scb2_flash_remove,
 };
 
 module_pci_driver(scb2_flash_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Tim Hockin <thockin@sun.com>");

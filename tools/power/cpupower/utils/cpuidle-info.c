@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- *  (C) 2004-2009  Dominik Brodowski <linux@dominikbrodowski.de>
- *  (C) 2010       Thomas Renninger <trenn@suse.de>
- *
- *  Licensed under the terms of the GNU GPL License version 2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *  (C) 2004-2009  Dominik Brodowski <linux@dominikbrodowski.de>
  *  (C) 2010       Thomas Renninger <trenn@suse.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -19,43 +11,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
-<<<<<<< HEAD
-#include <cpufreq.h>
-
-#include "helpers/helpers.h"
-#include "helpers/sysfs.h"
-=======
 
 #include <cpuidle.h>
 
 #include "helpers/sysfs.h"
 #include "helpers/helpers.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "helpers/bitmask.h"
 
 #define LINE_LEN 10
 
 static void cpuidle_cpu_output(unsigned int cpu, int verbose)
 {
-<<<<<<< HEAD
-	int idlestates, idlestate;
-	char *tmp;
-
-	printf(_ ("Analyzing CPU %d:\n"), cpu);
-
-	idlestates = sysfs_get_idlestate_count(cpu);
-	if (idlestates == 0) {
-		printf(_("CPU %u: No idle states\n"), cpu);
-		return;
-	} else if (idlestates <= 0) {
-		printf(_("CPU %u: Can't read idle state info\n"), cpu);
-		return;
-	}
-	printf(_("Number of idle states: %d\n"), idlestates);
-	printf(_("Available idle states:"));
-	for (idlestate = 0; idlestate < idlestates; idlestate++) {
-		tmp = sysfs_get_idlestate_name(cpu, idlestate);
-=======
 	unsigned int idlestates, idlestate;
 	char *tmp;
 
@@ -69,7 +35,6 @@ static void cpuidle_cpu_output(unsigned int cpu, int verbose)
 	printf(_("Available idle states:"));
 	for (idlestate = 0; idlestate < idlestates; idlestate++) {
 		tmp = cpuidle_state_name(cpu, idlestate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!tmp)
 			continue;
 		printf(" %s", tmp);
@@ -81,15 +46,6 @@ static void cpuidle_cpu_output(unsigned int cpu, int verbose)
 		return;
 
 	for (idlestate = 0; idlestate < idlestates; idlestate++) {
-<<<<<<< HEAD
-		tmp = sysfs_get_idlestate_name(cpu, idlestate);
-		if (!tmp)
-			continue;
-		printf("%s:\n", tmp);
-		free(tmp);
-
-		tmp = sysfs_get_idlestate_desc(cpu, idlestate);
-=======
 		int disabled = cpuidle_is_state_disabled(cpu, idlestate);
 		/* Disabled interface not supported on older kernels */
 		if (disabled < 0)
@@ -101,40 +57,25 @@ static void cpuidle_cpu_output(unsigned int cpu, int verbose)
 		free(tmp);
 
 		tmp = cpuidle_state_desc(cpu, idlestate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!tmp)
 			continue;
 		printf(_("Flags/Description: %s\n"), tmp);
 		free(tmp);
 
 		printf(_("Latency: %lu\n"),
-<<<<<<< HEAD
-		       sysfs_get_idlestate_latency(cpu, idlestate));
-		printf(_("Usage: %lu\n"),
-		       sysfs_get_idlestate_usage(cpu, idlestate));
-		printf(_("Duration: %llu\n"),
-		       sysfs_get_idlestate_time(cpu, idlestate));
-	}
-	printf("\n");
-=======
 		       cpuidle_state_latency(cpu, idlestate));
 		printf(_("Usage: %lu\n"),
 		       cpuidle_state_usage(cpu, idlestate));
 		printf(_("Duration: %llu\n"),
 		       cpuidle_state_time(cpu, idlestate));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cpuidle_general_output(void)
 {
 	char *tmp;
 
-<<<<<<< HEAD
-	tmp = sysfs_get_cpuidle_driver();
-=======
 	tmp = cpuidle_get_driver();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tmp) {
 		printf(_("Could not determine cpuidle driver\n"));
 		return;
@@ -143,11 +84,7 @@ static void cpuidle_general_output(void)
 	printf(_("CPUidle driver: %s\n"), tmp);
 	free(tmp);
 
-<<<<<<< HEAD
-	tmp = sysfs_get_cpuidle_governor();
-=======
 	tmp = cpuidle_get_governor();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tmp) {
 		printf(_("Could not determine cpuidle governor\n"));
 		return;
@@ -160,23 +97,6 @@ static void cpuidle_general_output(void)
 static void proc_cpuidle_cpu_output(unsigned int cpu)
 {
 	long max_allowed_cstate = 2000000000;
-<<<<<<< HEAD
-	int cstates, cstate;
-
-	cstates = sysfs_get_idlestate_count(cpu);
-	if (cstates == 0) {
-		/*
-		 * Go on and print same useless info as you'd see with
-		 * cat /proc/acpi/processor/../power
-		 *	printf(_("CPU %u: No C-states available\n"), cpu);
-		 *	return;
-		 */
-	} else if (cstates <= 0) {
-		printf(_("CPU %u: Can't read C-state info\n"), cpu);
-		return;
-	}
-	/* printf("Cstates: %d\n", cstates); */
-=======
 	unsigned int cstate, cstates;
 
 	cstates = cpuidle_state_count(cpu);
@@ -184,7 +104,6 @@ static void proc_cpuidle_cpu_output(unsigned int cpu)
 		printf(_("CPU %u: No C-states info\n"), cpu);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printf(_("active state:            C0\n"));
 	printf(_("max_cstate:              C%u\n"), cstates-1);
@@ -195,30 +114,17 @@ static void proc_cpuidle_cpu_output(unsigned int cpu)
 			 "type[C%d] "), cstate, cstate);
 		printf(_("promotion[--] demotion[--] "));
 		printf(_("latency[%03lu] "),
-<<<<<<< HEAD
-		       sysfs_get_idlestate_latency(cpu, cstate));
-		printf(_("usage[%08lu] "),
-		       sysfs_get_idlestate_usage(cpu, cstate));
-		printf(_("duration[%020Lu] \n"),
-		       sysfs_get_idlestate_time(cpu, cstate));
-=======
 		       cpuidle_state_latency(cpu, cstate));
 		printf(_("usage[%08lu] "),
 		       cpuidle_state_usage(cpu, cstate));
 		printf(_("duration[%020Lu] \n"),
 		       cpuidle_state_time(cpu, cstate));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static struct option info_opts[] = {
-<<<<<<< HEAD
-	{ .name = "silent",	.has_arg = no_argument,	.flag = NULL,	.val = 's'},
-	{ .name = "proc",	.has_arg = no_argument,	.flag = NULL,	.val = 'o'},
-=======
 	{"silent", no_argument, NULL, 's'},
 	{"proc", no_argument, NULL, 'o'},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ },
 };
 
@@ -270,15 +176,9 @@ int cmd_idle_info(int argc, char **argv)
 		cpuidle_exit(EXIT_FAILURE);
 	}
 
-<<<<<<< HEAD
-	/* Default is: show output of CPU 0 only */
-	if (bitmask_isallclear(cpus_chosen))
-		bitmask_setbit(cpus_chosen, 0);
-=======
 	/* Default is: show output of base_cpu only */
 	if (bitmask_isallclear(cpus_chosen))
 		bitmask_setbit(cpus_chosen, base_cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (output_param == 0)
 		cpuidle_general_output();
@@ -286,12 +186,6 @@ int cmd_idle_info(int argc, char **argv)
 	for (cpu = bitmask_first(cpus_chosen);
 	     cpu <= bitmask_last(cpus_chosen); cpu++) {
 
-<<<<<<< HEAD
-		if (!bitmask_isbitset(cpus_chosen, cpu) ||
-		    cpufreq_cpu_exists(cpu))
-			continue;
-
-=======
 		if (!bitmask_isbitset(cpus_chosen, cpu))
 			continue;
 
@@ -303,7 +197,6 @@ int cmd_idle_info(int argc, char **argv)
 			continue;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (output_param) {
 
 		case 'o':
@@ -314,10 +207,7 @@ int cmd_idle_info(int argc, char **argv)
 			cpuidle_cpu_output(cpu, verbose);
 			break;
 		}
-<<<<<<< HEAD
-=======
 		printf("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return EXIT_SUCCESS;
 }

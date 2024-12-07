@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NetLabel Management Support
  *
@@ -10,32 +7,10 @@
  * protocols such as CIPSO and RIPSO.
  *
  * Author: Paul Moore <paul@paul-moore.com>
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * (c) Copyright Hewlett-Packard Development Company, L.P., 2006, 2008
-<<<<<<< HEAD
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -52,15 +27,10 @@
 #include <net/ipv6.h>
 #include <net/netlabel.h>
 #include <net/cipso_ipv4.h>
-<<<<<<< HEAD
-#include <linux/atomic.h>
-
-=======
 #include <net/calipso.h>
 #include <linux/atomic.h>
 
 #include "netlabel_calipso.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "netlabel_domainhash.h"
 #include "netlabel_user.h"
 #include "netlabel_mgmt.h"
@@ -76,17 +46,7 @@ struct netlbl_domhsh_walk_arg {
 };
 
 /* NetLabel Generic NETLINK CIPSOv4 family */
-<<<<<<< HEAD
-static struct genl_family netlbl_mgmt_gnl_family = {
-	.id = GENL_ID_GENERATE,
-	.hdrsize = 0,
-	.name = NETLBL_NLTYPE_MGMT_NAME,
-	.version = NETLBL_PROTO_VERSION,
-	.maxattr = NLBL_MGMT_A_MAX,
-};
-=======
 static struct genl_family netlbl_mgmt_gnl_family;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* NetLabel Netlink attribute policy */
 static const struct nla_policy netlbl_mgmt_genl_policy[NLBL_MGMT_A_MAX + 1] = {
@@ -94,11 +54,8 @@ static const struct nla_policy netlbl_mgmt_genl_policy[NLBL_MGMT_A_MAX + 1] = {
 	[NLBL_MGMT_A_PROTOCOL] = { .type = NLA_U32 },
 	[NLBL_MGMT_A_VERSION] = { .type = NLA_U32 },
 	[NLBL_MGMT_A_CV4DOI] = { .type = NLA_U32 },
-<<<<<<< HEAD
-=======
 	[NLBL_MGMT_A_FAMILY] = { .type = NLA_U16 },
 	[NLBL_MGMT_A_CLPDOI] = { .type = NLA_U32 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -106,11 +63,7 @@ static const struct nla_policy netlbl_mgmt_genl_policy[NLBL_MGMT_A_MAX + 1] = {
  */
 
 /**
-<<<<<<< HEAD
- * netlbl_mgmt_add - Handle an ADD message
-=======
  * netlbl_mgmt_add_common - Handle an ADD message
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @info: the Generic NETLINK info block
  * @audit_info: NetLabel audit information
  *
@@ -123,20 +76,6 @@ static const struct nla_policy netlbl_mgmt_genl_policy[NLBL_MGMT_A_MAX + 1] = {
 static int netlbl_mgmt_add_common(struct genl_info *info,
 				  struct netlbl_audit *audit_info)
 {
-<<<<<<< HEAD
-	int ret_val = -EINVAL;
-	struct netlbl_dom_map *entry = NULL;
-	struct netlbl_domaddr_map *addrmap = NULL;
-	struct cipso_v4_doi *cipsov4 = NULL;
-	u32 tmp_val;
-
-	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
-	if (entry == NULL) {
-		ret_val = -ENOMEM;
-		goto add_failure;
-	}
-	entry->type = nla_get_u32(info->attrs[NLBL_MGMT_A_PROTOCOL]);
-=======
 	void *pmap = NULL;
 	int ret_val = -EINVAL;
 	struct netlbl_domaddr_map *addrmap = NULL;
@@ -150,21 +89,11 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 	if (!entry)
 		return -ENOMEM;
 	entry->def.type = nla_get_u32(info->attrs[NLBL_MGMT_A_PROTOCOL]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info->attrs[NLBL_MGMT_A_DOMAIN]) {
 		size_t tmp_size = nla_len(info->attrs[NLBL_MGMT_A_DOMAIN]);
 		entry->domain = kmalloc(tmp_size, GFP_KERNEL);
 		if (entry->domain == NULL) {
 			ret_val = -ENOMEM;
-<<<<<<< HEAD
-			goto add_failure;
-		}
-		nla_strlcpy(entry->domain,
-			    info->attrs[NLBL_MGMT_A_DOMAIN], tmp_size);
-	}
-
-	/* NOTE: internally we allow/use a entry->type value of
-=======
 			goto add_free_entry;
 		}
 		nla_strscpy(entry->domain,
@@ -172,19 +101,10 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 	}
 
 	/* NOTE: internally we allow/use a entry->def.type value of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *       NETLBL_NLTYPE_ADDRSELECT but we don't currently allow users
 	 *       to pass that as a protocol value because we need to know the
 	 *       "real" protocol */
 
-<<<<<<< HEAD
-	switch (entry->type) {
-	case NETLBL_NLTYPE_UNLABELED:
-		break;
-	case NETLBL_NLTYPE_CIPSOV4:
-		if (!info->attrs[NLBL_MGMT_A_CV4DOI])
-			goto add_failure;
-=======
 	switch (entry->def.type) {
 	case NETLBL_NLTYPE_UNLABELED:
 		if (info->attrs[NLBL_MGMT_A_FAMILY])
@@ -196,20 +116,10 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 	case NETLBL_NLTYPE_CIPSOV4:
 		if (!info->attrs[NLBL_MGMT_A_CV4DOI])
 			goto add_free_domain;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tmp_val = nla_get_u32(info->attrs[NLBL_MGMT_A_CV4DOI]);
 		cipsov4 = cipso_v4_doi_getdef(tmp_val);
 		if (cipsov4 == NULL)
-<<<<<<< HEAD
-			goto add_failure;
-		entry->type_def.cipsov4 = cipsov4;
-		break;
-	default:
-		goto add_failure;
-	}
-
-=======
 			goto add_free_domain;
 		entry->family = AF_INET;
 		entry->def.cipso = cipsov4;
@@ -235,7 +145,6 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 	    (entry->family == AF_INET6 && info->attrs[NLBL_MGMT_A_IPV4ADDR]))
 		goto add_doi_put_def;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info->attrs[NLBL_MGMT_A_IPV4ADDR]) {
 		struct in_addr *addr;
 		struct in_addr *mask;
@@ -244,11 +153,7 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 		addrmap = kzalloc(sizeof(*addrmap), GFP_KERNEL);
 		if (addrmap == NULL) {
 			ret_val = -ENOMEM;
-<<<<<<< HEAD
-			goto add_failure;
-=======
 			goto add_doi_put_def;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		INIT_LIST_HEAD(&addrmap->list4);
 		INIT_LIST_HEAD(&addrmap->list6);
@@ -256,20 +161,12 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 		if (nla_len(info->attrs[NLBL_MGMT_A_IPV4ADDR]) !=
 		    sizeof(struct in_addr)) {
 			ret_val = -EINVAL;
-<<<<<<< HEAD
-			goto add_failure;
-=======
 			goto add_free_addrmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (nla_len(info->attrs[NLBL_MGMT_A_IPV4MASK]) !=
 		    sizeof(struct in_addr)) {
 			ret_val = -EINVAL;
-<<<<<<< HEAD
-			goto add_failure;
-=======
 			goto add_free_addrmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		addr = nla_data(info->attrs[NLBL_MGMT_A_IPV4ADDR]);
 		mask = nla_data(info->attrs[NLBL_MGMT_A_IPV4MASK]);
@@ -277,25 +174,6 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 		map = kzalloc(sizeof(*map), GFP_KERNEL);
 		if (map == NULL) {
 			ret_val = -ENOMEM;
-<<<<<<< HEAD
-			goto add_failure;
-		}
-		map->list.addr = addr->s_addr & mask->s_addr;
-		map->list.mask = mask->s_addr;
-		map->list.valid = 1;
-		map->type = entry->type;
-		if (cipsov4)
-			map->type_def.cipsov4 = cipsov4;
-
-		ret_val = netlbl_af4list_add(&map->list, &addrmap->list4);
-		if (ret_val != 0) {
-			kfree(map);
-			goto add_failure;
-		}
-
-		entry->type = NETLBL_NLTYPE_ADDRSELECT;
-		entry->type_def.addrsel = addrmap;
-=======
 			goto add_free_addrmap;
 		}
 		pmap = map;
@@ -313,7 +191,6 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 		entry->family = AF_INET;
 		entry->def.type = NETLBL_NLTYPE_ADDRSELECT;
 		entry->def.addrsel = addrmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if IS_ENABLED(CONFIG_IPV6)
 	} else if (info->attrs[NLBL_MGMT_A_IPV6ADDR]) {
 		struct in6_addr *addr;
@@ -323,11 +200,7 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 		addrmap = kzalloc(sizeof(*addrmap), GFP_KERNEL);
 		if (addrmap == NULL) {
 			ret_val = -ENOMEM;
-<<<<<<< HEAD
-			goto add_failure;
-=======
 			goto add_doi_put_def;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		INIT_LIST_HEAD(&addrmap->list4);
 		INIT_LIST_HEAD(&addrmap->list6);
@@ -335,20 +208,12 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 		if (nla_len(info->attrs[NLBL_MGMT_A_IPV6ADDR]) !=
 		    sizeof(struct in6_addr)) {
 			ret_val = -EINVAL;
-<<<<<<< HEAD
-			goto add_failure;
-=======
 			goto add_free_addrmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (nla_len(info->attrs[NLBL_MGMT_A_IPV6MASK]) !=
 		    sizeof(struct in6_addr)) {
 			ret_val = -EINVAL;
-<<<<<<< HEAD
-			goto add_failure;
-=======
 			goto add_free_addrmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		addr = nla_data(info->attrs[NLBL_MGMT_A_IPV6ADDR]);
 		mask = nla_data(info->attrs[NLBL_MGMT_A_IPV6MASK]);
@@ -356,14 +221,9 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 		map = kzalloc(sizeof(*map), GFP_KERNEL);
 		if (map == NULL) {
 			ret_val = -ENOMEM;
-<<<<<<< HEAD
-			goto add_failure;
-		}
-=======
 			goto add_free_addrmap;
 		}
 		pmap = map;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		map->list.addr = *addr;
 		map->list.addr.s6_addr32[0] &= mask->s6_addr32[0];
 		map->list.addr.s6_addr32[1] &= mask->s6_addr32[1];
@@ -371,18 +231,6 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 		map->list.addr.s6_addr32[3] &= mask->s6_addr32[3];
 		map->list.mask = *mask;
 		map->list.valid = 1;
-<<<<<<< HEAD
-		map->type = entry->type;
-
-		ret_val = netlbl_af6list_add(&map->list, &addrmap->list6);
-		if (ret_val != 0) {
-			kfree(map);
-			goto add_failure;
-		}
-
-		entry->type = NETLBL_NLTYPE_ADDRSELECT;
-		entry->type_def.addrsel = addrmap;
-=======
 		map->def.type = entry->def.type;
 		if (calipso)
 			map->def.calipso = calipso;
@@ -394,24 +242,11 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
 		entry->family = AF_INET6;
 		entry->def.type = NETLBL_NLTYPE_ADDRSELECT;
 		entry->def.addrsel = addrmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* IPv6 */
 	}
 
 	ret_val = netlbl_domhsh_add(entry, audit_info);
 	if (ret_val != 0)
-<<<<<<< HEAD
-		goto add_failure;
-
-	return 0;
-
-add_failure:
-	if (cipsov4)
-		cipso_v4_doi_putdef(cipsov4);
-	if (entry)
-		kfree(entry->domain);
-	kfree(addrmap);
-=======
 		goto add_free_map;
 
 	return 0;
@@ -428,7 +263,6 @@ add_doi_put_def:
 add_free_domain:
 	kfree(entry->domain);
 add_free_entry:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(entry);
 	return ret_val;
 }
@@ -462,20 +296,6 @@ static int netlbl_mgmt_listentry(struct sk_buff *skb,
 			return ret_val;
 	}
 
-<<<<<<< HEAD
-	switch (entry->type) {
-	case NETLBL_NLTYPE_ADDRSELECT:
-		nla_a = nla_nest_start(skb, NLBL_MGMT_A_SELECTORLIST);
-		if (nla_a == NULL)
-			return -ENOMEM;
-
-		netlbl_af4list_foreach_rcu(iter4,
-					   &entry->type_def.addrsel->list4) {
-			struct netlbl_domaddr4_map *map4;
-			struct in_addr addr_struct;
-
-			nla_b = nla_nest_start(skb, NLBL_MGMT_A_ADDRSELECTOR);
-=======
 	ret_val = nla_put_u16(skb, NLBL_MGMT_A_FAMILY, entry->family);
 	if (ret_val != 0)
 		return ret_val;
@@ -492,22 +312,10 @@ static int netlbl_mgmt_listentry(struct sk_buff *skb,
 
 			nla_b = nla_nest_start_noflag(skb,
 						      NLBL_MGMT_A_ADDRSELECTOR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (nla_b == NULL)
 				return -ENOMEM;
 
 			addr_struct.s_addr = iter4->addr;
-<<<<<<< HEAD
-			ret_val = nla_put(skb, NLBL_MGMT_A_IPV4ADDR,
-					  sizeof(struct in_addr),
-					  &addr_struct);
-			if (ret_val != 0)
-				return ret_val;
-			addr_struct.s_addr = iter4->mask;
-			ret_val = nla_put(skb, NLBL_MGMT_A_IPV4MASK,
-					  sizeof(struct in_addr),
-					  &addr_struct);
-=======
 			ret_val = nla_put_in_addr(skb, NLBL_MGMT_A_IPV4ADDR,
 						  addr_struct.s_addr);
 			if (ret_val != 0)
@@ -515,20 +323,10 @@ static int netlbl_mgmt_listentry(struct sk_buff *skb,
 			addr_struct.s_addr = iter4->mask;
 			ret_val = nla_put_in_addr(skb, NLBL_MGMT_A_IPV4MASK,
 						  addr_struct.s_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret_val != 0)
 				return ret_val;
 			map4 = netlbl_domhsh_addr4_entry(iter4);
 			ret_val = nla_put_u32(skb, NLBL_MGMT_A_PROTOCOL,
-<<<<<<< HEAD
-					      map4->type);
-			if (ret_val != 0)
-				return ret_val;
-			switch (map4->type) {
-			case NETLBL_NLTYPE_CIPSOV4:
-				ret_val = nla_put_u32(skb, NLBL_MGMT_A_CV4DOI,
-						  map4->type_def.cipsov4->doi);
-=======
 					      map4->def.type);
 			if (ret_val != 0)
 				return ret_val;
@@ -536,7 +334,6 @@ static int netlbl_mgmt_listentry(struct sk_buff *skb,
 			case NETLBL_NLTYPE_CIPSOV4:
 				ret_val = nla_put_u32(skb, NLBL_MGMT_A_CV4DOI,
 						      map4->def.cipso->doi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ret_val != 0)
 					return ret_val;
 				break;
@@ -545,24 +342,6 @@ static int netlbl_mgmt_listentry(struct sk_buff *skb,
 			nla_nest_end(skb, nla_b);
 		}
 #if IS_ENABLED(CONFIG_IPV6)
-<<<<<<< HEAD
-		netlbl_af6list_foreach_rcu(iter6,
-					   &entry->type_def.addrsel->list6) {
-			struct netlbl_domaddr6_map *map6;
-
-			nla_b = nla_nest_start(skb, NLBL_MGMT_A_ADDRSELECTOR);
-			if (nla_b == NULL)
-				return -ENOMEM;
-
-			ret_val = nla_put(skb, NLBL_MGMT_A_IPV6ADDR,
-					  sizeof(struct in6_addr),
-					  &iter6->addr);
-			if (ret_val != 0)
-				return ret_val;
-			ret_val = nla_put(skb, NLBL_MGMT_A_IPV6MASK,
-					  sizeof(struct in6_addr),
-					  &iter6->mask);
-=======
 		netlbl_af6list_foreach_rcu(iter6, &entry->def.addrsel->list6) {
 			struct netlbl_domaddr6_map *map6;
 
@@ -577,17 +356,10 @@ static int netlbl_mgmt_listentry(struct sk_buff *skb,
 				return ret_val;
 			ret_val = nla_put_in6_addr(skb, NLBL_MGMT_A_IPV6MASK,
 						   &iter6->mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret_val != 0)
 				return ret_val;
 			map6 = netlbl_domhsh_addr6_entry(iter6);
 			ret_val = nla_put_u32(skb, NLBL_MGMT_A_PROTOCOL,
-<<<<<<< HEAD
-					      map6->type);
-			if (ret_val != 0)
-				return ret_val;
-
-=======
 					      map6->def.type);
 			if (ret_val != 0)
 				return ret_val;
@@ -601,7 +373,6 @@ static int netlbl_mgmt_listentry(struct sk_buff *skb,
 				break;
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nla_nest_end(skb, nla_b);
 		}
 #endif /* IPv6 */
@@ -609,16 +380,6 @@ static int netlbl_mgmt_listentry(struct sk_buff *skb,
 		nla_nest_end(skb, nla_a);
 		break;
 	case NETLBL_NLTYPE_UNLABELED:
-<<<<<<< HEAD
-		ret_val = nla_put_u32(skb, NLBL_MGMT_A_PROTOCOL, entry->type);
-		break;
-	case NETLBL_NLTYPE_CIPSOV4:
-		ret_val = nla_put_u32(skb, NLBL_MGMT_A_PROTOCOL, entry->type);
-		if (ret_val != 0)
-			return ret_val;
-		ret_val = nla_put_u32(skb, NLBL_MGMT_A_CV4DOI,
-				      entry->type_def.cipsov4->doi);
-=======
 		ret_val = nla_put_u32(skb, NLBL_MGMT_A_PROTOCOL,
 				      entry->def.type);
 		break;
@@ -637,7 +398,6 @@ static int netlbl_mgmt_listentry(struct sk_buff *skb,
 			return ret_val;
 		ret_val = nla_put_u32(skb, NLBL_MGMT_A_CLPDOI,
 				      entry->def.calipso->doi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -675,11 +435,7 @@ static int netlbl_mgmt_add(struct sk_buff *skb, struct genl_info *info)
 	     (info->attrs[NLBL_MGMT_A_IPV6MASK] != NULL)))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	netlbl_netlink_auditinfo(skb, &audit_info);
-=======
 	netlbl_netlink_auditinfo(&audit_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return netlbl_mgmt_add_common(info, &audit_info);
 }
@@ -702,17 +458,10 @@ static int netlbl_mgmt_remove(struct sk_buff *skb, struct genl_info *info)
 	if (!info->attrs[NLBL_MGMT_A_DOMAIN])
 		return -EINVAL;
 
-<<<<<<< HEAD
-	netlbl_netlink_auditinfo(skb, &audit_info);
-
-	domain = nla_data(info->attrs[NLBL_MGMT_A_DOMAIN]);
-	return netlbl_domhsh_remove(domain, &audit_info);
-=======
 	netlbl_netlink_auditinfo(&audit_info);
 
 	domain = nla_data(info->attrs[NLBL_MGMT_A_DOMAIN]);
 	return netlbl_domhsh_remove(domain, AF_UNSPEC, &audit_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -733,11 +482,7 @@ static int netlbl_mgmt_listall_cb(struct netlbl_dom_map *entry, void *arg)
 	struct netlbl_domhsh_walk_arg *cb_arg = arg;
 	void *data;
 
-<<<<<<< HEAD
-	data = genlmsg_put(cb_arg->skb, NETLINK_CB(cb_arg->nl_cb->skb).pid,
-=======
 	data = genlmsg_put(cb_arg->skb, NETLINK_CB(cb_arg->nl_cb->skb).portid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   cb_arg->seq, &netlbl_mgmt_gnl_family,
 			   NLM_F_MULTI, NLBL_MGMT_C_LISTALL);
 	if (data == NULL)
@@ -748,12 +493,8 @@ static int netlbl_mgmt_listall_cb(struct netlbl_dom_map *entry, void *arg)
 		goto listall_cb_failure;
 
 	cb_arg->seq++;
-<<<<<<< HEAD
-	return genlmsg_end(cb_arg->skb, data);
-=======
 	genlmsg_end(cb_arg->skb, data);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 listall_cb_failure:
 	genlmsg_cancel(cb_arg->skb, data);
@@ -817,11 +558,7 @@ static int netlbl_mgmt_adddef(struct sk_buff *skb, struct genl_info *info)
 	     (info->attrs[NLBL_MGMT_A_IPV6MASK] != NULL)))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	netlbl_netlink_auditinfo(skb, &audit_info);
-=======
 	netlbl_netlink_auditinfo(&audit_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return netlbl_mgmt_add_common(info, &audit_info);
 }
@@ -840,15 +577,9 @@ static int netlbl_mgmt_removedef(struct sk_buff *skb, struct genl_info *info)
 {
 	struct netlbl_audit audit_info;
 
-<<<<<<< HEAD
-	netlbl_netlink_auditinfo(skb, &audit_info);
-
-	return netlbl_domhsh_remove_default(&audit_info);
-=======
 	netlbl_netlink_auditinfo(&audit_info);
 
 	return netlbl_domhsh_remove_default(AF_UNSPEC, &audit_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -868,15 +599,12 @@ static int netlbl_mgmt_listdef(struct sk_buff *skb, struct genl_info *info)
 	struct sk_buff *ans_skb = NULL;
 	void *data;
 	struct netlbl_dom_map *entry;
-<<<<<<< HEAD
-=======
 	u16 family;
 
 	if (info->attrs[NLBL_MGMT_A_FAMILY])
 		family = nla_get_u16(info->attrs[NLBL_MGMT_A_FAMILY]);
 	else
 		family = AF_INET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ans_skb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (ans_skb == NULL)
@@ -887,11 +615,7 @@ static int netlbl_mgmt_listdef(struct sk_buff *skb, struct genl_info *info)
 		goto listdef_failure;
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	entry = netlbl_domhsh_getentry(NULL);
-=======
 	entry = netlbl_domhsh_getentry(NULL, family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (entry == NULL) {
 		ret_val = -ENOENT;
 		goto listdef_failure_lock;
@@ -930,11 +654,7 @@ static int netlbl_mgmt_protocols_cb(struct sk_buff *skb,
 	int ret_val = -ENOMEM;
 	void *data;
 
-<<<<<<< HEAD
-	data = genlmsg_put(skb, NETLINK_CB(cb->skb).pid, cb->nlh->nlmsg_seq,
-=======
 	data = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   &netlbl_mgmt_gnl_family, NLM_F_MULTI,
 			   NLBL_MGMT_C_PROTOCOLS);
 	if (data == NULL)
@@ -944,12 +664,8 @@ static int netlbl_mgmt_protocols_cb(struct sk_buff *skb,
 	if (ret_val != 0)
 		goto protocols_cb_failure;
 
-<<<<<<< HEAD
-	return genlmsg_end(skb, data);
-=======
 	genlmsg_end(skb, data);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 protocols_cb_failure:
 	genlmsg_cancel(skb, data);
@@ -984,8 +700,6 @@ static int netlbl_mgmt_protocols(struct sk_buff *skb,
 			goto protocols_return;
 		protos_sent++;
 	}
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 	if (protos_sent == 2) {
 		if (netlbl_mgmt_protocols_cb(skb,
@@ -995,7 +709,6 @@ static int netlbl_mgmt_protocols(struct sk_buff *skb,
 		protos_sent++;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 protocols_return:
 	cb->args[0] = protos_sent;
@@ -1045,110 +758,65 @@ version_failure:
  * NetLabel Generic NETLINK Command Definitions
  */
 
-<<<<<<< HEAD
-static struct genl_ops netlbl_mgmt_genl_ops[] = {
-	{
-	.cmd = NLBL_MGMT_C_ADD,
-	.flags = GENL_ADMIN_PERM,
-	.policy = netlbl_mgmt_genl_policy,
-=======
 static const struct genl_small_ops netlbl_mgmt_genl_ops[] = {
 	{
 	.cmd = NLBL_MGMT_C_ADD,
 	.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 	.flags = GENL_ADMIN_PERM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.doit = netlbl_mgmt_add,
 	.dumpit = NULL,
 	},
 	{
 	.cmd = NLBL_MGMT_C_REMOVE,
-<<<<<<< HEAD
-	.flags = GENL_ADMIN_PERM,
-	.policy = netlbl_mgmt_genl_policy,
-=======
 	.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 	.flags = GENL_ADMIN_PERM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.doit = netlbl_mgmt_remove,
 	.dumpit = NULL,
 	},
 	{
 	.cmd = NLBL_MGMT_C_LISTALL,
-<<<<<<< HEAD
-	.flags = 0,
-	.policy = netlbl_mgmt_genl_policy,
-=======
 	.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 	.flags = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.doit = NULL,
 	.dumpit = netlbl_mgmt_listall,
 	},
 	{
 	.cmd = NLBL_MGMT_C_ADDDEF,
-<<<<<<< HEAD
-	.flags = GENL_ADMIN_PERM,
-	.policy = netlbl_mgmt_genl_policy,
-=======
 	.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 	.flags = GENL_ADMIN_PERM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.doit = netlbl_mgmt_adddef,
 	.dumpit = NULL,
 	},
 	{
 	.cmd = NLBL_MGMT_C_REMOVEDEF,
-<<<<<<< HEAD
-	.flags = GENL_ADMIN_PERM,
-	.policy = netlbl_mgmt_genl_policy,
-=======
 	.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 	.flags = GENL_ADMIN_PERM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.doit = netlbl_mgmt_removedef,
 	.dumpit = NULL,
 	},
 	{
 	.cmd = NLBL_MGMT_C_LISTDEF,
-<<<<<<< HEAD
-	.flags = 0,
-	.policy = netlbl_mgmt_genl_policy,
-=======
 	.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 	.flags = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.doit = netlbl_mgmt_listdef,
 	.dumpit = NULL,
 	},
 	{
 	.cmd = NLBL_MGMT_C_PROTOCOLS,
-<<<<<<< HEAD
-	.flags = 0,
-	.policy = netlbl_mgmt_genl_policy,
-=======
 	.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 	.flags = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.doit = NULL,
 	.dumpit = netlbl_mgmt_protocols,
 	},
 	{
 	.cmd = NLBL_MGMT_C_VERSION,
-<<<<<<< HEAD
-	.flags = 0,
-	.policy = netlbl_mgmt_genl_policy,
-=======
 	.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 	.flags = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.doit = netlbl_mgmt_version,
 	.dumpit = NULL,
 	},
 };
 
-<<<<<<< HEAD
-=======
 static struct genl_family netlbl_mgmt_gnl_family __ro_after_init = {
 	.hdrsize = 0,
 	.name = NETLBL_NLTYPE_MGMT_NAME,
@@ -1161,7 +829,6 @@ static struct genl_family netlbl_mgmt_gnl_family __ro_after_init = {
 	.resv_start_op = NLBL_MGMT_C_VERSION + 1,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NetLabel Generic NETLINK Protocol Functions
  */
@@ -1176,10 +843,5 @@ static struct genl_family netlbl_mgmt_gnl_family __ro_after_init = {
  */
 int __init netlbl_mgmt_genl_init(void)
 {
-<<<<<<< HEAD
-	return genl_register_family_with_ops(&netlbl_mgmt_gnl_family,
-		netlbl_mgmt_genl_ops, ARRAY_SIZE(netlbl_mgmt_genl_ops));
-=======
 	return genl_register_family(&netlbl_mgmt_gnl_family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -30,45 +30,23 @@ struct ath6kl_fwlog_slot {
 	__le32 length;
 
 	/* max ATH6KL_FWLOG_PAYLOAD_SIZE bytes */
-<<<<<<< HEAD
-	u8 payload[0];
-=======
 	u8 payload[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define ATH6KL_FWLOG_MAX_ENTRIES 20
 
 #define ATH6KL_FWLOG_VALID_MASK 0x1ffff
 
-<<<<<<< HEAD
-int ath6kl_printk(const char *level, const char *fmt, ...)
-{
-	struct va_format vaf;
-	va_list args;
-	int rtn;
-=======
 void ath6kl_printk(const char *level, const char *fmt, ...)
 {
 	struct va_format vaf;
 	va_list args;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	va_start(args, fmt);
 
 	vaf.fmt = fmt;
 	vaf.va = &args;
 
-<<<<<<< HEAD
-	rtn = printk("%sath6kl: %pV", level, &vaf);
-
-	va_end(args);
-
-	return rtn;
-}
-EXPORT_SYMBOL(ath6kl_printk);
-
-=======
 	printk("%sath6kl: %pV", level, &vaf);
 
 	va_end(args);
@@ -147,7 +125,6 @@ int ath6kl_read_tgt_stats(struct ath6kl *ar, struct ath6kl_vif *vif)
 }
 EXPORT_SYMBOL(ath6kl_read_tgt_stats);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ATH6KL_DEBUG
 
 void ath6kl_dbg(enum ATH6K_DEBUG_MASK mask, const char *fmt, ...)
@@ -155,25 +132,15 @@ void ath6kl_dbg(enum ATH6K_DEBUG_MASK mask, const char *fmt, ...)
 	struct va_format vaf;
 	va_list args;
 
-<<<<<<< HEAD
-	if (!(debug_mask & mask))
-		return;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	va_start(args, fmt);
 
 	vaf.fmt = fmt;
 	vaf.va = &args;
 
-<<<<<<< HEAD
-	ath6kl_printk(KERN_DEBUG, "%pV", &vaf);
-=======
 	if (debug_mask & mask)
 		ath6kl_printk(KERN_DEBUG, "%pV", &vaf);
 
 	trace_ath6kl_log_dbg(mask, &vaf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	va_end(args);
 }
@@ -189,13 +156,10 @@ void ath6kl_dbg_dump(enum ATH6K_DEBUG_MASK mask,
 
 		print_hex_dump_bytes(prefix, DUMP_PREFIX_OFFSET, buf, len);
 	}
-<<<<<<< HEAD
-=======
 
 	/* tracing code doesn't like null strings :/ */
 	trace_ath6kl_log_dbg_dump(msg ? msg : "", prefix ? prefix : "",
 				  buf, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ath6kl_dbg_dump);
 
@@ -223,10 +187,6 @@ void ath6kl_dump_registers(struct ath6kl_device *dev,
 			   struct ath6kl_irq_proc_registers *irq_proc_reg,
 			   struct ath6kl_irq_enable_reg *irq_enable_reg)
 {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath6kl_dbg(ATH6KL_DBG_IRQ, ("<------- Register Table -------->\n"));
 
 	if (irq_proc_reg != NULL) {
@@ -273,10 +233,6 @@ void ath6kl_dump_registers(struct ath6kl_device *dev,
 				   "GMBOX lookahead alias 1:   0x%x\n",
 				   irq_proc_reg->rx_gmbox_lkahd_alias[1]);
 		}
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (irq_enable_reg != NULL) {
@@ -392,11 +348,7 @@ void ath6kl_debug_fwlog_event(struct ath6kl *ar, const void *buf, size_t len)
 	if (!skb)
 		return;
 
-<<<<<<< HEAD
-	slot = (struct ath6kl_fwlog_slot *) skb_put(skb, slot_len);
-=======
 	slot = skb_put(skb, slot_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	slot->timestamp = cpu_to_le32(jiffies);
 	slot->length = cpu_to_le32(len);
 	memcpy(slot->payload, buf, len);
@@ -520,15 +472,10 @@ static ssize_t ath6kl_fwlog_block_read(struct file *file,
 
 		ret = wait_for_completion_interruptible(
 			&ar->debug.fwlog_completion);
-<<<<<<< HEAD
-		if (ret == -ERESTARTSYS)
-			return ret;
-=======
 		if (ret == -ERESTARTSYS) {
 			vfree(buf);
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_lock(&ar->debug.fwlog_queue.lock);
 	}
@@ -624,52 +571,17 @@ static ssize_t read_file_tgt_stats(struct file *file, char __user *user_buf,
 	char *buf;
 	unsigned int len = 0, buf_len = 1500;
 	int i;
-<<<<<<< HEAD
-	long left;
-	ssize_t ret_cnt;
-=======
 	ssize_t ret_cnt;
 	int rv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vif = ath6kl_vif_first(ar);
 	if (!vif)
 		return -EIO;
 
-<<<<<<< HEAD
-	tgt_stats = &vif->target_stats;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf = kzalloc(buf_len, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	if (down_interruptible(&ar->sem)) {
-		kfree(buf);
-		return -EBUSY;
-	}
-
-	set_bit(STATS_UPDATE_PEND, &vif->flags);
-
-	if (ath6kl_wmi_get_stats_cmd(ar->wmi, 0)) {
-		up(&ar->sem);
-		kfree(buf);
-		return -EIO;
-	}
-
-	left = wait_event_interruptible_timeout(ar->event_wq,
-						!test_bit(STATS_UPDATE_PEND,
-						&vif->flags), WMI_TIMEOUT);
-
-	up(&ar->sem);
-
-	if (left <= 0) {
-		kfree(buf);
-		return -ETIMEDOUT;
-	}
-=======
 	rv = ath6kl_read_tgt_stats(ar, vif);
 	if (rv < 0) {
 		kfree(buf);
@@ -677,7 +589,6 @@ static ssize_t read_file_tgt_stats(struct file *file, char __user *user_buf,
 	}
 
 	tgt_stats = &vif->target_stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	len += scnprintf(buf + len, buf_len - len, "\n");
 	len += scnprintf(buf + len, buf_len - len, "%25s\n",
@@ -734,11 +645,7 @@ static ssize_t read_file_tgt_stats(struct file *file, char __user *user_buf,
 	len += scnprintf(buf + len, buf_len - len, "%20s %10llu\n",
 			 "CRC Err", tgt_stats->rx_crc_err);
 	len += scnprintf(buf + len, buf_len - len, "%20s %10llu\n",
-<<<<<<< HEAD
-			 "Key chache miss", tgt_stats->rx_key_cache_miss);
-=======
 			 "Key cache miss", tgt_stats->rx_key_cache_miss);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len += scnprintf(buf + len, buf_len - len, "%20s %10llu\n",
 			 "Decrypt Err", tgt_stats->rx_decrypt_err);
 	len += scnprintf(buf + len, buf_len - len, "%20s %10llu\n",
@@ -764,15 +671,12 @@ static ssize_t read_file_tgt_stats(struct file *file, char __user *user_buf,
 			 "Num disconnects", tgt_stats->cs_discon_cnt);
 	len += scnprintf(buf + len, buf_len - len, "%20s %10d\n",
 			 "Beacon avg rssi", tgt_stats->cs_ave_beacon_rssi);
-<<<<<<< HEAD
-=======
 	len += scnprintf(buf + len, buf_len - len, "%20s %10d\n",
 			 "ARP pkt received", tgt_stats->arp_received);
 	len += scnprintf(buf + len, buf_len - len, "%20s %10d\n",
 			 "ARP pkt matched", tgt_stats->arp_matched);
 	len += scnprintf(buf + len, buf_len - len, "%20s %10d\n",
 			 "ARP pkt replied", tgt_stats->arp_replied);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len > buf_len)
 		len = buf_len;
@@ -1123,25 +1027,17 @@ static ssize_t ath6kl_lrssi_roam_write(struct file *file,
 {
 	struct ath6kl *ar = file->private_data;
 	unsigned long lrssi_roam_threshold;
-<<<<<<< HEAD
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (kstrtoul_from_user(user_buf, count, 0, &lrssi_roam_threshold))
 		return -EINVAL;
 
 	ar->lrssi_roam_threshold = lrssi_roam_threshold;
 
-<<<<<<< HEAD
-	ath6kl_wmi_set_roam_lrssi_cmd(ar->wmi, ar->lrssi_roam_threshold);
-
-=======
 	ret = ath6kl_wmi_set_roam_lrssi_cmd(ar->wmi, ar->lrssi_roam_threshold);
 
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return count;
 }
 
@@ -1239,12 +1135,7 @@ int ath6kl_debug_roam_tbl_event(struct ath6kl *ar, const void *buf,
 
 	tbl = (const struct wmi_target_roam_tbl *) buf;
 	num_entries = le16_to_cpu(tbl->num_entries);
-<<<<<<< HEAD
-	if (sizeof(*tbl) + num_entries * sizeof(struct wmi_bss_roam_info) >
-	    len)
-=======
 	if (struct_size(tbl, info, num_entries) > len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (ar->debug.roam_tbl == NULL ||
@@ -1346,28 +1237,14 @@ static ssize_t ath6kl_force_roam_write(struct file *file,
 	char buf[20];
 	size_t len;
 	u8 bssid[ETH_ALEN];
-<<<<<<< HEAD
-	int i;
-	int addr[ETH_ALEN];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	len = min(count, sizeof(buf) - 1);
 	if (copy_from_user(buf, user_buf, len))
 		return -EFAULT;
 	buf[len] = '\0';
 
-<<<<<<< HEAD
-	if (sscanf(buf, "%02x:%02x:%02x:%02x:%02x:%02x",
-		   &addr[0], &addr[1], &addr[2], &addr[3], &addr[4], &addr[5])
-	    != ETH_ALEN)
-		return -EINVAL;
-	for (i = 0; i < ETH_ALEN; i++)
-		bssid[i] = addr[i];
-=======
 	if (!mac_pton(buf, bssid))
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ath6kl_wmi_force_roam_cmd(ar->wmi, bssid);
 	if (ret)
@@ -1516,10 +1393,6 @@ static ssize_t ath6kl_create_qos_write(struct file *file,
 						const char __user *user_buf,
 						size_t count, loff_t *ppos)
 {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath6kl *ar = file->private_data;
 	struct ath6kl_vif *vif;
 	char buf[200];
@@ -1698,10 +1571,6 @@ static ssize_t ath6kl_delete_qos_write(struct file *file,
 				const char __user *user_buf,
 				size_t count, loff_t *ppos)
 {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath6kl *ar = file->private_data;
 	struct ath6kl_vif *vif;
 	char buf[100];
@@ -1750,21 +1619,15 @@ static ssize_t ath6kl_bgscan_int_write(struct file *file,
 				size_t count, loff_t *ppos)
 {
 	struct ath6kl *ar = file->private_data;
-<<<<<<< HEAD
-=======
 	struct ath6kl_vif *vif;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 bgscan_int;
 	char buf[32];
 	ssize_t len;
 
-<<<<<<< HEAD
-=======
 	vif = ath6kl_vif_first(ar);
 	if (!vif)
 		return -EIO;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len = min(count, sizeof(buf) - 1);
 	if (copy_from_user(buf, user_buf, len))
 		return -EFAULT;
@@ -1776,11 +1639,8 @@ static ssize_t ath6kl_bgscan_int_write(struct file *file,
 	if (bgscan_int == 0)
 		bgscan_int = 0xffff;
 
-<<<<<<< HEAD
-=======
 	vif->bg_scan_period = bgscan_int;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath6kl_wmi_scanparams_cmd(ar->wmi, 0, 0, 0, bgscan_int, 0, 0, 0, 3,
 				  0, 0, 0);
 
@@ -1933,72 +1793,6 @@ int ath6kl_debug_init_fs(struct ath6kl *ar)
 {
 	ar->debugfs_phy = debugfs_create_dir("ath6kl",
 					     ar->wiphy->debugfsdir);
-<<<<<<< HEAD
-	if (!ar->debugfs_phy)
-		return -ENOMEM;
-
-	debugfs_create_file("tgt_stats", S_IRUSR, ar->debugfs_phy, ar,
-			    &fops_tgt_stats);
-
-	debugfs_create_file("credit_dist_stats", S_IRUSR, ar->debugfs_phy, ar,
-			    &fops_credit_dist_stats);
-
-	debugfs_create_file("endpoint_stats", S_IRUSR | S_IWUSR,
-			    ar->debugfs_phy, ar, &fops_endpoint_stats);
-
-	debugfs_create_file("fwlog", S_IRUSR, ar->debugfs_phy, ar,
-			    &fops_fwlog);
-
-	debugfs_create_file("fwlog_block", S_IRUSR, ar->debugfs_phy, ar,
-			    &fops_fwlog_block);
-
-	debugfs_create_file("fwlog_mask", S_IRUSR | S_IWUSR, ar->debugfs_phy,
-			    ar, &fops_fwlog_mask);
-
-	debugfs_create_file("reg_addr", S_IRUSR | S_IWUSR, ar->debugfs_phy, ar,
-			    &fops_diag_reg_read);
-
-	debugfs_create_file("reg_dump", S_IRUSR, ar->debugfs_phy, ar,
-			    &fops_reg_dump);
-
-	debugfs_create_file("lrssi_roam_threshold", S_IRUSR | S_IWUSR,
-			    ar->debugfs_phy, ar, &fops_lrssi_roam_threshold);
-
-	debugfs_create_file("reg_write", S_IRUSR | S_IWUSR,
-			    ar->debugfs_phy, ar, &fops_diag_reg_write);
-
-	debugfs_create_file("war_stats", S_IRUSR, ar->debugfs_phy, ar,
-			    &fops_war_stats);
-
-	debugfs_create_file("roam_table", S_IRUSR, ar->debugfs_phy, ar,
-			    &fops_roam_table);
-
-	debugfs_create_file("force_roam", S_IWUSR, ar->debugfs_phy, ar,
-			    &fops_force_roam);
-
-	debugfs_create_file("roam_mode", S_IWUSR, ar->debugfs_phy, ar,
-			    &fops_roam_mode);
-
-	debugfs_create_file("keepalive", S_IRUSR | S_IWUSR, ar->debugfs_phy, ar,
-			    &fops_keepalive);
-
-	debugfs_create_file("disconnect_timeout", S_IRUSR | S_IWUSR,
-			    ar->debugfs_phy, ar, &fops_disconnect_timeout);
-
-	debugfs_create_file("create_qos", S_IWUSR, ar->debugfs_phy, ar,
-			    &fops_create_qos);
-
-	debugfs_create_file("delete_qos", S_IWUSR, ar->debugfs_phy, ar,
-			    &fops_delete_qos);
-
-	debugfs_create_file("bgscan_interval", S_IWUSR,
-			    ar->debugfs_phy, ar, &fops_bgscan_int);
-
-	debugfs_create_file("listen_interval", S_IRUSR | S_IWUSR,
-			    ar->debugfs_phy, ar, &fops_listen_int);
-
-	debugfs_create_file("power_params", S_IWUSR, ar->debugfs_phy, ar,
-=======
 
 	debugfs_create_file("tgt_stats", 0400, ar->debugfs_phy, ar,
 			    &fops_tgt_stats);
@@ -2062,7 +1856,6 @@ int ath6kl_debug_init_fs(struct ath6kl *ar)
 			    ar->debugfs_phy, ar, &fops_listen_int);
 
 	debugfs_create_file("power_params", 0200, ar->debugfs_phy, ar,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    &fops_power_params);
 
 	return 0;
@@ -2071,10 +1864,7 @@ int ath6kl_debug_init_fs(struct ath6kl *ar)
 void ath6kl_debug_cleanup(struct ath6kl *ar)
 {
 	skb_queue_purge(&ar->debug.fwlog_queue);
-<<<<<<< HEAD
-=======
 	complete(&ar->debug.fwlog_completion);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ar->debug.roam_tbl);
 }
 

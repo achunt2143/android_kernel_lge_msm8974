@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  64-bit pSeries and RS/6000 setup code.
  *
@@ -9,14 +6,6 @@
  *  Adapted from 'alpha' version by Gary Thomas
  *  Modified by Cort Dougan (cort@cs.nmt.edu)
  *  Modified by PPC64 Team, IBM Corp
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -25,10 +14,7 @@
 
 #include <linux/cpu.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-=======
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
@@ -50,25 +36,16 @@
 #include <linux/irq.h>
 #include <linux/seq_file.h>
 #include <linux/root_dev.h>
-<<<<<<< HEAD
-#include <linux/cpuidle.h>
-=======
 #include <linux/of.h>
 #include <linux/of_irq.h>
 #include <linux/of_pci.h>
 #include <linux/memblock.h>
 #include <linux/swiotlb.h>
 #include <linux/seq_buf.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mmu.h>
 #include <asm/processor.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/rtas.h>
 #include <asm/pci-bridge.h>
 #include <asm/iommu.h>
@@ -78,35 +55,15 @@
 #include <asm/time.h>
 #include <asm/nvram.h>
 #include <asm/pmc.h>
-<<<<<<< HEAD
-#include <asm/mpic.h>
-#include <asm/xics.h>
-=======
 #include <asm/xics.h>
 #include <asm/xive.h>
 #include <asm/papr-sysparm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ppc-pci.h>
 #include <asm/i8259.h>
 #include <asm/udbg.h>
 #include <asm/smp.h>
 #include <asm/firmware.h>
 #include <asm/eeh.h>
-<<<<<<< HEAD
-#include <asm/pSeries_reconfig.h>
-
-#include "plpar_wrappers.h"
-#include "pseries.h"
-
-int CMO_PrPSP = -1;
-int CMO_SecPSP = -1;
-unsigned long CMO_PageSize = (ASM_CONST(1) << IOMMU_PAGE_SHIFT);
-EXPORT_SYMBOL(CMO_PageSize);
-
-int fwnmi_active;  /* TRUE if an FWNMI handler is present */
-
-static struct device_node *pSeries_mpic_node;
-=======
 #include <asm/reg.h>
 #include <asm/plpar_wrappers.h>
 #include <asm/kexec.h>
@@ -147,7 +104,6 @@ EXPORT_SYMBOL(CMO_PageSize);
 int fwnmi_active;  /* TRUE if an FWNMI handler is present */
 int ibm_nmi_interlock_token;
 u32 pseries_security_flavor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void pSeries_show_cpuinfo(struct seq_file *m)
 {
@@ -159,13 +115,10 @@ static void pSeries_show_cpuinfo(struct seq_file *m)
 		model = of_get_property(root, "model", NULL);
 	seq_printf(m, "machine\t\t: CHRP %s\n", model);
 	of_node_put(root);
-<<<<<<< HEAD
-=======
 	if (radix_enabled())
 		seq_printf(m, "MMU\t\t: Radix\n");
 	else
 		seq_printf(m, "MMU\t\t: Hash\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Initialize firmware assisted non-maskable interrupts if
@@ -174,11 +127,6 @@ static void pSeries_show_cpuinfo(struct seq_file *m)
 static void __init fwnmi_init(void)
 {
 	unsigned long system_reset_addr, machine_check_addr;
-<<<<<<< HEAD
-
-	int ibm_nmi_register = rtas_token("ibm,nmi-register");
-	if (ibm_nmi_register == RTAS_UNKNOWN_SERVICE)
-=======
 	u8 *mce_data_buf;
 	unsigned int i;
 	int nr_cpus = num_possible_cpus();
@@ -194,7 +142,6 @@ static void __init fwnmi_init(void)
 
 	ibm_nmi_interlock_token = rtas_function_token(RTAS_FN_IBM_NMI_INTERLOCK);
 	if (WARN_ON(ibm_nmi_interlock_token == RTAS_UNKNOWN_SERVICE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/* If the kernel's not linked at zero we point the firmware at low
@@ -202,14 +149,6 @@ static void __init fwnmi_init(void)
 	system_reset_addr  = __pa(system_reset_fwnmi) - PHYSICAL_START;
 	machine_check_addr = __pa(machine_check_fwnmi) - PHYSICAL_START;
 
-<<<<<<< HEAD
-	if (0 == rtas_call(ibm_nmi_register, 2, 1, NULL, system_reset_addr,
-				machine_check_addr))
-		fwnmi_active = 1;
-}
-
-static void pseries_8259_cascade(unsigned int irq, struct irq_desc *desc)
-=======
 	if (0 == rtas_call(ibm_nmi_register_token, 2, 1, NULL,
 			   system_reset_addr, machine_check_addr))
 		fwnmi_active = 1;
@@ -261,16 +200,11 @@ static __init int pseries_wdt_init(void)
 machine_subsys_initcall(pseries, pseries_wdt_init);
 
 static void pseries_8259_cascade(struct irq_desc *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	unsigned int cascade_irq = i8259_irq();
 
-<<<<<<< HEAD
-	if (cascade_irq != NO_IRQ)
-=======
 	if (cascade_irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		generic_handle_irq(cascade_irq);
 
 	chip->irq_eoi(&desc->irq_data);
@@ -297,11 +231,7 @@ static void __init pseries_setup_i8259_cascade(void)
 	}
 
 	cascade = irq_of_parse_and_map(found, 0);
-<<<<<<< HEAD
-	if (cascade == NO_IRQ) {
-=======
 	if (!cascade) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "pic: failed to map cascade interrupt");
 		return;
 	}
@@ -312,11 +242,7 @@ static void __init pseries_setup_i8259_cascade(void)
 		of_node_put(old);
 		if (np == NULL)
 			break;
-<<<<<<< HEAD
-		if (strcmp(np->name, "pci") != 0)
-=======
 		if (!of_node_name_eq(np, "pci"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		addrp = of_get_property(np, "8259-interrupt-acknowledge", NULL);
 		if (addrp == NULL)
@@ -333,53 +259,6 @@ static void __init pseries_setup_i8259_cascade(void)
 	irq_set_chained_handler(cascade, pseries_8259_cascade);
 }
 
-<<<<<<< HEAD
-static void __init pseries_mpic_init_IRQ(void)
-{
-	struct device_node *np;
-	const unsigned int *opprop;
-	unsigned long openpic_addr = 0;
-	int naddr, n, i, opplen;
-	struct mpic *mpic;
-
-	np = of_find_node_by_path("/");
-	naddr = of_n_addr_cells(np);
-	opprop = of_get_property(np, "platform-open-pic", &opplen);
-	if (opprop != 0) {
-		openpic_addr = of_read_number(opprop, naddr);
-		printk(KERN_DEBUG "OpenPIC addr: %lx\n", openpic_addr);
-	}
-	of_node_put(np);
-
-	BUG_ON(openpic_addr == 0);
-
-	/* Setup the openpic driver */
-	mpic = mpic_alloc(pSeries_mpic_node, openpic_addr,
-			MPIC_NO_RESET, 16, 0, " MPIC     ");
-	BUG_ON(mpic == NULL);
-
-	/* Add ISUs */
-	opplen /= sizeof(u32);
-	for (n = 0, i = naddr; i < opplen; i += naddr, n++) {
-		unsigned long isuaddr = of_read_number(opprop + i, naddr);
-		mpic_assign_isu(mpic, n, isuaddr);
-	}
-
-	/* Setup top-level get_irq */
-	ppc_md.get_irq = mpic_get_irq;
-
-	/* All ISUs are setup, complete initialization */
-	mpic_init(mpic);
-
-	/* Look for cascade */
-	pseries_setup_i8259_cascade();
-}
-
-static void __init pseries_xics_init_IRQ(void)
-{
-	xics_init();
-	pseries_setup_i8259_cascade();
-=======
 static void __init pseries_init_irq(void)
 {
 	/* Try using a XIVE if available, otherwise use a XICS */
@@ -387,7 +266,6 @@ static void __init pseries_init_irq(void)
 		xics_init();
 		pseries_setup_i8259_cascade();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pseries_lpar_enable_pmcs(void)
@@ -399,48 +277,6 @@ static void pseries_lpar_enable_pmcs(void)
 	plpar_hcall_norets(H_PERFMON, set, reset);
 }
 
-<<<<<<< HEAD
-static void __init pseries_discover_pic(void)
-{
-	struct device_node *np;
-	const char *typep;
-
-	for (np = NULL; (np = of_find_node_by_name(np,
-						   "interrupt-controller"));) {
-		typep = of_get_property(np, "compatible", NULL);
-		if (strstr(typep, "open-pic")) {
-			pSeries_mpic_node = of_node_get(np);
-			ppc_md.init_IRQ       = pseries_mpic_init_IRQ;
-			setup_kexec_cpu_down_mpic();
-			smp_init_pseries_mpic();
-			return;
-		} else if (strstr(typep, "ppc-xicp")) {
-			ppc_md.init_IRQ       = pseries_xics_init_IRQ;
-			setup_kexec_cpu_down_xics();
-			smp_init_pseries_xics();
-			return;
-		}
-	}
-	printk(KERN_ERR "pSeries_discover_pic: failed to recognize"
-	       " interrupt-controller\n");
-}
-
-static int pci_dn_reconfig_notifier(struct notifier_block *nb, unsigned long action, void *node)
-{
-	struct device_node *np = node;
-	struct pci_dn *pci = NULL;
-	int err = NOTIFY_OK;
-
-	switch (action) {
-	case PSERIES_RECONFIG_ADD:
-		pci = np->parent->data;
-		if (pci) {
-			update_dn_pci_info(np, pci->phb);
-
-			/* Create EEH device for the OF node */
-			eeh_dev_init(np, pci->phb);
-		}
-=======
 static int pci_dn_reconfig_notifier(struct notifier_block *nb, unsigned long action, void *data)
 {
 	struct of_reconfig_data *rd = data;
@@ -461,7 +297,6 @@ static int pci_dn_reconfig_notifier(struct notifier_block *nb, unsigned long act
 		pdn = PCI_DN(np);
 		if (pdn)
 			list_del(&pdn->list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		err = NOTIFY_DONE;
@@ -476,11 +311,7 @@ static struct notifier_block pci_dn_reconfig_nb = {
 
 struct kmem_cache *dtl_cache;
 
-<<<<<<< HEAD
-#ifdef CONFIG_VIRT_CPU_ACCOUNTING
-=======
 #ifdef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Allocate space for the dispatch trace log for all possible cpus
  * and register the buffers with the hypervisor.  This is used for
@@ -488,55 +319,12 @@ struct kmem_cache *dtl_cache;
  */
 static int alloc_dispatch_logs(void)
 {
-<<<<<<< HEAD
-	int cpu, ret;
-	struct paca_struct *pp;
-	struct dtl_entry *dtl;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!firmware_has_feature(FW_FEATURE_SPLPAR))
 		return 0;
 
 	if (!dtl_cache)
 		return 0;
 
-<<<<<<< HEAD
-	for_each_possible_cpu(cpu) {
-		pp = &paca[cpu];
-		dtl = kmem_cache_alloc(dtl_cache, GFP_KERNEL);
-		if (!dtl) {
-			pr_warn("Failed to allocate dispatch trace log for cpu %d\n",
-				cpu);
-			pr_warn("Stolen time statistics will be unreliable\n");
-			break;
-		}
-
-		pp->dtl_ridx = 0;
-		pp->dispatch_log = dtl;
-		pp->dispatch_log_end = dtl + N_DISPATCH_LOG;
-		pp->dtl_curr = dtl;
-	}
-
-	/* Register the DTL for the current (boot) cpu */
-	dtl = get_paca()->dispatch_log;
-	get_paca()->dtl_ridx = 0;
-	get_paca()->dtl_curr = dtl;
-	get_paca()->lppaca_ptr->dtl_idx = 0;
-
-	/* hypervisor reads buffer length from this field */
-	dtl->enqueue_to_dispatch_time = DISPATCH_LOG_BYTES;
-	ret = register_dtl(hard_smp_processor_id(), __pa(dtl));
-	if (ret)
-		pr_err("WARNING: DTL registration of cpu %d (hw %d) failed "
-		       "with %d\n", smp_processor_id(),
-		       hard_smp_processor_id(), ret);
-	get_paca()->lppaca_ptr->dtl_enable_mask = 2;
-
-	return 0;
-}
-#else /* !CONFIG_VIRT_CPU_ACCOUNTING */
-=======
 	alloc_dtl_buffers(0);
 
 	/* Register the DTL for the current (boot) cpu */
@@ -545,19 +333,10 @@ static int alloc_dispatch_logs(void)
 	return 0;
 }
 #else /* !CONFIG_VIRT_CPU_ACCOUNTING_NATIVE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int alloc_dispatch_logs(void)
 {
 	return 0;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_VIRT_CPU_ACCOUNTING */
-
-static int alloc_dispatch_log_kmem_cache(void)
-{
-	dtl_cache = kmem_cache_create("dtl", DISPATCH_LOG_BYTES,
-						DISPATCH_LOG_BYTES, 0, NULL);
-=======
 #endif /* CONFIG_VIRT_CPU_ACCOUNTING_NATIVE */
 
 static int alloc_dispatch_log_kmem_cache(void)
@@ -566,7 +345,6 @@ static int alloc_dispatch_log_kmem_cache(void)
 
 	dtl_cache = kmem_cache_create("dtl", DISPATCH_LOG_BYTES,
 						DISPATCH_LOG_BYTES, 0, ctor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dtl_cache) {
 		pr_warn("Failed to create dispatch trace log buffer cache\n");
 		pr_warn("Stolen time statistics will be unreliable\n");
@@ -575,31 +353,6 @@ static int alloc_dispatch_log_kmem_cache(void)
 
 	return alloc_dispatch_logs();
 }
-<<<<<<< HEAD
-early_initcall(alloc_dispatch_log_kmem_cache);
-
-static void pSeries_idle(void)
-{
-	/* This would call on the cpuidle framework, and the back-end pseries
-	 * driver to  go to idle states
-	 */
-	if (cpuidle_idle_call()) {
-		/* On error, execute default handler
-		 * to go into low thread priority and possibly
-		 * low power mode.
-		 */
-		HMT_low();
-		HMT_very_low();
-	}
-}
-
-static void __init pSeries_setup_arch(void)
-{
-	panic_timeout = 10;
-
-	/* Discover PIC type and setup ppc_md accordingly */
-	pseries_discover_pic();
-=======
 machine_early_initcall(pseries, alloc_dispatch_log_kmem_cache);
 
 DEFINE_PER_CPU(u64, idle_spurr_cycles);
@@ -1070,7 +823,6 @@ static void __init pSeries_setup_arch(void)
 		if (!firmware_has_feature(FW_FEATURE_RPT_INVALIDATE))
 			panic("BUG: Radix support requires either GTSE or RPT_INVALIDATE\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* openpic global configuration register (64-bit format). */
 	/* openpic Interrupt Source Unit pointer (64-bit format). */
@@ -1081,37 +833,15 @@ static void __init pSeries_setup_arch(void)
 
 	fwnmi_init();
 
-<<<<<<< HEAD
-	/* By default, only probe PCI (can be overriden by rtas_pci) */
-=======
 	pseries_setup_security_mitigations();
 	if (!radix_enabled())
 		pseries_lpar_read_hblkrm_characteristics();
 
 	/* By default, only probe PCI (can be overridden by rtas_pci) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_add_flags(PCI_PROBE_ONLY);
 
 	/* Find and initialize PCI host bridges */
 	init_pci_config_tokens();
-<<<<<<< HEAD
-	eeh_pseries_init();
-	find_and_init_phbs();
-	pSeries_reconfig_notifier_register(&pci_dn_reconfig_nb);
-	eeh_init();
-
-	pSeries_nvram_init();
-
-	if (firmware_has_feature(FW_FEATURE_SPLPAR)) {
-		vpa_init(boot_cpuid);
-		ppc_md.power_save = pSeries_idle;
-	}
-
-	if (firmware_has_feature(FW_FEATURE_LPAR))
-		ppc_md.enable_pmcs = pseries_lpar_enable_pmcs;
-	else
-		ppc_md.enable_pmcs = power4_enable_pmcs;
-=======
 	of_reconfig_notifier_register(&pci_dn_reconfig_nb);
 
 	pSeries_nvram_init();
@@ -1152,43 +882,27 @@ static void pseries_panic(char *str)
 {
 	panic_flush_kmsg_end();
 	rtas_os_term(str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init pSeries_init_panel(void)
 {
 	/* Manually leave the kernel version on the panel. */
-<<<<<<< HEAD
-	ppc_md.progress("Linux ppc64\n", 0);
-=======
 #ifdef __BIG_ENDIAN__
 	ppc_md.progress("Linux ppc64\n", 0);
 #else
 	ppc_md.progress("Linux ppc64le\n", 0);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ppc_md.progress(init_utsname()->version, 0);
 
 	return 0;
 }
 machine_arch_initcall(pseries, pSeries_init_panel);
 
-<<<<<<< HEAD
-static int pseries_set_dabr(unsigned long dabr)
-=======
 static int pseries_set_dabr(unsigned long dabr, unsigned long dabrx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return plpar_hcall_norets(H_SET_DABR, dabr);
 }
 
-<<<<<<< HEAD
-static int pseries_set_xdabr(unsigned long dabr)
-{
-	/* We want to catch accesses from kernel and userspace */
-	return plpar_hcall_norets(H_SET_XDABR, dabr,
-			H_DABRX_KERNEL | H_DABRX_USER);
-=======
 static int pseries_set_xdabr(unsigned long dabr, unsigned long dabrx)
 {
 	/* Have to set at least one bit in the DABRX according to PAPR */
@@ -1209,7 +923,6 @@ static int pseries_set_dawr(int nr, unsigned long dawr, unsigned long dawrx)
 		return plpar_set_watchpoint0(dawr, dawrx);
 	else
 		return plpar_set_watchpoint1(dawr, dawrx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define CMO_CHARACTERISTICS_TOKEN 44
@@ -1229,25 +942,6 @@ void pSeries_coalesce_init(void)
  * fw_cmo_feature_init - FW_FEATURE_CMO is not stored in ibm,hypertas-functions,
  * handle that here. (Stolen from parse_system_parameter_string)
  */
-<<<<<<< HEAD
-void pSeries_cmo_feature_init(void)
-{
-	char *ptr, *key, *value, *end;
-	int call_status;
-	int page_order = IOMMU_PAGE_SHIFT;
-
-	pr_debug(" -> fw_cmo_feature_init()\n");
-	spin_lock(&rtas_data_buf_lock);
-	memset(rtas_data_buf, 0, RTAS_DATA_BUF_SIZE);
-	call_status = rtas_call(rtas_token("ibm,get-system-parameter"), 3, 1,
-				NULL,
-				CMO_CHARACTERISTICS_TOKEN,
-				__pa(rtas_data_buf),
-				RTAS_DATA_BUF_SIZE);
-
-	if (call_status != 0) {
-		spin_unlock(&rtas_data_buf_lock);
-=======
 static void __init pSeries_cmo_feature_init(void)
 {
 	static struct papr_sysparm_buf buf __initdata;
@@ -1258,19 +952,13 @@ static void __init pSeries_cmo_feature_init(void)
 	pr_debug(" -> fw_cmo_feature_init()\n");
 
 	if (papr_sysparm_get(PAPR_SYSPARM_COOP_MEM_OVERCOMMIT_ATTRS, &buf)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_debug("CMO not available\n");
 		pr_debug(" <- fw_cmo_feature_init()\n");
 		return;
 	}
 
-<<<<<<< HEAD
-	end = rtas_data_buf + CMO_MAXLENGTH - 2;
-	ptr = rtas_data_buf + 2;	/* step over strlen value */
-=======
 	end = &buf.val[CMO_MAXLENGTH];
 	ptr = &buf.val[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key = value = ptr;
 
 	while (*ptr && (ptr <= end)) {
@@ -1316,18 +1004,6 @@ static void __init pSeries_cmo_feature_init(void)
 	} else
 		pr_debug("CMO not enabled, PrPSP=%d, SecPSP=%d\n", CMO_PrPSP,
 		         CMO_SecPSP);
-<<<<<<< HEAD
-	spin_unlock(&rtas_data_buf_lock);
-	pr_debug(" <- fw_cmo_feature_init()\n");
-}
-
-/*
- * Early initialization.  Relocation is on but do not reference unbolted pages
- */
-static void __init pSeries_init_early(void)
-{
-	pr_debug(" -> pSeries_init_early()\n");
-=======
 	pr_debug(" <- fw_cmo_feature_init()\n");
 }
 
@@ -1368,18 +1044,11 @@ static void __init pseries_init(void)
 	pr_debug(" -> pseries_init()\n");
 
 	pseries_add_hw_description();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_HVC_CONSOLE
 	if (firmware_has_feature(FW_FEATURE_LPAR))
 		hvc_vio_init_early();
 #endif
-<<<<<<< HEAD
-	if (firmware_has_feature(FW_FEATURE_DABR))
-		ppc_md.set_dabr = pseries_set_dabr;
-	else if (firmware_has_feature(FW_FEATURE_XDABR))
-		ppc_md.set_dabr = pseries_set_xdabr;
-=======
 	if (firmware_has_feature(FW_FEATURE_XDABR))
 		ppc_md.set_dabr = pseries_set_xdabr;
 	else if (firmware_has_feature(FW_FEATURE_DABR))
@@ -1387,39 +1056,10 @@ static void __init pseries_init(void)
 
 	if (firmware_has_feature(FW_FEATURE_SET_MODE))
 		ppc_md.set_dawr = pseries_set_dawr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pSeries_cmo_feature_init();
 	iommu_init_early_pSeries();
 
-<<<<<<< HEAD
-	pr_debug(" <- pSeries_init_early()\n");
-}
-
-/*
- * Called very early, MMU is off, device-tree isn't unflattened
- */
-
-static int __init pSeries_probe_hypertas(unsigned long node,
-					 const char *uname, int depth,
-					 void *data)
-{
-	const char *hypertas;
-	unsigned long len;
-
-	if (depth != 1 ||
-	    (strcmp(uname, "rtas") != 0 && strcmp(uname, "rtas@0") != 0))
-		return 0;
-
-	hypertas = of_get_flat_dt_prop(node, "ibm,hypertas-functions", &len);
-	if (!hypertas)
-		return 1;
-
-	powerpc_firmware_features |= FW_FEATURE_LPAR;
-	fw_feature_init(hypertas, len);
-
-	return 1;
-=======
 	pr_debug(" <- pseries_init()\n");
 }
 
@@ -1449,60 +1089,31 @@ static void pseries_power_off(void)
 		printk(KERN_INFO "RTAS ibm,power-off-ups returned %d\n", rc);
 	}
 	for (;;);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init pSeries_probe(void)
 {
-<<<<<<< HEAD
-	unsigned long root = of_get_flat_dt_root();
- 	char *dtype = of_get_flat_dt_prop(root, "device_type", NULL);
-
- 	if (dtype == NULL)
- 		return 0;
- 	if (strcmp(dtype, "chrp"))
-=======
 	struct device_node *root = of_find_node_by_path("/");
 	bool ret = of_node_is_type(root, "chrp");
 
 	of_node_put(root);
 	if (!ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* Cell blades firmware claims to be chrp while it's not. Until this
 	 * is fixed, we need to avoid those here.
 	 */
-<<<<<<< HEAD
-	if (of_flat_dt_is_compatible(root, "IBM,CPBW-1.0") ||
-	    of_flat_dt_is_compatible(root, "IBM,CBEA"))
-		return 0;
-
-	pr_debug("pSeries detected, looking for LPAR capability...\n");
-
-	/* Now try to figure out if we are running on LPAR */
-	of_scan_flat_dt(pSeries_probe_hypertas, NULL);
-
-	if (firmware_has_feature(FW_FEATURE_LPAR))
-		hpte_init_lpar();
-	else
-		hpte_init_native();
-=======
 	if (of_machine_is_compatible("IBM,CPBW-1.0") ||
 	    of_machine_is_compatible("IBM,CBEA"))
 		return 0;
 
 	pm_power_off = pseries_power_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("Machine is%s LPAR !\n",
 	         (powerpc_firmware_features & FW_FEATURE_LPAR) ? "" : " not");
 
-<<<<<<< HEAD
-=======
 	pseries_init();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -1513,40 +1124,6 @@ static int pSeries_pci_probe_mode(struct pci_bus *bus)
 	return PCI_PROBE_NORMAL;
 }
 
-<<<<<<< HEAD
-/**
- * pSeries_power_off - tell firmware about how to power off the system.
- *
- * This function calls either the power-off rtas token in normal cases
- * or the ibm,power-off-ups token (if present & requested) in case of
- * a power failure. If power-off token is used, power on will only be
- * possible with power button press. If ibm,power-off-ups token is used
- * it will allow auto poweron after power is restored.
- */
-static void pSeries_power_off(void)
-{
-	int rc;
-	int rtas_poweroff_ups_token = rtas_token("ibm,power-off-ups");
-
-	if (rtas_flash_term_hook)
-		rtas_flash_term_hook(SYS_POWER_OFF);
-
-	if (rtas_poweron_auto == 0 ||
-		rtas_poweroff_ups_token == RTAS_UNKNOWN_SERVICE) {
-		rc = rtas_call(rtas_token("power-off"), 2, 1, NULL, -1, -1);
-		printk(KERN_INFO "RTAS power-off returned %d\n", rc);
-	} else {
-		rc = rtas_call(rtas_poweroff_ups_token, 0, 1, NULL);
-		printk(KERN_INFO "RTAS ibm,power-off-ups returned %d\n", rc);
-	}
-	for (;;);
-}
-
-#ifndef CONFIG_PCI
-void pSeries_final_fixup(void) { }
-#endif
-
-=======
 #ifdef CONFIG_MEMORY_HOTPLUG
 static unsigned long pseries_memory_block_size(void)
 {
@@ -1561,29 +1138,10 @@ struct pci_controller_ops pseries_pci_controller_ops = {
 #endif
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 define_machine(pseries) {
 	.name			= "pSeries",
 	.probe			= pSeries_probe,
 	.setup_arch		= pSeries_setup_arch,
-<<<<<<< HEAD
-	.init_early		= pSeries_init_early,
-	.show_cpuinfo		= pSeries_show_cpuinfo,
-	.log_error		= pSeries_log_error,
-	.pcibios_fixup		= pSeries_final_fixup,
-	.pci_probe_mode		= pSeries_pci_probe_mode,
-	.restart		= rtas_restart,
-	.power_off		= pSeries_power_off,
-	.halt			= rtas_halt,
-	.panic			= rtas_os_term,
-	.get_boot_time		= rtas_get_boot_time,
-	.get_rtc_time		= rtas_get_rtc_time,
-	.set_rtc_time		= rtas_set_rtc_time,
-	.calibrate_decr		= generic_calibrate_decr,
-	.progress		= rtas_progress,
-	.system_reset_exception = pSeries_system_reset_exception,
-	.machine_check_exception = pSeries_machine_check_exception,
-=======
 	.init_IRQ		= pseries_init_irq,
 	.show_cpuinfo		= pSeries_show_cpuinfo,
 	.log_error		= pSeries_log_error,
@@ -1607,5 +1165,4 @@ define_machine(pseries) {
 #ifdef CONFIG_MEMORY_HOTPLUG
 	.memory_block_size	= pseries_memory_block_size,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

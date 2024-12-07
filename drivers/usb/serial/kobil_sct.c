@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  KOBIL USB Smart Card Terminal Driver
  *
@@ -14,14 +11,6 @@
  *  and associated source files.  Please see the usb/serial files for
  *  individual credits and copyrights.
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Thanks to Greg Kroah-Hartman (greg@kroah.com) for his help and
  *  patience.
  *
@@ -32,10 +21,6 @@
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -48,13 +33,6 @@
 #include <linux/ioctl.h>
 #include "kobil_sct.h"
 
-<<<<<<< HEAD
-static bool debug;
-
-/* Version Information */
-#define DRIVER_VERSION "21/05/2004"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_AUTHOR "KOBIL Systems GmbH - http://www.kobil.com"
 #define DRIVER_DESC "KOBIL USB Smart Card Terminal Driver (experimental)"
 
@@ -69,38 +47,23 @@ static bool debug;
 
 
 /* Function prototypes */
-<<<<<<< HEAD
-static int  kobil_startup(struct usb_serial *serial);
-static void kobil_release(struct usb_serial *serial);
-=======
 static int kobil_port_probe(struct usb_serial_port *probe);
 static void kobil_port_remove(struct usb_serial_port *probe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int  kobil_open(struct tty_struct *tty, struct usb_serial_port *port);
 static void kobil_close(struct usb_serial_port *port);
 static int  kobil_write(struct tty_struct *tty, struct usb_serial_port *port,
 			 const unsigned char *buf, int count);
-<<<<<<< HEAD
-static int  kobil_write_room(struct tty_struct *tty);
-=======
 static unsigned int kobil_write_room(struct tty_struct *tty);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int  kobil_ioctl(struct tty_struct *tty,
 			unsigned int cmd, unsigned long arg);
 static int  kobil_tiocmget(struct tty_struct *tty);
 static int  kobil_tiocmset(struct tty_struct *tty,
 			   unsigned int set, unsigned int clear);
 static void kobil_read_int_callback(struct urb *urb);
-<<<<<<< HEAD
-static void kobil_write_callback(struct urb *purb);
-static void kobil_set_termios(struct tty_struct *tty,
-			struct usb_serial_port *port, struct ktermios *old);
-=======
 static void kobil_write_int_callback(struct urb *urb);
 static void kobil_set_termios(struct tty_struct *tty,
 			      struct usb_serial_port *port,
 			      const struct ktermios *old);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void kobil_init_termios(struct tty_struct *tty);
 
 static const struct usb_device_id id_table[] = {
@@ -110,23 +73,8 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(KOBIL_VENDOR_ID, KOBIL_KAAN_SIM_PRODUCT_ID) },
 	{ }			/* Terminating entry */
 };
-<<<<<<< HEAD
-
-
 MODULE_DEVICE_TABLE(usb, id_table);
 
-static struct usb_driver kobil_driver = {
-	.name =		"kobil",
-	.probe =	usb_serial_probe,
-	.disconnect =	usb_serial_disconnect,
-	.id_table =	id_table,
-};
-
-
-=======
-MODULE_DEVICE_TABLE(usb, id_table);
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct usb_serial_driver kobil_device = {
 	.driver = {
 		.owner =	THIS_MODULE,
@@ -135,14 +83,9 @@ static struct usb_serial_driver kobil_device = {
 	.description =		"KOBIL USB smart card terminal",
 	.id_table =		id_table,
 	.num_ports =		1,
-<<<<<<< HEAD
-	.attach =		kobil_startup,
-	.release =		kobil_release,
-=======
 	.num_interrupt_out =	1,
 	.port_probe =		kobil_port_probe,
 	.port_remove =		kobil_port_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ioctl =		kobil_ioctl,
 	.set_termios =		kobil_set_termios,
 	.init_termios =		kobil_init_termios,
@@ -153,10 +96,7 @@ static struct usb_serial_driver kobil_device = {
 	.write =		kobil_write,
 	.write_room =		kobil_write_room,
 	.read_int_callback =	kobil_read_int_callback,
-<<<<<<< HEAD
-=======
 	.write_int_callback =	kobil_write_int_callback,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct usb_serial_driver * const serial_drivers[] = {
@@ -164,11 +104,6 @@ static struct usb_serial_driver * const serial_drivers[] = {
 };
 
 struct kobil_private {
-<<<<<<< HEAD
-	int write_int_endpoint_address;
-	int read_int_endpoint_address;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char buf[KOBIL_BUF_LENGTH]; /* buffer for the APDU to send */
 	int filled;  /* index of the last char in buf */
 	int cur_pos; /* index of the next char to send in buf */
@@ -176,22 +111,10 @@ struct kobil_private {
 };
 
 
-<<<<<<< HEAD
-static int kobil_startup(struct usb_serial *serial)
-{
-	int i;
-	struct kobil_private *priv;
-	struct usb_device *pdev;
-	struct usb_host_config *actconfig;
-	struct usb_interface *interface;
-	struct usb_host_interface *altsetting;
-	struct usb_host_endpoint *endpoint;
-=======
 static int kobil_port_probe(struct usb_serial_port *port)
 {
 	struct usb_serial *serial = port->serial;
 	struct kobil_private *priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = kmalloc(sizeof(struct kobil_private), GFP_KERNEL);
 	if (!priv)
@@ -203,45 +126,6 @@ static int kobil_port_probe(struct usb_serial_port *port)
 
 	switch (priv->device_type) {
 	case KOBIL_ADAPTER_B_PRODUCT_ID:
-<<<<<<< HEAD
-		printk(KERN_DEBUG "KOBIL B1 PRO / KAAN PRO detected\n");
-		break;
-	case KOBIL_ADAPTER_K_PRODUCT_ID:
-		printk(KERN_DEBUG
-		  "KOBIL KAAN Standard Plus / SecOVID Reader Plus detected\n");
-		break;
-	case KOBIL_USBTWIN_PRODUCT_ID:
-		printk(KERN_DEBUG "KOBIL USBTWIN detected\n");
-		break;
-	case KOBIL_KAAN_SIM_PRODUCT_ID:
-		printk(KERN_DEBUG "KOBIL KAAN SIM detected\n");
-		break;
-	}
-	usb_set_serial_port_data(serial->port[0], priv);
-
-	/* search for the necessary endpoints */
-	pdev = serial->dev;
-	actconfig = pdev->actconfig;
-	interface = actconfig->interface[0];
-	altsetting = interface->cur_altsetting;
-	endpoint = altsetting->endpoint;
-
-	for (i = 0; i < altsetting->desc.bNumEndpoints; i++) {
-		endpoint = &altsetting->endpoint[i];
-		if (usb_endpoint_is_int_out(&endpoint->desc)) {
-			dbg("%s Found interrupt out endpoint. Address: %d",
-				__func__, endpoint->desc.bEndpointAddress);
-			priv->write_int_endpoint_address =
-				endpoint->desc.bEndpointAddress;
-		}
-		if (usb_endpoint_is_int_in(&endpoint->desc)) {
-			dbg("%s Found interrupt in  endpoint. Address: %d",
-				__func__, endpoint->desc.bEndpointAddress);
-			priv->read_int_endpoint_address =
-				endpoint->desc.bEndpointAddress;
-		}
-	}
-=======
 		dev_dbg(&serial->dev->dev, "KOBIL B1 PRO / KAAN PRO detected\n");
 		break;
 	case KOBIL_ADAPTER_K_PRODUCT_ID:
@@ -256,64 +140,36 @@ static int kobil_port_probe(struct usb_serial_port *port)
 	}
 	usb_set_serial_port_data(port, priv);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
-<<<<<<< HEAD
-static void kobil_release(struct usb_serial *serial)
-{
-	int i;
-	dbg("%s - port %d", __func__, serial->port[0]->number);
-
-	for (i = 0; i < serial->num_ports; ++i)
-		kfree(usb_get_serial_port_data(serial->port[i]));
-=======
 static void kobil_port_remove(struct usb_serial_port *port)
 {
 	struct kobil_private *priv;
 
 	priv = usb_get_serial_port_data(port);
 	kfree(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void kobil_init_termios(struct tty_struct *tty)
 {
 	/* Default to echo off and other sane device settings */
-<<<<<<< HEAD
-	tty->termios->c_lflag = 0;
-	tty->termios->c_lflag &= ~(ISIG | ICANON | ECHO | IEXTEN | XCASE);
-	tty->termios->c_iflag = IGNBRK | IGNPAR | IXOFF;
-	/* do NOT translate CR to CR-NL (0x0A -> 0x0A 0x0D) */
-	tty->termios->c_oflag &= ~ONLCR;
-=======
 	tty->termios.c_lflag = 0;
 	tty->termios.c_iflag &= ~(ISIG | ICANON | ECHO | IEXTEN | XCASE);
 	tty->termios.c_iflag |= IGNBRK | IGNPAR | IXOFF;
 	/* do NOT translate CR to CR-NL (0x0A -> 0x0A 0x0D) */
 	tty->termios.c_oflag &= ~ONLCR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int kobil_open(struct tty_struct *tty, struct usb_serial_port *port)
 {
-<<<<<<< HEAD
-=======
 	struct device *dev = &port->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result = 0;
 	struct kobil_private *priv;
 	unsigned char *transfer_buffer;
 	int transfer_buffer_length = 8;
-<<<<<<< HEAD
-	int write_urb_transfer_buffer_length = 8;
 
-	dbg("%s - port %d", __func__, port->number);
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv = usb_get_serial_port_data(port);
 
 	/* allocate memory for transfer buffer */
@@ -321,32 +177,6 @@ static int kobil_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (!transfer_buffer)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	/* allocate write_urb */
-	if (!port->write_urb) {
-		dbg("%s - port %d  Allocating port->write_urb",
-						__func__, port->number);
-		port->write_urb = usb_alloc_urb(0, GFP_KERNEL);
-		if (!port->write_urb) {
-			dbg("%s - port %d usb_alloc_urb failed",
-						__func__, port->number);
-			kfree(transfer_buffer);
-			return -ENOMEM;
-		}
-	}
-
-	/* allocate memory for write_urb transfer buffer */
-	port->write_urb->transfer_buffer =
-			kmalloc(write_urb_transfer_buffer_length, GFP_KERNEL);
-	if (!port->write_urb->transfer_buffer) {
-		kfree(transfer_buffer);
-		usb_free_urb(port->write_urb);
-		port->write_urb = NULL;
-		return -ENOMEM;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* get hardware version */
 	result = usb_control_msg(port->serial->dev,
 			  usb_rcvctrlpipe(port->serial->dev, 0),
@@ -358,18 +188,11 @@ static int kobil_open(struct tty_struct *tty, struct usb_serial_port *port)
 			  transfer_buffer_length,
 			  KOBIL_TIMEOUT
 	);
-<<<<<<< HEAD
-	dbg("%s - port %d Send get_HW_version URB returns: %i",
-		__func__, port->number, result);
-	dbg("Harware version: %i.%i.%i",
-		transfer_buffer[0], transfer_buffer[1], transfer_buffer[2]);
-=======
 	dev_dbg(dev, "%s - Send get_HW_version URB returns: %i\n", __func__, result);
 	if (result >= 3) {
 		dev_dbg(dev, "Hardware version: %i.%i.%i\n", transfer_buffer[0],
 				transfer_buffer[1], transfer_buffer[2]);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get firmware version */
 	result = usb_control_msg(port->serial->dev,
@@ -382,45 +205,22 @@ static int kobil_open(struct tty_struct *tty, struct usb_serial_port *port)
 			  transfer_buffer_length,
 			  KOBIL_TIMEOUT
 	);
-<<<<<<< HEAD
-	dbg("%s - port %d Send get_FW_version URB returns: %i",
-					__func__, port->number, result);
-	dbg("Firmware version: %i.%i.%i",
-		transfer_buffer[0], transfer_buffer[1], transfer_buffer[2]);
-=======
 	dev_dbg(dev, "%s - Send get_FW_version URB returns: %i\n", __func__, result);
 	if (result >= 3) {
 		dev_dbg(dev, "Firmware version: %i.%i.%i\n", transfer_buffer[0],
 				transfer_buffer[1], transfer_buffer[2]);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (priv->device_type == KOBIL_ADAPTER_B_PRODUCT_ID ||
 			priv->device_type == KOBIL_ADAPTER_K_PRODUCT_ID) {
 		/* Setting Baudrate, Parity and Stopbits */
 		result = usb_control_msg(port->serial->dev,
-<<<<<<< HEAD
-			  usb_rcvctrlpipe(port->serial->dev, 0),
-=======
 			  usb_sndctrlpipe(port->serial->dev, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  SUSBCRequest_SetBaudRateParityAndStopBits,
 			  USB_TYPE_VENDOR | USB_RECIP_ENDPOINT | USB_DIR_OUT,
 			  SUSBCR_SBR_9600 | SUSBCR_SPASB_EvenParity |
 							SUSBCR_SPASB_1StopBit,
 			  0,
-<<<<<<< HEAD
-			  transfer_buffer,
-			  0,
-			  KOBIL_TIMEOUT
-		);
-		dbg("%s - port %d Send set_baudrate URB returns: %i",
-					__func__, port->number, result);
-
-		/* reset all queues */
-		result = usb_control_msg(port->serial->dev,
-			  usb_rcvctrlpipe(port->serial->dev, 0),
-=======
 			  NULL,
 			  0,
 			  KOBIL_TIMEOUT
@@ -430,38 +230,22 @@ static int kobil_open(struct tty_struct *tty, struct usb_serial_port *port)
 		/* reset all queues */
 		result = usb_control_msg(port->serial->dev,
 			  usb_sndctrlpipe(port->serial->dev, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  SUSBCRequest_Misc,
 			  USB_TYPE_VENDOR | USB_RECIP_ENDPOINT | USB_DIR_OUT,
 			  SUSBCR_MSC_ResetAllQueues,
 			  0,
-<<<<<<< HEAD
-			  transfer_buffer,
-			  0,
-			  KOBIL_TIMEOUT
-		);
-		dbg("%s - port %d Send reset_all_queues URB returns: %i",
-					__func__, port->number, result);
-=======
 			  NULL,
 			  0,
 			  KOBIL_TIMEOUT
 		);
 		dev_dbg(dev, "%s - Send reset_all_queues URB returns: %i\n", __func__, result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (priv->device_type == KOBIL_USBTWIN_PRODUCT_ID ||
 	    priv->device_type == KOBIL_ADAPTER_B_PRODUCT_ID ||
 	    priv->device_type == KOBIL_KAAN_SIM_PRODUCT_ID) {
 		/* start reading (Adapter B 'cause PNP string) */
-<<<<<<< HEAD
-		result = usb_submit_urb(port->interrupt_in_urb, GFP_ATOMIC);
-		dbg("%s - port %d Send read URB returns: %i",
-					__func__, port->number, result);
-=======
 		result = usb_submit_urb(port->interrupt_in_urb, GFP_KERNEL);
 		dev_dbg(dev, "%s - Send read URB returns: %i\n", __func__, result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kfree(transfer_buffer);
@@ -471,20 +255,8 @@ static int kobil_open(struct tty_struct *tty, struct usb_serial_port *port)
 
 static void kobil_close(struct usb_serial_port *port)
 {
-<<<<<<< HEAD
-	dbg("%s - port %d", __func__, port->number);
-
-	/* FIXME: Add rts/dtr methods */
-	if (port->write_urb) {
-		usb_poison_urb(port->write_urb);
-		kfree(port->write_urb->transfer_buffer);
-		usb_free_urb(port->write_urb);
-		port->write_urb = NULL;
-	}
-=======
 	/* FIXME: Add rts/dtr methods */
 	usb_kill_urb(port->interrupt_out_urb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_kill_urb(port->interrupt_in_urb);
 }
 
@@ -493,51 +265,6 @@ static void kobil_read_int_callback(struct urb *urb)
 {
 	int result;
 	struct usb_serial_port *port = urb->context;
-<<<<<<< HEAD
-	struct tty_struct *tty;
-	unsigned char *data = urb->transfer_buffer;
-	int status = urb->status;
-/*	char *dbg_data; */
-
-	dbg("%s - port %d", __func__, port->number);
-
-	if (status) {
-		dbg("%s - port %d Read int status not zero: %d",
-		    __func__, port->number, status);
-		return;
-	}
-
-	tty = tty_port_tty_get(&port->port);
-	if (tty && urb->actual_length) {
-
-		/* BEGIN DEBUG */
-		/*
-		  dbg_data = kzalloc((3 *  purb->actual_length + 10)
-						* sizeof(char), GFP_KERNEL);
-		  if (! dbg_data) {
-			  return;
-		  }
-		  for (i = 0; i < purb->actual_length; i++) {
-			  sprintf(dbg_data +3*i, "%02X ", data[i]);
-		  }
-		  dbg(" <-- %s", dbg_data);
-		  kfree(dbg_data);
-		*/
-		/* END DEBUG */
-
-		tty_insert_flip_string(tty, data, urb->actual_length);
-		tty_flip_buffer_push(tty);
-	}
-	tty_kref_put(tty);
-
-	result = usb_submit_urb(port->interrupt_in_urb, GFP_ATOMIC);
-	dbg("%s - port %d Send read URB returns: %i",
-			__func__, port->number, result);
-}
-
-
-static void kobil_write_callback(struct urb *purb)
-=======
 	unsigned char *data = urb->transfer_buffer;
 	int status = urb->status;
 
@@ -559,7 +286,6 @@ static void kobil_write_callback(struct urb *purb)
 
 
 static void kobil_write_int_callback(struct urb *urb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
@@ -573,34 +299,20 @@ static int kobil_write(struct tty_struct *tty, struct usb_serial_port *port,
 	struct kobil_private *priv;
 
 	if (count == 0) {
-<<<<<<< HEAD
-		dbg("%s - port %d write request of 0 bytes",
-						__func__, port->number);
-=======
 		dev_dbg(&port->dev, "%s - write request of 0 bytes\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	priv = usb_get_serial_port_data(port);
 
 	if (count > (KOBIL_BUF_LENGTH - priv->filled)) {
-<<<<<<< HEAD
-		dbg("%s - port %d Error: write request bigger than buffer size", __func__, port->number);
-=======
 		dev_dbg(&port->dev, "%s - Error: write request bigger than buffer size\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	/* Copy data to buffer */
 	memcpy(priv->buf + priv->filled, buf, count);
-<<<<<<< HEAD
-	usb_serial_debug_data(debug, &port->dev, __func__, count,
-						priv->buf + priv->filled);
-=======
 	usb_serial_debug_data(&port->dev, __func__, count, priv->buf + priv->filled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->filled = priv->filled + count;
 
 	/* only send complete block. TWIN, KAAN SIM and adapter K
@@ -616,27 +328,6 @@ static int kobil_write(struct tty_struct *tty, struct usb_serial_port *port,
 
 		while (todo > 0) {
 			/* max 8 byte in one urb (endpoint size) */
-<<<<<<< HEAD
-			length = (todo < 8) ? todo : 8;
-			/* copy data to transfer buffer */
-			memcpy(port->write_urb->transfer_buffer,
-					priv->buf + priv->cur_pos, length);
-			usb_fill_int_urb(port->write_urb,
-				  port->serial->dev,
-				  usb_sndintpipe(port->serial->dev,
-					priv->write_int_endpoint_address),
-				  port->write_urb->transfer_buffer,
-				  length,
-				  kobil_write_callback,
-				  port,
-				  8
-			);
-
-			priv->cur_pos = priv->cur_pos + length;
-			result = usb_submit_urb(port->write_urb, GFP_ATOMIC);
-			dbg("%s - port %d Send write URB returns: %i",
-					__func__, port->number, result);
-=======
 			length = min(todo, port->interrupt_out_size);
 			/* copy data to transfer buffer */
 			memcpy(port->interrupt_out_buffer,
@@ -647,7 +338,6 @@ static int kobil_write(struct tty_struct *tty, struct usb_serial_port *port,
 			result = usb_submit_urb(port->interrupt_out_urb,
 					GFP_ATOMIC);
 			dev_dbg(&port->dev, "%s - Send write URB returns: %i\n", __func__, result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			todo = priv->filled - priv->cur_pos;
 
 			if (todo > 0)
@@ -661,28 +351,16 @@ static int kobil_write(struct tty_struct *tty, struct usb_serial_port *port,
 		if (priv->device_type == KOBIL_ADAPTER_B_PRODUCT_ID ||
 			priv->device_type == KOBIL_ADAPTER_K_PRODUCT_ID) {
 			result = usb_submit_urb(port->interrupt_in_urb,
-<<<<<<< HEAD
-								GFP_ATOMIC);
-			dbg("%s - port %d Send read URB returns: %i",
-					__func__, port->number, result);
-=======
 					GFP_ATOMIC);
 			dev_dbg(&port->dev, "%s - Send read URB returns: %i\n", __func__, result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return count;
 }
 
 
-<<<<<<< HEAD
-static int kobil_write_room(struct tty_struct *tty)
-{
-	/* dbg("%s - port %d", __func__, port->number); */
-=======
 static unsigned int kobil_write_room(struct tty_struct *tty)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* FIXME */
 	return 8;
 }
@@ -718,10 +396,6 @@ static int kobil_tiocmget(struct tty_struct *tty)
 			  transfer_buffer_length,
 			  KOBIL_TIMEOUT);
 
-<<<<<<< HEAD
-	dbg("%s - port %d Send get_status_line_state URB returns: %i. Statusline: %02x",
-	    __func__, port->number, result, transfer_buffer[0]);
-=======
 	dev_dbg(&port->dev, "Send get_status_line_state URB returns: %i\n",
 			result);
 	if (result < 1) {
@@ -731,15 +405,11 @@ static int kobil_tiocmget(struct tty_struct *tty)
 	}
 
 	dev_dbg(&port->dev, "Statusline: %02x\n", transfer_buffer[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = 0;
 	if ((transfer_buffer[0] & SUSBCR_GSL_DSR) != 0)
 		result = TIOCM_DSR;
-<<<<<<< HEAD
-=======
 out_free:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(transfer_buffer);
 	return result;
 }
@@ -748,19 +418,11 @@ static int kobil_tiocmset(struct tty_struct *tty,
 			   unsigned int set, unsigned int clear)
 {
 	struct usb_serial_port *port = tty->driver_data;
-<<<<<<< HEAD
-=======
 	struct device *dev = &port->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kobil_private *priv;
 	int result;
 	int dtr = 0;
 	int rts = 0;
-<<<<<<< HEAD
-	unsigned char *transfer_buffer;
-	int transfer_buffer_length = 8;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME: locking ? */
 	priv = usb_get_serial_port_data(port);
@@ -770,14 +432,6 @@ static int kobil_tiocmset(struct tty_struct *tty,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	/* allocate memory for transfer buffer */
-	transfer_buffer = kzalloc(transfer_buffer_length, GFP_KERNEL);
-	if (!transfer_buffer)
-		return -ENOMEM;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (set & TIOCM_RTS)
 		rts = 1;
 	if (set & TIOCM_DTR)
@@ -789,98 +443,52 @@ static int kobil_tiocmset(struct tty_struct *tty,
 
 	if (priv->device_type == KOBIL_ADAPTER_B_PRODUCT_ID) {
 		if (dtr != 0)
-<<<<<<< HEAD
-			dbg("%s - port %d Setting DTR",
-						__func__, port->number);
-		else
-			dbg("%s - port %d Clearing DTR",
-						__func__, port->number);
-		result = usb_control_msg(port->serial->dev,
-			  usb_rcvctrlpipe(port->serial->dev, 0),
-=======
 			dev_dbg(dev, "%s - Setting DTR\n", __func__);
 		else
 			dev_dbg(dev, "%s - Clearing DTR\n", __func__);
 		result = usb_control_msg(port->serial->dev,
 			  usb_sndctrlpipe(port->serial->dev, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  SUSBCRequest_SetStatusLinesOrQueues,
 			  USB_TYPE_VENDOR | USB_RECIP_ENDPOINT | USB_DIR_OUT,
 			  ((dtr != 0) ? SUSBCR_SSL_SETDTR : SUSBCR_SSL_CLRDTR),
 			  0,
-<<<<<<< HEAD
-			  transfer_buffer,
-=======
 			  NULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  0,
 			  KOBIL_TIMEOUT);
 	} else {
 		if (rts != 0)
-<<<<<<< HEAD
-			dbg("%s - port %d Setting RTS",
-						__func__, port->number);
-		else
-			dbg("%s - port %d Clearing RTS",
-						__func__, port->number);
-		result = usb_control_msg(port->serial->dev,
-			usb_rcvctrlpipe(port->serial->dev, 0),
-=======
 			dev_dbg(dev, "%s - Setting RTS\n", __func__);
 		else
 			dev_dbg(dev, "%s - Clearing RTS\n", __func__);
 		result = usb_control_msg(port->serial->dev,
 			usb_sndctrlpipe(port->serial->dev, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SUSBCRequest_SetStatusLinesOrQueues,
 			USB_TYPE_VENDOR | USB_RECIP_ENDPOINT | USB_DIR_OUT,
 			((rts != 0) ? SUSBCR_SSL_SETRTS : SUSBCR_SSL_CLRRTS),
 			0,
-<<<<<<< HEAD
-			transfer_buffer,
-			0,
-			KOBIL_TIMEOUT);
-	}
-	dbg("%s - port %d Send set_status_line URB returns: %i",
-					__func__, port->number, result);
-	kfree(transfer_buffer);
-=======
 			NULL,
 			0,
 			KOBIL_TIMEOUT);
 	}
 	dev_dbg(dev, "%s - Send set_status_line URB returns: %i\n", __func__, result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (result < 0) ? result : 0;
 }
 
 static void kobil_set_termios(struct tty_struct *tty,
-<<<<<<< HEAD
-			struct usb_serial_port *port, struct ktermios *old)
-=======
 			      struct usb_serial_port *port,
 			      const struct ktermios *old)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kobil_private *priv;
 	int result;
 	unsigned short urb_val = 0;
-<<<<<<< HEAD
-	int c_cflag = tty->termios->c_cflag;
-=======
 	int c_cflag = tty->termios.c_cflag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	speed_t speed;
 
 	priv = usb_get_serial_port_data(port);
 	if (priv->device_type == KOBIL_USBTWIN_PRODUCT_ID ||
 			priv->device_type == KOBIL_KAAN_SIM_PRODUCT_ID) {
 		/* This device doesn't support ioctl calls */
-<<<<<<< HEAD
-		*tty->termios = *old;
-=======
 		tty_termios_copy_hw(&tty->termios, old);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -891,10 +499,7 @@ static void kobil_set_termios(struct tty_struct *tty,
 		break;
 	default:
 		speed = 9600;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 9600:
 		urb_val = SUSBCR_SBR_9600;
 		break;
@@ -908,19 +513,11 @@ static void kobil_set_termios(struct tty_struct *tty,
 			urb_val |= SUSBCR_SPASB_EvenParity;
 	} else
 		urb_val |= SUSBCR_SPASB_NoParity;
-<<<<<<< HEAD
-	tty->termios->c_cflag &= ~CMSPAR;
-	tty_encode_baud_rate(tty, speed, speed);
-
-	result = usb_control_msg(port->serial->dev,
-		  usb_rcvctrlpipe(port->serial->dev, 0),
-=======
 	tty->termios.c_cflag &= ~CMSPAR;
 	tty_encode_baud_rate(tty, speed, speed);
 
 	result = usb_control_msg(port->serial->dev,
 		  usb_sndctrlpipe(port->serial->dev, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  SUSBCRequest_SetBaudRateParityAndStopBits,
 		  USB_TYPE_VENDOR | USB_RECIP_ENDPOINT | USB_DIR_OUT,
 		  urb_val,
@@ -929,13 +526,10 @@ static void kobil_set_termios(struct tty_struct *tty,
 		  0,
 		  KOBIL_TIMEOUT
 		);
-<<<<<<< HEAD
-=======
 	if (result) {
 		dev_err(&port->dev, "failed to update line settings: %d\n",
 				result);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int kobil_ioctl(struct tty_struct *tty,
@@ -943,11 +537,6 @@ static int kobil_ioctl(struct tty_struct *tty,
 {
 	struct usb_serial_port *port = tty->driver_data;
 	struct kobil_private *priv = usb_get_serial_port_data(port);
-<<<<<<< HEAD
-	unsigned char *transfer_buffer;
-	int transfer_buffer_length = 8;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result;
 
 	if (priv->device_type == KOBIL_USBTWIN_PRODUCT_ID ||
@@ -957,56 +546,28 @@ static int kobil_ioctl(struct tty_struct *tty,
 
 	switch (cmd) {
 	case TCFLSH:
-<<<<<<< HEAD
-		transfer_buffer = kmalloc(transfer_buffer_length, GFP_KERNEL);
-		if (!transfer_buffer)
-			return -ENOBUFS;
-
-		result = usb_control_msg(port->serial->dev,
-			  usb_rcvctrlpipe(port->serial->dev, 0),
-=======
 		result = usb_control_msg(port->serial->dev,
 			  usb_sndctrlpipe(port->serial->dev, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  SUSBCRequest_Misc,
 			  USB_TYPE_VENDOR | USB_RECIP_ENDPOINT | USB_DIR_OUT,
 			  SUSBCR_MSC_ResetAllQueues,
 			  0,
-<<<<<<< HEAD
-			  NULL, /* transfer_buffer, */
-=======
 			  NULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  0,
 			  KOBIL_TIMEOUT
 			);
 
-<<<<<<< HEAD
-		dbg("%s - port %d Send reset_all_queues (FLUSH) URB returns: %i", __func__, port->number, result);
-		kfree(transfer_buffer);
-=======
 		dev_dbg(&port->dev,
 			"%s - Send reset_all_queues (FLUSH) URB returns: %i\n",
 			__func__, result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (result < 0) ? -EIO: 0;
 	default:
 		return -ENOIOCTLCMD;
 	}
 }
 
-<<<<<<< HEAD
-module_usb_serial_driver(kobil_driver, serial_drivers);
-=======
 module_usb_serial_driver(serial_drivers, id_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-
-module_param(debug, bool, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(debug, "Debug enabled or not");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASMARM_UCONTEXT_H
 #define _ASMARM_UCONTEXT_H
 
 #include <asm/fpstate.h>
-<<<<<<< HEAD
-=======
 #include <asm/user.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * struct sigcontext only has room for the basic registers, but struct
@@ -43,24 +37,11 @@ struct ucontext {
  * bytes, to prevent unpredictable padding in the signal frame.
  */
 
-<<<<<<< HEAD
-#ifdef CONFIG_CRUNCH
-#define CRUNCH_MAGIC		0x5065cf03
-#define CRUNCH_STORAGE_SIZE	(CRUNCH_SIZE + 8)
-
-struct crunch_sigframe {
-	unsigned long	magic;
-	unsigned long	size;
-	struct crunch_state	storage;
-} __attribute__((__aligned__(8)));
-#endif
-=======
 /*
  * Dummy padding block: if this magic is encountered, the block should
  * be skipped using the corresponding size field.
  */
 #define DUMMY_MAGIC		0xb0d9ed01
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_IWMMXT
 /* iwmmxt_area is 0x98 bytes long, preceded by 8 bytes of signature */
@@ -100,12 +81,6 @@ struct vfp_sigframe
  * one of these.
  */
 struct aux_sigframe {
-<<<<<<< HEAD
-#ifdef CONFIG_CRUNCH
-	struct crunch_sigframe	crunch;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_IWMMXT
 	struct iwmmxt_sigframe	iwmmxt;
 #endif

@@ -2,26 +2,15 @@
  * linux/include/video/vga.h -- standard VGA chipset interaction
  *
  * Copyright 1999 Jeff Garzik <jgarzik@pobox.com>
-<<<<<<< HEAD
- * 
- * Copyright history from vga16fb.c:
- *	Copyright 1999 Ben Pfaff and Petr Vandrovec
- *	Based on VGA info at http://www.osdever.net/FreeVGA/home.htm 
-=======
  *
  * Copyright history from vga16fb.c:
  *	Copyright 1999 Ben Pfaff and Petr Vandrovec
  *	Based on VGA info at http://www.osdever.net/FreeVGA/home.htm
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Based on VESA framebuffer (c) 1998 Gerd Knorr
  *
  * This file is subject to the terms and conditions of the GNU General
  * Public License.  See the file COPYING in the main directory of this
-<<<<<<< HEAD
- * archive for more details.  
-=======
  * archive for more details.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -29,41 +18,12 @@
 #define __linux_video_vga_h__
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-#ifndef CONFIG_AMIGA
-#include <asm/vga.h>
-#else
-/*
- * FIXME
- * Ugh, we don't have PCI space, so map readb() and friends to use Zorro space
- * for MMIO accesses. This should make cirrusfb work again on Amiga
- */
-#undef inb_p
-#undef inw_p
-#undef outb_p
-#undef outw
-#undef readb
-#undef writeb
-#undef writew
-#define inb_p(port)	0
-#define inw_p(port)	0
-#define outb_p(port, val)	do { } while (0)
-#define outw(port, val)		do { } while (0)
-#define readb		z_readb
-#define writeb		z_writeb
-#define writew		z_writew
-#endif
-#include <asm/byteorder.h>
-
-=======
 #include <linux/io.h>
 #include <asm/vga.h>
 #include <asm/byteorder.h>
 
 #define VGA_FB_PHYS_BASE	0xA0000 /* VGA framebuffer I/O base */
 #define VGA_FB_PHYS_SIZE	65536	/* VGA framebuffer I/O size */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Some of the code below is taken from SVGAlib.  The original,
    unmodified copyright notice for that code is below. */
@@ -232,11 +192,7 @@ struct vgastate {
 	__u32 num_gfx;		/* number of gfx registers, 0 for default  */
 	__u32 num_seq;		/* number of seq registers, 0 for default  */
 	void *vidstate;
-<<<<<<< HEAD
-};	
-=======
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int save_vga(struct vgastate *state);
 extern int restore_vga(struct vgastate *state);
@@ -244,11 +200,7 @@ extern int restore_vga(struct vgastate *state);
 /*
  * generic VGA port read/write
  */
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned char vga_io_r (unsigned short port)
 {
 	return inb_p(port);
@@ -311,11 +263,7 @@ static inline void vga_w_fast (void __iomem *regbase, unsigned short port,
 /*
  * VGA CRTC register read/write
  */
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned char vga_rcrt (void __iomem *regbase, unsigned char reg)
 {
         vga_w (regbase, VGA_CRT_IC, reg);
@@ -368,11 +316,7 @@ static inline void vga_mm_wcrt (void __iomem *regbase, unsigned char reg, unsign
 /*
  * VGA sequencer register read/write
  */
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned char vga_rseq (void __iomem *regbase, unsigned char reg)
 {
         vga_w (regbase, VGA_SEQ_I, reg);
@@ -424,11 +368,7 @@ static inline void vga_mm_wseq (void __iomem *regbase, unsigned char reg, unsign
 /*
  * VGA graphics controller register read/write
  */
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned char vga_rgfx (void __iomem *regbase, unsigned char reg)
 {
         vga_w (regbase, VGA_GFX_I, reg);
@@ -481,11 +421,7 @@ static inline void vga_mm_wgfx (void __iomem *regbase, unsigned char reg, unsign
 /*
  * VGA attribute controller register read/write
  */
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned char vga_rattr (void __iomem *regbase, unsigned char reg)
 {
         vga_w (regbase, VGA_ATT_IW, reg);

@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-/*
-=======
 /* SPDX-License-Identifier: GPL-2.0
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Low-Level PCI Support for SH7751 targets
  *
  *  Dustin McIntire (dustin@sensoria.com) (c) 2001
  *  Paul Mundt (lethal@linux-sh.org) (c) 2003
-<<<<<<< HEAD
- *
- *  May be copied or modified under the terms of the GNU General Public
- *  License.  See linux/COPYING for more information.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _PCI_SH7751_H_

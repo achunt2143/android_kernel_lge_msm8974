@@ -3,10 +3,7 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
-<<<<<<< HEAD
-=======
  * (C) Copyright 2020 Hewlett Packard Enterprise Development LP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2004-2008 Silicon Graphics, Inc.  All Rights Reserved.
  */
 
@@ -24,19 +21,11 @@
 
 /* define the XP debug device structures to be used with dev_dbg() et al */
 
-<<<<<<< HEAD
-struct device_driver xp_dbg_name = {
-	.name = "xp"
-};
-
-struct device xp_dbg_subname = {
-=======
 static struct device_driver xp_dbg_name = {
 	.name = "xp"
 };
 
 static struct device xp_dbg_subname = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_name = "",		/* set to "" */
 	.driver = &xp_dbg_name
 };
@@ -81,29 +70,9 @@ struct xpc_registration xpc_registrations[XPC_MAX_NCHANNELS];
 EXPORT_SYMBOL_GPL(xpc_registrations);
 
 /*
-<<<<<<< HEAD
- * Initialize the XPC interface to indicate that XPC isn't loaded.
- */
-static enum xp_retval
-xpc_notloaded(void)
-{
-	return xpNotLoaded;
-}
-
-struct xpc_interface xpc_interface = {
-	(void (*)(int))xpc_notloaded,
-	(void (*)(int))xpc_notloaded,
-	(enum xp_retval(*)(short, int, u32, void *, u16))xpc_notloaded,
-	(enum xp_retval(*)(short, int, u32, void *, u16, xpc_notify_func,
-			   void *))xpc_notloaded,
-	(void (*)(short, int, void *))xpc_notloaded,
-	(enum xp_retval(*)(short, void *))xpc_notloaded
-};
-=======
  * Initialize the XPC interface to NULL to indicate that XPC isn't loaded.
  */
 struct xpc_interface xpc_interface = { };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(xpc_interface);
 
 /*
@@ -133,21 +102,7 @@ EXPORT_SYMBOL_GPL(xpc_set_interface);
 void
 xpc_clear_interface(void)
 {
-<<<<<<< HEAD
-	xpc_interface.connect = (void (*)(int))xpc_notloaded;
-	xpc_interface.disconnect = (void (*)(int))xpc_notloaded;
-	xpc_interface.send = (enum xp_retval(*)(short, int, u32, void *, u16))
-	    xpc_notloaded;
-	xpc_interface.send_notify = (enum xp_retval(*)(short, int, u32, void *,
-						       u16, xpc_notify_func,
-						       void *))xpc_notloaded;
-	xpc_interface.received = (void (*)(short, int, void *))
-	    xpc_notloaded;
-	xpc_interface.partid_to_nasids = (enum xp_retval(*)(short, void *))
-	    xpc_notloaded;
-=======
 	memset(&xpc_interface, 0, sizeof(xpc_interface));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(xpc_clear_interface);
 
@@ -210,12 +165,8 @@ xpc_connect(int ch_number, xpc_channel_func func, void *key, u16 payload_size,
 
 	mutex_unlock(&registration->mutex);
 
-<<<<<<< HEAD
-	xpc_interface.connect(ch_number);
-=======
 	if (xpc_interface.connect)
 		xpc_interface.connect(ch_number);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return xpSuccess;
 }
@@ -264,12 +215,8 @@ xpc_disconnect(int ch_number)
 	registration->assigned_limit = 0;
 	registration->idle_limit = 0;
 
-<<<<<<< HEAD
-	xpc_interface.disconnect(ch_number);
-=======
 	if (xpc_interface.disconnect)
 		xpc_interface.disconnect(ch_number);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&registration->mutex);
 
@@ -277,11 +224,7 @@ xpc_disconnect(int ch_number)
 }
 EXPORT_SYMBOL_GPL(xpc_disconnect);
 
-<<<<<<< HEAD
-int __init
-=======
 static int __init
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 xp_init(void)
 {
 	enum xp_retval ret;
@@ -291,13 +234,7 @@ xp_init(void)
 	for (ch_number = 0; ch_number < XPC_MAX_NCHANNELS; ch_number++)
 		mutex_init(&xpc_registrations[ch_number].mutex);
 
-<<<<<<< HEAD
-	if (is_shub())
-		ret = xp_init_sn2();
-	else if (is_uv())
-=======
 	if (is_uv_system())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = xp_init_uv();
 	else
 		ret = 0;
@@ -310,19 +247,10 @@ xp_init(void)
 
 module_init(xp_init);
 
-<<<<<<< HEAD
-void __exit
-xp_exit(void)
-{
-	if (is_shub())
-		xp_exit_sn2();
-	else if (is_uv())
-=======
 static void __exit
 xp_exit(void)
 {
 	if (is_uv_system())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xp_exit_uv();
 }
 

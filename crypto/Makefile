@@ -1,22 +1,12 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Cryptographic API
 #
 
 obj-$(CONFIG_CRYPTO) += crypto.o
-<<<<<<< HEAD
-crypto-y := api.o cipher.o compress.o memneq.o
-
-obj-$(CONFIG_CRYPTO_WORKQUEUE) += crypto_wq.o
-
-=======
 crypto-y := api.o cipher.o compress.o
 
 obj-$(CONFIG_CRYPTO_ENGINE) += crypto_engine.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_CRYPTO_FIPS) += fips.o
 
 crypto_algapi-$(CONFIG_PROC_FS) += proc.o
@@ -24,15 +14,6 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
 obj-$(CONFIG_CRYPTO_ALGAPI2) += crypto_algapi.o
 
 obj-$(CONFIG_CRYPTO_AEAD2) += aead.o
-<<<<<<< HEAD
-
-crypto_blkcipher-y := ablkcipher.o
-crypto_blkcipher-y += blkcipher.o
-obj-$(CONFIG_CRYPTO_BLKCIPHER2) += crypto_blkcipher.o
-obj-$(CONFIG_CRYPTO_BLKCIPHER2) += chainiv.o
-obj-$(CONFIG_CRYPTO_BLKCIPHER2) += eseqiv.o
-obj-$(CONFIG_CRYPTO_SEQIV) += seqiv.o
-=======
 obj-$(CONFIG_CRYPTO_GENIV) += geniv.o
 
 crypto_skcipher-y += lskcipher.o
@@ -42,15 +23,11 @@ obj-$(CONFIG_CRYPTO_SKCIPHER2) += crypto_skcipher.o
 
 obj-$(CONFIG_CRYPTO_SEQIV) += seqiv.o
 obj-$(CONFIG_CRYPTO_ECHAINIV) += echainiv.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 crypto_hash-y += ahash.o
 crypto_hash-y += shash.o
 obj-$(CONFIG_CRYPTO_HASH2) += crypto_hash.o
 
-<<<<<<< HEAD
-obj-$(CONFIG_CRYPTO_PCOMP2) += pcompress.o
-=======
 obj-$(CONFIG_CRYPTO_AKCIPHER2) += akcipher.o
 obj-$(CONFIG_CRYPTO_SIG2) += sig.o
 obj-$(CONFIG_CRYPTO_KPP2) += kpp.o
@@ -87,30 +64,11 @@ obj-$(CONFIG_CRYPTO_ECDSA) += ecdsa_generic.o
 crypto_acompress-y := acompress.o
 crypto_acompress-y += scompress.o
 obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 cryptomgr-y := algboss.o testmgr.o
 
 obj-$(CONFIG_CRYPTO_MANAGER2) += cryptomgr.o
 obj-$(CONFIG_CRYPTO_USER) += crypto_user.o
-<<<<<<< HEAD
-obj-$(CONFIG_CRYPTO_HMAC) += hmac.o
-obj-$(CONFIG_CRYPTO_VMAC) += vmac.o
-obj-$(CONFIG_CRYPTO_XCBC) += xcbc.o
-obj-$(CONFIG_CRYPTO_NULL) += crypto_null.o
-obj-$(CONFIG_CRYPTO_MD4) += md4.o
-obj-$(CONFIG_CRYPTO_MD5) += md5.o
-obj-$(CONFIG_CRYPTO_RMD128) += rmd128.o
-obj-$(CONFIG_CRYPTO_RMD160) += rmd160.o
-obj-$(CONFIG_CRYPTO_RMD256) += rmd256.o
-obj-$(CONFIG_CRYPTO_RMD320) += rmd320.o
-obj-$(CONFIG_CRYPTO_SHA1) += sha1_generic.o
-obj-$(CONFIG_CRYPTO_SHA256) += sha256_generic.o
-obj-$(CONFIG_CRYPTO_SHA512) += sha512_generic.o
-obj-$(CONFIG_CRYPTO_WP512) += wp512.o
-obj-$(CONFIG_CRYPTO_TGR192) += tgr192.o
-obj-$(CONFIG_CRYPTO_GF128MUL) += gf128mul.o
-=======
 crypto_user-y := crypto_user_base.o
 crypto_user-$(CONFIG_CRYPTO_STATS) += crypto_user_stat.o
 obj-$(CONFIG_CRYPTO_CMAC) += cmac.o
@@ -132,7 +90,6 @@ obj-$(CONFIG_CRYPTO_WP512) += wp512.o
 CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
 obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
 CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105930
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_CRYPTO_ECB) += ecb.o
 obj-$(CONFIG_CRYPTO_CBC) += cbc.o
 obj-$(CONFIG_CRYPTO_PCBC) += pcbc.o
@@ -140,10 +97,6 @@ obj-$(CONFIG_CRYPTO_CTS) += cts.o
 obj-$(CONFIG_CRYPTO_LRW) += lrw.o
 obj-$(CONFIG_CRYPTO_XTS) += xts.o
 obj-$(CONFIG_CRYPTO_CTR) += ctr.o
-<<<<<<< HEAD
-obj-$(CONFIG_CRYPTO_GCM) += gcm.o
-obj-$(CONFIG_CRYPTO_CCM) += ccm.o
-=======
 obj-$(CONFIG_CRYPTO_XCTR) += xctr.o
 obj-$(CONFIG_CRYPTO_HCTR2) += hctr2.o
 obj-$(CONFIG_CRYPTO_KEYWRAP) += keywrap.o
@@ -175,7 +128,6 @@ endif
 # Enable <arm_neon.h>
 CFLAGS_aegis128-neon-inner.o += -isystem $(shell $(CC) -print-file-name=include)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_CRYPTO_PCRYPT) += pcrypt.o
 obj-$(CONFIG_CRYPTO_CRYPTD) += cryptd.o
 obj-$(CONFIG_CRYPTO_DES) += des_generic.o
@@ -185,12 +137,6 @@ obj-$(CONFIG_CRYPTO_BLOWFISH_COMMON) += blowfish_common.o
 obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
 obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
 obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
-<<<<<<< HEAD
-obj-$(CONFIG_CRYPTO_AES) += aes_generic.o
-obj-$(CONFIG_CRYPTO_CAMELLIA) += camellia_generic.o
-obj-$(CONFIG_CRYPTO_CAST5) += cast5.o
-obj-$(CONFIG_CRYPTO_CAST6) += cast6.o
-=======
 CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
 obj-$(CONFIG_CRYPTO_AES) += aes_generic.o
 CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
@@ -201,29 +147,11 @@ obj-$(CONFIG_CRYPTO_CAMELLIA) += camellia_generic.o
 obj-$(CONFIG_CRYPTO_CAST_COMMON) += cast_common.o
 obj-$(CONFIG_CRYPTO_CAST5) += cast5_generic.o
 obj-$(CONFIG_CRYPTO_CAST6) += cast6_generic.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_CRYPTO_ARC4) += arc4.o
 obj-$(CONFIG_CRYPTO_TEA) += tea.o
 obj-$(CONFIG_CRYPTO_KHAZAD) += khazad.o
 obj-$(CONFIG_CRYPTO_ANUBIS) += anubis.o
 obj-$(CONFIG_CRYPTO_SEED) += seed.o
-<<<<<<< HEAD
-obj-$(CONFIG_CRYPTO_SALSA20) += salsa20_generic.o
-obj-$(CONFIG_CRYPTO_DEFLATE) += deflate.o
-obj-$(CONFIG_CRYPTO_ZLIB) += zlib.o
-obj-$(CONFIG_CRYPTO_MICHAEL_MIC) += michael_mic.o
-obj-$(CONFIG_CRYPTO_CRC32C) += crc32c.o
-obj-$(CONFIG_CRYPTO_AUTHENC) += authenc.o authencesn.o
-obj-$(CONFIG_CRYPTO_LZO) += lzo.o
-obj-$(CONFIG_CRYPTO_RNG2) += rng.o
-obj-$(CONFIG_CRYPTO_RNG2) += krng.o
-obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
-obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
-obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
-obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
-obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
-obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
-=======
 obj-$(CONFIG_CRYPTO_ARIA) += aria_generic.o
 obj-$(CONFIG_CRYPTO_CHACHA20) += chacha_generic.o
 obj-$(CONFIG_CRYPTO_POLY1305) += poly1305_generic.o
@@ -272,16 +200,12 @@ ecrdsa_generic-y += ecrdsa.o
 ecrdsa_generic-y += ecrdsa_params.asn1.o
 ecrdsa_generic-y += ecrdsa_pub_key.asn1.o
 obj-$(CONFIG_CRYPTO_ECRDSA) += ecrdsa_generic.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # generic algorithms and the async_tx api
 #
 obj-$(CONFIG_XOR_BLOCKS) += xor.o
 obj-$(CONFIG_ASYNC_CORE) += async_tx/
-<<<<<<< HEAD
-obj-$(CONFIG_CRYPTO_ABLK_HELPER) += ablk_helper.o
-=======
 obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
 obj-$(CONFIG_CRYPTO_HASH_INFO) += hash_info.o
 crypto_simd-y := simd.o
@@ -291,4 +215,3 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
 # Key derivation function
 #
 obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef GRETH_H
 #define GRETH_H
 
@@ -111,11 +108,7 @@ struct greth_private {
 
 	u16 tx_next;
 	u16 tx_last;
-<<<<<<< HEAD
-	u16 tx_free;
-=======
 	u16 tx_free; /* only used on 10/100Mbit */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 rx_cur;
 
 	struct greth_regs *regs;	/* Address of controller registers. */
@@ -131,13 +124,7 @@ struct greth_private {
 	struct napi_struct napi;
 	spinlock_t devlock;
 
-<<<<<<< HEAD
-	struct phy_device *phy;
 	struct mii_bus *mdio;
-	int mdio_irqs[PHY_MAX_ADDR];
-=======
-	struct mii_bus *mdio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int link;
 	unsigned int speed;
 	unsigned int duplex;

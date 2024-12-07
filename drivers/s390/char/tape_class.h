@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-/*
- * (C) Copyright IBM Corp. 2004   All Rights Reserved.
- * tape_class.h
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright IBM Corp. 2004   All Rights Reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Tape class device support
  *

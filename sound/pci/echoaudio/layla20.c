@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- *  ALSA driver for Echoaudio soundcards.
- *  Copyright (C) 2003-2004 Giuliano Pochini <pochini@shiny.it>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *  ALSA driver for Echoaudio soundcards.
  *  Copyright (C) 2003-2004 Giuliano Pochini <pochini@shiny.it>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define ECHOGALS_FAMILY
@@ -33,11 +14,7 @@
 #define ECHOCARD_HAS_SUPER_INTERLEAVE
 #define ECHOCARD_HAS_DIGITAL_IO
 #define ECHOCARD_HAS_EXTERNAL_CLOCK
-<<<<<<< HEAD
-#define ECHOCARD_HAS_ADAT	FALSE
-=======
 #define ECHOCARD_HAS_ADAT	false
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ECHOCARD_HAS_OUTPUT_CLOCK_SWITCH
 #define ECHOCARD_HAS_MIDI
 
@@ -63,10 +40,7 @@
 #include <linux/module.h>
 #include <linux/firmware.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/info.h>
 #include <sound/control.h>
@@ -76,10 +50,6 @@
 #include <sound/asoundef.h>
 #include <sound/initval.h>
 #include <sound/rawmidi.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 #include "echoaudio.h"
 
@@ -94,21 +64,13 @@ static const struct firmware card_fw[] = {
 	{0, "layla20_asic.fw"}
 };
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(snd_echo_ids) = {
-=======
 static const struct pci_device_id snd_echo_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x1057, 0x1801, 0xECC0, 0x0030, 0, 0, 0},	/* DSP 56301 Layla20 rev.0 */
 	{0x1057, 0x1801, 0xECC0, 0x0031, 0, 0, 0},	/* DSP 56301 Layla20 rev.1 */
 	{0,}
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware pcm_hardware_skel = {
-=======
 static const struct snd_pcm_hardware pcm_hardware_skel = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = SNDRV_PCM_INFO_MMAP |
 		SNDRV_PCM_INFO_INTERLEAVED |
 		SNDRV_PCM_INFO_BLOCK_TRANSFER |

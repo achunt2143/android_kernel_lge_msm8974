@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#ifdef CONFIG_MMU
-#include "signal_mm.c"
-#else
-#include "signal_no.c"
-#endif
-=======
 /*
  *  linux/arch/m68k/kernel/signal.c
  *
@@ -1127,4 +1120,3 @@ asmlinkage void do_notify_resume(struct pt_regs *regs)
 	if (test_thread_flag(TIF_NOTIFY_RESUME))
 		resume_user_mode_work(regs);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-/*
- *  c 2001 PPC 64 Team, IBM Corp
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
- *
- * /dev/nvram driver for PPC64
- *
- * This perhaps should live in drivers/char
- *
- * TODO: Split the /dev/nvram part (that one can use
- *       drivers/char/generic_nvram.c) from the arch & partition
- *       parsing code.
- */
-
-#include <linux/module.h>
-
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  c 2001 PPC 64 Team, IBM Corp
@@ -26,7 +5,6 @@
  * /dev/nvram driver for PPC64
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -36,12 +14,6 @@
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/nvram.h>
-#include <asm/rtas.h>
-#include <asm/prom.h>
-=======
 #include <linux/kmsg_dump.h>
 #include <linux/pagemap.h>
 #include <linux/pstore.h>
@@ -50,7 +22,6 @@
 #include <linux/of.h>
 #include <asm/nvram.h>
 #include <asm/rtas.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 
 #undef DEBUG_NVRAM
@@ -75,147 +46,6 @@ struct nvram_partition {
 
 static LIST_HEAD(nvram_partitions);
 
-<<<<<<< HEAD
-static loff_t dev_nvram_llseek(struct file *file, loff_t offset, int origin)
-{
-	int size;
-
-	if (ppc_md.nvram_size == NULL)
-		return -ENODEV;
-	size = ppc_md.nvram_size();
-
-	switch (origin) {
-	case 1:
-		offset += file->f_pos;
-		break;
-	case 2:
-		offset += size;
-		break;
-	}
-	if (offset < 0)
-		return -EINVAL;
-	file->f_pos = offset;
-	return file->f_pos;
-}
-
-
-static ssize_t dev_nvram_read(struct file *file, char __user *buf,
-			  size_t count, loff_t *ppos)
-{
-	ssize_t ret;
-	char *tmp = NULL;
-	ssize_t size;
-
-	ret = -ENODEV;
-	if (!ppc_md.nvram_size)
-		goto out;
-
-	ret = 0;
-	size = ppc_md.nvram_size();
-	if (*ppos >= size || size < 0)
-		goto out;
-
-	count = min_t(size_t, count, size - *ppos);
-	count = min(count, PAGE_SIZE);
-
-	ret = -ENOMEM;
-	tmp = kmalloc(count, GFP_KERNEL);
-	if (!tmp)
-		goto out;
-
-	ret = ppc_md.nvram_read(tmp, count, ppos);
-	if (ret <= 0)
-		goto out;
-
-	if (copy_to_user(buf, tmp, ret))
-		ret = -EFAULT;
-
-out:
-	kfree(tmp);
-	return ret;
-
-}
-
-static ssize_t dev_nvram_write(struct file *file, const char __user *buf,
-			  size_t count, loff_t *ppos)
-{
-	ssize_t ret;
-	char *tmp = NULL;
-	ssize_t size;
-
-	ret = -ENODEV;
-	if (!ppc_md.nvram_size)
-		goto out;
-
-	ret = 0;
-	size = ppc_md.nvram_size();
-	if (*ppos >= size || size < 0)
-		goto out;
-
-	count = min_t(size_t, count, size - *ppos);
-	count = min(count, PAGE_SIZE);
-
-	ret = -ENOMEM;
-	tmp = kmalloc(count, GFP_KERNEL);
-	if (!tmp)
-		goto out;
-
-	ret = -EFAULT;
-	if (copy_from_user(tmp, buf, count))
-		goto out;
-
-	ret = ppc_md.nvram_write(tmp, count, ppos);
-
-out:
-	kfree(tmp);
-	return ret;
-
-}
-
-static long dev_nvram_ioctl(struct file *file, unsigned int cmd,
-			    unsigned long arg)
-{
-	switch(cmd) {
-#ifdef CONFIG_PPC_PMAC
-	case OBSOLETE_PMAC_NVRAM_GET_OFFSET:
-		printk(KERN_WARNING "nvram: Using obsolete PMAC_NVRAM_GET_OFFSET ioctl\n");
-	case IOC_NVRAM_GET_OFFSET: {
-		int part, offset;
-
-		if (!machine_is(powermac))
-			return -EINVAL;
-		if (copy_from_user(&part, (void __user*)arg, sizeof(part)) != 0)
-			return -EFAULT;
-		if (part < pmac_nvram_OF || part > pmac_nvram_NR)
-			return -EINVAL;
-		offset = pmac_get_partition(part);
-		if (offset < 0)
-			return offset;
-		if (copy_to_user((void __user*)arg, &offset, sizeof(offset)) != 0)
-			return -EFAULT;
-		return 0;
-	}
-#endif /* CONFIG_PPC_PMAC */
-	default:
-		return -EINVAL;
-	}
-}
-
-const struct file_operations nvram_fops = {
-	.owner		= THIS_MODULE,
-	.llseek		= dev_nvram_llseek,
-	.read		= dev_nvram_read,
-	.write		= dev_nvram_write,
-	.unlocked_ioctl	= dev_nvram_ioctl,
-};
-
-static struct miscdevice nvram_dev = {
-	NVRAM_MINOR,
-	"nvram",
-	&nvram_fops
-};
-
-=======
 #ifdef CONFIG_PPC_PSERIES
 struct nvram_os_partition rtas_log_partition = {
 	.name = "ibm,rtas-log",
@@ -873,7 +703,6 @@ static void oops_to_nvram(struct kmsg_dumper *dumper,
 
 	spin_unlock_irqrestore(&lock, flags);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef DEBUG_NVRAM
 static void __init nvram_print_partitions(char * label)
@@ -883,11 +712,7 @@ static void __init nvram_print_partitions(char * label)
 	printk(KERN_WARNING "--------%s---------\n", label);
 	printk(KERN_WARNING "indx\t\tsig\tchks\tlen\tname\n");
 	list_for_each_entry(tmp_part, &nvram_partitions, partition) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "%4d    \t%02x\t%02x\t%d\t%12s\n",
-=======
 		printk(KERN_WARNING "%4d    \t%02x\t%02x\t%d\t%12.12s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       tmp_part->index, tmp_part->header.signature,
 		       tmp_part->header.checksum, tmp_part->header.length,
 		       tmp_part->header.name);
@@ -900,11 +725,6 @@ static int __init nvram_write_header(struct nvram_partition * part)
 {
 	loff_t tmp_index;
 	int rc;
-<<<<<<< HEAD
-	
-	tmp_index = part->index;
-	rc = ppc_md.nvram_write((char *)&part->header, NVRAM_HEADER_LEN, &tmp_index); 
-=======
 	struct nvram_header phead;
 
 	memcpy(&phead, &part->header, NVRAM_HEADER_LEN);
@@ -912,7 +732,6 @@ static int __init nvram_write_header(struct nvram_partition * part)
 
 	tmp_index = part->index;
 	rc = ppc_md.nvram_write((char *)&phead, NVRAM_HEADER_LEN, &tmp_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -936,11 +755,7 @@ static unsigned char __init nvram_checksum(struct nvram_header *p)
  * Per the criteria passed via nvram_remove_partition(), should this
  * partition be removed?  1=remove, 0=keep
  */
-<<<<<<< HEAD
-static int nvram_can_remove_partition(struct nvram_partition *part,
-=======
 static int __init nvram_can_remove_partition(struct nvram_partition *part,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const char *name, int sig, const char *exceptions[])
 {
 	if (part->header.signature != sig)
@@ -979,11 +794,7 @@ int __init nvram_remove_partition(const char *name, int sig,
 
 		/* Make partition a free partition */
 		part->header.signature = NVRAM_SIG_FREE;
-<<<<<<< HEAD
-		strncpy(part->header.name, "wwwwwwwwwwww", 12);
-=======
 		memset(part->header.name, 'w', 12);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		part->header.checksum = nvram_checksum(&part->header);
 		rc = nvram_write_header(part);
 		if (rc <= 0) {
@@ -1001,13 +812,8 @@ int __init nvram_remove_partition(const char *name, int sig,
 		}
 		if (prev) {
 			prev->header.length += part->header.length;
-<<<<<<< HEAD
-			prev->header.checksum = nvram_checksum(&part->header);
-			rc = nvram_write_header(part);
-=======
 			prev->header.checksum = nvram_checksum(&prev->header);
 			rc = nvram_write_header(prev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc <= 0) {
 				printk(KERN_ERR "nvram_remove_partition: nvram_write failed (%d)\n", rc);
 				return rc;
@@ -1045,17 +851,11 @@ loff_t __init nvram_create_partition(const char *name, int sig,
 	long size = 0;
 	int rc;
 
-<<<<<<< HEAD
-	/* Convert sizes from bytes to blocks */
-	req_size = _ALIGN_UP(req_size, NVRAM_BLOCK_LEN) / NVRAM_BLOCK_LEN;
-	min_size = _ALIGN_UP(min_size, NVRAM_BLOCK_LEN) / NVRAM_BLOCK_LEN;
-=======
 	BUILD_BUG_ON(NVRAM_BLOCK_LEN != 16);
 
 	/* Convert sizes from bytes to blocks */
 	req_size = ALIGN(req_size, NVRAM_BLOCK_LEN) / NVRAM_BLOCK_LEN;
 	min_size = ALIGN(min_size, NVRAM_BLOCK_LEN) / NVRAM_BLOCK_LEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If no minimum size specified, make it the same as the
 	 * requested size
@@ -1090,37 +890,22 @@ loff_t __init nvram_create_partition(const char *name, int sig,
 		return -ENOSPC;
 	
 	/* Create our OS partition */
-<<<<<<< HEAD
-	new_part = kmalloc(sizeof(*new_part), GFP_KERNEL);
-	if (!new_part) {
-		pr_err("nvram_create_os_partition: kmalloc failed\n");
-=======
 	new_part = kzalloc(sizeof(*new_part), GFP_KERNEL);
 	if (!new_part) {
 		pr_err("%s: kmalloc failed\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	new_part->index = free_part->index;
 	new_part->header.signature = sig;
 	new_part->header.length = size;
-<<<<<<< HEAD
-	strncpy(new_part->header.name, name, 12);
-=======
 	memcpy(new_part->header.name, name, strnlen(name, sizeof(new_part->header.name)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new_part->header.checksum = nvram_checksum(&new_part->header);
 
 	rc = nvram_write_header(new_part);
 	if (rc <= 0) {
-<<<<<<< HEAD
-		pr_err("nvram_create_os_partition: nvram_write_header "
-		       "failed (%d)\n", rc);
-=======
 		pr_err("%s: nvram_write_header failed (%d)\n", __func__, rc);
 		kfree(new_part);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 	list_add_tail(&new_part->partition, &free_part->partition);
@@ -1132,13 +917,8 @@ loff_t __init nvram_create_partition(const char *name, int sig,
 		free_part->header.checksum = nvram_checksum(&free_part->header);
 		rc = nvram_write_header(free_part);
 		if (rc <= 0) {
-<<<<<<< HEAD
-			pr_err("nvram_create_os_partition: nvram_write_header "
-			       "failed (%d)\n", rc);
-=======
 			pr_err("%s: nvram_write_header failed (%d)\n",
 			       __func__, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rc;
 		}
 	} else {
@@ -1152,20 +932,12 @@ loff_t __init nvram_create_partition(const char *name, int sig,
 	     tmp_index += NVRAM_BLOCK_LEN) {
 		rc = ppc_md.nvram_write(nv_init_vals, NVRAM_BLOCK_LEN, &tmp_index);
 		if (rc <= 0) {
-<<<<<<< HEAD
-			pr_err("nvram_create_partition: nvram_write failed (%d)\n", rc);
-			return rc;
-		}
-	}
-	
-=======
 			pr_err("%s: nvram_write failed (%d)\n",
 			       __func__, rc);
 			return rc;
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return new_part->index + NVRAM_HEADER_LEN;
 }
 
@@ -1242,11 +1014,8 @@ int __init nvram_scan_partitions(void)
 
 		memcpy(&phead, header, NVRAM_HEADER_LEN);
 
-<<<<<<< HEAD
-=======
 		phead.length = be16_to_cpu(phead.length);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = 0;
 		c_sum = nvram_checksum(&phead);
 		if (c_sum != phead.checksum) {
@@ -1261,12 +1030,7 @@ int __init nvram_scan_partitions(void)
 			       "detected: 0-length partition\n");
 			goto out;
 		}
-<<<<<<< HEAD
-		tmp_part = (struct nvram_partition *)
-			kmalloc(sizeof(struct nvram_partition), GFP_KERNEL);
-=======
 		tmp_part = kmalloc(sizeof(*tmp_part), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		if (!tmp_part) {
 			printk(KERN_ERR "nvram_scan_partitions: kmalloc failed\n");
@@ -1289,33 +1053,3 @@ int __init nvram_scan_partitions(void)
 	kfree(header);
 	return err;
 }
-<<<<<<< HEAD
-
-static int __init nvram_init(void)
-{
-	int rc;
-	
-	BUILD_BUG_ON(NVRAM_BLOCK_LEN != 16);
-
-	if (ppc_md.nvram_size == NULL || ppc_md.nvram_size() <= 0)
-		return  -ENODEV;
-
-  	rc = misc_register(&nvram_dev);
-	if (rc != 0) {
-		printk(KERN_ERR "nvram_init: failed to register device\n");
-		return rc;
-	}
-  	
-  	return rc;
-}
-
-void __exit nvram_cleanup(void)
-{
-        misc_deregister( &nvram_dev );
-}
-
-module_init(nvram_init);
-module_exit(nvram_cleanup);
-MODULE_LICENSE("GPL");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

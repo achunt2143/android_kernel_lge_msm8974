@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux kernel.
 #
 
-<<<<<<< HEAD
-extra-y		:= head.o vmlinux.lds
-asflags-y	:= $(KBUILD_CFLAGS)
-ccflags-y	:= -Wno-sign-compare
-
-obj-y    := entry.o traps.o process.o init_task.o osf_sys.o irq.o \
-	    irq_alpha.o signal.o setup.o ptrace.o time.o \
-	    alpha_ksyms.o systbls.o err_common.o io.o
-=======
 extra-y		:= vmlinux.lds
 asflags-y	:= $(KBUILD_CFLAGS)
 ccflags-y	:= -Wno-sign-compare
@@ -22,7 +10,6 @@ ccflags-y	:= -Wno-sign-compare
 obj-y    := head.o entry.o traps.o process.o osf_sys.o irq.o \
 	    irq_alpha.o signal.o setup.o ptrace.o time.o \
 	    systbls.o err_common.o io.o bugs.o termios.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_VGA_HOSE)	+= console.o
 obj-$(CONFIG_SMP)	+= smp.o
@@ -30,11 +17,8 @@ obj-$(CONFIG_PCI)	+= pci.o pci_iommu.o pci-sysfs.o
 obj-$(CONFIG_SRM_ENV)	+= srm_env.o
 obj-$(CONFIG_MODULES)	+= module.o
 obj-$(CONFIG_PERF_EVENTS) += perf_event.o
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_RTC_DRV_ALPHA) += rtc.o
 obj-$(CONFIG_AUDIT)	+= audit.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ifdef CONFIG_ALPHA_GENERIC
 
@@ -63,13 +47,6 @@ else
 # Misc support
 obj-$(CONFIG_ALPHA_SRM)		+= srmcons.o
 
-<<<<<<< HEAD
-ifdef CONFIG_BINFMT_AOUT
-obj-y	+= binfmt_loader.o
-endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Core logic support
 obj-$(CONFIG_ALPHA_APECS)	+= core_apecs.o
 obj-$(CONFIG_ALPHA_CIA)		+= core_cia.o

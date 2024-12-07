@@ -1,17 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright 2011 Paul Mackerras, IBM Corp. <paulus@au1.ibm.com>
  *
@@ -22,15 +10,11 @@
  * Authors: Alexander Graf <agraf@suse.de>
  */
 
-<<<<<<< HEAD
-#include <asm/ppc_asm.h>
-=======
 #include <linux/export.h>
 #include <linux/linkage.h>
 #include <linux/objtool.h>
 #include <asm/ppc_asm.h>
 #include <asm/code-patching-asm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/kvm_asm.h>
 #include <asm/reg.h>
 #include <asm/mmu.h>
@@ -39,32 +23,6 @@
 #include <asm/hvcall.h>
 #include <asm/asm-offsets.h>
 #include <asm/exception-64s.h>
-<<<<<<< HEAD
-
-/*****************************************************************************
- *                                                                           *
- *        Real Mode handlers that need to be in the linear mapping           *
- *                                                                           *
- ****************************************************************************/
-
-	.globl	kvmppc_skip_interrupt
-kvmppc_skip_interrupt:
-	mfspr	r13,SPRN_SRR0
-	addi	r13,r13,4
-	mtspr	SPRN_SRR0,r13
-	GET_SCRATCH0(r13)
-	rfid
-	b	.
-
-	.globl	kvmppc_skip_Hinterrupt
-kvmppc_skip_Hinterrupt:
-	mfspr	r13,SPRN_HSRR0
-	addi	r13,r13,4
-	mtspr	SPRN_HSRR0,r13
-	GET_SCRATCH0(r13)
-	hrfid
-	b	.
-=======
 #include <asm/kvm_book3s_asm.h>
 #include <asm/book3s/64/mmu-hash.h>
 #include <asm/tm.h>
@@ -101,7 +59,6 @@ kvmppc_skip_Hinterrupt:
  * ignores the top bits.
  */
 #define   LPID_RSVD		0xfff
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Call kvmppc_hv_entry in real mode.
@@ -111,11 +68,6 @@ kvmppc_skip_Hinterrupt:
  *
  * LR = return address to continue at after eventually re-enabling MMU
  */
-<<<<<<< HEAD
-_GLOBAL(kvmppc_hv_entry_trampoline)
-	mfmsr	r10
-	LOAD_REG_ADDR(r5, kvmppc_hv_entry)
-=======
 _GLOBAL_TOC(kvmppc_hv_entry_trampoline)
 	mflr	r0
 	std	r0, PPC_LR_STKOFF(r1)
@@ -123,7 +75,6 @@ _GLOBAL_TOC(kvmppc_hv_entry_trampoline)
 	mfmsr	r10
 	std	r10, HSTATE_HOST_MSR(r13)
 	LOAD_REG_ADDR(r5, kvmppc_call_hv_entry)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r0,MSR_RI
 	andc	r0,r10,r0
 	li	r6,MSR_IR | MSR_DR
@@ -131,12 +82,6 @@ _GLOBAL_TOC(kvmppc_hv_entry_trampoline)
 	mtmsrd	r0,1		/* clear RI in MSR */
 	mtsrr0	r5
 	mtsrr1	r6
-<<<<<<< HEAD
-	RFI
-
-#define ULONG_SIZE 		8
-#define VCPU_GPR(n)		(VCPU_GPRS + (n * ULONG_SIZE))
-=======
 	RFI_TO_KERNEL
 
 kvmppc_call_hv_entry:
@@ -550,7 +495,6 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
 57:	li	r0, 0
 	stbx	r0, r3, r4
 	b	kvm_no_guest
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /******************************************************************************
  *                                                                            *
@@ -558,136 +502,6 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
  *                                                                            *
  *****************************************************************************/
 
-<<<<<<< HEAD
-#define XICS_XIRR		4
-#define XICS_QIRR		0xc
-
-/*
- * We come in here when wakened from nap mode on a secondary hw thread.
- * Relocation is off and most register values are lost.
- * r13 points to the PACA.
- */
-	.globl	kvm_start_guest
-kvm_start_guest:
-	ld	r1,PACAEMERGSP(r13)
-	subi	r1,r1,STACK_FRAME_OVERHEAD
-	ld	r2,PACATOC(r13)
-
-	/* were we napping due to cede? */
-	lbz	r0,HSTATE_NAPPING(r13)
-	cmpwi	r0,0
-	bne	kvm_end_cede
-
-	/* get vcpu pointer */
-	ld	r4, HSTATE_KVM_VCPU(r13)
-
-	/* We got here with an IPI; clear it */
-	ld	r5, HSTATE_XICS_PHYS(r13)
-	li	r0, 0xff
-	li	r6, XICS_QIRR
-	li	r7, XICS_XIRR
-	lwzcix	r8, r5, r7		/* ack the interrupt */
-	sync
-	stbcix	r0, r5, r6		/* clear it */
-	stwcix	r8, r5, r7		/* EOI it */
-
-	/* NV GPR values from power7_idle() will no longer be valid */
-	stb	r0, PACA_NAPSTATELOST(r13)
-
-.global kvmppc_hv_entry
-kvmppc_hv_entry:
-
-	/* Required state:
-	 *
-	 * R4 = vcpu pointer
-	 * MSR = ~IR|DR
-	 * R13 = PACA
-	 * R1 = host R1
-	 * all other volatile GPRS = free
-	 */
-	mflr	r0
-	std	r0, HSTATE_VMHANDLER(r13)
-
-	ld	r14, VCPU_GPR(r14)(r4)
-	ld	r15, VCPU_GPR(r15)(r4)
-	ld	r16, VCPU_GPR(r16)(r4)
-	ld	r17, VCPU_GPR(r17)(r4)
-	ld	r18, VCPU_GPR(r18)(r4)
-	ld	r19, VCPU_GPR(r19)(r4)
-	ld	r20, VCPU_GPR(r20)(r4)
-	ld	r21, VCPU_GPR(r21)(r4)
-	ld	r22, VCPU_GPR(r22)(r4)
-	ld	r23, VCPU_GPR(r23)(r4)
-	ld	r24, VCPU_GPR(r24)(r4)
-	ld	r25, VCPU_GPR(r25)(r4)
-	ld	r26, VCPU_GPR(r26)(r4)
-	ld	r27, VCPU_GPR(r27)(r4)
-	ld	r28, VCPU_GPR(r28)(r4)
-	ld	r29, VCPU_GPR(r29)(r4)
-	ld	r30, VCPU_GPR(r30)(r4)
-	ld	r31, VCPU_GPR(r31)(r4)
-
-	/* Load guest PMU registers */
-	/* R4 is live here (vcpu pointer) */
-	li	r3, 1
-	sldi	r3, r3, 31		/* MMCR0_FC (freeze counters) bit */
-	mtspr	SPRN_MMCR0, r3		/* freeze all counters, disable ints */
-	isync
-	lwz	r3, VCPU_PMC(r4)	/* always load up guest PMU registers */
-	lwz	r5, VCPU_PMC + 4(r4)	/* to prevent information leak */
-	lwz	r6, VCPU_PMC + 8(r4)
-	lwz	r7, VCPU_PMC + 12(r4)
-	lwz	r8, VCPU_PMC + 16(r4)
-	lwz	r9, VCPU_PMC + 20(r4)
-BEGIN_FTR_SECTION
-	lwz	r10, VCPU_PMC + 24(r4)
-	lwz	r11, VCPU_PMC + 28(r4)
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
-	mtspr	SPRN_PMC1, r3
-	mtspr	SPRN_PMC2, r5
-	mtspr	SPRN_PMC3, r6
-	mtspr	SPRN_PMC4, r7
-	mtspr	SPRN_PMC5, r8
-	mtspr	SPRN_PMC6, r9
-BEGIN_FTR_SECTION
-	mtspr	SPRN_PMC7, r10
-	mtspr	SPRN_PMC8, r11
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
-	ld	r3, VCPU_MMCR(r4)
-	ld	r5, VCPU_MMCR + 8(r4)
-	ld	r6, VCPU_MMCR + 16(r4)
-	mtspr	SPRN_MMCR1, r5
-	mtspr	SPRN_MMCRA, r6
-	mtspr	SPRN_MMCR0, r3
-	isync
-
-	/* Load up FP, VMX and VSX registers */
-	bl	kvmppc_load_fp
-
-BEGIN_FTR_SECTION
-	/* Switch DSCR to guest value */
-	ld	r5, VCPU_DSCR(r4)
-	mtspr	SPRN_DSCR, r5
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
-
-	/*
-	 * Set the decrementer to the guest decrementer.
-	 */
-	ld	r8,VCPU_DEC_EXPIRES(r4)
-	mftb	r7
-	subf	r3,r7,r8
-	mtspr	SPRN_DEC,r3
-	stw	r3,VCPU_DEC(r4)
-
-	ld	r5, VCPU_SPRG0(r4)
-	ld	r6, VCPU_SPRG1(r4)
-	ld	r7, VCPU_SPRG2(r4)
-	ld	r8, VCPU_SPRG3(r4)
-	mtspr	SPRN_SPRG0, r5
-	mtspr	SPRN_SPRG1, r6
-	mtspr	SPRN_SPRG2, r7
-	mtspr	SPRN_SPRG3, r8
-=======
 SYM_CODE_START_LOCAL(kvmppc_hv_entry)
 
 	/* Required state:
@@ -703,74 +517,10 @@ SYM_CODE_START_LOCAL(kvmppc_hv_entry)
 	mflr	r0
 	std	r0, PPC_LR_STKOFF(r1)
 	stdu	r1, -SFS(r1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Save R1 in the PACA */
 	std	r1, HSTATE_HOST_R1(r13)
 
-<<<<<<< HEAD
-	/* Increment yield count if they have a VPA */
-	ld	r3, VCPU_VPA(r4)
-	cmpdi	r3, 0
-	beq	25f
-	lwz	r5, LPPACA_YIELDCOUNT(r3)
-	addi	r5, r5, 1
-	stw	r5, LPPACA_YIELDCOUNT(r3)
-25:
-	/* Load up DAR and DSISR */
-	ld	r5, VCPU_DAR(r4)
-	lwz	r6, VCPU_DSISR(r4)
-	mtspr	SPRN_DAR, r5
-	mtspr	SPRN_DSISR, r6
-
-	/* Set partition DABR */
-	li	r5,3
-	ld	r6,VCPU_DABR(r4)
-	mtspr	SPRN_DABRX,r5
-	mtspr	SPRN_DABR,r6
-
-BEGIN_FTR_SECTION
-	/* Restore AMR and UAMOR, set AMOR to all 1s */
-	ld	r5,VCPU_AMR(r4)
-	ld	r6,VCPU_UAMOR(r4)
-	li	r7,-1
-	mtspr	SPRN_AMR,r5
-	mtspr	SPRN_UAMOR,r6
-	mtspr	SPRN_AMOR,r7
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
-
-	/* Clear out SLB */
-	li	r6,0
-	slbmte	r6,r6
-	slbia
-	ptesync
-
-BEGIN_FTR_SECTION
-	b	30f
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
-	/*
-	 * POWER7 host -> guest partition switch code.
-	 * We don't have to lock against concurrent tlbies,
-	 * but we do have to coordinate across hardware threads.
-	 */
-	/* Increment entry count iff exit count is zero. */
-	ld	r5,HSTATE_KVM_VCORE(r13)
-	addi	r9,r5,VCORE_ENTRY_EXIT
-21:	lwarx	r3,0,r9
-	cmpwi	r3,0x100		/* any threads starting to exit? */
-	bge	secondary_too_late	/* if so we're too late to the party */
-	addi	r3,r3,1
-	stwcx.	r3,0,r9
-	bne	21b
-
-	/* Primary thread switches to guest partition. */
-	ld	r9,VCPU_KVM(r4)		/* pointer to struct kvm */
-	lwz	r6,VCPU_PTID(r4)
-	cmpwi	r6,0
-	bne	20f
-	ld	r6,KVM_SDR1(r9)
-	lwz	r7,KVM_LPID(r9)
-=======
 	li	r6, KVM_GUEST_MODE_HOST_HV
 	stb	r6, HSTATE_IN_GUEST(r13)
 
@@ -809,67 +559,12 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
 
 	lwz	r7,KVM_LPID(r9)
 	ld	r6,KVM_SDR1(r9)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r0,LPID_RSVD		/* switch to reserved LPID */
 	mtspr	SPRN_LPID,r0
 	ptesync
 	mtspr	SPRN_SDR1,r6		/* switch to partition page table */
 	mtspr	SPRN_LPID,r7
 	isync
-<<<<<<< HEAD
-	li	r0,1
-	stb	r0,VCORE_IN_GUEST(r5)	/* signal secondaries to continue */
-	b	10f
-
-	/* Secondary threads wait for primary to have done partition switch */
-20:	lbz	r0,VCORE_IN_GUEST(r5)
-	cmpwi	r0,0
-	beq	20b
-
-	/* Set LPCR and RMOR. */
-10:	ld	r8,KVM_LPCR(r9)
-	mtspr	SPRN_LPCR,r8
-	ld	r8,KVM_RMOR(r9)
-	mtspr	SPRN_RMOR,r8
-	isync
-
-	/* Check if HDEC expires soon */
-	mfspr	r3,SPRN_HDEC
-	cmpwi	r3,10
-	li	r12,BOOK3S_INTERRUPT_HV_DECREMENTER
-	mr	r9,r4
-	blt	hdec_soon
-
-	/*
-	 * Invalidate the TLB if we could possibly have stale TLB
-	 * entries for this partition on this core due to the use
-	 * of tlbiel.
-	 * XXX maybe only need this on primary thread?
-	 */
-	ld	r9,VCPU_KVM(r4)		/* pointer to struct kvm */
-	lwz	r5,VCPU_VCPUID(r4)
-	lhz	r6,PACAPACAINDEX(r13)
-	rldimi	r6,r5,0,62		/* XXX map as if threads 1:1 p:v */
-	lhz	r8,VCPU_LAST_CPU(r4)
-	sldi	r7,r6,1			/* see if this is the same vcpu */
-	add	r7,r7,r9		/* as last ran on this pcpu */
-	lhz	r0,KVM_LAST_VCPU(r7)
-	cmpw	r6,r8			/* on the same cpu core as last time? */
-	bne	3f
-	cmpw	r0,r5			/* same vcpu as this core last ran? */
-	beq	1f
-3:	sth	r6,VCPU_LAST_CPU(r4)	/* if not, invalidate partition TLB */
-	sth	r5,KVM_LAST_VCPU(r7)
-	li	r6,128
-	mtctr	r6
-	li	r7,0x800		/* IS field = 0b10 */
-	ptesync
-2:	tlbiel	r7
-	addi	r7,r7,0x1000
-	bdnz	2b
-	ptesync
-1:
-=======
 
 	/* See if we need to flush the TLB. */
 	mr	r3, r9			/* kvm pointer */
@@ -935,7 +630,6 @@ kvmppc_got_guest:
 	li	r6, 1
 	stb	r6, VCPU_VPA_DIRTY(r4)
 25:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Save purr/spurr */
 	mfspr	r5,SPRN_PURR
@@ -946,96 +640,6 @@ kvmppc_got_guest:
 	ld	r8,VCPU_SPURR(r4)
 	mtspr	SPRN_PURR,r7
 	mtspr	SPRN_SPURR,r8
-<<<<<<< HEAD
-	b	31f
-
-	/*
-	 * PPC970 host -> guest partition switch code.
-	 * We have to lock against concurrent tlbies,
-	 * using native_tlbie_lock to lock against host tlbies
-	 * and kvm->arch.tlbie_lock to lock against guest tlbies.
-	 * We also have to invalidate the TLB since its
-	 * entries aren't tagged with the LPID.
-	 */
-30:	ld	r9,VCPU_KVM(r4)		/* pointer to struct kvm */
-
-	/* first take native_tlbie_lock */
-	.section ".toc","aw"
-toc_tlbie_lock:
-	.tc	native_tlbie_lock[TC],native_tlbie_lock
-	.previous
-	ld	r3,toc_tlbie_lock@toc(2)
-	lwz	r8,PACA_LOCK_TOKEN(r13)
-24:	lwarx	r0,0,r3
-	cmpwi	r0,0
-	bne	24b
-	stwcx.	r8,0,r3
-	bne	24b
-	isync
-
-	ld	r7,KVM_LPCR(r9)		/* use kvm->arch.lpcr to store HID4 */
-	li	r0,0x18f
-	rotldi	r0,r0,HID4_LPID5_SH	/* all lpid bits in HID4 = 1 */
-	or	r0,r7,r0
-	ptesync
-	sync
-	mtspr	SPRN_HID4,r0		/* switch to reserved LPID */
-	isync
-	li	r0,0
-	stw	r0,0(r3)		/* drop native_tlbie_lock */
-
-	/* invalidate the whole TLB */
-	li	r0,256
-	mtctr	r0
-	li	r6,0
-25:	tlbiel	r6
-	addi	r6,r6,0x1000
-	bdnz	25b
-	ptesync
-
-	/* Take the guest's tlbie_lock */
-	addi	r3,r9,KVM_TLBIE_LOCK
-24:	lwarx	r0,0,r3
-	cmpwi	r0,0
-	bne	24b
-	stwcx.	r8,0,r3
-	bne	24b
-	isync
-	ld	r6,KVM_SDR1(r9)
-	mtspr	SPRN_SDR1,r6		/* switch to partition page table */
-
-	/* Set up HID4 with the guest's LPID etc. */
-	sync
-	mtspr	SPRN_HID4,r7
-	isync
-
-	/* drop the guest's tlbie_lock */
-	li	r0,0
-	stw	r0,0(r3)
-
-	/* Check if HDEC expires soon */
-	mfspr	r3,SPRN_HDEC
-	cmpwi	r3,10
-	li	r12,BOOK3S_INTERRUPT_HV_DECREMENTER
-	mr	r9,r4
-	blt	hdec_soon
-
-	/* Enable HDEC interrupts */
-	mfspr	r0,SPRN_HID0
-	li	r3,1
-	rldimi	r0,r3, HID0_HDICE_SH, 64-HID0_HDICE_SH-1
-	sync
-	mtspr	SPRN_HID0,r0
-	mfspr	r0,SPRN_HID0
-	mfspr	r0,SPRN_HID0
-	mfspr	r0,SPRN_HID0
-	mfspr	r0,SPRN_HID0
-	mfspr	r0,SPRN_HID0
-	mfspr	r0,SPRN_HID0
-
-	/* Load up guest SLB entries */
-31:	lwz	r5,VCPU_SLB_MAX(r4)
-=======
 
 	/* Save host values of some registers */
 BEGIN_FTR_SECTION
@@ -1237,7 +841,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_ARCH_207S)
 
 	/* Load up guest SLB entries (N.B. slb_max will be 0 for radix) */
 	lwz	r5,VCPU_SLB_MAX(r4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmpwi	r5,0
 	beq	9f
 	mtctr	r5
@@ -1249,28 +852,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_ARCH_207S)
 	bdnz	1b
 9:
 
-<<<<<<< HEAD
-	/* Restore state of CTRL run bit; assume 1 on entry */
-	lwz	r5,VCPU_CTRL(r4)
-	andi.	r5,r5,1
-	bne	4f
-	mfspr	r6,SPRN_CTRLF
-	clrrdi	r6,r6,1
-	mtspr	SPRN_CTRLT,r6
-4:
-	ld	r6, VCPU_CTR(r4)
-	lwz	r7, VCPU_XER(r4)
-
-	mtctr	r6
-	mtxer	r7
-
-kvmppc_cede_reentry:		/* r4 = vcpu, r13 = paca */
-	ld	r6, VCPU_SRR0(r4)
-	ld	r7, VCPU_SRR1(r4)
-	ld	r10, VCPU_PC(r4)
-	ld	r11, VCPU_MSR(r4)	/* r11 = vcpu->arch.msr & ~MSR_HV */
-
-=======
 deliver_guest_interrupt:	/* r4 = vcpu, r13 = paca */
 	/* Check if we can deliver an external or decrementer interrupt now */
 	ld	r0, VCPU_PENDING_EXC(r4)
@@ -1288,48 +869,10 @@ deliver_guest_interrupt:	/* r4 = vcpu, r13 = paca */
 	ld	r10, VCPU_PC(r4)
 	ld	r11, VCPU_MSR(r4)
 	/* r11 = vcpu->arch.msr & ~MSR_HV */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rldicl	r11, r11, 63 - MSR_HV_LG, 1
 	rotldi	r11, r11, 1 + MSR_HV_LG
 	ori	r11, r11, MSR_ME
 
-<<<<<<< HEAD
-	/* Check if we can deliver an external or decrementer interrupt now */
-	ld	r0,VCPU_PENDING_EXC(r4)
-	li	r8,(1 << BOOK3S_IRQPRIO_EXTERNAL)
-	oris	r8,r8,(1 << BOOK3S_IRQPRIO_EXTERNAL_LEVEL)@h
-	and	r0,r0,r8
-	cmpdi	cr1,r0,0
-	andi.	r0,r11,MSR_EE
-	beq	cr1,11f
-BEGIN_FTR_SECTION
-	mfspr	r8,SPRN_LPCR
-	ori	r8,r8,LPCR_MER
-	mtspr	SPRN_LPCR,r8
-	isync
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
-	beq	5f
-	li	r0,BOOK3S_INTERRUPT_EXTERNAL
-12:	mr	r6,r10
-	mr	r10,r0
-	mr	r7,r11
-	li	r11,(MSR_ME << 1) | 1	/* synthesize MSR_SF | MSR_ME */
-	rotldi	r11,r11,63
-	b	5f
-11:	beq	5f
-	mfspr	r0,SPRN_DEC
-	cmpwi	r0,0
-	li	r0,BOOK3S_INTERRUPT_DECREMENTER
-	blt	12b
-
-	/* Move SRR0 and SRR1 into the respective regs */
-5:	mtspr	SPRN_SRR0, r6
-	mtspr	SPRN_SRR1, r7
-	li	r0,0
-	stb	r0,VCPU_CEDED(r4)	/* cancel cede */
-
-fast_guest_return:
-=======
 	ld	r6, VCPU_CTR(r4)
 	ld	r7, VCPU_XER(r4)
 	mtctr	r6
@@ -1345,41 +888,10 @@ fast_guest_return:
 fast_guest_return:
 	li	r0,0
 	stb	r0,VCPU_CEDED(r4)	/* cancel cede */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtspr	SPRN_HSRR0,r10
 	mtspr	SPRN_HSRR1,r11
 
 	/* Activate guest mode, so faults get handled by KVM */
-<<<<<<< HEAD
-	li	r9, KVM_GUEST_MODE_GUEST
-	stb	r9, HSTATE_IN_GUEST(r13)
-
-	/* Enter guest */
-
-	ld	r5, VCPU_LR(r4)
-	lwz	r6, VCPU_CR(r4)
-	mtlr	r5
-	mtcr	r6
-
-	ld	r0, VCPU_GPR(r0)(r4)
-	ld	r1, VCPU_GPR(r1)(r4)
-	ld	r2, VCPU_GPR(r2)(r4)
-	ld	r3, VCPU_GPR(r3)(r4)
-	ld	r5, VCPU_GPR(r5)(r4)
-	ld	r6, VCPU_GPR(r6)(r4)
-	ld	r7, VCPU_GPR(r7)(r4)
-	ld	r8, VCPU_GPR(r8)(r4)
-	ld	r9, VCPU_GPR(r9)(r4)
-	ld	r10, VCPU_GPR(r10)(r4)
-	ld	r11, VCPU_GPR(r11)(r4)
-	ld	r12, VCPU_GPR(r12)(r4)
-	ld	r13, VCPU_GPR(r13)(r4)
-
-	ld	r4, VCPU_GPR(r4)(r4)
-
-	hrfid
-	b	.
-=======
 	li	r9, KVM_GUEST_MODE_GUEST_HV
 	stb	r9, HSTATE_IN_GUEST(r13)
 
@@ -1454,7 +966,6 @@ hdec_soon:
 	bl	kvmhv_accumulate_time
 #endif
 	b	guest_bypass
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /******************************************************************************
  *                                                                            *
@@ -1465,19 +976,6 @@ hdec_soon:
 /*
  * We come here from the first-level interrupt handlers.
  */
-<<<<<<< HEAD
-	.globl	kvmppc_interrupt
-kvmppc_interrupt:
-	/*
-	 * Register contents:
-	 * R12		= interrupt vector
-	 * R13		= PACA
-	 * guest CR, R12 saved in shadow VCPU SCRATCH1/0
-	 * guest R13 saved in SPRN_SCRATCH0
-	 */
-	/* abuse host_r2 as third scratch area; we get r2 from PACATOC(r13) */
-	std	r9, HSTATE_HOST_R2(r13)
-=======
 	.globl	kvmppc_interrupt_hv
 kvmppc_interrupt_hv:
 	/*
@@ -1495,34 +993,10 @@ kvmppc_interrupt_hv:
 	li	r9, KVM_GUEST_MODE_HOST_HV
 	stb	r9, HSTATE_IN_GUEST(r13)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ld	r9, HSTATE_KVM_VCPU(r13)
 
 	/* Save registers */
 
-<<<<<<< HEAD
-	std	r0, VCPU_GPR(r0)(r9)
-	std	r1, VCPU_GPR(r1)(r9)
-	std	r2, VCPU_GPR(r2)(r9)
-	std	r3, VCPU_GPR(r3)(r9)
-	std	r4, VCPU_GPR(r4)(r9)
-	std	r5, VCPU_GPR(r5)(r9)
-	std	r6, VCPU_GPR(r6)(r9)
-	std	r7, VCPU_GPR(r7)(r9)
-	std	r8, VCPU_GPR(r8)(r9)
-	ld	r0, HSTATE_HOST_R2(r13)
-	std	r0, VCPU_GPR(r9)(r9)
-	std	r10, VCPU_GPR(r10)(r9)
-	std	r11, VCPU_GPR(r11)(r9)
-	ld	r3, HSTATE_SCRATCH0(r13)
-	lwz	r4, HSTATE_SCRATCH1(r13)
-	std	r3, VCPU_GPR(r12)(r9)
-	stw	r4, VCPU_CR(r9)
-
-	/* Restore R1/R2 so we can handle faults */
-	ld	r1, HSTATE_HOST_R1(r13)
-	ld	r2, PACATOC(r13)
-=======
 	std	r0, VCPU_GPR(R0)(r9)
 	std	r1, VCPU_GPR(R1)(r9)
 	std	r2, VCPU_GPR(R2)(r9)
@@ -1553,17 +1027,13 @@ END_FTR_SECTION_IFSET(CPU_FTR_HAS_PPR)
 	/* Restore R1/R2 so we can handle faults */
 	ld	r1, HSTATE_HOST_R1(r13)
 	LOAD_PACA_TOC()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mfspr	r10, SPRN_SRR0
 	mfspr	r11, SPRN_SRR1
 	std	r10, VCPU_SRR0(r9)
 	std	r11, VCPU_SRR1(r9)
-<<<<<<< HEAD
-=======
 	/* trap is in the low half of r12, clear CR from the high half */
 	clrldi	r12, r12, 32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	andi.	r0, r12, 2		/* need to read HSRR0/1? */
 	beq	1f
 	mfspr	r10, SPRN_HSRR0
@@ -1574,26 +1044,6 @@ END_FTR_SECTION_IFSET(CPU_FTR_HAS_PPR)
 
 	GET_SCRATCH0(r3)
 	mflr	r4
-<<<<<<< HEAD
-	std	r3, VCPU_GPR(r13)(r9)
-	std	r4, VCPU_LR(r9)
-
-	/* Unset guest mode */
-	li	r0, KVM_GUEST_MODE_NONE
-	stb	r0, HSTATE_IN_GUEST(r13)
-
-	stw	r12,VCPU_TRAP(r9)
-
-	/* Save HEIR (HV emulation assist reg) in last_inst
-	   if this is an HEI (HV emulation interrupt, e40) */
-	li	r3,KVM_INST_FETCH_FAILED
-BEGIN_FTR_SECTION
-	cmpwi	r12,BOOK3S_INTERRUPT_H_EMUL_ASSIST
-	bne	11f
-	mfspr	r3,SPRN_HEIR
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
-11:	stw	r3,VCPU_LAST_INST(r9)
-=======
 	std	r3, VCPU_GPR(R13)(r9)
 	std	r4, VCPU_LR(r9)
 
@@ -1626,23 +1076,11 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
 	bne	11f
 	mfspr	r3,SPRN_HEIR
 11:	std	r3,VCPU_HEIR(r9)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* these are volatile across C function calls */
 	mfctr	r3
 	mfxer	r4
 	std	r3, VCPU_CTR(r9)
-<<<<<<< HEAD
-	stw	r4, VCPU_XER(r9)
-
-BEGIN_FTR_SECTION
-	/* If this is a page table miss then see if it's theirs or ours */
-	cmpwi	r12, BOOK3S_INTERRUPT_H_DATA_STORAGE
-	beq	kvmppc_hdsi
-	cmpwi	r12, BOOK3S_INTERRUPT_H_INST_STORAGE
-	beq	kvmppc_hisi
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
-=======
 	std	r4, VCPU_XER(r9)
 
 	/* Save more register state  */
@@ -1658,71 +1096,20 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
 	stw	r4, VCPU_FAULT_DSISR(r9)
 	cmpwi	r12, BOOK3S_INTERRUPT_H_INST_STORAGE
 	beq	kvmppc_hisi
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* See if this is a leftover HDEC interrupt */
 	cmpwi	r12,BOOK3S_INTERRUPT_HV_DECREMENTER
 	bne	2f
 	mfspr	r3,SPRN_HDEC
-<<<<<<< HEAD
-	cmpwi	r3,0
-	bge	ignore_hdec
-=======
 	extsw	r3, r3
 	cmpdi	r3,0
 	mr	r4,r9
 	bge	fast_guest_return
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 2:
 	/* See if this is an hcall we can handle in real mode */
 	cmpwi	r12,BOOK3S_INTERRUPT_SYSCALL
 	beq	hcall_try_real_mode
 
-<<<<<<< HEAD
-	/* Check for mediated interrupts (could be done earlier really ...) */
-BEGIN_FTR_SECTION
-	cmpwi	r12,BOOK3S_INTERRUPT_EXTERNAL
-	bne+	1f
-	andi.	r0,r11,MSR_EE
-	beq	1f
-	mfspr	r5,SPRN_LPCR
-	andi.	r0,r5,LPCR_MER
-	bne	bounce_ext_interrupt
-1:
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
-
-nohpte_cont:
-hcall_real_cont:		/* r9 = vcpu, r12 = trap, r13 = paca */
-	/* Save DEC */
-	mfspr	r5,SPRN_DEC
-	mftb	r6
-	extsw	r5,r5
-	add	r5,r5,r6
-	std	r5,VCPU_DEC_EXPIRES(r9)
-
-	/* Save more register state  */
-	mfdar	r6
-	mfdsisr	r7
-	std	r6, VCPU_DAR(r9)
-	stw	r7, VCPU_DSISR(r9)
-BEGIN_FTR_SECTION
-	/* don't overwrite fault_dar/fault_dsisr if HDSI */
-	cmpwi	r12,BOOK3S_INTERRUPT_H_DATA_STORAGE
-	beq	6f
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
-	std	r6, VCPU_FAULT_DAR(r9)
-	stw	r7, VCPU_FAULT_DSISR(r9)
-
-	/* Save guest CTRL register, set runlatch to 1 */
-6:	mfspr	r6,SPRN_CTRLF
-	stw	r6,VCPU_CTRL(r9)
-	andi.	r0,r6,1
-	bne	4f
-	ori	r6,r6,1
-	mtspr	SPRN_CTRLT,r6
-4:
-	/* Read the guest SLB and save it away */
-=======
 	/* Hypervisor doorbell - exit only if host IPI flag set */
 	cmpwi	r12, BOOK3S_INTERRUPT_H_DOORBELL
 	bne	3f
@@ -1765,15 +1152,10 @@ guest_exit_cont:		/* r9 = vcpu, r12 = trap, r13 = paca */
 
 	/* For hash guest, read the guest SLB and save it away */
 	li	r5, 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwz	r0,VCPU_SLB_NR(r9)	/* number of entries in SLB */
 	mtctr	r0
 	li	r6,0
 	addi	r7,r9,VCPU_SLB
-<<<<<<< HEAD
-	li	r5,0
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	slbmfee	r8,r6
 	andis.	r0,r8,SLB_ESID_V@h
 	beq	2f
@@ -1785,14 +1167,6 @@ guest_exit_cont:		/* r9 = vcpu, r12 = trap, r13 = paca */
 	addi	r5,r5,1
 2:	addi	r6,r6,1
 	bdnz	1b
-<<<<<<< HEAD
-	stw	r5,VCPU_SLB_MAX(r9)
-
-	/*
-	 * Save the guest PURR/SPURR
-	 */
-BEGIN_FTR_SECTION
-=======
 	/* Finally clear out the SLB */
 	li	r0,0
 	slbmte	r0,r0
@@ -1848,7 +1222,6 @@ guest_bypass:
 	/*
 	 * Save the guest PURR/SPURR
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfspr	r5,SPRN_PURR
 	mfspr	r6,SPRN_SPURR
 	ld	r7,VCPU_PURR(r9)
@@ -1868,205 +1241,6 @@ guest_bypass:
 	add	r4,r4,r6
 	mtspr	SPRN_PURR,r3
 	mtspr	SPRN_SPURR,r4
-<<<<<<< HEAD
-END_FTR_SECTION_IFCLR(CPU_FTR_ARCH_201)
-
-	/* Clear out SLB */
-	li	r5,0
-	slbmte	r5,r5
-	slbia
-	ptesync
-
-hdec_soon:			/* r9 = vcpu, r12 = trap, r13 = paca */
-BEGIN_FTR_SECTION
-	b	32f
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
-	/*
-	 * POWER7 guest -> host partition switch code.
-	 * We don't have to lock against tlbies but we do
-	 * have to coordinate the hardware threads.
-	 */
-	/* Increment the threads-exiting-guest count in the 0xff00
-	   bits of vcore->entry_exit_count */
-	lwsync
-	ld	r5,HSTATE_KVM_VCORE(r13)
-	addi	r6,r5,VCORE_ENTRY_EXIT
-41:	lwarx	r3,0,r6
-	addi	r0,r3,0x100
-	stwcx.	r0,0,r6
-	bne	41b
-	lwsync
-
-	/*
-	 * At this point we have an interrupt that we have to pass
-	 * up to the kernel or qemu; we can't handle it in real mode.
-	 * Thus we have to do a partition switch, so we have to
-	 * collect the other threads, if we are the first thread
-	 * to take an interrupt.  To do this, we set the HDEC to 0,
-	 * which causes an HDEC interrupt in all threads within 2ns
-	 * because the HDEC register is shared between all 4 threads.
-	 * However, we don't need to bother if this is an HDEC
-	 * interrupt, since the other threads will already be on their
-	 * way here in that case.
-	 */
-	cmpwi	r3,0x100	/* Are we the first here? */
-	bge	43f
-	cmpwi	r3,1		/* Are any other threads in the guest? */
-	ble	43f
-	cmpwi	r12,BOOK3S_INTERRUPT_HV_DECREMENTER
-	beq	40f
-	li	r0,0
-	mtspr	SPRN_HDEC,r0
-40:
-	/*
-	 * Send an IPI to any napping threads, since an HDEC interrupt
-	 * doesn't wake CPUs up from nap.
-	 */
-	lwz	r3,VCORE_NAPPING_THREADS(r5)
-	lwz	r4,VCPU_PTID(r9)
-	li	r0,1
-	sld	r0,r0,r4
-	andc.	r3,r3,r0		/* no sense IPI'ing ourselves */
-	beq	43f
-	mulli	r4,r4,PACA_SIZE		/* get paca for thread 0 */
-	subf	r6,r4,r13
-42:	andi.	r0,r3,1
-	beq	44f
-	ld	r8,HSTATE_XICS_PHYS(r6)	/* get thread's XICS reg addr */
-	li	r0,IPI_PRIORITY
-	li	r7,XICS_QIRR
-	stbcix	r0,r7,r8		/* trigger the IPI */
-44:	srdi.	r3,r3,1
-	addi	r6,r6,PACA_SIZE
-	bne	42b
-
-	/* Secondary threads wait for primary to do partition switch */
-43:	ld	r4,VCPU_KVM(r9)		/* pointer to struct kvm */
-	ld	r5,HSTATE_KVM_VCORE(r13)
-	lwz	r3,VCPU_PTID(r9)
-	cmpwi	r3,0
-	beq	15f
-	HMT_LOW
-13:	lbz	r3,VCORE_IN_GUEST(r5)
-	cmpwi	r3,0
-	bne	13b
-	HMT_MEDIUM
-	b	16f
-
-	/* Primary thread waits for all the secondaries to exit guest */
-15:	lwz	r3,VCORE_ENTRY_EXIT(r5)
-	srwi	r0,r3,8
-	clrldi	r3,r3,56
-	cmpw	r3,r0
-	bne	15b
-	isync
-
-	/* Primary thread switches back to host partition */
-	ld	r6,KVM_HOST_SDR1(r4)
-	lwz	r7,KVM_HOST_LPID(r4)
-	li	r8,LPID_RSVD		/* switch to reserved LPID */
-	mtspr	SPRN_LPID,r8
-	ptesync
-	mtspr	SPRN_SDR1,r6		/* switch to partition page table */
-	mtspr	SPRN_LPID,r7
-	isync
-	li	r0,0
-	stb	r0,VCORE_IN_GUEST(r5)
-	lis	r8,0x7fff		/* MAX_INT@h */
-	mtspr	SPRN_HDEC,r8
-
-16:	ld	r8,KVM_HOST_LPCR(r4)
-	mtspr	SPRN_LPCR,r8
-	isync
-	b	33f
-
-	/*
-	 * PPC970 guest -> host partition switch code.
-	 * We have to lock against concurrent tlbies, and
-	 * we have to flush the whole TLB.
-	 */
-32:	ld	r4,VCPU_KVM(r9)		/* pointer to struct kvm */
-
-	/* Take the guest's tlbie_lock */
-	lwz	r8,PACA_LOCK_TOKEN(r13)
-	addi	r3,r4,KVM_TLBIE_LOCK
-24:	lwarx	r0,0,r3
-	cmpwi	r0,0
-	bne	24b
-	stwcx.	r8,0,r3
-	bne	24b
-	isync
-
-	ld	r7,KVM_HOST_LPCR(r4)	/* use kvm->arch.host_lpcr for HID4 */
-	li	r0,0x18f
-	rotldi	r0,r0,HID4_LPID5_SH	/* all lpid bits in HID4 = 1 */
-	or	r0,r7,r0
-	ptesync
-	sync
-	mtspr	SPRN_HID4,r0		/* switch to reserved LPID */
-	isync
-	li	r0,0
-	stw	r0,0(r3)		/* drop guest tlbie_lock */
-
-	/* invalidate the whole TLB */
-	li	r0,256
-	mtctr	r0
-	li	r6,0
-25:	tlbiel	r6
-	addi	r6,r6,0x1000
-	bdnz	25b
-	ptesync
-
-	/* take native_tlbie_lock */
-	ld	r3,toc_tlbie_lock@toc(2)
-24:	lwarx	r0,0,r3
-	cmpwi	r0,0
-	bne	24b
-	stwcx.	r8,0,r3
-	bne	24b
-	isync
-
-	ld	r6,KVM_HOST_SDR1(r4)
-	mtspr	SPRN_SDR1,r6		/* switch to host page table */
-
-	/* Set up host HID4 value */
-	sync
-	mtspr	SPRN_HID4,r7
-	isync
-	li	r0,0
-	stw	r0,0(r3)		/* drop native_tlbie_lock */
-
-	lis	r8,0x7fff		/* MAX_INT@h */
-	mtspr	SPRN_HDEC,r8
-
-	/* Disable HDEC interrupts */
-	mfspr	r0,SPRN_HID0
-	li	r3,0
-	rldimi	r0,r3, HID0_HDICE_SH, 64-HID0_HDICE_SH-1
-	sync
-	mtspr	SPRN_HID0,r0
-	mfspr	r0,SPRN_HID0
-	mfspr	r0,SPRN_HID0
-	mfspr	r0,SPRN_HID0
-	mfspr	r0,SPRN_HID0
-	mfspr	r0,SPRN_HID0
-	mfspr	r0,SPRN_HID0
-
-	/* load host SLB entries */
-33:	ld	r8,PACA_SLBSHADOWPTR(r13)
-
-	.rept	SLB_NUM_BOLTED
-	ld	r5,SLBSHADOW_SAVEAREA(r8)
-	ld	r6,SLBSHADOW_SAVEAREA+8(r8)
-	andis.	r7,r5,SLB_ESID_V@h
-	beq	1f
-	slbmte	r6,r5
-1:	addi	r8,r8,16
-	.endr
-
-	/* Save and reset AMR and UAMOR before turning on the MMU */
-BEGIN_FTR_SECTION
-=======
 
 BEGIN_FTR_SECTION
 	b	8f
@@ -2122,59 +1296,20 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
 	mtspr	SPRN_IAMR, r8
 
 8:	/* Power7 jumps back in here */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfspr	r5,SPRN_AMR
 	mfspr	r6,SPRN_UAMOR
 	std	r5,VCPU_AMR(r9)
 	std	r6,VCPU_UAMOR(r9)
-<<<<<<< HEAD
-	li	r6,0
-	mtspr	SPRN_AMR,r6
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
-
-	/* Restore host DABR and DABRX */
-	ld	r5,HSTATE_DABR(r13)
-	li	r6,7
-	mtspr	SPRN_DABR,r5
-	mtspr	SPRN_DABRX,r6
-
-	/* Switch DSCR back to host value */
-BEGIN_FTR_SECTION
-=======
 	ld	r5,STACK_SLOT_AMR(r1)
 	ld	r6,STACK_SLOT_UAMOR(r1)
 	mtspr	SPRN_AMR, r5
 	mtspr	SPRN_UAMOR, r6
 
 	/* Switch DSCR back to host value */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfspr	r8, SPRN_DSCR
 	ld	r7, HSTATE_DSCR(r13)
 	std	r8, VCPU_DSCR(r9)
 	mtspr	SPRN_DSCR, r7
-<<<<<<< HEAD
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
-
-	/* Save non-volatile GPRs */
-	std	r14, VCPU_GPR(r14)(r9)
-	std	r15, VCPU_GPR(r15)(r9)
-	std	r16, VCPU_GPR(r16)(r9)
-	std	r17, VCPU_GPR(r17)(r9)
-	std	r18, VCPU_GPR(r18)(r9)
-	std	r19, VCPU_GPR(r19)(r9)
-	std	r20, VCPU_GPR(r20)(r9)
-	std	r21, VCPU_GPR(r21)(r9)
-	std	r22, VCPU_GPR(r22)(r9)
-	std	r23, VCPU_GPR(r23)(r9)
-	std	r24, VCPU_GPR(r24)(r9)
-	std	r25, VCPU_GPR(r25)(r9)
-	std	r26, VCPU_GPR(r26)(r9)
-	std	r27, VCPU_GPR(r27)(r9)
-	std	r28, VCPU_GPR(r28)(r9)
-	std	r29, VCPU_GPR(r29)(r9)
-	std	r30, VCPU_GPR(r30)(r9)
-	std	r31, VCPU_GPR(r31)(r9)
-=======
 
 	/* Save non-volatile GPRs */
 	std	r14, VCPU_GPR(R14)(r9)
@@ -2195,7 +1330,6 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
 	std	r29, VCPU_GPR(R29)(r9)
 	std	r30, VCPU_GPR(R30)(r9)
 	std	r31, VCPU_GPR(R31)(r9)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Save SPRGs */
 	mfspr	r3, SPRN_SPRG0
@@ -2207,8 +1341,6 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
 	std	r5, VCPU_SPRG2(r9)
 	std	r6, VCPU_SPRG3(r9)
 
-<<<<<<< HEAD
-=======
 	/* save FP state */
 	mr	r3, r9
 	bl	kvmppc_save_fp
@@ -2229,143 +1361,10 @@ END_FTR_SECTION_IFCLR(CPU_FTR_TM)
 91:
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Increment yield count if they have a VPA */
 	ld	r8, VCPU_VPA(r9)	/* do they have a VPA? */
 	cmpdi	r8, 0
 	beq	25f
-<<<<<<< HEAD
-	lwz	r3, LPPACA_YIELDCOUNT(r8)
-	addi	r3, r3, 1
-	stw	r3, LPPACA_YIELDCOUNT(r8)
-25:
-	/* Save PMU registers if requested */
-	/* r8 and cr0.eq are live here */
-	li	r3, 1
-	sldi	r3, r3, 31		/* MMCR0_FC (freeze counters) bit */
-	mfspr	r4, SPRN_MMCR0		/* save MMCR0 */
-	mtspr	SPRN_MMCR0, r3		/* freeze all counters, disable ints */
-	isync
-	beq	21f			/* if no VPA, save PMU stuff anyway */
-	lbz	r7, LPPACA_PMCINUSE(r8)
-	cmpwi	r7, 0			/* did they ask for PMU stuff to be saved? */
-	bne	21f
-	std	r3, VCPU_MMCR(r9)	/* if not, set saved MMCR0 to FC */
-	b	22f
-21:	mfspr	r5, SPRN_MMCR1
-	mfspr	r6, SPRN_MMCRA
-	std	r4, VCPU_MMCR(r9)
-	std	r5, VCPU_MMCR + 8(r9)
-	std	r6, VCPU_MMCR + 16(r9)
-	mfspr	r3, SPRN_PMC1
-	mfspr	r4, SPRN_PMC2
-	mfspr	r5, SPRN_PMC3
-	mfspr	r6, SPRN_PMC4
-	mfspr	r7, SPRN_PMC5
-	mfspr	r8, SPRN_PMC6
-BEGIN_FTR_SECTION
-	mfspr	r10, SPRN_PMC7
-	mfspr	r11, SPRN_PMC8
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
-	stw	r3, VCPU_PMC(r9)
-	stw	r4, VCPU_PMC + 4(r9)
-	stw	r5, VCPU_PMC + 8(r9)
-	stw	r6, VCPU_PMC + 12(r9)
-	stw	r7, VCPU_PMC + 16(r9)
-	stw	r8, VCPU_PMC + 20(r9)
-BEGIN_FTR_SECTION
-	stw	r10, VCPU_PMC + 24(r9)
-	stw	r11, VCPU_PMC + 28(r9)
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
-22:
-	/* save FP state */
-	mr	r3, r9
-	bl	.kvmppc_save_fp
-
-	/* Secondary threads go off to take a nap on POWER7 */
-BEGIN_FTR_SECTION
-	lwz	r0,VCPU_PTID(r3)
-	cmpwi	r0,0
-	bne	secondary_nap
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
-
-	/*
-	 * Reload DEC.  HDEC interrupts were disabled when
-	 * we reloaded the host's LPCR value.
-	 */
-	ld	r3, HSTATE_DECEXP(r13)
-	mftb	r4
-	subf	r4, r4, r3
-	mtspr	SPRN_DEC, r4
-
-	/* Reload the host's PMU registers */
-	ld	r3, PACALPPACAPTR(r13)	/* is the host using the PMU? */
-	lbz	r4, LPPACA_PMCINUSE(r3)
-	cmpwi	r4, 0
-	beq	23f			/* skip if not */
-	lwz	r3, HSTATE_PMC(r13)
-	lwz	r4, HSTATE_PMC + 4(r13)
-	lwz	r5, HSTATE_PMC + 8(r13)
-	lwz	r6, HSTATE_PMC + 12(r13)
-	lwz	r8, HSTATE_PMC + 16(r13)
-	lwz	r9, HSTATE_PMC + 20(r13)
-BEGIN_FTR_SECTION
-	lwz	r10, HSTATE_PMC + 24(r13)
-	lwz	r11, HSTATE_PMC + 28(r13)
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
-	mtspr	SPRN_PMC1, r3
-	mtspr	SPRN_PMC2, r4
-	mtspr	SPRN_PMC3, r5
-	mtspr	SPRN_PMC4, r6
-	mtspr	SPRN_PMC5, r8
-	mtspr	SPRN_PMC6, r9
-BEGIN_FTR_SECTION
-	mtspr	SPRN_PMC7, r10
-	mtspr	SPRN_PMC8, r11
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
-	ld	r3, HSTATE_MMCR(r13)
-	ld	r4, HSTATE_MMCR + 8(r13)
-	ld	r5, HSTATE_MMCR + 16(r13)
-	mtspr	SPRN_MMCR1, r4
-	mtspr	SPRN_MMCRA, r5
-	mtspr	SPRN_MMCR0, r3
-	isync
-23:
-	/*
-	 * For external and machine check interrupts, we need
-	 * to call the Linux handler to process the interrupt.
-	 * We do that by jumping to the interrupt vector address
-	 * which we have in r12.  The [h]rfid at the end of the
-	 * handler will return to the book3s_hv_interrupts.S code.
-	 * For other interrupts we do the rfid to get back
-	 * to the book3s_interrupts.S code here.
-	 */
-	ld	r8, HSTATE_VMHANDLER(r13)
-	ld	r7, HSTATE_HOST_MSR(r13)
-
-	cmpwi	r12, BOOK3S_INTERRUPT_EXTERNAL
-	beq	11f
-	cmpwi	r12, BOOK3S_INTERRUPT_MACHINE_CHECK
-
-	/* RFI into the highmem handler, or branch to interrupt handler */
-12:	mfmsr	r6
-	mtctr	r12
-	li	r0, MSR_RI
-	andc	r6, r6, r0
-	mtmsrd	r6, 1			/* Clear RI in MSR */
-	mtsrr0	r8
-	mtsrr1	r7
-	beqctr
-	RFI
-
-11:
-BEGIN_FTR_SECTION
-	b	12b
-END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
-	mtspr	SPRN_HSRR0, r8
-	mtspr	SPRN_HSRR1, r7
-	ba	0x500
-=======
 	li	r4, LPPACA_YIELDCOUNT
 	LWZX_BE	r3, r8, r4
 	addi	r3, r3, 1
@@ -2601,7 +1600,6 @@ maybe_reenter_guest:
 	mr	r4, r9
 	blt	deliver_guest_interrupt
 	b	guest_exit_cont
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Check whether an HDSI is an HPTE not found fault or something else.
@@ -2619,25 +1617,16 @@ kvmppc_hdsi:
 	andi.	r0, r11, MSR_DR		/* data relocation enabled? */
 	beq	3f
 	clrrdi	r0, r4, 28
-<<<<<<< HEAD
-	PPC_SLBFEE_DOT(r5, r0)		/* if so, look up SLB */
-	bne	1f			/* if no SLB entry found */
-=======
 	PPC_SLBFEE_DOT(R5, R0)		/* if so, look up SLB */
 	li	r0, BOOK3S_INTERRUPT_DATA_SEGMENT
 	bne	7f			/* if no SLB entry found */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 4:	std	r4, VCPU_FAULT_DAR(r9)
 	stw	r6, VCPU_FAULT_DSISR(r9)
 
 	/* Search the hash table. */
 	mr	r3, r9			/* vcpu pointer */
 	li	r7, 1			/* data fault */
-<<<<<<< HEAD
-	bl	.kvmppc_hpte_hv_fault
-=======
 	bl	CFUNC(kvmppc_hpte_hv_fault)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ld	r9, HSTATE_KVM_VCPU(r13)
 	ld	r10, VCPU_PC(r9)
 	ld	r11, VCPU_MSR(r9)
@@ -2645,24 +1634,6 @@ kvmppc_hdsi:
 	cmpdi	r3, 0			/* retry the instruction */
 	beq	6f
 	cmpdi	r3, -1			/* handle in kernel mode */
-<<<<<<< HEAD
-	beq	nohpte_cont
-	cmpdi	r3, -2			/* MMIO emulation; need instr word */
-	beq	2f
-
-	/* Synthesize a DSI for the guest */
-	ld	r4, VCPU_FAULT_DAR(r9)
-	mr	r6, r3
-1:	mtspr	SPRN_DAR, r4
-	mtspr	SPRN_DSISR, r6
-	mtspr	SPRN_SRR0, r10
-	mtspr	SPRN_SRR1, r11
-	li	r10, BOOK3S_INTERRUPT_DATA_STORAGE
-	li	r11, (MSR_ME << 1) | 1	/* synthesize MSR_SF | MSR_ME */
-	rotldi	r11, r11, 63
-6:	ld	r7, VCPU_CTR(r9)
-	lwz	r8, VCPU_XER(r9)
-=======
 	beq	guest_exit_cont
 	cmpdi	r3, -2			/* MMIO emulation; need instr word */
 	beq	2f
@@ -2680,7 +1651,6 @@ kvmppc_hdsi:
 fast_interrupt_c_return:
 6:	ld	r7, VCPU_CTR(r9)
 	ld	r8, VCPU_XER(r9)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtctr	r7
 	mtxer	r8
 	mr	r4, r9
@@ -2706,21 +1676,12 @@ fast_interrupt_c_return:
 	mtmsrd	r3
 
 	/* Store the result */
-<<<<<<< HEAD
-	stw	r8, VCPU_LAST_INST(r9)
-
-	/* Unset guest mode. */
-	li	r0, KVM_GUEST_MODE_NONE
-	stb	r0, HSTATE_IN_GUEST(r13)
-	b	nohpte_cont
-=======
 	std	r8, VCPU_LAST_INST(r9)
 
 	/* Unset guest mode. */
 	li	r0, KVM_GUEST_MODE_HOST_HV
 	stb	r0, HSTATE_IN_GUEST(r13)
 	b	guest_exit_cont
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Similarly for an HISI, reflect it to the guest as an ISI unless
@@ -2732,49 +1693,21 @@ kvmppc_hisi:
 	andi.	r0, r11, MSR_IR		/* instruction relocation enabled? */
 	beq	3f
 	clrrdi	r0, r10, 28
-<<<<<<< HEAD
-	PPC_SLBFEE_DOT(r5, r0)		/* if so, look up SLB */
-	bne	1f			/* if no SLB entry found */
-=======
 	PPC_SLBFEE_DOT(R5, R0)		/* if so, look up SLB */
 	li	r0, BOOK3S_INTERRUPT_INST_SEGMENT
 	bne	7f			/* if no SLB entry found */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 4:
 	/* Search the hash table. */
 	mr	r3, r9			/* vcpu pointer */
 	mr	r4, r10
 	mr	r6, r11
 	li	r7, 0			/* instruction fault */
-<<<<<<< HEAD
-	bl	.kvmppc_hpte_hv_fault
-=======
 	bl	CFUNC(kvmppc_hpte_hv_fault)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ld	r9, HSTATE_KVM_VCPU(r13)
 	ld	r10, VCPU_PC(r9)
 	ld	r11, VCPU_MSR(r9)
 	li	r12, BOOK3S_INTERRUPT_H_INST_STORAGE
 	cmpdi	r3, 0			/* retry the instruction */
-<<<<<<< HEAD
-	beq	6f
-	cmpdi	r3, -1			/* handle in kernel mode */
-	beq	nohpte_cont
-
-	/* Synthesize an ISI for the guest */
-	mr	r11, r3
-1:	mtspr	SPRN_SRR0, r10
-	mtspr	SPRN_SRR1, r11
-	li	r10, BOOK3S_INTERRUPT_INST_STORAGE
-	li	r11, (MSR_ME << 1) | 1	/* synthesize MSR_SF | MSR_ME */
-	rotldi	r11, r11, 63
-6:	ld	r7, VCPU_CTR(r9)
-	lwz	r8, VCPU_XER(r9)
-	mtctr	r7
-	mtxer	r8
-	mr	r4, r9
-	b	fast_guest_return
-=======
 	beq	fast_interrupt_c_return
 	cmpdi	r3, -1			/* handle in kernel mode */
 	beq	guest_exit_cont
@@ -2787,7 +1720,6 @@ kvmppc_hisi:
 	mr	r10, r0
 	bl	kvmppc_msr_interrupt
 	b	fast_interrupt_c_return
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 3:	ld	r6, VCPU_KVM(r9)	/* not relocated, use VRMA */
 	ld	r5, KVM_VRMA_SLB_V(r6)
@@ -2798,25 +1730,6 @@ kvmppc_hisi:
  * Returns to the guest if we handle it, or continues on up to
  * the kernel if we can't (i.e. if we don't have a handler for
  * it, or if the handler returns H_TOO_HARD).
-<<<<<<< HEAD
- */
-	.globl	hcall_try_real_mode
-hcall_try_real_mode:
-	ld	r3,VCPU_GPR(r3)(r9)
-	andi.	r0,r11,MSR_PR
-	bne	hcall_real_cont
-	clrrdi	r3,r3,2
-	cmpldi	r3,hcall_real_table_end - hcall_real_table
-	bge	hcall_real_cont
-	LOAD_REG_ADDR(r4, hcall_real_table)
-	lwzx	r3,r3,r4
-	cmpwi	r3,0
-	beq	hcall_real_cont
-	add	r3,r3,r4
-	mtctr	r3
-	mr	r3,r9		/* get vcpu pointer */
-	ld	r4,VCPU_GPR(r4)(r9)
-=======
  *
  * r5 - r8 contain hcall args,
  * r9 = vcpu, r10 = pc, r11 = msr, r12 = trap, r13 = paca
@@ -2848,22 +1761,15 @@ hcall_try_real_mode:
 	mtctr	r12
 	mr	r3,r9		/* get vcpu pointer */
 	ld	r4,VCPU_GPR(R4)(r9)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bctrl
 	cmpdi	r3,H_TOO_HARD
 	beq	hcall_real_fallback
 	ld	r4,HSTATE_KVM_VCPU(r13)
-<<<<<<< HEAD
-	std	r3,VCPU_GPR(r3)(r4)
-=======
 	std	r3,VCPU_GPR(R3)(r4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ld	r10,VCPU_PC(r4)
 	ld	r11,VCPU_MSR(r4)
 	b	fast_guest_return
 
-<<<<<<< HEAD
-=======
 sc_1_fast_return:
 	mtspr	SPRN_SRR0,r10
 	mtspr	SPRN_SRR1,r11
@@ -2872,7 +1778,6 @@ sc_1_fast_return:
 	mr	r4,r9
 	b	fast_guest_return
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We've attempted a real mode hcall, but it's punted it back
 	 * to userspace.  We need to restore some clobbered volatiles
 	 * before resuming the pass-it-to-qemu path */
@@ -2880,28 +1785,11 @@ hcall_real_fallback:
 	li	r12,BOOK3S_INTERRUPT_SYSCALL
 	ld	r9, HSTATE_KVM_VCPU(r13)
 
-<<<<<<< HEAD
-	b	hcall_real_cont
-=======
 	b	guest_exit_cont
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.globl	hcall_real_table
 hcall_real_table:
 	.long	0		/* 0 - unused */
-<<<<<<< HEAD
-	.long	.kvmppc_h_remove - hcall_real_table
-	.long	.kvmppc_h_enter - hcall_real_table
-	.long	.kvmppc_h_read - hcall_real_table
-	.long	0		/* 0x10 - H_CLEAR_MOD */
-	.long	0		/* 0x14 - H_CLEAR_REF */
-	.long	.kvmppc_h_protect - hcall_real_table
-	.long	0		/* 0x1c - H_GET_TCE */
-	.long	.kvmppc_h_put_tce - hcall_real_table
-	.long	0		/* 0x24 - H_SET_SPRG0 */
-	.long	.kvmppc_h_set_dabr - hcall_real_table
-	.long	0		/* 0x2c */
-=======
 	.long	DOTSYM(kvmppc_h_remove) - hcall_real_table
 	.long	DOTSYM(kvmppc_h_enter) - hcall_real_table
 	.long	DOTSYM(kvmppc_h_read) - hcall_real_table
@@ -2913,7 +1801,6 @@ hcall_real_table:
 	.long	0		/* 0x24 - H_SET_SPRG0 */
 	.long	DOTSYM(kvmppc_h_set_dabr) - hcall_real_table
 	.long	DOTSYM(kvmppc_rm_h_page_init) - hcall_real_table
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	0		/* 0x30 */
 	.long	0		/* 0x34 */
 	.long	0		/* 0x38 */
@@ -2927,13 +1814,6 @@ hcall_real_table:
 	.long	0		/* 0x58 */
 	.long	0		/* 0x5c */
 	.long	0		/* 0x60 */
-<<<<<<< HEAD
-	.long	0		/* 0x64 */
-	.long	0		/* 0x68 */
-	.long	0		/* 0x6c */
-	.long	0		/* 0x70 */
-	.long	0		/* 0x74 */
-=======
 #ifdef CONFIG_KVM_XICS
 	.long	DOTSYM(xics_rm_h_eoi) - hcall_real_table
 	.long	DOTSYM(xics_rm_h_cppr) - hcall_real_table
@@ -2947,7 +1827,6 @@ hcall_real_table:
 	.long	0		/* 0x70 - H_IPOLL */
 	.long	0		/* 0x74 - H_XIRR */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	0		/* 0x78 */
 	.long	0		/* 0x7c */
 	.long	0		/* 0x80 */
@@ -2974,13 +1853,8 @@ hcall_real_table:
 	.long	0		/* 0xd4 */
 	.long	0		/* 0xd8 */
 	.long	0		/* 0xdc */
-<<<<<<< HEAD
-	.long	.kvmppc_h_cede - hcall_real_table
-	.long	0		/* 0xe4 */
-=======
 	.long	DOTSYM(kvmppc_h_cede) - hcall_real_table
 	.long	DOTSYM(kvmppc_rm_h_confer) - hcall_real_table
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	0		/* 0xe8 */
 	.long	0		/* 0xec */
 	.long	0		/* 0xf0 */
@@ -2996,31 +1870,6 @@ hcall_real_table:
 	.long	0		/* 0x118 */
 	.long	0		/* 0x11c */
 	.long	0		/* 0x120 */
-<<<<<<< HEAD
-	.long	.kvmppc_h_bulk_remove - hcall_real_table
-hcall_real_table_end:
-
-ignore_hdec:
-	mr	r4,r9
-	b	fast_guest_return
-
-bounce_ext_interrupt:
-	mr	r4,r9
-	mtspr	SPRN_SRR0,r10
-	mtspr	SPRN_SRR1,r11
-	li	r10,BOOK3S_INTERRUPT_EXTERNAL
-	li	r11,(MSR_ME << 1) | 1	/* synthesize MSR_SF | MSR_ME */
-	rotldi	r11,r11,63
-	b	fast_guest_return
-
-_GLOBAL(kvmppc_h_set_dabr)
-	std	r4,VCPU_DABR(r3)
-	mtspr	SPRN_DABR,r4
-	li	r3,0
-	blr
-
-_GLOBAL(kvmppc_h_cede)
-=======
 	.long	DOTSYM(kvmppc_h_bulk_remove) - hcall_real_table
 	.long	0		/* 0x128 */
 	.long	0		/* 0x12c */
@@ -3206,7 +2055,6 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
 	blr
 
 _GLOBAL(kvmppc_h_cede)		/* r3 = vcpu pointer, r11 = msr, r13 = paca */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ori	r11,r11,MSR_EE
 	std	r11,VCPU_MSR(r3)
 	li	r0,1
@@ -3214,22 +2062,11 @@ _GLOBAL(kvmppc_h_cede)		/* r3 = vcpu pointer, r11 = msr, r13 = paca */
 	sync			/* order setting ceded vs. testing prodded */
 	lbz	r5,VCPU_PRODDED(r3)
 	cmpwi	r5,0
-<<<<<<< HEAD
-	bne	1f
-	li	r0,0		/* set trap to 0 to say hcall is handled */
-	stw	r0,VCPU_TRAP(r3)
-	li	r0,H_SUCCESS
-	std	r0,VCPU_GPR(r3)(r3)
-BEGIN_FTR_SECTION
-	b	2f		/* just send it up to host on 970 */
-END_FTR_SECTION_IFCLR(CPU_FTR_ARCH_206)
-=======
 	bne	kvm_cede_prodded
 	li	r12,0		/* set trap to 0 to say hcall is handled */
 	stw	r12,VCPU_TRAP(r3)
 	li	r0,H_SUCCESS
 	std	r0,VCPU_GPR(R3)(r3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Set our bit in the bitmask of napping threads unless all the
@@ -3237,11 +2074,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_ARCH_206)
 	 * up to the host.
 	 */
 	ld	r5,HSTATE_KVM_VCORE(r13)
-<<<<<<< HEAD
-	lwz	r6,VCPU_PTID(r3)
-=======
 	lbz	r6,HSTATE_PTID(r13)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwz	r8,VCORE_ENTRY_EXIT(r5)
 	clrldi	r8,r8,56
 	li	r0,1
@@ -3249,18 +2082,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_ARCH_206)
 	addi	r6,r5,VCORE_NAPPING_THREADS
 31:	lwarx	r4,0,r6
 	or	r4,r4,r0
-<<<<<<< HEAD
-	PPC_POPCNTW(r7,r4)
-	cmpw	r7,r8
-	bge	2f
-	stwcx.	r4,0,r6
-	bne	31b
-	li	r0,1
-	stb	r0,HSTATE_NAPPING(r13)
-	/* order napping_threads update vs testing entry_exit_count */
-	lwsync
-	mr	r4,r3
-=======
 	cmpw	r4,r8
 	beq	kvm_cede_exit
 	stwcx.	r4,0,r6
@@ -3269,7 +2090,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_ARCH_206)
 	isync
 	li	r0,NAPPING_CEDE
 	stb	r0,HSTATE_NAPPING(r13)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwz	r7,VCORE_ENTRY_EXIT(r5)
 	cmpwi	r7,0x100
 	bge	33f		/* another thread already exiting */
@@ -3281,100 +2101,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_ARCH_206)
  * DAR, DSISR, DABR, DABRX, DSCR, PMCx, MMCRx, SIAR, SDAR.
  */
 	/* Save non-volatile GPRs */
-<<<<<<< HEAD
-	std	r14, VCPU_GPR(r14)(r3)
-	std	r15, VCPU_GPR(r15)(r3)
-	std	r16, VCPU_GPR(r16)(r3)
-	std	r17, VCPU_GPR(r17)(r3)
-	std	r18, VCPU_GPR(r18)(r3)
-	std	r19, VCPU_GPR(r19)(r3)
-	std	r20, VCPU_GPR(r20)(r3)
-	std	r21, VCPU_GPR(r21)(r3)
-	std	r22, VCPU_GPR(r22)(r3)
-	std	r23, VCPU_GPR(r23)(r3)
-	std	r24, VCPU_GPR(r24)(r3)
-	std	r25, VCPU_GPR(r25)(r3)
-	std	r26, VCPU_GPR(r26)(r3)
-	std	r27, VCPU_GPR(r27)(r3)
-	std	r28, VCPU_GPR(r28)(r3)
-	std	r29, VCPU_GPR(r29)(r3)
-	std	r30, VCPU_GPR(r30)(r3)
-	std	r31, VCPU_GPR(r31)(r3)
-
-	/* save FP state */
-	bl	.kvmppc_save_fp
-
-	/*
-	 * Take a nap until a decrementer or external interrupt occurs,
-	 * with PECE1 (wake on decr) and PECE0 (wake on external) set in LPCR
-	 */
-	li	r0,0x80
-	stb	r0,PACAPROCSTART(r13)
-	mfspr	r5,SPRN_LPCR
-	ori	r5,r5,LPCR_PECE0 | LPCR_PECE1
-	mtspr	SPRN_LPCR,r5
-	isync
-	li	r0, 0
-	std	r0, HSTATE_SCRATCH0(r13)
-	ptesync
-	ld	r0, HSTATE_SCRATCH0(r13)
-1:	cmpd	r0, r0
-	bne	1b
-	nap
-	b	.
-
-kvm_end_cede:
-	/* Woken by external or decrementer interrupt */
-	ld	r1, HSTATE_HOST_R1(r13)
-	ld	r2, PACATOC(r13)
-
-	/* If we're a secondary thread and we got here by an IPI, ack it */
-	ld	r4,HSTATE_KVM_VCPU(r13)
-	lwz	r3,VCPU_PTID(r4)
-	cmpwi	r3,0
-	beq	27f
-	mfspr	r3,SPRN_SRR1
-	rlwinm	r3,r3,44-31,0x7		/* extract wake reason field */
-	cmpwi	r3,4			/* was it an external interrupt? */
-	bne	27f
-	ld	r5, HSTATE_XICS_PHYS(r13)
-	li	r0,0xff
-	li	r6,XICS_QIRR
-	li	r7,XICS_XIRR
-	lwzcix	r8,r5,r7		/* ack the interrupt */
-	sync
-	stbcix	r0,r5,r6		/* clear it */
-	stwcix	r8,r5,r7		/* EOI it */
-27:
-	/* load up FP state */
-	bl	kvmppc_load_fp
-
-	/* Load NV GPRS */
-	ld	r14, VCPU_GPR(r14)(r4)
-	ld	r15, VCPU_GPR(r15)(r4)
-	ld	r16, VCPU_GPR(r16)(r4)
-	ld	r17, VCPU_GPR(r17)(r4)
-	ld	r18, VCPU_GPR(r18)(r4)
-	ld	r19, VCPU_GPR(r19)(r4)
-	ld	r20, VCPU_GPR(r20)(r4)
-	ld	r21, VCPU_GPR(r21)(r4)
-	ld	r22, VCPU_GPR(r22)(r4)
-	ld	r23, VCPU_GPR(r23)(r4)
-	ld	r24, VCPU_GPR(r24)(r4)
-	ld	r25, VCPU_GPR(r25)(r4)
-	ld	r26, VCPU_GPR(r26)(r4)
-	ld	r27, VCPU_GPR(r27)(r4)
-	ld	r28, VCPU_GPR(r28)(r4)
-	ld	r29, VCPU_GPR(r29)(r4)
-	ld	r30, VCPU_GPR(r30)(r4)
-	ld	r31, VCPU_GPR(r31)(r4)
-
-	/* clear our bit in vcore->napping_threads */
-33:	ld	r5,HSTATE_KVM_VCORE(r13)
-	lwz	r3,VCPU_PTID(r4)
-	li	r0,1
-	sld	r0,r0,r3
-=======
 	std	r14, VCPU_GPR(R14)(r3)
 	std	r15, VCPU_GPR(R15)(r3)
 	std	r16, VCPU_GPR(R16)(r3)
@@ -3567,7 +2293,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_TM)
 	lbz	r7,HSTATE_PTID(r13)
 	li	r0,1
 	sld	r0,r0,r7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	r6,r5,VCORE_NAPPING_THREADS
 32:	lwarx	r7,0,r6
 	andc	r7,r7,r0
@@ -3576,18 +2301,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_TM)
 	li	r0,0
 	stb	r0,HSTATE_NAPPING(r13)
 
-<<<<<<< HEAD
-	/* see if any other thread is already exiting */
-	lwz	r0,VCORE_ENTRY_EXIT(r5)
-	cmpwi	r0,0x100
-	blt	kvmppc_cede_reentry	/* if not go back to guest */
-
-	/* some threads are exiting, so go to the guest exit path */
-	b	hcall_real_fallback
-
-	/* cede when already previously prodded case */
-1:	li	r0,0
-=======
 	/* See if the wake reason saved in r3 means we need to exit */
 	stw	r12, VCPU_TRAP(r4)
 	mr	r9, r4
@@ -3598,7 +2311,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_TM)
 	/* cede when already previously prodded case */
 kvm_cede_prodded:
 	li	r0,0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stb	r0,VCPU_PRODDED(r3)
 	sync			/* order testing prodded vs. clearing ceded */
 	stb	r0,VCPU_CEDED(r3)
@@ -3606,65 +2318,6 @@ kvm_cede_prodded:
 	blr
 
 	/* we've ceded but we want to give control to the host */
-<<<<<<< HEAD
-2:	li	r3,H_TOO_HARD
-	blr
-
-secondary_too_late:
-	ld	r5,HSTATE_KVM_VCORE(r13)
-	HMT_LOW
-13:	lbz	r3,VCORE_IN_GUEST(r5)
-	cmpwi	r3,0
-	bne	13b
-	HMT_MEDIUM
-	ld	r11,PACA_SLBSHADOWPTR(r13)
-
-	.rept	SLB_NUM_BOLTED
-	ld	r5,SLBSHADOW_SAVEAREA(r11)
-	ld	r6,SLBSHADOW_SAVEAREA+8(r11)
-	andis.	r7,r5,SLB_ESID_V@h
-	beq	1f
-	slbmte	r6,r5
-1:	addi	r11,r11,16
-	.endr
-
-secondary_nap:
-	/* Clear any pending IPI - assume we're a secondary thread */
-	ld	r5, HSTATE_XICS_PHYS(r13)
-	li	r7, XICS_XIRR
-	lwzcix	r3, r5, r7		/* ack any pending interrupt */
-	rlwinm.	r0, r3, 0, 0xffffff	/* any pending? */
-	beq	37f
-	sync
-	li	r0, 0xff
-	li	r6, XICS_QIRR
-	stbcix	r0, r5, r6		/* clear the IPI */
-	stwcix	r3, r5, r7		/* EOI it */
-37:	sync
-
-	/* increment the nap count and then go to nap mode */
-	ld	r4, HSTATE_KVM_VCORE(r13)
-	addi	r4, r4, VCORE_NAP_COUNT
-	lwsync				/* make previous updates visible */
-51:	lwarx	r3, 0, r4
-	addi	r3, r3, 1
-	stwcx.	r3, 0, r4
-	bne	51b
-
-	li	r3, LPCR_PECE0
-	mfspr	r4, SPRN_LPCR
-	rlwimi	r4, r3, 0, LPCR_PECE0 | LPCR_PECE1
-	mtspr	SPRN_LPCR, r4
-	isync
-	li	r0, 0
-	std	r0, HSTATE_SCRATCH0(r13)
-	ptesync
-	ld	r0, HSTATE_SCRATCH0(r13)
-1:	cmpd	r0, r0
-	bne	1b
-	nap
-	b	.
-=======
 kvm_cede_exit:
 	ld	r9, HSTATE_KVM_VCPU(r13)
 	b	guest_exit_cont
@@ -3779,17 +2432,10 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
 	mtlr	r0
 	blr
 SYM_FUNC_END(kvmppc_check_wake_reason)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Save away FP, VMX and VSX registers.
  * r3 = vcpu pointer
-<<<<<<< HEAD
- */
-_GLOBAL(kvmppc_save_fp)
-	mfmsr	r9
-	ori	r8,r9,MSR_FP
-=======
  * N.B. r30 and r31 are volatile across this function,
  * thus it is not callable from C.
  */
@@ -3798,7 +2444,6 @@ SYM_FUNC_START_LOCAL(kvmppc_save_fp)
 	mr	r31,r3
 	mfmsr	r5
 	ori	r8,r5,MSR_FP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ALTIVEC
 BEGIN_FTR_SECTION
 	oris	r8,r8,MSR_VEC@h
@@ -3810,48 +2455,6 @@ BEGIN_FTR_SECTION
 END_FTR_SECTION_IFSET(CPU_FTR_VSX)
 #endif
 	mtmsrd	r8
-<<<<<<< HEAD
-	isync
-#ifdef CONFIG_VSX
-BEGIN_FTR_SECTION
-	reg = 0
-	.rept	32
-	li	r6,reg*16+VCPU_VSRS
-	STXVD2X(reg,r6,r3)
-	reg = reg + 1
-	.endr
-FTR_SECTION_ELSE
-#endif
-	reg = 0
-	.rept	32
-	stfd	reg,reg*8+VCPU_FPRS(r3)
-	reg = reg + 1
-	.endr
-#ifdef CONFIG_VSX
-ALT_FTR_SECTION_END_IFSET(CPU_FTR_VSX)
-#endif
-	mffs	fr0
-	stfd	fr0,VCPU_FPSCR(r3)
-
-#ifdef CONFIG_ALTIVEC
-BEGIN_FTR_SECTION
-	reg = 0
-	.rept	32
-	li	r6,reg*16+VCPU_VRS
-	stvx	reg,r6,r3
-	reg = reg + 1
-	.endr
-	mfvscr	vr0
-	li	r6,VCPU_VSCR
-	stvx	vr0,r6,r3
-END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
-#endif
-	mfspr	r6,SPRN_VRSAVE
-	stw	r6,VCPU_VRSAVE(r3)
-	mtmsrd	r9
-	isync
-	blr
-=======
 	addi	r3,r3,VCPU_FPRS
 	bl	store_fp_state
 #ifdef CONFIG_ALTIVEC
@@ -3865,23 +2468,16 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
 	mtlr	r30
 	blr
 SYM_FUNC_END(kvmppc_save_fp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Load up FP, VMX and VSX registers
  * r4 = vcpu pointer
-<<<<<<< HEAD
- */
-	.globl	kvmppc_load_fp
-kvmppc_load_fp:
-=======
  * N.B. r30 and r31 are volatile across this function,
  * thus it is not callable from C.
  */
 SYM_FUNC_START_LOCAL(kvmppc_load_fp)
 	mflr	r30
 	mr	r31,r4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfmsr	r9
 	ori	r8,r9,MSR_FP
 #ifdef CONFIG_ALTIVEC
@@ -3895,46 +2491,6 @@ BEGIN_FTR_SECTION
 END_FTR_SECTION_IFSET(CPU_FTR_VSX)
 #endif
 	mtmsrd	r8
-<<<<<<< HEAD
-	isync
-	lfd	fr0,VCPU_FPSCR(r4)
-	MTFSF_L(fr0)
-#ifdef CONFIG_VSX
-BEGIN_FTR_SECTION
-	reg = 0
-	.rept	32
-	li	r7,reg*16+VCPU_VSRS
-	LXVD2X(reg,r7,r4)
-	reg = reg + 1
-	.endr
-FTR_SECTION_ELSE
-#endif
-	reg = 0
-	.rept	32
-	lfd	reg,reg*8+VCPU_FPRS(r4)
-	reg = reg + 1
-	.endr
-#ifdef CONFIG_VSX
-ALT_FTR_SECTION_END_IFSET(CPU_FTR_VSX)
-#endif
-
-#ifdef CONFIG_ALTIVEC
-BEGIN_FTR_SECTION
-	li	r7,VCPU_VSCR
-	lvx	vr0,r7,r4
-	mtvscr	vr0
-	reg = 0
-	.rept	32
-	li	r7,reg*16+VCPU_VRS
-	lvx	reg,r7,r4
-	reg = reg + 1
-	.endr
-END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
-#endif
-	lwz	r7,VCPU_VRSAVE(r4)
-	mtspr	SPRN_VRSAVE,r7
-	blr
-=======
 	addi	r3,r4,VCPU_FPRS
 	bl	load_fp_state
 #ifdef CONFIG_ALTIVEC
@@ -4468,4 +3024,3 @@ kvmhv_accumulate_time:
 	std	r8, TAS_SEQCOUNT(r5)
 	blr
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

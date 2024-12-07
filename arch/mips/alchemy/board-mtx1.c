@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MTX-1 platform devices registration (Au1500)
  *
  * Copyright (C) 2007-2009, Florian Fainelli <florian@openwrt.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -31,10 +11,7 @@
 #include <linux/platform_device.h>
 #include <linux/leds.h>
 #include <linux/gpio.h>
-<<<<<<< HEAD
-=======
 #include <linux/gpio/machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gpio_keys.h>
 #include <linux/input.h>
 #include <linux/mtd/partitions.h>
@@ -42,13 +19,9 @@
 #include <mtd/mtd-abi.h>
 #include <asm/bootinfo.h>
 #include <asm/reboot.h>
-<<<<<<< HEAD
-#include <asm/mach-au1x00/au1000.h>
-=======
 #include <asm/setup.h>
 #include <asm/mach-au1x00/au1000.h>
 #include <asm/mach-au1x00/gpio-au1000.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mach-au1x00/au1xxx_eth.h>
 #include <prom.h>
 
@@ -57,30 +30,7 @@ const char *get_system_type(void)
 	return "MTX-1";
 }
 
-<<<<<<< HEAD
-void __init prom_init(void)
-{
-	unsigned char *memsize_str;
-	unsigned long memsize;
-
-	prom_argc = fw_arg0;
-	prom_argv = (char **)fw_arg1;
-	prom_envp = (char **)fw_arg2;
-
-	prom_init_cmdline();
-
-	memsize_str = prom_getenv("memsize");
-	if (!memsize_str)
-		memsize = 0x04000000;
-	else
-		strict_strtoul(memsize_str, 0, &memsize);
-	add_memory_region(0, memsize, BOOT_MEM_RAM);
-}
-
-void prom_putchar(unsigned char c)
-=======
 void prom_putchar(char c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	alchemy_uart_putchar(AU1000_UART0_PHYS_ADDR, c);
 }
@@ -102,18 +52,6 @@ static void mtx1_power_off(void)
 
 void __init board_setup(void)
 {
-<<<<<<< HEAD
-#if defined(CONFIG_USB_OHCI_HCD) || defined(CONFIG_USB_OHCI_HCD_MODULE)
-	/* Enable USB power switch */
-	alchemy_gpio_direction_output(204, 0);
-#endif /* defined(CONFIG_USB_OHCI_HCD) || defined(CONFIG_USB_OHCI_HCD_MODULE) */
-
-	/* Initialize sys_pinfunc */
-	au_writel(SYS_PF_NI2, SYS_PINFUNC);
-
-	/* Initialize GPIO */
-	au_writel(~0, KSEG1ADDR(AU1000_SYS_PHYS_ADDR) + SYS_TRIOUTCLR);
-=======
 #if IS_ENABLED(CONFIG_USB_OHCI_HCD)
 	/* Enable USB power switch */
 	alchemy_gpio_direction_output(204, 0);
@@ -124,7 +62,6 @@ void __init board_setup(void)
 
 	/* Initialize GPIO */
 	alchemy_wrsys(~0, AU1000_SYS_TRIOUTCLR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	alchemy_gpio_direction_output(0, 0);	/* Disable M66EN (PCI 66MHz) */
 	alchemy_gpio_direction_output(3, 1);	/* Disable PCI CLKRUN# */
 	alchemy_gpio_direction_output(1, 1);	/* Enable EXT_IO3 */
@@ -164,15 +101,6 @@ static struct platform_device mtx1_button = {
 	}
 };
 
-<<<<<<< HEAD
-static struct resource mtx1_wdt_res[] = {
-	[0] = {
-		.start	= 215,
-		.end	= 215,
-		.name	= "mtx1-wdt-gpio",
-		.flags	= IORESOURCE_IRQ,
-	}
-=======
 static struct gpiod_lookup_table mtx1_wdt_gpio_table = {
 	.dev_id = "mtx1-wdt.0",
 	.table = {
@@ -180,23 +108,14 @@ static struct gpiod_lookup_table mtx1_wdt_gpio_table = {
 		GPIO_LOOKUP("alchemy-gpio2", 15, NULL, GPIO_ACTIVE_HIGH),
 		{ },
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device mtx1_wdt = {
 	.name = "mtx1-wdt",
 	.id = 0,
-<<<<<<< HEAD
-	.num_resources = ARRAY_SIZE(mtx1_wdt_res),
-	.resource = mtx1_wdt_res,
-};
-
-static struct gpio_led default_leds[] = {
-=======
 };
 
 static const struct gpio_led default_leds[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name	= "mtx1:green",
 		.gpio = 211,
@@ -223,39 +142,23 @@ static struct mtd_partition mtx1_mtd_partitions[] = {
 	{
 		.name	= "filesystem",
 		.size	= 0x01C00000,
-<<<<<<< HEAD
-		.offset	= 0,
-=======
 		.offset = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name	= "yamon",
 		.size	= 0x00100000,
-<<<<<<< HEAD
-		.offset	= MTDPART_OFS_APPEND,
-=======
 		.offset = MTDPART_OFS_APPEND,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mask_flags = MTD_WRITEABLE,
 	},
 	{
 		.name	= "kernel",
 		.size	= 0x002c0000,
-<<<<<<< HEAD
-		.offset	= MTDPART_OFS_APPEND,
-=======
 		.offset = MTDPART_OFS_APPEND,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name	= "yamon env",
 		.size	= 0x00040000,
-<<<<<<< HEAD
-		.offset	= MTDPART_OFS_APPEND,
-=======
 		.offset = MTDPART_OFS_APPEND,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -294,11 +197,8 @@ static int mtx1_pci_idsel(unsigned int devsel, int assert)
 	 * adapter on the mtx-1 "singleboard" variant. It triggers a custom
 	 * logic chip connected to EXT_IO3 (GPIO1) to suppress IDSEL signals.
 	 */
-<<<<<<< HEAD
-=======
 	udelay(1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (assert && devsel != 0)
 		/* Suppress signal to Cardbus */
 		alchemy_gpio_set_value(1, 0);	/* set EXT_IO3 OFF */
@@ -345,11 +245,7 @@ static struct platform_device mtx1_pci_host = {
 	.resource	= alchemy_pci_host_res,
 };
 
-<<<<<<< HEAD
-static struct __initdata platform_device * mtx1_devs[] = {
-=======
 static struct platform_device *mtx1_devs[] __initdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&mtx1_pci_host,
 	&mtx1_gpio_leds,
 	&mtx1_wdt,
@@ -383,10 +279,7 @@ static int __init mtx1_register_devices(void)
 	}
 	gpio_direction_input(mtx1_gpio_button[0].gpio);
 out:
-<<<<<<< HEAD
-=======
 	gpiod_add_lookup_table(&mtx1_wdt_gpio_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return platform_add_devices(mtx1_devs, ARRAY_SIZE(mtx1_devs));
 }
 arch_initcall(mtx1_register_devices);

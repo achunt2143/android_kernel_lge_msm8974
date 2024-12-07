@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Drm device configuration
 #
@@ -10,12 +7,6 @@
 #
 menuconfig DRM
 	tristate "Direct Rendering Manager (XFree86 4.1.0 and higher DRI support)"
-<<<<<<< HEAD
-	depends on (AGP || AGP=n) && !EMULATED_CMPXCHG && MMU
-	select I2C
-	select I2C_ALGOBIT
-	select DMA_SHARED_BUFFER
-=======
 	depends on (AGP || AGP=n) && !EMULATED_CMPXCHG && HAS_DMA
 	select DRM_PANEL_ORIENTATION_QUIRKS
 	select DRM_KMS_HELPER if DRM_FBDEV_EMULATION
@@ -29,7 +20,6 @@ menuconfig DRM
 # device and dmabuf fd. Let's make sure that is available for our userspace.
 	select KCMP
 	select VIDEO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Kernel-level support for the Direct Rendering Infrastructure (DRI)
 	  introduced in XFree86 4.0. If you say Y here, you need to select
@@ -39,12 +29,6 @@ menuconfig DRM
 	  details.  You should also select and configure AGP
 	  (/dev/agpgart) support if it is available for your platform.
 
-<<<<<<< HEAD
-config DRM_USB
-	tristate
-	depends on DRM
-	select USB
-=======
 config DRM_MIPI_DBI
 	tristate
 	depends on DRM
@@ -111,22 +95,10 @@ config DRM_KUNIT_TEST
 	  Documentation/dev-tools/kunit/.
 
 	  If in doubt, say "N".
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config DRM_KMS_HELPER
 	tristate
 	depends on DRM
-<<<<<<< HEAD
-	select FB
-	select FRAMEBUFFER_CONSOLE if !EXPERT
-	select FRAMEBUFFER_CONSOLE_DETECT_PRIMARY if FRAMEBUFFER_CONSOLE
-	help
-	  FB and CRTC helpers for KMS drivers.
-
-config DRM_LOAD_EDID_FIRMWARE
-	bool "Allow to specify an EDID data set instead of probing for it"
-	depends on DRM_KMS_HELPER
-=======
 	help
 	  CRTC helpers for KMS drivers.
 
@@ -204,7 +176,6 @@ config DRM_FBDEV_LEAK_PHYS_SMEM
 config DRM_LOAD_EDID_FIRMWARE
 	bool "Allow to specify an EDID data set instead of probing for it"
 	depends on DRM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here, if you want to use EDID data to be loaded from the
 	  /lib/firmware directory or one of the provided built-in
@@ -212,13 +183,6 @@ config DRM_LOAD_EDID_FIRMWARE
 	  monitor are unable to provide appropriate EDID data. Since this
 	  feature is provided as a workaround for broken hardware, the
 	  default case is N. Details and instructions how to build your own
-<<<<<<< HEAD
-	  EDID data are given in Documentation/EDID/HOWTO.txt.
-
-config DRM_TTM
-	tristate
-	depends on DRM
-=======
 	  EDID data are given in Documentation/admin-guide/edid.rst.
 
 source "drivers/gpu/drm/display/Kconfig"
@@ -226,142 +190,11 @@ source "drivers/gpu/drm/display/Kconfig"
 config DRM_TTM
 	tristate
 	depends on DRM && MMU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  GPU memory management subsystem for devices with multiple
 	  GPU memory types. Will be enabled automatically if a device driver
 	  uses it.
 
-<<<<<<< HEAD
-config DRM_TDFX
-	tristate "3dfx Banshee/Voodoo3+"
-	depends on DRM && PCI
-	help
-	  Choose this option if you have a 3dfx Banshee or Voodoo3 (or later),
-	  graphics card.  If M is selected, the module will be called tdfx.
-
-config DRM_R128
-	tristate "ATI Rage 128"
-	depends on DRM && PCI
-	select FW_LOADER
-	help
-	  Choose this option if you have an ATI Rage 128 graphics card.  If M
-	  is selected, the module will be called r128.  AGP support for
-	  this card is strongly suggested (unless you have a PCI version).
-
-config DRM_RADEON
-	tristate "ATI Radeon"
-	depends on DRM && PCI
-	select FB_CFB_FILLRECT
-	select FB_CFB_COPYAREA
-	select FB_CFB_IMAGEBLIT
-	select FW_LOADER
-        select DRM_KMS_HELPER
-        select DRM_TTM
-	select POWER_SUPPLY
-	select HWMON
-	help
-	  Choose this option if you have an ATI Radeon graphics card.  There
-	  are both PCI and AGP versions.  You don't need to choose this to
-	  run the Radeon in plain VGA mode.
-
-	  If M is selected, the module will be called radeon.
-
-source "drivers/gpu/drm/radeon/Kconfig"
-
-source "drivers/gpu/drm/nouveau/Kconfig"
-
-config DRM_I810
-	tristate "Intel I810"
-	# !PREEMPT because of missing ioctl locking
-	depends on DRM && AGP && AGP_INTEL && (!PREEMPT || BROKEN)
-	help
-	  Choose this option if you have an Intel I810 graphics card.  If M is
-	  selected, the module will be called i810.  AGP support is required
-	  for this driver to work.
-
-config DRM_I915
-	tristate "Intel 8xx/9xx/G3x/G4x/HD Graphics"
-	depends on DRM
-	depends on AGP
-	depends on AGP_INTEL
-	# we need shmfs for the swappable backing store, and in particular
-	# the shmem_readpage() which depends upon tmpfs
-	select SHMEM
-	select TMPFS
-	select DRM_KMS_HELPER
-	select FB_CFB_FILLRECT
-	select FB_CFB_COPYAREA
-	select FB_CFB_IMAGEBLIT
-	# i915 depends on ACPI_VIDEO when ACPI is enabled
-	# but for select to work, need to select ACPI_VIDEO's dependencies, ick
-	select BACKLIGHT_LCD_SUPPORT if ACPI
-	select BACKLIGHT_CLASS_DEVICE if ACPI
-	select VIDEO_OUTPUT_CONTROL if ACPI
-	select INPUT if ACPI
-	select ACPI_VIDEO if ACPI
-	select ACPI_BUTTON if ACPI
-	help
-	  Choose this option if you have a system that has "Intel Graphics
-	  Media Accelerator" or "HD Graphics" integrated graphics,
-	  including 830M, 845G, 852GM, 855GM, 865G, 915G, 945G, 965G,
-	  G35, G41, G43, G45 chipsets and Celeron, Pentium, Core i3,
-	  Core i5, Core i7 as well as Atom CPUs with integrated graphics.
-	  If M is selected, the module will be called i915.  AGP support
-	  is required for this driver to work. This driver is used by
-	  the Intel driver in X.org 6.8 and XFree86 4.4 and above. It
-	  replaces the older i830 module that supported a subset of the
-	  hardware in older X.org releases.
-
-	  Note that the older i810/i815 chipsets require the use of the
-	  i810 driver instead, and the Atom z5xx series has an entirely
-	  different implementation.
-
-config DRM_I915_KMS
-	bool "Enable modesetting on intel by default"
-	depends on DRM_I915
-	help
-	  Choose this option if you want kernel modesetting enabled by default,
-	  and you have a new enough userspace to support this. Running old
-	  userspaces with this enabled will cause pain.  Note that this causes
-	  the driver to bind to PCI devices, which precludes loading things
-	  like intelfb.
-
-config DRM_MGA
-	tristate "Matrox g200/g400"
-	depends on DRM && PCI
-	select FW_LOADER
-	help
-	  Choose this option if you have a Matrox G200, G400 or G450 graphics
-	  card.  If M is selected, the module will be called mga.  AGP
-	  support is required for this driver to work.
-
-config DRM_SIS
-	tristate "SiS video cards"
-	depends on DRM && AGP
-	depends on FB_SIS || FB_SIS=n
-	help
-	  Choose this option if you have a SiS 630 or compatible video
-          chipset. If M is selected the module will be called sis. AGP
-          support is required for this driver to work.
-
-config DRM_VIA
-	tristate "Via unichrome video cards"
-	depends on DRM && PCI
-	help
-	  Choose this option if you have a Via unichrome or compatible video
-	  chipset. If M is selected the module will be called via.
-
-config DRM_SAVAGE
-	tristate "Savage video cards"
-	depends on DRM && PCI
-	help
-	  Choose this option if you have a Savage3D/4/SuperSavage/Pro/Twister
-	  chipset. If M is selected the module will be called savage.
-
-source "drivers/gpu/drm/exynos/Kconfig"
-
-=======
 config DRM_TTM_KUNIT_TEST
         tristate "KUnit tests for TTM" if !KUNIT_ALL_TESTS
         default n
@@ -462,14 +295,11 @@ source "drivers/gpu/drm/exynos/Kconfig"
 
 source "drivers/gpu/drm/rockchip/Kconfig"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "drivers/gpu/drm/vmwgfx/Kconfig"
 
 source "drivers/gpu/drm/gma500/Kconfig"
 
 source "drivers/gpu/drm/udl/Kconfig"
-<<<<<<< HEAD
-=======
 
 source "drivers/gpu/drm/ast/Kconfig"
 
@@ -584,4 +414,3 @@ config DRM_LIB_RANDOM
 config DRM_PRIVACY_SCREEN
 	bool
 	default n
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

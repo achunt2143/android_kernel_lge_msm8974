@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NVEC: NVIDIA compliant embedded controller interface
  *
@@ -11,20 +8,8 @@
  *           Ilya Petrov <ilya.muromec@gmail.com>
  *           Marc Dietrich <marvin24@gmx.de>
  *           Julian Andres Klode <jak@jak-linux.org>
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
  */
 
-/* #define DEBUG */
-
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/atomic.h>
@@ -32,51 +17,19 @@
 #include <linux/completion.h>
 #include <linux/delay.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-=======
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/irq.h>
 #include <linux/of.h>
-<<<<<<< HEAD
-#include <linux/of_gpio.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/mfd/core.h>
 #include <linux/mutex.h>
 #include <linux/notifier.h>
-<<<<<<< HEAD
-#include <linux/platform_device.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/workqueue.h>
 
-<<<<<<< HEAD
-#include <mach/clk.h>
-#include <mach/iomap.h>
-
-#include "nvec.h"
-
-#define I2C_CNFG			0x00
-#define I2C_CNFG_PACKET_MODE_EN		(1<<10)
-#define I2C_CNFG_NEW_MASTER_SFM		(1<<11)
-#define I2C_CNFG_DEBOUNCE_CNT_SHIFT	12
-
-#define I2C_SL_CNFG		0x20
-#define I2C_SL_NEWSL		(1<<2)
-#define I2C_SL_NACK		(1<<1)
-#define I2C_SL_RESP		(1<<0)
-#define I2C_SL_IRQ		(1<<3)
-#define END_TRANS		(1<<4)
-#define RCVD			(1<<2)
-#define RNW			(1<<1)
-=======
 #include "nvec.h"
 
 #define I2C_CNFG			0x00
@@ -92,7 +45,6 @@
 #define END_TRANS		BIT(4)
 #define RCVD			BIT(2)
 #define RNW			BIT(1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define I2C_SL_RCVD		0x24
 #define I2C_SL_STATUS		0x28
@@ -110,22 +62,6 @@ enum nvec_msg_category  {
 	NVEC_MSG_TX,
 };
 
-<<<<<<< HEAD
-static const unsigned char EC_DISABLE_EVENT_REPORTING[3] = "\x04\x00\x00";
-static const unsigned char EC_ENABLE_EVENT_REPORTING[3]  = "\x04\x00\x01";
-static const unsigned char EC_GET_FIRMWARE_VERSION[2]    = "\x07\x15";
-
-static struct nvec_chip *nvec_power_handle;
-
-static struct mfd_cell nvec_devices[] = {
-	{
-		.name = "nvec-kbd",
-		.id = 1,
-	},
-	{
-		.name = "nvec-mouse",
-		.id = 1,
-=======
 enum nvec_sleep_subcmds {
 	GLOBAL_EVENTS,
 	AP_PWR_DOWN,
@@ -149,23 +85,13 @@ static const struct mfd_cell nvec_devices[] = {
 	{
 		.name = "nvec-power",
 		.id = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name = "nvec-power",
 		.id = 1,
 	},
 	{
-<<<<<<< HEAD
-		.name = "nvec-power",
-		.id = 2,
-	},
-	{
-		.name = "nvec-leds",
-		.id = 1,
-=======
 		.name = "nvec-paz00",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -173,10 +99,7 @@ static const struct mfd_cell nvec_devices[] = {
  * nvec_register_notifier - Register a notifier with nvec
  * @nvec: A &struct nvec_chip
  * @nb: The notifier block to register
-<<<<<<< HEAD
-=======
  * @events: Unused
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Registers a notifier with @nvec. The notifier will be added to an atomic
  * notifier chain that is called for all received messages except those that
@@ -190,8 +113,6 @@ int nvec_register_notifier(struct nvec_chip *nvec, struct notifier_block *nb,
 EXPORT_SYMBOL_GPL(nvec_register_notifier);
 
 /**
-<<<<<<< HEAD
-=======
  * nvec_unregister_notifier - Unregister a notifier with nvec
  * @nvec: A &struct nvec_chip
  * @nb: The notifier block to unregister
@@ -206,7 +127,6 @@ int nvec_unregister_notifier(struct nvec_chip *nvec, struct notifier_block *nb)
 EXPORT_SYMBOL_GPL(nvec_unregister_notifier);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * nvec_status_notifier - The final notifier
  *
  * Prints a message about control events not handled in the notifier
@@ -215,26 +135,16 @@ EXPORT_SYMBOL_GPL(nvec_unregister_notifier);
 static int nvec_status_notifier(struct notifier_block *nb,
 				unsigned long event_type, void *data)
 {
-<<<<<<< HEAD
-	unsigned char *msg = (unsigned char *)data;
-=======
 	struct nvec_chip *nvec = container_of(nb, struct nvec_chip,
 						nvec_status_notifier);
 	unsigned char *msg = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (event_type != NVEC_CNTL)
 		return NOTIFY_DONE;
 
-<<<<<<< HEAD
-	printk(KERN_WARNING "unhandled msg type %ld\n", event_type);
-	print_hex_dump(KERN_WARNING, "payload: ", DUMP_PREFIX_NONE, 16, 1,
-		msg, msg[1] + 2, true);
-=======
 	dev_warn(nvec->dev, "unhandled msg type %ld\n", event_type);
 	print_hex_dump(KERN_WARNING, "payload: ", DUMP_PREFIX_NONE, 16, 1,
 		       msg, msg[1] + 2, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NOTIFY_OK;
 }
@@ -278,11 +188,7 @@ static struct nvec_msg *nvec_msg_alloc(struct nvec_chip *nvec,
  *
  * Free the given message
  */
-<<<<<<< HEAD
-inline void nvec_msg_free(struct nvec_chip *nvec, struct nvec_msg *msg)
-=======
 void nvec_msg_free(struct nvec_chip *nvec, struct nvec_msg *msg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (msg != &nvec->tx_scratch)
 		dev_vdbg(nvec->dev, "INFO: Free %ti\n", msg - nvec->msg_pool);
@@ -317,12 +223,7 @@ static size_t nvec_msg_size(struct nvec_msg *msg)
 		return 2;
 	else if (event_length == NVEC_3BYTES)
 		return 3;
-<<<<<<< HEAD
-	else
-		return 0;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -335,13 +236,8 @@ static size_t nvec_msg_size(struct nvec_msg *msg)
 static void nvec_gpio_set_value(struct nvec_chip *nvec, int value)
 {
 	dev_dbg(nvec->dev, "GPIO changed from %u to %u\n",
-<<<<<<< HEAD
-		gpio_get_value(nvec->gpio), value);
-	gpio_set_value(nvec->gpio, value);
-=======
 		gpiod_get_value(nvec->gpiod), value);
 	gpiod_set_value(nvec->gpiod, value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -354,28 +250,17 @@ static void nvec_gpio_set_value(struct nvec_chip *nvec, int value)
  * and return immediately.
  *
  * Returns: 0 on success, a negative error code on failure. If a failure
-<<<<<<< HEAD
- * occured, the nvec driver may print an error.
- */
-int nvec_write_async(struct nvec_chip *nvec, const unsigned char *data,
-			short size)
-=======
  * occurred, the nvec driver may print an error.
  */
 int nvec_write_async(struct nvec_chip *nvec, const unsigned char *data,
 		     short size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nvec_msg *msg;
 	unsigned long flags;
 
 	msg = nvec_msg_alloc(nvec, NVEC_MSG_TX);
 
-<<<<<<< HEAD
-	if (msg == NULL)
-=======
 	if (!msg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	msg->data[0] = size;
@@ -386,11 +271,7 @@ int nvec_write_async(struct nvec_chip *nvec, const unsigned char *data,
 	list_add_tail(&msg->node, &nvec->tx_data);
 	spin_unlock_irqrestore(&nvec->tx_lock, flags);
 
-<<<<<<< HEAD
-	queue_work(nvec->wq, &nvec->tx_work);
-=======
 	schedule_work(&nvec->tx_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -401,41 +282,13 @@ EXPORT_SYMBOL(nvec_write_async);
  * @nvec: An &struct nvec_chip
  * @data: The data to write
  * @size: The size of @data
-<<<<<<< HEAD
-=======
  * @msg:  The response message received
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is similar to nvec_write_async(), but waits for the
  * request to be answered before returning. This function
  * uses a mutex and can thus not be called from e.g.
  * interrupt handlers.
  *
-<<<<<<< HEAD
- * Returns: A pointer to the response message on success,
- * %NULL on failure. Free with nvec_msg_free() once no longer
- * used.
- */
-struct nvec_msg *nvec_write_sync(struct nvec_chip *nvec,
-		const unsigned char *data, short size)
-{
-	struct nvec_msg *msg;
-
-	mutex_lock(&nvec->sync_write_mutex);
-
-	nvec->sync_write_pending = (data[1] << 8) + data[0];
-
-	if (nvec_write_async(nvec, data, size) < 0)
-		return NULL;
-
-	dev_dbg(nvec->dev, "nvec_sync_write: 0x%04x\n",
-					nvec->sync_write_pending);
-	if (!(wait_for_completion_timeout(&nvec->sync_write,
-				msecs_to_jiffies(2000)))) {
-		dev_warn(nvec->dev, "timeout waiting for sync write to complete\n");
-		mutex_unlock(&nvec->sync_write_mutex);
-		return NULL;
-=======
  * Returns: 0 on success, a negative error code on failure.
  * The response message is returned in @msg. Shall be freed
  * with nvec_msg_free() once no longer used.
@@ -463,30 +316,19 @@ int nvec_write_sync(struct nvec_chip *nvec,
 			 "timeout waiting for sync write to complete\n");
 		mutex_unlock(&nvec->sync_write_mutex);
 		return -ETIMEDOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev_dbg(nvec->dev, "nvec_sync_write: pong!\n");
 
-<<<<<<< HEAD
-	msg = nvec->last_sync_msg;
-
-	mutex_unlock(&nvec->sync_write_mutex);
-
-	return msg;
-=======
 	*msg = nvec->last_sync_msg;
 
 	mutex_unlock(&nvec->sync_write_mutex);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(nvec_write_sync);
 
 /**
-<<<<<<< HEAD
-=======
  * nvec_toggle_global_events - enables or disables global event reporting
  * @nvec: nvec handle
  * @state: true for enable, false for disable
@@ -522,7 +364,6 @@ static void nvec_event_mask(char *ev, u32 mask)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * nvec_request_master - Process outgoing messages
  * @work: A &struct work_struct (the tx_worker member of &struct nvec_chip)
  *
@@ -542,13 +383,8 @@ static void nvec_request_master(struct work_struct *work)
 		msg = list_first_entry(&nvec->tx_data, struct nvec_msg, node);
 		spin_unlock_irqrestore(&nvec->tx_lock, flags);
 		nvec_gpio_set_value(nvec, 0);
-<<<<<<< HEAD
-		err = wait_for_completion_interruptible_timeout(
-				&nvec->ec_transfer, msecs_to_jiffies(5000));
-=======
 		err = wait_for_completion_interruptible_timeout(&nvec->ec_transfer,
 								msecs_to_jiffies(5000));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (err == 0) {
 			dev_warn(nvec->dev, "timeout waiting for ec transfer\n");
@@ -577,24 +413,14 @@ static void nvec_request_master(struct work_struct *work)
 static int parse_msg(struct nvec_chip *nvec, struct nvec_msg *msg)
 {
 	if ((msg->data[0] & 1 << 7) == 0 && msg->data[3]) {
-<<<<<<< HEAD
-		dev_err(nvec->dev, "ec responded %02x %02x %02x %02x\n",
-			msg->data[0], msg->data[1], msg->data[2], msg->data[3]);
-=======
 		dev_err(nvec->dev, "ec responded %*ph\n", 4, msg->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if ((msg->data[0] >> 7) == 1 && (msg->data[0] & 0x0f) == 5)
 		print_hex_dump(KERN_WARNING, "ec system event ",
-<<<<<<< HEAD
-				DUMP_PREFIX_NONE, 16, 1, msg->data,
-				msg->data[1] + 2, true);
-=======
 			       DUMP_PREFIX_NONE, 16, 1, msg->data,
 			       msg->data[1] + 2, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_notifier_call_chain(&nvec->notifier_list, msg->data[0] & 0x8f,
 				   msg->data);
@@ -664,13 +490,8 @@ static void nvec_rx_completed(struct nvec_chip *nvec)
 {
 	if (nvec->rx->pos != nvec_msg_size(nvec->rx)) {
 		dev_err(nvec->dev, "RX incomplete: Expected %u bytes, got %u\n",
-<<<<<<< HEAD
-			   (uint) nvec_msg_size(nvec->rx),
-			   (uint) nvec->rx->pos);
-=======
 			(uint)nvec_msg_size(nvec->rx),
 			(uint)nvec->rx->pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		nvec_msg_free(nvec, nvec->rx);
 		nvec->state = 0;
@@ -684,15 +505,10 @@ static void nvec_rx_completed(struct nvec_chip *nvec)
 
 	spin_lock(&nvec->rx_lock);
 
-<<<<<<< HEAD
-	/* add the received data to the work list
-	   and move the ring buffer pointer to the next entry */
-=======
 	/*
 	 * Add the received data to the work list and move the ring buffer
 	 * pointer to the next entry.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_tail(&nvec->rx->node, &nvec->rx_data);
 
 	spin_unlock(&nvec->rx_lock);
@@ -702,11 +518,7 @@ static void nvec_rx_completed(struct nvec_chip *nvec)
 	if (!nvec_msg_is_event(nvec->rx))
 		complete(&nvec->ec_transfer);
 
-<<<<<<< HEAD
-	queue_work(nvec->wq, &nvec->rx_work);
-=======
 	schedule_work(&nvec->rx_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -804,11 +616,7 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 		} else {
 			nvec->rx = nvec_msg_alloc(nvec, NVEC_MSG_RX);
 			/* Should not happen in a normal world */
-<<<<<<< HEAD
-			if (unlikely(nvec->rx == NULL)) {
-=======
 			if (unlikely(!nvec->rx)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				nvec->state = 0;
 				break;
 			}
@@ -829,17 +637,9 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 			nvec_msg_free(nvec, nvec->rx);
 			nvec->state = 3;
 			nvec_tx_set(nvec);
-<<<<<<< HEAD
-			BUG_ON(nvec->tx->size < 1);
 			to_send = nvec->tx->data[0];
 			nvec->tx->pos = 1;
 		} else if (status == (I2C_SL_IRQ)) {
-			BUG_ON(nvec->rx == NULL);
-=======
-			to_send = nvec->tx->data[0];
-			nvec->tx->pos = 1;
-		} else if (status == (I2C_SL_IRQ)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nvec->rx->data[1] = received;
 			nvec->rx->pos = 2;
 			nvec->state = 4;
@@ -855,18 +655,11 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 		} else if (nvec->tx && nvec->tx->pos < nvec->tx->size) {
 			to_send = nvec->tx->data[nvec->tx->pos++];
 		} else {
-<<<<<<< HEAD
-			dev_err(nvec->dev, "tx buffer underflow on %p (%u > %u)\n",
-				nvec->tx,
-				(uint) (nvec->tx ? nvec->tx->pos : 0),
-				(uint) (nvec->tx ? nvec->tx->size : 0));
-=======
 			dev_err(nvec->dev,
 				"tx buffer underflow on %p (%u > %u)\n",
 				nvec->tx,
 				(uint)(nvec->tx ? nvec->tx->pos : 0),
 				(uint)(nvec->tx ? nvec->tx->size : 0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nvec->state = 0;
 		}
 		break;
@@ -879,15 +672,9 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 			nvec->rx->data[nvec->rx->pos++] = received;
 		else
 			dev_err(nvec->dev,
-<<<<<<< HEAD
-				"RX buffer overflow on %p: "
-				"Trying to write byte %u of %u\n",
-				nvec->rx, nvec->rx->pos, NVEC_MSG_SIZE);
-=======
 				"RX buffer overflow on %p: Trying to write byte %u of %u\n",
 				nvec->rx, nvec->rx ? nvec->rx->pos : 0,
 				NVEC_MSG_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		nvec->state = 0;
@@ -897,13 +684,8 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 	if ((status & (RCVD | RNW)) == RCVD) {
 		if (received != nvec->i2c_addr)
 			dev_err(nvec->dev,
-<<<<<<< HEAD
-			"received address 0x%02x, expected 0x%02x\n",
-			received, nvec->i2c_addr);
-=======
 				"received address 0x%02x, expected 0x%02x\n",
 				received, nvec->i2c_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nvec->state = 1;
 	}
 
@@ -926,21 +708,12 @@ static irqreturn_t nvec_interrupt(int irq, void *dev)
 		status & RCVD ? " RCVD" : "",
 		status & RNW ? " RNW" : "");
 
-<<<<<<< HEAD
-
-	/*
-	 * TODO: A correct fix needs to be found for this.
-	 *
-	 * We experience less incomplete messages with this delay than without
-	 * it, but we don't know why. Help is appreciated.
-=======
 	/*
 	 * TODO: replace the udelay with a read back after each writel above
 	 * in order to work around a hardware issue, see i2c-tegra.c
 	 *
 	 * Unfortunately, this change causes an intialisation issue with the
 	 * touchpad, which needs to be fixed first.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	udelay(100);
 
@@ -951,19 +724,11 @@ static void tegra_init_i2c_slave(struct nvec_chip *nvec)
 {
 	u32 val;
 
-<<<<<<< HEAD
-	clk_enable(nvec->i2c_clk);
-
-	tegra_periph_reset_assert(nvec->i2c_clk);
-	udelay(2);
-	tegra_periph_reset_deassert(nvec->i2c_clk);
-=======
 	clk_prepare_enable(nvec->i2c_clk);
 
 	reset_control_assert(nvec->rst);
 	udelay(2);
 	reset_control_deassert(nvec->rst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = I2C_CNFG_NEW_MASTER_SFM | I2C_CNFG_PACKET_MODE_EN |
 	    (0x2 << I2C_CNFG_DEBOUNCE_CNT_SHIFT);
@@ -974,16 +739,6 @@ static void tegra_init_i2c_slave(struct nvec_chip *nvec)
 	writel(I2C_SL_NEWSL, nvec->base + I2C_SL_CNFG);
 	writel(0x1E, nvec->base + I2C_SL_DELAY_COUNT);
 
-<<<<<<< HEAD
-	writel(nvec->i2c_addr>>1, nvec->base + I2C_SL_ADDR1);
-	writel(0, nvec->base + I2C_SL_ADDR2);
-
-	enable_irq(nvec->irq);
-
-	clk_disable(nvec->i2c_clk);
-}
-
-=======
 	writel(nvec->i2c_addr >> 1, nvec->base + I2C_SL_ADDR1);
 	writel(0, nvec->base + I2C_SL_ADDR2);
 
@@ -991,92 +746,10 @@ static void tegra_init_i2c_slave(struct nvec_chip *nvec)
 }
 
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void nvec_disable_i2c_slave(struct nvec_chip *nvec)
 {
 	disable_irq(nvec->irq);
 	writel(I2C_SL_NEWSL | I2C_SL_NACK, nvec->base + I2C_SL_CNFG);
-<<<<<<< HEAD
-	clk_disable(nvec->i2c_clk);
-}
-
-static void nvec_power_off(void)
-{
-	nvec_write_async(nvec_power_handle, EC_DISABLE_EVENT_REPORTING, 3);
-	nvec_write_async(nvec_power_handle, "\x04\x01", 2);
-}
-
-static int __devinit tegra_nvec_probe(struct platform_device *pdev)
-{
-	int err, ret;
-	struct clk *i2c_clk;
-	struct nvec_platform_data *pdata = pdev->dev.platform_data;
-	struct nvec_chip *nvec;
-	struct nvec_msg *msg;
-	struct resource *res;
-	struct resource *iomem;
-	void __iomem *base;
-
-	nvec = kzalloc(sizeof(struct nvec_chip), GFP_KERNEL);
-	if (nvec == NULL) {
-		dev_err(&pdev->dev, "failed to reserve memory\n");
-		return -ENOMEM;
-	}
-	platform_set_drvdata(pdev, nvec);
-	nvec->dev = &pdev->dev;
-
-	if (pdata) {
-		nvec->gpio = pdata->gpio;
-		nvec->i2c_addr = pdata->i2c_addr;
-	} else if (nvec->dev->of_node) {
-		nvec->gpio = of_get_named_gpio(nvec->dev->of_node, "request-gpios", 0);
-		if (nvec->gpio < 0) {
-			dev_err(&pdev->dev, "no gpio specified");
-			goto failed;
-		}
-		if (of_property_read_u32(nvec->dev->of_node, "slave-addr", &nvec->i2c_addr)) {
-			dev_err(&pdev->dev, "no i2c address specified");
-			goto failed;
-		}
-	} else {
-		dev_err(&pdev->dev, "no platform data\n");
-		goto failed;
-	}
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		dev_err(&pdev->dev, "no mem resource?\n");
-		return -ENODEV;
-	}
-
-	iomem = request_mem_region(res->start, resource_size(res), pdev->name);
-	if (!iomem) {
-		dev_err(&pdev->dev, "I2C region already claimed\n");
-		return -EBUSY;
-	}
-
-	base = ioremap(iomem->start, resource_size(iomem));
-	if (!base) {
-		dev_err(&pdev->dev, "Can't ioremap I2C region\n");
-		return -ENOMEM;
-	}
-
-	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-	if (!res) {
-		dev_err(&pdev->dev, "no irq resource?\n");
-		ret = -ENODEV;
-		goto err_iounmap;
-	}
-
-	i2c_clk = clk_get_sys("tegra-i2c.2", NULL);
-	if (IS_ERR(i2c_clk)) {
-		dev_err(nvec->dev, "failed to get controller clock\n");
-		goto err_iounmap;
-	}
-
-	nvec->base = base;
-	nvec->irq = res->start;
-=======
 	clk_disable_unprepare(nvec->i2c_clk);
 }
 #endif
@@ -1139,7 +812,6 @@ static int tegra_nvec_probe(struct platform_device *pdev)
 	}
 
 	nvec->base = base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nvec->i2c_clk = i2c_clk;
 	nvec->rx = &nvec->msg_pool[0];
 
@@ -1154,20 +826,6 @@ static int tegra_nvec_probe(struct platform_device *pdev)
 	INIT_LIST_HEAD(&nvec->tx_data);
 	INIT_WORK(&nvec->rx_work, nvec_dispatch);
 	INIT_WORK(&nvec->tx_work, nvec_request_master);
-<<<<<<< HEAD
-	nvec->wq = alloc_workqueue("nvec", WQ_NON_REENTRANT, 2);
-
-	err = gpio_request_one(nvec->gpio, GPIOF_OUT_INIT_HIGH, "nvec gpio");
-	if (err < 0) {
-		dev_err(nvec->dev, "couldn't request gpio\n");
-		goto failed;
-	}
-
-	err = request_irq(nvec->irq, nvec_interrupt, 0, "nvec", nvec);
-	if (err) {
-		dev_err(nvec->dev, "couldn't request irq\n");
-		goto failed;
-=======
 
 	nvec->gpiod = devm_gpiod_get(dev, "request", GPIOD_OUT_HIGH);
 	if (IS_ERR(nvec->gpiod)) {
@@ -1180,23 +838,13 @@ static int tegra_nvec_probe(struct platform_device *pdev)
 	if (err) {
 		dev_err(dev, "couldn't request irq\n");
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	disable_irq(nvec->irq);
 
 	tegra_init_i2c_slave(nvec);
 
-<<<<<<< HEAD
-	clk_enable(i2c_clk);
-
-
-	/* enable event reporting */
-	nvec_write_async(nvec, EC_ENABLE_EVENT_REPORTING,
-			 sizeof(EC_ENABLE_EVENT_REPORTING));
-=======
 	/* enable event reporting */
 	nvec_toggle_global_events(nvec, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nvec->nvec_status_notifier.notifier_call = nvec_status_notifier;
 	nvec_register_notifier(nvec, &nvec->nvec_status_notifier, 0);
@@ -1205,14 +853,6 @@ static int tegra_nvec_probe(struct platform_device *pdev)
 	pm_power_off = nvec_power_off;
 
 	/* Get Firmware Version */
-<<<<<<< HEAD
-	msg = nvec_write_sync(nvec, EC_GET_FIRMWARE_VERSION,
-		sizeof(EC_GET_FIRMWARE_VERSION));
-
-	if (msg) {
-		dev_warn(nvec->dev, "ec firmware version %02x.%02x.%02x / %02x\n",
-			msg->data[4], msg->data[5], msg->data[6], msg->data[7]);
-=======
 	err = nvec_write_sync(nvec, get_firmware_version, 2, &msg);
 
 	if (!err) {
@@ -1220,57 +860,10 @@ static int tegra_nvec_probe(struct platform_device *pdev)
 			 "ec firmware version %02x.%02x.%02x / %02x\n",
 			 msg->data[4], msg->data[5],
 			 msg->data[6], msg->data[7]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		nvec_msg_free(nvec, msg);
 	}
 
-<<<<<<< HEAD
-	ret = mfd_add_devices(nvec->dev, -1, nvec_devices,
-			      ARRAY_SIZE(nvec_devices), base, 0);
-	if (ret)
-		dev_err(nvec->dev, "error adding subdevices\n");
-
-	/* unmute speakers? */
-	nvec_write_async(nvec, "\x0d\x10\x59\x95", 4);
-
-	/* enable lid switch event */
-	nvec_write_async(nvec, "\x01\x01\x01\x00\x00\x02\x00", 7);
-
-	/* enable power button event */
-	nvec_write_async(nvec, "\x01\x01\x01\x00\x00\x80\x00", 7);
-
-	return 0;
-
-err_iounmap:
-	iounmap(base);
-failed:
-	kfree(nvec);
-	return -ENOMEM;
-}
-
-static int __devexit tegra_nvec_remove(struct platform_device *pdev)
-{
-	struct nvec_chip *nvec = platform_get_drvdata(pdev);
-
-	nvec_write_async(nvec, EC_DISABLE_EVENT_REPORTING, 3);
-	mfd_remove_devices(nvec->dev);
-	free_irq(nvec->irq, &nvec_interrupt);
-	iounmap(nvec->base);
-	gpio_free(nvec->gpio);
-	destroy_workqueue(nvec->wq);
-	kfree(nvec);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-
-static int tegra_nvec_suspend(struct platform_device *pdev, pm_message_t state)
-{
-	struct nvec_chip *nvec = platform_get_drvdata(pdev);
-	struct nvec_msg *msg;
-=======
 	ret = mfd_add_devices(dev, 0, nvec_devices,
 			      ARRAY_SIZE(nvec_devices), NULL, 0, NULL);
 	if (ret)
@@ -1310,49 +903,21 @@ static int nvec_suspend(struct device *dev)
 	struct nvec_chip *nvec = dev_get_drvdata(dev);
 	struct nvec_msg *msg;
 	char ap_suspend[] = { NVEC_SLEEP, AP_SUSPEND };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(nvec->dev, "suspending\n");
 
 	/* keep these sync or you'll break suspend */
-<<<<<<< HEAD
-	msg = nvec_write_sync(nvec, EC_DISABLE_EVENT_REPORTING, 3);
-	nvec_msg_free(nvec, msg);
-	msg = nvec_write_sync(nvec, "\x04\x02", 2);
-	nvec_msg_free(nvec, msg);
-=======
 	nvec_toggle_global_events(nvec, false);
 
 	err = nvec_write_sync(nvec, ap_suspend, sizeof(ap_suspend), &msg);
 	if (!err)
 		nvec_msg_free(nvec, msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nvec_disable_i2c_slave(nvec);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int tegra_nvec_resume(struct platform_device *pdev)
-{
-	struct nvec_chip *nvec = platform_get_drvdata(pdev);
-
-	dev_dbg(nvec->dev, "resuming\n");
-	tegra_init_i2c_slave(nvec);
-	nvec_write_async(nvec, EC_ENABLE_EVENT_REPORTING, 3);
-
-	return 0;
-}
-
-#else
-#define tegra_nvec_suspend NULL
-#define tegra_nvec_resume NULL
-#endif
-
-/* Match table for of_platform binding */
-static const struct of_device_id nvidia_nvec_of_match[] __devinitconst = {
-=======
 static int nvec_resume(struct device *dev)
 {
 	struct nvec_chip *nvec = dev_get_drvdata(dev);
@@ -1369,7 +934,6 @@ static SIMPLE_DEV_PM_OPS(nvec_pm_ops, nvec_suspend, nvec_resume);
 
 /* Match table for of_platform binding */
 static const struct of_device_id nvidia_nvec_of_match[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "nvidia,nvec", },
 	{},
 };
@@ -1377,33 +941,15 @@ MODULE_DEVICE_TABLE(of, nvidia_nvec_of_match);
 
 static struct platform_driver nvec_device_driver = {
 	.probe   = tegra_nvec_probe,
-<<<<<<< HEAD
-	.remove  = __devexit_p(tegra_nvec_remove),
-	.suspend = tegra_nvec_suspend,
-	.resume  = tegra_nvec_resume,
-	.driver  = {
-		.name = "nvec",
-		.owner = THIS_MODULE,
-=======
 	.remove_new = tegra_nvec_remove,
 	.driver  = {
 		.name = "nvec",
 		.pm = &nvec_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = nvidia_nvec_of_match,
 	}
 };
 
-<<<<<<< HEAD
-static int __init tegra_nvec_init(void)
-{
-	return platform_driver_register(&nvec_device_driver);
-}
-
-module_init(tegra_nvec_init);
-=======
 module_platform_driver(nvec_device_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_ALIAS("platform:nvec");
 MODULE_DESCRIPTION("NVIDIA compliant embedded controller interface");

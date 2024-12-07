@@ -13,10 +13,7 @@
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ssb/ssb.h>
 #include <linux/ssb/ssb_regs.h>
 #include <linux/ssb/ssb_driver_gige.h>
@@ -40,12 +37,8 @@ static LIST_HEAD(buses);
 /* Software ID counter */
 static unsigned int next_busnumber;
 /* buses_mutes locks the two buslists and the next_busnumber.
-<<<<<<< HEAD
- * Don't lock this directly, but use ssb_buses_[un]lock() below. */
-=======
  * Don't lock this directly, but use ssb_buses_[un]lock() below.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_MUTEX(buses_mutex);
 
 /* There are differences in the codeflow, if the bus is
@@ -53,12 +46,8 @@ static DEFINE_MUTEX(buses_mutex);
  * are not available early. This is a mechanism to delay
  * these initializations to after early boot has finished.
  * It's also used to avoid mutex locking, as that's not
-<<<<<<< HEAD
- * available and needed early. */
-=======
  * available and needed early.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool ssb_is_early_boot = 1;
 
 static void ssb_buses_lock(void);
@@ -103,28 +92,6 @@ found:
 }
 #endif /* CONFIG_SSB_PCMCIAHOST */
 
-<<<<<<< HEAD
-#ifdef CONFIG_SSB_SDIOHOST
-struct ssb_bus *ssb_sdio_func_to_bus(struct sdio_func *func)
-{
-	struct ssb_bus *bus;
-
-	ssb_buses_lock();
-	list_for_each_entry(bus, &buses, list) {
-		if (bus->bustype == SSB_BUSTYPE_SDIO &&
-		    bus->host_sdio == func)
-			goto found;
-	}
-	bus = NULL;
-found:
-	ssb_buses_unlock();
-
-	return bus;
-}
-#endif /* CONFIG_SSB_SDIOHOST */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ssb_for_each_bus_call(unsigned long data,
 			  int (*func)(struct ssb_bus *bus, unsigned long data))
 {
@@ -196,12 +163,8 @@ int ssb_bus_resume(struct ssb_bus *bus)
 	int err;
 
 	/* Reset HW state information in memory, so that HW is
-<<<<<<< HEAD
-	 * completely reinitialized. */
-=======
 	 * completely reinitialized.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bus->mapped_device = NULL;
 #ifdef CONFIG_SSB_DRIVER_PCICORE
 	bus->pcicore.setup_done = 0;
@@ -249,11 +212,7 @@ int ssb_devices_freeze(struct ssb_bus *bus, struct ssb_freeze_context *ctx)
 
 	memset(ctx, 0, sizeof(*ctx));
 	ctx->bus = bus;
-<<<<<<< HEAD
-	SSB_WARN_ON(bus->nr_devices > ARRAY_SIZE(ctx->device_frozen));
-=======
 	WARN_ON(bus->nr_devices > ARRAY_SIZE(ctx->device_frozen));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < bus->nr_devices; i++) {
 		sdev = ssb_device_get(&bus->devices[i]);
@@ -264,11 +223,7 @@ int ssb_devices_freeze(struct ssb_bus *bus, struct ssb_freeze_context *ctx)
 			continue;
 		}
 		sdrv = drv_to_ssb_drv(sdev->dev->driver);
-<<<<<<< HEAD
-		if (SSB_WARN_ON(!sdrv->remove))
-=======
 		if (WARN_ON(!sdrv->remove))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		sdrv->remove(sdev);
 		ctx->device_frozen[i] = 1;
@@ -296,29 +251,17 @@ int ssb_devices_thaw(struct ssb_freeze_context *ctx)
 			continue;
 		sdev = &bus->devices[i];
 
-<<<<<<< HEAD
-		if (SSB_WARN_ON(!sdev->dev || !sdev->dev->driver))
-			continue;
-		sdrv = drv_to_ssb_drv(sdev->dev->driver);
-		if (SSB_WARN_ON(!sdrv || !sdrv->probe))
-=======
 		if (WARN_ON(!sdev->dev || !sdev->dev->driver))
 			continue;
 		sdrv = drv_to_ssb_drv(sdev->dev->driver);
 		if (WARN_ON(!sdrv || !sdrv->probe))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		err = sdrv->probe(sdev, &sdev->id);
 		if (err) {
-<<<<<<< HEAD
-			ssb_printk(KERN_ERR PFX "Failed to thaw device %s\n",
-				   dev_name(sdev->dev));
-=======
 			dev_err(sdev->dev,
 				"Failed to thaw device %s\n",
 				dev_name(sdev->dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result = err;
 		}
 		ssb_device_put(sdev);
@@ -340,11 +283,7 @@ static void ssb_device_shutdown(struct device *dev)
 		ssb_drv->shutdown(ssb_dev);
 }
 
-<<<<<<< HEAD
-static int ssb_device_remove(struct device *dev)
-=======
 static void ssb_device_remove(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ssb_device *ssb_dev = dev_to_ssb_dev(dev);
 	struct ssb_driver *ssb_drv = drv_to_ssb_drv(dev->driver);
@@ -352,11 +291,6 @@ static void ssb_device_remove(struct device *dev)
 	if (ssb_drv && ssb_drv->remove)
 		ssb_drv->remove(ssb_dev);
 	ssb_device_put(ssb_dev);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ssb_device_probe(struct device *dev)
@@ -405,15 +339,9 @@ static int ssb_bus_match(struct device *dev, struct device_driver *drv)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ssb_device_uevent(struct device *dev, struct kobj_uevent_env *env)
-{
-	struct ssb_device *ssb_dev = dev_to_ssb_dev(dev);
-=======
 static int ssb_device_uevent(const struct device *dev, struct kobj_uevent_env *env)
 {
 	const struct ssb_device *ssb_dev = dev_to_ssb_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev)
 		return -ENODEV;
@@ -429,12 +357,8 @@ static ssize_t \
 attrib##_show(struct device *dev, struct device_attribute *attr, char *buf) \
 { \
 	return sprintf(buf, format_string, dev_to_ssb_dev(dev)->field); \
-<<<<<<< HEAD
-}
-=======
 } \
 static DEVICE_ATTR_RO(attrib);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ssb_config_attr(core_num, core_index, "%u\n")
 ssb_config_attr(coreid, id.coreid, "0x%04x\n")
@@ -447,20 +371,6 @@ name_show(struct device *dev, struct device_attribute *attr, char *buf)
 	return sprintf(buf, "%s\n",
 		       ssb_core_name(dev_to_ssb_dev(dev)->id.coreid));
 }
-<<<<<<< HEAD
-
-static struct device_attribute ssb_device_attrs[] = {
-	__ATTR_RO(name),
-	__ATTR_RO(core_num),
-	__ATTR_RO(coreid),
-	__ATTR_RO(vendor),
-	__ATTR_RO(revision),
-	__ATTR_RO(irq),
-	__ATTR_NULL,
-};
-
-static struct bus_type ssb_bustype = {
-=======
 static DEVICE_ATTR_RO(name);
 
 static struct attribute *ssb_device_attrs[] = {
@@ -475,7 +385,6 @@ static struct attribute *ssb_device_attrs[] = {
 ATTRIBUTE_GROUPS(ssb_device);
 
 static const struct bus_type ssb_bustype = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "ssb",
 	.match		= ssb_bus_match,
 	.probe		= ssb_device_probe,
@@ -484,11 +393,7 @@ static const struct bus_type ssb_bustype = {
 	.suspend	= ssb_device_suspend,
 	.resume		= ssb_device_resume,
 	.uevent		= ssb_device_uevent,
-<<<<<<< HEAD
-	.dev_attrs	= ssb_device_attrs,
-=======
 	.dev_groups	= ssb_device_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void ssb_buses_lock(void)
@@ -515,27 +420,21 @@ static void ssb_devices_unregister(struct ssb_bus *bus)
 		if (sdev->dev)
 			device_unregister(sdev->dev);
 	}
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_SSB_EMBEDDED
 	if (bus->bustype == SSB_BUSTYPE_SSB)
 		platform_device_unregister(bus->watchdog);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ssb_bus_unregister(struct ssb_bus *bus)
 {
-<<<<<<< HEAD
-=======
 	int err;
 
 	err = ssb_gpio_unregister(bus);
 	if (err)
 		pr_debug("Can not unregister GPIO driver: %i\n", err);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssb_buses_lock();
 	ssb_devices_unregister(bus);
 	list_del(&bus->list);
@@ -567,12 +466,8 @@ static int ssb_devices_register(struct ssb_bus *bus)
 		sdev = &(bus->devices[i]);
 
 		/* We don't register SSB-system devices to the kernel,
-<<<<<<< HEAD
-		 * as the drivers for them are built into SSB. */
-=======
 		 * as the drivers for them are built into SSB.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (sdev->id.coreid) {
 		case SSB_DEV_CHIPCOMMON:
 		case SSB_DEV_PCI:
@@ -586,11 +481,6 @@ static int ssb_devices_register(struct ssb_bus *bus)
 
 		devwrap = kzalloc(sizeof(*devwrap), GFP_KERNEL);
 		if (!devwrap) {
-<<<<<<< HEAD
-			ssb_printk(KERN_ERR PFX
-				   "Could not allocate device\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -ENOMEM;
 			goto error;
 		}
@@ -629,29 +519,17 @@ static int ssb_devices_register(struct ssb_bus *bus)
 		sdev->dev = dev;
 		err = device_register(dev);
 		if (err) {
-<<<<<<< HEAD
-			ssb_printk(KERN_ERR PFX
-				   "Could not register %s\n",
-				   dev_name(dev));
-			/* Set dev to NULL to not unregister
-			 * dev on error unwinding. */
-			sdev->dev = NULL;
-			kfree(devwrap);
-=======
 			pr_err("Could not register %s\n", dev_name(dev));
 			/* Set dev to NULL to not unregister
 			 * dev on error unwinding.
 			 */
 			sdev->dev = NULL;
 			put_device(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error;
 		}
 		dev_idx++;
 	}
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SSB_DRIVER_MIPS
 	if (bus->mipscore.pflash.present) {
 		err = platform_device_register(&ssb_pflash_dev);
@@ -668,7 +546,6 @@ static int ssb_devices_register(struct ssb_bus *bus)
 	}
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 error:
 	/* Unwind the already registered devices. */
@@ -677,11 +554,7 @@ error:
 }
 
 /* Needs ssb_buses_lock() */
-<<<<<<< HEAD
-static int __devinit ssb_attach_queued_buses(void)
-=======
 static int ssb_attach_queued_buses(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ssb_bus *bus, *n;
 	int err = 0;
@@ -700,8 +573,6 @@ static int ssb_attach_queued_buses(void)
 		if (err)
 			goto error;
 		ssb_pcicore_init(&bus->pcicore);
-<<<<<<< HEAD
-=======
 		if (bus->bustype == SSB_BUSTYPE_SSB)
 			ssb_watchdog_register(bus);
 
@@ -711,7 +582,6 @@ static int ssb_attach_queued_buses(void)
 		else if (err)
 			pr_debug("Error registering GPIO driver: %i\n", err);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ssb_bus_may_powerdown(bus);
 
 		err = ssb_devices_register(bus);
@@ -727,169 +597,6 @@ error:
 	return err;
 }
 
-<<<<<<< HEAD
-static u8 ssb_ssb_read8(struct ssb_device *dev, u16 offset)
-{
-	struct ssb_bus *bus = dev->bus;
-
-	offset += dev->core_index * SSB_CORE_SIZE;
-	return readb(bus->mmio + offset);
-}
-
-static u16 ssb_ssb_read16(struct ssb_device *dev, u16 offset)
-{
-	struct ssb_bus *bus = dev->bus;
-
-	offset += dev->core_index * SSB_CORE_SIZE;
-	return readw(bus->mmio + offset);
-}
-
-static u32 ssb_ssb_read32(struct ssb_device *dev, u16 offset)
-{
-	struct ssb_bus *bus = dev->bus;
-
-	offset += dev->core_index * SSB_CORE_SIZE;
-	return readl(bus->mmio + offset);
-}
-
-#ifdef CONFIG_SSB_BLOCKIO
-static void ssb_ssb_block_read(struct ssb_device *dev, void *buffer,
-			       size_t count, u16 offset, u8 reg_width)
-{
-	struct ssb_bus *bus = dev->bus;
-	void __iomem *addr;
-
-	offset += dev->core_index * SSB_CORE_SIZE;
-	addr = bus->mmio + offset;
-
-	switch (reg_width) {
-	case sizeof(u8): {
-		u8 *buf = buffer;
-
-		while (count) {
-			*buf = __raw_readb(addr);
-			buf++;
-			count--;
-		}
-		break;
-	}
-	case sizeof(u16): {
-		__le16 *buf = buffer;
-
-		SSB_WARN_ON(count & 1);
-		while (count) {
-			*buf = (__force __le16)__raw_readw(addr);
-			buf++;
-			count -= 2;
-		}
-		break;
-	}
-	case sizeof(u32): {
-		__le32 *buf = buffer;
-
-		SSB_WARN_ON(count & 3);
-		while (count) {
-			*buf = (__force __le32)__raw_readl(addr);
-			buf++;
-			count -= 4;
-		}
-		break;
-	}
-	default:
-		SSB_WARN_ON(1);
-	}
-}
-#endif /* CONFIG_SSB_BLOCKIO */
-
-static void ssb_ssb_write8(struct ssb_device *dev, u16 offset, u8 value)
-{
-	struct ssb_bus *bus = dev->bus;
-
-	offset += dev->core_index * SSB_CORE_SIZE;
-	writeb(value, bus->mmio + offset);
-}
-
-static void ssb_ssb_write16(struct ssb_device *dev, u16 offset, u16 value)
-{
-	struct ssb_bus *bus = dev->bus;
-
-	offset += dev->core_index * SSB_CORE_SIZE;
-	writew(value, bus->mmio + offset);
-}
-
-static void ssb_ssb_write32(struct ssb_device *dev, u16 offset, u32 value)
-{
-	struct ssb_bus *bus = dev->bus;
-
-	offset += dev->core_index * SSB_CORE_SIZE;
-	writel(value, bus->mmio + offset);
-}
-
-#ifdef CONFIG_SSB_BLOCKIO
-static void ssb_ssb_block_write(struct ssb_device *dev, const void *buffer,
-				size_t count, u16 offset, u8 reg_width)
-{
-	struct ssb_bus *bus = dev->bus;
-	void __iomem *addr;
-
-	offset += dev->core_index * SSB_CORE_SIZE;
-	addr = bus->mmio + offset;
-
-	switch (reg_width) {
-	case sizeof(u8): {
-		const u8 *buf = buffer;
-
-		while (count) {
-			__raw_writeb(*buf, addr);
-			buf++;
-			count--;
-		}
-		break;
-	}
-	case sizeof(u16): {
-		const __le16 *buf = buffer;
-
-		SSB_WARN_ON(count & 1);
-		while (count) {
-			__raw_writew((__force u16)(*buf), addr);
-			buf++;
-			count -= 2;
-		}
-		break;
-	}
-	case sizeof(u32): {
-		const __le32 *buf = buffer;
-
-		SSB_WARN_ON(count & 3);
-		while (count) {
-			__raw_writel((__force u32)(*buf), addr);
-			buf++;
-			count -= 4;
-		}
-		break;
-	}
-	default:
-		SSB_WARN_ON(1);
-	}
-}
-#endif /* CONFIG_SSB_BLOCKIO */
-
-/* Ops for the plain SSB bus without a host-device (no PCI or PCMCIA). */
-static const struct ssb_bus_ops ssb_ssb_ops = {
-	.read8		= ssb_ssb_read8,
-	.read16		= ssb_ssb_read16,
-	.read32		= ssb_ssb_read32,
-	.write8		= ssb_ssb_write8,
-	.write16	= ssb_ssb_write16,
-	.write32	= ssb_ssb_write32,
-#ifdef CONFIG_SSB_BLOCKIO
-	.block_read	= ssb_ssb_block_read,
-	.block_write	= ssb_ssb_block_write,
-#endif
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ssb_fetch_invariants(struct ssb_bus *bus,
 				ssb_invariants_func_t get_invariants)
 {
@@ -907,16 +614,10 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit ssb_bus_register(struct ssb_bus *bus,
-				      ssb_invariants_func_t get_invariants,
-				      unsigned long baseaddr)
-=======
 static int __maybe_unused
 ssb_bus_register(struct ssb_bus *bus,
 		 ssb_invariants_func_t get_invariants,
 		 unsigned long baseaddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -957,10 +658,7 @@ ssb_bus_register(struct ssb_bus *bus,
 	if (err)
 		goto err_pcmcia_exit;
 	ssb_chipcommon_init(&bus->chipco);
-<<<<<<< HEAD
-=======
 	ssb_extif_init(&bus->extif);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssb_mipscore_init(&bus->mipscore);
 	err = ssb_fetch_invariants(bus, get_invariants);
 	if (err) {
@@ -970,12 +668,8 @@ ssb_bus_register(struct ssb_bus *bus,
 	ssb_bus_may_powerdown(bus);
 
 	/* Queue it for attach.
-<<<<<<< HEAD
-	 * See the comment at the ssb_is_early_boot definition. */
-=======
 	 * See the comment at the ssb_is_early_boot definition.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_tail(&bus->list, &attach_queue);
 	if (!ssb_is_early_boot) {
 		/* This is not early boot, so we must attach the bus now */
@@ -1006,12 +700,7 @@ err_disable_xtal:
 }
 
 #ifdef CONFIG_SSB_PCIHOST
-<<<<<<< HEAD
-int __devinit ssb_bus_pcibus_register(struct ssb_bus *bus,
-				      struct pci_dev *host_pci)
-=======
 int ssb_bus_pcibus_register(struct ssb_bus *bus, struct pci_dev *host_pci)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -1021,13 +710,6 @@ int ssb_bus_pcibus_register(struct ssb_bus *bus, struct pci_dev *host_pci)
 
 	err = ssb_bus_register(bus, ssb_pci_get_invariants, 0);
 	if (!err) {
-<<<<<<< HEAD
-		ssb_printk(KERN_INFO PFX "Sonics Silicon Backplane found on "
-			   "PCI device %s\n", dev_name(&host_pci->dev));
-	} else {
-		ssb_printk(KERN_ERR PFX "Failed to register PCI version"
-			   " of SSB with error %d\n", err);
-=======
 		dev_info(&host_pci->dev,
 			 "Sonics Silicon Backplane found on PCI device %s\n",
 			 dev_name(&host_pci->dev));
@@ -1035,27 +717,16 @@ int ssb_bus_pcibus_register(struct ssb_bus *bus, struct pci_dev *host_pci)
 		dev_err(&host_pci->dev,
 			"Failed to register PCI version of SSB with error %d\n",
 			err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(ssb_bus_pcibus_register);
-#endif /* CONFIG_SSB_PCIHOST */
-
-#ifdef CONFIG_SSB_PCMCIAHOST
-int __devinit ssb_bus_pcmciabus_register(struct ssb_bus *bus,
-					 struct pcmcia_device *pcmcia_dev,
-					 unsigned long baseaddr)
-=======
 #endif /* CONFIG_SSB_PCIHOST */
 
 #ifdef CONFIG_SSB_PCMCIAHOST
 int ssb_bus_pcmciabus_register(struct ssb_bus *bus,
 			       struct pcmcia_device *pcmcia_dev,
 			       unsigned long baseaddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -1065,33 +736,18 @@ int ssb_bus_pcmciabus_register(struct ssb_bus *bus,
 
 	err = ssb_bus_register(bus, ssb_pcmcia_get_invariants, baseaddr);
 	if (!err) {
-<<<<<<< HEAD
-		ssb_printk(KERN_INFO PFX "Sonics Silicon Backplane found on "
-			   "PCMCIA device %s\n", pcmcia_dev->devname);
-=======
 		dev_info(&pcmcia_dev->dev,
 			 "Sonics Silicon Backplane found on PCMCIA device %s\n",
 			 pcmcia_dev->devname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(ssb_bus_pcmciabus_register);
-#endif /* CONFIG_SSB_PCMCIAHOST */
-
-#ifdef CONFIG_SSB_SDIOHOST
-int __devinit ssb_bus_sdiobus_register(struct ssb_bus *bus,
-				       struct sdio_func *func,
-				       unsigned int quirks)
-=======
 #endif /* CONFIG_SSB_PCMCIAHOST */
 
 #ifdef CONFIG_SSB_SDIOHOST
 int ssb_bus_sdiobus_register(struct ssb_bus *bus, struct sdio_func *func,
 			     unsigned int quirks)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -1102,14 +758,9 @@ int ssb_bus_sdiobus_register(struct ssb_bus *bus, struct sdio_func *func,
 
 	err = ssb_bus_register(bus, ssb_sdio_get_invariants, ~0);
 	if (!err) {
-<<<<<<< HEAD
-		ssb_printk(KERN_INFO PFX "Sonics Silicon Backplane found on "
-			   "SDIO device %s\n", sdio_func_id(func));
-=======
 		dev_info(&func->dev,
 			 "Sonics Silicon Backplane found on SDIO device %s\n",
 			 sdio_func_id(func));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
@@ -1117,41 +768,23 @@ int ssb_bus_sdiobus_register(struct ssb_bus *bus, struct sdio_func *func,
 EXPORT_SYMBOL(ssb_bus_sdiobus_register);
 #endif /* CONFIG_SSB_PCMCIAHOST */
 
-<<<<<<< HEAD
-int __devinit ssb_bus_ssbbus_register(struct ssb_bus *bus,
-				      unsigned long baseaddr,
-				      ssb_invariants_func_t get_invariants)
-=======
 #ifdef CONFIG_SSB_HOST_SOC
 int ssb_bus_host_soc_register(struct ssb_bus *bus, unsigned long baseaddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
 	bus->bustype = SSB_BUSTYPE_SSB;
-<<<<<<< HEAD
-	bus->ops = &ssb_ssb_ops;
-
-	err = ssb_bus_register(bus, get_invariants, baseaddr);
-	if (!err) {
-		ssb_printk(KERN_INFO PFX "Sonics Silicon Backplane found at "
-			   "address 0x%08lX\n", baseaddr);
-=======
 	bus->ops = &ssb_host_soc_ops;
 
 	err = ssb_bus_register(bus, ssb_host_soc_get_invariants, baseaddr);
 	if (!err) {
 		pr_info("Sonics Silicon Backplane found at address 0x%08lX\n",
 			baseaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int __ssb_driver_register(struct ssb_driver *drv, struct module *owner)
 {
@@ -1204,11 +837,7 @@ static u32 clkfactor_f6_resolve(u32 v)
 	case SSB_CHIPCO_CLK_F6_7:
 		return 7;
 	}
-<<<<<<< HEAD
-	return 0;
-=======
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Calculate the speed the backplane would run at a given set of clockcontrol values */
@@ -1234,22 +863,13 @@ u32 ssb_calc_clock_rate(u32 plltype, u32 n, u32 m)
 	case SSB_PLLTYPE_2: /* 48Mhz, 4 dividers */
 		n1 += SSB_CHIPCO_CLK_T2_BIAS;
 		n2 += SSB_CHIPCO_CLK_T2_BIAS;
-<<<<<<< HEAD
-		SSB_WARN_ON(!((n1 >= 2) && (n1 <= 7)));
-		SSB_WARN_ON(!((n2 >= 5) && (n2 <= 23)));
-=======
 		WARN_ON(!((n1 >= 2) && (n1 <= 7)));
 		WARN_ON(!((n2 >= 5) && (n2 <= 23)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SSB_PLLTYPE_5: /* 25Mhz, 4 dividers */
 		return 100000000;
 	default:
-<<<<<<< HEAD
-		SSB_WARN_ON(1);
-=======
 		WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (plltype) {
@@ -1298,15 +918,9 @@ u32 ssb_calc_clock_rate(u32 plltype, u32 n, u32 m)
 		m1 += SSB_CHIPCO_CLK_T2_BIAS;
 		m2 += SSB_CHIPCO_CLK_T2M2_BIAS;
 		m3 += SSB_CHIPCO_CLK_T2_BIAS;
-<<<<<<< HEAD
-		SSB_WARN_ON(!((m1 >= 2) && (m1 <= 7)));
-		SSB_WARN_ON(!((m2 >= 3) && (m2 <= 10)));
-		SSB_WARN_ON(!((m3 >= 2) && (m3 <= 7)));
-=======
 		WARN_ON(!((m1 >= 2) && (m1 <= 7)));
 		WARN_ON(!((m2 >= 3) && (m2 <= 10)));
 		WARN_ON(!((m3 >= 2) && (m3 <= 7)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(mc & SSB_CHIPCO_CLK_T2MC_M1BYP))
 			clock /= m1;
@@ -1316,11 +930,7 @@ u32 ssb_calc_clock_rate(u32 plltype, u32 n, u32 m)
 			clock /= m3;
 		return clock;
 	default:
-<<<<<<< HEAD
-		SSB_WARN_ON(1);
-=======
 		WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1371,16 +981,10 @@ static u32 ssb_tmslow_reject_bitmask(struct ssb_device *dev)
 	case SSB_IDLOW_SSBREV_25:     /* TODO - find the proper REJECT bit */
 	case SSB_IDLOW_SSBREV_27:     /* same here */
 		return SSB_TMSLOW_REJECT;	/* this is a guess */
-<<<<<<< HEAD
-	default:
-		printk(KERN_INFO "ssb: Backplane Revision 0x%.8X\n", rev);
-		WARN_ON(1);
-=======
 	case SSB_IDLOW_SSBREV:
 		break;
 	default:
 		WARN(1, KERN_INFO "ssb: Backplane Revision 0x%.8X\n", rev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return (SSB_TMSLOW_REJECT | SSB_TMSLOW_REJECT_23);
 }
@@ -1405,12 +1009,8 @@ static void ssb_flush_tmslow(struct ssb_device *dev)
 	 * a machine check exception otherwise.
 	 * Do this by reading the register back to commit the
 	 * PCI write and delay an additional usec for the device
-<<<<<<< HEAD
-	 * to react to the change. */
-=======
 	 * to react to the change.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssb_read32(dev, SSB_TMSLOW);
 	udelay(1);
 }
@@ -1447,12 +1047,8 @@ void ssb_device_enable(struct ssb_device *dev, u32 core_specific_flags)
 EXPORT_SYMBOL(ssb_device_enable);
 
 /* Wait for bitmask in a register to get set or cleared.
-<<<<<<< HEAD
- * timeout is in units of ten-microseconds */
-=======
  * timeout is in units of ten-microseconds
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ssb_wait_bits(struct ssb_device *dev, u16 reg, u32 bitmask,
 			 int timeout, int set)
 {
@@ -1470,15 +1066,9 @@ static int ssb_wait_bits(struct ssb_device *dev, u16 reg, u32 bitmask,
 		}
 		udelay(10);
 	}
-<<<<<<< HEAD
-	printk(KERN_ERR PFX "Timeout waiting for bitmask %08X on "
-			    "register %04X to %s.\n",
-	       bitmask, reg, (set ? "set" : "clear"));
-=======
 	dev_err(dev->dev,
 		"Timeout waiting for bitmask %08X on register %04X to %s\n",
 		bitmask, reg, set ? "set" : "clear");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -ETIMEDOUT;
 }
@@ -1535,11 +1125,7 @@ static bool ssb_dma_translation_special_bit(struct ssb_device *dev)
 			chip_id == 43231 || chip_id == 43222);
 	}
 
-<<<<<<< HEAD
-	return 0;
-=======
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 ssb_dma_translation(struct ssb_device *dev)
@@ -1571,12 +1157,8 @@ int ssb_bus_may_powerdown(struct ssb_bus *bus)
 
 	/* On buses where more than one core may be working
 	 * at a time, we must not powerdown stuff if there are
-<<<<<<< HEAD
-	 * still cores that may want to run. */
-=======
 	 * still cores that may want to run.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bus->bustype == SSB_BUSTYPE_SSB)
 		goto out;
 
@@ -1592,19 +1174,10 @@ int ssb_bus_may_powerdown(struct ssb_bus *bus)
 	if (err)
 		goto error;
 out:
-<<<<<<< HEAD
-#ifdef CONFIG_SSB_DEBUG
-	bus->powered_up = 0;
-#endif
-	return err;
-error:
-	ssb_printk(KERN_ERR PFX "Bus powerdown failed\n");
-=======
 	bus->powered_up = 0;
 	return err;
 error:
 	pr_err("Bus powerdown failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out;
 }
 EXPORT_SYMBOL(ssb_bus_may_powerdown);
@@ -1618,24 +1191,14 @@ int ssb_bus_powerup(struct ssb_bus *bus, bool dynamic_pctl)
 	if (err)
 		goto error;
 
-<<<<<<< HEAD
-#ifdef CONFIG_SSB_DEBUG
 	bus->powered_up = 1;
-#endif
-=======
-	bus->powered_up = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mode = dynamic_pctl ? SSB_CLKMODE_DYNAMIC : SSB_CLKMODE_FAST;
 	ssb_chipco_set_clockmode(&bus->chipco, mode);
 
 	return 0;
 error:
-<<<<<<< HEAD
-	ssb_printk(KERN_ERR PFX "Bus powerup failed\n");
-=======
 	pr_err("Bus powerup failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL(ssb_bus_powerup);
@@ -1680,17 +1243,6 @@ u32 ssb_admatch_base(u32 adm)
 		base = (adm & SSB_ADM_BASE0);
 		break;
 	case SSB_ADM_TYPE1:
-<<<<<<< HEAD
-		SSB_WARN_ON(adm & SSB_ADM_NEG); /* unsupported */
-		base = (adm & SSB_ADM_BASE1);
-		break;
-	case SSB_ADM_TYPE2:
-		SSB_WARN_ON(adm & SSB_ADM_NEG); /* unsupported */
-		base = (adm & SSB_ADM_BASE2);
-		break;
-	default:
-		SSB_WARN_ON(1);
-=======
 		WARN_ON(adm & SSB_ADM_NEG); /* unsupported */
 		base = (adm & SSB_ADM_BASE1);
 		break;
@@ -1700,7 +1252,6 @@ u32 ssb_admatch_base(u32 adm)
 		break;
 	default:
 		WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return base;
@@ -1716,17 +1267,6 @@ u32 ssb_admatch_size(u32 adm)
 		size = ((adm & SSB_ADM_SZ0) >> SSB_ADM_SZ0_SHIFT);
 		break;
 	case SSB_ADM_TYPE1:
-<<<<<<< HEAD
-		SSB_WARN_ON(adm & SSB_ADM_NEG); /* unsupported */
-		size = ((adm & SSB_ADM_SZ1) >> SSB_ADM_SZ1_SHIFT);
-		break;
-	case SSB_ADM_TYPE2:
-		SSB_WARN_ON(adm & SSB_ADM_NEG); /* unsupported */
-		size = ((adm & SSB_ADM_SZ2) >> SSB_ADM_SZ2_SHIFT);
-		break;
-	default:
-		SSB_WARN_ON(1);
-=======
 		WARN_ON(adm & SSB_ADM_NEG); /* unsupported */
 		size = ((adm & SSB_ADM_SZ1) >> SSB_ADM_SZ1_SHIFT);
 		break;
@@ -1736,7 +1276,6 @@ u32 ssb_admatch_size(u32 adm)
 		break;
 	default:
 		WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	size = (1 << (size + 1));
 
@@ -1767,17 +1306,6 @@ static int __init ssb_modinit(void)
 
 	err = b43_pci_ssb_bridge_init();
 	if (err) {
-<<<<<<< HEAD
-		ssb_printk(KERN_ERR "Broadcom 43xx PCI-SSB-bridge "
-			   "initialization failed\n");
-		/* don't fail SSB init because of this */
-		err = 0;
-	}
-	err = ssb_gige_init();
-	if (err) {
-		ssb_printk(KERN_ERR "SSB Broadcom Gigabit Ethernet "
-			   "driver initialization failed\n");
-=======
 		pr_err("Broadcom 43xx PCI-SSB-bridge initialization failed\n");
 		/* don't fail SSB init because of this */
 	}
@@ -1789,7 +1317,6 @@ static int __init ssb_modinit(void)
 	err = ssb_gige_init();
 	if (err) {
 		pr_err("SSB Broadcom Gigabit Ethernet driver initialization failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* don't fail SSB init because of this */
 		err = 0;
 	}
@@ -1798,21 +1325,14 @@ out:
 }
 /* ssb must be initialized after PCI but before the ssb drivers.
  * That means we must use some initcall between subsys_initcall
-<<<<<<< HEAD
- * and device_initcall. */
-=======
  * and device_initcall.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fs_initcall(ssb_modinit);
 
 static void __exit ssb_modexit(void)
 {
 	ssb_gige_exit();
-<<<<<<< HEAD
-=======
 	ssb_host_pcmcia_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b43_pci_ssb_bridge_exit();
 	bus_unregister(&ssb_bustype);
 }

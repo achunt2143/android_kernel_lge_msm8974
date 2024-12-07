@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Statically sized hash table implementation
  * (C) 2012  Sasha Levin <levinsasha928@gmail.com>
@@ -20,13 +17,10 @@
 	struct hlist_head name[1 << (bits)] =					\
 			{ [0 ... ((1 << (bits)) - 1)] = HLIST_HEAD_INIT }
 
-<<<<<<< HEAD
-=======
 #define DEFINE_READ_MOSTLY_HASHTABLE(name, bits)				\
 	struct hlist_head name[1 << (bits)] __read_mostly =			\
 			{ [0 ... ((1 << (bits)) - 1)] = HLIST_HEAD_INIT }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DECLARE_HASHTABLE(name, bits)                                   	\
 	struct hlist_head name[1 << (bits)]
 
@@ -126,15 +120,6 @@ static inline void hash_del_rcu(struct hlist_node *node)
  * hash_for_each - iterate over a hashtable
  * @name: hashtable to iterate
  * @bkt: integer to use as bucket loop cursor
-<<<<<<< HEAD
- * @node: the &struct list_head to use as a loop cursor for each entry
- * @obj: the type * to use as a loop cursor for each entry
- * @member: the name of the hlist_node within the struct
- */
-#define hash_for_each(name, bkt, node, obj, member)				\
-	for ((bkt) = 0, node = NULL; node == NULL && (bkt) < HASH_SIZE(name); (bkt)++)\
-		hlist_for_each_entry(obj, node, &name[bkt], member)
-=======
  * @obj: the type * to use as a loop cursor for each entry
  * @member: the name of the hlist_node within the struct
  */
@@ -142,33 +127,11 @@ static inline void hash_del_rcu(struct hlist_node *node)
 	for ((bkt) = 0, obj = NULL; obj == NULL && (bkt) < HASH_SIZE(name);\
 			(bkt)++)\
 		hlist_for_each_entry(obj, &name[bkt], member)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * hash_for_each_rcu - iterate over a rcu enabled hashtable
  * @name: hashtable to iterate
  * @bkt: integer to use as bucket loop cursor
-<<<<<<< HEAD
- * @node: the &struct list_head to use as a loop cursor for each entry
- * @obj: the type * to use as a loop cursor for each entry
- * @member: the name of the hlist_node within the struct
- */
-#define hash_for_each_rcu(name, bkt, node, obj, member)				\
-	for ((bkt) = 0, node = NULL; node == NULL && (bkt) < HASH_SIZE(name); (bkt)++)\
-		hlist_for_each_entry_rcu(obj, node, &name[bkt], member)
-
-/**
- * hash_for_each_rcu_new - iterate over a rcu enabled hashtable
- * @name: hashtable to iterate
- * @bkt: integer to use as bucket loop cursor
- * @obj: the type * to use as a loop cursor for each entry
- * @member: the name of the hlist_node within the struct
- */
-#define hash_for_each_rcu_new(name, bkt, obj, member)			\
-	for ((bkt) = 0, obj = NULL; obj == NULL && (bkt) < HASH_SIZE(name);\
-			(bkt)++)\
-		hlist_for_each_entry_rcu_new(obj, &name[bkt], member)
-=======
  * @obj: the type * to use as a loop cursor for each entry
  * @member: the name of the hlist_node within the struct
  */
@@ -176,23 +139,12 @@ static inline void hash_del_rcu(struct hlist_node *node)
 	for ((bkt) = 0, obj = NULL; obj == NULL && (bkt) < HASH_SIZE(name);\
 			(bkt)++)\
 		hlist_for_each_entry_rcu(obj, &name[bkt], member)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * hash_for_each_safe - iterate over a hashtable safe against removal of
  * hash entry
  * @name: hashtable to iterate
  * @bkt: integer to use as bucket loop cursor
-<<<<<<< HEAD
- * @node: the &struct list_head to use as a loop cursor for each entry
- * @tmp: a &struct used for temporary storage
- * @obj: the type * to use as a loop cursor for each entry
- * @member: the name of the hlist_node within the struct
- */
-#define hash_for_each_safe(name, bkt, node, tmp, obj, member)			\
-	for ((bkt) = 0, node = NULL; node == NULL && (bkt) < HASH_SIZE(name); (bkt)++)\
-		hlist_for_each_entry_safe(obj, node, tmp, &name[bkt], member)
-=======
  * @tmp: a &struct hlist_node used for temporary storage
  * @obj: the type * to use as a loop cursor for each entry
  * @member: the name of the hlist_node within the struct
@@ -201,47 +153,21 @@ static inline void hash_del_rcu(struct hlist_node *node)
 	for ((bkt) = 0, obj = NULL; obj == NULL && (bkt) < HASH_SIZE(name);\
 			(bkt)++)\
 		hlist_for_each_entry_safe(obj, tmp, &name[bkt], member)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * hash_for_each_possible - iterate over all possible objects hashing to the
  * same bucket
  * @name: hashtable to iterate
  * @obj: the type * to use as a loop cursor for each entry
-<<<<<<< HEAD
- * @node: the &struct list_head to use as a loop cursor for each entry
- * @member: the name of the hlist_node within the struct
- * @key: the key of the objects to iterate over
- */
-#define hash_for_each_possible(name, obj, node, member, key)			\
-	hlist_for_each_entry(obj, node,	&name[hash_min(key, HASH_BITS(name))], member)
-=======
  * @member: the name of the hlist_node within the struct
  * @key: the key of the objects to iterate over
  */
 #define hash_for_each_possible(name, obj, member, key)			\
 	hlist_for_each_entry(obj, &name[hash_min(key, HASH_BITS(name))], member)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * hash_for_each_possible_rcu - iterate over all possible objects hashing to the
  * same bucket in an rcu enabled hashtable
-<<<<<<< HEAD
- * in a rcu enabled hashtable
- * @name: hashtable to iterate
- * @obj: the type * to use as a loop cursor for each entry
- * @node: the &struct list_head to use as a loop cursor for each entry
- * @member: the name of the hlist_node within the struct
- * @key: the key of the objects to iterate over
- */
-#define hash_for_each_possible_rcu(name, obj, node, member, key)		\
-	hlist_for_each_entry_rcu(obj, node, &name[hash_min(key, HASH_BITS(name))], member)
-
-/**
- * hash_for_each_possible_rcu_new - iterate over all possible objects hashing to the
- * same bucket in an rcu enabled hashtable
- * in a rcu enabled hashtable
-=======
  * @name: hashtable to iterate
  * @obj: the type * to use as a loop cursor for each entry
  * @member: the name of the hlist_node within the struct
@@ -254,17 +180,10 @@ static inline void hash_del_rcu(struct hlist_node *node)
 /**
  * hash_for_each_possible_rcu_notrace - iterate over all possible objects hashing
  * to the same bucket in an rcu enabled hashtable in a rcu enabled hashtable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @name: hashtable to iterate
  * @obj: the type * to use as a loop cursor for each entry
  * @member: the name of the hlist_node within the struct
  * @key: the key of the objects to iterate over
-<<<<<<< HEAD
- */
-#define hash_for_each_possible_rcu_new(name, obj, member, key)		\
-	hlist_for_each_entry_rcu_new(obj, &name[hash_min(key, HASH_BITS(name))],\
-		member)
-=======
  *
  * This is the same as hash_for_each_possible_rcu() except that it does
  * not do any RCU debugging or tracing.
@@ -272,29 +191,18 @@ static inline void hash_del_rcu(struct hlist_node *node)
 #define hash_for_each_possible_rcu_notrace(name, obj, member, key) \
 	hlist_for_each_entry_rcu_notrace(obj, \
 		&name[hash_min(key, HASH_BITS(name))], member)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * hash_for_each_possible_safe - iterate over all possible objects hashing to the
  * same bucket safe against removals
  * @name: hashtable to iterate
  * @obj: the type * to use as a loop cursor for each entry
-<<<<<<< HEAD
- * @node: the &struct list_head to use as a loop cursor for each entry
- * @tmp: a &struct used for temporary storage
- * @member: the name of the hlist_node within the struct
- * @key: the key of the objects to iterate over
- */
-#define hash_for_each_possible_safe(name, obj, node, tmp, member, key)		\
-	hlist_for_each_entry_safe(obj, node, tmp,				\
-=======
  * @tmp: a &struct hlist_node used for temporary storage
  * @member: the name of the hlist_node within the struct
  * @key: the key of the objects to iterate over
  */
 #define hash_for_each_possible_safe(name, obj, tmp, member, key)	\
 	hlist_for_each_entry_safe(obj, tmp,\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		&name[hash_min(key, HASH_BITS(name))], member)
 
 

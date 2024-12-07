@@ -14,21 +14,6 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include <linux/nl80211.h>
-#include <linux/pci.h>
-#include <linux/pci-aspm.h>
-#include <linux/ath9k_platform.h>
-#include <linux/module.h>
-#include "ath9k.h"
-
-static DEFINE_PCI_DEVICE_TABLE(ath_pci_id_table) = {
-	{ PCI_VDEVICE(ATHEROS, 0x0023) }, /* PCI   */
-	{ PCI_VDEVICE(ATHEROS, 0x0024) }, /* PCI-E */
-	{ PCI_VDEVICE(ATHEROS, 0x0027) }, /* PCI   */
-	{ PCI_VDEVICE(ATHEROS, 0x0029) }, /* PCI   */
-	{ PCI_VDEVICE(ATHEROS, 0x002A) }, /* PCI-E */
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/nl80211.h>
@@ -113,18 +98,10 @@ static const struct pci_device_id ath_pci_id_table[] = {
 	  .driver_data = ATH9K_PCI_BT_ANT_DIV },
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(ATHEROS, 0x002B) }, /* PCI-E */
 	{ PCI_VDEVICE(ATHEROS, 0x002C) }, /* PCI-E 802.11n bonded out */
 	{ PCI_VDEVICE(ATHEROS, 0x002D) }, /* PCI   */
 	{ PCI_VDEVICE(ATHEROS, 0x002E) }, /* PCI-E */
-<<<<<<< HEAD
-	{ PCI_VDEVICE(ATHEROS, 0x0030) }, /* PCI-E  AR9300 */
-	{ PCI_VDEVICE(ATHEROS, 0x0032) }, /* PCI-E  AR9485 */
-	{ PCI_VDEVICE(ATHEROS, 0x0033) }, /* PCI-E  AR9580 */
-	{ PCI_VDEVICE(ATHEROS, 0x0034) }, /* PCI-E  AR9462 */
-	{ PCI_VDEVICE(ATHEROS, 0x0037) }, /* PCI-E  AR1111/AR9485 */
-=======
 
 	/* Killer Wireless (3x3) */
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_ATHEROS,
@@ -797,7 +774,6 @@ static const struct pci_device_id ath_pci_id_table[] = {
 	  .driver_data = ATH9K_PCI_BT_ANT_DIV },
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0 }
 };
 
@@ -805,11 +781,7 @@ static const struct pci_device_id ath_pci_id_table[] = {
 /* return bus cachesize in 4B word units */
 static void ath_pci_read_cachesize(struct ath_common *common, int *csz)
 {
-<<<<<<< HEAD
-	struct ath_softc *sc = (struct ath_softc *) common->priv;
-=======
 	struct ath_softc *sc = common->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 u8tmp;
 
 	pci_read_config_byte(to_pci_dev(sc->dev), PCI_CACHE_LINE_SIZE, &u8tmp);
@@ -827,63 +799,6 @@ static void ath_pci_read_cachesize(struct ath_common *common, int *csz)
 
 static bool ath_pci_eeprom_read(struct ath_common *common, u32 off, u16 *data)
 {
-<<<<<<< HEAD
-	struct ath_softc *sc = (struct ath_softc *) common->priv;
-	struct ath9k_platform_data *pdata = sc->dev->platform_data;
-
-	if (pdata) {
-		if (off >= (ARRAY_SIZE(pdata->eeprom_data))) {
-			ath_err(common,
-				"%s: eeprom read failed, offset %08x is out of range\n",
-				__func__, off);
-		}
-
-		*data = pdata->eeprom_data[off];
-	} else {
-		struct ath_hw *ah = (struct ath_hw *) common->ah;
-
-		common->ops->read(ah, AR5416_EEPROM_OFFSET +
-				      (off << AR5416_EEPROM_S));
-
-		if (!ath9k_hw_wait(ah,
-				   AR_EEPROM_STATUS_DATA,
-				   AR_EEPROM_STATUS_DATA_BUSY |
-				   AR_EEPROM_STATUS_DATA_PROT_ACCESS, 0,
-				   AH_WAIT_TIMEOUT)) {
-			return false;
-		}
-
-		*data = MS(common->ops->read(ah, AR_EEPROM_STATUS_DATA),
-			   AR_EEPROM_STATUS_DATA_VAL);
-	}
-
-	return true;
-}
-
-static void ath_pci_extn_synch_enable(struct ath_common *common)
-{
-	struct ath_softc *sc = (struct ath_softc *) common->priv;
-	struct pci_dev *pdev = to_pci_dev(sc->dev);
-	u8 lnkctl;
-
-	pci_read_config_byte(pdev, sc->sc_ah->caps.pcie_lcr_offset, &lnkctl);
-	lnkctl |= PCI_EXP_LNKCTL_ES;
-	pci_write_config_byte(pdev, sc->sc_ah->caps.pcie_lcr_offset, lnkctl);
-}
-
-/* Need to be called after we discover btcoex capabilities */
-static void ath_pci_aspm_init(struct ath_common *common)
-{
-	struct ath_softc *sc = (struct ath_softc *) common->priv;
-	struct ath_hw *ah = sc->sc_ah;
-	struct pci_dev *pdev = to_pci_dev(sc->dev);
-	struct pci_dev *parent;
-	int pos;
-	u8 aspm;
-
-	pos = pci_pcie_cap(pdev);
-	if (!pos)
-=======
 	struct ath_hw *ah = common->ah;
 
 	common->ops->read(ah, AR5416_EEPROM_OFFSET + (off << AR5416_EEPROM_S));
@@ -913,7 +828,6 @@ static void ath_pci_aspm_init(struct ath_common *common)
 	int ret;
 
 	if (!ah->is_pciexpress)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	parent = pdev->bus->self;
@@ -922,37 +836,14 @@ static void ath_pci_aspm_init(struct ath_common *common)
 
 	if ((ath9k_hw_get_btcoex_scheme(ah) != ATH_BTCOEX_CFG_NONE) &&
 	    (AR_SREV_9285(ah))) {
-<<<<<<< HEAD
-		/* Bluetooth coexistance requires disabling ASPM for AR9285. */
-		pci_read_config_byte(pdev, pos + PCI_EXP_LNKCTL, &aspm);
-		aspm &= ~(PCIE_LINK_STATE_L0S | PCIE_LINK_STATE_L1);
-		pci_write_config_byte(pdev, pos + PCI_EXP_LNKCTL, aspm);
-=======
 		/* Bluetooth coexistence requires disabling ASPM. */
 		pcie_capability_clear_word(pdev, PCI_EXP_LNKCTL,
 			PCI_EXP_LNKCTL_ASPM_L0S | PCI_EXP_LNKCTL_ASPM_L1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Both upstream and downstream PCIe components should
 		 * have the same ASPM settings.
 		 */
-<<<<<<< HEAD
-		pos = pci_pcie_cap(parent);
-		pci_read_config_byte(parent, pos + PCI_EXP_LNKCTL, &aspm);
-		aspm &= ~(PCIE_LINK_STATE_L0S | PCIE_LINK_STATE_L1);
-		pci_write_config_byte(parent, pos + PCI_EXP_LNKCTL, aspm);
-
-		return;
-	}
-
-	pos = pci_pcie_cap(parent);
-	pci_read_config_byte(parent, pos +  PCI_EXP_LNKCTL, &aspm);
-	if (aspm & (PCIE_LINK_STATE_L0S | PCIE_LINK_STATE_L1)) {
-		ah->aspm_enabled = true;
-		/* Initialize PCIe PM and SERDES registers. */
-		ath9k_hw_configpcipowersave(ah, false);
-=======
 		pcie_capability_clear_word(parent, PCI_EXP_LNKCTL,
 			PCI_EXP_LNKCTL_ASPM_L0S | PCI_EXP_LNKCTL_ASPM_L1);
 
@@ -982,7 +873,6 @@ static void ath_pci_aspm_init(struct ath_common *common)
 		/* Initialize PCIe PM and SERDES registers. */
 		ath9k_hw_configpcipowersave(ah, false);
 		ath_info(common, "ASPM enabled: 0x%x\n", aspm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -990,42 +880,17 @@ static const struct ath_bus_ops ath_pci_bus_ops = {
 	.ath_bus_type = ATH_PCI,
 	.read_cachesize = ath_pci_read_cachesize,
 	.eeprom_read = ath_pci_eeprom_read,
-<<<<<<< HEAD
-	.extn_synch_en = ath_pci_extn_synch_enable,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.aspm_init = ath_pci_aspm_init,
 };
 
 static int ath_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
-<<<<<<< HEAD
-	void __iomem *mem;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath_softc *sc;
 	struct ieee80211_hw *hw;
 	u8 csz;
 	u32 val;
 	int ret = 0;
 	char hw_name[64];
-<<<<<<< HEAD
-
-	if (pci_enable_device(pdev))
-		return -EIO;
-
-	ret =  pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-	if (ret) {
-		printk(KERN_ERR "ath9k: 32-bit DMA not available\n");
-		goto err_dma;
-	}
-
-	ret = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-	if (ret) {
-		printk(KERN_ERR "ath9k: 32-bit DMA consistent "
-			"DMA enable failed\n");
-		goto err_dma;
-=======
 	int msi_enabled = 0;
 
 	if (pcim_enable_device(pdev))
@@ -1035,7 +900,6 @@ static int ath_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (ret) {
 		pr_err("32-bit DMA not available\n");
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1071,27 +935,6 @@ static int ath_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if ((val & 0x0000ff00) != 0)
 		pci_write_config_dword(pdev, 0x40, val & 0xffff00ff);
 
-<<<<<<< HEAD
-	ret = pci_request_region(pdev, 0, "ath9k");
-	if (ret) {
-		dev_err(&pdev->dev, "PCI memory region reserve error\n");
-		ret = -ENODEV;
-		goto err_region;
-	}
-
-	mem = pci_iomap(pdev, 0, 0);
-	if (!mem) {
-		printk(KERN_ERR "PCI memory map error\n") ;
-		ret = -EIO;
-		goto err_iomap;
-	}
-
-	hw = ieee80211_alloc_hw(sizeof(struct ath_softc), &ath9k_ops);
-	if (!hw) {
-		dev_err(&pdev->dev, "No memory for ieee80211_hw\n");
-		ret = -ENOMEM;
-		goto err_alloc_hw;
-=======
 	ret = pcim_iomap_regions(pdev, BIT(0), "ath9k");
 	if (ret) {
 		dev_err(&pdev->dev, "PCI memory region reserve error\n");
@@ -1103,7 +946,6 @@ static int ath_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (!hw) {
 		dev_err(&pdev->dev, "No memory for ieee80211_hw\n");
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	SET_IEEE80211_DEV(hw, &pdev->dev);
@@ -1112,14 +954,6 @@ static int ath_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	sc = hw->priv;
 	sc->hw = hw;
 	sc->dev = &pdev->dev;
-<<<<<<< HEAD
-	sc->mem = mem;
-
-	/* Will be cleared in ath9k_start() */
-	sc->sc_flags |= SC_OP_INVALID;
-
-	ret = request_irq(pdev->irq, ath_isr, IRQF_SHARED, "ath9k", sc);
-=======
 	sc->mem = pcim_iomap_table(pdev)[0];
 	sc->driver_data = id->driver_data;
 
@@ -1137,7 +971,6 @@ static int ath_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	else
 		ret = request_irq(pdev->irq, ath_isr, 0, "ath9k", sc);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(&pdev->dev, "request_irq failed\n");
 		goto err_irq;
@@ -1151,18 +984,12 @@ static int ath_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto err_init;
 	}
 
-<<<<<<< HEAD
-	ath9k_hw_name(sc->sc_ah, hw_name, sizeof(hw_name));
-	wiphy_info(hw->wiphy, "%s mem=0x%lx, irq=%d\n",
-		   hw_name, (unsigned long)mem, pdev->irq);
-=======
 	sc->sc_ah->msi_enabled = msi_enabled;
 	sc->sc_ah->msi_reg = 0;
 
 	ath9k_hw_name(sc->sc_ah, hw_name, sizeof(hw_name));
 	wiphy_info(hw->wiphy, "%s mem=0x%p, irq=%d\n",
 		   hw_name, sc->mem, pdev->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -1170,17 +997,6 @@ err_init:
 	free_irq(sc->irq, sc);
 err_irq:
 	ieee80211_free_hw(hw);
-<<<<<<< HEAD
-err_alloc_hw:
-	pci_iounmap(pdev, mem);
-err_iomap:
-	pci_release_region(pdev, 0);
-err_region:
-	/* Nothing */
-err_dma:
-	pci_disable_device(pdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1188,31 +1004,12 @@ static void ath_pci_remove(struct pci_dev *pdev)
 {
 	struct ieee80211_hw *hw = pci_get_drvdata(pdev);
 	struct ath_softc *sc = hw->priv;
-<<<<<<< HEAD
-	void __iomem *mem = sc->mem;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!is_ath9k_unloaded)
 		sc->sc_ah->ah_flags |= AH_UNPLUGGED;
 	ath9k_deinit_device(sc);
 	free_irq(sc->irq, sc);
 	ieee80211_free_hw(sc->hw);
-<<<<<<< HEAD
-
-	pci_iounmap(pdev, mem);
-	pci_disable_device(pdev);
-	pci_release_region(pdev, 0);
-}
-
-#ifdef CONFIG_PM
-
-static int ath_pci_suspend(struct device *device)
-{
-	struct pci_dev *pdev = to_pci_dev(device);
-	struct ieee80211_hw *hw = pci_get_drvdata(pdev);
-	struct ath_softc *sc = hw->priv;
-=======
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -1227,19 +1024,14 @@ static int ath_pci_suspend(struct device *device)
 		dev_info(device, "WOW is enabled, bypassing PCI suspend\n");
 		return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The device has to be moved to FULLSLEEP forcibly.
 	 * Otherwise the chip never moved to full sleep,
 	 * when no interface is up.
 	 */
-<<<<<<< HEAD
-	ath9k_hw_disable(sc->sc_ah);
-=======
 	ath9k_stop_btcoex(sc);
 	ath9k_hw_disable(sc->sc_ah);
 	del_timer_sync(&sc->sleep_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath9k_hw_setpower(sc->sc_ah, ATH9K_PM_FULL_SLEEP);
 
 	return 0;
@@ -1248,13 +1040,10 @@ static int ath_pci_suspend(struct device *device)
 static int ath_pci_resume(struct device *device)
 {
 	struct pci_dev *pdev = to_pci_dev(device);
-<<<<<<< HEAD
-=======
 	struct ieee80211_hw *hw = pci_get_drvdata(pdev);
 	struct ath_softc *sc = hw->priv;
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 val;
 
 	/*
@@ -1266,27 +1055,6 @@ static int ath_pci_resume(struct device *device)
 	if ((val & 0x0000ff00) != 0)
 		pci_write_config_dword(pdev, 0x40, val & 0xffff00ff);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-static const struct dev_pm_ops ath9k_pm_ops = {
-	.suspend = ath_pci_suspend,
-	.resume = ath_pci_resume,
-	.freeze = ath_pci_suspend,
-	.thaw = ath_pci_resume,
-	.poweroff = ath_pci_suspend,
-	.restore = ath_pci_resume,
-};
-
-#define ATH9K_PM_OPS	(&ath9k_pm_ops)
-
-#else /* !CONFIG_PM */
-
-#define ATH9K_PM_OPS	NULL
-
-#endif /* !CONFIG_PM */
-=======
 	ath_pci_aspm_init(common);
 	ah->reset_power_on = false;
 
@@ -1302,7 +1070,6 @@ static SIMPLE_DEV_PM_OPS(ath9k_pm_ops, ath_pci_suspend, ath_pci_resume);
 #define ATH9K_PM_OPS	NULL
 
 #endif /* !CONFIG_PM_SLEEP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 MODULE_DEVICE_TABLE(pci, ath_pci_id_table);

@@ -4,32 +4,21 @@
  * for more details.
  *
  * Copyright (C) 2007 by Ralf Baechle
-<<<<<<< HEAD
- * Copyright (C) 2009, 2010 Cavium Networks, Inc.
- */
-#include <linux/clocksource.h>
-=======
  * Copyright (C) 2009, 2012 Cavium, Inc.
  */
 #include <linux/clocksource.h>
 #include <linux/sched/clock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/init.h>
 #include <linux/smp.h>
 
 #include <asm/cpu-info.h>
-<<<<<<< HEAD
-=======
 #include <asm/cpu-type.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/time.h>
 
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-ipd-defs.h>
 #include <asm/octeon/cvmx-mio-defs.h>
-<<<<<<< HEAD
-=======
 #include <asm/octeon/cvmx-rst-defs.h>
 #include <asm/octeon/cvmx-fpa-defs.h>
 
@@ -67,7 +56,6 @@ void __init octeon_setup_delays(void)
 	}
 
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set the current core's cvmcount counter to the value of the
@@ -79,28 +67,12 @@ void __init octeon_setup_delays(void)
  */
 void octeon_init_cvmcount(void)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-	unsigned loops = 2;
-	u64 f = 0;
-	u64 rdiv = 0;
-	u64 sdiv = 0;
-	if (current_cpu_type() == CPU_CAVIUM_OCTEON2) {
-		union cvmx_mio_rst_boot rst_boot;
-		rst_boot.u64 = cvmx_read_csr(CVMX_MIO_RST_BOOT);
-		rdiv = rst_boot.s.c_mul;	/* CPU clock */
-		sdiv = rst_boot.s.pnr_mul;	/* I/O clock */
-		f = (0x8000000000000000ull / sdiv) * 2;
-	}
-
-=======
 	u64 clk_reg;
 	unsigned long flags;
 	unsigned loops = 2;
 
 	clk_reg = octeon_has_feature(OCTEON_FEATURE_FPA3) ?
 		CVMX_FPA_CLK_COUNT : CVMX_IPD_CLK_COUNT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clobber loops so GCC will not unroll the following while loop. */
 	asm("" : "+r" (loops));
@@ -111,20 +83,6 @@ void octeon_init_cvmcount(void)
 	 * which should give more deterministic timing.
 	 */
 	while (loops--) {
-<<<<<<< HEAD
-		u64 ipd_clk_count = cvmx_read_csr(CVMX_IPD_CLK_COUNT);
-		if (rdiv != 0) {
-			ipd_clk_count *= rdiv;
-			if (f != 0) {
-				asm("dmultu\t%[cnt],%[f]\n\t"
-				    "mfhi\t%[cnt]"
-				    : [cnt] "+r" (ipd_clk_count),
-				      [f] "=r" (f)
-				    : : "hi", "lo");
-			}
-		}
-		write_c0_cvmcount(ipd_clk_count);
-=======
 		u64 clk_count = cvmx_read_csr(clk_reg);
 		if (rdiv != 0) {
 			clk_count *= rdiv;
@@ -137,16 +95,11 @@ void octeon_init_cvmcount(void)
 			}
 		}
 		write_c0_cvmcount(clk_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	local_irq_restore(flags);
 }
 
-<<<<<<< HEAD
-static cycle_t octeon_cvmcount_read(struct clocksource *cs)
-=======
 static u64 octeon_cvmcount_read(struct clocksource *cs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return read_c0_cvmcount();
 }
@@ -160,11 +113,7 @@ static struct clocksource clocksource_mips = {
 
 unsigned long long notrace sched_clock(void)
 {
-<<<<<<< HEAD
-	/* 64-bit arithmatic can overflow, so use 128-bit.  */
-=======
 	/* 64-bit arithmetic can overflow, so use 128-bit.  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 t1, t2, t3;
 	unsigned long long rv;
 	u64 mult = clocksource_mips.mult;
@@ -192,24 +141,6 @@ void __init plat_time_init(void)
 	clocksource_register_hz(&clocksource_mips, octeon_get_clock_rate());
 }
 
-<<<<<<< HEAD
-static u64 octeon_udelay_factor;
-static u64 octeon_ndelay_factor;
-
-void __init octeon_setup_delays(void)
-{
-	octeon_udelay_factor = octeon_get_clock_rate() / 1000000;
-	/*
-	 * For __ndelay we divide by 2^16, so the factor is multiplied
-	 * by the same amount.
-	 */
-	octeon_ndelay_factor = (octeon_udelay_factor * 0x10000ull) / 1000ull;
-
-	preset_lpj = octeon_get_clock_rate() / HZ;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __udelay(unsigned long us)
 {
 	u64 cur, end, inc;
@@ -249,8 +180,6 @@ void __delay(unsigned long loops)
 		cur = read_c0_cvmcount();
 }
 EXPORT_SYMBOL(__delay);
-<<<<<<< HEAD
-=======
 
 
 /**
@@ -283,4 +212,3 @@ void octeon_io_clk_delay(unsigned long count)
 		cur = read_c0_cvmcount();
 }
 EXPORT_SYMBOL(octeon_io_clk_delay);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

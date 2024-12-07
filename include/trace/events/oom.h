@@ -1,19 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM oom
 
 #if !defined(_TRACE_OOM_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_OOM_H
 #include <linux/tracepoint.h>
-<<<<<<< HEAD
-=======
 #include <trace/events/mmflags.h>
 
 #define PG_COUNT_TO_KB(x) ((x) << (PAGE_SHIFT - 10))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 TRACE_EVENT(oom_score_adj_update,
 
@@ -24,11 +18,7 @@ TRACE_EVENT(oom_score_adj_update,
 	TP_STRUCT__entry(
 		__field(	pid_t,	pid)
 		__array(	char,	comm,	TASK_COMM_LEN )
-<<<<<<< HEAD
-		__field(	 int,	oom_score_adj)
-=======
 		__field(	short,	oom_score_adj)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
@@ -37,12 +27,6 @@ TRACE_EVENT(oom_score_adj_update,
 		__entry->oom_score_adj = task->signal->oom_score_adj;
 	),
 
-<<<<<<< HEAD
-	TP_printk("pid=%d comm=%s oom_score_adj=%d",
-		__entry->pid, __entry->comm, __entry->oom_score_adj)
-);
-
-=======
 	TP_printk("pid=%d comm=%s oom_score_adj=%hd",
 		__entry->pid, __entry->comm, __entry->oom_score_adj)
 );
@@ -233,7 +217,6 @@ TRACE_EVENT(compact_retry,
 			__entry->ret)
 );
 #endif /* CONFIG_COMPACTION */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* This part must be outside protection */

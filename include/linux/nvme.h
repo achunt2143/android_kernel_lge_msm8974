@@ -1,69 +1,12 @@
-<<<<<<< HEAD
-/*
- * Definitions for the NVM Express interface
- * Copyright (c) 2011, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Definitions for the NVM Express interface
  * Copyright (c) 2011-2014, Intel Corporation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_NVME_H
 #define _LINUX_NVME_H
 
-<<<<<<< HEAD
-#include <linux/types.h>
-
-struct nvme_bar {
-	__u64			cap;	/* Controller Capabilities */
-	__u32			vs;	/* Version */
-	__u32			intms;	/* Interrupt Mask Set */
-	__u32			intmc;	/* Interrupt Mask Clear */
-	__u32			cc;	/* Controller Configuration */
-	__u32			rsvd1;	/* Reserved */
-	__u32			csts;	/* Controller Status */
-	__u32			rsvd2;	/* Reserved */
-	__u32			aqa;	/* Admin Queue Attributes */
-	__u64			asq;	/* Admin SQ Base Address */
-	__u64			acq;	/* Admin CQ Base Address */
-};
-
-#define NVME_CAP_TIMEOUT(cap)	(((cap) >> 24) & 0xff)
-#define NVME_CAP_STRIDE(cap)	(((cap) >> 32) & 0xf)
-
-enum {
-	NVME_CC_ENABLE		= 1 << 0,
-	NVME_CC_CSS_NVM		= 0 << 4,
-	NVME_CC_MPS_SHIFT	= 7,
-	NVME_CC_ARB_RR		= 0 << 11,
-	NVME_CC_ARB_WRRU	= 1 << 11,
-	NVME_CC_ARB_VS		= 7 << 11,
-	NVME_CC_SHN_NONE	= 0 << 14,
-	NVME_CC_SHN_NORMAL	= 1 << 14,
-	NVME_CC_SHN_ABRUPT	= 2 << 14,
-	NVME_CC_IOSQES		= 6 << 16,
-	NVME_CC_IOCQES		= 4 << 20,
-	NVME_CSTS_RDY		= 1 << 0,
-	NVME_CSTS_CFS		= 1 << 1,
-	NVME_CSTS_SHST_NORMAL	= 0 << 2,
-	NVME_CSTS_SHST_OCCUR	= 1 << 2,
-	NVME_CSTS_SHST_CMPLT	= 2 << 2,
-=======
 #include <linux/bits.h>
 #include <linux/types.h>
 #include <linux/uuid.h>
@@ -298,29 +241,18 @@ enum {
 enum {
 	NVME_CAP_CRMS_CRWMS	= 1ULL << 59,
 	NVME_CAP_CRMS_CRIMS	= 1ULL << 60,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nvme_id_power_state {
 	__le16			max_power;	/* centiwatts */
-<<<<<<< HEAD
-	__u16			rsvd2;
-=======
 	__u8			rsvd2;
 	__u8			flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le32			entry_lat;	/* microseconds */
 	__le32			exit_lat;	/* microseconds */
 	__u8			read_tput;
 	__u8			read_lat;
 	__u8			write_tput;
 	__u8			write_lat;
-<<<<<<< HEAD
-	__u8			rsvd16[16];
-};
-
-#define NVME_VS(major, minor)	(major << 16 | minor)
-=======
 	__le16			idle_power;
 	__u8			idle_scale;
 	__u8			rsvd19;
@@ -339,7 +271,6 @@ enum nvme_ctrl_attr {
 	NVME_CTRL_ATTR_TBKAS		= (1 << 6),
 	NVME_CTRL_ATTR_ELBAS		= (1 << 15),
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nvme_id_ctrl {
 	__le16			vid;
@@ -349,11 +280,6 @@ struct nvme_id_ctrl {
 	char			fr[8];
 	__u8			rab;
 	__u8			ieee[3];
-<<<<<<< HEAD
-	__u8			mic;
-	__u8			mdts;
-	__u8			rsvd78[178];
-=======
 	__u8			cmic;
 	__u8			mdts;
 	__le16			cntlid;
@@ -369,7 +295,6 @@ struct nvme_id_ctrl {
 	__le16			crdt2;
 	__le16			crdt3;
 	__u8			rsvd134[122];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16			oacs;
 	__u8			acl;
 	__u8			aerl;
@@ -377,12 +302,6 @@ struct nvme_id_ctrl {
 	__u8			lpa;
 	__u8			elpe;
 	__u8			npss;
-<<<<<<< HEAD
-	__u8			rsvd264[248];
-	__u8			sqes;
-	__u8			cqes;
-	__u8			rsvd514[2];
-=======
 	__u8			avscc;
 	__u8			apsta;
 	__le16			wctemp;
@@ -412,7 +331,6 @@ struct nvme_id_ctrl {
 	__u8			sqes;
 	__u8			cqes;
 	__le16			maxcmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le32			nn;
 	__le16			oncs;
 	__le16			fuses;
@@ -420,9 +338,6 @@ struct nvme_id_ctrl {
 	__u8			vwc;
 	__le16			awun;
 	__le16			awupf;
-<<<<<<< HEAD
-	__u8			rsvd530[1518];
-=======
 	__u8			nvscc;
 	__u8			nwpc;
 	__le16			acwu;
@@ -440,13 +355,10 @@ struct nvme_id_ctrl {
 	__u8			rsvd1804[2];
 	__u8			dctype;
 	__u8			rsvd1807[241];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nvme_id_power_state	psd[32];
 	__u8			vs[1024];
 };
 
-<<<<<<< HEAD
-=======
 enum {
 	NVME_CTRL_CMIC_MULTI_PORT		= 1 << 0,
 	NVME_CTRL_CMIC_MULTI_CTRL		= 1 << 1,
@@ -473,7 +385,6 @@ enum {
 	NVME_CTRL_CTRATT_UUID_LIST		= 1 << 9,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nvme_lbaf {
 	__le16			ms;
 	__u8			ds;
@@ -490,16 +401,6 @@ struct nvme_id_ns {
 	__u8			mc;
 	__u8			dpc;
 	__u8			dps;
-<<<<<<< HEAD
-	__u8			rsvd30[98];
-	struct nvme_lbaf	lbaf[16];
-	__u8			rsvd192[192];
-	__u8			vs[3712];
-};
-
-enum {
-	NVME_NS_FEAT_THIN	= 1 << 0,
-=======
 	__u8			nmic;
 	__u8			rescap;
 	__u8			fpi;
@@ -646,13 +547,10 @@ enum {
 	NVME_NS_FLBAS_LBA_SHIFT	= 1,
 	NVME_NS_FLBAS_META_EXT	= 0x10,
 	NVME_NS_NMIC_SHARED	= 1 << 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NVME_LBAF_RP_BEST	= 0,
 	NVME_LBAF_RP_BETTER	= 1,
 	NVME_LBAF_RP_GOOD	= 2,
 	NVME_LBAF_RP_DEGRADED	= 3,
-<<<<<<< HEAD
-=======
 	NVME_NS_DPC_PI_LAST	= 1 << 4,
 	NVME_NS_DPC_PI_FIRST	= 1 << 3,
 	NVME_NS_DPC_PI_TYPE3	= 1 << 2,
@@ -844,20 +742,14 @@ enum {
 	NVME_AEN_CFG_FW_ACT		= 1 << NVME_AEN_BIT_FW_ACT,
 	NVME_AEN_CFG_ANA_CHANGE		= 1 << NVME_AEN_BIT_ANA_CHANGE,
 	NVME_AEN_CFG_DISC_CHANGE	= 1 << NVME_AEN_BIT_DISC_CHANGE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nvme_lba_range_type {
 	__u8			type;
 	__u8			attributes;
 	__u8			rsvd2[14];
-<<<<<<< HEAD
-	__u64			slba;
-	__u64			nlb;
-=======
 	__le64			slba;
 	__le64			nlb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8			guid[16];
 	__u8			rsvd48[16];
 };
@@ -872,8 +764,6 @@ enum {
 	NVME_LBART_ATTRIB_HIDE	= 1 << 1,
 };
 
-<<<<<<< HEAD
-=======
 enum nvme_pr_type {
 	NVME_PR_WRITE_EXCLUSIVE			= 1,
 	NVME_PR_EXCLUSIVE_ACCESS		= 2,
@@ -925,7 +815,6 @@ struct nvme_reservation_status_ext {
 	struct nvme_registered_ctrl_ext regctl_eds[];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* I/O commands */
 
 enum nvme_opcode {
@@ -934,9 +823,6 @@ enum nvme_opcode {
 	nvme_cmd_read		= 0x02,
 	nvme_cmd_write_uncor	= 0x04,
 	nvme_cmd_compare	= 0x05,
-<<<<<<< HEAD
-	nvme_cmd_dsm		= 0x09,
-=======
 	nvme_cmd_write_zeroes	= 0x08,
 	nvme_cmd_dsm		= 0x09,
 	nvme_cmd_verify		= 0x0c,
@@ -1053,7 +939,6 @@ enum {
 	NVME_CMD_SGL_METABUF	= (1 << 6),
 	NVME_CMD_SGL_METASEG	= (1 << 7),
 	NVME_CMD_SGL_ALL	= NVME_CMD_SGL_METABUF | NVME_CMD_SGL_METASEG,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nvme_common_command {
@@ -1061,13 +946,6 @@ struct nvme_common_command {
 	__u8			flags;
 	__u16			command_id;
 	__le32			nsid;
-<<<<<<< HEAD
-	__u32			cdw2[2];
-	__le64			metadata;
-	__le64			prp1;
-	__le64			prp2;
-	__u32			cdw10[6];
-=======
 	__le32			cdw2[2];
 	__le64			metadata;
 	union nvme_data_ptr	dptr;
@@ -1079,7 +957,6 @@ struct nvme_common_command {
 	__le32			cdw14;
 	__le32			cdw15;
 	);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nvme_rw_command {
@@ -1087,17 +964,10 @@ struct nvme_rw_command {
 	__u8			flags;
 	__u16			command_id;
 	__le32			nsid;
-<<<<<<< HEAD
-	__u64			rsvd2;
-	__le64			metadata;
-	__le64			prp1;
-	__le64			prp2;
-=======
 	__le32			cdw2;
 	__le32			cdw3;
 	__le64			metadata;
 	union nvme_data_ptr	dptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le64			slba;
 	__le16			length;
 	__le16			control;
@@ -1110,10 +980,7 @@ struct nvme_rw_command {
 enum {
 	NVME_RW_LR			= 1 << 15,
 	NVME_RW_FUA			= 1 << 14,
-<<<<<<< HEAD
-=======
 	NVME_RW_APPEND_PIREMAP		= 1 << 9,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NVME_RW_DSM_FREQ_UNSPEC		= 0,
 	NVME_RW_DSM_FREQ_TYPICAL	= 1,
 	NVME_RW_DSM_FREQ_RARE		= 2,
@@ -1129,8 +996,6 @@ enum {
 	NVME_RW_DSM_LATENCY_LOW		= 3 << 4,
 	NVME_RW_DSM_SEQ_REQ		= 1 << 6,
 	NVME_RW_DSM_COMPRESSED		= 1 << 7,
-<<<<<<< HEAD
-=======
 	NVME_RW_PRINFO_PRCHK_REF	= 1 << 10,
 	NVME_RW_PRINFO_PRCHK_APP	= 1 << 11,
 	NVME_RW_PRINFO_PRCHK_GUARD	= 1 << 12,
@@ -1263,7 +1128,6 @@ struct nvme_feat_host_behavior {
 enum {
 	NVME_ENABLE_ACRE	= 1,
 	NVME_ENABLE_LBAFEE	= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Admin commands */
@@ -1279,15 +1143,6 @@ enum nvme_admin_opcode {
 	nvme_admin_set_features		= 0x09,
 	nvme_admin_get_features		= 0x0a,
 	nvme_admin_async_event		= 0x0c,
-<<<<<<< HEAD
-	nvme_admin_activate_fw		= 0x10,
-	nvme_admin_download_fw		= 0x11,
-	nvme_admin_format_nvm		= 0x80,
-	nvme_admin_security_send	= 0x81,
-	nvme_admin_security_recv	= 0x82,
-};
-
-=======
 	nvme_admin_ns_mgmt		= 0x0d,
 	nvme_admin_activate_fw		= 0x10,
 	nvme_admin_download_fw		= 0x11,
@@ -1339,7 +1194,6 @@ enum nvme_admin_opcode {
 		nvme_admin_opcode_name(nvme_admin_sanitize_nvm),	\
 		nvme_admin_opcode_name(nvme_admin_get_lba_status))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	NVME_QUEUE_PHYS_CONTIG	= (1 << 0),
 	NVME_CQ_IRQ_ENABLED	= (1 << 1),
@@ -1358,11 +1212,6 @@ enum {
 	NVME_FEAT_IRQ_CONFIG	= 0x09,
 	NVME_FEAT_WRITE_ATOMIC	= 0x0a,
 	NVME_FEAT_ASYNC_EVENT	= 0x0b,
-<<<<<<< HEAD
-	NVME_FEAT_SW_PROGRESS	= 0x0c,
-};
-
-=======
 	NVME_FEAT_AUTO_PST	= 0x0c,
 	NVME_FEAT_HOST_MEM_BUF	= 0x0d,
 	NVME_FEAT_TIMESTAMP	= 0x0e,
@@ -1408,21 +1257,12 @@ enum {
 
 #define NVME_MAX_CHANGED_NAMESPACES	1024
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nvme_identify {
 	__u8			opcode;
 	__u8			flags;
 	__u16			command_id;
 	__le32			nsid;
 	__u64			rsvd2[2];
-<<<<<<< HEAD
-	__le64			prp1;
-	__le64			prp2;
-	__le32			cns;
-	__u32			rsvd11[5];
-};
-
-=======
 	union nvme_data_ptr	dptr;
 	__u8			cns;
 	__u8			rsvd3;
@@ -1434,20 +1274,12 @@ struct nvme_identify {
 
 #define NVME_IDENTIFY_DATA_SIZE 4096
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nvme_features {
 	__u8			opcode;
 	__u8			flags;
 	__u16			command_id;
 	__le32			nsid;
 	__u64			rsvd2[2];
-<<<<<<< HEAD
-	__le64			prp1;
-	__le64			prp2;
-	__le32			fid;
-	__le32			dword11;
-	__u32			rsvd12[4];
-=======
 	union nvme_data_ptr	dptr;
 	__le32			fid;
 	__le32			dword11;
@@ -1461,7 +1293,6 @@ struct nvme_host_mem_buf_desc {
 	__le64			addr;
 	__le32			size;
 	__u32			rsvd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nvme_create_cq {
@@ -1502,8 +1333,6 @@ struct nvme_delete_queue {
 	__u32			rsvd11[5];
 };
 
-<<<<<<< HEAD
-=======
 struct nvme_abort_cmd {
 	__u8			opcode;
 	__u8			flags;
@@ -1514,19 +1343,11 @@ struct nvme_abort_cmd {
 	__u32			rsvd11[5];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nvme_download_firmware {
 	__u8			opcode;
 	__u8			flags;
 	__u16			command_id;
 	__u32			rsvd1[5];
-<<<<<<< HEAD
-	__le64			prp1;
-	__le64			prp2;
-	__le32			numd;
-	__le32			offset;
-	__u32			rsvd12[4];
-=======
 	union nvme_data_ptr	dptr;
 	__le32			numd;
 	__le32			offset;
@@ -1959,7 +1780,6 @@ struct streams_directive_params {
 	__le16	nsa;
 	__le16	nso;
 	__u8	rsvd2[6];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nvme_command {
@@ -1972,12 +1792,6 @@ struct nvme_command {
 		struct nvme_create_sq create_sq;
 		struct nvme_delete_queue delete_queue;
 		struct nvme_download_firmware dlfw;
-<<<<<<< HEAD
-	};
-};
-
-enum {
-=======
 		struct nvme_format_cmd format;
 		struct nvme_dsm_cmd dsm;
 		struct nvme_write_zeroes_cmd write_zeroes;
@@ -2032,7 +1846,6 @@ enum {
 	/*
 	 * Generic Command Status:
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NVME_SC_SUCCESS			= 0x0,
 	NVME_SC_INVALID_OPCODE		= 0x1,
 	NVME_SC_INVALID_FIELD		= 0x2,
@@ -2045,11 +1858,6 @@ enum {
 	NVME_SC_FUSED_FAIL		= 0x9,
 	NVME_SC_FUSED_MISSING		= 0xa,
 	NVME_SC_INVALID_NS		= 0xb,
-<<<<<<< HEAD
-	NVME_SC_LBA_RANGE		= 0x80,
-	NVME_SC_CAP_EXCEEDED		= 0x81,
-	NVME_SC_NS_NOT_READY		= 0x82,
-=======
 	NVME_SC_CMD_SEQ_ERROR		= 0xc,
 	NVME_SC_SGL_INVALID_LAST	= 0xd,
 	NVME_SC_SGL_INVALID_COUNT	= 0xe,
@@ -2085,7 +1893,6 @@ enum {
 	/*
 	 * Command Specific Status:
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NVME_SC_CQ_INVALID		= 0x100,
 	NVME_SC_QID_INVALID		= 0x101,
 	NVME_SC_QUEUE_SIZE		= 0x102,
@@ -2097,9 +1904,6 @@ enum {
 	NVME_SC_INVALID_VECTOR		= 0x108,
 	NVME_SC_INVALID_LOG_PAGE	= 0x109,
 	NVME_SC_INVALID_FORMAT		= 0x10a,
-<<<<<<< HEAD
-	NVME_SC_BAD_ATTRIBUTES		= 0x180,
-=======
 	NVME_SC_FW_NEEDS_CONV_RESET	= 0x10b,
 	NVME_SC_INVALID_QUEUE		= 0x10c,
 	NVME_SC_FEATURE_NOT_SAVEABLE	= 0x10d,
@@ -2162,7 +1966,6 @@ enum {
 	/*
 	 * Media and Data Integrity Errors:
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NVME_SC_WRITE_FAULT		= 0x280,
 	NVME_SC_READ_ERROR		= 0x281,
 	NVME_SC_GUARD_CHECK		= 0x282,
@@ -2170,13 +1973,6 @@ enum {
 	NVME_SC_REFTAG_CHECK		= 0x284,
 	NVME_SC_COMPARE_FAILED		= 0x285,
 	NVME_SC_ACCESS_DENIED		= 0x286,
-<<<<<<< HEAD
-};
-
-struct nvme_completion {
-	__le32	result;		/* Used by admin commands to return data */
-	__u32	rsvd;
-=======
 	NVME_SC_UNWRITTEN_BLOCK		= 0x287,
 
 	/*
@@ -2204,60 +2000,17 @@ struct nvme_completion {
 		__le32	u32;
 		__le64	u64;
 	} result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16	sq_head;	/* how much of this queue may be reclaimed */
 	__le16	sq_id;		/* submission queue that generated this entry */
 	__u16	command_id;	/* of the command which completed */
 	__le16	status;		/* did the command fail, and if so, why? */
 };
 
-<<<<<<< HEAD
-struct nvme_user_io {
-	__u8	opcode;
-	__u8	flags;
-	__u16	control;
-	__u16	nblocks;
-	__u16	rsvd;
-	__u64	metadata;
-	__u64	addr;
-	__u64	slba;
-	__u32	dsmgmt;
-	__u32	reftag;
-	__u16	apptag;
-	__u16	appmask;
-};
-
-struct nvme_admin_cmd {
-	__u8	opcode;
-	__u8	flags;
-	__u16	rsvd1;
-	__u32	nsid;
-	__u32	cdw2;
-	__u32	cdw3;
-	__u64	metadata;
-	__u64	addr;
-	__u32	metadata_len;
-	__u32	data_len;
-	__u32	cdw10;
-	__u32	cdw11;
-	__u32	cdw12;
-	__u32	cdw13;
-	__u32	cdw14;
-	__u32	cdw15;
-	__u32	timeout_ms;
-	__u32	result;
-};
-
-#define NVME_IOCTL_ID		_IO('N', 0x40)
-#define NVME_IOCTL_ADMIN_CMD	_IOWR('N', 0x41, struct nvme_admin_cmd)
-#define NVME_IOCTL_SUBMIT_IO	_IOW('N', 0x42, struct nvme_user_io)
-=======
 #define NVME_VS(major, minor, tertiary) \
 	(((major) << 16) | ((minor) << 8) | (tertiary))
 
 #define NVME_MAJOR(ver)		((ver) >> 16)
 #define NVME_MINOR(ver)		(((ver) >> 8) & 0xff)
 #define NVME_TERTIARY(ver)	((ver) & 0xff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_NVME_H */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* net/atm/pvc.c - ATM PVC sockets */
 
 /* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
@@ -66,11 +63,7 @@ static int pvc_connect(struct socket *sock, struct sockaddr *sockaddr,
 }
 
 static int pvc_setsockopt(struct socket *sock, int level, int optname,
-<<<<<<< HEAD
-			  char __user *optval, unsigned int optlen)
-=======
 			  sockptr_t optval, unsigned int optlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	int error;
@@ -94,32 +87,20 @@ static int pvc_getsockopt(struct socket *sock, int level, int optname,
 }
 
 static int pvc_getname(struct socket *sock, struct sockaddr *sockaddr,
-<<<<<<< HEAD
-		       int *sockaddr_len, int peer)
-=======
 		       int peer)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sockaddr_atmpvc *addr;
 	struct atm_vcc *vcc = ATM_SD(sock);
 
 	if (!vcc->dev || !test_bit(ATM_VF_ADDR, &vcc->flags))
 		return -ENOTCONN;
-<<<<<<< HEAD
-	*sockaddr_len = sizeof(struct sockaddr_atmpvc);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr = (struct sockaddr_atmpvc *)sockaddr;
 	memset(addr, 0, sizeof(*addr));
 	addr->sap_family = AF_ATMPVC;
 	addr->sap_addr.itf = vcc->dev->number;
 	addr->sap_addr.vpi = vcc->vpi;
 	addr->sap_addr.vci = vcc->vci;
-<<<<<<< HEAD
-	return 0;
-=======
 	return sizeof(struct sockaddr_atmpvc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct proto_ops pvc_proto_ops = {
@@ -137,10 +118,7 @@ static const struct proto_ops pvc_proto_ops = {
 #ifdef CONFIG_COMPAT
 	.compat_ioctl = vcc_compat_ioctl,
 #endif
-<<<<<<< HEAD
-=======
 	.gettstamp =	sock_gettstamp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.listen =	sock_no_listen,
 	.shutdown =	pvc_shutdown,
 	.setsockopt =	pvc_setsockopt,
@@ -148,10 +126,6 @@ static const struct proto_ops pvc_proto_ops = {
 	.sendmsg =	vcc_sendmsg,
 	.recvmsg =	vcc_recvmsg,
 	.mmap =		sock_no_mmap,
-<<<<<<< HEAD
-	.sendpage =	sock_no_sendpage,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -162,11 +136,7 @@ static int pvc_create(struct net *net, struct socket *sock, int protocol,
 		return -EAFNOSUPPORT;
 
 	sock->ops = &pvc_proto_ops;
-<<<<<<< HEAD
-	return vcc_create(net, sock, protocol, PF_ATMPVC);
-=======
 	return vcc_create(net, sock, protocol, PF_ATMPVC, kern);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct net_proto_family pvc_family_ops = {

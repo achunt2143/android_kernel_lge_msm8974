@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-/* Credentials management - see Documentation/security/credentials.txt
- *
- * Copyright (C) 2008 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public Licence
- * as published by the Free Software Foundation; either version
- * 2 of the Licence, or (at your option) any later version.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* Credentials management - see Documentation/security/credentials.rst
  *
  * Copyright (C) 2008 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_CRED_H
@@ -23,43 +11,23 @@
 #include <linux/capability.h>
 #include <linux/init.h>
 #include <linux/key.h>
-<<<<<<< HEAD
-#include <linux/selinux.h>
-#include <linux/atomic.h>
-
-struct user_struct;
-=======
 #include <linux/atomic.h>
 #include <linux/refcount.h>
 #include <linux/uidgid.h>
 #include <linux/sched.h>
 #include <linux/sched/user.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cred;
 struct inode;
 
 /*
  * COW Supplementary groups list
  */
-<<<<<<< HEAD
-#define NGROUPS_SMALL		32
-#define NGROUPS_PER_BLOCK	((unsigned int)(PAGE_SIZE / sizeof(gid_t)))
-
-struct group_info {
-	atomic_t	usage;
-	int		ngroups;
-	int		nblocks;
-	gid_t		small_block[NGROUPS_SMALL];
-	gid_t		*blocks[0];
-};
-=======
 struct group_info {
 	refcount_t	usage;
 	int		ngroups;
 	kgid_t		gid[];
 } __randomize_layout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * get_group_info - Get a reference to a group info structure
@@ -72,11 +40,7 @@ struct group_info {
  */
 static inline struct group_info *get_group_info(struct group_info *gi)
 {
-<<<<<<< HEAD
-	atomic_inc(&gi->usage);
-=======
 	refcount_inc(&gi->usage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return gi;
 }
 
@@ -86,39 +50,6 @@ static inline struct group_info *get_group_info(struct group_info *gi)
  */
 #define put_group_info(group_info)			\
 do {							\
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&(group_info)->usage))	\
-		groups_free(group_info);		\
-} while (0)
-
-extern struct group_info *groups_alloc(int);
-extern struct group_info init_groups;
-extern void groups_free(struct group_info *);
-extern int set_current_groups(struct group_info *);
-extern int set_groups(struct cred *, struct group_info *);
-extern int groups_search(const struct group_info *, gid_t);
-
-/* access the groups "array" with this macro */
-#define GROUP_AT(gi, i) \
-	((gi)->blocks[(i) / NGROUPS_PER_BLOCK][(i) % NGROUPS_PER_BLOCK])
-
-extern int in_group_p(gid_t);
-extern int in_egroup_p(gid_t);
-
-/*
- * The common credentials for a thread group
- * - shared by CLONE_THREAD
- */
-#ifdef CONFIG_KEYS
-struct thread_group_cred {
-	atomic_t	usage;
-	pid_t		tgid;			/* thread group process ID */
-	spinlock_t	lock;
-	struct key __rcu *session_keyring;	/* keyring inherited over fork */
-	struct key	*process_keyring;	/* keyring private to this process */
-	struct rcu_head	rcu;			/* RCU deletion hook */
-};
-=======
 	if (refcount_dec_and_test(&(group_info)->usage))	\
 		groups_free(group_info);		\
 } while (0)
@@ -152,7 +83,6 @@ static inline int groups_search(const struct group_info *group_info, kgid_t grp)
 {
 	return 1;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -179,24 +109,6 @@ static inline int groups_search(const struct group_info *group_info, kgid_t grp)
  * same context as task->real_cred.
  */
 struct cred {
-<<<<<<< HEAD
-	atomic_t	usage;
-#ifdef CONFIG_DEBUG_CREDENTIALS
-	atomic_t	subscribers;	/* number of processes subscribed */
-	void		*put_addr;
-	unsigned	magic;
-#define CRED_MAGIC	0x43736564
-#define CRED_MAGIC_DEAD	0x44656144
-#endif
-	uid_t		uid;		/* real UID of the task */
-	gid_t		gid;		/* real GID of the task */
-	uid_t		suid;		/* saved UID of the task */
-	gid_t		sgid;		/* saved GID of the task */
-	uid_t		euid;		/* effective UID of the task */
-	gid_t		egid;		/* effective GID of the task */
-	uid_t		fsuid;		/* UID for VFS ops */
-	gid_t		fsgid;		/* GID for VFS ops */
-=======
 	atomic_long_t	usage;
 	kuid_t		uid;		/* real UID of the task */
 	kgid_t		gid;		/* real GID of the task */
@@ -206,7 +118,6 @@ struct cred {
 	kgid_t		egid;		/* effective GID of the task */
 	kuid_t		fsuid;		/* UID for VFS ops */
 	kgid_t		fsgid;		/* GID for VFS ops */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned	securebits;	/* SUID-less security management */
 	kernel_cap_t	cap_inheritable; /* caps our children can inherit */
 	kernel_cap_t	cap_permitted;	/* caps we're permitted */
@@ -216,20 +127,6 @@ struct cred {
 #ifdef CONFIG_KEYS
 	unsigned char	jit_keyring;	/* default keyring to attach requested
 					 * keys to */
-<<<<<<< HEAD
-	struct key	*thread_keyring; /* keyring private to this thread */
-	struct key	*request_key_auth; /* assumed request_key authority */
-	struct thread_group_cred *tgcred; /* thread-group shared credentials */
-#endif
-#ifdef CONFIG_SECURITY
-	void		*security;	/* subjective LSM security */
-#endif
-	struct user_struct *user;	/* real user ID subscription */
-	struct user_namespace *user_ns; /* cached user->user_ns */
-	struct group_info *group_info;	/* supplementary groups for euid/fsgid */
-	struct rcu_head	rcu;		/* RCU deletion hook */
-};
-=======
 	struct key	*session_keyring; /* keyring inherited over fork */
 	struct key	*process_keyring; /* keyring private to this process */
 	struct key	*thread_keyring; /* keyring private to this thread */
@@ -248,7 +145,6 @@ struct cred {
 		struct rcu_head	rcu;		/* RCU deletion hook */
 	};
 } __randomize_layout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void __put_cred(struct cred *);
 extern void exit_creds(struct task_struct *);
@@ -262,60 +158,12 @@ extern void abort_creds(struct cred *);
 extern const struct cred *override_creds(const struct cred *);
 extern void revert_creds(const struct cred *);
 extern struct cred *prepare_kernel_cred(struct task_struct *);
-<<<<<<< HEAD
-extern int change_create_files_as(struct cred *, struct inode *);
-extern int set_security_override(struct cred *, u32);
-extern int set_security_override_from_ctx(struct cred *, const char *);
-extern int set_create_files_as(struct cred *, struct inode *);
-extern void __init cred_init(void);
-
-/*
- * check for validity of credentials
- */
-#ifdef CONFIG_DEBUG_CREDENTIALS
-extern void __invalid_creds(const struct cred *, const char *, unsigned);
-extern void __validate_process_creds(struct task_struct *,
-				     const char *, unsigned);
-
-extern bool creds_are_invalid(const struct cred *cred);
-
-static inline void __validate_creds(const struct cred *cred,
-				    const char *file, unsigned line)
-{
-	if (unlikely(creds_are_invalid(cred)))
-		__invalid_creds(cred, file, line);
-}
-
-#define validate_creds(cred)				\
-do {							\
-	__validate_creds((cred), __FILE__, __LINE__);	\
-} while(0)
-
-#define validate_process_creds()				\
-do {								\
-	__validate_process_creds(current, __FILE__, __LINE__);	\
-} while(0)
-
-extern void validate_creds_for_do_exit(struct task_struct *);
-#else
-static inline void validate_creds(const struct cred *cred)
-{
-}
-static inline void validate_creds_for_do_exit(struct task_struct *tsk)
-{
-}
-static inline void validate_process_creds(void)
-{
-}
-#endif
-=======
 extern int set_security_override(struct cred *, u32);
 extern int set_security_override_from_ctx(struct cred *, const char *);
 extern int set_create_files_as(struct cred *, struct inode *);
 extern int cred_fscmp(const struct cred *, const struct cred *);
 extern void __init cred_init(void);
 extern int set_cred_ucounts(struct cred *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline bool cap_ambient_invariant_ok(const struct cred *cred)
 {
@@ -325,8 +173,6 @@ static inline bool cap_ambient_invariant_ok(const struct cred *cred)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * get_new_cred_many - Get references on a new set of credentials
  * @cred: The new credentials to reference
  * @nr: Number of references to acquire
@@ -341,7 +187,6 @@ static inline struct cred *get_new_cred_many(struct cred *cred, int nr)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * get_new_cred - Get a reference on a new set of credentials
  * @cred: The new credentials to reference
  *
@@ -350,18 +195,6 @@ static inline struct cred *get_new_cred_many(struct cred *cred, int nr)
  */
 static inline struct cred *get_new_cred(struct cred *cred)
 {
-<<<<<<< HEAD
-	atomic_inc(&cred->usage);
-	return cred;
-}
-
-/**
- * get_cred - Get a reference on a set of credentials
- * @cred: The credentials to reference
- *
- * Get a reference on the specified set of credentials.  The caller must
- * release the reference.
-=======
 	return get_new_cred_many(cred, 1);
 }
 
@@ -372,7 +205,6 @@ static inline struct cred *get_new_cred(struct cred *cred)
  *
  * Get references on the specified set of credentials.  The caller must release
  * all acquired reference.  If %NULL is passed, it is returned with no action.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is used to deal with a committed set of credentials.  Although the
  * pointer is const, this will temporarily discard the const and increment the
@@ -380,13 +212,6 @@ static inline struct cred *get_new_cred(struct cred *cred)
  * accidental alteration of a set of credentials that should be considered
  * immutable.
  */
-<<<<<<< HEAD
-static inline const struct cred *get_cred(const struct cred *cred)
-{
-	struct cred *nonconst_cred = (struct cred *) cred;
-	validate_creds(cred);
-	return get_new_cred(nonconst_cred);
-=======
 static inline const struct cred *get_cred_many(const struct cred *cred, int nr)
 {
 	struct cred *nonconst_cred = (struct cred *) cred;
@@ -419,36 +244,20 @@ static inline const struct cred *get_cred_rcu(const struct cred *cred)
 		return NULL;
 	nonconst_cred->non_rcu = 0;
 	return cred;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * put_cred - Release a reference to a set of credentials
  * @cred: The credentials to release
-<<<<<<< HEAD
- *
- * Release a reference to a set of credentials, deleting them when the last ref
- * is released.
-=======
  * @nr: Number of references to release
  *
  * Release a reference to a set of credentials, deleting them when the last ref
  * is released.  If %NULL is passed, nothing is done.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This takes a const pointer to a set of credentials because the credentials
  * on task_struct are attached by const pointers to prevent accidental
  * alteration of otherwise immutable credential sets.
  */
-<<<<<<< HEAD
-static inline void put_cred(const struct cred *_cred)
-{
-	struct cred *cred = (struct cred *) _cred;
-
-	validate_creds(cred);
-	if (atomic_dec_and_test(&(cred)->usage))
-		__put_cred(cred);
-=======
 static inline void put_cred_many(const struct cred *_cred, int nr)
 {
 	struct cred *cred = (struct cred *) _cred;
@@ -469,7 +278,6 @@ static inline void put_cred_many(const struct cred *_cred, int nr)
 static inline void put_cred(const struct cred *cred)
 {
 	put_cred_many(cred, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -482,8 +290,6 @@ static inline void put_cred(const struct cred *cred)
 	rcu_dereference_protected(current->cred, 1)
 
 /**
-<<<<<<< HEAD
-=======
  * current_real_cred - Access the current task's objective credentials
  *
  * Access the objective credentials of the current task.  RCU-safe,
@@ -493,31 +299,17 @@ static inline void put_cred(const struct cred *cred)
 	rcu_dereference_protected(current->real_cred, 1)
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * __task_cred - Access a task's objective credentials
  * @task: The task to query
  *
  * Access the objective credentials of a task.  The caller must hold the RCU
-<<<<<<< HEAD
- * readlock or the task must be dead and unable to change its own credentials.
-=======
  * readlock.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The result of this function should not be passed directly to get_cred();
  * rather get_task_cred() should be used instead.
  */
-<<<<<<< HEAD
-#define __task_cred(task)						\
-	({								\
-		const struct task_struct *__t = (task);			\
-		rcu_dereference_check(__t->real_cred,			\
-				      task_is_dead(__t));		\
-	})
-=======
 #define __task_cred(task)	\
 	rcu_dereference((task)->real_cred)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * get_current_cred - Get the current task's subjective credentials
@@ -570,10 +362,7 @@ static inline void put_cred(const struct cred *cred)
 
 #define task_uid(task)		(task_cred_xxx((task), uid))
 #define task_euid(task)		(task_cred_xxx((task), euid))
-<<<<<<< HEAD
-=======
 #define task_ucounts(task)	(task_cred_xxx((task), ucounts))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define current_cred_xxx(xxx)			\
 ({						\
@@ -590,17 +379,6 @@ static inline void put_cred(const struct cred *cred)
 #define current_fsgid() 	(current_cred_xxx(fsgid))
 #define current_cap()		(current_cred_xxx(cap_effective))
 #define current_user()		(current_cred_xxx(user))
-<<<<<<< HEAD
-#define current_security()	(current_cred_xxx(security))
-
-#ifdef CONFIG_USER_NS
-#define current_user_ns()	(current_cred_xxx(user_ns))
-#define task_user_ns(task)	(task_cred_xxx((task), user_ns))
-#else
-extern struct user_namespace init_user_ns;
-#define current_user_ns()	(&init_user_ns)
-#define task_user_ns(task)	(&init_user_ns)
-=======
 #define current_ucounts()	(current_cred_xxx(ucounts))
 
 extern struct user_namespace init_user_ns;
@@ -611,7 +389,6 @@ static inline struct user_namespace *current_user_ns(void)
 {
 	return &init_user_ns;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 

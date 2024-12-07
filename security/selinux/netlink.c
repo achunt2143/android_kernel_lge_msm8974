@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Netlink event notifications for SELinux.
  *
  * Author: James Morris <jmorris@redhat.com>
  *
  * Copyright (C) 2004 Red Hat, Inc., James Morris <jmorris@redhat.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2,
- * as published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/types.h>
@@ -23,15 +13,6 @@
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-#include <linux/netlink.h>
-#include <linux/selinux_netlink.h>
-#include <net/net_namespace.h>
-
-#include "security.h"
-
-static struct sock *selnl;
-=======
 #include <linux/selinux_netlink.h>
 #include <net/net_namespace.h>
 #include <net/netlink.h>
@@ -39,7 +20,6 @@ static struct sock *selnl;
 #include "security.h"
 
 static struct sock *selnl __ro_after_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int selnl_msglen(int msgtype)
 {
@@ -64,11 +44,7 @@ static void selnl_add_payload(struct nlmsghdr *nlh, int len, int msgtype, void *
 {
 	switch (msgtype) {
 	case SELNL_MSG_SETENFORCE: {
-<<<<<<< HEAD
-		struct selnl_msg_setenforce *msg = NLMSG_DATA(nlh);
-=======
 		struct selnl_msg_setenforce *msg = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		memset(msg, 0, len);
 		msg->val = *((int *)data);
@@ -76,11 +52,7 @@ static void selnl_add_payload(struct nlmsghdr *nlh, int len, int msgtype, void *
 	}
 
 	case SELNL_MSG_POLICYLOAD: {
-<<<<<<< HEAD
-		struct selnl_msg_policyload *msg = NLMSG_DATA(nlh);
-=======
 		struct selnl_msg_policyload *msg = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		memset(msg, 0, len);
 		msg->seqno = *((u32 *)data);
@@ -101,22 +73,14 @@ static void selnl_notify(int msgtype, void *data)
 
 	len = selnl_msglen(msgtype);
 
-<<<<<<< HEAD
-	skb = alloc_skb(NLMSG_SPACE(len), GFP_USER);
-=======
 	skb = nlmsg_new(len, GFP_USER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb)
 		goto oom;
 
 	tmp = skb->tail;
-<<<<<<< HEAD
-	nlh = NLMSG_PUT(skb, 0, 0, msgtype, len);
-=======
 	nlh = nlmsg_put(skb, 0, 0, msgtype, len, 0);
 	if (!nlh)
 		goto out_kfree_skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	selnl_add_payload(nlh, len, msgtype, data);
 	nlh->nlmsg_len = skb->tail - tmp;
 	NETLINK_CB(skb).dst_group = SELNLGRP_AVC;
@@ -124,17 +88,10 @@ static void selnl_notify(int msgtype, void *data)
 out:
 	return;
 
-<<<<<<< HEAD
-nlmsg_failure:
-	kfree_skb(skb);
-oom:
-	printk(KERN_ERR "SELinux:  OOM in %s\n", __func__);
-=======
 out_kfree_skb:
 	kfree_skb(skb);
 oom:
 	pr_err("SELinux:  OOM in %s\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out;
 }
 
@@ -150,13 +107,6 @@ void selnl_notify_policyload(u32 seqno)
 
 static int __init selnl_init(void)
 {
-<<<<<<< HEAD
-	selnl = netlink_kernel_create(&init_net, NETLINK_SELINUX,
-				      SELNLGRP_MAX, NULL, NULL, THIS_MODULE);
-	if (selnl == NULL)
-		panic("SELinux:  Cannot create netlink socket.");
-	netlink_set_nonroot(NETLINK_SELINUX, NL_NONROOT_RECV);
-=======
 	struct netlink_kernel_cfg cfg = {
 		.groups	= SELNLGRP_MAX,
 		.flags	= NL_CFG_F_NONROOT_RECV,
@@ -165,7 +115,6 @@ static int __init selnl_init(void)
 	selnl = netlink_kernel_create(&init_net, NETLINK_SELINUX, &cfg);
 	if (selnl == NULL)
 		panic("SELinux:  Cannot create netlink socket.");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Authors:
  * Copyright 2001, 2002 by Robert Olsson <robert.olsson@its.uu.se>
@@ -12,15 +9,6 @@
  * Ben Greear <greearb@candelatech.com>
  * Jens Låås <jens.laas@data.slu.se>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- *
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * A tool for loading the network with preconfigurated packets.
  * The tool is implemented as a linux module.  Parameters are output
  * device, delay (to hard_xmit), number of packets, and whether
@@ -67,28 +55,17 @@
  *
  * Integrated to 2.5.x 021029 --Lucio Maciel (luciomaciel@zipmail.com.br)
  *
-<<<<<<< HEAD
- *
- * 021124 Finished major redesign and rewrite for new functionality.
- * See Documentation/networking/pktgen.txt for how to use this.
-=======
  * 021124 Finished major redesign and rewrite for new functionality.
  * See Documentation/networking/pktgen.rst for how to use this.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The new operation:
  * For each CPU one thread/process is created at start. This process checks
  * for running devices in the if_list and sends packets until count is 0 it
  * also the thread checks the thread->control which is used for inter-process
  * communication. controlling process "posts" operations to the threads this
-<<<<<<< HEAD
- * way. The if_lock should be possible to remove when add/rem_device is merged
- * into this too.
-=======
  * way.
  * The if_list is RCU protected, and the if_lock remains to protect updating
  * of if_list, from "add_device" as it invoked from userspace (via proc write).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * By design there should only be *one* "controlling" process. In practice
  * multiple write accesses gives unpredictable result. Understood by "write"
@@ -114,11 +91,7 @@
  * New xmit() return, do_div and misc clean up by Stephen Hemminger
  * <shemminger@osdl.org> 040923
  *
-<<<<<<< HEAD
- * Randy Dunlap fixed u64 printk compiler waring
-=======
  * Randy Dunlap fixed u64 printk compiler warning
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Remove FCS from BW calculation.  Lennert Buytenhek <buytenh@wantstofly.org>
  * New time handling. Lennert Buytenhek <buytenh@wantstofly.org> 041213
@@ -135,10 +108,6 @@
  *
  * Fixed src_mac command to set source mac of packet to value specified in
  * command by Adit Ranadive <adit.262@gmail.com>
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -182,26 +151,17 @@
 #include <linux/etherdevice.h>
 #include <linux/kthread.h>
 #include <linux/prefetch.h>
-<<<<<<< HEAD
-#include <net/net_namespace.h>
-#include <net/checksum.h>
-#include <net/ipv6.h>
-=======
 #include <linux/mmzone.h>
 #include <net/net_namespace.h>
 #include <net/checksum.h>
 #include <net/ipv6.h>
 #include <net/udp.h>
 #include <net/ip6_checksum.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/addrconf.h>
 #ifdef CONFIG_XFRM
 #include <net/xfrm.h>
 #endif
-<<<<<<< HEAD
-=======
 #include <net/netns/generic.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/byteorder.h>
 #include <linux/rcupdate.h>
 #include <linux/bitops.h>
@@ -211,32 +171,6 @@
 #include <asm/dma.h>
 #include <asm/div64.h>		/* do_div */
 
-<<<<<<< HEAD
-#define VERSION	"2.74"
-#define IP_NAME_SZ 32
-#define MAX_MPLS_LABELS 16 /* This is the max label stack depth */
-#define MPLS_STACK_BOTTOM htonl(0x00000100)
-
-#define func_enter() pr_debug("entering %s\n", __func__);
-
-/* Device flag bits */
-#define F_IPSRC_RND   (1<<0)	/* IP-Src Random  */
-#define F_IPDST_RND   (1<<1)	/* IP-Dst Random  */
-#define F_UDPSRC_RND  (1<<2)	/* UDP-Src Random */
-#define F_UDPDST_RND  (1<<3)	/* UDP-Dst Random */
-#define F_MACSRC_RND  (1<<4)	/* MAC-Src Random */
-#define F_MACDST_RND  (1<<5)	/* MAC-Dst Random */
-#define F_TXSIZE_RND  (1<<6)	/* Transmit size is random */
-#define F_IPV6        (1<<7)	/* Interface in IPV6 Mode */
-#define F_MPLS_RND    (1<<8)	/* Random MPLS labels */
-#define F_VID_RND     (1<<9)	/* Random VLAN ID */
-#define F_SVID_RND    (1<<10)	/* Random SVLAN ID */
-#define F_FLOW_SEQ    (1<<11)	/* Sequential flows */
-#define F_IPSEC_ON    (1<<12)	/* ipsec on for flows */
-#define F_QUEUE_MAP_RND (1<<13)	/* queue map Random */
-#define F_QUEUE_MAP_CPU (1<<14)	/* queue map mirrors smp_processor_id() */
-#define F_NODE          (1<<15)	/* Node memory alloc*/
-=======
 #define VERSION	"2.75"
 #define IP_NAME_SZ 32
 #define MAX_MPLS_LABELS 16 /* This is the max label stack depth */
@@ -286,7 +220,6 @@ static char *pkt_flag_names[] = {
 #undef pf
 
 #define NR_PKT_FLAGS		ARRAY_SIZE(pkt_flag_names)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Thread control flag bits */
 #define T_STOP        (1<<0)	/* Stop run */
@@ -294,11 +227,6 @@ static char *pkt_flag_names[] = {
 #define T_REMDEVALL   (1<<2)	/* Remove all devs */
 #define T_REMDEV      (1<<3)	/* Remove one dev */
 
-<<<<<<< HEAD
-/* If lock -- can be removed after some work */
-#define   if_lock(t)           spin_lock(&(t->if_lock));
-#define   if_unlock(t)           spin_unlock(&(t->if_lock));
-=======
 /* Xmit modes */
 #define M_START_XMIT		0	/* Default normal TX */
 #define M_NETIF_RECEIVE 	1	/* Inject packets into stack */
@@ -307,31 +235,23 @@ static char *pkt_flag_names[] = {
 /* If lock -- protects updating of if_list */
 #define   if_lock(t)           mutex_lock(&(t->if_lock));
 #define   if_unlock(t)           mutex_unlock(&(t->if_lock));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Used to help with determining the pkts on receive */
 #define PKTGEN_MAGIC 0xbe9be955
 #define PG_PROC_DIR "pktgen"
 #define PGCTRL	    "pgctrl"
-<<<<<<< HEAD
-static struct proc_dir_entry *pg_proc_dir;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_CFLOWS  65536
 
 #define VLAN_TAG_SIZE(x) ((x)->vlan_id == 0xffff ? 0 : 4)
 #define SVLAN_TAG_SIZE(x) ((x)->svlan_id == 0xffff ? 0 : 4)
 
-<<<<<<< HEAD
-=======
 struct imix_pkt {
 	u64 size;
 	u64 weight;
 	u64 count_so_far;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct flow_state {
 	__be32 cur_daddr;
 	int count;
@@ -351,10 +271,7 @@ struct pktgen_dev {
 	struct proc_dir_entry *entry;	/* proc file */
 	struct pktgen_thread *pg_thread;/* the owner */
 	struct list_head list;		/* chaining in the thread's run-queue */
-<<<<<<< HEAD
-=======
 	struct rcu_head	 rcu;		/* freed by RCU */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int running;		/* if false, the test will stop */
 
@@ -362,15 +279,6 @@ struct pktgen_dev {
 	 * we will do a random selection from within the range.
 	 */
 	__u32 flags;
-<<<<<<< HEAD
-	int removal_mark;	/* non-zero => the device is marked for
-				 * removal by worker thread */
-
-	int min_pkt_size;	/* = ETH_ZLEN; */
-	int max_pkt_size;	/* = ETH_ZLEN; */
-	int pkt_overhead;	/* overhead for MPLS, VLANs, IPSEC etc */
-	int nfrags;
-=======
 	int xmit_mode;
 	int min_pkt_size;
 	int max_pkt_size;
@@ -379,7 +287,6 @@ struct pktgen_dev {
 	int removal_mark;	/* non-zero => the device is marked for
 				 * removal by worker thread */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page *page;
 	u64 delay;		/* nano-seconds */
 
@@ -390,10 +297,6 @@ struct pktgen_dev {
 
 	/* runtime counters relating to clone_skb */
 
-<<<<<<< HEAD
-	__u64 allocated_skbs;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u32 clone_count;
 	int last_ok;		/* Was last skb sent?
 				 * Or a failed transmit of some sort?
@@ -450,10 +353,6 @@ struct pktgen_dev {
 	__u8 traffic_class;  /* ditto for the (former) Traffic Class in IPv6
 				(see RFC 3260, sec. 4) */
 
-<<<<<<< HEAD
-	/* MPLS */
-	unsigned nr_labels;	/* Depth of stack, 0 = no MPLS */
-=======
 	/* IMIX */
 	unsigned int n_imix_entries;
 	struct imix_pkt imix_entries[MAX_IMIX_ENTRIES];
@@ -462,7 +361,6 @@ struct pktgen_dev {
 
 	/* MPLS */
 	unsigned int nr_labels;	/* Depth of stack, 0 = no MPLS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 labels[MAX_MPLS_LABELS];
 
 	/* VLAN/SVLAN (802.1Q/Q-in-Q) */
@@ -513,14 +411,6 @@ struct pktgen_dev {
 				  * device name (not when the inject is
 				  * started as it used to do.)
 				  */
-<<<<<<< HEAD
-	char odevname[32];
-	struct flow_state *flows;
-	unsigned cflows;	/* Concurrent flows (config) */
-	unsigned lflow;		/* Flow length  (config) */
-	unsigned nflows;	/* accumulated flows (stats) */
-	unsigned curfl;		/* current sequenced flow (state)*/
-=======
 	netdevice_tracker dev_tracker;
 	char odevname[32];
 	struct flow_state *flows;
@@ -528,26 +418,19 @@ struct pktgen_dev {
 	unsigned int lflow;		/* Flow length  (config) */
 	unsigned int nflows;	/* accumulated flows (stats) */
 	unsigned int curfl;		/* current sequenced flow (state)*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u16 queue_map_min;
 	u16 queue_map_max;
 	__u32 skb_priority;	/* skb priority field */
-<<<<<<< HEAD
-=======
 	unsigned int burst;	/* number of duplicated packets to burst */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int node;               /* Memory node */
 
 #ifdef CONFIG_XFRM
 	__u8	ipsmode;		/* IPSEC mode (config) */
 	__u8	ipsproto;		/* IPSEC type (config) */
-<<<<<<< HEAD
-=======
 	__u32	spi;
 	struct xfrm_dst xdst;
 	struct dst_ops dstops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	char result[512];
 };
@@ -559,12 +442,6 @@ struct pktgen_hdr {
 	__be32 tv_usec;
 };
 
-<<<<<<< HEAD
-static bool pktgen_exiting __read_mostly;
-
-struct pktgen_thread {
-	spinlock_t if_lock;		/* for list of devices */
-=======
 
 static unsigned int pg_net_id __read_mostly;
 
@@ -577,7 +454,6 @@ struct pktgen_net {
 
 struct pktgen_thread {
 	struct mutex if_lock;		/* for list of devices */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head if_list;	/* All device here */
 	struct list_head th_list;
 	struct task_struct *tsk;
@@ -591,10 +467,7 @@ struct pktgen_thread {
 
 	wait_queue_head_t queue;
 	struct completion start_done;
-<<<<<<< HEAD
-=======
 	struct pktgen_net *net;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define REMOVE 1
@@ -609,16 +482,6 @@ static int pktgen_add_device(struct pktgen_thread *t, const char *ifname);
 static struct pktgen_dev *pktgen_find_dev(struct pktgen_thread *t,
 					  const char *ifname, bool exact);
 static int pktgen_device_event(struct notifier_block *, unsigned long, void *);
-<<<<<<< HEAD
-static void pktgen_run_all_threads(void);
-static void pktgen_reset_all_threads(void);
-static void pktgen_stop_all_threads_ifs(void);
-
-static void pktgen_stop(struct pktgen_thread *t);
-static void pktgen_clear_counters(struct pktgen_dev *pkt_dev);
-
-static unsigned int scan_ip6(const char *s, char ip[16]);
-=======
 static void pktgen_run_all_threads(struct pktgen_net *pn);
 static void pktgen_reset_all_threads(struct pktgen_net *pn);
 static void pktgen_stop_all_threads(struct pktgen_net *pn);
@@ -626,7 +489,6 @@ static void pktgen_stop_all_threads(struct pktgen_net *pn);
 static void pktgen_stop(struct pktgen_thread *t);
 static void pktgen_clear_counters(struct pktgen_dev *pkt_dev);
 static void fill_imix_distribution(struct pktgen_dev *pkt_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Module parameters, defaults. */
 static int pg_count_d __read_mostly = 1000;
@@ -635,10 +497,6 @@ static int pg_clone_skb_d  __read_mostly;
 static int debug  __read_mostly;
 
 static DEFINE_MUTEX(pktgen_thread_lock);
-<<<<<<< HEAD
-static LIST_HEAD(pktgen_threads);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct notifier_block pktgen_notifier_block = {
 	.notifier_call = pktgen_device_event,
@@ -658,15 +516,6 @@ static int pgctrl_show(struct seq_file *seq, void *v)
 static ssize_t pgctrl_write(struct file *file, const char __user *buf,
 			    size_t count, loff_t *ppos)
 {
-<<<<<<< HEAD
-	int err = 0;
-	char data[128];
-
-	if (!capable(CAP_NET_ADMIN)) {
-		err = -EPERM;
-		goto out;
-	}
-=======
 	char data[128];
 	struct pktgen_net *pn = net_generic(current->nsproxy->net_ns, pg_net_id);
 
@@ -675,35 +524,10 @@ static ssize_t pgctrl_write(struct file *file, const char __user *buf,
 
 	if (count == 0)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (count > sizeof(data))
 		count = sizeof(data);
 
-<<<<<<< HEAD
-	if (copy_from_user(data, buf, count)) {
-		err = -EFAULT;
-		goto out;
-	}
-	data[count - 1] = 0;	/* Make string */
-
-	if (!strcmp(data, "stop"))
-		pktgen_stop_all_threads_ifs();
-
-	else if (!strcmp(data, "start"))
-		pktgen_run_all_threads();
-
-	else if (!strcmp(data, "reset"))
-		pktgen_reset_all_threads();
-
-	else
-		pr_warning("Unknown command: %s\n", data);
-
-	err = count;
-
-out:
-	return err;
-=======
 	if (copy_from_user(data, buf, count))
 		return -EFAULT;
 
@@ -719,23 +543,10 @@ out:
 		return -EINVAL;
 
 	return count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pgctrl_open(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	return single_open(file, pgctrl_show, PDE(inode)->data);
-}
-
-static const struct file_operations pktgen_fops = {
-	.owner   = THIS_MODULE,
-	.open    = pgctrl_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.write   = pgctrl_write,
-	.release = single_release,
-=======
 	return single_open(file, pgctrl_show, pde_data(inode));
 }
 
@@ -745,17 +556,13 @@ static const struct proc_ops pktgen_proc_ops = {
 	.proc_lseek	= seq_lseek,
 	.proc_write	= pgctrl_write,
 	.proc_release	= single_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int pktgen_if_show(struct seq_file *seq, void *v)
 {
 	const struct pktgen_dev *pkt_dev = seq->private;
 	ktime_t stopped;
-<<<<<<< HEAD
-=======
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 idle;
 
 	seq_printf(seq,
@@ -763,8 +570,6 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
 		   (unsigned long long)pkt_dev->count, pkt_dev->min_pkt_size,
 		   pkt_dev->max_pkt_size);
 
-<<<<<<< HEAD
-=======
 	if (pkt_dev->n_imix_entries > 0) {
 		seq_puts(seq, "     imix_weights: ");
 		for (i = 0; i < pkt_dev->n_imix_entries; i++) {
@@ -775,7 +580,6 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
 		seq_puts(seq, "\n");
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(seq,
 		   "     frags: %d  delay: %llu  clone_skb: %d  ifname: %s\n",
 		   pkt_dev->nfrags, (unsigned long long) pkt_dev->delay,
@@ -816,11 +620,7 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
 		   is_zero_ether_addr(pkt_dev->src_mac) ?
 			     pkt_dev->odev->dev_addr : pkt_dev->src_mac);
 
-<<<<<<< HEAD
-	seq_printf(seq, "dst_mac: ");
-=======
 	seq_puts(seq, "dst_mac: ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(seq, "%pM\n", pkt_dev->dst_mac);
 
 	seq_printf(seq,
@@ -834,12 +634,7 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
 		   pkt_dev->src_mac_count, pkt_dev->dst_mac_count);
 
 	if (pkt_dev->nr_labels) {
-<<<<<<< HEAD
-		unsigned i;
-		seq_printf(seq, "     mpls: ");
-=======
 		seq_puts(seq, "     mpls: ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < pkt_dev->nr_labels; i++)
 			seq_printf(seq, "%08x%s", ntohl(pkt_dev->labels[i]),
 				   i == pkt_dev->nr_labels-1 ? "\n" : ", ");
@@ -861,66 +656,6 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
 	if (pkt_dev->traffic_class)
 		seq_printf(seq, "     traffic_class: 0x%02x\n", pkt_dev->traffic_class);
 
-<<<<<<< HEAD
-	if (pkt_dev->node >= 0)
-		seq_printf(seq, "     node: %d\n", pkt_dev->node);
-
-	seq_printf(seq, "     Flags: ");
-
-	if (pkt_dev->flags & F_IPV6)
-		seq_printf(seq, "IPV6  ");
-
-	if (pkt_dev->flags & F_IPSRC_RND)
-		seq_printf(seq, "IPSRC_RND  ");
-
-	if (pkt_dev->flags & F_IPDST_RND)
-		seq_printf(seq, "IPDST_RND  ");
-
-	if (pkt_dev->flags & F_TXSIZE_RND)
-		seq_printf(seq, "TXSIZE_RND  ");
-
-	if (pkt_dev->flags & F_UDPSRC_RND)
-		seq_printf(seq, "UDPSRC_RND  ");
-
-	if (pkt_dev->flags & F_UDPDST_RND)
-		seq_printf(seq, "UDPDST_RND  ");
-
-	if (pkt_dev->flags & F_MPLS_RND)
-		seq_printf(seq,  "MPLS_RND  ");
-
-	if (pkt_dev->flags & F_QUEUE_MAP_RND)
-		seq_printf(seq,  "QUEUE_MAP_RND  ");
-
-	if (pkt_dev->flags & F_QUEUE_MAP_CPU)
-		seq_printf(seq,  "QUEUE_MAP_CPU  ");
-
-	if (pkt_dev->cflows) {
-		if (pkt_dev->flags & F_FLOW_SEQ)
-			seq_printf(seq,  "FLOW_SEQ  "); /*in sequence flows*/
-		else
-			seq_printf(seq,  "FLOW_RND  ");
-	}
-
-#ifdef CONFIG_XFRM
-	if (pkt_dev->flags & F_IPSEC_ON)
-		seq_printf(seq,  "IPSEC  ");
-#endif
-
-	if (pkt_dev->flags & F_MACSRC_RND)
-		seq_printf(seq, "MACSRC_RND  ");
-
-	if (pkt_dev->flags & F_MACDST_RND)
-		seq_printf(seq, "MACDST_RND  ");
-
-	if (pkt_dev->flags & F_VID_RND)
-		seq_printf(seq, "VID_RND  ");
-
-	if (pkt_dev->flags & F_SVID_RND)
-		seq_printf(seq, "SVID_RND  ");
-
-	if (pkt_dev->flags & F_NODE)
-		seq_printf(seq, "NODE_ALLOC  ");
-=======
 	if (pkt_dev->burst > 1)
 		seq_printf(seq, "     burst: %d\n", pkt_dev->burst);
 
@@ -949,7 +684,6 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
 			seq_puts(seq, "FLOW_RND  ");
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seq_puts(seq, "\n");
 
@@ -963,8 +697,6 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
 		   (unsigned long long)pkt_dev->sofar,
 		   (unsigned long long)pkt_dev->errors);
 
-<<<<<<< HEAD
-=======
 	if (pkt_dev->n_imix_entries > 0) {
 		int i;
 
@@ -977,7 +709,6 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
 		seq_puts(seq, "\n");
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(seq,
 		   "     started: %lluus  stopped: %lluus idle: %lluus\n",
 		   (unsigned long long) ktime_to_us(pkt_dev->started_at),
@@ -994,13 +725,8 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
 				&pkt_dev->cur_in6_saddr,
 				&pkt_dev->cur_in6_daddr);
 	} else
-<<<<<<< HEAD
-		seq_printf(seq, "     cur_saddr: 0x%x  cur_daddr: 0x%x\n",
-			   pkt_dev->cur_saddr, pkt_dev->cur_daddr);
-=======
 		seq_printf(seq, "     cur_saddr: %pI4  cur_daddr: %pI4\n",
 			   &pkt_dev->cur_saddr, &pkt_dev->cur_daddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seq_printf(seq, "     cur_udp_dst: %d  cur_udp_src: %d\n",
 		   pkt_dev->cur_udp_dst, pkt_dev->cur_udp_src);
@@ -1012,11 +738,7 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
 	if (pkt_dev->result[0])
 		seq_printf(seq, "Result: %s\n", pkt_dev->result);
 	else
-<<<<<<< HEAD
-		seq_printf(seq, "Result: Idle\n");
-=======
 		seq_puts(seq, "Result: Idle\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1102,10 +824,6 @@ static int strn_len(const char __user * user_buffer, unsigned int maxlen)
 		case '\t':
 		case ' ':
 			goto done_str;
-<<<<<<< HEAD
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			break;
 		}
@@ -1114,11 +832,6 @@ done_str:
 	return i;
 }
 
-<<<<<<< HEAD
-static ssize_t get_labels(const char __user *buffer, struct pktgen_dev *pkt_dev)
-{
-	unsigned n = 0;
-=======
 /* Parses imix entries from user buffer.
  * The user buffer should consist of imix entries separated by spaces
  * where each entry consists of size and weight delimited by commas.
@@ -1178,7 +891,6 @@ static ssize_t get_imix_entries(const char __user *buffer,
 static ssize_t get_labels(const char __user *buffer, struct pktgen_dev *pkt_dev)
 {
 	unsigned int n = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char c;
 	ssize_t i = 0;
 	int len;
@@ -1205,8 +917,6 @@ static ssize_t get_labels(const char __user *buffer, struct pktgen_dev *pkt_dev)
 	return i;
 }
 
-<<<<<<< HEAD
-=======
 static __u32 pktgen_read_flag(const char *f, bool *disable)
 {
 	__u32 i;
@@ -1236,7 +946,6 @@ static __u32 pktgen_read_flag(const char *f, bool *disable)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t pktgen_if_write(struct file *file,
 			       const char __user * user_buffer, size_t count,
 			       loff_t * offset)
@@ -1253,22 +962,14 @@ static ssize_t pktgen_if_write(struct file *file,
 	pg_result = &(pkt_dev->result[0]);
 
 	if (count < 1) {
-<<<<<<< HEAD
-		pr_warning("wrong command format\n");
-=======
 		pr_warn("wrong command format\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	max = count;
 	tmp = count_trail_chars(user_buffer, max);
 	if (tmp < 0) {
-<<<<<<< HEAD
-		pr_warning("illegal format\n");
-=======
 		pr_warn("illegal format\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return tmp;
 	}
 	i = tmp;
@@ -1292,15 +993,6 @@ static ssize_t pktgen_if_write(struct file *file,
 	i += len;
 
 	if (debug) {
-<<<<<<< HEAD
-		size_t copy = min_t(size_t, count, 1023);
-		char tb[copy + 1];
-		if (copy_from_user(tb, user_buffer, copy))
-			return -EFAULT;
-		tb[copy] = 0;
-		printk(KERN_DEBUG "pktgen: %s,%lu  buffer -:%s:-\n", name,
-		       (unsigned long)count, tb);
-=======
 		size_t copy = min_t(size_t, count + 1, 1024);
 		char *tp = strndup_user(user_buffer, copy);
 
@@ -1309,7 +1001,6 @@ static ssize_t pktgen_if_write(struct file *file,
 
 		pr_debug("%s,%zu  buffer -:%s:-\n", name, count, tp);
 		kfree(tp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!strcmp(name, "min_pkt_size")) {
@@ -1324,11 +1015,7 @@ static ssize_t pktgen_if_write(struct file *file,
 			pkt_dev->min_pkt_size = value;
 			pkt_dev->cur_pkt_size = value;
 		}
-<<<<<<< HEAD
-		sprintf(pg_result, "OK: min_pkt_size=%u",
-=======
 		sprintf(pg_result, "OK: min_pkt_size=%d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pkt_dev->min_pkt_size);
 		return count;
 	}
@@ -1345,11 +1032,7 @@ static ssize_t pktgen_if_write(struct file *file,
 			pkt_dev->max_pkt_size = value;
 			pkt_dev->cur_pkt_size = value;
 		}
-<<<<<<< HEAD
-		sprintf(pg_result, "OK: max_pkt_size=%u",
-=======
 		sprintf(pg_result, "OK: max_pkt_size=%d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pkt_dev->max_pkt_size);
 		return count;
 	}
@@ -1369,9 +1052,6 @@ static ssize_t pktgen_if_write(struct file *file,
 			pkt_dev->max_pkt_size = value;
 			pkt_dev->cur_pkt_size = value;
 		}
-<<<<<<< HEAD
-		sprintf(pg_result, "OK: pkt_size=%u", pkt_dev->min_pkt_size);
-=======
 		sprintf(pg_result, "OK: pkt_size=%d", pkt_dev->min_pkt_size);
 		return count;
 	}
@@ -1387,7 +1067,6 @@ static ssize_t pktgen_if_write(struct file *file,
 		fill_imix_distribution(pkt_dev);
 
 		i += len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return count;
 	}
 
@@ -1409,11 +1088,7 @@ static ssize_t pktgen_if_write(struct file *file,
 
 		i += len;
 		pkt_dev->nfrags = value;
-<<<<<<< HEAD
-		sprintf(pg_result, "OK: frags=%u", pkt_dev->nfrags);
-=======
 		sprintf(pg_result, "OK: frags=%d", pkt_dev->nfrags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return count;
 	}
 	if (!strcmp(name, "delay")) {
@@ -1517,11 +1192,6 @@ static ssize_t pktgen_if_write(struct file *file,
 		len = num_arg(&user_buffer[i], 10, &value);
 		if (len < 0)
 			return len;
-<<<<<<< HEAD
-		if ((value > 0) &&
-		    (!(pkt_dev->odev->priv_flags & IFF_TX_SKB_SHARING)))
-			return -ENOTSUPP;
-=======
 		/* clone_skb is not supported for netif_receive xmit_mode and
 		 * IMIX mode.
 		 */
@@ -1533,7 +1203,6 @@ static ssize_t pktgen_if_write(struct file *file,
 				  !(pkt_dev->flags & F_SHARED)))
 			return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i += len;
 		pkt_dev->clone_skb = value;
 
@@ -1579,8 +1248,6 @@ static ssize_t pktgen_if_write(struct file *file,
 			pkt_dev->dst_mac_count);
 		return count;
 	}
-<<<<<<< HEAD
-=======
 	if (!strcmp(name, "burst")) {
 		len = num_arg(&user_buffer[i], 10, &value);
 		if (len < 0)
@@ -1600,7 +1267,6 @@ static ssize_t pktgen_if_write(struct file *file,
 		sprintf(pg_result, "OK: burst=%u", pkt_dev->burst);
 		return count;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!strcmp(name, "node")) {
 		len = num_arg(&user_buffer[i], 10, &value);
 		if (len < 0)
@@ -1620,14 +1286,9 @@ static ssize_t pktgen_if_write(struct file *file,
 			sprintf(pg_result, "ERROR: node not possible");
 		return count;
 	}
-<<<<<<< HEAD
-	if (!strcmp(name, "flag")) {
-		char f[32];
-=======
 	if (!strcmp(name, "xmit_mode")) {
 		char f[32];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(f, 0, 32);
 		len = strn_len(&user_buffer[i], sizeof(f) - 1);
 		if (len < 0)
@@ -1636,105 +1297,6 @@ static ssize_t pktgen_if_write(struct file *file,
 		if (copy_from_user(f, &user_buffer[i], len))
 			return -EFAULT;
 		i += len;
-<<<<<<< HEAD
-		if (strcmp(f, "IPSRC_RND") == 0)
-			pkt_dev->flags |= F_IPSRC_RND;
-
-		else if (strcmp(f, "!IPSRC_RND") == 0)
-			pkt_dev->flags &= ~F_IPSRC_RND;
-
-		else if (strcmp(f, "TXSIZE_RND") == 0)
-			pkt_dev->flags |= F_TXSIZE_RND;
-
-		else if (strcmp(f, "!TXSIZE_RND") == 0)
-			pkt_dev->flags &= ~F_TXSIZE_RND;
-
-		else if (strcmp(f, "IPDST_RND") == 0)
-			pkt_dev->flags |= F_IPDST_RND;
-
-		else if (strcmp(f, "!IPDST_RND") == 0)
-			pkt_dev->flags &= ~F_IPDST_RND;
-
-		else if (strcmp(f, "UDPSRC_RND") == 0)
-			pkt_dev->flags |= F_UDPSRC_RND;
-
-		else if (strcmp(f, "!UDPSRC_RND") == 0)
-			pkt_dev->flags &= ~F_UDPSRC_RND;
-
-		else if (strcmp(f, "UDPDST_RND") == 0)
-			pkt_dev->flags |= F_UDPDST_RND;
-
-		else if (strcmp(f, "!UDPDST_RND") == 0)
-			pkt_dev->flags &= ~F_UDPDST_RND;
-
-		else if (strcmp(f, "MACSRC_RND") == 0)
-			pkt_dev->flags |= F_MACSRC_RND;
-
-		else if (strcmp(f, "!MACSRC_RND") == 0)
-			pkt_dev->flags &= ~F_MACSRC_RND;
-
-		else if (strcmp(f, "MACDST_RND") == 0)
-			pkt_dev->flags |= F_MACDST_RND;
-
-		else if (strcmp(f, "!MACDST_RND") == 0)
-			pkt_dev->flags &= ~F_MACDST_RND;
-
-		else if (strcmp(f, "MPLS_RND") == 0)
-			pkt_dev->flags |= F_MPLS_RND;
-
-		else if (strcmp(f, "!MPLS_RND") == 0)
-			pkt_dev->flags &= ~F_MPLS_RND;
-
-		else if (strcmp(f, "VID_RND") == 0)
-			pkt_dev->flags |= F_VID_RND;
-
-		else if (strcmp(f, "!VID_RND") == 0)
-			pkt_dev->flags &= ~F_VID_RND;
-
-		else if (strcmp(f, "SVID_RND") == 0)
-			pkt_dev->flags |= F_SVID_RND;
-
-		else if (strcmp(f, "!SVID_RND") == 0)
-			pkt_dev->flags &= ~F_SVID_RND;
-
-		else if (strcmp(f, "FLOW_SEQ") == 0)
-			pkt_dev->flags |= F_FLOW_SEQ;
-
-		else if (strcmp(f, "QUEUE_MAP_RND") == 0)
-			pkt_dev->flags |= F_QUEUE_MAP_RND;
-
-		else if (strcmp(f, "!QUEUE_MAP_RND") == 0)
-			pkt_dev->flags &= ~F_QUEUE_MAP_RND;
-
-		else if (strcmp(f, "QUEUE_MAP_CPU") == 0)
-			pkt_dev->flags |= F_QUEUE_MAP_CPU;
-
-		else if (strcmp(f, "!QUEUE_MAP_CPU") == 0)
-			pkt_dev->flags &= ~F_QUEUE_MAP_CPU;
-#ifdef CONFIG_XFRM
-		else if (strcmp(f, "IPSEC") == 0)
-			pkt_dev->flags |= F_IPSEC_ON;
-#endif
-
-		else if (strcmp(f, "!IPV6") == 0)
-			pkt_dev->flags &= ~F_IPV6;
-
-		else if (strcmp(f, "NODE_ALLOC") == 0)
-			pkt_dev->flags |= F_NODE;
-
-		else if (strcmp(f, "!NODE_ALLOC") == 0)
-			pkt_dev->flags &= ~F_NODE;
-
-		else {
-			sprintf(pg_result,
-				"Flag -:%s:- unknown\nAvailable flags, (prepend ! to un-set flag):\n%s",
-				f,
-				"IPSRC_RND, IPDST_RND, UDPSRC_RND, UDPDST_RND, "
-				"MACSRC_RND, MACDST_RND, TXSIZE_RND, IPV6, MPLS_RND, VID_RND, SVID_RND, FLOW_SEQ, IPSEC, NODE_ALLOC\n");
-			return count;
-		}
-		sprintf(pg_result, "OK: flags=0x%x", pkt_dev->flags);
-=======
 
 		if (strcmp(f, "start_xmit") == 0) {
 			pkt_dev->xmit_mode = M_START_XMIT;
@@ -1813,7 +1375,6 @@ static ssize_t pktgen_if_write(struct file *file,
 			*(pg_result - 2) = '\0';
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return count;
 	}
 	if (!strcmp(name, "dst_min") || !strcmp(name, "dst")) {
@@ -1826,21 +1387,12 @@ static ssize_t pktgen_if_write(struct file *file,
 		buf[len] = 0;
 		if (strcmp(buf, pkt_dev->dst_min) != 0) {
 			memset(pkt_dev->dst_min, 0, sizeof(pkt_dev->dst_min));
-<<<<<<< HEAD
-			strncpy(pkt_dev->dst_min, buf, len);
-=======
 			strcpy(pkt_dev->dst_min, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pkt_dev->daddr_min = in_aton(pkt_dev->dst_min);
 			pkt_dev->cur_daddr = pkt_dev->daddr_min;
 		}
 		if (debug)
-<<<<<<< HEAD
-			printk(KERN_DEBUG "pktgen: dst_min set to: %s\n",
-			       pkt_dev->dst_min);
-=======
 			pr_debug("dst_min set to: %s\n", pkt_dev->dst_min);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i += len;
 		sprintf(pg_result, "OK: dst_min=%s", pkt_dev->dst_min);
 		return count;
@@ -1850,33 +1402,17 @@ static ssize_t pktgen_if_write(struct file *file,
 		if (len < 0)
 			return len;
 
-<<<<<<< HEAD
-
-		if (copy_from_user(buf, &user_buffer[i], len))
-			return -EFAULT;
-
-		buf[len] = 0;
-		if (strcmp(buf, pkt_dev->dst_max) != 0) {
-			memset(pkt_dev->dst_max, 0, sizeof(pkt_dev->dst_max));
-			strncpy(pkt_dev->dst_max, buf, len);
-=======
 		if (copy_from_user(buf, &user_buffer[i], len))
 			return -EFAULT;
 		buf[len] = 0;
 		if (strcmp(buf, pkt_dev->dst_max) != 0) {
 			memset(pkt_dev->dst_max, 0, sizeof(pkt_dev->dst_max));
 			strcpy(pkt_dev->dst_max, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pkt_dev->daddr_max = in_aton(pkt_dev->dst_max);
 			pkt_dev->cur_daddr = pkt_dev->daddr_max;
 		}
 		if (debug)
-<<<<<<< HEAD
-			printk(KERN_DEBUG "pktgen: dst_max set to: %s\n",
-			       pkt_dev->dst_max);
-=======
 			pr_debug("dst_max set to: %s\n", pkt_dev->dst_max);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i += len;
 		sprintf(pg_result, "OK: dst_max=%s", pkt_dev->dst_max);
 		return count;
@@ -1892,21 +1428,13 @@ static ssize_t pktgen_if_write(struct file *file,
 			return -EFAULT;
 		buf[len] = 0;
 
-<<<<<<< HEAD
-		scan_ip6(buf, pkt_dev->in6_daddr.s6_addr);
-=======
 		in6_pton(buf, -1, pkt_dev->in6_daddr.s6_addr, -1, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snprintf(buf, sizeof(buf), "%pI6c", &pkt_dev->in6_daddr);
 
 		pkt_dev->cur_in6_daddr = pkt_dev->in6_daddr;
 
 		if (debug)
-<<<<<<< HEAD
-			printk(KERN_DEBUG "pktgen: dst6 set to: %s\n", buf);
-=======
 			pr_debug("dst6 set to: %s\n", buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		i += len;
 		sprintf(pg_result, "OK: dst6=%s", buf);
@@ -1923,20 +1451,12 @@ static ssize_t pktgen_if_write(struct file *file,
 			return -EFAULT;
 		buf[len] = 0;
 
-<<<<<<< HEAD
-		scan_ip6(buf, pkt_dev->min_in6_daddr.s6_addr);
-=======
 		in6_pton(buf, -1, pkt_dev->min_in6_daddr.s6_addr, -1, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snprintf(buf, sizeof(buf), "%pI6c", &pkt_dev->min_in6_daddr);
 
 		pkt_dev->cur_in6_daddr = pkt_dev->min_in6_daddr;
 		if (debug)
-<<<<<<< HEAD
-			printk(KERN_DEBUG "pktgen: dst6_min set to: %s\n", buf);
-=======
 			pr_debug("dst6_min set to: %s\n", buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		i += len;
 		sprintf(pg_result, "OK: dst6_min=%s", buf);
@@ -1953,19 +1473,11 @@ static ssize_t pktgen_if_write(struct file *file,
 			return -EFAULT;
 		buf[len] = 0;
 
-<<<<<<< HEAD
-		scan_ip6(buf, pkt_dev->max_in6_daddr.s6_addr);
-		snprintf(buf, sizeof(buf), "%pI6c", &pkt_dev->max_in6_daddr);
-
-		if (debug)
-			printk(KERN_DEBUG "pktgen: dst6_max set to: %s\n", buf);
-=======
 		in6_pton(buf, -1, pkt_dev->max_in6_daddr.s6_addr, -1, NULL);
 		snprintf(buf, sizeof(buf), "%pI6c", &pkt_dev->max_in6_daddr);
 
 		if (debug)
 			pr_debug("dst6_max set to: %s\n", buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		i += len;
 		sprintf(pg_result, "OK: dst6_max=%s", buf);
@@ -1982,21 +1494,13 @@ static ssize_t pktgen_if_write(struct file *file,
 			return -EFAULT;
 		buf[len] = 0;
 
-<<<<<<< HEAD
-		scan_ip6(buf, pkt_dev->in6_saddr.s6_addr);
-=======
 		in6_pton(buf, -1, pkt_dev->in6_saddr.s6_addr, -1, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snprintf(buf, sizeof(buf), "%pI6c", &pkt_dev->in6_saddr);
 
 		pkt_dev->cur_in6_saddr = pkt_dev->in6_saddr;
 
 		if (debug)
-<<<<<<< HEAD
-			printk(KERN_DEBUG "pktgen: src6 set to: %s\n", buf);
-=======
 			pr_debug("src6 set to: %s\n", buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		i += len;
 		sprintf(pg_result, "OK: src6=%s", buf);
@@ -2012,21 +1516,12 @@ static ssize_t pktgen_if_write(struct file *file,
 		buf[len] = 0;
 		if (strcmp(buf, pkt_dev->src_min) != 0) {
 			memset(pkt_dev->src_min, 0, sizeof(pkt_dev->src_min));
-<<<<<<< HEAD
-			strncpy(pkt_dev->src_min, buf, len);
-=======
 			strcpy(pkt_dev->src_min, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pkt_dev->saddr_min = in_aton(pkt_dev->src_min);
 			pkt_dev->cur_saddr = pkt_dev->saddr_min;
 		}
 		if (debug)
-<<<<<<< HEAD
-			printk(KERN_DEBUG "pktgen: src_min set to: %s\n",
-			       pkt_dev->src_min);
-=======
 			pr_debug("src_min set to: %s\n", pkt_dev->src_min);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i += len;
 		sprintf(pg_result, "OK: src_min=%s", pkt_dev->src_min);
 		return count;
@@ -2041,21 +1536,12 @@ static ssize_t pktgen_if_write(struct file *file,
 		buf[len] = 0;
 		if (strcmp(buf, pkt_dev->src_max) != 0) {
 			memset(pkt_dev->src_max, 0, sizeof(pkt_dev->src_max));
-<<<<<<< HEAD
-			strncpy(pkt_dev->src_max, buf, len);
-=======
 			strcpy(pkt_dev->src_max, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pkt_dev->saddr_max = in_aton(pkt_dev->src_max);
 			pkt_dev->cur_saddr = pkt_dev->saddr_max;
 		}
 		if (debug)
-<<<<<<< HEAD
-			printk(KERN_DEBUG "pktgen: src_max set to: %s\n",
-			       pkt_dev->src_max);
-=======
 			pr_debug("src_max set to: %s\n", pkt_dev->src_max);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i += len;
 		sprintf(pg_result, "OK: src_max=%s", pkt_dev->src_max);
 		return count;
@@ -2072,11 +1558,7 @@ static ssize_t pktgen_if_write(struct file *file,
 		if (!mac_pton(valstr, pkt_dev->dst_mac))
 			return -EINVAL;
 		/* Set up Dest MAC */
-<<<<<<< HEAD
-		memcpy(&pkt_dev->hh[0], pkt_dev->dst_mac, ETH_ALEN);
-=======
 		ether_addr_copy(&pkt_dev->hh[0], pkt_dev->dst_mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sprintf(pg_result, "OK: dstmac %pM", pkt_dev->dst_mac);
 		return count;
@@ -2093,11 +1575,7 @@ static ssize_t pktgen_if_write(struct file *file,
 		if (!mac_pton(valstr, pkt_dev->src_mac))
 			return -EINVAL;
 		/* Set up Src MAC */
-<<<<<<< HEAD
-		memcpy(&pkt_dev->hh[6], pkt_dev->src_mac, ETH_ALEN);
-=======
 		ether_addr_copy(&pkt_dev->hh[6], pkt_dev->src_mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sprintf(pg_result, "OK: srcmac %pM", pkt_dev->src_mac);
 		return count;
@@ -2122,9 +1600,6 @@ static ssize_t pktgen_if_write(struct file *file,
 		sprintf(pg_result, "OK: flows=%u", pkt_dev->cflows);
 		return count;
 	}
-<<<<<<< HEAD
-
-=======
 #ifdef CONFIG_XFRM
 	if (!strcmp(name, "spi")) {
 		len = num_arg(&user_buffer[i], 10, &value);
@@ -2137,7 +1612,6 @@ static ssize_t pktgen_if_write(struct file *file,
 		return count;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!strcmp(name, "flowlen")) {
 		len = num_arg(&user_buffer[i], 10, &value);
 		if (len < 0)
@@ -2172,11 +1646,7 @@ static ssize_t pktgen_if_write(struct file *file,
 	}
 
 	if (!strcmp(name, "mpls")) {
-<<<<<<< HEAD
-		unsigned n, cnt;
-=======
 		unsigned int n, cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		len = get_labels(&user_buffer[i], pkt_dev);
 		if (len < 0)
@@ -2193,11 +1663,7 @@ static ssize_t pktgen_if_write(struct file *file,
 			pkt_dev->svlan_id = 0xffff;
 
 			if (debug)
-<<<<<<< HEAD
-				printk(KERN_DEBUG "pktgen: VLAN/SVLAN auto turned off\n");
-=======
 				pr_debug("VLAN/SVLAN auto turned off\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return count;
 	}
@@ -2212,17 +1678,10 @@ static ssize_t pktgen_if_write(struct file *file,
 			pkt_dev->vlan_id = value;  /* turn on VLAN */
 
 			if (debug)
-<<<<<<< HEAD
-				printk(KERN_DEBUG "pktgen: VLAN turned on\n");
-
-			if (debug && pkt_dev->nr_labels)
-				printk(KERN_DEBUG "pktgen: MPLS auto turned off\n");
-=======
 				pr_debug("VLAN turned on\n");
 
 			if (debug && pkt_dev->nr_labels)
 				pr_debug("MPLS auto turned off\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			pkt_dev->nr_labels = 0;    /* turn off MPLS */
 			sprintf(pg_result, "OK: vlan_id=%u", pkt_dev->vlan_id);
@@ -2231,11 +1690,7 @@ static ssize_t pktgen_if_write(struct file *file,
 			pkt_dev->svlan_id = 0xffff;
 
 			if (debug)
-<<<<<<< HEAD
-				printk(KERN_DEBUG "pktgen: VLAN/SVLAN turned off\n");
-=======
 				pr_debug("VLAN/SVLAN turned off\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return count;
 	}
@@ -2280,17 +1735,10 @@ static ssize_t pktgen_if_write(struct file *file,
 			pkt_dev->svlan_id = value;  /* turn on SVLAN */
 
 			if (debug)
-<<<<<<< HEAD
-				printk(KERN_DEBUG "pktgen: SVLAN turned on\n");
-
-			if (debug && pkt_dev->nr_labels)
-				printk(KERN_DEBUG "pktgen: MPLS auto turned off\n");
-=======
 				pr_debug("SVLAN turned on\n");
 
 			if (debug && pkt_dev->nr_labels)
 				pr_debug("MPLS auto turned off\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			pkt_dev->nr_labels = 0;    /* turn off MPLS */
 			sprintf(pg_result, "OK: svlan_id=%u", pkt_dev->svlan_id);
@@ -2299,11 +1747,7 @@ static ssize_t pktgen_if_write(struct file *file,
 			pkt_dev->svlan_id = 0xffff;
 
 			if (debug)
-<<<<<<< HEAD
-				printk(KERN_DEBUG "pktgen: VLAN/SVLAN turned off\n");
-=======
 				pr_debug("VLAN/SVLAN turned off\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return count;
 	}
@@ -2388,18 +1832,6 @@ static ssize_t pktgen_if_write(struct file *file,
 
 static int pktgen_if_open(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	return single_open(file, pktgen_if_show, PDE(inode)->data);
-}
-
-static const struct file_operations pktgen_if_fops = {
-	.owner   = THIS_MODULE,
-	.open    = pktgen_if_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.write   = pktgen_if_write,
-	.release = single_release,
-=======
 	return single_open(file, pktgen_if_show, pde_data(inode));
 }
 
@@ -2409,7 +1841,6 @@ static const struct proc_ops pktgen_if_proc_ops = {
 	.proc_lseek	= seq_lseek,
 	.proc_write	= pktgen_if_write,
 	.proc_release	= single_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int pktgen_thread_show(struct seq_file *seq, void *v)
@@ -2419,18 +1850,6 @@ static int pktgen_thread_show(struct seq_file *seq, void *v)
 
 	BUG_ON(!t);
 
-<<<<<<< HEAD
-	seq_printf(seq, "Running: ");
-
-	if_lock(t);
-	list_for_each_entry(pkt_dev, &t->if_list, list)
-		if (pkt_dev->running)
-			seq_printf(seq, "%s ", pkt_dev->odevname);
-
-	seq_printf(seq, "\nStopped: ");
-
-	list_for_each_entry(pkt_dev, &t->if_list, list)
-=======
 	seq_puts(seq, "Running: ");
 
 	rcu_read_lock();
@@ -2441,22 +1860,15 @@ static int pktgen_thread_show(struct seq_file *seq, void *v)
 	seq_puts(seq, "\nStopped: ");
 
 	list_for_each_entry_rcu(pkt_dev, &t->if_list, list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!pkt_dev->running)
 			seq_printf(seq, "%s ", pkt_dev->odevname);
 
 	if (t->result[0])
 		seq_printf(seq, "\nResult: %s\n", t->result);
 	else
-<<<<<<< HEAD
-		seq_printf(seq, "\nResult: NA\n");
-
-	if_unlock(t);
-=======
 		seq_puts(seq, "\nResult: NA\n");
 
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2502,12 +1914,7 @@ static ssize_t pktgen_thread_write(struct file *file,
 	i += len;
 
 	if (debug)
-<<<<<<< HEAD
-		printk(KERN_DEBUG "pktgen: t=%s, count=%lu\n",
-		       name, (unsigned long)count);
-=======
 		pr_debug("t=%s, count=%lu\n", name, (unsigned long)count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!t) {
 		pr_err("ERROR: No thread\n");
@@ -2562,22 +1969,6 @@ out:
 
 static int pktgen_thread_open(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	return single_open(file, pktgen_thread_show, PDE(inode)->data);
-}
-
-static const struct file_operations pktgen_thread_fops = {
-	.owner   = THIS_MODULE,
-	.open    = pktgen_thread_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.write   = pktgen_thread_write,
-	.release = single_release,
-};
-
-/* Think find or remove for NN */
-static struct pktgen_dev *__pktgen_NN_threads(const char *ifname, int remove)
-=======
 	return single_open(file, pktgen_thread_show, pde_data(inode));
 }
 
@@ -2592,29 +1983,17 @@ static const struct proc_ops pktgen_thread_proc_ops = {
 /* Think find or remove for NN */
 static struct pktgen_dev *__pktgen_NN_threads(const struct pktgen_net *pn,
 					      const char *ifname, int remove)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pktgen_thread *t;
 	struct pktgen_dev *pkt_dev = NULL;
 	bool exact = (remove == FIND);
 
-<<<<<<< HEAD
-	list_for_each_entry(t, &pktgen_threads, th_list) {
-		pkt_dev = pktgen_find_dev(t, ifname, exact);
-		if (pkt_dev) {
-			if (remove) {
-				if_lock(t);
-				pkt_dev->removal_mark = 1;
-				t->control |= T_REMDEV;
-				if_unlock(t);
-=======
 	list_for_each_entry(t, &pn->pktgen_threads, th_list) {
 		pkt_dev = pktgen_find_dev(t, ifname, exact);
 		if (pkt_dev) {
 			if (remove) {
 				pkt_dev->removal_mark = 1;
 				t->control |= T_REMDEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		}
@@ -2625,11 +2004,7 @@ static struct pktgen_dev *__pktgen_NN_threads(const struct pktgen_net *pn,
 /*
  * mark a device for removal
  */
-<<<<<<< HEAD
-static void pktgen_mark_device(const char *ifname)
-=======
 static void pktgen_mark_device(const struct pktgen_net *pn, const char *ifname)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pktgen_dev *pkt_dev = NULL;
 	const int max_tries = 10, msec_per_try = 125;
@@ -2640,11 +2015,7 @@ static void pktgen_mark_device(const struct pktgen_net *pn, const char *ifname)
 
 	while (1) {
 
-<<<<<<< HEAD
-		pkt_dev = __pktgen_NN_threads(ifname, REMOVE);
-=======
 		pkt_dev = __pktgen_NN_threads(pn, ifname, REMOVE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pkt_dev == NULL)
 			break;	/* success */
 
@@ -2665,15 +2036,6 @@ static void pktgen_mark_device(const struct pktgen_net *pn, const char *ifname)
 	mutex_unlock(&pktgen_thread_lock);
 }
 
-<<<<<<< HEAD
-static void pktgen_change_name(struct net_device *dev)
-{
-	struct pktgen_thread *t;
-
-	list_for_each_entry(t, &pktgen_threads, th_list) {
-		struct pktgen_dev *pkt_dev;
-
-=======
 static void pktgen_change_name(const struct pktgen_net *pn, struct net_device *dev)
 {
 	struct pktgen_thread *t;
@@ -2684,52 +2046,33 @@ static void pktgen_change_name(const struct pktgen_net *pn, struct net_device *d
 		struct pktgen_dev *pkt_dev;
 
 		if_lock(t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_for_each_entry(pkt_dev, &t->if_list, list) {
 			if (pkt_dev->odev != dev)
 				continue;
 
-<<<<<<< HEAD
-			remove_proc_entry(pkt_dev->entry->name, pg_proc_dir);
-
-			pkt_dev->entry = proc_create_data(dev->name, 0600,
-							  pg_proc_dir,
-							  &pktgen_if_fops,
-=======
 			proc_remove(pkt_dev->entry);
 
 			pkt_dev->entry = proc_create_data(dev->name, 0600,
 							  pn->proc_dir,
 							  &pktgen_if_proc_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							  pkt_dev);
 			if (!pkt_dev->entry)
 				pr_err("can't move proc entry for '%s'\n",
 				       dev->name);
 			break;
 		}
-<<<<<<< HEAD
-	}
-=======
 		if_unlock(t);
 	}
 	mutex_unlock(&pktgen_thread_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pktgen_device_event(struct notifier_block *unused,
 			       unsigned long event, void *ptr)
 {
-<<<<<<< HEAD
-	struct net_device *dev = ptr;
-
-	if (!net_eq(dev_net(dev), &init_net) || pktgen_exiting)
-=======
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
 	struct pktgen_net *pn = net_generic(dev_net(dev), pg_net_id);
 
 	if (pn->pktgen_exiting)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NOTIFY_DONE;
 
 	/* It is OK that we do not hold the group lock right now,
@@ -2738,31 +2081,19 @@ static int pktgen_device_event(struct notifier_block *unused,
 
 	switch (event) {
 	case NETDEV_CHANGENAME:
-<<<<<<< HEAD
-		pktgen_change_name(dev);
-		break;
-
-	case NETDEV_UNREGISTER:
-		pktgen_mark_device(dev->name);
-=======
 		pktgen_change_name(pn, dev);
 		break;
 
 	case NETDEV_UNREGISTER:
 		pktgen_mark_device(pn, dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	return NOTIFY_DONE;
 }
 
-<<<<<<< HEAD
-static struct net_device *pktgen_dev_get_by_name(struct pktgen_dev *pkt_dev,
-=======
 static struct net_device *pktgen_dev_get_by_name(const struct pktgen_net *pn,
 						 struct pktgen_dev *pkt_dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 const char *ifname)
 {
 	char b[IFNAMSIZ+5];
@@ -2776,63 +2107,39 @@ static struct net_device *pktgen_dev_get_by_name(const struct pktgen_net *pn,
 	}
 	b[i] = 0;
 
-<<<<<<< HEAD
-	return dev_get_by_name(&init_net, b);
-=======
 	return dev_get_by_name(pn->net, b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /* Associate pktgen_dev with a device. */
 
-<<<<<<< HEAD
-static int pktgen_setup_dev(struct pktgen_dev *pkt_dev, const char *ifname)
-=======
 static int pktgen_setup_dev(const struct pktgen_net *pn,
 			    struct pktgen_dev *pkt_dev, const char *ifname)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *odev;
 	int err;
 
 	/* Clean old setups */
 	if (pkt_dev->odev) {
-<<<<<<< HEAD
-		dev_put(pkt_dev->odev);
-		pkt_dev->odev = NULL;
-	}
-
-	odev = pktgen_dev_get_by_name(pkt_dev, ifname);
-=======
 		netdev_put(pkt_dev->odev, &pkt_dev->dev_tracker);
 		pkt_dev->odev = NULL;
 	}
 
 	odev = pktgen_dev_get_by_name(pn, pkt_dev, ifname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!odev) {
 		pr_err("no such netdevice: \"%s\"\n", ifname);
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	if (odev->type != ARPHRD_ETHER) {
-		pr_err("not an ethernet device: \"%s\"\n", ifname);
-=======
 	if (odev->type != ARPHRD_ETHER && odev->type != ARPHRD_LOOPBACK) {
 		pr_err("not an ethernet or loopback device: \"%s\"\n", ifname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 	} else if (!netif_running(odev)) {
 		pr_err("device is down: \"%s\"\n", ifname);
 		err = -ENETDOWN;
 	} else {
 		pkt_dev->odev = odev;
-<<<<<<< HEAD
-=======
 		netdev_tracker_alloc(odev, &pkt_dev->dev_tracker, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -2858,17 +2165,6 @@ static void pktgen_setup_inject(struct pktgen_dev *pkt_dev)
 	ntxq = pkt_dev->odev->real_num_tx_queues;
 
 	if (ntxq <= pkt_dev->queue_map_min) {
-<<<<<<< HEAD
-		pr_warning("WARNING: Requested queue_map_min (zero-based) (%d) exceeds valid range [0 - %d] for (%d) queues on %s, resetting\n",
-			   pkt_dev->queue_map_min, (ntxq ?: 1) - 1, ntxq,
-			   pkt_dev->odevname);
-		pkt_dev->queue_map_min = (ntxq ?: 1) - 1;
-	}
-	if (pkt_dev->queue_map_max >= ntxq) {
-		pr_warning("WARNING: Requested queue_map_max (zero-based) (%d) exceeds valid range [0 - %d] for (%d) queues on %s, resetting\n",
-			   pkt_dev->queue_map_max, (ntxq ?: 1) - 1, ntxq,
-			   pkt_dev->odevname);
-=======
 		pr_warn("WARNING: Requested queue_map_min (zero-based) (%d) exceeds valid range [0 - %d] for (%d) queues on %s, resetting\n",
 			pkt_dev->queue_map_min, (ntxq ?: 1) - 1, ntxq,
 			pkt_dev->odevname);
@@ -2878,34 +2174,12 @@ static void pktgen_setup_inject(struct pktgen_dev *pkt_dev)
 		pr_warn("WARNING: Requested queue_map_max (zero-based) (%d) exceeds valid range [0 - %d] for (%d) queues on %s, resetting\n",
 			pkt_dev->queue_map_max, (ntxq ?: 1) - 1, ntxq,
 			pkt_dev->odevname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pkt_dev->queue_map_max = (ntxq ?: 1) - 1;
 	}
 
 	/* Default to the interface's mac if not explicitly set. */
 
 	if (is_zero_ether_addr(pkt_dev->src_mac))
-<<<<<<< HEAD
-		memcpy(&(pkt_dev->hh[6]), pkt_dev->odev->dev_addr, ETH_ALEN);
-
-	/* Set up Dest MAC */
-	memcpy(&(pkt_dev->hh[0]), pkt_dev->dst_mac, ETH_ALEN);
-
-	/* Set up pkt size */
-	pkt_dev->cur_pkt_size = pkt_dev->min_pkt_size;
-
-	if (pkt_dev->flags & F_IPV6) {
-		/*
-		 * Skip this automatic address setting until locks or functions
-		 * gets exported
-		 */
-
-#ifdef NOTNOW
-		int i, set = 0, err = 1;
-		struct inet6_dev *idev;
-
-		for (i = 0; i < IN6_ADDR_HSIZE; i++)
-=======
 		ether_addr_copy(&(pkt_dev->hh[6]), pkt_dev->odev->dev_addr);
 
 	/* Set up Dest MAC */
@@ -2923,7 +2197,6 @@ static void pktgen_setup_inject(struct pktgen_dev *pkt_dev)
 		}
 
 		for (i = 0; i < sizeof(struct in6_addr); i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (pkt_dev->cur_in6_saddr.s6_addr[i]) {
 				set = 1;
 				break;
@@ -2943,14 +2216,8 @@ static void pktgen_setup_inject(struct pktgen_dev *pkt_dev)
 				struct inet6_ifaddr *ifp;
 
 				read_lock_bh(&idev->lock);
-<<<<<<< HEAD
-				for (ifp = idev->addr_list; ifp;
-				     ifp = ifp->if_next) {
-					if (ifp->scope == IFA_LINK &&
-=======
 				list_for_each_entry(ifp, &idev->addr_list, if_list) {
 					if ((ifp->scope & IFA_LINK) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    !(ifp->flags & IFA_F_TENTATIVE)) {
 						pkt_dev->cur_in6_saddr = ifp->addr;
 						err = 0;
@@ -2963,10 +2230,6 @@ static void pktgen_setup_inject(struct pktgen_dev *pkt_dev)
 			if (err)
 				pr_err("ERROR: IPv6 link address not available\n");
 		}
-<<<<<<< HEAD
-#endif
-	} else {
-=======
 	} else {
 		if (pkt_dev->min_pkt_size == 0) {
 			pkt_dev->min_pkt_size = 14 + sizeof(struct iphdr)
@@ -2975,7 +2238,6 @@ static void pktgen_setup_inject(struct pktgen_dev *pkt_dev)
 						+ pkt_dev->pkt_overhead;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pkt_dev->saddr_min = 0;
 		pkt_dev->saddr_max = 0;
 		if (strlen(pkt_dev->src_min) == 0) {
@@ -2985,17 +2247,11 @@ static void pktgen_setup_inject(struct pktgen_dev *pkt_dev)
 			rcu_read_lock();
 			in_dev = __in_dev_get_rcu(pkt_dev->odev);
 			if (in_dev) {
-<<<<<<< HEAD
-				if (in_dev->ifa_list) {
-					pkt_dev->saddr_min =
-					    in_dev->ifa_list->ifa_address;
-=======
 				const struct in_ifaddr *ifa;
 
 				ifa = rcu_dereference(in_dev->ifa_list);
 				if (ifa) {
 					pkt_dev->saddr_min = ifa->ifa_address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					pkt_dev->saddr_max = pkt_dev->saddr_min;
 				}
 			}
@@ -3009,13 +2265,10 @@ static void pktgen_setup_inject(struct pktgen_dev *pkt_dev)
 		pkt_dev->daddr_max = in_aton(pkt_dev->dst_max);
 	}
 	/* Initialize current values. */
-<<<<<<< HEAD
-=======
 	pkt_dev->cur_pkt_size = pkt_dev->min_pkt_size;
 	if (pkt_dev->min_pkt_size > pkt_dev->max_pkt_size)
 		pkt_dev->max_pkt_size = pkt_dev->min_pkt_size;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pkt_dev->cur_dst_mac_offset = 0;
 	pkt_dev->cur_src_mac_offset = 0;
 	pkt_dev->cur_saddr = pkt_dev->saddr_min;
@@ -3032,23 +2285,12 @@ static void spin(struct pktgen_dev *pkt_dev, ktime_t spin_until)
 	s64 remaining;
 	struct hrtimer_sleeper t;
 
-<<<<<<< HEAD
-	hrtimer_init_on_stack(&t.timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
-	hrtimer_set_expires(&t.timer, spin_until);
-
-	remaining = ktime_to_ns(hrtimer_expires_remaining(&t.timer));
-	if (remaining <= 0) {
-		pkt_dev->next_tx = ktime_add_ns(spin_until, pkt_dev->delay);
-		return;
-	}
-=======
 	hrtimer_init_sleeper_on_stack(&t, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
 	hrtimer_set_expires(&t.timer, spin_until);
 
 	remaining = ktime_to_ns(hrtimer_expires_remaining(&t.timer));
 	if (remaining <= 0)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	start_time = ktime_get();
 	if (remaining < 100000) {
@@ -3057,19 +2299,9 @@ static void spin(struct pktgen_dev *pkt_dev, ktime_t spin_until)
 			end_time = ktime_get();
 		} while (ktime_compare(end_time, spin_until) < 0);
 	} else {
-<<<<<<< HEAD
-		/* see do_nanosleep */
-		hrtimer_init_sleeper(&t, current);
-		do {
-			set_current_state(TASK_INTERRUPTIBLE);
-			hrtimer_start_expires(&t.timer, HRTIMER_MODE_ABS);
-			if (!hrtimer_active(&t.timer))
-				t.task = NULL;
-=======
 		do {
 			set_current_state(TASK_INTERRUPTIBLE);
 			hrtimer_sleeper_start_expires(&t, HRTIMER_MODE_ABS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (likely(t.task))
 				schedule();
@@ -3081,13 +2313,9 @@ static void spin(struct pktgen_dev *pkt_dev, ktime_t spin_until)
 	}
 
 	pkt_dev->idle_acc += ktime_to_ns(ktime_sub(end_time, start_time));
-<<<<<<< HEAD
-	pkt_dev->next_tx = ktime_add_ns(spin_until, pkt_dev->delay);
-=======
 out:
 	pkt_dev->next_tx = ktime_add_ns(spin_until, pkt_dev->delay);
 	destroy_hrtimer_on_stack(&t.timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void set_pkt_overhead(struct pktgen_dev *pkt_dev)
@@ -3117,11 +2345,7 @@ static inline int f_pick(struct pktgen_dev *pkt_dev)
 				pkt_dev->curfl = 0; /*reset */
 		}
 	} else {
-<<<<<<< HEAD
-		flow = random32() % pkt_dev->cflows;
-=======
 		flow = get_random_u32_below(pkt_dev->cflows);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pkt_dev->curfl = flow;
 
 		if (pkt_dev->flows[flow].count > pkt_dev->lflow) {
@@ -3142,16 +2366,6 @@ static inline int f_pick(struct pktgen_dev *pkt_dev)
 static void get_ipsec_sa(struct pktgen_dev *pkt_dev, int flow)
 {
 	struct xfrm_state *x = pkt_dev->flows[flow].x;
-<<<<<<< HEAD
-	if (!x) {
-		/*slow path: we dont already have xfrm_state*/
-		x = xfrm_stateonly_find(&init_net, DUMMY_MARK,
-					(xfrm_address_t *)&pkt_dev->cur_daddr,
-					(xfrm_address_t *)&pkt_dev->cur_saddr,
-					AF_INET,
-					pkt_dev->ipsmode,
-					pkt_dev->ipsproto, 0);
-=======
 	struct pktgen_net *pn = net_generic(dev_net(pkt_dev->odev), pg_net_id);
 	if (!x) {
 
@@ -3169,7 +2383,6 @@ static void get_ipsec_sa(struct pktgen_dev *pkt_dev, int flow)
 						pkt_dev->ipsmode,
 						pkt_dev->ipsproto, 0);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (x) {
 			pkt_dev->flows[flow].x = x;
 			set_pkt_overhead(pkt_dev);
@@ -3188,15 +2401,8 @@ static void set_cur_queue_map(struct pktgen_dev *pkt_dev)
 	else if (pkt_dev->queue_map_min <= pkt_dev->queue_map_max) {
 		__u16 t;
 		if (pkt_dev->flags & F_QUEUE_MAP_RND) {
-<<<<<<< HEAD
-			t = random32() %
-				(pkt_dev->queue_map_max -
-				 pkt_dev->queue_map_min + 1)
-				+ pkt_dev->queue_map_min;
-=======
 			t = get_random_u32_inclusive(pkt_dev->queue_map_min,
 						     pkt_dev->queue_map_max);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			t = pkt_dev->cur_queue_map + 1;
 			if (t > pkt_dev->queue_map_max)
@@ -3225,11 +2431,7 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
 		__u32 tmp;
 
 		if (pkt_dev->flags & F_MACSRC_RND)
-<<<<<<< HEAD
-			mc = random32() % pkt_dev->src_mac_count;
-=======
 			mc = get_random_u32_below(pkt_dev->src_mac_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			mc = pkt_dev->cur_src_mac_offset++;
 			if (pkt_dev->cur_src_mac_offset >=
@@ -3255,11 +2457,7 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
 		__u32 tmp;
 
 		if (pkt_dev->flags & F_MACDST_RND)
-<<<<<<< HEAD
-			mc = random32() % pkt_dev->dst_mac_count;
-=======
 			mc = get_random_u32_below(pkt_dev->dst_mac_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		else {
 			mc = pkt_dev->cur_dst_mac_offset++;
@@ -3282,48 +2480,26 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
 	}
 
 	if (pkt_dev->flags & F_MPLS_RND) {
-<<<<<<< HEAD
-		unsigned i;
-		for (i = 0; i < pkt_dev->nr_labels; i++)
-			if (pkt_dev->labels[i] & MPLS_STACK_BOTTOM)
-				pkt_dev->labels[i] = MPLS_STACK_BOTTOM |
-					     ((__force __be32)random32() &
-=======
 		unsigned int i;
 		for (i = 0; i < pkt_dev->nr_labels; i++)
 			if (pkt_dev->labels[i] & MPLS_STACK_BOTTOM)
 				pkt_dev->labels[i] = MPLS_STACK_BOTTOM |
 					     ((__force __be32)get_random_u32() &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      htonl(0x000fffff));
 	}
 
 	if ((pkt_dev->flags & F_VID_RND) && (pkt_dev->vlan_id != 0xffff)) {
-<<<<<<< HEAD
-		pkt_dev->vlan_id = random32() & (4096-1);
-	}
-
-	if ((pkt_dev->flags & F_SVID_RND) && (pkt_dev->svlan_id != 0xffff)) {
-		pkt_dev->svlan_id = random32() & (4096 - 1);
-=======
 		pkt_dev->vlan_id = get_random_u32_below(4096);
 	}
 
 	if ((pkt_dev->flags & F_SVID_RND) && (pkt_dev->svlan_id != 0xffff)) {
 		pkt_dev->svlan_id = get_random_u32_below(4096);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pkt_dev->udp_src_min < pkt_dev->udp_src_max) {
 		if (pkt_dev->flags & F_UDPSRC_RND)
-<<<<<<< HEAD
-			pkt_dev->cur_udp_src = random32() %
-				(pkt_dev->udp_src_max - pkt_dev->udp_src_min)
-				+ pkt_dev->udp_src_min;
-=======
 			pkt_dev->cur_udp_src = get_random_u32_inclusive(pkt_dev->udp_src_min,
 									pkt_dev->udp_src_max - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		else {
 			pkt_dev->cur_udp_src++;
@@ -3334,14 +2510,8 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
 
 	if (pkt_dev->udp_dst_min < pkt_dev->udp_dst_max) {
 		if (pkt_dev->flags & F_UDPDST_RND) {
-<<<<<<< HEAD
-			pkt_dev->cur_udp_dst = random32() %
-				(pkt_dev->udp_dst_max - pkt_dev->udp_dst_min)
-				+ pkt_dev->udp_dst_min;
-=======
 			pkt_dev->cur_udp_dst = get_random_u32_inclusive(pkt_dev->udp_dst_min,
 									pkt_dev->udp_dst_max - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			pkt_dev->cur_udp_dst++;
 			if (pkt_dev->cur_udp_dst >= pkt_dev->udp_dst_max)
@@ -3356,11 +2526,7 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
 		if (imn < imx) {
 			__u32 t;
 			if (pkt_dev->flags & F_IPSRC_RND)
-<<<<<<< HEAD
-				t = random32() % (imx - imn) + imn;
-=======
 				t = get_random_u32_inclusive(imn, imx - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else {
 				t = ntohl(pkt_dev->cur_saddr);
 				t++;
@@ -3381,19 +2547,6 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
 				__be32 s;
 				if (pkt_dev->flags & F_IPDST_RND) {
 
-<<<<<<< HEAD
-					t = random32() % (imx - imn) + imn;
-					s = htonl(t);
-
-					while (ipv4_is_loopback(s) ||
-					       ipv4_is_multicast(s) ||
-					       ipv4_is_lbcast(s) ||
-					       ipv4_is_zeronet(s) ||
-					       ipv4_is_local_multicast(s)) {
-						t = random32() % (imx - imn) + imn;
-						s = htonl(t);
-					}
-=======
 					do {
 						t = get_random_u32_inclusive(imn, imx - 1);
 						s = htonl(t);
@@ -3402,7 +2555,6 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
 						ipv4_is_lbcast(s) ||
 						ipv4_is_zeronet(s) ||
 						ipv4_is_local_multicast(s));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					pkt_dev->cur_daddr = s;
 				} else {
 					t = ntohl(pkt_dev->cur_daddr);
@@ -3418,11 +2570,7 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
 				pkt_dev->flows[flow].cur_daddr =
 				    pkt_dev->cur_daddr;
 #ifdef CONFIG_XFRM
-<<<<<<< HEAD
-				if (pkt_dev->flags & F_IPSEC_ON)
-=======
 				if (pkt_dev->flags & F_IPSEC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					get_ipsec_sa(pkt_dev, flow);
 #endif
 				pkt_dev->nflows++;
@@ -3430,26 +2578,14 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
 		}
 	} else {		/* IPV6 * */
 
-<<<<<<< HEAD
-		if (pkt_dev->min_in6_daddr.s6_addr32[0] == 0 &&
-		    pkt_dev->min_in6_daddr.s6_addr32[1] == 0 &&
-		    pkt_dev->min_in6_daddr.s6_addr32[2] == 0 &&
-		    pkt_dev->min_in6_daddr.s6_addr32[3] == 0) ;
-		else {
-=======
 		if (!ipv6_addr_any(&pkt_dev->min_in6_daddr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int i;
 
 			/* Only random destinations yet */
 
 			for (i = 0; i < 4; i++) {
 				pkt_dev->cur_in6_daddr.s6_addr32[i] =
-<<<<<<< HEAD
-				    (((__force __be32)random32() |
-=======
 				    (((__force __be32)get_random_u32() |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      pkt_dev->min_in6_daddr.s6_addr32[i]) &
 				     pkt_dev->max_in6_daddr.s6_addr32[i]);
 			}
@@ -3459,22 +2595,14 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
 	if (pkt_dev->min_pkt_size < pkt_dev->max_pkt_size) {
 		__u32 t;
 		if (pkt_dev->flags & F_TXSIZE_RND) {
-<<<<<<< HEAD
-			t = random32() %
-				(pkt_dev->max_pkt_size - pkt_dev->min_pkt_size)
-				+ pkt_dev->min_pkt_size;
-=======
 			t = get_random_u32_inclusive(pkt_dev->min_pkt_size,
 						     pkt_dev->max_pkt_size - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			t = pkt_dev->cur_pkt_size + 1;
 			if (t > pkt_dev->max_pkt_size)
 				t = pkt_dev->min_pkt_size;
 		}
 		pkt_dev->cur_pkt_size = t;
-<<<<<<< HEAD
-=======
 	} else if (pkt_dev->n_imix_entries > 0) {
 		struct imix_pkt *entry;
 		__u32 t = get_random_u32_below(IMIX_PRECISION);
@@ -3483,7 +2611,6 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
 		entry = &pkt_dev->imix_entries[entry_index];
 		entry->count_so_far++;
 		pkt_dev->cur_pkt_size = entry->size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	set_cur_queue_map(pkt_dev);
@@ -3491,10 +2618,6 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
 	pkt_dev->flows[flow].count++;
 }
 
-<<<<<<< HEAD
-
-#ifdef CONFIG_XFRM
-=======
 static void fill_imix_distribution(struct pktgen_dev *pkt_dev)
 {
 	int cumulative_probabilites[MAX_IMIX_ENTRIES];
@@ -3528,38 +2651,16 @@ static u32 pktgen_dst_metrics[RTAX_MAX + 1] = {
 	[RTAX_HOPLIMIT] = 0x5, /* Set a static hoplimit */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pktgen_output_ipsec(struct sk_buff *skb, struct pktgen_dev *pkt_dev)
 {
 	struct xfrm_state *x = pkt_dev->flows[pkt_dev->curfl].x;
 	int err = 0;
-<<<<<<< HEAD
-=======
 	struct net *net = dev_net(pkt_dev->odev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!x)
 		return 0;
 	/* XXX: we dont support tunnel mode for now until
 	 * we resolve the dst issue */
-<<<<<<< HEAD
-	if (x->props.mode != XFRM_MODE_TRANSPORT)
-		return 0;
-
-	spin_lock(&x->lock);
-
-	err = x->outer_mode->output(x, skb);
-	if (err)
-		goto error;
-	err = x->type->output(x, skb);
-	if (err)
-		goto error;
-
-	x->curlft.bytes += skb->len;
-	x->curlft.packets++;
-error:
-	spin_unlock(&x->lock);
-=======
 	if ((x->props.mode != XFRM_MODE_TRANSPORT) && (pkt_dev->spi == 0))
 		return 0;
 
@@ -3586,7 +2687,6 @@ error:
 	x->curlft.packets++;
 	spin_unlock_bh(&x->lock);
 error:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -3608,15 +2708,6 @@ static void free_SAs(struct pktgen_dev *pkt_dev)
 static int process_ipsec(struct pktgen_dev *pkt_dev,
 			      struct sk_buff *skb, __be16 protocol)
 {
-<<<<<<< HEAD
-	if (pkt_dev->flags & F_IPSEC_ON) {
-		struct xfrm_state *x = pkt_dev->flows[pkt_dev->curfl].x;
-		int nhead = 0;
-		if (x) {
-			int ret;
-			__u8 *eth;
-			struct iphdr *iph;
-=======
 	if (pkt_dev->flags & F_IPSEC) {
 		struct xfrm_state *x = pkt_dev->flows[pkt_dev->curfl].x;
 		int nhead = 0;
@@ -3624,7 +2715,6 @@ static int process_ipsec(struct pktgen_dev *pkt_dev,
 			struct ethhdr *eth;
 			struct iphdr *iph;
 			int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			nhead = x->props.header_len - skb_headroom(skb);
 			if (nhead > 0) {
@@ -3644,15 +2734,9 @@ static int process_ipsec(struct pktgen_dev *pkt_dev,
 				goto err;
 			}
 			/* restore ll */
-<<<<<<< HEAD
-			eth = (__u8 *) skb_push(skb, ETH_HLEN);
-			memcpy(eth, pkt_dev->hh, 12);
-			*(u16 *) &eth[12] = protocol;
-=======
 			eth = skb_push(skb, ETH_HLEN);
 			memcpy(eth, pkt_dev->hh, 2 * ETH_ALEN);
 			eth->h_proto = protocol;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Update IPv4 header len as well as checksum value */
 			iph = ip_hdr(skb);
@@ -3669,11 +2753,7 @@ err:
 
 static void mpls_push(__be32 *mpls, struct pktgen_dev *pkt_dev)
 {
-<<<<<<< HEAD
-	unsigned i;
-=======
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < pkt_dev->nr_labels; i++)
 		*mpls++ = pkt_dev->labels[i] & ~MPLS_STACK_BOTTOM;
 
@@ -3690,16 +2770,6 @@ static inline __be16 build_tci(unsigned int id, unsigned int cfi,
 static void pktgen_finalize_skb(struct pktgen_dev *pkt_dev, struct sk_buff *skb,
 				int datalen)
 {
-<<<<<<< HEAD
-	struct timeval timestamp;
-	struct pktgen_hdr *pgh;
-
-	pgh = (struct pktgen_hdr *)skb_put(skb, sizeof(*pgh));
-	datalen -= sizeof(*pgh);
-
-	if (pkt_dev->nfrags <= 0) {
-		memset(skb_put(skb, datalen), 0, datalen);
-=======
 	struct timespec64 timestamp;
 	struct pktgen_hdr *pgh;
 
@@ -3708,7 +2778,6 @@ static void pktgen_finalize_skb(struct pktgen_dev *pkt_dev, struct sk_buff *skb,
 
 	if (pkt_dev->nfrags <= 0) {
 		skb_put_zero(skb, datalen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		int frags = pkt_dev->nfrags;
 		int i, len;
@@ -3719,11 +2788,7 @@ static void pktgen_finalize_skb(struct pktgen_dev *pkt_dev, struct sk_buff *skb,
 			frags = MAX_SKB_FRAGS;
 		len = datalen - frags * PAGE_SIZE;
 		if (len > 0) {
-<<<<<<< HEAD
-			memset(skb_put(skb, len), 0, len);
-=======
 			skb_put_zero(skb, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			datalen = frags * PAGE_SIZE;
 		}
 
@@ -3741,16 +2806,6 @@ static void pktgen_finalize_skb(struct pktgen_dev *pkt_dev, struct sk_buff *skb,
 					break;
 			}
 			get_page(pkt_dev->page);
-<<<<<<< HEAD
-			skb_frag_set_page(skb, i, pkt_dev->page);
-			skb_shinfo(skb)->frags[i].page_offset = 0;
-			/*last fragment, fill rest of data*/
-			if (i == (frags - 1))
-				skb_frag_size_set(&skb_shinfo(skb)->frags[i],
-				    (datalen < PAGE_SIZE ? datalen : PAGE_SIZE));
-			else
-				skb_frag_size_set(&skb_shinfo(skb)->frags[i], frag_len);
-=======
 
 			/*last fragment, fill rest of data*/
 			if (i == (frags - 1))
@@ -3762,7 +2817,6 @@ static void pktgen_finalize_skb(struct pktgen_dev *pkt_dev, struct sk_buff *skb,
 				skb_frag_fill_page_desc(&skb_shinfo(skb)->frags[i],
 							pkt_dev->page, 0, frag_len);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			datalen -= skb_frag_size(&skb_shinfo(skb)->frags[i]);
 			skb->len += skb_frag_size(&skb_shinfo(skb)->frags[i]);
 			skb->data_len += skb_frag_size(&skb_shinfo(skb)->frags[i]);
@@ -3777,11 +2831,6 @@ static void pktgen_finalize_skb(struct pktgen_dev *pkt_dev, struct sk_buff *skb,
 	pgh->pgh_magic = htonl(PKTGEN_MAGIC);
 	pgh->seq_num = htonl(pkt_dev->seq_num);
 
-<<<<<<< HEAD
-	do_gettimeofday(&timestamp);
-	pgh->tv_sec = htonl(timestamp.tv_sec);
-	pgh->tv_usec = htonl(timestamp.tv_usec);
-=======
 	if (pkt_dev->flags & F_NO_TIMESTAMP) {
 		pgh->tv_sec = 0;
 		pgh->tv_usec = 0;
@@ -3825,7 +2874,6 @@ static struct sk_buff *pktgen_alloc_skb(struct net_device *dev,
 		skb_reserve(skb, extralen - 16);
 
 	return skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct sk_buff *fill_packet_ipv4(struct net_device *odev,
@@ -3856,45 +2904,11 @@ static struct sk_buff *fill_packet_ipv4(struct net_device *odev,
 	mod_cur_headers(pkt_dev);
 	queue_map = pkt_dev->cur_queue_map;
 
-<<<<<<< HEAD
-	datalen = (odev->hard_header_len + 16) & ~0xf;
-
-	if (pkt_dev->flags & F_NODE) {
-		int node;
-
-		if (pkt_dev->node >= 0)
-			node = pkt_dev->node;
-		else
-			node =  numa_node_id();
-
-		skb = __alloc_skb(NET_SKB_PAD + pkt_dev->cur_pkt_size + 64
-				  + datalen + pkt_dev->pkt_overhead, GFP_NOWAIT, 0, node);
-		if (likely(skb)) {
-			skb_reserve(skb, NET_SKB_PAD);
-			skb->dev = odev;
-		}
-	}
-	else
-	  skb = __netdev_alloc_skb(odev,
-				   pkt_dev->cur_pkt_size + 64
-				   + datalen + pkt_dev->pkt_overhead, GFP_NOWAIT);
-
-=======
 	skb = pktgen_alloc_skb(odev, pkt_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb) {
 		sprintf(pkt_dev->result, "No memory");
 		return NULL;
 	}
-<<<<<<< HEAD
-	prefetchw(skb->data);
-
-	skb_reserve(skb, datalen);
-
-	/*  Reserve for ethernet and IP header  */
-	eth = (__u8 *) skb_push(skb, 14);
-	mpls = (__be32 *)skb_put(skb, pkt_dev->nr_labels*sizeof(__u32));
-=======
 
 	prefetchw(skb->data);
 	skb_reserve(skb, 16);
@@ -3902,38 +2916,11 @@ static struct sk_buff *fill_packet_ipv4(struct net_device *odev,
 	/*  Reserve for ethernet and IP header  */
 	eth = skb_push(skb, 14);
 	mpls = skb_put(skb, pkt_dev->nr_labels * sizeof(__u32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pkt_dev->nr_labels)
 		mpls_push(mpls, pkt_dev);
 
 	if (pkt_dev->vlan_id != 0xffff) {
 		if (pkt_dev->svlan_id != 0xffff) {
-<<<<<<< HEAD
-			svlan_tci = (__be16 *)skb_put(skb, sizeof(__be16));
-			*svlan_tci = build_tci(pkt_dev->svlan_id,
-					       pkt_dev->svlan_cfi,
-					       pkt_dev->svlan_p);
-			svlan_encapsulated_proto = (__be16 *)skb_put(skb, sizeof(__be16));
-			*svlan_encapsulated_proto = htons(ETH_P_8021Q);
-		}
-		vlan_tci = (__be16 *)skb_put(skb, sizeof(__be16));
-		*vlan_tci = build_tci(pkt_dev->vlan_id,
-				      pkt_dev->vlan_cfi,
-				      pkt_dev->vlan_p);
-		vlan_encapsulated_proto = (__be16 *)skb_put(skb, sizeof(__be16));
-		*vlan_encapsulated_proto = htons(ETH_P_IP);
-	}
-
-	skb->network_header = skb->tail;
-	skb->transport_header = skb->network_header + sizeof(struct iphdr);
-	skb_put(skb, sizeof(struct iphdr) + sizeof(struct udphdr));
-	skb_set_queue_mapping(skb, queue_map);
-	skb->priority = pkt_dev->skb_priority;
-
-	iph = ip_hdr(skb);
-	udph = udp_hdr(skb);
-
-=======
 			svlan_tci = skb_put(skb, sizeof(__be16));
 			*svlan_tci = build_tci(pkt_dev->svlan_id,
 					       pkt_dev->svlan_cfi,
@@ -3959,28 +2946,19 @@ static struct sk_buff *fill_packet_ipv4(struct net_device *odev,
 	skb_set_queue_mapping(skb, queue_map);
 	skb->priority = pkt_dev->skb_priority;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(eth, pkt_dev->hh, 12);
 	*(__be16 *) & eth[12] = protocol;
 
 	/* Eth + IPh + UDPh + mpls */
 	datalen = pkt_dev->cur_pkt_size - 14 - 20 - 8 -
 		  pkt_dev->pkt_overhead;
-<<<<<<< HEAD
-	if (datalen < sizeof(struct pktgen_hdr))
-=======
 	if (datalen < 0 || datalen < sizeof(struct pktgen_hdr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		datalen = sizeof(struct pktgen_hdr);
 
 	udph->source = htons(pkt_dev->cur_udp_src);
 	udph->dest = htons(pkt_dev->cur_udp_dst);
 	udph->len = htons(datalen + 8);	/* DATA + udphdr */
-<<<<<<< HEAD
-	udph->check = 0;	/* No checksum */
-=======
 	udph->check = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iph->ihl = 5;
 	iph->version = 4;
@@ -3994,17 +2972,6 @@ static struct sk_buff *fill_packet_ipv4(struct net_device *odev,
 	iph->frag_off = 0;
 	iplen = 20 + 8 + datalen;
 	iph->tot_len = htons(iplen);
-<<<<<<< HEAD
-	iph->check = 0;
-	iph->check = ip_fast_csum((void *)iph, iph->ihl);
-	skb->protocol = protocol;
-	skb->mac_header = (skb->network_header - ETH_HLEN -
-			   pkt_dev->pkt_overhead);
-	skb->dev = odev;
-	skb->pkt_type = PACKET_HOST;
-	pktgen_finalize_skb(pkt_dev, skb, datalen);
-
-=======
 	ip_send_check(iph);
 	skb->protocol = protocol;
 	skb->dev = odev;
@@ -4029,7 +2996,6 @@ static struct sk_buff *fill_packet_ipv4(struct net_device *odev,
 			udph->check = CSUM_MANGLED_0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_XFRM
 	if (!process_ipsec(pkt_dev, skb, protocol))
 		return NULL;
@@ -4038,111 +3004,13 @@ static struct sk_buff *fill_packet_ipv4(struct net_device *odev,
 	return skb;
 }
 
-<<<<<<< HEAD
-/*
- * scan_ip6, fmt_ip taken from dietlibc-0.21
- * Author Felix von Leitner <felix-dietlibc@fefe.de>
- *
- * Slightly modified for kernel.
- * Should be candidate for net/ipv4/utils.c
- * --ro
- */
-
-static unsigned int scan_ip6(const char *s, char ip[16])
-{
-	unsigned int i;
-	unsigned int len = 0;
-	unsigned long u;
-	char suffix[16];
-	unsigned int prefixlen = 0;
-	unsigned int suffixlen = 0;
-	__be32 tmp;
-	char *pos;
-
-	for (i = 0; i < 16; i++)
-		ip[i] = 0;
-
-	for (;;) {
-		if (*s == ':') {
-			len++;
-			if (s[1] == ':') {	/* Found "::", skip to part 2 */
-				s += 2;
-				len++;
-				break;
-			}
-			s++;
-		}
-
-		u = simple_strtoul(s, &pos, 16);
-		i = pos - s;
-		if (!i)
-			return 0;
-		if (prefixlen == 12 && s[i] == '.') {
-
-			/* the last 4 bytes may be written as IPv4 address */
-
-			tmp = in_aton(s);
-			memcpy((struct in_addr *)(ip + 12), &tmp, sizeof(tmp));
-			return i + len;
-		}
-		ip[prefixlen++] = (u >> 8);
-		ip[prefixlen++] = (u & 255);
-		s += i;
-		len += i;
-		if (prefixlen == 16)
-			return len;
-	}
-
-/* part 2, after "::" */
-	for (;;) {
-		if (*s == ':') {
-			if (suffixlen == 0)
-				break;
-			s++;
-			len++;
-		} else if (suffixlen != 0)
-			break;
-
-		u = simple_strtol(s, &pos, 16);
-		i = pos - s;
-		if (!i) {
-			if (*s)
-				len--;
-			break;
-		}
-		if (suffixlen + prefixlen <= 12 && s[i] == '.') {
-			tmp = in_aton(s);
-			memcpy((struct in_addr *)(suffix + suffixlen), &tmp,
-			       sizeof(tmp));
-			suffixlen += 4;
-			len += strlen(s);
-			break;
-		}
-		suffix[suffixlen++] = (u >> 8);
-		suffix[suffixlen++] = (u & 255);
-		s += i;
-		len += i;
-		if (prefixlen + suffixlen == 16)
-			break;
-	}
-	for (i = 0; i < suffixlen; i++)
-		ip[16 - suffixlen + i] = suffix[i];
-	return len;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct sk_buff *fill_packet_ipv6(struct net_device *odev,
 					struct pktgen_dev *pkt_dev)
 {
 	struct sk_buff *skb = NULL;
 	__u8 *eth;
 	struct udphdr *udph;
-<<<<<<< HEAD
-	int datalen;
-=======
 	int datalen, udplen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipv6hdr *iph;
 	__be16 protocol = htons(ETH_P_IPV6);
 	__be32 *mpls;
@@ -4164,26 +3032,11 @@ static struct sk_buff *fill_packet_ipv6(struct net_device *odev,
 	mod_cur_headers(pkt_dev);
 	queue_map = pkt_dev->cur_queue_map;
 
-<<<<<<< HEAD
-	skb = __netdev_alloc_skb(odev,
-				 pkt_dev->cur_pkt_size + 64
-				 + 16 + pkt_dev->pkt_overhead, GFP_NOWAIT);
-=======
 	skb = pktgen_alloc_skb(odev, pkt_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb) {
 		sprintf(pkt_dev->result, "No memory");
 		return NULL;
 	}
-<<<<<<< HEAD
-	prefetchw(skb->data);
-
-	skb_reserve(skb, 16);
-
-	/*  Reserve for ethernet and IP header  */
-	eth = (__u8 *) skb_push(skb, 14);
-	mpls = (__be32 *)skb_put(skb, pkt_dev->nr_labels*sizeof(__u32));
-=======
 
 	prefetchw(skb->data);
 	skb_reserve(skb, 16);
@@ -4191,36 +3044,11 @@ static struct sk_buff *fill_packet_ipv6(struct net_device *odev,
 	/*  Reserve for ethernet and IP header  */
 	eth = skb_push(skb, 14);
 	mpls = skb_put(skb, pkt_dev->nr_labels * sizeof(__u32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pkt_dev->nr_labels)
 		mpls_push(mpls, pkt_dev);
 
 	if (pkt_dev->vlan_id != 0xffff) {
 		if (pkt_dev->svlan_id != 0xffff) {
-<<<<<<< HEAD
-			svlan_tci = (__be16 *)skb_put(skb, sizeof(__be16));
-			*svlan_tci = build_tci(pkt_dev->svlan_id,
-					       pkt_dev->svlan_cfi,
-					       pkt_dev->svlan_p);
-			svlan_encapsulated_proto = (__be16 *)skb_put(skb, sizeof(__be16));
-			*svlan_encapsulated_proto = htons(ETH_P_8021Q);
-		}
-		vlan_tci = (__be16 *)skb_put(skb, sizeof(__be16));
-		*vlan_tci = build_tci(pkt_dev->vlan_id,
-				      pkt_dev->vlan_cfi,
-				      pkt_dev->vlan_p);
-		vlan_encapsulated_proto = (__be16 *)skb_put(skb, sizeof(__be16));
-		*vlan_encapsulated_proto = htons(ETH_P_IPV6);
-	}
-
-	skb->network_header = skb->tail;
-	skb->transport_header = skb->network_header + sizeof(struct ipv6hdr);
-	skb_put(skb, sizeof(struct ipv6hdr) + sizeof(struct udphdr));
-	skb_set_queue_mapping(skb, queue_map);
-	skb->priority = pkt_dev->skb_priority;
-	iph = ipv6_hdr(skb);
-	udph = udp_hdr(skb);
-=======
 			svlan_tci = skb_put(skb, sizeof(__be16));
 			*svlan_tci = build_tci(pkt_dev->svlan_id,
 					       pkt_dev->svlan_cfi,
@@ -4245,7 +3073,6 @@ static struct sk_buff *fill_packet_ipv6(struct net_device *odev,
 	udph = skb_put(skb, sizeof(struct udphdr));
 	skb_set_queue_mapping(skb, queue_map);
 	skb->priority = pkt_dev->skb_priority;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(eth, pkt_dev->hh, 12);
 	*(__be16 *) &eth[12] = protocol;
@@ -4257,16 +3084,6 @@ static struct sk_buff *fill_packet_ipv6(struct net_device *odev,
 
 	if (datalen < 0 || datalen < sizeof(struct pktgen_hdr)) {
 		datalen = sizeof(struct pktgen_hdr);
-<<<<<<< HEAD
-		if (net_ratelimit())
-			pr_info("increased datalen to %d\n", datalen);
-	}
-
-	udph->source = htons(pkt_dev->cur_udp_src);
-	udph->dest = htons(pkt_dev->cur_udp_dst);
-	udph->len = htons(datalen + sizeof(struct udphdr));
-	udph->check = 0;	/* No checksum */
-=======
 		net_info_ratelimited("increased datalen to %d\n", datalen);
 	}
 
@@ -4275,7 +3092,6 @@ static struct sk_buff *fill_packet_ipv6(struct net_device *odev,
 	udph->dest = htons(pkt_dev->cur_udp_dst);
 	udph->len = htons(udplen);
 	udph->check = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*(__be32 *) iph = htonl(0x60000000);	/* Version + flow */
 
@@ -4286,29 +3102,18 @@ static struct sk_buff *fill_packet_ipv6(struct net_device *odev,
 
 	iph->hop_limit = 32;
 
-<<<<<<< HEAD
-	iph->payload_len = htons(sizeof(struct udphdr) + datalen);
-=======
 	iph->payload_len = htons(udplen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iph->nexthdr = IPPROTO_UDP;
 
 	iph->daddr = pkt_dev->cur_in6_daddr;
 	iph->saddr = pkt_dev->cur_in6_saddr;
 
-<<<<<<< HEAD
-	skb->mac_header = (skb->network_header - ETH_HLEN -
-			   pkt_dev->pkt_overhead);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->protocol = protocol;
 	skb->dev = odev;
 	skb->pkt_type = PACKET_HOST;
 
 	pktgen_finalize_skb(pkt_dev, skb, datalen);
 
-<<<<<<< HEAD
-=======
 	if (!(pkt_dev->flags & F_UDPCSUM)) {
 		skb->ip_summed = CHECKSUM_NONE;
 	} else if (odev->features & (NETIF_F_HW_CSUM | NETIF_F_IPV6_CSUM)) {
@@ -4326,7 +3131,6 @@ static struct sk_buff *fill_packet_ipv6(struct net_device *odev,
 			udph->check = CSUM_MANGLED_0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return skb;
 }
 
@@ -4357,13 +3161,8 @@ static void pktgen_run(struct pktgen_thread *t)
 
 	func_enter();
 
-<<<<<<< HEAD
-	if_lock(t);
-	list_for_each_entry(pkt_dev, &t->if_list, list) {
-=======
 	rcu_read_lock();
 	list_for_each_entry_rcu(pkt_dev, &t->if_list, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * setup odev and create initial packet.
@@ -4372,45 +3171,22 @@ static void pktgen_run(struct pktgen_thread *t)
 
 		if (pkt_dev->odev) {
 			pktgen_clear_counters(pkt_dev);
-<<<<<<< HEAD
-			pkt_dev->running = 1;	/* Cranke yeself! */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pkt_dev->skb = NULL;
 			pkt_dev->started_at = pkt_dev->next_tx = ktime_get();
 
 			set_pkt_overhead(pkt_dev);
 
 			strcpy(pkt_dev->result, "Starting");
-<<<<<<< HEAD
-=======
 			pkt_dev->running = 1;	/* Cranke yeself! */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			started++;
 		} else
 			strcpy(pkt_dev->result, "Error starting");
 	}
-<<<<<<< HEAD
-	if_unlock(t);
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (started)
 		t->control &= ~(T_STOP);
 }
 
-<<<<<<< HEAD
-static void pktgen_stop_all_threads_ifs(void)
-{
-	struct pktgen_thread *t;
-
-	func_enter();
-
-	mutex_lock(&pktgen_thread_lock);
-
-	list_for_each_entry(t, &pktgen_threads, th_list)
-		t->control |= T_STOP;
-=======
 static void pktgen_handle_all_threads(struct pktgen_net *pn, u32 flags)
 {
 	struct pktgen_thread *t;
@@ -4419,13 +3195,10 @@ static void pktgen_handle_all_threads(struct pktgen_net *pn, u32 flags)
 
 	list_for_each_entry(t, &pn->pktgen_threads, th_list)
 		t->control |= (flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&pktgen_thread_lock);
 }
 
-<<<<<<< HEAD
-=======
 static void pktgen_stop_all_threads(struct pktgen_net *pn)
 {
 	func_enter();
@@ -4433,16 +3206,10 @@ static void pktgen_stop_all_threads(struct pktgen_net *pn)
 	pktgen_handle_all_threads(pn, T_STOP);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int thread_is_running(const struct pktgen_thread *t)
 {
 	const struct pktgen_dev *pkt_dev;
 
-<<<<<<< HEAD
-	list_for_each_entry(pkt_dev, &t->if_list, list)
-		if (pkt_dev->running)
-			return 1;
-=======
 	rcu_read_lock();
 	list_for_each_entry_rcu(pkt_dev, &t->if_list, list)
 		if (pkt_dev->running) {
@@ -4450,27 +3217,11 @@ static int thread_is_running(const struct pktgen_thread *t)
 			return 1;
 		}
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int pktgen_wait_thread_run(struct pktgen_thread *t)
 {
-<<<<<<< HEAD
-	if_lock(t);
-
-	while (thread_is_running(t)) {
-
-		if_unlock(t);
-
-		msleep_interruptible(100);
-
-		if (signal_pending(current))
-			goto signal;
-		if_lock(t);
-	}
-	if_unlock(t);
-=======
 	while (thread_is_running(t)) {
 
 		/* note: 't' will still be around even after the unlock/lock
@@ -4484,26 +3235,16 @@ static int pktgen_wait_thread_run(struct pktgen_thread *t)
 		if (signal_pending(current))
 			goto signal;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 signal:
 	return 0;
 }
 
-<<<<<<< HEAD
-static int pktgen_wait_all_threads_run(void)
-=======
 static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pktgen_thread *t;
 	int sig = 1;
 
-<<<<<<< HEAD
-	mutex_lock(&pktgen_thread_lock);
-
-	list_for_each_entry(t, &pktgen_threads, th_list) {
-=======
 	/* prevent from racing with rmmod */
 	if (!try_module_get(THIS_MODULE))
 		return sig;
@@ -4511,34 +3252,12 @@ static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
 	mutex_lock(&pktgen_thread_lock);
 
 	list_for_each_entry(t, &pn->pktgen_threads, th_list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sig = pktgen_wait_thread_run(t);
 		if (sig == 0)
 			break;
 	}
 
 	if (sig == 0)
-<<<<<<< HEAD
-		list_for_each_entry(t, &pktgen_threads, th_list)
-			t->control |= (T_STOP);
-
-	mutex_unlock(&pktgen_thread_lock);
-	return sig;
-}
-
-static void pktgen_run_all_threads(void)
-{
-	struct pktgen_thread *t;
-
-	func_enter();
-
-	mutex_lock(&pktgen_thread_lock);
-
-	list_for_each_entry(t, &pktgen_threads, th_list)
-		t->control |= (T_RUN);
-
-	mutex_unlock(&pktgen_thread_lock);
-=======
 		list_for_each_entry(t, &pn->pktgen_threads, th_list)
 			t->control |= (T_STOP);
 
@@ -4552,28 +3271,10 @@ static void pktgen_run_all_threads(struct pktgen_net *pn)
 	func_enter();
 
 	pktgen_handle_all_threads(pn, T_RUN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Propagate thread->control  */
 	schedule_timeout_interruptible(msecs_to_jiffies(125));
 
-<<<<<<< HEAD
-	pktgen_wait_all_threads_run();
-}
-
-static void pktgen_reset_all_threads(void)
-{
-	struct pktgen_thread *t;
-
-	func_enter();
-
-	mutex_lock(&pktgen_thread_lock);
-
-	list_for_each_entry(t, &pktgen_threads, th_list)
-		t->control |= (T_REMDEVALL);
-
-	mutex_unlock(&pktgen_thread_lock);
-=======
 	pktgen_wait_all_threads_run(pn);
 }
 
@@ -4582,16 +3283,11 @@ static void pktgen_reset_all_threads(struct pktgen_net *pn)
 	func_enter();
 
 	pktgen_handle_all_threads(pn, T_REMDEVALL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Propagate thread->control  */
 	schedule_timeout_interruptible(msecs_to_jiffies(125));
 
-<<<<<<< HEAD
-	pktgen_wait_all_threads_run();
-=======
 	pktgen_wait_all_threads_run(pn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void show_results(struct pktgen_dev *pkt_dev, int nr_frags)
@@ -4612,9 +3308,6 @@ static void show_results(struct pktgen_dev *pkt_dev, int nr_frags)
 	pps = div64_u64(pkt_dev->sofar * NSEC_PER_SEC,
 			ktime_to_ns(elapsed));
 
-<<<<<<< HEAD
-	bps = pps * 8 * pkt_dev->cur_pkt_size;
-=======
 	if (pkt_dev->n_imix_entries > 0) {
 		int i;
 		struct imix_pkt *entry;
@@ -4628,7 +3321,6 @@ static void show_results(struct pktgen_dev *pkt_dev, int nr_frags)
 	} else {
 		bps = pps * 8 * pkt_dev->cur_pkt_size;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mbps = bps;
 	do_div(mbps, 1000000);
@@ -4645,17 +3337,6 @@ static int pktgen_stop_device(struct pktgen_dev *pkt_dev)
 	int nr_frags = pkt_dev->skb ? skb_shinfo(pkt_dev->skb)->nr_frags : -1;
 
 	if (!pkt_dev->running) {
-<<<<<<< HEAD
-		pr_warning("interface: %s is already stopped\n",
-			   pkt_dev->odevname);
-		return -EINVAL;
-	}
-
-	kfree_skb(pkt_dev->skb);
-	pkt_dev->skb = NULL;
-	pkt_dev->stopped_at = ktime_get();
-	pkt_dev->running = 0;
-=======
 		pr_warn("interface: %s is already stopped\n",
 			pkt_dev->odevname);
 		return -EINVAL;
@@ -4665,7 +3346,6 @@ static int pktgen_stop_device(struct pktgen_dev *pkt_dev)
 	kfree_skb(pkt_dev->skb);
 	pkt_dev->skb = NULL;
 	pkt_dev->stopped_at = ktime_get();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	show_results(pkt_dev, nr_frags);
 
@@ -4676,14 +3356,8 @@ static struct pktgen_dev *next_to_run(struct pktgen_thread *t)
 {
 	struct pktgen_dev *pkt_dev, *best = NULL;
 
-<<<<<<< HEAD
-	if_lock(t);
-
-	list_for_each_entry(pkt_dev, &t->if_list, list) {
-=======
 	rcu_read_lock();
 	list_for_each_entry_rcu(pkt_dev, &t->if_list, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!pkt_dev->running)
 			continue;
 		if (best == NULL)
@@ -4691,12 +3365,8 @@ static struct pktgen_dev *next_to_run(struct pktgen_thread *t)
 		else if (ktime_compare(pkt_dev->next_tx, best->next_tx) < 0)
 			best = pkt_dev;
 	}
-<<<<<<< HEAD
-	if_unlock(t);
-=======
 	rcu_read_unlock();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return best;
 }
 
@@ -4706,15 +3376,6 @@ static void pktgen_stop(struct pktgen_thread *t)
 
 	func_enter();
 
-<<<<<<< HEAD
-	if_lock(t);
-
-	list_for_each_entry(pkt_dev, &t->if_list, list) {
-		pktgen_stop_device(pkt_dev);
-	}
-
-	if_unlock(t);
-=======
 	rcu_read_lock();
 
 	list_for_each_entry_rcu(pkt_dev, &t->if_list, list) {
@@ -4722,7 +3383,6 @@ static void pktgen_stop(struct pktgen_thread *t)
 	}
 
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -4736,11 +3396,6 @@ static void pktgen_rem_one_if(struct pktgen_thread *t)
 
 	func_enter();
 
-<<<<<<< HEAD
-	if_lock(t);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_safe(q, n, &t->if_list) {
 		cur = list_entry(q, struct pktgen_dev, list);
 
@@ -4754,11 +3409,6 @@ static void pktgen_rem_one_if(struct pktgen_thread *t)
 
 		break;
 	}
-<<<<<<< HEAD
-
-	if_unlock(t);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pktgen_rem_all_ifs(struct pktgen_thread *t)
@@ -4770,11 +3420,6 @@ static void pktgen_rem_all_ifs(struct pktgen_thread *t)
 
 	/* Remove all devices, free mem */
 
-<<<<<<< HEAD
-	if_lock(t);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_safe(q, n, &t->if_list) {
 		cur = list_entry(q, struct pktgen_dev, list);
 
@@ -4783,23 +3428,12 @@ static void pktgen_rem_all_ifs(struct pktgen_thread *t)
 
 		pktgen_remove_device(t, cur);
 	}
-<<<<<<< HEAD
-
-	if_unlock(t);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pktgen_rem_thread(struct pktgen_thread *t)
 {
 	/* Remove from the thread list */
-<<<<<<< HEAD
-
-	remove_proc_entry(t->tsk->comm, pg_proc_dir);
-
-=======
 	remove_proc_entry(t->tsk->comm, t->net->proc_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pktgen_resched(struct pktgen_dev *pkt_dev)
@@ -4813,11 +3447,7 @@ static void pktgen_wait_for_skb(struct pktgen_dev *pkt_dev)
 {
 	ktime_t idle_start = ktime_get();
 
-<<<<<<< HEAD
-	while (atomic_read(&(pkt_dev->skb->users)) != 1) {
-=======
 	while (refcount_read(&(pkt_dev->skb->users)) != 1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (signal_pending(current))
 			break;
 
@@ -4831,15 +3461,6 @@ static void pktgen_wait_for_skb(struct pktgen_dev *pkt_dev)
 
 static void pktgen_xmit(struct pktgen_dev *pkt_dev)
 {
-<<<<<<< HEAD
-	struct net_device *odev = pkt_dev->odev;
-	netdev_tx_t (*xmit)(struct sk_buff *, struct net_device *)
-		= odev->netdev_ops->ndo_start_xmit;
-	struct netdev_queue *txq;
-	u16 queue_map;
-	int ret;
-
-=======
 	bool skb_shared = !!(READ_ONCE(pkt_dev->flags) & F_SHARED);
 	struct net_device *odev = pkt_dev->odev;
 	struct netdev_queue *txq;
@@ -4858,7 +3479,6 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
 		clone_skb = READ_ONCE(pkt_dev->clone_skb);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If device is offline, then don't send */
 	if (unlikely(!netif_running(odev) || !netif_carrier_ok(odev))) {
 		pktgen_stop_device(pkt_dev);
@@ -4875,11 +3495,7 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
 
 	/* If no skb or clone count exhausted then get new one */
 	if (!pkt_dev->skb || (pkt_dev->last_ok &&
-<<<<<<< HEAD
-			      ++pkt_dev->clone_count >= pkt_dev->clone_skb)) {
-=======
 			      ++pkt_dev->clone_count >= clone_skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* build a new pkt */
 		kfree_skb(pkt_dev->skb);
 
@@ -4891,34 +3507,12 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
 			return;
 		}
 		pkt_dev->last_pkt_size = pkt_dev->skb->len;
-<<<<<<< HEAD
-		pkt_dev->allocated_skbs++;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pkt_dev->clone_count = 0;	/* reset counter */
 	}
 
 	if (pkt_dev->delay && pkt_dev->last_ok)
 		spin(pkt_dev, pkt_dev->next_tx);
 
-<<<<<<< HEAD
-	queue_map = skb_get_queue_mapping(pkt_dev->skb);
-	txq = netdev_get_tx_queue(odev, queue_map);
-
-	__netif_tx_lock_bh(txq);
-
-	if (unlikely(netif_xmit_frozen_or_stopped(txq))) {
-		ret = NETDEV_TX_BUSY;
-		pkt_dev->last_ok = 0;
-		goto unlock;
-	}
-	atomic_inc(&(pkt_dev->skb->users));
-	ret = (*xmit)(pkt_dev->skb, odev);
-
-	switch (ret) {
-	case NETDEV_TX_OK:
-		txq_trans_update(txq);
-=======
 	if (pkt_dev->xmit_mode == M_NETIF_RECEIVE) {
 		skb = pkt_dev->skb;
 		skb->protocol = eth_type_trans(skb, skb->dev);
@@ -5009,45 +3603,19 @@ xmit_more:
 
 	switch (ret) {
 	case NETDEV_TX_OK:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pkt_dev->last_ok = 1;
 		pkt_dev->sofar++;
 		pkt_dev->seq_num++;
 		pkt_dev->tx_bytes += pkt_dev->last_pkt_size;
-<<<<<<< HEAD
-		break;
-	case NET_XMIT_DROP:
-	case NET_XMIT_CN:
-	case NET_XMIT_POLICED:
-=======
 		if (burst > 0 && !netif_xmit_frozen_or_drv_stopped(txq))
 			goto xmit_more;
 		break;
 	case NET_XMIT_DROP:
 	case NET_XMIT_CN:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* skb has been consumed */
 		pkt_dev->errors++;
 		break;
 	default: /* Drivers are not supposed to return other values! */
-<<<<<<< HEAD
-		if (net_ratelimit())
-			pr_info("%s xmit error: %d\n", pkt_dev->odevname, ret);
-		pkt_dev->errors++;
-		/* fallthru */
-	case NETDEV_TX_LOCKED:
-	case NETDEV_TX_BUSY:
-		/* Retry it next time */
-		atomic_dec(&(pkt_dev->skb->users));
-		pkt_dev->last_ok = 0;
-	}
-unlock:
-	__netif_tx_unlock_bh(txq);
-
-	/* If pkt_dev->count is zero, then run forever */
-	if ((pkt_dev->count != 0) && (pkt_dev->sofar >= pkt_dev->count)) {
-		pktgen_wait_for_skb(pkt_dev);
-=======
 		net_info_ratelimited("%s xmit error: %d\n",
 				     pkt_dev->odevname, ret);
 		pkt_dev->errors++;
@@ -5070,7 +3638,6 @@ out:
 	if ((pkt_dev->count != 0) && (pkt_dev->sofar >= pkt_dev->count)) {
 		if (pkt_dev->skb)
 			pktgen_wait_for_skb(pkt_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Done with this */
 		pktgen_stop_device(pkt_dev);
@@ -5083,49 +3650,23 @@ out:
 
 static int pktgen_thread_worker(void *arg)
 {
-<<<<<<< HEAD
-	DEFINE_WAIT(wait);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pktgen_thread *t = arg;
 	struct pktgen_dev *pkt_dev = NULL;
 	int cpu = t->cpu;
 
-<<<<<<< HEAD
-	BUG_ON(smp_processor_id() != cpu);
-=======
 	WARN_ON(smp_processor_id() != cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_waitqueue_head(&t->queue);
 	complete(&t->start_done);
 
 	pr_debug("starting pktgen/%d:  pid=%d\n", cpu, task_pid_nr(current));
 
-<<<<<<< HEAD
-	set_current_state(TASK_INTERRUPTIBLE);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_freezable();
 
 	while (!kthread_should_stop()) {
 		pkt_dev = next_to_run(t);
 
 		if (unlikely(!pkt_dev && t->control == 0)) {
-<<<<<<< HEAD
-			if (pktgen_exiting)
-				break;
-			wait_event_interruptible_timeout(t->queue,
-							 t->control != 0,
-							 HZ/10);
-			try_to_freeze();
-			continue;
-		}
-
-		__set_current_state(TASK_RUNNING);
-
-=======
 			if (t->net->pktgen_exiting)
 				break;
 			wait_event_freezable_timeout(t->queue,
@@ -5133,7 +3674,6 @@ static int pktgen_thread_worker(void *arg)
 			continue;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (likely(pkt_dev)) {
 			pktgen_xmit(pkt_dev);
 
@@ -5164,11 +3704,6 @@ static int pktgen_thread_worker(void *arg)
 		}
 
 		try_to_freeze();
-<<<<<<< HEAD
-
-		set_current_state(TASK_INTERRUPTIBLE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pr_debug("%s stopping all device\n", t->tsk->comm);
@@ -5180,16 +3715,6 @@ static int pktgen_thread_worker(void *arg)
 	pr_debug("%s removing thread\n", t->tsk->comm);
 	pktgen_rem_thread(t);
 
-<<<<<<< HEAD
-	/* Wait for kthread_stop */
-	while (!kthread_should_stop()) {
-		set_current_state(TASK_INTERRUPTIBLE);
-		schedule();
-	}
-	__set_current_state(TASK_RUNNING);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -5199,13 +3724,8 @@ static struct pktgen_dev *pktgen_find_dev(struct pktgen_thread *t,
 	struct pktgen_dev *p, *pkt_dev = NULL;
 	size_t len = strlen(ifname);
 
-<<<<<<< HEAD
-	if_lock(t);
-	list_for_each_entry(p, &t->if_list, list)
-=======
 	rcu_read_lock();
 	list_for_each_entry_rcu(p, &t->if_list, list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (strncmp(p->odevname, ifname, len) == 0) {
 			if (p->odevname[len]) {
 				if (exact || p->odevname[len] != '@')
@@ -5215,11 +3735,7 @@ static struct pktgen_dev *pktgen_find_dev(struct pktgen_thread *t,
 			break;
 		}
 
-<<<<<<< HEAD
-	if_unlock(t);
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("find_dev(%s) returning %p\n", ifname, pkt_dev);
 	return pkt_dev;
 }
@@ -5233,15 +3749,12 @@ static int add_dev_to_thread(struct pktgen_thread *t,
 {
 	int rv = 0;
 
-<<<<<<< HEAD
-=======
 	/* This function cannot be called concurrently, as its called
 	 * under pktgen_thread_lock mutex, but it can run from
 	 * userspace on another CPU than the kthread.  The if_lock()
 	 * is used here to sync with concurrent instances of
 	 * _rem_dev_from_if_list() invoked via kthread, which is also
 	 * updating the if_list */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if_lock(t);
 
 	if (pkt_dev->pg_thread) {
@@ -5250,15 +3763,9 @@ static int add_dev_to_thread(struct pktgen_thread *t,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	list_add(&pkt_dev->list, &t->if_list);
-	pkt_dev->pg_thread = t;
-	pkt_dev->running = 0;
-=======
 	pkt_dev->running = 0;
 	pkt_dev->pg_thread = t;
 	list_add_rcu(&pkt_dev->list, &t->if_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	if_unlock(t);
@@ -5275,11 +3782,7 @@ static int pktgen_add_device(struct pktgen_thread *t, const char *ifname)
 
 	/* We don't allow a device to be on several threads */
 
-<<<<<<< HEAD
-	pkt_dev = __pktgen_NN_threads(ifname, FIND);
-=======
 	pkt_dev = __pktgen_NN_threads(t->net, ifname, FIND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pkt_dev) {
 		pr_err("ERROR: interface already used\n");
 		return -EBUSY;
@@ -5290,12 +3793,8 @@ static int pktgen_add_device(struct pktgen_thread *t, const char *ifname)
 		return -ENOMEM;
 
 	strcpy(pkt_dev->odevname, ifname);
-<<<<<<< HEAD
-	pkt_dev->flows = vzalloc_node(MAX_CFLOWS * sizeof(struct flow_state),
-=======
 	pkt_dev->flows = vzalloc_node(array_size(MAX_CFLOWS,
 						 sizeof(struct flow_state)),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      node);
 	if (pkt_dev->flows == NULL) {
 		kfree(pkt_dev);
@@ -5303,11 +3802,6 @@ static int pktgen_add_device(struct pktgen_thread *t, const char *ifname)
 	}
 
 	pkt_dev->removal_mark = 0;
-<<<<<<< HEAD
-	pkt_dev->min_pkt_size = ETH_ZLEN;
-	pkt_dev->max_pkt_size = ETH_ZLEN;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pkt_dev->nfrags = 0;
 	pkt_dev->delay = pg_delay_d;
 	pkt_dev->count = pg_count_d;
@@ -5322,29 +3816,18 @@ static int pktgen_add_device(struct pktgen_thread *t, const char *ifname)
 	pkt_dev->svlan_p = 0;
 	pkt_dev->svlan_cfi = 0;
 	pkt_dev->svlan_id = 0xffff;
-<<<<<<< HEAD
-	pkt_dev->node = -1;
-
-	err = pktgen_setup_dev(pkt_dev, ifname);
-=======
 	pkt_dev->burst = 1;
 	pkt_dev->node = NUMA_NO_NODE;
 	pkt_dev->flags = F_SHARED;	/* SKB shared by default */
 
 	err = pktgen_setup_dev(t->net, pkt_dev, ifname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out1;
 	if (pkt_dev->odev->priv_flags & IFF_TX_SKB_SHARING)
 		pkt_dev->clone_skb = pg_clone_skb_d;
 
-<<<<<<< HEAD
-	pkt_dev->entry = proc_create_data(ifname, 0600, pg_proc_dir,
-					  &pktgen_if_fops, pkt_dev);
-=======
 	pkt_dev->entry = proc_create_data(ifname, 0600, t->net->proc_dir,
 					  &pktgen_if_proc_ops, pkt_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pkt_dev->entry) {
 		pr_err("cannot create %s/%s procfs entry\n",
 		       PG_PROC_DIR, ifname);
@@ -5354,8 +3837,6 @@ static int pktgen_add_device(struct pktgen_thread *t, const char *ifname)
 #ifdef CONFIG_XFRM
 	pkt_dev->ipsmode = XFRM_MODE_TRANSPORT;
 	pkt_dev->ipsproto = IPPROTO_ESP;
-<<<<<<< HEAD
-=======
 
 	/* xfrm tunnel mode needs additional dst to extract outter
 	 * ip header protocol/ttl/id field, here creat a phony one.
@@ -5367,16 +3848,11 @@ static int pktgen_add_device(struct pktgen_thread *t, const char *ifname)
 	dst_init_metrics(&pkt_dev->xdst.u.dst, pktgen_dst_metrics, false);
 	pkt_dev->xdst.child = &pkt_dev->xdst.u.dst;
 	pkt_dev->xdst.u.dst.ops = &pkt_dev->dstops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	return add_dev_to_thread(t, pkt_dev);
 out2:
-<<<<<<< HEAD
-	dev_put(pkt_dev->odev);
-=======
 	netdev_put(pkt_dev->odev, &pkt_dev->dev_tracker);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out1:
 #ifdef CONFIG_XFRM
 	free_SAs(pkt_dev);
@@ -5386,11 +3862,7 @@ out1:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __init pktgen_create_thread(int cpu)
-=======
 static int __net_init pktgen_create_thread(int cpu, struct pktgen_net *pn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pktgen_thread *t;
 	struct proc_dir_entry *pe;
@@ -5403,20 +3875,12 @@ static int __net_init pktgen_create_thread(int cpu, struct pktgen_net *pn)
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	spin_lock_init(&t->if_lock);
-=======
 	mutex_init(&t->if_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t->cpu = cpu;
 
 	INIT_LIST_HEAD(&t->if_list);
 
-<<<<<<< HEAD
-	list_add_tail(&t->th_list, &pktgen_threads);
-=======
 	list_add_tail(&t->th_list, &pn->pktgen_threads);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_completion(&t->start_done);
 
 	p = kthread_create_on_node(pktgen_thread_worker,
@@ -5424,11 +3888,7 @@ static int __net_init pktgen_create_thread(int cpu, struct pktgen_net *pn)
 				   cpu_to_node(cpu),
 				   "kpktgend_%d", cpu);
 	if (IS_ERR(p)) {
-<<<<<<< HEAD
-		pr_err("kernel_thread() failed for cpu %d\n", t->cpu);
-=======
 		pr_err("kthread_create_on_node() failed for cpu %d\n", t->cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del(&t->th_list);
 		kfree(t);
 		return PTR_ERR(p);
@@ -5436,13 +3896,8 @@ static int __net_init pktgen_create_thread(int cpu, struct pktgen_net *pn)
 	kthread_bind(p, cpu);
 	t->tsk = p;
 
-<<<<<<< HEAD
-	pe = proc_create_data(t->tsk->comm, 0600, pg_proc_dir,
-			      &pktgen_thread_fops, t);
-=======
 	pe = proc_create_data(t->tsk->comm, 0600, pn->proc_dir,
 			      &pktgen_thread_proc_ops, t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pe) {
 		pr_err("cannot create %s/%s procfs entry\n",
 		       PG_PROC_DIR, t->tsk->comm);
@@ -5452,11 +3907,8 @@ static int __net_init pktgen_create_thread(int cpu, struct pktgen_net *pn)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-=======
 	t->net = pn;
 	get_task_struct(p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up_process(p);
 	wait_for_completion(&t->start_done);
 
@@ -5472,13 +3924,6 @@ static void _rem_dev_from_if_list(struct pktgen_thread *t,
 	struct list_head *q, *n;
 	struct pktgen_dev *p;
 
-<<<<<<< HEAD
-	list_for_each_safe(q, n, &t->if_list) {
-		p = list_entry(q, struct pktgen_dev, list);
-		if (p == pkt_dev)
-			list_del(&p->list);
-	}
-=======
 	if_lock(t);
 	list_for_each_safe(q, n, &t->if_list) {
 		p = list_entry(q, struct pktgen_dev, list);
@@ -5486,43 +3931,21 @@ static void _rem_dev_from_if_list(struct pktgen_thread *t,
 			list_del_rcu(&p->list);
 	}
 	if_unlock(t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pktgen_remove_device(struct pktgen_thread *t,
 				struct pktgen_dev *pkt_dev)
 {
-<<<<<<< HEAD
-
-	pr_debug("remove_device pkt_dev=%p\n", pkt_dev);
-
-	if (pkt_dev->running) {
-		pr_warning("WARNING: trying to remove a running interface, stopping it now\n");
-=======
 	pr_debug("remove_device pkt_dev=%p\n", pkt_dev);
 
 	if (pkt_dev->running) {
 		pr_warn("WARNING: trying to remove a running interface, stopping it now\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pktgen_stop_device(pkt_dev);
 	}
 
 	/* Dis-associate from the interface */
 
 	if (pkt_dev->odev) {
-<<<<<<< HEAD
-		dev_put(pkt_dev->odev);
-		pkt_dev->odev = NULL;
-	}
-
-	/* And update the thread if_list */
-
-	_rem_dev_from_if_list(t, pkt_dev);
-
-	if (pkt_dev->entry)
-		remove_proc_entry(pkt_dev->entry->name, pg_proc_dir);
-
-=======
 		netdev_put(pkt_dev->odev, &pkt_dev->dev_tracker);
 		pkt_dev->odev = NULL;
 	}
@@ -5535,39 +3958,12 @@ static int pktgen_remove_device(struct pktgen_thread *t,
 	/* And update the thread if_list */
 	_rem_dev_from_if_list(t, pkt_dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_XFRM
 	free_SAs(pkt_dev);
 #endif
 	vfree(pkt_dev->flows);
 	if (pkt_dev->page)
 		put_page(pkt_dev->page);
-<<<<<<< HEAD
-	kfree(pkt_dev);
-	return 0;
-}
-
-static int __init pg_init(void)
-{
-	int cpu;
-	struct proc_dir_entry *pe;
-	int ret = 0;
-
-	pr_info("%s", version);
-
-	pg_proc_dir = proc_mkdir(PG_PROC_DIR, init_net.proc_net);
-	if (!pg_proc_dir)
-		return -ENODEV;
-
-	pe = proc_create(PGCTRL, 0600, pg_proc_dir, &pktgen_fops);
-	if (pe == NULL) {
-		pr_err("ERROR: cannot create %s procfs entry\n", PGCTRL);
-		ret = -EINVAL;
-		goto remove_dir;
-	}
-
-	register_netdevice_notifier(&pktgen_notifier_block);
-=======
 	kfree_rcu(pkt_dev, rcu);
 	return 0;
 }
@@ -5592,23 +3988,10 @@ static int __net_init pg_net_init(struct net *net)
 		ret = -EINVAL;
 		goto remove;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for_each_online_cpu(cpu) {
 		int err;
 
-<<<<<<< HEAD
-		err = pktgen_create_thread(cpu);
-		if (err)
-			pr_warning("WARNING: Cannot create thread for cpu %d (%d)\n",
-				   cpu, err);
-	}
-
-	if (list_empty(&pktgen_threads)) {
-		pr_err("ERROR: Initialization failed for all threads\n");
-		ret = -ENODEV;
-		goto unregister;
-=======
 		err = pktgen_create_thread(cpu, pn);
 		if (err)
 			pr_warn("Cannot create thread for cpu %d (%d)\n",
@@ -5619,23 +4002,10 @@ static int __net_init pg_net_init(struct net *net)
 		pr_err("Initialization failed for all threads\n");
 		ret = -ENODEV;
 		goto remove_entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
-<<<<<<< HEAD
- unregister:
-	unregister_netdevice_notifier(&pktgen_notifier_block);
-	remove_proc_entry(PGCTRL, pg_proc_dir);
- remove_dir:
-	proc_net_remove(&init_net, PG_PROC_DIR);
-	return ret;
-}
-
-static void __exit pg_cleanup(void)
-{
-=======
 remove_entry:
 	remove_proc_entry(PGCTRL, pn->proc_dir);
 remove:
@@ -5646,40 +4016,20 @@ remove:
 static void __net_exit pg_net_exit(struct net *net)
 {
 	struct pktgen_net *pn = net_generic(net, pg_net_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pktgen_thread *t;
 	struct list_head *q, *n;
 	LIST_HEAD(list);
 
 	/* Stop all interfaces & threads */
-<<<<<<< HEAD
-	pktgen_exiting = true;
-
-	mutex_lock(&pktgen_thread_lock);
-	list_splice_init(&pktgen_threads, &list);
-=======
 	pn->pktgen_exiting = true;
 
 	mutex_lock(&pktgen_thread_lock);
 	list_splice_init(&pn->pktgen_threads, &list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&pktgen_thread_lock);
 
 	list_for_each_safe(q, n, &list) {
 		t = list_entry(q, struct pktgen_thread, th_list);
 		list_del(&t->th_list);
-<<<<<<< HEAD
-		kthread_stop(t->tsk);
-		kfree(t);
-	}
-
-	/* Un-register us from receiving netdevice events */
-	unregister_netdevice_notifier(&pktgen_notifier_block);
-
-	/* Clean up proc file system */
-	remove_proc_entry(PGCTRL, pg_proc_dir);
-	proc_net_remove(&init_net, PG_PROC_DIR);
-=======
 		kthread_stop_put(t->tsk);
 		kfree(t);
 	}
@@ -5715,7 +4065,6 @@ static void __exit pg_cleanup(void)
 	unregister_netdevice_notifier(&pktgen_notifier_block);
 	unregister_pernet_subsys(&pg_net_ops);
 	/* Don't need rcu_barrier() due to use of kfree_rcu() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(pg_init);

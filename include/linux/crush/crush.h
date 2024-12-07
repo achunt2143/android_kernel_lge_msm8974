@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#ifndef CEPH_CRUSH_CRUSH_H
-#define CEPH_CRUSH_CRUSH_H
-
-#include <linux/types.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef CEPH_CRUSH_CRUSH_H
 #define CEPH_CRUSH_CRUSH_H
@@ -14,7 +8,6 @@
 #else
 # include "crush_compat.h"
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * CRUSH is a pseudo-random data distribution algorithm that
@@ -24,11 +17,7 @@
  * The algorithm was originally described in detail in this paper
  * (although the algorithm has evolved somewhat since then):
  *
-<<<<<<< HEAD
- *     http://www.ssrc.ucsc.edu/Papers/weil-sc06.pdf
-=======
  *     https://www.ssrc.ucsc.edu/Papers/weil-sc06.pdf
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * LGPL2
  */
@@ -36,12 +25,6 @@
 
 #define CRUSH_MAGIC 0x00010000ul   /* for detecting algorithm revisions */
 
-<<<<<<< HEAD
-
-#define CRUSH_MAX_DEPTH 10  /* max crush hierarchy depth */
-#define CRUSH_MAX_SET   10  /* max size of a mapping result */
-
-=======
 #define CRUSH_MAX_DEPTH 10  /* max crush hierarchy depth */
 #define CRUSH_MAX_RULESET (1<<8)  /* max crush ruleset number */
 #define CRUSH_MAX_RULES CRUSH_MAX_RULESET  /* should be the same as max rulesets */
@@ -51,7 +34,6 @@
 
 #define CRUSH_ITEM_UNDEF  0x7ffffffe  /* undefined result (internal use only) */
 #define CRUSH_ITEM_NONE   0x7fffffff  /* no result */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * CRUSH uses user-defined "rules" to describe how inputs should be
@@ -72,10 +54,6 @@ enum {
 				      /* arg2 = type */
 	CRUSH_RULE_CHOOSE_INDEP = 3,  /* same */
 	CRUSH_RULE_EMIT = 4,          /* no args */
-<<<<<<< HEAD
-	CRUSH_RULE_CHOOSE_LEAF_FIRSTN = 6,
-	CRUSH_RULE_CHOOSE_LEAF_INDEP = 7,
-=======
 	CRUSH_RULE_CHOOSELEAF_FIRSTN = 6,
 	CRUSH_RULE_CHOOSELEAF_INDEP = 7,
 
@@ -85,7 +63,6 @@ enum {
 	CRUSH_RULE_SET_CHOOSE_LOCAL_FALLBACK_TRIES = 11,
 	CRUSH_RULE_SET_CHOOSELEAF_VARY_R = 12,
 	CRUSH_RULE_SET_CHOOSELEAF_STABLE = 13
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -110,11 +87,7 @@ struct crush_rule_mask {
 struct crush_rule {
 	__u32 len;
 	struct crush_rule_mask mask;
-<<<<<<< HEAD
-	struct crush_rule_step steps[0];
-=======
 	struct crush_rule_step steps[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define crush_rule_size(len) (sizeof(struct crush_rule) + \
@@ -134,23 +107,13 @@ struct crush_rule {
  *  uniform         O(1)       poor         poor
  *  list            O(n)       optimal      poor
  *  tree            O(log n)   good         good
-<<<<<<< HEAD
- *  straw           O(n)       optimal      optimal
-=======
  *  straw           O(n)       better       better
  *  straw2          O(n)       optimal      optimal
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum {
 	CRUSH_BUCKET_UNIFORM = 1,
 	CRUSH_BUCKET_LIST = 2,
 	CRUSH_BUCKET_TREE = 3,
-<<<<<<< HEAD
-	CRUSH_BUCKET_STRAW = 4
-};
-extern const char *crush_bucket_alg_name(int alg);
-
-=======
 	CRUSH_BUCKET_STRAW = 4,
 	CRUSH_BUCKET_STRAW2 = 5,
 };
@@ -165,7 +128,6 @@ extern const char *crush_bucket_alg_name(int alg);
 		(1 << CRUSH_BUCKET_LIST) |	\
 		(1 << CRUSH_BUCKET_STRAW))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct crush_bucket {
 	__s32 id;        /* this'll be negative */
 	__u16 type;      /* non-zero; type=0 is reserved for devices */
@@ -175,15 +137,6 @@ struct crush_bucket {
 	__u32 size;      /* num items */
 	__s32 *items;
 
-<<<<<<< HEAD
-	/*
-	 * cached random permutation: used for uniform bucket and for
-	 * the linear search fallback for the other bucket types.
-	 */
-	__u32 perm_x;  /* @x for which *perm is defined */
-	__u32 perm_n;  /* num elements of *perm that are permuted/defined */
-	__u32 *perm;
-=======
 };
 
 /** @ingroup API
@@ -246,7 +199,6 @@ struct crush_choose_arg_map {
 	struct crush_choose_arg *args; /*!< replacement for each bucket
                                             in the crushmap */
 	__u32 size;                    /*!< size of the __args__ array */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct crush_bucket_uniform {
@@ -274,14 +226,11 @@ struct crush_bucket_straw {
 	__u32 *straws;         /* 16-bit fixed point */
 };
 
-<<<<<<< HEAD
-=======
 struct crush_bucket_straw2 {
 	struct crush_bucket h;
 	__u32 *item_weights;   /* 16-bit fixed point */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -291,21 +240,6 @@ struct crush_map {
 	struct crush_bucket **buckets;
 	struct crush_rule **rules;
 
-<<<<<<< HEAD
-	/*
-	 * Parent pointers to identify the parent bucket a device or
-	 * bucket in the hierarchy.  If an item appears more than
-	 * once, this is the _last_ time it appeared (where buckets
-	 * are processed in bucket id order, from -1 on down to
-	 * -max_buckets.
-	 */
-	__u32 *bucket_parents;
-	__u32 *device_parents;
-
-	__s32 max_buckets;
-	__u32 max_rules;
-	__s32 max_devices;
-=======
 	__s32 max_buckets;
 	__u32 max_rules;
 	__s32 max_devices;
@@ -376,27 +310,18 @@ struct crush_map {
 	/* CrushWrapper::choose_args */
 	struct rb_root choose_args;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
 /* crush.c */
 extern int crush_get_bucket_item_weight(const struct crush_bucket *b, int pos);
-<<<<<<< HEAD
-extern void crush_calc_parents(struct crush_map *map);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void crush_destroy_bucket_uniform(struct crush_bucket_uniform *b);
 extern void crush_destroy_bucket_list(struct crush_bucket_list *b);
 extern void crush_destroy_bucket_tree(struct crush_bucket_tree *b);
 extern void crush_destroy_bucket_straw(struct crush_bucket_straw *b);
-<<<<<<< HEAD
-extern void crush_destroy_bucket(struct crush_bucket *b);
-=======
 extern void crush_destroy_bucket_straw2(struct crush_bucket_straw2 *b);
 extern void crush_destroy_bucket(struct crush_bucket *b);
 extern void crush_destroy_rule(struct crush_rule *r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void crush_destroy(struct crush_map *map);
 
 static inline int crush_calc_tree_node(int i)
@@ -404,8 +329,6 @@ static inline int crush_calc_tree_node(int i)
 	return ((i+1) << 1)-1;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * These data structures are private to the CRUSH implementation. They
  * are exposed in this header file because builder needs their
@@ -434,5 +357,4 @@ void clear_crush_names(struct rb_root *root);
 void clear_choose_args(struct crush_map *c);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

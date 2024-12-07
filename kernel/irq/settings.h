@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Internal header to deal with irq_desc->status which will be renamed
  * to irq_desc->settings.
@@ -18,13 +15,10 @@ enum {
 	_IRQ_NO_BALANCING	= IRQ_NO_BALANCING,
 	_IRQ_NESTED_THREAD	= IRQ_NESTED_THREAD,
 	_IRQ_PER_CPU_DEVID	= IRQ_PER_CPU_DEVID,
-<<<<<<< HEAD
-=======
 	_IRQ_IS_POLLED		= IRQ_IS_POLLED,
 	_IRQ_DISABLE_UNLAZY	= IRQ_DISABLE_UNLAZY,
 	_IRQ_HIDDEN		= IRQ_HIDDEN,
 	_IRQ_NO_DEBUG		= IRQ_NO_DEBUG,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_IRQF_MODIFY_MASK	= IRQF_MODIFY_MASK,
 };
 
@@ -37,13 +31,10 @@ enum {
 #define IRQ_NOAUTOEN		GOT_YOU_MORON
 #define IRQ_NESTED_THREAD	GOT_YOU_MORON
 #define IRQ_PER_CPU_DEVID	GOT_YOU_MORON
-<<<<<<< HEAD
-=======
 #define IRQ_IS_POLLED		GOT_YOU_MORON
 #define IRQ_DISABLE_UNLAZY	GOT_YOU_MORON
 #define IRQ_HIDDEN		GOT_YOU_MORON
 #define IRQ_NO_DEBUG		GOT_YOU_MORON
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef IRQF_MODIFY_MASK
 #define IRQF_MODIFY_MASK	GOT_YOU_MORON
 
@@ -165,8 +156,6 @@ static inline bool irq_settings_is_nested_thread(struct irq_desc *desc)
 {
 	return desc->status_use_accessors & _IRQ_NESTED_THREAD;
 }
-<<<<<<< HEAD
-=======
 
 static inline bool irq_settings_is_polled(struct irq_desc *desc)
 {
@@ -197,4 +186,3 @@ static inline bool irq_settings_no_debug(struct irq_desc *desc)
 {
 	return desc->status_use_accessors & _IRQ_NO_DEBUG;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

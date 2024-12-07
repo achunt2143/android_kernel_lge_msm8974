@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Kernel unwinding support
  *
@@ -16,30 +13,15 @@
 #include <linux/init.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/kallsyms.h>
-#include <linux/sort.h>
-
-#include <asm/uaccess.h>
-=======
 #include <linux/sort.h>
 #include <linux/sched/task_stack.h>
 
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/assembly.h>
 #include <asm/asm-offsets.h>
 #include <asm/ptrace.h>
 
 #include <asm/unwind.h>
-<<<<<<< HEAD
-
-/* #define DEBUG 1 */
-#ifdef DEBUG
-#define dbg(x...) printk(x)
-#else
-#define dbg(x...)
-=======
 #include <asm/switch_to.h>
 #include <asm/sections.h>
 #include <asm/ftrace.h>
@@ -49,7 +31,6 @@
 #define dbg(x...) pr_debug(x)
 #else
 #define dbg(x...) do { } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define KERNEL_START (KERNEL_BINARY_TEXT_START)
@@ -57,21 +38,13 @@
 extern struct unwind_table_entry __start___unwind[];
 extern struct unwind_table_entry __stop___unwind[];
 
-<<<<<<< HEAD
-static spinlock_t unwind_lock;
-=======
 static DEFINE_SPINLOCK(unwind_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * the kernel unwind block is not dynamically allocated so that
  * we can call unwind_init as early in the bootup process as 
  * possible (before the slab allocator is initialized)
  */
-<<<<<<< HEAD
-static struct unwind_table kernel_unwind_table __read_mostly;
-=======
 static struct unwind_table kernel_unwind_table __ro_after_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(unwind_tables);
 
 static inline const struct unwind_table_entry *
@@ -106,14 +79,10 @@ find_unwind_entry(unsigned long addr)
 	if (addr >= kernel_unwind_table.start && 
 	    addr <= kernel_unwind_table.end)
 		e = find_unwind_entry_in_table(&kernel_unwind_table, addr);
-<<<<<<< HEAD
-	else 
-=======
 	else {
 		unsigned long flags;
 
 		spin_lock_irqsave(&unwind_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_for_each_entry(table, &unwind_tables, list) {
 			if (addr >= table->start && 
 			    addr <= table->end)
@@ -124,11 +93,8 @@ find_unwind_entry(unsigned long addr)
 				break;
 			}
 		}
-<<<<<<< HEAD
-=======
 		spin_unlock_irqrestore(&unwind_lock, flags);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return e;
 }
@@ -154,12 +120,8 @@ unwind_table_init(struct unwind_table *table, const char *name,
 	for (; start <= end; start++) {
 		if (start < end && 
 		    start->region_end > (start+1)->region_start) {
-<<<<<<< HEAD
-			printk("WARNING: Out of order unwind entry! %p and %p\n", start, start+1);
-=======
 			pr_warn("Out of order unwind entry! %px and %px\n",
 				start, start+1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		start->region_start += base_addr;
@@ -216,27 +178,15 @@ void unwind_table_remove(struct unwind_table *table)
 }
 
 /* Called from setup_arch to import the kernel unwind info */
-<<<<<<< HEAD
-int unwind_init(void)
-{
-	long start, stop;
-=======
 int __init unwind_init(void)
 {
 	long start __maybe_unused, stop __maybe_unused;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	register unsigned long gp __asm__ ("r27");
 
 	start = (long)&__start___unwind[0];
 	stop = (long)&__stop___unwind[0];
 
-<<<<<<< HEAD
-	spin_lock_init(&unwind_lock);
-
-	printk("unwind_init: start = 0x%lx, end = 0x%lx, entries = %lu\n", 
-=======
 	dbg("unwind_init: start = 0x%lx, end = 0x%lx, entries = %lu\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    start, stop,
 	    (stop - start) / sizeof(struct unwind_table_entry));
 
@@ -257,20 +207,6 @@ int __init unwind_init(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_64BIT
-#define get_func_addr(fptr) fptr[2]
-#else
-#define get_func_addr(fptr) fptr[0]
-#endif
-
-static int unwind_special(struct unwind_frame_info *info, unsigned long pc, int frame_size)
-{
-	extern void handle_interruption(int, struct pt_regs *);
-	static unsigned long *hi = (unsigned long *)&handle_interruption;
-
-	if (pc == get_func_addr(hi)) {
-=======
 static bool pc_is_kernel_fn(unsigned long pc, void *fn)
 {
 	return (unsigned long)dereference_kernel_function_descriptor(fn) == pc;
@@ -294,17 +230,10 @@ static int unwind_special(struct unwind_frame_info *info, unsigned long pc, int 
 #endif /* CONFIG_IRQSTACKS */
 
 	if (pc_is_kernel_fn(pc, handle_interruption)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct pt_regs *regs = (struct pt_regs *)(info->sp - frame_size - PT_SZ_ALGN);
 		dbg("Unwinding through handle_interruption()\n");
 		info->prev_sp = regs->gr[30];
 		info->prev_ip = regs->iaoq[0];
-<<<<<<< HEAD
-
-		return 1;
-	}
-
-=======
 		return 1;
 	}
 
@@ -339,7 +268,6 @@ static int unwind_special(struct unwind_frame_info *info, unsigned long pc, int 
 		return 1;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -354,42 +282,9 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 	e = find_unwind_entry(info->ip);
 	if (e == NULL) {
 		unsigned long sp;
-<<<<<<< HEAD
-		extern char _stext[], _etext[];
-
-		dbg("Cannot find unwind entry for 0x%lx; forced unwinding\n", info->ip);
-
-#ifdef CONFIG_KALLSYMS
-		/* Handle some frequent special cases.... */
-		{
-			char symname[KSYM_NAME_LEN];
-			char *modname;
-
-			kallsyms_lookup(info->ip, NULL, NULL, &modname,
-				symname);
-
-			dbg("info->ip = 0x%lx, name = %s\n", info->ip, symname);
-
-			if (strcmp(symname, "_switch_to_ret") == 0) {
-				info->prev_sp = info->sp - CALLEE_SAVE_FRAME_SIZE;
-				info->prev_ip = *(unsigned long *)(info->prev_sp - RP_OFFSET);
-				dbg("_switch_to_ret @ %lx - setting "
-				    "prev_sp=%lx prev_ip=%lx\n", 
-				    info->ip, info->prev_sp, 
-				    info->prev_ip);
-				return;
-			} else if (strcmp(symname, "ret_from_kernel_thread") == 0 ||
-				   strcmp(symname, "syscall_exit") == 0) {
-				info->prev_ip = info->prev_sp = 0;
-				return;
-			}
-		}
-#endif
-=======
 
 		dbg("Cannot find unwind entry for %pS; forced unwinding\n",
 			(void *) info->ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Since we are doing the unwinding blind, we don't know if
 		   we are adjusting the stack correctly or extracting the rp
@@ -404,14 +299,6 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 
 			info->prev_sp = sp - 64;
 			info->prev_ip = 0;
-<<<<<<< HEAD
-			if (get_user(tmp, (unsigned long *)(info->prev_sp - RP_OFFSET))) 
-				break;
-			info->prev_ip = tmp;
-			sp = info->prev_sp;
-		} while (info->prev_ip < (unsigned long)_stext ||
-			 info->prev_ip > (unsigned long)_etext);
-=======
 
 			/* Check if stack is inside kernel stack area */
 			if ((info->prev_sp - (unsigned long) task_stack_page(info->t))
@@ -426,7 +313,6 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 			info->prev_ip = tmp;
 			sp = info->prev_sp;
 		} while (!kernel_text_address(info->prev_ip));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		info->rp = 0;
 
@@ -449,20 +335,6 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 
 			insn = *(unsigned int *)npc;
 
-<<<<<<< HEAD
-			if ((insn & 0xffffc000) == 0x37de0000 ||
-			    (insn & 0xffe00000) == 0x6fc00000) {
-				/* ldo X(sp), sp, or stwm X,D(sp) */
-				frame_size += (insn & 0x1 ? -1 << 13 : 0) | 
-					((insn & 0x3fff) >> 1);
-				dbg("analyzing func @ %lx, insn=%08x @ "
-				    "%lx, frame_size = %ld\n", info->ip,
-				    insn, npc, frame_size);
-			} else if ((insn & 0xffe00008) == 0x73c00008) {
-				/* std,ma X,D(sp) */
-				frame_size += (insn & 0x1 ? -1 << 13 : 0) | 
-					(((insn >> 4) & 0x3ff) << 3);
-=======
 			if ((insn & 0xffffc001) == 0x37de0000 ||
 			    (insn & 0xffe00001) == 0x6fc00000) {
 				/* ldo X(sp), sp, or stwm X,D(sp) */
@@ -473,7 +345,6 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 			} else if ((insn & 0xffe00009) == 0x73c00008) {
 				/* std,ma X,D(sp) */
 				frame_size += ((insn >> 4) & 0x3ff) << 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dbg("analyzing func @ %lx, insn=%08x @ "
 				    "%lx, frame_size = %ld\n", info->ip,
 				    insn, npc, frame_size);
@@ -492,12 +363,9 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 			}
 		}
 
-<<<<<<< HEAD
-=======
 		if (frame_size > e->Total_frame_size << 3)
 			frame_size = e->Total_frame_size << 3;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!unwind_special(info, e->region_start, frame_size)) {
 			info->prev_sp = info->sp - frame_size;
 			if (e->Millicode)
@@ -543,11 +411,6 @@ void unwind_frame_init_from_blocked_task(struct unwind_frame_info *info, struct 
 	kfree(r2);
 }
 
-<<<<<<< HEAD
-void unwind_frame_init_running(struct unwind_frame_info *info, struct pt_regs *regs)
-{
-	unwind_frame_init(info, current, regs);
-=======
 #define get_parisc_stackpointer() ({ \
 	unsigned long sp; \
 	__asm__("copy %%r30, %0" : "=r"(sp)); \
@@ -573,7 +436,6 @@ void unwind_frame_init_task(struct unwind_frame_info *info,
 	} else {
 		unwind_frame_init_from_blocked_task(info, task);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int unwind_once(struct unwind_frame_info *next_frame)
@@ -610,27 +472,6 @@ int unwind_to_user(struct unwind_frame_info *info)
 unsigned long return_address(unsigned int level)
 {
 	struct unwind_frame_info info;
-<<<<<<< HEAD
-	struct pt_regs r;
-	unsigned long sp;
-
-	/* initialize unwind info */
-	asm volatile ("copy %%r30, %0" : "=r"(sp));
-	memset(&r, 0, sizeof(struct pt_regs));
-	r.iaoq[0] = (unsigned long) current_text_addr();
-	r.gr[2] = (unsigned long) __builtin_return_address(0);
-	r.gr[30] = sp;
-	unwind_frame_init(&info, current, &r);
-
-	/* unwind stack */
-	++level;
-	do {
-		if (unwind_once(&info) < 0 || info.ip == 0)
-			return 0;
-		if (!__kernel_text_address(info.ip)) {
-			return 0;
-		}
-=======
 
 	/* initialize unwind info */
 	unwind_frame_init_task(&info, current, NULL);
@@ -642,7 +483,6 @@ unsigned long return_address(unsigned int level)
 			return 0;
 		if (!kernel_text_address(info.ip))
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (info.ip && level--);
 
 	return info.ip;

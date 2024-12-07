@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Xen PCI - handle PCI (INTx) and MSI infrastructure calls for PV, HVM and
  * initial domain support. We also handle the DSDT _PRT callbacks for GSI's
@@ -13,11 +10,7 @@
  *           Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
  *           Stefano Stabellini <stefano.stabellini@eu.citrix.com>
  */
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/acpi.h>
@@ -30,16 +23,12 @@
 
 #include <xen/features.h>
 #include <xen/events.h>
-<<<<<<< HEAD
-#include <asm/xen/pci.h>
-=======
 #include <xen/pci.h>
 #include <asm/xen/pci.h>
 #include <asm/xen/cpuid.h>
 #include <asm/apic.h>
 #include <asm/acpi.h>
 #include <asm/i8259.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int xen_pcifront_enable_irq(struct pci_dev *dev)
 {
@@ -57,11 +46,7 @@ static int xen_pcifront_enable_irq(struct pci_dev *dev)
 	/* In PV DomU the Xen PCI backend puts the PIRQ in the interrupt line.*/
 	pirq = gsi;
 
-<<<<<<< HEAD
-	if (gsi < NR_IRQS_LEGACY)
-=======
 	if (gsi < nr_legacy_irqs())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		share = 0;
 
 	rc = xen_bind_pirq_gsi_to_irq(gsi, pirq, share, "pcifront");
@@ -77,16 +62,9 @@ static int xen_pcifront_enable_irq(struct pci_dev *dev)
 }
 
 #ifdef CONFIG_ACPI
-<<<<<<< HEAD
-static int xen_register_pirq(u32 gsi, int gsi_override, int triggering,
-			     bool set_pirq)
-{
-	int rc, pirq = -1, irq = -1;
-=======
 static int xen_register_pirq(u32 gsi, int triggering, bool set_pirq)
 {
 	int rc, pirq = -1, irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct physdev_map_pirq map_irq;
 	int shareable = 0;
 	char *name;
@@ -117,12 +95,6 @@ static int xen_register_pirq(u32 gsi, int triggering, bool set_pirq)
 		name = "ioapic-level";
 	}
 
-<<<<<<< HEAD
-	if (gsi_override >= 0)
-		gsi = gsi_override;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq = xen_bind_pirq_gsi_to_irq(gsi, map_irq.pirq, shareable, name);
 	if (irq < 0)
 		goto out;
@@ -138,21 +110,12 @@ static int acpi_register_gsi_xen_hvm(struct device *dev, u32 gsi,
 	if (!xen_hvm_domain())
 		return -1;
 
-<<<<<<< HEAD
-	return xen_register_pirq(gsi, -1 /* no GSI override */, trigger,
-				 false /* no mapping of GSI to PIRQ */);
-}
-
-#ifdef CONFIG_XEN_DOM0
-static int xen_register_gsi(u32 gsi, int gsi_override, int triggering, int polarity)
-=======
 	return xen_register_pirq(gsi, trigger,
 				 false /* no mapping of GSI to PIRQ */);
 }
 
 #ifdef CONFIG_XEN_PV_DOM0
 static int xen_register_gsi(u32 gsi, int triggering, int polarity)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc, irq;
 	struct physdev_setup_gsi setup_gsi;
@@ -163,11 +126,7 @@ static int xen_register_gsi(u32 gsi, int triggering, int polarity)
 	printk(KERN_DEBUG "xen: registering gsi %u triggering %d polarity %d\n",
 			gsi, triggering, polarity);
 
-<<<<<<< HEAD
-	irq = xen_register_pirq(gsi, gsi_override, triggering, true);
-=======
 	irq = xen_register_pirq(gsi, triggering, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	setup_gsi.gsi = gsi;
 	setup_gsi.triggering = (triggering == ACPI_EDGE_SENSITIVE ? 0 : 1);
@@ -187,27 +146,17 @@ static int xen_register_gsi(u32 gsi, int triggering, int polarity)
 static int acpi_register_gsi_xen(struct device *dev, u32 gsi,
 				 int trigger, int polarity)
 {
-<<<<<<< HEAD
-	return xen_register_gsi(gsi, -1 /* no GSI override */, trigger, polarity);
-=======
 	return xen_register_gsi(gsi, trigger, polarity);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 #endif
 
 #if defined(CONFIG_PCI_MSI)
 #include <linux/msi.h>
-<<<<<<< HEAD
-#include <asm/msidef.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct xen_pci_frontend_ops *xen_pci_frontend;
 EXPORT_SYMBOL_GPL(xen_pci_frontend);
 
-<<<<<<< HEAD
-=======
 struct xen_msi_ops {
 	int (*setup_msi_irqs)(struct pci_dev *dev, int nvec, int type);
 	void (*teardown_msi_irqs)(struct pci_dev *dev);
@@ -215,7 +164,6 @@ struct xen_msi_ops {
 
 static struct xen_msi_ops xen_msi_ops __ro_after_init;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int xen_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 {
 	int irq, ret, i;
@@ -225,11 +173,7 @@ static int xen_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 	if (type == PCI_CAP_ID_MSI && nvec > 1)
 		return 1;
 
-<<<<<<< HEAD
-	v = kzalloc(sizeof(int) * max(1, nvec), GFP_KERNEL);
-=======
 	v = kcalloc(max(1, nvec), sizeof(int), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!v)
 		return -ENOMEM;
 
@@ -240,14 +184,9 @@ static int xen_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 	if (ret)
 		goto error;
 	i = 0;
-<<<<<<< HEAD
-	list_for_each_entry(msidesc, &dev->msi_list, list) {
-		irq = xen_bind_pirq_msi_to_irq(dev, msidesc, v[i], 0,
-=======
 	msi_for_each_desc(msidesc, &dev->dev, MSI_DESC_NOTASSOCIATED) {
 		irq = xen_bind_pirq_msi_to_irq(dev, msidesc, v[i],
 					       (type == PCI_CAP_ID_MSI) ? nvec : 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       (type == PCI_CAP_ID_MSIX) ?
 					       "pcifront-msi-x" :
 					       "pcifront-msi",
@@ -259,12 +198,6 @@ static int xen_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 		i++;
 	}
 	kfree(v);
-<<<<<<< HEAD
-	return 0;
-
-error:
-	dev_err(&dev->dev, "Xen PCI frontend has not registered MSI/MSI-X support!\n");
-=======
 	return msi_device_populate_sysfs(&dev->dev);
 
 error:
@@ -272,31 +205,11 @@ error:
 		dev_err(&dev->dev, "Xen PCI frontend has not registered MSI/MSI-X support!\n");
 	else if (ret)
 		dev_err(&dev->dev, "Xen PCI frontend error: %d!\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free:
 	kfree(v);
 	return ret;
 }
 
-<<<<<<< HEAD
-#define XEN_PIRQ_MSI_DATA  (MSI_DATA_TRIGGER_EDGE | \
-		MSI_DATA_LEVEL_ASSERT | (3 << 8) | MSI_DATA_VECTOR(0))
-
-static void xen_msi_compose_msg(struct pci_dev *pdev, unsigned int pirq,
-		struct msi_msg *msg)
-{
-	/* We set vector == 0 to tell the hypervisor we don't care about it,
-	 * but we want a pirq setup instead.
-	 * We use the dest_id field to pass the pirq that we want. */
-	msg->address_hi = MSI_ADDR_BASE_HI | MSI_ADDR_EXT_DEST_ID(pirq);
-	msg->address_lo =
-		MSI_ADDR_BASE_LO |
-		MSI_ADDR_DEST_MODE_PHYSICAL |
-		MSI_ADDR_REDIRECTION_CPU |
-		MSI_ADDR_DEST_ID(pirq);
-
-	msg->data = XEN_PIRQ_MSI_DATA;
-=======
 static void xen_msi_compose_msg(struct pci_dev *pdev, unsigned int pirq,
 		struct msi_msg *msg)
 {
@@ -311,7 +224,6 @@ static void xen_msi_compose_msg(struct pci_dev *pdev, unsigned int pirq,
 	msg->arch_addr_lo.destid_0_7 = pirq & 0xFF;
 	msg->arch_addr_lo.base_address = X86_MSI_BASE_ADDRESS_LOW;
 	msg->arch_data.delivery_mode = APIC_DELIVERY_MODE_EXTINT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xen_hvm_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
@@ -323,27 +235,6 @@ static int xen_hvm_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 	if (type == PCI_CAP_ID_MSI && nvec > 1)
 		return 1;
 
-<<<<<<< HEAD
-	list_for_each_entry(msidesc, &dev->msi_list, list) {
-		__read_msi_msg(msidesc, &msg);
-		pirq = MSI_ADDR_EXT_DEST_ID(msg.address_hi) |
-			((msg.address_lo >> MSI_ADDR_DEST_ID_SHIFT) & 0xff);
-		if (msg.data != XEN_PIRQ_MSI_DATA ||
-		    xen_irq_from_pirq(pirq) < 0) {
-			pirq = xen_allocate_pirq_msi(dev, msidesc);
-			if (pirq < 0) {
-				irq = -ENODEV;
-				goto error;
-			}
-			xen_msi_compose_msg(dev, pirq, &msg);
-			__write_msi_msg(msidesc, &msg);
-			dev_dbg(&dev->dev, "xen: msi bound to pirq=%d\n", pirq);
-		} else {
-			dev_dbg(&dev->dev,
-				"xen: msi already bound to pirq=%d\n", pirq);
-		}
-		irq = xen_bind_pirq_msi_to_irq(dev, msidesc, pirq, 0,
-=======
 	msi_for_each_desc(msidesc, &dev->dev, MSI_DESC_NOTASSOCIATED) {
 		pirq = xen_allocate_pirq_msi(dev, msidesc);
 		if (pirq < 0) {
@@ -355,7 +246,6 @@ static int xen_hvm_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 		dev_dbg(&dev->dev, "xen: msi bound to pirq=%d\n", pirq);
 		irq = xen_bind_pirq_msi_to_irq(dev, msidesc, pirq,
 					       (type == PCI_CAP_ID_MSI) ? nvec : 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       (type == PCI_CAP_ID_MSIX) ?
 					       "msi-x" : "msi",
 					       DOMID_SELF);
@@ -364,17 +254,6 @@ static int xen_hvm_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 		dev_dbg(&dev->dev,
 			"xen: msi --> pirq=%d --> irq=%d\n", pirq, irq);
 	}
-<<<<<<< HEAD
-	return 0;
-
-error:
-	dev_err(&dev->dev,
-		"Xen PCI frontend has not registered MSI/MSI-X support!\n");
-	return irq;
-}
-
-#ifdef CONFIG_XEN_DOM0
-=======
 	return msi_device_populate_sysfs(&dev->dev);
 
 error:
@@ -384,7 +263,6 @@ error:
 }
 
 #ifdef CONFIG_XEN_PV_DOM0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool __read_mostly pci_seg_supported = true;
 
 static int xen_initdom_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
@@ -392,14 +270,7 @@ static int xen_initdom_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 	int ret = 0;
 	struct msi_desc *msidesc;
 
-<<<<<<< HEAD
-	if (type == PCI_CAP_ID_MSI && nvec > 1)
-		return 1;
-
-	list_for_each_entry(msidesc, &dev->msi_list, list) {
-=======
 	msi_for_each_desc(msidesc, &dev->dev, MSI_DESC_NOTASSOCIATED) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct physdev_map_pirq map_irq;
 		domid_t domid;
 
@@ -418,20 +289,6 @@ static int xen_initdom_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 			      (pci_domain_nr(dev->bus) << 16);
 		map_irq.devfn = dev->devfn;
 
-<<<<<<< HEAD
-		if (type == PCI_CAP_ID_MSIX) {
-			int pos;
-			u32 table_offset, bir;
-
-			pos = pci_find_capability(dev, PCI_CAP_ID_MSIX);
-
-			pci_read_config_dword(dev, pos + PCI_MSIX_TABLE,
-					      &table_offset);
-			bir = (u8)(table_offset & PCI_MSIX_FLAGS_BIRMASK);
-
-			map_irq.table_base = pci_resource_start(dev, bir);
-			map_irq.entry_nr = msidesc->msi_attrib.entry_nr;
-=======
 		if (type == PCI_CAP_ID_MSI && nvec > 1) {
 			map_irq.type = MAP_PIRQ_TYPE_MULTI_MSI;
 			map_irq.entry_nr = nvec;
@@ -450,15 +307,12 @@ static int xen_initdom_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 
 			map_irq.table_base = pci_resource_start(dev, bir);
 			map_irq.entry_nr = msidesc->msi_index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		ret = -EINVAL;
 		if (pci_seg_supported)
 			ret = HYPERVISOR_physdev_op(PHYSDEVOP_map_pirq,
 						    &map_irq);
-<<<<<<< HEAD
-=======
 		if (type == PCI_CAP_ID_MSI && nvec > 1 && ret) {
 			/*
 			 * If MAP_PIRQ_TYPE_MULTI_MSI is not available
@@ -469,7 +323,6 @@ static int xen_initdom_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 			ret = 1;
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret == -EINVAL && !pci_domain_nr(dev->bus)) {
 			map_irq.type = MAP_PIRQ_TYPE_MSI;
 			map_irq.index = -1;
@@ -486,17 +339,6 @@ static int xen_initdom_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 			goto out;
 		}
 
-<<<<<<< HEAD
-		ret = xen_bind_pirq_msi_to_irq(dev, msidesc,
-					       map_irq.pirq, map_irq.index,
-					       (type == PCI_CAP_ID_MSIX) ?
-					       "msi-x" : "msi",
-						domid);
-		if (ret < 0)
-			goto out;
-	}
-	ret = 0;
-=======
 		ret = xen_bind_pirq_msi_to_irq(dev, msidesc, map_irq.pirq,
 		                               (type == PCI_CAP_ID_MSI) ? nvec : 1,
 		                               (type == PCI_CAP_ID_MSIX) ? "msi-x" : "msi",
@@ -505,17 +347,10 @@ static int xen_initdom_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 			goto out;
 	}
 	ret = msi_device_populate_sysfs(&dev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void xen_initdom_restore_msi_irqs(struct pci_dev *dev, int irq)
-{
-	int ret = 0;
-
-=======
 bool xen_initdom_restore_msi(struct pci_dev *dev)
 {
 	int ret = 0;
@@ -523,7 +358,6 @@ bool xen_initdom_restore_msi(struct pci_dev *dev)
 	if (!xen_initial_domain())
 		return true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pci_seg_supported) {
 		struct physdev_pci_device restore_ext;
 
@@ -544,25 +378,15 @@ bool xen_initdom_restore_msi(struct pci_dev *dev)
 		ret = HYPERVISOR_physdev_op(PHYSDEVOP_restore_msi, &restore);
 		WARN(ret && ret != -ENOSYS, "restore_msi -> %d\n", ret);
 	}
-<<<<<<< HEAD
-}
-#endif
-=======
 	return false;
 }
 #else /* CONFIG_XEN_PV_DOM0 */
 #define xen_initdom_setup_msi_irqs	NULL
 #endif /* !CONFIG_XEN_PV_DOM0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void xen_teardown_msi_irqs(struct pci_dev *dev)
 {
 	struct msi_desc *msidesc;
-<<<<<<< HEAD
-
-	msidesc = list_entry(dev->msi_list.next, struct msi_desc, list);
-	if (msidesc->msi_attrib.is_msix)
-=======
 	int i;
 
 	msi_for_each_desc(msidesc, &dev->dev, MSI_DESC_ASSOCIATED) {
@@ -577,23 +401,10 @@ static void xen_teardown_msi_irqs(struct pci_dev *dev)
 static void xen_pv_teardown_msi_irqs(struct pci_dev *dev)
 {
 	if (dev->msix_enabled)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xen_pci_frontend_disable_msix(dev);
 	else
 		xen_pci_frontend_disable_msi(dev);
 
-<<<<<<< HEAD
-	/* Free the IRQ's and the msidesc using the generic code. */
-	default_teardown_msi_irqs(dev);
-}
-
-static void xen_teardown_msi_irq(unsigned int irq)
-{
-	xen_destroy_irq(irq);
-}
-
-#endif
-=======
 	xen_teardown_msi_irqs(dev);
 }
 
@@ -683,7 +494,6 @@ static __init void xen_setup_pci_msi(void)
 #else /* CONFIG_PCI_MSI */
 static inline void xen_setup_pci_msi(void) { }
 #endif /* CONFIG_PCI_MSI */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int __init pci_xen_init(void)
 {
@@ -697,21 +507,6 @@ int __init pci_xen_init(void)
 	pcibios_enable_irq = xen_pcifront_enable_irq;
 	pcibios_disable_irq = NULL;
 
-<<<<<<< HEAD
-#ifdef CONFIG_ACPI
-	/* Keep ACPI out of the picture */
-	acpi_noirq = 1;
-#endif
-
-#ifdef CONFIG_PCI_MSI
-	x86_msi.setup_msi_irqs = xen_setup_msi_irqs;
-	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
-	x86_msi.teardown_msi_irqs = xen_teardown_msi_irqs;
-#endif
-	return 0;
-}
-
-=======
 	/* Keep ACPI out of the picture */
 	acpi_noirq_set();
 
@@ -739,7 +534,6 @@ static void __init xen_hvm_msi_init(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init pci_xen_hvm_init(void)
 {
 	if (!xen_have_vector_callback || !xen_feature(XENFEAT_hvm_pirqs))
@@ -751,13 +545,6 @@ int __init pci_xen_hvm_init(void)
 	 * just how GSIs get registered.
 	 */
 	__acpi_register_gsi = acpi_register_gsi_xen_hvm;
-<<<<<<< HEAD
-#endif
-
-#ifdef CONFIG_PCI_MSI
-	x86_msi.setup_msi_irqs = xen_hvm_setup_msi_irqs;
-	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
-=======
 	__acpi_unregister_gsi = NULL;
 #endif
 
@@ -767,76 +554,15 @@ int __init pci_xen_hvm_init(void)
 	 * before we can set MSI IRQ ops.
 	 */
 	x86_platform.apic_post_init = xen_hvm_msi_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_XEN_DOM0
-static __init void xen_setup_acpi_sci(void)
-{
-	int rc;
-	int trigger, polarity;
-	int gsi = acpi_sci_override_gsi;
-	int irq = -1;
-	int gsi_override = -1;
-
-	if (!gsi)
-		return;
-
-	rc = acpi_get_override_irq(gsi, &trigger, &polarity);
-	if (rc) {
-		printk(KERN_WARNING "xen: acpi_get_override_irq failed for acpi"
-				" sci, rc=%d\n", rc);
-		return;
-	}
-	trigger = trigger ? ACPI_LEVEL_SENSITIVE : ACPI_EDGE_SENSITIVE;
-	polarity = polarity ? ACPI_ACTIVE_LOW : ACPI_ACTIVE_HIGH;
-
-	printk(KERN_INFO "xen: sci override: global_irq=%d trigger=%d "
-			"polarity=%d\n", gsi, trigger, polarity);
-
-	/* Before we bind the GSI to a Linux IRQ, check whether
-	 * we need to override it with bus_irq (IRQ) value. Usually for
-	 * IRQs below IRQ_LEGACY_IRQ this holds IRQ == GSI, as so:
-	 *  ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 low level)
-	 * but there are oddballs where the IRQ != GSI:
-	 *  ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 20 low level)
-	 * which ends up being: gsi_to_irq[9] == 20
-	 * (which is what acpi_gsi_to_irq ends up calling when starting the
-	 * the ACPI interpreter and keels over since IRQ 9 has not been
-	 * setup as we had setup IRQ 20 for it).
-	 */
-	if (acpi_gsi_to_irq(gsi, &irq) == 0) {
-		/* Use the provided value if it's valid. */
-		if (irq >= 0)
-			gsi_override = irq;
-	}
-
-	gsi = xen_register_gsi(gsi, gsi_override, trigger, polarity);
-	printk(KERN_INFO "xen: acpi sci %d\n", gsi);
-
-	return;
-}
-
-=======
 #ifdef CONFIG_XEN_PV_DOM0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init pci_xen_initial_domain(void)
 {
 	int irq;
 
-<<<<<<< HEAD
-#ifdef CONFIG_PCI_MSI
-	x86_msi.setup_msi_irqs = xen_initdom_setup_msi_irqs;
-	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
-	x86_msi.restore_msi_irqs = xen_initdom_restore_msi_irqs;
-#endif
-	xen_setup_acpi_sci();
-	__acpi_register_gsi = acpi_register_gsi_xen;
-	/* Pre-allocate legacy irqs */
-=======
 	xen_setup_pci_msi();
 	__acpi_register_gsi = acpi_register_gsi_xen;
 	__acpi_unregister_gsi = NULL;
@@ -844,107 +570,21 @@ int __init pci_xen_initial_domain(void)
 	 * Pre-allocate the legacy IRQs.  Use NR_LEGACY_IRQS here
 	 * because we don't have a PIC and thus nr_legacy_irqs() is zero.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (irq = 0; irq < NR_IRQS_LEGACY; irq++) {
 		int trigger, polarity;
 
 		if (acpi_get_override_irq(irq, &trigger, &polarity) == -1)
 			continue;
 
-<<<<<<< HEAD
-		xen_register_pirq(irq, -1 /* no GSI override */,
-=======
 		xen_register_pirq(irq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			trigger ? ACPI_LEVEL_SENSITIVE : ACPI_EDGE_SENSITIVE,
 			true /* Map GSI to PIRQ */);
 	}
 	if (0 == nr_ioapics) {
-<<<<<<< HEAD
-		for (irq = 0; irq < NR_IRQS_LEGACY; irq++)
-=======
 		for (irq = 0; irq < nr_legacy_irqs(); irq++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			xen_bind_pirq_gsi_to_irq(irq, irq, 0, "xt-pic");
 	}
 	return 0;
 }
-<<<<<<< HEAD
-
-struct xen_device_domain_owner {
-	domid_t domain;
-	struct pci_dev *dev;
-	struct list_head list;
-};
-
-static DEFINE_SPINLOCK(dev_domain_list_spinlock);
-static struct list_head dev_domain_list = LIST_HEAD_INIT(dev_domain_list);
-
-static struct xen_device_domain_owner *find_device(struct pci_dev *dev)
-{
-	struct xen_device_domain_owner *owner;
-
-	list_for_each_entry(owner, &dev_domain_list, list) {
-		if (owner->dev == dev)
-			return owner;
-	}
-	return NULL;
-}
-
-int xen_find_device_domain_owner(struct pci_dev *dev)
-{
-	struct xen_device_domain_owner *owner;
-	int domain = -ENODEV;
-
-	spin_lock(&dev_domain_list_spinlock);
-	owner = find_device(dev);
-	if (owner)
-		domain = owner->domain;
-	spin_unlock(&dev_domain_list_spinlock);
-	return domain;
-}
-EXPORT_SYMBOL_GPL(xen_find_device_domain_owner);
-
-int xen_register_device_domain_owner(struct pci_dev *dev, uint16_t domain)
-{
-	struct xen_device_domain_owner *owner;
-
-	owner = kzalloc(sizeof(struct xen_device_domain_owner), GFP_KERNEL);
-	if (!owner)
-		return -ENODEV;
-
-	spin_lock(&dev_domain_list_spinlock);
-	if (find_device(dev)) {
-		spin_unlock(&dev_domain_list_spinlock);
-		kfree(owner);
-		return -EEXIST;
-	}
-	owner->domain = domain;
-	owner->dev = dev;
-	list_add_tail(&owner->list, &dev_domain_list);
-	spin_unlock(&dev_domain_list_spinlock);
-	return 0;
-}
-EXPORT_SYMBOL_GPL(xen_register_device_domain_owner);
-
-int xen_unregister_device_domain_owner(struct pci_dev *dev)
-{
-	struct xen_device_domain_owner *owner;
-
-	spin_lock(&dev_domain_list_spinlock);
-	owner = find_device(dev);
-	if (!owner) {
-		spin_unlock(&dev_domain_list_spinlock);
-		return -ENODEV;
-	}
-	list_del(&owner->list);
-	spin_unlock(&dev_domain_list_spinlock);
-	kfree(owner);
-	return 0;
-}
-EXPORT_SYMBOL_GPL(xen_unregister_device_domain_owner);
-#endif
-=======
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

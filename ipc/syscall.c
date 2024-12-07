@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sys_ipc() is the old de-multiplexer for the SysV IPC calls.
  *
@@ -9,30 +6,19 @@
  * the individual syscalls instead.
  */
 #include <linux/unistd.h>
-<<<<<<< HEAD
-=======
 #include <linux/syscalls.h>
 #include <linux/security.h>
 #include <linux/ipc_namespace.h>
 #include "util.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __ARCH_WANT_SYS_IPC
 #include <linux/errno.h>
 #include <linux/ipc.h>
 #include <linux/shm.h>
-<<<<<<< HEAD
-#include <linux/syscalls.h>
-#include <linux/uaccess.h>
-
-SYSCALL_DEFINE6(ipc, unsigned int, call, int, first, unsigned long, second,
-		unsigned long, third, void __user *, ptr, long, fifth)
-=======
 #include <linux/uaccess.h>
 
 int ksys_ipc(unsigned int call, int first, unsigned long second,
 	unsigned long third, void __user * ptr, long fifth)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int version, ret;
 
@@ -41,28 +27,6 @@ int ksys_ipc(unsigned int call, int first, unsigned long second,
 
 	switch (call) {
 	case SEMOP:
-<<<<<<< HEAD
-		return sys_semtimedop(first, (struct sembuf __user *)ptr,
-				      second, NULL);
-	case SEMTIMEDOP:
-		return sys_semtimedop(first, (struct sembuf __user *)ptr,
-				      second,
-				      (const struct timespec __user *)fifth);
-
-	case SEMGET:
-		return sys_semget(first, second, third);
-	case SEMCTL: {
-		union semun fourth;
-		if (!ptr)
-			return -EINVAL;
-		if (get_user(fourth.__pad, (void __user * __user *) ptr))
-			return -EFAULT;
-		return sys_semctl(first, second, third, fourth);
-	}
-
-	case MSGSND:
-		return sys_msgsnd(first, (struct msgbuf __user *) ptr,
-=======
 		return ksys_semtimedop(first, (struct sembuf __user *)ptr,
 				       second, NULL);
 	case SEMTIMEDOP:
@@ -88,7 +52,6 @@ int ksys_ipc(unsigned int call, int first, unsigned long second,
 
 	case MSGSND:
 		return ksys_msgsnd(first, (struct msgbuf __user *) ptr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  second, third);
 	case MSGRCV:
 		switch (version) {
@@ -101,44 +64,26 @@ int ksys_ipc(unsigned int call, int first, unsigned long second,
 					   (struct ipc_kludge __user *) ptr,
 					   sizeof(tmp)))
 				return -EFAULT;
-<<<<<<< HEAD
-			return sys_msgrcv(first, tmp.msgp, second,
-					   tmp.msgtyp, third);
-		}
-		default:
-			return sys_msgrcv(first,
-=======
 			return ksys_msgrcv(first, tmp.msgp, second,
 					   tmp.msgtyp, third);
 		}
 		default:
 			return ksys_msgrcv(first,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   (struct msgbuf __user *) ptr,
 					   second, fifth, third);
 		}
 	case MSGGET:
-<<<<<<< HEAD
-		return sys_msgget((key_t) first, second);
-	case MSGCTL:
-		return sys_msgctl(first, second, (struct msqid_ds __user *)ptr);
-=======
 		return ksys_msgget((key_t) first, second);
 	case MSGCTL:
 		return ksys_old_msgctl(first, second,
 				   (struct msqid_ds __user *)ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case SHMAT:
 		switch (version) {
 		default: {
 			unsigned long raddr;
 			ret = do_shmat(first, (char __user *)ptr,
-<<<<<<< HEAD
-				       second, &raddr);
-=======
 				       second, &raddr, SHMLBA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret)
 				return ret;
 			return put_user(raddr, (unsigned long __user *) third);
@@ -151,26 +96,16 @@ int ksys_ipc(unsigned int call, int first, unsigned long second,
 			return -EINVAL;
 		}
 	case SHMDT:
-<<<<<<< HEAD
-		return sys_shmdt((char __user *)ptr);
-	case SHMGET:
-		return sys_shmget(first, second, third);
-	case SHMCTL:
-		return sys_shmctl(first, second,
-=======
 		return ksys_shmdt((char __user *)ptr);
 	case SHMGET:
 		return ksys_shmget(first, second, third);
 	case SHMCTL:
 		return ksys_old_shmctl(first, second,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   (struct shmid_ds __user *) ptr);
 	default:
 		return -ENOSYS;
 	}
 }
-<<<<<<< HEAD
-=======
 
 SYSCALL_DEFINE6(ipc, unsigned int, call, int, first, unsigned long, second,
 		unsigned long, third, void __user *, ptr, long, fifth)
@@ -273,5 +208,4 @@ COMPAT_SYSCALL_DEFINE6(ipc, u32, call, int, first, int, second,
 	return compat_ksys_ipc(call, first, second, third, ptr, fifth);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

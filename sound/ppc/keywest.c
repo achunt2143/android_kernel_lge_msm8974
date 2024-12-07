@@ -1,49 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * common keywest i2c layer
  *
  * Copyright (c) by Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
 #include <linux/init.h>
 #include <linux/i2c.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <sound/core.h>
-#include "pmac.h"
-
-/*
- * we have to keep a static variable here since i2c attach_adapter
- * callback cannot pass a private data.
- */
-static struct pmac_keywest *keywest_ctx;
-
-
-static int keywest_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id)
-{
-=======
 #include <linux/module.h>
 #include <sound/core.h>
 #include "pmac.h"
@@ -57,7 +22,6 @@ static int keywest_probe(struct i2c_client *client)
 	/* If instantiated via i2c-powermac, we still need to set the client */
 	if (!keywest_ctx->client)
 		keywest_ctx->client = client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_set_clientdata(client, keywest_ctx);
 	return 0;
 }
@@ -70,25 +34,12 @@ static int keywest_probe(struct i2c_client *client)
 static int keywest_attach_adapter(struct i2c_adapter *adapter)
 {
 	struct i2c_board_info info;
-<<<<<<< HEAD
-=======
 	struct i2c_client *client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (! keywest_ctx)
 		return -EINVAL;
 
 	if (strncmp(adapter->name, "mac-io", 6))
-<<<<<<< HEAD
-		return 0; /* ignored */
-
-	memset(&info, 0, sizeof(struct i2c_board_info));
-	strlcpy(info.type, "keywest", I2C_NAME_SIZE);
-	info.addr = keywest_ctx->addr;
-	keywest_ctx->client = i2c_new_device(adapter, &info);
-	if (!keywest_ctx->client)
-		return -ENODEV;
-=======
 		return -EINVAL; /* ignored */
 
 	memset(&info, 0, sizeof(struct i2c_board_info));
@@ -99,17 +50,12 @@ static int keywest_attach_adapter(struct i2c_adapter *adapter)
 		return PTR_ERR(client);
 	keywest_ctx->client = client;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We know the driver is already loaded, so the device should be
 	 * already bound. If not it means binding failed, and then there
 	 * is no point in keeping the device instantiated.
 	 */
-<<<<<<< HEAD
-	if (!keywest_ctx->client->driver) {
-=======
 	if (!keywest_ctx->client->dev.driver) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i2c_unregister_device(keywest_ctx->client);
 		keywest_ctx->client = NULL;
 		return -ENODEV;
@@ -120,20 +66,6 @@ static int keywest_attach_adapter(struct i2c_adapter *adapter)
 	 * This is safe because i2c-core holds the core_lock mutex for us.
 	 */
 	list_add_tail(&keywest_ctx->client->detected,
-<<<<<<< HEAD
-		      &keywest_ctx->client->driver->clients);
-	return 0;
-}
-
-static int keywest_remove(struct i2c_client *client)
-{
-	if (! keywest_ctx)
-		return 0;
-	if (client == keywest_ctx->client)
-		keywest_ctx->client = NULL;
-
-	return 0;
-=======
 		      &to_i2c_driver(keywest_ctx->client->dev.driver)->clients);
 	return 0;
 }
@@ -144,31 +76,20 @@ static void keywest_remove(struct i2c_client *client)
 		return;
 	if (client == keywest_ctx->client)
 		keywest_ctx->client = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static const struct i2c_device_id keywest_i2c_id[] = {
-<<<<<<< HEAD
-	{ "keywest", 0 },
-	{ }
-};
-=======
 	{ "MAC,tas3004", 0 },		/* instantiated by i2c-powermac */
 	{ "keywest", 0 },		/* instantiated by us if needed */
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, keywest_i2c_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_driver keywest_driver = {
 	.driver = {
 		.name = "PMac Keywest Audio",
 	},
-<<<<<<< HEAD
-	.attach_adapter = keywest_attach_adapter,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe = keywest_probe,
 	.remove = keywest_remove,
 	.id_table = keywest_i2c_id,
@@ -183,23 +104,15 @@ void snd_pmac_keywest_cleanup(struct pmac_keywest *i2c)
 	}
 }
 
-<<<<<<< HEAD
-int __devinit snd_pmac_tumbler_post_init(void)
-=======
 int snd_pmac_tumbler_post_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	
 	if (!keywest_ctx || !keywest_ctx->client)
 		return -ENXIO;
 
-<<<<<<< HEAD
-	if ((err = keywest_ctx->init_client(keywest_ctx)) < 0) {
-=======
 	err = keywest_ctx->init_client(keywest_ctx);
 	if (err < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR "tumbler: %i :cannot initialize the MCS\n", err);
 		return err;
 	}
@@ -207,29 +120,14 @@ int snd_pmac_tumbler_post_init(void)
 }
 
 /* exported */
-<<<<<<< HEAD
-int __devinit snd_pmac_keywest_init(struct pmac_keywest *i2c)
-{
-	int err;
-=======
 int snd_pmac_keywest_init(struct pmac_keywest *i2c)
 {
 	struct i2c_adapter *adap;
 	int err, i = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (keywest_ctx)
 		return -EBUSY;
 
-<<<<<<< HEAD
-	keywest_ctx = i2c;
-
-	if ((err = i2c_add_driver(&keywest_driver))) {
-		snd_printk(KERN_ERR "cannot register keywest i2c driver\n");
-		return err;
-	}
-	return 0;
-=======
 	adap = i2c_get_adapter(0);
 	if (!adap)
 		return -EPROBE_DEFER;
@@ -258,5 +156,4 @@ int snd_pmac_keywest_init(struct pmac_keywest *i2c)
 	}
 
 	return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

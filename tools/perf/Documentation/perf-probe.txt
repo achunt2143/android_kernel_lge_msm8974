@@ -14,22 +14,15 @@ or
 or
 'perf probe' [options] --del='[GROUP:]EVENT' [...]
 or
-<<<<<<< HEAD
-'perf probe' --list
-=======
 'perf probe' --list[=[GROUP:]EVENT]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 or
 'perf probe' [options] --line='LINE'
 or
 'perf probe' [options] --vars='PROBEPOINT'
-<<<<<<< HEAD
-=======
 or
 'perf probe' [options] --funcs
 or
 'perf probe' [options] --definition='PROBE' [...]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DESCRIPTION
 -----------
@@ -43,11 +36,8 @@ OPTIONS
 -k::
 --vmlinux=PATH::
 	Specify vmlinux path which has debuginfo (Dwarf binary).
-<<<<<<< HEAD
-=======
 	Only when using this with --definition, you can give an offline
 	vmlinux file.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -m::
 --module=MODNAME|PATH::
@@ -63,15 +53,12 @@ OPTIONS
 -v::
 --verbose::
         Be more verbose (show parsed arguments, etc).
-<<<<<<< HEAD
-=======
 	Can not use with -q.
 
 -q::
 --quiet::
 	Do not show any warnings or messages.
 	Can not use with -v.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -a::
 --add=::
@@ -83,16 +70,11 @@ OPTIONS
 	classes(e.g. [a-z], [!A-Z]).
 
 -l::
-<<<<<<< HEAD
---list::
-	List up current probe events.
-=======
 --list[=[GROUP:]EVENT]::
 	List up current probe events. This can also accept filtering patterns of
 	event names.
 	When this is used with --cache, perf shows all cached probes instead of
 	the live probes.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -L::
 --line=::
@@ -108,11 +90,6 @@ OPTIONS
 	(Only for --vars) Show external defined variables in addition to local
 	variables.
 
-<<<<<<< HEAD
--F::
---funcs::
-	Show available functions in given module or kernel.
-=======
 --no-inlines::
 	(Only for --add) Search only for non-inlined functions. The functions
 	which do not have instances are ignored.
@@ -127,7 +104,6 @@ OPTIONS
 --definition=::
 	Show trace-event definition converted from given probe-event instead
 	of write it into tracing/[k,u]probe_events.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 --filter=FILTER::
 	(Only for --vars and --funcs) Set filter. FILTER is a combination of glob
@@ -145,11 +121,6 @@ OPTIONS
 	Dry run. With this option, --add and --del doesn't execute actual
 	adding and removal operations.
 
-<<<<<<< HEAD
---max-probes::
-	Set the maximum number of probe points for an event. Default is 128.
-
-=======
 --cache::
 	(With --add) Cache the probes. Any events which successfully added
 	are also stored in the cache file.
@@ -181,27 +152,11 @@ In absence of -m/-x options, perf probe checks if the first argument after
 the options is an absolute path name. If its an absolute path, perf probe
 uses it as a target module/target user space binary to probe.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 PROBE SYNTAX
 ------------
 Probe points are defined by following syntax.
 
     1) Define event based on function name
-<<<<<<< HEAD
-     [EVENT=]FUNC[@SRC][:RLN|+OFFS|%return|;PTN] [ARG ...]
-
-    2) Define event based on source file with line number
-     [EVENT=]SRC:ALN [ARG ...]
-
-    3) Define event based on source file with lazy pattern
-     [EVENT=]SRC;PTN [ARG ...]
-
-
-'EVENT' specifies the name of new event, if omitted, it will be set the name of the probed function. Currently, event group name is set as 'probe'.
-'FUNC' specifies a probed function name, and it may have one of the following options; '+OFFS' is the offset from function entry address in bytes, ':RLN' is the relative-line number from function entry line, and '%return' means that it probes function return. And ';PTN' means lazy matching pattern (see LAZY MATCHING). Note that ';PTN' must be the end of the probe point definition.  In addition, '@SRC' specifies a source file which has that function.
-It is also possible to specify a probe point by the source line number or lazy matching by using 'SRC:ALN' or 'SRC;PTN' syntax, where 'SRC' is the source file path, ':ALN' is the line number and ';PTN' is the lazy matching pattern.
-'ARG' specifies the arguments of this probe point, (see PROBE ARGUMENT).
-=======
      [[GROUP:]EVENT=]FUNC[@SRC][:RLN|+OFFS|%return|;PTN] [ARG ...]
 
     2) Define event based on source file with line number
@@ -234,18 +189,11 @@ In the probe syntax, '=', '@', '+', ':' and ';' are treated as a special charact
 This is useful if you need to probe on a specific versioned symbols, like @GLIBC_... suffixes, or also you need to specify a source file which includes the special characters.
 Note that usually single backslash is consumed by shell, so you might need to pass double backslash (\\) or wrapping with single quotes (\'AAA\@BBB').
 See EXAMPLES how it is used.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 PROBE ARGUMENT
 --------------
 Each probe argument follows below syntax.
 
-<<<<<<< HEAD
- [NAME=]LOCALVAR|$retval|%REG|@SYMBOL[:TYPE]
-
-'NAME' specifies the name of this argument (optional). You can use the name of local variable, local data structure member (e.g. var->field, var.field2), local array with fixed index (e.g. array[1], var->array[0], var->pointer[2]), or kprobe-tracer argument format (e.g. $retval, %ax, etc). Note that the name of this argument will be set as the last member name if you specify a local data structure member (e.g. field2 for 'var->field1.field2'.)
-'TYPE' casts the type of this argument (optional). If omitted, perf probe automatically set the type based on debuginfo. You can specify 'string' type only for the local variable or structure member which is an array of or a pointer to 'char' or 'unsigned char' type.
-=======
  [NAME=]LOCALVAR|$retval|%REG|@SYMBOL[:TYPE][@user]
 
 'NAME' specifies the name of this argument (optional). You can use the name of local variable, local data structure member (e.g. var->field, var.field2), local array with fixed index (e.g. array[1], var->array[0], var->pointer[2]), or kprobe-tracer argument format (e.g. $retval, %ax, etc). Note that the name of this argument will be set as the last member name if you specify a local data structure member (e.g. field2 for 'var->field1.field2'.)
@@ -261,7 +209,6 @@ String type is a special type, which fetches a "null-terminated" string from ker
 Bitfield is another special type, which takes 3 parameters, bit-width, bit-offset, and container-size (usually 32). The syntax is;
 
  b<bit-width>@<bit-offset>/<container-size>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 LINE SYNTAX
 -----------
@@ -275,19 +222,11 @@ probe syntax, 'SRC' means the source file path, 'ALN' is start line number,
 and 'ALN2' is end line number in the file. It is also possible to specify how
 many lines to show by using 'NUM'. Moreover, 'FUNC@SRC' combination is good
 for searching a specific function when several functions share same name.
-<<<<<<< HEAD
-So, "source.c:100-120" shows lines between 100th to l20th in source.c file. And "func:10+20" shows 20 lines from 10th line of func function.
-
-LAZY MATCHING
--------------
- The lazy line matching is similar to glob matching but ignoring spaces in both of pattern and target. So this accepts wildcards('*', '?') and character classes(e.g. [a-z], [!A-Z]).
-=======
 So, "source.c:100-120" shows lines between 100th to 120th in source.c file. And "func:10+20" shows 20 lines from 10th line of func function.
 
 LAZY MATCHING
 -------------
 The lazy line matching is similar to glob matching but ignoring spaces in both of pattern and target. So this accepts wildcards('*', '?') and character classes(e.g. [a-z], [!A-Z]).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 e.g.
  'a=*' can matches 'a=b', 'a = b', 'a == b' and so on.
@@ -296,13 +235,8 @@ This provides some sort of flexibility and robustness to probe point definitions
 
 FILTER PATTERN
 --------------
-<<<<<<< HEAD
- The filter pattern is a glob matching pattern(s) to filter variables.
- In addition, you can use "!" for specifying filter-out rule. You also can give several rules combined with "&" or "|", and fold those rules as one rule by using "(" ")".
-=======
 The filter pattern is a glob matching pattern(s) to filter variables.
 In addition, you can use "!" for specifying filter-out rule. You also can give several rules combined with "&" or "|", and fold those rules as one rule by using "(" ")".
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 e.g.
  With --filter "foo* | bar*", perf probe -V shows variables which start with "foo" or "bar".
@@ -320,11 +254,6 @@ Add a probe on schedule() function 12th line with recording cpu local variable:
  or
  ./perf probe --add='schedule:12 cpu'
 
-<<<<<<< HEAD
- this will add one or more probes which has the name start with "schedule".
-
- Add probes on lines in schedule() function which calls update_rq_clock().
-=======
 Add one or more probes which has the name start with "schedule".
 
  ./perf probe schedule*
@@ -332,7 +261,6 @@ Add one or more probes which has the name start with "schedule".
  ./perf probe --add='schedule*'
 
 Add probes on lines in schedule() function which calls update_rq_clock().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  ./perf probe 'schedule;update_rq_clock*'
  or
@@ -342,12 +270,6 @@ Delete all probes on schedule().
 
  ./perf probe --del='schedule*'
 
-<<<<<<< HEAD
-
-SEE ALSO
---------
-linkperf:perf-trace[1], linkperf:perf-record[1]
-=======
 Add probes at zfree() function on /bin/zsh
 
  ./perf probe -x /bin/zsh zfree or ./perf probe /bin/zsh zfree
@@ -389,4 +311,3 @@ Since perf probe depends on ftrace (tracefs) and kallsyms (/proc/kallsyms), you 
 SEE ALSO
 --------
 linkperf:perf-trace[1], linkperf:perf-record[1], linkperf:perf-buildid-cache[1]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

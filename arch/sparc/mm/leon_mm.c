@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/sparc/mm/leon_m.c
  *
@@ -19,12 +16,6 @@
 #include <asm/leon.h>
 #include <asm/tlbflush.h>
 
-<<<<<<< HEAD
-int leon_flush_during_switch = 1;
-int srmmu_swprobe_trace;
-
-unsigned long srmmu_swprobe(unsigned long vaddr, unsigned long *paddr)
-=======
 #include "mm_32.h"
 
 int leon_flush_during_switch = 1;
@@ -43,7 +34,6 @@ static inline unsigned long leon_get_ctable_ptr(void)
 
 
 unsigned long leon_swprobe(unsigned long vaddr, unsigned long *paddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	unsigned int ctxtbl;
@@ -58,17 +48,10 @@ unsigned long leon_swprobe(unsigned long vaddr, unsigned long *paddr)
 	if (srmmu_swprobe_trace)
 		printk(KERN_INFO "swprobe: trace on\n");
 
-<<<<<<< HEAD
-	ctxtbl = srmmu_get_ctable_ptr();
-	if (!(ctxtbl)) {
-		if (srmmu_swprobe_trace)
-			printk(KERN_INFO "swprobe: srmmu_get_ctable_ptr returned 0=>0\n");
-=======
 	ctxtbl = leon_get_ctable_ptr();
 	if (!(ctxtbl)) {
 		if (srmmu_swprobe_trace)
 			printk(KERN_INFO "swprobe: leon_get_ctable_ptr returned 0=>0\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	if (!_pfn_valid(PFN(ctxtbl))) {
@@ -290,8 +273,6 @@ void leon_switch_mm(void)
 	if (leon_flush_during_switch)
 		leon_flush_cache_all();
 }
-<<<<<<< HEAD
-=======
 
 static void leon_flush_cache_mm(struct mm_struct *mm)
 {
@@ -369,4 +350,3 @@ void __init init_leon(void)
 
 	leon_flush_during_switch = leon_flush_needed();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

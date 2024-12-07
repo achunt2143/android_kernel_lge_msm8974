@@ -1,31 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright (C) 1991, 1992 Linus Torvalds
  *   Copyright 2007 rPath, Inc. - All Rights Reserved
  *   Copyright 2009 Intel Corporation; author H. Peter Anvin
  *
-<<<<<<< HEAD
- *   This file is part of the Linux kernel, and is made available under
- *   the terms of the GNU General Public License version 2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
  * Main module for the real-mode kernel code
  */
-<<<<<<< HEAD
-
-#include "boot.h"
-
-struct boot_params boot_params __attribute__((aligned(16)));
-
-=======
 #include <linux/build_bug.h>
 
 #include "boot.h"
@@ -35,7 +19,6 @@ struct boot_params boot_params __attribute__((aligned(16)));
 
 struct port_io_ops pio_ops;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 char *HEAP = _end;
 char *heap_end = _end;		/* Default end of heap = no heap */
 
@@ -52,17 +35,10 @@ static void copy_boot_params(void)
 		u16 cl_offset;
 	};
 	const struct old_cmdline * const oldcmd =
-<<<<<<< HEAD
-		(const struct old_cmdline *)OLD_CL_ADDRESS;
-
-	BUILD_BUG_ON(sizeof boot_params != 4096);
-	memcpy(&boot_params.hdr, &hdr, sizeof hdr);
-=======
 		absolute_pointer(OLD_CL_ADDRESS);
 
 	BUILD_BUG_ON(sizeof(boot_params) != 4096);
 	memcpy(&boot_params.hdr, &hdr, sizeof(hdr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!boot_params.hdr.cmd_line_ptr &&
 	    oldcmd->cl_magic == OLD_CL_MAGIC) {
@@ -83,16 +59,6 @@ static void copy_boot_params(void)
 }
 
 /*
-<<<<<<< HEAD
- * Set the keyboard repeat rate to maximum.  Unclear why this
- * is done here; this might be possible to kill off as stale code.
- */
-static void keyboard_set_repeat(void)
-{
-	struct biosregs ireg;
-	initregs(&ireg);
-	ireg.ax = 0x0305;
-=======
  * Query the keyboard lock status as given by the BIOS, and
  * set the keyboard repeat rate to maximum.  Unclear why the latter
  * is done here; this might be possible to kill off as stale code.
@@ -107,7 +73,6 @@ static void keyboard_init(void)
 	boot_params.kbd_status = oreg.al;
 
 	ireg.ax = 0x0305;	/* Set keyboard repeat rate */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	intcall(0x16, &ireg, NULL);
 }
 
@@ -170,11 +135,8 @@ static void init_heap(void)
 
 void main(void)
 {
-<<<<<<< HEAD
-=======
 	init_default_io_ops();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* First, copy the boot header into the "zeropage" */
 	copy_boot_params();
 
@@ -199,16 +161,8 @@ void main(void)
 	/* Detect memory layout */
 	detect_memory();
 
-<<<<<<< HEAD
-	/* Set keyboard repeat rate (why?) */
-	keyboard_set_repeat();
-
-	/* Query MCA information */
-	query_mca();
-=======
 	/* Set keyboard repeat rate (why?) and query the lock flags */
 	keyboard_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Query Intel SpeedStep (IST) information */
 	query_ist();

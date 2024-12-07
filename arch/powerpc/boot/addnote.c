@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Program to hack in a PT_NOTE program header entry in an ELF file.
  * This is needed for OF on RS/6000s to load an image correctly.
@@ -10,14 +7,7 @@
  *
  * Copyright 2000 Paul Mackerras.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
  * Adapted for 64 bit little endian images by Andrew Tauferner.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Usage: addnote zImage
  */
@@ -63,24 +53,6 @@ unsigned int rpanote[N_RPA_DESCR] = {
 
 #define ROUNDUP(len)	(((len) + 3) & ~3)
 
-<<<<<<< HEAD
-unsigned char buf[512];
-
-#define GET_16BE(off)	((buf[off] << 8) + (buf[(off)+1]))
-#define GET_32BE(off)	((GET_16BE(off) << 16) + GET_16BE((off)+2))
-
-#define PUT_16BE(off, v)	(buf[off] = ((v) >> 8) & 0xff, \
-				 buf[(off) + 1] = (v) & 0xff)
-#define PUT_32BE(off, v)	(PUT_16BE((off), (v) >> 16), \
-				 PUT_16BE((off) + 2, (v)))
-
-/* Structure of an ELF file */
-#define E_IDENT		0	/* ELF header */
-#define	E_PHOFF		28
-#define E_PHENTSIZE	42
-#define E_PHNUM		44
-#define E_HSIZE		52	/* size of ELF header */
-=======
 unsigned char buf[1024];
 #define ELFDATA2LSB     1
 #define ELFDATA2MSB     2
@@ -124,30 +96,18 @@ static int e_class = ELFCLASS32;
 #define E_PHENTSIZE	(e_class == ELFCLASS32 ? 42 : 54)
 #define E_PHNUM		(e_class == ELFCLASS32 ? 44 : 56)
 #define E_HSIZE		(e_class == ELFCLASS32 ? 52 : 64)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EI_MAGIC	0	/* offsets in E_IDENT area */
 #define EI_CLASS	4
 #define EI_DATA		5
 
 #define PH_TYPE		0	/* ELF program header */
-<<<<<<< HEAD
-#define PH_OFFSET	4
-#define PH_FILESZ	16
-#define PH_HSIZE	32	/* size of program header */
-
-#define PT_NOTE		4	/* Program header type = note */
-
-#define ELFCLASS32	1
-#define ELFDATA2MSB	2
-=======
 #define PH_OFFSET	(e_class == ELFCLASS32 ? 4 : 8)
 #define PH_FILESZ	(e_class == ELFCLASS32 ? 16 : 32)
 #define PH_HSIZE	(e_class == ELFCLASS32 ? 32 : 56)
 
 #define PT_NOTE		4	/* Program header type = note */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned char elf_magic[4] = { 0x7f, 'E', 'L', 'F' };
 
@@ -155,13 +115,8 @@ int
 main(int ac, char **av)
 {
 	int fd, n, i;
-<<<<<<< HEAD
-	int ph, ps, np;
-	int nnote, nnote2, ns;
-=======
 	unsigned long ph, ps, np;
 	long nnote, nnote2, ns;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ac != 2) {
 		fprintf(stderr, "Usage: %s elf-file\n", av[0]);
@@ -182,21 +137,6 @@ main(int ac, char **av)
 		exit(1);
 	}
 
-<<<<<<< HEAD
-	if (n < E_HSIZE || memcmp(&buf[E_IDENT+EI_MAGIC], elf_magic, 4) != 0)
-		goto notelf;
-
-	if (buf[E_IDENT+EI_CLASS] != ELFCLASS32
-	    || buf[E_IDENT+EI_DATA] != ELFDATA2MSB) {
-		fprintf(stderr, "%s is not a big-endian 32-bit ELF image\n",
-			av[1]);
-		exit(1);
-	}
-
-	ph = GET_32BE(E_PHOFF);
-	ps = GET_16BE(E_PHENTSIZE);
-	np = GET_16BE(E_PHNUM);
-=======
 	if (memcmp(&buf[E_IDENT+EI_MAGIC], elf_magic, 4) != 0)
 		goto notelf;
 	e_class = buf[E_IDENT+EI_CLASS];
@@ -211,18 +151,13 @@ main(int ac, char **av)
 	ph = (e_class == ELFCLASS32 ? GET_32(E_PHOFF) : GET_64(E_PHOFF));
 	ps = GET_16(E_PHENTSIZE);
 	np = GET_16(E_PHNUM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ph < E_HSIZE || ps < PH_HSIZE || np < 1)
 		goto notelf;
 	if (ph + (np + 2) * ps + nnote + nnote2 > n)
 		goto nospace;
 
 	for (i = 0; i < np; ++i) {
-<<<<<<< HEAD
-		if (GET_32BE(ph + PH_TYPE) == PT_NOTE) {
-=======
 		if (GET_32(ph + PH_TYPE) == PT_NOTE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fprintf(stderr, "%s already has a note entry\n",
 				av[1]);
 			exit(0);
@@ -237,17 +172,6 @@ main(int ac, char **av)
 
 	/* fill in the program header entry */
 	ns = ph + 2 * ps;
-<<<<<<< HEAD
-	PUT_32BE(ph + PH_TYPE, PT_NOTE);
-	PUT_32BE(ph + PH_OFFSET, ns);
-	PUT_32BE(ph + PH_FILESZ, nnote);
-
-	/* fill in the note area we point to */
-	/* XXX we should probably make this a proper section */
-	PUT_32BE(ns, strlen(arch) + 1);
-	PUT_32BE(ns + 4, N_DESCR * 4);
-	PUT_32BE(ns + 8, 0x1275);
-=======
 	PUT_32(ph + PH_TYPE, PT_NOTE);
 	if (e_class == ELFCLASS32)
 		PUT_32(ph + PH_OFFSET, ns);
@@ -264,7 +188,6 @@ main(int ac, char **av)
 	PUT_32(ns, strlen(arch) + 1);
 	PUT_32(ns + 4, N_DESCR * 4);
 	PUT_32(ns + 8, 0x1275);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcpy((char *) &buf[ns + 12], arch);
 	ns += 12 + strlen(arch) + 1;
 	for (i = 0; i < N_DESCR; ++i, ns += 4)
@@ -272,16 +195,6 @@ main(int ac, char **av)
 
 	/* fill in the second program header entry and the RPA note area */
 	ph += ps;
-<<<<<<< HEAD
-	PUT_32BE(ph + PH_TYPE, PT_NOTE);
-	PUT_32BE(ph + PH_OFFSET, ns);
-	PUT_32BE(ph + PH_FILESZ, nnote2);
-
-	/* fill in the note area we point to */
-	PUT_32BE(ns, strlen(rpaname) + 1);
-	PUT_32BE(ns + 4, sizeof(rpanote));
-	PUT_32BE(ns + 8, 0x12759999);
-=======
 	PUT_32(ph + PH_TYPE, PT_NOTE);
 	if (e_class == ELFCLASS32)
 		PUT_32(ph + PH_OFFSET, ns);
@@ -297,19 +210,12 @@ main(int ac, char **av)
 	PUT_32(ns, strlen(rpaname) + 1);
 	PUT_32(ns + 4, sizeof(rpanote));
 	PUT_32(ns + 8, 0x12759999);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcpy((char *) &buf[ns + 12], rpaname);
 	ns += 12 + ROUNDUP(strlen(rpaname) + 1);
 	for (i = 0; i < N_RPA_DESCR; ++i, ns += 4)
 		PUT_32BE(ns, rpanote[i]);
 
 	/* Update the number of program headers */
-<<<<<<< HEAD
-	PUT_16BE(E_PHNUM, np + 2);
-
-	/* write back */
-	lseek(fd, (long) 0, SEEK_SET);
-=======
 	PUT_16(E_PHNUM, np + 2);
 
 	/* write back */
@@ -318,7 +224,6 @@ main(int ac, char **av)
 		perror("lseek");
 		exit(1);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i = write(fd, buf, n);
 	if (i < 0) {
 		perror("write");

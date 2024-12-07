@@ -1,35 +1,10 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dlmunlock.c
  *
  * underlying calls for unlocking locks
  *
  * Copyright (C) 2004 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -46,25 +21,15 @@
 #include <linux/spinlock.h>
 #include <linux/delay.h>
 
-<<<<<<< HEAD
-#include "cluster/heartbeat.h"
-#include "cluster/nodemanager.h"
-#include "cluster/tcp.h"
-=======
 #include "../cluster/heartbeat.h"
 #include "../cluster/nodemanager.h"
 #include "../cluster/tcp.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dlmapi.h"
 #include "dlmcommon.h"
 
 #define MLOG_MASK_PREFIX ML_DLM
-<<<<<<< HEAD
-#include "cluster/masklog.h"
-=======
 #include "../cluster/masklog.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DLM_UNLOCK_FREE_LOCK           0x00000001
 #define DLM_UNLOCK_CALL_AST            0x00000002
@@ -123,12 +88,8 @@ static enum dlm_status dlmunlock_common(struct dlm_ctxt *dlm,
 	enum dlm_status status;
 	int actions = 0;
 	int in_use;
-<<<<<<< HEAD
-        u8 owner;
-=======
 	u8 owner;
 	int recovery_wait = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlog(0, "master_node = %d, valblk = %d\n", master_node,
 	     flags & LKM_VALBLK);
@@ -214,13 +175,9 @@ static enum dlm_status dlmunlock_common(struct dlm_ctxt *dlm,
 				     DLM_UNLOCK_CLEAR_CONVERT_TYPE);
 		} else if (status == DLM_RECOVERING ||
 			   status == DLM_MIGRATING ||
-<<<<<<< HEAD
-			   status == DLM_FORWARD) {
-=======
 			   status == DLM_FORWARD ||
 			   status == DLM_NOLOCKMGR
 			   ) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* must clear the actions because this unlock
 			 * is about to be retried.  cannot free or do
 			 * any list manipulation. */
@@ -229,28 +186,18 @@ static enum dlm_status dlmunlock_common(struct dlm_ctxt *dlm,
 			     res->lockname.name,
 			     status==DLM_RECOVERING?"recovering":
 			     (status==DLM_MIGRATING?"migrating":
-<<<<<<< HEAD
-			      "forward"));
-=======
 				(status == DLM_FORWARD ? "forward" :
 						"nolockmanager")));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			actions = 0;
 		}
 		if (flags & LKM_CANCEL)
 			lock->cancel_pending = 0;
-<<<<<<< HEAD
-		else
-			lock->unlock_pending = 0;
-
-=======
 		else {
 			if (!lock->unlock_pending)
 				recovery_wait = 1;
 			else
 				lock->unlock_pending = 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* get an extra ref on lock.  if we are just switching
@@ -284,8 +231,6 @@ leave:
 	spin_unlock(&res->spinlock);
 	wake_up(&res->wq);
 
-<<<<<<< HEAD
-=======
 	if (recovery_wait) {
 		spin_lock(&res->spinlock);
 		/* Unlock request will directly succeed after owner dies,
@@ -297,7 +242,6 @@ leave:
 		spin_unlock(&res->spinlock);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* let the caller's final dlm_lock_put handle the actual kfree */
 	if (actions & DLM_UNLOCK_FREE_LOCK) {
 		/* this should always be coupled with list removal */
@@ -305,11 +249,7 @@ leave:
 		mlog(0, "lock %u:%llu should be gone now! refs=%d\n",
 		     dlm_get_lock_cookie_node(be64_to_cpu(lock->ml.cookie)),
 		     dlm_get_lock_cookie_seq(be64_to_cpu(lock->ml.cookie)),
-<<<<<<< HEAD
-		     atomic_read(&lock->lock_refs.refcount)-1);
-=======
 		     kref_read(&lock->lock_refs)-1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dlm_lock_put(lock);
 	}
 	if (actions & DLM_UNLOCK_CALL_AST)
@@ -425,14 +365,10 @@ static enum dlm_status dlm_send_remote_unlock_request(struct dlm_ctxt *dlm,
 			 * updated state to the recovery master.  this thread
 			 * just needs to finish out the operation and call
 			 * the unlockast. */
-<<<<<<< HEAD
-			ret = DLM_NORMAL;
-=======
 			if (dlm_is_node_dead(dlm, owner))
 				ret = DLM_NORMAL;
 			else
 				ret = DLM_NOLOCKMGR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* something bad.  this will BUG in ocfs2 */
 			ret = dlm_err_to_dlm_status(tmpret);
@@ -456,16 +392,9 @@ int dlm_unlock_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 	struct dlm_ctxt *dlm = data;
 	struct dlm_unlock_lock *unlock = (struct dlm_unlock_lock *)msg->buf;
 	struct dlm_lock_resource *res = NULL;
-<<<<<<< HEAD
-	struct list_head *iter;
-	struct dlm_lock *lock = NULL;
-	enum dlm_status status = DLM_NORMAL;
-	int found = 0, i;
-=======
 	struct dlm_lock *lock = NULL, *iter;
 	enum dlm_status status = DLM_NORMAL;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dlm_lockstatus *lksb = NULL;
 	int ignore;
 	u32 flags;
@@ -490,11 +419,7 @@ int dlm_unlock_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 	}
 
 	if (!dlm_grab(dlm))
-<<<<<<< HEAD
-		return DLM_REJECTED;
-=======
 		return DLM_FORWARD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlog_bug_on_msg(!dlm_domain_fully_joined(dlm),
 			"Domain %s not fully joined!\n", dlm->name);
@@ -512,10 +437,6 @@ int dlm_unlock_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 	}
 
 	queue=&res->granted;
-<<<<<<< HEAD
-	found = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&res->spinlock);
 	if (res->state & DLM_LOCK_RES_RECOVERING) {
 		spin_unlock(&res->spinlock);
@@ -539,18 +460,6 @@ int dlm_unlock_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 	}
 
 	for (i=0; i<3; i++) {
-<<<<<<< HEAD
-		list_for_each(iter, queue) {
-			lock = list_entry(iter, struct dlm_lock, list);
-			if (lock->ml.cookie == unlock->cookie &&
-		    	    lock->ml.node == unlock->node_idx) {
-				dlm_lock_get(lock);
-				found = 1;
-				break;
-			}
-		}
-		if (found)
-=======
 		list_for_each_entry(iter, queue, list) {
 			if (iter->ml.cookie == unlock->cookie &&
 			    iter->ml.node == unlock->node_idx) {
@@ -560,17 +469,12 @@ int dlm_unlock_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 			}
 		}
 		if (lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		/* scan granted -> converting -> blocked queues */
 		queue++;
 	}
 	spin_unlock(&res->spinlock);
-<<<<<<< HEAD
-	if (!found) {
-=======
 	if (!lock) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = DLM_IVLOCKID;
 		goto not_found;
 	}
@@ -600,11 +504,7 @@ int dlm_unlock_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 	dlm_kick_thread(dlm, res);
 
 not_found:
-<<<<<<< HEAD
-	if (!found)
-=======
 	if (!lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog(ML_ERROR, "failed to find lock to unlock! "
 			       "cookie=%u:%llu\n",
 		     dlm_get_lock_cookie_node(be64_to_cpu(unlock->cookie)),
@@ -741,13 +641,9 @@ retry:
 
 	if (status == DLM_RECOVERING ||
 	    status == DLM_MIGRATING ||
-<<<<<<< HEAD
-	    status == DLM_FORWARD) {
-=======
 	    status == DLM_FORWARD ||
 	    status == DLM_NOLOCKMGR) {
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* We want to go away for a tiny bit to allow recovery
 		 * / migration to complete on this resource. I don't
 		 * know of any wait queue we could sleep on as this
@@ -759,11 +655,7 @@ retry:
 		msleep(50);
 
 		mlog(0, "retrying unlock due to pending recovery/"
-<<<<<<< HEAD
-		     "migration/in-progress\n");
-=======
 		     "migration/in-progress/reconnect\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto retry;
 	}
 

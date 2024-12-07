@@ -4,11 +4,7 @@
  */
 
 #include <errno.h>
-<<<<<<< HEAD
-#include "ptrace_user.h"
-=======
 #include <ptrace_user.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ptrace_getregs(long pid, unsigned long *regs_out)
 {

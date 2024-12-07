@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SECURITY_TOMOYO
 	bool "TOMOYO Linux Support"
 	depends on SECURITY
@@ -13,11 +10,7 @@ config SECURITY_TOMOYO
 	help
 	  This selects TOMOYO Linux, pathname-based access control.
 	  Required userspace tools and further information may be
-<<<<<<< HEAD
-	  found at <http://tomoyo.sourceforge.jp/>.
-=======
 	  found at <https://tomoyo.osdn.jp/>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you are unsure how to answer this question, answer N.
 
 config SECURITY_TOMOYO_MAX_ACCEPT_ENTRY
@@ -48,11 +41,7 @@ config SECURITY_TOMOYO_OMIT_USERSPACE_LOADER
 	bool "Activate without calling userspace policy loader."
 	default n
 	depends on SECURITY_TOMOYO
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here if you want to activate access control as soon as built-in
 	  policy was loaded. This option will be useful for systems where
 	  operations which can lead to the hijacking of the boot sequence are
@@ -69,11 +58,7 @@ config SECURITY_TOMOYO_POLICY_LOADER
 	default "/sbin/tomoyo-init"
 	depends on SECURITY_TOMOYO
 	depends on !SECURITY_TOMOYO_OMIT_USERSPACE_LOADER
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is the default pathname of policy loader which is called before
 	  activation. You can override this setting via TOMOYO_loader= kernel
 	  command line option.
@@ -83,17 +68,11 @@ config SECURITY_TOMOYO_ACTIVATION_TRIGGER
 	default "/sbin/init"
 	depends on SECURITY_TOMOYO
 	depends on !SECURITY_TOMOYO_OMIT_USERSPACE_LOADER
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is the default pathname of activation trigger.
 	  You can override this setting via TOMOYO_trigger= kernel command line
 	  option. For example, if you pass init=/bin/systemd option, you may
 	  want to also pass TOMOYO_trigger=/bin/systemd option.
-<<<<<<< HEAD
-=======
 
 config SECURITY_TOMOYO_INSECURE_BUILTIN_SETTING
 	bool "Use insecure built-in settings for fuzzing tests."
@@ -104,4 +83,3 @@ config SECURITY_TOMOYO_INSECURE_BUILTIN_SETTING
 	  Enabling this option forces minimal built-in policy and disables
 	  domain/program checks for run-time policy modifications. Please enable
 	  this option only if this kernel is built for doing fuzzing tests.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

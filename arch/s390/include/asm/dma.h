@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-/*
- *  include/asm-s390/dma.h
- *
- *  S390 version
- */
-
-#ifndef _ASM_DMA_H
-#define _ASM_DMA_H
-
-#include <asm/io.h>		/* need byte IO */
-
-#define MAX_DMA_ADDRESS         0x80000000
-
-#define free_dma(x)	do { } while (0)
-
-#endif /* _ASM_DMA_H */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_S390_DMA_H
 #define _ASM_S390_DMA_H
@@ -30,4 +12,3 @@
 #define MAX_DMA_ADDRESS		__va(0x80000000)
 
 #endif /* _ASM_S390_DMA_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

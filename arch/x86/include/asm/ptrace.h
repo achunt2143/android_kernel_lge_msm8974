@@ -1,48 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_PTRACE_H
-#define _ASM_X86_PTRACE_H
-
-#include <linux/compiler.h>	/* For __user */
-#include <asm/ptrace-abi.h>
-#include <asm/processor-flags.h>
-
-#ifdef __KERNEL__
-#include <asm/segment.h>
-#include <asm/page_types.h>
-#endif
-
-#ifndef __ASSEMBLY__
-
-#ifdef __i386__
-/* this struct defines the way the registers are stored on the
-   stack during a system call. */
-
-#ifndef __KERNEL__
-
-struct pt_regs {
-	long ebx;
-	long ecx;
-	long edx;
-	long esi;
-	long edi;
-	long ebp;
-	long eax;
-	int  xds;
-	int  xes;
-	int  xfs;
-	int  xgs;
-	long orig_eax;
-	long eip;
-	int  xcs;
-	long eflags;
-	long esp;
-	int  xss;
-};
-
-#else /* __KERNEL__ */
-
-struct pt_regs {
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_PTRACE_H
 #define _ASM_X86_PTRACE_H
@@ -69,7 +24,6 @@ struct pt_regs {
 	 * so we can just treat all of the segment registers as 16-bit
 	 * values.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long bx;
 	unsigned long cx;
 	unsigned long dx;
@@ -77,57 +31,6 @@ struct pt_regs {
 	unsigned long di;
 	unsigned long bp;
 	unsigned long ax;
-<<<<<<< HEAD
-	unsigned long ds;
-	unsigned long es;
-	unsigned long fs;
-	unsigned long gs;
-	unsigned long orig_ax;
-	unsigned long ip;
-	unsigned long cs;
-	unsigned long flags;
-	unsigned long sp;
-	unsigned long ss;
-};
-
-#endif /* __KERNEL__ */
-
-#else /* __i386__ */
-
-#ifndef __KERNEL__
-
-struct pt_regs {
-	unsigned long r15;
-	unsigned long r14;
-	unsigned long r13;
-	unsigned long r12;
-	unsigned long rbp;
-	unsigned long rbx;
-/* arguments: non interrupts/non tracing syscalls only save up to here*/
-	unsigned long r11;
-	unsigned long r10;
-	unsigned long r9;
-	unsigned long r8;
-	unsigned long rax;
-	unsigned long rcx;
-	unsigned long rdx;
-	unsigned long rsi;
-	unsigned long rdi;
-	unsigned long orig_rax;
-/* end of arguments */
-/* cpu exception frame or undefined */
-	unsigned long rip;
-	unsigned long cs;
-	unsigned long eflags;
-	unsigned long rsp;
-	unsigned long ss;
-/* top of stack page */
-};
-
-#else /* __KERNEL__ */
-
-struct pt_regs {
-=======
 	unsigned short ds;
 	unsigned short __dsh;
 	unsigned short es;
@@ -203,19 +106,14 @@ struct pt_regs {
 	 * kernel entry unless syscall needs a complete, fully filled
 	 * "struct pt_regs".
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long r15;
 	unsigned long r14;
 	unsigned long r13;
 	unsigned long r12;
 	unsigned long bp;
 	unsigned long bx;
-<<<<<<< HEAD
-/* arguments: non interrupts/non tracing syscalls only save up to here*/
-=======
 
 	/* These regs are callee-clobbered. Always saved on kernel entry. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long r11;
 	unsigned long r10;
 	unsigned long r9;
@@ -225,26 +123,6 @@ struct pt_regs {
 	unsigned long dx;
 	unsigned long si;
 	unsigned long di;
-<<<<<<< HEAD
-	unsigned long orig_ax;
-/* end of arguments */
-/* cpu exception frame or undefined */
-	unsigned long ip;
-	unsigned long cs;
-	unsigned long flags;
-	unsigned long sp;
-	unsigned long ss;
-/* top of stack page */
-};
-
-#endif /* __KERNEL__ */
-#endif /* !__i386__ */
-
-
-#ifdef __KERNEL__
-
-#include <linux/init.h>
-=======
 
 	/*
 	 * orig_ax is used on entry for:
@@ -293,56 +171,27 @@ struct pt_regs {
 
 #endif /* !__i386__ */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PARAVIRT
 #include <asm/paravirt_types.h>
 #endif
 
-<<<<<<< HEAD
-=======
 #include <asm/proto.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpuinfo_x86;
 struct task_struct;
 
 extern unsigned long profile_pc(struct pt_regs *regs);
-<<<<<<< HEAD
-#define profile_pc profile_pc
-
-extern unsigned long
-convert_ip_to_linear(struct task_struct *child, struct pt_regs *regs);
-extern void send_sigtrap(struct task_struct *tsk, struct pt_regs *regs,
-			 int error_code, int si_code);
-
-extern long syscall_trace_enter(struct pt_regs *);
-extern void syscall_trace_leave(struct pt_regs *);
-=======
 
 extern unsigned long
 convert_ip_to_linear(struct task_struct *child, struct pt_regs *regs);
 extern void send_sigtrap(struct pt_regs *regs, int error_code, int si_code);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned long regs_return_value(struct pt_regs *regs)
 {
 	return regs->ax;
 }
 
-<<<<<<< HEAD
-/*
- * user_mode_vm(regs) determines whether a register set came from user mode.
- * This is true if V8086 mode was enabled OR if the register set was from
- * protected mode with RPL-3 CS value.  This tricky test checks that with
- * one comparison.  Many places in the kernel can bypass this full check
- * if they have already ruled out V8086 mode, so user_mode(regs) can be used.
- */
-static inline int user_mode(struct pt_regs *regs)
-{
-#ifdef CONFIG_X86_32
-	return (regs->cs & SEGMENT_RPL_MASK) == USER_RPL;
-=======
 static inline void regs_set_return_value(struct pt_regs *regs, unsigned long rc)
 {
 	regs->ax = rc;
@@ -361,27 +210,12 @@ static __always_inline int user_mode(struct pt_regs *regs)
 {
 #ifdef CONFIG_X86_32
 	return ((regs->cs & SEGMENT_RPL_MASK) | (regs->flags & X86_VM_MASK)) >= USER_RPL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	return !!(regs->cs & 3);
 #endif
 }
 
-<<<<<<< HEAD
-static inline int user_mode_vm(struct pt_regs *regs)
-{
-#ifdef CONFIG_X86_32
-	return ((regs->cs & SEGMENT_RPL_MASK) | (regs->flags & X86_VM_MASK)) >=
-		USER_RPL;
-#else
-	return user_mode(regs);
-#endif
-}
-
-static inline int v8086_mode(struct pt_regs *regs)
-=======
 static __always_inline int v8086_mode(struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_X86_32
 	return (regs->flags & X86_VM_MASK);
@@ -390,17 +224,10 @@ static __always_inline int v8086_mode(struct pt_regs *regs)
 #endif
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_X86_64
-static inline bool user_64bit_mode(struct pt_regs *regs)
-{
-#ifndef CONFIG_PARAVIRT
-=======
 static inline bool user_64bit_mode(struct pt_regs *regs)
 {
 #ifdef CONFIG_X86_64
 #ifndef CONFIG_PARAVIRT_XXL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * On non-paravirt systems, this is the only long mode CPL 3
 	 * selector.  We do not allow long mode selectors in the LDT.
@@ -410,14 +237,6 @@ static inline bool user_64bit_mode(struct pt_regs *regs)
 	/* Headers are too twisted for this to go in paravirt.h. */
 	return regs->cs == __USER_CS || regs->cs == pv_info.extra_user_64bit_cs;
 #endif
-<<<<<<< HEAD
-}
-#endif
-
-#ifdef CONFIG_X86_32
-extern unsigned long kernel_stack_pointer(struct pt_regs *regs);
-#else
-=======
 #else /* !CONFIG_X86_64 */
 	return false;
 #endif
@@ -458,20 +277,10 @@ static __always_inline bool ip_within_syscall_gap(struct pt_regs *regs)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned long kernel_stack_pointer(struct pt_regs *regs)
 {
 	return regs->sp;
 }
-<<<<<<< HEAD
-#endif
-
-#define GET_IP(regs) ((regs)->ip)
-#define GET_FP(regs) ((regs)->bp)
-#define GET_USP(regs) ((regs)->sp)
-
-#include <asm-generic/ptrace.h>
-=======
 
 static inline unsigned long instruction_pointer(struct pt_regs *regs)
 {
@@ -504,7 +313,6 @@ static __always_inline bool regs_irqs_disabled(struct pt_regs *regs)
 {
 	return !(regs->flags & X86_EFLAGS_IF);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Query offset/name of register from its name/offset */
 extern int regs_query_register_offset(const char *name);
@@ -525,8 +333,6 @@ static inline unsigned long regs_get_register(struct pt_regs *regs,
 {
 	if (unlikely(offset > MAX_REG_OFFSET))
 		return 0;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_X86_32
 	/* The selector fields are 16-bit. */
 	if (offset == offsetof(struct pt_regs, cs) ||
@@ -539,7 +345,6 @@ static inline unsigned long regs_get_register(struct pt_regs *regs,
 
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return *(unsigned long *)((unsigned long)regs + offset);
 }
 
@@ -554,13 +359,6 @@ static inline unsigned long regs_get_register(struct pt_regs *regs,
 static inline int regs_within_kernel_stack(struct pt_regs *regs,
 					   unsigned long addr)
 {
-<<<<<<< HEAD
-	return ((addr & ~(THREAD_SIZE - 1))  ==
-		(kernel_stack_pointer(regs) & ~(THREAD_SIZE - 1)));
-}
-
-/**
-=======
 	return ((addr & ~(THREAD_SIZE - 1)) == (regs->sp & ~(THREAD_SIZE - 1)));
 }
 
@@ -588,30 +386,17 @@ static inline unsigned long *regs_get_kernel_stack_nth_addr(struct pt_regs *regs
 extern long copy_from_kernel_nofault(void *dst, const void *src, size_t size);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * regs_get_kernel_stack_nth() - get Nth entry of the stack
  * @regs:	pt_regs which contains kernel stack pointer.
  * @n:		stack entry number.
  *
  * regs_get_kernel_stack_nth() returns @n th entry of the kernel stack which
-<<<<<<< HEAD
- * is specified by @regs. If the @n th entry is NOT in the kernel stack,
-=======
  * is specified by @regs. If the @n th entry is NOT in the kernel stack
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * this returns 0.
  */
 static inline unsigned long regs_get_kernel_stack_nth(struct pt_regs *regs,
 						      unsigned int n)
 {
-<<<<<<< HEAD
-	unsigned long *addr = (unsigned long *)kernel_stack_pointer(regs);
-	addr += n;
-	if (regs_within_kernel_stack(regs, (unsigned long)addr))
-		return *addr;
-	else
-		return 0;
-=======
 	unsigned long *addr;
 	unsigned long val;
 	long ret;
@@ -661,7 +446,6 @@ static inline unsigned long regs_get_kernel_argument(struct pt_regs *regs,
 		return regs_get_kernel_stack_nth(regs, n);
 	} else
 		return regs_get_register(regs, argument_offs[n]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define arch_has_single_step()	(1)
@@ -671,27 +455,7 @@ static inline unsigned long regs_get_kernel_argument(struct pt_regs *regs,
 #define arch_has_block_step()	(boot_cpu_data.x86 >= 6)
 #endif
 
-<<<<<<< HEAD
-#define ARCH_HAS_USER_SINGLE_STEP_INFO
-
-/*
- * When hitting ptrace_stop(), we cannot return using SYSRET because
- * that does not restore the full CPU state, only a minimal set.  The
- * ptracer can change arbitrary register values, which is usually okay
- * because the usual ptrace stops run off the signal delivery path which
- * forces IRET; however, ptrace_event() stops happen in arbitrary places
- * in the kernel and don't force IRET path.
- *
- * So force IRET path after a ptrace stop.
- */
-#define arch_ptrace_stop_needed(code, info)				\
-({									\
-	set_thread_flag(TIF_NOTIFY_RESUME);				\
-	false;								\
-})
-=======
 #define ARCH_HAS_USER_SINGLE_STEP_REPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct user_desc;
 extern int do_get_thread_area(struct task_struct *p, int idx,
@@ -699,12 +463,6 @@ extern int do_get_thread_area(struct task_struct *p, int idx,
 extern int do_set_thread_area(struct task_struct *p, int idx,
 			      struct user_desc __user *info, int can_allocate);
 
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-
-#endif /* !__ASSEMBLY__ */
-
-=======
 #ifdef CONFIG_X86_64
 # define do_set_thread_area_64(p, s, t)	do_arch_prctl_64(p, s, t)
 #else
@@ -712,5 +470,4 @@ extern int do_set_thread_area(struct task_struct *p, int idx,
 #endif
 
 #endif /* !__ASSEMBLY__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_PTRACE_H */

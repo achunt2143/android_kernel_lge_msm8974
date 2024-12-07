@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2007 Oracle.  All rights reserved.
-=======
  * Copyright (c) 2007, 2017 Oracle and/or its affiliates. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -105,11 +101,7 @@ static DEFINE_RWLOCK(rds_cong_monitor_lock);
 static DEFINE_SPINLOCK(rds_cong_lock);
 static struct rb_root rds_cong_tree = RB_ROOT;
 
-<<<<<<< HEAD
-static struct rds_cong_map *rds_cong_tree_walk(__be32 addr,
-=======
 static struct rds_cong_map *rds_cong_tree_walk(const struct in6_addr *addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       struct rds_cong_map *insert)
 {
 	struct rb_node **p = &rds_cong_tree.rb_node;
@@ -117,14 +109,6 @@ static struct rds_cong_map *rds_cong_tree_walk(const struct in6_addr *addr,
 	struct rds_cong_map *map;
 
 	while (*p) {
-<<<<<<< HEAD
-		parent = *p;
-		map = rb_entry(parent, struct rds_cong_map, m_rb_node);
-
-		if (addr < map->m_addr)
-			p = &(*p)->rb_left;
-		else if (addr > map->m_addr)
-=======
 		int diff;
 
 		parent = *p;
@@ -134,7 +118,6 @@ static struct rds_cong_map *rds_cong_tree_walk(const struct in6_addr *addr,
 		if (diff < 0)
 			p = &(*p)->rb_left;
 		else if (diff > 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			p = &(*p)->rb_right;
 		else
 			return map;
@@ -152,11 +135,7 @@ static struct rds_cong_map *rds_cong_tree_walk(const struct in6_addr *addr,
  * these bitmaps in the process getting pointers to them.  The bitmaps are only
  * ever freed as the module is removed after all connections have been freed.
  */
-<<<<<<< HEAD
-static struct rds_cong_map *rds_cong_from_addr(__be32 addr)
-=======
 static struct rds_cong_map *rds_cong_from_addr(const struct in6_addr *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rds_cong_map *map;
 	struct rds_cong_map *ret = NULL;
@@ -168,11 +147,7 @@ static struct rds_cong_map *rds_cong_from_addr(const struct in6_addr *addr)
 	if (!map)
 		return NULL;
 
-<<<<<<< HEAD
-	map->m_addr = addr;
-=======
 	map->m_addr = *addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_waitqueue_head(&map->m_waitq);
 	INIT_LIST_HEAD(&map->m_conn_list);
 
@@ -199,11 +174,7 @@ out:
 		kfree(map);
 	}
 
-<<<<<<< HEAD
-	rdsdebug("map %p for addr %x\n", ret, be32_to_cpu(addr));
-=======
 	rdsdebug("map %p for addr %pI6c\n", ret, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -234,13 +205,8 @@ void rds_cong_remove_conn(struct rds_connection *conn)
 
 int rds_cong_get_maps(struct rds_connection *conn)
 {
-<<<<<<< HEAD
-	conn->c_lcong = rds_cong_from_addr(conn->c_laddr);
-	conn->c_fcong = rds_cong_from_addr(conn->c_faddr);
-=======
 	conn->c_lcong = rds_cong_from_addr(&conn->c_laddr);
 	conn->c_fcong = rds_cong_from_addr(&conn->c_faddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(conn->c_lcong && conn->c_fcong))
 		return -ENOMEM;
@@ -256,12 +222,6 @@ void rds_cong_queue_updates(struct rds_cong_map *map)
 	spin_lock_irqsave(&rds_cong_lock, flags);
 
 	list_for_each_entry(conn, &map->m_conn_list, c_map_item) {
-<<<<<<< HEAD
-		if (!test_and_set_bit(0, &conn->c_map_queued)) {
-			rds_stats_inc(s_cong_update_queued);
-			rds_send_xmit(conn);
-		}
-=======
 		struct rds_conn_path *cp = &conn->c_path[0];
 
 		rcu_read_lock();
@@ -285,7 +245,6 @@ void rds_cong_queue_updates(struct rds_cong_map *map)
 			queue_delayed_work(rds_wq, &cp->cp_send_w, 0);
 		}
 		rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(&rds_cong_lock, flags);
@@ -348,11 +307,7 @@ void rds_cong_set_bit(struct rds_cong_map *map, __be16 port)
 	i = be16_to_cpu(port) / RDS_CONG_MAP_PAGE_BITS;
 	off = be16_to_cpu(port) % RDS_CONG_MAP_PAGE_BITS;
 
-<<<<<<< HEAD
-	__set_bit_le(off, (void *)map->m_page_addrs[i]);
-=======
 	set_bit_le(off, (void *)map->m_page_addrs[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rds_cong_clear_bit(struct rds_cong_map *map, __be16 port)
@@ -366,11 +321,7 @@ void rds_cong_clear_bit(struct rds_cong_map *map, __be16 port)
 	i = be16_to_cpu(port) / RDS_CONG_MAP_PAGE_BITS;
 	off = be16_to_cpu(port) % RDS_CONG_MAP_PAGE_BITS;
 
-<<<<<<< HEAD
-	__clear_bit_le(off, (void *)map->m_page_addrs[i]);
-=======
 	clear_bit_le(off, (void *)map->m_page_addrs[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rds_cong_test_bit(struct rds_cong_map *map, __be16 port)
@@ -405,11 +356,7 @@ void rds_cong_remove_socket(struct rds_sock *rs)
 
 	/* update congestion map for now-closed port */
 	spin_lock_irqsave(&rds_cong_lock, flags);
-<<<<<<< HEAD
-	map = rds_cong_tree_walk(rs->rs_bound_addr, NULL);
-=======
 	map = rds_cong_tree_walk(&rs->rs_bound_addr, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&rds_cong_lock, flags);
 
 	if (map && rds_cong_test_bit(map, rs->rs_bound_port)) {

@@ -1,24 +1,11 @@
-<<<<<<< HEAD
-#ifndef __ASM_ARM_CPUTYPE_H
-#define __ASM_ARM_CPUTYPE_H
-
-#include <linux/stringify.h>
-#include <linux/kernel.h>
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_ARM_CPUTYPE_H
 #define __ASM_ARM_CPUTYPE_H
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CPUID_ID	0
 #define CPUID_CACHETYPE	1
 #define CPUID_TCM	2
 #define CPUID_TLBTYPE	3
-<<<<<<< HEAD
-#define CPUID_MPIDR	5
-
-=======
 #define CPUID_MPUIR	4
 #define CPUID_MPIDR	5
 #define CPUID_REVIDR	6
@@ -41,7 +28,6 @@
 #define CPUID_EXT_ISAR6	0x7c
 #define CPUID_EXT_PFR2	0x90
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CPUID_EXT_PFR0	"c1, 0"
 #define CPUID_EXT_PFR1	"c1, 1"
 #define CPUID_EXT_DFR0	"c1, 2"
@@ -56,10 +42,6 @@
 #define CPUID_EXT_ISAR3	"c2, 3"
 #define CPUID_EXT_ISAR4	"c2, 4"
 #define CPUID_EXT_ISAR5	"c2, 5"
-<<<<<<< HEAD
-
-extern unsigned int processor_id;
-=======
 #define CPUID_EXT_ISAR6	"c2, 7"
 #define CPUID_EXT_PFR2	"c3, 4"
 #endif
@@ -134,7 +116,6 @@ extern unsigned int processor_id;
 
 extern unsigned int processor_id;
 struct proc_info_list *lookup_processor(u32 midr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_CPU_CP15
 #define read_cpuid(reg)							\
@@ -146,31 +127,18 @@ struct proc_info_list *lookup_processor(u32 midr);
 		    : "cc");						\
 		__val;							\
 	})
-<<<<<<< HEAD
-=======
 
 /*
  * The memory clobber prevents gcc 4.5 from reordering the mrc before
  * any is_smp() tests, which can cause undefined instruction aborts on
  * ARM1136 r0 due to the missing extended CP15 registers.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define read_cpuid_ext(ext_reg)						\
 	({								\
 		unsigned int __val;					\
 		asm("mrc	p15, 0, %0, c0, " ext_reg		\
 		    : "=r" (__val)					\
 		    :							\
-<<<<<<< HEAD
-		    : "cc");						\
-		__val;							\
-	})
-#else
-#define read_cpuid(reg) (processor_id)
-#define read_cpuid_ext(reg) 0
-#endif
-
-=======
 		    : "memory");					\
 		__val;							\
 	})
@@ -208,7 +176,6 @@ static inline unsigned int __attribute_const__ read_cpuid_ext(unsigned offset)
 #endif /* ifdef CONFIG_CPU_CP15 / else */
 
 #ifdef CONFIG_CPU_CP15
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The CPU ID never changes at run time, so we might as well tell the
  * compiler that it's constant.  Use this function to read the CPU ID
@@ -224,8 +191,6 @@ static inline unsigned int __attribute_const__ read_cpuid_cachetype(void)
 	return read_cpuid(CPUID_CACHETYPE);
 }
 
-<<<<<<< HEAD
-=======
 static inline unsigned int __attribute_const__ read_cpuid_mputype(void)
 {
 	return read_cpuid(CPUID_MPUIR);
@@ -287,7 +252,6 @@ static inline unsigned int __attribute_const__ xscale_cpu_arch_version(void)
 	return read_cpuid_id() & ARM_CPU_XSCALE_ARCH_MASK;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int __attribute_const__ read_cpuid_tcmstatus(void)
 {
 	return read_cpuid(CPUID_TCM);
@@ -298,13 +262,10 @@ static inline unsigned int __attribute_const__ read_cpuid_mpidr(void)
 	return read_cpuid(CPUID_MPIDR);
 }
 
-<<<<<<< HEAD
-=======
 /* StrongARM-11x0 CPUs */
 #define cpu_is_sa1100() (read_cpuid_part() == ARM_CPU_PART_SA1100)
 #define cpu_is_sa1110() (read_cpuid_part() == ARM_CPU_PART_SA1110)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Intel's XScale3 core supports some v6 features (supersections, L2)
  * but advertises itself as v5 as it does not support the v6 ISA.  For
@@ -325,14 +286,6 @@ static inline int cpu_is_xsc3(void)
 }
 #endif
 
-<<<<<<< HEAD
-#if !defined(CONFIG_CPU_XSCALE) && !defined(CONFIG_CPU_XSC3)
-#define	cpu_is_xscale()	0
-#else
-#define	cpu_is_xscale()	1
-#endif
-
-=======
 #if !defined(CONFIG_CPU_XSCALE) && !defined(CONFIG_CPU_XSC3) && \
     !defined(CONFIG_CPU_MOHAWK)
 #define	cpu_is_xscale_family() 0
@@ -392,5 +345,4 @@ static inline int __attribute_const__ cpuid_feature_extract_field(u32 features,
 
 #endif /* __ASSEMBLY__ */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,9 +1,6 @@
 perf-script-perl(1)
-<<<<<<< HEAD
-==================
 =======
 ===================
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 NAME
 ----
@@ -43,11 +40,7 @@ EVENT HANDLERS
 When perf script is invoked using a trace script, a user-defined
 'handler function' is called for each event in the trace.  If there's
 no handler function defined for a given event type, the event is
-<<<<<<< HEAD
-ignored (or passed to a 'trace_handled' function, see below) and the
-=======
 ignored (or passed to a 'trace_unhandled' function, see below) and the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 next event is processed.
 
 Most of the event's field values are passed as arguments to the
@@ -62,13 +55,8 @@ all sched_wakeup events in the system:
 Traces meant to be processed using a script should be recorded with
 the above option: -a to enable system-wide collection.
 
-<<<<<<< HEAD
-The format file for the sched_wakep event defines the following fields
-(see /sys/kernel/debug/tracing/events/sched/sched_wakeup/format):
-=======
 The format file for the sched_wakeup event defines the following fields
 (see /sys/kernel/tracing/events/sched/sched_wakeup/format):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ----
  format:
@@ -129,13 +117,8 @@ search path and 'use'ing a few support modules (see module
 descriptions below):
 
 ----
-<<<<<<< HEAD
- use lib "$ENV{'PERF_EXEC_PATH'}/scripts/perl/perf-script-Util/lib";
- use lib "./perf-script-Util/lib";
-=======
  use lib "$ENV{'PERF_EXEC_PATH'}/scripts/perl/Perf-Trace-Util/lib";
  use lib "./Perf-Trace-Util/lib";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  use Perf::Trace::Core;
  use Perf::Trace::Context;
  use Perf::Trace::Util;
@@ -199,13 +182,8 @@ strings for flag and symbolic fields.  These correspond to the strings
 and values parsed from the 'print fmt' fields of the event format
 files:
 
-<<<<<<< HEAD
-  flag_str($event_name, $field_name, $field_value) - returns the string represention corresponding to $field_value for the flag field $field_name of event $event_name
-  symbol_str($event_name, $field_name, $field_value) - returns the string represention corresponding to $field_value for the symbolic field $field_name of event $event_name
-=======
   flag_str($event_name, $field_name, $field_value) - returns the string representation corresponding to $field_value for the flag field $field_name of event $event_name
   symbol_str($event_name, $field_name, $field_value) - returns the string representation corresponding to $field_value for the symbolic field $field_name of event $event_name
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Perf::Trace::Context Module
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

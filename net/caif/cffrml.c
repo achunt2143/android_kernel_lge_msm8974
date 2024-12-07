@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CAIF Framing Layer.
  *
  * Copyright (C) ST-Ericsson AB 2010
-<<<<<<< HEAD
- * Author:	Sjur Brendeland/sjur.brandeland@stericsson.com
- * License terms: GNU General Public License (GPL) version 2
-=======
  * Author:	Sjur Brendeland
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
@@ -36,11 +28,7 @@ struct cffrml {
 static int cffrml_receive(struct cflayer *layr, struct cfpkt *pkt);
 static int cffrml_transmit(struct cflayer *layr, struct cfpkt *pkt);
 static void cffrml_ctrlcmd(struct cflayer *layr, enum caif_ctrlcmd ctrl,
-<<<<<<< HEAD
-				int phyid);
-=======
 			   int phyid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static u32 cffrml_rcv_error;
 static u32 cffrml_rcv_checsum_error;
@@ -96,11 +84,7 @@ static int cffrml_receive(struct cflayer *layr, struct cfpkt *pkt)
 	u16 tmp;
 	u16 len;
 	u16 hdrchks;
-<<<<<<< HEAD
-	u16 pktchks;
-=======
 	int pktchks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cffrml *this;
 	this = container_obj(layr);
 
@@ -183,11 +167,7 @@ static int cffrml_transmit(struct cflayer *layr, struct cfpkt *pkt)
 }
 
 static void cffrml_ctrlcmd(struct cflayer *layr, enum caif_ctrlcmd ctrl,
-<<<<<<< HEAD
-					int phyid)
-=======
 			   int phyid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (layr->up && layr->up->ctrlcmd)
 		layr->up->ctrlcmd(layr->up, ctrl, layr->id);

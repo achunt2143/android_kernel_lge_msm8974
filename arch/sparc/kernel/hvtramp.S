@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* hvtramp.S: Hypervisor start-cpu trampoline code.
  *
  * Copyright (C) 2007, 2008 David S. Miller <davem@davemloft.net>
  */
 
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/thread_info.h>
 #include <asm/hypervisor.h>
@@ -23,10 +16,6 @@
 #include <asm/asi.h>
 #include <asm/pil.h>
 
-<<<<<<< HEAD
-	__CPUINIT
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align		8
 	.globl		hv_cpu_startup, hv_cpu_startup_end
 
@@ -121,10 +110,6 @@ hv_cpu_startup:
 	sllx		%g5, THREAD_SHIFT, %g5
 	sub		%g5, (STACKFRAME_SZ + STACK_BIAS), %g5
 	add		%g6, %g5, %sp
-<<<<<<< HEAD
-	mov		0, %fp
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	call		init_irqwork_curcpu
 	 nop
@@ -141,12 +126,7 @@ hv_cpu_startup:
 
 	call		smp_callin
 	 nop
-<<<<<<< HEAD
-	call		cpu_idle
-	 mov		0, %o0
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	call		cpu_panic
 	 nop
 

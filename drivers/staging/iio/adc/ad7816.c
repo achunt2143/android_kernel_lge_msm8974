@@ -1,24 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AD7816 digital temperature sensor driver supporting AD7816/7/8
  *
  * Copyright 2010 Analog Devices Inc.
-<<<<<<< HEAD
- *
- * Licensed under the GPL-2 or later.
- */
-
-#include <linux/interrupt.h>
-#include <linux/gpio.h>
-=======
  */
 
 #include <linux/interrupt.h>
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -27,15 +15,9 @@
 #include <linux/spi/spi.h>
 #include <linux/module.h>
 
-<<<<<<< HEAD
-#include "../iio.h"
-#include "../sysfs.h"
-#include "../events.h"
-=======
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 #include <linux/iio/events.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * AD7816 config masks
@@ -55,19 +37,6 @@
 #define AD7816_TEMP_FLOAT_OFFSET	2
 #define AD7816_TEMP_FLOAT_MASK		0x3
 
-<<<<<<< HEAD
-
-/*
- * struct ad7816_chip_info - chip specifc information
- */
-
-struct ad7816_chip_info {
-	struct spi_device *spi_dev;
-	u16 rdwr_pin;
-	u16 convert_pin;
-	u16 busy_pin;
-	u8  oti_data[AD7816_CS_MAX+1];
-=======
 /*
  * struct ad7816_chip_info - chip specific information
  */
@@ -79,62 +48,32 @@ struct ad7816_chip_info {
 	struct gpio_desc *convert_pin;
 	struct gpio_desc *busy_pin;
 	u8  oti_data[AD7816_CS_MAX + 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8  channel_id;	/* 0 always be temperature */
 	u8  mode;
 };
 
-<<<<<<< HEAD
-=======
 enum ad7816_type {
 	ID_AD7816,
 	ID_AD7817,
 	ID_AD7818,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ad7816 data access by SPI
  */
 static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
 {
 	struct spi_device *spi_dev = chip->spi_dev;
-<<<<<<< HEAD
-	int ret = 0;
-
-	gpio_set_value(chip->rdwr_pin, 1);
-	gpio_set_value(chip->rdwr_pin, 0);
-=======
 	int ret;
 	__be16 buf;
 
 	gpiod_set_value(chip->rdwr_pin, 1);
 	gpiod_set_value(chip->rdwr_pin, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = spi_write(spi_dev, &chip->channel_id, sizeof(chip->channel_id));
 	if (ret < 0) {
 		dev_err(&spi_dev->dev, "SPI channel setting error\n");
 		return ret;
 	}
-<<<<<<< HEAD
-	gpio_set_value(chip->rdwr_pin, 1);
-
-
-	if (chip->mode == AD7816_PD) { /* operating mode 2 */
-		gpio_set_value(chip->convert_pin, 1);
-		gpio_set_value(chip->convert_pin, 0);
-	} else { /* operating mode 1 */
-		gpio_set_value(chip->convert_pin, 0);
-		gpio_set_value(chip->convert_pin, 1);
-	}
-
-	while (gpio_get_value(chip->busy_pin))
-		cpu_relax();
-
-	gpio_set_value(chip->rdwr_pin, 0);
-	gpio_set_value(chip->rdwr_pin, 1);
-	ret = spi_read(spi_dev, (u8 *)data, sizeof(*data));
-=======
 	gpiod_set_value(chip->rdwr_pin, 1);
 
 	if (chip->mode == AD7816_PD) { /* operating mode 2 */
@@ -153,17 +92,12 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
 	gpiod_set_value(chip->rdwr_pin, 0);
 	gpiod_set_value(chip->rdwr_pin, 1);
 	ret = spi_read(spi_dev, &buf, sizeof(*data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		dev_err(&spi_dev->dev, "SPI data read error\n");
 		return ret;
 	}
 
-<<<<<<< HEAD
-	*data = be16_to_cpu(*data);
-=======
 	*data = be16_to_cpu(buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -171,17 +105,10 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
 static int ad7816_spi_write(struct ad7816_chip_info *chip, u8 data)
 {
 	struct spi_device *spi_dev = chip->spi_dev;
-<<<<<<< HEAD
-	int ret = 0;
-
-	gpio_set_value(chip->rdwr_pin, 1);
-	gpio_set_value(chip->rdwr_pin, 0);
-=======
 	int ret;
 
 	gpiod_set_value(chip->rdwr_pin, 1);
 	gpiod_set_value(chip->rdwr_pin, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = spi_write(spi_dev, &data, sizeof(data));
 	if (ret < 0)
 		dev_err(&spi_dev->dev, "SPI oti data write error\n");
@@ -190,40 +117,14 @@ static int ad7816_spi_write(struct ad7816_chip_info *chip, u8 data)
 }
 
 static ssize_t ad7816_show_mode(struct device *dev,
-<<<<<<< HEAD
-		struct device_attribute *attr,
-		char *buf)
-{
-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-=======
 				struct device_attribute *attr,
 				char *buf)
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
 
 	if (chip->mode)
 		return sprintf(buf, "power-save\n");
-<<<<<<< HEAD
-	else
-		return sprintf(buf, "full\n");
-}
-
-static ssize_t ad7816_store_mode(struct device *dev,
-		struct device_attribute *attr,
-		const char *buf,
-		size_t len)
-{
-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-	struct ad7816_chip_info *chip = iio_priv(indio_dev);
-
-	if (strcmp(buf, "full")) {
-		gpio_set_value(chip->rdwr_pin, 1);
-		chip->mode = AD7816_FULL;
-	} else {
-		gpio_set_value(chip->rdwr_pin, 0);
-=======
 	return sprintf(buf, "full\n");
 }
 
@@ -240,43 +141,24 @@ static ssize_t ad7816_store_mode(struct device *dev,
 		chip->mode = AD7816_FULL;
 	} else {
 		gpiod_set_value(chip->rdwr_pin, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->mode = AD7816_PD;
 	}
 
 	return len;
 }
 
-<<<<<<< HEAD
-static IIO_DEVICE_ATTR(mode, S_IRUGO | S_IWUSR,
-=======
 static IIO_DEVICE_ATTR(mode, 0644,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ad7816_show_mode,
 		ad7816_store_mode,
 		0);
 
 static ssize_t ad7816_show_available_modes(struct device *dev,
-<<<<<<< HEAD
-		struct device_attribute *attr,
-		char *buf)
-=======
 					   struct device_attribute *attr,
 					   char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sprintf(buf, "full\npower-save\n");
 }
 
-<<<<<<< HEAD
-static IIO_DEVICE_ATTR(available_modes, S_IRUGO, ad7816_show_available_modes, NULL, 0);
-
-static ssize_t ad7816_show_channel(struct device *dev,
-		struct device_attribute *attr,
-		char *buf)
-{
-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-=======
 static IIO_DEVICE_ATTR(available_modes, 0444, ad7816_show_available_modes,
 			NULL, 0);
 
@@ -285,39 +167,24 @@ static ssize_t ad7816_show_channel(struct device *dev,
 				   char *buf)
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
 
 	return sprintf(buf, "%d\n", chip->channel_id);
 }
 
 static ssize_t ad7816_store_channel(struct device *dev,
-<<<<<<< HEAD
-		struct device_attribute *attr,
-		const char *buf,
-		size_t len)
-{
-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-=======
 				    struct device_attribute *attr,
 				    const char *buf,
 				    size_t len)
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
 	unsigned long data;
 	int ret;
 
-<<<<<<< HEAD
-	ret = strict_strtoul(buf, 10, &data);
-	if (ret)
-		return -EINVAL;
-=======
 	ret = kstrtoul(buf, 10, &data);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data > AD7816_CS_MAX && data != AD7816_CS_MASK) {
 		dev_err(&chip->spi_dev->dev, "Invalid channel id %lu for %s.\n",
@@ -338,29 +205,16 @@ static ssize_t ad7816_store_channel(struct device *dev,
 	return len;
 }
 
-<<<<<<< HEAD
-static IIO_DEVICE_ATTR(channel, S_IRUGO | S_IWUSR,
-=======
 static IIO_DEVICE_ATTR(channel, 0644,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ad7816_show_channel,
 		ad7816_store_channel,
 		0);
 
-<<<<<<< HEAD
-
-static ssize_t ad7816_show_value(struct device *dev,
-		struct device_attribute *attr,
-		char *buf)
-{
-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-=======
 static ssize_t ad7816_show_value(struct device *dev,
 				 struct device_attribute *attr,
 				 char *buf)
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
 	u16 data;
 	s8 value;
@@ -376,15 +230,6 @@ static ssize_t ad7816_show_value(struct device *dev,
 		value = (s8)((data >> AD7816_TEMP_FLOAT_OFFSET) - 103);
 		data &= AD7816_TEMP_FLOAT_MASK;
 		if (value < 0)
-<<<<<<< HEAD
-			data = (1 << AD7816_TEMP_FLOAT_OFFSET) - data;
-		return sprintf(buf, "%d.%.2d\n", value, data * 25);
-	} else
-		return sprintf(buf, "%u\n", data);
-}
-
-static IIO_DEVICE_ATTR(value, S_IRUGO, ad7816_show_value, NULL, 0);
-=======
 			data = BIT(AD7816_TEMP_FLOAT_OFFSET) - data;
 		return sprintf(buf, "%d.%.2d\n", value, data * 25);
 	}
@@ -392,7 +237,6 @@ static IIO_DEVICE_ATTR(value, S_IRUGO, ad7816_show_value, NULL, 0);
 }
 
 static IIO_DEVICE_ATTR(value, 0444, ad7816_show_value, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *ad7816_attributes[] = {
 	&iio_dev_attr_available_modes.dev_attr.attr,
@@ -417,27 +261,16 @@ static const struct attribute_group ad7816_attribute_group = {
 
 static irqreturn_t ad7816_event_handler(int irq, void *private)
 {
-<<<<<<< HEAD
-	iio_push_event(private, IIO_EVENT_CODE_AD7816_OTI, iio_get_time_ns());
-=======
 	iio_push_event(private, IIO_EVENT_CODE_AD7816_OTI,
 		       iio_get_time_ns(private));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
 static ssize_t ad7816_show_oti(struct device *dev,
-<<<<<<< HEAD
-		struct device_attribute *attr,
-		char *buf)
-{
-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-=======
 			       struct device_attribute *attr,
 			       char *buf)
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
 	int value;
 
@@ -449,18 +282,6 @@ static ssize_t ad7816_show_oti(struct device *dev,
 			(chip->oti_data[chip->channel_id] -
 			AD7816_BOUND_VALUE_BASE);
 		return sprintf(buf, "%d\n", value);
-<<<<<<< HEAD
-	} else
-		return sprintf(buf, "%u\n", chip->oti_data[chip->channel_id]);
-}
-
-static inline ssize_t ad7816_set_oti(struct device *dev,
-		struct device_attribute *attr,
-		const char *buf,
-		size_t len)
-{
-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-=======
 	}
 	return sprintf(buf, "%u\n", chip->oti_data[chip->channel_id]);
 }
@@ -471,41 +292,27 @@ static inline ssize_t ad7816_set_oti(struct device *dev,
 				     size_t len)
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
 	long value;
 	u8 data;
 	int ret;
 
-<<<<<<< HEAD
-	ret = strict_strtol(buf, 10, &value);
-=======
 	ret = kstrtol(buf, 10, &value);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chip->channel_id > AD7816_CS_MAX) {
 		dev_err(dev, "Invalid oti channel id %d.\n", chip->channel_id);
 		return -EINVAL;
 	} else if (chip->channel_id == 0) {
-<<<<<<< HEAD
-		if (ret || value < AD7816_BOUND_VALUE_MIN ||
-			value > AD7816_BOUND_VALUE_MAX)
-=======
 		if (value < AD7816_BOUND_VALUE_MIN ||
 		    value > AD7816_BOUND_VALUE_MAX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 
 		data = (u8)(value - AD7816_BOUND_VALUE_MIN +
 			AD7816_BOUND_VALUE_BASE);
 	} else {
-<<<<<<< HEAD
-		if (ret || value < AD7816_BOUND_VALUE_BASE || value > 255)
-=======
 		if (value < AD7816_BOUND_VALUE_BASE || value > 255)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 
 		data = (u8)value;
@@ -520,11 +327,7 @@ static inline ssize_t ad7816_set_oti(struct device *dev,
 	return len;
 }
 
-<<<<<<< HEAD
-static IIO_DEVICE_ATTR(oti, S_IRUGO | S_IWUSR,
-=======
 static IIO_DEVICE_ATTR(oti, 0644,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       ad7816_show_oti, ad7816_set_oti, 0);
 
 static struct attribute *ad7816_event_attributes[] = {
@@ -532,11 +335,7 @@ static struct attribute *ad7816_event_attributes[] = {
 	NULL,
 };
 
-<<<<<<< HEAD
-static struct attribute_group ad7816_event_attribute_group = {
-=======
 static const struct attribute_group ad7816_event_attribute_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = ad7816_event_attributes,
 	.name = "events",
 };
@@ -544,36 +343,12 @@ static const struct attribute_group ad7816_event_attribute_group = {
 static const struct iio_info ad7816_info = {
 	.attrs = &ad7816_attribute_group,
 	.event_attrs = &ad7816_event_attribute_group,
-<<<<<<< HEAD
-	.driver_module = THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * device probe and remove
  */
 
-<<<<<<< HEAD
-static int __devinit ad7816_probe(struct spi_device *spi_dev)
-{
-	struct ad7816_chip_info *chip;
-	struct iio_dev *indio_dev;
-	unsigned short *pins = spi_dev->dev.platform_data;
-	int ret = 0;
-	int i;
-
-	if (!pins) {
-		dev_err(&spi_dev->dev, "No necessary GPIO platform data.\n");
-		return -EINVAL;
-	}
-
-	indio_dev = iio_allocate_device(sizeof(*chip));
-	if (indio_dev == NULL) {
-		ret = -ENOMEM;
-		goto error_ret;
-	}
-=======
 static int ad7816_probe(struct spi_device *spi_dev)
 {
 	struct ad7816_chip_info *chip;
@@ -583,7 +358,6 @@ static int ad7816_probe(struct spi_device *spi_dev)
 	indio_dev = devm_iio_device_alloc(&spi_dev->dev, sizeof(*chip));
 	if (!indio_dev)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip = iio_priv(indio_dev);
 	/* this is only used for device removal purposes */
 	dev_set_drvdata(&spi_dev->dev, indio_dev);
@@ -591,36 +365,6 @@ static int ad7816_probe(struct spi_device *spi_dev)
 	chip->spi_dev = spi_dev;
 	for (i = 0; i <= AD7816_CS_MAX; i++)
 		chip->oti_data[i] = 203;
-<<<<<<< HEAD
-	chip->rdwr_pin = pins[0];
-	chip->convert_pin = pins[1];
-	chip->busy_pin = pins[2];
-
-	ret = gpio_request(chip->rdwr_pin, spi_get_device_id(spi_dev)->name);
-	if (ret) {
-		dev_err(&spi_dev->dev, "Fail to request rdwr gpio PIN %d.\n",
-			chip->rdwr_pin);
-		goto error_free_device;
-	}
-	gpio_direction_input(chip->rdwr_pin);
-	ret = gpio_request(chip->convert_pin, spi_get_device_id(spi_dev)->name);
-	if (ret) {
-		dev_err(&spi_dev->dev, "Fail to request convert gpio PIN %d.\n",
-			chip->convert_pin);
-		goto error_free_gpio_rdwr;
-	}
-	gpio_direction_input(chip->convert_pin);
-	ret = gpio_request(chip->busy_pin, spi_get_device_id(spi_dev)->name);
-	if (ret) {
-		dev_err(&spi_dev->dev, "Fail to request busy gpio PIN %d.\n",
-			chip->busy_pin);
-		goto error_free_gpio_convert;
-	}
-	gpio_direction_input(chip->busy_pin);
-
-	indio_dev->name = spi_get_device_id(spi_dev)->name;
-	indio_dev->dev.parent = &spi_dev->dev;
-=======
 
 	chip->id = spi_get_device_id(spi_dev)->driver_data;
 	chip->rdwr_pin = devm_gpiod_get(&spi_dev->dev, "rdwr", GPIOD_OUT_HIGH);
@@ -650,59 +394,11 @@ static int ad7816_probe(struct spi_device *spi_dev)
 	}
 
 	indio_dev->name = spi_get_device_id(spi_dev)->name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	indio_dev->info = &ad7816_info;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 
 	if (spi_dev->irq) {
 		/* Only low trigger is supported in ad7816/7/8 */
-<<<<<<< HEAD
-		ret = request_threaded_irq(spi_dev->irq,
-					   NULL,
-					   &ad7816_event_handler,
-					   IRQF_TRIGGER_LOW,
-					   indio_dev->name,
-					   indio_dev);
-		if (ret)
-			goto error_free_gpio;
-	}
-
-	ret = iio_device_register(indio_dev);
-	if (ret)
-		goto error_free_irq;
-
-	dev_info(&spi_dev->dev, "%s temperature sensor and ADC registered.\n",
-			 indio_dev->name);
-
-	return 0;
-error_free_irq:
-	free_irq(spi_dev->irq, indio_dev);
-error_free_gpio:
-	gpio_free(chip->busy_pin);
-error_free_gpio_convert:
-	gpio_free(chip->convert_pin);
-error_free_gpio_rdwr:
-	gpio_free(chip->rdwr_pin);
-error_free_device:
-	iio_free_device(indio_dev);
-error_ret:
-	return ret;
-}
-
-static int __devexit ad7816_remove(struct spi_device *spi_dev)
-{
-	struct iio_dev *indio_dev = dev_get_drvdata(&spi_dev->dev);
-	struct ad7816_chip_info *chip = iio_priv(indio_dev);
-
-	iio_device_unregister(indio_dev);
-	dev_set_drvdata(&spi_dev->dev, NULL);
-	if (spi_dev->irq)
-		free_irq(spi_dev->irq, indio_dev);
-	gpio_free(chip->busy_pin);
-	gpio_free(chip->convert_pin);
-	gpio_free(chip->rdwr_pin);
-	iio_free_device(indio_dev);
-=======
 		ret = devm_request_threaded_irq(&spi_dev->dev, spi_dev->irq,
 						NULL,
 						&ad7816_event_handler,
@@ -719,17 +415,10 @@ static int __devexit ad7816_remove(struct spi_device *spi_dev)
 
 	dev_info(&spi_dev->dev, "%s temperature sensor and ADC registered.\n",
 		 indio_dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct spi_device_id ad7816_id[] = {
-	{ "ad7816", 0 },
-	{ "ad7817", 0 },
-	{ "ad7818", 0 },
-=======
 static const struct of_device_id ad7816_of_match[] = {
 	{ .compatible = "adi,ad7816", },
 	{ .compatible = "adi,ad7817", },
@@ -742,7 +431,6 @@ static const struct spi_device_id ad7816_id[] = {
 	{ "ad7816", ID_AD7816 },
 	{ "ad7817", ID_AD7817 },
 	{ "ad7818", ID_AD7818 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 
@@ -751,25 +439,13 @@ MODULE_DEVICE_TABLE(spi, ad7816_id);
 static struct spi_driver ad7816_driver = {
 	.driver = {
 		.name = "ad7816",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe = ad7816_probe,
-	.remove = __devexit_p(ad7816_remove),
-=======
 		.of_match_table = ad7816_of_match,
 	},
 	.probe = ad7816_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = ad7816_id,
 };
 module_spi_driver(ad7816_driver);
 
 MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
-<<<<<<< HEAD
-MODULE_DESCRIPTION("Analog Devices AD7816/7/8 digital"
-			" temperature sensor driver");
-=======
 MODULE_DESCRIPTION("Analog Devices AD7816/7/8 digital temperature sensor driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL v2");

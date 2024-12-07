@@ -1,43 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Serial Attached SCSI (SAS) class SCSI Host glue.
  *
  * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
  * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
-<<<<<<< HEAD
- *
- * This file is licensed under GPLv2.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kthread.h>
 #include <linux/firmware.h>
 #include <linux/export.h>
 #include <linux/ctype.h>
-<<<<<<< HEAD
-=======
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "sas_internal.h"
 
@@ -49,15 +22,9 @@
 #include <scsi/scsi_transport.h>
 #include <scsi/scsi_transport_sas.h>
 #include <scsi/sas_ata.h>
-<<<<<<< HEAD
-#include "../scsi_sas_internal.h"
-#include "../scsi_transport_api.h"
-#include "../scsi_priv.h"
-=======
 #include "scsi_sas_internal.h"
 #include "scsi_transport_api.h"
 #include "scsi_priv.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/err.h>
 #include <linux/blkdev.h>
@@ -70,12 +37,8 @@
 static void sas_end_task(struct scsi_cmnd *sc, struct sas_task *task)
 {
 	struct task_status_struct *ts = &task->task_status;
-<<<<<<< HEAD
-	int hs = 0, stat = 0;
-=======
 	enum scsi_host_status hs = DID_OK;
 	enum exec_status stat = SAS_SAM_STAT_GOOD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ts->resp == SAS_TASK_UNDELIVERED) {
 		/* transport error */
@@ -104,12 +67,6 @@ static void sas_end_task(struct scsi_cmnd *sc, struct sas_task *task)
 		case SAS_DEVICE_UNKNOWN:
 			hs = DID_BAD_TARGET;
 			break;
-<<<<<<< HEAD
-		case SAS_SG_ERR:
-			hs = DID_PARITY;
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SAS_OPEN_REJECT:
 			if (ts->open_rej_reason == SAS_OREJ_RSVD_RETRY)
 				hs = DID_SOFT_ERROR; /* retry */
@@ -117,29 +74,16 @@ static void sas_end_task(struct scsi_cmnd *sc, struct sas_task *task)
 				hs = DID_ERROR;
 			break;
 		case SAS_PROTO_RESPONSE:
-<<<<<<< HEAD
-			SAS_DPRINTK("LLDD:%s sent SAS_PROTO_RESP for an SSP "
-				    "task; please report this\n",
-				    task->dev->port->ha->sas_ha_name);
-=======
 			pr_notice("LLDD:%s sent SAS_PROTO_RESP for an SSP task; please report this\n",
 				  task->dev->port->ha->sas_ha_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case SAS_ABORTED_TASK:
 			hs = DID_ABORT;
 			break;
-<<<<<<< HEAD
-		case SAM_STAT_CHECK_CONDITION:
-			memcpy(sc->sense_buffer, ts->buf,
-			       min(SCSI_SENSE_BUFFERSIZE, ts->buf_valid_size));
-			stat = SAM_STAT_CHECK_CONDITION;
-=======
 		case SAS_SAM_STAT_CHECK_CONDITION:
 			memcpy(sc->sense_buffer, ts->buf,
 			       min(SCSI_SENSE_BUFFERSIZE, ts->buf_valid_size));
 			stat = SAS_SAM_STAT_CHECK_CONDITION;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			stat = ts->stat;
@@ -149,10 +93,6 @@ static void sas_end_task(struct scsi_cmnd *sc, struct sas_task *task)
 
 	sc->result = (hs << 16) | stat;
 	ASSIGN_SAS_TASK(sc, NULL);
-<<<<<<< HEAD
-	list_del_init(&task->list);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sas_free_task(task);
 }
 
@@ -172,31 +112,18 @@ static void sas_scsi_task_done(struct sas_task *task)
 
 	if (unlikely(!task)) {
 		/* task will be completed by the error handler */
-<<<<<<< HEAD
-		SAS_DPRINTK("task done but aborted\n");
-=======
 		pr_debug("task done but aborted\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (unlikely(!sc)) {
-<<<<<<< HEAD
-		SAS_DPRINTK("task_done called with non existing SCSI cmnd!\n");
-		list_del_init(&task->list);
-=======
 		pr_debug("task_done called with non existing SCSI cmnd!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sas_free_task(task);
 		return;
 	}
 
 	sas_end_task(sc, task);
-<<<<<<< HEAD
-	sc->scsi_done(sc);
-=======
 	scsi_done(sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct sas_task *sas_create_task(struct scsi_cmnd *cmd,
@@ -215,18 +142,10 @@ static struct sas_task *sas_create_task(struct scsi_cmnd *cmd,
 	task->dev = dev;
 	task->task_proto = task->dev->tproto; /* BUG_ON(!SSP) */
 
-<<<<<<< HEAD
-	task->ssp_task.retry_count = 1;
-	int_to_scsilun(cmd->device->lun, &lun);
-	memcpy(task->ssp_task.LUN, &lun.scsi_lun, 8);
-	task->ssp_task.task_attr = TASK_ATTR_SIMPLE;
-	memcpy(task->ssp_task.cdb, cmd->cmnd, 16);
-=======
 	int_to_scsilun(cmd->device->lun, &lun);
 	memcpy(task->ssp_task.LUN, &lun.scsi_lun, 8);
 	task->ssp_task.task_attr = TASK_ATTR_SIMPLE;
 	task->ssp_task.cmd = cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	task->scatter = scsi_sglist(cmd);
 	task->num_scatter = scsi_sg_count(cmd);
@@ -238,37 +157,10 @@ static struct sas_task *sas_create_task(struct scsi_cmnd *cmd,
 	return task;
 }
 
-<<<<<<< HEAD
-int sas_queue_up(struct sas_task *task)
-{
-	struct sas_ha_struct *sas_ha = task->dev->port->ha;
-	struct scsi_core *core = &sas_ha->core;
-	unsigned long flags;
-	LIST_HEAD(list);
-
-	spin_lock_irqsave(&core->task_queue_lock, flags);
-	if (sas_ha->lldd_queue_size < core->task_queue_size + 1) {
-		spin_unlock_irqrestore(&core->task_queue_lock, flags);
-		return -SAS_QUEUE_FULL;
-	}
-	list_add_tail(&task->list, &core->task_queue);
-	core->task_queue_size += 1;
-	spin_unlock_irqrestore(&core->task_queue_lock, flags);
-	wake_up_process(core->queue_thread);
-
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sas_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *cmd)
 {
 	struct sas_internal *i = to_sas_internal(host->transportt);
 	struct domain_device *dev = cmd_to_domain_dev(cmd);
-<<<<<<< HEAD
-	struct sas_ha_struct *sas_ha = dev->port->ha;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sas_task *task;
 	int res = 0;
 
@@ -289,26 +181,13 @@ int sas_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *cmd)
 	if (!task)
 		return SCSI_MLQUEUE_HOST_BUSY;
 
-<<<<<<< HEAD
-	/* Queue up, Direct Mode or Task Collector Mode. */
-	if (sas_ha->lldd_max_execute_num < 2)
-		res = i->dft->lldd_execute_task(task, 1, GFP_ATOMIC);
-	else
-		res = sas_queue_up(task);
-
-=======
 	res = i->dft->lldd_execute_task(task, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res)
 		goto out_free_task;
 	return 0;
 
 out_free_task:
-<<<<<<< HEAD
-	SAS_DPRINTK("lldd_execute_task returned: %d\n", res);
-=======
 	pr_debug("lldd_execute_task returned: %d\n", res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ASSIGN_SAS_TASK(cmd, NULL);
 	sas_free_task(task);
 	if (res == -SAS_QUEUE_FULL)
@@ -316,24 +195,15 @@ out_free_task:
 	else
 		cmd->result = DID_ERROR << 16;
 out_done:
-<<<<<<< HEAD
-	cmd->scsi_done(cmd);
-	return 0;
-}
-=======
 	scsi_done(cmd);
 	return 0;
 }
 EXPORT_SYMBOL_GPL(sas_queuecommand);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void sas_eh_finish_cmd(struct scsi_cmnd *cmd)
 {
 	struct sas_ha_struct *sas_ha = SHOST_TO_SAS_HA(cmd->device->host);
-<<<<<<< HEAD
-=======
 	struct domain_device *dev = cmd_to_domain_dev(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sas_task *task = TO_SAS_TASK(cmd);
 
 	/* At this point, we only get called following an actual abort
@@ -342,8 +212,6 @@ static void sas_eh_finish_cmd(struct scsi_cmnd *cmd)
 	 */
 	sas_end_task(cmd, task);
 
-<<<<<<< HEAD
-=======
 	if (dev_is_sata(dev)) {
 		/* defer commands to libata so that libata EH can
 		 * handle ata qcs correctly
@@ -352,7 +220,6 @@ static void sas_eh_finish_cmd(struct scsi_cmnd *cmd)
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* now finish the command and move it on to the error
 	 * handler done list, this also takes it off the
 	 * error handler pending list.
@@ -360,25 +227,6 @@ static void sas_eh_finish_cmd(struct scsi_cmnd *cmd)
 	scsi_eh_finish_cmd(cmd, &sas_ha->eh_done_q);
 }
 
-<<<<<<< HEAD
-static void sas_eh_defer_cmd(struct scsi_cmnd *cmd)
-{
-	struct domain_device *dev = cmd_to_domain_dev(cmd);
-	struct sas_ha_struct *ha = dev->port->ha;
-	struct sas_task *task = TO_SAS_TASK(cmd);
-
-	if (!dev_is_sata(dev)) {
-		sas_eh_finish_cmd(cmd);
-		return;
-	}
-
-	/* report the timeout to libata */
-	sas_end_task(cmd, task);
-	list_move_tail(&cmd->eh_entry, &ha->eh_ata_q);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sas_scsi_clear_queue_lu(struct list_head *error_q, struct scsi_cmnd *my_cmd)
 {
 	struct scsi_cmnd *cmd, *n;
@@ -386,11 +234,7 @@ static void sas_scsi_clear_queue_lu(struct list_head *error_q, struct scsi_cmnd 
 	list_for_each_entry_safe(cmd, n, error_q, eh_entry) {
 		if (cmd->device->sdev_target == my_cmd->device->sdev_target &&
 		    cmd->device->lun == my_cmd->device->lun)
-<<<<<<< HEAD
-			sas_eh_defer_cmd(cmd);
-=======
 			sas_eh_finish_cmd(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -425,44 +269,12 @@ enum task_disposition {
 	TASK_IS_DONE,
 	TASK_IS_ABORTED,
 	TASK_IS_AT_LU,
-<<<<<<< HEAD
-	TASK_IS_NOT_AT_HA,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TASK_IS_NOT_AT_LU,
 	TASK_ABORT_FAILED,
 };
 
 static enum task_disposition sas_scsi_find_task(struct sas_task *task)
 {
-<<<<<<< HEAD
-	struct sas_ha_struct *ha = task->dev->port->ha;
-	unsigned long flags;
-	int i, res;
-	struct sas_internal *si =
-		to_sas_internal(task->dev->port->ha->core.shost->transportt);
-
-	if (ha->lldd_max_execute_num > 1) {
-		struct scsi_core *core = &ha->core;
-		struct sas_task *t, *n;
-
-		mutex_lock(&core->task_queue_flush);
-		spin_lock_irqsave(&core->task_queue_lock, flags);
-		list_for_each_entry_safe(t, n, &core->task_queue, list)
-			if (task == t) {
-				list_del_init(&t->list);
-				break;
-			}
-		spin_unlock_irqrestore(&core->task_queue_lock, flags);
-		mutex_unlock(&core->task_queue_flush);
-
-		if (task == t)
-			return TASK_IS_NOT_AT_HA;
-	}
-
-	for (i = 0; i < 5; i++) {
-		SAS_DPRINTK("%s: aborting task 0x%p\n", __func__, task);
-=======
 	unsigned long flags;
 	int i, res;
 	struct sas_internal *si =
@@ -470,50 +282,17 @@ static enum task_disposition sas_scsi_find_task(struct sas_task *task)
 
 	for (i = 0; i < 5; i++) {
 		pr_notice("%s: aborting task 0x%p\n", __func__, task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res = si->dft->lldd_abort_task(task);
 
 		spin_lock_irqsave(&task->task_state_lock, flags);
 		if (task->task_state_flags & SAS_TASK_STATE_DONE) {
 			spin_unlock_irqrestore(&task->task_state_lock, flags);
-<<<<<<< HEAD
-			SAS_DPRINTK("%s: task 0x%p is done\n", __func__,
-				    task);
-=======
 			pr_debug("%s: task 0x%p is done\n", __func__, task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return TASK_IS_DONE;
 		}
 		spin_unlock_irqrestore(&task->task_state_lock, flags);
 
 		if (res == TMF_RESP_FUNC_COMPLETE) {
-<<<<<<< HEAD
-			SAS_DPRINTK("%s: task 0x%p is aborted\n",
-				    __func__, task);
-			return TASK_IS_ABORTED;
-		} else if (si->dft->lldd_query_task) {
-			SAS_DPRINTK("%s: querying task 0x%p\n",
-				    __func__, task);
-			res = si->dft->lldd_query_task(task);
-			switch (res) {
-			case TMF_RESP_FUNC_SUCC:
-				SAS_DPRINTK("%s: task 0x%p at LU\n",
-					    __func__, task);
-				return TASK_IS_AT_LU;
-			case TMF_RESP_FUNC_COMPLETE:
-				SAS_DPRINTK("%s: task 0x%p not at LU\n",
-					    __func__, task);
-				return TASK_IS_NOT_AT_LU;
-			case TMF_RESP_FUNC_FAILED:
-                                SAS_DPRINTK("%s: task 0x%p failed to abort\n",
-                                                __func__, task);
-                                return TASK_ABORT_FAILED;
-                        }
-
-		}
-	}
-	return res;
-=======
 			pr_notice("%s: task 0x%p is aborted\n",
 				  __func__, task);
 			return TASK_IS_ABORTED;
@@ -540,7 +319,6 @@ static enum task_disposition sas_scsi_find_task(struct sas_task *task)
 		}
 	}
 	return TASK_ABORT_FAILED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sas_recover_lu(struct domain_device *dev, struct scsi_cmnd *cmd)
@@ -548,15 +326,6 @@ static int sas_recover_lu(struct domain_device *dev, struct scsi_cmnd *cmd)
 	int res = TMF_RESP_FUNC_FAILED;
 	struct scsi_lun lun;
 	struct sas_internal *i =
-<<<<<<< HEAD
-		to_sas_internal(dev->port->ha->core.shost->transportt);
-
-	int_to_scsilun(cmd->device->lun, &lun);
-
-	SAS_DPRINTK("eh: device %llx LUN %x has the task\n",
-		    SAS_ADDR(dev->sas_addr),
-		    cmd->device->lun);
-=======
 		to_sas_internal(dev->port->ha->shost->transportt);
 
 	int_to_scsilun(cmd->device->lun, &lun);
@@ -564,7 +333,6 @@ static int sas_recover_lu(struct domain_device *dev, struct scsi_cmnd *cmd)
 	pr_notice("eh: device %016llx LUN 0x%llx has the task\n",
 		  SAS_ADDR(dev->sas_addr),
 		  cmd->device->lun);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (i->dft->lldd_abort_task_set)
 		res = i->dft->lldd_abort_task_set(dev, lun.scsi_lun);
@@ -586,17 +354,10 @@ static int sas_recover_I_T(struct domain_device *dev)
 {
 	int res = TMF_RESP_FUNC_FAILED;
 	struct sas_internal *i =
-<<<<<<< HEAD
-		to_sas_internal(dev->port->ha->core.shost->transportt);
-
-	SAS_DPRINTK("I_T nexus reset for dev %016llx\n",
-		    SAS_ADDR(dev->sas_addr));
-=======
 		to_sas_internal(dev->port->ha->shost->transportt);
 
 	pr_notice("I_T nexus reset for dev %016llx\n",
 		  SAS_ADDR(dev->sas_addr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (i->dft->lldd_I_T_nexus_reset)
 		res = i->dft->lldd_I_T_nexus_reset(dev);
@@ -625,16 +386,6 @@ struct sas_phy *sas_get_local_phy(struct domain_device *dev)
 }
 EXPORT_SYMBOL_GPL(sas_get_local_phy);
 
-<<<<<<< HEAD
-/* Attempt to send a LUN reset message to a device */
-int sas_eh_device_reset_handler(struct scsi_cmnd *cmd)
-{
-	struct domain_device *dev = cmd_to_domain_dev(cmd);
-	struct sas_internal *i =
-		to_sas_internal(dev->port->ha->core.shost->transportt);
-	struct scsi_lun lun;
-	int res;
-=======
 static int sas_queue_reset(struct domain_device *dev, int reset_type, u64 lun)
 {
 	struct sas_ha_struct *ha = dev->port->ha;
@@ -713,7 +464,6 @@ int sas_eh_device_reset_handler(struct scsi_cmnd *cmd)
 
 	if (current != host->ehandler)
 		return sas_queue_reset(dev, SAS_DEV_LU_RESET, cmd->device->lun);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int_to_scsilun(cmd->device->lun, &lun);
 
@@ -726,24 +476,6 @@ int sas_eh_device_reset_handler(struct scsi_cmnd *cmd)
 
 	return FAILED;
 }
-<<<<<<< HEAD
-
-/* Attempt to send a phy (bus) reset */
-int sas_eh_bus_reset_handler(struct scsi_cmnd *cmd)
-{
-	struct domain_device *dev = cmd_to_domain_dev(cmd);
-	struct sas_phy *phy = sas_get_local_phy(dev);
-	int res;
-
-	res = sas_phy_reset(phy, 1);
-	if (res)
-		SAS_DPRINTK("Bus reset of %s failed 0x%x\n",
-			    kobject_name(&phy->dev.kobj),
-			    res);
-	sas_put_local_phy(phy);
-
-	if (res == TMF_RESP_FUNC_SUCC || res == TMF_RESP_FUNC_COMPLETE)
-=======
 EXPORT_SYMBOL_GPL(sas_eh_device_reset_handler);
 
 int sas_eh_target_reset_handler(struct scsi_cmnd *cmd)
@@ -762,15 +494,11 @@ int sas_eh_target_reset_handler(struct scsi_cmnd *cmd)
 	res = i->dft->lldd_I_T_nexus_reset(dev);
 	if (res == TMF_RESP_FUNC_SUCC || res == TMF_RESP_FUNC_COMPLETE ||
 	    res == -ENODEV)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SUCCESS;
 
 	return FAILED;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(sas_eh_target_reset_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Try to reset a device */
 static int try_to_reset_cmd_device(struct scsi_cmnd *cmd)
@@ -779,25 +507,15 @@ static int try_to_reset_cmd_device(struct scsi_cmnd *cmd)
 	struct Scsi_Host *shost = cmd->device->host;
 
 	if (!shost->hostt->eh_device_reset_handler)
-<<<<<<< HEAD
-		goto try_bus_reset;
-=======
 		goto try_target_reset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = shost->hostt->eh_device_reset_handler(cmd);
 	if (res == SUCCESS)
 		return res;
 
-<<<<<<< HEAD
-try_bus_reset:
-	if (shost->hostt->eh_bus_reset_handler)
-		return shost->hostt->eh_bus_reset_handler(cmd);
-=======
 try_target_reset:
 	if (shost->hostt->eh_target_reset_handler)
 		return shost->hostt->eh_target_reset_handler(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return FAILED;
 }
@@ -840,55 +558,6 @@ static void sas_eh_handle_sas_errors(struct Scsi_Host *shost, struct list_head *
 		spin_unlock_irqrestore(&task->task_state_lock, flags);
 
 		if (need_reset) {
-<<<<<<< HEAD
-			SAS_DPRINTK("%s: task 0x%p requests reset\n",
-				    __func__, task);
-			goto reset;
-		}
-
-		SAS_DPRINTK("trying to find task 0x%p\n", task);
-		res = sas_scsi_find_task(task);
-
-		cmd->eh_eflags = 0;
-
-		switch (res) {
-		case TASK_IS_NOT_AT_HA:
-			SAS_DPRINTK("%s: task 0x%p is not at ha: %s\n",
-				    __func__, task,
-				    cmd->retries ? "retry" : "aborted");
-			if (cmd->retries)
-				cmd->retries--;
-			sas_eh_finish_cmd(cmd);
-			continue;
-		case TASK_IS_DONE:
-			SAS_DPRINTK("%s: task 0x%p is done\n", __func__,
-				    task);
-			sas_eh_defer_cmd(cmd);
-			continue;
-		case TASK_IS_ABORTED:
-			SAS_DPRINTK("%s: task 0x%p is aborted\n",
-				    __func__, task);
-			sas_eh_defer_cmd(cmd);
-			continue;
-		case TASK_IS_AT_LU:
-			SAS_DPRINTK("task 0x%p is at LU: lu recover\n", task);
- reset:
-			tmf_resp = sas_recover_lu(task->dev, cmd);
-			if (tmf_resp == TMF_RESP_FUNC_COMPLETE) {
-				SAS_DPRINTK("dev %016llx LU %x is "
-					    "recovered\n",
-					    SAS_ADDR(task->dev),
-					    cmd->device->lun);
-				sas_eh_defer_cmd(cmd);
-				sas_scsi_clear_queue_lu(work_q, cmd);
-				goto Again;
-			}
-			/* fallthrough */
-		case TASK_IS_NOT_AT_LU:
-		case TASK_ABORT_FAILED:
-			SAS_DPRINTK("task 0x%p is not at LU: I_T recover\n",
-				    task);
-=======
 			pr_notice("%s: task 0x%p requests reset\n",
 				  __func__, task);
 			goto reset;
@@ -925,18 +594,12 @@ static void sas_eh_handle_sas_errors(struct Scsi_Host *shost, struct list_head *
 		case TASK_ABORT_FAILED:
 			pr_notice("task 0x%p is not at LU: I_T recover\n",
 				  task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tmf_resp = sas_recover_I_T(task->dev);
 			if (tmf_resp == TMF_RESP_FUNC_COMPLETE ||
 			    tmf_resp == -ENODEV) {
 				struct domain_device *dev = task->dev;
-<<<<<<< HEAD
-				SAS_DPRINTK("I_T %016llx recovered\n",
-					    SAS_ADDR(task->dev->sas_addr));
-=======
 				pr_notice("I_T %016llx recovered\n",
 					  SAS_ADDR(task->dev->sas_addr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sas_eh_finish_cmd(cmd);
 				sas_scsi_clear_queue_I_T(work_q, dev);
 				goto Again;
@@ -945,21 +608,12 @@ static void sas_eh_handle_sas_errors(struct Scsi_Host *shost, struct list_head *
 			try_to_reset_cmd_device(cmd);
 			if (i->dft->lldd_clear_nexus_port) {
 				struct asd_sas_port *port = task->dev->port;
-<<<<<<< HEAD
-				SAS_DPRINTK("clearing nexus for port:%d\n",
-					    port->id);
-				res = i->dft->lldd_clear_nexus_port(port);
-				if (res == TMF_RESP_FUNC_COMPLETE) {
-					SAS_DPRINTK("clear nexus port:%d "
-						    "succeeded\n", port->id);
-=======
 				pr_debug("clearing nexus for port:%d\n",
 					  port->id);
 				res = i->dft->lldd_clear_nexus_port(port);
 				if (res == TMF_RESP_FUNC_COMPLETE) {
 					pr_notice("clear nexus port:%d succeeded\n",
 						  port->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					sas_eh_finish_cmd(cmd);
 					sas_scsi_clear_queue_port(work_q,
 								  port);
@@ -967,18 +621,10 @@ static void sas_eh_handle_sas_errors(struct Scsi_Host *shost, struct list_head *
 				}
 			}
 			if (i->dft->lldd_clear_nexus_ha) {
-<<<<<<< HEAD
-				SAS_DPRINTK("clear nexus ha\n");
-				res = i->dft->lldd_clear_nexus_ha(ha);
-				if (res == TMF_RESP_FUNC_COMPLETE) {
-					SAS_DPRINTK("clear nexus ha "
-						    "succeeded\n");
-=======
 				pr_debug("clear nexus ha\n");
 				res = i->dft->lldd_clear_nexus_ha(ha);
 				if (res == TMF_RESP_FUNC_COMPLETE) {
 					pr_notice("clear nexus ha succeeded\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					sas_eh_finish_cmd(cmd);
 					goto clear_q;
 				}
@@ -987,16 +633,9 @@ static void sas_eh_handle_sas_errors(struct Scsi_Host *shost, struct list_head *
 			 * of effort could recover from errors.  Quite
 			 * possibly the HA just disappeared.
 			 */
-<<<<<<< HEAD
-			SAS_DPRINTK("error from  device %llx, LUN %x "
-				    "couldn't be recovered in any way\n",
-				    SAS_ADDR(task->dev->sas_addr),
-				    cmd->device->lun);
-=======
 			pr_err("error from device %016llx, LUN 0x%llx couldn't be recovered in any way\n",
 			       SAS_ADDR(task->dev->sas_addr),
 			       cmd->device->lun);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			sas_eh_finish_cmd(cmd);
 			goto clear_q;
@@ -1008,31 +647,12 @@ static void sas_eh_handle_sas_errors(struct Scsi_Host *shost, struct list_head *
 	return;
 
  clear_q:
-<<<<<<< HEAD
-	SAS_DPRINTK("--- Exit %s -- clear_q\n", __func__);
-=======
 	pr_debug("--- Exit %s -- clear_q\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry_safe(cmd, n, work_q, eh_entry)
 		sas_eh_finish_cmd(cmd);
 	goto out;
 }
 
-<<<<<<< HEAD
-void sas_scsi_recover_host(struct Scsi_Host *shost)
-{
-	struct sas_ha_struct *ha = SHOST_TO_SAS_HA(shost);
-	unsigned long flags;
-	LIST_HEAD(eh_work_q);
-
-	spin_lock_irqsave(shost->host_lock, flags);
-	list_splice_init(&shost->eh_cmd_q, &eh_work_q);
-	shost->host_eh_scheduled = 0;
-	spin_unlock_irqrestore(shost->host_lock, flags);
-
-	SAS_DPRINTK("Enter %s busy: %d failed: %d\n",
-		    __func__, shost->host_busy, shost->host_failed);
-=======
 static void sas_eh_handle_resets(struct Scsi_Host *shost)
 {
 	struct sas_ha_struct *ha = SHOST_TO_SAS_HA(shost);
@@ -1083,7 +703,6 @@ retry:
 
 	pr_notice("Enter %s busy: %d failed: %d\n",
 		  __func__, scsi_host_busy(shost), shost->host_failed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Deal with commands that still have SAS tasks (i.e. they didn't
 	 * complete via the normal sas_task completion mechanism),
@@ -1101,41 +720,18 @@ retry:
 	 * scsi_unjam_host does, but we skip scsi_eh_abort_cmds because any
 	 * command we see here has no sas_task and is thus unknown to the HA.
 	 */
-<<<<<<< HEAD
-	sas_ata_eh(shost, &eh_work_q, &ha->eh_done_q);
-=======
 	sas_ata_eh(shost, &eh_work_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!scsi_eh_get_sense(&eh_work_q, &ha->eh_done_q))
 		scsi_eh_ready_devs(shost, &eh_work_q, &ha->eh_done_q);
 
 out:
-<<<<<<< HEAD
-	if (ha->lldd_max_execute_num > 1)
-		wake_up_process(ha->core.queue_thread);
-=======
 	sas_eh_handle_resets(shost);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* now link into libata eh --- if we have any ata devices */
 	sas_ata_strategy_handler(shost);
 
 	scsi_eh_flush_done_q(&ha->eh_done_q);
 
-<<<<<<< HEAD
-	SAS_DPRINTK("--- Exit %s: busy: %d failed: %d\n",
-		    __func__, shost->host_busy, shost->host_failed);
-}
-
-enum blk_eh_timer_return sas_scsi_timed_out(struct scsi_cmnd *cmd)
-{
-	scmd_printk(KERN_DEBUG, cmd, "command %p timed out\n", cmd);
-
-	return BLK_EH_NOT_HANDLED;
-}
-
-int sas_ioctl(struct scsi_device *sdev, int cmd, void __user *arg)
-=======
 	/* check if any new eh work was scheduled during the last run */
 	spin_lock_irq(&ha->lock);
 	if (ha->eh_active == 0) {
@@ -1153,7 +749,6 @@ int sas_ioctl(struct scsi_device *sdev, int cmd, void __user *arg)
 }
 
 int sas_ioctl(struct scsi_device *sdev, unsigned int cmd, void __user *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct domain_device *dev = sdev_to_domain_dev(sdev);
 
@@ -1162,10 +757,7 @@ int sas_ioctl(struct scsi_device *sdev, unsigned int cmd, void __user *arg)
 
 	return -EINVAL;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(sas_ioctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct domain_device *sas_find_dev_by_rphy(struct sas_rphy *rphy)
 {
@@ -1208,20 +800,13 @@ int sas_target_alloc(struct scsi_target *starget)
 	starget->hostdata = found_dev;
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(sas_target_alloc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SAS_DEF_QD 256
 
 int sas_slave_configure(struct scsi_device *scsi_dev)
 {
 	struct domain_device *dev = sdev_to_domain_dev(scsi_dev);
-<<<<<<< HEAD
-	struct sas_ha_struct *sas_ha;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(dev->rphy->identify.device_type != SAS_END_DEVICE);
 
@@ -1230,22 +815,6 @@ int sas_slave_configure(struct scsi_device *scsi_dev)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	sas_ha = dev->port->ha;
-
-	sas_read_port_mode_page(scsi_dev);
-
-	if (scsi_dev->tagged_supported) {
-		scsi_set_tag_type(scsi_dev, MSG_SIMPLE_TAG);
-		scsi_activate_tcq(scsi_dev, SAS_DEF_QD);
-	} else {
-		SAS_DPRINTK("device %llx, LUN %x doesn't support "
-			    "TCQ\n", SAS_ADDR(dev->sas_addr),
-			    scsi_dev->lun);
-		scsi_dev->tagged_supported = 0;
-		scsi_set_tag_type(scsi_dev, 0);
-		scsi_deactivate_tcq(scsi_dev, 1);
-=======
 	sas_read_port_mode_page(scsi_dev);
 
 	if (scsi_dev->tagged_supported) {
@@ -1254,64 +823,19 @@ int sas_slave_configure(struct scsi_device *scsi_dev)
 		pr_notice("device %016llx, LUN 0x%llx doesn't support TCQ\n",
 			  SAS_ADDR(dev->sas_addr), scsi_dev->lun);
 		scsi_change_queue_depth(scsi_dev, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	scsi_dev->allow_restart = 1;
 
 	return 0;
 }
-<<<<<<< HEAD
-
-int sas_change_queue_depth(struct scsi_device *sdev, int depth, int reason)
-=======
 EXPORT_SYMBOL_GPL(sas_slave_configure);
 
 int sas_change_queue_depth(struct scsi_device *sdev, int depth)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct domain_device *dev = sdev_to_domain_dev(sdev);
 
 	if (dev_is_sata(dev))
-<<<<<<< HEAD
-		return __ata_change_queue_depth(dev->sata_dev.ap, sdev, depth,
-						reason);
-
-	switch (reason) {
-	case SCSI_QDEPTH_DEFAULT:
-	case SCSI_QDEPTH_RAMP_UP:
-		if (!sdev->tagged_supported)
-			depth = 1;
-		scsi_adjust_queue_depth(sdev, scsi_get_tag_type(sdev), depth);
-		break;
-	case SCSI_QDEPTH_QFULL:
-		scsi_track_queue_full(sdev, depth);
-		break;
-	default:
-		return -EOPNOTSUPP;
-	}
-
-	return depth;
-}
-
-int sas_change_queue_type(struct scsi_device *scsi_dev, int qt)
-{
-	struct domain_device *dev = sdev_to_domain_dev(scsi_dev);
-
-	if (dev_is_sata(dev))
-		return -EINVAL;
-
-	if (!scsi_dev->tagged_supported)
-		return 0;
-
-	scsi_deactivate_tcq(scsi_dev, 1);
-
-	scsi_set_tag_type(scsi_dev, qt);
-	scsi_activate_tcq(scsi_dev, scsi_dev->queue_depth);
-
-	return qt;
-}
-=======
 		return ata_change_queue_depth(dev->sata_dev.ap, sdev, depth);
 
 	if (!sdev->tagged_supported)
@@ -1319,7 +843,6 @@ int sas_change_queue_type(struct scsi_device *scsi_dev, int qt)
 	return scsi_change_queue_depth(sdev, depth);
 }
 EXPORT_SYMBOL_GPL(sas_change_queue_depth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int sas_bios_param(struct scsi_device *scsi_dev,
 			  struct block_device *bdev,
@@ -1332,124 +855,6 @@ int sas_bios_param(struct scsi_device *scsi_dev,
 
 	return 0;
 }
-<<<<<<< HEAD
-
-/* ---------- Task Collector Thread implementation ---------- */
-
-static void sas_queue(struct sas_ha_struct *sas_ha)
-{
-	struct scsi_core *core = &sas_ha->core;
-	unsigned long flags;
-	LIST_HEAD(q);
-	int can_queue;
-	int res;
-	struct sas_internal *i = to_sas_internal(core->shost->transportt);
-
-	mutex_lock(&core->task_queue_flush);
-	spin_lock_irqsave(&core->task_queue_lock, flags);
-	while (!kthread_should_stop() &&
-	       !list_empty(&core->task_queue) &&
-	       !test_bit(SAS_HA_FROZEN, &sas_ha->state)) {
-
-		can_queue = sas_ha->lldd_queue_size - core->task_queue_size;
-		if (can_queue >= 0) {
-			can_queue = core->task_queue_size;
-			list_splice_init(&core->task_queue, &q);
-		} else {
-			struct list_head *a, *n;
-
-			can_queue = sas_ha->lldd_queue_size;
-			list_for_each_safe(a, n, &core->task_queue) {
-				list_move_tail(a, &q);
-				if (--can_queue == 0)
-					break;
-			}
-			can_queue = sas_ha->lldd_queue_size;
-		}
-		core->task_queue_size -= can_queue;
-		spin_unlock_irqrestore(&core->task_queue_lock, flags);
-		{
-			struct sas_task *task = list_entry(q.next,
-							   struct sas_task,
-							   list);
-			list_del_init(&q);
-			res = i->dft->lldd_execute_task(task, can_queue,
-							GFP_KERNEL);
-			if (unlikely(res))
-				__list_add(&q, task->list.prev, &task->list);
-		}
-		spin_lock_irqsave(&core->task_queue_lock, flags);
-		if (res) {
-			list_splice_init(&q, &core->task_queue); /*at head*/
-			core->task_queue_size += can_queue;
-		}
-	}
-	spin_unlock_irqrestore(&core->task_queue_lock, flags);
-	mutex_unlock(&core->task_queue_flush);
-}
-
-/**
- * sas_queue_thread -- The Task Collector thread
- * @_sas_ha: pointer to struct sas_ha
- */
-static int sas_queue_thread(void *_sas_ha)
-{
-	struct sas_ha_struct *sas_ha = _sas_ha;
-
-	while (1) {
-		set_current_state(TASK_INTERRUPTIBLE);
-		schedule();
-		sas_queue(sas_ha);
-		if (kthread_should_stop())
-			break;
-	}
-
-	return 0;
-}
-
-int sas_init_queue(struct sas_ha_struct *sas_ha)
-{
-	struct scsi_core *core = &sas_ha->core;
-
-	spin_lock_init(&core->task_queue_lock);
-	mutex_init(&core->task_queue_flush);
-	core->task_queue_size = 0;
-	INIT_LIST_HEAD(&core->task_queue);
-
-	core->queue_thread = kthread_run(sas_queue_thread, sas_ha,
-					 "sas_queue_%d", core->shost->host_no);
-	if (IS_ERR(core->queue_thread))
-		return PTR_ERR(core->queue_thread);
-	return 0;
-}
-
-void sas_shutdown_queue(struct sas_ha_struct *sas_ha)
-{
-	unsigned long flags;
-	struct scsi_core *core = &sas_ha->core;
-	struct sas_task *task, *n;
-
-	kthread_stop(core->queue_thread);
-
-	if (!list_empty(&core->task_queue))
-		SAS_DPRINTK("HA: %llx: scsi core task queue is NOT empty!?\n",
-			    SAS_ADDR(sas_ha->sas_addr));
-
-	spin_lock_irqsave(&core->task_queue_lock, flags);
-	list_for_each_entry_safe(task, n, &core->task_queue, list) {
-		struct scsi_cmnd *cmd = task->uldd_task;
-
-		list_del_init(&task->list);
-
-		ASSIGN_SAS_TASK(cmd, NULL);
-		sas_free_task(task);
-		cmd->result = DID_ABORT << 16;
-		cmd->scsi_done(cmd);
-	}
-	spin_unlock_irqrestore(&core->task_queue_lock, flags);
-}
-
-=======
 EXPORT_SYMBOL_GPL(sas_bios_param);
 
 void sas_task_internal_done(struct sas_task *task)
@@ -1761,7 +1166,6 @@ int sas_abort_task(struct sas_task *task, u16 tag)
 }
 EXPORT_SYMBOL_GPL(sas_abort_task);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Tell an upper layer that it needs to initiate an abort for a given task.
  * This should only ever be called by an LLDD.
@@ -1772,26 +1176,6 @@ void sas_task_abort(struct sas_task *task)
 
 	/* Escape for libsas internal commands */
 	if (!sc) {
-<<<<<<< HEAD
-		if (!del_timer(&task->timer))
-			return;
-		task->timer.function(task->timer.data);
-		return;
-	}
-
-	if (dev_is_sata(task->dev)) {
-		sas_ata_task_abort(task);
-	} else {
-		struct request_queue *q = sc->device->request_queue;
-		unsigned long flags;
-
-		spin_lock_irqsave(q->queue_lock, flags);
-		blk_abort_request(sc->request);
-		spin_unlock_irqrestore(q->queue_lock, flags);
-		scsi_schedule_eh(sc->device->host);
-	}
-}
-=======
 		struct sas_task_slow *slow = task->slow_task;
 
 		if (!slow)
@@ -1817,7 +1201,6 @@ int sas_slave_alloc(struct scsi_device *sdev)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(sas_slave_alloc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void sas_target_destroy(struct scsi_target *starget)
 {
@@ -1829,25 +1212,7 @@ void sas_target_destroy(struct scsi_target *starget)
 	starget->hostdata = NULL;
 	sas_put_device(found_dev);
 }
-<<<<<<< HEAD
-
-static void sas_parse_addr(u8 *sas_addr, const char *p)
-{
-	int i;
-	for (i = 0; i < SAS_ADDR_SIZE; i++) {
-		u8 h, l;
-		if (!*p)
-			break;
-		h = isdigit(*p) ? *p-'0' : toupper(*p)-'A'+10;
-		p++;
-		l = isdigit(*p) ? *p-'0' : toupper(*p)-'A'+10;
-		p++;
-		sas_addr[i] = (h<<4) | l;
-	}
-}
-=======
 EXPORT_SYMBOL_GPL(sas_target_destroy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SAS_STRING_ADDR_SIZE	16
 
@@ -1865,13 +1230,9 @@ int sas_request_addr(struct Scsi_Host *shost, u8 *addr)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	sas_parse_addr(addr, fw->data);
-=======
 	res = hex2bin(addr, fw->data, strnlen(fw->data, SAS_ADDR_SIZE * 2) / 2);
 	if (res)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	release_firmware(fw);
@@ -1879,18 +1240,3 @@ out:
 }
 EXPORT_SYMBOL_GPL(sas_request_addr);
 
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(sas_queuecommand);
-EXPORT_SYMBOL_GPL(sas_target_alloc);
-EXPORT_SYMBOL_GPL(sas_slave_configure);
-EXPORT_SYMBOL_GPL(sas_change_queue_depth);
-EXPORT_SYMBOL_GPL(sas_change_queue_type);
-EXPORT_SYMBOL_GPL(sas_bios_param);
-EXPORT_SYMBOL_GPL(sas_task_abort);
-EXPORT_SYMBOL_GPL(sas_phy_reset);
-EXPORT_SYMBOL_GPL(sas_eh_device_reset_handler);
-EXPORT_SYMBOL_GPL(sas_eh_bus_reset_handler);
-EXPORT_SYMBOL_GPL(sas_target_destroy);
-EXPORT_SYMBOL_GPL(sas_ioctl);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

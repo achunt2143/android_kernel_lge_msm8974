@@ -1,23 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __NET_TC_PED_H
 #define __NET_TC_PED_H
 
 #include <net/act_api.h>
-<<<<<<< HEAD
-
-struct tcf_pedit {
-	struct tcf_common	common;
-	unsigned char		tcfp_nkeys;
-	unsigned char		tcfp_flags;
-	struct tc_pedit_key	*tcfp_keys;
-};
-#define to_pedit(pc) \
-	container_of(pc, struct tcf_pedit, common)
-
-=======
 #include <linux/tc_act/tc_pedit.h>
 #include <linux/types.h>
 
@@ -131,5 +116,4 @@ static inline u32 tcf_pedit_offset(const struct tc_action *a, int index)
 
 	return off;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __NET_TC_PED_H */

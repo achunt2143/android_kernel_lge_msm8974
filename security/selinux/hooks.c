@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-/*
- *  NSA Security-Enhanced Linux (SELinux) security module
- *
- *  This file contains the SELinux hook function implementations.
- *
- *  Authors:  Stephen Smalley, <sds@epoch.ncsc.mil>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *  Security-Enhanced Linux (SELinux) security module
@@ -13,7 +5,6 @@
  *  This file contains the SELinux hook function implementations.
  *
  *  Authors:  Stephen Smalley, <stephen.smalley.work@gmail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	      Chris Vance, <cvance@nai.com>
  *	      Wayne Salamon, <wsalamon@nai.com>
  *	      James Morris <jmorris@redhat.com>
@@ -27,31 +18,17 @@
  *	Paul Moore <paul@paul-moore.com>
  *  Copyright (C) 2007 Hitachi Software Engineering Co., Ltd.
  *		       Yuichi Nakamura <ynakam@hitachisoft.jp>
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License version 2,
- *	as published by the Free Software Foundation.
-=======
  *  Copyright (C) 2016 Mellanox Technologies
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/kd.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/tracehook.h>
-#include <linux/errno.h>
-#include <linux/sched.h>
-#include <linux/security.h>
-=======
 #include <linux/kernel_read_file.h>
 #include <linux/errno.h>
 #include <linux/sched/signal.h>
 #include <linux/sched/task.h>
 #include <linux/lsm_hooks.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/xattr.h>
 #include <linux/capability.h>
 #include <linux/unistd.h>
@@ -68,11 +45,8 @@
 #include <linux/fdtable.h>
 #include <linux/namei.h>
 #include <linux/mount.h>
-<<<<<<< HEAD
-=======
 #include <linux/fs_context.h>
 #include <linux/fs_parser.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netfilter_ipv4.h>
 #include <linux/netfilter_ipv6.h>
 #include <linux/tty.h>
@@ -88,19 +62,12 @@
 #include <linux/bitops.h>
 #include <linux/interrupt.h>
 #include <linux/netdevice.h>	/* for network interface checks */
-<<<<<<< HEAD
-#include <linux/netlink.h>
-#include <linux/tcp.h>
-#include <linux/udp.h>
-#include <linux/dccp.h>
-=======
 #include <net/netlink.h>
 #include <linux/tcp.h>
 #include <linux/udp.h>
 #include <linux/dccp.h>
 #include <linux/sctp.h>
 #include <net/sctp/structs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/quota.h>
 #include <linux/un.h>		/* for Unix socket types */
 #include <net/af_unix.h>	/* for Unix socket types */
@@ -111,10 +78,6 @@
 #include <linux/personality.h>
 #include <linux/audit.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/selinux.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mutex.h>
 #include <linux/posix-timers.h>
 #include <linux/syslog.h>
@@ -122,9 +85,6 @@
 #include <linux/export.h>
 #include <linux/msg.h>
 #include <linux/shm.h>
-<<<<<<< HEAD
-#include <linux/pft.h>
-=======
 #include <uapi/linux/shm.h>
 #include <linux/bpf.h>
 #include <linux/kernfs.h>
@@ -134,70 +94,31 @@
 #include <linux/fanotify.h>
 #include <linux/io_uring/cmd.h>
 #include <uapi/linux/lsm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "avc.h"
 #include "objsec.h"
 #include "netif.h"
 #include "netnode.h"
 #include "netport.h"
-<<<<<<< HEAD
-=======
 #include "ibpkey.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "xfrm.h"
 #include "netlabel.h"
 #include "audit.h"
 #include "avc_ss.h"
 
-<<<<<<< HEAD
-#define NUM_SEL_MNT_OPTS 5
-
-extern struct security_operations *security_ops;
-=======
 #define SELINUX_INODE_INIT_XATTRS 1
 
 struct selinux_state selinux_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SECMARK reference count */
 static atomic_t selinux_secmark_refcount = ATOMIC_INIT(0);
 
 #ifdef CONFIG_SECURITY_SELINUX_DEVELOP
-<<<<<<< HEAD
-int selinux_enforcing;
-=======
 static int selinux_enforcing_boot __initdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init enforcing_setup(char *str)
 {
 	unsigned long enforcing;
-<<<<<<< HEAD
-	if (!strict_strtoul(str, 0, &enforcing))
-		selinux_enforcing = enforcing ? 1 : 0;
-	return 1;
-}
-__setup("enforcing=", enforcing_setup);
-#endif
-
-#ifdef CONFIG_SECURITY_SELINUX_BOOTPARAM
-int selinux_enabled = CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE;
-
-static int __init selinux_enabled_setup(char *str)
-{
-	unsigned long enabled;
-	if (!strict_strtoul(str, 0, &enabled))
-		selinux_enabled = enabled ? 1 : 0;
-	return 1;
-}
-__setup("selinux=", selinux_enabled_setup);
-#else
-int selinux_enabled = 1;
-#endif
-
-static struct kmem_cache *sel_inode_cache;
-=======
 	if (!kstrtoul(str, 0, &enforcing))
 		selinux_enforcing_boot = enforcing ? 1 : 0;
 	return 1;
@@ -230,7 +151,6 @@ static int __init checkreqprot_setup(char *str)
 	return 1;
 }
 __setup("checkreqprot=", checkreqprot_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * selinux_secmark_enabled - Check to see if SECMARK is currently enabled
@@ -239,19 +159,12 @@ __setup("checkreqprot=", checkreqprot_setup);
  * This function checks the SECMARK reference counter to see if any SECMARK
  * targets are currently configured, if the reference counter is greater than
  * zero SECMARK is considered to be enabled.  Returns true (1) if SECMARK is
-<<<<<<< HEAD
- * enabled, false (0) if SECMARK is disabled.
-=======
  * enabled, false (0) if SECMARK is disabled.  If the always_check_network
  * policy capability is enabled, SECMARK is always considered enabled.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 static int selinux_secmark_enabled(void)
 {
-<<<<<<< HEAD
-	return (atomic_read(&selinux_secmark_refcount) > 0);
-=======
 	return (selinux_policycap_alwaysnetwork() ||
 		atomic_read(&selinux_secmark_refcount));
 }
@@ -291,7 +204,6 @@ static int selinux_lsm_notifier_avc_callback(u32 event)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -299,22 +211,10 @@ static int selinux_lsm_notifier_avc_callback(u32 event)
  */
 static void cred_init_security(void)
 {
-<<<<<<< HEAD
-	struct cred *cred = (struct cred *) current->real_cred;
-	struct task_security_struct *tsec;
-
-	tsec = kzalloc(sizeof(struct task_security_struct), GFP_KERNEL);
-	if (!tsec)
-		panic("SELinux:  Failed to initialize initial task.\n");
-
-	tsec->osid = tsec->sid = SECINITSID_KERNEL;
-	cred->security = tsec;
-=======
 	struct task_security_struct *tsec;
 
 	tsec = selinux_cred(unrcu_pointer(current->real_cred));
 	tsec->osid = tsec->sid = SECINITSID_KERNEL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -324,16 +224,6 @@ static inline u32 cred_sid(const struct cred *cred)
 {
 	const struct task_security_struct *tsec;
 
-<<<<<<< HEAD
-	tsec = cred->security;
-	return tsec->sid;
-}
-
-/*
- * get the objective security ID of a task
- */
-static inline u32 task_sid(const struct task_struct *task)
-=======
 	tsec = selinux_cred(cred);
 	return tsec->sid;
 }
@@ -367,7 +257,6 @@ static void ad_net_init_from_iif(struct common_audit_data *ad,
  * get the objective security ID of a task
  */
 static inline u32 task_sid_obj(const struct task_struct *task)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 sid;
 
@@ -377,46 +266,6 @@ static inline u32 task_sid_obj(const struct task_struct *task)
 	return sid;
 }
 
-<<<<<<< HEAD
-/*
- * get the subjective security ID of the current task
- */
-static inline u32 current_sid(void)
-{
-	const struct task_security_struct *tsec = current_security();
-
-	return tsec->sid;
-}
-
-/* Allocate and free functions for each kind of security blob. */
-
-static int inode_alloc_security(struct inode *inode)
-{
-	struct inode_security_struct *isec;
-	u32 sid = current_sid();
-
-	isec = kmem_cache_zalloc(sel_inode_cache, GFP_NOFS);
-	if (!isec)
-		return -ENOMEM;
-
-	mutex_init(&isec->lock);
-	INIT_LIST_HEAD(&isec->list);
-	isec->inode = inode;
-	isec->sid = SECINITSID_UNLABELED;
-	isec->sclass = SECCLASS_FILE;
-	isec->task_sid = sid;
-	inode->i_security = isec;
-
-	return 0;
-}
-
-static void inode_free_rcu(struct rcu_head *head)
-{
-	struct inode_security_struct *isec;
-
-	isec = container_of(head, struct inode_security_struct, rcu);
-	kmem_cache_free(sel_inode_cache, isec);
-=======
 static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dentry);
 
 /*
@@ -488,99 +337,10 @@ static struct inode_security_struct *backing_inode_security(struct dentry *dentr
 
 	__inode_security_revalidate(inode, dentry, true);
 	return selinux_inode(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void inode_free_security(struct inode *inode)
 {
-<<<<<<< HEAD
-	struct inode_security_struct *isec = inode->i_security;
-	struct superblock_security_struct *sbsec = inode->i_sb->s_security;
-
-	spin_lock(&sbsec->isec_lock);
-	if (!list_empty(&isec->list))
-		list_del_init(&isec->list);
-	spin_unlock(&sbsec->isec_lock);
-
-	/*
-	 * The inode may still be referenced in a path walk and
-	 * a call to selinux_inode_permission() can be made
-	 * after inode_free_security() is called. Ideally, the VFS
-	 * wouldn't do this, but fixing that is a much harder
-	 * job. For now, simply free the i_security via RCU, and
-	 * leave the current inode->i_security pointer intact.
-	 * The inode will be freed after the RCU grace period too.
-	 */
-	call_rcu(&isec->rcu, inode_free_rcu);
-}
-
-static int file_alloc_security(struct file *file)
-{
-	struct file_security_struct *fsec;
-	u32 sid = current_sid();
-
-	fsec = kzalloc(sizeof(struct file_security_struct), GFP_KERNEL);
-	if (!fsec)
-		return -ENOMEM;
-
-	fsec->sid = sid;
-	fsec->fown_sid = sid;
-	file->f_security = fsec;
-
-	return 0;
-}
-
-static void file_free_security(struct file *file)
-{
-	struct file_security_struct *fsec = file->f_security;
-	file->f_security = NULL;
-	kfree(fsec);
-}
-
-static int superblock_alloc_security(struct super_block *sb)
-{
-	struct superblock_security_struct *sbsec;
-
-	sbsec = kzalloc(sizeof(struct superblock_security_struct), GFP_KERNEL);
-	if (!sbsec)
-		return -ENOMEM;
-
-	mutex_init(&sbsec->lock);
-	INIT_LIST_HEAD(&sbsec->isec_head);
-	spin_lock_init(&sbsec->isec_lock);
-	sbsec->sb = sb;
-	sbsec->sid = SECINITSID_UNLABELED;
-	sbsec->def_sid = SECINITSID_FILE;
-	sbsec->mntpoint_sid = SECINITSID_UNLABELED;
-	sb->s_security = sbsec;
-
-	return 0;
-}
-
-static void superblock_free_security(struct super_block *sb)
-{
-	struct superblock_security_struct *sbsec = sb->s_security;
-	sb->s_security = NULL;
-	kfree(sbsec);
-}
-
-/* The file system's label must be initialized prior to use. */
-
-static const char *labeling_behaviors[6] = {
-	"uses xattr",
-	"uses transition SIDs",
-	"uses task SIDs",
-	"uses genfs_contexts",
-	"not configured for labeling",
-	"uses mountpoint labeling",
-};
-
-static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dentry);
-
-static inline int inode_doinit(struct inode *inode)
-{
-	return inode_doinit_with_dentry(inode, NULL);
-=======
 	struct inode_security_struct *isec = selinux_inode(inode);
 	struct superblock_security_struct *sbsec;
 
@@ -614,28 +374,10 @@ struct selinux_mnt_opts {
 static void selinux_free_mnt_opts(void *mnt_opts)
 {
 	kfree(mnt_opts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 enum {
 	Opt_error = -1,
-<<<<<<< HEAD
-	Opt_context = 1,
-	Opt_fscontext = 2,
-	Opt_defcontext = 3,
-	Opt_rootcontext = 4,
-	Opt_labelsupport = 5,
-};
-
-static const match_table_t tokens = {
-	{Opt_context, CONTEXT_STR "%s"},
-	{Opt_fscontext, FSCONTEXT_STR "%s"},
-	{Opt_defcontext, DEFCONTEXT_STR "%s"},
-	{Opt_rootcontext, ROOTCONTEXT_STR "%s"},
-	{Opt_labelsupport, LABELSUPP_STR},
-	{Opt_error, NULL},
-};
-=======
 	Opt_context = 0,
 	Opt_defcontext = 1,
 	Opt_fscontext = 2,
@@ -676,7 +418,6 @@ static int match_opt_prefix(char *s, int l, char **arg)
 	}
 	return Opt_error;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SEL_MOUNT_FAIL_MSG "SELinux:  duplicate or incompatible mount options\n"
 
@@ -684,11 +425,7 @@ static int may_context_mount_sb_relabel(u32 sid,
 			struct superblock_security_struct *sbsec,
 			const struct cred *cred)
 {
-<<<<<<< HEAD
-	const struct task_security_struct *tsec = cred->security;
-=======
 	const struct task_security_struct *tsec = selinux_cred(cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = avc_has_perm(tsec->sid, sbsec->sid, SECCLASS_FILESYSTEM,
@@ -705,11 +442,7 @@ static int may_context_mount_inode_relabel(u32 sid,
 			struct superblock_security_struct *sbsec,
 			const struct cred *cred)
 {
-<<<<<<< HEAD
-	const struct task_security_struct *tsec = cred->security;
-=======
 	const struct task_security_struct *tsec = selinux_cred(cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 	rc = avc_has_perm(tsec->sid, sbsec->sid, SECCLASS_FILESYSTEM,
 			  FILESYSTEM__RELABELFROM, NULL);
@@ -721,63 +454,6 @@ static int may_context_mount_inode_relabel(u32 sid,
 	return rc;
 }
 
-<<<<<<< HEAD
-static int sb_finish_set_opts(struct super_block *sb)
-{
-	struct superblock_security_struct *sbsec = sb->s_security;
-	struct dentry *root = sb->s_root;
-	struct inode *root_inode = root->d_inode;
-	int rc = 0;
-
-	if (sbsec->behavior == SECURITY_FS_USE_XATTR) {
-		/* Make sure that the xattr handler exists and that no
-		   error other than -ENODATA is returned by getxattr on
-		   the root directory.  -ENODATA is ok, as this may be
-		   the first boot of the SELinux kernel before we have
-		   assigned xattr values to the filesystem. */
-		if (!root_inode->i_op->getxattr) {
-			printk(KERN_WARNING "SELinux: (dev %s, type %s) has no "
-			       "xattr support\n", sb->s_id, sb->s_type->name);
-			rc = -EOPNOTSUPP;
-			goto out;
-		}
-		rc = root_inode->i_op->getxattr(root, XATTR_NAME_SELINUX, NULL, 0);
-		if (rc < 0 && rc != -ENODATA) {
-			if (rc == -EOPNOTSUPP)
-				printk(KERN_WARNING "SELinux: (dev %s, type "
-				       "%s) has no security xattr handler\n",
-				       sb->s_id, sb->s_type->name);
-			else
-				printk(KERN_WARNING "SELinux: (dev %s, type "
-				       "%s) getxattr errno %d\n", sb->s_id,
-				       sb->s_type->name, -rc);
-			goto out;
-		}
-	}
-
-	sbsec->flags |= (SE_SBINITIALIZED | SE_SBLABELSUPP);
-
-	if (sbsec->behavior > ARRAY_SIZE(labeling_behaviors))
-		printk(KERN_ERR "SELinux: initialized (dev %s, type %s), unknown behavior\n",
-		       sb->s_id, sb->s_type->name);
-	else
-		printk(KERN_DEBUG "SELinux: initialized (dev %s, type %s), %s\n",
-		       sb->s_id, sb->s_type->name,
-		       labeling_behaviors[sbsec->behavior-1]);
-
-	if (sbsec->behavior == SECURITY_FS_USE_GENFS ||
-	    sbsec->behavior == SECURITY_FS_USE_MNTPOINT ||
-	    sbsec->behavior == SECURITY_FS_USE_NONE ||
-	    sbsec->behavior > ARRAY_SIZE(labeling_behaviors))
-		sbsec->flags &= ~SE_SBLABELSUPP;
-
-	/* Special handling. Is genfs but also has in-core setxattr handler*/
-	if (!strcmp(sb->s_type->name, "sysfs") ||
-	    !strcmp(sb->s_type->name, "pstore") ||
-	    !strcmp(sb->s_type->name, "debugfs") ||
-	    !strcmp(sb->s_type->name, "rootfs"))
-		sbsec->flags |= SE_SBLABELSUPP;
-=======
 static int selinux_is_genfs_special_handling(struct super_block *sb)
 {
 	/* Special handling. Genfs but also in-core setxattr handler */
@@ -892,7 +568,6 @@ static int sb_finish_set_opts(struct super_block *sb)
 		sbsec->flags |= SBLABEL_MNT;
 	else
 		sbsec->flags &= ~SBLABEL_MNT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the root inode. */
 	rc = inode_doinit_with_dentry(root_inode, root);
@@ -902,16 +577,9 @@ static int sb_finish_set_opts(struct super_block *sb)
 	   during get_sb by a pseudo filesystem that directly
 	   populates itself. */
 	spin_lock(&sbsec->isec_lock);
-<<<<<<< HEAD
-next_inode:
-	if (!list_empty(&sbsec->isec_head)) {
-		struct inode_security_struct *isec =
-				list_entry(sbsec->isec_head.next,
-=======
 	while (!list_empty(&sbsec->isec_head)) {
 		struct inode_security_struct *isec =
 				list_first_entry(&sbsec->isec_head,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   struct inode_security_struct, list);
 		struct inode *inode = isec->inode;
 		list_del_init(&isec->list);
@@ -919,114 +587,12 @@ next_inode:
 		inode = igrab(inode);
 		if (inode) {
 			if (!IS_PRIVATE(inode))
-<<<<<<< HEAD
-				inode_doinit(inode);
-			iput(inode);
-		}
-		spin_lock(&sbsec->isec_lock);
-		goto next_inode;
-	}
-	spin_unlock(&sbsec->isec_lock);
-out:
-	return rc;
-}
-
-/*
- * This function should allow an FS to ask what it's mount security
- * options were so it can use those later for submounts, displaying
- * mount options, or whatever.
- */
-static int selinux_get_mnt_opts(const struct super_block *sb,
-				struct security_mnt_opts *opts)
-{
-	int rc = 0, i;
-	struct superblock_security_struct *sbsec = sb->s_security;
-	char *context = NULL;
-	u32 len;
-	char tmp;
-
-	security_init_mnt_opts(opts);
-
-	if (!(sbsec->flags & SE_SBINITIALIZED))
-		return -EINVAL;
-
-	if (!ss_initialized)
-		return -EINVAL;
-
-	tmp = sbsec->flags & SE_MNTMASK;
-	/* count the number of mount options for this sb */
-	for (i = 0; i < 8; i++) {
-		if (tmp & 0x01)
-			opts->num_mnt_opts++;
-		tmp >>= 1;
-	}
-	/* Check if the Label support flag is set */
-	if (sbsec->flags & SE_SBLABELSUPP)
-		opts->num_mnt_opts++;
-
-	opts->mnt_opts = kcalloc(opts->num_mnt_opts, sizeof(char *), GFP_ATOMIC);
-	if (!opts->mnt_opts) {
-		rc = -ENOMEM;
-		goto out_free;
-	}
-
-	opts->mnt_opts_flags = kcalloc(opts->num_mnt_opts, sizeof(int), GFP_ATOMIC);
-	if (!opts->mnt_opts_flags) {
-		rc = -ENOMEM;
-		goto out_free;
-	}
-
-	i = 0;
-	if (sbsec->flags & FSCONTEXT_MNT) {
-		rc = security_sid_to_context(sbsec->sid, &context, &len);
-		if (rc)
-			goto out_free;
-		opts->mnt_opts[i] = context;
-		opts->mnt_opts_flags[i++] = FSCONTEXT_MNT;
-	}
-	if (sbsec->flags & CONTEXT_MNT) {
-		rc = security_sid_to_context(sbsec->mntpoint_sid, &context, &len);
-		if (rc)
-			goto out_free;
-		opts->mnt_opts[i] = context;
-		opts->mnt_opts_flags[i++] = CONTEXT_MNT;
-	}
-	if (sbsec->flags & DEFCONTEXT_MNT) {
-		rc = security_sid_to_context(sbsec->def_sid, &context, &len);
-		if (rc)
-			goto out_free;
-		opts->mnt_opts[i] = context;
-		opts->mnt_opts_flags[i++] = DEFCONTEXT_MNT;
-	}
-	if (sbsec->flags & ROOTCONTEXT_MNT) {
-		struct inode *root = sbsec->sb->s_root->d_inode;
-		struct inode_security_struct *isec = root->i_security;
-
-		rc = security_sid_to_context(isec->sid, &context, &len);
-		if (rc)
-			goto out_free;
-		opts->mnt_opts[i] = context;
-		opts->mnt_opts_flags[i++] = ROOTCONTEXT_MNT;
-	}
-	if (sbsec->flags & SE_SBLABELSUPP) {
-		opts->mnt_opts[i] = NULL;
-		opts->mnt_opts_flags[i++] = SE_SBLABELSUPP;
-	}
-
-	BUG_ON(i != opts->num_mnt_opts);
-
-	return 0;
-
-out_free:
-	security_free_mnt_opts(opts);
-=======
 				inode_doinit_with_dentry(inode, NULL);
 			iput(inode);
 		}
 		spin_lock(&sbsec->isec_lock);
 	}
 	spin_unlock(&sbsec->isec_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -1055,33 +621,6 @@ static int bad_option(struct superblock_security_struct *sbsec, char flag,
  * labeling information.
  */
 static int selinux_set_mnt_opts(struct super_block *sb,
-<<<<<<< HEAD
-				struct security_mnt_opts *opts)
-{
-	const struct cred *cred = current_cred();
-	int rc = 0, i;
-	struct superblock_security_struct *sbsec = sb->s_security;
-	const char *name = sb->s_type->name;
-	struct inode *inode = sbsec->sb->s_root->d_inode;
-	struct inode_security_struct *root_isec = inode->i_security;
-	u32 fscontext_sid = 0, context_sid = 0, rootcontext_sid = 0;
-	u32 defcontext_sid = 0;
-	char **mount_options = opts->mnt_opts;
-	int *flags = opts->mnt_opts_flags;
-	int num_opts = opts->num_mnt_opts;
-
-	mutex_lock(&sbsec->lock);
-
-	if (!ss_initialized) {
-		if (!num_opts) {
-			/* Defer initialization until selinux_complete_init,
-			   after the initial policy is loaded and the security
-			   server is ready to handle calls. */
-			goto out;
-		}
-		rc = -EINVAL;
-		printk(KERN_WARNING "SELinux: Unable to set superblock options "
-=======
 				void *mnt_opts,
 				unsigned long kern_flags,
 				unsigned long *set_kern_flags)
@@ -1117,7 +656,6 @@ static int selinux_set_mnt_opts(struct super_block *sb,
 		}
 		rc = -EINVAL;
 		pr_warn("SELinux: Unable to set superblock options "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"before the security server is initialized\n");
 		goto out;
 	}
@@ -1129,88 +667,21 @@ static int selinux_set_mnt_opts(struct super_block *sb,
 	 * we need to skip the double mount verification.
 	 *
 	 * This does open a hole in which we will not notice if the first
-<<<<<<< HEAD
-	 * mount using this sb set explict options and a second mount using
-=======
 	 * mount using this sb set explicit options and a second mount using
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * this sb does not set any security options.  (The first options
 	 * will be used for both mounts)
 	 */
 	if ((sbsec->flags & SE_SBINITIALIZED) && (sb->s_type->fs_flags & FS_BINARY_MOUNTDATA)
-<<<<<<< HEAD
-	    && (num_opts == 0))
-		goto out;
-
-=======
 	    && !opts)
 		goto out;
 
 	root_isec = backing_inode_security_novalidate(root);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * parse the mount options, check if they are valid sids.
 	 * also check if someone is trying to mount the same sb more
 	 * than once with different security options.
 	 */
-<<<<<<< HEAD
-	for (i = 0; i < num_opts; i++) {
-		u32 sid;
-
-		if (flags[i] == SE_SBLABELSUPP)
-			continue;
-		rc = security_context_to_sid(mount_options[i],
-					     strlen(mount_options[i]), &sid);
-		if (rc) {
-			printk(KERN_WARNING "SELinux: security_context_to_sid"
-			       "(%s) failed for (dev %s, type %s) errno=%d\n",
-			       mount_options[i], sb->s_id, name, rc);
-			goto out;
-		}
-		switch (flags[i]) {
-		case FSCONTEXT_MNT:
-			fscontext_sid = sid;
-
-			if (bad_option(sbsec, FSCONTEXT_MNT, sbsec->sid,
-					fscontext_sid))
-				goto out_double_mount;
-
-			sbsec->flags |= FSCONTEXT_MNT;
-			break;
-		case CONTEXT_MNT:
-			context_sid = sid;
-
-			if (bad_option(sbsec, CONTEXT_MNT, sbsec->mntpoint_sid,
-					context_sid))
-				goto out_double_mount;
-
-			sbsec->flags |= CONTEXT_MNT;
-			break;
-		case ROOTCONTEXT_MNT:
-			rootcontext_sid = sid;
-
-			if (bad_option(sbsec, ROOTCONTEXT_MNT, root_isec->sid,
-					rootcontext_sid))
-				goto out_double_mount;
-
-			sbsec->flags |= ROOTCONTEXT_MNT;
-
-			break;
-		case DEFCONTEXT_MNT:
-			defcontext_sid = sid;
-
-			if (bad_option(sbsec, DEFCONTEXT_MNT, sbsec->def_sid,
-					defcontext_sid))
-				goto out_double_mount;
-
-			sbsec->flags |= DEFCONTEXT_MNT;
-
-			break;
-		default:
-			rc = -EINVAL;
-			goto out;
-=======
 	if (opts) {
 		if (opts->fscontext_sid) {
 			fscontext_sid = opts->fscontext_sid;
@@ -1239,17 +710,12 @@ static int selinux_set_mnt_opts(struct super_block *sb,
 					defcontext_sid))
 				goto out_double_mount;
 			sbsec->flags |= DEFCONTEXT_MNT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	if (sbsec->flags & SE_SBINITIALIZED) {
 		/* previously mounted with options, but not on this attempt? */
-<<<<<<< HEAD
-		if ((sbsec->flags & SE_MNTMASK) && !num_opts)
-=======
 		if ((sbsec->flags & SE_MNTMASK) && !opts)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_double_mount;
 		rc = 0;
 		goto out;
@@ -1259,18 +725,6 @@ static int selinux_set_mnt_opts(struct super_block *sb,
 		sbsec->flags |= SE_SBPROC | SE_SBGENFS;
 
 	if (!strcmp(sb->s_type->name, "debugfs") ||
-<<<<<<< HEAD
-	    !strcmp(sb->s_type->name, "sysfs") ||
-	    !strcmp(sb->s_type->name, "pstore"))
-		sbsec->flags |= SE_SBGENFS;
-
-	/* Determine the labeling behavior to use for this filesystem type. */
-	rc = security_fs_use((sbsec->flags & SE_SBPROC) ? "proc" : sb->s_type->name, &sbsec->behavior, &sbsec->sid);
-	if (rc) {
-		printk(KERN_WARNING "%s: security_fs_use(%s) returned %d\n",
-		       __func__, sb->s_type->name, rc);
-		goto out;
-=======
 	    !strcmp(sb->s_type->name, "tracefs") ||
 	    !strcmp(sb->s_type->name, "binder") ||
 	    !strcmp(sb->s_type->name, "bpf") ||
@@ -1321,7 +775,6 @@ static int selinux_set_mnt_opts(struct super_block *sb,
 				goto out;
 		}
 		goto out_set_opts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* sets the context of the superblock for the fs being mounted. */
@@ -1338,8 +791,6 @@ static int selinux_set_mnt_opts(struct super_block *sb,
 	 * sets the label used on all file below the mountpoint, and will set
 	 * the superblock context if not already set.
 	 */
-<<<<<<< HEAD
-=======
 	if (sbsec->flags & SE_SBNATIVE) {
 		/*
 		 * This means we are initializing a superblock that has been
@@ -1355,7 +806,6 @@ static int selinux_set_mnt_opts(struct super_block *sb,
 		*set_kern_flags |= SECURITY_LSM_NATIVE_LABELS;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (context_sid) {
 		if (!fscontext_sid) {
 			rc = may_context_mount_sb_relabel(context_sid, sbsec,
@@ -1383,15 +833,6 @@ static int selinux_set_mnt_opts(struct super_block *sb,
 			goto out;
 
 		root_isec->sid = rootcontext_sid;
-<<<<<<< HEAD
-		root_isec->initialized = 1;
-	}
-
-	if (defcontext_sid) {
-		if (sbsec->behavior != SECURITY_FS_USE_XATTR) {
-			rc = -EINVAL;
-			printk(KERN_WARNING "SELinux: defcontext option is "
-=======
 		root_isec->initialized = LABEL_INITIALIZED;
 	}
 
@@ -1400,7 +841,6 @@ static int selinux_set_mnt_opts(struct super_block *sb,
 			sbsec->behavior != SECURITY_FS_USE_NATIVE) {
 			rc = -EINVAL;
 			pr_warn("SELinux: defcontext option is "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "invalid for this filesystem type\n");
 			goto out;
 		}
@@ -1415,28 +855,13 @@ static int selinux_set_mnt_opts(struct super_block *sb,
 		sbsec->def_sid = defcontext_sid;
 	}
 
-<<<<<<< HEAD
-=======
 out_set_opts:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = sb_finish_set_opts(sb);
 out:
 	mutex_unlock(&sbsec->lock);
 	return rc;
 out_double_mount:
 	rc = -EINVAL;
-<<<<<<< HEAD
-	printk(KERN_WARNING "SELinux: mount invalid.  Same superblock, different "
-	       "security settings for (dev %s, type %s)\n", sb->s_id, name);
-	goto out;
-}
-
-static void selinux_sb_clone_mnt_opts(const struct super_block *oldsb,
-					struct super_block *newsb)
-{
-	const struct superblock_security_struct *oldsbsec = oldsb->s_security;
-	struct superblock_security_struct *newsbsec = newsb->s_security;
-=======
 	pr_warn("SELinux: mount invalid.  Same superblock, different "
 	       "security settings for (dev %s, type %s)\n", sb->s_id,
 	       sb->s_type->name);
@@ -1482,20 +907,12 @@ static int selinux_sb_clone_mnt_opts(const struct super_block *oldsb,
 	const struct superblock_security_struct *oldsbsec =
 						selinux_superblock(oldsb);
 	struct superblock_security_struct *newsbsec = selinux_superblock(newsb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int set_fscontext =	(oldsbsec->flags & FSCONTEXT_MNT);
 	int set_context =	(oldsbsec->flags & CONTEXT_MNT);
 	int set_rootcontext =	(oldsbsec->flags & ROOTCONTEXT_MNT);
 
 	/*
-<<<<<<< HEAD
-	 * if the parent was able to be mounted it clearly had no special lsm
-	 * mount options.  thus we can safely deal with this superblock later
-	 */
-	if (!ss_initialized)
-		return;
-=======
 	 * Specifying internal flags without providing a place to
 	 * place the results is not allowed.
 	 */
@@ -1515,18 +932,10 @@ static int selinux_sb_clone_mnt_opts(const struct super_block *oldsb,
 		}
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* how can we clone if the old one wasn't set up?? */
 	BUG_ON(!(oldsbsec->flags & SE_SBINITIALIZED));
 
-<<<<<<< HEAD
-	/* if fs is reusing a sb, just let its options stand... */
-	if (newsbsec->flags & SE_SBINITIALIZED)
-		return;
-
-	mutex_lock(&newsbsec->lock);
-=======
 	/* if fs is reusing a sb, make sure that the contexts match */
 	if (newsbsec->flags & SE_SBINITIALIZED) {
 		mutex_unlock(&newsbsec->lock);
@@ -1534,7 +943,6 @@ static int selinux_sb_clone_mnt_opts(const struct super_block *oldsb,
 			*set_kern_flags |= SECURITY_LSM_NATIVE_LABELS;
 		return selinux_cmp_sb_context(oldsb, newsb);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	newsbsec->flags = oldsbsec->flags;
 
@@ -1542,8 +950,6 @@ static int selinux_sb_clone_mnt_opts(const struct super_block *oldsb,
 	newsbsec->def_sid = oldsbsec->def_sid;
 	newsbsec->behavior = oldsbsec->behavior;
 
-<<<<<<< HEAD
-=======
 	if (newsbsec->behavior == SECURITY_FS_USE_NATIVE &&
 		!(kern_flags & SECURITY_LSM_NATIVE_LABELS) && !set_context) {
 		rc = security_fs_use(newsb);
@@ -1556,235 +962,25 @@ static int selinux_sb_clone_mnt_opts(const struct super_block *oldsb,
 		*set_kern_flags |= SECURITY_LSM_NATIVE_LABELS;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (set_context) {
 		u32 sid = oldsbsec->mntpoint_sid;
 
 		if (!set_fscontext)
 			newsbsec->sid = sid;
 		if (!set_rootcontext) {
-<<<<<<< HEAD
-			struct inode *newinode = newsb->s_root->d_inode;
-			struct inode_security_struct *newisec = newinode->i_security;
-=======
 			struct inode_security_struct *newisec = backing_inode_security(newsb->s_root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			newisec->sid = sid;
 		}
 		newsbsec->mntpoint_sid = sid;
 	}
 	if (set_rootcontext) {
-<<<<<<< HEAD
-		const struct inode *oldinode = oldsb->s_root->d_inode;
-		const struct inode_security_struct *oldisec = oldinode->i_security;
-		struct inode *newinode = newsb->s_root->d_inode;
-		struct inode_security_struct *newisec = newinode->i_security;
-=======
 		const struct inode_security_struct *oldisec = backing_inode_security(oldsb->s_root);
 		struct inode_security_struct *newisec = backing_inode_security(newsb->s_root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		newisec->sid = oldisec->sid;
 	}
 
 	sb_finish_set_opts(newsb);
-<<<<<<< HEAD
-	mutex_unlock(&newsbsec->lock);
-}
-
-static int selinux_parse_opts_str(char *options,
-				  struct security_mnt_opts *opts)
-{
-	char *p;
-	char *context = NULL, *defcontext = NULL;
-	char *fscontext = NULL, *rootcontext = NULL;
-	int rc, num_mnt_opts = 0;
-
-	opts->num_mnt_opts = 0;
-
-	/* Standard string-based options. */
-	while ((p = strsep(&options, "|")) != NULL) {
-		int token;
-		substring_t args[MAX_OPT_ARGS];
-
-		if (!*p)
-			continue;
-
-		token = match_token(p, tokens, args);
-
-		switch (token) {
-		case Opt_context:
-			if (context || defcontext) {
-				rc = -EINVAL;
-				printk(KERN_WARNING SEL_MOUNT_FAIL_MSG);
-				goto out_err;
-			}
-			context = match_strdup(&args[0]);
-			if (!context) {
-				rc = -ENOMEM;
-				goto out_err;
-			}
-			break;
-
-		case Opt_fscontext:
-			if (fscontext) {
-				rc = -EINVAL;
-				printk(KERN_WARNING SEL_MOUNT_FAIL_MSG);
-				goto out_err;
-			}
-			fscontext = match_strdup(&args[0]);
-			if (!fscontext) {
-				rc = -ENOMEM;
-				goto out_err;
-			}
-			break;
-
-		case Opt_rootcontext:
-			if (rootcontext) {
-				rc = -EINVAL;
-				printk(KERN_WARNING SEL_MOUNT_FAIL_MSG);
-				goto out_err;
-			}
-			rootcontext = match_strdup(&args[0]);
-			if (!rootcontext) {
-				rc = -ENOMEM;
-				goto out_err;
-			}
-			break;
-
-		case Opt_defcontext:
-			if (context || defcontext) {
-				rc = -EINVAL;
-				printk(KERN_WARNING SEL_MOUNT_FAIL_MSG);
-				goto out_err;
-			}
-			defcontext = match_strdup(&args[0]);
-			if (!defcontext) {
-				rc = -ENOMEM;
-				goto out_err;
-			}
-			break;
-		case Opt_labelsupport:
-			break;
-		default:
-			rc = -EINVAL;
-			printk(KERN_WARNING "SELinux:  unknown mount option\n");
-			goto out_err;
-
-		}
-	}
-
-	rc = -ENOMEM;
-	opts->mnt_opts = kcalloc(NUM_SEL_MNT_OPTS, sizeof(char *), GFP_ATOMIC);
-	if (!opts->mnt_opts)
-		goto out_err;
-
-	opts->mnt_opts_flags = kcalloc(NUM_SEL_MNT_OPTS, sizeof(int), GFP_ATOMIC);
-	if (!opts->mnt_opts_flags) {
-		kfree(opts->mnt_opts);
-		goto out_err;
-	}
-
-	if (fscontext) {
-		opts->mnt_opts[num_mnt_opts] = fscontext;
-		opts->mnt_opts_flags[num_mnt_opts++] = FSCONTEXT_MNT;
-	}
-	if (context) {
-		opts->mnt_opts[num_mnt_opts] = context;
-		opts->mnt_opts_flags[num_mnt_opts++] = CONTEXT_MNT;
-	}
-	if (rootcontext) {
-		opts->mnt_opts[num_mnt_opts] = rootcontext;
-		opts->mnt_opts_flags[num_mnt_opts++] = ROOTCONTEXT_MNT;
-	}
-	if (defcontext) {
-		opts->mnt_opts[num_mnt_opts] = defcontext;
-		opts->mnt_opts_flags[num_mnt_opts++] = DEFCONTEXT_MNT;
-	}
-
-	opts->num_mnt_opts = num_mnt_opts;
-	return 0;
-
-out_err:
-	kfree(context);
-	kfree(defcontext);
-	kfree(fscontext);
-	kfree(rootcontext);
-	return rc;
-}
-/*
- * string mount options parsing and call set the sbsec
- */
-static int superblock_doinit(struct super_block *sb, void *data)
-{
-	int rc = 0;
-	char *options = data;
-	struct security_mnt_opts opts;
-
-	security_init_mnt_opts(&opts);
-
-	if (!data)
-		goto out;
-
-	BUG_ON(sb->s_type->fs_flags & FS_BINARY_MOUNTDATA);
-
-	rc = selinux_parse_opts_str(options, &opts);
-	if (rc)
-		goto out_err;
-
-out:
-	rc = selinux_set_mnt_opts(sb, &opts);
-
-out_err:
-	security_free_mnt_opts(&opts);
-	return rc;
-}
-
-static void selinux_write_opts(struct seq_file *m,
-			       struct security_mnt_opts *opts)
-{
-	int i;
-	char *prefix;
-
-	for (i = 0; i < opts->num_mnt_opts; i++) {
-		char *has_comma;
-
-		if (opts->mnt_opts[i])
-			has_comma = strchr(opts->mnt_opts[i], ',');
-		else
-			has_comma = NULL;
-
-		switch (opts->mnt_opts_flags[i]) {
-		case CONTEXT_MNT:
-			prefix = CONTEXT_STR;
-			break;
-		case FSCONTEXT_MNT:
-			prefix = FSCONTEXT_STR;
-			break;
-		case ROOTCONTEXT_MNT:
-			prefix = ROOTCONTEXT_STR;
-			break;
-		case DEFCONTEXT_MNT:
-			prefix = DEFCONTEXT_STR;
-			break;
-		case SE_SBLABELSUPP:
-			seq_putc(m, ',');
-			seq_puts(m, LABELSUPP_STR);
-			continue;
-		default:
-			BUG();
-			return;
-		};
-		/* we need a comma before each option */
-		seq_putc(m, ',');
-		seq_puts(m, prefix);
-		if (has_comma)
-			seq_putc(m, '\"');
-		seq_escape(m, opts->mnt_opts[i], "\"\n\\");
-		if (has_comma)
-			seq_putc(m, '\"');
-	}
-=======
 out:
 	mutex_unlock(&newsbsec->lock);
 	return rc;
@@ -1872,29 +1068,10 @@ static int show_sid(struct seq_file *m, u32 sid)
 	}
 	kfree(context);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_sb_show_options(struct seq_file *m, struct super_block *sb)
 {
-<<<<<<< HEAD
-	struct security_mnt_opts opts;
-	int rc;
-
-	rc = selinux_get_mnt_opts(sb, &opts);
-	if (rc) {
-		/* before policy load we may get EINVAL, don't show anything */
-		if (rc == -EINVAL)
-			rc = 0;
-		return rc;
-	}
-
-	selinux_write_opts(m, &opts);
-
-	security_free_mnt_opts(&opts);
-
-	return rc;
-=======
 	struct superblock_security_struct *sbsec = selinux_superblock(sb);
 	int rc;
 
@@ -1939,7 +1116,6 @@ static int selinux_sb_show_options(struct seq_file *m, struct super_block *sb)
 		seq_puts(m, SECLABEL_STR);
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u16 inode_mode_to_security_class(umode_t mode)
@@ -1967,12 +1143,8 @@ static inline u16 inode_mode_to_security_class(umode_t mode)
 
 static inline int default_protocol_stream(int protocol)
 {
-<<<<<<< HEAD
-	return (protocol == IPPROTO_IP || protocol == IPPROTO_TCP);
-=======
 	return (protocol == IPPROTO_IP || protocol == IPPROTO_TCP ||
 		protocol == IPPROTO_MPTCP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int default_protocol_dgram(int protocol)
@@ -1982,11 +1154,8 @@ static inline int default_protocol_dgram(int protocol)
 
 static inline u16 socket_type_to_security_class(int family, int type, int protocol)
 {
-<<<<<<< HEAD
-=======
 	bool extsockclass = selinux_policycap_extsockclass();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (family) {
 	case PF_UNIX:
 		switch (type) {
@@ -1994,10 +1163,7 @@ static inline u16 socket_type_to_security_class(int family, int type, int protoc
 		case SOCK_SEQPACKET:
 			return SECCLASS_UNIX_STREAM_SOCKET;
 		case SOCK_DGRAM:
-<<<<<<< HEAD
-=======
 		case SOCK_RAW:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return SECCLASS_UNIX_DGRAM_SOCKET;
 		}
 		break;
@@ -2005,27 +1171,19 @@ static inline u16 socket_type_to_security_class(int family, int type, int protoc
 	case PF_INET6:
 		switch (type) {
 		case SOCK_STREAM:
-<<<<<<< HEAD
-			if (default_protocol_stream(protocol))
-				return SECCLASS_TCP_SOCKET;
-=======
 		case SOCK_SEQPACKET:
 			if (default_protocol_stream(protocol))
 				return SECCLASS_TCP_SOCKET;
 			else if (extsockclass && protocol == IPPROTO_SCTP)
 				return SECCLASS_SCTP_SOCKET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else
 				return SECCLASS_RAWIP_SOCKET;
 		case SOCK_DGRAM:
 			if (default_protocol_dgram(protocol))
 				return SECCLASS_UDP_SOCKET;
-<<<<<<< HEAD
-=======
 			else if (extsockclass && (protocol == IPPROTO_ICMP ||
 						  protocol == IPPROTO_ICMPV6))
 				return SECCLASS_ICMP_SOCKET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else
 				return SECCLASS_RAWIP_SOCKET;
 		case SOCK_DCCP:
@@ -2079,8 +1237,6 @@ static inline u16 socket_type_to_security_class(int family, int type, int protoc
 		return SECCLASS_APPLETALK_SOCKET;
 	}
 
-<<<<<<< HEAD
-=======
 	if (extsockclass) {
 		switch (family) {
 		case PF_AX25:
@@ -2147,7 +1303,6 @@ static inline u16 socket_type_to_security_class(int family, int type, int protoc
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return SECCLASS_SOCKET;
 }
 
@@ -2157,11 +1312,7 @@ static int selinux_genfs_get_sid(struct dentry *dentry,
 				 u32 *sid)
 {
 	int rc;
-<<<<<<< HEAD
-	struct super_block *sb = dentry->d_inode->i_sb;
-=======
 	struct super_block *sb = dentry->d_sb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *buffer, *path;
 
 	buffer = (char *)__get_free_page(GFP_KERNEL);
@@ -2181,9 +1332,6 @@ static int selinux_genfs_get_sid(struct dentry *dentry,
 				path++;
 			}
 		}
-<<<<<<< HEAD
-		rc = security_genfs_sid(sb->s_type->name, path, tclass, sid);
-=======
 		rc = security_genfs_sid(sb->s_type->name,
 					path, tclass, sid);
 		if (rc == -ENOENT) {
@@ -2191,14 +1339,11 @@ static int selinux_genfs_get_sid(struct dentry *dentry,
 			*sid = SECINITSID_UNLABELED;
 			rc = 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	free_page((unsigned long)buffer);
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 static int inode_doinit_use_xattr(struct inode *inode, struct dentry *dentry,
 				  u32 def_sid, u32 *sid)
 {
@@ -2260,29 +1405,10 @@ static int inode_doinit_use_xattr(struct inode *inode, struct dentry *dentry,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The inode's security attributes must be initialized before first use. */
 static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dentry)
 {
 	struct superblock_security_struct *sbsec = NULL;
-<<<<<<< HEAD
-	struct inode_security_struct *isec = inode->i_security;
-	u32 sid;
-	struct dentry *dentry;
-#define INITCONTEXTLEN 255
-	char *context = NULL;
-	unsigned len = 0;
-	int rc = 0;
-
-	if (isec->initialized)
-		goto out;
-
-	mutex_lock(&isec->lock);
-	if (isec->initialized)
-		goto out_unlock;
-
-	sbsec = inode->i_sb->s_security;
-=======
 	struct inode_security_struct *isec = selinux_inode(inode);
 	u32 task_sid, sid = 0;
 	u16 sclass;
@@ -2300,7 +1426,6 @@ static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dent
 		isec->sclass = inode_mode_to_security_class(inode->i_mode);
 
 	sbsec = selinux_superblock(inode->i_sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(sbsec->flags & SE_SBINITIALIZED)) {
 		/* Defer initialization until selinux_complete_init,
 		   after the initial policy is loaded and the security
@@ -2312,15 +1437,6 @@ static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dent
 		goto out_unlock;
 	}
 
-<<<<<<< HEAD
-	switch (sbsec->behavior) {
-	case SECURITY_FS_USE_XATTR:
-		if (!inode->i_op->getxattr) {
-			isec->sid = sbsec->def_sid;
-			break;
-		}
-
-=======
 	sclass = isec->sclass;
 	task_sid = isec->task_sid;
 	sid = isec->sid;
@@ -2338,17 +1454,12 @@ static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dent
 			sid = sbsec->def_sid;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Need a dentry, since the xattr API requires one.
 		   Life would be simpler if we could just pass the inode. */
 		if (opt_dentry) {
 			/* Called from d_instantiate or d_splice_alias. */
 			dentry = dget(opt_dentry);
 		} else {
-<<<<<<< HEAD
-			/* Called from selinux_complete_init, try to find a dentry. */
-			dentry = d_find_alias(inode);
-=======
 			/*
 			 * Called from selinux_complete_init, try to find a dentry.
 			 * Some filesystems really want a connected one, so try
@@ -2358,7 +1469,6 @@ static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dent
 			dentry = d_find_alias(inode);
 			if (!dentry)
 				dentry = d_find_any_alias(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (!dentry) {
 			/*
@@ -2370,115 +1480,6 @@ static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dent
 			 * inode_doinit with a dentry, before these inodes could
 			 * be used again by userspace.
 			 */
-<<<<<<< HEAD
-			goto out_unlock;
-		}
-
-		len = INITCONTEXTLEN;
-		context = kmalloc(len+1, GFP_NOFS);
-		if (!context) {
-			rc = -ENOMEM;
-			dput(dentry);
-			goto out_unlock;
-		}
-		context[len] = '\0';
-		rc = inode->i_op->getxattr(dentry, XATTR_NAME_SELINUX,
-					   context, len);
-		if (rc == -ERANGE) {
-			kfree(context);
-
-			/* Need a larger buffer.  Query for the right size. */
-			rc = inode->i_op->getxattr(dentry, XATTR_NAME_SELINUX,
-						   NULL, 0);
-			if (rc < 0) {
-				dput(dentry);
-				goto out_unlock;
-			}
-			len = rc;
-			context = kmalloc(len+1, GFP_NOFS);
-			if (!context) {
-				rc = -ENOMEM;
-				dput(dentry);
-				goto out_unlock;
-			}
-			context[len] = '\0';
-			rc = inode->i_op->getxattr(dentry,
-						   XATTR_NAME_SELINUX,
-						   context, len);
-		}
-		dput(dentry);
-		if (rc < 0) {
-			if (rc != -ENODATA) {
-				printk(KERN_WARNING "SELinux: %s:  getxattr returned "
-				       "%d for dev=%s ino=%ld\n", __func__,
-				       -rc, inode->i_sb->s_id, inode->i_ino);
-				kfree(context);
-				goto out_unlock;
-			}
-			/* Map ENODATA to the default file SID */
-			sid = sbsec->def_sid;
-			rc = 0;
-		} else {
-			rc = security_context_to_sid_default(context, rc, &sid,
-							     sbsec->def_sid,
-							     GFP_NOFS);
-			if (rc) {
-				char *dev = inode->i_sb->s_id;
-				unsigned long ino = inode->i_ino;
-
-				if (rc == -EINVAL) {
-					if (printk_ratelimit())
-						printk(KERN_NOTICE "SELinux: inode=%lu on dev=%s was found to have an invalid "
-							"context=%s.  This indicates you may need to relabel the inode or the "
-							"filesystem in question.\n", ino, dev, context);
-				} else {
-					printk(KERN_WARNING "SELinux: %s:  context_to_sid(%s) "
-					       "returned %d for dev=%s ino=%ld\n",
-					       __func__, context, -rc, dev, ino);
-				}
-				kfree(context);
-				/* Leave with the unlabeled SID */
-				rc = 0;
-				break;
-			}
-		}
-		kfree(context);
-		isec->sid = sid;
-		break;
-	case SECURITY_FS_USE_TASK:
-		isec->sid = isec->task_sid;
-		break;
-	case SECURITY_FS_USE_TRANS:
-		/* Default to the fs SID. */
-		isec->sid = sbsec->sid;
-
-		/* Try to obtain a transition SID. */
-		isec->sclass = inode_mode_to_security_class(inode->i_mode);
-		rc = security_transition_sid(isec->task_sid, sbsec->sid,
-					     isec->sclass, NULL, &sid);
-		if (rc)
-			goto out_unlock;
-		isec->sid = sid;
-		break;
-	case SECURITY_FS_USE_MNTPOINT:
-		isec->sid = sbsec->mntpoint_sid;
-		break;
-	default:
-		/* Default to the fs superblock SID. */
-		isec->sid = sbsec->sid;
-
-		if ((sbsec->flags & SE_SBGENFS) && !S_ISLNK(inode->i_mode)) {
-			/* We must have a dentry to determine the label on
-			 * procfs inodes */
-			if (opt_dentry)
-				/* Called from d_instantiate or
-				 * d_splice_alias. */
-				dentry = dget(opt_dentry);
-			else
-				/* Called from selinux_complete_init, try to
-				 * find a dentry. */
-				dentry = d_find_alias(inode);
-=======
 			goto out_invalid;
 		}
 
@@ -2526,7 +1527,6 @@ static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dent
 				if (!dentry)
 					dentry = d_find_any_alias(inode);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * This can be hit on boot when a file is accessed
 			 * before the policy is loaded.  When we load policy we
@@ -2537,16 +1537,6 @@ static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dent
 			 * could be used again by userspace.
 			 */
 			if (!dentry)
-<<<<<<< HEAD
-				goto out_unlock;
-			isec->sclass = inode_mode_to_security_class(inode->i_mode);
-			rc = selinux_genfs_get_sid(dentry, isec->sclass,
-						   sbsec->flags, &sid);
-			dput(dentry);
-			if (rc)
-				goto out_unlock;
-			isec->sid = sid;
-=======
 				goto out_invalid;
 			rc = selinux_genfs_get_sid(dentry, sclass,
 						   sbsec->flags, &sid);
@@ -2565,21 +1555,10 @@ static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dent
 				}
 			}
 			dput(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	}
 
-<<<<<<< HEAD
-	isec->initialized = 1;
-
-out_unlock:
-	mutex_unlock(&isec->lock);
-out:
-	if (isec->sclass == SECCLASS_FILE)
-		isec->sclass = inode_mode_to_security_class(inode->i_mode);
-	return rc;
-=======
 out:
 	spin_lock(&isec->lock);
 	if (isec->initialized == LABEL_PENDING) {
@@ -2603,7 +1582,6 @@ out_invalid:
 	}
 	spin_unlock(&isec->lock);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Convert a Linux signal to an access vector. */
@@ -2633,101 +1611,26 @@ static inline u32 signal_to_av(int sig)
 	return perm;
 }
 
-<<<<<<< HEAD
-/*
- * Check permission between a pair of credentials
- * fork check, ptrace check, etc.
- */
-static int cred_has_perm(const struct cred *actor,
-			 const struct cred *target,
-			 u32 perms)
-{
-	u32 asid = cred_sid(actor), tsid = cred_sid(target);
-
-	return avc_has_perm(asid, tsid, SECCLASS_PROCESS, perms, NULL);
-}
-
-/*
- * Check permission between a pair of tasks, e.g. signal checks,
- * fork check, ptrace check, etc.
- * tsk1 is the actor and tsk2 is the target
- * - this uses the default subjective creds of tsk1
- */
-static int task_has_perm(const struct task_struct *tsk1,
-			 const struct task_struct *tsk2,
-			 u32 perms)
-{
-	const struct task_security_struct *__tsec1, *__tsec2;
-	u32 sid1, sid2;
-
-	rcu_read_lock();
-	__tsec1 = __task_cred(tsk1)->security;	sid1 = __tsec1->sid;
-	__tsec2 = __task_cred(tsk2)->security;	sid2 = __tsec2->sid;
-	rcu_read_unlock();
-	return avc_has_perm(sid1, sid2, SECCLASS_PROCESS, perms, NULL);
-}
-
-/*
- * Check permission between current and another task, e.g. signal checks,
- * fork check, ptrace check, etc.
- * current is the actor and tsk2 is the target
- * - this uses current's subjective creds
- */
-static int current_has_perm(const struct task_struct *tsk,
-			    u32 perms)
-{
-	u32 sid, tsid;
-
-	sid = current_sid();
-	tsid = task_sid(tsk);
-	return avc_has_perm(sid, tsid, SECCLASS_PROCESS, perms, NULL);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if CAP_LAST_CAP > 63
 #error Fix SELinux to handle capabilities > 63.
 #endif
 
 /* Check whether a task is allowed to use a capability. */
 static int cred_has_capability(const struct cred *cred,
-<<<<<<< HEAD
-			       int cap, int audit)
-{
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-=======
 			       int cap, unsigned int opts, bool initns)
 {
 	struct common_audit_data ad;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct av_decision avd;
 	u16 sclass;
 	u32 sid = cred_sid(cred);
 	u32 av = CAP_TO_MASK(cap);
 	int rc;
 
-<<<<<<< HEAD
-	COMMON_AUDIT_DATA_INIT(&ad, CAP);
-	ad.selinux_audit_data = &sad;
-	ad.tsk = current;
-=======
 	ad.type = LSM_AUDIT_DATA_CAP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ad.u.cap = cap;
 
 	switch (CAP_TO_INDEX(cap)) {
 	case 0:
-<<<<<<< HEAD
-		sclass = SECCLASS_CAPABILITY;
-		break;
-	case 1:
-		sclass = SECCLASS_CAPABILITY2;
-		break;
-	default:
-		printk(KERN_ERR
-		       "SELinux:  out of range capability %d\n", cap);
-=======
 		sclass = initns ? SECCLASS_CAPABILITY : SECCLASS_CAP_USERNS;
 		break;
 	case 1:
@@ -2735,86 +1638,37 @@ static int cred_has_capability(const struct cred *cred,
 		break;
 	default:
 		pr_err("SELinux:  out of range capability %d\n", cap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG();
 		return -EINVAL;
 	}
 
 	rc = avc_has_perm_noaudit(sid, sid, sclass, av, 0, &avd);
-<<<<<<< HEAD
-	if (audit == SECURITY_CAP_AUDIT) {
-		int rc2 = avc_audit(sid, sid, sclass, av, &avd, rc, &ad, 0);
-=======
 	if (!(opts & CAP_OPT_NOAUDIT)) {
 		int rc2 = avc_audit(sid, sid, sclass, av, &avd, rc, &ad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc2)
 			return rc2;
 	}
 	return rc;
 }
 
-<<<<<<< HEAD
-/* Check whether a task is allowed to use a system operation. */
-static int task_has_system(struct task_struct *tsk,
-			   u32 perms)
-{
-	u32 sid = task_sid(tsk);
-
-	return avc_has_perm(sid, SECINITSID_KERNEL,
-			    SECCLASS_SYSTEM, perms, NULL);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Check whether a task has a particular permission to an inode.
    The 'adp' parameter is optional and allows other audit
    data to be passed (e.g. the dentry). */
 static int inode_has_perm(const struct cred *cred,
 			  struct inode *inode,
 			  u32 perms,
-<<<<<<< HEAD
-			  struct common_audit_data *adp,
-			  unsigned flags)
-=======
 			  struct common_audit_data *adp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode_security_struct *isec;
 	u32 sid;
 
-<<<<<<< HEAD
-	validate_creds(cred);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(IS_PRIVATE(inode)))
 		return 0;
 
 	sid = cred_sid(cred);
-<<<<<<< HEAD
-	isec = inode->i_security;
-
-	return avc_has_perm_flags(sid, isec->sid, isec->sclass, perms, adp, flags);
-}
-
-static int inode_has_perm_noadp(const struct cred *cred,
-				struct inode *inode,
-				u32 perms,
-				unsigned flags)
-{
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-
-	COMMON_AUDIT_DATA_INIT(&ad, INODE);
-	ad.u.inode = inode;
-	ad.selinux_audit_data = &sad;
-	return inode_has_perm(cred, inode, perms, &ad, flags);
-=======
 	isec = selinux_inode(inode);
 
 	return avc_has_perm(sid, isec->sid, isec->sclass, perms, adp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Same as inode_has_perm, but pass explicit audit data containing
@@ -2824,16 +1678,6 @@ static inline int dentry_has_perm(const struct cred *cred,
 				  struct dentry *dentry,
 				  u32 av)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-
-	COMMON_AUDIT_DATA_INIT(&ad, DENTRY);
-	ad.u.dentry = dentry;
-	ad.selinux_audit_data = &sad;
-	return inode_has_perm(cred, inode, av, &ad, 0);
-=======
 	struct inode *inode = d_backing_inode(dentry);
 	struct common_audit_data ad;
 
@@ -2841,28 +1685,12 @@ static inline int dentry_has_perm(const struct cred *cred,
 	ad.u.dentry = dentry;
 	__inode_security_revalidate(inode, dentry, true);
 	return inode_has_perm(cred, inode, av, &ad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Same as inode_has_perm, but pass explicit audit data containing
    the path to help the auditing code to more easily generate the
    pathname if needed. */
 static inline int path_has_perm(const struct cred *cred,
-<<<<<<< HEAD
-				struct path *path,
-				u32 av)
-{
-	struct inode *inode = path->dentry->d_inode;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-
-	COMMON_AUDIT_DATA_INIT(&ad, PATH);
-	ad.u.path = *path;
-	ad.selinux_audit_data = &sad;
-	return inode_has_perm(cred, inode, av, &ad, 0);
-}
-
-=======
 				const struct path *path,
 				u32 av)
 {
@@ -2891,7 +1719,6 @@ static inline int file_path_has_perm(const struct cred *cred,
 static int bpf_fd_pass(const struct file *file, u32 sid);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Check whether a task can use an open file descriptor to
    access an inode in a given way.  Check access to the
    descriptor itself, and then use dentry_has_perm to
@@ -2904,18 +1731,6 @@ static int file_has_perm(const struct cred *cred,
 			 struct file *file,
 			 u32 av)
 {
-<<<<<<< HEAD
-	struct file_security_struct *fsec = file->f_security;
-	struct inode *inode = file->f_path.dentry->d_inode;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	u32 sid = cred_sid(cred);
-	int rc;
-
-	COMMON_AUDIT_DATA_INIT(&ad, PATH);
-	ad.u.path = file->f_path;
-	ad.selinux_audit_data = &sad;
-=======
 	struct file_security_struct *fsec = selinux_file(file);
 	struct inode *inode = file_inode(file);
 	struct common_audit_data ad;
@@ -2924,7 +1739,6 @@ static int file_has_perm(const struct cred *cred,
 
 	ad.type = LSM_AUDIT_DATA_FILE;
 	ad.u.file = file;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sid != fsec->sid) {
 		rc = avc_has_perm(sid, fsec->sid,
@@ -2935,12 +1749,6 @@ static int file_has_perm(const struct cred *cred,
 			goto out;
 	}
 
-<<<<<<< HEAD
-	/* av is zero if only checking access to the descriptor. */
-	rc = 0;
-	if (av)
-		rc = inode_has_perm(cred, inode, av, &ad, 0);
-=======
 #ifdef CONFIG_BPF_SYSCALL
 	rc = bpf_fd_pass(file, cred_sid(cred));
 	if (rc)
@@ -2951,14 +1759,11 @@ static int file_has_perm(const struct cred *cred,
 	rc = 0;
 	if (av)
 		rc = inode_has_perm(cred, inode, av, &ad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Determine the label for an inode that might be unioned.
  */
@@ -2987,35 +1792,16 @@ selinux_determine_inode_label(const struct task_security_struct *tsec,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Check whether a task can create a file. */
 static int may_create(struct inode *dir,
 		      struct dentry *dentry,
 		      u16 tclass)
 {
-<<<<<<< HEAD
-	const struct task_security_struct *tsec = current_security();
-=======
 	const struct task_security_struct *tsec = selinux_cred(current_cred());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode_security_struct *dsec;
 	struct superblock_security_struct *sbsec;
 	u32 sid, newsid;
 	struct common_audit_data ad;
-<<<<<<< HEAD
-	struct selinux_audit_data sad = {0,};
-	int rc;
-
-	dsec = dir->i_security;
-	sbsec = dir->i_sb->s_security;
-
-	sid = tsec->sid;
-	newsid = tsec->create_sid;
-
-	COMMON_AUDIT_DATA_INIT(&ad, DENTRY);
-	ad.u.dentry = dentry;
-	ad.selinux_audit_data = &sad;
-=======
 	int rc;
 
 	dsec = inode_security(dir);
@@ -3025,7 +1811,6 @@ static int may_create(struct inode *dir,
 
 	ad.type = LSM_AUDIT_DATA_DENTRY;
 	ad.u.dentry = dentry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = avc_has_perm(sid, dsec->sid, SECCLASS_DIR,
 			  DIR__ADD_NAME | DIR__SEARCH,
@@ -3033,48 +1818,18 @@ static int may_create(struct inode *dir,
 	if (rc)
 		return rc;
 
-<<<<<<< HEAD
-	if (!newsid || !(sbsec->flags & SE_SBLABELSUPP)) {
-		rc = security_transition_sid(sid, dsec->sid, tclass,
-					     &dentry->d_name, &newsid);
-		if (rc)
-			return rc;
-	}
-=======
 	rc = selinux_determine_inode_label(tsec, dir, &dentry->d_name, tclass,
 					   &newsid);
 	if (rc)
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = avc_has_perm(sid, newsid, tclass, FILE__CREATE, &ad);
 	if (rc)
 		return rc;
 
-<<<<<<< HEAD
-	rc = avc_has_perm(newsid, sbsec->sid,
-			  SECCLASS_FILESYSTEM,
-			  FILESYSTEM__ASSOCIATE, &ad);
-	if (rc)
-		return rc;
-
-	rc = pft_inode_mknod(dir, dentry, 0, 0);
-
-	return rc;
-}
-
-/* Check whether a task can create a key. */
-static int may_create_key(u32 ksid,
-			  struct task_struct *ctx)
-{
-	u32 sid = task_sid(ctx);
-
-	return avc_has_perm(sid, ksid, SECCLASS_KEY, KEY__CREATE, NULL);
-=======
 	return avc_has_perm(newsid, sbsec->sid,
 			    SECCLASS_FILESYSTEM,
 			    FILESYSTEM__ASSOCIATE, &ad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define MAY_LINK	0
@@ -3089,28 +1844,15 @@ static int may_link(struct inode *dir,
 {
 	struct inode_security_struct *dsec, *isec;
 	struct common_audit_data ad;
-<<<<<<< HEAD
-	struct selinux_audit_data sad = {0,};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 sid = current_sid();
 	u32 av;
 	int rc;
 
-<<<<<<< HEAD
-	dsec = dir->i_security;
-	isec = dentry->d_inode->i_security;
-
-	COMMON_AUDIT_DATA_INIT(&ad, DENTRY);
-	ad.u.dentry = dentry;
-	ad.selinux_audit_data = &sad;
-=======
 	dsec = inode_security(dir);
 	isec = backing_inode_security(dentry);
 
 	ad.type = LSM_AUDIT_DATA_DENTRY;
 	ad.u.dentry = dentry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	av = DIR__SEARCH;
 	av |= (kind ? DIR__REMOVE_NAME : DIR__ADD_NAME);
@@ -3129,25 +1871,12 @@ static int may_link(struct inode *dir,
 		av = DIR__RMDIR;
 		break;
 	default:
-<<<<<<< HEAD
-		printk(KERN_WARNING "SELinux: %s:  unrecognized kind %d\n",
-=======
 		pr_warn("SELinux: %s:  unrecognized kind %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, kind);
 		return 0;
 	}
 
 	rc = avc_has_perm(sid, isec->sid, isec->sclass, av, &ad);
-<<<<<<< HEAD
-	if (rc)
-		return rc;
-
-	if (kind == MAY_UNLINK)
-		rc = pft_inode_unlink(dir, dentry);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -3158,31 +1887,17 @@ static inline int may_rename(struct inode *old_dir,
 {
 	struct inode_security_struct *old_dsec, *new_dsec, *old_isec, *new_isec;
 	struct common_audit_data ad;
-<<<<<<< HEAD
-	struct selinux_audit_data sad = {0,};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 sid = current_sid();
 	u32 av;
 	int old_is_dir, new_is_dir;
 	int rc;
 
-<<<<<<< HEAD
-	old_dsec = old_dir->i_security;
-	old_isec = old_dentry->d_inode->i_security;
-	old_is_dir = S_ISDIR(old_dentry->d_inode->i_mode);
-	new_dsec = new_dir->i_security;
-
-	COMMON_AUDIT_DATA_INIT(&ad, DENTRY);
-	ad.selinux_audit_data = &sad;
-=======
 	old_dsec = inode_security(old_dir);
 	old_isec = backing_inode_security(old_dentry);
 	old_is_dir = d_is_dir(old_dentry);
 	new_dsec = inode_security(new_dir);
 
 	ad.type = LSM_AUDIT_DATA_DENTRY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ad.u.dentry = old_dentry;
 	rc = avc_has_perm(sid, old_dsec->sid, SECCLASS_DIR,
@@ -3202,24 +1917,14 @@ static inline int may_rename(struct inode *old_dir,
 
 	ad.u.dentry = new_dentry;
 	av = DIR__ADD_NAME | DIR__SEARCH;
-<<<<<<< HEAD
-	if (new_dentry->d_inode)
-=======
 	if (d_is_positive(new_dentry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		av |= DIR__REMOVE_NAME;
 	rc = avc_has_perm(sid, new_dsec->sid, SECCLASS_DIR, av, &ad);
 	if (rc)
 		return rc;
-<<<<<<< HEAD
-	if (new_dentry->d_inode) {
-		new_isec = new_dentry->d_inode->i_security;
-		new_is_dir = S_ISDIR(new_dentry->d_inode->i_mode);
-=======
 	if (d_is_positive(new_dentry)) {
 		new_isec = backing_inode_security(new_dentry);
 		new_is_dir = d_is_dir(new_dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = avc_has_perm(sid, new_isec->sid,
 				  new_isec->sclass,
 				  (new_is_dir ? DIR__RMDIR : FILE__UNLINK), &ad);
@@ -3232,22 +1937,14 @@ static inline int may_rename(struct inode *old_dir,
 
 /* Check whether a task can perform a filesystem operation. */
 static int superblock_has_perm(const struct cred *cred,
-<<<<<<< HEAD
-			       struct super_block *sb,
-=======
 			       const struct super_block *sb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       u32 perms,
 			       struct common_audit_data *ad)
 {
 	struct superblock_security_struct *sbsec;
 	u32 sid = cred_sid(cred);
 
-<<<<<<< HEAD
-	sbsec = sb->s_security;
-=======
 	sbsec = selinux_superblock(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return avc_has_perm(sid, sbsec->sid, SECCLASS_FILESYSTEM, perms, ad);
 }
 
@@ -3280,11 +1977,7 @@ static inline u32 file_mask_to_av(int mode, int mask)
 }
 
 /* Convert a Linux file to an access vector. */
-<<<<<<< HEAD
-static inline u32 file_to_av(struct file *file)
-=======
 static inline u32 file_to_av(const struct file *file)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 av = 0;
 
@@ -3307,25 +2000,16 @@ static inline u32 file_to_av(const struct file *file)
 }
 
 /*
-<<<<<<< HEAD
- * Convert a file to an access vector and include the correct open
-=======
  * Convert a file to an access vector and include the correct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * open permission.
  */
 static inline u32 open_file_to_av(struct file *file)
 {
 	u32 av = file_to_av(file);
-<<<<<<< HEAD
-
-	if (selinux_policycap_openperm)
-=======
 	struct inode *inode = file_inode(file);
 
 	if (selinux_policycap_openperm() &&
 	    inode->i_sb->s_magic != SOCKFS_MAGIC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		av |= FILE__OPEN;
 
 	return av;
@@ -3333,25 +2017,6 @@ static inline u32 open_file_to_av(struct file *file)
 
 /* Hook functions begin here. */
 
-<<<<<<< HEAD
-static int selinux_binder_set_context_mgr(struct task_struct *mgr)
-{
-	u32 mysid = current_sid();
-	u32 mgrsid = task_sid(mgr);
-
-	return avc_has_perm(mysid, mgrsid, SECCLASS_BINDER, BINDER__SET_CONTEXT_MGR, NULL);
-}
-
-static int selinux_binder_transaction(struct task_struct *from, struct task_struct *to)
-{
-	u32 mysid = current_sid();
-	u32 fromsid = task_sid(from);
-	u32 tosid = task_sid(to);
-	int rc;
-
-	if (mysid != fromsid) {
-		rc = avc_has_perm(mysid, fromsid, SECCLASS_BINDER, BINDER__IMPERSONATE, NULL);
-=======
 static int selinux_binder_set_context_mgr(const struct cred *mgr)
 {
 	return avc_has_perm(current_sid(), cred_sid(mgr), SECCLASS_BINDER,
@@ -3369,36 +2034,10 @@ static int selinux_binder_transaction(const struct cred *from,
 	if (mysid != fromsid) {
 		rc = avc_has_perm(mysid, fromsid, SECCLASS_BINDER,
 				  BINDER__IMPERSONATE, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc)
 			return rc;
 	}
 
-<<<<<<< HEAD
-	return avc_has_perm(fromsid, tosid, SECCLASS_BINDER, BINDER__CALL, NULL);
-}
-
-static int selinux_binder_transfer_binder(struct task_struct *from, struct task_struct *to)
-{
-	u32 fromsid = task_sid(from);
-	u32 tosid = task_sid(to);
-	return avc_has_perm(fromsid, tosid, SECCLASS_BINDER, BINDER__TRANSFER, NULL);
-}
-
-static int selinux_binder_transfer_file(struct task_struct *from, struct task_struct *to, struct file *file)
-{
-	u32 sid = task_sid(to);
-	struct file_security_struct *fsec = file->f_security;
-	struct inode *inode = file->f_path.dentry->d_inode;
-	struct inode_security_struct *isec = inode->i_security;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	int rc;
-
-	COMMON_AUDIT_DATA_INIT(&ad, PATH);
-	ad.u.path = file->f_path;
-	ad.selinux_audit_data = &sad;
-=======
 	return avc_has_perm(fromsid, tosid,
 			    SECCLASS_BINDER, BINDER__CALL, NULL);
 }
@@ -3424,7 +2063,6 @@ static int selinux_binder_transfer_file(const struct cred *from,
 
 	ad.type = LSM_AUDIT_DATA_PATH;
 	ad.u.path = file->f_path;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sid != fsec->sid) {
 		rc = avc_has_perm(sid, fsec->sid,
@@ -3435,11 +2073,6 @@ static int selinux_binder_transfer_file(const struct cred *from,
 			return rc;
 	}
 
-<<<<<<< HEAD
-	if (unlikely(IS_PRIVATE(inode)))
-		return 0;
-
-=======
 #ifdef CONFIG_BPF_SYSCALL
 	rc = bpf_fd_pass(file, sid);
 	if (rc)
@@ -3450,29 +2083,11 @@ static int selinux_binder_transfer_file(const struct cred *from,
 		return 0;
 
 	isec = backing_inode_security(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return avc_has_perm(sid, isec->sid, isec->sclass, file_to_av(file),
 			    &ad);
 }
 
 static int selinux_ptrace_access_check(struct task_struct *child,
-<<<<<<< HEAD
-				     unsigned int mode)
-{
-	int rc;
-
-	rc = cap_ptrace_access_check(child, mode);
-	if (rc)
-		return rc;
-
-	if (mode & PTRACE_MODE_READ) {
-		u32 sid = current_sid();
-		u32 csid = task_sid(child);
-		return avc_has_perm(sid, csid, SECCLASS_FILE, FILE__READ, NULL);
-	}
-
-	return current_has_perm(child, PROCESS__PTRACE);
-=======
 				       unsigned int mode)
 {
 	u32 sid = current_sid();
@@ -3484,32 +2099,10 @@ static int selinux_ptrace_access_check(struct task_struct *child,
 
 	return avc_has_perm(sid, csid, SECCLASS_PROCESS, PROCESS__PTRACE,
 			NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_ptrace_traceme(struct task_struct *parent)
 {
-<<<<<<< HEAD
-	int rc;
-
-	rc = cap_ptrace_traceme(parent);
-	if (rc)
-		return rc;
-
-	return task_has_perm(parent, current, PROCESS__PTRACE);
-}
-
-static int selinux_capget(struct task_struct *target, kernel_cap_t *effective,
-			  kernel_cap_t *inheritable, kernel_cap_t *permitted)
-{
-	int error;
-
-	error = current_has_perm(target, PROCESS__GETCAP);
-	if (error)
-		return error;
-
-	return cap_capget(target, effective, inheritable, permitted);
-=======
 	return avc_has_perm(task_sid_obj(parent), task_sid_obj(current),
 			    SECCLASS_PROCESS, PROCESS__PTRACE, NULL);
 }
@@ -3519,7 +2112,6 @@ static int selinux_capget(const struct task_struct *target, kernel_cap_t *effect
 {
 	return avc_has_perm(current_sid(), task_sid_obj(target),
 			SECCLASS_PROCESS, PROCESS__GETCAP, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_capset(struct cred *new, const struct cred *old,
@@ -3527,19 +2119,8 @@ static int selinux_capset(struct cred *new, const struct cred *old,
 			  const kernel_cap_t *inheritable,
 			  const kernel_cap_t *permitted)
 {
-<<<<<<< HEAD
-	int error;
-
-	error = cap_capset(new, old,
-				      effective, inheritable, permitted);
-	if (error)
-		return error;
-
-	return cred_has_perm(old, new, PROCESS__SETCAP);
-=======
 	return avc_has_perm(cred_sid(old), cred_sid(new), SECCLASS_PROCESS,
 			    PROCESS__SETCAP, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3553,27 +2134,12 @@ static int selinux_capset(struct cred *new, const struct cred *old,
  */
 
 static int selinux_capable(const struct cred *cred, struct user_namespace *ns,
-<<<<<<< HEAD
-			   int cap, int audit)
-{
-	int rc;
-
-	rc = cap_capable(cred, ns, cap, audit);
-	if (rc)
-		return rc;
-
-	return cred_has_capability(cred, cap, audit);
-}
-
-static int selinux_quotactl(int cmds, int type, int id, struct super_block *sb)
-=======
 			   int cap, unsigned int opts)
 {
 	return cred_has_capability(cred, cap, opts, ns == &init_user_ns);
 }
 
 static int selinux_quotactl(int cmds, int type, int id, const struct super_block *sb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct cred *cred = current_cred();
 	int rc = 0;
@@ -3587,24 +2153,18 @@ static int selinux_quotactl(int cmds, int type, int id, const struct super_block
 	case Q_QUOTAOFF:
 	case Q_SETINFO:
 	case Q_SETQUOTA:
-<<<<<<< HEAD
-=======
 	case Q_XQUOTAOFF:
 	case Q_XQUOTAON:
 	case Q_XSETQLIM:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = superblock_has_perm(cred, sb, FILESYSTEM__QUOTAMOD, NULL);
 		break;
 	case Q_GETFMT:
 	case Q_GETINFO:
 	case Q_GETQUOTA:
-<<<<<<< HEAD
-=======
 	case Q_XGETQUOTA:
 	case Q_XGETQSTAT:
 	case Q_XGETQSTATV:
 	case Q_XGETNEXTQUOTA:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = superblock_has_perm(cred, sb, FILESYSTEM__QUOTAGET, NULL);
 		break;
 	default:
@@ -3623,39 +2183,15 @@ static int selinux_quota_on(struct dentry *dentry)
 
 static int selinux_syslog(int type)
 {
-<<<<<<< HEAD
-	int rc;
-
-	switch (type) {
-	case SYSLOG_ACTION_READ_ALL:	/* Read last kernel messages */
-	case SYSLOG_ACTION_SIZE_BUFFER:	/* Return size of the log buffer */
-		rc = task_has_system(current, SYSTEM__SYSLOG_READ);
-		break;
-=======
 	switch (type) {
 	case SYSLOG_ACTION_READ_ALL:	/* Read last kernel messages */
 	case SYSLOG_ACTION_SIZE_BUFFER:	/* Return size of the log buffer */
 		return avc_has_perm(current_sid(), SECINITSID_KERNEL,
 				    SECCLASS_SYSTEM, SYSTEM__SYSLOG_READ, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SYSLOG_ACTION_CONSOLE_OFF:	/* Disable logging to console */
 	case SYSLOG_ACTION_CONSOLE_ON:	/* Enable logging to console */
 	/* Set level of messages printed to console */
 	case SYSLOG_ACTION_CONSOLE_LEVEL:
-<<<<<<< HEAD
-		rc = task_has_system(current, SYSTEM__SYSLOG_CONSOLE);
-		break;
-	case SYSLOG_ACTION_CLOSE:	/* Close log */
-	case SYSLOG_ACTION_OPEN:	/* Open log */
-	case SYSLOG_ACTION_READ:	/* Read from log */
-	case SYSLOG_ACTION_READ_CLEAR:	/* Read/clear last kernel messages */
-	case SYSLOG_ACTION_CLEAR:	/* Clear ring buffer */
-	default:
-		rc = task_has_system(current, SYSTEM__SYSLOG_MOD);
-		break;
-	}
-	return rc;
-=======
 		return avc_has_perm(current_sid(), SECINITSID_KERNEL,
 				    SECCLASS_SYSTEM, SYSTEM__SYSLOG_CONSOLE,
 				    NULL);
@@ -3663,7 +2199,6 @@ static int selinux_syslog(int type)
 	/* All other syslog types */
 	return avc_has_perm(current_sid(), SECINITSID_KERNEL,
 			    SECCLASS_SYSTEM, SYSTEM__SYSLOG_MOD, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3678,28 +2213,16 @@ static int selinux_vm_enough_memory(struct mm_struct *mm, long pages)
 {
 	int rc, cap_sys_admin = 0;
 
-<<<<<<< HEAD
-	rc = selinux_capable(current_cred(), &init_user_ns, CAP_SYS_ADMIN,
-			     SECURITY_CAP_NOAUDIT);
-	if (rc == 0)
-		cap_sys_admin = 1;
-
-	return __vm_enough_memory(mm, pages, cap_sys_admin);
-=======
 	rc = cred_has_capability(current_cred(), CAP_SYS_ADMIN,
 				 CAP_OPT_NOAUDIT, true);
 	if (rc == 0)
 		cap_sys_admin = 1;
 
 	return cap_sys_admin;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* binprm security operations */
 
-<<<<<<< HEAD
-static int selinux_bprm_set_creds(struct linux_binprm *bprm)
-=======
 static u32 ptrace_parent_sid(void)
 {
 	u32 sid = 0;
@@ -3768,30 +2291,11 @@ static int check_nnp_nosuid(const struct linux_binprm *bprm,
 }
 
 static int selinux_bprm_creds_for_exec(struct linux_binprm *bprm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct task_security_struct *old_tsec;
 	struct task_security_struct *new_tsec;
 	struct inode_security_struct *isec;
 	struct common_audit_data ad;
-<<<<<<< HEAD
-	struct selinux_audit_data sad = {0,};
-	struct inode *inode = bprm->file->f_path.dentry->d_inode;
-	int rc;
-
-	rc = cap_bprm_set_creds(bprm);
-	if (rc)
-		return rc;
-
-	/* SELinux context only depends on initial program or script and not
-	 * the script interpreter */
-	if (bprm->cred_prepared)
-		return 0;
-
-	old_tsec = current_security();
-	new_tsec = bprm->cred->security;
-	isec = inode->i_security;
-=======
 	struct inode *inode = file_inode(bprm->file);
 	int rc;
 
@@ -3801,7 +2305,6 @@ static int selinux_bprm_creds_for_exec(struct linux_binprm *bprm)
 	old_tsec = selinux_cred(current_cred());
 	new_tsec = selinux_cred(bprm->cred);
 	isec = inode_security(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Default to the current task SID. */
 	new_tsec->sid = old_tsec->sid;
@@ -3812,8 +2315,6 @@ static int selinux_bprm_creds_for_exec(struct linux_binprm *bprm)
 	new_tsec->keycreate_sid = 0;
 	new_tsec->sockcreate_sid = 0;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Before policy is loaded, label any task outside kernel space
 	 * as SECINITSID_INIT, so that any userspace tasks surviving from
@@ -3827,36 +2328,11 @@ static int selinux_bprm_creds_for_exec(struct linux_binprm *bprm)
 		return 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (old_tsec->exec_sid) {
 		new_tsec->sid = old_tsec->exec_sid;
 		/* Reset exec SID on execve. */
 		new_tsec->exec_sid = 0;
 
-<<<<<<< HEAD
-		/*
-		 * Minimize confusion: if no_new_privs and a transition is
-		 * explicitly requested, then fail the exec.
-		 */
-		if (bprm->unsafe & LSM_UNSAFE_NO_NEW_PRIVS)
-			return -EPERM;
-	} else {
-		/* Check for a default transition on this program. */
-		rc = security_transition_sid(old_tsec->sid, isec->sid,
-					     SECCLASS_PROCESS, NULL,
-					     &new_tsec->sid);
-		if (rc)
-			return rc;
-	}
-
-	COMMON_AUDIT_DATA_INIT(&ad, PATH);
-	ad.selinux_audit_data = &sad;
-	ad.u.path = bprm->file->f_path;
-
-	if ((bprm->file->f_path.mnt->mnt_flags & MNT_NOSUID) ||
-	    (bprm->unsafe & LSM_UNSAFE_NO_NEW_PRIVS))
-		new_tsec->sid = old_tsec->sid;
-=======
 		/* Fail on NNP or nosuid if not an allowed transition. */
 		rc = check_nnp_nosuid(bprm, old_tsec, new_tsec);
 		if (rc)
@@ -3880,7 +2356,6 @@ static int selinux_bprm_creds_for_exec(struct linux_binprm *bprm)
 
 	ad.type = LSM_AUDIT_DATA_FILE;
 	ad.u.file = bprm->file;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (new_tsec->sid == old_tsec->sid) {
 		rc = avc_has_perm(old_tsec->sid, isec->sid,
@@ -3910,25 +2385,8 @@ static int selinux_bprm_creds_for_exec(struct linux_binprm *bprm)
 
 		/* Make sure that anyone attempting to ptrace over a task that
 		 * changes its SID has the appropriate permit */
-<<<<<<< HEAD
-		if (bprm->unsafe &
-		    (LSM_UNSAFE_PTRACE | LSM_UNSAFE_PTRACE_CAP)) {
-			struct task_struct *tracer;
-			struct task_security_struct *sec;
-			u32 ptsid = 0;
-
-			rcu_read_lock();
-			tracer = ptrace_parent(current);
-			if (likely(tracer != NULL)) {
-				sec = __task_cred(tracer)->security;
-				ptsid = sec->sid;
-			}
-			rcu_read_unlock();
-
-=======
 		if (bprm->unsafe & LSM_UNSAFE_PTRACE) {
 			u32 ptsid = ptrace_parent_sid();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ptsid != 0) {
 				rc = avc_has_perm(ptsid, new_tsec->sid,
 						  SECCLASS_PROCESS,
@@ -3940,8 +2398,6 @@ static int selinux_bprm_creds_for_exec(struct linux_binprm *bprm)
 
 		/* Clear any possibly unsafe personality bits on exec: */
 		bprm->per_clear |= PER_CLEAR_ON_SETID;
-<<<<<<< HEAD
-=======
 
 		/* Enable secure mode for SIDs transitions unless
 		   the noatsecure permission is granted between
@@ -3950,75 +2406,20 @@ static int selinux_bprm_creds_for_exec(struct linux_binprm *bprm)
 				  SECCLASS_PROCESS, PROCESS__NOATSECURE,
 				  NULL);
 		bprm->secureexec |= !!rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int selinux_bprm_secureexec(struct linux_binprm *bprm)
-{
-	const struct task_security_struct *tsec = current_security();
-	u32 sid, osid;
-	int atsecure = 0;
-
-	sid = tsec->sid;
-	osid = tsec->osid;
-
-	if (osid != sid) {
-		/* Enable secure mode for SIDs transitions unless
-		   the noatsecure permission is granted between
-		   the two SIDs, i.e. ahp returns 0. */
-		atsecure = avc_has_perm(osid, sid,
-					SECCLASS_PROCESS,
-					PROCESS__NOATSECURE, NULL);
-	}
-
-	return (atsecure || cap_bprm_secureexec(bprm));
-=======
 static int match_file(const void *p, struct file *file, unsigned fd)
 {
 	return file_has_perm(p, file, file_to_av(file)) ? fd + 1 : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Derived from fs/exec.c:flush_old_files. */
 static inline void flush_unauthorized_files(const struct cred *cred,
 					    struct files_struct *files)
 {
-<<<<<<< HEAD
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	struct file *file, *devnull = NULL;
-	struct tty_struct *tty;
-	struct fdtable *fdt;
-	long j = -1;
-	int drop_tty = 0;
-
-	tty = get_current_tty();
-	if (tty) {
-		spin_lock(&tty_files_lock);
-		if (!list_empty(&tty->tty_files)) {
-			struct tty_file_private *file_priv;
-			struct inode *inode;
-
-			/* Revalidate access to controlling tty.
-			   Use inode_has_perm on the tty inode directly rather
-			   than using file_has_perm, as this particular open
-			   file may belong to another process and we are only
-			   interested in the inode-based check here. */
-			file_priv = list_first_entry(&tty->tty_files,
-						struct tty_file_private, list);
-			file = file_priv->file;
-			inode = file->f_path.dentry->d_inode;
-			if (inode_has_perm_noadp(cred, inode,
-					   FILE__READ | FILE__WRITE, 0)) {
-				drop_tty = 1;
-			}
-		}
-		spin_unlock(&tty_files_lock);
-=======
 	struct file *file, *devnull = NULL;
 	struct tty_struct *tty;
 	int drop_tty = 0;
@@ -4042,7 +2443,6 @@ static inline void flush_unauthorized_files(const struct cred *cred,
 				drop_tty = 1;
 		}
 		spin_unlock(&tty->files_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tty_kref_put(tty);
 	}
 	/* Reset controlling tty. */
@@ -4050,65 +2450,6 @@ static inline void flush_unauthorized_files(const struct cred *cred,
 		no_tty();
 
 	/* Revalidate access to inherited open files. */
-<<<<<<< HEAD
-
-	COMMON_AUDIT_DATA_INIT(&ad, INODE);
-	ad.selinux_audit_data = &sad;
-
-	spin_lock(&files->file_lock);
-	for (;;) {
-		unsigned long set, i;
-		int fd;
-
-		j++;
-		i = j * BITS_PER_LONG;
-		fdt = files_fdtable(files);
-		if (i >= fdt->max_fds)
-			break;
-		set = fdt->open_fds[j];
-		if (!set)
-			continue;
-		spin_unlock(&files->file_lock);
-		for ( ; set ; i++, set >>= 1) {
-			if (set & 1) {
-				file = fget(i);
-				if (!file)
-					continue;
-				if (file_has_perm(cred,
-						  file,
-						  file_to_av(file))) {
-					sys_close(i);
-					fd = get_unused_fd();
-					if (fd != i) {
-						if (fd >= 0)
-							put_unused_fd(fd);
-						fput(file);
-						continue;
-					}
-					if (devnull) {
-						get_file(devnull);
-					} else {
-						devnull = dentry_open(
-							dget(selinux_null),
-							mntget(selinuxfs_mount),
-							O_RDWR, cred);
-						if (IS_ERR(devnull)) {
-							devnull = NULL;
-							put_unused_fd(fd);
-							fput(file);
-							continue;
-						}
-					}
-					fd_install(fd, devnull);
-				}
-				fput(file);
-			}
-		}
-		spin_lock(&files->file_lock);
-
-	}
-	spin_unlock(&files->file_lock);
-=======
 	n = iterate_fd(files, 0, match_file, cred);
 	if (!n) /* none found? */
 		return;
@@ -4122,27 +2463,18 @@ static inline void flush_unauthorized_files(const struct cred *cred,
 	} while ((n = iterate_fd(files, n, match_file, cred)) != 0);
 	if (devnull)
 		fput(devnull);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Prepare a process for imminent new credential changes due to exec
  */
-<<<<<<< HEAD
-static void selinux_bprm_committing_creds(struct linux_binprm *bprm)
-=======
 static void selinux_bprm_committing_creds(const struct linux_binprm *bprm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct task_security_struct *new_tsec;
 	struct rlimit *rlim, *initrlim;
 	int rc, i;
 
-<<<<<<< HEAD
-	new_tsec = bprm->cred->security;
-=======
 	new_tsec = selinux_cred(bprm->cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (new_tsec->sid == new_tsec->osid)
 		return;
 
@@ -4173,12 +2505,8 @@ static void selinux_bprm_committing_creds(const struct linux_binprm *bprm)
 			rlim->rlim_cur = min(rlim->rlim_max, initrlim->rlim_cur);
 		}
 		task_unlock(current);
-<<<<<<< HEAD
-		update_rlimit_cpu(current, rlimit(RLIMIT_CPU));
-=======
 		if (IS_ENABLED(CONFIG_POSIX_TIMERS))
 			update_rlimit_cpu(current, rlimit(RLIMIT_CPU));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -4186,20 +2514,11 @@ static void selinux_bprm_committing_creds(const struct linux_binprm *bprm)
  * Clean up the process immediately after the installation of new credentials
  * due to exec
  */
-<<<<<<< HEAD
-static void selinux_bprm_committed_creds(struct linux_binprm *bprm)
-{
-	const struct task_security_struct *tsec = current_security();
-	struct itimerval itimer;
-	u32 osid, sid;
-	int rc, i;
-=======
 static void selinux_bprm_committed_creds(const struct linux_binprm *bprm)
 {
 	const struct task_security_struct *tsec = selinux_cred(current_cred());
 	u32 osid, sid;
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	osid = tsec->osid;
 	sid = tsec->sid;
@@ -4216,18 +2535,6 @@ static void selinux_bprm_committed_creds(const struct linux_binprm *bprm)
 	 */
 	rc = avc_has_perm(osid, sid, SECCLASS_PROCESS, PROCESS__SIGINH, NULL);
 	if (rc) {
-<<<<<<< HEAD
-		memset(&itimer, 0, sizeof itimer);
-		for (i = 0; i < 3; i++)
-			do_setitimer(i, &itimer, NULL);
-		spin_lock_irq(&current->sighand->siglock);
-		if (!(current->signal->flags & SIGNAL_GROUP_EXIT)) {
-			__flush_signals(current);
-			flush_signal_handlers(current, 1);
-			sigemptyset(&current->blocked);
-		}
-		spin_unlock_irq(&current->sighand->siglock);
-=======
 		clear_itimer();
 
 		spin_lock_irq(&unrcu_pointer(current->sighand)->siglock);
@@ -4239,17 +2546,12 @@ static void selinux_bprm_committed_creds(const struct linux_binprm *bprm)
 			recalc_sigpending();
 		}
 		spin_unlock_irq(&unrcu_pointer(current->sighand)->siglock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Wake up the parent if it is waiting so that it can recheck
 	 * wait permission to the new task SID. */
 	read_lock(&tasklist_lock);
-<<<<<<< HEAD
-	__wake_up_parent(current, current->real_parent);
-=======
 	__wake_up_parent(current, unrcu_pointer(current->real_parent));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_unlock(&tasklist_lock);
 }
 
@@ -4257,113 +2559,6 @@ static void selinux_bprm_committed_creds(const struct linux_binprm *bprm)
 
 static int selinux_sb_alloc_security(struct super_block *sb)
 {
-<<<<<<< HEAD
-	return superblock_alloc_security(sb);
-}
-
-static void selinux_sb_free_security(struct super_block *sb)
-{
-	superblock_free_security(sb);
-}
-
-static inline int match_prefix(char *prefix, int plen, char *option, int olen)
-{
-	if (plen > olen)
-		return 0;
-
-	return !memcmp(prefix, option, plen);
-}
-
-static inline int selinux_option(char *option, int len)
-{
-	return (match_prefix(CONTEXT_STR, sizeof(CONTEXT_STR)-1, option, len) ||
-		match_prefix(FSCONTEXT_STR, sizeof(FSCONTEXT_STR)-1, option, len) ||
-		match_prefix(DEFCONTEXT_STR, sizeof(DEFCONTEXT_STR)-1, option, len) ||
-		match_prefix(ROOTCONTEXT_STR, sizeof(ROOTCONTEXT_STR)-1, option, len) ||
-		match_prefix(LABELSUPP_STR, sizeof(LABELSUPP_STR)-1, option, len));
-}
-
-static inline void take_option(char **to, char *from, int *first, int len)
-{
-	if (!*first) {
-		**to = ',';
-		*to += 1;
-	} else
-		*first = 0;
-	memcpy(*to, from, len);
-	*to += len;
-}
-
-static inline void take_selinux_option(char **to, char *from, int *first,
-				       int len)
-{
-	int current_size = 0;
-
-	if (!*first) {
-		**to = '|';
-		*to += 1;
-	} else
-		*first = 0;
-
-	while (current_size < len) {
-		if (*from != '"') {
-			**to = *from;
-			*to += 1;
-		}
-		from += 1;
-		current_size += 1;
-	}
-}
-
-static int selinux_sb_copy_data(char *orig, char *copy)
-{
-	int fnosec, fsec, rc = 0;
-	char *in_save, *in_curr, *in_end;
-	char *sec_curr, *nosec_save, *nosec;
-	int open_quote = 0;
-
-	in_curr = orig;
-	sec_curr = copy;
-
-	nosec = (char *)get_zeroed_page(GFP_KERNEL);
-	if (!nosec) {
-		rc = -ENOMEM;
-		goto out;
-	}
-
-	nosec_save = nosec;
-	fnosec = fsec = 1;
-	in_save = in_end = orig;
-
-	do {
-		if (*in_end == '"')
-			open_quote = !open_quote;
-		if ((*in_end == ',' && open_quote == 0) ||
-				*in_end == '\0') {
-			int len = in_end - in_curr;
-
-			if (selinux_option(in_curr, len))
-				take_selinux_option(&sec_curr, in_curr, &fsec, len);
-			else
-				take_option(&nosec, in_curr, &fnosec, len);
-
-			in_curr = in_end + 1;
-		}
-	} while (*in_end++);
-
-	strcpy(in_save, nosec_save);
-	free_page((unsigned long)nosec_save);
-out:
-	return rc;
-}
-
-static int selinux_sb_remount(struct super_block *sb, void *data)
-{
-	int rc, i, *flags;
-	struct security_mnt_opts opts;
-	char *secdata, **mount_options;
-	struct superblock_security_struct *sbsec = sb->s_security;
-=======
 	struct superblock_security_struct *sbsec = selinux_superblock(sb);
 
 	mutex_init(&sbsec->lock);
@@ -4501,105 +2696,10 @@ static int selinux_sb_remount(struct super_block *sb, void *mnt_opts)
 {
 	struct selinux_mnt_opts *opts = mnt_opts;
 	struct superblock_security_struct *sbsec = selinux_superblock(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(sbsec->flags & SE_SBINITIALIZED))
 		return 0;
 
-<<<<<<< HEAD
-	if (!data)
-		return 0;
-
-	if (sb->s_type->fs_flags & FS_BINARY_MOUNTDATA)
-		return 0;
-
-	security_init_mnt_opts(&opts);
-	secdata = alloc_secdata();
-	if (!secdata)
-		return -ENOMEM;
-	rc = selinux_sb_copy_data(data, secdata);
-	if (rc)
-		goto out_free_secdata;
-
-	rc = selinux_parse_opts_str(secdata, &opts);
-	if (rc)
-		goto out_free_secdata;
-
-	mount_options = opts.mnt_opts;
-	flags = opts.mnt_opts_flags;
-
-	for (i = 0; i < opts.num_mnt_opts; i++) {
-		u32 sid;
-		size_t len;
-
-		if (flags[i] == SE_SBLABELSUPP)
-			continue;
-		len = strlen(mount_options[i]);
-		rc = security_context_to_sid(mount_options[i], len, &sid);
-		if (rc) {
-			printk(KERN_WARNING "SELinux: security_context_to_sid"
-			       "(%s) failed for (dev %s, type %s) errno=%d\n",
-			       mount_options[i], sb->s_id, sb->s_type->name, rc);
-			goto out_free_opts;
-		}
-		rc = -EINVAL;
-		switch (flags[i]) {
-		case FSCONTEXT_MNT:
-			if (bad_option(sbsec, FSCONTEXT_MNT, sbsec->sid, sid))
-				goto out_bad_option;
-			break;
-		case CONTEXT_MNT:
-			if (bad_option(sbsec, CONTEXT_MNT, sbsec->mntpoint_sid, sid))
-				goto out_bad_option;
-			break;
-		case ROOTCONTEXT_MNT: {
-			struct inode_security_struct *root_isec;
-			root_isec = sb->s_root->d_inode->i_security;
-
-			if (bad_option(sbsec, ROOTCONTEXT_MNT, root_isec->sid, sid))
-				goto out_bad_option;
-			break;
-		}
-		case DEFCONTEXT_MNT:
-			if (bad_option(sbsec, DEFCONTEXT_MNT, sbsec->def_sid, sid))
-				goto out_bad_option;
-			break;
-		default:
-			goto out_free_opts;
-		}
-	}
-
-	rc = 0;
-out_free_opts:
-	security_free_mnt_opts(&opts);
-out_free_secdata:
-	free_secdata(secdata);
-	return rc;
-out_bad_option:
-	printk(KERN_WARNING "SELinux: unable to change security options "
-	       "during remount (dev %s, type=%s)\n", sb->s_id,
-	       sb->s_type->name);
-	goto out_free_opts;
-}
-
-static int selinux_sb_kern_mount(struct super_block *sb, int flags, void *data)
-{
-	const struct cred *cred = current_cred();
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	int rc;
-
-	rc = superblock_doinit(sb, data);
-	if (rc)
-		return rc;
-
-	/* Allow all mounts performed by the kernel */
-	if (flags & MS_KERNMOUNT)
-		return 0;
-
-	COMMON_AUDIT_DATA_INIT(&ad, DENTRY);
-	ad.selinux_audit_data = &sad;
-=======
 	if (!opts)
 		return 0;
 
@@ -4640,7 +2740,6 @@ static int selinux_sb_kern_mount(const struct super_block *sb)
 	struct common_audit_data ad;
 
 	ad.type = LSM_AUDIT_DATA_DENTRY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ad.u.dentry = sb->s_root;
 	return superblock_has_perm(cred, sb, FILESYSTEM__MOUNT, &ad);
 }
@@ -4649,25 +2748,14 @@ static int selinux_sb_statfs(struct dentry *dentry)
 {
 	const struct cred *cred = current_cred();
 	struct common_audit_data ad;
-<<<<<<< HEAD
-	struct selinux_audit_data sad = {0,};
-
-	COMMON_AUDIT_DATA_INIT(&ad, DENTRY);
-	ad.selinux_audit_data = &sad;
-=======
 
 	ad.type = LSM_AUDIT_DATA_DENTRY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ad.u.dentry = dentry->d_sb->s_root;
 	return superblock_has_perm(cred, dentry->d_sb, FILESYSTEM__GETATTR, &ad);
 }
 
 static int selinux_mount(const char *dev_name,
-<<<<<<< HEAD
-			 struct path *path,
-=======
 			 const struct path *path,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 const char *type,
 			 unsigned long flags,
 			 void *data)
@@ -4681,8 +2769,6 @@ static int selinux_mount(const char *dev_name,
 		return path_has_perm(cred, path, FILE__MOUNTON);
 }
 
-<<<<<<< HEAD
-=======
 static int selinux_move_mount(const struct path *from_path,
 			      const struct path *to_path)
 {
@@ -4691,7 +2777,6 @@ static int selinux_move_mount(const struct path *from_path,
 	return path_has_perm(cred, to_path, FILE__MOUNTON);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int selinux_umount(struct vfsmount *mnt, int flags)
 {
 	const struct cred *cred = current_cred();
@@ -4700,8 +2785,6 @@ static int selinux_umount(struct vfsmount *mnt, int flags)
 				   FILESYSTEM__UNMOUNT, NULL);
 }
 
-<<<<<<< HEAD
-=======
 static int selinux_fs_context_submount(struct fs_context *fc,
 				   struct super_block *reference)
 {
@@ -4763,14 +2846,10 @@ static int selinux_fs_context_parse_param(struct fs_context *fc,
 	return selinux_add_opt(opt, param->string, &fc->security);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* inode security operations */
 
 static int selinux_inode_alloc_security(struct inode *inode)
 {
-<<<<<<< HEAD
-	return inode_alloc_security(inode);
-=======
 	struct inode_security_struct *isec = selinux_inode(inode);
 	u32 sid = current_sid();
 
@@ -4783,7 +2862,6 @@ static int selinux_inode_alloc_security(struct inode *inode)
 	isec->initialized = LABEL_INVALID;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void selinux_inode_free_security(struct inode *inode)
@@ -4791,68 +2869,6 @@ static void selinux_inode_free_security(struct inode *inode)
 	inode_free_security(inode);
 }
 
-<<<<<<< HEAD
-static int selinux_inode_init_security(struct inode *inode, struct inode *dir,
-				       const struct qstr *qstr, char **name,
-				       void **value, size_t *len)
-{
-	const struct task_security_struct *tsec = current_security();
-	struct inode_security_struct *dsec;
-	struct superblock_security_struct *sbsec;
-	u32 sid, newsid, clen;
-	int rc;
-	char *namep = NULL, *context;
-
-	dsec = dir->i_security;
-	sbsec = dir->i_sb->s_security;
-
-	sid = tsec->sid;
-	newsid = tsec->create_sid;
-
-	if ((sbsec->flags & SE_SBINITIALIZED) &&
-	    (sbsec->behavior == SECURITY_FS_USE_MNTPOINT))
-		newsid = sbsec->mntpoint_sid;
-	else if (!newsid || !(sbsec->flags & SE_SBLABELSUPP)) {
-		rc = security_transition_sid(sid, dsec->sid,
-					     inode_mode_to_security_class(inode->i_mode),
-					     qstr, &newsid);
-		if (rc) {
-			printk(KERN_WARNING "%s:  "
-			       "security_transition_sid failed, rc=%d (dev=%s "
-			       "ino=%ld)\n",
-			       __func__,
-			       -rc, inode->i_sb->s_id, inode->i_ino);
-			return rc;
-		}
-	}
-
-	/* Possibly defer initialization to selinux_complete_init. */
-	if (sbsec->flags & SE_SBINITIALIZED) {
-		struct inode_security_struct *isec = inode->i_security;
-		isec->sclass = inode_mode_to_security_class(inode->i_mode);
-		isec->sid = newsid;
-		isec->initialized = 1;
-	}
-
-	if (!ss_initialized || !(sbsec->flags & SE_SBLABELSUPP))
-		return -EOPNOTSUPP;
-
-	if (name) {
-		namep = kstrdup(XATTR_SELINUX_SUFFIX, GFP_NOFS);
-		if (!namep)
-			return -ENOMEM;
-		*name = namep;
-	}
-
-	if (value && len) {
-		rc = security_sid_to_context_force(newsid, &context, &clen);
-		if (rc) {
-			kfree(namep);
-			return rc;
-		}
-		*value = context;
-		*len = clen;
-=======
 static int selinux_dentry_init_security(struct dentry *dentry, int mode,
 					const struct qstr *name,
 					const char **xattr_name, void **ctx,
@@ -4936,33 +2952,11 @@ static int selinux_inode_init_security(struct inode *inode, struct inode *dir,
 		xattr->value = context;
 		xattr->value_len = clen;
 		xattr->name = XATTR_SELINUX_SUFFIX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int selinux_inode_create(struct inode *dir, struct dentry *dentry, umode_t mode)
-{
-	int ret;
-
-	ret = pft_inode_create(dir, dentry, mode);
-	if (ret < 0)
-		return ret;
-
-	return may_create(dir, dentry, SECCLASS_FILE);
-}
-
-static int selinux_inode_post_create(struct inode *dir, struct dentry *dentry,
-				     umode_t mode)
-{
-	int ret;
-
-	ret = pft_inode_post_create(dir, dentry, mode);
-
-	return ret;
-=======
 static int selinux_inode_init_security_anon(struct inode *inode,
 					    const struct qstr *name,
 					    const struct inode *context_inode)
@@ -5021,7 +3015,6 @@ static int selinux_inode_init_security_anon(struct inode *inode,
 static int selinux_inode_create(struct inode *dir, struct dentry *dentry, umode_t mode)
 {
 	return may_create(dir, dentry, SECCLASS_FILE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_inode_link(struct dentry *old_dentry, struct inode *dir, struct dentry *new_dentry)
@@ -5057,15 +3050,6 @@ static int selinux_inode_mknod(struct inode *dir, struct dentry *dentry, umode_t
 static int selinux_inode_rename(struct inode *old_inode, struct dentry *old_dentry,
 				struct inode *new_inode, struct dentry *new_dentry)
 {
-<<<<<<< HEAD
-	int rc;
-
-	rc = pft_inode_rename(old_inode, old_dentry, new_inode, new_dentry);
-	if (rc)
-		return rc;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return may_rename(old_inode, old_dentry, new_inode, new_dentry);
 }
 
@@ -5076,13 +3060,6 @@ static int selinux_inode_readlink(struct dentry *dentry)
 	return dentry_has_perm(cred, dentry, FILE__READ);
 }
 
-<<<<<<< HEAD
-static int selinux_inode_follow_link(struct dentry *dentry, struct nameidata *nameidata)
-{
-	const struct cred *cred = current_cred();
-
-	return dentry_has_perm(cred, dentry, FILE__READ);
-=======
 static int selinux_inode_follow_link(struct dentry *dentry, struct inode *inode,
 				     bool rcu)
 {
@@ -5113,19 +3090,11 @@ static noinline int audit_inode_permission(struct inode *inode,
 
 	return slow_avc_audit(current_sid(), isec->sid, isec->sclass, perms,
 			    audited, denied, result, &ad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_inode_permission(struct inode *inode, int mask)
 {
 	const struct cred *cred = current_cred();
-<<<<<<< HEAD
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	u32 perms;
-	bool from_access;
-	unsigned flags = mask & MAY_NOT_BLOCK;
-=======
 	u32 perms;
 	bool from_access;
 	bool no_block = mask & MAY_NOT_BLOCK;
@@ -5134,7 +3103,6 @@ static int selinux_inode_permission(struct inode *inode, int mask)
 	struct av_decision avd;
 	int rc, rc2;
 	u32 audited, denied;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	from_access = mask & MAY_ACCESS;
 	mask &= (MAY_READ|MAY_WRITE|MAY_EXEC|MAY_APPEND);
@@ -5143,24 +3111,6 @@ static int selinux_inode_permission(struct inode *inode, int mask)
 	if (!mask)
 		return 0;
 
-<<<<<<< HEAD
-	COMMON_AUDIT_DATA_INIT(&ad, INODE);
-	ad.selinux_audit_data = &sad;
-	ad.u.inode = inode;
-
-	if (from_access)
-		ad.selinux_audit_data->auditdeny |= FILE__AUDIT_ACCESS;
-
-	perms = file_mask_to_av(inode->i_mode, mask);
-
-	return inode_has_perm(cred, inode, perms, &ad, flags);
-}
-
-static int selinux_inode_setattr(struct dentry *dentry, struct iattr *iattr)
-{
-	const struct cred *cred = current_cred();
-	unsigned int ia_valid = iattr->ia_valid;
-=======
 	if (unlikely(IS_PRIVATE(inode)))
 		return 0;
 
@@ -5192,7 +3142,6 @@ static int selinux_inode_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	struct inode *inode = d_backing_inode(dentry);
 	unsigned int ia_valid = iattr->ia_valid;
 	__u32 av = FILE__WRITE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ATTR_FORCE is just used for ATTR_KILL_S[UG]ID. */
 	if (ia_valid & ATTR_FORCE) {
@@ -5206,72 +3155,6 @@ static int selinux_inode_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 			ATTR_ATIME_SET | ATTR_MTIME_SET | ATTR_TIMES_SET))
 		return dentry_has_perm(cred, dentry, FILE__SETATTR);
 
-<<<<<<< HEAD
-	return dentry_has_perm(cred, dentry, FILE__WRITE);
-}
-
-static int selinux_inode_getattr(struct vfsmount *mnt, struct dentry *dentry)
-{
-	const struct cred *cred = current_cred();
-	struct path path;
-
-	path.dentry = dentry;
-	path.mnt = mnt;
-
-	return path_has_perm(cred, &path, FILE__GETATTR);
-}
-
-static int selinux_inode_setotherxattr(struct dentry *dentry, const char *name)
-{
-	const struct cred *cred = current_cred();
-
-	if (pft_inode_set_xattr(dentry, name) < 0)
-		return -EACCES;
-
-
-	if (!strncmp(name, XATTR_SECURITY_PREFIX,
-		     sizeof XATTR_SECURITY_PREFIX - 1)) {
-		if (!strcmp(name, XATTR_NAME_CAPS)) {
-			if (!capable(CAP_SETFCAP))
-				return -EPERM;
-		} else if (!capable(CAP_SYS_ADMIN)) {
-			/* A different attribute in the security namespace.
-			   Restrict to administrator. */
-			return -EPERM;
-		}
-	}
-
-	/* Not an attribute we recognize, so just check the
-	   ordinary setattr permission. */
-	return dentry_has_perm(cred, dentry, FILE__SETATTR);
-}
-
-static int selinux_inode_setxattr(struct dentry *dentry, const char *name,
-				  const void *value, size_t size, int flags)
-{
-	struct inode *inode = dentry->d_inode;
-	struct inode_security_struct *isec = inode->i_security;
-	struct superblock_security_struct *sbsec;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	u32 newsid, sid = current_sid();
-	int rc = 0;
-
-	if (strcmp(name, XATTR_NAME_SELINUX))
-		return selinux_inode_setotherxattr(dentry, name);
-
-	sbsec = inode->i_sb->s_security;
-	if (!(sbsec->flags & SE_SBLABELSUPP))
-		return -EOPNOTSUPP;
-
-	if (!inode_owner_or_capable(inode))
-		return -EPERM;
-
-	COMMON_AUDIT_DATA_INIT(&ad, DENTRY);
-	ad.selinux_audit_data = &sad;
-	ad.u.dentry = dentry;
-
-=======
 	if (selinux_policycap_openperm() &&
 	    inode->i_sb->s_magic != SOCKFS_MAGIC &&
 	    (ia_valid & ATTR_SIZE) &&
@@ -5333,19 +3216,11 @@ static int selinux_inode_setxattr(struct mnt_idmap *idmap,
 	ad.u.dentry = dentry;
 
 	isec = backing_inode_security(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = avc_has_perm(sid, isec->sid, isec->sclass,
 			  FILE__RELABELFROM, &ad);
 	if (rc)
 		return rc;
 
-<<<<<<< HEAD
-	rc = security_context_to_sid(value, size, &newsid);
-	if (rc == -EINVAL) {
-		if (!capable(CAP_MAC_ADMIN))
-			return rc;
-		rc = security_context_to_sid_force(value, size, &newsid);
-=======
 	rc = security_context_to_sid(value, size, &newsid,
 				     GFP_KERNEL);
 	if (rc == -EINVAL) {
@@ -5377,7 +3252,6 @@ static int selinux_inode_setxattr(struct mnt_idmap *idmap,
 		}
 		rc = security_context_to_sid_force(value,
 						   size, &newsid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (rc)
 		return rc;
@@ -5387,13 +3261,8 @@ static int selinux_inode_setxattr(struct mnt_idmap *idmap,
 	if (rc)
 		return rc;
 
-<<<<<<< HEAD
-	rc = security_validate_transition(isec->sid, newsid, sid,
-					  isec->sclass);
-=======
 	rc = security_validate_transition(isec->sid, newsid,
 					  sid, isec->sclass);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -5404,8 +3273,6 @@ static int selinux_inode_setxattr(struct mnt_idmap *idmap,
 			    &ad);
 }
 
-<<<<<<< HEAD
-=======
 static int selinux_inode_set_acl(struct mnt_idmap *idmap,
 				 struct dentry *dentry, const char *acl_name,
 				 struct posix_acl *kacl)
@@ -5425,18 +3292,12 @@ static int selinux_inode_remove_acl(struct mnt_idmap *idmap,
 	return dentry_has_perm(current_cred(), dentry, FILE__SETATTR);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void selinux_inode_post_setxattr(struct dentry *dentry, const char *name,
 					const void *value, size_t size,
 					int flags)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-	struct inode_security_struct *isec = inode->i_security;
-=======
 	struct inode *inode = d_backing_inode(dentry);
 	struct inode_security_struct *isec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 newsid;
 	int rc;
 
@@ -5445,11 +3306,6 @@ static void selinux_inode_post_setxattr(struct dentry *dentry, const char *name,
 		return;
 	}
 
-<<<<<<< HEAD
-	rc = security_context_to_sid_force(value, size, &newsid);
-	if (rc) {
-		printk(KERN_ERR "SELinux:  unable to map context to SID"
-=======
 	if (!selinux_initialized()) {
 		/* If we haven't even been initialized, then we can't validate
 		 * against a policy, so leave the label as invalid. It may
@@ -5463,23 +3319,17 @@ static void selinux_inode_post_setxattr(struct dentry *dentry, const char *name,
 					   &newsid);
 	if (rc) {
 		pr_err("SELinux:  unable to map context to SID"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "for (%s, %lu), rc=%d\n",
 		       inode->i_sb->s_id, inode->i_ino, -rc);
 		return;
 	}
 
-<<<<<<< HEAD
-	isec->sid = newsid;
-	return;
-=======
 	isec = backing_inode_security(dentry);
 	spin_lock(&isec->lock);
 	isec->sclass = inode_mode_to_security_class(inode->i_mode);
 	isec->sid = newsid;
 	isec->initialized = LABEL_INITIALIZED;
 	spin_unlock(&isec->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_inode_getxattr(struct dentry *dentry, const char *name)
@@ -5496,12 +3346,6 @@ static int selinux_inode_listxattr(struct dentry *dentry)
 	return dentry_has_perm(cred, dentry, FILE__GETATTR);
 }
 
-<<<<<<< HEAD
-static int selinux_inode_removexattr(struct dentry *dentry, const char *name)
-{
-	if (strcmp(name, XATTR_NAME_SELINUX))
-		return selinux_inode_setotherxattr(dentry, name);
-=======
 static int selinux_inode_removexattr(struct mnt_idmap *idmap,
 				     struct dentry *dentry, const char *name)
 {
@@ -5517,15 +3361,12 @@ static int selinux_inode_removexattr(struct mnt_idmap *idmap,
 
 	if (!selinux_initialized())
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* No one is allowed to remove a SELinux security label.
 	   You can change the label, but all data must be labeled. */
 	return -EACCES;
 }
 
-<<<<<<< HEAD
-=======
 static int selinux_path_notify(const struct path *path, u64 mask,
 						unsigned int obj_type)
 {
@@ -5570,28 +3411,18 @@ static int selinux_path_notify(const struct path *path, u64 mask,
 	return path_has_perm(current_cred(), path, perm);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copy the inode security context value to the user.
  *
  * Permission check is handled by selinux_inode_getxattr hook.
  */
-<<<<<<< HEAD
-static int selinux_inode_getsecurity(const struct inode *inode, const char *name, void **buffer, bool alloc)
-=======
 static int selinux_inode_getsecurity(struct mnt_idmap *idmap,
 				     struct inode *inode, const char *name,
 				     void **buffer, bool alloc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 size;
 	int error;
 	char *context = NULL;
-<<<<<<< HEAD
-	struct inode_security_struct *isec = inode->i_security;
-
-	if (strcmp(name, XATTR_SELINUX_SUFFIX))
-=======
 	struct inode_security_struct *isec;
 
 	/*
@@ -5600,7 +3431,6 @@ static int selinux_inode_getsecurity(struct mnt_idmap *idmap,
 	 */
 	if (!selinux_initialized() ||
 	    strcmp(name, XATTR_SELINUX_SUFFIX))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EOPNOTSUPP;
 
 	/*
@@ -5612,15 +3442,6 @@ static int selinux_inode_getsecurity(struct mnt_idmap *idmap,
 	 * and lack of permission just means that we fall back to the
 	 * in-core context value, not a denial.
 	 */
-<<<<<<< HEAD
-	error = selinux_capable(current_cred(), &init_user_ns, CAP_MAC_ADMIN,
-				SECURITY_CAP_NOAUDIT);
-	if (!error)
-		error = security_sid_to_context_force(isec->sid, &context,
-						      &size);
-	else
-		error = security_sid_to_context(isec->sid, &context, &size);
-=======
 	isec = inode_security(inode);
 	if (has_cap_mac_admin(false))
 		error = security_sid_to_context_force(isec->sid, &context,
@@ -5628,7 +3449,6 @@ static int selinux_inode_getsecurity(struct mnt_idmap *idmap,
 	else
 		error = security_sid_to_context(isec->sid,
 						&context, &size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 	error = size;
@@ -5644,29 +3464,14 @@ out_nofree:
 static int selinux_inode_setsecurity(struct inode *inode, const char *name,
 				     const void *value, size_t size, int flags)
 {
-<<<<<<< HEAD
-	struct inode_security_struct *isec = inode->i_security;
-=======
 	struct inode_security_struct *isec = inode_security_novalidate(inode);
 	struct superblock_security_struct *sbsec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 newsid;
 	int rc;
 
 	if (strcmp(name, XATTR_SELINUX_SUFFIX))
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	if (!value || !size)
-		return -EACCES;
-
-	rc = security_context_to_sid((void *)value, size, &newsid);
-	if (rc)
-		return rc;
-
-	isec->sid = newsid;
-	isec->initialized = 1;
-=======
 	sbsec = selinux_superblock(inode->i_sb);
 	if (!(sbsec->flags & SBLABEL_MNT))
 		return -EOPNOTSUPP;
@@ -5684,33 +3489,21 @@ static int selinux_inode_setsecurity(struct inode *inode, const char *name,
 	isec->sid = newsid;
 	isec->initialized = LABEL_INITIALIZED;
 	spin_unlock(&isec->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int selinux_inode_listsecurity(struct inode *inode, char *buffer, size_t buffer_size)
 {
 	const int len = sizeof(XATTR_NAME_SELINUX);
-<<<<<<< HEAD
-=======
 
 	if (!selinux_initialized())
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (buffer && len <= buffer_size)
 		memcpy(buffer, XATTR_NAME_SELINUX, len);
 	return len;
 }
 
-<<<<<<< HEAD
-static void selinux_inode_getsecid(const struct inode *inode, u32 *secid)
-{
-	struct inode_security_struct *isec = inode->i_security;
-	*secid = isec->sid;
-}
-
-=======
 static void selinux_inode_getsecid(struct inode *inode, u32 *secid)
 {
 	struct inode_security_struct *isec = inode_security_novalidate(inode);
@@ -5814,17 +3607,12 @@ static int selinux_kernfs_init_security(struct kernfs_node *kn_dir,
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* file security operations */
 
 static int selinux_revalidate_file_permission(struct file *file, int mask)
 {
 	const struct cred *cred = current_cred();
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-=======
 	struct inode *inode = file_inode(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* file_mask_to_av won't add FILE__WRITE if MAY_APPEND is set */
 	if ((file->f_flags & O_APPEND) && (mask & MAY_WRITE))
@@ -5836,37 +3624,19 @@ static int selinux_revalidate_file_permission(struct file *file, int mask)
 
 static int selinux_file_permission(struct file *file, int mask)
 {
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-	struct file_security_struct *fsec = file->f_security;
-	struct inode_security_struct *isec = inode->i_security;
-	u32 sid = current_sid();
-	int ret;
-=======
 	struct inode *inode = file_inode(file);
 	struct file_security_struct *fsec = selinux_file(file);
 	struct inode_security_struct *isec;
 	u32 sid = current_sid();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!mask)
 		/* No permission to check.  Existence test. */
 		return 0;
 
-<<<<<<< HEAD
-	ret = pft_file_permission(file, mask);
-	if (ret < 0)
-		return ret;
-
-	if (sid == fsec->sid && fsec->isid == isec->sid &&
-	    fsec->pseqno == avc_policy_seqno())
-		/* No change since dentry_open check. */
-=======
 	isec = inode_security(inode);
 	if (sid == fsec->sid && fsec->isid == isec->sid &&
 	    fsec->pseqno == avc_policy_seqno())
 		/* No change since file_open check. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return selinux_revalidate_file_permission(file, mask);
@@ -5874,14 +3644,6 @@ static int selinux_file_permission(struct file *file, int mask)
 
 static int selinux_file_alloc_security(struct file *file)
 {
-<<<<<<< HEAD
-	return file_alloc_security(file);
-}
-
-static void selinux_file_free_security(struct file *file)
-{
-	file_free_security(file);
-=======
 	struct file_security_struct *fsec = selinux_file(file);
 	u32 sid = current_sid();
 
@@ -5889,25 +3651,12 @@ static void selinux_file_free_security(struct file *file)
 	fsec->fown_sid = sid;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Check whether a task has the ioctl permission and cmd
  * operation to an inode.
  */
-<<<<<<< HEAD
-int ioctl_has_perm(const struct cred *cred, struct file *file,
-		u32 requested, u16 cmd)
-{
-	struct common_audit_data ad;
-	struct file_security_struct *fsec = file->f_security;
-	struct inode *inode = file->f_path.dentry->d_inode;
-	struct inode_security_struct *isec = inode->i_security;
-	struct lsm_ioctlop_audit ioctl;
-	u32 ssid = cred_sid(cred);
-	struct selinux_audit_data sad = {0,};
-=======
 static int ioctl_has_perm(const struct cred *cred, struct file *file,
 		u32 requested, u16 cmd)
 {
@@ -5917,21 +3666,13 @@ static int ioctl_has_perm(const struct cred *cred, struct file *file,
 	struct inode_security_struct *isec;
 	struct lsm_ioctlop_audit ioctl;
 	u32 ssid = cred_sid(cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 	u8 driver = cmd >> 8;
 	u8 xperm = cmd & 0xff;
 
-<<<<<<< HEAD
-	COMMON_AUDIT_DATA_INIT(&ad, IOCTL_OP);
-	ad.u.op = &ioctl;
-	ad.u.op->cmd = cmd;
-	ad.selinux_audit_data = &sad;
-=======
 	ad.type = LSM_AUDIT_DATA_IOCTL_OP;
 	ad.u.op = &ioctl;
 	ad.u.op->cmd = cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ad.u.op->path = file->f_path;
 
 	if (ssid != fsec->sid) {
@@ -5946,14 +3687,9 @@ static int ioctl_has_perm(const struct cred *cred, struct file *file,
 	if (unlikely(IS_PRIVATE(inode)))
 		return 0;
 
-<<<<<<< HEAD
-	rc = avc_has_extended_perms(ssid, isec->sid, isec->sclass,
-			requested, driver, xperm, &ad);
-=======
 	isec = inode_security(inode);
 	rc = avc_has_extended_perms(ssid, isec->sid, isec->sclass,
 				    requested, driver, xperm, &ad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return rc;
 }
@@ -5966,38 +3702,20 @@ static int selinux_file_ioctl(struct file *file, unsigned int cmd,
 
 	switch (cmd) {
 	case FIONREAD:
-<<<<<<< HEAD
-	/* fall through */
-	case FIBMAP:
-	/* fall through */
-	case FIGETBSZ:
-	/* fall through */
-	case FS_IOC_GETFLAGS:
-	/* fall through */
-=======
 	case FIBMAP:
 	case FIGETBSZ:
 	case FS_IOC_GETFLAGS:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FS_IOC_GETVERSION:
 		error = file_has_perm(cred, file, FILE__GETATTR);
 		break;
 
 	case FS_IOC_SETFLAGS:
-<<<<<<< HEAD
-	/* fall through */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FS_IOC_SETVERSION:
 		error = file_has_perm(cred, file, FILE__SETATTR);
 		break;
 
 	/* sys_ioctl() checks */
 	case FIONBIO:
-<<<<<<< HEAD
-	/* fall through */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FIOASYNC:
 		error = file_has_perm(cred, file, 0);
 		break;
@@ -6005,9 +3723,6 @@ static int selinux_file_ioctl(struct file *file, unsigned int cmd,
 	case KDSKBENT:
 	case KDSKBSENT:
 		error = cred_has_capability(cred, CAP_SYS_TTY_CONFIG,
-<<<<<<< HEAD
-					    SECURITY_CAP_AUDIT);
-=======
 					    CAP_OPT_NONE, true);
 		break;
 
@@ -6015,7 +3730,6 @@ static int selinux_file_ioctl(struct file *file, unsigned int cmd,
 	case FIONCLEX:
 		if (!selinux_policycap_ioctl_skip_cloexec())
 			error = ioctl_has_perm(cred, file, FILE__IOCTL, (u16) cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	/* default case assumes that the command will go
@@ -6027,9 +3741,6 @@ static int selinux_file_ioctl(struct file *file, unsigned int cmd,
 	return error;
 }
 
-<<<<<<< HEAD
-static int default_noexec;
-=======
 static int selinux_file_ioctl_compat(struct file *file, unsigned int cmd,
 			      unsigned long arg)
 {
@@ -6058,35 +3769,23 @@ static int selinux_file_ioctl_compat(struct file *file, unsigned int cmd,
 }
 
 static int default_noexec __ro_after_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int file_map_prot_check(struct file *file, unsigned long prot, int shared)
 {
 	const struct cred *cred = current_cred();
-<<<<<<< HEAD
-	int rc = 0;
-
-	if (default_noexec &&
-	    (prot & PROT_EXEC) && (!file || (!shared && (prot & PROT_WRITE)))) {
-=======
 	u32 sid = cred_sid(cred);
 	int rc = 0;
 
 	if (default_noexec &&
 	    (prot & PROT_EXEC) && (!file || IS_PRIVATE(file_inode(file)) ||
 				   (!shared && (prot & PROT_WRITE)))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * We are making executable an anonymous mapping or a
 		 * private file mapping that will also be writable.
 		 * This has an additional check.
 		 */
-<<<<<<< HEAD
-		rc = cred_has_perm(cred, cred, PROCESS__EXECMEM);
-=======
 		rc = avc_has_perm(sid, sid, SECCLASS_PROCESS,
 				  PROCESS__EXECMEM, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc)
 			goto error;
 	}
@@ -6109,24 +3808,6 @@ error:
 	return rc;
 }
 
-<<<<<<< HEAD
-static int selinux_file_mmap(struct file *file, unsigned long reqprot,
-			     unsigned long prot, unsigned long flags,
-			     unsigned long addr, unsigned long addr_only)
-{
-	int rc = 0;
-	u32 sid = current_sid();
-
-	/*
-	 * notice that we are intentionally putting the SELinux check before
-	 * the secondary cap_file_mmap check.  This is such a likely attempt
-	 * at bad behaviour/exploit that we always want to get the AVC, even
-	 * if DAC would have also denied the operation.
-	 */
-	if (addr < CONFIG_LSM_MMAP_MIN_ADDR) {
-		rc = avc_has_perm(sid, sid, SECCLASS_MEMPROTECT,
-				  MEMPROTECT__MMAP_ZERO, NULL);
-=======
 static int selinux_mmap_addr(unsigned long addr)
 {
 	int rc = 0;
@@ -6152,55 +3833,24 @@ static int selinux_mmap_file(struct file *file,
 		ad.u.file = file;
 		rc = inode_has_perm(current_cred(), file_inode(file),
 				    FILE__MAP, &ad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc)
 			return rc;
 	}
 
-<<<<<<< HEAD
-	/* do DAC check on address space usage */
-	rc = cap_file_mmap(file, reqprot, prot, flags, addr, addr_only);
-	if (rc || addr_only)
-		return rc;
-
-	if (selinux_checkreqprot)
-		prot = reqprot;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return file_map_prot_check(file, prot,
 				   (flags & MAP_TYPE) == MAP_SHARED);
 }
 
 static int selinux_file_mprotect(struct vm_area_struct *vma,
-<<<<<<< HEAD
-				 unsigned long reqprot,
-				 unsigned long prot)
-{
-	const struct cred *cred = current_cred();
-
-	if (selinux_checkreqprot)
-		prot = reqprot;
-=======
 				 unsigned long reqprot __always_unused,
 				 unsigned long prot)
 {
 	const struct cred *cred = current_cred();
 	u32 sid = cred_sid(cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (default_noexec &&
 	    (prot & PROT_EXEC) && !(vma->vm_flags & VM_EXEC)) {
 		int rc = 0;
-<<<<<<< HEAD
-		if (vma->vm_start >= vma->vm_mm->start_brk &&
-		    vma->vm_end <= vma->vm_mm->brk) {
-			rc = cred_has_perm(cred, cred, PROCESS__EXECHEAP);
-		} else if (!vma->vm_file &&
-			   vma->vm_start <= vma->vm_mm->start_stack &&
-			   vma->vm_end >= vma->vm_mm->start_stack) {
-			rc = current_has_perm(current, PROCESS__EXECSTACK);
-=======
 		if (vma_is_initial_heap(vma)) {
 			rc = avc_has_perm(sid, sid, SECCLASS_PROCESS,
 					  PROCESS__EXECHEAP, NULL);
@@ -6208,7 +3858,6 @@ static int selinux_file_mprotect(struct vm_area_struct *vma,
 			    vma_is_stack_for_current(vma))) {
 			rc = avc_has_perm(sid, sid, SECCLASS_PROCESS,
 					  PROCESS__EXECSTACK, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (vma->vm_file && vma->anon_vma) {
 			/*
 			 * We are making executable a file mapping that has
@@ -6241,32 +3890,17 @@ static int selinux_file_fcntl(struct file *file, unsigned int cmd,
 
 	switch (cmd) {
 	case F_SETFL:
-<<<<<<< HEAD
-		if (!file->f_path.dentry || !file->f_path.dentry->d_inode) {
-			err = -EINVAL;
-			break;
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((file->f_flags & O_APPEND) && !(arg & O_APPEND)) {
 			err = file_has_perm(cred, file, FILE__WRITE);
 			break;
 		}
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case F_SETOWN:
 	case F_SETSIG:
 	case F_GETFL:
 	case F_GETOWN:
 	case F_GETSIG:
-<<<<<<< HEAD
-=======
 	case F_GETOWNER_UIDS:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Just check FD__USE permission */
 		err = file_has_perm(cred, file, 0);
 		break;
@@ -6281,13 +3915,6 @@ static int selinux_file_fcntl(struct file *file, unsigned int cmd,
 	case F_SETLK64:
 	case F_SETLKW64:
 #endif
-<<<<<<< HEAD
-		if (!file->f_path.dentry || !file->f_path.dentry->d_inode) {
-			err = -EINVAL;
-			break;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = file_has_perm(cred, file, FILE__LOCK);
 		break;
 	}
@@ -6295,45 +3922,26 @@ static int selinux_file_fcntl(struct file *file, unsigned int cmd,
 	return err;
 }
 
-<<<<<<< HEAD
-static int selinux_file_set_fowner(struct file *file)
-{
-	struct file_security_struct *fsec;
-
-	fsec = file->f_security;
-	fsec->fown_sid = current_sid();
-
-	return 0;
-=======
 static void selinux_file_set_fowner(struct file *file)
 {
 	struct file_security_struct *fsec;
 
 	fsec = selinux_file(file);
 	fsec->fown_sid = current_sid();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_file_send_sigiotask(struct task_struct *tsk,
 				       struct fown_struct *fown, int signum)
 {
 	struct file *file;
-<<<<<<< HEAD
-	u32 sid = task_sid(tsk);
-=======
 	u32 sid = task_sid_obj(tsk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 perm;
 	struct file_security_struct *fsec;
 
 	/* struct fown_struct is never outside the context of a struct file */
 	file = container_of(fown, struct file, f_owner);
 
-<<<<<<< HEAD
-	fsec = file->f_security;
-=======
 	fsec = selinux_file(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!signum)
 		perm = signal_to_av(SIGIO); /* as per send_sigio_to_task */
@@ -6351,22 +3959,6 @@ static int selinux_file_receive(struct file *file)
 	return file_has_perm(cred, file, file_to_av(file));
 }
 
-<<<<<<< HEAD
-static int selinux_dentry_open(struct file *file, const struct cred *cred)
-{
-	struct file_security_struct *fsec;
-	struct inode *inode;
-	struct inode_security_struct *isec;
-	int ret;
-
-	ret = pft_file_open(file, cred);
-	if (ret < 0)
-		return ret;
-
-	inode = file->f_path.dentry->d_inode;
-	fsec = file->f_security;
-	isec = inode->i_security;
-=======
 static int selinux_file_open(struct file *file)
 {
 	struct file_security_struct *fsec;
@@ -6374,7 +3966,6 @@ static int selinux_file_open(struct file *file)
 
 	fsec = selinux_file(file);
 	isec = inode_security(file_inode(file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Save inode label and policy sequence number
 	 * at open-time so that selinux_file_permission
@@ -6392,68 +3983,17 @@ static int selinux_file_open(struct file *file)
 	 * new inode label or new policy.
 	 * This check is not redundant - do not remove.
 	 */
-<<<<<<< HEAD
-	return inode_has_perm_noadp(cred, inode, open_file_to_av(file), 0);
-}
-
-static int selinux_file_close(struct file *file)
-{
-	return pft_file_close(file);
-}
-
-static bool selinux_allow_merge_bio(struct bio *bio1, struct bio *bio2)
-{
-	return pft_allow_merge_bio(bio1, bio2);
-=======
 	return file_path_has_perm(file->f_cred, file, open_file_to_av(file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* task security operations */
 
-<<<<<<< HEAD
-static int selinux_task_create(unsigned long clone_flags)
-{
-	return current_has_perm(current, PROCESS__FORK);
-}
-
-/*
- * allocate the SELinux part of blank credentials
- */
-static int selinux_cred_alloc_blank(struct cred *cred, gfp_t gfp)
-{
-	struct task_security_struct *tsec;
-
-	tsec = kzalloc(sizeof(struct task_security_struct), gfp);
-	if (!tsec)
-		return -ENOMEM;
-
-	cred->security = tsec;
-	return 0;
-}
-
-/*
- * detach and free the LSM part of a set of credentials
- */
-static void selinux_cred_free(struct cred *cred)
-{
-	struct task_security_struct *tsec = cred->security;
-
-	/*
-	 * cred->security == NULL if security_cred_alloc_blank() or
-	 * security_prepare_creds() returned an error.
-	 */
-	BUG_ON(cred->security && (unsigned long) cred->security < PAGE_SIZE);
-	cred->security = (void *) 0x7UL;
-	kfree(tsec);
-=======
 static int selinux_task_alloc(struct task_struct *task,
 			      unsigned long clone_flags)
 {
 	u32 sid = current_sid();
 
 	return avc_has_perm(sid, sid, SECCLASS_PROCESS, PROCESS__FORK, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -6462,23 +4002,10 @@ static int selinux_task_alloc(struct task_struct *task,
 static int selinux_cred_prepare(struct cred *new, const struct cred *old,
 				gfp_t gfp)
 {
-<<<<<<< HEAD
-	const struct task_security_struct *old_tsec;
-	struct task_security_struct *tsec;
-
-	old_tsec = old->security;
-
-	tsec = kmemdup(old_tsec, sizeof(struct task_security_struct), gfp);
-	if (!tsec)
-		return -ENOMEM;
-
-	new->security = tsec;
-=======
 	const struct task_security_struct *old_tsec = selinux_cred(old);
 	struct task_security_struct *tsec = selinux_cred(new);
 
 	*tsec = *old_tsec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -6487,36 +4014,24 @@ static int selinux_cred_prepare(struct cred *new, const struct cred *old,
  */
 static void selinux_cred_transfer(struct cred *new, const struct cred *old)
 {
-<<<<<<< HEAD
-	const struct task_security_struct *old_tsec = old->security;
-	struct task_security_struct *tsec = new->security;
-=======
 	const struct task_security_struct *old_tsec = selinux_cred(old);
 	struct task_security_struct *tsec = selinux_cred(new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*tsec = *old_tsec;
 }
 
-<<<<<<< HEAD
-=======
 static void selinux_cred_getsecid(const struct cred *c, u32 *secid)
 {
 	*secid = cred_sid(c);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * set the security data for a kernel service
  * - all the creation contexts are set to unlabelled
  */
 static int selinux_kernel_act_as(struct cred *new, u32 secid)
 {
-<<<<<<< HEAD
-	struct task_security_struct *tsec = new->security;
-=======
 	struct task_security_struct *tsec = selinux_cred(new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 sid = current_sid();
 	int ret;
 
@@ -6539,13 +4054,8 @@ static int selinux_kernel_act_as(struct cred *new, u32 secid)
  */
 static int selinux_kernel_create_files_as(struct cred *new, struct inode *inode)
 {
-<<<<<<< HEAD
-	struct inode_security_struct *isec = inode->i_security;
-	struct task_security_struct *tsec = new->security;
-=======
 	struct inode_security_struct *isec = inode_security(inode);
 	struct task_security_struct *tsec = selinux_cred(new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 sid = current_sid();
 	int ret;
 
@@ -6561,25 +4071,6 @@ static int selinux_kernel_create_files_as(struct cred *new, struct inode *inode)
 
 static int selinux_kernel_module_request(char *kmod_name)
 {
-<<<<<<< HEAD
-	u32 sid;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-
-	sid = task_sid(current);
-
-	COMMON_AUDIT_DATA_INIT(&ad, KMOD);
-	ad.selinux_audit_data = &sad;
-	ad.u.kmod_name = kmod_name;
-
-	return avc_has_perm(sid, SECINITSID_KERNEL, SECCLASS_SYSTEM,
-			    SYSTEM__MODULE_REQUEST, &ad);
-}
-
-static int selinux_task_setpgid(struct task_struct *p, pid_t pgid)
-{
-	return current_has_perm(p, PROCESS__SETPGID);
-=======
 	struct common_audit_data ad;
 
 	ad.type = LSM_AUDIT_DATA_KMOD;
@@ -6655,29 +4146,16 @@ static int selinux_task_setpgid(struct task_struct *p, pid_t pgid)
 {
 	return avc_has_perm(current_sid(), task_sid_obj(p), SECCLASS_PROCESS,
 			    PROCESS__SETPGID, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_task_getpgid(struct task_struct *p)
 {
-<<<<<<< HEAD
-	return current_has_perm(p, PROCESS__GETPGID);
-=======
 	return avc_has_perm(current_sid(), task_sid_obj(p), SECCLASS_PROCESS,
 			    PROCESS__GETPGID, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_task_getsid(struct task_struct *p)
 {
-<<<<<<< HEAD
-	return current_has_perm(p, PROCESS__GETSESSION);
-}
-
-static void selinux_task_getsecid(struct task_struct *p, u32 *secid)
-{
-	*secid = task_sid(p);
-=======
 	return avc_has_perm(current_sid(), task_sid_obj(p), SECCLASS_PROCESS,
 			    PROCESS__GETSESSION, NULL);
 }
@@ -6690,46 +4168,22 @@ static void selinux_current_getsecid_subj(u32 *secid)
 static void selinux_task_getsecid_obj(struct task_struct *p, u32 *secid)
 {
 	*secid = task_sid_obj(p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_task_setnice(struct task_struct *p, int nice)
 {
-<<<<<<< HEAD
-	int rc;
-
-	rc = cap_task_setnice(p, nice);
-	if (rc)
-		return rc;
-
-	return current_has_perm(p, PROCESS__SETSCHED);
-=======
 	return avc_has_perm(current_sid(), task_sid_obj(p), SECCLASS_PROCESS,
 			    PROCESS__SETSCHED, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_task_setioprio(struct task_struct *p, int ioprio)
 {
-<<<<<<< HEAD
-	int rc;
-
-	rc = cap_task_setioprio(p, ioprio);
-	if (rc)
-		return rc;
-
-	return current_has_perm(p, PROCESS__SETSCHED);
-=======
 	return avc_has_perm(current_sid(), task_sid_obj(p), SECCLASS_PROCESS,
 			    PROCESS__SETSCHED, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_task_getioprio(struct task_struct *p)
 {
-<<<<<<< HEAD
-	return current_has_perm(p, PROCESS__GETSCHED);
-=======
 	return avc_has_perm(current_sid(), task_sid_obj(p), SECCLASS_PROCESS,
 			    PROCESS__GETSCHED, NULL);
 }
@@ -6747,7 +4201,6 @@ static int selinux_task_prlimit(const struct cred *cred, const struct cred *tcre
 		av |= PROCESS__GETRLIMIT;
 	return avc_has_perm(cred_sid(cred), cred_sid(tcred),
 			    SECCLASS_PROCESS, av, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_task_setrlimit(struct task_struct *p, unsigned int resource,
@@ -6760,54 +4213,26 @@ static int selinux_task_setrlimit(struct task_struct *p, unsigned int resource,
 	   later be used as a safe reset point for the soft limit
 	   upon context transitions.  See selinux_bprm_committing_creds. */
 	if (old_rlim->rlim_max != new_rlim->rlim_max)
-<<<<<<< HEAD
-		return current_has_perm(p, PROCESS__SETRLIMIT);
-=======
 		return avc_has_perm(current_sid(), task_sid_obj(p),
 				    SECCLASS_PROCESS, PROCESS__SETRLIMIT, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int selinux_task_setscheduler(struct task_struct *p)
 {
-<<<<<<< HEAD
-	int rc;
-
-	rc = cap_task_setscheduler(p);
-	if (rc)
-		return rc;
-
-	return current_has_perm(p, PROCESS__SETSCHED);
-=======
 	return avc_has_perm(current_sid(), task_sid_obj(p), SECCLASS_PROCESS,
 			    PROCESS__SETSCHED, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_task_getscheduler(struct task_struct *p)
 {
-<<<<<<< HEAD
-	return current_has_perm(p, PROCESS__GETSCHED);
-=======
 	return avc_has_perm(current_sid(), task_sid_obj(p), SECCLASS_PROCESS,
 			    PROCESS__GETSCHED, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_task_movememory(struct task_struct *p)
 {
-<<<<<<< HEAD
-	return current_has_perm(p, PROCESS__SETSCHED);
-}
-
-static int selinux_task_kill(struct task_struct *p, struct siginfo *info,
-				int sig, u32 secid)
-{
-	u32 perm;
-	int rc;
-=======
 	return avc_has_perm(current_sid(), task_sid_obj(p), SECCLASS_PROCESS,
 			    PROCESS__SETSCHED, NULL);
 }
@@ -6817,43 +4242,21 @@ static int selinux_task_kill(struct task_struct *p, struct kernel_siginfo *info,
 {
 	u32 secid;
 	u32 perm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!sig)
 		perm = PROCESS__SIGNULL; /* null signal; existence test */
 	else
 		perm = signal_to_av(sig);
-<<<<<<< HEAD
-	if (secid)
-		rc = avc_has_perm(secid, task_sid(p),
-				  SECCLASS_PROCESS, perm, NULL);
-	else
-		rc = current_has_perm(p, perm);
-	return rc;
-}
-
-static int selinux_task_wait(struct task_struct *p)
-{
-	return task_has_perm(p, current, PROCESS__SIGCHLD);
-=======
 	if (!cred)
 		secid = current_sid();
 	else
 		secid = cred_sid(cred);
 	return avc_has_perm(secid, task_sid_obj(p), SECCLASS_PROCESS, perm, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void selinux_task_to_inode(struct task_struct *p,
 				  struct inode *inode)
 {
-<<<<<<< HEAD
-	struct inode_security_struct *isec = inode->i_security;
-	u32 sid = task_sid(p);
-
-	isec->sid = sid;
-	isec->initialized = 1;
-=======
 	struct inode_security_struct *isec = selinux_inode(inode);
 	u32 sid = task_sid_obj(p);
 
@@ -6870,7 +4273,6 @@ static int selinux_userns_create(const struct cred *cred)
 
 	return avc_has_perm(sid, sid, SECCLASS_USER_NAMESPACE,
 			USER_NAMESPACE__CREATE, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Returns error only if unable to parse addresses */
@@ -6945,8 +4347,6 @@ static int selinux_parse_skb_ipv4(struct sk_buff *skb,
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IP_SCTP)
 	case IPPROTO_SCTP: {
 		struct sctphdr _sctph, *sh;
@@ -6964,7 +4364,6 @@ static int selinux_parse_skb_ipv4(struct sk_buff *skb,
 		break;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -6972,11 +4371,7 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
-=======
 #if IS_ENABLED(CONFIG_IPV6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Returns error only if unable to parse addresses */
 static int selinux_parse_skb_ipv6(struct sk_buff *skb,
@@ -7042,8 +4437,6 @@ static int selinux_parse_skb_ipv6(struct sk_buff *skb,
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IP_SCTP)
 	case IPPROTO_SCTP: {
 		struct sctphdr _sctph, *sh;
@@ -7057,7 +4450,6 @@ static int selinux_parse_skb_ipv6(struct sk_buff *skb,
 		break;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* includes fragments */
 	default:
 		break;
@@ -7083,11 +4475,7 @@ static int selinux_parse_skb(struct sk_buff *skb, struct common_audit_data *ad,
 				       &ad->u.net->v4info.daddr);
 		goto okay;
 
-<<<<<<< HEAD
-#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
-=======
 #if IS_ENABLED(CONFIG_IPV6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PF_INET6:
 		ret = selinux_parse_skb_ipv6(skb, ad, proto);
 		if (ret)
@@ -7102,11 +4490,7 @@ static int selinux_parse_skb(struct sk_buff *skb, struct common_audit_data *ad,
 	}
 
 parse_error:
-<<<<<<< HEAD
-	printk(KERN_WARNING
-=======
 	pr_warn(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       "SELinux: failure in selinux_parse_skb(),"
 	       " unable to parse packet\n");
 	return ret;
@@ -7139,14 +4523,6 @@ static int selinux_skb_peerlbl_sid(struct sk_buff *skb, u16 family, u32 *sid)
 	u32 nlbl_sid;
 	u32 nlbl_type;
 
-<<<<<<< HEAD
-	selinux_xfrm_skb_sid(skb, &xfrm_sid);
-	selinux_netlbl_skbuff_getsid(skb, family, &nlbl_type, &nlbl_sid);
-
-	err = security_net_peersid_resolve(nlbl_sid, nlbl_type, xfrm_sid, sid);
-	if (unlikely(err)) {
-		printk(KERN_WARNING
-=======
 	err = selinux_xfrm_skb_sid(skb, &xfrm_sid);
 	if (unlikely(err))
 		return -EACCES;
@@ -7158,7 +4534,6 @@ static int selinux_skb_peerlbl_sid(struct sk_buff *skb, u16 family, u32 *sid)
 					   nlbl_type, xfrm_sid, sid);
 	if (unlikely(err)) {
 		pr_warn(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "SELinux: failure in selinux_skb_peerlbl_sid(),"
 		       " unable to determine packet's peer label\n");
 		return -EACCES;
@@ -7175,11 +4550,7 @@ static int selinux_skb_peerlbl_sid(struct sk_buff *skb, u16 family, u32 *sid)
  *
  * If @skb_sid is valid then the user:role:type information from @sk_sid is
  * combined with the MLS information from @skb_sid in order to create
-<<<<<<< HEAD
- * @conn_sid.  If @skb_sid is not valid then then @conn_sid is simply a copy
-=======
  * @conn_sid.  If @skb_sid is not valid then @conn_sid is simply a copy
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * of @sk_sid.  Returns zero on success, negative values on failure.
  *
  */
@@ -7188,12 +4559,8 @@ static int selinux_conn_sid(u32 sk_sid, u32 skb_sid, u32 *conn_sid)
 	int err = 0;
 
 	if (skb_sid != SECSID_NULL)
-<<<<<<< HEAD
-		err = security_sid_mls_copy(sk_sid, skb_sid, conn_sid);
-=======
 		err = security_sid_mls_copy(sk_sid, skb_sid,
 					    conn_sid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		*conn_sid = sk_sid;
 
@@ -7210,24 +4577,6 @@ static int socket_sockcreate_sid(const struct task_security_struct *tsec,
 		return 0;
 	}
 
-<<<<<<< HEAD
-	return security_transition_sid(tsec->sid, tsec->sid, secclass, NULL,
-				       socksid);
-}
-
-static int sock_has_perm(struct task_struct *task, struct sock *sk, u32 perms)
-{
-	struct sk_security_struct *sksec = sk->sk_security;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	struct lsm_network_audit net = {0,};
-	u32 tsid = task_sid(task);
-
-	if (unlikely(!sksec)) {
-		pr_warn("SELinux: sksec is NULL, socket is already freed\n");
-		return -EINVAL;
-	}
-=======
 	return security_transition_sid(tsec->sid, tsec->sid,
 				       secclass, NULL, socksid);
 }
@@ -7237,19 +4586,10 @@ static int sock_has_perm(struct sock *sk, u32 perms)
 	struct sk_security_struct *sksec = sk->sk_security;
 	struct common_audit_data ad;
 	struct lsm_network_audit net;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sksec->sid == SECINITSID_KERNEL)
 		return 0;
 
-<<<<<<< HEAD
-	COMMON_AUDIT_DATA_INIT(&ad, NET);
-	ad.selinux_audit_data = &sad;
-	ad.u.net = &net;
-	ad.u.net->sk = sk;
-
-	return avc_has_perm(tsid, sksec->sid, sksec->sclass, perms, &ad);
-=======
 	/*
 	 * Before POLICYDB_CAP_USERSPACE_INITIAL_CONTEXT, sockets that
 	 * inherited the kernel context from early boot used to be skipped
@@ -7269,17 +4609,12 @@ static int sock_has_perm(struct sock *sk, u32 perms)
 
 	return avc_has_perm(current_sid(), sksec->sid, sksec->sclass, perms,
 			    &ad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_socket_create(int family, int type,
 				 int protocol, int kern)
 {
-<<<<<<< HEAD
-	const struct task_security_struct *tsec = current_security();
-=======
 	const struct task_security_struct *tsec = selinux_cred(current_cred());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 newsid;
 	u16 secclass;
 	int rc;
@@ -7298,19 +4633,6 @@ static int selinux_socket_create(int family, int type,
 static int selinux_socket_post_create(struct socket *sock, int family,
 				      int type, int protocol, int kern)
 {
-<<<<<<< HEAD
-	const struct task_security_struct *tsec = current_security();
-	struct inode_security_struct *isec = SOCK_INODE(sock)->i_security;
-	struct sk_security_struct *sksec;
-	int err = 0;
-
-	isec->sclass = socket_type_to_security_class(family, type, protocol);
-
-	if (kern)
-		isec->sid = SECINITSID_KERNEL;
-	else {
-		err = socket_sockcreate_sid(tsec, isec->sclass, &(isec->sid));
-=======
 	const struct task_security_struct *tsec = selinux_cred(current_cred());
 	struct inode_security_struct *isec = inode_security_novalidate(SOCK_INODE(sock));
 	struct sk_security_struct *sksec;
@@ -7320,19 +4642,10 @@ static int selinux_socket_post_create(struct socket *sock, int family,
 
 	if (!kern) {
 		err = socket_sockcreate_sid(tsec, sclass, &sid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 	}
 
-<<<<<<< HEAD
-	isec->initialized = 1;
-
-	if (sock->sk) {
-		sksec = sock->sk->sk_security;
-		sksec->sid = isec->sid;
-		sksec->sclass = isec->sclass;
-=======
 	isec->sclass = sclass;
 	isec->sid = sid;
 	isec->initialized = LABEL_INITIALIZED;
@@ -7345,15 +4658,12 @@ static int selinux_socket_post_create(struct socket *sock, int family,
 		if (sksec->sclass == SECCLASS_SCTP_SOCKET)
 			sksec->sctp_assoc_state = SCTP_ASSOC_UNSET;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = selinux_netlbl_socket_post_create(sock->sk, family);
 	}
 
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int selinux_socket_socketpair(struct socket *socka,
 				     struct socket *sockb)
 {
@@ -7366,7 +4676,6 @@ static int selinux_socket_socketpair(struct socket *socka,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Range of port numbers used to automatically bind.
    Need to determine whether we should perform a name_bind
    permission check between the socket and the port number. */
@@ -7374,48 +4683,6 @@ static int selinux_socket_socketpair(struct socket *socka,
 static int selinux_socket_bind(struct socket *sock, struct sockaddr *address, int addrlen)
 {
 	struct sock *sk = sock->sk;
-<<<<<<< HEAD
-	u16 family;
-	int err;
-
-	err = sock_has_perm(current, sk, SOCKET__BIND);
-	if (err)
-		goto out;
-
-	/*
-	 * If PF_INET or PF_INET6, check name_bind permission for the port.
-	 * Multiple address binding for SCTP is not supported yet: we just
-	 * check the first address now.
-	 */
-	family = sk->sk_family;
-	if (family == PF_INET || family == PF_INET6) {
-		char *addrp;
-		struct sk_security_struct *sksec = sk->sk_security;
-		struct common_audit_data ad;
-		struct selinux_audit_data sad = {0,};
-		struct lsm_network_audit net = {0,};
-		struct sockaddr_in *addr4 = NULL;
-		struct sockaddr_in6 *addr6 = NULL;
-		unsigned short snum;
-		u32 sid, node_perm;
-
-		if (family == PF_INET) {
-			addr4 = (struct sockaddr_in *)address;
-			snum = ntohs(addr4->sin_port);
-			addrp = (char *)&addr4->sin_addr.s_addr;
-		} else {
-			addr6 = (struct sockaddr_in6 *)address;
-			snum = ntohs(addr6->sin6_port);
-			addrp = (char *)&addr6->sin6_addr.s6_addr;
-		}
-
-		if (snum) {
-			int low, high;
-
-			inet_get_local_port_range(&low, &high);
-
-			if (snum < max(PROT_SOCK, low) || snum > high) {
-=======
 	struct sk_security_struct *sksec = sk->sk_security;
 	u16 family;
 	int err;
@@ -7492,19 +4759,10 @@ static int selinux_socket_bind(struct socket *sock, struct sockaddr *address, in
 
 			if (inet_port_requires_bind_service(sock_net(sk), snum) ||
 			    snum < low || snum > high) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = sel_netport_sid(sk->sk_protocol,
 						      snum, &sid);
 				if (err)
 					goto out;
-<<<<<<< HEAD
-				COMMON_AUDIT_DATA_INIT(&ad, NET);
-				ad.selinux_audit_data = &sad;
-				ad.u.net = &net;
-				ad.u.net->sport = htons(snum);
-				ad.u.net->family = family;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = avc_has_perm(sksec->sid, sid,
 						   sksec->sclass,
 						   SOCKET__NAME_BIND, &ad);
@@ -7526,37 +4784,20 @@ static int selinux_socket_bind(struct socket *sock, struct sockaddr *address, in
 			node_perm = DCCP_SOCKET__NODE_BIND;
 			break;
 
-<<<<<<< HEAD
-=======
 		case SECCLASS_SCTP_SOCKET:
 			node_perm = SCTP_SOCKET__NODE_BIND;
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			node_perm = RAWIP_SOCKET__NODE_BIND;
 			break;
 		}
 
-<<<<<<< HEAD
-		err = sel_netnode_sid(addrp, family, &sid);
-		if (err)
-			goto out;
-
-		COMMON_AUDIT_DATA_INIT(&ad, NET);
-		ad.selinux_audit_data = &sad;
-		ad.u.net = &net;
-		ad.u.net->sport = htons(snum);
-		ad.u.net->family = family;
-
-		if (family == PF_INET)
-=======
 		err = sel_netnode_sid(addrp, family_sa, &sid);
 		if (err)
 			goto out;
 
 		if (family_sa == AF_INET)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ad.u.net->v4info.saddr = addr4->sin_addr.s_addr;
 		else
 			ad.u.net->v6info.saddr = addr6->sin6_addr;
@@ -7568,11 +4809,6 @@ static int selinux_socket_bind(struct socket *sock, struct sockaddr *address, in
 	}
 out:
 	return err;
-<<<<<<< HEAD
-}
-
-static int selinux_socket_connect(struct socket *sock, struct sockaddr *address, int addrlen)
-=======
 err_af:
 	/* Note that SCTP services expect -EINVAL, others -EAFNOSUPPORT. */
 	if (sksec->sclass == SECCLASS_SCTP_SOCKET)
@@ -7585,25 +4821,11 @@ err_af:
  */
 static int selinux_socket_connect_helper(struct socket *sock,
 					 struct sockaddr *address, int addrlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct sk_security_struct *sksec = sk->sk_security;
 	int err;
 
-<<<<<<< HEAD
-	err = sock_has_perm(current, sk, SOCKET__CONNECT);
-	if (err)
-		return err;
-
-	/*
-	 * If a TCP or DCCP socket, check name_connect permission for the port.
-	 */
-	if (sksec->sclass == SECCLASS_TCP_SOCKET ||
-	    sksec->sclass == SECCLASS_DCCP_SOCKET) {
-		struct common_audit_data ad;
-		struct selinux_audit_data sad = {0,};
-=======
 	err = sock_has_perm(sk, SOCKET__CONNECT);
 	if (err)
 		return err;
@@ -7624,16 +4846,12 @@ static int selinux_socket_connect_helper(struct socket *sock,
 	    sksec->sclass == SECCLASS_DCCP_SOCKET ||
 	    sksec->sclass == SECCLASS_SCTP_SOCKET) {
 		struct common_audit_data ad;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct lsm_network_audit net = {0,};
 		struct sockaddr_in *addr4 = NULL;
 		struct sockaddr_in6 *addr6 = NULL;
 		unsigned short snum;
 		u32 sid, perm;
 
-<<<<<<< HEAD
-		if (sk->sk_family == PF_INET) {
-=======
 		/* sctp_connectx(3) calls via selinux_sctp_bind_connect()
 		 * that validates multiple connect addresses. Because of this
 		 * need to check address->sa_family as it is possible to have
@@ -7641,23 +4859,16 @@ static int selinux_socket_connect_helper(struct socket *sock,
 		 */
 		switch (address->sa_family) {
 		case AF_INET:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			addr4 = (struct sockaddr_in *)address;
 			if (addrlen < sizeof(struct sockaddr_in))
 				return -EINVAL;
 			snum = ntohs(addr4->sin_port);
-<<<<<<< HEAD
-		} else {
-=======
 			break;
 		case AF_INET6:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			addr6 = (struct sockaddr_in6 *)address;
 			if (addrlen < SIN6_LEN_RFC2133)
 				return -EINVAL;
 			snum = ntohs(addr6->sin6_port);
-<<<<<<< HEAD
-=======
 			break;
 		default:
 			/* Note that SCTP services expect -EINVAL, whereas
@@ -7667,32 +4878,10 @@ static int selinux_socket_connect_helper(struct socket *sock,
 				return -EINVAL;
 			else
 				return -EAFNOSUPPORT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		err = sel_netport_sid(sk->sk_protocol, snum, &sid);
 		if (err)
-<<<<<<< HEAD
-			goto out;
-
-		perm = (sksec->sclass == SECCLASS_TCP_SOCKET) ?
-		       TCP_SOCKET__NAME_CONNECT : DCCP_SOCKET__NAME_CONNECT;
-
-		COMMON_AUDIT_DATA_INIT(&ad, NET);
-		ad.selinux_audit_data = &sad;
-		ad.u.net = &net;
-		ad.u.net->dport = htons(snum);
-		ad.u.net->family = sk->sk_family;
-		err = avc_has_perm(sksec->sid, sid, sksec->sclass, perm, &ad);
-		if (err)
-			goto out;
-	}
-
-	err = selinux_netlbl_socket_connect(sk, address);
-
-out:
-	return err;
-=======
 			return err;
 
 		switch (sksec->sclass) {
@@ -7731,16 +4920,11 @@ static int selinux_socket_connect(struct socket *sock,
 		return err;
 
 	return selinux_netlbl_socket_connect(sk, address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_socket_listen(struct socket *sock, int backlog)
 {
-<<<<<<< HEAD
-	return sock_has_perm(current, sock->sk, SOCKET__LISTEN);
-=======
 	return sock_has_perm(sock->sk, SOCKET__LISTEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_socket_accept(struct socket *sock, struct socket *newsock)
@@ -7748,19 +4932,6 @@ static int selinux_socket_accept(struct socket *sock, struct socket *newsock)
 	int err;
 	struct inode_security_struct *isec;
 	struct inode_security_struct *newisec;
-<<<<<<< HEAD
-
-	err = sock_has_perm(current, sock->sk, SOCKET__ACCEPT);
-	if (err)
-		return err;
-
-	newisec = SOCK_INODE(newsock)->i_security;
-
-	isec = SOCK_INODE(sock)->i_security;
-	newisec->sclass = isec->sclass;
-	newisec->sid = isec->sid;
-	newisec->initialized = 1;
-=======
 	u16 sclass;
 	u32 sid;
 
@@ -7778,7 +4949,6 @@ static int selinux_socket_accept(struct socket *sock, struct socket *newsock)
 	newisec->sclass = sclass;
 	newisec->sid = sid;
 	newisec->initialized = LABEL_INITIALIZED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -7786,50 +4956,30 @@ static int selinux_socket_accept(struct socket *sock, struct socket *newsock)
 static int selinux_socket_sendmsg(struct socket *sock, struct msghdr *msg,
 				  int size)
 {
-<<<<<<< HEAD
-	return sock_has_perm(current, sock->sk, SOCKET__WRITE);
-=======
 	return sock_has_perm(sock->sk, SOCKET__WRITE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_socket_recvmsg(struct socket *sock, struct msghdr *msg,
 				  int size, int flags)
 {
-<<<<<<< HEAD
-	return sock_has_perm(current, sock->sk, SOCKET__READ);
-=======
 	return sock_has_perm(sock->sk, SOCKET__READ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_socket_getsockname(struct socket *sock)
 {
-<<<<<<< HEAD
-	return sock_has_perm(current, sock->sk, SOCKET__GETATTR);
-=======
 	return sock_has_perm(sock->sk, SOCKET__GETATTR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_socket_getpeername(struct socket *sock)
 {
-<<<<<<< HEAD
-	return sock_has_perm(current, sock->sk, SOCKET__GETATTR);
-=======
 	return sock_has_perm(sock->sk, SOCKET__GETATTR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_socket_setsockopt(struct socket *sock, int level, int optname)
 {
 	int err;
 
-<<<<<<< HEAD
-	err = sock_has_perm(current, sock->sk, SOCKET__SETOPT);
-=======
 	err = sock_has_perm(sock->sk, SOCKET__SETOPT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -7839,20 +4989,12 @@ static int selinux_socket_setsockopt(struct socket *sock, int level, int optname
 static int selinux_socket_getsockopt(struct socket *sock, int level,
 				     int optname)
 {
-<<<<<<< HEAD
-	return sock_has_perm(current, sock->sk, SOCKET__GETOPT);
-=======
 	return sock_has_perm(sock->sk, SOCKET__GETOPT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_socket_shutdown(struct socket *sock, int how)
 {
-<<<<<<< HEAD
-	return sock_has_perm(current, sock->sk, SOCKET__SHUTDOWN);
-=======
 	return sock_has_perm(sock->sk, SOCKET__SHUTDOWN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_socket_unix_stream_connect(struct sock *sock,
@@ -7863,21 +5005,10 @@ static int selinux_socket_unix_stream_connect(struct sock *sock,
 	struct sk_security_struct *sksec_other = other->sk_security;
 	struct sk_security_struct *sksec_new = newsk->sk_security;
 	struct common_audit_data ad;
-<<<<<<< HEAD
-	struct selinux_audit_data sad = {0,};
-	struct lsm_network_audit net = {0,};
-	int err;
-
-	COMMON_AUDIT_DATA_INIT(&ad, NET);
-	ad.selinux_audit_data = &sad;
-	ad.u.net = &net;
-	ad.u.net->sk = other;
-=======
 	struct lsm_network_audit net;
 	int err;
 
 	ad_net_init_from_sk(&ad, &net, other);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = avc_has_perm(sksec_sock->sid, sksec_other->sid,
 			   sksec_other->sclass,
@@ -7887,13 +5018,8 @@ static int selinux_socket_unix_stream_connect(struct sock *sock,
 
 	/* server child socket */
 	sksec_new->peer_sid = sksec_sock->sid;
-<<<<<<< HEAD
-	err = security_sid_mls_copy(sksec_other->sid, sksec_sock->sid,
-				    &sksec_new->sid);
-=======
 	err = security_sid_mls_copy(sksec_other->sid,
 				    sksec_sock->sid, &sksec_new->sid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -7909,42 +5035,23 @@ static int selinux_socket_unix_may_send(struct socket *sock,
 	struct sk_security_struct *ssec = sock->sk->sk_security;
 	struct sk_security_struct *osec = other->sk->sk_security;
 	struct common_audit_data ad;
-<<<<<<< HEAD
-	struct selinux_audit_data sad = {0,};
-	struct lsm_network_audit net = {0,};
-
-	COMMON_AUDIT_DATA_INIT(&ad, NET);
-	ad.selinux_audit_data = &sad;
-	ad.u.net = &net;
-	ad.u.net->sk = other->sk;
-=======
 	struct lsm_network_audit net;
 
 	ad_net_init_from_sk(&ad, &net, other->sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return avc_has_perm(ssec->sid, osec->sid, osec->sclass, SOCKET__SENDTO,
 			    &ad);
 }
 
-<<<<<<< HEAD
-static int selinux_inet_sys_rcv_skb(int ifindex, char *addrp, u16 family,
-				    u32 peer_sid,
-=======
 static int selinux_inet_sys_rcv_skb(struct net *ns, int ifindex,
 				    char *addrp, u16 family, u32 peer_sid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    struct common_audit_data *ad)
 {
 	int err;
 	u32 if_sid;
 	u32 node_sid;
 
-<<<<<<< HEAD
-	err = sel_netif_sid(ifindex, &if_sid);
-=======
 	err = sel_netif_sid(ns, ifindex, &if_sid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 	err = avc_has_perm(peer_sid, if_sid,
@@ -7966,22 +5073,10 @@ static int selinux_sock_rcv_skb_compat(struct sock *sk, struct sk_buff *skb,
 	struct sk_security_struct *sksec = sk->sk_security;
 	u32 sk_sid = sksec->sid;
 	struct common_audit_data ad;
-<<<<<<< HEAD
-	struct selinux_audit_data sad = {0,};
-	struct lsm_network_audit net = {0,};
-	char *addrp;
-
-	COMMON_AUDIT_DATA_INIT(&ad, NET);
-	ad.selinux_audit_data = &sad;
-	ad.u.net = &net;
-	ad.u.net->netif = skb->skb_iif;
-	ad.u.net->family = family;
-=======
 	struct lsm_network_audit net;
 	char *addrp;
 
 	ad_net_init_from_iif(&ad, &net, skb->skb_iif, family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = selinux_parse_skb(skb, &ad, &addrp, 1, NULL);
 	if (err)
 		return err;
@@ -8003,25 +5098,13 @@ static int selinux_sock_rcv_skb_compat(struct sock *sk, struct sk_buff *skb,
 
 static int selinux_socket_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	int err;
-=======
 	int err, peerlbl_active, secmark_active;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_security_struct *sksec = sk->sk_security;
 	u16 family = sk->sk_family;
 	u32 sk_sid = sksec->sid;
 	struct common_audit_data ad;
-<<<<<<< HEAD
-	struct selinux_audit_data sad = {0,};
-	struct lsm_network_audit net = {0,};
-	char *addrp;
-	u8 secmark_active;
-	u8 peerlbl_active;
-=======
 	struct lsm_network_audit net;
 	char *addrp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (family != PF_INET && family != PF_INET6)
 		return 0;
@@ -8034,21 +5117,6 @@ static int selinux_socket_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
 	 * to the selinux_sock_rcv_skb_compat() function to deal with the
 	 * special handling.  We do this in an attempt to keep this function
 	 * as fast and as clean as possible. */
-<<<<<<< HEAD
-	if (!selinux_policycap_netpeer)
-		return selinux_sock_rcv_skb_compat(sk, skb, family);
-
-	secmark_active = selinux_secmark_enabled();
-	peerlbl_active = netlbl_enabled() || selinux_xfrm_enabled();
-	if (!secmark_active && !peerlbl_active)
-		return 0;
-
-	COMMON_AUDIT_DATA_INIT(&ad, NET);
-	ad.selinux_audit_data = &sad;
-	ad.u.net = &net;
-	ad.u.net->netif = skb->skb_iif;
-	ad.u.net->family = family;
-=======
 	if (!selinux_policycap_netpeer())
 		return selinux_sock_rcv_skb_compat(sk, skb, family);
 
@@ -8058,7 +5126,6 @@ static int selinux_socket_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
 		return 0;
 
 	ad_net_init_from_iif(&ad, &net, skb->skb_iif, family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = selinux_parse_skb(skb, &ad, &addrp, 1, NULL);
 	if (err)
 		return err;
@@ -8069,27 +5136,16 @@ static int selinux_socket_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
 		err = selinux_skb_peerlbl_sid(skb, family, &peer_sid);
 		if (err)
 			return err;
-<<<<<<< HEAD
-		err = selinux_inet_sys_rcv_skb(skb->skb_iif, addrp, family,
-					       peer_sid, &ad);
-		if (err) {
-			selinux_netlbl_err(skb, err, 0);
-=======
 		err = selinux_inet_sys_rcv_skb(sock_net(sk), skb->skb_iif,
 					       addrp, family, peer_sid, &ad);
 		if (err) {
 			selinux_netlbl_err(skb, family, err, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 		err = avc_has_perm(sk_sid, peer_sid, SECCLASS_PEER,
 				   PEER__RECV, &ad);
 		if (err) {
-<<<<<<< HEAD
-			selinux_netlbl_err(skb, err, 0);
-=======
 			selinux_netlbl_err(skb, family, err, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 	}
@@ -8104,74 +5160,43 @@ static int selinux_socket_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
 	return err;
 }
 
-<<<<<<< HEAD
-static int selinux_socket_getpeersec_stream(struct socket *sock, char __user *optval,
-					    int __user *optlen, unsigned len)
-{
-	int err = 0;
-	char *scontext;
-=======
 static int selinux_socket_getpeersec_stream(struct socket *sock,
 					    sockptr_t optval, sockptr_t optlen,
 					    unsigned int len)
 {
 	int err = 0;
 	char *scontext = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 scontext_len;
 	struct sk_security_struct *sksec = sock->sk->sk_security;
 	u32 peer_sid = SECSID_NULL;
 
 	if (sksec->sclass == SECCLASS_UNIX_STREAM_SOCKET ||
-<<<<<<< HEAD
-	    sksec->sclass == SECCLASS_TCP_SOCKET)
-=======
 	    sksec->sclass == SECCLASS_TCP_SOCKET ||
 	    sksec->sclass == SECCLASS_SCTP_SOCKET)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		peer_sid = sksec->peer_sid;
 	if (peer_sid == SECSID_NULL)
 		return -ENOPROTOOPT;
 
-<<<<<<< HEAD
-	err = security_sid_to_context(peer_sid, &scontext, &scontext_len);
-	if (err)
-		return err;
-
-=======
 	err = security_sid_to_context(peer_sid, &scontext,
 				      &scontext_len);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (scontext_len > len) {
 		err = -ERANGE;
 		goto out_len;
 	}
 
-<<<<<<< HEAD
-	if (copy_to_user(optval, scontext, scontext_len))
-		err = -EFAULT;
-
-out_len:
-	if (put_user(scontext_len, optlen))
-=======
 	if (copy_to_sockptr(optval, scontext, scontext_len))
 		err = -EFAULT;
 out_len:
 	if (copy_to_sockptr(optlen, &scontext_len, sizeof(scontext_len)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EFAULT;
 	kfree(scontext);
 	return err;
 }
 
-<<<<<<< HEAD
-static int selinux_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid)
-=======
 static int selinux_socket_getpeersec_dgram(struct socket *sock,
 					   struct sk_buff *skb, u32 *secid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 peer_secid = SECSID_NULL;
 	u16 family;
@@ -8182,20 +5207,6 @@ static int selinux_socket_getpeersec_dgram(struct socket *sock,
 		family = PF_INET6;
 	else if (sock)
 		family = sock->sk->sk_family;
-<<<<<<< HEAD
-	else
-		goto out;
-
-	if (sock && family == PF_UNIX)
-		selinux_inode_getsecid(SOCK_INODE(sock), &peer_secid);
-	else if (skb)
-		selinux_skb_peerlbl_sid(skb, family, &peer_secid);
-
-out:
-	*secid = peer_secid;
-	if (peer_secid == SECSID_NULL)
-		return -EINVAL;
-=======
 	else {
 		*secid = SECSID_NULL;
 		return -EINVAL;
@@ -8211,7 +5222,6 @@ out:
 	*secid = peer_secid;
 	if (peer_secid == SECSID_NULL)
 		return -ENOPROTOOPT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -8225,10 +5235,7 @@ static int selinux_sk_alloc_security(struct sock *sk, int family, gfp_t priority
 
 	sksec->peer_sid = SECINITSID_UNLABELED;
 	sksec->sid = SECINITSID_UNLABELED;
-<<<<<<< HEAD
-=======
 	sksec->sclass = SECCLASS_SOCKET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	selinux_netlbl_sk_security_reset(sksec);
 	sk->sk_security = sksec;
 
@@ -8256,20 +5263,12 @@ static void selinux_sk_clone_security(const struct sock *sk, struct sock *newsk)
 	selinux_netlbl_sk_security_reset(newsksec);
 }
 
-<<<<<<< HEAD
-static void selinux_sk_getsecid(struct sock *sk, u32 *secid)
-=======
 static void selinux_sk_getsecid(const struct sock *sk, u32 *secid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!sk)
 		*secid = SECINITSID_ANY_SOCKET;
 	else {
-<<<<<<< HEAD
-		struct sk_security_struct *sksec = sk->sk_security;
-=======
 		const struct sk_security_struct *sksec = sk->sk_security;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*secid = sksec->sid;
 	}
@@ -8277,12 +5276,8 @@ static void selinux_sk_getsecid(const struct sock *sk, u32 *secid)
 
 static void selinux_sock_graft(struct sock *sk, struct socket *parent)
 {
-<<<<<<< HEAD
-	struct inode_security_struct *isec = SOCK_INODE(parent)->i_security;
-=======
 	struct inode_security_struct *isec =
 		inode_security_novalidate(SOCK_INODE(parent));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_security_struct *sksec = sk->sk_security;
 
 	if (sk->sk_family == PF_INET || sk->sk_family == PF_INET6 ||
@@ -8291,16 +5286,6 @@ static void selinux_sock_graft(struct sock *sk, struct socket *parent)
 	sksec->sclass = isec->sclass;
 }
 
-<<<<<<< HEAD
-static int selinux_inet_conn_request(struct sock *sk, struct sk_buff *skb,
-				     struct request_sock *req)
-{
-	struct sk_security_struct *sksec = sk->sk_security;
-	int err;
-	u16 family = sk->sk_family;
-	u32 connsid;
-	u32 peersid;
-=======
 /*
  * Determines peer_secid for the asoc and updates socket's peer label
  * if it's the first association on the socket.
@@ -8314,14 +5299,11 @@ static int selinux_sctp_process_new_assoc(struct sctp_association *asoc,
 	struct common_audit_data ad;
 	struct lsm_network_audit net;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* handle mapped IPv4 packets arriving via IPv6 sockets */
 	if (family == PF_INET6 && skb->protocol == htons(ETH_P_IP))
 		family = PF_INET;
 
-<<<<<<< HEAD
-=======
 	if (selinux_peerlbl_enabled()) {
 		asoc->peer_secid = SECSID_NULL;
 
@@ -8539,7 +5521,6 @@ static int selinux_inet_conn_request(const struct sock *sk, struct sk_buff *skb,
 	u32 connsid;
 	u32 peersid;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = selinux_skb_peerlbl_sid(skb, family, &peersid);
 	if (err)
 		return err;
@@ -8583,15 +5564,6 @@ static void selinux_inet_conn_established(struct sock *sk, struct sk_buff *skb)
 
 static int selinux_secmark_relabel_packet(u32 sid)
 {
-<<<<<<< HEAD
-	const struct task_security_struct *__tsec;
-	u32 tsid;
-
-	__tsec = current_security();
-	tsid = __tsec->sid;
-
-	return avc_has_perm(tsid, sid, SECCLASS_PACKET, PACKET__RELABELTO, NULL);
-=======
 	const struct task_security_struct *tsec;
 	u32 tsid;
 
@@ -8600,7 +5572,6 @@ static int selinux_secmark_relabel_packet(u32 sid)
 
 	return avc_has_perm(tsid, sid, SECCLASS_PACKET, PACKET__RELABELTO,
 			    NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void selinux_secmark_refcount_inc(void)
@@ -8614,11 +5585,6 @@ static void selinux_secmark_refcount_dec(void)
 }
 
 static void selinux_req_classify_flow(const struct request_sock *req,
-<<<<<<< HEAD
-				      struct flowi *fl)
-{
-	fl->flowi_secid = req->secid;
-=======
 				      struct flowi_common *flic)
 {
 	flic->flowic_secid = req->secid;
@@ -8640,7 +5606,6 @@ static int selinux_tun_dev_alloc_security(void **security)
 static void selinux_tun_dev_free_security(void *security)
 {
 	kfree(security);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_tun_dev_create(void)
@@ -8658,10 +5623,6 @@ static int selinux_tun_dev_create(void)
 			    NULL);
 }
 
-<<<<<<< HEAD
-static void selinux_tun_dev_post_create(struct sock *sk)
-{
-=======
 static int selinux_tun_dev_attach_queue(void *security)
 {
 	struct tun_security_struct *tunsec = security;
@@ -8673,7 +5634,6 @@ static int selinux_tun_dev_attach_queue(void *security)
 static int selinux_tun_dev_attach(struct sock *sk, void *security)
 {
 	struct tun_security_struct *tunsec = security;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_security_struct *sksec = sk->sk_security;
 
 	/* we don't currently perform any NetLabel based labeling here and it
@@ -8683,22 +5643,6 @@ static int selinux_tun_dev_attach(struct sock *sk, void *security)
 	 * cause confusion to the TUN user that had no idea network labeling
 	 * protocols were being used */
 
-<<<<<<< HEAD
-	/* see the comments in selinux_tun_dev_create() about why we don't use
-	 * the sockcreate SID here */
-
-	sksec->sid = current_sid();
-	sksec->sclass = SECCLASS_TUN_SOCKET;
-}
-
-static int selinux_tun_dev_attach(struct sock *sk)
-{
-	struct sk_security_struct *sksec = sk->sk_security;
-	u32 sid = current_sid();
-	int err;
-
-	err = avc_has_perm(sid, sksec->sid, SECCLASS_TUN_SOCKET,
-=======
 	sksec->sid = tunsec->sid;
 	sksec->sclass = SECCLASS_TUN_SOCKET;
 
@@ -8712,7 +5656,6 @@ static int selinux_tun_dev_open(void *security)
 	int err;
 
 	err = avc_has_perm(sid, tunsec->sid, SECCLASS_TUN_SOCKET,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   TUN_SOCKET__RELABELFROM, NULL);
 	if (err)
 		return err;
@@ -8720,85 +5663,11 @@ static int selinux_tun_dev_open(void *security)
 			   TUN_SOCKET__RELABELTO, NULL);
 	if (err)
 		return err;
-<<<<<<< HEAD
-
-	sksec->sid = sid;
-=======
 	tunsec->sid = sid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int selinux_nlmsg_perm(struct sock *sk, struct sk_buff *skb)
-{
-	int err = 0;
-	u32 perm;
-	struct nlmsghdr *nlh;
-	struct sk_security_struct *sksec = sk->sk_security;
-
-	if (skb->len < NLMSG_SPACE(0)) {
-		err = -EINVAL;
-		goto out;
-	}
-	nlh = nlmsg_hdr(skb);
-
-	err = selinux_nlmsg_lookup(sksec->sclass, nlh->nlmsg_type, &perm);
-	if (err) {
-		if (err == -EINVAL) {
-			audit_log(current->audit_context, GFP_KERNEL, AUDIT_SELINUX_ERR,
-				  "SELinux:  unrecognized netlink message"
-				  " type=%hu for sclass=%hu\n",
-				  nlh->nlmsg_type, sksec->sclass);
-			if (!selinux_enforcing || security_get_allow_unknown())
-				err = 0;
-		}
-
-		/* Ignore */
-		if (err == -ENOENT)
-			err = 0;
-		goto out;
-	}
-
-	err = sock_has_perm(current, sk, perm);
-out:
-	return err;
-}
-
-#ifdef CONFIG_NETFILTER
-
-static unsigned int selinux_ip_forward(struct sk_buff *skb, int ifindex,
-				       u16 family)
-{
-	int err;
-	char *addrp;
-	u32 peer_sid;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	struct lsm_network_audit net = {0,};
-	u8 secmark_active;
-	u8 netlbl_active;
-	u8 peerlbl_active;
-
-	if (!selinux_policycap_netpeer)
-		return NF_ACCEPT;
-
-	secmark_active = selinux_secmark_enabled();
-	netlbl_active = netlbl_enabled();
-	peerlbl_active = netlbl_active || selinux_xfrm_enabled();
-	if (!secmark_active && !peerlbl_active)
-		return NF_ACCEPT;
-
-	if (selinux_skb_peerlbl_sid(skb, family, &peer_sid) != 0)
-		return NF_DROP;
-
-	COMMON_AUDIT_DATA_INIT(&ad, NET);
-	ad.selinux_audit_data = &sad;
-	ad.u.net = &net;
-	ad.u.net->netif = ifindex;
-	ad.u.net->family = family;
-=======
 #ifdef CONFIG_NETFILTER
 
 static unsigned int selinux_ip_forward(void *priv, struct sk_buff *skb,
@@ -8826,24 +5695,16 @@ static unsigned int selinux_ip_forward(void *priv, struct sk_buff *skb,
 
 	ifindex = state->in->ifindex;
 	ad_net_init_from_iif(&ad, &net, ifindex, family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (selinux_parse_skb(skb, &ad, &addrp, 1, NULL) != 0)
 		return NF_DROP;
 
 	if (peerlbl_active) {
-<<<<<<< HEAD
-		err = selinux_inet_sys_rcv_skb(ifindex, addrp, family,
-					       peer_sid, &ad);
-		if (err) {
-			selinux_netlbl_err(skb, err, 1);
-=======
 		int err;
 
 		err = selinux_inet_sys_rcv_skb(state->net, ifindex,
 					       addrp, family, peer_sid, &ad);
 		if (err) {
 			selinux_netlbl_err(skb, family, err, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NF_DROP;
 		}
 	}
@@ -8853,11 +5714,7 @@ static unsigned int selinux_ip_forward(void *priv, struct sk_buff *skb,
 				 SECCLASS_PACKET, PACKET__FORWARD_IN, &ad))
 			return NF_DROP;
 
-<<<<<<< HEAD
-	if (netlbl_active)
-=======
 	if (netlbl_enabled())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* we do this in the FORWARD path and not the POST_ROUTING
 		 * path because we want to make sure we apply the necessary
 		 * labeling before IPsec is applied so we can leverage AH
@@ -8868,33 +5725,8 @@ static unsigned int selinux_ip_forward(void *priv, struct sk_buff *skb,
 	return NF_ACCEPT;
 }
 
-<<<<<<< HEAD
-static unsigned int selinux_ipv4_forward(unsigned int hooknum,
-					 struct sk_buff *skb,
-					 const struct net_device *in,
-					 const struct net_device *out,
-					 int (*okfn)(struct sk_buff *))
-{
-	return selinux_ip_forward(skb, in->ifindex, PF_INET);
-}
-
-#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
-static unsigned int selinux_ipv6_forward(unsigned int hooknum,
-					 struct sk_buff *skb,
-					 const struct net_device *in,
-					 const struct net_device *out,
-					 int (*okfn)(struct sk_buff *))
-{
-	return selinux_ip_forward(skb, in->ifindex, PF_INET6);
-}
-#endif	/* IPV6 */
-
-static unsigned int selinux_ip_output(struct sk_buff *skb,
-				      u16 family)
-=======
 static unsigned int selinux_ip_output(void *priv, struct sk_buff *skb,
 				      const struct nf_hook_state *state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk;
 	u32 sid;
@@ -8909,11 +5741,7 @@ static unsigned int selinux_ip_output(void *priv, struct sk_buff *skb,
 	if (sk) {
 		struct sk_security_struct *sksec;
 
-<<<<<<< HEAD
-		if (sk->sk_state == TCP_LISTEN)
-=======
 		if (sk_listener(sk))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* if the socket is the listening state then this
 			 * packet is a SYN-ACK packet which means it needs to
 			 * be labeled based on the connection/request_sock and
@@ -8933,39 +5761,12 @@ static unsigned int selinux_ip_output(void *priv, struct sk_buff *skb,
 		sid = sksec->sid;
 	} else
 		sid = SECINITSID_KERNEL;
-<<<<<<< HEAD
-	if (selinux_netlbl_skbuff_setsid(skb, family, sid) != 0)
-=======
 	if (selinux_netlbl_skbuff_setsid(skb, state->pf, sid) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NF_DROP;
 
 	return NF_ACCEPT;
 }
 
-<<<<<<< HEAD
-static unsigned int selinux_ipv4_output(unsigned int hooknum,
-					struct sk_buff *skb,
-					const struct net_device *in,
-					const struct net_device *out,
-					int (*okfn)(struct sk_buff *))
-{
-	return selinux_ip_output(skb, PF_INET);
-}
-
-static unsigned int selinux_ip_postroute_compat(struct sk_buff *skb,
-						int ifindex,
-						u16 family)
-{
-	struct sock *sk = skb->sk;
-	struct sk_security_struct *sksec;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	struct lsm_network_audit net = {0,};
-	char *addrp;
-	u8 proto;
-
-=======
 
 static unsigned int selinux_ip_postroute_compat(struct sk_buff *skb,
 					const struct nf_hook_state *state)
@@ -8977,22 +5778,12 @@ static unsigned int selinux_ip_postroute_compat(struct sk_buff *skb,
 	u8 proto = 0;
 
 	sk = skb_to_full_sk(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sk == NULL)
 		return NF_ACCEPT;
 	sksec = sk->sk_security;
 
-<<<<<<< HEAD
-	COMMON_AUDIT_DATA_INIT(&ad, NET);
-	ad.selinux_audit_data = &sad;
-	ad.u.net = &net;
-	ad.u.net->netif = ifindex;
-	ad.u.net->family = family;
-	if (selinux_parse_skb(skb, &ad, &addrp, 0, &proto))
-=======
 	ad_net_init_from_iif(&ad, &net, state->out->ifindex, state->pf);
 	if (selinux_parse_skb(skb, &ad, NULL, 0, &proto))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NF_DROP;
 
 	if (selinux_secmark_enabled())
@@ -9006,20 +5797,6 @@ static unsigned int selinux_ip_postroute_compat(struct sk_buff *skb,
 	return NF_ACCEPT;
 }
 
-<<<<<<< HEAD
-static unsigned int selinux_ip_postroute(struct sk_buff *skb, int ifindex,
-					 u16 family)
-{
-	u32 secmark_perm;
-	u32 peer_sid;
-	struct sock *sk;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	struct lsm_network_audit net = {0,};
-	char *addrp;
-	u8 secmark_active;
-	u8 peerlbl_active;
-=======
 static unsigned int selinux_ip_postroute(void *priv,
 					 struct sk_buff *skb,
 					 const struct nf_hook_state *state)
@@ -9033,23 +5810,11 @@ static unsigned int selinux_ip_postroute(void *priv,
 	struct lsm_network_audit net;
 	char *addrp;
 	int secmark_active, peerlbl_active;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If any sort of compatibility mode is enabled then handoff processing
 	 * to the selinux_ip_postroute_compat() function to deal with the
 	 * special handling.  We do this in an attempt to keep this function
 	 * as fast and as clean as possible. */
-<<<<<<< HEAD
-	if (!selinux_policycap_netpeer)
-		return selinux_ip_postroute_compat(skb, ifindex, family);
-
-	secmark_active = selinux_secmark_enabled();
-	peerlbl_active = netlbl_enabled() || selinux_xfrm_enabled();
-	if (!secmark_active && !peerlbl_active)
-		return NF_ACCEPT;
-
-	sk = skb->sk;
-=======
 	if (!selinux_policycap_netpeer())
 		return selinux_ip_postroute_compat(skb, state);
 
@@ -9059,7 +5824,6 @@ static unsigned int selinux_ip_postroute(void *priv,
 		return NF_ACCEPT;
 
 	sk = skb_to_full_sk(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_XFRM
 	/* If skb->dst->xfrm is non-NULL then the packet is undergoing an IPsec
@@ -9068,28 +5832,17 @@ static unsigned int selinux_ip_postroute(void *priv,
 	 * when the packet is on it's final way out.
 	 * NOTE: there appear to be some IPv6 multicast cases where skb->dst
 	 *       is NULL, in this case go ahead and apply access control.
-<<<<<<< HEAD
-	 *       is NULL, in this case go ahead and apply access control.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * NOTE: if this is a local socket (skb->sk != NULL) that is in the
 	 *       TCP listening state we cannot wait until the XFRM processing
 	 *       is done as we will miss out on the SA label if we do;
 	 *       unfortunately, this means more work, but it is only once per
 	 *       connection. */
 	if (skb_dst(skb) != NULL && skb_dst(skb)->xfrm != NULL &&
-<<<<<<< HEAD
-	    !(sk != NULL && sk->sk_state == TCP_LISTEN))
-		return NF_ACCEPT;
-#endif
-
-=======
 	    !(sk && sk_listener(sk)))
 		return NF_ACCEPT;
 #endif
 
 	family = state->pf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sk == NULL) {
 		/* Without an associated socket the packet is either coming
 		 * from the kernel or it is being forwarded; check the packet
@@ -9103,11 +5856,7 @@ static unsigned int selinux_ip_postroute(void *priv,
 			secmark_perm = PACKET__SEND;
 			peer_sid = SECINITSID_KERNEL;
 		}
-<<<<<<< HEAD
-	} else if (sk->sk_state == TCP_LISTEN) {
-=======
 	} else if (sk_listener(sk)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Locally generated packet but the associated socket is in the
 		 * listening state which means this is a SYN-ACK packet.  In
 		 * this particular case the correct security label is assigned
@@ -9118,13 +5867,9 @@ static unsigned int selinux_ip_postroute(void *priv,
 		 * selinux_inet_conn_request().  See also selinux_ip_output()
 		 * for similar problems. */
 		u32 skb_sid;
-<<<<<<< HEAD
-		struct sk_security_struct *sksec = sk->sk_security;
-=======
 		struct sk_security_struct *sksec;
 
 		sksec = sk->sk_security;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (selinux_skb_peerlbl_sid(skb, family, &skb_sid))
 			return NF_DROP;
 		/* At this point, if the returned skb peerlbl is SECSID_NULL
@@ -9142,10 +5887,7 @@ static unsigned int selinux_ip_postroute(void *priv,
 			case PF_INET6:
 				if (IP6CB(skb)->flags & IP6SKB_XFRM_TRANSFORMED)
 					return NF_ACCEPT;
-<<<<<<< HEAD
-=======
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			default:
 				return NF_DROP_ERR(-ECONNREFUSED);
 			}
@@ -9161,16 +5903,8 @@ static unsigned int selinux_ip_postroute(void *priv,
 		secmark_perm = PACKET__SEND;
 	}
 
-<<<<<<< HEAD
-	COMMON_AUDIT_DATA_INIT(&ad, NET);
-	ad.selinux_audit_data = &sad;
-	ad.u.net = &net;
-	ad.u.net->netif = ifindex;
-	ad.u.net->family = family;
-=======
 	ifindex = state->out->ifindex;
 	ad_net_init_from_iif(&ad, &net, ifindex, family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (selinux_parse_skb(skb, &ad, &addrp, 0, NULL))
 		return NF_DROP;
 
@@ -9183,11 +5917,7 @@ static unsigned int selinux_ip_postroute(void *priv,
 		u32 if_sid;
 		u32 node_sid;
 
-<<<<<<< HEAD
-		if (sel_netif_sid(ifindex, &if_sid))
-=======
 		if (sel_netif_sid(state->net, ifindex, &if_sid))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NF_DROP;
 		if (avc_has_perm(peer_sid, if_sid,
 				 SECCLASS_NETIF, NETIF__EGRESS, &ad))
@@ -9202,91 +5932,10 @@ static unsigned int selinux_ip_postroute(void *priv,
 
 	return NF_ACCEPT;
 }
-<<<<<<< HEAD
-
-static unsigned int selinux_ipv4_postroute(unsigned int hooknum,
-					   struct sk_buff *skb,
-					   const struct net_device *in,
-					   const struct net_device *out,
-					   int (*okfn)(struct sk_buff *))
-{
-	return selinux_ip_postroute(skb, out->ifindex, PF_INET);
-}
-
-#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
-static unsigned int selinux_ipv6_postroute(unsigned int hooknum,
-					   struct sk_buff *skb,
-					   const struct net_device *in,
-					   const struct net_device *out,
-					   int (*okfn)(struct sk_buff *))
-{
-	return selinux_ip_postroute(skb, out->ifindex, PF_INET6);
-}
-#endif	/* IPV6 */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* CONFIG_NETFILTER */
 
 static int selinux_netlink_send(struct sock *sk, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	int err;
-
-	err = cap_netlink_send(sk, skb);
-	if (err)
-		return err;
-
-	return selinux_nlmsg_perm(sk, skb);
-}
-
-static int ipc_alloc_security(struct task_struct *task,
-			      struct kern_ipc_perm *perm,
-			      u16 sclass)
-{
-	struct ipc_security_struct *isec;
-	u32 sid;
-
-	isec = kzalloc(sizeof(struct ipc_security_struct), GFP_KERNEL);
-	if (!isec)
-		return -ENOMEM;
-
-	sid = task_sid(task);
-	isec->sclass = sclass;
-	isec->sid = sid;
-	perm->security = isec;
-
-	return 0;
-}
-
-static void ipc_free_security(struct kern_ipc_perm *perm)
-{
-	struct ipc_security_struct *isec = perm->security;
-	perm->security = NULL;
-	kfree(isec);
-}
-
-static int msg_msg_alloc_security(struct msg_msg *msg)
-{
-	struct msg_security_struct *msec;
-
-	msec = kzalloc(sizeof(struct msg_security_struct), GFP_KERNEL);
-	if (!msec)
-		return -ENOMEM;
-
-	msec->sid = SECINITSID_UNLABELED;
-	msg->security = msec;
-
-	return 0;
-}
-
-static void msg_msg_free_security(struct msg_msg *msg)
-{
-	struct msg_security_struct *msec = msg->security;
-
-	msg->security = NULL;
-	kfree(msec);
-=======
 	int rc = 0;
 	unsigned int msg_len;
 	unsigned int data_len = skb->len;
@@ -9347,7 +5996,6 @@ static void ipc_init_security(struct ipc_security_struct *isec, u16 sclass)
 {
 	isec->sclass = sclass;
 	isec->sid = current_sid();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ipc_has_perm(struct kern_ipc_perm *ipc_perms,
@@ -9355,21 +6003,11 @@ static int ipc_has_perm(struct kern_ipc_perm *ipc_perms,
 {
 	struct ipc_security_struct *isec;
 	struct common_audit_data ad;
-<<<<<<< HEAD
-	struct selinux_audit_data sad = {0,};
-	u32 sid = current_sid();
-
-	isec = ipc_perms->security;
-
-	COMMON_AUDIT_DATA_INIT(&ad, IPC);
-	ad.selinux_audit_data = &sad;
-=======
 	u32 sid = current_sid();
 
 	isec = selinux_ipc(ipc_perms);
 
 	ad.type = LSM_AUDIT_DATA_IPC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ad.u.ipc_id = ipc_perms->key;
 
 	return avc_has_perm(sid, isec->sid, isec->sclass, perms, &ad);
@@ -9377,61 +6015,6 @@ static int ipc_has_perm(struct kern_ipc_perm *ipc_perms,
 
 static int selinux_msg_msg_alloc_security(struct msg_msg *msg)
 {
-<<<<<<< HEAD
-	return msg_msg_alloc_security(msg);
-}
-
-static void selinux_msg_msg_free_security(struct msg_msg *msg)
-{
-	msg_msg_free_security(msg);
-}
-
-/* message queue security operations */
-static int selinux_msg_queue_alloc_security(struct msg_queue *msq)
-{
-	struct ipc_security_struct *isec;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	u32 sid = current_sid();
-	int rc;
-
-	rc = ipc_alloc_security(current, &msq->q_perm, SECCLASS_MSGQ);
-	if (rc)
-		return rc;
-
-	isec = msq->q_perm.security;
-
-	COMMON_AUDIT_DATA_INIT(&ad, IPC);
-	ad.selinux_audit_data = &sad;
-	ad.u.ipc_id = msq->q_perm.key;
-
-	rc = avc_has_perm(sid, isec->sid, SECCLASS_MSGQ,
-			  MSGQ__CREATE, &ad);
-	if (rc) {
-		ipc_free_security(&msq->q_perm);
-		return rc;
-	}
-	return 0;
-}
-
-static void selinux_msg_queue_free_security(struct msg_queue *msq)
-{
-	ipc_free_security(&msq->q_perm);
-}
-
-static int selinux_msg_queue_associate(struct msg_queue *msq, int msqflg)
-{
-	struct ipc_security_struct *isec;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	u32 sid = current_sid();
-
-	isec = msq->q_perm.security;
-
-	COMMON_AUDIT_DATA_INIT(&ad, IPC);
-	ad.selinux_audit_data = &sad;
-	ad.u.ipc_id = msq->q_perm.key;
-=======
 	struct msg_security_struct *msec;
 
 	msec = selinux_msg_msg(msg);
@@ -9467,38 +6050,24 @@ static int selinux_msg_queue_associate(struct kern_ipc_perm *msq, int msqflg)
 
 	ad.type = LSM_AUDIT_DATA_IPC;
 	ad.u.ipc_id = msq->key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return avc_has_perm(sid, isec->sid, SECCLASS_MSGQ,
 			    MSGQ__ASSOCIATE, &ad);
 }
 
-<<<<<<< HEAD
-static int selinux_msg_queue_msgctl(struct msg_queue *msq, int cmd)
-{
-	int err;
-	int perms;
-=======
 static int selinux_msg_queue_msgctl(struct kern_ipc_perm *msq, int cmd)
 {
 	u32 perms;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case IPC_INFO:
 	case MSG_INFO:
 		/* No specific object, just general system-wide information. */
-<<<<<<< HEAD
-		return task_has_system(current, SYSTEM__IPC_INFO);
-	case IPC_STAT:
-	case MSG_STAT:
-=======
 		return avc_has_perm(current_sid(), SECINITSID_KERNEL,
 				    SECCLASS_SYSTEM, SYSTEM__IPC_INFO, NULL);
 	case IPC_STAT:
 	case MSG_STAT:
 	case MSG_STAT_ANY:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		perms = MSGQ__GETATTR | MSGQ__ASSOCIATE;
 		break;
 	case IPC_SET:
@@ -9511,36 +6080,19 @@ static int selinux_msg_queue_msgctl(struct kern_ipc_perm *msq, int cmd)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	err = ipc_has_perm(&msq->q_perm, perms);
-	return err;
-}
-
-static int selinux_msg_queue_msgsnd(struct msg_queue *msq, struct msg_msg *msg, int msqflg)
-=======
 	return ipc_has_perm(msq, perms);
 }
 
 static int selinux_msg_queue_msgsnd(struct kern_ipc_perm *msq, struct msg_msg *msg, int msqflg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipc_security_struct *isec;
 	struct msg_security_struct *msec;
 	struct common_audit_data ad;
-<<<<<<< HEAD
-	struct selinux_audit_data sad = {0,};
-	u32 sid = current_sid();
-	int rc;
-
-	isec = msq->q_perm.security;
-	msec = msg->security;
-=======
 	u32 sid = current_sid();
 	int rc;
 
 	isec = selinux_ipc(msq);
 	msec = selinux_msg_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * First time through, need to assign label to the message
@@ -9550,25 +6102,14 @@ static int selinux_msg_queue_msgsnd(struct kern_ipc_perm *msq, struct msg_msg *m
 		 * Compute new sid based on current process and
 		 * message queue this message will be stored in
 		 */
-<<<<<<< HEAD
-		rc = security_transition_sid(sid, isec->sid, SECCLASS_MSG,
-					     NULL, &msec->sid);
-=======
 		rc = security_transition_sid(sid, isec->sid,
 					     SECCLASS_MSG, NULL, &msec->sid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc)
 			return rc;
 	}
 
-<<<<<<< HEAD
-	COMMON_AUDIT_DATA_INIT(&ad, IPC);
-	ad.selinux_audit_data = &sad;
-	ad.u.ipc_id = msq->q_perm.key;
-=======
 	ad.type = LSM_AUDIT_DATA_IPC;
 	ad.u.ipc_id = msq->key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Can this process write to the queue? */
 	rc = avc_has_perm(sid, isec->sid, SECCLASS_MSGQ,
@@ -9585,29 +6126,13 @@ static int selinux_msg_queue_msgsnd(struct kern_ipc_perm *msq, struct msg_msg *m
 	return rc;
 }
 
-<<<<<<< HEAD
-static int selinux_msg_queue_msgrcv(struct msg_queue *msq, struct msg_msg *msg,
-=======
 static int selinux_msg_queue_msgrcv(struct kern_ipc_perm *msq, struct msg_msg *msg,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    struct task_struct *target,
 				    long type, int mode)
 {
 	struct ipc_security_struct *isec;
 	struct msg_security_struct *msec;
 	struct common_audit_data ad;
-<<<<<<< HEAD
-	struct selinux_audit_data sad = {0,};
-	u32 sid = task_sid(target);
-	int rc;
-
-	isec = msq->q_perm.security;
-	msec = msg->security;
-
-	COMMON_AUDIT_DATA_INIT(&ad, IPC);
-	ad.selinux_audit_data = &sad;
-	ad.u.ipc_id = msq->q_perm.key;
-=======
 	u32 sid = task_sid_obj(target);
 	int rc;
 
@@ -9616,7 +6141,6 @@ static int selinux_msg_queue_msgrcv(struct kern_ipc_perm *msq, struct msg_msg *m
 
 	ad.type = LSM_AUDIT_DATA_IPC;
 	ad.u.ipc_id = msq->key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = avc_has_perm(sid, isec->sid,
 			  SECCLASS_MSGQ, MSGQ__READ, &ad);
@@ -9627,52 +6151,6 @@ static int selinux_msg_queue_msgrcv(struct kern_ipc_perm *msq, struct msg_msg *m
 }
 
 /* Shared Memory security operations */
-<<<<<<< HEAD
-static int selinux_shm_alloc_security(struct shmid_kernel *shp)
-{
-	struct ipc_security_struct *isec;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	u32 sid = current_sid();
-	int rc;
-
-	rc = ipc_alloc_security(current, &shp->shm_perm, SECCLASS_SHM);
-	if (rc)
-		return rc;
-
-	isec = shp->shm_perm.security;
-
-	COMMON_AUDIT_DATA_INIT(&ad, IPC);
-	ad.selinux_audit_data = &sad;
-	ad.u.ipc_id = shp->shm_perm.key;
-
-	rc = avc_has_perm(sid, isec->sid, SECCLASS_SHM,
-			  SHM__CREATE, &ad);
-	if (rc) {
-		ipc_free_security(&shp->shm_perm);
-		return rc;
-	}
-	return 0;
-}
-
-static void selinux_shm_free_security(struct shmid_kernel *shp)
-{
-	ipc_free_security(&shp->shm_perm);
-}
-
-static int selinux_shm_associate(struct shmid_kernel *shp, int shmflg)
-{
-	struct ipc_security_struct *isec;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	u32 sid = current_sid();
-
-	isec = shp->shm_perm.security;
-
-	COMMON_AUDIT_DATA_INIT(&ad, IPC);
-	ad.selinux_audit_data = &sad;
-	ad.u.ipc_id = shp->shm_perm.key;
-=======
 static int selinux_shm_alloc_security(struct kern_ipc_perm *shp)
 {
 	struct ipc_security_struct *isec;
@@ -9699,39 +6177,25 @@ static int selinux_shm_associate(struct kern_ipc_perm *shp, int shmflg)
 
 	ad.type = LSM_AUDIT_DATA_IPC;
 	ad.u.ipc_id = shp->key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return avc_has_perm(sid, isec->sid, SECCLASS_SHM,
 			    SHM__ASSOCIATE, &ad);
 }
 
 /* Note, at this point, shp is locked down */
-<<<<<<< HEAD
-static int selinux_shm_shmctl(struct shmid_kernel *shp, int cmd)
-{
-	int perms;
-	int err;
-=======
 static int selinux_shm_shmctl(struct kern_ipc_perm *shp, int cmd)
 {
 	u32 perms;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case IPC_INFO:
 	case SHM_INFO:
 		/* No specific object, just general system-wide information. */
-<<<<<<< HEAD
-		return task_has_system(current, SYSTEM__IPC_INFO);
-	case IPC_STAT:
-	case SHM_STAT:
-=======
 		return avc_has_perm(current_sid(), SECINITSID_KERNEL,
 				    SECCLASS_SYSTEM, SYSTEM__IPC_INFO, NULL);
 	case IPC_STAT:
 	case SHM_STAT:
 	case SHM_STAT_ANY:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		perms = SHM__GETATTR | SHM__ASSOCIATE;
 		break;
 	case IPC_SET:
@@ -9748,18 +6212,10 @@ static int selinux_shm_shmctl(struct kern_ipc_perm *shp, int cmd)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	err = ipc_has_perm(&shp->shm_perm, perms);
-	return err;
-}
-
-static int selinux_shm_shmat(struct shmid_kernel *shp,
-=======
 	return ipc_has_perm(shp, perms);
 }
 
 static int selinux_shm_shmat(struct kern_ipc_perm *shp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     char __user *shmaddr, int shmflg)
 {
 	u32 perms;
@@ -9769,56 +6225,6 @@ static int selinux_shm_shmat(struct kern_ipc_perm *shp,
 	else
 		perms = SHM__READ | SHM__WRITE;
 
-<<<<<<< HEAD
-	return ipc_has_perm(&shp->shm_perm, perms);
-}
-
-/* Semaphore security operations */
-static int selinux_sem_alloc_security(struct sem_array *sma)
-{
-	struct ipc_security_struct *isec;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	u32 sid = current_sid();
-	int rc;
-
-	rc = ipc_alloc_security(current, &sma->sem_perm, SECCLASS_SEM);
-	if (rc)
-		return rc;
-
-	isec = sma->sem_perm.security;
-
-	COMMON_AUDIT_DATA_INIT(&ad, IPC);
-	ad.selinux_audit_data = &sad;
-	ad.u.ipc_id = sma->sem_perm.key;
-
-	rc = avc_has_perm(sid, isec->sid, SECCLASS_SEM,
-			  SEM__CREATE, &ad);
-	if (rc) {
-		ipc_free_security(&sma->sem_perm);
-		return rc;
-	}
-	return 0;
-}
-
-static void selinux_sem_free_security(struct sem_array *sma)
-{
-	ipc_free_security(&sma->sem_perm);
-}
-
-static int selinux_sem_associate(struct sem_array *sma, int semflg)
-{
-	struct ipc_security_struct *isec;
-	struct common_audit_data ad;
-	struct selinux_audit_data sad = {0,};
-	u32 sid = current_sid();
-
-	isec = sma->sem_perm.security;
-
-	COMMON_AUDIT_DATA_INIT(&ad, IPC);
-	ad.selinux_audit_data = &sad;
-	ad.u.ipc_id = sma->sem_perm.key;
-=======
 	return ipc_has_perm(shp, perms);
 }
 
@@ -9849,18 +6255,13 @@ static int selinux_sem_associate(struct kern_ipc_perm *sma, int semflg)
 
 	ad.type = LSM_AUDIT_DATA_IPC;
 	ad.u.ipc_id = sma->key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return avc_has_perm(sid, isec->sid, SECCLASS_SEM,
 			    SEM__ASSOCIATE, &ad);
 }
 
 /* Note, at this point, sma is locked down */
-<<<<<<< HEAD
-static int selinux_sem_semctl(struct sem_array *sma, int cmd)
-=======
 static int selinux_sem_semctl(struct kern_ipc_perm *sma, int cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	u32 perms;
@@ -9869,12 +6270,8 @@ static int selinux_sem_semctl(struct kern_ipc_perm *sma, int cmd)
 	case IPC_INFO:
 	case SEM_INFO:
 		/* No specific object, just general system-wide information. */
-<<<<<<< HEAD
-		return task_has_system(current, SYSTEM__IPC_INFO);
-=======
 		return avc_has_perm(current_sid(), SECINITSID_KERNEL,
 				    SECCLASS_SYSTEM, SYSTEM__IPC_INFO, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case GETPID:
 	case GETNCNT:
 	case GETZCNT:
@@ -9896,29 +6293,18 @@ static int selinux_sem_semctl(struct kern_ipc_perm *sma, int cmd)
 		break;
 	case IPC_STAT:
 	case SEM_STAT:
-<<<<<<< HEAD
-=======
 	case SEM_STAT_ANY:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		perms = SEM__GETATTR | SEM__ASSOCIATE;
 		break;
 	default:
 		return 0;
 	}
 
-<<<<<<< HEAD
-	err = ipc_has_perm(&sma->sem_perm, perms);
-	return err;
-}
-
-static int selinux_sem_semop(struct sem_array *sma,
-=======
 	err = ipc_has_perm(sma, perms);
 	return err;
 }
 
 static int selinux_sem_semop(struct kern_ipc_perm *sma,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct sembuf *sops, unsigned nsops, int alter)
 {
 	u32 perms;
@@ -9928,11 +6314,7 @@ static int selinux_sem_semop(struct kern_ipc_perm *sma,
 	else
 		perms = SEM__READ;
 
-<<<<<<< HEAD
-	return ipc_has_perm(&sma->sem_perm, perms);
-=======
 	return ipc_has_perm(sma, perms);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_ipc_permission(struct kern_ipc_perm *ipcp, short flag)
@@ -9953,11 +6335,7 @@ static int selinux_ipc_permission(struct kern_ipc_perm *ipcp, short flag)
 
 static void selinux_ipc_getsecid(struct kern_ipc_perm *ipcp, u32 *secid)
 {
-<<<<<<< HEAD
-	struct ipc_security_struct *isec = ipcp->security;
-=======
 	struct ipc_security_struct *isec = selinux_ipc(ipcp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*secid = isec->sid;
 }
 
@@ -9967,44 +6345,14 @@ static void selinux_d_instantiate(struct dentry *dentry, struct inode *inode)
 		inode_doinit_with_dentry(inode, dentry);
 }
 
-<<<<<<< HEAD
-static int selinux_getprocattr(struct task_struct *p,
-			       char *name, char **value)
-=======
 static int selinux_lsm_getattr(unsigned int attr, struct task_struct *p,
 			       char **value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct task_security_struct *__tsec;
 	u32 sid;
 	int error;
 	unsigned len;
 
-<<<<<<< HEAD
-	if (current != p) {
-		error = current_has_perm(p, PROCESS__GETATTR);
-		if (error)
-			return error;
-	}
-
-	rcu_read_lock();
-	__tsec = __task_cred(p)->security;
-
-	if (!strcmp(name, "current"))
-		sid = __tsec->sid;
-	else if (!strcmp(name, "prev"))
-		sid = __tsec->osid;
-	else if (!strcmp(name, "exec"))
-		sid = __tsec->exec_sid;
-	else if (!strcmp(name, "fscreate"))
-		sid = __tsec->create_sid;
-	else if (!strcmp(name, "keycreate"))
-		sid = __tsec->keycreate_sid;
-	else if (!strcmp(name, "sockcreate"))
-		sid = __tsec->sockcreate_sid;
-	else
-		goto invalid;
-=======
 	rcu_read_lock();
 	__tsec = selinux_cred(__task_cred(p));
 
@@ -10038,7 +6386,6 @@ static int selinux_lsm_getattr(unsigned int attr, struct task_struct *p,
 		error = -EOPNOTSUPP;
 		goto bad;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 
 	if (!sid)
@@ -10049,46 +6396,6 @@ static int selinux_lsm_getattr(unsigned int attr, struct task_struct *p,
 		return error;
 	return len;
 
-<<<<<<< HEAD
-invalid:
-	rcu_read_unlock();
-	return -EINVAL;
-}
-
-static int selinux_setprocattr(struct task_struct *p,
-			       char *name, void *value, size_t size)
-{
-	struct task_security_struct *tsec;
-	struct task_struct *tracer;
-	struct cred *new;
-	u32 sid = 0, ptsid;
-	int error;
-	char *str = value;
-
-	if (current != p) {
-		/* SELinux only allows a process to change its own
-		   security attributes. */
-		return -EACCES;
-	}
-
-	/*
-	 * Basic control over ability to set these attributes at all.
-	 * current == p, but we'll pass them separately in case the
-	 * above restriction is ever removed.
-	 */
-	if (!strcmp(name, "exec"))
-		error = current_has_perm(p, PROCESS__SETEXEC);
-	else if (!strcmp(name, "fscreate"))
-		error = current_has_perm(p, PROCESS__SETFSCREATE);
-	else if (!strcmp(name, "keycreate"))
-		error = current_has_perm(p, PROCESS__SETKEYCREATE);
-	else if (!strcmp(name, "sockcreate"))
-		error = current_has_perm(p, PROCESS__SETSOCKCREATE);
-	else if (!strcmp(name, "current"))
-		error = current_has_perm(p, PROCESS__SETCURRENT);
-	else
-		error = -EINVAL;
-=======
 bad:
 	rcu_read_unlock();
 	return error;
@@ -10130,7 +6437,6 @@ static int selinux_lsm_setattr(u64 attr, void *value, size_t size)
 		error = -EOPNOTSUPP;
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
@@ -10140,14 +6446,6 @@ static int selinux_lsm_setattr(u64 attr, void *value, size_t size)
 			str[size-1] = 0;
 			size--;
 		}
-<<<<<<< HEAD
-		error = security_context_to_sid(value, size, &sid);
-		if (error == -EINVAL && !strcmp(name, "fscreate")) {
-			if (!capable(CAP_MAC_ADMIN))
-				return error;
-			error = security_context_to_sid_force(value, size,
-							      &sid);
-=======
 		error = security_context_to_sid(value, size,
 						&sid, GFP_KERNEL);
 		if (error == -EINVAL && attr == LSM_ATTR_FSCREATE) {
@@ -10176,7 +6474,6 @@ static int selinux_lsm_setattr(u64 attr, void *value, size_t size)
 			}
 			error = security_context_to_sid_force(value, size,
 							&sid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (error)
 			return error;
@@ -10189,24 +6486,6 @@ static int selinux_lsm_setattr(u64 attr, void *value, size_t size)
 	/* Permission checking based on the specified context is
 	   performed during the actual operation (execve,
 	   open/mkdir/...), when we know the full context of the
-<<<<<<< HEAD
-	   operation.  See selinux_bprm_set_creds for the execve
-	   checks and may_create for the file creation checks. The
-	   operation will then fail if the context is not permitted. */
-	tsec = new->security;
-	if (!strcmp(name, "exec")) {
-		tsec->exec_sid = sid;
-	} else if (!strcmp(name, "fscreate")) {
-		tsec->create_sid = sid;
-	} else if (!strcmp(name, "keycreate")) {
-		error = may_create_key(sid, p);
-		if (error)
-			goto abort_change;
-		tsec->keycreate_sid = sid;
-	} else if (!strcmp(name, "sockcreate")) {
-		tsec->sockcreate_sid = sid;
-	} else if (!strcmp(name, "current")) {
-=======
 	   operation.  See selinux_bprm_creds_for_exec for the execve
 	   checks and may_create for the file creation checks. The
 	   operation will then fail if the context is not permitted. */
@@ -10226,16 +6505,10 @@ static int selinux_lsm_setattr(u64 attr, void *value, size_t size)
 	} else if (attr == LSM_ATTR_SOCKCREATE) {
 		tsec->sockcreate_sid = sid;
 	} else if (attr == LSM_ATTR_CURRENT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = -EINVAL;
 		if (sid == 0)
 			goto abort_change;
 
-<<<<<<< HEAD
-		/* Only allow single threaded processes to change context */
-		error = -EPERM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!current_is_single_threaded()) {
 			error = security_bounded_transition(tsec->sid, sid);
 			if (error)
@@ -10250,19 +6523,8 @@ static int selinux_lsm_setattr(u64 attr, void *value, size_t size)
 
 		/* Check for ptracing, and update the task SID if ok.
 		   Otherwise, leave SID unchanged and fail. */
-<<<<<<< HEAD
-		ptsid = 0;
-		rcu_read_lock();
-		tracer = ptrace_parent(p);
-		if (tracer)
-			ptsid = task_sid(tracer);
-		rcu_read_unlock();
-
-		if (tracer) {
-=======
 		ptsid = ptrace_parent_sid();
 		if (ptsid != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = avc_has_perm(ptsid, sid, SECCLASS_PROCESS,
 					     PROCESS__PTRACE, NULL);
 			if (error)
@@ -10283,11 +6545,6 @@ abort_change:
 	return error;
 }
 
-<<<<<<< HEAD
-static int selinux_secid_to_secctx(u32 secid, char **secdata, u32 *seclen)
-{
-	return security_sid_to_context(secid, secdata, seclen);
-=======
 /**
  * selinux_getselfattr - Get SELinux current task attributes
  * @attr: the requested attribute
@@ -10360,17 +6617,12 @@ static int selinux_secid_to_secctx(u32 secid, char **secdata, u32 *seclen)
 {
 	return security_sid_to_context(secid,
 				       secdata, seclen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_secctx_to_secid(const char *secdata, u32 seclen, u32 *secid)
 {
-<<<<<<< HEAD
-	return security_context_to_sid(secdata, seclen, secid);
-=======
 	return security_context_to_sid(secdata, seclen,
 				       secid, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void selinux_release_secctx(char *secdata, u32 seclen)
@@ -10378,8 +6630,6 @@ static void selinux_release_secctx(char *secdata, u32 seclen)
 	kfree(secdata);
 }
 
-<<<<<<< HEAD
-=======
 static void selinux_inode_invalidate_secctx(struct inode *inode)
 {
 	struct inode_security_struct *isec = selinux_inode(inode);
@@ -10389,20 +6639,15 @@ static void selinux_inode_invalidate_secctx(struct inode *inode)
 	spin_unlock(&isec->lock);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	called with inode->i_mutex locked
  */
 static int selinux_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen)
 {
-<<<<<<< HEAD
-	return selinux_inode_setsecurity(inode, XATTR_SELINUX_SUFFIX, ctx, ctxlen, 0);
-=======
 	int rc = selinux_inode_setsecurity(inode, XATTR_SELINUX_SUFFIX,
 					   ctx, ctxlen, 0);
 	/* Do not return error when suppressing label (SBLABEL_MNT not set). */
 	return rc == -EOPNOTSUPP ? 0 : rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -10410,24 +6655,15 @@ static int selinux_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen
  */
 static int selinux_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen)
 {
-<<<<<<< HEAD
-	return __vfs_setxattr_noperm(dentry, XATTR_NAME_SELINUX, ctx, ctxlen, 0);
-=======
 	return __vfs_setxattr_noperm(&nop_mnt_idmap, dentry, XATTR_NAME_SELINUX,
 				     ctx, ctxlen, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int selinux_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen)
 {
 	int len = 0;
-<<<<<<< HEAD
-	len = selinux_inode_getsecurity(inode, XATTR_SELINUX_SUFFIX,
-						ctx, true);
-=======
 	len = selinux_inode_getsecurity(&nop_mnt_idmap, inode,
 					XATTR_SELINUX_SUFFIX, ctx, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len < 0)
 		return len;
 	*ctxlen = len;
@@ -10445,11 +6681,7 @@ static int selinux_key_alloc(struct key *k, const struct cred *cred,
 	if (!ksec)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	tsec = cred->security;
-=======
 	tsec = selinux_cred(cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tsec->keycreate_sid)
 		ksec->sid = tsec->keycreate_sid;
 	else
@@ -10469,22 +6701,6 @@ static void selinux_key_free(struct key *k)
 
 static int selinux_key_permission(key_ref_t key_ref,
 				  const struct cred *cred,
-<<<<<<< HEAD
-				  key_perm_t perm)
-{
-	struct key *key;
-	struct key_security_struct *ksec;
-	u32 sid;
-
-	/* if no specific permissions are requested, we skip the
-	   permission check. No serious, additional covert channels
-	   appear to be created. */
-	if (perm == 0)
-		return 0;
-
-	sid = cred_sid(cred);
-
-=======
 				  enum key_need_perm need_perm)
 {
 	struct key *key;
@@ -10522,7 +6738,6 @@ static int selinux_key_permission(key_ref_t key_ref,
 	}
 
 	sid = cred_sid(cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key = key_ref_to_ptr(key_ref);
 	ksec = key->security;
 
@@ -10536,224 +6751,14 @@ static int selinux_key_getsecurity(struct key *key, char **_buffer)
 	unsigned len;
 	int rc;
 
-<<<<<<< HEAD
-	rc = security_sid_to_context(ksec->sid, &context, &len);
-=======
 	rc = security_sid_to_context(ksec->sid,
 				     &context, &len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rc)
 		rc = len;
 	*_buffer = context;
 	return rc;
 }
 
-<<<<<<< HEAD
-#endif
-
-static struct security_operations selinux_ops = {
-	.name =				"selinux",
-
-	.binder_set_context_mgr =	selinux_binder_set_context_mgr,
-	.binder_transaction =		selinux_binder_transaction,
-	.binder_transfer_binder =	selinux_binder_transfer_binder,
-	.binder_transfer_file =		selinux_binder_transfer_file,
-
-	.ptrace_access_check =		selinux_ptrace_access_check,
-	.ptrace_traceme =		selinux_ptrace_traceme,
-	.capget =			selinux_capget,
-	.capset =			selinux_capset,
-	.capable =			selinux_capable,
-	.quotactl =			selinux_quotactl,
-	.quota_on =			selinux_quota_on,
-	.syslog =			selinux_syslog,
-	.vm_enough_memory =		selinux_vm_enough_memory,
-
-	.netlink_send =			selinux_netlink_send,
-
-	.bprm_set_creds =		selinux_bprm_set_creds,
-	.bprm_committing_creds =	selinux_bprm_committing_creds,
-	.bprm_committed_creds =		selinux_bprm_committed_creds,
-	.bprm_secureexec =		selinux_bprm_secureexec,
-
-	.sb_alloc_security =		selinux_sb_alloc_security,
-	.sb_free_security =		selinux_sb_free_security,
-	.sb_copy_data =			selinux_sb_copy_data,
-	.sb_remount =			selinux_sb_remount,
-	.sb_kern_mount =		selinux_sb_kern_mount,
-	.sb_show_options =		selinux_sb_show_options,
-	.sb_statfs =			selinux_sb_statfs,
-	.sb_mount =			selinux_mount,
-	.sb_umount =			selinux_umount,
-	.sb_set_mnt_opts =		selinux_set_mnt_opts,
-	.sb_clone_mnt_opts =		selinux_sb_clone_mnt_opts,
-	.sb_parse_opts_str = 		selinux_parse_opts_str,
-
-
-	.inode_alloc_security =		selinux_inode_alloc_security,
-	.inode_free_security =		selinux_inode_free_security,
-	.inode_init_security =		selinux_inode_init_security,
-	.inode_create =			selinux_inode_create,
-	.inode_post_create =		selinux_inode_post_create,
-	.inode_link =			selinux_inode_link,
-	.inode_unlink =			selinux_inode_unlink,
-	.inode_symlink =		selinux_inode_symlink,
-	.inode_mkdir =			selinux_inode_mkdir,
-	.inode_rmdir =			selinux_inode_rmdir,
-	.inode_mknod =			selinux_inode_mknod,
-	.inode_rename =			selinux_inode_rename,
-	.inode_readlink =		selinux_inode_readlink,
-	.inode_follow_link =		selinux_inode_follow_link,
-	.inode_permission =		selinux_inode_permission,
-	.inode_setattr =		selinux_inode_setattr,
-	.inode_getattr =		selinux_inode_getattr,
-	.inode_setxattr =		selinux_inode_setxattr,
-	.inode_post_setxattr =		selinux_inode_post_setxattr,
-	.inode_getxattr =		selinux_inode_getxattr,
-	.inode_listxattr =		selinux_inode_listxattr,
-	.inode_removexattr =		selinux_inode_removexattr,
-	.inode_getsecurity =		selinux_inode_getsecurity,
-	.inode_setsecurity =		selinux_inode_setsecurity,
-	.inode_listsecurity =		selinux_inode_listsecurity,
-	.inode_getsecid =		selinux_inode_getsecid,
-
-	.file_permission =		selinux_file_permission,
-	.file_alloc_security =		selinux_file_alloc_security,
-	.file_free_security =		selinux_file_free_security,
-	.file_ioctl =			selinux_file_ioctl,
-	.file_mmap =			selinux_file_mmap,
-	.file_mprotect =		selinux_file_mprotect,
-	.file_lock =			selinux_file_lock,
-	.file_fcntl =			selinux_file_fcntl,
-	.file_set_fowner =		selinux_file_set_fowner,
-	.file_send_sigiotask =		selinux_file_send_sigiotask,
-	.file_receive =			selinux_file_receive,
-
-	.dentry_open =			selinux_dentry_open,
-	.file_close =			selinux_file_close,
-	.allow_merge_bio =		selinux_allow_merge_bio,
-
-	.task_create =			selinux_task_create,
-	.cred_alloc_blank =		selinux_cred_alloc_blank,
-	.cred_free =			selinux_cred_free,
-	.cred_prepare =			selinux_cred_prepare,
-	.cred_transfer =		selinux_cred_transfer,
-	.kernel_act_as =		selinux_kernel_act_as,
-	.kernel_create_files_as =	selinux_kernel_create_files_as,
-	.kernel_module_request =	selinux_kernel_module_request,
-	.task_setpgid =			selinux_task_setpgid,
-	.task_getpgid =			selinux_task_getpgid,
-	.task_getsid =			selinux_task_getsid,
-	.task_getsecid =		selinux_task_getsecid,
-	.task_setnice =			selinux_task_setnice,
-	.task_setioprio =		selinux_task_setioprio,
-	.task_getioprio =		selinux_task_getioprio,
-	.task_setrlimit =		selinux_task_setrlimit,
-	.task_setscheduler =		selinux_task_setscheduler,
-	.task_getscheduler =		selinux_task_getscheduler,
-	.task_movememory =		selinux_task_movememory,
-	.task_kill =			selinux_task_kill,
-	.task_wait =			selinux_task_wait,
-	.task_to_inode =		selinux_task_to_inode,
-
-	.ipc_permission =		selinux_ipc_permission,
-	.ipc_getsecid =			selinux_ipc_getsecid,
-
-	.msg_msg_alloc_security =	selinux_msg_msg_alloc_security,
-	.msg_msg_free_security =	selinux_msg_msg_free_security,
-
-	.msg_queue_alloc_security =	selinux_msg_queue_alloc_security,
-	.msg_queue_free_security =	selinux_msg_queue_free_security,
-	.msg_queue_associate =		selinux_msg_queue_associate,
-	.msg_queue_msgctl =		selinux_msg_queue_msgctl,
-	.msg_queue_msgsnd =		selinux_msg_queue_msgsnd,
-	.msg_queue_msgrcv =		selinux_msg_queue_msgrcv,
-
-	.shm_alloc_security =		selinux_shm_alloc_security,
-	.shm_free_security =		selinux_shm_free_security,
-	.shm_associate =		selinux_shm_associate,
-	.shm_shmctl =			selinux_shm_shmctl,
-	.shm_shmat =			selinux_shm_shmat,
-
-	.sem_alloc_security =		selinux_sem_alloc_security,
-	.sem_free_security =		selinux_sem_free_security,
-	.sem_associate =		selinux_sem_associate,
-	.sem_semctl =			selinux_sem_semctl,
-	.sem_semop =			selinux_sem_semop,
-
-	.d_instantiate =		selinux_d_instantiate,
-
-	.getprocattr =			selinux_getprocattr,
-	.setprocattr =			selinux_setprocattr,
-
-	.secid_to_secctx =		selinux_secid_to_secctx,
-	.secctx_to_secid =		selinux_secctx_to_secid,
-	.release_secctx =		selinux_release_secctx,
-	.inode_notifysecctx =		selinux_inode_notifysecctx,
-	.inode_setsecctx =		selinux_inode_setsecctx,
-	.inode_getsecctx =		selinux_inode_getsecctx,
-
-	.unix_stream_connect =		selinux_socket_unix_stream_connect,
-	.unix_may_send =		selinux_socket_unix_may_send,
-
-	.socket_create =		selinux_socket_create,
-	.socket_post_create =		selinux_socket_post_create,
-	.socket_bind =			selinux_socket_bind,
-	.socket_connect =		selinux_socket_connect,
-	.socket_listen =		selinux_socket_listen,
-	.socket_accept =		selinux_socket_accept,
-	.socket_sendmsg =		selinux_socket_sendmsg,
-	.socket_recvmsg =		selinux_socket_recvmsg,
-	.socket_getsockname =		selinux_socket_getsockname,
-	.socket_getpeername =		selinux_socket_getpeername,
-	.socket_getsockopt =		selinux_socket_getsockopt,
-	.socket_setsockopt =		selinux_socket_setsockopt,
-	.socket_shutdown =		selinux_socket_shutdown,
-	.socket_sock_rcv_skb =		selinux_socket_sock_rcv_skb,
-	.socket_getpeersec_stream =	selinux_socket_getpeersec_stream,
-	.socket_getpeersec_dgram =	selinux_socket_getpeersec_dgram,
-	.sk_alloc_security =		selinux_sk_alloc_security,
-	.sk_free_security =		selinux_sk_free_security,
-	.sk_clone_security =		selinux_sk_clone_security,
-	.sk_getsecid =			selinux_sk_getsecid,
-	.sock_graft =			selinux_sock_graft,
-	.inet_conn_request =		selinux_inet_conn_request,
-	.inet_csk_clone =		selinux_inet_csk_clone,
-	.inet_conn_established =	selinux_inet_conn_established,
-	.secmark_relabel_packet =	selinux_secmark_relabel_packet,
-	.secmark_refcount_inc =		selinux_secmark_refcount_inc,
-	.secmark_refcount_dec =		selinux_secmark_refcount_dec,
-	.req_classify_flow =		selinux_req_classify_flow,
-	.tun_dev_create =		selinux_tun_dev_create,
-	.tun_dev_post_create = 		selinux_tun_dev_post_create,
-	.tun_dev_attach =		selinux_tun_dev_attach,
-
-#ifdef CONFIG_SECURITY_NETWORK_XFRM
-	.xfrm_policy_alloc_security =	selinux_xfrm_policy_alloc,
-	.xfrm_policy_clone_security =	selinux_xfrm_policy_clone,
-	.xfrm_policy_free_security =	selinux_xfrm_policy_free,
-	.xfrm_policy_delete_security =	selinux_xfrm_policy_delete,
-	.xfrm_state_alloc_security =	selinux_xfrm_state_alloc,
-	.xfrm_state_free_security =	selinux_xfrm_state_free,
-	.xfrm_state_delete_security =	selinux_xfrm_state_delete,
-	.xfrm_policy_lookup =		selinux_xfrm_policy_lookup,
-	.xfrm_state_pol_flow_match =	selinux_xfrm_state_pol_flow_match,
-	.xfrm_decode_session =		selinux_xfrm_decode_session,
-#endif
-
-#ifdef CONFIG_KEYS
-	.key_alloc =			selinux_key_alloc,
-	.key_free =			selinux_key_free,
-	.key_permission =		selinux_key_permission,
-	.key_getsecurity =		selinux_key_getsecurity,
-#endif
-
-#ifdef CONFIG_AUDIT
-	.audit_rule_init =		selinux_audit_rule_init,
-	.audit_rule_known =		selinux_audit_rule_known,
-	.audit_rule_match =		selinux_audit_rule_match,
-	.audit_rule_free =		selinux_audit_rule_free,
-=======
 #ifdef CONFIG_KEY_NOTIFICATIONS
 static int selinux_watch_key(struct key *key)
 {
@@ -11412,25 +7417,11 @@ static struct security_hook_list selinux_hooks[] __ro_after_init = {
 #endif
 #ifdef CONFIG_PERF_EVENTS
 	LSM_HOOK_INIT(perf_event_alloc, selinux_perf_event_alloc),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
 static __init int selinux_init(void)
 {
-<<<<<<< HEAD
-	if (!security_module_enable(&selinux_ops)) {
-		selinux_enabled = 0;
-		return 0;
-	}
-
-	if (!selinux_enabled) {
-		printk(KERN_INFO "SELinux:  Disabled at boot.\n");
-		return 0;
-	}
-
-	printk(KERN_INFO "SELinux:  Initializing.\n");
-=======
 	pr_info("SELinux:  Initializing.\n");
 
 	memset(&selinux_state, 0, sizeof(selinux_state));
@@ -11438,27 +7429,11 @@ static __init int selinux_init(void)
 	selinux_avc_init();
 	mutex_init(&selinux_state.status_lock);
 	mutex_init(&selinux_state.policy_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set the security state for the initial task. */
 	cred_init_security();
 
 	default_noexec = !(VM_DATA_DEFAULT_FLAGS & VM_EXEC);
-<<<<<<< HEAD
-
-	sel_inode_cache = kmem_cache_create("selinux_inode_security",
-					    sizeof(struct inode_security_struct),
-					    0, SLAB_PANIC, NULL);
-	avc_init();
-
-	if (register_security(&selinux_ops))
-		panic("SELinux: Unable to register with kernel.\n");
-
-	if (selinux_enforcing)
-		printk(KERN_DEBUG "SELinux:  Starting in enforcing mode\n");
-	else
-		printk(KERN_DEBUG "SELinux:  Starting in permissive mode\n");
-=======
 	if (!default_noexec)
 		pr_notice("SELinux:  virtual memory is executable by default\n");
 
@@ -11485,49 +7460,26 @@ static __init int selinux_init(void)
 		pr_debug("SELinux:  Starting in permissive mode\n");
 
 	fs_validate_description("selinux", selinux_fs_parameters);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static void delayed_superblock_init(struct super_block *sb, void *unused)
 {
-<<<<<<< HEAD
-	superblock_doinit(sb, NULL);
-=======
 	selinux_set_mnt_opts(sb, NULL, 0, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void selinux_complete_init(void)
 {
-<<<<<<< HEAD
-	printk(KERN_DEBUG "SELinux:  Completing initialization.\n");
-
-	/* Set up any superblocks initialized prior to the policy load. */
-	printk(KERN_DEBUG "SELinux:  Setting up existing superblocks.\n");
-=======
 	pr_debug("SELinux:  Completing initialization.\n");
 
 	/* Set up any superblocks initialized prior to the policy load. */
 	pr_debug("SELinux:  Setting up existing superblocks.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iterate_supers(delayed_superblock_init, NULL);
 }
 
 /* SELinux requires early initialization in order to label
    all processes and objects when they are created. */
-<<<<<<< HEAD
-security_initcall(selinux_init);
-
-#if defined(CONFIG_NETFILTER)
-
-static struct nf_hook_ops selinux_ipv4_ops[] = {
-	{
-		.hook =		selinux_ipv4_postroute,
-		.owner =	THIS_MODULE,
-		.pf =		PF_INET,
-=======
 DEFINE_LSM(selinux) = {
 	.name = "selinux",
 	.flags = LSM_FLAG_LEGACY_MAJOR | LSM_FLAG_EXCLUSIVE,
@@ -11541,40 +7493,16 @@ static const struct nf_hook_ops selinux_nf_ops[] = {
 	{
 		.hook =		selinux_ip_postroute,
 		.pf =		NFPROTO_IPV4,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.hooknum =	NF_INET_POST_ROUTING,
 		.priority =	NF_IP_PRI_SELINUX_LAST,
 	},
 	{
-<<<<<<< HEAD
-		.hook =		selinux_ipv4_forward,
-		.owner =	THIS_MODULE,
-		.pf =		PF_INET,
-=======
 		.hook =		selinux_ip_forward,
 		.pf =		NFPROTO_IPV4,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.hooknum =	NF_INET_FORWARD,
 		.priority =	NF_IP_PRI_SELINUX_FIRST,
 	},
 	{
-<<<<<<< HEAD
-		.hook =		selinux_ipv4_output,
-		.owner =	THIS_MODULE,
-		.pf =		PF_INET,
-		.hooknum =	NF_INET_LOCAL_OUT,
-		.priority =	NF_IP_PRI_SELINUX_FIRST,
-	}
-};
-
-#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
-
-static struct nf_hook_ops selinux_ipv6_ops[] = {
-	{
-		.hook =		selinux_ipv6_postroute,
-		.owner =	THIS_MODULE,
-		.pf =		PF_INET6,
-=======
 		.hook =		selinux_ip_output,
 		.pf =		NFPROTO_IPV4,
 		.hooknum =	NF_INET_LOCAL_OUT,
@@ -11584,102 +7512,10 @@ static struct nf_hook_ops selinux_ipv6_ops[] = {
 	{
 		.hook =		selinux_ip_postroute,
 		.pf =		NFPROTO_IPV6,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.hooknum =	NF_INET_POST_ROUTING,
 		.priority =	NF_IP6_PRI_SELINUX_LAST,
 	},
 	{
-<<<<<<< HEAD
-		.hook =		selinux_ipv6_forward,
-		.owner =	THIS_MODULE,
-		.pf =		PF_INET6,
-		.hooknum =	NF_INET_FORWARD,
-		.priority =	NF_IP6_PRI_SELINUX_FIRST,
-	}
-};
-
-#endif	/* IPV6 */
-
-static int __init selinux_nf_ip_init(void)
-{
-	int err = 0;
-
-	if (!selinux_enabled)
-		goto out;
-
-	printk(KERN_DEBUG "SELinux:  Registering netfilter hooks\n");
-
-	err = nf_register_hooks(selinux_ipv4_ops, ARRAY_SIZE(selinux_ipv4_ops));
-	if (err)
-		panic("SELinux: nf_register_hooks for IPv4: error %d\n", err);
-
-#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
-	err = nf_register_hooks(selinux_ipv6_ops, ARRAY_SIZE(selinux_ipv6_ops));
-	if (err)
-		panic("SELinux: nf_register_hooks for IPv6: error %d\n", err);
-#endif	/* IPV6 */
-
-out:
-	return err;
-}
-
-__initcall(selinux_nf_ip_init);
-
-#ifdef CONFIG_SECURITY_SELINUX_DISABLE
-static void selinux_nf_ip_exit(void)
-{
-	printk(KERN_DEBUG "SELinux:  Unregistering netfilter hooks\n");
-
-	nf_unregister_hooks(selinux_ipv4_ops, ARRAY_SIZE(selinux_ipv4_ops));
-#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
-	nf_unregister_hooks(selinux_ipv6_ops, ARRAY_SIZE(selinux_ipv6_ops));
-#endif	/* IPV6 */
-}
-#endif
-
-#else /* CONFIG_NETFILTER */
-
-#ifdef CONFIG_SECURITY_SELINUX_DISABLE
-#define selinux_nf_ip_exit()
-#endif
-
-#endif /* CONFIG_NETFILTER */
-
-#ifdef CONFIG_SECURITY_SELINUX_DISABLE
-static int selinux_disabled;
-
-int selinux_disable(void)
-{
-	if (ss_initialized) {
-		/* Not permitted after initial policy load. */
-		return -EINVAL;
-	}
-
-	if (selinux_disabled) {
-		/* Only do this once. */
-		return -EINVAL;
-	}
-
-	printk(KERN_INFO "SELinux:  Disabled at runtime.\n");
-
-	selinux_disabled = 1;
-	selinux_enabled = 0;
-
-	reset_security_ops();
-
-	/* Try to destroy the avc node cache */
-	avc_disable();
-
-	/* Unregister netfilter hooks. */
-	selinux_nf_ip_exit();
-
-	/* Unregister selinuxfs. */
-	exit_sel_fs();
-
-	return 0;
-}
-#endif
-=======
 		.hook =		selinux_ip_forward,
 		.pf =		NFPROTO_IPV6,
 		.hooknum =	NF_INET_FORWARD,
@@ -11728,4 +7564,3 @@ static int __init selinux_nf_ip_init(void)
 }
 __initcall(selinux_nf_ip_init);
 #endif /* CONFIG_NETFILTER */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *			Linux MegaRAID device driver
  *
  * Copyright (c) 2003-2004  LSI Logic Corporation.
  *
-<<<<<<< HEAD
- *	   This program is free software; you can redistribute it and/or
- *	   modify it under the terms of the GNU General Public License
- *	   as published by the Free Software Foundation; either version
- *	   2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FILE		: megaraid_mbox.c
  * Version	: v2.20.5.1 (Nov 16 2006)
  *
@@ -45,10 +34,6 @@
  * Dell PERC 4e/DC			1000	0408	1028	0002
  * Dell PERC 4e/SC			1000	0408	1028	0001
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LSI MegaRAID SCSI 320-0		1000	1960	1000	A520
  * LSI MegaRAID SCSI 320-1		1000	1960	1000	0520
  * LSI MegaRAID SCSI 320-2		1000	1960	1000	0518
@@ -136,13 +121,8 @@ static irqreturn_t megaraid_isr(int, void *);
 
 static void megaraid_mbox_dpc(unsigned long);
 
-<<<<<<< HEAD
-static ssize_t megaraid_sysfs_show_app_hndl(struct device *, struct device_attribute *attr, char *);
-static ssize_t megaraid_sysfs_show_ldnum(struct device *, struct device_attribute *attr, char *);
-=======
 static ssize_t megaraid_mbox_app_hndl_show(struct device *, struct device_attribute *attr, char *);
 static ssize_t megaraid_mbox_ld_show(struct device *, struct device_attribute *attr, char *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int megaraid_cmm_register(adapter_t *);
 static int megaraid_cmm_unregister(adapter_t *);
@@ -201,11 +181,7 @@ MODULE_PARM_DESC(cmd_per_lun,
  * This would result in non-disk devices being skipped during driver load
  * time. These can be later added though, using /proc/scsi/scsi
  */
-<<<<<<< HEAD
-static unsigned int megaraid_fast_load = 0;
-=======
 static unsigned int megaraid_fast_load;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_named(fast_load, megaraid_fast_load, int, 0);
 MODULE_PARM_DESC(fast_load,
 	"Faster loading of the driver, skips physical devices! (default=0)");
@@ -221,16 +197,6 @@ module_param_named(debug_level, mraid_debug_level, int, 0);
 MODULE_PARM_DESC(debug_level, "Debug level for driver (default=0)");
 
 /*
-<<<<<<< HEAD
- * ### global data ###
- */
-static uint8_t megaraid_mbox_version[8] =
-	{ 0x02, 0x20, 0x04, 0x06, 3, 7, 20, 5 };
-
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * PCI table for all supported controllers.
  */
 static struct pci_device_id pci_id_table_g[] =  {
@@ -327,11 +293,7 @@ static struct pci_driver megaraid_pci_driver = {
 	.name		= "megaraid",
 	.id_table	= pci_id_table_g,
 	.probe		= megaraid_probe_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(megaraid_detach_one),
-=======
 	.remove		= megaraid_detach_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown	= megaraid_mbox_shutdown,
 };
 
@@ -340,46 +302,6 @@ static struct pci_driver megaraid_pci_driver = {
 // definitions for the device attributes for exporting logical drive number
 // for a scsi address (Host, Channel, Id, Lun)
 
-<<<<<<< HEAD
-DEVICE_ATTR(megaraid_mbox_app_hndl, S_IRUSR, megaraid_sysfs_show_app_hndl,
-		NULL);
-
-// Host template initializer for megaraid mbox sysfs device attributes
-static struct device_attribute *megaraid_shost_attrs[] = {
-	&dev_attr_megaraid_mbox_app_hndl,
-	NULL,
-};
-
-
-DEVICE_ATTR(megaraid_mbox_ld, S_IRUSR, megaraid_sysfs_show_ldnum, NULL);
-
-// Host template initializer for megaraid mbox sysfs device attributes
-static struct device_attribute *megaraid_sdev_attrs[] = {
-	&dev_attr_megaraid_mbox_ld,
-	NULL,
-};
-
-/**
- * megaraid_change_queue_depth - Change the device's queue depth
- * @sdev:	scsi device struct
- * @qdepth:	depth to set
- * @reason:	calling context
- *
- * Return value:
- * 	actual depth set
- */
-static int megaraid_change_queue_depth(struct scsi_device *sdev, int qdepth,
-				       int reason)
-{
-	if (reason != SCSI_QDEPTH_DEFAULT)
-		return -EOPNOTSUPP;
-
-	if (qdepth > MBOX_MAX_SCSI_CMDS)
-		qdepth = MBOX_MAX_SCSI_CMDS;
-	scsi_adjust_queue_depth(sdev, 0, qdepth);
-	return sdev->queue_depth;
-}
-=======
 static DEVICE_ATTR_ADMIN_RO(megaraid_mbox_app_hndl);
 
 // Host template initializer for megaraid mbox sysfs device attributes
@@ -399,36 +321,21 @@ static struct attribute *megaraid_sdev_attrs[] = {
 };
 
 ATTRIBUTE_GROUPS(megaraid_sdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Scsi host template for megaraid unified driver
  */
-<<<<<<< HEAD
-static struct scsi_host_template megaraid_template_g = {
-=======
 static const struct scsi_host_template megaraid_template_g = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module				= THIS_MODULE,
 	.name				= "LSI Logic MegaRAID driver",
 	.proc_name			= "megaraid",
 	.queuecommand			= megaraid_queue_command,
 	.eh_abort_handler		= megaraid_abort_handler,
-<<<<<<< HEAD
-	.eh_device_reset_handler	= megaraid_reset_handler,
-	.eh_bus_reset_handler		= megaraid_reset_handler,
-	.eh_host_reset_handler		= megaraid_reset_handler,
-	.change_queue_depth		= megaraid_change_queue_depth,
-	.use_clustering			= ENABLE_CLUSTERING,
-	.sdev_attrs			= megaraid_sdev_attrs,
-	.shost_attrs			= megaraid_shost_attrs,
-=======
 	.eh_host_reset_handler		= megaraid_reset_handler,
 	.change_queue_depth		= scsi_change_queue_depth,
 	.no_write_same			= 1,
 	.sdev_groups			= megaraid_sdev_groups,
 	.shost_groups			= megaraid_shost_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -494,11 +401,7 @@ megaraid_exit(void)
  * This routine should be called whenever a new adapter is detected by the
  * PCI hotplug susbsystem.
  */
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 megaraid_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 {
 	adapter_t	*adapter;
@@ -535,11 +438,7 @@ megaraid_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 
 
 	// set up PCI related soft state and other pre-known parameters
-<<<<<<< HEAD
-	adapter->unique_id	= pdev->bus->number << 8 | pdev->devfn;
-=======
 	adapter->unique_id	= pci_dev_id(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter->irq		= pdev->irq;
 	adapter->pdev		= pdev;
 
@@ -547,16 +446,9 @@ megaraid_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	// Setup the default DMA mask. This would be changed later on
 	// depending on hardware capabilities
-<<<<<<< HEAD
-	if (pci_set_dma_mask(adapter->pdev, DMA_BIT_MASK(32)) != 0) {
-
-		con_log(CL_ANN, (KERN_WARNING
-			"megaraid: pci_set_dma_mask failed:%d\n", __LINE__));
-=======
 	if (dma_set_mask(&adapter->pdev->dev, DMA_BIT_MASK(32))) {
 		con_log(CL_ANN, (KERN_WARNING
 			"megaraid: dma_set_mask failed:%d\n", __LINE__));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		goto out_free_adapter;
 	}
@@ -580,11 +472,7 @@ megaraid_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	// Start the mailbox based controller
 	if (megaraid_init_mbox(adapter) != 0) {
 		con_log(CL_ANN, (KERN_WARNING
-<<<<<<< HEAD
-			"megaraid: maibox adapter did not initialize\n"));
-=======
 			"megaraid: mailbox adapter did not initialize\n"));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		goto out_free_adapter;
 	}
@@ -612,10 +500,6 @@ megaraid_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	return 0;
 
 out_cmm_unreg:
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	megaraid_cmm_unregister(adapter);
 out_fini_mbox:
 	megaraid_fini_mbox(adapter);
@@ -630,11 +514,7 @@ out_probe_one:
 
 /**
  * megaraid_detach_one - release framework resources and call LLD release routine
-<<<<<<< HEAD
- * @pdev	: handle for our PCI cofiguration space
-=======
  * @pdev	: handle for our PCI configuration space
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is called during driver unload. We free all the allocated
  * resources and call the corresponding LLD so that it can also release all
@@ -679,14 +559,6 @@ megaraid_detach_one(struct pci_dev *pdev)
 	// detach from the IO sub-system
 	megaraid_io_detach(adapter);
 
-<<<<<<< HEAD
-	// reset the device state in the PCI structure. We check this
-	// condition when we enter here. If the device state is NULL,
-	// that would mean the device has already been removed
-	pci_set_drvdata(pdev, NULL);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	// Unregister from common management module
 	//
 	// FIXME: this must return success or failure for conditions if there
@@ -823,11 +695,7 @@ megaraid_io_detach(adapter_t *adapter)
  * - Allocate memory required for all the commands
  * - Use internal library of FW routines, build up complete soft state
  */
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 megaraid_init_mbox(adapter_t *adapter)
 {
 	struct pci_dev		*pdev;
@@ -865,11 +733,7 @@ megaraid_init_mbox(adapter_t *adapter)
 		goto out_free_raid_dev;
 	}
 
-<<<<<<< HEAD
-	raid_dev->baseaddr = ioremap_nocache(raid_dev->baseport, 128);
-=======
 	raid_dev->baseaddr = ioremap(raid_dev->baseport, 128);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!raid_dev->baseaddr) {
 
@@ -1002,20 +866,12 @@ megaraid_init_mbox(adapter_t *adapter)
 		adapter->pdev->device == PCI_DEVICE_ID_PERC4_DI_EVERGLADES) ||
 		(adapter->pdev->vendor == PCI_VENDOR_ID_DELL &&
 		adapter->pdev->device == PCI_DEVICE_ID_PERC4E_DI_KOBUK)) {
-<<<<<<< HEAD
-		if (pci_set_dma_mask(adapter->pdev, DMA_BIT_MASK(64))) {
-			con_log(CL_ANN, (KERN_WARNING
-				"megaraid: DMA mask for 64-bit failed\n"));
-
-			if (pci_set_dma_mask (adapter->pdev, DMA_BIT_MASK(32))) {
-=======
 		if (dma_set_mask(&adapter->pdev->dev, DMA_BIT_MASK(64))) {
 			con_log(CL_ANN, (KERN_WARNING
 				"megaraid: DMA mask for 64-bit failed\n"));
 
 			if (dma_set_mask(&adapter->pdev->dev,
 						DMA_BIT_MASK(32))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				con_log(CL_ANN, (KERN_WARNING
 					"megaraid: 32-bit DMA mask failed\n"));
 				goto out_free_sysfs_res;
@@ -1083,13 +939,8 @@ megaraid_fini_mbox(adapter_t *adapter)
  * megaraid_alloc_cmd_packets - allocate shared mailbox
  * @adapter		: soft state of the raid controller
  *
-<<<<<<< HEAD
- * Allocate and align the shared mailbox. This maibox is used to issue
- * all the commands. For IO based controllers, the mailbox is also regsitered
-=======
  * Allocate and align the shared mailbox. This mailbox is used to issue
  * all the commands. For IO based controllers, the mailbox is also registered
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * with the FW. Allocate memory for all commands as well.
  * This is our big allocator.
  */
@@ -1113,15 +964,10 @@ megaraid_alloc_cmd_packets(adapter_t *adapter)
 	 * Allocate the common 16-byte aligned memory for the handshake
 	 * mailbox.
 	 */
-<<<<<<< HEAD
-	raid_dev->una_mbox64 = pci_alloc_consistent(adapter->pdev,
-			sizeof(mbox64_t), &raid_dev->una_mbox64_dma);
-=======
 	raid_dev->una_mbox64 = dma_alloc_coherent(&adapter->pdev->dev,
 						  sizeof(mbox64_t),
 						  &raid_dev->una_mbox64_dma,
 						  GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!raid_dev->una_mbox64) {
 		con_log(CL_ANN, (KERN_WARNING
@@ -1129,10 +975,6 @@ megaraid_alloc_cmd_packets(adapter_t *adapter)
 			__LINE__));
 		return -1;
 	}
-<<<<<<< HEAD
-	memset(raid_dev->una_mbox64, 0, sizeof(mbox64_t));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Align the mailbox at 16-byte boundary
@@ -1151,13 +993,8 @@ megaraid_alloc_cmd_packets(adapter_t *adapter)
 			align;
 
 	// Allocate memory for commands issued internally
-<<<<<<< HEAD
-	adapter->ibuf = pci_alloc_consistent(pdev, MBOX_IBUF_SIZE,
-				&adapter->ibuf_dma_h);
-=======
 	adapter->ibuf = dma_alloc_coherent(&pdev->dev, MBOX_IBUF_SIZE,
 					   &adapter->ibuf_dma_h, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!adapter->ibuf) {
 
 		con_log(CL_ANN, (KERN_WARNING
@@ -1166,10 +1003,6 @@ megaraid_alloc_cmd_packets(adapter_t *adapter)
 
 		goto out_free_common_mbox;
 	}
-<<<<<<< HEAD
-	memset(adapter->ibuf, 0, MBOX_IBUF_SIZE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	// Allocate memory for our SCSI Command Blocks and their associated
 	// memory
@@ -1239,11 +1072,7 @@ megaraid_alloc_cmd_packets(adapter_t *adapter)
 
 		scb->scp		= NULL;
 		scb->state		= SCB_FREE;
-<<<<<<< HEAD
-		scb->dma_direction	= PCI_DMA_NONE;
-=======
 		scb->dma_direction	= DMA_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scb->dma_type		= MRAID_DMA_NONE;
 		scb->dev_channel	= -1;
 		scb->dev_target		= -1;
@@ -1259,17 +1088,10 @@ out_teardown_dma_pools:
 out_free_scb_list:
 	kfree(adapter->kscb_list);
 out_free_ibuf:
-<<<<<<< HEAD
-	pci_free_consistent(pdev, MBOX_IBUF_SIZE, (void *)adapter->ibuf,
-		adapter->ibuf_dma_h);
-out_free_common_mbox:
-	pci_free_consistent(adapter->pdev, sizeof(mbox64_t),
-=======
 	dma_free_coherent(&pdev->dev, MBOX_IBUF_SIZE, (void *)adapter->ibuf,
 		adapter->ibuf_dma_h);
 out_free_common_mbox:
 	dma_free_coherent(&adapter->pdev->dev, sizeof(mbox64_t),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(caddr_t)raid_dev->una_mbox64, raid_dev->una_mbox64_dma);
 
 	return -1;
@@ -1291,17 +1113,10 @@ megaraid_free_cmd_packets(adapter_t *adapter)
 
 	kfree(adapter->kscb_list);
 
-<<<<<<< HEAD
-	pci_free_consistent(adapter->pdev, MBOX_IBUF_SIZE,
-		(void *)adapter->ibuf, adapter->ibuf_dma_h);
-
-	pci_free_consistent(adapter->pdev, sizeof(mbox64_t),
-=======
 	dma_free_coherent(&adapter->pdev->dev, MBOX_IBUF_SIZE,
 		(void *)adapter->ibuf, adapter->ibuf_dma_h);
 
 	dma_free_coherent(&adapter->pdev->dev, sizeof(mbox64_t),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(caddr_t)raid_dev->una_mbox64, raid_dev->una_mbox64_dma);
 	return;
 }
@@ -1326,13 +1141,8 @@ megaraid_mbox_setup_dma_pools(adapter_t *adapter)
 
 
 	// Allocate memory for 16-bytes aligned mailboxes
-<<<<<<< HEAD
-	raid_dev->mbox_pool_handle = pci_pool_create("megaraid mbox pool",
-						adapter->pdev,
-=======
 	raid_dev->mbox_pool_handle = dma_pool_create("megaraid mbox pool",
 						&adapter->pdev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						sizeof(mbox64_t) + 16,
 						16, 0);
 
@@ -1342,11 +1152,7 @@ megaraid_mbox_setup_dma_pools(adapter_t *adapter)
 
 	mbox_pci_blk = raid_dev->mbox_pool;
 	for (i = 0; i < MBOX_MAX_SCSI_CMDS; i++) {
-<<<<<<< HEAD
-		mbox_pci_blk[i].vaddr = pci_pool_alloc(
-=======
 		mbox_pci_blk[i].vaddr = dma_pool_alloc(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						raid_dev->mbox_pool_handle,
 						GFP_KERNEL,
 						&mbox_pci_blk[i].dma_addr);
@@ -1361,17 +1167,10 @@ megaraid_mbox_setup_dma_pools(adapter_t *adapter)
 	 * structure
 	 * Since passthru and extended passthru commands are exclusive, they
 	 * share common memory pool. Passthru structures piggyback on memory
-<<<<<<< HEAD
-	 * allocted to extended passthru since passthru is smaller of the two
-	 */
-	raid_dev->epthru_pool_handle = pci_pool_create("megaraid mbox pthru",
-			adapter->pdev, sizeof(mraid_epassthru_t), 128, 0);
-=======
 	 * allocated to extended passthru since passthru is smaller of the two
 	 */
 	raid_dev->epthru_pool_handle = dma_pool_create("megaraid mbox pthru",
 			&adapter->pdev->dev, sizeof(mraid_epassthru_t), 128, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (raid_dev->epthru_pool_handle == NULL) {
 		goto fail_setup_dma_pool;
@@ -1379,11 +1178,7 @@ megaraid_mbox_setup_dma_pools(adapter_t *adapter)
 
 	epthru_pci_blk = raid_dev->epthru_pool;
 	for (i = 0; i < MBOX_MAX_SCSI_CMDS; i++) {
-<<<<<<< HEAD
-		epthru_pci_blk[i].vaddr = pci_pool_alloc(
-=======
 		epthru_pci_blk[i].vaddr = dma_pool_alloc(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						raid_dev->epthru_pool_handle,
 						GFP_KERNEL,
 						&epthru_pci_blk[i].dma_addr);
@@ -1395,13 +1190,8 @@ megaraid_mbox_setup_dma_pools(adapter_t *adapter)
 
 	// Allocate memory for each scatter-gather list. Request for 512 bytes
 	// alignment for each sg list
-<<<<<<< HEAD
-	raid_dev->sg_pool_handle = pci_pool_create("megaraid mbox sg",
-					adapter->pdev,
-=======
 	raid_dev->sg_pool_handle = dma_pool_create("megaraid mbox sg",
 					&adapter->pdev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					sizeof(mbox_sgl64) * MBOX_MAX_SG_SIZE,
 					512, 0);
 
@@ -1411,11 +1201,7 @@ megaraid_mbox_setup_dma_pools(adapter_t *adapter)
 
 	sg_pci_blk = raid_dev->sg_pool;
 	for (i = 0; i < MBOX_MAX_SCSI_CMDS; i++) {
-<<<<<<< HEAD
-		sg_pci_blk[i].vaddr = pci_pool_alloc(
-=======
 		sg_pci_blk[i].vaddr = dma_pool_alloc(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						raid_dev->sg_pool_handle,
 						GFP_KERNEL,
 						&sg_pci_blk[i].dma_addr);
@@ -1451,50 +1237,26 @@ megaraid_mbox_teardown_dma_pools(adapter_t *adapter)
 
 	sg_pci_blk = raid_dev->sg_pool;
 	for (i = 0; i < MBOX_MAX_SCSI_CMDS && sg_pci_blk[i].vaddr; i++) {
-<<<<<<< HEAD
-		pci_pool_free(raid_dev->sg_pool_handle, sg_pci_blk[i].vaddr,
-			sg_pci_blk[i].dma_addr);
-	}
-	if (raid_dev->sg_pool_handle)
-		pci_pool_destroy(raid_dev->sg_pool_handle);
-=======
 		dma_pool_free(raid_dev->sg_pool_handle, sg_pci_blk[i].vaddr,
 			sg_pci_blk[i].dma_addr);
 	}
 	dma_pool_destroy(raid_dev->sg_pool_handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	epthru_pci_blk = raid_dev->epthru_pool;
 	for (i = 0; i < MBOX_MAX_SCSI_CMDS && epthru_pci_blk[i].vaddr; i++) {
-<<<<<<< HEAD
-		pci_pool_free(raid_dev->epthru_pool_handle,
-			epthru_pci_blk[i].vaddr, epthru_pci_blk[i].dma_addr);
-	}
-	if (raid_dev->epthru_pool_handle)
-		pci_pool_destroy(raid_dev->epthru_pool_handle);
-=======
 		dma_pool_free(raid_dev->epthru_pool_handle,
 			epthru_pci_blk[i].vaddr, epthru_pci_blk[i].dma_addr);
 	}
 	dma_pool_destroy(raid_dev->epthru_pool_handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	mbox_pci_blk = raid_dev->mbox_pool;
 	for (i = 0; i < MBOX_MAX_SCSI_CMDS && mbox_pci_blk[i].vaddr; i++) {
-<<<<<<< HEAD
-		pci_pool_free(raid_dev->mbox_pool_handle,
-			mbox_pci_blk[i].vaddr, mbox_pci_blk[i].dma_addr);
-	}
-	if (raid_dev->mbox_pool_handle)
-		pci_pool_destroy(raid_dev->mbox_pool_handle);
-=======
 		dma_pool_free(raid_dev->mbox_pool_handle,
 			mbox_pci_blk[i].vaddr, mbox_pci_blk[i].dma_addr);
 	}
 	dma_pool_destroy(raid_dev->mbox_pool_handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 }
@@ -1653,15 +1415,6 @@ mbox_post_cmd(adapter_t *adapter, scb_t *scb)
 
 	adapter->outstanding_cmds++;
 
-<<<<<<< HEAD
-	if (scb->dma_direction == PCI_DMA_TODEVICE)
-		pci_dma_sync_sg_for_device(adapter->pdev,
-					   scsi_sglist(scb->scp),
-					   scsi_sg_count(scb->scp),
-					   PCI_DMA_TODEVICE);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mbox->busy	= 1;	// Set busy
 	mbox->poll	= 0;
 	mbox->ack	= 0;
@@ -1676,17 +1429,6 @@ mbox_post_cmd(adapter_t *adapter, scb_t *scb)
 
 
 /**
-<<<<<<< HEAD
- * megaraid_queue_command - generic queue entry point for all LLDs
- * @scp		: pointer to the scsi command to be executed
- * @done	: callback routine to be called after the cmd has be completed
- *
- * Queue entry point for mailbox based controllers.
- */
-static int
-megaraid_queue_command_lck(struct scsi_cmnd *scp, void (*done)(struct scsi_cmnd *))
-{
-=======
  * megaraid_queue_command_lck - generic queue entry point for all LLDs
  * @scp		: pointer to the scsi command to be executed
  *
@@ -1695,16 +1437,11 @@ megaraid_queue_command_lck(struct scsi_cmnd *scp, void (*done)(struct scsi_cmnd 
 static int megaraid_queue_command_lck(struct scsi_cmnd *scp)
 {
 	void (*done)(struct scsi_cmnd *) = scsi_done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter_t	*adapter;
 	scb_t		*scb;
 	int		if_busy;
 
 	adapter		= SCP2ADAPTER(scp);
-<<<<<<< HEAD
-	scp->scsi_done	= done;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scp->result	= 0;
 
 	/*
@@ -1837,23 +1574,12 @@ megaraid_mbox_build_cmd(adapter_t *adapter, struct scsi_cmnd *scp, int *busy)
 			}
 
 			if (scp->cmnd[1] & MEGA_SCSI_INQ_EVPD) {
-<<<<<<< HEAD
-				scp->sense_buffer[0] = 0x70;
-				scp->sense_buffer[2] = ILLEGAL_REQUEST;
-				scp->sense_buffer[12] = MEGA_INVALID_FIELD_IN_CDB;
-				scp->result = CHECK_CONDITION << 1;
-				return NULL;
-			}
-
-			/* Fall through */
-=======
 				scsi_build_sense(scp, 0, ILLEGAL_REQUEST,
 						 MEGA_INVALID_FIELD_IN_CDB, 0);
 				return NULL;
 			}
 
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case READ_CAPACITY:
 			/*
@@ -2249,11 +1975,7 @@ megaraid_mbox_prepare_pthru(adapter_t *adapter, scb_t *scb,
  * @scb		: scsi control block
  * @scp		: scsi command from the mid-layer
  *
-<<<<<<< HEAD
- * Prepare a command for the scsi physical devices. This rountine prepares
-=======
  * Prepare a command for the scsi physical devices. This routine prepares
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * commands for devices which can take extended CDBs (>10 bytes).
  */
 static void
@@ -2436,34 +2158,6 @@ megaraid_isr(int irq, void *devp)
 
 
 /**
-<<<<<<< HEAD
- * megaraid_mbox_sync_scb - sync kernel buffers
- * @adapter	: controller's soft state
- * @scb		: pointer to the resource packet
- *
- * DMA sync if required.
- */
-static void
-megaraid_mbox_sync_scb(adapter_t *adapter, scb_t *scb)
-{
-	mbox_ccb_t	*ccb;
-
-	ccb	= (mbox_ccb_t *)scb->ccb;
-
-	if (scb->dma_direction == PCI_DMA_FROMDEVICE)
-		pci_dma_sync_sg_for_cpu(adapter->pdev,
-					scsi_sglist(scb->scp),
-					scsi_sg_count(scb->scp),
-					PCI_DMA_FROMDEVICE);
-
-	scsi_dma_unmap(scb->scp);
-	return;
-}
-
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * megaraid_mbox_dpc - the tasklet to complete the commands from completed list
  * @devp	: pointer to HBA soft state
  *
@@ -2605,12 +2299,7 @@ megaraid_mbox_dpc(unsigned long devp)
 				memcpy(scp->sense_buffer, pthru->reqsensearea,
 						14);
 
-<<<<<<< HEAD
-				scp->result = DRIVER_SENSE << 24 |
-					DID_OK << 16 | CHECK_CONDITION << 1;
-=======
 				scp->result = SAM_STAT_CHECK_CONDITION;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			else {
 				if (mbox->cmd == MBOXCMD_EXTPTHRU) {
@@ -2618,21 +2307,10 @@ megaraid_mbox_dpc(unsigned long devp)
 					memcpy(scp->sense_buffer,
 						epthru->reqsensearea, 14);
 
-<<<<<<< HEAD
-					scp->result = DRIVER_SENSE << 24 |
-						DID_OK << 16 |
-						CHECK_CONDITION << 1;
-				} else {
-					scp->sense_buffer[0] = 0x70;
-					scp->sense_buffer[2] = ABORTED_COMMAND;
-					scp->result = CHECK_CONDITION << 1;
-				}
-=======
 					scp->result = SAM_STAT_CHECK_CONDITION;
 				} else
 					scsi_build_sense(scp, 0,
 							 ABORTED_COMMAND, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 
@@ -2649,11 +2327,7 @@ megaraid_mbox_dpc(unsigned long devp)
 			 */
 			if (scp->cmnd[0] == TEST_UNIT_READY) {
 				scp->result = DID_ERROR << 16 |
-<<<<<<< HEAD
-					RESERVATION_CONFLICT << 1;
-=======
 					SAM_STAT_RESERVATION_CONFLICT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			else
 			/*
@@ -2664,11 +2338,7 @@ megaraid_mbox_dpc(unsigned long devp)
 					 scp->cmnd[0] == RELEASE)) {
 
 				scp->result = DID_ERROR << 16 |
-<<<<<<< HEAD
-					RESERVATION_CONFLICT << 1;
-=======
 					SAM_STAT_RESERVATION_CONFLICT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			else {
 				scp->result = DID_BAD_TARGET << 16 | status;
@@ -2680,13 +2350,7 @@ megaraid_mbox_dpc(unsigned long devp)
 			megaraid_mbox_display_scb(adapter, scb);
 		}
 
-<<<<<<< HEAD
-		// Free our internal resources and call the mid-layer callback
-		// routine
-		megaraid_mbox_sync_scb(adapter, scb);
-=======
 		scsi_dma_unmap(scp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		// remove from local clist
 		list_del_init(&scb->list);
@@ -2695,11 +2359,7 @@ megaraid_mbox_dpc(unsigned long devp)
 		megaraid_dealloc_scb(adapter, scb);
 
 		// send the scsi packet back to kernel
-<<<<<<< HEAD
-		scp->scsi_done(scp);
-=======
 		scsi_done(scp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return;
@@ -2757,11 +2417,7 @@ megaraid_abort_handler(struct scsi_cmnd *scp)
 				scb->sno, scb->dev_channel, scb->dev_target));
 
 			scp->result = (DID_ABORT << 16);
-<<<<<<< HEAD
-			scp->scsi_done(scp);
-=======
 			scsi_done(scp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			megaraid_dealloc_scb(adapter, scb);
 
@@ -2791,11 +2447,7 @@ megaraid_abort_handler(struct scsi_cmnd *scp)
 				scb->dev_channel, scb->dev_target));
 
 			scp->result = (DID_ABORT << 16);
-<<<<<<< HEAD
-			scp->scsi_done(scp);
-=======
 			scsi_done(scp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			megaraid_dealloc_scb(adapter, scb);
 
@@ -2850,11 +2502,7 @@ megaraid_abort_handler(struct scsi_cmnd *scp)
 }
 
 /**
-<<<<<<< HEAD
- * megaraid_reset_handler - device reset hadler for mailbox based driver
-=======
  * megaraid_reset_handler - device reset handler for mailbox based driver
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @scp		: reference command
  *
  * Reset handler for the mailbox based controller. First try to find out if
@@ -2874,10 +2522,6 @@ megaraid_reset_handler(struct scsi_cmnd *scp)
 	uint8_t		raw_mbox[sizeof(mbox_t)];
 	int		rval;
 	int		recovery_window;
-<<<<<<< HEAD
-	int		recovering;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		i;
 	uioc_t		*kioc;
 
@@ -2891,10 +2535,6 @@ megaraid_reset_handler(struct scsi_cmnd *scp)
 		return FAILED;
 	}
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	// Under exceptional conditions, FW can take up to 3 minutes to
 	// complete command processing. Wait for additional 2 minutes for the
 	// pending commands counter to go down to 0. If it doesn't, let the
@@ -2927,11 +2567,7 @@ megaraid_reset_handler(struct scsi_cmnd *scp)
 			}
 
 			scb->scp->result = (DID_RESET << 16);
-<<<<<<< HEAD
-			scb->scp->scsi_done(scb->scp);
-=======
 			scsi_done(scb->scp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			megaraid_dealloc_scb(adapter, scb);
 		}
@@ -2947,11 +2583,6 @@ megaraid_reset_handler(struct scsi_cmnd *scp)
 
 	recovery_window = MBOX_RESET_WAIT + MBOX_RESET_EXT_WAIT;
 
-<<<<<<< HEAD
-	recovering = adapter->outstanding_cmds;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < recovery_window; i++) {
 
 		megaraid_ack_sequence(adapter);
@@ -3012,11 +2643,7 @@ megaraid_reset_handler(struct scsi_cmnd *scp)
 	}
 
  out:
-<<<<<<< HEAD
-	spin_unlock_irq(&adapter->lock);
-=======
 	spin_unlock(&adapter->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
@@ -3039,19 +2666,10 @@ static int
 mbox_post_sync_cmd(adapter_t *adapter, uint8_t raw_mbox[])
 {
 	mraid_device_t	*raid_dev = ADAP2RAIDDEV(adapter);
-<<<<<<< HEAD
-	mbox64_t	*mbox64;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mbox_t		*mbox;
 	uint8_t		status;
 	int		i;
 
-<<<<<<< HEAD
-
-	mbox64	= raid_dev->mbox64;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mbox	= raid_dev->mbox;
 
 	/*
@@ -3268,14 +2886,8 @@ megaraid_mbox_product_info(adapter_t *adapter)
 	 * Issue an ENQUIRY3 command to find out certain adapter parameters,
 	 * e.g., max channels, max commands etc.
 	 */
-<<<<<<< HEAD
-	pinfo = pci_alloc_consistent(adapter->pdev, sizeof(mraid_pinfo_t),
-			&pinfo_dma_h);
-
-=======
 	pinfo = dma_alloc_coherent(&adapter->pdev->dev, sizeof(mraid_pinfo_t),
 				   &pinfo_dma_h, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pinfo == NULL) {
 		con_log(CL_ANN, (KERN_WARNING
 			"megaraid: out of memory, %s %d\n", __func__,
@@ -3283,10 +2895,6 @@ megaraid_mbox_product_info(adapter_t *adapter)
 
 		return -1;
 	}
-<<<<<<< HEAD
-	memset(pinfo, 0, sizeof(mraid_pinfo_t));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mbox->xferaddr = (uint32_t)adapter->ibuf_dma_h;
 	memset((void *)adapter->ibuf, 0, MBOX_IBUF_SIZE);
@@ -3300,11 +2908,7 @@ megaraid_mbox_product_info(adapter_t *adapter)
 
 		con_log(CL_ANN, (KERN_WARNING "megaraid: Inquiry3 failed\n"));
 
-<<<<<<< HEAD
-		pci_free_consistent(adapter->pdev, sizeof(mraid_pinfo_t),
-=======
 		dma_free_coherent(&adapter->pdev->dev, sizeof(mraid_pinfo_t),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pinfo, pinfo_dma_h);
 
 		return -1;
@@ -3335,11 +2939,7 @@ megaraid_mbox_product_info(adapter_t *adapter)
 		con_log(CL_ANN, (KERN_WARNING
 			"megaraid: product info failed\n"));
 
-<<<<<<< HEAD
-		pci_free_consistent(adapter->pdev, sizeof(mraid_pinfo_t),
-=======
 		dma_free_coherent(&adapter->pdev->dev, sizeof(mraid_pinfo_t),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pinfo, pinfo_dma_h);
 
 		return -1;
@@ -3375,11 +2975,7 @@ megaraid_mbox_product_info(adapter_t *adapter)
 		"megaraid: fw version:[%s] bios version:[%s]\n",
 		adapter->fw_version, adapter->bios_version));
 
-<<<<<<< HEAD
-	pci_free_consistent(adapter->pdev, sizeof(mraid_pinfo_t), pinfo,
-=======
 	dma_free_coherent(&adapter->pdev->dev, sizeof(mraid_pinfo_t), pinfo,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pinfo_dma_h);
 
 	return 0;
@@ -3476,10 +3072,6 @@ megaraid_mbox_support_ha(adapter_t *adapter, uint16_t *init_id)
 static int
 megaraid_mbox_support_random_del(adapter_t *adapter)
 {
-<<<<<<< HEAD
-	mbox_t		*mbox;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t		raw_mbox[sizeof(mbox_t)];
 	int		rval;
 
@@ -3501,11 +3093,6 @@ megaraid_mbox_support_random_del(adapter_t *adapter)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	mbox = (mbox_t *)raw_mbox;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset((caddr_t)raw_mbox, 0, sizeof(mbox_t));
 
 	raw_mbox[0] = FC_DEL_LOGDRV;
@@ -3610,17 +3197,8 @@ megaraid_mbox_enum_raid_scsi(adapter_t *adapter)
 static void
 megaraid_mbox_flush_cache(adapter_t *adapter)
 {
-<<<<<<< HEAD
-	mbox_t	*mbox;
 	uint8_t	raw_mbox[sizeof(mbox_t)];
 
-
-	mbox = (mbox_t *)raw_mbox;
-
-=======
-	uint8_t	raw_mbox[sizeof(mbox_t)];
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset((caddr_t)raw_mbox, 0, sizeof(mbox_t));
 
 	raw_mbox[0] = FLUSH_ADAPTER;
@@ -3651,27 +3229,14 @@ megaraid_mbox_fire_sync_cmd(adapter_t *adapter)
 	mbox_t	*mbox;
 	uint8_t	raw_mbox[sizeof(mbox_t)];
 	mraid_device_t	*raid_dev = ADAP2RAIDDEV(adapter);
-<<<<<<< HEAD
-	mbox64_t *mbox64;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	status = 0;
 	int i;
 	uint32_t dword;
 
-<<<<<<< HEAD
-	mbox = (mbox_t *)raw_mbox;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset((caddr_t)raw_mbox, 0, sizeof(mbox_t));
 
 	raw_mbox[0] = 0xFF;
 
-<<<<<<< HEAD
-	mbox64	= raid_dev->mbox64;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mbox	= raid_dev->mbox;
 
 	/* Wait until mailbox is free */
@@ -3730,10 +3295,6 @@ blocked_mailbox:
  * megaraid_mbox_display_scb - display SCB information, mostly debug purposes
  * @adapter		: controller's soft state
  * @scb			: SCB to be displayed
-<<<<<<< HEAD
- * @level		: debug level for console print
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Diplay information about the given SCB iff the current debug level is
  * verbose.
@@ -3780,11 +3341,7 @@ megaraid_mbox_display_scb(adapter_t *adapter, scb_t *scb)
  * megaraid_mbox_setup_device_map - manage device ids
  * @adapter	: Driver's soft state
  *
-<<<<<<< HEAD
- * Manange the device ids to have an appropriate mapping between the kernel
-=======
  * Manage the device ids to have an appropriate mapping between the kernel
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * scsi addresses and megaraid scsi and logical drive addresses. We export
  * scsi devices on their actual addresses, whereas the logical drives are
  * exported on a virtual scsi channel.
@@ -3883,11 +3440,7 @@ megaraid_cmm_register(adapter_t *adapter)
 
 		scb->scp		= NULL;
 		scb->state		= SCB_FREE;
-<<<<<<< HEAD
-		scb->dma_direction	= PCI_DMA_NONE;
-=======
 		scb->dma_direction	= DMA_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scb->dma_type		= MRAID_DMA_NONE;
 		scb->dev_channel	= -1;
 		scb->dev_target		= -1;
@@ -4025,11 +3578,7 @@ megaraid_mbox_mm_command(adapter_t *adapter, uioc_t *kioc)
 
 	scb->state		= SCB_ACTIVE;
 	scb->dma_type		= MRAID_DMA_NONE;
-<<<<<<< HEAD
-	scb->dma_direction	= PCI_DMA_NONE;
-=======
 	scb->dma_direction	= DMA_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ccb		= (mbox_ccb_t *)scb->ccb;
 	mbox64		= (mbox64_t *)(unsigned long)kioc->cmdbuf;
@@ -4170,13 +3719,6 @@ megaraid_mbox_mm_done(adapter_t *adapter, scb_t *scb)
 static int
 gather_hbainfo(adapter_t *adapter, mraid_hba_info_t *hinfo)
 {
-<<<<<<< HEAD
-	uint8_t	dmajor;
-
-	dmajor			= megaraid_mbox_version[0];
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hinfo->pci_vendor_id	= adapter->pdev->vendor;
 	hinfo->pci_device_id	= adapter->pdev->device;
 	hinfo->subsys_vendor_id	= adapter->pdev->subsystem_vendor;
@@ -4222,13 +3764,8 @@ megaraid_sysfs_alloc_resources(adapter_t *adapter)
 
 	raid_dev->sysfs_mbox64 = kmalloc(sizeof(mbox64_t), GFP_KERNEL);
 
-<<<<<<< HEAD
-	raid_dev->sysfs_buffer = pci_alloc_consistent(adapter->pdev,
-			PAGE_SIZE, &raid_dev->sysfs_buffer_dma);
-=======
 	raid_dev->sysfs_buffer = dma_alloc_coherent(&adapter->pdev->dev,
 			PAGE_SIZE, &raid_dev->sysfs_buffer_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!raid_dev->sysfs_uioc || !raid_dev->sysfs_mbox64 ||
 		!raid_dev->sysfs_buffer) {
@@ -4265,11 +3802,7 @@ megaraid_sysfs_free_resources(adapter_t *adapter)
 	kfree(raid_dev->sysfs_mbox64);
 
 	if (raid_dev->sysfs_buffer) {
-<<<<<<< HEAD
-		pci_free_consistent(adapter->pdev, PAGE_SIZE,
-=======
 		dma_free_coherent(&adapter->pdev->dev, PAGE_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			raid_dev->sysfs_buffer, raid_dev->sysfs_buffer_dma);
 	}
 }
@@ -4292,32 +3825,19 @@ megaraid_sysfs_get_ldmap_done(uioc_t *uioc)
 	wake_up(&raid_dev->sysfs_wait_q);
 }
 
-<<<<<<< HEAD
-
-/**
- * megaraid_sysfs_get_ldmap_timeout - timeout handling for get ldmap
- * @data	: timed out packet
-=======
 /**
  * megaraid_sysfs_get_ldmap_timeout - timeout handling for get ldmap
  * @t	: timed out timer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Timeout routine to recover and return to application, in case the adapter
  * has stopped responding. A timeout of 60 seconds for this command seems like
  * a good value.
  */
 static void
-<<<<<<< HEAD
-megaraid_sysfs_get_ldmap_timeout(unsigned long data)
-{
-	uioc_t		*uioc = (uioc_t *)data;
-=======
 megaraid_sysfs_get_ldmap_timeout(struct timer_list *t)
 {
 	struct uioc_timeout *timeout = from_timer(timeout, t, timer);
 	uioc_t		*uioc = timeout->uioc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter_t	*adapter = (adapter_t *)uioc->buf_vaddr;
 	mraid_device_t	*raid_dev = ADAP2RAIDDEV(adapter);
 
@@ -4352,12 +3872,7 @@ megaraid_sysfs_get_ldmap(adapter_t *adapter)
 	mbox64_t		*mbox64;
 	mbox_t			*mbox;
 	char			*raw_mbox;
-<<<<<<< HEAD
-	struct timer_list	sysfs_timer;
-	struct timer_list	*timerp;
-=======
 	struct uioc_timeout	timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	caddr_t			ldmap;
 	int			rval = 0;
 
@@ -4393,23 +3908,12 @@ megaraid_sysfs_get_ldmap(adapter_t *adapter)
 	/*
 	 * Setup a timer to recover from a non-responding controller
 	 */
-<<<<<<< HEAD
-	timerp	= &sysfs_timer;
-	init_timer(timerp);
-
-	timerp->function	= megaraid_sysfs_get_ldmap_timeout;
-	timerp->data		= (unsigned long)uioc;
-	timerp->expires		= jiffies + 60 * HZ;
-
-	add_timer(timerp);
-=======
 	timeout.uioc = uioc;
 	timer_setup_on_stack(&timeout.timer,
 			     megaraid_sysfs_get_ldmap_timeout, 0);
 
 	timeout.timer.expires		= jiffies + 60 * HZ;
 	add_timer(&timeout.timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Send the command to the firmware
@@ -4447,12 +3951,8 @@ megaraid_sysfs_get_ldmap(adapter_t *adapter)
 	}
 
 
-<<<<<<< HEAD
-	del_timer_sync(timerp);
-=======
 	del_timer_sync(&timeout.timer);
 	destroy_timer_on_stack(&timeout.timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&raid_dev->sysfs_mtx);
 
@@ -4461,14 +3961,9 @@ megaraid_sysfs_get_ldmap(adapter_t *adapter)
 
 
 /**
-<<<<<<< HEAD
- * megaraid_sysfs_show_app_hndl - display application handle for this adapter
- * @cdev	: class device object representation for the host
-=======
  * megaraid_mbox_app_hndl_show - display application handle for this adapter
  * @dev		: class device object representation for the host
  * @attr	: device attribute (unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf		: buffer to send data to
  *
  * Display the handle used by the applications while executing management
@@ -4476,12 +3971,7 @@ megaraid_sysfs_get_ldmap(adapter_t *adapter)
  * handle, since we do not interface with applications directly.
  */
 static ssize_t
-<<<<<<< HEAD
-megaraid_sysfs_show_app_hndl(struct device *dev, struct device_attribute *attr,
-			     char *buf)
-=======
 megaraid_mbox_app_hndl_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *shost = class_to_shost(dev);
 	adapter_t	*adapter = (adapter_t *)SCSIHOST2ADAP(shost);
@@ -4489,20 +3979,12 @@ megaraid_mbox_app_hndl_show(struct device *dev, struct device_attribute *attr, c
 
 	app_hndl = mraid_mm_adapter_app_handle(adapter->unique_id);
 
-<<<<<<< HEAD
-	return snprintf(buf, 8, "%u\n", app_hndl);
-=======
 	return sysfs_emit(buf, "%u\n", app_hndl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /**
-<<<<<<< HEAD
- * megaraid_sysfs_show_ldnum - display the logical drive number for this device
-=======
  * megaraid_mbox_ld_show - display the logical drive number for this device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev		: device object representation for the scsi device
  * @attr	: device attribute to show
  * @buf		: buffer to send data to
@@ -4517,11 +3999,7 @@ megaraid_mbox_app_hndl_show(struct device *dev, struct device_attribute *attr, c
  *   <int>     <int>       <int>            <int>
  */
 static ssize_t
-<<<<<<< HEAD
-megaraid_sysfs_show_ldnum(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 megaraid_mbox_ld_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scsi_device *sdev = to_scsi_device(dev);
 	adapter_t	*adapter = (adapter_t *)SCSIHOST2ADAP(sdev->host);
@@ -4570,11 +4048,7 @@ megaraid_mbox_ld_show(struct device *dev, struct device_attribute *attr, char *b
 		}
 	}
 
-<<<<<<< HEAD
-	return snprintf(buf, 36, "%d %d %d %d\n", scsi_id, logical_drv,
-=======
 	return sysfs_emit(buf, "%d %d %d %d\n", scsi_id, logical_drv,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ldid_map, app_hndl);
 }
 
@@ -4584,8 +4058,3 @@ megaraid_mbox_ld_show(struct device *dev, struct device_attribute *attr, char *b
  */
 module_init(megaraid_init);
 module_exit(megaraid_exit);
-<<<<<<< HEAD
-
-/* vim: set ts=8 sw=8 tw=78 ai si: */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* drivers/atm/atmtcp.c - ATM over TCP "device" driver */
 
 /* Written 1997-2000 by Werner Almesberger, EPFL LRC/ICA */
@@ -14,11 +11,7 @@
 #include <linux/bitops.h>
 #include <linux/init.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 
 
@@ -68,11 +61,7 @@ static int atmtcp_send_control(struct atm_vcc *vcc,int type,
 		return -EUNATCH;
 	}
 	atm_force_charge(out_vcc,skb->truesize);
-<<<<<<< HEAD
-	new_msg = (struct atmtcp_control *) skb_put(skb,sizeof(*new_msg));
-=======
 	new_msg = skb_put(skb, sizeof(*new_msg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*new_msg = *msg;
 	new_msg->hdr.length = ATMTCP_HDR_MAGIC;
 	new_msg->type = type;
@@ -169,10 +158,6 @@ static int atmtcp_v_ioctl(struct atm_dev *dev,unsigned int cmd,void __user *arg)
 {
 	struct atm_cirange ci;
 	struct atm_vcc *vcc;
-<<<<<<< HEAD
-	struct hlist_node *node;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock *s;
 	int i;
 
@@ -186,11 +171,7 @@ static int atmtcp_v_ioctl(struct atm_dev *dev,unsigned int cmd,void __user *arg)
 	for(i = 0; i < VCC_HTABLE_SIZE; ++i) {
 		struct hlist_head *head = &vcc_hash[i];
 
-<<<<<<< HEAD
-		sk_for_each(s, node, head) {
-=======
 		sk_for_each(s, head) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vcc = atm_sk(s);
 			if (vcc->dev != dev)
 				continue;
@@ -237,11 +218,7 @@ static int atmtcp_v_send(struct atm_vcc *vcc,struct sk_buff *skb)
 		atomic_inc(&vcc->stats->tx_err);
 		return -ENOBUFS;
 	}
-<<<<<<< HEAD
-	hdr = (void *) skb_put(new_skb,sizeof(struct atmtcp_hdr));
-=======
 	hdr = skb_put(new_skb, sizeof(struct atmtcp_hdr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr->vpi = htons(vcc->vpi);
 	hdr->vci = htons(vcc->vci);
 	hdr->length = htonl(skb->len);
@@ -287,19 +264,11 @@ static struct atm_vcc *find_vcc(struct atm_dev *dev, short vpi, int vci)
 {
         struct hlist_head *head;
         struct atm_vcc *vcc;
-<<<<<<< HEAD
-        struct hlist_node *node;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         struct sock *s;
 
         head = &vcc_hash[vci & (VCC_HTABLE_SIZE -1)];
 
-<<<<<<< HEAD
-        sk_for_each(s, node, head) {
-=======
 	sk_for_each(s, head) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 vcc = atm_sk(s);
                 if (vcc->dev == dev &&
                     vcc->vci == vci && vcc->vpi == vpi &&
@@ -331,10 +300,7 @@ static int atmtcp_c_send(struct atm_vcc *vcc,struct sk_buff *skb)
 	out_vcc = find_vcc(dev, ntohs(hdr->vpi), ntohs(hdr->vci));
 	read_unlock(&vcc_sklist_lock);
 	if (!out_vcc) {
-<<<<<<< HEAD
-=======
 		result = -EUNATCH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_inc(&vcc->stats->tx_err);
 		goto done;
 	}
@@ -361,11 +327,7 @@ done:
  */
 
 
-<<<<<<< HEAD
-static struct atmdev_ops atmtcp_v_dev_ops = {
-=======
 static const struct atmdev_ops atmtcp_v_dev_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dev_close	= atmtcp_v_dev_close,
 	.open		= atmtcp_v_open,
 	.close		= atmtcp_v_close,
@@ -381,11 +343,7 @@ static const struct atmdev_ops atmtcp_v_dev_ops = {
  */
 
 
-<<<<<<< HEAD
-static struct atmdev_ops atmtcp_c_dev_ops = {
-=======
 static const struct atmdev_ops atmtcp_c_dev_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.close		= atmtcp_c_close,
 	.send		= atmtcp_c_send
 };
@@ -475,11 +433,6 @@ static int atmtcp_remove_persistent(int itf)
 		return -EMEDIUMTYPE;
 	}
 	dev_data = PRIV(dev);
-<<<<<<< HEAD
-	if (!dev_data->persist) return 0;
-	dev_data->persist = 0;
-	if (PRIV(dev)->vcc) return 0;
-=======
 	if (!dev_data->persist) {
 		atm_dev_put(dev);
 		return 0;
@@ -489,7 +442,6 @@ static int atmtcp_remove_persistent(int itf)
 		atm_dev_put(dev);
 		return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(dev_data);
 	atm_dev_put(dev);
 	atm_dev_deregister(dev);
@@ -542,10 +494,7 @@ static void __exit atmtcp_exit(void)
 	deregister_atm_ioctl(&atmtcp_ioctl_ops);
 }
 
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("ATM over TCP");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 module_init(atmtcp_init);
 module_exit(atmtcp_exit);

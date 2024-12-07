@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ds.c: Domain Services driver for Logical Domains
  *
  * Copyright (C) 2007, 2008 David S. Miller <davem@davemloft.net>
@@ -13,10 +10,7 @@
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/clock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/mutex.h>
 #include <linux/kthread.h>
@@ -37,15 +31,9 @@
 #define DRV_MODULE_VERSION	"1.0"
 #define DRV_MODULE_RELDATE	"Jul 11, 2007"
 
-<<<<<<< HEAD
-static char version[] __devinitdata =
-	DRV_MODULE_NAME ".c:v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
-MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
-=======
 static char version[] =
 	DRV_MODULE_NAME ".c:v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
 MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Sun LDOM domain services driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
@@ -99,11 +87,7 @@ struct ds_reg_req {
 	__u64			handle;
 	__u16			major;
 	__u16			minor;
-<<<<<<< HEAD
-	char			svc_id[0];
-=======
 	char			svc_id[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ds_reg_ack {
@@ -546,15 +530,8 @@ static void dr_cpu_mark(struct ds_data *resp, int cpu, int ncpus,
 	}
 }
 
-<<<<<<< HEAD
-static int __cpuinit dr_cpu_configure(struct ds_info *dp,
-				      struct ds_cap_state *cp,
-				      u64 req_num,
-				      cpumask_t *mask)
-=======
 static int dr_cpu_configure(struct ds_info *dp, struct ds_cap_state *cp,
 			    u64 req_num, cpumask_t *mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ds_data *resp;
 	int resp_len, ncpus, cpu;
@@ -578,11 +555,7 @@ static int dr_cpu_configure(struct ds_info *dp, struct ds_cap_state *cp,
 
 		printk(KERN_INFO "ds-%llu: Starting cpu %d...\n",
 		       dp->id, cpu);
-<<<<<<< HEAD
-		err = cpu_up(cpu);
-=======
 		err = add_cpu(cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			__u32 res = DR_CPU_RES_FAILURE;
 			__u32 stat = DR_CPU_STAT_UNCONFIGURED;
@@ -638,11 +611,7 @@ static int dr_cpu_unconfigure(struct ds_info *dp,
 
 		printk(KERN_INFO "ds-%llu: Shutting down cpu %d...\n",
 		       dp->id, cpu);
-<<<<<<< HEAD
-		err = cpu_down(cpu);
-=======
 		err = remove_cpu(cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			dr_cpu_mark(resp, cpu, ncpus,
 				    DR_CPU_RES_FAILURE,
@@ -658,14 +627,8 @@ static int dr_cpu_unconfigure(struct ds_info *dp,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __cpuinit dr_cpu_data(struct ds_info *dp,
-				  struct ds_cap_state *cp,
-				  void *buf, int len)
-=======
 static void dr_cpu_data(struct ds_info *dp, struct ds_cap_state *cp, void *buf,
 			int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ds_data *data = buf;
 	struct dr_cpu_tag *tag = (struct dr_cpu_tag *) (data + 1);
@@ -738,20 +701,12 @@ struct ds_var_hdr {
 
 struct ds_var_set_msg {
 	struct ds_var_hdr		hdr;
-<<<<<<< HEAD
-	char				name_and_value[0];
-=======
 	char				name_and_value[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ds_var_delete_msg {
 	struct ds_var_hdr		hdr;
-<<<<<<< HEAD
-	char				name[0];
-=======
 	char				name[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ds_var_resp {
@@ -827,8 +782,6 @@ void ldom_set_var(const char *var, const char *value)
 		char  *base, *p;
 		int msg_len, loops;
 
-<<<<<<< HEAD
-=======
 		if (strlen(var) + strlen(value) + 2 >
 		    sizeof(pkt) - sizeof(pkt.header)) {
 			printk(KERN_ERR PFX
@@ -839,7 +792,6 @@ void ldom_set_var(const char *var, const char *value)
 			return;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(&pkt, 0, sizeof(pkt));
 		pkt.header.data.tag.type = DS_DATA;
 		pkt.header.data.handle = cp->handle;
@@ -899,13 +851,8 @@ void ldom_reboot(const char *boot_command)
 	if (boot_command && strlen(boot_command)) {
 		unsigned long len;
 
-<<<<<<< HEAD
-		strcpy(full_boot_str, "boot ");
-		strcpy(full_boot_str + strlen("boot "), boot_command);
-=======
 		snprintf(full_boot_str, sizeof(full_boot_str), "boot %s",
 			 boot_command);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = strlen(full_boot_str);
 
 		if (reboot_data_supported) {
@@ -930,11 +877,7 @@ void ldom_power_off(void)
 
 static void ds_conn_reset(struct ds_info *dp)
 {
-<<<<<<< HEAD
-	printk(KERN_ERR "ds-%llu: ds_conn_reset() from %p\n",
-=======
 	printk(KERN_ERR "ds-%llu: ds_conn_reset() from %ps\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       dp->id, __builtin_return_address(0));
 }
 
@@ -967,11 +910,7 @@ static int register_services(struct ds_info *dp)
 		pbuf.req.handle = cp->handle;
 		pbuf.req.major = 1;
 		pbuf.req.minor = 0;
-<<<<<<< HEAD
-		strcpy(pbuf.req.svc_id, cp->service_id);
-=======
 		strcpy(pbuf.id_buf, cp->service_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = __ds_send(lp, &pbuf, msg_len);
 		if (err > 0)
@@ -1050,11 +989,7 @@ struct ds_queue_entry {
 	struct ds_info			*dp;
 	int				req_len;
 	int				__pad;
-<<<<<<< HEAD
-	u64				req[0];
-=======
 	u64				req[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void process_ds_work(void)
@@ -1220,12 +1155,7 @@ static void ds_event(void *arg, int event)
 	spin_unlock_irqrestore(&ds_lock, flags);
 }
 
-<<<<<<< HEAD
-static int __devinit ds_probe(struct vio_dev *vdev,
-			      const struct vio_device_id *id)
-=======
 static int ds_probe(struct vio_dev *vdev, const struct vio_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int ds_version_printed;
 	struct ldc_channel_config ds_cfg = {
@@ -1272,22 +1202,14 @@ static int ds_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 	ds_cfg.tx_irq = vdev->tx_irq;
 	ds_cfg.rx_irq = vdev->rx_irq;
 
-<<<<<<< HEAD
-	lp = ldc_alloc(vdev->channel_id, &ds_cfg, dp);
-=======
 	lp = ldc_alloc(vdev->channel_id, &ds_cfg, dp, "DS");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(lp)) {
 		err = PTR_ERR(lp);
 		goto out_free_ds_states;
 	}
 	dp->lp = lp;
 
-<<<<<<< HEAD
-	err = ldc_bind(lp, "DS");
-=======
 	err = ldc_bind(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out_free_ldc;
 
@@ -1314,14 +1236,6 @@ out_err:
 	return err;
 }
 
-<<<<<<< HEAD
-static int ds_remove(struct vio_dev *vdev)
-{
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct vio_device_id ds_match[] = {
 	{
 		.type = "domain-services-port",
@@ -1332,10 +1246,6 @@ static const struct vio_device_id ds_match[] = {
 static struct vio_driver ds_driver = {
 	.id_table	= ds_match,
 	.probe		= ds_probe,
-<<<<<<< HEAD
-	.remove		= ds_remove,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "ds",
 };
 

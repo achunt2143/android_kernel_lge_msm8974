@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_BITOPS_H
-#define _LINUX_BITOPS_H
-#include <asm/types.h>
-
-#ifdef	__KERNEL__
-#define BIT(nr)			(1UL << (nr))
-#define BIT_MASK(nr)		(1UL << ((nr) % BITS_PER_LONG))
-#define BIT_WORD(nr)		((nr) / BITS_PER_LONG)
-#define BITS_PER_BYTE		8
-#define BITS_TO_LONGS(nr)	DIV_ROUND_UP(nr, BITS_PER_BYTE * sizeof(long))
-#endif
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_BITOPS_H
 #define _LINUX_BITOPS_H
@@ -35,15 +21,12 @@
 #define BITS_TO_U32(nr)		__KERNEL_DIV_ROUND_UP(nr, BITS_PER_TYPE(u32))
 #define BITS_TO_BYTES(nr)	__KERNEL_DIV_ROUND_UP(nr, BITS_PER_TYPE(char))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned int __sw_hweight8(unsigned int w);
 extern unsigned int __sw_hweight16(unsigned int w);
 extern unsigned int __sw_hweight32(unsigned int w);
 extern unsigned long __sw_hweight64(__u64 w);
 
 /*
-<<<<<<< HEAD
-=======
  * Defined here because those may be needed by architecture-specific static
  * inlines.
  */
@@ -79,37 +62,11 @@ extern unsigned long __sw_hweight64(__u64 w);
 #define test_bit_acquire(nr, addr)	bitop(_test_bit_acquire, nr, addr)
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Include this here because some architectures need generic_ffs/fls in
  * scope
  */
 #include <asm/bitops.h>
 
-<<<<<<< HEAD
-#define for_each_set_bit(bit, addr, size) \
-	for ((bit) = find_first_bit((addr), (size));		\
-	     (bit) < (size);					\
-	     (bit) = find_next_bit((addr), (size), (bit) + 1))
-
-/* same as for_each_set_bit() but use bit as value to start with */
-#define for_each_set_bit_from(bit, addr, size) \
-	for ((bit) = find_next_bit((addr), (size), (bit));	\
-	     (bit) < (size);					\
-	     (bit) = find_next_bit((addr), (size), (bit) + 1))
-
-#define for_each_clear_bit(bit, addr, size) \
-	for ((bit) = find_first_zero_bit((addr), (size));	\
-	     (bit) < (size);					\
-	     (bit) = find_next_zero_bit((addr), (size), (bit) + 1))
-
-/* same as for_each_clear_bit() but use bit as value to start with */
-#define for_each_clear_bit_from(bit, addr, size) \
-	for ((bit) = find_next_zero_bit((addr), (size), (bit));	\
-	     (bit) < (size);					\
-	     (bit) = find_next_zero_bit((addr), (size), (bit) + 1))
-
-static __inline__ int get_bitmask_order(unsigned int count)
-=======
 /* Check that the bitops prototypes are sane */
 #define __check_bitop_pr(name)						\
 	static_assert(__same_type(arch_##name, generic_##name) &&	\
@@ -127,7 +84,6 @@ __check_bitop_pr(test_bit);
 #undef __check_bitop_pr
 
 static inline int get_bitmask_order(unsigned int count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int order;
 
@@ -135,25 +91,9 @@ static inline int get_bitmask_order(unsigned int count)
 	return order;	/* We could be slightly more clever with -1 here... */
 }
 
-<<<<<<< HEAD
-static __inline__ int get_count_order(unsigned int count)
-{
-	int order;
-
-	order = fls(count) - 1;
-	if (count & (count - 1))
-		order++;
-	return order;
-}
-
-static inline unsigned long hweight_long(unsigned long w)
-{
-	return sizeof(w) == 4 ? hweight32(w) : hweight64(w);
-=======
 static __always_inline unsigned long hweight_long(unsigned long w)
 {
 	return sizeof(w) == 4 ? hweight32(w) : hweight64((__u64)w);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -163,11 +103,7 @@ static __always_inline unsigned long hweight_long(unsigned long w)
  */
 static inline __u64 rol64(__u64 word, unsigned int shift)
 {
-<<<<<<< HEAD
-	return (word << shift) | (word >> (64 - shift));
-=======
 	return (word << (shift & 63)) | (word >> ((-shift) & 63));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -177,11 +113,7 @@ static inline __u64 rol64(__u64 word, unsigned int shift)
  */
 static inline __u64 ror64(__u64 word, unsigned int shift)
 {
-<<<<<<< HEAD
-	return (word >> shift) | (word << (64 - shift));
-=======
 	return (word >> (shift & 63)) | (word << ((-shift) & 63));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -191,11 +123,7 @@ static inline __u64 ror64(__u64 word, unsigned int shift)
  */
 static inline __u32 rol32(__u32 word, unsigned int shift)
 {
-<<<<<<< HEAD
-	return (word << shift) | (word >> (32 - shift));
-=======
 	return (word << (shift & 31)) | (word >> ((-shift) & 31));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -205,11 +133,7 @@ static inline __u32 rol32(__u32 word, unsigned int shift)
  */
 static inline __u32 ror32(__u32 word, unsigned int shift)
 {
-<<<<<<< HEAD
-	return (word >> shift) | (word << (32 - shift));
-=======
 	return (word >> (shift & 31)) | (word << ((-shift) & 31));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -219,11 +143,7 @@ static inline __u32 ror32(__u32 word, unsigned int shift)
  */
 static inline __u16 rol16(__u16 word, unsigned int shift)
 {
-<<<<<<< HEAD
-	return (word << shift) | (word >> (16 - shift));
-=======
 	return (word << (shift & 15)) | (word >> ((-shift) & 15));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -233,11 +153,7 @@ static inline __u16 rol16(__u16 word, unsigned int shift)
  */
 static inline __u16 ror16(__u16 word, unsigned int shift)
 {
-<<<<<<< HEAD
-	return (word >> shift) | (word << (16 - shift));
-=======
 	return (word >> (shift & 15)) | (word << ((-shift) & 15));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -247,11 +163,7 @@ static inline __u16 ror16(__u16 word, unsigned int shift)
  */
 static inline __u8 rol8(__u8 word, unsigned int shift)
 {
-<<<<<<< HEAD
-	return (word << shift) | (word >> (8 - shift));
-=======
 	return (word << (shift & 7)) | (word >> ((-shift) & 7));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -261,33 +173,22 @@ static inline __u8 rol8(__u8 word, unsigned int shift)
  */
 static inline __u8 ror8(__u8 word, unsigned int shift)
 {
-<<<<<<< HEAD
-	return (word >> shift) | (word << (8 - shift));
-=======
 	return (word >> (shift & 7)) | (word << ((-shift) & 7));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * sign_extend32 - sign extend a 32-bit value using specified bit as sign-bit
  * @value: value to sign extend
  * @index: 0 based bit index (0<=index<32) to sign bit
-<<<<<<< HEAD
- */
-static inline __s32 sign_extend32(__u32 value, int index)
-=======
  *
  * This is safe to use for 16- and 8-bit types as well.
  */
 static __always_inline __s32 sign_extend32(__u32 value, int index)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u8 shift = 31 - index;
 	return (__s32)(value << shift) >> shift;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * sign_extend64 - sign extend a 64-bit value using specified bit as sign-bit
  * @value: value to sign extend
@@ -299,7 +200,6 @@ static __always_inline __s64 sign_extend64(__u64 value, int index)
 	return (__s64)(value << shift) >> shift;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned fls_long(unsigned long l)
 {
 	if (sizeof(l) == 4)
@@ -307,8 +207,6 @@ static inline unsigned fls_long(unsigned long l)
 	return fls64(l);
 }
 
-<<<<<<< HEAD
-=======
 static inline int get_count_order(unsigned int count)
 {
 	if (count == 0)
@@ -330,16 +228,11 @@ static inline int get_count_order_long(unsigned long l)
 	return (int)fls_long(--l);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * __ffs64 - find first set bit in a 64 bit word
  * @word: The 64 bit word
  *
-<<<<<<< HEAD
- * On 64 bit arches this is a synomyn for __ffs
-=======
  * On 64 bit arches this is a synonym for __ffs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The result is not defined if no bits are set, so check that @word
  * is non-zero before calling this.
  */
@@ -354,35 +247,6 @@ static inline unsigned long __ffs64(u64 word)
 	return __ffs((unsigned long)word);
 }
 
-<<<<<<< HEAD
-#ifdef __KERNEL__
-
-#ifndef set_mask_bits
-#define set_mask_bits(ptr, _mask, _bits)	\
-({								\
-	const typeof(*ptr) mask = (_mask), bits = (_bits);	\
-	typeof(*ptr) old, new;					\
-								\
-	do {							\
-		old = ACCESS_ONCE(*ptr);			\
-		new = (old & ~mask) | bits;			\
-	} while (cmpxchg(ptr, old, new) != old);		\
-								\
-	new;							\
-})
-#endif
-
-#ifndef find_last_bit
-/**
- * find_last_bit - find the last set bit in a memory region
- * @addr: The address to start the search at
- * @size: The maximum size to search
- *
- * Returns the bit number of the first set bit, or size.
- */
-extern unsigned long find_last_bit(const unsigned long *addr,
-				   unsigned long size);
-=======
 /**
  * fns - find N'th set bit in a word
  * @word: The word to search
@@ -507,7 +371,6 @@ static __always_inline void __assign_bit(long nr, volatile unsigned long *addr,
 								\
 	!(old__ & test__);					\
 })
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* __KERNEL__ */

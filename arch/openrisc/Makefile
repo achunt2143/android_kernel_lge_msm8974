@@ -1,13 +1,7 @@
 # BK Id: %F% %I% %G% %U% %#%
 #
 # This file is included by the global makefile so that you can add your own
-<<<<<<< HEAD
-# architecture-specific flags and dependencies. Remember to do have actions
-# for "archclean" and "archdep" for cleaning up and making dependencies for
-# this architecture
-=======
 # architecture-specific flags and dependencies.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # This file is subject to the terms and conditions of the GNU General Public
 # License.  See the file "COPYING" in the main directory of this archive
@@ -23,14 +17,6 @@
 
 KBUILD_DEFCONFIG := or1ksim_defconfig
 
-<<<<<<< HEAD
-LDFLAGS         :=
-OBJCOPYFLAGS    := -O binary -R .note -R .comment -S
-LDFLAGS_vmlinux :=
-LIBGCC 		:= $(shell $(CC) $(KBUILD_CFLAGS) -print-libgcc-file-name)
-
-KBUILD_CFLAGS	+= -pipe -ffixed-r10
-=======
 OBJCOPYFLAGS    := -O binary -R .note -R .comment -S
 LIBGCC 		:= $(shell $(CC) $(KBUILD_CFLAGS) -print-libgcc-file-name)
 
@@ -40,7 +26,6 @@ KBUILD_CFLAGS	+= -msfimm -mshftimm
 all: vmlinux.bin
 
 boot := arch/$(ARCH)/boot
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ifeq ($(CONFIG_OPENRISC_HAVE_INST_MUL),y)
 	KBUILD_CFLAGS += $(call cc-option,-mhard-mul)
@@ -54,23 +39,6 @@ else
 	KBUILD_CFLAGS += $(call cc-option,-msoft-div)
 endif
 
-<<<<<<< HEAD
-head-y 		:= arch/openrisc/kernel/head.o arch/openrisc/kernel/init_task.o
-
-core-y		+= arch/openrisc/lib/ \
-		   arch/openrisc/kernel/ \
-		   arch/openrisc/mm/
-libs-y		+= $(LIBGCC)
-
-ifneq '$(CONFIG_OPENRISC_BUILTIN_DTB)' '""'
-BUILTIN_DTB := y
-else
-BUILTIN_DTB := n
-endif
-core-$(BUILTIN_DTB) += arch/openrisc/boot/
-
-all: vmlinux
-=======
 ifeq ($(CONFIG_OPENRISC_HAVE_INST_CMOV),y)
 	KBUILD_CFLAGS += $(call cc-option,-mcmov)
 endif
@@ -93,4 +61,3 @@ PHONY += vmlinux.bin
 
 vmlinux.bin: vmlinux
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

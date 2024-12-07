@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap2/id.c
  *
@@ -12,42 +9,22 @@
  *
  * Copyright (C) 2009-11 Texas Instruments
  * Added OMAP4 support - Santosh Shilimkar <santosh.shilimkar@ti.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include <linux/random.h>
 #include <linux/slab.h>
 
 #ifdef CONFIG_SOC_BUS
 #include <linux/sys_soc.h>
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/cputype.h>
 
 #include "common.h"
-<<<<<<< HEAD
-#include <plat/cpu.h>
-
-#include <mach/id.h>
-
-#include "control.h"
-
-static unsigned int omap_revision;
-static const char *cpu_rev;
-=======
 
 #include "id.h"
 
@@ -62,7 +39,6 @@ static const char *cpu_rev;
 static unsigned int omap_revision;
 static char soc_name[OMAP_SOC_MAX_NAME_LENGTH];
 static char soc_rev[OMAP_SOC_MAX_NAME_LENGTH];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u32 omap_features;
 
 unsigned int omap_rev(void)
@@ -73,18 +49,6 @@ EXPORT_SYMBOL(omap_rev);
 
 int omap_type(void)
 {
-<<<<<<< HEAD
-	u32 val = 0;
-
-	if (cpu_is_omap24xx()) {
-		val = omap_ctrl_readl(OMAP24XX_CONTROL_STATUS);
-	} else if (cpu_is_am33xx()) {
-		val = omap_ctrl_readl(AM33XX_CONTROL_STATUS);
-	} else if (cpu_is_omap34xx()) {
-		val = omap_ctrl_readl(OMAP343X_CONTROL_STATUS);
-	} else if (cpu_is_omap44xx()) {
-		val = omap_ctrl_readl(OMAP4_CTRL_MODULE_CORE_STATUS);
-=======
 	static u32 val = OMAP2_DEVICETYPE_MASK;
 
 	if (val < OMAP2_DEVICETYPE_MASK)
@@ -105,7 +69,6 @@ int omap_type(void)
 		val &= OMAP5_DEVICETYPE_MASK;
 		val >>= 6;
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		pr_err("Cannot detect omap type!\n");
 		goto out;
@@ -133,11 +96,7 @@ EXPORT_SYMBOL(omap_type);
 #define OMAP_TAP_DIE_ID_44XX_2	0x020c
 #define OMAP_TAP_DIE_ID_44XX_3	0x0210
 
-<<<<<<< HEAD
-#define read_tap_reg(reg)	__raw_readl(tap_base  + (reg))
-=======
 #define read_tap_reg(reg)	readl_relaxed(tap_base  + (reg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct omap_id {
 	u16	hawkeye;	/* Silicon type (Hawkeye id) */
@@ -158,15 +117,9 @@ static struct omap_id omap_ids[] __initdata = {
 static void __iomem *tap_base;
 static u16 tap_prod_id;
 
-<<<<<<< HEAD
-void omap_get_die_id(struct omap_die_id *odi)
-{
-	if (cpu_is_omap44xx()) {
-=======
 static void omap_get_die_id(struct omap_die_id *odi)
 {
 	if (soc_is_omap44xx() || soc_is_omap54xx() || soc_is_dra7xx()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		odi->id_0 = read_tap_reg(OMAP_TAP_DIE_ID_44XX_0);
 		odi->id_1 = read_tap_reg(OMAP_TAP_DIE_ID_44XX_1);
 		odi->id_2 = read_tap_reg(OMAP_TAP_DIE_ID_44XX_2);
@@ -180,8 +133,6 @@ static void omap_get_die_id(struct omap_die_id *odi)
 	odi->id_3 = read_tap_reg(OMAP_TAP_DIE_ID_3);
 }
 
-<<<<<<< HEAD
-=======
 static int __init omap_feed_randpool(void)
 {
 	struct omap_die_id odi;
@@ -193,7 +144,6 @@ static int __init omap_feed_randpool(void)
 }
 omap_device_initcall(omap_feed_randpool);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init omap2xxx_check_revision(void)
 {
 	int i, j;
@@ -236,18 +186,6 @@ void __init omap2xxx_check_revision(void)
 	}
 
 	if (j == ARRAY_SIZE(omap_ids)) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Unknown OMAP device type. "
-				"Handling it as OMAP%04x\n",
-				omap_ids[i].type >> 16);
-		j = i;
-	}
-
-	pr_info("OMAP%04x", omap_rev() >> 16);
-	if ((omap_rev() >> 8) & 0x0f)
-		pr_info("ES%x", (omap_rev() >> 12) & 0xf);
-	pr_info("\n");
-=======
 		pr_err("Unknown OMAP device type. Handling it as OMAP%04x\n",
 		       omap_ids[i].type >> 16);
 		j = i;
@@ -260,27 +198,19 @@ void __init omap2xxx_check_revision(void)
 	if ((omap_rev() >> 8) & 0x0f)
 		pr_cont("%s", soc_rev);
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define OMAP3_SHOW_FEATURE(feat)		\
 	if (omap3_has_ ##feat())		\
-<<<<<<< HEAD
-		printk(#feat" ");
-=======
 		n += scnprintf(buf + n, sizeof(buf) - n, #feat " ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __init omap3_cpuinfo(void)
 {
 	const char *cpu_name;
-<<<<<<< HEAD
-=======
 	char buf[64];
 	int n = 0;
 
 	memset(buf, 0, sizeof(buf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * OMAP3430 and OMAP3530 are assumed to be same.
@@ -289,18 +219,6 @@ static void __init omap3_cpuinfo(void)
 	 * on available features. Upon detection, update the CPU id
 	 * and CPU class bits.
 	 */
-<<<<<<< HEAD
-	if (cpu_is_omap3630()) {
-		cpu_name = "OMAP3630";
-	} else if (cpu_is_omap3517()) {
-		/* AM35xx devices */
-		cpu_name = (omap3_has_sgx()) ? "AM3517" : "AM3505";
-	} else if (cpu_is_ti816x()) {
-		cpu_name = "TI816X";
-	} else if (cpu_is_am335x()) {
-		cpu_name =  "AM335X";
-	} else if (cpu_is_ti814x()) {
-=======
 	if (soc_is_omap3630()) {
 		if (omap3_has_iva() && omap3_has_sgx()) {
 			cpu_name = (omap3_has_isp()) ? "OMAP3630/DM3730" : "OMAP3621";
@@ -320,7 +238,6 @@ static void __init omap3_cpuinfo(void)
 	} else if (soc_is_am437x()) {
 		cpu_name =  "AM437x";
 	} else if (soc_is_ti814x()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cpu_name = "TI814X";
 	} else if (omap3_has_iva() && omap3_has_sgx()) {
 		/* OMAP3430, OMAP3525, OMAP3515, OMAP3503 devices */
@@ -333,15 +250,10 @@ static void __init omap3_cpuinfo(void)
 		cpu_name = "OMAP3503";
 	}
 
-<<<<<<< HEAD
-	/* Print verbose information */
-	pr_info("%s ES%s (", cpu_name, cpu_rev);
-=======
 	scnprintf(soc_name, sizeof(soc_name), "%s", cpu_name);
 
 	/* Print verbose information */
 	n += scnprintf(buf, sizeof(buf) - n, "%s %s (", soc_name, soc_rev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	OMAP3_SHOW_FEATURE(l2cache);
 	OMAP3_SHOW_FEATURE(iva);
@@ -349,15 +261,10 @@ static void __init omap3_cpuinfo(void)
 	OMAP3_SHOW_FEATURE(neon);
 	OMAP3_SHOW_FEATURE(isp);
 	OMAP3_SHOW_FEATURE(192mhz_clk);
-<<<<<<< HEAD
-
-	printk(")\n");
-=======
 	if (*(buf + n - 1) == ' ')
 		n--;
 	n += scnprintf(buf + n, sizeof(buf) - n, ")\n");
 	pr_info("%s", buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define OMAP3_CHECK_FEATURE(status,feat)				\
@@ -379,27 +286,17 @@ void __init omap3xxx_check_features(void)
 	OMAP3_CHECK_FEATURE(status, SGX);
 	OMAP3_CHECK_FEATURE(status, NEON);
 	OMAP3_CHECK_FEATURE(status, ISP);
-<<<<<<< HEAD
-	if (cpu_is_omap3630())
-		omap_features |= OMAP3_HAS_192MHZ_CLK;
-	if (cpu_is_omap3430() || cpu_is_omap3630())
-		omap_features |= OMAP3_HAS_IO_WAKEUP;
-	if (cpu_is_omap3630() || omap_rev() == OMAP3430_REV_ES3_1 ||
-=======
 	if (soc_is_omap3630())
 		omap_features |= OMAP3_HAS_192MHZ_CLK;
 	if (soc_is_omap3430() || soc_is_omap3630())
 		omap_features |= OMAP3_HAS_IO_WAKEUP;
 	if (soc_is_omap3630() || omap_rev() == OMAP3430_REV_ES3_1 ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    omap_rev() == OMAP3430_REV_ES3_1_2)
 		omap_features |= OMAP3_HAS_IO_CHAIN_CTRL;
 
 	omap_features |= OMAP3_HAS_SDRC;
 
 	/*
-<<<<<<< HEAD
-=======
 	 * am35x fixups:
 	 * - The am35x Chip ID register has bits 12, 7:5, and 3:2 marked as
 	 *   reserved and therefore return 0 when read.  Unfortunately,
@@ -411,7 +308,6 @@ void __init omap3xxx_check_features(void)
 		omap_features &= ~(OMAP3_HAS_IVA | OMAP3_HAS_ISP);
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * TODO: Get additional info (where applicable)
 	 *       e.g. Size of L2 cache.
 	 */
@@ -423,33 +319,11 @@ void __init omap4xxx_check_features(void)
 {
 	u32 si_type;
 
-<<<<<<< HEAD
-	if (cpu_is_omap443x())
-		omap_features |= OMAP4_HAS_MPU_1GHZ;
-
-
-	if (cpu_is_omap446x()) {
-		si_type =
-			read_tap_reg(OMAP4_CTRL_MODULE_CORE_STD_FUSE_PROD_ID_1);
-		switch ((si_type & (3 << 16)) >> 16) {
-		case 2:
-			/* High performance device */
-			omap_features |= OMAP4_HAS_MPU_1_5GHZ;
-			break;
-		case 1:
-		default:
-			/* Standard device */
-			omap_features |= OMAP4_HAS_MPU_1_2GHZ;
-			break;
-		}
-	}
-=======
 	si_type =
 	(read_tap_reg(OMAP4_CTRL_MODULE_CORE_STD_FUSE_PROD_ID_1) >> 16) & 0x03;
 
 	if (si_type == OMAP4_SILICON_TYPE_PERFORMANCE)
 		omap_features = OMAP4_HAS_PERF_SILICON;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init ti81xx_check_features(void)
@@ -458,10 +332,6 @@ void __init ti81xx_check_features(void)
 	omap3_cpuinfo();
 }
 
-<<<<<<< HEAD
-void __init omap3xxx_check_revision(void)
-{
-=======
 void __init am33xx_check_features(void)
 {
 	u32 status;
@@ -478,7 +348,6 @@ void __init am33xx_check_features(void)
 void __init omap3xxx_check_revision(void)
 {
 	const char *cpu_rev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 cpuid, idcode;
 	u16 hawkeye;
 	u8 rev;
@@ -488,11 +357,7 @@ void __init omap3xxx_check_revision(void)
 	 * If the processor type is Cortex-A8 and the revision is 0x0
 	 * it means its Cortex r0p0 which is 3430 ES1.0.
 	 */
-<<<<<<< HEAD
-	cpuid = read_cpuid(CPUID_ID);
-=======
 	cpuid = read_cpuid_id();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((((cpuid >> 4) & 0xfff) == 0xc08) && ((cpuid & 0xf) == 0x0)) {
 		omap_revision = OMAP3430_REV_ES1_0;
 		cpu_rev = "1.0";
@@ -531,10 +396,6 @@ void __init omap3xxx_check_revision(void)
 			cpu_rev = "3.1";
 			break;
 		case 7:
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			/* Use the latest known revision as default */
 			omap_revision = OMAP3430_REV_ES3_1_2;
@@ -550,22 +411,12 @@ void __init omap3xxx_check_revision(void)
 		 */
 		switch (rev) {
 		case 0:
-<<<<<<< HEAD
-			omap_revision = OMAP3517_REV_ES1_0;
-			cpu_rev = "1.0";
-			break;
-		case 1:
-		/* FALLTHROUGH */
-		default:
-			omap_revision = OMAP3517_REV_ES1_1;
-=======
 			omap_revision = AM35XX_REV_ES1_0;
 			cpu_rev = "1.0";
 			break;
 		case 1:
 		default:
 			omap_revision = AM35XX_REV_ES1_1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cpu_rev = "1.1";
 		}
 		break;
@@ -582,10 +433,6 @@ void __init omap3xxx_check_revision(void)
 			cpu_rev = "1.1";
 			break;
 		case 2:
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			omap_revision = OMAP3630_REV_ES1_2;
 			cpu_rev = "1.2";
@@ -598,23 +445,6 @@ void __init omap3xxx_check_revision(void)
 			cpu_rev = "1.0";
 			break;
 		case 1:
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-		default:
-			omap_revision = TI8168_REV_ES1_1;
-			cpu_rev = "1.1";
-			break;
-		}
-		break;
-	case 0xb944:
-		omap_revision = AM335X_REV_ES1_0;
-		cpu_rev = "1.0";
-		break;
-	case 0xb8f2:
-		switch (rev) {
-		case 0:
-		/* FALLTHROUGH */
-=======
 			omap_revision = TI8168_REV_ES1_1;
 			cpu_rev = "1.1";
 			break;
@@ -666,7 +496,6 @@ void __init omap3xxx_check_revision(void)
 	case 0xb968:
 		switch (rev) {
 		case 0:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 1:
 			omap_revision = TI8148_REV_ES1_0;
 			cpu_rev = "1.0";
@@ -676,10 +505,6 @@ void __init omap3xxx_check_revision(void)
 			cpu_rev = "2.0";
 			break;
 		case 3:
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			omap_revision = TI8148_REV_ES2_1;
 			cpu_rev = "2.1";
@@ -690,15 +515,10 @@ void __init omap3xxx_check_revision(void)
 		/* Unknown default to latest silicon rev as default */
 		omap_revision = OMAP3630_REV_ES1_2;
 		cpu_rev = "1.2";
-<<<<<<< HEAD
-		pr_warn("Warning: unknown chip type; assuming OMAP3630ES1.2\n");
-	}
-=======
 		pr_warn("Warning: unknown chip type: hawkeye %04x, assuming OMAP3630ES1.2\n",
 			hawkeye);
 	}
 	sprintf(soc_rev, "ES%s", cpu_rev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init omap4xxx_check_revision(void)
@@ -721,11 +541,7 @@ void __init omap4xxx_check_revision(void)
 	 * Use ARM register to detect the correct ES version
 	 */
 	if (!rev && (hawkeye != 0xb94e) && (hawkeye != 0xb975)) {
-<<<<<<< HEAD
-		idcode = read_cpuid(CPUID_ID);
-=======
 		idcode = read_cpuid_id();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rev = (idcode & 0xf) - 1;
 	}
 
@@ -756,18 +572,12 @@ void __init omap4xxx_check_revision(void)
 	case 0xb94e:
 		switch (rev) {
 		case 0:
-<<<<<<< HEAD
-		default:
-			omap_revision = OMAP4460_REV_ES1_0;
-			break;
-=======
 			omap_revision = OMAP4460_REV_ES1_0;
 			break;
 		case 2:
 		default:
 			omap_revision = OMAP4460_REV_ES1_1;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case 0xb975:
@@ -783,10 +593,6 @@ void __init omap4xxx_check_revision(void)
 		omap_revision = OMAP4430_REV_ES2_3;
 	}
 
-<<<<<<< HEAD
-	pr_info("OMAP%04x ES%d.%d\n", omap_rev() >> 16,
-		((omap_rev() >> 12) & 0xf), ((omap_rev() >> 8) & 0xf));
-=======
 	sprintf(soc_name, "OMAP%04x", omap_rev() >> 16);
 	sprintf(soc_rev, "ES%d.%d", (omap_rev() >> 12) & 0xf,
 						(omap_rev() >> 8) & 0xf);
@@ -910,7 +716,6 @@ void __init dra7xxx_check_revision(void)
 		(omap_rev() >> 8) & 0xf);
 
 	pr_info("%s %s\n", soc_name, soc_rev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -920,14 +725,6 @@ void __init dra7xxx_check_revision(void)
  * detect the exact revision later on in omap2_detect_revision() once map_io
  * is done.
  */
-<<<<<<< HEAD
-void __init omap2_set_globals_tap(struct omap_globals *omap2_globals)
-{
-	omap_revision = omap2_globals->class;
-	tap_base = omap2_globals->tap;
-
-	if (cpu_is_omap34xx())
-=======
 void __init omap2_set_globals_tap(u32 class, void __iomem *tap)
 {
 	omap_revision = class;
@@ -935,13 +732,10 @@ void __init omap2_set_globals_tap(u32 class, void __iomem *tap)
 
 	/* XXX What is this intended to do? */
 	if (soc_is_omap34xx())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tap_prod_id = 0x0210;
 	else
 		tap_prod_id = 0x0208;
 }
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_SOC_BUS
 
@@ -1014,4 +808,3 @@ void __init omap_soc_device_init(void)
 	}
 }
 #endif /* CONFIG_SOC_BUS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

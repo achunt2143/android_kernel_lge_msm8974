@@ -32,10 +32,7 @@
  */
 
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <rdma/ib_user_verbs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "mlx4_ib.h"
 
@@ -45,11 +42,6 @@ static u32 convert_access(int acc)
 	       (acc & IB_ACCESS_REMOTE_WRITE  ? MLX4_PERM_REMOTE_WRITE : 0) |
 	       (acc & IB_ACCESS_REMOTE_READ   ? MLX4_PERM_REMOTE_READ  : 0) |
 	       (acc & IB_ACCESS_LOCAL_WRITE   ? MLX4_PERM_LOCAL_WRITE  : 0) |
-<<<<<<< HEAD
-	       MLX4_PERM_LOCAL_READ;
-}
-
-=======
 	       (acc & IB_ACCESS_MW_BIND	      ? MLX4_PERM_BIND_MW      : 0) |
 	       MLX4_PERM_LOCAL_READ;
 }
@@ -63,17 +55,12 @@ static enum mlx4_mw_type to_mlx4_type(enum ib_mw_type type)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ib_mr *mlx4_ib_get_dma_mr(struct ib_pd *pd, int acc)
 {
 	struct mlx4_ib_mr *mr;
 	int err;
 
-<<<<<<< HEAD
-	mr = kmalloc(sizeof *mr, GFP_KERNEL);
-=======
 	mr = kzalloc(sizeof(*mr), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mr)
 		return ERR_PTR(-ENOMEM);
 
@@ -92,11 +79,7 @@ struct ib_mr *mlx4_ib_get_dma_mr(struct ib_pd *pd, int acc)
 	return &mr->ibmr;
 
 err_mr:
-<<<<<<< HEAD
-	mlx4_mr_free(to_mdev(pd->device)->dev, &mr->mmr);
-=======
 	(void) mlx4_mr_free(to_mdev(pd->device)->dev, &mr->mmr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_free:
 	kfree(mr);
@@ -104,8 +87,6 @@ err_free:
 	return ERR_PTR(err);
 }
 
-<<<<<<< HEAD
-=======
 enum {
 	MLX4_MAX_MTT_SHIFT = 31
 };
@@ -198,18 +179,10 @@ static int mlx4_ib_umem_calc_block_mtt(u64 next_block_start,
 	return block_shift;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_ib_umem_write_mtt(struct mlx4_ib_dev *dev, struct mlx4_mtt *mtt,
 			   struct ib_umem *umem)
 {
 	u64 *pages;
-<<<<<<< HEAD
-	struct ib_umem_chunk *chunk;
-	int i, j, k;
-	int n;
-	int len;
-	int err = 0;
-=======
 	u64 len = 0;
 	int err = 0;
 	u64 mtt_size;
@@ -219,39 +192,11 @@ int mlx4_ib_umem_write_mtt(struct mlx4_ib_dev *dev, struct mlx4_mtt *mtt,
 	int npages = 0;
 	struct scatterlist *sg;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pages = (u64 *) __get_free_page(GFP_KERNEL);
 	if (!pages)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	i = n = 0;
-
-	list_for_each_entry(chunk, &umem->chunk_list, list)
-		for (j = 0; j < chunk->nmap; ++j) {
-			len = sg_dma_len(&chunk->page_list[j]) >> mtt->page_shift;
-			for (k = 0; k < len; ++k) {
-				pages[i++] = sg_dma_address(&chunk->page_list[j]) +
-					umem->page_size * k;
-				/*
-				 * Be friendly to mlx4_write_mtt() and
-				 * pass it chunks of appropriate size.
-				 */
-				if (i == PAGE_SIZE / sizeof (u64)) {
-					err = mlx4_write_mtt(dev->dev, mtt, n,
-							     i, pages);
-					if (err)
-						goto out;
-					n += i;
-					i = 0;
-				}
-			}
-		}
-
-	if (i)
-		err = mlx4_write_mtt(dev->dev, mtt, n, i, pages);
-=======
 	mtt_shift = mtt->page_shift;
 	mtt_size = 1ULL << mtt_shift;
 
@@ -294,15 +239,12 @@ int mlx4_ib_umem_write_mtt(struct mlx4_ib_dev *dev, struct mlx4_mtt *mtt,
 
 	if (npages)
 		err = mlx4_write_mtt(dev->dev, mtt, start_index, npages, pages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	free_page((unsigned long) pages);
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Calculate optimal mtt size based on contiguous pages.
  * Function will return also the number of pages that are not aligned to the
@@ -461,7 +403,6 @@ static struct ib_umem *mlx4_get_umem_mr(struct ib_device *device, u64 start,
 	return ib_umem_get(device, start, length, access_flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ib_mr *mlx4_ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
 				  u64 virt_addr, int access_flags,
 				  struct ib_udata *udata)
@@ -472,31 +413,17 @@ struct ib_mr *mlx4_ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
 	int err;
 	int n;
 
-<<<<<<< HEAD
-	mr = kmalloc(sizeof *mr, GFP_KERNEL);
-	if (!mr)
-		return ERR_PTR(-ENOMEM);
-
-	mr->umem = ib_umem_get(pd->uobject->context, start, length,
-			       access_flags, 0);
-=======
 	mr = kzalloc(sizeof(*mr), GFP_KERNEL);
 	if (!mr)
 		return ERR_PTR(-ENOMEM);
 
 	mr->umem = mlx4_get_umem_mr(pd->device, start, length, access_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(mr->umem)) {
 		err = PTR_ERR(mr->umem);
 		goto err_free;
 	}
 
-<<<<<<< HEAD
-	n = ib_umem_page_count(mr->umem);
-	shift = ilog2(mr->umem->page_size);
-=======
 	shift = mlx4_ib_umem_calc_optimal_mtt_size(mr->umem, start, &n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = mlx4_mr_alloc(dev->dev, to_mpd(pd)->pdn, virt_addr, length,
 			    convert_access(access_flags), n, shift, &mr->mmr);
@@ -512,19 +439,12 @@ struct ib_mr *mlx4_ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
 		goto err_mr;
 
 	mr->ibmr.rkey = mr->ibmr.lkey = mr->mmr.key;
-<<<<<<< HEAD
-=======
 	mr->ibmr.page_size = 1U << shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return &mr->ibmr;
 
 err_mr:
-<<<<<<< HEAD
-	mlx4_mr_free(to_mdev(pd->device)->dev, &mr->mmr);
-=======
 	(void) mlx4_mr_free(to_mdev(pd->device)->dev, &mr->mmr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_umem:
 	ib_umem_release(mr->umem);
@@ -535,13 +455,6 @@ err_free:
 	return ERR_PTR(err);
 }
 
-<<<<<<< HEAD
-int mlx4_ib_dereg_mr(struct ib_mr *ibmr)
-{
-	struct mlx4_ib_mr *mr = to_mmr(ibmr);
-
-	mlx4_mr_free(to_mdev(ibmr->device)->dev, &mr->mmr);
-=======
 struct ib_mr *mlx4_ib_rereg_user_mr(struct ib_mr *mr, int flags, u64 start,
 				    u64 length, u64 virt_addr,
 				    int mr_access_flags, struct ib_pd *pd,
@@ -690,7 +603,6 @@ int mlx4_ib_dereg_mr(struct ib_mr *ibmr, struct ib_udata *udata)
 	ret = mlx4_mr_free(to_mdev(ibmr->device)->dev, &mr->mmr);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mr->umem)
 		ib_umem_release(mr->umem);
 	kfree(mr);
@@ -698,10 +610,6 @@ int mlx4_ib_dereg_mr(struct ib_mr *ibmr, struct ib_udata *udata)
 	return 0;
 }
 
-<<<<<<< HEAD
-struct ib_mr *mlx4_ib_alloc_fast_reg_mr(struct ib_pd *pd,
-					int max_page_list_len)
-=======
 int mlx4_ib_alloc_mw(struct ib_mw *ibmw, struct ib_udata *udata)
 {
 	struct mlx4_ib_dev *dev = to_mdev(ibmw->device);
@@ -735,34 +643,20 @@ int mlx4_ib_dealloc_mw(struct ib_mw *ibmw)
 
 struct ib_mr *mlx4_ib_alloc_mr(struct ib_pd *pd, enum ib_mr_type mr_type,
 			       u32 max_num_sg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_ib_dev *dev = to_mdev(pd->device);
 	struct mlx4_ib_mr *mr;
 	int err;
 
-<<<<<<< HEAD
-	mr = kmalloc(sizeof *mr, GFP_KERNEL);
-=======
 	if (mr_type != IB_MR_TYPE_MEM_REG ||
 	    max_num_sg > MLX4_MAX_FAST_REG_PAGES)
 		return ERR_PTR(-EINVAL);
 
 	mr = kzalloc(sizeof(*mr), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mr)
 		return ERR_PTR(-ENOMEM);
 
 	err = mlx4_mr_alloc(dev->dev, to_mpd(pd)->pdn, 0, 0, 0,
-<<<<<<< HEAD
-			    max_page_list_len, 0, &mr->mmr);
-	if (err)
-		goto err_free;
-
-	err = mlx4_mr_enable(dev->dev, &mr->mmr);
-	if (err)
-		goto err_mr;
-=======
 			    max_num_sg, 0, &mr->mmr);
 	if (err)
 		goto err_free;
@@ -775,152 +669,22 @@ struct ib_mr *mlx4_ib_alloc_mr(struct ib_pd *pd, enum ib_mr_type mr_type,
 	err = mlx4_mr_enable(dev->dev, &mr->mmr);
 	if (err)
 		goto err_free_pl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mr->ibmr.rkey = mr->ibmr.lkey = mr->mmr.key;
 	mr->umem = NULL;
 
 	return &mr->ibmr;
 
-<<<<<<< HEAD
-err_mr:
-	mlx4_mr_free(dev->dev, &mr->mmr);
-
-=======
 err_free_pl:
 	mr->ibmr.device = pd->device;
 	mlx4_free_priv_pages(mr);
 err_free_mr:
 	(void) mlx4_mr_free(dev->dev, &mr->mmr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free:
 	kfree(mr);
 	return ERR_PTR(err);
 }
 
-<<<<<<< HEAD
-struct ib_fast_reg_page_list *mlx4_ib_alloc_fast_reg_page_list(struct ib_device *ibdev,
-							       int page_list_len)
-{
-	struct mlx4_ib_dev *dev = to_mdev(ibdev);
-	struct mlx4_ib_fast_reg_page_list *mfrpl;
-	int size = page_list_len * sizeof (u64);
-
-	if (page_list_len > MLX4_MAX_FAST_REG_PAGES)
-		return ERR_PTR(-EINVAL);
-
-	mfrpl = kmalloc(sizeof *mfrpl, GFP_KERNEL);
-	if (!mfrpl)
-		return ERR_PTR(-ENOMEM);
-
-	mfrpl->ibfrpl.page_list = kmalloc(size, GFP_KERNEL);
-	if (!mfrpl->ibfrpl.page_list)
-		goto err_free;
-
-	mfrpl->mapped_page_list = dma_alloc_coherent(&dev->dev->pdev->dev,
-						     size, &mfrpl->map,
-						     GFP_KERNEL);
-	if (!mfrpl->mapped_page_list)
-		goto err_free;
-
-	WARN_ON(mfrpl->map & 0x3f);
-
-	return &mfrpl->ibfrpl;
-
-err_free:
-	kfree(mfrpl->ibfrpl.page_list);
-	kfree(mfrpl);
-	return ERR_PTR(-ENOMEM);
-}
-
-void mlx4_ib_free_fast_reg_page_list(struct ib_fast_reg_page_list *page_list)
-{
-	struct mlx4_ib_dev *dev = to_mdev(page_list->device);
-	struct mlx4_ib_fast_reg_page_list *mfrpl = to_mfrpl(page_list);
-	int size = page_list->max_page_list_len * sizeof (u64);
-
-	dma_free_coherent(&dev->dev->pdev->dev, size, mfrpl->mapped_page_list,
-			  mfrpl->map);
-	kfree(mfrpl->ibfrpl.page_list);
-	kfree(mfrpl);
-}
-
-struct ib_fmr *mlx4_ib_fmr_alloc(struct ib_pd *pd, int acc,
-				 struct ib_fmr_attr *fmr_attr)
-{
-	struct mlx4_ib_dev *dev = to_mdev(pd->device);
-	struct mlx4_ib_fmr *fmr;
-	int err = -ENOMEM;
-
-	fmr = kmalloc(sizeof *fmr, GFP_KERNEL);
-	if (!fmr)
-		return ERR_PTR(-ENOMEM);
-
-	err = mlx4_fmr_alloc(dev->dev, to_mpd(pd)->pdn, convert_access(acc),
-			     fmr_attr->max_pages, fmr_attr->max_maps,
-			     fmr_attr->page_shift, &fmr->mfmr);
-	if (err)
-		goto err_free;
-
-	err = mlx4_fmr_enable(to_mdev(pd->device)->dev, &fmr->mfmr);
-	if (err)
-		goto err_mr;
-
-	fmr->ibfmr.rkey = fmr->ibfmr.lkey = fmr->mfmr.mr.key;
-
-	return &fmr->ibfmr;
-
-err_mr:
-	mlx4_mr_free(to_mdev(pd->device)->dev, &fmr->mfmr.mr);
-
-err_free:
-	kfree(fmr);
-
-	return ERR_PTR(err);
-}
-
-int mlx4_ib_map_phys_fmr(struct ib_fmr *ibfmr, u64 *page_list,
-		      int npages, u64 iova)
-{
-	struct mlx4_ib_fmr *ifmr = to_mfmr(ibfmr);
-	struct mlx4_ib_dev *dev = to_mdev(ifmr->ibfmr.device);
-
-	return mlx4_map_phys_fmr(dev->dev, &ifmr->mfmr, page_list, npages, iova,
-				 &ifmr->ibfmr.lkey, &ifmr->ibfmr.rkey);
-}
-
-int mlx4_ib_unmap_fmr(struct list_head *fmr_list)
-{
-	struct ib_fmr *ibfmr;
-	int err;
-	struct mlx4_dev *mdev = NULL;
-
-	list_for_each_entry(ibfmr, fmr_list, list) {
-		if (mdev && to_mdev(ibfmr->device)->dev != mdev)
-			return -EINVAL;
-		mdev = to_mdev(ibfmr->device)->dev;
-	}
-
-	if (!mdev)
-		return 0;
-
-	list_for_each_entry(ibfmr, fmr_list, list) {
-		struct mlx4_ib_fmr *ifmr = to_mfmr(ibfmr);
-
-		mlx4_fmr_unmap(mdev, &ifmr->mfmr, &ifmr->ibfmr.lkey, &ifmr->ibfmr.rkey);
-	}
-
-	/*
-	 * Make sure all MPT status updates are visible before issuing
-	 * SYNC_TPT firmware command.
-	 */
-	wmb();
-
-	err = mlx4_SYNC_TPT(mdev);
-	if (err)
-		printk(KERN_WARNING "mlx4_ib: SYNC_TPT error %d when "
-		       "unmapping FMRs\n", err);
-=======
 static int mlx4_set_page(struct ib_mr *ibmr, u64 addr)
 {
 	struct mlx4_ib_mr *mr = to_mmr(ibmr);
@@ -929,25 +693,10 @@ static int mlx4_set_page(struct ib_mr *ibmr, u64 addr)
 		return -ENOMEM;
 
 	mr->pages[mr->npages++] = cpu_to_be64(addr | MLX4_MTT_FLAG_PRESENT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int mlx4_ib_fmr_dealloc(struct ib_fmr *ibfmr)
-{
-	struct mlx4_ib_fmr *ifmr = to_mfmr(ibfmr);
-	struct mlx4_ib_dev *dev = to_mdev(ibfmr->device);
-	int err;
-
-	err = mlx4_fmr_free(dev->dev, &ifmr->mfmr);
-
-	if (!err)
-		kfree(ifmr);
-
-	return err;
-=======
 int mlx4_ib_map_mr_sg(struct ib_mr *ibmr, struct scatterlist *sg, int sg_nents,
 		      unsigned int *sg_offset)
 {
@@ -965,5 +714,4 @@ int mlx4_ib_map_mr_sg(struct ib_mr *ibmr, struct scatterlist *sg, int sg_nents,
 				      mr->page_map_size, DMA_TO_DEVICE);
 
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

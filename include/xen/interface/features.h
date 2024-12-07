@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: MIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * features.h
  *
@@ -45,8 +42,6 @@
 /* x86: Does this Xen host support the MMU_PT_UPDATE_PRESERVE_AD hypercall? */
 #define XENFEAT_mmu_pt_update_preserve_ad  5
 
-<<<<<<< HEAD
-=======
 /* x86: Does this Xen host support the MMU_{CLEAR,COPY}_PAGE hypercall? */
 #define XENFEAT_highmem_assist             6
 
@@ -56,7 +51,6 @@
  */
 #define XENFEAT_gnttab_map_avail_bits      7
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* x86: Does this Xen host support the HVM callback vector type? */
 #define XENFEAT_hvm_callback_vector        8
 
@@ -66,8 +60,6 @@
 /* x86: pirq can be used by HVM guests */
 #define XENFEAT_hvm_pirqs           10
 
-<<<<<<< HEAD
-=======
 /* operation as Dom0 is supported */
 #define XENFEAT_dom0                      11
 
@@ -105,7 +97,6 @@
 #define XENFEAT_not_direct_mapped         16
 #define XENFEAT_direct_mapped             17
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define XENFEAT_NR_SUBMAPS 1
 
 #endif /* __XEN_PUBLIC_FEATURES_H__ */

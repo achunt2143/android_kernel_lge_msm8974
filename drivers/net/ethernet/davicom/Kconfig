@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Davicom device configuration
 #
 
-<<<<<<< HEAD
-config DM9000
-	tristate "DM9000 support"
-	depends on ARM || BLACKFIN || MIPS
-	select CRC32
-	select NET_CORE
-	select MII
-	---help---
-=======
 config NET_VENDOR_DAVICOM
 	bool "Davicom devices"
 	default y
@@ -34,7 +22,6 @@ config DM9000
 	select CRC32
 	select MII
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Support for DM9000 chipset.
 
 	  To compile this driver as a module, choose M here.  The module
@@ -43,17 +30,11 @@ config DM9000
 config DM9000_FORCE_SIMPLE_PHY_POLL
 	bool "Force simple NSR based PHY polling"
 	depends on DM9000
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This configuration forces the DM9000 to use the NSR's LinkStatus
 	  bit to determine if the link is up or down instead of the more
 	  costly MII PHY reads. Note, this will not work if the chip is
 	  operating with an external PHY.
-<<<<<<< HEAD
-=======
 
 config DM9051
 	tristate "DM9051 SPI support"
@@ -72,4 +53,3 @@ config DM9051
 	  0 on the SPI bus.
 
 endif # NET_VENDOR_DAVICOM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

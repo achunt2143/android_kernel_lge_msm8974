@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * config.c
  *
@@ -12,11 +9,6 @@
  * Copyright (C) Johannes Schindelin, 2005
  *
  */
-<<<<<<< HEAD
-#include "util.h"
-#include "cache.h"
-#include "exec_cmd.h"
-=======
 #include <errno.h>
 #include <sys/param.h>
 #include "cache.h"
@@ -37,7 +29,6 @@
 #include <linux/string.h>
 #include <linux/zalloc.h>
 #include <linux/ctype.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAXNAME (256)
 
@@ -50,14 +41,9 @@ static FILE *config_file;
 static const char *config_file_name;
 static int config_linenr;
 static int config_file_eof;
-<<<<<<< HEAD
-
-static const char *config_exclusive_filename;
-=======
 static struct perf_config_set *config_set;
 
 const char *config_exclusive_filename;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int get_next_char(void)
 {
@@ -153,11 +139,7 @@ static char *parse_value(void)
 
 static inline int iskeychar(int c)
 {
-<<<<<<< HEAD
-	return isalnum(c) || c == '-';
-=======
 	return isalnum(c) || c == '-' || c == '_';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int get_value(config_fn_t fn, void *data, char *name, unsigned int len)
@@ -258,12 +240,8 @@ static int perf_parse_file(config_fn_t fn, void *data)
 	const unsigned char *bomptr = utf8_bom;
 
 	for (;;) {
-<<<<<<< HEAD
-		int c = get_next_char();
-=======
 		int line, c = get_next_char();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bomptr && *bomptr) {
 			/* We are at the file beginning; skip UTF8-encoded BOM
 			 * if present. Sane editors won't put this in on their
@@ -302,12 +280,6 @@ static int perf_parse_file(config_fn_t fn, void *data)
 		if (!isalpha(c))
 			break;
 		var[baselen] = tolower(c);
-<<<<<<< HEAD
-		if (get_value(fn, data, var, baselen+1) < 0)
-			break;
-	}
-	die("bad config file line %d in %s", config_linenr, config_file_name);
-=======
 
 		/*
 		 * The get_value function might or might not reach the '\n',
@@ -321,7 +293,6 @@ static int perf_parse_file(config_fn_t fn, void *data)
 	}
 	pr_err("bad config file line %d in %s\n", config_linenr, config_file_name);
 	return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int parse_unit_factor(const char *end, unsigned long *val)
@@ -343,8 +314,6 @@ static int parse_unit_factor(const char *end, unsigned long *val)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int perf_parse_llong(const char *value, long long *ret)
 {
 	if (value && *value) {
@@ -360,7 +329,6 @@ static int perf_parse_llong(const char *value, long long *ret)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int perf_parse_long(const char *value, long *ret)
 {
 	if (value && *value) {
@@ -375,21 +343,6 @@ static int perf_parse_long(const char *value, long *ret)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void die_bad_config(const char *name)
-{
-	if (config_file_name)
-		die("bad config value for '%s' in %s", name, config_file_name);
-	die("bad config value for '%s'", name);
-}
-
-int perf_config_int(const char *name, const char *value)
-{
-	long ret = 0;
-	if (!perf_parse_long(value, &ret))
-		die_bad_config(name);
-	return ret;
-=======
 static void bad_config(const char *name)
 {
 	if (config_file_name)
@@ -432,16 +385,12 @@ int perf_config_u8(u8 *dest, const char *name, const char *value)
 	}
 	*dest = ret;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int perf_config_bool_or_int(const char *name, const char *value, int *is_bool)
 {
-<<<<<<< HEAD
-=======
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*is_bool = 1;
 	if (!value)
 		return 1;
@@ -452,11 +401,7 @@ static int perf_config_bool_or_int(const char *name, const char *value, int *is_
 	if (!strcasecmp(value, "false") || !strcasecmp(value, "no") || !strcasecmp(value, "off"))
 		return 0;
 	*is_bool = 0;
-<<<<<<< HEAD
-	return perf_config_int(name, value);
-=======
 	return perf_config_int(&ret, name, value) < 0 ? -1 : ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int perf_config_bool(const char *name, const char *value)
@@ -465,21 +410,13 @@ int perf_config_bool(const char *name, const char *value)
 	return !!perf_config_bool_or_int(name, value, &discard);
 }
 
-<<<<<<< HEAD
-const char *perf_config_dirname(const char *name, const char *value)
-=======
 static const char *perf_config_dirname(const char *name, const char *value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!name)
 		return NULL;
 	return value;
 }
 
-<<<<<<< HEAD
-static int perf_default_core_config(const char *var __used, const char *value __used)
-{
-=======
 static int perf_buildid_config(const char *var, const char *value)
 {
 	/* same dir for all commands */
@@ -505,18 +442,10 @@ static int perf_default_core_config(const char *var, const char *value)
 	if (!strcmp(var, "core.addr2line-timeout"))
 		addr2line_timeout_ms = strtoul(value, NULL, 10);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Add other config variables here. */
 	return 0;
 }
 
-<<<<<<< HEAD
-int perf_default_config(const char *var, const char *value, void *dummy __used)
-{
-	if (!prefixcmp(var, "core."))
-		return perf_default_core_config(var, value);
-
-=======
 static int perf_ui_config(const char *var, const char *value)
 {
 	/* Add other config variables here. */
@@ -562,7 +491,6 @@ int perf_default_config(const char *var, const char *value,
 	if (strstarts(var, "stat."))
 		return perf_stat_config(var, value);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Add other config variables here. */
 	return 0;
 }
@@ -585,11 +513,7 @@ static int perf_config_from_file(config_fn_t fn, const char *filename, void *dat
 	return ret;
 }
 
-<<<<<<< HEAD
-static const char *perf_etc_perfconfig(void)
-=======
 const char *perf_etc_perfconfig(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const char *system_wide;
 	if (!system_wide)
@@ -603,74 +527,16 @@ static int perf_env_bool(const char *k, int def)
 	return v ? perf_config_bool(k, v) : def;
 }
 
-<<<<<<< HEAD
-static int perf_config_system(void)
-=======
 int perf_config_system(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return !perf_env_bool("PERF_CONFIG_NOSYSTEM", 0);
 }
 
-<<<<<<< HEAD
-static int perf_config_global(void)
-=======
 int perf_config_global(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return !perf_env_bool("PERF_CONFIG_NOGLOBAL", 0);
 }
 
-<<<<<<< HEAD
-int perf_config(config_fn_t fn, void *data)
-{
-	int ret = 0, found = 0;
-	const char *home = NULL;
-
-	/* Setting $PERF_CONFIG makes perf read _only_ the given config file. */
-	if (config_exclusive_filename)
-		return perf_config_from_file(fn, config_exclusive_filename, data);
-	if (perf_config_system() && !access(perf_etc_perfconfig(), R_OK)) {
-		ret += perf_config_from_file(fn, perf_etc_perfconfig(),
-					    data);
-		found += 1;
-	}
-
-	home = getenv("HOME");
-	if (perf_config_global() && home) {
-		char *user_config = strdup(mkpath("%s/.perfconfig", home));
-		struct stat st;
-
-		if (user_config == NULL) {
-			warning("Not enough memory to process %s/.perfconfig, "
-				"ignoring it.", home);
-			goto out;
-		}
-
-		if (stat(user_config, &st) < 0)
-			goto out_free;
-
-		if (st.st_uid && (st.st_uid != geteuid())) {
-			warning("File %s not owned by current user or root, "
-				"ignoring it.", user_config);
-			goto out_free;
-		}
-
-		if (!st.st_size)
-			goto out_free;
-
-		ret += perf_config_from_file(fn, user_config, data);
-		found += 1;
-out_free:
-		free(user_config);
-	}
-out:
-	if (found == 0)
-		return -1;
-	return ret;
-}
-
-=======
 static char *home_perfconfig(void)
 {
 	const char *home = NULL;
@@ -1012,59 +878,12 @@ void perf_config_set__delete(struct perf_config_set *set)
 	free(set);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Call this to report error for your variable that should not
  * get a boolean value (i.e. "[my] var" means "true").
  */
 int config_error_nonbool(const char *var)
 {
-<<<<<<< HEAD
-	return error("Missing value for '%s'", var);
-}
-
-struct buildid_dir_config {
-	char *dir;
-};
-
-static int buildid_dir_command_config(const char *var, const char *value,
-				      void *data)
-{
-	struct buildid_dir_config *c = data;
-	const char *v;
-
-	/* same dir for all commands */
-	if (!prefixcmp(var, "buildid.") && !strcmp(var + 8, "dir")) {
-		v = perf_config_dirname(var, value);
-		if (!v)
-			return -1;
-		strncpy(c->dir, v, MAXPATHLEN-1);
-		c->dir[MAXPATHLEN-1] = '\0';
-	}
-	return 0;
-}
-
-static void check_buildid_dir_config(void)
-{
-	struct buildid_dir_config c;
-	c.dir = buildid_dir;
-	perf_config(buildid_dir_command_config, &c);
-}
-
-void set_buildid_dir(void)
-{
-	buildid_dir[0] = '\0';
-
-	/* try config file */
-	check_buildid_dir_config();
-
-	/* default to $HOME/.debug */
-	if (buildid_dir[0] == '\0') {
-		char *v = getenv("HOME");
-		if (v) {
-			snprintf(buildid_dir, MAXPATHLEN-1, "%s/%s",
-				 v, DEBUG_CACHE_DIR);
-=======
 	pr_err("Missing value for '%s'", var);
 	return -1;
 }
@@ -1081,7 +900,6 @@ void set_buildid_dir(const char *dir)
 		if (home) {
 			snprintf(buildid_dir, MAXPATHLEN, "%s/%s",
 				 home, DEBUG_CACHE_DIR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			strncpy(buildid_dir, DEBUG_CACHE_DIR, MAXPATHLEN-1);
 		}
@@ -1090,8 +908,6 @@ void set_buildid_dir(const char *dir)
 	/* for communicating with external commands */
 	setenv("PERF_BUILDID_DIR", buildid_dir, 1);
 }
-<<<<<<< HEAD
-=======
 
 struct perf_config_scan_data {
 	const char *name;
@@ -1123,4 +939,3 @@ int perf_config_scan(const char *name, const char *fmt, ...)
 
 	return d.ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

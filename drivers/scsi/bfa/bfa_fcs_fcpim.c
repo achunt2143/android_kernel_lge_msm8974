@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -34,10 +16,7 @@
 #include "bfa_fcs.h"
 #include "bfa_fcbuild.h"
 #include "bfad_im.h"
-<<<<<<< HEAD
-=======
 #include "bfa_fcpim.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 BFA_TRC_FILE(FCS, FCPIM);
 
@@ -55,28 +34,6 @@ static void	bfa_fcs_itnim_prli_response(void *fcsarg,
 static void	bfa_fcs_itnim_aen_post(struct bfa_fcs_itnim_s *itnim,
 			enum bfa_itnim_aen_event event);
 
-<<<<<<< HEAD
-/*
- *  fcs_itnim_sm FCS itnim state machine events
- */
-
-enum bfa_fcs_itnim_event {
-	BFA_FCS_ITNIM_SM_ONLINE = 1,	/*  rport online event */
-	BFA_FCS_ITNIM_SM_OFFLINE = 2,	/*  rport offline */
-	BFA_FCS_ITNIM_SM_FRMSENT = 3,	/*  prli frame is sent */
-	BFA_FCS_ITNIM_SM_RSP_OK = 4,	/*  good response */
-	BFA_FCS_ITNIM_SM_RSP_ERROR = 5,	/*  error response */
-	BFA_FCS_ITNIM_SM_TIMEOUT = 6,	/*  delay timeout */
-	BFA_FCS_ITNIM_SM_HCB_OFFLINE = 7, /*  BFA online callback */
-	BFA_FCS_ITNIM_SM_HCB_ONLINE = 8, /*  BFA offline callback */
-	BFA_FCS_ITNIM_SM_INITIATOR = 9,	/*  rport is initiator */
-	BFA_FCS_ITNIM_SM_DELETE = 10,	/*  delete event from rport */
-	BFA_FCS_ITNIM_SM_PRLO = 11,	/*  delete event from rport */
-	BFA_FCS_ITNIM_SM_RSP_NOT_SUPP = 12, /* cmd not supported rsp */
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void	bfa_fcs_itnim_sm_offline(struct bfa_fcs_itnim_s *itnim,
 					 enum bfa_fcs_itnim_event event);
 static void	bfa_fcs_itnim_sm_prli_send(struct bfa_fcs_itnim_s *itnim,
@@ -87,11 +44,8 @@ static void	bfa_fcs_itnim_sm_prli_retry(struct bfa_fcs_itnim_s *itnim,
 					    enum bfa_fcs_itnim_event event);
 static void	bfa_fcs_itnim_sm_hcb_online(struct bfa_fcs_itnim_s *itnim,
 					    enum bfa_fcs_itnim_event event);
-<<<<<<< HEAD
-=======
 static void	bfa_fcs_itnim_sm_hal_rport_online(struct bfa_fcs_itnim_s *itnim,
 					enum bfa_fcs_itnim_event event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void	bfa_fcs_itnim_sm_online(struct bfa_fcs_itnim_s *itnim,
 					enum bfa_fcs_itnim_event event);
 static void	bfa_fcs_itnim_sm_hcb_offline(struct bfa_fcs_itnim_s *itnim,
@@ -99,9 +53,6 @@ static void	bfa_fcs_itnim_sm_hcb_offline(struct bfa_fcs_itnim_s *itnim,
 static void	bfa_fcs_itnim_sm_initiator(struct bfa_fcs_itnim_s *itnim,
 					   enum bfa_fcs_itnim_event event);
 
-<<<<<<< HEAD
-static struct bfa_sm_table_s itnim_sm_table[] = {
-=======
 struct bfa_fcs_itnim_sm_table_s {
 	bfa_fcs_itnim_sm_t sm;		/*  state machine function	*/
 	enum bfa_itnim_state state;	/*  state machine encoding	*/
@@ -119,7 +70,6 @@ bfa_fcs_itnim_sm_to_state(struct bfa_fcs_itnim_sm_table_s *smt, bfa_fcs_itnim_sm
 }
 
 static struct bfa_fcs_itnim_sm_table_s itnim_sm_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{BFA_SM(bfa_fcs_itnim_sm_offline), BFA_ITNIM_OFFLINE},
 	{BFA_SM(bfa_fcs_itnim_sm_prli_send), BFA_ITNIM_PRLI_SEND},
 	{BFA_SM(bfa_fcs_itnim_sm_prli), BFA_ITNIM_PRLI_SENT},
@@ -142,11 +92,7 @@ bfa_fcs_itnim_sm_offline(struct bfa_fcs_itnim_s *itnim,
 	bfa_trc(itnim->fcs, event);
 
 	switch (event) {
-<<<<<<< HEAD
-	case BFA_FCS_ITNIM_SM_ONLINE:
-=======
 	case BFA_FCS_ITNIM_SM_FCS_ONLINE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bfa_sm_set_state(itnim, bfa_fcs_itnim_sm_prli_send);
 		itnim->prli_retries = 0;
 		bfa_fcs_itnim_send_prli(itnim, NULL);
@@ -185,10 +131,7 @@ bfa_fcs_itnim_sm_prli_send(struct bfa_fcs_itnim_s *itnim,
 	case BFA_FCS_ITNIM_SM_INITIATOR:
 		bfa_sm_set_state(itnim, bfa_fcs_itnim_sm_initiator);
 		bfa_fcxp_walloc_cancel(itnim->fcs->bfa, &itnim->fcxp_wqe);
-<<<<<<< HEAD
-=======
 		bfa_sm_send_event(itnim->rport, RPSM_EVENT_FC4_FCS_ONLINE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFA_FCS_ITNIM_SM_OFFLINE:
@@ -217,14 +160,6 @@ bfa_fcs_itnim_sm_prli(struct bfa_fcs_itnim_s *itnim,
 
 	switch (event) {
 	case BFA_FCS_ITNIM_SM_RSP_OK:
-<<<<<<< HEAD
-		if (itnim->rport->scsi_function == BFA_RPORT_INITIATOR) {
-			bfa_sm_set_state(itnim, bfa_fcs_itnim_sm_initiator);
-		} else {
-			bfa_sm_set_state(itnim, bfa_fcs_itnim_sm_hcb_online);
-			bfa_itnim_online(itnim->bfa_itnim, itnim->seq_rec);
-		}
-=======
 		if (itnim->rport->scsi_function == BFA_RPORT_INITIATOR)
 			bfa_sm_set_state(itnim, bfa_fcs_itnim_sm_initiator);
 		else
@@ -232,7 +167,6 @@ bfa_fcs_itnim_sm_prli(struct bfa_fcs_itnim_s *itnim,
 				bfa_fcs_itnim_sm_hal_rport_online);
 
 		bfa_sm_send_event(itnim->rport, RPSM_EVENT_FC4_FCS_ONLINE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFA_FCS_ITNIM_SM_RSP_ERROR:
@@ -255,10 +189,7 @@ bfa_fcs_itnim_sm_prli(struct bfa_fcs_itnim_s *itnim,
 	case BFA_FCS_ITNIM_SM_INITIATOR:
 		bfa_sm_set_state(itnim, bfa_fcs_itnim_sm_initiator);
 		bfa_fcxp_discard(itnim->fcxp);
-<<<<<<< HEAD
-=======
 		bfa_sm_send_event(itnim->rport, RPSM_EVENT_FC4_FCS_ONLINE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFA_FCS_ITNIM_SM_DELETE:
@@ -273,8 +204,6 @@ bfa_fcs_itnim_sm_prli(struct bfa_fcs_itnim_s *itnim,
 }
 
 static void
-<<<<<<< HEAD
-=======
 bfa_fcs_itnim_sm_hal_rport_online(struct bfa_fcs_itnim_s *itnim,
 				enum bfa_fcs_itnim_event event)
 {
@@ -313,7 +242,6 @@ bfa_fcs_itnim_sm_hal_rport_online(struct bfa_fcs_itnim_s *itnim,
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcs_itnim_sm_prli_retry(struct bfa_fcs_itnim_s *itnim,
 			    enum bfa_fcs_itnim_event event)
 {
@@ -344,10 +272,7 @@ bfa_fcs_itnim_sm_prli_retry(struct bfa_fcs_itnim_s *itnim,
 	case BFA_FCS_ITNIM_SM_INITIATOR:
 		bfa_sm_set_state(itnim, bfa_fcs_itnim_sm_initiator);
 		bfa_timer_stop(&itnim->timer);
-<<<<<<< HEAD
-=======
 		bfa_sm_send_event(itnim->rport, RPSM_EVENT_FC4_FCS_ONLINE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFA_FCS_ITNIM_SM_DELETE:
@@ -385,14 +310,8 @@ bfa_fcs_itnim_sm_hcb_online(struct bfa_fcs_itnim_s *itnim,
 		break;
 
 	case BFA_FCS_ITNIM_SM_OFFLINE:
-<<<<<<< HEAD
-		bfa_sm_set_state(itnim, bfa_fcs_itnim_sm_offline);
-		bfa_itnim_offline(itnim->bfa_itnim);
-		bfa_sm_send_event(itnim->rport, RPSM_EVENT_FC4_OFFLINE);
-=======
 		bfa_sm_set_state(itnim, bfa_fcs_itnim_sm_hcb_offline);
 		bfa_itnim_offline(itnim->bfa_itnim);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFA_FCS_ITNIM_SM_DELETE:
@@ -487,10 +406,6 @@ bfa_fcs_itnim_sm_initiator(struct bfa_fcs_itnim_s *itnim,
 		bfa_sm_send_event(itnim->rport, RPSM_EVENT_FC4_OFFLINE);
 		break;
 
-<<<<<<< HEAD
-	case BFA_FCS_ITNIM_SM_RSP_ERROR:
-	case BFA_FCS_ITNIM_SM_ONLINE:
-=======
 	/*
 	 * fcs_online is expected here for well known initiator ports
 	 */
@@ -499,7 +414,6 @@ bfa_fcs_itnim_sm_initiator(struct bfa_fcs_itnim_s *itnim,
 		break;
 
 	case BFA_FCS_ITNIM_SM_RSP_ERROR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BFA_FCS_ITNIM_SM_INITIATOR:
 		break;
 
@@ -552,20 +466,12 @@ bfa_fcs_itnim_send_prli(void *itnim_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 
 	bfa_trc(itnim->fcs, itnim->rport->pwwn);
 
-<<<<<<< HEAD
-	fcxp = fcxp_alloced ? fcxp_alloced : bfa_fcs_fcxp_alloc(port->fcs);
-	if (!fcxp) {
-		itnim->stats.fcxp_alloc_wait++;
-		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &itnim->fcxp_wqe,
-				    bfa_fcs_itnim_send_prli, itnim);
-=======
 	fcxp = fcxp_alloced ? fcxp_alloced :
 	       bfa_fcs_fcxp_alloc(port->fcs, BFA_TRUE);
 	if (!fcxp) {
 		itnim->stats.fcxp_alloc_wait++;
 		bfa_fcs_fcxp_alloc_wait(port->fcs->bfa, &itnim->fcxp_wqe,
 				bfa_fcs_itnim_send_prli, itnim, BFA_TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	itnim->fcxp = fcxp;
@@ -618,11 +524,7 @@ bfa_fcs_itnim_prli_response(void *fcsarg, struct bfa_fcxp_s *fcxp, void *cbarg,
 			if (prli_resp->parampage.servparams.initiator) {
 				bfa_trc(itnim->fcs, prli_resp->parampage.type);
 				itnim->rport->scsi_function =
-<<<<<<< HEAD
-					 BFA_RPORT_INITIATOR;
-=======
 						BFA_RPORT_INITIATOR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				itnim->stats.prli_rsp_acc++;
 				itnim->stats.initiator++;
 				bfa_sm_send_event(itnim,
@@ -670,15 +572,11 @@ bfa_fcs_itnim_timeout(void *arg)
 static void
 bfa_fcs_itnim_free(struct bfa_fcs_itnim_s *itnim)
 {
-<<<<<<< HEAD
-	bfa_itnim_delete(itnim->bfa_itnim);
-=======
 	if (itnim->bfa_itnim) {
 		bfa_itnim_delete(itnim->bfa_itnim);
 		itnim->bfa_itnim = NULL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_fcb_itnim_free(itnim->fcs->bfad, itnim->itnim_drv);
 }
 
@@ -699,22 +597,13 @@ bfa_fcs_itnim_create(struct bfa_fcs_rport_s *rport)
 	struct bfa_fcs_lport_s *port = rport->port;
 	struct bfa_fcs_itnim_s *itnim;
 	struct bfad_itnim_s   *itnim_drv;
-<<<<<<< HEAD
-	struct bfa_itnim_s *bfa_itnim;
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * call bfad to allocate the itnim
 	 */
-<<<<<<< HEAD
-	bfa_fcb_itnim_alloc(port->fcs->bfad, &itnim, &itnim_drv);
-	if (itnim == NULL) {
-=======
 	ret = bfa_fcb_itnim_alloc(port->fcs->bfad, &itnim, &itnim_drv);
 	if (ret) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bfa_trc(port->fcs, rport->pwwn);
 		return NULL;
 	}
@@ -726,24 +615,7 @@ bfa_fcs_itnim_create(struct bfa_fcs_rport_s *rport)
 	itnim->fcs = rport->fcs;
 	itnim->itnim_drv = itnim_drv;
 
-<<<<<<< HEAD
-	/*
-	 * call BFA to create the itnim
-	 */
-	bfa_itnim =
-		bfa_itnim_create(port->fcs->bfa, rport->bfa_rport, itnim);
-
-	if (bfa_itnim == NULL) {
-		bfa_trc(port->fcs, rport->pwwn);
-		bfa_fcb_itnim_free(port->fcs->bfad, itnim_drv);
-		WARN_ON(1);
-		return NULL;
-	}
-
-	itnim->bfa_itnim     = bfa_itnim;
-=======
 	itnim->bfa_itnim     = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	itnim->seq_rec	     = BFA_FALSE;
 	itnim->rec_support   = BFA_FALSE;
 	itnim->conf_comp     = BFA_FALSE;
@@ -773,29 +645,12 @@ bfa_fcs_itnim_delete(struct bfa_fcs_itnim_s *itnim)
  * Notification from rport that PLOGI is complete to initiate FC-4 session.
  */
 void
-<<<<<<< HEAD
-bfa_fcs_itnim_rport_online(struct bfa_fcs_itnim_s *itnim)
-{
-	itnim->stats.onlines++;
-
-	if (!BFA_FCS_PID_IS_WKA(itnim->rport->pid)) {
-		bfa_sm_send_event(itnim, BFA_FCS_ITNIM_SM_ONLINE);
-	} else {
-		/*
-		 *  For well known addresses, we set the itnim to initiator
-		 *  state
-		 */
-		itnim->stats.initiator++;
-		bfa_sm_send_event(itnim, BFA_FCS_ITNIM_SM_INITIATOR);
-	}
-=======
 bfa_fcs_itnim_brp_online(struct bfa_fcs_itnim_s *itnim)
 {
 	itnim->stats.onlines++;
 
 	if (!BFA_FCS_PID_IS_WKA(itnim->rport->pid))
 		bfa_sm_send_event(itnim, BFA_FCS_ITNIM_SM_HAL_ONLINE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -827,11 +682,7 @@ bfa_status_t
 bfa_fcs_itnim_get_online_state(struct bfa_fcs_itnim_s *itnim)
 {
 	bfa_trc(itnim->fcs, itnim->rport->pid);
-<<<<<<< HEAD
-	switch (bfa_sm_to_state(itnim_sm_table, itnim->sm)) {
-=======
 	switch (bfa_fcs_itnim_sm_to_state(itnim_sm_table, itnim->sm)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BFA_ITNIM_ONLINE:
 	case BFA_ITNIM_INITIATIOR:
 		return BFA_STATUS_OK;
@@ -931,11 +782,7 @@ bfa_fcs_itnim_attr_get(struct bfa_fcs_lport_s *port, wwn_t rpwwn,
 	if (itnim == NULL)
 		return BFA_STATUS_NO_FCPIM_NEXUS;
 
-<<<<<<< HEAD
-	attr->state	    = bfa_sm_to_state(itnim_sm_table, itnim->sm);
-=======
 	attr->state	    = bfa_fcs_itnim_sm_to_state(itnim_sm_table, itnim->sm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	attr->retry	    = itnim->seq_rec;
 	attr->rec_support   = itnim->rec_support;
 	attr->conf_comp	    = itnim->conf_comp;

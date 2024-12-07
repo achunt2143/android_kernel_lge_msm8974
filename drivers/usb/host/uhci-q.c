@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Universal Host Controller Interface driver for USB.
  *
@@ -76,12 +73,7 @@ static void uhci_add_fsbr(struct uhci_hcd *uhci, struct urb *urb)
 {
 	struct urb_priv *urbp = urb->hcpriv;
 
-<<<<<<< HEAD
-	if (!(urb->transfer_flags & URB_NO_FSBR))
-		urbp->fsbr = 1;
-=======
 	urbp->fsbr = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void uhci_urbp_wants_fsbr(struct uhci_hcd *uhci, struct urb_priv *urbp)
@@ -97,15 +89,9 @@ static void uhci_urbp_wants_fsbr(struct uhci_hcd *uhci, struct urb_priv *urbp)
 	}
 }
 
-<<<<<<< HEAD
-static void uhci_fsbr_timeout(unsigned long _uhci)
-{
-	struct uhci_hcd *uhci = (struct uhci_hcd *) _uhci;
-=======
 static void uhci_fsbr_timeout(struct timer_list *t)
 {
 	struct uhci_hcd *uhci = from_timer(uhci, t, fsbr_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&uhci->lock, flags);
@@ -262,18 +248,10 @@ static struct uhci_qh *uhci_alloc_qh(struct uhci_hcd *uhci,
 	dma_addr_t dma_handle;
 	struct uhci_qh *qh;
 
-<<<<<<< HEAD
-	qh = dma_pool_alloc(uhci->qh_pool, GFP_ATOMIC, &dma_handle);
-	if (!qh)
-		return NULL;
-
-	memset(qh, 0, sizeof(*qh));
-=======
 	qh = dma_pool_zalloc(uhci->qh_pool, GFP_ATOMIC, &dma_handle);
 	if (!qh)
 		return NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qh->dma_handle = dma_handle;
 
 	qh->element = UHCI_PTR_TERM(uhci);
@@ -1221,11 +1199,7 @@ static int uhci_result_common(struct uhci_hcd *uhci, struct urb *urb)
 				if (debug > 1 && errbuf) {
 					/* Print the chain for debugging */
 					uhci_show_qh(uhci, urbp->qh, errbuf,
-<<<<<<< HEAD
-							ERRBUF_LEN, 0);
-=======
 						ERRBUF_LEN - EXTRA_SPACE, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					lprintk(errbuf);
 				}
 			}
@@ -1281,12 +1255,8 @@ static int uhci_submit_isochronous(struct uhci_hcd *uhci, struct urb *urb,
 		struct uhci_qh *qh)
 {
 	struct uhci_td *td = NULL;	/* Since urb->number_of_packets > 0 */
-<<<<<<< HEAD
-	int i, frame;
-=======
 	int i;
 	unsigned frame, next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long destination, status;
 	struct urb_priv *urbp = (struct urb_priv *) urb->hcpriv;
 
@@ -1295,34 +1265,6 @@ static int uhci_submit_isochronous(struct uhci_hcd *uhci, struct urb *urb,
 			urb->number_of_packets >= UHCI_NUMFRAMES)
 		return -EFBIG;
 
-<<<<<<< HEAD
-	/* Check the period and figure out the starting frame number */
-	if (!qh->bandwidth_reserved) {
-		qh->period = urb->interval;
-		if (urb->transfer_flags & URB_ISO_ASAP) {
-			qh->phase = -1;		/* Find the best phase */
-			i = uhci_check_bandwidth(uhci, qh);
-			if (i)
-				return i;
-
-			/* Allow a little time to allocate the TDs */
-			uhci_get_current_frame_number(uhci);
-			frame = uhci->frame_number + 10;
-
-			/* Move forward to the first frame having the
-			 * correct phase */
-			urb->start_frame = frame + ((qh->phase - frame) &
-					(qh->period - 1));
-		} else {
-			i = urb->start_frame - uhci->last_iso_frame;
-			if (i <= 0 || i >= UHCI_NUMFRAMES)
-				return -EINVAL;
-			qh->phase = urb->start_frame & (qh->period - 1);
-			i = uhci_check_bandwidth(uhci, qh);
-			if (i)
-				return i;
-		}
-=======
 	uhci_get_current_frame_number(uhci);
 
 	/* Check the period and figure out the starting frame number */
@@ -1339,17 +1281,13 @@ static int uhci_submit_isochronous(struct uhci_hcd *uhci, struct urb *urb,
 
 		/* Round up to the first available slot */
 		frame += (next - frame + qh->period - 1) & -qh->period;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else if (qh->period != urb->interval) {
 		return -EINVAL;		/* Can't change the period */
 
 	} else {
-<<<<<<< HEAD
-=======
 		next = uhci->frame_number + 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Find the next unused frame */
 		if (list_empty(&qh->queue)) {
 			frame = qh->iso_frame;
@@ -1362,20 +1300,6 @@ static int uhci_submit_isochronous(struct uhci_hcd *uhci, struct urb *urb,
 					lurb->number_of_packets *
 					lurb->interval;
 		}
-<<<<<<< HEAD
-		if (urb->transfer_flags & URB_ISO_ASAP) {
-			/* Skip some frames if necessary to insure
-			 * the start frame is in the future.
-			 */
-			uhci_get_current_frame_number(uhci);
-			if (uhci_frame_before_eq(frame, uhci->frame_number)) {
-				frame = uhci->frame_number + 1;
-				frame += ((qh->phase - frame) &
-					(qh->period - 1));
-			}
-		}	/* Otherwise pick up where the last URB leaves off */
-		urb->start_frame = frame;
-=======
 
 		/* Fell behind? */
 		if (!uhci_frame_before_eq(next, frame)) {
@@ -1398,20 +1322,13 @@ static int uhci_submit_isochronous(struct uhci_hcd *uhci, struct urb *urb,
 							qh->period,
 						next);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Make sure we won't have to go too far into the future */
 	if (uhci_frame_before_eq(uhci->last_iso_frame + UHCI_NUMFRAMES,
-<<<<<<< HEAD
-			urb->start_frame + urb->number_of_packets *
-				urb->interval))
-		return -EFBIG;
-=======
 			frame + urb->number_of_packets * urb->interval))
 		return -EFBIG;
 	urb->start_frame = frame;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = TD_CTRL_ACTIVE | TD_CTRL_IOS;
 	destination = (urb->pipe & PIPE_DEVEP_MASK) | usb_packetid(urb->pipe);

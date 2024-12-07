@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2008 Paul Mundt
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2008 Paul Mundt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/gpio.h>

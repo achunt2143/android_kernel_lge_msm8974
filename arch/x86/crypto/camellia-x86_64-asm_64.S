@@ -1,36 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Camellia Cipher Algorithm (x86_64)
  *
  * Copyright (C) 2012 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
- * USA
- *
- */
-
-=======
  */
 
 #include <linux/linkage.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .file "camellia-x86_64-asm_64.S"
 .text
 
@@ -84,42 +60,23 @@
 #define RCD1bh %dh
 
 #define RT0 %rsi
-<<<<<<< HEAD
-#define RT1 %rbp
-#define RT2 %r8
-
-#define RT0d %esi
-#define RT1d %ebp
-=======
 #define RT1 %r12
 #define RT2 %r8
 
 #define RT0d %esi
 #define RT1d %r12d
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RT2d %r8d
 
 #define RT2bl %r8b
 
 #define RXOR %r9
-<<<<<<< HEAD
-#define RRBP %r10
-=======
 #define RR12 %r10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RDST %r11
 
 #define RXORd %r9d
 #define RXORbl %r9b
 
 #define xor2ror16(T0, T1, tmp1, tmp2, ab, dst) \
-<<<<<<< HEAD
-	movzbl ab ## bl,		tmp2 ## d; \
-	movzbl ab ## bh,		tmp1 ## d; \
-	rorq $16,			ab; \
-	xorq T0(, tmp2, 8),		dst; \
-	xorq T1(, tmp1, 8),		dst;
-=======
 	leaq T0(%rip), 			tmp1; \
 	movzbl ab ## bl,		tmp2 ## d; \
 	xorq (tmp1, tmp2, 8),		dst; \
@@ -127,7 +84,6 @@
 	movzbl ab ## bh,		tmp1 ## d; \
 	rorq $16,			ab; \
 	xorq (tmp2, tmp1, 8),		dst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**********************************************************************
   1-way camellia
@@ -221,25 +177,14 @@
 	bswapq				RAB0; \
 	movq RAB0,			4*2(RIO);
 
-<<<<<<< HEAD
-.global __camellia_enc_blk;
-.type   __camellia_enc_blk,@function;
-
-__camellia_enc_blk:
-=======
 SYM_FUNC_START(__camellia_enc_blk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* input:
 	 *	%rdi: ctx, CTX
 	 *	%rsi: dst
 	 *	%rdx: src
 	 *	%rcx: bool xor
 	 */
-<<<<<<< HEAD
-	movq %rbp, RRBP;
-=======
 	movq %r12, RR12;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	movq %rcx, RXOR;
 	movq %rsi, RDST;
@@ -255,39 +200,12 @@ SYM_FUNC_START(__camellia_enc_blk)
 	movl $24, RT1d; /* max */
 
 	cmpb $16, key_length(CTX);
-<<<<<<< HEAD
-	je __enc_done;
-=======
 	je .L__enc_done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enc_fls(24);
 	enc_rounds(24);
 	movl $32, RT1d; /* max */
 
-<<<<<<< HEAD
-__enc_done:
-	testb RXORbl, RXORbl;
-	movq RDST, RIO;
-
-	jnz __enc_xor;
-
-	enc_outunpack(mov, RT1);
-
-	movq RRBP, %rbp;
-	ret;
-
-__enc_xor:
-	enc_outunpack(xor, RT1);
-
-	movq RRBP, %rbp;
-	ret;
-
-.global camellia_dec_blk;
-.type   camellia_dec_blk,@function;
-
-camellia_dec_blk:
-=======
 .L__enc_done:
 	testb RXORbl, RXORbl;
 	movq RDST, RIO;
@@ -307,7 +225,6 @@ camellia_dec_blk:
 SYM_FUNC_END(__camellia_enc_blk)
 
 SYM_FUNC_START(camellia_dec_blk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* input:
 	 *	%rdi: ctx, CTX
 	 *	%rsi: dst
@@ -318,31 +235,19 @@ SYM_FUNC_START(camellia_dec_blk)
 	movl $24, RXORd;
 	cmovel RXORd, RT2d; /* max */
 
-<<<<<<< HEAD
-	movq %rbp, RRBP;
-=======
 	movq %r12, RR12;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movq %rsi, RDST;
 	movq %rdx, RIO;
 
 	dec_inpack(RT2);
 
 	cmpb $24, RT2bl;
-<<<<<<< HEAD
-	je __dec_rounds16;
-=======
 	je .L__dec_rounds16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dec_rounds(24);
 	dec_fls(24);
 
-<<<<<<< HEAD
-__dec_rounds16:
-=======
 .L__dec_rounds16:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dec_rounds(16);
 	dec_fls(16);
 	dec_rounds(8);
@@ -353,14 +258,9 @@ __dec_rounds16:
 
 	dec_outunpack();
 
-<<<<<<< HEAD
-	movq RRBP, %rbp;
-	ret;
-=======
 	movq RR12, %r12;
 	RET;
 SYM_FUNC_END(camellia_dec_blk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**********************************************************************
   2-way camellia
@@ -511,14 +411,7 @@ SYM_FUNC_END(camellia_dec_blk)
 		bswapq				RAB1; \
 		movq RAB1,			12*2(RIO);
 
-<<<<<<< HEAD
-.global __camellia_enc_blk_2way;
-.type   __camellia_enc_blk_2way,@function;
-
-__camellia_enc_blk_2way:
-=======
 SYM_FUNC_START(__camellia_enc_blk_2way)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* input:
 	 *	%rdi: ctx, CTX
 	 *	%rsi: dst
@@ -527,11 +420,7 @@ SYM_FUNC_START(__camellia_enc_blk_2way)
 	 */
 	pushq %rbx;
 
-<<<<<<< HEAD
-	movq %rbp, RRBP;
-=======
 	movq %r12, RR12;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movq %rcx, RXOR;
 	movq %rsi, RDST;
 	movq %rdx, RIO;
@@ -546,40 +435,12 @@ SYM_FUNC_START(__camellia_enc_blk_2way)
 	movl $24, RT2d; /* max */
 
 	cmpb $16, key_length(CTX);
-<<<<<<< HEAD
-	je __enc2_done;
-=======
 	je .L__enc2_done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enc_fls2(24);
 	enc_rounds2(24);
 	movl $32, RT2d; /* max */
 
-<<<<<<< HEAD
-__enc2_done:
-	test RXORbl, RXORbl;
-	movq RDST, RIO;
-	jnz __enc2_xor;
-
-	enc_outunpack2(mov, RT2);
-
-	movq RRBP, %rbp;
-	popq %rbx;
-	ret;
-
-__enc2_xor:
-	enc_outunpack2(xor, RT2);
-
-	movq RRBP, %rbp;
-	popq %rbx;
-	ret;
-
-.global camellia_dec_blk_2way;
-.type   camellia_dec_blk_2way,@function;
-
-camellia_dec_blk_2way:
-=======
 .L__enc2_done:
 	test RXORbl, RXORbl;
 	movq RDST, RIO;
@@ -600,7 +461,6 @@ camellia_dec_blk_2way:
 SYM_FUNC_END(__camellia_enc_blk_2way)
 
 SYM_FUNC_START(camellia_dec_blk_2way)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* input:
 	 *	%rdi: ctx, CTX
 	 *	%rsi: dst
@@ -612,31 +472,19 @@ SYM_FUNC_START(camellia_dec_blk_2way)
 	cmovel RXORd, RT2d; /* max */
 
 	movq %rbx, RXOR;
-<<<<<<< HEAD
-	movq %rbp, RRBP;
-=======
 	movq %r12, RR12;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movq %rsi, RDST;
 	movq %rdx, RIO;
 
 	dec_inpack2(RT2);
 
 	cmpb $24, RT2bl;
-<<<<<<< HEAD
-	je __dec2_rounds16;
-=======
 	je .L__dec2_rounds16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dec_rounds2(24);
 	dec_fls2(24);
 
-<<<<<<< HEAD
-__dec2_rounds16:
-=======
 .L__dec2_rounds16:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dec_rounds2(16);
 	dec_fls2(16);
 	dec_rounds2(8);
@@ -647,13 +495,7 @@ __dec2_rounds16:
 
 	dec_outunpack2();
 
-<<<<<<< HEAD
-	movq RRBP, %rbp;
-	movq RXOR, %rbx;
-	ret;
-=======
 	movq RR12, %r12;
 	movq RXOR, %rbx;
 	RET;
 SYM_FUNC_END(camellia_dec_blk_2way)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

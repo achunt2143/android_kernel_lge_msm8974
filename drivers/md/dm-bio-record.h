@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2004-2005 Red Hat, Inc. All rights reserved.
  *
@@ -12,10 +9,7 @@
 #define DM_BIO_RECORD_H
 
 #include <linux/bio.h>
-<<<<<<< HEAD
-=======
 #include <linux/blk-integrity.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * There are lots of mutable fields in the bio struct that get
@@ -25,25 +19,6 @@
  * original bio state.
  */
 
-<<<<<<< HEAD
-struct dm_bio_vec_details {
-#if PAGE_SIZE < 65536
-	__u16 bv_len;
-	__u16 bv_offset;
-#else
-	unsigned bv_len;
-	unsigned bv_offset;
-#endif
-};
-
-struct dm_bio_details {
-	sector_t bi_sector;
-	struct block_device *bi_bdev;
-	unsigned int bi_size;
-	unsigned short bi_idx;
-	unsigned long bi_flags;
-	struct dm_bio_vec_details bi_io_vec[BIO_MAX_PAGES];
-=======
 struct dm_bio_details {
 	struct block_device *bi_bdev;
 	int __bi_remaining;
@@ -53,25 +28,10 @@ struct dm_bio_details {
 #if defined(CONFIG_BLK_DEV_INTEGRITY)
 	struct bio_integrity_payload *bi_integrity;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline void dm_bio_record(struct dm_bio_details *bd, struct bio *bio)
 {
-<<<<<<< HEAD
-	unsigned i;
-
-	bd->bi_sector = bio->bi_sector;
-	bd->bi_bdev = bio->bi_bdev;
-	bd->bi_size = bio->bi_size;
-	bd->bi_idx = bio->bi_idx;
-	bd->bi_flags = bio->bi_flags;
-
-	for (i = 0; i < bio->bi_vcnt; i++) {
-		bd->bi_io_vec[i].bv_len = bio->bi_io_vec[i].bv_len;
-		bd->bi_io_vec[i].bv_offset = bio->bi_io_vec[i].bv_offset;
-	}
-=======
 	bd->bi_bdev = bio->bi_bdev;
 	bd->bi_flags = bio->bi_flags;
 	bd->bi_iter = bio->bi_iter;
@@ -80,25 +40,10 @@ static inline void dm_bio_record(struct dm_bio_details *bd, struct bio *bio)
 #if defined(CONFIG_BLK_DEV_INTEGRITY)
 	bd->bi_integrity = bio_integrity(bio);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void dm_bio_restore(struct dm_bio_details *bd, struct bio *bio)
 {
-<<<<<<< HEAD
-	unsigned i;
-
-	bio->bi_sector = bd->bi_sector;
-	bio->bi_bdev = bd->bi_bdev;
-	bio->bi_size = bd->bi_size;
-	bio->bi_idx = bd->bi_idx;
-	bio->bi_flags = bd->bi_flags;
-
-	for (i = 0; i < bio->bi_vcnt; i++) {
-		bio->bi_io_vec[i].bv_len = bd->bi_io_vec[i].bv_len;
-		bio->bi_io_vec[i].bv_offset = bd->bi_io_vec[i].bv_offset;
-	}
-=======
 	bio->bi_bdev = bd->bi_bdev;
 	bio->bi_flags = bd->bi_flags;
 	bio->bi_iter = bd->bi_iter;
@@ -107,7 +52,6 @@ static inline void dm_bio_restore(struct dm_bio_details *bd, struct bio *bio)
 #if defined(CONFIG_BLK_DEV_INTEGRITY)
 	bio->bi_integrity = bd->bi_integrity;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif

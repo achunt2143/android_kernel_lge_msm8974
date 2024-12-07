@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * connection tracking expectations.
  */
 
 #ifndef _NF_CONNTRACK_EXPECT_H
 #define _NF_CONNTRACK_EXPECT_H
-<<<<<<< HEAD
-#include <net/netfilter/nf_conntrack.h>
-
-extern unsigned int nf_ct_expect_hsize;
-extern unsigned int nf_ct_expect_max;
-=======
 
 #include <linux/refcount.h>
 
@@ -23,7 +14,6 @@ extern unsigned int nf_ct_expect_max;
 extern unsigned int nf_ct_expect_hsize;
 extern unsigned int nf_ct_expect_max;
 extern struct hlist_head *nf_ct_expect_hash;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nf_conntrack_expect {
 	/* Conntrack expectation list member */
@@ -36,8 +26,6 @@ struct nf_conntrack_expect {
 	struct nf_conntrack_tuple tuple;
 	struct nf_conntrack_tuple_mask mask;
 
-<<<<<<< HEAD
-=======
 	/* Usage count. */
 	refcount_t use;
 
@@ -47,7 +35,6 @@ struct nf_conntrack_expect {
 	/* Expectation class */
 	unsigned int class;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Function to call after setup and insertion */
 	void (*expectfn)(struct nf_conn *new,
 			 struct nf_conntrack_expect *this);
@@ -61,20 +48,7 @@ struct nf_conntrack_expect {
 	/* Timer function; deletes the expectation. */
 	struct timer_list timeout;
 
-<<<<<<< HEAD
-	/* Usage count. */
-	atomic_t use;
-
-	/* Flags */
-	unsigned int flags;
-
-	/* Expectation class */
-	unsigned int class;
-
-#ifdef CONFIG_NF_NAT_NEEDED
-=======
 #if IS_ENABLED(CONFIG_NF_NAT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union nf_inet_addr saved_addr;
 	/* This is the original per-proto part, used to map the
 	 * expected connection the way the recipient expects. */
@@ -100,26 +74,6 @@ struct nf_conntrack_expect_policy {
 };
 
 #define NF_CT_EXPECT_CLASS_DEFAULT	0
-<<<<<<< HEAD
-
-int nf_conntrack_expect_init(struct net *net);
-void nf_conntrack_expect_fini(struct net *net);
-
-struct nf_conntrack_expect *
-__nf_ct_expect_find(struct net *net, u16 zone,
-		    const struct nf_conntrack_tuple *tuple);
-
-struct nf_conntrack_expect *
-nf_ct_expect_find_get(struct net *net, u16 zone,
-		      const struct nf_conntrack_tuple *tuple);
-
-struct nf_conntrack_expect *
-nf_ct_find_expectation(struct net *net, u16 zone,
-		       const struct nf_conntrack_tuple *tuple);
-
-void nf_ct_unlink_expect_report(struct nf_conntrack_expect *exp,
-				u32 pid, int report);
-=======
 #define NF_CT_EXPECT_MAX_CNT		255
 
 /* Allow to reuse expectations with the same tuples from different master
@@ -150,7 +104,6 @@ nf_ct_find_expectation(struct net *net,
 
 void nf_ct_unlink_expect_report(struct nf_conntrack_expect *exp,
 				u32 portid, int report);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void nf_ct_unlink_expect(struct nf_conntrack_expect *exp)
 {
 	nf_ct_unlink_expect_report(exp, 0, 0);
@@ -158,15 +111,12 @@ static inline void nf_ct_unlink_expect(struct nf_conntrack_expect *exp)
 
 void nf_ct_remove_expectations(struct nf_conn *ct);
 void nf_ct_unexpect_related(struct nf_conntrack_expect *exp);
-<<<<<<< HEAD
-=======
 bool nf_ct_remove_expect(struct nf_conntrack_expect *exp);
 
 void nf_ct_expect_iterate_destroy(bool (*iter)(struct nf_conntrack_expect *e, void *data), void *data);
 void nf_ct_expect_iterate_net(struct net *net,
 			      bool (*iter)(struct nf_conntrack_expect *e, void *data),
                               void *data, u32 portid, int report);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Allocate space for an expectation: this is mandatory before calling
    nf_ct_expect_related.  You will have to call put afterwards. */
@@ -176,20 +126,12 @@ void nf_ct_expect_init(struct nf_conntrack_expect *, unsigned int, u_int8_t,
 		       const union nf_inet_addr *,
 		       u_int8_t, const __be16 *, const __be16 *);
 void nf_ct_expect_put(struct nf_conntrack_expect *exp);
-<<<<<<< HEAD
-int nf_ct_expect_related_report(struct nf_conntrack_expect *expect, 
-				u32 pid, int report);
-static inline int nf_ct_expect_related(struct nf_conntrack_expect *expect)
-{
-	return nf_ct_expect_related_report(expect, 0, 0);
-=======
 int nf_ct_expect_related_report(struct nf_conntrack_expect *expect,
 				u32 portid, int report, unsigned int flags);
 static inline int nf_ct_expect_related(struct nf_conntrack_expect *expect,
 				       unsigned int flags)
 {
 	return nf_ct_expect_related_report(expect, 0, 0, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /*_NF_CONNTRACK_EXPECT_H*/

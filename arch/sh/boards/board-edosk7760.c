@@ -1,39 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas Europe EDOSK7760 Board Support
  *
  * Copyright (C) 2008 SPES Societa' Progettazione Elettronica e Software Ltd.
  * Author: Luca Santini <luca.santini@spesonline.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/types.h>
 #include <linux/platform_device.h>
 #include <linux/smc91x.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-=======
 #include <linux/sh_intc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/i2c.h>
 #include <linux/mtd/physmap.h>
 #include <asm/machvec.h>
@@ -41,11 +18,7 @@
 #include <asm/addrspace.h>
 #include <asm/delay.h>
 #include <asm/i2c-sh7760.h>
-<<<<<<< HEAD
-#include <asm/sizes.h>
-=======
 #include <linux/sizes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Bus state controller registers for CS4 area */
 #define BSC_CS4BCR	0xA4FD0010
@@ -55,11 +28,6 @@
 #define SMC_IO_OFFSET	0x300
 #define SMC_IOADDR	(SMC_IOBASE + SMC_IO_OFFSET)
 
-<<<<<<< HEAD
-#define ETHERNET_IRQ	5
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NOR flash */
 static struct mtd_partition edosk7760_nor_flash_partitions[] = {
 	{
@@ -117,13 +85,8 @@ static struct resource sh7760_i2c1_res[] = {
 		.end	= SH7760_I2C1_MMIOEND,
 		.flags	= IORESOURCE_MEM,
 	},{
-<<<<<<< HEAD
-		.start	= SH7760_I2C1_IRQ,
-		.end	= SH7760_I2C1_IRQ,
-=======
 		.start	= evt2irq(0x9e0),
 		.end	= evt2irq(0x9e0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -145,13 +108,8 @@ static struct resource sh7760_i2c0_res[] = {
 		.end	= SH7760_I2C0_MMIOEND,
 		.flags	= IORESOURCE_MEM,
 	}, {
-<<<<<<< HEAD
-		.start	= SH7760_I2C0_IRQ,
-		.end	= SH7760_I2C0_IRQ,
-=======
 		.start	= evt2irq(0x9c0),
 		.end	= evt2irq(0x9c0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -178,13 +136,8 @@ static struct resource smc91x_res[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start	= ETHERNET_IRQ,
-		.end	= ETHERNET_IRQ,
-=======
 		.start	= evt2irq(0x2a0),
 		.end	= evt2irq(0x2a0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ ,
 	}
 };
@@ -222,8 +175,4 @@ device_initcall(init_edosk7760_devices);
  */
 struct sh_machine_vector mv_edosk7760 __initmv = {
 	.mv_name	= "EDOSK7760",
-<<<<<<< HEAD
-	.mv_nr_irqs	= 128,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

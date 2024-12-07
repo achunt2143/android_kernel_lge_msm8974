@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-#include <linux/ceph/ceph_debug.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/ceph/ceph_debug.h>
 #include <linux/ceph/pagelist.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "super.h"
 #include "mds_client.h"
@@ -12,23 +8,13 @@
 #include <linux/ceph/decode.h>
 
 #include <linux/xattr.h>
-<<<<<<< HEAD
-=======
 #include <linux/security.h>
 #include <linux/posix_acl_xattr.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #define XATTR_CEPH_PREFIX "ceph."
 #define XATTR_CEPH_PREFIX_LEN (sizeof (XATTR_CEPH_PREFIX) - 1)
 
-<<<<<<< HEAD
-static bool ceph_is_valid_xattr(const char *name)
-{
-	return !strncmp(name, XATTR_CEPH_PREFIX, XATTR_CEPH_PREFIX_LEN) ||
-	       !strncmp(name, XATTR_SECURITY_PREFIX,
-			XATTR_SECURITY_PREFIX_LEN) ||
-=======
 static int __remove_xattr(struct ceph_inode_info *ci,
 			  struct ceph_inode_xattr *xattr);
 
@@ -36,7 +22,6 @@ static bool ceph_is_valid_xattr(const char *name)
 {
 	return !strncmp(name, XATTR_SECURITY_PREFIX, XATTR_SECURITY_PREFIX_LEN) ||
 	       !strncmp(name, XATTR_CEPH_PREFIX, XATTR_CEPH_PREFIX_LEN) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       !strncmp(name, XATTR_TRUSTED_PREFIX, XATTR_TRUSTED_PREFIX_LEN) ||
 	       !strncmp(name, XATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN);
 }
@@ -48,123 +33,6 @@ static bool ceph_is_valid_xattr(const char *name)
 struct ceph_vxattr {
 	char *name;
 	size_t name_size;	/* strlen(name) + 1 (for '\0') */
-<<<<<<< HEAD
-	size_t (*getxattr_cb)(struct ceph_inode_info *ci, char *val,
-			      size_t size);
-	bool readonly;
-};
-
-/* directories */
-
-static size_t ceph_vxattrcb_dir_entries(struct ceph_inode_info *ci, char *val,
-					size_t size)
-{
-	return snprintf(val, size, "%lld", ci->i_files + ci->i_subdirs);
-}
-
-static size_t ceph_vxattrcb_dir_files(struct ceph_inode_info *ci, char *val,
-				      size_t size)
-{
-	return snprintf(val, size, "%lld", ci->i_files);
-}
-
-static size_t ceph_vxattrcb_dir_subdirs(struct ceph_inode_info *ci, char *val,
-					size_t size)
-{
-	return snprintf(val, size, "%lld", ci->i_subdirs);
-}
-
-static size_t ceph_vxattrcb_dir_rentries(struct ceph_inode_info *ci, char *val,
-					 size_t size)
-{
-	return snprintf(val, size, "%lld", ci->i_rfiles + ci->i_rsubdirs);
-}
-
-static size_t ceph_vxattrcb_dir_rfiles(struct ceph_inode_info *ci, char *val,
-				       size_t size)
-{
-	return snprintf(val, size, "%lld", ci->i_rfiles);
-}
-
-static size_t ceph_vxattrcb_dir_rsubdirs(struct ceph_inode_info *ci, char *val,
-					 size_t size)
-{
-	return snprintf(val, size, "%lld", ci->i_rsubdirs);
-}
-
-static size_t ceph_vxattrcb_dir_rbytes(struct ceph_inode_info *ci, char *val,
-				       size_t size)
-{
-	return snprintf(val, size, "%lld", ci->i_rbytes);
-}
-
-static size_t ceph_vxattrcb_dir_rctime(struct ceph_inode_info *ci, char *val,
-				       size_t size)
-{
-	return snprintf(val, size, "%ld.09%ld", (long)ci->i_rctime.tv_sec,
-			(long)ci->i_rctime.tv_nsec);
-}
-
-#define CEPH_XATTR_NAME(_type, _name)	XATTR_CEPH_PREFIX #_type "." #_name
-
-#define XATTR_NAME_CEPH(_type, _name) \
-		{ \
-			.name = CEPH_XATTR_NAME(_type, _name), \
-			.name_size = sizeof (CEPH_XATTR_NAME(_type, _name)), \
-			.getxattr_cb = ceph_vxattrcb_ ## _type ## _ ## _name, \
-			.readonly = true, \
-		}
-
-static struct ceph_vxattr ceph_dir_vxattrs[] = {
-	XATTR_NAME_CEPH(dir, entries),
-	XATTR_NAME_CEPH(dir, files),
-	XATTR_NAME_CEPH(dir, subdirs),
-	XATTR_NAME_CEPH(dir, rentries),
-	XATTR_NAME_CEPH(dir, rfiles),
-	XATTR_NAME_CEPH(dir, rsubdirs),
-	XATTR_NAME_CEPH(dir, rbytes),
-	XATTR_NAME_CEPH(dir, rctime),
-	{ 0 }	/* Required table terminator */
-};
-static size_t ceph_dir_vxattrs_name_size;	/* total size of all names */
-
-/* files */
-
-static size_t ceph_vxattrcb_file_layout(struct ceph_inode_info *ci, char *val,
-				   size_t size)
-{
-	int ret;
-
-	ret = snprintf(val, size,
-		"chunk_bytes=%lld\nstripe_count=%lld\nobject_size=%lld\n",
-		(unsigned long long)ceph_file_layout_su(ci->i_layout),
-		(unsigned long long)ceph_file_layout_stripe_count(ci->i_layout),
-		(unsigned long long)ceph_file_layout_object_size(ci->i_layout));
-
-	if (ceph_file_layout_pg_preferred(ci->i_layout) >= 0) {
-		val += ret;
-		size -= ret;
-		ret += snprintf(val, size, "preferred_osd=%lld\n",
-			    (unsigned long long)ceph_file_layout_pg_preferred(
-				    ci->i_layout));
-	}
-
-	return ret;
-}
-
-static struct ceph_vxattr ceph_file_vxattrs[] = {
-	XATTR_NAME_CEPH(file, layout),
-	/* The following extended attribute name is deprecated */
-	{
-		.name = XATTR_CEPH_PREFIX "layout",
-		.name_size = sizeof (XATTR_CEPH_PREFIX "layout"),
-		.getxattr_cb = ceph_vxattrcb_file_layout,
-		.readonly = true,
-	},
-	{ 0 }	/* Required table terminator */
-};
-static size_t ceph_file_vxattrs_name_size;	/* total size of all names */
-=======
 	ssize_t (*getxattr_cb)(struct ceph_inode_info *ci, char *val,
 			       size_t size);
 	bool (*exists_cb)(struct ceph_inode_info *ci);
@@ -662,7 +530,6 @@ static struct ceph_vxattr ceph_common_vxattrs[] = {
 #endif /* CONFIG_FS_ENCRYPTION */
 	{ .name = NULL, 0 }	/* Required table terminator */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct ceph_vxattr *ceph_inode_vxattrs(struct inode *inode)
 {
@@ -673,49 +540,6 @@ static struct ceph_vxattr *ceph_inode_vxattrs(struct inode *inode)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static size_t ceph_vxattrs_name_size(struct ceph_vxattr *vxattrs)
-{
-	if (vxattrs == ceph_dir_vxattrs)
-		return ceph_dir_vxattrs_name_size;
-	if (vxattrs == ceph_file_vxattrs)
-		return ceph_file_vxattrs_name_size;
-	BUG();
-
-	return 0;
-}
-
-/*
- * Compute the aggregate size (including terminating '\0') of all
- * virtual extended attribute names in the given vxattr table.
- */
-static size_t __init vxattrs_name_size(struct ceph_vxattr *vxattrs)
-{
-	struct ceph_vxattr *vxattr;
-	size_t size = 0;
-
-	for (vxattr = vxattrs; vxattr->name; vxattr++)
-		size += vxattr->name_size;
-
-	return size;
-}
-
-/* Routines called at initialization and exit time */
-
-void __init ceph_xattr_init(void)
-{
-	ceph_dir_vxattrs_name_size = vxattrs_name_size(ceph_dir_vxattrs);
-	ceph_file_vxattrs_name_size = vxattrs_name_size(ceph_file_vxattrs);
-}
-
-void ceph_xattr_exit(void)
-{
-	ceph_dir_vxattrs_name_size = 0;
-	ceph_file_vxattrs_name_size = 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ceph_vxattr *ceph_match_vxattr(struct inode *inode,
 						const char *name)
 {
@@ -729,18 +553,6 @@ static struct ceph_vxattr *ceph_match_vxattr(struct inode *inode,
 		}
 	}
 
-<<<<<<< HEAD
-	return NULL;
-}
-
-static int __set_xattr(struct ceph_inode_info *ci,
-			   const char *name, int name_len,
-			   const char *val, int val_len,
-			   int dirty,
-			   int should_free_name, int should_free_val,
-			   struct ceph_inode_xattr **newxattr)
-{
-=======
 	vxattr = ceph_common_vxattrs;
 	while (vxattr->name) {
 		if (!strcmp(vxattr->name, name))
@@ -761,7 +573,6 @@ static int __set_xattr(struct ceph_inode_info *ci,
 {
 	struct inode *inode = &ci->netfs.inode;
 	struct ceph_client *cl = ceph_inode_to_client(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_node **p;
 	struct rb_node *parent = NULL;
 	struct ceph_inode_xattr *xattr = NULL;
@@ -788,8 +599,6 @@ static int __set_xattr(struct ceph_inode_info *ci,
 		xattr = NULL;
 	}
 
-<<<<<<< HEAD
-=======
 	if (update_xattr) {
 		int err = 0;
 
@@ -812,38 +621,23 @@ static int __set_xattr(struct ceph_inode_info *ci,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!xattr) {
 		new = 1;
 		xattr = *newxattr;
 		xattr->name = name;
 		xattr->name_len = name_len;
-<<<<<<< HEAD
-		xattr->should_free_name = should_free_name;
-
-		ci->i_xattrs.count++;
-		dout("__set_xattr count=%d\n", ci->i_xattrs.count);
-=======
 		xattr->should_free_name = update_xattr;
 
 		ci->i_xattrs.count++;
 		doutc(cl, "count=%d\n", ci->i_xattrs.count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		kfree(*newxattr);
 		*newxattr = NULL;
 		if (xattr->should_free_val)
-<<<<<<< HEAD
-			kfree((void *)xattr->val);
-
-		if (should_free_name) {
-			kfree((void *)name);
-=======
 			kfree(xattr->val);
 
 		if (update_xattr) {
 			kfree(name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			name = xattr->name;
 		}
 		ci->i_xattrs.names_size -= xattr->name_len;
@@ -857,24 +651,12 @@ static int __set_xattr(struct ceph_inode_info *ci,
 		xattr->val = "";
 
 	xattr->val_len = val_len;
-<<<<<<< HEAD
-	xattr->dirty = dirty;
-	xattr->should_free_val = (val && should_free_val);
-=======
 	xattr->dirty = update_xattr;
 	xattr->should_free_val = (val && update_xattr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (new) {
 		rb_link_node(&xattr->node, parent, p);
 		rb_insert_color(&xattr->node, &ci->i_xattrs.index);
-<<<<<<< HEAD
-		dout("__set_xattr_val p=%p\n", p);
-	}
-
-	dout("__set_xattr_val added %llx.%llx xattr %p %s=%.*s\n",
-	     ceph_vinop(&ci->vfs_inode), xattr, name, val_len, val);
-=======
 		doutc(cl, "p=%p\n", p);
 	}
 
@@ -882,7 +664,6 @@ static int __set_xattr(struct ceph_inode_info *ci,
 	      ceph_vinop(inode), xattr, name_len, name, min(val_len,
 	      MAX_XATTR_VAL_PRINT_LEN), val,
 	      val_len > MAX_XATTR_VAL_PRINT_LEN ? "..." : "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -890,10 +671,7 @@ static int __set_xattr(struct ceph_inode_info *ci,
 static struct ceph_inode_xattr *__get_xattr(struct ceph_inode_info *ci,
 			   const char *name)
 {
-<<<<<<< HEAD
-=======
 	struct ceph_client *cl = ceph_inode_to_client(&ci->netfs.inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_node **p;
 	struct rb_node *parent = NULL;
 	struct ceph_inode_xattr *xattr = NULL;
@@ -912,24 +690,15 @@ static struct ceph_inode_xattr *__get_xattr(struct ceph_inode_info *ci,
 		else if (c > 0)
 			p = &(*p)->rb_right;
 		else {
-<<<<<<< HEAD
-			dout("__get_xattr %s: found %.*s\n", name,
-			     xattr->val_len, xattr->val);
-=======
 			int len = min(xattr->val_len, MAX_XATTR_VAL_PRINT_LEN);
 
 			doutc(cl, "%s found %.*s%s\n", name, len, xattr->val,
 			      xattr->val_len > len ? "..." : "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return xattr;
 		}
 	}
 
-<<<<<<< HEAD
-	dout("__get_xattr %s: not found\n", name);
-=======
 	doutc(cl, "%s not found\n", name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NULL;
 }
@@ -939,15 +708,9 @@ static void __free_xattr(struct ceph_inode_xattr *xattr)
 	BUG_ON(!xattr);
 
 	if (xattr->should_free_name)
-<<<<<<< HEAD
-		kfree((void *)xattr->name);
-	if (xattr->should_free_val)
-		kfree((void *)xattr->val);
-=======
 		kfree(xattr->name);
 	if (xattr->should_free_val)
 		kfree(xattr->val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(xattr);
 }
@@ -956,24 +719,14 @@ static int __remove_xattr(struct ceph_inode_info *ci,
 			  struct ceph_inode_xattr *xattr)
 {
 	if (!xattr)
-<<<<<<< HEAD
-		return -EOPNOTSUPP;
-=======
 		return -ENODATA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rb_erase(&xattr->node, &ci->i_xattrs.index);
 
 	if (xattr->should_free_name)
-<<<<<<< HEAD
-		kfree((void *)xattr->name);
-	if (xattr->should_free_val)
-		kfree((void *)xattr->val);
-=======
 		kfree(xattr->name);
 	if (xattr->should_free_val)
 		kfree(xattr->val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ci->i_xattrs.names_size -= xattr->name_len;
 	ci->i_xattrs.vals_size -= xattr->val_len;
@@ -983,51 +736,23 @@ static int __remove_xattr(struct ceph_inode_info *ci,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __remove_xattr_by_name(struct ceph_inode_info *ci,
-			   const char *name)
-{
-	struct rb_node **p;
-	struct ceph_inode_xattr *xattr;
-	int err;
-
-	p = &ci->i_xattrs.index.rb_node;
-	xattr = __get_xattr(ci, name);
-	err = __remove_xattr(ci, xattr);
-	return err;
-}
-
-static char *__copy_xattr_names(struct ceph_inode_info *ci,
-				char *dest)
-{
-=======
 static char *__copy_xattr_names(struct ceph_inode_info *ci,
 				char *dest)
 {
 	struct ceph_client *cl = ceph_inode_to_client(&ci->netfs.inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_node *p;
 	struct ceph_inode_xattr *xattr = NULL;
 
 	p = rb_first(&ci->i_xattrs.index);
-<<<<<<< HEAD
-	dout("__copy_xattr_names count=%d\n", ci->i_xattrs.count);
-=======
 	doutc(cl, "count=%d\n", ci->i_xattrs.count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (p) {
 		xattr = rb_entry(p, struct ceph_inode_xattr, node);
 		memcpy(dest, xattr->name, xattr->name_len);
 		dest[xattr->name_len] = '\0';
 
-<<<<<<< HEAD
-		dout("dest=%s %p (%s) (%d/%d)\n", dest, xattr, xattr->name,
-		     xattr->name_len, ci->i_xattrs.names_size);
-=======
 		doutc(cl, "dest=%s %p (%s) (%d/%d)\n", dest, xattr, xattr->name,
 		      xattr->name_len, ci->i_xattrs.names_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dest += xattr->name_len + 1;
 		p = rb_next(p);
@@ -1038,31 +763,19 @@ static char *__copy_xattr_names(struct ceph_inode_info *ci,
 
 void __ceph_destroy_xattrs(struct ceph_inode_info *ci)
 {
-<<<<<<< HEAD
-=======
 	struct ceph_client *cl = ceph_inode_to_client(&ci->netfs.inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_node *p, *tmp;
 	struct ceph_inode_xattr *xattr = NULL;
 
 	p = rb_first(&ci->i_xattrs.index);
 
-<<<<<<< HEAD
-	dout("__ceph_destroy_xattrs p=%p\n", p);
-=======
 	doutc(cl, "p=%p\n", p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (p) {
 		xattr = rb_entry(p, struct ceph_inode_xattr, node);
 		tmp = p;
 		p = rb_next(tmp);
-<<<<<<< HEAD
-		dout("__ceph_destroy_xattrs next p=%p (%.*s)\n", p,
-		     xattr->name_len, xattr->name);
-=======
 		doutc(cl, "next p=%p (%.*s)\n", p, xattr->name_len, xattr->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rb_erase(tmp, &ci->i_xattrs.index);
 
 		__free_xattr(xattr);
@@ -1079,32 +792,20 @@ static int __build_xattrs(struct inode *inode)
 	__releases(ci->i_ceph_lock)
 	__acquires(ci->i_ceph_lock)
 {
-<<<<<<< HEAD
-=======
 	struct ceph_client *cl = ceph_inode_to_client(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 namelen;
 	u32 numattr = 0;
 	void *p, *end;
 	u32 len;
 	const char *name, *val;
 	struct ceph_inode_info *ci = ceph_inode(inode);
-<<<<<<< HEAD
-	int xattr_version;
-=======
 	u64 xattr_version;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ceph_inode_xattr **xattrs = NULL;
 	int err = 0;
 	int i;
 
-<<<<<<< HEAD
-	dout("__build_xattrs() len=%d\n",
-	     ci->i_xattrs.blob ? (int)ci->i_xattrs.blob->vec.iov_len : 0);
-=======
 	doutc(cl, "len=%d\n",
 	      ci->i_xattrs.blob ? (int)ci->i_xattrs.blob->vec.iov_len : 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ci->i_xattrs.index_version >= ci->i_xattrs.version)
 		return 0; /* already built */
@@ -1120,20 +821,12 @@ start:
 		xattr_version = ci->i_xattrs.version;
 		spin_unlock(&ci->i_ceph_lock);
 
-<<<<<<< HEAD
-		xattrs = kcalloc(numattr, sizeof(struct ceph_xattr *),
-=======
 		xattrs = kcalloc(numattr, sizeof(struct ceph_inode_xattr *),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 GFP_NOFS);
 		err = -ENOMEM;
 		if (!xattrs)
 			goto bad_lock;
-<<<<<<< HEAD
-		memset(xattrs, 0, numattr*sizeof(struct ceph_xattr *));
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < numattr; i++) {
 			xattrs[i] = kmalloc(sizeof(struct ceph_inode_xattr),
 					    GFP_NOFS);
@@ -1147,10 +840,7 @@ start:
 			for (i = 0; i < numattr; i++)
 				kfree(xattrs[i]);
 			kfree(xattrs);
-<<<<<<< HEAD
-=======
 			xattrs = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto start;
 		}
 		err = -EIO;
@@ -1164,11 +854,7 @@ start:
 			p += len;
 
 			err = __set_xattr(ci, name, namelen, val, len,
-<<<<<<< HEAD
-					  0, 0, 0, &xattrs[numattr]);
-=======
 					  0, 0, &xattrs[numattr]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (err < 0)
 				goto bad;
@@ -1194,11 +880,8 @@ bad:
 static int __get_required_blob_size(struct ceph_inode_info *ci, int name_size,
 				    int val_size)
 {
-<<<<<<< HEAD
-=======
 	struct ceph_client *cl = ceph_inode_to_client(&ci->netfs.inode);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * 4 bytes for the length, and additional 4 bytes per each xattr name,
 	 * 4 bytes per each value
@@ -1206,14 +889,8 @@ static int __get_required_blob_size(struct ceph_inode_info *ci, int name_size,
 	int size = 4 + ci->i_xattrs.count*(4 + 4) +
 			     ci->i_xattrs.names_size +
 			     ci->i_xattrs.vals_size;
-<<<<<<< HEAD
-	dout("__get_required_blob_size c=%d names.size=%d vals.size=%d\n",
-	     ci->i_xattrs.count, ci->i_xattrs.names_size,
-	     ci->i_xattrs.vals_size);
-=======
 	doutc(cl, "c=%d names.size=%d vals.size=%d\n", ci->i_xattrs.count,
 	      ci->i_xattrs.names_size, ci->i_xattrs.vals_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (name_size)
 		size += 4 + 4 + name_size + val_size;
@@ -1223,17 +900,6 @@ static int __get_required_blob_size(struct ceph_inode_info *ci, int name_size,
 
 /*
  * If there are dirty xattrs, reencode xattrs into the prealloc_blob
-<<<<<<< HEAD
- * and swap into place.
- */
-void __ceph_build_xattrs_blob(struct ceph_inode_info *ci)
-{
-	struct rb_node *p;
-	struct ceph_inode_xattr *xattr = NULL;
-	void *dest;
-
-	dout("__build_xattrs_blob %p\n", &ci->vfs_inode);
-=======
  * and swap into place.  It returns the old i_xattrs.blob (or NULL) so
  * that it can be freed by the caller as the i_ceph_lock is likely to be
  * held.
@@ -1248,7 +914,6 @@ struct ceph_buffer *__ceph_build_xattrs_blob(struct ceph_inode_info *ci)
 	void *dest;
 
 	doutc(cl, "%p %llx.%llx\n", inode, ceph_vinop(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ci->i_xattrs.dirty) {
 		int need = __get_required_blob_size(ci, 0, 0);
 
@@ -1276,55 +941,12 @@ struct ceph_buffer *__ceph_build_xattrs_blob(struct ceph_inode_info *ci)
 			dest - ci->i_xattrs.prealloc_blob->vec.iov_base;
 
 		if (ci->i_xattrs.blob)
-<<<<<<< HEAD
-			ceph_buffer_put(ci->i_xattrs.blob);
-=======
 			old_blob = ci->i_xattrs.blob;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ci->i_xattrs.blob = ci->i_xattrs.prealloc_blob;
 		ci->i_xattrs.prealloc_blob = NULL;
 		ci->i_xattrs.dirty = false;
 		ci->i_xattrs.version++;
 	}
-<<<<<<< HEAD
-}
-
-ssize_t ceph_getxattr(struct dentry *dentry, const char *name, void *value,
-		      size_t size)
-{
-	struct inode *inode = dentry->d_inode;
-	struct ceph_inode_info *ci = ceph_inode(inode);
-	int err;
-	struct ceph_inode_xattr *xattr;
-	struct ceph_vxattr *vxattr = NULL;
-
-	if (!ceph_is_valid_xattr(name))
-		return -ENODATA;
-
-	/* let's see if a virtual xattr was requested */
-	vxattr = ceph_match_vxattr(inode, name);
-
-	spin_lock(&ci->i_ceph_lock);
-	dout("getxattr %p ver=%lld index_ver=%lld\n", inode,
-	     ci->i_xattrs.version, ci->i_xattrs.index_version);
-
-	if (__ceph_caps_issued_mask(ci, CEPH_CAP_XATTR_SHARED, 1) &&
-	    (ci->i_xattrs.index_version >= ci->i_xattrs.version)) {
-		goto get_xattr;
-	} else {
-		spin_unlock(&ci->i_ceph_lock);
-		/* get xattrs from mds (if we don't already have them) */
-		err = ceph_do_getattr(inode, CEPH_STAT_CAP_XATTR);
-		if (err)
-			return err;
-	}
-
-	spin_lock(&ci->i_ceph_lock);
-
-	if (vxattr && vxattr->readonly) {
-		err = vxattr->getxattr_cb(ci, value, size);
-		goto out;
-=======
 
 	return old_blob;
 }
@@ -1410,28 +1032,16 @@ handle_non_vxattrs:
 		if (err)
 			return err;
 		spin_lock(&ci->i_ceph_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = __build_xattrs(inode);
 	if (err < 0)
 		goto out;
 
-<<<<<<< HEAD
-get_xattr:
-	err = -ENODATA;  /* == ENOATTR */
-	xattr = __get_xattr(ci, name);
-	if (!xattr) {
-		if (vxattr)
-			err = vxattr->getxattr_cb(ci, value, size);
-		goto out;
-	}
-=======
 	err = -ENODATA;  /* == ENOATTR */
 	xattr = __get_xattr(ci, name);
 	if (!xattr)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = -ERANGE;
 	if (size && size < xattr->val_len)
@@ -1443,13 +1053,10 @@ get_xattr:
 
 	memcpy(value, xattr->val, xattr->val_len);
 
-<<<<<<< HEAD
-=======
 	if (current->journal_info &&
 	    !strncmp(name, XATTR_SECURITY_PREFIX, XATTR_SECURITY_PREFIX_LEN) &&
 	    security_ismaclabel(name + XATTR_SECURITY_PREFIX_LEN))
 		ci->i_ceph_flags |= CEPH_I_SEC_INITED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	spin_unlock(&ci->i_ceph_lock);
 	return err;
@@ -1457,33 +1064,6 @@ out:
 
 ssize_t ceph_listxattr(struct dentry *dentry, char *names, size_t size)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-	struct ceph_inode_info *ci = ceph_inode(inode);
-	struct ceph_vxattr *vxattrs = ceph_inode_vxattrs(inode);
-	u32 vir_namelen = 0;
-	u32 namelen;
-	int err;
-	u32 len;
-	int i;
-
-	spin_lock(&ci->i_ceph_lock);
-	dout("listxattr %p ver=%lld index_ver=%lld\n", inode,
-	     ci->i_xattrs.version, ci->i_xattrs.index_version);
-
-	if (__ceph_caps_issued_mask(ci, CEPH_CAP_XATTR_SHARED, 1) &&
-	    (ci->i_xattrs.index_version >= ci->i_xattrs.version)) {
-		goto list_xattr;
-	} else {
-		spin_unlock(&ci->i_ceph_lock);
-		err = ceph_do_getattr(inode, CEPH_STAT_CAP_XATTR);
-		if (err)
-			return err;
-	}
-
-	spin_lock(&ci->i_ceph_lock);
-
-=======
 	struct inode *inode = d_inode(dentry);
 	struct ceph_client *cl = ceph_inode_to_client(inode);
 	struct ceph_inode_info *ci = ceph_inode(inode);
@@ -1505,39 +1085,10 @@ ssize_t ceph_listxattr(struct dentry *dentry, char *names, size_t size)
 		spin_lock(&ci->i_ceph_lock);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = __build_xattrs(inode);
 	if (err < 0)
 		goto out;
 
-<<<<<<< HEAD
-list_xattr:
-	/*
-	 * Start with virtual dir xattr names (if any) (including
-	 * terminating '\0' characters for each).
-	 */
-	vir_namelen = ceph_vxattrs_name_size(vxattrs);
-
-	/* adding 1 byte per each variable due to the null termination */
-	namelen = vir_namelen + ci->i_xattrs.names_size + ci->i_xattrs.count;
-	err = -ERANGE;
-	if (size && namelen > size)
-		goto out;
-
-	err = namelen;
-	if (size == 0)
-		goto out;
-
-	names = __copy_xattr_names(ci, names);
-
-	/* virtual xattr names, too */
-	if (vxattrs)
-		for (i = 0; vxattrs[i].name; i++) {
-			len = sprintf(names, "%s", vxattrs[i].name);
-			names += len + 1;
-		}
-
-=======
 	/* add 1 byte for each xattr due to the null termination */
 	namelen = ci->i_xattrs.names_size + ci->i_xattrs.count;
 	if (!len_only) {
@@ -1549,52 +1100,11 @@ list_xattr:
 		size -= namelen;
 	}
 	err = namelen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	spin_unlock(&ci->i_ceph_lock);
 	return err;
 }
 
-<<<<<<< HEAD
-static int ceph_sync_setxattr(struct dentry *dentry, const char *name,
-			      const char *value, size_t size, int flags)
-{
-	struct ceph_fs_client *fsc = ceph_sb_to_client(dentry->d_sb);
-	struct inode *inode = dentry->d_inode;
-	struct ceph_inode_info *ci = ceph_inode(inode);
-	struct inode *parent_inode;
-	struct ceph_mds_request *req;
-	struct ceph_mds_client *mdsc = fsc->mdsc;
-	int err;
-	int i, nr_pages;
-	struct page **pages = NULL;
-	void *kaddr;
-
-	/* copy value into some pages */
-	nr_pages = calc_pages_for(0, size);
-	if (nr_pages) {
-		pages = kmalloc(sizeof(pages[0])*nr_pages, GFP_NOFS);
-		if (!pages)
-			return -ENOMEM;
-		err = -ENOMEM;
-		for (i = 0; i < nr_pages; i++) {
-			pages[i] = __page_cache_alloc(GFP_NOFS);
-			if (!pages[i]) {
-				nr_pages = i;
-				goto out;
-			}
-			kaddr = kmap(pages[i]);
-			memcpy(kaddr, value + i*PAGE_CACHE_SIZE,
-			       min(PAGE_CACHE_SIZE, size-i*PAGE_CACHE_SIZE));
-		}
-	}
-
-	dout("setxattr value=%.*s\n", (int)size, value);
-
-	/* do request */
-	req = ceph_mdsc_create_request(mdsc, CEPH_MDS_OP_SETXATTR,
-				       USE_AUTH_MDS);
-=======
 static int ceph_sync_setxattr(struct inode *inode, const char *name,
 			      const char *value, size_t size, int flags)
 {
@@ -1628,49 +1138,10 @@ static int ceph_sync_setxattr(struct inode *inode, const char *name,
 
 	/* do request */
 	req = ceph_mdsc_create_request(mdsc, op, USE_AUTH_MDS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(req)) {
 		err = PTR_ERR(req);
 		goto out;
 	}
-<<<<<<< HEAD
-	req->r_inode = inode;
-	ihold(inode);
-	req->r_inode_drop = CEPH_CAP_XATTR_SHARED;
-	req->r_num_caps = 1;
-	req->r_args.setxattr.flags = cpu_to_le32(flags);
-	req->r_path2 = kstrdup(name, GFP_NOFS);
-
-	req->r_pages = pages;
-	req->r_num_pages = nr_pages;
-	req->r_data_len = size;
-
-	dout("xattr.ver (before): %lld\n", ci->i_xattrs.version);
-	parent_inode = ceph_get_dentry_parent_inode(dentry);
-	err = ceph_mdsc_do_request(mdsc, parent_inode, req);
-	iput(parent_inode);
-	ceph_mdsc_put_request(req);
-	dout("xattr.ver (after): %lld\n", ci->i_xattrs.version);
-
-out:
-	if (pages) {
-		for (i = 0; i < nr_pages; i++)
-			__free_page(pages[i]);
-		kfree(pages);
-	}
-	return err;
-}
-
-int ceph_setxattr(struct dentry *dentry, const char *name,
-		  const void *value, size_t size, int flags)
-{
-	struct inode *inode = dentry->d_inode;
-	struct ceph_vxattr *vxattr;
-	struct ceph_inode_info *ci = ceph_inode(inode);
-	int issued;
-	int err;
-	int dirty;
-=======
 
 	req->r_path2 = kstrdup(name, GFP_NOFS);
 	if (!req->r_path2) {
@@ -1715,30 +1186,18 @@ int __ceph_setxattr(struct inode *inode, const char *name,
 	int issued;
 	int err;
 	int dirty = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int name_len = strlen(name);
 	int val_len = size;
 	char *newname = NULL;
 	char *newval = NULL;
 	struct ceph_inode_xattr *xattr = NULL;
 	int required_blob_size;
-<<<<<<< HEAD
-=======
 	bool check_realm = false;
 	bool lock_snap_rwsem = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ceph_snap(inode) != CEPH_NOSNAP)
 		return -EROFS;
 
-<<<<<<< HEAD
-	if (!ceph_is_valid_xattr(name))
-		return -EOPNOTSUPP;
-
-	vxattr = ceph_match_vxattr(inode, name);
-	if (vxattr && vxattr->readonly)
-		return -EOPNOTSUPP;
-=======
 	vxattr = ceph_match_vxattr(inode, name);
 	if (vxattr) {
 		if (vxattr->flags & VXATTR_FLAG_READONLY)
@@ -1750,7 +1209,6 @@ int __ceph_setxattr(struct inode *inode, const char *name,
 	/* pass any unhandled ceph.* xattrs through to the MDS */
 	if (!strncmp(name, XATTR_CEPH_PREFIX, XATTR_CEPH_PREFIX_LEN))
 		goto do_sync_unlocked;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* preallocate memory for xattr name, value, index node */
 	err = -ENOMEM;
@@ -1768,17 +1226,6 @@ int __ceph_setxattr(struct inode *inode, const char *name,
 	if (!xattr)
 		goto out;
 
-<<<<<<< HEAD
-	spin_lock(&ci->i_ceph_lock);
-retry:
-	issued = __ceph_caps_issued(ci, NULL);
-	dout("setxattr %p issued %s\n", inode, ceph_cap_string(issued));
-	if (!(issued & CEPH_CAP_XATTR_EXCL))
-		goto do_sync;
-	__build_xattrs(inode);
-
-	required_blob_size = __get_required_blob_size(ci, name_len, val_len);
-=======
 	prealloc_cf = ceph_alloc_cap_flush();
 	if (!prealloc_cf)
 		goto out;
@@ -1808,22 +1255,12 @@ retry:
 	doutc(cl, "%p %llx.%llx name '%s' issued %s\n", inode,
 	      ceph_vinop(inode), name, ceph_cap_string(issued));
 	__build_xattrs(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ci->i_xattrs.prealloc_blob ||
 	    required_blob_size > ci->i_xattrs.prealloc_blob->alloc_len) {
 		struct ceph_buffer *blob;
 
 		spin_unlock(&ci->i_ceph_lock);
-<<<<<<< HEAD
-		dout(" preaallocating new blob size=%d\n", required_blob_size);
-		blob = ceph_buffer_new(required_blob_size, GFP_NOFS);
-		if (!blob)
-			goto out;
-		spin_lock(&ci->i_ceph_lock);
-		if (ci->i_xattrs.prealloc_blob)
-			ceph_buffer_put(ci->i_xattrs.prealloc_blob);
-=======
 		ceph_buffer_put(old_blob); /* Shouldn't be required */
 		doutc(cl, " pre-allocating new blob size=%d\n",
 		      required_blob_size);
@@ -1834,23 +1271,10 @@ retry:
 		/* prealloc_blob can't be released while holding i_ceph_lock */
 		if (ci->i_xattrs.prealloc_blob)
 			old_blob = ci->i_xattrs.prealloc_blob;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ci->i_xattrs.prealloc_blob = blob;
 		goto retry;
 	}
 
-<<<<<<< HEAD
-	err = __set_xattr(ci, newname, name_len, newval,
-			  val_len, 1, 1, 1, &xattr);
-
-	dirty = __ceph_mark_dirty_caps(ci, CEPH_CAP_XATTR_EXCL);
-	ci->i_xattrs.dirty = true;
-	inode->i_ctime = CURRENT_TIME;
-
-	spin_unlock(&ci->i_ceph_lock);
-	if (dirty)
-		__mark_inode_dirty(inode, dirty);
-=======
 	err = __set_xattr(ci, newname, name_len, newval, val_len,
 			  flags, value ? 1 : -1, &xattr);
 
@@ -1868,15 +1292,10 @@ retry:
 	if (dirty)
 		__mark_inode_dirty(inode, dirty);
 	ceph_free_cap_flush(prealloc_cf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 
 do_sync:
 	spin_unlock(&ci->i_ceph_lock);
-<<<<<<< HEAD
-	err = ceph_sync_setxattr(dentry, name, value, size, flags);
-out:
-=======
 do_sync_unlocked:
 	if (lock_snap_rwsem)
 		up_read(&mdsc->snap_rwsem);
@@ -1901,105 +1320,12 @@ do_sync_unlocked:
 	}
 out:
 	ceph_free_cap_flush(prealloc_cf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(newname);
 	kfree(newval);
 	kfree(xattr);
 	return err;
 }
 
-<<<<<<< HEAD
-static int ceph_send_removexattr(struct dentry *dentry, const char *name)
-{
-	struct ceph_fs_client *fsc = ceph_sb_to_client(dentry->d_sb);
-	struct ceph_mds_client *mdsc = fsc->mdsc;
-	struct inode *inode = dentry->d_inode;
-	struct inode *parent_inode;
-	struct ceph_mds_request *req;
-	int err;
-
-	req = ceph_mdsc_create_request(mdsc, CEPH_MDS_OP_RMXATTR,
-				       USE_AUTH_MDS);
-	if (IS_ERR(req))
-		return PTR_ERR(req);
-	req->r_inode = inode;
-	ihold(inode);
-	req->r_inode_drop = CEPH_CAP_XATTR_SHARED;
-	req->r_num_caps = 1;
-	req->r_path2 = kstrdup(name, GFP_NOFS);
-
-	parent_inode = ceph_get_dentry_parent_inode(dentry);
-	err = ceph_mdsc_do_request(mdsc, parent_inode, req);
-	iput(parent_inode);
-	ceph_mdsc_put_request(req);
-	return err;
-}
-
-int ceph_removexattr(struct dentry *dentry, const char *name)
-{
-	struct inode *inode = dentry->d_inode;
-	struct ceph_vxattr *vxattr;
-	struct ceph_inode_info *ci = ceph_inode(inode);
-	int issued;
-	int err;
-	int required_blob_size;
-	int dirty;
-
-	if (ceph_snap(inode) != CEPH_NOSNAP)
-		return -EROFS;
-
-	if (!ceph_is_valid_xattr(name))
-		return -EOPNOTSUPP;
-
-	vxattr = ceph_match_vxattr(inode, name);
-	if (vxattr && vxattr->readonly)
-		return -EOPNOTSUPP;
-
-	err = -ENOMEM;
-	spin_lock(&ci->i_ceph_lock);
-retry:
-	issued = __ceph_caps_issued(ci, NULL);
-	dout("removexattr %p issued %s\n", inode, ceph_cap_string(issued));
-
-	if (!(issued & CEPH_CAP_XATTR_EXCL))
-		goto do_sync;
-	__build_xattrs(inode);
-
-	required_blob_size = __get_required_blob_size(ci, 0, 0);
-
-	if (!ci->i_xattrs.prealloc_blob ||
-	    required_blob_size > ci->i_xattrs.prealloc_blob->alloc_len) {
-		struct ceph_buffer *blob;
-
-		spin_unlock(&ci->i_ceph_lock);
-		dout(" preaallocating new blob size=%d\n", required_blob_size);
-		blob = ceph_buffer_new(required_blob_size, GFP_NOFS);
-		if (!blob)
-			goto out;
-		spin_lock(&ci->i_ceph_lock);
-		if (ci->i_xattrs.prealloc_blob)
-			ceph_buffer_put(ci->i_xattrs.prealloc_blob);
-		ci->i_xattrs.prealloc_blob = blob;
-		goto retry;
-	}
-
-	err = __remove_xattr_by_name(ceph_inode(inode), name);
-
-	dirty = __ceph_mark_dirty_caps(ci, CEPH_CAP_XATTR_EXCL);
-	ci->i_xattrs.dirty = true;
-	inode->i_ctime = CURRENT_TIME;
-	spin_unlock(&ci->i_ceph_lock);
-	if (dirty)
-		__mark_inode_dirty(inode, dirty);
-	return err;
-do_sync:
-	spin_unlock(&ci->i_ceph_lock);
-	err = ceph_send_removexattr(dentry, name);
-out:
-	return err;
-}
-
-=======
 static int ceph_get_xattr_handler(const struct xattr_handler *handler,
 				  struct dentry *dentry, struct inode *inode,
 				  const char *name, void *value, size_t size)
@@ -2142,4 +1468,3 @@ const struct xattr_handler * const ceph_xattr_handlers[] = {
 	&ceph_other_xattr_handler,
 	NULL,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

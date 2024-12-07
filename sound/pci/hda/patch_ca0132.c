@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * HD audio interface patch for Creative CA0132 chip
  *
@@ -9,36 +6,11 @@
  *
  * Based on patch_ca0110.c
  * Copyright (c) 2008 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *  This driver is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This driver is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/pci.h>
-#include <linux/mutex.h>
-#include <linux/module.h>
-#include <sound/core.h>
-#include "hda_codec.h"
-#include "hda_local.h"
-=======
 #include <linux/mutex.h>
 #include <linux/module.h>
 #include <linux/firmware.h>
@@ -83,15 +55,10 @@
 #define MASTERCONTROL				0x80
 #define MASTERCONTROL_ALLOC_DMA_CHAN		10
 #define MASTERCONTROL_QUERY_SPEAKER_EQ_ADDRESS	60
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WIDGET_CHIP_CTRL      0x15
 #define WIDGET_DSP_CTRL       0x16
 
-<<<<<<< HEAD
-#define WUH_MEM_CONNID        10
-#define DSP_MEM_CONNID        16
-=======
 #define MEM_CONNID_MICIN1     3
 #define MEM_CONNID_MICIN2     5
 #define MEM_CONNID_MICOUT1    12
@@ -854,7 +821,6 @@ static const struct chipio_stream_remap_data stream_remap_data[] = {
 			 0x000142c8, 0x000143c9, 0x000152ca, 0x000153cb },
 	}
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum hda_cmd_vendor_io {
 	/* for DspIO node */
@@ -875,20 +841,14 @@ enum hda_cmd_vendor_io {
 	VENDOR_CHIPIO_DATA_LOW               = 0x300,
 	VENDOR_CHIPIO_DATA_HIGH              = 0x400,
 
-<<<<<<< HEAD
-=======
 	VENDOR_CHIPIO_8051_WRITE_DIRECT      = 0x500,
 	VENDOR_CHIPIO_8051_READ_DIRECT       = 0xD00,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	VENDOR_CHIPIO_GET_PARAMETER          = 0xF00,
 	VENDOR_CHIPIO_STATUS                 = 0xF01,
 	VENDOR_CHIPIO_HIC_POST_READ          = 0x702,
 	VENDOR_CHIPIO_HIC_READ_DATA          = 0xF03,
 
-<<<<<<< HEAD
-	VENDOR_CHIPIO_CT_EXTENSIONS_ENABLE   = 0x70A,
-=======
 	VENDOR_CHIPIO_8051_DATA_WRITE        = 0x707,
 	VENDOR_CHIPIO_8051_DATA_READ         = 0xF07,
 	VENDOR_CHIPIO_8051_PMEM_READ         = 0xF08,
@@ -897,7 +857,6 @@ enum hda_cmd_vendor_io {
 
 	VENDOR_CHIPIO_CT_EXTENSIONS_ENABLE   = 0x70A,
 	VENDOR_CHIPIO_CT_EXTENSIONS_GET      = 0xF0A,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	VENDOR_CHIPIO_PLL_PMU_WRITE          = 0x70C,
 	VENDOR_CHIPIO_PLL_PMU_READ           = 0xF0C,
@@ -905,25 +864,14 @@ enum hda_cmd_vendor_io {
 	VENDOR_CHIPIO_8051_ADDRESS_HIGH      = 0x70E,
 	VENDOR_CHIPIO_FLAG_SET               = 0x70F,
 	VENDOR_CHIPIO_FLAGS_GET              = 0xF0F,
-<<<<<<< HEAD
-	VENDOR_CHIPIO_PARAMETER_SET          = 0x710,
-	VENDOR_CHIPIO_PARAMETER_GET          = 0xF10,
-=======
 	VENDOR_CHIPIO_PARAM_SET              = 0x710,
 	VENDOR_CHIPIO_PARAM_GET              = 0xF10,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	VENDOR_CHIPIO_PORT_ALLOC_CONFIG_SET  = 0x711,
 	VENDOR_CHIPIO_PORT_ALLOC_SET         = 0x712,
 	VENDOR_CHIPIO_PORT_ALLOC_GET         = 0xF12,
 	VENDOR_CHIPIO_PORT_FREE_SET          = 0x713,
 
-<<<<<<< HEAD
-	VENDOR_CHIPIO_PARAMETER_EX_ID_GET    = 0xF17,
-	VENDOR_CHIPIO_PARAMETER_EX_ID_SET    = 0x717,
-	VENDOR_CHIPIO_PARAMETER_EX_VALUE_GET = 0xF18,
-	VENDOR_CHIPIO_PARAMETER_EX_VALUE_SET = 0x718
-=======
 	VENDOR_CHIPIO_PARAM_EX_ID_GET        = 0xF17,
 	VENDOR_CHIPIO_PARAM_EX_ID_SET        = 0x717,
 	VENDOR_CHIPIO_PARAM_EX_VALUE_GET     = 0xF18,
@@ -937,7 +885,6 @@ enum hda_cmd_vendor_io {
 	VENDOR_CHIPIO_DMIC_MCLK_GET          = 0xF8A,
 
 	VENDOR_CHIPIO_EAPD_SEL_SET           = 0x78D
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -987,11 +934,7 @@ enum control_flag_id {
 	/* Impedance for ramp generator on Port_A 16 Ohm/10K Ohm */
 	CONTROL_FLAG_PORT_A_10KOHM_LOAD     = 20,
 	/* Impedance for ramp generator on Port_D, 16 Ohm/10K Ohm */
-<<<<<<< HEAD
-	CONTROL_FLAG_PORT_D_10K0HM_LOAD     = 21,
-=======
 	CONTROL_FLAG_PORT_D_10KOHM_LOAD     = 21,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ASI rate is 48kHz/96kHz */
 	CONTROL_FLAG_ASI_96KHZ              = 22,
 	/* DAC power settings able to control attached ports no/yes */
@@ -1005,11 +948,6 @@ enum control_flag_id {
 /*
  * Control parameter IDs
  */
-<<<<<<< HEAD
-enum control_parameter_id {
-	/* 0: force HDA, 1: allow DSP if HDA Spdif1Out stream is idle */
-	CONTROL_PARAM_SPDIF1_SOURCE            = 2,
-=======
 enum control_param_id {
 	/* 0: None, 1: Mic1In*/
 	CONTROL_PARAM_VIP_SOURCE               = 1,
@@ -1027,7 +965,6 @@ enum control_param_id {
 	 * sense given the fact the AE-5 uses it and has the ASI flag set.
 	 */
 	CONTROL_PARAM_ASI                      = 23,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Stream Control */
 
@@ -1105,96 +1042,6 @@ enum ca0132_sample_rate {
 	SR_RATE_UNKNOWN = 0x1F
 };
 
-<<<<<<< HEAD
-/*
- *  Scp Helper function
- */
-enum get_set {
-	IS_SET = 0,
-	IS_GET = 1,
-};
-
-/*
- * Duplicated from ca0110 codec
- */
-
-static void init_output(struct hda_codec *codec, hda_nid_t pin, hda_nid_t dac)
-{
-	if (pin) {
-		snd_hda_codec_write(codec, pin, 0,
-				    AC_VERB_SET_PIN_WIDGET_CONTROL, PIN_HP);
-		if (get_wcaps(codec, pin) & AC_WCAP_OUT_AMP)
-			snd_hda_codec_write(codec, pin, 0,
-					    AC_VERB_SET_AMP_GAIN_MUTE,
-					    AMP_OUT_UNMUTE);
-	}
-	if (dac)
-		snd_hda_codec_write(codec, dac, 0,
-				    AC_VERB_SET_AMP_GAIN_MUTE, AMP_OUT_ZERO);
-}
-
-static void init_input(struct hda_codec *codec, hda_nid_t pin, hda_nid_t adc)
-{
-	if (pin) {
-		snd_hda_codec_write(codec, pin, 0,
-				    AC_VERB_SET_PIN_WIDGET_CONTROL,
-				    PIN_VREF80);
-		if (get_wcaps(codec, pin) & AC_WCAP_IN_AMP)
-			snd_hda_codec_write(codec, pin, 0,
-					    AC_VERB_SET_AMP_GAIN_MUTE,
-					    AMP_IN_UNMUTE(0));
-	}
-	if (adc)
-		snd_hda_codec_write(codec, adc, 0, AC_VERB_SET_AMP_GAIN_MUTE,
-				    AMP_IN_UNMUTE(0));
-}
-
-static char *dirstr[2] = { "Playback", "Capture" };
-
-static int _add_switch(struct hda_codec *codec, hda_nid_t nid, const char *pfx,
-		       int chan, int dir)
-{
-	char namestr[44];
-	int type = dir ? HDA_INPUT : HDA_OUTPUT;
-	struct snd_kcontrol_new knew =
-		HDA_CODEC_MUTE_MONO(namestr, nid, chan, 0, type);
-	if ((query_amp_caps(codec, nid, type) & AC_AMPCAP_MUTE) == 0) {
-		snd_printdd("Skipping '%s %s Switch' (no mute on node 0x%x)\n", pfx, dirstr[dir], nid);
-		return 0;
-	}
-	sprintf(namestr, "%s %s Switch", pfx, dirstr[dir]);
-	return snd_hda_ctl_add(codec, nid, snd_ctl_new1(&knew, codec));
-}
-
-static int _add_volume(struct hda_codec *codec, hda_nid_t nid, const char *pfx,
-		       int chan, int dir)
-{
-	char namestr[44];
-	int type = dir ? HDA_INPUT : HDA_OUTPUT;
-	struct snd_kcontrol_new knew =
-		HDA_CODEC_VOLUME_MONO(namestr, nid, chan, 0, type);
-	if ((query_amp_caps(codec, nid, type) & AC_AMPCAP_NUM_STEPS) == 0) {
-		snd_printdd("Skipping '%s %s Volume' (no amp on node 0x%x)\n", pfx, dirstr[dir], nid);
-		return 0;
-	}
-	sprintf(namestr, "%s %s Volume", pfx, dirstr[dir]);
-	return snd_hda_ctl_add(codec, nid, snd_ctl_new1(&knew, codec));
-}
-
-#define add_out_switch(codec, nid, pfx) _add_switch(codec, nid, pfx, 3, 0)
-#define add_out_volume(codec, nid, pfx) _add_volume(codec, nid, pfx, 3, 0)
-#define add_in_switch(codec, nid, pfx) _add_switch(codec, nid, pfx, 3, 1)
-#define add_in_volume(codec, nid, pfx) _add_volume(codec, nid, pfx, 3, 1)
-#define add_mono_switch(codec, nid, pfx, chan) \
-	_add_switch(codec, nid, pfx, chan, 0)
-#define add_mono_volume(codec, nid, pfx, chan) \
-	_add_volume(codec, nid, pfx, chan, 0)
-#define add_in_mono_switch(codec, nid, pfx, chan) \
-	_add_switch(codec, nid, pfx, chan, 1)
-#define add_in_mono_volume(codec, nid, pfx, chan) \
-	_add_volume(codec, nid, pfx, chan, 1)
-
-=======
 enum dsp_download_state {
 	DSP_DOWNLOAD_FAILED = -1,
 	DSP_DOWNLOAD_INIT   = 0,
@@ -1207,20 +1054,12 @@ enum dsp_download_state {
 #define get_hdafmt_bits(fmt)	((fmt >> 4) & 0x7)
 #define get_hdafmt_rate(fmt)	((fmt >> 8) & 0x7f)
 #define get_hdafmt_type(fmt)	((fmt >> 15) & 0x1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * CA0132 specific
  */
 
 struct ca0132_spec {
-<<<<<<< HEAD
-	struct auto_pin_cfg autocfg;
-	struct hda_multi_out multiout;
-	hda_nid_t out_pins[AUTO_CFG_MAX_OUTS];
-	hda_nid_t dacs[AUTO_CFG_MAX_OUTS];
-	hda_nid_t hp_dac;
-=======
 	const struct snd_kcontrol_new *mixers[5];
 	unsigned int num_mixers;
 	const struct hda_verb *base_init_verbs;
@@ -1235,22 +1074,11 @@ struct ca0132_spec {
 	hda_nid_t out_pins[AUTO_CFG_MAX_OUTS];
 	hda_nid_t dacs[AUTO_CFG_MAX_OUTS];
 	unsigned int num_outputs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hda_nid_t input_pins[AUTO_PIN_LAST];
 	hda_nid_t adcs[AUTO_PIN_LAST];
 	hda_nid_t dig_out;
 	hda_nid_t dig_in;
 	unsigned int num_inputs;
-<<<<<<< HEAD
-	long curr_hp_switch;
-	long curr_hp_volume[2];
-	long curr_speaker_switch;
-	struct mutex chipio_mutex;
-	const char *input_labels[AUTO_PIN_LAST];
-	struct hda_pcm pcm_rec[2]; /* PCM information */
-};
-
-=======
 	hda_nid_t shared_mic_nid;
 	hda_nid_t shared_out_nid;
 	hda_nid_t unsol_tag_hp;
@@ -1712,18 +1540,13 @@ static int codec_set_converter_stream_channel(struct hda_codec *codec,
 				converter_stream_channel, res);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Chip access helper function */
 static int chipio_send(struct hda_codec *codec,
 		       unsigned int reg,
 		       unsigned int data)
 {
 	unsigned int res;
-<<<<<<< HEAD
-	int retry = 50;
-=======
 	unsigned long timeout = jiffies + msecs_to_jiffies(1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* send bits of data specified by reg */
 	do {
@@ -1731,13 +1554,9 @@ static int chipio_send(struct hda_codec *codec,
 					 reg, data);
 		if (res == VENDOR_STATUS_CHIPIO_OK)
 			return 0;
-<<<<<<< HEAD
-	} while (--retry);
-=======
 		msleep(20);
 	} while (time_before(jiffies, timeout));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
@@ -1747,17 +1566,12 @@ static int chipio_send(struct hda_codec *codec,
 static int chipio_write_address(struct hda_codec *codec,
 				unsigned int chip_addx)
 {
-<<<<<<< HEAD
-	int res;
-
-=======
 	struct ca0132_spec *spec = codec->spec;
 	int res;
 
 	if (spec->curr_chip_addx == chip_addx)
 			return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* send low 16 bits of the address */
 	res = chipio_send(codec, VENDOR_CHIPIO_ADDRESS_LOW,
 			  chip_addx & 0xffff);
@@ -1768,26 +1582,17 @@ static int chipio_write_address(struct hda_codec *codec,
 				  chip_addx >> 16);
 	}
 
-<<<<<<< HEAD
-=======
 	spec->curr_chip_addx = (res < 0) ? ~0U : chip_addx;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
 /*
  * Write data through the vendor widget -- NOT protected by the Mutex!
  */
-<<<<<<< HEAD
-
-static int chipio_write_data(struct hda_codec *codec, unsigned int data)
-{
-=======
 static int chipio_write_data(struct hda_codec *codec, unsigned int data)
 {
 	struct ca0132_spec *spec = codec->spec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	/* send low 16 bits of the data */
@@ -1799,19 +1604,14 @@ static int chipio_write_data(struct hda_codec *codec, unsigned int data)
 				  data >> 16);
 	}
 
-<<<<<<< HEAD
-=======
 	/*If no error encountered, automatically increment the address
 	as per chip behaviour*/
 	spec->curr_chip_addx = (res != -EIO) ?
 					(spec->curr_chip_addx + 4) : ~0U;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Write multiple data through the vendor widget -- NOT protected by the Mutex!
  */
 static int chipio_write_data_multiple(struct hda_codec *codec,
@@ -1833,15 +1633,11 @@ static int chipio_write_data_multiple(struct hda_codec *codec,
 
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Read data through the vendor widget -- NOT protected by the Mutex!
  */
 static int chipio_read_data(struct hda_codec *codec, unsigned int *data)
 {
-<<<<<<< HEAD
-=======
 	struct ca0132_spec *spec = codec->spec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	/* post read */
@@ -1859,13 +1655,10 @@ static int chipio_read_data(struct hda_codec *codec, unsigned int *data)
 					   0);
 	}
 
-<<<<<<< HEAD
-=======
 	/*If no error encountered, automatically increment the address
 	as per chip behaviour*/
 	spec->curr_chip_addx = (res != -EIO) ?
 					(spec->curr_chip_addx + 4) : ~0U;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
@@ -1896,8 +1689,6 @@ exit:
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Write given value to the given address through the chip I/O widget.
  * not protected by the Mutex
  */
@@ -1945,7 +1736,6 @@ error:
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Read the given address through the chip I/O widget
  * protected by the Mutex
  */
@@ -1972,47 +1762,6 @@ exit:
 }
 
 /*
-<<<<<<< HEAD
- * PCM stuffs
- */
-static void ca0132_setup_stream(struct hda_codec *codec, hda_nid_t nid,
-				 u32 stream_tag,
-				 int channel_id, int format)
-{
-	unsigned int oldval, newval;
-
-	if (!nid)
-		return;
-
-	snd_printdd("ca0132_setup_stream: "
-		"NID=0x%x, stream=0x%x, channel=%d, format=0x%x\n",
-		nid, stream_tag, channel_id, format);
-
-	/* update the format-id if changed */
-	oldval = snd_hda_codec_read(codec, nid, 0,
-				    AC_VERB_GET_STREAM_FORMAT,
-				    0);
-	if (oldval != format) {
-		msleep(20);
-		snd_hda_codec_write(codec, nid, 0,
-				    AC_VERB_SET_STREAM_FORMAT,
-				    format);
-	}
-
-	oldval = snd_hda_codec_read(codec, nid, 0, AC_VERB_GET_CONV, 0);
-	newval = (stream_tag << 4) | channel_id;
-	if (oldval != newval) {
-		snd_hda_codec_write(codec, nid, 0,
-				    AC_VERB_SET_CHANNEL_STREAMID,
-				    newval);
-	}
-}
-
-static void ca0132_cleanup_stream(struct hda_codec *codec, hda_nid_t nid)
-{
-	snd_hda_codec_write(codec, nid, 0, AC_VERB_SET_STREAM_FORMAT, 0);
-	snd_hda_codec_write(codec, nid, 0, AC_VERB_SET_CHANNEL_STREAMID, 0);
-=======
  * Set chip control flags through the chip I/O widget.
  */
 static void chipio_set_control_flag(struct hda_codec *codec,
@@ -4130,7 +3879,6 @@ static void r3di_gpio_dsp_status_set(struct hda_codec *codec,
 
 	snd_hda_codec_write(codec, codec->core.afg, 0,
 			    AC_VERB_SET_GPIO_DATA, cur_gpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -4144,11 +3892,7 @@ static int ca0132_playback_pcm_prepare(struct hda_pcm_stream *hinfo,
 {
 	struct ca0132_spec *spec = codec->spec;
 
-<<<<<<< HEAD
-	ca0132_setup_stream(codec, spec->dacs[0], stream_tag, 0, format);
-=======
 	snd_hda_codec_setup_stream(codec, spec->dacs[0], stream_tag, 0, format);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -4159,9 +3903,6 @@ static int ca0132_playback_pcm_cleanup(struct hda_pcm_stream *hinfo,
 {
 	struct ca0132_spec *spec = codec->spec;
 
-<<<<<<< HEAD
-	ca0132_cleanup_stream(codec, spec->dacs[0]);
-=======
 	if (spec->dsp_state == DSP_DOWNLOADING)
 		return 0;
 
@@ -4171,16 +3912,10 @@ static int ca0132_playback_pcm_cleanup(struct hda_pcm_stream *hinfo,
 		msleep(50);
 
 	snd_hda_codec_cleanup_stream(codec, spec->dacs[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * Digital out
- */
-=======
 static unsigned int ca0132_playback_pcm_delay(struct hda_pcm_stream *info,
 			struct hda_codec *codec,
 			struct snd_pcm_substream *substream)
@@ -4217,7 +3952,6 @@ static int ca0132_dig_playback_pcm_open(struct hda_pcm_stream *hinfo,
 	return snd_hda_multi_out_dig_open(codec, &spec->multiout);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ca0132_dig_playback_pcm_prepare(struct hda_pcm_stream *hinfo,
 			struct hda_codec *codec,
 			unsigned int stream_tag,
@@ -4225,15 +3959,8 @@ static int ca0132_dig_playback_pcm_prepare(struct hda_pcm_stream *hinfo,
 			struct snd_pcm_substream *substream)
 {
 	struct ca0132_spec *spec = codec->spec;
-<<<<<<< HEAD
-
-	ca0132_setup_stream(codec, spec->dig_out, stream_tag, 0, format);
-
-	return 0;
-=======
 	return snd_hda_multi_out_dig_prepare(codec, &spec->multiout,
 					     stream_tag, format, substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ca0132_dig_playback_pcm_cleanup(struct hda_pcm_stream *hinfo,
@@ -4241,12 +3968,6 @@ static int ca0132_dig_playback_pcm_cleanup(struct hda_pcm_stream *hinfo,
 			struct snd_pcm_substream *substream)
 {
 	struct ca0132_spec *spec = codec->spec;
-<<<<<<< HEAD
-
-	ca0132_cleanup_stream(codec, spec->dig_out);
-
-	return 0;
-=======
 	return snd_hda_multi_out_dig_cleanup(codec, &spec->multiout);
 }
 
@@ -4256,24 +3977,12 @@ static int ca0132_dig_playback_pcm_close(struct hda_pcm_stream *hinfo,
 {
 	struct ca0132_spec *spec = codec->spec;
 	return snd_hda_multi_out_dig_close(codec, &spec->multiout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Analog capture
  */
 static int ca0132_capture_pcm_prepare(struct hda_pcm_stream *hinfo,
-<<<<<<< HEAD
-			struct hda_codec *codec,
-			unsigned int stream_tag,
-			unsigned int format,
-			struct snd_pcm_substream *substream)
-{
-	struct ca0132_spec *spec = codec->spec;
-
-	ca0132_setup_stream(codec, spec->adcs[substream->number],
-			     stream_tag, 0, format);
-=======
 					struct hda_codec *codec,
 					unsigned int stream_tag,
 					unsigned int format,
@@ -4281,7 +3990,6 @@ static int ca0132_capture_pcm_prepare(struct hda_pcm_stream *hinfo,
 {
 	snd_hda_codec_setup_stream(codec, hinfo->nid,
 				   stream_tag, 0, format);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -4292,9 +4000,6 @@ static int ca0132_capture_pcm_cleanup(struct hda_pcm_stream *hinfo,
 {
 	struct ca0132_spec *spec = codec->spec;
 
-<<<<<<< HEAD
-	ca0132_cleanup_stream(codec, spec->adcs[substream->number]);
-=======
 	if (spec->dsp_state == DSP_DOWNLOADING)
 		return 0;
 
@@ -4928,25 +4633,11 @@ static int ca0132_alt_surround_set_bass_redirection(struct hda_codec *codec,
 		if (err < 0)
 			return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
- * Digital capture
- */
-static int ca0132_dig_capture_pcm_prepare(struct hda_pcm_stream *hinfo,
-			struct hda_codec *codec,
-			unsigned int stream_tag,
-			unsigned int format,
-			struct snd_pcm_substream *substream)
-{
-	struct ca0132_spec *spec = codec->spec;
-
-	ca0132_setup_stream(codec, spec->dig_in, stream_tag, 0, format);
-=======
  * These are the commands needed to setup output on each of the different card
  * types.
  */
@@ -5035,20 +4726,10 @@ static int ca0132_alt_select_out_quirk_set(struct hda_codec *codec)
 						spec->zxr_gain_set);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ca0132_dig_capture_pcm_cleanup(struct hda_pcm_stream *hinfo,
-			struct hda_codec *codec,
-			struct snd_pcm_substream *substream)
-{
-	struct ca0132_spec *spec = codec->spec;
-
-	ca0132_cleanup_stream(codec, spec->dig_in);
-=======
 static void ca0132_set_out_node_pincfg(struct hda_codec *codec, hda_nid_t nid,
 		bool out_enable, bool hp_enable)
 {
@@ -5397,26 +5078,11 @@ static int ca0132_select_mic(struct hda_codec *codec)
 	}
 
 	snd_hda_power_down_pm(codec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
- */
-static struct hda_pcm_stream ca0132_pcm_analog_playback = {
-	.substreams = 1,
-	.channels_min = 2,
-	.channels_max = 2,
-	.ops = {
-		.prepare = ca0132_playback_pcm_prepare,
-		.cleanup = ca0132_playback_pcm_cleanup
-	},
-};
-
-static struct hda_pcm_stream ca0132_pcm_analog_capture = {
-=======
  * Select the active input.
  * Mic detection isn't used, because it's kind of pointless on the SBZ.
  * The front mic has no jack-detection, so the only way to switch to it
@@ -7580,68 +7246,37 @@ static const struct hda_pcm_stream ca0132_pcm_analog_playback = {
 };
 
 static const struct hda_pcm_stream ca0132_pcm_analog_capture = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.substreams = 1,
 	.channels_min = 2,
 	.channels_max = 2,
 	.ops = {
 		.prepare = ca0132_capture_pcm_prepare,
-<<<<<<< HEAD
-		.cleanup = ca0132_capture_pcm_cleanup
-	},
-};
-
-static struct hda_pcm_stream ca0132_pcm_digital_playback = {
-=======
 		.cleanup = ca0132_capture_pcm_cleanup,
 		.get_delay = ca0132_capture_pcm_delay,
 	},
 };
 
 static const struct hda_pcm_stream ca0132_pcm_digital_playback = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.substreams = 1,
 	.channels_min = 2,
 	.channels_max = 2,
 	.ops = {
-<<<<<<< HEAD
-=======
 		.open = ca0132_dig_playback_pcm_open,
 		.close = ca0132_dig_playback_pcm_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.prepare = ca0132_dig_playback_pcm_prepare,
 		.cleanup = ca0132_dig_playback_pcm_cleanup
 	},
 };
 
-<<<<<<< HEAD
-static struct hda_pcm_stream ca0132_pcm_digital_capture = {
-	.substreams = 1,
-	.channels_min = 2,
-	.channels_max = 2,
-	.ops = {
-		.prepare = ca0132_dig_capture_pcm_prepare,
-		.cleanup = ca0132_dig_capture_pcm_cleanup
-	},
-=======
 static const struct hda_pcm_stream ca0132_pcm_digital_capture = {
 	.substreams = 1,
 	.channels_min = 2,
 	.channels_max = 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int ca0132_build_pcms(struct hda_codec *codec)
 {
 	struct ca0132_spec *spec = codec->spec;
-<<<<<<< HEAD
-	struct hda_pcm *info = spec->pcm_rec;
-
-	codec->pcm_info = info;
-	codec->num_pcms = 0;
-
-	info->name = "CA0132 Analog";
-=======
 	struct hda_pcm *info;
 
 	info = snd_hda_codec_pcm_new(codec, "CA0132 Analog");
@@ -7652,17 +7287,11 @@ static int ca0132_build_pcms(struct hda_codec *codec)
 		info->stream[SNDRV_PCM_STREAM_PLAYBACK].chmap
 			= ca0132_alt_chmaps;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->stream[SNDRV_PCM_STREAM_PLAYBACK] = ca0132_pcm_analog_playback;
 	info->stream[SNDRV_PCM_STREAM_PLAYBACK].nid = spec->dacs[0];
 	info->stream[SNDRV_PCM_STREAM_PLAYBACK].channels_max =
 		spec->multiout.max_channels;
 	info->stream[SNDRV_PCM_STREAM_CAPTURE] = ca0132_pcm_analog_capture;
-<<<<<<< HEAD
-	info->stream[SNDRV_PCM_STREAM_CAPTURE].substreams = spec->num_inputs;
-	info->stream[SNDRV_PCM_STREAM_CAPTURE].nid = spec->adcs[0];
-	codec->num_pcms++;
-=======
 	info->stream[SNDRV_PCM_STREAM_CAPTURE].substreams = 1;
 	info->stream[SNDRV_PCM_STREAM_CAPTURE].nid = spec->adcs[0];
 
@@ -7683,19 +7312,13 @@ static int ca0132_build_pcms(struct hda_codec *codec)
 	info->stream[SNDRV_PCM_STREAM_CAPTURE] = ca0132_pcm_analog_capture;
 	info->stream[SNDRV_PCM_STREAM_CAPTURE].substreams = 1;
 	info->stream[SNDRV_PCM_STREAM_CAPTURE].nid = spec->adcs[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!spec->dig_out && !spec->dig_in)
 		return 0;
 
-<<<<<<< HEAD
-	info++;
-	info->name = "CA0132 Digital";
-=======
 	info = snd_hda_codec_pcm_new(codec, "CA0132 Digital");
 	if (!info)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->pcm_type = HDA_PCM_TYPE_SPDIF;
 	if (spec->dig_out) {
 		info->stream[SNDRV_PCM_STREAM_PLAYBACK] =
@@ -7707,324 +7330,10 @@ static int ca0132_build_pcms(struct hda_codec *codec)
 			ca0132_pcm_digital_capture;
 		info->stream[SNDRV_PCM_STREAM_CAPTURE].nid = spec->dig_in;
 	}
-<<<<<<< HEAD
-	codec->num_pcms++;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#define REG_CODEC_MUTE		0x18b014
-#define REG_CODEC_HP_VOL_L	0x18b070
-#define REG_CODEC_HP_VOL_R	0x18b074
-
-static int ca0132_hp_switch_get(struct snd_kcontrol *kcontrol,
-				struct snd_ctl_elem_value *ucontrol)
-{
-	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct ca0132_spec *spec = codec->spec;
-	long *valp = ucontrol->value.integer.value;
-
-	*valp = spec->curr_hp_switch;
-	return 0;
-}
-
-static int ca0132_hp_switch_put(struct snd_kcontrol *kcontrol,
-				struct snd_ctl_elem_value *ucontrol)
-{
-	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct ca0132_spec *spec = codec->spec;
-	long *valp = ucontrol->value.integer.value;
-	unsigned int data;
-	int err;
-
-	/* any change? */
-	if (spec->curr_hp_switch == *valp)
-		return 0;
-
-	snd_hda_power_up(codec);
-
-	err = chipio_read(codec, REG_CODEC_MUTE, &data);
-	if (err < 0)
-		goto exit;
-
-	/* *valp 0 is mute, 1 is unmute */
-	data = (data & 0x7f) | (*valp ? 0 : 0x80);
-	err = chipio_write(codec, REG_CODEC_MUTE, data);
-	if (err < 0)
-		goto exit;
-
-	spec->curr_hp_switch = *valp;
-
- exit:
-	snd_hda_power_down(codec);
-	return err < 0 ? err : 1;
-}
-
-static int ca0132_speaker_switch_get(struct snd_kcontrol *kcontrol,
-				     struct snd_ctl_elem_value *ucontrol)
-{
-	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct ca0132_spec *spec = codec->spec;
-	long *valp = ucontrol->value.integer.value;
-
-	*valp = spec->curr_speaker_switch;
-	return 0;
-}
-
-static int ca0132_speaker_switch_put(struct snd_kcontrol *kcontrol,
-				     struct snd_ctl_elem_value *ucontrol)
-{
-	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct ca0132_spec *spec = codec->spec;
-	long *valp = ucontrol->value.integer.value;
-	unsigned int data;
-	int err;
-
-	/* any change? */
-	if (spec->curr_speaker_switch == *valp)
-		return 0;
-
-	snd_hda_power_up(codec);
-
-	err = chipio_read(codec, REG_CODEC_MUTE, &data);
-	if (err < 0)
-		goto exit;
-
-	/* *valp 0 is mute, 1 is unmute */
-	data = (data & 0xef) | (*valp ? 0 : 0x10);
-	err = chipio_write(codec, REG_CODEC_MUTE, data);
-	if (err < 0)
-		goto exit;
-
-	spec->curr_speaker_switch = *valp;
-
- exit:
-	snd_hda_power_down(codec);
-	return err < 0 ? err : 1;
-}
-
-static int ca0132_hp_volume_get(struct snd_kcontrol *kcontrol,
-				struct snd_ctl_elem_value *ucontrol)
-{
-	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct ca0132_spec *spec = codec->spec;
-	long *valp = ucontrol->value.integer.value;
-
-	*valp++ = spec->curr_hp_volume[0];
-	*valp = spec->curr_hp_volume[1];
-	return 0;
-}
-
-static int ca0132_hp_volume_put(struct snd_kcontrol *kcontrol,
-				struct snd_ctl_elem_value *ucontrol)
-{
-	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct ca0132_spec *spec = codec->spec;
-	long *valp = ucontrol->value.integer.value;
-	long left_vol, right_vol;
-	unsigned int data;
-	int val;
-	int err;
-
-	left_vol = *valp++;
-	right_vol = *valp;
-
-	/* any change? */
-	if ((spec->curr_hp_volume[0] == left_vol) &&
-		(spec->curr_hp_volume[1] == right_vol))
-		return 0;
-
-	snd_hda_power_up(codec);
-
-	err = chipio_read(codec, REG_CODEC_HP_VOL_L, &data);
-	if (err < 0)
-		goto exit;
-
-	val = 31 - left_vol;
-	data = (data & 0xe0) | val;
-	err = chipio_write(codec, REG_CODEC_HP_VOL_L, data);
-	if (err < 0)
-		goto exit;
-
-	val = 31 - right_vol;
-	data = (data & 0xe0) | val;
-	err = chipio_write(codec, REG_CODEC_HP_VOL_R, data);
-	if (err < 0)
-		goto exit;
-
-	spec->curr_hp_volume[0] = left_vol;
-	spec->curr_hp_volume[1] = right_vol;
-
- exit:
-	snd_hda_power_down(codec);
-	return err < 0 ? err : 1;
-}
-
-static int add_hp_switch(struct hda_codec *codec, hda_nid_t nid)
-{
-	struct snd_kcontrol_new knew =
-		HDA_CODEC_MUTE_MONO("Headphone Playback Switch",
-				     nid, 1, 0, HDA_OUTPUT);
-	knew.get = ca0132_hp_switch_get;
-	knew.put = ca0132_hp_switch_put;
-	return snd_hda_ctl_add(codec, nid, snd_ctl_new1(&knew, codec));
-}
-
-static int add_hp_volume(struct hda_codec *codec, hda_nid_t nid)
-{
-	struct snd_kcontrol_new knew =
-		HDA_CODEC_VOLUME_MONO("Headphone Playback Volume",
-				       nid, 3, 0, HDA_OUTPUT);
-	knew.get = ca0132_hp_volume_get;
-	knew.put = ca0132_hp_volume_put;
-	return snd_hda_ctl_add(codec, nid, snd_ctl_new1(&knew, codec));
-}
-
-static int add_speaker_switch(struct hda_codec *codec, hda_nid_t nid)
-{
-	struct snd_kcontrol_new knew =
-		HDA_CODEC_MUTE_MONO("Speaker Playback Switch",
-				     nid, 1, 0, HDA_OUTPUT);
-	knew.get = ca0132_speaker_switch_get;
-	knew.put = ca0132_speaker_switch_put;
-	return snd_hda_ctl_add(codec, nid, snd_ctl_new1(&knew, codec));
-}
-
-static void ca0132_fix_hp_caps(struct hda_codec *codec)
-{
-	struct ca0132_spec *spec = codec->spec;
-	struct auto_pin_cfg *cfg = &spec->autocfg;
-	unsigned int caps;
-
-	/* set mute-capable, 1db step, 32 steps, ofs 6 */
-	caps = 0x80031f06;
-	snd_hda_override_amp_caps(codec, cfg->hp_pins[0], HDA_OUTPUT, caps);
-}
-
-static int ca0132_build_controls(struct hda_codec *codec)
-{
-	struct ca0132_spec *spec = codec->spec;
-	struct auto_pin_cfg *cfg = &spec->autocfg;
-	int i, err;
-
-	if (spec->multiout.num_dacs) {
-		err = add_speaker_switch(codec, spec->out_pins[0]);
-		if (err < 0)
-			return err;
-	}
-
-	if (cfg->hp_outs) {
-		ca0132_fix_hp_caps(codec);
-		err = add_hp_switch(codec, cfg->hp_pins[0]);
-		if (err < 0)
-			return err;
-		err = add_hp_volume(codec, cfg->hp_pins[0]);
-		if (err < 0)
-			return err;
-	}
-
-	for (i = 0; i < spec->num_inputs; i++) {
-		const char *label = spec->input_labels[i];
-
-		err = add_in_switch(codec, spec->adcs[i], label);
-		if (err < 0)
-			return err;
-		err = add_in_volume(codec, spec->adcs[i], label);
-		if (err < 0)
-			return err;
-		if (cfg->inputs[i].type == AUTO_PIN_MIC) {
-			/* add Mic-Boost */
-			err = add_in_mono_volume(codec, spec->input_pins[i],
-						 "Mic Boost", 1);
-			if (err < 0)
-				return err;
-		}
-	}
-
-	if (spec->dig_out) {
-		err = snd_hda_create_spdif_out_ctls(codec, spec->dig_out,
-						    spec->dig_out);
-		if (err < 0)
-			return err;
-		err = add_out_volume(codec, spec->dig_out, "IEC958");
-		if (err < 0)
-			return err;
-	}
-
-	if (spec->dig_in) {
-		err = snd_hda_create_spdif_in_ctls(codec, spec->dig_in);
-		if (err < 0)
-			return err;
-		err = add_in_volume(codec, spec->dig_in, "IEC958");
-		if (err < 0)
-			return err;
-	}
-	return 0;
-}
-
-
-static void ca0132_set_ct_ext(struct hda_codec *codec, int enable)
-{
-	/* Set Creative extension */
-	snd_printdd("SET CREATIVE EXTENSION\n");
-	snd_hda_codec_write(codec, WIDGET_CHIP_CTRL, 0,
-			    VENDOR_CHIPIO_CT_EXTENSIONS_ENABLE,
-			    enable);
-	msleep(20);
-}
-
-
-static void ca0132_config(struct hda_codec *codec)
-{
-	struct ca0132_spec *spec = codec->spec;
-	struct auto_pin_cfg *cfg = &spec->autocfg;
-
-	/* line-outs */
-	cfg->line_outs = 1;
-	cfg->line_out_pins[0] = 0x0b; /* front */
-	cfg->line_out_type = AUTO_PIN_LINE_OUT;
-
-	spec->dacs[0] = 0x02;
-	spec->out_pins[0] = 0x0b;
-	spec->multiout.dac_nids = spec->dacs;
-	spec->multiout.num_dacs = 1;
-	spec->multiout.max_channels = 2;
-
-	/* headphone */
-	cfg->hp_outs = 1;
-	cfg->hp_pins[0] = 0x0f;
-
-	spec->hp_dac = 0;
-	spec->multiout.hp_nid = 0;
-
-	/* inputs */
-	cfg->num_inputs = 2;  /* Mic-in and line-in */
-	cfg->inputs[0].pin = 0x12;
-	cfg->inputs[0].type = AUTO_PIN_MIC;
-	cfg->inputs[1].pin = 0x11;
-	cfg->inputs[1].type = AUTO_PIN_LINE_IN;
-
-	/* Mic-in */
-	spec->input_pins[0] = 0x12;
-	spec->input_labels[0] = "Mic-In";
-	spec->adcs[0] = 0x07;
-
-	/* Line-In */
-	spec->input_pins[1] = 0x11;
-	spec->input_labels[1] = "Line-In";
-	spec->adcs[1] = 0x08;
-	spec->num_inputs = 2;
-}
-
-static void ca0132_init_chip(struct hda_codec *codec)
-{
-	struct ca0132_spec *spec = codec->spec;
-
-	mutex_init(&spec->chipio_mutex);
-=======
 static int dbpro_build_pcms(struct hda_codec *codec)
 {
 	struct ca0132_spec *spec = codec->spec;
@@ -9744,14 +9053,11 @@ static void zxr_exit_chip(struct hda_codec *codec)
 	ca0113_mmio_gpio_set(codec, 5, true);
 	ca0113_mmio_gpio_set(codec, 2, false);
 	ca0113_mmio_gpio_set(codec, 3, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ca0132_exit_chip(struct hda_codec *codec)
 {
 	/* put any chip cleanup stuffs here. */
-<<<<<<< HEAD
-=======
 
 	if (dspload_is_loaded(codec))
 		dsp_reset(codec);
@@ -10187,7 +9493,6 @@ static void ca0132_alt_init(struct hda_codec *codec)
 	default:
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ca0132_init(struct hda_codec *codec)
@@ -10195,14 +9500,6 @@ static int ca0132_init(struct hda_codec *codec)
 	struct ca0132_spec *spec = codec->spec;
 	struct auto_pin_cfg *cfg = &spec->autocfg;
 	int i;
-<<<<<<< HEAD
-
-	for (i = 0; i < spec->multiout.num_dacs; i++) {
-		init_output(codec, spec->out_pins[i],
-			    spec->multiout.dac_nids[i]);
-	}
-	init_output(codec, cfg->hp_pins[0], spec->hp_dac);
-=======
 	bool dsp_loaded;
 
 	/*
@@ -10276,7 +9573,6 @@ static int ca0132_init(struct hda_codec *codec)
 	for (i = 0; i < spec->num_outputs; i++)
 		init_output(codec, spec->out_pins[i], spec->dacs[0]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_output(codec, cfg->dig_out_pins[0], spec->dig_out);
 
 	for (i = 0; i < spec->num_inputs; i++)
@@ -10284,9 +9580,6 @@ static int ca0132_init(struct hda_codec *codec)
 
 	init_input(codec, cfg->dig_in_pin, spec->dig_in);
 
-<<<<<<< HEAD
-	ca0132_set_ct_ext(codec, 1);
-=======
 	if (!ca0132_use_alt_functions(spec)) {
 		snd_hda_sequence_write(codec, spec->chip_init_verbs);
 		snd_hda_codec_write(codec, WIDGET_CHIP_CTRL, 0,
@@ -10319,22 +9612,10 @@ static int ca0132_init(struct hda_codec *codec)
 	}
 
 	snd_hda_power_down_pm(codec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-
-static void ca0132_free(struct hda_codec *codec)
-{
-	ca0132_set_ct_ext(codec, 0);
-	ca0132_exit_chip(codec);
-	kfree(codec->spec);
-}
-
-static struct hda_codec_ops ca0132_patch_ops = {
-=======
 static int dbpro_init(struct hda_codec *codec)
 {
 	struct ca0132_spec *spec = codec->spec;
@@ -10412,16 +9693,10 @@ static int ca0132_suspend(struct hda_codec *codec)
 #endif
 
 static const struct hda_codec_ops ca0132_patch_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.build_controls = ca0132_build_controls,
 	.build_pcms = ca0132_build_pcms,
 	.init = ca0132_init,
 	.free = ca0132_free,
-<<<<<<< HEAD
-};
-
-
-=======
 	.unsol_event = snd_hda_jack_unsol_event,
 #ifdef CONFIG_PM
 	.suspend = ca0132_suspend,
@@ -10700,27 +9975,19 @@ static void sbz_detect_quirk(struct hda_codec *codec)
 		break;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int patch_ca0132(struct hda_codec *codec)
 {
 	struct ca0132_spec *spec;
-<<<<<<< HEAD
-
-	snd_printdd("patch_ca0132\n");
-=======
 	int err;
 	const struct snd_pci_quirk *quirk;
 
 	codec_dbg(codec, "patch_ca0132\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spec = kzalloc(sizeof(*spec), GFP_KERNEL);
 	if (!spec)
 		return -ENOMEM;
 	codec->spec = spec;
-<<<<<<< HEAD
-=======
 	spec->codec = codec;
 
 	/* Detect codec quirk */
@@ -10814,17 +10081,11 @@ static int patch_ca0132(struct hda_codec *codec)
 	spec->base_exit_verbs = ca0132_base_exit_verbs;
 
 	INIT_DELAYED_WORK(&spec->unsol_hp_work, ca0132_unsol_hp_delayed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ca0132_init_chip(codec);
 
 	ca0132_config(codec);
 
-<<<<<<< HEAD
-	codec->patch_ops = ca0132_patch_ops;
-
-	return 0;
-=======
 	err = ca0132_prepare_verbs(codec);
 	if (err < 0)
 		goto error;
@@ -10840,41 +10101,11 @@ static int patch_ca0132(struct hda_codec *codec)
  error:
 	ca0132_free(codec);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * patch entries
  */
-<<<<<<< HEAD
-static struct hda_codec_preset snd_hda_preset_ca0132[] = {
-	{ .id = 0x11020011, .name = "CA0132",     .patch = patch_ca0132 },
-	{} /* terminator */
-};
-
-MODULE_ALIAS("snd-hda-codec-id:11020011");
-
-MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("Creative CA0132, CA0132 HD-audio codec");
-
-static struct hda_codec_preset_list ca0132_list = {
-	.preset = snd_hda_preset_ca0132,
-	.owner = THIS_MODULE,
-};
-
-static int __init patch_ca0132_init(void)
-{
-	return snd_hda_add_codec_preset(&ca0132_list);
-}
-
-static void __exit patch_ca0132_exit(void)
-{
-	snd_hda_delete_codec_preset(&ca0132_list);
-}
-
-module_init(patch_ca0132_init)
-module_exit(patch_ca0132_exit)
-=======
 static const struct hda_device_id snd_hda_id_ca0132[] = {
 	HDA_CODEC_ENTRY(0x11020011, "CA0132", patch_ca0132),
 	{} /* terminator */
@@ -10889,4 +10120,3 @@ static struct hda_codec_driver ca0132_driver = {
 };
 
 module_hda_codec_driver(ca0132_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

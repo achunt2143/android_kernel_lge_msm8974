@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/* -----------------------------------------------------------------------
- *
- *   Copyright 2009 Intel Corporation; author H. Peter Anvin
- *
- *   This file is part of the Linux kernel, and is made available under
- *   the terms of the GNU General Public License version 2 or (at your
- *   option) any later version; incorporated herein by reference.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* -----------------------------------------------------------------------
  *
  *   Copyright 2009-2014 Intel Corporation; author H. Peter Anvin
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * ----------------------------------------------------------------------- */
 
@@ -20,13 +10,8 @@
  * touching registers they shouldn't be.
  */
 
-<<<<<<< HEAD
-	.code16gcc
-	.text
-=======
 	.code16
 	.section ".inittext","ax"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.globl	intcall
 	.type	intcall, @function
 intcall:
@@ -47,11 +32,7 @@ intcall:
 	movw	%dx, %si
 	movw	%sp, %di
 	movw	$11, %cx
-<<<<<<< HEAD
-	rep; movsd
-=======
 	rep; movsl
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Pop full state from the stack */
 	popal
@@ -86,11 +67,7 @@ intcall:
 	jz	4f
 	movw	%sp, %si
 	movw	$11, %cx
-<<<<<<< HEAD
-	rep; movsd
-=======
 	rep; movsl
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 4:	addw	$44, %sp
 
 	/* Restore state and return */

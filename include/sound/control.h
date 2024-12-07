@@ -1,38 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_CONTROL_H
 #define __SOUND_CONTROL_H
 
 /*
  *  Header file for control interface
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
-<<<<<<< HEAD
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- */
-
-=======
  */
 
 #include <linux/wait.h>
 #include <linux/nospec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/asound.h>
 
 #define snd_kcontrol_chip(kcontrol) ((kcontrol)->private_data)
@@ -42,12 +18,6 @@ typedef int (snd_kcontrol_info_t) (struct snd_kcontrol * kcontrol, struct snd_ct
 typedef int (snd_kcontrol_get_t) (struct snd_kcontrol * kcontrol, struct snd_ctl_elem_value * ucontrol);
 typedef int (snd_kcontrol_put_t) (struct snd_kcontrol * kcontrol, struct snd_ctl_elem_value * ucontrol);
 typedef int (snd_kcontrol_tlv_rw_t)(struct snd_kcontrol *kcontrol,
-<<<<<<< HEAD
-				    int op_flag, /* 0=read,1=write,-1=command */
-				    unsigned int size,
-				    unsigned int __user *tlv);
-
-=======
 				    int op_flag, /* SNDRV_CTL_TLV_OP_XXX */
 				    unsigned int size,
 				    unsigned int __user *tlv);
@@ -73,21 +43,12 @@ enum {
 	SNDRV_CTL_TLV_OP_WRITE = 1,
 	SNDRV_CTL_TLV_OP_CMD = -1,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct snd_kcontrol_new {
 	snd_ctl_elem_iface_t iface;	/* interface identifier */
 	unsigned int device;		/* device/client number */
 	unsigned int subdevice;		/* subdevice (substream) number */
-<<<<<<< HEAD
-#ifdef CONFIG_SND_SOC_WM5110
-	const unsigned char *name;	/* ASCII name of item */
-#else
-	unsigned char *name;
-#endif
-=======
 	const char *name;		/* ASCII name of item */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int index;		/* index of item */
 	unsigned int access;		/* access rights */
 	unsigned int count;		/* count of same elements */
@@ -120,11 +81,7 @@ struct snd_kcontrol {
 	unsigned long private_value;
 	void *private_data;
 	void (*private_free)(struct snd_kcontrol *kcontrol);
-<<<<<<< HEAD
-	struct snd_kcontrol_volatile vd[0];	/* volatile data */
-=======
 	struct snd_kcontrol_volatile vd[];	/* volatile data */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define snd_kcontrol(n) list_entry(n, struct snd_kcontrol, list)
@@ -139,37 +96,24 @@ struct snd_kctl_event {
 
 struct pid;
 
-<<<<<<< HEAD
-=======
 enum {
 	SND_CTL_SUBDEV_PCM,
 	SND_CTL_SUBDEV_RAWMIDI,
 	SND_CTL_SUBDEV_ITEMS,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct snd_ctl_file {
 	struct list_head list;		/* list of all control files */
 	struct snd_card *card;
 	struct pid *pid;
-<<<<<<< HEAD
-	int prefer_pcm_subdevice;
-	int prefer_rawmidi_subdevice;
-	wait_queue_head_t change_sleep;
-	spinlock_t read_lock;
-	struct fasync_struct *fasync;
-=======
 	int preferred_subdevice[SND_CTL_SUBDEV_ITEMS];
 	wait_queue_head_t change_sleep;
 	spinlock_t read_lock;
 	struct snd_fasync *fasync;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int subscribed;			/* read interface is activated */
 	struct list_head events;	/* waiting events for read */
 };
 
-<<<<<<< HEAD
-=======
 struct snd_ctl_layer_ops {
 	struct snd_ctl_layer_ops *next;
 	const char *module_name;
@@ -178,7 +122,6 @@ struct snd_ctl_layer_ops {
 	void (*lnotify)(struct snd_card *card, unsigned int mask, struct snd_kcontrol *kctl, unsigned int ioff);
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define snd_ctl_file(n) list_entry(n, struct snd_ctl_file, list)
 
 typedef int (*snd_kctl_ioctl_func_t) (struct snd_card * card,
@@ -186,10 +129,7 @@ typedef int (*snd_kctl_ioctl_func_t) (struct snd_card * card,
 				      unsigned int cmd, unsigned long arg);
 
 void snd_ctl_notify(struct snd_card * card, unsigned int mask, struct snd_ctl_elem_id * id);
-<<<<<<< HEAD
-=======
 void snd_ctl_notify_one(struct snd_card * card, unsigned int mask, struct snd_kcontrol * kctl, unsigned int ioff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct snd_kcontrol *snd_ctl_new1(const struct snd_kcontrol_new * kcontrolnew, void * private_data);
 void snd_ctl_free_one(struct snd_kcontrol * kcontrol);
@@ -198,12 +138,6 @@ int snd_ctl_remove(struct snd_card * card, struct snd_kcontrol * kcontrol);
 int snd_ctl_replace(struct snd_card *card, struct snd_kcontrol *kcontrol, bool add_on_replace);
 int snd_ctl_remove_id(struct snd_card * card, struct snd_ctl_elem_id *id);
 int snd_ctl_rename_id(struct snd_card * card, struct snd_ctl_elem_id *src_id, struct snd_ctl_elem_id *dst_id);
-<<<<<<< HEAD
-int snd_ctl_activate_id(struct snd_card *card, struct snd_ctl_elem_id *id,
-			int active);
-struct snd_kcontrol *snd_ctl_find_numid(struct snd_card * card, unsigned int numid);
-struct snd_kcontrol *snd_ctl_find_id(struct snd_card * card, struct snd_ctl_elem_id *id);
-=======
 void snd_ctl_rename(struct snd_card *card, struct snd_kcontrol *kctl, const char *name);
 int snd_ctl_activate_id(struct snd_card *card, struct snd_ctl_elem_id *id, int active);
 struct snd_kcontrol *snd_ctl_find_numid_locked(struct snd_card *card, unsigned int numid);
@@ -232,7 +166,6 @@ snd_ctl_find_id_mixer(struct snd_card *card, const char *name)
 	strscpy(id.name, name, sizeof(id.name));
 	return snd_ctl_find_id(card, &id);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int snd_ctl_create(struct snd_card *card);
 
@@ -246,11 +179,6 @@ int snd_ctl_unregister_ioctl_compat(snd_kctl_ioctl_func_t fcn);
 #define snd_ctl_unregister_ioctl_compat(fcn)
 #endif
 
-<<<<<<< HEAD
-static inline unsigned int snd_ctl_get_ioffnum(struct snd_kcontrol *kctl, struct snd_ctl_elem_id *id)
-{
-	return id->numid - kctl->id.numid;
-=======
 int snd_ctl_request_layer(const char *module_name);
 void snd_ctl_register_layer(struct snd_ctl_layer_ops *lops);
 void snd_ctl_disconnect_layer(struct snd_ctl_layer_ops *lops);
@@ -261,17 +189,12 @@ static inline unsigned int snd_ctl_get_ioffnum(struct snd_kcontrol *kctl, struct
 {
 	unsigned int ioff = id->numid - kctl->id.numid;
 	return array_index_nospec(ioff, kctl->count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned int snd_ctl_get_ioffidx(struct snd_kcontrol *kctl, struct snd_ctl_elem_id *id)
 {
-<<<<<<< HEAD
-	return id->index - kctl->id.index;
-=======
 	unsigned int ioff = id->index - kctl->id.index;
 	return array_index_nospec(ioff, kctl->count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned int snd_ctl_get_ioff(struct snd_kcontrol *kctl, struct snd_ctl_elem_id *id)
@@ -308,23 +231,6 @@ int snd_ctl_enum_info(struct snd_ctl_elem_info *info, unsigned int channels,
  */
 struct snd_kcontrol *snd_ctl_make_virtual_master(char *name,
 						 const unsigned int *tlv);
-<<<<<<< HEAD
-int _snd_ctl_add_slave(struct snd_kcontrol *master, struct snd_kcontrol *slave,
-		       unsigned int flags);
-/* optional flags for slave */
-#define SND_CTL_SLAVE_NEED_UPDATE	(1 << 0)
-
-/**
- * snd_ctl_add_slave - Add a virtual slave control
- * @master: vmaster element
- * @slave: slave element to add
- *
- * Add a virtual slave control to the given master element created via
- * snd_ctl_create_virtual_master() beforehand.
- * Returns zero if successful or a negative error code.
- *
- * All slaves must be the same type (returning the same information
-=======
 int _snd_ctl_add_follower(struct snd_kcontrol *master,
 			  struct snd_kcontrol *follower,
 			  unsigned int flags);
@@ -340,7 +246,6 @@ int _snd_ctl_add_follower(struct snd_kcontrol *master,
  * snd_ctl_create_virtual_master() beforehand.
  *
  * All followers must be the same type (returning the same information
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * via info callback).  The function doesn't check it, so it's your
  * responsibility.
  *
@@ -348,24 +253,6 @@ int _snd_ctl_add_follower(struct snd_kcontrol *master,
  * at most two channels,
  * logarithmic volume control (dB level) thus no linear volume,
  * master can only attenuate the volume without gain
-<<<<<<< HEAD
- */
-static inline int
-snd_ctl_add_slave(struct snd_kcontrol *master, struct snd_kcontrol *slave)
-{
-	return _snd_ctl_add_slave(master, slave, 0);
-}
-
-/**
- * snd_ctl_add_slave_uncached - Add a virtual slave control
- * @master: vmaster element
- * @slave: slave element to add
- *
- * Add a virtual slave control to the given master.
- * Unlike snd_ctl_add_slave(), the element added via this function
- * is supposed to have volatile values, and get callback is called
- * at each time quried from the master.
-=======
  *
  * Return: Zero if successful or a negative error code.
  */
@@ -387,19 +274,10 @@ int snd_ctl_add_followers(struct snd_card *card, struct snd_kcontrol *master,
  * Unlike snd_ctl_add_follower(), the element added via this function
  * is supposed to have volatile values, and get callback is called
  * at each time queried from the master.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * When the control peeks the hardware values directly and the value
  * can be changed by other means than the put callback of the element,
  * this function should be used to keep the value always up-to-date.
-<<<<<<< HEAD
- */
-static inline int
-snd_ctl_add_slave_uncached(struct snd_kcontrol *master,
-			   struct snd_kcontrol *slave)
-{
-	return _snd_ctl_add_slave(master, slave, SND_CTL_SLAVE_NEED_UPDATE);
-=======
  *
  * Return: Zero if successful or a negative error code.
  */
@@ -408,15 +286,11 @@ snd_ctl_add_follower_uncached(struct snd_kcontrol *master,
 			      struct snd_kcontrol *follower)
 {
 	return _snd_ctl_add_follower(master, follower, SND_CTL_FOLLOWER_NEED_UPDATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int snd_ctl_add_vmaster_hook(struct snd_kcontrol *kctl,
 			     void (*hook)(void *private_data, int),
 			     void *private_data);
-<<<<<<< HEAD
-void snd_ctl_sync_vmaster_hook(struct snd_kcontrol *kctl);
-=======
 void snd_ctl_sync_vmaster(struct snd_kcontrol *kctl, bool hook_only);
 #define snd_ctl_sync_vmaster_hook(kctl)	snd_ctl_sync_vmaster(kctl, true)
 int snd_ctl_apply_vmaster_followers(struct snd_kcontrol *kctl,
@@ -435,17 +309,12 @@ static inline int snd_ctl_led_request(void) { return snd_ctl_request_layer(SND_C
 #else
 static inline int snd_ctl_led_request(void) { return 0; }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Helper functions for jack-detection controls
  */
 struct snd_kcontrol *
-<<<<<<< HEAD
-snd_kctl_jack_new(const char *name, int idx, void *private_data);
-=======
 snd_kctl_jack_new(const char *name, struct snd_card *card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void snd_kctl_jack_report(struct snd_card *card,
 			  struct snd_kcontrol *kctl, bool status);
 

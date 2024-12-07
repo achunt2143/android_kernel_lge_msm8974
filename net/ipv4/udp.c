@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -73,42 +70,22 @@
  *					a single port at the same time.
  *	Derek Atkins <derek@ihtfp.com>: Add Encapulation Support
  *	James Chapman		:	Add L2TP encapsulation type.
-<<<<<<< HEAD
- *
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) "UDP: " fmt
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/ioctls.h>
-#include <linux/bootmem.h>
-#include <linux/highmem.h>
-#include <linux/swap.h>
-=======
 #include <linux/bpf-cgroup.h>
 #include <linux/uaccess.h>
 #include <asm/ioctls.h>
 #include <linux/memblock.h>
 #include <linux/highmem.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/fcntl.h>
 #include <linux/module.h>
 #include <linux/socket.h>
 #include <linux/sockios.h>
 #include <linux/igmp.h>
-<<<<<<< HEAD
-=======
 #include <linux/inetdevice.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/in.h>
 #include <linux/errno.h>
 #include <linux/timer.h>
@@ -122,13 +99,6 @@
 #include <linux/seq_file.h>
 #include <net/net_namespace.h>
 #include <net/icmp.h>
-<<<<<<< HEAD
-#include <net/route.h>
-#include <net/checksum.h>
-#include <net/xfrm.h>
-#include <trace/events/udp.h>
-#include "udp_impl.h"
-=======
 #include <net/inet_hashtables.h>
 #include <net/ip_tunnels.h>
 #include <net/route.h>
@@ -148,7 +118,6 @@
 #if IS_ENABLED(CONFIG_IPV6)
 #include <net/ipv6_stubs.h>
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct udp_table udp_table __read_mostly;
 EXPORT_SYMBOL(udp_table);
@@ -156,19 +125,6 @@ EXPORT_SYMBOL(udp_table);
 long sysctl_udp_mem[3] __read_mostly;
 EXPORT_SYMBOL(sysctl_udp_mem);
 
-<<<<<<< HEAD
-int sysctl_udp_rmem_min __read_mostly;
-EXPORT_SYMBOL(sysctl_udp_rmem_min);
-
-int sysctl_udp_wmem_min __read_mostly;
-EXPORT_SYMBOL(sysctl_udp_wmem_min);
-
-atomic_long_t udp_memory_allocated;
-EXPORT_SYMBOL(udp_memory_allocated);
-
-#define MAX_UDP_PORTS 65536
-#define PORTS_PER_CHAIN (MAX_UDP_PORTS / UDP_HTABLE_SIZE_MIN)
-=======
 atomic_long_t udp_memory_allocated ____cacheline_aligned_in_smp;
 EXPORT_SYMBOL(udp_memory_allocated);
 DEFINE_PER_CPU(int, udp_memory_per_cpu_fw_alloc);
@@ -181,44 +137,22 @@ static struct udp_table *udp_get_table_prot(struct sock *sk)
 {
 	return sk->sk_prot->h.udp_table ? : sock_net(sk)->ipv4.udp_table;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int udp_lib_lport_inuse(struct net *net, __u16 num,
 			       const struct udp_hslot *hslot,
 			       unsigned long *bitmap,
-<<<<<<< HEAD
-			       struct sock *sk,
-			       int (*saddr_comp)(const struct sock *sk1,
-						 const struct sock *sk2),
-			       unsigned int log)
-{
-	struct sock *sk2;
-	struct hlist_nulls_node *node;
-
-	sk_nulls_for_each(sk2, node, &hslot->head)
-=======
 			       struct sock *sk, unsigned int log)
 {
 	struct sock *sk2;
 	kuid_t uid = sock_i_uid(sk);
 
 	sk_for_each(sk2, &hslot->head) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (net_eq(sock_net(sk2), net) &&
 		    sk2 != sk &&
 		    (bitmap || udp_sk(sk2)->udp_port_hash == num) &&
 		    (!sk2->sk_reuse || !sk->sk_reuse) &&
 		    (!sk2->sk_bound_dev_if || !sk->sk_bound_dev_if ||
 		     sk2->sk_bound_dev_if == sk->sk_bound_dev_if) &&
-<<<<<<< HEAD
-		    (*saddr_comp)(sk, sk2)) {
-			if (bitmap)
-				__set_bit(udp_sk(sk2)->udp_port_hash >> log,
-					  bitmap);
-			else
-				return 1;
-		}
-=======
 		    inet_rcv_saddr_equal(sk, sk2, true)) {
 			if (sk2->sk_reuseport && sk->sk_reuseport &&
 			    !rcu_access_pointer(sk->sk_reuseport_cb) &&
@@ -233,7 +167,6 @@ static int udp_lib_lport_inuse(struct net *net, __u16 num,
 			}
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -242,19 +175,6 @@ static int udp_lib_lport_inuse(struct net *net, __u16 num,
  * can insert/delete a socket with local_port == num
  */
 static int udp_lib_lport_inuse2(struct net *net, __u16 num,
-<<<<<<< HEAD
-			       struct udp_hslot *hslot2,
-			       struct sock *sk,
-			       int (*saddr_comp)(const struct sock *sk1,
-						 const struct sock *sk2))
-{
-	struct sock *sk2;
-	struct hlist_nulls_node *node;
-	int res = 0;
-
-	spin_lock(&hslot2->lock);
-	udp_portaddr_for_each_entry(sk2, node, &hslot2->head)
-=======
 				struct udp_hslot *hslot2,
 				struct sock *sk)
 {
@@ -264,19 +184,12 @@ static int udp_lib_lport_inuse2(struct net *net, __u16 num,
 
 	spin_lock(&hslot2->lock);
 	udp_portaddr_for_each_entry(sk2, &hslot2->head) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (net_eq(sock_net(sk2), net) &&
 		    sk2 != sk &&
 		    (udp_sk(sk2)->udp_port_hash == num) &&
 		    (!sk2->sk_reuse || !sk->sk_reuse) &&
 		    (!sk2->sk_bound_dev_if || !sk->sk_bound_dev_if ||
 		     sk2->sk_bound_dev_if == sk->sk_bound_dev_if) &&
-<<<<<<< HEAD
-		    (*saddr_comp)(sk, sk2)) {
-			res = 1;
-			break;
-		}
-=======
 		    inet_rcv_saddr_equal(sk, sk2, true)) {
 			if (sk2->sk_reuseport && sk->sk_reuseport &&
 			    !rcu_access_pointer(sk->sk_reuseport_cb) &&
@@ -288,13 +201,10 @@ static int udp_lib_lport_inuse2(struct net *net, __u16 num,
 			break;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&hslot2->lock);
 	return res;
 }
 
-<<<<<<< HEAD
-=======
 static int udp_reuseport_add_sock(struct sock *sk, struct udp_hslot *hslot)
 {
 	struct net *net = sock_net(sk);
@@ -318,42 +228,15 @@ static int udp_reuseport_add_sock(struct sock *sk, struct udp_hslot *hslot)
 	return reuseport_alloc(sk, inet_rcv_saddr_any(sk));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *  udp_lib_get_port  -  UDP/-Lite port lookup for IPv4 and IPv6
  *
  *  @sk:          socket struct in question
  *  @snum:        port number to look up
-<<<<<<< HEAD
- *  @saddr_comp:  AF-dependent comparison of bound local IP addresses
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  @hash2_nulladdr: AF-dependent hash value in secondary hash chains,
  *                   with NULL address
  */
 int udp_lib_get_port(struct sock *sk, unsigned short snum,
-<<<<<<< HEAD
-		       int (*saddr_comp)(const struct sock *sk1,
-					 const struct sock *sk2),
-		     unsigned int hash2_nulladdr)
-{
-	struct udp_hslot *hslot, *hslot2;
-	struct udp_table *udptable = sk->sk_prot->h.udp_table;
-	int    error = 1;
-	struct net *net = sock_net(sk);
-
-	if (!snum) {
-		int low, high, remaining;
-		unsigned rand;
-		unsigned short first, last;
-		DECLARE_BITMAP(bitmap, PORTS_PER_CHAIN);
-
-		inet_get_local_port_range(&low, &high);
-		remaining = (high - low) + 1;
-
-		rand = net_random();
-		first = (((u64)rand * remaining) >> 32) + low;
-=======
 		     unsigned int hash2_nulladdr)
 {
 	struct udp_table *udptable = udp_get_table_prot(sk);
@@ -372,7 +255,6 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
 
 		rand = get_random_u32();
 		first = reciprocal_scale(rand, remaining) + low;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * force rand to be an odd multiple of UDP_HTABLE_SIZE
 		 */
@@ -383,11 +265,7 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
 			bitmap_zero(bitmap, PORTS_PER_CHAIN);
 			spin_lock_bh(&hslot->lock);
 			udp_lib_lport_inuse(net, snum, hslot, bitmap, sk,
-<<<<<<< HEAD
-					    saddr_comp, udptable->log);
-=======
 					    udptable->log);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			snum = first;
 			/*
@@ -398,19 +276,12 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
 			do {
 				if (low <= snum && snum <= high &&
 				    !test_bit(snum >> udptable->log, bitmap) &&
-<<<<<<< HEAD
-				    !inet_is_reserved_local_port(snum))
-=======
 				    !inet_is_local_reserved_port(net, snum))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto found;
 				snum += rand;
 			} while (snum != first);
 			spin_unlock_bh(&hslot->lock);
-<<<<<<< HEAD
-=======
 			cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} while (++first != last);
 		goto fail;
 	} else {
@@ -427,20 +298,11 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
 			if (hslot->count < hslot2->count)
 				goto scan_primary_hash;
 
-<<<<<<< HEAD
-			exist = udp_lib_lport_inuse2(net, snum, hslot2,
-						     sk, saddr_comp);
-			if (!exist && (hash2_nulladdr != slot2)) {
-				hslot2 = udp_hashslot2(udptable, hash2_nulladdr);
-				exist = udp_lib_lport_inuse2(net, snum, hslot2,
-							     sk, saddr_comp);
-=======
 			exist = udp_lib_lport_inuse2(net, snum, hslot2, sk);
 			if (!exist && (hash2_nulladdr != slot2)) {
 				hslot2 = udp_hashslot2(udptable, hash2_nulladdr);
 				exist = udp_lib_lport_inuse2(net, snum, hslot2,
 							     sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			if (exist)
 				goto fail_unlock;
@@ -448,12 +310,7 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
 				goto found;
 		}
 scan_primary_hash:
-<<<<<<< HEAD
-		if (udp_lib_lport_inuse(net, snum, hslot, NULL, sk,
-					saddr_comp, 0))
-=======
 		if (udp_lib_lport_inuse(net, snum, hslot, NULL, sk, 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fail_unlock;
 	}
 found:
@@ -461,9 +318,6 @@ found:
 	udp_sk(sk)->udp_port_hash = snum;
 	udp_sk(sk)->udp_portaddr_hash ^= snum;
 	if (sk_unhashed(sk)) {
-<<<<<<< HEAD
-		sk_nulls_add_node_rcu(sk, &hslot->head);
-=======
 		if (sk->sk_reuseport &&
 		    udp_reuseport_add_sock(sk, hslot)) {
 			inet_sk(sk)->inet_num = 0;
@@ -473,19 +327,11 @@ found:
 		}
 
 		sk_add_node_rcu(sk, &hslot->head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hslot->count++;
 		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
 
 		hslot2 = udp_hashslot2(udptable, udp_sk(sk)->udp_portaddr_hash);
 		spin_lock(&hslot2->lock);
-<<<<<<< HEAD
-		hlist_nulls_add_head_rcu(&udp_sk(sk)->udp_portaddr_node,
-					 &hslot2->head);
-		hslot2->count++;
-		spin_unlock(&hslot2->lock);
-	}
-=======
 		if (IS_ENABLED(CONFIG_IPV6) && sk->sk_reuseport &&
 		    sk->sk_family == AF_INET6)
 			hlist_add_tail_rcu(&udp_sk(sk)->udp_portaddr_node,
@@ -497,7 +343,6 @@ found:
 		spin_unlock(&hslot2->lock);
 	}
 	sock_set_flag(sk, SOCK_RCU_FREE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = 0;
 fail_unlock:
 	spin_unlock_bh(&hslot->lock);
@@ -506,148 +351,6 @@ fail:
 }
 EXPORT_SYMBOL(udp_lib_get_port);
 
-<<<<<<< HEAD
-static int ipv4_rcv_saddr_equal(const struct sock *sk1, const struct sock *sk2)
-{
-	struct inet_sock *inet1 = inet_sk(sk1), *inet2 = inet_sk(sk2);
-
-	return 	(!ipv6_only_sock(sk2)  &&
-		 (!inet1->inet_rcv_saddr || !inet2->inet_rcv_saddr ||
-		   inet1->inet_rcv_saddr == inet2->inet_rcv_saddr));
-}
-
-static unsigned int udp4_portaddr_hash(struct net *net, __be32 saddr,
-				       unsigned int port)
-{
-	return jhash_1word((__force u32)saddr, net_hash_mix(net)) ^ port;
-}
-
-int udp_v4_get_port(struct sock *sk, unsigned short snum)
-{
-	unsigned int hash2_nulladdr =
-		udp4_portaddr_hash(sock_net(sk), htonl(INADDR_ANY), snum);
-	unsigned int hash2_partial =
-		udp4_portaddr_hash(sock_net(sk), inet_sk(sk)->inet_rcv_saddr, 0);
-
-	/* precompute partial secondary hash */
-	udp_sk(sk)->udp_portaddr_hash = hash2_partial;
-	return udp_lib_get_port(sk, snum, ipv4_rcv_saddr_equal, hash2_nulladdr);
-}
-
-static inline int compute_score(struct sock *sk, struct net *net, __be32 saddr,
-			 unsigned short hnum,
-			 __be16 sport, __be32 daddr, __be16 dport, int dif)
-{
-	int score = -1;
-
-	if (net_eq(sock_net(sk), net) && udp_sk(sk)->udp_port_hash == hnum &&
-			!ipv6_only_sock(sk)) {
-		struct inet_sock *inet = inet_sk(sk);
-
-		score = (sk->sk_family == PF_INET ? 1 : 0);
-		if (inet->inet_rcv_saddr) {
-			if (inet->inet_rcv_saddr != daddr)
-				return -1;
-			score += 2;
-		}
-		if (inet->inet_daddr) {
-			if (inet->inet_daddr != saddr)
-				return -1;
-			score += 2;
-		}
-		if (inet->inet_dport) {
-			if (inet->inet_dport != sport)
-				return -1;
-			score += 2;
-		}
-		if (sk->sk_bound_dev_if) {
-			if (sk->sk_bound_dev_if != dif)
-				return -1;
-			score += 2;
-		}
-	}
-	return score;
-}
-
-/*
- * In this second variant, we check (daddr, dport) matches (inet_rcv_sadd, inet_num)
- */
-#define SCORE2_MAX (1 + 2 + 2 + 2)
-static inline int compute_score2(struct sock *sk, struct net *net,
-				 __be32 saddr, __be16 sport,
-				 __be32 daddr, unsigned int hnum, int dif)
-{
-	int score = -1;
-
-	if (net_eq(sock_net(sk), net) && !ipv6_only_sock(sk)) {
-		struct inet_sock *inet = inet_sk(sk);
-
-		if (inet->inet_rcv_saddr != daddr)
-			return -1;
-		if (inet->inet_num != hnum)
-			return -1;
-
-		score = (sk->sk_family == PF_INET ? 1 : 0);
-		if (inet->inet_daddr) {
-			if (inet->inet_daddr != saddr)
-				return -1;
-			score += 2;
-		}
-		if (inet->inet_dport) {
-			if (inet->inet_dport != sport)
-				return -1;
-			score += 2;
-		}
-		if (sk->sk_bound_dev_if) {
-			if (sk->sk_bound_dev_if != dif)
-				return -1;
-			score += 2;
-		}
-	}
-	return score;
-}
-
-
-/* called with read_rcu_lock() */
-static struct sock *udp4_lib_lookup2(struct net *net,
-		__be32 saddr, __be16 sport,
-		__be32 daddr, unsigned int hnum, int dif,
-		struct udp_hslot *hslot2, unsigned int slot2)
-{
-	struct sock *sk, *result;
-	struct hlist_nulls_node *node;
-	int score, badness;
-
-begin:
-	result = NULL;
-	badness = -1;
-	udp_portaddr_for_each_entry_rcu(sk, node, &hslot2->head) {
-		score = compute_score2(sk, net, saddr, sport,
-				      daddr, hnum, dif);
-		if (score > badness) {
-			result = sk;
-			badness = score;
-			if (score == SCORE2_MAX)
-				goto exact_match;
-		}
-	}
-	/*
-	 * if the nulls value we got at the end of this lookup is
-	 * not the expected one, we must restart lookup.
-	 * We probably met an item that was moved to another chain.
-	 */
-	if (get_nulls_value(node) != slot2)
-		goto begin;
-
-	if (result) {
-exact_match:
-		if (unlikely(!atomic_inc_not_zero_hint(&result->sk_refcnt, 2)))
-			result = NULL;
-		else if (unlikely(compute_score2(result, net, saddr, sport,
-				  daddr, hnum, dif) < badness)) {
-			sock_put(result);
-			goto begin;
-=======
 int udp_v4_get_port(struct sock *sk, unsigned short snum)
 {
 	unsigned int hash2_nulladdr =
@@ -756,7 +459,6 @@ static struct sock *udp4_lib_lookup2(struct net *net,
 			badness = compute_score(result, net, saddr, sport,
 						daddr, hnum, dif, sdif);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return result;
@@ -766,72 +468,6 @@ static struct sock *udp4_lib_lookup2(struct net *net,
  * harder than this. -DaveM
  */
 struct sock *__udp4_lib_lookup(struct net *net, __be32 saddr,
-<<<<<<< HEAD
-		__be16 sport, __be32 daddr, __be16 dport,
-		int dif, struct udp_table *udptable)
-{
-	struct sock *sk, *result;
-	struct hlist_nulls_node *node;
-	unsigned short hnum = ntohs(dport);
-	unsigned int hash2, slot2, slot = udp_hashfn(net, hnum, udptable->mask);
-	struct udp_hslot *hslot2, *hslot = &udptable->hash[slot];
-	int score, badness;
-
-	rcu_read_lock();
-	if (hslot->count > 10) {
-		hash2 = udp4_portaddr_hash(net, daddr, hnum);
-		slot2 = hash2 & udptable->mask;
-		hslot2 = &udptable->hash2[slot2];
-		if (hslot->count < hslot2->count)
-			goto begin;
-
-		result = udp4_lib_lookup2(net, saddr, sport,
-					  daddr, hnum, dif,
-					  hslot2, slot2);
-		if (!result) {
-			hash2 = udp4_portaddr_hash(net, htonl(INADDR_ANY), hnum);
-			slot2 = hash2 & udptable->mask;
-			hslot2 = &udptable->hash2[slot2];
-			if (hslot->count < hslot2->count)
-				goto begin;
-
-			result = udp4_lib_lookup2(net, saddr, sport,
-						  htonl(INADDR_ANY), hnum, dif,
-						  hslot2, slot2);
-		}
-		rcu_read_unlock();
-		return result;
-	}
-begin:
-	result = NULL;
-	badness = -1;
-	sk_nulls_for_each_rcu(sk, node, &hslot->head) {
-		score = compute_score(sk, net, saddr, hnum, sport,
-				      daddr, dport, dif);
-		if (score > badness) {
-			result = sk;
-			badness = score;
-		}
-	}
-	/*
-	 * if the nulls value we got at the end of this lookup is
-	 * not the expected one, we must restart lookup.
-	 * We probably met an item that was moved to another chain.
-	 */
-	if (get_nulls_value(node) != slot)
-		goto begin;
-
-	if (result) {
-		if (unlikely(!atomic_inc_not_zero_hint(&result->sk_refcnt, 2)))
-			result = NULL;
-		else if (unlikely(compute_score(result, net, saddr, hnum, sport,
-				  daddr, dport, dif) < badness)) {
-			sock_put(result);
-			goto begin;
-		}
-	}
-	rcu_read_unlock();
-=======
 		__be16 sport, __be32 daddr, __be16 dport, int dif,
 		int sdif, struct udp_table *udptable, struct sk_buff *skb)
 {
@@ -878,7 +514,6 @@ begin:
 done:
 	if (IS_ERR(result))
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 EXPORT_SYMBOL_GPL(__udp4_lib_lookup);
@@ -887,54 +522,6 @@ static inline struct sock *__udp4_lib_lookup_skb(struct sk_buff *skb,
 						 __be16 sport, __be16 dport,
 						 struct udp_table *udptable)
 {
-<<<<<<< HEAD
-	struct sock *sk;
-	const struct iphdr *iph = ip_hdr(skb);
-
-	if (unlikely(sk = skb_steal_sock(skb)))
-		return sk;
-	else
-		return __udp4_lib_lookup(dev_net(skb_dst(skb)->dev), iph->saddr, sport,
-					 iph->daddr, dport, inet_iif(skb),
-					 udptable);
-}
-
-struct sock *udp4_lib_lookup(struct net *net, __be32 saddr, __be16 sport,
-			     __be32 daddr, __be16 dport, int dif)
-{
-	return __udp4_lib_lookup(net, saddr, sport, daddr, dport, dif, &udp_table);
-}
-EXPORT_SYMBOL_GPL(udp4_lib_lookup);
-
-static inline struct sock *udp_v4_mcast_next(struct net *net, struct sock *sk,
-					     __be16 loc_port, __be32 loc_addr,
-					     __be16 rmt_port, __be32 rmt_addr,
-					     int dif)
-{
-	struct hlist_nulls_node *node;
-	struct sock *s = sk;
-	unsigned short hnum = ntohs(loc_port);
-
-	sk_nulls_for_each_from(s, node) {
-		struct inet_sock *inet = inet_sk(s);
-
-		if (!net_eq(sock_net(s), net) ||
-		    udp_sk(s)->udp_port_hash != hnum ||
-		    (inet->inet_daddr && inet->inet_daddr != rmt_addr) ||
-		    (inet->inet_dport != rmt_port && inet->inet_dport) ||
-		    (inet->inet_rcv_saddr &&
-		     inet->inet_rcv_saddr != loc_addr) ||
-		    ipv6_only_sock(s) ||
-		    (s->sk_bound_dev_if && s->sk_bound_dev_if != dif))
-			continue;
-		if (!ip_mc_sf_allow(s, loc_addr, rmt_addr, dif))
-			continue;
-		goto found;
-	}
-	s = NULL;
-found:
-	return s;
-=======
 	const struct iphdr *iph = ip_hdr(skb);
 
 	return __udp4_lib_lookup(dev_net(skb->dev), iph->saddr, sport,
@@ -1103,7 +690,6 @@ out:
 	skb_set_network_header(skb, network_offset);
 
 	return sk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1117,33 +703,20 @@ out:
  * to find the appropriate port.
  */
 
-<<<<<<< HEAD
-void __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
-=======
 int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inet_sock *inet;
 	const struct iphdr *iph = (const struct iphdr *)skb->data;
 	struct udphdr *uh = (struct udphdr *)(skb->data+(iph->ihl<<2));
 	const int type = icmp_hdr(skb)->type;
 	const int code = icmp_hdr(skb)->code;
-<<<<<<< HEAD
-=======
 	bool tunnel = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock *sk;
 	int harderr;
 	int err;
 	struct net *net = dev_net(skb->dev);
 
 	sk = __udp4_lib_lookup(net, iph->daddr, uh->dest,
-<<<<<<< HEAD
-			iph->saddr, uh->source, skb->dev->ifindex, udptable);
-	if (sk == NULL) {
-		ICMP_INC_STATS_BH(net, ICMP_MIB_INERRORS);
-		return;	/* No socket for error */
-=======
 			       iph->saddr, uh->source, skb->dev->ifindex,
 			       inet_sdif(skb), udptable, NULL);
 
@@ -1163,7 +736,6 @@ int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
 		}
 
 		tunnel = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = 0;
@@ -1183,12 +755,8 @@ int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
 		break;
 	case ICMP_DEST_UNREACH:
 		if (code == ICMP_FRAG_NEEDED) { /* Path MTU discovery */
-<<<<<<< HEAD
-			if (inet->pmtudisc != IP_PMTUDISC_DONT) {
-=======
 			ipv4_sk_update_pmtu(skb, sk, info);
 			if (READ_ONCE(inet->pmtudisc) != IP_PMTUDISC_DONT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = EMSGSIZE;
 				harderr = 1;
 				break;
@@ -1201,21 +769,15 @@ int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
 			err = icmp_err_convert[code].errno;
 		}
 		break;
-<<<<<<< HEAD
-=======
 	case ICMP_REDIRECT:
 		ipv4_sk_redirect(skb, sk);
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 *      RFC1122: OK.  Passes ICMP errors back to application, as per
 	 *	4.1.3.3.
 	 */
-<<<<<<< HEAD
-	if (!inet->recverr) {
-=======
 	if (tunnel) {
 		/* ...not for tunnels though: we don't have a sending socket */
 		if (udp_sk(sk)->encap_err_rcv)
@@ -1224,23 +786,12 @@ int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
 		goto out;
 	}
 	if (!inet_test_bit(RECVERR, sk)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!harderr || sk->sk_state != TCP_ESTABLISHED)
 			goto out;
 	} else
 		ip_icmp_error(sk, skb, err, uh->dest, info, (u8 *)(uh+1));
 
 	sk->sk_err = err;
-<<<<<<< HEAD
-	sk->sk_error_report(sk);
-out:
-	sock_put(sk);
-}
-
-void udp_err(struct sk_buff *skb, u32 info)
-{
-	__udp4_lib_err(skb, info, &udp_table);
-=======
 	sk_error_report(sk);
 out:
 	return 0;
@@ -1249,7 +800,6 @@ out:
 int udp_err(struct sk_buff *skb, u32 info)
 {
 	return __udp4_lib_err(skb, info, dev_net(skb->dev)->ipv4.udp_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1261,11 +811,7 @@ void udp_flush_pending_frames(struct sock *sk)
 
 	if (up->pending) {
 		up->len = 0;
-<<<<<<< HEAD
-		up->pending = 0;
-=======
 		WRITE_ONCE(up->pending, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ip_flush_pending_frames(sk);
 	}
 }
@@ -1278,26 +824,15 @@ EXPORT_SYMBOL(udp_flush_pending_frames);
  *	@src:	source IP address
  *	@dst:	destination IP address
  */
-<<<<<<< HEAD
-static void udp4_hwcsum(struct sk_buff *skb, __be32 src, __be32 dst)
-{
-	struct udphdr *uh = udp_hdr(skb);
-	struct sk_buff *frags = skb_shinfo(skb)->frag_list;
-=======
 void udp4_hwcsum(struct sk_buff *skb, __be32 src, __be32 dst)
 {
 	struct udphdr *uh = udp_hdr(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int offset = skb_transport_offset(skb);
 	int len = skb->len - offset;
 	int hlen = len;
 	__wsum csum = 0;
 
-<<<<<<< HEAD
-	if (!frags) {
-=======
 	if (!skb_has_frag_list(skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Only one fragment on the socket.
 		 */
@@ -1306,27 +841,17 @@ void udp4_hwcsum(struct sk_buff *skb, __be32 src, __be32 dst)
 		uh->check = ~csum_tcpudp_magic(src, dst, len,
 					       IPPROTO_UDP, 0);
 	} else {
-<<<<<<< HEAD
-=======
 		struct sk_buff *frags;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * HW-checksum won't work as there are two or more
 		 * fragments on the socket so that all csums of sk_buffs
 		 * should be together
 		 */
-<<<<<<< HEAD
-		do {
-			csum = csum_add(csum, frags->csum);
-			hlen -= frags->len;
-		} while ((frags = frags->next));
-=======
 		skb_walk_frags(skb, frags) {
 			csum = csum_add(csum, frags->csum);
 			hlen -= frags->len;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		csum = skb_checksum(skb, offset, hlen, csum);
 		skb->ip_summed = CHECKSUM_NONE;
@@ -1336,10 +861,6 @@ void udp4_hwcsum(struct sk_buff *skb, __be32 src, __be32 dst)
 			uh->check = CSUM_MANGLED_0;
 	}
 }
-<<<<<<< HEAD
-
-static int udp_send_skb(struct sk_buff *skb, struct flowi4 *fl4)
-=======
 EXPORT_SYMBOL_GPL(udp4_hwcsum);
 
 /* Function to set UDP checksum for an IPv4 UDP packet. This is intended
@@ -1370,23 +891,15 @@ EXPORT_SYMBOL(udp_set_csum);
 
 static int udp_send_skb(struct sk_buff *skb, struct flowi4 *fl4,
 			struct inet_cork *cork)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = skb->sk;
 	struct inet_sock *inet = inet_sk(sk);
 	struct udphdr *uh;
-<<<<<<< HEAD
-	int err = 0;
-	int is_udplite = IS_UDPLITE(sk);
-	int offset = skb_transport_offset(skb);
-	int len = skb->len - offset;
-=======
 	int err;
 	int is_udplite = IS_UDPLITE(sk);
 	int offset = skb_transport_offset(skb);
 	int len = skb->len - offset;
 	int datalen = len - sizeof(*uh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__wsum csum = 0;
 
 	/*
@@ -1398,12 +911,6 @@ static int udp_send_skb(struct sk_buff *skb, struct flowi4 *fl4,
 	uh->len = htons(len);
 	uh->check = 0;
 
-<<<<<<< HEAD
-	if (is_udplite)  				 /*     UDP-Lite      */
-		csum = udplite_csum(skb);
-
-	else if (sk->sk_no_check == UDP_CSUM_NOXMIT && !skb_has_frags(skb)) {   /* UDP csum off */
-=======
 	if (cork->gso_size) {
 		const int hlen = skb_network_header_len(skb) +
 				 sizeof(struct udphdr);
@@ -1439,16 +946,12 @@ static int udp_send_skb(struct sk_buff *skb, struct flowi4 *fl4,
 		csum = udplite_csum(skb);
 
 	else if (sk->sk_no_check_tx) {			 /* UDP csum off */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		skb->ip_summed = CHECKSUM_NONE;
 		goto send;
 
 	} else if (skb->ip_summed == CHECKSUM_PARTIAL) { /* UDP hardware csum */
-<<<<<<< HEAD
-=======
 csum_partial:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		udp4_hwcsum(skb, fl4->saddr, fl4->daddr);
 		goto send;
@@ -1463,18 +966,6 @@ csum_partial:
 		uh->check = CSUM_MANGLED_0;
 
 send:
-<<<<<<< HEAD
-	err = ip_send_skb(skb);
-	if (err) {
-		if (err == -ENOBUFS && !inet->recverr) {
-			UDP_INC_STATS_USER(sock_net(sk),
-					   UDP_MIB_SNDBUFERRORS, is_udplite);
-			err = 0;
-		}
-	} else
-		UDP_INC_STATS_USER(sock_net(sk),
-				   UDP_MIB_OUTDATAGRAMS, is_udplite);
-=======
 	err = ip_send_skb(sock_net(sk), skb);
 	if (err) {
 		if (err == -ENOBUFS &&
@@ -1486,7 +977,6 @@ send:
 	} else
 		UDP_INC_STATS(sock_net(sk),
 			      UDP_MIB_OUTDATAGRAMS, is_udplite);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1505,30 +995,15 @@ int udp_push_pending_frames(struct sock *sk)
 	if (!skb)
 		goto out;
 
-<<<<<<< HEAD
-	err = udp_send_skb(skb, fl4);
-
-out:
-	up->len = 0;
-	up->pending = 0;
-=======
 	err = udp_send_skb(skb, fl4, &inet->cork.base);
 
 out:
 	up->len = 0;
 	WRITE_ONCE(up->pending, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL(udp_push_pending_frames);
 
-<<<<<<< HEAD
-int udp_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
-		size_t len)
-{
-	struct inet_sock *inet = inet_sk(sk);
-	struct udp_sock *up = udp_sk(sk);
-=======
 static int __udp_cmsg_send(struct cmsghdr *cmsg, u16 *gso_size)
 {
 	switch (cmsg->cmsg_type) {
@@ -1571,7 +1046,6 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 	struct inet_sock *inet = inet_sk(sk);
 	struct udp_sock *up = udp_sk(sk);
 	DECLARE_SOCKADDR(struct sockaddr_in *, usin, msg->msg_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct flowi4 fl4_stack;
 	struct flowi4 *fl4;
 	int ulen = len;
@@ -1580,15 +1054,6 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 	int free = 0;
 	int connected = 0;
 	__be32 daddr, faddr, saddr;
-<<<<<<< HEAD
-	__be16 dport;
-	u8  tos;
-	int err, is_udplite = IS_UDPLITE(sk);
-	int corkreq = up->corkflag || msg->msg_flags&MSG_MORE;
-	int (*getfrag)(void *, char *, int, int, int, struct sk_buff *);
-	struct sk_buff *skb;
-	struct ip_options_data opt_copy;
-=======
 	u8 tos, scope;
 	__be16 dport;
 	int err, is_udplite = IS_UDPLITE(sk);
@@ -1597,7 +1062,6 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 	struct sk_buff *skb;
 	struct ip_options_data opt_copy;
 	int uc_index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len > 0xFFFF)
 		return -EMSGSIZE;
@@ -1609,20 +1073,10 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 	if (msg->msg_flags & MSG_OOB) /* Mirror BSD error message compatibility */
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	ipc.opt = NULL;
-	ipc.tx_flags = 0;
-
-	getfrag = is_udplite ? udplite_getfrag : ip_generic_getfrag;
-
-	fl4 = &inet->cork.fl.u.ip4;
-	if (up->pending) {
-=======
 	getfrag = is_udplite ? udplite_getfrag : ip_generic_getfrag;
 
 	fl4 = &inet->cork.fl.u.ip4;
 	if (READ_ONCE(up->pending)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * There are pending frames.
 		 * The socket lock must be held while it's corked.
@@ -1642,12 +1096,7 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 	/*
 	 *	Get and verify the address.
 	 */
-<<<<<<< HEAD
-	if (msg->msg_name) {
-		struct sockaddr_in * usin = (struct sockaddr_in *)msg->msg_name;
-=======
 	if (usin) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (msg->msg_namelen < sizeof(*usin))
 			return -EINVAL;
 		if (usin->sin_family != AF_INET) {
@@ -1669,21 +1118,6 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 		 */
 		connected = 1;
 	}
-<<<<<<< HEAD
-	ipc.addr = inet->inet_saddr;
-
-	ipc.oif = sk->sk_bound_dev_if;
-	err = sock_tx_timestamp(sk, &ipc.tx_flags);
-	if (err)
-		return err;
-	if (msg->msg_controllen) {
-		err = ip_cmsg_send(sock_net(sk), msg, &ipc);
-		if (err)
-			return err;
-		if (ipc.opt)
-			free = 1;
-		connected = 0;
-=======
 
 	ipcm_init_sk(&ipc, inet);
 	ipc.gso_size = READ_ONCE(up->gso_size);
@@ -1701,7 +1135,6 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 		}
 		if (ipc.opt)
 			free = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!ipc.opt) {
 		struct ip_options_rcu *inet_opt;
@@ -1716,8 +1149,6 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 		rcu_read_unlock();
 	}
 
-<<<<<<< HEAD
-=======
 	if (cgroup_bpf_enabled(CGROUP_UDP4_SENDMSG) && !connected) {
 		err = BPF_CGROUP_RUN_PROG_UDP4_SENDMSG_LOCK(sk,
 					    (struct sockaddr *)usin,
@@ -1736,34 +1167,10 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	saddr = ipc.addr;
 	ipc.addr = faddr = daddr;
 
 	if (ipc.opt && ipc.opt->opt.srr) {
-<<<<<<< HEAD
-		if (!daddr)
-			return -EINVAL;
-		faddr = ipc.opt->opt.faddr;
-		connected = 0;
-	}
-	tos = RT_TOS(inet->tos);
-	if (sock_flag(sk, SOCK_LOCALROUTE) ||
-	    (msg->msg_flags & MSG_DONTROUTE) ||
-	    (ipc.opt && ipc.opt->opt.is_strictroute)) {
-		tos |= RTO_ONLINK;
-		connected = 0;
-	}
-
-	if (ipv4_is_multicast(daddr)) {
-		if (!ipc.oif)
-			ipc.oif = inet->mc_index;
-		if (!saddr)
-			saddr = inet->mc_addr;
-		connected = 0;
-	} else if (!ipc.oif)
-		ipc.oif = inet->uc_index;
-=======
 		if (!daddr) {
 			err = -EINVAL;
 			goto out_free;
@@ -1798,24 +1205,10 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 			ipc.oif = uc_index;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (connected)
 		rt = (struct rtable *)sk_dst_check(sk, 0);
 
-<<<<<<< HEAD
-	if (rt == NULL) {
-		struct net *net = sock_net(sk);
-
-		fl4 = &fl4_stack;
-		flowi4_init_output(fl4, ipc.oif, sk->sk_mark, tos,
-				   RT_SCOPE_UNIVERSE, sk->sk_protocol,
-				   inet_sk_flowi_flags(sk)|FLOWI_FLAG_CAN_SLEEP,
-				   faddr, saddr, dport, inet->inet_sport,
-				   sk->sk_uid);
-
-		security_sk_classify_flow(sk, flowi4_to_flowi(fl4));
-=======
 	if (!rt) {
 		struct net *net = sock_net(sk);
 		__u8 flow_flags = inet_sk_flowi_flags(sk);
@@ -1827,7 +1220,6 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 				   dport, inet->inet_sport, sk->sk_uid);
 
 		security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rt = ip_route_output_flow(net, fl4, sk);
 		if (IS_ERR(rt)) {
 			err = PTR_ERR(rt);
@@ -1855,14 +1247,6 @@ back_from_confirm:
 
 	/* Lockless fast path for the non-corking case. */
 	if (!corkreq) {
-<<<<<<< HEAD
-		skb = ip_make_skb(sk, fl4, getfrag, msg->msg_iov, ulen,
-				  sizeof(struct udphdr), &ipc, &rt,
-				  msg->msg_flags);
-		err = PTR_ERR(skb);
-		if (skb && !IS_ERR(skb))
-			err = udp_send_skb(skb, fl4);
-=======
 		struct inet_cork cork;
 
 		skb = ip_make_skb(sk, fl4, getfrag, msg, ulen,
@@ -1871,7 +1255,6 @@ back_from_confirm:
 		err = PTR_ERR(skb);
 		if (!IS_ERR_OR_NULL(skb))
 			err = udp_send_skb(skb, fl4, &cork);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -1881,11 +1264,7 @@ back_from_confirm:
 		/* ... which is an evident application bug. --ANK */
 		release_sock(sk);
 
-<<<<<<< HEAD
-		LIMIT_NETDEBUG(KERN_DEBUG pr_fmt("cork app bug 2\n"));
-=======
 		net_dbg_ratelimited("socket already corked\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto out;
 	}
@@ -1897,19 +1276,11 @@ back_from_confirm:
 	fl4->saddr = saddr;
 	fl4->fl4_dport = dport;
 	fl4->fl4_sport = inet->inet_sport;
-<<<<<<< HEAD
-	up->pending = AF_INET;
-
-do_append_data:
-	up->len += ulen;
-	err = ip_append_data(sk, fl4, getfrag, msg->msg_iov, ulen,
-=======
 	WRITE_ONCE(up->pending, AF_INET);
 
 do_append_data:
 	up->len += ulen;
 	err = ip_append_data(sk, fl4, getfrag, msg, ulen,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     sizeof(struct udphdr), &ipc, &rt,
 			     corkreq ? msg->msg_flags|MSG_MORE : msg->msg_flags);
 	if (err)
@@ -1917,19 +1288,12 @@ do_append_data:
 	else if (!corkreq)
 		err = udp_push_pending_frames(sk);
 	else if (unlikely(skb_queue_empty(&sk->sk_write_queue)))
-<<<<<<< HEAD
-		up->pending = 0;
-=======
 		WRITE_ONCE(up->pending, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_sock(sk);
 
 out:
 	ip_rt_put(rt);
-<<<<<<< HEAD
-=======
 out_free:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (free)
 		kfree(ipc.opt);
 	if (!err)
@@ -1942,23 +1306,14 @@ out_free:
 	 * seems like overkill.
 	 */
 	if (err == -ENOBUFS || test_bit(SOCK_NOSPACE, &sk->sk_socket->flags)) {
-<<<<<<< HEAD
-		UDP_INC_STATS_USER(sock_net(sk),
-				UDP_MIB_SNDBUFERRORS, is_udplite);
-=======
 		UDP_INC_STATS(sock_net(sk),
 			      UDP_MIB_SNDBUFERRORS, is_udplite);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 
 do_confirm:
-<<<<<<< HEAD
-	dst_confirm(&rt->dst);
-=======
 	if (msg->msg_flags & MSG_PROBE)
 		dst_confirm_neigh(&rt->dst, &fl4->daddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(msg->msg_flags&MSG_PROBE) || len)
 		goto back_from_confirm;
 	err = 0;
@@ -1966,61 +1321,6 @@ do_confirm:
 }
 EXPORT_SYMBOL(udp_sendmsg);
 
-<<<<<<< HEAD
-int udp_sendpage(struct sock *sk, struct page *page, int offset,
-		 size_t size, int flags)
-{
-	struct inet_sock *inet = inet_sk(sk);
-	struct udp_sock *up = udp_sk(sk);
-	int ret;
-
-	if (flags & MSG_SENDPAGE_NOTLAST)
-		flags |= MSG_MORE;
-
-	if (!up->pending) {
-		struct msghdr msg = {	.msg_flags = flags|MSG_MORE };
-
-		/* Call udp_sendmsg to specify destination address which
-		 * sendpage interface can't pass.
-		 * This will succeed only when the socket is connected.
-		 */
-		ret = udp_sendmsg(NULL, sk, &msg, 0);
-		if (ret < 0)
-			return ret;
-	}
-
-	lock_sock(sk);
-
-	if (unlikely(!up->pending)) {
-		release_sock(sk);
-
-		LIMIT_NETDEBUG(KERN_DEBUG pr_fmt("udp cork app bug 3\n"));
-		return -EINVAL;
-	}
-
-	ret = ip_append_page(sk, &inet->cork.fl.u.ip4,
-			     page, offset, size, flags);
-	if (ret == -EOPNOTSUPP) {
-		release_sock(sk);
-		return sock_no_sendpage(sk->sk_socket, page, offset,
-					size, flags);
-	}
-	if (ret < 0) {
-		udp_flush_pending_frames(sk);
-		goto out;
-	}
-
-	up->len += size;
-	if (!(up->corkflag || (flags&MSG_MORE)))
-		ret = udp_push_pending_frames(sk);
-	if (!ret)
-		ret = size;
-out:
-	release_sock(sk);
-	return ret;
-}
-
-=======
 void udp_splice_eof(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
@@ -2334,44 +1634,12 @@ static struct sk_buff *__first_packet_length(struct sock *sk,
 	}
 	return skb;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	first_packet_length	- return length of first packet in receive queue
  *	@sk: socket
  *
  *	Drops all bad checksum frames, until a valid one is found.
-<<<<<<< HEAD
- *	Returns the length of found skb, or 0 if none is found.
- */
-static unsigned int first_packet_length(struct sock *sk)
-{
-	struct sk_buff_head list_kill, *rcvq = &sk->sk_receive_queue;
-	struct sk_buff *skb;
-	unsigned int res;
-
-	__skb_queue_head_init(&list_kill);
-
-	spin_lock_bh(&rcvq->lock);
-	while ((skb = skb_peek(rcvq)) != NULL &&
-		udp_lib_checksum_complete(skb)) {
-		UDP_INC_STATS_BH(sock_net(sk), UDP_MIB_INERRORS,
-				 IS_UDPLITE(sk));
-		atomic_inc(&sk->sk_drops);
-		__skb_unlink(skb, rcvq);
-		__skb_queue_tail(&list_kill, skb);
-	}
-	res = skb ? skb->len : 0;
-	spin_unlock_bh(&rcvq->lock);
-
-	if (!skb_queue_empty(&list_kill)) {
-		bool slow = lock_sock_fast(sk);
-
-		__skb_queue_purge(&list_kill);
-		sk_mem_reclaim_partial(sk);
-		unlock_sock_fast(sk, slow);
-	}
-=======
  *	Returns the length of found skb, or -1 if none is found.
  */
 static int first_packet_length(struct sock *sk)
@@ -2395,7 +1663,6 @@ static int first_packet_length(struct sock *sk)
 	if (total)
 		udp_rmem_release(sk, total, 1, false);
 	spin_unlock_bh(&rcvq->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
@@ -2403,43 +1670,19 @@ static int first_packet_length(struct sock *sk)
  *	IOCTL requests applicable to the UDP protocol
  */
 
-<<<<<<< HEAD
-int udp_ioctl(struct sock *sk, int cmd, unsigned long arg)
-=======
 int udp_ioctl(struct sock *sk, int cmd, int *karg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (cmd) {
 	case SIOCOUTQ:
 	{
-<<<<<<< HEAD
-		int amount = sk_wmem_alloc_get(sk);
-
-		return put_user(amount, (int __user *)arg);
-=======
 		*karg = sk_wmem_alloc_get(sk);
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	case SIOCINQ:
 	{
-<<<<<<< HEAD
-		unsigned int amount = first_packet_length(sk);
-
-		if (amount)
-			/*
-			 * We will only return the amount
-			 * of this packet since that is all
-			 * that will be read.
-			 */
-			amount -= sizeof(struct udphdr);
-
-		return put_user(amount, (int __user *)arg);
-=======
 		*karg = max_t(int, 0, first_packet_length(sk));
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	default:
@@ -2450,8 +1693,6 @@ int udp_ioctl(struct sock *sk, int cmd, int *karg)
 }
 EXPORT_SYMBOL(udp_ioctl);
 
-<<<<<<< HEAD
-=======
 struct sk_buff *__skb_recv_udp(struct sock *sk, unsigned int flags,
 			       int *off, int *err)
 {
@@ -2548,26 +1789,11 @@ try_again:
 }
 EXPORT_SYMBOL(udp_read_skb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 	This should be easy, if there is something there we
  * 	return it, otherwise we block.
  */
 
-<<<<<<< HEAD
-int udp_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
-		size_t len, int noblock, int flags, int *addr_len)
-{
-	struct inet_sock *inet = inet_sk(sk);
-	struct sockaddr_in *sin = (struct sockaddr_in *)msg->msg_name;
-	struct sk_buff *skb;
-	unsigned int ulen, copied;
-	int peeked, off = 0;
-	int err;
-	int is_udplite = IS_UDPLITE(sk);
-	bool checksum_valid = false;
-	bool slow;
-=======
 int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int flags,
 		int *addr_len)
 {
@@ -2578,23 +1804,11 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int flags,
 	int off, err, peeking = flags & MSG_PEEK;
 	int is_udplite = IS_UDPLITE(sk);
 	bool checksum_valid = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flags & MSG_ERRQUEUE)
 		return ip_recv_error(sk, msg, len, addr_len);
 
 try_again:
-<<<<<<< HEAD
-	skb = __skb_recv_datagram(sk, flags | (noblock ? MSG_DONTWAIT : 0),
-				  &peeked, &off, &err);
-	if (!skb)
-		goto out;
-
-	ulen = skb->len - sizeof(struct udphdr);
-	copied = len;
-	if (copied > ulen)
-		copied = ulen;
-=======
 	off = sk_peek_offset(sk, flags);
 	skb = __skb_recv_udp(sk, flags, &off, &err);
 	if (!skb)
@@ -2604,7 +1818,6 @@ try_again:
 	copied = len;
 	if (copied > ulen - off)
 		copied = ulen - off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (copied < ulen)
 		msg->msg_flags |= MSG_TRUNC;
 
@@ -2614,28 +1827,14 @@ try_again:
 	 * coverage checksum (UDP-Lite), do it before the copy.
 	 */
 
-<<<<<<< HEAD
-	if (copied < ulen || UDP_SKB_CB(skb)->partial_cov) {
-		checksum_valid = !udp_lib_checksum_complete(skb);
-=======
 	if (copied < ulen || peeking ||
 	    (is_udplite && UDP_SKB_CB(skb)->partial_cov)) {
 		checksum_valid = udp_skb_csum_unnecessary(skb) ||
 				!__udp_lib_checksum_complete(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!checksum_valid)
 			goto csum_copy_err;
 	}
 
-<<<<<<< HEAD
-	if (checksum_valid || skb_csum_unnecessary(skb))
-		err = skb_copy_datagram_iovec(skb, sizeof(struct udphdr),
-					      msg->msg_iov, copied);
-	else {
-		err = skb_copy_and_csum_datagram_iovec(skb,
-						       sizeof(struct udphdr),
-						       msg->msg_iov, copied);
-=======
 	if (checksum_valid || udp_skb_csum_unnecessary(skb)) {
 		if (udp_skb_is_linear(skb))
 			err = copy_linear_skb(skb, copied, off, &msg->msg_iter);
@@ -2643,22 +1842,11 @@ try_again:
 			err = skb_copy_datagram_msg(skb, off, msg, copied);
 	} else {
 		err = skb_copy_and_csum_datagram_msg(skb, off, msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (err == -EINVAL)
 			goto csum_copy_err;
 	}
 
-<<<<<<< HEAD
-	if (err)
-		goto out_free;
-
-	if (!peeked)
-		UDP_INC_STATS_USER(sock_net(sk),
-				UDP_MIB_INDATAGRAMS, is_udplite);
-
-	sock_recv_ts_and_drops(msg, sk, skb);
-=======
 	if (unlikely(err)) {
 		if (!peeking) {
 			atomic_inc(&sk->sk_drops);
@@ -2674,7 +1862,6 @@ try_again:
 			      UDP_MIB_INDATAGRAMS, is_udplite);
 
 	sock_recv_cmsgs(msg, sk, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Copy the address. */
 	if (sin) {
@@ -2683,11 +1870,6 @@ try_again:
 		sin->sin_addr.s_addr = ip_hdr(skb)->saddr;
 		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
 		*addr_len = sizeof(*sin);
-<<<<<<< HEAD
-	}
-	if (inet->cmsg_flags)
-		ip_cmsg_recv(msg, skb);
-=======
 
 		BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk,
 						      (struct sockaddr *)sin,
@@ -2699,24 +1881,11 @@ try_again:
 
 	if (inet_cmsg_flags(inet))
 		ip_cmsg_recv_offset(msg, sk, skb, sizeof(struct udphdr), off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = copied;
 	if (flags & MSG_TRUNC)
 		err = ulen;
 
-<<<<<<< HEAD
-out_free:
-	skb_free_datagram_locked(sk, skb);
-out:
-	return err;
-
-csum_copy_err:
-	slow = lock_sock_fast(sk);
-	if (!skb_kill_datagram(sk, skb, flags))
-		UDP_INC_STATS_USER(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
-	unlock_sock_fast(sk, slow);
-=======
 	skb_consume_udp(sk, skb, peeking ? -err : err);
 	return err;
 
@@ -2727,7 +1896,6 @@ csum_copy_err:
 		UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
 	}
 	kfree_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* starting over for a new packet, but check if we need to yield */
 	cond_resched();
@@ -2735,10 +1903,6 @@ csum_copy_err:
 	goto try_again;
 }
 
-<<<<<<< HEAD
-
-int udp_disconnect(struct sock *sk, int flags)
-=======
 int udp_pre_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 {
 	/* This check is replicated from __ip4_datagram_connect() and
@@ -2753,7 +1917,6 @@ int udp_pre_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 EXPORT_SYMBOL(udp_pre_connect);
 
 int __udp_disconnect(struct sock *sk, int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inet_sock *inet = inet_sk(sk);
 	/*
@@ -2765,17 +1928,12 @@ int __udp_disconnect(struct sock *sk, int flags)
 	inet->inet_dport = 0;
 	sock_rps_reset_rxhash(sk);
 	sk->sk_bound_dev_if = 0;
-<<<<<<< HEAD
-	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-		inet_reset_saddr(sk);
-=======
 	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK)) {
 		inet_reset_saddr(sk);
 		if (sk->sk_prot->rehash &&
 		    (sk->sk_userlocks & SOCK_BINDPORT_LOCK))
 			sk->sk_prot->rehash(sk);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(sk->sk_userlocks & SOCK_BINDPORT_LOCK)) {
 		sk->sk_prot->unhash(sk);
@@ -2784,8 +1942,6 @@ int __udp_disconnect(struct sock *sk, int flags)
 	sk_dst_reset(sk);
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(__udp_disconnect);
 
 int udp_disconnect(struct sock *sk, int flags)
@@ -2795,17 +1951,12 @@ int udp_disconnect(struct sock *sk, int flags)
 	release_sock(sk);
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(udp_disconnect);
 
 void udp_lib_unhash(struct sock *sk)
 {
 	if (sk_hashed(sk)) {
-<<<<<<< HEAD
-		struct udp_table *udptable = sk->sk_prot->h.udp_table;
-=======
 		struct udp_table *udptable = udp_get_table_prot(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct udp_hslot *hslot, *hslot2;
 
 		hslot  = udp_hashslot(udptable, sock_net(sk),
@@ -2813,23 +1964,15 @@ void udp_lib_unhash(struct sock *sk)
 		hslot2 = udp_hashslot2(udptable, udp_sk(sk)->udp_portaddr_hash);
 
 		spin_lock_bh(&hslot->lock);
-<<<<<<< HEAD
-		if (sk_nulls_del_node_init_rcu(sk)) {
-=======
 		if (rcu_access_pointer(sk->sk_reuseport_cb))
 			reuseport_detach_sock(sk);
 		if (sk_del_node_init_rcu(sk)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hslot->count--;
 			inet_sk(sk)->inet_num = 0;
 			sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
 
 			spin_lock(&hslot2->lock);
-<<<<<<< HEAD
-			hlist_nulls_del_init_rcu(&udp_sk(sk)->udp_portaddr_node);
-=======
 			hlist_del_init_rcu(&udp_sk(sk)->udp_portaddr_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hslot2->count--;
 			spin_unlock(&hslot2->lock);
 		}
@@ -2844,40 +1987,19 @@ EXPORT_SYMBOL(udp_lib_unhash);
 void udp_lib_rehash(struct sock *sk, u16 newhash)
 {
 	if (sk_hashed(sk)) {
-<<<<<<< HEAD
-		struct udp_table *udptable = sk->sk_prot->h.udp_table;
-=======
 		struct udp_table *udptable = udp_get_table_prot(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct udp_hslot *hslot, *hslot2, *nhslot2;
 
 		hslot2 = udp_hashslot2(udptable, udp_sk(sk)->udp_portaddr_hash);
 		nhslot2 = udp_hashslot2(udptable, newhash);
 		udp_sk(sk)->udp_portaddr_hash = newhash;
-<<<<<<< HEAD
-		if (hslot2 != nhslot2) {
-=======
 
 		if (hslot2 != nhslot2 ||
 		    rcu_access_pointer(sk->sk_reuseport_cb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hslot = udp_hashslot(udptable, sock_net(sk),
 					     udp_sk(sk)->udp_port_hash);
 			/* we must lock primary chain too */
 			spin_lock_bh(&hslot->lock);
-<<<<<<< HEAD
-
-			spin_lock(&hslot2->lock);
-			hlist_nulls_del_init_rcu(&udp_sk(sk)->udp_portaddr_node);
-			hslot2->count--;
-			spin_unlock(&hslot2->lock);
-
-			spin_lock(&nhslot2->lock);
-			hlist_nulls_add_head_rcu(&udp_sk(sk)->udp_portaddr_node,
-						 &nhslot2->head);
-			nhslot2->count++;
-			spin_unlock(&nhslot2->lock);
-=======
 			if (rcu_access_pointer(sk->sk_reuseport_cb))
 				reuseport_detach_sock(sk);
 
@@ -2893,7 +2015,6 @@ void udp_lib_rehash(struct sock *sk, u16 newhash)
 				nhslot2->count++;
 				spin_unlock(&nhslot2->lock);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			spin_unlock_bh(&hslot->lock);
 		}
@@ -2901,15 +2022,9 @@ void udp_lib_rehash(struct sock *sk, u16 newhash)
 }
 EXPORT_SYMBOL(udp_lib_rehash);
 
-<<<<<<< HEAD
-static void udp_v4_rehash(struct sock *sk)
-{
-	u16 new_hash = udp4_portaddr_hash(sock_net(sk),
-=======
 void udp_v4_rehash(struct sock *sk)
 {
 	u16 new_hash = ipv4_portaddr_hash(sock_net(sk),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  inet_sk(sk)->inet_rcv_saddr,
 					  inet_sk(sk)->inet_num);
 	udp_lib_rehash(sk, new_hash);
@@ -2919,21 +2034,6 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 {
 	int rc;
 
-<<<<<<< HEAD
-	if (inet_sk(sk)->inet_daddr)
-		sock_rps_save_rxhash(sk, skb);
-
-	rc = sock_queue_rcv_skb(sk, skb);
-	if (rc < 0) {
-		int is_udplite = IS_UDPLITE(sk);
-
-		/* Note that an ENOMEM error is charged twice */
-		if (rc == -ENOMEM)
-			UDP_INC_STATS_BH(sock_net(sk), UDP_MIB_RCVBUFERRORS,
-					 is_udplite);
-		UDP_INC_STATS_BH(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
-		kfree_skb(skb);
-=======
 	if (inet_sk(sk)->inet_daddr) {
 		sock_rps_save_rxhash(sk, skb);
 		sk_mark_napi_id(sk, skb);
@@ -2959,16 +2059,11 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 		}
 		UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
 		kfree_skb_reason(skb, drop_reason);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		trace_udp_fail_queue_rcv_skb(rc, sk);
 		return -1;
 	}
 
 	return 0;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* returns:
@@ -2979,29 +2074,15 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
  * Note that in the success and error cases, the skb is assumed to
  * have either been requeued or freed.
  */
-<<<<<<< HEAD
-int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
-{
-	struct udp_sock *up = udp_sk(sk);
-	int rc;
-=======
 static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
 {
 	int drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
 	struct udp_sock *up = udp_sk(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int is_udplite = IS_UDPLITE(sk);
 
 	/*
 	 *	Charge it to the socket, dropping if the queue is full.
 	 */
-<<<<<<< HEAD
-	if (!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb))
-		goto drop;
-	nf_reset(skb);
-
-	if (up->encap_type) {
-=======
 	if (!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb)) {
 		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
 		goto drop;
@@ -3010,7 +2091,6 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
 
 	if (static_branch_unlikely(&udp_encap_needed_key) &&
 	    READ_ONCE(up->encap_type)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int (*encap_rcv)(struct sock *sk, struct sk_buff *skb);
 
 		/*
@@ -3025,17 +2105,6 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
 		 */
 
 		/* if we're overly short, let UDP handle it */
-<<<<<<< HEAD
-		encap_rcv = ACCESS_ONCE(up->encap_rcv);
-		if (skb->len > sizeof(struct udphdr) && encap_rcv != NULL) {
-			int ret;
-
-			ret = encap_rcv(sk, skb);
-			if (ret <= 0) {
-				UDP_INC_STATS_BH(sock_net(sk),
-						 UDP_MIB_INDATAGRAMS,
-						 is_udplite);
-=======
 		encap_rcv = READ_ONCE(up->encap_rcv);
 		if (encap_rcv) {
 			int ret;
@@ -3049,7 +2118,6 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
 				__UDP_INC_STATS(sock_net(sk),
 						UDP_MIB_INDATAGRAMS,
 						is_udplite);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ret;
 			}
 		}
@@ -3060,12 +2128,8 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
 	/*
 	 * 	UDP-Lite specific tests, ignored on UDP sockets
 	 */
-<<<<<<< HEAD
-	if ((is_udplite & UDPLITE_RECV_CC)  &&  UDP_SKB_CB(skb)->partial_cov) {
-=======
 	if (udp_test_bit(UDPLITE_RECV_CC, sk) && UDP_SKB_CB(skb)->partial_cov) {
 		u16 pcrlen = READ_ONCE(up->pcrlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * MIB statistics other than incrementing the error count are
@@ -3078,15 +2142,9 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
 		 * delivery of packets with coverage values less than a value
 		 * provided by the application."
 		 */
-<<<<<<< HEAD
-		if (up->pcrlen == 0) {          /* full coverage was set  */
-			LIMIT_NETDEBUG(KERN_WARNING "UDPLite: partial coverage %d while full coverage %d requested\n",
-				       UDP_SKB_CB(skb)->cscov, skb->len);
-=======
 		if (pcrlen == 0) {          /* full coverage was set  */
 			net_dbg_ratelimited("UDPLite: partial coverage %d while full coverage %d requested\n",
 					    UDP_SKB_CB(skb)->cscov, skb->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto drop;
 		}
 		/* The next case involves violating the min. coverage requested
@@ -3095,78 +2153,13 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
 		 * that it wants x while sender emits packets of smaller size y.
 		 * Therefore the above ...()->partial_cov statement is essential.
 		 */
-<<<<<<< HEAD
-		if (UDP_SKB_CB(skb)->cscov  <  up->pcrlen) {
-			LIMIT_NETDEBUG(KERN_WARNING "UDPLite: coverage %d too small, need min %d\n",
-				       UDP_SKB_CB(skb)->cscov, up->pcrlen);
-=======
 		if (UDP_SKB_CB(skb)->cscov < pcrlen) {
 			net_dbg_ratelimited("UDPLite: coverage %d too small, need min %d\n",
 					    UDP_SKB_CB(skb)->cscov, pcrlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto drop;
 		}
 	}
 
-<<<<<<< HEAD
-	if (rcu_access_pointer(sk->sk_filter) &&
-	    udp_lib_checksum_complete(skb))
-		goto drop;
-
-
-	if (sk_rcvqueues_full(sk, skb))
-		goto drop;
-
-	rc = 0;
-
-	ipv4_pktinfo_prepare(skb);
-	bh_lock_sock(sk);
-	if (!sock_owned_by_user(sk))
-		rc = __udp_queue_rcv_skb(sk, skb);
-	else if (sk_add_backlog(sk, skb)) {
-		bh_unlock_sock(sk);
-		goto drop;
-	}
-	bh_unlock_sock(sk);
-
-	return rc;
-
-drop:
-	UDP_INC_STATS_BH(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
-	atomic_inc(&sk->sk_drops);
-	kfree_skb(skb);
-	return -1;
-}
-
-
-static void flush_stack(struct sock **stack, unsigned int count,
-			struct sk_buff *skb, unsigned int final)
-{
-	unsigned int i;
-	struct sk_buff *skb1 = NULL;
-	struct sock *sk;
-
-	for (i = 0; i < count; i++) {
-		sk = stack[i];
-		if (likely(skb1 == NULL))
-			skb1 = (i == final) ? skb : skb_clone(skb, GFP_ATOMIC);
-
-		if (!skb1) {
-			atomic_inc(&sk->sk_drops);
-			UDP_INC_STATS_BH(sock_net(sk), UDP_MIB_RCVBUFERRORS,
-					 IS_UDPLITE(sk));
-			UDP_INC_STATS_BH(sock_net(sk), UDP_MIB_INERRORS,
-					 IS_UDPLITE(sk));
-		}
-
-		if (skb1 && udp_queue_rcv_skb(sk, skb1) <= 0)
-			skb1 = NULL;
-	}
-	if (unlikely(skb1))
-		kfree_skb(skb1);
-}
-
-=======
 	prefetch(&sk->sk_rmem_alloc);
 	if (rcu_access_pointer(sk->sk_filter) &&
 	    udp_lib_checksum_complete(skb))
@@ -3230,7 +2223,6 @@ bool udp_sk_rx_dst_set(struct sock *sk, struct dst_entry *dst)
 }
 EXPORT_SYMBOL(udp_sk_rx_dst_set);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Multicasts and broadcasts go to each listener.
  *
@@ -3239,48 +2231,6 @@ EXPORT_SYMBOL(udp_sk_rx_dst_set);
 static int __udp4_lib_mcast_deliver(struct net *net, struct sk_buff *skb,
 				    struct udphdr  *uh,
 				    __be32 saddr, __be32 daddr,
-<<<<<<< HEAD
-				    struct udp_table *udptable)
-{
-	struct sock *sk, *stack[256 / sizeof(struct sock *)];
-	struct udp_hslot *hslot = udp_hashslot(udptable, net, ntohs(uh->dest));
-	int dif;
-	unsigned int i, count = 0;
-
-	spin_lock(&hslot->lock);
-	sk = sk_nulls_head(&hslot->head);
-	dif = skb->dev->ifindex;
-	sk = udp_v4_mcast_next(net, sk, uh->dest, daddr, uh->source, saddr, dif);
-	while (sk) {
-		stack[count++] = sk;
-		sk = udp_v4_mcast_next(net, sk_nulls_next(sk), uh->dest,
-				       daddr, uh->source, saddr, dif);
-		if (unlikely(count == ARRAY_SIZE(stack))) {
-			if (!sk)
-				break;
-			flush_stack(stack, count, skb, ~0);
-			count = 0;
-		}
-	}
-	/*
-	 * before releasing chain lock, we must take a reference on sockets
-	 */
-	for (i = 0; i < count; i++)
-		sock_hold(stack[i]);
-
-	spin_unlock(&hslot->lock);
-
-	/*
-	 * do the slow work with no lock held
-	 */
-	if (count) {
-		flush_stack(stack, count, skb, count - 1);
-
-		for (i = 0; i < count; i++)
-			sock_put(stack[i]);
-	} else {
-		kfree_skb(skb);
-=======
 				    struct udp_table *udptable,
 				    int proto)
 {
@@ -3339,27 +2289,18 @@ start_lookup:
 		kfree_skb(skb);
 		__UDP_INC_STATS(net, UDP_MIB_IGNOREDMULTI,
 				proto == IPPROTO_UDPLITE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
 /* Initialize UDP checksum. If exited with zero value (success),
  * CHECKSUM_UNNECESSARY means, that no more checks are required.
-<<<<<<< HEAD
- * Otherwise, csum completion requires chacksumming packet body,
-=======
  * Otherwise, csum completion requires checksumming packet body,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * including udp header and folding it to skb->csum.
  */
 static inline int udp4_csum_init(struct sk_buff *skb, struct udphdr *uh,
 				 int proto)
 {
-<<<<<<< HEAD
-	const struct iphdr *iph;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	UDP_SKB_CB(skb)->partial_cov = 0;
@@ -3369,25 +2310,6 @@ static inline int udp4_csum_init(struct sk_buff *skb, struct udphdr *uh,
 		err = udplite_checksum_init(skb, uh);
 		if (err)
 			return err;
-<<<<<<< HEAD
-	}
-
-	iph = ip_hdr(skb);
-	if (uh->check == 0) {
-		skb->ip_summed = CHECKSUM_UNNECESSARY;
-	} else if (skb->ip_summed == CHECKSUM_COMPLETE) {
-		if (!csum_tcpudp_magic(iph->saddr, iph->daddr, skb->len,
-				      proto, skb->csum))
-			skb->ip_summed = CHECKSUM_UNNECESSARY;
-	}
-	if (!skb_csum_unnecessary(skb))
-		skb->csum = csum_tcpudp_nofold(iph->saddr, iph->daddr,
-					       skb->len, proto, 0);
-	/* Probably, we should checksum udp header (it should be in cache
-	 * in any case) and data in tiny packets (< rx copybreak).
-	 */
-
-=======
 
 		if (UDP_SKB_CB(skb)->partial_cov) {
 			skb->csum = inet_compute_pseudo(skb, proto);
@@ -3436,7 +2358,6 @@ static int udp_unicast_rcv_skb(struct sock *sk, struct sk_buff *skb,
 	 */
 	if (ret > 0)
 		return -ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3453,13 +2374,10 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 	struct rtable *rt = skb_rtable(skb);
 	__be32 saddr, daddr;
 	struct net *net = dev_net(skb->dev);
-<<<<<<< HEAD
-=======
 	bool refcounted;
 	int drop_reason;
 
 	drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *  Validate the packet.
@@ -3485,29 +2403,6 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 	if (udp4_csum_init(skb, uh, proto))
 		goto csum_error;
 
-<<<<<<< HEAD
-	if (rt->rt_flags & (RTCF_BROADCAST|RTCF_MULTICAST))
-		return __udp4_lib_mcast_deliver(net, skb, uh,
-				saddr, daddr, udptable);
-
-	sk = __udp4_lib_lookup_skb(skb, uh->source, uh->dest, udptable);
-
-	if (sk != NULL) {
-		int ret = udp_queue_rcv_skb(sk, skb);
-		sock_put(sk);
-
-		/* a return value > 0 means to resubmit the input, but
-		 * it wants the return to be -protocol, or 0
-		 */
-		if (ret > 0)
-			return -ret;
-		return 0;
-	}
-
-	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb))
-		goto drop;
-	nf_reset(skb);
-=======
 	sk = inet_steal_sock(net, skb, sizeof(struct udphdr), saddr, uh->source, daddr, uh->dest,
 			     &refcounted, udp_ehashfn);
 	if (IS_ERR(sk))
@@ -3537,35 +2432,19 @@ no_sk:
 	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb))
 		goto drop;
 	nf_reset_ct(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* No socket. Drop packet silently, if checksum is wrong */
 	if (udp_lib_checksum_complete(skb))
 		goto csum_error;
 
-<<<<<<< HEAD
-	UDP_INC_STATS_BH(net, UDP_MIB_NOPORTS, proto == IPPROTO_UDPLITE);
-=======
 	drop_reason = SKB_DROP_REASON_NO_SOCKET;
 	__UDP_INC_STATS(net, UDP_MIB_NOPORTS, proto == IPPROTO_UDPLITE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	icmp_send(skb, ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, 0);
 
 	/*
 	 * Hmm.  We got an UDP packet to a port to which we
 	 * don't wanna listen.  Ignore it.
 	 */
-<<<<<<< HEAD
-	kfree_skb(skb);
-	return 0;
-
-short_packet:
-	LIMIT_NETDEBUG(KERN_DEBUG "UDP%s: short packet: From %pI4:%u %d/%d to %pI4:%u\n",
-		       proto == IPPROTO_UDPLITE ? "Lite" : "",
-		       &saddr, ntohs(uh->source),
-		       ulen, skb->len,
-		       &daddr, ntohs(uh->dest));
-=======
 	kfree_skb_reason(skb, drop_reason);
 	return 0;
 
@@ -3576,7 +2455,6 @@ short_packet:
 			    &saddr, ntohs(uh->source),
 			    ulen, skb->len,
 			    &daddr, ntohs(uh->dest));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto drop;
 
 csum_error:
@@ -3584,15 +2462,6 @@ csum_error:
 	 * RFC1122: OK.  Discards the bad packet silently (as far as
 	 * the network is concerned, anyway) as per 4.1.3.4 (MUST).
 	 */
-<<<<<<< HEAD
-	LIMIT_NETDEBUG(KERN_DEBUG "UDP%s: bad checksum. From %pI4:%u to %pI4:%u ulen %d\n",
-		       proto == IPPROTO_UDPLITE ? "Lite" : "",
-		       &saddr, ntohs(uh->source), &daddr, ntohs(uh->dest),
-		       ulen);
-drop:
-	UDP_INC_STATS_BH(net, UDP_MIB_INERRORS, proto == IPPROTO_UDPLITE);
-	kfree_skb(skb);
-=======
 	drop_reason = SKB_DROP_REASON_UDP_CSUM;
 	net_dbg_ratelimited("UDP%s: bad checksum. From %pI4:%u to %pI4:%u ulen %d\n",
 			    proto == IPPROTO_UDPLITE ? "Lite" : "",
@@ -3736,26 +2605,16 @@ int udp_v4_early_demux(struct sk_buff *skb)
 						     iph->tos & IPTOS_RT_MASK,
 						     skb->dev, in_dev, &itag);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int udp_rcv(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	return __udp4_lib_rcv(skb, &udp_table, IPPROTO_UDP);
-=======
 	return __udp4_lib_rcv(skb, dev_net(skb->dev)->ipv4.udp_table, IPPROTO_UDP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void udp_destroy_sock(struct sock *sk)
 {
-<<<<<<< HEAD
-	bool slow = lock_sock_fast(sk);
-	udp_flush_pending_frames(sk);
-	unlock_sock_fast(sk, slow);
-=======
 	struct udp_sock *up = udp_sk(sk);
 	bool slow = lock_sock_fast(sk);
 
@@ -3786,37 +2645,12 @@ static void set_xfrm_gro_udp_encap_rcv(__u16 encap_type, unsigned short family,
 			WRITE_ONCE(udp_sk(sk)->gro_receive, ipv6_stub->xfrm6_gro_udp_encap_rcv);
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  *	Socket option code for UDP
  */
 int udp_lib_setsockopt(struct sock *sk, int level, int optname,
-<<<<<<< HEAD
-		       char __user *optval, unsigned int optlen,
-		       int (*push_pending_frames)(struct sock *))
-{
-	struct udp_sock *up = udp_sk(sk);
-	int val;
-	int err = 0;
-	int is_udplite = IS_UDPLITE(sk);
-
-	if (optlen < sizeof(int))
-		return -EINVAL;
-
-	if (get_user(val, (int __user *)optval))
-		return -EFAULT;
-
-	switch (optname) {
-	case UDP_CORK:
-		if (val != 0) {
-			up->corkflag = 1;
-		} else {
-			up->corkflag = 0;
-			lock_sock(sk);
-			(*push_pending_frames)(sk);
-=======
 		       sockptr_t optval, unsigned int optlen,
 		       int (*push_pending_frames)(struct sock *))
 {
@@ -3853,7 +2687,6 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
 			udp_clear_bit(CORK, sk);
 			lock_sock(sk);
 			push_pending_frames(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			release_sock(sk);
 		}
 		break;
@@ -3861,14 +2694,6 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
 	case UDP_ENCAP:
 		switch (val) {
 		case 0:
-<<<<<<< HEAD
-		case UDP_ENCAP_ESPINUDP:
-		case UDP_ENCAP_ESPINUDP_NON_IKE:
-			up->encap_rcv = xfrm4_udp_encap_rcv;
-			/* FALLTHROUGH */
-		case UDP_ENCAP_L2TPINUDP:
-			up->encap_type = val;
-=======
 #ifdef CONFIG_XFRM
 		case UDP_ENCAP_ESPINUDP:
 			set_xfrm_gro_udp_encap_rcv(val, sk->sk_family, sk);
@@ -3887,7 +2712,6 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
 		case UDP_ENCAP_L2TPINUDP:
 			WRITE_ONCE(up->encap_type, val);
 			udp_tunnel_encap_enable(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			err = -ENOPROTOOPT;
@@ -3895,8 +2719,6 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
 		}
 		break;
 
-<<<<<<< HEAD
-=======
 	case UDP_NO_CHECK6_TX:
 		udp_set_no_check6_tx(sk, valbool);
 		break;
@@ -3921,7 +2743,6 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
 		set_xfrm_gro_udp_encap_rcv(up->encap_type, sk->sk_family, sk);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * 	UDP-Lite's partial checksum coverage (RFC 3828).
 	 */
@@ -3934,13 +2755,8 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
 			val = 8;
 		else if (val > USHRT_MAX)
 			val = USHRT_MAX;
-<<<<<<< HEAD
-		up->pcslen = val;
-		up->pcflag |= UDPLITE_SEND_CC;
-=======
 		WRITE_ONCE(up->pcslen, val);
 		udp_set_bit(UDPLITE_SEND_CC, sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	/* The receiver specifies a minimum checksum coverage value. To make
@@ -3953,13 +2769,8 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
 			val = 8;
 		else if (val > USHRT_MAX)
 			val = USHRT_MAX;
-<<<<<<< HEAD
-		up->pcrlen = val;
-		up->pcflag |= UDPLITE_RECV_CC;
-=======
 		WRITE_ONCE(up->pcrlen, val);
 		udp_set_bit(UDPLITE_RECV_CC, sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -3971,38 +2782,16 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
 }
 EXPORT_SYMBOL(udp_lib_setsockopt);
 
-<<<<<<< HEAD
-int udp_setsockopt(struct sock *sk, int level, int optname,
-		   char __user *optval, unsigned int optlen)
-{
-	if (level == SOL_UDP  ||  level == SOL_UDPLITE)
-		return udp_lib_setsockopt(sk, level, optname, optval, optlen,
-=======
 int udp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
 		   unsigned int optlen)
 {
 	if (level == SOL_UDP  ||  level == SOL_UDPLITE || level == SOL_SOCKET)
 		return udp_lib_setsockopt(sk, level, optname,
 					  optval, optlen,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  udp_push_pending_frames);
 	return ip_setsockopt(sk, level, optname, optval, optlen);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-int compat_udp_setsockopt(struct sock *sk, int level, int optname,
-			  char __user *optval, unsigned int optlen)
-{
-	if (level == SOL_UDP  ||  level == SOL_UDPLITE)
-		return udp_lib_setsockopt(sk, level, optname, optval, optlen,
-					  udp_push_pending_frames);
-	return compat_ip_setsockopt(sk, level, optname, optval, optlen);
-}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int udp_lib_getsockopt(struct sock *sk, int level, int optname,
 		       char __user *optval, int __user *optlen)
 {
@@ -4012,20 +2801,6 @@ int udp_lib_getsockopt(struct sock *sk, int level, int optname,
 	if (get_user(len, optlen))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	len = min_t(unsigned int, len, sizeof(int));
-
-	if (len < 0)
-		return -EINVAL;
-
-	switch (optname) {
-	case UDP_CORK:
-		val = up->corkflag;
-		break;
-
-	case UDP_ENCAP:
-		val = up->encap_type;
-=======
 	if (len < 0)
 		return -EINVAL;
 
@@ -4054,25 +2829,16 @@ int udp_lib_getsockopt(struct sock *sk, int level, int optname,
 
 	case UDP_GRO:
 		val = udp_test_bit(GRO_ENABLED, sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	/* The following two cannot be changed on UDP sockets, the return is
 	 * always 0 (which corresponds to the full checksum coverage of UDP). */
 	case UDPLITE_SEND_CSCOV:
-<<<<<<< HEAD
-		val = up->pcslen;
-		break;
-
-	case UDPLITE_RECV_CSCOV:
-		val = up->pcrlen;
-=======
 		val = READ_ONCE(up->pcslen);
 		break;
 
 	case UDPLITE_RECV_CSCOV:
 		val = READ_ONCE(up->pcrlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -4095,28 +2861,11 @@ int udp_getsockopt(struct sock *sk, int level, int optname,
 	return ip_getsockopt(sk, level, optname, optval, optlen);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-int compat_udp_getsockopt(struct sock *sk, int level, int optname,
-				 char __user *optval, int __user *optlen)
-{
-	if (level == SOL_UDP  ||  level == SOL_UDPLITE)
-		return udp_lib_getsockopt(sk, level, optname, optval, optlen);
-	return compat_ip_getsockopt(sk, level, optname, optval, optlen);
-}
-#endif
-/**
- * 	udp_poll - wait for a UDP event.
- *	@file - file struct
- *	@sock - socket
- *	@wait - poll table
-=======
 /**
  * 	udp_poll - wait for a UDP event.
  *	@file: - file struct
  *	@sock: - socket
  *	@wait: - poll table
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	This is same as datagram poll, except for the special case of
  *	blocking sockets. If application is using a blocking fd
@@ -4125,18 +2874,6 @@ int compat_udp_getsockopt(struct sock *sk, int level, int optname,
  *	but then block when reading it. Add special case code
  *	to work around these arguably broken applications.
  */
-<<<<<<< HEAD
-unsigned int udp_poll(struct file *file, struct socket *sock, poll_table *wait)
-{
-	unsigned int mask = datagram_poll(file, sock, wait);
-	struct sock *sk = sock->sk;
-
-	/* Check for false positives due to checksum errors */
-	if ((mask & POLLRDNORM) && !(file->f_flags & O_NONBLOCK) &&
-	    !(sk->sk_shutdown & RCV_SHUTDOWN) && !first_packet_length(sk))
-		mask &= ~(POLLIN | POLLRDNORM);
-
-=======
 __poll_t udp_poll(struct file *file, struct socket *sock, poll_table *wait)
 {
 	__poll_t mask = datagram_poll(file, sock, wait);
@@ -4153,44 +2890,11 @@ __poll_t udp_poll(struct file *file, struct socket *sock, poll_table *wait)
 	/* psock ingress_msg queue should not contain any bad checksum frames */
 	if (sk_is_readable(sk))
 		mask |= EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mask;
 
 }
 EXPORT_SYMBOL(udp_poll);
 
-<<<<<<< HEAD
-struct proto udp_prot = {
-	.name		   = "UDP",
-	.owner		   = THIS_MODULE,
-	.close		   = udp_lib_close,
-	.connect	   = ip4_datagram_connect,
-	.disconnect	   = udp_disconnect,
-	.ioctl		   = udp_ioctl,
-	.destroy	   = udp_destroy_sock,
-	.setsockopt	   = udp_setsockopt,
-	.getsockopt	   = udp_getsockopt,
-	.sendmsg	   = udp_sendmsg,
-	.recvmsg	   = udp_recvmsg,
-	.sendpage	   = udp_sendpage,
-	.backlog_rcv	   = __udp_queue_rcv_skb,
-	.hash		   = udp_lib_hash,
-	.unhash		   = udp_lib_unhash,
-	.rehash		   = udp_v4_rehash,
-	.get_port	   = udp_v4_get_port,
-	.memory_allocated  = &udp_memory_allocated,
-	.sysctl_mem	   = sysctl_udp_mem,
-	.sysctl_wmem	   = &sysctl_udp_wmem_min,
-	.sysctl_rmem	   = &sysctl_udp_rmem_min,
-	.obj_size	   = sizeof(struct udp_sock),
-	.slab_flags	   = SLAB_DESTROY_BY_RCU,
-	.h.udp_table	   = &udp_table,
-#ifdef CONFIG_COMPAT
-	.compat_setsockopt = compat_udp_setsockopt,
-	.compat_getsockopt = compat_udp_getsockopt,
-#endif
-	.clear_sk	   = sk_prot_clear_portaddr_nulls,
-=======
 int udp_abort(struct sock *sk, int err)
 {
 	if (!has_current_bpf_ctx())
@@ -4247,34 +2951,12 @@ struct proto udp_prot = {
 	.obj_size		= sizeof(struct udp_sock),
 	.h.udp_table		= NULL,
 	.diag_destroy		= udp_abort,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 EXPORT_SYMBOL(udp_prot);
 
 /* ------------------------------------------------------------------------ */
 #ifdef CONFIG_PROC_FS
 
-<<<<<<< HEAD
-static struct sock *udp_get_first(struct seq_file *seq, int start)
-{
-	struct sock *sk;
-	struct udp_iter_state *state = seq->private;
-	struct net *net = seq_file_net(seq);
-
-	for (state->bucket = start; state->bucket <= state->udp_table->mask;
-	     ++state->bucket) {
-		struct hlist_nulls_node *node;
-		struct udp_hslot *hslot = &state->udp_table->hash[state->bucket];
-
-		if (hlist_nulls_empty(&hslot->head))
-			continue;
-
-		spin_lock_bh(&hslot->lock);
-		sk_nulls_for_each(sk, node, &hslot->head) {
-			if (!net_eq(sock_net(sk), net))
-				continue;
-			if (sk->sk_family == state->family)
-=======
 static unsigned short seq_file_family(const struct seq_file *seq);
 static bool seq_sk_match(struct seq_file *seq, const struct sock *sk)
 {
@@ -4321,7 +3003,6 @@ static struct sock *udp_get_first(struct seq_file *seq, int start)
 		spin_lock_bh(&hslot->lock);
 		sk_for_each(sk, &hslot->head) {
 			if (seq_sk_match(seq, sk))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto found;
 		}
 		spin_unlock_bh(&hslot->lock);
@@ -4335,16 +3016,6 @@ static struct sock *udp_get_next(struct seq_file *seq, struct sock *sk)
 {
 	struct udp_iter_state *state = seq->private;
 	struct net *net = seq_file_net(seq);
-<<<<<<< HEAD
-
-	do {
-		sk = sk_nulls_next(sk);
-	} while (sk && (!net_eq(sock_net(sk), net) || sk->sk_family != state->family));
-
-	if (!sk) {
-		if (state->bucket <= state->udp_table->mask)
-			spin_unlock_bh(&state->udp_table->hash[state->bucket].lock);
-=======
 	struct udp_table *udptable;
 
 	do {
@@ -4357,7 +3028,6 @@ static struct sock *udp_get_next(struct seq_file *seq, struct sock *sk)
 		if (state->bucket <= udptable->mask)
 			spin_unlock_bh(&udptable->hash[state->bucket].lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return udp_get_first(seq, state->bucket + 1);
 	}
 	return sk;
@@ -4373,25 +3043,16 @@ static struct sock *udp_get_idx(struct seq_file *seq, loff_t pos)
 	return pos ? NULL : sk;
 }
 
-<<<<<<< HEAD
-static void *udp_seq_start(struct seq_file *seq, loff_t *pos)
-=======
 void *udp_seq_start(struct seq_file *seq, loff_t *pos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct udp_iter_state *state = seq->private;
 	state->bucket = MAX_UDP_PORTS;
 
 	return *pos ? udp_get_idx(seq, *pos-1) : SEQ_START_TOKEN;
 }
-<<<<<<< HEAD
-
-static void *udp_seq_next(struct seq_file *seq, void *v, loff_t *pos)
-=======
 EXPORT_SYMBOL(udp_seq_start);
 
 void *udp_seq_next(struct seq_file *seq, void *v, loff_t *pos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk;
 
@@ -4403,58 +3064,6 @@ void *udp_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 	++*pos;
 	return sk;
 }
-<<<<<<< HEAD
-
-static void udp_seq_stop(struct seq_file *seq, void *v)
-{
-	struct udp_iter_state *state = seq->private;
-
-	if (state->bucket <= state->udp_table->mask)
-		spin_unlock_bh(&state->udp_table->hash[state->bucket].lock);
-}
-
-int udp_seq_open(struct inode *inode, struct file *file)
-{
-	struct udp_seq_afinfo *afinfo = PDE(inode)->data;
-	struct udp_iter_state *s;
-	int err;
-
-	err = seq_open_net(inode, file, &afinfo->seq_ops,
-			   sizeof(struct udp_iter_state));
-	if (err < 0)
-		return err;
-
-	s = ((struct seq_file *)file->private_data)->private;
-	s->family		= afinfo->family;
-	s->udp_table		= afinfo->udp_table;
-	return err;
-}
-EXPORT_SYMBOL(udp_seq_open);
-
-/* ------------------------------------------------------------------------ */
-int udp_proc_register(struct net *net, struct udp_seq_afinfo *afinfo)
-{
-	struct proc_dir_entry *p;
-	int rc = 0;
-
-	afinfo->seq_ops.start		= udp_seq_start;
-	afinfo->seq_ops.next		= udp_seq_next;
-	afinfo->seq_ops.stop		= udp_seq_stop;
-
-	p = proc_create_data(afinfo->name, S_IRUGO, net->proc_net,
-			     afinfo->seq_fops, afinfo);
-	if (!p)
-		rc = -ENOMEM;
-	return rc;
-}
-EXPORT_SYMBOL(udp_proc_register);
-
-void udp_proc_unregister(struct net *net, struct udp_seq_afinfo *afinfo)
-{
-	proc_net_remove(net, afinfo->name);
-}
-EXPORT_SYMBOL(udp_proc_unregister);
-=======
 EXPORT_SYMBOL(udp_seq_next);
 
 void udp_seq_stop(struct seq_file *seq, void *v)
@@ -4468,7 +3077,6 @@ void udp_seq_stop(struct seq_file *seq, void *v)
 		spin_unlock_bh(&udptable->hash[state->bucket].lock);
 }
 EXPORT_SYMBOL(udp_seq_stop);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ------------------------------------------------------------------------ */
 static void udp4_format_sock(struct sock *sp, struct seq_file *f,
@@ -4481,14 +3089,6 @@ static void udp4_format_sock(struct sock *sp, struct seq_file *f,
 	__u16 srcp	  = ntohs(inet->inet_sport);
 
 	seq_printf(f, "%5d: %08X:%04X %08X:%04X"
-<<<<<<< HEAD
-		" %02X %08X:%08X %02X:%08lX %08X %5d %8d %lu %d %pK %d",
-		bucket, src, srcp, dest, destp, sp->sk_state,
-		sk_wmem_alloc_get(sp),
-		sk_rmem_alloc_get(sp),
-		0, 0L, 0, sock_i_uid(sp), 0, sock_i_ino(sp),
-		atomic_read(&sp->sk_refcnt), sp,
-=======
 		" %02X %08X:%08X %02X:%08lX %08X %5u %8d %lu %d %pK %u",
 		bucket, src, srcp, dest, destp, sp->sk_state,
 		sk_wmem_alloc_get(sp),
@@ -4497,7 +3097,6 @@ static void udp4_format_sock(struct sock *sp, struct seq_file *f,
 		from_kuid_munged(seq_user_ns(f), sock_i_uid(sp)),
 		0, sock_i_ino(sp),
 		refcount_read(&sp->sk_refcnt), sp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_read(&sp->sk_drops));
 }
 
@@ -4505,11 +3104,7 @@ int udp4_seq_show(struct seq_file *seq, void *v)
 {
 	seq_setwidth(seq, 127);
 	if (v == SEQ_START_TOKEN)
-<<<<<<< HEAD
-		seq_puts(seq, "  sl  local_address rem_address   st tx_queue "
-=======
 		seq_puts(seq, "   sl  local_address rem_address   st tx_queue "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   "rx_queue tr tm->when retrnsmt   uid  timeout "
 			   "inode ref pointer drops");
 	else {
@@ -4521,25 +3116,6 @@ int udp4_seq_show(struct seq_file *seq, void *v)
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct file_operations udp_afinfo_seq_fops = {
-	.owner    = THIS_MODULE,
-	.open     = udp_seq_open,
-	.read     = seq_read,
-	.llseek   = seq_lseek,
-	.release  = seq_release_net
-};
-
-/* ------------------------------------------------------------------------ */
-static struct udp_seq_afinfo udp4_seq_afinfo = {
-	.name		= "udp",
-	.family		= AF_INET,
-	.udp_table	= &udp_table,
-	.seq_fops	= &udp_afinfo_seq_fops,
-	.seq_ops	= {
-		.show		= udp4_seq_show,
-	},
-=======
 #ifdef CONFIG_BPF_SYSCALL
 struct bpf_iter__udp {
 	__bpf_md_ptr(struct bpf_iter_meta *, meta);
@@ -4784,28 +3360,19 @@ EXPORT_SYMBOL(udp_seq_ops);
 static struct udp_seq_afinfo udp4_seq_afinfo = {
 	.family		= AF_INET,
 	.udp_table	= NULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __net_init udp4_proc_init_net(struct net *net)
 {
-<<<<<<< HEAD
-	return udp_proc_register(net, &udp4_seq_afinfo);
-=======
 	if (!proc_create_net_data("udp", 0444, net->proc_net, &udp_seq_ops,
 			sizeof(struct udp_iter_state), &udp4_seq_afinfo))
 		return -ENOMEM;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __net_exit udp4_proc_exit_net(struct net *net)
 {
-<<<<<<< HEAD
-	udp_proc_unregister(net, &udp4_seq_afinfo);
-=======
 	remove_proc_entry("udp", net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pernet_operations udp4_net_ops = {
@@ -4827,11 +3394,6 @@ void udp4_proc_exit(void)
 static __initdata unsigned long uhash_entries;
 static int __init set_uhash_entries(char *str)
 {
-<<<<<<< HEAD
-	if (!str)
-		return 0;
-	uhash_entries = simple_strtoul(str, &str, 0);
-=======
 	ssize_t ret;
 
 	if (!str)
@@ -4841,7 +3403,6 @@ static int __init set_uhash_entries(char *str)
 	if (ret)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (uhash_entries && uhash_entries < UDP_HTABLE_SIZE_MIN)
 		uhash_entries = UDP_HTABLE_SIZE_MIN;
 	return 1;
@@ -4852,31 +3413,6 @@ void __init udp_table_init(struct udp_table *table, const char *name)
 {
 	unsigned int i;
 
-<<<<<<< HEAD
-	if (!CONFIG_BASE_SMALL)
-		table->hash = alloc_large_system_hash(name,
-			2 * sizeof(struct udp_hslot),
-			uhash_entries,
-			21, /* one slot per 2 MB */
-			0,
-			&table->log,
-			&table->mask,
-			64 * 1024);
-	/*
-	 * Make sure hash table has the minimum size
-	 */
-	if (CONFIG_BASE_SMALL || table->mask < UDP_HTABLE_SIZE_MIN - 1) {
-		table->hash = kmalloc(UDP_HTABLE_SIZE_MIN *
-				      2 * sizeof(struct udp_hslot), GFP_KERNEL);
-		if (!table->hash)
-			panic(name);
-		table->log = ilog2(UDP_HTABLE_SIZE_MIN);
-		table->mask = UDP_HTABLE_SIZE_MIN - 1;
-	}
-	table->hash2 = table->hash + (table->mask + 1);
-	for (i = 0; i <= table->mask; i++) {
-		INIT_HLIST_NULLS_HEAD(&table->hash[i].head, i);
-=======
 	table->hash = alloc_large_system_hash(name,
 					      2 * sizeof(struct udp_hslot),
 					      uhash_entries,
@@ -4890,26 +3426,16 @@ void __init udp_table_init(struct udp_table *table, const char *name)
 	table->hash2 = table->hash + (table->mask + 1);
 	for (i = 0; i <= table->mask; i++) {
 		INIT_HLIST_HEAD(&table->hash[i].head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		table->hash[i].count = 0;
 		spin_lock_init(&table->hash[i].lock);
 	}
 	for (i = 0; i <= table->mask; i++) {
-<<<<<<< HEAD
-		INIT_HLIST_NULLS_HEAD(&table->hash2[i].head, i);
-=======
 		INIT_HLIST_HEAD(&table->hash2[i].head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		table->hash2[i].count = 0;
 		spin_lock_init(&table->hash2[i].lock);
 	}
 }
 
-<<<<<<< HEAD
-void __init udp_init(void)
-{
-	unsigned long limit;
-=======
 u32 udp_flow_hashrnd(void)
 {
 	static u32 hashrnd __read_mostly;
@@ -5104,7 +3630,6 @@ void __init udp_init(void)
 {
 	unsigned long limit;
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	udp_table_init(&udp_table, "UDP");
 	limit = nr_free_buffer_pages() / 8;
@@ -5113,74 +3638,6 @@ void __init udp_init(void)
 	sysctl_udp_mem[1] = limit;
 	sysctl_udp_mem[2] = sysctl_udp_mem[0] * 2;
 
-<<<<<<< HEAD
-	sysctl_udp_rmem_min = SK_MEM_QUANTUM;
-	sysctl_udp_wmem_min = SK_MEM_QUANTUM;
-}
-
-int udp4_ufo_send_check(struct sk_buff *skb)
-{
-	const struct iphdr *iph;
-	struct udphdr *uh;
-
-	if (!pskb_may_pull(skb, sizeof(*uh)))
-		return -EINVAL;
-
-	iph = ip_hdr(skb);
-	uh = udp_hdr(skb);
-
-	uh->check = ~csum_tcpudp_magic(iph->saddr, iph->daddr, skb->len,
-				       IPPROTO_UDP, 0);
-	skb->csum_start = skb_transport_header(skb) - skb->head;
-	skb->csum_offset = offsetof(struct udphdr, check);
-	skb->ip_summed = CHECKSUM_PARTIAL;
-	return 0;
-}
-
-struct sk_buff *udp4_ufo_fragment(struct sk_buff *skb,
-	netdev_features_t features)
-{
-	struct sk_buff *segs = ERR_PTR(-EINVAL);
-	unsigned int mss;
-	int offset;
-	__wsum csum;
-
-	mss = skb_shinfo(skb)->gso_size;
-	if (unlikely(skb->len <= mss))
-		goto out;
-
-	if (skb_gso_ok(skb, features | NETIF_F_GSO_ROBUST)) {
-		/* Packet is from an untrusted source, reset gso_segs. */
-		int type = skb_shinfo(skb)->gso_type;
-
-		if (unlikely(type & ~(SKB_GSO_UDP | SKB_GSO_DODGY) ||
-			     !(type & (SKB_GSO_UDP))))
-			goto out;
-
-		skb_shinfo(skb)->gso_segs = DIV_ROUND_UP(skb->len, mss);
-
-		segs = NULL;
-		goto out;
-	}
-
-	/* Do software UFO. Complete and fill in the UDP checksum as HW cannot
-	 * do checksum of UDP packets sent as multiple IP fragments.
-	 */
-	offset = skb_checksum_start_offset(skb);
-	csum = skb_checksum(skb, offset, skb->len - offset, 0);
-	offset += skb->csum_offset;
-	*(__sum16 *)(skb->data + offset) = csum_fold(csum);
-	skb->ip_summed = CHECKSUM_NONE;
-
-	/* Fragment the skb. IP headers of the fragments are updated in
-	 * inet_gso_segment()
-	 */
-	segs = skb_segment(skb, features);
-out:
-	return segs;
-}
-
-=======
 	/* 16 spinlocks per cpu */
 	udp_busylocks_log = ilog2(nr_cpu_ids) + 4;
 	udp_busylocks = kmalloc(sizeof(spinlock_t) << udp_busylocks_log,
@@ -5197,4 +3654,3 @@ out:
 	bpf_iter_register();
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

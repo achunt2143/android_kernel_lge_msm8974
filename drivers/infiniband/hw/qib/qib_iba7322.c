@@ -1,10 +1,6 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2008, 2009, 2010 QLogic Corporation. All rights reserved.
-=======
  * Copyright (c) 2012 - 2017 Intel Corporation.  All rights reserved.
  * Copyright (c) 2008 - 2012 QLogic Corporation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -48,25 +44,19 @@
 #include <linux/module.h>
 #include <rdma/ib_verbs.h>
 #include <rdma/ib_smi.h>
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 #include <linux/dca.h>
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "qib.h"
 #include "qib_7322_regs.h"
 #include "qib_qsfp.h"
 
 #include "qib_mad.h"
-<<<<<<< HEAD
-=======
 #include "qib_verbs.h"
 
 #undef pr_fmt
 #define pr_fmt(fmt) QIB_DRV_NAME " " fmt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void qib_setup_7322_setextled(struct qib_pportdata *, u32);
 static void qib_7322_handle_hwerrors(struct qib_devdata *, char *, size_t);
@@ -93,10 +83,7 @@ static void ibsd_wr_allchans(struct qib_pportdata *, int, unsigned, unsigned);
 static void serdes_7322_los_enable(struct qib_pportdata *, int);
 static int serdes_7322_init_old(struct qib_pportdata *);
 static int serdes_7322_init_new(struct qib_pportdata *);
-<<<<<<< HEAD
-=======
 static void dump_sdma_7322_state(struct qib_pportdata *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BMASK(msb, lsb) (((1 << ((msb) + 1 - (lsb))) - 1) << (lsb))
 
@@ -130,11 +117,7 @@ MODULE_PARM_DESC(chase, "Enable state chase handling");
 
 static ushort qib_long_atten = 10; /* 10 dB ~= 5m length */
 module_param_named(long_attenuation, qib_long_atten, ushort, S_IRUGO);
-<<<<<<< HEAD
-MODULE_PARM_DESC(long_attenuation, \
-=======
 MODULE_PARM_DESC(long_attenuation,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 "attenuation cutoff (dB) for long copper cable setup");
 
 static ushort qib_singleport;
@@ -167,25 +150,15 @@ static struct kparam_string kp_txselect = {
 	.string = txselect_list,
 	.maxlen = MAX_ATTEN_LEN
 };
-<<<<<<< HEAD
-static int  setup_txselect(const char *, struct kernel_param *);
-module_param_call(txselect, setup_txselect, param_get_string,
-		  &kp_txselect, S_IWUSR | S_IRUGO);
-MODULE_PARM_DESC(txselect, \
-=======
 static int  setup_txselect(const char *, const struct kernel_param *);
 module_param_call(txselect, setup_txselect, param_get_string,
 		  &kp_txselect, S_IWUSR | S_IRUGO);
 MODULE_PARM_DESC(txselect,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 "Tx serdes indices (for no QSFP or invalid QSFP data)");
 
 #define BOARD_QME7342 5
 #define BOARD_QMH7342 6
-<<<<<<< HEAD
-=======
 #define BOARD_QMH7360 9
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IS_QMH(dd) (SYM_FIELD((dd)->revision, Revision, BoardID) == \
 		    BOARD_QMH7342)
 #define IS_QME(dd) (SYM_FIELD((dd)->revision, Revision, BoardID) == \
@@ -490,8 +463,6 @@ static u8 ib_rate_to_delay[IB_RATE_120_GBPS + 1] = {
 	[IB_RATE_40_GBPS] = 1
 };
 
-<<<<<<< HEAD
-=======
 static const char * const qib_sdma_state_names[] = {
 	[qib_sdma_state_s00_hw_down]          = "s00_HwDown",
 	[qib_sdma_state_s10_hw_start_up_wait] = "s10_HwStartUpWait",
@@ -502,7 +473,6 @@ static const char * const qib_sdma_state_names[] = {
 	[qib_sdma_state_s99_running]          = "s99_Running",
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IBA7322_LINKSPEED_SHIFT SYM_LSB(IBCStatusA_0, LinkSpeedActive)
 #define IBA7322_LINKWIDTH_SHIFT SYM_LSB(IBCStatusA_0, LinkWidthActive)
 
@@ -564,8 +534,6 @@ static const u8 qib_7322_physportstate[0x20] = {
 	[0x17] = IB_PHYSPORTSTATE_CFG_TRAIN
 };
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 struct qib_irq_notify {
 	int rcv;
@@ -574,7 +542,6 @@ struct qib_irq_notify {
 };
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct qib_chip_specific {
 	u64 __iomem *cregbase;
 	u64 *cntrs;
@@ -596,24 +563,17 @@ struct qib_chip_specific {
 	u32 updthresh; /* current AvailUpdThld */
 	u32 updthresh_dflt; /* default AvailUpdThld */
 	u32 r1;
-<<<<<<< HEAD
-	int irq;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 num_msix_entries;
 	u32 sdmabufcnt;
 	u32 lastbuf_for_pio;
 	u32 stay_in_freeze;
 	u32 recovery_ports_initted;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 	u32 dca_ctrl;
 	int rhdr_cpu[18];
 	int sdma_cpu[2];
 	u64 dca_rcvhdr_ctrl[5]; /* B, C, D, E, F */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qib_msix_entry *msix_entries;
 	unsigned long *sendchkenable;
 	unsigned long *sendgrhchk;
@@ -641,11 +601,7 @@ struct vendor_txdds_ent {
 static void write_tx_serdes_param(struct qib_pportdata *, struct txdds_ent *);
 
 #define TXDDS_TABLE_SZ 16 /* number of entries per speed in onchip table */
-<<<<<<< HEAD
-#define TXDDS_EXTRA_SZ 13 /* number of extra tx settings entries */
-=======
 #define TXDDS_EXTRA_SZ 18 /* number of extra tx settings entries */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TXDDS_MFG_SZ 2    /* number of mfg tx settings entries */
 #define SERDES_CHANS 4 /* yes, it's obvious, but one less magic number */
 
@@ -707,10 +663,7 @@ struct qib_chippport_specific {
 	u8 ibmalfusesnap;
 	struct qib_qsfp_data qsfp_data;
 	char epmsgbuf[192]; /* for port error interrupt msg buffer */
-<<<<<<< HEAD
-=======
 	char sdmamsgbuf[192]; /* for per-port sdma error messages */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct {
@@ -718,30 +671,6 @@ static struct {
 	irq_handler_t handler;
 	int lsb;
 	int port; /* 0 if not port-specific, else port # */
-<<<<<<< HEAD
-} irq_table[] = {
-	{ "", qib_7322intr, -1, 0 },
-	{ " (buf avail)", qib_7322bufavail,
-		SYM_LSB(IntStatus, SendBufAvail), 0 },
-	{ " (sdma 0)", sdma_intr,
-		SYM_LSB(IntStatus, SDmaInt_0), 1 },
-	{ " (sdma 1)", sdma_intr,
-		SYM_LSB(IntStatus, SDmaInt_1), 2 },
-	{ " (sdmaI 0)", sdma_idle_intr,
-		SYM_LSB(IntStatus, SDmaIdleInt_0), 1 },
-	{ " (sdmaI 1)", sdma_idle_intr,
-		SYM_LSB(IntStatus, SDmaIdleInt_1), 2 },
-	{ " (sdmaP 0)", sdma_progress_intr,
-		SYM_LSB(IntStatus, SDmaProgressInt_0), 1 },
-	{ " (sdmaP 1)", sdma_progress_intr,
-		SYM_LSB(IntStatus, SDmaProgressInt_1), 2 },
-	{ " (sdmaC 0)", sdma_cleanup_intr,
-		SYM_LSB(IntStatus, SDmaCleanupDone_0), 1 },
-	{ " (sdmaC 1)", sdma_cleanup_intr,
-		SYM_LSB(IntStatus, SDmaCleanupDone_1), 2 },
-};
-
-=======
 	int dca;
 } irq_table[] = {
 	{ "", qib_7322intr, -1, 0, 0 },
@@ -812,7 +741,6 @@ static const struct dca_reg_map {
 };
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ibcctrl bits */
 #define QLOGIC_IB_IBCC_LINKINITCMD_DISABLE 1
 /* cycle through TS1/TS2 till OK */
@@ -835,14 +763,11 @@ static void write_7322_init_portregs(struct qib_pportdata *);
 static void setup_7322_link_recovery(struct qib_pportdata *, u32);
 static void check_7322_rxe_status(struct qib_pportdata *);
 static u32 __iomem *qib_7322_getsendbuf(struct qib_pportdata *, u64, u32 *);
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 static void qib_setup_dca(struct qib_devdata *dd);
 static void setup_dca_notifier(struct qib_devdata *dd, int msixnum);
 static void reset_dca_notifier(struct qib_devdata *dd, int msixnum);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * qib_read_ureg32 - read 32-bit virtualized per-context register
@@ -866,31 +791,6 @@ static inline u32 qib_read_ureg32(const struct qib_devdata *dd,
 }
 
 /**
-<<<<<<< HEAD
- * qib_read_ureg - read virtualized per-context register
- * @dd: device
- * @regno: register number
- * @ctxt: context number
- *
- * Return the contents of a register that is virtualized to be per context.
- * Returns -1 on errors (not distinguishable from valid contents at
- * runtime; we may add a separate error variable at some point).
- */
-static inline u64 qib_read_ureg(const struct qib_devdata *dd,
-				enum qib_ureg regno, int ctxt)
-{
-
-	if (!dd->kregbase || !(dd->flags & QIB_PRESENT))
-		return 0;
-	return readq(regno + (u64 __iomem *)(
-		(dd->ureg_align * ctxt) + (dd->userbase ?
-		 (char __iomem *)dd->userbase :
-		 (char __iomem *)dd->kregbase + dd->uregbase)));
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * qib_write_ureg - write virtualized per-context register
  * @dd: device
  * @regno: register number
@@ -903,10 +803,7 @@ static inline void qib_write_ureg(const struct qib_devdata *dd,
 				  enum qib_ureg regno, u64 value, int ctxt)
 {
 	u64 __iomem *ubase;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dd->userbase)
 		ubase = (u64 __iomem *)
 			((char __iomem *) dd->userbase +
@@ -1396,24 +1293,6 @@ static const struct  qib_hwerror_msgs qib_7322p_error_msgs[] = {
 	SYM_LSB(IntMask, fldname##17IntMask)), \
 	.msg = #fldname "_C", .sz = sizeof(#fldname "_C") }
 
-<<<<<<< HEAD
-static const struct  qib_hwerror_msgs qib_7322_intr_msgs[] = {
-	INTR_AUTO_P(SDmaInt),
-	INTR_AUTO_P(SDmaProgressInt),
-	INTR_AUTO_P(SDmaIdleInt),
-	INTR_AUTO_P(SDmaCleanupDone),
-	INTR_AUTO_C(RcvUrg),
-	INTR_AUTO_P(ErrInt),
-	INTR_AUTO(ErrInt),      /* non-port-specific errs */
-	INTR_AUTO(AssertGPIOInt),
-	INTR_AUTO_P(SendDoneInt),
-	INTR_AUTO(SendBufAvailInt),
-	INTR_AUTO_C(RcvAvail),
-	{ .mask = 0, .sz = 0 }
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TXSYMPTOM_AUTO_P(fldname) \
 	{ .mask = SYM_MASK(SendHdrErrSymptom_0, fldname), \
 	.msg = #fldname, .sz = sizeof(#fldname) }
@@ -1481,10 +1360,6 @@ static void err_decode(char *msg, size_t len, u64 errs,
 					*msg++ = ',';
 					len--;
 				}
-<<<<<<< HEAD
-				BUG_ON(!msp->sz);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* msp->sz counts the nul */
 				took = min_t(size_t, msp->sz - (size_t)1, len);
 				memcpy(msg,  msp->msg, took);
@@ -1524,11 +1399,7 @@ static void flush_fifo(struct qib_pportdata *ppd)
 	u32 *hdr;
 	u64 pbc;
 	const unsigned hdrwords = 7;
-<<<<<<< HEAD
-	static struct qib_ib_header ibhdr = {
-=======
 	static struct ib_header ibhdr = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.lrh[0] = cpu_to_be16(0xF000 | QIB_LRH_BTH),
 		.lrh[1] = IB_LID_PERMISSIVE,
 		.lrh[2] = cpu_to_be16(hdrwords + SIZE_OF_CRC),
@@ -1696,11 +1567,8 @@ static void sdma_7322_p_errors(struct qib_pportdata *ppd, u64 errs)
 	struct qib_devdata *dd = ppd->dd;
 
 	errs &= QIB_E_P_SDMAERRS;
-<<<<<<< HEAD
-=======
 	err_decode(ppd->cpspec->sdmamsgbuf, sizeof(ppd->cpspec->sdmamsgbuf),
 		   errs, qib_7322p_error_msgs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (errs & QIB_E_P_SDMAUNEXPDATA)
 		qib_dev_err(dd, "IB%u:%u SDmaUnexpData\n", dd->unit,
@@ -1708,8 +1576,6 @@ static void sdma_7322_p_errors(struct qib_pportdata *ppd, u64 errs)
 
 	spin_lock_irqsave(&ppd->sdma_lock, flags);
 
-<<<<<<< HEAD
-=======
 	if (errs != QIB_E_P_SDMAHALT) {
 		/* SDMA errors have QIB_E_P_SDMAHALT and another bit set */
 		qib_dev_porterr(dd, ppd->port,
@@ -1719,7 +1585,6 @@ static void sdma_7322_p_errors(struct qib_pportdata *ppd, u64 errs)
 		dump_sdma_7322_state(ppd);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (ppd->sdma_state.current_state) {
 	case qib_sdma_state_s00_hw_down:
 		break;
@@ -1766,21 +1631,12 @@ static noinline void handle_7322_errors(struct qib_devdata *dd)
 	u64 iserr = 0;
 	u64 errs;
 	u64 mask;
-<<<<<<< HEAD
-	int log_idx;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	qib_stats.sps_errints++;
 	errs = qib_read_kreg64(dd, kr_errstatus);
 	if (!errs) {
-<<<<<<< HEAD
-		qib_devinfo(dd->pcidev, "device error interrupt, "
-			 "but no error bits set!\n");
-=======
 		qib_devinfo(dd->pcidev,
 			"device error interrupt, but no error bits set!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto done;
 	}
 
@@ -1791,16 +1647,8 @@ static noinline void handle_7322_errors(struct qib_devdata *dd)
 	/* do these first, they are most important */
 	if (errs & QIB_E_HARDWARE) {
 		*msg = '\0';
-<<<<<<< HEAD
-		qib_7322_handle_hwerrors(dd, msg, sizeof dd->cspec->emsgbuf);
-	} else
-		for (log_idx = 0; log_idx < QIB_EEP_LOG_CNT; ++log_idx)
-			if (errs & dd->eep_st_masks[log_idx].errs_to_log)
-				qib_inc_eeprom_err(dd, log_idx, 1);
-=======
 		qib_7322_handle_hwerrors(dd, msg, sizeof(dd->cspec->emsgbuf));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (errs & QIB_E_SPKTERRS) {
 		qib_disarm_7322_senderrbufs(dd->pport);
@@ -1821,11 +1669,7 @@ static noinline void handle_7322_errors(struct qib_devdata *dd)
 	mask = QIB_E_HARDWARE;
 	*msg = '\0';
 
-<<<<<<< HEAD
-	err_decode(msg, sizeof dd->cspec->emsgbuf, errs & ~mask,
-=======
 	err_decode(msg, sizeof(dd->cspec->emsgbuf), errs & ~mask,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   qib_7322error_msgs);
 
 	/*
@@ -1835,13 +1679,8 @@ static noinline void handle_7322_errors(struct qib_devdata *dd)
 	if (errs & QIB_E_RESET) {
 		int pidx;
 
-<<<<<<< HEAD
-		qib_dev_err(dd, "Got reset, requires re-init "
-			    "(unload and reload driver)\n");
-=======
 		qib_dev_err(dd,
 			"Got reset, requires re-init (unload and reload driver)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dd->flags &= ~QIB_INITTED;  /* needs re-init */
 		/* mark as having had error */
 		*dd->devstatusp |= QIB_STATUS_HWERROR;
@@ -1872,30 +1711,18 @@ done:
 	return;
 }
 
-<<<<<<< HEAD
-static void qib_error_tasklet(unsigned long data)
-{
-	struct qib_devdata *dd = (struct qib_devdata *)data;
-=======
 static void qib_error_tasklet(struct tasklet_struct *t)
 {
 	struct qib_devdata *dd = from_tasklet(dd, t, error_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	handle_7322_errors(dd);
 	qib_write_kreg(dd, kr_errmask, dd->cspec->errormask);
 }
 
-<<<<<<< HEAD
-static void reenable_chase(unsigned long opaque)
-{
-	struct qib_pportdata *ppd = (struct qib_pportdata *)opaque;
-=======
 static void reenable_chase(struct timer_list *t)
 {
 	struct qib_chippport_specific *cp = from_timer(cp, t, chase_timer);
 	struct qib_pportdata *ppd = cp->ppd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ppd->cpspec->chase_timer.expires = 0;
 	qib_set_ib_7322_lstate(ppd, QLOGIC_IB_IBCC_LINKCMD_DOWN,
@@ -1991,15 +1818,9 @@ static void handle_serdes_issues(struct qib_pportdata *ppd, u64 ibcst)
 					    ppd->dd->cspec->r1 ?
 					    QDR_STATIC_ADAPT_DOWN_R1 :
 					    QDR_STATIC_ADAPT_DOWN);
-<<<<<<< HEAD
-			printk(KERN_INFO QIB_DRV_NAME
-				" IB%u:%u re-enabled QDR adaptation "
-				"ibclt %x\n", ppd->dd->unit, ppd->port, ibclt);
-=======
 			pr_info(
 				"IB%u:%u re-enabled QDR adaptation ibclt %x\n",
 				ppd->dd->unit, ppd->port, ibclt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -2036,16 +1857,6 @@ static noinline void handle_7322_p_errors(struct qib_pportdata *ppd)
 	*msg = '\0';
 
 	if (errs & ~QIB_E_P_BITSEXTANT) {
-<<<<<<< HEAD
-		err_decode(msg, sizeof ppd->cpspec->epmsgbuf,
-			   errs & ~QIB_E_P_BITSEXTANT, qib_7322p_error_msgs);
-		if (!*msg)
-			snprintf(msg, sizeof ppd->cpspec->epmsgbuf,
-				 "no others");
-		qib_dev_porterr(dd, ppd->port, "error interrupt with unknown"
-				" errors 0x%016Lx set (and %s)\n",
-				(errs & ~QIB_E_P_BITSEXTANT), msg);
-=======
 		err_decode(msg, sizeof(ppd->cpspec->epmsgbuf),
 			   errs & ~QIB_E_P_BITSEXTANT, qib_7322p_error_msgs);
 		if (!*msg)
@@ -2054,7 +1865,6 @@ static noinline void handle_7322_p_errors(struct qib_pportdata *ppd)
 		qib_dev_porterr(dd, ppd->port,
 			"error interrupt with unknown errors 0x%016Lx set (and %s)\n",
 			(errs & ~QIB_E_P_BITSEXTANT), msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*msg = '\0';
 	}
 
@@ -2064,11 +1874,7 @@ static noinline void handle_7322_p_errors(struct qib_pportdata *ppd)
 		/* determine cause, then write to clear */
 		symptom = qib_read_kreg_port(ppd, krp_sendhdrsymptom);
 		qib_write_kreg_port(ppd, krp_sendhdrsymptom, 0);
-<<<<<<< HEAD
-		err_decode(msg, sizeof ppd->cpspec->epmsgbuf, symptom,
-=======
 		err_decode(msg, sizeof(ppd->cpspec->epmsgbuf), symptom,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   hdrchk_msgs);
 		*msg = '\0';
 		/* senderrbuf cleared in SPKTERRS below */
@@ -2084,11 +1890,7 @@ static noinline void handle_7322_p_errors(struct qib_pportdata *ppd)
 			 * isn't valid.  We don't want to confuse people, so
 			 * we just don't print them, except at debug
 			 */
-<<<<<<< HEAD
-			err_decode(msg, sizeof ppd->cpspec->epmsgbuf,
-=======
 			err_decode(msg, sizeof(ppd->cpspec->epmsgbuf),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   (errs & QIB_E_P_LINK_PKTERRS),
 				   qib_7322p_error_msgs);
 			*msg = '\0';
@@ -2104,11 +1906,7 @@ static noinline void handle_7322_p_errors(struct qib_pportdata *ppd)
 		 * valid.  We don't want to confuse people, so we just
 		 * don't print them, except at debug
 		 */
-<<<<<<< HEAD
-		err_decode(msg, sizeof ppd->cpspec->epmsgbuf, errs,
-=======
 		err_decode(msg, sizeof(ppd->cpspec->epmsgbuf), errs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   qib_7322p_error_msgs);
 		ignore_this_time = errs & QIB_E_P_LINK_PKTERRS;
 		*msg = '\0';
@@ -2201,10 +1999,7 @@ static void qib_7322_set_intr_state(struct qib_devdata *dd, u32 enable)
 		if (dd->cspec->num_msix_entries) {
 			/* and same for MSIx */
 			u64 val = qib_read_kreg64(dd, kr_intgranted);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (val)
 				qib_write_kreg(dd, kr_intgranted, val);
 		}
@@ -2239,11 +2034,7 @@ static void qib_7322_clear_freeze(struct qib_devdata *dd)
 			qib_write_kreg_port(dd->pport + pidx, krp_errmask,
 					    0ULL);
 
-<<<<<<< HEAD
-	/* also disable interrupts; errormask is sometimes overwriten */
-=======
 	/* also disable interrupts; errormask is sometimes overwritten */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qib_7322_set_intr_state(dd, 0);
 
 	/* clear the freeze, and be sure chip saw it */
@@ -2292,13 +2083,8 @@ static void qib_7322_handle_hwerrors(struct qib_devdata *dd, char *msg,
 	if (!hwerrs)
 		goto bail;
 	if (hwerrs == ~0ULL) {
-<<<<<<< HEAD
-		qib_dev_err(dd, "Read of hardware error status failed "
-			    "(all bits set); ignoring\n");
-=======
 		qib_dev_err(dd,
 			"Read of hardware error status failed (all bits set); ignoring\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 	qib_stats.sps_hwerrs++;
@@ -2312,14 +2098,9 @@ static void qib_7322_handle_hwerrors(struct qib_devdata *dd, char *msg,
 	/* no EEPROM logging, yet */
 
 	if (hwerrs)
-<<<<<<< HEAD
-		qib_devinfo(dd->pcidev, "Hardware error: hwerr=0x%llx "
-			    "(cleared)\n", (unsigned long long) hwerrs);
-=======
 		qib_devinfo(dd->pcidev,
 			"Hardware error: hwerr=0x%llx (cleared)\n",
 			(unsigned long long) hwerrs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctrl = qib_read_kreg32(dd, kr_control);
 	if ((ctrl & SYM_MASK(Control, FreezeMode)) && !dd->diag_client) {
@@ -2343,14 +2124,9 @@ static void qib_7322_handle_hwerrors(struct qib_devdata *dd, char *msg,
 
 	if (hwerrs & HWE_MASK(PowerOnBISTFailed)) {
 		isfatal = 1;
-<<<<<<< HEAD
-		strlcpy(msg, "[Memory BIST test failed, "
-			"InfiniPath hardware unusable]", msgl);
-=======
 		strscpy(msg,
 			"[Memory BIST test failed, InfiniPath hardware unusable]",
 			msgl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* ignore from now on, so disable until driver reloaded */
 		dd->cspec->hwerrmask &= ~HWE_MASK(PowerOnBISTFailed);
 		qib_write_kreg(dd, kr_hwerrmask, dd->cspec->hwerrmask);
@@ -2362,11 +2138,6 @@ static void qib_7322_handle_hwerrors(struct qib_devdata *dd, char *msg,
 
 	qib_dev_err(dd, "%s hardware error\n", msg);
 
-<<<<<<< HEAD
-	if (isfatal && !dd->diag_client) {
-		qib_dev_err(dd, "Fatal Hardware Error, no longer"
-			    " usable, SN %.16s\n", dd->serial);
-=======
 	if (hwerrs &
 		   (SYM_MASK(HwErrMask, SDmaMemReadErrMask_0) |
 		    SYM_MASK(HwErrMask, SDmaMemReadErrMask_1))) {
@@ -2395,7 +2166,6 @@ static void qib_7322_handle_hwerrors(struct qib_devdata *dd, char *msg,
 		qib_dev_err(dd,
 			"Fatal Hardware Error, no longer usable, SN %.16s\n",
 			dd->serial);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * for /sys status file and user programs to print; if no
 		 * trailing brace is copied, we'll know it was truncated.
@@ -2583,10 +2353,6 @@ static int qib_7322_bringup_serdes(struct qib_pportdata *ppd)
 	struct qib_devdata *dd = ppd->dd;
 	u64 val, guid, ibc;
 	unsigned long flags;
-<<<<<<< HEAD
-	int ret = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * SerDes model not in Pd, but still need to
@@ -2721,21 +2487,12 @@ static int qib_7322_bringup_serdes(struct qib_pportdata *ppd)
 		val | ERR_MASK_N(IBStatusChanged));
 
 	/* Always zero until we start messing with SerDes for real */
-<<<<<<< HEAD
-	return ret;
-}
-
-/**
- * qib_7322_quiet_serdes - set serdes to txidle
- * @dd: the qlogic_ib device
-=======
 	return 0;
 }
 
 /**
  * qib_7322_mini_quiet_serdes - set serdes to txidle
  * @ppd: the qlogic_ib device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Called when driver is being unloaded
  */
 static void qib_7322_mini_quiet_serdes(struct qib_pportdata *ppd)
@@ -2754,11 +2511,7 @@ static void qib_7322_mini_quiet_serdes(struct qib_pportdata *ppd)
 		cancel_delayed_work_sync(&ppd->cpspec->ipg_work);
 
 	ppd->cpspec->chase_end = 0;
-<<<<<<< HEAD
-	if (ppd->cpspec->chase_timer.data) /* if initted */
-=======
 	if (ppd->cpspec->chase_timer.function) /* if initted */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		del_timer_sync(&ppd->cpspec->chase_timer);
 
 	/*
@@ -2887,33 +2640,6 @@ static void qib_setup_7322_setextled(struct qib_pportdata *ppd, u32 on)
 		qib_write_kreg_port(ppd, krp_rcvpktledcnt, ledblink);
 }
 
-<<<<<<< HEAD
-/*
- * Disable MSIx interrupt if enabled, call generic MSIx code
- * to cleanup, and clear pending MSIx interrupts.
- * Used for fallback to INTx, after reset, and when MSIx setup fails.
- */
-static void qib_7322_nomsix(struct qib_devdata *dd)
-{
-	u64 intgranted;
-	int n;
-
-	dd->cspec->main_int_mask = ~0ULL;
-	n = dd->cspec->num_msix_entries;
-	if (n) {
-		int i;
-
-		dd->cspec->num_msix_entries = 0;
-		for (i = 0; i < n; i++) {
-			irq_set_affinity_hint(
-			  dd->cspec->msix_entries[i].msix.vector, NULL);
-			free_cpumask_var(dd->cspec->msix_entries[i].mask);
-			free_irq(dd->cspec->msix_entries[i].msix.vector,
-			   dd->cspec->msix_entries[i].arg);
-		}
-		qib_nomsix(dd);
-	}
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 
 static int qib_7322_notify_dca(struct qib_devdata *dd, unsigned long event)
@@ -3103,36 +2829,16 @@ static void qib_7322_free_irq(struct qib_devdata *dd)
 
 	pci_free_irq_vectors(dd->pcidev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* make sure no MSIx interrupts are left pending */
 	intgranted = qib_read_kreg64(dd, kr_intgranted);
 	if (intgranted)
 		qib_write_kreg(dd, kr_intgranted, intgranted);
 }
 
-<<<<<<< HEAD
-static void qib_7322_free_irq(struct qib_devdata *dd)
-{
-	if (dd->cspec->irq) {
-		free_irq(dd->cspec->irq, dd);
-		dd->cspec->irq = 0;
-	}
-	qib_7322_nomsix(dd);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void qib_setup_7322_cleanup(struct qib_devdata *dd)
 {
 	int i;
 
-<<<<<<< HEAD
-	qib_7322_free_irq(dd);
-	kfree(dd->cspec->cntrs);
-	kfree(dd->cspec->sendchkenable);
-	kfree(dd->cspec->sendgrhchk);
-	kfree(dd->cspec->sendibchk);
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 	if (dd->flags & QIB_DCA_ENABLED) {
 		dca_remove_requester(&dd->pcidev->dev);
@@ -3147,7 +2853,6 @@ static void qib_setup_7322_cleanup(struct qib_devdata *dd)
 	bitmap_free(dd->cspec->sendchkenable);
 	bitmap_free(dd->cspec->sendgrhchk);
 	bitmap_free(dd->cspec->sendibchk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(dd->cspec->msix_entries);
 	for (i = 0; i < dd->num_pports; i++) {
 		unsigned long flags;
@@ -3160,14 +2865,7 @@ static void qib_setup_7322_cleanup(struct qib_devdata *dd)
 			dd->cspec->gpio_mask &= ~mask;
 			qib_write_kreg(dd, kr_gpio_mask, dd->cspec->gpio_mask);
 			spin_unlock_irqrestore(&dd->cspec->gpio_lock, flags);
-<<<<<<< HEAD
-			qib_qsfp_deinit(&dd->pport[i].cpspec->qsfp_data);
 		}
-		if (dd->pport[i].ibport_data.smi_ah)
-			ib_destroy_ah(&dd->pport[i].ibport_data.smi_ah->ibah);
-=======
-		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -3220,14 +2918,9 @@ static noinline void unknown_7322_ibits(struct qib_devdata *dd, u64 istat)
 	char msg[128];
 
 	kills = istat & ~QIB_I_BITSEXTANT;
-<<<<<<< HEAD
-	qib_dev_err(dd, "Clearing reserved interrupt(s) 0x%016llx:"
-		    " %s\n", (unsigned long long) kills, msg);
-=======
 	qib_dev_err(dd,
 		"Clearing reserved interrupt(s) 0x%016llx: %s\n",
 		(unsigned long long) kills, msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qib_write_kreg(dd, kr_intmask, (dd->cspec->int_enable_mask & ~kills));
 }
 
@@ -3263,10 +2956,7 @@ static noinline void unknown_7322_gpio_intr(struct qib_devdata *dd)
 		struct qib_pportdata *ppd;
 		struct qib_qsfp_data *qd;
 		u32 mask;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!dd->pport[pidx].link_speed_supported)
 			continue;
 		mask = QSFP_GPIO_MOD_PRS_N;
@@ -3274,10 +2964,7 @@ static noinline void unknown_7322_gpio_intr(struct qib_devdata *dd)
 		mask <<= (QSFP_GPIO_PORT2_SHIFT * ppd->hw_pidx);
 		if (gpiostatus & dd->cspec->gpio_mask & mask) {
 			u64 pins;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qd = &ppd->cpspec->qsfp_data;
 			gpiostatus &= ~mask;
 			pins = qib_read_kreg64(dd, kr_extstatus);
@@ -3392,13 +3079,7 @@ static irqreturn_t qib_7322intr(int irq, void *data)
 		goto bail;
 	}
 
-<<<<<<< HEAD
-	qib_stats.sps_ints++;
-	if (dd->int_counter != (u32) -1)
-		dd->int_counter++;
-=======
 	this_cpu_inc(*dd->int_counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* handle "errors" of various kinds first, device ahead of port */
 	if (unlikely(istat & (~QIB_I_BITSEXTANT | QIB_I_GPIO |
@@ -3467,13 +3148,7 @@ static irqreturn_t qib_7322pintr(int irq, void *data)
 		 */
 		return IRQ_HANDLED;
 
-<<<<<<< HEAD
-	qib_stats.sps_ints++;
-	if (dd->int_counter != (u32) -1)
-		dd->int_counter++;
-=======
 	this_cpu_inc(*dd->int_counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the interrupt bit we expect to be set. */
 	qib_write_kreg(dd, kr_intclear, ((1ULL << QIB_I_RCVAVAIL_LSB) |
@@ -3500,13 +3175,7 @@ static irqreturn_t qib_7322bufavail(int irq, void *data)
 		 */
 		return IRQ_HANDLED;
 
-<<<<<<< HEAD
-	qib_stats.sps_ints++;
-	if (dd->int_counter != (u32) -1)
-		dd->int_counter++;
-=======
 	this_cpu_inc(*dd->int_counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the interrupt bit we expect to be set. */
 	qib_write_kreg(dd, kr_intclear, QIB_I_SPIOBUFAVAIL);
@@ -3537,13 +3206,7 @@ static irqreturn_t sdma_intr(int irq, void *data)
 		 */
 		return IRQ_HANDLED;
 
-<<<<<<< HEAD
-	qib_stats.sps_ints++;
-	if (dd->int_counter != (u32) -1)
-		dd->int_counter++;
-=======
 	this_cpu_inc(*dd->int_counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the interrupt bit we expect to be set. */
 	qib_write_kreg(dd, kr_intclear, ppd->hw_pidx ?
@@ -3570,13 +3233,7 @@ static irqreturn_t sdma_idle_intr(int irq, void *data)
 		 */
 		return IRQ_HANDLED;
 
-<<<<<<< HEAD
-	qib_stats.sps_ints++;
-	if (dd->int_counter != (u32) -1)
-		dd->int_counter++;
-=======
 	this_cpu_inc(*dd->int_counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the interrupt bit we expect to be set. */
 	qib_write_kreg(dd, kr_intclear, ppd->hw_pidx ?
@@ -3603,13 +3260,7 @@ static irqreturn_t sdma_progress_intr(int irq, void *data)
 		 */
 		return IRQ_HANDLED;
 
-<<<<<<< HEAD
-	qib_stats.sps_ints++;
-	if (dd->int_counter != (u32) -1)
-		dd->int_counter++;
-=======
 	this_cpu_inc(*dd->int_counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the interrupt bit we expect to be set. */
 	qib_write_kreg(dd, kr_intclear, ppd->hw_pidx ?
@@ -3637,13 +3288,7 @@ static irqreturn_t sdma_cleanup_intr(int irq, void *data)
 		 */
 		return IRQ_HANDLED;
 
-<<<<<<< HEAD
-	qib_stats.sps_ints++;
-	if (dd->int_counter != (u32) -1)
-		dd->int_counter++;
-=======
 	this_cpu_inc(*dd->int_counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the interrupt bit we expect to be set. */
 	qib_write_kreg(dd, kr_intclear, ppd->hw_pidx ?
@@ -3654,8 +3299,6 @@ static irqreturn_t sdma_cleanup_intr(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 
 static void reset_dca_notifier(struct qib_devdata *dd, int msixnum)
@@ -3701,7 +3344,6 @@ static void setup_dca_notifier(struct qib_devdata *dd, int msixnum)
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Set up our chip-specific interrupt handler.
  * The interrupt type has already been setup, so
@@ -3743,28 +3385,6 @@ static void qib_setup_7322_interrupt(struct qib_devdata *dd, int clearpend)
 	if (!dd->cspec->num_msix_entries) {
 		/* Try to get INTx interrupt */
 try_intx:
-<<<<<<< HEAD
-		if (!dd->pcidev->irq) {
-			qib_dev_err(dd, "irq is 0, BIOS error?  "
-				    "Interrupts won't work\n");
-			goto bail;
-		}
-		ret = request_irq(dd->pcidev->irq, qib_7322intr,
-				  IRQF_SHARED, QIB_DRV_NAME, dd);
-		if (ret) {
-			qib_dev_err(dd, "Couldn't setup INTx "
-				    "interrupt (irq=%d): %d\n",
-				    dd->pcidev->irq, ret);
-			goto bail;
-		}
-		dd->cspec->irq = dd->pcidev->irq;
-		dd->cspec->main_int_mask = ~0ULL;
-		goto bail;
-	}
-
-	/* Try to get MSIx interrupts */
-	memset(redirect, 0, sizeof redirect);
-=======
 		ret = pci_request_irq(dd->pcidev, 0, qib_7322intr, NULL, dd,
 				      QIB_DRV_NAME);
 		if (ret) {
@@ -3780,7 +3400,6 @@ try_intx:
 
 	/* Try to get MSIx interrupts */
 	memset(redirect, 0, sizeof(redirect));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mask = ~0ULL;
 	msixnum = 0;
 	local_mask = cpumask_of_pcibus(dd->pcidev->bus);
@@ -3799,19 +3418,10 @@ try_intx:
 	for (i = 0; msixnum < dd->cspec->num_msix_entries; i++) {
 		irq_handler_t handler;
 		void *arg;
-<<<<<<< HEAD
-		u64 val;
-		int lsb, reg, sh;
-
-		dd->cspec->msix_entries[msixnum].
-			name[sizeof(dd->cspec->msix_entries[msixnum].name) - 1]
-			= '\0';
-=======
 		int lsb, reg, sh;
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 		int dca = 0;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (i < ARRAY_SIZE(irq_table)) {
 			if (irq_table[i].port) {
 				/* skip if for a non-configured port */
@@ -3820,15 +3430,6 @@ try_intx:
 				arg = dd->pport + irq_table[i].port - 1;
 			} else
 				arg = dd;
-<<<<<<< HEAD
-			lsb = irq_table[i].lsb;
-			handler = irq_table[i].handler;
-			snprintf(dd->cspec->msix_entries[msixnum].name,
-				sizeof(dd->cspec->msix_entries[msixnum].name)
-				 - 1,
-				QIB_DRV_NAME "%d%s", dd->unit,
-				irq_table[i].name);
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 			dca = irq_table[i].dca;
 #endif
@@ -3838,7 +3439,6 @@ try_intx:
 					      NULL, arg, QIB_DRV_NAME "%d%s",
 					      dd->unit,
 					      irq_table[i].name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			unsigned ctxt;
 
@@ -3849,19 +3449,6 @@ try_intx:
 				continue;
 			if (qib_krcvq01_no_msi && ctxt < 2)
 				continue;
-<<<<<<< HEAD
-			lsb = QIB_I_RCVAVAIL_LSB + ctxt;
-			handler = qib_7322pintr;
-			snprintf(dd->cspec->msix_entries[msixnum].name,
-				sizeof(dd->cspec->msix_entries[msixnum].name)
-				 - 1,
-				QIB_DRV_NAME "%d (kctx)", dd->unit);
-		}
-		ret = request_irq(
-			dd->cspec->msix_entries[msixnum].msix.vector,
-			handler, 0, dd->cspec->msix_entries[msixnum].name,
-			arg);
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 			dca = 1;
 #endif
@@ -3873,22 +3460,11 @@ try_intx:
 					      dd->unit);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			/*
 			 * Shouldn't happen since the enable said we could
 			 * have as many as we are trying to setup here.
 			 */
-<<<<<<< HEAD
-			qib_dev_err(dd, "Couldn't setup MSIx "
-				"interrupt (vec=%d, irq=%d): %d\n", msixnum,
-				dd->cspec->msix_entries[msixnum].msix.vector,
-				ret);
-			qib_7322_nomsix(dd);
-			goto try_intx;
-		}
-		dd->cspec->msix_entries[msixnum].arg = arg;
-=======
 			qib_dev_err(dd,
 				    "Couldn't setup MSIx interrupt (vec=%d, irq=%d): %d\n",
 				    msixnum,
@@ -3905,7 +3481,6 @@ try_intx:
 		dd->cspec->msix_entries[msixnum].rcv =
 			handler == qib_7322pintr;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lsb >= 0) {
 			reg = lsb / IBA7322_REDIRECT_VEC_PER_REG;
 			sh = (lsb % IBA7322_REDIRECT_VEC_PER_REG) *
@@ -3913,13 +3488,8 @@ try_intx:
 			mask &= ~(1ULL << lsb);
 			redirect[reg] |= ((u64) msixnum) << sh;
 		}
-<<<<<<< HEAD
-		val = qib_read_kreg64(dd, 2 * msixnum + 1 +
-			(QIB_7322_MsixTable_OFFS / sizeof(u64)));
-=======
 		qib_read_kreg64(dd, 2 * msixnum + 1 +
 				(QIB_7322_MsixTable_OFFS / sizeof(u64)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (firstcpu < nr_cpu_ids &&
 			zalloc_cpumask_var(
 				&dd->cspec->msix_entries[msixnum].mask,
@@ -3936,11 +3506,7 @@ try_intx:
 					dd->cspec->msix_entries[msixnum].mask);
 			}
 			irq_set_affinity_hint(
-<<<<<<< HEAD
-				dd->cspec->msix_entries[msixnum].msix.vector,
-=======
 				pci_irq_vector(dd->pcidev, msixnum),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dd->cspec->msix_entries[msixnum].mask);
 		}
 		msixnum++;
@@ -3949,13 +3515,7 @@ try_intx:
 	for (i = 0; i < ARRAY_SIZE(redirect); i++)
 		qib_write_kreg(dd, kr_intredirect + i, redirect[i]);
 	dd->cspec->main_int_mask = mask;
-<<<<<<< HEAD
-	tasklet_init(&dd->error_tasklet, qib_error_tasklet,
-		(unsigned long)dd);
-bail:;
-=======
 	tasklet_setup(&dd->error_tasklet, qib_error_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3967,44 +3527,21 @@ bail:;
 static unsigned qib_7322_boardname(struct qib_devdata *dd)
 {
 	/* Will need enumeration of board-types here */
-<<<<<<< HEAD
-	char *n;
-	u32 boardid, namelen;
-	unsigned features = DUAL_PORT_CAP;
-=======
 	u32 boardid;
 	unsigned int features = DUAL_PORT_CAP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	boardid = SYM_FIELD(dd->revision, Revision, BoardID);
 
 	switch (boardid) {
 	case 0:
-<<<<<<< HEAD
-		n = "InfiniPath_QLE7342_Emulation";
-		break;
-	case 1:
-		n = "InfiniPath_QLE7340";
-=======
 		dd->boardname = "InfiniPath_QLE7342_Emulation";
 		break;
 	case 1:
 		dd->boardname = "InfiniPath_QLE7340";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dd->flags |= QIB_HAS_QSFP;
 		features = PORT_SPD_CAP;
 		break;
 	case 2:
-<<<<<<< HEAD
-		n = "InfiniPath_QLE7342";
-		dd->flags |= QIB_HAS_QSFP;
-		break;
-	case 3:
-		n = "InfiniPath_QMI7342";
-		break;
-	case 4:
-		n = "InfiniPath_Unsupported7342";
-=======
 		dd->boardname = "InfiniPath_QLE7342";
 		dd->flags |= QIB_HAS_QSFP;
 		break;
@@ -4013,29 +3550,10 @@ static unsigned qib_7322_boardname(struct qib_devdata *dd)
 		break;
 	case 4:
 		dd->boardname = "InfiniPath_Unsupported7342";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qib_dev_err(dd, "Unsupported version of QMH7342\n");
 		features = 0;
 		break;
 	case BOARD_QMH7342:
-<<<<<<< HEAD
-		n = "InfiniPath_QMH7342";
-		features = 0x24;
-		break;
-	case BOARD_QME7342:
-		n = "InfiniPath_QME7342";
-		break;
-	case 8:
-		n = "InfiniPath_QME7362";
-		dd->flags |= QIB_HAS_QSFP;
-		break;
-	case 15:
-		n = "InfiniPath_QLE7342_TEST";
-		dd->flags |= QIB_HAS_QSFP;
-		break;
-	default:
-		n = "InfiniPath_QLE73xy_UNKNOWN";
-=======
 		dd->boardname = "InfiniPath_QMH7342";
 		features = 0x24;
 		break;
@@ -4056,31 +3574,11 @@ static unsigned qib_7322_boardname(struct qib_devdata *dd)
 		break;
 	default:
 		dd->boardname = "InfiniPath_QLE73xy_UNKNOWN";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qib_dev_err(dd, "Unknown 7322 board type %u\n", boardid);
 		break;
 	}
 	dd->board_atten = 1; /* index into txdds_Xdr */
 
-<<<<<<< HEAD
-	namelen = strlen(n) + 1;
-	dd->boardname = kmalloc(namelen, GFP_KERNEL);
-	if (!dd->boardname)
-		qib_dev_err(dd, "Failed allocation for board name: %s\n", n);
-	else
-		snprintf(dd->boardname, namelen, "%s", n);
-
-	snprintf(dd->boardversion, sizeof(dd->boardversion),
-		 "ChipABI %u.%u, %s, InfiniPath%u %u.%u, SW Compat %u\n",
-		 QIB_CHIP_VERS_MAJ, QIB_CHIP_VERS_MIN, dd->boardname,
-		 (unsigned)SYM_FIELD(dd->revision, Revision_R, Arch),
-		 dd->majrev, dd->minrev,
-		 (unsigned)SYM_FIELD(dd->revision, Revision_R, SW));
-
-	if (qib_singleport && (features >> PORT_SPD_CAP_SHIFT) & PORT_SPD_CAP) {
-		qib_devinfo(dd->pcidev, "IB%u: Forced to single port mode"
-			    " by module parameter\n", dd->unit);
-=======
 	snprintf(dd->boardversion, sizeof(dd->boardversion),
 		 "ChipABI %u.%u, %s, InfiniPath%u %u.%u, SW Compat %u\n",
 		 QIB_CHIP_VERS_MAJ, QIB_CHIP_VERS_MIN, dd->boardname,
@@ -4092,7 +3590,6 @@ static unsigned qib_7322_boardname(struct qib_devdata *dd)
 		qib_devinfo(dd->pcidev,
 			    "IB%u: Forced to single port mode by module parameter\n",
 			    dd->unit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		features &= PORT_SPD_CAP;
 	}
 
@@ -4106,11 +3603,7 @@ static unsigned qib_7322_boardname(struct qib_devdata *dd)
 static int qib_do_7322_reset(struct qib_devdata *dd)
 {
 	u64 val;
-<<<<<<< HEAD
-	u64 *msix_vecsave;
-=======
 	u64 *msix_vecsave = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, msix_entries, ret = 1;
 	u16 cmdval;
 	u8 int_line, clinesz;
@@ -4126,17 +3619,6 @@ static int qib_do_7322_reset(struct qib_devdata *dd)
 	/* no interrupts till re-initted */
 	qib_7322_set_intr_state(dd, 0);
 
-<<<<<<< HEAD
-	if (msix_entries) {
-		qib_7322_nomsix(dd);
-		/* can be up to 512 bytes, too big for stack */
-		msix_vecsave = kmalloc(2 * dd->cspec->num_msix_entries *
-			sizeof(u64), GFP_KERNEL);
-		if (!msix_vecsave)
-			qib_dev_err(dd, "No mem to save MSIx data\n");
-	} else
-		msix_vecsave = NULL;
-=======
 	qib_7322_free_irq(dd);
 
 	if (msix_entries) {
@@ -4145,7 +3627,6 @@ static int qib_do_7322_reset(struct qib_devdata *dd)
 					     sizeof(u64),
 					     GFP_KERNEL);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Core PCI (as of 2.6.18) doesn't save or rewrite the full vector
@@ -4156,10 +3637,7 @@ static int qib_do_7322_reset(struct qib_devdata *dd)
 	 */
 	for (i = 0; i < msix_entries; i++) {
 		u64 vecaddr, vecdata;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vecaddr = qib_read_kreg64(dd, 2 * i +
 				  (QIB_7322_MsixTable_OFFS / sizeof(u64)));
 		vecdata = qib_read_kreg64(dd, 1 + 2 * i +
@@ -4175,12 +3653,8 @@ static int qib_do_7322_reset(struct qib_devdata *dd)
 	dd->pport->cpspec->ibsymdelta = 0;
 	dd->pport->cpspec->iblnkerrdelta = 0;
 	dd->pport->cpspec->ibmalfdelta = 0;
-<<<<<<< HEAD
-	dd->int_counter = 0; /* so we check interrupts work again */
-=======
 	/* so we check interrupts work again */
 	dd->z_int_counter = qib_int_counter(dd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Keep chip from being accessed until we are ready.  Use
@@ -4210,13 +3684,8 @@ static int qib_do_7322_reset(struct qib_devdata *dd)
 		if (val == dd->revision)
 			break;
 		if (i == 5) {
-<<<<<<< HEAD
-			qib_dev_err(dd, "Failed to initialize after reset, "
-				    "unusable\n");
-=======
 			qib_dev_err(dd,
 				"Failed to initialize after reset, unusable\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = 0;
 			goto  bail;
 		}
@@ -4227,10 +3696,6 @@ static int qib_do_7322_reset(struct qib_devdata *dd)
 	if (msix_entries) {
 		/* restore the MSIx vector address and data if saved above */
 		for (i = 0; i < msix_entries; i++) {
-<<<<<<< HEAD
-			dd->cspec->msix_entries[i].msix.entry = i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!msix_vecsave || !msix_vecsave[2 * i])
 				continue;
 			qib_write_kreg(dd, 2 * i +
@@ -4247,20 +3712,11 @@ static int qib_do_7322_reset(struct qib_devdata *dd)
 		write_7322_init_portregs(&dd->pport[i]);
 	write_7322_initregs(dd);
 
-<<<<<<< HEAD
-	if (qib_pcie_params(dd, dd->lbus_width,
-			    &dd->cspec->num_msix_entries,
-			    dd->cspec->msix_entries))
-		qib_dev_err(dd, "Reset failed to setup PCIe or interrupts; "
-				"continuing anyway\n");
-
-=======
 	if (qib_pcie_params(dd, dd->lbus_width, &msix_entries))
 		qib_dev_err(dd,
 			"Reset failed to setup PCIe or interrupts; continuing anyway\n");
 
 	dd->cspec->num_msix_entries = msix_entries;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qib_setup_7322_interrupt(dd, 1);
 
 	for (i = 0; i < dd->num_pports; ++i) {
@@ -4282,11 +3738,7 @@ bail:
  * qib_7322_put_tid - write a TID to the chip
  * @dd: the qlogic_ib device
  * @tidptr: pointer to the expected TID (in chip) to update
-<<<<<<< HEAD
- * @tidtype: 0 for eager, 1 for expected
-=======
  * @type: 0 for eager, 1 for expected
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pa: physical address of in memory buffer; tidinvalid if freeing
  */
 static void qib_7322_put_tid(struct qib_devdata *dd, u64 __iomem *tidptr,
@@ -4304,14 +3756,9 @@ static void qib_7322_put_tid(struct qib_devdata *dd, u64 __iomem *tidptr,
 			return;
 		}
 		if (chippa >= (1UL << IBA7322_TID_SZ_SHIFT)) {
-<<<<<<< HEAD
-			qib_dev_err(dd, "Physical page address 0x%lx "
-				"larger than supported\n", pa);
-=======
 			qib_dev_err(dd,
 				"Physical page address 0x%lx larger than supported\n",
 				pa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 
@@ -4322,20 +3769,12 @@ static void qib_7322_put_tid(struct qib_devdata *dd, u64 __iomem *tidptr,
 		pa = chippa;
 	}
 	writeq(pa, tidptr);
-<<<<<<< HEAD
-	mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * qib_7322_clear_tids - clear all TID entries for a ctxt, expected and eager
  * @dd: the qlogic_ib device
-<<<<<<< HEAD
- * @ctxt: the ctxt
-=======
  * @rcd: the ctxt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * clear all TID entries for a ctxt, expected and eager.
  * Used from qib_close().
@@ -4398,15 +3837,9 @@ static void qib_7322_tidtemplate(struct qib_devdata *dd)
 }
 
 /**
-<<<<<<< HEAD
- * qib_init_7322_get_base_info - set chip-specific flags for user code
- * @rcd: the qlogic_ib ctxt
- * @kbase: qib_base_info pointer
-=======
  * qib_7322_get_base_info - set chip-specific flags for user code
  * @rcd: the qlogic_ib ctxt
  * @kinfo: qib_base_info pointer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * We set the PCIE flag because the lower bandwidth on PCIe vs
  * HyperTransport can affect some user packet algorithims.
@@ -4878,14 +4311,9 @@ static int qib_7322_set_loopback(struct qib_pportdata *ppd, const char *what)
 							Loopback);
 		/* enable heart beat again */
 		val = IBA7322_IBC_HRTBT_RMASK << IBA7322_IBC_HRTBT_LSB;
-<<<<<<< HEAD
-		qib_devinfo(ppd->dd->pcidev, "Disabling IB%u:%u IBC loopback "
-			    "(normal)\n", ppd->dd->unit, ppd->port);
-=======
 		qib_devinfo(ppd->dd->pcidev,
 			"Disabling IB%u:%u IBC loopback (normal)\n",
 			ppd->dd->unit, ppd->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		ret = -EINVAL;
 	if (!ret) {
@@ -4987,15 +4415,8 @@ static void qib_update_7322_usrhead(struct qib_ctxtdata *rcd, u64 hd,
 		adjust_rcv_timeout(rcd, npkts);
 	if (updegr)
 		qib_write_ureg(rcd->dd, ur_rcvegrindexhead, egrhd, rcd->ctxt);
-<<<<<<< HEAD
-	mmiowb();
 	qib_write_ureg(rcd->dd, ur_rcvhdrhead, hd, rcd->ctxt);
 	qib_write_ureg(rcd->dd, ur_rcvhdrhead, hd, rcd->ctxt);
-	mmiowb();
-=======
-	qib_write_ureg(rcd->dd, ur_rcvhdrhead, hd, rcd->ctxt);
-	qib_write_ureg(rcd->dd, ur_rcvhdrhead, hd, rcd->ctxt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 qib_7322_hdrqempty(struct qib_ctxtdata *rcd)
@@ -5281,11 +4702,7 @@ static void sendctrl_7322_mod(struct qib_pportdata *ppd, u32 op)
 /**
  * qib_portcntr_7322 - read a per-port chip counter
  * @ppd: the qlogic_ib pport
-<<<<<<< HEAD
- * @creg: the counter to read (not a chip offset)
-=======
  * @reg: the counter to read (not a chip offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static u64 qib_portcntr_7322(struct qib_pportdata *ppd, u32 reg)
 {
@@ -5565,32 +4982,17 @@ static void init_7322_cntrnames(struct qib_devdata *dd)
 		dd->cspec->cntrnamelen = sizeof(cntr7322names) - 1;
 	else
 		dd->cspec->cntrnamelen = 1 + s - cntr7322names;
-<<<<<<< HEAD
-	dd->cspec->cntrs = kmalloc(dd->cspec->ncntrs
-		* sizeof(u64), GFP_KERNEL);
-	if (!dd->cspec->cntrs)
-		qib_dev_err(dd, "Failed allocation for counters\n");
-=======
 	dd->cspec->cntrs = kmalloc_array(dd->cspec->ncntrs, sizeof(u64),
 					 GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0, s = (char *)portcntr7322names; s; i++)
 		s = strchr(s + 1, '\n');
 	dd->cspec->nportcntrs = i - 1;
 	dd->cspec->portcntrnamelen = sizeof(portcntr7322names) - 1;
 	for (i = 0; i < dd->num_pports; ++i) {
-<<<<<<< HEAD
-		dd->pport[i].cpspec->portcntrs = kmalloc(dd->cspec->nportcntrs
-			* sizeof(u64), GFP_KERNEL);
-		if (!dd->pport[i].cpspec->portcntrs)
-			qib_dev_err(dd, "Failed allocation for"
-				    " portcounters\n");
-=======
 		dd->pport[i].cpspec->portcntrs =
 			kmalloc_array(dd->cspec->nportcntrs, sizeof(u64),
 				      GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -5672,11 +5074,7 @@ done:
 
 /**
  * qib_get_7322_faststats - get word counters from chip before they overflow
-<<<<<<< HEAD
- * @opaque - contains a pointer to the qlogic_ib device qib_devdata
-=======
  * @t: contains a pointer to the qlogic_ib device qib_devdata
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * VESTIGIAL IBA7322 has no "small fast counters", so the only
  * real purpose of this function is to maintain the notion of
@@ -5685,15 +5083,9 @@ done:
  *
  * called from add_timer
  */
-<<<<<<< HEAD
-static void qib_get_7322_faststats(unsigned long opaque)
-{
-	struct qib_devdata *dd = (struct qib_devdata *) opaque;
-=======
 static void qib_get_7322_faststats(struct timer_list *t)
 {
 	struct qib_devdata *dd = from_timer(dd, t, stats_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qib_pportdata *ppd;
 	unsigned long flags;
 	u64 traffic_wds;
@@ -5748,18 +5140,11 @@ static int qib_7322_intr_fallback(struct qib_devdata *dd)
 	if (!dd->cspec->num_msix_entries)
 		return 0; /* already using INTx */
 
-<<<<<<< HEAD
-	qib_devinfo(dd->pcidev, "MSIx interrupt not detected,"
-		 " trying INTx interrupts\n");
-	qib_7322_nomsix(dd);
-	qib_enable_intx(dd->pcidev);
-=======
 	qib_devinfo(dd->pcidev,
 		"MSIx interrupt not detected, trying INTx interrupts\n");
 	qib_7322_free_irq(dd);
 	if (pci_alloc_irq_vectors(dd->pcidev, 1, 1, PCI_IRQ_LEGACY) < 0)
 		qib_dev_err(dd, "Failed to enable INTx\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qib_setup_7322_interrupt(dd, 0);
 	return 1;
 }
@@ -5906,10 +5291,7 @@ static void qib_autoneg_7322_send(struct qib_pportdata *ppd, int which)
 static void set_7322_ibspeed_fast(struct qib_pportdata *ppd, u32 speed)
 {
 	u64 newctrlb;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	newctrlb = ppd->cpspec->ibcctrl_b & ~(IBA7322_IBC_SPEED_MASK |
 				    IBA7322_IBC_IBTA_1_2_MASK |
 				    IBA7322_IBC_MAX_SPEED_MASK);
@@ -5960,22 +5342,11 @@ static void try_7322_autoneg(struct qib_pportdata *ppd)
 static void autoneg_7322_work(struct work_struct *work)
 {
 	struct qib_pportdata *ppd;
-<<<<<<< HEAD
-	struct qib_devdata *dd;
-	u64 startms;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 i;
 	unsigned long flags;
 
 	ppd = container_of(work, struct qib_chippport_specific,
 			    autoneg_work.work)->ppd;
-<<<<<<< HEAD
-	dd = ppd->dd;
-
-	startms = jiffies_to_msecs(jiffies);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Busy wait for this first part, it should be at most a
@@ -6042,39 +5413,17 @@ static void try_7322_ipg(struct qib_pportdata *ppd)
 	unsigned delay;
 	int ret;
 
-<<<<<<< HEAD
-	agent = ibp->send_agent;
-=======
 	agent = ibp->rvp.send_agent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!agent)
 		goto retry;
 
 	send_buf = ib_create_send_mad(agent, 0, 0, 0, IB_MGMT_MAD_HDR,
-<<<<<<< HEAD
-				      IB_MGMT_MAD_DATA, GFP_ATOMIC);
-=======
 				      IB_MGMT_MAD_DATA, GFP_ATOMIC,
 				      IB_MGMT_BASE_VERSION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(send_buf))
 		goto retry;
 
 	if (!ibp->smi_ah) {
-<<<<<<< HEAD
-		struct ib_ah_attr attr;
-		struct ib_ah *ah;
-
-		memset(&attr, 0, sizeof attr);
-		attr.dlid = be16_to_cpu(IB_LID_PERMISSIVE);
-		attr.port_num = ppd->port;
-		ah = ib_create_ah(ibp->qp0->ibqp.pd, &attr);
-		if (IS_ERR(ah))
-			ret = -EINVAL;
-		else {
-			send_buf->ah = ah;
-			ibp->smi_ah = to_iah(ah);
-=======
 		struct ib_ah *ah;
 
 		ah = qib_create_qp0_ah(ibp, be16_to_cpu(IB_LID_PERMISSIVE));
@@ -6083,7 +5432,6 @@ static void try_7322_ipg(struct qib_pportdata *ppd)
 		else {
 			send_buf->ah = ah;
 			ibp->smi_ah = ibah_to_rvtah(ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = 0;
 		}
 	} else {
@@ -6137,19 +5485,11 @@ static u32 qib_7322_iblink_state(u64 ibcs)
 		state = IB_PORT_ARMED;
 		break;
 	case IB_7322_L_STATE_ACTIVE:
-<<<<<<< HEAD
-		/* fall through */
-	case IB_7322_L_STATE_ACT_DEFER:
-		state = IB_PORT_ACTIVE;
-		break;
-	default: /* fall through */
-=======
 	case IB_7322_L_STATE_ACT_DEFER:
 		state = IB_PORT_ACTIVE;
 		break;
 	default:
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IB_7322_L_STATE_DOWN:
 		state = IB_PORT_DOWN;
 		break;
@@ -6325,11 +5665,7 @@ static int qib_7322_ib_updown(struct qib_pportdata *ppd, int ibup, u64 ibcs)
 /*
  * Does read/modify/write to appropriate registers to
  * set output and direction bits selected by mask.
-<<<<<<< HEAD
- * these are in their canonical postions (e.g. lsb of
-=======
  * these are in their canonical positions (e.g. lsb of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dir will end up in D48 of extctrl on existing chips).
  * returns contents of GP Inputs.
  */
@@ -6438,10 +5774,7 @@ static void get_7322_chip_params(struct qib_devdata *dd)
 static void qib_7322_set_baseaddrs(struct qib_devdata *dd)
 {
 	u32 cregbase;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cregbase = qib_read_kreg32(dd, kr_counterregbase);
 
 	dd->cspec->cregbase = (u64 __iomem *)(cregbase +
@@ -6777,16 +6110,6 @@ static void set_no_qsfp_atten(struct qib_devdata *dd, int change)
 }
 
 /* handle the txselect parameter changing */
-<<<<<<< HEAD
-static int setup_txselect(const char *str, struct kernel_param *kp)
-{
-	struct qib_devdata *dd;
-	unsigned long val;
-	char *n;
-	if (strlen(str) >= MAX_ATTEN_LEN) {
-		printk(KERN_INFO QIB_DRV_NAME " txselect_values string "
-		       "too long\n");
-=======
 static int setup_txselect(const char *str, const struct kernel_param *kp)
 {
 	struct qib_devdata *dd;
@@ -6795,22 +6118,11 @@ static int setup_txselect(const char *str, const struct kernel_param *kp)
 
 	if (strlen(str) >= ARRAY_SIZE(txselect_list)) {
 		pr_info("txselect_values string too long\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSPC;
 	}
 	val = simple_strtoul(str, &n, 0);
 	if (n == str || val >= (TXDDS_TABLE_SZ + TXDDS_EXTRA_SZ +
 				TXDDS_MFG_SZ)) {
-<<<<<<< HEAD
-		printk(KERN_INFO QIB_DRV_NAME
-		       "txselect_values must start with a number < %d\n",
-			TXDDS_TABLE_SZ + TXDDS_EXTRA_SZ + TXDDS_MFG_SZ);
-		return -EINVAL;
-	}
-	strcpy(txselect_list, str);
-
-	list_for_each_entry(dd, &qib_dev_list, list)
-=======
 		pr_info("txselect_values must start with a number < %d\n",
 			TXDDS_TABLE_SZ + TXDDS_EXTRA_SZ + TXDDS_MFG_SZ);
 		return -EINVAL;
@@ -6818,7 +6130,6 @@ static int setup_txselect(const char *str, const struct kernel_param *kp)
 	strscpy(txselect_list, str, sizeof(txselect_list));
 
 	xa_for_each(&qib_dev_table, index, dd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dd->deviceid == PCI_DEVICE_ID_QLOGIC_IB_7322)
 			set_no_qsfp_atten(dd, 1);
 	return 0;
@@ -6840,18 +6151,10 @@ static int qib_late_7322_initreg(struct qib_devdata *dd)
 	qib_write_kreg(dd, kr_sendpioavailaddr, dd->pioavailregs_phys);
 	val = qib_read_kreg64(dd, kr_sendpioavailaddr);
 	if (val != dd->pioavailregs_phys) {
-<<<<<<< HEAD
-		qib_dev_err(dd, "Catastrophic software error, "
-			    "SendPIOAvailAddr written as %lx, "
-			    "read back as %llx\n",
-			    (unsigned long) dd->pioavailregs_phys,
-			    (unsigned long long) val);
-=======
 		qib_dev_err(dd,
 			"Catastrophic software error, SendPIOAvailAddr written as %lx, read back as %llx\n",
 			(unsigned long) dd->pioavailregs_phys,
 			(unsigned long long) val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 	}
 
@@ -7023,10 +6326,7 @@ static void write_7322_initregs(struct qib_devdata *dd)
 	val = TIDFLOW_ERRBITS; /* these are W1C */
 	for (i = 0; i < dd->cfgctxts; i++) {
 		int flow;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (flow = 0; flow < NUM_TIDFLOWS_CTXT; flow++)
 			qib_write_ureg(dd, ur_rcvflowtable+flow, val, i);
 	}
@@ -7046,10 +6346,7 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 	unsigned features, pidx, sbufcnt;
 	int ret, mtu;
 	u32 sbufs, updthresh;
-<<<<<<< HEAD
-=======
 	resource_size_t vl15off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* pport structs are contiguous, allocated after devdata */
 	ppd = (struct qib_pportdata *)(dd + 1);
@@ -7071,13 +6368,8 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 	dd->revision = readq(&dd->kregbase[kr_revision]);
 
 	if ((dd->revision & 0xffffffffU) == 0xffffffffU) {
-<<<<<<< HEAD
-		qib_dev_err(dd, "Revision register read failure, "
-			    "giving up initialization\n");
-=======
 		qib_dev_err(dd,
 			"Revision register read failure, giving up initialization\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENODEV;
 		goto bail;
 	}
@@ -7091,20 +6383,6 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 	features = qib_7322_boardname(dd);
 
 	/* now that piobcnt2k and 4k set, we can allocate these */
-<<<<<<< HEAD
-	sbufcnt = dd->piobcnt2k + dd->piobcnt4k +
-		NUM_VL15_BUFS + BITS_PER_LONG - 1;
-	sbufcnt /= BITS_PER_LONG;
-	dd->cspec->sendchkenable = kmalloc(sbufcnt *
-		sizeof(*dd->cspec->sendchkenable), GFP_KERNEL);
-	dd->cspec->sendgrhchk = kmalloc(sbufcnt *
-		sizeof(*dd->cspec->sendgrhchk), GFP_KERNEL);
-	dd->cspec->sendibchk = kmalloc(sbufcnt *
-		sizeof(*dd->cspec->sendibchk), GFP_KERNEL);
-	if (!dd->cspec->sendchkenable || !dd->cspec->sendgrhchk ||
-		!dd->cspec->sendibchk) {
-		qib_dev_err(dd, "Failed allocation for hdrchk bitmaps\n");
-=======
 	sbufcnt = dd->piobcnt2k + dd->piobcnt4k + NUM_VL15_BUFS;
 
 	dd->cspec->sendchkenable = bitmap_zalloc(sbufcnt, GFP_KERNEL);
@@ -7112,7 +6390,6 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 	dd->cspec->sendibchk = bitmap_zalloc(sbufcnt, GFP_KERNEL);
 	if (!dd->cspec->sendchkenable || !dd->cspec->sendgrhchk ||
 		!dd->cspec->sendibchk) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto bail;
 	}
@@ -7156,10 +6433,7 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 
 	for (pidx = 0; pidx < NUM_IB_PORTS; ++pidx) {
 		struct qib_chippport_specific *cp = ppd->cpspec;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ppd->link_speed_supported = features & PORT_SPD_CAP;
 		features >>=  PORT_SPD_CAP_SHIFT;
 		if (!ppd->link_speed_supported) {
@@ -7201,15 +6475,11 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 		}
 
 		dd->num_pports++;
-<<<<<<< HEAD
-		qib_init_pportdata(ppd, dd, pidx, dd->num_pports);
-=======
 		ret = qib_init_pportdata(ppd, dd, pidx, dd->num_pports);
 		if (ret) {
 			dd->num_pports--;
 			goto bail;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ppd->link_width_supported = IB_WIDTH_1X | IB_WIDTH_4X;
 		ppd->link_width_enabled = IB_WIDTH_4X;
@@ -7233,11 +6503,7 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 				    "Invalid num_vls %u, using 4 VLs\n",
 				    qib_num_cfg_vls);
 			qib_num_cfg_vls = 4;
-<<<<<<< HEAD
-			/* fall through */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 4:
 			ppd->vls_supported = IB_VL_VL0_3;
 			break;
@@ -7246,12 +6512,7 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 				ppd->vls_supported = IB_VL_VL0_7;
 			else {
 				qib_devinfo(dd->pcidev,
-<<<<<<< HEAD
-					    "Invalid num_vls %u for MTU %d "
-					    ", using 4 VLs\n",
-=======
 					    "Invalid num_vls %u for MTU %d , using 4 VLs\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    qib_num_cfg_vls, mtu);
 				ppd->vls_supported = IB_VL_VL0_3;
 				qib_num_cfg_vls = 4;
@@ -7273,15 +6534,9 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 		 */
 		if (!(dd->flags & QIB_HAS_QSFP)) {
 			if (!IS_QMH(dd) && !IS_QME(dd))
-<<<<<<< HEAD
-				qib_devinfo(dd->pcidev, "IB%u:%u: "
-					    "Unknown mezzanine card type\n",
-					    dd->unit, ppd->port);
-=======
 				qib_devinfo(dd->pcidev,
 					"IB%u:%u: Unknown mezzanine card type\n",
 					dd->unit, ppd->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cp->h1_val = IS_QMH(dd) ? H1_FORCE_QMH : H1_FORCE_QME;
 			/*
 			 * Choose center value as default tx serdes setting
@@ -7296,13 +6551,7 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 		if (!qib_mini_init)
 			write_7322_init_portregs(ppd);
 
-<<<<<<< HEAD
-		init_timer(&cp->chase_timer);
-		cp->chase_timer.function = reenable_chase;
-		cp->chase_timer.data = (unsigned long)ppd;
-=======
 		timer_setup(&cp->chase_timer, reenable_chase, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ppd++;
 	}
@@ -7315,10 +6564,6 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 
 	/* we always allocate at least 2048 bytes for eager buffers */
 	dd->rcvegrbufsize = max(mtu, 2048);
-<<<<<<< HEAD
-	BUG_ON(!is_power_of_2(dd->rcvegrbufsize));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dd->rcvegrbufsize_shift = ilog2(dd->rcvegrbufsize);
 
 	qib_7322_tidtemplate(dd);
@@ -7331,13 +6576,7 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 		(u64) rcv_int_count << IBA7322_HDRHEAD_PKTINT_SHIFT;
 
 	/* setup the stats timer; the add_timer is done at end of init */
-<<<<<<< HEAD
-	init_timer(&dd->stats_timer);
-	dd->stats_timer.function = qib_get_7322_faststats;
-	dd->stats_timer.data = (unsigned long) dd;
-=======
 	timer_setup(&dd->stats_timer, qib_get_7322_faststats, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dd->ureg_align = 0x10000;  /* 64KB alignment */
 
@@ -7346,29 +6585,6 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 	qib_7322_config_ctxts(dd);
 	qib_set_ctxtcnt(dd);
 
-<<<<<<< HEAD
-	if (qib_wc_pat) {
-		resource_size_t vl15off;
-		/*
-		 * We do not set WC on the VL15 buffers to avoid
-		 * a rare problem with unaligned writes from
-		 * interrupt-flushed store buffers, so we need
-		 * to map those separately here.  We can't solve
-		 * this for the rarely used mtrr case.
-		 */
-		ret = init_chip_wc_pat(dd, 0);
-		if (ret)
-			goto bail;
-
-		/* vl15 buffers start just after the 4k buffers */
-		vl15off = dd->physaddr + (dd->piobufbase >> 32) +
-			dd->piobcnt4k * dd->align4k;
-		dd->piovl15base	= ioremap_nocache(vl15off,
-						  NUM_VL15_BUFS * dd->align4k);
-		if (!dd->piovl15base)
-			goto bail;
-	}
-=======
 	/*
 	 * We do not set WC on the VL15 buffers to avoid
 	 * a rare problem with unaligned writes from
@@ -7390,7 +6606,6 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 		goto bail;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qib_7322_set_baseaddrs(dd); /* set chip access pointers now */
 
 	ret = 0;
@@ -7428,10 +6643,7 @@ static int qib_init_7322_variables(struct qib_devdata *dd)
 		dd->cspec->sdmabufcnt;
 	dd->lastctxt_piobuf = dd->cspec->lastbuf_for_pio - sbufs;
 	dd->cspec->lastbuf_for_pio--; /* range is <= , not < */
-<<<<<<< HEAD
-=======
 	dd->last_pio = dd->cspec->lastbuf_for_pio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dd->pbufsctxt = (dd->cfgctxts > dd->first_user_ctxt) ?
 		dd->lastctxt_piobuf / (dd->cfgctxts - dd->first_user_ctxt) : 0;
 
@@ -7495,8 +6707,6 @@ static void qib_sdma_set_7322_desc_cnt(struct qib_pportdata *ppd, unsigned cnt)
 	qib_write_kreg_port(ppd, krp_senddmadesccnt, cnt);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * sdma_lock should be acquired before calling this routine
  */
@@ -7577,7 +6787,6 @@ static void dump_sdma_7322_state(struct qib_pportdata *ppd)
 	dump_sdma_state(ppd);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct sdma_set_state_action sdma_7322_action_table[] = {
 	[qib_sdma_state_s00_hw_down] = {
 		.go_s99_running_tofalse = 1,
@@ -7635,11 +6844,7 @@ static int init_sdma_7322_regs(struct qib_pportdata *ppd)
 	struct qib_devdata *dd = ppd->dd;
 	unsigned lastbuf, erstbuf;
 	u64 senddmabufmask[3] = { 0 };
-<<<<<<< HEAD
-	int n, ret = 0;
-=======
 	int n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	qib_write_kreg_port(ppd, krp_senddmabase, ppd->sdma_descq_phys);
 	qib_sdma_7322_setlengen(ppd);
@@ -7663,20 +6868,12 @@ static int init_sdma_7322_regs(struct qib_pportdata *ppd)
 		unsigned word = erstbuf / BITS_PER_LONG;
 		unsigned bit = erstbuf & (BITS_PER_LONG - 1);
 
-<<<<<<< HEAD
-		BUG_ON(word >= 3);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		senddmabufmask[word] |= 1ULL << bit;
 	}
 	qib_write_kreg_port(ppd, krp_senddmabufmask0, senddmabufmask[0]);
 	qib_write_kreg_port(ppd, krp_senddmabufmask1, senddmabufmask[1]);
 	qib_write_kreg_port(ppd, krp_senddmabufmask2, senddmabufmask[2]);
-<<<<<<< HEAD
-	return ret;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* sdma_lock must be held */
@@ -7805,11 +7002,7 @@ static void qib_7322_txchk_change(struct qib_devdata *dd, u32 start,
 	unsigned long flags;
 
 	while (wait) {
-<<<<<<< HEAD
-		unsigned long shadow;
-=======
 		unsigned long shadow = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int cstart, previ = -1;
 
 		/*
@@ -7953,11 +7146,7 @@ static int qib_7322_tempsense_rd(struct qib_devdata *dd, int regnum)
 
 /**
  * qib_init_iba7322_funcs - set up the chip-specific function pointers
-<<<<<<< HEAD
- * @dev: the pci_dev for qlogic_ib device
-=======
  * @pdev: the pci_dev for qlogic_ib device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ent: pci_device_id struct for this dev
  *
  * Also allocates, inits, and returns the devdata struct for this
@@ -8030,12 +7219,9 @@ struct qib_devdata *qib_init_iba7322_funcs(struct pci_dev *pdev,
 	dd->f_sdma_init_early   = qib_7322_sdma_init_early;
 	dd->f_writescratch      = writescratch;
 	dd->f_tempsense_rd	= qib_7322_tempsense_rd;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 	dd->f_notify_dca	= qib_7322_notify_dca;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Do remaining PCIe setup and save PCIe values in dd.
 	 * Any error printing is already done by the init code.
@@ -8072,20 +7258,6 @@ struct qib_devdata *qib_init_iba7322_funcs(struct pci_dev *pdev,
 		actual_cnt -= dd->num_pports;
 
 	tabsize = actual_cnt;
-<<<<<<< HEAD
-	dd->cspec->msix_entries = kmalloc(tabsize *
-			sizeof(struct qib_msix_entry), GFP_KERNEL);
-	if (!dd->cspec->msix_entries) {
-		qib_dev_err(dd, "No memory for MSIx table\n");
-		tabsize = 0;
-	}
-	for (i = 0; i < tabsize; i++)
-		dd->cspec->msix_entries[i].msix.entry = i;
-
-	if (qib_pcie_params(dd, 8, &tabsize, dd->cspec->msix_entries))
-		qib_dev_err(dd, "Failed to setup PCIe or interrupts; "
-			    "continuing anyway\n");
-=======
 	dd->cspec->msix_entries = kcalloc(tabsize,
 					  sizeof(struct qib_msix_entry),
 					  GFP_KERNEL);
@@ -8095,7 +7267,6 @@ struct qib_devdata *qib_init_iba7322_funcs(struct pci_dev *pdev,
 	if (qib_pcie_params(dd, 8, &tabsize))
 		qib_dev_err(dd,
 			"Failed to setup PCIe or interrupts; continuing anyway\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* may be less than we wanted, if not enough available */
 	dd->cspec->num_msix_entries = tabsize;
 
@@ -8104,9 +7275,6 @@ struct qib_devdata *qib_init_iba7322_funcs(struct pci_dev *pdev,
 
 	/* clear diagctrl register, in case diags were running and crashed */
 	qib_write_kreg(dd, kr_hwdiagctrl, 0);
-<<<<<<< HEAD
-
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 	if (!dca_add_requester(&pdev->dev)) {
 		qib_devinfo(dd->pcidev, "DCA enabled\n");
@@ -8114,7 +7282,6 @@ struct qib_devdata *qib_init_iba7322_funcs(struct pci_dev *pdev,
 		qib_setup_dca(dd);
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto bail;
 
 bail_cleanup:
@@ -8329,17 +7496,6 @@ static const struct txdds_ent txdds_extra_sdr[TXDDS_EXTRA_SZ] = {
 	{  0, 0, 0,  1 },	/* QMH7342 backplane settings */
 	{  0, 0, 0,  2 },	/* QMH7342 backplane settings */
 	{  0, 0, 0,  2 },	/* QMH7342 backplane settings */
-<<<<<<< HEAD
-	{  0, 0, 0, 11 },	/* QME7342 backplane settings */
-	{  0, 0, 0, 11 },	/* QME7342 backplane settings */
-	{  0, 0, 0, 11 },	/* QME7342 backplane settings */
-	{  0, 0, 0, 11 },	/* QME7342 backplane settings */
-	{  0, 0, 0, 11 },	/* QME7342 backplane settings */
-	{  0, 0, 0, 11 },	/* QME7342 backplane settings */
-	{  0, 0, 0, 11 },	/* QME7342 backplane settings */
-	{  0, 0, 0,  3 },	/* QMH7342 backplane settings */
-	{  0, 0, 0,  4 },	/* QMH7342 backplane settings */
-=======
 	{  0, 0, 0,  3 },	/* QMH7342 backplane settings */
 	{  0, 0, 0,  4 },	/* QMH7342 backplane settings */
 	{  0, 1, 4, 15 },	/* QME7342 backplane settings 1.0 */
@@ -8354,7 +7510,6 @@ static const struct txdds_ent txdds_extra_sdr[TXDDS_EXTRA_SZ] = {
 	{  0, 1, 0,  9 },       /* QME7342 backplane settings 1.1 */
 	{  0, 1, 0,  6 },       /* QME7342 backplane settings 1.1 */
 	{  0, 1, 0,  8 },       /* QME7342 backplane settings 1.1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct txdds_ent txdds_extra_ddr[TXDDS_EXTRA_SZ] = {
@@ -8363,17 +7518,6 @@ static const struct txdds_ent txdds_extra_ddr[TXDDS_EXTRA_SZ] = {
 	{  0, 0, 0,  7 },	/* QMH7342 backplane settings */
 	{  0, 0, 0,  8 },	/* QMH7342 backplane settings */
 	{  0, 0, 0,  8 },	/* QMH7342 backplane settings */
-<<<<<<< HEAD
-	{  0, 0, 0, 13 },	/* QME7342 backplane settings */
-	{  0, 0, 0, 13 },	/* QME7342 backplane settings */
-	{  0, 0, 0, 13 },	/* QME7342 backplane settings */
-	{  0, 0, 0, 13 },	/* QME7342 backplane settings */
-	{  0, 0, 0, 13 },	/* QME7342 backplane settings */
-	{  0, 0, 0, 13 },	/* QME7342 backplane settings */
-	{  0, 0, 0, 13 },	/* QME7342 backplane settings */
-	{  0, 0, 0,  9 },	/* QMH7342 backplane settings */
-	{  0, 0, 0, 10 },	/* QMH7342 backplane settings */
-=======
 	{  0, 0, 0,  9 },	/* QMH7342 backplane settings */
 	{  0, 0, 0, 10 },	/* QMH7342 backplane settings */
 	{  0, 1, 4, 15 },	/* QME7342 backplane settings 1.0 */
@@ -8388,7 +7532,6 @@ static const struct txdds_ent txdds_extra_ddr[TXDDS_EXTRA_SZ] = {
 	{  0, 1, 0,  9 },       /* QME7342 backplane settings 1.1 */
 	{  0, 1, 0,  6 },       /* QME7342 backplane settings 1.1 */
 	{  0, 1, 0,  8 },       /* QME7342 backplane settings 1.1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct txdds_ent txdds_extra_qdr[TXDDS_EXTRA_SZ] = {
@@ -8397,17 +7540,6 @@ static const struct txdds_ent txdds_extra_qdr[TXDDS_EXTRA_SZ] = {
 	{  0, 1,  0,  5 },	/* QMH7342 backplane settings */
 	{  0, 1,  0,  6 },	/* QMH7342 backplane settings */
 	{  0, 1,  0,  8 },	/* QMH7342 backplane settings */
-<<<<<<< HEAD
-	{  0, 1, 12, 10 },	/* QME7342 backplane setting */
-	{  0, 1, 12, 11 },	/* QME7342 backplane setting */
-	{  0, 1, 12, 12 },	/* QME7342 backplane setting */
-	{  0, 1, 12, 14 },	/* QME7342 backplane setting */
-	{  0, 1, 12,  6 },	/* QME7342 backplane setting */
-	{  0, 1, 12,  7 },	/* QME7342 backplane setting */
-	{  0, 1, 12,  8 },	/* QME7342 backplane setting */
-	{  0, 1,  0, 10 },	/* QMH7342 backplane settings */
-	{  0, 1,  0, 12 },	/* QMH7342 backplane settings */
-=======
 	{  0, 1,  0, 10 },	/* QMH7342 backplane settings */
 	{  0, 1,  0, 12 },	/* QMH7342 backplane settings */
 	{  0, 1,  4, 15 },	/* QME7342 backplane settings 1.0 */
@@ -8422,7 +7554,6 @@ static const struct txdds_ent txdds_extra_qdr[TXDDS_EXTRA_SZ] = {
 	{  0, 1,  0,  9 },      /* QME7342 backplane settings 1.1 */
 	{  0, 1,  0,  6 },      /* QME7342 backplane settings 1.1 */
 	{  0, 1,  0,  8 },      /* QME7342 backplane settings 1.1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct txdds_ent txdds_extra_mfg[TXDDS_MFG_SZ] = {
@@ -8509,12 +7640,7 @@ static void find_best_ent(struct qib_pportdata *ppd,
 		   ppd->cpspec->no_eep < (TXDDS_TABLE_SZ + TXDDS_EXTRA_SZ +
 					  TXDDS_MFG_SZ)) {
 		idx = ppd->cpspec->no_eep - (TXDDS_TABLE_SZ + TXDDS_EXTRA_SZ);
-<<<<<<< HEAD
-		printk(KERN_INFO QIB_DRV_NAME
-			" IB%u:%u use idx %u into txdds_mfg\n",
-=======
 		pr_info("IB%u:%u use idx %u into txdds_mfg\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ppd->dd->unit, ppd->port, idx);
 		*sdr_dds = &txdds_extra_mfg[idx];
 		*ddr_dds = &txdds_extra_mfg[idx];
@@ -8653,21 +7779,12 @@ static void ibsd_wr_allchans(struct qib_pportdata *ppd, int addr, unsigned data,
 {
 	struct qib_devdata *dd = ppd->dd;
 	int chan;
-<<<<<<< HEAD
-	u32 rbc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (chan = 0; chan < SERDES_CHANS; ++chan) {
 		ahb_mod(dd, IBSD(ppd->hw_pidx), (chan + (chan >> 1)), addr,
 			data, mask);
-<<<<<<< HEAD
-		rbc = ahb_mod(dd, IBSD(ppd->hw_pidx), (chan + (chan >> 1)),
-			      addr, 0, 0);
-=======
 		ahb_mod(dd, IBSD(ppd->hw_pidx), (chan + (chan >> 1)), addr,
 			0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -8677,19 +7794,11 @@ static void serdes_7322_los_enable(struct qib_pportdata *ppd, int enable)
 	u8 state = SYM_FIELD(data, IBSerdesCtrl_0, RXLOSEN);
 
 	if (enable && !state) {
-<<<<<<< HEAD
-		printk(KERN_INFO QIB_DRV_NAME " IB%u:%u Turning LOS on\n",
-			ppd->dd->unit, ppd->port);
-		data |= SYM_MASK(IBSerdesCtrl_0, RXLOSEN);
-	} else if (!enable && state) {
-		printk(KERN_INFO QIB_DRV_NAME " IB%u:%u Turning LOS off\n",
-=======
 		pr_info("IB%u:%u Turning LOS on\n",
 			ppd->dd->unit, ppd->port);
 		data |= SYM_MASK(IBSerdesCtrl_0, RXLOSEN);
 	} else if (!enable && state) {
 		pr_info("IB%u:%u Turning LOS off\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ppd->dd->unit, ppd->port);
 		data &= ~SYM_MASK(IBSerdesCtrl_0, RXLOSEN);
 	}
@@ -8699,10 +7808,7 @@ static void serdes_7322_los_enable(struct qib_pportdata *ppd, int enable)
 static int serdes_7322_init(struct qib_pportdata *ppd)
 {
 	int ret = 0;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ppd->dd->cspec->r1)
 		ret = serdes_7322_init_old(ppd);
 	else
@@ -8929,12 +8035,7 @@ static int serdes_7322_init_new(struct qib_pportdata *ppd)
 		}
 	}
 	if (chan_done) {
-<<<<<<< HEAD
-		printk(KERN_INFO QIB_DRV_NAME
-			 " Serdes %d calibration not done after .5 sec: 0x%x\n",
-=======
 		pr_info("Serdes %d calibration not done after .5 sec: 0x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 IBSD(ppd->hw_pidx), chan_done);
 	} else {
 		for (chan = 0; chan < SERDES_CHANS; ++chan) {
@@ -8942,14 +8043,8 @@ static int serdes_7322_init_new(struct qib_pportdata *ppd)
 					    (chan + (chan >> 1)),
 					    25, 0, 0);
 			if ((~rxcaldone & (u32)BMASK(10, 10)) == 0)
-<<<<<<< HEAD
-				printk(KERN_INFO QIB_DRV_NAME
-					 " Serdes %d chan %d calibration "
-					 "failed\n", IBSD(ppd->hw_pidx), chan);
-=======
 				pr_info("Serdes %d chan %d calibration failed\n",
 					IBSD(ppd->hw_pidx), chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -8975,11 +8070,7 @@ static int serdes_7322_init_new(struct qib_pportdata *ppd)
 	ibsd_wr_allchans(ppd, 5, 0, BMASK(0, 0));
 	msleep(20);
 	/*       Set Frequency Loop Bandwidth */
-<<<<<<< HEAD
-	ibsd_wr_allchans(ppd, 2, (7 << 5), BMASK(8, 5));
-=======
 	ibsd_wr_allchans(ppd, 2, (15 << 5), BMASK(8, 5));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*       Enable Frequency Loop */
 	ibsd_wr_allchans(ppd, 2, (1 << 4), BMASK(4, 4));
 	/*       Set Timing Loop Bandwidth */
@@ -9133,13 +8224,8 @@ static void force_h1(struct qib_pportdata *ppd)
 
 static int qib_r_grab(struct qib_devdata *dd)
 {
-<<<<<<< HEAD
-	u64 val;
-	val = SJA_EN;
-=======
 	u64 val = SJA_EN;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qib_write_kreg(dd, kr_r_access, val);
 	qib_read_kreg32(dd, kr_scratch);
 	return 0;
@@ -9152,10 +8238,7 @@ static int qib_r_wait_for_rdy(struct qib_devdata *dd)
 {
 	u64 val;
 	int timeout;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (timeout = 0; timeout < 100 ; ++timeout) {
 		val = qib_read_kreg32(dd, kr_r_access);
 		if (val & R_RDY)
@@ -9183,10 +8266,7 @@ static int qib_r_shift(struct qib_devdata *dd, int bisten,
 		}
 		if (inp) {
 			int tdi = inp[pos >> 3] >> (pos & 7);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			val |= ((tdi & 1) << R_TDI_LSB);
 		}
 		qib_write_kreg(dd, kr_r_access, val);

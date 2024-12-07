@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000-2001 Vojtech Pavlik <vojtech@ucw.cz>
  *  Copyright (c) 2001, 2007 Johann Deneux <johann.deneux@gmail.com>
@@ -9,32 +6,6 @@
  *  USB/RS232 I-Force joysticks and wheels.
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * Should you need to contact me, the author, you can do so either by
- * e-mail - mail your message to <vojtech@ucw.cz>, or by paper mail:
- * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
- */
-
-#include "iforce.h"
-
-void iforce_serial_xmit(struct iforce *iforce)
-{
-=======
 #include <linux/serio.h>
 #include "iforce.h"
 
@@ -55,7 +26,6 @@ static void iforce_serio_xmit(struct iforce *iforce)
 	struct iforce_serio *iforce_serio = container_of(iforce,
 							 struct iforce_serio,
 							 iforce);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char cs;
 	int i;
 	unsigned long flags;
@@ -69,60 +39,36 @@ static void iforce_serio_xmit(struct iforce *iforce)
 
 again:
 	if (iforce->xmit.head == iforce->xmit.tail) {
-<<<<<<< HEAD
-		clear_bit(IFORCE_XMIT_RUNNING, iforce->xmit_flags);
-=======
 		iforce_clear_xmit_and_wake(iforce);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&iforce->xmit_lock, flags);
 		return;
 	}
 
 	cs = 0x2b;
 
-<<<<<<< HEAD
-	serio_write(iforce->serio, 0x2b);
-
-	serio_write(iforce->serio, iforce->xmit.buf[iforce->xmit.tail]);
-=======
 	serio_write(iforce_serio->serio, 0x2b);
 
 	serio_write(iforce_serio->serio, iforce->xmit.buf[iforce->xmit.tail]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cs ^= iforce->xmit.buf[iforce->xmit.tail];
 	XMIT_INC(iforce->xmit.tail, 1);
 
 	for (i=iforce->xmit.buf[iforce->xmit.tail]; i >= 0; --i) {
-<<<<<<< HEAD
-		serio_write(iforce->serio, iforce->xmit.buf[iforce->xmit.tail]);
-=======
 		serio_write(iforce_serio->serio,
 			    iforce->xmit.buf[iforce->xmit.tail]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cs ^= iforce->xmit.buf[iforce->xmit.tail];
 		XMIT_INC(iforce->xmit.tail, 1);
 	}
 
-<<<<<<< HEAD
-	serio_write(iforce->serio, cs);
-=======
 	serio_write(iforce_serio->serio, cs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_and_clear_bit(IFORCE_XMIT_AGAIN, iforce->xmit_flags))
 		goto again;
 
-<<<<<<< HEAD
-	clear_bit(IFORCE_XMIT_RUNNING, iforce->xmit_flags);
-=======
 	iforce_clear_xmit_and_wake(iforce);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&iforce->xmit_lock, flags);
 }
 
-<<<<<<< HEAD
-=======
 static int iforce_serio_get_id(struct iforce *iforce, u8 id,
 			       u8 *response_data, size_t *response_len)
 {
@@ -171,41 +117,10 @@ static const struct iforce_xport_ops iforce_serio_xport_ops = {
 	.stop_io	= iforce_serio_stop_io,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void iforce_serio_write_wakeup(struct serio *serio)
 {
 	struct iforce *iforce = serio_get_drvdata(serio);
 
-<<<<<<< HEAD
-	iforce_serial_xmit(iforce);
-}
-
-static irqreturn_t iforce_serio_irq(struct serio *serio,
-		unsigned char data, unsigned int flags)
-{
-	struct iforce *iforce = serio_get_drvdata(serio);
-
-	if (!iforce->pkt) {
-		if (data == 0x2b)
-			iforce->pkt = 1;
-		goto out;
-	}
-
-	if (!iforce->id) {
-		if (data > 3 && data != 0xff)
-			iforce->pkt = 0;
-		else
-			iforce->id = data;
-		goto out;
-	}
-
-	if (!iforce->len) {
-		if (data > IFORCE_MAX_LENGTH) {
-			iforce->pkt = 0;
-			iforce->id = 0;
-		} else {
-			iforce->len = data;
-=======
 	iforce_serio_xmit(iforce);
 }
 
@@ -235,25 +150,10 @@ static irqreturn_t iforce_serio_irq(struct serio *serio,
 			iforce_serio->id = 0;
 		} else {
 			iforce_serio->len = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		goto out;
 	}
 
-<<<<<<< HEAD
-	if (iforce->idx < iforce->len) {
-		iforce->csum += iforce->data[iforce->idx++] = data;
-		goto out;
-	}
-
-	if (iforce->idx == iforce->len) {
-		iforce_process_packet(iforce, (iforce->id << 8) | iforce->idx, iforce->data);
-		iforce->pkt = 0;
-		iforce->id  = 0;
-		iforce->len = 0;
-		iforce->idx = 0;
-		iforce->csum = 0;
-=======
 	if (iforce_serio->idx < iforce_serio->len) {
 		iforce_serio->data_in[iforce_serio->idx++] = data;
 		iforce_serio->csum += data;
@@ -281,7 +181,6 @@ static irqreturn_t iforce_serio_irq(struct serio *serio,
 		iforce_serio->len = 0;
 		iforce_serio->idx = 0;
 		iforce_serio->csum = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	return IRQ_HANDLED;
@@ -289,19 +188,6 @@ out:
 
 static int iforce_serio_connect(struct serio *serio, struct serio_driver *drv)
 {
-<<<<<<< HEAD
-	struct iforce *iforce;
-	int err;
-
-	iforce = kzalloc(sizeof(struct iforce), GFP_KERNEL);
-	if (!iforce)
-		return -ENOMEM;
-
-	iforce->bus = IFORCE_232;
-	iforce->serio = serio;
-
-	serio_set_drvdata(serio, iforce);
-=======
 	struct iforce_serio *iforce_serio;
 	int err;
 
@@ -313,17 +199,12 @@ static int iforce_serio_connect(struct serio *serio, struct serio_driver *drv)
 
 	iforce_serio->serio = serio;
 	serio_set_drvdata(serio, iforce_serio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = serio_open(serio, drv);
 	if (err)
 		goto fail1;
 
-<<<<<<< HEAD
-	err = iforce_init_device(iforce);
-=======
 	err = iforce_init_device(&serio->dev, BUS_RS232, &iforce_serio->iforce);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto fail2;
 
@@ -331,27 +212,12 @@ static int iforce_serio_connect(struct serio *serio, struct serio_driver *drv)
 
  fail2:	serio_close(serio);
  fail1:	serio_set_drvdata(serio, NULL);
-<<<<<<< HEAD
-	kfree(iforce);
-=======
 	kfree(iforce_serio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static void iforce_serio_disconnect(struct serio *serio)
 {
-<<<<<<< HEAD
-	struct iforce *iforce = serio_get_drvdata(serio);
-
-	input_unregister_device(iforce->dev);
-	serio_close(serio);
-	serio_set_drvdata(serio, NULL);
-	kfree(iforce);
-}
-
-static struct serio_device_id iforce_serio_ids[] = {
-=======
 	struct iforce_serio *iforce_serio = serio_get_drvdata(serio);
 
 	input_unregister_device(iforce_serio->iforce.dev);
@@ -361,7 +227,6 @@ static struct serio_device_id iforce_serio_ids[] = {
 }
 
 static const struct serio_device_id iforce_serio_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_IFORCE,
@@ -384,12 +249,9 @@ struct serio_driver iforce_serio_drv = {
 	.connect	= iforce_serio_connect,
 	.disconnect	= iforce_serio_disconnect,
 };
-<<<<<<< HEAD
-=======
 
 module_serio_driver(iforce_serio_drv);
 
 MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>, Johann Deneux <johann.deneux@gmail.com>");
 MODULE_DESCRIPTION("RS232 I-Force joysticks and wheels driver");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

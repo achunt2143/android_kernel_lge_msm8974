@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-#ifndef TARGET_CORE_FILE_H
-#define TARGET_CORE_FILE_H
-
-#define FD_VERSION		"4.0"
-
-#define FD_MAX_DEV_NAME		256
-#define FD_DEVICE_QUEUE_DEPTH	32
-#define FD_MAX_DEVICE_QUEUE_DEPTH 128
-#define FD_BLOCKSIZE		512
-#define FD_MAX_SECTORS		1024
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef TARGET_CORE_FILE_H
 #define TARGET_CORE_FILE_H
@@ -27,22 +15,10 @@
  * Limited by the number of iovecs (2048) per vfs_[writev,readv] call
  */
 #define FD_MAX_BYTES		8388608
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RRF_EMULATE_CDB		0x01
 #define RRF_GOT_LBA		0x02
 
-<<<<<<< HEAD
-struct fd_request {
-	struct se_task	fd_task;
-};
-
-#define FBDF_HAS_PATH		0x01
-#define FBDF_HAS_SIZE		0x02
-#define FDBD_HAS_BUFFERED_IO_WCE 0x04
-
-struct fd_dev {
-=======
 #define FBDF_HAS_PATH		0x01
 #define FBDF_HAS_SIZE		0x02
 #define FDBD_HAS_BUFFERED_IO_WCE 0x04
@@ -52,7 +28,6 @@ struct fd_dev {
 struct fd_dev {
 	struct se_device dev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		fbd_flags;
 	unsigned char	fd_dev_name[FD_MAX_DEV_NAME];
 	/* Unique Ramdisk Device ID in Ramdisk HBA */
@@ -63,10 +38,7 @@ struct fd_dev {
 	u32		fd_block_size;
 	unsigned long long fd_dev_size;
 	struct file	*fd_file;
-<<<<<<< HEAD
-=======
 	struct file	*fd_prot_file;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* FILEIO HBA device is connected to */
 	struct fd_host *fd_host;
 } ____cacheline_aligned;

@@ -1,34 +1,17 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Paul Mackerras 1997.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- *
- * NOTE: this code runs in 32 bit mode, is position-independent,
- * and is packaged as ELF32.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright (C) Paul Mackerras 1997.
  *
  * Adapted for 64 bit LE PowerPC by Andrew Tauferner
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ppc_asm.h"
 
-<<<<<<< HEAD
-	.text
-=======
 RELA = 7
 RELASZ = 8
 RELAENT = 9
 
 	.data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* A procedure descriptor used when booting this as a COFF file.
 	 * When making COFF, this comes first in the link and we're
 	 * linked at 0x500000.
@@ -36,9 +19,6 @@ RELAENT = 9
 	.globl	_zimage_start_opd
 _zimage_start_opd:
 	.long	0x500000, 0, 0, 0
-<<<<<<< HEAD
-
-=======
 	.text
 	b	_zimage_start
 
@@ -56,7 +36,6 @@ p_prom:		.8byte	0
 	.weak	_platform_stack_top
 p_pstack:	.8byte	_platform_stack_top
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 p_start:	.long	_start
 p_etext:	.long	_etext
 p_bss_start:	.long	__bss_start
@@ -64,28 +43,17 @@ p_end:		.long	_end
 
 	.weak	_platform_stack_top
 p_pstack:	.long	_platform_stack_top
-<<<<<<< HEAD
-
-	.weak	_zimage_start
-	.globl	_zimage_start
-=======
 #endif
 
 	.weak	_zimage_start
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 _zimage_start:
 	.globl	_zimage_start_lib
 _zimage_start_lib:
 	/* Work out the offset between the address we were linked at
 	   and the address where we're running. */
-<<<<<<< HEAD
-	bl	.+4
-p_base:	mflr	r10		/* r10 now points to runtime addr of p_base */
-=======
 	bcl	20,31,.+4
 p_base:	mflr	r10		/* r10 now points to runtime addr of p_base */
 #ifndef __powerpc64__
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* grab the link address of the dynamic section in r11 */
 	addis	r11,r10,(_GLOBAL_OFFSET_TABLE_-p_base)@ha
 	lwz	r11,(_GLOBAL_OFFSET_TABLE_-p_base)@l(r11)
@@ -99,11 +67,6 @@ p_base:	mflr	r10		/* r10 now points to runtime addr of p_base */
 
 	/* The dynamic section contains a series of tagged entries.
 	 * We need the RELA and RELACOUNT entries. */
-<<<<<<< HEAD
-RELA = 7
-RELACOUNT = 0x6ffffff9
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r9,0
 	li	r0,0
 9:	lwz	r8,0(r12)	/* get tag */
@@ -113,12 +76,6 @@ RELACOUNT = 0x6ffffff9
 	bne	11f
 	lwz	r9,4(r12)	/* get RELA pointer in r9 */
 	b	12f
-<<<<<<< HEAD
-11:	addis	r8,r8,(-RELACOUNT)@ha
-	cmpwi	r8,RELACOUNT@l
-	bne	12f
-	lwz	r0,4(r12)	/* get RELACOUNT value in r0 */
-=======
 11:	cmpwi	r8,RELASZ
 	bne	.Lcheck_for_relaent
 	lwz	r0,4(r12)       /* get RELASZ value in r0 */
@@ -127,32 +84,17 @@ RELACOUNT = 0x6ffffff9
 	cmpwi	r8,RELAENT
 	bne	12f
 	lwz     r14,4(r12)      /* get RELAENT value in r14 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 12:	addi	r12,r12,8
 	b	9b
 
 	/* The relocation section contains a list of relocations.
 	 * We now do the R_PPC_RELATIVE ones, which point to words
-<<<<<<< HEAD
-	 * which need to be initialized with addend + offset.
-	 * The R_PPC_RELATIVE ones come first and there are RELACOUNT
-	 * of them. */
-=======
 	 * which need to be initialized with addend + offset */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 10:	/* skip relocation if we don't have both */
 	cmpwi	r0,0
 	beq	3f
 	cmpwi	r9,0
 	beq	3f
-<<<<<<< HEAD
-
-	add	r9,r9,r11	/* Relocate RELA pointer */
-	mtctr	r0
-2:	lbz	r0,4+3(r9)	/* ELF32_R_INFO(reloc->r_info) */
-	cmpwi	r0,22		/* R_PPC_RELATIVE */
-	bne	3f
-=======
 	cmpwi	r14,0
 	beq	3f
 
@@ -162,16 +104,11 @@ RELACOUNT = 0x6ffffff9
 2:	lbz	r0,4+3(r9)	/* ELF32_R_INFO(reloc->r_info) */
 	cmpwi	r0,22		/* R_PPC_RELATIVE */
 	bne	.Lnext
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwz	r12,0(r9)	/* reloc->r_offset */
 	lwz	r0,8(r9)	/* reloc->r_addend */
 	add	r0,r0,r11
 	stwx	r0,r11,r12
-<<<<<<< HEAD
-	addi	r9,r9,12
-=======
 .Lnext:	add	r9,r9,r14
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bdnz	2b
 
 	/* Do a cache flush for our text, in case the loader didn't */
@@ -202,9 +139,6 @@ RELACOUNT = 0x6ffffff9
 	li	r0,0
 	stwu	r0,-16(r1)	/* establish a stack frame */
 6:
-<<<<<<< HEAD
-
-=======
 #else /* __powerpc64__ */
 	/* Save the prom pointer at p_prom. */
 	std	r5,(p_prom-p_base)(r10)
@@ -296,14 +230,11 @@ RELACOUNT = 0x6ffffff9
 	stdu	r0,-112(r1)	/* establish a stack frame */
 6:
 #endif  /* __powerpc64__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Call platform_init() */
 	bl	platform_init
 
 	/* Call start */
 	b	start
-<<<<<<< HEAD
-=======
 
 #ifdef __powerpc64__
 
@@ -375,4 +306,3 @@ prom:
 	mtlr    r0
 	blr
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

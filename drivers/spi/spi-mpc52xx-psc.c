@@ -1,29 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MPC52xx PSC in SPI mode driver.
  *
  * Maintainer: Dragos Carp
  *
  * Copyright (C) 2006 TOPTICA Photonics AG.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- */
-
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/types.h>
-#include <linux/errno.h>
-#include <linux/interrupt.h>
-#include <linux/of_address.h>
-#include <linux/of_platform.h>
-=======
  */
 
 #include <linux/module.h>
@@ -32,16 +13,11 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/property.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/workqueue.h>
 #include <linux/completion.h>
 #include <linux/io.h>
 #include <linux/delay.h>
 #include <linux/spi/spi.h>
-<<<<<<< HEAD
-#include <linux/fsl_devices.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #include <asm/mpc52xx.h>
@@ -50,30 +26,11 @@
 #define MCLK 20000000 /* PSC port MClk in hz */
 
 struct mpc52xx_psc_spi {
-<<<<<<< HEAD
-	/* fsl_spi_platform data */
-	void (*cs_control)(struct spi_device *spi, bool on);
-	u32 sysclk;
-
-	/* driver internal data */
-	struct mpc52xx_psc __iomem *psc;
-	struct mpc52xx_psc_fifo __iomem *fifo;
-	unsigned int irq;
-	u8 bits_per_word;
-	u8 busy;
-
-	struct workqueue_struct *workqueue;
-	struct work_struct work;
-
-	struct list_head queue;
-	spinlock_t lock;
-=======
 	/* driver internal data */
 	struct mpc52xx_psc __iomem *psc;
 	struct mpc52xx_psc_fifo __iomem *fifo;
 	int irq;
 	u8 bits_per_word;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct completion done;
 };
@@ -103,11 +60,7 @@ static int mpc52xx_psc_spi_transfer_setup(struct spi_device *spi,
 static void mpc52xx_psc_spi_activate_cs(struct spi_device *spi)
 {
 	struct mpc52xx_psc_spi_cs *cs = spi->controller_state;
-<<<<<<< HEAD
-	struct mpc52xx_psc_spi *mps = spi_master_get_devdata(spi->master);
-=======
 	struct mpc52xx_psc_spi *mps = spi_controller_get_devdata(spi->controller);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mpc52xx_psc __iomem *psc = mps->psc;
 	u32 sicr;
 	u16 ccr;
@@ -142,20 +95,6 @@ static void mpc52xx_psc_spi_activate_cs(struct spi_device *spi)
 		ccr |= (MCLK / 1000000 - 1) & 0xFF;
 	out_be16((u16 __iomem *)&psc->ccr, ccr);
 	mps->bits_per_word = cs->bits_per_word;
-<<<<<<< HEAD
-
-	if (mps->cs_control)
-		mps->cs_control(spi, (spi->mode & SPI_CS_HIGH) ? 1 : 0);
-}
-
-static void mpc52xx_psc_spi_deactivate_cs(struct spi_device *spi)
-{
-	struct mpc52xx_psc_spi *mps = spi_master_get_devdata(spi->master);
-
-	if (mps->cs_control)
-		mps->cs_control(spi, (spi->mode & SPI_CS_HIGH) ? 0 : 1);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define MPC52xx_PSC_BUFSIZE (MPC52xx_PSC_RFNUM_MASK + 1)
@@ -165,11 +104,7 @@ static void mpc52xx_psc_spi_deactivate_cs(struct spi_device *spi)
 static int mpc52xx_psc_spi_transfer_rxtx(struct spi_device *spi,
 						struct spi_transfer *t)
 {
-<<<<<<< HEAD
-	struct mpc52xx_psc_spi *mps = spi_master_get_devdata(spi->master);
-=======
 	struct mpc52xx_psc_spi *mps = spi_controller_get_devdata(spi->controller);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mpc52xx_psc __iomem *psc = mps->psc;
 	struct mpc52xx_psc_fifo __iomem *fifo = mps->fifo;
 	unsigned rb = 0;	/* number of bytes receieved */
@@ -240,64 +175,6 @@ static int mpc52xx_psc_spi_transfer_rxtx(struct spi_device *spi,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void mpc52xx_psc_spi_work(struct work_struct *work)
-{
-	struct mpc52xx_psc_spi *mps =
-		container_of(work, struct mpc52xx_psc_spi, work);
-
-	spin_lock_irq(&mps->lock);
-	mps->busy = 1;
-	while (!list_empty(&mps->queue)) {
-		struct spi_message *m;
-		struct spi_device *spi;
-		struct spi_transfer *t = NULL;
-		unsigned cs_change;
-		int status;
-
-		m = container_of(mps->queue.next, struct spi_message, queue);
-		list_del_init(&m->queue);
-		spin_unlock_irq(&mps->lock);
-
-		spi = m->spi;
-		cs_change = 1;
-		status = 0;
-		list_for_each_entry (t, &m->transfers, transfer_list) {
-			if (t->bits_per_word || t->speed_hz) {
-				status = mpc52xx_psc_spi_transfer_setup(spi, t);
-				if (status < 0)
-					break;
-			}
-
-			if (cs_change)
-				mpc52xx_psc_spi_activate_cs(spi);
-			cs_change = t->cs_change;
-
-			status = mpc52xx_psc_spi_transfer_rxtx(spi, t);
-			if (status)
-				break;
-			m->actual_length += t->len;
-
-			if (t->delay_usecs)
-				udelay(t->delay_usecs);
-
-			if (cs_change)
-				mpc52xx_psc_spi_deactivate_cs(spi);
-		}
-
-		m->status = status;
-		m->complete(m->context);
-
-		if (status || !cs_change)
-			mpc52xx_psc_spi_deactivate_cs(spi);
-
-		mpc52xx_psc_spi_transfer_setup(spi, NULL);
-
-		spin_lock_irq(&mps->lock);
-	}
-	mps->busy = 0;
-	spin_unlock_irq(&mps->lock);
-=======
 static int mpc52xx_psc_spi_transfer_one_message(struct spi_controller *ctlr,
 						struct spi_message *m)
 {
@@ -335,28 +212,17 @@ static int mpc52xx_psc_spi_transfer_one_message(struct spi_controller *ctlr,
 	spi_finalize_current_message(ctlr);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mpc52xx_psc_spi_setup(struct spi_device *spi)
 {
-<<<<<<< HEAD
-	struct mpc52xx_psc_spi *mps = spi_master_get_devdata(spi->master);
 	struct mpc52xx_psc_spi_cs *cs = spi->controller_state;
-	unsigned long flags;
-=======
-	struct mpc52xx_psc_spi_cs *cs = spi->controller_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (spi->bits_per_word%8)
 		return -EINVAL;
 
 	if (!cs) {
-<<<<<<< HEAD
-		cs = kzalloc(sizeof *cs, GFP_KERNEL);
-=======
 		cs = kzalloc(sizeof(*cs), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!cs)
 			return -ENOMEM;
 		spi->controller_state = cs;
@@ -365,31 +231,6 @@ static int mpc52xx_psc_spi_setup(struct spi_device *spi)
 	cs->bits_per_word = spi->bits_per_word;
 	cs->speed_hz = spi->max_speed_hz;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&mps->lock, flags);
-	if (!mps->busy)
-		mpc52xx_psc_spi_deactivate_cs(spi);
-	spin_unlock_irqrestore(&mps->lock, flags);
-
-	return 0;
-}
-
-static int mpc52xx_psc_spi_transfer(struct spi_device *spi,
-		struct spi_message *m)
-{
-	struct mpc52xx_psc_spi *mps = spi_master_get_devdata(spi->master);
-	unsigned long flags;
-
-	m->actual_length = 0;
-	m->status = -EINPROGRESS;
-
-	spin_lock_irqsave(&mps->lock, flags);
-	list_add_tail(&m->queue, &mps->queue);
-	queue_work(mps->workqueue, &mps->work);
-	spin_unlock_irqrestore(&mps->lock, flags);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -406,11 +247,7 @@ static int mpc52xx_psc_spi_port_config(int psc_id, struct mpc52xx_psc_spi *mps)
 	int ret;
 
 	/* default sysclk is 512MHz */
-<<<<<<< HEAD
-	mclken_div = (mps->sysclk ? mps->sysclk : 512000000) / MCLK;
-=======
 	mclken_div = 512000000 / MCLK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = mpc52xx_set_psc_clkdiv(psc_id, mclken_div);
 	if (ret)
 		return ret;
@@ -426,11 +263,7 @@ static int mpc52xx_psc_spi_port_config(int psc_id, struct mpc52xx_psc_spi *mps)
 	out_8(&fifo->rfcntl, 0);
 	out_8(&psc->mode, MPC52xx_PSC_MODE_FFULL);
 
-<<<<<<< HEAD
-	/* Configure 8bit codec mode as a SPI master and use EOF flags */
-=======
 	/* Configure 8bit codec mode as a SPI host and use EOF flags */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* SICR_SIM_CODEC8|SICR_GENCLK|SICR_SPI|SICR_MSTR|SICR_USEEOF */
 	out_be32(&psc->sicr, 0x0180C800);
 	out_be16((u16 __iomem *)&psc->ccr, 0x070F); /* default SPI Clk 1MHz */
@@ -458,138 +291,6 @@ static irqreturn_t mpc52xx_psc_spi_isr(int irq, void *dev_id)
 	return IRQ_NONE;
 }
 
-<<<<<<< HEAD
-/* bus_num is used only for the case dev->platform_data == NULL */
-static int __devinit mpc52xx_psc_spi_do_probe(struct device *dev, u32 regaddr,
-				u32 size, unsigned int irq, s16 bus_num)
-{
-	struct fsl_spi_platform_data *pdata = dev->platform_data;
-	struct mpc52xx_psc_spi *mps;
-	struct spi_master *master;
-	int ret;
-
-	master = spi_alloc_master(dev, sizeof *mps);
-	if (master == NULL)
-		return -ENOMEM;
-
-	dev_set_drvdata(dev, master);
-	mps = spi_master_get_devdata(master);
-
-	/* the spi->mode bits understood by this driver: */
-	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH | SPI_LSB_FIRST;
-
-	mps->irq = irq;
-	if (pdata == NULL) {
-		dev_warn(dev, "probe called without platform data, no "
-				"cs_control function will be called\n");
-		mps->cs_control = NULL;
-		mps->sysclk = 0;
-		master->bus_num = bus_num;
-		master->num_chipselect = 255;
-	} else {
-		mps->cs_control = pdata->cs_control;
-		mps->sysclk = pdata->sysclk;
-		master->bus_num = pdata->bus_num;
-		master->num_chipselect = pdata->max_chipselect;
-	}
-	master->setup = mpc52xx_psc_spi_setup;
-	master->transfer = mpc52xx_psc_spi_transfer;
-	master->cleanup = mpc52xx_psc_spi_cleanup;
-	master->dev.of_node = dev->of_node;
-
-	mps->psc = ioremap(regaddr, size);
-	if (!mps->psc) {
-		dev_err(dev, "could not ioremap I/O port range\n");
-		ret = -EFAULT;
-		goto free_master;
-	}
-	/* On the 5200, fifo regs are immediately ajacent to the psc regs */
-	mps->fifo = ((void __iomem *)mps->psc) + sizeof(struct mpc52xx_psc);
-
-	ret = request_irq(mps->irq, mpc52xx_psc_spi_isr, 0, "mpc52xx-psc-spi",
-				mps);
-	if (ret)
-		goto free_master;
-
-	ret = mpc52xx_psc_spi_port_config(master->bus_num, mps);
-	if (ret < 0) {
-		dev_err(dev, "can't configure PSC! Is it capable of SPI?\n");
-		goto free_irq;
-	}
-
-	spin_lock_init(&mps->lock);
-	init_completion(&mps->done);
-	INIT_WORK(&mps->work, mpc52xx_psc_spi_work);
-	INIT_LIST_HEAD(&mps->queue);
-
-	mps->workqueue = create_singlethread_workqueue(
-		dev_name(master->dev.parent));
-	if (mps->workqueue == NULL) {
-		ret = -EBUSY;
-		goto free_irq;
-	}
-
-	ret = spi_register_master(master);
-	if (ret < 0)
-		goto unreg_master;
-
-	return ret;
-
-unreg_master:
-	destroy_workqueue(mps->workqueue);
-free_irq:
-	free_irq(mps->irq, mps);
-free_master:
-	if (mps->psc)
-		iounmap(mps->psc);
-	spi_master_put(master);
-
-	return ret;
-}
-
-static int __devinit mpc52xx_psc_spi_of_probe(struct platform_device *op)
-{
-	const u32 *regaddr_p;
-	u64 regaddr64, size64;
-	s16 id = -1;
-
-	regaddr_p = of_get_address(op->dev.of_node, 0, &size64, NULL);
-	if (!regaddr_p) {
-		dev_err(&op->dev, "Invalid PSC address\n");
-		return -EINVAL;
-	}
-	regaddr64 = of_translate_address(op->dev.of_node, regaddr_p);
-
-	/* get PSC id (1..6, used by port_config) */
-	if (op->dev.platform_data == NULL) {
-		const u32 *psc_nump;
-
-		psc_nump = of_get_property(op->dev.of_node, "cell-index", NULL);
-		if (!psc_nump || *psc_nump > 5) {
-			dev_err(&op->dev, "Invalid cell-index property\n");
-			return -EINVAL;
-		}
-		id = *psc_nump + 1;
-	}
-
-	return mpc52xx_psc_spi_do_probe(&op->dev, (u32)regaddr64, (u32)size64,
-				irq_of_parse_and_map(op->dev.of_node, 0), id);
-}
-
-static int __devexit mpc52xx_psc_spi_of_remove(struct platform_device *op)
-{
-	struct spi_master *master = dev_get_drvdata(&op->dev);
-	struct mpc52xx_psc_spi *mps = spi_master_get_devdata(master);
-
-	flush_workqueue(mps->workqueue);
-	destroy_workqueue(mps->workqueue);
-	spi_unregister_master(master);
-	free_irq(mps->irq, mps);
-	if (mps->psc)
-		iounmap(mps->psc);
-
-	return 0;
-=======
 static int mpc52xx_psc_spi_of_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -643,7 +344,6 @@ static int mpc52xx_psc_spi_of_probe(struct platform_device *pdev)
 	init_completion(&mps->done);
 
 	return devm_spi_register_controller(dev, host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id mpc52xx_psc_spi_of_match[] = {
@@ -656,15 +356,8 @@ MODULE_DEVICE_TABLE(of, mpc52xx_psc_spi_of_match);
 
 static struct platform_driver mpc52xx_psc_spi_of_driver = {
 	.probe = mpc52xx_psc_spi_of_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(mpc52xx_psc_spi_of_remove),
 	.driver = {
 		.name = "mpc52xx-psc-spi",
-		.owner = THIS_MODULE,
-=======
-	.driver = {
-		.name = "mpc52xx-psc-spi",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = mpc52xx_psc_spi_of_match,
 	},
 };

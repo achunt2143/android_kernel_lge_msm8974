@@ -1,44 +1,24 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/head-nommu.S
  *
  *  Copyright (C) 1994-2002 Russell King
  *  Copyright (C) 2003-2006 Hyok S. Choi
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- *  Common kernel startup code (non-paged MM)
- *
- */
-#include <linux/linkage.h>
-#include <linux/init.h>
-=======
  *  Common kernel startup code (non-paged MM)
  */
 #include <linux/linkage.h>
 #include <linux/init.h>
 #include <linux/errno.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/assembler.h>
 #include <asm/ptrace.h>
 #include <asm/asm-offsets.h>
-<<<<<<< HEAD
-#include <asm/cp15.h>
-#include <asm/thread_info.h>
-=======
 #include <asm/page.h>
 #include <asm/cp15.h>
 #include <asm/thread_info.h>
 #include <asm/v7m.h>
 #include <asm/mpu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Kernel startup entry point.
@@ -52,20 +32,6 @@
  * numbers for r1.
  *
  */
-<<<<<<< HEAD
-	.arm
-
-	__HEAD
-ENTRY(stext)
-
- THUMB(	adr	r9, BSYM(1f)	)	@ Kernel is always entered in ARM.
- THUMB(	bx	r9		)	@ If this is a Thumb-2 kernel,
- THUMB(	.thumb			)	@ switch to Thumb now.
- THUMB(1:			)
-
-	setmode	PSR_F_BIT | PSR_I_BIT | SVC_MODE, r9 @ ensure svc mode
-						@ and irqs disabled
-=======
 
 	__HEAD
 
@@ -127,23 +93,12 @@ ENTRY(secondary_startup)
 #endif
 	safe_svcmode_maskall r9
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_CPU_CP15
 	ldr	r9, =CONFIG_PROCESSOR_ID
 #else
 	mrc	p15, 0, r9, c0, c0		@ get processor id
 #endif
 	bl	__lookup_processor_type		@ r5=procinfo r9=cpuid
-<<<<<<< HEAD
-	movs	r10, r5				@ invalid processor (r5=0)?
-	beq	__error_p				@ yes, error 'p'
-
-	adr	lr, BSYM(__after_proc_init)	@ return (PIC) address
- ARM(	add	pc, r10, #PROCINFO_INITFUNC	)
- THUMB(	add	r12, r10, #PROCINFO_INITFUNC	)
- THUMB(	mov	pc, r12				)
-ENDPROC(stext)
-=======
 	movs	r10, r5				@ invalid processor?
 	beq	__error_p			@ yes, error 'p'
 
@@ -169,14 +124,10 @@ ENDPROC(secondary_startup)
 __secondary_data:
 	.long	secondary_data
 #endif /* CONFIG_SMP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set the Control Register and Read the process ID.
  */
-<<<<<<< HEAD
-__after_proc_init:
-=======
 	.text
 __after_proc_init:
 M_CLASS(movw	r12, #:lower16:BASEADDR_V7M_SCB)
@@ -206,22 +157,17 @@ M_CLASS(streq	r3, [r12, #PMSAv8_MAIR1])
 
 1:
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CPU_CP15
 	/*
 	 * CP15 system control register value returned in r0 from
 	 * the CPU init function.
 	 */
-<<<<<<< HEAD
-#ifdef CONFIG_ALIGNMENT_TRAP
-=======
 
 #ifdef CONFIG_ARM_MPU
 	biceq	r0, r0, #CR_BR			@ Disable the 'default mem-map'
 	orreq	r0, r0, #CR_M			@ Set SCTRL.M (MPU on)
 #endif
 #if defined(CONFIG_ALIGNMENT_TRAP) && __LINUX_ARM_ARCH__ < 6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	orr	r0, r0, #CR_A
 #else
 	bic	r0, r0, #CR_A
@@ -235,21 +181,6 @@ M_CLASS(streq	r3, [r12, #PMSAv8_MAIR1])
 #ifdef CONFIG_CPU_ICACHE_DISABLE
 	bic	r0, r0, #CR_I
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_CPU_HIGH_VECTOR
-	orr	r0, r0, #CR_V
-#else
-	bic	r0, r0, #CR_V
-#endif
-	mcr	p15, 0, r0, c1, c0, 0		@ write control reg
-#endif /* CONFIG_CPU_CP15 */
-
-	b	__mmap_switched			@ clear the BSS and jump
-						@ to start_kernel
-ENDPROC(__after_proc_init)
-	.ltorg
-
-=======
 	mcr	p15, 0, r0, c1, c0, 0		@ write control reg
 	instr_sync
 #elif defined (CONFIG_CPU_V7M)
@@ -602,5 +533,4 @@ ENTRY(__secondary_setup_pmsa_v8)
 ENDPROC(__secondary_setup_pmsa_v8)
 #endif /* CONFIG_SMP */
 #endif /* CONFIG_ARM_MPU */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "head-common.S"

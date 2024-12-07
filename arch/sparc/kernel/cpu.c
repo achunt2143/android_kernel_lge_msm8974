@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* cpu.c: Dinky routines to look for the kind of Sparc cpu
  *        we are on.
  *
@@ -14,15 +11,9 @@
 #include <linux/init.h>
 #include <linux/smp.h>
 #include <linux/threads.h>
-<<<<<<< HEAD
-
-#include <asm/spitfire.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/pgtable.h>
 
 #include <asm/spitfire.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/oplib.h>
 #include <asm/setup.h>
 #include <asm/page.h>
@@ -32,10 +23,7 @@
 #include <asm/cpudata.h>
 
 #include "kernel.h"
-<<<<<<< HEAD
-=======
 #include "entry.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DEFINE_PER_CPU(cpuinfo_sparc, __cpu_data) = { 0 };
 EXPORT_PER_CPU_SYMBOL(__cpu_data);
@@ -135,11 +123,7 @@ static const struct manufacturer_info __initconst manufacturer_info[] = {
 		FPU(-1, NULL)
 	}
 },{
-<<<<<<< HEAD
-	4,
-=======
 	PSR_IMPL_TI,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cpu_info = {
 		CPU(0, "Texas Instruments, Inc. - SuperSparc-(II)"),
 		/* SparcClassic  --  borned STP1010TAB-50*/
@@ -209,11 +193,7 @@ static const struct manufacturer_info __initconst manufacturer_info[] = {
 		FPU(-1, NULL)
 	}
 },{
-<<<<<<< HEAD
-	0xF,		/* Aeroflex Gaisler */
-=======
 	PSR_IMPL_LEON,		/* Aeroflex Gaisler */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cpu_info = {
 		CPU(3, "LEON"),
 		CPU(-1, NULL)
@@ -462,18 +442,6 @@ static int __init cpu_type_probe(void)
 	int psr_impl, psr_vers, fpu_vers;
 	int psr;
 
-<<<<<<< HEAD
-	psr_impl = ((get_psr() >> 28) & 0xf);
-	psr_vers = ((get_psr() >> 24) & 0xf);
-
-	psr = get_psr();
-	put_psr(psr | PSR_EF);
-#ifdef CONFIG_SPARC_LEON
-	fpu_vers = get_psr() & PSR_EF ? ((get_fsr() >> 17) & 0x7) : 7;
-#else
-	fpu_vers = ((get_fsr() >> 17) & 0x7);
-#endif
-=======
 	psr_impl = ((get_psr() >> PSR_IMPL_SHIFT) & PSR_IMPL_SHIFTED_MASK);
 	psr_vers = ((get_psr() >> PSR_VERS_SHIFT) & PSR_VERS_SHIFTED_MASK);
 
@@ -484,7 +452,6 @@ static int __init cpu_type_probe(void)
 		fpu_vers = get_psr() & PSR_EF ? ((get_fsr() >> 17) & 0x7) : 7;
 	else
 		fpu_vers = ((get_fsr() >> 17) & 0x7);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	put_psr(psr);
 
@@ -528,8 +495,6 @@ static void __init sun4v_cpu_probe(void)
 		sparc_pmu_type = "niagara5";
 		break;
 
-<<<<<<< HEAD
-=======
 	case SUN4V_CHIP_SPARC_M6:
 		sparc_cpu_type = "SPARC-M6";
 		sparc_fpu_type = "SPARC-M6 integrated FPU";
@@ -560,7 +525,6 @@ static void __init sun4v_cpu_probe(void)
 		sparc_pmu_type = "sparc64-x";
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		printk(KERN_WARNING "CPU: Unknown sun4v cpu type [%s]\n",
 		       prom_cpu_compatible);

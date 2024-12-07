@@ -1,32 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Serial Attached SCSI (SAS) Discover process
  *
  * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
  * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
-<<<<<<< HEAD
- *
- * This file is licensed under GPLv2.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/scatterlist.h>
@@ -38,32 +15,13 @@
 #include <scsi/scsi_transport.h>
 #include <scsi/scsi_transport_sas.h>
 #include <scsi/sas_ata.h>
-<<<<<<< HEAD
-#include "../scsi_sas_internal.h"
-=======
 #include "scsi_sas_internal.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ---------- Basic task processing for discovery purposes ---------- */
 
 void sas_init_dev(struct domain_device *dev)
 {
 	switch (dev->dev_type) {
-<<<<<<< HEAD
-	case SAS_END_DEV:
-		break;
-	case EDGE_DEV:
-	case FANOUT_DEV:
-		INIT_LIST_HEAD(&dev->ex_dev.children);
-		mutex_init(&dev->ex_dev.cmd_mutex);
-		break;
-	case SATA_DEV:
-	case SATA_PM:
-	case SATA_PM_PORT:
-	case SATA_PENDING:
-		INIT_LIST_HEAD(&dev->sata_dev.children);
-		break;
-=======
 	case SAS_END_DEVICE:
 		INIT_LIST_HEAD(&dev->ssp_dev.eh_list_node);
 		break;
@@ -72,7 +30,6 @@ void sas_init_dev(struct domain_device *dev)
 		INIT_LIST_HEAD(&dev->ex_dev.children);
 		mutex_init(&dev->ex_dev.cmd_mutex);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -81,11 +38,7 @@ void sas_init_dev(struct domain_device *dev)
 /* ---------- Domain device discovery ---------- */
 
 /**
-<<<<<<< HEAD
- * sas_get_port_device -- Discover devices which caused port creation
-=======
  * sas_get_port_device - Discover devices which caused port creation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @port: pointer to struct sas_port of interest
  *
  * Devices directly attached to a HA port, have no parent.  This is
@@ -121,15 +74,6 @@ static int sas_get_port_device(struct asd_sas_port *port)
 		struct dev_to_host_fis *fis =
 			(struct dev_to_host_fis *) dev->frame_rcvd;
 		if (fis->interrupt_reason == 1 && fis->lbal == 1 &&
-<<<<<<< HEAD
-		    fis->byte_count_low==0x69 && fis->byte_count_high == 0x96
-		    && (fis->device & ~0x10) == 0)
-			dev->dev_type = SATA_PM;
-		else
-			dev->dev_type = SATA_DEV;
-		dev->tproto = SAS_PROTOCOL_SATA;
-	} else {
-=======
 		    fis->byte_count_low == 0x69 && fis->byte_count_high == 0x96
 		    && (fis->device & ~0x10) == 0)
 			dev->dev_type = SAS_SATA_PM;
@@ -137,14 +81,11 @@ static int sas_get_port_device(struct asd_sas_port *port)
 			dev->dev_type = SAS_SATA_DEV;
 		dev->tproto = SAS_PROTOCOL_SATA;
 	} else if (port->oob_mode == SAS_OOB_MODE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct sas_identify_frame *id =
 			(struct sas_identify_frame *) dev->frame_rcvd;
 		dev->dev_type = id->dev_type;
 		dev->iproto = id->initiator_bits;
 		dev->tproto = id->target_bits;
-<<<<<<< HEAD
-=======
 	} else {
 		/* If the oob mode is OOB_NOT_CONNECTED, the port is
 		 * disconnected due to race with PHY down. We cannot
@@ -154,34 +95,18 @@ static int sas_get_port_device(struct asd_sas_port *port)
 		pr_warn("Port %016llx is disconnected when discovering\n",
 			SAS_ADDR(port->attached_sas_addr));
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sas_init_dev(dev);
 
 	dev->port = port;
 	switch (dev->dev_type) {
-<<<<<<< HEAD
-	case SATA_DEV:
-=======
 	case SAS_SATA_DEV:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = sas_ata_init(dev);
 		if (rc) {
 			rphy = NULL;
 			break;
 		}
-<<<<<<< HEAD
-		/* fall through */
-	case SAS_END_DEV:
-		rphy = sas_end_device_alloc(port->port);
-		break;
-	case EDGE_DEV:
-		rphy = sas_expander_alloc(port->port,
-					  SAS_EDGE_EXPANDER_DEVICE);
-		break;
-	case FANOUT_DEV:
-=======
 		fallthrough;
 	case SAS_END_DEVICE:
 		rphy = sas_end_device_alloc(port->port);
@@ -191,16 +116,11 @@ static int sas_get_port_device(struct asd_sas_port *port)
 					  SAS_EDGE_EXPANDER_DEVICE);
 		break;
 	case SAS_FANOUT_EXPANDER_DEVICE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rphy = sas_expander_alloc(port->port,
 					  SAS_FANOUT_EXPANDER_DEVICE);
 		break;
 	default:
-<<<<<<< HEAD
-		printk("ERROR: Unidentified device type %d\n", dev->dev_type);
-=======
 		pr_warn("ERROR: Unidentified device type %d\n", dev->dev_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rphy = NULL;
 		break;
 	}
@@ -228,11 +148,7 @@ static int sas_get_port_device(struct asd_sas_port *port)
 	dev->rphy = rphy;
 	get_device(&dev->rphy->dev);
 
-<<<<<<< HEAD
-	if (dev_is_sata(dev) || dev->dev_type == SAS_END_DEV)
-=======
 	if (dev_is_sata(dev) || dev->dev_type == SAS_END_DEVICE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&dev->disco_list_node, &port->disco_list);
 	else {
 		spin_lock_irq(&port->dev_list_lock);
@@ -254,22 +170,6 @@ int sas_notify_lldd_dev_found(struct domain_device *dev)
 {
 	int res = 0;
 	struct sas_ha_struct *sas_ha = dev->port->ha;
-<<<<<<< HEAD
-	struct Scsi_Host *shost = sas_ha->core.shost;
-	struct sas_internal *i = to_sas_internal(shost->transportt);
-
-	if (i->dft->lldd_dev_found) {
-		res = i->dft->lldd_dev_found(dev);
-		if (res) {
-			printk("sas: driver on pcidev %s cannot handle "
-			       "device %llx, error:%d\n",
-			       dev_name(sas_ha->dev),
-			       SAS_ADDR(dev->sas_addr), res);
-		}
-		kref_get(&dev->kref);
-	}
-	return res;
-=======
 	struct Scsi_Host *shost = sas_ha->shost;
 	struct sas_internal *i = to_sas_internal(shost->transportt);
 
@@ -286,19 +186,12 @@ int sas_notify_lldd_dev_found(struct domain_device *dev)
 	set_bit(SAS_DEV_FOUND, &dev->state);
 	kref_get(&dev->kref);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 void sas_notify_lldd_dev_gone(struct domain_device *dev)
 {
 	struct sas_ha_struct *sas_ha = dev->port->ha;
-<<<<<<< HEAD
-	struct Scsi_Host *shost = sas_ha->core.shost;
-	struct sas_internal *i = to_sas_internal(shost->transportt);
-
-	if (i->dft->lldd_dev_gone) {
-=======
 	struct Scsi_Host *shost = sas_ha->shost;
 	struct sas_internal *i = to_sas_internal(shost->transportt);
 
@@ -306,25 +199,14 @@ void sas_notify_lldd_dev_gone(struct domain_device *dev)
 		return;
 
 	if (test_and_clear_bit(SAS_DEV_FOUND, &dev->state)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i->dft->lldd_dev_gone(dev);
 		sas_put_device(dev);
 	}
 }
 
-<<<<<<< HEAD
-static void sas_probe_devices(struct work_struct *work)
-{
-	struct domain_device *dev, *n;
-	struct sas_discovery_event *ev = to_sas_discovery_event(work);
-	struct asd_sas_port *port = ev->port;
-
-	clear_bit(DISCE_PROBE, &port->disc.pending);
-=======
 static void sas_probe_devices(struct asd_sas_port *port)
 {
 	struct domain_device *dev, *n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* devices must be domain members before link recovery and probe */
 	list_for_each_entry(dev, &port->disco_list, disco_list_node) {
@@ -346,24 +228,6 @@ static void sas_probe_devices(struct asd_sas_port *port)
 	}
 }
 
-<<<<<<< HEAD
-/**
- * sas_discover_end_dev -- discover an end device (SSP, etc)
- * @end: pointer to domain device of interest
- *
- * See comment in sas_discover_sata().
- */
-int sas_discover_end_dev(struct domain_device *dev)
-{
-	int res;
-
-	res = sas_notify_lldd_dev_found(dev);
-	if (res)
-		return res;
-	sas_discover_event(dev->port, DISCE_PROBE);
-
-	return 0;
-=======
 static void sas_suspend_devices(struct work_struct *work)
 {
 	struct asd_sas_phy *phy;
@@ -414,7 +278,6 @@ static void sas_resume_devices(struct work_struct *work)
 static int sas_discover_end_dev(struct domain_device *dev)
 {
 	return sas_notify_lldd_dev_found(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ---------- Device registration and unregistration ---------- */
@@ -433,13 +296,6 @@ void sas_free_device(struct kref *kref)
 	dev->phy = NULL;
 
 	/* remove the phys and ports, everything else should be gone */
-<<<<<<< HEAD
-	if (dev->dev_type == EDGE_DEV || dev->dev_type == FANOUT_DEV)
-		kfree(dev->ex_dev.ex_phy);
-
-	if (dev_is_sata(dev) && dev->sata_dev.ap) {
-		ata_sas_port_destroy(dev->sata_dev.ap);
-=======
 	if (dev_is_expander(dev->dev_type))
 		kfree(dev->ex_dev.ex_phy);
 
@@ -448,7 +304,6 @@ void sas_free_device(struct kref *kref)
 		kfree(dev->sata_dev.ap);
 		ata_host_put(dev->sata_dev.ata_host);
 		dev->sata_dev.ata_host = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->sata_dev.ap = NULL;
 	}
 
@@ -457,11 +312,8 @@ void sas_free_device(struct kref *kref)
 
 static void sas_unregister_common_dev(struct asd_sas_port *port, struct domain_device *dev)
 {
-<<<<<<< HEAD
-=======
 	struct sas_ha_struct *ha = port->ha;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sas_notify_lldd_dev_gone(dev);
 	if (!dev->parent)
 		dev->port->port_dev = NULL;
@@ -470,20 +322,6 @@ static void sas_unregister_common_dev(struct asd_sas_port *port, struct domain_d
 
 	spin_lock_irq(&port->dev_list_lock);
 	list_del_init(&dev->dev_list_node);
-<<<<<<< HEAD
-	spin_unlock_irq(&port->dev_list_lock);
-
-	sas_put_device(dev);
-}
-
-static void sas_destruct_devices(struct work_struct *work)
-{
-	struct domain_device *dev, *n;
-	struct sas_discovery_event *ev = to_sas_discovery_event(work);
-	struct asd_sas_port *port = ev->port;
-
-	clear_bit(DISCE_DESTRUCT, &port->disc.pending);
-=======
 	if (dev_is_sata(dev))
 		sas_ata_end_eh(dev->sata_dev.ap);
 	spin_unlock_irq(&port->dev_list_lock);
@@ -502,7 +340,6 @@ static void sas_destruct_devices(struct work_struct *work)
 void sas_destruct_devices(struct asd_sas_port *port)
 {
 	struct domain_device *dev, *n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry_safe(dev, n, &port->destroy_list, disco_list_node) {
 		list_del_init(&dev->disco_list_node);
@@ -513,8 +350,6 @@ void sas_destruct_devices(struct asd_sas_port *port)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void sas_destruct_ports(struct asd_sas_port *port)
 {
 	struct sas_port *sas_port, *p;
@@ -552,7 +387,6 @@ static void sas_abort_device_scsi_cmds(struct domain_device *dev)
 	blk_mq_tagset_busy_iter(&shost->tag_set, sas_abort_cmd, dev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sas_unregister_dev(struct asd_sas_port *port, struct domain_device *dev)
 {
 	if (!test_bit(SAS_DEV_DESTROY, &dev->state) &&
@@ -565,16 +399,10 @@ void sas_unregister_dev(struct asd_sas_port *port, struct domain_device *dev)
 	}
 
 	if (!test_and_set_bit(SAS_DEV_DESTROY, &dev->state)) {
-<<<<<<< HEAD
-		sas_rphy_unlink(dev->rphy);
-		list_move_tail(&dev->disco_list_node, &port->destroy_list);
-		sas_discover_event(dev->port, DISCE_DESTRUCT);
-=======
 		if (test_bit(SAS_DEV_GONE, &dev->state))
 			sas_abort_device_scsi_cmds(dev);
 		sas_rphy_unlink(dev->rphy);
 		list_move_tail(&dev->disco_list_node, &port->destroy_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -618,13 +446,8 @@ void sas_device_set_phy(struct domain_device *dev, struct sas_port *port)
 /* ---------- Discovery and Revalidation ---------- */
 
 /**
-<<<<<<< HEAD
- * sas_discover_domain -- discover the domain
- * @port: port to the domain of interest
-=======
  * sas_discover_domain - discover the domain
  * @work: work structure embedded in port domain device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * NOTE: this process _must_ quit (return) as soon as any connection
  * errors are encountered.  Connection recovery is done elsewhere.
@@ -648,31 +471,6 @@ static void sas_discover_domain(struct work_struct *work)
 		return;
 	dev = port->port_dev;
 
-<<<<<<< HEAD
-	SAS_DPRINTK("DOING DISCOVERY on port %d, pid:%d\n", port->id,
-		    task_pid_nr(current));
-
-	switch (dev->dev_type) {
-	case SAS_END_DEV:
-		error = sas_discover_end_dev(dev);
-		break;
-	case EDGE_DEV:
-	case FANOUT_DEV:
-		error = sas_discover_root_expander(dev);
-		break;
-	case SATA_DEV:
-	case SATA_PM:
-#ifdef CONFIG_SCSI_SAS_ATA
-		error = sas_discover_sata(dev);
-		break;
-#else
-		SAS_DPRINTK("ATA device seen but CONFIG_SCSI_SAS_ATA=N so cannot attach\n");
-		/* Fall through */
-#endif
-	default:
-		error = -ENXIO;
-		SAS_DPRINTK("unhandled device %d\n", dev->dev_type);
-=======
 	pr_debug("DOING DISCOVERY on port %d, pid:%d\n", port->id,
 		 task_pid_nr(current));
 
@@ -691,7 +489,6 @@ static void sas_discover_domain(struct work_struct *work)
 	default:
 		error = -ENXIO;
 		pr_err("unhandled device %d\n", dev->dev_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -706,15 +503,10 @@ static void sas_discover_domain(struct work_struct *work)
 		port->port_dev = NULL;
 	}
 
-<<<<<<< HEAD
-	SAS_DPRINTK("DONE DISCOVERY on port %d, pid:%d, result:%d\n", port->id,
-		    task_pid_nr(current), error);
-=======
 	sas_probe_devices(port);
 
 	pr_debug("DONE DISCOVERY on port %d, pid:%d, result:%d\n", port->id,
 		 task_pid_nr(current), error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sas_revalidate_domain(struct work_struct *work)
@@ -728,31 +520,13 @@ static void sas_revalidate_domain(struct work_struct *work)
 	/* prevent revalidation from finding sata links in recovery */
 	mutex_lock(&ha->disco_mutex);
 	if (test_bit(SAS_HA_ATA_EH_ACTIVE, &ha->state)) {
-<<<<<<< HEAD
-		SAS_DPRINTK("REVALIDATION DEFERRED on port %d, pid:%d\n",
-			    port->id, task_pid_nr(current));
-=======
 		pr_debug("REVALIDATION DEFERRED on port %d, pid:%d\n",
 			 port->id, task_pid_nr(current));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	clear_bit(DISCE_REVALIDATE_DOMAIN, &port->disc.pending);
 
-<<<<<<< HEAD
-	SAS_DPRINTK("REVALIDATING DOMAIN on port %d, pid:%d\n", port->id,
-		    task_pid_nr(current));
-
-	if (ddev && (ddev->dev_type == SAS_FANOUT_EXPANDER_DEVICE ||
-		     ddev->dev_type == SAS_EDGE_EXPANDER_DEVICE))
-		res = sas_ex_revalidate_domain(ddev);
-
-	SAS_DPRINTK("done REVALIDATING DOMAIN on port %d, pid:%d, res 0x%x\n",
-		    port->id, task_pid_nr(current), res);
- out:
-	mutex_unlock(&ha->disco_mutex);
-=======
 	pr_debug("REVALIDATING DOMAIN on port %d, pid:%d\n", port->id,
 		 task_pid_nr(current));
 
@@ -767,7 +541,6 @@ static void sas_revalidate_domain(struct work_struct *work)
 	sas_destruct_devices(port);
 	sas_destruct_ports(port);
 	sas_probe_devices(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ---------- Events ---------- */
@@ -779,11 +552,7 @@ static void sas_chain_work(struct sas_ha_struct *ha, struct sas_work *sw)
 	 * workqueue, or known to be submitted from a context that is
 	 * not racing against draining
 	 */
-<<<<<<< HEAD
-	scsi_queue_work(ha->core.shost, &sw->work);
-=======
 	queue_work(ha->disco_q, &sw->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sas_chain_event(int event, unsigned long *pending,
@@ -793,15 +562,6 @@ static void sas_chain_event(int event, unsigned long *pending,
 	if (!test_and_set_bit(event, pending)) {
 		unsigned long flags;
 
-<<<<<<< HEAD
-		spin_lock_irqsave(&ha->state_lock, flags);
-		sas_chain_work(ha, sw);
-		spin_unlock_irqrestore(&ha->state_lock, flags);
-	}
-}
-
-int sas_discover_event(struct asd_sas_port *port, enum discover_event ev)
-=======
 		spin_lock_irqsave(&ha->lock, flags);
 		sas_chain_work(ha, sw);
 		spin_unlock_irqrestore(&ha->lock, flags);
@@ -809,35 +569,21 @@ int sas_discover_event(struct asd_sas_port *port, enum discover_event ev)
 }
 
 void sas_discover_event(struct asd_sas_port *port, enum discover_event ev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sas_discovery *disc;
 
 	if (!port)
-<<<<<<< HEAD
-		return 0;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	disc = &port->disc;
 
 	BUG_ON(ev >= DISC_NUM_EVENTS);
 
 	sas_chain_event(ev, &disc->pending, &disc->disc_work[ev].work, port->ha);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-/**
- * sas_init_disc -- initialize the discovery struct in the port
-=======
 }
 
 /**
  * sas_init_disc - initialize the discovery struct in the port
  * @disc: port discovery structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @port: pointer to struct port
  *
  * Called when the ports are being initialized.
@@ -849,13 +595,8 @@ void sas_init_disc(struct sas_discovery *disc, struct asd_sas_port *port)
 	static const work_func_t sas_event_fns[DISC_NUM_EVENTS] = {
 		[DISCE_DISCOVER_DOMAIN] = sas_discover_domain,
 		[DISCE_REVALIDATE_DOMAIN] = sas_revalidate_domain,
-<<<<<<< HEAD
-		[DISCE_PROBE] = sas_probe_devices,
-		[DISCE_DESTRUCT] = sas_destruct_devices,
-=======
 		[DISCE_SUSPEND] = sas_suspend_devices,
 		[DISCE_RESUME] = sas_resume_devices,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	disc->pending = 0;

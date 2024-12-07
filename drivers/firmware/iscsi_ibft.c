@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright 2007-2010 Red Hat, Inc.
  *  by Peter Jones <pjones@redhat.com>
@@ -12,18 +9,6 @@
  *
  * This code exposes the iSCSI Boot Format Table to userland via sysfs.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License v2.0 as published by
- * the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Changelog:
  *
  *  06 Jan 2010 - Peter Jones <pjones@redhat.com>
@@ -70,10 +55,6 @@
  *
  *  27 Aug 2007 - Konrad Rzeszutek <konradr@linux.vnet.ibm.com>
  *   First version exposing iBFT data via a binary /sysfs. (v0.1)
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -103,11 +84,8 @@ MODULE_DESCRIPTION("sysfs interface to BIOS iBFT information");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(IBFT_ISCSI_VERSION);
 
-<<<<<<< HEAD
-=======
 static struct acpi_table_ibft *ibft_addr;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ibft_hdr {
 	u8 id;
 	u8 version;
@@ -124,10 +102,7 @@ struct ibft_control {
 	u16 tgt0_off;
 	u16 nic1_off;
 	u16 tgt1_off;
-<<<<<<< HEAD
-=======
 	u16 expansion[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((__packed__));
 
 struct ibft_initiator {
@@ -205,10 +180,6 @@ struct ibft_kobject {
 
 static struct iscsi_boot_kset *boot_kset;
 
-<<<<<<< HEAD
-static const char nulls[16];
-
-=======
 /* fully null address */
 static const char nulls[16];
 
@@ -223,7 +194,6 @@ static int address_not_null(u8 *ip)
 	return (memcmp(ip, nulls, 16) && memcmp(ip, mapped_nulls, 16));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Helper functions to parse data properly.
  */
@@ -264,11 +234,7 @@ static int ibft_verify_hdr(char *t, struct ibft_hdr *hdr, int id, int length)
 				"found %d instead!\n", t, id, hdr->id);
 		return -ENODEV;
 	}
-<<<<<<< HEAD
-	if (hdr->length != length) {
-=======
 	if (length && hdr->length != length) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "iBFT error: We expected the %s " \
 				"field header.length to have %d but " \
 				"found %d instead!\n", t, length, hdr->length);
@@ -347,12 +313,9 @@ static ssize_t ibft_attr_show_nic(void *data, int type, char *buf)
 		val = cpu_to_be32(~((1 << (32-nic->subnet_mask_prefix))-1));
 		str += sprintf(str, "%pI4", &val);
 		break;
-<<<<<<< HEAD
-=======
 	case ISCSI_BOOT_ETH_PREFIX_LEN:
 		str += sprintf(str, "%d\n", nic->subnet_mask_prefix);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ISCSI_BOOT_ETH_ORIGIN:
 		str += sprintf(str, "%d\n", nic->origin);
 		break;
@@ -449,8 +412,6 @@ static ssize_t ibft_attr_show_target(void *data, int type, char *buf)
 	return str - buf;
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t ibft_attr_show_acpitbl(void *data, int type, char *buf)
 {
 	struct ibft_kobject *entry = data;
@@ -476,7 +437,6 @@ static ssize_t ibft_attr_show_acpitbl(void *data, int type, char *buf)
 	return str - buf;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init ibft_check_device(void)
 {
 	int len;
@@ -519,16 +479,10 @@ static umode_t ibft_check_nic_for(void *data, int type)
 		rc = S_IRUGO;
 		break;
 	case ISCSI_BOOT_ETH_IP_ADDR:
-<<<<<<< HEAD
-		if (memcmp(nic->ip_addr, nulls, sizeof(nic->ip_addr)))
-			rc = S_IRUGO;
-		break;
-=======
 		if (address_not_null(nic->ip_addr))
 			rc = S_IRUGO;
 		break;
 	case ISCSI_BOOT_ETH_PREFIX_LEN:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ISCSI_BOOT_ETH_SUBNET_MASK:
 		if (nic->subnet_mask_prefix)
 			rc = S_IRUGO;
@@ -537,23 +491,6 @@ static umode_t ibft_check_nic_for(void *data, int type)
 		rc = S_IRUGO;
 		break;
 	case ISCSI_BOOT_ETH_GATEWAY:
-<<<<<<< HEAD
-		if (memcmp(nic->gateway, nulls, sizeof(nic->gateway)))
-			rc = S_IRUGO;
-		break;
-	case ISCSI_BOOT_ETH_PRIMARY_DNS:
-		if (memcmp(nic->primary_dns, nulls,
-			   sizeof(nic->primary_dns)))
-			rc = S_IRUGO;
-		break;
-	case ISCSI_BOOT_ETH_SECONDARY_DNS:
-		if (memcmp(nic->secondary_dns, nulls,
-			   sizeof(nic->secondary_dns)))
-			rc = S_IRUGO;
-		break;
-	case ISCSI_BOOT_ETH_DHCP:
-		if (memcmp(nic->dhcp, nulls, sizeof(nic->dhcp)))
-=======
 		if (address_not_null(nic->gateway))
 			rc = S_IRUGO;
 		break;
@@ -567,7 +504,6 @@ static umode_t ibft_check_nic_for(void *data, int type)
 		break;
 	case ISCSI_BOOT_ETH_DHCP:
 		if (address_not_null(nic->dhcp))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = S_IRUGO;
 		break;
 	case ISCSI_BOOT_ETH_VLAN:
@@ -600,10 +536,7 @@ static umode_t __init ibft_check_tgt_for(void *data, int type)
 	case ISCSI_BOOT_TGT_NIC_ASSOC:
 	case ISCSI_BOOT_TGT_CHAP_TYPE:
 		rc = S_IRUGO;
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ISCSI_BOOT_TGT_NAME:
 		if (tgt->tgt_name_len)
 			rc = S_IRUGO;
@@ -637,25 +570,6 @@ static umode_t __init ibft_check_initiator_for(void *data, int type)
 		rc = S_IRUGO;
 		break;
 	case ISCSI_BOOT_INI_ISNS_SERVER:
-<<<<<<< HEAD
-		if (memcmp(init->isns_server, nulls,
-			   sizeof(init->isns_server)))
-			rc = S_IRUGO;
-		break;
-	case ISCSI_BOOT_INI_SLP_SERVER:
-		if (memcmp(init->slp_server, nulls,
-			   sizeof(init->slp_server)))
-			rc = S_IRUGO;
-		break;
-	case ISCSI_BOOT_INI_PRI_RADIUS_SERVER:
-		if (memcmp(init->pri_radius_server, nulls,
-			   sizeof(init->pri_radius_server)))
-			rc = S_IRUGO;
-		break;
-	case ISCSI_BOOT_INI_SEC_RADIUS_SERVER:
-		if (memcmp(init->sec_radius_server, nulls,
-			   sizeof(init->sec_radius_server)))
-=======
 		if (address_not_null(init->isns_server))
 			rc = S_IRUGO;
 		break;
@@ -669,7 +583,6 @@ static umode_t __init ibft_check_initiator_for(void *data, int type)
 		break;
 	case ISCSI_BOOT_INI_SEC_RADIUS_SERVER:
 		if (address_not_null(init->sec_radius_server))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = S_IRUGO;
 		break;
 	case ISCSI_BOOT_INI_INITIATOR_NAME:
@@ -683,8 +596,6 @@ static umode_t __init ibft_check_initiator_for(void *data, int type)
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 static umode_t __init ibft_check_acpitbl_for(void *data, int type)
 {
 
@@ -703,7 +614,6 @@ static umode_t __init ibft_check_acpitbl_for(void *data, int type)
 	return rc;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ibft_kobj_release(void *data)
 {
 	kfree(data);
@@ -804,14 +714,9 @@ static int __init ibft_create_kobject(struct acpi_table_ibft *header,
 		* executes only devices which are in domain 0. Furthermore, the
 		* iBFT spec doesn't have a domain id field :-(
 		*/
-<<<<<<< HEAD
-		pci_dev = pci_get_bus_and_slot((nic->pci_bdf & 0xff00) >> 8,
-					       (nic->pci_bdf & 0xff));
-=======
 		pci_dev = pci_get_domain_bus_and_slot(0,
 						(nic->pci_bdf & 0xff00) >> 8,
 						(nic->pci_bdf & 0xff));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pci_dev) {
 			rc = sysfs_create_link(&boot_kobj->kobj,
 					       &pci_dev->dev.kobj, "device");
@@ -833,11 +738,8 @@ free_ibft_obj:
 static int __init ibft_register_kobjects(struct acpi_table_ibft *header)
 {
 	struct ibft_control *control = NULL;
-<<<<<<< HEAD
-=======
 	struct iscsi_boot_kobj *boot_kobj;
 	struct ibft_kobject *ibft_kobj;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *ptr, *end;
 	int rc = 0;
 	u16 offset;
@@ -846,28 +748,16 @@ static int __init ibft_register_kobjects(struct acpi_table_ibft *header)
 	control = (void *)header + sizeof(*header);
 	end = (void *)control + control->hdr.length;
 	eot_offset = (void *)header + header->header.length - (void *)control;
-<<<<<<< HEAD
-	rc = ibft_verify_hdr("control", (struct ibft_hdr *)control, id_control,
-			     sizeof(*control));
-
-	/* iBFT table safety checking */
-	rc |= ((control->hdr.index) ? -ENODEV : 0);
-=======
 	rc = ibft_verify_hdr("control", (struct ibft_hdr *)control, id_control, 0);
 
 	/* iBFT table safety checking */
 	rc |= ((control->hdr.index) ? -ENODEV : 0);
 	rc |= ((control->hdr.length < sizeof(*control)) ? -ENODEV : 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		printk(KERN_ERR "iBFT error: Control header is invalid!\n");
 		return rc;
 	}
-<<<<<<< HEAD
-	for (ptr = &control->initiator_off; ptr < end; ptr += sizeof(u16)) {
-=======
 	for (ptr = &control->initiator_off; ptr + sizeof(u16) <= end; ptr += sizeof(u16)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		offset = *(u16 *)ptr;
 		if (offset && offset < header->header.length &&
 						offset < eot_offset) {
@@ -877,8 +767,6 @@ static int __init ibft_register_kobjects(struct acpi_table_ibft *header)
 				break;
 		}
 	}
-<<<<<<< HEAD
-=======
 	if (rc)
 		return rc;
 
@@ -898,7 +786,6 @@ static int __init ibft_register_kobjects(struct acpi_table_ibft *header)
 		kfree(ibft_kobj);
 		rc = -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -911,11 +798,7 @@ static void ibft_unregister(void)
 	list_for_each_entry_safe(boot_kobj, tmp_kobj,
 				 &boot_kset->kobj_list, list) {
 		ibft_kobj = boot_kobj->data;
-<<<<<<< HEAD
-		if (ibft_kobj->hdr->id == id_nic)
-=======
 		if (ibft_kobj->hdr && ibft_kobj->hdr->id == id_nic)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sysfs_remove_link(&boot_kobj->kobj, "device");
 	};
 }
@@ -943,10 +826,7 @@ static const struct {
 	 */
 	{ ACPI_SIG_IBFT },
 	{ "iBFT" },
-<<<<<<< HEAD
-=======
 	{ "BIFT" },	/* Broadcom iSCSI Offload */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __init acpi_find_ibft_region(void)
@@ -967,9 +847,6 @@ static void __init acpi_find_ibft_region(void)
 {
 }
 #endif
-<<<<<<< HEAD
-
-=======
 #ifdef CONFIG_ISCSI_IBFT_FIND
 static int __init acpi_find_isa_region(void)
 {
@@ -985,7 +862,6 @@ static int __init acpi_find_isa_region(void)
 	return -ENODEV;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ibft_init() - creates sysfs tree entries for the iBFT data.
  */
@@ -994,19 +870,11 @@ static int __init ibft_init(void)
 	int rc = 0;
 
 	/*
-<<<<<<< HEAD
-	   As on UEFI systems the setup_arch()/find_ibft_region()
-	   is called before ACPI tables are parsed and it only does
-	   legacy finding.
-	*/
-	if (!ibft_addr)
-=======
 	   As on UEFI systems the setup_arch()/reserve_ibft_region()
 	   is called before ACPI tables are parsed and it only does
 	   legacy finding.
 	*/
 	if (acpi_find_isa_region())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acpi_find_ibft_region();
 
 	if (ibft_addr) {

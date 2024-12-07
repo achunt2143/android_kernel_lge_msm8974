@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-obj-y += timekeeping.o ntp.o clocksource.o jiffies.o timer_list.o timecompare.o
-obj-y += timeconv.o posix-clock.o alarmtimer.o
-
-obj-$(CONFIG_GENERIC_CLOCKEVENTS_BUILD)		+= clockevents.o
-obj-$(CONFIG_GENERIC_CLOCKEVENTS)		+= tick-common.o
-obj-$(CONFIG_GENERIC_CLOCKEVENTS_BROADCAST)	+= tick-broadcast.o
-obj-$(CONFIG_GENERIC_SCHED_CLOCK)		+= sched_clock.o
-obj-$(CONFIG_TICK_ONESHOT)			+= tick-oneshot.o
-obj-$(CONFIG_TICK_ONESHOT)			+= tick-sched.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 obj-y += time.o timer.o hrtimer.o
 obj-y += timekeeping.o ntp.o clocksource.o jiffies.o timer_list.o
@@ -37,4 +26,3 @@ obj-$(CONFIG_TEST_UDELAY)			+= test_udelay.o
 obj-$(CONFIG_TIME_NS)				+= namespace.o
 obj-$(CONFIG_TEST_CLOCKSOURCE_WATCHDOG)		+= clocksource-wdtest.o
 obj-$(CONFIG_TIME_KUNIT_TEST)			+= time_test.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

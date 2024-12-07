@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_BIOS_EBDA_H
 #define _ASM_X86_BIOS_EBDA_H
 
@@ -21,32 +18,7 @@ static inline unsigned int get_bios_ebda(void)
 	return address;	/* 0 means none */
 }
 
-<<<<<<< HEAD
-/*
- * Return the sanitized length of the EBDA in bytes, if it exists.
- */
-static inline unsigned int get_bios_ebda_length(void)
-{
-	unsigned int address;
-	unsigned int length;
-
-	address = get_bios_ebda();
-	if (!address)
-		return 0;
-
-	/* EBDA length is byte 0 of the EBDA (stored in KiB) */
-	length = *(unsigned char *)phys_to_virt(address);
-	length <<= 10;
-
-	/* Trim the length if it extends beyond 640KiB */
-	length = min_t(unsigned int, (640 * 1024) - address, length);
-	return length;
-}
-
-void reserve_ebda_region(void);
-=======
 void reserve_bios_regions(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_X86_CHECK_BIOS_CORRUPTION
 /*

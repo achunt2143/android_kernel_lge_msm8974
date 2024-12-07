@@ -24,21 +24,6 @@
 
 /* Bluetooth kernel library. */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-
-#include <linux/kernel.h>
-#include <linux/stddef.h>
-#include <linux/string.h>
-#include <asm/errno.h>
-
-#include <net/bluetooth/bluetooth.h>
-
-void baswap(bdaddr_t *dst, bdaddr_t *src)
-{
-	unsigned char *d = (unsigned char *) dst;
-	unsigned char *s = (unsigned char *) src;
-=======
 #define pr_fmt(fmt) "Bluetooth: " fmt
 
 #include <linux/export.h>
@@ -58,7 +43,6 @@ void baswap(bdaddr_t *dst, const bdaddr_t *src)
 {
 	const unsigned char *s = (const unsigned char *)src;
 	unsigned char *d = (unsigned char *)dst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i;
 
 	for (i = 0; i < 6; i++)
@@ -66,24 +50,6 @@ void baswap(bdaddr_t *dst, const bdaddr_t *src)
 }
 EXPORT_SYMBOL(baswap);
 
-<<<<<<< HEAD
-char *batostr(bdaddr_t *ba)
-{
-	static char str[2][18];
-	static int i = 1;
-
-	i ^= 1;
-	sprintf(str[i], "%2.2X:%2.2X:%2.2X:%2.2X:%2.2X:%2.2X",
-		ba->b[5], ba->b[4], ba->b[3],
-		ba->b[2], ba->b[1], ba->b[0]);
-
-	return str[i];
-}
-EXPORT_SYMBOL(batostr);
-
-/* Bluetooth error codes to Unix errno mapping */
-int bt_err(__u16 code)
-=======
 /**
  * bt_to_errno() - Bluetooth error codes to standard errno
  * @code: Bluetooth error code to be converted
@@ -98,7 +64,6 @@ int bt_err(__u16 code)
  * If the given bt error code is not known, ENOSYS is returned.
  */
 int bt_to_errno(__u16 code)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (code) {
 	case 0:
@@ -114,10 +79,7 @@ int bt_to_errno(__u16 code)
 		return EIO;
 
 	case 0x04:
-<<<<<<< HEAD
-=======
 	case 0x3c:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return EHOSTDOWN;
 
 	case 0x05:
@@ -192,9 +154,6 @@ int bt_to_errno(__u16 code)
 		return ENOSYS;
 	}
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(bt_err);
-=======
 EXPORT_SYMBOL(bt_to_errno);
 
 /**
@@ -422,4 +381,3 @@ void bt_err_ratelimited(const char *format, ...)
 	va_end(args);
 }
 EXPORT_SYMBOL(bt_err_ratelimited);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-turbostat : turbostat.c
-
-clean :
-	rm -f turbostat
-
-install :
-	install turbostat /usr/bin/turbostat
-	install turbostat.8 /usr/share/man/man8
-=======
 # SPDX-License-Identifier: GPL-2.0
 CC		= $(CROSS_COMPILE)gcc
 BUILD_OUTPUT	:= $(CURDIR)
@@ -38,4 +28,3 @@ install : turbostat
 	install $(BUILD_OUTPUT)/turbostat $(DESTDIR)$(PREFIX)/bin/turbostat
 	install -d  $(DESTDIR)$(PREFIX)/share/man/man8
 	install -m 644 turbostat.8 $(DESTDIR)$(PREFIX)/share/man/man8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

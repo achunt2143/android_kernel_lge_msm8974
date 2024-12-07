@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright 2002 H. Peter Anvin - All Rights Reserved
  *
-<<<<<<< HEAD
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, Inc., 53 Temple Place Ste 330,
- *   Boston MA 02111-1307, USA; either version 2 of the License, or
- *   (at your option) any later version; incorporated herein by reference.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -24,11 +12,6 @@
  *
  */
 
-<<<<<<< HEAD
-#if (defined(__i386__) || defined(__x86_64__)) && !defined(__arch_um__)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/raid/pq.h>
 #include "x86.h"
 
@@ -100,10 +83,6 @@ static void raid6_sse21_gen_syndrome(int disks, size_t bytes, void **ptrs)
 	kernel_fpu_end();
 }
 
-<<<<<<< HEAD
-const struct raid6_calls raid6_sse2x1 = {
-	raid6_sse21_gen_syndrome,
-=======
 
 static void raid6_sse21_xor_syndrome(int disks, int start, int stop,
 				     size_t bytes, void **ptrs)
@@ -156,7 +135,6 @@ static void raid6_sse21_xor_syndrome(int disks, int start, int stop,
 const struct raid6_calls raid6_sse2x1 = {
 	raid6_sse21_gen_syndrome,
 	raid6_sse21_xor_syndrome,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raid6_have_sse2,
 	"sse2x1",
 	1			/* Has cache hints */
@@ -217,10 +195,6 @@ static void raid6_sse22_gen_syndrome(int disks, size_t bytes, void **ptrs)
 	kernel_fpu_end();
 }
 
-<<<<<<< HEAD
-const struct raid6_calls raid6_sse2x2 = {
-	raid6_sse22_gen_syndrome,
-=======
 static void raid6_sse22_xor_syndrome(int disks, int start, int stop,
 				     size_t bytes, void **ptrs)
 {
@@ -291,19 +265,12 @@ static void raid6_sse22_xor_syndrome(int disks, int start, int stop,
 const struct raid6_calls raid6_sse2x2 = {
 	raid6_sse22_gen_syndrome,
 	raid6_sse22_xor_syndrome,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raid6_have_sse2,
 	"sse2x2",
 	1			/* Has cache hints */
 };
 
-<<<<<<< HEAD
-#endif
-
-#if defined(__x86_64__) && !defined(__arch_um__)
-=======
 #ifdef CONFIG_X86_64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Unrolled-by-4 SSE2 implementation
@@ -394,10 +361,6 @@ static void raid6_sse24_gen_syndrome(int disks, size_t bytes, void **ptrs)
 	kernel_fpu_end();
 }
 
-<<<<<<< HEAD
-const struct raid6_calls raid6_sse2x4 = {
-	raid6_sse24_gen_syndrome,
-=======
 static void raid6_sse24_xor_syndrome(int disks, int start, int stop,
 				     size_t bytes, void **ptrs)
 {
@@ -509,14 +472,9 @@ static void raid6_sse24_xor_syndrome(int disks, int start, int stop,
 const struct raid6_calls raid6_sse2x4 = {
 	raid6_sse24_gen_syndrome,
 	raid6_sse24_xor_syndrome,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raid6_have_sse2,
 	"sse2x4",
 	1			/* Has cache hints */
 };
 
-<<<<<<< HEAD
-#endif
-=======
 #endif /* CONFIG_X86_64 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

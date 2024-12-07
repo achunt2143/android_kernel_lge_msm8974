@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/ext4/mballoc.h
  *
@@ -27,34 +24,6 @@
 #include "ext4.h"
 
 /*
-<<<<<<< HEAD
- * with AGGRESSIVE_CHECK allocator runs consistency checks over
- * structures. these checks slow things down a lot
- */
-#define AGGRESSIVE_CHECK__
-
-/*
- * with DOUBLE_CHECK defined mballoc creates persistent in-core
- * bitmaps, maintains and uses them to check for double allocations
- */
-#define DOUBLE_CHECK__
-
-/*
- */
-#ifdef CONFIG_EXT4_DEBUG
-extern u8 mb_enable_debug;
-
-#define mb_debug(n, fmt, a...)	                                        \
-	do {								\
-		if ((n) <= mb_enable_debug) {		        	\
-			printk(KERN_DEBUG "(%s, %d): %s: ",		\
-			       __FILE__, __LINE__, __func__);		\
-			printk(fmt, ## a);				\
-		}							\
-	} while (0)
-#else
-#define mb_debug(n, fmt, a...)
-=======
  * mb_debug() dynamic printk msgs could be used to debug mballoc code.
  */
 #ifdef CONFIG_EXT4_DEBUG
@@ -64,7 +33,6 @@ extern u8 mb_enable_debug;
 	       __FILE__, __LINE__, __func__, ##__VA_ARGS__)
 #else
 #define mb_debug(sb, fmt, ...)	no_printk(fmt, ##__VA_ARGS__)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define EXT4_MB_HISTORY_ALLOC		1	/* allocation */
@@ -81,16 +49,7 @@ extern u8 mb_enable_debug;
 #define MB_DEFAULT_MIN_TO_SCAN		10
 
 /*
-<<<<<<< HEAD
- * How many groups mballoc will scan looking for the best chunk
- */
-#define MB_DEFAULT_MAX_GROUPS_TO_SCAN	5
-
-/*
- * with 'ext4_mb_stats' allocator will collect stats that will be
-=======
  * with 's_mb_stats' allocator will collect stats that will be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * shown at umount. The collecting costs though!
  */
 #define MB_DEFAULT_STATS		0
@@ -100,11 +59,7 @@ extern u8 mb_enable_debug;
  * by the stream allocator, which purpose is to pack requests
  * as close each to other as possible to produce smooth I/O traffic
  * We use locality group prealloc space for stream request.
-<<<<<<< HEAD
- * We can tune the same via /proc/fs/ext4/<parition>/stream_req
-=======
  * We can tune the same via /proc/fs/ext4/<partition>/stream_req
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define MB_DEFAULT_STREAM_THRESHOLD	16	/* 64K */
 
@@ -118,14 +73,6 @@ extern u8 mb_enable_debug;
  */
 #define MB_DEFAULT_GROUP_PREALLOC	512
 
-<<<<<<< HEAD
-
-struct ext4_free_data {
-	/* MUST be the first member */
-	struct ext4_journal_cb_entry	efd_jce;
-
-	/* ext4_free_data private data starts from here */
-=======
 /*
  * Number of groups to search linearly before performing group scanning
  * optimization.
@@ -153,7 +100,6 @@ struct ext4_free_data {
 struct ext4_free_data {
 	/* this links the free block information from sb_info */
 	struct list_head		efd_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* this links the free block information from group_info */
 	struct rb_node			efd_node;
@@ -170,14 +116,10 @@ struct ext4_free_data {
 };
 
 struct ext4_prealloc_space {
-<<<<<<< HEAD
-	struct list_head	pa_inode_list;
-=======
 	union {
 		struct rb_node	inode_node;		/* for inode PA rbtree */
 		struct list_head	lg_list;	/* for lg PAs */
 	} pa_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	pa_group_list;
 	union {
 		struct list_head pa_tmp_list;
@@ -191,16 +133,11 @@ struct ext4_prealloc_space {
 	ext4_grpblk_t		pa_len;		/* len of preallocated chunk */
 	ext4_grpblk_t		pa_free;	/* how many blocks are free */
 	unsigned short		pa_type;	/* pa type. inode or group */
-<<<<<<< HEAD
-	spinlock_t		*pa_obj_lock;
-	struct inode		*pa_inode;	/* hack, for history only */
-=======
 	union {
 		rwlock_t		*inode_lock;	/* locks the rbtree holding this PA */
 		spinlock_t		*lg_lock;	/* locks the lg list holding this PA */
 	} pa_node_lock;
 	struct inode		*pa_inode;	/* used to get the inode during group discard */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -249,15 +186,6 @@ struct ext4_allocation_context {
 	/* copy of the best found extent taken before preallocation efforts */
 	struct ext4_free_extent ac_f_ex;
 
-<<<<<<< HEAD
-	/* number of iterations done. we have to track to limit searching */
-	unsigned long ac_ex_scanned;
-	__u16 ac_groups_scanned;
-	__u16 ac_found;
-	__u16 ac_tail;
-	__u16 ac_buddy;
-	__u16 ac_flags;		/* allocation hints */
-=======
 	/*
 	 * goal len can change in CR1.5, so save the original len. This is
 	 * used while adjusting the PA window and for accounting.
@@ -271,7 +199,6 @@ struct ext4_allocation_context {
 	__u16 ac_cX_found[EXT4_MB_NUM_CRS];
 	__u16 ac_tail;
 	__u16 ac_buddy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 ac_status;
 	__u8 ac_criteria;
 	__u8 ac_2order;		/* if request is to allocate 2^N blocks and
@@ -304,8 +231,6 @@ static inline ext4_fsblk_t ext4_grp_offs_to_block(struct super_block *sb,
 	return ext4_group_first_block_no(sb, fex->fe_group) +
 		(fex->fe_start << EXT4_SB(sb)->s_cluster_bits);
 }
-<<<<<<< HEAD
-=======
 
 static inline loff_t extent_logical_end(struct ext4_sb_info *sbi,
 					struct ext4_free_extent *fex)
@@ -337,5 +262,4 @@ ext4_mballoc_query_range(
 	ext4_mballoc_query_range_fn	formatter,
 	void				*priv);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/proc-xscale.S
  *
@@ -9,13 +6,6 @@
  *  Created:	November 2000
  *  Copyright:	(C) 2000, 2001 MontaVista Software Inc.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * MMU functions for the Intel XScale CPUs
  *
  * 2001 Aug 21:
@@ -29,15 +19,9 @@
 
 #include <linux/linkage.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <asm/assembler.h>
-#include <asm/hwcap.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/pgtable.h>
 #include <asm/assembler.h>
 #include <asm/hwcap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pgtable-hwdef.h>
 #include <asm/page.h>
 #include <asm/ptrace.h>
@@ -117,10 +101,7 @@
 	.endm
 
 	.data
-<<<<<<< HEAD
-=======
 	.align	2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 clean_addr:	.word	CLEAN_ADDR
 
 	.text
@@ -135,11 +116,7 @@ ENTRY(cpu_xscale_proc_init)
 	mrc	p15, 0, r1, c1, c0, 1
 	bic	r1, r1, #1
 	mcr	p15, 0, r1, c1, c0, 1
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_xscale_proc_fin()
@@ -149,11 +126,7 @@ ENTRY(cpu_xscale_proc_fin)
 	bic	r0, r0, #0x1800			@ ...IZ...........
 	bic	r0, r0, #0x0006			@ .............CA.
 	mcr	p15, 0, r0, c1, c0, 0		@ disable caches
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_xscale_reset(loc)
@@ -185,11 +158,7 @@ ENTRY(cpu_xscale_reset)
 	@ CAUTION: MMU turned off from this point. We count on the pipeline
 	@ already containing those two last instructions to survive.
 	mcr	p15, 0, ip, c8, c7, 0		@ invalidate I & D TLBs
-<<<<<<< HEAD
-	mov	pc, r0
-=======
 	ret	r0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(cpu_xscale_reset)
 	.popsection
 
@@ -208,11 +177,7 @@ ENDPROC(cpu_xscale_reset)
 ENTRY(cpu_xscale_do_idle)
 	mov	r0, #1
 	mcr	p14, 0, r0, c7, c0, 0		@ Go to IDLE
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ================================= CACHE ================================ */
 
@@ -224,11 +189,7 @@ ENTRY(cpu_xscale_do_idle)
 ENTRY(xscale_flush_icache_all)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(xscale_flush_icache_all)
 
 /*
@@ -253,11 +214,7 @@ __flush_whole_cache:
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c5, 0		@ Invalidate I cache & BTB
 	mcrne	p15, 0, ip, c7, c10, 4		@ Drain Write (& Fill) Buffer
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	flush_user_cache_range(start, end, vm_flags)
@@ -286,11 +243,7 @@ ENTRY(xscale_flush_user_cache_range)
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c5, 6		@ Invalidate BTB
 	mcrne	p15, 0, ip, c7, c10, 4		@ Drain Write (& Fill) Buffer
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	coherent_kern_range(start, end)
@@ -314,11 +267,7 @@ ENTRY(xscale_coherent_kern_range)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ Invalidate I cache & BTB
 	mcr	p15, 0, r0, c7, c10, 4		@ Drain Write (& Fill) Buffer
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	coherent_user_range(start, end)
@@ -340,11 +289,7 @@ ENTRY(xscale_coherent_user_range)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 6		@ Invalidate BTB
 	mcr	p15, 0, r0, c7, c10, 4		@ Drain Write (& Fill) Buffer
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	flush_kern_dcache_area(void *addr, size_t size)
@@ -365,11 +310,7 @@ ENTRY(xscale_flush_kern_dcache_area)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ Invalidate I cache & BTB
 	mcr	p15, 0, r0, c7, c10, 4		@ Drain Write (& Fill) Buffer
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_inv_range(start, end)
@@ -393,11 +334,7 @@ xscale_dma_inv_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ Drain Write (& Fill) Buffer
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_clean_range(start, end)
@@ -414,11 +351,7 @@ xscale_dma_clean_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ Drain Write (& Fill) Buffer
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_flush_range(start, end)
@@ -436,11 +369,7 @@ ENTRY(xscale_dma_flush_range)
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ Drain Write (& Fill) Buffer
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_map_area(start, size, dir)
@@ -476,11 +405,7 @@ ENDPROC(xscale_80200_A0_A1_dma_map_area)
  *	- dir	- DMA direction
  */
 ENTRY(xscale_dma_unmap_area)
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(xscale_dma_unmap_area)
 
 	.globl	xscale_flush_kern_cache_louis
@@ -515,10 +440,7 @@ ENDPROC(xscale_dma_unmap_area)
 	a0_alias flush_icache_all
 	a0_alias flush_user_cache_all
 	a0_alias flush_kern_cache_all
-<<<<<<< HEAD
-=======
 	a0_alias flush_kern_cache_louis
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	a0_alias flush_user_cache_range
 	a0_alias coherent_kern_range
 	a0_alias coherent_user_range
@@ -534,11 +456,7 @@ ENTRY(cpu_xscale_dcache_clean_area)
 	add	r0, r0, #CACHELINESIZE
 	subs	r1, r1, #CACHELINESIZE
 	bhi	1b
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* =============================== PageTable ============================== */
 
@@ -601,11 +519,7 @@ ENTRY(cpu_xscale_set_pte_ext)
 	orr	r2, r2, ip
 
 	xscale_set_pte_ext_epilogue
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.ltorg
 	.align
@@ -642,11 +556,6 @@ ENTRY(cpu_xscale_do_resume)
 ENDPROC(cpu_xscale_do_resume)
 #endif
 
-<<<<<<< HEAD
-	__CPUINIT
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type	__xscale_setup, #function
 __xscale_setup:
 	mcr	p15, 0, ip, c7, c7, 0		@ invalidate I, D caches & BTB
@@ -661,11 +570,7 @@ __xscale_setup:
 	mrc	p15, 0, r0, c1, c0, 0		@ get control register
 	bic	r0, r0, r5
 	orr	r0, r0, r6
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size	__xscale_setup, . - __xscale_setup
 
 	/*
@@ -705,11 +610,7 @@ xscale_crval:
 
 	.align
 
-<<<<<<< HEAD
-	.section ".proc.info.init", #alloc, #execinstr
-=======
 	.section ".proc.info.init", "a"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .macro xscale_proc_info name:req, cpu_val:req, cpu_mask:req, cpu_name:req, cache
 	.type	__\name\()_proc_info,#object
@@ -724,11 +625,7 @@ __\name\()_proc_info:
 	.long	PMD_TYPE_SECT | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
-<<<<<<< HEAD
-	b	__xscale_setup
-=======
 	initfn	__xscale_setup, __\name\()_proc_info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP|HWCAP_HALF|HWCAP_THUMB|HWCAP_FAST_MULT|HWCAP_EDSP

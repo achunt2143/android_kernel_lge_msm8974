@@ -38,8 +38,6 @@
 #define R7XX_MAX_PIPES             8
 #define R7XX_MAX_PIPES_MASK        0xff
 
-<<<<<<< HEAD
-=======
 /* discrete uvd clocks */
 #define CG_UPLL_FUNC_CNTL				0x718
 #	define UPLL_RESET_MASK				0x00000001
@@ -311,7 +309,6 @@
 
 #define CGTS_SM_CTRL_REG                                  0x9150
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Registers */
 #define	CB_COLOR0_BASE					0x28040
 #define	CB_COLOR1_BASE					0x28044
@@ -336,13 +333,8 @@
 #define	CONFIG_MEMSIZE					0x5428
 
 #define	CP_ME_CNTL					0x86D8
-<<<<<<< HEAD
-#define		CP_ME_HALT					(1<<28)
-#define		CP_PFP_HALT					(1<<26)
-=======
 #define		CP_ME_HALT					(1 << 28)
 #define		CP_PFP_HALT					(1 << 26)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	CP_ME_RAM_DATA					0xC160
 #define	CP_ME_RAM_RADDR					0xC158
 #define	CP_ME_RAM_WADDR					0xC15C
@@ -385,8 +377,6 @@
 #define		BACKEND_MAP(x)					((x) << 16)
 
 #define GB_TILING_CONFIG				0x98F0
-<<<<<<< HEAD
-=======
 #define     PIPE_TILING__SHIFT              1
 #define     PIPE_TILING__MASK               0x0000000e
 
@@ -398,15 +388,11 @@
 #define UVD_UDEC_DB_TILING_CONFIG                       0xef44
 #define UVD_UDEC_DBW_TILING_CONFIG                      0xef48
 #define UVD_NO_OP					0xeffc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	GC_USER_SHADER_PIPE_CONFIG			0x8954
 #define		INACTIVE_QD_PIPES(x)				((x) << 8)
 #define		INACTIVE_QD_PIPES_MASK				0x0000FF00
-<<<<<<< HEAD
-=======
 #define		INACTIVE_QD_PIPES_SHIFT			    8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define		INACTIVE_SIMDS(x)				((x) << 16)
 #define		INACTIVE_SIMDS_MASK				0x00FF0000
 
@@ -419,8 +405,6 @@
 #define		GUI_ACTIVE					(1<<31)
 #define	GRBM_STATUS2					0x8014
 
-<<<<<<< HEAD
-=======
 #define	CG_THERMAL_CTRL					0x72C
 #define 	DPM_EVENT_SRC(x)			((x) << 0)
 #define 	DPM_EVENT_SRC_MASK			(7 << 0)
@@ -438,7 +422,6 @@
 #define 	THERM_INT_MASK_HIGH			(1 << 24)
 #define 	THERM_INT_MASK_LOW			(1 << 25)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	CG_MULT_THERMAL_STATUS				0x740
 #define		ASIC_T(x)			        ((x) << 16)
 #define		ASIC_T_MASK			        0x3FF0000
@@ -672,10 +655,6 @@
 
 #define	WAIT_UNTIL					0x8040
 
-<<<<<<< HEAD
-#define	SRBM_STATUS				        0x0E50
-
-=======
 /* async DMA */
 #define DMA_RB_RPTR                                       0xd008
 #define DMA_RB_WPTR                                       0xd00c
@@ -937,7 +916,6 @@
 #       define AUDIO_ENABLED                              (1 << 31)
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define D1GRPH_PRIMARY_SURFACE_ADDRESS                    0x6110
 #define D1GRPH_PRIMARY_SURFACE_ADDRESS_HIGH               0x6914
 #define D2GRPH_PRIMARY_SURFACE_ADDRESS_HIGH               0x6114
@@ -945,9 +923,6 @@
 #define D1GRPH_SECONDARY_SURFACE_ADDRESS_HIGH             0x691c
 #define D2GRPH_SECONDARY_SURFACE_ADDRESS_HIGH             0x611c
 
-<<<<<<< HEAD
-/* PCIE link stuff */
-=======
 /* PCIE indirect regs */
 #define PCIE_P_CNTL                                       0x40
 #       define P_PLL_PWRDN_IN_L1L23                       (1 << 3)
@@ -964,7 +939,6 @@
 #       define LC_L1_INACTIVITY_SHIFT                     12
 #       define LC_PMI_TO_L1_DIS                           (1 << 16)
 #       define LC_ASPM_TO_L1_DIS                          (1 << 24)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCIE_LC_TRAINING_CNTL                             0xa1 /* PCIE_P */
 #define PCIE_LC_LINK_WIDTH_CNTL                           0xa2 /* PCIE_P */
 #       define LC_LINK_WIDTH_SHIFT                        0
@@ -992,12 +966,9 @@
 #       define LC_SPEED_CHANGE_ATTEMPTS_ALLOWED_MASK      (0x3 << 8)
 #       define LC_SPEED_CHANGE_ATTEMPTS_ALLOWED_SHIFT     3
 #       define LC_CURRENT_DATA_RATE                       (1 << 11)
-<<<<<<< HEAD
-=======
 #       define LC_HW_VOLTAGE_IF_CONTROL(x)                ((x) << 12)
 #       define LC_HW_VOLTAGE_IF_CONTROL_MASK              (3 << 12)
 #       define LC_HW_VOLTAGE_IF_CONTROL_SHIFT             12
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #       define LC_VOLTAGE_TIMER_SEL_MASK                  (0xf << 14)
 #       define LC_CLR_FAILED_SPD_CHANGE_CNT               (1 << 21)
 #       define LC_OTHER_SIDE_EVER_SENT_GEN2               (1 << 23)
@@ -1008,8 +979,6 @@
 #       define TARGET_LINK_SPEED_MASK                     (0xf << 0)
 #       define SELECTABLE_DEEMPHASIS                      (1 << 6)
 
-<<<<<<< HEAD
-=======
 /*
  * PM4
  */
@@ -1043,5 +1012,4 @@
 
 #define UVD_CONTEXT_ID					0xf6f4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

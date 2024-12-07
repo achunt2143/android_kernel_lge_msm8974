@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common Flash Interface support:
  *   Generic utility functions not dependent on command set
  *
  * Copyright (C) 2002 Red Hat
  * Copyright (C) 2003 STMicroelectronics Limited
-<<<<<<< HEAD
- *
- * This code is covered by the GPL.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -30,8 +22,6 @@
 #include <linux/mtd/map.h>
 #include <linux/mtd/cfi.h>
 
-<<<<<<< HEAD
-=======
 void cfi_udelay(int us)
 {
 	if (us >= 1000) {
@@ -226,7 +216,6 @@ uint32_t cfi_send_gen_cmd(u_char cmd, uint32_t cmd_addr, uint32_t base,
 }
 EXPORT_SYMBOL(cfi_send_gen_cmd);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __xipram cfi_qry_present(struct map_info *map, __u32 base,
 			     struct cfi_private *cfi)
 {
@@ -320,15 +309,8 @@ __xipram cfi_read_pri(struct map_info *map, __u16 adr, __u16 size, const char* n
 	printk(KERN_INFO "%s Extended Query Table at 0x%4.4X\n", name, adr);
 
 	extp = kmalloc(size, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!extp) {
-		printk(KERN_ERR "Failed to allocate memory\n");
-		goto out;
-	}
-=======
 	if (!extp)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_MTD_XIP
 	local_irq_disable();
@@ -450,11 +432,7 @@ int cfi_varsize_frob(struct mtd_info *mtd, varsize_frob_t frob,
 			chipnum++;
 
 			if (chipnum >= cfi->numchips)
-<<<<<<< HEAD
-			break;
-=======
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 

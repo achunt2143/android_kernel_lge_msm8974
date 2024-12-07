@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: MIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if !defined(_RADEON_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _RADEON_TRACE_H_
 
 #include <linux/stringify.h>
-<<<<<<< HEAD
-#include <linux/types.h>
-#include <linux/tracepoint.h>
-
-#include <drm/drmP.h>
-
-#undef TRACE_SYSTEM
-#define TRACE_SYSTEM radeon
-#define TRACE_SYSTEM_STRING __stringify(TRACE_SYSTEM)
-=======
 #include <linux/tracepoint.h>
 #include <linux/types.h>
 
@@ -23,7 +10,6 @@
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM radeon
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TRACE_INCLUDE_FILE radeon_trace
 
 TRACE_EVENT(radeon_bo_create,
@@ -36,25 +22,11 @@ TRACE_EVENT(radeon_bo_create,
 
 	    TP_fast_assign(
 			   __entry->bo = bo;
-<<<<<<< HEAD
-			   __entry->pages = bo->tbo.num_pages;
-=======
 			   __entry->pages = PFN_UP(bo->tbo.resource->size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   ),
 	    TP_printk("bo=%p, pages=%u", __entry->bo, __entry->pages)
 );
 
-<<<<<<< HEAD
-DECLARE_EVENT_CLASS(radeon_fence_request,
-
-	    TP_PROTO(struct drm_device *dev, u32 seqno),
-
-	    TP_ARGS(dev, seqno),
-
-	    TP_STRUCT__entry(
-			     __field(u32, dev)
-=======
 TRACE_EVENT(radeon_cs,
 	    TP_PROTO(struct radeon_cs_parser *p),
 	    TP_ARGS(p),
@@ -159,67 +131,35 @@ DECLARE_EVENT_CLASS(radeon_fence_request,
 	    TP_STRUCT__entry(
 			     __field(u32, dev)
 			     __field(int, ring)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     __field(u32, seqno)
 			     ),
 
 	    TP_fast_assign(
 			   __entry->dev = dev->primary->index;
-<<<<<<< HEAD
-			   __entry->seqno = seqno;
-			   ),
-
-	    TP_printk("dev=%u, seqno=%u", __entry->dev, __entry->seqno)
-=======
 			   __entry->ring = ring;
 			   __entry->seqno = seqno;
 			   ),
 
 	    TP_printk("dev=%u, ring=%d, seqno=%u",
 		      __entry->dev, __entry->ring, __entry->seqno)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(radeon_fence_request, radeon_fence_emit,
 
-<<<<<<< HEAD
-	    TP_PROTO(struct drm_device *dev, u32 seqno),
-
-	    TP_ARGS(dev, seqno)
-);
-
-DEFINE_EVENT(radeon_fence_request, radeon_fence_retire,
-
-	    TP_PROTO(struct drm_device *dev, u32 seqno),
-
-	    TP_ARGS(dev, seqno)
-=======
 	    TP_PROTO(struct drm_device *dev, int ring, u32 seqno),
 
 	    TP_ARGS(dev, ring, seqno)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(radeon_fence_request, radeon_fence_wait_begin,
 
-<<<<<<< HEAD
-	    TP_PROTO(struct drm_device *dev, u32 seqno),
-
-	    TP_ARGS(dev, seqno)
-=======
 	    TP_PROTO(struct drm_device *dev, int ring, u32 seqno),
 
 	    TP_ARGS(dev, ring, seqno)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(radeon_fence_request, radeon_fence_wait_end,
 
-<<<<<<< HEAD
-	    TP_PROTO(struct drm_device *dev, u32 seqno),
-
-	    TP_ARGS(dev, seqno)
-=======
 	    TP_PROTO(struct drm_device *dev, int ring, u32 seqno),
 
 	    TP_ARGS(dev, ring, seqno)
@@ -259,16 +199,11 @@ DEFINE_EVENT(radeon_semaphore_request, radeon_semaphore_wait,
 	    TP_PROTO(int ring, struct radeon_semaphore *sem),
 
 	    TP_ARGS(ring, sem)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 #endif
 
 /* This part must be outside protection */
 #undef TRACE_INCLUDE_PATH
-<<<<<<< HEAD
-#define TRACE_INCLUDE_PATH .
-=======
 #define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/radeon
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <trace/define_trace.h>

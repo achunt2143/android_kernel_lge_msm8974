@@ -1,42 +1,13 @@
-<<<<<<< HEAD
-#ifndef _LINUX_SOCKET_H
-#define _LINUX_SOCKET_H
-
-/*
- * Desired design of maximum size and alignment (see RFC2553)
- */
-#define _K_SS_MAXSIZE	128	/* Implementation specific max size */
-#define _K_SS_ALIGNSIZE	(__alignof__ (struct sockaddr *))
-				/* Implementation specific desired alignment */
-
-typedef unsigned short __kernel_sa_family_t;
-
-struct __kernel_sockaddr_storage {
-	__kernel_sa_family_t	ss_family;		/* address family */
-	/* Following field(s) are implementation specific */
-	char		__data[_K_SS_MAXSIZE - sizeof(unsigned short)];
-				/* space to achieve desired size, */
-				/* _SS_MAXSIZE value minus size of ss_family */
-} __attribute__ ((aligned(_K_SS_ALIGNSIZE)));	/* force desired alignment */
-
-#ifdef __KERNEL__
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_SOCKET_H
 #define _LINUX_SOCKET_H
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/socket.h>			/* arch-dependent defines	*/
 #include <linux/sockios.h>		/* the SIOCxxx I/O controls	*/
 #include <linux/uio.h>			/* iovec support		*/
 #include <linux/types.h>		/* pid_t			*/
 #include <linux/compiler.h>		/* __user			*/
-<<<<<<< HEAD
-
-struct pid;
-struct cred;
-=======
 #include <uapi/linux/socket.h>
 
 struct file;
@@ -45,7 +16,6 @@ struct cred;
 struct socket;
 struct sock;
 struct sk_buff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __sockaddr_check_size(size)	\
 	BUILD_BUG_ON(((size) > sizeof(struct __kernel_sockaddr_storage)))
@@ -60,12 +30,6 @@ typedef __kernel_sa_family_t	sa_family_t;
 /*
  *	1003.1g requires sa_family_t and that sa_data is char.
  */
-<<<<<<< HEAD
- 
-struct sockaddr {
-	sa_family_t	sa_family;	/* address family, AF_xxx	*/
-	char		sa_data[14];	/* 14 bytes of protocol address	*/
-=======
 
 struct sockaddr {
 	sa_family_t	sa_family;	/* address family, AF_xxx	*/
@@ -73,7 +37,6 @@ struct sockaddr {
 		char sa_data_min[14];		/* Minimum 14 bytes of protocol address	*/
 		DECLARE_FLEX_ARRAY(char, sa_data);
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct linger {
@@ -88,17 +51,6 @@ struct linger {
  *	system, not 4.3. Thus msg_accrights(len) are now missing. They
  *	belong in an obscure libc emulation or the bin.
  */
-<<<<<<< HEAD
- 
-struct msghdr {
-	void	*	msg_name;	/* Socket name			*/
-	int		msg_namelen;	/* Length of name		*/
-	struct iovec *	msg_iov;	/* Data blocks			*/
-	__kernel_size_t	msg_iovlen;	/* Number of blocks		*/
-	void 	*	msg_control;	/* Per protocol magic (eg BSD file descriptor passing) */
-	__kernel_size_t	msg_controllen;	/* Length of cmsg list */
-	unsigned	msg_flags;
-=======
 
 struct msghdr {
 	void		*msg_name;	/* ptr to socket address structure */
@@ -135,27 +87,17 @@ struct user_msghdr {
 	void		__user *msg_control;	/* ancillary data */
 	__kernel_size_t	msg_controllen;		/* ancillary data buffer length */
 	unsigned int	msg_flags;		/* flags on received message */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* For recvmmsg/sendmmsg */
 struct mmsghdr {
-<<<<<<< HEAD
-	struct msghdr   msg_hdr;
-	unsigned        msg_len;
-=======
 	struct user_msghdr  msg_hdr;
 	unsigned int        msg_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  *	POSIX 1003.1g - ancillary data object information
-<<<<<<< HEAD
- *	Ancillary data consits of a sequence of pairs of
-=======
  *	Ancillary data consists of a sequence of pairs of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	(cmsghdr, cmsg_data[])
  */
 
@@ -175,18 +117,12 @@ struct cmsghdr {
 
 #define CMSG_ALIGN(len) ( ((len)+sizeof(long)-1) & ~(sizeof(long)-1) )
 
-<<<<<<< HEAD
-#define CMSG_DATA(cmsg)	((void *)((char *)(cmsg) + CMSG_ALIGN(sizeof(struct cmsghdr))))
-#define CMSG_SPACE(len) (CMSG_ALIGN(sizeof(struct cmsghdr)) + CMSG_ALIGN(len))
-#define CMSG_LEN(len) (CMSG_ALIGN(sizeof(struct cmsghdr)) + (len))
-=======
 #define CMSG_DATA(cmsg) \
 	((void *)(cmsg) + sizeof(struct cmsghdr))
 #define CMSG_USER_DATA(cmsg) \
 	((void __user *)(cmsg) + sizeof(struct cmsghdr))
 #define CMSG_SPACE(len) (sizeof(struct cmsghdr) + CMSG_ALIGN(len))
 #define CMSG_LEN(len) (sizeof(struct cmsghdr) + (len))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __CMSG_FIRSTHDR(ctl,len) ((len) >= sizeof(struct cmsghdr) ? \
 				  (struct cmsghdr *)(ctl) : \
@@ -196,13 +132,10 @@ struct cmsghdr {
 			     (cmsg)->cmsg_len <= (unsigned long) \
 			     ((mhdr)->msg_controllen - \
 			      ((char *)(cmsg) - (char *)(mhdr)->msg_control)))
-<<<<<<< HEAD
-=======
 #define for_each_cmsghdr(cmsg, msg) \
 	for (cmsg = CMSG_FIRSTHDR(msg); \
 	     cmsg; \
 	     cmsg = CMSG_NXTHDR(msg, cmsg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Get the next cmsg header
@@ -216,11 +149,7 @@ struct cmsghdr {
  *	inside range, given by msg->msg_controllen before using
  *	ancillary object DATA.				--ANK (980731)
  */
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct cmsghdr * __cmsg_nxthdr(void *__ctl, __kernel_size_t __size,
 					       struct cmsghdr *__cmsg)
 {
@@ -238,23 +167,17 @@ static inline struct cmsghdr * cmsg_nxthdr (struct msghdr *__msg, struct cmsghdr
 	return __cmsg_nxthdr(__msg->msg_control, __msg->msg_controllen, __cmsg);
 }
 
-<<<<<<< HEAD
-=======
 static inline size_t msg_data_left(struct msghdr *msg)
 {
 	return iov_iter_count(&msg->msg_iter);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* "Socket"-level control message types: */
 
 #define	SCM_RIGHTS	0x01		/* rw: access rights (array of int) */
 #define SCM_CREDENTIALS 0x02		/* rw: struct ucred		*/
 #define SCM_SECURITY	0x03		/* rw: security label		*/
-<<<<<<< HEAD
-=======
 #define SCM_PIDFD	0x04		/* ro: pidfd (int)		*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ucred {
 	__u32	pid;
@@ -292,11 +215,8 @@ struct ucred {
 #define AF_PPPOX	24	/* PPPoX sockets		*/
 #define AF_WANPIPE	25	/* Wanpipe API Sockets */
 #define AF_LLC		26	/* Linux LLC			*/
-<<<<<<< HEAD
-=======
 #define AF_IB		27	/* Native InfiniBand address	*/
 #define AF_MPLS		28	/* MPLS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AF_CAN		29	/* Controller Area Network      */
 #define AF_TIPC		30	/* TIPC sockets			*/
 #define AF_BLUETOOTH	31	/* Bluetooth sockets 		*/
@@ -308,9 +228,6 @@ struct ucred {
 #define AF_CAIF		37	/* CAIF sockets			*/
 #define AF_ALG		38	/* Algorithm sockets		*/
 #define AF_NFC		39	/* NFC sockets			*/
-<<<<<<< HEAD
-#define AF_MAX		40	/* For now.. */
-=======
 #define AF_VSOCK	40	/* vSockets			*/
 #define AF_KCM		41	/* Kernel Connection Multiplexor*/
 #define AF_QIPCRTR	42	/* Qualcomm IPC Router          */
@@ -324,7 +241,6 @@ struct ucred {
 				 */
 
 #define AF_MAX		46	/* For now.. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Protocol families, same as address families. */
 #define PF_UNSPEC	AF_UNSPEC
@@ -356,11 +272,8 @@ struct ucred {
 #define PF_PPPOX	AF_PPPOX
 #define PF_WANPIPE	AF_WANPIPE
 #define PF_LLC		AF_LLC
-<<<<<<< HEAD
-=======
 #define PF_IB		AF_IB
 #define PF_MPLS		AF_MPLS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PF_CAN		AF_CAN
 #define PF_TIPC		AF_TIPC
 #define PF_BLUETOOTH	AF_BLUETOOTH
@@ -372,17 +285,6 @@ struct ucred {
 #define PF_CAIF		AF_CAIF
 #define PF_ALG		AF_ALG
 #define PF_NFC		AF_NFC
-<<<<<<< HEAD
-#define PF_MAX		AF_MAX
-
-/* Maximum queue length specifiable by listen.  */
-#define SOMAXCONN	128
-
-/* Flags we can use with send/ and recv. 
-   Added those for 1003.1g not all are supported yet
- */
- 
-=======
 #define PF_VSOCK	AF_VSOCK
 #define PF_KCM		AF_KCM
 #define PF_QIPCRTR	AF_QIPCRTR
@@ -398,7 +300,6 @@ struct ucred {
    Added those for 1003.1g not all are supported yet
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSG_OOB		1
 #define MSG_PEEK	2
 #define MSG_DONTROUTE	4
@@ -417,12 +318,6 @@ struct ucred {
 #define MSG_NOSIGNAL	0x4000	/* Do not generate SIGPIPE */
 #define MSG_MORE	0x8000	/* Sender will send more */
 #define MSG_WAITFORONE	0x10000	/* recvmmsg(): block until 1+ packets avail */
-<<<<<<< HEAD
-#define MSG_SENDPAGE_NOTLAST 0x20000 /* sendpage() internal : not the last page */
-#define MSG_EOF         MSG_FIN
-
-#define MSG_CMSG_CLOEXEC 0x40000000	/* Set close_on_exit for file
-=======
 #define MSG_SENDPAGE_NOPOLICY 0x10000 /* sendpage() internal : do no apply policy */
 #define MSG_BATCH	0x40000 /* sendmmsg(): more messages coming */
 #define MSG_EOF         MSG_FIN
@@ -435,7 +330,6 @@ struct ucred {
 #define MSG_SPLICE_PAGES 0x8000000	/* Splice the pages from the iterator in sendmsg() */
 #define MSG_FASTOPEN	0x20000000	/* Send data in TCP SYN */
 #define MSG_CMSG_CLOEXEC 0x40000000	/* Set close_on_exec for file
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   descriptor received through
 					   SCM_RIGHTS */
 #if defined(CONFIG_COMPAT)
@@ -444,12 +338,9 @@ struct ucred {
 #define MSG_CMSG_COMPAT	0		/* We never have 32 bit fixups */
 #endif
 
-<<<<<<< HEAD
-=======
 /* Flags to be cleared on entry by sendmsg and sendmmsg syscalls */
 #define MSG_INTERNAL_SENDMSG_FLAGS \
 	(MSG_SPLICE_PAGES | MSG_SENDPAGE_NOPOLICY | MSG_SENDPAGE_DECRYPTED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Setsockoptions(2) level. Thanks to BSD these must match IPPROTO_xxx */
 #define SOL_IP		0
@@ -485,8 +376,6 @@ struct ucred {
 #define SOL_IUCV	277
 #define SOL_CAIF	278
 #define SOL_ALG		279
-<<<<<<< HEAD
-=======
 #define SOL_NFC		280
 #define SOL_KCM		281
 #define SOL_TLS		282
@@ -495,41 +384,10 @@ struct ucred {
 #define SOL_MCTP	285
 #define SOL_SMC		286
 #define SOL_VSOCK	287
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* IPX options */
 #define IPX_TYPE	1
 
-<<<<<<< HEAD
-extern void cred_to_ucred(struct pid *pid, const struct cred *cred, struct ucred *ucred,
-			  bool use_effective);
-
-extern int memcpy_fromiovec(unsigned char *kdata, struct iovec *iov, int len);
-extern int memcpy_fromiovecend(unsigned char *kdata, const struct iovec *iov,
-			       int offset, int len);
-extern int csum_partial_copy_fromiovecend(unsigned char *kdata, 
-					  struct iovec *iov, 
-					  int offset, 
-					  unsigned int len, __wsum *csump);
-
-extern int verify_iovec(struct msghdr *m, struct iovec *iov, struct sockaddr_storage *address, int mode);
-extern int memcpy_toiovec(struct iovec *v, unsigned char *kdata, int len);
-extern int memcpy_toiovecend(const struct iovec *v, unsigned char *kdata,
-			     int offset, int len);
-extern int move_addr_to_kernel(void __user *uaddr, int ulen, struct sockaddr_storage *kaddr);
-extern int put_cmsg(struct msghdr*, int level, int type, int len, void *data);
-
-struct timespec;
-
-/* The __sys_...msg variants allow MSG_CMSG_COMPAT */
-extern long __sys_recvmsg(int fd, struct msghdr __user *msg, unsigned flags);
-extern long __sys_sendmsg(int fd, struct msghdr __user *msg, unsigned flags);
-extern int __sys_recvmmsg(int fd, struct mmsghdr __user *mmsg, unsigned int vlen,
-			  unsigned int flags, struct timespec *timeout);
-extern int __sys_sendmmsg(int fd, struct mmsghdr __user *mmsg,
-			  unsigned int vlen, unsigned int flags);
-#endif /* not kernel and not glibc */
-=======
 extern int move_addr_to_kernel(void __user *uaddr, int ulen, struct sockaddr_storage *kaddr);
 extern int put_cmsg(struct msghdr*, int level, int type, int len, void *data);
 
@@ -596,5 +454,4 @@ extern int __sys_socketpair(int family, int type, int protocol,
 			    int __user *usockvec);
 extern int __sys_shutdown_sock(struct socket *sock, int how);
 extern int __sys_shutdown(int fd, int how);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_SOCKET_H */

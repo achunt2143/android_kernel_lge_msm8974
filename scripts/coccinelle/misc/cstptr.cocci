@@ -1,24 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /// PTR_ERR should be applied before its argument is reassigned, typically
 /// to NULL
 ///
 // Confidence: High
-<<<<<<< HEAD
-// Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.  GPLv2.
-// Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.  GPLv2.
-// URL: http://coccinelle.lip6.fr/
-// Comments:
-// Options: -no_includes -include_headers
-=======
 // Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.
 // Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.
 // URL: https://coccinelle.gitlabpages.inria.fr/website
 // Comments:
 // Options: --no-includes --include-headers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 virtual org
 virtual report

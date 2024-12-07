@@ -1,33 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP44xx sleep code.
  *
  * Copyright (C) 2011 Texas Instruments, Inc.
  * 	Santosh Shilimkar <santosh.shilimkar@ti.com>
-<<<<<<< HEAD
- *
- * This program is free software,you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-#include <linux/linkage.h>
-#include <asm/smp_scu.h>
-#include <asm/memory.h>
-#include <asm/hardware/cache-l2x0.h>
-
-#include <plat/omap44xx.h>
-#include <mach/omap-secure.h>
-
-#include "common.h"
-#include "omap4-sar-layout.h"
-
-#if defined(CONFIG_SMP) && defined(CONFIG_PM)
-
-=======
  */
 
 #include <linux/linkage.h>
@@ -47,22 +23,13 @@
 #if defined(CONFIG_SMP) && defined(CONFIG_PM)
 
 	.arch_extension sec
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .macro	DO_SMC
 	dsb
 	smc	#0
 	dsb
 .endm
 
-<<<<<<< HEAD
-ppa_zero_params:
-	.word		0x0
-
-ppa_por_params:
-	.word		1, 0
-=======
 #ifdef CONFIG_ARCH_OMAP4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * =============================
@@ -86,11 +53,6 @@ ppa_por_params:
  * The restore function pointer is stored at CPUx_WAKEUP_NS_PA_ADDR_OFFSET.
  * It returns to the caller for CPU INACTIVE and ON power states or in case
  * CPU failed to transition to targeted OFF/DORMANT state.
-<<<<<<< HEAD
- */
-ENTRY(omap4_finish_suspend)
-	stmfd	sp!, {lr}
-=======
  *
  * omap4_finish_suspend() calls v7_flush_dcache_all() which doesn't save
  * stack frame and it expects the caller to take care of it. Hence the entire
@@ -98,7 +60,6 @@ ENTRY(omap4_finish_suspend)
  */
 ENTRY(omap4_finish_suspend)
 	stmfd	sp!, {r4-r12, lr}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmp	r0, #0x0
 	beq	do_WFI				@ No lowpower state, jump to WFI
 
@@ -129,16 +90,7 @@ skip_secure_l1_clean:
 	mcr	p15, 0, r0, c1, c0, 0
 	isb
 
-<<<<<<< HEAD
-	/*
-	 * Invalidate L1 data cache. Even though only invalidate is
-	 * necessary exported flush API is used here. Doing clean
-	 * on already clean cache would be almost NOP.
-	 */
-	bl	v7_flush_dcache_all
-=======
 	bl	v7_invalidate_l1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Switch the CPU from Symmetric Multiprocessing (SMP) mode
@@ -270,11 +222,7 @@ scu_gp_clear:
 skip_scu_gp_clear:
 	isb
 	dsb
-<<<<<<< HEAD
-	ldmfd	sp!, {pc}
-=======
 	ldmfd	sp!, {r4-r12, pc}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(omap4_finish_suspend)
 
 /*
@@ -307,13 +255,9 @@ ENTRY(omap4_cpu_resume)
 	beq	skip_ns_smp_enable
 ppa_actrl_retry:
 	mov     r0, #OMAP4_PPA_CPU_ACTRL_SMP_INDEX
-<<<<<<< HEAD
-	adr	r3, ppa_zero_params		@ Pointer to parameters
-=======
 	adr	r1, ppa_zero_params_offset
 	ldr	r3, [r1]
 	add	r3, r3, r1			@ Pointer to ppa_zero_params
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov	r1, #0x0			@ Process ID
 	mov	r2, #0x4			@ Flag
 	mov	r6, #0xff
@@ -350,13 +294,9 @@ skip_ns_smp_enable:
 	ldr     r0, =OMAP4_PPA_L2_POR_INDEX
 	ldr     r1, =OMAP44XX_SAR_RAM_BASE
 	ldr     r4, [r1, #L2X0_PREFETCH_CTRL_OFFSET]
-<<<<<<< HEAD
-	adr     r3, ppa_por_params
-=======
 	adr     r1, ppa_por_params_offset
 	ldr	r3, [r1]
 	add	r3, r3, r1			@ Pointer to ppa_por_params
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	str     r4, [r3, #0x04]
 	mov	r1, #0x0			@ Process ID
 	mov	r2, #0x4			@ Flag
@@ -381,21 +321,6 @@ skip_l2en:
 #endif
 
 	b	cpu_resume			@ Jump to generic resume
-<<<<<<< HEAD
-ENDPROC(omap4_cpu_resume)
-#endif
-
-#ifndef CONFIG_OMAP4_ERRATA_I688
-ENTRY(omap_bus_sync)
-	mov	pc, lr
-ENDPROC(omap_bus_sync)
-#endif
-
-ENTRY(omap_do_wfi)
-	stmfd	sp!, {lr}
-	/* Drain interconnect write buffers. */
-	bl omap_bus_sync
-=======
 ppa_por_params_offset:
 	.long	ppa_por_params - .
 ENDPROC(omap4_cpu_resume)
@@ -409,7 +334,6 @@ ENTRY(omap_do_wfi)
 	/* Drain interconnect write buffers. */
 	bl	omap_interconnect_sync
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Execute an ISB instruction to ensure that all of the
@@ -451,9 +375,6 @@ ENTRY(omap_do_wfi)
 	nop
 
 	ldmfd	sp!, {pc}
-<<<<<<< HEAD
-ENDPROC(omap_do_wfi)
-=======
 ppa_zero_params_offset:
 	.long	ppa_zero_params - .
 ENDPROC(omap_do_wfi)
@@ -465,4 +386,3 @@ ppa_zero_params:
 
 ppa_por_params:
 	.word		1, 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

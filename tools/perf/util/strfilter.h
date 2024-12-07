@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __PERF_STRFILTER_H
 #define __PERF_STRFILTER_H
 /* General purpose glob matching filter */
@@ -11,13 +8,8 @@
 
 /* A node of string filter */
 struct strfilter_node {
-<<<<<<< HEAD
-	struct strfilter_node *l;	/* Tree left branche (for &,|) */
-	struct strfilter_node *r;	/* Tree right branche (for !,&,|) */
-=======
 	struct strfilter_node *l;	/* Tree left branch (for &,|) */
 	struct strfilter_node *r;	/* Tree right branch (for !,&,|) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *p;		/* Operator or rule */
 };
 
@@ -38,23 +30,6 @@ struct strfilter {
 struct strfilter *strfilter__new(const char *rules, const char **err);
 
 /**
-<<<<<<< HEAD
- * strfilter__compare - compare given string and a string filter
- * @self: String filter
- * @str: target string
- *
- * Compare @str and @self. Return true if the str match the rule
- */
-bool strfilter__compare(struct strfilter *self, const char *str);
-
-/**
- * strfilter__delete - delete a string filter
- * @self: String filter to delete
- *
- * Delete @self.
- */
-void strfilter__delete(struct strfilter *self);
-=======
  * strfilter__or - Append an additional rule by logical-or
  * @filter: Original string filter
  * @rules: Filter rule to be appended at left of the root of
@@ -105,6 +80,5 @@ void strfilter__delete(struct strfilter *filter);
  * debug messages. Note that returning string must be freed afterward.
  */
 char *strfilter__string(struct strfilter *filter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

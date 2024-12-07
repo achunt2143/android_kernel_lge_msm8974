@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-menu "Memory management options"
-
-config QUICKLIST
-	def_bool y
-
-config MMU
-        bool "Support for memory management hardware"
-	depends on !CPU_SH2
-=======
 # SPDX-License-Identifier: GPL-2.0
 menu "Memory management options"
 
@@ -17,7 +7,6 @@ config MMU
 	select HAVE_PAGE_SIZE_4KB
 	select HAVE_PAGE_SIZE_8KB if X2TLB
 	select HAVE_PAGE_SIZE_64KB if CPU_SH4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	help
 	  Some SH processors (such as SH-2/SH-2A) lack an MMU. In order to
@@ -27,33 +16,6 @@ config MMU
 	  turning this off will boot the kernel on these machines with the
 	  MMU implicitly switched off.
 
-<<<<<<< HEAD
-config PAGE_OFFSET
-	hex
-	default "0x80000000" if MMU && SUPERH32
-	default "0x20000000" if MMU && SUPERH64
-	default "0x00000000"
-
-config FORCE_MAX_ZONEORDER
-	int "Maximum zone order"
-	range 9 64 if PAGE_SIZE_16KB
-	default "9" if PAGE_SIZE_16KB
-	range 7 64 if PAGE_SIZE_64KB
-	default "7" if PAGE_SIZE_64KB
-	range 11 64
-	default "14" if !MMU
-	default "11"
-	help
-	  The kernel memory allocator divides physically contiguous memory
-	  blocks into "zones", where each zone is a power of two number of
-	  pages.  This option selects the largest power of two that the kernel
-	  keeps in the memory allocator.  If you need to allocate very large
-	  blocks of physically contiguous memory, then you may need to
-	  increase this value.
-
-	  This config option is actually maximum order plus one. For example,
-	  a value of 11 means that the largest free memory block is 2^10 pages.
-=======
 config NOMMU
 	def_bool !MMU
 	select HAVE_PAGE_SIZE_4KB
@@ -81,24 +43,16 @@ config ARCH_FORCE_MAX_ORDER
 	  allocated as a single contiguous block. This option allows
 	  overriding the default setting when ability to allocate very
 	  large blocks of physically contiguous memory is required.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  The page size is not necessarily 4KB. Keep this in mind when
 	  choosing a value for this option.
 
-<<<<<<< HEAD
-config MEMORY_START
-	hex "Physical memory start address"
-	default "0x08000000"
-	---help---
-=======
 	  Don't change if unsure.
 
 config MEMORY_START
 	hex "Physical memory start address"
 	default "0x08000000"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Computers built with Hitachi SuperH processors always
 	  map the ROM starting at address zero.  But the processor
 	  does not specify the range that RAM takes.
@@ -125,27 +79,15 @@ config MEMORY_SIZE
 
 config 29BIT
 	def_bool !32BIT
-<<<<<<< HEAD
-	depends on SUPERH32
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select UNCACHED_MAPPING
 
 config 32BIT
 	bool
-<<<<<<< HEAD
-	default y if CPU_SH5 || !MMU
-
-config PMB
-	bool "Support 32-bit physical addressing through PMB"
-	depends on MMU && EXPERIMENTAL && CPU_SH4A && !CPU_SH4AL_DSP
-=======
 	default !MMU
 
 config PMB
 	bool "Support 32-bit physical addressing through PMB"
 	depends on MMU && CPU_SH4A && !CPU_SH4AL_DSP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select 32BIT
 	select UNCACHED_MAPPING
 	help
@@ -171,14 +113,9 @@ config VSYSCALL
 	  (the default value) say Y.
 
 config NUMA
-<<<<<<< HEAD
-	bool "Non Uniform Memory Access (NUMA) Support"
-	depends on MMU && SYS_SUPPORTS_NUMA && EXPERIMENTAL
-=======
 	bool "Non-Uniform Memory Access (NUMA) Support"
 	depends on MMU && SYS_SUPPORTS_NUMA
 	select ARCH_WANT_NUMA_VARIABLE_LOCALITY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	help
 	  Some SH systems have many various memories scattered around
@@ -191,11 +128,7 @@ config NODES_SHIFT
 	int
 	default "3" if CPU_SUBTYPE_SHX3
 	default "1"
-<<<<<<< HEAD
-	depends on NEED_MULTIPLE_NODES
-=======
 	depends on NUMA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ARCH_FLATMEM_ENABLE
 	def_bool y
@@ -208,41 +141,16 @@ config ARCH_SPARSEMEM_ENABLE
 config ARCH_SPARSEMEM_DEFAULT
 	def_bool y
 
-<<<<<<< HEAD
-config MAX_ACTIVE_REGIONS
-	int
-	default "6" if (CPU_SUBTYPE_SHX3 && SPARSEMEM)
-	default "2" if SPARSEMEM && (CPU_SUBTYPE_SH7722 || \
-		       CPU_SUBTYPE_SH7785)
-	default "1"
-
 config ARCH_SELECT_MEMORY_MODEL
 	def_bool y
 
-config ARCH_ENABLE_MEMORY_HOTPLUG
-	def_bool y
-	depends on SPARSEMEM && MMU
-
-config ARCH_ENABLE_MEMORY_HOTREMOVE
-	def_bool y
-	depends on SPARSEMEM && MMU
-
-=======
-config ARCH_SELECT_MEMORY_MODEL
-	def_bool y
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ARCH_MEMORY_PROBE
 	def_bool y
 	depends on MEMORY_HOTPLUG
 
 config IOREMAP_FIXED
        def_bool y
-<<<<<<< HEAD
-       depends on X2TLB || SUPERH64
-=======
        depends on X2TLB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config UNCACHED_MAPPING
 	bool
@@ -252,39 +160,6 @@ config HAVE_SRAM_POOL
 	select GENERIC_ALLOCATOR
 
 choice
-<<<<<<< HEAD
-	prompt "Kernel page size"
-	default PAGE_SIZE_4KB
-
-config PAGE_SIZE_4KB
-	bool "4kB"
-	help
-	  This is the default page size used by all SuperH CPUs.
-
-config PAGE_SIZE_8KB
-	bool "8kB"
-	depends on !MMU || X2TLB
-	help
-	  This enables 8kB pages as supported by SH-X2 and later MMUs.
-
-config PAGE_SIZE_16KB
-	bool "16kB"
-	depends on !MMU
-	help
-	  This enables 16kB pages on MMU-less SH systems.
-
-config PAGE_SIZE_64KB
-	bool "64kB"
-	depends on !MMU || CPU_SH4 || CPU_SH5
-	help
-	  This enables support for 64kB pages, possible on all SH-4
-	  CPUs and later.
-
-endchoice
-
-choice
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prompt "HugeTLB page size"
 	depends on HUGETLB_PAGE
 	default HUGETLB_PAGE_SIZE_1MB if PAGE_SIZE_64KB
@@ -309,19 +184,8 @@ config HUGETLB_PAGE_SIZE_64MB
 	bool "64MB"
 	depends on X2TLB
 
-<<<<<<< HEAD
-config HUGETLB_PAGE_SIZE_512MB
-	bool "512MB"
-	depends on CPU_SH5
-
 endchoice
 
-source "mm/Kconfig"
-
-=======
-endchoice
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SCHED_MC
 	bool "Multi-core scheduler support"
 	depends on SMP
@@ -342,11 +206,7 @@ config SH7705_CACHE_32KB
 
 choice
 	prompt "Cache mode"
-<<<<<<< HEAD
-	default CACHE_WRITEBACK if CPU_SH2A || CPU_SH3 || CPU_SH4 || CPU_SH5
-=======
 	default CACHE_WRITEBACK if CPU_SH2A || CPU_SH3 || CPU_SH4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default CACHE_WRITETHROUGH if (CPU_SH2 && !CPU_SH2A)
 
 config CACHE_WRITEBACK

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Alchemy Au1x00 ethernet driver
@@ -18,28 +15,6 @@
  *
  * Author: MontaVista Software, Inc.
  *		ppopov@mvista.com or source@mvista.com
-<<<<<<< HEAD
- *
- * ########################################################################
- *
- *  This program is free software; you can distribute it and/or modify it
- *  under the terms of the GNU General Public License (Version 2) as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
- *
- * ########################################################################
- *
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -55,10 +30,6 @@
 #include <linux/bitops.h>
 #include <linux/slab.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -92,19 +63,12 @@ static int au1000_debug = 3;
 				NETIF_MSG_LINK)
 
 #define DRV_NAME	"au1000_eth"
-<<<<<<< HEAD
-#define DRV_VERSION	"1.7"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRV_AUTHOR	"Pete Popov <ppopov@embeddedalley.com>"
 #define DRV_DESC	"Au1xxx on-chip Ethernet driver"
 
 MODULE_AUTHOR(DRV_AUTHOR);
 MODULE_DESCRIPTION(DRV_DESC);
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_VERSION(DRV_VERSION);
-=======
 
 /* AU1000 MAC registers and bits */
 #define MAC_CONTROL		0x0
@@ -223,7 +187,6 @@ MODULE_VERSION(DRV_VERSION);
 #define MAC_RX_BUFF2_ADDR	0x24
 #define MAC_RX_BUFF3_STATUS	0x30
 #define MAC_RX_BUFF3_ADDR	0x34
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Theory of operation
@@ -278,10 +241,6 @@ MODULE_VERSION(DRV_VERSION);
  * ps: make sure the used irqs are configured properly in the board
  * specific irq-map
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void au1000_enable_mac(struct net_device *dev, int force_reset)
 {
 	unsigned long flags;
@@ -291,19 +250,12 @@ static void au1000_enable_mac(struct net_device *dev, int force_reset)
 
 	if (force_reset || (!aup->mac_enabled)) {
 		writel(MAC_EN_CLOCK_ENABLE, aup->enable);
-<<<<<<< HEAD
-		au_sync_delay(2);
-		writel((MAC_EN_RESET0 | MAC_EN_RESET1 | MAC_EN_RESET2
-				| MAC_EN_CLOCK_ENABLE), aup->enable);
-		au_sync_delay(2);
-=======
 		wmb(); /* drain writebuffer */
 		mdelay(2);
 		writel((MAC_EN_RESET0 | MAC_EN_RESET1 | MAC_EN_RESET2
 				| MAC_EN_CLOCK_ENABLE), aup->enable);
 		wmb(); /* drain writebuffer */
 		mdelay(2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		aup->mac_enabled = 1;
 	}
@@ -372,12 +324,6 @@ static void au1000_mdio_write(struct net_device *dev, int phy_addr,
 
 static int au1000_mdiobus_read(struct mii_bus *bus, int phy_addr, int regnum)
 {
-<<<<<<< HEAD
-	/* WARNING: bus->phy_map[phy_addr].attached_dev == dev does
-	 * _NOT_ hold (e.g. when PHY is accessed through other MAC's MII bus)
-	 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *const dev = bus->priv;
 
 	/* make sure the MAC associated with this
@@ -424,12 +370,8 @@ static void au1000_hard_stop(struct net_device *dev)
 	reg = readl(&aup->mac->control);
 	reg &= ~(MAC_RX_ENABLE | MAC_TX_ENABLE);
 	writel(reg, &aup->mac->control);
-<<<<<<< HEAD
-	au_sync_delay(10);
-=======
 	wmb(); /* drain writebuffer */
 	mdelay(10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void au1000_enable_rx_tx(struct net_device *dev)
@@ -442,33 +384,21 @@ static void au1000_enable_rx_tx(struct net_device *dev)
 	reg = readl(&aup->mac->control);
 	reg |= (MAC_RX_ENABLE | MAC_TX_ENABLE);
 	writel(reg, &aup->mac->control);
-<<<<<<< HEAD
-	au_sync_delay(10);
-=======
 	wmb(); /* drain writebuffer */
 	mdelay(10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 au1000_adjust_link(struct net_device *dev)
 {
 	struct au1000_private *aup = netdev_priv(dev);
-<<<<<<< HEAD
-	struct phy_device *phydev = aup->phy_dev;
-=======
 	struct phy_device *phydev = dev->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	u32 reg;
 
 	int status_change = 0;
 
-<<<<<<< HEAD
-	BUG_ON(!aup->phy_dev);
-=======
 	BUG_ON(!phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&aup->lock, flags);
 
@@ -505,12 +435,8 @@ au1000_adjust_link(struct net_device *dev)
 			reg |= MAC_DISABLE_RX_OWN;
 		}
 		writel(reg, &aup->mac->control);
-<<<<<<< HEAD
-		au_sync_delay(1);
-=======
 		wmb(); /* drain writebuffer */
 		mdelay(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		au1000_enable_rx_tx(dev);
 		aup->old_duplex = phydev->duplex;
@@ -553,11 +479,7 @@ static int au1000_mii_probe(struct net_device *dev)
 		BUG_ON(aup->mac_id < 0 || aup->mac_id > 1);
 
 		if (aup->phy_addr)
-<<<<<<< HEAD
-			phydev = aup->mii_bus->phy_map[aup->phy_addr];
-=======
 			phydev = mdiobus_get_phy(aup->mii_bus, aup->phy_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			netdev_info(dev, "using PHY-less setup\n");
 		return 0;
@@ -567,13 +489,8 @@ static int au1000_mii_probe(struct net_device *dev)
 	 * on the current MAC's MII bus
 	 */
 	for (phy_addr = 0; phy_addr < PHY_MAX_ADDR; phy_addr++)
-<<<<<<< HEAD
-		if (aup->mii_bus->phy_map[phy_addr]) {
-			phydev = aup->mii_bus->phy_map[phy_addr];
-=======
 		if (mdiobus_get_phy(aup->mii_bus, phy_addr)) {
 			phydev = mdiobus_get_phy(aup->mii_bus, phy_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!aup->phy_search_highest_addr)
 				/* break out with first one found */
 				break;
@@ -591,12 +508,8 @@ static int au1000_mii_probe(struct net_device *dev)
 			 */
 			for (phy_addr = 0; phy_addr < PHY_MAX_ADDR; phy_addr++) {
 				struct phy_device *const tmp_phydev =
-<<<<<<< HEAD
-					aup->mii_bus->phy_map[phy_addr];
-=======
 					mdiobus_get_phy(aup->mii_bus,
 							phy_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				if (aup->mac_id == 1)
 					break;
@@ -623,56 +536,25 @@ static int au1000_mii_probe(struct net_device *dev)
 	/* now we are supposed to have a proper phydev, to attach to... */
 	BUG_ON(phydev->attached_dev);
 
-<<<<<<< HEAD
-	phydev = phy_connect(dev, dev_name(&phydev->dev), &au1000_adjust_link,
-			0, PHY_INTERFACE_MODE_MII);
-=======
 	phydev = phy_connect(dev, phydev_name(phydev),
 			     &au1000_adjust_link, PHY_INTERFACE_MODE_MII);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(phydev)) {
 		netdev_err(dev, "Could not attach to PHY\n");
 		return PTR_ERR(phydev);
 	}
 
-<<<<<<< HEAD
-	/* mask with MAC supported features */
-	phydev->supported &= (SUPPORTED_10baseT_Half
-			      | SUPPORTED_10baseT_Full
-			      | SUPPORTED_100baseT_Half
-			      | SUPPORTED_100baseT_Full
-			      | SUPPORTED_Autoneg
-			      /* | SUPPORTED_Pause | SUPPORTED_Asym_Pause */
-			      | SUPPORTED_MII
-			      | SUPPORTED_TP);
-
-	phydev->advertising = phydev->supported;
-=======
 	phy_set_max_speed(phydev, SPEED_100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aup->old_link = 0;
 	aup->old_speed = 0;
 	aup->old_duplex = -1;
-<<<<<<< HEAD
-	aup->phy_dev = phydev;
-
-	netdev_info(dev, "attached PHY driver [%s] "
-	       "(mii_bus:phy_addr=%s, irq=%d)\n",
-	       phydev->drv->name, dev_name(&phydev->dev), phydev->irq);
-=======
 
 	phy_attached_info(phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Buffer allocation/deallocation routines. The buffer descriptor returned
  * has the virtual and dma address of a buffer suitable for
@@ -705,17 +587,11 @@ static void au1000_reset_mac_unlocked(struct net_device *dev)
 	au1000_hard_stop(dev);
 
 	writel(MAC_EN_CLOCK_ENABLE, aup->enable);
-<<<<<<< HEAD
-	au_sync_delay(2);
-	writel(0, aup->enable);
-	au_sync_delay(2);
-=======
 	wmb(); /* drain writebuffer */
 	mdelay(2);
 	writel(0, aup->enable);
 	wmb(); /* drain writebuffer */
 	mdelay(2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aup->tx_full = 0;
 	for (i = 0; i < NUM_RX_DMA; i++) {
@@ -769,49 +645,14 @@ au1000_setup_hw_rings(struct au1000_private *aup, void __iomem *tx_base)
 /*
  * ethtool operations
  */
-<<<<<<< HEAD
-
-static int au1000_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct au1000_private *aup = netdev_priv(dev);
-
-	if (aup->phy_dev)
-		return phy_ethtool_gset(aup->phy_dev, cmd);
-
-	return -EINVAL;
-}
-
-static int au1000_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct au1000_private *aup = netdev_priv(dev);
-
-	if (!capable(CAP_NET_ADMIN))
-		return -EPERM;
-
-	if (aup->phy_dev)
-		return phy_ethtool_sset(aup->phy_dev, cmd);
-
-	return -EINVAL;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 au1000_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
 	struct au1000_private *aup = netdev_priv(dev);
 
-<<<<<<< HEAD
-	strcpy(info->driver, DRV_NAME);
-	strcpy(info->version, DRV_VERSION);
-	info->fw_version[0] = '\0';
-	sprintf(info->bus_info, "%s %d", DRV_NAME, aup->mac_id);
-	info->regdump_len = 0;
-=======
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	snprintf(info->bus_info, sizeof(info->bus_info), "%s %d", DRV_NAME,
 		 aup->mac_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void au1000_set_msglevel(struct net_device *dev, u32 value)
@@ -827,25 +668,14 @@ static u32 au1000_get_msglevel(struct net_device *dev)
 }
 
 static const struct ethtool_ops au1000_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings = au1000_get_settings,
-	.set_settings = au1000_set_settings,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo = au1000_get_drvinfo,
 	.get_link = ethtool_op_get_link,
 	.get_msglevel = au1000_get_msglevel,
 	.set_msglevel = au1000_set_msglevel,
-<<<<<<< HEAD
-};
-
-
-=======
 	.get_link_ksettings = phy_ethtool_get_link_ksettings,
 	.set_link_ksettings = phy_ethtool_set_link_ksettings,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Initialize the interface.
  *
@@ -884,23 +714,14 @@ static int au1000_init(struct net_device *dev)
 	for (i = 0; i < NUM_RX_DMA; i++)
 		aup->rx_dma_ring[i]->buff_stat |= RX_DMA_ENABLE;
 
-<<<<<<< HEAD
-	au_sync();
-=======
 	wmb(); /* drain writebuffer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	control = MAC_RX_ENABLE | MAC_TX_ENABLE;
 #ifndef CONFIG_CPU_LITTLE_ENDIAN
 	control |= MAC_BIG_ENDIAN;
 #endif
-<<<<<<< HEAD
-	if (aup->phy_dev) {
-		if (aup->phy_dev->link && (DUPLEX_FULL == aup->phy_dev->duplex))
-=======
 	if (dev->phydev) {
 		if (dev->phydev->link && (DUPLEX_FULL == dev->phydev->duplex))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			control |= MAC_FULL_DUPLEX;
 		else
 			control |= MAC_DISABLE_RX_OWN;
@@ -910,11 +731,7 @@ static int au1000_init(struct net_device *dev)
 
 	writel(control, &aup->mac->control);
 	writel(0x8100, &aup->mac->vlan1_tag); /* activate vlan support */
-<<<<<<< HEAD
-	au_sync();
-=======
 	wmb(); /* drain writebuffer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&aup->lock, flags);
 	return 0;
@@ -969,12 +786,7 @@ static int au1000_rx(struct net_device *dev)
 			frmlen = (status & RX_FRAME_LEN_MASK);
 			frmlen -= 4; /* Remove FCS */
 			skb = netdev_alloc_skb(dev, frmlen + 2);
-<<<<<<< HEAD
-			if (skb == NULL) {
-				netdev_err(dev, "Memory squeeze, dropping packet.\n");
-=======
 			if (!skb) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->stats.rx_dropped++;
 				continue;
 			}
@@ -1008,15 +820,9 @@ static int au1000_rx(struct net_device *dev)
 				pr_cont("\n");
 			}
 		}
-<<<<<<< HEAD
-		prxd->buff_stat = (u32)(pDB->dma_addr | RX_DMA_ENABLE);
-		aup->rx_head = (aup->rx_head + 1) & (NUM_RX_DMA - 1);
-		au_sync();
-=======
 		prxd->buff_stat = lower_32_bits(pDB->dma_addr) | RX_DMA_ENABLE;
 		aup->rx_head = (aup->rx_head + 1) & (NUM_RX_DMA - 1);
 		wmb(); /* drain writebuffer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* next descriptor */
 		prxd = aup->rx_dma_ring[aup->rx_head];
@@ -1027,18 +833,10 @@ static int au1000_rx(struct net_device *dev)
 
 static void au1000_update_tx_stats(struct net_device *dev, u32 status)
 {
-<<<<<<< HEAD
-	struct au1000_private *aup = netdev_priv(dev);
-	struct net_device_stats *ps = &dev->stats;
-
-	if (status & TX_FRAME_ABORTED) {
-		if (!aup->phy_dev || (DUPLEX_FULL == aup->phy_dev->duplex)) {
-=======
 	struct net_device_stats *ps = &dev->stats;
 
 	if (status & TX_FRAME_ABORTED) {
 		if (!dev->phydev || (DUPLEX_FULL == dev->phydev->duplex)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (status & (TX_JAB_TIMEOUT | TX_UNDERRUN)) {
 				/* any other tx errors are only valid
 				 * in half duplex mode
@@ -1071,11 +869,7 @@ static void au1000_tx_ack(struct net_device *dev)
 		au1000_update_tx_stats(dev, ptxd->status);
 		ptxd->buff_stat &= ~TX_T_DONE;
 		ptxd->len = 0;
-<<<<<<< HEAD
-		au_sync();
-=======
 		wmb(); /* drain writebuffer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		aup->tx_tail = (aup->tx_tail + 1) & (NUM_TX_DMA - 1);
 		ptxd = aup->tx_dma_ring[aup->tx_tail];
@@ -1122,16 +916,8 @@ static int au1000_open(struct net_device *dev)
 		return retval;
 	}
 
-<<<<<<< HEAD
-	if (aup->phy_dev) {
-		/* cause the PHY state machine to schedule a link state check */
-		aup->phy_dev->state = PHY_CHANGELINK;
-		phy_start(aup->phy_dev);
-	}
-=======
 	if (dev->phydev)
 		phy_start(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_start_queue(dev);
 
@@ -1147,13 +933,8 @@ static int au1000_close(struct net_device *dev)
 
 	netif_dbg(aup, drv, dev, "close: dev=%p\n", dev);
 
-<<<<<<< HEAD
-	if (aup->phy_dev)
-		phy_stop(aup->phy_dev);
-=======
 	if (dev->phydev)
 		phy_stop(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&aup->lock, flags);
 
@@ -1215,13 +996,8 @@ static netdev_tx_t au1000_tx(struct sk_buff *skb, struct net_device *dev)
 	ps->tx_packets++;
 	ps->tx_bytes += ptxd->len;
 
-<<<<<<< HEAD
-	ptxd->buff_stat = pDB->dma_addr | TX_DMA_ENABLE;
-	au_sync();
-=======
 	ptxd->buff_stat = lower_32_bits(pDB->dma_addr) | TX_DMA_ENABLE;
 	wmb(); /* drain writebuffer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_kfree_skb(skb);
 	aup->tx_head = (aup->tx_head + 1) & (NUM_TX_DMA - 1);
 	return NETDEV_TX_OK;
@@ -1231,20 +1007,12 @@ static netdev_tx_t au1000_tx(struct sk_buff *skb, struct net_device *dev)
  * The Tx ring has been full longer than the watchdog timeout
  * value. The transmitter must be hung?
  */
-<<<<<<< HEAD
-static void au1000_tx_timeout(struct net_device *dev)
-=======
 static void au1000_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	netdev_err(dev, "au1000_tx_timeout: dev=%p\n", dev);
 	au1000_reset_mac(dev);
 	au1000_init(dev);
-<<<<<<< HEAD
-	dev->trans_start = jiffies; /* prevent tx timeout */
-=======
 	netif_trans_update(dev); /* prevent tx timeout */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue(dev);
 }
 
@@ -1278,39 +1046,11 @@ static void au1000_multicast_list(struct net_device *dev)
 	writel(reg, &aup->mac->control);
 }
 
-<<<<<<< HEAD
-static int au1000_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
-{
-	struct au1000_private *aup = netdev_priv(dev);
-
-	if (!netif_running(dev))
-		return -EINVAL;
-
-	if (!aup->phy_dev)
-		return -EINVAL; /* PHY not controllable */
-
-	return phy_mii_ioctl(aup->phy_dev, rq, cmd);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops au1000_netdev_ops = {
 	.ndo_open		= au1000_open,
 	.ndo_stop		= au1000_close,
 	.ndo_start_xmit		= au1000_tx,
 	.ndo_set_rx_mode	= au1000_multicast_list,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= au1000_ioctl,
-	.ndo_tx_timeout		= au1000_tx_timeout,
-	.ndo_set_mac_address	= eth_mac_addr,
-	.ndo_validate_addr	= eth_validate_addr,
-	.ndo_change_mtu		= eth_change_mtu,
-};
-
-static int __devinit au1000_probe(struct platform_device *pdev)
-{
-	static unsigned version_printed;
-=======
 	.ndo_eth_ioctl		= phy_do_ioctl_running,
 	.ndo_tx_timeout		= au1000_tx_timeout,
 	.ndo_set_mac_address	= eth_mac_addr,
@@ -1319,7 +1059,6 @@ static int __devinit au1000_probe(struct platform_device *pdev)
 
 static int au1000_probe(struct platform_device *pdev)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct au1000_private *aup = NULL;
 	struct au1000_eth_platform_data *pd;
 	struct net_device *dev = NULL;
@@ -1343,10 +1082,6 @@ static int au1000_probe(struct platform_device *pdev)
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
-<<<<<<< HEAD
-		dev_err(&pdev->dev, "failed to retrieve IRQ\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENODEV;
 		goto out;
 	}
@@ -1396,15 +1131,9 @@ static int au1000_probe(struct platform_device *pdev)
 	/* Allocate the data buffers
 	 * Snooping works fine with eth on all au1xxx
 	 */
-<<<<<<< HEAD
-	aup->vaddr = (u32)dma_alloc_noncoherent(NULL, MAX_BUF_SIZE *
-						(NUM_TX_BUFFS + NUM_RX_BUFFS),
-						&aup->dma_addr,	0);
-=======
 	aup->vaddr = dma_alloc_coherent(&pdev->dev, MAX_BUF_SIZE *
 					(NUM_TX_BUFFS + NUM_RX_BUFFS),
 					&aup->dma_addr, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!aup->vaddr) {
 		dev_err(&pdev->dev, "failed to allocate data buffers\n");
 		err = -ENOMEM;
@@ -1413,11 +1142,7 @@ static int au1000_probe(struct platform_device *pdev)
 
 	/* aup->mac is the base address of the MAC's registers */
 	aup->mac = (struct mac_reg *)
-<<<<<<< HEAD
-			ioremap_nocache(base->start, resource_size(base));
-=======
 			ioremap(base->start, resource_size(base));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!aup->mac) {
 		dev_err(&pdev->dev, "failed to ioremap MAC registers\n");
 		err = -ENXIO;
@@ -1425,11 +1150,7 @@ static int au1000_probe(struct platform_device *pdev)
 	}
 
 	/* Setup some variables for quick register address access */
-<<<<<<< HEAD
-	aup->enable = (u32 *)ioremap_nocache(macen->start,
-=======
 	aup->enable = (u32 *)ioremap(macen->start,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						resource_size(macen));
 	if (!aup->enable) {
 		dev_err(&pdev->dev, "failed to ioremap MAC enable register\n");
@@ -1438,11 +1159,7 @@ static int au1000_probe(struct platform_device *pdev)
 	}
 	aup->mac_id = pdev->id;
 
-<<<<<<< HEAD
-	aup->macdma = ioremap_nocache(macdma->start, resource_size(macdma));
-=======
 	aup->macdma = ioremap(macdma->start, resource_size(macdma));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!aup->macdma) {
 		dev_err(&pdev->dev, "failed to ioremap MACDMA registers\n");
 		err = -ENXIO;
@@ -1454,22 +1171,14 @@ static int au1000_probe(struct platform_device *pdev)
 	writel(0, aup->enable);
 	aup->mac_enabled = 0;
 
-<<<<<<< HEAD
-	pd = pdev->dev.platform_data;
-=======
 	pd = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pd) {
 		dev_info(&pdev->dev, "no platform_data passed,"
 					" PHY search on MAC0\n");
 		aup->phy1_search_mac0 = 1;
 	} else {
 		if (is_valid_ether_addr(pd->mac)) {
-<<<<<<< HEAD
-			memcpy(dev->dev_addr, pd->mac, 6);
-=======
 			eth_hw_addr_set(dev, pd->mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* Set a random MAC since no valid provided by platform_data. */
 			eth_hw_addr_random(dev);
@@ -1483,22 +1192,14 @@ static int au1000_probe(struct platform_device *pdev)
 		aup->phy_irq = pd->phy_irq;
 	}
 
-<<<<<<< HEAD
-	if (aup->phy_busid && aup->phy_busid > 0) {
-=======
 	if (aup->phy_busid > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "MAC0-associated PHY attached 2nd MACs MII bus not supported yet\n");
 		err = -ENODEV;
 		goto err_mdiobus_alloc;
 	}
 
 	aup->mii_bus = mdiobus_alloc();
-<<<<<<< HEAD
-	if (aup->mii_bus == NULL) {
-=======
 	if (!aup->mii_bus) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "failed to allocate mdiobus structure\n");
 		err = -ENOMEM;
 		goto err_mdiobus_alloc;
@@ -1511,16 +1212,7 @@ static int au1000_probe(struct platform_device *pdev)
 	aup->mii_bus->name = "au1000_eth_mii";
 	snprintf(aup->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
 		pdev->name, aup->mac_id);
-<<<<<<< HEAD
-	aup->mii_bus->irq = kmalloc(sizeof(int)*PHY_MAX_ADDR, GFP_KERNEL);
-	if (aup->mii_bus->irq == NULL)
-		goto err_out;
 
-	for (i = 0; i < PHY_MAX_ADDR; ++i)
-		aup->mii_bus->irq[i] = PHY_POLL;
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* if known, set corresponding PHY IRQs */
 	if (aup->phy_static_config)
 		if (aup->phy_irq && aup->phy_busid == aup->mac_id)
@@ -1532,12 +1224,8 @@ static int au1000_probe(struct platform_device *pdev)
 		goto err_mdiobus_reg;
 	}
 
-<<<<<<< HEAD
-	if (au1000_mii_probe(dev) != 0)
-=======
 	err = au1000_mii_probe(dev);
 	if (err != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out;
 
 	pDBfree = NULL;
@@ -1546,46 +1234,28 @@ static int au1000_probe(struct platform_device *pdev)
 	for (i = 0; i < (NUM_TX_BUFFS+NUM_RX_BUFFS); i++) {
 		pDB->pnext = pDBfree;
 		pDBfree = pDB;
-<<<<<<< HEAD
-		pDB->vaddr = (u32 *)((unsigned)aup->vaddr + MAX_BUF_SIZE*i);
-		pDB->dma_addr = (dma_addr_t)virt_to_bus(pDB->vaddr);
-=======
 		pDB->vaddr = aup->vaddr + MAX_BUF_SIZE * i;
 		pDB->dma_addr = aup->dma_addr + MAX_BUF_SIZE * i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pDB++;
 	}
 	aup->pDBfree = pDBfree;
 
-<<<<<<< HEAD
-=======
 	err = -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < NUM_RX_DMA; i++) {
 		pDB = au1000_GetFreeDB(aup);
 		if (!pDB)
 			goto err_out;
 
-<<<<<<< HEAD
-		aup->rx_dma_ring[i]->buff_stat = (unsigned)pDB->dma_addr;
-		aup->rx_db_inuse[i] = pDB;
-	}
-=======
 		aup->rx_dma_ring[i]->buff_stat = lower_32_bits(pDB->dma_addr);
 		aup->rx_db_inuse[i] = pDB;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < NUM_TX_DMA; i++) {
 		pDB = au1000_GetFreeDB(aup);
 		if (!pDB)
 			goto err_out;
 
-<<<<<<< HEAD
-		aup->tx_dma_ring[i]->buff_stat = (unsigned)pDB->dma_addr;
-=======
 		aup->tx_dma_ring[i]->buff_stat = lower_32_bits(pDB->dma_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		aup->tx_dma_ring[i]->len = 0;
 		aup->tx_db_inuse[i] = pDB;
 	}
@@ -1593,11 +1263,7 @@ static int au1000_probe(struct platform_device *pdev)
 	dev->base_addr = base->start;
 	dev->irq = irq;
 	dev->netdev_ops = &au1000_netdev_ops;
-<<<<<<< HEAD
-	SET_ETHTOOL_OPS(dev, &au1000_ethtool_ops);
-=======
 	dev->ethtool_ops = &au1000_ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->watchdog_timeo = ETH_TX_TIMEOUT;
 
 	/*
@@ -1614,21 +1280,11 @@ static int au1000_probe(struct platform_device *pdev)
 
 	netdev_info(dev, "Au1xx0 Ethernet found at 0x%lx, irq %d\n",
 			(unsigned long)base->start, irq);
-<<<<<<< HEAD
-	if (version_printed++ == 0)
-		pr_info("%s version %s %s\n",
-					DRV_NAME, DRV_VERSION, DRV_AUTHOR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 err_out:
-<<<<<<< HEAD
-	if (aup->mii_bus != NULL)
-=======
 	if (aup->mii_bus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdiobus_unregister(aup->mii_bus);
 
 	/* here we should have a valid dev plus aup-> register addresses
@@ -1653,13 +1309,8 @@ err_remap3:
 err_remap2:
 	iounmap(aup->mac);
 err_remap1:
-<<<<<<< HEAD
-	dma_free_noncoherent(NULL, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
-			     (void *)aup->vaddr, aup->dma_addr);
-=======
 	dma_free_coherent(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
 			  aup->vaddr, aup->dma_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_vaddr:
 	free_netdev(dev);
 err_alloc:
@@ -1672,22 +1323,13 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit au1000_remove(struct platform_device *pdev)
-=======
 static void au1000_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
 	struct au1000_private *aup = netdev_priv(dev);
 	int i;
 	struct resource *base, *macen;
 
-<<<<<<< HEAD
-	platform_set_drvdata(pdev, NULL);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_netdev(dev);
 	mdiobus_unregister(aup->mii_bus);
 	mdiobus_free(aup->mii_bus);
@@ -1700,14 +1342,8 @@ static void au1000_remove(struct platform_device *pdev)
 		if (aup->tx_db_inuse[i])
 			au1000_ReleaseDB(aup, aup->tx_db_inuse[i]);
 
-<<<<<<< HEAD
-	dma_free_noncoherent(NULL, MAX_BUF_SIZE *
-			(NUM_TX_BUFFS + NUM_RX_BUFFS),
-			(void *)aup->vaddr, aup->dma_addr);
-=======
 	dma_free_coherent(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
 			  aup->vaddr, aup->dma_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iounmap(aup->macdma);
 	iounmap(aup->mac);
@@ -1723,25 +1359,13 @@ static void au1000_remove(struct platform_device *pdev)
 	release_mem_region(macen->start, resource_size(macen));
 
 	free_netdev(dev);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver au1000_eth_driver = {
 	.probe  = au1000_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(au1000_remove),
-	.driver = {
-		.name   = "au1000-eth",
-		.owner  = THIS_MODULE,
-=======
 	.remove_new = au1000_remove,
 	.driver = {
 		.name   = "au1000-eth",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

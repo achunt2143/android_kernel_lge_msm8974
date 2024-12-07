@@ -38,28 +38,19 @@
 #include <linux/notifier.h>
 #include <linux/mutex.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-#include <linux/completion.h>
-#include <linux/init.h>
-#include <linux/slab.h>
-=======
 #include <linux/fs.h>
 #include <linux/completion.h>
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/semaphore.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <xen/interface/xen.h>
 #include <xen/interface/grant_table.h>
 #include <xen/interface/io/xenbus.h>
 #include <xen/interface/io/xs_wire.h>
-<<<<<<< HEAD
-=======
 #include <xen/interface/event_channel.h>
 
 #define XENBUS_MAX_RING_GRANT_ORDER 4
 #define XENBUS_MAX_RING_GRANTS      (1U << XENBUS_MAX_RING_GRANT_ORDER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Register callback to watch this node. */
 struct xenbus_watch
@@ -69,11 +60,6 @@ struct xenbus_watch
 	/* Path being watched. */
 	const char *node;
 
-<<<<<<< HEAD
-	/* Callback (executed in a process context with no locks held). */
-	void (*callback)(struct xenbus_watch *,
-			 const char **vec, unsigned int len);
-=======
 	unsigned int nr_pending;
 
 	/*
@@ -86,7 +72,6 @@ struct xenbus_watch
 	/* Callback (executed in a process context with no locks held). */
 	void (*callback)(struct xenbus_watch *,
 			 const char *path, const char *token);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -100,14 +85,6 @@ struct xenbus_device {
 	struct device dev;
 	enum xenbus_state state;
 	struct completion down;
-<<<<<<< HEAD
-};
-
-static inline struct xenbus_device *to_xenbus_device(struct device *dev)
-{
-	return container_of(dev, struct xenbus_device, dev);
-}
-=======
 	struct work_struct work;
 	struct semaphore reclaim_sem;
 
@@ -120,7 +97,6 @@ static inline struct xenbus_device *to_xenbus_device(struct device *dev)
 };
 
 #define to_xenbus_device(__dev)	container_of_const(__dev, struct xenbus_device, dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct xenbus_device_id
 {
@@ -130,36 +106,14 @@ struct xenbus_device_id
 
 /* A xenbus driver. */
 struct xenbus_driver {
-<<<<<<< HEAD
-	const struct xenbus_device_id *ids;
-=======
 	const char *name;       /* defaults to ids[0].devicetype */
 	const struct xenbus_device_id *ids;
 	bool allow_rebind; /* avoid setting xenstore closed during remove */
 	bool not_essential;     /* is not mandatory for boot progress */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*probe)(struct xenbus_device *dev,
 		     const struct xenbus_device_id *id);
 	void (*otherend_changed)(struct xenbus_device *dev,
 				 enum xenbus_state backend_state);
-<<<<<<< HEAD
-	int (*remove)(struct xenbus_device *dev);
-	int (*suspend)(struct xenbus_device *dev);
-	int (*resume)(struct xenbus_device *dev);
-	int (*uevent)(struct xenbus_device *, struct kobj_uevent_env *);
-	struct device_driver driver;
-	int (*read_otherend_details)(struct xenbus_device *dev);
-	int (*is_ready)(struct xenbus_device *dev);
-};
-
-#define DEFINE_XENBUS_DRIVER(var, drvname, methods...)		\
-struct xenbus_driver var ## _driver = {				\
-	.driver.name = drvname + 0 ?: var ## _ids->devicetype,	\
-	.driver.owner = THIS_MODULE,				\
-	.ids = var ## _ids, ## methods				\
-}
-
-=======
 	void (*remove)(struct xenbus_device *dev);
 	int (*suspend)(struct xenbus_device *dev);
 	int (*resume)(struct xenbus_device *dev);
@@ -170,16 +124,11 @@ struct xenbus_driver var ## _driver = {				\
 	void (*reclaim_memory)(struct xenbus_device *dev);
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct xenbus_driver *to_xenbus_driver(struct device_driver *drv)
 {
 	return container_of(drv, struct xenbus_driver, driver);
 }
 
-<<<<<<< HEAD
-int __must_check xenbus_register_frontend(struct xenbus_driver *);
-int __must_check xenbus_register_backend(struct xenbus_driver *);
-=======
 int __must_check __xenbus_register_frontend(struct xenbus_driver *drv,
 					    struct module *owner,
 					    const char *mod_name);
@@ -191,7 +140,6 @@ int __must_check __xenbus_register_backend(struct xenbus_driver *drv,
 	__xenbus_register_frontend(drv, THIS_MODULE, KBUILD_MODNAME)
 #define xenbus_register_backend(drv) \
 	__xenbus_register_backend(drv, THIS_MODULE, KBUILD_MODNAME)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void xenbus_unregister_driver(struct xenbus_driver *drv);
 
@@ -222,13 +170,10 @@ __scanf(4, 5)
 int xenbus_scanf(struct xenbus_transaction t,
 		 const char *dir, const char *node, const char *fmt, ...);
 
-<<<<<<< HEAD
-=======
 /* Read an (optional) unsigned value. */
 unsigned int xenbus_read_unsigned(const char *dir, const char *node,
 				  unsigned int default_val);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Single printf and write: returns -errno or 0. */
 __printf(4, 5)
 int xenbus_printf(struct xenbus_transaction t,
@@ -249,22 +194,8 @@ void xs_suspend(void);
 void xs_resume(void);
 void xs_suspend_cancel(void);
 
-<<<<<<< HEAD
-/* Used by xenbus_dev to borrow kernel's store connection. */
-void *xenbus_dev_request_and_reply(struct xsd_sockmsg *msg);
-
 struct work_struct;
 
-/* Prepare for domain suspend: then resume or cancel the suspend. */
-void xenbus_suspend(void);
-void xenbus_resume(void);
-void xenbus_probe(struct work_struct *);
-void xenbus_suspend_cancel(void);
-
-=======
-struct work_struct;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define XENBUS_IS_ERR_READ(str) ({			\
 	if (!IS_ERR(str) && strlen(str) == 0) {		\
 		kfree(str);				\
@@ -277,30 +208,6 @@ struct work_struct;
 
 int xenbus_watch_path(struct xenbus_device *dev, const char *path,
 		      struct xenbus_watch *watch,
-<<<<<<< HEAD
-		      void (*callback)(struct xenbus_watch *,
-				       const char **, unsigned int));
-__printf(4, 5)
-int xenbus_watch_pathfmt(struct xenbus_device *dev, struct xenbus_watch *watch,
-			 void (*callback)(struct xenbus_watch *,
-					  const char **, unsigned int),
-			 const char *pathfmt, ...);
-
-int xenbus_switch_state(struct xenbus_device *dev, enum xenbus_state new_state);
-int xenbus_grant_ring(struct xenbus_device *dev, unsigned long ring_mfn);
-int xenbus_map_ring_valloc(struct xenbus_device *dev,
-			   int gnt_ref, void **vaddr);
-int xenbus_map_ring(struct xenbus_device *dev, int gnt_ref,
-			   grant_handle_t *handle, void *vaddr);
-
-int xenbus_unmap_ring_vfree(struct xenbus_device *dev, void *vaddr);
-int xenbus_unmap_ring(struct xenbus_device *dev,
-		      grant_handle_t handle, void *vaddr);
-
-int xenbus_alloc_evtchn(struct xenbus_device *dev, int *port);
-int xenbus_bind_evtchn(struct xenbus_device *dev, int remote_port, int *port);
-int xenbus_free_evtchn(struct xenbus_device *dev, int port);
-=======
 		      bool (*will_handle)(struct xenbus_watch *,
 					  const char *, const char *),
 		      void (*callback)(struct xenbus_watch *,
@@ -325,7 +232,6 @@ int xenbus_unmap_ring_vfree(struct xenbus_device *dev, void *vaddr);
 
 int xenbus_alloc_evtchn(struct xenbus_device *dev, evtchn_port_t *port);
 int xenbus_free_evtchn(struct xenbus_device *dev, evtchn_port_t port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum xenbus_state xenbus_read_driver_state(const char *path);
 
@@ -338,11 +244,8 @@ const char *xenbus_strstate(enum xenbus_state state);
 int xenbus_dev_is_online(struct xenbus_device *dev);
 int xenbus_frontend_closed(struct xenbus_device *dev);
 
-<<<<<<< HEAD
-=======
 extern const struct file_operations xen_xenbus_fops;
 extern struct xenstore_domain_interface *xen_store_interface;
 extern int xen_store_evtchn;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _XEN_XENBUS_H */

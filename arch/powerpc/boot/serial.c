@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic serial console support
  *
@@ -10,14 +7,7 @@
  * Code in serial_edit_cmdline() copied from <file:arch/ppc/boot/simple/misc.c>
  * and was written by Matt Porter <mporter@kernel.crashing.org>.
  *
-<<<<<<< HEAD
- * 2001,2006 (c) MontaVista Software, Inc.  This file is licensed under
- * the terms of the GNU General Public License version 2.  This program
- * is licensed "as is" without any warranty of any kind, whether express
- * or implied.
-=======
  * 2001,2006 (c) MontaVista Software, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <stdarg.h>
 #include <stddef.h>
@@ -41,11 +31,7 @@ static void serial_write(const char *buf, int len)
 		scdp->putc(*buf++);
 }
 
-<<<<<<< HEAD
-static void serial_edit_cmdline(char *buf, int len)
-=======
 static void serial_edit_cmdline(char *buf, int len, unsigned int timeout)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int timer = 0, count;
 	char ch, *cp;
@@ -56,11 +42,7 @@ static void serial_edit_cmdline(char *buf, int len, unsigned int timeout)
 	cp = &buf[count];
 	count++;
 
-<<<<<<< HEAD
-	while (timer++ < 5*1000) {
-=======
 	do {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (scdp->tstc()) {
 			while (((ch = scdp->getc()) != '\n') && (ch != '\r')) {
 				/* Test for backspace/delete */
@@ -86,11 +68,7 @@ static void serial_edit_cmdline(char *buf, int len, unsigned int timeout)
 			break;  /* Exit 'timer' loop */
 		}
 		udelay(1000);  /* 1 msec */
-<<<<<<< HEAD
-	}
-=======
 	} while (timer++ < timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*cp = 0;
 }
 
@@ -112,12 +90,8 @@ static void *serial_get_stdout_devp(void)
 	if (devp == NULL)
 		goto err_out;
 
-<<<<<<< HEAD
-	if (getprop(devp, "linux,stdout-path", path, MAX_PATH_LEN) > 0) {
-=======
 	if (getprop(devp, "linux,stdout-path", path, MAX_PATH_LEN) > 0 ||
 		getprop(devp, "stdout-path", path, MAX_PATH_LEN) > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		devp = finddevice(path);
 		if (devp == NULL)
 			goto err_out;
@@ -145,24 +119,12 @@ int serial_console_init(void)
 	if (dt_is_compatible(devp, "ns16550") ||
 	    dt_is_compatible(devp, "pnpPNP,501"))
 		rc = ns16550_console_init(devp, &serial_cd);
-<<<<<<< HEAD
-	else if (dt_is_compatible(devp, "marvell,mv64360-mpsc"))
-		rc = mpsc_console_init(devp, &serial_cd);
-=======
 #ifdef CONFIG_CPM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (dt_is_compatible(devp, "fsl,cpm1-scc-uart") ||
 	         dt_is_compatible(devp, "fsl,cpm1-smc-uart") ||
 	         dt_is_compatible(devp, "fsl,cpm2-scc-uart") ||
 	         dt_is_compatible(devp, "fsl,cpm2-smc-uart"))
 		rc = cpm_console_init(devp, &serial_cd);
-<<<<<<< HEAD
-	else if (dt_is_compatible(devp, "fsl,mpc5200-psc-uart"))
-		rc = mpc5200_psc_console_init(devp, &serial_cd);
-	else if (dt_is_compatible(devp, "xlnx,opb-uartlite-1.00.b") ||
-		 dt_is_compatible(devp, "xlnx,xps-uartlite-1.00.a"))
-		rc = uartlite_console_init(devp, &serial_cd);
-=======
 #endif
 #ifdef CONFIG_PPC_MPC52xx
 	else if (dt_is_compatible(devp, "fsl,mpc5200-psc-uart"))
@@ -172,7 +134,6 @@ int serial_console_init(void)
 	else if (dt_is_compatible(devp, "ibm,opal-console-raw"))
 		rc = opal_console_init(devp, &serial_cd);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Add other serial console driver calls here */
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/nfs/unlink.c
  *
@@ -18,21 +15,15 @@
 #include <linux/sched.h>
 #include <linux/wait.h>
 #include <linux/namei.h>
-<<<<<<< HEAD
-=======
 #include <linux/fsnotify.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "internal.h"
 #include "nfs4_fs.h"
 #include "iostat.h"
 #include "delegation.h"
 
-<<<<<<< HEAD
-=======
 #include "nfstrace.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * nfs_free_unlinkdata - release data from a sillydelete operation.
  * @data: pointer to unlink structure.
@@ -40,84 +31,31 @@
 static void
 nfs_free_unlinkdata(struct nfs_unlinkdata *data)
 {
-<<<<<<< HEAD
-	iput(data->dir);
-	put_rpccred(data->cred);
-=======
 	put_cred(data->cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(data->args.name.name);
 	kfree(data);
 }
 
-<<<<<<< HEAD
-#define NAME_ALLOC_LEN(len)	((len+16) & ~15)
-/**
- * nfs_copy_dname - copy dentry name to data structure
- * @dentry: pointer to dentry
- * @data: nfs_unlinkdata
- */
-static int nfs_copy_dname(struct dentry *dentry, struct nfs_unlinkdata *data)
-{
-	char		*str;
-	int		len = dentry->d_name.len;
-
-	str = kmemdup(dentry->d_name.name, NAME_ALLOC_LEN(len), GFP_KERNEL);
-	if (!str)
-		return -ENOMEM;
-	data->args.name.len = len;
-	data->args.name.name = str;
-	return 0;
-}
-
-static void nfs_free_dname(struct nfs_unlinkdata *data)
-{
-	kfree(data->args.name.name);
-	data->args.name.name = NULL;
-	data->args.name.len = 0;
-}
-
-static void nfs_dec_sillycount(struct inode *dir)
-{
-	struct nfs_inode *nfsi = NFS_I(dir);
-	if (atomic_dec_return(&nfsi->silly_count) == 1)
-		wake_up(&nfsi->waitqueue);
-}
-
-/**
- * nfs_async_unlink_done - Sillydelete post-processing
- * @task: rpc_task of the sillydelete
-=======
 /**
  * nfs_async_unlink_done - Sillydelete post-processing
  * @task: rpc_task of the sillydelete
  * @calldata: pointer to nfs_unlinkdata
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Do the directory attribute update.
  */
 static void nfs_async_unlink_done(struct rpc_task *task, void *calldata)
 {
 	struct nfs_unlinkdata *data = calldata;
-<<<<<<< HEAD
-	struct inode *dir = data->dir;
-
-=======
 	struct inode *dir = d_inode(data->dentry->d_parent);
 
 	trace_nfs_sillyrename_unlink(data, task->tk_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!NFS_PROTO(dir)->unlink_done(task, dir))
 		rpc_restart_call_prepare(task);
 }
 
 /**
  * nfs_async_unlink_release - Release the sillydelete data.
-<<<<<<< HEAD
- * @task: rpc_task of the sillydelete
-=======
  * @calldata: struct nfs_unlinkdata to release
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * We need to call nfs_put_unlinkdata as a 'tk_release' task since the
  * rpc_task would be freed too.
@@ -125,12 +63,6 @@ static void nfs_async_unlink_done(struct rpc_task *task, void *calldata)
 static void nfs_async_unlink_release(void *calldata)
 {
 	struct nfs_unlinkdata	*data = calldata;
-<<<<<<< HEAD
-	struct super_block *sb = data->dir->i_sb;
-
-	nfs_dec_sillycount(data->dir);
-	nfs_free_unlinkdata(data);
-=======
 	struct dentry *dentry = data->dentry;
 	struct super_block *sb = dentry->d_sb;
 
@@ -138,19 +70,14 @@ static void nfs_async_unlink_release(void *calldata)
 	d_lookup_done(dentry);
 	nfs_free_unlinkdata(data);
 	dput(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nfs_sb_deactive(sb);
 }
 
 static void nfs_unlink_prepare(struct rpc_task *task, void *calldata)
 {
 	struct nfs_unlinkdata *data = calldata;
-<<<<<<< HEAD
-	NFS_PROTO(data->dir)->unlink_rpc_prepare(task, data);
-=======
 	struct inode *dir = d_inode(data->dentry->d_parent);
 	NFS_PROTO(dir)->unlink_rpc_prepare(task, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct rpc_call_ops nfs_unlink_ops = {
@@ -159,11 +86,7 @@ static const struct rpc_call_ops nfs_unlink_ops = {
 	.rpc_call_prepare = nfs_unlink_prepare,
 };
 
-<<<<<<< HEAD
-static int nfs_do_call_unlink(struct dentry *parent, struct inode *dir, struct nfs_unlinkdata *data)
-=======
 static void nfs_do_call_unlink(struct inode *inode, struct nfs_unlinkdata *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rpc_message msg = {
 		.rpc_argp = &data->args,
@@ -175,15 +98,6 @@ static void nfs_do_call_unlink(struct inode *inode, struct nfs_unlinkdata *data)
 		.callback_ops = &nfs_unlink_ops,
 		.callback_data = data,
 		.workqueue = nfsiod_workqueue,
-<<<<<<< HEAD
-		.flags = RPC_TASK_ASYNC,
-	};
-	struct rpc_task *task;
-	struct dentry *alias;
-
-	alias = d_lookup(parent, &data->args.name);
-	if (alias != NULL) {
-=======
 		.flags = RPC_TASK_ASYNC | RPC_TASK_CRED_NOREF,
 	};
 	struct rpc_task *task;
@@ -216,7 +130,6 @@ static int nfs_call_unlink(struct dentry *dentry, struct inode *inode, struct nf
 		return 0;
 	}
 	if (!d_in_lookup(alias)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int ret;
 		void *devname_garbage = NULL;
 
@@ -224,16 +137,9 @@ static int nfs_call_unlink(struct dentry *dentry, struct inode *inode, struct nf
 		 * Hey, we raced with lookup... See if we need to transfer
 		 * the sillyrename information to the aliased dentry.
 		 */
-<<<<<<< HEAD
-		nfs_free_dname(data);
-		ret = nfs_copy_dname(alias, data);
-		spin_lock(&alias->d_lock);
-		if (ret == 0 && alias->d_inode != NULL &&
-=======
 		spin_lock(&alias->d_lock);
 		if (d_really_is_positive(alias) &&
 		    !nfs_compare_fh(NFS_FH(inode), NFS_FH(d_inode(alias))) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    !(alias->d_flags & DCACHE_NFSFS_RENAMED)) {
 			devname_garbage = alias->d_fsdata;
 			alias->d_fsdata = data;
@@ -242,13 +148,8 @@ static int nfs_call_unlink(struct dentry *dentry, struct inode *inode, struct nf
 		} else
 			ret = 0;
 		spin_unlock(&alias->d_lock);
-<<<<<<< HEAD
-		nfs_dec_sillycount(dir);
-		dput(alias);
-=======
 		dput(alias);
 		up_read_non_owner(&NFS_I(dir)->rmdir_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If we'd displaced old cached devname, free it.  At that
 		 * point dentry is definitely not a root, so we won't need
@@ -257,89 +158,6 @@ static int nfs_call_unlink(struct dentry *dentry, struct inode *inode, struct nf
 		kfree(devname_garbage);
 		return ret;
 	}
-<<<<<<< HEAD
-	data->dir = igrab(dir);
-	if (!data->dir) {
-		nfs_dec_sillycount(dir);
-		return 0;
-	}
-	nfs_sb_active(dir->i_sb);
-	data->args.fh = NFS_FH(dir);
-	nfs_fattr_init(data->res.dir_attr);
-
-	NFS_PROTO(dir)->unlink_setup(&msg, dir);
-
-	task_setup_data.rpc_client = NFS_CLIENT(dir);
-	task = rpc_run_task(&task_setup_data);
-	if (!IS_ERR(task))
-		rpc_put_task_async(task);
-	return 1;
-}
-
-static int nfs_call_unlink(struct dentry *dentry, struct nfs_unlinkdata *data)
-{
-	struct dentry *parent;
-	struct inode *dir;
-	int ret = 0;
-
-
-	parent = dget_parent(dentry);
-	if (parent == NULL)
-		goto out_free;
-	dir = parent->d_inode;
-	/* Non-exclusive lock protects against concurrent lookup() calls */
-	spin_lock(&dir->i_lock);
-	if (atomic_inc_not_zero(&NFS_I(dir)->silly_count) == 0) {
-		/* Deferred delete */
-		hlist_add_head(&data->list, &NFS_I(dir)->silly_list);
-		spin_unlock(&dir->i_lock);
-		ret = 1;
-		goto out_dput;
-	}
-	spin_unlock(&dir->i_lock);
-	ret = nfs_do_call_unlink(parent, dir, data);
-out_dput:
-	dput(parent);
-out_free:
-	return ret;
-}
-
-void nfs_block_sillyrename(struct dentry *dentry)
-{
-	struct nfs_inode *nfsi = NFS_I(dentry->d_inode);
-
-	wait_event(nfsi->waitqueue, atomic_cmpxchg(&nfsi->silly_count, 1, 0) == 1);
-}
-
-void nfs_unblock_sillyrename(struct dentry *dentry)
-{
-	struct inode *dir = dentry->d_inode;
-	struct nfs_inode *nfsi = NFS_I(dir);
-	struct nfs_unlinkdata *data;
-
-	atomic_inc(&nfsi->silly_count);
-	spin_lock(&dir->i_lock);
-	while (!hlist_empty(&nfsi->silly_list)) {
-		if (!atomic_inc_not_zero(&nfsi->silly_count))
-			break;
-		data = hlist_entry(nfsi->silly_list.first, struct nfs_unlinkdata, list);
-		hlist_del(&data->list);
-		spin_unlock(&dir->i_lock);
-		if (nfs_do_call_unlink(dentry, dir, data) == 0)
-			nfs_free_unlinkdata(data);
-		spin_lock(&dir->i_lock);
-	}
-	spin_unlock(&dir->i_lock);
-}
-
-/**
- * nfs_async_unlink - asynchronous unlinking of a file
- * @dir: parent directory of dentry
- * @dentry: dentry to unlink
- */
-static int
-nfs_async_unlink(struct inode *dir, struct dentry *dentry)
-=======
 	data->dentry = alias;
 	nfs_do_call_unlink(inode, data);
 	return 1;
@@ -352,7 +170,6 @@ nfs_async_unlink(struct inode *dir, struct dentry *dentry)
  */
 static int
 nfs_async_unlink(struct dentry *dentry, const struct qstr *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nfs_unlinkdata *data;
 	int status = -ENOMEM;
@@ -361,15 +178,6 @@ nfs_async_unlink(struct dentry *dentry, const struct qstr *name)
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
 	if (data == NULL)
 		goto out;
-<<<<<<< HEAD
-
-	data->cred = rpc_lookup_cred();
-	if (IS_ERR(data->cred)) {
-		status = PTR_ERR(data->cred);
-		goto out_free;
-	}
-	data->res.dir_attr = &data->dir_attr;
-=======
 	data->args.name.name = kstrdup(name->name, GFP_KERNEL);
 	if (!data->args.name.name)
 		goto out_free;
@@ -378,7 +186,6 @@ nfs_async_unlink(struct dentry *dentry, const struct qstr *name)
 	data->cred = get_current_cred();
 	data->res.dir_attr = &data->dir_attr;
 	init_waitqueue_head(&data->wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = -EBUSY;
 	spin_lock(&dentry->d_lock);
@@ -393,21 +200,12 @@ nfs_async_unlink(struct dentry *dentry, const struct qstr *name)
 	 * point dentry is definitely not a root, so we won't need
 	 * that anymore.
 	 */
-<<<<<<< HEAD
-	if (devname_garbage)
-		kfree(devname_garbage);
-	return 0;
-out_unlock:
-	spin_unlock(&dentry->d_lock);
-	put_rpccred(data->cred);
-=======
 	kfree(devname_garbage);
 	return 0;
 out_unlock:
 	spin_unlock(&dentry->d_lock);
 	put_cred(data->cred);
 	kfree(data->args.name.name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_free:
 	kfree(data);
 out:
@@ -426,19 +224,6 @@ out:
 void
 nfs_complete_unlink(struct dentry *dentry, struct inode *inode)
 {
-<<<<<<< HEAD
-	struct nfs_unlinkdata	*data = NULL;
-
-	spin_lock(&dentry->d_lock);
-	if (dentry->d_flags & DCACHE_NFSFS_RENAMED) {
-		dentry->d_flags &= ~DCACHE_NFSFS_RENAMED;
-		data = dentry->d_fsdata;
-		dentry->d_fsdata = NULL;
-	}
-	spin_unlock(&dentry->d_lock);
-
-	if (data != NULL && (NFS_STALE(inode) || !nfs_call_unlink(dentry, data)))
-=======
 	struct nfs_unlinkdata	*data;
 
 	spin_lock(&dentry->d_lock);
@@ -448,7 +233,6 @@ nfs_complete_unlink(struct dentry *dentry, struct inode *inode)
 	spin_unlock(&dentry->d_lock);
 
 	if (NFS_STALE(inode) || !nfs_call_unlink(dentry, inode, data))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nfs_free_unlinkdata(data);
 }
 
@@ -483,23 +267,15 @@ static void nfs_async_rename_done(struct rpc_task *task, void *calldata)
 	struct inode *new_dir = data->new_dir;
 	struct dentry *old_dentry = data->old_dentry;
 
-<<<<<<< HEAD
-=======
 	trace_nfs_async_rename_done(old_dir, old_dentry,
 			new_dir, data->new_dentry, task->tk_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!NFS_PROTO(old_dir)->rename_done(task, old_dir, new_dir)) {
 		rpc_restart_call_prepare(task);
 		return;
 	}
 
-<<<<<<< HEAD
-	if (task->tk_status != 0)
-		nfs_cancel_async_unlink(old_dentry);
-=======
 	if (data->complete)
 		data->complete(task, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -511,10 +287,6 @@ static void nfs_async_rename_release(void *calldata)
 	struct nfs_renamedata	*data = calldata;
 	struct super_block *sb = data->old_dir->i_sb;
 
-<<<<<<< HEAD
-	if (data->old_dentry->d_inode)
-		nfs_mark_for_revalidate(data->old_dentry->d_inode);
-=======
 	if (d_really_is_positive(data->old_dentry))
 		nfs_mark_for_revalidate(d_inode(data->old_dentry));
 
@@ -530,18 +302,13 @@ static void nfs_async_rename_release(void *calldata)
 			spin_unlock(&data->new_dir->i_lock);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dput(data->old_dentry);
 	dput(data->new_dentry);
 	iput(data->old_dir);
 	iput(data->new_dir);
 	nfs_sb_deactive(sb);
-<<<<<<< HEAD
-	put_rpccred(data->cred);
-=======
 	put_cred(data->cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(data);
 }
 
@@ -563,14 +330,6 @@ static const struct rpc_call_ops nfs_rename_ops = {
  * @new_dir: target directory for the rename
  * @old_dentry: original dentry to be renamed
  * @new_dentry: dentry to which the old_dentry should be renamed
-<<<<<<< HEAD
- *
- * It's expected that valid references to the dentries and inodes are held
- */
-static struct rpc_task *
-nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
-		 struct dentry *old_dentry, struct dentry *new_dentry)
-=======
  * @complete: Function to run on successful completion
  *
  * It's expected that valid references to the dentries and inodes are held
@@ -579,7 +338,6 @@ struct rpc_task *
 nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
 		 struct dentry *old_dentry, struct dentry *new_dentry,
 		 void (*complete)(struct rpc_task *, struct nfs_renamedata *))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nfs_renamedata *data;
 	struct rpc_message msg = { };
@@ -588,22 +346,6 @@ nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
 		.callback_ops = &nfs_rename_ops,
 		.workqueue = nfsiod_workqueue,
 		.rpc_client = NFS_CLIENT(old_dir),
-<<<<<<< HEAD
-		.flags = RPC_TASK_ASYNC,
-	};
-
-	data = kzalloc(sizeof(*data), GFP_KERNEL);
-	if (data == NULL)
-		return ERR_PTR(-ENOMEM);
-	task_setup_data.callback_data = data;
-
-	data->cred = rpc_lookup_cred();
-	if (IS_ERR(data->cred)) {
-		struct rpc_task *task = ERR_CAST(data->cred);
-		kfree(data);
-		return task;
-	}
-=======
 		.flags = RPC_TASK_ASYNC | RPC_TASK_CRED_NOREF,
 	};
 
@@ -618,7 +360,6 @@ nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
 	task_setup_data.callback_data = data;
 
 	data->cred = get_current_cred();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	msg.rpc_argp = &data->args;
 	msg.rpc_resp = &data->res;
@@ -633,10 +374,7 @@ nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
 	data->new_dentry = dget(new_dentry);
 	nfs_fattr_init(&data->old_fattr);
 	nfs_fattr_init(&data->new_fattr);
-<<<<<<< HEAD
-=======
 	data->complete = complete;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set up nfs_renameargs */
 	data->args.old_dir = NFS_FH(old_dir);
@@ -650,17 +388,11 @@ nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
 
 	nfs_sb_active(old_dir->i_sb);
 
-<<<<<<< HEAD
-	NFS_PROTO(data->old_dir)->rename_setup(&msg, old_dir);
-=======
 	NFS_PROTO(data->old_dir)->rename_setup(&msg, old_dentry, new_dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rpc_run_task(&task_setup_data);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Perform tasks needed when a sillyrename is done such as cancelling the
  * queued async unlink if it failed.
@@ -684,7 +416,6 @@ nfs_complete_sillyrename(struct rpc_task *task, struct nfs_renamedata *data)
 		SILLYNAME_FILEID_LEN + \
 		SILLYNAME_COUNTER_LEN)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * nfs_sillyrename - Perform a silly-rename of a dentry
  * @dir: inode of directory that contains dentry
@@ -710,19 +441,6 @@ int
 nfs_sillyrename(struct inode *dir, struct dentry *dentry)
 {
 	static unsigned int sillycounter;
-<<<<<<< HEAD
-	const int      fileidsize  = sizeof(NFS_FILEID(dentry->d_inode))*2;
-	const int      countersize = sizeof(sillycounter)*2;
-	const int      slen        = sizeof(".nfs")+fileidsize+countersize-1;
-	char           silly[slen+1];
-	struct dentry *sdentry;
-	struct rpc_task *task;
-	int            error = -EIO;
-
-	dfprintk(VFS, "NFS: silly-rename(%s/%s, ct=%d)\n",
-		dentry->d_parent->d_name.name, dentry->d_name.name,
-		dentry->d_count);
-=======
 	unsigned char silly[SILLYNAME_LEN + 1];
 	unsigned long long fileid;
 	struct dentry *sdentry;
@@ -732,35 +450,11 @@ nfs_sillyrename(struct inode *dir, struct dentry *dentry)
 
 	dfprintk(VFS, "NFS: silly-rename(%pd2, ct=%d)\n",
 		dentry, d_count(dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nfs_inc_stats(dir, NFSIOS_SILLYRENAME);
 
 	/*
 	 * We don't allow a dentry to be silly-renamed twice.
 	 */
-<<<<<<< HEAD
-	error = -EBUSY;
-	if (dentry->d_flags & DCACHE_NFSFS_RENAMED)
-		goto out;
-
-	sprintf(silly, ".nfs%*.*Lx",
-		fileidsize, fileidsize,
-		(unsigned long long)NFS_FILEID(dentry->d_inode));
-
-	/* Return delegation in anticipation of the rename */
-	nfs_inode_return_delegation(dentry->d_inode);
-
-	sdentry = NULL;
-	do {
-		char *suffix = silly + slen - countersize;
-
-		dput(sdentry);
-		sillycounter++;
-		sprintf(suffix, "%*.*x", countersize, countersize, sillycounter);
-
-		dfprintk(VFS, "NFS: trying to rename %s to %s\n",
-				dentry->d_name.name, silly);
-=======
 	if (dentry->d_flags & DCACHE_NFSFS_RENAMED)
 		goto out;
 
@@ -778,7 +472,6 @@ nfs_sillyrename(struct inode *dir, struct dentry *dentry)
 
 		dfprintk(VFS, "NFS: trying to rename %pd to %s\n",
 				dentry, silly);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sdentry = lookup_one_len(silly, dentry->d_parent, slen);
 		/*
@@ -787,33 +480,13 @@ nfs_sillyrename(struct inode *dir, struct dentry *dentry)
 		 */
 		if (IS_ERR(sdentry))
 			goto out;
-<<<<<<< HEAD
-	} while (sdentry->d_inode != NULL); /* need negative lookup */
-=======
 	} while (d_inode(sdentry) != NULL); /* need negative lookup */
 
 	ihold(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* queue unlink first. Can't do this from rpc_release as it
 	 * has to allocate memory
 	 */
-<<<<<<< HEAD
-	error = nfs_async_unlink(dir, dentry);
-	if (error)
-		goto out_dput;
-
-	/* populate unlinkdata with the right dname */
-	error = nfs_copy_dname(sdentry,
-				(struct nfs_unlinkdata *)dentry->d_fsdata);
-	if (error) {
-		nfs_cancel_async_unlink(dentry);
-		goto out_dput;
-	}
-
-	/* run the rename task, undo unlink if it fails */
-	task = nfs_async_rename(dir, dir, dentry, sdentry);
-=======
 	error = nfs_async_unlink(dentry, &sdentry->d_name);
 	if (error)
 		goto out_dput;
@@ -821,7 +494,6 @@ nfs_sillyrename(struct inode *dir, struct dentry *dentry)
 	/* run the rename task, undo unlink if it fails */
 	task = nfs_async_rename(dir, dir, dentry, sdentry,
 					nfs_complete_sillyrename);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(task)) {
 		error = -EBUSY;
 		nfs_cancel_async_unlink(dentry);
@@ -836,15 +508,12 @@ nfs_sillyrename(struct inode *dir, struct dentry *dentry)
 	case 0:
 		/* The rename succeeded */
 		nfs_set_verifier(dentry, nfs_save_change_attribute(dir));
-<<<<<<< HEAD
-=======
 		spin_lock(&inode->i_lock);
 		NFS_I(inode)->attr_gencount = nfs_inc_attr_generation_counter();
 		nfs_set_cache_invalid(inode, NFS_INO_INVALID_CHANGE |
 						     NFS_INO_INVALID_CTIME |
 						     NFS_INO_REVAL_FORCED);
 		spin_unlock(&inode->i_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		d_move(dentry, sdentry);
 		break;
 	case -ERESTARTSYS:
@@ -855,10 +524,7 @@ nfs_sillyrename(struct inode *dir, struct dentry *dentry)
 	}
 	rpc_put_task(task);
 out_dput:
-<<<<<<< HEAD
-=======
 	iput(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dput(sdentry);
 out:
 	return error;

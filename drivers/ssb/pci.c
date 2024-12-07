@@ -15,22 +15,14 @@
  * Licensed under the GNU/GPL. See COPYING for details.
  */
 
-<<<<<<< HEAD
-=======
 #include "ssb_private.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ssb/ssb.h>
 #include <linux/ssb/ssb_regs.h>
 #include <linux/slab.h>
 #include <linux/pci.h>
 #include <linux/delay.h>
 
-<<<<<<< HEAD
-#include "ssb_private.h"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Define the following to 1 to enable a printk on each coreswitch. */
 #define SSB_VERBOSE_PCICORESWITCH_DEBUG		0
@@ -64,11 +56,7 @@ int ssb_pci_switch_coreidx(struct ssb_bus *bus, u8 coreidx)
 	}
 	return 0;
 error:
-<<<<<<< HEAD
-	ssb_printk(KERN_ERR PFX "Failed to switch to core %u\n", coreidx);
-=======
 	pr_err("Failed to switch to core %u\n", coreidx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
 }
 
@@ -79,15 +67,8 @@ int ssb_pci_switch_core(struct ssb_bus *bus,
 	unsigned long flags;
 
 #if SSB_VERBOSE_PCICORESWITCH_DEBUG
-<<<<<<< HEAD
-	ssb_printk(KERN_INFO PFX
-		   "Switching to %s core, index %d\n",
-		   ssb_core_name(dev->id.coreid),
-		   dev->core_index);
-=======
 	pr_info("Switching to %s core, index %d\n",
 		ssb_core_name(dev->id.coreid), dev->core_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	spin_lock_irqsave(&bus->bar_lock, flags);
@@ -179,11 +160,7 @@ out:
 	return err;
 
 err_pci:
-<<<<<<< HEAD
-	printk(KERN_ERR PFX "Error: ssb_pci_xtal() could not access PCI config space!\n");
-=======
 	pr_err("Error: ssb_pci_xtal() could not access PCI config space!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -EBUSY;
 	goto out;
 }
@@ -199,8 +176,6 @@ err_pci:
 #define SPEX(_outvar, _offset, _mask, _shift) \
 	SPEX16(_outvar, _offset, _mask, _shift)
 
-<<<<<<< HEAD
-=======
 #define SPEX_ARRAY8(_field, _offset, _mask, _shift)	\
 	do {	\
 		SPEX(_field[0], _offset +  0, _mask, _shift);	\
@@ -213,7 +188,6 @@ err_pci:
 		SPEX(_field[7], _offset + 14, _mask, _shift);	\
 	} while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u8 ssb_crc8(u8 crc, u8 data)
 {
@@ -255,8 +229,6 @@ static inline u8 ssb_crc8(u8 crc, u8 data)
 	return t[crc ^ data];
 }
 
-<<<<<<< HEAD
-=======
 static void sprom_get_mac(char *mac, const u16 *in)
 {
 	int i;
@@ -266,7 +238,6 @@ static void sprom_get_mac(char *mac, const u16 *in)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u8 ssb_sprom_crc(const u16 *sprom, u16 size)
 {
 	int word;
@@ -314,11 +285,7 @@ static int sprom_do_write(struct ssb_bus *bus, const u16 *sprom)
 	u32 spromctl;
 	u16 size = bus->sprom_size;
 
-<<<<<<< HEAD
-	ssb_printk(KERN_NOTICE PFX "Writing SPROM. Do NOT turn off the power! Please stand by...\n");
-=======
 	pr_notice("Writing SPROM. Do NOT turn off the power! Please stand by...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = pci_read_config_dword(pdev, SSB_SPROMCTL, &spromctl);
 	if (err)
 		goto err_ctlreg;
@@ -326,21 +293,6 @@ static int sprom_do_write(struct ssb_bus *bus, const u16 *sprom)
 	err = pci_write_config_dword(pdev, SSB_SPROMCTL, spromctl);
 	if (err)
 		goto err_ctlreg;
-<<<<<<< HEAD
-	ssb_printk(KERN_NOTICE PFX "[ 0%%");
-	msleep(500);
-	for (i = 0; i < size; i++) {
-		if (i == size / 4)
-			ssb_printk("25%%");
-		else if (i == size / 2)
-			ssb_printk("50%%");
-		else if (i == (size * 3) / 4)
-			ssb_printk("75%%");
-		else if (i % 2)
-			ssb_printk(".");
-		writew(sprom[i], bus->mmio + bus->sprom_offset + (i * 2));
-		mmiowb();
-=======
 	pr_notice("[ 0%%");
 	msleep(500);
 	for (i = 0; i < size; i++) {
@@ -353,7 +305,6 @@ static int sprom_do_write(struct ssb_bus *bus, const u16 *sprom)
 		else if (i % 2)
 			pr_cont(".");
 		writew(sprom[i], bus->mmio + bus->sprom_offset + (i * 2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(20);
 	}
 	err = pci_read_config_dword(pdev, SSB_SPROMCTL, &spromctl);
@@ -364,19 +315,6 @@ static int sprom_do_write(struct ssb_bus *bus, const u16 *sprom)
 	if (err)
 		goto err_ctlreg;
 	msleep(500);
-<<<<<<< HEAD
-	ssb_printk("100%% ]\n");
-	ssb_printk(KERN_NOTICE PFX "SPROM written.\n");
-
-	return 0;
-err_ctlreg:
-	ssb_printk(KERN_ERR PFX "Could not access SPROM control register.\n");
-	return err;
-}
-
-static s8 r123_extract_antgain(u8 sprom_revision, const u16 *in,
-			       u16 mask, u16 shift)
-=======
 	pr_cont("100%% ]\n");
 	pr_notice("SPROM written\n");
 
@@ -388,16 +326,11 @@ err_ctlreg:
 
 static s8 sprom_extract_antgain(u8 sprom_revision, const u16 *in, u16 offset,
 				u16 mask, u16 shift)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 v;
 	u8 gain;
 
-<<<<<<< HEAD
-	v = in[SPOFF(SSB_SPROM1_AGAIN)];
-=======
 	v = in[SPOFF(offset)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gain = (v & mask) >> shift;
 	if (gain == 0xFF)
 		gain = 2; /* If unset use 2dBm */
@@ -412,12 +345,6 @@ static s8 sprom_extract_antgain(u8 sprom_revision, const u16 *in, u16 offset,
 	return (s8)gain;
 }
 
-<<<<<<< HEAD
-static void sprom_extract_r123(struct ssb_sprom *out, const u16 *in)
-{
-	int i;
-	u16 v;
-=======
 static void sprom_extract_r23(struct ssb_sprom *out, const u16 *in)
 {
 	SPEX(boardflags_hi, SSB_SPROM2_BFLHI, 0xFFFF, 0);
@@ -435,7 +362,6 @@ static void sprom_extract_r23(struct ssb_sprom *out, const u16 *in)
 
 static void sprom_extract_r123(struct ssb_sprom *out, const u16 *in)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 loc[3];
 
 	if (out->revision == 3)			/* rev 3 moved MAC */
@@ -445,26 +371,10 @@ static void sprom_extract_r123(struct ssb_sprom *out, const u16 *in)
 		loc[1] = SSB_SPROM1_ET0MAC;
 		loc[2] = SSB_SPROM1_ET1MAC;
 	}
-<<<<<<< HEAD
-	for (i = 0; i < 3; i++) {
-		v = in[SPOFF(loc[0]) + i];
-		*(((__be16 *)out->il0mac) + i) = cpu_to_be16(v);
-	}
-	if (out->revision < 3) { 	/* only rev 1-2 have et0, et1 */
-		for (i = 0; i < 3; i++) {
-			v = in[SPOFF(loc[1]) + i];
-			*(((__be16 *)out->et0mac) + i) = cpu_to_be16(v);
-		}
-		for (i = 0; i < 3; i++) {
-			v = in[SPOFF(loc[2]) + i];
-			*(((__be16 *)out->et1mac) + i) = cpu_to_be16(v);
-		}
-=======
 	sprom_get_mac(out->il0mac, &in[SPOFF(loc[0])]);
 	if (out->revision < 3) { 	/* only rev 1-2 have et0, et1 */
 		sprom_get_mac(out->et0mac, &in[SPOFF(loc[1])]);
 		sprom_get_mac(out->et1mac, &in[SPOFF(loc[2])]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	SPEX(et0phyaddr, SSB_SPROM1_ETHPHY, SSB_SPROM1_ETHPHY_ET0A, 0);
 	SPEX(et1phyaddr, SSB_SPROM1_ETHPHY, SSB_SPROM1_ETHPHY_ET1A,
@@ -472,15 +382,10 @@ static void sprom_extract_r123(struct ssb_sprom *out, const u16 *in)
 	SPEX(et0mdcport, SSB_SPROM1_ETHPHY, SSB_SPROM1_ETHPHY_ET0M, 14);
 	SPEX(et1mdcport, SSB_SPROM1_ETHPHY, SSB_SPROM1_ETHPHY_ET1M, 15);
 	SPEX(board_rev, SSB_SPROM1_BINF, SSB_SPROM1_BINF_BREV, 0);
-<<<<<<< HEAD
-	SPEX(country_code, SSB_SPROM1_BINF, SSB_SPROM1_BINF_CCODE,
-	     SSB_SPROM1_BINF_CCODE_SHIFT);
-=======
 	SPEX(board_type, SSB_SPROM1_SPID, 0xFFFF, 0);
 	if (out->revision == 1)
 		SPEX(country_code, SSB_SPROM1_BINF, SSB_SPROM1_BINF_CCODE,
 		     SSB_SPROM1_BINF_CCODE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SPEX(ant_available_a, SSB_SPROM1_BINF, SSB_SPROM1_BINF_ANTA,
 	     SSB_SPROM1_BINF_ANTA_SHIFT);
 	SPEX(ant_available_bg, SSB_SPROM1_BINF, SSB_SPROM1_BINF_ANTBG,
@@ -504,18 +409,6 @@ static void sprom_extract_r123(struct ssb_sprom *out, const u16 *in)
 	     SSB_SPROM1_ITSSI_A_SHIFT);
 	SPEX(itssi_bg, SSB_SPROM1_ITSSI, SSB_SPROM1_ITSSI_BG, 0);
 	SPEX(boardflags_lo, SSB_SPROM1_BFLLO, 0xFFFF, 0);
-<<<<<<< HEAD
-	if (out->revision >= 2)
-		SPEX(boardflags_hi, SSB_SPROM2_BFLHI, 0xFFFF, 0);
-
-	/* Extract the antenna gain values. */
-	out->antenna_gain.a0 = r123_extract_antgain(out->revision, in,
-						    SSB_SPROM1_AGAIN_BG,
-						    SSB_SPROM1_AGAIN_BG_SHIFT);
-	out->antenna_gain.a1 = r123_extract_antgain(out->revision, in,
-						    SSB_SPROM1_AGAIN_A,
-						    SSB_SPROM1_AGAIN_A_SHIFT);
-=======
 
 	SPEX(alpha2[0], SSB_SPROM1_CCODE, 0xff00, 8);
 	SPEX(alpha2[1], SSB_SPROM1_CCODE, 0x00ff, 0);
@@ -531,7 +424,6 @@ static void sprom_extract_r123(struct ssb_sprom *out, const u16 *in)
 						     SSB_SPROM1_AGAIN_A_SHIFT);
 	if (out->revision >= 2)
 		sprom_extract_r23(out, in);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Revs 4 5 and 8 have partially shared layout */
@@ -576,11 +468,6 @@ static void sprom_extract_r458(struct ssb_sprom *out, const u16 *in)
 
 static void sprom_extract_r45(struct ssb_sprom *out, const u16 *in)
 {
-<<<<<<< HEAD
-	int i;
-	u16 v;
-	u16 il0mac_offset;
-=======
 	static const u16 pwr_info_offset[] = {
 		SSB_SPROM4_PWR_INFO_CORE0, SSB_SPROM4_PWR_INFO_CORE1,
 		SSB_SPROM4_PWR_INFO_CORE2, SSB_SPROM4_PWR_INFO_CORE3
@@ -590,24 +477,11 @@ static void sprom_extract_r45(struct ssb_sprom *out, const u16 *in)
 
 	BUILD_BUG_ON(ARRAY_SIZE(pwr_info_offset) !=
 		     ARRAY_SIZE(out->core_pwr_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (out->revision == 4)
 		il0mac_offset = SSB_SPROM4_IL0MAC;
 	else
 		il0mac_offset = SSB_SPROM5_IL0MAC;
-<<<<<<< HEAD
-	/* extract the MAC address */
-	for (i = 0; i < 3; i++) {
-		v = in[SPOFF(il0mac_offset) + i];
-		*(((__be16 *)out->il0mac) + i) = cpu_to_be16(v);
-	}
-	SPEX(et0phyaddr, SSB_SPROM4_ETHPHY, SSB_SPROM4_ETHPHY_ET0A, 0);
-	SPEX(et1phyaddr, SSB_SPROM4_ETHPHY, SSB_SPROM4_ETHPHY_ET1A,
-	     SSB_SPROM4_ETHPHY_ET1A_SHIFT);
-	if (out->revision == 4) {
-		SPEX(country_code, SSB_SPROM4_CCODE, 0xFFFF, 0);
-=======
 
 	sprom_get_mac(out->il0mac, &in[SPOFF(il0mac_offset)]);
 
@@ -619,18 +493,13 @@ static void sprom_extract_r45(struct ssb_sprom *out, const u16 *in)
 	if (out->revision == 4) {
 		SPEX(alpha2[0], SSB_SPROM4_CCODE, 0xff00, 8);
 		SPEX(alpha2[1], SSB_SPROM4_CCODE, 0x00ff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SPEX(boardflags_lo, SSB_SPROM4_BFLLO, 0xFFFF, 0);
 		SPEX(boardflags_hi, SSB_SPROM4_BFLHI, 0xFFFF, 0);
 		SPEX(boardflags2_lo, SSB_SPROM4_BFL2LO, 0xFFFF, 0);
 		SPEX(boardflags2_hi, SSB_SPROM4_BFL2HI, 0xFFFF, 0);
 	} else {
-<<<<<<< HEAD
-		SPEX(country_code, SSB_SPROM5_CCODE, 0xFFFF, 0);
-=======
 		SPEX(alpha2[0], SSB_SPROM5_CCODE, 0xff00, 8);
 		SPEX(alpha2[1], SSB_SPROM5_CCODE, 0x00ff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SPEX(boardflags_lo, SSB_SPROM5_BFLLO, 0xFFFF, 0);
 		SPEX(boardflags_hi, SSB_SPROM5_BFLHI, 0xFFFF, 0);
 		SPEX(boardflags2_lo, SSB_SPROM5_BFL2LO, 0xFFFF, 0);
@@ -663,16 +532,6 @@ static void sprom_extract_r45(struct ssb_sprom *out, const u16 *in)
 	}
 
 	/* Extract the antenna gain values. */
-<<<<<<< HEAD
-	SPEX(antenna_gain.a0, SSB_SPROM4_AGAIN01,
-	     SSB_SPROM4_AGAIN0, SSB_SPROM4_AGAIN0_SHIFT);
-	SPEX(antenna_gain.a1, SSB_SPROM4_AGAIN01,
-	     SSB_SPROM4_AGAIN1, SSB_SPROM4_AGAIN1_SHIFT);
-	SPEX(antenna_gain.a2, SSB_SPROM4_AGAIN23,
-	     SSB_SPROM4_AGAIN2, SSB_SPROM4_AGAIN2_SHIFT);
-	SPEX(antenna_gain.a3, SSB_SPROM4_AGAIN23,
-	     SSB_SPROM4_AGAIN3, SSB_SPROM4_AGAIN3_SHIFT);
-=======
 	out->antenna_gain.a0 = sprom_extract_antgain(out->revision, in,
 						     SSB_SPROM4_AGAIN01,
 						     SSB_SPROM4_AGAIN0,
@@ -726,7 +585,6 @@ static void sprom_extract_r45(struct ssb_sprom *out, const u16 *in)
 		SPEX(core_pwr_info[i].pa_5gh[2], o + SSB_SPROM4_5GH_PA_2, ~0, 0);
 		SPEX(core_pwr_info[i].pa_5gh[3], o + SSB_SPROM4_5GH_PA_3, ~0, 0);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sprom_extract_r458(out, in);
 
@@ -736,13 +594,8 @@ static void sprom_extract_r45(struct ssb_sprom *out, const u16 *in)
 static void sprom_extract_r8(struct ssb_sprom *out, const u16 *in)
 {
 	int i;
-<<<<<<< HEAD
-	u16 v, o;
-	u16 pwr_info_offset[] = {
-=======
 	u16 o;
 	static const u16 pwr_info_offset[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SSB_SROM8_PWR_INFO_CORE0, SSB_SROM8_PWR_INFO_CORE1,
 		SSB_SROM8_PWR_INFO_CORE2, SSB_SROM8_PWR_INFO_CORE3
 	};
@@ -750,20 +603,12 @@ static void sprom_extract_r8(struct ssb_sprom *out, const u16 *in)
 			ARRAY_SIZE(out->core_pwr_info));
 
 	/* extract the MAC address */
-<<<<<<< HEAD
-	for (i = 0; i < 3; i++) {
-		v = in[SPOFF(SSB_SPROM8_IL0MAC) + i];
-		*(((__be16 *)out->il0mac) + i) = cpu_to_be16(v);
-	}
-	SPEX(country_code, SSB_SPROM8_CCODE, 0xFFFF, 0);
-=======
 	sprom_get_mac(out->il0mac, &in[SPOFF(SSB_SPROM8_IL0MAC)]);
 
 	SPEX(board_rev, SSB_SPROM8_BOARDREV, 0xFFFF, 0);
 	SPEX(board_type, SSB_SPROM1_SPID, 0xFFFF, 0);
 	SPEX(alpha2[0], SSB_SPROM8_CCODE, 0xff00, 8);
 	SPEX(alpha2[1], SSB_SPROM8_CCODE, 0x00ff, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SPEX(boardflags_lo, SSB_SPROM8_BFLLO, 0xFFFF, 0);
 	SPEX(boardflags_hi, SSB_SPROM8_BFLHI, 0xFFFF, 0);
 	SPEX(boardflags2_lo, SSB_SPROM8_BFL2LO, 0xFFFF, 0);
@@ -829,16 +674,6 @@ static void sprom_extract_r8(struct ssb_sprom *out, const u16 *in)
 	SPEX32(ofdm5ghpo, SSB_SPROM8_OFDM5GHPO, 0xFFFFFFFF, 0);
 
 	/* Extract the antenna gain values. */
-<<<<<<< HEAD
-	SPEX(antenna_gain.a0, SSB_SPROM8_AGAIN01,
-	     SSB_SPROM8_AGAIN0, SSB_SPROM8_AGAIN0_SHIFT);
-	SPEX(antenna_gain.a1, SSB_SPROM8_AGAIN01,
-	     SSB_SPROM8_AGAIN1, SSB_SPROM8_AGAIN1_SHIFT);
-	SPEX(antenna_gain.a2, SSB_SPROM8_AGAIN23,
-	     SSB_SPROM8_AGAIN2, SSB_SPROM8_AGAIN2_SHIFT);
-	SPEX(antenna_gain.a3, SSB_SPROM8_AGAIN23,
-	     SSB_SPROM8_AGAIN3, SSB_SPROM8_AGAIN3_SHIFT);
-=======
 	out->antenna_gain.a0 = sprom_extract_antgain(out->revision, in,
 						     SSB_SPROM8_AGAIN01,
 						     SSB_SPROM8_AGAIN0,
@@ -855,7 +690,6 @@ static void sprom_extract_r8(struct ssb_sprom *out, const u16 *in)
 						     SSB_SPROM8_AGAIN23,
 						     SSB_SPROM8_AGAIN3,
 						     SSB_SPROM8_AGAIN3_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Extract cores power info info */
 	for (i = 0; i < ARRAY_SIZE(pwr_info_offset); i++) {
@@ -912,8 +746,6 @@ static void sprom_extract_r8(struct ssb_sprom *out, const u16 *in)
 	SPEX(fem.ghz5.antswlut, SSB_SPROM8_FEM5G,
 		SSB_SROM8_FEM_ANTSWLUT, SSB_SROM8_FEM_ANTSWLUT_SHIFT);
 
-<<<<<<< HEAD
-=======
 	SPEX(leddc_on_time, SSB_SPROM8_LEDDC, SSB_SPROM8_LEDDC_ON,
 	     SSB_SPROM8_LEDDC_ON_SHIFT);
 	SPEX(leddc_off_time, SSB_SPROM8_LEDDC, SSB_SPROM8_LEDDC_OFF,
@@ -971,7 +803,6 @@ static void sprom_extract_r8(struct ssb_sprom *out, const u16 *in)
 	SPEX(temps_hysteresis, SSB_SPROM8_TEMPDELTA,
 	     SSB_SPROM8_TEMPDELTA_HYSTERESIS,
 	     SSB_SPROM8_TEMPDELTA_HYSTERESIS_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sprom_extract_r458(out, in);
 
 	/* TODO - get remaining rev 8 stuff needed */
@@ -983,11 +814,7 @@ static int sprom_extract(struct ssb_bus *bus, struct ssb_sprom *out,
 	memset(out, 0, sizeof(*out));
 
 	out->revision = in[size - 1] & 0x00FF;
-<<<<<<< HEAD
-	ssb_dprintk(KERN_DEBUG PFX "SPROM revision %d detected.\n", out->revision);
-=======
 	pr_debug("SPROM revision %d detected\n", out->revision);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(out->et0mac, 0xFF, 6);		/* preset et0 and et1 mac */
 	memset(out->et1mac, 0xFF, 6);
 
@@ -996,11 +823,7 @@ static int sprom_extract(struct ssb_bus *bus, struct ssb_sprom *out,
 		 * number stored in the SPROM.
 		 * Always extract r1. */
 		out->revision = 1;
-<<<<<<< HEAD
-		ssb_dprintk(KERN_DEBUG PFX "SPROM treated as revision %d\n", out->revision);
-=======
 		pr_debug("SPROM treated as revision %d\n", out->revision);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (out->revision) {
@@ -1017,14 +840,8 @@ static int sprom_extract(struct ssb_bus *bus, struct ssb_sprom *out,
 		sprom_extract_r8(out, in);
 		break;
 	default:
-<<<<<<< HEAD
-		ssb_printk(KERN_WARNING PFX "Unsupported SPROM"
-			   " revision %d detected. Will extract"
-			   " v1\n", out->revision);
-=======
 		pr_warn("Unsupported SPROM revision %d detected. Will extract v1\n",
 			out->revision);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		out->revision = 1;
 		sprom_extract_r123(out, in);
 	}
@@ -1044,11 +861,7 @@ static int ssb_pci_sprom_get(struct ssb_bus *bus,
 	u16 *buf;
 
 	if (!ssb_is_sprom_available(bus)) {
-<<<<<<< HEAD
-		ssb_printk(KERN_ERR PFX "No SPROM available!\n");
-=======
 		pr_err("No SPROM available!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	if (bus->chipco.dev) {	/* can be unavailable! */
@@ -1067,11 +880,7 @@ static int ssb_pci_sprom_get(struct ssb_bus *bus,
 	} else {
 		bus->sprom_offset = SSB_SPROM_BASE1;
 	}
-<<<<<<< HEAD
-	ssb_dprintk(KERN_INFO PFX "SPROM offset is 0x%x\n", bus->sprom_offset);
-=======
 	pr_debug("SPROM offset is 0x%x\n", bus->sprom_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf = kcalloc(SSB_SPROMSIZE_WORDS_R123, sizeof(u16), GFP_KERNEL);
 	if (!buf)
@@ -1096,20 +905,6 @@ static int ssb_pci_sprom_get(struct ssb_bus *bus,
 			 * available for this device in some other storage */
 			err = ssb_fill_sprom_with_fallback(bus, sprom);
 			if (err) {
-<<<<<<< HEAD
-				ssb_printk(KERN_WARNING PFX "WARNING: Using"
-					   " fallback SPROM failed (err %d)\n",
-					   err);
-			} else {
-				ssb_dprintk(KERN_DEBUG PFX "Using SPROM"
-					    " revision %d provided by"
-					    " platform.\n", sprom->revision);
-				err = 0;
-				goto out_free;
-			}
-			ssb_printk(KERN_WARNING PFX "WARNING: Invalid"
-				   " SPROM CRC (corrupt SPROM)\n");
-=======
 				pr_warn("WARNING: Using fallback SPROM failed (err %d)\n",
 					err);
 				goto out_free;
@@ -1119,7 +914,6 @@ static int ssb_pci_sprom_get(struct ssb_bus *bus,
 				err = 0;
 				goto out_free;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	err = sprom_extract(bus, sprom, buf, bus->sprom_size);
@@ -1134,10 +928,6 @@ static void ssb_pci_get_boardinfo(struct ssb_bus *bus,
 {
 	bi->vendor = bus->host_pci->subsystem_vendor;
 	bi->type = bus->host_pci->subsystem_device;
-<<<<<<< HEAD
-	bi->rev = bus->host_pci->revision;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ssb_pci_get_invariants(struct ssb_bus *bus,
@@ -1154,21 +944,12 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_SSB_DEBUG
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ssb_pci_assert_buspower(struct ssb_bus *bus)
 {
 	if (likely(bus->powered_up))
 		return 0;
 
-<<<<<<< HEAD
-	printk(KERN_ERR PFX "FATAL ERROR: Bus powered down "
-	       "while accessing PCI MMIO space\n");
-=======
 	pr_err("FATAL ERROR: Bus powered down while accessing PCI MMIO space\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bus->power_warn_count <= 10) {
 		bus->power_warn_count++;
 		dump_stack();
@@ -1176,15 +957,6 @@ static int ssb_pci_assert_buspower(struct ssb_bus *bus)
 
 	return -ENODEV;
 }
-<<<<<<< HEAD
-#else /* DEBUG */
-static inline int ssb_pci_assert_buspower(struct ssb_bus *bus)
-{
-	return 0;
-}
-#endif /* DEBUG */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static u8 ssb_pci_read8(struct ssb_device *dev, u16 offset)
 {
@@ -1243,17 +1015,6 @@ static void ssb_pci_block_read(struct ssb_device *dev, void *buffer,
 		ioread8_rep(addr, buffer, count);
 		break;
 	case sizeof(u16):
-<<<<<<< HEAD
-		SSB_WARN_ON(count & 1);
-		ioread16_rep(addr, buffer, count >> 1);
-		break;
-	case sizeof(u32):
-		SSB_WARN_ON(count & 3);
-		ioread32_rep(addr, buffer, count >> 2);
-		break;
-	default:
-		SSB_WARN_ON(1);
-=======
 		WARN_ON(count & 1);
 		ioread16_rep(addr, buffer, count >> 1);
 		break;
@@ -1263,7 +1024,6 @@ static void ssb_pci_block_read(struct ssb_device *dev, void *buffer,
 		break;
 	default:
 		WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return;
@@ -1329,17 +1089,6 @@ static void ssb_pci_block_write(struct ssb_device *dev, const void *buffer,
 		iowrite8_rep(addr, buffer, count);
 		break;
 	case sizeof(u16):
-<<<<<<< HEAD
-		SSB_WARN_ON(count & 1);
-		iowrite16_rep(addr, buffer, count >> 1);
-		break;
-	case sizeof(u32):
-		SSB_WARN_ON(count & 3);
-		iowrite32_rep(addr, buffer, count >> 2);
-		break;
-	default:
-		SSB_WARN_ON(1);
-=======
 		WARN_ON(count & 1);
 		iowrite16_rep(addr, buffer, count >> 1);
 		break;
@@ -1349,7 +1098,6 @@ static void ssb_pci_block_write(struct ssb_device *dev, const void *buffer,
 		break;
 	default:
 		WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #endif /* CONFIG_SSB_BLOCKIO */
@@ -1368,15 +1116,9 @@ const struct ssb_bus_ops ssb_pci_ops = {
 #endif
 };
 
-<<<<<<< HEAD
-static ssize_t ssb_pci_attr_sprom_show(struct device *pcidev,
-				       struct device_attribute *attr,
-				       char *buf)
-=======
 static ssize_t ssb_sprom_show(struct device *pcidev,
 			      struct device_attribute *attr,
 			      char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = container_of(pcidev, struct pci_dev, dev);
 	struct ssb_bus *bus;
@@ -1388,15 +1130,9 @@ static ssize_t ssb_sprom_show(struct device *pcidev,
 	return ssb_attr_sprom_show(bus, buf, sprom_do_read);
 }
 
-<<<<<<< HEAD
-static ssize_t ssb_pci_attr_sprom_store(struct device *pcidev,
-					struct device_attribute *attr,
-					const char *buf, size_t count)
-=======
 static ssize_t ssb_sprom_store(struct device *pcidev,
 			       struct device_attribute *attr,
 			       const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = container_of(pcidev, struct pci_dev, dev);
 	struct ssb_bus *bus;
@@ -1409,13 +1145,7 @@ static ssize_t ssb_sprom_store(struct device *pcidev,
 				    sprom_check_crc, sprom_do_write);
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(ssb_sprom, 0600,
-		   ssb_pci_attr_sprom_show,
-		   ssb_pci_attr_sprom_store);
-=======
 static DEVICE_ATTR_ADMIN_RW(ssb_sprom);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ssb_pci_exit(struct ssb_bus *bus)
 {
@@ -1431,25 +1161,12 @@ void ssb_pci_exit(struct ssb_bus *bus)
 int ssb_pci_init(struct ssb_bus *bus)
 {
 	struct pci_dev *pdev;
-<<<<<<< HEAD
-	int err;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bus->bustype != SSB_BUSTYPE_PCI)
 		return 0;
 
 	pdev = bus->host_pci;
 	mutex_init(&bus->sprom_mutex);
-<<<<<<< HEAD
-	err = device_create_file(&pdev->dev, &dev_attr_ssb_sprom);
-	if (err)
-		goto out;
-
-out:
-	return err;
-=======
 
 	return device_create_file(&pdev->dev, &dev_attr_ssb_sprom);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

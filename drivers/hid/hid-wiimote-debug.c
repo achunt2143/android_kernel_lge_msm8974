@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-/*
- * Debug support for HID Nintendo Wiimote devices
- * Copyright (c) 2011 David Herrmann
- */
-
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Debug support for HID Nintendo Wii / Wii U peripherals
@@ -17,7 +5,6 @@
  */
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/debugfs.h>
@@ -137,12 +124,8 @@ static int wiidebug_drm_open(struct inode *i, struct file *f)
 static ssize_t wiidebug_drm_write(struct file *f, const char __user *u,
 							size_t s, loff_t *off)
 {
-<<<<<<< HEAD
-	struct wiimote_debug *dbg = f->private_data;
-=======
 	struct seq_file *sf = f->private_data;
 	struct wiimote_debug *dbg = sf->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	char buf[16];
 	ssize_t len;
@@ -155,11 +138,7 @@ static ssize_t wiidebug_drm_write(struct file *f, const char __user *u,
 	if (copy_from_user(buf, u, len))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	buf[15] = 0;
-=======
 	buf[len] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < WIIPROTO_REQ_MAX; ++i) {
 		if (!wiidebug_drmmap[i])
@@ -169,12 +148,6 @@ static ssize_t wiidebug_drm_write(struct file *f, const char __user *u,
 	}
 
 	if (i == WIIPROTO_REQ_MAX)
-<<<<<<< HEAD
-		i = simple_strtoul(buf, NULL, 10);
-
-	spin_lock_irqsave(&dbg->wdata->state.lock, flags);
-	wiiproto_req_drm(dbg->wdata, (__u8) i);
-=======
 		i = simple_strtoul(buf, NULL, 16);
 
 	spin_lock_irqsave(&dbg->wdata->state.lock, flags);
@@ -182,7 +155,6 @@ static ssize_t wiidebug_drm_write(struct file *f, const char __user *u,
 	wiiproto_req_drm(dbg->wdata, (__u8) i);
 	if (i != WIIPROTO_REQ_NULL)
 		dbg->wdata->state.flags |= WIIPROTO_FLAG_DRM_LOCKED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&dbg->wdata->state.lock, flags);
 
 	return len;
@@ -201,10 +173,6 @@ int wiidebug_init(struct wiimote_data *wdata)
 {
 	struct wiimote_debug *dbg;
 	unsigned long flags;
-<<<<<<< HEAD
-	int ret = -ENOMEM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg = kzalloc(sizeof(*dbg), GFP_KERNEL);
 	if (!dbg)
@@ -214,19 +182,9 @@ int wiidebug_init(struct wiimote_data *wdata)
 
 	dbg->eeprom = debugfs_create_file("eeprom", S_IRUSR,
 		dbg->wdata->hdev->debug_dir, dbg, &wiidebug_eeprom_fops);
-<<<<<<< HEAD
-	if (!dbg->eeprom)
-		goto err;
 
 	dbg->drm = debugfs_create_file("drm", S_IRUSR,
 			dbg->wdata->hdev->debug_dir, dbg, &wiidebug_drm_fops);
-	if (!dbg->drm)
-		goto err_drm;
-=======
-
-	dbg->drm = debugfs_create_file("drm", S_IRUSR,
-			dbg->wdata->hdev->debug_dir, dbg, &wiidebug_drm_fops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&wdata->state.lock, flags);
 	wdata->debug = dbg;
@@ -234,14 +192,6 @@ int wiidebug_init(struct wiimote_data *wdata)
 
 	return 0;
 
-<<<<<<< HEAD
-err_drm:
-	debugfs_remove(dbg->eeprom);
-err:
-	kfree(dbg);
-	return ret;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void wiidebug_deinit(struct wiimote_data *wdata)

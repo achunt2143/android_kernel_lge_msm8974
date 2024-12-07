@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#if defined(__i386__) || defined(__x86_64__)
-
-#include "helpers/helpers.h"
-=======
 // SPDX-License-Identifier: GPL-2.0
 
 #include <stdio.h>
@@ -19,28 +14,10 @@
 #include "cpupower_intern.h"
 
 #define MSR_AMD_HWCR	0xc0010015
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int cpufreq_has_boost_support(unsigned int cpu, int *support, int *active,
 			int *states)
 {
-<<<<<<< HEAD
-	struct cpupower_cpu_info cpu_info;
-	int ret;
-
-	*support = *active = *states = 0;
-
-	ret = get_cpu_info(0, &cpu_info);
-	if (ret)
-		return ret;
-
-	if (cpupower_cpu_info.caps & CPUPOWER_CAP_AMD_CBP) {
-		*support = 1;
-		amd_pci_get_num_boost_states(active, states);
-		if (ret <= 0)
-			return ret;
-		*support = 1;
-=======
 	int ret;
 	unsigned long long val;
 
@@ -66,14 +43,10 @@ int cpufreq_has_boost_support(unsigned int cpu, int *support, int *active,
 		}
 	} else if (cpupower_cpu_info.caps & CPUPOWER_CAP_AMD_PSTATE) {
 		amd_pstate_boost_init(cpu, support, active);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (cpupower_cpu_info.caps & CPUPOWER_CAP_INTEL_IDA)
 		*support = *active = 1;
 	return 0;
 }
-<<<<<<< HEAD
-#endif /* #if defined(__i386__) || defined(__x86_64__) */
-=======
 
 int cpupower_intel_get_perf_bias(unsigned int cpu)
 {
@@ -286,4 +259,3 @@ void print_speed(unsigned long speed, int no_rounding)
 		}
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

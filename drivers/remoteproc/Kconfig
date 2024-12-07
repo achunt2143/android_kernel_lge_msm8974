@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-menu "Remoteproc drivers (EXPERIMENTAL)"
-
-# REMOTEPROC gets selected by whoever wants it
-config REMOTEPROC
-	tristate
-	depends on EXPERIMENTAL
-	select FW_CONFIG
-	select VIRTIO
-
-config OMAP_REMOTEPROC
-	tristate "OMAP remoteproc support"
-	depends on EXPERIMENTAL
-	depends on ARCH_OMAP4
-	depends on OMAP_IOMMU
-	select REMOTEPROC
-	select OMAP_MBOX_FWK
-	select RPMSG
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 menu "Remoteproc drivers"
 
@@ -89,22 +70,12 @@ config OMAP_REMOTEPROC
 	depends on OMAP_IOMMU
 	select MAILBOX
 	select OMAP2PLUS_MBOX
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say y here to support OMAP's remote processors (dual M3
 	  and DSP on OMAP4) via the remote processor framework.
 
 	  Currently only supported on OMAP4.
 
-<<<<<<< HEAD
-	  Usually you want to say y here, in order to enable multimedia
-	  use-cases to run on your platform (multimedia codecs are
-	  offloaded to remote DSP processors using this framework).
-
-	  It's safe to say n here if you're not interested in multimedia
-	  offloading or just want a bare minimum kernel.
-
-=======
 	  Usually you want to say Y here, in order to enable multimedia
 	  use-cases to run on your platform (multimedia codecs are
 	  offloaded to remote DSP processors using this framework).
@@ -396,5 +367,4 @@ config XLNX_R5_REMOTEPROC
 
 endif # REMOTEPROC
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endmenu

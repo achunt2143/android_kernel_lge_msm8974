@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
@@ -9,46 +6,6 @@
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -60,25 +17,15 @@ ACPI_MODULE_NAME("nsobject")
  *
  * FUNCTION:    acpi_ns_attach_object
  *
-<<<<<<< HEAD
- * PARAMETERS:  Node                - Parent Node
- *              Object              - Object to be attached
- *              Type                - Type of object, or ACPI_TYPE_ANY if not
-=======
  * PARAMETERS:  node                - Parent Node
  *              object              - Object to be attached
  *              type                - Type of object, or ACPI_TYPE_ANY if not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                    known
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Record the given object as the value associated with the
-<<<<<<< HEAD
- *              name whose acpi_handle is passed.  If Object is NULL
-=======
  *              name whose acpi_handle is passed. If Object is NULL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              and Type is ACPI_TYPE_ANY, set the name as having no value.
  *              Note: Future may require that the Node->Flags field be passed
  *              as a parameter.
@@ -150,11 +97,7 @@ acpi_ns_attach_object(struct acpi_namespace_node *node,
 		 ((struct acpi_namespace_node *)object)->object) {
 		/*
 		 * Value passed is a name handle and that name has a
-<<<<<<< HEAD
-		 * non-null value.  Use that name's value and type.
-=======
 		 * non-null value. Use that name's value and type.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		obj_desc = ((struct acpi_namespace_node *)object)->object;
 		object_type = ((struct acpi_namespace_node *)object)->type;
@@ -212,11 +155,7 @@ acpi_ns_attach_object(struct acpi_namespace_node *node,
  *
  * FUNCTION:    acpi_ns_detach_object
  *
-<<<<<<< HEAD
- * PARAMETERS:  Node           - A Namespace node whose object will be detached
-=======
  * PARAMETERS:  node           - A Namespace node whose object will be detached
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None.
  *
@@ -247,17 +186,6 @@ void acpi_ns_detach_object(struct acpi_namespace_node *node)
 		}
 	}
 
-<<<<<<< HEAD
-	/* Clear the entry in all cases */
-
-	node->object = NULL;
-	if (ACPI_GET_DESCRIPTOR_TYPE(obj_desc) == ACPI_DESC_TYPE_OPERAND) {
-		node->object = obj_desc->common.next_object;
-		if (node->object &&
-		    ((node->object)->common.type != ACPI_TYPE_LOCAL_DATA)) {
-			node->object = node->object->common.next_object;
-		}
-=======
 	if (obj_desc->common.type == ACPI_TYPE_REGION) {
 		acpi_ut_remove_address_range(obj_desc->region.space_id, node);
 	}
@@ -287,7 +215,6 @@ void acpi_ns_detach_object(struct acpi_namespace_node *node)
 		     ACPI_TYPE_LOCAL_DATA)) {
 			obj_desc->common.next_object = NULL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Reset the node type to untyped */
@@ -307,11 +234,7 @@ void acpi_ns_detach_object(struct acpi_namespace_node *node)
  *
  * FUNCTION:    acpi_ns_get_attached_object
  *
-<<<<<<< HEAD
- * PARAMETERS:  Node             - Namespace node
-=======
  * PARAMETERS:  node             - Namespace node
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Current value of the object field from the Node whose
  *              handle is passed
@@ -346,11 +269,7 @@ union acpi_operand_object *acpi_ns_get_attached_object(struct
  *
  * FUNCTION:    acpi_ns_get_secondary_object
  *
-<<<<<<< HEAD
- * PARAMETERS:  Node             - Namespace node
-=======
  * PARAMETERS:  node             - Namespace node
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Current value of the object field from the Node whose
  *              handle is passed.
@@ -380,15 +299,6 @@ union acpi_operand_object *acpi_ns_get_secondary_object(union
  *
  * FUNCTION:    acpi_ns_attach_data
  *
-<<<<<<< HEAD
- * PARAMETERS:  Node            - Namespace node
- *              Handler         - Handler to be associated with the data
- *              Data            - Data to be attached
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Low-level attach data.  Create and attach a Data object.
-=======
  * PARAMETERS:  node            - Namespace node
  *              handler         - Handler to be associated with the data
  *              data            - Data to be attached
@@ -396,7 +306,6 @@ union acpi_operand_object *acpi_ns_get_secondary_object(union
  * RETURN:      Status
  *
  * DESCRIPTION: Low-level attach data. Create and attach a Data object.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
@@ -447,31 +356,18 @@ acpi_ns_attach_data(struct acpi_namespace_node *node,
  *
  * FUNCTION:    acpi_ns_detach_data
  *
-<<<<<<< HEAD
- * PARAMETERS:  Node            - Namespace node
- *              Handler         - Handler associated with the data
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Low-level detach data.  Delete the data node, but the caller
-=======
  * PARAMETERS:  node            - Namespace node
  *              handler         - Handler associated with the data
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Low-level detach data. Delete the data node, but the caller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              is responsible for the actual data.
  *
  ******************************************************************************/
 
 acpi_status
-<<<<<<< HEAD
-acpi_ns_detach_data(struct acpi_namespace_node * node,
-=======
 acpi_ns_detach_data(struct acpi_namespace_node *node,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    acpi_object_handler handler)
 {
 	union acpi_operand_object *obj_desc;
@@ -504,15 +400,9 @@ acpi_ns_detach_data(struct acpi_namespace_node *node,
  *
  * FUNCTION:    acpi_ns_get_attached_data
  *
-<<<<<<< HEAD
- * PARAMETERS:  Node            - Namespace node
- *              Handler         - Handler associated with the data
- *              Data            - Where the data is returned
-=======
  * PARAMETERS:  node            - Namespace node
  *              handler         - Handler associated with the data
  *              data            - Where the data is returned
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -522,11 +412,7 @@ acpi_ns_detach_data(struct acpi_namespace_node *node,
  ******************************************************************************/
 
 acpi_status
-<<<<<<< HEAD
-acpi_ns_get_attached_data(struct acpi_namespace_node * node,
-=======
 acpi_ns_get_attached_data(struct acpi_namespace_node *node,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  acpi_object_handler handler, void **data)
 {
 	union acpi_operand_object *obj_desc;

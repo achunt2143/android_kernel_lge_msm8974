@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-/*
- *  Copyright (c) 2002 Petko Manolov (petkan@users.sourceforge.net)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- */
-
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *  Copyright (c) 2002 Petko Manolov (petkan@users.sourceforge.net)
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/signal.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -23,11 +11,7 @@
 #include <linux/mii.h>
 #include <linux/ethtool.h>
 #include <linux/usb.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Version Information */
 #define DRIVER_VERSION "v0.6.2 (2004/08/27)"
@@ -125,11 +109,7 @@
 #undef	EEPROM_WRITE
 
 /* table of devices that work with this driver */
-<<<<<<< HEAD
-static struct usb_device_id rtl8150_table[] = {
-=======
 static const struct usb_device_id rtl8150_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{USB_DEVICE(VENDOR_ID_REALTEK, PRODUCT_ID_RTL8150)},
 	{USB_DEVICE(VENDOR_ID_MELCO, PRODUCT_ID_LUAKTX)},
 	{USB_DEVICE(VENDOR_ID_MICRONET, PRODUCT_ID_SP128AR)},
@@ -146,34 +126,23 @@ struct rtl8150 {
 	struct usb_device *udev;
 	struct tasklet_struct tl;
 	struct net_device *netdev;
-<<<<<<< HEAD
-	struct urb *rx_urb, *tx_urb, *intr_urb, *ctrl_urb;
-=======
 	struct urb *rx_urb, *tx_urb, *intr_urb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *tx_skb, *rx_skb;
 	struct sk_buff *rx_skb_pool[RX_SKB_POOL_SIZE];
 	spinlock_t rx_pool_lock;
 	struct usb_ctrlrequest dr;
 	int intr_interval;
-<<<<<<< HEAD
-	__le16 rx_creg;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *intr_buff;
 	u8 phy;
 };
 
 typedef struct rtl8150 rtl8150_t;
 
-<<<<<<< HEAD
-=======
 struct async_req {
 	struct usb_ctrlrequest dr;
 	u16 rx_creg;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char driver_name [] = "rtl8150";
 
 /*
@@ -183,64 +152,6 @@ static const char driver_name [] = "rtl8150";
 */
 static int get_registers(rtl8150_t * dev, u16 indx, u16 size, void *data)
 {
-<<<<<<< HEAD
-	return usb_control_msg(dev->udev, usb_rcvctrlpipe(dev->udev, 0),
-			       RTL8150_REQ_GET_REGS, RTL8150_REQT_READ,
-			       indx, 0, data, size, 500);
-}
-
-static int set_registers(rtl8150_t * dev, u16 indx, u16 size, void *data)
-{
-	return usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, 0),
-			       RTL8150_REQ_SET_REGS, RTL8150_REQT_WRITE,
-			       indx, 0, data, size, 500);
-}
-
-static void ctrl_callback(struct urb *urb)
-{
-	rtl8150_t *dev;
-	int status = urb->status;
-
-	switch (status) {
-	case 0:
-		break;
-	case -EINPROGRESS:
-		break;
-	case -ENOENT:
-		break;
-	default:
-		if (printk_ratelimit())
-			dev_warn(&urb->dev->dev, "ctrl urb status %d\n", status);
-	}
-	dev = urb->context;
-	clear_bit(RX_REG_SET, &dev->flags);
-}
-
-static int async_set_registers(rtl8150_t * dev, u16 indx, u16 size)
-{
-	int ret;
-
-	if (test_bit(RX_REG_SET, &dev->flags))
-		return -EAGAIN;
-
-	dev->dr.bRequestType = RTL8150_REQT_WRITE;
-	dev->dr.bRequest = RTL8150_REQ_SET_REGS;
-	dev->dr.wValue = cpu_to_le16(indx);
-	dev->dr.wIndex = 0;
-	dev->dr.wLength = cpu_to_le16(size);
-	dev->ctrl_urb->transfer_buffer_length = size;
-	usb_fill_control_urb(dev->ctrl_urb, dev->udev,
-			 usb_sndctrlpipe(dev->udev, 0), (char *) &dev->dr,
-			 &dev->rx_creg, size, ctrl_callback, dev);
-	if ((ret = usb_submit_urb(dev->ctrl_urb, GFP_ATOMIC))) {
-		if (ret == -ENODEV)
-			netif_device_detach(dev->netdev);
-		err("control request submission failed: %d", ret);
-	} else
-		set_bit(RX_REG_SET, &dev->flags);
-
-	return ret;
-=======
 	return usb_control_msg_recv(dev->udev, 0, RTL8150_REQ_GET_REGS,
 				    RTL8150_REQT_READ, indx, 0, data, size,
 				    1000, GFP_NOIO);
@@ -294,7 +205,6 @@ static int async_set_registers(rtl8150_t *dev, u16 indx, u16 size, u16 reg)
 		dev_err(&dev->udev->dev, "%s failed with %d\n", __func__, res);
 	}
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int read_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 * reg)
@@ -344,14 +254,6 @@ static int write_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 reg)
 		return 1;
 }
 
-<<<<<<< HEAD
-static inline void set_ethernet_addr(rtl8150_t * dev)
-{
-	u8 node_id[6];
-
-	get_registers(dev, IDR, sizeof(node_id), node_id);
-	memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
-=======
 static void set_ethernet_addr(rtl8150_t *dev)
 {
 	u8 node_id[ETH_ALEN];
@@ -366,7 +268,6 @@ static void set_ethernet_addr(rtl8150_t *dev)
 		netdev_notice(dev->netdev, "Assigned a random MAC address: %pM\n",
 			      dev->netdev->dev_addr);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rtl8150_set_mac_address(struct net_device *netdev, void *p)
@@ -377,13 +278,8 @@ static int rtl8150_set_mac_address(struct net_device *netdev, void *p)
 	if (netif_running(netdev))
 		return -EBUSY;
 
-<<<<<<< HEAD
-	memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
-	dbg("%s: Setting MAC address to %pM\n", netdev->name, netdev->dev_addr);
-=======
 	eth_hw_addr_set(netdev, addr->sa_data);
 	netdev_dbg(netdev, "Setting MAC address to %pM\n", netdev->dev_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set the IDR registers. */
 	set_registers(dev, IDR, netdev->addr_len, netdev->dev_addr);
 #ifdef EEPROM_WRITE
@@ -438,16 +334,6 @@ static int alloc_all_urbs(rtl8150_t * dev)
 		usb_free_urb(dev->tx_urb);
 		return 0;
 	}
-<<<<<<< HEAD
-	dev->ctrl_urb = usb_alloc_urb(0, GFP_KERNEL);
-	if (!dev->ctrl_urb) {
-		usb_free_urb(dev->rx_urb);
-		usb_free_urb(dev->tx_urb);
-		usb_free_urb(dev->intr_urb);
-		return 0;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -457,10 +343,6 @@ static void free_all_urbs(rtl8150_t * dev)
 	usb_free_urb(dev->rx_urb);
 	usb_free_urb(dev->tx_urb);
 	usb_free_urb(dev->intr_urb);
-<<<<<<< HEAD
-	usb_free_urb(dev->ctrl_urb);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void unlink_all_urbs(rtl8150_t * dev)
@@ -468,10 +350,6 @@ static void unlink_all_urbs(rtl8150_t * dev)
 	usb_kill_urb(dev->rx_urb);
 	usb_kill_urb(dev->tx_urb);
 	usb_kill_urb(dev->intr_urb);
-<<<<<<< HEAD
-	usb_kill_urb(dev->ctrl_urb);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct sk_buff *pull_skb(rtl8150_t *dev)
@@ -495,15 +373,9 @@ static void read_bulk_callback(struct urb *urb)
 	unsigned pkt_len, res;
 	struct sk_buff *skb;
 	struct net_device *netdev;
-<<<<<<< HEAD
-	u16 rx_stat;
-	int status = urb->status;
-	int result;
-=======
 	int status = urb->status;
 	int result;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = urb->context;
 	if (!dev)
@@ -536,10 +408,6 @@ static void read_bulk_callback(struct urb *urb)
 		goto goon;
 
 	res = urb->actual_length;
-<<<<<<< HEAD
-	rx_stat = le16_to_cpu(*(__le16 *)(urb->transfer_buffer + res - 4));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pkt_len = res - 4;
 
 	skb_put(dev->rx_skb, pkt_len);
@@ -548,15 +416,9 @@ static void read_bulk_callback(struct urb *urb)
 	netdev->stats.rx_packets++;
 	netdev->stats.rx_bytes += pkt_len;
 
-<<<<<<< HEAD
-	spin_lock(&dev->rx_pool_lock);
-	skb = pull_skb(dev);
-	spin_unlock(&dev->rx_pool_lock);
-=======
 	spin_lock_irqsave(&dev->rx_pool_lock, flags);
 	skb = pull_skb(dev);
 	spin_unlock_irqrestore(&dev->rx_pool_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb)
 		goto resched;
 
@@ -593,11 +455,7 @@ static void write_bulk_callback(struct urb *urb)
 	if (status)
 		dev_info(&urb->dev->dev, "%s: Tx status %d\n",
 			 dev->netdev->name, status);
-<<<<<<< HEAD
-	dev->netdev->trans_start = jiffies;
-=======
 	netif_trans_update(dev->netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue(dev->netdev);
 }
 
@@ -639,20 +497,12 @@ static void intr_callback(struct urb *urb)
 	if ((d[INT_MSR] & MSR_LINK) == 0) {
 		if (netif_carrier_ok(dev->netdev)) {
 			netif_carrier_off(dev->netdev);
-<<<<<<< HEAD
-			dbg("%s: LINK LOST\n", __func__);
-=======
 			netdev_dbg(dev->netdev, "%s: LINK LOST\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		if (!netif_carrier_ok(dev->netdev)) {
 			netif_carrier_on(dev->netdev);
-<<<<<<< HEAD
-			dbg("%s: LINK CAME BACK\n", __func__);
-=======
 			netdev_dbg(dev->netdev, "%s: LINK CAME BACK\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -661,15 +511,9 @@ resubmit:
 	if (res == -ENODEV)
 		netif_device_detach(dev->netdev);
 	else if (res)
-<<<<<<< HEAD
-		err ("can't resubmit intr, %s-%s/input0, status %d",
-				dev->udev->bus->bus_name,
-				dev->udev->devpath, res);
-=======
 		dev_err(&dev->udev->dev,
 			"can't resubmit intr, %s-%s/input0, status %d\n",
 			dev->udev->bus->bus_name, dev->udev->devpath, res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rtl8150_suspend(struct usb_interface *intf, pm_message_t message)
@@ -730,22 +574,12 @@ static void free_skb_pool(rtl8150_t *dev)
 	int i;
 
 	for (i = 0; i < RX_SKB_POOL_SIZE; i++)
-<<<<<<< HEAD
-		if (dev->rx_skb_pool[i])
-			dev_kfree_skb(dev->rx_skb_pool[i]);
-}
-
-static void rx_fixup(unsigned long data)
-{
-	struct rtl8150 *dev = (struct rtl8150 *)data;
-=======
 		dev_kfree_skb(dev->rx_skb_pool[i]);
 }
 
 static void rx_fixup(struct tasklet_struct *t)
 {
 	struct rtl8150 *dev = from_tasklet(dev, t, tl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 	int status;
 
@@ -788,10 +622,6 @@ static int enable_net_traffic(rtl8150_t * dev)
 	}
 	/* RCR bit7=1 attach Rx info at the end;  =0 HW CRC (which is broken) */
 	rcr = 0x9e;
-<<<<<<< HEAD
-	dev->rx_creg = cpu_to_le16(rcr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tcr = 0xd8;
 	cr = 0x0c;
 	if (!(rcr & 0x80))
@@ -813,11 +643,7 @@ static void disable_net_traffic(rtl8150_t * dev)
 	set_registers(dev, CR, 1, &cr);
 }
 
-<<<<<<< HEAD
-static void rtl8150_tx_timeout(struct net_device *netdev)
-=======
 static void rtl8150_tx_timeout(struct net_device *netdev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	rtl8150_t *dev = netdev_priv(netdev);
 	dev_warn(&netdev->dev, "Tx timeout.\n");
@@ -828,22 +654,6 @@ static void rtl8150_tx_timeout(struct net_device *netdev, unsigned int txqueue)
 static void rtl8150_set_multicast(struct net_device *netdev)
 {
 	rtl8150_t *dev = netdev_priv(netdev);
-<<<<<<< HEAD
-	netif_stop_queue(netdev);
-	if (netdev->flags & IFF_PROMISC) {
-		dev->rx_creg |= cpu_to_le16(0x0001);
-		dev_info(&netdev->dev, "%s: promiscuous mode\n", netdev->name);
-	} else if (!netdev_mc_empty(netdev) ||
-		   (netdev->flags & IFF_ALLMULTI)) {
-		dev->rx_creg &= cpu_to_le16(0xfffe);
-		dev->rx_creg |= cpu_to_le16(0x0002);
-		dev_info(&netdev->dev, "%s: allmulti set\n", netdev->name);
-	} else {
-		/* ~RX_MULTICAST, ~RX_PROMISCUOUS */
-		dev->rx_creg &= cpu_to_le16(0x00fc);
-	}
-	async_set_registers(dev, RCR, 2);
-=======
 	u16 rx_creg = 0x9e;
 
 	netif_stop_queue(netdev);
@@ -860,7 +670,6 @@ static void rtl8150_set_multicast(struct net_device *netdev)
 		rx_creg &= 0x00fc;
 	}
 	async_set_registers(dev, RCR, sizeof(rx_creg), rx_creg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue(netdev);
 }
 
@@ -888,11 +697,7 @@ static netdev_tx_t rtl8150_start_xmit(struct sk_buff *skb,
 	} else {
 		netdev->stats.tx_packets++;
 		netdev->stats.tx_bytes += skb->len;
-<<<<<<< HEAD
-		netdev->trans_start = jiffies;
-=======
 		netif_trans_update(netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return NETDEV_TX_OK;
@@ -951,40 +756,19 @@ static int rtl8150_open(struct net_device *netdev)
 static int rtl8150_close(struct net_device *netdev)
 {
 	rtl8150_t *dev = netdev_priv(netdev);
-<<<<<<< HEAD
-	int res = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_stop_queue(netdev);
 	if (!test_bit(RTL8150_UNPLUG, &dev->flags))
 		disable_net_traffic(dev);
 	unlink_all_urbs(dev);
 
-<<<<<<< HEAD
-	return res;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rtl8150_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *info)
 {
 	rtl8150_t *dev = netdev_priv(netdev);
 
-<<<<<<< HEAD
-	strncpy(info->driver, driver_name, ETHTOOL_BUSINFO_LEN);
-	strncpy(info->version, DRIVER_VERSION, ETHTOOL_BUSINFO_LEN);
-	usb_make_path(dev->udev, info->bus_info, sizeof info->bus_info);
-}
-
-static int rtl8150_get_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
-{
-	rtl8150_t *dev = netdev_priv(netdev);
-	short lpa, bmcr;
-
-	ecmd->supported = (SUPPORTED_10baseT_Half |
-=======
 	strscpy(info->driver, driver_name, sizeof(info->driver));
 	strscpy(info->version, DRIVER_VERSION, sizeof(info->version));
 	usb_make_path(dev->udev, info->bus_info, sizeof(info->bus_info));
@@ -998,42 +782,18 @@ static int rtl8150_get_link_ksettings(struct net_device *netdev,
 	u32 supported;
 
 	supported = (SUPPORTED_10baseT_Half |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  SUPPORTED_10baseT_Full |
 			  SUPPORTED_100baseT_Half |
 			  SUPPORTED_100baseT_Full |
 			  SUPPORTED_Autoneg |
 			  SUPPORTED_TP | SUPPORTED_MII);
-<<<<<<< HEAD
-	ecmd->port = PORT_TP;
-	ecmd->transceiver = XCVR_INTERNAL;
-	ecmd->phy_address = dev->phy;
-=======
 	ecmd->base.port = PORT_TP;
 	ecmd->base.phy_address = dev->phy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	get_registers(dev, BMCR, 2, &bmcr);
 	get_registers(dev, ANLP, 2, &lpa);
 	if (bmcr & BMCR_ANENABLE) {
 		u32 speed = ((lpa & (LPA_100HALF | LPA_100FULL)) ?
 			     SPEED_100 : SPEED_10);
-<<<<<<< HEAD
-		ethtool_cmd_speed_set(ecmd, speed);
-		ecmd->autoneg = AUTONEG_ENABLE;
-		if (speed == SPEED_100)
-			ecmd->duplex = (lpa & LPA_100FULL) ?
-			    DUPLEX_FULL : DUPLEX_HALF;
-		else
-			ecmd->duplex = (lpa & LPA_10FULL) ?
-			    DUPLEX_FULL : DUPLEX_HALF;
-	} else {
-		ecmd->autoneg = AUTONEG_DISABLE;
-		ethtool_cmd_speed_set(ecmd, ((bmcr & BMCR_SPEED100) ?
-					     SPEED_100 : SPEED_10));
-		ecmd->duplex = (bmcr & BMCR_FULLDPLX) ?
-		    DUPLEX_FULL : DUPLEX_HALF;
-	}
-=======
 		ecmd->base.speed = speed;
 		ecmd->base.autoneg = AUTONEG_ENABLE;
 		if (speed == SPEED_100)
@@ -1053,26 +813,17 @@ static int rtl8150_get_link_ksettings(struct net_device *netdev,
 	ethtool_convert_legacy_u32_to_link_mode(ecmd->link_modes.supported,
 						supported);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static const struct ethtool_ops ops = {
 	.get_drvinfo = rtl8150_get_drvinfo,
-<<<<<<< HEAD
-	.get_settings = rtl8150_get_settings,
-	.get_link = ethtool_op_get_link
-};
-
-static int rtl8150_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
-=======
 	.get_link = ethtool_op_get_link,
 	.get_link_ksettings = rtl8150_get_link_ksettings,
 };
 
 static int rtl8150_siocdevprivate(struct net_device *netdev, struct ifreq *rq,
 				  void __user *udata, int cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	rtl8150_t *dev = netdev_priv(netdev);
 	u16 *data = (u16 *) & rq->ifr_ifru;
@@ -1081,10 +832,7 @@ static int rtl8150_siocdevprivate(struct net_device *netdev, struct ifreq *rq,
 	switch (cmd) {
 	case SIOCDEVPRIVATE:
 		data[0] = dev->phy;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SIOCDEVPRIVATE + 1:
 		read_mii_word(dev, dev->phy, (data[1] & 0x1f), &data[3]);
 		break;
@@ -1103,20 +851,12 @@ static int rtl8150_siocdevprivate(struct net_device *netdev, struct ifreq *rq,
 static const struct net_device_ops rtl8150_netdev_ops = {
 	.ndo_open		= rtl8150_open,
 	.ndo_stop		= rtl8150_close,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= rtl8150_ioctl,
-=======
 	.ndo_siocdevprivate	= rtl8150_siocdevprivate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_start_xmit		= rtl8150_start_xmit,
 	.ndo_tx_timeout		= rtl8150_tx_timeout,
 	.ndo_set_rx_mode	= rtl8150_set_multicast,
 	.ndo_set_mac_address	= rtl8150_set_mac_address,
 
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
@@ -1139,28 +879,13 @@ static int rtl8150_probe(struct usb_interface *intf,
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	tasklet_init(&dev->tl, rx_fixup, (unsigned long)dev);
-=======
 	tasklet_setup(&dev->tl, rx_fixup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&dev->rx_pool_lock);
 
 	dev->udev = udev;
 	dev->netdev = netdev;
 	netdev->netdev_ops = &rtl8150_netdev_ops;
 	netdev->watchdog_timeo = RTL8150_TX_TIMEOUT;
-<<<<<<< HEAD
-	SET_ETHTOOL_OPS(netdev, &ops);
-	dev->intr_interval = 100;	/* 100ms */
-
-	if (!alloc_all_urbs(dev)) {
-		err("out of memory");
-		goto out;
-	}
-	if (!rtl8150_reset(dev)) {
-		err("couldn't reset the device");
-=======
 	netdev->ethtool_ops = &ops;
 	dev->intr_interval = 100;	/* 100ms */
 
@@ -1170,7 +895,6 @@ static int rtl8150_probe(struct usb_interface *intf,
 	}
 	if (!rtl8150_reset(dev)) {
 		dev_err(&intf->dev, "couldn't reset the device\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out1;
 	}
 	fill_skb_pool(dev);
@@ -1179,11 +903,7 @@ static int rtl8150_probe(struct usb_interface *intf,
 	usb_set_intfdata(intf, dev);
 	SET_NETDEV_DEV(netdev, &intf->dev);
 	if (register_netdev(netdev) != 0) {
-<<<<<<< HEAD
-		err("couldn't register the device");
-=======
 		dev_err(&intf->dev, "couldn't register the device\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out2;
 	}
 
@@ -1214,12 +934,7 @@ static void rtl8150_disconnect(struct usb_interface *intf)
 		unlink_all_urbs(dev);
 		free_all_urbs(dev);
 		free_skb_pool(dev);
-<<<<<<< HEAD
-		if (dev->rx_skb)
-			dev_kfree_skb(dev->rx_skb);
-=======
 		dev_kfree_skb(dev->rx_skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(dev->intr_buff);
 		free_netdev(dev->netdev);
 	}
@@ -1231,12 +946,8 @@ static struct usb_driver rtl8150_driver = {
 	.disconnect	= rtl8150_disconnect,
 	.id_table	= rtl8150_table,
 	.suspend	= rtl8150_suspend,
-<<<<<<< HEAD
-	.resume		= rtl8150_resume
-=======
 	.resume		= rtl8150_resume,
 	.disable_hub_initiated_lpm = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(rtl8150_driver);

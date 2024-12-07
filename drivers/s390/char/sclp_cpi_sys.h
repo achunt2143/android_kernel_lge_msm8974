@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-/*
- *  drivers/s390/char/sclp_cpi_sys.h
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    SCLP control program identification sysfs interface
  *
  *    Copyright IBM Corp. 2007

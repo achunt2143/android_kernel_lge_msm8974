@@ -1,23 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AppArmor security module
  *
  * This file contains AppArmor dfa based regular expression matching engine
  *
  * Copyright (C) 1998-2008 Novell/SUSE
-<<<<<<< HEAD
- * Copyright 2009-2010 Canonical Ltd.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
-=======
  * Copyright 2009-2012 Canonical Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -28,17 +16,11 @@
 #include <linux/err.h>
 #include <linux/kref.h>
 
-<<<<<<< HEAD
-#include "include/apparmor.h"
-#include "include/match.h"
-
-=======
 #include "include/lib.h"
 #include "include/match.h"
 
 #define base_idx(X) ((X) & 0xffffff)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * unpack_table - unpack a dfa table (one of accept, default, base, next check)
  * @blob: data to unpack (NOT NULL)
@@ -46,11 +28,7 @@
  *
  * Returns: pointer to table else NULL on failure
  *
-<<<<<<< HEAD
- * NOTE: must be freed by kvfree (not kmalloc)
-=======
  * NOTE: must be freed by kvfree (not kfree)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct table_header *unpack_table(char *blob, size_t bsize)
 {
@@ -64,57 +42,24 @@ static struct table_header *unpack_table(char *blob, size_t bsize)
 	/* loaded td_id's start at 1, subtract 1 now to avoid doing
 	 * it every time we use td_id as an index
 	 */
-<<<<<<< HEAD
-	th.td_id = be16_to_cpu(*(u16 *) (blob)) - 1;
-	th.td_flags = be16_to_cpu(*(u16 *) (blob + 2));
-	th.td_lolen = be32_to_cpu(*(u32 *) (blob + 8));
-=======
 	th.td_id = be16_to_cpu(*(__be16 *) (blob)) - 1;
 	if (th.td_id > YYTD_ID_MAX)
 		goto out;
 	th.td_flags = be16_to_cpu(*(__be16 *) (blob + 2));
 	th.td_lolen = be32_to_cpu(*(__be32 *) (blob + 8));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blob += sizeof(struct table_header);
 
 	if (!(th.td_flags == YYTD_DATA16 || th.td_flags == YYTD_DATA32 ||
 	      th.td_flags == YYTD_DATA8))
 		goto out;
 
-<<<<<<< HEAD
-=======
 	/* if we have a table it must have some entries */
 	if (th.td_lolen == 0)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tsize = table_size(th.td_lolen, th.td_flags);
 	if (bsize < tsize)
 		goto out;
 
-<<<<<<< HEAD
-	table = kvmalloc(tsize);
-	if (table) {
-		*table = th;
-		if (th.td_flags == YYTD_DATA8)
-			UNPACK_ARRAY(table->td_data, blob, th.td_lolen,
-				     u8, byte_to_byte);
-		else if (th.td_flags == YYTD_DATA16)
-			UNPACK_ARRAY(table->td_data, blob, th.td_lolen,
-				     u16, be16_to_cpu);
-		else if (th.td_flags == YYTD_DATA32)
-			UNPACK_ARRAY(table->td_data, blob, th.td_lolen,
-				     u32, be32_to_cpu);
-		else
-			goto fail;
-	}
-
-out:
-	/* if table was vmalloced make sure the page tables are synced
-	 * before it is used, as it goes live to all cpus.
-	 */
-	if (is_vmalloc_addr(table))
-		vm_unmap_aliases();
-=======
 	table = kvzalloc(tsize, GFP_KERNEL);
 	if (table) {
 		table->td_id = th.td_id;
@@ -139,7 +84,6 @@ out:
 	}
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return table;
 fail:
 	kvfree(table);
@@ -147,13 +91,8 @@ fail:
 }
 
 /**
-<<<<<<< HEAD
- * verify_dfa - verify that transitions and states in the tables are in bounds.
- * @dfa: dfa to test  (NOT NULL)
-=======
  * verify_table_headers - verify that the tables headers are as expected
  * @tables: array of dfa tables to check (NOT NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @flags: flags controlling what type of accept table are acceptable
  *
  * Assumes dfa has gone through the first pass verification done by unpacking
@@ -161,9 +100,6 @@ fail:
  *
  * Returns: %0 else error code on failure to verify
  */
-<<<<<<< HEAD
-static int verify_dfa(struct aa_dfa *dfa, int flags)
-=======
 static int verify_table_headers(struct table_header **tables, int flags)
 {
 	size_t state_count, trans_count;
@@ -215,67 +151,10 @@ out:
  * Returns: %0 else error code on failure to verify
  */
 static int verify_dfa(struct aa_dfa *dfa)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	size_t i, state_count, trans_count;
 	int error = -EPROTO;
 
-<<<<<<< HEAD
-	/* check that required tables exist */
-	if (!(dfa->tables[YYTD_ID_DEF] &&
-	      dfa->tables[YYTD_ID_BASE] &&
-	      dfa->tables[YYTD_ID_NXT] && dfa->tables[YYTD_ID_CHK]))
-		goto out;
-
-	/* accept.size == default.size == base.size */
-	state_count = dfa->tables[YYTD_ID_BASE]->td_lolen;
-	if (ACCEPT1_FLAGS(flags)) {
-		if (!dfa->tables[YYTD_ID_ACCEPT])
-			goto out;
-		if (state_count != dfa->tables[YYTD_ID_ACCEPT]->td_lolen)
-			goto out;
-	}
-	if (ACCEPT2_FLAGS(flags)) {
-		if (!dfa->tables[YYTD_ID_ACCEPT2])
-			goto out;
-		if (state_count != dfa->tables[YYTD_ID_ACCEPT2]->td_lolen)
-			goto out;
-	}
-	if (state_count != dfa->tables[YYTD_ID_DEF]->td_lolen)
-		goto out;
-
-	/* next.size == chk.size */
-	trans_count = dfa->tables[YYTD_ID_NXT]->td_lolen;
-	if (trans_count != dfa->tables[YYTD_ID_CHK]->td_lolen)
-		goto out;
-
-	/* if equivalence classes then its table size must be 256 */
-	if (dfa->tables[YYTD_ID_EC] &&
-	    dfa->tables[YYTD_ID_EC]->td_lolen != 256)
-		goto out;
-
-	if (flags & DFA_FLAG_VERIFY_STATES) {
-		for (i = 0; i < state_count; i++) {
-			if (DEFAULT_TABLE(dfa)[i] >= state_count)
-				goto out;
-			/* TODO: do check that DEF state recursion terminates */
-			if (BASE_TABLE(dfa)[i] + 255 >= trans_count) {
-				printk(KERN_ERR "AppArmor DFA next/check upper "
-				       "bounds error\n");
-				goto out;
-			}
-		}
-
-		for (i = 0; i < trans_count; i++) {
-			if (NEXT_TABLE(dfa)[i] >= state_count)
-				goto out;
-			if (CHECK_TABLE(dfa)[i] >= state_count)
-				goto out;
-		}
-	}
-
-	error = 0;
-=======
 	state_count = dfa->tables[YYTD_ID_BASE]->td_lolen;
 	trans_count = dfa->tables[YYTD_ID_NXT]->td_lolen;
 	if (state_count == 0)
@@ -335,7 +214,6 @@ static int verify_dfa(struct aa_dfa *dfa)
 	}
 	error = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return error;
 }
@@ -361,11 +239,7 @@ static void dfa_free(struct aa_dfa *dfa)
 
 /**
  * aa_dfa_free_kref - free aa_dfa by kref (called by aa_put_dfa)
-<<<<<<< HEAD
- * @kr: kref callback for freeing of a dfa  (NOT NULL)
-=======
  * @kref: kref callback for freeing of a dfa  (NOT NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void aa_dfa_free_kref(struct kref *kref)
 {
@@ -380,11 +254,7 @@ void aa_dfa_free_kref(struct kref *kref)
  * @flags: flags controlling what type of accept tables are acceptable
  *
  * Unpack a dfa that has been serialized.  To find information on the dfa
-<<<<<<< HEAD
- * format look in Documentation/security/apparmor.txt
-=======
  * format look in Documentation/admin-guide/LSM/apparmor.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Assumes the dfa @blob stream has been aligned on a 8 byte boundary
  *
  * Returns: an unpacked dfa ready for matching or ERR_PTR on failure
@@ -407,16 +277,6 @@ struct aa_dfa *aa_dfa_unpack(void *blob, size_t size, int flags)
 	if (size < sizeof(struct table_set_header))
 		goto fail;
 
-<<<<<<< HEAD
-	if (ntohl(*(u32 *) data) != YYTH_MAGIC)
-		goto fail;
-
-	hsize = ntohl(*(u32 *) (data + 4));
-	if (size < hsize)
-		goto fail;
-
-	dfa->flags = ntohs(*(u16 *) (data + 12));
-=======
 	if (ntohl(*(__be32 *) data) != YYTH_MAGIC)
 		goto fail;
 
@@ -442,7 +302,6 @@ struct aa_dfa *aa_dfa_unpack(void *blob, size_t size, int flags)
 	 */
 	dfa->max_oob = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data += hsize;
 	size -= hsize;
 
@@ -485,13 +344,6 @@ struct aa_dfa *aa_dfa_unpack(void *blob, size_t size, int flags)
 		size -= table_size(table->td_lolen, table->td_flags);
 		table = NULL;
 	}
-<<<<<<< HEAD
-
-	error = verify_dfa(dfa, flags);
-	if (error)
-		goto fail;
-
-=======
 	error = verify_table_headers(dfa->tables, flags);
 	if (error)
 		goto fail;
@@ -502,7 +354,6 @@ struct aa_dfa *aa_dfa_unpack(void *blob, size_t size, int flags)
 			goto fail;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dfa;
 
 fail:
@@ -511,8 +362,6 @@ fail:
 	return ERR_PTR(error);
 }
 
-<<<<<<< HEAD
-=======
 #define match_char(state, def, base, next, check, C)	\
 do {							\
 	u32 b = (base)[(state)];			\
@@ -527,7 +376,6 @@ do {							\
 	break;						\
 } while (1)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * aa_dfa_match_len - traverse @dfa to find state @str stops at
  * @dfa: the dfa to match @str against  (NOT NULL)
@@ -544,53 +392,22 @@ do {							\
  *
  * Returns: final state reached after input is consumed
  */
-<<<<<<< HEAD
-unsigned int aa_dfa_match_len(struct aa_dfa *dfa, unsigned int start,
-			      const char *str, int len)
-=======
 aa_state_t aa_dfa_match_len(struct aa_dfa *dfa, aa_state_t start,
 			    const char *str, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 *def = DEFAULT_TABLE(dfa);
 	u32 *base = BASE_TABLE(dfa);
 	u16 *next = NEXT_TABLE(dfa);
 	u16 *check = CHECK_TABLE(dfa);
-<<<<<<< HEAD
-	unsigned int state = start, pos;
-
-	if (state == 0)
-		return 0;
-=======
 	aa_state_t state = start;
 
 	if (state == DFA_NOMATCH)
 		return DFA_NOMATCH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* current state is <state>, matching character *str */
 	if (dfa->tables[YYTD_ID_EC]) {
 		/* Equivalence class table defined */
 		u8 *equiv = EQUIV_TABLE(dfa);
-<<<<<<< HEAD
-		/* default is direct to next state */
-		for (; len; len--) {
-			pos = base[state] + equiv[(u8) *str++];
-			if (check[pos] == state)
-				state = next[pos];
-			else
-				state = def[state];
-		}
-	} else {
-		/* default is direct to next state */
-		for (; len; len--) {
-			pos = base[state] + (u8) *str++;
-			if (check[pos] == state)
-				state = next[pos];
-			else
-				state = def[state];
-		}
-=======
 		for (; len; len--)
 			match_char(state, def, base, next, check,
 				   equiv[(u8) *str++]);
@@ -598,7 +415,6 @@ aa_state_t aa_dfa_match_len(struct aa_dfa *dfa, aa_state_t start,
 		/* default is direct to next state */
 		for (; len; len--)
 			match_char(state, def, base, next, check, (u8) *str++);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return state;
@@ -616,52 +432,22 @@ aa_state_t aa_dfa_match_len(struct aa_dfa *dfa, aa_state_t start,
  *
  * Returns: final state reached after input is consumed
  */
-<<<<<<< HEAD
-unsigned int aa_dfa_match(struct aa_dfa *dfa, unsigned int start,
-			  const char *str)
-=======
 aa_state_t aa_dfa_match(struct aa_dfa *dfa, aa_state_t start, const char *str)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 *def = DEFAULT_TABLE(dfa);
 	u32 *base = BASE_TABLE(dfa);
 	u16 *next = NEXT_TABLE(dfa);
 	u16 *check = CHECK_TABLE(dfa);
-<<<<<<< HEAD
-	unsigned int state = start, pos;
-
-	if (state == 0)
-		return 0;
-=======
 	aa_state_t state = start;
 
 	if (state == DFA_NOMATCH)
 		return DFA_NOMATCH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* current state is <state>, matching character *str */
 	if (dfa->tables[YYTD_ID_EC]) {
 		/* Equivalence class table defined */
 		u8 *equiv = EQUIV_TABLE(dfa);
 		/* default is direct to next state */
-<<<<<<< HEAD
-		while (*str) {
-			pos = base[state] + equiv[(u8) *str++];
-			if (check[pos] == state)
-				state = next[pos];
-			else
-				state = def[state];
-		}
-	} else {
-		/* default is direct to next state */
-		while (*str) {
-			pos = base[state] + (u8) *str++;
-			if (check[pos] == state)
-				state = next[pos];
-			else
-				state = def[state];
-		}
-=======
 		while (*str)
 			match_char(state, def, base, next, check,
 				   equiv[(u8) *str++]);
@@ -669,7 +455,6 @@ aa_state_t aa_dfa_match(struct aa_dfa *dfa, aa_state_t start, const char *str)
 		/* default is direct to next state */
 		while (*str)
 			match_char(state, def, base, next, check, (u8) *str++);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return state;
@@ -677,11 +462,7 @@ aa_state_t aa_dfa_match(struct aa_dfa *dfa, aa_state_t start, const char *str)
 
 /**
  * aa_dfa_next - step one character to the next state in the dfa
-<<<<<<< HEAD
- * @dfa: the dfa to tranverse (NOT NULL)
-=======
  * @dfa: the dfa to traverse (NOT NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @state: the state to start in
  * @c: the input character to transition on
  *
@@ -689,20 +470,12 @@ aa_state_t aa_dfa_match(struct aa_dfa *dfa, aa_state_t start, const char *str)
  *
  * Returns: state reach after input @c
  */
-<<<<<<< HEAD
-unsigned int aa_dfa_next(struct aa_dfa *dfa, unsigned int state,
-			  const char c)
-=======
 aa_state_t aa_dfa_next(struct aa_dfa *dfa, aa_state_t state, const char c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 *def = DEFAULT_TABLE(dfa);
 	u32 *base = BASE_TABLE(dfa);
 	u16 *next = NEXT_TABLE(dfa);
 	u16 *check = CHECK_TABLE(dfa);
-<<<<<<< HEAD
-	unsigned int pos;
-=======
 
 	/* current state is <state>, matching character *str */
 	if (dfa->tables[YYTD_ID_EC]) {
@@ -757,32 +530,12 @@ aa_state_t aa_dfa_match_until(struct aa_dfa *dfa, aa_state_t start,
 
 	if (state == DFA_NOMATCH)
 		return DFA_NOMATCH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* current state is <state>, matching character *str */
 	if (dfa->tables[YYTD_ID_EC]) {
 		/* Equivalence class table defined */
 		u8 *equiv = EQUIV_TABLE(dfa);
 		/* default is direct to next state */
-<<<<<<< HEAD
-
-		pos = base[state] + equiv[(u8) c];
-		if (check[pos] == state)
-			state = next[pos];
-		else
-			state = def[state];
-	} else {
-		/* default is direct to next state */
-		pos = base[state] + (u8) c;
-		if (check[pos] == state)
-			state = next[pos];
-		else
-			state = def[state];
-	}
-
-	return state;
-}
-=======
 		while (*str) {
 			pos = base_idx(base[state]) + equiv[(u8) *str++];
 			if (check[pos] == state)
@@ -991,4 +744,3 @@ aa_state_t aa_dfa_leftmatch(struct aa_dfa *dfa, aa_state_t start,
 
 	return leftmatch_fb(dfa, start, str, &wb, count);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

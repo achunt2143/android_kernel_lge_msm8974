@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/asm-m68k/raw_io.h
  *
@@ -14,47 +11,12 @@
 
 #ifdef __KERNEL__
 
-<<<<<<< HEAD
-#include <asm/types.h>
-
-
-/* Values for nocacheflag and cmode */
-#define IOMAP_FULL_CACHING		0
-#define IOMAP_NOCACHE_SER		1
-#define IOMAP_NOCACHE_NONSER		2
-#define IOMAP_WRITETHROUGH		3
-
-extern void iounmap(void __iomem *addr);
-
-extern void __iomem *__ioremap(unsigned long physaddr, unsigned long size,
-		       int cacheflag);
-extern void __iounmap(void *addr, unsigned long size);
-
-=======
 #include <asm/byteorder.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ++roman: The assignments to temp. vars avoid that gcc sometimes generates
  * two accesses to memory, which may be undesirable for some devices.
  */
 #define in_8(addr) \
-<<<<<<< HEAD
-    ({ u8 __v = (*(__force volatile u8 *) (addr)); __v; })
-#define in_be16(addr) \
-    ({ u16 __v = (*(__force volatile u16 *) (addr)); __v; })
-#define in_be32(addr) \
-    ({ u32 __v = (*(__force volatile u32 *) (addr)); __v; })
-#define in_le16(addr) \
-    ({ u16 __v = le16_to_cpu(*(__force volatile __le16 *) (addr)); __v; })
-#define in_le32(addr) \
-    ({ u32 __v = le32_to_cpu(*(__force volatile __le32 *) (addr)); __v; })
-
-#define out_8(addr,b) (void)((*(__force volatile u8 *) (addr)) = (b))
-#define out_be16(addr,w) (void)((*(__force volatile u16 *) (addr)) = (w))
-#define out_be32(addr,l) (void)((*(__force volatile u32 *) (addr)) = (l))
-#define out_le16(addr,w) (void)((*(__force volatile __le16 *) (addr)) = cpu_to_le16(w))
-#define out_le32(addr,l) (void)((*(__force volatile __le32 *) (addr)) = cpu_to_le32(l))
-=======
     ({ u8 __v = (*(__force const volatile u8 *) (unsigned long)(addr)); __v; })
 #define in_be16(addr) \
     ({ u16 __v = (*(__force const volatile u16 *) (unsigned long)(addr)); __v; })
@@ -70,7 +32,6 @@ extern void __iounmap(void *addr, unsigned long size);
 #define out_be32(addr,l) (void)((*(__force volatile u32 *) (unsigned long)(addr)) = (l))
 #define out_le16(addr,w) (void)((*(__force volatile __le16 *) (unsigned long)(addr)) = cpu_to_le16(w))
 #define out_le32(addr,l) (void)((*(__force volatile __le32 *) (unsigned long)(addr)) = cpu_to_le32(l))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define raw_inb in_8
 #define raw_inw in_be16
@@ -86,9 +47,6 @@ extern void __iounmap(void *addr, unsigned long size);
 #define __raw_writew(val,addr) out_be16((addr),(val))
 #define __raw_writel(val,addr) out_be32((addr),(val))
 
-<<<<<<< HEAD
-static inline void raw_insb(volatile u8 __iomem *port, u8 *buf, unsigned int len)
-=======
 /*
  * Atari ROM port (cartridge port) ISA adapter, used for the EtherNEC NE2000
  * network card driver.
@@ -142,7 +100,6 @@ static inline void raw_insb(volatile u8 __iomem *port, u8 *buf, unsigned int len
 
 static inline void raw_insb(const volatile u8 __iomem *port, u8 *buf,
 			    unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 
@@ -151,17 +108,6 @@ static inline void raw_insb(const volatile u8 __iomem *port, u8 *buf,
 }
 
 static inline void raw_outsb(volatile u8 __iomem *port, const u8 *buf,
-<<<<<<< HEAD
-			     unsigned int len)
-{
-	unsigned int i;
-
-        for (i = 0; i < len; i++)
-		out_8(port, *buf++);
-}
-
-static inline void raw_insw(volatile u16 __iomem *port, u16 *buf, unsigned int nr)
-=======
 			     unsigned int nr)
 {
 	unsigned int tmp;
@@ -202,7 +148,6 @@ static inline void raw_insw(volatile u16 __iomem *port, u16 *buf, unsigned int n
 }
 
 static inline void raw_insw(volatile const u16 __iomem *port, u16 *buf, unsigned int nr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int tmp;
 
@@ -281,11 +226,7 @@ static inline void raw_outsw(volatile u16 __iomem *port, const u16 *buf,
 	}
 }
 
-<<<<<<< HEAD
-static inline void raw_insl(volatile u32 __iomem *port, u32 *buf, unsigned int nr)
-=======
 static inline void raw_insl(const volatile u32 __iomem *port, u32 *buf, unsigned int nr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int tmp;
 
@@ -365,11 +306,7 @@ static inline void raw_outsl(volatile u32 __iomem *port, const u32 *buf,
 }
 
 
-<<<<<<< HEAD
-static inline void raw_insw_swapw(volatile u16 __iomem *port, u16 *buf,
-=======
 static inline void raw_insw_swapw(const volatile u16 __iomem *port, u16 *buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  unsigned int nr)
 {
     if ((nr) % 8)
@@ -475,8 +412,6 @@ static inline void raw_outsw_swapw(volatile u16 __iomem *port, const u16 *buf,
 		: "d0", "a0", "a1", "d6");
 }
 
-<<<<<<< HEAD
-=======
 
 #if defined(CONFIG_ATARI_ROM_ISA)
 static inline void raw_rom_insb(const volatile u8 __iomem *port, u8 *buf,
@@ -534,7 +469,6 @@ static inline void raw_rom_outsw_swapw(volatile u16 __iomem *port, const u16 *bu
 }
 #endif /* CONFIG_ATARI_ROM_ISA */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KERNEL__ */
 
 #endif /* _RAW_IO_H */

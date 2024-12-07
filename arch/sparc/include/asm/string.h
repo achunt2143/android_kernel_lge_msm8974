@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef ___ASM_SPARC_STRING_H
 #define ___ASM_SPARC_STRING_H
 #if defined(__sparc__) && defined(__arch64__)
@@ -9,8 +6,6 @@
 #else
 #include <asm/string_32.h>
 #endif
-<<<<<<< HEAD
-=======
 
 /* First the mem*() things. */
 #define __HAVE_ARCH_MEMMOVE
@@ -49,5 +44,4 @@ __kernel_size_t strlen(const char *);
 #define __HAVE_ARCH_STRNCMP
 int strncmp(const char *, const char *, __kernel_size_t);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

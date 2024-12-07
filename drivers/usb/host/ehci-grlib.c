@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Aeroflex Gaisler GRLIB GRUSBHC EHCI host controller
  *
@@ -13,29 +10,9 @@
  * (c) Valentine Barshak <vbarshak@ru.mvista.com>
  * and in turn based on "ehci-ppc-soc.c" by Stefan Roese <sr@denx.de>
  * and "ohci-ppc-of.c" by Sylvain Munaut <tnt@246tNt.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
-
-=======
  */
 
 #include <linux/err.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/signal.h>
 
 #include <linux/of_irq.h>
@@ -44,30 +21,6 @@
 
 #define GRUSBHC_HCIVERSION 0x0100 /* Known value of cap. reg. HCIVERSION */
 
-<<<<<<< HEAD
-/* called during probe() after chip reset completes */
-static int ehci_grlib_setup(struct usb_hcd *hcd)
-{
-	struct ehci_hcd	*ehci = hcd_to_ehci(hcd);
-	int		retval;
-
-	retval = ehci_halt(ehci);
-	if (retval)
-		return retval;
-
-	retval = ehci_init(hcd);
-	if (retval)
-		return retval;
-
-	ehci->sbrn = 0x20;
-	ehci_port_power(ehci, 1);
-
-	return ehci_reset(ehci);
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct hc_driver ehci_grlib_hc_driver = {
 	.description		= hcd_name,
 	.product_desc		= "GRLIB GRUSBHC EHCI",
@@ -77,20 +30,12 @@ static const struct hc_driver ehci_grlib_hc_driver = {
 	 * generic hardware linkage
 	 */
 	.irq			= ehci_irq,
-<<<<<<< HEAD
-	.flags			= HCD_MEMORY | HCD_USB2,
-=======
 	.flags			= HCD_MEMORY | HCD_DMA | HCD_USB2 | HCD_BH,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * basic lifecycle operations
 	 */
-<<<<<<< HEAD
-	.reset			= ehci_grlib_setup,
-=======
 	.reset			= ehci_setup,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start			= ehci_run,
 	.stop			= ehci_stop,
 	.shutdown		= ehci_shutdown,
@@ -124,11 +69,7 @@ static const struct hc_driver ehci_grlib_hc_driver = {
 };
 
 
-<<<<<<< HEAD
-static int __devinit ehci_hcd_grlib_probe(struct platform_device *op)
-=======
 static int ehci_hcd_grlib_probe(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dn = op->dev.of_node;
 	struct usb_hcd *hcd;
@@ -157,36 +98,17 @@ static int ehci_hcd_grlib_probe(struct platform_device *op)
 	hcd->rsrc_start = res.start;
 	hcd->rsrc_len = resource_size(&res);
 
-<<<<<<< HEAD
-	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
-		printk(KERN_ERR "%s: request_mem_region failed\n", __FILE__);
-		rv = -EBUSY;
-		goto err_rmr;
-	}
-
-	irq = irq_of_parse_and_map(dn, 0);
-	if (irq == NO_IRQ) {
-		printk(KERN_ERR "%s: irq_of_parse_and_map failed\n", __FILE__);
-=======
 	irq = irq_of_parse_and_map(dn, 0);
 	if (!irq) {
 		dev_err(&op->dev, "%s: irq_of_parse_and_map failed\n",
 			__FILE__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rv = -EBUSY;
 		goto err_irq;
 	}
 
-<<<<<<< HEAD
-	hcd->regs = ioremap(hcd->rsrc_start, hcd->rsrc_len);
-	if (!hcd->regs) {
-		printk(KERN_ERR "%s: ioremap failed\n", __FILE__);
-		rv = -ENOMEM;
-=======
 	hcd->regs = devm_ioremap_resource(&op->dev, &res);
 	if (IS_ERR(hcd->regs)) {
 		rv = PTR_ERR(hcd->regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_ioremap;
 	}
 
@@ -202,27 +124,6 @@ static int ehci_hcd_grlib_probe(struct platform_device *op)
 		ehci->big_endian_capbase = 1;
 	}
 
-<<<<<<< HEAD
-	ehci->regs = hcd->regs +
-		HC_LENGTH(ehci, ehci_readl(ehci, &ehci->caps->hc_capbase));
-
-	/* cache this readonly data; minimize chip reads */
-	ehci->hcs_params = ehci_readl(ehci, &ehci->caps->hcs_params);
-
-	rv = usb_add_hcd(hcd, irq, 0);
-	if (rv)
-		goto err_ehci;
-
-	return 0;
-
-err_ehci:
-	iounmap(hcd->regs);
-err_ioremap:
-	irq_dispose_mapping(irq);
-err_irq:
-	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
-err_rmr:
-=======
 	rv = usb_add_hcd(hcd, irq, 0);
 	if (rv)
 		goto err_ioremap;
@@ -233,51 +134,23 @@ err_rmr:
 err_ioremap:
 	irq_dispose_mapping(irq);
 err_irq:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_put_hcd(hcd);
 
 	return rv;
 }
 
 
-<<<<<<< HEAD
-static int ehci_hcd_grlib_remove(struct platform_device *op)
-{
-	struct usb_hcd *hcd = dev_get_drvdata(&op->dev);
-
-	dev_set_drvdata(&op->dev, NULL);
-=======
 static void ehci_hcd_grlib_remove(struct platform_device *op)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&op->dev, "stopping GRLIB GRUSBHC EHCI USB Controller\n");
 
 	usb_remove_hcd(hcd);
 
-<<<<<<< HEAD
-	iounmap(hcd->regs);
-	irq_dispose_mapping(hcd->irq);
-	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
-
-	usb_put_hcd(hcd);
-
-	return 0;
-}
-
-
-static void ehci_hcd_grlib_shutdown(struct platform_device *op)
-{
-	struct usb_hcd *hcd = dev_get_drvdata(&op->dev);
-
-	if (hcd->driver->shutdown)
-		hcd->driver->shutdown(hcd);
-=======
 	irq_dispose_mapping(hcd->irq);
 
 	usb_put_hcd(hcd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -295,18 +168,10 @@ MODULE_DEVICE_TABLE(of, ehci_hcd_grlib_of_match);
 
 static struct platform_driver ehci_grlib_driver = {
 	.probe		= ehci_hcd_grlib_probe,
-<<<<<<< HEAD
-	.remove		= ehci_hcd_grlib_remove,
-	.shutdown	= ehci_hcd_grlib_shutdown,
-	.driver = {
-		.name = "grlib-ehci",
-		.owner = THIS_MODULE,
-=======
 	.remove_new	= ehci_hcd_grlib_remove,
 	.shutdown	= usb_hcd_platform_shutdown,
 	.driver = {
 		.name = "grlib-ehci",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = ehci_hcd_grlib_of_match,
 	},
 };

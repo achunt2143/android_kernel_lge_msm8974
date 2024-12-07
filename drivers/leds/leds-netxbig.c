@@ -1,46 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * leds-netxbig.c - Driver for the 2Big and 5Big Network series LEDs
  *
  * Copyright (C) 2010 LaCie
  *
  * Author: Simon Guinot <sguinot@lacie.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include <linux/module.h>
-#include <linux/init.h>
-=======
- */
-
-#include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/irq.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-#include <linux/leds.h>
-#include <mach/leds-netxbig.h>
-=======
 #include <linux/gpio/consumer.h>
 #include <linux/leds.h>
 #include <linux/of.h>
@@ -87,7 +58,6 @@ struct netxbig_led_platform_data {
 	struct netxbig_led	*leds;
 	int			num_leds;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * GPIO extension bus.
@@ -100,11 +70,7 @@ static void gpio_ext_set_addr(struct netxbig_gpio_ext *gpio_ext, int addr)
 	int pin;
 
 	for (pin = 0; pin < gpio_ext->num_addr; pin++)
-<<<<<<< HEAD
-		gpio_set_value(gpio_ext->addr[pin], (addr >> pin) & 1);
-=======
 		gpiod_set_value(gpio_ext->addr[pin], (addr >> pin) & 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gpio_ext_set_data(struct netxbig_gpio_ext *gpio_ext, int data)
@@ -112,23 +78,14 @@ static void gpio_ext_set_data(struct netxbig_gpio_ext *gpio_ext, int data)
 	int pin;
 
 	for (pin = 0; pin < gpio_ext->num_data; pin++)
-<<<<<<< HEAD
-		gpio_set_value(gpio_ext->data[pin], (data >> pin) & 1);
-=======
 		gpiod_set_value(gpio_ext->data[pin], (data >> pin) & 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gpio_ext_enable_select(struct netxbig_gpio_ext *gpio_ext)
 {
 	/* Enable select is done on the raising edge. */
-<<<<<<< HEAD
-	gpio_set_value(gpio_ext->enable, 0);
-	gpio_set_value(gpio_ext->enable, 1);
-=======
 	gpiod_set_value(gpio_ext->enable, 0);
 	gpiod_set_value(gpio_ext->enable, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gpio_ext_set_value(struct netxbig_gpio_ext *gpio_ext,
@@ -143,61 +100,6 @@ static void gpio_ext_set_value(struct netxbig_gpio_ext *gpio_ext,
 	spin_unlock_irqrestore(&gpio_ext_lock, flags);
 }
 
-<<<<<<< HEAD
-static int __devinit gpio_ext_init(struct netxbig_gpio_ext *gpio_ext)
-{
-	int err;
-	int i;
-
-	if (unlikely(!gpio_ext))
-		return -EINVAL;
-
-	/* Configure address GPIOs. */
-	for (i = 0; i < gpio_ext->num_addr; i++) {
-		err = gpio_request_one(gpio_ext->addr[i], GPIOF_OUT_INIT_LOW,
-				       "GPIO extension addr");
-		if (err)
-			goto err_free_addr;
-	}
-	/* Configure data GPIOs. */
-	for (i = 0; i < gpio_ext->num_data; i++) {
-		err = gpio_request_one(gpio_ext->data[i], GPIOF_OUT_INIT_LOW,
-				   "GPIO extension data");
-		if (err)
-			goto err_free_data;
-	}
-	/* Configure "enable select" GPIO. */
-	err = gpio_request_one(gpio_ext->enable, GPIOF_OUT_INIT_LOW,
-			       "GPIO extension enable");
-	if (err)
-		goto err_free_data;
-
-	return 0;
-
-err_free_data:
-	for (i = i - 1; i >= 0; i--)
-		gpio_free(gpio_ext->data[i]);
-	i = gpio_ext->num_addr;
-err_free_addr:
-	for (i = i - 1; i >= 0; i--)
-		gpio_free(gpio_ext->addr[i]);
-
-	return err;
-}
-
-static void gpio_ext_free(struct netxbig_gpio_ext *gpio_ext)
-{
-	int i;
-
-	gpio_free(gpio_ext->enable);
-	for (i = gpio_ext->num_addr - 1; i >= 0; i--)
-		gpio_free(gpio_ext->addr[i]);
-	for (i = gpio_ext->num_data - 1; i >= 0; i--)
-		gpio_free(gpio_ext->data[i]);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Class LED driver.
  */
@@ -208,10 +110,6 @@ struct netxbig_led_data {
 	int			mode_addr;
 	int			*mode_val;
 	int			bright_addr;
-<<<<<<< HEAD
-	int			bright_max;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct			netxbig_led_timer *timer;
 	int			num_timer;
 	enum netxbig_led_mode	mode;
@@ -273,11 +171,7 @@ static void netxbig_led_set(struct led_classdev *led_cdev,
 	struct netxbig_led_data *led_dat =
 		container_of(led_cdev, struct netxbig_led_data, cdev);
 	enum netxbig_led_mode mode;
-<<<<<<< HEAD
-	int mode_val, bright_val;
-=======
 	int mode_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int set_brightness = 1;
 	unsigned long flags;
 
@@ -303,31 +197,16 @@ static void netxbig_led_set(struct led_classdev *led_cdev,
 	 * SATA LEDs. So, change the brightness setting for a single
 	 * SATA LED will affect all the others.
 	 */
-<<<<<<< HEAD
-	if (set_brightness) {
-		bright_val = DIV_ROUND_UP(value * led_dat->bright_max,
-					  LED_FULL);
-		gpio_ext_set_value(led_dat->gpio_ext,
-				   led_dat->bright_addr, bright_val);
-	}
-=======
 	if (set_brightness)
 		gpio_ext_set_value(led_dat->gpio_ext,
 				   led_dat->bright_addr, value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&led_dat->lock, flags);
 }
 
-<<<<<<< HEAD
-static ssize_t netxbig_led_sata_store(struct device *dev,
-				      struct device_attribute *attr,
-				      const char *buff, size_t count)
-=======
 static ssize_t sata_store(struct device *dev,
 			  struct device_attribute *attr,
 			  const char *buff, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
 	struct netxbig_led_data *led_dat =
@@ -337,11 +216,7 @@ static ssize_t sata_store(struct device *dev,
 	int mode_val;
 	int ret;
 
-<<<<<<< HEAD
-	ret = strict_strtoul(buff, 10, &enable);
-=======
 	ret = kstrtoul(buff, 10, &enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -380,13 +255,8 @@ exit_unlock:
 	return ret;
 }
 
-<<<<<<< HEAD
-static ssize_t netxbig_led_sata_show(struct device *dev,
-				     struct device_attribute *attr, char *buf)
-=======
 static ssize_t sata_show(struct device *dev,
 			 struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
 	struct netxbig_led_data *led_dat =
@@ -395,25 +265,6 @@ static ssize_t sata_show(struct device *dev,
 	return sprintf(buf, "%d\n", led_dat->sata);
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(sata, 0644, netxbig_led_sata_show, netxbig_led_sata_store);
-
-static void delete_netxbig_led(struct netxbig_led_data *led_dat)
-{
-	if (led_dat->mode_val[NETXBIG_LED_SATA] != NETXBIG_LED_INVALID_MODE)
-		device_remove_file(led_dat->cdev.dev, &dev_attr_sata);
-	led_classdev_unregister(&led_dat->cdev);
-}
-
-static int __devinit
-create_netxbig_led(struct platform_device *pdev,
-		   struct netxbig_led_data *led_dat,
-		   const struct netxbig_led *template)
-{
-	struct netxbig_led_platform_data *pdata = pdev->dev.platform_data;
-	int ret;
-
-=======
 static DEVICE_ATTR_RW(sata);
 
 static struct attribute *netxbig_led_attrs[] = {
@@ -427,7 +278,6 @@ static int create_netxbig_led(struct platform_device *pdev,
 			      struct netxbig_led_data *led_dat,
 			      const struct netxbig_led *template)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&led_dat->lock);
 	led_dat->gpio_ext = pdata->gpio_ext;
 	led_dat->cdev.name = template->name;
@@ -446,45 +296,17 @@ static int create_netxbig_led(struct platform_device *pdev,
 	 */
 	led_dat->sata = 0;
 	led_dat->cdev.brightness = LED_OFF;
-<<<<<<< HEAD
-=======
 	led_dat->cdev.max_brightness = template->bright_max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led_dat->cdev.flags |= LED_CORE_SUSPENDRESUME;
 	led_dat->mode_addr = template->mode_addr;
 	led_dat->mode_val = template->mode_val;
 	led_dat->bright_addr = template->bright_addr;
-<<<<<<< HEAD
-	led_dat->bright_max = (1 << pdata->gpio_ext->num_data) - 1;
 	led_dat->timer = pdata->timer;
 	led_dat->num_timer = pdata->num_timer;
-
-	ret = led_classdev_register(&pdev->dev, &led_dat->cdev);
-	if (ret < 0)
-		return ret;
-
-=======
-	led_dat->timer = pdata->timer;
-	led_dat->num_timer = pdata->num_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If available, expose the SATA activity blink capability through
 	 * a "sata" sysfs attribute.
 	 */
-<<<<<<< HEAD
-	if (led_dat->mode_val[NETXBIG_LED_SATA] != NETXBIG_LED_INVALID_MODE) {
-		ret = device_create_file(led_dat->cdev.dev, &dev_attr_sata);
-		if (ret)
-			led_classdev_unregister(&led_dat->cdev);
-	}
-
-	return ret;
-}
-
-static int __devinit netxbig_led_probe(struct platform_device *pdev)
-{
-	struct netxbig_led_platform_data *pdata = pdev->dev.platform_data;
-=======
 	if (led_dat->mode_val[NETXBIG_LED_SATA] != NETXBIG_LED_INVALID_MODE)
 		led_dat->cdev.groups = netxbig_led_groups;
 
@@ -777,60 +599,10 @@ MODULE_DEVICE_TABLE(of, of_netxbig_leds_match);
 static int netxbig_led_probe(struct platform_device *pdev)
 {
 	struct netxbig_led_platform_data *pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct netxbig_led_data *leds_data;
 	int i;
 	int ret;
 
-<<<<<<< HEAD
-	if (!pdata)
-		return -EINVAL;
-
-	leds_data = kzalloc(sizeof(struct netxbig_led_data) * pdata->num_leds,
-			    GFP_KERNEL);
-	if (!leds_data)
-		return -ENOMEM;
-
-	ret = gpio_ext_init(pdata->gpio_ext);
-	if (ret < 0)
-		goto err_free_data;
-
-	for (i = 0; i < pdata->num_leds; i++) {
-		ret = create_netxbig_led(pdev, &leds_data[i], &pdata->leds[i]);
-		if (ret < 0)
-			goto err_free_leds;
-	}
-
-	platform_set_drvdata(pdev, leds_data);
-
-	return 0;
-
-err_free_leds:
-	for (i = i - 1; i >= 0; i--)
-		delete_netxbig_led(&leds_data[i]);
-
-	gpio_ext_free(pdata->gpio_ext);
-err_free_data:
-	kfree(leds_data);
-
-	return ret;
-}
-
-static int __devexit netxbig_led_remove(struct platform_device *pdev)
-{
-	struct netxbig_led_platform_data *pdata = pdev->dev.platform_data;
-	struct netxbig_led_data *leds_data;
-	int i;
-
-	leds_data = platform_get_drvdata(pdev);
-
-	for (i = 0; i < pdata->num_leds; i++)
-		delete_netxbig_led(&leds_data[i]);
-
-	gpio_ext_free(pdata->gpio_ext);
-	kfree(leds_data);
-
-=======
 	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
 	if (!pdata)
 		return -ENOMEM;
@@ -851,22 +623,14 @@ static int __devexit netxbig_led_remove(struct platform_device *pdev)
 			return ret;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static struct platform_driver netxbig_led_driver = {
 	.probe		= netxbig_led_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(netxbig_led_remove),
-	.driver		= {
-		.name	= "leds-netxbig",
-		.owner	= THIS_MODULE,
-=======
 	.driver		= {
 		.name		= "leds-netxbig",
 		.of_match_table	= of_netxbig_leds_match,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

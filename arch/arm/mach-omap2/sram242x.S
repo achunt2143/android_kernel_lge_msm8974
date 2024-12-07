@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap2/sram242x.S
  *
@@ -11,24 +8,6 @@
  * Texas Instruments, <www.ti.com>
  * Richard Woodruff <r-woodruff2@ti.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Richard Woodruff notes that any changes to this code must be carefully
  * audited and tested to ensure that they don't cause a TLB miss while
  * the SDRAM is inaccessible.  Such a situation will crash the system
@@ -39,18 +18,10 @@
 
 #include <asm/assembler.h>
 
-<<<<<<< HEAD
-#include <mach/hardware.h>
-
-#include "iomap.h"
-#include "prm2xxx_3xxx.h"
-#include "cm2xxx_3xxx.h"
-=======
 #include "soc.h"
 #include "iomap.h"
 #include "prm2xxx.h"
 #include "cm2xxx.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "sdrc.h"
 
 	.text
@@ -79,11 +50,7 @@ ENTRY(omap242x_sram_ddr_init)
 	mvn	r9, #0x4		@ mask to get clear bit2
 	and	r10, r10, r9		@ clear bit2 for lock mode.
 	orr	r10, r10, #0x8		@ make sure DLL on (es2 bit pos)
-<<<<<<< HEAD
-	orr	r10, r10, #0x2		@ 90 degree phase for all below 133Mhz
-=======
 	orr	r10, r10, #0x2		@ 90 degree phase for all below 133MHz
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	str	r10, [r11]		@ commit to DLLA_CTRL
 	bl	i_dll_wait		@ wait for dll to lock
 
@@ -120,11 +87,7 @@ i_dll_wait:
 i_dll_delay:
 	subs	r4, r4, #0x1
 	bne	i_dll_delay
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * shift up or down voltage, use R9 as input to tell level.
@@ -148,11 +111,7 @@ volt_delay:
 	ldr	r7, [r3]		@ get timer value
 	cmp	r5, r7			@ time up?
 	bhi	volt_delay		@ not yet->branch
-<<<<<<< HEAD
-	mov	pc, lr			@ back to caller.
-=======
 	ret	lr			@ back to caller.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 omap242x_sdi_cm_clksel2_pll:
 	.word OMAP2420_CM_REGADDR(PLL_MOD, CM_CLKSEL2)
@@ -247,11 +206,7 @@ volt_delay_c:
 	ldr	r7, [r10]		@ get timer value
 	cmp	r8, r7			@ time up?
 	bhi	volt_delay_c		@ not yet->branch
-<<<<<<< HEAD
-	mov	pc, lr			@ back to caller
-=======
 	ret	lr			@ back to caller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 omap242x_srs_cm_clksel2_pll:
 	.word OMAP2420_CM_REGADDR(PLL_MOD, CM_CLKSEL2)

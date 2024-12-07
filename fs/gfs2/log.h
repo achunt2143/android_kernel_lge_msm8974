@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LOG_DOT_H__
@@ -21,8 +11,6 @@
 #include <linux/spinlock.h>
 #include <linux/writeback.h>
 #include "incore.h"
-<<<<<<< HEAD
-=======
 #include "inode.h"
 
 /*
@@ -31,7 +19,6 @@
  * GFS2_LOG_HEAD_FLUSH_NORMAL may write one or two more log headers.
  */
 #define GFS2_LOG_FLUSH_MIN_BLOCKS 4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * gfs2_log_lock - acquire the right to mess with the log manager
@@ -63,25 +50,6 @@ static inline void gfs2_log_pointers_init(struct gfs2_sbd *sdp,
 	if (++value == sdp->sd_jdesc->jd_blocks) {
 		value = 0;
 	}
-<<<<<<< HEAD
-	sdp->sd_log_head = sdp->sd_log_tail = value;
-}
-
-extern unsigned int gfs2_struct2blk(struct gfs2_sbd *sdp, unsigned int nstruct,
-			    unsigned int ssize);
-
-extern int gfs2_log_reserve(struct gfs2_sbd *sdp, unsigned int blks);
-extern void gfs2_log_incr_head(struct gfs2_sbd *sdp);
-extern u64 gfs2_log_bmap(struct gfs2_sbd *sdp, unsigned int lbn);
-extern void gfs2_log_flush(struct gfs2_sbd *sdp, struct gfs2_glock *gl);
-extern void gfs2_log_commit(struct gfs2_sbd *sdp, struct gfs2_trans *trans);
-extern void gfs2_remove_from_ail(struct gfs2_bufdata *bd);
-extern void gfs2_ail1_flush(struct gfs2_sbd *sdp, struct writeback_control *wbc);
-
-extern void gfs2_log_shutdown(struct gfs2_sbd *sdp);
-extern void gfs2_meta_syncfs(struct gfs2_sbd *sdp);
-extern int gfs2_logd(void *data);
-=======
 	sdp->sd_log_tail = value;
 	sdp->sd_log_flush_tail = value;
 	sdp->sd_log_head = value;
@@ -126,6 +94,5 @@ void gfs2_add_revoke(struct gfs2_sbd *sdp, struct gfs2_bufdata *bd);
 void gfs2_glock_remove_revoke(struct gfs2_glock *gl);
 void gfs2_flush_revokes(struct gfs2_sbd *sdp);
 void gfs2_ail_drain(struct gfs2_sbd *sdp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __LOG_DOT_H__ */

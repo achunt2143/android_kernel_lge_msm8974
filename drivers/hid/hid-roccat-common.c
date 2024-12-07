@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Roccat common functions for device specific drivers
  *
@@ -9,13 +6,6 @@
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/hid.h>
@@ -23,20 +13,12 @@
 #include <linux/module.h>
 #include "hid-roccat-common.h"
 
-<<<<<<< HEAD
-static inline uint16_t roccat_common_feature_report(uint8_t report_id)
-=======
 static inline uint16_t roccat_common2_feature_report(uint8_t report_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0x300 | report_id;
 }
 
-<<<<<<< HEAD
-int roccat_common_receive(struct usb_device *usb_dev, uint report_id,
-=======
 int roccat_common2_receive(struct usb_device *usb_dev, uint report_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void *data, uint size)
 {
 	char *buf;
@@ -49,26 +31,16 @@ int roccat_common2_receive(struct usb_device *usb_dev, uint report_id,
 	len = usb_control_msg(usb_dev, usb_rcvctrlpipe(usb_dev, 0),
 			HID_REQ_GET_REPORT,
 			USB_TYPE_CLASS | USB_RECIP_INTERFACE | USB_DIR_IN,
-<<<<<<< HEAD
-			roccat_common_feature_report(report_id),
-=======
 			roccat_common2_feature_report(report_id),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			0, buf, size, USB_CTRL_SET_TIMEOUT);
 
 	memcpy(data, buf, size);
 	kfree(buf);
 	return ((len < 0) ? len : ((len != size) ? -EIO : 0));
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(roccat_common_receive);
-
-int roccat_common_send(struct usb_device *usb_dev, uint report_id,
-=======
 EXPORT_SYMBOL_GPL(roccat_common2_receive);
 
 int roccat_common2_send(struct usb_device *usb_dev, uint report_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void const *data, uint size)
 {
 	char *buf;
@@ -81,19 +53,12 @@ int roccat_common2_send(struct usb_device *usb_dev, uint report_id,
 	len = usb_control_msg(usb_dev, usb_sndctrlpipe(usb_dev, 0),
 			HID_REQ_SET_REPORT,
 			USB_TYPE_CLASS | USB_RECIP_INTERFACE | USB_DIR_OUT,
-<<<<<<< HEAD
-			roccat_common_feature_report(report_id),
-=======
 			roccat_common2_feature_report(report_id),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			0, buf, size, USB_CTRL_SET_TIMEOUT);
 
 	kfree(buf);
 	return ((len < 0) ? len : ((len != size) ? -EIO : 0));
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(roccat_common_send);
-=======
 EXPORT_SYMBOL_GPL(roccat_common2_send);
 
 enum roccat_common2_control_states {
@@ -204,7 +169,6 @@ ssize_t roccat_common2_sysfs_write(struct file *fp, struct kobject *kobj,
 	return retval ? retval : real_size;
 }
 EXPORT_SYMBOL_GPL(roccat_common2_sysfs_write);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Stefan Achatz");
 MODULE_DESCRIPTION("USB Roccat common driver");

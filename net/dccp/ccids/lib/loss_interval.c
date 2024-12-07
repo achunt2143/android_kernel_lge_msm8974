@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2007   The University of Aberdeen, Scotland, UK
  *  Copyright (c) 2005-7 The University of Waikato, Hamilton, New Zealand.
  *  Copyright (c) 2005-7 Ian McDonald <ian.mcdonald@jandi.co.nz>
  *  Copyright (c) 2005 Arnaldo Carvalho de Melo <acme@conectiva.com.br>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <net/sock.h>
 #include "tfrc.h"
@@ -90,12 +79,9 @@ static void tfrc_lh_calc_i_mean(struct tfrc_loss_hist *lh)
 
 /**
  * tfrc_lh_update_i_mean  -  Update the `open' loss interval I_0
-<<<<<<< HEAD
-=======
  * @lh: histogram to update
  * @skb: received socket triggering loss interval update
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * For recomputing p: returns `true' if p > p_prev  <=>  1/p < 1/p_prev
  */
 u8 tfrc_lh_update_i_mean(struct tfrc_loss_hist *lh, struct sk_buff *skb)
@@ -146,10 +132,7 @@ static inline u8 tfrc_lh_is_new_loss(struct tfrc_loss_interval *cur,
  * @rh:		   Receive history containing a fresh loss event
  * @calc_first_li: Caller-dependent routine to compute length of first interval
  * @sk:		   Used by @calc_first_li in caller-specific way (subtyping)
-<<<<<<< HEAD
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Updates I_mean and returns 1 if a new interval has in fact been added to @lh.
  */
 int tfrc_lh_interval_add(struct tfrc_loss_hist *lh, struct tfrc_rx_hist *rh,

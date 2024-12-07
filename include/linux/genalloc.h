@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Basic general purpose allocator for managing special purpose
  * memory, for example, memory that is not managed by the regular
@@ -25,19 +22,11 @@
  * the allocator can NOT be used in NMI handler.  So code uses the
  * allocator in NMI handler should depend on
  * CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG.
-<<<<<<< HEAD
- *
- * This source code is licensed under the GNU General Public License,
- * Version 2.  See the file COPYING for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
 #ifndef __GENALLOC_H__
 #define __GENALLOC_H__
-<<<<<<< HEAD
-=======
 
 #include <linux/types.h>
 #include <linux/spinlock_types.h>
@@ -63,7 +52,6 @@ typedef unsigned long (*genpool_algo_t)(unsigned long *map,
 			void *data, struct gen_pool *pool,
 			unsigned long start_addr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  General purpose special memory pool descriptor.
  */
@@ -71,14 +59,11 @@ struct gen_pool {
 	spinlock_t lock;
 	struct list_head chunks;	/* list of chunks in this pool */
 	int min_alloc_order;		/* minimum allocation order */
-<<<<<<< HEAD
-=======
 
 	genpool_algo_t algo;		/* allocation function */
 	void *data;
 
 	const char *name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -86,19 +71,6 @@ struct gen_pool {
  */
 struct gen_pool_chunk {
 	struct list_head next_chunk;	/* next chunk in pool */
-<<<<<<< HEAD
-	atomic_t avail;
-	phys_addr_t phys_addr;		/* physical starting address of memory chunk */
-	u64 start_addr;			/* starting address of memory chunk */
-	u64 end_addr;			/* ending address of memory chunk */
-	unsigned long bits[0];		/* bitmap for allocating memory chunk */
-};
-
-extern struct gen_pool *gen_pool_create(int, int);
-extern phys_addr_t gen_pool_virt_to_phys(struct gen_pool *pool, u64);
-extern int gen_pool_add_virt(struct gen_pool *, u64, phys_addr_t,
-			     size_t, int);
-=======
 	atomic_long_t avail;
 	phys_addr_t phys_addr;		/* physical starting address of memory chunk */
 	void *owner;			/* private data to retrieve at alloc time */
@@ -132,7 +104,6 @@ static inline int gen_pool_add_virt(struct gen_pool *pool, unsigned long addr,
 	return gen_pool_add_owner(pool, addr, phys, size, nid, NULL);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * gen_pool_add - add a new chunk of special memory to the pool
  * @pool: pool to add new memory chunk to
@@ -145,19 +116,12 @@ static inline int gen_pool_add_virt(struct gen_pool *pool, unsigned long addr,
  *
  * Returns 0 on success or a -ve errno on failure.
  */
-<<<<<<< HEAD
-static inline int gen_pool_add(struct gen_pool *pool, u64 addr,
-=======
 static inline int gen_pool_add(struct gen_pool *pool, unsigned long addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       size_t size, int nid)
 {
 	return gen_pool_add_virt(pool, addr, -1, size, nid);
 }
 extern void gen_pool_destroy(struct gen_pool *);
-<<<<<<< HEAD
-extern void gen_pool_free(struct gen_pool *, u64, size_t);
-=======
 unsigned long gen_pool_alloc_algo_owner(struct gen_pool *pool, size_t size,
 		genpool_algo_t algo, void *data, void **owner);
 
@@ -208,32 +172,11 @@ static inline void gen_pool_free(struct gen_pool *pool, unsigned long addr,
 	gen_pool_free_owner(pool, addr, size, NULL);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void gen_pool_for_each_chunk(struct gen_pool *,
 	void (*)(struct gen_pool *, struct gen_pool_chunk *, void *), void *);
 extern size_t gen_pool_avail(struct gen_pool *);
 extern size_t gen_pool_size(struct gen_pool *);
 
-<<<<<<< HEAD
-u64 __must_check
-gen_pool_alloc_aligned(struct gen_pool *pool, size_t size,
-                       unsigned alignment_order);
-
-/**
- * gen_pool_alloc() - allocate special memory from the pool
- * @pool:       Pool to allocate from.
- * @size:       Number of bytes to allocate from the pool.
- *
- * Allocate the requested number of bytes from the specified pool.
- * Uses a first-fit algorithm.
- */
-static inline u64 __must_check
-gen_pool_alloc(struct gen_pool *pool, size_t size)
-{
-        return gen_pool_alloc_aligned(pool, size, 0);
-}
-
-=======
 extern void gen_pool_set_algo(struct gen_pool *pool, genpool_algo_t algo,
 		void *data);
 
@@ -276,5 +219,4 @@ static inline struct gen_pool *of_gen_pool_get(struct device_node *np,
 	return NULL;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __GENALLOC_H__ */

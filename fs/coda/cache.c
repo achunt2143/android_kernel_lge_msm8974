@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cache operations for Coda.
  * For Linux 2.1: (C) 1997 Carnegie Mellon University
@@ -17,22 +14,14 @@
 #include <linux/fs.h>
 #include <linux/stat.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/list.h>
 #include <linux/sched.h>
 #include <linux/spinlock.h>
 
 #include <linux/coda.h>
-<<<<<<< HEAD
-#include <linux/coda_psdev.h>
-=======
 #include "coda_psdev.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "coda_linux.h"
 #include "coda_cache.h"
 
@@ -45,11 +34,7 @@ void coda_cache_enter(struct inode *inode, int mask)
 
 	spin_lock(&cii->c_lock);
 	cii->c_cached_epoch = atomic_read(&permission_epoch);
-<<<<<<< HEAD
-	if (cii->c_uid != current_fsuid()) {
-=======
 	if (!uid_eq(cii->c_uid, current_fsuid())) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cii->c_uid = current_fsuid();
                 cii->c_cached_perm = mask;
         } else
@@ -81,11 +66,7 @@ int coda_cache_check(struct inode *inode, int mask)
 	
 	spin_lock(&cii->c_lock);
 	hit = (mask & cii->c_cached_perm) == mask &&
-<<<<<<< HEAD
-	    cii->c_uid == current_fsuid() &&
-=======
 	    uid_eq(cii->c_uid, current_fsuid()) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    cii->c_cached_epoch == atomic_read(&permission_epoch);
 	spin_unlock(&cii->c_lock);
 
@@ -109,22 +90,6 @@ int coda_cache_check(struct inode *inode, int mask)
 /* this won't do any harm: just flag all children */
 static void coda_flag_children(struct dentry *parent, int flag)
 {
-<<<<<<< HEAD
-	struct list_head *child;
-	struct dentry *de;
-
-	spin_lock(&parent->d_lock);
-	list_for_each(child, &parent->d_subdirs)
-	{
-		de = list_entry(child, struct dentry, d_child);
-		/* don't know what to do with negative dentries */
-		if ( ! de->d_inode ) 
-			continue;
-		coda_flag_inode(de->d_inode, flag);
-	}
-	spin_unlock(&parent->d_lock);
-	return; 
-=======
 	struct dentry *de;
 
 	spin_lock(&parent->d_lock);
@@ -135,7 +100,6 @@ static void coda_flag_children(struct dentry *parent, int flag)
 			coda_flag_inode(inode, flag);
 	}
 	spin_unlock(&parent->d_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void coda_flag_inode_children(struct inode *inode, int flag)

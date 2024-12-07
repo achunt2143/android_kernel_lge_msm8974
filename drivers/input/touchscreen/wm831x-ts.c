@@ -1,29 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Touchscreen driver for WM831x PMICs
  *
  * Copyright 2011 Wolfson Microelectronics plc.
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/pm.h>
 #include <linux/input.h>
@@ -231,11 +216,7 @@ static void wm831x_ts_input_close(struct input_dev *idev)
 	synchronize_irq(wm831x_ts->pd_irq);
 
 	/* Make sure the IRQ completion work is quiesced */
-<<<<<<< HEAD
-	flush_work_sync(&wm831x_ts->pd_data_work);
-=======
 	flush_work(&wm831x_ts->pd_data_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If we ended up with the pen down then make sure we revert back
 	 * to pen detection state for the next time we start up.
@@ -247,11 +228,7 @@ static void wm831x_ts_input_close(struct input_dev *idev)
 	}
 }
 
-<<<<<<< HEAD
-static __devinit int wm831x_ts_probe(struct platform_device *pdev)
-=======
 static int wm831x_ts_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm831x_ts *wm831x_ts;
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
@@ -263,14 +240,9 @@ static int wm831x_ts_probe(struct platform_device *pdev)
 	if (core_pdata)
 		pdata = core_pdata->touch;
 
-<<<<<<< HEAD
-	wm831x_ts = kzalloc(sizeof(struct wm831x_ts), GFP_KERNEL);
-	input_dev = input_allocate_device();
-=======
 	wm831x_ts = devm_kzalloc(&pdev->dev, sizeof(struct wm831x_ts),
 				 GFP_KERNEL);
 	input_dev = devm_input_allocate_device(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!wm831x_ts || !input_dev) {
 		error = -ENOMEM;
 		goto err_alloc;
@@ -284,17 +256,6 @@ static int wm831x_ts_probe(struct platform_device *pdev)
 	 * If we have a direct IRQ use it, otherwise use the interrupt
 	 * from the WM831x IRQ controller.
 	 */
-<<<<<<< HEAD
-	if (pdata && pdata->data_irq)
-		wm831x_ts->data_irq = pdata->data_irq;
-	else
-		wm831x_ts->data_irq = platform_get_irq_byname(pdev, "TCHDATA");
-
-	if (pdata && pdata->pd_irq)
-		wm831x_ts->pd_irq = pdata->pd_irq;
-	else
-		wm831x_ts->pd_irq = platform_get_irq_byname(pdev, "TCHPD");
-=======
 	wm831x_ts->data_irq = wm831x_irq(wm831x,
 					 platform_get_irq_byname(pdev,
 								 "TCHDATA"));
@@ -305,7 +266,6 @@ static int wm831x_ts_probe(struct platform_device *pdev)
 				       platform_get_irq_byname(pdev, "TCHPD"));
 	if (pdata && pdata->pd_irq)
 		wm831x_ts->pd_irq = pdata->pd_irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdata)
 		wm831x_ts->pressure = pdata->pressure;
@@ -330,11 +290,7 @@ static int wm831x_ts_probe(struct platform_device *pdev)
 		default:
 			dev_err(&pdev->dev, "Unsupported ISEL setting: %d\n",
 				pdata->isel);
-<<<<<<< HEAD
-			/* Fall through */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 200:
 		case 0:
 			wm831x_set_bits(wm831x, WM831X_TOUCH_CONTROL_2,
@@ -361,21 +317,13 @@ static int wm831x_ts_probe(struct platform_device *pdev)
 
 	error = request_threaded_irq(wm831x_ts->data_irq,
 				     NULL, wm831x_ts_data_irq,
-<<<<<<< HEAD
-				     irqf | IRQF_ONESHOT,
-=======
 				     irqf | IRQF_ONESHOT | IRQF_NO_AUTOEN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     "Touchscreen data", wm831x_ts);
 	if (error) {
 		dev_err(&pdev->dev, "Failed to request data IRQ %d: %d\n",
 			wm831x_ts->data_irq, error);
 		goto err_alloc;
 	}
-<<<<<<< HEAD
-	disable_irq(wm831x_ts->data_irq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdata && pdata->pd_irqf)
 		irqf = pdata->pd_irqf;
@@ -422,48 +370,24 @@ err_pd_irq:
 err_data_irq:
 	free_irq(wm831x_ts->data_irq, wm831x_ts);
 err_alloc:
-<<<<<<< HEAD
-	input_free_device(input_dev);
-	kfree(wm831x_ts);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 
-<<<<<<< HEAD
-static __devexit int wm831x_ts_remove(struct platform_device *pdev)
-=======
 static void wm831x_ts_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm831x_ts *wm831x_ts = platform_get_drvdata(pdev);
 
 	free_irq(wm831x_ts->pd_irq, wm831x_ts);
 	free_irq(wm831x_ts->data_irq, wm831x_ts);
-<<<<<<< HEAD
-	input_unregister_device(wm831x_ts->input_dev);
-	kfree(wm831x_ts);
-
-	platform_set_drvdata(pdev, NULL);
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver wm831x_ts_driver = {
 	.driver = {
 		.name = "wm831x-touch",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe = wm831x_ts_probe,
-	.remove = __devexit_p(wm831x_ts_remove),
-=======
 	},
 	.probe = wm831x_ts_probe,
 	.remove_new = wm831x_ts_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 module_platform_driver(wm831x_ts_driver);
 

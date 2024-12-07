@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Code to process dynamic relocations for PPC32.
  *
@@ -9,14 +6,6 @@
  *	Author: Suzuki Poulose <suzuki@in.ibm.com>
  *
  *  - Based on ppc64 code - reloc_64.S
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/ppc_asm.h>
@@ -41,11 +30,7 @@ R_PPC_RELATIVE = 22
 _GLOBAL(relocate)
 
 	mflr	r0		/* Save our LR */
-<<<<<<< HEAD
-	bl	0f		/* Find our current runtime address */
-=======
 	bcl	20,31,$+4	/* Find our current runtime address */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 0:	mflr	r12		/* Make it accessible */
 	mtlr	r0
 
@@ -177,11 +162,7 @@ ha16:
 	/* R_PPC_ADDR16_LO */
 lo16:
 	cmpwi	r4, R_PPC_ADDR16_LO
-<<<<<<< HEAD
-	bne	nxtrela
-=======
 	bne	unknown_type
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwz	r4, 0(r9)	/* r_offset */
 	lwz	r0, 8(r9)	/* r_addend */
 	add	r0, r0, r3
@@ -206,10 +187,7 @@ nxtrela:
 	dcbst	r4,r7
 	sync			/* Ensure the data is flushed before icbi */
 	icbi	r4,r7
-<<<<<<< HEAD
-=======
 unknown_type:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmpwi	r8, 0		/* relasz = 0 ? */
 	ble	done
 	add	r9, r9, r6	/* move to next entry in the .rela table */

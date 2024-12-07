@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASMARM_ARCH_SCU_H
 #define __ASMARM_ARCH_SCU_H
 
@@ -10,11 +7,6 @@
 #define SCU_PM_POWEROFF	3
 
 #ifndef __ASSEMBLER__
-<<<<<<< HEAD
-unsigned int scu_get_core_count(void __iomem *);
-void scu_enable(void __iomem *);
-int scu_power_mode(void __iomem *, unsigned int);
-=======
 
 #include <linux/errno.h>
 #include <asm/cputype.h>
@@ -65,7 +57,6 @@ void scu_enable(void __iomem *scu_base);
 static inline void scu_enable(void __iomem *scu_base) {}
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

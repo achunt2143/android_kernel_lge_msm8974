@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_MPSPEC_DEF_H
 #define _ASM_X86_MPSPEC_DEF_H
 
@@ -62,11 +59,7 @@ struct mpc_table {
 #define	MP_TRANSLATION		192
 
 #define CPU_ENABLED		1	/* Processor is available */
-<<<<<<< HEAD
-#define CPU_BOOTPROCESSOR	2	/* Processor is the BP */
-=======
 #define CPU_BOOTPROCESSOR	2	/* Processor is the boot CPU */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CPU_STEPPING_MASK	0x000F
 #define CPU_MODEL_MASK		0x00F0
@@ -92,11 +85,7 @@ struct mpc_bus {
 #define BUSTYPE_EISA	"EISA"
 #define BUSTYPE_ISA	"ISA"
 #define BUSTYPE_INTERN	"INTERN"	/* Internal BUS */
-<<<<<<< HEAD
-#define BUSTYPE_MCA	"MCA"
-=======
 #define BUSTYPE_MCA	"MCA"		/* Obsolete */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BUSTYPE_VL	"VL"		/* Local bus */
 #define BUSTYPE_PCI	"PCI"
 #define BUSTYPE_PCMCIA	"PCMCIA"
@@ -139,11 +128,6 @@ enum mp_irq_source_types {
 	mp_ExtINT = 3
 };
 
-<<<<<<< HEAD
-#define MP_IRQDIR_DEFAULT	0
-#define MP_IRQDIR_HIGH		1
-#define MP_IRQDIR_LOW		3
-=======
 #define MP_IRQPOL_DEFAULT	0x0
 #define MP_IRQPOL_ACTIVE_HIGH	0x1
 #define MP_IRQPOL_RESERVED	0x2
@@ -155,7 +139,6 @@ enum mp_irq_source_types {
 #define MP_IRQTRIG_RESERVED	0x8
 #define MP_IRQTRIG_LEVEL	0xc
 #define MP_IRQTRIG_MASK		0xc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MP_APIC_ALL	0xFF
 
@@ -195,9 +178,5 @@ enum mp_bustype {
 	MP_BUS_ISA = 1,
 	MP_BUS_EISA,
 	MP_BUS_PCI,
-<<<<<<< HEAD
-	MP_BUS_MCA,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif /* _ASM_X86_MPSPEC_DEF_H */

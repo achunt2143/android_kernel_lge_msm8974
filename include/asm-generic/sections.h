@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_GENERIC_SECTIONS_H_
 #define _ASM_GENERIC_SECTIONS_H_
 
 /* References to section boundaries */
 
-<<<<<<< HEAD
-=======
 #include <linux/compiler.h>
 #include <linux/types.h>
 
@@ -37,56 +32,24 @@
  *	__softirqentry_text_start, __softirqentry_text_end
  *	__start_opd, __end_opd
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern char _text[], _stext[], _etext[];
 extern char _data[], _sdata[], _edata[];
 extern char __bss_start[], __bss_stop[];
 extern char __init_begin[], __init_end[];
 extern char _sinittext[], _einittext[];
-<<<<<<< HEAD
-=======
 extern char __start_ro_after_init[], __end_ro_after_init[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern char _end[];
 extern char __per_cpu_load[], __per_cpu_start[], __per_cpu_end[];
 extern char __kprobes_text_start[], __kprobes_text_end[];
 extern char __entry_text_start[], __entry_text_end[];
-<<<<<<< HEAD
-extern char __initdata_begin[], __initdata_end[];
-extern char __start_rodata[], __end_rodata[];
-=======
 extern char __start_rodata[], __end_rodata[];
 extern char __irqentry_text_start[], __irqentry_text_end[];
 extern char __softirqentry_text_start[], __softirqentry_text_end[];
 extern char __start_once[], __end_once[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Start and end of .ctors section - used for constructor calls. */
 extern char __ctors_start[], __ctors_end[];
 
-<<<<<<< HEAD
-/* function descriptor handling (if any).  Override
- * in asm/sections.h */
-#ifndef dereference_function_descriptor
-#define dereference_function_descriptor(p) (p)
-#endif
-
-/* random extra sections (if any).  Override
- * in asm/sections.h */
-#ifndef arch_is_kernel_text
-static inline int arch_is_kernel_text(unsigned long addr)
-{
-	return 0;
-}
-#endif
-
-#ifndef arch_is_kernel_data
-static inline int arch_is_kernel_data(unsigned long addr)
-{
-	return 0;
-}
-#endif
-=======
 /* Start and end of .opd section - used for function descriptors. */
 extern char __start_opd[], __end_opd[];
 
@@ -263,6 +226,5 @@ static inline bool __is_kernel(unsigned long addr)
 		(addr >= (unsigned long)__init_begin &&
 		 addr < (unsigned long)__init_end));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_GENERIC_SECTIONS_H_ */

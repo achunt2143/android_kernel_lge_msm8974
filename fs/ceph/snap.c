@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-#include <linux/ceph/ceph_debug.h>
-
-#include <linux/sort.h>
-#include <linux/slab.h>
-
-#include "super.h"
-#include "mds_client.h"
-
-#include <linux/ceph/decode.h>
-
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/ceph/ceph_debug.h>
 
@@ -24,7 +12,6 @@
 /* unused map expires after 5 minutes */
 #define CEPH_SNAPID_MAP_TIMEOUT	(5 * 60 * HZ)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Snapshots in ceph are driven in large part by cooperation from the
  * client.  In contrast to local file systems or file servers that
@@ -74,32 +61,11 @@
 /*
  * increase ref count for the realm
  *
-<<<<<<< HEAD
- * caller must hold snap_rwsem for write.
-=======
  * caller must hold snap_rwsem.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void ceph_get_snap_realm(struct ceph_mds_client *mdsc,
 			 struct ceph_snap_realm *realm)
 {
-<<<<<<< HEAD
-	dout("get_realm %p %d -> %d\n", realm,
-	     atomic_read(&realm->nref), atomic_read(&realm->nref)+1);
-	/*
-	 * since we _only_ increment realm refs or empty the empty
-	 * list with snap_rwsem held, adjusting the empty list here is
-	 * safe.  we do need to protect against concurrent empty list
-	 * additions, however.
-	 */
-	if (atomic_read(&realm->nref) == 0) {
-		spin_lock(&mdsc->snap_empty_lock);
-		list_del_init(&realm->empty_item);
-		spin_unlock(&mdsc->snap_empty_lock);
-	}
-
-	atomic_inc(&realm->nref);
-=======
 	lockdep_assert_held(&mdsc->snap_rwsem);
 
 	/*
@@ -115,7 +81,6 @@ void ceph_get_snap_realm(struct ceph_mds_client *mdsc,
 	if (atomic_inc_return(&realm->nref) == 1)
 		list_del_init(&realm->empty_item);
 	spin_unlock(&mdsc->snap_empty_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __insert_snap_realm(struct rb_root *root,
@@ -151,35 +116,22 @@ static struct ceph_snap_realm *ceph_create_snap_realm(
 {
 	struct ceph_snap_realm *realm;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held_write(&mdsc->snap_rwsem);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	realm = kzalloc(sizeof(*realm), GFP_NOFS);
 	if (!realm)
 		return ERR_PTR(-ENOMEM);
 
-<<<<<<< HEAD
-	atomic_set(&realm->nref, 0);    /* tree does not take a ref */
-=======
 	/* Do not release the global dummy snaprealm until unmouting */
 	if (ino == CEPH_INO_GLOBAL_SNAPREALM)
 		atomic_set(&realm->nref, 2);
 	else
 		atomic_set(&realm->nref, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	realm->ino = ino;
 	INIT_LIST_HEAD(&realm->children);
 	INIT_LIST_HEAD(&realm->child_item);
 	INIT_LIST_HEAD(&realm->empty_item);
 	INIT_LIST_HEAD(&realm->dirty_item);
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&realm->inodes_with_caps);
-	spin_lock_init(&realm->inodes_with_caps_lock);
-	__insert_snap_realm(&mdsc->snap_realms, realm);
-	dout("create_snap_realm %llx %p\n", realm->ino, realm);
-=======
 	INIT_LIST_HEAD(&realm->rebuild_item);
 	INIT_LIST_HEAD(&realm->inodes_with_caps);
 	spin_lock_init(&realm->inodes_with_caps_lock);
@@ -187,23 +139,12 @@ static struct ceph_snap_realm *ceph_create_snap_realm(
 	mdsc->num_snap_realms++;
 
 	doutc(mdsc->fsc->client, "%llx %p\n", realm->ino, realm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return realm;
 }
 
 /*
  * lookup the realm rooted at @ino.
  *
-<<<<<<< HEAD
- * caller must hold snap_rwsem for write.
- */
-struct ceph_snap_realm *ceph_lookup_snap_realm(struct ceph_mds_client *mdsc,
-					       u64 ino)
-{
-	struct rb_node *n = mdsc->snap_realms.rb_node;
-	struct ceph_snap_realm *r;
-
-=======
  * caller must hold snap_rwsem.
  */
 static struct ceph_snap_realm *__lookup_snap_realm(struct ceph_mds_client *mdsc,
@@ -215,7 +156,6 @@ static struct ceph_snap_realm *__lookup_snap_realm(struct ceph_mds_client *mdsc,
 
 	lockdep_assert_held(&mdsc->snap_rwsem);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (n) {
 		r = rb_entry(n, struct ceph_snap_realm, node);
 		if (ino < r->ino)
@@ -223,19 +163,13 @@ static struct ceph_snap_realm *__lookup_snap_realm(struct ceph_mds_client *mdsc,
 		else if (ino > r->ino)
 			n = n->rb_right;
 		else {
-<<<<<<< HEAD
-			dout("lookup_snap_realm %llx %p\n", r->ino, r);
-=======
 			doutc(cl, "%llx %p\n", r->ino, r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return r;
 		}
 	}
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 struct ceph_snap_realm *ceph_lookup_snap_realm(struct ceph_mds_client *mdsc,
 					       u64 ino)
 {
@@ -246,7 +180,6 @@ struct ceph_snap_realm *ceph_lookup_snap_realm(struct ceph_mds_client *mdsc,
 	return r;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __put_snap_realm(struct ceph_mds_client *mdsc,
 			     struct ceph_snap_realm *realm);
 
@@ -256,11 +189,6 @@ static void __put_snap_realm(struct ceph_mds_client *mdsc,
 static void __destroy_snap_realm(struct ceph_mds_client *mdsc,
 				 struct ceph_snap_realm *realm)
 {
-<<<<<<< HEAD
-	dout("__destroy_snap_realm %p %llx\n", realm, realm->ino);
-
-	rb_erase(&realm->node, &mdsc->snap_realms);
-=======
 	struct ceph_client *cl = mdsc->fsc->client;
 	lockdep_assert_held_write(&mdsc->snap_rwsem);
 
@@ -268,7 +196,6 @@ static void __destroy_snap_realm(struct ceph_mds_client *mdsc,
 
 	rb_erase(&realm->node, &mdsc->snap_realms);
 	mdsc->num_snap_realms--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (realm->parent) {
 		list_del_init(&realm->child_item);
@@ -287,43 +214,22 @@ static void __destroy_snap_realm(struct ceph_mds_client *mdsc,
 static void __put_snap_realm(struct ceph_mds_client *mdsc,
 			     struct ceph_snap_realm *realm)
 {
-<<<<<<< HEAD
-	dout("__put_snap_realm %llx %p %d -> %d\n", realm->ino, realm,
-	     atomic_read(&realm->nref), atomic_read(&realm->nref)-1);
-=======
 	lockdep_assert_held_write(&mdsc->snap_rwsem);
 
 	/*
 	 * We do not require the snap_empty_lock here, as any caller that
 	 * increments the value must hold the snap_rwsem.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (atomic_dec_and_test(&realm->nref))
 		__destroy_snap_realm(mdsc, realm);
 }
 
 /*
-<<<<<<< HEAD
- * caller needn't hold any locks
-=======
  * See comments in ceph_get_snap_realm. Caller needn't hold any locks.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void ceph_put_snap_realm(struct ceph_mds_client *mdsc,
 			 struct ceph_snap_realm *realm)
 {
-<<<<<<< HEAD
-	dout("put_snap_realm %llx %p %d -> %d\n", realm->ino, realm,
-	     atomic_read(&realm->nref), atomic_read(&realm->nref)-1);
-	if (!atomic_dec_and_test(&realm->nref))
-		return;
-
-	if (down_write_trylock(&mdsc->snap_rwsem)) {
-		__destroy_snap_realm(mdsc, realm);
-		up_write(&mdsc->snap_rwsem);
-	} else {
-		spin_lock(&mdsc->snap_empty_lock);
-=======
 	if (!atomic_dec_and_lock(&realm->nref, &mdsc->snap_empty_lock))
 		return;
 
@@ -332,7 +238,6 @@ void ceph_put_snap_realm(struct ceph_mds_client *mdsc,
 		__destroy_snap_realm(mdsc, realm);
 		up_write(&mdsc->snap_rwsem);
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add(&realm->empty_item, &mdsc->snap_empty);
 		spin_unlock(&mdsc->snap_empty_lock);
 	}
@@ -349,11 +254,8 @@ static void __cleanup_empty_realms(struct ceph_mds_client *mdsc)
 {
 	struct ceph_snap_realm *realm;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held_write(&mdsc->snap_rwsem);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&mdsc->snap_empty_lock);
 	while (!list_empty(&mdsc->snap_empty)) {
 		realm = list_first_entry(&mdsc->snap_empty,
@@ -366,11 +268,6 @@ static void __cleanup_empty_realms(struct ceph_mds_client *mdsc)
 	spin_unlock(&mdsc->snap_empty_lock);
 }
 
-<<<<<<< HEAD
-void ceph_cleanup_empty_realms(struct ceph_mds_client *mdsc)
-{
-	down_write(&mdsc->snap_rwsem);
-=======
 void ceph_cleanup_global_and_empty_realms(struct ceph_mds_client *mdsc)
 {
 	struct ceph_snap_realm *global_realm;
@@ -379,7 +276,6 @@ void ceph_cleanup_global_and_empty_realms(struct ceph_mds_client *mdsc)
 	global_realm = __lookup_snap_realm(mdsc, CEPH_INO_GLOBAL_SNAPREALM);
 	if (global_realm)
 		ceph_put_snap_realm(mdsc, global_realm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__cleanup_empty_realms(mdsc);
 	up_write(&mdsc->snap_rwsem);
 }
@@ -396,16 +292,11 @@ static int adjust_snap_realm_parent(struct ceph_mds_client *mdsc,
 				    struct ceph_snap_realm *realm,
 				    u64 parentino)
 {
-<<<<<<< HEAD
-	struct ceph_snap_realm *parent;
-
-=======
 	struct ceph_client *cl = mdsc->fsc->client;
 	struct ceph_snap_realm *parent;
 
 	lockdep_assert_held_write(&mdsc->snap_rwsem);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (realm->parent_ino == parentino)
 		return 0;
 
@@ -415,24 +306,14 @@ static int adjust_snap_realm_parent(struct ceph_mds_client *mdsc,
 		if (IS_ERR(parent))
 			return PTR_ERR(parent);
 	}
-<<<<<<< HEAD
-	dout("adjust_snap_realm_parent %llx %p: %llx %p -> %llx %p\n",
-	     realm->ino, realm, realm->parent_ino, realm->parent,
-	     parentino, parent);
-=======
 	doutc(cl, "%llx %p: %llx %p -> %llx %p\n", realm->ino, realm,
 	      realm->parent_ino, realm->parent, parentino, parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (realm->parent) {
 		list_del_init(&realm->child_item);
 		ceph_put_snap_realm(mdsc, realm->parent);
 	}
 	realm->parent_ino = parentino;
 	realm->parent = parent;
-<<<<<<< HEAD
-	ceph_get_snap_realm(mdsc, parent);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add(&realm->child_item, &parent->children);
 	return 1;
 }
@@ -447,18 +328,6 @@ static int cmpu64_rev(const void *a, const void *b)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * build the snap context for a given realm.
- */
-static int build_snap_context(struct ceph_snap_realm *realm)
-{
-	struct ceph_snap_realm *parent = realm->parent;
-	struct ceph_snap_context *snapc;
-	int err = 0;
-	int i;
-	int num = realm->num_prior_parent_snaps + realm->num_snaps;
-=======
 
 /*
  * build the snap context for a given realm.
@@ -473,7 +342,6 @@ static int build_snap_context(struct ceph_mds_client *mdsc,
 	struct ceph_snap_context *snapc;
 	int err = 0;
 	u32 num = realm->num_prior_parent_snaps + realm->num_snaps;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * build parent context, if it hasn't been built.
@@ -482,15 +350,9 @@ static int build_snap_context(struct ceph_mds_client *mdsc,
 	 */
 	if (parent) {
 		if (!parent->cached_context) {
-<<<<<<< HEAD
-			err = build_snap_context(parent);
-			if (err)
-				goto fail;
-=======
 			/* add to the queue head */
 			list_add(&parent->rebuild_item, realm_queue);
 			return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		num += parent->cached_context->num_snaps;
 	}
@@ -503,18 +365,10 @@ static int build_snap_context(struct ceph_mds_client *mdsc,
 	    realm->cached_context->seq == realm->seq &&
 	    (!parent ||
 	     realm->cached_context->seq >= parent->cached_context->seq)) {
-<<<<<<< HEAD
-		dout("build_snap_context %llx %p: %p seq %lld (%d snaps)"
-		     " (unchanged)\n",
-		     realm->ino, realm, realm->cached_context,
-		     realm->cached_context->seq,
-		     realm->cached_context->num_snaps);
-=======
 		doutc(cl, "%llx %p: %p seq %lld (%u snaps) (unchanged)\n",
 		      realm->ino, realm, realm->cached_context,
 		      realm->cached_context->seq,
 		      (unsigned int)realm->cached_context->num_snaps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -522,26 +376,16 @@ static int build_snap_context(struct ceph_mds_client *mdsc,
 	err = -ENOMEM;
 	if (num > (SIZE_MAX - sizeof(*snapc)) / sizeof(u64))
 		goto fail;
-<<<<<<< HEAD
-	snapc = kzalloc(sizeof(*snapc) + num*sizeof(u64), GFP_NOFS);
-	if (!snapc)
-		goto fail;
-	atomic_set(&snapc->nref, 1);
-=======
 	snapc = ceph_create_snap_context(num, GFP_NOFS);
 	if (!snapc)
 		goto fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* build (reverse sorted) snap vector */
 	num = 0;
 	snapc->seq = realm->seq;
 	if (parent) {
-<<<<<<< HEAD
-=======
 		u32 i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* include any of parent's snaps occurring _after_ my
 		   parent became my parent */
 		for (i = 0; i < parent->cached_context->num_snaps; i++)
@@ -561,14 +405,6 @@ static int build_snap_context(struct ceph_mds_client *mdsc,
 
 	sort(snapc->snaps, num, sizeof(u64), cmpu64_rev, NULL);
 	snapc->num_snaps = num;
-<<<<<<< HEAD
-	dout("build_snap_context %llx %p: %p seq %lld (%d snaps)\n",
-	     realm->ino, realm, snapc, snapc->seq, snapc->num_snaps);
-
-	if (realm->cached_context)
-		ceph_put_snap_context(realm->cached_context);
-	realm->cached_context = snapc;
-=======
 	doutc(cl, "%llx %p: %p seq %lld (%u snaps)\n", realm->ino, realm,
 	      snapc, snapc->seq, (unsigned int) snapc->num_snaps);
 
@@ -576,7 +412,6 @@ static int build_snap_context(struct ceph_mds_client *mdsc,
 	realm->cached_context = snapc;
 	/* queue realm for cap_snap creation */
 	list_add_tail(&realm->dirty_item, dirty_realms);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 fail:
@@ -588,29 +423,13 @@ fail:
 		ceph_put_snap_context(realm->cached_context);
 		realm->cached_context = NULL;
 	}
-<<<<<<< HEAD
-	pr_err("build_snap_context %llx %p fail %d\n", realm->ino,
-	       realm, err);
-=======
 	pr_err_client(cl, "%llx %p fail %d\n", realm->ino, realm, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 /*
  * rebuild snap context for the given realm and all of its children.
  */
-<<<<<<< HEAD
-static void rebuild_snap_realms(struct ceph_snap_realm *realm)
-{
-	struct ceph_snap_realm *child;
-
-	dout("rebuild_snap_realms %llx %p\n", realm->ino, realm);
-	build_snap_context(realm);
-
-	list_for_each_entry(child, &realm->children, child_item)
-		rebuild_snap_realms(child);
-=======
 static void rebuild_snap_realms(struct ceph_mds_client *mdsc,
 				struct ceph_snap_realm *realm,
 				struct list_head *dirty_realms)
@@ -661,7 +480,6 @@ static void rebuild_snap_realms(struct ceph_mds_client *mdsc,
 		if (last <= 0)
 			list_del_init(&_realm->rebuild_item);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -669,15 +487,9 @@ static void rebuild_snap_realms(struct ceph_mds_client *mdsc,
  * helper to allocate and decode an array of snapids.  free prior
  * instance, if any.
  */
-<<<<<<< HEAD
-static int dup_array(u64 **dst, __le64 *src, int num)
-{
-	int i;
-=======
 static int dup_array(u64 **dst, __le64 *src, u32 num)
 {
 	u32 i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(*dst);
 	if (num) {
@@ -692,8 +504,6 @@ static int dup_array(u64 **dst, __le64 *src, u32 num)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static bool has_new_snaps(struct ceph_snap_context *o,
 			  struct ceph_snap_context *n)
 {
@@ -702,7 +512,6 @@ static bool has_new_snaps(struct ceph_snap_context *o,
 	/* snaps are in descending order */
 	return n->snaps[0] > o->seq;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * When a snapshot is applied, the size/mtime inode metadata is queued
@@ -718,20 +527,6 @@ static bool has_new_snaps(struct ceph_snap_context *o,
  * Caller must hold snap_rwsem for read (i.e., the realm topology won't
  * change).
  */
-<<<<<<< HEAD
-void ceph_queue_cap_snap(struct ceph_inode_info *ci)
-{
-	struct inode *inode = &ci->vfs_inode;
-	struct ceph_cap_snap *capsnap;
-	int used, dirty;
-
-	capsnap = kzalloc(sizeof(*capsnap), GFP_NOFS);
-	if (!capsnap) {
-		pr_err("ENOMEM allocating ceph_cap_snap on %p\n", inode);
-		return;
-	}
-
-=======
 static void ceph_queue_cap_snap(struct ceph_inode_info *ci,
 				struct ceph_cap_snap **pcapsnap)
 {
@@ -742,17 +537,13 @@ static void ceph_queue_cap_snap(struct ceph_inode_info *ci,
 	struct ceph_buffer *old_blob = NULL;
 	int used, dirty;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&ci->i_ceph_lock);
 	used = __ceph_caps_used(ci);
 	dirty = __ceph_caps_dirty(ci);
 
-<<<<<<< HEAD
-=======
 	old_snapc = ci->i_head_snapc;
 	new_snapc = ci->i_snap_realm->cached_context;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If there is a write in progress, treat that as a dirty Fw,
 	 * even though it hasn't completed yet; by the time we finish
@@ -766,74 +557,6 @@ static void ceph_queue_cap_snap(struct ceph_inode_info *ci,
 		   as no new writes are allowed to start when pending, so any
 		   writes in progress now were started before the previous
 		   cap_snap.  lucky us. */
-<<<<<<< HEAD
-		dout("queue_cap_snap %p already pending\n", inode);
-		kfree(capsnap);
-	} else if (dirty & (CEPH_CAP_AUTH_EXCL|CEPH_CAP_XATTR_EXCL|
-			    CEPH_CAP_FILE_EXCL|CEPH_CAP_FILE_WR)) {
-		struct ceph_snap_context *snapc = ci->i_head_snapc;
-
-		/*
-		 * if we are a sync write, we may need to go to the snaprealm
-		 * to get the current snapc.
-		 */
-		if (!snapc)
-			snapc = ci->i_snap_realm->cached_context;
-
-		dout("queue_cap_snap %p cap_snap %p queuing under %p %s\n",
-		     inode, capsnap, snapc, ceph_cap_string(dirty));
-		ihold(inode);
-
-		atomic_set(&capsnap->nref, 1);
-		capsnap->ci = ci;
-		INIT_LIST_HEAD(&capsnap->ci_item);
-		INIT_LIST_HEAD(&capsnap->flushing_item);
-
-		capsnap->follows = snapc->seq;
-		capsnap->issued = __ceph_caps_issued(ci, NULL);
-		capsnap->dirty = dirty;
-
-		capsnap->mode = inode->i_mode;
-		capsnap->uid = inode->i_uid;
-		capsnap->gid = inode->i_gid;
-
-		if (dirty & CEPH_CAP_XATTR_EXCL) {
-			__ceph_build_xattrs_blob(ci);
-			capsnap->xattr_blob =
-				ceph_buffer_get(ci->i_xattrs.blob);
-			capsnap->xattr_version = ci->i_xattrs.version;
-		} else {
-			capsnap->xattr_blob = NULL;
-			capsnap->xattr_version = 0;
-		}
-
-		/* dirty page count moved from _head to this cap_snap;
-		   all subsequent writes page dirties occur _after_ this
-		   snapshot. */
-		capsnap->dirty_pages = ci->i_wrbuffer_ref_head;
-		ci->i_wrbuffer_ref_head = 0;
-		capsnap->context = snapc;
-		ci->i_head_snapc =
-			ceph_get_snap_context(ci->i_snap_realm->cached_context);
-		dout(" new snapc is %p\n", ci->i_head_snapc);
-		list_add_tail(&capsnap->ci_item, &ci->i_cap_snaps);
-
-		if (used & CEPH_CAP_FILE_WR) {
-			dout("queue_cap_snap %p cap_snap %p snapc %p"
-			     " seq %llu used WR, now pending\n", inode,
-			     capsnap, snapc, snapc->seq);
-			capsnap->writing = 1;
-		} else {
-			/* note mtime, size NOW. */
-			__ceph_finish_cap_snap(ci, capsnap);
-		}
-	} else {
-		dout("queue_cap_snap %p nothing dirty|writing\n", inode);
-		kfree(capsnap);
-	}
-
-	spin_unlock(&ci->i_ceph_lock);
-=======
 		doutc(cl, "%p %llx.%llx already pending\n", inode,
 		      ceph_vinop(inode));
 		goto update_snapc;
@@ -926,7 +649,6 @@ update_snapc:
 
 	ceph_buffer_put(old_blob);
 	ceph_put_snap_context(old_snapc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -940,32 +662,6 @@ update_snapc:
 int __ceph_finish_cap_snap(struct ceph_inode_info *ci,
 			    struct ceph_cap_snap *capsnap)
 {
-<<<<<<< HEAD
-	struct inode *inode = &ci->vfs_inode;
-	struct ceph_mds_client *mdsc = ceph_sb_to_client(inode->i_sb)->mdsc;
-
-	BUG_ON(capsnap->writing);
-	capsnap->size = inode->i_size;
-	capsnap->mtime = inode->i_mtime;
-	capsnap->atime = inode->i_atime;
-	capsnap->ctime = inode->i_ctime;
-	capsnap->time_warp_seq = ci->i_time_warp_seq;
-	if (capsnap->dirty_pages) {
-		dout("finish_cap_snap %p cap_snap %p snapc %p %llu %s s=%llu "
-		     "still has %d dirty pages\n", inode, capsnap,
-		     capsnap->context, capsnap->context->seq,
-		     ceph_cap_string(capsnap->dirty), capsnap->size,
-		     capsnap->dirty_pages);
-		return 0;
-	}
-	dout("finish_cap_snap %p cap_snap %p snapc %p %llu %s s=%llu\n",
-	     inode, capsnap, capsnap->context,
-	     capsnap->context->seq, ceph_cap_string(capsnap->dirty),
-	     capsnap->size);
-
-	spin_lock(&mdsc->snap_flush_lock);
-	list_add_tail(&ci->i_snap_flush_item, &mdsc->snap_flush_list);
-=======
 	struct inode *inode = &ci->netfs.inode;
 	struct ceph_mds_client *mdsc = ceph_sb_to_mdsc(inode->i_sb);
 	struct ceph_client *cl = mdsc->fsc->client;
@@ -1015,7 +711,6 @@ int __ceph_finish_cap_snap(struct ceph_inode_info *ci,
 		ihold(inode);
 		list_add_tail(&ci->i_snap_flush_item, &mdsc->snap_flush_list);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&mdsc->snap_flush_lock);
 	return 1;  /* caller may want to ceph_flush_snaps */
 }
@@ -1024,42 +719,6 @@ int __ceph_finish_cap_snap(struct ceph_inode_info *ci,
  * Queue cap_snaps for snap writeback for this realm and its children.
  * Called under snap_rwsem, so realm topology won't change.
  */
-<<<<<<< HEAD
-static void queue_realm_cap_snaps(struct ceph_snap_realm *realm)
-{
-	struct ceph_inode_info *ci;
-	struct inode *lastinode = NULL;
-	struct ceph_snap_realm *child;
-
-	dout("queue_realm_cap_snaps %p %llx inodes\n", realm, realm->ino);
-
-	spin_lock(&realm->inodes_with_caps_lock);
-	list_for_each_entry(ci, &realm->inodes_with_caps,
-			    i_snap_realm_item) {
-		struct inode *inode = igrab(&ci->vfs_inode);
-		if (!inode)
-			continue;
-		spin_unlock(&realm->inodes_with_caps_lock);
-		if (lastinode)
-			iput(lastinode);
-		lastinode = inode;
-		ceph_queue_cap_snap(ci);
-		spin_lock(&realm->inodes_with_caps_lock);
-	}
-	spin_unlock(&realm->inodes_with_caps_lock);
-	if (lastinode)
-		iput(lastinode);
-
-	list_for_each_entry(child, &realm->children, child_item) {
-		dout("queue_realm_cap_snaps %p %llx queue child %p %llx\n",
-		     realm, realm->ino, child, child->ino);
-		list_del_init(&child->dirty_item);
-		list_add(&child->dirty_item, &realm->dirty_item);
-	}
-
-	list_del_init(&realm->dirty_item);
-	dout("queue_realm_cap_snaps %p %llx done\n", realm, realm->ino);
-=======
 static void queue_realm_cap_snaps(struct ceph_mds_client *mdsc,
 				  struct ceph_snap_realm *realm)
 {
@@ -1108,7 +767,6 @@ static void queue_realm_cap_snaps(struct ceph_mds_client *mdsc,
 	if (capsnap)
 		kmem_cache_free(ceph_cap_snap_cachep, capsnap);
 	doutc(cl, "%p %llx done\n", realm, realm->ino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1119,27 +777,14 @@ static void queue_realm_cap_snaps(struct ceph_mds_client *mdsc,
  * Caller must hold snap_rwsem for write.
  */
 int ceph_update_snap_trace(struct ceph_mds_client *mdsc,
-<<<<<<< HEAD
-			   void *p, void *e, bool deletion)
-{
-=======
 			   void *p, void *e, bool deletion,
 			   struct ceph_snap_realm **realm_ret)
 {
 	struct ceph_client *cl = mdsc->fsc->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ceph_mds_snap_realm *ri;    /* encoded */
 	__le64 *snaps;                     /* encoded */
 	__le64 *prior_parent_snaps;        /* encoded */
 	struct ceph_snap_realm *realm;
-<<<<<<< HEAD
-	int invalidate = 0;
-	int err = -ENOMEM;
-	LIST_HEAD(dirty_realms);
-
-	dout("update_snap_trace deletion=%d\n", deletion);
-more:
-=======
 	struct ceph_snap_realm *first_realm = NULL;
 	struct ceph_snap_realm *realm_to_rebuild = NULL;
 	struct ceph_client *client = mdsc->fsc->client;
@@ -1154,7 +799,6 @@ more:
 more:
 	realm = NULL;
 	rebuild_snapcs = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ceph_decode_need(&p, e, sizeof(*ri), bad);
 	ri = p;
 	p += sizeof(*ri);
@@ -1178,19 +822,11 @@ more:
 	err = adjust_snap_realm_parent(mdsc, realm, le64_to_cpu(ri->parent));
 	if (err < 0)
 		goto fail;
-<<<<<<< HEAD
-	invalidate += err;
-
-	if (le64_to_cpu(ri->seq) > realm->seq) {
-		dout("update_snap_trace updating %llx %p %lld -> %lld\n",
-		     realm->ino, realm, realm->seq, le64_to_cpu(ri->seq));
-=======
 	rebuild_snapcs += err;
 
 	if (le64_to_cpu(ri->seq) > realm->seq) {
 		doutc(cl, "updating %llx %p %lld -> %lld\n", realm->ino,
 		      realm, realm->seq, le64_to_cpu(ri->seq));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* update realm parameters, snap lists */
 		realm->seq = le64_to_cpu(ri->seq);
 		realm->created = le64_to_cpu(ri->created);
@@ -1208,23 +844,6 @@ more:
 		if (err < 0)
 			goto fail;
 
-<<<<<<< HEAD
-		/* queue realm for cap_snap creation */
-		list_add(&realm->dirty_item, &dirty_realms);
-
-		invalidate = 1;
-	} else if (!realm->cached_context) {
-		dout("update_snap_trace %llx %p seq %lld new\n",
-		     realm->ino, realm, realm->seq);
-		invalidate = 1;
-	} else {
-		dout("update_snap_trace %llx %p seq %lld unchanged\n",
-		     realm->ino, realm, realm->seq);
-	}
-
-	dout("done with %llx %p, invalidated=%d, %p %p\n", realm->ino,
-	     realm, invalidate, p, e);
-=======
 		if (realm->seq > mdsc->last_snap_seq)
 			mdsc->last_snap_seq = realm->seq;
 
@@ -1257,18 +876,10 @@ more:
 		first_realm = realm;
 	else
 		ceph_put_snap_realm(mdsc, realm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (p < e)
 		goto more;
 
-<<<<<<< HEAD
-	/* invalidate when we reach the _end_ (root) of the trace */
-	if (invalidate)
-		rebuild_snap_realms(realm);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * queue cap snaps _after_ we've built the new snap contexts,
 	 * so that i_head_snapc can be set appropriately.
@@ -1276,11 +887,6 @@ more:
 	while (!list_empty(&dirty_realms)) {
 		realm = list_first_entry(&dirty_realms, struct ceph_snap_realm,
 					 dirty_item);
-<<<<<<< HEAD
-		queue_realm_cap_snaps(realm);
-	}
-
-=======
 		list_del_init(&realm->dirty_item);
 		queue_realm_cap_snaps(mdsc, realm);
 	}
@@ -1290,16 +896,10 @@ more:
 	else
 		ceph_put_snap_realm(mdsc, first_realm);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__cleanup_empty_realms(mdsc);
 	return 0;
 
 bad:
-<<<<<<< HEAD
-	err = -EINVAL;
-fail:
-	pr_err("update_snap_trace error %d\n", err);
-=======
 	err = -EIO;
 fail:
 	if (realm && !IS_ERR(realm))
@@ -1329,7 +929,6 @@ fail:
 	     ret ? "" : " was blocklisted, ",
 	     err == -EIO ? " after corrupted snaptrace is fixed" : "");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1342,50 +941,25 @@ fail:
  */
 static void flush_snaps(struct ceph_mds_client *mdsc)
 {
-<<<<<<< HEAD
-=======
 	struct ceph_client *cl = mdsc->fsc->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ceph_inode_info *ci;
 	struct inode *inode;
 	struct ceph_mds_session *session = NULL;
 
-<<<<<<< HEAD
-	dout("flush_snaps\n");
-=======
 	doutc(cl, "begin\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&mdsc->snap_flush_lock);
 	while (!list_empty(&mdsc->snap_flush_list)) {
 		ci = list_first_entry(&mdsc->snap_flush_list,
 				struct ceph_inode_info, i_snap_flush_item);
-<<<<<<< HEAD
-		inode = &ci->vfs_inode;
-		ihold(inode);
-		spin_unlock(&mdsc->snap_flush_lock);
-		spin_lock(&ci->i_ceph_lock);
-		__ceph_flush_snaps(ci, &session, 0);
-		spin_unlock(&ci->i_ceph_lock);
-=======
 		inode = &ci->netfs.inode;
 		ihold(inode);
 		spin_unlock(&mdsc->snap_flush_lock);
 		ceph_flush_snaps(ci, &session);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iput(inode);
 		spin_lock(&mdsc->snap_flush_lock);
 	}
 	spin_unlock(&mdsc->snap_flush_lock);
 
-<<<<<<< HEAD
-	if (session) {
-		mutex_unlock(&session->s_mutex);
-		ceph_put_mds_session(session);
-	}
-	dout("flush_snaps done\n");
-}
-
-=======
 	ceph_put_mds_session(session);
 	doutc(cl, "done\n");
 }
@@ -1427,7 +1001,6 @@ void ceph_change_snap_realm(struct inode *inode, struct ceph_snap_realm *realm)
 		spin_unlock(&realm->inodes_with_caps_lock);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Handle a snap notification from the MDS.
@@ -1444,10 +1017,7 @@ void ceph_handle_snap(struct ceph_mds_client *mdsc,
 		      struct ceph_mds_session *session,
 		      struct ceph_msg *msg)
 {
-<<<<<<< HEAD
-=======
 	struct ceph_client *cl = mdsc->fsc->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct super_block *sb = mdsc->fsc->sb;
 	int mds = session->s_mds;
 	u64 split;
@@ -1461,13 +1031,10 @@ void ceph_handle_snap(struct ceph_mds_client *mdsc,
 	__le64 *split_inos = NULL, *split_realms = NULL;
 	int i;
 	int locked_rwsem = 0;
-<<<<<<< HEAD
-=======
 	bool close_sessions = false;
 
 	if (!ceph_inc_mds_stopping_blocker(mdsc, session))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* decode */
 	if (msg->front.iov_len < sizeof(*h))
@@ -1481,17 +1048,8 @@ void ceph_handle_snap(struct ceph_mds_client *mdsc,
 	trace_len = le32_to_cpu(h->trace_len);
 	p += sizeof(*h);
 
-<<<<<<< HEAD
-	dout("handle_snap from mds%d op %s split %llx tracelen %d\n", mds,
-	     ceph_snap_op_name(op), split, trace_len);
-
-	mutex_lock(&session->s_mutex);
-	session->s_seq++;
-	mutex_unlock(&session->s_mutex);
-=======
 	doutc(cl, "from mds%d op %s split %llx tracelen %d\n", mds,
 	      ceph_snap_op_name(op), split, trace_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_write(&mdsc->snap_rwsem);
 	locked_rwsem = 1;
@@ -1521,14 +1079,8 @@ void ceph_handle_snap(struct ceph_mds_client *mdsc,
 			if (IS_ERR(realm))
 				goto out;
 		}
-<<<<<<< HEAD
-		ceph_get_snap_realm(mdsc, realm);
-
-		dout("splitting snap_realm %llx %p\n", realm->ino, realm);
-=======
 
 		doutc(cl, "splitting snap_realm %llx %p\n", realm->ino, realm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < num_split_inos; i++) {
 			struct ceph_vino vino = {
 				.ino = le64_to_cpu(split_inos[i]),
@@ -1536,10 +1088,6 @@ void ceph_handle_snap(struct ceph_mds_client *mdsc,
 			};
 			struct inode *inode = ceph_find_inode(sb, vino);
 			struct ceph_inode_info *ci;
-<<<<<<< HEAD
-			struct ceph_snap_realm *oldrealm;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (!inode)
 				continue;
@@ -1557,30 +1105,6 @@ void ceph_handle_snap(struct ceph_mds_client *mdsc,
 			 */
 			if (ci->i_snap_realm->created >
 			    le64_to_cpu(ri->created)) {
-<<<<<<< HEAD
-				dout(" leaving %p in newer realm %llx %p\n",
-				     inode, ci->i_snap_realm->ino,
-				     ci->i_snap_realm);
-				goto skip_inode;
-			}
-			dout(" will move %p to split realm %llx %p\n",
-			     inode, realm->ino, realm);
-			/*
-			 * Move the inode to the new realm
-			 */
-			spin_lock(&realm->inodes_with_caps_lock);
-			list_del_init(&ci->i_snap_realm_item);
-			list_add(&ci->i_snap_realm_item,
-				 &realm->inodes_with_caps);
-			oldrealm = ci->i_snap_realm;
-			ci->i_snap_realm = realm;
-			spin_unlock(&realm->inodes_with_caps_lock);
-			spin_unlock(&ci->i_ceph_lock);
-
-			ceph_get_snap_realm(mdsc, realm);
-			ceph_put_snap_realm(mdsc, oldrealm);
-
-=======
 				doutc(cl, " leaving %p %llx.%llx in newer realm %llx %p\n",
 				      inode, ceph_vinop(inode), ci->i_snap_realm->ino,
 				      ci->i_snap_realm);
@@ -1592,7 +1116,6 @@ void ceph_handle_snap(struct ceph_mds_client *mdsc,
 			ceph_get_snap_realm(mdsc, realm);
 			ceph_change_snap_realm(inode, realm);
 			spin_unlock(&ci->i_ceph_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iput(inode);
 			continue;
 
@@ -1604,18 +1127,12 @@ skip_inode:
 		/* we may have taken some of the old realm's children. */
 		for (i = 0; i < num_split_realms; i++) {
 			struct ceph_snap_realm *child =
-<<<<<<< HEAD
-				ceph_lookup_snap_realm(mdsc,
-=======
 				__lookup_snap_realm(mdsc,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   le64_to_cpu(split_realms[i]));
 			if (!child)
 				continue;
 			adjust_snap_realm_parent(mdsc, child, realm->ino);
 		}
-<<<<<<< HEAD
-=======
 	} else {
 		/*
 		 * In the non-split case both 'num_split_inos' and
@@ -1629,24 +1146,18 @@ skip_inode:
 		 */
 		p += sizeof(u64) * num_split_inos;
 		p += sizeof(u64) * num_split_realms;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * update using the provided snap trace. if we are deleting a
 	 * snap, we can avoid queueing cap_snaps.
 	 */
-<<<<<<< HEAD
-	ceph_update_snap_trace(mdsc, p, e,
-			       op == CEPH_SNAP_OP_DESTROY);
-=======
 	if (ceph_update_snap_trace(mdsc, p, e,
 				   op == CEPH_SNAP_OP_DESTROY,
 				   NULL)) {
 		close_sessions = true;
 		goto bad;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (op == CEPH_SNAP_OP_SPLIT)
 		/* we took a reference when we created the realm, above */
@@ -1657,29 +1168,15 @@ skip_inode:
 	up_write(&mdsc->snap_rwsem);
 
 	flush_snaps(mdsc);
-<<<<<<< HEAD
-	return;
-
-bad:
-	pr_err("corrupt snap message from mds%d\n", mds);
-=======
 	ceph_dec_mds_stopping_blocker(mdsc);
 	return;
 
 bad:
 	pr_err_client(cl, "corrupt snap message from mds%d\n", mds);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ceph_msg_dump(msg);
 out:
 	if (locked_rwsem)
 		up_write(&mdsc->snap_rwsem);
-<<<<<<< HEAD
-	return;
-}
-
-
-
-=======
 
 	ceph_dec_mds_stopping_blocker(mdsc);
 
@@ -1844,4 +1341,3 @@ void ceph_cleanup_snapid_map(struct ceph_mds_client *mdsc)
 		kfree(sm);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

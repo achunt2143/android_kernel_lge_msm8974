@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _FS_CEPH_OSDMAP_H
 #define _FS_CEPH_OSDMAP_H
 
 #include <linux/rbtree.h>
-<<<<<<< HEAD
-#include "types.h"
-#include "ceph_fs.h"
-=======
 #include <linux/ceph/types.h>
 #include <linux/ceph/decode.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crush/crush.h>
 
 /*
@@ -27,14 +19,6 @@
  * The map can be updated either via an incremental map (diff) describing
  * the change between two successive epochs, or as a fully encoded map.
  */
-<<<<<<< HEAD
-struct ceph_pg_pool_info {
-	struct rb_node node;
-	int id;
-	struct ceph_pg_pool v;
-	int pg_num_mask, pgp_num_mask, lpg_num_mask, lpgp_num_mask;
-	char *name;
-=======
 struct ceph_pg {
 	uint64_t pool;
 	uint32_t seed;
@@ -162,16 +146,11 @@ struct workspace_manager {
 	atomic_t total_ws;
 	/* Waiters for a free workspace */
 	wait_queue_head_t ws_wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ceph_pg_mapping {
 	struct rb_node node;
 	struct ceph_pg pgid;
-<<<<<<< HEAD
-	int len;
-	int osds[];
-=======
 
 	union {
 		struct {
@@ -186,32 +165,21 @@ struct ceph_pg_mapping {
 			int from_to[][2];
 		} pg_upmap_items;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ceph_osdmap {
 	struct ceph_fsid fsid;
 	u32 epoch;
-<<<<<<< HEAD
-	u32 mkfs_epoch;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ceph_timespec created, modified;
 
 	u32 flags;         /* CEPH_OSDMAP_* */
 
 	u32 max_osd;       /* size of osd_state, _offload, _addr arrays */
-<<<<<<< HEAD
-	u8 *osd_state;     /* CEPH_OSD_* */
-=======
 	u32 *osd_state;    /* CEPH_OSD_* */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 *osd_weight;   /* 0 = failed, 0x10000 = 100% normal */
 	struct ceph_entity_addr *osd_addr;
 
 	struct rb_root pg_temp;
-<<<<<<< HEAD
-=======
 	struct rb_root primary_temp;
 
 	/* remap (post-CRUSH, pre-up) */
@@ -220,57 +188,12 @@ struct ceph_osdmap {
 
 	u32 *osd_primary_affinity;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_root pg_pools;
 	u32 pool_max;
 
 	/* the CRUSH map specifies the mapping of placement groups to
 	 * the list of osds that store+replicate them. */
 	struct crush_map *crush;
-<<<<<<< HEAD
-};
-
-/*
- * file layout helpers
- */
-#define ceph_file_layout_su(l) ((__s32)le32_to_cpu((l).fl_stripe_unit))
-#define ceph_file_layout_stripe_count(l) \
-	((__s32)le32_to_cpu((l).fl_stripe_count))
-#define ceph_file_layout_object_size(l) ((__s32)le32_to_cpu((l).fl_object_size))
-#define ceph_file_layout_cas_hash(l) ((__s32)le32_to_cpu((l).fl_cas_hash))
-#define ceph_file_layout_object_su(l) \
-	((__s32)le32_to_cpu((l).fl_object_stripe_unit))
-#define ceph_file_layout_pg_preferred(l) \
-	((__s32)le32_to_cpu((l).fl_pg_preferred))
-#define ceph_file_layout_pg_pool(l) \
-	((__s32)le32_to_cpu((l).fl_pg_pool))
-
-static inline unsigned ceph_file_layout_stripe_width(struct ceph_file_layout *l)
-{
-	return le32_to_cpu(l->fl_stripe_unit) *
-		le32_to_cpu(l->fl_stripe_count);
-}
-
-/* "period" == bytes before i start on a new set of objects */
-static inline unsigned ceph_file_layout_period(struct ceph_file_layout *l)
-{
-	return le32_to_cpu(l->fl_object_size) *
-		le32_to_cpu(l->fl_stripe_count);
-}
-
-
-static inline int ceph_osd_is_up(struct ceph_osdmap *map, int osd)
-{
-	return (osd < map->max_osd) && (map->osd_state[osd] & CEPH_OSD_UP);
-}
-
-static inline bool ceph_osdmap_flag(struct ceph_osdmap *map, int flag)
-{
-	return map && (map->flags & flag);
-}
-
-extern char *ceph_osdmap_state_str(char *str, int len, int state);
-=======
 
 	struct workspace_manager crush_wsm;
 };
@@ -294,7 +217,6 @@ static inline bool ceph_osd_is_down(struct ceph_osdmap *map, int osd)
 
 char *ceph_osdmap_state_str(char *str, int len, u32 state);
 extern u32 ceph_get_primary_affinity(struct ceph_osdmap *map, int osd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct ceph_entity_addr *ceph_osd_addr(struct ceph_osdmap *map,
 						     int osd)
@@ -304,30 +226,6 @@ static inline struct ceph_entity_addr *ceph_osd_addr(struct ceph_osdmap *map,
 	return &map->osd_addr[osd];
 }
 
-<<<<<<< HEAD
-extern struct ceph_osdmap *osdmap_decode(void **p, void *end);
-extern struct ceph_osdmap *osdmap_apply_incremental(void **p, void *end,
-					    struct ceph_osdmap *map,
-					    struct ceph_messenger *msgr);
-extern void ceph_osdmap_destroy(struct ceph_osdmap *map);
-
-/* calculate mapping of a file extent to an object */
-extern int ceph_calc_file_object_mapping(struct ceph_file_layout *layout,
-					 u64 off, u64 *plen,
-					 u64 *bno, u64 *oxoff, u64 *oxlen);
-
-/* calculate mapping of object to a placement group */
-extern int ceph_calc_object_layout(struct ceph_object_layout *ol,
-				   const char *oid,
-				   struct ceph_file_layout *fl,
-				   struct ceph_osdmap *osdmap);
-extern int ceph_calc_pg_acting(struct ceph_osdmap *osdmap, struct ceph_pg pgid,
-			       int *acting);
-extern int ceph_calc_pg_primary(struct ceph_osdmap *osdmap,
-				struct ceph_pg pgid);
-
-extern int ceph_pg_poolid_by_name(struct ceph_osdmap *map, const char *name);
-=======
 #define CEPH_PGID_ENCODING_LEN		(1 + 8 + 4 + 4)
 
 static inline int ceph_decode_pgid(void **p, void *end, struct ceph_pg *pgid)
@@ -437,6 +335,5 @@ extern struct ceph_pg_pool_info *ceph_pg_pool_by_id(struct ceph_osdmap *map,
 extern const char *ceph_pg_pool_name_by_id(struct ceph_osdmap *map, u64 id);
 extern int ceph_pg_poolid_by_name(struct ceph_osdmap *map, const char *name);
 u64 ceph_pg_pool_flags(struct ceph_osdmap *map, u64 id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP2/3 common powerdomain definitions
  *
@@ -9,13 +6,6 @@
  * Copyright (C) 2007-2011 Nokia Corporation
  *
  * Paul Walmsley, Jouni Högander
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -61,20 +51,12 @@ struct powerdomain gfx_omap2_pwrdm = {
 	.pwrsts_mem_on	  = {
 		[0] = PWRSTS_ON,  /* MEMONSTATE */
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct powerdomain wkup_omap2_pwrdm = {
 	.name		= "wkup_pwrdm",
 	.prcm_offs	= WKUP_MOD,
 	.pwrsts		= PWRSTS_ON,
-<<<<<<< HEAD
-	.voltdm         = { .name = "wakeup" },
-=======
 	.voltdm		= { .name = "wakeup" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 gelic network driver.
  *
  * Copyright (C) 2007 Sony Computer Entertainment Inc.
  * Copyright 2007 Sony Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation version 2.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _GELIC_WIRELESS_H
 #define _GELIC_WIRELESS_H
@@ -177,11 +158,7 @@ struct gelic_eurus_scan_info {
 	__be32 reserved2;
 	__be32 reserved3;
 	__be32 reserved4;
-<<<<<<< HEAD
-	u8 elements[0]; /* ie */
-=======
 	u8 elements[]; /* ie */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* the hypervisor returns bbs up to 16 */
@@ -331,13 +308,7 @@ struct gelic_eurus_cmd {
 #define GELIC_WL_PRIV_SET_PSK		(SIOCIWFIRSTPRIV + 0)
 #define GELIC_WL_PRIV_GET_PSK		(SIOCIWFIRSTPRIV + 1)
 
-<<<<<<< HEAD
-extern int gelic_wl_driver_probe(struct gelic_card *card);
-extern int gelic_wl_driver_remove(struct gelic_card *card);
-extern void gelic_wl_interrupt(struct net_device *netdev, u64 status);
-=======
 int gelic_wl_driver_probe(struct gelic_card *card);
 int gelic_wl_driver_remove(struct gelic_card *card);
 void gelic_wl_interrupt(struct net_device *netdev, u64 status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _GELIC_WIRELESS_H */

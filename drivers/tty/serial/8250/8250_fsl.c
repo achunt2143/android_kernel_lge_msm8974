@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-#include <linux/serial_reg.h>
-#include <linux/serial_8250.h>
-
-#include "8250.h"
-
-/*
- * Freescale 16550 UART "driver", Copyright (C) 2011 Paul Gortmaker.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This isn't a full driver; it just provides an alternate IRQ
- * handler to deal with an errata.  Everything else is just
- * using the bog standard 8250 support.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Freescale 16550 UART "driver", Copyright (C) 2011 Paul Gortmaker.
@@ -24,7 +7,6 @@
  * This isn't a full driver; it just provides an alternate IRQ
  * handler to deal with an errata and provide ACPI wrapper.
  * Everything else is just using the bog standard 8250 support.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * We follow code flow of serial8250_default_handle_irq() but add
  * a check for a break and insert a dummy read on the Rx for the
@@ -35,29 +17,6 @@
  * IRQ event to the next one.
  */
 
-<<<<<<< HEAD
-int fsl8250_handle_irq(struct uart_port *port)
-{
-	unsigned char lsr, orig_lsr;
-	unsigned long flags;
-	unsigned int iir;
-	struct uart_8250_port *up =
-		container_of(port, struct uart_8250_port, port);
-
-	spin_lock_irqsave(&up->port.lock, flags);
-
-	iir = port->serial_in(port, UART_IIR);
-	if (iir & UART_IIR_NO_INT) {
-		spin_unlock_irqrestore(&up->port.lock, flags);
-		return 0;
-	}
-
-	/* This is the WAR; if last event was BRK, then read and return */
-	if (unlikely(up->lsr_saved_flags & UART_LSR_BI)) {
-		up->lsr_saved_flags &= ~UART_LSR_BI;
-		port->serial_in(port, UART_RX);
-		spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 #include <linux/acpi.h>
 #include <linux/serial_reg.h>
 #include <linux/serial_8250.h>
@@ -97,26 +56,11 @@ int fsl8250_handle_irq(struct uart_port *port)
 		up->lsr_saved_flags &= ~UART_LSR_BI;
 		port->serial_in(port, UART_RX);
 		uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
 	lsr = orig_lsr = up->port.serial_in(&up->port, UART_LSR);
 
-<<<<<<< HEAD
-	if (lsr & (UART_LSR_DR | UART_LSR_BI))
-		lsr = serial8250_rx_chars(up, lsr);
-
-	serial8250_modem_status(up);
-
-	if (lsr & UART_LSR_THRE)
-		serial8250_tx_chars(up);
-
-	up->lsr_saved_flags = orig_lsr;
-	spin_unlock_irqrestore(&up->port.lock, flags);
-	return 1;
-}
-=======
 	/* Process incoming characters first */
 	if ((lsr & (UART_LSR_DR | UART_LSR_BI)) &&
 	    (up->ier & (UART_IER_RLSI | UART_IER_RDI))) {
@@ -243,4 +187,3 @@ module_platform_driver(fsl8250_platform_driver);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Handling of Freescale specific 8250 variants");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

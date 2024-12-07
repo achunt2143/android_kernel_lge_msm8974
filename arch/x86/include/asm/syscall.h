@@ -1,33 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Access to user system call parameters and results
  *
  * Copyright (C) 2008-2009 Red Hat, Inc.  All rights reserved.
  *
-<<<<<<< HEAD
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License v.2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * See asm-generic/syscall.h for descriptions of what we must do here.
  */
 
 #ifndef _ASM_X86_SYSCALL_H
 #define _ASM_X86_SYSCALL_H
 
-<<<<<<< HEAD
-#include <linux/sched.h>
-#include <linux/err.h>
-#include <asm/asm-offsets.h>	/* For NR_syscalls */
-#include <asm/unistd.h>
-
-extern const unsigned long sys_call_table[];
-=======
 #include <uapi/linux/audit.h>
 #include <linux/sched.h>
 #include <linux/err.h>
@@ -45,7 +27,6 @@ extern const sys_call_ptr_t sys_call_table[];
 extern long ia32_sys_call(const struct pt_regs *, unsigned int nr);
 extern long x32_sys_call(const struct pt_regs *, unsigned int nr);
 extern long x64_sys_call(const struct pt_regs *, unsigned int nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Only the low 32 bits of orig_ax are meaningful, so we return int.
@@ -72,11 +53,7 @@ static inline long syscall_get_error(struct task_struct *task,
 	 * TS_COMPAT is set for 32-bit syscall entries and then
 	 * remains set until we return to user mode.
 	 */
-<<<<<<< HEAD
-	if (task_thread_info(task)->status & TS_COMPAT)
-=======
 	if (task->thread_info.status & (TS_COMPAT|TS_I386_REGS_POKED))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Sign-extend the value so (int)-EFOO becomes (long)-EFOO
 		 * and will match correctly in comparisons.
@@ -103,22 +80,6 @@ static inline void syscall_set_return_value(struct task_struct *task,
 
 static inline void syscall_get_arguments(struct task_struct *task,
 					 struct pt_regs *regs,
-<<<<<<< HEAD
-					 unsigned int i, unsigned int n,
-					 unsigned long *args)
-{
-	BUG_ON(i + n > 6);
-	memcpy(args, &regs->bx + i, n * sizeof(args[0]));
-}
-
-static inline void syscall_set_arguments(struct task_struct *task,
-					 struct pt_regs *regs,
-					 unsigned int i, unsigned int n,
-					 const unsigned long *args)
-{
-	BUG_ON(i + n > 6);
-	memcpy(&regs->bx + i, args, n * sizeof(args[0]));
-=======
 					 unsigned long *args)
 {
 	memcpy(args, &regs->bx, 6 * sizeof(args[0]));
@@ -127,137 +88,12 @@ static inline void syscall_set_arguments(struct task_struct *task,
 static inline int syscall_get_arch(struct task_struct *task)
 {
 	return AUDIT_ARCH_I386;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else	 /* CONFIG_X86_64 */
 
 static inline void syscall_get_arguments(struct task_struct *task,
 					 struct pt_regs *regs,
-<<<<<<< HEAD
-					 unsigned int i, unsigned int n,
-					 unsigned long *args)
-{
-# ifdef CONFIG_IA32_EMULATION
-	if (task_thread_info(task)->status & TS_COMPAT)
-		switch (i) {
-		case 0:
-			if (!n--) break;
-			*args++ = regs->bx;
-		case 1:
-			if (!n--) break;
-			*args++ = regs->cx;
-		case 2:
-			if (!n--) break;
-			*args++ = regs->dx;
-		case 3:
-			if (!n--) break;
-			*args++ = regs->si;
-		case 4:
-			if (!n--) break;
-			*args++ = regs->di;
-		case 5:
-			if (!n--) break;
-			*args++ = regs->bp;
-		case 6:
-			if (!n--) break;
-		default:
-			BUG();
-			break;
-		}
-	else
-# endif
-		switch (i) {
-		case 0:
-			if (!n--) break;
-			*args++ = regs->di;
-		case 1:
-			if (!n--) break;
-			*args++ = regs->si;
-		case 2:
-			if (!n--) break;
-			*args++ = regs->dx;
-		case 3:
-			if (!n--) break;
-			*args++ = regs->r10;
-		case 4:
-			if (!n--) break;
-			*args++ = regs->r8;
-		case 5:
-			if (!n--) break;
-			*args++ = regs->r9;
-		case 6:
-			if (!n--) break;
-		default:
-			BUG();
-			break;
-		}
-}
-
-static inline void syscall_set_arguments(struct task_struct *task,
-					 struct pt_regs *regs,
-					 unsigned int i, unsigned int n,
-					 const unsigned long *args)
-{
-# ifdef CONFIG_IA32_EMULATION
-	if (task_thread_info(task)->status & TS_COMPAT)
-		switch (i) {
-		case 0:
-			if (!n--) break;
-			regs->bx = *args++;
-		case 1:
-			if (!n--) break;
-			regs->cx = *args++;
-		case 2:
-			if (!n--) break;
-			regs->dx = *args++;
-		case 3:
-			if (!n--) break;
-			regs->si = *args++;
-		case 4:
-			if (!n--) break;
-			regs->di = *args++;
-		case 5:
-			if (!n--) break;
-			regs->bp = *args++;
-		case 6:
-			if (!n--) break;
-		default:
-			BUG();
-			break;
-		}
-	else
-# endif
-		switch (i) {
-		case 0:
-			if (!n--) break;
-			regs->di = *args++;
-		case 1:
-			if (!n--) break;
-			regs->si = *args++;
-		case 2:
-			if (!n--) break;
-			regs->dx = *args++;
-		case 3:
-			if (!n--) break;
-			regs->r10 = *args++;
-		case 4:
-			if (!n--) break;
-			regs->r8 = *args++;
-		case 5:
-			if (!n--) break;
-			regs->r9 = *args++;
-		case 6:
-			if (!n--) break;
-		default:
-			BUG();
-			break;
-		}
-}
-
-#endif	/* CONFIG_X86_32 */
-
-=======
 					 unsigned long *args)
 {
 # ifdef CONFIG_IA32_EMULATION
@@ -297,5 +133,4 @@ void do_int80_syscall_32(struct pt_regs *regs);
 bool do_fast_syscall_32(struct pt_regs *regs);
 bool do_SYSENTER_32(struct pt_regs *regs);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _ASM_X86_SYSCALL_H */

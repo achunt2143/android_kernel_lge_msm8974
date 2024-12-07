@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xfrm_input.c
  *
@@ -11,46 +8,6 @@
  *
  */
 
-<<<<<<< HEAD
-#include <linux/slab.h>
-#include <linux/module.h>
-#include <linux/netdevice.h>
-#include <net/dst.h>
-#include <net/ip.h>
-#include <net/xfrm.h>
-
-static struct kmem_cache *secpath_cachep __read_mostly;
-
-void __secpath_destroy(struct sec_path *sp)
-{
-	int i;
-	for (i = 0; i < sp->len; i++)
-		xfrm_state_put(sp->xvec[i]);
-	kmem_cache_free(secpath_cachep, sp);
-}
-EXPORT_SYMBOL(__secpath_destroy);
-
-struct sec_path *secpath_dup(struct sec_path *src)
-{
-	struct sec_path *sp;
-
-	sp = kmem_cache_alloc(secpath_cachep, GFP_ATOMIC);
-	if (!sp)
-		return NULL;
-
-	sp->len = 0;
-	if (src) {
-		int i;
-
-		memcpy(sp, src, sizeof(*sp));
-		for (i = 0; i < sp->len; i++)
-			xfrm_state_hold(sp->xvec[i]);
-	}
-	atomic_set(&sp->refcnt, 1);
-	return sp;
-}
-EXPORT_SYMBOL(secpath_dup);
-=======
 #include <linux/bottom_half.h>
 #include <linux/cache.h>
 #include <linux/interrupt.h>
@@ -180,7 +137,6 @@ struct sec_path *secpath_set(struct sk_buff *skb)
 	return sp;
 }
 EXPORT_SYMBOL(secpath_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Fetch spi and seq from ipsec header */
 
@@ -203,11 +159,7 @@ int xfrm_parse_spi(struct sk_buff *skb, u8 nexthdr, __be32 *spi, __be32 *seq)
 	case IPPROTO_COMP:
 		if (!pskb_may_pull(skb, sizeof(struct ip_comp_hdr)))
 			return -EINVAL;
-<<<<<<< HEAD
-		*spi = htonl(ntohs(*(__be16*)(skb_transport_header(skb) + 2)));
-=======
 		*spi = htonl(ntohs(*(__be16 *)(skb_transport_header(skb) + 2)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*seq = 0;
 		return 0;
 	default:
@@ -217,35 +169,6 @@ int xfrm_parse_spi(struct sk_buff *skb, u8 nexthdr, __be32 *spi, __be32 *seq)
 	if (!pskb_may_pull(skb, hlen))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	*spi = *(__be32*)(skb_transport_header(skb) + offset);
-	*seq = *(__be32*)(skb_transport_header(skb) + offset_seq);
-	return 0;
-}
-
-int xfrm_prepare_input(struct xfrm_state *x, struct sk_buff *skb)
-{
-	struct xfrm_mode *inner_mode = x->inner_mode;
-	int err;
-
-	err = x->outer_mode->afinfo->extract_input(x, skb);
-	if (err)
-		return err;
-
-	if (x->sel.family == AF_UNSPEC) {
-		inner_mode = xfrm_ip2inner_mode(x, XFRM_MODE_SKB_CB(skb)->protocol);
-		if (inner_mode == NULL)
-			return -EAFNOSUPPORT;
-	}
-
-	skb->protocol = inner_mode->afinfo->eth_proto;
-	return inner_mode->input2(x, skb);
-}
-EXPORT_SYMBOL(xfrm_prepare_input);
-
-int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
-{
-=======
 	*spi = *(__be32 *)(skb_transport_header(skb) + offset);
 	*seq = *(__be32 *)(skb_transport_header(skb) + offset_seq);
 	return 0;
@@ -533,48 +456,10 @@ static int xfrm_inner_mode_input(struct xfrm_state *x,
 int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 {
 	const struct xfrm_state_afinfo *afinfo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net *net = dev_net(skb->dev);
 	int err;
 	__be32 seq;
 	__be32 seq_hi;
-<<<<<<< HEAD
-	struct xfrm_state *x;
-	xfrm_address_t *daddr;
-	struct xfrm_mode *inner_mode;
-	unsigned int family;
-	int decaps = 0;
-	int async = 0;
-
-	/* A negative encap_type indicates async resumption. */
-	if (encap_type < 0) {
-		async = 1;
-		x = xfrm_input_state(skb);
-		seq = XFRM_SKB_CB(skb)->seq.input.low;
-		goto resume;
-	}
-
-	/* Allocate new secpath or COW existing one. */
-	if (!skb->sp || atomic_read(&skb->sp->refcnt) != 1) {
-		struct sec_path *sp;
-
-		sp = secpath_dup(skb->sp);
-		if (!sp) {
-			XFRM_INC_STATS(net, LINUX_MIB_XFRMINERROR);
-			goto drop;
-		}
-		if (skb->sp)
-			secpath_put(skb->sp);
-		skb->sp = sp;
-	}
-
-	daddr = (xfrm_address_t *)(skb_network_header(skb) +
-				   XFRM_SPI_SKB_CB(skb)->daddroff);
-	family = XFRM_SPI_SKB_CB(skb)->family;
-
-	seq = 0;
-	if (!spi && (err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
-=======
 	struct xfrm_state *x = NULL;
 	xfrm_address_t *daddr;
 	u32 mark = skb->mark;
@@ -671,15 +556,10 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 	seq = 0;
 	if (!spi && xfrm_parse_spi(skb, nexthdr, &spi, &seq)) {
 		secpath_reset(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
 		goto drop;
 	}
 
-<<<<<<< HEAD
-	do {
-		if (skb->sp->len == XFRM_MAX_DEPTH) {
-=======
 	daddr = (xfrm_address_t *)(skb_network_header(skb) +
 				   XFRM_SPI_SKB_CB(skb)->daddroff);
 	do {
@@ -687,31 +567,18 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 
 		if (sp->len == XFRM_MAX_DEPTH) {
 			secpath_reset(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINBUFFERERROR);
 			goto drop;
 		}
 
-<<<<<<< HEAD
-		x = xfrm_state_lookup(net, skb->mark, daddr, spi, nexthdr, family);
-		if (x == NULL) {
-=======
 		x = xfrm_state_lookup(net, mark, daddr, spi, nexthdr, family);
 		if (x == NULL) {
 			secpath_reset(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOSTATES);
 			xfrm_audit_state_notfound(skb, family, spi, seq);
 			goto drop;
 		}
 
-<<<<<<< HEAD
-		skb->sp->xvec[skb->sp->len++] = x;
-
-		spin_lock(&x->lock);
-		if (unlikely(x->km.state != XFRM_STATE_VALID)) {
-			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEINVALID);
-=======
 		skb->mark = xfrm_smark_get(skb->mark, x);
 
 		sp->xvec[sp->len++] = x;
@@ -731,7 +598,6 @@ lock:
 			else
 				XFRM_INC_STATS(net,
 					       LINUX_MIB_XFRMINSTATEINVALID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto drop_unlock;
 		}
 
@@ -740,11 +606,7 @@ lock:
 			goto drop_unlock;
 		}
 
-<<<<<<< HEAD
-		if (x->repl->check(x, skb, seq)) {
-=======
 		if (xfrm_replay_check(x, skb, seq)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATESEQERROR);
 			goto drop_unlock;
 		}
@@ -756,31 +618,16 @@ lock:
 
 		spin_unlock(&x->lock);
 
-<<<<<<< HEAD
-=======
 		if (xfrm_tunnel_check(skb, x, family)) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMODEERROR);
 			goto drop;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_hi = htonl(xfrm_replay_seqhi(x, seq));
 
 		XFRM_SKB_CB(skb)->seq.input.low = seq;
 		XFRM_SKB_CB(skb)->seq.input.hi = seq_hi;
 
-<<<<<<< HEAD
-		skb_dst_force(skb);
-
-		nexthdr = x->type->input(x, skb);
-
-		if (nexthdr == -EINPROGRESS)
-			return 0;
-
-resume:
-		spin_lock(&x->lock);
-		if (nexthdr <= 0) {
-=======
 		dev_hold(skb->dev);
 
 		if (crypto_done)
@@ -795,7 +642,6 @@ resume:
 
 		spin_lock(&x->lock);
 		if (nexthdr < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (nexthdr == -EBADMSG) {
 				xfrm_audit_state_icvfail(x, skb,
 							 x->type->proto);
@@ -808,54 +654,27 @@ resume:
 		/* only the first xfrm gets the encap type */
 		encap_type = 0;
 
-<<<<<<< HEAD
-		if (async && x->repl->recheck(x, skb, seq)) {
-=======
 		if (xfrm_replay_recheck(x, skb, seq)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATESEQERROR);
 			goto drop_unlock;
 		}
 
-<<<<<<< HEAD
-		x->repl->advance(x, seq);
-
-		x->curlft.bytes += skb->len;
-		x->curlft.packets++;
-=======
 		xfrm_replay_advance(x, seq);
 
 		x->curlft.bytes += skb->len;
 		x->curlft.packets++;
 		x->lastused = ktime_get_real_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_unlock(&x->lock);
 
 		XFRM_MODE_SKB_CB(skb)->protocol = nexthdr;
 
-<<<<<<< HEAD
-		inner_mode = x->inner_mode;
-
-		if (x->sel.family == AF_UNSPEC) {
-			inner_mode = xfrm_ip2inner_mode(x, XFRM_MODE_SKB_CB(skb)->protocol);
-			if (inner_mode == NULL)
-				goto drop;
-		}
-
-		if (inner_mode->input(x, skb)) {
-=======
 		if (xfrm_inner_mode_input(x, skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMODEERROR);
 			goto drop;
 		}
 
-<<<<<<< HEAD
-		if (x->outer_mode->flags & XFRM_MODE_FLAG_TUNNEL) {
-=======
 		if (x->outer_mode.flags & XFRM_MODE_FLAG_TUNNEL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			decaps = 1;
 			break;
 		}
@@ -865,29 +684,13 @@ resume:
 		 * transport mode so the outer address is identical.
 		 */
 		daddr = &x->id.daddr;
-<<<<<<< HEAD
-		family = x->outer_mode->afinfo->family;
-=======
 		family = x->props.family;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = xfrm_parse_spi(skb, nexthdr, &spi, &seq);
 		if (err < 0) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
 			goto drop;
 		}
-<<<<<<< HEAD
-	} while (!err);
-
-	nf_reset(skb);
-
-	if (decaps) {
-		skb_dst_drop(skb);
-		netif_rx(skb);
-		return 0;
-	} else {
-		return x->inner_mode->afinfo->transport_finish(skb, async);
-=======
 		crypto_done = false;
 	} while (!err);
 
@@ -927,16 +730,12 @@ resume:
 		}
 
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 drop_unlock:
 	spin_unlock(&x->lock);
 drop:
-<<<<<<< HEAD
-=======
 	xfrm_rcv_cb(skb, family, x && x->type ? x->type->proto : nexthdr, -1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree_skb(skb);
 	return 0;
 }
@@ -948,14 +747,6 @@ int xfrm_input_resume(struct sk_buff *skb, int nexthdr)
 }
 EXPORT_SYMBOL(xfrm_input_resume);
 
-<<<<<<< HEAD
-void __init xfrm_input_init(void)
-{
-	secpath_cachep = kmem_cache_create("secpath_cache",
-					   sizeof(struct sec_path),
-					   0, SLAB_HWCACHE_ALIGN|SLAB_PANIC,
-					   NULL);
-=======
 static void xfrm_trans_reinject(struct work_struct *work)
 {
 	struct xfrm_trans_tasklet *trans = container_of(work, struct xfrm_trans_tasklet, work);
@@ -1023,5 +814,4 @@ void __init xfrm_input_init(void)
 		__skb_queue_head_init(&trans->queue);
 		INIT_WORK(&trans->work, xfrm_trans_reinject);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

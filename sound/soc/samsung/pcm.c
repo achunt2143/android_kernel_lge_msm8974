@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-/* sound/soc/samsung/pcm.c
- *
- * ALSA SoC Audio Layer - S3C PCM-Controller driver
- *
- * Copyright (c) 2009 Samsung Electronics Co. Ltd
- * Author: Jaswinder Singh <jassisinghbrar@gmail.com>
- * based upon I2S drivers by Ben Dooks.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0
 //
 // ALSA SoC Audio Layer - S3C PCM-Controller driver
@@ -19,7 +5,6 @@
 // Copyright (c) 2009 Samsung Electronics Co. Ltd
 // Author: Jaswinder Singh <jassisinghbrar@gmail.com>
 // based upon I2S drivers by Ben Dooks.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -29,12 +14,7 @@
 #include <sound/soc.h>
 #include <sound/pcm_params.h>
 
-<<<<<<< HEAD
-#include <plat/audio.h>
-#include <plat/dma.h>
-=======
 #include <linux/platform_data/asoc-s3c.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dma.h"
 #include "pcm.h"
@@ -124,10 +104,6 @@
 
 /**
  * struct s3c_pcm_info - S3C PCM Controller information
-<<<<<<< HEAD
- * @dev: The parent device passed to use from the probe.
- * @regs: The pointer to the device register block.
-=======
  * @lock: Spin lock
  * @dev: The parent device passed to use from the probe.
  * @regs: The pointer to the device register block.
@@ -135,7 +111,6 @@
  * @idleclk: Whether to keep PCMSCLK enabled even when idle (no active xfer)
  * @pclk: the PCLK_PCM (pcm) clock pointer
  * @cclk: the SCLK_AUDIO (audio-bus) clock pointer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dma_playback: DMA information for playback channel.
  * @dma_capture: DMA information for capture channel.
  */
@@ -152,39 +127,6 @@ struct s3c_pcm_info {
 	struct clk	*pclk;
 	struct clk	*cclk;
 
-<<<<<<< HEAD
-	struct s3c_dma_params	*dma_playback;
-	struct s3c_dma_params	*dma_capture;
-};
-
-static struct s3c2410_dma_client s3c_pcm_dma_client_out = {
-	.name		= "PCM Stereo out"
-};
-
-static struct s3c2410_dma_client s3c_pcm_dma_client_in = {
-	.name		= "PCM Stereo in"
-};
-
-static struct s3c_dma_params s3c_pcm_stereo_out[] = {
-	[0] = {
-		.client		= &s3c_pcm_dma_client_out,
-		.dma_size	= 4,
-	},
-	[1] = {
-		.client		= &s3c_pcm_dma_client_out,
-		.dma_size	= 4,
-	},
-};
-
-static struct s3c_dma_params s3c_pcm_stereo_in[] = {
-	[0] = {
-		.client		= &s3c_pcm_dma_client_in,
-		.dma_size	= 4,
-	},
-	[1] = {
-		.client		= &s3c_pcm_dma_client_in,
-		.dma_size	= 4,
-=======
 	struct snd_dmaengine_dai_dma_data *dma_playback;
 	struct snd_dmaengine_dai_dma_data *dma_capture;
 };
@@ -204,7 +146,6 @@ static struct snd_dmaengine_dai_dma_data s3c_pcm_stereo_in[] = {
 	},
 	[1] = {
 		.addr_width	= 4,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -275,13 +216,8 @@ static void s3c_pcm_snd_rxctrl(struct s3c_pcm_info *pcm, int on)
 static int s3c_pcm_trigger(struct snd_pcm_substream *substream, int cmd,
 			       struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct s3c_pcm_info *pcm = snd_soc_dai_get_drvdata(rtd->cpu_dai);
-=======
 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
 	struct s3c_pcm_info *pcm = snd_soc_dai_get_drvdata(snd_soc_rtd_to_cpu(rtd, 0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	dev_dbg(pcm->dev, "Entered %s\n", __func__);
@@ -324,14 +260,8 @@ static int s3c_pcm_hw_params(struct snd_pcm_substream *substream,
 				 struct snd_pcm_hw_params *params,
 				 struct snd_soc_dai *socdai)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct s3c_pcm_info *pcm = snd_soc_dai_get_drvdata(rtd->cpu_dai);
-	struct s3c_dma_params *dma_data;
-=======
 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
 	struct s3c_pcm_info *pcm = snd_soc_dai_get_drvdata(snd_soc_rtd_to_cpu(rtd, 0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *regs = pcm->regs;
 	struct clk *clk;
 	int sclk_div, sync_div;
@@ -340,22 +270,9 @@ static int s3c_pcm_hw_params(struct snd_pcm_substream *substream,
 
 	dev_dbg(pcm->dev, "Entered %s\n", __func__);
 
-<<<<<<< HEAD
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
-		dma_data = pcm->dma_playback;
-	else
-		dma_data = pcm->dma_capture;
-
-	snd_soc_dai_set_dma_data(rtd->cpu_dai, substream, dma_data);
-
-	/* Strictly check for sample size */
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-=======
 	/* Strictly check for sample size */
 	switch (params_width(params)) {
 	case 16:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -423,13 +340,8 @@ static int s3c_pcm_set_fmt(struct snd_soc_dai *cpu_dai,
 		goto exit;
 	}
 
-<<<<<<< HEAD
-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-	case SND_SOC_DAIFMT_CBS_CFS:
-=======
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Nothing to do, Master by default */
 		break;
 	default:
@@ -520,9 +432,6 @@ static int s3c_pcm_set_sysclk(struct snd_soc_dai *cpu_dai,
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct snd_soc_dai_ops s3c_pcm_dai_ops = {
-=======
 static int s3c_pcm_dai_probe(struct snd_soc_dai *dai)
 {
 	struct s3c_pcm_info *pcm = snd_soc_dai_get_drvdata(dai);
@@ -534,7 +443,6 @@ static int s3c_pcm_dai_probe(struct snd_soc_dai *dai)
 
 static const struct snd_soc_dai_ops s3c_pcm_dai_ops = {
 	.probe		= s3c_pcm_dai_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_sysclk	= s3c_pcm_set_sysclk,
 	.set_clkdiv	= s3c_pcm_set_clkdiv,
 	.trigger	= s3c_pcm_trigger,
@@ -545,11 +453,7 @@ static const struct snd_soc_dai_ops s3c_pcm_dai_ops = {
 #define S3C_PCM_RATES  SNDRV_PCM_RATE_8000_96000
 
 #define S3C_PCM_DAI_DECLARE			\
-<<<<<<< HEAD
-	.symmetric_rates = 1,					\
-=======
 	.symmetric_rate = 1,					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ops = &s3c_pcm_dai_ops,				\
 	.playback = {						\
 		.channels_min	= 2,				\
@@ -575,13 +479,6 @@ static struct snd_soc_dai_driver s3c_pcm_dai[] = {
 	},
 };
 
-<<<<<<< HEAD
-static __devinit int s3c_pcm_dev_probe(struct platform_device *pdev)
-{
-	struct s3c_pcm_info *pcm;
-	struct resource *mem_res, *dmatx_res, *dmarx_res;
-	struct s3c_audio_pdata *pcm_pdata;
-=======
 static const struct snd_soc_component_driver s3c_pcm_component = {
 	.name			= "s3c-pcm",
 	.legacy_dai_naming	= 1,
@@ -593,7 +490,6 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 	struct resource *mem_res;
 	struct s3c_audio_pdata *pcm_pdata;
 	dma_filter_fn filter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/* Check for valid device index */
@@ -604,28 +500,6 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 
 	pcm_pdata = pdev->dev.platform_data;
 
-<<<<<<< HEAD
-	/* Check for availability of necessary resource */
-	dmatx_res = platform_get_resource(pdev, IORESOURCE_DMA, 0);
-	if (!dmatx_res) {
-		dev_err(&pdev->dev, "Unable to get PCM-TX dma resource\n");
-		return -ENXIO;
-	}
-
-	dmarx_res = platform_get_resource(pdev, IORESOURCE_DMA, 1);
-	if (!dmarx_res) {
-		dev_err(&pdev->dev, "Unable to get PCM-RX dma resource\n");
-		return -ENXIO;
-	}
-
-	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!mem_res) {
-		dev_err(&pdev->dev, "Unable to get register resource\n");
-		return -ENXIO;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pcm_pdata && pcm_pdata->cfg_gpio && pcm_pdata->cfg_gpio(pdev)) {
 		dev_err(&pdev->dev, "Unable to configure gpio\n");
 		return -EINVAL;
@@ -639,15 +513,6 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 	/* Default is 128fs */
 	pcm->sclk_per_fs = 128;
 
-<<<<<<< HEAD
-	pcm->cclk = clk_get(&pdev->dev, "audio-bus");
-	if (IS_ERR(pcm->cclk)) {
-		dev_err(&pdev->dev, "failed to get audio-bus\n");
-		ret = PTR_ERR(pcm->cclk);
-		goto err1;
-	}
-	clk_enable(pcm->cclk);
-=======
 	pcm->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &mem_res);
 	if (IS_ERR(pcm->regs))
 		return PTR_ERR(pcm->regs);
@@ -660,42 +525,10 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 	ret = clk_prepare_enable(pcm->cclk);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* record our pcm structure for later use in the callbacks */
 	dev_set_drvdata(&pdev->dev, pcm);
 
-<<<<<<< HEAD
-	if (!request_mem_region(mem_res->start,
-				resource_size(mem_res), "samsung-pcm")) {
-		dev_err(&pdev->dev, "Unable to request register region\n");
-		ret = -EBUSY;
-		goto err2;
-	}
-
-	pcm->regs = ioremap(mem_res->start, 0x100);
-	if (pcm->regs == NULL) {
-		dev_err(&pdev->dev, "cannot ioremap registers\n");
-		ret = -ENXIO;
-		goto err3;
-	}
-
-	pcm->pclk = clk_get(&pdev->dev, "pcm");
-	if (IS_ERR(pcm->pclk)) {
-		dev_err(&pdev->dev, "failed to get pcm_clock\n");
-		ret = -ENOENT;
-		goto err4;
-	}
-	clk_enable(pcm->pclk);
-
-	s3c_pcm_stereo_in[pdev->id].dma_addr = mem_res->start
-							+ S3C_PCM_RXFIFO;
-	s3c_pcm_stereo_out[pdev->id].dma_addr = mem_res->start
-							+ S3C_PCM_TXFIFO;
-
-	s3c_pcm_stereo_in[pdev->id].channel = dmarx_res->start;
-	s3c_pcm_stereo_out[pdev->id].channel = dmatx_res->start;
-=======
 	pcm->pclk = devm_clk_get(&pdev->dev, "pcm");
 	if (IS_ERR(pcm->pclk)) {
 		dev_err(&pdev->dev, "failed to get pcm clock\n");
@@ -715,19 +548,10 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 		s3c_pcm_stereo_out[pdev->id].filter_data = pcm_pdata->dma_playback;
 		filter = pcm_pdata->dma_filter;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcm->dma_capture = &s3c_pcm_stereo_in[pdev->id];
 	pcm->dma_playback = &s3c_pcm_stereo_out[pdev->id];
 
-<<<<<<< HEAD
-	pm_runtime_enable(&pdev->dev);
-
-	ret = snd_soc_register_dai(&pdev->dev, &s3c_pcm_dai[pdev->id]);
-	if (ret != 0) {
-		dev_err(&pdev->dev, "failed to get register DAI: %d\n", ret);
-		goto err5;
-=======
 	ret = samsung_asoc_dma_platform_register(&pdev->dev, filter,
 						 NULL, NULL, NULL);
 	if (ret) {
@@ -742,47 +566,10 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 	if (ret != 0) {
 		dev_err(&pdev->dev, "failed to get register DAI: %d\n", ret);
 		goto err_dis_pm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
-<<<<<<< HEAD
-err5:
-	clk_disable(pcm->pclk);
-	clk_put(pcm->pclk);
-err4:
-	iounmap(pcm->regs);
-err3:
-	release_mem_region(mem_res->start, resource_size(mem_res));
-err2:
-	clk_disable(pcm->cclk);
-	clk_put(pcm->cclk);
-err1:
-	return ret;
-}
-
-static __devexit int s3c_pcm_dev_remove(struct platform_device *pdev)
-{
-	struct s3c_pcm_info *pcm = &s3c_pcm[pdev->id];
-	struct resource *mem_res;
-
-	snd_soc_unregister_dai(&pdev->dev);
-
-	pm_runtime_disable(&pdev->dev);
-
-	iounmap(pcm->regs);
-
-	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	release_mem_region(mem_res->start, resource_size(mem_res));
-
-	clk_disable(pcm->cclk);
-	clk_disable(pcm->pclk);
-	clk_put(pcm->pclk);
-	clk_put(pcm->cclk);
-
-	return 0;
-=======
 err_dis_pm:
 	pm_runtime_disable(&pdev->dev);
 err_dis_pclk:
@@ -799,21 +586,13 @@ static void s3c_pcm_dev_remove(struct platform_device *pdev)
 	pm_runtime_disable(&pdev->dev);
 	clk_disable_unprepare(pcm->cclk);
 	clk_disable_unprepare(pcm->pclk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver s3c_pcm_driver = {
 	.probe  = s3c_pcm_dev_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(s3c_pcm_dev_remove),
-	.driver = {
-		.name = "samsung-pcm",
-		.owner = THIS_MODULE,
-=======
 	.remove_new = s3c_pcm_dev_remove,
 	.driver = {
 		.name = "samsung-pcm",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/powerpc/kernel/pmc.c
  *
@@ -9,14 +6,6 @@
  *  Includes code formerly from arch/ppc/kernel/perfmon.c:
  *    Author: Andy Fleming
  *    Copyright (c) 2004 Freescale Semiconductor, Inc
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -36,11 +25,7 @@ static void dummy_perf(struct pt_regs *regs)
 {
 #if defined(CONFIG_FSL_EMB_PERFMON)
 	mtpmr(PMRN_PMGC0, mfpmr(PMRN_PMGC0) & ~PMGC0_PMIE);
-<<<<<<< HEAD
-#elif defined(CONFIG_PPC64) || defined(CONFIG_6xx)
-=======
 #elif defined(CONFIG_PPC64) || defined(CONFIG_PPC_BOOK3S_32)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cur_cpu_spec->pmc_type == PPC_PMC_IBM)
 		mtspr(SPRN_MMCR0, mfspr(SPRN_MMCR0) & ~(MMCR0_PMXE|MMCR0_PMAO));
 #else
@@ -89,11 +74,7 @@ void release_pmc_hardware(void)
 }
 EXPORT_SYMBOL_GPL(release_pmc_hardware);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PPC64
-=======
 #ifdef CONFIG_PPC_BOOK3S_64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void power4_enable_pmcs(void)
 {
 	unsigned long hid0;

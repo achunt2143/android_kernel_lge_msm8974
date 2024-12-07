@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pm_runtime.h - Device run-time power management helper functions.
  *
  * Copyright (C) 2009 Rafael J. Wysocki <rjw@sisk.pl>
-<<<<<<< HEAD
- *
- * This file is released under the GPLv2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_PM_RUNTIME_H
@@ -30,15 +22,6 @@
 					    usage_count */
 #define RPM_AUTO		0x08	/* Use autosuspend_delay */
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM_RUNTIME
-
-extern struct workqueue_struct *pm_wq;
-
-extern int __pm_runtime_idle(struct device *dev, int rpmflags);
-extern int __pm_runtime_suspend(struct device *dev, int rpmflags);
-extern int __pm_runtime_resume(struct device *dev, int rpmflags);
-=======
 /*
  * Use this for defining a set of PM operations to be used in all situations
  * (system suspend, hibernation or runtime PM).
@@ -91,7 +74,6 @@ extern int __pm_runtime_suspend(struct device *dev, int rpmflags);
 extern int __pm_runtime_resume(struct device *dev, int rpmflags);
 extern int pm_runtime_get_if_active(struct device *dev);
 extern int pm_runtime_get_if_in_use(struct device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int pm_schedule_suspend(struct device *dev, unsigned int delay);
 extern int __pm_runtime_set_status(struct device *dev, unsigned int status);
 extern int pm_runtime_barrier(struct device *dev);
@@ -99,28 +81,10 @@ extern void pm_runtime_enable(struct device *dev);
 extern void __pm_runtime_disable(struct device *dev, bool check_resume);
 extern void pm_runtime_allow(struct device *dev);
 extern void pm_runtime_forbid(struct device *dev);
-<<<<<<< HEAD
-extern int pm_generic_runtime_idle(struct device *dev);
-extern int pm_generic_runtime_suspend(struct device *dev);
-extern int pm_generic_runtime_resume(struct device *dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void pm_runtime_no_callbacks(struct device *dev);
 extern void pm_runtime_irq_safe(struct device *dev);
 extern void __pm_runtime_use_autosuspend(struct device *dev, bool use);
 extern void pm_runtime_set_autosuspend_delay(struct device *dev, int delay);
-<<<<<<< HEAD
-extern unsigned long pm_runtime_autosuspend_expiration(struct device *dev);
-extern void pm_runtime_update_max_time_suspended(struct device *dev,
-						 s64 delta_ns);
-
-static inline bool pm_children_suspended(struct device *dev)
-{
-	return dev->power.ignore_children
-		|| !atomic_read(&dev->power.child_count);
-}
-
-=======
 extern u64 pm_runtime_autosuspend_expiration(struct device *dev);
 extern void pm_runtime_set_memalloc_noio(struct device *dev, bool enable);
 extern void pm_runtime_get_suppliers(struct device *dev);
@@ -149,38 +113,22 @@ static inline void pm_suspend_ignore_children(struct device *dev, bool enable)
  * pm_runtime_get_noresume - Bump up runtime PM usage counter of a device.
  * @dev: Target device.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void pm_runtime_get_noresume(struct device *dev)
 {
 	atomic_inc(&dev->power.usage_count);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_put_noidle - Drop runtime PM usage counter of a device.
  * @dev: Target device.
  *
  * Decrement the runtime PM usage counter of @dev unless it is 0 already.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void pm_runtime_put_noidle(struct device *dev)
 {
 	atomic_add_unless(&dev->power.usage_count, -1, 0);
 }
 
-<<<<<<< HEAD
-static inline bool device_run_wake(struct device *dev)
-{
-	return dev->power.run_wake;
-}
-
-static inline void device_set_run_wake(struct device *dev, bool enable)
-{
-	dev->power.run_wake = enable;
-}
-
-=======
 /**
  * pm_runtime_suspended - Check whether or not a device is runtime-suspended.
  * @dev: Target device.
@@ -193,15 +141,12 @@ static inline void device_set_run_wake(struct device *dev, bool enable)
  * runtime PM cannot be either disabled or enabled for @dev and its runtime PM
  * status cannot change.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool pm_runtime_suspended(struct device *dev)
 {
 	return dev->power.runtime_status == RPM_SUSPENDED
 		&& !dev->power.disable_depth;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_active - Check whether or not a device is runtime-active.
  * @dev: Target device.
@@ -231,14 +176,11 @@ static inline bool pm_runtime_active(struct device *dev)
  * called under the runtime PM lock of @dev or under conditions in which the
  * runtime PM status of @dev cannot change.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool pm_runtime_status_suspended(struct device *dev)
 {
 	return dev->power.runtime_status == RPM_SUSPENDED;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_enabled - Check if runtime PM is enabled.
  * @dev: Target device.
@@ -249,25 +191,11 @@ static inline bool pm_runtime_status_suspended(struct device *dev)
  * called under the runtime PM lock of @dev or under conditions in which
  * runtime PM cannot be either disabled or enabled for @dev.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool pm_runtime_enabled(struct device *dev)
 {
 	return !dev->power.disable_depth;
 }
 
-<<<<<<< HEAD
-static inline bool pm_runtime_callbacks_present(struct device *dev)
-{
-	return !dev->power.no_callbacks;
-}
-
-static inline void pm_runtime_mark_last_busy(struct device *dev)
-{
-	ACCESS_ONCE(dev->power.last_busy) = jiffies;
-}
-
-#else /* !CONFIG_PM_RUNTIME */
-=======
 /**
  * pm_runtime_has_no_callbacks - Check if runtime PM callbacks may be present.
  * @dev: Target device.
@@ -315,7 +243,6 @@ static inline int pm_generic_runtime_suspend(struct device *dev) { return 0; }
 static inline int pm_generic_runtime_resume(struct device *dev) { return 0; }
 static inline int pm_runtime_force_suspend(struct device *dev) { return 0; }
 static inline int pm_runtime_force_resume(struct device *dev) { return 0; }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int __pm_runtime_idle(struct device *dev, int rpmflags)
 {
@@ -333,8 +260,6 @@ static inline int pm_schedule_suspend(struct device *dev, unsigned int delay)
 {
 	return -ENOSYS;
 }
-<<<<<<< HEAD
-=======
 static inline int pm_runtime_get_if_in_use(struct device *dev)
 {
 	return -EINVAL;
@@ -343,7 +268,6 @@ static inline int pm_runtime_get_if_active(struct device *dev)
 {
 	return -EINVAL;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int __pm_runtime_set_status(struct device *dev,
 					    unsigned int status) { return 0; }
 static inline int pm_runtime_barrier(struct device *dev) { return 0; }
@@ -352,24 +276,6 @@ static inline void __pm_runtime_disable(struct device *dev, bool c) {}
 static inline void pm_runtime_allow(struct device *dev) {}
 static inline void pm_runtime_forbid(struct device *dev) {}
 
-<<<<<<< HEAD
-static inline bool pm_children_suspended(struct device *dev) { return false; }
-static inline void pm_runtime_get_noresume(struct device *dev) {}
-static inline void pm_runtime_put_noidle(struct device *dev) {}
-static inline bool device_run_wake(struct device *dev) { return false; }
-static inline void device_set_run_wake(struct device *dev, bool enable) {}
-static inline bool pm_runtime_suspended(struct device *dev) { return false; }
-static inline bool pm_runtime_status_suspended(struct device *dev) { return false; }
-static inline bool pm_runtime_enabled(struct device *dev) { return false; }
-
-static inline int pm_generic_runtime_idle(struct device *dev) { return 0; }
-static inline int pm_generic_runtime_suspend(struct device *dev) { return 0; }
-static inline int pm_generic_runtime_resume(struct device *dev) { return 0; }
-static inline void pm_runtime_no_callbacks(struct device *dev) {}
-static inline void pm_runtime_irq_safe(struct device *dev) {}
-
-static inline bool pm_runtime_callbacks_present(struct device *dev) { return false; }
-=======
 static inline int devm_pm_runtime_enable(struct device *dev) { return 0; }
 
 static inline void pm_suspend_ignore_children(struct device *dev, bool enable) {}
@@ -385,22 +291,11 @@ static inline void pm_runtime_irq_safe(struct device *dev) {}
 static inline bool pm_runtime_is_irq_safe(struct device *dev) { return false; }
 
 static inline bool pm_runtime_has_no_callbacks(struct device *dev) { return false; }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void pm_runtime_mark_last_busy(struct device *dev) {}
 static inline void __pm_runtime_use_autosuspend(struct device *dev,
 						bool use) {}
 static inline void pm_runtime_set_autosuspend_delay(struct device *dev,
 						int delay) {}
-<<<<<<< HEAD
-static inline unsigned long pm_runtime_autosuspend_expiration(
-				struct device *dev) { return 0; }
-
-static inline void pm_runtime_update_max_time_suspended(struct device *dev,
-							s64 delta_ns) {}
-
-#endif /* !CONFIG_PM_RUNTIME */
-
-=======
 static inline u64 pm_runtime_autosuspend_expiration(
 				struct device *dev) { return 0; }
 static inline void pm_runtime_set_memalloc_noio(struct device *dev,
@@ -421,26 +316,20 @@ static inline void pm_runtime_release_supplier(struct device_link *link) {}
  * set up autosuspend of @dev or suspend it (depending on whether or not
  * autosuspend has been enabled for it).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_runtime_idle(struct device *dev)
 {
 	return __pm_runtime_idle(dev, 0);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_suspend - Suspend a device synchronously.
  * @dev: Target device.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_runtime_suspend(struct device *dev)
 {
 	return __pm_runtime_suspend(dev, 0);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_autosuspend - Set up autosuspend of a device or suspend it.
  * @dev: Target device.
@@ -448,26 +337,20 @@ static inline int pm_runtime_suspend(struct device *dev)
  * Set up autosuspend of @dev or suspend it (depending on whether or not
  * autosuspend is enabled for it) without engaging its "idle check" callback.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_runtime_autosuspend(struct device *dev)
 {
 	return __pm_runtime_suspend(dev, RPM_AUTO);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_resume - Resume a device synchronously.
  * @dev: Target device.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_runtime_resume(struct device *dev)
 {
 	return __pm_runtime_resume(dev, 0);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_request_idle - Queue up "idle check" execution for a device.
  * @dev: Target device.
@@ -475,26 +358,20 @@ static inline int pm_runtime_resume(struct device *dev)
  * Queue up a work item to run an equivalent of pm_runtime_idle() for @dev
  * asynchronously.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_request_idle(struct device *dev)
 {
 	return __pm_runtime_idle(dev, RPM_ASYNC);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_request_resume - Queue up runtime-resume of a device.
  * @dev: Target device.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_request_resume(struct device *dev)
 {
 	return __pm_runtime_resume(dev, RPM_ASYNC);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_request_autosuspend - Queue up autosuspend of a device.
  * @dev: Target device.
@@ -502,14 +379,11 @@ static inline int pm_request_resume(struct device *dev)
  * Queue up a work item to run an equivalent pm_runtime_autosuspend() for @dev
  * asynchronously.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_request_autosuspend(struct device *dev)
 {
 	return __pm_runtime_suspend(dev, RPM_ASYNC | RPM_AUTO);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_get - Bump up usage counter and queue up resume of a device.
  * @dev: Target device.
@@ -517,14 +391,11 @@ static inline int pm_request_autosuspend(struct device *dev)
  * Bump up the runtime PM usage counter of @dev and queue up a work item to
  * carry out runtime-resume of it.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_runtime_get(struct device *dev)
 {
 	return __pm_runtime_resume(dev, RPM_GET_PUT | RPM_ASYNC);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_get_sync - Bump up usage counter of a device and resume it.
  * @dev: Target device.
@@ -539,14 +410,11 @@ static inline int pm_runtime_get(struct device *dev)
  * if its return value is checked by the caller, as this is likely to result
  * in cleaner code.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_runtime_get_sync(struct device *dev)
 {
 	return __pm_runtime_resume(dev, RPM_GET_PUT);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_resume_and_get - Bump up usage counter of a device and resume it.
  * @dev: Target device.
@@ -575,14 +443,11 @@ static inline int pm_runtime_resume_and_get(struct device *dev)
  * Decrement the runtime PM usage counter of @dev and if it turns out to be
  * equal to 0, queue up a work item for @dev like in pm_request_idle().
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_runtime_put(struct device *dev)
 {
 	return __pm_runtime_idle(dev, RPM_GET_PUT | RPM_ASYNC);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * __pm_runtime_put_autosuspend - Drop device usage counter and queue autosuspend if 0.
  * @dev: Target device.
@@ -602,15 +467,12 @@ static inline int __pm_runtime_put_autosuspend(struct device *dev)
  * Decrement the runtime PM usage counter of @dev and if it turns out to be
  * equal to 0, queue up a work item for @dev like in pm_request_autosuspend().
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_runtime_put_autosuspend(struct device *dev)
 {
 	return __pm_runtime_suspend(dev,
 	    RPM_GET_PUT | RPM_ASYNC | RPM_AUTO);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_put_sync - Drop device usage counter and run "idle check" if 0.
  * @dev: Target device.
@@ -624,14 +486,11 @@ static inline int pm_runtime_put_autosuspend(struct device *dev)
  * pm_runtime_idle() and the runtime PM usage counter of @dev remains
  * decremented in all cases, even if it returns an error code.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_runtime_put_sync(struct device *dev)
 {
 	return __pm_runtime_idle(dev, RPM_GET_PUT);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_put_sync_suspend - Drop device usage counter and suspend if 0.
  * @dev: Target device.
@@ -643,14 +502,11 @@ static inline int pm_runtime_put_sync(struct device *dev)
  * pm_runtime_suspend() and the runtime PM usage counter of @dev remains
  * decremented in all cases, even if it returns an error code.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_runtime_put_sync_suspend(struct device *dev)
 {
 	return __pm_runtime_suspend(dev, RPM_GET_PUT);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_put_sync_autosuspend - Drop device usage counter and autosuspend if 0.
  * @dev: Target device.
@@ -663,14 +519,11 @@ static inline int pm_runtime_put_sync_suspend(struct device *dev)
  * pm_runtime_autosuspend() and the runtime PM usage counter of @dev remains
  * decremented in all cases, even if it returns an error code.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_runtime_put_sync_autosuspend(struct device *dev)
 {
 	return __pm_runtime_suspend(dev, RPM_GET_PUT | RPM_AUTO);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_set_active - Set runtime PM status to "active".
  * @dev: Target device.
@@ -680,19 +533,11 @@ static inline int pm_runtime_put_sync_autosuspend(struct device *dev)
  *
  * It is not valid to call this function for devices with runtime PM enabled.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pm_runtime_set_active(struct device *dev)
 {
 	return __pm_runtime_set_status(dev, RPM_ACTIVE);
 }
 
-<<<<<<< HEAD
-static inline void pm_runtime_set_suspended(struct device *dev)
-{
-	__pm_runtime_set_status(dev, RPM_SUSPENDED);
-}
-
-=======
 /**
  * pm_runtime_set_suspended - Set runtime PM status to "suspended".
  * @dev: Target device.
@@ -717,14 +562,11 @@ static inline int pm_runtime_set_suspended(struct device *dev)
  * For each invocation of this function for @dev there must be a matching
  * pm_runtime_enable() call in order for runtime PM to be enabled for it.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void pm_runtime_disable(struct device *dev)
 {
 	__pm_runtime_disable(dev, true);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_use_autosuspend - Allow autosuspend to be used for a device.
  * @dev: Target device.
@@ -737,14 +579,11 @@ static inline void pm_runtime_disable(struct device *dev)
  * at driver exit time unless your driver initially enabled pm_runtime
  * with devm_pm_runtime_enable() (which handles it for you).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void pm_runtime_use_autosuspend(struct device *dev)
 {
 	__pm_runtime_use_autosuspend(dev, true);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * pm_runtime_dont_use_autosuspend - Prevent autosuspend from being used.
  * @dev: Target device.
@@ -753,7 +592,6 @@ static inline void pm_runtime_use_autosuspend(struct device *dev)
  * means that "autosuspend" will be handled as direct runtime-suspend for it
  * going forward.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void pm_runtime_dont_use_autosuspend(struct device *dev)
 {
 	__pm_runtime_use_autosuspend(dev, false);

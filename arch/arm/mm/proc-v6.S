@@ -1,36 +1,19 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/proc-v6.S
  *
  *  Copyright (C) 2001 Deep Blue Solutions Ltd.
  *  Modified by Catalin Marinas for noMMU support
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  This is the "shell" of the ARMv6 processor support.
  */
 #include <linux/init.h>
 #include <linux/linkage.h>
-<<<<<<< HEAD
-=======
 #include <linux/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/assembler.h>
 #include <asm/asm-offsets.h>
 #include <asm/hwcap.h>
 #include <asm/pgtable-hwdef.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "proc-macros.S"
 
@@ -49,26 +32,17 @@
 #define TTB_FLAGS_SMP	TTB_RGN_WBWA|TTB_S
 #define PMD_FLAGS_SMP	PMD_SECT_WBWA|PMD_SECT_S
 
-<<<<<<< HEAD
-ENTRY(cpu_v6_proc_init)
-	mov	pc, lr
-=======
 .arch armv6
 
 ENTRY(cpu_v6_proc_init)
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(cpu_v6_proc_fin)
 	mrc	p15, 0, r0, c1, c0, 0		@ ctrl register
 	bic	r0, r0, #0x1000			@ ...i............
 	bic	r0, r0, #0x0006			@ .............ca.
 	mcr	p15, 0, r0, c1, c0, 0		@ disable caches
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	cpu_v6_reset(loc)
@@ -87,11 +61,7 @@ ENTRY(cpu_v6_reset)
 	mcr	p15, 0, r1, c1, c0, 0		@ disable MMU
 	mov	r1, #0
 	mcr	p15, 0, r1, c7, c5, 4		@ ISB
-<<<<<<< HEAD
-	mov	pc, r0
-=======
 	ret	r0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(cpu_v6_reset)
 	.popsection
 
@@ -106,32 +76,17 @@ ENTRY(cpu_v6_do_idle)
 	mov	r1, #0
 	mcr	p15, 0, r1, c7, c10, 4		@ DWB - WFI may enter a low-power mode
 	mcr	p15, 0, r1, c7, c0, 4		@ wait for interrupt
-<<<<<<< HEAD
-	mov	pc, lr
-
-ENTRY(cpu_v6_dcache_clean_area)
-#ifndef TLB_CAN_READ_FROM_L1_CACHE
-=======
 	ret	lr
 
 ENTRY(cpu_v6_dcache_clean_area)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	mcr	p15, 0, r0, c7, c10, 1		@ clean D entry
 	add	r0, r0, #D_CACHE_LINE_SIZE
 	subs	r1, r1, #D_CACHE_LINE_SIZE
 	bhi	1b
-<<<<<<< HEAD
-#endif
-	mov	pc, lr
-
-/*
- *	cpu_arm926_switch_mm(pgd_phys, tsk)
-=======
 	ret	lr
 
 /*
  *	cpu_v6_switch_mm(pgd_phys, tsk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Set the translation table base pointer to be pgd_phys
  *
@@ -143,11 +98,7 @@ ENTRY(cpu_v6_dcache_clean_area)
 ENTRY(cpu_v6_switch_mm)
 #ifdef CONFIG_MMU
 	mov	r2, #0
-<<<<<<< HEAD
-	ldr	r1, [r1, #MM_CONTEXT_ID]	@ get mm->context.id
-=======
 	mmid	r1, r1				@ get mm->context.id
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ALT_SMP(orr	r0, r0, #TTB_FLAGS_SMP)
 	ALT_UP(orr	r0, r0, #TTB_FLAGS_UP)
 	mcr	p15, 0, r2, c7, c5, 6		@ flush BTAC/BTB
@@ -157,19 +108,11 @@ ENTRY(cpu_v6_switch_mm)
 	mrc	p15, 0, r2, c13, c0, 1		@ read current context ID
 	bic	r2, r2, #0xff			@ extract the PID
 	and	r1, r1, #0xff
-<<<<<<< HEAD
-	orr	r1, r1, r2			@ insert the PID into r1
-#endif
-	mcr	p15, 0, r1, c13, c0, 1		@ set context ID
-#endif
-	mov	pc, lr
-=======
 	orr	r1, r1, r2			@ insert into new context ID
 #endif
 	mcr	p15, 0, r1, c13, c0, 1		@ set context ID
 #endif
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	cpu_v6_set_pte_ext(ptep, pte, ext)
@@ -187,11 +130,7 @@ ENTRY(cpu_v6_set_pte_ext)
 #ifdef CONFIG_MMU
 	armv6_set_pte_ext cpu_v6
 #endif
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Suspend/resume support: taken from arch/arm/mach-s3c64xx/sleep.S */
 .globl	cpu_v6_suspend_size
@@ -200,15 +139,10 @@ ENTRY(cpu_v6_set_pte_ext)
 ENTRY(cpu_v6_do_suspend)
 	stmfd	sp!, {r4 - r9, lr}
 	mrc	p15, 0, r4, c13, c0, 0	@ FCSE/PID
-<<<<<<< HEAD
-	mrc	p15, 0, r5, c3, c0, 0	@ Domain ID
-	mrc	p15, 0, r6, c2, c0, 1	@ Translation table base 1
-=======
 #ifdef CONFIG_MMU
 	mrc	p15, 0, r5, c3, c0, 0	@ Domain ID
 	mrc	p15, 0, r6, c2, c0, 1	@ Translation table base 1
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mrc	p15, 0, r7, c1, c0, 1	@ auxiliary control register
 	mrc	p15, 0, r8, c1, c0, 2	@ co-processor access control
 	mrc	p15, 0, r9, c1, c0, 0	@ control register
@@ -225,25 +159,16 @@ ENTRY(cpu_v6_do_resume)
 	mcr	p15, 0, ip, c13, c0, 1	@ set reserved context ID
 	ldmia	r0, {r4 - r9}
 	mcr	p15, 0, r4, c13, c0, 0	@ FCSE/PID
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MMU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcr	p15, 0, r5, c3, c0, 0	@ Domain ID
 	ALT_SMP(orr	r1, r1, #TTB_FLAGS_SMP)
 	ALT_UP(orr	r1, r1, #TTB_FLAGS_UP)
 	mcr	p15, 0, r1, c2, c0, 0	@ Translation table base 0
 	mcr	p15, 0, r6, c2, c0, 1	@ Translation table base 1
-<<<<<<< HEAD
-	mcr	p15, 0, r7, c1, c0, 1	@ auxiliary control register
-	mcr	p15, 0, r8, c1, c0, 2	@ co-processor access control
-	mcr	p15, 0, ip, c2, c0, 2	@ TTB control register
-=======
 	mcr	p15, 0, ip, c2, c0, 2	@ TTB control register
 #endif
 	mcr	p15, 0, r7, c1, c0, 1	@ auxiliary control register
 	mcr	p15, 0, r8, c1, c0, 2	@ co-processor access control
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcr	p15, 0, ip, c7, c5, 4	@ ISB
 	mov	r0, r9			@ control register
 	b	cpu_resume_mmu
@@ -254,11 +179,6 @@ ENDPROC(cpu_v6_do_resume)
 
 	.align
 
-<<<<<<< HEAD
-	__CPUINIT
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	__v6_setup
  *
@@ -300,13 +220,7 @@ __v6_setup:
 						@ complete invalidations
 	adr	r5, v6_crval
 	ldmia	r5, {r5, r6}
-<<<<<<< HEAD
-#ifdef CONFIG_CPU_ENDIAN_BE8
-	orr	r6, r6, #1 << 25		@ big-endian page tables
-#endif
-=======
  ARM_BE8(orr	r6, r6, #1 << 25)		@ big-endian page tables
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mrc	p15, 0, r0, c1, c0, 0		@ read control register
 	bic	r0, r0, r5			@ clear bits them
 	orr	r0, r0, r6			@ set them
@@ -326,11 +240,7 @@ __v6_setup:
 	mcreq	p15, 0, r5, c1, c0, 1		@ write aux control reg
 	orreq	r0, r0, #(1 << 21)		@ low interrupt latency configuration
 #endif
-<<<<<<< HEAD
-	mov	pc, lr				@ return to head.S:__ret
-=======
 	ret	lr				@ return to head.S:__ret
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *         V X F   I D LR
@@ -353,11 +263,7 @@ v6_crval:
 	string	cpu_elf_name, "v6"
 	.align
 
-<<<<<<< HEAD
-	.section ".proc.info.init", #alloc, #execinstr
-=======
 	.section ".proc.info.init", "a"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Match any ARMv6 processor core.
@@ -380,11 +286,7 @@ __v6_proc_info:
 		PMD_SECT_XN | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
-<<<<<<< HEAD
-	b	__v6_setup
-=======
 	initfn	__v6_setup, __v6_proc_info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	/* See also feat_v6_fixup() for HWCAP_TLS */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_IRQ_H
 #define _ASM_X86_IRQ_H
 /*
@@ -14,8 +11,6 @@
 #include <asm/apicdef.h>
 #include <asm/irq_vectors.h>
 
-<<<<<<< HEAD
-=======
 /*
  * The irq entry code is in the noinstr section and the start/end of
  * __irqentry_text is emitted via labels. Make the build fail if
@@ -23,26 +18,11 @@
  */
 #define __irq_entry __invalid_section
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int irq_canonicalize(int irq)
 {
 	return ((irq == 2) ? 9 : irq);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_X86_32
-extern void irq_ctx_init(int cpu);
-#else
-# define irq_ctx_init(cpu) do { } while (0)
-#endif
-
-#define __ARCH_HAS_DO_SOFTIRQ
-
-#ifdef CONFIG_HOTPLUG_CPU
-#include <linux/cpumask.h>
-extern void fixup_irqs(void);
-extern void irq_force_complete_move(int);
-=======
 extern int irq_init_percpu_irqstack(unsigned int cpu);
 
 struct irq_desc;
@@ -51,23 +31,10 @@ extern void fixup_irqs(void);
 
 #if IS_ENABLED(CONFIG_KVM)
 extern void kvm_set_posted_intr_wakeup_handler(void (*handler)(void));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 extern void (*x86_platform_ipi_callback)(void);
 extern void native_init_IRQ(void);
-<<<<<<< HEAD
-extern bool handle_irq(unsigned irq, struct pt_regs *regs);
-
-extern unsigned int do_IRQ(struct pt_regs *regs);
-
-/* Interrupt vector management */
-extern DECLARE_BITMAP(used_vectors, NR_VECTORS);
-extern int vector_used_by_percpu_irq(unsigned int vector);
-
-extern void init_ISA_irqs(void);
-
-=======
 
 extern void __handle_irq(struct irq_desc *desc, struct pt_regs *regs);
 
@@ -80,5 +47,4 @@ void arch_trigger_cpumask_backtrace(const struct cpumask *mask,
 #define arch_trigger_cpumask_backtrace arch_trigger_cpumask_backtrace
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_IRQ_H */

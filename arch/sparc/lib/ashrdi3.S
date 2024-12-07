@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ashrdi3.S:	The filesystem code creates all kinds of references to
  *              this little routine on the sparc with gcc.
@@ -9,18 +6,11 @@
  * Copyright (C) 1995 David S. Miller (davem@caip.rutgers.edu)
  */
 
-<<<<<<< HEAD
-	.text
-	.align	4
-	.globl __ashrdi3
-__ashrdi3:
-=======
 #include <linux/export.h>
 #include <linux/linkage.h>
 
 	.text
 ENTRY(__ashrdi3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tst	%o2
 	be	3f
 	 or	%g0, 32, %g2
@@ -46,8 +36,5 @@ ENTRY(__ashrdi3)
 3:
 	jmpl	%o7 + 8, %g0
 	 nop
-<<<<<<< HEAD
-=======
 ENDPROC(__ashrdi3)
 EXPORT_SYMBOL(__ashrdi3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

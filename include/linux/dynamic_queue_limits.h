@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Dynamic queue limits (dql) - Definitions
  *
@@ -41,28 +38,22 @@
 
 #ifdef __KERNEL__
 
-<<<<<<< HEAD
-=======
 #include <linux/bitops.h>
 #include <asm/bug.h>
 
 #define DQL_HIST_LEN		4
 #define DQL_HIST_ENT(dql, idx)	((dql)->history[(idx) % DQL_HIST_LEN])
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dql {
 	/* Fields accessed in enqueue path (dql_queued) */
 	unsigned int	num_queued;		/* Total ever queued */
 	unsigned int	adj_limit;		/* limit + num_completed */
 	unsigned int	last_obj_cnt;		/* Count at last queuing */
 
-<<<<<<< HEAD
-=======
 	unsigned long	history_head;		/* top 58 bits of jiffies */
 	/* stall entries, a bit per entry */
 	unsigned long	history[DQL_HIST_LEN];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fields accessed only by completion path (dql_completed) */
 
 	unsigned int	limit ____cacheline_aligned_in_smp; /* Current limit */
@@ -79,8 +70,6 @@ struct dql {
 	unsigned int	max_limit;		/* Max limit */
 	unsigned int	min_limit;		/* Minimum limit */
 	unsigned int	slack_hold_time;	/* Time to measure slack */
-<<<<<<< HEAD
-=======
 
 	/* Stall threshold (in jiffies), defined by user */
 	unsigned short	stall_thrs;
@@ -88,7 +77,6 @@ struct dql {
 	unsigned short	stall_max;
 	unsigned long	last_reap;		/* Last reap (in jiffies) */
 	unsigned long	stall_cnt;		/* Number of stalls */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Set some static maximums */
@@ -101,12 +89,6 @@ struct dql {
  */
 static inline void dql_queued(struct dql *dql, unsigned int count)
 {
-<<<<<<< HEAD
-	BUG_ON(count > DQL_MAX_OBJECT);
-
-	dql->num_queued += count;
-	dql->last_obj_cnt = count;
-=======
 	unsigned long map, now, now_hi, i;
 
 	BUG_ON(count > DQL_MAX_OBJECT);
@@ -149,17 +131,12 @@ static inline void dql_queued(struct dql *dql, unsigned int count)
 	/* Populate the history with an entry (bit) per queued */
 	if (!(map & BIT_MASK(now)))
 		WRITE_ONCE(DQL_HIST_ENT(dql, now_hi), map | BIT_MASK(now));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Returns how many objects can be queued, < 0 indicates over limit. */
 static inline int dql_avail(const struct dql *dql)
 {
-<<<<<<< HEAD
-	return dql->adj_limit - dql->num_queued;
-=======
 	return READ_ONCE(dql->adj_limit) - READ_ONCE(dql->num_queued);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Record number of completed objects and recalculate the limit. */
@@ -169,11 +146,7 @@ void dql_completed(struct dql *dql, unsigned int count);
 void dql_reset(struct dql *dql);
 
 /* Initialize dql state */
-<<<<<<< HEAD
-int dql_init(struct dql *dql, unsigned hold_time);
-=======
 void dql_init(struct dql *dql, unsigned int hold_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _KERNEL_ */
 

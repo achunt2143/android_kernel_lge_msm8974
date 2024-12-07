@@ -1,33 +1,14 @@
-<<<<<<< HEAD
-/* ir-sony-decoder.c - handle Sony IR Pulse/Space protocol
- *
- * Copyright (C) 2010 by David Härdeman <david@hardeman.nu>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* ir-sony-decoder.c - handle Sony IR Pulse/Space protocol
  *
  * Copyright (C) 2010 by David Härdeman <david@hardeman.nu>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bitrev.h>
 #include <linux/module.h>
 #include "rc-core-priv.h"
 
-<<<<<<< HEAD
-#define SONY_UNIT		600000 /* ns */
-=======
 #define SONY_UNIT		600 /* us */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SONY_HEADER_PULSE	(4 * SONY_UNIT)
 #define	SONY_HEADER_SPACE	(1 * SONY_UNIT)
 #define SONY_BIT_0_PULSE	(1 * SONY_UNIT)
@@ -53,23 +34,12 @@ enum sony_state {
 static int ir_sony_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct sony_dec *data = &dev->raw->sony;
-<<<<<<< HEAD
-	u32 scancode;
-	u8 device, subdevice, function;
-
-	if (!(dev->raw->enabled_protocols & RC_TYPE_SONY))
-		return 0;
-
-	if (!is_timing_event(ev)) {
-		if (ev.reset)
-=======
 	enum rc_proto protocol;
 	u32 scancode;
 	u8 device, subdevice, function;
 
 	if (!is_timing_event(ev)) {
 		if (ev.overflow)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			data->state = STATE_INACTIVE;
 		return 0;
 	}
@@ -77,13 +47,8 @@ static int ir_sony_decode(struct rc_dev *dev, struct ir_raw_event ev)
 	if (!geq_margin(ev.duration, SONY_UNIT, SONY_UNIT / 2))
 		goto out;
 
-<<<<<<< HEAD
-	IR_dprintk(2, "Sony decode started at state %d (%uus %s)\n",
-		   data->state, TO_US(ev.duration), TO_STR(ev.pulse));
-=======
 	dev_dbg(&dev->dev, "Sony decode started at state %d (%uus %s)\n",
 		data->state, ev.duration, TO_STR(ev.pulse));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (data->state) {
 
@@ -137,11 +102,7 @@ static int ir_sony_decode(struct rc_dev *dev, struct ir_raw_event ev)
 		}
 
 		data->state = STATE_FINISHED;
-<<<<<<< HEAD
-		/* Fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case STATE_FINISHED:
 		if (ev.pulse)
@@ -152,24 +113,6 @@ static int ir_sony_decode(struct rc_dev *dev, struct ir_raw_event ev)
 
 		switch (data->count) {
 		case 12:
-<<<<<<< HEAD
-			device    = bitrev8((data->bits <<  3) & 0xF8);
-			subdevice = 0;
-			function  = bitrev8((data->bits >>  4) & 0xFE);
-			break;
-		case 15:
-			device    = bitrev8((data->bits >>  0) & 0xFF);
-			subdevice = 0;
-			function  = bitrev8((data->bits >>  7) & 0xFE);
-			break;
-		case 20:
-			device    = bitrev8((data->bits >>  5) & 0xF8);
-			subdevice = bitrev8((data->bits >>  0) & 0xFF);
-			function  = bitrev8((data->bits >> 12) & 0xFE);
-			break;
-		default:
-			IR_dprintk(1, "Sony invalid bitcount %u\n", data->count);
-=======
 			if (!(dev->enabled_protocols & RC_PROTO_BIT_SONY12))
 				goto finish_state_machine;
 
@@ -199,29 +142,10 @@ static int ir_sony_decode(struct rc_dev *dev, struct ir_raw_event ev)
 		default:
 			dev_dbg(&dev->dev, "Sony invalid bitcount %u\n",
 				data->count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
 		scancode = device << 16 | subdevice << 8 | function;
-<<<<<<< HEAD
-		IR_dprintk(1, "Sony(%u) scancode 0x%05x\n", data->count, scancode);
-		rc_keydown(dev, scancode, 0);
-		data->state = STATE_INACTIVE;
-		return 0;
-	}
-
-out:
-	IR_dprintk(1, "Sony decode failed at state %d (%uus %s)\n",
-		   data->state, TO_US(ev.duration), TO_STR(ev.pulse));
-	data->state = STATE_INACTIVE;
-	return -EINVAL;
-}
-
-static struct ir_raw_handler sony_handler = {
-	.protocols	= RC_TYPE_SONY,
-	.decode		= ir_sony_decode,
-=======
 		dev_dbg(&dev->dev, "Sony(%u) scancode 0x%05x\n", data->count,
 			scancode);
 		rc_keydown(dev, protocol, scancode, 0);
@@ -293,7 +217,6 @@ static struct ir_raw_handler sony_handler = {
 	.encode		= ir_sony_encode,
 	.carrier	= 40000,
 	.min_timeout	= SONY_TRAILER_SPACE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ir_sony_decode_init(void)

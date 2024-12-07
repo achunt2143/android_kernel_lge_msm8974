@@ -1,66 +1,20 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acdispat.h"
 
-<<<<<<< HEAD
-=======
 #ifdef ACPI_ASL_COMPILER
 #include "acdisasm.h"
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _COMPONENT          ACPI_NAMESPACE
 ACPI_MODULE_NAME("nsaccess")
 
@@ -82,10 +36,7 @@ acpi_status acpi_ns_root_initialize(void)
 	acpi_status status;
 	const struct acpi_predefined_names *init_val = NULL;
 	struct acpi_namespace_node *new_node;
-<<<<<<< HEAD
-=======
 	struct acpi_namespace_node *prev_node = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union acpi_operand_object *obj_desc;
 	acpi_string val = NULL;
 
@@ -111,22 +62,11 @@ acpi_status acpi_ns_root_initialize(void)
 	 */
 	acpi_gbl_root_node = &acpi_gbl_root_node_struct;
 
-<<<<<<< HEAD
-	/* Enter the pre-defined names in the name table */
-=======
 	/* Enter the predefined names in the name table */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 			  "Entering predefined entries into namespace\n"));
 
-<<<<<<< HEAD
-	for (init_val = acpi_gbl_pre_defined_names; init_val->name; init_val++) {
-
-		/* _OSI is optional for now, will be permanent later */
-
-		if (!ACPI_STRCMP(init_val->name, "_OSI")
-=======
 	/*
 	 * Create the initial (default) namespace.
 	 * This namespace looks like something similar to this:
@@ -148,23 +88,10 @@ acpi_status acpi_ns_root_initialize(void)
 		/* _OSI is optional for now, will be permanent later */
 
 		if (!strcmp(init_val->name, "_OSI")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    && !acpi_gbl_create_osi_method) {
 			continue;
 		}
 
-<<<<<<< HEAD
-		status = acpi_ns_lookup(NULL, init_val->name, init_val->type,
-					ACPI_IMODE_LOAD_PASS2,
-					ACPI_NS_NO_UPSEARCH, NULL, &new_node);
-
-		if (ACPI_FAILURE(status) || (!new_node)) {	/* Must be on same line for code converter */
-			ACPI_EXCEPTION((AE_INFO, status,
-					"Could not create predefined name %s",
-					init_val->name));
-		}
-
-=======
 		/*
 		 * Create, init, and link the new predefined name
 		 * Note: No need to use acpi_ns_lookup here because all the
@@ -190,7 +117,6 @@ acpi_status acpi_ns_root_initialize(void)
 		new_node->parent = &acpi_gbl_root_node_struct;
 		prev_node = new_node;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Name entered successfully. If entry in pre_defined_names[] specifies
 		 * an initial value, create the initial value.
@@ -225,29 +151,18 @@ acpi_status acpi_ns_root_initialize(void)
 			 */
 			switch (init_val->type) {
 			case ACPI_TYPE_METHOD:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				obj_desc->method.param_count =
 				    (u8) ACPI_TO_INTEGER(val);
 				obj_desc->common.flags |= AOPOBJ_DATA_VALID;
 
 #if defined (ACPI_ASL_COMPILER)
 
-<<<<<<< HEAD
-				/* Save the parameter count for the i_aSL compiler */
-
-				new_node->value = obj_desc->method.param_count;
-#else
-				/* Mark this as a very SPECIAL method */
-=======
 				/* Save the parameter count for the iASL compiler */
 
 				new_node->value = obj_desc->method.param_count;
 #else
 				/* Mark this as a very SPECIAL method (_OSI) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				obj_desc->method.info_flags =
 				    ACPI_METHOD_INTERNAL_ONLY;
@@ -265,12 +180,7 @@ acpi_status acpi_ns_root_initialize(void)
 
 				/* Build an object around the static string */
 
-<<<<<<< HEAD
-				obj_desc->string.length =
-				    (u32) ACPI_STRLEN(val);
-=======
 				obj_desc->string.length = (u32)strlen(val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				obj_desc->string.pointer = val;
 				obj_desc->common.flags |= AOPOBJ_STATIC_POINTER;
 				break;
@@ -293,11 +203,7 @@ acpi_status acpi_ns_root_initialize(void)
 
 				/* Special case for ACPI Global Lock */
 
-<<<<<<< HEAD
-				if (ACPI_STRCMP(init_val->name, "_GL_") == 0) {
-=======
 				if (strcmp(init_val->name, "_GL_") == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					acpi_gbl_global_lock_mutex = obj_desc;
 
 					/* Create additional counting semaphore for global lock */
@@ -334,11 +240,7 @@ acpi_status acpi_ns_root_initialize(void)
 		}
 	}
 
-<<<<<<< HEAD
-      unlock_and_exit:
-=======
 unlock_and_exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 
 	/* Save a handle to "_GPE", it is always present */
@@ -356,19 +258,11 @@ unlock_and_exit:
  * FUNCTION:    acpi_ns_lookup
  *
  * PARAMETERS:  scope_info      - Current scope info block
-<<<<<<< HEAD
- *              Pathname        - Search pathname, in internal format
- *                                (as represented in the AML stream)
- *              Type            - Type associated with name
- *              interpreter_mode - IMODE_LOAD_PASS2 => add name if not found
- *              Flags           - Flags describing the search restrictions
-=======
  *              pathname        - Search pathname, in internal format
  *                                (as represented in the AML stream)
  *              type            - Type associated with name
  *              interpreter_mode - IMODE_LOAD_PASS2 => add name if not found
  *              flags           - Flags describing the search restrictions
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              walk_state      - Current state of the walk
  *              return_node     - Where the Node is placed (if found
  *                                or created successfully)
@@ -393,10 +287,7 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 {
 	acpi_status status;
 	char *path = pathname;
-<<<<<<< HEAD
-=======
 	char *external_path;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct acpi_namespace_node *prefix_node;
 	struct acpi_namespace_node *current_node = NULL;
 	struct acpi_namespace_node *this_node = NULL;
@@ -407,10 +298,7 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 	acpi_object_type this_search_type;
 	u32 search_parent_flag = ACPI_NS_SEARCH_PARENT;
 	u32 local_flags;
-<<<<<<< HEAD
-=======
 	acpi_interpreter_mode local_interpreter_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(ns_lookup);
 
@@ -418,13 +306,9 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
 	}
 
-<<<<<<< HEAD
-	local_flags = flags & ~(ACPI_NS_ERROR_IF_FOUND | ACPI_NS_SEARCH_PARENT);
-=======
 	local_flags = flags &
 	    ~(ACPI_NS_ERROR_IF_FOUND | ACPI_NS_OVERRIDE_IF_FOUND |
 	      ACPI_NS_SEARCH_PARENT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*return_node = ACPI_ENTRY_NOT_FOUND;
 	acpi_gbl_ns_lookup_count++;
 
@@ -540,14 +424,6 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 				num_carats++;
 				this_node = this_node->parent;
 				if (!this_node) {
-<<<<<<< HEAD
-
-					/* Current scope has no parent scope */
-
-					ACPI_ERROR((AE_INFO,
-						    "ACPI path has too many parent prefixes (^) "
-						    "- reached beyond root node"));
-=======
 					/*
 					 * Current scope has no parent scope. Externalize
 					 * the internal path for error message.
@@ -564,7 +440,6 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 						ACPI_FREE(external_path);
 					}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return_ACPI_STATUS(AE_NOT_FOUND);
 				}
 			}
@@ -620,11 +495,7 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 					  flags));
 			break;
 
-<<<<<<< HEAD
-		case AML_MULTI_NAME_PREFIX_OP:
-=======
 		case AML_MULTI_NAME_PREFIX:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* More than one name_seg, search rules do not apply */
 
@@ -667,10 +538,7 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 	 */
 	this_search_type = ACPI_TYPE_ANY;
 	current_node = this_node;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (num_segments && current_node) {
 		num_segments--;
 		if (!num_segments) {
@@ -693,8 +561,6 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 			if (flags & ACPI_NS_ERROR_IF_FOUND) {
 				local_flags |= ACPI_NS_ERROR_IF_FOUND;
 			}
-<<<<<<< HEAD
-=======
 
 			/* Set override flag according to caller */
 
@@ -711,7 +577,6 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 			/* Every element of the path must exist (except for the final name_seg) */
 
 			local_interpreter_mode = ACPI_IMODE_EXECUTE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Extract one ACPI name from the front of the pathname */
@@ -722,19 +587,12 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 
 		status =
 		    acpi_ns_search_and_enter(simple_name, walk_state,
-<<<<<<< HEAD
-					     current_node, interpreter_mode,
-=======
 					     current_node,
 					     local_interpreter_mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     this_search_type, local_flags,
 					     &this_node);
 		if (ACPI_FAILURE(status)) {
 			if (status == AE_NOT_FOUND) {
-<<<<<<< HEAD
-
-=======
 #if !defined ACPI_ASL_COMPILER	/* Note: iASL reports this error by itself, not needed here */
 				if (flags & ACPI_NS_PREFIX_MUST_EXIST) {
 					acpi_os_printf(ACPI_MSG_BIOS_ERROR
@@ -742,7 +600,6 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 						       (char *)&simple_name);
 				}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* Name not found in ACPI namespace */
 
 				ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
@@ -751,8 +608,6 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 						  (char *)&current_node->name,
 						  current_node));
 			}
-<<<<<<< HEAD
-=======
 #ifdef ACPI_EXEC_APP
 			if ((status == AE_ALREADY_EXISTS) &&
 			    (this_node->flags & ANOBJ_NODE_EARLY_INIT)) {
@@ -784,7 +639,6 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 				break;
 			}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			*return_node = this_node;
 			return_ACPI_STATUS(status);
@@ -860,11 +714,7 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 
 		/* Point to next name segment and make this node current */
 
-<<<<<<< HEAD
-		path += ACPI_NAME_SIZE;
-=======
 		path += ACPI_NAMESEG_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		current_node = this_node;
 	}
 
@@ -884,14 +734,11 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 			}
 		}
 	}
-<<<<<<< HEAD
-=======
 #ifdef ACPI_EXEC_APP
 	if (flags & ACPI_NS_EARLY_INIT) {
 		this_node->flags |= ANOBJ_NODE_EARLY_INIT;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*return_node = this_node;
 	return_ACPI_STATUS(AE_OK);

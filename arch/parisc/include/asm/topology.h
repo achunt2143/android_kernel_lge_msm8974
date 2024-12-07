@@ -1,11 +1,6 @@
 #ifndef _ASM_PARISC_TOPOLOGY_H
 #define _ASM_PARISC_TOPOLOGY_H
 
-<<<<<<< HEAD
-#include <asm-generic/topology.h>
-
-#endif /* _ASM_PARISC_TOPOLOGY_H */
-=======
 #ifdef CONFIG_GENERIC_ARCH_TOPOLOGY
 
 #include <linux/cpumask.h>
@@ -22,4 +17,3 @@ static inline void reset_cpu_topology(void) { }
 #include <asm-generic/topology.h>
 
 #endif /* _ASM_ARM_TOPOLOGY_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

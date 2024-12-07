@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_JIFFIES_H
-#define _LINUX_JIFFIES_H
-
-#include <linux/math64.h>
-#include <linux/kernel.h>
-#include <linux/types.h>
-#include <linux/time.h>
-#include <linux/timex.h>
-#include <asm/param.h>			/* for HZ */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_JIFFIES_H
 #define _LINUX_JIFFIES_H
@@ -23,7 +12,6 @@
 #include <vdso/jiffies.h>
 #include <asm/param.h>			/* for HZ */
 #include <generated/timeconst.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The following defines establish the engineering parameters of the PLL
@@ -56,12 +44,6 @@
 # error Invalid value of HZ.
 #endif
 
-<<<<<<< HEAD
-/* LATCH is used in the interval timer and ftape setup. */
-#define LATCH  ((CLOCK_TICK_RATE + HZ/2) / HZ)	/* For divider */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Suppose we want to divide two numbers NOM and DEN: NOM/DEN, then we can
  * improve accuracy by shifting LSH bits, hence calculating:
  *     (NOM << LSH) / DEN
@@ -74,34 +56,6 @@
 #define SH_DIV(NOM,DEN,LSH) (   (((NOM) / (DEN)) << (LSH))              \
                              + ((((NOM) % (DEN)) << (LSH)) + (DEN) / 2) / (DEN))
 
-<<<<<<< HEAD
-/* HZ is the requested value. ACTHZ is actual HZ ("<< 8" is for accuracy) */
-#define ACTHZ (SH_DIV (CLOCK_TICK_RATE, LATCH, 8))
-
-/* TICK_NSEC is the time between ticks in nsec assuming real ACTHZ */
-#define TICK_NSEC (SH_DIV (1000000UL * 1000, ACTHZ, 8))
-
-/* TICK_USEC is the time between ticks in usec assuming fake USER_HZ */
-#define TICK_USEC ((1000000UL + USER_HZ/2) / USER_HZ)
-
-/* TICK_USEC_TO_NSEC is the time between ticks in nsec assuming real ACTHZ and	*/
-/* a value TUSEC for TICK_USEC (can be set bij adjtimex)		*/
-#define TICK_USEC_TO_NSEC(TUSEC) (SH_DIV (TUSEC * USER_HZ * 1000, ACTHZ, 8))
-
-/* some arch's have a small-data section that can be accessed register-relative
- * but that can only take up to, say, 4-byte variables. jiffies being part of
- * an 8-byte variable may not be correctly accessed unless we force the issue
- */
-#define __jiffy_data  __attribute__((section(".data")))
-
-/*
- * The 64-bit value is not atomic - you MUST NOT read it
- * without sampling the sequence number in xtime_lock.
- * get_jiffies_64() will do this for you as appropriate.
- */
-extern u64 __jiffy_data jiffies_64;
-extern unsigned long volatile __jiffy_data jiffies;
-=======
 /* LATCH is used in the interval timer and ftape setup. */
 #define LATCH ((CLOCK_TICK_RATE + HZ/2) / HZ)	/* For divider */
 
@@ -130,13 +84,10 @@ extern int register_refined_jiffies(long clock_tick_rate);
  */
 extern u64 __cacheline_aligned_in_smp jiffies_64;
 extern unsigned long volatile __cacheline_aligned_in_smp __jiffy_arch_data jiffies;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if (BITS_PER_LONG < 64)
 u64 get_jiffies_64(void);
 #else
-<<<<<<< HEAD
-=======
 /**
  * get_jiffies_64 - read the 64-bit non-atomic jiffies_64 value
  *
@@ -145,23 +96,12 @@ u64 get_jiffies_64(void);
  *
  * Return: current 64-bit jiffies value
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u64 get_jiffies_64(void)
 {
 	return (u64)jiffies;
 }
 #endif
 
-<<<<<<< HEAD
-/*
- *	These inlines deal with timer wrapping correctly. You are 
- *	strongly encouraged to use them
- *	1. Because people otherwise forget
- *	2. Because if the timer wrap changes in future you won't have to
- *	   alter your driver code.
- *
- * time_after(a,b) returns true if the time a is after time b.
-=======
 /**
  * DOC: General information about time_* inlines
  *
@@ -177,25 +117,17 @@ static inline u64 get_jiffies_64(void)
  * time_after - returns true if the time a is after time b.
  * @a: first comparable as unsigned long
  * @b: second comparable as unsigned long
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Do this with "<0" and ">=0" to only test the sign of the result. A
  * good compiler would generate better code (and a really good compiler
  * wouldn't care). Gcc is currently neither.
-<<<<<<< HEAD
-=======
  *
  * Return: %true is time a is after time b, otherwise %false.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define time_after(a,b)		\
 	(typecheck(unsigned long, a) && \
 	 typecheck(unsigned long, b) && \
 	 ((long)((b) - (a)) < 0))
-<<<<<<< HEAD
-#define time_before(a,b)	time_after(b,a)
-
-=======
 /**
  * time_before - returns true if the time a is before time b.
  * @a: first comparable as unsigned long
@@ -212,17 +144,10 @@ static inline u64 get_jiffies_64(void)
  *
  * Return: %true is time a is after or the same as time b, otherwise %false.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define time_after_eq(a,b)	\
 	(typecheck(unsigned long, a) && \
 	 typecheck(unsigned long, b) && \
 	 ((long)((a) - (b)) >= 0))
-<<<<<<< HEAD
-#define time_before_eq(a,b)	time_after_eq(b,a)
-
-/*
- * Calculate whether a is in the range of [b, c].
-=======
 /**
  * time_before_eq - returns true if the time a is before or the same as time b.
  * @a: first comparable as unsigned long
@@ -239,16 +164,11 @@ static inline u64 get_jiffies_64(void)
  * @c: end of the range
  *
  * Return: %true is time a is in the range [b, c], otherwise %false.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define time_in_range(a,b,c) \
 	(time_after_eq(a,b) && \
 	 time_before_eq(a,c))
 
-<<<<<<< HEAD
-/*
- * Calculate whether a is in the range of [b, c).
-=======
 /**
  * time_in_range_open - Calculate whether a is in the range of [b, c).
  * @a: time to test
@@ -256,7 +176,6 @@ static inline u64 get_jiffies_64(void)
  * @c: end of the range
  *
  * Return: %true is time a is in the range [b, c), otherwise %false.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define time_in_range_open(a,b,c) \
 	(time_after_eq(a,b) && \
@@ -264,9 +183,6 @@ static inline u64 get_jiffies_64(void)
 
 /* Same as above, but does so with platform independent 64bit types.
  * These must be used when utilizing jiffies_64 (i.e. return value of
-<<<<<<< HEAD
- * get_jiffies_64() */
-=======
  * get_jiffies_64()). */
 
 /**
@@ -279,15 +195,10 @@ static inline u64 get_jiffies_64(void)
  *
  * Return: %true is time a is after time b, otherwise %false.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define time_after64(a,b)	\
 	(typecheck(__u64, a) &&	\
 	 typecheck(__u64, b) && \
 	 ((__s64)((b) - (a)) < 0))
-<<<<<<< HEAD
-#define time_before64(a,b)	time_after64(b,a)
-
-=======
 /**
  * time_before64 - returns true if the time a is before time b.
  * @a: first comparable as __u64
@@ -310,33 +221,10 @@ static inline u64 get_jiffies_64(void)
  *
  * Return: %true is time a is after or the same as time b, otherwise %false.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define time_after_eq64(a,b)	\
 	(typecheck(__u64, a) && \
 	 typecheck(__u64, b) && \
 	 ((__s64)((a) - (b)) >= 0))
-<<<<<<< HEAD
-#define time_before_eq64(a,b)	time_after_eq64(b,a)
-
-/*
- * These four macros compare jiffies and 'a' for convenience.
- */
-
-/* time_is_before_jiffies(a) return true if a is before jiffies */
-#define time_is_before_jiffies(a) time_after(jiffies, a)
-
-/* time_is_after_jiffies(a) return true if a is after jiffies */
-#define time_is_after_jiffies(a) time_before(jiffies, a)
-
-/* time_is_before_eq_jiffies(a) return true if a is before or equal to jiffies*/
-#define time_is_before_eq_jiffies(a) time_after_eq(jiffies, a)
-
-/* time_is_after_eq_jiffies(a) return true if a is after or equal to jiffies*/
-#define time_is_after_eq_jiffies(a) time_before_eq(jiffies, a)
-
-/*
- * Have the 32 bit jiffies value wrap 5 minutes after boot
-=======
 /**
  * time_before_eq64 - returns true if the time a is before or the same as time b.
  * @a: first comparable as __u64
@@ -427,7 +315,6 @@ static inline u64 get_jiffies_64(void)
 
 /*
  * Have the 32-bit jiffies value wrap 5 minutes after boot
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * so jiffies wrap bugs show up earlier.
  */
 #define INITIAL_JIFFIES ((unsigned long)(unsigned int) (-300*HZ))
@@ -538,11 +425,7 @@ extern unsigned long preset_lpj;
 #if BITS_PER_LONG < 64
 # define MAX_SEC_IN_JIFFIES \
 	(long)((u64)((u64)MAX_JIFFY_OFFSET * TICK_NSEC) / NSEC_PER_SEC)
-<<<<<<< HEAD
-#else	/* take care of overflow on 64 bits machines */
-=======
 #else	/* take care of overflow on 64-bit machines */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define MAX_SEC_IN_JIFFIES \
 	(SH_DIV((MAX_JIFFY_OFFSET >> SEC_JIFFIE_SC) * TICK_NSEC, NSEC_PER_SEC, 1) - 1)
 
@@ -553,17 +436,6 @@ extern unsigned long preset_lpj;
  */
 extern unsigned int jiffies_to_msecs(const unsigned long j);
 extern unsigned int jiffies_to_usecs(const unsigned long j);
-<<<<<<< HEAD
-extern unsigned long msecs_to_jiffies(const unsigned int m);
-extern unsigned long usecs_to_jiffies(const unsigned int u);
-extern unsigned long timespec_to_jiffies(const struct timespec *value);
-extern void jiffies_to_timespec(const unsigned long jiffies,
-				struct timespec *value);
-extern unsigned long timeval_to_jiffies(const struct timeval *value);
-extern void jiffies_to_timeval(const unsigned long jiffies,
-			       struct timeval *value);
-extern clock_t jiffies_to_clock_t(unsigned long x);
-=======
 
 /**
  * jiffies_to_nsecs - Convert jiffies to nanoseconds
@@ -718,7 +590,6 @@ static inline unsigned int jiffies_delta_to_msecs(long delta)
 	return jiffies_to_msecs(max(0L, delta));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned long clock_t_to_jiffies(unsigned long x);
 extern u64 jiffies_64_to_clock_t(u64 x);
 extern u64 nsec_to_clock_t(u64 x);

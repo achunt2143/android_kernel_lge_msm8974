@@ -1,25 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef INCLUDE_XEN_OPS_H
 #define INCLUDE_XEN_OPS_H
 
 #include <linux/percpu.h>
-<<<<<<< HEAD
-
-DECLARE_PER_CPU(struct vcpu_info *, xen_vcpu);
-
-void xen_arch_pre_suspend(void);
-void xen_arch_post_suspend(int suspend_cancelled);
-void xen_arch_hvm_post_suspend(int suspend_cancelled);
-
-void xen_mm_pin_all(void);
-void xen_mm_unpin_all(void);
-
-void xen_timer_resume(void);
-void xen_arch_resume(void);
-=======
 #include <linux/notifier.h>
 #include <linux/efi.h>
 #include <linux/virtio_anchor.h>
@@ -55,23 +38,10 @@ void xen_time_setup_guest(void);
 void xen_manage_runstate_time(int action);
 void xen_get_runstate_snapshot(struct vcpu_runstate_info *res);
 u64 xen_steal_clock(int cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int xen_setup_shutdown_event(void);
 
 extern unsigned long *xen_contiguous_bitmap;
-<<<<<<< HEAD
-int xen_create_contiguous_region(unsigned long vstart, unsigned int order,
-				unsigned int address_bits);
-
-void xen_destroy_contiguous_region(unsigned long vstart, unsigned int order);
-
-struct vm_area_struct;
-int xen_remap_domain_mfn_range(struct vm_area_struct *vma,
-			       unsigned long addr,
-			       unsigned long mfn, int nr,
-			       pgprot_t prot, unsigned domid);
-=======
 
 #if defined(CONFIG_XEN_PV)
 int xen_remap_pfn(struct vm_area_struct *vma, unsigned long addr,
@@ -255,6 +225,5 @@ static inline bool xen_virtio_restricted_mem_acc(struct virtio_device *dev)
 	return false;
 }
 #endif /* CONFIG_XEN_GRANT_DMA_OPS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* INCLUDE_XEN_OPS_H */

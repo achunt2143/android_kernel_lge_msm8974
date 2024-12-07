@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Au1000/Au1500/Au1100 I2S controller driver for ASoC
  *
@@ -122,15 +119,9 @@ static int au1xi2s_set_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/* I2S controller only supports master */
-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-	case SND_SOC_DAIFMT_CBS_CFS:	/* CODEC slave */
-=======
 	/* I2S controller only supports provider */
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:	/* CODEC consumer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		goto out;
@@ -219,11 +210,7 @@ static const struct snd_soc_dai_ops au1xi2s_dai_ops = {
 };
 
 static struct snd_soc_dai_driver au1xi2s_dai_driver = {
-<<<<<<< HEAD
-	.symmetric_rates	= 1,
-=======
 	.symmetric_rate		= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.playback = {
 		.rates		= AU1XI2SC_RATES,
 		.formats	= AU1XI2SC_FMTS,
@@ -239,16 +226,12 @@ static struct snd_soc_dai_driver au1xi2s_dai_driver = {
 	.ops = &au1xi2s_dai_ops,
 };
 
-<<<<<<< HEAD
-static int __devinit au1xi2s_drvprobe(struct platform_device *pdev)
-=======
 static const struct snd_soc_component_driver au1xi2s_component = {
 	.name			= "au1xi2s",
 	.legacy_dai_naming	= 1,
 };
 
 static int au1xi2s_drvprobe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *iores, *dmares;
 	struct au1xpsc_audio_data *ctx;
@@ -266,11 +249,7 @@ static int au1xi2s_drvprobe(struct platform_device *pdev)
 				     pdev->name))
 		return -EBUSY;
 
-<<<<<<< HEAD
-	ctx->mmio = devm_ioremap_nocache(&pdev->dev, iores->start,
-=======
 	ctx->mmio = devm_ioremap(&pdev->dev, iores->start,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 resource_size(iores));
 	if (!ctx->mmio)
 		return -EBUSY;
@@ -287,20 +266,6 @@ static int au1xi2s_drvprobe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, ctx);
 
-<<<<<<< HEAD
-	return snd_soc_register_dai(&pdev->dev, &au1xi2s_dai_driver);
-}
-
-static int __devexit au1xi2s_drvremove(struct platform_device *pdev)
-{
-	struct au1xpsc_audio_data *ctx = platform_get_drvdata(pdev);
-
-	snd_soc_unregister_dai(&pdev->dev);
-
-	WR(ctx, I2S_ENABLE, EN_D);	/* clock off, disable */
-
-	return 0;
-=======
 	return snd_soc_register_component(&pdev->dev, &au1xi2s_component,
 					  &au1xi2s_dai_driver, 1);
 }
@@ -312,7 +277,6 @@ static void au1xi2s_drvremove(struct platform_device *pdev)
 	snd_soc_unregister_component(&pdev->dev);
 
 	WR(ctx, I2S_ENABLE, EN_D);	/* clock off, disable */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -346,18 +310,10 @@ static const struct dev_pm_ops au1xi2sc_pmops = {
 static struct platform_driver au1xi2s_driver = {
 	.driver	= {
 		.name	= "alchemy-i2sc",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-		.pm	= AU1XI2SC_PMOPS,
-	},
-	.probe		= au1xi2s_drvprobe,
-	.remove		= __devexit_p(au1xi2s_drvremove),
-=======
 		.pm	= AU1XI2SC_PMOPS,
 	},
 	.probe		= au1xi2s_drvprobe,
 	.remove_new	= au1xi2s_drvremove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(au1xi2s_driver);

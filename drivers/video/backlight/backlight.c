@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Backlight Lowlevel Control Abstraction
  *
@@ -9,11 +6,8 @@
  *
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/device.h>
@@ -28,8 +22,6 @@
 #include <asm/backlight.h>
 #endif
 
-<<<<<<< HEAD
-=======
 /**
  * DOC: overview
  *
@@ -75,20 +67,12 @@ static struct list_head backlight_dev_list;
 static struct mutex backlight_dev_list_mutex;
 static struct blocking_notifier_head backlight_notifier;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *const backlight_types[] = {
 	[BACKLIGHT_RAW] = "raw",
 	[BACKLIGHT_PLATFORM] = "platform",
 	[BACKLIGHT_FIRMWARE] = "firmware",
 };
 
-<<<<<<< HEAD
-#if defined(CONFIG_FB) || (defined(CONFIG_FB_MODULE) && \
-			   defined(CONFIG_BACKLIGHT_CLASS_DEVICE_MODULE))
-/* This callback gets called when something important happens inside a
- * framebuffer driver. We're looking if that important event is blanking,
- * and if it is, we're switching backlight power as well ...
-=======
 static const char *const backlight_scale_types[] = {
 	[BACKLIGHT_SCALE_UNKNOWN]	= "unknown",
 	[BACKLIGHT_SCALE_LINEAR]	= "linear",
@@ -108,40 +92,21 @@ static const char *const backlight_scale_types[] = {
  * There may be several fbdev's connected to the backlight device,
  * in which case they are kept track of. A state change is only reported
  * if there is a change in backlight for the specified fbdev.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int fb_notifier_callback(struct notifier_block *self,
 				unsigned long event, void *data)
 {
 	struct backlight_device *bd;
 	struct fb_event *evdata = data;
-<<<<<<< HEAD
-
-	/* If we aren't interested in this event, skip it immediately ... */
-	if (event != FB_EVENT_BLANK && event != FB_EVENT_CONBLANK)
-=======
 	int node = evdata->info->node;
 	int fb_blank = 0;
 
 	/* If we aren't interested in this event, skip it immediately ... */
 	if (event != FB_EVENT_BLANK)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	bd = container_of(self, struct backlight_device, fb_notif);
 	mutex_lock(&bd->ops_lock);
-<<<<<<< HEAD
-	if (bd->ops)
-		if (!bd->ops->check_fb ||
-		    bd->ops->check_fb(bd, evdata->info)) {
-			bd->props.fb_blank = *(int *)evdata->data;
-			if (bd->props.fb_blank == FB_BLANK_UNBLANK)
-				bd->props.state &= ~BL_CORE_FBBLANK;
-			else
-				bd->props.state |= BL_CORE_FBBLANK;
-			backlight_update_status(bd);
-		}
-=======
 
 	if (!bd->ops)
 		goto out;
@@ -165,7 +130,6 @@ static int fb_notifier_callback(struct notifier_block *self,
 		}
 	}
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&bd->ops_lock);
 	return 0;
 }
@@ -191,11 +155,7 @@ static inline int backlight_register_fb(struct backlight_device *bd)
 static inline void backlight_unregister_fb(struct backlight_device *bd)
 {
 }
-<<<<<<< HEAD
-#endif /* CONFIG_FB */
-=======
 #endif /* CONFIG_FB_CORE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void backlight_generate_event(struct backlight_device *bd,
 				     enum backlight_update_reason reason)
@@ -218,34 +178,20 @@ static void backlight_generate_event(struct backlight_device *bd,
 	sysfs_notify(&bd->dev.kobj, NULL, "actual_brightness");
 }
 
-<<<<<<< HEAD
-static ssize_t backlight_show_power(struct device *dev,
-		struct device_attribute *attr, char *buf)
-=======
 static ssize_t bl_power_show(struct device *dev, struct device_attribute *attr,
 		char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct backlight_device *bd = to_backlight_device(dev);
 
 	return sprintf(buf, "%d\n", bd->props.power);
 }
 
-<<<<<<< HEAD
-static ssize_t backlight_store_power(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
-{
-	int rc;
-	struct backlight_device *bd = to_backlight_device(dev);
-	unsigned long power;
-=======
 static ssize_t bl_power_store(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
 {
 	int rc;
 	struct backlight_device *bd = to_backlight_device(dev);
 	unsigned long power, old_power;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = kstrtoul(buf, 0, &power);
 	if (rc)
@@ -254,14 +200,6 @@ static ssize_t bl_power_store(struct device *dev, struct device_attribute *attr,
 	rc = -ENXIO;
 	mutex_lock(&bd->ops_lock);
 	if (bd->ops) {
-<<<<<<< HEAD
-		pr_debug("backlight: set power to %lu\n", power);
-		if (bd->props.power != power) {
-			bd->props.power = power;
-			backlight_update_status(bd);
-		}
-		rc = count;
-=======
 		pr_debug("set power to %lu\n", power);
 		if (bd->props.power != power) {
 			old_power = bd->props.power;
@@ -274,20 +212,14 @@ static ssize_t bl_power_store(struct device *dev, struct device_attribute *attr,
 		} else {
 			rc = count;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&bd->ops_lock);
 
 	return rc;
 }
-<<<<<<< HEAD
-
-static ssize_t backlight_show_brightness(struct device *dev,
-=======
 static DEVICE_ATTR_RW(bl_power);
 
 static ssize_t brightness_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct device_attribute *attr, char *buf)
 {
 	struct backlight_device *bd = to_backlight_device(dev);
@@ -295,9 +227,6 @@ static ssize_t brightness_show(struct device *dev,
 	return sprintf(buf, "%d\n", bd->props.brightness);
 }
 
-<<<<<<< HEAD
-static ssize_t backlight_store_brightness(struct device *dev,
-=======
 int backlight_device_set_brightness(struct backlight_device *bd,
 				    unsigned long brightness)
 {
@@ -322,7 +251,6 @@ int backlight_device_set_brightness(struct backlight_device *bd,
 EXPORT_SYMBOL(backlight_device_set_brightness);
 
 static ssize_t brightness_store(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct device_attribute *attr, const char *buf, size_t count)
 {
 	int rc;
@@ -333,31 +261,6 @@ static ssize_t brightness_store(struct device *dev,
 	if (rc)
 		return rc;
 
-<<<<<<< HEAD
-	rc = -ENXIO;
-
-	mutex_lock(&bd->ops_lock);
-	if (bd->ops) {
-		if (brightness > bd->props.max_brightness)
-			rc = -EINVAL;
-		else {
-			pr_debug("backlight: set brightness to %lu\n",
-				 brightness);
-			bd->props.brightness = brightness;
-			backlight_update_status(bd);
-			rc = count;
-		}
-	}
-	mutex_unlock(&bd->ops_lock);
-
-	backlight_generate_event(bd, BACKLIGHT_UPDATE_SYSFS);
-
-	return rc;
-}
-
-static ssize_t backlight_show_type(struct device *dev,
-		struct device_attribute *attr, char *buf)
-=======
 	rc = backlight_device_set_brightness(bd, brightness);
 
 	return rc ? rc : count;
@@ -366,44 +269,29 @@ static DEVICE_ATTR_RW(brightness);
 
 static ssize_t type_show(struct device *dev, struct device_attribute *attr,
 		char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct backlight_device *bd = to_backlight_device(dev);
 
 	return sprintf(buf, "%s\n", backlight_types[bd->props.type]);
 }
-<<<<<<< HEAD
-
-static ssize_t backlight_show_max_brightness(struct device *dev,
-=======
 static DEVICE_ATTR_RO(type);
 
 static ssize_t max_brightness_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct device_attribute *attr, char *buf)
 {
 	struct backlight_device *bd = to_backlight_device(dev);
 
 	return sprintf(buf, "%d\n", bd->props.max_brightness);
 }
-<<<<<<< HEAD
-
-static ssize_t backlight_show_actual_brightness(struct device *dev,
-=======
 static DEVICE_ATTR_RO(max_brightness);
 
 static ssize_t actual_brightness_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct device_attribute *attr, char *buf)
 {
 	int rc = -ENXIO;
 	struct backlight_device *bd = to_backlight_device(dev);
 
 	mutex_lock(&bd->ops_lock);
-<<<<<<< HEAD
-	if (bd->ops && bd->ops->get_brightness)
-		rc = sprintf(buf, "%d\n", bd->ops->get_brightness(bd));
-=======
 	if (bd->ops && bd->ops->get_brightness) {
 		rc = bd->ops->get_brightness(bd);
 		if (rc >= 0)
@@ -411,44 +299,10 @@ static ssize_t actual_brightness_show(struct device *dev,
 	} else {
 		rc = sprintf(buf, "%d\n", bd->props.brightness);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&bd->ops_lock);
 
 	return rc;
 }
-<<<<<<< HEAD
-
-static struct class *backlight_class;
-
-#if defined(CONFIG_MACH_LGE_BACKLIGHT_SUPPORT)
-struct backlight_device *get_backlight_device()
-{
-	struct class_dev_iter iter;
-	struct backlight_device *bd = NULL;
-	struct device *dev = NULL;
-
-	if (!backlight_class)
-		return NULL;
-	if (!backlight_class->p) {
-		WARN(1, "%s called for class '%s' before it was initialized",
-						__func__, backlight_class->name);
-		return NULL;
-	}
-
-	class_dev_iter_init(&iter, backlight_class, NULL, NULL);
-	dev = class_dev_iter_next(&iter);
-	if (dev) {
-		bd = to_backlight_device(dev);
-		pr_info("%s: backlight device name is %s", __func__,
-						(bd) ? bd->dev.kobj.name : "NULL");
-	}
-	class_dev_iter_exit(&iter);
-	return bd;
-}
-#endif
-
-static int backlight_suspend(struct device *dev, pm_message_t state)
-=======
 static DEVICE_ATTR_RO(actual_brightness);
 
 static ssize_t scale_show(struct device *dev,
@@ -467,7 +321,6 @@ static struct class *backlight_class;
 
 #ifdef CONFIG_PM_SLEEP
 static int backlight_suspend(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct backlight_device *bd = to_backlight_device(dev);
 
@@ -494,13 +347,10 @@ static int backlight_resume(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 #endif
 
 static SIMPLE_DEV_PM_OPS(backlight_class_dev_pm_ops, backlight_suspend,
 			 backlight_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void bl_device_release(struct device *dev)
 {
@@ -508,18 +358,6 @@ static void bl_device_release(struct device *dev)
 	kfree(bd);
 }
 
-<<<<<<< HEAD
-static struct device_attribute bl_device_attributes[] = {
-	__ATTR(bl_power, 0644, backlight_show_power, backlight_store_power),
-	__ATTR(brightness, 0644, backlight_show_brightness,
-		     backlight_store_brightness),
-	__ATTR(actual_brightness, 0444, backlight_show_actual_brightness,
-		     NULL),
-	__ATTR(max_brightness, 0444, backlight_show_max_brightness, NULL),
-	__ATTR(type, 0444, backlight_show_type, NULL),
-	__ATTR_NULL,
-};
-=======
 static struct attribute *bl_device_attrs[] = {
 	&dev_attr_bl_power.attr,
 	&dev_attr_brightness.attr,
@@ -530,17 +368,11 @@ static struct attribute *bl_device_attrs[] = {
 	NULL,
 };
 ATTRIBUTE_GROUPS(bl_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * backlight_force_update - tell the backlight subsystem that hardware state
  *   has changed
  * @bd: the backlight device to update
-<<<<<<< HEAD
- *
- * Updates the internal state of the backlight in response to a hardware event,
- * and generate a uevent to notify userspace
-=======
  * @reason: reason for update
  *
  * Updates the internal state of the backlight in response to a hardware event,
@@ -548,16 +380,10 @@ ATTRIBUTE_GROUPS(bl_device);
  * backlight_force_update() when the backlight is changed using, for example,
  * a hot-key. The updated brightness is read using get_brightness() and the
  * brightness value is reported using an uevent.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void backlight_force_update(struct backlight_device *bd,
 			    enum backlight_update_reason reason)
 {
-<<<<<<< HEAD
-	mutex_lock(&bd->ops_lock);
-	if (bd->ops && bd->ops->get_brightness)
-		bd->props.brightness = bd->ops->get_brightness(bd);
-=======
 	int brightness;
 
 	mutex_lock(&bd->ops_lock);
@@ -570,29 +396,12 @@ void backlight_force_update(struct backlight_device *bd,
 				"Could not update brightness from device: %pe\n",
 				ERR_PTR(brightness));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&bd->ops_lock);
 	backlight_generate_event(bd, reason);
 }
 EXPORT_SYMBOL(backlight_force_update);
 
-<<<<<<< HEAD
-/**
- * backlight_device_register - create and register a new object of
- *   backlight_device class.
- * @name: the name of the new object(must be the same as the name of the
- *   respective framebuffer device).
- * @parent: a pointer to the parent device
- * @devdata: an optional pointer to be stored for private driver use. The
- *   methods may retrieve it by using bl_get_data(bd).
- * @ops: the backlight operations structure.
- *
- * Creates and registers new backlight device. Returns either an
- * ERR_PTR() or a pointer to the newly allocated device.
- */
-=======
 /* deprecated - use devm_backlight_device_register() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct backlight_device *backlight_device_register(const char *name,
 	struct device *parent, void *devdata, const struct backlight_ops *ops,
 	const struct backlight_properties *props)
@@ -612,11 +421,7 @@ struct backlight_device *backlight_device_register(const char *name,
 	new_bd->dev.class = backlight_class;
 	new_bd->dev.parent = parent;
 	new_bd->dev.release = bl_device_release;
-<<<<<<< HEAD
-	dev_set_name(&new_bd->dev, name);
-=======
 	dev_set_name(&new_bd->dev, "%s", name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_drvdata(&new_bd->dev, devdata);
 
 	/* Set default properties */
@@ -633,11 +438,7 @@ struct backlight_device *backlight_device_register(const char *name,
 
 	rc = device_register(&new_bd->dev);
 	if (rc) {
-<<<<<<< HEAD
-		kfree(new_bd);
-=======
 		put_device(&new_bd->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(rc);
 	}
 
@@ -656,8 +457,6 @@ struct backlight_device *backlight_device_register(const char *name,
 	mutex_unlock(&pmac_backlight_mutex);
 #endif
 
-<<<<<<< HEAD
-=======
 	mutex_lock(&backlight_dev_list_mutex);
 	list_add(&new_bd->entry, &backlight_dev_list);
 	mutex_unlock(&backlight_dev_list_mutex);
@@ -665,19 +464,10 @@ struct backlight_device *backlight_device_register(const char *name,
 	blocking_notifier_call_chain(&backlight_notifier,
 				     BACKLIGHT_REGISTERED, new_bd);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return new_bd;
 }
 EXPORT_SYMBOL(backlight_device_register);
 
-<<<<<<< HEAD
-/**
- * backlight_device_unregister - unregisters a backlight device object.
- * @bd: the backlight device object to be unregistered and freed.
- *
- * Unregisters a previously registered via backlight_device_register object.
- */
-=======
 /** backlight_device_get_by_type - find first backlight device of a type
  * @type: the type of backlight device
  *
@@ -727,32 +517,25 @@ struct backlight_device *backlight_device_get_by_name(const char *name)
 EXPORT_SYMBOL(backlight_device_get_by_name);
 
 /* deprecated - use devm_backlight_device_unregister() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void backlight_device_unregister(struct backlight_device *bd)
 {
 	if (!bd)
 		return;
 
-<<<<<<< HEAD
-=======
 	mutex_lock(&backlight_dev_list_mutex);
 	list_del(&bd->entry);
 	mutex_unlock(&backlight_dev_list_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PMAC_BACKLIGHT
 	mutex_lock(&pmac_backlight_mutex);
 	if (pmac_backlight == bd)
 		pmac_backlight = NULL;
 	mutex_unlock(&pmac_backlight_mutex);
 #endif
-<<<<<<< HEAD
-=======
 
 	blocking_notifier_call_chain(&backlight_notifier,
 				     BACKLIGHT_UNREGISTERED, bd);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&bd->ops_lock);
 	bd->ops = NULL;
 	mutex_unlock(&bd->ops_lock);
@@ -762,8 +545,6 @@ void backlight_device_unregister(struct backlight_device *bd)
 }
 EXPORT_SYMBOL(backlight_device_unregister);
 
-<<<<<<< HEAD
-=======
 static void devm_backlight_device_release(struct device *dev, void *res)
 {
 	struct backlight_device *backlight = *(struct backlight_device **)res;
@@ -963,7 +744,6 @@ struct backlight_device *devm_of_find_backlight(struct device *dev)
 }
 EXPORT_SYMBOL(devm_of_find_backlight);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __exit backlight_class_exit(void)
 {
 	class_destroy(backlight_class);
@@ -971,18 +751,6 @@ static void __exit backlight_class_exit(void)
 
 static int __init backlight_class_init(void)
 {
-<<<<<<< HEAD
-	backlight_class = class_create(THIS_MODULE, "backlight");
-	if (IS_ERR(backlight_class)) {
-		printk(KERN_WARNING "Unable to create backlight class; errno = %ld\n",
-				PTR_ERR(backlight_class));
-		return PTR_ERR(backlight_class);
-	}
-
-	backlight_class->dev_attrs = bl_device_attributes;
-	backlight_class->suspend = backlight_suspend;
-	backlight_class->resume = backlight_resume;
-=======
 	backlight_class = class_create("backlight");
 	if (IS_ERR(backlight_class)) {
 		pr_warn("Unable to create backlight class; errno = %ld\n",
@@ -996,7 +764,6 @@ static int __init backlight_class_init(void)
 	mutex_init(&backlight_dev_list_mutex);
 	BLOCKING_INIT_NOTIFIER_HEAD(&backlight_notifier);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

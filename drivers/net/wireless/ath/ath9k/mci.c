@@ -20,11 +20,7 @@
 #include "ath9k.h"
 #include "mci.h"
 
-<<<<<<< HEAD
-static const u8 ath_mci_duty_cycle[] = { 0, 50, 60, 70, 80, 85, 90, 95, 98 };
-=======
 static const u8 ath_mci_duty_cycle[] = { 55, 50, 60, 70, 80, 85, 90, 95, 98 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct ath_mci_profile_info*
 ath_mci_find_profile(struct ath_mci_profile *mci,
@@ -32,13 +28,6 @@ ath_mci_find_profile(struct ath_mci_profile *mci,
 {
 	struct ath_mci_profile_info *entry;
 
-<<<<<<< HEAD
-	list_for_each_entry(entry, &mci->info, list) {
-		if (entry->conn_handle == info->conn_handle)
-			break;
-	}
-	return entry;
-=======
 	if (list_empty(&mci->info))
 		return NULL;
 
@@ -47,7 +36,6 @@ ath_mci_find_profile(struct ath_mci_profile *mci,
 			return entry;
 	}
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool ath_mci_add_profile(struct ath_common *common,
@@ -55,10 +43,7 @@ static bool ath_mci_add_profile(struct ath_common *common,
 				struct ath_mci_profile_info *info)
 {
 	struct ath_mci_profile_info *entry;
-<<<<<<< HEAD
-=======
 	static const u8 voice_priority[] = { 110, 110, 110, 112, 110, 110, 114, 116, 118 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((mci->num_sco == ATH_MCI_MAX_SCO_PROFILE) &&
 	    (info->type == MCI_GPM_COEX_PROFILE_VOICE))
@@ -68,20 +53,6 @@ static bool ath_mci_add_profile(struct ath_common *common,
 	    (info->type != MCI_GPM_COEX_PROFILE_VOICE))
 		return false;
 
-<<<<<<< HEAD
-	entry = ath_mci_find_profile(mci, info);
-
-	if (entry) {
-		memcpy(entry, info, 10);
-	} else {
-		entry = kzalloc(sizeof(*entry), GFP_KERNEL);
-		if (!entry)
-			return false;
-
-		memcpy(entry, info, 10);
-		INC_PROF(mci, info);
-		list_add_tail(&info->list, &mci->info);
-=======
 	entry = kzalloc(sizeof(*entry), GFP_ATOMIC);
 	if (!entry)
 		return false;
@@ -94,7 +65,6 @@ static bool ath_mci_add_profile(struct ath_common *common,
 			mci->voice_priority = voice_priority[info->voice_type];
 		else
 			mci->voice_priority = 110;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return true;
@@ -102,17 +72,8 @@ static bool ath_mci_add_profile(struct ath_common *common,
 
 static void ath_mci_del_profile(struct ath_common *common,
 				struct ath_mci_profile *mci,
-<<<<<<< HEAD
-				struct ath_mci_profile_info *info)
-{
-	struct ath_mci_profile_info *entry;
-
-	entry = ath_mci_find_profile(mci, info);
-
-=======
 				struct ath_mci_profile_info *entry)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!entry)
 		return;
 
@@ -125,24 +86,17 @@ void ath_mci_flush_profile(struct ath_mci_profile *mci)
 {
 	struct ath_mci_profile_info *info, *tinfo;
 
-<<<<<<< HEAD
-=======
 	mci->aggr_limit = 0;
 	mci->num_mgmt = 0;
 
 	if (list_empty(&mci->info))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry_safe(info, tinfo, &mci->info, list) {
 		list_del(&info->list);
 		DEC_PROF(mci, info);
 		kfree(info);
 	}
-<<<<<<< HEAD
-	mci->aggr_limit = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ath_mci_adjust_aggr_limit(struct ath_btcoex *btcoex)
@@ -167,11 +121,6 @@ static void ath_mci_update_scheme(struct ath_softc *sc)
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
 	struct ath_btcoex *btcoex = &sc->btcoex;
 	struct ath_mci_profile *mci = &btcoex->mci;
-<<<<<<< HEAD
-	struct ath_mci_profile_info *info;
-	u32 num_profile = NUM_PROF(mci);
-
-=======
 	struct ath9k_hw_mci *mci_hw = &sc->sc_ah->btcoex_hw.mci;
 	struct ath_mci_profile_info *info;
 	u32 num_profile = NUM_PROF(mci);
@@ -188,42 +137,10 @@ static void ath_mci_update_scheme(struct ath_softc *sc)
 		btcoex->bt_stomp_type = mci->num_mgmt ? ATH_BTCOEX_STOMP_ALL :
 							ATH_BTCOEX_STOMP_LOW;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (num_profile == 1) {
 		info = list_first_entry(&mci->info,
 					struct ath_mci_profile_info,
 					list);
-<<<<<<< HEAD
-		if (mci->num_sco && info->T == 12) {
-			mci->aggr_limit = 8;
-			ath_dbg(common, MCI,
-				"Single SCO, aggregation limit 2 ms\n");
-		} else if ((info->type == MCI_GPM_COEX_PROFILE_BNEP) &&
-			   !info->master) {
-			btcoex->btcoex_period = 60;
-			ath_dbg(common, MCI,
-				"Single slave PAN/FTP, bt period 60 ms\n");
-		} else if ((info->type == MCI_GPM_COEX_PROFILE_HID) &&
-			 (info->T > 0 && info->T < 50) &&
-			 (info->A > 1 || info->W > 1)) {
-			btcoex->duty_cycle = 30;
-			mci->aggr_limit = 8;
-			ath_dbg(common, MCI,
-				"Multiple attempt/timeout single HID "
-				"aggregation limit 2 ms dutycycle 30%%\n");
-		}
-	} else if ((num_profile == 2) && (mci->num_hid == 2)) {
-		btcoex->duty_cycle = 30;
-		mci->aggr_limit = 8;
-		ath_dbg(common, MCI,
-			"Two HIDs aggregation limit 2 ms dutycycle 30%%\n");
-	} else if (num_profile > 3) {
-		mci->aggr_limit = 6;
-		ath_dbg(common, MCI,
-			"Three or more profiles aggregation limit 1.5 ms\n");
-	}
-
-=======
 		if (mci->num_sco) {
 			if (info->T == 12)
 				mci->aggr_limit = 8;
@@ -266,7 +183,6 @@ static void ath_mci_update_scheme(struct ath_softc *sc)
 	}
 
 skip_tuning:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_CHAN_2GHZ(sc->sc_ah->curchan)) {
 		if (IS_CHAN_HT(sc->sc_ah->curchan))
 			ath_mci_adjust_aggr_limit(btcoex);
@@ -274,29 +190,16 @@ skip_tuning:
 			btcoex->btcoex_period >>= 1;
 	}
 
-<<<<<<< HEAD
-	ath9k_hw_btcoex_disable(sc->sc_ah);
-	ath9k_btcoex_timer_pause(sc);
-=======
 	ath9k_btcoex_timer_pause(sc);
 	ath9k_hw_btcoex_disable(sc->sc_ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_CHAN_5GHZ(sc->sc_ah->curchan))
 		return;
 
-<<<<<<< HEAD
-	btcoex->duty_cycle += (mci->num_bdr ? ATH_MCI_MAX_DUTY_CYCLE : 0);
-	if (btcoex->duty_cycle > ATH_MCI_MAX_DUTY_CYCLE)
-		btcoex->duty_cycle = ATH_MCI_MAX_DUTY_CYCLE;
-
-	btcoex->btcoex_period *= 1000;
-=======
 	btcoex->duty_cycle += (mci->num_bdr ? ATH_MCI_BDR_DUTY_CYCLE : 0);
 	if (btcoex->duty_cycle > ATH_MCI_MAX_DUTY_CYCLE)
 		btcoex->duty_cycle = ATH_MCI_MAX_DUTY_CYCLE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	btcoex->btcoex_no_stomp =  btcoex->btcoex_period *
 		(100 - btcoex->duty_cycle) / 100;
 
@@ -308,32 +211,16 @@ static void ath_mci_cal_msg(struct ath_softc *sc, u8 opcode, u8 *rx_payload)
 {
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
-<<<<<<< HEAD
-=======
 	struct ath9k_hw_mci *mci_hw = &ah->btcoex_hw.mci;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 payload[4] = {0, 0, 0, 0};
 
 	switch (opcode) {
 	case MCI_GPM_BT_CAL_REQ:
-<<<<<<< HEAD
-		if (ar9003_mci_state(ah, MCI_STATE_BT, NULL) == MCI_BT_AWAKE) {
-			ar9003_mci_state(ah, MCI_STATE_SET_BT_CAL_START, NULL);
-			ieee80211_queue_work(sc->hw, &sc->hw_reset_work);
-		} else {
-			ath_dbg(common, MCI, "MCI State mismatch: %d\n",
-				ar9003_mci_state(ah, MCI_STATE_BT, NULL));
-		}
-		break;
-	case MCI_GPM_BT_CAL_DONE:
-		ar9003_mci_state(ah, MCI_STATE_BT, NULL);
-=======
 		if (mci_hw->bt_state == MCI_BT_AWAKE) {
 			mci_hw->bt_state = MCI_BT_CAL_START;
 			ath9k_queue_reset(sc, RESET_TYPE_MCI);
 		}
 		ath_dbg(common, MCI, "MCI State : %d\n", mci_hw->bt_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MCI_GPM_BT_CAL_GRANT:
 		MCI_GPM_SET_CAL_TYPE(payload, MCI_GPM_WLAN_CAL_DONE);
@@ -346,44 +233,13 @@ static void ath_mci_cal_msg(struct ath_softc *sc, u8 opcode, u8 *rx_payload)
 	}
 }
 
-<<<<<<< HEAD
-static void ath_mci_process_profile(struct ath_softc *sc,
-				    struct ath_mci_profile_info *info)
-{
-	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
-	struct ath_btcoex *btcoex = &sc->btcoex;
-	struct ath_mci_profile *mci = &btcoex->mci;
-
-	if (info->start) {
-		if (!ath_mci_add_profile(common, mci, info))
-			return;
-	} else
-		ath_mci_del_profile(common, mci, info);
-
-	btcoex->btcoex_period = ATH_MCI_DEF_BT_PERIOD;
-	mci->aggr_limit = mci->num_sco ? 6 : 0;
-
-	if (NUM_PROF(mci)) {
-		btcoex->bt_stomp_type = ATH_BTCOEX_STOMP_LOW;
-		btcoex->duty_cycle = ath_mci_duty_cycle[NUM_PROF(mci)];
-	} else {
-		btcoex->bt_stomp_type = mci->num_mgmt ? ATH_BTCOEX_STOMP_ALL :
-							ATH_BTCOEX_STOMP_LOW;
-		btcoex->duty_cycle = ATH_BTCOEX_DEF_DUTY_CYCLE;
-	}
-=======
 static void ath9k_mci_work(struct work_struct *work)
 {
 	struct ath_softc *sc = container_of(work, struct ath_softc, mci_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath_mci_update_scheme(sc);
 }
 
-<<<<<<< HEAD
-static void ath_mci_process_status(struct ath_softc *sc,
-				   struct ath_mci_profile_status *status)
-=======
 static void ath_mci_update_stomp_txprio(u8 cur_txprio, u8 *stomp_prio)
 {
 	if (cur_txprio < stomp_prio[ATH_BTCOEX_STOMP_NONE])
@@ -475,7 +331,6 @@ static u8 ath_mci_process_profile(struct ath_softc *sc,
 
 static u8 ath_mci_process_status(struct ath_softc *sc,
 				 struct ath_mci_profile_status *status)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath_btcoex *btcoex = &sc->btcoex;
 	struct ath_mci_profile *mci = &btcoex->mci;
@@ -484,18 +339,6 @@ static u8 ath_mci_process_status(struct ath_softc *sc,
 
 	/* Link status type are not handled */
 	if (status->is_link)
-<<<<<<< HEAD
-		return;
-
-	memset(&info, 0, sizeof(struct ath_mci_profile_info));
-
-	info.conn_handle = status->conn_handle;
-	if (ath_mci_find_profile(mci, &info))
-		return;
-
-	if (status->conn_handle >= ATH_MCI_MAX_PROFILE)
-		return;
-=======
 		return 0;
 
 	info.conn_handle = status->conn_handle;
@@ -504,7 +347,6 @@ static u8 ath_mci_process_status(struct ath_softc *sc,
 
 	if (status->conn_handle >= ATH_MCI_MAX_PROFILE)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status->is_critical)
 		__set_bit(status->conn_handle, mci->status);
@@ -517,16 +359,11 @@ static u8 ath_mci_process_status(struct ath_softc *sc,
 			mci->num_mgmt++;
 	} while (++i < ATH_MCI_MAX_PROFILE);
 
-<<<<<<< HEAD
-	if (old_num_mgmt != mci->num_mgmt)
-		ath_mci_update_scheme(sc);
-=======
 	ath_mci_set_concur_txprio(sc);
 	if (old_num_mgmt != mci->num_mgmt)
 		return 1;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ath_mci_msg(struct ath_softc *sc, u8 opcode, u8 *rx_payload)
@@ -535,17 +372,6 @@ static void ath_mci_msg(struct ath_softc *sc, u8 opcode, u8 *rx_payload)
 	struct ath_mci_profile_info profile_info;
 	struct ath_mci_profile_status profile_status;
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
-<<<<<<< HEAD
-	u32 version;
-	u8 major;
-	u8 minor;
-	u32 seq_num;
-
-	switch (opcode) {
-	case MCI_GPM_COEX_VERSION_QUERY:
-		version = ar9003_mci_state(ah, MCI_STATE_SEND_WLAN_COEX_VERSION,
-					   NULL);
-=======
 	u8 major, minor, update_scheme = 0;
 	u32 seq_num;
 
@@ -559,24 +385,14 @@ static void ath_mci_msg(struct ath_softc *sc, u8 opcode, u8 *rx_payload)
 	switch (opcode) {
 	case MCI_GPM_COEX_VERSION_QUERY:
 		ar9003_mci_state(ah, MCI_STATE_SEND_WLAN_COEX_VERSION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MCI_GPM_COEX_VERSION_RESPONSE:
 		major = *(rx_payload + MCI_GPM_COEX_B_MAJOR_VERSION);
 		minor = *(rx_payload + MCI_GPM_COEX_B_MINOR_VERSION);
-<<<<<<< HEAD
-		version = (major << 8) + minor;
-		version = ar9003_mci_state(ah, MCI_STATE_SET_BT_COEX_VERSION,
-					   &version);
-		break;
-	case MCI_GPM_COEX_STATUS_QUERY:
-		ar9003_mci_state(ah, MCI_STATE_SEND_WLAN_CHANNELS, NULL);
-=======
 		ar9003_mci_set_bt_version(ah, major, minor);
 		break;
 	case MCI_GPM_COEX_STATUS_QUERY:
 		ar9003_mci_send_wlan_channels(ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MCI_GPM_COEX_BT_PROFILE_INFO:
 		memcpy(&profile_info,
@@ -591,11 +407,7 @@ static void ath_mci_msg(struct ath_softc *sc, u8 opcode, u8 *rx_payload)
 			break;
 		}
 
-<<<<<<< HEAD
-		ath_mci_process_profile(sc, &profile_info);
-=======
 		update_scheme += ath_mci_process_profile(sc, &profile_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MCI_GPM_COEX_BT_STATUS_UPDATE:
 		profile_status.is_link = *(rx_payload +
@@ -607,29 +419,18 @@ static void ath_mci_msg(struct ath_softc *sc, u8 opcode, u8 *rx_payload)
 
 		seq_num = *((u32 *)(rx_payload + 12));
 		ath_dbg(common, MCI,
-<<<<<<< HEAD
-			"BT_Status_Update: is_link=%d, linkId=%d, state=%d, SEQ=%d\n",
-			profile_status.is_link, profile_status.conn_handle,
-			profile_status.is_critical, seq_num);
-
-		ath_mci_process_status(sc, &profile_status);
-=======
 			"BT_Status_Update: is_link=%d, linkId=%d, state=%d, SEQ=%u\n",
 			profile_status.is_link, profile_status.conn_handle,
 			profile_status.is_critical, seq_num);
 
 		update_scheme += ath_mci_process_status(sc, &profile_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		ath_dbg(common, MCI, "Unknown GPM COEX message = 0x%02x\n", opcode);
 		break;
 	}
-<<<<<<< HEAD
-=======
 	if (update_scheme)
 		ieee80211_queue_work(sc->hw, &sc->mci_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ath_mci_setup(struct ath_softc *sc)
@@ -637,14 +438,9 @@ int ath_mci_setup(struct ath_softc *sc)
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
 	struct ath_mci_coex *mci = &sc->mci_coex;
 	struct ath_mci_buf *buf = &mci->sched_buf;
-<<<<<<< HEAD
-
-	buf->bf_addr = dma_alloc_coherent(sc->dev,
-=======
 	int ret;
 
 	buf->bf_addr = dmam_alloc_coherent(sc->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  ATH_MCI_SCHED_BUF_SIZE + ATH_MCI_GPM_BUF_SIZE,
 				  &buf->bf_paddr, GFP_KERNEL);
 
@@ -659,15 +455,6 @@ int ath_mci_setup(struct ath_softc *sc)
 	mci->sched_buf.bf_len = ATH_MCI_SCHED_BUF_SIZE;
 
 	mci->gpm_buf.bf_len = ATH_MCI_GPM_BUF_SIZE;
-<<<<<<< HEAD
-	mci->gpm_buf.bf_addr = (u8 *)mci->sched_buf.bf_addr + mci->sched_buf.bf_len;
-	mci->gpm_buf.bf_paddr = mci->sched_buf.bf_paddr + mci->sched_buf.bf_len;
-
-	ar9003_mci_setup(sc->sc_ah, mci->gpm_buf.bf_paddr,
-			 mci->gpm_buf.bf_addr, (mci->gpm_buf.bf_len >> 4),
-			 mci->sched_buf.bf_paddr);
-
-=======
 	mci->gpm_buf.bf_addr = mci->sched_buf.bf_addr + mci->sched_buf.bf_len;
 	mci->gpm_buf.bf_paddr = mci->sched_buf.bf_paddr + mci->sched_buf.bf_len;
 
@@ -680,7 +467,6 @@ int ath_mci_setup(struct ath_softc *sc)
 	}
 
 	INIT_WORK(&sc->mci_work, ath9k_mci_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath_dbg(common, MCI, "MCI Initialized\n");
 
 	return 0;
@@ -690,16 +476,6 @@ void ath_mci_cleanup(struct ath_softc *sc)
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
 	struct ath_hw *ah = sc->sc_ah;
-<<<<<<< HEAD
-	struct ath_mci_coex *mci = &sc->mci_coex;
-	struct ath_mci_buf *buf = &mci->sched_buf;
-
-	if (buf->bf_addr)
-		dma_free_coherent(sc->dev,
-				  ATH_MCI_SCHED_BUF_SIZE + ATH_MCI_GPM_BUF_SIZE,
-				  buf->bf_addr, buf->bf_paddr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ar9003_mci_cleanup(ah);
 
@@ -711,10 +487,7 @@ void ath_mci_intr(struct ath_softc *sc)
 	struct ath_mci_coex *mci = &sc->mci_coex;
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
-<<<<<<< HEAD
-=======
 	struct ath9k_hw_mci *mci_hw = &ah->btcoex_hw.mci;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mci_int, mci_int_rxmsg;
 	u32 offset, subtype, opcode;
 	u32 *pgpm;
@@ -723,13 +496,8 @@ void ath_mci_intr(struct ath_softc *sc)
 
 	ar9003_mci_get_interrupt(sc->sc_ah, &mci_int, &mci_int_rxmsg);
 
-<<<<<<< HEAD
-	if (ar9003_mci_state(ah, MCI_STATE_ENABLE, NULL) == 0) {
-		ar9003_mci_state(ah, MCI_STATE_INIT_GPM_OFFSET, NULL);
-=======
 	if (ar9003_mci_state(ah, MCI_STATE_ENABLE) == 0) {
 		ar9003_mci_state(ah, MCI_STATE_INIT_GPM_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -748,94 +516,52 @@ void ath_mci_intr(struct ath_softc *sc)
 					NULL, 0, true, false);
 
 		mci_int_rxmsg &= ~AR_MCI_INTERRUPT_RX_MSG_REQ_WAKE;
-<<<<<<< HEAD
-		ar9003_mci_state(ah, MCI_STATE_RESET_REQ_WAKE, NULL);
-=======
 		ar9003_mci_state(ah, MCI_STATE_RESET_REQ_WAKE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * always do this for recovery and 2G/5G toggling and LNA_TRANS
 		 */
-<<<<<<< HEAD
-		ar9003_mci_state(ah, MCI_STATE_SET_BT_AWAKE, NULL);
-=======
 		ar9003_mci_state(ah, MCI_STATE_SET_BT_AWAKE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (mci_int_rxmsg & AR_MCI_INTERRUPT_RX_MSG_SYS_WAKING) {
 		mci_int_rxmsg &= ~AR_MCI_INTERRUPT_RX_MSG_SYS_WAKING;
 
-<<<<<<< HEAD
-		if (ar9003_mci_state(ah, MCI_STATE_BT, NULL) == MCI_BT_SLEEP) {
-			if (ar9003_mci_state(ah, MCI_STATE_REMOTE_SLEEP, NULL) !=
-			    MCI_BT_SLEEP)
-				ar9003_mci_state(ah, MCI_STATE_SET_BT_AWAKE,
-						 NULL);
-		}
-=======
 		if ((mci_hw->bt_state == MCI_BT_SLEEP) &&
 		    (ar9003_mci_state(ah, MCI_STATE_REMOTE_SLEEP) !=
 		     MCI_BT_SLEEP))
 			ar9003_mci_state(ah, MCI_STATE_SET_BT_AWAKE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (mci_int_rxmsg & AR_MCI_INTERRUPT_RX_MSG_SYS_SLEEPING) {
 		mci_int_rxmsg &= ~AR_MCI_INTERRUPT_RX_MSG_SYS_SLEEPING;
 
-<<<<<<< HEAD
-		if (ar9003_mci_state(ah, MCI_STATE_BT, NULL) == MCI_BT_AWAKE) {
-			if (ar9003_mci_state(ah, MCI_STATE_REMOTE_SLEEP, NULL) !=
-			    MCI_BT_AWAKE)
-				ar9003_mci_state(ah, MCI_STATE_SET_BT_SLEEP,
-						 NULL);
-		}
-=======
 		if ((mci_hw->bt_state == MCI_BT_AWAKE) &&
 		    (ar9003_mci_state(ah, MCI_STATE_REMOTE_SLEEP) !=
 		     MCI_BT_AWAKE))
 			mci_hw->bt_state = MCI_BT_SLEEP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if ((mci_int & AR_MCI_INTERRUPT_RX_INVALID_HDR) ||
 	    (mci_int & AR_MCI_INTERRUPT_CONT_INFO_TIMEOUT)) {
-<<<<<<< HEAD
-		ar9003_mci_state(ah, MCI_STATE_RECOVER_RX, NULL);
-=======
 		ar9003_mci_state(ah, MCI_STATE_RECOVER_RX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skip_gpm = true;
 	}
 
 	if (mci_int_rxmsg & AR_MCI_INTERRUPT_RX_MSG_SCHD_INFO) {
 		mci_int_rxmsg &= ~AR_MCI_INTERRUPT_RX_MSG_SCHD_INFO;
-<<<<<<< HEAD
-		offset = ar9003_mci_state(ah, MCI_STATE_LAST_SCHD_MSG_OFFSET,
-					  NULL);
-=======
 		ar9003_mci_state(ah, MCI_STATE_LAST_SCHD_MSG_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (mci_int_rxmsg & AR_MCI_INTERRUPT_RX_MSG_GPM) {
 		mci_int_rxmsg &= ~AR_MCI_INTERRUPT_RX_MSG_GPM;
 
 		while (more_data == MCI_GPM_MORE) {
-<<<<<<< HEAD
-
-			pgpm = mci->gpm_buf.bf_addr;
-			offset = ar9003_mci_state(ah, MCI_STATE_NEXT_GPM_OFFSET,
-						  &more_data);
-=======
 			if (test_bit(ATH_OP_HW_RESET, &common->op_flags))
 				return;
 
 			pgpm = mci->gpm_buf.bf_addr;
 			offset = ar9003_mci_get_next_gpm_offset(ah, &more_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (offset == MCI_GPM_INVALID)
 				break;
@@ -876,25 +602,6 @@ void ath_mci_intr(struct ath_softc *sc)
 			mci_int_rxmsg &= ~AR_MCI_INTERRUPT_RX_MSG_LNA_INFO;
 
 		if (mci_int_rxmsg & AR_MCI_INTERRUPT_RX_MSG_CONT_INFO) {
-<<<<<<< HEAD
-			int value_dbm = ar9003_mci_state(ah,
-						 MCI_STATE_CONT_RSSI_POWER, NULL);
-
-			mci_int_rxmsg &= ~AR_MCI_INTERRUPT_RX_MSG_CONT_INFO;
-
-			if (ar9003_mci_state(ah, MCI_STATE_CONT_TXRX, NULL))
-				ath_dbg(common, MCI,
-					"MCI CONT_INFO: (tx) pri = %d, pwr = %d dBm\n",
-					ar9003_mci_state(ah,
-						 MCI_STATE_CONT_PRIORITY, NULL),
-					value_dbm);
-			else
-				ath_dbg(common, MCI,
-					"MCI CONT_INFO: (rx) pri = %d,pwr = %d dBm\n",
-					ar9003_mci_state(ah,
-						 MCI_STATE_CONT_PRIORITY, NULL),
-					value_dbm);
-=======
 			int value_dbm = MS(mci_hw->cont_status,
 					   AR_MCI_CONT_RSSI_POWER);
 
@@ -906,7 +613,6 @@ void ath_mci_intr(struct ath_softc *sc)
 				"tx" : "rx",
 				MS(mci_hw->cont_status, AR_MCI_CONT_PRIORITY),
 				value_dbm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (mci_int_rxmsg & AR_MCI_INTERRUPT_RX_MSG_CONT_NACK)
@@ -917,11 +623,6 @@ void ath_mci_intr(struct ath_softc *sc)
 	}
 
 	if ((mci_int & AR_MCI_INTERRUPT_RX_INVALID_HDR) ||
-<<<<<<< HEAD
-	    (mci_int & AR_MCI_INTERRUPT_CONT_INFO_TIMEOUT))
-		mci_int &= ~(AR_MCI_INTERRUPT_RX_INVALID_HDR |
-			     AR_MCI_INTERRUPT_CONT_INFO_TIMEOUT);
-=======
 	    (mci_int & AR_MCI_INTERRUPT_CONT_INFO_TIMEOUT)) {
 		mci_int &= ~(AR_MCI_INTERRUPT_RX_INVALID_HDR |
 			     AR_MCI_INTERRUPT_CONT_INFO_TIMEOUT);
@@ -1065,5 +766,4 @@ void ath9k_mci_update_rssi(struct ath_softc *sc)
 			ath9k_mci_set_txpower(sc, false, false);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

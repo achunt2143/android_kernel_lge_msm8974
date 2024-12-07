@@ -1,17 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
-<<<<<<< HEAD
- * Copyright (C) 2009-2011 Emulex.  All rights reserved.           *
- * EMULEX and SLI are trademarks of Emulex.                        *
- * www.emulex.com                                                  *
-=======
  * Copyright (C) 2017-2024 Broadcom. All Rights Reserved. The term *
  * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.     *
  * Copyright (C) 2009-2016 Emulex.  All rights reserved.           *
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.broadcom.com                                                *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                 *
  * This program is free software; you can redistribute it and/or   *
  * modify it under the terms of version 2 of the GNU General       *
@@ -26,8 +20,6 @@
  * included with this package.                                     *
  *******************************************************************/
 
-<<<<<<< HEAD
-=======
 #include <linux/irq_poll.h>
 #include <linux/cpufreq.h>
 
@@ -35,15 +27,10 @@
 #define CONFIG_SCSI_LPFC_DEBUG_FS
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_ACTIVE_MBOX_WAIT_CNT               100
 #define LPFC_XRI_EXCH_BUSY_WAIT_TMO		10000
 #define LPFC_XRI_EXCH_BUSY_WAIT_T1   		10
 #define LPFC_XRI_EXCH_BUSY_WAIT_T2              30000
-<<<<<<< HEAD
-#define LPFC_RELEASE_NOTIFICATION_INTERVAL	32
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_RPI_LOW_WATER_MARK			10
 
 #define LPFC_UNREG_FCF                          1
@@ -55,20 +42,6 @@
 /* Number of SGL entries can be posted in a 4KB nonembedded mbox command */
 #define LPFC_NEMBED_MBOX_SGL_CNT		254
 
-<<<<<<< HEAD
-/* Multi-queue arrangement for fast-path FCP work queues */
-#define LPFC_FN_EQN_MAX       8
-#define LPFC_SP_EQN_DEF       1
-#define LPFC_FP_EQN_DEF       4
-#define LPFC_FP_EQN_MIN       1
-#define LPFC_FP_EQN_MAX       (LPFC_FN_EQN_MAX - LPFC_SP_EQN_DEF)
-
-#define LPFC_FN_WQN_MAX       32
-#define LPFC_SP_WQN_DEF       1
-#define LPFC_FP_WQN_DEF       4
-#define LPFC_FP_WQN_MIN       1
-#define LPFC_FP_WQN_MAX       (LPFC_FN_WQN_MAX - LPFC_SP_WQN_DEF)
-=======
 /* Multi-queue arrangement for FCP EQ/CQ/WQ tuples */
 #define LPFC_HBA_HDWQ_MIN	0
 #define LPFC_HBA_HDWQ_MAX	256
@@ -83,7 +56,6 @@
 #define LPFC_FCP_MQ_THRESHOLD_MIN	0
 #define LPFC_FCP_MQ_THRESHOLD_MAX	256
 #define LPFC_FCP_MQ_THRESHOLD_DEF	8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Provide the default FCF Record attributes used by the driver
@@ -113,23 +85,16 @@
 	 (fc_hdr)->fh_s_id[1] <<  8 | \
 	 (fc_hdr)->fh_s_id[2])
 
-<<<<<<< HEAD
-=======
 #define sli4_did_from_fc_hdr(fc_hdr)  \
 	((fc_hdr)->fh_d_id[0] << 16 | \
 	 (fc_hdr)->fh_d_id[1] <<  8 | \
 	 (fc_hdr)->fh_d_id[2])
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define sli4_fctl_from_fc_hdr(fc_hdr)  \
 	((fc_hdr)->fh_f_ctl[0] << 16 | \
 	 (fc_hdr)->fh_f_ctl[1] <<  8 | \
 	 (fc_hdr)->fh_f_ctl[2])
 
-<<<<<<< HEAD
-#define LPFC_FW_RESET_MAXIMUM_WAIT_10MS_CNT 12000
-
-=======
 #define sli4_type_from_fc_hdr(fc_hdr)  \
 	((fc_hdr)->fh_type)
 
@@ -138,7 +103,6 @@
 #define INT_FW_UPGRADE	0
 #define RUN_FW_UPGRADE	1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum lpfc_sli4_queue_type {
 	LPFC_EQ,
 	LPFC_GCQ,
@@ -155,25 +119,6 @@ enum lpfc_sli4_queue_type {
 enum lpfc_sli4_queue_subtype {
 	LPFC_NONE,
 	LPFC_MBOX,
-<<<<<<< HEAD
-	LPFC_FCP,
-	LPFC_ELS,
-	LPFC_USOL
-};
-
-union sli4_qe {
-	void *address;
-	struct lpfc_eqe *eqe;
-	struct lpfc_cqe *cqe;
-	struct lpfc_mcqe *mcqe;
-	struct lpfc_wcqe_complete *wcqe_complete;
-	struct lpfc_wcqe_release *wcqe_release;
-	struct sli4_wcqe_xri_aborted *wcqe_xri_aborted;
-	struct lpfc_rcqe_complete *rcqe_complete;
-	struct lpfc_mqe *mqe;
-	union  lpfc_wqe *wqe;
-	struct lpfc_rqe *rqe;
-=======
 	LPFC_IO,
 	LPFC_ELS,
 	LPFC_NVMET,
@@ -201,13 +146,10 @@ enum lpfc_poll_mode {
 struct lpfc_idle_stat {
 	u64 prev_idle;
 	u64 prev_wall;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct lpfc_queue {
 	struct list_head list;
-<<<<<<< HEAD
-=======
 	struct list_head wq_list;
 
 	/*
@@ -227,28 +169,10 @@ struct lpfc_queue {
 #define LPFC_EQ_POLL		1
 
 	struct list_head wqfull_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum lpfc_sli4_queue_type type;
 	enum lpfc_sli4_queue_subtype subtype;
 	struct lpfc_hba *phba;
 	struct list_head child_list;
-<<<<<<< HEAD
-	uint32_t entry_count;	/* Number of entries to support on the queue */
-	uint32_t entry_size;	/* Size of each queue entry. */
-	uint32_t entry_repost;	/* Count of entries before doorbell is rung */
-#define LPFC_QUEUE_MIN_REPOST	8
-	uint32_t queue_id;	/* Queue ID assigned by the hardware */
-	uint32_t assoc_qid;     /* Queue ID associated with, for CQ/WQ/MQ */
-	struct list_head page_list;
-	uint32_t page_count;	/* Number of pages allocated for this queue */
-	uint32_t host_index;	/* The host's index for putting or getting */
-	uint32_t hba_index;	/* The last known hba index for get or put */
-	union sli4_qe qe[1];	/* array to index entries (must be last) */
-};
-
-struct lpfc_sli4_link {
-	uint8_t speed;
-=======
 	struct list_head page_list;
 	struct list_head sgl_list;
 	struct list_head cpu_list;
@@ -360,20 +284,14 @@ struct lpfc_sli4_link {
 
 struct lpfc_sli4_link {
 	uint32_t speed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t duplex;
 	uint8_t status;
 	uint8_t type;
 	uint8_t number;
 	uint8_t fault;
-<<<<<<< HEAD
-	uint16_t logical_speed;
-	uint16_t topology;
-=======
 	uint8_t link_status;
 	uint16_t topology;
 	uint32_t logical_speed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct lpfc_fcf_rec {
@@ -423,10 +341,7 @@ struct lpfc_fcf {
 #define FCF_REDISC_EVT	0x100 /* FCF rediscovery event to worker thread */
 #define FCF_REDISC_FOV	0x200 /* Post FCF rediscovery fast failover */
 #define FCF_REDISC_PROG (FCF_REDISC_PEND | FCF_REDISC_EVT)
-<<<<<<< HEAD
-=======
 	uint16_t fcf_redisc_attempted;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t addr_mode;
 	uint32_t eligible_fcf_cnt;
 	struct lpfc_fcf_rec current_rec;
@@ -520,22 +435,15 @@ struct lpfc_bmbx {
 #define LPFC_EQE_SIZE_16B	16
 #define LPFC_CQE_SIZE		16
 #define LPFC_WQE_SIZE		64
-<<<<<<< HEAD
-=======
 #define LPFC_WQE128_SIZE	128
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_MQE_SIZE		256
 #define LPFC_RQE_SIZE		8
 
 #define LPFC_EQE_DEF_COUNT	1024
 #define LPFC_CQE_DEF_COUNT      1024
-<<<<<<< HEAD
-#define LPFC_WQE_DEF_COUNT      256
-=======
 #define LPFC_CQE_EXP_COUNT      4096
 #define LPFC_WQE_DEF_COUNT      256
 #define LPFC_WQE_EXP_COUNT      1024
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_MQE_DEF_COUNT      16
 #define LPFC_RQE_DEF_COUNT	512
 
@@ -551,14 +459,6 @@ struct lpfc_bmbx {
 #define SLI4_CT_VFI 2
 #define SLI4_CT_FCFI 3
 
-<<<<<<< HEAD
-#define LPFC_SLI4_FL1_MAX_SEGMENT_SIZE	0x10000
-#define LPFC_SLI4_FL1_MAX_BUF_SIZE	0X2000
-#define LPFC_SLI4_MIN_BUF_SIZE		0x400
-#define LPFC_SLI4_MAX_BUF_SIZE		0x20000
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SLI4 specific data structures
  */
@@ -585,11 +485,6 @@ struct lpfc_max_cfg_param {
 
 struct lpfc_hba;
 /* SLI4 HBA multi-fcp queue handler struct */
-<<<<<<< HEAD
-struct lpfc_fcp_eq_hdl {
-	uint32_t idx;
-	struct lpfc_hba *phba;
-=======
 #define LPFC_SLI4_HANDLER_NAME_SZ	16
 struct lpfc_hba_eq_hdl {
 	uint32_t idx;
@@ -616,7 +511,6 @@ struct lpfc_bbscn_params {
 #define lpfc_bbscn_def_SHIFT		8
 #define lpfc_bbscn_def_MASK		0x0000000F
 #define lpfc_bbscn_def_WORD		word0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Port Capabilities for SLI4 Parameters */
@@ -637,10 +531,7 @@ struct lpfc_pc_sli4_params {
 	uint32_t if_page_sz;
 	uint32_t rq_db_window;
 	uint32_t loopbk_scope;
-<<<<<<< HEAD
-=======
 	uint32_t oas_supported;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t eq_pages_max;
 	uint32_t eqe_size;
 	uint32_t cq_pages_max;
@@ -657,8 +548,6 @@ struct lpfc_pc_sli4_params {
 	uint32_t hdr_pp_align;
 	uint32_t sgl_pages_max;
 	uint32_t sgl_pp_align;
-<<<<<<< HEAD
-=======
 	uint32_t mib_size;
 	uint16_t mi_ver;
 #define LPFC_MIB1_SUPPORT	1
@@ -669,15 +558,10 @@ struct lpfc_pc_sli4_params {
 	uint8_t mi_cap;
 	uint8_t mib_bde_cnt;
 	uint8_t cmf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t cqv;
 	uint8_t mqv;
 	uint8_t wqv;
 	uint8_t rqv;
-<<<<<<< HEAD
-};
-
-=======
 	uint8_t eqav;
 	uint8_t cqav;
 	uint8_t wqsize;
@@ -694,7 +578,6 @@ struct lpfc_pc_sli4_params {
 #define LPFC_WQ_4K_PAGE_SZ	0x1
 #define LPFC_WQ_16K_PAGE_SZ	0x4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_iov {
 	uint32_t pf_number;
 	uint32_t vf_number;
@@ -705,21 +588,6 @@ struct lpfc_sli4_lnk_info {
 #define LPFC_LNK_DAT_INVAL	0
 #define LPFC_LNK_DAT_VAL	1
 	uint8_t lnk_tp;
-<<<<<<< HEAD
-#define LPFC_LNK_GE	0x0 /* FCoE */
-#define LPFC_LNK_FC	0x1 /* FC   */
-	uint8_t lnk_no;
-};
-
-/* SLI4 HBA data structure entries */
-struct lpfc_sli4_hba {
-	void __iomem *conf_regs_memmap_p; /* Kernel memory mapped address for
-					     PCI BAR0, config space registers */
-	void __iomem *ctrl_regs_memmap_p; /* Kernel memory mapped address for
-					     PCI BAR1, control registers */
-	void __iomem *drbl_regs_memmap_p; /* Kernel memory mapped address for
-					     PCI BAR2, doorbell registers */
-=======
 #define LPFC_LNK_GE		0x0 /* FCoE */
 #define LPFC_LNK_FC		0x1 /* FC */
 #define LPFC_LNK_FC_TRUNKED	0x2 /* FC_Trunked */
@@ -915,7 +783,6 @@ struct lpfc_sli4_hba {
 	void __iomem *dpp_regs_memmap_p;  /* Kernel memory mapped address for
 					   * dpp registers
 					   */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union {
 		struct {
 			/* IF Type 0, BAR 0 PCI cfg space reg mem map */
@@ -939,10 +806,7 @@ struct lpfc_sli4_hba {
 #define SLIPORT_ERR2_REG_FAILURE_CQ		0x4
 #define SLIPORT_ERR2_REG_FAILURE_BUS		0x5
 #define SLIPORT_ERR2_REG_FAILURE_RQ		0x6
-<<<<<<< HEAD
-=======
 			void __iomem *EQDregaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} if_type2;
 	} u;
 
@@ -959,36 +823,13 @@ struct lpfc_sli4_hba {
 	/* IF type 0, BAR 0 and if type 2, BAR 0 doorbell register memory map */
 	void __iomem *RQDBregaddr;	/* RQ_DOORBELL register */
 	void __iomem *WQDBregaddr;	/* WQ_DOORBELL register */
-<<<<<<< HEAD
-	void __iomem *EQCQDBregaddr;	/* EQCQ_DOORBELL register */
-=======
 	void __iomem *CQDBregaddr;	/* CQ_DOORBELL register */
 	void __iomem *EQDBregaddr;	/* EQ_DOORBELL register */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *MQDBregaddr;	/* MQ_DOORBELL register */
 	void __iomem *BMBXregaddr;	/* BootStrap MBX register */
 
 	uint32_t ue_mask_lo;
 	uint32_t ue_mask_hi;
-<<<<<<< HEAD
-	struct lpfc_register sli_intf;
-	struct lpfc_pc_sli4_params pc_sli4_params;
-	struct msix_entry *msix_entries;
-	uint32_t cfg_eqn;
-	uint32_t msix_vec_nr;
-	struct lpfc_fcp_eq_hdl *fcp_eq_hdl; /* FCP per-WQ handle */
-	/* Pointers to the constructed SLI4 queues */
-	struct lpfc_queue **fp_eq; /* Fast-path event queue */
-	struct lpfc_queue *sp_eq;  /* Slow-path event queue */
-	struct lpfc_queue **fcp_wq;/* Fast-path FCP work queue */
-	struct lpfc_queue *mbx_wq; /* Slow-path MBOX work queue */
-	struct lpfc_queue *els_wq; /* Slow-path ELS work queue */
-	struct lpfc_queue *hdr_rq; /* Slow-path Header Receive queue */
-	struct lpfc_queue *dat_rq; /* Slow-path Data Receive queue */
-	struct lpfc_queue **fcp_cq;/* Fast-path FCP compl queue */
-	struct lpfc_queue *mbx_cq; /* Slow-path mailbox complete queue */
-	struct lpfc_queue *els_cq; /* Slow-path ELS response complete queue */
-=======
 	uint32_t ue_to_sr;
 	uint32_t ue_to_rp;
 	struct lpfc_register sli_intf;
@@ -1031,7 +872,6 @@ struct lpfc_sli4_hba {
 	uint64_t oas_next_lun;
 	uint8_t oas_next_tgt_wwpn[8];
 	uint8_t oas_next_vpt_wwpn[8];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup information for various queue parameters */
 	int eq_esize;
@@ -1054,18 +894,6 @@ struct lpfc_sli4_hba {
 	uint16_t rpi_hdrs_in_use; /* must post rpi hdrs if set. */
 	uint16_t next_xri; /* last_xri - max_cfg_param.xri_base = used */
 	uint16_t next_rpi;
-<<<<<<< HEAD
-	uint16_t scsi_xri_max;
-	uint16_t scsi_xri_cnt;
-	uint16_t scsi_xri_start;
-	struct list_head lpfc_free_sgl_list;
-	struct list_head lpfc_sgl_list;
-	struct lpfc_sglq **lpfc_els_sgl_array;
-	struct list_head lpfc_abts_els_sgl_list;
-	struct lpfc_scsi_buf **lpfc_scsi_psb_array;
-	struct list_head lpfc_abts_scsi_buf_list;
-	uint32_t total_sglq_bufs;
-=======
 	uint16_t io_xri_max;
 	uint16_t io_xri_cnt;
 	uint16_t io_xri_start;
@@ -1086,7 +914,6 @@ struct lpfc_sli4_hba {
 	struct list_head t_active_ctx_list;
 	struct list_head lpfc_nvmet_io_wait_list;
 	struct lpfc_nvmet_ctx_info *nvmet_ctx_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_sglq **lpfc_sglq_active_list;
 	struct list_head lpfc_rpi_hdr_list;
 	unsigned long *rpi_bmask;
@@ -1095,10 +922,6 @@ struct lpfc_sli4_hba {
 	struct list_head lpfc_rpi_blk_list;
 	unsigned long *xri_bmask;
 	uint16_t *xri_ids;
-<<<<<<< HEAD
-	uint16_t xri_count;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head lpfc_xri_blk_list;
 	unsigned long *vfi_bmask;
 	uint16_t *vfi_ids;
@@ -1108,14 +931,9 @@ struct lpfc_sli4_hba {
 	struct list_head sp_queue_event;
 	struct list_head sp_cqe_event_pool;
 	struct list_head sp_asynce_work_queue;
-<<<<<<< HEAD
-	struct list_head sp_fcp_xri_aborted_work_queue;
-	struct list_head sp_els_xri_aborted_work_queue;
-=======
 	spinlock_t asynce_list_lock; /* protect sp_asynce_work_queue list */
 	struct list_head sp_els_xri_aborted_work_queue;
 	spinlock_t els_xri_abrt_list_lock; /* protect els_xri_aborted list */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head sp_unsol_work_queue;
 	struct lpfc_sli4_link link_state;
 	struct lpfc_sli4_lnk_info lnk_info;
@@ -1123,10 +941,6 @@ struct lpfc_sli4_hba {
 #define LPFC_SLI4_PPNAME_NON	0
 #define LPFC_SLI4_PPNAME_GET	1
 	struct lpfc_iov iov;
-<<<<<<< HEAD
-	spinlock_t abts_scsi_buf_list_lock; /* list of aborted SCSI IOs */
-	spinlock_t abts_sgl_list_lock; /* list of aborted els IOs */
-=======
 	spinlock_t sgl_list_lock; /* list of aborted els IOs */
 	spinlock_t nvmet_io_wait_lock; /* IOs waiting for ctx resources */
 	uint32_t physical_port;
@@ -1172,17 +986,12 @@ struct lpfc_sli4_hba {
 	uint16_t fawwpn_flag;	/* FA-WWPN support state */
 #define LPFC_FAWWPN_CONFIG	0x1 /* FA-PWWN is configured */
 #define LPFC_FAWWPN_FABRIC	0x2 /* FA-PWWN success with Fabric */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum lpfc_sge_type {
 	GEN_BUFF_TYPE,
-<<<<<<< HEAD
-	SCSI_BUFF_TYPE
-=======
 	SCSI_BUFF_TYPE,
 	NVMET_BUFF_TYPE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum lpfc_sgl_state {
@@ -1212,10 +1021,7 @@ struct lpfc_rpi_hdr {
 	struct lpfc_dmabuf *dmabuf;
 	uint32_t page_count;
 	uint32_t start_rpi;
-<<<<<<< HEAD
-=======
 	uint16_t next_rpi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct lpfc_rsrc_blks {
@@ -1225,8 +1031,6 @@ struct lpfc_rsrc_blks {
 	uint16_t rsrc_used;
 };
 
-<<<<<<< HEAD
-=======
 struct lpfc_rdp_context {
 	struct lpfc_nodelist *ndlp;
 	uint16_t ox_id;
@@ -1249,7 +1053,6 @@ struct lpfc_lcb_context {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SLI4 specific function prototypes
  */
@@ -1266,26 +1069,6 @@ int lpfc_sli4_mbx_read_fcf_rec(struct lpfc_hba *, struct lpfcMboxq *,
 			       uint16_t);
 
 void lpfc_sli4_hba_reset(struct lpfc_hba *);
-<<<<<<< HEAD
-struct lpfc_queue *lpfc_sli4_queue_alloc(struct lpfc_hba *, uint32_t,
-			uint32_t);
-void lpfc_sli4_queue_free(struct lpfc_queue *);
-uint32_t lpfc_eq_create(struct lpfc_hba *, struct lpfc_queue *, uint16_t);
-uint32_t lpfc_cq_create(struct lpfc_hba *, struct lpfc_queue *,
-			struct lpfc_queue *, uint32_t, uint32_t);
-int32_t lpfc_mq_create(struct lpfc_hba *, struct lpfc_queue *,
-		       struct lpfc_queue *, uint32_t);
-uint32_t lpfc_wq_create(struct lpfc_hba *, struct lpfc_queue *,
-			struct lpfc_queue *, uint32_t);
-uint32_t lpfc_rq_create(struct lpfc_hba *, struct lpfc_queue *,
-			struct lpfc_queue *, struct lpfc_queue *, uint32_t);
-void lpfc_rq_adjust_repost(struct lpfc_hba *, struct lpfc_queue *, int);
-uint32_t lpfc_eq_destroy(struct lpfc_hba *, struct lpfc_queue *);
-uint32_t lpfc_cq_destroy(struct lpfc_hba *, struct lpfc_queue *);
-uint32_t lpfc_mq_destroy(struct lpfc_hba *, struct lpfc_queue *);
-uint32_t lpfc_wq_destroy(struct lpfc_hba *, struct lpfc_queue *);
-uint32_t lpfc_rq_destroy(struct lpfc_hba *, struct lpfc_queue *,
-=======
 struct lpfc_queue *lpfc_sli4_queue_alloc(struct lpfc_hba *phba,
 					 uint32_t page_size,
 					 uint32_t entry_size,
@@ -1313,26 +1096,14 @@ int lpfc_cq_destroy(struct lpfc_hba *, struct lpfc_queue *);
 int lpfc_mq_destroy(struct lpfc_hba *, struct lpfc_queue *);
 int lpfc_wq_destroy(struct lpfc_hba *, struct lpfc_queue *);
 int lpfc_rq_destroy(struct lpfc_hba *, struct lpfc_queue *,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 struct lpfc_queue *);
 int lpfc_sli4_queue_setup(struct lpfc_hba *);
 void lpfc_sli4_queue_unset(struct lpfc_hba *);
 int lpfc_sli4_post_sgl(struct lpfc_hba *, dma_addr_t, dma_addr_t, uint16_t);
-<<<<<<< HEAD
-int lpfc_sli4_repost_scsi_sgl_list(struct lpfc_hba *);
-uint16_t lpfc_sli4_next_xritag(struct lpfc_hba *);
-int lpfc_sli4_post_async_mbox(struct lpfc_hba *);
-int lpfc_sli4_post_els_sgl_list(struct lpfc_hba *phba);
-int lpfc_sli4_post_els_sgl_list_ext(struct lpfc_hba *phba);
-int lpfc_sli4_post_scsi_sgl_block(struct lpfc_hba *, struct list_head *, int);
-int lpfc_sli4_post_scsi_sgl_blk_ext(struct lpfc_hba *, struct list_head *,
-				    int);
-=======
 int lpfc_repost_io_sgl_list(struct lpfc_hba *phba);
 uint16_t lpfc_sli4_next_xritag(struct lpfc_hba *);
 void lpfc_sli4_free_xri(struct lpfc_hba *, int);
 int lpfc_sli4_post_async_mbox(struct lpfc_hba *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_cq_event *__lpfc_sli4_cq_event_alloc(struct lpfc_hba *);
 struct lpfc_cq_event *lpfc_sli4_cq_event_alloc(struct lpfc_hba *);
 void __lpfc_sli4_cq_event_release(struct lpfc_hba *, struct lpfc_cq_event *);
@@ -1347,14 +1118,6 @@ void lpfc_sli4_free_rpi(struct lpfc_hba *, int);
 void lpfc_sli4_remove_rpis(struct lpfc_hba *);
 void lpfc_sli4_async_event_proc(struct lpfc_hba *);
 void lpfc_sli4_fcf_redisc_event_proc(struct lpfc_hba *);
-<<<<<<< HEAD
-int lpfc_sli4_resume_rpi(struct lpfc_nodelist *,
-			void (*)(struct lpfc_hba *, LPFC_MBOXQ_t *), void *);
-void lpfc_sli4_fcp_xri_abort_event_proc(struct lpfc_hba *);
-void lpfc_sli4_els_xri_abort_event_proc(struct lpfc_hba *);
-void lpfc_sli4_fcp_xri_aborted(struct lpfc_hba *,
-			       struct sli4_wcqe_xri_aborted *);
-=======
 int lpfc_sli4_resume_rpi(struct lpfc_nodelist *ndlp,
 			 void (*cmpl)(struct lpfc_hba *, LPFC_MBOXQ_t *),
 			 struct lpfc_iocbq *iocbq);
@@ -1368,7 +1131,6 @@ void lpfc_sli4_io_xri_aborted(struct lpfc_hba *phba,
 			      struct sli4_wcqe_xri_aborted *axri, int idx);
 void lpfc_sli4_nvmet_xri_aborted(struct lpfc_hba *phba,
 				 struct sli4_wcqe_xri_aborted *axri);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void lpfc_sli4_els_xri_aborted(struct lpfc_hba *,
 			       struct sli4_wcqe_xri_aborted *);
 void lpfc_sli4_vport_delete_els_xri_aborted(struct lpfc_vport *);
@@ -1377,11 +1139,6 @@ int lpfc_sli4_brdreset(struct lpfc_hba *);
 int lpfc_sli4_add_fcf_record(struct lpfc_hba *, struct fcf_record *);
 void lpfc_sli_remove_dflt_fcf(struct lpfc_hba *);
 int lpfc_sli4_get_els_iocb_cnt(struct lpfc_hba *);
-<<<<<<< HEAD
-int lpfc_sli4_init_vpi(struct lpfc_vport *);
-uint32_t lpfc_sli4_cq_release(struct lpfc_queue *, bool);
-uint32_t lpfc_sli4_eq_release(struct lpfc_queue *, bool);
-=======
 int lpfc_sli4_get_iocb_cnt(struct lpfc_hba *phba);
 int lpfc_sli4_init_vpi(struct lpfc_vport *);
 void lpfc_sli4_eq_clr_intr(struct lpfc_queue *);
@@ -1394,7 +1151,6 @@ void lpfc_sli4_if6_write_cq_db(struct lpfc_hba *phba, struct lpfc_queue *q,
 			       uint32_t count, bool arm);
 void lpfc_sli4_if6_write_eq_db(struct lpfc_hba *phba, struct lpfc_queue *q,
 			       uint32_t count, bool arm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void lpfc_sli4_fcfi_unreg(struct lpfc_hba *, uint16_t);
 int lpfc_sli4_fcf_scan_read_fcf_rec(struct lpfc_hba *, uint16_t);
 int lpfc_sli4_fcf_rr_read_fcf_rec(struct lpfc_hba *, uint16_t);
@@ -1406,8 +1162,6 @@ int lpfc_sli4_unregister_fcf(struct lpfc_hba *);
 int lpfc_sli4_post_status_check(struct lpfc_hba *);
 uint8_t lpfc_sli_config_mbox_subsys_get(struct lpfc_hba *, LPFC_MBOXQ_t *);
 uint8_t lpfc_sli_config_mbox_opcode_get(struct lpfc_hba *, LPFC_MBOXQ_t *);
-<<<<<<< HEAD
-=======
 void lpfc_sli4_ras_dma_free(struct lpfc_hba *phba);
 struct sli4_hybrid_sgl *lpfc_get_sgl_per_hdwq(struct lpfc_hba *phba,
 					      struct lpfc_io_buf *buf);
@@ -1444,4 +1198,3 @@ lpfc_sli4_unrecoverable_port(struct lpfc_register *portstat_reg)
 	return bf_get(lpfc_sliport_status_err, portstat_reg) &&
 	       !bf_get(lpfc_sliport_status_rn, portstat_reg);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

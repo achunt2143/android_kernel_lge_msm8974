@@ -1,30 +1,14 @@
-<<<<<<< HEAD
-config PPC_MAPLE
-	depends on PPC64 && PPC_BOOK3S
-	bool "Maple 970FX Evaluation Board"
-	select PCI
-=======
 # SPDX-License-Identifier: GPL-2.0
 config PPC_MAPLE
 	depends on PPC64 && PPC_BOOK3S && CPU_BIG_ENDIAN
 	bool "Maple 970FX Evaluation Board"
 	select FORCE_PCI
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select MPIC
 	select U3_DART
 	select MPIC_U3_HT_IRQS
 	select GENERIC_TBSYNC
 	select PPC_UDBG_16550
 	select PPC_970_NAP
-<<<<<<< HEAD
-	select PPC_NATIVE
-	select PPC_RTAS
-	select MMIO_NVRAM
-	select ATA_NONSTANDARD if ATA
-	default n
-	help
-          This option enables support for the Maple 970FX Evaluation Board.
-=======
 	select PPC_64S_HASH_MMU
 	select PPC_HASH_MMU_NATIVE
 	select PPC_RTAS
@@ -32,5 +16,4 @@ config PPC_MAPLE
 	select ATA_NONSTANDARD if ATA
 	help
 	  This option enables support for the Maple 970FX Evaluation Board.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  For more information, refer to <http://www.970eval.com>

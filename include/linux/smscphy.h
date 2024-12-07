@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_SMSCPHY_H__
 #define __LINUX_SMSCPHY_H__
 
 #define MII_LAN83C185_ISF 29 /* Interrupt Source Flags */
 #define MII_LAN83C185_IM  30 /* Interrupt Mask */
 #define MII_LAN83C185_CTRL_STATUS 17 /* Mode/Status Register */
-<<<<<<< HEAD
-=======
 #define MII_LAN83C185_SPECIAL_MODES 18 /* Special Modes Register */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MII_LAN83C185_ISF_INT1 (1<<1) /* Auto-Negotiation Page Received */
 #define MII_LAN83C185_ISF_INT2 (1<<2) /* Parallel Detection Fault */
@@ -30,8 +24,6 @@
 #define MII_LAN83C185_EDPWRDOWN (1 << 13) /* EDPWRDOWN */
 #define MII_LAN83C185_ENERGYON  (1 << 1)  /* ENERGYON */
 
-<<<<<<< HEAD
-=======
 #define MII_LAN83C185_MODE_MASK      0xE0
 #define MII_LAN83C185_MODE_POWERDOWN 0xC0 /* Power Down mode */
 #define MII_LAN83C185_MODE_ALL       0xE0 /* All capable mode */
@@ -80,5 +72,4 @@ int smsc_phy_probe(struct phy_device *phydev);
 
 #define MII_LAN874X_PHY_PME_SELF_CLEAR_DELAY	0x1000 /* 81 milliseconds */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_SMSCPHY_H__ */

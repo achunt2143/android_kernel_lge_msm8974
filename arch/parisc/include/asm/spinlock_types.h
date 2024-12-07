@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-#ifndef __ASM_SPINLOCK_TYPES_H
-#define __ASM_SPINLOCK_TYPES_H
-
-typedef struct {
-#ifdef CONFIG_PA20
-	volatile unsigned int slock;
-# define __ARCH_SPIN_LOCK_UNLOCKED { 1 }
-#else
-	volatile unsigned int lock[4];
-# define __ARCH_SPIN_LOCK_UNLOCKED	{ { 1, 1, 1, 1 } }
-#endif
-} arch_spinlock_t;
-
-typedef struct {
-	arch_spinlock_t lock;
-	volatile int counter;
-} arch_rwlock_t;
-
-#define __ARCH_RW_LOCK_UNLOCKED		{ __ARCH_SPIN_LOCK_UNLOCKED, 0 }
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_SPINLOCK_TYPES_H
 #define __ASM_SPINLOCK_TYPES_H
@@ -52,6 +31,5 @@ typedef struct {
 #define __ARCH_RW_LOCK_UNLOCKED__       0x01000000
 #define __ARCH_RW_LOCK_UNLOCKED         { .lock_mutex = __ARCH_SPIN_LOCK_UNLOCKED, \
 					.counter = __ARCH_RW_LOCK_UNLOCKED__ }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

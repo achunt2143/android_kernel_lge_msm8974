@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sc-rm7k.c: RM7000 cache management functions.
  *
@@ -10,10 +7,6 @@
 
 #undef DEBUG
 
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/bitops.h>
@@ -111,11 +104,7 @@ static void blast_rm7k_tcache(void)
 /*
  * This function is executed in uncached address space.
  */
-<<<<<<< HEAD
-static __cpuinit void __rm7k_tc_enable(void)
-=======
 static void __rm7k_tc_enable(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -128,11 +117,7 @@ static void __rm7k_tc_enable(void)
 		cache_op(Index_Store_Tag_T, CKSEG0ADDR(i));
 }
 
-<<<<<<< HEAD
-static __cpuinit void rm7k_tc_enable(void)
-=======
 static void rm7k_tc_enable(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (read_c0_config() & RM7K_CONF_TE)
 		return;
@@ -145,11 +130,7 @@ static void rm7k_tc_enable(void)
 /*
  * This function is executed in uncached address space.
  */
-<<<<<<< HEAD
-static __cpuinit void __rm7k_sc_enable(void)
-=======
 static void __rm7k_sc_enable(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -162,11 +143,7 @@ static void __rm7k_sc_enable(void)
 		cache_op(Index_Store_Tag_SD, CKSEG0ADDR(i));
 }
 
-<<<<<<< HEAD
-static __cpuinit void rm7k_sc_enable(void)
-=======
 static void rm7k_sc_enable(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (read_c0_config() & RM7K_CONF_SE)
 		return;
@@ -185,11 +162,7 @@ static void rm7k_tc_disable(void)
 	local_irq_save(flags);
 	blast_rm7k_tcache();
 	clear_c0_config(RM7K_CONF_TE);
-<<<<<<< HEAD
-	local_irq_save(flags);
-=======
 	local_irq_restore(flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rm7k_sc_disable(void)
@@ -211,11 +184,7 @@ static struct bcache_ops rm7k_sc_ops = {
  * This is a probing function like the one found in c-r4k.c, we look for the
  * wrap around point with different addresses.
  */
-<<<<<<< HEAD
-static __cpuinit void __probe_tcache(void)
-=======
 static void __probe_tcache(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags, addr, begin, end, pow2;
 
@@ -257,11 +226,7 @@ static void __probe_tcache(void)
 	local_irq_restore(flags);
 }
 
-<<<<<<< HEAD
-void __cpuinit rm7k_sc_init(void)
-=======
 void rm7k_sc_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cpuinfo_mips *c = &current_cpu_data;
 	unsigned int config = read_c0_config();

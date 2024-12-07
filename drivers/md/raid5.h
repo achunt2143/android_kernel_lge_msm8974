@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _RAID5_H
 #define _RAID5_H
 
 #include <linux/raid/xor.h>
 #include <linux/dmaengine.h>
-<<<<<<< HEAD
-=======
 #include <linux/local_lock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *
@@ -57,11 +51,7 @@
  * can't distinguish between a clean block that has been generated
  * from parity calculations, and a clean block that has been
  * successfully written to the spare ( or to parity when resyncing).
-<<<<<<< HEAD
- * To distingush these states we have a stripe bit STRIPE_INSYNC that
-=======
  * To distinguish these states we have a stripe bit STRIPE_INSYNC that
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * is set whenever a write is scheduled to the spare, or to the parity
  * disc if there is no spare.  A sync request clears this bit, and
  * when we find it set with no buffers locked, we know the sync is
@@ -167,11 +157,7 @@
  */
 
 /*
-<<<<<<< HEAD
- * Operations state - intermediate states that are visible outside of 
-=======
  * Operations state - intermediate states that are visible outside of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   STRIPE_ACTIVE.
  * In general _idle indicates nothing is running, _run indicates a data
  * processing operation is active, and _result means the data processing result
@@ -210,17 +196,11 @@ enum reconstruct_states {
 	reconstruct_state_result,
 };
 
-<<<<<<< HEAD
-struct stripe_head {
-	struct hlist_node	hash;
-	struct list_head	lru;	      /* inactive_list or handle_list */
-=======
 #define DEFAULT_STRIPE_SIZE	4096
 struct stripe_head {
 	struct hlist_node	hash;
 	struct list_head	lru;	      /* inactive_list or handle_list */
 	struct llist_node	release_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct r5conf		*raid_conf;
 	short			generation;	/* increments with every
 						 * reshape */
@@ -228,18 +208,11 @@ struct stripe_head {
 	short			pd_idx;		/* parity disk index */
 	short			qd_idx;		/* 'Q' disk index for raid6 */
 	short			ddf_layout;/* use DDF ordering to calculate Q */
-<<<<<<< HEAD
-=======
 	short			hash_lock_index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		state;		/* state flags */
 	atomic_t		count;	      /* nr of active thread/requests */
 	int			bm_seq;	/* sequence number for bitmap flushes */
 	int			disks;		/* disks in stripe */
-<<<<<<< HEAD
-	enum check_states	check_state;
-	enum reconstruct_states reconstruct_state;
-=======
 	int			overwrite_disks; /* total overwrite disks in stripe,
 						  * this is only checked when stripe
 						  * has STRIPE_BATCH_READY
@@ -264,7 +237,6 @@ struct stripe_head {
 	struct list_head	r5c; /* for r5c_cache->stripe_in_journal */
 
 	struct page		*ppl_page; /* partial parity of this stripe */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/**
 	 * struct stripe_operations
 	 * @target - STRIPE_OP_COMPUTE_BLK target
@@ -275,13 +247,6 @@ struct stripe_head {
 	struct stripe_operations {
 		int 		     target, target2;
 		enum sum_check_flags zero_sum_result;
-<<<<<<< HEAD
-		#ifdef CONFIG_MULTICORE_RAID456
-		unsigned long	     request;
-		wait_queue_head_t    wait_for_ops;
-		#endif
-	} ops;
-=======
 	} ops;
 
 #if PAGE_SIZE != DEFAULT_STRIPE_SIZE
@@ -290,20 +255,12 @@ struct stripe_head {
 	int	nr_pages;	/* page array size */
 	int	stripes_per_page;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct r5dev {
 		/* rreq and rvec are used for the replacement device when
 		 * writing data to both devices.
 		 */
 		struct bio	req, rreq;
 		struct bio_vec	vec, rvec;
-<<<<<<< HEAD
-		struct page	*page;
-		struct bio	*toread, *read, *towrite, *written;
-		sector_t	sector;			/* sector of this page */
-		unsigned long	flags;
-	} dev[1]; /* allocated with extra space depending of RAID geometry */
-=======
 		struct page	*page, *orig_page;
 		unsigned int    offset;     /* offset of the page */
 		struct bio	*toread, *read, *towrite, *written;
@@ -312,7 +269,6 @@ struct stripe_head {
 		u32		log_checksum;
 		unsigned short	write_hint;
 	} dev[]; /* allocated depending of RAID geometry ("disks" member) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* stripe_head_state - collects and tracks the dynamic state of a stripe_head
@@ -328,25 +284,16 @@ struct stripe_head_state {
 	int syncing, expanding, expanded, replacing;
 	int locked, uptodate, to_read, to_write, failed, written;
 	int to_fill, compute, req_compute, non_overwrite;
-<<<<<<< HEAD
-=======
 	int injournal, just_cached;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int failed_num[2];
 	int p_failed, q_failed;
 	int dec_preread_active;
 	unsigned long ops_request;
 
-<<<<<<< HEAD
-	struct bio *return_bi;
-	struct md_rdev *blocked_rdev;
-	int handle_bad_blocks;
-=======
 	struct md_rdev *blocked_rdev;
 	int handle_bad_blocks;
 	int log_failed;
 	int waiting_extra_page;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Flags for struct r5dev.flags */
@@ -361,10 +308,7 @@ enum r5dev_flags {
 	R5_Wantwrite,
 	R5_Overlap,	/* There is a pending overlapping request
 			 * on this block */
-<<<<<<< HEAD
-=======
 	R5_ReadNoMerge, /* prevent bio from merging in block-layer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	R5_ReadError,	/* seen a read error here recently */
 	R5_ReWrite,	/* have tried to over-write the readerror */
 
@@ -377,10 +321,7 @@ enum r5dev_flags {
 			 */
 	R5_Wantdrain,	/* dev->towrite needs to be drained */
 	R5_WantFUA,	/* Write should be FUA */
-<<<<<<< HEAD
-=======
 	R5_SyncIO,	/* The IO is sync */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	R5_WriteError,	/* got a write error - need to record it */
 	R5_MadeGood,	/* A bad block has been fixed by writing to it */
 	R5_ReadRepl,	/* Will/did read from replacement rather than orig */
@@ -391,8 +332,6 @@ enum r5dev_flags {
 	R5_WantReplace, /* We need to update the replacement, we have read
 			 * data in, and now is a good time to write it out.
 			 */
-<<<<<<< HEAD
-=======
 	R5_Discard,	/* Discard the stripe */
 	R5_SkipCopy,	/* Don't copy data from bio to stripe cache */
 	R5_InJournal,	/* data being written is in the journal device.
@@ -405,7 +344,6 @@ enum r5dev_flags {
 				 * set, orig_page contains latest data in the
 				 * raid disk.
 				 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -429,11 +367,6 @@ enum {
 	STRIPE_FULL_WRITE,	/* all blocks are set to be overwritten */
 	STRIPE_BIOFILL_RUN,
 	STRIPE_COMPUTE_RUN,
-<<<<<<< HEAD
-	STRIPE_OPS_REQ_PENDING,
-};
-
-=======
 	STRIPE_ON_UNPLUG_LIST,
 	STRIPE_DISCARD,
 	STRIPE_ON_RELEASE_LIST,
@@ -473,7 +406,6 @@ enum {
 	(1 << STRIPE_EXPAND_READY) |\
 	(1 << STRIPE_EXPANDING) |\
 	(1 << STRIPE_SYNC_REQUESTED))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Operation request flags
  */
@@ -484,8 +416,6 @@ enum {
 	STRIPE_OP_BIODRAIN,
 	STRIPE_OP_RECONSTRUCT,
 	STRIPE_OP_CHECK,
-<<<<<<< HEAD
-=======
 	STRIPE_OP_PARTIAL_PARITY,
 };
 
@@ -505,7 +435,6 @@ enum {
 	SYNDROME_SRC_ALL,
 	SYNDROME_SRC_WANT_DRAIN,
 	SYNDROME_SRC_WRITTEN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 /*
  * Plugging:
@@ -531,11 +460,6 @@ enum {
  * HANDLE gets cleared if stripe_handle leaves nothing locked.
  */
 
-<<<<<<< HEAD
-
-struct disk_info {
-	struct md_rdev	*rdev, *replacement;
-=======
 /* Note: disk_info.rdev can be set to NULL asynchronously by raid5_remove_disk.
  * There are three safe ways to access disk_info.rdev.
  * 1/ when holding mddev->reconfig_mutex
@@ -645,19 +569,10 @@ struct raid5_percpu {
 				     */
 	int             scribble_obj_size;
 	local_lock_t    lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct r5conf {
 	struct hlist_head	*stripe_hashtbl;
-<<<<<<< HEAD
-	struct mddev		*mddev;
-	int			chunk_sectors;
-	int			level, algorithm;
-	int			max_degraded;
-	int			raid_disks;
-	int			max_nr_stripes;
-=======
 	/* only protect corresponding hash list and inactive_list */
 	spinlock_t		hash_locks[NR_STRIPE_HASH_LOCKS];
 	struct mddev		*mddev;
@@ -672,7 +587,6 @@ struct r5conf {
 	unsigned int	stripe_shift;
 	unsigned long	stripe_sectors;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* reshape_progress is the leading edge of a 'reshape'
 	 * It has value MaxSector when no reshape is happening
@@ -688,12 +602,6 @@ struct r5conf {
 	int			prev_chunk_sectors;
 	int			prev_algo;
 	short			generation; /* increments with every reshape */
-<<<<<<< HEAD
-	unsigned long		reshape_checkpoint; /* Time we last updated
-						     * metadata */
-
-	struct list_head	handle_list; /* stripes needing handling */
-=======
 	seqcount_spinlock_t	gen_lock;	/* lock against generation changes */
 	unsigned long		reshape_checkpoint; /* Time we last updated
 						     * metadata */
@@ -706,25 +614,18 @@ struct r5conf {
 
 	struct list_head	handle_list; /* stripes needing handling */
 	struct list_head	loprio_list; /* low priority stripes */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	hold_list; /* preread ready stripes */
 	struct list_head	delayed_list; /* stripes that have plugged requests */
 	struct list_head	bitmap_list; /* stripes delaying awaiting bitmap update */
 	struct bio		*retry_read_aligned; /* currently retrying aligned bios   */
-<<<<<<< HEAD
-=======
 	unsigned int		retry_read_offset; /* sector offset into retry_read_aligned */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bio		*retry_read_aligned_list; /* aligned bios retry list  */
 	atomic_t		preread_active_stripes; /* stripes with scheduled io */
 	atomic_t		active_aligned_reads;
 	atomic_t		pending_full_writes; /* full write backlog */
 	int			bypass_count; /* bypassed prereads */
 	int			bypass_threshold; /* preread nice */
-<<<<<<< HEAD
-=======
 	int			skip_copy; /* Don't copy data from bio to stripe cache */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	*last_hold; /* detect hold_list promotions */
 
 	atomic_t		reshape_stripes; /* stripes with pending writes for reshape */
@@ -733,12 +634,8 @@ struct r5conf {
 	 */
 	int			active_name;
 	char			cache_name[2][32];
-<<<<<<< HEAD
-	struct kmem_cache		*slab_cache; /* for allocating stripes */
-=======
 	struct kmem_cache	*slab_cache; /* for allocating stripes */
 	struct mutex		cache_size_mutex; /* Protect changes to cache size */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int			seq_flush, seq_write;
 	int			quiesce;
@@ -749,43 +646,15 @@ struct r5conf {
 					    */
 	int			recovery_disabled;
 	/* per cpu variables */
-<<<<<<< HEAD
-	struct raid5_percpu {
-		struct page	*spare_page; /* Used when checking P/Q in raid6 */
-		void		*scribble;   /* space for constructing buffer
-					      * lists and performing address
-					      * conversions
-					      */
-	} __percpu *percpu;
-	size_t			scribble_len; /* size of scribble region must be
-					       * associated with conf to handle
-					       * cpu hotplug while reshaping
-					       */
-#ifdef CONFIG_HOTPLUG_CPU
-	struct notifier_block	cpu_notify;
-#endif
-=======
 	struct raid5_percpu __percpu *percpu;
 	int scribble_disks;
 	int scribble_sectors;
 	struct hlist_node node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Free stripes pool
 	 */
 	atomic_t		active_stripes;
-<<<<<<< HEAD
-	struct list_head	inactive_list;
-	wait_queue_head_t	wait_for_stripe;
-	wait_queue_head_t	wait_for_overlap;
-	int			inactive_blocked;	/* release of inactive stripes blocked,
-							 * waiting for 25% to be free
-							 */
-	int			pool_size; /* number of disks in stripeheads in pool */
-	spinlock_t		device_lock;
-	struct disk_info	*disks;
-=======
 	struct list_head	inactive_list[NR_STRIPE_HASH_LOCKS];
 
 	atomic_t		r5c_cached_full_stripes;
@@ -806,16 +675,10 @@ struct r5conf {
 	spinlock_t		device_lock;
 	struct disk_info	*disks;
 	struct bio_set		bio_split;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* When taking over an array from a different personality, we store
 	 * the new thread here until we fully activate the array.
 	 */
-<<<<<<< HEAD
-	struct md_thread	*thread;
-};
-
-=======
 	struct md_thread __rcu	*thread;
 	struct list_head	temp_inactive_list[NR_STRIPE_HASH_LOCKS];
 	struct r5worker_group	*worker_groups;
@@ -860,7 +723,6 @@ static inline struct bio *r5_next_bio(struct r5conf *conf, struct bio *bio, sect
 		return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Our supported algorithms
  */
@@ -891,10 +753,6 @@ static inline struct bio *r5_next_bio(struct r5conf *conf, struct bio *bio, sect
 #define ALGORITHM_ROTATING_N_RESTART	9 /* DDF PRL=6 RLQ=2 */
 #define ALGORITHM_ROTATING_N_CONTINUE	10 /*DDF PRL=6 RLQ=3 */
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* For every RAID5 algorithm we define a RAID6 algorithm
  * with exactly the same layout for data and parity, and
  * with the Q block always on the last device (N-1).
@@ -926,11 +784,6 @@ static inline int algorithm_is_DDF(int layout)
 	return layout >= 8 && layout <= 10;
 }
 
-<<<<<<< HEAD
-extern int md_raid5_congested(struct mddev *mddev, int bits);
-extern void md_raid5_kick_device(struct r5conf *conf);
-extern int raid5_set_cache_size(struct mddev *mddev, int size);
-=======
 #if PAGE_SIZE != DEFAULT_STRIPE_SIZE
 /*
  * Return offset of the corresponding page for r5dev.
@@ -970,5 +823,4 @@ struct stripe_head *raid5_get_active_stripe(struct r5conf *conf,
 
 int raid5_calc_degraded(struct r5conf *conf);
 int r5c_journal_mode_set(struct mddev *mddev, int journal_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

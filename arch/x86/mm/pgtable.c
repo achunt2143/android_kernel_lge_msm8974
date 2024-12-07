@@ -1,35 +1,3 @@
-<<<<<<< HEAD
-#include <linux/mm.h>
-#include <linux/gfp.h>
-#include <asm/pgalloc.h>
-#include <asm/pgtable.h>
-#include <asm/tlb.h>
-#include <asm/fixmap.h>
-
-#define PGALLOC_GFP GFP_KERNEL | __GFP_NOTRACK | __GFP_REPEAT | __GFP_ZERO
-
-#ifdef CONFIG_HIGHPTE
-#define PGALLOC_USER_GFP __GFP_HIGHMEM
-#else
-#define PGALLOC_USER_GFP 0
-#endif
-
-gfp_t __userpte_alloc_gfp = PGALLOC_GFP | PGALLOC_USER_GFP;
-
-pte_t *pte_alloc_one_kernel(struct mm_struct *mm, unsigned long address)
-{
-	return (pte_t *)__get_free_page(PGALLOC_GFP);
-}
-
-pgtable_t pte_alloc_one(struct mm_struct *mm, unsigned long address)
-{
-	struct page *pte;
-
-	pte = alloc_pages(__userpte_alloc_gfp, 0);
-	if (pte)
-		pgtable_page_ctor(pte);
-	return pte;
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/mm.h>
 #include <linux/gfp.h>
@@ -63,7 +31,6 @@ gfp_t __userpte_alloc_gfp = GFP_PGTABLE_USER | PGTABLE_HIGHMEM;
 pgtable_t pte_alloc_one(struct mm_struct *mm)
 {
 	return __pte_alloc_one(mm, __userpte_alloc_gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init setup_userpte(char *arg)
@@ -85,34 +52,6 @@ early_param("userpte", setup_userpte);
 
 void ___pte_free_tlb(struct mmu_gather *tlb, struct page *pte)
 {
-<<<<<<< HEAD
-	pgtable_page_dtor(pte);
-	paravirt_release_pte(page_to_pfn(pte));
-	tlb_remove_page(tlb, pte);
-}
-
-#if PAGETABLE_LEVELS > 2
-void ___pmd_free_tlb(struct mmu_gather *tlb, pmd_t *pmd)
-{
-	paravirt_release_pmd(__pa(pmd) >> PAGE_SHIFT);
-	tlb_remove_page(tlb, virt_to_page(pmd));
-}
-
-#if PAGETABLE_LEVELS > 3
-void ___pud_free_tlb(struct mmu_gather *tlb, pud_t *pud)
-{
-	paravirt_release_pud(__pa(pud) >> PAGE_SHIFT);
-	tlb_remove_page(tlb, virt_to_page(pud));
-}
-#endif	/* PAGETABLE_LEVELS > 3 */
-#endif	/* PAGETABLE_LEVELS > 2 */
-
-static inline void pgd_list_add(pgd_t *pgd)
-{
-	struct page *page = virt_to_page(pgd);
-
-	list_add(&page->lru, &pgd_list);
-=======
 	pagetable_pte_dtor(page_ptdesc(pte));
 	paravirt_release_pte(page_to_pfn(pte));
 	paravirt_tlb_remove_table(tlb, pte);
@@ -159,48 +98,29 @@ static inline void pgd_list_add(pgd_t *pgd)
 	struct ptdesc *ptdesc = virt_to_ptdesc(pgd);
 
 	list_add(&ptdesc->pt_list, &pgd_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void pgd_list_del(pgd_t *pgd)
 {
-<<<<<<< HEAD
-	struct page *page = virt_to_page(pgd);
-
-	list_del(&page->lru);
-=======
 	struct ptdesc *ptdesc = virt_to_ptdesc(pgd);
 
 	list_del(&ptdesc->pt_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define UNSHARED_PTRS_PER_PGD				\
 	(SHARED_KERNEL_PMD ? KERNEL_PGD_BOUNDARY : PTRS_PER_PGD)
-<<<<<<< HEAD
-=======
 #define MAX_UNSHARED_PTRS_PER_PGD			\
 	max_t(size_t, KERNEL_PGD_BOUNDARY, PTRS_PER_PGD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static void pgd_set_mm(pgd_t *pgd, struct mm_struct *mm)
 {
-<<<<<<< HEAD
-	BUILD_BUG_ON(sizeof(virt_to_page(pgd)->index) < sizeof(mm));
-	virt_to_page(pgd)->index = (pgoff_t)mm;
-=======
 	virt_to_ptdesc(pgd)->pt_mm = mm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct mm_struct *pgd_page_get_mm(struct page *page)
 {
-<<<<<<< HEAD
-	return (struct mm_struct *)page->index;
-=======
 	return page_ptdesc(page)->pt_mm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pgd_ctor(struct mm_struct *mm, pgd_t *pgd)
@@ -208,15 +128,9 @@ static void pgd_ctor(struct mm_struct *mm, pgd_t *pgd)
 	/* If the pgd points to a shared pagetable level (either the
 	   ptes in non-PAE, or shared PMD in PAE), then just copy the
 	   references from swapper_pg_dir. */
-<<<<<<< HEAD
-	if (PAGETABLE_LEVELS == 2 ||
-	    (PAGETABLE_LEVELS == 3 && SHARED_KERNEL_PMD) ||
-	    PAGETABLE_LEVELS == 4) {
-=======
 	if (CONFIG_PGTABLE_LEVELS == 2 ||
 	    (CONFIG_PGTABLE_LEVELS == 3 && SHARED_KERNEL_PMD) ||
 	    CONFIG_PGTABLE_LEVELS >= 4) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clone_pgd_range(pgd + KERNEL_PGD_BOUNDARY,
 				swapper_pg_dir + KERNEL_PGD_BOUNDARY,
 				KERNEL_PGD_PTRS);
@@ -247,11 +161,7 @@ static void pgd_dtor(pgd_t *pgd)
  * against pageattr.c; it is the unique case in which a valid change
  * of kernel pagetables can't be lazily synchronized by vmalloc faults.
  * vmalloc faults work because attached pagetables are never freed.
-<<<<<<< HEAD
- * -- wli
-=======
  * -- nyc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifdef CONFIG_X86_PAE
@@ -267,8 +177,6 @@ static void pgd_dtor(pgd_t *pgd)
  * and initialize the kernel pmds here.
  */
 #define PREALLOCATED_PMDS	UNSHARED_PTRS_PER_PGD
-<<<<<<< HEAD
-=======
 #define MAX_PREALLOCATED_PMDS	MAX_UNSHARED_PTRS_PER_PGD
 
 /*
@@ -279,7 +187,6 @@ static void pgd_dtor(pgd_t *pgd)
 #define PREALLOCATED_USER_PMDS	 (boot_cpu_has(X86_FEATURE_PTI) ? \
 					KERNEL_PGD_PTRS : 0)
 #define MAX_PREALLOCATED_USER_PMDS KERNEL_PGD_PTRS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void pud_populate(struct mm_struct *mm, pud_t *pudp, pmd_t *pmd)
 {
@@ -301,29 +208,6 @@ void pud_populate(struct mm_struct *mm, pud_t *pudp, pmd_t *pmd)
 
 /* No need to prepopulate any pagetable entries in non-PAE modes. */
 #define PREALLOCATED_PMDS	0
-<<<<<<< HEAD
-
-#endif	/* CONFIG_X86_PAE */
-
-static void free_pmds(pmd_t *pmds[])
-{
-	int i;
-
-	for(i = 0; i < PREALLOCATED_PMDS; i++)
-		if (pmds[i])
-			free_page((unsigned long)pmds[i]);
-}
-
-static int preallocate_pmds(pmd_t *pmds[])
-{
-	int i;
-	bool failed = false;
-
-	for(i = 0; i < PREALLOCATED_PMDS; i++) {
-		pmd_t *pmd = (pmd_t *)__get_free_page(PGALLOC_GFP);
-		if (pmd == NULL)
-			failed = true;
-=======
 #define MAX_PREALLOCATED_PMDS	0
 #define PREALLOCATED_USER_PMDS	 0
 #define MAX_PREALLOCATED_USER_PMDS 0
@@ -370,16 +254,11 @@ static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
 			pmd = ptdesc_address(ptdesc);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pmds[i] = pmd;
 	}
 
 	if (failed) {
-<<<<<<< HEAD
-		free_pmds(pmds);
-=======
 		free_pmds(mm, pmds, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -392,8 +271,6 @@ static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
  * preallocate which never got a corresponding vma will need to be
  * freed manually.
  */
-<<<<<<< HEAD
-=======
 static void mop_up_one_pmd(struct mm_struct *mm, pgd_t *pgdp)
 {
 	pgd_t pgd = *pgdp;
@@ -409,25 +286,10 @@ static void mop_up_one_pmd(struct mm_struct *mm, pgd_t *pgdp)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pgd_mop_up_pmds(struct mm_struct *mm, pgd_t *pgdp)
 {
 	int i;
 
-<<<<<<< HEAD
-	for(i = 0; i < PREALLOCATED_PMDS; i++) {
-		pgd_t pgd = pgdp[i];
-
-		if (pgd_val(pgd) != 0) {
-			pmd_t *pmd = (pmd_t *)pgd_page_vaddr(pgd);
-
-			pgdp[i] = native_make_pgd(0);
-
-			paravirt_release_pmd(pgd_val(pgd) >> PAGE_SHIFT);
-			pmd_free(mm, pmd);
-		}
-	}
-=======
 	for (i = 0; i < PREALLOCATED_PMDS; i++)
 		mop_up_one_pmd(mm, &pgdp[i]);
 
@@ -441,24 +303,10 @@ static void pgd_mop_up_pmds(struct mm_struct *mm, pgd_t *pgdp)
 	for (i = 0; i < PREALLOCATED_USER_PMDS; i++)
 		mop_up_one_pmd(mm, &pgdp[i + KERNEL_PGD_BOUNDARY]);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pgd_prepopulate_pmd(struct mm_struct *mm, pgd_t *pgd, pmd_t *pmds[])
 {
-<<<<<<< HEAD
-	pud_t *pud;
-	unsigned long addr;
-	int i;
-
-	if (PREALLOCATED_PMDS == 0) /* Work around gcc-3.4.x bug */
-		return;
-
-	pud = pud_offset(pgd, 0);
-
- 	for (addr = i = 0; i < PREALLOCATED_PMDS;
-	     i++, pud++, addr += PUD_SIZE) {
-=======
 	p4d_t *p4d;
 	pud_t *pud;
 	int i;
@@ -467,7 +315,6 @@ static void pgd_prepopulate_pmd(struct mm_struct *mm, pgd_t *pgd, pmd_t *pmds[])
 	pud = pud_offset(p4d, 0);
 
 	for (i = 0; i < PREALLOCATED_PMDS; i++, pud++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pmd_t *pmd = pmds[i];
 
 		if (i >= KERNEL_PGD_BOUNDARY)
@@ -478,14 +325,6 @@ static void pgd_prepopulate_pmd(struct mm_struct *mm, pgd_t *pgd, pmd_t *pmds[])
 	}
 }
 
-<<<<<<< HEAD
-pgd_t *pgd_alloc(struct mm_struct *mm)
-{
-	pgd_t *pgd;
-	pmd_t *pmds[PREALLOCATED_PMDS];
-
-	pgd = (pgd_t *)__get_free_page(PGALLOC_GFP);
-=======
 #ifdef CONFIG_MITIGATION_PAGE_TABLE_ISOLATION
 static void pgd_prepopulate_user_pmd(struct mm_struct *mm,
 				     pgd_t *k_pgd, pmd_t *pmds[])
@@ -598,21 +437,12 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
 	pmd_t *pmds[MAX_PREALLOCATED_PMDS];
 
 	pgd = _pgd_alloc();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pgd == NULL)
 		goto out;
 
 	mm->pgd = pgd;
 
-<<<<<<< HEAD
-	if (preallocate_pmds(pmds) != 0)
-		goto out_free_pgd;
-
-	if (paravirt_pgd_alloc(mm) != 0)
-		goto out_free_pmds;
-
-=======
 	if (sizeof(pmds) != 0 &&
 			preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
 		goto out_free_pgd;
@@ -624,7 +454,6 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
 	if (paravirt_pgd_alloc(mm) != 0)
 		goto out_free_user_pmds;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Make sure that pre-populating the pmds is atomic with
 	 * respect to anything walking the pgd_list, so that they
@@ -633,26 +462,16 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
 	spin_lock(&pgd_lock);
 
 	pgd_ctor(mm, pgd);
-<<<<<<< HEAD
-	pgd_prepopulate_pmd(mm, pgd, pmds);
-=======
 	if (sizeof(pmds) != 0)
 		pgd_prepopulate_pmd(mm, pgd, pmds);
 
 	if (sizeof(u_pmds) != 0)
 		pgd_prepopulate_user_pmd(mm, pgd, u_pmds);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock(&pgd_lock);
 
 	return pgd;
 
-<<<<<<< HEAD
-out_free_pmds:
-	free_pmds(pmds);
-out_free_pgd:
-	free_page((unsigned long)pgd);
-=======
 out_free_user_pmds:
 	if (sizeof(u_pmds) != 0)
 		free_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS);
@@ -661,7 +480,6 @@ out_free_pmds:
 		free_pmds(mm, pmds, PREALLOCATED_PMDS);
 out_free_pgd:
 	_pgd_free(pgd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return NULL;
 }
@@ -671,11 +489,6 @@ void pgd_free(struct mm_struct *mm, pgd_t *pgd)
 	pgd_mop_up_pmds(mm, pgd);
 	pgd_dtor(pgd);
 	paravirt_pgd_free(mm, pgd);
-<<<<<<< HEAD
-	free_page((unsigned long)pgd);
-}
-
-=======
 	_pgd_free(pgd);
 }
 
@@ -686,23 +499,14 @@ void pgd_free(struct mm_struct *mm, pgd_t *pgd)
  * to also make the pte writeable at the same time the dirty bit is
  * set. In that case we do actually need to write the PTE.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ptep_set_access_flags(struct vm_area_struct *vma,
 			  unsigned long address, pte_t *ptep,
 			  pte_t entry, int dirty)
 {
 	int changed = !pte_same(*ptep, entry);
 
-<<<<<<< HEAD
-	if (changed && dirty) {
-		*ptep = entry;
-		pte_update_defer(vma->vm_mm, address, ptep);
-		flush_tlb_page(vma, address);
-	}
-=======
 	if (changed && dirty)
 		set_pte(ptep, entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return changed;
 }
@@ -717,11 +521,6 @@ int pmdp_set_access_flags(struct vm_area_struct *vma,
 	VM_BUG_ON(address & ~HPAGE_PMD_MASK);
 
 	if (changed && dirty) {
-<<<<<<< HEAD
-		*pmdp = entry;
-		pmd_update_defer(vma->vm_mm, address, pmdp);
-		flush_tlb_range(vma, address, address + HPAGE_PMD_SIZE);
-=======
 		set_pmd(pmdp, entry);
 		/*
 		 * We had a write-protection fault here and changed the pmd
@@ -749,7 +548,6 @@ int pudp_set_access_flags(struct vm_area_struct *vma, unsigned long address,
 		 * #PF is architecturally guaranteed to do that and in the
 		 * worst-case we'll generate a spurious fault.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return changed;
@@ -765,20 +563,10 @@ int ptep_test_and_clear_young(struct vm_area_struct *vma,
 		ret = test_and_clear_bit(_PAGE_BIT_ACCESSED,
 					 (unsigned long *) &ptep->pte);
 
-<<<<<<< HEAD
-	if (ret)
-		pte_update(vma->vm_mm, addr, ptep);
-
-	return ret;
-}
-
-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
-=======
 	return ret;
 }
 
 #if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int pmdp_test_and_clear_young(struct vm_area_struct *vma,
 			      unsigned long addr, pmd_t *pmdp)
 {
@@ -788,10 +576,6 @@ int pmdp_test_and_clear_young(struct vm_area_struct *vma,
 		ret = test_and_clear_bit(_PAGE_BIT_ACCESSED,
 					 (unsigned long *)pmdp);
 
-<<<<<<< HEAD
-	if (ret)
-		pmd_update(vma->vm_mm, addr, pmdp);
-=======
 	return ret;
 }
 #endif
@@ -805,7 +589,6 @@ int pudp_test_and_clear_young(struct vm_area_struct *vma,
 	if (pud_young(*pudp))
 		ret = test_and_clear_bit(_PAGE_BIT_ACCESSED,
 					 (unsigned long *)pudp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -814,15 +597,6 @@ int pudp_test_and_clear_young(struct vm_area_struct *vma,
 int ptep_clear_flush_young(struct vm_area_struct *vma,
 			   unsigned long address, pte_t *ptep)
 {
-<<<<<<< HEAD
-	int young;
-
-	young = ptep_test_and_clear_young(vma, address, ptep);
-	if (young)
-		flush_tlb_page(vma, address);
-
-	return young;
-=======
 	/*
 	 * On x86 CPUs, clearing the accessed bit without a TLB flush
 	 * doesn't cause data corruption. [ It could cause incorrect
@@ -837,7 +611,6 @@ int ptep_clear_flush_young(struct vm_area_struct *vma,
 	 * pressure for swapout to react to. ]
 	 */
 	return ptep_test_and_clear_young(vma, address, ptep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
@@ -855,20 +628,6 @@ int pmdp_clear_flush_young(struct vm_area_struct *vma,
 	return young;
 }
 
-<<<<<<< HEAD
-void pmdp_splitting_flush(struct vm_area_struct *vma,
-			  unsigned long address, pmd_t *pmdp)
-{
-	int set;
-	VM_BUG_ON(address & ~HPAGE_PMD_MASK);
-	set = !test_and_set_bit(_PAGE_BIT_SPLITTING,
-				(unsigned long *)pmdp);
-	if (set) {
-		pmd_update(vma->vm_mm, address, pmdp);
-		/* need tlb flush only to serialize against gup-fast */
-		flush_tlb_range(vma, address, address + HPAGE_PMD_SIZE);
-	}
-=======
 pmd_t pmdp_invalidate_ad(struct vm_area_struct *vma, unsigned long address,
 			 pmd_t *pmdp)
 {
@@ -877,7 +636,6 @@ pmd_t pmdp_invalidate_ad(struct vm_area_struct *vma, unsigned long address,
 	 * access and dirty bits cannot be updated.
 	 */
 	return pmdp_establish(vma, address, pmdp, pmd_mkinvalid(*pmdp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -892,15 +650,9 @@ void __init reserve_top_address(unsigned long reserve)
 {
 #ifdef CONFIG_X86_32
 	BUG_ON(fixmaps_set > 0);
-<<<<<<< HEAD
-	printk(KERN_INFO "Reserving virtual address space above 0x%08x\n",
-	       (int)-reserve);
-	__FIXADDR_TOP = -reserve - PAGE_SIZE;
-=======
 	__FIXADDR_TOP = round_down(-reserve, 1 << PMD_SHIFT) - PAGE_SIZE;
 	printk(KERN_INFO "Reserving virtual address space above 0x%08lx (rounded to 0x%08lx)\n",
 	       -reserve, __FIXADDR_TOP + PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -910,8 +662,6 @@ void __native_set_fixmap(enum fixed_addresses idx, pte_t pte)
 {
 	unsigned long address = __fix_to_virt(idx);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_X86_64
        /*
 	* Ensure that the static initial page tables are covering the
@@ -921,7 +671,6 @@ void __native_set_fixmap(enum fixed_addresses idx, pte_t pte)
 		     (FIXMAP_PMD_NUM * PTRS_PER_PTE));
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (idx >= __end_of_fixed_addresses) {
 		BUG();
 		return;
@@ -930,13 +679,6 @@ void __native_set_fixmap(enum fixed_addresses idx, pte_t pte)
 	fixmaps_set++;
 }
 
-<<<<<<< HEAD
-void native_set_fixmap(enum fixed_addresses idx, phys_addr_t phys,
-		       pgprot_t flags)
-{
-	__native_set_fixmap(idx, pfn_pte(phys >> PAGE_SHIFT, flags));
-}
-=======
 void native_set_fixmap(unsigned /* enum fixed_addresses */ idx,
 		       phys_addr_t phys, pgprot_t flags)
 {
@@ -1182,4 +924,3 @@ void arch_check_zapped_pmd(struct vm_area_struct *vma, pmd_t pmd)
 	VM_WARN_ON_ONCE(!(vma->vm_flags & VM_SHADOW_STACK) &&
 			pmd_shstk(pmd));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

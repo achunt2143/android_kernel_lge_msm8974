@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-#
-# Generated files
-#
-config*
-*.lex.c
-*.tab.c
-*.tab.h
-zconf.hash.c
-*.moc
-lkc_defs.h
-gconf.glade.h
-*.pot
-*.mo
-
-#
-# configuration programs
-#
-conf
-mconf
-nconf
-qconf
-gconf
-kxgettext
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 /conf
 /[gmnq]conf
@@ -30,4 +5,3 @@ kxgettext
 /[gmnq]conf-cflags
 /[gmnq]conf-libs
 /qconf-moc.cc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

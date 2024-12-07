@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* leon_smp.c: Sparc-Leon SMP support.
  *
  * based on sun4m_smp.c
@@ -13,11 +10,7 @@
 #include <asm/head.h>
 
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/threads.h>
 #include <linux/smp.h>
 #include <linux/interrupt.h>
@@ -32,10 +25,7 @@
 #include <linux/delay.h>
 #include <linux/gfp.h>
 #include <linux/cpu.h>
-<<<<<<< HEAD
-=======
 #include <linux/clockchips.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/cacheflush.h>
 #include <asm/tlbflush.h>
@@ -48,39 +38,22 @@
 #include <asm/delay.h>
 #include <asm/irq.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgalloc.h>
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/oplib.h>
 #include <asm/cpudata.h>
 #include <asm/asi.h>
 #include <asm/leon.h>
 #include <asm/leon_amba.h>
-<<<<<<< HEAD
-
-#include "kernel.h"
-
-#ifdef CONFIG_SPARC_LEON
-
-=======
 #include <asm/timer.h>
 
 #include "kernel.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "irq.h"
 
 extern ctxd_t *srmmu_ctx_table_phys;
 static int smp_processors_ready;
 extern volatile unsigned long cpu_callin_map[NR_CPUS];
 extern cpumask_t smp_commenced_mask;
-<<<<<<< HEAD
-void __init leon_configure_cache_smp(void);
-=======
 void leon_configure_cache_smp(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void leon_ipi_init(void);
 
 /* IRQ number of LEON IPIs */
@@ -95,40 +68,6 @@ static inline unsigned long do_swap(volatile unsigned long *ptr,
 	return val;
 }
 
-<<<<<<< HEAD
-static void smp_setup_percpu_timer(void);
-
-void __cpuinit leon_callin(void)
-{
-	int cpuid = hard_smpleon_processor_id();
-
-	local_flush_cache_all();
-	local_flush_tlb_all();
-	leon_configure_cache_smp();
-
-	notify_cpu_starting(cpuid);
-
-	/* Get our local ticker going. */
-	smp_setup_percpu_timer();
-
-	calibrate_delay();
-	smp_store_cpu_info(cpuid);
-
-	local_flush_cache_all();
-	local_flush_tlb_all();
-
-	/*
-	 * Unblock the master CPU _only_ when the scheduler state
-	 * of all secondary CPUs will be up-to-date, so after
-	 * the SMP initialization the master will be just allowed
-	 * to call the scheduler code.
-	 * Allow master to continue.
-	 */
-	do_swap(&cpu_callin_map[cpuid], 1);
-
-	local_flush_cache_all();
-	local_flush_tlb_all();
-=======
 void leon_cpu_pre_starting(void *arg)
 {
 	leon_configure_cache_smp();
@@ -147,28 +86,17 @@ void leon_cpu_pre_online(void *arg)
 
 	local_ops->cache_all();
 	local_ops->tlb_all();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fix idle thread fields. */
 	__asm__ __volatile__("ld [%0], %%g6\n\t" : : "r"(&current_set[cpuid])
 			     : "memory" /* paranoid */);
 
 	/* Attach to the address space of init_task. */
-<<<<<<< HEAD
-	atomic_inc(&init_mm.mm_count);
-=======
 	mmgrab(&init_mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	current->active_mm = &init_mm;
 
 	while (!cpumask_test_cpu(cpuid, &smp_commenced_mask))
 		mb();
-<<<<<<< HEAD
-
-	local_irq_enable();
-	set_cpu_online(cpuid, true);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -177,11 +105,7 @@ void leon_cpu_pre_online(void *arg)
 
 extern struct linux_prom_registers smp_penguin_ctable;
 
-<<<<<<< HEAD
-void __init leon_configure_cache_smp(void)
-=======
 void leon_configure_cache_smp(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long cfg = sparc_leon3_get_dcachecfg();
 	int me = smp_processor_id();
@@ -201,19 +125,11 @@ void leon_configure_cache_smp(void)
 		}
 	}
 
-<<<<<<< HEAD
-	local_flush_cache_all();
-	local_flush_tlb_all();
-}
-
-void leon_smp_setbroadcast(unsigned int mask)
-=======
 	local_ops->cache_all();
 	local_ops->tlb_all();
 }
 
 static void leon_smp_setbroadcast(unsigned int mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int broadcast =
 	    ((LEON3_BYPASS_LOAD_PA(&(leon3_irqctrl_regs->mpstatus)) >>
@@ -231,16 +147,6 @@ static void leon_smp_setbroadcast(unsigned int mask)
 	LEON_BYPASS_STORE_PA(&(leon3_irqctrl_regs->mpbroadcast), mask);
 }
 
-<<<<<<< HEAD
-unsigned int leon_smp_getbroadcast(void)
-{
-	unsigned int mask;
-	mask = LEON_BYPASS_LOAD_PA(&(leon3_irqctrl_regs->mpbroadcast));
-	return mask;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int leon_smp_nrcpus(void)
 {
 	int nrcpu =
@@ -268,23 +174,6 @@ void __init leon_boot_cpus(void)
 	leon_smp_setbroadcast(1 << LEON3_IRQ_TICKER);
 
 	leon_configure_cache_smp();
-<<<<<<< HEAD
-	smp_setup_percpu_timer();
-	local_flush_cache_all();
-
-}
-
-int __cpuinit leon_boot_one_cpu(int i)
-{
-
-	struct task_struct *p;
-	int timeout;
-
-	/* Cook up an idler for this guy. */
-	p = fork_idle(i);
-
-	current_set[i] = task_thread_info(p);
-=======
 	local_ops->cache_all();
 
 }
@@ -294,7 +183,6 @@ int leon_boot_one_cpu(int i, struct task_struct *idle)
 	int timeout;
 
 	current_set[i] = task_thread_info(idle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* See trampoline.S:leon_smp_cpu_startup for details...
 	 * Initialize the contexts table
@@ -308,11 +196,7 @@ int leon_boot_one_cpu(int i, struct task_struct *idle)
 	/* whirrr, whirrr, whirrrrrrrrr... */
 	printk(KERN_INFO "Starting CPU %d : (irqmp: 0x%x)\n", (unsigned int)i,
 	       (unsigned int)&leon3_irqctrl_regs->mpstatus);
-<<<<<<< HEAD
-	local_flush_cache_all();
-=======
 	local_ops->cache_all();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Make sure all IRQs are of from the start for this new CPU */
 	LEON_BYPASS_STORE_PA(&leon3_irqctrl_regs->mask[i], 0);
@@ -337,11 +221,7 @@ int leon_boot_one_cpu(int i, struct task_struct *idle)
 		leon_enable_irq_cpu(leon_ipi_irq, i);
 	}
 
-<<<<<<< HEAD
-	local_flush_cache_all();
-=======
 	local_ops->cache_all();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -361,31 +241,6 @@ void __init leon_smp_done(void)
 		}
 	}
 	*prev = first;
-<<<<<<< HEAD
-	local_flush_cache_all();
-
-	/* Free unneeded trap tables */
-	if (!cpu_present(1)) {
-		ClearPageReserved(virt_to_page(&trapbase_cpu1));
-		init_page_count(virt_to_page(&trapbase_cpu1));
-		free_page((unsigned long)&trapbase_cpu1);
-		totalram_pages++;
-		num_physpages++;
-	}
-	if (!cpu_present(2)) {
-		ClearPageReserved(virt_to_page(&trapbase_cpu2));
-		init_page_count(virt_to_page(&trapbase_cpu2));
-		free_page((unsigned long)&trapbase_cpu2);
-		totalram_pages++;
-		num_physpages++;
-	}
-	if (!cpu_present(3)) {
-		ClearPageReserved(virt_to_page(&trapbase_cpu3));
-		init_page_count(virt_to_page(&trapbase_cpu3));
-		free_page((unsigned long)&trapbase_cpu3);
-		totalram_pages++;
-		num_physpages++;
-=======
 	local_ops->cache_all();
 
 	/* Free unneeded trap tables */
@@ -397,20 +252,12 @@ void __init leon_smp_done(void)
 	}
 	if (!cpu_present(3)) {
 		free_reserved_page(virt_to_page(&trapbase_cpu3[0]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Ok, they are spinning and ready to go. */
 	smp_processors_ready = 1;
 
 }
 
-<<<<<<< HEAD
-void leon_irq_rotate(int cpu)
-{
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct leon_ipi_work {
 	int single;
 	int msk;
@@ -444,11 +291,7 @@ static void __init leon_ipi_init(void)
 	local_irq_save(flags);
 	trap_table = &sparc_ttable[SP_TRAP_IRQ1 + (leon_ipi_irq - 1)];
 	trap_table->inst_three += smpleon_ipi - real_irq_entry;
-<<<<<<< HEAD
-	local_flush_cache_all();
-=======
 	local_ops->cache_all();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 
 	for_each_possible_cpu(cpu) {
@@ -457,8 +300,6 @@ static void __init leon_ipi_init(void)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void leon_send_ipi(int cpu, int level)
 {
 	unsigned long mask;
@@ -466,7 +307,6 @@ static void leon_send_ipi(int cpu, int level)
 	LEON3_BYPASS_STORE_PA(&leon3_irqctrl_regs->force[cpu], mask);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void leon_ipi_single(int cpu)
 {
 	struct leon_ipi_work *work = &per_cpu(leon_ipi_work, cpu);
@@ -475,11 +315,7 @@ static void leon_ipi_single(int cpu)
 	work->single = 1;
 
 	/* Generate IRQ on the CPU */
-<<<<<<< HEAD
-	set_cpu_int(cpu, leon_ipi_irq);
-=======
 	leon_send_ipi(cpu, leon_ipi_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void leon_ipi_mask_one(int cpu)
@@ -490,11 +326,7 @@ static void leon_ipi_mask_one(int cpu)
 	work->msk = 1;
 
 	/* Generate IRQ on the CPU */
-<<<<<<< HEAD
-	set_cpu_int(cpu, leon_ipi_irq);
-=======
 	leon_send_ipi(cpu, leon_ipi_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void leon_ipi_resched(int cpu)
@@ -505,20 +337,12 @@ static void leon_ipi_resched(int cpu)
 	work->resched = 1;
 
 	/* Generate IRQ on the CPU (any IRQ will cause resched) */
-<<<<<<< HEAD
-	set_cpu_int(cpu, leon_ipi_irq);
-=======
 	leon_send_ipi(cpu, leon_ipi_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void leonsmp_ipi_interrupt(void)
 {
-<<<<<<< HEAD
-	struct leon_ipi_work *work = &__get_cpu_var(leon_ipi_work);
-=======
 	struct leon_ipi_work *work = this_cpu_ptr(&leon_ipi_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (work->single) {
 		work->single = 0;
@@ -535,11 +359,7 @@ void leonsmp_ipi_interrupt(void)
 }
 
 static struct smp_funcall {
-<<<<<<< HEAD
-	smpfunc_t func;
-=======
 	void *func;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long arg1;
 	unsigned long arg2;
 	unsigned long arg3;
@@ -547,20 +367,12 @@ static struct smp_funcall {
 	unsigned long arg5;
 	unsigned long processors_in[NR_CPUS];	/* Set when ipi entered. */
 	unsigned long processors_out[NR_CPUS];	/* Set when ipi exited. */
-<<<<<<< HEAD
-} ccall_info;
-=======
 } ccall_info __attribute__((aligned(8)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_SPINLOCK(cross_call_lock);
 
 /* Cross calls must be serialized, at least currently. */
-<<<<<<< HEAD
-static void leon_cross_call(smpfunc_t func, cpumask_t mask, unsigned long arg1,
-=======
 static void leon_cross_call(void *func, cpumask_t mask, unsigned long arg1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    unsigned long arg2, unsigned long arg3,
 			    unsigned long arg4)
 {
@@ -572,11 +384,7 @@ static void leon_cross_call(void *func, cpumask_t mask, unsigned long arg1,
 
 		{
 			/* If you make changes here, make sure gcc generates proper code... */
-<<<<<<< HEAD
-			register smpfunc_t f asm("i0") = func;
-=======
 			register void *f asm("i0") = func;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			register unsigned long a1 asm("i1") = arg1;
 			register unsigned long a2 asm("i2") = arg2;
 			register unsigned long a3 asm("i3") = arg3;
@@ -601,11 +409,7 @@ static void leon_cross_call(void *func, cpumask_t mask, unsigned long arg1,
 				if (cpumask_test_cpu(i, &mask)) {
 					ccall_info.processors_in[i] = 0;
 					ccall_info.processors_out[i] = 0;
-<<<<<<< HEAD
-					set_cpu_int(i, LEON3_IRQ_CROSS_CALL);
-=======
 					leon_send_ipi(i, LEON3_IRQ_CROSS_CALL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				}
 			}
@@ -640,64 +444,6 @@ static void leon_cross_call(void *func, cpumask_t mask, unsigned long arg1,
 /* Running cross calls. */
 void leon_cross_call_irq(void)
 {
-<<<<<<< HEAD
-	int i = smp_processor_id();
-
-	ccall_info.processors_in[i] = 1;
-	ccall_info.func(ccall_info.arg1, ccall_info.arg2, ccall_info.arg3,
-			ccall_info.arg4, ccall_info.arg5);
-	ccall_info.processors_out[i] = 1;
-}
-
-irqreturn_t leon_percpu_timer_interrupt(int irq, void *unused)
-{
-	int cpu = smp_processor_id();
-
-	leon_clear_profile_irq(cpu);
-
-	profile_tick(CPU_PROFILING);
-
-	if (!--prof_counter(cpu)) {
-		int user = user_mode(get_irq_regs());
-
-		update_process_times(user);
-
-		prof_counter(cpu) = prof_multiplier(cpu);
-	}
-
-	return IRQ_HANDLED;
-}
-
-static void __init smp_setup_percpu_timer(void)
-{
-	int cpu = smp_processor_id();
-
-	prof_counter(cpu) = prof_multiplier(cpu) = 1;
-}
-
-void __init leon_blackbox_id(unsigned *addr)
-{
-	int rd = *addr & 0x3e000000;
-	int rs1 = rd >> 11;
-
-	/* patch places where ___b_hard_smp_processor_id appears */
-	addr[0] = 0x81444000 | rd;	/* rd %asr17, reg */
-	addr[1] = 0x8130201c | rd | rs1;	/* srl reg, 0x1c, reg */
-	addr[2] = 0x01000000;	/* nop */
-}
-
-void __init leon_blackbox_current(unsigned *addr)
-{
-	int rd = *addr & 0x3e000000;
-	int rs1 = rd >> 11;
-
-	/* patch LOAD_CURRENT macro where ___b_load_current appears */
-	addr[0] = 0x81444000 | rd;	/* rd %asr17, reg */
-	addr[2] = 0x8130201c | rd | rs1;	/* srl reg, 0x1c, reg */
-	addr[4] = 0x81282002 | rd | rs1;	/* sll reg, 0x2, reg */
-
-}
-=======
 	void (*func)(unsigned long, unsigned long, unsigned long, unsigned long,
 		     unsigned long) = ccall_info.func;
 	int i = smp_processor_id();
@@ -714,26 +460,11 @@ static const struct sparc32_ipi_ops leon_ipi_ops = {
 	.single     = leon_ipi_single,
 	.mask_one   = leon_ipi_mask_one,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init leon_init_smp(void)
 {
 	/* Patch ipi15 trap table */
 	t_nmi[1] = t_nmi[1] + (linux_trap_ipi15_leon - linux_trap_ipi15_sun4m);
 
-<<<<<<< HEAD
-	BTFIXUPSET_BLACKBOX(hard_smp_processor_id, leon_blackbox_id);
-	BTFIXUPSET_BLACKBOX(load_current, leon_blackbox_current);
-	BTFIXUPSET_CALL(smp_cross_call, leon_cross_call, BTFIXUPCALL_NORM);
-	BTFIXUPSET_CALL(__hard_smp_processor_id, __leon_processor_id,
-			BTFIXUPCALL_NORM);
-	BTFIXUPSET_CALL(smp_ipi_resched, leon_ipi_resched, BTFIXUPCALL_NORM);
-	BTFIXUPSET_CALL(smp_ipi_single, leon_ipi_single, BTFIXUPCALL_NORM);
-	BTFIXUPSET_CALL(smp_ipi_mask_one, leon_ipi_mask_one, BTFIXUPCALL_NORM);
-}
-
-#endif /* CONFIG_SPARC_LEON */
-=======
 	sparc32_ipi_ops = &leon_ipi_ops;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

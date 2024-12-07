@@ -31,10 +31,6 @@
  * SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/export.h>
 #include <linux/io-mapping.h>
@@ -62,19 +58,11 @@ EXPORT_SYMBOL_GPL(mlx4_pd_alloc);
 
 void mlx4_pd_free(struct mlx4_dev *dev, u32 pdn)
 {
-<<<<<<< HEAD
-	mlx4_bitmap_free(&mlx4_priv(dev)->pd_bitmap, pdn);
-}
-EXPORT_SYMBOL_GPL(mlx4_pd_free);
-
-int mlx4_xrcd_alloc(struct mlx4_dev *dev, u32 *xrcdn)
-=======
 	mlx4_bitmap_free(&mlx4_priv(dev)->pd_bitmap, pdn, MLX4_USE_RR);
 }
 EXPORT_SYMBOL_GPL(mlx4_pd_free);
 
 int __mlx4_xrcd_alloc(struct mlx4_dev *dev, u32 *xrcdn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 
@@ -84,13 +72,6 @@ int __mlx4_xrcd_alloc(struct mlx4_dev *dev, u32 *xrcdn)
 
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(mlx4_xrcd_alloc);
-
-void mlx4_xrcd_free(struct mlx4_dev *dev, u32 xrcdn)
-{
-	mlx4_bitmap_free(&mlx4_priv(dev)->xrcd_bitmap, xrcdn);
-=======
 
 int mlx4_xrcd_alloc(struct mlx4_dev *dev, u32 *xrcdn)
 {
@@ -131,7 +112,6 @@ void mlx4_xrcd_free(struct mlx4_dev *dev, u32 xrcdn)
 			mlx4_warn(dev, "Failed to release xrcdn %d\n", xrcdn);
 	} else
 		__mlx4_xrcd_free(dev, xrcdn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mlx4_xrcd_free);
 
@@ -171,13 +151,6 @@ int mlx4_uar_alloc(struct mlx4_dev *dev, struct mlx4_uar *uar)
 		return -ENOMEM;
 
 	if (mlx4_is_slave(dev))
-<<<<<<< HEAD
-		offset = uar->index % ((int) pci_resource_len(dev->pdev, 2) /
-				       dev->caps.uar_page_size);
-	else
-		offset = uar->index;
-	uar->pfn = (pci_resource_start(dev->pdev, 2) >> PAGE_SHIFT) + offset;
-=======
 		offset = uar->index % ((int)pci_resource_len(dev->persist->pdev,
 							     2) /
 				       dev->caps.uar_page_size);
@@ -185,7 +158,6 @@ int mlx4_uar_alloc(struct mlx4_dev *dev, struct mlx4_uar *uar)
 		offset = uar->index;
 	uar->pfn = (pci_resource_start(dev->persist->pdev, 2) >> PAGE_SHIFT)
 		    + offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uar->map = NULL;
 	return 0;
 }
@@ -193,19 +165,11 @@ EXPORT_SYMBOL_GPL(mlx4_uar_alloc);
 
 void mlx4_uar_free(struct mlx4_dev *dev, struct mlx4_uar *uar)
 {
-<<<<<<< HEAD
-	mlx4_bitmap_free(&mlx4_priv(dev)->uar_table.bitmap, uar->index);
-}
-EXPORT_SYMBOL_GPL(mlx4_uar_free);
-
-int mlx4_bf_alloc(struct mlx4_dev *dev, struct mlx4_bf *bf)
-=======
 	mlx4_bitmap_free(&mlx4_priv(dev)->uar_table.bitmap, uar->index, MLX4_USE_RR);
 }
 EXPORT_SYMBOL_GPL(mlx4_uar_free);
 
 int mlx4_bf_alloc(struct mlx4_dev *dev, struct mlx4_bf *bf, int node)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	struct mlx4_uar *uar;
@@ -223,12 +187,6 @@ int mlx4_bf_alloc(struct mlx4_dev *dev, struct mlx4_bf *bf, int node)
 			err = -ENOMEM;
 			goto out;
 		}
-<<<<<<< HEAD
-		uar = kmalloc(sizeof *uar, GFP_KERNEL);
-		if (!uar) {
-			err = -ENOMEM;
-			goto out;
-=======
 		uar = kmalloc_node(sizeof(*uar), GFP_KERNEL, node);
 		if (!uar) {
 			uar = kmalloc(sizeof(*uar), GFP_KERNEL);
@@ -236,7 +194,6 @@ int mlx4_bf_alloc(struct mlx4_dev *dev, struct mlx4_bf *bf, int node)
 				err = -ENOMEM;
 				goto out;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		err = mlx4_uar_alloc(dev, uar);
 		if (err)
@@ -248,13 +205,9 @@ int mlx4_bf_alloc(struct mlx4_dev *dev, struct mlx4_bf *bf, int node)
 			goto free_uar;
 		}
 
-<<<<<<< HEAD
-		uar->bf_map = io_mapping_map_wc(priv->bf_mapping, uar->index << PAGE_SHIFT);
-=======
 		uar->bf_map = io_mapping_map_wc(priv->bf_mapping,
 						uar->index << PAGE_SHIFT,
 						PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!uar->bf_map) {
 			err = -ENOMEM;
 			goto unamp_uar;
@@ -263,10 +216,6 @@ int mlx4_bf_alloc(struct mlx4_dev *dev, struct mlx4_bf *bf, int node)
 		list_add(&uar->bf_list, &priv->bf_list);
 	}
 
-<<<<<<< HEAD
-	bf->uar = uar;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	idx = ffz(uar->free_bf_bmap);
 	uar->free_bf_bmap |= 1 << idx;
 	bf->uar = uar;
@@ -322,11 +271,6 @@ EXPORT_SYMBOL_GPL(mlx4_bf_free);
 
 int mlx4_init_uar_table(struct mlx4_dev *dev)
 {
-<<<<<<< HEAD
-	if (dev->caps.num_uars <= 128) {
-		mlx4_err(dev, "Only %d UAR pages (need more than 128)\n",
-			 dev->caps.num_uars);
-=======
 	int num_reserved_uar = mlx4_get_num_reserved_uar(dev);
 
 	mlx4_dbg(dev, "uar_page_shift = %d", dev->uar_page_shift);
@@ -336,7 +280,6 @@ int mlx4_init_uar_table(struct mlx4_dev *dev)
 		mlx4_err(
 			dev, "Only %d UAR pages (need more than %d)\n",
 			dev->caps.num_uars, num_reserved_uar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlx4_err(dev, "Increase firmware log2_uar_bar_megabytes?\n");
 		return -ENODEV;
 	}

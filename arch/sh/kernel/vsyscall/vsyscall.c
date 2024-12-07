@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/vsyscall/vsyscall.c
  *
@@ -9,13 +6,6 @@
  *
  * vDSO randomization
  * Copyright(C) 2005-2006, Red Hat, Inc., Ingo Molnar
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/mm.h>
 #include <linux/kernel.h>
@@ -71,13 +61,9 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	unsigned long addr;
 	int ret;
 
-<<<<<<< HEAD
-	down_write(&mm->mmap_sem);
-=======
 	if (mmap_write_lock_killable(mm))
 		return -EINTR;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr = get_unmapped_area(NULL, 0, PAGE_SIZE, 0, 0);
 	if (IS_ERR_VALUE(addr)) {
 		ret = addr;
@@ -94,11 +80,7 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	current->mm->context.vdso = (void *)addr;
 
 up_fail:
-<<<<<<< HEAD
-	up_write(&mm->mmap_sem);
-=======
 	mmap_write_unlock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -109,21 +91,3 @@ const char *arch_vma_name(struct vm_area_struct *vma)
 
 	return NULL;
 }
-<<<<<<< HEAD
-
-struct vm_area_struct *get_gate_vma(struct mm_struct *mm)
-{
-	return NULL;
-}
-
-int in_gate_area(struct mm_struct *mm, unsigned long address)
-{
-	return 0;
-}
-
-int in_gate_area_no_mm(unsigned long address)
-{
-	return 0;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

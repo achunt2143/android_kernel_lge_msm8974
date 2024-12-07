@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OSS compatible sequencer driver
  *
  * synth device handlers
  *
  * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "seq_oss_synth.h"
@@ -33,10 +13,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/nospec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * constants
@@ -81,19 +58,11 @@ struct seq_oss_synth {
 static int max_synth_devs;
 static struct seq_oss_synth *synth_devs[SNDRV_SEQ_OSS_MAX_SYNTH_DEVS];
 static struct seq_oss_synth midi_synth_dev = {
-<<<<<<< HEAD
-	-1, /* seq_device */
-	SYNTH_TYPE_MIDI, /* synth_type */
-	0, /* synth_subtype */
-	16, /* nr_voices */
-	"MIDI", /* name */
-=======
 	.seq_device = -1,
 	.synth_type = SYNTH_TYPE_MIDI,
 	.synth_subtype = 0,
 	.nr_voices = 16,
 	.name = "MIDI",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static DEFINE_SPINLOCK(register_lock);
@@ -117,29 +86,17 @@ snd_seq_oss_synth_init(void)
  * registration of the synth device
  */
 int
-<<<<<<< HEAD
-snd_seq_oss_synth_register(struct snd_seq_device *dev)
-{
-=======
 snd_seq_oss_synth_probe(struct device *_dev)
 {
 	struct snd_seq_device *dev = to_seq_dev(_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	struct seq_oss_synth *rec;
 	struct snd_seq_oss_reg *reg = SNDRV_SEQ_DEVICE_ARGPTR(dev);
 	unsigned long flags;
 
-<<<<<<< HEAD
-	if ((rec = kzalloc(sizeof(*rec), GFP_KERNEL)) == NULL) {
-		snd_printk(KERN_ERR "can't malloc synth info\n");
-		return -ENOMEM;
-	}
-=======
 	rec = kzalloc(sizeof(*rec), GFP_KERNEL);
 	if (!rec)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rec->seq_device = -1;
 	rec->synth_type = reg->type;
 	rec->synth_subtype = reg->subtype;
@@ -150,11 +107,7 @@ snd_seq_oss_synth_probe(struct device *_dev)
 	snd_use_lock_init(&rec->use_lock);
 
 	/* copy and truncate the name of synth device */
-<<<<<<< HEAD
-	strlcpy(rec->name, dev->name, sizeof(rec->name));
-=======
 	strscpy(rec->name, dev->name, sizeof(rec->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* registration */
 	spin_lock_irqsave(&register_lock, flags);
@@ -165,11 +118,7 @@ snd_seq_oss_synth_probe(struct device *_dev)
 	if (i >= max_synth_devs) {
 		if (max_synth_devs >= SNDRV_SEQ_OSS_MAX_SYNTH_DEVS) {
 			spin_unlock_irqrestore(&register_lock, flags);
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "no more synth slot\n");
-=======
 			pr_err("ALSA: seq_oss: no more synth slot\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(rec);
 			return -ENOMEM;
 		}
@@ -177,10 +126,6 @@ snd_seq_oss_synth_probe(struct device *_dev)
 	}
 	rec->seq_device = i;
 	synth_devs[i] = rec;
-<<<<<<< HEAD
-	debug_printk(("synth %s registered %d\n", rec->name, i));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&register_lock, flags);
 	dev->driver_data = rec;
 #ifdef SNDRV_OSS_INFO_DEV_SYNTH
@@ -192,14 +137,9 @@ snd_seq_oss_synth_probe(struct device *_dev)
 
 
 int
-<<<<<<< HEAD
-snd_seq_oss_synth_unregister(struct snd_seq_device *dev)
-{
-=======
 snd_seq_oss_synth_remove(struct device *_dev)
 {
 	struct snd_seq_device *dev = to_seq_dev(_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int index;
 	struct seq_oss_synth *rec = dev->driver_data;
 	unsigned long flags;
@@ -211,11 +151,7 @@ snd_seq_oss_synth_remove(struct device *_dev)
 	}
 	if (index >= max_synth_devs) {
 		spin_unlock_irqrestore(&register_lock, flags);
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "can't unregister synth\n");
-=======
 		pr_err("ALSA: seq_oss: can't unregister synth\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	synth_devs[index] = NULL;
@@ -300,10 +236,6 @@ snd_seq_oss_synth_setup(struct seq_oss_devinfo *dp)
 		if (info->nr_voices > 0) {
 			info->ch = kcalloc(info->nr_voices, sizeof(struct seq_oss_chinfo), GFP_KERNEL);
 			if (!info->ch) {
-<<<<<<< HEAD
-				snd_printk(KERN_ERR "Cannot malloc\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rec->oper.close(&info->arg);
 				module_put(rec->oper.owner);
 				snd_use_lock_free(&rec->use_lock);
@@ -311,10 +243,6 @@ snd_seq_oss_synth_setup(struct seq_oss_devinfo *dp)
 			}
 			reset_channels(info);
 		}
-<<<<<<< HEAD
-		debug_printk(("synth %d assigned\n", i));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->opened++;
 		rec->opened++;
 		dp->synth_opened++;
@@ -368,11 +296,7 @@ snd_seq_oss_synth_cleanup(struct seq_oss_devinfo *dp)
 	struct seq_oss_synth *rec;
 	struct seq_oss_synthinfo *info;
 
-<<<<<<< HEAD
-	if (snd_BUG_ON(dp->max_synthdev >= SNDRV_SEQ_OSS_MAX_SYNTH_DEVS))
-=======
 	if (snd_BUG_ON(dp->max_synthdev > SNDRV_SEQ_OSS_MAX_SYNTH_DEVS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	for (i = 0; i < dp->max_synthdev; i++) {
 		info = &dp->synths[i];
@@ -388,10 +312,6 @@ snd_seq_oss_synth_cleanup(struct seq_oss_devinfo *dp)
 			if (rec == NULL)
 				continue;
 			if (rec->opened > 0) {
-<<<<<<< HEAD
-				debug_printk(("synth %d closed\n", i));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rec->oper.close(&info->arg);
 				module_put(rec->oper.owner);
 				rec->opened = 0;
@@ -407,19 +327,6 @@ snd_seq_oss_synth_cleanup(struct seq_oss_devinfo *dp)
 	dp->max_synthdev = 0;
 }
 
-<<<<<<< HEAD
-/*
- * check if the specified device is MIDI mapped device
- */
-static int
-is_midi_dev(struct seq_oss_devinfo *dp, int dev)
-{
-	if (dev < 0 || dev >= dp->max_synthdev)
-		return 0;
-	if (dp->synths[dev].is_midi)
-		return 1;
-	return 0;
-=======
 static struct seq_oss_synthinfo *
 get_synthinfo_nospec(struct seq_oss_devinfo *dp, int dev)
 {
@@ -427,7 +334,6 @@ get_synthinfo_nospec(struct seq_oss_devinfo *dp, int dev)
 		return NULL;
 	dev = array_index_nospec(dev, SNDRV_SEQ_OSS_MAX_SYNTH_DEVS);
 	return &dp->synths[dev];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -437,16 +343,6 @@ static struct seq_oss_synth *
 get_synthdev(struct seq_oss_devinfo *dp, int dev)
 {
 	struct seq_oss_synth *rec;
-<<<<<<< HEAD
-	if (dev < 0 || dev >= dp->max_synthdev)
-		return NULL;
-	if (! dp->synths[dev].opened)
-		return NULL;
-	if (dp->synths[dev].is_midi)
-		return &midi_synth_dev;
-	if ((rec = get_sdev(dev)) == NULL)
-		return NULL;
-=======
 	struct seq_oss_synthinfo *info = get_synthinfo_nospec(dp, dev);
 
 	if (!info)
@@ -461,7 +357,6 @@ get_synthdev(struct seq_oss_devinfo *dp, int dev)
 		if (!rec)
 			return NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (! rec->opened) {
 		snd_use_lock_free(&rec->use_lock);
 		return NULL;
@@ -497,15 +392,8 @@ snd_seq_oss_synth_reset(struct seq_oss_devinfo *dp, int dev)
 	struct seq_oss_synth *rec;
 	struct seq_oss_synthinfo *info;
 
-<<<<<<< HEAD
-	if (snd_BUG_ON(dev < 0 || dev >= dp->max_synthdev))
-		return;
-	info = &dp->synths[dev];
-	if (! info->opened)
-=======
 	info = get_synthinfo_nospec(dp, dev);
 	if (!info || !info->opened)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	if (info->sysex)
 		info->sysex->len = 0; /* reset sysex */
@@ -554,16 +442,6 @@ snd_seq_oss_synth_load_patch(struct seq_oss_devinfo *dp, int dev, int fmt,
 			    const char __user *buf, int p, int c)
 {
 	struct seq_oss_synth *rec;
-<<<<<<< HEAD
-	int rc;
-
-	if (dev < 0 || dev >= dp->max_synthdev)
-		return -ENXIO;
-
-	if (is_midi_dev(dp, dev))
-		return 0;
-	if ((rec = get_synthdev(dp, dev)) == NULL)
-=======
 	struct seq_oss_synthinfo *info;
 	int rc;
 
@@ -575,36 +453,17 @@ snd_seq_oss_synth_load_patch(struct seq_oss_devinfo *dp, int dev, int fmt,
 		return 0;
 	rec = get_synthdev(dp, dev);
 	if (!rec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 
 	if (rec->oper.load_patch == NULL)
 		rc = -ENXIO;
 	else
-<<<<<<< HEAD
-		rc = rec->oper.load_patch(&dp->synths[dev].arg, fmt, buf, p, c);
-=======
 		rc = rec->oper.load_patch(&info->arg, fmt, buf, p, c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_use_lock_free(&rec->use_lock);
 	return rc;
 }
 
 /*
-<<<<<<< HEAD
- * check if the device is valid synth device
- */
-int
-snd_seq_oss_synth_is_valid(struct seq_oss_devinfo *dp, int dev)
-{
-	struct seq_oss_synth *rec;
-	rec = get_synthdev(dp, dev);
-	if (rec) {
-		snd_use_lock_free(&rec->use_lock);
-		return 1;
-	}
-	return 0;
-=======
  * check if the device is valid synth device and return the synth info
  */
 struct seq_oss_synthinfo *
@@ -618,7 +477,6 @@ snd_seq_oss_synth_info(struct seq_oss_devinfo *dp, int dev)
 		return get_synthinfo_nospec(dp, dev);
 	}
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -633,13 +491,6 @@ snd_seq_oss_synth_sysex(struct seq_oss_devinfo *dp, int dev, unsigned char *buf,
 	int i, send;
 	unsigned char *dest;
 	struct seq_oss_synth_sysex *sysex;
-<<<<<<< HEAD
-
-	if (! snd_seq_oss_synth_is_valid(dp, dev))
-		return -ENXIO;
-
-	sysex = dp->synths[dev].sysex;
-=======
 	struct seq_oss_synthinfo *info;
 
 	info = snd_seq_oss_synth_info(dp, dev);
@@ -647,16 +498,11 @@ snd_seq_oss_synth_sysex(struct seq_oss_devinfo *dp, int dev, unsigned char *buf,
 		return -ENXIO;
 
 	sysex = info->sysex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sysex == NULL) {
 		sysex = kzalloc(sizeof(*sysex), GFP_KERNEL);
 		if (sysex == NULL)
 			return -ENOMEM;
-<<<<<<< HEAD
-		dp->synths[dev].sysex = sysex;
-=======
 		info->sysex = sysex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	send = 0;
@@ -701,19 +547,12 @@ snd_seq_oss_synth_sysex(struct seq_oss_devinfo *dp, int dev, unsigned char *buf,
 int
 snd_seq_oss_synth_addr(struct seq_oss_devinfo *dp, int dev, struct snd_seq_event *ev)
 {
-<<<<<<< HEAD
-	if (! snd_seq_oss_synth_is_valid(dp, dev))
-		return -EINVAL;
-	snd_seq_oss_fill_addr(dp, ev, dp->synths[dev].arg.addr.client,
-			      dp->synths[dev].arg.addr.port);
-=======
 	struct seq_oss_synthinfo *info = snd_seq_oss_synth_info(dp, dev);
 
 	if (!info)
 		return -EINVAL;
 	snd_seq_oss_fill_addr(dp, ev, info->arg.addr.client,
 			      info->arg.addr.port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -725,13 +564,6 @@ int
 snd_seq_oss_synth_ioctl(struct seq_oss_devinfo *dp, int dev, unsigned int cmd, unsigned long addr)
 {
 	struct seq_oss_synth *rec;
-<<<<<<< HEAD
-	int rc;
-
-	if (is_midi_dev(dp, dev))
-		return -ENXIO;
-	if ((rec = get_synthdev(dp, dev)) == NULL)
-=======
 	struct seq_oss_synthinfo *info;
 	int rc;
 
@@ -740,16 +572,11 @@ snd_seq_oss_synth_ioctl(struct seq_oss_devinfo *dp, int dev, unsigned int cmd, u
 		return -ENXIO;
 	rec = get_synthdev(dp, dev);
 	if (!rec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	if (rec->oper.ioctl == NULL)
 		rc = -ENXIO;
 	else
-<<<<<<< HEAD
-		rc = rec->oper.ioctl(&dp->synths[dev].arg, cmd, addr);
-=======
 		rc = rec->oper.ioctl(&info->arg, cmd, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_use_lock_free(&rec->use_lock);
 	return rc;
 }
@@ -761,14 +588,10 @@ snd_seq_oss_synth_ioctl(struct seq_oss_devinfo *dp, int dev, unsigned int cmd, u
 int
 snd_seq_oss_synth_raw_event(struct seq_oss_devinfo *dp, int dev, unsigned char *data, struct snd_seq_event *ev)
 {
-<<<<<<< HEAD
-	if (! snd_seq_oss_synth_is_valid(dp, dev) || is_midi_dev(dp, dev))
-=======
 	struct seq_oss_synthinfo *info;
 
 	info = snd_seq_oss_synth_info(dp, dev);
 	if (!info || info->is_midi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	ev->type = SNDRV_SEQ_EVENT_OSS;
 	memcpy(ev->data.raw8.d, data, 8);
@@ -783,15 +606,6 @@ int
 snd_seq_oss_synth_make_info(struct seq_oss_devinfo *dp, int dev, struct synth_info *inf)
 {
 	struct seq_oss_synth *rec;
-<<<<<<< HEAD
-
-	if (dev < 0 || dev >= dp->max_synthdev)
-		return -ENXIO;
-
-	if (dp->synths[dev].is_midi) {
-		struct midi_info minf;
-		snd_seq_oss_midi_make_info(dp, dp->synths[dev].midi_mapped, &minf);
-=======
 	struct seq_oss_synthinfo *info = get_synthinfo_nospec(dp, dev);
 
 	if (!info)
@@ -801,42 +615,27 @@ snd_seq_oss_synth_make_info(struct seq_oss_devinfo *dp, int dev, struct synth_in
 		struct midi_info minf;
 		if (snd_seq_oss_midi_make_info(dp, info->midi_mapped, &minf))
 			return -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inf->synth_type = SYNTH_TYPE_MIDI;
 		inf->synth_subtype = 0;
 		inf->nr_voices = 16;
 		inf->device = dev;
-<<<<<<< HEAD
-		strlcpy(inf->name, minf.name, sizeof(inf->name));
-	} else {
-		if ((rec = get_synthdev(dp, dev)) == NULL)
-=======
 		strscpy(inf->name, minf.name, sizeof(inf->name));
 	} else {
 		rec = get_synthdev(dp, dev);
 		if (!rec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENXIO;
 		inf->synth_type = rec->synth_type;
 		inf->synth_subtype = rec->synth_subtype;
 		inf->nr_voices = rec->nr_voices;
 		inf->device = dev;
-<<<<<<< HEAD
-		strlcpy(inf->name, rec->name, sizeof(inf->name));
-=======
 		strscpy(inf->name, rec->name, sizeof(inf->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_use_lock_free(&rec->use_lock);
 	}
 	return 0;
 }
 
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-=======
 #ifdef CONFIG_SND_PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * proc interface
  */
@@ -864,8 +663,4 @@ snd_seq_oss_synth_info_read(struct snd_info_buffer *buf)
 		snd_use_lock_free(&rec->use_lock);
 	}
 }
-<<<<<<< HEAD
-#endif /* CONFIG_PROC_FS */
-=======
 #endif /* CONFIG_SND_PROC_FS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

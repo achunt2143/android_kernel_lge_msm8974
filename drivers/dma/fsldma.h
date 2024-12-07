@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2007-2010 Freescale Semiconductor, Inc. All rights reserved.
  *
  * Author:
  *   Zhang Wei <wei.zhang@freescale.com>, Jul 2007
  *   Ebony Zhu <ebony.zhu@freescale.com>, May 2007
-<<<<<<< HEAD
- *
- * This is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __DMA_FSLDMA_H
 #define __DMA_FSLDMA_H
@@ -43,23 +31,16 @@
 #define FSL_DMA_MR_DAHE		0x00002000
 #define FSL_DMA_MR_SAHE		0x00001000
 
-<<<<<<< HEAD
-=======
 #define FSL_DMA_MR_SAHTS_MASK	0x0000C000
 #define FSL_DMA_MR_DAHTS_MASK	0x00030000
 #define FSL_DMA_MR_BWC_MASK	0x0f000000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Bandwidth/pause control determines how many bytes a given
  * channel is allowed to transfer before the DMA engine pauses
  * the current channel and switches to the next channel
  */
-<<<<<<< HEAD
-#define FSL_DMA_MR_BWC         0x08000000
-=======
 #define FSL_DMA_MR_BWC         0x0A000000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Special MR definition for MPC8349 */
 #define FSL_DMA_MR_EOTIE	0x00000080
@@ -101,13 +82,10 @@
 #define FSL_DMA_DGSR_EOSI	0x02
 #define FSL_DMA_DGSR_EOLSI	0x01
 
-<<<<<<< HEAD
-=======
 #define FSL_DMA_BUSWIDTHS	(BIT(DMA_SLAVE_BUSWIDTH_1_BYTE) | \
 				BIT(DMA_SLAVE_BUSWIDTH_2_BYTES) | \
 				BIT(DMA_SLAVE_BUSWIDTH_4_BYTES) | \
 				BIT(DMA_SLAVE_BUSWIDTH_8_BYTES))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef u64 __bitwise v64;
 typedef u32 __bitwise v32;
 
@@ -137,11 +115,7 @@ struct fsldma_chan_regs {
 };
 
 struct fsldma_chan;
-<<<<<<< HEAD
-#define FSL_DMA_MAX_CHANS_PER_DEVICE 4
-=======
 #define FSL_DMA_MAX_CHANS_PER_DEVICE 8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fsldma_device {
 	void __iomem *regs;	/* DGSR register base */
@@ -163,8 +137,6 @@ struct fsldma_device {
 #define FSL_DMA_CHAN_PAUSE_EXT	0x00001000
 #define FSL_DMA_CHAN_START_EXT	0x00002000
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PM
 struct fsldma_chan_regs_save {
 	u32 mr;
@@ -176,15 +148,10 @@ enum fsldma_pm_state {
 };
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fsldma_chan {
 	char name[8];			/* Channel name */
 	struct fsldma_chan_regs __iomem *regs;
 	spinlock_t desc_lock;		/* Descriptor operation lock */
-<<<<<<< HEAD
-	struct list_head ld_pending;	/* Link descriptors queue */
-	struct list_head ld_running;	/* Link descriptors queue */
-=======
 	/*
 	 * Descriptors which are queued to run, but have not yet been
 	 * submitted to the hardware for execution
@@ -200,7 +167,6 @@ struct fsldma_chan {
 	 * waiting for the ACK bit to be set by the async_tx API.
 	 */
 	struct list_head ld_completed;	/* Link descriptors queue */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dma_chan common;		/* DMA common channel */
 	struct dma_pool *desc_pool;	/* Descriptors pool */
 	struct device *dev;		/* Channel device */
@@ -209,13 +175,10 @@ struct fsldma_chan {
 	struct tasklet_struct tasklet;
 	u32 feature;
 	bool idle;			/* DMA controller is idle */
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PM
 	struct fsldma_chan_regs_save regs_save;
 	enum fsldma_pm_state pm_state;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void (*toggle_ext_pause)(struct fsldma_chan *fsl_chan, int enable);
 	void (*toggle_ext_start)(struct fsldma_chan *fsl_chan, int enable);
@@ -228,29 +191,6 @@ struct fsldma_chan {
 #define to_fsl_desc(lh) container_of(lh, struct fsl_desc_sw, node)
 #define tx_to_fsl_desc(tx) container_of(tx, struct fsl_desc_sw, async_tx)
 
-<<<<<<< HEAD
-#ifndef __powerpc64__
-static u64 in_be64(const u64 __iomem *addr)
-{
-	return ((u64)in_be32((u32 __iomem *)addr) << 32) |
-		(in_be32((u32 __iomem *)addr + 1));
-}
-
-static void out_be64(u64 __iomem *addr, u64 val)
-{
-	out_be32((u32 __iomem *)addr, val >> 32);
-	out_be32((u32 __iomem *)addr + 1, (u32)val);
-}
-
-/* There is no asm instructions for 64 bits reverse loads and stores */
-static u64 in_le64(const u64 __iomem *addr)
-{
-	return ((u64)in_le32((u32 __iomem *)addr + 1) << 32) |
-		(in_le32((u32 __iomem *)addr));
-}
-
-static void out_le64(u64 __iomem *addr, u64 val)
-=======
 #ifdef	CONFIG_PPC
 #define fsl_ioread32(p)		in_le32(p)
 #define fsl_ioread32be(p)	in_be32(p)
@@ -272,21 +212,10 @@ static u64 fsl_ioread64(const u64 __iomem *addr)
 }
 
 static void fsl_iowrite64(u64 val, u64 __iomem *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	out_le32((u32 __iomem *)addr + 1, val >> 32);
 	out_le32((u32 __iomem *)addr, (u32)val);
 }
-<<<<<<< HEAD
-#endif
-
-#define DMA_IN(fsl_chan, addr, width)					\
-		(((fsl_chan)->feature & FSL_DMA_BIG_ENDIAN) ?		\
-			in_be##width(addr) : in_le##width(addr))
-#define DMA_OUT(fsl_chan, addr, val, width)				\
-		(((fsl_chan)->feature & FSL_DMA_BIG_ENDIAN) ?		\
-			out_be##width(addr, val) : out_le##width(addr, val))
-=======
 
 static u64 fsl_ioread64be(const u64 __iomem *addr)
 {
@@ -323,7 +252,6 @@ static void fsl_iowrite64be(u64 val, u64 __iomem *addr)
 		(((fsl_dma)->feature & FSL_DMA_BIG_ENDIAN) ?	\
 			fsl_iowrite##width##be(val, addr) : fsl_iowrite	\
 		##width(val, addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DMA_TO_CPU(fsl_chan, d, width)					\
 		(((fsl_chan)->feature & FSL_DMA_BIG_ENDIAN) ?		\

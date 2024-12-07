@@ -1,17 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
-<<<<<<< HEAD
- * Copyright (C) 2010 Emulex.  All rights reserved.                *
- * EMULEX and SLI are trademarks of Emulex.                        *
- * www.emulex.com                                                  *
-=======
  * Copyright (C) 2017-2022 Broadcom. All Rights Reserved. The term *
  * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.     *
  * Copyright (C) 2010-2015 Emulex.  All rights reserved.           *
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.broadcom.com                                                *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                 *
  * This program is free software; you can redistribute it and/or   *
  * modify it under the terms of version 2 of the GNU General       *
@@ -39,12 +33,6 @@
 #define LPFC_BSG_VENDOR_DIAG_RUN_LOOPBACK	5
 #define LPFC_BSG_VENDOR_GET_MGMT_REV		6
 #define LPFC_BSG_VENDOR_MBOX			7
-<<<<<<< HEAD
-#define LPFC_BSG_VENDOR_MENLO_CMD		8
-#define LPFC_BSG_VENDOR_MENLO_DATA		9
-#define LPFC_BSG_VENDOR_DIAG_MODE_END		10
-#define LPFC_BSG_VENDOR_LINK_DIAG_TEST		11
-=======
 #define LPFC_BSG_VENDOR_DIAG_MODE_END		10
 #define LPFC_BSG_VENDOR_LINK_DIAG_TEST		11
 #define LPFC_BSG_VENDOR_FORCED_LINK_SPEED	14
@@ -54,7 +42,6 @@
 #define LPFC_BSG_VENDOR_RAS_SET_CONFIG		19
 #define LPFC_BSG_VENDOR_GET_TRUNK_INFO		20
 #define LPFC_BSG_VENDOR_GET_CGNBUF_INFO		21
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct set_ct_event {
 	uint32_t command;
@@ -80,10 +67,7 @@ struct send_mgmt_resp {
 };
 
 
-<<<<<<< HEAD
-=======
 #define DISABLE_LOOP_BACK  0x0 /* disables loop back */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INTERNAL_LOOP_BACK 0x1 /* adapter short cuts the loop internally */
 #define EXTERNAL_LOOP_BACK 0x2 /* requires an external loopback plug */
 
@@ -91,10 +75,7 @@ struct diag_mode_set {
 	uint32_t command;
 	uint32_t type;
 	uint32_t timeout;
-<<<<<<< HEAD
-=======
 	uint32_t physical_link;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sli4_link_diag {
@@ -148,19 +129,6 @@ struct dfc_mbox_req {
 	uint32_t extSeqNum;
 };
 
-<<<<<<< HEAD
-/* Used for menlo command or menlo data. The xri is only used for menlo data */
-struct menlo_command {
-	uint32_t cmd;
-	uint32_t xri;
-};
-
-struct menlo_response {
-	uint32_t xri; /* return the xri of the iocb exchange */
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * macros and data structures for handling sli-config mailbox command
  * pass-through support, this header file is shared between user and
@@ -246,13 +214,10 @@ struct lpfc_sli_config_hdr {
 	uint32_t reserved5;
 };
 
-<<<<<<< HEAD
-=======
 #define LPFC_CSF_BOOT_DEV		0x1D
 #define LPFC_CSF_QUERY			0
 #define LPFC_CSF_SAVE			1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_sli_config_emb0_subsys {
 	struct lpfc_sli_config_hdr	sli_config_hdr;
 #define LPFC_MBX_SLI_CONFIG_MAX_MSE     19
@@ -269,8 +234,6 @@ struct lpfc_sli_config_emb0_subsys {
 #define SLI_CONFIG_SUBSYS_FCOE		0x0C
 #define FCOE_OPCODE_READ_FCF		0x08
 #define FCOE_OPCODE_ADD_FCF		0x09
-<<<<<<< HEAD
-=======
 #define FCOE_OPCODE_SET_DPORT_MODE	0x27
 #define FCOE_OPCODE_GET_DPORT_RESULTS	0x28
 	uint32_t timeout;		/* comn_set_feature timeout */
@@ -282,7 +245,6 @@ struct lpfc_sli_config_emb0_subsys {
 #define lpfc_emb0_subcmnd_csf_p0_SHIFT	0
 #define lpfc_emb0_subcmnd_csf_p0_MASK	0x3
 #define lpfc_emb0_subcmnd_csf_p0_WORD	word70
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct lpfc_sli_config_emb1_subsys {
@@ -296,21 +258,14 @@ struct lpfc_sli_config_emb1_subsys {
 #define lpfc_emb1_subcmnd_subsys_WORD	word6
 /* Subsystem COMN (0x01) OpCodes */
 #define SLI_CONFIG_SUBSYS_COMN		0x01
-<<<<<<< HEAD
-=======
 #define COMN_OPCODE_GET_PROFILE_CONFIG	0xA4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define COMN_OPCODE_READ_OBJECT		0xAB
 #define COMN_OPCODE_WRITE_OBJECT	0xAC
 #define COMN_OPCODE_READ_OBJECT_LIST	0xAD
 #define COMN_OPCODE_DELETE_OBJECT	0xAE
-<<<<<<< HEAD
-#define COMN_OPCODE_GET_CNTL_ADDL_ATTRIBUTES	0x79
-=======
 #define COMN_OPCODE_SET_FEATURES	0xBF
 #define COMN_OPCODE_GET_CNTL_ADDL_ATTRIBUTES	0x79
 #define COMN_OPCODE_GET_CNTL_ATTRIBUTES	0x20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t timeout;
 	uint32_t request_length;
 	uint32_t word9;
@@ -342,8 +297,6 @@ struct lpfc_sli_config_mbox {
 	} un;
 };
 
-<<<<<<< HEAD
-=======
 #define LPFC_FORCED_LINK_SPEED_NOT_SUPPORTED	0
 #define LPFC_FORCED_LINK_SPEED_SUPPORTED	1
 struct get_forced_link_speed_support {
@@ -429,7 +382,6 @@ struct get_cgnbuf_info_req {
 #define LPFC_BSG_CGN_RESET_STAT		1
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* driver only */
 #define SLI_CONFIG_NOT_HANDLED		0
 #define SLI_CONFIG_HANDLED		1

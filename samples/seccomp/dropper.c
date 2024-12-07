@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Naive system call dropper built on seccomp_filter.
  *
@@ -15,10 +12,6 @@
  * When run, returns the specified errno for the specified
  * system call number against the given architecture.
  *
-<<<<<<< HEAD
- * Run this one as root as PR_SET_NO_NEW_PRIVS is not called.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <errno.h>
@@ -32,11 +25,7 @@
 #include <sys/prctl.h>
 #include <unistd.h>
 
-<<<<<<< HEAD
-static int install_filter(int nr, int arch, int error)
-=======
 static int install_filter(int arch, int nr, int error)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock_filter filter[] = {
 		BPF_STMT(BPF_LD+BPF_W+BPF_ABS,
@@ -53,10 +42,6 @@ static int install_filter(int arch, int nr, int error)
 		.len = (unsigned short)(sizeof(filter)/sizeof(filter[0])),
 		.filter = filter,
 	};
-<<<<<<< HEAD
-	if (prctl(PR_SET_SECCOMP, 2, &prog)) {
-		perror("prctl");
-=======
 	if (error == -1) {
 		struct sock_filter kill = BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_KILL);
 		filter[4] = kill;
@@ -67,7 +52,6 @@ static int install_filter(int arch, int nr, int error)
 	}
 	if (prctl(PR_SET_SECCOMP, 2, &prog)) {
 		perror("prctl(PR_SET_SECCOMP)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 	return 0;
@@ -77,16 +61,10 @@ int main(int argc, char **argv)
 {
 	if (argc < 5) {
 		fprintf(stderr, "Usage:\n"
-<<<<<<< HEAD
-			"dropper <syscall_nr> <arch> <errno> <prog> [<args>]\n"
-			"Hint:	AUDIT_ARCH_I386: 0x%X\n"
-			"	AUDIT_ARCH_X86_64: 0x%X\n"
-=======
 			"dropper <arch> <syscall_nr> <errno> <prog> [<args>]\n"
 			"Hint:	AUDIT_ARCH_I386: 0x%X\n"
 			"	AUDIT_ARCH_X86_64: 0x%X\n"
 			"	errno == -1 means SECCOMP_RET_KILL\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"\n", AUDIT_ARCH_I386, AUDIT_ARCH_X86_64);
 		return 1;
 	}

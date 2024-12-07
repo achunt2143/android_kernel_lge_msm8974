@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/m68k/mvme147/config.c
  *
@@ -11,51 +8,21 @@
  * Based on:
  *
  *  Copyright (C) 1993 Hamish Macdonald
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file README.legal in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/tty.h>
-<<<<<<< HEAD
-=======
 #include <linux/clocksource.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/console.h>
 #include <linux/linkage.h>
 #include <linux/init.h>
 #include <linux/major.h>
-<<<<<<< HEAD
-#include <linux/genhd.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/rtc.h>
 #include <linux/interrupt.h>
 
 #include <asm/bootinfo.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/setup.h>
-#include <asm/irq.h>
-#include <asm/traps.h>
-#include <asm/rtc.h>
-#include <asm/machdep.h>
-#include <asm/mvme147hw.h>
-
-
-static void mvme147_get_model(char *model);
-extern void mvme147_sched_init(irq_handler_t handler);
-extern unsigned long mvme147_gettimeoffset (void);
-extern int mvme147_hwclk (int, struct rtc_time *);
-extern int mvme147_set_clock_mmss (unsigned long);
-=======
 #include <asm/bootinfo-vme.h>
 #include <asm/byteorder.h>
 #include <asm/setup.h>
@@ -69,29 +36,16 @@ extern int mvme147_set_clock_mmss (unsigned long);
 static void mvme147_get_model(char *model);
 extern void mvme147_sched_init(void);
 extern int mvme147_hwclk (int, struct rtc_time *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void mvme147_reset (void);
 
 
 static int bcd2int (unsigned char b);
 
-<<<<<<< HEAD
-/* Save tick handler routine pointer, will point to xtime_update() in
- * kernel/time/timekeeping.c, called via mvme147_process_int() */
-
-irq_handler_t tick_handler;
-
-
-int mvme147_parse_bootinfo(const struct bi_record *bi)
-{
-	if (bi->tag == BI_VME_TYPE || bi->tag == BI_VME_BRDINFO)
-=======
 
 int __init mvme147_parse_bootinfo(const struct bi_record *bi)
 {
 	uint16_t tag = be16_to_cpu(bi->tag);
 	if (tag == BI_VME_TYPE || tag == BI_VME_BRDINFO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	else
 		return 1;
@@ -99,11 +53,7 @@ int __init mvme147_parse_bootinfo(const struct bi_record *bi)
 
 void mvme147_reset(void)
 {
-<<<<<<< HEAD
-	printk ("\r\n\nCalled mvme147_reset\r\n");
-=======
 	pr_info("\r\n\nCalled mvme147_reset\r\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	m147_pcc->watchdog = 0x0a;	/* Clear timer */
 	m147_pcc->watchdog = 0xa5;	/* Enable watchdog - 100ms to reset */
 	while (1)
@@ -120,29 +70,16 @@ static void mvme147_get_model(char *model)
  * the mvme147 IRQ handling routines.
  */
 
-<<<<<<< HEAD
-void __init mvme147_init_IRQ(void)
-=======
 static void __init mvme147_init_IRQ(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	m68k_setup_user_interrupt(VEC_USER, 192);
 }
 
 void __init config_mvme147(void)
 {
-<<<<<<< HEAD
-	mach_max_dma_address	= 0x01000000;
-	mach_sched_init		= mvme147_sched_init;
-	mach_init_IRQ		= mvme147_init_IRQ;
-	mach_gettimeoffset	= mvme147_gettimeoffset;
-	mach_hwclk		= mvme147_hwclk;
-	mach_set_clock_mmss	= mvme147_set_clock_mmss;
-=======
 	mach_sched_init		= mvme147_sched_init;
 	mach_init_IRQ		= mvme147_init_IRQ;
 	mach_hwclk		= mvme147_hwclk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mach_reset		= mvme147_reset;
 	mach_get_model		= mvme147_get_model;
 
@@ -151,8 +88,6 @@ void __init config_mvme147(void)
 		vme_brdtype = VME_TYPE_MVME147;
 }
 
-<<<<<<< HEAD
-=======
 static u64 mvme147_read_clk(struct clocksource *cs);
 
 static struct clocksource mvme147_clk = {
@@ -168,48 +103,11 @@ static u32 clk_total;
 #define PCC_TIMER_CLOCK_FREQ 160000
 #define PCC_TIMER_CYCLES     (PCC_TIMER_CLOCK_FREQ / HZ)
 #define PCC_TIMER_PRELOAD    (0x10000 - PCC_TIMER_CYCLES)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Using pcc tick timer 1 */
 
 static irqreturn_t mvme147_timer_int (int irq, void *dev_id)
 {
-<<<<<<< HEAD
-	m147_pcc->t1_int_cntrl = PCC_TIMER_INT_CLR;
-	m147_pcc->t1_int_cntrl = PCC_INT_ENAB|PCC_LEVEL_TIMER1;
-	return tick_handler(irq, dev_id);
-}
-
-
-void mvme147_sched_init (irq_handler_t timer_routine)
-{
-	tick_handler = timer_routine;
-	if (request_irq(PCC_IRQ_TIMER1, mvme147_timer_int, 0, "timer 1", NULL))
-		pr_err("Couldn't register timer interrupt\n");
-
-	/* Init the clock with a value */
-	/* our clock goes off every 6.25us */
-	m147_pcc->t1_preload = PCC_TIMER_PRELOAD;
-	m147_pcc->t1_cntrl = 0x0;	/* clear timer */
-	m147_pcc->t1_cntrl = 0x3;	/* start timer */
-	m147_pcc->t1_int_cntrl = PCC_TIMER_INT_CLR;  /* clear pending ints */
-	m147_pcc->t1_int_cntrl = PCC_INT_ENAB|PCC_LEVEL_TIMER1;
-}
-
-/* This is always executed with interrupts disabled.  */
-/* XXX There are race hazards in this code XXX */
-unsigned long mvme147_gettimeoffset (void)
-{
-	volatile unsigned short *cp = (volatile unsigned short *)0xfffe1012;
-	unsigned short n;
-
-	n = *cp;
-	while (n != *cp)
-		n = *cp;
-
-	n -= PCC_TIMER_PRELOAD;
-	return (unsigned long)n * 25 / 4;
-=======
 	unsigned long flags;
 
 	local_irq_save(flags);
@@ -261,7 +159,6 @@ static u64 mvme147_read_clk(struct clocksource *cs)
 	local_irq_restore(flags);
 
 	return ticks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int bcd2int (unsigned char b)
@@ -271,79 +168,15 @@ static int bcd2int (unsigned char b)
 
 int mvme147_hwclk(int op, struct rtc_time *t)
 {
-<<<<<<< HEAD
-#warning check me!
-	if (!op) {
-		m147_rtc->ctrl = RTC_READ;
-		t->tm_year = bcd2int (m147_rtc->bcd_year);
-		t->tm_mon  = bcd2int (m147_rtc->bcd_mth);
-=======
 	if (!op) {
 		m147_rtc->ctrl = RTC_READ;
 		t->tm_year = bcd2int (m147_rtc->bcd_year);
 		t->tm_mon  = bcd2int(m147_rtc->bcd_mth) - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		t->tm_mday = bcd2int (m147_rtc->bcd_dom);
 		t->tm_hour = bcd2int (m147_rtc->bcd_hr);
 		t->tm_min  = bcd2int (m147_rtc->bcd_min);
 		t->tm_sec  = bcd2int (m147_rtc->bcd_sec);
 		m147_rtc->ctrl = 0;
-<<<<<<< HEAD
-	}
-	return 0;
-}
-
-int mvme147_set_clock_mmss (unsigned long nowtime)
-{
-	return 0;
-}
-
-/*-------------------  Serial console stuff ------------------------*/
-
-static void scc_delay (void)
-{
-	int n;
-	volatile int trash;
-
-	for (n = 0; n < 20; n++)
-		trash = n;
-}
-
-static void scc_write (char ch)
-{
-	volatile char *p = (volatile char *)M147_SCC_A_ADDR;
-
-	do {
-		scc_delay();
-	}
-	while (!(*p & 4));
-	scc_delay();
-	*p = 8;
-	scc_delay();
-	*p = ch;
-}
-
-
-void m147_scc_write (struct console *co, const char *str, unsigned count)
-{
-	unsigned long flags;
-
-	local_irq_save(flags);
-
-	while (count--)
-	{
-		if (*str == '\n')
-			scc_write ('\r');
-		scc_write (*str++);
-	}
-	local_irq_restore(flags);
-}
-
-void mvme147_init_console_port (struct console *co, int cflag)
-{
-	co->write    = m147_scc_write;
-}
-=======
 		if (t->tm_year < 70)
 			t->tm_year += 100;
 	} else {
@@ -352,4 +185,3 @@ void mvme147_init_console_port (struct console *co, int cflag)
 	}
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

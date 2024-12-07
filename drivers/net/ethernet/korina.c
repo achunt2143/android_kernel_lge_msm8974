@@ -4,10 +4,7 @@
  *  Copyright 2004 IDT Inc. (rischelp@idt.com)
  *  Copyright 2006 Felix Fietkau <nbd@openwrt.org>
  *  Copyright 2008 Florian Fainelli <florian@openwrt.org>
-<<<<<<< HEAD
-=======
  *  Copyright 2017 Roman Yeryomin <roman@advem.lv>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
@@ -43,17 +40,11 @@
 #include <linux/ctype.h>
 #include <linux/types.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/ioport.h>
-#include <linux/in.h>
-=======
 #include <linux/ioport.h>
 #include <linux/iopoll.h>
 #include <linux/in.h>
 #include <linux/of.h>
 #include <linux/of_net.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/delay.h>
@@ -65,23 +56,6 @@
 #include <linux/mii.h>
 #include <linux/ethtool.h>
 #include <linux/crc32.h>
-<<<<<<< HEAD
-
-#include <asm/bootinfo.h>
-#include <asm/bitops.h>
-#include <asm/pgtable.h>
-#include <asm/io.h>
-#include <asm/dma.h>
-
-#include <asm/mach-rc32434/rb.h>
-#include <asm/mach-rc32434/rc32434.h>
-#include <asm/mach-rc32434/eth.h>
-#include <asm/mach-rc32434/dma_v.h>
-
-#define DRV_NAME        "korina"
-#define DRV_VERSION     "0.10"
-#define DRV_RELDATE     "04Mar2008"
-=======
 #include <linux/pgtable.h>
 #include <linux/clk.h>
 
@@ -322,7 +296,6 @@ struct dma_reg {
 #define DMA_STAT_CHAIN			BIT(2)
 #define DMA_STAT_ERR			BIT(3)
 #define DMA_STAT_HALT			BIT(4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define STATION_ADDRESS_HIGH(dev) (((dev)->dev_addr[0] << 8) | \
 				   ((dev)->dev_addr[1]))
@@ -331,11 +304,7 @@ struct dma_reg {
 				   ((dev)->dev_addr[4] << 8)  | \
 				   ((dev)->dev_addr[5]))
 
-<<<<<<< HEAD
-#define MII_CLOCK 1250000 	/* no more than 2.5MHz */
-=======
 #define MII_CLOCK	1250000 /* no more than 2.5MHz */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* the following must be powers of two */
 #define KORINA_NUM_RDS	64  /* number of receive descriptors */
@@ -347,25 +316,6 @@ struct dma_reg {
 #define KORINA_RBSIZE	1536 /* size of one resource buffer = Ether MTU */
 #define KORINA_RDS_MASK	(KORINA_NUM_RDS - 1)
 #define KORINA_TDS_MASK	(KORINA_NUM_TDS - 1)
-<<<<<<< HEAD
-#define RD_RING_SIZE 	(KORINA_NUM_RDS * sizeof(struct dma_desc))
-#define TD_RING_SIZE	(KORINA_NUM_TDS * sizeof(struct dma_desc))
-
-#define TX_TIMEOUT 	(6000 * HZ / 1000)
-
-enum chain_status { desc_filled, desc_empty };
-#define IS_DMA_FINISHED(X)   (((X) & (DMA_DESC_FINI)) != 0)
-#define IS_DMA_DONE(X)   (((X) & (DMA_DESC_DONE)) != 0)
-#define RCVPKT_LENGTH(X)     (((X) & ETH_RX_LEN) >> ETH_RX_LEN_BIT)
-
-/* Information that need to be kept for each board. */
-struct korina_private {
-	struct eth_regs *eth_regs;
-	struct dma_reg *rx_dma_regs;
-	struct dma_reg *tx_dma_regs;
-	struct dma_desc *td_ring; /* transmit descriptor ring */
-	struct dma_desc *rd_ring; /* receive descriptor ring  */
-=======
 #define RD_RING_SIZE	(KORINA_NUM_RDS * sizeof(struct dma_desc))
 #define TD_RING_SIZE	(KORINA_NUM_TDS * sizeof(struct dma_desc))
 
@@ -390,17 +340,13 @@ struct korina_private {
 	struct dma_desc *rd_ring; /* receive descriptor ring  */
 	dma_addr_t td_dma;
 	dma_addr_t rd_dma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct sk_buff *tx_skb[KORINA_NUM_TDS];
 	struct sk_buff *rx_skb[KORINA_NUM_RDS];
 
-<<<<<<< HEAD
-=======
 	dma_addr_t rx_skb_dma[KORINA_NUM_RDS];
 	dma_addr_t tx_skb_dma[KORINA_NUM_TDS];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rx_next_done;
 	int rx_chain_head;
 	int rx_chain_tail;
@@ -415,15 +361,8 @@ struct korina_private {
 
 	int rx_irq;
 	int tx_irq;
-<<<<<<< HEAD
-	int ovr_irq;
-	int und_irq;
-
-	spinlock_t lock;        /* NIC xmit lock */
-=======
 
 	spinlock_t lock;	/* NIC xmit lock */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int dma_halt_cnt;
 	int dma_run_cnt;
@@ -432,17 +371,6 @@ struct korina_private {
 	struct mii_if_info mii_if;
 	struct work_struct restart_task;
 	struct net_device *dev;
-<<<<<<< HEAD
-	int phy_addr;
-};
-
-extern unsigned int idt_cpu_freq;
-
-static inline void korina_start_dma(struct dma_reg *ch, u32 dma_addr)
-{
-	writel(0, &ch->dmandptr);
-	writel(dma_addr, &ch->dmadptr);
-=======
 	struct device *dmadev;
 	int mii_clock_freq;
 };
@@ -455,30 +383,11 @@ static dma_addr_t korina_tx_dma(struct korina_private *lp, int idx)
 static dma_addr_t korina_rx_dma(struct korina_private *lp, int idx)
 {
 	return lp->rd_dma + (idx * sizeof(struct dma_desc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void korina_abort_dma(struct net_device *dev,
 					struct dma_reg *ch)
 {
-<<<<<<< HEAD
-       if (readl(&ch->dmac) & DMA_CHAN_RUN_BIT) {
-	       writel(0x10, &ch->dmac);
-
-	       while (!(readl(&ch->dmas) & DMA_STAT_HALT))
-		       dev->trans_start = jiffies;
-
-	       writel(0, &ch->dmas);
-       }
-
-       writel(0, &ch->dmadptr);
-       writel(0, &ch->dmandptr);
-}
-
-static inline void korina_chain_dma(struct dma_reg *ch, u32 dma_addr)
-{
-	writel(dma_addr, &ch->dmandptr);
-=======
 	if (readl(&ch->dmac) & DMA_CHAN_RUN_BIT) {
 		writel(0x10, &ch->dmac);
 
@@ -490,7 +399,6 @@ static inline void korina_chain_dma(struct dma_reg *ch, u32 dma_addr)
 
 	writel(0, &ch->dmadptr);
 	writel(0, &ch->dmandptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void korina_abort_tx(struct net_device *dev)
@@ -507,32 +415,6 @@ static void korina_abort_rx(struct net_device *dev)
 	korina_abort_dma(dev, lp->rx_dma_regs);
 }
 
-<<<<<<< HEAD
-static void korina_start_rx(struct korina_private *lp,
-					struct dma_desc *rd)
-{
-	korina_start_dma(lp->rx_dma_regs, CPHYSADDR(rd));
-}
-
-static void korina_chain_rx(struct korina_private *lp,
-					struct dma_desc *rd)
-{
-	korina_chain_dma(lp->rx_dma_regs, CPHYSADDR(rd));
-}
-
-/* transmit packet */
-static int korina_send_packet(struct sk_buff *skb, struct net_device *dev)
-{
-	struct korina_private *lp = netdev_priv(dev);
-	unsigned long flags;
-	u32 length;
-	u32 chain_prev, chain_next;
-	struct dma_desc *td;
-
-	spin_lock_irqsave(&lp->lock, flags);
-
-	td = &lp->td_ring[lp->tx_chain_tail];
-=======
 /* transmit packet */
 static netdev_tx_t korina_send_packet(struct sk_buff *skb,
 				      struct net_device *dev)
@@ -549,7 +431,6 @@ static netdev_tx_t korina_send_packet(struct sk_buff *skb,
 
 	idx = lp->tx_chain_tail;
 	td = &lp->td_ring[idx];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* stop queue when full, drop pkts if queue already full */
 	if (lp->tx_count >= (KORINA_NUM_TDS - 2)) {
@@ -557,37 +438,12 @@ static netdev_tx_t korina_send_packet(struct sk_buff *skb,
 
 		if (lp->tx_count == (KORINA_NUM_TDS - 2))
 			netif_stop_queue(dev);
-<<<<<<< HEAD
-		else {
-			dev->stats.tx_dropped++;
-			dev_kfree_skb_any(skb);
-			spin_unlock_irqrestore(&lp->lock, flags);
-
-			return NETDEV_TX_BUSY;
-		}
-=======
 		else
 			goto drop_packet;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	lp->tx_count++;
 
-<<<<<<< HEAD
-	lp->tx_skb[lp->tx_chain_tail] = skb;
-
-	length = skb->len;
-	dma_cache_wback((u32)skb->data, skb->len);
-
-	/* Setup the transmit descriptor. */
-	dma_cache_inv((u32) td, sizeof(*td));
-	td->ca = CPHYSADDR(skb->data);
-	chain_prev = (lp->tx_chain_tail - 1) & KORINA_TDS_MASK;
-	chain_next = (lp->tx_chain_tail + 1) & KORINA_TDS_MASK;
-
-	if (readl(&(lp->tx_dma_regs->dmandptr)) == 0) {
-		if (lp->tx_chain_status == desc_empty) {
-=======
 	lp->tx_skb[idx] = skb;
 
 	length = skb->len;
@@ -605,20 +461,14 @@ static netdev_tx_t korina_send_packet(struct sk_buff *skb,
 
 	if (readl(&(lp->tx_dma_regs->dmandptr)) == 0) {
 		if (lp->tx_chain_status == desc_is_empty) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Update tail */
 			td->control = DMA_COUNT(length) |
 					DMA_DESC_COF | DMA_DESC_IOF;
 			/* Move tail */
 			lp->tx_chain_tail = chain_next;
 			/* Write to NDPTR */
-<<<<<<< HEAD
-			writel(CPHYSADDR(&lp->td_ring[lp->tx_chain_head]),
-					&lp->tx_dma_regs->dmandptr);
-=======
 			writel(korina_tx_dma(lp, lp->tx_chain_head),
 			       &lp->tx_dma_regs->dmandptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Move head to tail */
 			lp->tx_chain_head = lp->tx_chain_tail;
 		} else {
@@ -629,20 +479,6 @@ static netdev_tx_t korina_send_packet(struct sk_buff *skb,
 			lp->td_ring[chain_prev].control &=
 					~DMA_DESC_COF;
 			/* Link to prev */
-<<<<<<< HEAD
-			lp->td_ring[chain_prev].link =  CPHYSADDR(td);
-			/* Move tail */
-			lp->tx_chain_tail = chain_next;
-			/* Write to NDPTR */
-			writel(CPHYSADDR(&lp->td_ring[lp->tx_chain_head]),
-					&(lp->tx_dma_regs->dmandptr));
-			/* Move head to tail */
-			lp->tx_chain_head = lp->tx_chain_tail;
-			lp->tx_chain_status = desc_empty;
-		}
-	} else {
-		if (lp->tx_chain_status == desc_empty) {
-=======
 			lp->td_ring[chain_prev].link = korina_tx_dma(lp, idx);
 			/* Move tail */
 			lp->tx_chain_tail = chain_next;
@@ -655,7 +491,6 @@ static netdev_tx_t korina_send_packet(struct sk_buff *skb,
 		}
 	} else {
 		if (lp->tx_chain_status == desc_is_empty) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Update tail */
 			td->control = DMA_COUNT(length) |
 					DMA_DESC_COF | DMA_DESC_IOF;
@@ -668,15 +503,6 @@ static netdev_tx_t korina_send_packet(struct sk_buff *skb,
 					DMA_DESC_COF | DMA_DESC_IOF;
 			lp->td_ring[chain_prev].control &=
 					~DMA_DESC_COF;
-<<<<<<< HEAD
-			lp->td_ring[chain_prev].link =  CPHYSADDR(td);
-			lp->tx_chain_tail = chain_next;
-		}
-	}
-	dma_cache_wback((u32) td, sizeof(*td));
-
-	dev->trans_start = jiffies;
-=======
 			lp->td_ring[chain_prev].link = korina_tx_dma(lp, idx);
 			lp->tx_chain_tail = chain_next;
 		}
@@ -690,15 +516,11 @@ static netdev_tx_t korina_send_packet(struct sk_buff *skb,
 drop_packet:
 	dev->stats.tx_dropped++;
 	dev_kfree_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&lp->lock, flags);
 
 	return NETDEV_TX_OK;
 }
 
-<<<<<<< HEAD
-static int mdio_read(struct net_device *dev, int mii_id, int reg)
-=======
 static int korina_mdio_wait(struct korina_private *lp)
 {
 	u32 value;
@@ -709,34 +531,10 @@ static int korina_mdio_wait(struct korina_private *lp)
 }
 
 static int korina_mdio_read(struct net_device *dev, int phy, int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct korina_private *lp = netdev_priv(dev);
 	int ret;
 
-<<<<<<< HEAD
-	mii_id = ((lp->rx_irq == 0x2c ? 1 : 0) << 8);
-
-	writel(0, &lp->eth_regs->miimcfg);
-	writel(0, &lp->eth_regs->miimcmd);
-	writel(mii_id | reg, &lp->eth_regs->miimaddr);
-	writel(ETH_MII_CMD_SCN, &lp->eth_regs->miimcmd);
-
-	ret = (int)(readl(&lp->eth_regs->miimrdd));
-	return ret;
-}
-
-static void mdio_write(struct net_device *dev, int mii_id, int reg, int val)
-{
-	struct korina_private *lp = netdev_priv(dev);
-
-	mii_id = ((lp->rx_irq == 0x2c ? 1 : 0) << 8);
-
-	writel(0, &lp->eth_regs->miimcfg);
-	writel(1, &lp->eth_regs->miimcmd);
-	writel(mii_id | reg, &lp->eth_regs->miimaddr);
-	writel(ETH_MII_CMD_SCN, &lp->eth_regs->miimcmd);
-=======
 	ret = korina_mdio_wait(lp);
 	if (ret < 0)
 		return ret;
@@ -765,7 +563,6 @@ static void korina_mdio_write(struct net_device *dev, int phy, int reg, int val)
 
 	writel(0, &lp->eth_regs->miimcmd);
 	writel(phy << 8 | reg, &lp->eth_regs->miimaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(val, &lp->eth_regs->miimwtd);
 }
 
@@ -801,19 +598,10 @@ static int korina_rx(struct net_device *dev, int limit)
 	struct korina_private *lp = netdev_priv(dev);
 	struct dma_desc *rd = &lp->rd_ring[lp->rx_next_done];
 	struct sk_buff *skb, *skb_new;
-<<<<<<< HEAD
-	u8 *pkt_buf;
-	u32 devcs, pkt_len, dmas;
-	int count;
-
-	dma_cache_inv((u32)rd, sizeof(*rd));
-
-=======
 	u32 devcs, pkt_len, dmas;
 	dma_addr_t ca;
 	int count;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (count = 0; count < limit; count++) {
 		skb = lp->rx_skb[lp->rx_next_done];
 		skb_new = NULL;
@@ -823,68 +611,6 @@ static int korina_rx(struct net_device *dev, int limit)
 		if ((KORINA_RBSIZE - (u32)DMA_COUNT(rd->control)) == 0)
 			break;
 
-<<<<<<< HEAD
-		/* Update statistics counters */
-		if (devcs & ETH_RX_CRC)
-			dev->stats.rx_crc_errors++;
-		if (devcs & ETH_RX_LOR)
-			dev->stats.rx_length_errors++;
-		if (devcs & ETH_RX_LE)
-			dev->stats.rx_length_errors++;
-		if (devcs & ETH_RX_OVR)
-			dev->stats.rx_fifo_errors++;
-		if (devcs & ETH_RX_CV)
-			dev->stats.rx_frame_errors++;
-		if (devcs & ETH_RX_CES)
-			dev->stats.rx_length_errors++;
-		if (devcs & ETH_RX_MP)
-			dev->stats.multicast++;
-
-		if ((devcs & ETH_RX_LD) != ETH_RX_LD) {
-			/* check that this is a whole packet
-			 * WARNING: DMA_FD bit incorrectly set
-			 * in Rc32434 (errata ref #077) */
-			dev->stats.rx_errors++;
-			dev->stats.rx_dropped++;
-		} else if ((devcs & ETH_RX_ROK)) {
-			pkt_len = RCVPKT_LENGTH(devcs);
-
-			/* must be the (first and) last
-			 * descriptor then */
-			pkt_buf = (u8 *)lp->rx_skb[lp->rx_next_done]->data;
-
-			/* invalidate the cache */
-			dma_cache_inv((unsigned long)pkt_buf, pkt_len - 4);
-
-			/* Malloc up new buffer. */
-			skb_new = netdev_alloc_skb_ip_align(dev, KORINA_RBSIZE);
-
-			if (!skb_new)
-				break;
-			/* Do not count the CRC */
-			skb_put(skb, pkt_len - 4);
-			skb->protocol = eth_type_trans(skb, dev);
-
-			/* Pass the packet to upper layers */
-			netif_receive_skb(skb);
-			dev->stats.rx_packets++;
-			dev->stats.rx_bytes += pkt_len;
-
-			/* Update the mcast stats */
-			if (devcs & ETH_RX_MP)
-				dev->stats.multicast++;
-
-			lp->rx_skb[lp->rx_next_done] = skb_new;
-		}
-
-		rd->devcs = 0;
-
-		/* Restore descriptor's curr_addr */
-		if (skb_new)
-			rd->ca = CPHYSADDR(skb_new->data);
-		else
-			rd->ca = CPHYSADDR(skb->data);
-=======
 		/* check that this is a whole packet
 		 * WARNING: DMA_FD bit incorrectly set
 		 * in Rc32434 (errata ref #077) */
@@ -946,7 +672,6 @@ next:
 
 		/* Restore descriptor's curr_addr */
 		rd->ca = lp->rx_skb_dma[lp->rx_next_done];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rd->control = DMA_COUNT(KORINA_RBSIZE) |
 			DMA_DESC_COD | DMA_DESC_IOD;
@@ -955,30 +680,13 @@ next:
 			~DMA_DESC_COD;
 
 		lp->rx_next_done = (lp->rx_next_done + 1) & KORINA_RDS_MASK;
-<<<<<<< HEAD
-		dma_cache_wback((u32)rd, sizeof(*rd));
-		rd = &lp->rd_ring[lp->rx_next_done];
-		writel(~DMA_STAT_DONE, &lp->rx_dma_regs->dmas);
-=======
 		rd = &lp->rd_ring[lp->rx_next_done];
 		writel((u32)~DMA_STAT_DONE, &lp->rx_dma_regs->dmas);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dmas = readl(&lp->rx_dma_regs->dmas);
 
 	if (dmas & DMA_STAT_HALT) {
-<<<<<<< HEAD
-		writel(~(DMA_STAT_HALT | DMA_STAT_ERR),
-				&lp->rx_dma_regs->dmas);
-
-		lp->dma_halt_cnt++;
-		rd->devcs = 0;
-		skb = lp->rx_skb[lp->rx_next_done];
-		rd->ca = CPHYSADDR(skb->data);
-		dma_cache_wback((u32)rd, sizeof(*rd));
-		korina_chain_rx(lp, rd);
-=======
 		writel((u32)~(DMA_STAT_HALT | DMA_STAT_ERR),
 		       &lp->rx_dma_regs->dmas);
 
@@ -987,7 +695,6 @@ next:
 		rd->ca = lp->rx_skb_dma[lp->rx_next_done];
 		writel(korina_rx_dma(lp, rd - lp->rd_ring),
 		       &lp->rx_dma_regs->dmandptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return count;
@@ -1002,11 +709,7 @@ static int korina_poll(struct napi_struct *napi, int budget)
 
 	work_done = korina_rx(dev, budget);
 	if (work_done < budget) {
-<<<<<<< HEAD
-		napi_complete(napi);
-=======
 		napi_complete_done(napi, work_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		writel(readl(&lp->rx_dma_regs->dmasm) &
 			~(DMA_STAT_DONE | DMA_STAT_HALT | DMA_STAT_ERR),
@@ -1024,10 +727,6 @@ static void korina_multicast_list(struct net_device *dev)
 	unsigned long flags;
 	struct netdev_hw_addr *ha;
 	u32 recognise = ETH_ARC_AB;	/* always accept broadcasts */
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set promiscuous mode */
 	if (dev->flags & IFF_PROMISC)
@@ -1039,18 +738,9 @@ static void korina_multicast_list(struct net_device *dev)
 
 	/* Build the hash table */
 	if (netdev_mc_count(dev) > 4) {
-<<<<<<< HEAD
-		u16 hash_table[4];
-		u32 crc;
-
-		for (i = 0; i < 4; i++)
-			hash_table[i] = 0;
-
-=======
 		u16 hash_table[4] = { 0 };
 		u32 crc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netdev_for_each_mc_addr(ha, dev) {
 			crc = ether_crc_le(6, ha->addr);
 			crc >>= 26;
@@ -1127,13 +817,10 @@ static void korina_tx(struct net_device *dev)
 
 		/* We must always free the original skb */
 		if (lp->tx_skb[lp->tx_next_done]) {
-<<<<<<< HEAD
-=======
 			dma_unmap_single(lp->dmadev,
 					 lp->tx_skb_dma[lp->tx_next_done],
 					 lp->tx_skb[lp->tx_next_done]->len,
 					 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb_any(lp->tx_skb[lp->tx_next_done]);
 			lp->tx_skb[lp->tx_next_done] = NULL;
 		}
@@ -1180,19 +867,11 @@ korina_tx_dma_interrupt(int irq, void *dev_id)
 
 		if (lp->tx_chain_status == desc_filled &&
 			(readl(&(lp->tx_dma_regs->dmandptr)) == 0)) {
-<<<<<<< HEAD
-			writel(CPHYSADDR(&lp->td_ring[lp->tx_chain_head]),
-				&(lp->tx_dma_regs->dmandptr));
-			lp->tx_chain_status = desc_empty;
-			lp->tx_chain_head = lp->tx_chain_tail;
-			dev->trans_start = jiffies;
-=======
 			writel(korina_tx_dma(lp, lp->tx_chain_head),
 			       &lp->tx_dma_regs->dmandptr);
 			lp->tx_chain_status = desc_is_empty;
 			lp->tx_chain_head = lp->tx_chain_tail;
 			netif_trans_update(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (dmas & DMA_STAT_ERR)
 			printk(KERN_ERR "%s: DMA error\n", dev->name);
@@ -1209,11 +888,7 @@ static void korina_check_media(struct net_device *dev, unsigned int init_media)
 {
 	struct korina_private *lp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	mii_check_media(&lp->mii_if, 0, init_media);
-=======
 	mii_check_media(&lp->mii_if, 1, init_media);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lp->mii_if.full_duplex)
 		writel(readl(&lp->eth_regs->ethmac2) | ETH_MAC2_FD,
@@ -1223,17 +898,10 @@ static void korina_check_media(struct net_device *dev, unsigned int init_media)
 						&lp->eth_regs->ethmac2);
 }
 
-<<<<<<< HEAD
-static void korina_poll_media(unsigned long data)
-{
-	struct net_device *dev = (struct net_device *) data;
-	struct korina_private *lp = netdev_priv(dev);
-=======
 static void korina_poll_media(struct timer_list *t)
 {
 	struct korina_private *lp = from_timer(lp, t, media_check_timer);
 	struct net_device *dev = lp->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	korina_check_media(dev, 0);
 	mod_timer(&lp->media_check_timer, jiffies + HZ);
@@ -1267,30 +935,6 @@ static int korina_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 
 /* ethtool helpers */
 static void netdev_get_drvinfo(struct net_device *dev,
-<<<<<<< HEAD
-			struct ethtool_drvinfo *info)
-{
-	struct korina_private *lp = netdev_priv(dev);
-
-	strcpy(info->driver, DRV_NAME);
-	strcpy(info->version, DRV_VERSION);
-	strcpy(info->bus_info, lp->dev->name);
-}
-
-static int netdev_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct korina_private *lp = netdev_priv(dev);
-	int rc;
-
-	spin_lock_irq(&lp->lock);
-	rc = mii_ethtool_gset(&lp->mii_if, cmd);
-	spin_unlock_irq(&lp->lock);
-
-	return rc;
-}
-
-static int netdev_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-=======
 				struct ethtool_drvinfo *info)
 {
 	struct korina_private *lp = netdev_priv(dev);
@@ -1314,17 +958,12 @@ static int netdev_get_link_ksettings(struct net_device *dev,
 
 static int netdev_set_link_ksettings(struct net_device *dev,
 				     const struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct korina_private *lp = netdev_priv(dev);
 	int rc;
 
 	spin_lock_irq(&lp->lock);
-<<<<<<< HEAD
-	rc = mii_ethtool_sset(&lp->mii_if, cmd);
-=======
 	rc = mii_ethtool_set_link_ksettings(&lp->mii_if, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&lp->lock);
 	korina_set_carrier(&lp->mii_if);
 
@@ -1339,27 +978,17 @@ static u32 netdev_get_link(struct net_device *dev)
 }
 
 static const struct ethtool_ops netdev_ethtool_ops = {
-<<<<<<< HEAD
-	.get_drvinfo            = netdev_get_drvinfo,
-	.get_settings           = netdev_get_settings,
-	.set_settings           = netdev_set_settings,
-	.get_link               = netdev_get_link,
-=======
 	.get_drvinfo		= netdev_get_drvinfo,
 	.get_link		= netdev_get_link,
 	.get_link_ksettings	= netdev_get_link_ksettings,
 	.set_link_ksettings	= netdev_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int korina_alloc_ring(struct net_device *dev)
 {
 	struct korina_private *lp = netdev_priv(dev);
 	struct sk_buff *skb;
-<<<<<<< HEAD
-=======
 	dma_addr_t ca;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/* Initialize the transmit descriptors */
@@ -1371,11 +1000,7 @@ static int korina_alloc_ring(struct net_device *dev)
 	}
 	lp->tx_next_done = lp->tx_chain_head = lp->tx_chain_tail =
 			lp->tx_full = lp->tx_count = 0;
-<<<<<<< HEAD
-	lp->tx_chain_status = desc_empty;
-=======
 	lp->tx_chain_status = desc_is_empty;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the receive descriptors */
 	for (i = 0; i < KORINA_NUM_RDS; i++) {
@@ -1386,10 +1011,6 @@ static int korina_alloc_ring(struct net_device *dev)
 		lp->rd_ring[i].control = DMA_DESC_IOD |
 				DMA_COUNT(KORINA_RBSIZE);
 		lp->rd_ring[i].devcs = 0;
-<<<<<<< HEAD
-		lp->rd_ring[i].ca = CPHYSADDR(skb->data);
-		lp->rd_ring[i].link = CPHYSADDR(&lp->rd_ring[i+1]);
-=======
 		ca = dma_map_single(lp->dmadev, skb->data, KORINA_RBSIZE,
 				    DMA_FROM_DEVICE);
 		if (dma_mapping_error(lp->dmadev, ca))
@@ -1397,26 +1018,17 @@ static int korina_alloc_ring(struct net_device *dev)
 		lp->rd_ring[i].ca = ca;
 		lp->rx_skb_dma[i] = ca;
 		lp->rd_ring[i].link = korina_rx_dma(lp, i + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* loop back receive descriptors, so the last
 	 * descriptor points to the first one */
-<<<<<<< HEAD
-	lp->rd_ring[i - 1].link = CPHYSADDR(&lp->rd_ring[0]);
-=======
 	lp->rd_ring[i - 1].link = lp->rd_dma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lp->rd_ring[i - 1].control |= DMA_DESC_COD;
 
 	lp->rx_next_done  = 0;
 	lp->rx_chain_head = 0;
 	lp->rx_chain_tail = 0;
-<<<<<<< HEAD
-	lp->rx_chain_status = desc_empty;
-=======
 	lp->rx_chain_status = desc_is_empty;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1428,34 +1040,22 @@ static void korina_free_ring(struct net_device *dev)
 
 	for (i = 0; i < KORINA_NUM_RDS; i++) {
 		lp->rd_ring[i].control = 0;
-<<<<<<< HEAD
-		if (lp->rx_skb[i])
-			dev_kfree_skb_any(lp->rx_skb[i]);
-		lp->rx_skb[i] = NULL;
-=======
 		if (lp->rx_skb[i]) {
 			dma_unmap_single(lp->dmadev, lp->rx_skb_dma[i],
 					 KORINA_RBSIZE, DMA_FROM_DEVICE);
 			dev_kfree_skb_any(lp->rx_skb[i]);
 			lp->rx_skb[i] = NULL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < KORINA_NUM_TDS; i++) {
 		lp->td_ring[i].control = 0;
-<<<<<<< HEAD
-		if (lp->tx_skb[i])
-			dev_kfree_skb_any(lp->tx_skb[i]);
-		lp->tx_skb[i] = NULL;
-=======
 		if (lp->tx_skb[i]) {
 			dma_unmap_single(lp->dmadev, lp->tx_skb_dma[i],
 					 lp->tx_skb[i]->len, DMA_TO_DEVICE);
 			dev_kfree_skb_any(lp->tx_skb[i]);
 			lp->tx_skb[i] = NULL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1473,11 +1073,7 @@ static int korina_init(struct net_device *dev)
 	/* reset ethernet logic */
 	writel(0, &lp->eth_regs->ethintfc);
 	while ((readl(&lp->eth_regs->ethintfc) & ETH_INT_FC_RIP))
-<<<<<<< HEAD
-		dev->trans_start = jiffies;
-=======
 		netif_trans_update(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable Ethernet Interface */
 	writel(ETH_INT_FC_EN, &lp->eth_regs->ethintfc);
@@ -1491,12 +1087,8 @@ static int korina_init(struct net_device *dev)
 
 	writel(0, &lp->rx_dma_regs->dmas);
 	/* Start Rx DMA */
-<<<<<<< HEAD
-	korina_start_rx(lp, &lp->rd_ring[0]);
-=======
 	writel(0, &lp->rx_dma_regs->dmandptr);
 	writel(korina_rx_dma(lp, 0), &lp->rx_dma_regs->dmadptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writel(readl(&lp->tx_dma_regs->dmasm) &
 			~(DMA_STAT_FINI | DMA_STAT_ERR),
@@ -1533,25 +1125,17 @@ static int korina_init(struct net_device *dev)
 
 	/* Management Clock Prescaler Divisor
 	 * Clock independent setting */
-<<<<<<< HEAD
-	writel(((idt_cpu_freq) / MII_CLOCK + 1) & ~1,
-		       &lp->eth_regs->ethmcp);
-=======
 	writel(((lp->mii_clock_freq) / MII_CLOCK + 1) & ~1,
 	       &lp->eth_regs->ethmcp);
 	writel(0, &lp->eth_regs->miimcfg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* don't transmit until fifo contains 48b */
 	writel(48, &lp->eth_regs->ethfifott);
 
 	writel(ETH_MAC1_RE, &lp->eth_regs->ethmac1);
 
-<<<<<<< HEAD
-=======
 	korina_check_media(dev, 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	napi_enable(&lp->napi);
 	netif_start_queue(dev);
 
@@ -1572,11 +1156,6 @@ static void korina_restart_task(struct work_struct *work)
 	 */
 	disable_irq(lp->rx_irq);
 	disable_irq(lp->tx_irq);
-<<<<<<< HEAD
-	disable_irq(lp->ovr_irq);
-	disable_irq(lp->und_irq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writel(readl(&lp->tx_dma_regs->dmasm) |
 				DMA_STAT_FINI | DMA_STAT_ERR,
@@ -1585,93 +1164,27 @@ static void korina_restart_task(struct work_struct *work)
 				DMA_STAT_DONE | DMA_STAT_HALT | DMA_STAT_ERR,
 				&lp->rx_dma_regs->dmasm);
 
-<<<<<<< HEAD
-	korina_free_ring(dev);
-
-	napi_disable(&lp->napi);
-
-=======
 	napi_disable(&lp->napi);
 
 	korina_free_ring(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (korina_init(dev) < 0) {
 		printk(KERN_ERR "%s: cannot restart device\n", dev->name);
 		return;
 	}
 	korina_multicast_list(dev);
 
-<<<<<<< HEAD
-	enable_irq(lp->und_irq);
-	enable_irq(lp->ovr_irq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enable_irq(lp->tx_irq);
 	enable_irq(lp->rx_irq);
 }
 
-<<<<<<< HEAD
-static void korina_clear_and_restart(struct net_device *dev, u32 value)
-{
-	struct korina_private *lp = netdev_priv(dev);
-
-	netif_stop_queue(dev);
-	writel(value, &lp->eth_regs->ethintfc);
-	schedule_work(&lp->restart_task);
-}
-
-/* Ethernet Tx Underflow interrupt */
-static irqreturn_t korina_und_interrupt(int irq, void *dev_id)
-{
-	struct net_device *dev = dev_id;
-	struct korina_private *lp = netdev_priv(dev);
-	unsigned int und;
-
-	spin_lock(&lp->lock);
-
-	und = readl(&lp->eth_regs->ethintfc);
-
-	if (und & ETH_INT_FC_UND)
-		korina_clear_and_restart(dev, und & ~ETH_INT_FC_UND);
-
-	spin_unlock(&lp->lock);
-
-	return IRQ_HANDLED;
-}
-
-static void korina_tx_timeout(struct net_device *dev)
-=======
 static void korina_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct korina_private *lp = netdev_priv(dev);
 
 	schedule_work(&lp->restart_task);
 }
 
-<<<<<<< HEAD
-/* Ethernet Rx Overflow interrupt */
-static irqreturn_t
-korina_ovr_interrupt(int irq, void *dev_id)
-{
-	struct net_device *dev = dev_id;
-	struct korina_private *lp = netdev_priv(dev);
-	unsigned int ovr;
-
-	spin_lock(&lp->lock);
-	ovr = readl(&lp->eth_regs->ethintfc);
-
-	if (ovr & ETH_INT_FC_OVR)
-		korina_clear_and_restart(dev, ovr & ~ETH_INT_FC_OVR);
-
-	spin_unlock(&lp->lock);
-
-	return IRQ_HANDLED;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 static void korina_poll_controller(struct net_device *dev)
 {
@@ -1694,42 +1207,6 @@ static int korina_open(struct net_device *dev)
 	}
 
 	/* Install the interrupt handler
-<<<<<<< HEAD
-	 * that handles the Done Finished
-	 * Ovr and Und Events */
-	ret = request_irq(lp->rx_irq, korina_rx_dma_interrupt,
-			IRQF_DISABLED, "Korina ethernet Rx", dev);
-	if (ret < 0) {
-		printk(KERN_ERR "%s: unable to get Rx DMA IRQ %d\n",
-		    dev->name, lp->rx_irq);
-		goto err_release;
-	}
-	ret = request_irq(lp->tx_irq, korina_tx_dma_interrupt,
-			IRQF_DISABLED, "Korina ethernet Tx", dev);
-	if (ret < 0) {
-		printk(KERN_ERR "%s: unable to get Tx DMA IRQ %d\n",
-		    dev->name, lp->tx_irq);
-		goto err_free_rx_irq;
-	}
-
-	/* Install handler for overrun error. */
-	ret = request_irq(lp->ovr_irq, korina_ovr_interrupt,
-			IRQF_DISABLED, "Ethernet Overflow", dev);
-	if (ret < 0) {
-		printk(KERN_ERR "%s: unable to get OVR IRQ %d\n",
-		    dev->name, lp->ovr_irq);
-		goto err_free_tx_irq;
-	}
-
-	/* Install handler for underflow error. */
-	ret = request_irq(lp->und_irq, korina_und_interrupt,
-			IRQF_DISABLED, "Ethernet Underflow", dev);
-	if (ret < 0) {
-		printk(KERN_ERR "%s: unable to get UND IRQ %d\n",
-		    dev->name, lp->und_irq);
-		goto err_free_ovr_irq;
-	}
-=======
 	 * that handles the Done Finished */
 	ret = request_irq(lp->rx_irq, korina_rx_dma_interrupt,
 			0, "Korina ethernet Rx", dev);
@@ -1746,18 +1223,10 @@ static int korina_open(struct net_device *dev)
 		goto err_free_rx_irq;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mod_timer(&lp->media_check_timer, jiffies + 1);
 out:
 	return ret;
 
-<<<<<<< HEAD
-err_free_ovr_irq:
-	free_irq(lp->ovr_irq, dev);
-err_free_tx_irq:
-	free_irq(lp->tx_irq, dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free_rx_irq:
 	free_irq(lp->rx_irq, dev);
 err_release:
@@ -1775,11 +1244,6 @@ static int korina_close(struct net_device *dev)
 	/* Disable interrupts */
 	disable_irq(lp->rx_irq);
 	disable_irq(lp->tx_irq);
-<<<<<<< HEAD
-	disable_irq(lp->ovr_irq);
-	disable_irq(lp->und_irq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	korina_abort_tx(dev);
 	tmp = readl(&lp->tx_dma_regs->dmasm);
@@ -1791,26 +1255,14 @@ static int korina_close(struct net_device *dev)
 	tmp = tmp | DMA_STAT_DONE | DMA_STAT_HALT | DMA_STAT_ERR;
 	writel(tmp, &lp->rx_dma_regs->dmasm);
 
-<<<<<<< HEAD
-	korina_free_ring(dev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	napi_disable(&lp->napi);
 
 	cancel_work_sync(&lp->restart_task);
 
-<<<<<<< HEAD
-	free_irq(lp->rx_irq, dev);
-	free_irq(lp->tx_irq, dev);
-	free_irq(lp->ovr_irq, dev);
-	free_irq(lp->und_irq, dev);
-=======
 	korina_free_ring(dev);
 
 	free_irq(lp->rx_irq, dev);
 	free_irq(lp->tx_irq, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1821,12 +1273,7 @@ static const struct net_device_ops korina_netdev_ops = {
 	.ndo_start_xmit		= korina_send_packet,
 	.ndo_set_rx_mode	= korina_multicast_list,
 	.ndo_tx_timeout		= korina_tx_timeout,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= korina_ioctl,
-	.ndo_change_mtu		= eth_change_mtu,
-=======
 	.ndo_eth_ioctl		= korina_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -1836,15 +1283,6 @@ static const struct net_device_ops korina_netdev_ops = {
 
 static int korina_probe(struct platform_device *pdev)
 {
-<<<<<<< HEAD
-	struct korina_device *bif = platform_get_drvdata(pdev);
-	struct korina_private *lp;
-	struct net_device *dev;
-	struct resource *r;
-	int rc;
-
-	dev = alloc_etherdev(sizeof(struct korina_private));
-=======
 	u8 *mac_addr = dev_get_platdata(&pdev->dev);
 	struct korina_private *lp;
 	struct net_device *dev;
@@ -1853,60 +1291,12 @@ static int korina_probe(struct platform_device *pdev)
 	int rc;
 
 	dev = devm_alloc_etherdev(&pdev->dev, sizeof(struct korina_private));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev)
 		return -ENOMEM;
 
 	SET_NETDEV_DEV(dev, &pdev->dev);
 	lp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	bif->dev = dev;
-	memcpy(dev->dev_addr, bif->mac, 6);
-
-	lp->rx_irq = platform_get_irq_byname(pdev, "korina_rx");
-	lp->tx_irq = platform_get_irq_byname(pdev, "korina_tx");
-	lp->ovr_irq = platform_get_irq_byname(pdev, "korina_ovr");
-	lp->und_irq = platform_get_irq_byname(pdev, "korina_und");
-
-	r = platform_get_resource_byname(pdev, IORESOURCE_MEM, "korina_regs");
-	dev->base_addr = r->start;
-	lp->eth_regs = ioremap_nocache(r->start, resource_size(r));
-	if (!lp->eth_regs) {
-		printk(KERN_ERR DRV_NAME ": cannot remap registers\n");
-		rc = -ENXIO;
-		goto probe_err_out;
-	}
-
-	r = platform_get_resource_byname(pdev, IORESOURCE_MEM, "korina_dma_rx");
-	lp->rx_dma_regs = ioremap_nocache(r->start, resource_size(r));
-	if (!lp->rx_dma_regs) {
-		printk(KERN_ERR DRV_NAME ": cannot remap Rx DMA registers\n");
-		rc = -ENXIO;
-		goto probe_err_dma_rx;
-	}
-
-	r = platform_get_resource_byname(pdev, IORESOURCE_MEM, "korina_dma_tx");
-	lp->tx_dma_regs = ioremap_nocache(r->start, resource_size(r));
-	if (!lp->tx_dma_regs) {
-		printk(KERN_ERR DRV_NAME ": cannot remap Tx DMA registers\n");
-		rc = -ENXIO;
-		goto probe_err_dma_tx;
-	}
-
-	lp->td_ring = kmalloc(TD_RING_SIZE + RD_RING_SIZE, GFP_KERNEL);
-	if (!lp->td_ring) {
-		rc = -ENXIO;
-		goto probe_err_td_ring;
-	}
-
-	dma_cache_inv((unsigned long)(lp->td_ring),
-			TD_RING_SIZE + RD_RING_SIZE);
-
-	/* now convert TD_RING pointer to KSEG1 */
-	lp->td_ring = (struct dma_desc *)KSEG1ADDR(lp->td_ring);
-	lp->rd_ring = &lp->td_ring[KORINA_NUM_TDS];
-=======
 	if (mac_addr)
 		eth_hw_addr_set(dev, mac_addr);
 	else if (of_get_ethdev_address(pdev->dev.of_node, dev) < 0)
@@ -1954,32 +1344,16 @@ static int korina_probe(struct platform_device *pdev)
 					  &lp->rd_dma, GFP_KERNEL);
 	if (!lp->rd_ring)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&lp->lock);
 	/* just use the rx dma irq */
 	dev->irq = lp->rx_irq;
 	lp->dev = dev;
-<<<<<<< HEAD
-=======
 	lp->dmadev = &pdev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->netdev_ops = &korina_netdev_ops;
 	dev->ethtool_ops = &netdev_ethtool_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
-<<<<<<< HEAD
-	netif_napi_add(dev, &lp->napi, korina_poll, 64);
-
-	lp->phy_addr = (((lp->rx_irq == 0x2c? 1:0) << 8) | 0x05);
-	lp->mii_if.dev = dev;
-	lp->mii_if.mdio_read = mdio_read;
-	lp->mii_if.mdio_write = mdio_write;
-	lp->mii_if.phy_id = lp->phy_addr;
-	lp->mii_if.phy_id_mask = 0x1f;
-	lp->mii_if.reg_num_mask = 0x1f;
-
-=======
 	netif_napi_add(dev, &lp->napi, korina_poll);
 
 	lp->mii_if.dev = dev;
@@ -1991,63 +1365,18 @@ static int korina_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = register_netdev(dev);
 	if (rc < 0) {
 		printk(KERN_ERR DRV_NAME
 			": cannot register net device: %d\n", rc);
-<<<<<<< HEAD
-		goto probe_err_register;
-	}
-	setup_timer(&lp->media_check_timer, korina_poll_media, (unsigned long) dev);
-=======
 		return rc;
 	}
 	timer_setup(&lp->media_check_timer, korina_poll_media, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_WORK(&lp->restart_task, korina_restart_task);
 
 	printk(KERN_INFO "%s: " DRV_NAME "-" DRV_VERSION " " DRV_RELDATE "\n",
 			dev->name);
-<<<<<<< HEAD
-out:
-	return rc;
-
-probe_err_register:
-	kfree(lp->td_ring);
-probe_err_td_ring:
-	iounmap(lp->tx_dma_regs);
-probe_err_dma_tx:
-	iounmap(lp->rx_dma_regs);
-probe_err_dma_rx:
-	iounmap(lp->eth_regs);
-probe_err_out:
-	free_netdev(dev);
-	goto out;
-}
-
-static int korina_remove(struct platform_device *pdev)
-{
-	struct korina_device *bif = platform_get_drvdata(pdev);
-	struct korina_private *lp = netdev_priv(bif->dev);
-
-	iounmap(lp->eth_regs);
-	iounmap(lp->rx_dma_regs);
-	iounmap(lp->tx_dma_regs);
-
-	platform_set_drvdata(pdev, NULL);
-	unregister_netdev(bif->dev);
-	free_netdev(bif->dev);
-
-	return 0;
-}
-
-static struct platform_driver korina_driver = {
-	.driver.name = "korina",
-	.probe = korina_probe,
-	.remove = korina_remove,
-=======
 	return rc;
 }
 
@@ -2075,7 +1404,6 @@ static struct platform_driver korina_driver = {
 	},
 	.probe = korina_probe,
 	.remove_new = korina_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(korina_driver);
@@ -2083,9 +1411,6 @@ module_platform_driver(korina_driver);
 MODULE_AUTHOR("Philip Rischel <rischelp@idt.com>");
 MODULE_AUTHOR("Felix Fietkau <nbd@openwrt.org>");
 MODULE_AUTHOR("Florian Fainelli <florian@openwrt.org>");
-<<<<<<< HEAD
-=======
 MODULE_AUTHOR("Roman Yeryomin <roman@advem.lv>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("IDT RC32434 (Korina) Ethernet driver");
 MODULE_LICENSE("GPL");

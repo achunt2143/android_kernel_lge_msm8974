@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASMARM_CURRENT_H
-#define _ASMARM_CURRENT_H
-
-#include <linux/thread_info.h>
-
-static inline struct task_struct *get_current(void) __attribute_const__;
-
-static inline struct task_struct *get_current(void)
-{
-	return current_thread_info()->task;
-}
-
-#define current (get_current())
-
-#endif /* _ASMARM_CURRENT_H */
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2021 Keith Packard <keithp@keithp.com>
@@ -80,4 +63,3 @@ static __always_inline __attribute_const__ struct task_struct *get_current(void)
 #endif /* __ASSEMBLY__ */
 
 #endif /* _ASM_ARM_CURRENT_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

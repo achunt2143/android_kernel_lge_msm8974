@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  HID driver for some microsoft "special" devices
  *
@@ -9,21 +6,10 @@
  *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
  *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
  *  Copyright (c) 2006-2007 Jiri Kosina
-<<<<<<< HEAD
- *  Copyright (c) 2007 Paul Walmsley
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Copyright (c) 2008 Jiri Slaby
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -33,15 +19,6 @@
 
 #include "hid-ids.h"
 
-<<<<<<< HEAD
-#define MS_HIDINPUT		0x01
-#define MS_ERGONOMY		0x02
-#define MS_PRESENTER		0x04
-#define MS_RDESC		0x08
-#define MS_NOGET		0x10
-#define MS_DUPLICATE_USAGES	0x20
-#define MS_RDESC_3K		0x40
-=======
 #define MS_HIDINPUT		BIT(0)
 #define MS_ERGONOMY		BIT(1)
 #define MS_PRESENTER		BIT(2)
@@ -78,17 +55,12 @@ struct xb1s_ff_report {
 	__u8	start_delay_10ms;
 	__u8	loop_count;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static __u8 *ms_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		unsigned int *rsize)
 {
-<<<<<<< HEAD
-	unsigned long quirks = (unsigned long)hid_get_drvdata(hdev);
-=======
 	struct ms_data *ms = hid_get_drvdata(hdev);
 	unsigned long quirks = ms->quirks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Microsoft Wireless Desktop Receiver (Model 1028) has
@@ -100,16 +72,6 @@ static __u8 *ms_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		rdesc[557] = 0x35;
 		rdesc[559] = 0x45;
 	}
-<<<<<<< HEAD
-	/* the same as above (s/usage/physical/) */
-	if ((quirks & MS_RDESC_3K) && *rsize == 106 && rdesc[94] == 0x19 &&
-			rdesc[95] == 0x00 && rdesc[96] == 0x29 &&
-			rdesc[97] == 0xff) {
-		rdesc[94] = 0x35;
-		rdesc[96] = 0x45;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rdesc;
 }
 
@@ -120,11 +82,6 @@ static int ms_ergonomy_kb_quirk(struct hid_input *hi, struct hid_usage *usage,
 {
 	struct input_dev *input = hi->input;
 
-<<<<<<< HEAD
-	switch (usage->hid & HID_USAGE) {
-	case 0xfd06: ms_map_key_clear(KEY_CHAT);	break;
-	case 0xfd07: ms_map_key_clear(KEY_PHONE);	break;
-=======
 	if ((usage->hid & HID_USAGE_PAGE) == HID_UP_CONSUMER) {
 		switch (usage->hid & HID_USAGE) {
 		/*
@@ -167,7 +124,6 @@ static int ms_ergonomy_kb_quirk(struct hid_input *hi, struct hid_usage *usage,
 		 * changes state, and as such is useless, ignore it.
 		 */
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0xff05:
 		set_bit(EV_REP, input->evbit);
 		ms_map_key_clear(KEY_F13);
@@ -176,10 +132,7 @@ static int ms_ergonomy_kb_quirk(struct hid_input *hi, struct hid_usage *usage,
 		set_bit(KEY_F16, input->keybit);
 		set_bit(KEY_F17, input->keybit);
 		set_bit(KEY_F18, input->keybit);
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return 0;
 	}
@@ -189,12 +142,9 @@ static int ms_ergonomy_kb_quirk(struct hid_input *hi, struct hid_usage *usage,
 static int ms_presenter_8k_quirk(struct hid_input *hi, struct hid_usage *usage,
 		unsigned long **bit, int *max)
 {
-<<<<<<< HEAD
-=======
 	if ((usage->hid & HID_USAGE_PAGE) != HID_UP_MSVENDOR)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(EV_REP, hi->input->evbit);
 	switch (usage->hid & HID_USAGE) {
 	case 0xfd08: ms_map_key_clear(KEY_FORWARD);	break;
@@ -208,8 +158,6 @@ static int ms_presenter_8k_quirk(struct hid_input *hi, struct hid_usage *usage,
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 static int ms_surface_dial_quirk(struct hid_input *hi, struct hid_field *field,
 		struct hid_usage *usage, unsigned long **bit, int *max)
 {
@@ -231,20 +179,12 @@ static int ms_surface_dial_quirk(struct hid_input *hi, struct hid_field *field,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ms_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 		struct hid_field *field, struct hid_usage *usage,
 		unsigned long **bit, int *max)
 {
-<<<<<<< HEAD
-	unsigned long quirks = (unsigned long)hid_get_drvdata(hdev);
-
-	if ((usage->hid & HID_USAGE_PAGE) != HID_UP_MSVENDOR)
-		return 0;
-=======
 	struct ms_data *ms = hid_get_drvdata(hdev);
 	unsigned long quirks = ms->quirks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (quirks & MS_ERGONOMY) {
 		int ret = ms_ergonomy_kb_quirk(hi, usage, bit, max);
@@ -256,8 +196,6 @@ static int ms_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 			ms_presenter_8k_quirk(hi, usage, bit, max))
 		return 1;
 
-<<<<<<< HEAD
-=======
 	if (quirks & MS_SURFACE_DIAL) {
 		int ret = ms_surface_dial_quirk(hi, field, usage, bit, max);
 
@@ -265,7 +203,6 @@ static int ms_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 			return ret;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -273,12 +210,8 @@ static int ms_input_mapped(struct hid_device *hdev, struct hid_input *hi,
 		struct hid_field *field, struct hid_usage *usage,
 		unsigned long **bit, int *max)
 {
-<<<<<<< HEAD
-	unsigned long quirks = (unsigned long)hid_get_drvdata(hdev);
-=======
 	struct ms_data *ms = hid_get_drvdata(hdev);
 	unsigned long quirks = ms->quirks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (quirks & MS_DUPLICATE_USAGES)
 		clear_bit(usage->code, *bit);
@@ -289,23 +222,14 @@ static int ms_input_mapped(struct hid_device *hdev, struct hid_input *hi,
 static int ms_event(struct hid_device *hdev, struct hid_field *field,
 		struct hid_usage *usage, __s32 value)
 {
-<<<<<<< HEAD
-	unsigned long quirks = (unsigned long)hid_get_drvdata(hdev);
-=======
 	struct ms_data *ms = hid_get_drvdata(hdev);
 	unsigned long quirks = ms->quirks;
 	struct input_dev *input;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(hdev->claimed & HID_CLAIMED_INPUT) || !field->hidinput ||
 			!usage->type)
 		return 0;
 
-<<<<<<< HEAD
-	/* Handling MS keyboards special buttons */
-	if (quirks & MS_ERGONOMY && usage->hid == (HID_UP_MSVENDOR | 0xff05)) {
-		struct input_dev *input = field->hidinput->input;
-=======
 	input = field->hidinput->input;
 
 	/* Handling MS keyboards special buttons */
@@ -333,7 +257,6 @@ static int ms_event(struct hid_device *hdev, struct hid_field *field,
 	}
 
 	if (quirks & MS_ERGONOMY && usage->hid == (HID_UP_MSVENDOR | 0xff05)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		static unsigned int last_key = 0;
 		unsigned int key = 0;
 		switch (value) {
@@ -355,14 +278,6 @@ static int ms_event(struct hid_device *hdev, struct hid_field *field,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ms_probe(struct hid_device *hdev, const struct hid_device_id *id)
-{
-	unsigned long quirks = id->driver_data;
-	int ret;
-
-	hid_set_drvdata(hdev, (void *)quirks);
-=======
 static void ms_ff_worker(struct work_struct *work)
 {
 	struct ms_data *ms = container_of(work, struct ms_data, ff_worker);
@@ -460,17 +375,13 @@ static int ms_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	ms->quirks = quirks;
 
 	hid_set_drvdata(hdev, ms);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (quirks & MS_NOGET)
 		hdev->quirks |= HID_QUIRK_NOGET;
 
-<<<<<<< HEAD
-=======
 	if (quirks & MS_SURFACE_DIAL)
 		hdev->quirks |= HID_QUIRK_INPUT_PER_APP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = hid_parse(hdev);
 	if (ret) {
 		hid_err(hdev, "parse failed\n");
@@ -484,25 +395,15 @@ static int ms_probe(struct hid_device *hdev, const struct hid_device_id *id)
 		goto err_free;
 	}
 
-<<<<<<< HEAD
-=======
 	ret = ms_init_ff(hdev);
 	if (ret)
 		hid_err(hdev, "could not initialize ff, continuing anyway");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 err_free:
 	return ret;
 }
 
-<<<<<<< HEAD
-static const struct hid_device_id ms_devices[] = {
-	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_SIDEWINDER_GV),
-		.driver_data = MS_HIDINPUT },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_NE4K),
-		.driver_data = MS_ERGONOMY },
-=======
 static void ms_remove(struct hid_device *hdev)
 {
 	hid_hw_stop(hdev);
@@ -520,15 +421,11 @@ static const struct hid_device_id ms_devices[] = {
 		.driver_data = MS_ERGONOMY },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_NE7K),
 		.driver_data = MS_ERGONOMY },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_LK6K),
 		.driver_data = MS_ERGONOMY | MS_RDESC },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_PRESENTER_8K_USB),
 		.driver_data = MS_PRESENTER },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_DIGITAL_MEDIA_3K),
-<<<<<<< HEAD
-		.driver_data = MS_ERGONOMY | MS_RDESC_3K },
-=======
 		.driver_data = MS_ERGONOMY },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_DIGITAL_MEDIA_7K),
 		.driver_data = MS_ERGONOMY },
@@ -536,16 +433,10 @@ static const struct hid_device_id ms_devices[] = {
 		.driver_data = MS_ERGONOMY },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_DIGITAL_MEDIA_3KV1),
 		.driver_data = MS_ERGONOMY },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_WIRELESS_OPTICAL_DESKTOP_3_0),
 		.driver_data = MS_NOGET },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_COMFORT_MOUSE_4500),
 		.driver_data = MS_DUPLICATE_USAGES },
-<<<<<<< HEAD
-
-	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_PRESENTER_8K_BT),
-		.driver_data = MS_PRESENTER },
-=======
 	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_POWER_COVER),
 		.driver_data = MS_HIDINPUT },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_COMFORT_KEYBOARD),
@@ -568,7 +459,6 @@ static const struct hid_device_id ms_devices[] = {
 		.driver_data = MS_QUIRK_FF },
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_8BITDO_SN30_PRO_PLUS),
 		.driver_data = MS_QUIRK_FF },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(hid, ms_devices);
@@ -581,25 +471,8 @@ static struct hid_driver ms_driver = {
 	.input_mapped = ms_input_mapped,
 	.event = ms_event,
 	.probe = ms_probe,
-<<<<<<< HEAD
-};
-
-static int __init ms_init(void)
-{
-	return hid_register_driver(&ms_driver);
-}
-
-static void __exit ms_exit(void)
-{
-	hid_unregister_driver(&ms_driver);
-}
-
-module_init(ms_init);
-module_exit(ms_exit);
-=======
 	.remove = ms_remove,
 };
 module_hid_driver(ms_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

@@ -21,19 +21,11 @@
    SOFTWARE IS DISCLAIMED.
 */
 
-<<<<<<< HEAD
-#ifndef __RFCOMM_H
-#define __RFCOMM_H
-
-#define RFCOMM_PSM 3
-
-=======
 #include <linux/refcount.h>
 
 #ifndef __RFCOMM_H
 #define __RFCOMM_H
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RFCOMM_CONN_TIMEOUT (HZ * 30)
 #define RFCOMM_DISC_TIMEOUT (HZ * 20)
 #define RFCOMM_AUTH_TIMEOUT (HZ * 25)
@@ -42,10 +34,6 @@
 #define RFCOMM_DEFAULT_MTU	127
 #define RFCOMM_DEFAULT_CREDITS	7
 
-<<<<<<< HEAD
-#define RFCOMM_MAX_L2CAP_MTU	1013
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RFCOMM_MAX_CREDITS	40
 
 #define RFCOMM_SKB_HEAD_RESERVE	8
@@ -169,10 +157,6 @@ struct rfcomm_session {
 	struct timer_list timer;
 	unsigned long    state;
 	unsigned long    flags;
-<<<<<<< HEAD
-	atomic_t         refcnt;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int              initiator;
 
 	/* Default DLC parameters */
@@ -188,17 +172,10 @@ struct rfcomm_dlc {
 	struct sk_buff_head   tx_queue;
 	struct timer_list     timer;
 
-<<<<<<< HEAD
-	spinlock_t    lock;
-	unsigned long state;
-	unsigned long flags;
-	atomic_t      refcnt;
-=======
 	struct mutex  lock;
 	unsigned long state;
 	unsigned long flags;
 	refcount_t    refcnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8            dlci;
 	u8            addr;
 	u8            priority;
@@ -232,10 +209,7 @@ struct rfcomm_dlc {
 #define RFCOMM_AUTH_ACCEPT  6
 #define RFCOMM_AUTH_REJECT  7
 #define RFCOMM_DEFER_SETUP  8
-<<<<<<< HEAD
-=======
 #define RFCOMM_ENC_DROP     9
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Scheduling flags and events */
 #define RFCOMM_SCHED_WAKEUP 31
@@ -259,21 +233,6 @@ int rfcomm_send_rpn(struct rfcomm_session *s, int cr, u8 dlci,
 /* ---- RFCOMM DLCs (channels) ---- */
 struct rfcomm_dlc *rfcomm_dlc_alloc(gfp_t prio);
 void rfcomm_dlc_free(struct rfcomm_dlc *d);
-<<<<<<< HEAD
-int  rfcomm_dlc_open(struct rfcomm_dlc *d, bdaddr_t *src, bdaddr_t *dst, u8 channel);
-int  rfcomm_dlc_close(struct rfcomm_dlc *d, int reason);
-int  rfcomm_dlc_send(struct rfcomm_dlc *d, struct sk_buff *skb);
-int  rfcomm_dlc_set_modem_status(struct rfcomm_dlc *d, u8 v24_sig);
-int  rfcomm_dlc_get_modem_status(struct rfcomm_dlc *d, u8 *v24_sig);
-void rfcomm_dlc_accept(struct rfcomm_dlc *d);
-
-#define rfcomm_dlc_lock(d)     spin_lock(&d->lock)
-#define rfcomm_dlc_unlock(d)   spin_unlock(&d->lock)
-
-static inline void rfcomm_dlc_hold(struct rfcomm_dlc *d)
-{
-	atomic_inc(&d->refcnt);
-=======
 int  rfcomm_dlc_open(struct rfcomm_dlc *d, bdaddr_t *src, bdaddr_t *dst,
 								u8 channel);
 int  rfcomm_dlc_close(struct rfcomm_dlc *d, int reason);
@@ -290,26 +249,16 @@ struct rfcomm_dlc *rfcomm_dlc_exists(bdaddr_t *src, bdaddr_t *dst, u8 channel);
 static inline void rfcomm_dlc_hold(struct rfcomm_dlc *d)
 {
 	refcount_inc(&d->refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void rfcomm_dlc_put(struct rfcomm_dlc *d)
 {
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&d->refcnt))
-		rfcomm_dlc_free(d);
-}
-
-extern void __rfcomm_dlc_throttle(struct rfcomm_dlc *d);
-extern void __rfcomm_dlc_unthrottle(struct rfcomm_dlc *d);
-=======
 	if (refcount_dec_and_test(&d->refcnt))
 		rfcomm_dlc_free(d);
 }
 
 void __rfcomm_dlc_throttle(struct rfcomm_dlc *d);
 void __rfcomm_dlc_unthrottle(struct rfcomm_dlc *d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void rfcomm_dlc_throttle(struct rfcomm_dlc *d)
 {
@@ -324,17 +273,8 @@ static inline void rfcomm_dlc_unthrottle(struct rfcomm_dlc *d)
 }
 
 /* ---- RFCOMM sessions ---- */
-<<<<<<< HEAD
-void   rfcomm_session_getaddr(struct rfcomm_session *s, bdaddr_t *src, bdaddr_t *dst);
-
-static inline void rfcomm_session_hold(struct rfcomm_session *s)
-{
-	atomic_inc(&s->refcnt);
-}
-=======
 void   rfcomm_session_getaddr(struct rfcomm_session *s, bdaddr_t *src,
 								bdaddr_t *dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ---- RFCOMM sockets ---- */
 struct sockaddr_rc {
@@ -356,20 +296,14 @@ struct rfcomm_conninfo {
 #define RFCOMM_LM_TRUSTED	0x0008
 #define RFCOMM_LM_RELIABLE	0x0010
 #define RFCOMM_LM_SECURE	0x0020
-<<<<<<< HEAD
-=======
 #define RFCOMM_LM_FIPS		0x0040
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define rfcomm_pi(sk) ((struct rfcomm_pinfo *) sk)
 
 struct rfcomm_pinfo {
 	struct bt_sock bt;
-<<<<<<< HEAD
-=======
 	bdaddr_t src;
 	bdaddr_t dst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rfcomm_dlc   *dlc;
 	u8     channel;
 	u8     sec_level;
@@ -379,12 +313,8 @@ struct rfcomm_pinfo {
 int  rfcomm_init_sockets(void);
 void rfcomm_cleanup_sockets(void);
 
-<<<<<<< HEAD
-int  rfcomm_connect_ind(struct rfcomm_session *s, u8 channel, struct rfcomm_dlc **d);
-=======
 int  rfcomm_connect_ind(struct rfcomm_session *s, u8 channel,
 							struct rfcomm_dlc **d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ---- RFCOMM TTY ---- */
 #define RFCOMM_MAX_DEV  256
@@ -395,23 +325,16 @@ int  rfcomm_connect_ind(struct rfcomm_session *s, u8 channel,
 #define RFCOMMGETDEVINFO	_IOR('R', 211, int)
 #define RFCOMMSTEALDLC		_IOW('R', 220, int)
 
-<<<<<<< HEAD
-=======
 /* rfcomm_dev.flags bit definitions */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RFCOMM_REUSE_DLC      0
 #define RFCOMM_RELEASE_ONHUP  1
 #define RFCOMM_HANGUP_NOW     2
 #define RFCOMM_TTY_ATTACHED   3
-<<<<<<< HEAD
-#define RFCOMM_TTY_RELEASED   4
-=======
 #define RFCOMM_DEFUNCT_BIT4   4	  /* don't reuse this bit - userspace visible */
 
 /* rfcomm_dev.status bit definitions */
 #define RFCOMM_DEV_RELEASED   0
 #define RFCOMM_TTY_OWNED      1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct rfcomm_dev_req {
 	s16      dev_id;
@@ -432,11 +355,7 @@ struct rfcomm_dev_info {
 
 struct rfcomm_dev_list_req {
 	u16      dev_num;
-<<<<<<< HEAD
-	struct   rfcomm_dev_info dev_info[0];
-=======
 	struct   rfcomm_dev_info dev_info[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int  rfcomm_dev_ioctl(struct sock *sk, unsigned int cmd, void __user *arg);

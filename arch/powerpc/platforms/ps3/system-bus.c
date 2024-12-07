@@ -1,38 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 system bus driver.
  *
  *  Copyright (C) 2006 Sony Computer Entertainment Inc.
  *  Copyright 2006 Sony Corp.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-#include <linux/dma-mapping.h>
-=======
 #include <linux/dma-map-ops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/slab.h>
 
@@ -48,20 +25,12 @@ static struct device ps3_system_bus = {
 };
 
 /* FIXME: need device usage counters! */
-<<<<<<< HEAD
-struct {
-=======
 static struct {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex mutex;
 	int sb_11; /* usb 0 */
 	int sb_12; /* usb 0 */
 	int gpu;
-<<<<<<< HEAD
-} static usage_hack;
-=======
 } usage_hack;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ps3_is_device(struct ps3_system_bus_device *dev, u64 bus_id,
 			 u64 dev_id)
@@ -95,16 +64,10 @@ static int ps3_open_hv_device_sb(struct ps3_system_bus_device *dev)
 	result = lv1_open_device(dev->bus_id, dev->dev_id, 0);
 
 	if (result) {
-<<<<<<< HEAD
-		pr_debug("%s:%d: lv1_open_device failed: %s\n", __func__,
-			__LINE__, ps3_result(result));
-			result = -EPERM;
-=======
 		pr_warn("%s:%d: lv1_open_device dev=%u.%u(%s) failed: %s\n",
 			__func__, __LINE__, dev->match_id, dev->match_sub_id,
 			dev_name(&dev->core), ps3_result(result));
 		result = -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 done:
@@ -158,11 +121,7 @@ static int ps3_open_hv_device_gpu(struct ps3_system_bus_device *dev)
 	result = lv1_gpu_open(0);
 
 	if (result) {
-<<<<<<< HEAD
-		pr_debug("%s:%d: lv1_gpu_open failed: %s\n", __func__,
-=======
 		pr_warn("%s:%d: lv1_gpu_open failed: %s\n", __func__,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__LINE__, ps3_result(result));
 			result = -EPERM;
 	}
@@ -422,14 +381,8 @@ static int ps3_system_bus_probe(struct device *_dev)
 	return result;
 }
 
-<<<<<<< HEAD
-static int ps3_system_bus_remove(struct device *_dev)
-{
-	int result = 0;
-=======
 static void ps3_system_bus_remove(struct device *_dev)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ps3_system_bus_device *dev = ps3_dev_to_system_bus_dev(_dev);
 	struct ps3_system_bus_driver *drv;
 
@@ -440,20 +393,12 @@ static void ps3_system_bus_remove(struct device *_dev)
 	BUG_ON(!drv);
 
 	if (drv->remove)
-<<<<<<< HEAD
-		result = drv->remove(dev);
-=======
 		drv->remove(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		dev_dbg(&dev->core, "%s:%d %s: no remove method\n",
 			__func__, __LINE__, drv->core.name);
 
 	pr_debug(" <- %s:%d: %s\n", __func__, __LINE__, dev_name(&dev->core));
-<<<<<<< HEAD
-	return result;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ps3_system_bus_shutdown(struct device *_dev)
@@ -494,11 +439,7 @@ static void ps3_system_bus_shutdown(struct device *_dev)
 	dev_dbg(&dev->core, " <- %s:%d\n", __func__, __LINE__);
 }
 
-<<<<<<< HEAD
-static int ps3_system_bus_uevent(struct device *_dev, struct kobj_uevent_env *env)
-=======
 static int ps3_system_bus_uevent(const struct device *_dev, struct kobj_uevent_env *env)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps3_system_bus_device *dev = ps3_dev_to_system_bus_dev(_dev);
 
@@ -517,15 +458,6 @@ static ssize_t modalias_show(struct device *_dev, struct device_attribute *a,
 
 	return (len >= PAGE_SIZE) ? (PAGE_SIZE - 1) : len;
 }
-<<<<<<< HEAD
-
-static struct device_attribute ps3_system_bus_dev_attrs[] = {
-	__ATTR_RO(modalias),
-	__ATTR_NULL,
-};
-
-struct bus_type ps3_system_bus_type = {
-=======
 static DEVICE_ATTR_RO(modalias);
 
 static struct attribute *ps3_system_bus_dev_attrs[] = {
@@ -535,18 +467,13 @@ static struct attribute *ps3_system_bus_dev_attrs[] = {
 ATTRIBUTE_GROUPS(ps3_system_bus_dev);
 
 static struct bus_type ps3_system_bus_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "ps3_system_bus",
 	.match = ps3_system_bus_match,
 	.uevent = ps3_system_bus_uevent,
 	.probe = ps3_system_bus_probe,
 	.remove = ps3_system_bus_remove,
 	.shutdown = ps3_system_bus_shutdown,
-<<<<<<< HEAD
-	.dev_attrs = ps3_system_bus_dev_attrs,
-=======
 	.dev_groups = ps3_system_bus_dev_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ps3_system_bus_init(void)
@@ -578,11 +505,7 @@ core_initcall(ps3_system_bus_init);
  */
 static void * ps3_alloc_coherent(struct device *_dev, size_t size,
 				 dma_addr_t *dma_handle, gfp_t flag,
-<<<<<<< HEAD
-				 struct dma_attrs *attrs)
-=======
 				 unsigned long attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result;
 	struct ps3_system_bus_device *dev = ps3_dev_to_system_bus_dev(_dev);
@@ -619,11 +542,7 @@ clean_none:
 }
 
 static void ps3_free_coherent(struct device *_dev, size_t size, void *vaddr,
-<<<<<<< HEAD
-			      dma_addr_t dma_handle, struct dma_attrs *attrs)
-=======
 			      dma_addr_t dma_handle, unsigned long attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps3_system_bus_device *dev = ps3_dev_to_system_bus_dev(_dev);
 
@@ -639,11 +558,7 @@ static void ps3_free_coherent(struct device *_dev, size_t size, void *vaddr,
 
 static dma_addr_t ps3_sb_map_page(struct device *_dev, struct page *page,
 	unsigned long offset, size_t size, enum dma_data_direction direction,
-<<<<<<< HEAD
-	struct dma_attrs *attrs)
-=======
 	unsigned long attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps3_system_bus_device *dev = ps3_dev_to_system_bus_dev(_dev);
 	int result;
@@ -666,11 +581,7 @@ static dma_addr_t ps3_sb_map_page(struct device *_dev, struct page *page,
 static dma_addr_t ps3_ioc0_map_page(struct device *_dev, struct page *page,
 				    unsigned long offset, size_t size,
 				    enum dma_data_direction direction,
-<<<<<<< HEAD
-				    struct dma_attrs *attrs)
-=======
 				    unsigned long attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps3_system_bus_device *dev = ps3_dev_to_system_bus_dev(_dev);
 	int result;
@@ -690,15 +601,9 @@ static dma_addr_t ps3_ioc0_map_page(struct device *_dev, struct page *page,
 		iopte_flag |= CBE_IOPTE_PP_W | CBE_IOPTE_SO_RW;
 		break;
 	default:
-<<<<<<< HEAD
-		/* not happned */
-		BUG();
-	};
-=======
 		/* not happened */
 		BUG();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = ps3_dma_map(dev->d_region, (unsigned long)ptr, size,
 			     &bus_addr, iopte_flag);
 
@@ -710,11 +615,7 @@ static dma_addr_t ps3_ioc0_map_page(struct device *_dev, struct page *page,
 }
 
 static void ps3_unmap_page(struct device *_dev, dma_addr_t dma_addr,
-<<<<<<< HEAD
-	size_t size, enum dma_data_direction direction, struct dma_attrs *attrs)
-=======
 	size_t size, enum dma_data_direction direction, unsigned long attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps3_system_bus_device *dev = ps3_dev_to_system_bus_dev(_dev);
 	int result;
@@ -728,11 +629,7 @@ static void ps3_unmap_page(struct device *_dev, dma_addr_t dma_addr,
 }
 
 static int ps3_sb_map_sg(struct device *_dev, struct scatterlist *sgl,
-<<<<<<< HEAD
-	int nents, enum dma_data_direction direction, struct dma_attrs *attrs)
-=======
 	int nents, enum dma_data_direction direction, unsigned long attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #if defined(CONFIG_PS3_DYNAMIC_DMA)
 	BUG_ON("do");
@@ -762,16 +659,6 @@ static int ps3_sb_map_sg(struct device *_dev, struct scatterlist *sgl,
 static int ps3_ioc0_map_sg(struct device *_dev, struct scatterlist *sg,
 			   int nents,
 			   enum dma_data_direction direction,
-<<<<<<< HEAD
-			   struct dma_attrs *attrs)
-{
-	BUG();
-	return 0;
-}
-
-static void ps3_sb_unmap_sg(struct device *_dev, struct scatterlist *sg,
-	int nents, enum dma_data_direction direction, struct dma_attrs *attrs)
-=======
 			   unsigned long attrs)
 {
 	BUG();
@@ -780,7 +667,6 @@ static void ps3_sb_unmap_sg(struct device *_dev, struct scatterlist *sg,
 
 static void ps3_sb_unmap_sg(struct device *_dev, struct scatterlist *sg,
 	int nents, enum dma_data_direction direction, unsigned long attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #if defined(CONFIG_PS3_DYNAMIC_DMA)
 	BUG_ON("do");
@@ -789,11 +675,7 @@ static void ps3_sb_unmap_sg(struct device *_dev, struct scatterlist *sg,
 
 static void ps3_ioc0_unmap_sg(struct device *_dev, struct scatterlist *sg,
 			    int nents, enum dma_data_direction direction,
-<<<<<<< HEAD
-			    struct dma_attrs *attrs)
-=======
 			    unsigned long attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BUG();
 }
@@ -803,29 +685,12 @@ static int ps3_dma_supported(struct device *_dev, u64 mask)
 	return mask >= DMA_BIT_MASK(32);
 }
 
-<<<<<<< HEAD
-static u64 ps3_dma_get_required_mask(struct device *_dev)
-{
-	return DMA_BIT_MASK(32);
-}
-
-static struct dma_map_ops ps3_sb_dma_ops = {
-=======
 static const struct dma_map_ops ps3_sb_dma_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.alloc = ps3_alloc_coherent,
 	.free = ps3_free_coherent,
 	.map_sg = ps3_sb_map_sg,
 	.unmap_sg = ps3_sb_unmap_sg,
 	.dma_supported = ps3_dma_supported,
-<<<<<<< HEAD
-	.get_required_mask = ps3_dma_get_required_mask,
-	.map_page = ps3_sb_map_page,
-	.unmap_page = ps3_unmap_page,
-};
-
-static struct dma_map_ops ps3_ioc0_dma_ops = {
-=======
 	.map_page = ps3_sb_map_page,
 	.unmap_page = ps3_unmap_page,
 	.mmap = dma_common_mmap,
@@ -835,24 +700,17 @@ static struct dma_map_ops ps3_ioc0_dma_ops = {
 };
 
 static const struct dma_map_ops ps3_ioc0_dma_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.alloc = ps3_alloc_coherent,
 	.free = ps3_free_coherent,
 	.map_sg = ps3_ioc0_map_sg,
 	.unmap_sg = ps3_ioc0_unmap_sg,
 	.dma_supported = ps3_dma_supported,
-<<<<<<< HEAD
-	.get_required_mask = ps3_dma_get_required_mask,
-	.map_page = ps3_ioc0_map_page,
-	.unmap_page = ps3_unmap_page,
-=======
 	.map_page = ps3_ioc0_map_page,
 	.unmap_page = ps3_unmap_page,
 	.mmap = dma_common_mmap,
 	.get_sgtable = dma_common_get_sgtable,
 	.alloc_pages = dma_common_alloc_pages,
 	.free_pages = dma_common_free_pages,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -888,19 +746,11 @@ int ps3_system_bus_device_register(struct ps3_system_bus_device *dev)
 
 	switch (dev->dev_type) {
 	case PS3_DEVICE_TYPE_IOC0:
-<<<<<<< HEAD
-		dev->core.archdata.dma_ops = &ps3_ioc0_dma_ops;
-		dev_set_name(&dev->core, "ioc0_%02x", ++dev_ioc0_count);
-		break;
-	case PS3_DEVICE_TYPE_SB:
-		dev->core.archdata.dma_ops = &ps3_sb_dma_ops;
-=======
 		dev->core.dma_ops = &ps3_ioc0_dma_ops;
 		dev_set_name(&dev->core, "ioc0_%02x", ++dev_ioc0_count);
 		break;
 	case PS3_DEVICE_TYPE_SB:
 		dev->core.dma_ops = &ps3_sb_dma_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_set_name(&dev->core, "sb_%02x", ++dev_sb_count);
 
 		break;
@@ -912,11 +762,7 @@ int ps3_system_bus_device_register(struct ps3_system_bus_device *dev)
 		break;
 	default:
 		BUG();
-<<<<<<< HEAD
-	};
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->core.of_node = NULL;
 	set_dev_node(&dev->core, 0);

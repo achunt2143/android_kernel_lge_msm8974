@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "bfad_drv.h"
@@ -33,11 +15,8 @@
 
 BFA_TRC_FILE(CNA, IOC_CB);
 
-<<<<<<< HEAD
-=======
 #define bfa_ioc_cb_join_pos(__ioc) ((u32) (1 << BFA_IOC_CB_JOIN_SH))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * forward declarations
  */
@@ -53,15 +32,12 @@ static void bfa_ioc_cb_sync_join(struct bfa_ioc_s *ioc);
 static void bfa_ioc_cb_sync_leave(struct bfa_ioc_s *ioc);
 static void bfa_ioc_cb_sync_ack(struct bfa_ioc_s *ioc);
 static bfa_boolean_t bfa_ioc_cb_sync_complete(struct bfa_ioc_s *ioc);
-<<<<<<< HEAD
-=======
 static void bfa_ioc_cb_set_cur_ioc_fwstate(
 			struct bfa_ioc_s *ioc, enum bfi_ioc_state fwstate);
 static enum bfi_ioc_state bfa_ioc_cb_get_cur_ioc_fwstate(struct bfa_ioc_s *ioc);
 static void bfa_ioc_cb_set_alt_ioc_fwstate(
 			struct bfa_ioc_s *ioc, enum bfi_ioc_state fwstate);
 static enum bfi_ioc_state bfa_ioc_cb_get_alt_ioc_fwstate(struct bfa_ioc_s *ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct bfa_ioc_hwif_s hwif_cb;
 
@@ -84,13 +60,10 @@ bfa_ioc_set_cb_hwif(struct bfa_ioc_s *ioc)
 	hwif_cb.ioc_sync_leave = bfa_ioc_cb_sync_leave;
 	hwif_cb.ioc_sync_ack = bfa_ioc_cb_sync_ack;
 	hwif_cb.ioc_sync_complete = bfa_ioc_cb_sync_complete;
-<<<<<<< HEAD
-=======
 	hwif_cb.ioc_set_fwstate = bfa_ioc_cb_set_cur_ioc_fwstate;
 	hwif_cb.ioc_get_fwstate = bfa_ioc_cb_get_cur_ioc_fwstate;
 	hwif_cb.ioc_set_alt_fwstate = bfa_ioc_cb_set_alt_ioc_fwstate;
 	hwif_cb.ioc_get_alt_fwstate = bfa_ioc_cb_get_alt_ioc_fwstate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ioc->ioc_hwif = &hwif_cb;
 }
@@ -101,8 +74,6 @@ bfa_ioc_set_cb_hwif(struct bfa_ioc_s *ioc)
 static bfa_boolean_t
 bfa_ioc_cb_firmware_lock(struct bfa_ioc_s *ioc)
 {
-<<<<<<< HEAD
-=======
 	enum bfi_ioc_state alt_fwstate, cur_fwstate;
 	struct bfi_ioc_image_hdr_s fwhdr;
 
@@ -126,7 +97,6 @@ bfa_ioc_cb_firmware_lock(struct bfa_ioc_s *ioc)
 		return BFA_FALSE;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return BFA_TRUE;
 }
 
@@ -245,8 +215,6 @@ bfa_ioc_cb_isr_mode_set(struct bfa_ioc_s *ioc, bfa_boolean_t msix)
 static bfa_boolean_t
 bfa_ioc_cb_sync_start(struct bfa_ioc_s *ioc)
 {
-<<<<<<< HEAD
-=======
 	u32 ioc_fwstate = readl(ioc->ioc_regs.ioc_fwstate);
 
 	/**
@@ -261,7 +229,6 @@ bfa_ioc_cb_sync_start(struct bfa_ioc_s *ioc)
 		return BFA_TRUE;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bfa_ioc_cb_sync_complete(ioc);
 }
 
@@ -287,20 +254,15 @@ bfa_ioc_cb_ownership_reset(struct bfa_ioc_s *ioc)
 static void
 bfa_ioc_cb_sync_join(struct bfa_ioc_s *ioc)
 {
-<<<<<<< HEAD
-=======
 	u32 r32 = readl(ioc->ioc_regs.ioc_fwstate);
 	u32 join_pos = bfa_ioc_cb_join_pos(ioc);
 
 	writel((r32 | join_pos), ioc->ioc_regs.ioc_fwstate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 bfa_ioc_cb_sync_leave(struct bfa_ioc_s *ioc)
 {
-<<<<<<< HEAD
-=======
 	u32 r32 = readl(ioc->ioc_regs.ioc_fwstate);
 	u32 join_pos = bfa_ioc_cb_join_pos(ioc);
 
@@ -339,29 +301,19 @@ bfa_ioc_cb_get_alt_ioc_fwstate(struct bfa_ioc_s *ioc)
 {
 	return (enum bfi_ioc_state)(readl(ioc->ioc_regs.alt_ioc_fwstate) &
 			BFA_IOC_CB_FWSTATE_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 bfa_ioc_cb_sync_ack(struct bfa_ioc_s *ioc)
 {
-<<<<<<< HEAD
-	writel(BFI_IOC_FAIL, ioc->ioc_regs.ioc_fwstate);
-=======
 	bfa_ioc_cb_set_cur_ioc_fwstate(ioc, BFI_IOC_FAIL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bfa_boolean_t
 bfa_ioc_cb_sync_complete(struct bfa_ioc_s *ioc)
 {
-<<<<<<< HEAD
-	uint32_t fwstate, alt_fwstate;
-	fwstate = readl(ioc->ioc_regs.ioc_fwstate);
-=======
 	u32 fwstate, alt_fwstate;
 	fwstate = bfa_ioc_cb_get_cur_ioc_fwstate(ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * At this point, this IOC is hoding the hw sem in the
@@ -389,11 +341,7 @@ bfa_ioc_cb_sync_complete(struct bfa_ioc_s *ioc)
 		fwstate == BFI_IOC_OP)
 		return BFA_TRUE;
 	else {
-<<<<<<< HEAD
-		alt_fwstate = readl(ioc->ioc_regs.alt_ioc_fwstate);
-=======
 		alt_fwstate = bfa_ioc_cb_get_alt_ioc_fwstate(ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (alt_fwstate == BFI_IOC_FAIL ||
 			alt_fwstate == BFI_IOC_DISABLED ||
 			alt_fwstate == BFI_IOC_UNINIT ||
@@ -408,11 +356,7 @@ bfa_ioc_cb_sync_complete(struct bfa_ioc_s *ioc)
 bfa_status_t
 bfa_ioc_cb_pll_init(void __iomem *rb, enum bfi_asic_mode fcmode)
 {
-<<<<<<< HEAD
-	u32	pll_sclk, pll_fclk;
-=======
 	u32	pll_sclk, pll_fclk, join_bits;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pll_sclk = __APP_PLL_SCLK_ENABLE | __APP_PLL_SCLK_LRESETN |
 		__APP_PLL_SCLK_P0_1(3U) |
@@ -422,17 +366,12 @@ bfa_ioc_cb_pll_init(void __iomem *rb, enum bfi_asic_mode fcmode)
 		__APP_PLL_LCLK_RSEL200500 | __APP_PLL_LCLK_P0_1(3U) |
 		__APP_PLL_LCLK_JITLMT0_1(3U) |
 		__APP_PLL_LCLK_CNTLMT0_1(3U);
-<<<<<<< HEAD
-	writel(BFI_IOC_UNINIT, (rb + BFA_IOC0_STATE_REG));
-	writel(BFI_IOC_UNINIT, (rb + BFA_IOC1_STATE_REG));
-=======
 	join_bits = readl(rb + BFA_IOC0_STATE_REG) &
 			BFA_IOC_CB_JOIN_MASK;
 	writel((BFI_IOC_UNINIT | join_bits), (rb + BFA_IOC0_STATE_REG));
 	join_bits = readl(rb + BFA_IOC1_STATE_REG) &
 			BFA_IOC_CB_JOIN_MASK;
 	writel((BFI_IOC_UNINIT | join_bits), (rb + BFA_IOC1_STATE_REG));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(0xffffffffU, (rb + HOSTFN0_INT_MSK));
 	writel(0xffffffffU, (rb + HOSTFN1_INT_MSK));
 	writel(0xffffffffU, (rb + HOSTFN0_INT_STATUS));

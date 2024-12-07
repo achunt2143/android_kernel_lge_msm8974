@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Kernel module to match connection tracking information. */
 
 /* (C) 1999-2001 Paul `Rusty' Russell
  * (C) 2002-2005 Netfilter Core Team <coreteam@netfilter.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -35,16 +25,6 @@ state_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	unsigned int statebit;
 	struct nf_conn *ct = nf_ct_get(skb, &ctinfo);
 
-<<<<<<< HEAD
-	if (!ct)
-		statebit = XT_STATE_INVALID;
-	else {
-		if (nf_ct_is_untracked(ct))
-			statebit = XT_STATE_UNTRACKED;
-		else
-			statebit = XT_STATE_BIT(ctinfo);
-	}
-=======
 	if (ct)
 		statebit = XT_STATE_BIT(ctinfo);
 	else if (ctinfo == IP_CT_UNTRACKED)
@@ -52,7 +32,6 @@ state_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	else
 		statebit = XT_STATE_INVALID;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (sinfo->statemask & statebit);
 }
 
@@ -60,27 +39,16 @@ static int state_mt_check(const struct xt_mtchk_param *par)
 {
 	int ret;
 
-<<<<<<< HEAD
-	ret = nf_ct_l3proto_try_module_get(par->family);
-	if (ret < 0)
-		pr_info("cannot load conntrack support for proto=%u\n",
-			par->family);
-=======
 	ret = nf_ct_netns_get(par->net, par->family);
 	if (ret < 0)
 		pr_info_ratelimited("cannot load conntrack support for proto=%u\n",
 				    par->family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static void state_mt_destroy(const struct xt_mtdtor_param *par)
 {
-<<<<<<< HEAD
-	nf_ct_l3proto_module_put(par->family);
-=======
 	nf_ct_netns_put(par->net, par->family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xt_match state_mt_reg __read_mostly = {

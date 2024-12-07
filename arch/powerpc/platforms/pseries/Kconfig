@@ -1,23 +1,15 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config PPC_PSERIES
 	depends on PPC64 && PPC_BOOK3S
 	bool "IBM pSeries & new (POWER5-based) iSeries"
 	select HAVE_PCSPKR_PLATFORM
 	select MPIC
 	select OF_DYNAMIC
-<<<<<<< HEAD
-	select PCI_MSI
-	select PPC_XICS
-=======
 	select FORCE_PCI
 	select PCI_MSI
 	select GENERIC_ALLOCATOR
 	select PPC_XICS
 	select PPC_XIVE_SPAPR
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select PPC_ICP_NATIVE
 	select PPC_ICP_HV
 	select PPC_ICS_RTAS
@@ -26,17 +18,6 @@ config PPC_PSERIES
 	select PPC_RTAS_DAEMON
 	select RTAS_ERROR_LOGGING
 	select PPC_UDBG_16550
-<<<<<<< HEAD
-	select PPC_NATIVE
-	select PPC_PCI_CHOICE if EXPERT
-	select ZLIB_DEFLATE
-	default y
-
-config PPC_SPLPAR
-	depends on PPC_PSERIES
-	bool "Support for shared-processor logical partitions"
-	default n
-=======
 	select PPC_DOORBELL
 	select HOTPLUG_CPU
 	select FORCE_SMP
@@ -60,24 +41,12 @@ config PPC_SPLPAR
 	select PARAVIRT_SPINLOCKS if PPC_QUEUED_SPINLOCKS
 	select PARAVIRT_TIME_ACCOUNTING if VIRT_CPU_ACCOUNTING_GEN
 	default y
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Enabling this option will make the kernel run more efficiently
 	  on logically-partitioned pSeries systems which use shared
 	  processors, that is, which share physical processors between
 	  two or more partitions.
 
-<<<<<<< HEAD
-config EEH
-	bool
-	depends on PPC_PSERIES && PCI
-	default y
-
-config PSERIES_MSI
-       bool
-       depends on PCI_MSI && EEH
-       default y
-=======
 	  Say Y if you are unsure.
 
 config DTL
@@ -89,7 +58,6 @@ config DTL
 	  which are accessible through a debugfs file.
 
 	  Say N if you are unsure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PSERIES_ENERGY
 	tristate "pSeries energy management capabilities driver"
@@ -101,13 +69,6 @@ config PSERIES_ENERGY
 	  Provides: /sys/devices/system/cpu/pseries_(de)activation_hint_list
 	  and /sys/devices/system/cpu/cpuN/pseries_(de)activation_hint
 
-<<<<<<< HEAD
-config SCANLOG
-	tristate "Scanlog dump interface"
-	depends on RTAS_PROC && PPC_PSERIES
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config IO_EVENT_IRQ
 	bool "IO Event Interrupt support"
 	depends on PPC_PSERIES
@@ -122,11 +83,7 @@ config IO_EVENT_IRQ
 
 	  This option will only enable the IO event platform code. You
 	  will still need to enable or compile the actual drivers
-<<<<<<< HEAD
-	  that use this infrastruture to handle IO event interrupts.
-=======
 	  that use this infrastructure to handle IO event interrupts.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Say Y if you are unsure.
 
@@ -134,41 +91,24 @@ config LPARCFG
 	bool "LPAR Configuration Data"
 	depends on PPC_PSERIES
 	help
-<<<<<<< HEAD
-	Provide system capacity information via human readable
-	<key word>=<value> pairs through a /proc/ppc64/lparcfg interface.
-=======
 	  Provide system capacity information via human readable
 	  <key word>=<value> pairs through a /proc/ppc64/lparcfg interface.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PPC_PSERIES_DEBUG
 	depends on PPC_PSERIES && PPC_EARLY_DEBUG
 	bool "Enable extra debug logging in platforms/pseries"
-<<<<<<< HEAD
-        help
-=======
 	default y
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here if you want the pseries core to produce a bunch of
 	  debug messages to the system log. Select this if you are having a
 	  problem with the pseries core and want to see more of what is
 	  going on. This does not enable debugging in lpar.c, which must
 	  be manually done due to its verbosity.
-<<<<<<< HEAD
-	default y
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PPC_SMLPAR
 	bool "Support for shared-memory logical partitions"
 	depends on PPC_PSERIES
 	select LPARCFG
-<<<<<<< HEAD
-	default n
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Select this option to enable shared memory partition support.
 	  With this option a system running in an LPAR can be given more
@@ -178,10 +118,7 @@ config PPC_SMLPAR
 config CMM
 	tristate "Collaborative memory management"
 	depends on PPC_SMLPAR
-<<<<<<< HEAD
-=======
 	select MEMORY_BALLOON
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	help
 	  Select this option, if you want to enable the kernel interface
@@ -191,26 +128,6 @@ config CMM
 	  will be reused for other LPARs. The interface allows firmware to
 	  balance memory across many LPARs.
 
-<<<<<<< HEAD
-config DTL
-	bool "Dispatch Trace Log"
-	depends on PPC_SPLPAR && DEBUG_FS
-	help
-	  SPLPAR machines can log hypervisor preempt & dispatch events to a
-	  kernel buffer. Saying Y here will enable logging these events,
-	  which are accessible through a debugfs file.
-
-	  Say N if you are unsure.
-
-config PSERIES_IDLE
-	bool "Cpuidle driver for pSeries platforms"
-	depends on CPU_IDLE
-	depends on PPC_PSERIES
-	default y
-	help
-	  Select this option to enable processor idle state management
-	  through cpuidle subsystem.
-=======
 config HV_PERF_CTRS
 	bool "Hypervisor supplied PMU events (24x7 & GPCI)"
 	default y
@@ -273,4 +190,3 @@ config PPC_SVM
 	 those guests.
 
 	 If unsure, say "N".
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

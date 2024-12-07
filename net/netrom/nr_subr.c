@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
  */
@@ -27,11 +19,7 @@
 #include <linux/skbuff.h>
 #include <net/sock.h>
 #include <net/tcp_states.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fcntl.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
@@ -135,11 +123,7 @@ void nr_write_internal(struct sock *sk, int frametype)
 	unsigned char  *dptr;
 	int len, timeout;
 
-<<<<<<< HEAD
-	len = NR_NETWORK_LEN + NR_TRANSPORT_LEN;
-=======
 	len = NR_TRANSPORT_LEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (frametype & 0x0F) {
 	case NR_CONNREQ:
@@ -157,12 +141,8 @@ void nr_write_internal(struct sock *sk, int frametype)
 		return;
 	}
 
-<<<<<<< HEAD
-	if ((skb = alloc_skb(len, GFP_ATOMIC)) == NULL)
-=======
 	skb = alloc_skb(NR_NETWORK_LEN + len, GFP_ATOMIC);
 	if (!skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/*
@@ -170,11 +150,7 @@ void nr_write_internal(struct sock *sk, int frametype)
 	 */
 	skb_reserve(skb, NR_NETWORK_LEN);
 
-<<<<<<< HEAD
-	dptr = skb_put(skb, skb_tailroom(skb));
-=======
 	dptr = skb_put(skb, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (frametype & 0x0F) {
 	case NR_CONNREQ:
@@ -206,12 +182,8 @@ void nr_write_internal(struct sock *sk, int frametype)
 		*dptr++ = nr->my_id;
 		*dptr++ = frametype;
 		*dptr++ = nr->window;
-<<<<<<< HEAD
-		if (nr->bpqext) *dptr++ = sysctl_netrom_network_ttl_initialiser;
-=======
 		if (nr->bpqext)
 			*dptr++ = READ_ONCE(sysctl_netrom_network_ttl_initialiser);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case NR_DISCREQ:
@@ -265,11 +237,7 @@ void __nr_transmit_reply(struct sk_buff *skb, int mine, unsigned char cmdflags)
 	dptr[6] |= AX25_SSSID_SPARE;
 	dptr += AX25_ADDR_LEN;
 
-<<<<<<< HEAD
-	*dptr++ = sysctl_netrom_network_ttl_initialiser;
-=======
 	*dptr++ = READ_ONCE(sysctl_netrom_network_ttl_initialiser);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mine) {
 		*dptr++ = 0;

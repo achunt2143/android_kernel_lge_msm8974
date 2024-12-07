@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-omap1/clock_data.c
  *
@@ -9,13 +6,6 @@
  *  Written by Tuukka Tikkanen <tuukka.tikkanen@elektrobit.com>
  *  Based on clocks.h by Tony Lindgren, Gordon McNutt and RidgeRun, Inc
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * To do:
  * - Clocks that are only available on some chips should be marked with the
  *   chips that they are present on.
@@ -24,23 +14,6 @@
 #include <linux/kernel.h>
 #include <linux/io.h>
 #include <linux/clk.h>
-<<<<<<< HEAD
-#include <linux/cpufreq.h>
-#include <linux/delay.h>
-
-#include <asm/mach-types.h>  /* for machine_is_* */
-
-#include <plat/clock.h>
-#include <plat/cpu.h>
-#include <plat/clkdev_omap.h>
-#include <plat/sram.h>	/* for omap_sram_reprogram_clock() */
-#include <plat/usb.h>   /* for OTG_BASE */
-
-#include <mach/hardware.h>
-
-#include "iomap.h"
-#include "clock.h"
-=======
 #include <linux/clkdev.h>
 #include <linux/clk-provider.h>
 #include <linux/cpufreq.h>
@@ -55,7 +28,6 @@
 #include "iomap.h"
 #include "clock.h"
 #include "sram.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Some ARM_IDLECT1 bit shifts - used in struct arm_idlect1_clk */
 #define IDL_CLKOUT_ARM_SHIFT			12
@@ -101,18 +73,6 @@
  * Omap1 clocks
  */
 
-<<<<<<< HEAD
-static struct clk ck_ref = {
-	.name		= "ck_ref",
-	.ops		= &clkops_null,
-	.rate		= 12000000,
-};
-
-static struct clk ck_dpll1 = {
-	.name		= "ck_dpll1",
-	.ops		= &clkops_null,
-	.parent		= &ck_ref,
-=======
 static struct omap1_clk ck_ref = {
 	.hw.init	= CLK_HW_INIT_NO_PARENT("ck_ref", &omap1_clk_rate_ops, 0),
 	.rate		= 12000000,
@@ -125,7 +85,6 @@ static struct omap1_clk ck_dpll1 = {
 				       * and its children when clk_get_rate() is called
 				       */
 				      CLK_GET_RATE_NOCACHE),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -134,56 +93,28 @@ static struct omap1_clk ck_dpll1 = {
  */
 static struct arm_idlect1_clk ck_dpll1out = {
 	.clk = {
-<<<<<<< HEAD
-		.name		= "ck_dpll1out",
-		.ops		= &clkops_generic,
-		.parent		= &ck_dpll1,
-		.flags		= CLOCK_IDLE_CONTROL | ENABLE_REG_32BIT |
-				  ENABLE_ON_INIT,
-		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
-		.enable_bit	= EN_CKOUT_ARM,
-		.recalc		= &followparent_recalc,
-=======
 		.hw.init	= CLK_HW_INIT("ck_dpll1out", "ck_dpll1", &omap1_clk_gate_ops, 0),
 		.ops		= &clkops_generic,
 		.flags		= CLOCK_IDLE_CONTROL | ENABLE_REG_32BIT,
 		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
 		.enable_bit	= EN_CKOUT_ARM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.idlect_shift	= IDL_CLKOUT_ARM_SHIFT,
 };
 
-<<<<<<< HEAD
-static struct clk sossi_ck = {
-	.name		= "ck_sossi",
-	.ops		= &clkops_generic,
-	.parent		= &ck_dpll1out.clk,
-=======
 static struct omap1_clk sossi_ck = {
 	.hw.init	= CLK_HW_INIT("ck_sossi", "ck_dpll1out", &omap1_clk_full_ops, 0),
 	.ops		= &clkops_generic,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags		= CLOCK_NO_IDLE_PARENT | ENABLE_REG_32BIT,
 	.enable_reg	= OMAP1_IO_ADDRESS(MOD_CONF_CTRL_1),
 	.enable_bit	= CONF_MOD_SOSSI_CLK_EN_R,
 	.recalc		= &omap1_sossi_recalc,
-<<<<<<< HEAD
-	.set_rate	= &omap1_set_sossi_rate,
-};
-
-static struct clk arm_ck = {
-	.name		= "arm_ck",
-	.ops		= &clkops_null,
-	.parent		= &ck_dpll1,
-=======
 	.round_rate	= &omap1_round_sossi_rate,
 	.set_rate	= &omap1_set_sossi_rate,
 };
 
 static struct omap1_clk arm_ck = {
 	.hw.init	= CLK_HW_INIT("arm_ck", "ck_dpll1", &omap1_clk_rate_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate_offset	= CKCTL_ARMDIV_OFFSET,
 	.recalc		= &omap1_ckctl_recalc,
 	.round_rate	= omap1_clk_round_rate_ckctl_arm,
@@ -192,15 +123,9 @@ static struct omap1_clk arm_ck = {
 
 static struct arm_idlect1_clk armper_ck = {
 	.clk = {
-<<<<<<< HEAD
-		.name		= "armper_ck",
-		.ops		= &clkops_generic,
-		.parent		= &ck_dpll1,
-=======
 		.hw.init	= CLK_HW_INIT("armper_ck", "ck_dpll1", &omap1_clk_full_ops,
 					      CLK_IS_CRITICAL),
 		.ops		= &clkops_generic,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags		= CLOCK_IDLE_CONTROL,
 		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
 		.enable_bit	= EN_PERCK,
@@ -216,78 +141,41 @@ static struct arm_idlect1_clk armper_ck = {
  * FIXME: This clock seems to be necessary but no-one has asked for its
  * activation.  [ GPIO code for 1510 ]
  */
-<<<<<<< HEAD
-static struct clk arm_gpio_ck = {
-	.name		= "ick",
-	.ops		= &clkops_generic,
-	.parent		= &ck_dpll1,
-	.flags		= ENABLE_ON_INIT,
-	.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
-	.enable_bit	= EN_GPIOCK,
-	.recalc		= &followparent_recalc,
-=======
 static struct omap1_clk arm_gpio_ck = {
 	.hw.init	= CLK_HW_INIT("ick", "ck_dpll1", &omap1_clk_gate_ops, CLK_IS_CRITICAL),
 	.ops		= &clkops_generic,
 	.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
 	.enable_bit	= EN_GPIOCK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct arm_idlect1_clk armxor_ck = {
 	.clk = {
-<<<<<<< HEAD
-		.name		= "armxor_ck",
-		.ops		= &clkops_generic,
-		.parent		= &ck_ref,
-		.flags		= CLOCK_IDLE_CONTROL,
-		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
-		.enable_bit	= EN_XORPCK,
-		.recalc		= &followparent_recalc,
-=======
 		.hw.init	= CLK_HW_INIT("armxor_ck", "ck_ref", &omap1_clk_gate_ops,
 					      CLK_IS_CRITICAL),
 		.ops		= &clkops_generic,
 		.flags		= CLOCK_IDLE_CONTROL,
 		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
 		.enable_bit	= EN_XORPCK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.idlect_shift	= IDLXORP_ARM_SHIFT,
 };
 
 static struct arm_idlect1_clk armtim_ck = {
 	.clk = {
-<<<<<<< HEAD
-		.name		= "armtim_ck",
-		.ops		= &clkops_generic,
-		.parent		= &ck_ref,
-		.flags		= CLOCK_IDLE_CONTROL,
-		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
-		.enable_bit	= EN_TIMCK,
-		.recalc		= &followparent_recalc,
-=======
 		.hw.init	= CLK_HW_INIT("armtim_ck", "ck_ref", &omap1_clk_gate_ops,
 					      CLK_IS_CRITICAL),
 		.ops		= &clkops_generic,
 		.flags		= CLOCK_IDLE_CONTROL,
 		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
 		.enable_bit	= EN_TIMCK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.idlect_shift	= IDLTIM_ARM_SHIFT,
 };
 
 static struct arm_idlect1_clk armwdt_ck = {
 	.clk = {
-<<<<<<< HEAD
-		.name		= "armwdt_ck",
-		.ops		= &clkops_generic,
-		.parent		= &ck_ref,
-=======
 		.hw.init	= CLK_HW_INIT("armwdt_ck", "ck_ref", &omap1_clk_full_ops, 0),
 		.ops		= &clkops_generic,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags		= CLOCK_IDLE_CONTROL,
 		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
 		.enable_bit	= EN_WDTCK,
@@ -297,16 +185,8 @@ static struct arm_idlect1_clk armwdt_ck = {
 	.idlect_shift	= IDLWDT_ARM_SHIFT,
 };
 
-<<<<<<< HEAD
-static struct clk arminth_ck16xx = {
-	.name		= "arminth_ck",
-	.ops		= &clkops_null,
-	.parent		= &arm_ck,
-	.recalc		= &followparent_recalc,
-=======
 static struct omap1_clk arminth_ck16xx = {
 	.hw.init	= CLK_HW_INIT("arminth_ck", "arm_ck", &omap1_clk_null_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Note: On 16xx the frequency can be divided by 2 by programming
 	 * ARM_CKCTL:ARM_INTHCK_SEL(14) to 1
 	 *
@@ -314,16 +194,9 @@ static struct omap1_clk arminth_ck16xx = {
 	 */
 };
 
-<<<<<<< HEAD
-static struct clk dsp_ck = {
-	.name		= "dsp_ck",
-	.ops		= &clkops_generic,
-	.parent		= &ck_dpll1,
-=======
 static struct omap1_clk dsp_ck = {
 	.hw.init	= CLK_HW_INIT("dsp_ck", "ck_dpll1", &omap1_clk_full_ops, 0),
 	.ops		= &clkops_generic,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable_reg	= OMAP1_IO_ADDRESS(ARM_CKCTL),
 	.enable_bit	= EN_DSPCK,
 	.rate_offset	= CKCTL_DSPDIV_OFFSET,
@@ -332,31 +205,17 @@ static struct omap1_clk dsp_ck = {
 	.set_rate	= omap1_clk_set_rate_ckctl_arm,
 };
 
-<<<<<<< HEAD
-static struct clk dspmmu_ck = {
-	.name		= "dspmmu_ck",
-	.ops		= &clkops_null,
-	.parent		= &ck_dpll1,
-=======
 static struct omap1_clk dspmmu_ck = {
 	.hw.init	= CLK_HW_INIT("dspmmu_ck", "ck_dpll1", &omap1_clk_rate_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate_offset	= CKCTL_DSPMMUDIV_OFFSET,
 	.recalc		= &omap1_ckctl_recalc,
 	.round_rate	= omap1_clk_round_rate_ckctl_arm,
 	.set_rate	= omap1_clk_set_rate_ckctl_arm,
 };
 
-<<<<<<< HEAD
-static struct clk dspper_ck = {
-	.name		= "dspper_ck",
-	.ops		= &clkops_dspck,
-	.parent		= &ck_dpll1,
-=======
 static struct omap1_clk dspper_ck = {
 	.hw.init	= CLK_HW_INIT("dspper_ck", "ck_dpll1", &omap1_clk_full_ops, 0),
 	.ops		= &clkops_dspck,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable_reg	= DSP_IDLECT2,
 	.enable_bit	= EN_PERCK,
 	.rate_offset	= CKCTL_PERDIV_OFFSET,
@@ -365,24 +224,6 @@ static struct omap1_clk dspper_ck = {
 	.set_rate	= &omap1_clk_set_rate_dsp_domain,
 };
 
-<<<<<<< HEAD
-static struct clk dspxor_ck = {
-	.name		= "dspxor_ck",
-	.ops		= &clkops_dspck,
-	.parent		= &ck_ref,
-	.enable_reg	= DSP_IDLECT2,
-	.enable_bit	= EN_XORPCK,
-	.recalc		= &followparent_recalc,
-};
-
-static struct clk dsptim_ck = {
-	.name		= "dsptim_ck",
-	.ops		= &clkops_dspck,
-	.parent		= &ck_ref,
-	.enable_reg	= DSP_IDLECT2,
-	.enable_bit	= EN_DSPTIMCK,
-	.recalc		= &followparent_recalc,
-=======
 static struct omap1_clk dspxor_ck = {
 	.hw.init	= CLK_HW_INIT("dspxor_ck", "ck_ref", &omap1_clk_gate_ops, 0),
 	.ops		= &clkops_dspck,
@@ -395,18 +236,11 @@ static struct omap1_clk dsptim_ck = {
 	.ops		= &clkops_dspck,
 	.enable_reg	= DSP_IDLECT2,
 	.enable_bit	= EN_DSPTIMCK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct arm_idlect1_clk tc_ck = {
 	.clk = {
-<<<<<<< HEAD
-		.name		= "tc_ck",
-		.ops		= &clkops_null,
-		.parent		= &ck_dpll1,
-=======
 		.hw.init	= CLK_HW_INIT("tc_ck", "ck_dpll1", &omap1_clk_rate_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags		= CLOCK_IDLE_CONTROL,
 		.rate_offset	= CKCTL_TCDIV_OFFSET,
 		.recalc		= &omap1_ckctl_recalc,
@@ -416,49 +250,14 @@ static struct arm_idlect1_clk tc_ck = {
 	.idlect_shift	= IDLIF_ARM_SHIFT,
 };
 
-<<<<<<< HEAD
-static struct clk arminth_ck1510 = {
-	.name		= "arminth_ck",
-	.ops		= &clkops_null,
-	.parent		= &tc_ck.clk,
-	.recalc		= &followparent_recalc,
-=======
 static struct omap1_clk arminth_ck1510 = {
 	.hw.init	= CLK_HW_INIT("arminth_ck", "tc_ck", &omap1_clk_null_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Note: On 1510 the frequency follows TC_CK
 	 *
 	 * 16xx version is in MPU clocks.
 	 */
 };
 
-<<<<<<< HEAD
-static struct clk tipb_ck = {
-	/* No-idle controlled by "tc_ck" */
-	.name		= "tipb_ck",
-	.ops		= &clkops_null,
-	.parent		= &tc_ck.clk,
-	.recalc		= &followparent_recalc,
-};
-
-static struct clk l3_ocpi_ck = {
-	/* No-idle controlled by "tc_ck" */
-	.name		= "l3_ocpi_ck",
-	.ops		= &clkops_generic,
-	.parent		= &tc_ck.clk,
-	.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT3),
-	.enable_bit	= EN_OCPI_CK,
-	.recalc		= &followparent_recalc,
-};
-
-static struct clk tc1_ck = {
-	.name		= "tc1_ck",
-	.ops		= &clkops_generic,
-	.parent		= &tc_ck.clk,
-	.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT3),
-	.enable_bit	= EN_TC1_CK,
-	.recalc		= &followparent_recalc,
-=======
 static struct omap1_clk tipb_ck = {
 	/* No-idle controlled by "tc_ck" */
 	.hw.init	= CLK_HW_INIT("tipb_ck", "tc_ck", &omap1_clk_null_ops, 0),
@@ -477,38 +276,12 @@ static struct omap1_clk tc1_ck = {
 	.ops		= &clkops_generic,
 	.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT3),
 	.enable_bit	= EN_TC1_CK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * FIXME: This clock seems to be necessary but no-one has asked for its
  * activation.  [ pm.c (SRAM), CCP, Camera ]
  */
-<<<<<<< HEAD
-static struct clk tc2_ck = {
-	.name		= "tc2_ck",
-	.ops		= &clkops_generic,
-	.parent		= &tc_ck.clk,
-	.flags		= ENABLE_ON_INIT,
-	.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT3),
-	.enable_bit	= EN_TC2_CK,
-	.recalc		= &followparent_recalc,
-};
-
-static struct clk dma_ck = {
-	/* No-idle controlled by "tc_ck" */
-	.name		= "dma_ck",
-	.ops		= &clkops_null,
-	.parent		= &tc_ck.clk,
-	.recalc		= &followparent_recalc,
-};
-
-static struct clk dma_lcdfree_ck = {
-	.name		= "dma_lcdfree_ck",
-	.ops		= &clkops_null,
-	.parent		= &tc_ck.clk,
-	.recalc		= &followparent_recalc,
-=======
 
 static struct omap1_clk tc2_ck = {
 	.hw.init	= CLK_HW_INIT("tc2_ck", "tc_ck", &omap1_clk_gate_ops, CLK_IS_CRITICAL),
@@ -524,71 +297,30 @@ static struct omap1_clk dma_ck = {
 
 static struct omap1_clk dma_lcdfree_ck = {
 	.hw.init	= CLK_HW_INIT("dma_lcdfree_ck", "tc_ck", &omap1_clk_null_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct arm_idlect1_clk api_ck = {
 	.clk = {
-<<<<<<< HEAD
-		.name		= "api_ck",
-		.ops		= &clkops_generic,
-		.parent		= &tc_ck.clk,
-		.flags		= CLOCK_IDLE_CONTROL,
-		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
-		.enable_bit	= EN_APICK,
-		.recalc		= &followparent_recalc,
-=======
 		.hw.init	= CLK_HW_INIT("api_ck", "tc_ck", &omap1_clk_gate_ops, 0),
 		.ops		= &clkops_generic,
 		.flags		= CLOCK_IDLE_CONTROL,
 		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
 		.enable_bit	= EN_APICK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.idlect_shift	= IDLAPI_ARM_SHIFT,
 };
 
 static struct arm_idlect1_clk lb_ck = {
 	.clk = {
-<<<<<<< HEAD
-		.name		= "lb_ck",
-		.ops		= &clkops_generic,
-		.parent		= &tc_ck.clk,
-		.flags		= CLOCK_IDLE_CONTROL,
-		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
-		.enable_bit	= EN_LBCK,
-		.recalc		= &followparent_recalc,
-=======
 		.hw.init	= CLK_HW_INIT("lb_ck", "tc_ck", &omap1_clk_gate_ops, 0),
 		.ops		= &clkops_generic,
 		.flags		= CLOCK_IDLE_CONTROL,
 		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
 		.enable_bit	= EN_LBCK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.idlect_shift	= IDLLB_ARM_SHIFT,
 };
 
-<<<<<<< HEAD
-static struct clk rhea1_ck = {
-	.name		= "rhea1_ck",
-	.ops		= &clkops_null,
-	.parent		= &tc_ck.clk,
-	.recalc		= &followparent_recalc,
-};
-
-static struct clk rhea2_ck = {
-	.name		= "rhea2_ck",
-	.ops		= &clkops_null,
-	.parent		= &tc_ck.clk,
-	.recalc		= &followparent_recalc,
-};
-
-static struct clk lcd_ck_16xx = {
-	.name		= "lcd_ck",
-	.ops		= &clkops_generic,
-	.parent		= &ck_dpll1,
-=======
 static struct omap1_clk rhea1_ck = {
 	.hw.init	= CLK_HW_INIT("rhea1_ck", "tc_ck", &omap1_clk_null_ops, 0),
 };
@@ -600,7 +332,6 @@ static struct omap1_clk rhea2_ck = {
 static struct omap1_clk lcd_ck_16xx = {
 	.hw.init	= CLK_HW_INIT("lcd_ck", "ck_dpll1", &omap1_clk_full_ops, 0),
 	.ops		= &clkops_generic,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
 	.enable_bit	= EN_LCDCK,
 	.rate_offset	= CKCTL_LCDDIV_OFFSET,
@@ -611,14 +342,8 @@ static struct omap1_clk lcd_ck_16xx = {
 
 static struct arm_idlect1_clk lcd_ck_1510 = {
 	.clk = {
-<<<<<<< HEAD
-		.name		= "lcd_ck",
-		.ops		= &clkops_generic,
-		.parent		= &ck_dpll1,
-=======
 		.hw.init	= CLK_HW_INIT("lcd_ck", "ck_dpll1", &omap1_clk_full_ops, 0),
 		.ops		= &clkops_generic,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags		= CLOCK_IDLE_CONTROL,
 		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
 		.enable_bit	= EN_LCDCK,
@@ -630,23 +355,6 @@ static struct arm_idlect1_clk lcd_ck_1510 = {
 	.idlect_shift	= OMAP1510_IDLLCD_ARM_SHIFT,
 };
 
-<<<<<<< HEAD
-/*
- * XXX The enable_bit here is misused - it simply switches between 12MHz
- * and 48MHz.  Reimplement with clksel.
- *
- * XXX does this need SYSC register handling?
- */
-static struct clk uart1_1510 = {
-	.name		= "uart1_ck",
-	.ops		= &clkops_null,
-	/* Direct from ULPD, no real parent */
-	.parent		= &armper_ck.clk,
-	.rate		= 12000000,
-	.flags		= ENABLE_REG_32BIT | CLOCK_NO_IDLE_PARENT,
-	.enable_reg	= OMAP1_IO_ADDRESS(MOD_CONF_CTRL_0),
-	.enable_bit	= CONF_MOD_UART1_CLK_MODE_R,
-=======
 
 /*
  * XXX The enable_bit here is misused - it simply switches between 12MHz
@@ -661,33 +369,21 @@ static struct omap1_clk uart1_1510 = {
 	.enable_reg	= OMAP1_IO_ADDRESS(MOD_CONF_CTRL_0),
 	.enable_bit	= CONF_MOD_UART1_CLK_MODE_R,
 	.round_rate	= &omap1_round_uart_rate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_rate	= &omap1_set_uart_rate,
 	.recalc		= &omap1_uart_recalc,
 };
 
 /*
  * XXX The enable_bit here is misused - it simply switches between 12MHz
-<<<<<<< HEAD
- * and 48MHz.  Reimplement with clksel.
-=======
  * and 48MHz.  Reimplement with clk_mux.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * XXX SYSC register handling does not belong in the clock framework
  */
 static struct uart_clk uart1_16xx = {
 	.clk	= {
-<<<<<<< HEAD
-		.name		= "uart1_ck",
-		.ops		= &clkops_uart_16xx,
-		/* Direct from ULPD, no real parent */
-		.parent		= &armper_ck.clk,
-=======
 		.ops		= &clkops_uart_16xx,
 		/* Direct from ULPD, no real parent */
 		.hw.init	= CLK_HW_INIT("uart1_ck", "armper_ck", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.rate		= 48000000,
 		.flags		= ENABLE_REG_32BIT | CLOCK_NO_IDLE_PARENT,
 		.enable_reg	= OMAP1_IO_ADDRESS(MOD_CONF_CTRL_0),
@@ -698,21 +394,6 @@ static struct uart_clk uart1_16xx = {
 
 /*
  * XXX The enable_bit here is misused - it simply switches between 12MHz
-<<<<<<< HEAD
- * and 48MHz.  Reimplement with clksel.
- *
- * XXX does this need SYSC register handling?
- */
-static struct clk uart2_ck = {
-	.name		= "uart2_ck",
-	.ops		= &clkops_null,
-	/* Direct from ULPD, no real parent */
-	.parent		= &armper_ck.clk,
-	.rate		= 12000000,
-	.flags		= ENABLE_REG_32BIT | CLOCK_NO_IDLE_PARENT,
-	.enable_reg	= OMAP1_IO_ADDRESS(MOD_CONF_CTRL_0),
-	.enable_bit	= CONF_MOD_UART2_CLK_MODE_R,
-=======
  * and 48MHz.  Reimplement with clk_mux.
  *
  * XXX does this need SYSC register handling?
@@ -724,28 +405,12 @@ static struct omap1_clk uart2_ck = {
 	.enable_reg	= OMAP1_IO_ADDRESS(MOD_CONF_CTRL_0),
 	.enable_bit	= CONF_MOD_UART2_CLK_MODE_R,
 	.round_rate	= &omap1_round_uart_rate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_rate	= &omap1_set_uart_rate,
 	.recalc		= &omap1_uart_recalc,
 };
 
 /*
  * XXX The enable_bit here is misused - it simply switches between 12MHz
-<<<<<<< HEAD
- * and 48MHz.  Reimplement with clksel.
- *
- * XXX does this need SYSC register handling?
- */
-static struct clk uart3_1510 = {
-	.name		= "uart3_ck",
-	.ops		= &clkops_null,
-	/* Direct from ULPD, no real parent */
-	.parent		= &armper_ck.clk,
-	.rate		= 12000000,
-	.flags		= ENABLE_REG_32BIT | CLOCK_NO_IDLE_PARENT,
-	.enable_reg	= OMAP1_IO_ADDRESS(MOD_CONF_CTRL_0),
-	.enable_bit	= CONF_MOD_UART3_CLK_MODE_R,
-=======
  * and 48MHz.  Reimplement with clk_mux.
  *
  * XXX does this need SYSC register handling?
@@ -757,33 +422,21 @@ static struct omap1_clk uart3_1510 = {
 	.enable_reg	= OMAP1_IO_ADDRESS(MOD_CONF_CTRL_0),
 	.enable_bit	= CONF_MOD_UART3_CLK_MODE_R,
 	.round_rate	= &omap1_round_uart_rate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_rate	= &omap1_set_uart_rate,
 	.recalc		= &omap1_uart_recalc,
 };
 
 /*
  * XXX The enable_bit here is misused - it simply switches between 12MHz
-<<<<<<< HEAD
- * and 48MHz.  Reimplement with clksel.
-=======
  * and 48MHz.  Reimplement with clk_mux.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * XXX SYSC register handling does not belong in the clock framework
  */
 static struct uart_clk uart3_16xx = {
 	.clk	= {
-<<<<<<< HEAD
-		.name		= "uart3_ck",
-		.ops		= &clkops_uart_16xx,
-		/* Direct from ULPD, no real parent */
-		.parent		= &armper_ck.clk,
-=======
 		.ops		= &clkops_uart_16xx,
 		/* Direct from ULPD, no real parent */
 		.hw.init	= CLK_HW_INIT("uart3_ck", "armper_ck", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.rate		= 48000000,
 		.flags		= ENABLE_REG_32BIT | CLOCK_NO_IDLE_PARENT,
 		.enable_reg	= OMAP1_IO_ADDRESS(MOD_CONF_CTRL_0),
@@ -792,51 +445,30 @@ static struct uart_clk uart3_16xx = {
 	.sysc_addr	= 0xfffb9854,
 };
 
-<<<<<<< HEAD
-static struct clk usb_clko = {	/* 6 MHz output on W4_USB_CLKO */
-	.name		= "usb_clko",
-	.ops		= &clkops_generic,
-	/* Direct from ULPD, no parent */
-=======
 static struct omap1_clk usb_clko = {	/* 6 MHz output on W4_USB_CLKO */
 	.ops		= &clkops_generic,
 	/* Direct from ULPD, no parent */
 	.hw.init	= CLK_HW_INIT_NO_PARENT("usb_clko", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate		= 6000000,
 	.flags		= ENABLE_REG_32BIT,
 	.enable_reg	= OMAP1_IO_ADDRESS(ULPD_CLOCK_CTRL),
 	.enable_bit	= USB_MCLK_EN_BIT,
 };
 
-<<<<<<< HEAD
-static struct clk usb_hhc_ck1510 = {
-	.name		= "usb_hhc_ck",
-	.ops		= &clkops_generic,
-	/* Direct from ULPD, no parent */
-=======
 static struct omap1_clk usb_hhc_ck1510 = {
 	.ops		= &clkops_generic,
 	/* Direct from ULPD, no parent */
 	.hw.init	= CLK_HW_INIT_NO_PARENT("usb_hhc_ck", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate		= 48000000, /* Actually 2 clocks, 12MHz and 48MHz */
 	.flags		= ENABLE_REG_32BIT,
 	.enable_reg	= OMAP1_IO_ADDRESS(MOD_CONF_CTRL_0),
 	.enable_bit	= USB_HOST_HHC_UHOST_EN,
 };
 
-<<<<<<< HEAD
-static struct clk usb_hhc_ck16xx = {
-	.name		= "usb_hhc_ck",
-	.ops		= &clkops_generic,
-	/* Direct from ULPD, no parent */
-=======
 static struct omap1_clk usb_hhc_ck16xx = {
 	.ops		= &clkops_generic,
 	/* Direct from ULPD, no parent */
 	.hw.init	= CLK_HW_INIT_NO_PARENT("usb_hhc_ck", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate		= 48000000,
 	/* OTG_SYSCON_2.OTG_PADEN == 0 (not 1510-compatible) */
 	.flags		= ENABLE_REG_32BIT,
@@ -844,90 +476,46 @@ static struct omap1_clk usb_hhc_ck16xx = {
 	.enable_bit	= OTG_SYSCON_2_UHOST_EN_SHIFT
 };
 
-<<<<<<< HEAD
-static struct clk usb_dc_ck = {
-	.name		= "usb_dc_ck",
-	.ops		= &clkops_generic,
-	/* Direct from ULPD, no parent */
-	.rate		= 48000000,
-	.enable_reg	= OMAP1_IO_ADDRESS(SOFT_REQ_REG),
-	.enable_bit	= USB_REQ_EN_SHIFT,
-};
-
-static struct clk usb_dc_ck7xx = {
-	.name		= "usb_dc_ck",
-	.ops		= &clkops_generic,
-	/* Direct from ULPD, no parent */
-=======
 static struct omap1_clk usb_dc_ck = {
 	.ops		= &clkops_generic,
 	/* Direct from ULPD, no parent */
 	.hw.init	= CLK_HW_INIT_NO_PARENT("usb_dc_ck", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate		= 48000000,
 	.enable_reg	= OMAP1_IO_ADDRESS(SOFT_REQ_REG),
 	.enable_bit	= SOFT_USB_OTG_DPLL_REQ_SHIFT,
 };
 
-<<<<<<< HEAD
-static struct clk uart1_7xx = {
-	.name		= "uart1_ck",
-	.ops		= &clkops_generic,
-	/* Direct from ULPD, no parent */
-=======
 static struct omap1_clk uart1_7xx = {
 	.ops		= &clkops_generic,
 	/* Direct from ULPD, no parent */
 	.hw.init	= CLK_HW_INIT_NO_PARENT("uart1_ck", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate		= 12000000,
 	.enable_reg	= OMAP1_IO_ADDRESS(SOFT_REQ_REG),
 	.enable_bit	= 9,
 };
 
-<<<<<<< HEAD
-static struct clk uart2_7xx = {
-	.name		= "uart2_ck",
-	.ops		= &clkops_generic,
-	/* Direct from ULPD, no parent */
-=======
 static struct omap1_clk uart2_7xx = {
 	.ops		= &clkops_generic,
 	/* Direct from ULPD, no parent */
 	.hw.init	= CLK_HW_INIT_NO_PARENT("uart2_ck", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate		= 12000000,
 	.enable_reg	= OMAP1_IO_ADDRESS(SOFT_REQ_REG),
 	.enable_bit	= 11,
 };
 
-<<<<<<< HEAD
-static struct clk mclk_1510 = {
-	.name		= "mclk",
-	.ops		= &clkops_generic,
-	/* Direct from ULPD, no parent. May be enabled by ext hardware. */
-=======
 static struct omap1_clk mclk_1510 = {
 	.ops		= &clkops_generic,
 	/* Direct from ULPD, no parent. May be enabled by ext hardware. */
 	.hw.init	= CLK_HW_INIT_NO_PARENT("mclk", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate		= 12000000,
 	.enable_reg	= OMAP1_IO_ADDRESS(SOFT_REQ_REG),
 	.enable_bit	= SOFT_COM_MCKO_REQ_SHIFT,
 };
 
-<<<<<<< HEAD
-static struct clk mclk_16xx = {
-	.name		= "mclk",
-	.ops		= &clkops_generic,
-	/* Direct from ULPD, no parent. May be enabled by ext hardware. */
-=======
 static struct omap1_clk mclk_16xx = {
 	.ops		= &clkops_generic,
 	/* Direct from ULPD, no parent. May be enabled by ext hardware. */
 	.hw.init	= CLK_HW_INIT_NO_PARENT("mclk", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable_reg	= OMAP1_IO_ADDRESS(COM_CLK_DIV_CTRL_SEL),
 	.enable_bit	= COM_ULPD_PLL_CLK_REQ,
 	.set_rate	= &omap1_set_ext_clk_rate,
@@ -935,19 +523,6 @@ static struct omap1_clk mclk_16xx = {
 	.init		= &omap1_init_ext_clk,
 };
 
-<<<<<<< HEAD
-static struct clk bclk_1510 = {
-	.name		= "bclk",
-	.ops		= &clkops_generic,
-	/* Direct from ULPD, no parent. May be enabled by ext hardware. */
-	.rate		= 12000000,
-};
-
-static struct clk bclk_16xx = {
-	.name		= "bclk",
-	.ops		= &clkops_generic,
-	/* Direct from ULPD, no parent. May be enabled by ext hardware. */
-=======
 static struct omap1_clk bclk_1510 = {
 	/* Direct from ULPD, no parent. May be enabled by ext hardware. */
 	.hw.init	= CLK_HW_INIT_NO_PARENT("bclk", &omap1_clk_rate_ops, 0),
@@ -958,7 +533,6 @@ static struct omap1_clk bclk_16xx = {
 	.ops		= &clkops_generic,
 	/* Direct from ULPD, no parent. May be enabled by ext hardware. */
 	.hw.init	= CLK_HW_INIT_NO_PARENT("bclk", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable_reg	= OMAP1_IO_ADDRESS(SWD_CLK_DIV_CTRL_SEL),
 	.enable_bit	= SWD_ULPD_PLL_CLK_REQ,
 	.set_rate	= &omap1_set_ext_clk_rate,
@@ -966,18 +540,10 @@ static struct omap1_clk bclk_16xx = {
 	.init		= &omap1_init_ext_clk,
 };
 
-<<<<<<< HEAD
-static struct clk mmc1_ck = {
-	.name		= "mmc1_ck",
-	.ops		= &clkops_generic,
-	/* Functional clock is direct from ULPD, interface clock is ARMPER */
-	.parent		= &armper_ck.clk,
-=======
 static struct omap1_clk mmc1_ck = {
 	.ops		= &clkops_generic,
 	/* Functional clock is direct from ULPD, interface clock is ARMPER */
 	.hw.init	= CLK_HW_INIT("mmc1_ck", "armper_ck", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate		= 48000000,
 	.flags		= ENABLE_REG_32BIT | CLOCK_NO_IDLE_PARENT,
 	.enable_reg	= OMAP1_IO_ADDRESS(MOD_CONF_CTRL_0),
@@ -988,52 +554,29 @@ static struct omap1_clk mmc1_ck = {
  * XXX MOD_CONF_CTRL_0 bit 20 is defined in the 1510 TRM as
  * CONF_MOD_MCBSP3_AUXON ??
  */
-<<<<<<< HEAD
-static struct clk mmc2_ck = {
-	.name		= "mmc2_ck",
-	.ops		= &clkops_generic,
-	/* Functional clock is direct from ULPD, interface clock is ARMPER */
-	.parent		= &armper_ck.clk,
-=======
 static struct omap1_clk mmc2_ck = {
 	.ops		= &clkops_generic,
 	/* Functional clock is direct from ULPD, interface clock is ARMPER */
 	.hw.init	= CLK_HW_INIT("mmc2_ck", "armper_ck", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate		= 48000000,
 	.flags		= ENABLE_REG_32BIT | CLOCK_NO_IDLE_PARENT,
 	.enable_reg	= OMAP1_IO_ADDRESS(MOD_CONF_CTRL_0),
 	.enable_bit	= 20,
 };
 
-<<<<<<< HEAD
-static struct clk mmc3_ck = {
-	.name		= "mmc3_ck",
-	.ops		= &clkops_generic,
-	/* Functional clock is direct from ULPD, interface clock is ARMPER */
-	.parent		= &armper_ck.clk,
-=======
 static struct omap1_clk mmc3_ck = {
 	.ops		= &clkops_generic,
 	/* Functional clock is direct from ULPD, interface clock is ARMPER */
 	.hw.init	= CLK_HW_INIT("mmc3_ck", "armper_ck", &omap1_clk_full_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate		= 48000000,
 	.flags		= ENABLE_REG_32BIT | CLOCK_NO_IDLE_PARENT,
 	.enable_reg	= OMAP1_IO_ADDRESS(SOFT_REQ_REG),
 	.enable_bit	= SOFT_MMC_DPLL_REQ_SHIFT,
 };
 
-<<<<<<< HEAD
-static struct clk virtual_ck_mpu = {
-	.name		= "mpu",
-	.ops		= &clkops_null,
-	.parent		= &arm_ck, /* Is smarter alias for */
-=======
 static struct omap1_clk virtual_ck_mpu = {
 	/* Is smarter alias for arm_ck */
 	.hw.init	= CLK_HW_INIT("mpu", "arm_ck", &omap1_clk_rate_ops, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.recalc		= &followparent_recalc,
 	.set_rate	= &omap1_select_table_rate,
 	.round_rate	= &omap1_round_to_table_rate,
@@ -1041,22 +584,6 @@ static struct omap1_clk virtual_ck_mpu = {
 
 /* virtual functional clock domain for I2C. Just for making sure that ARMXOR_CK
 remains active during MPU idle whenever this is enabled */
-<<<<<<< HEAD
-static struct clk i2c_fck = {
-	.name		= "i2c_fck",
-	.ops		= &clkops_null,
-	.flags		= CLOCK_NO_IDLE_PARENT,
-	.parent		= &armxor_ck.clk,
-	.recalc		= &followparent_recalc,
-};
-
-static struct clk i2c_ick = {
-	.name		= "i2c_ick",
-	.ops		= &clkops_null,
-	.flags		= CLOCK_NO_IDLE_PARENT,
-	.parent		= &armper_ck.clk,
-	.recalc		= &followparent_recalc,
-=======
 static struct omap1_clk i2c_fck = {
 	.hw.init	= CLK_HW_INIT("i2c_fck", "armxor_ck", &omap1_clk_gate_ops, 0),
 	.flags		= CLOCK_NO_IDLE_PARENT,
@@ -1065,7 +592,6 @@ static struct omap1_clk i2c_fck = {
 static struct omap1_clk i2c_ick = {
 	.hw.init	= CLK_HW_INIT("i2c_ick", "armper_ck", &omap1_clk_gate_ops, 0),
 	.flags		= CLOCK_NO_IDLE_PARENT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1074,84 +600,6 @@ static struct omap1_clk i2c_ick = {
 
 static struct omap_clk omap_clks[] = {
 	/* non-ULPD clocks */
-<<<<<<< HEAD
-	CLK(NULL,	"ck_ref",	&ck_ref,	CK_16XX | CK_1510 | CK_310 | CK_7XX),
-	CLK(NULL,	"ck_dpll1",	&ck_dpll1,	CK_16XX | CK_1510 | CK_310 | CK_7XX),
-	/* CK_GEN1 clocks */
-	CLK(NULL,	"ck_dpll1out",	&ck_dpll1out.clk, CK_16XX),
-	CLK(NULL,	"ck_sossi",	&sossi_ck,	CK_16XX),
-	CLK(NULL,	"arm_ck",	&arm_ck,	CK_16XX | CK_1510 | CK_310),
-	CLK(NULL,	"armper_ck",	&armper_ck.clk,	CK_16XX | CK_1510 | CK_310),
-	CLK("omap_gpio.0", "ick",	&arm_gpio_ck,	CK_1510 | CK_310),
-	CLK(NULL,	"armxor_ck",	&armxor_ck.clk,	CK_16XX | CK_1510 | CK_310 | CK_7XX),
-	CLK(NULL,	"armtim_ck",	&armtim_ck.clk,	CK_16XX | CK_1510 | CK_310),
-	CLK("omap_wdt",	"fck",		&armwdt_ck.clk,	CK_16XX | CK_1510 | CK_310),
-	CLK("omap_wdt",	"ick",		&armper_ck.clk,	CK_16XX),
-	CLK("omap_wdt", "ick",		&dummy_ck,	CK_1510 | CK_310),
-	CLK(NULL,	"arminth_ck",	&arminth_ck1510, CK_1510 | CK_310),
-	CLK(NULL,	"arminth_ck",	&arminth_ck16xx, CK_16XX),
-	/* CK_GEN2 clocks */
-	CLK(NULL,	"dsp_ck",	&dsp_ck,	CK_16XX | CK_1510 | CK_310),
-	CLK(NULL,	"dspmmu_ck",	&dspmmu_ck,	CK_16XX | CK_1510 | CK_310),
-	CLK(NULL,	"dspper_ck",	&dspper_ck,	CK_16XX | CK_1510 | CK_310),
-	CLK(NULL,	"dspxor_ck",	&dspxor_ck,	CK_16XX | CK_1510 | CK_310),
-	CLK(NULL,	"dsptim_ck",	&dsptim_ck,	CK_16XX | CK_1510 | CK_310),
-	/* CK_GEN3 clocks */
-	CLK(NULL,	"tc_ck",	&tc_ck.clk,	CK_16XX | CK_1510 | CK_310 | CK_7XX),
-	CLK(NULL,	"tipb_ck",	&tipb_ck,	CK_1510 | CK_310),
-	CLK(NULL,	"l3_ocpi_ck",	&l3_ocpi_ck,	CK_16XX | CK_7XX),
-	CLK(NULL,	"tc1_ck",	&tc1_ck,	CK_16XX),
-	CLK(NULL,	"tc2_ck",	&tc2_ck,	CK_16XX),
-	CLK(NULL,	"dma_ck",	&dma_ck,	CK_16XX | CK_1510 | CK_310),
-	CLK(NULL,	"dma_lcdfree_ck", &dma_lcdfree_ck, CK_16XX),
-	CLK(NULL,	"api_ck",	&api_ck.clk,	CK_16XX | CK_1510 | CK_310 | CK_7XX),
-	CLK(NULL,	"lb_ck",	&lb_ck.clk,	CK_1510 | CK_310),
-	CLK(NULL,	"rhea1_ck",	&rhea1_ck,	CK_16XX),
-	CLK(NULL,	"rhea2_ck",	&rhea2_ck,	CK_16XX),
-	CLK(NULL,	"lcd_ck",	&lcd_ck_16xx,	CK_16XX | CK_7XX),
-	CLK(NULL,	"lcd_ck",	&lcd_ck_1510.clk, CK_1510 | CK_310),
-	/* ULPD clocks */
-	CLK(NULL,	"uart1_ck",	&uart1_1510,	CK_1510 | CK_310),
-	CLK(NULL,	"uart1_ck",	&uart1_16xx.clk, CK_16XX),
-	CLK(NULL,	"uart1_ck",	&uart1_7xx,	CK_7XX),
-	CLK(NULL,	"uart2_ck",	&uart2_ck,	CK_16XX | CK_1510 | CK_310),
-	CLK(NULL,	"uart2_ck",	&uart2_7xx,	CK_7XX),
-	CLK(NULL,	"uart3_ck",	&uart3_1510,	CK_1510 | CK_310),
-	CLK(NULL,	"uart3_ck",	&uart3_16xx.clk, CK_16XX),
-	CLK(NULL,	"usb_clko",	&usb_clko,	CK_16XX | CK_1510 | CK_310),
-	CLK(NULL,	"usb_hhc_ck",	&usb_hhc_ck1510, CK_1510 | CK_310),
-	CLK(NULL,	"usb_hhc_ck",	&usb_hhc_ck16xx, CK_16XX),
-	CLK(NULL,	"usb_dc_ck",	&usb_dc_ck,	CK_16XX),
-	CLK(NULL,	"usb_dc_ck",	&usb_dc_ck7xx,	CK_7XX),
-	CLK(NULL,	"mclk",		&mclk_1510,	CK_1510 | CK_310),
-	CLK(NULL,	"mclk",		&mclk_16xx,	CK_16XX),
-	CLK(NULL,	"bclk",		&bclk_1510,	CK_1510 | CK_310),
-	CLK(NULL,	"bclk",		&bclk_16xx,	CK_16XX),
-	CLK("mmci-omap.0", "fck",	&mmc1_ck,	CK_16XX | CK_1510 | CK_310),
-	CLK("mmci-omap.0", "fck",	&mmc3_ck,	CK_7XX),
-	CLK("mmci-omap.0", "ick",	&armper_ck.clk,	CK_16XX | CK_1510 | CK_310 | CK_7XX),
-	CLK("mmci-omap.1", "fck",	&mmc2_ck,	CK_16XX),
-	CLK("mmci-omap.1", "ick",	&armper_ck.clk,	CK_16XX),
-	/* Virtual clocks */
-	CLK(NULL,	"mpu",		&virtual_ck_mpu, CK_16XX | CK_1510 | CK_310),
-	CLK("omap_i2c.1", "fck",	&i2c_fck,	CK_16XX | CK_1510 | CK_310 | CK_7XX),
-	CLK("omap_i2c.1", "ick",	&i2c_ick,	CK_16XX),
-	CLK("omap_i2c.1", "ick",	&dummy_ck,	CK_1510 | CK_310 | CK_7XX),
-	CLK("omap1_spi100k.1", "fck",	&dummy_ck,	CK_7XX),
-	CLK("omap1_spi100k.1", "ick",	&dummy_ck,	CK_7XX),
-	CLK("omap1_spi100k.2", "fck",	&dummy_ck,	CK_7XX),
-	CLK("omap1_spi100k.2", "ick",	&dummy_ck,	CK_7XX),
-	CLK("omap_uwire", "fck",	&armxor_ck.clk,	CK_16XX | CK_1510 | CK_310),
-	CLK("omap-mcbsp.1", "ick",	&dspper_ck,	CK_16XX),
-	CLK("omap-mcbsp.1", "ick",	&dummy_ck,	CK_1510 | CK_310),
-	CLK("omap-mcbsp.2", "ick",	&armper_ck.clk,	CK_16XX),
-	CLK("omap-mcbsp.2", "ick",	&dummy_ck,	CK_1510 | CK_310),
-	CLK("omap-mcbsp.3", "ick",	&dspper_ck,	CK_16XX),
-	CLK("omap-mcbsp.3", "ick",	&dummy_ck,	CK_1510 | CK_310),
-	CLK("omap-mcbsp.1", "fck",	&dspxor_ck,	CK_16XX | CK_1510 | CK_310),
-	CLK("omap-mcbsp.2", "fck",	&armper_ck.clk,	CK_16XX | CK_1510 | CK_310),
-	CLK("omap-mcbsp.3", "fck",	&dspxor_ck,	CK_16XX | CK_1510 | CK_310),
-=======
 	CLK(NULL,	"ck_ref",	&ck_ref.hw,	CK_16XX | CK_1510 | CK_310 | CK_7XX),
 	CLK(NULL,	"ck_dpll1",	&ck_dpll1.hw,	CK_16XX | CK_1510 | CK_310 | CK_7XX),
 	/* CK_GEN1 clocks */
@@ -1227,37 +675,18 @@ static struct omap_clk omap_clks[] = {
 	CLK("omap-mcbsp.1", "fck",	&dspxor_ck.hw,	CK_16XX | CK_1510 | CK_310),
 	CLK("omap-mcbsp.2", "fck",	&armper_ck.clk.hw, CK_16XX | CK_1510 | CK_310),
 	CLK("omap-mcbsp.3", "fck",	&dspxor_ck.hw,	CK_16XX | CK_1510 | CK_310),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * init
  */
 
-<<<<<<< HEAD
-static struct clk_functions omap1_clk_functions = {
-	.clk_enable		= omap1_clk_enable,
-	.clk_disable		= omap1_clk_disable,
-	.clk_round_rate		= omap1_clk_round_rate,
-	.clk_set_rate		= omap1_clk_set_rate,
-	.clk_disable_unused	= omap1_clk_disable_unused,
-};
-
-static void __init omap1_show_rates(void)
-{
-	pr_notice("Clocking rate (xtal/DPLL1/MPU): "
-			"%ld.%01ld/%ld.%01ld/%ld.%01ld MHz\n",
-		ck_ref.rate / 1000000, (ck_ref.rate / 100000) % 10,
-		ck_dpll1.rate / 1000000, (ck_dpll1.rate / 100000) % 10,
-		arm_ck.rate / 1000000, (arm_ck.rate / 100000) % 10);
-=======
 static void __init omap1_show_rates(void)
 {
 	pr_notice("Clocking rate (xtal/DPLL1/MPU): %ld.%01ld/%ld.%01ld/%ld.%01ld MHz\n",
 		  ck_ref.rate / 1000000, (ck_ref.rate / 100000) % 10,
 		  ck_dpll1.rate / 1000000, (ck_dpll1.rate / 100000) % 10,
 		  arm_ck.rate / 1000000, (arm_ck.rate / 100000) % 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 cpu_mask;
@@ -1265,18 +694,6 @@ u32 cpu_mask;
 int __init omap1_clk_init(void)
 {
 	struct omap_clk *c;
-<<<<<<< HEAD
-	const struct omap_clock_config *info;
-	int crystal_type = 0; /* Default 12 MHz */
-	u32 reg;
-
-#ifdef CONFIG_DEBUG_LL
-	/*
-	 * Resets some clocks that may be left on from bootloader,
-	 * but leaves serial clocks on.
-	 */
-	omap_writel(0x3 << 29, MOD_CONF_CTRL_0);
-=======
 	u32 reg;
 
 #ifdef CONFIG_DEBUG_LL
@@ -1285,7 +702,6 @@ int __init omap1_clk_init(void)
 		omap_writel(omap_readl(MOD_CONF_CTRL_0) |
 			    CONF_MOD_UART1_CLK_MODE_R |
 			    CONF_MOD_UART3_CLK_MODE_R, MOD_CONF_CTRL_0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* USB_REQ_EN will be disabled later if necessary (usb_dc_ck) */
@@ -1294,20 +710,9 @@ int __init omap1_clk_init(void)
 	if (!cpu_is_omap15xx())
 		omap_writew(0, SOFT_REQ_REG2);
 
-<<<<<<< HEAD
-	clk_init(&omap1_clk_functions);
-
 	/* By default all idlect1 clocks are allowed to idle */
 	arm_idlect1_mask = ~0;
 
-	for (c = omap_clks; c < omap_clks + ARRAY_SIZE(omap_clks); c++)
-		clk_preinit(c->lk.clk);
-
-=======
-	/* By default all idlect1 clocks are allowed to idle */
-	arm_idlect1_mask = ~0;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpu_mask = 0;
 	if (cpu_is_omap1710())
 		cpu_mask |= CK_1710;
@@ -1315,40 +720,6 @@ int __init omap1_clk_init(void)
 		cpu_mask |= CK_16XX;
 	if (cpu_is_omap1510())
 		cpu_mask |= CK_1510;
-<<<<<<< HEAD
-	if (cpu_is_omap7xx())
-		cpu_mask |= CK_7XX;
-	if (cpu_is_omap310())
-		cpu_mask |= CK_310;
-
-	for (c = omap_clks; c < omap_clks + ARRAY_SIZE(omap_clks); c++)
-		if (c->cpu & cpu_mask) {
-			clkdev_add(&c->lk);
-			clk_register(c->lk.clk);
-		}
-
-	/* Pointers to these clocks are needed by code in clock.c */
-	api_ck_p = clk_get(NULL, "api_ck");
-	ck_dpll1_p = clk_get(NULL, "ck_dpll1");
-	ck_ref_p = clk_get(NULL, "ck_ref");
-
-	info = omap_get_config(OMAP_TAG_CLOCK, struct omap_clock_config);
-	if (info != NULL) {
-		if (!cpu_is_omap15xx())
-			crystal_type = info->system_clock_type;
-	}
-
-	if (cpu_is_omap7xx())
-		ck_ref.rate = 13000000;
-	if (cpu_is_omap16xx() && crystal_type == 2)
-		ck_ref.rate = 19200000;
-
-	pr_info("Clocks: ARM_SYSST: 0x%04x DPLL_CTL: 0x%04x ARM_CKCTL: "
-		"0x%04x\n", omap_readw(ARM_SYSST), omap_readw(DPLL_CTL),
-		omap_readw(ARM_CKCTL));
-
-	/* We want to be in syncronous scalable mode */
-=======
 	if (cpu_is_omap310())
 		cpu_mask |= CK_310;
 
@@ -1362,7 +733,6 @@ int __init omap1_clk_init(void)
 		omap_readw(ARM_CKCTL));
 
 	/* We want to be in synchronous scalable mode */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	omap_writew(0x1000, ARM_SYSST);
 
 
@@ -1395,18 +765,6 @@ int __init omap1_clk_init(void)
 			}
 		}
 	}
-<<<<<<< HEAD
-	propagate_rate(&ck_dpll1);
-	/* Cache rates for clocks connected to ck_ref (not dpll1) */
-	propagate_rate(&ck_ref);
-	omap1_show_rates();
-	if (machine_is_omap_perseus2() || machine_is_omap_fsample()) {
-		/* Select slicer output as OMAP input clock */
-		omap_writew(omap_readw(OMAP7XX_PCC_UPLD_CTRL) & ~0x1,
-				OMAP7XX_PCC_UPLD_CTRL);
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Amstrad Delta wants BCLK high when inactive */
 	if (machine_is_ams_delta())
@@ -1415,15 +773,7 @@ int __init omap1_clk_init(void)
 				ULPD_CLOCK_CTRL);
 
 	/* Turn off DSP and ARM_TIMXO. Make sure ARM_INTHCK is not divided */
-<<<<<<< HEAD
-	/* (on 730, bit 13 must not be cleared) */
-	if (cpu_is_omap7xx())
-		omap_writew(omap_readw(ARM_CKCTL) & 0x2fff, ARM_CKCTL);
-	else
-		omap_writew(omap_readw(ARM_CKCTL) & 0x0fff, ARM_CKCTL);
-=======
 	omap_writew(omap_readw(ARM_CKCTL) & 0x0fff, ARM_CKCTL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Put DSP/MPUI into reset until needed */
 	omap_writew(0, ARM_RSTCT1);
@@ -1437,18 +787,6 @@ int __init omap1_clk_init(void)
 	 */
 	omap_writew(0x0000, ARM_IDLECT2);	/* Turn LCD clock off also */
 
-<<<<<<< HEAD
-	/*
-	 * Only enable those clocks we will need, let the drivers
-	 * enable other clocks as necessary
-	 */
-	clk_enable(&armper_ck.clk);
-	clk_enable(&armxor_ck.clk);
-	clk_enable(&armtim_ck.clk); /* This should be done by timer code */
-
-	if (cpu_is_omap15xx())
-		clk_enable(&arm_gpio_ck);
-=======
 	for (c = omap_clks; c < omap_clks + ARRAY_SIZE(omap_clks); c++) {
 		if (!(c->cpu & cpu_mask))
 			continue;
@@ -1471,7 +809,6 @@ int __init omap1_clk_init(void)
 	}
 
 	omap1_show_rates();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1483,11 +820,7 @@ void __init omap1_clk_late_init(void)
 	unsigned long rate = ck_dpll1.rate;
 
 	/* Find the highest supported frequency and enable it */
-<<<<<<< HEAD
-	if (omap1_select_table_rate(&virtual_ck_mpu, ~0)) {
-=======
 	if (omap1_select_table_rate(&virtual_ck_mpu, ~0, arm_ck.rate)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("System frequencies not set, using default. Check your config.\n");
 		/*
 		 * Reprogramming the DPLL is tricky, it must be done from SRAM.

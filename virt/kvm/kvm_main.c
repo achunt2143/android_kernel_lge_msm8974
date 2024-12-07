@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Kernel-based Virtual Machine driver for Linux
  *
@@ -14,19 +11,9 @@
  * Authors:
  *   Avi Kivity   <avi@qumranet.com>
  *   Yaniv Kamay  <yaniv@qumranet.com>
-<<<<<<< HEAD
- *
- * This work is licensed under the terms of the GNU GPL, version 2.  See
- * the COPYING file in the top-level directory.
- *
- */
-
-#include "iodev.h"
-=======
  */
 
 #include <kvm/iodev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kvm_host.h>
 #include <linux/kvm.h>
@@ -42,13 +29,9 @@
 #include <linux/file.h>
 #include <linux/syscore_ops.h>
 #include <linux/cpu.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/signal.h>
 #include <linux/sched/mm.h>
 #include <linux/sched/stat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cpumask.h>
 #include <linux/smp.h>
 #include <linux/anon_inodes.h>
@@ -65,17 +48,6 @@
 #include <linux/slab.h>
 #include <linux/sort.h>
 #include <linux/bsearch.h>
-<<<<<<< HEAD
-
-#include <asm/processor.h>
-#include <asm/io.h>
-#include <asm/ioctl.h>
-#include <asm/uaccess.h>
-#include <asm/pgtable.h>
-
-#include "coalesced_mmio.h"
-#include "async_pf.h"
-=======
 #include <linux/io.h>
 #include <linux/lockdep.h>
 #include <linux/kthread.h>
@@ -91,41 +63,10 @@
 #include "vfio.h"
 
 #include <trace/events/ipi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/kvm.h>
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Qumranet");
-MODULE_LICENSE("GPL");
-
-/*
- * Ordering of locks:
- *
- * 		kvm->lock --> kvm->slots_lock --> kvm->irq_lock
- */
-
-DEFINE_RAW_SPINLOCK(kvm_lock);
-LIST_HEAD(vm_list);
-
-static cpumask_var_t cpus_hardware_enabled;
-static int kvm_usage_count = 0;
-static atomic_t hardware_enable_failed;
-
-struct kmem_cache *kvm_vcpu_cache;
-EXPORT_SYMBOL_GPL(kvm_vcpu_cache);
-
-static __read_mostly struct preempt_ops kvm_preempt_ops;
-
-struct dentry *kvm_debugfs_dir;
-
-static long kvm_vcpu_ioctl(struct file *file, unsigned int ioctl,
-			   unsigned long arg);
-#ifdef CONFIG_COMPAT
-static long kvm_vcpu_compat_ioctl(struct file *file, unsigned int ioctl,
-				  unsigned long arg);
-=======
 #include <linux/kvm_dirty_ring.h>
 
 
@@ -197,52 +138,12 @@ static int kvm_no_compat_open(struct inode *inode, struct file *file)
 }
 #define KVM_COMPAT(c)	.compat_ioctl	= kvm_no_compat_ioctl,	\
 			.open		= kvm_no_compat_open
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 static int hardware_enable_all(void);
 static void hardware_disable_all(void);
 
 static void kvm_io_bus_destroy(struct kvm_io_bus *bus);
 
-<<<<<<< HEAD
-bool kvm_rebooting;
-EXPORT_SYMBOL_GPL(kvm_rebooting);
-
-static bool largepages_enabled = true;
-
-static struct page *hwpoison_page;
-static pfn_t hwpoison_pfn;
-
-struct page *fault_page;
-pfn_t fault_pfn;
-
-inline int kvm_is_mmio_pfn(pfn_t pfn)
-{
-	if (pfn_valid(pfn)) {
-		int reserved;
-		struct page *tail = pfn_to_page(pfn);
-		struct page *head = compound_trans_head(tail);
-		reserved = PageReserved(head);
-		if (head != tail) {
-			/*
-			 * "head" is not a dangling pointer
-			 * (compound_trans_head takes care of that)
-			 * but the hugepage may have been splitted
-			 * from under us (and we may not hold a
-			 * reference count on the head page so it can
-			 * be reused before we run PageReferenced), so
-			 * we've to check PageTail before returning
-			 * what we just read.
-			 */
-			smp_rmb();
-			if (PageTail(tail))
-				return reserved;
-		}
-		return PageReserved(tail);
-	}
-
-	return true;
-=======
 #define KVM_EVENT_CREATE_VM 0
 #define KVM_EVENT_DESTROY_VM 1
 static void kvm_uevent_notify_change(unsigned int type, struct kvm *kvm);
@@ -299,7 +200,6 @@ struct page *kvm_pfn_to_refcounted_page(kvm_pfn_t pfn)
 		return page;
 
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -307,100 +207,20 @@ struct page *kvm_pfn_to_refcounted_page(kvm_pfn_t pfn)
  */
 void vcpu_load(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	int cpu;
-
-	mutex_lock(&vcpu->mutex);
-	if (unlikely(vcpu->pid != current->pids[PIDTYPE_PID].pid)) {
-		/* The thread running this VCPU changed. */
-		struct pid *oldpid = vcpu->pid;
-		struct pid *newpid = get_task_pid(current, PIDTYPE_PID);
-		rcu_assign_pointer(vcpu->pid, newpid);
-		synchronize_rcu();
-		put_pid(oldpid);
-	}
-	cpu = get_cpu();
-=======
 	int cpu = get_cpu();
 
 	__this_cpu_write(kvm_running_vcpu, vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	preempt_notifier_register(&vcpu->preempt_notifier);
 	kvm_arch_vcpu_load(vcpu, cpu);
 	put_cpu();
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(vcpu_load);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void vcpu_put(struct kvm_vcpu *vcpu)
 {
 	preempt_disable();
 	kvm_arch_vcpu_put(vcpu);
 	preempt_notifier_unregister(&vcpu->preempt_notifier);
-<<<<<<< HEAD
-	preempt_enable();
-	mutex_unlock(&vcpu->mutex);
-}
-
-static void ack_flush(void *_completed)
-{
-}
-
-static bool make_all_cpus_request(struct kvm *kvm, unsigned int req)
-{
-	int i, cpu, me;
-	cpumask_var_t cpus;
-	bool called = true;
-	struct kvm_vcpu *vcpu;
-
-	zalloc_cpumask_var(&cpus, GFP_ATOMIC);
-
-	me = get_cpu();
-	kvm_for_each_vcpu(i, vcpu, kvm) {
-		kvm_make_request(req, vcpu);
-		cpu = vcpu->cpu;
-
-		/* Set ->requests bit before we read ->mode */
-		smp_mb();
-
-		if (cpus != NULL && cpu != -1 && cpu != me &&
-		      kvm_vcpu_exiting_guest_mode(vcpu) != OUTSIDE_GUEST_MODE)
-			cpumask_set_cpu(cpu, cpus);
-	}
-	if (unlikely(cpus == NULL))
-		smp_call_function_many(cpu_online_mask, ack_flush, NULL, 1);
-	else if (!cpumask_empty(cpus))
-		smp_call_function_many(cpus, ack_flush, NULL, 1);
-	else
-		called = false;
-	put_cpu();
-	free_cpumask_var(cpus);
-	return called;
-}
-
-void kvm_flush_remote_tlbs(struct kvm *kvm)
-{
-	long dirty_count = kvm->tlbs_dirty;
-
-	smp_mb();
-	if (make_all_cpus_request(kvm, KVM_REQ_TLB_FLUSH))
-		++kvm->stat.remote_tlb_flush;
-	cmpxchg(&kvm->tlbs_dirty, dirty_count, 0);
-}
-
-void kvm_reload_remote_mmus(struct kvm *kvm)
-{
-	make_all_cpus_request(kvm, KVM_REQ_MMU_RELOAD);
-}
-
-int kvm_vcpu_init(struct kvm_vcpu *vcpu, struct kvm *kvm, unsigned id)
-{
-	struct page *page;
-	int r;
-
-=======
 	__this_cpu_write(kvm_running_vcpu, NULL);
 	preempt_enable();
 }
@@ -661,45 +481,11 @@ void *kvm_mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc)
 
 static void kvm_vcpu_init(struct kvm_vcpu *vcpu, struct kvm *kvm, unsigned id)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&vcpu->mutex);
 	vcpu->cpu = -1;
 	vcpu->kvm = kvm;
 	vcpu->vcpu_id = id;
 	vcpu->pid = NULL;
-<<<<<<< HEAD
-	init_waitqueue_head(&vcpu->wq);
-	kvm_async_pf_vcpu_init(vcpu);
-
-	page = alloc_page(GFP_KERNEL | __GFP_ZERO);
-	if (!page) {
-		r = -ENOMEM;
-		goto fail;
-	}
-	vcpu->run = page_address(page);
-
-	r = kvm_arch_vcpu_init(vcpu);
-	if (r < 0)
-		goto fail_free_run;
-	return 0;
-
-fail_free_run:
-	free_page((unsigned long)vcpu->run);
-fail:
-	return r;
-}
-EXPORT_SYMBOL_GPL(kvm_vcpu_init);
-
-void kvm_vcpu_uninit(struct kvm_vcpu *vcpu)
-{
-	put_pid(vcpu->pid);
-	kvm_arch_vcpu_uninit(vcpu);
-	free_page((unsigned long)vcpu->run);
-}
-EXPORT_SYMBOL_GPL(kvm_vcpu_uninit);
-
-#if defined(CONFIG_MMU_NOTIFIER) && defined(KVM_ARCH_WANT_MMU_NOTIFIER)
-=======
 #ifndef __KVM_HAVE_ARCH_WQP
 	rcuwait_init(&vcpu->wait);
 #endif
@@ -748,50 +534,11 @@ void kvm_destroy_vcpus(struct kvm *kvm)
 EXPORT_SYMBOL_GPL(kvm_destroy_vcpus);
 
 #ifdef CONFIG_KVM_GENERIC_MMU_NOTIFIER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct kvm *mmu_notifier_to_kvm(struct mmu_notifier *mn)
 {
 	return container_of(mn, struct kvm, mmu_notifier);
 }
 
-<<<<<<< HEAD
-static void kvm_mmu_notifier_invalidate_page(struct mmu_notifier *mn,
-					     struct mm_struct *mm,
-					     unsigned long address)
-{
-	struct kvm *kvm = mmu_notifier_to_kvm(mn);
-	int need_tlb_flush, idx;
-
-	/*
-	 * When ->invalidate_page runs, the linux pte has been zapped
-	 * already but the page is still allocated until
-	 * ->invalidate_page returns. So if we increase the sequence
-	 * here the kvm page fault will notice if the spte can't be
-	 * established because the page is going to be freed. If
-	 * instead the kvm page fault establishes the spte before
-	 * ->invalidate_page runs, kvm_unmap_hva will release it
-	 * before returning.
-	 *
-	 * The sequence increase only need to be seen at spin_unlock
-	 * time, and not at spin_lock time.
-	 *
-	 * Increasing the sequence after the spin_unlock would be
-	 * unsafe because the kvm page fault could then establish the
-	 * pte after kvm_unmap_hva returned, without noticing the page
-	 * is going to be freed.
-	 */
-	idx = srcu_read_lock(&kvm->srcu);
-	spin_lock(&kvm->mmu_lock);
-
-	kvm->mmu_notifier_seq++;
-	need_tlb_flush = kvm_unmap_hva(kvm, address) | kvm->tlbs_dirty;
-	/* we've to flush the tlb before the pages can be freed */
-	if (need_tlb_flush)
-		kvm_flush_remote_tlbs(kvm);
-
-	spin_unlock(&kvm->mmu_lock);
-	srcu_read_unlock(&kvm->srcu, idx);
-=======
 typedef bool (*gfn_handler_t)(struct kvm *kvm, struct kvm_gfn_range *range);
 
 typedef void (*on_lock_fn_t)(struct kvm *kvm);
@@ -973,7 +720,6 @@ static bool kvm_change_spte_gfn(struct kvm *kvm, struct kvm_gfn_range *range)
 		return false;
 
 	return kvm_set_spte_gfn(kvm, range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void kvm_mmu_notifier_change_pte(struct mmu_notifier *mn,
@@ -982,28 +728,6 @@ static void kvm_mmu_notifier_change_pte(struct mmu_notifier *mn,
 					pte_t pte)
 {
 	struct kvm *kvm = mmu_notifier_to_kvm(mn);
-<<<<<<< HEAD
-	int idx;
-
-	idx = srcu_read_lock(&kvm->srcu);
-	spin_lock(&kvm->mmu_lock);
-	kvm->mmu_notifier_seq++;
-	kvm_set_spte_hva(kvm, address, pte);
-	spin_unlock(&kvm->mmu_lock);
-	srcu_read_unlock(&kvm->srcu, idx);
-}
-
-static void kvm_mmu_notifier_invalidate_range_start(struct mmu_notifier *mn,
-						    struct mm_struct *mm,
-						    unsigned long start,
-						    unsigned long end)
-{
-	struct kvm *kvm = mmu_notifier_to_kvm(mn);
-	int need_tlb_flush = 0, idx;
-
-	idx = srcu_read_lock(&kvm->srcu);
-	spin_lock(&kvm->mmu_lock);
-=======
 	const union kvm_mmu_notifier_arg arg = { .pte = pte };
 
 	trace_kvm_set_spte_hva(address);
@@ -1026,34 +750,11 @@ static void kvm_mmu_notifier_invalidate_range_start(struct mmu_notifier *mn,
 void kvm_mmu_invalidate_begin(struct kvm *kvm)
 {
 	lockdep_assert_held_write(&kvm->mmu_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The count increase must become visible at unlock time as no
 	 * spte can be established without taking the mmu_lock and
 	 * count is also read inside the mmu_lock critical section.
 	 */
-<<<<<<< HEAD
-	kvm->mmu_notifier_count++;
-	for (; start < end; start += PAGE_SIZE)
-		need_tlb_flush |= kvm_unmap_hva(kvm, start);
-	need_tlb_flush |= kvm->tlbs_dirty;
-	/* we've to flush the tlb before the pages can be freed */
-	if (need_tlb_flush)
-		kvm_flush_remote_tlbs(kvm);
-
-	spin_unlock(&kvm->mmu_lock);
-	srcu_read_unlock(&kvm->srcu, idx);
-}
-
-static void kvm_mmu_notifier_invalidate_range_end(struct mmu_notifier *mn,
-						  struct mm_struct *mm,
-						  unsigned long start,
-						  unsigned long end)
-{
-	struct kvm *kvm = mmu_notifier_to_kvm(mn);
-
-	spin_lock(&kvm->mmu_lock);
-=======
 	kvm->mmu_invalidate_in_progress++;
 
 	if (likely(kvm->mmu_invalidate_in_progress == 1)) {
@@ -1148,29 +849,16 @@ void kvm_mmu_invalidate_end(struct kvm *kvm)
 {
 	lockdep_assert_held_write(&kvm->mmu_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This sequence increase will notify the kvm page fault that
 	 * the page that is going to be mapped in the spte could have
 	 * been freed.
 	 */
-<<<<<<< HEAD
-	kvm->mmu_notifier_seq++;
-=======
 	kvm->mmu_invalidate_seq++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smp_wmb();
 	/*
 	 * The above sequence increase must be visible before the
 	 * below count decrease, which is ensured by the smp_wmb above
-<<<<<<< HEAD
-	 * in conjunction with the smp_rmb in mmu_notifier_retry().
-	 */
-	kvm->mmu_notifier_count--;
-	spin_unlock(&kvm->mmu_lock);
-
-	BUG_ON(kvm->mmu_notifier_count < 0);
-=======
 	 * in conjunction with the smp_rmb in mmu_invalidate_retry().
 	 */
 	kvm->mmu_invalidate_in_progress--;
@@ -1212,29 +900,10 @@ static void kvm_mmu_notifier_invalidate_range_end(struct mmu_notifier *mn,
 	 */
 	if (wake)
 		rcuwait_wake_up(&kvm->mn_memslots_update_rcuwait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int kvm_mmu_notifier_clear_flush_young(struct mmu_notifier *mn,
 					      struct mm_struct *mm,
-<<<<<<< HEAD
-					      unsigned long address)
-{
-	struct kvm *kvm = mmu_notifier_to_kvm(mn);
-	int young, idx;
-
-	idx = srcu_read_lock(&kvm->srcu);
-	spin_lock(&kvm->mmu_lock);
-
-	young = kvm_age_hva(kvm, address);
-	if (young)
-		kvm_flush_remote_tlbs(kvm);
-
-	spin_unlock(&kvm->mmu_lock);
-	srcu_read_unlock(&kvm->srcu, idx);
-
-	return young;
-=======
 					      unsigned long start,
 					      unsigned long end)
 {
@@ -1265,30 +934,16 @@ static int kvm_mmu_notifier_clear_young(struct mmu_notifier *mn,
 	 * more sophisticated heuristic later.
 	 */
 	return kvm_handle_hva_range_no_flush(mn, start, end, kvm_age_gfn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int kvm_mmu_notifier_test_young(struct mmu_notifier *mn,
 				       struct mm_struct *mm,
 				       unsigned long address)
 {
-<<<<<<< HEAD
-	struct kvm *kvm = mmu_notifier_to_kvm(mn);
-	int young, idx;
-
-	idx = srcu_read_lock(&kvm->srcu);
-	spin_lock(&kvm->mmu_lock);
-	young = kvm_test_age_hva(kvm, address);
-	spin_unlock(&kvm->mmu_lock);
-	srcu_read_unlock(&kvm->srcu, idx);
-
-	return young;
-=======
 	trace_kvm_test_age_hva(address);
 
 	return kvm_handle_hva_range_no_flush(mn, address, address + 1,
 					     kvm_test_age_gfn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void kvm_mmu_notifier_release(struct mmu_notifier *mn,
@@ -1298,26 +953,15 @@ static void kvm_mmu_notifier_release(struct mmu_notifier *mn,
 	int idx;
 
 	idx = srcu_read_lock(&kvm->srcu);
-<<<<<<< HEAD
-	kvm_arch_flush_shadow(kvm);
-=======
 	kvm_flush_shadow_all(kvm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srcu_read_unlock(&kvm->srcu, idx);
 }
 
 static const struct mmu_notifier_ops kvm_mmu_notifier_ops = {
-<<<<<<< HEAD
-	.invalidate_page	= kvm_mmu_notifier_invalidate_page,
-	.invalidate_range_start	= kvm_mmu_notifier_invalidate_range_start,
-	.invalidate_range_end	= kvm_mmu_notifier_invalidate_range_end,
-	.clear_flush_young	= kvm_mmu_notifier_clear_flush_young,
-=======
 	.invalidate_range_start	= kvm_mmu_notifier_invalidate_range_start,
 	.invalidate_range_end	= kvm_mmu_notifier_invalidate_range_end,
 	.clear_flush_young	= kvm_mmu_notifier_clear_flush_young,
 	.clear_young		= kvm_mmu_notifier_clear_young,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.test_young		= kvm_mmu_notifier_test_young,
 	.change_pte		= kvm_mmu_notifier_change_pte,
 	.release		= kvm_mmu_notifier_release,
@@ -1329,96 +973,13 @@ static int kvm_init_mmu_notifier(struct kvm *kvm)
 	return mmu_notifier_register(&kvm->mmu_notifier, current->mm);
 }
 
-<<<<<<< HEAD
-#else  /* !(CONFIG_MMU_NOTIFIER && KVM_ARCH_WANT_MMU_NOTIFIER) */
-=======
 #else  /* !CONFIG_KVM_GENERIC_MMU_NOTIFIER */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int kvm_init_mmu_notifier(struct kvm *kvm)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-#endif /* CONFIG_MMU_NOTIFIER && KVM_ARCH_WANT_MMU_NOTIFIER */
-
-static void kvm_init_memslots_id(struct kvm *kvm)
-{
-	int i;
-	struct kvm_memslots *slots = kvm->memslots;
-
-	for (i = 0; i < KVM_MEM_SLOTS_NUM; i++)
-		slots->id_to_index[i] = slots->memslots[i].id = i;
-}
-
-static struct kvm *kvm_create_vm(unsigned long type)
-{
-	int r, i;
-	struct kvm *kvm = kvm_arch_alloc_vm();
-
-	if (!kvm)
-		return ERR_PTR(-ENOMEM);
-
-	r = kvm_arch_init_vm(kvm, type);
-	if (r)
-		goto out_err_nodisable;
-
-	r = hardware_enable_all();
-	if (r)
-		goto out_err_nodisable;
-
-#ifdef CONFIG_HAVE_KVM_IRQCHIP
-	INIT_HLIST_HEAD(&kvm->mask_notifier_list);
-	INIT_HLIST_HEAD(&kvm->irq_ack_notifier_list);
-#endif
-
-	r = -ENOMEM;
-	kvm->memslots = kzalloc(sizeof(struct kvm_memslots), GFP_KERNEL);
-	if (!kvm->memslots)
-		goto out_err_nosrcu;
-	kvm_init_memslots_id(kvm);
-	if (init_srcu_struct(&kvm->srcu))
-		goto out_err_nosrcu;
-	for (i = 0; i < KVM_NR_BUSES; i++) {
-		kvm->buses[i] = kzalloc(sizeof(struct kvm_io_bus),
-					GFP_KERNEL);
-		if (!kvm->buses[i])
-			goto out_err;
-	}
-
-	spin_lock_init(&kvm->mmu_lock);
-	kvm->mm = current->mm;
-	atomic_inc(&kvm->mm->mm_count);
-	kvm_eventfd_init(kvm);
-	mutex_init(&kvm->lock);
-	mutex_init(&kvm->irq_lock);
-	mutex_init(&kvm->slots_lock);
-	atomic_set(&kvm->users_count, 1);
-
-	r = kvm_init_mmu_notifier(kvm);
-	if (r)
-		goto out_err;
-
-	raw_spin_lock(&kvm_lock);
-	list_add(&kvm->vm_list, &vm_list);
-	raw_spin_unlock(&kvm_lock);
-
-	return kvm;
-
-out_err:
-	cleanup_srcu_struct(&kvm->srcu);
-out_err_nosrcu:
-	hardware_disable_all();
-out_err_nodisable:
-	for (i = 0; i < KVM_NR_BUSES; i++)
-		kfree(kvm->buses[i]);
-	kfree(kvm->memslots);
-	kvm_arch_free_vm(kvm);
-	return ERR_PTR(r);
-}
-
-=======
 #endif /* CONFIG_KVM_GENERIC_MMU_NOTIFIER */
 
 #ifdef CONFIG_HAVE_KVM_PM_NOTIFIER
@@ -1453,50 +1014,11 @@ static void kvm_destroy_pm_notifier(struct kvm *kvm)
 }
 #endif /* CONFIG_HAVE_KVM_PM_NOTIFIER */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void kvm_destroy_dirty_bitmap(struct kvm_memory_slot *memslot)
 {
 	if (!memslot->dirty_bitmap)
 		return;
 
-<<<<<<< HEAD
-	if (2 * kvm_dirty_bitmap_bytes(memslot) > PAGE_SIZE)
-		vfree(memslot->dirty_bitmap_head);
-	else
-		kfree(memslot->dirty_bitmap_head);
-
-	memslot->dirty_bitmap = NULL;
-	memslot->dirty_bitmap_head = NULL;
-}
-
-/*
- * Free any memory in @free but not in @dont.
- */
-static void kvm_free_physmem_slot(struct kvm_memory_slot *free,
-				  struct kvm_memory_slot *dont)
-{
-	if (!dont || free->rmap != dont->rmap)
-		vfree(free->rmap);
-
-	if (!dont || free->dirty_bitmap != dont->dirty_bitmap)
-		kvm_destroy_dirty_bitmap(free);
-
-	kvm_arch_free_memslot(free, dont);
-
-	free->npages = 0;
-	free->rmap = NULL;
-}
-
-void kvm_free_physmem(struct kvm *kvm)
-{
-	struct kvm_memslots *slots = kvm->memslots;
-	struct kvm_memory_slot *memslot;
-
-	kvm_for_each_memslot(memslot, slots)
-		kvm_free_physmem_slot(memslot, NULL);
-
-	kfree(kvm->memslots);
-=======
 	kvfree(memslot->dirty_bitmap);
 	memslot->dirty_bitmap = NULL;
 }
@@ -1811,7 +1333,6 @@ static void kvm_destroy_devices(struct kvm *kvm)
 		list_del(&dev->vm_node);
 		dev->ops->destroy(dev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void kvm_destroy_vm(struct kvm *kvm)
@@ -1819,25 +1340,6 @@ static void kvm_destroy_vm(struct kvm *kvm)
 	int i;
 	struct mm_struct *mm = kvm->mm;
 
-<<<<<<< HEAD
-	kvm_arch_sync_events(kvm);
-	raw_spin_lock(&kvm_lock);
-	list_del(&kvm->vm_list);
-	raw_spin_unlock(&kvm_lock);
-	kvm_free_irq_routing(kvm);
-	for (i = 0; i < KVM_NR_BUSES; i++)
-		kvm_io_bus_destroy(kvm->buses[i]);
-	kvm_coalesced_mmio_free(kvm);
-#if defined(CONFIG_MMU_NOTIFIER) && defined(KVM_ARCH_WANT_MMU_NOTIFIER)
-	mmu_notifier_unregister(&kvm->mmu_notifier, kvm->mm);
-#else
-	kvm_arch_flush_shadow(kvm);
-#endif
-	kvm_arch_destroy_vm(kvm);
-	kvm_free_physmem(kvm);
-	cleanup_srcu_struct(&kvm->srcu);
-	kvm_arch_free_vm(kvm);
-=======
 	kvm_destroy_pm_notifier(kvm);
 	kvm_uevent_notify_change(KVM_EVENT_DESTROY_VM, kvm);
 	kvm_destroy_vm_debugfs(kvm);
@@ -1891,22 +1393,12 @@ static void kvm_destroy_vm(struct kvm *kvm)
 #endif
 	kvm_arch_free_vm(kvm);
 	preempt_notifier_dec();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hardware_disable_all();
 	mmdrop(mm);
 }
 
 void kvm_get_kvm(struct kvm *kvm)
 {
-<<<<<<< HEAD
-	atomic_inc(&kvm->users_count);
-}
-EXPORT_SYMBOL_GPL(kvm_get_kvm);
-
-void kvm_put_kvm(struct kvm *kvm)
-{
-	if (atomic_dec_and_test(&kvm->users_count))
-=======
 	refcount_inc(&kvm->users_count);
 }
 EXPORT_SYMBOL_GPL(kvm_get_kvm);
@@ -1924,13 +1416,10 @@ EXPORT_SYMBOL_GPL(kvm_get_kvm_safe);
 void kvm_put_kvm(struct kvm *kvm)
 {
 	if (refcount_dec_and_test(&kvm->users_count))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kvm_destroy_vm(kvm);
 }
 EXPORT_SYMBOL_GPL(kvm_put_kvm);
 
-<<<<<<< HEAD
-=======
 /*
  * Used to put a reference that was taken on behalf of an object associated
  * with a user-visible file descriptor, e.g. a vcpu or device, if installation
@@ -1943,7 +1432,6 @@ void kvm_put_kvm_no_destroy(struct kvm *kvm)
 	WARN_ON(refcount_dec_and_test(&kvm->users_count));
 }
 EXPORT_SYMBOL_GPL(kvm_put_kvm_no_destroy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int kvm_vm_release(struct inode *inode, struct file *filp)
 {
@@ -1957,73 +1445,6 @@ static int kvm_vm_release(struct inode *inode, struct file *filp)
 
 /*
  * Allocation size is twice as large as the actual dirty bitmap size.
-<<<<<<< HEAD
- * This makes it possible to do double buffering: see x86's
- * kvm_vm_ioctl_get_dirty_log().
- */
-static int kvm_create_dirty_bitmap(struct kvm_memory_slot *memslot)
-{
-#ifndef CONFIG_S390
-	unsigned long dirty_bytes = 2 * kvm_dirty_bitmap_bytes(memslot);
-
-	if (dirty_bytes > PAGE_SIZE)
-		memslot->dirty_bitmap = vzalloc(dirty_bytes);
-	else
-		memslot->dirty_bitmap = kzalloc(dirty_bytes, GFP_KERNEL);
-
-	if (!memslot->dirty_bitmap)
-		return -ENOMEM;
-
-	memslot->dirty_bitmap_head = memslot->dirty_bitmap;
-	memslot->nr_dirty_pages = 0;
-#endif /* !CONFIG_S390 */
-	return 0;
-}
-
-static int cmp_memslot(const void *slot1, const void *slot2)
-{
-	struct kvm_memory_slot *s1, *s2;
-
-	s1 = (struct kvm_memory_slot *)slot1;
-	s2 = (struct kvm_memory_slot *)slot2;
-
-	if (s1->npages < s2->npages)
-		return 1;
-	if (s1->npages > s2->npages)
-		return -1;
-
-	return 0;
-}
-
-/*
- * Sort the memslots base on its size, so the larger slots
- * will get better fit.
- */
-static void sort_memslots(struct kvm_memslots *slots)
-{
-	int i;
-
-	sort(slots->memslots, KVM_MEM_SLOTS_NUM,
-	      sizeof(struct kvm_memory_slot), cmp_memslot, NULL);
-
-	for (i = 0; i < KVM_MEM_SLOTS_NUM; i++)
-		slots->id_to_index[slots->memslots[i].id] = i;
-}
-
-void update_memslots(struct kvm_memslots *slots, struct kvm_memory_slot *new)
-{
-	if (new) {
-		int id = new->id;
-		struct kvm_memory_slot *old = id_to_memslot(slots, id);
-		unsigned long npages = old->npages;
-
-		*old = *new;
-		if (new->npages != npages)
-			sort_memslots(slots);
-	}
-
-	slots->generation++;
-=======
  * See kvm_vm_ioctl_get_dirty_log() why this is needed.
  */
 static int kvm_alloc_dirty_bitmap(struct kvm_memory_slot *memslot)
@@ -2583,7 +2004,6 @@ static bool kvm_check_memslot_overlap(struct kvm_memslots *slots, int id,
 	}
 
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2592,177 +2012,6 @@ static bool kvm_check_memslot_overlap(struct kvm_memslots *slots, int id,
  *
  * Discontiguous memory is allowed, mostly for framebuffers.
  *
-<<<<<<< HEAD
- * Must be called holding mmap_sem for write.
- */
-int __kvm_set_memory_region(struct kvm *kvm,
-			    struct kvm_userspace_memory_region *mem,
-			    int user_alloc)
-{
-	int r;
-	gfn_t base_gfn;
-	unsigned long npages;
-	struct kvm_memory_slot *memslot, *slot;
-	struct kvm_memory_slot old, new;
-	struct kvm_memslots *slots, *old_memslots;
-
-	r = -EINVAL;
-	/* General sanity checks */
-	if (mem->memory_size & (PAGE_SIZE - 1))
-		goto out;
-	if (mem->guest_phys_addr & (PAGE_SIZE - 1))
-		goto out;
-	/* We can read the guest memory with __xxx_user() later on. */
-	if (user_alloc &&
-	    ((mem->userspace_addr & (PAGE_SIZE - 1)) ||
-	     !access_ok(VERIFY_WRITE,
-			(void __user *)(unsigned long)mem->userspace_addr,
-			mem->memory_size)))
-		goto out;
-	if (mem->slot >= KVM_MEM_SLOTS_NUM)
-		goto out;
-	if (mem->guest_phys_addr + mem->memory_size < mem->guest_phys_addr)
-		goto out;
-
-	memslot = id_to_memslot(kvm->memslots, mem->slot);
-	base_gfn = mem->guest_phys_addr >> PAGE_SHIFT;
-	npages = mem->memory_size >> PAGE_SHIFT;
-
-	r = -EINVAL;
-	if (npages > KVM_MEM_MAX_NR_PAGES)
-		goto out;
-
-	if (!npages)
-		mem->flags &= ~KVM_MEM_LOG_DIRTY_PAGES;
-
-	new = old = *memslot;
-
-	new.id = mem->slot;
-	new.base_gfn = base_gfn;
-	new.npages = npages;
-	new.flags = mem->flags;
-
-	/* Disallow changing a memory slot's size. */
-	r = -EINVAL;
-	if (npages && old.npages && npages != old.npages)
-		goto out_free;
-
-	/* Check for overlaps */
-	r = -EEXIST;
-	kvm_for_each_memslot(slot, kvm->memslots) {
-		if (slot->id >= KVM_MEMORY_SLOTS || slot == memslot)
-			continue;
-		if (!((base_gfn + npages <= slot->base_gfn) ||
-		      (base_gfn >= slot->base_gfn + slot->npages)))
-			goto out_free;
-	}
-
-	/* Free page dirty bitmap if unneeded */
-	if (!(new.flags & KVM_MEM_LOG_DIRTY_PAGES))
-		new.dirty_bitmap = NULL;
-
-	r = -ENOMEM;
-
-	/* Allocate if a slot is being created */
-	if (npages && !old.npages) {
-		new.user_alloc = user_alloc;
-		new.userspace_addr = mem->userspace_addr;
-#ifndef CONFIG_S390
-		new.rmap = vzalloc(npages * sizeof(*new.rmap));
-		if (!new.rmap)
-			goto out_free;
-#endif /* not defined CONFIG_S390 */
-		if (kvm_arch_create_memslot(&new, npages))
-			goto out_free;
-	}
-
-	/* Allocate page dirty bitmap if needed */
-	if ((new.flags & KVM_MEM_LOG_DIRTY_PAGES) && !new.dirty_bitmap) {
-		if (kvm_create_dirty_bitmap(&new) < 0)
-			goto out_free;
-		/* destroy any largepage mappings for dirty tracking */
-	}
-
-	if (!npages || base_gfn != old.base_gfn) {
-		struct kvm_memory_slot *slot;
-
-		r = -ENOMEM;
-		slots = kmemdup(kvm->memslots, sizeof(struct kvm_memslots),
-				GFP_KERNEL);
-		if (!slots)
-			goto out_free;
-		slot = id_to_memslot(slots, mem->slot);
-		slot->flags |= KVM_MEMSLOT_INVALID;
-
-		update_memslots(slots, NULL);
-
-		old_memslots = kvm->memslots;
-		rcu_assign_pointer(kvm->memslots, slots);
-		synchronize_srcu_expedited(&kvm->srcu);
-		/* slot was deleted or moved, clear iommu mapping */
-		kvm_iommu_unmap_pages(kvm, &old);
-		/* From this point no new shadow pages pointing to a deleted,
-		 * or moved, memslot will be created.
-		 *
-		 * validation of sp->gfn happens in:
-		 * 	- gfn_to_hva (kvm_read_guest, gfn_to_pfn)
-		 * 	- kvm_is_visible_gfn (mmu_check_roots)
-		 */
-		kvm_arch_flush_shadow(kvm);
-		kfree(old_memslots);
-	}
-
-	r = kvm_arch_prepare_memory_region(kvm, &new, old, mem, user_alloc);
-	if (r)
-		goto out_free;
-
-	r = -ENOMEM;
-	slots = kmemdup(kvm->memslots, sizeof(struct kvm_memslots),
-			GFP_KERNEL);
-	if (!slots)
-		goto out_free;
-
-	/* map new memory slot into the iommu */
-	if (npages) {
-		r = kvm_iommu_map_pages(kvm, &new);
-		if (r)
-			goto out_slots;
-	}
-
-	/* actual memory is freed via old in kvm_free_physmem_slot below */
-	if (!npages) {
-		new.rmap = NULL;
-		new.dirty_bitmap = NULL;
-		memset(&new.arch, 0, sizeof(new.arch));
-	}
-
-	update_memslots(slots, &new);
-	old_memslots = kvm->memslots;
-	rcu_assign_pointer(kvm->memslots, slots);
-	synchronize_srcu_expedited(&kvm->srcu);
-
-	kvm_arch_commit_memory_region(kvm, mem, old, user_alloc);
-
-	/*
-	 * If the new memory slot is created, we need to clear all
-	 * mmio sptes.
-	 */
-	if (npages && old.base_gfn != mem->guest_phys_addr >> PAGE_SHIFT)
-		kvm_arch_flush_shadow(kvm);
-
-	kvm_free_physmem_slot(&old, &new);
-	kfree(old_memslots);
-
-	return 0;
-
-out_slots:
-	kfree(slots);
-out_free:
-	kvm_free_physmem_slot(&new, &old);
-out:
-	return r;
-
-=======
  * Must be called holding kvm->slots_lock for write.
  */
 int __kvm_set_memory_region(struct kvm *kvm,
@@ -2886,134 +2135,21 @@ out_unbind:
 out:
 	kfree(new);
 	return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(__kvm_set_memory_region);
 
 int kvm_set_memory_region(struct kvm *kvm,
-<<<<<<< HEAD
-			  struct kvm_userspace_memory_region *mem,
-			  int user_alloc)
-=======
 			  const struct kvm_userspace_memory_region2 *mem)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 
 	mutex_lock(&kvm->slots_lock);
-<<<<<<< HEAD
-	r = __kvm_set_memory_region(kvm, mem, user_alloc);
-=======
 	r = __kvm_set_memory_region(kvm, mem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&kvm->slots_lock);
 	return r;
 }
 EXPORT_SYMBOL_GPL(kvm_set_memory_region);
 
-<<<<<<< HEAD
-int kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
-				   struct
-				   kvm_userspace_memory_region *mem,
-				   int user_alloc)
-{
-	if (mem->slot >= KVM_MEMORY_SLOTS)
-		return -EINVAL;
-	return kvm_set_memory_region(kvm, mem, user_alloc);
-}
-
-int kvm_get_dirty_log(struct kvm *kvm,
-			struct kvm_dirty_log *log, int *is_dirty)
-{
-	struct kvm_memory_slot *memslot;
-	int r, i;
-	unsigned long n;
-	unsigned long any = 0;
-
-	r = -EINVAL;
-	if (log->slot >= KVM_MEMORY_SLOTS)
-		goto out;
-
-	memslot = id_to_memslot(kvm->memslots, log->slot);
-	r = -ENOENT;
-	if (!memslot->dirty_bitmap)
-		goto out;
-
-	n = kvm_dirty_bitmap_bytes(memslot);
-
-	for (i = 0; !any && i < n/sizeof(long); ++i)
-		any = memslot->dirty_bitmap[i];
-
-	r = -EFAULT;
-	if (copy_to_user(log->dirty_bitmap, memslot->dirty_bitmap, n))
-		goto out;
-
-	if (any)
-		*is_dirty = 1;
-
-	r = 0;
-out:
-	return r;
-}
-
-bool kvm_largepages_enabled(void)
-{
-	return largepages_enabled;
-}
-
-void kvm_disable_largepages(void)
-{
-	largepages_enabled = false;
-}
-EXPORT_SYMBOL_GPL(kvm_disable_largepages);
-
-int is_error_page(struct page *page)
-{
-	return page == bad_page || page == hwpoison_page || page == fault_page;
-}
-EXPORT_SYMBOL_GPL(is_error_page);
-
-int is_error_pfn(pfn_t pfn)
-{
-	return pfn == bad_pfn || pfn == hwpoison_pfn || pfn == fault_pfn;
-}
-EXPORT_SYMBOL_GPL(is_error_pfn);
-
-int is_hwpoison_pfn(pfn_t pfn)
-{
-	return pfn == hwpoison_pfn;
-}
-EXPORT_SYMBOL_GPL(is_hwpoison_pfn);
-
-int is_fault_pfn(pfn_t pfn)
-{
-	return pfn == fault_pfn;
-}
-EXPORT_SYMBOL_GPL(is_fault_pfn);
-
-int is_noslot_pfn(pfn_t pfn)
-{
-	return pfn == bad_pfn;
-}
-EXPORT_SYMBOL_GPL(is_noslot_pfn);
-
-int is_invalid_pfn(pfn_t pfn)
-{
-	return pfn == hwpoison_pfn || pfn == fault_pfn;
-}
-EXPORT_SYMBOL_GPL(is_invalid_pfn);
-
-static inline unsigned long bad_hva(void)
-{
-	return PAGE_OFFSET;
-}
-
-int kvm_is_error_hva(unsigned long addr)
-{
-	return addr == bad_hva();
-}
-EXPORT_SYMBOL_GPL(kvm_is_error_hva);
-=======
 static int kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
 					  struct kvm_userspace_memory_region2 *mem)
 {
@@ -3487,7 +2623,6 @@ static int kvm_vm_ioctl_set_mem_attributes(struct kvm *kvm,
 	return kvm_vm_set_mem_attributes(kvm, start, end, attrs->attributes);
 }
 #endif /* CONFIG_KVM_GENERIC_MEMORY_ATTRIBUTES */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct kvm_memory_slot *gfn_to_memslot(struct kvm *kvm, gfn_t gfn)
 {
@@ -3495,21 +2630,6 @@ struct kvm_memory_slot *gfn_to_memslot(struct kvm *kvm, gfn_t gfn)
 }
 EXPORT_SYMBOL_GPL(gfn_to_memslot);
 
-<<<<<<< HEAD
-int kvm_is_visible_gfn(struct kvm *kvm, gfn_t gfn)
-{
-	struct kvm_memory_slot *memslot = gfn_to_memslot(kvm, gfn);
-
-	if (!memslot || memslot->id >= KVM_MEMORY_SLOTS ||
-	      memslot->flags & KVM_MEMSLOT_INVALID)
-		return 0;
-
-	return 1;
-}
-EXPORT_SYMBOL_GPL(kvm_is_visible_gfn);
-
-unsigned long kvm_host_page_size(struct kvm *kvm, gfn_t gfn)
-=======
 struct kvm_memory_slot *kvm_vcpu_gfn_to_memslot(struct kvm_vcpu *vcpu, gfn_t gfn)
 {
 	struct kvm_memslots *slots = kvm_vcpu_memslots(vcpu);
@@ -3560,26 +2680,17 @@ bool kvm_vcpu_is_visible_gfn(struct kvm_vcpu *vcpu, gfn_t gfn)
 EXPORT_SYMBOL_GPL(kvm_vcpu_is_visible_gfn);
 
 unsigned long kvm_host_page_size(struct kvm_vcpu *vcpu, gfn_t gfn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vm_area_struct *vma;
 	unsigned long addr, size;
 
 	size = PAGE_SIZE;
 
-<<<<<<< HEAD
-	addr = gfn_to_hva(kvm, gfn);
-	if (kvm_is_error_hva(addr))
-		return PAGE_SIZE;
-
-	down_read(&current->mm->mmap_sem);
-=======
 	addr = kvm_vcpu_gfn_to_hva_prot(vcpu, gfn, NULL);
 	if (kvm_is_error_hva(addr))
 		return PAGE_SIZE;
 
 	mmap_read_lock(current->mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma = find_vma(current->mm, addr);
 	if (!vma)
 		goto out;
@@ -3587,29 +2698,11 @@ unsigned long kvm_host_page_size(struct kvm_vcpu *vcpu, gfn_t gfn)
 	size = vma_kernel_pagesize(vma);
 
 out:
-<<<<<<< HEAD
-	up_read(&current->mm->mmap_sem);
-=======
 	mmap_read_unlock(current->mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return size;
 }
 
-<<<<<<< HEAD
-static unsigned long gfn_to_hva_many(struct kvm_memory_slot *slot, gfn_t gfn,
-				     gfn_t *nr_pages)
-{
-	if (!slot || slot->flags & KVM_MEMSLOT_INVALID)
-		return bad_hva();
-
-	if (nr_pages)
-		*nr_pages = slot->npages - (gfn - slot->base_gfn);
-
-	return gfn_to_hva_memslot(slot, gfn);
-}
-
-=======
 static bool memslot_is_readonly(const struct kvm_memory_slot *slot)
 {
 	return slot->flags & KVM_MEM_READONLY;
@@ -3643,30 +2736,12 @@ unsigned long gfn_to_hva_memslot(struct kvm_memory_slot *slot,
 }
 EXPORT_SYMBOL_GPL(gfn_to_hva_memslot);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned long gfn_to_hva(struct kvm *kvm, gfn_t gfn)
 {
 	return gfn_to_hva_many(gfn_to_memslot(kvm, gfn), gfn, NULL);
 }
 EXPORT_SYMBOL_GPL(gfn_to_hva);
 
-<<<<<<< HEAD
-static pfn_t get_fault_pfn(void)
-{
-	get_page(fault_page);
-	return fault_pfn;
-}
-
-int get_user_page_nowait(struct task_struct *tsk, struct mm_struct *mm,
-	unsigned long start, int write, struct page **page)
-{
-	int flags = FOLL_TOUCH | FOLL_NOWAIT | FOLL_HWPOISON | FOLL_GET;
-
-	if (write)
-		flags |= FOLL_WRITE;
-
-	return __get_user_pages(tsk, mm, start, 1, flags, page, NULL, NULL);
-=======
 unsigned long kvm_vcpu_gfn_to_hva(struct kvm_vcpu *vcpu, gfn_t gfn)
 {
 	return gfn_to_hva_many(kvm_vcpu_gfn_to_memslot(vcpu, gfn), gfn, NULL);
@@ -3704,26 +2779,10 @@ unsigned long kvm_vcpu_gfn_to_hva_prot(struct kvm_vcpu *vcpu, gfn_t gfn, bool *w
 	struct kvm_memory_slot *slot = kvm_vcpu_gfn_to_memslot(vcpu, gfn);
 
 	return gfn_to_hva_memslot_prot(slot, gfn, writable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int check_user_page_hwpoison(unsigned long addr)
 {
-<<<<<<< HEAD
-	int rc, flags = FOLL_TOUCH | FOLL_HWPOISON | FOLL_WRITE;
-
-	rc = __get_user_pages(current, current->mm, addr, 1,
-			      flags, NULL, NULL, NULL);
-	return rc == -EHWPOISON;
-}
-
-static pfn_t hva_to_pfn(struct kvm *kvm, unsigned long addr, bool atomic,
-			bool *async, bool write_fault, bool *writable)
-{
-	struct page *page[1];
-	int npages = 0;
-	pfn_t pfn;
-=======
 	int rc, flags = FOLL_HWPOISON | FOLL_WRITE;
 
 	rc = get_user_pages(addr, 1, flags, NULL);
@@ -3921,147 +2980,10 @@ kvm_pfn_t hva_to_pfn(unsigned long addr, bool atomic, bool interruptible,
 	struct vm_area_struct *vma;
 	kvm_pfn_t pfn;
 	int npages, r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we can do it either atomically or asynchronously, not both */
 	BUG_ON(atomic && async);
 
-<<<<<<< HEAD
-	BUG_ON(!write_fault && !writable);
-
-	if (writable)
-		*writable = true;
-
-	if (atomic || async)
-		npages = __get_user_pages_fast(addr, 1, 1, page);
-
-	if (unlikely(npages != 1) && !atomic) {
-		might_sleep();
-
-		if (writable)
-			*writable = write_fault;
-
-		if (async) {
-			down_read(&current->mm->mmap_sem);
-			npages = get_user_page_nowait(current, current->mm,
-						     addr, write_fault, page);
-			up_read(&current->mm->mmap_sem);
-		} else
-			npages = get_user_pages_fast(addr, 1, write_fault,
-						     page);
-
-		/* map read fault as writable if possible */
-		if (unlikely(!write_fault) && npages == 1) {
-			struct page *wpage[1];
-
-			npages = __get_user_pages_fast(addr, 1, 1, wpage);
-			if (npages == 1) {
-				*writable = true;
-				put_page(page[0]);
-				page[0] = wpage[0];
-			}
-			npages = 1;
-		}
-	}
-
-	if (unlikely(npages != 1)) {
-		struct vm_area_struct *vma;
-
-		if (atomic)
-			return get_fault_pfn();
-
-		down_read(&current->mm->mmap_sem);
-		if (npages == -EHWPOISON ||
-			(!async && check_user_page_hwpoison(addr))) {
-			up_read(&current->mm->mmap_sem);
-			get_page(hwpoison_page);
-			return page_to_pfn(hwpoison_page);
-		}
-
-		vma = find_vma_intersection(current->mm, addr, addr+1);
-
-		if (vma == NULL)
-			pfn = get_fault_pfn();
-		else if ((vma->vm_flags & VM_PFNMAP)) {
-			pfn = ((addr - vma->vm_start) >> PAGE_SHIFT) +
-				vma->vm_pgoff;
-			BUG_ON(!kvm_is_mmio_pfn(pfn));
-		} else {
-			if (async && (vma->vm_flags & VM_WRITE))
-				*async = true;
-			pfn = get_fault_pfn();
-		}
-		up_read(&current->mm->mmap_sem);
-	} else
-		pfn = page_to_pfn(page[0]);
-
-	return pfn;
-}
-
-pfn_t hva_to_pfn_atomic(struct kvm *kvm, unsigned long addr)
-{
-	return hva_to_pfn(kvm, addr, true, NULL, true, NULL);
-}
-EXPORT_SYMBOL_GPL(hva_to_pfn_atomic);
-
-static pfn_t __gfn_to_pfn(struct kvm *kvm, gfn_t gfn, bool atomic, bool *async,
-			  bool write_fault, bool *writable)
-{
-	unsigned long addr;
-
-	if (async)
-		*async = false;
-
-	addr = gfn_to_hva(kvm, gfn);
-	if (kvm_is_error_hva(addr)) {
-		get_page(bad_page);
-		return page_to_pfn(bad_page);
-	}
-
-	return hva_to_pfn(kvm, addr, atomic, async, write_fault, writable);
-}
-
-pfn_t gfn_to_pfn_atomic(struct kvm *kvm, gfn_t gfn)
-{
-	return __gfn_to_pfn(kvm, gfn, true, NULL, true, NULL);
-}
-EXPORT_SYMBOL_GPL(gfn_to_pfn_atomic);
-
-pfn_t gfn_to_pfn_async(struct kvm *kvm, gfn_t gfn, bool *async,
-		       bool write_fault, bool *writable)
-{
-	return __gfn_to_pfn(kvm, gfn, false, async, write_fault, writable);
-}
-EXPORT_SYMBOL_GPL(gfn_to_pfn_async);
-
-pfn_t gfn_to_pfn(struct kvm *kvm, gfn_t gfn)
-{
-	return __gfn_to_pfn(kvm, gfn, false, NULL, true, NULL);
-}
-EXPORT_SYMBOL_GPL(gfn_to_pfn);
-
-pfn_t gfn_to_pfn_prot(struct kvm *kvm, gfn_t gfn, bool write_fault,
-		      bool *writable)
-{
-	return __gfn_to_pfn(kvm, gfn, false, NULL, write_fault, writable);
-}
-EXPORT_SYMBOL_GPL(gfn_to_pfn_prot);
-
-pfn_t gfn_to_pfn_memslot(struct kvm *kvm,
-			 struct kvm_memory_slot *slot, gfn_t gfn)
-{
-	unsigned long addr = gfn_to_hva_memslot(slot, gfn);
-	return hva_to_pfn(kvm, addr, false, NULL, true, NULL);
-}
-
-int gfn_to_page_many_atomic(struct kvm *kvm, gfn_t gfn, struct page **pages,
-								  int nr_pages)
-{
-	unsigned long addr;
-	gfn_t entry;
-
-	addr = gfn_to_hva_many(gfn_to_memslot(kvm, gfn), gfn, &entry);
-=======
 	if (hva_to_pfn_fast(addr, write_fault, writable, &pfn))
 		return pfn;
 
@@ -4182,45 +3104,12 @@ int gfn_to_page_many_atomic(struct kvm_memory_slot *slot, gfn_t gfn,
 	gfn_t entry = 0;
 
 	addr = gfn_to_hva_many(slot, gfn, &entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (kvm_is_error_hva(addr))
 		return -1;
 
 	if (entry < nr_pages)
 		return 0;
 
-<<<<<<< HEAD
-	return __get_user_pages_fast(addr, nr_pages, 1, pages);
-}
-EXPORT_SYMBOL_GPL(gfn_to_page_many_atomic);
-
-struct page *gfn_to_page(struct kvm *kvm, gfn_t gfn)
-{
-	pfn_t pfn;
-
-	pfn = gfn_to_pfn(kvm, gfn);
-	if (!kvm_is_mmio_pfn(pfn))
-		return pfn_to_page(pfn);
-
-	WARN_ON(kvm_is_mmio_pfn(pfn));
-
-	get_page(bad_page);
-	return bad_page;
-}
-
-EXPORT_SYMBOL_GPL(gfn_to_page);
-
-void kvm_release_page_clean(struct page *page)
-{
-	kvm_release_pfn_clean(page_to_pfn(page));
-}
-EXPORT_SYMBOL_GPL(kvm_release_page_clean);
-
-void kvm_release_pfn_clean(pfn_t pfn)
-{
-	if (!kvm_is_mmio_pfn(pfn))
-		put_page(pfn_to_page(pfn));
-=======
 	return get_user_pages_fast_only(addr, nr_pages, FOLL_WRITE, pages);
 }
 EXPORT_SYMBOL_GPL(gfn_to_page_many_atomic);
@@ -4358,55 +3247,11 @@ void kvm_release_pfn_clean(kvm_pfn_t pfn)
 		return;
 
 	kvm_release_page_clean(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(kvm_release_pfn_clean);
 
 void kvm_release_page_dirty(struct page *page)
 {
-<<<<<<< HEAD
-	kvm_release_pfn_dirty(page_to_pfn(page));
-}
-EXPORT_SYMBOL_GPL(kvm_release_page_dirty);
-
-void kvm_release_pfn_dirty(pfn_t pfn)
-{
-	kvm_set_pfn_dirty(pfn);
-	kvm_release_pfn_clean(pfn);
-}
-EXPORT_SYMBOL_GPL(kvm_release_pfn_dirty);
-
-void kvm_set_page_dirty(struct page *page)
-{
-	kvm_set_pfn_dirty(page_to_pfn(page));
-}
-EXPORT_SYMBOL_GPL(kvm_set_page_dirty);
-
-void kvm_set_pfn_dirty(pfn_t pfn)
-{
-	if (!kvm_is_mmio_pfn(pfn)) {
-		struct page *page = pfn_to_page(pfn);
-		if (!PageReserved(page))
-			SetPageDirty(page);
-	}
-}
-EXPORT_SYMBOL_GPL(kvm_set_pfn_dirty);
-
-void kvm_set_pfn_accessed(pfn_t pfn)
-{
-	if (!kvm_is_mmio_pfn(pfn))
-		mark_page_accessed(pfn_to_page(pfn));
-}
-EXPORT_SYMBOL_GPL(kvm_set_pfn_accessed);
-
-void kvm_get_pfn(pfn_t pfn)
-{
-	if (!kvm_is_mmio_pfn(pfn))
-		get_page(pfn_to_page(pfn));
-}
-EXPORT_SYMBOL_GPL(kvm_get_pfn);
-
-=======
 	WARN_ON(is_error_page(page));
 
 	kvm_set_page_dirty(page);
@@ -4454,7 +3299,6 @@ void kvm_set_pfn_accessed(kvm_pfn_t pfn)
 }
 EXPORT_SYMBOL_GPL(kvm_set_pfn_accessed);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int next_segment(unsigned long len, int offset)
 {
 	if (len > PAGE_SIZE - offset)
@@ -4463,22 +3307,13 @@ static int next_segment(unsigned long len, int offset)
 		return len;
 }
 
-<<<<<<< HEAD
-int kvm_read_guest_page(struct kvm *kvm, gfn_t gfn, void *data, int offset,
-			int len)
-=======
 static int __kvm_read_guest_page(struct kvm_memory_slot *slot, gfn_t gfn,
 				 void *data, int offset, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	unsigned long addr;
 
-<<<<<<< HEAD
-	addr = gfn_to_hva(kvm, gfn);
-=======
 	addr = gfn_to_hva_memslot_prot(slot, gfn, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (kvm_is_error_hva(addr))
 		return -EFAULT;
 	r = __copy_from_user(data, (void __user *)addr + offset, len);
@@ -4486,10 +3321,6 @@ static int __kvm_read_guest_page(struct kvm_memory_slot *slot, gfn_t gfn,
 		return -EFAULT;
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(kvm_read_guest_page);
-
-=======
 
 int kvm_read_guest_page(struct kvm *kvm, gfn_t gfn, void *data, int offset,
 			int len)
@@ -4509,7 +3340,6 @@ int kvm_vcpu_read_guest_page(struct kvm_vcpu *vcpu, gfn_t gfn, void *data,
 }
 EXPORT_SYMBOL_GPL(kvm_vcpu_read_guest_page);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kvm_read_guest(struct kvm *kvm, gpa_t gpa, void *data, unsigned long len)
 {
 	gfn_t gfn = gpa >> PAGE_SHIFT;
@@ -4530,17 +3360,6 @@ int kvm_read_guest(struct kvm *kvm, gpa_t gpa, void *data, unsigned long len)
 }
 EXPORT_SYMBOL_GPL(kvm_read_guest);
 
-<<<<<<< HEAD
-int kvm_read_guest_atomic(struct kvm *kvm, gpa_t gpa, void *data,
-			  unsigned long len)
-{
-	int r;
-	unsigned long addr;
-	gfn_t gfn = gpa >> PAGE_SHIFT;
-	int offset = offset_in_page(gpa);
-
-	addr = gfn_to_hva(kvm, gfn);
-=======
 int kvm_vcpu_read_guest(struct kvm_vcpu *vcpu, gpa_t gpa, void *data, unsigned long len)
 {
 	gfn_t gfn = gpa >> PAGE_SHIFT;
@@ -4568,7 +3387,6 @@ static int __kvm_read_guest_atomic(struct kvm_memory_slot *slot, gfn_t gfn,
 	unsigned long addr;
 
 	addr = gfn_to_hva_memslot_prot(slot, gfn, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (kvm_is_error_hva(addr))
 		return -EFAULT;
 	pagefault_disable();
@@ -4578,12 +3396,6 @@ static int __kvm_read_guest_atomic(struct kvm_memory_slot *slot, gfn_t gfn,
 		return -EFAULT;
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(kvm_read_guest_atomic);
-
-int kvm_write_guest_page(struct kvm *kvm, gfn_t gfn, const void *data,
-			 int offset, int len)
-=======
 
 int kvm_vcpu_read_guest_atomic(struct kvm_vcpu *vcpu, gpa_t gpa,
 			       void *data, unsigned long len)
@@ -4599,28 +3411,16 @@ EXPORT_SYMBOL_GPL(kvm_vcpu_read_guest_atomic);
 static int __kvm_write_guest_page(struct kvm *kvm,
 				  struct kvm_memory_slot *memslot, gfn_t gfn,
 			          const void *data, int offset, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	unsigned long addr;
 
-<<<<<<< HEAD
-	addr = gfn_to_hva(kvm, gfn);
-=======
 	addr = gfn_to_hva_memslot(memslot, gfn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (kvm_is_error_hva(addr))
 		return -EFAULT;
 	r = __copy_to_user((void __user *)addr + offset, data, len);
 	if (r)
 		return -EFAULT;
-<<<<<<< HEAD
-	mark_page_dirty(kvm, gfn);
-	return 0;
-}
-EXPORT_SYMBOL_GPL(kvm_write_guest_page);
-
-=======
 	mark_page_dirty_in_slot(kvm, memslot, gfn);
 	return 0;
 }
@@ -4643,7 +3443,6 @@ int kvm_vcpu_write_guest_page(struct kvm_vcpu *vcpu, gfn_t gfn,
 }
 EXPORT_SYMBOL_GPL(kvm_vcpu_write_guest_page);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kvm_write_guest(struct kvm *kvm, gpa_t gpa, const void *data,
 		    unsigned long len)
 {
@@ -4663,120 +3462,16 @@ int kvm_write_guest(struct kvm *kvm, gpa_t gpa, const void *data,
 	}
 	return 0;
 }
-<<<<<<< HEAD
-
-int kvm_gfn_to_hva_cache_init(struct kvm *kvm, struct gfn_to_hva_cache *ghc,
-			      gpa_t gpa, unsigned long len)
-{
-	struct kvm_memslots *slots = kvm_memslots(kvm);
-	int offset = offset_in_page(gpa);
-	gfn_t start_gfn = gpa >> PAGE_SHIFT;
-	gfn_t end_gfn = (gpa + len - 1) >> PAGE_SHIFT;
-	gfn_t nr_pages_needed = end_gfn - start_gfn + 1;
-	gfn_t nr_pages_avail;
-
-	ghc->gpa = gpa;
-	ghc->generation = slots->generation;
-	ghc->len = len;
-	ghc->memslot = gfn_to_memslot(kvm, start_gfn);
-	ghc->hva = gfn_to_hva_many(ghc->memslot, start_gfn, &nr_pages_avail);
-	if (!kvm_is_error_hva(ghc->hva) && nr_pages_avail >= nr_pages_needed) {
-		ghc->hva += offset;
-	} else {
-		/*
-		 * If the requested region crosses two memslots, we still
-		 * verify that the entire region is valid here.
-		 */
-		while (start_gfn <= end_gfn) {
-			ghc->memslot = gfn_to_memslot(kvm, start_gfn);
-			ghc->hva = gfn_to_hva_many(ghc->memslot, start_gfn,
-						   &nr_pages_avail);
-			if (kvm_is_error_hva(ghc->hva))
-				return -EFAULT;
-			start_gfn += nr_pages_avail;
-		}
-		/* Use the slow path for cross page reads and writes. */
-		ghc->memslot = NULL;
-	}
-	return 0;
-}
-EXPORT_SYMBOL_GPL(kvm_gfn_to_hva_cache_init);
-
-int kvm_write_guest_cached(struct kvm *kvm, struct gfn_to_hva_cache *ghc,
-			   void *data, unsigned long len)
-{
-	struct kvm_memslots *slots = kvm_memslots(kvm);
-	int r;
-
-	BUG_ON(len > ghc->len);
-
-	if (slots->generation != ghc->generation)
-		kvm_gfn_to_hva_cache_init(kvm, ghc, ghc->gpa, ghc->len);
-
-	if (unlikely(!ghc->memslot))
-		return kvm_write_guest(kvm, ghc->gpa, data, len);
-
-	if (kvm_is_error_hva(ghc->hva))
-		return -EFAULT;
-
-	r = __copy_to_user((void __user *)ghc->hva, data, len);
-	if (r)
-		return -EFAULT;
-	mark_page_dirty_in_slot(kvm, ghc->memslot, ghc->gpa >> PAGE_SHIFT);
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(kvm_write_guest_cached);
-
-int kvm_read_guest_cached(struct kvm *kvm, struct gfn_to_hva_cache *ghc,
-			   void *data, unsigned long len)
-{
-	struct kvm_memslots *slots = kvm_memslots(kvm);
-	int r;
-
-	BUG_ON(len > ghc->len);
-
-	if (slots->generation != ghc->generation)
-		kvm_gfn_to_hva_cache_init(kvm, ghc, ghc->gpa, ghc->len);
-
-	if (unlikely(!ghc->memslot))
-		return kvm_read_guest(kvm, ghc->gpa, data, len);
-
-	if (kvm_is_error_hva(ghc->hva))
-		return -EFAULT;
-
-	r = __copy_from_user(data, (void __user *)ghc->hva, len);
-	if (r)
-		return -EFAULT;
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(kvm_read_guest_cached);
-
-int kvm_clear_guest_page(struct kvm *kvm, gfn_t gfn, int offset, int len)
-{
-	return kvm_write_guest_page(kvm, gfn, (const void *) empty_zero_page,
-				    offset, len);
-}
-EXPORT_SYMBOL_GPL(kvm_clear_guest_page);
-
-int kvm_clear_guest(struct kvm *kvm, gpa_t gpa, unsigned long len)
-=======
 EXPORT_SYMBOL_GPL(kvm_write_guest);
 
 int kvm_vcpu_write_guest(struct kvm_vcpu *vcpu, gpa_t gpa, const void *data,
 		         unsigned long len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	gfn_t gfn = gpa >> PAGE_SHIFT;
 	int seg;
 	int offset = offset_in_page(gpa);
 	int ret;
 
-<<<<<<< HEAD
-        while ((seg = next_segment(len, offset)) != 0) {
-		ret = kvm_clear_guest_page(kvm, gfn, offset, seg);
-=======
 	while ((seg = next_segment(len, offset)) != 0) {
 		ret = kvm_vcpu_write_guest_page(vcpu, gfn, data, offset, seg);
 		if (ret < 0)
@@ -4924,7 +3619,6 @@ int kvm_clear_guest(struct kvm *kvm, gpa_t gpa, unsigned long len)
 
 	while ((seg = next_segment(len, offset)) != 0) {
 		ret = kvm_write_guest_page(kvm, gfn, zero_page, offset, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return ret;
 		offset = 0;
@@ -4935,18 +3629,6 @@ int kvm_clear_guest(struct kvm *kvm, gpa_t gpa, unsigned long len)
 }
 EXPORT_SYMBOL_GPL(kvm_clear_guest);
 
-<<<<<<< HEAD
-void mark_page_dirty_in_slot(struct kvm *kvm, struct kvm_memory_slot *memslot,
-			     gfn_t gfn)
-{
-	if (memslot && memslot->dirty_bitmap) {
-		unsigned long rel_gfn = gfn - memslot->base_gfn;
-
-		if (!test_and_set_bit_le(rel_gfn, memslot->dirty_bitmap))
-			memslot->nr_dirty_pages++;
-	}
-}
-=======
 void mark_page_dirty_in_slot(struct kvm *kvm,
 			     const struct kvm_memory_slot *memslot,
 		 	     gfn_t gfn)
@@ -4971,7 +3653,6 @@ void mark_page_dirty_in_slot(struct kvm *kvm,
 	}
 }
 EXPORT_SYMBOL_GPL(mark_page_dirty_in_slot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void mark_page_dirty(struct kvm *kvm, gfn_t gfn)
 {
@@ -4980,43 +3661,6 @@ void mark_page_dirty(struct kvm *kvm, gfn_t gfn)
 	memslot = gfn_to_memslot(kvm, gfn);
 	mark_page_dirty_in_slot(kvm, memslot, gfn);
 }
-<<<<<<< HEAD
-
-/*
- * The vCPU has executed a HLT instruction with in-kernel mode enabled.
- */
-void kvm_vcpu_block(struct kvm_vcpu *vcpu)
-{
-	DEFINE_WAIT(wait);
-
-	for (;;) {
-		prepare_to_wait(&vcpu->wq, &wait, TASK_INTERRUPTIBLE);
-
-		if (kvm_arch_vcpu_runnable(vcpu)) {
-			kvm_make_request(KVM_REQ_UNHALT, vcpu);
-			break;
-		}
-		if (kvm_cpu_has_pending_timer(vcpu))
-			break;
-		if (signal_pending(current))
-			break;
-
-		schedule();
-	}
-
-	finish_wait(&vcpu->wq, &wait);
-}
-
-void kvm_resched(struct kvm_vcpu *vcpu)
-{
-	if (!need_resched())
-		return;
-	cond_resched();
-}
-EXPORT_SYMBOL_GPL(kvm_resched);
-
-void kvm_vcpu_on_spin(struct kvm_vcpu *me)
-=======
 EXPORT_SYMBOL_GPL(mark_page_dirty);
 
 void kvm_vcpu_mark_page_dirty(struct kvm_vcpu *vcpu, gfn_t gfn)
@@ -5419,24 +4063,16 @@ bool __weak kvm_arch_dy_has_pending_interrupt(struct kvm_vcpu *vcpu)
 }
 
 void kvm_vcpu_on_spin(struct kvm_vcpu *me, bool yield_to_kernel_mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kvm *kvm = me->kvm;
 	struct kvm_vcpu *vcpu;
 	int last_boosted_vcpu = me->kvm->last_boosted_vcpu;
-<<<<<<< HEAD
-	int yielded = 0;
-	int pass;
-	int i;
-
-=======
 	unsigned long i;
 	int yielded = 0;
 	int try = 3;
 	int pass;
 
 	kvm_vcpu_set_in_spin_loop(me, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We boost the priority of a VCPU that is runnable but not
 	 * currently running, because it got preempted by something
@@ -5444,53 +4080,13 @@ void kvm_vcpu_on_spin(struct kvm_vcpu *me, bool yield_to_kernel_mode)
 	 * VCPU is holding the lock that we need and will release it.
 	 * We approximate round-robin by starting at the last boosted VCPU.
 	 */
-<<<<<<< HEAD
-	for (pass = 0; pass < 2 && !yielded; pass++) {
-		kvm_for_each_vcpu(i, vcpu, kvm) {
-			struct task_struct *task = NULL;
-			struct pid *pid;
-			if (!pass && i < last_boosted_vcpu) {
-=======
 	for (pass = 0; pass < 2 && !yielded && try; pass++) {
 		kvm_for_each_vcpu(i, vcpu, kvm) {
 			if (!pass && i <= last_boosted_vcpu) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				i = last_boosted_vcpu;
 				continue;
 			} else if (pass && i > last_boosted_vcpu)
 				break;
-<<<<<<< HEAD
-			if (vcpu == me)
-				continue;
-			if (waitqueue_active(&vcpu->wq))
-				continue;
-			rcu_read_lock();
-			pid = rcu_dereference(vcpu->pid);
-			if (pid)
-				task = get_pid_task(vcpu->pid, PIDTYPE_PID);
-			rcu_read_unlock();
-			if (!task)
-				continue;
-			if (task->flags & PF_VCPU) {
-				put_task_struct(task);
-				continue;
-			}
-			if (yield_to(task, 1)) {
-				put_task_struct(task);
-				kvm->last_boosted_vcpu = i;
-				yielded = 1;
-				break;
-			}
-			put_task_struct(task);
-		}
-	}
-}
-EXPORT_SYMBOL_GPL(kvm_vcpu_on_spin);
-
-static int kvm_vcpu_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-	struct kvm_vcpu *vcpu = vma->vm_file->private_data;
-=======
 			if (!READ_ONCE(vcpu->ready))
 				continue;
 			if (vcpu == me)
@@ -5543,7 +4139,6 @@ static bool kvm_page_in_dirty_ring(struct kvm *kvm, unsigned long pgoff)
 static vm_fault_t kvm_vcpu_fault(struct vm_fault *vmf)
 {
 	struct kvm_vcpu *vcpu = vmf->vma->vm_file->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page *page;
 
 	if (vmf->pgoff == 0)
@@ -5552,12 +4147,6 @@ static vm_fault_t kvm_vcpu_fault(struct vm_fault *vmf)
 	else if (vmf->pgoff == KVM_PIO_PAGE_OFFSET)
 		page = virt_to_page(vcpu->arch.pio_data);
 #endif
-<<<<<<< HEAD
-#ifdef KVM_COALESCED_MMIO_PAGE_OFFSET
-	else if (vmf->pgoff == KVM_COALESCED_MMIO_PAGE_OFFSET)
-		page = virt_to_page(vcpu->kvm->coalesced_mmio_ring);
-#endif
-=======
 #ifdef CONFIG_KVM_MMIO
 	else if (vmf->pgoff == KVM_COALESCED_MMIO_PAGE_OFFSET)
 		page = virt_to_page(vcpu->kvm->coalesced_mmio_ring);
@@ -5566,7 +4155,6 @@ static vm_fault_t kvm_vcpu_fault(struct vm_fault *vmf)
 		page = kvm_dirty_ring_get_page(
 		    &vcpu->dirty_ring,
 		    vmf->pgoff - KVM_DIRTY_LOG_PAGE_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return kvm_arch_vcpu_fault(vcpu, vmf);
 	get_page(page);
@@ -5580,8 +4168,6 @@ static const struct vm_operations_struct kvm_vcpu_vm_ops = {
 
 static int kvm_vcpu_mmap(struct file *file, struct vm_area_struct *vma)
 {
-<<<<<<< HEAD
-=======
 	struct kvm_vcpu *vcpu = file->private_data;
 	unsigned long pages = vma_pages(vma);
 
@@ -5590,7 +4176,6 @@ static int kvm_vcpu_mmap(struct file *file, struct vm_area_struct *vma)
 	    ((vma->vm_flags & VM_EXEC) || !(vma->vm_flags & VM_SHARED)))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma->vm_ops = &kvm_vcpu_vm_ops;
 	return 0;
 }
@@ -5606,17 +4191,9 @@ static int kvm_vcpu_release(struct inode *inode, struct file *filp)
 static struct file_operations kvm_vcpu_fops = {
 	.release        = kvm_vcpu_release,
 	.unlocked_ioctl = kvm_vcpu_ioctl,
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-	.compat_ioctl   = kvm_vcpu_compat_ioctl,
-#endif
-	.mmap           = kvm_vcpu_mmap,
-	.llseek		= noop_llseek,
-=======
 	.mmap           = kvm_vcpu_mmap,
 	.llseek		= noop_llseek,
 	KVM_COMPAT(kvm_vcpu_compat_ioctl),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -5624,11 +4201,6 @@ static struct file_operations kvm_vcpu_fops = {
  */
 static int create_vcpu_fd(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	return anon_inode_getfd("kvm-vcpu", &kvm_vcpu_fops, vcpu, O_RDWR);
-}
-
-=======
 	char name[8 + 1 + ITOA_MAX_LEN + 1];
 
 	snprintf(name, sizeof(name), "kvm-vcpu:%d", vcpu->vcpu_id);
@@ -5666,47 +4238,12 @@ static void kvm_create_vcpu_debugfs(struct kvm_vcpu *vcpu)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Creates some virtual cpus.  Good luck creating more than one.
  */
 static int kvm_vm_ioctl_create_vcpu(struct kvm *kvm, u32 id)
 {
 	int r;
-<<<<<<< HEAD
-	struct kvm_vcpu *vcpu, *v;
-
-	if (id >= KVM_MAX_VCPUS)
-		return -EINVAL;
-
-	vcpu = kvm_arch_vcpu_create(kvm, id);
-	if (IS_ERR(vcpu))
-		return PTR_ERR(vcpu);
-
-	preempt_notifier_init(&vcpu->preempt_notifier, &kvm_preempt_ops);
-
-	r = kvm_arch_vcpu_setup(vcpu);
-	if (r)
-		goto vcpu_destroy;
-
-	mutex_lock(&kvm->lock);
-	if (!kvm_vcpu_compatible(vcpu)) {
-		r = -EINVAL;
-		goto unlock_vcpu_destroy;
-	}
-	if (atomic_read(&kvm->online_vcpus) == KVM_MAX_VCPUS) {
-		r = -EINVAL;
-		goto unlock_vcpu_destroy;
-	}
-
-	kvm_for_each_vcpu(r, v, kvm)
-		if (v->vcpu_id == id) {
-			r = -EEXIST;
-			goto unlock_vcpu_destroy;
-		}
-
-	BUG_ON(kvm->vcpus[atomic_read(&kvm->online_vcpus)]);
-=======
 	struct kvm_vcpu *vcpu;
 	struct page *page;
 
@@ -5772,19 +4309,10 @@ static int kvm_vm_ioctl_create_vcpu(struct kvm *kvm, u32 id)
 	r = xa_reserve(&kvm->vcpu_array, vcpu->vcpu_idx, GFP_KERNEL_ACCOUNT);
 	if (r)
 		goto unlock_vcpu_destroy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Now it's all set up, let userspace reach it */
 	kvm_get_kvm(kvm);
 	r = create_vcpu_fd(vcpu);
-<<<<<<< HEAD
-	if (r < 0) {
-		kvm_put_kvm(kvm);
-		goto unlock_vcpu_destroy;
-	}
-
-	kvm->vcpus[atomic_read(&kvm->online_vcpus)] = vcpu;
-=======
 	if (r < 0)
 		goto kvm_put_xa_release;
 
@@ -5797,19 +4325,10 @@ static int kvm_vm_ioctl_create_vcpu(struct kvm *kvm, u32 id)
 	 * Pairs with smp_rmb() in kvm_get_vcpu.  Store the vcpu
 	 * pointer before kvm->online_vcpu's incremented value.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smp_wmb();
 	atomic_inc(&kvm->online_vcpus);
 
 	mutex_unlock(&kvm->lock);
-<<<<<<< HEAD
-	return r;
-
-unlock_vcpu_destroy:
-	mutex_unlock(&kvm->lock);
-vcpu_destroy:
-	kvm_arch_vcpu_destroy(vcpu);
-=======
 	kvm_arch_vcpu_postcreate(vcpu);
 	kvm_create_vcpu_debugfs(vcpu);
 	return r;
@@ -5830,7 +4349,6 @@ vcpu_decrement:
 	mutex_lock(&kvm->lock);
 	kvm->created_vcpus--;
 	mutex_unlock(&kvm->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
@@ -5845,8 +4363,6 @@ static int kvm_vcpu_ioctl_set_sigmask(struct kvm_vcpu *vcpu, sigset_t *sigset)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t kvm_vcpu_stats_read(struct file *file, char __user *user_buffer,
 			      size_t size, loff_t *offset)
 {
@@ -5898,7 +4414,6 @@ static int kvm_vcpu_ioctl_get_stats_fd(struct kvm_vcpu *vcpu)
 	return fd;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long kvm_vcpu_ioctl(struct file *filp,
 			   unsigned int ioctl, unsigned long arg)
 {
@@ -5908,37 +4423,12 @@ static long kvm_vcpu_ioctl(struct file *filp,
 	struct kvm_fpu *fpu = NULL;
 	struct kvm_sregs *kvm_sregs = NULL;
 
-<<<<<<< HEAD
-	if (vcpu->kvm->mm != current->mm)
-=======
 	if (vcpu->kvm->mm != current->mm || vcpu->kvm->vm_dead)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 
 	if (unlikely(_IOC_TYPE(ioctl) != KVMIO))
 		return -EINVAL;
 
-<<<<<<< HEAD
-#if defined(CONFIG_S390) || defined(CONFIG_PPC)
-	/*
-	 * Special cases: vcpu ioctls that are asynchronous to vcpu execution,
-	 * so vcpu_load() would break it.
-	 */
-	if (ioctl == KVM_S390_INTERRUPT || ioctl == KVM_INTERRUPT)
-		return kvm_arch_vcpu_ioctl(filp, ioctl, arg);
-#endif
-
-
-	vcpu_load(vcpu);
-	switch (ioctl) {
-	case KVM_RUN:
-		r = -EINVAL;
-		if (arg)
-			goto out;
-		r = kvm_arch_vcpu_ioctl_run(vcpu, vcpu->run);
-		trace_kvm_userspace_exit(vcpu->run->exit_reason, r);
-		break;
-=======
 	/*
 	 * Some architectures have vcpu ioctls that are asynchronous to vcpu
 	 * execution; mutex_lock() would break them.
@@ -5974,16 +4464,11 @@ static long kvm_vcpu_ioctl(struct file *filp,
 		trace_kvm_userspace_exit(vcpu->run->exit_reason, r);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KVM_GET_REGS: {
 		struct kvm_regs *kvm_regs;
 
 		r = -ENOMEM;
-<<<<<<< HEAD
-		kvm_regs = kzalloc(sizeof(struct kvm_regs), GFP_KERNEL);
-=======
 		kvm_regs = kzalloc(sizeof(struct kvm_regs), GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!kvm_regs)
 			goto out;
 		r = kvm_arch_vcpu_ioctl_get_regs(vcpu, kvm_regs);
@@ -6000,33 +4485,18 @@ out_free1:
 	case KVM_SET_REGS: {
 		struct kvm_regs *kvm_regs;
 
-<<<<<<< HEAD
-		r = -ENOMEM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kvm_regs = memdup_user(argp, sizeof(*kvm_regs));
 		if (IS_ERR(kvm_regs)) {
 			r = PTR_ERR(kvm_regs);
 			goto out;
 		}
 		r = kvm_arch_vcpu_ioctl_set_regs(vcpu, kvm_regs);
-<<<<<<< HEAD
-		if (r)
-			goto out_free2;
-		r = 0;
-out_free2:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(kvm_regs);
 		break;
 	}
 	case KVM_GET_SREGS: {
-<<<<<<< HEAD
-		kvm_sregs = kzalloc(sizeof(struct kvm_sregs), GFP_KERNEL);
-=======
 		kvm_sregs = kzalloc(sizeof(struct kvm_sregs),
 				    GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = -ENOMEM;
 		if (!kvm_sregs)
 			goto out;
@@ -6043,19 +4513,10 @@ out_free2:
 		kvm_sregs = memdup_user(argp, sizeof(*kvm_sregs));
 		if (IS_ERR(kvm_sregs)) {
 			r = PTR_ERR(kvm_sregs);
-<<<<<<< HEAD
-			goto out;
-		}
-		r = kvm_arch_vcpu_ioctl_set_sregs(vcpu, kvm_sregs);
-		if (r)
-			goto out;
-		r = 0;
-=======
 			kvm_sregs = NULL;
 			goto out;
 		}
 		r = kvm_arch_vcpu_ioctl_set_sregs(vcpu, kvm_sregs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	case KVM_GET_MP_STATE: {
@@ -6065,11 +4526,7 @@ out_free2:
 		if (r)
 			goto out;
 		r = -EFAULT;
-<<<<<<< HEAD
-		if (copy_to_user(argp, &mp_state, sizeof mp_state))
-=======
 		if (copy_to_user(argp, &mp_state, sizeof(mp_state)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		r = 0;
 		break;
@@ -6078,39 +4535,22 @@ out_free2:
 		struct kvm_mp_state mp_state;
 
 		r = -EFAULT;
-<<<<<<< HEAD
-		if (copy_from_user(&mp_state, argp, sizeof mp_state))
-			goto out;
-		r = kvm_arch_vcpu_ioctl_set_mpstate(vcpu, &mp_state);
-		if (r)
-			goto out;
-		r = 0;
-=======
 		if (copy_from_user(&mp_state, argp, sizeof(mp_state)))
 			goto out;
 		r = kvm_arch_vcpu_ioctl_set_mpstate(vcpu, &mp_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	case KVM_TRANSLATE: {
 		struct kvm_translation tr;
 
 		r = -EFAULT;
-<<<<<<< HEAD
-		if (copy_from_user(&tr, argp, sizeof tr))
-=======
 		if (copy_from_user(&tr, argp, sizeof(tr)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		r = kvm_arch_vcpu_ioctl_translate(vcpu, &tr);
 		if (r)
 			goto out;
 		r = -EFAULT;
-<<<<<<< HEAD
-		if (copy_to_user(argp, &tr, sizeof tr))
-=======
 		if (copy_to_user(argp, &tr, sizeof(tr)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		r = 0;
 		break;
@@ -6119,18 +4559,9 @@ out_free2:
 		struct kvm_guest_debug dbg;
 
 		r = -EFAULT;
-<<<<<<< HEAD
-		if (copy_from_user(&dbg, argp, sizeof dbg))
-			goto out;
-		r = kvm_arch_vcpu_ioctl_set_guest_debug(vcpu, &dbg);
-		if (r)
-			goto out;
-		r = 0;
-=======
 		if (copy_from_user(&dbg, argp, sizeof(dbg)))
 			goto out;
 		r = kvm_arch_vcpu_ioctl_set_guest_debug(vcpu, &dbg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	case KVM_SET_SIGNAL_MASK: {
@@ -6142,16 +4573,6 @@ out_free2:
 		if (argp) {
 			r = -EFAULT;
 			if (copy_from_user(&kvm_sigmask, argp,
-<<<<<<< HEAD
-					   sizeof kvm_sigmask))
-				goto out;
-			r = -EINVAL;
-			if (kvm_sigmask.len != sizeof sigset)
-				goto out;
-			r = -EFAULT;
-			if (copy_from_user(&sigset, sigmask_arg->sigset,
-					   sizeof sigset))
-=======
 					   sizeof(kvm_sigmask)))
 				goto out;
 			r = -EINVAL;
@@ -6160,7 +4581,6 @@ out_free2:
 			r = -EFAULT;
 			if (copy_from_user(&sigset, sigmask_arg->sigset,
 					   sizeof(sigset)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out;
 			p = &sigset;
 		}
@@ -6168,11 +4588,7 @@ out_free2:
 		break;
 	}
 	case KVM_GET_FPU: {
-<<<<<<< HEAD
-		fpu = kzalloc(sizeof(struct kvm_fpu), GFP_KERNEL);
-=======
 		fpu = kzalloc(sizeof(struct kvm_fpu), GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = -ENOMEM;
 		if (!fpu)
 			goto out;
@@ -6189,14 +4605,6 @@ out_free2:
 		fpu = memdup_user(argp, sizeof(*fpu));
 		if (IS_ERR(fpu)) {
 			r = PTR_ERR(fpu);
-<<<<<<< HEAD
-			goto out;
-		}
-		r = kvm_arch_vcpu_ioctl_set_fpu(vcpu, fpu);
-		if (r)
-			goto out;
-		r = 0;
-=======
 			fpu = NULL;
 			goto out;
 		}
@@ -6205,28 +4613,19 @@ out_free2:
 	}
 	case KVM_GET_STATS_FD: {
 		r = kvm_vcpu_ioctl_get_stats_fd(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	default:
 		r = kvm_arch_vcpu_ioctl(filp, ioctl, arg);
 	}
 out:
-<<<<<<< HEAD
-	vcpu_put(vcpu);
-=======
 	mutex_unlock(&vcpu->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(fpu);
 	kfree(kvm_sregs);
 	return r;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 #ifdef CONFIG_KVM_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long kvm_vcpu_compat_ioctl(struct file *filp,
 				  unsigned int ioctl, unsigned long arg)
 {
@@ -6234,40 +4633,18 @@ static long kvm_vcpu_compat_ioctl(struct file *filp,
 	void __user *argp = compat_ptr(arg);
 	int r;
 
-<<<<<<< HEAD
-	if (vcpu->kvm->mm != current->mm)
-=======
 	if (vcpu->kvm->mm != current->mm || vcpu->kvm->vm_dead)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 
 	switch (ioctl) {
 	case KVM_SET_SIGNAL_MASK: {
 		struct kvm_signal_mask __user *sigmask_arg = argp;
 		struct kvm_signal_mask kvm_sigmask;
-<<<<<<< HEAD
-		compat_sigset_t csigset;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sigset_t sigset;
 
 		if (argp) {
 			r = -EFAULT;
 			if (copy_from_user(&kvm_sigmask, argp,
-<<<<<<< HEAD
-					   sizeof kvm_sigmask))
-				goto out;
-			r = -EINVAL;
-			if (kvm_sigmask.len != sizeof csigset)
-				goto out;
-			r = -EFAULT;
-			if (copy_from_user(&csigset, sigmask_arg->sigset,
-					   sizeof csigset))
-				goto out;
-		}
-		sigset_from_compat(&sigset, &csigset);
-		r = kvm_vcpu_ioctl_set_sigmask(vcpu, &sigset);
-=======
 					   sizeof(kvm_sigmask)))
 				goto out;
 			r = -EINVAL;
@@ -6280,7 +4657,6 @@ static long kvm_vcpu_compat_ioctl(struct file *filp,
 			r = kvm_vcpu_ioctl_set_sigmask(vcpu, &sigset);
 		} else
 			r = kvm_vcpu_ioctl_set_sigmask(vcpu, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	default:
@@ -6292,8 +4668,6 @@ out:
 }
 #endif
 
-<<<<<<< HEAD
-=======
 static int kvm_device_mmap(struct file *filp, struct vm_area_struct *vma)
 {
 	struct kvm_device *dev = filp->private_data;
@@ -6737,7 +5111,6 @@ do {										\
 		     sizeof_field(struct kvm_userspace_memory_region2, field));	\
 } while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long kvm_vm_ioctl(struct file *filp,
 			   unsigned int ioctl, unsigned long arg)
 {
@@ -6745,31 +5118,11 @@ static long kvm_vm_ioctl(struct file *filp,
 	void __user *argp = (void __user *)arg;
 	int r;
 
-<<<<<<< HEAD
-	if (kvm->mm != current->mm)
-=======
 	if (kvm->mm != current->mm || kvm->vm_dead)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	switch (ioctl) {
 	case KVM_CREATE_VCPU:
 		r = kvm_vm_ioctl_create_vcpu(kvm, arg);
-<<<<<<< HEAD
-		if (r < 0)
-			goto out;
-		break;
-	case KVM_SET_USER_MEMORY_REGION: {
-		struct kvm_userspace_memory_region kvm_userspace_mem;
-
-		r = -EFAULT;
-		if (copy_from_user(&kvm_userspace_mem, argp,
-						sizeof kvm_userspace_mem))
-			goto out;
-
-		r = kvm_vm_ioctl_set_memory_region(kvm, &kvm_userspace_mem, 1);
-		if (r)
-			goto out;
-=======
 		break;
 	case KVM_ENABLE_CAP: {
 		struct kvm_enable_cap cap;
@@ -6813,32 +5166,12 @@ static long kvm_vm_ioctl(struct file *filp,
 			goto out;
 
 		r = kvm_vm_ioctl_set_memory_region(kvm, &mem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	case KVM_GET_DIRTY_LOG: {
 		struct kvm_dirty_log log;
 
 		r = -EFAULT;
-<<<<<<< HEAD
-		if (copy_from_user(&log, argp, sizeof log))
-			goto out;
-		r = kvm_vm_ioctl_get_dirty_log(kvm, &log);
-		if (r)
-			goto out;
-		break;
-	}
-#ifdef KVM_COALESCED_MMIO_PAGE_OFFSET
-	case KVM_REGISTER_COALESCED_MMIO: {
-		struct kvm_coalesced_mmio_zone zone;
-		r = -EFAULT;
-		if (copy_from_user(&zone, argp, sizeof zone))
-			goto out;
-		r = kvm_vm_ioctl_register_coalesced_mmio(kvm, &zone);
-		if (r)
-			goto out;
-		r = 0;
-=======
 		if (copy_from_user(&log, argp, sizeof(log)))
 			goto out;
 		r = kvm_vm_ioctl_get_dirty_log(kvm, &log);
@@ -6863,26 +5196,15 @@ static long kvm_vm_ioctl(struct file *filp,
 		if (copy_from_user(&zone, argp, sizeof(zone)))
 			goto out;
 		r = kvm_vm_ioctl_register_coalesced_mmio(kvm, &zone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	case KVM_UNREGISTER_COALESCED_MMIO: {
 		struct kvm_coalesced_mmio_zone zone;
-<<<<<<< HEAD
-		r = -EFAULT;
-		if (copy_from_user(&zone, argp, sizeof zone))
-			goto out;
-		r = kvm_vm_ioctl_unregister_coalesced_mmio(kvm, &zone);
-		if (r)
-			goto out;
-		r = 0;
-=======
 
 		r = -EFAULT;
 		if (copy_from_user(&zone, argp, sizeof(zone)))
 			goto out;
 		r = kvm_vm_ioctl_unregister_coalesced_mmio(kvm, &zone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 #endif
@@ -6890,47 +5212,20 @@ static long kvm_vm_ioctl(struct file *filp,
 		struct kvm_irqfd data;
 
 		r = -EFAULT;
-<<<<<<< HEAD
-		if (copy_from_user(&data, argp, sizeof data))
-			goto out;
-		r = kvm_irqfd(kvm, data.fd, data.gsi, data.flags);
-=======
 		if (copy_from_user(&data, argp, sizeof(data)))
 			goto out;
 		r = kvm_irqfd(kvm, &data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	case KVM_IOEVENTFD: {
 		struct kvm_ioeventfd data;
 
 		r = -EFAULT;
-<<<<<<< HEAD
-		if (copy_from_user(&data, argp, sizeof data))
-=======
 		if (copy_from_user(&data, argp, sizeof(data)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		r = kvm_ioeventfd(kvm, &data);
 		break;
 	}
-<<<<<<< HEAD
-#ifdef CONFIG_KVM_APIC_ARCHITECTURE
-	case KVM_SET_BOOT_CPU_ID:
-		r = 0;
-		mutex_lock(&kvm->lock);
-		if (atomic_read(&kvm->online_vcpus) != 0)
-			r = -EBUSY;
-		else
-			kvm->bsp_vcpu_id = arg;
-		mutex_unlock(&kvm->lock);
-		break;
-#endif
-	default:
-		r = kvm_arch_vm_ioctl(filp, ioctl, arg);
-		if (r == -ENOTTY)
-			r = kvm_vm_ioctl_assigned_device(kvm, ioctl, arg);
-=======
 #ifdef CONFIG_HAVE_KVM_MSI
 	case KVM_SIGNAL_MSI: {
 		struct kvm_msi msi;
@@ -7050,17 +5345,12 @@ static long kvm_vm_ioctl(struct file *filp,
 #endif
 	default:
 		r = kvm_arch_vm_ioctl(filp, ioctl, arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	return r;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 #ifdef CONFIG_KVM_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct compat_kvm_dirty_log {
 	__u32 slot;
 	__u32 padding1;
@@ -7070,8 +5360,6 @@ struct compat_kvm_dirty_log {
 	};
 };
 
-<<<<<<< HEAD
-=======
 struct compat_kvm_clear_dirty_log {
 	__u32 slot;
 	__u32 num_pages;
@@ -7088,18 +5376,12 @@ long __weak kvm_arch_vm_compat_ioctl(struct file *filp, unsigned int ioctl,
 	return -ENOTTY;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long kvm_vm_compat_ioctl(struct file *filp,
 			   unsigned int ioctl, unsigned long arg)
 {
 	struct kvm *kvm = filp->private_data;
 	int r;
 
-<<<<<<< HEAD
-	if (kvm->mm != current->mm)
-		return -EIO;
-	switch (ioctl) {
-=======
 	if (kvm->mm != current->mm || kvm->vm_dead)
 		return -EIO;
 
@@ -7126,140 +5408,28 @@ static long kvm_vm_compat_ioctl(struct file *filp,
 		break;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KVM_GET_DIRTY_LOG: {
 		struct compat_kvm_dirty_log compat_log;
 		struct kvm_dirty_log log;
 
-<<<<<<< HEAD
-		r = -EFAULT;
-		if (copy_from_user(&compat_log, (void __user *)arg,
-				   sizeof(compat_log)))
-			goto out;
-=======
 		if (copy_from_user(&compat_log, (void __user *)arg,
 				   sizeof(compat_log)))
 			return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		log.slot	 = compat_log.slot;
 		log.padding1	 = compat_log.padding1;
 		log.padding2	 = compat_log.padding2;
 		log.dirty_bitmap = compat_ptr(compat_log.dirty_bitmap);
 
 		r = kvm_vm_ioctl_get_dirty_log(kvm, &log);
-<<<<<<< HEAD
-		if (r)
-			goto out;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	default:
 		r = kvm_vm_ioctl(filp, ioctl, arg);
 	}
-<<<<<<< HEAD
-
-out:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 #endif
 
-<<<<<<< HEAD
-static int kvm_vm_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-	struct page *page[1];
-	unsigned long addr;
-	int npages;
-	gfn_t gfn = vmf->pgoff;
-	struct kvm *kvm = vma->vm_file->private_data;
-
-	addr = gfn_to_hva(kvm, gfn);
-	if (kvm_is_error_hva(addr))
-		return VM_FAULT_SIGBUS;
-
-	npages = get_user_pages(current, current->mm, addr, 1, 1, 0, page,
-				NULL);
-	if (unlikely(npages != 1))
-		return VM_FAULT_SIGBUS;
-
-	vmf->page = page[0];
-	return 0;
-}
-
-static const struct vm_operations_struct kvm_vm_vm_ops = {
-	.fault = kvm_vm_fault,
-};
-
-static int kvm_vm_mmap(struct file *file, struct vm_area_struct *vma)
-{
-	vma->vm_ops = &kvm_vm_vm_ops;
-	return 0;
-}
-
-static struct file_operations kvm_vm_fops = {
-	.release        = kvm_vm_release,
-	.unlocked_ioctl = kvm_vm_ioctl,
-#ifdef CONFIG_COMPAT
-	.compat_ioctl   = kvm_vm_compat_ioctl,
-#endif
-	.mmap           = kvm_vm_mmap,
-	.llseek		= noop_llseek,
-};
-
-static int kvm_dev_ioctl_create_vm(unsigned long type)
-{
-	int r;
-	struct kvm *kvm;
-
-	kvm = kvm_create_vm(type);
-	if (IS_ERR(kvm))
-		return PTR_ERR(kvm);
-#ifdef KVM_COALESCED_MMIO_PAGE_OFFSET
-	r = kvm_coalesced_mmio_init(kvm);
-	if (r < 0) {
-		kvm_put_kvm(kvm);
-		return r;
-	}
-#endif
-	r = anon_inode_getfd("kvm-vm", &kvm_vm_fops, kvm, O_RDWR);
-	if (r < 0)
-		kvm_put_kvm(kvm);
-
-	return r;
-}
-
-static long kvm_dev_ioctl_check_extension_generic(long arg)
-{
-	switch (arg) {
-	case KVM_CAP_USER_MEMORY:
-	case KVM_CAP_DESTROY_MEMORY_REGION_WORKS:
-	case KVM_CAP_JOIN_MEMORY_REGIONS_WORKS:
-#ifdef CONFIG_KVM_APIC_ARCHITECTURE
-	case KVM_CAP_SET_BOOT_CPU_ID:
-#endif
-	case KVM_CAP_INTERNAL_ERROR_DATA:
-		return 1;
-#ifdef CONFIG_HAVE_KVM_IRQCHIP
-	case KVM_CAP_IRQ_ROUTING:
-		return KVM_MAX_IRQ_ROUTES;
-#endif
-	default:
-		break;
-	}
-	return kvm_dev_ioctl_check_extension(arg);
-}
-
-static long kvm_dev_ioctl(struct file *filp,
-			  unsigned int ioctl, unsigned long arg)
-{
-	long r = -EINVAL;
-
-	switch (ioctl) {
-	case KVM_GET_API_VERSION:
-		r = -EINVAL;
-=======
 static struct file_operations kvm_vm_fops = {
 	.release        = kvm_vm_release,
 	.unlocked_ioctl = kvm_vm_ioctl,
@@ -7323,7 +5493,6 @@ static long kvm_dev_ioctl(struct file *filp,
 
 	switch (ioctl) {
 	case KVM_GET_API_VERSION:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (arg)
 			goto out;
 		r = KVM_API_VERSION;
@@ -7332,38 +5501,19 @@ static long kvm_dev_ioctl(struct file *filp,
 		r = kvm_dev_ioctl_create_vm(arg);
 		break;
 	case KVM_CHECK_EXTENSION:
-<<<<<<< HEAD
-		r = kvm_dev_ioctl_check_extension_generic(arg);
-		break;
-	case KVM_GET_VCPU_MMAP_SIZE:
-		r = -EINVAL;
-=======
 		r = kvm_vm_ioctl_check_extension_generic(NULL, arg);
 		break;
 	case KVM_GET_VCPU_MMAP_SIZE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (arg)
 			goto out;
 		r = PAGE_SIZE;     /* struct kvm_run */
 #ifdef CONFIG_X86
 		r += PAGE_SIZE;    /* pio data page */
 #endif
-<<<<<<< HEAD
-#ifdef KVM_COALESCED_MMIO_PAGE_OFFSET
-		r += PAGE_SIZE;    /* coalesced mmio ring page */
-#endif
-		break;
-	case KVM_TRACE_ENABLE:
-	case KVM_TRACE_PAUSE:
-	case KVM_TRACE_DISABLE:
-		r = -EOPNOTSUPP;
-		break;
-=======
 #ifdef CONFIG_KVM_MMIO
 		r += PAGE_SIZE;    /* coalesced mmio ring page */
 #endif
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return kvm_arch_dev_ioctl(filp, ioctl, arg);
 	}
@@ -7373,13 +5523,8 @@ out:
 
 static struct file_operations kvm_chardev_ops = {
 	.unlocked_ioctl = kvm_dev_ioctl,
-<<<<<<< HEAD
-	.compat_ioctl   = kvm_dev_ioctl,
-	.llseek		= noop_llseek,
-=======
 	.llseek		= noop_llseek,
 	KVM_COMPAT(kvm_dev_ioctl),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct miscdevice kvm_dev = {
@@ -7388,33 +5533,6 @@ static struct miscdevice kvm_dev = {
 	&kvm_chardev_ops,
 };
 
-<<<<<<< HEAD
-static void hardware_enable_nolock(void *junk)
-{
-	int cpu = raw_smp_processor_id();
-	int r;
-
-	if (cpumask_test_cpu(cpu, cpus_hardware_enabled))
-		return;
-
-	cpumask_set_cpu(cpu, cpus_hardware_enabled);
-
-	r = kvm_arch_hardware_enable(NULL);
-
-	if (r) {
-		cpumask_clear_cpu(cpu, cpus_hardware_enabled);
-		atomic_inc(&hardware_enable_failed);
-		printk(KERN_INFO "kvm: enabling virtualization on "
-				 "CPU%d failed\n", cpu);
-	}
-}
-
-static void hardware_enable(void *junk)
-{
-	raw_spin_lock(&kvm_lock);
-	hardware_enable_nolock(junk);
-	raw_spin_unlock(&kvm_lock);
-=======
 #ifdef CONFIG_KVM_GENERIC_HARDWARE_ENABLING
 __visible bool kvm_rebooting;
 EXPORT_SYMBOL_GPL(kvm_rebooting);
@@ -7457,26 +5575,10 @@ static int kvm_online_cpu(unsigned int cpu)
 		ret = __hardware_enable_nolock();
 	mutex_unlock(&kvm_lock);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hardware_disable_nolock(void *junk)
 {
-<<<<<<< HEAD
-	int cpu = raw_smp_processor_id();
-
-	if (!cpumask_test_cpu(cpu, cpus_hardware_enabled))
-		return;
-	cpumask_clear_cpu(cpu, cpus_hardware_enabled);
-	kvm_arch_hardware_disable(NULL);
-}
-
-static void hardware_disable(void *junk)
-{
-	raw_spin_lock(&kvm_lock);
-	hardware_disable_nolock(junk);
-	raw_spin_unlock(&kvm_lock);
-=======
 	/*
 	 * Note, hardware_disable_all_nolock() tells all online CPUs to disable
 	 * hardware, not just CPUs that successfully enabled hardware!
@@ -7496,7 +5598,6 @@ static int kvm_offline_cpu(unsigned int cpu)
 		hardware_disable_nolock(NULL);
 	mutex_unlock(&kvm_lock);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hardware_disable_all_nolock(void)
@@ -7510,33 +5611,15 @@ static void hardware_disable_all_nolock(void)
 
 static void hardware_disable_all(void)
 {
-<<<<<<< HEAD
-	raw_spin_lock(&kvm_lock);
-	hardware_disable_all_nolock();
-	raw_spin_unlock(&kvm_lock);
-=======
 	cpus_read_lock();
 	mutex_lock(&kvm_lock);
 	hardware_disable_all_nolock();
 	mutex_unlock(&kvm_lock);
 	cpus_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hardware_enable_all(void)
 {
-<<<<<<< HEAD
-	int r = 0;
-
-	raw_spin_lock(&kvm_lock);
-
-	kvm_usage_count++;
-	if (kvm_usage_count == 1) {
-		atomic_set(&hardware_enable_failed, 0);
-		on_each_cpu(hardware_enable_nolock, NULL, 1);
-
-		if (atomic_read(&hardware_enable_failed)) {
-=======
 	atomic_t failed = ATOMIC_INIT(0);
 	int r;
 
@@ -7571,75 +5654,17 @@ static int hardware_enable_all(void)
 		on_each_cpu(hardware_enable_nolock, &failed, 1);
 
 		if (atomic_read(&failed)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hardware_disable_all_nolock();
 			r = -EBUSY;
 		}
 	}
 
-<<<<<<< HEAD
-	raw_spin_unlock(&kvm_lock);
-=======
 	mutex_unlock(&kvm_lock);
 	cpus_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
 
-<<<<<<< HEAD
-static int kvm_cpu_hotplug(struct notifier_block *notifier, unsigned long val,
-			   void *v)
-{
-	int cpu = (long)v;
-
-	if (!kvm_usage_count)
-		return NOTIFY_OK;
-
-	val &= ~CPU_TASKS_FROZEN;
-	switch (val) {
-	case CPU_DYING:
-		printk(KERN_INFO "kvm: disabling virtualization on CPU%d\n",
-		       cpu);
-		hardware_disable(NULL);
-		break;
-	case CPU_STARTING:
-		printk(KERN_INFO "kvm: enabling virtualization on CPU%d\n",
-		       cpu);
-		hardware_enable(NULL);
-		break;
-	}
-	return NOTIFY_OK;
-}
-
-
-asmlinkage void kvm_spurious_fault(void)
-{
-	/* Fault while not rebooting.  We want the trace. */
-	BUG();
-}
-EXPORT_SYMBOL_GPL(kvm_spurious_fault);
-
-static int kvm_reboot(struct notifier_block *notifier, unsigned long val,
-		      void *v)
-{
-	/*
-	 * Some (well, at least mine) BIOSes hang on reboot if
-	 * in vmx root mode.
-	 *
-	 * And Intel TXT required VMX off for all cpu when system shutdown.
-	 */
-	printk(KERN_INFO "kvm: exiting hardware virtualization\n");
-	kvm_rebooting = true;
-	on_each_cpu(hardware_disable_nolock, NULL, 1);
-	return NOTIFY_OK;
-}
-
-static struct notifier_block kvm_reboot_notifier = {
-	.notifier_call = kvm_reboot,
-	.priority = 0,
-};
-=======
 static void kvm_shutdown(void)
 {
 	/*
@@ -7707,7 +5732,6 @@ static void kvm_iodevice_destructor(struct kvm_io_device *dev)
 	if (dev->ops->destructor)
 		dev->ops->destructor(dev);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void kvm_io_bus_destroy(struct kvm_io_bus *bus)
 {
@@ -7721,39 +5745,6 @@ static void kvm_io_bus_destroy(struct kvm_io_bus *bus)
 	kfree(bus);
 }
 
-<<<<<<< HEAD
-int kvm_io_bus_sort_cmp(const void *p1, const void *p2)
-{
-	const struct kvm_io_range *r1 = p1;
-	const struct kvm_io_range *r2 = p2;
-
-	if (r1->addr < r2->addr)
-		return -1;
-	if (r1->addr + r1->len > r2->addr + r2->len)
-		return 1;
-	return 0;
-}
-
-int kvm_io_bus_insert_dev(struct kvm_io_bus *bus, struct kvm_io_device *dev,
-			  gpa_t addr, int len)
-{
-	if (bus->dev_count == NR_IOBUS_DEVS)
-		return -ENOSPC;
-
-	bus->range[bus->dev_count++] = (struct kvm_io_range) {
-		.addr = addr,
-		.len = len,
-		.dev = dev,
-	};
-
-	sort(bus->range, bus->dev_count, sizeof(struct kvm_io_range),
-		kvm_io_bus_sort_cmp, NULL);
-
-	return 0;
-}
-
-int kvm_io_bus_get_first_dev(struct kvm_io_bus *bus,
-=======
 static inline int kvm_io_bus_cmp(const struct kvm_io_range *r1,
 				 const struct kvm_io_range *r2)
 {
@@ -7785,7 +5776,6 @@ static int kvm_io_bus_sort_cmp(const void *p1, const void *p2)
 }
 
 static int kvm_io_bus_get_first_dev(struct kvm_io_bus *bus,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     gpa_t addr, int len)
 {
 	struct kvm_io_range *range, key;
@@ -7803,23 +5793,12 @@ static int kvm_io_bus_get_first_dev(struct kvm_io_bus *bus,
 
 	off = range - bus->range;
 
-<<<<<<< HEAD
-	while (off > 0 && kvm_io_bus_sort_cmp(&key, &bus->range[off-1]) == 0)
-=======
 	while (off > 0 && kvm_io_bus_cmp(&key, &bus->range[off-1]) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		off--;
 
 	return off;
 }
 
-<<<<<<< HEAD
-/* kvm_io_bus_write - called under kvm->slots_lock */
-int kvm_io_bus_write(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
-		     int len, const void *val)
-{
-	int idx;
-=======
 static int __kvm_io_bus_write(struct kvm_vcpu *vcpu, struct kvm_io_bus *bus,
 			      struct kvm_io_range *range, const void *val)
 {
@@ -7865,7 +5844,6 @@ EXPORT_SYMBOL_GPL(kvm_io_bus_write);
 int kvm_io_bus_write_cookie(struct kvm_vcpu *vcpu, enum kvm_bus bus_idx,
 			    gpa_t addr, int len, const void *val, long cookie)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kvm_io_bus *bus;
 	struct kvm_io_range range;
 
@@ -7874,10 +5852,6 @@ int kvm_io_bus_write_cookie(struct kvm_vcpu *vcpu, enum kvm_bus bus_idx,
 		.len = len,
 	};
 
-<<<<<<< HEAD
-	bus = srcu_dereference(kvm->buses[bus_idx], &kvm->srcu);
-	idx = kvm_io_bus_get_first_dev(bus, addr, len);
-=======
 	bus = srcu_dereference(vcpu->kvm->buses[bus_idx], &vcpu->kvm->srcu);
 	if (!bus)
 		return -ENOMEM;
@@ -7902,21 +5876,14 @@ static int __kvm_io_bus_read(struct kvm_vcpu *vcpu, struct kvm_io_bus *bus,
 	int idx;
 
 	idx = kvm_io_bus_get_first_dev(bus, range->addr, range->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (idx < 0)
 		return -EOPNOTSUPP;
 
 	while (idx < bus->dev_count &&
-<<<<<<< HEAD
-		kvm_io_bus_sort_cmp(&range, &bus->range[idx]) == 0) {
-		if (!kvm_iodevice_write(bus->range[idx].dev, addr, len, val))
-			return 0;
-=======
 		kvm_io_bus_cmp(range, &bus->range[idx]) == 0) {
 		if (!kvm_iodevice_read(vcpu, bus->range[idx].dev, range->addr,
 				       range->len, val))
 			return idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		idx++;
 	}
 
@@ -7924,58 +5891,18 @@ static int __kvm_io_bus_read(struct kvm_vcpu *vcpu, struct kvm_io_bus *bus,
 }
 
 /* kvm_io_bus_read - called under kvm->slots_lock */
-<<<<<<< HEAD
-int kvm_io_bus_read(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
-		    int len, void *val)
-{
-	int idx;
-	struct kvm_io_bus *bus;
-	struct kvm_io_range range;
-=======
 int kvm_io_bus_read(struct kvm_vcpu *vcpu, enum kvm_bus bus_idx, gpa_t addr,
 		    int len, void *val)
 {
 	struct kvm_io_bus *bus;
 	struct kvm_io_range range;
 	int r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	range = (struct kvm_io_range) {
 		.addr = addr,
 		.len = len,
 	};
 
-<<<<<<< HEAD
-	bus = srcu_dereference(kvm->buses[bus_idx], &kvm->srcu);
-	idx = kvm_io_bus_get_first_dev(bus, addr, len);
-	if (idx < 0)
-		return -EOPNOTSUPP;
-
-	while (idx < bus->dev_count &&
-		kvm_io_bus_sort_cmp(&range, &bus->range[idx]) == 0) {
-		if (!kvm_iodevice_read(bus->range[idx].dev, addr, len, val))
-			return 0;
-		idx++;
-	}
-
-	return -EOPNOTSUPP;
-}
-
-/* Caller must hold slots_lock. */
-int kvm_io_bus_register_dev(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
-			    int len, struct kvm_io_device *dev)
-{
-	struct kvm_io_bus *new_bus, *bus;
-
-	bus = kvm->buses[bus_idx];
-	if (bus->dev_count > NR_IOBUS_DEVS-1)
-		return -ENOSPC;
-
-	new_bus = kmemdup(bus, sizeof(struct kvm_io_bus), GFP_KERNEL);
-	if (!new_bus)
-		return -ENOMEM;
-	kvm_io_bus_insert_dev(new_bus, dev, addr, len);
-=======
 	bus = srcu_dereference(vcpu->kvm->buses[bus_idx], &vcpu->kvm->srcu);
 	if (!bus)
 		return -ENOMEM;
@@ -8020,7 +5947,6 @@ int kvm_io_bus_register_dev(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
 	new_bus->range[i] = range;
 	memcpy(new_bus->range + i + 1, bus->range + i,
 		(bus->dev_count - i) * sizeof(struct kvm_io_range));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_assign_pointer(kvm->buses[bus_idx], new_bus);
 	synchronize_srcu_expedited(&kvm->srcu);
 	kfree(bus);
@@ -8028,36 +5954,6 @@ int kvm_io_bus_register_dev(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
 	return 0;
 }
 
-<<<<<<< HEAD
-/* Caller must hold slots_lock. */
-int kvm_io_bus_unregister_dev(struct kvm *kvm, enum kvm_bus bus_idx,
-			      struct kvm_io_device *dev)
-{
-	int i, r;
-	struct kvm_io_bus *new_bus, *bus;
-
-	bus = kvm->buses[bus_idx];
-
-	new_bus = kmemdup(bus, sizeof(*bus), GFP_KERNEL);
-	if (!new_bus)
-		return -ENOMEM;
-
-	r = -ENOENT;
-	for (i = 0; i < new_bus->dev_count; i++)
-		if (new_bus->range[i].dev == dev) {
-			r = 0;
-			new_bus->dev_count--;
-			new_bus->range[i] = new_bus->range[new_bus->dev_count];
-			sort(new_bus->range, new_bus->dev_count,
-			     sizeof(struct kvm_io_range),
-			     kvm_io_bus_sort_cmp, NULL);
-			break;
-		}
-
-	if (r) {
-		kfree(new_bus);
-		return r;
-=======
 int kvm_io_bus_unregister_dev(struct kvm *kvm, enum kvm_bus bus_idx,
 			      struct kvm_io_device *dev)
 {
@@ -8086,19 +5982,10 @@ int kvm_io_bus_unregister_dev(struct kvm *kvm, enum kvm_bus bus_idx,
 		new_bus->dev_count--;
 		memcpy(new_bus->range + i, bus->range + i + 1,
 				flex_array_size(new_bus, range, new_bus->dev_count - i));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rcu_assign_pointer(kvm->buses[bus_idx], new_bus);
 	synchronize_srcu_expedited(&kvm->srcu);
-<<<<<<< HEAD
-	kfree(bus);
-	return r;
-}
-
-static struct notifier_block kvm_cpu_notifier = {
-	.notifier_call = kvm_cpu_hotplug,
-=======
 
 	/*
 	 * If NULL bus is installed, destroy the old bus, including all the
@@ -8268,25 +6155,12 @@ static const struct file_operations stat_fops_per_vm = {
 	.read = simple_attr_read,
 	.write = simple_attr_write,
 	.llseek = no_llseek,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int vm_stat_get(void *_offset, u64 *val)
 {
 	unsigned offset = (long)_offset;
 	struct kvm *kvm;
-<<<<<<< HEAD
-
-	*val = 0;
-	raw_spin_lock(&kvm_lock);
-	list_for_each_entry(kvm, &vm_list, vm_list)
-		*val += *(u32 *)((void *)kvm + offset);
-	raw_spin_unlock(&kvm_lock);
-	return 0;
-}
-
-DEFINE_SIMPLE_ATTRIBUTE(vm_stat_fops, vm_stat_get, NULL, "%llu\n");
-=======
 	u64 tmp_val;
 
 	*val = 0;
@@ -8318,91 +6192,11 @@ static int vm_stat_clear(void *_offset, u64 val)
 
 DEFINE_SIMPLE_ATTRIBUTE(vm_stat_fops, vm_stat_get, vm_stat_clear, "%llu\n");
 DEFINE_SIMPLE_ATTRIBUTE(vm_stat_readonly_fops, vm_stat_get, NULL, "%llu\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int vcpu_stat_get(void *_offset, u64 *val)
 {
 	unsigned offset = (long)_offset;
 	struct kvm *kvm;
-<<<<<<< HEAD
-	struct kvm_vcpu *vcpu;
-	int i;
-
-	*val = 0;
-	raw_spin_lock(&kvm_lock);
-	list_for_each_entry(kvm, &vm_list, vm_list)
-		kvm_for_each_vcpu(i, vcpu, kvm)
-			*val += *(u32 *)((void *)vcpu + offset);
-
-	raw_spin_unlock(&kvm_lock);
-	return 0;
-}
-
-DEFINE_SIMPLE_ATTRIBUTE(vcpu_stat_fops, vcpu_stat_get, NULL, "%llu\n");
-
-static const struct file_operations *stat_fops[] = {
-	[KVM_STAT_VCPU] = &vcpu_stat_fops,
-	[KVM_STAT_VM]   = &vm_stat_fops,
-};
-
-static int kvm_init_debug(void)
-{
-	int r = -EFAULT;
-	struct kvm_stats_debugfs_item *p;
-
-	kvm_debugfs_dir = debugfs_create_dir("kvm", NULL);
-	if (kvm_debugfs_dir == NULL)
-		goto out;
-
-	for (p = debugfs_entries; p->name; ++p) {
-		p->dentry = debugfs_create_file(p->name, 0444, kvm_debugfs_dir,
-						(void *)(long)p->offset,
-						stat_fops[p->kind]);
-		if (p->dentry == NULL)
-			goto out_dir;
-	}
-
-	return 0;
-
-out_dir:
-	debugfs_remove_recursive(kvm_debugfs_dir);
-out:
-	return r;
-}
-
-static void kvm_exit_debug(void)
-{
-	struct kvm_stats_debugfs_item *p;
-
-	for (p = debugfs_entries; p->name; ++p)
-		debugfs_remove(p->dentry);
-	debugfs_remove(kvm_debugfs_dir);
-}
-
-static int kvm_suspend(void)
-{
-	if (kvm_usage_count)
-		hardware_disable_nolock(NULL);
-	return 0;
-}
-
-static void kvm_resume(void)
-{
-	if (kvm_usage_count) {
-		WARN_ON(raw_spin_is_locked(&kvm_lock));
-		hardware_enable_nolock(NULL);
-	}
-}
-
-static struct syscore_ops kvm_syscore_ops = {
-	.suspend = kvm_suspend,
-	.resume = kvm_resume,
-};
-
-struct page *bad_page;
-pfn_t bad_pfn;
-
-=======
 	u64 tmp_val;
 
 	*val = 0;
@@ -8517,7 +6311,6 @@ static void kvm_init_debug(void)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline
 struct kvm_vcpu *preempt_notifier_to_vcpu(struct preempt_notifier *pn)
 {
@@ -8528,14 +6321,11 @@ static void kvm_sched_in(struct preempt_notifier *pn, int cpu)
 {
 	struct kvm_vcpu *vcpu = preempt_notifier_to_vcpu(pn);
 
-<<<<<<< HEAD
-=======
 	WRITE_ONCE(vcpu->preempted, false);
 	WRITE_ONCE(vcpu->ready, false);
 
 	__this_cpu_write(kvm_running_vcpu, vcpu);
 	kvm_arch_sched_in(vcpu, cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kvm_arch_vcpu_load(vcpu, cpu);
 }
 
@@ -8544,13 +6334,6 @@ static void kvm_sched_out(struct preempt_notifier *pn,
 {
 	struct kvm_vcpu *vcpu = preempt_notifier_to_vcpu(pn);
 
-<<<<<<< HEAD
-	kvm_arch_vcpu_put(vcpu);
-}
-
-int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
-		  struct module *module)
-=======
 	if (current->on_rq) {
 		WRITE_ONCE(vcpu->preempted, true);
 		WRITE_ONCE(vcpu->ready, true);
@@ -8633,65 +6416,10 @@ void kvm_unregister_perf_callbacks(void)
 #endif
 
 int kvm_init(unsigned vcpu_size, unsigned vcpu_align, struct module *module)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	int cpu;
 
-<<<<<<< HEAD
-	r = kvm_arch_init(opaque);
-	if (r)
-		goto out_fail;
-
-	bad_page = alloc_page(GFP_KERNEL | __GFP_ZERO);
-
-	if (bad_page == NULL) {
-		r = -ENOMEM;
-		goto out;
-	}
-
-	bad_pfn = page_to_pfn(bad_page);
-
-	hwpoison_page = alloc_page(GFP_KERNEL | __GFP_ZERO);
-
-	if (hwpoison_page == NULL) {
-		r = -ENOMEM;
-		goto out_free_0;
-	}
-
-	hwpoison_pfn = page_to_pfn(hwpoison_page);
-
-	fault_page = alloc_page(GFP_KERNEL | __GFP_ZERO);
-
-	if (fault_page == NULL) {
-		r = -ENOMEM;
-		goto out_free_0;
-	}
-
-	fault_pfn = page_to_pfn(fault_page);
-
-	if (!zalloc_cpumask_var(&cpus_hardware_enabled, GFP_KERNEL)) {
-		r = -ENOMEM;
-		goto out_free_0;
-	}
-
-	r = kvm_arch_hardware_setup();
-	if (r < 0)
-		goto out_free_0a;
-
-	for_each_online_cpu(cpu) {
-		smp_call_function_single(cpu,
-				kvm_arch_check_processor_compat,
-				&r, 1);
-		if (r < 0)
-			goto out_free_1;
-	}
-
-	r = register_cpu_notifier(&kvm_cpu_notifier);
-	if (r)
-		goto out_free_2;
-	register_reboot_notifier(&kvm_reboot_notifier);
-=======
 #ifdef CONFIG_KVM_GENERIC_HARDWARE_ENABLING
 	r = cpuhp_setup_state_nocalls(CPUHP_AP_KVM_ONLINE, "kvm/cpu:online",
 				      kvm_online_cpu, kvm_offline_cpu);
@@ -8700,23 +6428,10 @@ int kvm_init(unsigned vcpu_size, unsigned vcpu_align, struct module *module)
 
 	register_syscore_ops(&kvm_syscore_ops);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* A kmem cache lets us meet the alignment requirements of fx_save. */
 	if (!vcpu_align)
 		vcpu_align = __alignof__(struct kvm_vcpu);
-<<<<<<< HEAD
-	kvm_vcpu_cache = kmem_cache_create("kvm_vcpu", vcpu_size, vcpu_align,
-					   0, NULL);
-	if (!kvm_vcpu_cache) {
-		r = -ENOMEM;
-		goto out_free_3;
-	}
-
-	r = kvm_async_pf_init();
-	if (r)
-		goto out_free;
-=======
 	kvm_vcpu_cache =
 		kmem_cache_create_usercopy("kvm_vcpu", vcpu_size, vcpu_align,
 					   SLAB_ACCOUNT,
@@ -8744,33 +6459,15 @@ int kvm_init(unsigned vcpu_size, unsigned vcpu_align, struct module *module)
 	r = kvm_async_pf_init();
 	if (r)
 		goto err_async_pf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kvm_chardev_ops.owner = module;
 	kvm_vm_fops.owner = module;
 	kvm_vcpu_fops.owner = module;
-<<<<<<< HEAD
-
-	r = misc_register(&kvm_dev);
-	if (r) {
-		printk(KERN_ERR "kvm: misc device register failed\n");
-		goto out_unreg;
-	}
-
-	register_syscore_ops(&kvm_syscore_ops);
-=======
 	kvm_device_fops.owner = module;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kvm_preempt_ops.sched_in = kvm_sched_in;
 	kvm_preempt_ops.sched_out = kvm_sched_out;
 
-<<<<<<< HEAD
-	r = kvm_init_debug();
-	if (r) {
-		printk(KERN_ERR "kvm: create debugfs files failed\n");
-		goto out_undebugfs;
-=======
 	kvm_init_debug();
 
 	r = kvm_vfio_ops_init();
@@ -8787,36 +6484,10 @@ int kvm_init(unsigned vcpu_size, unsigned vcpu_align, struct module *module)
 	if (r) {
 		pr_err("kvm: misc device register failed\n");
 		goto err_register;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
-<<<<<<< HEAD
-out_undebugfs:
-	unregister_syscore_ops(&kvm_syscore_ops);
-out_unreg:
-	kvm_async_pf_deinit();
-out_free:
-	kmem_cache_destroy(kvm_vcpu_cache);
-out_free_3:
-	unregister_reboot_notifier(&kvm_reboot_notifier);
-	unregister_cpu_notifier(&kvm_cpu_notifier);
-out_free_2:
-out_free_1:
-	kvm_arch_hardware_unsetup();
-out_free_0a:
-	free_cpumask_var(cpus_hardware_enabled);
-out_free_0:
-	if (fault_page)
-		__free_page(fault_page);
-	if (hwpoison_page)
-		__free_page(hwpoison_page);
-	__free_page(bad_page);
-out:
-	kvm_arch_exit();
-out_fail:
-=======
 err_register:
 	kvm_vfio_ops_exit();
 err_vfio:
@@ -8833,30 +6504,12 @@ err_vcpu_cache:
 	unregister_syscore_ops(&kvm_syscore_ops);
 	cpuhp_remove_state_nocalls(CPUHP_AP_KVM_ONLINE);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 EXPORT_SYMBOL_GPL(kvm_init);
 
 void kvm_exit(void)
 {
-<<<<<<< HEAD
-	kvm_exit_debug();
-	misc_deregister(&kvm_dev);
-	kmem_cache_destroy(kvm_vcpu_cache);
-	kvm_async_pf_deinit();
-	unregister_syscore_ops(&kvm_syscore_ops);
-	unregister_reboot_notifier(&kvm_reboot_notifier);
-	unregister_cpu_notifier(&kvm_cpu_notifier);
-	on_each_cpu(hardware_disable_nolock, NULL, 1);
-	kvm_arch_hardware_unsetup();
-	kvm_arch_exit();
-	free_cpumask_var(cpus_hardware_enabled);
-	__free_page(hwpoison_page);
-	__free_page(bad_page);
-}
-EXPORT_SYMBOL_GPL(kvm_exit);
-=======
 	int cpu;
 
 	/*
@@ -8982,4 +6635,3 @@ int kvm_vm_create_worker_thread(struct kvm *kvm, kvm_vm_thread_fn_t thread_fn,
 
 	return init_context.err;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * tlv320aic32x4.h  --  TLV320AIC32X4 Soc Audio driver platform data
  *
  * Copyright 2011 Vista Silicon S.L.
  *
  * Author: Javier Martin <javier.martin@vista-silicon.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _AIC32X4_PDATA_H
@@ -29,12 +19,6 @@
 #define AIC32X4_MICPGA_ROUTE_LMIC_IN2R_10K	0x00000001
 #define AIC32X4_MICPGA_ROUTE_RMIC_IN1L_10K	0x00000002
 
-<<<<<<< HEAD
-struct aic32x4_pdata {
-	u32 power_cfg;
-	u32 micpga_routing;
-	bool swapdacs;
-=======
 /* GPIO API */
 #define AIC32X4_MFPX_DEFAULT_VALUE	0xff
 
@@ -63,7 +47,6 @@ struct aic32x4_pdata {
 	u32 micpga_routing;
 	bool swapdacs;
 	int rstn_gpio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

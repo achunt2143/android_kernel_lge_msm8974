@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Dump R3000 TLB for debugging purposes.
  *
@@ -13,13 +10,6 @@
 #include <linux/mm.h>
 
 #include <asm/mipsregs.h>
-<<<<<<< HEAD
-#include <asm/page.h>
-#include <asm/pgtable.h>
-#include <asm/tlbdebug.h>
-
-extern int r3k_have_wired_reg;	/* defined in tlb-r3k.c */
-=======
 #include <asm/mmu_context.h>
 #include <asm/page.h>
 #include <asm/tlbdebug.h>
@@ -30,22 +20,15 @@ void dump_tlb_regs(void)
 	pr_info("EntryHi  : %0lx\n", read_c0_entryhi());
 	pr_info("EntryLo  : %0lx\n", read_c0_entrylo0());
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void dump_tlb(int first, int last)
 {
 	int	i;
 	unsigned int asid;
-<<<<<<< HEAD
-	unsigned long entryhi, entrylo0;
-
-	asid = read_c0_entryhi() & 0xfc0;
-=======
 	unsigned long entryhi, entrylo0, asid_mask;
 
 	asid_mask = cpu_asid_mask(&current_cpu_data);
 	asid = read_c0_entryhi() & asid_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = first; i <= last; i++) {
 		write_c0_index(i<<8);
@@ -54,14 +37,6 @@ static void dump_tlb(int first, int last)
 			"tlbr\n\t"
 			"nop\n\t"
 			".set\treorder");
-<<<<<<< HEAD
-		entryhi  = read_c0_entryhi();
-		entrylo0 = read_c0_entrylo0();
-
-		/* Unused entries have a virtual address of KSEG0.  */
-		if ((entryhi & 0xffffe000) != 0x80000000
-		    && (entryhi & 0xfc0) == asid) {
-=======
 		entryhi	 = read_c0_entryhi();
 		entrylo0 = read_c0_entrylo0();
 
@@ -69,23 +44,11 @@ static void dump_tlb(int first, int last)
 		if ((entryhi & PAGE_MASK) != KSEG0 &&
 		    (entrylo0 & R3K_ENTRYLO_G ||
 		     (entryhi & asid_mask) == asid)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Only print entries in use
 			 */
 			printk("Index: %2d ", i);
 
-<<<<<<< HEAD
-			printk("va=%08lx asid=%08lx"
-			       "  [pa=%06lx n=%d d=%d v=%d g=%d]",
-			       (entryhi & 0xffffe000),
-			       entryhi & 0xfc0,
-			       entrylo0 & PAGE_MASK,
-			       (entrylo0 & (1 << 11)) ? 1 : 0,
-			       (entrylo0 & (1 << 10)) ? 1 : 0,
-			       (entrylo0 & (1 << 9)) ? 1 : 0,
-			       (entrylo0 & (1 << 8)) ? 1 : 0);
-=======
 			pr_cont("va=%08lx asid=%08lx"
 				"  [pa=%06lx n=%d d=%d v=%d g=%d]",
 				entryhi & PAGE_MASK,
@@ -95,7 +58,6 @@ static void dump_tlb(int first, int last)
 				(entrylo0 & R3K_ENTRYLO_D) ? 1 : 0,
 				(entrylo0 & R3K_ENTRYLO_V) ? 1 : 0,
 				(entrylo0 & R3K_ENTRYLO_G) ? 1 : 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	printk("\n");

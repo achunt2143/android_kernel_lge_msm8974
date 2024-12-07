@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#include "builtin.h"
-#include "perf.h"
-
-#include "util/util.h"
-#include "util/cache.h"
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include "builtin.h"
 
@@ -13,26 +6,11 @@
 #include "util/evsel.h"
 #include "util/config.h"
 #include "util/map.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "util/symbol.h"
 #include "util/thread.h"
 #include "util/header.h"
 #include "util/session.h"
 #include "util/tool.h"
-<<<<<<< HEAD
-
-#include "util/parse-options.h"
-#include "util/trace-event.h"
-
-#include "util/debug.h"
-
-#include <linux/rbtree.h>
-
-struct alloc_stat;
-typedef int (*sort_fn_t)(struct alloc_stat *, struct alloc_stat *);
-
-static const char		*input_name;
-=======
 #include "util/callchain.h"
 #include "util/time-utils.h"
 #include <linux/err.h>
@@ -71,7 +49,6 @@ static enum {
 
 struct alloc_stat;
 typedef int (*sort_fn_t)(void *, void *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int			alloc_flag;
 static int			caller_flag;
@@ -81,23 +58,12 @@ static int			caller_lines = -1;
 
 static bool			raw_ip;
 
-<<<<<<< HEAD
-static char			default_sort_order[] = "frag,hit,bytes";
-
-static int			*cpunode_map;
-static int			max_cpu_num;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct alloc_stat {
 	u64	call_site;
 	u64	ptr;
 	u64	bytes_req;
 	u64	bytes_alloc;
-<<<<<<< HEAD
-=======
 	u64	last_alloc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	hit;
 	u32	pingpong;
 
@@ -111,71 +77,6 @@ static struct rb_root root_alloc_sorted;
 static struct rb_root root_caller_stat;
 static struct rb_root root_caller_sorted;
 
-<<<<<<< HEAD
-static unsigned long total_requested, total_allocated;
-static unsigned long nr_allocs, nr_cross_allocs;
-
-#define PATH_SYS_NODE	"/sys/devices/system/node"
-
-static void init_cpunode_map(void)
-{
-	FILE *fp;
-	int i;
-
-	fp = fopen("/sys/devices/system/cpu/kernel_max", "r");
-	if (!fp) {
-		max_cpu_num = 4096;
-		return;
-	}
-
-	if (fscanf(fp, "%d", &max_cpu_num) < 1)
-		die("Failed to read 'kernel_max' from sysfs");
-	max_cpu_num++;
-
-	cpunode_map = calloc(max_cpu_num, sizeof(int));
-	if (!cpunode_map)
-		die("calloc");
-	for (i = 0; i < max_cpu_num; i++)
-		cpunode_map[i] = -1;
-	fclose(fp);
-}
-
-static void setup_cpunode_map(void)
-{
-	struct dirent *dent1, *dent2;
-	DIR *dir1, *dir2;
-	unsigned int cpu, mem;
-	char buf[PATH_MAX];
-
-	init_cpunode_map();
-
-	dir1 = opendir(PATH_SYS_NODE);
-	if (!dir1)
-		return;
-
-	while ((dent1 = readdir(dir1)) != NULL) {
-		if (dent1->d_type != DT_DIR ||
-		    sscanf(dent1->d_name, "node%u", &mem) < 1)
-			continue;
-
-		snprintf(buf, PATH_MAX, "%s/%s", PATH_SYS_NODE, dent1->d_name);
-		dir2 = opendir(buf);
-		if (!dir2)
-			continue;
-		while ((dent2 = readdir(dir2)) != NULL) {
-			if (dent2->d_type != DT_LNK ||
-			    sscanf(dent2->d_name, "cpu%u", &cpu) < 1)
-				continue;
-			cpunode_map[cpu] = mem;
-		}
-		closedir(dir2);
-	}
-	closedir(dir1);
-}
-
-static void insert_alloc_stat(unsigned long call_site, unsigned long ptr,
-			      int bytes_req, int bytes_alloc, int cpu)
-=======
 static unsigned long total_requested, total_allocated, total_freed;
 static unsigned long nr_allocs, nr_cross_allocs;
 
@@ -185,7 +86,6 @@ const char *time_str;
 
 static int insert_alloc_stat(unsigned long call_site, unsigned long ptr,
 			     int bytes_req, int bytes_alloc, int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rb_node **node = &root_alloc_stat.rb_node;
 	struct rb_node *parent = NULL;
@@ -209,15 +109,10 @@ static int insert_alloc_stat(unsigned long call_site, unsigned long ptr,
 		data->bytes_alloc += bytes_alloc;
 	} else {
 		data = malloc(sizeof(*data));
-<<<<<<< HEAD
-		if (!data)
-			die("malloc");
-=======
 		if (!data) {
 			pr_err("%s: malloc failed\n", __func__);
 			return -1;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data->ptr = ptr;
 		data->pingpong = 0;
 		data->hit = 1;
@@ -229,18 +124,12 @@ static int insert_alloc_stat(unsigned long call_site, unsigned long ptr,
 	}
 	data->call_site = call_site;
 	data->alloc_cpu = cpu;
-<<<<<<< HEAD
-}
-
-static void insert_caller_stat(unsigned long call_site,
-=======
 	data->last_alloc = bytes_alloc;
 
 	return 0;
 }
 
 static int insert_caller_stat(unsigned long call_site,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      int bytes_req, int bytes_alloc)
 {
 	struct rb_node **node = &root_caller_stat.rb_node;
@@ -265,15 +154,10 @@ static int insert_caller_stat(unsigned long call_site,
 		data->bytes_alloc += bytes_alloc;
 	} else {
 		data = malloc(sizeof(*data));
-<<<<<<< HEAD
-		if (!data)
-			die("malloc");
-=======
 		if (!data) {
 			pr_err("%s: malloc failed\n", __func__);
 			return -1;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data->call_site = call_site;
 		data->pingpong = 0;
 		data->hit = 1;
@@ -283,30 +167,6 @@ static int insert_caller_stat(unsigned long call_site,
 		rb_link_node(&data->node, parent, node);
 		rb_insert_color(&data->node, &root_caller_stat);
 	}
-<<<<<<< HEAD
-}
-
-static void process_alloc_event(void *data,
-				struct event *event,
-				int cpu,
-				u64 timestamp __used,
-				struct thread *thread __used,
-				int node)
-{
-	unsigned long call_site;
-	unsigned long ptr;
-	int bytes_req;
-	int bytes_alloc;
-	int node1, node2;
-
-	ptr = raw_field_value(event, "ptr", data);
-	call_site = raw_field_value(event, "call_site", data);
-	bytes_req = raw_field_value(event, "bytes_req", data);
-	bytes_alloc = raw_field_value(event, "bytes_alloc", data);
-
-	insert_alloc_stat(call_site, ptr, bytes_req, bytes_alloc, cpu);
-	insert_caller_stat(call_site, bytes_req, bytes_alloc);
-=======
 
 	return 0;
 }
@@ -321,24 +181,10 @@ static int evsel__process_alloc_event(struct evsel *evsel, struct perf_sample *s
 	if (insert_alloc_stat(call_site, ptr, bytes_req, bytes_alloc, sample->cpu) ||
 	    insert_caller_stat(call_site, bytes_req, bytes_alloc))
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	total_requested += bytes_req;
 	total_allocated += bytes_alloc;
 
-<<<<<<< HEAD
-	if (node) {
-		node1 = cpunode_map[cpu];
-		node2 = raw_field_value(event, "node", data);
-		if (node1 != node2)
-			nr_cross_allocs++;
-	}
-	nr_allocs++;
-}
-
-static int ptr_cmp(struct alloc_stat *, struct alloc_stat *);
-static int callsite_cmp(struct alloc_stat *, struct alloc_stat *);
-=======
 	nr_allocs++;
 
 	/*
@@ -371,7 +217,6 @@ static int callsite_cmp(struct alloc_stat *, struct alloc_stat *);
 
 static int ptr_cmp(void *, void *);
 static int slab_callsite_cmp(void *, void *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct alloc_stat *search_alloc_stat(unsigned long ptr,
 					    unsigned long call_site,
@@ -398,69 +243,6 @@ static struct alloc_stat *search_alloc_stat(unsigned long ptr,
 	return NULL;
 }
 
-<<<<<<< HEAD
-static void process_free_event(void *data,
-			       struct event *event,
-			       int cpu,
-			       u64 timestamp __used,
-			       struct thread *thread __used)
-{
-	unsigned long ptr;
-	struct alloc_stat *s_alloc, *s_caller;
-
-	ptr = raw_field_value(event, "ptr", data);
-
-	s_alloc = search_alloc_stat(ptr, 0, &root_alloc_stat, ptr_cmp);
-	if (!s_alloc)
-		return;
-
-	if (cpu != s_alloc->alloc_cpu) {
-		s_alloc->pingpong++;
-
-		s_caller = search_alloc_stat(0, s_alloc->call_site,
-					     &root_caller_stat, callsite_cmp);
-		assert(s_caller);
-		s_caller->pingpong++;
-	}
-	s_alloc->alloc_cpu = -1;
-}
-
-static void process_raw_event(union perf_event *raw_event __used, void *data,
-			      int cpu, u64 timestamp, struct thread *thread)
-{
-	struct event *event;
-	int type;
-
-	type = trace_parse_common_type(data);
-	event = trace_find_event(type);
-
-	if (!strcmp(event->name, "kmalloc") ||
-	    !strcmp(event->name, "kmem_cache_alloc")) {
-		process_alloc_event(data, event, cpu, timestamp, thread, 0);
-		return;
-	}
-
-	if (!strcmp(event->name, "kmalloc_node") ||
-	    !strcmp(event->name, "kmem_cache_alloc_node")) {
-		process_alloc_event(data, event, cpu, timestamp, thread, 1);
-		return;
-	}
-
-	if (!strcmp(event->name, "kfree") ||
-	    !strcmp(event->name, "kmem_cache_free")) {
-		process_free_event(data, event, cpu, timestamp, thread);
-		return;
-	}
-}
-
-static int process_sample_event(struct perf_tool *tool __used,
-				union perf_event *event,
-				struct perf_sample *sample,
-				struct perf_evsel *evsel __used,
-				struct machine *machine)
-{
-	struct thread *thread = machine__findnew_thread(machine, event->ip.pid);
-=======
 static int evsel__process_free_event(struct evsel *evsel, struct perf_sample *sample)
 {
 	unsigned long ptr = evsel__intval(evsel, sample, "ptr");
@@ -1182,7 +964,6 @@ static int process_sample_event(struct perf_tool *tool __maybe_unused,
 	int err = 0;
 	struct thread *thread = machine__findnew_thread(machine, sample->pid,
 							sample->tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (thread == NULL) {
 		pr_debug("problem processing %d event, skipping it.\n",
@@ -1190,20 +971,6 @@ static int process_sample_event(struct perf_tool *tool __maybe_unused,
 		return -1;
 	}
 
-<<<<<<< HEAD
-	dump_printf(" ... thread: %s:%d\n", thread->comm, thread->pid);
-
-	process_raw_event(event, sample->raw_data, sample->cpu,
-			  sample->time, thread);
-
-	return 0;
-}
-
-static struct perf_tool perf_kmem = {
-	.sample			= process_sample_event,
-	.comm			= perf_event__process_comm,
-	.ordered_samples	= true,
-=======
 	if (perf_kmem__skip_sample(sample))
 		return 0;
 
@@ -1226,7 +993,6 @@ static struct perf_tool perf_kmem = {
 	.mmap2		 = perf_event__process_mmap2,
 	.namespaces	 = perf_event__process_namespaces,
 	.ordered_events	 = true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static double fragmentation(unsigned long n_req, unsigned long n_alloc)
@@ -1237,26 +1003,6 @@ static double fragmentation(unsigned long n_req, unsigned long n_alloc)
 		return 100.0 - (100.0 * n_req / n_alloc);
 }
 
-<<<<<<< HEAD
-static void __print_result(struct rb_root *root, struct perf_session *session,
-			   int n_lines, int is_caller)
-{
-	struct rb_node *next;
-	struct machine *machine;
-
-	printf("%.102s\n", graph_dotted_line);
-	printf(" %-34s |",  is_caller ? "Callsite": "Alloc Ptr");
-	printf(" Total_alloc/Per | Total_req/Per   | Hit      | Ping-pong | Frag\n");
-	printf("%.102s\n", graph_dotted_line);
-
-	next = rb_first(root);
-
-	machine = perf_session__find_host_machine(session);
-	if (!machine) {
-		pr_err("__print_result: couldn't find kernel information\n");
-		return;
-	}
-=======
 static void __print_slab_result(struct rb_root *root,
 				struct perf_session *session,
 				int n_lines, int is_caller)
@@ -1271,7 +1017,6 @@ static void __print_slab_result(struct rb_root *root,
 
 	next = rb_first(root);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (next && n_lines--) {
 		struct alloc_stat *data = rb_entry(next, struct alloc_stat,
 						   node);
@@ -1283,30 +1028,18 @@ static void __print_slab_result(struct rb_root *root,
 		if (is_caller) {
 			addr = data->call_site;
 			if (!raw_ip)
-<<<<<<< HEAD
-				sym = machine__find_kernel_function(machine, addr, &map, NULL);
-=======
 				sym = machine__find_kernel_symbol(machine, addr, &map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			addr = data->ptr;
 
 		if (sym != NULL)
 			snprintf(buf, sizeof(buf), "%s+%" PRIx64 "", sym->name,
-<<<<<<< HEAD
-				 addr - map->unmap_ip(map, sym->start));
-=======
 				 addr - map__unmap_ip(map, sym->start));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			snprintf(buf, sizeof(buf), "%#" PRIx64 "", addr);
 		printf(" %-34s |", buf);
 
-<<<<<<< HEAD
-		printf(" %9llu/%-5lu | %9llu/%-5lu | %8lu | %8lu | %6.3f%%\n",
-=======
 		printf(" %9llu/%-5lu | %9llu/%-5lu | %8lu | %9lu | %6.3f%%\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       (unsigned long long)data->bytes_alloc,
 		       (unsigned long)data->bytes_alloc / data->hit,
 		       (unsigned long long)data->bytes_req,
@@ -1319,23 +1052,6 @@ static void __print_slab_result(struct rb_root *root,
 	}
 
 	if (n_lines == -1)
-<<<<<<< HEAD
-		printf(" ...                                | ...             | ...             | ...    | ...      | ...   \n");
-
-	printf("%.102s\n", graph_dotted_line);
-}
-
-static void print_summary(void)
-{
-	printf("\nSUMMARY\n=======\n");
-	printf("Total bytes requested: %lu\n", total_requested);
-	printf("Total bytes allocated: %lu\n", total_allocated);
-	printf("Total bytes wasted on internal fragmentation: %lu\n",
-	       total_allocated - total_requested);
-	printf("Internal fragmentation: %f%%\n",
-	       fragmentation(total_requested, total_allocated));
-	printf("Cross CPU allocations: %lu/%lu\n", nr_cross_allocs, nr_allocs);
-=======
 		printf(" ...                                | ...             | ...             | ...      | ...       | ...   \n");
 
 	printf("%.105s\n", graph_dotted_line);
@@ -1536,31 +1252,10 @@ static void print_page_result(struct perf_session *session)
 	if (alloc_flag)
 		__print_page_alloc_result(session, alloc_lines);
 	print_page_summary();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void print_result(struct perf_session *session)
 {
-<<<<<<< HEAD
-	if (caller_flag)
-		__print_result(&root_caller_sorted, session, caller_lines, 1);
-	if (alloc_flag)
-		__print_result(&root_alloc_sorted, session, alloc_lines, 0);
-	print_summary();
-}
-
-struct sort_dimension {
-	const char		name[20];
-	sort_fn_t		cmp;
-	struct list_head	list;
-};
-
-static LIST_HEAD(caller_sort);
-static LIST_HEAD(alloc_sort);
-
-static void sort_insert(struct rb_root *root, struct alloc_stat *data,
-			struct list_head *sort_list)
-=======
 	if (kmem_slab)
 		print_slab_result(session);
 	if (kmem_page)
@@ -1574,7 +1269,6 @@ static LIST_HEAD(page_alloc_sort);
 
 static void sort_slab_insert(struct rb_root *root, struct alloc_stat *data,
 			     struct list_head *sort_list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rb_node **new = &(root->rb_node);
 	struct rb_node *parent = NULL;
@@ -1603,13 +1297,8 @@ static void sort_slab_insert(struct rb_root *root, struct alloc_stat *data,
 	rb_insert_color(&data->node, root);
 }
 
-<<<<<<< HEAD
-static void __sort_result(struct rb_root *root, struct rb_root *root_sorted,
-			  struct list_head *sort_list)
-=======
 static void __sort_slab_result(struct rb_root *root, struct rb_root *root_sorted,
 			       struct list_head *sort_list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rb_node *node;
 	struct alloc_stat *data;
@@ -1621,9 +1310,6 @@ static void __sort_slab_result(struct rb_root *root, struct rb_root *root_sorted
 
 		rb_erase(node, root);
 		data = rb_entry(node, struct alloc_stat, node);
-<<<<<<< HEAD
-		sort_insert(root_sorted, data, sort_list);
-=======
 		sort_slab_insert(root_sorted, data, sort_list);
 	}
 }
@@ -1672,50 +1358,11 @@ static void __sort_page_result(struct rb_root *root, struct rb_root *root_sorted
 		rb_erase(node, root);
 		data = rb_entry(node, struct page_stat, node);
 		sort_page_insert(root_sorted, data, sort_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void sort_result(void)
 {
-<<<<<<< HEAD
-	__sort_result(&root_alloc_stat, &root_alloc_sorted, &alloc_sort);
-	__sort_result(&root_caller_stat, &root_caller_sorted, &caller_sort);
-}
-
-static int __cmd_kmem(void)
-{
-	int err = -EINVAL;
-	struct perf_session *session = perf_session__new(input_name, O_RDONLY,
-							 0, false, &perf_kmem);
-	if (session == NULL)
-		return -ENOMEM;
-
-	if (perf_session__create_kernel_maps(session) < 0)
-		goto out_delete;
-
-	if (!perf_session__has_traces(session, "kmem record"))
-		goto out_delete;
-
-	setup_pager();
-	err = perf_session__process_events(session, &perf_kmem);
-	if (err != 0)
-		goto out_delete;
-	sort_result();
-	print_result(session);
-out_delete:
-	perf_session__delete(session);
-	return err;
-}
-
-static const char * const kmem_usage[] = {
-	"perf kmem [<options>] {record|stat}",
-	NULL
-};
-
-static int ptr_cmp(struct alloc_stat *l, struct alloc_stat *r)
-{
-=======
 	if (kmem_slab) {
 		__sort_slab_result(&root_alloc_stat, &root_alloc_sorted,
 				   &slab_alloc_sort);
@@ -1786,7 +1433,6 @@ static int ptr_cmp(void *a, void *b)
 	struct alloc_stat *l = a;
 	struct alloc_stat *r = b;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (l->ptr < r->ptr)
 		return -1;
 	else if (l->ptr > r->ptr)
@@ -1799,16 +1445,11 @@ static struct sort_dimension ptr_sort_dimension = {
 	.cmp	= ptr_cmp,
 };
 
-<<<<<<< HEAD
-static int callsite_cmp(struct alloc_stat *l, struct alloc_stat *r)
-{
-=======
 static int slab_callsite_cmp(void *a, void *b)
 {
 	struct alloc_stat *l = a;
 	struct alloc_stat *r = b;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (l->call_site < r->call_site)
 		return -1;
 	else if (l->call_site > r->call_site)
@@ -1818,13 +1459,6 @@ static int slab_callsite_cmp(void *a, void *b)
 
 static struct sort_dimension callsite_sort_dimension = {
 	.name	= "callsite",
-<<<<<<< HEAD
-	.cmp	= callsite_cmp,
-};
-
-static int hit_cmp(struct alloc_stat *l, struct alloc_stat *r)
-{
-=======
 	.cmp	= slab_callsite_cmp,
 };
 
@@ -1833,7 +1467,6 @@ static int hit_cmp(void *a, void *b)
 	struct alloc_stat *l = a;
 	struct alloc_stat *r = b;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (l->hit < r->hit)
 		return -1;
 	else if (l->hit > r->hit)
@@ -1846,16 +1479,11 @@ static struct sort_dimension hit_sort_dimension = {
 	.cmp	= hit_cmp,
 };
 
-<<<<<<< HEAD
-static int bytes_cmp(struct alloc_stat *l, struct alloc_stat *r)
-{
-=======
 static int bytes_cmp(void *a, void *b)
 {
 	struct alloc_stat *l = a;
 	struct alloc_stat *r = b;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (l->bytes_alloc < r->bytes_alloc)
 		return -1;
 	else if (l->bytes_alloc > r->bytes_alloc)
@@ -1868,17 +1496,11 @@ static struct sort_dimension bytes_sort_dimension = {
 	.cmp	= bytes_cmp,
 };
 
-<<<<<<< HEAD
-static int frag_cmp(struct alloc_stat *l, struct alloc_stat *r)
-{
-	double x, y;
-=======
 static int frag_cmp(void *a, void *b)
 {
 	double x, y;
 	struct alloc_stat *l = a;
 	struct alloc_stat *r = b;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	x = fragmentation(l->bytes_req, l->bytes_alloc);
 	y = fragmentation(r->bytes_req, r->bytes_alloc);
@@ -1895,16 +1517,11 @@ static struct sort_dimension frag_sort_dimension = {
 	.cmp	= frag_cmp,
 };
 
-<<<<<<< HEAD
-static int pingpong_cmp(struct alloc_stat *l, struct alloc_stat *r)
-{
-=======
 static int pingpong_cmp(void *a, void *b)
 {
 	struct alloc_stat *l = a;
 	struct alloc_stat *r = b;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (l->pingpong < r->pingpong)
 		return -1;
 	else if (l->pingpong > r->pingpong)
@@ -1917,9 +1534,6 @@ static struct sort_dimension pingpong_sort_dimension = {
 	.cmp	= pingpong_cmp,
 };
 
-<<<<<<< HEAD
-static struct sort_dimension *avail_sorts[] = {
-=======
 /* page sort keys */
 static int page_cmp(void *a, void *b)
 {
@@ -2049,7 +1663,6 @@ static struct sort_dimension gfp_flags_sort_dimension = {
 };
 
 static struct sort_dimension *slab_sorts[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&ptr_sort_dimension,
 	&callsite_sort_dimension,
 	&hit_sort_dimension,
@@ -2058,12 +1671,6 @@ static struct sort_dimension *slab_sorts[] = {
 	&pingpong_sort_dimension,
 };
 
-<<<<<<< HEAD
-#define NUM_AVAIL_SORTS	\
-	(int)(sizeof(avail_sorts) / sizeof(struct sort_dimension *))
-
-static int sort_dimension__add(const char *tok, struct list_head *list)
-=======
 static struct sort_dimension *page_sorts[] = {
 	&page_sort_dimension,
 	&page_callsite_sort_dimension,
@@ -2075,19 +1682,10 @@ static struct sort_dimension *page_sorts[] = {
 };
 
 static int slab_sort_dimension__add(const char *tok, struct list_head *list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sort_dimension *sort;
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < NUM_AVAIL_SORTS; i++) {
-		if (!strcmp(avail_sorts[i]->name, tok)) {
-			sort = malloc(sizeof(*sort));
-			if (!sort)
-				die("malloc");
-			memcpy(sort, avail_sorts[i], sizeof(*sort));
-=======
 	for (i = 0; i < (int)ARRAY_SIZE(slab_sorts); i++) {
 		if (!strcmp(slab_sorts[i]->name, tok)) {
 			sort = memdup(slab_sorts[i], sizeof(*slab_sorts[i]));
@@ -2095,7 +1693,6 @@ static int slab_sort_dimension__add(const char *tok, struct list_head *list)
 				pr_err("%s: memdup failed\n", __func__);
 				return -1;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_add_tail(&sort->list, list);
 			return 0;
 		}
@@ -2104,22 +1701,6 @@ static int slab_sort_dimension__add(const char *tok, struct list_head *list)
 	return -1;
 }
 
-<<<<<<< HEAD
-static int setup_sorting(struct list_head *sort_list, const char *arg)
-{
-	char *tok;
-	char *str = strdup(arg);
-
-	if (!str)
-		die("strdup");
-
-	while (true) {
-		tok = strsep(&str, ",");
-		if (!tok)
-			break;
-		if (sort_dimension__add(tok, sort_list) < 0) {
-			error("Unknown --sort key: '%s'", tok);
-=======
 static int page_sort_dimension__add(const char *tok, struct list_head *list)
 {
 	struct sort_dimension *sort;
@@ -2157,7 +1738,6 @@ static int setup_slab_sorting(struct list_head *sort_list, const char *arg)
 			break;
 		if (slab_sort_dimension__add(tok, sort_list) < 0) {
 			pr_err("Unknown slab --sort key: '%s'", tok);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			free(str);
 			return -1;
 		}
@@ -2167,10 +1747,6 @@ static int setup_slab_sorting(struct list_head *sort_list, const char *arg)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int parse_sort_opt(const struct option *opt __used,
-			  const char *arg, int unset __used)
-=======
 static int setup_page_sorting(struct list_head *sort_list, const char *arg)
 {
 	char *tok;
@@ -2199,17 +1775,10 @@ static int setup_page_sorting(struct list_head *sort_list, const char *arg)
 
 static int parse_sort_opt(const struct option *opt __maybe_unused,
 			  const char *arg, int unset __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!arg)
 		return -1;
 
-<<<<<<< HEAD
-	if (caller_flag > alloc_flag)
-		return setup_sorting(&caller_sort, arg);
-	else
-		return setup_sorting(&alloc_sort, arg);
-=======
 	if (kmem_page > kmem_slab ||
 	    (kmem_page == 0 && kmem_slab == 0 && kmem_default == KMEM_PAGE)) {
 		if (caller_flag > alloc_flag)
@@ -2222,41 +1791,26 @@ static int parse_sort_opt(const struct option *opt __maybe_unused,
 		else
 			return setup_slab_sorting(&slab_alloc_sort, arg);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int parse_caller_opt(const struct option *opt __used,
-			  const char *arg __used, int unset __used)
-=======
 static int parse_caller_opt(const struct option *opt __maybe_unused,
 			    const char *arg __maybe_unused,
 			    int unset __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	caller_flag = (alloc_flag + 1);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int parse_alloc_opt(const struct option *opt __used,
-			  const char *arg __used, int unset __used)
-=======
 static int parse_alloc_opt(const struct option *opt __maybe_unused,
 			   const char *arg __maybe_unused,
 			   int unset __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	alloc_flag = (caller_flag + 1);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int parse_line_opt(const struct option *opt __used,
-			  const char *arg, int unset __used)
-=======
 static int parse_slab_opt(const struct option *opt __maybe_unused,
 			  const char *arg __maybe_unused,
 			  int unset __maybe_unused)
@@ -2275,7 +1829,6 @@ static int parse_page_opt(const struct option *opt __maybe_unused,
 
 static int parse_line_opt(const struct option *opt __maybe_unused,
 			  const char *arg, int unset __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int lines;
 
@@ -2292,47 +1845,6 @@ static int parse_line_opt(const struct option *opt __maybe_unused,
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct option kmem_options[] = {
-	OPT_STRING('i', "input", &input_name, "file",
-		   "input file name"),
-	OPT_CALLBACK_NOOPT(0, "caller", NULL, NULL,
-			   "show per-callsite statistics",
-			   parse_caller_opt),
-	OPT_CALLBACK_NOOPT(0, "alloc", NULL, NULL,
-			   "show per-allocation statistics",
-			   parse_alloc_opt),
-	OPT_CALLBACK('s', "sort", NULL, "key[,key2...]",
-		     "sort by keys: ptr, call_site, bytes, hit, pingpong, frag",
-		     parse_sort_opt),
-	OPT_CALLBACK('l', "line", NULL, "num",
-		     "show n lines",
-		     parse_line_opt),
-	OPT_BOOLEAN(0, "raw-ip", &raw_ip, "show raw ip instead of symbol"),
-	OPT_END()
-};
-
-static const char *record_args[] = {
-	"record",
-	"-a",
-	"-R",
-	"-f",
-	"-c", "1",
-	"-e", "kmem:kmalloc",
-	"-e", "kmem:kmalloc_node",
-	"-e", "kmem:kfree",
-	"-e", "kmem:kmem_cache_alloc",
-	"-e", "kmem:kmem_cache_alloc_node",
-	"-e", "kmem:kmem_cache_free",
-};
-
-static int __cmd_record(int argc, const char **argv)
-{
-	unsigned int rec_argc, i, j;
-	const char **rec_argv;
-
-	rec_argc = ARRAY_SIZE(record_args) + argc - 1;
-=======
 static bool slab_legacy_tp_is_exposed(void)
 {
 	/*
@@ -2378,7 +1890,6 @@ static int __cmd_record(int argc, const char **argv)
 	if (kmem_page)
 		rec_argc += ARRAY_SIZE(page_events) + 1; /* for -g */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rec_argv = calloc(rec_argc + 1, sizeof(char *));
 
 	if (rec_argv == NULL)
@@ -2387,36 +1898,6 @@ static int __cmd_record(int argc, const char **argv)
 	for (i = 0; i < ARRAY_SIZE(record_args); i++)
 		rec_argv[i] = strdup(record_args[i]);
 
-<<<<<<< HEAD
-	for (j = 1; j < (unsigned int)argc; j++, i++)
-		rec_argv[i] = argv[j];
-
-	return cmd_record(i, rec_argv, NULL);
-}
-
-int cmd_kmem(int argc, const char **argv, const char *prefix __used)
-{
-	argc = parse_options(argc, argv, kmem_options, kmem_usage, 0);
-
-	if (!argc)
-		usage_with_options(kmem_usage, kmem_options);
-
-	symbol__init();
-
-	if (!strncmp(argv[0], "rec", 3)) {
-		return __cmd_record(argc, argv);
-	} else if (!strcmp(argv[0], "stat")) {
-		setup_cpunode_map();
-
-		if (list_empty(&caller_sort))
-			setup_sorting(&caller_sort, default_sort_order);
-		if (list_empty(&alloc_sort))
-			setup_sorting(&alloc_sort, default_sort_order);
-
-		return __cmd_kmem();
-	} else
-		usage_with_options(kmem_usage, kmem_options);
-=======
 	if (kmem_slab) {
 		for (j = 0; j < ARRAY_SIZE(slab_events); j++, i++)
 			rec_argv[i] = strdup(slab_events[j]);
@@ -2450,13 +1931,10 @@ static int kmem_config(const char *var, const char *value, void *cb __maybe_unus
 			       value);
 		return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 int cmd_kmem(int argc, const char **argv)
 {
 	const char * const default_slab_sort = "frag,hit,bytes";
@@ -2584,4 +2062,3 @@ out_delete:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

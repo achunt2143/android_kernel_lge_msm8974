@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Touchwindow serial touchscreen driver
  *
@@ -12,14 +9,6 @@
  * and Dan Streetman <ddstreet@ieee.org>
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 2005/02/19 Rick Koch:
@@ -34,10 +23,6 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"Touchwindow serial touchscreen driver"
 
@@ -170,11 +155,7 @@ static int tw_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
-<<<<<<< HEAD
-static struct serio_device_id tw_serio_ids[] = {
-=======
 static const struct serio_device_id tw_serio_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_TOUCHWIN,
@@ -197,23 +178,4 @@ static struct serio_driver tw_drv = {
 	.disconnect	= tw_disconnect,
 };
 
-<<<<<<< HEAD
-/*
- * The functions for inserting/removing us as a module.
- */
-
-static int __init tw_init(void)
-{
-	return serio_register_driver(&tw_drv);
-}
-
-static void __exit tw_exit(void)
-{
-	serio_unregister_driver(&tw_drv);
-}
-
-module_init(tw_init);
-module_exit(tw_exit);
-=======
 module_serio_driver(tw_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

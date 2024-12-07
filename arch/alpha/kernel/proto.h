@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-#include <linux/interrupt.h>
-#include <linux/io.h>
-
-#include <asm/pgtable.h>
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #include <linux/interrupt.h>
 #include <linux/screen_info.h>
 #include <linux/io.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Prototypes of functions used across modules here in this directory.  */
 
 #define vucp	volatile unsigned char  *
@@ -58,13 +50,6 @@ extern void marvel_init_arch(void);
 extern void marvel_kill_arch(int);
 extern void marvel_machine_check(unsigned long, unsigned long);
 extern void marvel_pci_tbi(struct pci_controller *, dma_addr_t, dma_addr_t);
-<<<<<<< HEAD
-extern int marvel_pa_to_nid(unsigned long);
-extern int marvel_cpuid_to_nid(int);
-extern unsigned long marvel_node_mem_start(int);
-extern unsigned long marvel_node_mem_size(int);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct _alpha_agp_info *marvel_agp_info(void);
 struct io7 *marvel_find_io7(int pe);
 struct io7 *marvel_next_io7(struct io7 *prev);
@@ -113,13 +98,6 @@ extern void wildfire_init_arch(void);
 extern void wildfire_kill_arch(int);
 extern void wildfire_machine_check(unsigned long vector, unsigned long la_ptr);
 extern void wildfire_pci_tbi(struct pci_controller *, dma_addr_t, dma_addr_t);
-<<<<<<< HEAD
-extern int wildfire_pa_to_nid(unsigned long);
-extern int wildfire_cpuid_to_nid(int);
-extern unsigned long wildfire_node_mem_start(int);
-extern unsigned long wildfire_node_mem_size(int);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* console.c */
 #ifdef CONFIG_VGA_HOSE
@@ -136,10 +114,7 @@ extern int boot_cpuid;
 #ifdef CONFIG_VERBOSE_MCHECK
 extern unsigned long alpha_verbose_mcheck;
 #endif
-<<<<<<< HEAD
-=======
 extern struct screen_info vgacon_screen_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* srmcons.c */
 #if defined(CONFIG_ALPHA_GENERIC) || defined(CONFIG_ALPHA_SRM)
@@ -153,27 +128,15 @@ extern void unregister_srm_console(void);
 /* smp.c */
 extern void setup_smp(void);
 extern void handle_ipi(struct pt_regs *);
-<<<<<<< HEAD
-extern void smp_percpu_timer_interrupt(struct pt_regs *);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* bios32.c */
 /* extern void reset_for_srm(void); */
 
 /* time.c */
-<<<<<<< HEAD
-extern irqreturn_t timer_interrupt(int irq, void *dev);
-extern void common_init_rtc(void);
-extern unsigned long est_cycle_freq;
-extern unsigned int common_get_rtc_time(struct rtc_time *time);
-extern int common_set_rtc_time(struct rtc_time *time);
-=======
 extern irqreturn_t rtc_timer_interrupt(int irq, void *dev);
 extern void init_clockevent(void);
 extern void common_init_rtc(void);
 extern unsigned long est_cycle_freq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* smc37c93x.c */
 extern void SMC93x_Init(void);

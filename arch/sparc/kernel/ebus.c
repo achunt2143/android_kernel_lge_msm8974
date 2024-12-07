@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ebus.c: EBUS DMA library code.
  *
  * Copyright (C) 1997  Eddie C. Dost  (ecd@skynet.be)
@@ -11,10 +8,6 @@
 #include <linux/export.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/delay.h>
 

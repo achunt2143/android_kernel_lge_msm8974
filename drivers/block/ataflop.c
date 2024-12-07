@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  drivers/block/ataflop.c
  *
@@ -70,20 +67,12 @@
 #include <linux/fd.h>
 #include <linux/delay.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/blkdev.h>
-#include <linux/mutex.h>
-
-#include <asm/atafd.h>
-#include <asm/atafdreg.h>
-=======
 #include <linux/blk-mq.h>
 #include <linux/major.h>
 #include <linux/mutex.h>
 #include <linux/completion.h>
 #include <linux/wait.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/atariints.h>
 #include <asm/atari_stdma.h>
 #include <asm/atari_stram.h>
@@ -94,9 +83,6 @@
 
 static DEFINE_MUTEX(ataflop_mutex);
 static struct request *fd_request;
-<<<<<<< HEAD
-static int fdc_queue;
-=======
 
 /*
  * WD1772 stuff
@@ -178,7 +164,6 @@ struct atari_format_descr {
 	int head;		/*   ""     ""     */
 	int sect_offset;	/* offset of first sector */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Disk types: DD, HD, ED */
 static struct atari_disk_type {
@@ -313,18 +298,12 @@ static struct atari_floppy_struct {
 	unsigned int wpstat;	/* current state of WP signal (for
 				   disk change detection) */
 	int flags;		/* flags */
-<<<<<<< HEAD
-	struct gendisk *disk;
-	int ref;
-	int type;
-=======
 	struct gendisk *disk[NUM_DISK_MINORS];
 	bool registered[NUM_DISK_MINORS];
 	int ref;
 	int type;
 	struct blk_mq_tag_set tag_set;
 	int error_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } unit[FD_MAX_UNITS];
 
 #define	UD	unit[drive]
@@ -404,14 +383,7 @@ static int IsFormatting = 0, FormatError;
 static int UserSteprate[FD_MAX_UNITS] = { -1, -1 };
 module_param_array(UserSteprate, int, NULL, 0);
 
-<<<<<<< HEAD
-/* Synchronization of FDC access. */
-static volatile int fdc_busy = 0;
-static DECLARE_WAIT_QUEUE_HEAD(fdc_wait);
-static DECLARE_WAIT_QUEUE_HEAD(format_wait);
-=======
 static DECLARE_COMPLETION(format_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned long changed_floppies = 0xff, fake_change = 0;
 #define	CHECK_CHANGE_DELAY	HZ/2
@@ -450,13 +422,8 @@ static int NeedSeek = 0;
 static void fd_select_side( int side );
 static void fd_select_drive( int drive );
 static void fd_deselect( void );
-<<<<<<< HEAD
-static void fd_motor_off_timer( unsigned long dummy );
-static void check_change( unsigned long dummy );
-=======
 static void fd_motor_off_timer(struct timer_list *unused);
 static void check_change(struct timer_list *unused);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t floppy_irq (int irq, void *dummy);
 static void fd_error( void );
 static int do_format(int drive, int type, struct atari_format_descr *desc);
@@ -466,41 +433,11 @@ static void fd_calibrate_done( int status );
 static void fd_seek( void );
 static void fd_seek_done( int status );
 static void fd_rwsec( void );
-<<<<<<< HEAD
-static void fd_readtrack_check( unsigned long dummy );
-=======
 static void fd_readtrack_check(struct timer_list *unused);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void fd_rwsec_done( int status );
 static void fd_rwsec_done1(int status);
 static void fd_writetrack( void );
 static void fd_writetrack_done( int status );
-<<<<<<< HEAD
-static void fd_times_out( unsigned long dummy );
-static void finish_fdc( void );
-static void finish_fdc_done( int dummy );
-static void setup_req_params( int drive );
-static void redo_fd_request( void);
-static int fd_locked_ioctl(struct block_device *bdev, fmode_t mode, unsigned int
-                     cmd, unsigned long param);
-static void fd_probe( int drive );
-static int fd_test_drive_present( int drive );
-static void config_types( void );
-static int floppy_open(struct block_device *bdev, fmode_t mode);
-static int floppy_release(struct gendisk *disk, fmode_t mode);
-
-/************************* End of Prototypes **************************/
-
-static DEFINE_TIMER(motor_off_timer, fd_motor_off_timer, 0, 0);
-static DEFINE_TIMER(readtrack_timer, fd_readtrack_check, 0, 0);
-static DEFINE_TIMER(timeout_timer, fd_times_out, 0, 0);
-static DEFINE_TIMER(fd_timer, check_change, 0, 0);
-	
-static void fd_end_request_cur(int err)
-{
-	if (!__blk_end_request_cur(fd_request, err))
-		fd_request = NULL;
-=======
 static void fd_times_out(struct timer_list *unused);
 static void finish_fdc( void );
 static void finish_fdc_done( int dummy );
@@ -537,7 +474,6 @@ static void fd_end_request_cur(blk_status_t err)
 		blk_mq_requeue_request(fd_request, true);
 		fd_request = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void start_motor_off_timer(void)
@@ -635,11 +571,7 @@ static void fd_deselect( void )
  * counts the index signals, which arrive only if one drive is selected.
  */
 
-<<<<<<< HEAD
-static void fd_motor_off_timer( unsigned long dummy )
-=======
 static void fd_motor_off_timer(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char status;
 
@@ -675,11 +607,7 @@ static void fd_motor_off_timer(struct timer_list *unused)
  * as possible) and keep track of the current state of the write protection.
  */
 
-<<<<<<< HEAD
-static void check_change( unsigned long dummy )
-=======
 static void check_change(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int    drive = 0;
 
@@ -738,12 +666,6 @@ static inline void copy_buffer(void *from, void *to)
 		*p2++ = *p1++;
 }
 
-<<<<<<< HEAD
-  
-  
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* General Interrupt Handling */
 
 static void (*FloppyIRQHandler)( int status ) = NULL;
@@ -777,25 +699,13 @@ static void fd_error( void )
 	if (IsFormatting) {
 		IsFormatting = 0;
 		FormatError = 1;
-<<<<<<< HEAD
-		wake_up( &format_wait );
-=======
 		complete(&format_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (!fd_request)
 		return;
 
-<<<<<<< HEAD
-	fd_request->errors++;
-	if (fd_request->errors >= MAX_ERRORS) {
-		printk(KERN_ERR "fd%d: too many errors.\n", SelectedDrive );
-		fd_end_request_cur(-EIO);
-	}
-	else if (fd_request->errors == RECALIBRATE_ERRORS) {
-=======
 	unit[SelectedDrive].error_count++;
 	if (unit[SelectedDrive].error_count >= MAX_ERRORS) {
 		printk(KERN_ERR "fd%d: too many errors.\n", SelectedDrive );
@@ -804,14 +714,10 @@ static void fd_error( void )
 		return;
 	}
 	else if (unit[SelectedDrive].error_count == RECALIBRATE_ERRORS) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "fd%d: recalibrating\n", SelectedDrive );
 		if (SelectedDrive != -1)
 			SUD.track = -1;
 	}
-<<<<<<< HEAD
-	redo_fd_request();
-=======
 	/* need to re-run request to recalibrate */
 	atari_disable_irq( IRQ_MFP_FDC );
 
@@ -819,7 +725,6 @@ static void fd_error( void )
 	do_fd_action( SelectedDrive );
 
 	atari_enable_irq( IRQ_MFP_FDC );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -837,18 +742,6 @@ static void fd_error( void )
 
 static int do_format(int drive, int type, struct atari_format_descr *desc)
 {
-<<<<<<< HEAD
-	unsigned char	*p;
-	int sect, nsect;
-	unsigned long	flags;
-
-	DPRINT(("do_format( dr=%d tr=%d he=%d offs=%d )\n",
-		drive, desc->track, desc->head, desc->sect_offset ));
-
-	local_irq_save(flags);
-	while( fdc_busy ) sleep_on( &fdc_wait );
-	fdc_busy = 1;
-=======
 	struct request_queue *q;
 	unsigned char	*p;
 	int sect, nsect;
@@ -869,33 +762,19 @@ static int do_format(int drive, int type, struct atari_format_descr *desc)
 	blk_mq_quiesce_queue(q);
 
 	local_irq_save(flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stdma_lock(floppy_irq, NULL);
 	atari_turnon_irq( IRQ_MFP_FDC ); /* should be already, just to be sure */
 	local_irq_restore(flags);
 
 	if (type) {
-<<<<<<< HEAD
-		if (--type >= NUM_DISK_MINORS ||
-		    minor2disktype[type].drive_types > DriveType) {
-			redo_fd_request();
-			return -EINVAL;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		type = minor2disktype[type].index;
 		UDT = &atari_disk_type[type];
 	}
 
 	if (!UDT || desc->track >= UDT->blocks/UDT->spt/2 || desc->head >= 2) {
-<<<<<<< HEAD
-		redo_fd_request();
-		return -EINVAL;
-=======
 		finish_fdc();
 		ret = -EINVAL;
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	nsect = UDT->spt;
@@ -932,12 +811,6 @@ static int do_format(int drive, int type, struct atari_format_descr *desc)
 	ReqSide  = desc->head;
 	do_fd_action( drive );
 
-<<<<<<< HEAD
-	sleep_on( &format_wait );
-
-	redo_fd_request();
-	return( FormatError ? -EIO : 0 );	
-=======
 	wait_for_completion(&format_wait);
 
 	finish_fdc();
@@ -946,7 +819,6 @@ out:
 	blk_mq_unquiesce_queue(q);
 	blk_mq_unfreeze_queue(q);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -975,13 +847,8 @@ static void do_fd_action( int drive )
 		    }
 		    else {
 			/* all sectors finished */
-<<<<<<< HEAD
-			fd_end_request_cur(0);
-			redo_fd_request();
-=======
 			fd_end_request_cur(BLK_STS_OK);
 			finish_fdc();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		    }
 		}
@@ -1017,11 +884,7 @@ static void fd_calibrate( void )
 	}
 
 	if (ATARIHW_PRESENT(FDCSPEED))
-<<<<<<< HEAD
-		dma_wd.fdc_speed = 0; 	/* always seek with 8 Mhz */;
-=======
 		dma_wd.fdc_speed = 0;   /* always seek with 8 Mhz */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DPRINT(("fd_calibrate\n"));
 	SET_IRQ_HANDLER( fd_calibrate_done );
 	/* we can't verify, since the speed may be incorrect */
@@ -1211,11 +1074,7 @@ static void fd_rwsec( void )
 }
 
     
-<<<<<<< HEAD
-static void fd_readtrack_check( unsigned long dummy )
-=======
 static void fd_readtrack_check(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags, addr, addr2;
 
@@ -1322,11 +1181,7 @@ static void fd_rwsec_done1(int status)
 			    if (SUDT[-1].blocks > ReqBlock) {
 				/* try another disk type */
 				SUDT--;
-<<<<<<< HEAD
-				set_capacity(unit[SelectedDrive].disk,
-=======
 				set_capacity(unit[SelectedDrive].disk[0],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							SUDT->blocks);
 			    } else
 				Probing = 0;
@@ -1341,11 +1196,7 @@ static void fd_rwsec_done1(int status)
 /* record not found, but not probing. Maybe stretch wrong ? Restart probing */
 			if (SUD.autoprobe) {
 				SUDT = atari_disk_type + StartDiskType[DriveType];
-<<<<<<< HEAD
-				set_capacity(unit[SelectedDrive].disk,
-=======
 				set_capacity(unit[SelectedDrive].disk[0],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							SUDT->blocks);
 				Probing = 1;
 			}
@@ -1401,13 +1252,8 @@ static void fd_rwsec_done1(int status)
 	}
 	else {
 		/* all sectors finished */
-<<<<<<< HEAD
-		fd_end_request_cur(0);
-		redo_fd_request();
-=======
 		fd_end_request_cur(BLK_STS_OK);
 		finish_fdc();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return;
   
@@ -1492,22 +1338,14 @@ static void fd_writetrack_done( int status )
 		goto err_end;
 	}
 
-<<<<<<< HEAD
-	wake_up( &format_wait );
-=======
 	complete(&format_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
   err_end:
 	fd_error();
 }
 
-<<<<<<< HEAD
-static void fd_times_out( unsigned long dummy )
-=======
 static void fd_times_out(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	atari_disable_irq( IRQ_MFP_FDC );
 	if (!FloppyIRQHandler) goto end; /* int occurred after timer was fired, but
@@ -1537,11 +1375,7 @@ static void fd_times_out(struct timer_list *unused)
 
 static void finish_fdc( void )
 {
-<<<<<<< HEAD
-	if (!NeedSeek) {
-=======
 	if (!NeedSeek || !stdma_is_locked_by(floppy_irq)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		finish_fdc_done( 0 );
 	}
 	else {
@@ -1576,14 +1410,8 @@ static void finish_fdc_done( int dummy )
 	start_motor_off_timer();
 
 	local_irq_save(flags);
-<<<<<<< HEAD
-	stdma_release();
-	fdc_busy = 0;
-	wake_up( &fdc_wait );
-=======
 	if (stdma_is_locked_by(floppy_irq))
 		stdma_release();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 
 	DPRINT(("finish_fdc() finished\n"));
@@ -1633,12 +1461,7 @@ static int floppy_revalidate(struct gendisk *disk)
 	unsigned int drive = p - unit;
 
 	if (test_bit(drive, &changed_floppies) ||
-<<<<<<< HEAD
-	    test_bit(drive, &fake_change) ||
-	    p->disktype == 0) {
-=======
 	    test_bit(drive, &fake_change) || !p->disktype) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (UD.flags & FTD_MSG)
 			printk(KERN_ERR "floppy: clear format %p!\n", UDT);
 		BufferDrive = -1;
@@ -1669,11 +1492,7 @@ static void setup_req_params( int drive )
 	ReqData = ReqBuffer + 512 * ReqCnt;
 
 	if (UseTrackbuffer)
-<<<<<<< HEAD
-		read_track = (ReqCmd == READ && fd_request->errors == 0);
-=======
 		read_track = (ReqCmd == READ && unit[drive].error_count == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		read_track = 0;
 
@@ -1681,59 +1500,6 @@ static void setup_req_params( int drive )
 			ReqTrack, ReqSector, (unsigned long)ReqData ));
 }
 
-<<<<<<< HEAD
-/*
- * Round-robin between our available drives, doing one request from each
- */
-static struct request *set_next_request(void)
-{
-	struct request_queue *q;
-	int old_pos = fdc_queue;
-	struct request *rq = NULL;
-
-	do {
-		q = unit[fdc_queue].disk->queue;
-		if (++fdc_queue == FD_MAX_UNITS)
-			fdc_queue = 0;
-		if (q) {
-			rq = blk_fetch_request(q);
-			if (rq)
-				break;
-		}
-	} while (fdc_queue != old_pos);
-
-	return rq;
-}
-
-
-static void redo_fd_request(void)
-{
-	int drive, type;
-	struct atari_floppy_struct *floppy;
-
-	DPRINT(("redo_fd_request: fd_request=%p dev=%s fd_request->sector=%ld\n",
-		fd_request, fd_request ? fd_request->rq_disk->disk_name : "",
-		fd_request ? blk_rq_pos(fd_request) : 0 ));
-
-	IsFormatting = 0;
-
-repeat:
-	if (!fd_request) {
-		fd_request = set_next_request();
-		if (!fd_request)
-			goto the_end;
-	}
-
-	floppy = fd_request->rq_disk->private_data;
-	drive = floppy - unit;
-	type = floppy->type;
-	
-	if (!UD.connected) {
-		/* drive not connected */
-		printk(KERN_ERR "Unknown Device: fd%d\n", drive );
-		fd_end_request_cur(-EIO);
-		goto repeat;
-=======
 static blk_status_t ataflop_queue_rq(struct blk_mq_hw_ctx *hctx,
 				     const struct blk_mq_queue_data *bd)
 {
@@ -1768,18 +1534,13 @@ static blk_status_t ataflop_queue_rq(struct blk_mq_hw_ctx *hctx,
 		fd_end_request_cur(BLK_STS_IOERR);
 		stdma_release();
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 		
 	if (type == 0) {
 		if (!UDT) {
 			Probing = 1;
 			UDT = atari_disk_type + StartDiskType[DriveType];
-<<<<<<< HEAD
-			set_capacity(floppy->disk, UDT->blocks);
-=======
 			set_capacity(bd->rq->q->disk, UDT->blocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			UD.autoprobe = 1;
 		}
 	} 
@@ -1787,26 +1548,6 @@ static blk_status_t ataflop_queue_rq(struct blk_mq_hw_ctx *hctx,
 		/* user supplied disk type */
 		if (--type >= NUM_DISK_MINORS) {
 			printk(KERN_WARNING "fd%d: invalid disk format", drive );
-<<<<<<< HEAD
-			fd_end_request_cur(-EIO);
-			goto repeat;
-		}
-		if (minor2disktype[type].drive_types > DriveType)  {
-			printk(KERN_WARNING "fd%d: unsupported disk format", drive );
-			fd_end_request_cur(-EIO);
-			goto repeat;
-		}
-		type = minor2disktype[type].index;
-		UDT = &atari_disk_type[type];
-		set_capacity(floppy->disk, UDT->blocks);
-		UD.autoprobe = 0;
-	}
-	
-	if (blk_rq_pos(fd_request) + 1 > UDT->blocks) {
-		fd_end_request_cur(-EIO);
-		goto repeat;
-	}
-=======
 			fd_end_request_cur(BLK_STS_IOERR);
 			stdma_release();
 			goto out;
@@ -1822,7 +1563,6 @@ static blk_status_t ataflop_queue_rq(struct blk_mq_hw_ctx *hctx,
 		set_capacity(bd->rq->q->disk, UDT->blocks);
 		UD.autoprobe = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* stop deselect timer */
 	del_timer( &motor_off_timer );
@@ -1830,32 +1570,6 @@ static blk_status_t ataflop_queue_rq(struct blk_mq_hw_ctx *hctx,
 	ReqCnt = 0;
 	ReqCmd = rq_data_dir(fd_request);
 	ReqBlock = blk_rq_pos(fd_request);
-<<<<<<< HEAD
-	ReqBuffer = fd_request->buffer;
-	setup_req_params( drive );
-	do_fd_action( drive );
-
-	return;
-
-  the_end:
-	finish_fdc();
-}
-
-
-void do_fd_request(struct request_queue * q)
-{
-	DPRINT(("do_fd_request for pid %d\n",current->pid));
-	while( fdc_busy ) sleep_on( &fdc_wait );
-	fdc_busy = 1;
-	stdma_lock(floppy_irq, NULL);
-
-	atari_disable_irq( IRQ_MFP_FDC );
-	redo_fd_request();
-	atari_enable_irq( IRQ_MFP_FDC );
-}
-
-static int fd_locked_ioctl(struct block_device *bdev, fmode_t mode,
-=======
 	ReqBuffer = bio_data(fd_request->bio);
 	setup_req_params( drive );
 	do_fd_action( drive );
@@ -1868,7 +1582,6 @@ out:
 }
 
 static int fd_locked_ioctl(struct block_device *bdev, blk_mode_t mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    unsigned int cmd, unsigned long param)
 {
 	struct gendisk *disk = bdev->bd_disk;
@@ -1943,11 +1656,7 @@ static int fd_locked_ioctl(struct block_device *bdev, blk_mode_t mode,
 		/* what if type > 0 here? Overwrite specified entry ? */
 		if (type) {
 		        /* refuse to re-set a predefined type for now */
-<<<<<<< HEAD
-			redo_fd_request();
-=======
 			finish_fdc();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -1975,11 +1684,7 @@ static int fd_locked_ioctl(struct block_device *bdev, blk_mode_t mode,
 				    printk (KERN_INFO "floppy%d: setting %s %p!\n",
 				        drive, dtp->name, dtp);
 				UDT = dtp;
-<<<<<<< HEAD
-				set_capacity(floppy->disk, UDT->blocks);
-=======
 				set_capacity(disk, UDT->blocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				if (cmd == FDDEFPRM) {
 				  /* save settings as permanent default type */
@@ -2020,20 +1725,12 @@ static int fd_locked_ioctl(struct block_device *bdev, blk_mode_t mode,
 		/* sanity check */
 		if (setprm.track != dtp->blocks/dtp->spt/2 ||
 		    setprm.head != 2) {
-<<<<<<< HEAD
-			redo_fd_request();
-=======
 			finish_fdc();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
 		UDT = dtp;
-<<<<<<< HEAD
-		set_capacity(floppy->disk, UDT->blocks);
-=======
 		set_capacity(disk, UDT->blocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return 0;
 	case FDMSGON:
@@ -2056,36 +1753,24 @@ static int fd_locked_ioctl(struct block_device *bdev, blk_mode_t mode,
 		UDT = NULL;
 		/* MSch: invalidate default_params */
 		default_params[drive].blocks  = 0;
-<<<<<<< HEAD
-		set_capacity(floppy->disk, MAX_DISK_SIZE * 2);
-=======
 		set_capacity(disk, MAX_DISK_SIZE * 2);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FDFMTEND:
 	case FDFLUSH:
 		/* invalidate the buffer track to force a reread */
 		BufferDrive = -1;
 		set_bit(drive, &fake_change);
-<<<<<<< HEAD
-		check_disk_change(bdev);
-=======
 		if (disk_check_media_change(disk)) {
 			bdev_mark_dead(disk->part0, true);
 			floppy_revalidate(disk);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	default:
 		return -EINVAL;
 	}
 }
 
-<<<<<<< HEAD
-static int fd_ioctl(struct block_device *bdev, fmode_t mode,
-=======
 static int fd_ioctl(struct block_device *bdev, blk_mode_t mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     unsigned int cmd, unsigned long arg)
 {
 	int ret;
@@ -2232,46 +1917,24 @@ static void __init config_types( void )
  * drive with different device numbers.
  */
 
-<<<<<<< HEAD
-static int floppy_open(struct block_device *bdev, fmode_t mode)
-{
-	struct atari_floppy_struct *p = bdev->bd_disk->private_data;
-	int type  = MINOR(bdev->bd_dev) >> 2;
-=======
 static int floppy_open(struct gendisk *disk, blk_mode_t mode)
 {
 	struct atari_floppy_struct *p = disk->private_data;
 	int type = disk->first_minor >> 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DPRINT(("fd_open: type=%d\n",type));
 	if (p->ref && p->type != type)
 		return -EBUSY;
 
-<<<<<<< HEAD
-	if (p->ref == -1 || (p->ref && mode & FMODE_EXCL))
-		return -EBUSY;
-
-	if (mode & FMODE_EXCL)
-=======
 	if (p->ref == -1 || (p->ref && mode & BLK_OPEN_EXCL))
 		return -EBUSY;
 	if (mode & BLK_OPEN_EXCL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p->ref = -1;
 	else
 		p->ref++;
 
 	p->type = type;
 
-<<<<<<< HEAD
-	if (mode & FMODE_NDELAY)
-		return 0;
-
-	if (mode & (FMODE_READ|FMODE_WRITE)) {
-		check_disk_change(bdev);
-		if (mode & FMODE_WRITE) {
-=======
 	if (mode & BLK_OPEN_NDELAY)
 		return 0;
 
@@ -2279,7 +1942,6 @@ static int floppy_open(struct gendisk *disk, blk_mode_t mode)
 		if (disk_check_media_change(disk))
 			floppy_revalidate(disk);
 		if (mode & BLK_OPEN_WRITE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (p->wpstat) {
 				if (p->ref < 0)
 					p->ref = 0;
@@ -2292,30 +1954,18 @@ static int floppy_open(struct gendisk *disk, blk_mode_t mode)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int floppy_unlocked_open(struct block_device *bdev, fmode_t mode)
-=======
 static int floppy_unlocked_open(struct gendisk *disk, blk_mode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
 	mutex_lock(&ataflop_mutex);
-<<<<<<< HEAD
-	ret = floppy_open(bdev, mode);
-=======
 	ret = floppy_open(disk, mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ataflop_mutex);
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int floppy_release(struct gendisk *disk, fmode_t mode)
-=======
 static void floppy_release(struct gendisk *disk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atari_floppy_struct *p = disk->private_data;
 	mutex_lock(&ataflop_mutex);
@@ -2326,10 +1976,6 @@ static void floppy_release(struct gendisk *disk)
 		p->ref = 0;
 	}
 	mutex_unlock(&ataflop_mutex);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct block_device_operations floppy_fops = {
@@ -2338,19 +1984,6 @@ static const struct block_device_operations floppy_fops = {
 	.release	= floppy_release,
 	.ioctl		= fd_ioctl,
 	.check_events	= floppy_check_events,
-<<<<<<< HEAD
-	.revalidate_disk= floppy_revalidate,
-};
-
-static struct kobject *floppy_find(dev_t dev, int *part, void *data)
-{
-	int drive = *part & 3;
-	int type  = *part >> 2;
-	if (drive >= FD_MAX_UNITS || type > NUM_DISK_MINORS)
-		return NULL;
-	*part = 0;
-	return get_disk(unit[drive].disk);
-=======
 };
 
 static const struct blk_mq_ops ataflop_mq_ops = {
@@ -2434,30 +2067,17 @@ static void atari_cleanup_floppy_disk(struct atari_floppy_struct *fs)
 		put_disk(fs->disk[type]);
 	}
 	blk_mq_free_tag_set(&fs->tag_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init atari_floppy_init (void)
 {
 	int i;
-<<<<<<< HEAD
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!MACH_IS_ATARI)
 		/* Amiga, Mac, ... don't have Atari-compatible floppy :-) */
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (register_blkdev(FLOPPY_MAJOR,"fd"))
-		return -EBUSY;
-
-	for (i = 0; i < FD_MAX_UNITS; i++) {
-		unit[i].disk = alloc_disk(1);
-		if (!unit[i].disk)
-			goto Enomem;
-=======
 	for (i = 0; i < FD_MAX_UNITS; i++) {
 		memset(&unit[i].tag_set, 0, sizeof(unit[i].tag_set));
 		unit[i].tag_set.ops = &ataflop_mq_ops;
@@ -2475,7 +2095,6 @@ static int __init atari_floppy_init (void)
 			blk_mq_free_tag_set(&unit[i].tag_set);
 			goto err;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (UseTrackbuffer < 0)
@@ -2492,68 +2111,28 @@ static int __init atari_floppy_init (void)
 	DMABuffer = atari_stram_alloc(BUFFER_SIZE+512, "ataflop");
 	if (!DMABuffer) {
 		printk(KERN_ERR "atari_floppy_init: cannot get dma buffer\n");
-<<<<<<< HEAD
-		goto Enomem;
-	}
-	TrackBuffer = DMABuffer + 512;
-	PhysDMABuffer = virt_to_phys(DMABuffer);
-=======
 		ret = -ENOMEM;
 		goto err;
 	}
 	TrackBuffer = DMABuffer + 512;
 	PhysDMABuffer = atari_stram_to_phys(DMABuffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PhysTrackBuffer = virt_to_phys(TrackBuffer);
 	BufferDrive = BufferSide = BufferTrack = -1;
 
 	for (i = 0; i < FD_MAX_UNITS; i++) {
 		unit[i].track = -1;
 		unit[i].flags = 0;
-<<<<<<< HEAD
-		unit[i].disk->major = FLOPPY_MAJOR;
-		unit[i].disk->first_minor = i;
-		sprintf(unit[i].disk->disk_name, "fd%d", i);
-		unit[i].disk->fops = &floppy_fops;
-		unit[i].disk->private_data = &unit[i];
-		unit[i].disk->queue = blk_init_queue(do_fd_request,
-					&ataflop_lock);
-		if (!unit[i].disk->queue)
-			goto Enomem;
-		set_capacity(unit[i].disk, MAX_DISK_SIZE * 2);
-		add_disk(unit[i].disk);
-	}
-
-	blk_register_region(MKDEV(FLOPPY_MAJOR, 0), 256, THIS_MODULE,
-				floppy_find, NULL, NULL);
-
-=======
 		ret = add_disk(unit[i].disk[0]);
 		if (ret)
 			goto err_out_dma;
 		unit[i].registered[0] = true;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO "Atari floppy driver: max. %cD, %strack buffering\n",
 	       DriveType == 0 ? 'D' : DriveType == 1 ? 'H' : 'E',
 	       UseTrackbuffer ? "" : "no ");
 	config_types();
 
-<<<<<<< HEAD
-	return 0;
-Enomem:
-	while (i--) {
-		struct request_queue *q = unit[i].disk->queue;
-
-		put_disk(unit[i].disk);
-		if (q)
-			blk_cleanup_queue(q);
-	}
-
-	unregister_blkdev(FLOPPY_MAJOR, "fd");
-	return -ENOMEM;
-=======
 	ret = __register_blkdev(FLOPPY_MAJOR, "fd", ataflop_probe);
 	if (ret) {
 		printk(KERN_ERR "atari_floppy_init: cannot register block device\n");
@@ -2568,7 +2147,6 @@ err:
 		atari_cleanup_floppy_disk(&unit[i]);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifndef MODULE
@@ -2612,24 +2190,8 @@ __setup("floppy=", atari_floppy_setup);
 
 static void __exit atari_floppy_exit(void)
 {
-<<<<<<< HEAD
-	int i;
-	blk_unregister_region(MKDEV(FLOPPY_MAJOR, 0), 256);
-	for (i = 0; i < FD_MAX_UNITS; i++) {
-		struct request_queue *q = unit[i].disk->queue;
-
-		del_gendisk(unit[i].disk);
-		put_disk(unit[i].disk);
-		blk_cleanup_queue(q);
-	}
-	unregister_blkdev(FLOPPY_MAJOR, "fd");
-
-	del_timer_sync(&fd_timer);
-	atari_stram_free( DMABuffer );
-=======
 	unregister_blkdev(FLOPPY_MAJOR, "fd");
 	atari_floppy_cleanup();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(atari_floppy_init)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_IO_H
 #define _ASM_X86_IO_H
 
@@ -38,13 +35,6 @@
   *  - Arnaldo Carvalho de Melo <acme@conectiva.com.br>
   */
 
-<<<<<<< HEAD
-#define ARCH_HAS_IOREMAP_WC
-
-#include <linux/string.h>
-#include <linux/compiler.h>
-#include <asm/page.h>
-=======
 #include <linux/string.h>
 #include <linux/compiler.h>
 #include <linux/cc_platform.h>
@@ -52,7 +42,6 @@
 #include <asm/early_ioremap.h>
 #include <asm/pgtable_types.h>
 #include <asm/shared/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define build_mmio_read(name, size, type, reg, barrier) \
 static inline type name(const volatile void __iomem *addr) \
@@ -80,12 +69,9 @@ build_mmio_write(__writeb, "b", unsigned char, "q", )
 build_mmio_write(__writew, "w", unsigned short, "r", )
 build_mmio_write(__writel, "l", unsigned int, "r", )
 
-<<<<<<< HEAD
-=======
 #define readb readb
 #define readw readw
 #define readl readl
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define readb_relaxed(a) __readb(a)
 #define readw_relaxed(a) __readw(a)
 #define readl_relaxed(a) __readl(a)
@@ -93,32 +79,16 @@ build_mmio_write(__writel, "l", unsigned int, "r", )
 #define __raw_readw __readw
 #define __raw_readl __readl
 
-<<<<<<< HEAD
-=======
 #define writeb writeb
 #define writew writew
 #define writel writel
 #define writeb_relaxed(v, a) __writeb(v, a)
 #define writew_relaxed(v, a) __writew(v, a)
 #define writel_relaxed(v, a) __writel(v, a)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __raw_writeb __writeb
 #define __raw_writew __writew
 #define __raw_writel __writel
 
-<<<<<<< HEAD
-#define mmiowb() barrier()
-
-#ifdef CONFIG_X86_64
-
-build_mmio_read(readq, "q", unsigned long, "=r", :"memory")
-build_mmio_write(writeq, "q", unsigned long, "r", :"memory")
-
-#define readq_relaxed(a)	readq(a)
-
-#define __raw_readq(a)		readq(a)
-#define __raw_writeq(val, addr)	writeq(val, addr)
-=======
 #ifdef CONFIG_X86_64
 
 build_mmio_read(readq, "q", u64, "=r", :"memory")
@@ -131,7 +101,6 @@ build_mmio_write(__writeq, "q", u64, "r", )
 
 #define __raw_readq		__readq
 #define __raw_writeq		__writeq
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Let people know that we have them */
 #define readq			readq
@@ -139,13 +108,10 @@ build_mmio_write(__writeq, "q", u64, "r", )
 
 #endif
 
-<<<<<<< HEAD
-=======
 #define ARCH_HAS_VALID_PHYS_ADDR_RANGE
 extern int valid_phys_addr_range(phys_addr_t addr, size_t size);
 extern int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	virt_to_phys	-	map virtual addresses to physical
  *	@address: address to remap
@@ -163,10 +129,7 @@ static inline phys_addr_t virt_to_phys(volatile void *address)
 {
 	return __pa(address);
 }
-<<<<<<< HEAD
-=======
 #define virt_to_phys virt_to_phys
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	phys_to_virt	-	map physical address to virtual
@@ -185,10 +148,7 @@ static inline void *phys_to_virt(phys_addr_t address)
 {
 	return __va(address);
 }
-<<<<<<< HEAD
-=======
 #define phys_to_virt phys_to_virt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Change "struct page" to physical address.
@@ -198,29 +158,12 @@ static inline void *phys_to_virt(phys_addr_t address)
 /*
  * ISA I/O bus memory addresses are 1:1 with the physical address.
  * However, we truncate the address to unsigned int to avoid undesirable
-<<<<<<< HEAD
- * promitions in legacy drivers.
-=======
  * promotions in legacy drivers.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline unsigned int isa_virt_to_bus(volatile void *address)
 {
 	return (unsigned int)virt_to_phys(address);
 }
-<<<<<<< HEAD
-#define isa_page_to_bus(page)	((unsigned int)page_to_phys(page))
-#define isa_bus_to_virt		phys_to_virt
-
-/*
- * However PCI ones are not necessarily 1:1 and therefore these interfaces
- * are forbidden in portable PCI drivers.
- *
- * Allow them on x86 for legacy drivers, though.
- */
-#define virt_to_bus virt_to_phys
-#define bus_to_virt phys_to_virt
-=======
 #define isa_bus_to_virt		phys_to_virt
 
 /*
@@ -235,7 +178,6 @@ extern void __iomem *ioremap_prot(resource_size_t offset, unsigned long size, un
 #define ioremap_prot ioremap_prot
 extern void __iomem *ioremap_encrypted(resource_size_t phys_addr, unsigned long size);
 #define ioremap_encrypted ioremap_encrypted
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ioremap     -   map bus memory into CPU space
@@ -251,53 +193,6 @@ extern void __iomem *ioremap_encrypted(resource_size_t phys_addr, unsigned long 
  * If the area you are trying to map is a PCI BAR you should have a
  * look at pci_iomap().
  */
-<<<<<<< HEAD
-extern void __iomem *ioremap_nocache(resource_size_t offset, unsigned long size);
-extern void __iomem *ioremap_cache(resource_size_t offset, unsigned long size);
-extern void __iomem *ioremap_prot(resource_size_t offset, unsigned long size,
-				unsigned long prot_val);
-
-/*
- * The default ioremap() behavior is non-cached:
- */
-static inline void __iomem *ioremap(resource_size_t offset, unsigned long size)
-{
-	return ioremap_nocache(offset, size);
-}
-
-extern void iounmap(volatile void __iomem *addr);
-
-extern void set_iounmap_nonlazy(void);
-
-#ifdef __KERNEL__
-
-#include <asm-generic/iomap.h>
-
-#include <linux/vmalloc.h>
-
-/*
- * Convert a virtual cached pointer to an uncached pointer
- */
-#define xlate_dev_kmem_ptr(p)	p
-
-static inline void
-memset_io(volatile void __iomem *addr, unsigned char val, size_t count)
-{
-	memset((void __force *)addr, val, count);
-}
-
-static inline void
-memcpy_fromio(void *dst, const volatile void __iomem *src, size_t count)
-{
-	memcpy(dst, (const void __force *)src, count);
-}
-
-static inline void
-memcpy_toio(volatile void __iomem *dst, const void *src, size_t count)
-{
-	memcpy((void __force *)dst, src, count);
-}
-=======
 void __iomem *ioremap(resource_size_t offset, unsigned long size);
 #define ioremap ioremap
 
@@ -313,7 +208,6 @@ void memset_io(volatile void __iomem *, int, size_t);
 #define memcpy_fromio memcpy_fromio
 #define memcpy_toio memcpy_toio
 #define memset_io memset_io
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ISA space is 'always mapped' on a typical x86 system, no need to
@@ -325,24 +219,6 @@ void memset_io(volatile void __iomem *, int, size_t);
  */
 #define __ISA_IO_base ((char __iomem *)(PAGE_OFFSET))
 
-<<<<<<< HEAD
-/*
- *	Cache management
- *
- *	This needed for two cases
- *	1. Out of order aware processors
- *	2. Accidentally out of order processors (PPro errata #51)
- */
-
-static inline void flush_write_buffers(void)
-{
-#if defined(CONFIG_X86_OOSTORE) || defined(CONFIG_X86_PPRO_FENCE)
-	asm volatile("lock; addl $0,0(%%esp)": : :"memory");
-#endif
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KERNEL__ */
 
 extern void native_io_delay(void);
@@ -366,99 +242,20 @@ static inline void slow_down_io(void)
 
 #endif
 
-<<<<<<< HEAD
-#define BUILDIO(bwl, bw, type)						\
-static inline void out##bwl(unsigned type value, int port)		\
-{									\
-	asm volatile("out" #bwl " %" #bw "0, %w1"			\
-		     : : "a"(value), "Nd"(port));			\
-}									\
-									\
-static inline unsigned type in##bwl(int port)				\
-{									\
-	unsigned type value;						\
-	asm volatile("in" #bwl " %w1, %" #bw "0"			\
-		     : "=a"(value) : "Nd"(port));			\
-	return value;							\
-}									\
-									\
-static inline void out##bwl##_p(unsigned type value, int port)		\
-=======
 #define BUILDIO(bwl, type)						\
 static inline void out##bwl##_p(type value, u16 port)			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {									\
 	out##bwl(value, port);						\
 	slow_down_io();							\
 }									\
 									\
-<<<<<<< HEAD
-static inline unsigned type in##bwl##_p(int port)			\
-{									\
-	unsigned type value = in##bwl(port);				\
-=======
 static inline type in##bwl##_p(u16 port)				\
 {									\
 	type value = in##bwl(port);					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	slow_down_io();							\
 	return value;							\
 }									\
 									\
-<<<<<<< HEAD
-static inline void outs##bwl(int port, const void *addr, unsigned long count) \
-{									\
-	asm volatile("rep; outs" #bwl					\
-		     : "+S"(addr), "+c"(count) : "d"(port));		\
-}									\
-									\
-static inline void ins##bwl(int port, void *addr, unsigned long count)	\
-{									\
-	asm volatile("rep; ins" #bwl					\
-		     : "+D"(addr), "+c"(count) : "d"(port));		\
-}
-
-BUILDIO(b, b, char)
-BUILDIO(w, w, short)
-BUILDIO(l, , int)
-
-extern void *xlate_dev_mem_ptr(unsigned long phys);
-extern void unxlate_dev_mem_ptr(unsigned long phys, void *addr);
-
-extern int ioremap_change_attr(unsigned long vaddr, unsigned long size,
-				unsigned long prot_val);
-extern void __iomem *ioremap_wc(resource_size_t offset, unsigned long size);
-
-/*
- * early_ioremap() and early_iounmap() are for temporary early boot-time
- * mappings, before the real ioremap() is functional.
- * A boot-time mapping is currently limited to at most 16 pages.
- */
-extern void early_ioremap_init(void);
-extern void early_ioremap_reset(void);
-extern void __iomem *early_ioremap(resource_size_t phys_addr,
-				   unsigned long size);
-extern void __iomem *early_memremap(resource_size_t phys_addr,
-				    unsigned long size);
-extern void early_iounmap(void __iomem *addr, unsigned long size);
-extern void fixup_early_ioremap(void);
-extern bool is_early_ioremap_ptep(pte_t *ptep);
-
-#ifdef CONFIG_XEN
-#include <xen/xen.h>
-struct bio_vec;
-
-extern bool xen_biovec_phys_mergeable(const struct bio_vec *vec1,
-				      const struct bio_vec *vec2);
-
-#define BIOVEC_PHYS_MERGEABLE(vec1, vec2)				\
-	(__BIOVEC_PHYS_MERGEABLE(vec1, vec2) &&				\
-	 (!xen_domain() || xen_biovec_phys_mergeable(vec1, vec2)))
-#endif	/* CONFIG_XEN */
-
-#define IO_SPACE_LIMIT 0xffff
-
-=======
 static inline void outs##bwl(u16 port, const void *addr, unsigned long count) \
 {									\
 	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {		\
@@ -587,5 +384,4 @@ static inline void iosubmit_cmds512(void __iomem *dst, const void *src,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_IO_H */

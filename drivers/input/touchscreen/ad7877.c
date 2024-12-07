@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006-2008 Michael Hennerich, Analog Devices Inc.
  *
@@ -10,24 +7,6 @@
  *
  * Bugs:        Enter bugs at http://blackfin.uclinux.org/
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see the file COPYING, or write
- * to the Free Software Foundation, Inc.,
- * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * History:
  * Copyright (c) 2005 David Brownell
  * Copyright (c) 2006 Nokia Corporation
@@ -44,10 +23,6 @@
 
 
 #include <linux/device.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/input.h>
 #include <linux/interrupt.h>
@@ -221,14 +196,6 @@ static bool gpio3;
 module_param(gpio3, bool, 0);
 MODULE_PARM_DESC(gpio3, "If gpio3 is set to 1 AUX3 acts as GPIO3");
 
-<<<<<<< HEAD
-/*
- * ad7877_read/write are only used for initial setup and for sysfs controls.
- * The main traffic is done using spi_async() in the interrupt handler.
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ad7877_read(struct spi_device *spi, u16 reg)
 {
 	struct ser_req *req;
@@ -286,11 +253,7 @@ static int ad7877_write(struct spi_device *spi, u16 reg, u16 val)
 
 static int ad7877_read_adc(struct spi_device *spi, unsigned command)
 {
-<<<<<<< HEAD
-	struct ad7877 *ts = dev_get_drvdata(&spi->dev);
-=======
 	struct ad7877 *ts = spi_get_drvdata(spi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ser_req *req;
 	int status;
 	int sample;
@@ -318,22 +281,14 @@ static int ad7877_read_adc(struct spi_device *spi, unsigned command)
 
 	req->xfer[1].tx_buf = &req->ref_on;
 	req->xfer[1].len = 2;
-<<<<<<< HEAD
-	req->xfer[1].delay_usecs = ts->vref_delay_usecs;
-=======
 	req->xfer[1].delay.value = ts->vref_delay_usecs;
 	req->xfer[1].delay.unit = SPI_DELAY_UNIT_USECS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->xfer[1].cs_change = 1;
 
 	req->xfer[2].tx_buf = &req->command;
 	req->xfer[2].len = 2;
-<<<<<<< HEAD
-	req->xfer[2].delay_usecs = ts->vref_delay_usecs;
-=======
 	req->xfer[2].delay.value = ts->vref_delay_usecs;
 	req->xfer[2].delay.unit = SPI_DELAY_UNIT_USECS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->xfer[2].cs_change = 1;
 
 	req->xfer[3].rx_buf = &req->sample;
@@ -418,15 +373,9 @@ static inline void ad7877_ts_event_release(struct ad7877 *ts)
 	input_sync(input_dev);
 }
 
-<<<<<<< HEAD
-static void ad7877_timer(unsigned long handle)
-{
-	struct ad7877 *ts = (void *)handle;
-=======
 static void ad7877_timer(struct timer_list *t)
 {
 	struct ad7877 *ts = from_timer(ts, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&ts->lock, flags);
@@ -456,15 +405,10 @@ out:
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static void ad7877_disable(struct ad7877 *ts)
-{
-=======
 static void ad7877_disable(void *data)
 {
 	struct ad7877 *ts = data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&ts->mutex);
 
 	if (!ts->disabled) {
@@ -668,18 +612,11 @@ static umode_t ad7877_attr_is_visible(struct kobject *kobj,
 	return mode;
 }
 
-<<<<<<< HEAD
-static const struct attribute_group ad7877_attr_group = {
-	.is_visible	= ad7877_attr_is_visible,
-	.attrs		= ad7877_attributes,
-};
-=======
 static const struct attribute_group ad7877_group = {
 	.is_visible	= ad7877_attr_is_visible,
 	.attrs		= ad7877_attributes,
 };
 __ATTRIBUTE_GROUPS(ad7877);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ad7877_setup_ts_def_msg(struct spi_device *spi, struct ad7877 *ts)
 {
@@ -730,19 +667,11 @@ static void ad7877_setup_ts_def_msg(struct spi_device *spi, struct ad7877 *ts)
 	}
 }
 
-<<<<<<< HEAD
-static int __devinit ad7877_probe(struct spi_device *spi)
-{
-	struct ad7877			*ts;
-	struct input_dev		*input_dev;
-	struct ad7877_platform_data	*pdata = spi->dev.platform_data;
-=======
 static int ad7877_probe(struct spi_device *spi)
 {
 	struct ad7877			*ts;
 	struct input_dev		*input_dev;
 	struct ad7877_platform_data	*pdata = dev_get_platdata(&spi->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int				err;
 	u16				verify;
 
@@ -769,20 +698,6 @@ static int ad7877_probe(struct spi_device *spi)
 		return err;
 	}
 
-<<<<<<< HEAD
-	ts = kzalloc(sizeof(struct ad7877), GFP_KERNEL);
-	input_dev = input_allocate_device();
-	if (!ts || !input_dev) {
-		err = -ENOMEM;
-		goto err_free_mem;
-	}
-
-	dev_set_drvdata(&spi->dev, ts);
-	ts->spi = spi;
-	ts->input = input_dev;
-
-	setup_timer(&ts->timer, ad7877_timer, (unsigned long) ts);
-=======
 	ts = devm_kzalloc(&spi->dev, sizeof(struct ad7877), GFP_KERNEL);
 	if (!ts)
 		return -ENOMEM;
@@ -800,7 +715,6 @@ static int ad7877_probe(struct spi_device *spi)
 	ts->input = input_dev;
 
 	timer_setup(&ts->timer, ad7877_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&ts->mutex);
 	spin_lock_init(&ts->lock);
 
@@ -843,18 +757,10 @@ static int ad7877_probe(struct spi_device *spi)
 
 	verify = ad7877_read(spi, AD7877_REG_SEQ1);
 
-<<<<<<< HEAD
-	if (verify != AD7877_MM_SEQUENCE){
-		dev_err(&spi->dev, "%s: Failed to probe %s\n",
-			dev_name(&spi->dev), input_dev->name);
-		err = -ENODEV;
-		goto err_free_mem;
-=======
 	if (verify != AD7877_MM_SEQUENCE) {
 		dev_err(&spi->dev, "%s: Failed to probe %s\n",
 			dev_name(&spi->dev), input_dev->name);
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (gpio3)
@@ -864,51 +770,6 @@ static int ad7877_probe(struct spi_device *spi)
 
 	/* Request AD7877 /DAV GPIO interrupt */
 
-<<<<<<< HEAD
-	err = request_threaded_irq(spi->irq, NULL, ad7877_irq,
-				   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-				   spi->dev.driver->name, ts);
-	if (err) {
-		dev_dbg(&spi->dev, "irq %d busy?\n", spi->irq);
-		goto err_free_mem;
-	}
-
-	err = sysfs_create_group(&spi->dev.kobj, &ad7877_attr_group);
-	if (err)
-		goto err_free_irq;
-
-	err = input_register_device(input_dev);
-	if (err)
-		goto err_remove_attr_group;
-
-	return 0;
-
-err_remove_attr_group:
-	sysfs_remove_group(&spi->dev.kobj, &ad7877_attr_group);
-err_free_irq:
-	free_irq(spi->irq, ts);
-err_free_mem:
-	input_free_device(input_dev);
-	kfree(ts);
-	dev_set_drvdata(&spi->dev, NULL);
-	return err;
-}
-
-static int __devexit ad7877_remove(struct spi_device *spi)
-{
-	struct ad7877 *ts = dev_get_drvdata(&spi->dev);
-
-	sysfs_remove_group(&spi->dev.kobj, &ad7877_attr_group);
-
-	ad7877_disable(ts);
-	free_irq(ts->spi->irq, ts);
-
-	input_unregister_device(ts->input);
-	kfree(ts);
-
-	dev_dbg(&spi->dev, "unregistered touchscreen\n");
-	dev_set_drvdata(&spi->dev, NULL);
-=======
 	err = devm_request_threaded_irq(&spi->dev, spi->irq, NULL, ad7877_irq,
 					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
 					spi->dev.driver->name, ts);
@@ -920,15 +781,10 @@ static int __devexit ad7877_remove(struct spi_device *spi)
 	err = input_register_device(input_dev);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM_SLEEP
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ad7877_suspend(struct device *dev)
 {
 	struct ad7877 *ts = dev_get_drvdata(dev);
@@ -946,20 +802,6 @@ static int ad7877_resume(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-#endif
-
-static SIMPLE_DEV_PM_OPS(ad7877_pm, ad7877_suspend, ad7877_resume);
-
-static struct spi_driver ad7877_driver = {
-	.driver = {
-		.name	= "ad7877",
-		.owner	= THIS_MODULE,
-		.pm	= &ad7877_pm,
-	},
-	.probe		= ad7877_probe,
-	.remove		= __devexit_p(ad7877_remove),
-=======
 
 static DEFINE_SIMPLE_DEV_PM_OPS(ad7877_pm, ad7877_suspend, ad7877_resume);
 
@@ -970,7 +812,6 @@ static struct spi_driver ad7877_driver = {
 		.pm		= pm_sleep_ptr(&ad7877_pm),
 	},
 	.probe		= ad7877_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(ad7877_driver);

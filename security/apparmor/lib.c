@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AppArmor security module
  *
@@ -9,19 +6,9 @@
  *
  * Copyright (C) 1998-2008 Novell/SUSE
  * Copyright 2009-2010 Canonical Ltd.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
- */
-
-=======
  */
 
 #include <linux/ctype.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/slab.h>
 #include <linux/string.h>
@@ -29,9 +16,6 @@
 
 #include "include/audit.h"
 #include "include/apparmor.h"
-<<<<<<< HEAD
-
-=======
 #include "include/lib.h"
 #include "include/perms.h"
 #include "include/policy.h"
@@ -60,7 +44,6 @@ void aa_free_str_table(struct aa_str_table *t)
 		t->size = 0;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * aa_split_fqname - split a fqname into a profile and namespace name
@@ -86,15 +69,10 @@ char *aa_split_fqname(char *fqname, char **ns_name)
 		*ns_name = skip_spaces(&name[1]);
 		if (split) {
 			/* overwrite ':' with \0 */
-<<<<<<< HEAD
-			*split = 0;
-			name = skip_spaces(split + 1);
-=======
 			*split++ = 0;
 			if (strncmp(split, "//", 2) == 0)
 				split += 2;
 			name = skip_spaces(split);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			/* a ns name without a following profile is allowed */
 			name = NULL;
@@ -106,8 +84,6 @@ char *aa_split_fqname(char *fqname, char **ns_name)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * skipn_spaces - Removes leading whitespace from @str.
  * @str: The string to be stripped.
  * @n: length of str to parse, will stop at \0 if encountered before n
@@ -163,62 +139,20 @@ const char *aa_splitn_fqname(const char *fqname, size_t n, const char **ns_name,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * aa_info_message - log a none profile related status message
  * @str: message to log
  */
 void aa_info_message(const char *str)
 {
 	if (audit_enabled) {
-<<<<<<< HEAD
-		struct common_audit_data sa;
-		struct apparmor_audit_data aad = {0,};
-		COMMON_AUDIT_DATA_INIT(&sa, NONE);
-		sa.aad = &aad;
-		aad.info = str;
-		aa_audit_msg(AUDIT_APPARMOR_STATUS, &sa, NULL);
-=======
 		DEFINE_AUDIT_DATA(ad, LSM_AUDIT_DATA_NONE, AA_CLASS_NONE, NULL);
 
 		ad.info = str;
 		aa_audit_msg(AUDIT_APPARMOR_STATUS, &ad, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	printk(KERN_INFO "AppArmor: %s\n", str);
 }
 
-<<<<<<< HEAD
-/**
- * kvmalloc - do allocation preferring kmalloc but falling back to vmalloc
- * @size: size of allocation
- *
- * Return: allocated buffer or NULL if failed
- *
- * It is possible that policy being loaded from the user is larger than
- * what can be allocated by kmalloc, in those cases fall back to vmalloc.
- */
-void *kvmalloc(size_t size)
-{
-	void *buffer = NULL;
-
-	if (size == 0)
-		return NULL;
-
-	/* do not attempt kmalloc if we need more than 16 pages at once */
-	if (size <= (16*PAGE_SIZE))
-		buffer = kmalloc(size, GFP_NOIO | __GFP_NOWARN);
-	if (!buffer) {
-		/* see kvfree for why size must be at least work_struct size
-		 * when allocated via vmalloc
-		 */
-		if (size < sizeof(struct work_struct))
-			size = sizeof(struct work_struct);
-		buffer = vmalloc(size);
-	}
-	return buffer;
-}
-
-=======
 __counted char *aa_str_alloc(int size, gfp_t gfp)
 {
 	struct counted_str *str;
@@ -548,4 +482,3 @@ void aa_policy_destroy(struct aa_policy *policy)
 	/* don't free name as its a subset of hname */
 	aa_put_str(policy->hname);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP2+ common Power & Reset Management (PRM) IP block functions
  *
  * Copyright (C) 2011 Texas Instruments, Inc.
  * Tero Kristo <t-kristo@ti.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * For historical purposes, the API used to configure the PRM
  * interrupt handler refers to it as the "PRCM interrupt."  The
  * underlying registers are located in the PRM on OMAP3/4.
@@ -30,15 +19,6 @@
 #include <linux/irq.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <plat/common.h>
-#include <plat/prcm.h>
-#include <plat/irqs.h>
-
-#include "prm2xxx_3xxx.h"
-#include "prm44xx.h"
-=======
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/clk-provider.h>
@@ -57,7 +37,6 @@
 #include "clock.h"
 #include "cm.h"
 #include "control.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * OMAP_PRCM_MAX_NR_PENDING_REG: maximum number of PRM_IRQ*_MPU regs
@@ -82,8 +61,6 @@ static struct irq_chip_generic **prcm_irq_chips;
  */
 static struct omap_prcm_irq_setup *prcm_irq_setup;
 
-<<<<<<< HEAD
-=======
 /* prm_base: base virtual address of the PRM IP block */
 struct omap_domain_base prm_base;
 
@@ -102,7 +79,6 @@ enum reboot_mode prm_reboot_mode;
 static struct prm_ll_data null_prm_ll_data;
 static struct prm_ll_data *prm_ll_data = &null_prm_ll_data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Private functions */
 
 /*
@@ -128,21 +104,13 @@ static void omap_prcm_events_filter_priority(unsigned long *events,
  * dispatched accordingly. Clearing of the wakeup events should be
  * done by the SoC specific individual handlers.
  */
-<<<<<<< HEAD
-static void omap_prcm_irq_handler(unsigned int irq, struct irq_desc *desc)
-=======
 static void omap_prcm_irq_handler(struct irq_desc *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long pending[OMAP_PRCM_MAX_NR_PENDING_REG];
 	unsigned long priority_pending[OMAP_PRCM_MAX_NR_PENDING_REG];
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	unsigned int virtirq;
-<<<<<<< HEAD
-	int nr_irqs = prcm_irq_setup->nr_regs * 32;
-=======
 	int nr_irq = prcm_irq_setup->nr_regs * 32;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we are suspended, mask all interrupts from PRCM level,
@@ -167,11 +135,7 @@ static void omap_prcm_irq_handler(struct irq_desc *desc)
 		prcm_irq_setup->read_pending_irqs(pending);
 
 		/* No bit set, then all IRQs are handled */
-<<<<<<< HEAD
-		if (find_first_bit(pending, nr_irqs) >= nr_irqs)
-=======
 		if (find_first_bit(pending, nr_irq) >= nr_irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		omap_prcm_events_filter_priority(pending, priority_pending);
@@ -182,19 +146,11 @@ static void omap_prcm_irq_handler(struct irq_desc *desc)
 		 */
 
 		/* Serve priority events first */
-<<<<<<< HEAD
-		for_each_set_bit(virtirq, priority_pending, nr_irqs)
-			generic_handle_irq(prcm_irq_setup->base_irq + virtirq);
-
-		/* Serve normal events next */
-		for_each_set_bit(virtirq, pending, nr_irqs)
-=======
 		for_each_set_bit(virtirq, priority_pending, nr_irq)
 			generic_handle_irq(prcm_irq_setup->base_irq + virtirq);
 
 		/* Serve normal events next */
 		for_each_set_bit(virtirq, pending, nr_irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			generic_handle_irq(prcm_irq_setup->base_irq + virtirq);
 	}
 	if (chip->irq_ack)
@@ -237,14 +193,9 @@ int omap_prcm_event_to_irq(const char *name)
  *
  * No return value.
  */
-<<<<<<< HEAD
-void omap_prcm_irq_cleanup(void)
-{
-=======
 static void omap_prcm_irq_cleanup(void)
 {
 	unsigned int irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (!prcm_irq_setup) {
@@ -269,12 +220,8 @@ static void omap_prcm_irq_cleanup(void)
 	kfree(prcm_irq_setup->priority_mask);
 	prcm_irq_setup->priority_mask = NULL;
 
-<<<<<<< HEAD
-	irq_set_chained_handler(prcm_irq_setup->irq, NULL);
-=======
 	irq = prcm_irq_setup->irq;
 	irq_set_chained_handler(irq, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (prcm_irq_setup->base_irq > 0)
 		irq_free_descs(prcm_irq_setup->base_irq,
@@ -317,26 +264,17 @@ void omap_prcm_irq_complete(void)
  */
 int omap_prcm_register_chain_handler(struct omap_prcm_irq_setup *irq_setup)
 {
-<<<<<<< HEAD
-	int nr_regs = irq_setup->nr_regs;
-	u32 mask[OMAP_PRCM_MAX_NR_PENDING_REG];
-	int offset, i;
-=======
 	int nr_regs;
 	u32 mask[OMAP_PRCM_MAX_NR_PENDING_REG];
 	int offset, i, irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct irq_chip_generic *gc;
 	struct irq_chip_type *ct;
 
 	if (!irq_setup)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	nr_regs = irq_setup->nr_regs;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (prcm_irq_setup) {
 		pr_err("PRCM: already initialized; won't reinitialize\n");
 		return -EINVAL;
@@ -349,18 +287,6 @@ int omap_prcm_register_chain_handler(struct omap_prcm_irq_setup *irq_setup)
 
 	prcm_irq_setup = irq_setup;
 
-<<<<<<< HEAD
-	prcm_irq_chips = kzalloc(sizeof(void *) * nr_regs, GFP_KERNEL);
-	prcm_irq_setup->saved_mask = kzalloc(sizeof(u32) * nr_regs, GFP_KERNEL);
-	prcm_irq_setup->priority_mask = kzalloc(sizeof(u32) * nr_regs,
-		GFP_KERNEL);
-
-	if (!prcm_irq_chips || !prcm_irq_setup->saved_mask ||
-	    !prcm_irq_setup->priority_mask) {
-		pr_err("PRCM: kzalloc failed\n");
-		goto err;
-	}
-=======
 	prcm_irq_chips = kcalloc(nr_regs, sizeof(void *), GFP_KERNEL);
 	prcm_irq_setup->saved_mask = kcalloc(nr_regs, sizeof(u32),
 					     GFP_KERNEL);
@@ -370,7 +296,6 @@ int omap_prcm_register_chain_handler(struct omap_prcm_irq_setup *irq_setup)
 	if (!prcm_irq_chips || !prcm_irq_setup->saved_mask ||
 	    !prcm_irq_setup->priority_mask)
 		goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(mask, 0, sizeof(mask));
 
@@ -382,12 +307,8 @@ int omap_prcm_register_chain_handler(struct omap_prcm_irq_setup *irq_setup)
 				1 << (offset & 0x1f);
 	}
 
-<<<<<<< HEAD
-	irq_set_chained_handler(irq_setup->irq, omap_prcm_irq_handler);
-=======
 	irq = irq_setup->irq;
 	irq_set_chained_handler(irq, omap_prcm_irq_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	irq_setup->base_irq = irq_alloc_descs(-1, 0, irq_setup->nr_regs * 32,
 		0);
@@ -400,11 +321,7 @@ int omap_prcm_register_chain_handler(struct omap_prcm_irq_setup *irq_setup)
 
 	for (i = 0; i < irq_setup->nr_regs; i++) {
 		gc = irq_alloc_generic_chip("PRCM", 1,
-<<<<<<< HEAD
-			irq_setup->base_irq + i * 32, prm_base,
-=======
 			irq_setup->base_irq + i * 32, prm_base.va,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			handle_level_irq);
 
 		if (!gc) {
@@ -423,20 +340,15 @@ int omap_prcm_register_chain_handler(struct omap_prcm_irq_setup *irq_setup)
 		prcm_irq_chips[i] = gc;
 	}
 
-<<<<<<< HEAD
-=======
 	irq = omap_prcm_event_to_irq("io");
 	omap_pcs_legacy_init(irq, irq_setup->reconfigure_io_chain);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err:
 	omap_prcm_irq_cleanup();
 	return -ENOMEM;
 }
-<<<<<<< HEAD
-=======
 
 /**
  * prm_was_any_context_lost_old - was device context lost? (old API)
@@ -864,4 +776,3 @@ static int __init prm_late_init(void)
 	return 0;
 }
 subsys_initcall(prm_late_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

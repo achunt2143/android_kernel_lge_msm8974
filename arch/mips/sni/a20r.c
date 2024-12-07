@@ -41,19 +41,6 @@ static struct platform_device a20r_serial8250_device = {
 };
 
 static struct resource a20r_ds1216_rsrc[] = {
-<<<<<<< HEAD
-        {
-                .start = 0x1c081ffc,
-                .end   = 0x1c081fff,
-                .flags = IORESOURCE_MEM
-        }
-};
-
-static struct platform_device a20r_ds1216_device = {
-        .name           = "rtc-ds1216",
-        .num_resources  = ARRAY_SIZE(a20r_ds1216_rsrc),
-        .resource       = a20r_ds1216_rsrc
-=======
 	{
 		.start = 0x1c081ffc,
 		.end   = 0x1c081fff,
@@ -65,7 +52,6 @@ static struct platform_device a20r_ds1216_device = {
 	.name		= "rtc-ds1216",
 	.num_resources	= ARRAY_SIZE(a20r_ds1216_rsrc),
 	.resource	= a20r_ds1216_rsrc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource snirm_82596_rsrc[] = {
@@ -90,24 +76,14 @@ static struct resource snirm_82596_rsrc[] = {
 		.flags = IORESOURCE_IRQ
 	},
 	{
-<<<<<<< HEAD
-		.flags = 0x01                /* 16bit mpu port access */
-=======
 		.flags = 0x01		     /* 16bit mpu port access */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
 static struct platform_device snirm_82596_pdev = {
-<<<<<<< HEAD
-	.name           = "snirm_82596",
-	.num_resources  = ARRAY_SIZE(snirm_82596_rsrc),
-	.resource       = snirm_82596_rsrc
-=======
 	.name		= "snirm_82596",
 	.num_resources	= ARRAY_SIZE(snirm_82596_rsrc),
 	.resource	= snirm_82596_rsrc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource snirm_53c710_rsrc[] = {
@@ -124,15 +100,9 @@ static struct resource snirm_53c710_rsrc[] = {
 };
 
 static struct platform_device snirm_53c710_pdev = {
-<<<<<<< HEAD
-	.name           = "snirm_53c710",
-	.num_resources  = ARRAY_SIZE(snirm_53c710_rsrc),
-	.resource       = snirm_53c710_rsrc
-=======
 	.name		= "snirm_53c710",
 	.num_resources	= ARRAY_SIZE(snirm_53c710_rsrc),
 	.resource	= snirm_53c710_rsrc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource sc26xx_rsrc[] = {
@@ -148,24 +118,6 @@ static struct resource sc26xx_rsrc[] = {
 	}
 };
 
-<<<<<<< HEAD
-static unsigned int sc26xx_data[2] = {
-	/* DTR   |   RTS    |   DSR    |   CTS     |   DCD     |   RI    */
-	(8 << 0) | (4 << 4) | (6 << 8) | (0 << 12) | (6 << 16) | (0 << 20),
-	(3 << 0) | (2 << 4) | (1 << 8) | (2 << 12) | (3 << 16) | (4 << 20)
-};
-
-static struct platform_device sc26xx_pdev = {
-	.name           = "SC26xx",
-	.num_resources  = ARRAY_SIZE(sc26xx_rsrc),
-	.resource       = sc26xx_rsrc,
-	.dev			= {
-		.platform_data	= sc26xx_data,
-	}
-};
-
-static u32 a20r_ack_hwint(void)
-=======
 #include <linux/platform_data/serial-sccnxp.h>
 
 static struct sccnxp_pdata sccnxp_data = {
@@ -195,7 +147,6 @@ static struct platform_device sc26xx_pdev = {
  * Trigger chipset to update CPU's CAUSE IP field
  */
 static u32 a20r_update_cause_ip(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 status = read_c0_status();
 
@@ -222,11 +173,7 @@ static u32 a20r_update_cause_ip(void)
 	"	addiu	%1, -1			\n"
 	"	sw	$1, 0(%0)		\n"
 	"	sync				\n"
-<<<<<<< HEAD
-		".set   pop			\n"
-=======
 		".set	pop			\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	:
 	: "Jr" (PCIMT_UCONF), "Jr" (0xbc000000));
 	write_c0_status(status);
@@ -261,21 +208,14 @@ static void a20r_hwint(void)
 	int irq;
 
 	clear_c0_status(IE_IRQ0);
-<<<<<<< HEAD
-	status = a20r_ack_hwint();
-=======
 	status = a20r_update_cause_ip();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cause = read_c0_cause();
 
 	irq = ffs(((cause & status) >> 8) & 0xf8);
 	if (likely(irq > 0))
 		do_IRQ(SNI_A20R_IRQ_BASE + irq - 1);
-<<<<<<< HEAD
-=======
 
 	a20r_update_cause_ip();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_c0_status(IE_IRQ0);
 }
 
@@ -287,13 +227,9 @@ void __init sni_a20r_irq_init(void)
 		irq_set_chip_and_handler(i, &a20r_irq_type, handle_level_irq);
 	sni_hwint = a20r_hwint;
 	change_c0_status(ST0_IM, IE_IRQ0);
-<<<<<<< HEAD
-	setup_irq(SNI_A20R_IRQ_BASE + 3, &sni_isa_irq);
-=======
 	if (request_irq(SNI_A20R_IRQ_BASE + 3, sni_isa_irq_handler,
 			IRQF_SHARED, "ISA", sni_isa_irq_handler))
 		pr_err("Failed to register ISA interrupt\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void sni_a20r_init(void)
@@ -306,15 +242,6 @@ static int __init snirm_a20r_setup_devinit(void)
 	switch (sni_brd_type) {
 	case SNI_BRD_TOWER_OASIC:
 	case SNI_BRD_MINITOWER:
-<<<<<<< HEAD
-	        platform_device_register(&snirm_82596_pdev);
-	        platform_device_register(&snirm_53c710_pdev);
-	        platform_device_register(&sc26xx_pdev);
-	        platform_device_register(&a20r_serial8250_device);
-	        platform_device_register(&a20r_ds1216_device);
-		sni_eisa_root_init();
-	        break;
-=======
 		platform_device_register(&snirm_82596_pdev);
 		platform_device_register(&snirm_53c710_pdev);
 		platform_device_register(&sc26xx_pdev);
@@ -322,7 +249,6 @@ static int __init snirm_a20r_setup_devinit(void)
 		platform_device_register(&a20r_ds1216_device);
 		sni_eisa_root_init();
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }

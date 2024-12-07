@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1992, 1998-2006 Linus Torvalds, Ingo Molnar
  * Copyright (C) 2005-2006, Thomas Gleixner, Russell King
@@ -10,20 +7,13 @@
  */
 #include <linux/interrupt.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "internals.h"
 
 /*
  * What should we do if we get a hw irq event on an illegal vector?
-<<<<<<< HEAD
- * Each architecture has to answer this themself.
-=======
  * Each architecture has to answer this themselves.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void ack_bad(struct irq_data *data)
 {
@@ -53,10 +43,7 @@ struct irq_chip no_irq_chip = {
 	.irq_enable	= noop,
 	.irq_disable	= noop,
 	.irq_ack	= ack_bad,
-<<<<<<< HEAD
-=======
 	.flags		= IRQCHIP_SKIP_SET_WAKE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -72,10 +59,6 @@ struct irq_chip dummy_irq_chip = {
 	.irq_ack	= noop,
 	.irq_mask	= noop,
 	.irq_unmask	= noop,
-<<<<<<< HEAD
-};
-=======
 	.flags		= IRQCHIP_SKIP_SET_WAKE,
 };
 EXPORT_SYMBOL_GPL(dummy_irq_chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # 802.1d Ethernet Bridging
 #
@@ -11,11 +8,7 @@ config BRIDGE
 	select LLC
 	select STP
 	depends on IPV6 || IPV6=n
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you say Y here, then your Linux box will be able to act as an
 	  Ethernet bridge, which means that the different Ethernet segments it
 	  is connected to will appear as one Ethernet to the participants.
@@ -25,11 +18,7 @@ config BRIDGE
 	  other third party bridge products.
 
 	  In order to use the Ethernet bridge, you'll need the bridge
-<<<<<<< HEAD
-	  configuration tools; see <file:Documentation/networking/bridge.txt>
-=======
 	  configuration tools; see <file:Documentation/networking/bridge.rst>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  for location. Please read the Bridge mini-HOWTO for more
 	  information.
 
@@ -50,11 +39,7 @@ config BRIDGE_IGMP_SNOOPING
 	depends on BRIDGE
 	depends on INET
 	default y
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you say Y here, then the Ethernet bridge will be able selectively
 	  forward multicast traffic based on IGMP/MLD traffic received from
 	  each port.
@@ -62,8 +47,6 @@ config BRIDGE_IGMP_SNOOPING
 	  Say N to exclude this support and reduce the binary size.
 
 	  If unsure, say Y.
-<<<<<<< HEAD
-=======
 
 config BRIDGE_VLAN_FILTERING
 	bool "VLAN filtering"
@@ -101,4 +84,3 @@ config BRIDGE_CFM
 	  Say N to exclude this support and reduce the binary size.
 
 	  If unsure, say N.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

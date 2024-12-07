@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_ELF_H
 #define _ASM_X86_ELF_H
 
@@ -10,17 +7,11 @@
  */
 #include <linux/thread_info.h>
 
-<<<<<<< HEAD
-#include <asm/ptrace.h>
-#include <asm/user.h>
-#include <asm/auxvec.h>
-=======
 #include <asm/ia32.h>
 #include <asm/ptrace.h>
 #include <asm/user.h>
 #include <asm/auxvec.h>
 #include <asm/fsgsbase.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef unsigned long elf_greg_t;
 
@@ -31,11 +22,6 @@ typedef struct user_i387_struct elf_fpregset_t;
 
 #ifdef __i386__
 
-<<<<<<< HEAD
-typedef struct user_fxsr_struct elf_fpxregset_t;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define R_386_NONE	0
 #define R_386_32	1
 #define R_386_PC32	2
@@ -76,12 +62,7 @@ typedef struct user_fxsr_struct elf_fpxregset_t;
 #define R_X86_64_PC16		13	/* 16 bit sign extended pc relative */
 #define R_X86_64_8		14	/* Direct 8 bit sign extended  */
 #define R_X86_64_PC8		15	/* 8 bit sign extended pc relative */
-<<<<<<< HEAD
-
-#define R_X86_64_NUM		16
-=======
 #define R_X86_64_PC64		24	/* Place relative 64-bit signed */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are used to set parameters in the core dumps.
@@ -94,16 +75,12 @@ typedef struct user_fxsr_struct elf_fpxregset_t;
 
 #include <asm/vdso.h>
 
-<<<<<<< HEAD
-extern unsigned int vdso_enabled;
-=======
 #ifdef CONFIG_X86_64
 extern unsigned int vdso64_enabled;
 #endif
 #if defined(CONFIG_X86_32) || defined(CONFIG_IA32_EMULATION)
 extern unsigned int vdso32_enabled;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is used to ensure we don't load something for the wrong architecture.
@@ -140,11 +117,7 @@ extern unsigned int vdso32_enabled;
  * now struct_user_regs, they are different)
  */
 
-<<<<<<< HEAD
-#define ELF_CORE_COPY_REGS_COMMON(pr_reg, regs)	\
-=======
 #define ELF_CORE_COPY_REGS(pr_reg, regs)	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 do {						\
 	pr_reg[0] = regs->bx;			\
 	pr_reg[1] = regs->cx;			\
@@ -153,29 +126,6 @@ do {						\
 	pr_reg[4] = regs->di;			\
 	pr_reg[5] = regs->bp;			\
 	pr_reg[6] = regs->ax;			\
-<<<<<<< HEAD
-	pr_reg[7] = regs->ds & 0xffff;		\
-	pr_reg[8] = regs->es & 0xffff;		\
-	pr_reg[9] = regs->fs & 0xffff;		\
-	pr_reg[11] = regs->orig_ax;		\
-	pr_reg[12] = regs->ip;			\
-	pr_reg[13] = regs->cs & 0xffff;		\
-	pr_reg[14] = regs->flags;		\
-	pr_reg[15] = regs->sp;			\
-	pr_reg[16] = regs->ss & 0xffff;		\
-} while (0);
-
-#define ELF_CORE_COPY_REGS(pr_reg, regs)	\
-do {						\
-	ELF_CORE_COPY_REGS_COMMON(pr_reg, regs);\
-	pr_reg[10] = get_user_gs(regs);		\
-} while (0);
-
-#define ELF_CORE_COPY_KERNEL_REGS(pr_reg, regs)	\
-do {						\
-	ELF_CORE_COPY_REGS_COMMON(pr_reg, regs);\
-	savesegment(gs, pr_reg[10]);		\
-=======
 	pr_reg[7] = regs->ds;			\
 	pr_reg[8] = regs->es;			\
 	pr_reg[9] = regs->fs;			\
@@ -186,7 +136,6 @@ do {						\
 	pr_reg[14] = regs->flags;		\
 	pr_reg[15] = regs->sp;			\
 	pr_reg[16] = regs->ss;			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0);
 
 #define ELF_PLATFORM	(utsname()->machine)
@@ -201,23 +150,6 @@ do {						\
 	((x)->e_machine == EM_X86_64)
 
 #define compat_elf_check_arch(x)					\
-<<<<<<< HEAD
-	(elf_check_arch_ia32(x) ||					\
-	 (IS_ENABLED(CONFIG_X86_X32_ABI) && (x)->e_machine == EM_X86_64))
-
-#if __USER32_DS != __USER_DS
-# error "The following code assumes __USER32_DS == __USER_DS"
-#endif
-
-static inline void elf_common_init(struct thread_struct *t,
-				   struct pt_regs *regs, const u16 ds)
-{
-	regs->ax = regs->bx = regs->cx = regs->dx = 0;
-	regs->si = regs->di = regs->bp = 0;
-	regs->r8 = regs->r9 = regs->r10 = regs->r11 = 0;
-	regs->r12 = regs->r13 = regs->r14 = regs->r15 = 0;
-	t->fs = t->gs = 0;
-=======
 	((elf_check_arch_ia32(x) && ia32_enabled_verbose()) ||		\
 	 (IS_ENABLED(CONFIG_X86_X32_ABI) && (x)->e_machine == EM_X86_64))
 
@@ -230,7 +162,6 @@ static inline void elf_common_init(struct thread_struct *t,
 	regs->r8 = regs->r9 = regs->r10 = regs->r11 = 0;
 	regs->r12 = regs->r13 = regs->r14 = regs->r15 = 0;
 	t->fsbase = t->gsbase = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t->fsindex = t->gsindex = 0;
 	t->ds = t->es = ds;
 }
@@ -241,14 +172,9 @@ static inline void elf_common_init(struct thread_struct *t,
 #define	COMPAT_ELF_PLAT_INIT(regs, load_addr)		\
 	elf_common_init(&current->thread, regs, __USER_DS)
 
-<<<<<<< HEAD
-void start_thread_ia32(struct pt_regs *regs, u32 new_ip, u32 new_sp);
-#define compat_start_thread start_thread_ia32
-=======
 void compat_start_thread(struct pt_regs *regs, u32 new_ip, u32 new_sp, bool x32);
 #define COMPAT_START_THREAD(ex, regs, new_ip, new_sp)	\
 	compat_start_thread(regs, new_ip, new_sp, ex->e_machine == EM_X86_64)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void set_personality_ia32(bool);
 #define COMPAT_SET_PERSONALITY(ex)			\
@@ -286,13 +212,8 @@ do {								\
 	(pr_reg)[18] = (regs)->flags;				\
 	(pr_reg)[19] = (regs)->sp;				\
 	(pr_reg)[20] = (regs)->ss;				\
-<<<<<<< HEAD
-	(pr_reg)[21] = current->thread.fs;			\
-	(pr_reg)[22] = current->thread.gs;			\
-=======
 	(pr_reg)[21] = x86_fsbase_read_cpu();			\
 	(pr_reg)[22] = x86_gsbase_read_cpu_inactive();		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asm("movl %%ds,%0" : "=r" (v)); (pr_reg)[23] = v;	\
 	asm("movl %%es,%0" : "=r" (v)); (pr_reg)[24] = v;	\
 	asm("movl %%fs,%0" : "=r" (v)); (pr_reg)[25] = v;	\
@@ -302,10 +223,6 @@ do {								\
 /* I'm not sure if we can use '-' here */
 #define ELF_PLATFORM       ("x86_64")
 extern void set_personality_64bit(void);
-<<<<<<< HEAD
-extern unsigned int sysctl_vsyscall32;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int force_personality32;
 
 #endif /* !CONFIG_X86_32 */
@@ -313,14 +230,6 @@ extern int force_personality32;
 #define CORE_DUMP_USE_REGSET
 #define ELF_EXEC_PAGESIZE	4096
 
-<<<<<<< HEAD
-/* This is the location that an ET_DYN program is loaded if exec'ed.  Typical
-   use of this is to invoke "./ld.so someprog" to test out a new version of
-   the loader.  We need to make sure that it is out of the way of the program
-   that it will "exec", and that there is sufficient room for the brk.  */
-
-#define ELF_ET_DYN_BASE		(TASK_SIZE / 3 * 2)
-=======
 /*
  * This is the base location for PIE (ET_DYN with INTERP) loads. On
  * 64-bit, this is above 4GB to leave the entire 32-bit address
@@ -328,15 +237,11 @@ extern int force_personality32;
  */
 #define ELF_ET_DYN_BASE		(mmap_is_ia32() ? 0x000400000UL : \
 						  (DEFAULT_MAP_WINDOW / 3 * 2))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This yields a mask that user programs can use to figure out what
    instruction set this CPU supports.  This could be done in user space,
    but it's not easy, and we've already done it here.  */
 
-<<<<<<< HEAD
-#define ELF_HWCAP		(boot_cpu_data.x86_capability[0])
-=======
 #define ELF_HWCAP		(boot_cpu_data.x86_capability[CPUID_1_EDX])
 
 extern u32 elf_hwcap2;
@@ -347,7 +252,6 @@ extern u32 elf_hwcap2;
  * The bits are defined in uapi/asm/hwcap2.h.
  */
 #define ELF_HWCAP2		(elf_hwcap2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This yields a string that ld.so will use to load implementation
    specific libraries for optimization.  This is more specific in
@@ -361,29 +265,6 @@ extern u32 elf_hwcap2;
 /*
  * An executable for which elf_read_implies_exec() returns TRUE will
  * have the READ_IMPLIES_EXEC personality flag set automatically.
-<<<<<<< HEAD
- */
-#define elf_read_implies_exec(ex, executable_stack)	\
-	(executable_stack != EXSTACK_DISABLE_X)
-
-struct task_struct;
-
-#define	ARCH_DLINFO_IA32(vdso_enabled)					\
-do {									\
-	if (vdso_enabled) {						\
-		NEW_AUX_ENT(AT_SYSINFO,	VDSO_ENTRY);			\
-		NEW_AUX_ENT(AT_SYSINFO_EHDR, VDSO_CURRENT_BASE);	\
-	}								\
-} while (0)
-
-#ifdef CONFIG_X86_32
-
-#define STACK_RND_MASK (0x7ff)
-
-#define VDSO_HIGH_BASE		(__fix_to_virt(FIX_VDSO))
-
-#define ARCH_DLINFO		ARCH_DLINFO_IA32(vdso_enabled)
-=======
  *
  * The decision process for determining the results are:
  *
@@ -441,31 +322,11 @@ extern unsigned long get_sigframe_size(void);
 #define STACK_RND_MASK (0x7ff)
 
 #define ARCH_DLINFO		ARCH_DLINFO_IA32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* update AT_VECTOR_SIZE_ARCH if the number of NEW_AUX_ENT entries changes */
 
 #else /* CONFIG_X86_32 */
 
-<<<<<<< HEAD
-#define VDSO_HIGH_BASE		0xffffe000U /* CONFIG_COMPAT_VDSO address */
-
-/* 1GB for 64bit, 8MB for 32bit */
-#define STACK_RND_MASK (test_thread_flag(TIF_ADDR32) ? 0x7ff : 0x3fffff)
-
-#define ARCH_DLINFO							\
-do {									\
-	if (vdso_enabled)						\
-		NEW_AUX_ENT(AT_SYSINFO_EHDR,				\
-			    (unsigned long)current->mm->context.vdso);	\
-} while (0)
-
-#define ARCH_DLINFO_X32							\
-do {									\
-	if (vdso_enabled)						\
-		NEW_AUX_ENT(AT_SYSINFO_EHDR,				\
-			    (unsigned long)current->mm->context.vdso);	\
-=======
 /* 1GB for 64bit, 8MB for 32bit */
 #define __STACK_RND_MASK(is32bit) ((is32bit) ? 0x7ff : 0x3fffff)
 #define STACK_RND_MASK __STACK_RND_MASK(mmap_is_ia32())
@@ -485,23 +346,15 @@ do {									\
 		NEW_AUX_ENT(AT_SYSINFO_EHDR,				\
 			    (unsigned long __force)current->mm->context.vdso); \
 	NEW_AUX_ENT(AT_MINSIGSTKSZ, get_sigframe_size());		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 
 #define AT_SYSINFO		32
 
 #define COMPAT_ARCH_DLINFO						\
-<<<<<<< HEAD
-if (test_thread_flag(TIF_X32))						\
-	ARCH_DLINFO_X32;						\
-else									\
-	ARCH_DLINFO_IA32(sysctl_vsyscall32)
-=======
 if (exec->e_machine == EM_X86_64)					\
 	ARCH_DLINFO_X32;						\
 else if (IS_ENABLED(CONFIG_IA32_EMULATION))				\
 	ARCH_DLINFO_IA32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define COMPAT_ELF_ET_DYN_BASE	(TASK_UNMAPPED_BASE + 0x1000000)
 
@@ -510,50 +363,14 @@ else if (IS_ENABLED(CONFIG_IA32_EMULATION))				\
 #define VDSO_CURRENT_BASE	((unsigned long)current->mm->context.vdso)
 
 #define VDSO_ENTRY							\
-<<<<<<< HEAD
-	((unsigned long)VDSO32_SYMBOL(VDSO_CURRENT_BASE, vsyscall))
-=======
 	((unsigned long)current->mm->context.vdso +			\
 	 vdso_image_32.sym___kernel_vsyscall)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct linux_binprm;
 
 #define ARCH_HAS_SETUP_ADDITIONAL_PAGES 1
 extern int arch_setup_additional_pages(struct linux_binprm *bprm,
 				       int uses_interp);
-<<<<<<< HEAD
-extern int x32_setup_additional_pages(struct linux_binprm *bprm,
-				      int uses_interp);
-
-extern int syscall32_setup_pages(struct linux_binprm *, int exstack);
-#define compat_arch_setup_additional_pages	syscall32_setup_pages
-
-extern unsigned long arch_randomize_brk(struct mm_struct *mm);
-#define arch_randomize_brk arch_randomize_brk
-
-/*
- * True on X86_32 or when emulating IA32 on X86_64
- */
-static inline int mmap_is_ia32(void)
-{
-#ifdef CONFIG_X86_32
-	return 1;
-#endif
-#ifdef CONFIG_IA32_EMULATION
-	if (test_thread_flag(TIF_ADDR32))
-		return 1;
-#endif
-	return 0;
-}
-
-/* The first two values are special, do not change. See align_addr() */
-enum align_flags {
-	ALIGN_VA_32	= BIT(0),
-	ALIGN_VA_64	= BIT(1),
-	ALIGN_VDSO	= BIT(2),
-	ALIGN_TOPDOWN	= BIT(3),
-=======
 extern int compat_arch_setup_additional_pages(struct linux_binprm *bprm,
 					      int uses_interp, bool x32);
 #define COMPAT_ARCH_SETUP_ADDITIONAL_PAGES(bprm, ex, interpreter)	\
@@ -566,21 +383,13 @@ extern bool arch_syscall_is_vdso_sigreturn(struct pt_regs *regs);
 enum align_flags {
 	ALIGN_VA_32	= BIT(0),
 	ALIGN_VA_64	= BIT(1),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct va_alignment {
 	int flags;
 	unsigned long mask;
-<<<<<<< HEAD
-} ____cacheline_aligned;
-
-extern struct va_alignment va_align;
-extern unsigned long align_addr(unsigned long, struct file *, enum align_flags);
-=======
 	unsigned long bits;
 } ____cacheline_aligned;
 
 extern struct va_alignment va_align;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_ELF_H */

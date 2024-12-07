@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef PCI_BCM63XX_H_
 #define PCI_BCM63XX_H_
 
@@ -11,32 +8,22 @@
 #include <bcm63xx_dev_pci.h>
 
 /*
-<<<<<<< HEAD
- * Cardbus shares  the PCI bus, but has  no IDSEL, so a  special id is
-=======
  * Cardbus shares  the PCI bus, but has	 no IDSEL, so a	 special id is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * reserved for it.  If you have a standard PCI device at this id, you
  * need to change the following definition.
  */
 #define CARDBUS_PCI_IDSEL	0x8
 
-<<<<<<< HEAD
-=======
 
 #define PCIE_BUS_BRIDGE		0
 #define PCIE_BUS_DEVICE		1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * defined in ops-bcm63xx.c
  */
 extern struct pci_ops bcm63xx_pci_ops;
 extern struct pci_ops bcm63xx_cb_ops;
-<<<<<<< HEAD
-=======
 extern struct pci_ops bcm63xx_pcie_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * defined in pci-bcm63xx.c

@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-config CPU_FREQ_MAPLE
-	bool "Support for Maple 970FX Evaluation Board"
-	depends on PPC_MAPLE
-	select CPU_FREQ_TABLE
-	help
-	  This adds support for frequency switching on Maple 970FX
-	  Evaluation Board and compatible boards (IBM JS2x blades).
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config CPU_FREQ_CBE
 	tristate "CBE frequency scaling"
@@ -63,4 +54,3 @@ config POWERNV_CPUFREQ
 	help
 	 This adds support for CPU frequency switching on IBM POWERNV
 	 platform
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

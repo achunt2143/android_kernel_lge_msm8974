@@ -1,31 +1,9 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the kernel software RAID and LVM drivers.
 #
 
 dm-mod-y	+= dm.o dm-table.o dm-target.o dm-linear.o dm-stripe.o \
-<<<<<<< HEAD
-		   dm-ioctl.o dm-io.o dm-kcopyd.o dm-sysfs.o
-dm-multipath-y	+= dm-path-selector.o dm-mpath.o
-dm-snapshot-y	+= dm-snap.o dm-exception-store.o dm-snap-transient.o \
-		    dm-snap-persistent.o
-dm-mirror-y	+= dm-raid1.o
-dm-log-userspace-y \
-		+= dm-log-userspace-base.o dm-log-userspace-transfer.o
-dm-thin-pool-y	+= dm-thin.o dm-thin-metadata.o
-md-mod-y	+= md.o bitmap.o
-raid456-y	+= raid5.o
-
-# Note: link order is important.  All raid personalities
-# and must come before md.o, as they each initialise 
-# themselves, and md.o may use the personalities when it 
-# auto-initialised.
-
-obj-$(CONFIG_MD_LINEAR)		+= linear.o
-=======
 		   dm-ioctl.o dm-io.o dm-kcopyd.o dm-sysfs.o dm-stats.o \
 		   dm-rq.o dm-io-rewind.o
 dm-multipath-y	+= dm-path-selector.o dm-mpath.o
@@ -57,21 +35,10 @@ raid456-y	+= raid5.o raid5-cache.o raid5-ppl.o
 # themselves, and md.o may use the personalities when it
 # auto-initialised.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_MD_RAID0)		+= raid0.o
 obj-$(CONFIG_MD_RAID1)		+= raid1.o
 obj-$(CONFIG_MD_RAID10)		+= raid10.o
 obj-$(CONFIG_MD_RAID456)	+= raid456.o
-<<<<<<< HEAD
-obj-$(CONFIG_MD_MULTIPATH)	+= multipath.o
-obj-$(CONFIG_MD_FAULTY)		+= faulty.o
-obj-$(CONFIG_BLK_DEV_MD)	+= md-mod.o
-obj-$(CONFIG_BLK_DEV_DM)	+= dm-mod.o
-obj-$(CONFIG_BLK_DEV_DM_BUILTIN) += dm-builtin.o
-obj-$(CONFIG_DM_BUFIO)		+= dm-bufio.o
-obj-$(CONFIG_DM_CRYPT)		+= dm-crypt.o
-obj-$(CONFIG_DM_DELAY)		+= dm-delay.o
-=======
 obj-$(CONFIG_MD_CLUSTER)	+= md-cluster.o
 obj-$(CONFIG_BCACHE)		+= bcache/
 obj-$(CONFIG_BLK_DEV_MD)	+= md-mod.o
@@ -86,25 +53,10 @@ obj-$(CONFIG_DM_BIO_PRISON)	+= dm-bio-prison.o
 obj-$(CONFIG_DM_CRYPT)		+= dm-crypt.o
 obj-$(CONFIG_DM_DELAY)		+= dm-delay.o
 obj-$(CONFIG_DM_DUST)		+= dm-dust.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_DM_FLAKEY)		+= dm-flakey.o
 obj-$(CONFIG_DM_MULTIPATH)	+= dm-multipath.o dm-round-robin.o
 obj-$(CONFIG_DM_MULTIPATH_QL)	+= dm-queue-length.o
 obj-$(CONFIG_DM_MULTIPATH_ST)	+= dm-service-time.o
-<<<<<<< HEAD
-obj-$(CONFIG_DM_SNAPSHOT)	+= dm-snapshot.o
-obj-$(CONFIG_DM_PERSISTENT_DATA)	+= persistent-data/
-obj-$(CONFIG_DM_MIRROR)		+= dm-mirror.o dm-log.o dm-region-hash.o
-obj-$(CONFIG_DM_LOG_USERSPACE)	+= dm-log-userspace.o
-obj-$(CONFIG_DM_ZERO)		+= dm-zero.o
-obj-$(CONFIG_DM_RAID)	+= dm-raid.o
-obj-$(CONFIG_DM_THIN_PROVISIONING)	+= dm-thin-pool.o
-obj-$(CONFIG_DM_VERITY)		+= dm-verity.o
-obj-$(CONFIG_DM_REQ_CRYPT)		+= dm-req-crypt.o
-ifeq ($(CONFIG_DM_UEVENT),y)
-dm-mod-objs			+= dm-uevent.o
-endif
-=======
 obj-$(CONFIG_DM_MULTIPATH_HST)	+= dm-historical-service-time.o
 obj-$(CONFIG_DM_MULTIPATH_IOA)	+= dm-io-affinity.o
 obj-$(CONFIG_DM_SWITCH)		+= dm-switch.o
@@ -155,4 +107,3 @@ endif
 ifeq ($(CONFIG_DM_AUDIT),y)
 dm-mod-objs			+= dm-audit.o
 endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

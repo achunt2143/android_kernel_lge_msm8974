@@ -1,46 +1,19 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006-2007 PA Semi, Inc
  *
  * Maintained by: Olof Johansson <olof@lixom.net>
  *
  * Driver for the PWRficient onchip rng
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/platform_device.h>
-#include <linux/hw_random.h>
-#include <linux/delay.h>
-#include <linux/of_platform.h>
-#include <asm/io.h>
-=======
 #include <linux/mod_devicetable.h>
 #include <linux/platform_device.h>
 #include <linux/hw_random.h>
 #include <linux/delay.h>
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SDCRNG_CTL_REG			0x00
 #define   SDCRNG_CTL_FVLD_M		0x0000f000
@@ -109,47 +82,6 @@ static struct hwrng pasemi_rng = {
 	.data_read	= pasemi_rng_data_read,
 };
 
-<<<<<<< HEAD
-static int __devinit rng_probe(struct platform_device *ofdev)
-{
-	void __iomem *rng_regs;
-	struct device_node *rng_np = ofdev->dev.of_node;
-	struct resource res;
-	int err = 0;
-
-	err = of_address_to_resource(rng_np, 0, &res);
-	if (err)
-		return -ENODEV;
-
-	rng_regs = ioremap(res.start, 0x100);
-
-	if (!rng_regs)
-		return -ENOMEM;
-
-	pasemi_rng.priv = (unsigned long)rng_regs;
-
-	printk(KERN_INFO "Registering PA Semi RNG\n");
-
-	err = hwrng_register(&pasemi_rng);
-
-	if (err)
-		iounmap(rng_regs);
-
-	return err;
-}
-
-static int __devexit rng_remove(struct platform_device *dev)
-{
-	void __iomem *rng_regs = (void __iomem *)pasemi_rng.priv;
-
-	hwrng_unregister(&pasemi_rng);
-	iounmap(rng_regs);
-
-	return 0;
-}
-
-static struct of_device_id rng_match[] = {
-=======
 static int rng_probe(struct platform_device *pdev)
 {
 	void __iomem *rng_regs;
@@ -165,30 +97,18 @@ static int rng_probe(struct platform_device *pdev)
 }
 
 static const struct of_device_id rng_match[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible      = "1682m-rng", },
 	{ .compatible      = "pasemi,pwrficient-rng", },
 	{ },
 };
-<<<<<<< HEAD
-=======
 MODULE_DEVICE_TABLE(of, rng_match);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver rng_driver = {
 	.driver = {
 		.name = "pasemi-rng",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
 		.of_match_table = rng_match,
 	},
 	.probe		= rng_probe,
-	.remove		= rng_remove,
-=======
-		.of_match_table = rng_match,
-	},
-	.probe		= rng_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(rng_driver);

@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-#ifndef _XEN_PAGE_H
-#define _XEN_PAGE_H
-
-#include <asm/xen/page.h>
-
-struct xen_memory_region {
-	phys_addr_t start;
-	phys_addr_t size;
-};
-
-#define XEN_EXTRA_MEM_MAX_REGIONS 128 /* == E820MAX */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _XEN_PAGE_H
 #define _XEN_PAGE_H
@@ -52,7 +39,6 @@ struct xen_memory_region {
 };
 
 #define XEN_EXTRA_MEM_MAX_REGIONS 128 /* == E820_MAX_ENTRIES_ZEROPAGE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern __initdata
 struct xen_memory_region xen_extra_mem[XEN_EXTRA_MEM_MAX_REGIONS];

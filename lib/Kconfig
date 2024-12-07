@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Library configuration
 #
@@ -14,16 +11,6 @@ menu "Library routines"
 config RAID6_PQ
 	tristate
 
-<<<<<<< HEAD
-config BITREVERSE
-	tristate
-
-config RATIONAL
-	boolean
-
-config GENERIC_FIND_FIRST_BIT
-	bool
-=======
 config RAID6_PQ_BENCHMARK
 	bool "Automatically choose fastest RAID6 PQ functions"
 	depends on RAID6_PQ
@@ -79,26 +66,14 @@ config GENERIC_NET_UTILS
 	bool
 
 source "lib/math/Kconfig"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config NO_GENERIC_PCI_IOPORT_MAP
 	bool
 
-<<<<<<< HEAD
-config GENERIC_PCI_IOMAP
-	bool
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config GENERIC_IOMAP
 	bool
 	select GENERIC_PCI_IOMAP
 
-<<<<<<< HEAD
-config GENERIC_IO
-	boolean
-	default n
-=======
 config STMP_DEVICE
 	bool
 
@@ -150,7 +125,6 @@ config TRACE_MMIO_ACCESS
 	  can be used for logging all MMIO read/write operations.
 
 source "lib/crypto/Kconfig"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config CRC_CCITT
 	tristate "CRC-CCITT functions"
@@ -170,18 +144,13 @@ config CRC16
 
 config CRC_T10DIF
 	tristate "CRC calculation for the T10 Data Integrity Field"
-<<<<<<< HEAD
-=======
 	select CRYPTO
 	select CRYPTO_CRCT10DIF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option is only needed if a module that's not in the
 	  kernel tree needs to calculate CRC checks for use with the
 	  SCSI data integrity subsystem.
 
-<<<<<<< HEAD
-=======
 config CRC64_ROCKSOFT
 	tristate "CRC calculation for the Rocksoft model CRC64"
 	select CRC64
@@ -191,7 +160,6 @@ config CRC64_ROCKSOFT
 	  This option provides a CRC64 API to a registered crypto driver.
 	  This is used with the block layer's data integrity subsystem.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CRC_ITU_T
 	tristate "CRC ITU-T V.41 functions"
 	help
@@ -211,12 +179,7 @@ config CRC32
 	  functions require M here.
 
 config CRC32_SELFTEST
-<<<<<<< HEAD
-	bool "CRC32 perform self test on init"
-	default n
-=======
 	tristate "CRC32 perform self test on init"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on CRC32
 	help
 	  This option enables the CRC32 library functions to perform a
@@ -271,8 +234,6 @@ config CRC32_BIT
 
 endchoice
 
-<<<<<<< HEAD
-=======
 config CRC64
 	tristate "CRC64 functions"
 	help
@@ -289,7 +250,6 @@ config CRC4
 	  the kernel tree does. Such modules that use library CRC4
 	  functions require M here.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CRC7
 	tristate "CRC7 functions"
 	help
@@ -316,22 +276,14 @@ config CRC8
 	  when they need to do cyclic redundancy check according CRC8
 	  algorithm. Module will be called crc8.
 
-<<<<<<< HEAD
-=======
 config XXHASH
 	tristate
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config AUDIT_GENERIC
 	bool
 	depends on AUDIT && !AUDIT_ARCH
 	default y
 
-<<<<<<< HEAD
-#
-# compression support is select'ed if needed
-#
-=======
 config AUDIT_ARCH_COMPAT_GENERIC
 	bool
 	default n
@@ -358,14 +310,11 @@ config 842_DECOMPRESS
 	select CRC32
 	tristate
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ZLIB_INFLATE
 	tristate
 
 config ZLIB_DEFLATE
 	tristate
-<<<<<<< HEAD
-=======
 	select BITREVERSE
 
 config ZLIB_DFLTCC
@@ -374,7 +323,6 @@ config ZLIB_DFLTCC
 	prompt "Enable s390x DEFLATE CONVERSION CALL support for kernel zlib"
 	help
 	 Enable s390x hardware support for zlib in the kernel.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config LZO_COMPRESS
 	tristate
@@ -391,8 +339,6 @@ config LZ4HC_COMPRESS
 config LZ4_DECOMPRESS
 	tristate
 
-<<<<<<< HEAD
-=======
 config ZSTD_COMMON
 	select XXHASH
 	tristate
@@ -405,7 +351,6 @@ config ZSTD_DECOMPRESS
 	select ZSTD_COMMON
 	tristate
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "lib/xz/Kconfig"
 
 #
@@ -434,22 +379,15 @@ config DECOMPRESS_LZ4
 	select LZ4_DECOMPRESS
 	tristate
 
-<<<<<<< HEAD
-=======
 config DECOMPRESS_ZSTD
 	select ZSTD_DECOMPRESS
 	tristate
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Generic allocator support is selected if needed
 #
 config GENERIC_ALLOCATOR
-<<<<<<< HEAD
-	boolean
-=======
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # reed solomon support is select'ed if needed
@@ -458,18 +396,6 @@ config REED_SOLOMON
 	tristate
 	
 config REED_SOLOMON_ENC8
-<<<<<<< HEAD
-	boolean
-
-config REED_SOLOMON_DEC8
-	boolean
-
-config REED_SOLOMON_ENC16
-	boolean
-
-config REED_SOLOMON_DEC16
-	boolean
-=======
 	bool
 
 config REED_SOLOMON_DEC8
@@ -480,23 +406,16 @@ config REED_SOLOMON_ENC16
 
 config REED_SOLOMON_DEC16
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # BCH support is selected if needed
 #
 config BCH
 	tristate
-<<<<<<< HEAD
-
-config BCH_CONST_PARAMS
-	boolean
-=======
 	select BITREVERSE
 
 config BCH_CONST_PARAMS
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Drivers may select this option to force specific constant
 	  values for parameters 'm' (Galois field order) and 't'
@@ -532,11 +451,7 @@ config BCH_CONST_T
 # Textsearch support is select'ed if needed
 #
 config TEXTSEARCH
-<<<<<<< HEAD
-	boolean
-=======
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config TEXTSEARCH_KMP
 	tristate
@@ -548,25 +463,6 @@ config TEXTSEARCH_FSM
 	tristate
 
 config BTREE
-<<<<<<< HEAD
-	boolean
-
-config HAS_IOMEM
-	boolean
-	depends on !NO_IOMEM
-	select GENERIC_IO
-	default y
-
-config HAS_IOPORT
-	boolean
-	depends on HAS_IOMEM && !NO_IOPORT
-	default y
-
-config HAS_DMA
-	boolean
-	depends on !NO_DMA
-	default y
-=======
 	bool
 
 config INTERVAL_TREE
@@ -631,7 +527,6 @@ config SGL_ALLOC
 
 config IOMMU_HELPER
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config CHECK_SIGNATURE
 	bool
@@ -643,11 +538,6 @@ config CPUMASK_OFFSTACK
 	  them on the stack.  This is a bit more expensive, but avoids
 	  stack overflow.
 
-<<<<<<< HEAD
-config DISABLE_OBSOLETE_CPUMASK_FUNCTIONS
-       bool "Disable obsolete cpumask functions" if DEBUG_PER_CPU_MAPS
-       depends on EXPERIMENTAL && BROKEN
-=======
 config FORCE_NR_CPUS
        bool "Set number of CPUs at compile time"
        depends on SMP && EXPERT && !COMPILE_TEST
@@ -656,7 +546,6 @@ config FORCE_NR_CPUS
          CPUs in your system, not to a default value. This forces the core
          code to rely on compile-time value and optimize kernel routines
          better.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config CPU_RMAP
 	bool
@@ -665,8 +554,6 @@ config CPU_RMAP
 config DQL
 	bool
 
-<<<<<<< HEAD
-=======
 config GLOB
 	bool
 #	This actually supports modular compilation, but the module overhead
@@ -699,7 +586,6 @@ config GLOB_SELFTEST
 	  module load) by a small amount, so you're welcome to play with
 	  it, but you probably don't need it.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Netlink attribute parsing support is select'ed if needed
 #
@@ -715,26 +601,6 @@ config GENERIC_ATOMIC64
 config LRU_CACHE
 	tristate
 
-<<<<<<< HEAD
-config AVERAGE
-	bool "Averaging functions"
-	help
-	  This option is provided for the case where no in-kernel-tree
-	  modules require averaging functions, but a module built outside
-	  the kernel tree does. Such modules that use library averaging
-	  functions require Y here.
-
-	  If unsure, say N.
-
-config CLZ_TAB
-	bool
-
-config CORDIC
-	tristate "CORDIC algorithm"
-	help
-	  This option provides an implementation of the CORDIC algorithm;
-	  calculations are in fixed point. Module will be called cordic.
-=======
 config CLZ_TAB
 	bool
 
@@ -742,7 +608,6 @@ config IRQ_POLL
 	bool "IRQ polling library"
 	help
 	  Helper library to poll interrupt mitigation using polling.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MPILIB
 	tristate
@@ -752,49 +617,16 @@ config MPILIB
 	  It is used to implement RSA digital signature verification,
 	  which is used by IMA/EVM digital signature extension.
 
-<<<<<<< HEAD
-config MPILIB_EXTRA
-	bool
-	depends on MPILIB
-	help
-	  Additional sources of multiprecision maths library from GnuPG.
-	  This code is unnecessary for RSA digital signature verification,
-	  but can be compiled if needed.
-
-config SIGNATURE
-	tristate
-	depends on KEYS && CRYPTO
-=======
 config SIGNATURE
 	tristate
 	depends on KEYS
 	select CRYPTO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CRYPTO_SHA1
 	select MPILIB
 	help
 	  Digital signature verification. Currently only RSA is supported.
 	  Implementation is done using GnuPG MPI library
 
-<<<<<<< HEAD
-config QMI_ENCDEC
-	bool "QMI Encode/Decode Library"
-	help
-	  Library to encode & decode QMI messages from within
-	  the kernel. The kernel drivers encode the C structure into
-	  QMI message wire format and then send it over a transport.
-	  The kernel drivers receive the QMI message over a transport
-	  and then decode it into a C structure.
-
-config QMI_ENCDEC_DEBUG
-	bool "QMI Encode/Decode Library Debug"
-	help
-	  Kernel config option to enable debugging QMI Encode/Decode
-	  library. This will log the information regarding the element
-	  and message being encoded & decoded.
-
-endmenu
-=======
 config DIMLIB
 	bool
 	help
@@ -950,4 +782,3 @@ config POLYNOMIAL
 
 config FIRMWARE_TABLE
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux squashfs routines.
 #
 
 obj-$(CONFIG_SQUASHFS) += squashfs.o
 squashfs-y += block.o cache.o dir.o export.o file.o fragment.o id.o inode.o
-<<<<<<< HEAD
-squashfs-y += namei.o super.o symlink.o decompressor.o
-squashfs-$(CONFIG_SQUASHFS_XATTR) += xattr.o xattr_id.o
-squashfs-$(CONFIG_SQUASHFS_LZO) += lzo_wrapper.o
-squashfs-$(CONFIG_SQUASHFS_XZ) += xz_wrapper.o
-squashfs-$(CONFIG_SQUASHFS_ZLIB) += zlib_wrapper.o
-=======
 squashfs-y += namei.o super.o symlink.o decompressor.o page_actor.o
 squashfs-$(CONFIG_SQUASHFS_FILE_CACHE) += file_cache.o
 squashfs-$(CONFIG_SQUASHFS_FILE_DIRECT) += file_direct.o
@@ -27,4 +17,3 @@ squashfs-$(CONFIG_SQUASHFS_LZO) += lzo_wrapper.o
 squashfs-$(CONFIG_SQUASHFS_XZ) += xz_wrapper.o
 squashfs-$(CONFIG_SQUASHFS_ZLIB) += zlib_wrapper.o
 squashfs-$(CONFIG_SQUASHFS_ZSTD) += zstd_wrapper.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

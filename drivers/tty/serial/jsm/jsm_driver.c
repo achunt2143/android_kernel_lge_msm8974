@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /************************************************************************
  * Copyright 2003 Digi International (www.digi.com)
  *
  * Copyright (C) 2004 IBM Corporation. All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY, EXPRESS OR IMPLIED; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- * PURPOSE.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 * Temple Place - Suite 330, Boston,
- * MA  02111-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Contact Information:
  * Scott H Kilau <Scott_Kilau@digi.com>
  * Wendy Xiong   <wendyx@us.ibm.com>
@@ -37,17 +16,9 @@
 
 #include "jsm.h"
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Digi International, http://www.digi.com");
-MODULE_DESCRIPTION("Driver for the Digi International "
-		   "Neo PCI based product line");
-MODULE_LICENSE("GPL");
-MODULE_SUPPORTED_DEVICE("jsm");
-=======
 MODULE_AUTHOR("Digi International, https://www.digi.com");
 MODULE_DESCRIPTION("Driver for the Digi International Neo and Classic PCI based product line");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define JSM_DRIVER_NAME "jsm"
 #define NR_PORTS	32
@@ -63,19 +34,11 @@ struct uart_driver jsm_uart_driver = {
 };
 
 static pci_ers_result_t jsm_io_error_detected(struct pci_dev *pdev,
-<<<<<<< HEAD
-                                       pci_channel_state_t state);
-static pci_ers_result_t jsm_io_slot_reset(struct pci_dev *pdev);
-static void jsm_io_resume(struct pci_dev *pdev);
-
-static struct pci_error_handlers jsm_err_handler = {
-=======
 					pci_channel_state_t state);
 static pci_ers_result_t jsm_io_slot_reset(struct pci_dev *pdev);
 static void jsm_io_resume(struct pci_dev *pdev);
 
 static const struct pci_error_handlers jsm_err_handler = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.error_detected = jsm_io_error_detected,
 	.slot_reset = jsm_io_slot_reset,
 	.resume = jsm_io_resume,
@@ -85,19 +48,11 @@ int jsm_debug;
 module_param(jsm_debug, int, 0);
 MODULE_PARM_DESC(jsm_debug, "Driver debugging level");
 
-<<<<<<< HEAD
-static int __devinit jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
-{
-	int rc = 0;
-	struct jsm_board *brd;
-	static int adapter_count = 0;
-=======
 static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	int rc = 0;
 	struct jsm_board *brd;
 	static int adapter_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = pci_enable_device(pdev);
 	if (rc) {
@@ -105,25 +60,14 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	rc = pci_request_regions(pdev, "jsm");
-=======
 	rc = pci_request_regions(pdev, JSM_DRIVER_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		dev_err(&pdev->dev, "pci_request_region FAILED\n");
 		goto out_disable_device;
 	}
 
-<<<<<<< HEAD
-	brd = kzalloc(sizeof(struct jsm_board), GFP_KERNEL);
-	if (!brd) {
-		dev_err(&pdev->dev,
-			"memory allocation for board structure failed\n");
-=======
 	brd = kzalloc(sizeof(*brd), GFP_KERNEL);
 	if (!brd) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto out_release_regions;
 	}
@@ -131,14 +75,6 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	/* store the info for the board we've found */
 	brd->boardnum = adapter_count++;
 	brd->pci_dev = pdev;
-<<<<<<< HEAD
-	if (pdev->device == PCIE_DEVICE_ID_NEO_4_IBM)
-		brd->maxports = 4;
-	else if (pdev->device == PCI_DEVICE_ID_DIGI_NEO_8)
-		brd->maxports = 8;
-	else
-		brd->maxports = 2;
-=======
 
 	switch (pdev->device) {
 	case PCI_DEVICE_ID_NEO_2DB9:
@@ -170,7 +106,6 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		brd->maxports = 1;
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&brd->bd_intr_lock);
 
@@ -179,39 +114,6 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	brd->irq = pdev->irq;
 
-<<<<<<< HEAD
-	jsm_printk(INIT, INFO, &brd->pci_dev,
-		"jsm_found_board - NEO adapter\n");
-
-	/* get the PCI Base Address Registers */
-	brd->membase	= pci_resource_start(pdev, 0);
-	brd->membase_end = pci_resource_end(pdev, 0);
-
-	if (brd->membase & 1)
-		brd->membase &= ~3;
-	else
-		brd->membase &= ~15;
-
-	/* Assign the board_ops struct */
-	brd->bd_ops = &jsm_neo_ops;
-
-	brd->bd_uart_offset = 0x200;
-	brd->bd_dividend = 921600;
-
-	brd->re_map_membase = ioremap(brd->membase, pci_resource_len(pdev, 0));
-	if (!brd->re_map_membase) {
-		dev_err(&pdev->dev,
-			"card has no PCI Memory resources, "
-			"failing board.\n");
-		rc = -ENOMEM;
-		goto out_kfree_brd;
-	}
-
-	rc = request_irq(brd->irq, brd->bd_ops->intr,
-			IRQF_SHARED, "JSM", brd);
-	if (rc) {
-		printk(KERN_WARNING "Failed to hook IRQ %d\n",brd->irq);
-=======
 	switch (pdev->device) {
 	case PCI_DEVICE_ID_CLASSIC_4:
 	case PCI_DEVICE_ID_CLASSIC_4_422:
@@ -316,7 +218,6 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	rc = request_irq(brd->irq, brd->bd_ops->intr, IRQF_SHARED, "JSM", brd);
 	if (rc) {
 		dev_warn(&pdev->dev, "Failed to hook IRQ %d\n", brd->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_iounmap;
 	}
 
@@ -336,11 +237,7 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	/* Log the information about the board */
-<<<<<<< HEAD
-	dev_info(&pdev->dev, "board %d: Digi Neo (rev %d), irq %d\n",
-=======
 	dev_info(&pdev->dev, "board %d: Digi Classic/Neo (rev %d), irq %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			adapter_count, brd->rev, brd->irq);
 
 	pci_set_drvdata(pdev, brd);
@@ -362,17 +259,11 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	return rc;
 }
 
-<<<<<<< HEAD
-static void __devexit jsm_remove_one(struct pci_dev *pdev)
-=======
 static void jsm_remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jsm_board *brd = pci_get_drvdata(pdev);
 	int i = 0;
 
-<<<<<<< HEAD
-=======
 	switch (pdev->device) {
 	case PCI_DEVICE_ID_CLASSIC_4:
 	case PCI_DEVICE_ID_CLASSIC_4_422:
@@ -385,7 +276,6 @@ static void jsm_remove_one(struct pci_dev *pdev)
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jsm_remove_uart_port(brd);
 
 	free_irq(brd->irq, brd);
@@ -405,19 +295,13 @@ static void jsm_remove_one(struct pci_dev *pdev)
 	kfree(brd);
 }
 
-<<<<<<< HEAD
-static struct pci_device_id jsm_pci_tbl[] = {
-=======
 static const struct pci_device_id jsm_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9), 0, 0, 0 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9PRI), 0, 0, 1 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2RJ45), 0, 0, 2 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2RJ45PRI), 0, 0, 3 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_4_IBM), 0, 0, 4 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_DIGI_NEO_8), 0, 0, 5 },
-<<<<<<< HEAD
-=======
 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_4), 0, 0, 6 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_1_422), 0, 0, 7 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_1_422_485), 0, 0, 8 },
@@ -430,23 +314,15 @@ static const struct pci_device_id jsm_pci_tbl[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_CLASSIC_4_422), 0, 0, 15 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_CLASSIC_8), 0, 0, 16 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_CLASSIC_8_422), 0, 0, 17 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, jsm_pci_tbl);
 
 static struct pci_driver jsm_driver = {
-<<<<<<< HEAD
-	.name		= "jsm",
-	.id_table	= jsm_pci_tbl,
-	.probe		= jsm_probe_one,
-	.remove		= __devexit_p(jsm_remove_one),
-=======
 	.name		= JSM_DRIVER_NAME,
 	.id_table	= jsm_pci_tbl,
 	.probe		= jsm_probe_one,
 	.remove		= jsm_remove_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.err_handler    = &jsm_err_handler,
 };
 

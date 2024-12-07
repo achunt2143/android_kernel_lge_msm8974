@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menuconfig SND_FIREWIRE
 	bool "FireWire sound devices"
 	depends on FIREWIRE
@@ -13,24 +10,6 @@ if SND_FIREWIRE && FIREWIRE
 
 config SND_FIREWIRE_LIB
 	tristate
-<<<<<<< HEAD
-	depends on SND_PCM
-
-config SND_FIREWIRE_SPEAKERS
-	tristate "FireWire speakers"
-	select SND_PCM
-	select SND_FIREWIRE_LIB
-	help
-	  Say Y here to include support for the Griffin FireWave Surround
-	  and the LaCie FireWire Speakers.
-
-	  To compile this driver as a module, choose M here: the module
-	  will be called snd-firewire-speakers.
-
-config SND_ISIGHT
-	tristate "Apple iSight microphone"
-	select SND_PCM
-=======
 	select SND_PCM
 	select SND_RAWMIDI
 
@@ -87,7 +66,6 @@ config SND_OXFW
 
 config SND_ISIGHT
 	tristate "Apple iSight microphone"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_FIREWIRE_LIB
 	help
 	  Say Y here to include support for the front and rear microphones
@@ -96,8 +74,6 @@ config SND_ISIGHT
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-isight.
 
-<<<<<<< HEAD
-=======
 config SND_FIREWORKS
 	tristate "Echo Fireworks board module support"
 	select SND_FIREWIRE_LIB
@@ -223,5 +199,4 @@ config SND_FIREFACE
 	  * Fireface UCX
 	  * Fireface 802
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # SND_FIREWIRE

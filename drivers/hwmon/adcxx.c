@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * adcxx.c
  *
@@ -22,23 +19,6 @@
  *
  * Handling of 8, 10 and 12 bits converters are the same, the
  * unavailable bits are 0 :)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -64,13 +44,8 @@ struct adcxx {
 };
 
 /* sysfs hook function */
-<<<<<<< HEAD
-static ssize_t adcxx_read(struct device *dev,
-		struct device_attribute *devattr, char *buf)
-=======
 static ssize_t adcxx_show(struct device *dev,
 			  struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct spi_device *spi = to_spi_device(dev);
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
@@ -106,25 +81,15 @@ out:
 	return status;
 }
 
-<<<<<<< HEAD
-static ssize_t adcxx_show_min(struct device *dev,
-		struct device_attribute *devattr, char *buf)
-=======
 static ssize_t adcxx_min_show(struct device *dev,
 			      struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* The minimum reference is 0 for this chip family */
 	return sprintf(buf, "0\n");
 }
 
-<<<<<<< HEAD
-static ssize_t adcxx_show_max(struct device *dev,
-		struct device_attribute *devattr, char *buf)
-=======
 static ssize_t adcxx_max_show(struct device *dev,
 			      struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct spi_device *spi = to_spi_device(dev);
 	struct adcxx *adc = spi_get_drvdata(spi);
@@ -140,14 +105,9 @@ static ssize_t adcxx_max_show(struct device *dev,
 	return sprintf(buf, "%d\n", reference);
 }
 
-<<<<<<< HEAD
-static ssize_t adcxx_set_max(struct device *dev,
-	struct device_attribute *devattr, const char *buf, size_t count)
-=======
 static ssize_t adcxx_max_store(struct device *dev,
 			       struct device_attribute *devattr,
 			       const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct spi_device *spi = to_spi_device(dev);
 	struct adcxx *adc = spi_get_drvdata(spi);
@@ -166,30 +126,6 @@ static ssize_t adcxx_max_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t adcxx_show_name(struct device *dev, struct device_attribute
-			      *devattr, char *buf)
-{
-	struct spi_device *spi = to_spi_device(dev);
-	struct adcxx *adc = spi_get_drvdata(spi);
-
-	return sprintf(buf, "adcxx%ds\n", adc->channels);
-}
-
-static struct sensor_device_attribute ad_input[] = {
-	SENSOR_ATTR(name, S_IRUGO, adcxx_show_name, NULL, 0),
-	SENSOR_ATTR(in_min, S_IRUGO, adcxx_show_min, NULL, 0),
-	SENSOR_ATTR(in_max, S_IWUSR | S_IRUGO, adcxx_show_max,
-					adcxx_set_max, 0),
-	SENSOR_ATTR(in0_input, S_IRUGO, adcxx_read, NULL, 0),
-	SENSOR_ATTR(in1_input, S_IRUGO, adcxx_read, NULL, 1),
-	SENSOR_ATTR(in2_input, S_IRUGO, adcxx_read, NULL, 2),
-	SENSOR_ATTR(in3_input, S_IRUGO, adcxx_read, NULL, 3),
-	SENSOR_ATTR(in4_input, S_IRUGO, adcxx_read, NULL, 4),
-	SENSOR_ATTR(in5_input, S_IRUGO, adcxx_read, NULL, 5),
-	SENSOR_ATTR(in6_input, S_IRUGO, adcxx_read, NULL, 6),
-	SENSOR_ATTR(in7_input, S_IRUGO, adcxx_read, NULL, 7),
-=======
 static ssize_t adcxx_name_show(struct device *dev,
 			       struct device_attribute *devattr, char *buf)
 {
@@ -208,27 +144,18 @@ static struct sensor_device_attribute ad_input[] = {
 	SENSOR_ATTR_RO(in5_input, adcxx, 5),
 	SENSOR_ATTR_RO(in6_input, adcxx, 6),
 	SENSOR_ATTR_RO(in7_input, adcxx, 7),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*----------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-static int __devinit adcxx_probe(struct spi_device *spi)
-=======
 static int adcxx_probe(struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int channels = spi_get_device_id(spi)->driver_data;
 	struct adcxx *adc;
 	int status;
 	int i;
 
-<<<<<<< HEAD
-	adc = kzalloc(sizeof *adc, GFP_KERNEL);
-=======
 	adc = devm_kzalloc(&spi->dev, sizeof(*adc), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!adc)
 		return -ENOMEM;
 
@@ -263,21 +190,11 @@ out_err:
 	for (i--; i >= 0; i--)
 		device_remove_file(&spi->dev, &ad_input[i].dev_attr);
 
-<<<<<<< HEAD
-	spi_set_drvdata(spi, NULL);
-	mutex_unlock(&adc->lock);
-	kfree(adc);
-	return status;
-}
-
-static int __devexit adcxx_remove(struct spi_device *spi)
-=======
 	mutex_unlock(&adc->lock);
 	return status;
 }
 
 static void adcxx_remove(struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adcxx *adc = spi_get_drvdata(spi);
 	int i;
@@ -287,15 +204,7 @@ static void adcxx_remove(struct spi_device *spi)
 	for (i = 0; i < 3 + adc->channels; i++)
 		device_remove_file(&spi->dev, &ad_input[i].dev_attr);
 
-<<<<<<< HEAD
-	spi_set_drvdata(spi, NULL);
 	mutex_unlock(&adc->lock);
-	kfree(adc);
-
-	return 0;
-=======
-	mutex_unlock(&adc->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct spi_device_id adcxx_ids[] = {
@@ -310,18 +219,10 @@ MODULE_DEVICE_TABLE(spi, adcxx_ids);
 static struct spi_driver adcxx_driver = {
 	.driver = {
 		.name	= "adcxx",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.id_table = adcxx_ids,
-	.probe	= adcxx_probe,
-	.remove	= __devexit_p(adcxx_remove),
-=======
 	},
 	.id_table = adcxx_ids,
 	.probe	= adcxx_probe,
 	.remove	= adcxx_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(adcxx_driver);

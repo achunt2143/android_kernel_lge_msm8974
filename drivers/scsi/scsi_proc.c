@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/scsi/scsi_proc.c
  *
@@ -30,11 +27,7 @@
 #include <linux/seq_file.h>
 #include <linux/mutex.h>
 #include <linux/gfp.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_device.h>
@@ -50,47 +43,6 @@
 
 static struct proc_dir_entry *proc_scsi;
 
-<<<<<<< HEAD
-/* Protect sht->present and sht->proc_dir */
-static DEFINE_MUTEX(global_host_template_mutex);
-
-/**
- * proc_scsi_read - handle read from /proc by calling host's proc_info() command
- * @buffer: passed to proc_info
- * @start: passed to proc_info
- * @offset: passed to proc_info
- * @length: passed to proc_info
- * @eof: returns whether length read was less than requested
- * @data: pointer to a &struct Scsi_Host
- */
-
-static int proc_scsi_read(char *buffer, char **start, off_t offset,
-			  int length, int *eof, void *data)
-{
-	struct Scsi_Host *shost = data;
-	int n;
-
-	n = shost->hostt->proc_info(shost, buffer, start, offset, length, 0);
-	*eof = (n < length);
-
-	return n;
-}
-
-/**
- * proc_scsi_write_proc - Handle write to /proc by calling host's proc_info()
- * @file: not used
- * @buf: source of data to write.
- * @count: number of bytes (at most PROC_BLOCK_SIZE) to write.
- * @data: pointer to &struct Scsi_Host
- */
-static int proc_scsi_write_proc(struct file *file, const char __user *buf,
-                           unsigned long count, void *data)
-{
-	struct Scsi_Host *shost = data;
-	ssize_t ret = -ENOMEM;
-	char *page;
-	char *start;
-=======
 /* Protects scsi_proc_list */
 static DEFINE_MUTEX(global_host_template_mutex);
 static LIST_HEAD(scsi_proc_list);
@@ -115,35 +67,25 @@ static ssize_t proc_scsi_host_write(struct file *file, const char __user *buf,
 	struct Scsi_Host *shost = pde_data(file_inode(file));
 	ssize_t ret = -ENOMEM;
 	char *page;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     
 	if (count > PROC_BLOCK_SIZE)
 		return -EOVERFLOW;
 
-<<<<<<< HEAD
-=======
 	if (!shost->hostt->write_info)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	page = (char *)__get_free_page(GFP_KERNEL);
 	if (page) {
 		ret = -EFAULT;
 		if (copy_from_user(page, buf, count))
 			goto out;
-<<<<<<< HEAD
-		ret = shost->hostt->proc_info(shost, page, &start, 0, count, 1);
-=======
 		ret = shost->hostt->write_info(shost, page, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	free_page((unsigned long)page);
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int proc_scsi_show(struct seq_file *m, void *v)
 {
 	struct Scsi_Host *shost = m->private;
@@ -203,29 +145,12 @@ static const struct proc_ops proc_scsi_ops = {
 	.proc_write	= proc_scsi_host_write
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * scsi_proc_hostdir_add - Create directory in /proc for a scsi host
  * @sht: owner of this directory
  *
  * Sets sht->proc_dir to the new directory.
  */
-<<<<<<< HEAD
-
-void scsi_proc_hostdir_add(struct scsi_host_template *sht)
-{
-	if (!sht->proc_info)
-		return;
-
-	mutex_lock(&global_host_template_mutex);
-	if (!sht->present++) {
-		sht->proc_dir = proc_mkdir(sht->proc_name, proc_scsi);
-        	if (!sht->proc_dir)
-			printk(KERN_ERR "%s: proc_mkdir failed for %s\n",
-			       __func__, sht->proc_name);
-	}
-	mutex_unlock(&global_host_template_mutex);
-=======
 int scsi_proc_hostdir_add(const struct scsi_host_template *sht)
 {
 	struct scsi_proc_entry *e;
@@ -262,24 +187,12 @@ unlock:
 
 	kfree(e);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * scsi_proc_hostdir_rm - remove directory in /proc for a scsi host
  * @sht: owner of directory
  */
-<<<<<<< HEAD
-void scsi_proc_hostdir_rm(struct scsi_host_template *sht)
-{
-	if (!sht->proc_info)
-		return;
-
-	mutex_lock(&global_host_template_mutex);
-	if (!--sht->present && sht->proc_dir) {
-		remove_proc_entry(sht->proc_name, proc_scsi);
-		sht->proc_dir = NULL;
-=======
 void scsi_proc_hostdir_rm(const struct scsi_host_template *sht)
 {
 	struct scsi_proc_entry *e;
@@ -293,7 +206,6 @@ void scsi_proc_hostdir_rm(const struct scsi_host_template *sht)
 		remove_proc_entry(sht->proc_name, proc_scsi);
 		list_del(&e->entry);
 		kfree(e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&global_host_template_mutex);
 }
@@ -305,26 +217,6 @@ void scsi_proc_hostdir_rm(const struct scsi_host_template *sht)
  */
 void scsi_proc_host_add(struct Scsi_Host *shost)
 {
-<<<<<<< HEAD
-	struct scsi_host_template *sht = shost->hostt;
-	struct proc_dir_entry *p;
-	char name[10];
-
-	if (!sht->proc_dir)
-		return;
-
-	sprintf(name,"%d", shost->host_no);
-	p = create_proc_read_entry(name, S_IFREG | S_IRUGO | S_IWUSR,
-			sht->proc_dir, proc_scsi_read, shost);
-	if (!p) {
-		printk(KERN_ERR "%s: Failed to register host %d in"
-		       "%s\n", __func__, shost->host_no,
-		       sht->proc_name);
-		return;
-	} 
-
-	p->write_proc = proc_scsi_write_proc;
-=======
 	const struct scsi_host_template *sht = shost->hostt;
 	struct scsi_proc_entry *e;
 	struct proc_dir_entry *p;
@@ -348,7 +240,6 @@ err:
 	shost_printk(KERN_ERR, shost,
 		     "%s: Failed to register host (%s failed)\n", __func__,
 		     e ? "proc_create_data()" : "scsi_proc_hostdir_add()");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -357,15 +248,6 @@ err:
  */
 void scsi_proc_host_rm(struct Scsi_Host *shost)
 {
-<<<<<<< HEAD
-	char name[10];
-
-	if (!shost->hostt->proc_dir)
-		return;
-
-	sprintf(name,"%d", shost->host_no);
-	remove_proc_entry(name, shost->hostt->proc_dir);
-=======
 	const struct scsi_host_template *sht = shost->hostt;
 	struct scsi_proc_entry *e;
 	char name[10];
@@ -379,7 +261,6 @@ void scsi_proc_host_rm(struct Scsi_Host *shost)
 
 	sprintf(name,"%d", shost->host_no);
 	remove_proc_entry(name, e->proc_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 /**
  * proc_print_scsidevice - return data about this host
@@ -400,34 +281,6 @@ static int proc_print_scsidevice(struct device *dev, void *data)
 
 	sdev = to_scsi_device(dev);
 	seq_printf(s,
-<<<<<<< HEAD
-		"Host: scsi%d Channel: %02d Id: %02d Lun: %02d\n  Vendor: ",
-		sdev->host->host_no, sdev->channel, sdev->id, sdev->lun);
-	for (i = 0; i < 8; i++) {
-		if (sdev->vendor[i] >= 0x20)
-			seq_printf(s, "%c", sdev->vendor[i]);
-		else
-			seq_printf(s, " ");
-	}
-
-	seq_printf(s, " Model: ");
-	for (i = 0; i < 16; i++) {
-		if (sdev->model[i] >= 0x20)
-			seq_printf(s, "%c", sdev->model[i]);
-		else
-			seq_printf(s, " ");
-	}
-
-	seq_printf(s, " Rev: ");
-	for (i = 0; i < 4; i++) {
-		if (sdev->rev[i] >= 0x20)
-			seq_printf(s, "%c", sdev->rev[i]);
-		else
-			seq_printf(s, " ");
-	}
-
-	seq_printf(s, "\n");
-=======
 		"Host: scsi%d Channel: %02d Id: %02d Lun: %02llu\n  Vendor: ",
 		sdev->host->host_no, sdev->channel, sdev->id, sdev->lun);
 	for (i = 0; i < 8; i++) {
@@ -454,21 +307,14 @@ static int proc_print_scsidevice(struct device *dev, void *data)
 	}
 
 	seq_putc(s, '\n');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seq_printf(s, "  Type:   %s ", scsi_device_type(sdev->type));
 	seq_printf(s, "               ANSI  SCSI revision: %02x",
 			sdev->scsi_level - (sdev->scsi_level > 1));
 	if (sdev->scsi_level == 2)
-<<<<<<< HEAD
-		seq_printf(s, " CCS\n");
-	else
-		seq_printf(s, "\n");
-=======
 		seq_puts(s, " CCS\n");
 	else
 		seq_putc(s, '\n');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return 0;
@@ -501,12 +347,8 @@ static int scsi_add_single_device(uint host, uint channel, uint id, uint lun)
 	if (shost->transportt->user_scan)
 		error = shost->transportt->user_scan(shost, channel, id, lun);
 	else
-<<<<<<< HEAD
-		error = scsi_scan_host_selected(shost, channel, id, lun, 1);
-=======
 		error = scsi_scan_host_selected(shost, channel, id, lun,
 						SCSI_SCAN_MANUAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_host_put(shost);
 	return error;
 }
@@ -564,11 +406,7 @@ static ssize_t proc_scsi_write(struct file *file, const char __user *buf,
 			       size_t length, loff_t *ppos)
 {
 	int host, channel, id, lun;
-<<<<<<< HEAD
-	char *buffer, *p;
-=======
 	char *buffer, *end, *p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (!buf || length > PAGE_SIZE)
@@ -583,12 +421,6 @@ static ssize_t proc_scsi_write(struct file *file, const char __user *buf,
 		goto out;
 
 	err = -EINVAL;
-<<<<<<< HEAD
-	if (length < PAGE_SIZE)
-		buffer[length] = '\0';
-	else if (buffer[PAGE_SIZE-1])
-		goto out;
-=======
 	if (length < PAGE_SIZE) {
 		end = buffer + length;
 		*end = '\0';
@@ -597,7 +429,6 @@ static ssize_t proc_scsi_write(struct file *file, const char __user *buf,
 		if (*end)
 			goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Usage: echo "scsi add-single-device 0 1 2 3" >/proc/scsi/scsi
@@ -606,17 +437,10 @@ static ssize_t proc_scsi_write(struct file *file, const char __user *buf,
 	if (!strncmp("scsi add-single-device", buffer, 22)) {
 		p = buffer + 23;
 
-<<<<<<< HEAD
-		host = simple_strtoul(p, &p, 0);
-		channel = simple_strtoul(p + 1, &p, 0);
-		id = simple_strtoul(p + 1, &p, 0);
-		lun = simple_strtoul(p + 1, &p, 0);
-=======
 		host    = (p     < end) ? simple_strtoul(p, &p, 0) : 0;
 		channel = (p + 1 < end) ? simple_strtoul(p + 1, &p, 0) : 0;
 		id      = (p + 1 < end) ? simple_strtoul(p + 1, &p, 0) : 0;
 		lun     = (p + 1 < end) ? simple_strtoul(p + 1, &p, 0) : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = scsi_add_single_device(host, channel, id, lun);
 
@@ -627,17 +451,10 @@ static ssize_t proc_scsi_write(struct file *file, const char __user *buf,
 	} else if (!strncmp("scsi remove-single-device", buffer, 25)) {
 		p = buffer + 26;
 
-<<<<<<< HEAD
-		host = simple_strtoul(p, &p, 0);
-		channel = simple_strtoul(p + 1, &p, 0);
-		id = simple_strtoul(p + 1, &p, 0);
-		lun = simple_strtoul(p + 1, &p, 0);
-=======
 		host    = (p     < end) ? simple_strtoul(p, &p, 0) : 0;
 		channel = (p + 1 < end) ? simple_strtoul(p + 1, &p, 0) : 0;
 		id      = (p + 1 < end) ? simple_strtoul(p + 1, &p, 0) : 0;
 		lun     = (p + 1 < end) ? simple_strtoul(p + 1, &p, 0) : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = scsi_remove_single_device(host, channel, id, lun);
 	}
@@ -654,22 +471,10 @@ static ssize_t proc_scsi_write(struct file *file, const char __user *buf,
 	return err;
 }
 
-<<<<<<< HEAD
-static int always_match(struct device *dev, void *data)
-{
-	return 1;
-}
-
-static inline struct device *next_scsi_device(struct device *start)
-{
-	struct device *next = bus_find_device(&scsi_bus_type, start, NULL,
-					      always_match);
-=======
 static inline struct device *next_scsi_device(struct device *start)
 {
 	struct device *next = bus_find_next_device(&scsi_bus_type, start);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_device(start);
 	return next;
 }
@@ -730,22 +535,12 @@ static int proc_scsi_open(struct inode *inode, struct file *file)
 	return seq_open(file, &scsi_seq_ops);
 }
 
-<<<<<<< HEAD
-static const struct file_operations proc_scsi_operations = {
-	.owner		= THIS_MODULE,
-	.open		= proc_scsi_open,
-	.read		= seq_read,
-	.write		= proc_scsi_write,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-=======
 static const struct proc_ops scsi_scsi_proc_ops = {
 	.proc_open	= proc_scsi_open,
 	.proc_read	= seq_read,
 	.proc_write	= proc_scsi_write,
 	.proc_lseek	= seq_lseek,
 	.proc_release	= seq_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -759,11 +554,7 @@ int __init scsi_init_procfs(void)
 	if (!proc_scsi)
 		goto err1;
 
-<<<<<<< HEAD
-	pde = proc_create("scsi/scsi", 0, NULL, &proc_scsi_operations);
-=======
 	pde = proc_create("scsi/scsi", 0, NULL, &scsi_scsi_proc_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pde)
 		goto err2;
 

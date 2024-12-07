@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1997, 2001 Ralf Baechle (ralf@gnu.org),
  * derived from r4xx0.c by David S. Miller (davem@davemloft.net).
@@ -15,10 +12,6 @@
 #include <asm/bcache.h>
 #include <asm/cacheops.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mmu_context.h>
 #include <asm/r4kcache.h>
 
@@ -65,11 +58,7 @@ static void r5k_dma_cache_inv_sc(unsigned long addr, unsigned long size)
 
 static void r5k_sc_enable(void)
 {
-<<<<<<< HEAD
-        unsigned long flags;
-=======
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local_irq_save(flags);
 	set_c0_config(R5K_CONF_SE);
@@ -79,11 +68,7 @@ static void r5k_sc_enable(void)
 
 static void r5k_sc_disable(void)
 {
-<<<<<<< HEAD
-        unsigned long flags;
-=======
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local_irq_save(flags);
 	blast_r5000_scache();
@@ -96,11 +81,7 @@ static inline int __init r5k_sc_probe(void)
 	unsigned long config = read_c0_config();
 
 	if (config & CONF_SC)
-<<<<<<< HEAD
-		return(0);
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scache_size = (512 * 1024) << ((config & R5K_CONF_SS) >> 20);
 
@@ -117,11 +98,7 @@ static struct bcache_ops r5k_sc_ops = {
 	.bc_inv = r5k_dma_cache_inv_sc
 };
 
-<<<<<<< HEAD
-void __cpuinit r5k_sc_init(void)
-=======
 void r5k_sc_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (r5k_sc_probe()) {
 		r5k_sc_enable();

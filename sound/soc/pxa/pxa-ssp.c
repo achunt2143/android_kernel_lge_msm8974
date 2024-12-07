@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pxa-ssp.c  --  ALSA Soc Audio Layer
  *
@@ -9,14 +6,6 @@
  * Author: Liam Girdwood
  *         Mark Brown <broonie@opensource.wolfsonmicro.com>
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TODO:
  *  o Test network mode for > 16bit sample size
  */
@@ -28,11 +17,8 @@
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/pxa2xx_ssp.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
 #include <linux/dmaengine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/irq.h>
 
@@ -42,17 +28,8 @@
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 #include <sound/pxa2xx-lib.h>
-<<<<<<< HEAD
-
-#include <mach/hardware.h>
-#include <mach/dma.h>
-#include <mach/audio.h>
-
-#include "../../arm/pxa2xx-pcm.h"
-=======
 #include <sound/dmaengine_pcm.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "pxa-ssp.h"
 
 /*
@@ -60,16 +37,11 @@
  */
 struct ssp_priv {
 	struct ssp_device *ssp;
-<<<<<<< HEAD
-	unsigned int sysclk;
-	int dai_fmt;
-=======
 	struct clk *extclk;
 	unsigned long ssp_clk;
 	unsigned int sysclk;
 	unsigned int dai_fmt;
 	unsigned int configured_dai_fmt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	uint32_t	cr0;
 	uint32_t	cr1;
@@ -80,66 +52,15 @@ struct ssp_priv {
 
 static void dump_registers(struct ssp_device *ssp)
 {
-<<<<<<< HEAD
-	dev_dbg(&ssp->pdev->dev, "SSCR0 0x%08x SSCR1 0x%08x SSTO 0x%08x\n",
-		 pxa_ssp_read_reg(ssp, SSCR0), pxa_ssp_read_reg(ssp, SSCR1),
-		 pxa_ssp_read_reg(ssp, SSTO));
-
-	dev_dbg(&ssp->pdev->dev, "SSPSP 0x%08x SSSR 0x%08x SSACD 0x%08x\n",
-=======
 	dev_dbg(ssp->dev, "SSCR0 0x%08x SSCR1 0x%08x SSTO 0x%08x\n",
 		 pxa_ssp_read_reg(ssp, SSCR0), pxa_ssp_read_reg(ssp, SSCR1),
 		 pxa_ssp_read_reg(ssp, SSTO));
 
 	dev_dbg(ssp->dev, "SSPSP 0x%08x SSSR 0x%08x SSACD 0x%08x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 pxa_ssp_read_reg(ssp, SSPSP), pxa_ssp_read_reg(ssp, SSSR),
 		 pxa_ssp_read_reg(ssp, SSACD));
 }
 
-<<<<<<< HEAD
-static void pxa_ssp_enable(struct ssp_device *ssp)
-{
-	uint32_t sscr0;
-
-	sscr0 = __raw_readl(ssp->mmio_base + SSCR0) | SSCR0_SSE;
-	__raw_writel(sscr0, ssp->mmio_base + SSCR0);
-}
-
-static void pxa_ssp_disable(struct ssp_device *ssp)
-{
-	uint32_t sscr0;
-
-	sscr0 = __raw_readl(ssp->mmio_base + SSCR0) & ~SSCR0_SSE;
-	__raw_writel(sscr0, ssp->mmio_base + SSCR0);
-}
-
-struct pxa2xx_pcm_dma_data {
-	struct pxa2xx_pcm_dma_params params;
-	char name[20];
-};
-
-static struct pxa2xx_pcm_dma_params *
-pxa_ssp_get_dma_params(struct ssp_device *ssp, int width4, int out)
-{
-	struct pxa2xx_pcm_dma_data *dma;
-
-	dma = kzalloc(sizeof(struct pxa2xx_pcm_dma_data), GFP_KERNEL);
-	if (dma == NULL)
-		return NULL;
-
-	snprintf(dma->name, 20, "SSP%d PCM %s %s", ssp->port_id,
-			width4 ? "32-bit" : "16-bit", out ? "out" : "in");
-
-	dma->params.name = dma->name;
-	dma->params.drcmr = &DRCMR(out ? ssp->drcmr_tx : ssp->drcmr_rx);
-	dma->params.dcmd = (out ? (DCMD_INCSRCADDR | DCMD_FLOWTRG) :
-				  (DCMD_INCTRGADDR | DCMD_FLOWSRC)) |
-			(width4 ? DCMD_WIDTH4 : DCMD_WIDTH2) | DCMD_BURST16;
-	dma->params.dev_addr = ssp->phys_base + SSDR;
-
-	return &dma->params;
-=======
 static void pxa_ssp_set_dma_params(struct ssp_device *ssp, int width4,
 			int out, struct snd_dmaengine_dai_dma_data *dma)
 {
@@ -147,7 +68,6 @@ static void pxa_ssp_set_dma_params(struct ssp_device *ssp, int width4,
 				   DMA_SLAVE_BUSWIDTH_2_BYTES;
 	dma->maxburst = 16;
 	dma->addr = ssp->phys_base + SSDR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pxa_ssp_startup(struct snd_pcm_substream *substream,
@@ -155,17 +75,6 @@ static int pxa_ssp_startup(struct snd_pcm_substream *substream,
 {
 	struct ssp_priv *priv = snd_soc_dai_get_drvdata(cpu_dai);
 	struct ssp_device *ssp = priv->ssp;
-<<<<<<< HEAD
-	int ret = 0;
-
-	if (!cpu_dai->active) {
-		clk_enable(ssp->clk);
-		pxa_ssp_disable(ssp);
-	}
-
-	kfree(snd_soc_dai_get_dma_data(cpu_dai, substream));
-	snd_soc_dai_set_dma_data(cpu_dai, substream, NULL);
-=======
 	struct snd_dmaengine_dai_dma_data *dma;
 	int ret = 0;
 
@@ -183,7 +92,6 @@ static int pxa_ssp_startup(struct snd_pcm_substream *substream,
 		"tx" : "rx";
 
 	snd_soc_dai_set_dma_data(cpu_dai, substream, dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -194,13 +102,6 @@ static void pxa_ssp_shutdown(struct snd_pcm_substream *substream,
 	struct ssp_priv *priv = snd_soc_dai_get_drvdata(cpu_dai);
 	struct ssp_device *ssp = priv->ssp;
 
-<<<<<<< HEAD
-	if (!cpu_dai->active) {
-		pxa_ssp_disable(ssp);
-		clk_disable(ssp->clk);
-	}
-
-=======
 	if (!snd_soc_dai_active(cpu_dai)) {
 		pxa_ssp_disable(ssp);
 		clk_disable_unprepare(ssp->clk);
@@ -208,22 +109,12 @@ static void pxa_ssp_shutdown(struct snd_pcm_substream *substream,
 
 	clk_disable_unprepare(priv->extclk);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(snd_soc_dai_get_dma_data(cpu_dai, substream));
 	snd_soc_dai_set_dma_data(cpu_dai, substream, NULL);
 }
 
 #ifdef CONFIG_PM
 
-<<<<<<< HEAD
-static int pxa_ssp_suspend(struct snd_soc_dai *cpu_dai)
-{
-	struct ssp_priv *priv = snd_soc_dai_get_drvdata(cpu_dai);
-	struct ssp_device *ssp = priv->ssp;
-
-	if (!cpu_dai->active)
-		clk_enable(ssp->clk);
-=======
 static int pxa_ssp_suspend(struct snd_soc_component *component)
 {
 	struct ssp_priv *priv = snd_soc_component_get_drvdata(component);
@@ -231,7 +122,6 @@ static int pxa_ssp_suspend(struct snd_soc_component *component)
 
 	if (!snd_soc_component_active(component))
 		clk_prepare_enable(ssp->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->cr0 = __raw_readl(ssp->mmio_base + SSCR0);
 	priv->cr1 = __raw_readl(ssp->mmio_base + SSCR1);
@@ -239,19 +129,6 @@ static int pxa_ssp_suspend(struct snd_soc_component *component)
 	priv->psp = __raw_readl(ssp->mmio_base + SSPSP);
 
 	pxa_ssp_disable(ssp);
-<<<<<<< HEAD
-	clk_disable(ssp->clk);
-	return 0;
-}
-
-static int pxa_ssp_resume(struct snd_soc_dai *cpu_dai)
-{
-	struct ssp_priv *priv = snd_soc_dai_get_drvdata(cpu_dai);
-	struct ssp_device *ssp = priv->ssp;
-	uint32_t sssr = SSSR_ROR | SSSR_TUR | SSSR_BCE;
-
-	clk_enable(ssp->clk);
-=======
 	clk_disable_unprepare(ssp->clk);
 	return 0;
 }
@@ -263,7 +140,6 @@ static int pxa_ssp_resume(struct snd_soc_component *component)
 	uint32_t sssr = SSSR_ROR | SSSR_TUR | SSSR_BCE;
 
 	clk_prepare_enable(ssp->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__raw_writel(sssr, ssp->mmio_base + SSSR);
 	__raw_writel(priv->cr0 & ~SSCR0_SSE, ssp->mmio_base + SSCR0);
@@ -271,17 +147,10 @@ static int pxa_ssp_resume(struct snd_soc_component *component)
 	__raw_writel(priv->to,  ssp->mmio_base + SSTO);
 	__raw_writel(priv->psp, ssp->mmio_base + SSPSP);
 
-<<<<<<< HEAD
-	if (cpu_dai->active)
-		pxa_ssp_enable(ssp);
-	else
-		clk_disable(ssp->clk);
-=======
 	if (snd_soc_component_active(component))
 		pxa_ssp_enable(ssp);
 	else
 		clk_disable_unprepare(ssp->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -291,11 +160,7 @@ static int pxa_ssp_resume(struct snd_soc_component *component)
 #define pxa_ssp_resume	NULL
 #endif
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ssp_set_clkdiv - set SSP clock divider
  * @div: serial clock rate divider
  */
@@ -303,11 +168,7 @@ static void pxa_ssp_set_scr(struct ssp_device *ssp, u32 div)
 {
 	u32 sscr0 = pxa_ssp_read_reg(ssp, SSCR0);
 
-<<<<<<< HEAD
-	if (cpu_is_pxa25x() && ssp->type == PXA25x_SSP) {
-=======
 	if (ssp->type == PXA25x_SSP) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sscr0 &= ~0x0000ff00;
 		sscr0 |= ((div - 2)/2) << 8; /* 2..512 */
 	} else {
@@ -317,24 +178,6 @@ static void pxa_ssp_set_scr(struct ssp_device *ssp, u32 div)
 	pxa_ssp_write_reg(ssp, SSCR0, sscr0);
 }
 
-<<<<<<< HEAD
-/**
- * pxa_ssp_get_clkdiv - get SSP clock divider
- */
-static u32 pxa_ssp_get_scr(struct ssp_device *ssp)
-{
-	u32 sscr0 = pxa_ssp_read_reg(ssp, SSCR0);
-	u32 div;
-
-	if (cpu_is_pxa25x() && ssp->type == PXA25x_SSP)
-		div = ((sscr0 >> 8) & 0xff) * 2 + 2;
-	else
-		div = ((sscr0 >> 8) & 0xfff) + 1;
-	return div;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Set the SSP ports SYSCLK.
  */
@@ -343,14 +186,6 @@ static int pxa_ssp_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 {
 	struct ssp_priv *priv = snd_soc_dai_get_drvdata(cpu_dai);
 	struct ssp_device *ssp = priv->ssp;
-<<<<<<< HEAD
-	int val;
-
-	u32 sscr0 = pxa_ssp_read_reg(ssp, SSCR0) &
-		~(SSCR0_ECS |  SSCR0_NCS | SSCR0_MOD | SSCR0_ACS);
-
-	dev_dbg(&ssp->pdev->dev,
-=======
 
 	u32 sscr0 = pxa_ssp_read_reg(ssp, SSCR0) &
 		~(SSCR0_ECS | SSCR0_NCS | SSCR0_MOD | SSCR0_ACS);
@@ -371,7 +206,6 @@ static int pxa_ssp_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 	}
 
 	dev_dbg(ssp->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"pxa_ssp_set_dai_sysclk id: %d, clk_id %d, freq %u\n",
 		cpu_dai->id, clk_id, freq);
 
@@ -381,11 +215,7 @@ static int pxa_ssp_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 		break;
 	case PXA_SSP_CLK_PLL:
 		/* Internal PLL is fixed */
-<<<<<<< HEAD
-		if (cpu_is_pxa25x())
-=======
 		if (ssp->type == PXA25x_SSP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			priv->sysclk = 1843200;
 		else
 			priv->sysclk = 13000000;
@@ -409,71 +239,11 @@ static int pxa_ssp_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 
 	/* The SSP clock must be disabled when changing SSP clock mode
 	 * on PXA2xx.  On PXA3xx it must be enabled when doing so. */
-<<<<<<< HEAD
-	if (!cpu_is_pxa3xx())
-		clk_disable(ssp->clk);
-	val = pxa_ssp_read_reg(ssp, SSCR0) | sscr0;
-	pxa_ssp_write_reg(ssp, SSCR0, val);
-	if (!cpu_is_pxa3xx())
-		clk_enable(ssp->clk);
-
-	return 0;
-}
-
-/*
- * Set the SSP clock dividers.
- */
-static int pxa_ssp_set_dai_clkdiv(struct snd_soc_dai *cpu_dai,
-	int div_id, int div)
-{
-	struct ssp_priv *priv = snd_soc_dai_get_drvdata(cpu_dai);
-	struct ssp_device *ssp = priv->ssp;
-	int val;
-
-	switch (div_id) {
-	case PXA_SSP_AUDIO_DIV_ACDS:
-		val = (pxa_ssp_read_reg(ssp, SSACD) & ~0x7) | SSACD_ACDS(div);
-		pxa_ssp_write_reg(ssp, SSACD, val);
-		break;
-	case PXA_SSP_AUDIO_DIV_SCDB:
-		val = pxa_ssp_read_reg(ssp, SSACD);
-		val &= ~SSACD_SCDB;
-#if defined(CONFIG_PXA3xx)
-		if (cpu_is_pxa3xx())
-			val &= ~SSACD_SCDX8;
-#endif
-		switch (div) {
-		case PXA_SSP_CLK_SCDB_1:
-			val |= SSACD_SCDB;
-			break;
-		case PXA_SSP_CLK_SCDB_4:
-			break;
-#if defined(CONFIG_PXA3xx)
-		case PXA_SSP_CLK_SCDB_8:
-			if (cpu_is_pxa3xx())
-				val |= SSACD_SCDX8;
-			else
-				return -EINVAL;
-			break;
-#endif
-		default:
-			return -EINVAL;
-		}
-		pxa_ssp_write_reg(ssp, SSACD, val);
-		break;
-	case PXA_SSP_DIV_SCR:
-		pxa_ssp_set_scr(ssp, div);
-		break;
-	default:
-		return -ENODEV;
-	}
-=======
 	if (ssp->type != PXA3xx_SSP)
 		clk_disable_unprepare(ssp->clk);
 	pxa_ssp_write_reg(ssp, SSCR0, sscr0);
 	if (ssp->type != PXA3xx_SSP)
 		clk_prepare_enable(ssp->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -481,21 +251,6 @@ static int pxa_ssp_set_dai_clkdiv(struct snd_soc_dai *cpu_dai,
 /*
  * Configure the PLL frequency pxa27x and (afaik - pxa320 only)
  */
-<<<<<<< HEAD
-static int pxa_ssp_set_dai_pll(struct snd_soc_dai *cpu_dai, int pll_id,
-	int source, unsigned int freq_in, unsigned int freq_out)
-{
-	struct ssp_priv *priv = snd_soc_dai_get_drvdata(cpu_dai);
-	struct ssp_device *ssp = priv->ssp;
-	u32 ssacd = pxa_ssp_read_reg(ssp, SSACD) & ~0x70;
-
-#if defined(CONFIG_PXA3xx)
-	if (cpu_is_pxa3xx())
-		pxa_ssp_write_reg(ssp, SSACDD, 0);
-#endif
-
-	switch (freq_out) {
-=======
 static int pxa_ssp_set_pll(struct ssp_priv *priv, unsigned int freq)
 {
 	struct ssp_device *ssp = priv->ssp;
@@ -505,7 +260,6 @@ static int pxa_ssp_set_pll(struct ssp_priv *priv, unsigned int freq)
 		pxa_ssp_write_reg(ssp, SSACDD, 0);
 
 	switch (freq) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 5622000:
 		break;
 	case 11345000:
@@ -528,17 +282,6 @@ static int pxa_ssp_set_pll(struct ssp_priv *priv, unsigned int freq)
 		break;
 
 	default:
-<<<<<<< HEAD
-#ifdef CONFIG_PXA3xx
-		/* PXA3xx has a clock ditherer which can be used to generate
-		 * a wider range of frequencies - calculate a value for it.
-		 */
-		if (cpu_is_pxa3xx()) {
-			u32 val;
-			u64 tmp = 19968;
-			tmp *= 1000000;
-			do_div(tmp, freq_out);
-=======
 		/* PXA3xx has a clock ditherer which can be used to generate
 		 * a wider range of frequencies - calculate a value for it.
 		 */
@@ -548,7 +291,6 @@ static int pxa_ssp_set_pll(struct ssp_priv *priv, unsigned int freq)
 
 			tmp *= 1000000;
 			do_div(tmp, freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			val = tmp;
 
 			val = (val << 16) | 64;
@@ -556,20 +298,11 @@ static int pxa_ssp_set_pll(struct ssp_priv *priv, unsigned int freq)
 
 			ssacd |= (0x6 << 4);
 
-<<<<<<< HEAD
-			dev_dbg(&ssp->pdev->dev,
-				"Using SSACDD %x to supply %uHz\n",
-				val, freq_out);
-			break;
-		}
-#endif
-=======
 			dev_dbg(ssp->dev,
 				"Using SSACDD %x to supply %uHz\n",
 				val, freq);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return -EINVAL;
 	}
@@ -634,45 +367,6 @@ static int pxa_ssp_set_dai_tristate(struct snd_soc_dai *cpu_dai,
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * Set up the SSP DAI format.
- * The SSP Port must be inactive before calling this function as the
- * physical interface format is changed.
- */
-static int pxa_ssp_set_dai_fmt(struct snd_soc_dai *cpu_dai,
-		unsigned int fmt)
-{
-	struct ssp_priv *priv = snd_soc_dai_get_drvdata(cpu_dai);
-	struct ssp_device *ssp = priv->ssp;
-	u32 sscr0, sscr1, sspsp, scfr;
-
-	/* check if we need to change anything at all */
-	if (priv->dai_fmt == fmt)
-		return 0;
-
-	/* we can only change the settings if the port is not in use */
-	if (pxa_ssp_read_reg(ssp, SSCR0) & SSCR0_SSE) {
-		dev_err(&ssp->pdev->dev,
-			"can't change hardware dai format: stream is in use");
-		return -EINVAL;
-	}
-
-	/* reset port settings */
-	sscr0 = pxa_ssp_read_reg(ssp, SSCR0) &
-		~(SSCR0_ECS |  SSCR0_NCS | SSCR0_MOD | SSCR0_ACS);
-	sscr1 = SSCR1_RxTresh(8) | SSCR1_TxTresh(7);
-	sspsp = 0;
-
-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-	case SND_SOC_DAIFMT_CBM_CFM:
-		sscr1 |= SSCR1_SCLKDIR | SSCR1_SFRMDIR | SSCR1_SCFR;
-		break;
-	case SND_SOC_DAIFMT_CBM_CFS:
-		sscr1 |= SSCR1_SCLKDIR | SSCR1_SCFR;
-		break;
-	case SND_SOC_DAIFMT_CBS_CFS:
-=======
 static int pxa_ssp_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 			       unsigned int fmt)
 {
@@ -682,7 +376,6 @@ static int pxa_ssp_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 	case SND_SOC_DAIFMT_BC_FC:
 	case SND_SOC_DAIFMT_BC_FP:
 	case SND_SOC_DAIFMT_BP_FP:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -690,8 +383,6 @@ static int pxa_ssp_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
-<<<<<<< HEAD
-=======
 	case SND_SOC_DAIFMT_NB_IF:
 	case SND_SOC_DAIFMT_IB_IF:
 	case SND_SOC_DAIFMT_IB_NF:
@@ -756,7 +447,6 @@ static int pxa_ssp_configure_dai_fmt(struct ssp_priv *priv)
 
 	switch (priv->dai_fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sspsp |= SSPSP_SFRMP;
 		break;
 	case SND_SOC_DAIFMT_NB_IF:
@@ -771,11 +461,7 @@ static int pxa_ssp_configure_dai_fmt(struct ssp_priv *priv)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
-=======
 	switch (priv->dai_fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SND_SOC_DAIFMT_I2S:
 		sscr0 |= SSCR0_PSP;
 		sscr1 |= SSCR1_RWOT | SSCR1_TRAIL;
@@ -784,10 +470,7 @@ static int pxa_ssp_configure_dai_fmt(struct ssp_priv *priv)
 
 	case SND_SOC_DAIFMT_DSP_A:
 		sspsp |= SSPSP_FSRT;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SND_SOC_DAIFMT_DSP_B:
 		sscr0 |= SSCR0_MOD | SSCR0_PSP;
 		sscr1 |= SSCR1_TRAIL | SSCR1_RWOT;
@@ -801,15 +484,9 @@ static int pxa_ssp_configure_dai_fmt(struct ssp_priv *priv)
 	pxa_ssp_write_reg(ssp, SSCR1, sscr1);
 	pxa_ssp_write_reg(ssp, SSPSP, sspsp);
 
-<<<<<<< HEAD
-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-	case SND_SOC_DAIFMT_CBM_CFM:
-	case SND_SOC_DAIFMT_CBM_CFS:
-=======
 	switch (priv->dai_fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BC_FC:
 	case SND_SOC_DAIFMT_BC_FP:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scfr = pxa_ssp_read_reg(ssp, SSCR1) | SSCR1_SCFR;
 		pxa_ssp_write_reg(ssp, SSCR1, scfr);
 
@@ -824,17 +501,11 @@ static int pxa_ssp_configure_dai_fmt(struct ssp_priv *priv)
 	 * we have to defer some things until hw_params() where we
 	 * know parameters like the sample size.
 	 */
-<<<<<<< HEAD
-	priv->dai_fmt = fmt;
-=======
 	priv->configured_dai_fmt = priv->dai_fmt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 struct pxa_ssp_clock_mode {
 	int rate;
 	int pll;
@@ -853,7 +524,6 @@ static const struct pxa_ssp_clock_mode pxa_ssp_clock_modes[] = {
 	{}
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Set the SSP audio DMA parameters and sample size.
  * Can be called multiple times by oss emulation.
@@ -865,19 +535,6 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 	struct ssp_priv *priv = snd_soc_dai_get_drvdata(cpu_dai);
 	struct ssp_device *ssp = priv->ssp;
 	int chn = params_channels(params);
-<<<<<<< HEAD
-	u32 sscr0;
-	u32 sspsp;
-	int width = snd_pcm_format_physical_width(params_format(params));
-	int ttsa = pxa_ssp_read_reg(ssp, SSTSA) & 0xf;
-	struct pxa2xx_pcm_dma_params *dma_data;
-
-	dma_data = snd_soc_dai_get_dma_data(cpu_dai, substream);
-
-	/* generate correct DMA params */
-	kfree(dma_data);
-
-=======
 	u32 sscr0, sspsp;
 	int width = snd_pcm_format_physical_width(params_format(params));
 	int ttsa = pxa_ssp_read_reg(ssp, SSTSA) & 0xf;
@@ -888,49 +545,30 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 
 	dma_data = snd_soc_dai_get_dma_data(cpu_dai, substream);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Network mode with one active slot (ttsa == 1) can be used
 	 * to force 16-bit frame width on the wire (for S16_LE), even
 	 * with two channels. Use 16-bit DMA transfers for this case.
 	 */
-<<<<<<< HEAD
-	dma_data = pxa_ssp_get_dma_params(ssp,
-			((chn == 2) && (ttsa != 1)) || (width == 32),
-			substream->stream == SNDRV_PCM_STREAM_PLAYBACK);
-
-	snd_soc_dai_set_dma_data(cpu_dai, substream, dma_data);
-=======
 	pxa_ssp_set_dma_params(ssp,
 		((chn == 2) && (ttsa != 1)) || (width == 32),
 		substream->stream == SNDRV_PCM_STREAM_PLAYBACK, dma_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we can only change the settings if the port is not in use */
 	if (pxa_ssp_read_reg(ssp, SSCR0) & SSCR0_SSE)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	ret = pxa_ssp_configure_dai_fmt(priv);
 	if (ret < 0)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clear selected SSP bits */
 	sscr0 = pxa_ssp_read_reg(ssp, SSCR0) & ~(SSCR0_DSS | SSCR0_EDSS);
 
 	/* bit size */
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
-<<<<<<< HEAD
-#ifdef CONFIG_PXA3xx
-		if (cpu_is_pxa3xx())
-			sscr0 |= SSCR0_FPCKE;
-#endif
-=======
 		if (ssp->type == PXA3xx_SSP)
 			sscr0 |= SSCR0_FPCKE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sscr0 |= SSCR0_DataSize(16);
 		break;
 	case SNDRV_PCM_FORMAT_S24_LE:
@@ -942,8 +580,6 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 	}
 	pxa_ssp_write_reg(ssp, SSCR0, sscr0);
 
-<<<<<<< HEAD
-=======
 	if (sscr0 & SSCR0_ACS) {
 		ret = pxa_ssp_set_pll(priv, bclk);
 
@@ -984,25 +620,10 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 		pxa_ssp_set_scr(ssp, bclk / rate);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (priv->dai_fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 	       sspsp = pxa_ssp_read_reg(ssp, SSPSP);
 
-<<<<<<< HEAD
-		if ((pxa_ssp_get_scr(ssp) == 4) && (width == 16)) {
-			/* This is a special case where the bitclk is 64fs
-			* and we're not dealing with 2*32 bits of audio
-			* samples.
-			*
-			* The SSP values used for that are all found out by
-			* trying and failing a lot; some of the registers
-			* needed for that mode are only available on PXA3xx.
-			*/
-
-#ifdef CONFIG_PXA3xx
-			if (!cpu_is_pxa3xx())
-=======
 		if (((priv->sysclk / bclk) == 64) && (width == 16)) {
 			/* This is a special case where the bitclk is 64fs
 			 * and we're not dealing with 2*32 bits of audio
@@ -1013,7 +634,6 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 			 * needed for that mode are only available on PXA3xx.
 			 */
 			if (ssp->type != PXA3xx_SSP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 
 			sspsp |= SSPSP_SFRMWDTH(width * 2);
@@ -1021,12 +641,6 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 			sspsp |= SSPSP_EDMYSTOP(3);
 			sspsp |= SSPSP_DMYSTOP(3);
 			sspsp |= SSPSP_DMYSTRT(1);
-<<<<<<< HEAD
-#else
-			return -EINVAL;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* The frame width is the width the LRCLK is
 			 * asserted for; the delay is expressed in
@@ -1049,11 +663,7 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 	 * - complain loudly and fail if they've not been set up yet.
 	 */
 	if ((sscr0 & SSCR0_MOD) && !ttsa) {
-<<<<<<< HEAD
-		dev_err(&ssp->pdev->dev, "No TDM timeslot configured\n");
-=======
 		dev_err(ssp->dev, "No TDM timeslot configured\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1135,10 +745,7 @@ static int pxa_ssp_trigger(struct snd_pcm_substream *substream, int cmd,
 
 static int pxa_ssp_probe(struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-=======
 	struct device *dev = dai->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ssp_priv *priv;
 	int ret;
 
@@ -1146,12 +753,6 @@ static int pxa_ssp_probe(struct snd_soc_dai *dai)
 	if (!priv)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	priv->ssp = pxa_ssp_request(dai->id + 1, "SoC audio");
-	if (priv->ssp == NULL) {
-		ret = -ENODEV;
-		goto err_priv;
-=======
 	if (dev->of_node) {
 		struct device_node *ssp_handle;
 
@@ -1182,7 +783,6 @@ static int pxa_ssp_probe(struct snd_soc_dai *dai)
 			ret = -ENODEV;
 			goto err_priv;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	priv->dai_fmt = (unsigned int) -1;
@@ -1213,34 +813,19 @@ static int pxa_ssp_remove(struct snd_soc_dai *dai)
 #define PXA_SSP_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S32_LE)
 
 static const struct snd_soc_dai_ops pxa_ssp_dai_ops = {
-<<<<<<< HEAD
-=======
 	.probe		= pxa_ssp_probe,
 	.remove		= pxa_ssp_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.startup	= pxa_ssp_startup,
 	.shutdown	= pxa_ssp_shutdown,
 	.trigger	= pxa_ssp_trigger,
 	.hw_params	= pxa_ssp_hw_params,
 	.set_sysclk	= pxa_ssp_set_dai_sysclk,
-<<<<<<< HEAD
-	.set_clkdiv	= pxa_ssp_set_dai_clkdiv,
-	.set_pll	= pxa_ssp_set_dai_pll,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_fmt	= pxa_ssp_set_dai_fmt,
 	.set_tdm_slot	= pxa_ssp_set_dai_tdm_slot,
 	.set_tristate	= pxa_ssp_set_dai_tristate,
 };
 
 static struct snd_soc_dai_driver pxa_ssp_dai = {
-<<<<<<< HEAD
-		.probe = pxa_ssp_probe,
-		.remove = pxa_ssp_remove,
-		.suspend = pxa_ssp_suspend,
-		.resume = pxa_ssp_resume,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.playback = {
 			.channels_min = 1,
 			.channels_max = 8,
@@ -1256,17 +841,6 @@ static struct snd_soc_dai_driver pxa_ssp_dai = {
 		.ops = &pxa_ssp_dai_ops,
 };
 
-<<<<<<< HEAD
-static __devinit int asoc_ssp_probe(struct platform_device *pdev)
-{
-	return snd_soc_register_dai(&pdev->dev, &pxa_ssp_dai);
-}
-
-static int __devexit asoc_ssp_remove(struct platform_device *pdev)
-{
-	snd_soc_unregister_dai(&pdev->dev);
-	return 0;
-=======
 static const struct snd_soc_component_driver pxa_ssp_component = {
 	.name			= "pxa-ssp",
 	.pcm_construct		= pxa2xx_soc_pcm_new,
@@ -1293,25 +867,15 @@ static int asoc_ssp_probe(struct platform_device *pdev)
 {
 	return devm_snd_soc_register_component(&pdev->dev, &pxa_ssp_component,
 					       &pxa_ssp_dai, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver asoc_ssp_driver = {
 	.driver = {
-<<<<<<< HEAD
-			.name = "pxa-ssp-dai",
-			.owner = THIS_MODULE,
-	},
-
-	.probe = asoc_ssp_probe,
-	.remove = __devexit_p(asoc_ssp_remove),
-=======
 		.name = "pxa-ssp-dai",
 		.of_match_table = of_match_ptr(pxa_ssp_of_ids),
 	},
 
 	.probe = asoc_ssp_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(asoc_ssp_driver);
@@ -1320,7 +884,4 @@ module_platform_driver(asoc_ssp_driver);
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_DESCRIPTION("PXA SSP/PCM SoC Interface");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_ALIAS("platform:pxa-ssp-dai");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-/*
- * Freescale STMP37XX/STMP378X Application UART driver
- *
- * Author: dmitry pervushin <dimka@embeddedalley.com>
- *
- * Copyright 2008-2010 Freescale Semiconductor, Inc.
- * Copyright 2008 Embedded Alley Solutions, Inc All Rights Reserved.
- *
- * The code contained herein is licensed under the GNU General Public
- * License. You may obtain a copy of the GNU General Public License
- * Version 2 or later at the following locations:
- *
- * http://www.opensource.org/licenses/gpl-license.html
- * http://www.gnu.org/copyleft/gpl.html
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Application UART driver for:
@@ -26,7 +10,6 @@
  *	Provide Alphascale ASM9260 support.
  * Copyright 2008-2010 Freescale Semiconductor, Inc.
  * Copyright 2008 Embedded Alley Solutions, Inc All Rights Reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -47,37 +30,6 @@
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-
-#include <asm/cacheflush.h>
-
-#define MXS_AUART_PORTS 5
-
-#define AUART_CTRL0			0x00000000
-#define AUART_CTRL0_SET			0x00000004
-#define AUART_CTRL0_CLR			0x00000008
-#define AUART_CTRL0_TOG			0x0000000c
-#define AUART_CTRL1			0x00000010
-#define AUART_CTRL1_SET			0x00000014
-#define AUART_CTRL1_CLR			0x00000018
-#define AUART_CTRL1_TOG			0x0000001c
-#define AUART_CTRL2			0x00000020
-#define AUART_CTRL2_SET			0x00000024
-#define AUART_CTRL2_CLR			0x00000028
-#define AUART_CTRL2_TOG			0x0000002c
-#define AUART_LINECTRL			0x00000030
-#define AUART_LINECTRL_SET		0x00000034
-#define AUART_LINECTRL_CLR		0x00000038
-#define AUART_LINECTRL_TOG		0x0000003c
-#define AUART_LINECTRL2			0x00000040
-#define AUART_LINECTRL2_SET		0x00000044
-#define AUART_LINECTRL2_CLR		0x00000048
-#define AUART_LINECTRL2_TOG		0x0000004c
-#define AUART_INTR			0x00000050
-#define AUART_INTR_SET			0x00000054
-#define AUART_INTR_CLR			0x00000058
-#define AUART_INTR_TOG			0x0000005c
-=======
 #include <linux/of.h>
 #include <linux/dma-mapping.h>
 #include <linux/dmaengine.h>
@@ -100,7 +52,6 @@
 #define AUART_LINECTRL			0x00000030
 #define AUART_LINECTRL2			0x00000040
 #define AUART_INTR			0x00000050
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AUART_DATA			0x00000060
 #define AUART_STAT			0x00000070
 #define AUART_DEBUG			0x00000080
@@ -109,10 +60,6 @@
 
 #define AUART_CTRL0_SFTRST			(1 << 31)
 #define AUART_CTRL0_CLKGATE			(1 << 30)
-<<<<<<< HEAD
-
-#define AUART_CTRL2_CTSEN			(1 << 15)
-=======
 #define AUART_CTRL0_RXTO_ENABLE			(1 << 27)
 #define AUART_CTRL0_RXTIMEOUT(v)		(((v) & 0x7ff) << 16)
 #define AUART_CTRL0_XFER_COUNT(v)		((v) & 0xffff)
@@ -125,31 +72,22 @@
 
 #define AUART_CTRL2_CTSEN			(1 << 15)
 #define AUART_CTRL2_RTSEN			(1 << 14)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AUART_CTRL2_RTS				(1 << 11)
 #define AUART_CTRL2_RXE				(1 << 9)
 #define AUART_CTRL2_TXE				(1 << 8)
 #define AUART_CTRL2_UARTEN			(1 << 0)
 
-<<<<<<< HEAD
-=======
 #define AUART_LINECTRL_BAUD_DIV_MAX		0x003fffc0
 #define AUART_LINECTRL_BAUD_DIV_MIN		0x000000ec
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AUART_LINECTRL_BAUD_DIVINT_SHIFT	16
 #define AUART_LINECTRL_BAUD_DIVINT_MASK		0xffff0000
 #define AUART_LINECTRL_BAUD_DIVINT(v)		(((v) & 0xffff) << 16)
 #define AUART_LINECTRL_BAUD_DIVFRAC_SHIFT	8
 #define AUART_LINECTRL_BAUD_DIVFRAC_MASK	0x00003f00
 #define AUART_LINECTRL_BAUD_DIVFRAC(v)		(((v) & 0x3f) << 8)
-<<<<<<< HEAD
-#define AUART_LINECTRL_WLEN_MASK		0x00000060
-#define AUART_LINECTRL_WLEN(v)			(((v) & 0x3) << 5)
-=======
 #define AUART_LINECTRL_SPS			(1 << 7)
 #define AUART_LINECTRL_WLEN_MASK		0x00000060
 #define AUART_LINECTRL_WLEN(v)			((((v) - 5) & 0x3) << 5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AUART_LINECTRL_FEN			(1 << 4)
 #define AUART_LINECTRL_STP2			(1 << 3)
 #define AUART_LINECTRL_EPS			(1 << 2)
@@ -174,23 +112,6 @@
 #define AUART_STAT_BERR				(1 << 18)
 #define AUART_STAT_PERR				(1 << 17)
 #define AUART_STAT_FERR				(1 << 16)
-<<<<<<< HEAD
-
-static struct uart_driver auart_driver;
-
-struct mxs_auart_port {
-	struct uart_port port;
-
-	unsigned int flags;
-	unsigned int ctrl;
-
-	unsigned int irq;
-
-	struct clk *clk;
-	struct device *dev;
-};
-
-=======
 #define AUART_STAT_RXCOUNT_MASK			0xffff
 
 /*
@@ -587,46 +508,10 @@ static void mxs_clr(unsigned int val, struct mxs_auart_port *uap,
 	writel_relaxed(val, addr + CLR_REG);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mxs_auart_stop_tx(struct uart_port *u);
 
 #define to_auart_port(u) container_of(u, struct mxs_auart_port, port)
 
-<<<<<<< HEAD
-static inline void mxs_auart_tx_chars(struct mxs_auart_port *s)
-{
-	struct circ_buf *xmit = &s->port.state->xmit;
-
-	while (!(readl(s->port.membase + AUART_STAT) &
-		 AUART_STAT_TXFF)) {
-		if (s->port.x_char) {
-			s->port.icount.tx++;
-			writel(s->port.x_char,
-				     s->port.membase + AUART_DATA);
-			s->port.x_char = 0;
-			continue;
-		}
-		if (!uart_circ_empty(xmit) && !uart_tx_stopped(&s->port)) {
-			s->port.icount.tx++;
-			writel(xmit->buf[xmit->tail],
-				     s->port.membase + AUART_DATA);
-			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-		} else
-			break;
-	}
-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-		uart_write_wakeup(&s->port);
-
-	if (uart_circ_empty(&(s->port.state->xmit)))
-		writel(AUART_INTR_TXIEN,
-			     s->port.membase + AUART_INTR_CLR);
-	else
-		writel(AUART_INTR_TXIEN,
-			     s->port.membase + AUART_INTR_SET);
-
-	if (uart_tx_stopped(&s->port))
-		mxs_auart_stop_tx(&s->port);
-=======
 static void mxs_auart_tx_chars(struct mxs_auart_port *s);
 
 static void dma_tx_callback(void *param)
@@ -730,25 +615,15 @@ static void mxs_auart_tx_chars(struct mxs_auart_port *s)
 
 	if (uart_tx_stopped(&s->port))
                mxs_auart_stop_tx(&s->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mxs_auart_rx_char(struct mxs_auart_port *s)
 {
-<<<<<<< HEAD
-	int flag;
-	u32 stat;
-	u8 c;
-
-	c = readl(s->port.membase + AUART_DATA);
-	stat = readl(s->port.membase + AUART_STAT);
-=======
 	u32 stat;
 	u8 c, flag;
 
 	c = mxs_read(s, REG_DATA);
 	stat = mxs_read(s, REG_STAT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	flag = TTY_NORMAL;
 	s->port.icount.rx++;
@@ -783,39 +658,22 @@ static void mxs_auart_rx_char(struct mxs_auart_port *s)
 
 	uart_insert_char(&s->port, stat, AUART_STAT_OERR, c, flag);
 out:
-<<<<<<< HEAD
-	writel(stat, s->port.membase + AUART_STAT);
-=======
 	mxs_write(stat, s, REG_STAT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mxs_auart_rx_chars(struct mxs_auart_port *s)
 {
-<<<<<<< HEAD
-	struct tty_struct *tty = s->port.state->port.tty;
-	u32 stat = 0;
-
-	for (;;) {
-		stat = readl(s->port.membase + AUART_STAT);
-=======
 	u32 stat = 0;
 
 	for (;;) {
 		stat = mxs_read(s, REG_STAT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (stat & AUART_STAT_RXFE)
 			break;
 		mxs_auart_rx_char(s);
 	}
 
-<<<<<<< HEAD
-	writel(stat, s->port.membase + AUART_STAT);
-	tty_flip_buffer_push(tty);
-=======
 	mxs_write(stat, s, REG_STAT);
 	tty_flip_buffer_push(&s->port.state->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mxs_auart_request_port(struct uart_port *u)
@@ -850,15 +708,6 @@ static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
 {
 	struct mxs_auart_port *s = to_auart_port(u);
 
-<<<<<<< HEAD
-	u32 ctrl = readl(u->membase + AUART_CTRL2);
-
-	ctrl &= ~AUART_CTRL2_RTS;
-	if (mctrl & TIOCM_RTS)
-		ctrl |= AUART_CTRL2_RTS;
-	s->ctrl = mctrl;
-	writel(ctrl, u->membase + AUART_CTRL2);
-=======
 	u32 ctrl = mxs_read(s, REG_CTRL2);
 
 	ctrl &= ~(AUART_CTRL2_RTSEN | AUART_CTRL2_RTS);
@@ -895,34 +744,11 @@ static u32 mxs_auart_modem_status(struct mxs_auart_port *s, u32 mctrl)
 		wake_up_interruptible(&s->port.state->port.delta_msr_wait);
 	}
 	return mctrl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 mxs_auart_get_mctrl(struct uart_port *u)
 {
 	struct mxs_auart_port *s = to_auart_port(u);
-<<<<<<< HEAD
-	u32 stat = readl(u->membase + AUART_STAT);
-	int ctrl2 = readl(u->membase + AUART_CTRL2);
-	u32 mctrl = s->ctrl;
-
-	mctrl &= ~TIOCM_CTS;
-	if (stat & AUART_STAT_CTS)
-		mctrl |= TIOCM_CTS;
-
-	if (ctrl2 & AUART_CTRL2_RTS)
-		mctrl |= TIOCM_RTS;
-
-	return mctrl;
-}
-
-static void mxs_auart_settermios(struct uart_port *u,
-				 struct ktermios *termios,
-				 struct ktermios *old)
-{
-	u32 bm, ctrl, ctrl2, div;
-	unsigned int cflag, baud;
-=======
 	u32 stat = mxs_read(s, REG_STAT);
 	u32 mctrl = 0;
 
@@ -1130,53 +956,19 @@ static void mxs_auart_settermios(struct uart_port *u,
 	struct mxs_auart_port *s = to_auart_port(u);
 	u32 ctrl, ctrl2, div;
 	unsigned int cflag, baud, baud_min, baud_max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cflag = termios->c_cflag;
 
 	ctrl = AUART_LINECTRL_FEN;
-<<<<<<< HEAD
-	ctrl2 = readl(u->membase + AUART_CTRL2);
-
-	/* byte size */
-	switch (cflag & CSIZE) {
-	case CS5:
-		bm = 0;
-		break;
-	case CS6:
-		bm = 1;
-		break;
-	case CS7:
-		bm = 2;
-		break;
-	case CS8:
-		bm = 3;
-		break;
-	default:
-		return;
-	}
-
-	ctrl |= AUART_LINECTRL_WLEN(bm);
-=======
 	ctrl2 = mxs_read(s, REG_CTRL2);
 
 	ctrl |= AUART_LINECTRL_WLEN(tty_get_char_size(cflag));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* parity */
 	if (cflag & PARENB) {
 		ctrl |= AUART_LINECTRL_PEN;
 		if ((cflag & PARODD) == 0)
 			ctrl |= AUART_LINECTRL_EPS;
-<<<<<<< HEAD
-	}
-
-	u->read_status_mask = 0;
-
-	if (termios->c_iflag & INPCK)
-		u->read_status_mask |= AUART_STAT_PERR;
-	if (termios->c_iflag & (BRKINT | PARMRK))
-=======
 		if (cflag & CMSPAR)
 			ctrl |= AUART_LINECTRL_SPS;
 	}
@@ -1186,7 +978,6 @@ static void mxs_auart_settermios(struct uart_port *u,
 	if (termios->c_iflag & INPCK)
 		u->read_status_mask |= AUART_STAT_PERR;
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u->read_status_mask |= AUART_STAT_BERR;
 
 	/*
@@ -1218,23 +1009,6 @@ static void mxs_auart_settermios(struct uart_port *u,
 		ctrl |= AUART_LINECTRL_STP2;
 
 	/* figure out the hardware flow control settings */
-<<<<<<< HEAD
-	if (cflag & CRTSCTS)
-		ctrl2 |= AUART_CTRL2_CTSEN;
-	else
-		ctrl2 &= ~AUART_CTRL2_CTSEN;
-
-	/* set baud rate */
-	baud = uart_get_baud_rate(u, termios, old, 0, u->uartclk);
-	div = u->uartclk * 32 / baud;
-	ctrl |= AUART_LINECTRL_BAUD_DIVFRAC(div & 0x3F);
-	ctrl |= AUART_LINECTRL_BAUD_DIVINT(div >> 6);
-
-	writel(ctrl, u->membase + AUART_LINECTRL);
-	writel(ctrl2, u->membase + AUART_CTRL2);
-
-	uart_update_timeout(u, termios->c_cflag, baud);
-=======
 	ctrl2 &= ~(AUART_CTRL2_CTSEN | AUART_CTRL2_RTSEN);
 	if (cflag & CRTSCTS) {
 		/*
@@ -1308,30 +1082,10 @@ static void mxs_auart_set_ldisc(struct uart_port *port,
 	} else {
 		port->flags &= ~UPF_HARDPPS_CD;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
 {
-<<<<<<< HEAD
-	u32 istat;
-	struct mxs_auart_port *s = context;
-	u32 stat = readl(s->port.membase + AUART_STAT);
-
-	istat = readl(s->port.membase + AUART_INTR);
-
-	/* ack irq */
-	writel(istat & (AUART_INTR_RTIS
-		| AUART_INTR_TXIS
-		| AUART_INTR_RXIS
-		| AUART_INTR_CTSMIS),
-			s->port.membase + AUART_INTR_CLR);
-
-	if (istat & AUART_INTR_CTSMIS) {
-		uart_handle_cts_change(&s->port, stat & AUART_STAT_CTS);
-		writel(AUART_INTR_CTSMIS,
-				s->port.membase + AUART_INTR_CLR);
-=======
 	u32 istat, stat;
 	struct mxs_auart_port *s = context;
 	u32 mctrl_temp = s->mctrl_prev;
@@ -1360,17 +1114,12 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
 			uart_handle_cts_change(&s->port,
 					stat & AUART_STAT_CTS);
 		mxs_clr(AUART_INTR_CTSMIS, s, REG_INTR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		istat &= ~AUART_INTR_CTSMIS;
 	}
 
 	if (istat & (AUART_INTR_RTIS | AUART_INTR_RXIS)) {
-<<<<<<< HEAD
-		mxs_auart_rx_chars(s);
-=======
 		if (!auart_dma_enabled(s))
 			mxs_auart_rx_chars(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		istat &= ~(AUART_INTR_RTIS | AUART_INTR_RXIS);
 	}
 
@@ -1379,41 +1128,24 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
 		istat &= ~AUART_INTR_TXIS;
 	}
 
-<<<<<<< HEAD
-	return IRQ_HANDLED;
-}
-
-static void mxs_auart_reset(struct uart_port *u)
-=======
 	uart_port_unlock(&s->port);
 
 	return IRQ_HANDLED;
 }
 
 static void mxs_auart_reset_deassert(struct mxs_auart_port *s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	unsigned int reg;
 
-<<<<<<< HEAD
-	writel(AUART_CTRL0_SFTRST, u->membase + AUART_CTRL0_CLR);
-
-	for (i = 0; i < 10000; i++) {
-		reg = readl(u->membase + AUART_CTRL0);
-=======
 	mxs_clr(AUART_CTRL0_SFTRST, s, REG_CTRL0);
 
 	for (i = 0; i < 10000; i++) {
 		reg = mxs_read(s, REG_CTRL0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(reg & AUART_CTRL0_SFTRST))
 			break;
 		udelay(3);
 	}
-<<<<<<< HEAD
-	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
-=======
 	mxs_clr(AUART_CTRL0_CLKGATE, s, REG_CTRL0);
 }
 
@@ -1439,23 +1171,10 @@ static void mxs_auart_reset_assert(struct mxs_auart_port *s)
 	}
 
 	dev_err(s->dev, "Failed to reset the unit.");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mxs_auart_startup(struct uart_port *u)
 {
-<<<<<<< HEAD
-	struct mxs_auart_port *s = to_auart_port(u);
-
-	clk_prepare_enable(s->clk);
-
-	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
-
-	writel(AUART_CTRL2_UARTEN, u->membase + AUART_CTRL2_SET);
-
-	writel(AUART_INTR_RXIEN | AUART_INTR_RTIEN | AUART_INTR_CTSMIEN,
-			u->membase + AUART_INTR);
-=======
 	int ret;
 	struct mxs_auart_port *s = to_auart_port(u);
 
@@ -1478,23 +1197,17 @@ static int mxs_auart_startup(struct uart_port *u)
 
 	/* Reset FIFO size (it could have changed if DMA was enabled) */
 	u->fifosize = MXS_AUART_FIFO_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Enable fifo so all four bytes of a DMA word are written to
 	 * output (otherwise, only the LSB is written, ie. 1 in 4 bytes)
 	 */
-<<<<<<< HEAD
-	writel(AUART_LINECTRL_FEN, u->membase + AUART_LINECTRL_SET);
-
-=======
 	mxs_set(AUART_LINECTRL_FEN, s, REG_LINECTRL);
 
 	/* get initial status of modem lines */
 	mctrl_gpio_get(s->gpios, &s->mctrl_prev);
 
 	s->ms_irq_enabled = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1502,14 +1215,6 @@ static void mxs_auart_shutdown(struct uart_port *u)
 {
 	struct mxs_auart_port *s = to_auart_port(u);
 
-<<<<<<< HEAD
-	writel(AUART_CTRL2_UARTEN, u->membase + AUART_CTRL2_CLR);
-
-	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_SET);
-
-	writel(AUART_INTR_RXIEN | AUART_INTR_RTIEN | AUART_INTR_CTSMIEN,
-			u->membase + AUART_INTR_CLR);
-=======
 	mxs_auart_disable_ms(u);
 
 	if (auart_dma_enabled(s))
@@ -1524,19 +1229,12 @@ static void mxs_auart_shutdown(struct uart_port *u)
 	} else {
 		mxs_auart_reset_assert(s);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clk_disable_unprepare(s->clk);
 }
 
 static unsigned int mxs_auart_tx_empty(struct uart_port *u)
 {
-<<<<<<< HEAD
-	if (readl(u->membase + AUART_STAT) & AUART_STAT_TXFE)
-		return TIOCSER_TEMT;
-	else
-		return 0;
-=======
 	struct mxs_auart_port *s = to_auart_port(u);
 
 	if ((mxs_read(s, REG_STAT) &
@@ -1544,7 +1242,6 @@ static unsigned int mxs_auart_tx_empty(struct uart_port *u)
 		return TIOCSER_TEMT;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mxs_auart_start_tx(struct uart_port *u)
@@ -1552,55 +1249,27 @@ static void mxs_auart_start_tx(struct uart_port *u)
 	struct mxs_auart_port *s = to_auart_port(u);
 
 	/* enable transmitter */
-<<<<<<< HEAD
-	writel(AUART_CTRL2_TXE, u->membase + AUART_CTRL2_SET);
-=======
 	mxs_set(AUART_CTRL2_TXE, s, REG_CTRL2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mxs_auart_tx_chars(s);
 }
 
 static void mxs_auart_stop_tx(struct uart_port *u)
 {
-<<<<<<< HEAD
-	writel(AUART_CTRL2_TXE, u->membase + AUART_CTRL2_CLR);
-=======
 	struct mxs_auart_port *s = to_auart_port(u);
 
 	mxs_clr(AUART_CTRL2_TXE, s, REG_CTRL2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mxs_auart_stop_rx(struct uart_port *u)
 {
-<<<<<<< HEAD
-	writel(AUART_CTRL2_RXE, u->membase + AUART_CTRL2_CLR);
-=======
 	struct mxs_auart_port *s = to_auart_port(u);
 
 	mxs_clr(AUART_CTRL2_RXE, s, REG_CTRL2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mxs_auart_break_ctl(struct uart_port *u, int ctl)
 {
-<<<<<<< HEAD
-	if (ctl)
-		writel(AUART_LINECTRL_BRK,
-			     u->membase + AUART_LINECTRL_SET);
-	else
-		writel(AUART_LINECTRL_BRK,
-			     u->membase + AUART_LINECTRL_CLR);
-}
-
-static void mxs_auart_enable_ms(struct uart_port *port)
-{
-	/* just empty */
-}
-
-static struct uart_ops mxs_auart_ops = {
-=======
 	struct mxs_auart_port *s = to_auart_port(u);
 
 	if (ctl)
@@ -1610,7 +1279,6 @@ static struct uart_ops mxs_auart_ops = {
 }
 
 static const struct uart_ops mxs_auart_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty       = mxs_auart_tx_empty,
 	.start_tx       = mxs_auart_start_tx,
 	.stop_tx	= mxs_auart_stop_tx,
@@ -1622,10 +1290,7 @@ static const struct uart_ops mxs_auart_ops = {
 	.startup	= mxs_auart_startup,
 	.shutdown       = mxs_auart_shutdown,
 	.set_termios    = mxs_auart_settermios,
-<<<<<<< HEAD
-=======
 	.set_ldisc      = mxs_auart_set_ldisc,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type	   	= mxs_auart_type,
 	.release_port   = mxs_auart_release_port,
 	.request_port   = mxs_auart_request_port,
@@ -1636,30 +1301,18 @@ static const struct uart_ops mxs_auart_ops = {
 static struct mxs_auart_port *auart_port[MXS_AUART_PORTS];
 
 #ifdef CONFIG_SERIAL_MXS_AUART_CONSOLE
-<<<<<<< HEAD
-static void mxs_auart_console_putchar(struct uart_port *port, int ch)
-{
-	unsigned int to = 1000;
-
-	while (readl(port->membase + AUART_STAT) & AUART_STAT_TXFF) {
-=======
 static void mxs_auart_console_putchar(struct uart_port *port, unsigned char ch)
 {
 	struct mxs_auart_port *s = to_auart_port(port);
 	unsigned int to = 1000;
 
 	while (mxs_read(s, REG_STAT) & AUART_STAT_TXFF) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!to--)
 			break;
 		udelay(1);
 	}
 
-<<<<<<< HEAD
-	writel(ch, port->membase + AUART_DATA);
-=======
 	mxs_write(ch, s, REG_DATA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1670,11 +1323,7 @@ auart_console_write(struct console *co, const char *str, unsigned int count)
 	unsigned int old_ctrl0, old_ctrl2;
 	unsigned int to = 20000;
 
-<<<<<<< HEAD
-	if (co->index >	MXS_AUART_PORTS || co->index < 0)
-=======
 	if (co->index >= MXS_AUART_PORTS || co->index < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	s = auart_port[co->index];
@@ -1683,30 +1332,16 @@ auart_console_write(struct console *co, const char *str, unsigned int count)
 	clk_enable(s->clk);
 
 	/* First save the CR then disable the interrupts */
-<<<<<<< HEAD
-	old_ctrl2 = readl(port->membase + AUART_CTRL2);
-	old_ctrl0 = readl(port->membase + AUART_CTRL0);
-
-	writel(AUART_CTRL0_CLKGATE,
-		     port->membase + AUART_CTRL0_CLR);
-	writel(AUART_CTRL2_UARTEN | AUART_CTRL2_TXE,
-		     port->membase + AUART_CTRL2_SET);
-=======
 	old_ctrl2 = mxs_read(s, REG_CTRL2);
 	old_ctrl0 = mxs_read(s, REG_CTRL0);
 
 	mxs_clr(AUART_CTRL0_CLKGATE, s, REG_CTRL0);
 	mxs_set(AUART_CTRL2_UARTEN | AUART_CTRL2_TXE, s, REG_CTRL2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uart_console_write(port, str, count, mxs_auart_console_putchar);
 
 	/* Finally, wait for transmitter to become empty ... */
-<<<<<<< HEAD
-	while (readl(port->membase + AUART_STAT) & AUART_STAT_BUSY) {
-=======
 	while (mxs_read(s, REG_STAT) & AUART_STAT_BUSY) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		udelay(1);
 		if (!to--)
 			break;
@@ -1718,32 +1353,15 @@ auart_console_write(struct console *co, const char *str, unsigned int count)
 	 * unused, but that is better than to disable it while it is still
 	 * transmitting.
 	 */
-<<<<<<< HEAD
-	if (!(readl(port->membase + AUART_STAT) & AUART_STAT_BUSY)) {
-		writel(old_ctrl0, port->membase + AUART_CTRL0);
-		writel(old_ctrl2, port->membase + AUART_CTRL2);
-=======
 	if (!(mxs_read(s, REG_STAT) & AUART_STAT_BUSY)) {
 		mxs_write(old_ctrl0, s, REG_CTRL0);
 		mxs_write(old_ctrl2, s, REG_CTRL2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	clk_disable(s->clk);
 }
 
 static void __init
-<<<<<<< HEAD
-auart_console_get_options(struct uart_port *port, int *baud,
-			  int *parity, int *bits)
-{
-	unsigned int lcr_h, quot;
-
-	if (!(readl(port->membase + AUART_CTRL2) & AUART_CTRL2_UARTEN))
-		return;
-
-	lcr_h = readl(port->membase + AUART_LINECTRL);
-=======
 auart_console_get_options(struct mxs_auart_port *s, int *baud,
 			  int *parity, int *bits)
 {
@@ -1754,7 +1372,6 @@ auart_console_get_options(struct mxs_auart_port *s, int *baud,
 		return;
 
 	lcr_h = mxs_read(s, REG_LINECTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*parity = 'n';
 	if (lcr_h & AUART_LINECTRL_PEN) {
@@ -1764,28 +1381,15 @@ auart_console_get_options(struct mxs_auart_port *s, int *baud,
 			*parity = 'o';
 	}
 
-<<<<<<< HEAD
-	if ((lcr_h & AUART_LINECTRL_WLEN_MASK) == AUART_LINECTRL_WLEN(2))
-=======
 	if ((lcr_h & AUART_LINECTRL_WLEN_MASK) == AUART_LINECTRL_WLEN(7))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*bits = 7;
 	else
 		*bits = 8;
 
-<<<<<<< HEAD
-	quot = ((readl(port->membase + AUART_LINECTRL)
-			& AUART_LINECTRL_BAUD_DIVINT_MASK))
-			    >> (AUART_LINECTRL_BAUD_DIVINT_SHIFT - 6);
-	quot |= ((readl(port->membase + AUART_LINECTRL)
-			& AUART_LINECTRL_BAUD_DIVFRAC_MASK))
-				>> AUART_LINECTRL_BAUD_DIVFRAC_SHIFT;
-=======
 	quot = ((mxs_read(s, REG_LINECTRL) & AUART_LINECTRL_BAUD_DIVINT_MASK))
 		>> (AUART_LINECTRL_BAUD_DIVINT_SHIFT - 6);
 	quot |= ((mxs_read(s, REG_LINECTRL) & AUART_LINECTRL_BAUD_DIVFRAC_MASK))
 		>> AUART_LINECTRL_BAUD_DIVFRAC_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (quot == 0)
 		quot = 1;
 
@@ -1813,22 +1417,14 @@ auart_console_setup(struct console *co, char *options)
 	if (!s)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	clk_prepare_enable(s->clk);
-=======
 	ret = clk_prepare_enable(s->clk);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (options)
 		uart_parse_options(options, &baud, &parity, &bits, &flow);
 	else
-<<<<<<< HEAD
-		auart_console_get_options(&s->port, &baud, &parity, &bits);
-=======
 		auart_console_get_options(s, &baud, &parity, &bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = uart_set_options(&s->port, co, baud, parity, bits, flow);
 
@@ -1860,26 +1456,6 @@ static struct uart_driver auart_driver = {
 #endif
 };
 
-<<<<<<< HEAD
-static int __devinit mxs_auart_probe(struct platform_device *pdev)
-{
-	struct mxs_auart_port *s;
-	u32 version;
-	int ret = 0;
-	struct resource *r;
-
-	s = kzalloc(sizeof(struct mxs_auart_port), GFP_KERNEL);
-	if (!s) {
-		ret = -ENOMEM;
-		goto out;
-	}
-
-	s->clk = clk_get(&pdev->dev, NULL);
-	if (IS_ERR(s->clk)) {
-		ret = PTR_ERR(s->clk);
-		goto out_free;
-	}
-=======
 static void mxs_init_regs(struct mxs_auart_port *s)
 {
 	if (is_asm9260_auart(s))
@@ -2037,68 +1613,15 @@ static int mxs_auart_probe(struct platform_device *pdev)
 	ret = mxs_get_clks(s, pdev);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!r) {
 		ret = -ENXIO;
-<<<<<<< HEAD
-		goto out_free_clk;
-=======
 		goto out_disable_clks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	s->port.mapbase = r->start;
 	s->port.membase = ioremap(r->start, resource_size(r));
-<<<<<<< HEAD
-	s->port.ops = &mxs_auart_ops;
-	s->port.iotype = UPIO_MEM;
-	s->port.line = pdev->id < 0 ? 0 : pdev->id;
-	s->port.fifosize = 16;
-	s->port.uartclk = clk_get_rate(s->clk);
-	s->port.type = PORT_IMX;
-	s->port.dev = s->dev = get_device(&pdev->dev);
-
-	s->flags = 0;
-	s->ctrl = 0;
-
-	s->irq = platform_get_irq(pdev, 0);
-	s->port.irq = s->irq;
-	ret = request_irq(s->irq, mxs_auart_irq_handle, 0, dev_name(&pdev->dev), s);
-	if (ret)
-		goto out_free_clk;
-
-	platform_set_drvdata(pdev, s);
-
-	auart_port[pdev->id] = s;
-
-	mxs_auart_reset(&s->port);
-
-	ret = uart_add_one_port(&auart_driver, &s->port);
-	if (ret)
-		goto out_free_irq;
-
-	version = readl(s->port.membase + AUART_VERSION);
-	dev_info(&pdev->dev, "Found APPUART %d.%d.%d\n",
-	       (version >> 24) & 0xff,
-	       (version >> 16) & 0xff, version & 0xffff);
-
-	return 0;
-
-out_free_irq:
-	auart_port[pdev->id] = NULL;
-	free_irq(s->irq, s);
-out_free_clk:
-	clk_put(s->clk);
-out_free:
-	kfree(s);
-out:
-	return ret;
-}
-
-static int __devexit mxs_auart_remove(struct platform_device *pdev)
-=======
 	if (!s->port.membase) {
 		ret = -ENOMEM;
 		goto out_disable_clks;
@@ -2177,21 +1700,10 @@ out_disable_clks:
 }
 
 static void mxs_auart_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mxs_auart_port *s = platform_get_drvdata(pdev);
 
 	uart_remove_one_port(&auart_driver, &s->port);
-<<<<<<< HEAD
-
-	auart_port[pdev->id] = NULL;
-
-	clk_put(s->clk);
-	free_irq(s->irq, s);
-	kfree(s);
-
-	return 0;
-=======
 	auart_port[pdev->id] = NULL;
 	mxs_auart_free_gpio_irq(s);
 	iounmap(s->port.membase);
@@ -2199,22 +1711,14 @@ static void mxs_auart_remove(struct platform_device *pdev)
 		clk_disable_unprepare(s->clk);
 		clk_disable_unprepare(s->clk_ahb);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver mxs_auart_driver = {
 	.probe = mxs_auart_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(mxs_auart_remove),
-	.driver = {
-		.name = "mxs-auart",
-		.owner = THIS_MODULE,
-=======
 	.remove_new = mxs_auart_remove,
 	.driver = {
 		.name = "mxs-auart",
 		.of_match_table = mxs_auart_dt_ids,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -2247,7 +1751,4 @@ module_init(mxs_auart_init);
 module_exit(mxs_auart_exit);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Freescale MXS application uart driver");
-<<<<<<< HEAD
-=======
 MODULE_ALIAS("platform:mxs-auart");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *   pata-isapnp.c - ISA PnP PATA controller driver.
@@ -23,11 +20,7 @@
 #define DRV_NAME "pata_isapnp"
 #define DRV_VERSION "0.2.5"
 
-<<<<<<< HEAD
-static struct scsi_host_template isapnp_sht = {
-=======
 static const struct scsi_host_template isapnp_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_PIO_SHT(DRV_NAME),
 };
 
@@ -86,18 +79,12 @@ static int isapnp_init_one(struct pnp_dev *idev, const struct pnp_device_id *dev
 
 	ap->ioaddr.cmd_addr = cmd_addr;
 
-<<<<<<< HEAD
-	if (pnp_port_valid(idev, 1) == 0) {
-		ctl_addr = devm_ioport_map(&idev->dev,
-					   pnp_port_start(idev, 1), 1);
-=======
 	if (pnp_port_valid(idev, 1)) {
 		ctl_addr = devm_ioport_map(&idev->dev,
 					   pnp_port_start(idev, 1), 1);
 		if (!ctl_addr)
 			return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ap->ioaddr.altstatus_addr = ctl_addr;
 		ap->ioaddr.ctl_addr = ctl_addr;
 		ap->ops = &isapnp_port_ops;
@@ -145,27 +132,8 @@ static struct pnp_driver isapnp_driver = {
 	.remove		= isapnp_remove_one,
 };
 
-<<<<<<< HEAD
-static int __init isapnp_init(void)
-{
-	return pnp_register_driver(&isapnp_driver);
-}
-
-static void __exit isapnp_exit(void)
-{
-	pnp_unregister_driver(&isapnp_driver);
-}
-
-=======
 module_pnp_driver(isapnp_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for ISA PnP ATA");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(isapnp_init);
-module_exit(isapnp_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

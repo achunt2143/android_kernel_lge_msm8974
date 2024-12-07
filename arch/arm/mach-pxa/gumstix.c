@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-pxa/gumstix.c
  *
@@ -11,13 +8,6 @@
  *  Created:	Feb 14, 2008
  *  Copyright:	Craig Hughes
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Implemented based on lubbock.c by Nicolas Pitre and code from Craig
  *  Hughes
  */
@@ -30,19 +20,6 @@
 #include <linux/delay.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-#include <linux/err.h>
-#include <linux/clk.h>
-#include <linux/usb/gpio_vbus.h>
-
-#include <asm/setup.h>
-#include <asm/memory.h>
-#include <asm/mach-types.h>
-#include <mach/hardware.h>
-#include <asm/irq.h>
-#include <asm/sizes.h>
-=======
 #include <linux/gpio/machine.h>
 #include <linux/gpio.h>
 #include <linux/err.h>
@@ -53,24 +30,16 @@
 #include <asm/mach-types.h>
 #include <asm/irq.h>
 #include <linux/sizes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 #include <asm/mach/irq.h>
 #include <asm/mach/flash.h>
 
-<<<<<<< HEAD
-#include <mach/pxa25x.h>
-#include <mach/mmc.h>
-#include <mach/udc.h>
-#include <mach/gumstix.h>
-=======
 #include "pxa25x.h"
 #include <linux/platform_data/mmc-pxamci.h>
 #include "udc.h"
 #include "gumstix.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "generic.h"
 
@@ -117,12 +86,6 @@ static struct platform_device *devices[] __initdata = {
 #ifdef CONFIG_MMC_PXA
 static struct pxamci_platform_data gumstix_mci_platform_data = {
 	.ocr_mask		= MMC_VDD_32_33|MMC_VDD_33_34,
-<<<<<<< HEAD
-	.gpio_card_detect 	= -1,
-	.gpio_card_ro		= -1,
-	.gpio_power		= -1,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __init gumstix_mmc_init(void)
@@ -137,11 +100,6 @@ static void __init gumstix_mmc_init(void)
 #endif
 
 #ifdef CONFIG_USB_PXA25X
-<<<<<<< HEAD
-static struct gpio_vbus_mach_info gumstix_udc_info = {
-	.gpio_vbus		= GPIO_GUMSTIX_USB_GPIOn,
-	.gpio_pullup		= GPIO_GUMSTIX_USB_GPIOx,
-=======
 static struct gpiod_lookup_table gumstix_gpio_vbus_gpiod_table = {
 	.dev_id = "gpio-vbus",
 	.table = {
@@ -151,26 +109,16 @@ static struct gpiod_lookup_table gumstix_gpio_vbus_gpiod_table = {
 			    "pullup", GPIO_ACTIVE_HIGH),
 		{ },
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device gumstix_gpio_vbus = {
 	.name	= "gpio-vbus",
 	.id	= -1,
-<<<<<<< HEAD
-	.dev	= {
-		.platform_data	= &gumstix_udc_info,
-	},
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __init gumstix_udc_init(void)
 {
-<<<<<<< HEAD
-=======
 	gpiod_add_lookup_table(&gumstix_gpio_vbus_gpiod_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_device_register(&gumstix_gpio_vbus);
 }
 #else
@@ -188,17 +136,6 @@ static void gumstix_setup_bt_clock(void)
 {
 	int timeout = 500;
 
-<<<<<<< HEAD
-	if (!(OSCC & OSCC_OOK))
-		pr_warning("32kHz clock was not on. Bootloader may need to "
-				"be updated\n");
-	else
-		return;
-
-	OSCC |= OSCC_OON;
-	do {
-		if (OSCC & OSCC_OOK)
-=======
 	if (!(readl(OSCC) & OSCC_OOK))
 		pr_warn("32kHz clock was not on. Bootloader may need to be updated\n");
 	else
@@ -207,7 +144,6 @@ static void gumstix_setup_bt_clock(void)
 	writel(readl(OSCC) | OSCC_OON, OSCC);
 	do {
 		if (readl(OSCC) & OSCC_OOK)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		udelay(1);
 	} while (--timeout);
@@ -297,12 +233,7 @@ MACHINE_START(GUMSTIX, "Gumstix")
 	.map_io		= pxa25x_map_io,
 	.nr_irqs	= PXA_NR_IRQS,
 	.init_irq	= pxa25x_init_irq,
-<<<<<<< HEAD
-	.handle_irq	= pxa25x_handle_irq,
-	.timer		= &pxa_timer,
-=======
 	.init_time	= pxa_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_machine	= gumstix_init,
 	.restart	= pxa_restart,
 MACHINE_END

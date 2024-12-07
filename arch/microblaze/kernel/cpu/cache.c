@@ -17,140 +17,70 @@
 
 static inline void __enable_icache_msr(void)
 {
-<<<<<<< HEAD
-	__asm__ __volatile__ ("	msrset	r0, %0;		\
-				nop; "			\
-=======
 	__asm__ __volatile__ ("	 msrset	r0, %0;"	\
 				"nop;"			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			: : "i" (MSR_ICE) : "memory");
 }
 
 static inline void __disable_icache_msr(void)
 {
-<<<<<<< HEAD
-	__asm__ __volatile__ ("	msrclr	r0, %0;		\
-				nop; "			\
-=======
 	__asm__ __volatile__ ("	 msrclr	r0, %0;"	\
 				"nop;"			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			: : "i" (MSR_ICE) : "memory");
 }
 
 static inline void __enable_dcache_msr(void)
 {
-<<<<<<< HEAD
-	__asm__ __volatile__ ("	msrset	r0, %0;		\
-				nop; "			\
-				:			\
-				: "i" (MSR_DCE)		\
-				: "memory");
-=======
 	__asm__ __volatile__ ("	 msrset	r0, %0;"	\
 				"nop;"			\
 			: : "i" (MSR_DCE) : "memory");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void __disable_dcache_msr(void)
 {
-<<<<<<< HEAD
-	__asm__ __volatile__ ("	msrclr	r0, %0;		\
-				nop; "			\
-				:			\
-				: "i" (MSR_DCE)		\
-				: "memory");
-=======
 	__asm__ __volatile__ ("	 msrclr	r0, %0;"	\
 				"nop; "			\
 			: : "i" (MSR_DCE) : "memory");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void __enable_icache_nomsr(void)
 {
-<<<<<<< HEAD
-	__asm__ __volatile__ ("	mfs	r12, rmsr;	\
-				nop;			\
-				ori	r12, r12, %0;	\
-				mts	rmsr, r12;	\
-				nop; "			\
-				:			\
-				: "i" (MSR_ICE)		\
-				: "memory", "r12");
-=======
 	__asm__ __volatile__ ("	 mfs	r12, rmsr;"	\
 				"nop;"			\
 				"ori	r12, r12, %0;"	\
 				"mts	rmsr, r12;"	\
 				"nop;"			\
 			: : "i" (MSR_ICE) : "memory", "r12");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void __disable_icache_nomsr(void)
 {
-<<<<<<< HEAD
-	__asm__ __volatile__ ("	mfs	r12, rmsr;	\
-				nop;			\
-				andi	r12, r12, ~%0;	\
-				mts	rmsr, r12;	\
-				nop; "			\
-				:			\
-				: "i" (MSR_ICE)		\
-				: "memory", "r12");
-=======
 	__asm__ __volatile__ ("	 mfs	r12, rmsr;"	\
 				"nop;"			\
 				"andi	r12, r12, ~%0;"	\
 				"mts	rmsr, r12;"	\
 				"nop;"			\
 			: : "i" (MSR_ICE) : "memory", "r12");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void __enable_dcache_nomsr(void)
 {
-<<<<<<< HEAD
-	__asm__ __volatile__ ("	mfs	r12, rmsr;	\
-				nop;			\
-				ori	r12, r12, %0;	\
-				mts	rmsr, r12;	\
-				nop; "			\
-				:			\
-				: "i" (MSR_DCE)		\
-				: "memory", "r12");
-=======
 	__asm__ __volatile__ ("	 mfs	r12, rmsr;"	\
 				"nop;"			\
 				"ori	r12, r12, %0;"	\
 				"mts	rmsr, r12;"	\
 				"nop;"			\
 			: : "i" (MSR_DCE) : "memory", "r12");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void __disable_dcache_nomsr(void)
 {
-<<<<<<< HEAD
-	__asm__ __volatile__ ("	mfs	r12, rmsr;	\
-				nop;			\
-				andi	r12, r12, ~%0;	\
-				mts	rmsr, r12;	\
-				nop; "			\
-				:			\
-				: "i" (MSR_DCE)		\
-				: "memory", "r12");
-=======
 	__asm__ __volatile__ ("	 mfs	r12, rmsr;"	\
 				"nop;"			\
 				"andi	r12, r12, ~%0;"	\
 				"mts	rmsr, r12;"	\
 				"nop;"			\
 			: : "i" (MSR_DCE) : "memory", "r12");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -162,16 +92,10 @@ static inline void __disable_dcache_nomsr(void)
 #define CACHE_LOOP_LIMITS(start, end, cache_line_length, cache_size)	\
 do {									\
 	int align = ~(cache_line_length - 1);				\
-<<<<<<< HEAD
-	end = min(start + cache_size, end);				\
-	start &= align;							\
-} while (0);
-=======
 	if (start <  UINT_MAX - cache_size)				\
 		end = min(start + cache_size, end);			\
 	start &= align;							\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Helper macro to loop over the specified cache_size/line_length and
@@ -183,21 +107,12 @@ do {									\
 	int step = -line_length;					\
 	WARN_ON(step >= 0);						\
 									\
-<<<<<<< HEAD
-	__asm__ __volatile__ (" 1:      " #op " %0, r0;			\
-					bgtid   %0, 1b;			\
-					addk    %0, %0, %1;		\
-					" : : "r" (len), "r" (step)	\
-					: "memory");			\
-} while (0);
-=======
 	__asm__ __volatile__ (" 1:      " #op " %0, r0;"		\
 					"bgtid   %0, 1b;"		\
 					"addk    %0, %0, %1;"		\
 					: : "r" (len), "r" (step)	\
 					: "memory");			\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Used for wdc.flush/clear which can use rB for offset which is not possible
  * to use for simple wdc or wic.
@@ -216,39 +131,16 @@ do {									\
 	count = end - start;						\
 	WARN_ON(count < 0);						\
 									\
-<<<<<<< HEAD
-	__asm__ __volatile__ (" 1:	" #op "	%0, %1;			\
-					bgtid	%1, 1b;			\
-					addk	%1, %1, %2;		\
-					" : : "r" (start), "r" (count),	\
-					"r" (step) : "memory");		\
-} while (0);
-=======
 	__asm__ __volatile__ (" 1:	" #op "	%0, %1;"		\
 					"bgtid	%1, 1b;"		\
 					"addk	%1, %1, %2;"		\
 					: : "r" (start), "r" (count),	\
 					"r" (step) : "memory");		\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* It is used only first parameter for OP - for wic, wdc */
 #define CACHE_RANGE_LOOP_1(start, end, line_length, op)			\
 do {									\
-<<<<<<< HEAD
-	int volatile temp;						\
-	int align = ~(line_length - 1);					\
-	end = ((end & align) == end) ? end - line_length : end & align;	\
-	WARN_ON(end - start < 0);					\
-									\
-	__asm__ __volatile__ (" 1:	" #op "	%1, r0;			\
-					cmpu	%0, %1, %2;		\
-					bgtid	%0, 1b;			\
-					addk	%1, %1, %3;		\
-				" : : "r" (temp), "r" (start), "r" (end),\
-					"r" (line_length) : "memory");	\
-} while (0);
-=======
 	unsigned int volatile temp = 0;						\
 	unsigned int align = ~(line_length - 1);					\
 	end = ((end & align) == end) ? end - line_length : end & align;	\
@@ -261,7 +153,6 @@ do {									\
 				: : "r" (temp), "r" (start), "r" (end),	\
 					"r" (line_length) : "memory");	\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ASM_LOOP
 
@@ -450,11 +341,7 @@ static void __invalidate_dcache_all_noirq_wt(void)
 #endif
 	pr_debug("%s\n", __func__);
 #ifdef ASM_LOOP
-<<<<<<< HEAD
-	CACHE_ALL_LOOP(cpuinfo.dcache_size, cpuinfo.dcache_line_length, wdc)
-=======
 	CACHE_ALL_LOOP(cpuinfo.dcache_size, cpuinfo.dcache_line_length, wdc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	for (i = 0; i < cpuinfo.dcache_size;
 		 i += cpuinfo.dcache_line_length)
@@ -463,12 +350,8 @@ static void __invalidate_dcache_all_noirq_wt(void)
 #endif
 }
 
-<<<<<<< HEAD
-/* FIXME It is blindly invalidation as is expected
-=======
 /*
  * FIXME It is blindly invalidation as is expected
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * but can't be called on noMMU in microblaze_cache_init below
  *
  * MS: noMMU kernel won't boot if simple wdc is used
@@ -482,11 +365,7 @@ static void __invalidate_dcache_all_wb(void)
 	pr_debug("%s\n", __func__);
 #ifdef ASM_LOOP
 	CACHE_ALL_LOOP(cpuinfo.dcache_size, cpuinfo.dcache_line_length,
-<<<<<<< HEAD
-					wdc)
-=======
 					wdc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	for (i = 0; i < cpuinfo.dcache_size;
 		 i += cpuinfo.dcache_line_length)
@@ -727,29 +606,10 @@ static const struct scache wt_nomsr_noirq = {
 #define CPUVER_7_20_A	0x0c
 #define CPUVER_7_20_D	0x0f
 
-<<<<<<< HEAD
-#define INFO(s)	printk(KERN_INFO "cache: " s "\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void microblaze_cache_init(void)
 {
 	if (cpuinfo.use_instr & PVR2_USE_MSR_INSTR) {
 		if (cpuinfo.dcache_wb) {
-<<<<<<< HEAD
-			INFO("wb_msr");
-			mbc = (struct scache *)&wb_msr;
-			if (cpuinfo.ver_code <= CPUVER_7_20_D) {
-				/* MS: problem with signal handling - hw bug */
-				INFO("WB won't work properly");
-			}
-		} else {
-			if (cpuinfo.ver_code >= CPUVER_7_20_A) {
-				INFO("wt_msr_noirq");
-				mbc = (struct scache *)&wt_msr_noirq;
-			} else {
-				INFO("wt_msr");
-=======
 			pr_info("wb_msr\n");
 			mbc = (struct scache *)&wb_msr;
 			if (cpuinfo.ver_code <= CPUVER_7_20_D) {
@@ -762,26 +622,11 @@ void microblaze_cache_init(void)
 				mbc = (struct scache *)&wt_msr_noirq;
 			} else {
 				pr_info("wt_msr\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mbc = (struct scache *)&wt_msr;
 			}
 		}
 	} else {
 		if (cpuinfo.dcache_wb) {
-<<<<<<< HEAD
-			INFO("wb_nomsr");
-			mbc = (struct scache *)&wb_nomsr;
-			if (cpuinfo.ver_code <= CPUVER_7_20_D) {
-				/* MS: problem with signal handling - hw bug */
-				INFO("WB won't work properly");
-			}
-		} else {
-			if (cpuinfo.ver_code >= CPUVER_7_20_A) {
-				INFO("wt_nomsr_noirq");
-				mbc = (struct scache *)&wt_nomsr_noirq;
-			} else {
-				INFO("wt_nomsr");
-=======
 			pr_info("wb_nomsr\n");
 			mbc = (struct scache *)&wb_nomsr;
 			if (cpuinfo.ver_code <= CPUVER_7_20_D) {
@@ -794,23 +639,15 @@ void microblaze_cache_init(void)
 				mbc = (struct scache *)&wt_nomsr_noirq;
 			} else {
 				pr_info("wt_nomsr\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mbc = (struct scache *)&wt_nomsr;
 			}
 		}
 	}
-<<<<<<< HEAD
-/* FIXME Invalidation is done in U-BOOT
- * WT cache: Data is already written to main memory
- * WB cache: Discard data on noMMU which caused that kernel doesn't boot
- */
-=======
 	/*
 	 * FIXME Invalidation is done in U-BOOT
 	 * WT cache: Data is already written to main memory
 	 * WB cache: Discard data on noMMU which caused that kernel doesn't boot
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* invalidate_dcache(); */
 	enable_dcache();
 

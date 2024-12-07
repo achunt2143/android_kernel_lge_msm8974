@@ -4,15 +4,6 @@
  * for more details.
  *
  * Copyright (C) 2004-2007 Cavium Networks
-<<<<<<< HEAD
- * Copyright (C) 2008 Wind River Systems
- */
-#include <linux/init.h>
-#include <linux/console.h>
-#include <linux/delay.h>
-#include <linux/interrupt.h>
-#include <linux/io.h>
-=======
  * Copyright (C) 2008, 2009 Wind River Systems
  *   written by Ralf Baechle <ralf@linux-mips.org>
  */
@@ -26,7 +17,6 @@
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial.h>
 #include <linux/smp.h>
 #include <linux/types.h>
@@ -36,12 +26,9 @@
 #include <linux/platform_device.h>
 #include <linux/serial_core.h>
 #include <linux/serial_8250.h>
-<<<<<<< HEAD
-=======
 #include <linux/of_fdt.h>
 #include <linux/libfdt.h>
 #include <linux/kexec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/processor.h>
 #include <asm/reboot.h>
@@ -50,27 +37,13 @@
 #include <asm/mipsregs.h>
 #include <asm/bootinfo.h>
 #include <asm/sections.h>
-<<<<<<< HEAD
-=======
 #include <asm/fw/fw.h>
 #include <asm/setup.h>
 #include <asm/prom.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/time.h>
 
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/pci-octeon.h>
-<<<<<<< HEAD
-#include <asm/octeon/cvmx-mio-defs.h>
-
-#ifdef CONFIG_CAVIUM_DECODE_RSL
-extern void cvmx_interrupt_rsl_decode(void);
-extern int __cvmx_interrupt_ecc_report_single_bit_errors;
-extern void cvmx_interrupt_rsl_enable(void);
-#endif
-
-extern struct plat_smp_ops octeon_smp_ops;
-=======
 #include <asm/octeon/cvmx-rst-defs.h>
 
 /*
@@ -91,17 +64,11 @@ const bool octeon_should_swizzle_table[256] = {
 	[0x6f] = true,	/* OCTEON II USB */
 };
 EXPORT_SYMBOL(octeon_should_swizzle_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PCI
 extern void pci_console_init(const char *arg);
 #endif
 
-<<<<<<< HEAD
-static unsigned long long MAX_MEMORY = 512ull << 20;
-
-struct octeon_boot_descriptor *octeon_boot_desc_ptr;
-=======
 static unsigned long long max_memory = ULLONG_MAX;
 static unsigned long long reserve_low_mem;
 
@@ -109,16 +76,10 @@ DEFINE_SEMAPHORE(octeon_bootbus_sem, 1);
 EXPORT_SYMBOL(octeon_bootbus_sem);
 
 static struct octeon_boot_descriptor *octeon_boot_desc_ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cvmx_bootinfo *octeon_bootinfo;
 EXPORT_SYMBOL(octeon_bootinfo);
 
-<<<<<<< HEAD
-#ifdef CONFIG_CAVIUM_RESERVE32
-uint64_t octeon_reserve32_memory;
-EXPORT_SYMBOL(octeon_reserve32_memory);
-=======
 #ifdef CONFIG_KEXEC
 #ifdef CONFIG_SMP
 /*
@@ -330,27 +291,17 @@ EXPORT_SYMBOL(octeon_reserve32_memory);
 /* crashkernel cmdline parameter is parsed _after_ memory setup
  * we also parse it here (workaround for EHB5200) */
 static uint64_t crashk_size, crashk_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static int octeon_uart;
 
 extern asmlinkage void handle_int(void);
-<<<<<<< HEAD
-extern asmlinkage void plat_irq_dispatch(void);
-
-/**
- * Return non zero if we are currently running in the Octeon simulator
- *
- * Returns
-=======
 
 /**
  * octeon_is_simulation - Return non-zero if we are currently running
  * in the Octeon simulator
  *
  * Return: non-0 if running in the Octeon simulator, 0 otherwise
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int octeon_is_simulation(void)
 {
@@ -359,17 +310,10 @@ int octeon_is_simulation(void)
 EXPORT_SYMBOL(octeon_is_simulation);
 
 /**
-<<<<<<< HEAD
- * Return true if Octeon is in PCI Host mode. This means
- * Linux can control the PCI bus.
- *
- * Returns Non zero if Octeon in host mode.
-=======
  * octeon_is_pci_host - Return true if Octeon is in PCI Host mode. This means
  * Linux can control the PCI bus.
  *
  * Return: Non-zero if Octeon is in host mode.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int octeon_is_pci_host(void)
 {
@@ -381,15 +325,9 @@ int octeon_is_pci_host(void)
 }
 
 /**
-<<<<<<< HEAD
- * Get the clock rate of Octeon
- *
- * Returns Clock rate in HZ
-=======
  * octeon_get_clock_rate - Get the clock rate of Octeon
  *
  * Return: Clock rate in HZ
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 uint64_t octeon_get_clock_rate(void)
 {
@@ -409,19 +347,6 @@ EXPORT_SYMBOL(octeon_get_io_clock_rate);
 
 
 /**
-<<<<<<< HEAD
- * Write to the LCD display connected to the bootbus. This display
- * exists on most Cavium evaluation boards. If it doesn't exist, then
- * this function doesn't do anything.
- *
- * @s:      String to write
- */
-void octeon_write_lcd(const char *s)
-{
-	if (octeon_bootinfo->led_display_base_addr) {
-		void __iomem *lcd_address =
-			ioremap_nocache(octeon_bootinfo->led_display_base_addr,
-=======
  * octeon_write_lcd - Write to the LCD display connected to the bootbus.
  * @s:	    String to write
  *
@@ -433,7 +358,6 @@ static void octeon_write_lcd(const char *s)
 	if (octeon_bootinfo->led_display_base_addr) {
 		void __iomem *lcd_address =
 			ioremap(octeon_bootinfo->led_display_base_addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					8);
 		int i;
 		for (i = 0; i < 8; i++, s++) {
@@ -447,28 +371,6 @@ static void octeon_write_lcd(const char *s)
 }
 
 /**
-<<<<<<< HEAD
- * Return the console uart passed by the bootloader
- *
- * Returns uart   (0 or 1)
- */
-int octeon_get_boot_uart(void)
-{
-	int uart;
-#ifdef CONFIG_CAVIUM_OCTEON_2ND_KERNEL
-	uart = 1;
-#else
-	uart = (octeon_boot_desc_ptr->flags & OCTEON_BL_FLAG_CONSOLE_UART1) ?
-		1 : 0;
-#endif
-	return uart;
-}
-
-/**
- * Get the coremask Linux was booted on.
- *
- * Returns Core mask
-=======
  * octeon_get_boot_uart - Return the console uart passed by the bootloader
  *
  * Return: uart number (0 or 1)
@@ -483,7 +385,6 @@ static int octeon_get_boot_uart(void)
  * octeon_get_boot_coremask - Get the coremask Linux was booted on.
  *
  * Return: Core mask
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int octeon_get_boot_coremask(void)
 {
@@ -491,11 +392,7 @@ int octeon_get_boot_coremask(void)
 }
 
 /**
-<<<<<<< HEAD
- * Check the hardware BIST results for a CPU
-=======
  * octeon_check_cpu_bist - Check the hardware BIST results for a CPU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void octeon_check_cpu_bist(void)
 {
@@ -526,11 +423,7 @@ void octeon_check_cpu_bist(void)
 }
 
 /**
-<<<<<<< HEAD
- * Reboot Octeon
-=======
  * octeon_restart - Reboot Octeon
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @command: Command to pass to the bootloader. Currently ignored.
  */
@@ -547,37 +440,20 @@ static void octeon_restart(char *command)
 
 	mb();
 	while (1)
-<<<<<<< HEAD
-		cvmx_write_csr(CVMX_CIU_SOFT_RST, 1);
-=======
 		if (OCTEON_IS_OCTEON3())
 			cvmx_write_csr(CVMX_RST_SOFT_RST, 1);
 		else
 			cvmx_write_csr(CVMX_CIU_SOFT_RST, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /**
-<<<<<<< HEAD
- * Permanently stop a core.
-=======
  * octeon_kill_core - Permanently stop a core.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @arg: Ignored.
  */
 static void octeon_kill_core(void *arg)
 {
-<<<<<<< HEAD
-	mb();
-	if (octeon_is_simulation()) {
-		/* The simulator needs the watchdog to stop for dead cores */
-		cvmx_write_csr(CVMX_CIU_WDOGX(cvmx_get_core_num()), 0);
-		/* A break instruction causes the simulator stop a core */
-		asm volatile ("sync\nbreak");
-	}
-=======
 	if (octeon_is_simulation())
 		/* A break instruction causes the simulator stop a core */
 		asm volatile ("break" ::: "memory");
@@ -588,16 +464,11 @@ static void octeon_kill_core(void *arg)
 	/* Spin in a low power mode. */
 	while (true)
 		asm volatile ("wait" ::: "memory");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /**
-<<<<<<< HEAD
- * Halt the system
-=======
  * octeon_halt - Halt the system
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void octeon_halt(void)
 {
@@ -617,36 +488,6 @@ static void octeon_halt(void)
 	octeon_kill_core(NULL);
 }
 
-<<<<<<< HEAD
-/**
- * Handle all the error condition interrupts that might occur.
- *
- */
-#ifdef CONFIG_CAVIUM_DECODE_RSL
-static irqreturn_t octeon_rlm_interrupt(int cpl, void *dev_id)
-{
-	cvmx_interrupt_rsl_decode();
-	return IRQ_HANDLED;
-}
-#endif
-
-static char __read_mostly octeon_system_type[80];
-
-static int __init init_octeon_system_type(void)
-{
-	snprintf(octeon_system_type, sizeof(octeon_system_type), "%s (%s)",
-		cvmx_board_type_to_string(octeon_bootinfo->board_type),
-		octeon_model_get_string(read_c0_prid()));
-
-	return 0;
-}
-early_initcall(init_octeon_system_type);
-
-/**
- * Return a string representing the system type
- *
- * Returns
-=======
 static char __read_mostly octeon_system_type[80];
 
 static void __init init_octeon_system_type(void)
@@ -673,7 +514,6 @@ static void __init init_octeon_system_type(void)
  * octeon_board_type_string - Return a string representing the system type
  *
  * Return: system type string
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 const char *octeon_board_type_string(void)
 {
@@ -686,20 +526,11 @@ const char *get_system_type(void)
 void octeon_user_io_init(void)
 {
 	union octeon_cvmemctl cvmmemctl;
-<<<<<<< HEAD
-	union cvmx_iob_fau_timeout fau_timeout;
-	union cvmx_pow_nw_tim nm_tim;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the current settings for CP0_CVMMEMCTL_REG */
 	cvmmemctl.u64 = read_c0_cvmmemctl();
 	/* R/W If set, marked write-buffer entries time out the same
-<<<<<<< HEAD
-	 * as as other entries; if clear, marked write-buffer entries
-=======
 	 * as other entries; if clear, marked write-buffer entries
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * use the maximum timeout. */
 	cvmmemctl.s.dismarkwblongto = 1;
 	/* R/W If set, a merged store does not clear the write-buffer
@@ -787,37 +618,15 @@ void octeon_user_io_init(void)
 	/* R/W If set, CVMSEG is available for loads/stores in user
 	 * mode. */
 	cvmmemctl.s.cvmsegenau = 0;
-<<<<<<< HEAD
-	/* R/W Size of local memory in cache blocks, 54 (6912 bytes)
-	 * is max legal value. */
-	cvmmemctl.s.lmemsz = CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE;
-
-	write_c0_cvmmemctl(cvmmemctl.u64);
-
-=======
 
 	write_c0_cvmmemctl(cvmmemctl.u64);
 
 	/* Setup of CVMSEG is done in kernel-entry-init.h */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (smp_processor_id() == 0)
 		pr_notice("CVMSEG size: %d cache lines (%d bytes)\n",
 			  CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE,
 			  CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE * 128);
 
-<<<<<<< HEAD
-	/* Set a default for the hardware timeouts */
-	fau_timeout.u64 = 0;
-	fau_timeout.s.tout_val = 0xfff;
-	/* Disable tagwait FAU timeout */
-	fau_timeout.s.tout_enb = 0;
-	cvmx_write_csr(CVMX_IOB_FAU_TIMEOUT, fau_timeout.u64);
-
-	nm_tim.u64 = 0;
-	/* 4096 cycles */
-	nm_tim.s.nw_tim = 3;
-	cvmx_write_csr(CVMX_POW_NW_TIM, nm_tim.u64);
-=======
 	if (octeon_has_feature(OCTEON_FEATURE_FAU)) {
 		union cvmx_iob_fau_timeout fau_timeout;
 
@@ -839,35 +648,22 @@ void octeon_user_io_init(void)
 		nm_tim.s.nw_tim = 3;
 		cvmx_write_csr(CVMX_POW_NW_TIM, nm_tim.u64);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_octeon_c0_icacheerr(0);
 	write_c0_derraddr1(0);
 }
 
 /**
-<<<<<<< HEAD
- * Early entry point for arch setup
-=======
  * prom_init - Early entry point for arch setup
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void __init prom_init(void)
 {
 	struct cvmx_sysinfo *sysinfo;
-<<<<<<< HEAD
-	int i;
-	int argc;
-#ifdef CONFIG_CAVIUM_RESERVE32
-	int64_t addr = -1;
-#endif
-=======
 	const char *arg;
 	char *p;
 	int i;
 	u64 t;
 	int argc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The bootloader passes a pointer to the boot descriptor in
 	 * $a3, this is available as fw_arg3.
@@ -880,11 +676,6 @@ void __init prom_init(void)
 	sysinfo = cvmx_sysinfo_get();
 	memset(sysinfo, 0, sizeof(*sysinfo));
 	sysinfo->system_dram_size = octeon_bootinfo->dram_size << 20;
-<<<<<<< HEAD
-	sysinfo->phy_mem_desc_ptr =
-		cvmx_phys_to_ptr(octeon_bootinfo->phy_mem_desc_addr);
-	sysinfo->core_mask = octeon_bootinfo->core_mask;
-=======
 	sysinfo->phy_mem_desc_addr = (u64)phys_to_virt(octeon_bootinfo->phy_mem_desc_addr);
 
 	if ((octeon_bootinfo->major_version > 1) ||
@@ -901,7 +692,6 @@ void __init prom_init(void)
 		for (i = 512; i < 1024; i++)
 			cvmx_coremask_clear_core(&sysinfo->core_mask, i);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sysinfo->exception_base_addr = octeon_bootinfo->exception_base_addr;
 	sysinfo->cpu_clock_hz = octeon_bootinfo->eclock_hz;
 	sysinfo->dram_data_rate_hz = octeon_bootinfo->dclock_hz * 2;
@@ -922,29 +712,20 @@ void __init prom_init(void)
 	sysinfo->dfa_ref_clock_hz = octeon_bootinfo->dfa_ref_clock_hz;
 	sysinfo->bootloader_config_flags = octeon_bootinfo->config_flags;
 
-<<<<<<< HEAD
-	if (OCTEON_IS_MODEL(OCTEON_CN6XXX)) {
-=======
 	if (OCTEON_IS_OCTEON2()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* I/O clock runs at a different rate than the CPU. */
 		union cvmx_mio_rst_boot rst_boot;
 		rst_boot.u64 = cvmx_read_csr(CVMX_MIO_RST_BOOT);
 		octeon_io_clock_rate = 50000000 * rst_boot.s.pnr_mul;
-<<<<<<< HEAD
-=======
 	} else if (OCTEON_IS_OCTEON3()) {
 		/* I/O clock runs at a different rate than the CPU. */
 		union cvmx_rst_boot rst_boot;
 		rst_boot.u64 = cvmx_read_csr(CVMX_RST_BOOT);
 		octeon_io_clock_rate = 50000000 * rst_boot.s.pnr_mul;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		octeon_io_clock_rate = sysinfo->cpu_clock_hz;
 	}
 
-<<<<<<< HEAD
-=======
 	t = read_c0_cvmctl();
 	if ((t & (1ull << 27)) == 0) {
 		/*
@@ -981,7 +762,6 @@ void __init prom_init(void)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Only enable the LED controller if we're running on a CN38XX, CN58XX,
 	 * or CN56XX. The CN30XX and CN31XX don't have an LED controller.
@@ -998,11 +778,7 @@ void __init prom_init(void)
 		cvmx_write_csr(CVMX_LED_UDD_DATX(1), 0);
 		cvmx_write_csr(CVMX_LED_EN, 1);
 	}
-<<<<<<< HEAD
-#ifdef CONFIG_CAVIUM_RESERVE32
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We need to temporarily allocate all memory in the reserve32
 	 * region. This makes sure the kernel doesn't allocate this
@@ -1013,16 +789,6 @@ void __init prom_init(void)
 	 * Allocate memory for RESERVED32 aligned on 2MB boundary. This
 	 * is in case we later use hugetlb entries with it.
 	 */
-<<<<<<< HEAD
-	addr = cvmx_bootmem_phy_named_block_alloc(CONFIG_CAVIUM_RESERVE32 << 20,
-						0, 0, 2 << 20,
-						"CAVIUM_RESERVE32", 0);
-	if (addr < 0)
-		pr_err("Failed to allocate CAVIUM_RESERVE32 memory area\n");
-	else
-		octeon_reserve32_memory = addr;
-#endif
-=======
 	if (CONFIG_CAVIUM_RESERVE32) {
 		int64_t addr =
 			cvmx_bootmem_phy_named_block_alloc(CONFIG_CAVIUM_RESERVE32 << 20,
@@ -1033,17 +799,12 @@ void __init prom_init(void)
 		else
 			octeon_reserve32_memory = addr;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_CAVIUM_OCTEON_LOCK_L2
 	if (cvmx_read_csr(CVMX_L2D_FUS3) & (3ull << 34)) {
 		pr_info("Skipping L2 locking due to reduced L2 cache size\n");
 	} else {
-<<<<<<< HEAD
-		uint32_t ebase = read_c0_ebase() & 0x3ffff000;
-=======
 		uint32_t __maybe_unused ebase = read_c0_ebase() & 0x3ffff000;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CAVIUM_OCTEON_LOCK_L2_TLB
 		/* TLB refill */
 		cvmx_l2c_lock_mem_region(ebase, 0x100);
@@ -1076,30 +837,13 @@ void __init prom_init(void)
 	octeon_write_lcd("Linux");
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_CAVIUM_GDB
-	/*
-	 * When debugging the linux kernel, force the cores to enter
-	 * the debug exception handler to break in.
-	 */
-	if (octeon_get_boot_debug_flag()) {
-		cvmx_write_csr(CVMX_CIU_DINT, 1 << cvmx_get_core_num());
-		cvmx_read_csr(CVMX_CIU_DINT);
-	}
-#endif
-=======
 	octeon_setup_delays();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * BIST should always be enabled when doing a soft reset. L2
 	 * Cache locking for instance is not cleared unless BIST is
 	 * enabled.  Unfortunately due to a chip errata G-200 for
-<<<<<<< HEAD
-	 * Cn38XX and CN31XX, BIST msut be disabled on these parts.
-=======
 	 * Cn38XX and CN31XX, BIST must be disabled on these parts.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (OCTEON_IS_MODEL(OCTEON_CN38XX_PASS2) ||
 	    OCTEON_IS_MODEL(OCTEON_CN31XX))
@@ -1109,9 +853,6 @@ void __init prom_init(void)
 
 	/* Default to 64MB in the simulator to speed things up */
 	if (octeon_is_simulation())
-<<<<<<< HEAD
-		MAX_MEMORY = 64ull << 20;
-=======
 		max_memory = 64ull << 20;
 
 	arg = strstr(arcs_cmdline, "mem=");
@@ -1122,7 +863,6 @@ void __init prom_init(void)
 		if (*p == '@')
 			reserve_low_mem = memparse(p + 1, &p);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	arcs_cmdline[0] = 0;
 	argc = octeon_boot_desc_ptr->argc;
@@ -1131,17 +871,6 @@ void __init prom_init(void)
 			cvmx_phys_to_ptr(octeon_boot_desc_ptr->argv[i]);
 		if ((strncmp(arg, "MEM=", 4) == 0) ||
 		    (strncmp(arg, "mem=", 4) == 0)) {
-<<<<<<< HEAD
-			sscanf(arg + 4, "%llu", &MAX_MEMORY);
-			MAX_MEMORY <<= 20;
-			if (MAX_MEMORY == 0)
-				MAX_MEMORY = 32ull << 30;
-		} else if (strcmp(arg, "ecc_verbose") == 0) {
-#ifdef CONFIG_CAVIUM_REPORT_SINGLE_BIT_ECC
-			__cvmx_interrupt_ecc_report_single_bit_errors = 1;
-			pr_notice("Reporting of single bit ECC errors is "
-				  "turned on\n");
-=======
 			max_memory = memparse(arg + 4, &p);
 			if (max_memory == 0)
 				max_memory = 32ull << 30;
@@ -1159,7 +888,6 @@ void __init prom_init(void)
 			 * parse_crashkernel(arg, sysinfo->system_dram_size,
 			 *		  &crashk_size, &crashk_base);
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		} else if (strlen(arcs_cmdline) + strlen(arg) + 1 <
 			   sizeof(arcs_cmdline) - 1) {
@@ -1169,49 +897,19 @@ void __init prom_init(void)
 	}
 
 	if (strstr(arcs_cmdline, "console=") == NULL) {
-<<<<<<< HEAD
-#ifdef CONFIG_CAVIUM_OCTEON_2ND_KERNEL
-		strcat(arcs_cmdline, " console=ttyS0,115200");
-#else
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (octeon_uart == 1)
 			strcat(arcs_cmdline, " console=ttyS1,115200");
 		else
 			strcat(arcs_cmdline, " console=ttyS0,115200");
-<<<<<<< HEAD
-#endif
-	}
-
-	if (octeon_is_simulation()) {
-		/*
-		 * The simulator uses a mtdram device pre filled with
-		 * the filesystem. Also specify the calibration delay
-		 * to avoid calculating it every time.
-		 */
-		strcat(arcs_cmdline, " rw root=1f00 slram=root,0x40000000,+1073741824");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mips_hpt_frequency = octeon_get_clock_rate();
 
 	octeon_init_cvmcount();
-<<<<<<< HEAD
-	octeon_setup_delays();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	_machine_restart = octeon_restart;
 	_machine_halt = octeon_halt;
 
-<<<<<<< HEAD
-	octeon_user_io_init();
-	register_smp_ops(&octeon_smp_ops);
-}
-
-/* Exclude a single page from the regions obtained in plat_mem_setup. */
-=======
 #ifdef CONFIG_KEXEC
 	_machine_kexec_shutdown = octeon_shutdown;
 	_machine_crash_shutdown = octeon_crash_shutdown;
@@ -1227,16 +925,11 @@ void __init prom_init(void)
 
 /* Exclude a single page from the regions obtained in plat_mem_setup. */
 #ifndef CONFIG_CRASH_DUMP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __init void memory_exclude_page(u64 addr, u64 *mem, u64 *size)
 {
 	if (addr > *mem && addr < *mem + *size) {
 		u64 inc = addr - *mem;
-<<<<<<< HEAD
-		add_memory_region(*mem, inc, BOOT_MEM_RAM);
-=======
 		memblock_add(*mem, inc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*mem += inc;
 		*size -= inc;
 	}
@@ -1246,8 +939,6 @@ static __init void memory_exclude_page(u64 addr, u64 *mem, u64 *size)
 		*size -= PAGE_SIZE;
 	}
 }
-<<<<<<< HEAD
-=======
 #endif /* CONFIG_CRASH_DUMP */
 
 void __init fw_init_cmdline(void)
@@ -1272,17 +963,11 @@ void __init *plat_get_fdt(void)
 		cvmx_phys_to_ptr(octeon_boot_desc_ptr->cvmx_desc_vaddr);
 	return phys_to_virt(octeon_bootinfo->fdt_addr);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init plat_mem_setup(void)
 {
 	uint64_t mem_alloc_size;
 	uint64_t total;
-<<<<<<< HEAD
-	int64_t memory;
-
-	total = 0;
-=======
 	uint64_t crashk_end;
 #ifndef CONFIG_CRASH_DUMP
 	int64_t memory;
@@ -1290,7 +975,6 @@ void __init plat_mem_setup(void)
 
 	total = 0;
 	crashk_end = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The Mips memory init uses the first memory location for
@@ -1300,35 +984,6 @@ void __init plat_mem_setup(void)
 	 * to consistently work.
 	 */
 	mem_alloc_size = 4 << 20;
-<<<<<<< HEAD
-	if (mem_alloc_size > MAX_MEMORY)
-		mem_alloc_size = MAX_MEMORY;
-
-	/*
-	 * When allocating memory, we want incrementing addresses from
-	 * bootmem_alloc so the code in add_memory_region can merge
-	 * regions next to each other.
-	 */
-	cvmx_bootmem_lock();
-	while ((boot_mem_map.nr_map < BOOT_MEM_MAP_MAX)
-		&& (total < MAX_MEMORY)) {
-#if defined(CONFIG_64BIT) || defined(CONFIG_64BIT_PHYS_ADDR)
-		memory = cvmx_bootmem_phy_alloc(mem_alloc_size,
-						__pa_symbol(&__init_end), -1,
-						0x100000,
-						CVMX_BOOTMEM_FLAG_NO_LOCKING);
-#elif defined(CONFIG_HIGHMEM)
-		memory = cvmx_bootmem_phy_alloc(mem_alloc_size, 0, 1ull << 31,
-						0x100000,
-						CVMX_BOOTMEM_FLAG_NO_LOCKING);
-#else
-		memory = cvmx_bootmem_phy_alloc(mem_alloc_size, 0, 512 << 20,
-						0x100000,
-						CVMX_BOOTMEM_FLAG_NO_LOCKING);
-#endif
-		if (memory >= 0) {
-			u64 size = mem_alloc_size;
-=======
 	if (mem_alloc_size > max_memory)
 		mem_alloc_size = max_memory;
 
@@ -1358,7 +1013,6 @@ void __init plat_mem_setup(void)
 #ifdef CONFIG_KEXEC
 			uint64_t end;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * exclude a page at the beginning and end of
@@ -1371,17 +1025,6 @@ void __init plat_mem_setup(void)
 			memory_exclude_page(CVMX_PCIE_BAR1_PHYS_BASE +
 					    CVMX_PCIE_BAR1_PHYS_SIZE,
 					    &memory, &size);
-<<<<<<< HEAD
-
-			/*
-			 * This function automatically merges address
-			 * regions next to each other if they are
-			 * received in incrementing order.
-			 */
-			if (size)
-				add_memory_region(memory, size, BOOT_MEM_RAM);
-			total += mem_alloc_size;
-=======
 #ifdef CONFIG_KEXEC
 			end = memory + mem_alloc_size;
 
@@ -1426,19 +1069,13 @@ void __init plat_mem_setup(void)
 			total += mem_alloc_size;
 			/* Recovering mem_alloc_size */
 			mem_alloc_size = 4 << 20;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			break;
 		}
 	}
 	cvmx_bootmem_unlock();
-<<<<<<< HEAD
-
-#ifdef CONFIG_CAVIUM_RESERVE32
-=======
 #endif /* CONFIG_CRASH_DUMP */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Now that we've allocated the kernel memory it is safe to
 	 * free the reserved region. We free it here so that builtin
@@ -1446,20 +1083,6 @@ void __init plat_mem_setup(void)
 	 */
 	if (octeon_reserve32_memory)
 		cvmx_bootmem_free_named("CAVIUM_RESERVE32");
-<<<<<<< HEAD
-#endif /* CONFIG_CAVIUM_RESERVE32 */
-
-	if (total == 0)
-		panic("Unable to allocate memory from "
-		      "cvmx_bootmem_phy_alloc\n");
-}
-
-/*
- * Emit one character to the boot UART.  Exported for use by the
- * watchdog timer.
- */
-int prom_putchar(char c)
-=======
 
 	if (total == 0)
 		panic("Unable to allocate memory from "
@@ -1471,7 +1094,6 @@ int prom_putchar(char c)
  * watchdog timer.
  */
 void prom_putchar(char c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint64_t lsrval;
 
@@ -1482,22 +1104,12 @@ void prom_putchar(char c)
 
 	/* Write the byte */
 	cvmx_write_csr(CVMX_MIO_UARTX_THR(octeon_uart), c & 0xffull);
-<<<<<<< HEAD
-	return 1;
-}
-EXPORT_SYMBOL(prom_putchar);
-
-void prom_free_prom_memory(void)
-{
-	if (OCTEON_IS_MODEL(OCTEON_CN63XX_PASS1_X)) {
-=======
 }
 EXPORT_SYMBOL(prom_putchar);
 
 void __init prom_free_prom_memory(void)
 {
 	if (OCTEON_IS_MODEL(OCTEON_CN6XXX)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Check for presence of Core-14449 fix.  */
 		u32 insn;
 		u32 *foo;
@@ -1519,21 +1131,6 @@ void __init prom_free_prom_memory(void)
 			panic("No PREF instruction at Core-14449 probe point.");
 
 		if (((insn >> 16) & 0x1f) != 28)
-<<<<<<< HEAD
-			panic("Core-14449 WAR not in place (%04x).\n"
-			      "Please build kernel with proper options (CONFIG_CAVIUM_CN63XXP1).", insn);
-	}
-#ifdef CONFIG_CAVIUM_DECODE_RSL
-	cvmx_interrupt_rsl_enable();
-
-	/* Add an interrupt handler for general failures. */
-	if (request_irq(OCTEON_IRQ_RML, octeon_rlm_interrupt, IRQF_SHARED,
-			"RML/RSL", octeon_rlm_interrupt)) {
-		panic("Unable to request_irq(OCTEON_IRQ_RML)");
-	}
-#endif
-}
-=======
 			panic("OCTEON II DCache prefetch workaround not in place (%04x).\n"
 			      "Please build kernel with proper options (CONFIG_CAVIUM_CN63XXP1).",
 			      insn);
@@ -1659,4 +1256,3 @@ static int __init octeon_no_pci_release(void)
 	return 0;
 }
 late_initcall(octeon_no_pci_release);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

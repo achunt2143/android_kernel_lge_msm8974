@@ -1,57 +1,8 @@
-<<<<<<< HEAD
-
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-/*
- * DEFINE_AML_GLOBALS is tested in amlcode.h
- * to determine whether certain global names should be "defined" or only
- * "declared" in the current compilation.  This enhances maintainability
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
@@ -60,16 +11,11 @@
  * DEFINE_AML_GLOBALS is tested in amlcode.h
  * to determine whether certain global names should be "defined" or only
  * "declared" in the current compilation. This enhances maintainability
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * by enabling a single header file to embody all knowledge of the names
  * in question.
  *
  * Exactly one module of any executable should #define DEFINE_GLOBALS
-<<<<<<< HEAD
- * before #including the header files which use this convention.  The
-=======
  * before #including the header files which use this convention. The
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * names in question will be defined and initialized in that module,
  * and declared as extern in all other modules which #include those
  * header files.
@@ -88,10 +34,6 @@ ACPI_MODULE_NAME("exutils")
 /* Local prototypes */
 static u32 acpi_ex_digits_needed(u64 value, u32 base);
 
-<<<<<<< HEAD
-#ifndef ACPI_NO_METHOD_EXECUTION
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ex_enter_interpreter
@@ -117,42 +59,9 @@ void acpi_ex_enter_interpreter(void)
 		ACPI_ERROR((AE_INFO,
 			    "Could not acquire AML Interpreter mutex"));
 	}
-<<<<<<< HEAD
-
-	return_VOID;
-}
-
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_reacquire_interpreter
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Reacquire the interpreter execution region from within the
- *              interpreter code. Failure to enter the interpreter region is a
- *              fatal system error. Used in  conjunction with
- *              relinquish_interpreter
- *
- ******************************************************************************/
-
-void acpi_ex_reacquire_interpreter(void)
-{
-	ACPI_FUNCTION_TRACE(ex_reacquire_interpreter);
-
-	/*
-	 * If the global serialized flag is set, do not release the interpreter,
-	 * since it was not actually released by acpi_ex_relinquish_interpreter.
-	 * This forces the interpreter to be single threaded.
-	 */
-	if (!acpi_gbl_all_methods_serialized) {
-		acpi_ex_enter_interpreter();
-=======
 	status = acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
 	if (ACPI_FAILURE(status)) {
 		ACPI_ERROR((AE_INFO, "Could not acquire AML Namespace mutex"));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return_VOID;
@@ -168,9 +77,6 @@ void acpi_ex_reacquire_interpreter(void)
  *
  * DESCRIPTION: Exit the interpreter execution region. This is the top level
  *              routine used to exit the interpreter when all processing has
-<<<<<<< HEAD
- *              been completed.
-=======
  *              been completed, or when the method blocks.
  *
  * Cases where the interpreter is unlocked internally:
@@ -181,7 +87,6 @@ void acpi_ex_reacquire_interpreter(void)
  *      5) Method will be blocked waiting to execute a serialized control
  *          method that is currently executing
  *      6) About to invoke a user-installed opregion handler
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
@@ -191,13 +96,10 @@ void acpi_ex_exit_interpreter(void)
 
 	ACPI_FUNCTION_TRACE(ex_exit_interpreter);
 
-<<<<<<< HEAD
-=======
 	status = acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	if (ACPI_FAILURE(status)) {
 		ACPI_ERROR((AE_INFO, "Could not release AML Namespace mutex"));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = acpi_ut_release_mutex(ACPI_MTX_INTERPRETER);
 	if (ACPI_FAILURE(status)) {
 		ACPI_ERROR((AE_INFO,
@@ -209,94 +111,29 @@ void acpi_ex_exit_interpreter(void)
 
 /*******************************************************************************
  *
-<<<<<<< HEAD
- * FUNCTION:    acpi_ex_relinquish_interpreter
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Exit the interpreter execution region, from within the
- *              interpreter - before attempting an operation that will possibly
- *              block the running thread.
- *
- * Cases where the interpreter is unlocked internally
- *      1) Method to be blocked on a Sleep() AML opcode
- *      2) Method to be blocked on an Acquire() AML opcode
- *      3) Method to be blocked on a Wait() AML opcode
- *      4) Method to be blocked to acquire the global lock
- *      5) Method to be blocked waiting to execute a serialized control method
- *          that is currently executing
- *      6) About to invoke a user-installed opregion handler
- *
- ******************************************************************************/
-
-void acpi_ex_relinquish_interpreter(void)
-{
-	ACPI_FUNCTION_TRACE(ex_relinquish_interpreter);
-
-	/*
-	 * If the global serialized flag is set, do not release the interpreter.
-	 * This forces the interpreter to be single threaded.
-	 */
-	if (!acpi_gbl_all_methods_serialized) {
-		acpi_ex_exit_interpreter();
-	}
-
-	return_VOID;
-}
-
-/*******************************************************************************
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FUNCTION:    acpi_ex_truncate_for32bit_table
  *
  * PARAMETERS:  obj_desc        - Object to be truncated
  *
-<<<<<<< HEAD
- * RETURN:      none
-=======
  * RETURN:      TRUE if a truncation was performed, FALSE otherwise.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * DESCRIPTION: Truncate an ACPI Integer to 32 bits if the execution mode is
  *              32-bit, as determined by the revision of the DSDT.
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-void acpi_ex_truncate_for32bit_table(union acpi_operand_object *obj_desc)
-=======
 u8 acpi_ex_truncate_for32bit_table(union acpi_operand_object *obj_desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	ACPI_FUNCTION_ENTRY();
 
 	/*
 	 * Object must be a valid number and we must be executing
-<<<<<<< HEAD
-	 * a control method. NS node could be there for AML_INT_NAMEPATH_OP.
-=======
 	 * a control method. Object could be NS node for AML_INT_NAMEPATH_OP.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if ((!obj_desc) ||
 	    (ACPI_GET_DESCRIPTOR_TYPE(obj_desc) != ACPI_DESC_TYPE_OPERAND) ||
 	    (obj_desc->common.type != ACPI_TYPE_INTEGER)) {
-<<<<<<< HEAD
-		return;
-	}
-
-	if (acpi_gbl_integer_byte_width == 4) {
-		/*
-		 * We are running a method that exists in a 32-bit ACPI table.
-		 * Truncate the value to 32 bits by zeroing out the upper 32-bit field
-		 */
-		obj_desc->integer.value &= (u64) ACPI_UINT32_MAX;
-	}
-=======
 		return (FALSE);
 	}
 
@@ -311,7 +148,6 @@ u8 acpi_ex_truncate_for32bit_table(union acpi_operand_object *obj_desc)
 	}
 
 	return (FALSE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
@@ -324,11 +160,7 @@ u8 acpi_ex_truncate_for32bit_table(union acpi_operand_object *obj_desc)
  * RETURN:      None
  *
  * DESCRIPTION: Obtain the ACPI hardware Global Lock, only if the field
-<<<<<<< HEAD
- *              flags specifiy that it is to be obtained before field access.
-=======
  *              flags specify that it is to be obtained before field access.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
@@ -401,13 +233,8 @@ void acpi_ex_release_global_lock(u32 field_flags)
  *
  * FUNCTION:    acpi_ex_digits_needed
  *
-<<<<<<< HEAD
- * PARAMETERS:  Value           - Value to be represented
- *              Base            - Base of representation
-=======
  * PARAMETERS:  value           - Value to be represented
  *              base            - Base of representation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      The number of digits.
  *
@@ -447,13 +274,8 @@ static u32 acpi_ex_digits_needed(u64 value, u32 base)
  *
  * FUNCTION:    acpi_ex_eisa_id_to_string
  *
-<<<<<<< HEAD
- * PARAMETERS:  compressed_id   - EISAID to be converted
- *              out_string      - Where to put the converted string (8 bytes)
-=======
  * PARAMETERS:  out_string      - Where to put the converted string (8 bytes)
  *              compressed_id   - EISAID to be converted
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -474,12 +296,8 @@ void acpi_ex_eisa_id_to_string(char *out_string, u64 compressed_id)
 
 	if (compressed_id > ACPI_UINT32_MAX) {
 		ACPI_WARNING((AE_INFO,
-<<<<<<< HEAD
-			      "Expected EISAID is larger than 32 bits: 0x%8.8X%8.8X, truncating",
-=======
 			      "Expected EISAID is larger than 32 bits: "
 			      "0x%8.8X%8.8X, truncating",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      ACPI_FORMAT_UINT64(compressed_id)));
 	}
 
@@ -507,15 +325,9 @@ void acpi_ex_eisa_id_to_string(char *out_string, u64 compressed_id)
  * PARAMETERS:  out_string      - Where to put the converted string. At least
  *                                21 bytes are needed to hold the largest
  *                                possible 64-bit integer.
-<<<<<<< HEAD
- *              Value           - Value to be converted
- *
- * RETURN:      None, string
-=======
  *              value           - Value to be converted
  *
  * RETURN:      Converted string in out_string
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * DESCRIPTION: Convert a 64-bit integer to decimal string representation.
  *              Assumes string buffer is large enough to hold the string. The
@@ -542,8 +354,6 @@ void acpi_ex_integer_to_string(char *out_string, u64 value)
 
 /*******************************************************************************
  *
-<<<<<<< HEAD
-=======
  * FUNCTION:    acpi_ex_pci_cls_to_string
  *
  * PARAMETERS:  out_string      - Where to put the converted string (7 bytes)
@@ -576,20 +386,13 @@ void acpi_ex_pci_cls_to_string(char *out_string, u8 class_code[3])
 
 /*******************************************************************************
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FUNCTION:    acpi_is_valid_space_id
  *
  * PARAMETERS:  space_id            - ID to be validated
  *
-<<<<<<< HEAD
- * RETURN:      TRUE if valid/supported ID.
- *
- * DESCRIPTION: Validate an operation region space_iD.
-=======
  * RETURN:      TRUE if space_id is a valid/supported ID.
  *
  * DESCRIPTION: Validate an operation region space_ID.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
@@ -605,8 +408,3 @@ u8 acpi_is_valid_space_id(u8 space_id)
 
 	return (TRUE);
 }
-<<<<<<< HEAD
-
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

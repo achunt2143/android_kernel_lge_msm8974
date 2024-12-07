@@ -20,24 +20,13 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *
-<<<<<<< HEAD
-=======
  * Authors:
  *     Alex Deucher <alexander.deucher@amd.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef EVERGREEN_BLIT_SHADERS_H
 #define EVERGREEN_BLIT_SHADERS_H
 
-<<<<<<< HEAD
-extern const u32 evergreen_ps[];
-extern const u32 evergreen_vs[];
-extern const u32 evergreen_default_state[];
-
-extern const u32 evergreen_ps_size, evergreen_vs_size;
-extern const u32 evergreen_default_size;
-=======
 /*
  * evergreen cards need to use the 3D engine to blit data which requires
  * quite a bit of hw state setup.  Rather than pull the whole 3D driver
@@ -310,6 +299,5 @@ static const u32 evergreen_default_state[] = {
 };
 
 static const u32 evergreen_default_size = ARRAY_SIZE(evergreen_default_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

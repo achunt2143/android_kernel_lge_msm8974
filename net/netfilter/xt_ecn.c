@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Xtables module for matching the value of the IPv4/IPv6 and TCP ECN bits
  *
  * (C) 2002 by Harald Welte <laforge@gnumonks.org>
  * (C) 2011 Patrick McHardy <kaber@trash.net>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/in.h>
@@ -104,11 +94,7 @@ static int ecn_mt_check4(const struct xt_mtchk_param *par)
 
 	if (info->operation & (XT_ECN_OP_MATCH_ECE | XT_ECN_OP_MATCH_CWR) &&
 	    (ip->proto != IPPROTO_TCP || ip->invflags & IPT_INV_PROTO)) {
-<<<<<<< HEAD
-		pr_info("cannot match TCP bits in rule for non-tcp packets\n");
-=======
 		pr_info_ratelimited("cannot match TCP bits for non-tcp packets\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -150,11 +136,7 @@ static int ecn_mt_check6(const struct xt_mtchk_param *par)
 
 	if (info->operation & (XT_ECN_OP_MATCH_ECE | XT_ECN_OP_MATCH_CWR) &&
 	    (ip->proto != IPPROTO_TCP || ip->invflags & IP6T_INV_PROTO)) {
-<<<<<<< HEAD
-		pr_info("cannot match TCP bits in rule for non-tcp packets\n");
-=======
 		pr_info_ratelimited("cannot match TCP bits for non-tcp packets\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 

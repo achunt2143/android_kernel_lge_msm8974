@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-menu "DCCP CCIDs Configuration (EXPERIMENTAL)"
-	depends on EXPERIMENTAL
-
-config IP_DCCP_CCID2_DEBUG
-	bool "CCID-2 debugging messages"
-	---help---
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 menu "DCCP CCIDs Configuration"
 
 config IP_DCCP_CCID2_DEBUG
 	bool "CCID-2 debugging messages"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Enable CCID-2 specific debugging messages.
 
 	  The debugging output can additionally be toggled by setting the
@@ -21,15 +12,9 @@ config IP_DCCP_CCID2_DEBUG
 	  If in doubt, say N.
 
 config IP_DCCP_CCID3
-<<<<<<< HEAD
-	bool "CCID-3 (TCP-Friendly) (EXPERIMENTAL)"
-	def_bool y if (IP_DCCP = y || IP_DCCP = m)
-	---help---
-=======
 	bool "CCID-3 (TCP-Friendly)"
 	default IP_DCCP = y || IP_DCCP = m
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  CCID-3 denotes TCP-Friendly Rate Control (TFRC), an equation-based
 	  rate-controlled congestion control mechanism.  TFRC is designed to
 	  be reasonably fair when competing for bandwidth with TCP-like flows,
@@ -41,32 +26,20 @@ config IP_DCCP_CCID3
 	  relatively smooth sending rate is of importance.
 
 	  CCID-3 is further described in RFC 4342,
-<<<<<<< HEAD
-	  http://www.ietf.org/rfc/rfc4342.txt
-=======
 	  https://www.ietf.org/rfc/rfc4342.txt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  The TFRC congestion control algorithms were initially described in
 	  RFC 5348.
 
 	  This text was extracted from RFC 4340 (sec. 10.2),
-<<<<<<< HEAD
-	  http://www.ietf.org/rfc/rfc4340.txt
-=======
 	  https://www.ietf.org/rfc/rfc4340.txt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If in doubt, say N.
 
 config IP_DCCP_CCID3_DEBUG
 	bool "CCID-3 debugging messages"
 	depends on IP_DCCP_CCID3
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Enable CCID-3 specific debugging messages.
 
 	  The debugging output can additionally be toggled by setting the

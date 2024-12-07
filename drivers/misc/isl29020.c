@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * isl29020.c - Intersil  ALS Driver
  *
@@ -9,31 +6,12 @@
  *
  *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * Data sheet at: http://www.intersil.com/data/fn/fn6505.pdf
  */
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/err.h>
@@ -100,15 +78,10 @@ static ssize_t als_sensing_range_store(struct device *dev,
 	int ret_val;
 	unsigned long val;
 
-<<<<<<< HEAD
-	if (strict_strtoul(buf, 10, &val))
-		return -EINVAL;
-=======
 	ret_val = kstrtoul(buf, 10, &val);
 	if (ret_val)
 		return ret_val;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (val < 1 || val > 64000)
 		return -EINVAL;
 
@@ -161,11 +134,7 @@ static struct attribute *mid_att_als[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group m_als_gr = {
-=======
 static const struct attribute_group m_als_gr = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "isl29020",
 	.attrs = mid_att_als
 };
@@ -182,12 +151,7 @@ static int als_set_default_config(struct i2c_client *client)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int  isl29020_probe(struct i2c_client *client,
-					const struct i2c_device_id *id)
-=======
 static int  isl29020_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int res;
 
@@ -206,15 +170,6 @@ static int  isl29020_probe(struct i2c_client *client)
 	return res;
 }
 
-<<<<<<< HEAD
-static int isl29020_remove(struct i2c_client *client)
-{
-	sysfs_remove_group(&client->dev.kobj, &m_als_gr);
-	return 0;
-}
-
-static struct i2c_device_id isl29020_id[] = {
-=======
 static void isl29020_remove(struct i2c_client *client)
 {
 	pm_runtime_disable(&client->dev);
@@ -222,7 +177,6 @@ static void isl29020_remove(struct i2c_client *client)
 }
 
 static const struct i2c_device_id isl29020_id[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "isl29020", 0 },
 	{ }
 };

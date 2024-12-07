@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * __get_user functions.
  *
@@ -19,106 +16,23 @@
  * __get_user_X
  *
  * Inputs:	%[r|e]ax contains the address.
-<<<<<<< HEAD
- *		The register is modified, but all changes are undone
- *		before returning because the C code doesn't know about it.
- *
- * Outputs:	%[r|e]ax is error code (0 or -EFAULT)
- *		%[r|e]dx contains zero-extended value
-=======
  *
  * Outputs:	%[r|e]ax is error code (0 or -EFAULT)
  *		%[r|e]dx contains zero-extended value
  *		%ecx contains the high half for 32-bit __get_user_8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *
  * These functions should not modify any other registers,
  * as they get called from within inline assembly.
  */
 
-<<<<<<< HEAD
-#include <linux/linkage.h>
-#include <asm/dwarf2.h>
-=======
 #include <linux/export.h>
 #include <linux/linkage.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page_types.h>
 #include <asm/errno.h>
 #include <asm/asm-offsets.h>
 #include <asm/thread_info.h>
 #include <asm/asm.h>
-<<<<<<< HEAD
-
-	.text
-ENTRY(__get_user_1)
-	CFI_STARTPROC
-	GET_THREAD_INFO(%_ASM_DX)
-	cmp TI_addr_limit(%_ASM_DX),%_ASM_AX
-	jae bad_get_user
-1:	movzb (%_ASM_AX),%edx
-	xor %eax,%eax
-	ret
-	CFI_ENDPROC
-ENDPROC(__get_user_1)
-
-ENTRY(__get_user_2)
-	CFI_STARTPROC
-	add $1,%_ASM_AX
-	jc bad_get_user
-	GET_THREAD_INFO(%_ASM_DX)
-	cmp TI_addr_limit(%_ASM_DX),%_ASM_AX
-	jae bad_get_user
-2:	movzwl -1(%_ASM_AX),%edx
-	xor %eax,%eax
-	ret
-	CFI_ENDPROC
-ENDPROC(__get_user_2)
-
-ENTRY(__get_user_4)
-	CFI_STARTPROC
-	add $3,%_ASM_AX
-	jc bad_get_user
-	GET_THREAD_INFO(%_ASM_DX)
-	cmp TI_addr_limit(%_ASM_DX),%_ASM_AX
-	jae bad_get_user
-3:	mov -3(%_ASM_AX),%edx
-	xor %eax,%eax
-	ret
-	CFI_ENDPROC
-ENDPROC(__get_user_4)
-
-#ifdef CONFIG_X86_64
-ENTRY(__get_user_8)
-	CFI_STARTPROC
-	add $7,%_ASM_AX
-	jc bad_get_user
-	GET_THREAD_INFO(%_ASM_DX)
-	cmp TI_addr_limit(%_ASM_DX),%_ASM_AX
-	jae	bad_get_user
-4:	movq -7(%_ASM_AX),%_ASM_DX
-	xor %eax,%eax
-	ret
-	CFI_ENDPROC
-ENDPROC(__get_user_8)
-#endif
-
-bad_get_user:
-	CFI_STARTPROC
-	xor %edx,%edx
-	mov $(-EFAULT),%_ASM_AX
-	ret
-	CFI_ENDPROC
-END(bad_get_user)
-
-.section __ex_table,"a"
-	_ASM_PTR 1b,bad_get_user
-	_ASM_PTR 2b,bad_get_user
-	_ASM_PTR 3b,bad_get_user
-#ifdef CONFIG_X86_64
-	_ASM_PTR 4b,bad_get_user
-=======
 #include <asm/smap.h>
 
 #define ASM_BARRIER_NOSPEC ALTERNATIVE "", "lfence", X86_FEATURE_LFENCE_RDTSC
@@ -268,5 +182,4 @@ SYM_CODE_END(__get_user_8_handle_exception)
 #else
 	_ASM_EXTABLE_UA(9b, __get_user_8_handle_exception)
 	_ASM_EXTABLE_UA(10b, __get_user_8_handle_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

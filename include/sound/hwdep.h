@@ -1,32 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_HWDEP_H
 #define __SOUND_HWDEP_H
 
 /*
  *  Hardware dependent layer 
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
-<<<<<<< HEAD
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <sound/asound.h>
@@ -44,11 +22,7 @@ struct snd_hwdep_ops {
 		      long count, loff_t *offset);
 	int (*open)(struct snd_hwdep *hw, struct file * file);
 	int (*release)(struct snd_hwdep *hw, struct file * file);
-<<<<<<< HEAD
-	unsigned int (*poll)(struct snd_hwdep *hw, struct file *file,
-=======
 	__poll_t (*poll)(struct snd_hwdep *hw, struct file *file,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     poll_table *wait);
 	int (*ioctl)(struct snd_hwdep *hw, struct file *file,
 		     unsigned int cmd, unsigned long arg);
@@ -71,10 +45,6 @@ struct snd_hwdep {
 	int iface;
 
 #ifdef CONFIG_SND_OSSEMUL
-<<<<<<< HEAD
-	char oss_dev[32];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int oss_type;
 	int ossreg;
 #endif
@@ -83,10 +53,7 @@ struct snd_hwdep {
 	wait_queue_head_t open_wait;
 	void *private_data;
 	void (*private_free) (struct snd_hwdep *hwdep);
-<<<<<<< HEAD
-=======
 	struct device *dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex open_mutex;
 	int used;			/* reference counter */

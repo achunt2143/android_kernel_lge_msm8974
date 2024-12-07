@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Tablet driver configuration
 #
@@ -41,21 +38,6 @@ config TABLET_USB_AIPTEK
 	  To compile this driver as a module, choose M here: the
 	  module will be called aiptek.
 
-<<<<<<< HEAD
-config TABLET_USB_GTCO
-        tristate "GTCO CalComp/InterWrite USB Support"
-        depends on USB && INPUT
-        help
-          Say Y here if you want to use the USB version of the GTCO
-          CalComp/InterWrite Tablet.  Make sure to say Y to "Mouse support"
-          (CONFIG_INPUT_MOUSEDEV) and/or "Event interface support"
-          (CONFIG_INPUT_EVDEV) as well.
-
-          To compile this driver as a module, choose M here: the
-          module will be called gtco.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config TABLET_USB_HANWANG
 	tristate "Hanwang Art Master III tablet support (USB)"
 	depends on USB_ARCH_HAS_HCD
@@ -80,23 +62,6 @@ config TABLET_USB_KBTAB
 	  To compile this driver as a module, choose M here: the
 	  module will be called kbtab.
 
-<<<<<<< HEAD
-config TABLET_USB_WACOM
-	tristate "Wacom Intuos/Graphire tablet support (USB)"
-	depends on USB_ARCH_HAS_HCD
-	select POWER_SUPPLY
-	select USB
-	select NEW_LEDS
-	select LEDS_CLASS
-	help
-	  Say Y here if you want to use the USB version of the Wacom Intuos
-	  or Graphire tablet.  Make sure to say Y to "Mouse support"
-	  (CONFIG_INPUT_MOUSEDEV) and/or "Event interface support"
-	  (CONFIG_INPUT_EVDEV) as well.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called wacom.
-=======
 config TABLET_USB_PEGASUS
 	tristate "Pegasus Mobile Notetaker Pen input tablet support"
 	depends on USB_ARCH_HAS_HCD
@@ -121,6 +86,5 @@ config TABLET_SERIAL_WACOM4
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called wacom_serial4.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif

@@ -1,32 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *  Broadcom Blutonium firmware driver
  *
  *  Copyright (C) 2003  Maxim Krasnyansky <maxk@qualcomm.com>
  *  Copyright (C) 2003  Marcel Holtmann <marcel@holtmann.org>
-<<<<<<< HEAD
- *
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -72,10 +50,7 @@ struct bcm203x_data {
 	unsigned long		state;
 
 	struct work_struct	work;
-<<<<<<< HEAD
-=======
 	atomic_t		shutdown;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct urb		*urb;
 	unsigned char		*buffer;
@@ -108,10 +83,7 @@ static void bcm203x_complete(struct urb *urb)
 
 		data->state = BCM203X_SELECT_MEMORY;
 
-<<<<<<< HEAD
-=======
 		/* use workqueue to have a small delay */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		schedule_work(&data->work);
 		break;
 
@@ -133,11 +105,7 @@ static void bcm203x_complete(struct urb *urb)
 		}
 
 		data->state = BCM203X_LOAD_FIRMWARE;
-<<<<<<< HEAD
-
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BCM203X_LOAD_FIRMWARE:
 		if (data->fw_sent == data->fw_size) {
 			usb_fill_int_urb(urb, udev, usb_rcvintpipe(udev, BCM203X_IN_EP),
@@ -174,14 +142,10 @@ static void bcm203x_work(struct work_struct *work)
 	struct bcm203x_data *data =
 		container_of(work, struct bcm203x_data, work);
 
-<<<<<<< HEAD
-	if (usb_submit_urb(data->urb, GFP_ATOMIC) < 0)
-=======
 	if (atomic_read(&data->shutdown))
 		return;
 
 	if (usb_submit_urb(data->urb, GFP_KERNEL) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BT_ERR("Can't submit URB");
 }
 
@@ -197,40 +161,20 @@ static int bcm203x_probe(struct usb_interface *intf, const struct usb_device_id 
 	if (intf->cur_altsetting->desc.bInterfaceNumber != 0)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	data = kzalloc(sizeof(*data), GFP_KERNEL);
-	if (!data) {
-		BT_ERR("Can't allocate memory for data structure");
-		return -ENOMEM;
-	}
-=======
 	data = devm_kzalloc(&intf->dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->udev  = udev;
 	data->state = BCM203X_LOAD_MINIDRV;
 
 	data->urb = usb_alloc_urb(0, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!data->urb) {
-		BT_ERR("Can't allocate URB");
-		kfree(data);
-		return -ENOMEM;
-	}
-=======
 	if (!data->urb)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (request_firmware(&firmware, "BCM2033-MD.hex", &udev->dev) < 0) {
 		BT_ERR("Mini driver request failed");
 		usb_free_urb(data->urb);
-<<<<<<< HEAD
-		kfree(data);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -243,10 +187,6 @@ static int bcm203x_probe(struct usb_interface *intf, const struct usb_device_id 
 		BT_ERR("Can't allocate memory for mini driver");
 		release_firmware(firmware);
 		usb_free_urb(data->urb);
-<<<<<<< HEAD
-		kfree(data);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -261,10 +201,6 @@ static int bcm203x_probe(struct usb_interface *intf, const struct usb_device_id 
 		BT_ERR("Firmware request failed");
 		usb_free_urb(data->urb);
 		kfree(data->buffer);
-<<<<<<< HEAD
-		kfree(data);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -276,10 +212,6 @@ static int bcm203x_probe(struct usb_interface *intf, const struct usb_device_id 
 		release_firmware(firmware);
 		usb_free_urb(data->urb);
 		kfree(data->buffer);
-<<<<<<< HEAD
-		kfree(data);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -292,10 +224,7 @@ static int bcm203x_probe(struct usb_interface *intf, const struct usb_device_id 
 
 	usb_set_intfdata(intf, data);
 
-<<<<<<< HEAD
-=======
 	/* use workqueue to have a small delay */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	schedule_work(&data->work);
 
 	return 0;
@@ -307,12 +236,9 @@ static void bcm203x_disconnect(struct usb_interface *intf)
 
 	BT_DBG("intf %p", intf);
 
-<<<<<<< HEAD
-=======
 	atomic_inc(&data->shutdown);
 	cancel_work_sync(&data->work);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_kill_urb(data->urb);
 
 	usb_set_intfdata(intf, NULL);
@@ -320,10 +246,6 @@ static void bcm203x_disconnect(struct usb_interface *intf)
 	usb_free_urb(data->urb);
 	kfree(data->fw_data);
 	kfree(data->buffer);
-<<<<<<< HEAD
-	kfree(data);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct usb_driver bcm203x_driver = {
@@ -331,35 +253,10 @@ static struct usb_driver bcm203x_driver = {
 	.probe		= bcm203x_probe,
 	.disconnect	= bcm203x_disconnect,
 	.id_table	= bcm203x_table,
-<<<<<<< HEAD
-};
-
-static int __init bcm203x_init(void)
-{
-	int err;
-
-	BT_INFO("Broadcom Blutonium firmware driver ver %s", VERSION);
-
-	err = usb_register(&bcm203x_driver);
-	if (err < 0)
-		BT_ERR("Failed to register USB driver");
-
-	return err;
-}
-
-static void __exit bcm203x_exit(void)
-{
-	usb_deregister(&bcm203x_driver);
-}
-
-module_init(bcm203x_init);
-module_exit(bcm203x_exit);
-=======
 	.disable_hub_initiated_lpm = 1,
 };
 
 module_usb_driver(bcm203x_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
 MODULE_DESCRIPTION("Broadcom Blutonium firmware driver ver " VERSION);

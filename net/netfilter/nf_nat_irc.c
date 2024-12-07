@@ -1,26 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IRC extension for TCP NAT alteration.
  *
  * (C) 2000-2001 by Harald Welte <laforge@gnumonks.org>
  * (C) 2004 Rusty Russell <rusty@rustcorp.com.au> IBM Corporation
  * based on a copy of RR's ip_nat_ftp.c
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/tcp.h>
@@ -32,12 +19,6 @@
 #include <net/netfilter/nf_conntrack_expect.h>
 #include <linux/netfilter/nf_conntrack_irc.h>
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Harald Welte <laforge@gnumonks.org>");
-MODULE_DESCRIPTION("IRC (DCC) NAT helper");
-MODULE_LICENSE("GPL");
-MODULE_ALIAS("ip_nat_irc");
-=======
 #define NAT_HELPER_NAME "irc"
 
 MODULE_AUTHOR("Harald Welte <laforge@gnumonks.org>");
@@ -47,7 +28,6 @@ MODULE_ALIAS_NF_NAT_HELPER(NAT_HELPER_NAME);
 
 static struct nf_conntrack_nat_helper nat_helper_irc =
 	NF_CT_NAT_HELPER_INIT(NAT_HELPER_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int help(struct sk_buff *skb,
 			 enum ip_conntrack_info ctinfo,
@@ -57,12 +37,6 @@ static unsigned int help(struct sk_buff *skb,
 			 struct nf_conntrack_expect *exp)
 {
 	char buffer[sizeof("4294967296 65635")];
-<<<<<<< HEAD
-	u_int16_t port;
-	unsigned int ret;
-
-	/* Reply comes from server. */
-=======
 	struct nf_conn *ct = exp->master;
 	union nf_inet_addr newaddr;
 	u_int16_t port;
@@ -70,36 +44,10 @@ static unsigned int help(struct sk_buff *skb,
 	/* Reply comes from server. */
 	newaddr = ct->tuplehash[IP_CT_DIR_REPLY].tuple.dst.u3;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	exp->saved_proto.tcp.port = exp->tuple.dst.u.tcp.port;
 	exp->dir = IP_CT_DIR_REPLY;
 	exp->expectfn = nf_nat_follow_master;
 
-<<<<<<< HEAD
-	/* Try to get same port: if not, try to change it. */
-	for (port = ntohs(exp->saved_proto.tcp.port); port != 0; port++) {
-		int ret;
-
-		exp->tuple.dst.u.tcp.port = htons(port);
-		ret = nf_ct_expect_related(exp);
-		if (ret == 0)
-			break;
-		else if (ret != -EBUSY) {
-			port = 0;
-			break;
-		}
-	}
-
-	if (port == 0)
-		return NF_DROP;
-
-	ret = nf_nat_mangle_tcp_packet(skb, exp->master, ctinfo,
-				       protoff, matchoff, matchlen, buffer,
-				       strlen(buffer));
-	if (ret != NF_ACCEPT)
-		nf_ct_unexpect_related(exp);
-	return ret;
-=======
 	port = nf_nat_exp_find_port(exp,
 				    ntohs(exp->saved_proto.tcp.port));
 	if (port == 0) {
@@ -133,15 +81,11 @@ static unsigned int help(struct sk_buff *skb,
 	}
 
 	return NF_ACCEPT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit nf_nat_irc_fini(void)
 {
-<<<<<<< HEAD
-=======
 	nf_nat_helper_unregister(&nat_helper_irc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RCU_INIT_POINTER(nf_nat_irc_hook, NULL);
 	synchronize_rcu();
 }
@@ -149,25 +93,15 @@ static void __exit nf_nat_irc_fini(void)
 static int __init nf_nat_irc_init(void)
 {
 	BUG_ON(nf_nat_irc_hook != NULL);
-<<<<<<< HEAD
-=======
 	nf_nat_helper_register(&nat_helper_irc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RCU_INIT_POINTER(nf_nat_irc_hook, help);
 	return 0;
 }
 
 /* Prior to 2.6.11, we had a ports param.  No longer, but don't break users. */
-<<<<<<< HEAD
-static int warn_set(const char *val, struct kernel_param *kp)
-{
-	printk(KERN_INFO KBUILD_MODNAME
-	       ": kernel >= 2.6.10 only uses 'ports' for conntrack modules\n");
-=======
 static int warn_set(const char *val, const struct kernel_param *kp)
 {
 	pr_info("kernel >= 2.6.10 only uses 'ports' for conntrack modules\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 module_param_call(ports, warn_set, NULL, NULL, 0);

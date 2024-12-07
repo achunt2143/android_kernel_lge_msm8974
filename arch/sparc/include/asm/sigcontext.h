@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-#ifndef __SPARC_SIGCONTEXT_H
-#define __SPARC_SIGCONTEXT_H
-
-#ifdef __KERNEL__
-#include <asm/ptrace.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __SPARC_SIGCONTEXT_H
 #define __SPARC_SIGCONTEXT_H
 
 #include <asm/ptrace.h>
 #include <uapi/asm/sigcontext.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 
@@ -34,11 +26,7 @@ struct sigcontext32 {
 	int sigc_oswins;       /* outstanding windows */
 
 	/* stack ptrs for each regwin buf */
-<<<<<<< HEAD
-	unsigned sigc_spbuf[__SUNOS_MAXWIN];
-=======
 	unsigned int sigc_spbuf[__SUNOS_MAXWIN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Windows to restore after signal */
 	struct reg_window32 sigc_wbuf[__SUNOS_MAXWIN];
@@ -118,9 +106,4 @@ typedef struct {
 
 #endif /* !(__ASSEMBLY__) */
 
-<<<<<<< HEAD
-#endif /* (__KERNEL__) */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(__SPARC_SIGCONTEXT_H) */

@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-TARGETS = breakpoints vm
-
-all:
-	for TARGET in $(TARGETS); do \
-		make -C $$TARGET; \
-	done;
-
-run_tests: all
-	for TARGET in $(TARGETS); do \
-		make -C $$TARGET run_tests; \
-	done;
-
-clean:
-	for TARGET in $(TARGETS); do \
-		make -C $$TARGET clean; \
-	done;
-=======
 # SPDX-License-Identifier: GPL-2.0
 TARGETS += alsa
 TARGETS += amd-pstate
@@ -304,4 +286,3 @@ clean:
 	done;
 
 .PHONY: all run_tests hotplug run_hotplug clean_hotplug run_pstore_crash install clean gen_tar
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

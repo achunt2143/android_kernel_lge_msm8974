@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* kgdb.c: KGDB support for 64-bit sparc.
  *
  * Copyright (C) 2008 David S. Miller <davem@davemloft.net>
@@ -10,21 +7,15 @@
 #include <linux/kgdb.h>
 #include <linux/kdebug.h>
 #include <linux/ftrace.h>
-<<<<<<< HEAD
-=======
 #include <linux/context_tracking.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/cacheflush.h>
 #include <asm/kdebug.h>
 #include <asm/ptrace.h>
 #include <asm/irq.h>
 
-<<<<<<< HEAD
-=======
 #include "kernel.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void pt_regs_to_gdb_regs(unsigned long *gdb_regs, struct pt_regs *regs)
 {
 	struct reg_window *win;
@@ -55,11 +46,7 @@ void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 {
 	struct thread_info *t = task_thread_info(p);
 	extern unsigned int switch_to_pc;
-<<<<<<< HEAD
-	extern unsigned int ret_from_syscall;
-=======
 	extern unsigned int ret_from_fork;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct reg_window *win;
 	unsigned long pc, cwp;
 	int i;
@@ -83,11 +70,7 @@ void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 		gdb_regs[i] = 0;
 
 	if (t->new_child)
-<<<<<<< HEAD
-		pc = (unsigned long) &ret_from_syscall;
-=======
 		pc = (unsigned long) &ret_from_fork;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		pc = (unsigned long) &switch_to_pc;
 
@@ -165,11 +148,7 @@ int kgdb_arch_handle_exception(int e_vector, int signo, int err_code,
 			linux_regs->tpc = addr;
 			linux_regs->tnpc = addr + 4;
 		}
-<<<<<<< HEAD
-		/* fallthru */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case 'D':
 	case 'k':
@@ -184,19 +163,12 @@ int kgdb_arch_handle_exception(int e_vector, int signo, int err_code,
 
 asmlinkage void kgdb_trap(unsigned long trap_level, struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	enum ctx_state prev_state = exception_enter();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	if (user_mode(regs)) {
 		bad_trap(regs, trap_level);
-<<<<<<< HEAD
-		return;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	flushw_all();
@@ -204,11 +176,8 @@ asmlinkage void kgdb_trap(unsigned long trap_level, struct pt_regs *regs)
 	local_irq_save(flags);
 	kgdb_handle_exception(0x172, SIGTRAP, 0, regs);
 	local_irq_restore(flags);
-<<<<<<< HEAD
-=======
 out:
 	exception_exit(prev_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kgdb_arch_init(void)
@@ -226,11 +195,7 @@ void kgdb_arch_set_pc(struct pt_regs *regs, unsigned long ip)
 	regs->tnpc = regs->tpc + 4;
 }
 
-<<<<<<< HEAD
-struct kgdb_arch arch_kgdb_ops = {
-=======
 const struct kgdb_arch arch_kgdb_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Breakpoint instruction: ta 0x72 */
 	.gdb_bpt_instr		= { 0x91, 0xd0, 0x20, 0x72 },
 };

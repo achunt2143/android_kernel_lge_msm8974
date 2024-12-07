@@ -25,20 +25,13 @@
  */
 
 #include <linux/hw_random.h>
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/stop_machine.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define PFX	KBUILD_MODNAME ": "
@@ -206,11 +199,7 @@ static int intel_rng_init(struct hwrng *rng)
 	if ((hw_status & INTEL_RNG_ENABLED) == 0)
 		hw_status = hwstatus_set(mem, hw_status | INTEL_RNG_ENABLED);
 	if ((hw_status & INTEL_RNG_ENABLED) == 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR PFX "cannot enable RNG, aborting\n");
-=======
 		pr_err(PFX "cannot enable RNG, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	err = 0;
@@ -227,11 +216,7 @@ static void intel_rng_cleanup(struct hwrng *rng)
 	if (hw_status & INTEL_RNG_ENABLED)
 		hwstatus_set(mem, hw_status & ~INTEL_RNG_ENABLED);
 	else
-<<<<<<< HEAD
-		printk(KERN_WARNING PFX "unusual: RNG already disabled\n");
-=======
 		pr_warn(PFX "unusual: RNG already disabled\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -289,11 +274,7 @@ static int __init intel_rng_hw_init(void *_intel_rng_hw)
 	if (mfc != INTEL_FWH_MANUFACTURER_CODE ||
 	    (dvc != INTEL_FWH_DEVICE_CODE_8M &&
 	     dvc != INTEL_FWH_DEVICE_CODE_4M)) {
-<<<<<<< HEAD
-		printk(KERN_NOTICE PFX "FWH not detected\n");
-=======
 		pr_notice(PFX "FWH not detected\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -325,10 +306,6 @@ static int __init intel_init_hw_struct(struct intel_rng_hw *intel_rng_hw,
 	     (BIOS_CNTL_LOCK_ENABLE_MASK|BIOS_CNTL_WRITE_ENABLE_MASK))
 	    == BIOS_CNTL_LOCK_ENABLE_MASK) {
 		static __initdata /*const*/ char warning[] =
-<<<<<<< HEAD
-			KERN_WARNING
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 PFX "Firmware space is locked read-only. If you can't or\n"
 PFX "don't want to disable this in firmware setup, and if\n"
 PFX "you are certain that your system has a functional\n"
@@ -336,19 +313,11 @@ PFX "RNG, try using the 'no_fwh_detect' option.\n";
 
 		if (no_fwh_detect)
 			return -ENODEV;
-<<<<<<< HEAD
-		printk(warning);
-		return -EBUSY;
-	}
-
-	intel_rng_hw->mem = ioremap_nocache(INTEL_FWH_ADDR, INTEL_FWH_ADDR_LEN);
-=======
 		pr_warn("%s", warning);
 		return -EBUSY;
 	}
 
 	intel_rng_hw->mem = ioremap(INTEL_FWH_ADDR, INTEL_FWH_ADDR_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (intel_rng_hw->mem == NULL)
 		return -EBUSY;
 
@@ -356,20 +325,12 @@ PFX "RNG, try using the 'no_fwh_detect' option.\n";
 }
 
 
-<<<<<<< HEAD
-static int __init mod_init(void)
-=======
 static int __init intel_rng_mod_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = -ENODEV;
 	int i;
 	struct pci_dev *dev = NULL;
-<<<<<<< HEAD
-	void __iomem *mem = mem;
-=======
 	void __iomem *mem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 hw_status;
 	struct intel_rng_hw *intel_rng_hw;
 
@@ -430,17 +391,10 @@ fwh_done:
 		goto out;
 	}
 
-<<<<<<< HEAD
-	printk(KERN_INFO "Intel 82802 RNG detected\n");
-	err = hwrng_register(&intel_rng);
-	if (err) {
-		printk(KERN_ERR PFX "RNG registering failed (%d)\n",
-=======
 	pr_info("Intel 82802 RNG detected\n");
 	err = hwrng_register(&intel_rng);
 	if (err) {
 		pr_err(PFX "RNG registering failed (%d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       err);
 		iounmap(mem);
 	}
@@ -449,11 +403,7 @@ out:
 
 }
 
-<<<<<<< HEAD
-static void __exit mod_exit(void)
-=======
 static void __exit intel_rng_mod_exit(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *mem = (void __iomem *)intel_rng.priv;
 
@@ -461,13 +411,8 @@ static void __exit intel_rng_mod_exit(void)
 	iounmap(mem);
 }
 
-<<<<<<< HEAD
-module_init(mod_init);
-module_exit(mod_exit);
-=======
 module_init(intel_rng_mod_init);
 module_exit(intel_rng_mod_exit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("H/W RNG driver for Intel chipsets");
 MODULE_LICENSE("GPL");

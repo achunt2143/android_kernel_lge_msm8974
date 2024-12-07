@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pci_sun4v_asm: Hypervisor calls for PCI support.
  *
  * Copyright (C) 2006, 2008 David S. Miller <davem@davemloft.net>
@@ -364,8 +361,6 @@ ENTRY(pci_sun4v_msg_setvalid)
 	 mov	%o0, %o0
 ENDPROC(pci_sun4v_msg_setvalid)
 
-<<<<<<< HEAD
-=======
 	/*
 	 * %o0:	devhandle
 	 * %o1:	r_addr
@@ -434,4 +429,3 @@ ENTRY(pci_sun4v_iotsb_demap)
 	retl
 	 stx	%o1, [%o4]
 ENDPROC(pci_sun4v_iotsb_demap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * License Terms: GNU General Public License, version 2
- * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
- */
-
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/platform_device.h>
-#include <linux/slab.h>
-#include <linux/gpio.h>
-#include <linux/irq.h>
-#include <linux/interrupt.h>
-#include <linux/mfd/stmpe.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) ST-Ericsson SA 2010
@@ -32,7 +15,6 @@
 #include <linux/mfd/stmpe.h>
 #include <linux/seq_file.h>
 #include <linux/bitops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These registers are modified under the irq bus lock and cached to avoid
@@ -40,55 +22,29 @@
  */
 enum { REG_RE, REG_FE, REG_IE };
 
-<<<<<<< HEAD
-#define CACHE_NR_REGS	3
-#define CACHE_NR_BANKS	(STMPE_NR_GPIOS / 8)
-=======
 enum { LSB, CSB, MSB };
 
 #define CACHE_NR_REGS	3
 /* No variant has more than 24 GPIOs */
 #define CACHE_NR_BANKS	(24 / 8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct stmpe_gpio {
 	struct gpio_chip chip;
 	struct stmpe *stmpe;
 	struct device *dev;
 	struct mutex irq_lock;
-<<<<<<< HEAD
-
-	int irq_base;
-	unsigned norequest_mask;
-
-=======
 	u32 norequest_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Caches of interrupt control registers for bus_lock */
 	u8 regs[CACHE_NR_REGS][CACHE_NR_BANKS];
 	u8 oldregs[CACHE_NR_REGS][CACHE_NR_BANKS];
 };
 
-<<<<<<< HEAD
-static inline struct stmpe_gpio *to_stmpe_gpio(struct gpio_chip *chip)
-{
-	return container_of(chip, struct stmpe_gpio, chip);
-}
-
-static int stmpe_gpio_get(struct gpio_chip *chip, unsigned offset)
-{
-	struct stmpe_gpio *stmpe_gpio = to_stmpe_gpio(chip);
-	struct stmpe *stmpe = stmpe_gpio->stmpe;
-	u8 reg = stmpe->regs[STMPE_IDX_GPMR_LSB] - (offset / 8);
-	u8 mask = 1 << (offset % 8);
-=======
 static int stmpe_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
 	struct stmpe_gpio *stmpe_gpio = gpiochip_get_data(chip);
 	struct stmpe *stmpe = stmpe_gpio->stmpe;
 	u8 reg = stmpe->regs[STMPE_IDX_GPMR_LSB + (offset / 8)];
 	u8 mask = BIT(offset % 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = stmpe_reg_read(stmpe, reg);
@@ -100,19 +56,11 @@ static int stmpe_gpio_get(struct gpio_chip *chip, unsigned offset)
 
 static void stmpe_gpio_set(struct gpio_chip *chip, unsigned offset, int val)
 {
-<<<<<<< HEAD
-	struct stmpe_gpio *stmpe_gpio = to_stmpe_gpio(chip);
-	struct stmpe *stmpe = stmpe_gpio->stmpe;
-	int which = val ? STMPE_IDX_GPSR_LSB : STMPE_IDX_GPCR_LSB;
-	u8 reg = stmpe->regs[which] - (offset / 8);
-	u8 mask = 1 << (offset % 8);
-=======
 	struct stmpe_gpio *stmpe_gpio = gpiochip_get_data(chip);
 	struct stmpe *stmpe = stmpe_gpio->stmpe;
 	int which = val ? STMPE_IDX_GPSR_LSB : STMPE_IDX_GPCR_LSB;
 	u8 reg = stmpe->regs[which + (offset / 8)];
 	u8 mask = BIT(offset % 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Some variants have single register for gpio set/clear functionality.
@@ -124,15 +72,6 @@ static void stmpe_gpio_set(struct gpio_chip *chip, unsigned offset, int val)
 		stmpe_reg_write(stmpe, reg, mask);
 }
 
-<<<<<<< HEAD
-static int stmpe_gpio_direction_output(struct gpio_chip *chip,
-					 unsigned offset, int val)
-{
-	struct stmpe_gpio *stmpe_gpio = to_stmpe_gpio(chip);
-	struct stmpe *stmpe = stmpe_gpio->stmpe;
-	u8 reg = stmpe->regs[STMPE_IDX_GPDR_LSB] - (offset / 8);
-	u8 mask = 1 << (offset % 8);
-=======
 static int stmpe_gpio_get_direction(struct gpio_chip *chip,
 				    unsigned offset)
 {
@@ -159,7 +98,6 @@ static int stmpe_gpio_direction_output(struct gpio_chip *chip,
 	struct stmpe *stmpe = stmpe_gpio->stmpe;
 	u8 reg = stmpe->regs[STMPE_IDX_GPDR_LSB + (offset / 8)];
 	u8 mask = BIT(offset % 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	stmpe_gpio_set(chip, offset, val);
 
@@ -169,44 +107,14 @@ static int stmpe_gpio_direction_output(struct gpio_chip *chip,
 static int stmpe_gpio_direction_input(struct gpio_chip *chip,
 					unsigned offset)
 {
-<<<<<<< HEAD
-	struct stmpe_gpio *stmpe_gpio = to_stmpe_gpio(chip);
-	struct stmpe *stmpe = stmpe_gpio->stmpe;
-	u8 reg = stmpe->regs[STMPE_IDX_GPDR_LSB] - (offset / 8);
-	u8 mask = 1 << (offset % 8);
-=======
 	struct stmpe_gpio *stmpe_gpio = gpiochip_get_data(chip);
 	struct stmpe *stmpe = stmpe_gpio->stmpe;
 	u8 reg = stmpe->regs[STMPE_IDX_GPDR_LSB + (offset / 8)];
 	u8 mask = BIT(offset % 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return stmpe_set_bits(stmpe, reg, mask, 0);
 }
 
-<<<<<<< HEAD
-static int stmpe_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
-{
-	struct stmpe_gpio *stmpe_gpio = to_stmpe_gpio(chip);
-
-	return stmpe_gpio->irq_base + offset;
-}
-
-static int stmpe_gpio_request(struct gpio_chip *chip, unsigned offset)
-{
-	struct stmpe_gpio *stmpe_gpio = to_stmpe_gpio(chip);
-	struct stmpe *stmpe = stmpe_gpio->stmpe;
-
-	if (stmpe_gpio->norequest_mask & (1 << offset))
-		return -EINVAL;
-
-	return stmpe_set_altfunc(stmpe, 1 << offset, STMPE_BLOCK_GPIO);
-}
-
-static struct gpio_chip template_chip = {
-	.label			= "stmpe",
-	.owner			= THIS_MODULE,
-=======
 static int stmpe_gpio_request(struct gpio_chip *chip, unsigned offset)
 {
 	struct stmpe_gpio *stmpe_gpio = gpiochip_get_data(chip);
@@ -222,38 +130,16 @@ static const struct gpio_chip template_chip = {
 	.label			= "stmpe",
 	.owner			= THIS_MODULE,
 	.get_direction		= stmpe_gpio_get_direction,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.direction_input	= stmpe_gpio_direction_input,
 	.get			= stmpe_gpio_get,
 	.direction_output	= stmpe_gpio_direction_output,
 	.set			= stmpe_gpio_set,
-<<<<<<< HEAD
-	.to_irq			= stmpe_gpio_to_irq,
-	.request		= stmpe_gpio_request,
-	.can_sleep		= 1,
-=======
 	.request		= stmpe_gpio_request,
 	.can_sleep		= true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int stmpe_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 {
-<<<<<<< HEAD
-	struct stmpe_gpio *stmpe_gpio = irq_data_get_irq_chip_data(d);
-	int offset = d->irq - stmpe_gpio->irq_base;
-	int regoffset = offset / 8;
-	int mask = 1 << (offset % 8);
-
-	if (type == IRQ_TYPE_LEVEL_LOW || type == IRQ_TYPE_LEVEL_HIGH)
-		return -EINVAL;
-
-	/* STMPE801 doesn't have RE and FE registers */
-	if (stmpe_gpio->stmpe->partnum == STMPE801)
-		return 0;
-
-	if (type == IRQ_TYPE_EDGE_RISING)
-=======
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
 	struct stmpe_gpio *stmpe_gpio = gpiochip_get_data(gc);
 	int offset = d->hwirq;
@@ -269,16 +155,11 @@ static int stmpe_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 		return 0;
 
 	if (type & IRQ_TYPE_EDGE_RISING)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stmpe_gpio->regs[REG_RE][regoffset] |= mask;
 	else
 		stmpe_gpio->regs[REG_RE][regoffset] &= ~mask;
 
-<<<<<<< HEAD
-	if (type == IRQ_TYPE_EDGE_FALLING)
-=======
 	if (type & IRQ_TYPE_EDGE_FALLING)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stmpe_gpio->regs[REG_FE][regoffset] |= mask;
 	else
 		stmpe_gpio->regs[REG_FE][regoffset] &= ~mask;
@@ -288,34 +169,14 @@ static int stmpe_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 
 static void stmpe_gpio_irq_lock(struct irq_data *d)
 {
-<<<<<<< HEAD
-	struct stmpe_gpio *stmpe_gpio = irq_data_get_irq_chip_data(d);
-=======
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
 	struct stmpe_gpio *stmpe_gpio = gpiochip_get_data(gc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&stmpe_gpio->irq_lock);
 }
 
 static void stmpe_gpio_irq_sync_unlock(struct irq_data *d)
 {
-<<<<<<< HEAD
-	struct stmpe_gpio *stmpe_gpio = irq_data_get_irq_chip_data(d);
-	struct stmpe *stmpe = stmpe_gpio->stmpe;
-	int num_banks = DIV_ROUND_UP(stmpe->num_gpios, 8);
-	static const u8 regmap[] = {
-		[REG_RE]	= STMPE_IDX_GPRER_LSB,
-		[REG_FE]	= STMPE_IDX_GPFER_LSB,
-		[REG_IE]	= STMPE_IDX_IEGPIOR_LSB,
-	};
-	int i, j;
-
-	for (i = 0; i < CACHE_NR_REGS; i++) {
-		/* STMPE801 doesn't have RE and FE registers */
-		if ((stmpe->partnum == STMPE801) &&
-				(i != REG_IE))
-=======
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
 	struct stmpe_gpio *stmpe_gpio = gpiochip_get_data(gc);
 	struct stmpe *stmpe = stmpe_gpio->stmpe;
@@ -348,7 +209,6 @@ static void stmpe_gpio_irq_sync_unlock(struct irq_data *d)
 		if ((stmpe->partnum == STMPE801 ||
 		     stmpe->partnum == STMPE1600) &&
 		     (i != REG_IE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		for (j = 0; j < num_banks; j++) {
@@ -359,11 +219,7 @@ static void stmpe_gpio_irq_sync_unlock(struct irq_data *d)
 				continue;
 
 			stmpe_gpio->oldregs[i][j] = new;
-<<<<<<< HEAD
-			stmpe_reg_write(stmpe, stmpe->regs[regmap[i]] - j, new);
-=======
 			stmpe_reg_write(stmpe, stmpe->regs[regmap[i][j]], new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -372,14 +228,6 @@ static void stmpe_gpio_irq_sync_unlock(struct irq_data *d)
 
 static void stmpe_gpio_irq_mask(struct irq_data *d)
 {
-<<<<<<< HEAD
-	struct stmpe_gpio *stmpe_gpio = irq_data_get_irq_chip_data(d);
-	int offset = d->irq - stmpe_gpio->irq_base;
-	int regoffset = offset / 8;
-	int mask = 1 << (offset % 8);
-
-	stmpe_gpio->regs[REG_IE][regoffset] &= ~mask;
-=======
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
 	struct stmpe_gpio *stmpe_gpio = gpiochip_get_data(gc);
 	int offset = d->hwirq;
@@ -388,22 +236,10 @@ static void stmpe_gpio_irq_mask(struct irq_data *d)
 
 	stmpe_gpio->regs[REG_IE][regoffset] &= ~mask;
 	gpiochip_disable_irq(gc, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void stmpe_gpio_irq_unmask(struct irq_data *d)
 {
-<<<<<<< HEAD
-	struct stmpe_gpio *stmpe_gpio = irq_data_get_irq_chip_data(d);
-	int offset = d->irq - stmpe_gpio->irq_base;
-	int regoffset = offset / 8;
-	int mask = 1 << (offset % 8);
-
-	stmpe_gpio->regs[REG_IE][regoffset] |= mask;
-}
-
-static struct irq_chip stmpe_gpio_irq_chip = {
-=======
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
 	struct stmpe_gpio *stmpe_gpio = gpiochip_get_data(gc);
 	int offset = d->hwirq;
@@ -528,36 +364,22 @@ static void stmpe_dbg_show(struct seq_file *s, struct gpio_chip *gc)
 }
 
 static const struct irq_chip stmpe_gpio_irq_chip = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name			= "stmpe-gpio",
 	.irq_bus_lock		= stmpe_gpio_irq_lock,
 	.irq_bus_sync_unlock	= stmpe_gpio_irq_sync_unlock,
 	.irq_mask		= stmpe_gpio_irq_mask,
 	.irq_unmask		= stmpe_gpio_irq_unmask,
 	.irq_set_type		= stmpe_gpio_irq_set_type,
-<<<<<<< HEAD
-};
-
-=======
 	.flags			= IRQCHIP_IMMUTABLE,
 	GPIOCHIP_IRQ_RESOURCE_HELPERS,
 };
 
 #define MAX_GPIOS 24
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t stmpe_gpio_irq(int irq, void *dev)
 {
 	struct stmpe_gpio *stmpe_gpio = dev;
 	struct stmpe *stmpe = stmpe_gpio->stmpe;
-<<<<<<< HEAD
-	u8 statmsbreg = stmpe->regs[STMPE_IDX_ISGPIOR_MSB];
-	int num_banks = DIV_ROUND_UP(stmpe->num_gpios, 8);
-	u8 status[num_banks];
-	int ret;
-	int i;
-
-=======
 	u8 statmsbreg;
 	int num_banks = DIV_ROUND_UP(stmpe->num_gpios, 8);
 	u8 status[DIV_ROUND_UP(MAX_GPIOS, 8)];
@@ -577,18 +399,13 @@ static irqreturn_t stmpe_gpio_irq(int irq, void *dev)
 	else
 		statmsbreg = stmpe->regs[STMPE_IDX_ISGPIOR_MSB];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = stmpe_block_read(stmpe, statmsbreg, num_banks, status);
 	if (ret < 0)
 		return IRQ_NONE;
 
 	for (i = 0; i < num_banks; i++) {
-<<<<<<< HEAD
-		int bank = num_banks - i - 1;
-=======
 		int bank = (stmpe_gpio->stmpe->partnum == STMPE1600) ? i :
 			   num_banks - i - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int enabled = stmpe_gpio->regs[REG_IE][bank];
 		unsigned int stat = status[i];
 
@@ -599,19 +416,6 @@ static irqreturn_t stmpe_gpio_irq(int irq, void *dev)
 		while (stat) {
 			int bit = __ffs(stat);
 			int line = bank * 8 + bit;
-<<<<<<< HEAD
-
-			handle_nested_irq(stmpe_gpio->irq_base + line);
-			stat &= ~(1 << bit);
-		}
-
-		stmpe_reg_write(stmpe, statmsbreg + i, status[i]);
-
-		/* Edge detect register is not present on 801 */
-		if (stmpe->partnum != STMPE801)
-			stmpe_reg_write(stmpe, stmpe->regs[STMPE_IDX_GPEDR_MSB]
-					+ i, status[i]);
-=======
 			int child_irq = irq_find_mapping(stmpe_gpio->chip.irq.domain,
 							 line);
 
@@ -631,61 +435,11 @@ static irqreturn_t stmpe_gpio_irq(int irq, void *dev)
 					stmpe->regs[STMPE_IDX_GPEDR_MSB] + i,
 					status[i]);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit stmpe_gpio_irq_init(struct stmpe_gpio *stmpe_gpio)
-{
-	int base = stmpe_gpio->irq_base;
-	int irq;
-
-	for (irq = base; irq < base + stmpe_gpio->chip.ngpio; irq++) {
-		irq_set_chip_data(irq, stmpe_gpio);
-		irq_set_chip_and_handler(irq, &stmpe_gpio_irq_chip,
-					 handle_simple_irq);
-		irq_set_nested_thread(irq, 1);
-#ifdef CONFIG_ARM
-		set_irq_flags(irq, IRQF_VALID);
-#else
-		irq_set_noprobe(irq);
-#endif
-	}
-
-	return 0;
-}
-
-static void stmpe_gpio_irq_remove(struct stmpe_gpio *stmpe_gpio)
-{
-	int base = stmpe_gpio->irq_base;
-	int irq;
-
-	for (irq = base; irq < base + stmpe_gpio->chip.ngpio; irq++) {
-#ifdef CONFIG_ARM
-		set_irq_flags(irq, 0);
-#endif
-		irq_set_chip_and_handler(irq, NULL, NULL);
-		irq_set_chip_data(irq, NULL);
-	}
-}
-
-static int __devinit stmpe_gpio_probe(struct platform_device *pdev)
-{
-	struct stmpe *stmpe = dev_get_drvdata(pdev->dev.parent);
-	struct stmpe_gpio_platform_data *pdata;
-	struct stmpe_gpio *stmpe_gpio;
-	int ret;
-	int irq = 0;
-
-	pdata = stmpe->pdata->gpio;
-
-	irq = platform_get_irq(pdev, 0);
-
-	stmpe_gpio = kzalloc(sizeof(struct stmpe_gpio), GFP_KERNEL);
-=======
 static void stmpe_init_irq_valid_mask(struct gpio_chip *gc,
 				      unsigned long *valid_mask,
 				      unsigned int ngpios)
@@ -721,7 +475,6 @@ static int stmpe_gpio_probe(struct platform_device *pdev)
 	}
 
 	stmpe_gpio = devm_kzalloc(&pdev->dev, sizeof(*stmpe_gpio), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!stmpe_gpio)
 		return -ENOMEM;
 
@@ -729,20 +482,6 @@ static int stmpe_gpio_probe(struct platform_device *pdev)
 
 	stmpe_gpio->dev = &pdev->dev;
 	stmpe_gpio->stmpe = stmpe;
-<<<<<<< HEAD
-	stmpe_gpio->norequest_mask = pdata ? pdata->norequest_mask : 0;
-
-	stmpe_gpio->chip = template_chip;
-	stmpe_gpio->chip.ngpio = stmpe->num_gpios;
-	stmpe_gpio->chip.dev = &pdev->dev;
-	stmpe_gpio->chip.base = pdata ? pdata->gpio_base : -1;
-
-	if (irq >= 0)
-		stmpe_gpio->irq_base = stmpe->irq_base + STMPE_INT_GPIO(0);
-	else
-		dev_info(&pdev->dev,
-			"device configured in no-irq mode; "
-=======
 	stmpe_gpio->chip = template_chip;
 	stmpe_gpio->chip.ngpio = stmpe->num_gpios;
 	stmpe_gpio->chip.parent = &pdev->dev;
@@ -758,89 +497,10 @@ static int stmpe_gpio_probe(struct platform_device *pdev)
 	if (irq < 0)
 		dev_info(&pdev->dev,
 			"device configured in no-irq mode: "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"irqs are not available\n");
 
 	ret = stmpe_enable(stmpe, STMPE_BLOCK_GPIO);
 	if (ret)
-<<<<<<< HEAD
-		goto out_free;
-
-	if (irq >= 0) {
-		ret = stmpe_gpio_irq_init(stmpe_gpio);
-		if (ret)
-			goto out_disable;
-
-		ret = request_threaded_irq(irq, NULL, stmpe_gpio_irq,
-				IRQF_ONESHOT, "stmpe-gpio", stmpe_gpio);
-		if (ret) {
-			dev_err(&pdev->dev, "unable to get irq: %d\n", ret);
-			goto out_removeirq;
-		}
-	}
-
-	ret = gpiochip_add(&stmpe_gpio->chip);
-	if (ret) {
-		dev_err(&pdev->dev, "unable to add gpiochip: %d\n", ret);
-		goto out_freeirq;
-	}
-
-	if (pdata && pdata->setup)
-		pdata->setup(stmpe, stmpe_gpio->chip.base);
-
-	platform_set_drvdata(pdev, stmpe_gpio);
-
-	return 0;
-
-out_freeirq:
-	if (irq >= 0)
-		free_irq(irq, stmpe_gpio);
-out_removeirq:
-	if (irq >= 0)
-		stmpe_gpio_irq_remove(stmpe_gpio);
-out_disable:
-	stmpe_disable(stmpe, STMPE_BLOCK_GPIO);
-out_free:
-	kfree(stmpe_gpio);
-	return ret;
-}
-
-static int __devexit stmpe_gpio_remove(struct platform_device *pdev)
-{
-	struct stmpe_gpio *stmpe_gpio = platform_get_drvdata(pdev);
-	struct stmpe *stmpe = stmpe_gpio->stmpe;
-	struct stmpe_gpio_platform_data *pdata = stmpe->pdata->gpio;
-	int irq = platform_get_irq(pdev, 0);
-	int ret;
-
-	if (pdata && pdata->remove)
-		pdata->remove(stmpe, stmpe_gpio->chip.base);
-
-	ret = gpiochip_remove(&stmpe_gpio->chip);
-	if (ret < 0) {
-		dev_err(stmpe_gpio->dev,
-			"unable to remove gpiochip: %d\n", ret);
-		return ret;
-	}
-
-	stmpe_disable(stmpe, STMPE_BLOCK_GPIO);
-
-	if (irq >= 0) {
-		free_irq(irq, stmpe_gpio);
-		stmpe_gpio_irq_remove(stmpe_gpio);
-	}
-	platform_set_drvdata(pdev, NULL);
-	kfree(stmpe_gpio);
-
-	return 0;
-}
-
-static struct platform_driver stmpe_gpio_driver = {
-	.driver.name	= "stmpe-gpio",
-	.driver.owner	= THIS_MODULE,
-	.probe		= stmpe_gpio_probe,
-	.remove		= __devexit_p(stmpe_gpio_remove),
-=======
 		return ret;
 
 	ret = devm_add_action_or_reset(&pdev->dev, stmpe_gpio_disable, stmpe);
@@ -879,7 +539,6 @@ static struct platform_driver stmpe_gpio_driver = {
 		.name			= "stmpe-gpio",
 	},
 	.probe		= stmpe_gpio_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init stmpe_gpio_init(void)
@@ -887,16 +546,3 @@ static int __init stmpe_gpio_init(void)
 	return platform_driver_register(&stmpe_gpio_driver);
 }
 subsys_initcall(stmpe_gpio_init);
-<<<<<<< HEAD
-
-static void __exit stmpe_gpio_exit(void)
-{
-	platform_driver_unregister(&stmpe_gpio_driver);
-}
-module_exit(stmpe_gpio_exit);
-
-MODULE_LICENSE("GPL v2");
-MODULE_DESCRIPTION("STMPExxxx GPIO driver");
-MODULE_AUTHOR("Rabin Vincent <rabin.vincent@stericsson.com>");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

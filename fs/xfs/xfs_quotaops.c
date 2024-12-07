@@ -1,37 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2008, Christoph Hellwig
- * All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write the Free Software Foundation,
- * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
-#include "xfs.h"
-#include "xfs_sb.h"
-#include "xfs_inum.h"
-#include "xfs_log.h"
-#include "xfs_ag.h"
-#include "xfs_mount.h"
-#include "xfs_quota.h"
-#include "xfs_trans.h"
-#include "xfs_bmap_btree.h"
-#include "xfs_inode.h"
-#include "xfs_qm.h"
-#include <linux/quota.h>
-
-
-STATIC int
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2008, Christoph Hellwig
@@ -120,46 +86,10 @@ xfs_fs_get_quota_state(
 }
 
 STATIC xfs_dqtype_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 xfs_quota_type(int type)
 {
 	switch (type) {
 	case USRQUOTA:
-<<<<<<< HEAD
-		return XFS_DQ_USER;
-	case GRPQUOTA:
-		return XFS_DQ_GROUP;
-	default:
-		return XFS_DQ_PROJ;
-	}
-}
-
-STATIC int
-xfs_fs_get_xstate(
-	struct super_block	*sb,
-	struct fs_quota_stat	*fqs)
-{
-	struct xfs_mount	*mp = XFS_M(sb);
-
-	if (!XFS_IS_QUOTA_RUNNING(mp))
-		return -ENOSYS;
-	return -xfs_qm_scall_getqstat(mp, fqs);
-}
-
-STATIC int
-xfs_fs_set_xstate(
-	struct super_block	*sb,
-	unsigned int		uflags,
-	int			op)
-{
-	struct xfs_mount	*mp = XFS_M(sb);
-	unsigned int		flags = 0;
-
-	if (sb->s_flags & MS_RDONLY)
-		return -EROFS;
-	if (op != Q_XQUOTARM && !XFS_IS_QUOTA_RUNNING(mp))
-		return -ENOSYS;
-=======
 		return XFS_DQTYPE_USER;
 	case GRPQUOTA:
 		return XFS_DQTYPE_GROUP;
@@ -206,7 +136,6 @@ static unsigned int
 xfs_quota_flags(unsigned int uflags)
 {
 	unsigned int flags = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (uflags & FS_QUOTA_UDQ_ACCT)
 		flags |= XFS_UQUOTA_ACCT;
@@ -216,25 +145,6 @@ xfs_quota_flags(unsigned int uflags)
 		flags |= XFS_GQUOTA_ACCT;
 	if (uflags & FS_QUOTA_UDQ_ENFD)
 		flags |= XFS_UQUOTA_ENFD;
-<<<<<<< HEAD
-	if (uflags & (FS_QUOTA_PDQ_ENFD|FS_QUOTA_GDQ_ENFD))
-		flags |= XFS_OQUOTA_ENFD;
-
-	switch (op) {
-	case Q_XQUOTAON:
-		return -xfs_qm_scall_quotaon(mp, flags);
-	case Q_XQUOTAOFF:
-		if (!XFS_IS_QUOTA_ON(mp))
-			return -EINVAL;
-		return -xfs_qm_scall_quotaoff(mp, flags);
-	case Q_XQUOTARM:
-		if (XFS_IS_QUOTA_ON(mp))
-			return -EINVAL;
-		return -xfs_qm_scall_trunc_qfiles(mp, flags);
-	}
-
-	return -EINVAL;
-=======
 	if (uflags & FS_QUOTA_GDQ_ENFD)
 		flags |= XFS_GQUOTA_ENFD;
 	if (uflags & FS_QUOTA_PDQ_ENFD)
@@ -298,26 +208,11 @@ xfs_fs_rm_xquota(
 		flags |= XFS_QMOPT_PQUOTA;
 
 	return xfs_qm_scall_trunc_qfiles(mp, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 STATIC int
 xfs_fs_get_dqblk(
 	struct super_block	*sb,
-<<<<<<< HEAD
-	int			type,
-	qid_t			id,
-	struct fs_disk_quota	*fdq)
-{
-	struct xfs_mount	*mp = XFS_M(sb);
-
-	if (!XFS_IS_QUOTA_RUNNING(mp))
-		return -ENOSYS;
-	if (!XFS_IS_QUOTA_ON(mp))
-		return -ESRCH;
-
-	return -xfs_qm_scall_getquota(mp, id, xfs_quota_type(type), fdq);
-=======
 	struct kqid		qid,
 	struct qc_dqblk		*qdq)
 {
@@ -354,34 +249,11 @@ xfs_fs_get_nextdqblk(
 	/* ID may be different, so convert back what we got */
 	*qid = make_kqid(current_user_ns(), qid->type, id);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 STATIC int
 xfs_fs_set_dqblk(
 	struct super_block	*sb,
-<<<<<<< HEAD
-	int			type,
-	qid_t			id,
-	struct fs_disk_quota	*fdq)
-{
-	struct xfs_mount	*mp = XFS_M(sb);
-
-	if (sb->s_flags & MS_RDONLY)
-		return -EROFS;
-	if (!XFS_IS_QUOTA_RUNNING(mp))
-		return -ENOSYS;
-	if (!XFS_IS_QUOTA_ON(mp))
-		return -ESRCH;
-
-	return -xfs_qm_scall_setqlim(mp, id, xfs_quota_type(type), fdq);
-}
-
-const struct quotactl_ops xfs_quotactl_operations = {
-	.get_xstate		= xfs_fs_get_xstate,
-	.set_xstate		= xfs_fs_set_xstate,
-	.get_dqblk		= xfs_fs_get_dqblk,
-=======
 	struct kqid		qid,
 	struct qc_dqblk		*qdq)
 {
@@ -404,6 +276,5 @@ const struct quotactl_ops xfs_quotactl_operations = {
 	.rm_xquota		= xfs_fs_rm_xquota,
 	.get_dqblk		= xfs_fs_get_dqblk,
 	.get_nextdqblk		= xfs_fs_get_nextdqblk,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_dqblk		= xfs_fs_set_dqblk,
 };

@@ -20,24 +20,13 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *
-<<<<<<< HEAD
-=======
  * Authors:
  *     Alex Deucher <alexander.deucher@amd.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef CAYMAN_BLIT_SHADERS_H
 #define CAYMAN_BLIT_SHADERS_H
 
-<<<<<<< HEAD
-extern const u32 cayman_ps[];
-extern const u32 cayman_vs[];
-extern const u32 cayman_default_state[];
-
-extern const u32 cayman_ps_size, cayman_vs_size;
-extern const u32 cayman_default_size;
-=======
 /*
  * evergreen cards need to use the 3D engine to blit data which requires
  * quite a bit of hw state setup.  Rather than pull the whole 3D driver
@@ -326,6 +315,5 @@ static const u32 cayman_default_state[] = {
 };
 
 static const u32 cayman_default_size = ARRAY_SIZE(cayman_default_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

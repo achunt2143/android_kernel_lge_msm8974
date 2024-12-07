@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Support for Digigram Lola PCI-e boards
  *
  *  Copyright (c) 2011 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the Free
- *  Software Foundation; either version 2 of the License, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- *  more details.
- *
- *  You should have received a copy of the GNU General Public License along with
- *  this program; if not, write to the Free Software Foundation, Inc., 59
- *  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LOLA_H
@@ -227,11 +207,7 @@ struct lola_bar {
 
 /* CORB/RIRB */
 struct lola_rb {
-<<<<<<< HEAD
-	u32 *buf;		/* CORB/RIRB buffer, 8 byte per each entry */
-=======
 	__le32 *buf;		/* CORB/RIRB buffer, 8 byte per each entry */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t addr;	/* physical address of CORB/RIRB buffer */
 	unsigned short rp, wp;	/* read/write pointers */
 	int cmds;		/* number of pending requests */
@@ -286,11 +262,7 @@ struct lola_mixer_array {
 struct lola_mixer_widget {
 	unsigned int nid;
 	unsigned int caps;
-<<<<<<< HEAD
-	struct lola_mixer_array __user *array;
-=======
 	struct lola_mixer_array __iomem *array;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lola_mixer_array *array_saved;
 	unsigned int src_stream_outs;
 	unsigned int src_phys_ins;
@@ -331,11 +303,7 @@ struct lola_stream {
 
 struct lola_pcm {
 	unsigned int num_streams;
-<<<<<<< HEAD
-	struct snd_dma_buffer bdl; /* BDL buffer */
-=======
 	struct snd_dma_buffer *bdl; /* BDL buffer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lola_stream streams[MAX_STREAM_COUNT];
 };
 
@@ -360,11 +328,7 @@ struct lola {
 	unsigned int last_cmd_nid, last_verb, last_data, last_extdata;
 
 	/* CORB/RIRB buffers */
-<<<<<<< HEAD
-	struct snd_dma_buffer rb;
-=======
 	struct snd_dma_buffer *rb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* unsolicited events */
 	unsigned int last_unsol_res;
@@ -516,10 +480,6 @@ int lola_codec_flush(struct lola *chip);
 
 /* PCM */
 int lola_create_pcm(struct lola *chip);
-<<<<<<< HEAD
-void lola_free_pcm(struct lola *chip);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int lola_init_pcm(struct lola *chip, int dir, int *nidp);
 void lola_pcm_update(struct lola *chip, struct lola_pcm *pcm, unsigned int bits);
 

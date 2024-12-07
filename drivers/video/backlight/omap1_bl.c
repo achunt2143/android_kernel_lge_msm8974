@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Backlight driver for OMAP based boards.
  *
  * Copyright (c) 2006 Andrzej Zaborowski  <balrog@zabor.org>
-<<<<<<< HEAD
- *
- * This package is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This package is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this package; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -32,17 +12,10 @@
 #include <linux/fb.h>
 #include <linux/backlight.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <mach/hardware.h>
-#include <plat/board.h>
-#include <plat/mux.h>
-=======
 #include <linux/platform_data/omap1_bl.h>
 
 #include <linux/soc/ti/omap1-io.h>
 #include <linux/soc/ti/omap1-mux.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define OMAPBL_MAX_INTENSITY		0xff
 
@@ -54,20 +27,12 @@ struct omap_backlight {
 	struct omap_backlight_config *pdata;
 };
 
-<<<<<<< HEAD
-static void inline omapbl_send_intensity(int intensity)
-=======
 static inline void omapbl_send_intensity(int intensity)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	omap_writeb(intensity, OMAP_PWL_ENABLE);
 }
 
-<<<<<<< HEAD
-static void inline omapbl_send_enable(int enable)
-=======
 static inline void omapbl_send_enable(int enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	omap_writeb(enable, OMAP_PWL_CLK_ENABLE);
 }
@@ -93,54 +58,29 @@ static void omapbl_blank(struct omap_backlight *bl, int mode)
 	}
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int omapbl_suspend(struct platform_device *pdev, pm_message_t state)
-{
-	struct backlight_device *dev = platform_get_drvdata(pdev);
-	struct omap_backlight *bl = dev_get_drvdata(&dev->dev);
-=======
 #ifdef CONFIG_PM_SLEEP
 static int omapbl_suspend(struct device *dev)
 {
 	struct backlight_device *bl_dev = dev_get_drvdata(dev);
 	struct omap_backlight *bl = bl_get_data(bl_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	omapbl_blank(bl, FB_BLANK_POWERDOWN);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int omapbl_resume(struct platform_device *pdev)
-{
-	struct backlight_device *dev = platform_get_drvdata(pdev);
-	struct omap_backlight *bl = dev_get_drvdata(&dev->dev);
-=======
 static int omapbl_resume(struct device *dev)
 {
 	struct backlight_device *bl_dev = dev_get_drvdata(dev);
 	struct omap_backlight *bl = bl_get_data(bl_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	omapbl_blank(bl, bl->powermode);
 	return 0;
 }
-<<<<<<< HEAD
-#else
-#define omapbl_suspend	NULL
-#define omapbl_resume	NULL
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static int omapbl_set_power(struct backlight_device *dev, int state)
 {
-<<<<<<< HEAD
-	struct omap_backlight *bl = dev_get_drvdata(&dev->dev);
-=======
 	struct omap_backlight *bl = bl_get_data(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	omapbl_blank(bl, state);
 	bl->powermode = state;
@@ -150,11 +90,7 @@ static int omapbl_set_power(struct backlight_device *dev, int state)
 
 static int omapbl_update_status(struct backlight_device *dev)
 {
-<<<<<<< HEAD
-	struct omap_backlight *bl = dev_get_drvdata(&dev->dev);
-=======
 	struct omap_backlight *bl = bl_get_data(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bl->current_intensity != dev->props.brightness) {
 		if (bl->powermode == FB_BLANK_UNBLANK)
@@ -170,12 +106,8 @@ static int omapbl_update_status(struct backlight_device *dev)
 
 static int omapbl_get_intensity(struct backlight_device *dev)
 {
-<<<<<<< HEAD
-	struct omap_backlight *bl = dev_get_drvdata(&dev->dev);
-=======
 	struct omap_backlight *bl = bl_get_data(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bl->current_intensity;
 }
 
@@ -189,11 +121,7 @@ static int omapbl_probe(struct platform_device *pdev)
 	struct backlight_properties props;
 	struct backlight_device *dev;
 	struct omap_backlight *bl;
-<<<<<<< HEAD
-	struct omap_backlight_config *pdata = pdev->dev.platform_data;
-=======
 	struct omap_backlight_config *pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pdata)
 		return -ENXIO;
@@ -206,13 +134,8 @@ static int omapbl_probe(struct platform_device *pdev)
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = OMAPBL_MAX_INTENSITY;
-<<<<<<< HEAD
-	dev = backlight_device_register("omap-bl", &pdev->dev, bl, &omapbl_ops,
-					&props);
-=======
 	dev = devm_backlight_device_register(&pdev->dev, "omap-bl", &pdev->dev,
 					bl, &omapbl_ops, &props);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(dev))
 		return PTR_ERR(dev);
 
@@ -230,33 +153,11 @@ static int omapbl_probe(struct platform_device *pdev)
 	dev->props.brightness = pdata->default_intensity;
 	omapbl_update_status(dev);
 
-<<<<<<< HEAD
-	printk(KERN_INFO "OMAP LCD backlight initialised\n");
-=======
 	dev_info(&pdev->dev, "OMAP LCD backlight initialised\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int omapbl_remove(struct platform_device *pdev)
-{
-	struct backlight_device *dev = platform_get_drvdata(pdev);
-
-	backlight_device_unregister(dev);
-
-	return 0;
-}
-
-static struct platform_driver omapbl_driver = {
-	.probe		= omapbl_probe,
-	.remove		= omapbl_remove,
-	.suspend	= omapbl_suspend,
-	.resume		= omapbl_resume,
-	.driver		= {
-		.name	= "omap-bl",
-=======
 static SIMPLE_DEV_PM_OPS(omapbl_pm_ops, omapbl_suspend, omapbl_resume);
 
 static struct platform_driver omapbl_driver = {
@@ -264,7 +165,6 @@ static struct platform_driver omapbl_driver = {
 	.driver		= {
 		.name	= "omap-bl",
 		.pm	= &omapbl_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

@@ -20,44 +20,15 @@
 #include <linux/bitmap.h>
 #include <linux/slab.h>
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM_RUNTIME
-
-static int default_platform_runtime_idle(struct device *dev)
-{
-	/* suspend synchronously to disable clocks immediately */
-	return pm_runtime_suspend(dev);
-}
-
-static struct dev_pm_domain default_pm_domain = {
-	.ops = {
-		.runtime_suspend = pm_clk_suspend,
-		.runtime_resume = pm_clk_resume,
-		.runtime_idle = default_platform_runtime_idle,
-=======
 static struct dev_pm_domain default_pm_domain = {
 	.ops = {
 		USE_PM_CLK_RUNTIME_OPS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		USE_PLATFORM_PM_SLEEP_OPS
 	},
 };
 
-<<<<<<< HEAD
-#define DEFAULT_PM_DOMAIN_PTR	(&default_pm_domain)
-
-#else
-
-#define DEFAULT_PM_DOMAIN_PTR	NULL
-
-#endif /* CONFIG_PM_RUNTIME */
-
-static struct pm_clk_notifier_block platform_bus_notifier = {
-	.pm_domain = DEFAULT_PM_DOMAIN_PTR,
-=======
 static struct pm_clk_notifier_block platform_bus_notifier = {
 	.pm_domain = &default_pm_domain,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.con_ids = { NULL, },
 };
 
@@ -67,13 +38,3 @@ static int __init sh_pm_runtime_init(void)
 	return 0;
 }
 core_initcall(sh_pm_runtime_init);
-<<<<<<< HEAD
-
-static int __init sh_pm_runtime_late_init(void)
-{
-	pm_genpd_poweroff_unused();
-	return 0;
-}
-late_initcall(sh_pm_runtime_late_init);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

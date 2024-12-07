@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Elantech Touchpad driver (v6)
  *
  * Copyright (C) 2007-2009 Arjan Opmeer <arjan@opmeer.net>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Trademarks are the property of their respective owners.
  */
 
@@ -28,10 +18,7 @@
 #define ETP_CAPABILITIES_QUERY		0x02
 #define ETP_SAMPLE_QUERY		0x03
 #define ETP_RESOLUTION_QUERY		0x04
-<<<<<<< HEAD
-=======
 #define ETP_ICBODY_QUERY		0x05
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Command values for register reading or writing
@@ -105,10 +92,7 @@
 #define PACKET_V4_HEAD			0x05
 #define PACKET_V4_MOTION		0x06
 #define PACKET_V4_STATUS		0x07
-<<<<<<< HEAD
-=======
 #define PACKET_TRACKPOINT		0x08
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * track up to 5 fingers for v4 hardware
@@ -121,8 +105,6 @@
 #define ETP_WEIGHT_VALUE		5
 
 /*
-<<<<<<< HEAD
-=======
  * Bus information on 3rd byte of query ETP_RESOLUTION_QUERY(0x04)
  */
 #define ETP_BUS_PS2_ONLY		0
@@ -147,7 +129,6 @@
 		 ((fw_version) & 0x0000ff) > 0)
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The base position for one finger, v4 hardware
  */
 struct finger_pos {
@@ -155,9 +136,6 @@ struct finger_pos {
 	unsigned int y;
 };
 
-<<<<<<< HEAD
-struct elantech_data {
-=======
 struct elantech_device_info {
 	unsigned char capabilities[3];
 	unsigned char samples[3];
@@ -191,7 +169,6 @@ struct elantech_device_info {
 struct elantech_data {
 	struct input_dev *tp_dev;	/* Relative device for trackpoint */
 	char tp_phys[32];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char reg_07;
 	unsigned char reg_10;
 	unsigned char reg_11;
@@ -202,35 +179,11 @@ struct elantech_data {
 	unsigned char reg_24;
 	unsigned char reg_25;
 	unsigned char reg_26;
-<<<<<<< HEAD
-	unsigned char debug;
-	unsigned char capabilities[3];
-	bool paritycheck;
-	bool jumpy_cursor;
-	bool reports_pressure;
-	unsigned char hw_version;
-	unsigned int fw_version;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int single_finger_reports;
 	unsigned int y_max;
 	unsigned int width;
 	struct finger_pos mt[ETP_MAX_FINGERS];
 	unsigned char parity[256];
-<<<<<<< HEAD
-	int (*send_cmd)(struct psmouse *psmouse, unsigned char c, unsigned char *param);
-	void (*original_set_rate)(struct psmouse *psmouse, unsigned int rate);
-};
-
-#ifdef CONFIG_MOUSE_PS2_ELANTECH
-int elantech_detect(struct psmouse *psmouse, bool set_properties);
-int elantech_init(struct psmouse *psmouse);
-#else
-static inline int elantech_detect(struct psmouse *psmouse, bool set_properties)
-{
-	return -ENOSYS;
-}
-=======
 	struct elantech_device_info info;
 	void (*original_set_rate)(struct psmouse *psmouse, unsigned int rate);
 };
@@ -241,16 +194,12 @@ int elantech_init_ps2(struct psmouse *psmouse);
 #ifdef CONFIG_MOUSE_PS2_ELANTECH
 int elantech_init(struct psmouse *psmouse);
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int elantech_init(struct psmouse *psmouse)
 {
 	return -ENOSYS;
 }
 #endif /* CONFIG_MOUSE_PS2_ELANTECH */
 
-<<<<<<< HEAD
-=======
 int elantech_init_smbus(struct psmouse *psmouse);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

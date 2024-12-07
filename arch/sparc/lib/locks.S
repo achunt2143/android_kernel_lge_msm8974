@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * locks.S: SMP low-level lock primitives on Sparc.
  *
@@ -10,10 +7,7 @@
  * Copyright (C) 1998 Jakub Jelinek   (jj@ultra.linux.cz)
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ptrace.h>
 #include <asm/psr.h>
 #include <asm/smp.h>
@@ -56,10 +50,7 @@ ___rw_write_enter_spin_on_wlock:
 	 ld	[%g1], %g2
 
 	.globl	___rw_read_enter
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(___rw_read_enter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ___rw_read_enter:
 	orcc	%g2, 0x0, %g0
 	bne,a	___rw_read_enter_spin_on_wlock
@@ -71,10 +62,7 @@ ___rw_read_enter:
 	 mov	%g4, %o7
 
 	.globl	___rw_read_exit
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(___rw_read_exit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ___rw_read_exit:
 	orcc	%g2, 0x0, %g0
 	bne,a	___rw_read_exit_spin_on_wlock
@@ -86,10 +74,7 @@ ___rw_read_exit:
 	 mov	%g4, %o7
 
 	.globl	___rw_read_try
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(___rw_read_try)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ___rw_read_try:
 	orcc	%g2, 0x0, %g0
 	bne	___rw_read_try_spin_on_wlock
@@ -101,10 +86,7 @@ ___rw_read_try:
 	 mov	%g4, %o7
 
 	.globl	___rw_write_enter
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(___rw_write_enter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ___rw_write_enter:
 	orcc	%g2, 0x0, %g0
 	bne	___rw_write_enter_spin_on_wlock

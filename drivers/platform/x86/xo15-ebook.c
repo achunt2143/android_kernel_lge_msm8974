@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  OLPC XO-1.5 ebook switch driver
  *  (based on generic ACPI button driver)
  *
  *  Copyright (C) 2009 Paul Fox <pgf@laptop.org>
  *  Copyright (C) 2010 One Laptop per Child
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or (at
- *  your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -25,12 +14,7 @@
 #include <linux/init.h>
 #include <linux/types.h>
 #include <linux/input.h>
-<<<<<<< HEAD
-#include <acpi/acpi_bus.h>
-#include <acpi/acpi_drivers.h>
-=======
 #include <linux/acpi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MODULE_NAME "xo15-ebook"
 
@@ -42,11 +26,6 @@
 #define XO15_EBOOK_HID			"XO15EBK"
 #define XO15_EBOOK_DEVICE_NAME		"EBook Switch"
 
-<<<<<<< HEAD
-ACPI_MODULE_NAME(MODULE_NAME);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("OLPC XO-1.5 ebook switch driver");
 MODULE_LICENSE("GPL");
 
@@ -85,29 +64,12 @@ static void ebook_switch_notify(struct acpi_device *device, u32 event)
 		ebook_send_state(device);
 		break;
 	default:
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
-				  "Unsupported event [0x%x]\n", event));
-=======
 		acpi_handle_debug(device->handle,
 				  "Unsupported event [0x%x]\n", event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
-<<<<<<< HEAD
-static int ebook_switch_resume(struct acpi_device *device)
-{
-	return ebook_send_state(device);
-}
-
-static int ebook_switch_add(struct acpi_device *device)
-{
-	struct ebook_switch *button;
-	struct input_dev *input;
-	const char *hid = acpi_device_hid(device);
-=======
 #ifdef CONFIG_PM_SLEEP
 static int ebook_switch_resume(struct device *dev)
 {
@@ -122,7 +84,6 @@ static int ebook_switch_add(struct acpi_device *device)
 	const struct acpi_device_id *id;
 	struct ebook_switch *button;
 	struct input_dev *input;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *name, *class;
 	int error;
 
@@ -141,14 +102,9 @@ static int ebook_switch_add(struct acpi_device *device)
 	name = acpi_device_name(device);
 	class = acpi_device_class(device);
 
-<<<<<<< HEAD
-	if (strcmp(hid, XO15_EBOOK_HID)) {
-		pr_err("Unsupported hid [%s]\n", hid);
-=======
 	id = acpi_match_acpi_device(ebook_device_ids, device);
 	if (!id) {
 		dev_err(&device->dev, "Unsupported hid\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = -ENODEV;
 		goto err_free_input;
 	}
@@ -156,11 +112,7 @@ static int ebook_switch_add(struct acpi_device *device)
 	strcpy(name, XO15_EBOOK_DEVICE_NAME);
 	sprintf(class, "%s/%s", XO15_EBOOK_CLASS, XO15_EBOOK_SUBCLASS);
 
-<<<<<<< HEAD
-	snprintf(button->phys, sizeof(button->phys), "%s/button/input0", hid);
-=======
 	snprintf(button->phys, sizeof(button->phys), "%s/button/input0", id->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input->name = name;
 	input->phys = button->phys;
@@ -192,20 +144,12 @@ static int ebook_switch_add(struct acpi_device *device)
 	return error;
 }
 
-<<<<<<< HEAD
-static int ebook_switch_remove(struct acpi_device *device, int type)
-=======
 static void ebook_switch_remove(struct acpi_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ebook_switch *button = acpi_driver_data(device);
 
 	input_unregister_device(button->input);
 	kfree(button);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct acpi_driver xo15_ebook_driver = {
@@ -214,30 +158,9 @@ static struct acpi_driver xo15_ebook_driver = {
 	.ids = ebook_device_ids,
 	.ops = {
 		.add = ebook_switch_add,
-<<<<<<< HEAD
-		.resume = ebook_switch_resume,
-		.remove = ebook_switch_remove,
-		.notify = ebook_switch_notify,
-	},
-};
-
-static int __init xo15_ebook_init(void)
-{
-	return acpi_bus_register_driver(&xo15_ebook_driver);
-}
-
-static void __exit xo15_ebook_exit(void)
-{
-	acpi_bus_unregister_driver(&xo15_ebook_driver);
-}
-
-module_init(xo15_ebook_init);
-module_exit(xo15_ebook_exit);
-=======
 		.remove = ebook_switch_remove,
 		.notify = ebook_switch_notify,
 	},
 	.drv.pm = &ebook_switch_pm,
 };
 module_acpi_driver(xo15_ebook_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

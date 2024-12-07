@@ -1,31 +1,9 @@
-<<<<<<< HEAD
-/*
- * i2c-core.h - interfaces internal to the I2C framework
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301 USA.
- */
-
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * i2c-core.h - interfaces internal to the I2C framework
  */
 
 #include <linux/kconfig.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/rwsem.h>
 
 struct i2c_devinfo {
@@ -41,8 +19,6 @@ extern struct rw_semaphore	__i2c_board_lock;
 extern struct list_head	__i2c_board_list;
 extern int		__i2c_first_dynamic_bus_num;
 
-<<<<<<< HEAD
-=======
 int i2c_check_7bit_addr_validity_strict(unsigned short addr);
 int i2c_dev_irq_from_resources(const struct resource *resources,
 			       unsigned int num_resources);
@@ -121,4 +97,3 @@ static inline int i2c_setup_smbus_alert(struct i2c_adapter *adap)
 	return 0;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

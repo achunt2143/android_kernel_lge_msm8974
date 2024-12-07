@@ -1,425 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_FB_H
-#define _LINUX_FB_H
-
-#include <linux/types.h>
-#include <linux/i2c.h>
-#ifdef __KERNEL__
-#include <linux/kgdb.h>
-#endif /* __KERNEL__ */
-
-/* Definitions of frame buffers						*/
-
-#define FB_MAX			32	/* sufficient for now */
-
-/* ioctls
-   0x46 is 'F'								*/
-#define FBIOGET_VSCREENINFO	0x4600
-#define FBIOPUT_VSCREENINFO	0x4601
-#define FBIOGET_FSCREENINFO	0x4602
-#define FBIOGETCMAP		0x4604
-#define FBIOPUTCMAP		0x4605
-#define FBIOPAN_DISPLAY		0x4606
-#ifdef __KERNEL__
-#define FBIO_CURSOR            _IOWR('F', 0x08, struct fb_cursor_user)
-#else
-#define FBIO_CURSOR            _IOWR('F', 0x08, struct fb_cursor)
-#endif
-/* 0x4607-0x460B are defined below */
-/* #define FBIOGET_MONITORSPEC	0x460C */
-/* #define FBIOPUT_MONITORSPEC	0x460D */
-/* #define FBIOSWITCH_MONIBIT	0x460E */
-#define FBIOGET_CON2FBMAP	0x460F
-#define FBIOPUT_CON2FBMAP	0x4610
-#define FBIOBLANK		0x4611		/* arg: 0 or vesa level + 1 */
-#define FBIOGET_VBLANK		_IOR('F', 0x12, struct fb_vblank)
-#define FBIO_ALLOC              0x4613
-#define FBIO_FREE               0x4614
-#define FBIOGET_GLYPH           0x4615
-#define FBIOGET_HWCINFO         0x4616
-#define FBIOPUT_MODEINFO        0x4617
-#define FBIOGET_DISPINFO        0x4618
-#define FBIO_WAITFORVSYNC	_IOW('F', 0x20, __u32)
-
-#define FB_TYPE_PACKED_PIXELS		0	/* Packed Pixels	*/
-#define FB_TYPE_PLANES			1	/* Non interleaved planes */
-#define FB_TYPE_INTERLEAVED_PLANES	2	/* Interleaved planes	*/
-#define FB_TYPE_TEXT			3	/* Text/attributes	*/
-#define FB_TYPE_VGA_PLANES		4	/* EGA/VGA planes	*/
-#define FB_TYPE_FOURCC			5	/* Type identified by a V4L2 FOURCC */
-
-#define FB_AUX_TEXT_MDA		0	/* Monochrome text */
-#define FB_AUX_TEXT_CGA		1	/* CGA/EGA/VGA Color text */
-#define FB_AUX_TEXT_S3_MMIO	2	/* S3 MMIO fasttext */
-#define FB_AUX_TEXT_MGA_STEP16	3	/* MGA Millenium I: text, attr, 14 reserved bytes */
-#define FB_AUX_TEXT_MGA_STEP8	4	/* other MGAs:      text, attr,  6 reserved bytes */
-#define FB_AUX_TEXT_SVGA_GROUP	8	/* 8-15: SVGA tileblit compatible modes */
-#define FB_AUX_TEXT_SVGA_MASK	7	/* lower three bits says step */
-#define FB_AUX_TEXT_SVGA_STEP2	8	/* SVGA text mode:  text, attr */
-#define FB_AUX_TEXT_SVGA_STEP4	9	/* SVGA text mode:  text, attr,  2 reserved bytes */
-#define FB_AUX_TEXT_SVGA_STEP8	10	/* SVGA text mode:  text, attr,  6 reserved bytes */
-#define FB_AUX_TEXT_SVGA_STEP16	11	/* SVGA text mode:  text, attr, 14 reserved bytes */
-#define FB_AUX_TEXT_SVGA_LAST	15	/* reserved up to 15 */
-
-#define FB_AUX_VGA_PLANES_VGA4		0	/* 16 color planes (EGA/VGA) */
-#define FB_AUX_VGA_PLANES_CFB4		1	/* CFB4 in planes (VGA) */
-#define FB_AUX_VGA_PLANES_CFB8		2	/* CFB8 in planes (VGA) */
-
-#define FB_VISUAL_MONO01		0	/* Monochr. 1=Black 0=White */
-#define FB_VISUAL_MONO10		1	/* Monochr. 1=White 0=Black */
-#define FB_VISUAL_TRUECOLOR		2	/* True color	*/
-#define FB_VISUAL_PSEUDOCOLOR		3	/* Pseudo color (like atari) */
-#define FB_VISUAL_DIRECTCOLOR		4	/* Direct color */
-#define FB_VISUAL_STATIC_PSEUDOCOLOR	5	/* Pseudo color readonly */
-#define FB_VISUAL_FOURCC		6	/* Visual identified by a V4L2 FOURCC */
-
-#define FB_ACCEL_NONE		0	/* no hardware accelerator	*/
-#define FB_ACCEL_ATARIBLITT	1	/* Atari Blitter		*/
-#define FB_ACCEL_AMIGABLITT	2	/* Amiga Blitter                */
-#define FB_ACCEL_S3_TRIO64	3	/* Cybervision64 (S3 Trio64)    */
-#define FB_ACCEL_NCR_77C32BLT	4	/* RetinaZ3 (NCR 77C32BLT)      */
-#define FB_ACCEL_S3_VIRGE	5	/* Cybervision64/3D (S3 ViRGE)	*/
-#define FB_ACCEL_ATI_MACH64GX	6	/* ATI Mach 64GX family		*/
-#define FB_ACCEL_DEC_TGA	7	/* DEC 21030 TGA		*/
-#define FB_ACCEL_ATI_MACH64CT	8	/* ATI Mach 64CT family		*/
-#define FB_ACCEL_ATI_MACH64VT	9	/* ATI Mach 64CT family VT class */
-#define FB_ACCEL_ATI_MACH64GT	10	/* ATI Mach 64CT family GT class */
-#define FB_ACCEL_SUN_CREATOR	11	/* Sun Creator/Creator3D	*/
-#define FB_ACCEL_SUN_CGSIX	12	/* Sun cg6			*/
-#define FB_ACCEL_SUN_LEO	13	/* Sun leo/zx			*/
-#define FB_ACCEL_IMS_TWINTURBO	14	/* IMS Twin Turbo		*/
-#define FB_ACCEL_3DLABS_PERMEDIA2 15	/* 3Dlabs Permedia 2		*/
-#define FB_ACCEL_MATROX_MGA2064W 16	/* Matrox MGA2064W (Millenium)	*/
-#define FB_ACCEL_MATROX_MGA1064SG 17	/* Matrox MGA1064SG (Mystique)	*/
-#define FB_ACCEL_MATROX_MGA2164W 18	/* Matrox MGA2164W (Millenium II) */
-#define FB_ACCEL_MATROX_MGA2164W_AGP 19	/* Matrox MGA2164W (Millenium II) */
-#define FB_ACCEL_MATROX_MGAG100	20	/* Matrox G100 (Productiva G100) */
-#define FB_ACCEL_MATROX_MGAG200	21	/* Matrox G200 (Myst, Mill, ...) */
-#define FB_ACCEL_SUN_CG14	22	/* Sun cgfourteen		 */
-#define FB_ACCEL_SUN_BWTWO	23	/* Sun bwtwo			*/
-#define FB_ACCEL_SUN_CGTHREE	24	/* Sun cgthree			*/
-#define FB_ACCEL_SUN_TCX	25	/* Sun tcx			*/
-#define FB_ACCEL_MATROX_MGAG400	26	/* Matrox G400			*/
-#define FB_ACCEL_NV3		27	/* nVidia RIVA 128              */
-#define FB_ACCEL_NV4		28	/* nVidia RIVA TNT		*/
-#define FB_ACCEL_NV5		29	/* nVidia RIVA TNT2		*/
-#define FB_ACCEL_CT_6555x	30	/* C&T 6555x			*/
-#define FB_ACCEL_3DFX_BANSHEE	31	/* 3Dfx Banshee			*/
-#define FB_ACCEL_ATI_RAGE128	32	/* ATI Rage128 family		*/
-#define FB_ACCEL_IGS_CYBER2000	33	/* CyberPro 2000		*/
-#define FB_ACCEL_IGS_CYBER2010	34	/* CyberPro 2010		*/
-#define FB_ACCEL_IGS_CYBER5000	35	/* CyberPro 5000		*/
-#define FB_ACCEL_SIS_GLAMOUR    36	/* SiS 300/630/540              */
-#define FB_ACCEL_3DLABS_PERMEDIA3 37	/* 3Dlabs Permedia 3		*/
-#define FB_ACCEL_ATI_RADEON	38	/* ATI Radeon family		*/
-#define FB_ACCEL_I810           39      /* Intel 810/815                */
-#define FB_ACCEL_SIS_GLAMOUR_2  40	/* SiS 315, 650, 740		*/
-#define FB_ACCEL_SIS_XABRE      41	/* SiS 330 ("Xabre")		*/
-#define FB_ACCEL_I830           42      /* Intel 830M/845G/85x/865G     */
-#define FB_ACCEL_NV_10          43      /* nVidia Arch 10               */
-#define FB_ACCEL_NV_20          44      /* nVidia Arch 20               */
-#define FB_ACCEL_NV_30          45      /* nVidia Arch 30               */
-#define FB_ACCEL_NV_40          46      /* nVidia Arch 40               */
-#define FB_ACCEL_XGI_VOLARI_V	47	/* XGI Volari V3XT, V5, V8      */
-#define FB_ACCEL_XGI_VOLARI_Z	48	/* XGI Volari Z7                */
-#define FB_ACCEL_OMAP1610	49	/* TI OMAP16xx                  */
-#define FB_ACCEL_TRIDENT_TGUI	50	/* Trident TGUI			*/
-#define FB_ACCEL_TRIDENT_3DIMAGE 51	/* Trident 3DImage		*/
-#define FB_ACCEL_TRIDENT_BLADE3D 52	/* Trident Blade3D		*/
-#define FB_ACCEL_TRIDENT_BLADEXP 53	/* Trident BladeXP		*/
-#define FB_ACCEL_CIRRUS_ALPINE   53	/* Cirrus Logic 543x/544x/5480	*/
-#define FB_ACCEL_NEOMAGIC_NM2070 90	/* NeoMagic NM2070              */
-#define FB_ACCEL_NEOMAGIC_NM2090 91	/* NeoMagic NM2090              */
-#define FB_ACCEL_NEOMAGIC_NM2093 92	/* NeoMagic NM2093              */
-#define FB_ACCEL_NEOMAGIC_NM2097 93	/* NeoMagic NM2097              */
-#define FB_ACCEL_NEOMAGIC_NM2160 94	/* NeoMagic NM2160              */
-#define FB_ACCEL_NEOMAGIC_NM2200 95	/* NeoMagic NM2200              */
-#define FB_ACCEL_NEOMAGIC_NM2230 96	/* NeoMagic NM2230              */
-#define FB_ACCEL_NEOMAGIC_NM2360 97	/* NeoMagic NM2360              */
-#define FB_ACCEL_NEOMAGIC_NM2380 98	/* NeoMagic NM2380              */
-#define FB_ACCEL_PXA3XX		 99	/* PXA3xx			*/
-
-#define FB_ACCEL_SAVAGE4        0x80	/* S3 Savage4                   */
-#define FB_ACCEL_SAVAGE3D       0x81	/* S3 Savage3D                  */
-#define FB_ACCEL_SAVAGE3D_MV    0x82	/* S3 Savage3D-MV               */
-#define FB_ACCEL_SAVAGE2000     0x83	/* S3 Savage2000                */
-#define FB_ACCEL_SAVAGE_MX_MV   0x84	/* S3 Savage/MX-MV              */
-#define FB_ACCEL_SAVAGE_MX      0x85	/* S3 Savage/MX                 */
-#define FB_ACCEL_SAVAGE_IX_MV   0x86	/* S3 Savage/IX-MV              */
-#define FB_ACCEL_SAVAGE_IX      0x87	/* S3 Savage/IX                 */
-#define FB_ACCEL_PROSAVAGE_PM   0x88	/* S3 ProSavage PM133           */
-#define FB_ACCEL_PROSAVAGE_KM   0x89	/* S3 ProSavage KM133           */
-#define FB_ACCEL_S3TWISTER_P    0x8a	/* S3 Twister                   */
-#define FB_ACCEL_S3TWISTER_K    0x8b	/* S3 TwisterK                  */
-#define FB_ACCEL_SUPERSAVAGE    0x8c    /* S3 Supersavage               */
-#define FB_ACCEL_PROSAVAGE_DDR  0x8d	/* S3 ProSavage DDR             */
-#define FB_ACCEL_PROSAVAGE_DDRK 0x8e	/* S3 ProSavage DDR-K           */
-
-#define FB_ACCEL_PUV3_UNIGFX	0xa0	/* PKUnity-v3 Unigfx		*/
-
-#define FB_CAP_FOURCC		1	/* Device supports FOURCC-based formats */
-
-struct fb_fix_screeninfo {
-	char id[16];			/* identification string eg "TT Builtin" */
-	unsigned long smem_start;	/* Start of frame buffer mem */
-					/* (physical address) */
-	__u32 smem_len;			/* Length of frame buffer mem */
-	__u32 type;			/* see FB_TYPE_*		*/
-	__u32 type_aux;			/* Interleave for interleaved Planes */
-	__u32 visual;			/* see FB_VISUAL_*		*/ 
-	__u16 xpanstep;			/* zero if no hardware panning  */
-	__u16 ypanstep;			/* zero if no hardware panning  */
-	__u16 ywrapstep;		/* zero if no hardware ywrap    */
-	__u32 line_length;		/* length of a line in bytes    */
-	unsigned long mmio_start;	/* Start of Memory Mapped I/O   */
-					/* (physical address) */
-	__u32 mmio_len;			/* Length of Memory Mapped I/O  */
-	__u32 accel;			/* Indicate to driver which	*/
-					/*  specific chip/card we have	*/
-	__u16 capabilities;		/* see FB_CAP_*			*/
-	__u16 reserved[2];		/* Reserved for future compatibility */
-};
-
-/* Interpretation of offset for color fields: All offsets are from the right,
- * inside a "pixel" value, which is exactly 'bits_per_pixel' wide (means: you
- * can use the offset as right argument to <<). A pixel afterwards is a bit
- * stream and is written to video memory as that unmodified.
- *
- * For pseudocolor: offset and length should be the same for all color
- * components. Offset specifies the position of the least significant bit
- * of the pallette index in a pixel value. Length indicates the number
- * of available palette entries (i.e. # of entries = 1 << length).
- */
-struct fb_bitfield {
-	__u32 offset;			/* beginning of bitfield	*/
-	__u32 length;			/* length of bitfield		*/
-	__u32 msb_right;		/* != 0 : Most significant bit is */ 
-					/* right */ 
-};
-
-#define FB_NONSTD_HAM		1	/* Hold-And-Modify (HAM)        */
-#define FB_NONSTD_REV_PIX_IN_B	2	/* order of pixels in each byte is reversed */
-
-#define FB_ACTIVATE_NOW		0	/* set values immediately (or vbl)*/
-#define FB_ACTIVATE_NXTOPEN	1	/* activate on next open	*/
-#define FB_ACTIVATE_TEST	2	/* don't set, round up impossible */
-#define FB_ACTIVATE_MASK       15
-					/* values			*/
-#define FB_ACTIVATE_VBL	       16	/* activate values on next vbl  */
-#define FB_CHANGE_CMAP_VBL     32	/* change colormap on vbl	*/
-#define FB_ACTIVATE_ALL	       64	/* change all VCs on this fb	*/
-#define FB_ACTIVATE_FORCE     128	/* force apply even when no change*/
-#define FB_ACTIVATE_INV_MODE  256       /* invalidate videomode */
-
-#define FB_ACCELF_TEXT		1	/* (OBSOLETE) see fb_info.flags and vc_mode */
-
-#define FB_SYNC_HOR_HIGH_ACT	1	/* horizontal sync high active	*/
-#define FB_SYNC_VERT_HIGH_ACT	2	/* vertical sync high active	*/
-#define FB_SYNC_EXT		4	/* external sync		*/
-#define FB_SYNC_COMP_HIGH_ACT	8	/* composite sync high active   */
-#define FB_SYNC_BROADCAST	16	/* broadcast video timings      */
-					/* vtotal = 144d/288n/576i => PAL  */
-					/* vtotal = 121d/242n/484i => NTSC */
-#define FB_SYNC_ON_GREEN	32	/* sync on green */
-
-#define FB_VMODE_NONINTERLACED  0	/* non interlaced */
-#define FB_VMODE_INTERLACED	1	/* interlaced	*/
-#define FB_VMODE_DOUBLE		2	/* double scan */
-#define FB_VMODE_ODD_FLD_FIRST	4	/* interlaced: top line first */
-#define FB_VMODE_MASK		255
-
-#define FB_VMODE_YWRAP		256	/* ywrap instead of panning     */
-#define FB_VMODE_SMOOTH_XPAN	512	/* smooth xpan possible (internally used) */
-#define FB_VMODE_CONUPDATE	512	/* don't update x/yoffset	*/
-
-/*
- * Display rotation support
- */
-#define FB_ROTATE_UR      0
-#define FB_ROTATE_CW      1
-#define FB_ROTATE_UD      2
-#define FB_ROTATE_CCW     3
-
-#define PICOS2KHZ(a) (1000000000UL/(a))
-#define KHZ2PICOS(a) (1000000000UL/(a))
-
-struct fb_var_screeninfo {
-	__u32 xres;			/* visible resolution		*/
-	__u32 yres;
-	__u32 xres_virtual;		/* virtual resolution		*/
-	__u32 yres_virtual;
-	__u32 xoffset;			/* offset from virtual to visible */
-	__u32 yoffset;			/* resolution			*/
-
-	__u32 bits_per_pixel;		/* guess what			*/
-	__u32 grayscale;		/* 0 = color, 1 = grayscale,	*/
-					/* >1 = FOURCC			*/
-	struct fb_bitfield red;		/* bitfield in fb mem if true color, */
-	struct fb_bitfield green;	/* else only length is significant */
-	struct fb_bitfield blue;
-	struct fb_bitfield transp;	/* transparency			*/	
-
-	__u32 nonstd;			/* != 0 Non standard pixel format */
-
-	__u32 activate;			/* see FB_ACTIVATE_*		*/
-
-	__u32 height;			/* height of picture in mm    */
-	__u32 width;			/* width of picture in mm     */
-
-	__u32 accel_flags;		/* (OBSOLETE) see fb_info.flags */
-
-	/* Timing: All values in pixclocks, except pixclock (of course) */
-	__u32 pixclock;			/* pixel clock in ps (pico seconds) */
-	__u32 left_margin;		/* time from sync to picture	*/
-	__u32 right_margin;		/* time from picture to sync	*/
-	__u32 upper_margin;		/* time from sync to picture	*/
-	__u32 lower_margin;
-	__u32 hsync_len;		/* length of horizontal sync	*/
-	__u32 vsync_len;		/* length of vertical sync	*/
-	__u32 sync;			/* see FB_SYNC_*		*/
-	__u32 vmode;			/* see FB_VMODE_*		*/
-	__u32 rotate;			/* angle we rotate counter clockwise */
-	__u32 colorspace;		/* colorspace for FOURCC-based modes */
-	__u32 reserved[4];		/* Reserved for future compatibility */
-};
-
-struct fb_cmap {
-	__u32 start;			/* First entry	*/
-	__u32 len;			/* Number of entries */
-	__u16 *red;			/* Red values	*/
-	__u16 *green;
-	__u16 *blue;
-	__u16 *transp;			/* transparency, can be NULL */
-};
-
-struct fb_con2fbmap {
-	__u32 console;
-	__u32 framebuffer;
-};
-
-/* VESA Blanking Levels */
-#define VESA_NO_BLANKING        0
-#define VESA_VSYNC_SUSPEND      1
-#define VESA_HSYNC_SUSPEND      2
-#define VESA_POWERDOWN          3
-
-
-enum {
-	/* screen: unblanked, hsync: on,  vsync: on */
-	FB_BLANK_UNBLANK       = VESA_NO_BLANKING,
-
-	/* screen: blanked,   hsync: on,  vsync: on */
-	FB_BLANK_NORMAL        = VESA_NO_BLANKING + 1,
-
-	/* screen: blanked,   hsync: on,  vsync: off */
-	FB_BLANK_VSYNC_SUSPEND = VESA_VSYNC_SUSPEND + 1,
-
-	/* screen: blanked,   hsync: off, vsync: on */
-	FB_BLANK_HSYNC_SUSPEND = VESA_HSYNC_SUSPEND + 1,
-
-	/* screen: blanked,   hsync: off, vsync: off */
-	FB_BLANK_POWERDOWN     = VESA_POWERDOWN + 1
-};
-
-#define FB_VBLANK_VBLANKING	0x001	/* currently in a vertical blank */
-#define FB_VBLANK_HBLANKING	0x002	/* currently in a horizontal blank */
-#define FB_VBLANK_HAVE_VBLANK	0x004	/* vertical blanks can be detected */
-#define FB_VBLANK_HAVE_HBLANK	0x008	/* horizontal blanks can be detected */
-#define FB_VBLANK_HAVE_COUNT	0x010	/* global retrace counter is available */
-#define FB_VBLANK_HAVE_VCOUNT	0x020	/* the vcount field is valid */
-#define FB_VBLANK_HAVE_HCOUNT	0x040	/* the hcount field is valid */
-#define FB_VBLANK_VSYNCING	0x080	/* currently in a vsync */
-#define FB_VBLANK_HAVE_VSYNC	0x100	/* verical syncs can be detected */
-
-struct fb_vblank {
-	__u32 flags;			/* FB_VBLANK flags */
-	__u32 count;			/* counter of retraces since boot */
-	__u32 vcount;			/* current scanline position */
-	__u32 hcount;			/* current scandot position */
-	__u32 reserved[4];		/* reserved for future compatibility */
-};
-
-/* Internal HW accel */
-#define ROP_COPY 0
-#define ROP_XOR  1
-
-struct fb_copyarea {
-	__u32 dx;
-	__u32 dy;
-	__u32 width;
-	__u32 height;
-	__u32 sx;
-	__u32 sy;
-};
-
-struct fb_fillrect {
-	__u32 dx;	/* screen-relative */
-	__u32 dy;
-	__u32 width;
-	__u32 height;
-	__u32 color;
-	__u32 rop;
-};
-
-struct fb_image {
-	__u32 dx;		/* Where to place image */
-	__u32 dy;
-	__u32 width;		/* Size of image */
-	__u32 height;
-	__u32 fg_color;		/* Only used when a mono bitmap */
-	__u32 bg_color;
-	__u8  depth;		/* Depth of the image */
-	const char *data;	/* Pointer to image data */
-	struct fb_cmap cmap;	/* color map info */
-};
-
-/*
- * hardware cursor control
- */
-
-#define FB_CUR_SETIMAGE 0x01
-#define FB_CUR_SETPOS   0x02
-#define FB_CUR_SETHOT   0x04
-#define FB_CUR_SETCMAP  0x08
-#define FB_CUR_SETSHAPE 0x10
-#define FB_CUR_SETSIZE	0x20
-#define FB_CUR_SETALL   0xFF
-
-struct fbcurpos {
-	__u16 x, y;
-};
-
-struct fb_cursor {
-	__u16 set;		/* what to set */
-	__u16 enable;		/* cursor on/off */
-	__u16 rop;		/* bitop operation */
-	const char *mask;	/* cursor mask bits */
-	struct fbcurpos hot;	/* cursor hot spot */
-	struct fb_image	image;	/* Cursor image */
-};
-
-#ifdef CONFIG_FB_BACKLIGHT
-/* Settings for the generic backlight code */
-#define FB_BACKLIGHT_LEVELS	128
-#define FB_BACKLIGHT_MAX	0xFF
-#endif
-
-#ifdef __KERNEL__
-
-#include <linux/fs.h>
-#include <linux/init.h>
-#include <linux/workqueue.h>
-#include <linux/notifier.h>
-#include <linux/list.h>
-#include <linux/backlight.h>
-#include <linux/slab.h>
-#include <asm/io.h>
-
-struct vm_area_struct;
-struct fb_info;
-struct device;
-struct file;
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_FB_H
 #define _LINUX_FB_H
@@ -448,7 +26,6 @@ struct notifier_block;
 struct page;
 struct videomode;
 struct vm_area_struct;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Definitions below are used in the parsed monitor specs */
 #define FB_DPMS_ACTIVE_OFF	1
@@ -475,10 +52,7 @@ struct vm_area_struct;
 
 #define FB_MISC_PRIM_COLOR	1
 #define FB_MISC_1ST_DETAIL	2	/* First Detailed Timing is preferred */
-<<<<<<< HEAD
-=======
 #define FB_MISC_HDMI		4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fb_chroma {
 	__u32 redx;	/* in fraction of 1024 */
 	__u32 greenx;
@@ -554,43 +128,6 @@ struct fb_cursor_user {
  * Register/unregister for framebuffer events
  */
 
-<<<<<<< HEAD
-/*	The resolution of the passed in fb_info about to change */ 
-#define FB_EVENT_MODE_CHANGE		0x01
-/*	The display on this fb_info is beeing suspended, no access to the
- *	framebuffer is allowed any more after that call returns
- */
-#define FB_EVENT_SUSPEND		0x02
-/*	The display on this fb_info was resumed, you can restore the display
- *	if you own it
- */
-#define FB_EVENT_RESUME			0x03
-/*      An entry from the modelist was removed */
-#define FB_EVENT_MODE_DELETE            0x04
-/*      A driver registered itself */
-#define FB_EVENT_FB_REGISTERED          0x05
-/*      A driver unregistered itself */
-#define FB_EVENT_FB_UNREGISTERED        0x06
-/*      CONSOLE-SPECIFIC: get console to framebuffer mapping */
-#define FB_EVENT_GET_CONSOLE_MAP        0x07
-/*      CONSOLE-SPECIFIC: set console to framebuffer mapping */
-#define FB_EVENT_SET_CONSOLE_MAP        0x08
-/*      A hardware display blank change occurred */
-#define FB_EVENT_BLANK                  0x09
-/*      Private modelist is to be replaced */
-#define FB_EVENT_NEW_MODELIST           0x0A
-/*	The resolution of the passed in fb_info about to change and
-        all vc's should be changed         */
-#define FB_EVENT_MODE_CHANGE_ALL	0x0B
-/*	A software display blank change occurred */
-#define FB_EVENT_CONBLANK               0x0C
-/*      Get drawing requirements        */
-#define FB_EVENT_GET_REQ                0x0D
-/*      Unbind from the console if possible */
-#define FB_EVENT_FB_UNBIND              0x0E
-/*      CONSOLE-SPECIFIC: remap all consoles to new fb - for vga switcheroo */
-#define FB_EVENT_REMAP_ALL_CONSOLE      0x0F
-=======
 /*	The resolution of the passed in fb_info about to change */
 #define FB_EVENT_MODE_CHANGE		0x01
 
@@ -602,18 +139,12 @@ struct fb_cursor_user {
 
 /*      A display blank is requested       */
 #define FB_EVENT_BLANK                  0x09
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fb_event {
 	struct fb_info *info;
 	void *data;
 };
 
-<<<<<<< HEAD
-struct fb_blit_caps {
-	u32 x;
-	u32 y;
-=======
 /*	Enough for the VT console needs, see its max_font_width/height */
 #define FB_MAX_BLIT_WIDTH	64
 #define FB_MAX_BLIT_HEIGHT	128
@@ -621,16 +152,10 @@ struct fb_blit_caps {
 struct fb_blit_caps {
 	DECLARE_BITMAP(x, FB_MAX_BLIT_WIDTH);
 	DECLARE_BITMAP(y, FB_MAX_BLIT_HEIGHT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 len;
 	u32 flags;
 };
 
-<<<<<<< HEAD
-extern int fb_register_client(struct notifier_block *nb);
-extern int fb_unregister_client(struct notifier_block *nb);
-extern int fb_notifier_call_chain(unsigned long val, void *v);
-=======
 #ifdef CONFIG_FB_NOTIFY
 extern int fb_register_client(struct notifier_block *nb);
 extern int fb_unregister_client(struct notifier_block *nb);
@@ -652,7 +177,6 @@ static inline int fb_notifier_call_chain(unsigned long val, void *v)
 };
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Pixmap structure definition
  *
@@ -674,32 +198,18 @@ struct fb_pixmap {
 	u32 scan_align;		/* alignment per scanline		*/
 	u32 access_align;	/* alignment per read/write (bits)	*/
 	u32 flags;		/* see FB_PIXMAP_*			*/
-<<<<<<< HEAD
-	u32 blit_x;             /* supported bit block dimensions (1-32)*/
-	u32 blit_y;             /* Format: blit_x = 1 << (width - 1)    */
-	                        /*         blit_y = 1 << (height - 1)   */
-	                        /* if 0, will be set to 0xffffffff (all)*/
-=======
 				/* supported bit block dimensions	*/
 				/* Format: test_bit(width - 1, blit_x)	*/
 				/*	   test_bit(height - 1, blit_y)	*/
 				/* if zero, will be set to full (all)	*/
 	DECLARE_BITMAP(blit_x, FB_MAX_BLIT_WIDTH);
 	DECLARE_BITMAP(blit_y, FB_MAX_BLIT_HEIGHT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* access methods */
 	void (*writeio)(struct fb_info *info, void __iomem *dst, void *src, unsigned int size);
 	void (*readio) (struct fb_info *info, void *dst, void __iomem *src, unsigned int size);
 };
 
 #ifdef CONFIG_FB_DEFERRED_IO
-<<<<<<< HEAD
-struct fb_deferred_io {
-	/* delay between mkwrite and deferred handler */
-	unsigned long delay;
-	struct mutex lock; /* mutex that protects the page list */
-	struct list_head pagelist; /* list of touched pages */
-=======
 struct fb_deferred_io_pageref {
 	struct page *page;
 	unsigned long offset;
@@ -714,7 +224,6 @@ struct fb_deferred_io {
 	int open_count; /* number of opened files; protected by fb_info lock */
 	struct mutex lock; /* mutex that protects the pageref list */
 	struct list_head pagereflist; /* list of pagerefs for touched pages */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* callback */
 	void (*deferred_io)(struct fb_info *info, struct list_head *pagelist);
 };
@@ -778,12 +287,6 @@ struct fb_ops {
 	/* Draws cursor */
 	int (*fb_cursor) (struct fb_info *info, struct fb_cursor *cursor);
 
-<<<<<<< HEAD
-	/* Rotates the display */
-	void (*fb_rotate)(struct fb_info *info, int angle);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* wait for blit idle, optional */
 	int (*fb_sync)(struct fb_info *info);
 
@@ -888,10 +391,6 @@ struct fb_tile_ops {
 #endif /* CONFIG_FB_TILEBLITTING */
 
 /* FBINFO_* = fb_info.flags bit flags */
-<<<<<<< HEAD
-#define FBINFO_MODULE		0x0001	/* Low-level driver is a module */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FBINFO_HWACCEL_DISABLED	0x0002
 	/* When FBINFO_HWACCEL_DISABLED is set:
 	 *  Hardware acceleration is turned off.  Software implementations
@@ -918,11 +417,6 @@ struct fb_tile_ops {
 #define FBINFO_HWACCEL_YPAN		0x2000 /* optional */
 #define FBINFO_HWACCEL_YWRAP		0x4000 /* optional */
 
-<<<<<<< HEAD
-#define FBINFO_MISC_USEREVENT          0x10000 /* event request
-						  from userspace */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FBINFO_MISC_TILEBLITTING       0x20000 /* use tile blitting */
 
 /* A driver may set this flag to indicate that it does want a set_par to be
@@ -937,11 +431,6 @@ struct fb_tile_ops {
  */
 #define FBINFO_MISC_ALWAYS_SETPAR   0x40000
 
-<<<<<<< HEAD
-/* where the fb is a firmware driver, and can be replaced with a proper one */
-#define FBINFO_MISC_FIRMWARE        0x80000
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Host and GPU endianness differ.
  */
@@ -952,17 +441,6 @@ struct fb_tile_ops {
  * and host endianness. Drivers should not use this flag.
  */
 #define FBINFO_BE_MATH  0x100000
-<<<<<<< HEAD
-
-/* report to the VT layer that this fb driver can accept forced console
-   output like oopses */
-#define FBINFO_CAN_FORCE_OUTPUT     0x200000
-
-struct fb_info {
-	atomic_t count;
-	int node;
-	int flags;
-=======
 /*
  * Hide smem_start in the FBIOGET_FSCREENINFO IOCTL. This is used by modern DRM
  * drivers to stop userspace from trying to share buffers behind the kernel's
@@ -980,52 +458,29 @@ struct fb_info {
 	 * a lcd is not mounted upright and fbcon should rotate to compensate.
 	 */
 	int fbcon_rotate_hint;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex lock;		/* Lock for open/release/ioctl funcs */
 	struct mutex mm_lock;		/* Lock for fb_mmap and smem_* fields */
 	struct fb_var_screeninfo var;	/* Current var */
 	struct fb_fix_screeninfo fix;	/* Current fix */
 	struct fb_monspecs monspecs;	/* Current Monitor specs */
-<<<<<<< HEAD
-	struct work_struct queue;	/* Framebuffer event queue */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fb_pixmap pixmap;	/* Image hardware mapper */
 	struct fb_pixmap sprite;	/* Cursor hardware mapper */
 	struct fb_cmap cmap;		/* Current cmap */
 	struct list_head modelist;      /* mode list */
 	struct fb_videomode *mode;	/* current mode */
 
-<<<<<<< HEAD
-#ifdef CONFIG_FB_BACKLIGHT
-	/* assigned backlight device */
-	/* set before framebuffer registration, 
-=======
 #if IS_ENABLED(CONFIG_FB_BACKLIGHT)
 	/* assigned backlight device */
 	/* set before framebuffer registration,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   remove after unregister */
 	struct backlight_device *bl_dev;
 
 	/* Backlight level curve */
-<<<<<<< HEAD
-	struct mutex bl_curve_mutex;	
-=======
 	struct mutex bl_curve_mutex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 bl_curve[FB_BACKLIGHT_LEVELS];
 #endif
 #ifdef CONFIG_FB_DEFERRED_IO
 	struct delayed_work deferred_work;
-<<<<<<< HEAD
-	struct fb_deferred_io *fbdefio;
-#endif
-
-	struct fb_ops *fbops;
-	struct device *device;		/* This is the parent */
-	struct device *dev;		/* This is this fb device */
-=======
 	unsigned long npagerefs;
 	struct fb_deferred_io_pageref *pagerefs;
 	struct fb_deferred_io *fbdefio;
@@ -1036,67 +491,26 @@ struct fb_info {
 #if defined(CONFIG_FB_DEVICE)
 	struct device *dev;		/* This is this fb device */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int class_flag;                    /* private sysfs flags */
 #ifdef CONFIG_FB_TILEBLITTING
 	struct fb_tile_ops *tileops;    /* Tile Blitting */
 #endif
-<<<<<<< HEAD
-	char __iomem *screen_base;	/* Virtual address */
-	unsigned long screen_size;	/* Amount of ioremapped VRAM or 0 */ 
-	void *pseudo_palette;		/* Fake palette of 16 colors */ 
-=======
 	union {
 		char __iomem *screen_base;	/* Virtual address */
 		char *screen_buffer;
 	};
 	unsigned long screen_size;	/* Amount of ioremapped VRAM or 0 */
 	void *pseudo_palette;		/* Fake palette of 16 colors */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FBINFO_STATE_RUNNING	0
 #define FBINFO_STATE_SUSPENDED	1
 	u32 state;			/* Hardware state i.e suspend */
 	void *fbcon_par;                /* fbcon use-only private area */
 	/* From here on everything is device dependent */
 	void *par;
-<<<<<<< HEAD
-	/* we need the PCI or similar aperture base/size not
-	   smem_start/size as smem_start may just be an object
-	   allocated inside the aperture so may not actually overlap */
-	struct apertures_struct {
-		unsigned int count;
-		struct aperture {
-			resource_size_t base;
-			resource_size_t size;
-		} ranges[0];
-	} *apertures;
-};
-
-static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
-	struct apertures_struct *a = kzalloc(sizeof(struct apertures_struct)
-			+ max_num * sizeof(struct aperture), GFP_KERNEL);
-	if (!a)
-		return NULL;
-	a->count = max_num;
-	return a;
-}
-
-#ifdef MODULE
-#define FBINFO_DEFAULT	FBINFO_MODULE
-#else
-#define FBINFO_DEFAULT	0
-#endif
-
-// This will go away
-#define FBINFO_FLAG_MODULE	FBINFO_MODULE
-#define FBINFO_FLAG_DEFAULT	FBINFO_DEFAULT
-
-=======
 
 	bool skip_vt_switch; /* no VT switch on suspend/resume required */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This will go away
  * fbset currently hacks in FB_ACCELF_TEXT into var.accel_flags
  * when it wants to turn the acceleration engine on.  This is
@@ -1105,59 +519,6 @@ static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
  */
 #define STUPID_ACCELF_TEXT_SHIT
 
-<<<<<<< HEAD
-// This will go away
-#if defined(__sparc__)
-
-/* We map all of our framebuffers such that big-endian accesses
- * are what we want, so the following is sufficient.
- */
-
-// This will go away
-#define fb_readb sbus_readb
-#define fb_readw sbus_readw
-#define fb_readl sbus_readl
-#define fb_readq sbus_readq
-#define fb_writeb sbus_writeb
-#define fb_writew sbus_writew
-#define fb_writel sbus_writel
-#define fb_writeq sbus_writeq
-#define fb_memset sbus_memset_io
-#define fb_memcpy_fromfb sbus_memcpy_fromio
-#define fb_memcpy_tofb sbus_memcpy_toio
-
-#elif defined(__i386__) || defined(__alpha__) || defined(__x86_64__) || defined(__hppa__) || defined(__sh__) || defined(__powerpc__) || defined(__avr32__) || defined(__bfin__)
-
-#define fb_readb __raw_readb
-#define fb_readw __raw_readw
-#define fb_readl __raw_readl
-#define fb_readq __raw_readq
-#define fb_writeb __raw_writeb
-#define fb_writew __raw_writew
-#define fb_writel __raw_writel
-#define fb_writeq __raw_writeq
-#define fb_memset memset_io
-#define fb_memcpy_fromfb memcpy_fromio
-#define fb_memcpy_tofb memcpy_toio
-
-#else
-
-#define fb_readb(addr) (*(volatile u8 *) (addr))
-#define fb_readw(addr) (*(volatile u16 *) (addr))
-#define fb_readl(addr) (*(volatile u32 *) (addr))
-#define fb_readq(addr) (*(volatile u64 *) (addr))
-#define fb_writeb(b,addr) (*(volatile u8 *) (addr) = (b))
-#define fb_writew(b,addr) (*(volatile u16 *) (addr) = (b))
-#define fb_writel(b,addr) (*(volatile u32 *) (addr) = (b))
-#define fb_writeq(b,addr) (*(volatile u64 *) (addr) = (b))
-#define fb_memset memset
-#define fb_memcpy_fromfb memcpy
-#define fb_memcpy_tofb memcpy
-
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FB_LEFT_POS(p, bpp)          (fb_be_math(p) ? (32 - (bpp)) : 0)
 #define FB_SHIFT_HIGH(p, val, bits)  (fb_be_math(p) ? (val) >> (bits) : \
 						      (val) << (bits))
@@ -1168,17 +529,6 @@ static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
      *  `Generic' versions of the frame buffer device operations
      */
 
-<<<<<<< HEAD
-extern int fb_set_var(struct fb_info *info, struct fb_var_screeninfo *var); 
-extern int fb_pan_display(struct fb_info *info, struct fb_var_screeninfo *var); 
-extern int fb_blank(struct fb_info *info, int blank);
-extern void cfb_fillrect(struct fb_info *info, const struct fb_fillrect *rect); 
-extern void cfb_copyarea(struct fb_info *info, const struct fb_copyarea *area); 
-extern void cfb_imageblit(struct fb_info *info, const struct fb_image *image);
-/*
- * Drawing operations where framebuffer is in system RAM
- */
-=======
 extern int fb_set_var(struct fb_info *info, struct fb_var_screeninfo *var);
 extern int fb_pan_display(struct fb_info *info, struct fb_var_screeninfo *var);
 extern int fb_blank(struct fb_info *info, int blank);
@@ -1217,7 +567,6 @@ int fb_io_mmap(struct fb_info *info, struct vm_area_struct *vma);
  * Helpers for framebuffers in system memory
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void sys_fillrect(struct fb_info *info, const struct fb_fillrect *rect);
 extern void sys_copyarea(struct fb_info *info, const struct fb_copyarea *area);
 extern void sys_imageblit(struct fb_info *info, const struct fb_image *image);
@@ -1226,16 +575,6 @@ extern ssize_t fb_sys_read(struct fb_info *info, char __user *buf,
 extern ssize_t fb_sys_write(struct fb_info *info, const char __user *buf,
 			    size_t count, loff_t *ppos);
 
-<<<<<<< HEAD
-/* drivers/video/fbmem.c */
-extern int register_framebuffer(struct fb_info *fb_info);
-extern int unregister_framebuffer(struct fb_info *fb_info);
-extern int unlink_framebuffer(struct fb_info *fb_info);
-extern void remove_conflicting_framebuffers(struct apertures_struct *a,
-				const char *name, bool primary);
-extern int fb_prepare_logo(struct fb_info *fb_info, int rotate);
-extern int fb_show_logo(struct fb_info *fb_info, int rotate);
-=======
 #define __FB_DEFAULT_SYSMEM_OPS_RDWR \
 	.fb_read	= fb_sys_read, \
 	.fb_write	= fb_sys_write
@@ -1261,7 +600,6 @@ extern int fb_show_logo(struct fb_info *fb_info, int rotate);
 /* fbmem.c */
 extern int register_framebuffer(struct fb_info *fb_info);
 extern void unregister_framebuffer(struct fb_info *fb_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern char* fb_get_buffer_offset(struct fb_info *info, struct fb_pixmap *buf, u32 size);
 extern void fb_pad_unaligned_buffer(u8 *dst, u32 d_pitch, u8 *src, u32 idx,
 				u32 height, u32 shift_high, u32 shift_low, u32 mod);
@@ -1269,16 +607,6 @@ extern void fb_pad_aligned_buffer(u8 *dst, u32 d_pitch, u8 *src, u32 s_pitch, u3
 extern void fb_set_suspend(struct fb_info *info, int state);
 extern int fb_get_color_depth(struct fb_var_screeninfo *var,
 			      struct fb_fix_screeninfo *fix);
-<<<<<<< HEAD
-extern int fb_get_options(char *name, char **option);
-extern int fb_new_modelist(struct fb_info *info);
-
-extern struct fb_info *registered_fb[FB_MAX];
-extern int num_registered_fb;
-extern struct class *fb_class;
-
-extern int lock_fb_info(struct fb_info *info);
-=======
 extern int fb_get_options(const char *name, char **option);
 extern int fb_new_modelist(struct fb_info *info);
 
@@ -1286,7 +614,6 @@ static inline void lock_fb_info(struct fb_info *info)
 {
 	mutex_lock(&info->lock);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void unlock_fb_info(struct fb_info *info)
 {
@@ -1296,11 +623,7 @@ static inline void unlock_fb_info(struct fb_info *info)
 static inline void __fb_pad_aligned_buffer(u8 *dst, u32 d_pitch,
 					   u8 *src, u32 s_pitch, u32 height)
 {
-<<<<<<< HEAD
-	int i, j;
-=======
 	u32 i, j;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	d_pitch -= s_pitch;
 
@@ -1312,13 +635,6 @@ static inline void __fb_pad_aligned_buffer(u8 *dst, u32 d_pitch,
 	}
 }
 
-<<<<<<< HEAD
-/* drivers/video/fb_defio.c */
-extern void fb_deferred_io_init(struct fb_info *info);
-extern void fb_deferred_io_open(struct fb_info *info,
-				struct inode *inode,
-				struct file *file);
-=======
 /* fb_defio.c */
 int fb_deferred_io_mmap(struct fb_info *info, struct vm_area_struct *vma);
 extern int  fb_deferred_io_init(struct fb_info *info);
@@ -1326,13 +642,10 @@ extern void fb_deferred_io_open(struct fb_info *info,
 				struct inode *inode,
 				struct file *file);
 extern void fb_deferred_io_release(struct fb_info *info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void fb_deferred_io_cleanup(struct fb_info *info);
 extern int fb_deferred_io_fsync(struct file *file, loff_t start,
 				loff_t end, int datasync);
 
-<<<<<<< HEAD
-=======
 /*
  * Generate callbacks for deferred I/O
  */
@@ -1402,7 +715,6 @@ extern int fb_deferred_io_fsync(struct file *file, loff_t start,
 	__FB_DEFAULT_DEFERRED_OPS_DRAW(__prefix), \
 	__FB_DEFAULT_DEFERRED_OPS_MMAP(__prefix)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool fb_be_math(struct fb_info *info)
 {
 #ifdef CONFIG_FB_FOREIGN_ENDIAN
@@ -1422,22 +734,11 @@ static inline bool fb_be_math(struct fb_info *info)
 #endif /* CONFIG_FB_FOREIGN_ENDIAN */
 }
 
-<<<<<<< HEAD
-/* drivers/video/fbsysfs.c */
-extern struct fb_info *framebuffer_alloc(size_t size, struct device *dev);
-extern void framebuffer_release(struct fb_info *info);
-extern int fb_init_device(struct fb_info *fb_info);
-extern void fb_cleanup_device(struct fb_info *head);
-extern void fb_bl_default_curve(struct fb_info *fb_info, u8 off, u8 min, u8 max);
-
-/* drivers/video/fbmon.c */
-=======
 extern struct fb_info *framebuffer_alloc(size_t size, struct device *dev);
 extern void framebuffer_release(struct fb_info *info);
 extern void fb_bl_default_curve(struct fb_info *fb_info, u8 off, u8 min, u8 max);
 
 /* fbmon.c */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FB_MAXTIMINGS		0
 #define FB_VSYNCTIMINGS		1
 #define FB_HSYNCTIMINGS		2
@@ -1461,19 +762,10 @@ extern int fb_parse_edid(unsigned char *edid, struct fb_var_screeninfo *var);
 extern const unsigned char *fb_firmware_edid(struct device *device);
 extern void fb_edid_to_monspecs(unsigned char *edid,
 				struct fb_monspecs *specs);
-<<<<<<< HEAD
-extern void fb_edid_add_monspecs(unsigned char *edid,
-				 struct fb_monspecs *specs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void fb_destroy_modedb(struct fb_videomode *modedb);
 extern int fb_find_mode_cvt(struct fb_videomode *mode, int margins, int rb);
 extern unsigned char *fb_ddc_read(struct i2c_adapter *adapter);
 
-<<<<<<< HEAD
-/* drivers/video/modedb.c */
-#define VESA_MODEDB_SIZE 34
-=======
 extern int of_get_fb_videomode(struct device_node *np,
 			       struct fb_videomode *fb,
 			       int index);
@@ -1484,7 +776,6 @@ extern int fb_videomode_from_videomode(const struct videomode *vm,
 #define VESA_MODEDB_SIZE 43
 #define DMT_SIZE 0x50
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void fb_var_to_videomode(struct fb_videomode *mode,
 				const struct fb_var_screeninfo *var);
 extern void fb_videomode_to_var(struct fb_var_screeninfo *var,
@@ -1507,11 +798,7 @@ extern void fb_videomode_to_modelist(const struct fb_videomode *modedb, int num,
 extern const struct fb_videomode *fb_find_best_display(const struct fb_monspecs *specs,
 						       struct list_head *head);
 
-<<<<<<< HEAD
-/* drivers/video/fbcmap.c */
-=======
 /* fbcmap.c */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int fb_alloc_cmap(struct fb_cmap *cmap, int len, int transp);
 extern int fb_alloc_cmap_gfp(struct fb_cmap *cmap, int len, int transp, gfp_t flags);
 extern void fb_dealloc_cmap(struct fb_cmap *cmap);
@@ -1539,11 +826,6 @@ struct fb_videomode {
 	u32 flag;
 };
 
-<<<<<<< HEAD
-extern const char *fb_mode_option;
-extern const struct fb_videomode vesa_modes[];
-extern const struct fb_videomode cea_modes[64];
-=======
 struct dmt_videomode {
 	u32 dmt_id;
 	u32 std_2byte_code;
@@ -1553,7 +835,6 @@ struct dmt_videomode {
 
 extern const struct fb_videomode vesa_modes[];
 extern const struct dmt_videomode dmt_modes[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fb_modelist {
 	struct list_head list;
@@ -1567,9 +848,6 @@ extern int fb_find_mode(struct fb_var_screeninfo *var,
 			const struct fb_videomode *default_mode,
 			unsigned int default_bpp);
 
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-=======
 bool fb_modesetting_disabled(const char *drvname);
 
 /*
@@ -1594,6 +872,5 @@ bool fb_modesetting_disabled(const char *drvname);
 	WARN_ONCE(condition, "fb%d: " fmt, (fb_info)->node, ##__VA_ARGS__)
 #define fb_WARN_ON_ONCE(fb_info, x) \
 	fb_WARN_ONCE(fb_info, (x), "%s", "fb_WARN_ON_ONCE(" __stringify(x) ")")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_FB_H */

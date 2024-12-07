@@ -1,39 +1,24 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright (C) 1991, 1992 Linus Torvalds
  *   Copyright 2007 rPath, Inc. - All Rights Reserved
  *   Copyright 2009 Intel Corporation; author H. Peter Anvin
  *
-<<<<<<< HEAD
- *   This file is part of the Linux kernel, and is made available under
- *   the terms of the GNU General Public License version 2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
  * Select video mode
  */
 
-<<<<<<< HEAD
-=======
 #include <uapi/asm/boot.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "boot.h"
 #include "video.h"
 #include "vesa.h"
 
-<<<<<<< HEAD
-=======
 static u16 video_segment;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void store_cursor_position(void)
 {
 	struct biosregs ireg, oreg;
@@ -128,11 +113,7 @@ static unsigned int get_entry(void)
 		} else if ((key >= '0' && key <= '9') ||
 			   (key >= 'A' && key <= 'Z') ||
 			   (key >= 'a' && key <= 'z')) {
-<<<<<<< HEAD
-			if (len < sizeof entry_buf) {
-=======
 			if (len < sizeof(entry_buf)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				entry_buf[len++] = key;
 				putchar(key);
 			}

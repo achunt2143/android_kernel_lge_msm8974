@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * phonet.c -- USB CDC Phonet host driver
  *
  * Copyright (C) 2008-2009 Nokia Corporation. All rights reserved.
  *
  * Author: Rémi Denis-Courmont
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -56,11 +36,7 @@ struct usbpn_dev {
 
 	spinlock_t		rx_lock;
 	struct sk_buff		*rx_skb;
-<<<<<<< HEAD
-	struct urb		*urbs[0];
-=======
 	struct urb		*urbs[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void tx_complete(struct urb *req);
@@ -110,10 +86,7 @@ static void tx_complete(struct urb *req)
 	struct net_device *dev = skb->dev;
 	struct usbpn_dev *pnd = netdev_priv(dev);
 	int status = req->status;
-<<<<<<< HEAD
-=======
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (status) {
 	case 0:
@@ -124,27 +97,17 @@ static void tx_complete(struct urb *req)
 	case -ECONNRESET:
 	case -ESHUTDOWN:
 		dev->stats.tx_aborted_errors++;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		dev->stats.tx_errors++;
 		dev_dbg(&dev->dev, "TX error (%d)\n", status);
 	}
 	dev->stats.tx_packets++;
 
-<<<<<<< HEAD
-	spin_lock(&pnd->tx_lock);
-	pnd->tx_queue--;
-	netif_wake_queue(dev);
-	spin_unlock(&pnd->tx_lock);
-=======
 	spin_lock_irqsave(&pnd->tx_lock, flags);
 	pnd->tx_queue--;
 	netif_wake_queue(dev);
 	spin_unlock_irqrestore(&pnd->tx_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_kfree_skb_any(skb);
 	usb_free_urb(req);
@@ -156,11 +119,7 @@ static int rx_submit(struct usbpn_dev *pnd, struct urb *req, gfp_t gfp_flags)
 	struct page *page;
 	int err;
 
-<<<<<<< HEAD
-	page = alloc_page(gfp_flags);
-=======
 	page = __dev_alloc_page(gfp_flags | __GFP_NOMEMALLOC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!page)
 		return -ENOMEM;
 
@@ -192,11 +151,7 @@ static void rx_complete(struct urb *req)
 			skb = pnd->rx_skb = netdev_alloc_skb(dev, 12);
 			if (likely(skb)) {
 				/* Can't use pskb_pull() on page in IRQ */
-<<<<<<< HEAD
-				memcpy(skb_put(skb, 1), page_address(page), 1);
-=======
 				skb_put_data(skb, page_address(page), 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
 						page, 1, req->actual_length,
 						PAGE_SIZE);
@@ -246,11 +201,7 @@ resubmit:
 	if (page)
 		put_page(page);
 	if (req)
-<<<<<<< HEAD
-		rx_submit(pnd, req, GFP_ATOMIC | __GFP_COLD);
-=======
 		rx_submit(pnd, req, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int usbpn_close(struct net_device *dev);
@@ -269,12 +220,8 @@ static int usbpn_open(struct net_device *dev)
 	for (i = 0; i < rxq_size; i++) {
 		struct urb *req = usb_alloc_urb(0, GFP_KERNEL);
 
-<<<<<<< HEAD
-		if (!req || rx_submit(pnd, req, GFP_KERNEL | __GFP_COLD)) {
-=======
 		if (!req || rx_submit(pnd, req, GFP_KERNEL)) {
 			usb_free_urb(req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			usbpn_close(dev);
 			return -ENOMEM;
 		}
@@ -306,12 +253,8 @@ static int usbpn_close(struct net_device *dev)
 	return usb_set_interface(pnd->usb, num, !pnd->active_setting);
 }
 
-<<<<<<< HEAD
-static int usbpn_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-=======
 static int usbpn_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 				void __user *data, int cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct if_phonet_req *req = (struct if_phonet_req *)ifr;
 
@@ -323,53 +266,23 @@ static int usbpn_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 	return -ENOIOCTLCMD;
 }
 
-<<<<<<< HEAD
-static int usbpn_set_mtu(struct net_device *dev, int new_mtu)
-{
-	if ((new_mtu < PHONET_MIN_MTU) || (new_mtu > PHONET_MAX_MTU))
-		return -EINVAL;
-
-	dev->mtu = new_mtu;
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops usbpn_ops = {
 	.ndo_open	= usbpn_open,
 	.ndo_stop	= usbpn_close,
 	.ndo_start_xmit = usbpn_xmit,
-<<<<<<< HEAD
-	.ndo_do_ioctl	= usbpn_ioctl,
-	.ndo_change_mtu = usbpn_set_mtu,
-=======
 	.ndo_siocdevprivate = usbpn_siocdevprivate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void usbpn_setup(struct net_device *dev)
 {
-<<<<<<< HEAD
-	dev->features		= 0;
-	dev->netdev_ops		= &usbpn_ops,
-=======
 	const u8 addr = PN_MEDIA_USB;
 
 	dev->features		= 0;
 	dev->netdev_ops		= &usbpn_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->header_ops		= &phonet_header_ops;
 	dev->type		= ARPHRD_PHONET;
 	dev->flags		= IFF_POINTOPOINT | IFF_NOARP;
 	dev->mtu		= PHONET_MAX_MTU;
-<<<<<<< HEAD
-	dev->hard_header_len	= 1;
-	dev->dev_addr[0]	= PN_MEDIA_USB;
-	dev->addr_len		= 1;
-	dev->tx_queue_len	= 3;
-
-	dev->destructor		= free_netdev;
-=======
 	dev->min_mtu		= PHONET_MIN_MTU;
 	dev->max_mtu		= PHONET_MAX_MTU;
 	dev->hard_header_len	= 1;
@@ -378,17 +291,12 @@ static void usbpn_setup(struct net_device *dev)
 	dev->tx_queue_len	= 3;
 
 	dev->needs_free_netdev	= true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * USB driver callbacks
  */
-<<<<<<< HEAD
-static struct usb_device_id usbpn_ids[] = {
-=======
 static const struct usb_device_id usbpn_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.match_flags = USB_DEVICE_ID_MATCH_VENDOR
 			| USB_DEVICE_ID_MATCH_INT_CLASS
@@ -404,11 +312,7 @@ MODULE_DEVICE_TABLE(usb, usbpn_ids);
 
 static struct usb_driver usbpn_driver;
 
-<<<<<<< HEAD
-int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *id)
-=======
 static int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const char ifname[] = "usbpn%d";
 	const struct usb_cdc_union_desc *union_header = NULL;
@@ -420,34 +324,6 @@ static int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *i
 	u8 *data;
 	int phonet = 0;
 	int len, err;
-<<<<<<< HEAD
-
-	data = intf->altsetting->extra;
-	len = intf->altsetting->extralen;
-	while (len > 0) {
-		u8 dlen = data[0];
-		if ((len < dlen) || (dlen < 3 ))
-			return -EINVAL;
-
-		/* bDescriptorType */
-		if (data[1] == USB_DT_CS_INTERFACE) {
-			/* bDescriptorSubType */
-			switch (data[2]) {
-			case USB_CDC_UNION_TYPE:
-				if (union_header || dlen < 5)
-					break;
-				union_header =
-					(struct usb_cdc_union_desc *)data;
-				break;
-			case 0xAB:
-				phonet = 1;
-				break;
-			}
-		}
-		data += dlen;
-		len -= dlen;
-	}
-=======
 	struct usb_cdc_parsed_header hdr;
 
 	data = intf->altsetting->extra;
@@ -455,7 +331,6 @@ static int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *i
 	cdc_parse_cdc_header(&hdr, intf, data, len);
 	union_header = hdr.usb_cdc_union_desc;
 	phonet = hdr.phonet_magic_present;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!union_header || !phonet)
 		return -EINVAL;
@@ -476,13 +351,8 @@ static int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *i
 	else
 		return -EINVAL;
 
-<<<<<<< HEAD
-	dev = alloc_netdev(sizeof(*pnd) + sizeof(pnd->urbs[0]) * rxq_size,
-				ifname, usbpn_setup);
-=======
 	dev = alloc_netdev(struct_size(pnd, urbs, rxq_size), ifname,
 			   NET_NAME_UNKNOWN, usbpn_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev)
 		return -ENOMEM;
 
@@ -490,11 +360,7 @@ static int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *i
 	SET_NETDEV_DEV(dev, &intf->dev);
 
 	pnd->dev = dev;
-<<<<<<< HEAD
-	pnd->usb = usb_get_dev(usbdev);
-=======
 	pnd->usb = usbdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnd->intf = intf;
 	pnd->data_intf = data_intf;
 	spin_lock_init(&pnd->tx_lock);
@@ -524,11 +390,8 @@ static int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *i
 
 	err = register_netdev(dev);
 	if (err) {
-<<<<<<< HEAD
-=======
 		/* Set disconnected flag so that disconnect() returns early. */
 		pnd->disconnected = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_driver_release_interface(&usbpn_driver, data_intf);
 		goto out;
 	}
@@ -545,10 +408,6 @@ out:
 static void usbpn_disconnect(struct usb_interface *intf)
 {
 	struct usbpn_dev *pnd = usb_get_intfdata(intf);
-<<<<<<< HEAD
-	struct usb_device *usb = pnd->usb;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pnd->disconnected)
 		return;
@@ -557,10 +416,6 @@ static void usbpn_disconnect(struct usb_interface *intf)
 	usb_driver_release_interface(&usbpn_driver,
 			(pnd->intf == intf) ? pnd->data_intf : pnd->intf);
 	unregister_netdev(pnd->dev);
-<<<<<<< HEAD
-	usb_put_dev(usb);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct usb_driver usbpn_driver = {
@@ -568,10 +423,7 @@ static struct usb_driver usbpn_driver = {
 	.probe =	usbpn_probe,
 	.disconnect =	usbpn_disconnect,
 	.id_table =	usbpn_ids,
-<<<<<<< HEAD
-=======
 	.disable_hub_initiated_lpm = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(usbpn_driver);

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH7757_H__
 #define __ASM_SH7757_H__
 
@@ -44,11 +41,7 @@ enum {
 
 	/* PTJ */
 	GPIO_PTJ0, GPIO_PTJ1, GPIO_PTJ2, GPIO_PTJ3,
-<<<<<<< HEAD
-	GPIO_PTJ4, GPIO_PTJ5, GPIO_PTJ6, GPIO_PTJ7_RESV,
-=======
 	GPIO_PTJ4, GPIO_PTJ5, GPIO_PTJ6,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PTK */
 	GPIO_PTK0, GPIO_PTK1, GPIO_PTK2, GPIO_PTK3,
@@ -56,11 +49,7 @@ enum {
 
 	/* PTL */
 	GPIO_PTL0, GPIO_PTL1, GPIO_PTL2, GPIO_PTL3,
-<<<<<<< HEAD
-	GPIO_PTL4, GPIO_PTL5, GPIO_PTL6, GPIO_PTL7_RESV,
-=======
 	GPIO_PTL4, GPIO_PTL5, GPIO_PTL6,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PTM */
 	GPIO_PTM0, GPIO_PTM1, GPIO_PTM2, GPIO_PTM3,
@@ -68,11 +57,7 @@ enum {
 
 	/* PTN */
 	GPIO_PTN0, GPIO_PTN1, GPIO_PTN2, GPIO_PTN3,
-<<<<<<< HEAD
-	GPIO_PTN4, GPIO_PTN5, GPIO_PTN6, GPIO_PTN7_RESV,
-=======
 	GPIO_PTN4, GPIO_PTN5, GPIO_PTN6,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PTO */
 	GPIO_PTO0, GPIO_PTO1, GPIO_PTO2, GPIO_PTO3,
@@ -84,11 +69,7 @@ enum {
 
 	/* PTQ */
 	GPIO_PTQ0, GPIO_PTQ1, GPIO_PTQ2, GPIO_PTQ3,
-<<<<<<< HEAD
-	GPIO_PTQ4, GPIO_PTQ5, GPIO_PTQ6, GPIO_PTQ7_RESV,
-=======
 	GPIO_PTQ4, GPIO_PTQ5, GPIO_PTQ6,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PTR */
 	GPIO_PTR0, GPIO_PTR1, GPIO_PTR2, GPIO_PTR3,
@@ -303,10 +284,7 @@ enum {
 	SHDMA_SLAVE_RIIC8_RX,
 	SHDMA_SLAVE_RIIC9_TX,
 	SHDMA_SLAVE_RIIC9_RX,
-<<<<<<< HEAD
-=======
 	SHDMA_SLAVE_RSPI_TX,
 	SHDMA_SLAVE_RSPI_RX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif /* __ASM_SH7757_H__ */

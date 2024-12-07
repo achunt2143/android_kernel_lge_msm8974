@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEBUG
 
 #include <linux/wait.h>
@@ -330,11 +327,7 @@ static int spu_process_callback(struct spu_context *ctx)
 	spu_ret = -ENOSYS;
 	npc += 4;
 
-<<<<<<< HEAD
-	if (s.nr_ret < __NR_syscalls) {
-=======
 	if (s.nr_ret < NR_syscalls) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spu_release(ctx);
 		/* do actual system call from here */
 		spu_ret = spu_sys_callback(&s);
@@ -360,10 +353,6 @@ static int spu_process_callback(struct spu_context *ctx)
 long spufs_run_spu(struct spu_context *ctx, u32 *npc, u32 *event)
 {
 	int ret;
-<<<<<<< HEAD
-	struct spu *spu;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 status;
 
 	if (mutex_lock_interruptible(&ctx->run_mutex))
@@ -396,20 +385,10 @@ long spufs_run_spu(struct spu_context *ctx, u32 *npc, u32 *event)
 			mutex_lock(&ctx->state_mutex);
 			break;
 		}
-<<<<<<< HEAD
-		spu = ctx->spu;
-		if (unlikely(test_and_clear_bit(SPU_SCHED_NOTIFY_ACTIVE,
-						&ctx->sched_flags))) {
-			if (!(status & SPU_STATUS_STOPPED_BY_STOP)) {
-				spu_switch_notify(spu, ctx);
-				continue;
-			}
-=======
 		if (unlikely(test_and_clear_bit(SPU_SCHED_NOTIFY_ACTIVE,
 						&ctx->sched_flags))) {
 			if (!(status & SPU_STATUS_STOPPED_BY_STOP))
 				continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		spuctx_switch_state(ctx, SPU_UTIL_SYSTEM);
@@ -453,22 +432,14 @@ long spufs_run_spu(struct spu_context *ctx, u32 *npc, u32 *event)
 
 	/* Note: we don't need to force_sig SIGTRAP on single-step
 	 * since we have TIF_SINGLESTEP set, thus the kernel will do
-<<<<<<< HEAD
-	 * it upon return from the syscall anyawy
-=======
 	 * it upon return from the syscall anyway.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (unlikely(status & SPU_STATUS_SINGLE_STEP))
 		ret = -ERESTARTSYS;
 
 	else if (unlikely((status & SPU_STATUS_STOPPED_BY_STOP)
 	    && (status >> SPU_STOP_STATUS_SHIFT) == 0x3fff)) {
-<<<<<<< HEAD
-		force_sig(SIGTRAP, current);
-=======
 		force_sig(SIGTRAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ERESTARTSYS;
 	}
 

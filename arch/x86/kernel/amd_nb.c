@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-/*
- * Shared support code for AMD K8 northbridges and derivates.
- * Copyright 2006 Andi Kleen, SUSE Labs. Subject to GPLv2.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Shared support code for AMD K8 northbridges and derivatives.
@@ -12,29 +6,10 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/spinlock.h>
-#include <asm/amd_nb.h>
-
-static u32 *flush_words;
-
-const struct pci_device_id amd_nb_misc_ids[] = {
-	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_K8_NB_MISC) },
-	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_10H_NB_MISC) },
-	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_NB_F3) },
-	{}
-};
-EXPORT_SYMBOL(amd_nb_misc_ids);
-
-static struct pci_device_id amd_nb_link_ids[] = {
-	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_NB_F4) },
-=======
 #include <linux/export.h>
 #include <linux/spinlock.h>
 #include <linux/pci_ids.h>
@@ -164,7 +139,6 @@ static const struct pci_device_id hygon_nb_misc_ids[] = {
 
 static const struct pci_device_id hygon_nb_link_ids[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_HYGON, PCI_DEVICE_ID_AMD_17H_DF_F4) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 
@@ -175,10 +149,6 @@ const struct amd_nb_bus_dev_range amd_nb_bus_dev_ranges[] __initconst = {
 	{ }
 };
 
-<<<<<<< HEAD
-struct amd_northbridge_info amd_northbridges;
-EXPORT_SYMBOL(amd_northbridges);
-=======
 static struct amd_northbridge_info amd_northbridges;
 
 u16 amd_nb_num(void)
@@ -198,7 +168,6 @@ struct amd_northbridge *node_to_amd_nb(int node)
 	return (node < amd_northbridges.num) ? &amd_northbridges.nb[node] : NULL;
 }
 EXPORT_SYMBOL_GPL(node_to_amd_nb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_dev *next_northbridge(struct pci_dev *dev,
 					const struct pci_device_id *ids)
@@ -211,25 +180,6 @@ static struct pci_dev *next_northbridge(struct pci_dev *dev,
 	return dev;
 }
 
-<<<<<<< HEAD
-int amd_cache_northbridges(void)
-{
-	u16 i = 0;
-	struct amd_northbridge *nb;
-	struct pci_dev *misc, *link;
-
-	if (amd_nb_num())
-		return 0;
-
-	misc = NULL;
-	while ((misc = next_northbridge(misc, amd_nb_misc_ids)) != NULL)
-		i++;
-
-	if (i == 0)
-		return 0;
-
-	nb = kzalloc(i * sizeof(struct amd_northbridge), GFP_KERNEL);
-=======
 static int __amd_smn_rw(u16 node, u32 address, u32 *value, bool write)
 {
 	struct pci_dev *root;
@@ -322,29 +272,10 @@ static int amd_cache_northbridges(void)
 	}
 
 	nb = kcalloc(misc_count, sizeof(struct amd_northbridge), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nb)
 		return -ENOMEM;
 
 	amd_northbridges.nb = nb;
-<<<<<<< HEAD
-	amd_northbridges.num = i;
-
-	link = misc = NULL;
-	for (i = 0; i != amd_nb_num(); i++) {
-		node_to_amd_nb(i)->misc = misc =
-			next_northbridge(misc, amd_nb_misc_ids);
-		node_to_amd_nb(i)->link = link =
-			next_northbridge(link, amd_nb_link_ids);
-        }
-
-	/* some CPU families (e.g. family 0x11) do not support GART */
-	if (boot_cpu_data.x86 == 0xf || boot_cpu_data.x86 == 0x10 ||
-	    boot_cpu_data.x86 == 0x15)
-		amd_northbridges.flags |= AMD_NB_GART;
-
-	/*
-=======
 	amd_northbridges.num = misc_count;
 
 	link = misc = root = NULL;
@@ -379,18 +310,13 @@ static int amd_cache_northbridges(void)
 		return 0;
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Some CPU families support L3 Cache Index Disable. There are some
 	 * limitations because of E382 and E388 on family 0x10.
 	 */
 	if (boot_cpu_data.x86 == 0x10 &&
 	    boot_cpu_data.x86_model >= 0x8 &&
 	    (boot_cpu_data.x86_model > 0x9 ||
-<<<<<<< HEAD
-	     boot_cpu_data.x86_mask >= 0x1))
-=======
 	     boot_cpu_data.x86_stepping >= 0x1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		amd_northbridges.flags |= AMD_NB_L3_INDEX_DISABLE;
 
 	if (boot_cpu_data.x86 == 0x15)
@@ -402,10 +328,6 @@ static int amd_cache_northbridges(void)
 
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(amd_cache_northbridges);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Ignores subdevice/subvendor but as far as I can figure out
@@ -413,13 +335,6 @@ EXPORT_SYMBOL_GPL(amd_cache_northbridges);
  */
 bool __init early_is_amd_nb(u32 device)
 {
-<<<<<<< HEAD
-	const struct pci_device_id *id;
-	u32 vendor = device & 0xffff;
-
-	device >>= 16;
-	for (id = amd_nb_misc_ids; id->vendor; id++)
-=======
 	const struct pci_device_id *misc_ids = amd_nb_misc_ids;
 	const struct pci_device_id *id;
 	u32 vendor = device & 0xffff;
@@ -433,7 +348,6 @@ bool __init early_is_amd_nb(u32 device)
 
 	device >>= 16;
 	for (id = misc_ids; id->vendor; id++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (vendor == id->vendor && device == id->device)
 			return true;
 	return false;
@@ -443,15 +357,6 @@ struct resource *amd_get_mmconfig_range(struct resource *res)
 {
 	u32 address;
 	u64 base, msr;
-<<<<<<< HEAD
-	unsigned segn_busn_bits;
-
-	if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD)
-		return NULL;
-
-	/* assume all cpus from fam10h have mmconfig */
-        if (boot_cpu_data.x86 < 0x10)
-=======
 	unsigned int segn_busn_bits;
 
 	if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
@@ -460,7 +365,6 @@ struct resource *amd_get_mmconfig_range(struct resource *res)
 
 	/* assume all cpus from fam10h have mmconfig */
 	if (boot_cpu_data.x86 < 0x10)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	address = MSR_FAM10H_MMIO_CONF_BASE;
@@ -483,30 +387,14 @@ struct resource *amd_get_mmconfig_range(struct resource *res)
 
 int amd_get_subcaches(int cpu)
 {
-<<<<<<< HEAD
-	struct pci_dev *link = node_to_amd_nb(amd_get_nb_id(cpu))->link;
-	unsigned int mask;
-	int cuid;
-=======
 	struct pci_dev *link = node_to_amd_nb(topology_amd_node_id(cpu))->link;
 	unsigned int mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!amd_nb_has_feature(AMD_NB_L3_PARTITIONING))
 		return 0;
 
 	pci_read_config_dword(link, 0x1d4, &mask);
 
-<<<<<<< HEAD
-	cuid = cpu_data(cpu).compute_unit_id;
-	return (mask >> (4 * cuid)) & 0xf;
-}
-
-int amd_set_subcaches(int cpu, int mask)
-{
-	static unsigned int reset, ban;
-	struct amd_northbridge *nb = node_to_amd_nb(amd_get_nb_id(cpu));
-=======
 	return (mask >> (4 * cpu_data(cpu).topo.core_id)) & 0xf;
 }
 
@@ -514,7 +402,6 @@ int amd_set_subcaches(int cpu, unsigned long mask)
 {
 	static unsigned int reset, ban;
 	struct amd_northbridge *nb = node_to_amd_nb(topology_amd_node_id(cpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int reg;
 	int cuid;
 
@@ -534,11 +421,7 @@ int amd_set_subcaches(int cpu, unsigned long mask)
 		pci_write_config_dword(nb->misc, 0x1b8, reg & ~0x180000);
 	}
 
-<<<<<<< HEAD
-	cuid = cpu_data(cpu).compute_unit_id;
-=======
 	cuid = cpu_data(cpu).topo.core_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mask <<= 4 * cuid;
 	mask |= (0xf ^ (1 << cuid)) << 26;
 
@@ -555,26 +438,6 @@ int amd_set_subcaches(int cpu, unsigned long mask)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int amd_cache_gart(void)
-{
-	u16 i;
-
-       if (!amd_nb_has_feature(AMD_NB_GART))
-               return 0;
-
-       flush_words = kmalloc(amd_nb_num() * sizeof(u32), GFP_KERNEL);
-       if (!flush_words) {
-               amd_northbridges.flags &= ~AMD_NB_GART;
-               return -ENOMEM;
-       }
-
-       for (i = 0; i != amd_nb_num(); i++)
-               pci_read_config_dword(node_to_amd_nb(i)->misc, 0x9c,
-                                     &flush_words[i]);
-
-       return 0;
-=======
 static void amd_cache_gart(void)
 {
 	u16 i;
@@ -591,7 +454,6 @@ static void amd_cache_gart(void)
 
 	for (i = 0; i != amd_northbridges.num; i++)
 		pci_read_config_dword(node_to_amd_nb(i)->misc, 0x9c, &flush_words[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void amd_flush_garts(void)
@@ -603,15 +465,6 @@ void amd_flush_garts(void)
 	if (!amd_nb_has_feature(AMD_NB_GART))
 		return;
 
-<<<<<<< HEAD
-	/* Avoid races between AGP and IOMMU. In theory it's not needed
-	   but I'm not sure if the hardware won't lose flush requests
-	   when another is pending. This whole thing is so expensive anyways
-	   that it doesn't matter to serialize more. -AK */
-	spin_lock_irqsave(&gart_lock, flags);
-	flushed = 0;
-	for (i = 0; i < amd_nb_num(); i++) {
-=======
 	/*
 	 * Avoid races between AGP and IOMMU. In theory it's not needed
 	 * but I'm not sure if the hardware won't lose flush requests
@@ -621,16 +474,11 @@ void amd_flush_garts(void)
 	spin_lock_irqsave(&gart_lock, flags);
 	flushed = 0;
 	for (i = 0; i < amd_northbridges.num; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_write_config_dword(node_to_amd_nb(i)->misc, 0x9c,
 				       flush_words[i] | 1);
 		flushed++;
 	}
-<<<<<<< HEAD
-	for (i = 0; i < amd_nb_num(); i++) {
-=======
 	for (i = 0; i < amd_northbridges.num; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 w;
 		/* Make sure the hardware actually executed the flush*/
 		for (;;) {
@@ -643,26 +491,6 @@ void amd_flush_garts(void)
 	}
 	spin_unlock_irqrestore(&gart_lock, flags);
 	if (!flushed)
-<<<<<<< HEAD
-		printk("nothing to flush?\n");
-}
-EXPORT_SYMBOL_GPL(amd_flush_garts);
-
-static __init int init_amd_nbs(void)
-{
-	int err = 0;
-
-	err = amd_cache_northbridges();
-
-	if (err < 0)
-		printk(KERN_NOTICE "AMD NB: Cannot enumerate AMD northbridges.\n");
-
-	if (amd_cache_gart() < 0)
-		printk(KERN_NOTICE "AMD NB: Cannot initialize GART flush words, "
-		       "GART support disabled.\n");
-
-	return err;
-=======
 		pr_notice("nothing to flush?\n");
 }
 EXPORT_SYMBOL_GPL(amd_flush_garts);
@@ -710,7 +538,6 @@ static __init int init_amd_nbs(void)
 	fix_erratum_688();
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This has to go after the PCI subsystem */

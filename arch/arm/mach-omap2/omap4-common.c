@@ -1,46 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP4 specific common source file.
  *
  * Copyright (C) 2010 Texas Instruments, Inc.
  * Author:
  *	Santosh Shilimkar <santosh.shilimkar@ti.com>
-<<<<<<< HEAD
- *
- *
- * This program is free software,you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-#include <linux/platform_device.h>
-#include <linux/memblock.h>
-
-#include <asm/hardware/gic.h>
-#include <asm/hardware/cache-l2x0.h>
-#include <asm/mach/map.h>
-#include <asm/memblock.h>
-
-#include <plat/irqs.h>
-#include <plat/sram.h>
-#include <plat/omap-secure.h>
-
-#include <mach/hardware.h>
-#include <mach/omap-wakeupgen.h>
-
-#include "common.h"
-#include "omap4-sar-layout.h"
-#include <linux/export.h>
-=======
 #include <linux/irq.h>
 #include <linux/irqchip.h>
 #include <linux/memblock.h>
@@ -66,26 +35,12 @@
 #include "omap4-sar-layout.h"
 #include "omap-secure.h"
 #include "sram.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_CACHE_L2X0
 static void __iomem *l2cache_base;
 #endif
 
 static void __iomem *sar_ram_base;
-<<<<<<< HEAD
-
-#ifdef CONFIG_OMAP4_ERRATA_I688
-/* Used to implement memory barrier on DRAM path */
-#define OMAP4_DRAM_BARRIER_VA			0xfe600000
-
-void __iomem *dram_sync, *sram_sync;
-
-static phys_addr_t paddr;
-static u32 size;
-
-void omap_bus_sync(void)
-=======
 static void __iomem *gic_dist_base_addr;
 static void __iomem *twd_base;
 
@@ -158,7 +113,6 @@ static void omap4_mb(void)
  * as well, and is necessary prior to executing a WFI.
  */
 void omap_interconnect_sync(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (dram_sync && sram_sync) {
 		writel_relaxed(readl_relaxed(dram_sync), dram_sync);
@@ -166,19 +120,6 @@ void omap_interconnect_sync(void)
 		isb();
 	}
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(omap_bus_sync);
-
-/* Steal one page physical memory for barrier implementation */
-int __init omap_barrier_reserve_memblock(void)
-{
-
-	size = ALIGN(PAGE_SIZE, SZ_1M);
-	paddr = arm_memblock_steal(size, SZ_1M);
-
-	return 0;
-}
-=======
 
 static int __init omap4_sram_init(void)
 {
@@ -210,47 +151,12 @@ void __init omap_barrier_reserve_memblock(void)
 	dram_sync_size = ALIGN(PAGE_SIZE, SZ_1M);
 	dram_sync_paddr = arm_memblock_steal(dram_sync_size, SZ_1M);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init omap_barriers_init(void)
 {
 	struct map_desc dram_io_desc[1];
 
 	dram_io_desc[0].virtual = OMAP4_DRAM_BARRIER_VA;
-<<<<<<< HEAD
-	dram_io_desc[0].pfn = __phys_to_pfn(paddr);
-	dram_io_desc[0].length = size;
-	dram_io_desc[0].type = MT_MEMORY_SO;
-	iotable_init(dram_io_desc, ARRAY_SIZE(dram_io_desc));
-	dram_sync = (void __iomem *) dram_io_desc[0].virtual;
-	sram_sync = (void __iomem *) OMAP4_SRAM_VA;
-
-	pr_info("OMAP4: Map 0x%08llx to 0x%08lx for dram barrier\n",
-		(long long) paddr, dram_io_desc[0].virtual);
-
-}
-#else
-void __init omap_barriers_init(void)
-{}
-#endif
-
-void __init gic_init_irq(void)
-{
-	void __iomem *omap_irq_base;
-	void __iomem *gic_dist_base_addr;
-
-	/* Static mapping, never released */
-	gic_dist_base_addr = ioremap(OMAP44XX_GIC_DIST_BASE, SZ_4K);
-	BUG_ON(!gic_dist_base_addr);
-
-	/* Static mapping, never released */
-	omap_irq_base = ioremap(OMAP44XX_GIC_CPU_BASE, SZ_512);
-	BUG_ON(!omap_irq_base);
-
-	omap_wakeupgen_init();
-
-	gic_init(0, 29, gic_dist_base_addr, omap_irq_base);
-=======
 	dram_io_desc[0].pfn = __phys_to_pfn(dram_sync_paddr);
 	dram_io_desc[0].length = dram_sync_size;
 	dram_io_desc[0].type = MT_MEMORY_RW_SO;
@@ -301,7 +207,6 @@ void gic_timer_retrigger(void)
 			writel_relaxed(twd_ctrl, twd_base + TWD_TIMER_CONTROL);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_CACHE_L2X0
@@ -311,31 +216,6 @@ void __iomem *omap4_get_l2cache_base(void)
 	return l2cache_base;
 }
 
-<<<<<<< HEAD
-static void omap4_l2x0_disable(void)
-{
-	/* Disable PL310 L2 Cache controller */
-	omap_smc1(0x102, 0x0);
-}
-
-static void omap4_l2x0_set_debug(unsigned long val)
-{
-	/* Program PL310 L2 Cache controller debug register */
-	omap_smc1(0x100, val);
-}
-
-static int __init omap_l2_cache_init(void)
-{
-	u32 aux_ctrl = 0;
-
-	/*
-	 * To avoid code running on other OMAPs in
-	 * multi-omap builds
-	 */
-	if (!cpu_is_omap44xx())
-		return -ENODEV;
-
-=======
 void omap4_l2c310_write_sec(unsigned long val, unsigned reg)
 {
 	unsigned smc_op;
@@ -371,54 +251,12 @@ void omap4_l2c310_write_sec(unsigned long val, unsigned reg)
 
 int __init omap_l2_cache_init(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Static mapping, never released */
 	l2cache_base = ioremap(OMAP44XX_L2CACHE_BASE, SZ_4K);
 	if (WARN_ON(!l2cache_base))
 		return -ENOMEM;
-<<<<<<< HEAD
-
-	/*
-	 * 16-way associativity, parity disabled
-	 * Way size - 32KB (es1.0)
-	 * Way size - 64KB (es2.0 +)
-	 */
-	aux_ctrl = ((1 << L2X0_AUX_CTRL_ASSOCIATIVITY_SHIFT) |
-			(0x1 << 25) |
-			(0x1 << L2X0_AUX_CTRL_NS_LOCKDOWN_SHIFT) |
-			(0x1 << L2X0_AUX_CTRL_NS_INT_CTRL_SHIFT));
-
-	if (omap_rev() == OMAP4430_REV_ES1_0) {
-		aux_ctrl |= 0x2 << L2X0_AUX_CTRL_WAY_SIZE_SHIFT;
-	} else {
-		aux_ctrl |= ((0x3 << L2X0_AUX_CTRL_WAY_SIZE_SHIFT) |
-			(1 << L2X0_AUX_CTRL_SHARE_OVERRIDE_SHIFT) |
-			(1 << L2X0_AUX_CTRL_DATA_PREFETCH_SHIFT) |
-			(1 << L2X0_AUX_CTRL_INSTR_PREFETCH_SHIFT) |
-			(1 << L2X0_AUX_CTRL_EARLY_BRESP_SHIFT));
-	}
-	if (omap_rev() != OMAP4430_REV_ES1_0)
-		omap_smc1(0x109, aux_ctrl);
-
-	/* Enable PL310 L2 Cache controller */
-	omap_smc1(0x102, 0x1);
-
-	l2x0_init(l2cache_base, aux_ctrl, L2X0_AUX_CTRL_MASK);
-
-	/*
-	 * Override default outer_cache.disable with a OMAP4
-	 * specific one
-	*/
-	outer_cache.disable = omap4_l2x0_disable;
-	outer_cache.set_debug = omap4_l2x0_set_debug;
-
 	return 0;
 }
-early_initcall(omap_l2_cache_init);
-=======
-	return 0;
-}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 void __iomem *omap4_get_sar_ram_base(void)
@@ -427,13 +265,6 @@ void __iomem *omap4_get_sar_ram_base(void)
 }
 
 /*
-<<<<<<< HEAD
- * SAR RAM used to save and restore the HW
- * context in low power modes
- */
-static int __init omap4_sar_ram_init(void)
-{
-=======
  * SAR RAM used to save and restore the HW context in low power modes.
  * Note that we need to initialize this very early for kexec. See
  * omap4_mpuss_early_init().
@@ -442,24 +273,10 @@ void __init omap4_sar_ram_init(void)
 {
 	unsigned long sar_base;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * To avoid code running on other OMAPs in
 	 * multi-omap builds
 	 */
-<<<<<<< HEAD
-	if (!cpu_is_omap44xx())
-		return -ENOMEM;
-
-	/* Static mapping, never released */
-	sar_ram_base = ioremap(OMAP44XX_SAR_RAM_BASE, SZ_16K);
-	if (WARN_ON(!sar_ram_base))
-		return -ENOMEM;
-
-	return 0;
-}
-early_initcall(omap4_sar_ram_init);
-=======
 	if (cpu_is_omap44xx())
 		sar_base = OMAP44XX_SAR_RAM_BASE;
 	else if (soc_is_omap54xx())
@@ -508,4 +325,3 @@ void __init omap_gic_of_init(void)
 skip_errata_init:
 	irqchip_init();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

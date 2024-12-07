@@ -1,27 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LED Class Core
  *
  * Copyright 2005-2006 Openedhand Ltd.
  *
  * Author: Richard Purdie <rpurdie@openedhand.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- */
-
-#include <linux/kernel.h>
-#include <linux/list.h>
-#include <linux/module.h>
-#include <linux/rwsem.h>
-#include <linux/leds.h>
-=======
  */
 
 #include <linux/kernel.h>
@@ -34,7 +17,6 @@
 #include <linux/rwsem.h>
 #include <linux/slab.h>
 #include <uapi/linux/uleds.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "leds.h"
 
 DECLARE_RWSEM(leds_list_lock);
@@ -43,14 +25,6 @@ EXPORT_SYMBOL_GPL(leds_list_lock);
 LIST_HEAD(leds_list);
 EXPORT_SYMBOL_GPL(leds_list);
 
-<<<<<<< HEAD
-static void led_stop_software_blink(struct led_classdev *led_cdev)
-{
-	/* deactivate previous settings */
-	del_timer_sync(&led_cdev->blink_timer);
-	led_cdev->blink_delay_on = 0;
-	led_cdev->blink_delay_off = 0;
-=======
 const char * const led_colors[LED_COLOR_ID_MAX] = {
 	[LED_COLOR_ID_WHITE] = "white",
 	[LED_COLOR_ID_RED] = "red",
@@ -190,7 +164,6 @@ static void set_brightness_delayed(struct work_struct *ws)
 
 		led_blink_set(led_cdev, &delay_on, &delay_off);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void led_set_software_blink(struct led_classdev *led_cdev,
@@ -205,28 +178,6 @@ static void led_set_software_blink(struct led_classdev *led_cdev,
 	if (!led_cdev->blink_brightness)
 		led_cdev->blink_brightness = led_cdev->max_brightness;
 
-<<<<<<< HEAD
-	if (led_get_trigger_data(led_cdev) &&
-	    delay_on == led_cdev->blink_delay_on &&
-	    delay_off == led_cdev->blink_delay_off)
-		return;
-
-	led_stop_software_blink(led_cdev);
-
-	led_cdev->blink_delay_on = delay_on;
-	led_cdev->blink_delay_off = delay_off;
-
-	/* never on - don't blink */
-	if (!delay_on)
-		return;
-
-	/* never off - just set to brightness */
-	if (!delay_off) {
-		led_set_brightness(led_cdev, led_cdev->blink_brightness);
-		return;
-	}
-
-=======
 	led_cdev->blink_delay_on = delay_on;
 	led_cdev->blink_delay_off = delay_off;
 
@@ -244,27 +195,16 @@ static void led_set_software_blink(struct led_classdev *led_cdev,
 	}
 
 	set_bit(LED_BLINK_SW, &led_cdev->work_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mod_timer(&led_cdev->blink_timer, jiffies + 1);
 }
 
 
-<<<<<<< HEAD
-void led_blink_set(struct led_classdev *led_cdev,
-		   unsigned long *delay_on,
-		   unsigned long *delay_off)
-{
-	del_timer_sync(&led_cdev->blink_timer);
-
-	if (led_cdev->blink_set &&
-=======
 static void led_blink_setup(struct led_classdev *led_cdev,
 		     unsigned long *delay_on,
 		     unsigned long *delay_off)
 {
 	if (!test_bit(LED_BLINK_ONESHOT, &led_cdev->work_flags) &&
 	    led_cdev->blink_set &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !led_cdev->blink_set(led_cdev, delay_on, delay_off))
 		return;
 
@@ -274,17 +214,6 @@ static void led_blink_setup(struct led_classdev *led_cdev,
 
 	led_set_software_blink(led_cdev, *delay_on, *delay_off);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(led_blink_set);
-
-void led_brightness_set(struct led_classdev *led_cdev,
-			enum led_brightness brightness)
-{
-	led_stop_software_blink(led_cdev);
-	led_cdev->brightness_set(led_cdev, brightness);
-}
-EXPORT_SYMBOL(led_brightness_set);
-=======
 
 void led_init_core(struct led_classdev *led_cdev)
 {
@@ -619,4 +548,3 @@ enum led_default_state led_init_default_state_get(struct fwnode_handle *fwnode)
 	return LEDS_DEFSTATE_OFF;
 }
 EXPORT_SYMBOL_GPL(led_init_default_state_get);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

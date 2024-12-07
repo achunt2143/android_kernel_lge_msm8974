@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * lib/plist.c
  *
@@ -18,11 +15,6 @@
  * Simplifications of the original code by
  * Oleg Nesterov <oleg@tv-sign.ru>
  *
-<<<<<<< HEAD
- * Licensed under the FSF's GNU Public License v2 or later.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on simple lists (include/linux/list.h).
  *
  * This file contains the add / del functions which are considered to
@@ -32,14 +24,8 @@
 
 #include <linux/bug.h>
 #include <linux/plist.h>
-<<<<<<< HEAD
-#include <linux/spinlock.h>
-
-#ifdef CONFIG_DEBUG_PI_LIST
-=======
 
 #ifdef CONFIG_DEBUG_PLIST
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct plist_head test_head;
 
@@ -146,10 +132,6 @@ void plist_del(struct plist_node *node, struct plist_head *head)
 	plist_check_head(head);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_DEBUG_PI_LIST
-#include <linux/sched.h>
-=======
 /**
  * plist_requeue - Requeue @node at end of same-prio entries.
  *
@@ -193,7 +175,6 @@ void plist_requeue(struct plist_node *node, struct plist_head *head)
 #ifdef CONFIG_DEBUG_PLIST
 #include <linux/sched.h>
 #include <linux/sched/clock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 
@@ -228,8 +209,6 @@ static void __init plist_test_check(int nr_expect)
 	BUG_ON(prio_pos->prio_list.next != &first->prio_list);
 }
 
-<<<<<<< HEAD
-=======
 static void __init plist_test_requeue(struct plist_node *node)
 {
 	plist_requeue(node, &test_head);
@@ -238,17 +217,12 @@ static void __init plist_test_requeue(struct plist_node *node)
 		BUG_ON(node->prio == plist_next(node)->prio);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int  __init plist_test(void)
 {
 	int nr_expect = 0, i, loop;
 	unsigned int r = local_clock();
 
-<<<<<<< HEAD
-	printk(KERN_INFO "start plist test\n");
-=======
 	printk(KERN_DEBUG "start plist test\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	plist_head_init(&test_head);
 	for (i = 0; i < ARRAY_SIZE(test_node); i++)
 		plist_node_init(test_node + i, 0);
@@ -266,13 +240,10 @@ static int  __init plist_test(void)
 			nr_expect--;
 		}
 		plist_test_check(nr_expect);
-<<<<<<< HEAD
-=======
 		if (!plist_node_empty(test_node + i)) {
 			plist_test_requeue(test_node + i);
 			plist_test_check(nr_expect);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < ARRAY_SIZE(test_node); i++) {
@@ -283,11 +254,7 @@ static int  __init plist_test(void)
 		plist_test_check(nr_expect);
 	}
 
-<<<<<<< HEAD
-	printk(KERN_INFO "end plist test\n");
-=======
 	printk(KERN_DEBUG "end plist test\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

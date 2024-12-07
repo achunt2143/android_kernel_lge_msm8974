@@ -1,30 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Disassemble SPU instructions
 
    Copyright 2006 Free Software Foundation, Inc.
 
    This file is part of GDB, GAS, and the GNU binutils.
 
-<<<<<<< HEAD
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation, Inc.,
-   51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
-=======
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/string.h>
 #include "nonstdio.h"
@@ -110,11 +91,7 @@ print_insn_spu (unsigned long insn, unsigned long memaddr)
 
   if (index == 0)
     {
-<<<<<<< HEAD
-      printf(".long 0x%x", insn);
-=======
       printf(".long 0x%lx", insn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     }
   else
     {
@@ -146,29 +123,6 @@ print_insn_spu (unsigned long insn, unsigned long memaddr)
 	  switch (arg)
 	    {
 	    case A_T:
-<<<<<<< HEAD
-	      printf("$%d",
-				     DECODE_INSN_RT (insn));
-	      break;
-	    case A_A:
-	      printf("$%d",
-				     DECODE_INSN_RA (insn));
-	      break;
-	    case A_B:
-	      printf("$%d",
-				     DECODE_INSN_RB (insn));
-	      break;
-	    case A_C:
-	      printf("$%d",
-				     DECODE_INSN_RC (insn));
-	      break;
-	    case A_S:
-	      printf("$sp%d",
-				     DECODE_INSN_RA (insn));
-	      break;
-	    case A_H:
-	      printf("$ch%d",
-=======
 	      printf("$%lu",
 				     DECODE_INSN_RT (insn));
 	      break;
@@ -190,7 +144,6 @@ print_insn_spu (unsigned long insn, unsigned long memaddr)
 	      break;
 	    case A_H:
 	      printf("$ch%lu",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     DECODE_INSN_RA (insn));
 	      break;
 	    case A_P:
@@ -198,19 +151,11 @@ print_insn_spu (unsigned long insn, unsigned long memaddr)
 	      printf("(");
 	      break;
 	    case A_U7A:
-<<<<<<< HEAD
-	      printf("%d",
-				     173 - DECODE_INSN_U8 (insn));
-	      break;
-	    case A_U7B:
-	      printf("%d",
-=======
 	      printf("%lu",
 				     173 - DECODE_INSN_U8 (insn));
 	      break;
 	    case A_U7B:
 	      printf("%lu",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     155 - DECODE_INSN_U8 (insn));
 	      break;
 	    case A_S3:

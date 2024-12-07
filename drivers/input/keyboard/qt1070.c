@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Atmel AT42QT1070 QTouch Sensor Controller
  *
@@ -12,30 +9,9 @@
  *  Base on AT42QT2160 driver by:
  *  Raphael Derosso Pereira <raphaelpereira@gmail.com>
  *  Copyright (C) 2009
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
-#include <linux/init.h>
-=======
- */
-#include <linux/kernel.h>
-#include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/i2c.h>
 #include <linux/input.h>
 #include <linux/slab.h>
@@ -101,11 +77,7 @@ static int qt1070_write(struct i2c_client *client, u8 reg, u8 data)
 	return ret;
 }
 
-<<<<<<< HEAD
-static bool __devinit qt1070_identify(struct i2c_client *client)
-=======
 static bool qt1070_identify(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int id, ver;
 
@@ -154,12 +126,7 @@ static irqreturn_t qt1070_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit qt1070_probe(struct i2c_client *client,
-				const struct i2c_device_id *id)
-=======
 static int qt1070_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qt1070_data *data;
 	struct input_dev *input;
@@ -182,15 +149,6 @@ static int qt1070_probe(struct i2c_client *client)
 	if (!qt1070_identify(client))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	data = kzalloc(sizeof(struct qt1070_data), GFP_KERNEL);
-	input = input_allocate_device();
-	if (!data || !input) {
-		dev_err(&client->dev, "insufficient memory\n");
-		err = -ENOMEM;
-		goto err_free_mem;
-	}
-=======
 	data = devm_kzalloc(&client->dev, sizeof(struct qt1070_data),
 			    GFP_KERNEL);
 	if (!data)
@@ -199,17 +157,12 @@ static int qt1070_probe(struct i2c_client *client)
 	input = devm_input_allocate_device(&client->dev);
 	if (!input)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->client = client;
 	data->input = input;
 	data->irq = client->irq;
 
 	input->name = "AT42QT1070 QTouch Sensor";
-<<<<<<< HEAD
-	input->dev.parent = &client->dev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input->id.bustype = BUS_I2C;
 
 	/* Add the keycode */
@@ -232,13 +185,6 @@ static int qt1070_probe(struct i2c_client *client)
 	qt1070_write(client, RESET, 1);
 	msleep(QT1070_RESET_TIME);
 
-<<<<<<< HEAD
-	err = request_threaded_irq(client->irq, NULL, qt1070_interrupt,
-		IRQF_TRIGGER_NONE, client->dev.driver->name, data);
-	if (err) {
-		dev_err(&client->dev, "fail to request irq\n");
-		goto err_free_mem;
-=======
 	err = devm_request_threaded_irq(&client->dev, client->irq,
 					NULL, qt1070_interrupt,
 					IRQF_TRIGGER_NONE | IRQF_ONESHOT,
@@ -246,18 +192,13 @@ static int qt1070_probe(struct i2c_client *client)
 	if (err) {
 		dev_err(&client->dev, "fail to request irq\n");
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Register the input device */
 	err = input_register_device(data->input);
 	if (err) {
 		dev_err(&client->dev, "Failed to register input device\n");
-<<<<<<< HEAD
-		goto err_free_irq;
-=======
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	i2c_set_clientdata(client, data);
@@ -266,26 +207,6 @@ static int qt1070_probe(struct i2c_client *client)
 	qt1070_read(client, DET_STATUS);
 
 	return 0;
-<<<<<<< HEAD
-
-err_free_irq:
-	free_irq(client->irq, data);
-err_free_mem:
-	input_free_device(input);
-	kfree(data);
-	return err;
-}
-
-static int __devexit qt1070_remove(struct i2c_client *client)
-{
-	struct qt1070_data *data = i2c_get_clientdata(client);
-
-	/* Release IRQ */
-	free_irq(client->irq, data);
-
-	input_unregister_device(data->input);
-	kfree(data);
-=======
 }
 
 static int qt1070_suspend(struct device *dev)
@@ -295,13 +216,10 @@ static int qt1070_suspend(struct device *dev)
 
 	if (device_may_wakeup(dev))
 		enable_irq_wake(data->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int qt1070_resume(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -315,23 +233,12 @@ static int qt1070_resume(struct device *dev)
 
 static DEFINE_SIMPLE_DEV_PM_OPS(qt1070_pm_ops, qt1070_suspend, qt1070_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id qt1070_id[] = {
 	{ "qt1070", 0 },
 	{ },
 };
 MODULE_DEVICE_TABLE(i2c, qt1070_id);
 
-<<<<<<< HEAD
-static struct i2c_driver qt1070_driver = {
-	.driver	= {
-		.name	= "qt1070",
-		.owner	= THIS_MODULE,
-	},
-	.id_table	= qt1070_id,
-	.probe		= qt1070_probe,
-	.remove		= __devexit_p(qt1070_remove),
-=======
 #ifdef CONFIG_OF
 static const struct of_device_id qt1070_of_match[] = {
 	{ .compatible = "qt1070", },
@@ -348,7 +255,6 @@ static struct i2c_driver qt1070_driver = {
 	},
 	.id_table	= qt1070_id,
 	.probe		= qt1070_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_i2c_driver(qt1070_driver);

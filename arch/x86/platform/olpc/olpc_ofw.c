@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/init.h>
-#include <asm/page.h>
-#include <asm/setup.h>
-#include <asm/io.h>
-#include <asm/pgtable.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 #include <linux/kernel.h>
 #include <linux/export.h>
@@ -18,7 +9,6 @@
 #include <asm/io.h>
 #include <asm/cpufeature.h>
 #include <asm/special_insns.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/olpc_ofw.h>
 
 /* address of OFW callback interface; will be NULL if OFW isn't found */

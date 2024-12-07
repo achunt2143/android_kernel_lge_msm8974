@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sleep.c - x86-specific ACPI sleep support.
  *
@@ -10,18 +7,6 @@
  */
 
 #include <linux/acpi.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-#include <linux/memblock.h>
-#include <linux/dmi.h>
-#include <linux/cpumask.h>
-#include <asm/segment.h>
-#include <asm/desc.h>
-#include <asm/pgtable.h>
-#include <asm/cacheflush.h>
-
-#include "realmode/wakeup.h"
-=======
 #include <linux/memblock.h>
 #include <linux/dmi.h>
 #include <linux/cpumask.h>
@@ -35,7 +20,6 @@
 
 #include <linux/ftrace.h>
 #include "../../realmode/rm/wakeup.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "sleep.h"
 
 unsigned long acpi_realmode_flags;
@@ -44,14 +28,6 @@ unsigned long acpi_realmode_flags;
 static char temp_stack[4096];
 #endif
 
-<<<<<<< HEAD
-asmlinkage void acpi_enter_s3(void)
-{
-	acpi_enter_sleep_state(3, wake_sleep_flags);
-}
-/**
- * acpi_suspend_lowlevel - save kernel state
-=======
 /**
  * acpi_get_wakeup_address - provide physical address for S3 wakeup
  *
@@ -76,28 +52,15 @@ asmlinkage acpi_status __visible x86_acpi_enter_sleep_state(u8 state)
 
 /**
  * x86_acpi_suspend_lowlevel - save kernel state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Create an identity mapped page table and copy the wakeup routine to
  * low memory.
  */
-<<<<<<< HEAD
-int acpi_suspend_lowlevel(void)
-{
-	struct wakeup_header *header;
-	/* address in low memory of the wakeup routine. */
-	char *acpi_realmode;
-
-	acpi_realmode = TRAMPOLINE_SYM(acpi_wakeup_code);
-
-	header = (struct wakeup_header *)(acpi_realmode + WAKEUP_HEADER_OFFSET);
-=======
 int x86_acpi_suspend_lowlevel(void)
 {
 	struct wakeup_header *header =
 		(struct wakeup_header *) __va(real_mode_header->wakeup_header);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (header->signature != WAKEUP_HEADER_SIGNATURE) {
 		printk(KERN_ERR "wakeup header does not match\n");
 		return -EINVAL;
@@ -105,43 +68,6 @@ int x86_acpi_suspend_lowlevel(void)
 
 	header->video_mode = saved_video_mode;
 
-<<<<<<< HEAD
-	header->wakeup_jmp_seg = acpi_wakeup_address >> 4;
-
-	/*
-	 * Set up the wakeup GDT.  We set these up as Big Real Mode,
-	 * that is, with limits set to 4 GB.  At least the Lenovo
-	 * Thinkpad X61 is known to need this for the video BIOS
-	 * initialization quirk to work; this is likely to also
-	 * be the case for other laptops or integrated video devices.
-	 */
-
-	/* GDT[0]: GDT self-pointer */
-	header->wakeup_gdt[0] =
-		(u64)(sizeof(header->wakeup_gdt) - 1) +
-		((u64)__pa(&header->wakeup_gdt) << 16);
-	/* GDT[1]: big real mode-like code segment */
-	header->wakeup_gdt[1] =
-		GDT_ENTRY(0x809b, acpi_wakeup_address, 0xfffff);
-	/* GDT[2]: big real mode-like data segment */
-	header->wakeup_gdt[2] =
-		GDT_ENTRY(0x8093, acpi_wakeup_address, 0xfffff);
-
-#ifndef CONFIG_64BIT
-	store_gdt((struct desc_ptr *)&header->pmode_gdt);
-
-	if (rdmsr_safe(MSR_EFER, &header->pmode_efer_low,
-		       &header->pmode_efer_high))
-		header->pmode_efer_low = header->pmode_efer_high = 0;
-#endif /* !CONFIG_64BIT */
-
-	header->pmode_cr0 = read_cr0();
-	header->pmode_cr4 = read_cr4_safe();
-	header->pmode_behavior = 0;
-	if (!rdmsr_safe(MSR_IA32_MISC_ENABLE,
-			&header->pmode_misc_en_low,
-			&header->pmode_misc_en_high))
-=======
 	header->pmode_behavior = 0;
 
 #ifndef CONFIG_64BIT
@@ -175,7 +101,6 @@ int x86_acpi_suspend_lowlevel(void)
 	    !wrmsr_safe(MSR_IA32_MISC_ENABLE,
 			header->pmode_misc_en_low,
 			header->pmode_misc_en_high))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		header->pmode_behavior |=
 			(1 << WAKEUP_BEHAVIOR_RESTORE_MISC_ENABLE);
 	header->realmode_flags = acpi_realmode_flags;
@@ -183,23 +108,6 @@ int x86_acpi_suspend_lowlevel(void)
 
 #ifndef CONFIG_64BIT
 	header->pmode_entry = (u32)&wakeup_pmode_return;
-<<<<<<< HEAD
-	header->pmode_cr3 = (u32)__pa(&initial_page_table);
-	saved_magic = 0x12345678;
-#else /* CONFIG_64BIT */
-	header->trampoline_segment = trampoline_address() >> 4;
-#ifdef CONFIG_SMP
-	stack_start = (unsigned long)temp_stack + sizeof(temp_stack);
-	early_gdt_descr.address =
-			(unsigned long)get_cpu_gdt_table(smp_processor_id());
-	initial_gs = per_cpu_offset(smp_processor_id());
-#endif
-	initial_code = (unsigned long)wakeup_long64;
-       saved_magic = 0x123456789abcdef0L;
-#endif /* CONFIG_64BIT */
-
-	do_suspend_lowlevel();
-=======
 	header->pmode_cr3 = (u32)__pa_symbol(initial_page_table);
 	saved_magic = 0x12345678;
 #else /* CONFIG_64BIT */
@@ -239,7 +147,6 @@ int x86_acpi_suspend_lowlevel(void)
 	pause_graph_tracing();
 	do_suspend_lowlevel();
 	unpause_graph_tracing();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -253,15 +160,6 @@ static int __init acpi_sleep_setup(char *str)
 		if (strncmp(str, "s3_beep", 7) == 0)
 			acpi_realmode_flags |= 4;
 #ifdef CONFIG_HIBERNATION
-<<<<<<< HEAD
-		if (strncmp(str, "s4_nohwsig", 10) == 0)
-			acpi_no_s4_hw_signature();
-#endif
-		if (strncmp(str, "nonvs", 5) == 0)
-			acpi_nvs_nosave();
-		if (strncmp(str, "old_ordering", 12) == 0)
-			acpi_old_suspend_ordering();
-=======
 		if (strncmp(str, "s4_hwsig", 8) == 0)
 			acpi_check_s4_hw_signature = 1;
 		if (strncmp(str, "s4_nohwsig", 10) == 0)
@@ -275,7 +173,6 @@ static int __init acpi_sleep_setup(char *str)
 			acpi_old_suspend_ordering();
 		if (strncmp(str, "nobl", 4) == 0)
 			acpi_sleep_no_blacklist();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		str = strchr(str, ',');
 		if (str != NULL)
 			str += strspn(str, ", \t");
@@ -284,8 +181,6 @@ static int __init acpi_sleep_setup(char *str)
 }
 
 __setup("acpi_sleep=", acpi_sleep_setup);
-<<<<<<< HEAD
-=======
 
 #if defined(CONFIG_HIBERNATION) && defined(CONFIG_HYPERVISOR_GUEST)
 static int __init init_s4_sigcheck(void)
@@ -304,4 +199,3 @@ static int __init init_s4_sigcheck(void)
 /* This must happen before acpi_init() which is a subsys initcall */
 arch_initcall(init_s4_sigcheck);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

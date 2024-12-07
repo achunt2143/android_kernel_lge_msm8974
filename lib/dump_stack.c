@@ -1,23 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Provide a default dump_stack() function for architectures
  * which don't implement their own.
  */
 
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/export.h>
-
-void dump_stack(void)
-{
-	printk(KERN_NOTICE
-		"This architecture does not implement dump_stack()\n");
-}
-
-=======
 #include <linux/buildid.h>
 #include <linux/export.h>
 #include <linux/sched.h>
@@ -135,5 +122,4 @@ asmlinkage __visible void dump_stack(void)
 {
 	dump_stack_lvl(KERN_DEFAULT);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(dump_stack);

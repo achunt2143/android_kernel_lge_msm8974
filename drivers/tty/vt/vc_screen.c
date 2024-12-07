@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-/*
- * Provide access to virtual console memory.
- * /dev/vcs0: the screen as it is being viewed right now (possibly scrolled)
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Provide access to virtual console memory.
  * /dev/vcs: the screen as it is being viewed right now (possibly scrolled)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * /dev/vcsN: the screen of /dev/ttyN (1 <= N <= 63)
  *            [minor: N]
  *
@@ -16,15 +10,12 @@
  *	Attribute/character pair is in native endianity.
  *            [minor: N+128]
  *
-<<<<<<< HEAD
-=======
  * /dev/vcsuN: similar to /dev/vcsaN but using 4-byte unicode values
  *	instead of 1-byte screen glyph values.
  *            [minor: N+64]
  *
  * /dev/vcsuaN: same idea as /dev/vcsaN for unicode (not yet implemented).
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This replaces screendump and part of selection, so that the system
  * administrator can control access using file system permissions.
  *
@@ -55,23 +46,6 @@
 #include <linux/slab.h>
 #include <linux/notifier.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/byteorder.h>
-#include <asm/unaligned.h>
-
-#undef attr
-#undef org
-#undef addr
-#define HEADER_SIZE	4
-
-#define CON_BUF_SIZE (CONFIG_BASE_SMALL ? 256 : PAGE_SIZE)
-
-struct vcs_poll_data {
-	struct notifier_block notifier;
-	unsigned int cons_num;
-	bool seen_last_update;
-=======
 #include <linux/uaccess.h>
 #include <asm/byteorder.h>
 #include <asm/unaligned.h>
@@ -103,7 +77,6 @@ struct vcs_poll_data {
 	struct notifier_block notifier;
 	unsigned int cons_num;
 	int event;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_queue_head_t waitq;
 	struct fasync_struct *fasync;
 };
@@ -116,11 +89,6 @@ vcs_notifier(struct notifier_block *nb, unsigned long code, void *_param)
 	struct vcs_poll_data *poll =
 		container_of(nb, struct vcs_poll_data, notifier);
 	int currcons = poll->cons_num;
-<<<<<<< HEAD
-
-	if (code != VT_UPDATE)
-		return NOTIFY_DONE;
-=======
 	int fa_band;
 
 	switch (code) {
@@ -133,7 +101,6 @@ vcs_notifier(struct notifier_block *nb, unsigned long code, void *_param)
 	default:
 		return NOTIFY_DONE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (currcons == 0)
 		currcons = fg_console;
@@ -142,15 +109,9 @@ vcs_notifier(struct notifier_block *nb, unsigned long code, void *_param)
 	if (currcons != vc->vc_num)
 		return NOTIFY_DONE;
 
-<<<<<<< HEAD
-	poll->seen_last_update = false;
-	wake_up_interruptible(&poll->waitq);
-	kill_fasync(&poll->fasync, SIGIO, POLL_IN);
-=======
 	poll->event = code;
 	wake_up_interruptible(&poll->waitq);
 	kill_fasync(&poll->fasync, SIGIO, fa_band);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NOTIFY_OK;
 }
 
@@ -172,11 +133,6 @@ vcs_poll_data_get(struct file *file)
 	poll = kzalloc(sizeof(*poll), GFP_KERNEL);
 	if (!poll)
 		return NULL;
-<<<<<<< HEAD
-	poll->cons_num = iminor(file->f_path.dentry->d_inode) & 127;
-	init_waitqueue_head(&poll->waitq);
-	poll->notifier.notifier_call = vcs_notifier;
-=======
 	poll->cons_num = console(file_inode(file));
 	init_waitqueue_head(&poll->waitq);
 	poll->notifier.notifier_call = vcs_notifier;
@@ -189,7 +145,6 @@ vcs_poll_data_get(struct file *file)
 	 */
 	poll->event = VT_UPDATE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (register_vt_notifier(&poll->notifier) != 0) {
 		kfree(poll);
 		return NULL;
@@ -218,16 +173,6 @@ vcs_poll_data_get(struct file *file)
 	return poll;
 }
 
-<<<<<<< HEAD
-/*
- * Returns VC for inode.
- * Must be called with console_lock.
- */
-static struct vc_data*
-vcs_vc(struct inode *inode, int *viewed)
-{
-	unsigned int currcons = iminor(inode) & 127;
-=======
 /**
  * vcs_vc - return VC for @inode
  * @inode: inode for which to return a VC
@@ -238,53 +183,21 @@ vcs_vc(struct inode *inode, int *viewed)
 static struct vc_data *vcs_vc(struct inode *inode, bool *viewed)
 {
 	unsigned int currcons = console(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WARN_CONSOLE_UNLOCKED();
 
 	if (currcons == 0) {
 		currcons = fg_console;
 		if (viewed)
-<<<<<<< HEAD
-			*viewed = 1;
-	} else {
-		currcons--;
-		if (viewed)
-			*viewed = 0;
-=======
 			*viewed = true;
 	} else {
 		currcons--;
 		if (viewed)
 			*viewed = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return vc_cons[currcons].d;
 }
 
-<<<<<<< HEAD
-/*
- * Returns size for VC carried by inode.
- * Must be called with console_lock.
- */
-static int
-vcs_size(struct inode *inode)
-{
-	int size;
-	int minor = iminor(inode);
-	struct vc_data *vc;
-
-	WARN_CONSOLE_UNLOCKED();
-
-	vc = vcs_vc(inode, NULL);
-	if (!vc)
-		return -ENXIO;
-
-	size = vc->vc_rows * vc->vc_cols;
-
-	if (minor & 128)
-		size = 2*size + HEADER_SIZE;
-=======
 /**
  * vcs_size - return size for a VC in @vc
  * @vc: which VC
@@ -309,39 +222,11 @@ static int vcs_size(const struct vc_data *vc, bool attr, bool unicode)
 	} else if (unicode)
 		size *= 4;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return size;
 }
 
 static loff_t vcs_lseek(struct file *file, loff_t offset, int orig)
 {
-<<<<<<< HEAD
-	int size;
-
-	console_lock();
-	size = vcs_size(file->f_path.dentry->d_inode);
-	console_unlock();
-	if (size < 0)
-		return size;
-	switch (orig) {
-		default:
-			return -EINVAL;
-		case 2:
-			offset += size;
-			break;
-		case 1:
-			offset += file->f_pos;
-		case 0:
-			break;
-	}
-	if (offset < 0 || offset > size) {
-		return -EINVAL;
-	}
-	file->f_pos = offset;
-	return file->f_pos;
-}
-
-=======
 	struct inode *inode = file_inode(file);
 	struct vc_data *vc;
 	int size;
@@ -475,23 +360,10 @@ static unsigned int vcs_read_buf(const struct vc_data *vc, char *con_buf,
 
 	return filled;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t
 vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 {
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-	unsigned int currcons = iminor(inode);
-	struct vc_data *vc;
-	struct vcs_poll_data *poll;
-	long pos;
-	long attr, read;
-	int col, maxcol, viewed;
-	unsigned short *org = NULL;
-	ssize_t ret;
-	char *con_buf;
-=======
 	struct inode *inode = file_inode(file);
 	struct vc_data *vc;
 	struct vcs_poll_data *poll;
@@ -500,7 +372,6 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 	char *con_buf;
 	loff_t pos;
 	bool viewed, attr, uni_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	con_buf = (char *) __get_free_page(GFP_KERNEL);
 	if (!con_buf)
@@ -513,32 +384,12 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 	 */
 	console_lock();
 
-<<<<<<< HEAD
-	attr = (currcons & 128);
-	ret = -ENXIO;
-	vc = vcs_vc(inode, &viewed);
-	if (!vc)
-		goto unlock_out;
-=======
 	uni_mode = use_unicode(inode);
 	attr = use_attributes(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = -EINVAL;
 	if (pos < 0)
 		goto unlock_out;
-<<<<<<< HEAD
-	poll = file->private_data;
-	if (count && poll)
-		poll->seen_last_update = true;
-	read = 0;
-	ret = 0;
-	while (count) {
-		char *con_buf0, *con_buf_start;
-		long this_round, size;
-		ssize_t orig_count;
-		long p = pos;
-=======
 	/* we enforce 32-bit alignment for pos and count in unicode mode */
 	if (uni_mode && (pos | count) & 3)
 		goto unlock_out;
@@ -557,25 +408,15 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 			ret = -ENXIO;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Check whether we are above size each round,
 		 * as copy_to_user at the end of this loop
 		 * could sleep.
 		 */
-<<<<<<< HEAD
-		size = vcs_size(inode);
-		if (size < 0) {
-			if (read)
-				break;
-			ret = size;
-			goto unlock_out;
-=======
 		size = vcs_size(vc, attr, uni_mode);
 		if (size < 0) {
 			ret = size;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (pos >= size)
 			break;
@@ -591,84 +432,6 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 		 * attempt to move it to userspace.
 		 */
 
-<<<<<<< HEAD
-		con_buf_start = con_buf0 = con_buf;
-		orig_count = this_round;
-		maxcol = vc->vc_cols;
-		if (!attr) {
-			org = screen_pos(vc, p, viewed);
-			col = p % maxcol;
-			p += maxcol - col;
-			while (this_round-- > 0) {
-				*con_buf0++ = (vcs_scr_readw(vc, org++) & 0xff);
-				if (++col == maxcol) {
-					org = screen_pos(vc, p, viewed);
-					col = 0;
-					p += maxcol;
-				}
-			}
-		} else {
-			if (p < HEADER_SIZE) {
-				size_t tmp_count;
-
-				con_buf0[0] = (char)vc->vc_rows;
-				con_buf0[1] = (char)vc->vc_cols;
-				getconsxy(vc, con_buf0 + 2);
-
-				con_buf_start += p;
-				this_round += p;
-				if (this_round > CON_BUF_SIZE) {
-					this_round = CON_BUF_SIZE;
-					orig_count = this_round - p;
-				}
-
-				tmp_count = HEADER_SIZE;
-				if (tmp_count > this_round)
-					tmp_count = this_round;
-
-				/* Advance state pointers and move on. */
-				this_round -= tmp_count;
-				p = HEADER_SIZE;
-				con_buf0 = con_buf + HEADER_SIZE;
-				/* If this_round >= 0, then p is even... */
-			} else if (p & 1) {
-				/* Skip first byte for output if start address is odd
-				 * Update region sizes up/down depending on free
-				 * space in buffer.
-				 */
-				con_buf_start++;
-				if (this_round < CON_BUF_SIZE)
-					this_round++;
-				else
-					orig_count--;
-			}
-			if (this_round > 0) {
-				unsigned short *tmp_buf = (unsigned short *)con_buf0;
-
-				p -= HEADER_SIZE;
-				p /= 2;
-				col = p % maxcol;
-
-				org = screen_pos(vc, p, viewed);
-				p += maxcol - col;
-
-				/* Buffer has even length, so we can always copy
-				 * character + attribute. We do not copy last byte
-				 * to userspace if this_round is odd.
-				 */
-				this_round = (this_round + 1) >> 1;
-
-				while (this_round) {
-					*tmp_buf++ = vcs_scr_readw(vc, org++);
-					this_round --;
-					if (++col == maxcol) {
-						org = screen_pos(vc, p, viewed);
-						col = 0;
-						p += maxcol;
-					}
-				}
-			}
-=======
 		if (uni_mode) {
 			ret = vcs_read_buf_uni(vc, con_buf, pos, this_round,
 					viewed);
@@ -680,7 +443,6 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 		} else {
 			this_round = vcs_read_buf(vc, con_buf, pos, this_round,
 					viewed, &skip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Finally, release the console semaphore while we push
@@ -691,20 +453,6 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 		 */
 
 		console_unlock();
-<<<<<<< HEAD
-		ret = copy_to_user(buf, con_buf_start, orig_count);
-		console_lock();
-
-		if (ret) {
-			read += (orig_count - ret);
-			ret = -EFAULT;
-			break;
-		}
-		buf += orig_count;
-		pos += orig_count;
-		read += orig_count;
-		count -= orig_count;
-=======
 		ret = copy_to_user(buf, con_buf + skip, this_round);
 		console_lock();
 
@@ -717,7 +465,6 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 		pos += this_round;
 		read += this_round;
 		count -= this_round;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	*ppos += read;
 	if (read)
@@ -728,21 +475,6 @@ unlock_out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static ssize_t
-vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
-{
-	struct inode *inode = file->f_path.dentry->d_inode;
-	unsigned int currcons = iminor(inode);
-	struct vc_data *vc;
-	long pos;
-	long attr, size, written;
-	char *con_buf0;
-	int col, maxcol, viewed;
-	u16 *org0 = NULL, *org = NULL;
-	size_t ret;
-	char *con_buf;
-=======
 static u16 *vcs_write_buf_noattr(struct vc_data *vc, const char *con_buf,
 		unsigned int pos, unsigned int count, bool viewed, u16 **org0)
 {
@@ -869,7 +601,6 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 
 	if (use_unicode(inode))
 		return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	con_buf = (char *) __get_free_page(GFP_KERNEL);
 	if (!con_buf)
@@ -882,25 +613,17 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 	 */
 	console_lock();
 
-<<<<<<< HEAD
-	attr = (currcons & 128);
-=======
 	attr = use_attributes(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = -ENXIO;
 	vc = vcs_vc(inode, &viewed);
 	if (!vc)
 		goto unlock_out;
 
-<<<<<<< HEAD
-	size = vcs_size(inode);
-=======
 	size = vcs_size(vc, attr, false);
 	if (size < 0) {
 		ret = size;
 		goto unlock_out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = -EINVAL;
 	if (pos < 0 || pos > size)
 		goto unlock_out;
@@ -908,13 +631,7 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 		count = size - pos;
 	written = 0;
 	while (count) {
-<<<<<<< HEAD
-		long this_round = count;
-		size_t orig_count;
-		long p;
-=======
 		unsigned int this_round = count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (this_round > CON_BUF_SIZE)
 			this_round = CON_BUF_SIZE;
@@ -939,13 +656,6 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 			}
 		}
 
-<<<<<<< HEAD
-		/* The vcs_size might have changed while we slept to grab
-		 * the user buffer, so recheck.
-		 * Return data written up to now on failure.
-		 */
-		size = vcs_size(inode);
-=======
 		/* The vc might have been freed or vcs_size might have changed
 		 * while we slept to grab the user buffer, so recheck.
 		 * Return data written up to now on failure.
@@ -958,7 +668,6 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 			goto unlock_out;
 		}
 		size = vcs_size(vc, attr, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (size < 0) {
 			if (written)
 				break;
@@ -974,97 +683,6 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 		 * under the lock using the local kernel buffer.
 		 */
 
-<<<<<<< HEAD
-		con_buf0 = con_buf;
-		orig_count = this_round;
-		maxcol = vc->vc_cols;
-		p = pos;
-		if (!attr) {
-			org0 = org = screen_pos(vc, p, viewed);
-			col = p % maxcol;
-			p += maxcol - col;
-
-			while (this_round > 0) {
-				unsigned char c = *con_buf0++;
-
-				this_round--;
-				vcs_scr_writew(vc,
-					       (vcs_scr_readw(vc, org) & 0xff00) | c, org);
-				org++;
-				if (++col == maxcol) {
-					org = screen_pos(vc, p, viewed);
-					col = 0;
-					p += maxcol;
-				}
-			}
-		} else {
-			if (p < HEADER_SIZE) {
-				char header[HEADER_SIZE];
-
-				getconsxy(vc, header + 2);
-				while (p < HEADER_SIZE && this_round > 0) {
-					this_round--;
-					header[p++] = *con_buf0++;
-				}
-				if (!viewed)
-					putconsxy(vc, header + 2);
-			}
-			p -= HEADER_SIZE;
-			col = (p/2) % maxcol;
-			if (this_round > 0) {
-				org0 = org = screen_pos(vc, p/2, viewed);
-				if ((p & 1) && this_round > 0) {
-					char c;
-
-					this_round--;
-					c = *con_buf0++;
-#ifdef __BIG_ENDIAN
-					vcs_scr_writew(vc, c |
-					     (vcs_scr_readw(vc, org) & 0xff00), org);
-#else
-					vcs_scr_writew(vc, (c << 8) |
-					     (vcs_scr_readw(vc, org) & 0xff), org);
-#endif
-					org++;
-					p++;
-					if (++col == maxcol) {
-						org = screen_pos(vc, p/2, viewed);
-						col = 0;
-					}
-				}
-				p /= 2;
-				p += maxcol - col;
-			}
-			while (this_round > 1) {
-				unsigned short w;
-
-				w = get_unaligned(((unsigned short *)con_buf0));
-				vcs_scr_writew(vc, w, org++);
-				con_buf0 += 2;
-				this_round -= 2;
-				if (++col == maxcol) {
-					org = screen_pos(vc, p, viewed);
-					col = 0;
-					p += maxcol;
-				}
-			}
-			if (this_round > 0) {
-				unsigned char c;
-
-				c = *con_buf0++;
-#ifdef __BIG_ENDIAN
-				vcs_scr_writew(vc, (vcs_scr_readw(vc, org) & 0xff) | (c << 8), org);
-#else
-				vcs_scr_writew(vc, (vcs_scr_readw(vc, org) & 0xff00) | c, org);
-#endif
-			}
-		}
-		count -= orig_count;
-		written += orig_count;
-		buf += orig_count;
-		pos += orig_count;
-		if (org0)
-=======
 		if (attr)
 			org = vcs_write_buf(vc, con_buf, pos, this_round,
 					viewed, &org0);
@@ -1077,7 +695,6 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 		buf += this_round;
 		pos += this_round;
 		if (org)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			update_region(vc, (unsigned long)(org0), org - org0);
 	}
 	*ppos += written;
@@ -1091,18 +708,6 @@ unlock_out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static unsigned int
-vcs_poll(struct file *file, poll_table *wait)
-{
-	struct vcs_poll_data *poll = vcs_poll_data_get(file);
-	int ret = DEFAULT_POLLMASK|POLLERR|POLLPRI;
-
-	if (poll) {
-		poll_wait(file, &poll->waitq, wait);
-		if (poll->seen_last_update)
-			ret = DEFAULT_POLLMASK;
-=======
 static __poll_t
 vcs_poll(struct file *file, poll_table *wait)
 {
@@ -1122,7 +727,6 @@ vcs_poll(struct file *file, poll_table *wait)
 			ret = DEFAULT_POLLMASK;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
@@ -1147,11 +751,6 @@ vcs_fasync(int fd, struct file *file, int on)
 static int
 vcs_open(struct inode *inode, struct file *filp)
 {
-<<<<<<< HEAD
-	unsigned int currcons = iminor(inode) & 127;
-	int ret = 0;
-	
-=======
 	unsigned int currcons = console(inode);
 	bool attr = use_attributes(inode);
 	bool uni_mode = use_unicode(inode);
@@ -1161,7 +760,6 @@ vcs_open(struct inode *inode, struct file *filp)
 	if (attr && uni_mode)
 		return -EOPNOTSUPP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	console_lock();
 	if(currcons && !vc_cons_allocated(currcons-1))
 		ret = -ENXIO;
@@ -1188,16 +786,6 @@ static const struct file_operations vcs_fops = {
 	.release	= vcs_release,
 };
 
-<<<<<<< HEAD
-static struct class *vc_class;
-
-void vcs_make_sysfs(int index)
-{
-	device_create(vc_class, NULL, MKDEV(VCS_MAJOR, index + 1), NULL,
-		      "vcs%u", index + 1);
-	device_create(vc_class, NULL, MKDEV(VCS_MAJOR, index + 129), NULL,
-		      "vcsa%u", index + 1);
-=======
 static const struct class vc_class = {
 	.name = "vc",
 };
@@ -1207,19 +795,13 @@ void vcs_make_sysfs(int index)
 	device_create(&vc_class, NULL, MKDEV(VCS_MAJOR, index + 1), NULL, "vcs%u", index + 1);
 	device_create(&vc_class, NULL, MKDEV(VCS_MAJOR, index + 65), NULL, "vcsu%u", index + 1);
 	device_create(&vc_class, NULL, MKDEV(VCS_MAJOR, index + 129), NULL, "vcsa%u", index + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void vcs_remove_sysfs(int index)
 {
-<<<<<<< HEAD
-	device_destroy(vc_class, MKDEV(VCS_MAJOR, index + 1));
-	device_destroy(vc_class, MKDEV(VCS_MAJOR, index + 129));
-=======
 	device_destroy(&vc_class, MKDEV(VCS_MAJOR, index + 1));
 	device_destroy(&vc_class, MKDEV(VCS_MAJOR, index + 65));
 	device_destroy(&vc_class, MKDEV(VCS_MAJOR, index + 129));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __init vcs_init(void)
@@ -1228,19 +810,12 @@ int __init vcs_init(void)
 
 	if (register_chrdev(VCS_MAJOR, "vcs", &vcs_fops))
 		panic("unable to get major %d for vcs device", VCS_MAJOR);
-<<<<<<< HEAD
-	vc_class = class_create(THIS_MODULE, "vc");
-
-	device_create(vc_class, NULL, MKDEV(VCS_MAJOR, 0), NULL, "vcs");
-	device_create(vc_class, NULL, MKDEV(VCS_MAJOR, 128), NULL, "vcsa");
-=======
 	if (class_register(&vc_class))
 		panic("unable to create vc_class");
 
 	device_create(&vc_class, NULL, MKDEV(VCS_MAJOR, 0), NULL, "vcs");
 	device_create(&vc_class, NULL, MKDEV(VCS_MAJOR, 64), NULL, "vcsu");
 	device_create(&vc_class, NULL, MKDEV(VCS_MAJOR, 128), NULL, "vcsa");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < MIN_NR_CONSOLES; i++)
 		vcs_make_sysfs(i);
 	return 0;

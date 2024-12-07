@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Functions for registration of I/O interruption subclasses on s390.
  *
@@ -36,11 +33,7 @@ void isc_register(unsigned int isc)
 
 	spin_lock(&isc_ref_lock);
 	if (isc_refs[isc] == 0)
-<<<<<<< HEAD
-		ctl_set_bit(6, 31 - isc);
-=======
 		system_ctl_set_bit(6, 31 - isc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	isc_refs[isc]++;
 	spin_unlock(&isc_ref_lock);
 }
@@ -68,11 +61,7 @@ void isc_unregister(unsigned int isc)
 		goto out_unlock;
 	}
 	if (isc_refs[isc] == 1)
-<<<<<<< HEAD
-		ctl_clear_bit(6, 31 - isc);
-=======
 		system_ctl_clear_bit(6, 31 - isc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	isc_refs[isc]--;
 out_unlock:
 	spin_unlock(&isc_ref_lock);

@@ -1,35 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-1.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas USB driver
  *
  * Copyright (C) 2011 Renesas Solutions Corp.
  * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-<<<<<<< HEAD
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- */
-#include <linux/delay.h>
-#include <linux/slab.h>
-#include "./common.h"
-#include "./pipe.h"
-=======
  */
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include "common.h"
 #include "pipe.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *		macros
@@ -56,8 +35,6 @@ char *usbhs_pipe_name(struct usbhs_pipe *pipe)
 	return usbhsp_pipe_name[usbhs_pipe_type(pipe)];
 }
 
-<<<<<<< HEAD
-=======
 static struct renesas_usbhs_driver_pipe_config
 *usbhsp_get_pipe_config(struct usbhs_priv *priv, int pipe_num)
 {
@@ -67,7 +44,6 @@ static struct renesas_usbhs_driver_pipe_config
 	return &pipe_configs[pipe_num];
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *		DCPCTR/PIPEnCTR functions
  */
@@ -108,8 +84,6 @@ static void __usbhsp_pipe_xxx_set(struct usbhs_pipe *pipe,
 		usbhs_bset(priv, pipe_reg, mask, val);
 }
 
-<<<<<<< HEAD
-=======
 static u16 __usbhsp_pipe_xxx_get(struct usbhs_pipe *pipe,
 				 u16 dcp_reg, u16 pipe_reg)
 {
@@ -121,7 +95,6 @@ static u16 __usbhsp_pipe_xxx_get(struct usbhs_pipe *pipe,
 		return usbhs_read(priv, pipe_reg);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *		DCPCFG/PIPECFG functions
  */
@@ -130,8 +103,6 @@ static void usbhsp_pipe_cfg_set(struct usbhs_pipe *pipe, u16 mask, u16 val)
 	__usbhsp_pipe_xxx_set(pipe, DCPCFG, PIPECFG, mask, val);
 }
 
-<<<<<<< HEAD
-=======
 static u16 usbhsp_pipe_cfg_get(struct usbhs_pipe *pipe)
 {
 	return __usbhsp_pipe_xxx_get(pipe, DCPCFG, PIPECFG);
@@ -213,7 +184,6 @@ static void usbhsp_pipe_tre_set(struct usbhs_pipe *pipe, u16 mask, u16 val)
 	__usbhsp_pipe_xxx_set(pipe, 0, reg, mask, val);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *		PIPEBUF
  */
@@ -262,11 +232,7 @@ static int usbhsp_pipe_barrier(struct usbhs_pipe *pipe)
 {
 	struct usbhs_priv *priv = usbhs_pipe_to_priv(pipe);
 	int timeout = 1024;
-<<<<<<< HEAD
-	u16 val;
-=======
 	u16 mask = usbhs_mod_is_host(priv) ? (CSSTS | PID_MASK) : PID_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * make sure....
@@ -290,13 +256,7 @@ static int usbhsp_pipe_barrier(struct usbhs_pipe *pipe)
 	usbhs_pipe_disable(pipe);
 
 	do {
-<<<<<<< HEAD
-		val  = usbhsp_pipectrl_get(pipe);
-		val &= CSSTS | PID_MASK;
-		if (!val)
-=======
 		if (!(usbhsp_pipectrl_get(pipe) & mask))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 
 		udelay(10);
@@ -317,8 +277,6 @@ int usbhs_pipe_is_accessible(struct usbhs_pipe *pipe)
 	return -EBUSY;
 }
 
-<<<<<<< HEAD
-=======
 bool usbhs_pipe_contains_transmittable_data(struct usbhs_pipe *pipe)
 {
 	u16 val;
@@ -334,7 +292,6 @@ bool usbhs_pipe_contains_transmittable_data(struct usbhs_pipe *pipe)
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *		PID ctrl
  */
@@ -351,11 +308,7 @@ static void __usbhsp_pid_try_nak_if_stall(struct usbhs_pipe *pipe)
 	switch (pid) {
 	case PID_STALL11:
 		usbhsp_pipectrl_set(pipe, PID_MASK, PID_STALL10);
-<<<<<<< HEAD
-		/* fall-through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PID_STALL10:
 		usbhsp_pipectrl_set(pipe, PID_MASK, PID_NAK);
 	}
@@ -416,26 +369,6 @@ int usbhs_pipe_is_stall(struct usbhs_pipe *pipe)
 	return (int)(pid == PID_STALL10 || pid == PID_STALL11);
 }
 
-<<<<<<< HEAD
-/*
- *		pipe setup
- */
-static int usbhsp_possible_double_buffer(struct usbhs_pipe *pipe)
-{
-	/*
-	 * only ISO / BULK pipe can use double buffer
-	 */
-	if (usbhs_pipe_type_is(pipe, USB_ENDPOINT_XFER_BULK) ||
-	    usbhs_pipe_type_is(pipe, USB_ENDPOINT_XFER_ISOC))
-		return 1;
-
-	return 0;
-}
-
-static u16 usbhsp_setup_pipecfg(struct usbhs_pipe *pipe,
-				int is_host,
-				int dir_in)
-=======
 void usbhs_pipe_set_trans_count_if_bulk(struct usbhs_pipe *pipe, int len)
 {
 	if (!usbhs_pipe_type_is(pipe, USB_ENDPOINT_XFER_BULK))
@@ -466,7 +399,6 @@ void usbhs_pipe_set_trans_count_if_bulk(struct usbhs_pipe *pipe, int len)
  */
 static int usbhsp_setup_pipecfg(struct usbhs_pipe *pipe, int is_host,
 				int dir_in, u16 *pipecfg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 type = 0;
 	u16 bfre = 0;
@@ -475,19 +407,11 @@ static int usbhsp_setup_pipecfg(struct usbhs_pipe *pipe, int is_host,
 	u16 dir = 0;
 	u16 epnum = 0;
 	u16 shtnak = 0;
-<<<<<<< HEAD
-	u16 type_array[] = {
-=======
 	static const u16 type_array[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		[USB_ENDPOINT_XFER_BULK] = TYPE_BULK,
 		[USB_ENDPOINT_XFER_INT]  = TYPE_INT,
 		[USB_ENDPOINT_XFER_ISOC] = TYPE_ISO,
 	};
-<<<<<<< HEAD
-	int is_double = usbhsp_possible_double_buffer(pipe);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (usbhs_pipe_is_dcp(pipe))
 		return -EINVAL;
@@ -509,14 +433,7 @@ static int usbhsp_setup_pipecfg(struct usbhs_pipe *pipe, int is_host,
 	    usbhs_pipe_type_is(pipe, USB_ENDPOINT_XFER_BULK))
 		bfre = 0; /* FIXME */
 
-<<<<<<< HEAD
-	/* DBLB */
-	if (usbhs_pipe_type_is(pipe, USB_ENDPOINT_XFER_ISOC) ||
-	    usbhs_pipe_type_is(pipe, USB_ENDPOINT_XFER_BULK))
-		dblb = (is_double) ? DBLB : 0;
-=======
 	/* DBLB: see usbhs_pipe_config_update() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* CNTMD */
 	if (usbhs_pipe_type_is(pipe, USB_ENDPOINT_XFER_BULK))
@@ -539,16 +456,6 @@ static int usbhsp_setup_pipecfg(struct usbhs_pipe *pipe, int is_host,
 
 	/* EPNUM */
 	epnum = 0; /* see usbhs_pipe_config_update() */
-<<<<<<< HEAD
-
-	return	type	|
-		bfre	|
-		dblb	|
-		cntmd	|
-		dir	|
-		shtnak	|
-		epnum;
-=======
 	*pipecfg = type		|
 		   bfre		|
 		   dblb		|
@@ -557,21 +464,11 @@ static int usbhsp_setup_pipecfg(struct usbhs_pipe *pipe, int is_host,
 		   shtnak	|
 		   epnum;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u16 usbhsp_setup_pipebuff(struct usbhs_pipe *pipe)
 {
 	struct usbhs_priv *priv = usbhs_pipe_to_priv(pipe);
-<<<<<<< HEAD
-	struct usbhs_pipe_info *info = usbhs_priv_to_pipeinfo(priv);
-	struct device *dev = usbhs_priv_to_dev(priv);
-	int pipe_num = usbhs_pipe_number(pipe);
-	int is_double = usbhsp_possible_double_buffer(pipe);
-	u16 buff_size;
-	u16 bufnmb;
-	u16 bufnmb_cnt;
-=======
 	struct device *dev = usbhs_priv_to_dev(priv);
 	int pipe_num = usbhs_pipe_number(pipe);
 	u16 buff_size;
@@ -579,7 +476,6 @@ static u16 usbhsp_setup_pipebuff(struct usbhs_pipe *pipe)
 	u16 bufnmb_cnt;
 	struct renesas_usbhs_driver_pipe_config *pipe_config =
 					usbhsp_get_pipe_config(priv, pipe_num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * PIPEBUF
@@ -589,65 +485,13 @@ static u16 usbhsp_setup_pipebuff(struct usbhs_pipe *pipe)
 	 *  - "Features"  - "Pipe configuration"
 	 *  - "Operation" - "FIFO Buffer Memory"
 	 *  - "Operation" - "Pipe Control"
-<<<<<<< HEAD
-	 *
-	 * ex) if pipe6 - pipe9 are USB_ENDPOINT_XFER_INT (SH7724)
-	 *
-	 * BUFNMB:	PIPE
-	 * 0:		pipe0 (DCP 256byte)
-	 * 1:		-
-	 * 2:		-
-	 * 3:		-
-	 * 4:		pipe6 (INT 64byte)
-	 * 5:		pipe7 (INT 64byte)
-	 * 6:		pipe8 (INT 64byte)
-	 * 7:		pipe9 (INT 64byte)
-	 * 8 - xx:	free (for BULK, ISOC)
-	 */
-
-	/*
-	 * FIXME
-	 *
-	 * it doesn't have good buffer allocator
-	 *
-	 * DCP : 256 byte
-	 * BULK: 512 byte
-	 * INT :  64 byte
-	 * ISOC: 512 byte
-	 */
-	if (usbhs_pipe_type_is(pipe, USB_ENDPOINT_XFER_CONTROL))
-		buff_size = 256;
-	else if (usbhs_pipe_type_is(pipe, USB_ENDPOINT_XFER_INT))
-		buff_size = 64;
-	else
-		buff_size = 512;
-=======
 	 */
 	buff_size = pipe_config->bufsize;
 	bufnmb = pipe_config->bufnum;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* change buff_size to register value */
 	bufnmb_cnt = (buff_size / 64) - 1;
 
-<<<<<<< HEAD
-	/* BUFNMB has been reserved for INT pipe
-	 * see above */
-	if (usbhs_pipe_type_is(pipe, USB_ENDPOINT_XFER_INT)) {
-		bufnmb = pipe_num - 2;
-	} else {
-		bufnmb = info->bufnmb_last;
-		info->bufnmb_last += bufnmb_cnt + 1;
-
-		/*
-		 * double buffer
-		 */
-		if (is_double)
-			info->bufnmb_last += bufnmb_cnt + 1;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(dev, "pipe : %d : buff_size 0x%x: bufnmb 0x%x\n",
 		pipe_num, buff_size, bufnmb);
 
@@ -658,10 +502,6 @@ static u16 usbhsp_setup_pipebuff(struct usbhs_pipe *pipe)
 void usbhs_pipe_config_update(struct usbhs_pipe *pipe, u16 devsel,
 			      u16 epnum, u16 maxp)
 {
-<<<<<<< HEAD
-	if (devsel > 0xA) {
-		struct usbhs_priv *priv = usbhs_pipe_to_priv(pipe);
-=======
 	struct usbhs_priv *priv = usbhs_pipe_to_priv(pipe);
 	int pipe_num = usbhs_pipe_number(pipe);
 	struct renesas_usbhs_driver_pipe_config *pipe_config =
@@ -669,7 +509,6 @@ void usbhs_pipe_config_update(struct usbhs_pipe *pipe, u16 devsel,
 	u16 dblb = pipe_config->double_buf ? DBLB : 0;
 
 	if (devsel > 0xA) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct device *dev = usbhs_priv_to_dev(priv);
 
 		dev_err(dev, "devsel error %d\n", devsel);
@@ -687,11 +526,7 @@ void usbhs_pipe_config_update(struct usbhs_pipe *pipe, u16 devsel,
 			     maxp);
 
 	if (!usbhs_pipe_is_dcp(pipe))
-<<<<<<< HEAD
-		usbhsp_pipe_cfg_set(pipe,  0x000F, epnum);
-=======
 		usbhsp_pipe_cfg_set(pipe,  0x000F | DBLB, epnum | dblb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -717,8 +552,6 @@ int usbhs_pipe_is_dir_host(struct usbhs_pipe *pipe)
 	return usbhsp_flags_has(pipe, IS_DIR_HOST);
 }
 
-<<<<<<< HEAD
-=======
 int usbhs_pipe_is_running(struct usbhs_pipe *pipe)
 {
 	return usbhsp_flags_has(pipe, IS_RUNNING);
@@ -732,7 +565,6 @@ void usbhs_pipe_running(struct usbhs_pipe *pipe, int running)
 		usbhsp_flags_clr(pipe, IS_RUNNING);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void usbhs_pipe_data_sequence(struct usbhs_pipe *pipe, int sequence)
 {
 	u16 mask = (SQCLR | SQSET);
@@ -758,12 +590,6 @@ void usbhs_pipe_data_sequence(struct usbhs_pipe *pipe, int sequence)
 	usbhsp_pipectrl_set(pipe, mask, val);
 }
 
-<<<<<<< HEAD
-void usbhs_pipe_clear(struct usbhs_pipe *pipe)
-{
-	usbhsp_pipectrl_set(pipe, ACLRM, ACLRM);
-	usbhsp_pipectrl_set(pipe, ACLRM, 0);
-=======
 static int usbhs_pipe_get_data_sequence(struct usbhs_pipe *pipe)
 {
 	return !!(usbhsp_pipectrl_get(pipe) & SQMON);
@@ -804,7 +630,6 @@ void usbhs_pipe_config_change_bfre(struct usbhs_pipe *pipe, int enable)
 		return;
 
 	usbhs_pipe_clear_without_sequence(pipe, 1, enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct usbhs_pipe *usbhsp_get_pipe(struct usbhs_priv *priv, u32 type)
@@ -838,10 +663,6 @@ static struct usbhs_pipe *usbhsp_get_pipe(struct usbhs_priv *priv, u32 type)
 	return pipe;
 }
 
-<<<<<<< HEAD
-void usbhs_pipe_init(struct usbhs_priv *priv,
-		     int (*dma_map_ctrl)(struct usbhs_pkt *pkt, int map))
-=======
 static void usbhsp_put_pipe(struct usbhs_pipe *pipe)
 {
 	usbhsp_flags_init(pipe);
@@ -850,33 +671,12 @@ static void usbhsp_put_pipe(struct usbhs_pipe *pipe)
 void usbhs_pipe_init(struct usbhs_priv *priv,
 		     int (*dma_map_ctrl)(struct device *dma_dev,
 					 struct usbhs_pkt *pkt, int map))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbhs_pipe_info *info = usbhs_priv_to_pipeinfo(priv);
 	struct usbhs_pipe *pipe;
 	int i;
 
-<<<<<<< HEAD
-	/*
-	 * FIXME
-	 *
-	 * driver needs good allocator.
-	 *
-	 * find first free buffer area (BULK, ISOC)
-	 * (DCP, INT area is fixed)
-	 *
-	 * buffer number 0 - 3 have been reserved for DCP
-	 * see
-	 *	usbhsp_to_bufnmb
-	 */
-	info->bufnmb_last = 4;
 	usbhs_for_each_pipe_with_dcp(pipe, priv, i) {
-		if (usbhs_pipe_type_is(pipe, USB_ENDPOINT_XFER_INT))
-			info->bufnmb_last++;
-
-=======
-	usbhs_for_each_pipe_with_dcp(pipe, priv, i) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usbhsp_flags_init(pipe);
 		pipe->fifo = NULL;
 		pipe->mod_private = NULL;
@@ -917,24 +717,17 @@ struct usbhs_pipe *usbhs_pipe_malloc(struct usbhs_priv *priv,
 		return NULL;
 	}
 
-<<<<<<< HEAD
-	pipecfg  = usbhsp_setup_pipecfg(pipe, is_host, dir_in);
-=======
 	if (usbhsp_setup_pipecfg(pipe, is_host, dir_in, &pipecfg)) {
 		dev_err(dev, "can't setup pipe\n");
 		return NULL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pipebuf  = usbhsp_setup_pipebuff(pipe);
 
 	usbhsp_pipe_select(pipe);
 	usbhsp_pipe_cfg_set(pipe, 0xFFFF, pipecfg);
 	usbhsp_pipe_buf_set(pipe, 0xFFFF, pipebuf);
-<<<<<<< HEAD
-=======
 	usbhs_pipe_clear(pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usbhs_pipe_sequence_data0(pipe);
 
@@ -951,8 +744,6 @@ struct usbhs_pipe *usbhs_pipe_malloc(struct usbhs_priv *priv,
 	return pipe;
 }
 
-<<<<<<< HEAD
-=======
 void usbhs_pipe_free(struct usbhs_pipe *pipe)
 {
 	usbhsp_pipe_select(pipe);
@@ -960,7 +751,6 @@ void usbhs_pipe_free(struct usbhs_pipe *pipe)
 	usbhsp_put_pipe(pipe);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void usbhs_pipe_select_fifo(struct usbhs_pipe *pipe, struct usbhs_fifo *fifo)
 {
 	if (pipe->fifo)
@@ -1019,37 +809,21 @@ int usbhs_pipe_probe(struct usbhs_priv *priv)
 	struct usbhs_pipe_info *info = usbhs_priv_to_pipeinfo(priv);
 	struct usbhs_pipe *pipe;
 	struct device *dev = usbhs_priv_to_dev(priv);
-<<<<<<< HEAD
-	u32 *pipe_type = usbhs_get_dparam(priv, pipe_type);
-=======
 	struct renesas_usbhs_driver_pipe_config *pipe_configs =
 					usbhs_get_dparam(priv, pipe_configs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pipe_size = usbhs_get_dparam(priv, pipe_size);
 	int i;
 
 	/* This driver expects 1st pipe is DCP */
-<<<<<<< HEAD
-	if (pipe_type[0] != USB_ENDPOINT_XFER_CONTROL) {
-=======
 	if (pipe_configs[0].type != USB_ENDPOINT_XFER_CONTROL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(dev, "1st PIPE is not DCP\n");
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	info->pipe = kzalloc(sizeof(struct usbhs_pipe) * pipe_size, GFP_KERNEL);
-	if (!info->pipe) {
-		dev_err(dev, "Could not allocate pipe\n");
-		return -ENOMEM;
-	}
-=======
 	info->pipe = kcalloc(pipe_size, sizeof(struct usbhs_pipe),
 			     GFP_KERNEL);
 	if (!info->pipe)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info->size = pipe_size;
 
@@ -1060,17 +834,10 @@ int usbhs_pipe_probe(struct usbhs_priv *priv)
 		pipe->priv = priv;
 
 		usbhs_pipe_type(pipe) =
-<<<<<<< HEAD
-			pipe_type[i] & USB_ENDPOINT_XFERTYPE_MASK;
-
-		dev_dbg(dev, "pipe %x\t: %s\n",
-			i, usbhsp_pipe_name[pipe_type[i]]);
-=======
 			pipe_configs[i].type & USB_ENDPOINT_XFERTYPE_MASK;
 
 		dev_dbg(dev, "pipe %x\t: %s\n",
 			i, usbhsp_pipe_name[pipe_configs[i].type]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1995, 1996  Gero Kuhlmann <gero@gkminix.han.de>
  *
@@ -91,12 +88,6 @@
 #define NFS_ROOT		"/tftpboot/%s"
 
 /* Default NFSROOT mount options. */
-<<<<<<< HEAD
-#define NFS_DEF_OPTIONS		"vers=2,udp,rsize=4096,wsize=4096"
-
-/* Parameters passed from the kernel command line */
-static char nfs_root_parms[256] __initdata = "";
-=======
 #if defined(CONFIG_NFS_V2)
 #define NFS_DEF_OPTIONS		"vers=2,tcp,rsize=4096,wsize=4096"
 #elif defined(CONFIG_NFS_V3)
@@ -107,7 +98,6 @@ static char nfs_root_parms[256] __initdata = "";
 
 /* Parameters passed from the kernel command line */
 static char nfs_root_parms[NFS_MAXPATHLEN + 1] __initdata = "";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Text-based mount options passed to super.c */
 static char nfs_root_options[256] __initdata = NFS_DEF_OPTIONS;
@@ -149,11 +139,7 @@ static int __init nfs_root_setup(char *line)
 	ROOT_DEV = Root_NFS;
 
 	if (line[0] == '/' || line[0] == ',' || (line[0] >= '0' && line[0] <= '9')) {
-<<<<<<< HEAD
-		strlcpy(nfs_root_parms, line, sizeof(nfs_root_parms));
-=======
 		strscpy(nfs_root_parms, line, sizeof(nfs_root_parms));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		size_t n = strlen(line) + sizeof(NFS_ROOT) - 1;
 		if (n >= sizeof(nfs_root_parms))
@@ -178,11 +164,7 @@ __setup("nfsroot=", nfs_root_setup);
 static int __init root_nfs_copy(char *dest, const char *src,
 				     const size_t destlen)
 {
-<<<<<<< HEAD
-	if (strlcpy(dest, src, destlen) > destlen)
-=======
 	if (strscpy(dest, src, destlen) == -E2BIG)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	return 0;
 }
@@ -193,17 +175,10 @@ static int __init root_nfs_cat(char *dest, const char *src,
 	size_t len = strlen(dest);
 
 	if (len && dest[len - 1] != ',')
-<<<<<<< HEAD
-		if (strlcat(dest, ",", destlen) > destlen)
-			return -1;
-
-	if (strlcat(dest, src, destlen) > destlen)
-=======
 		if (strlcat(dest, ",", destlen) >= destlen)
 			return -1;
 
 	if (strlcat(dest, src, destlen) >= destlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	return 0;
 }
@@ -293,19 +268,11 @@ static int __init root_nfs_data(char *cmdline)
 	 */
 	len = snprintf(nfs_export_path, sizeof(nfs_export_path),
 				tmp, utsname()->nodename);
-<<<<<<< HEAD
-	if (len > (int)sizeof(nfs_export_path))
-		goto out_devnametoolong;
-	len = snprintf(nfs_root_device, sizeof(nfs_root_device),
-				"%pI4:%s", &servaddr, nfs_export_path);
-	if (len > (int)sizeof(nfs_root_device))
-=======
 	if (len >= (int)sizeof(nfs_export_path))
 		goto out_devnametoolong;
 	len = snprintf(nfs_root_device, sizeof(nfs_root_device),
 				"%pI4:%s", &servaddr, nfs_export_path);
 	if (len >= (int)sizeof(nfs_root_device))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_devnametoolong;
 
 	retval = 0;

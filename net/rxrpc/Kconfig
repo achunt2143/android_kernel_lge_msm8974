@@ -1,23 +1,14 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # RxRPC session sockets
 #
 
 config AF_RXRPC
 	tristate "RxRPC session sockets"
-<<<<<<< HEAD
-	depends on INET && EXPERIMENTAL
-	select CRYPTO
-	select KEYS
-=======
 	depends on INET
 	select CRYPTO
 	select KEYS
 	select NET_UDP_TUNNEL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y or M here to include support for RxRPC session sockets (just
 	  the transport part, not the presentation part: (un)marshalling is
@@ -28,26 +19,6 @@ config AF_RXRPC
 	  This module at the moment only supports client operations and is
 	  currently incomplete.
 
-<<<<<<< HEAD
-	  See Documentation/networking/rxrpc.txt.
-
-
-config AF_RXRPC_DEBUG
-	bool "RxRPC dynamic debugging"
-	depends on AF_RXRPC
-	help
-	  Say Y here to make runtime controllable debugging messages appear.
-
-	  See Documentation/networking/rxrpc.txt.
-
-
-config RXKAD
-	tristate "RxRPC Kerberos security"
-	depends on AF_RXRPC
-	select CRYPTO
-	select CRYPTO_MANAGER
-	select CRYPTO_BLKCIPHER
-=======
 	  See Documentation/networking/rxrpc.rst.
 
 if AF_RXRPC
@@ -88,16 +59,12 @@ config RXKAD
 	select CRYPTO
 	select CRYPTO_MANAGER
 	select CRYPTO_SKCIPHER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CRYPTO_PCBC
 	select CRYPTO_FCRYPT
 	help
 	  Provide kerberos 4 and AFS kaserver security handling for AF_RXRPC
 	  through the use of the key retention service.
 
-<<<<<<< HEAD
-	  See Documentation/networking/rxrpc.txt.
-=======
 	  See Documentation/networking/rxrpc.rst.
 
 config RXPERF
@@ -108,4 +75,3 @@ config RXPERF
 	  found in OpenAFS).
 
 endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

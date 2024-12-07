@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_QUOTAIO_V1_H
 #define _LINUX_QUOTAIO_V1_H
 
@@ -28,15 +25,10 @@ struct v1_disk_dqblk {
 	__u32 dqb_ihardlimit;	/* absolute limit on allocated inodes */
 	__u32 dqb_isoftlimit;	/* preferred inode limit */
 	__u32 dqb_curinodes;	/* current # allocated inodes */
-<<<<<<< HEAD
-	time_t dqb_btime;	/* time limit for excessive disk use */
-	time_t dqb_itime;	/* time limit for excessive inode use */
-=======
 
 	/* below fields differ in length on 32-bit vs 64-bit architectures */
 	unsigned long dqb_btime; /* time limit for excessive disk use */
 	unsigned long dqb_itime; /* time limit for excessive inode use */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define v1_dqoff(UID)      ((loff_t)((UID) * sizeof (struct v1_disk_dqblk)))

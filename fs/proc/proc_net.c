@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/proc/net.c
  *
@@ -11,12 +8,6 @@
  *
  *  proc net directory handling functions
  */
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/time.h>
 #include <linux/proc_fs.h>
@@ -24,52 +15,27 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/task.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/bitops.h>
 #include <linux/mount.h>
 #include <linux/nsproxy.h>
-<<<<<<< HEAD
-=======
 #include <linux/uidgid.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/net_namespace.h>
 #include <linux/seq_file.h>
 
 #include "internal.h"
 
-<<<<<<< HEAD
-=======
 static inline struct net *PDE_NET(struct proc_dir_entry *pde)
 {
 	return pde->parent->data;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct net *get_proc_net(const struct inode *inode)
 {
 	return maybe_get_net(PDE_NET(PDE(inode)));
 }
 
-<<<<<<< HEAD
-int seq_open_net(struct inode *ino, struct file *f,
-		 const struct seq_operations *ops, int size)
-{
-	struct net *net;
-	struct seq_net_private *p;
-
-	BUG_ON(size < sizeof(*p));
-
-	net = get_proc_net(ino);
-	if (net == NULL)
-		return -ENXIO;
-
-	p = __seq_open_private(f, ops, size);
-	if (p == NULL) {
-=======
 static int seq_open_net(struct inode *inode, struct file *file)
 {
 	unsigned int state_size = PDE(inode)->state_size;
@@ -87,56 +53,11 @@ static int seq_open_net(struct inode *inode, struct file *file)
 
 	p = __seq_open_private(file, PDE(inode)->seq_ops, state_size);
 	if (!p) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_net(net);
 		return -ENOMEM;
 	}
 #ifdef CONFIG_NET_NS
 	p->net = net;
-<<<<<<< HEAD
-#endif
-	return 0;
-}
-EXPORT_SYMBOL_GPL(seq_open_net);
-
-int single_open_net(struct inode *inode, struct file *file,
-		int (*show)(struct seq_file *, void *))
-{
-	int err;
-	struct net *net;
-
-	err = -ENXIO;
-	net = get_proc_net(inode);
-	if (net == NULL)
-		goto err_net;
-
-	err = single_open(file, show, net);
-	if (err < 0)
-		goto err_open;
-
-	return 0;
-
-err_open:
-	put_net(net);
-err_net:
-	return err;
-}
-EXPORT_SYMBOL_GPL(single_open_net);
-
-int seq_release_net(struct inode *ino, struct file *f)
-{
-	struct seq_file *seq;
-
-	seq = f->private_data;
-
-	put_net(seq_file_net(seq));
-	seq_release_private(ino, f);
-	return 0;
-}
-EXPORT_SYMBOL_GPL(seq_release_net);
-
-int single_release_net(struct inode *ino, struct file *f)
-=======
 	netns_tracker_alloc(net, &p->ns_tracker, GFP_KERNEL);
 #endif
 	return 0;
@@ -269,15 +190,11 @@ static int single_open_net(struct inode *inode, struct file *file)
 }
 
 static int single_release_net(struct inode *ino, struct file *f)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct seq_file *seq = f->private_data;
 	put_net(seq->private);
 	return single_release(ino, f);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(single_release_net);
-=======
 
 static const struct proc_ops proc_net_single_ops = {
 	.proc_open	= single_open_net,
@@ -346,7 +263,6 @@ struct proc_dir_entry *proc_create_net_single_write(const char *name, umode_t mo
 	return proc_register(parent, p);
 }
 EXPORT_SYMBOL_GPL(proc_create_net_single_write);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct net *get_proc_task_net(struct inode *dir)
 {
@@ -357,17 +273,11 @@ static struct net *get_proc_task_net(struct inode *dir)
 	rcu_read_lock();
 	task = pid_task(proc_pid(dir), PIDTYPE_PID);
 	if (task != NULL) {
-<<<<<<< HEAD
-		ns = task_nsproxy(task);
-		if (ns != NULL)
-			net = get_net(ns->net_ns);
-=======
 		task_lock(task);
 		ns = task->nsproxy;
 		if (ns != NULL)
 			net = get_net(ns->net_ns);
 		task_unlock(task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rcu_read_unlock();
 
@@ -383,37 +293,22 @@ static struct dentry *proc_tgid_net_lookup(struct inode *dir,
 	de = ERR_PTR(-ENOENT);
 	net = get_proc_task_net(dir);
 	if (net != NULL) {
-<<<<<<< HEAD
-		de = proc_lookup_de(net->proc_net, dir, dentry);
-=======
 		de = proc_lookup_de(dir, dentry, net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_net(net);
 	}
 	return de;
 }
 
-<<<<<<< HEAD
-static int proc_tgid_net_getattr(struct vfsmount *mnt, struct dentry *dentry,
-		struct kstat *stat)
-{
-	struct inode *inode = dentry->d_inode;
-=======
 static int proc_tgid_net_getattr(struct mnt_idmap *idmap,
 				 const struct path *path, struct kstat *stat,
 				 u32 request_mask, unsigned int query_flags)
 {
 	struct inode *inode = d_inode(path->dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net *net;
 
 	net = get_proc_task_net(inode);
 
-<<<<<<< HEAD
-	generic_fillattr(inode, stat);
-=======
 	generic_fillattr(&nop_mnt_idmap, request_mask, inode, stat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (net != NULL) {
 		stat->nlink = net->proc_net->nlink;
@@ -426,31 +321,18 @@ static int proc_tgid_net_getattr(struct mnt_idmap *idmap,
 const struct inode_operations proc_net_inode_operations = {
 	.lookup		= proc_tgid_net_lookup,
 	.getattr	= proc_tgid_net_getattr,
-<<<<<<< HEAD
-};
-
-static int proc_tgid_net_readdir(struct file *filp, void *dirent,
-		filldir_t filldir)
-=======
 	.setattr        = proc_setattr,
 };
 
 static int proc_tgid_net_readdir(struct file *file, struct dir_context *ctx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct net *net;
 
 	ret = -EINVAL;
-<<<<<<< HEAD
-	net = get_proc_task_net(filp->f_path.dentry->d_inode);
-	if (net != NULL) {
-		ret = proc_readdir_de(net->proc_net, filp, dirent, filldir);
-=======
 	net = get_proc_task_net(file_inode(file));
 	if (net != NULL) {
 		ret = proc_readdir_de(file, ctx, net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_net(net);
 	}
 	return ret;
@@ -459,35 +341,6 @@ static int proc_tgid_net_readdir(struct file *file, struct dir_context *ctx)
 const struct file_operations proc_net_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
-<<<<<<< HEAD
-	.readdir	= proc_tgid_net_readdir,
-};
-
-
-struct proc_dir_entry *proc_net_fops_create(struct net *net,
-	const char *name, umode_t mode, const struct file_operations *fops)
-{
-	return proc_create(name, mode, net->proc_net, fops);
-}
-EXPORT_SYMBOL_GPL(proc_net_fops_create);
-
-void proc_net_remove(struct net *net, const char *name)
-{
-	remove_proc_entry(name, net->proc_net);
-}
-EXPORT_SYMBOL_GPL(proc_net_remove);
-
-static __net_init int proc_net_ns_init(struct net *net)
-{
-	struct proc_dir_entry *netd, *net_statd;
-	int err;
-
-	err = -ENOMEM;
-	netd = kzalloc(sizeof(*netd) + 4, GFP_KERNEL);
-	if (!netd)
-		goto out;
-
-=======
 	.iterate_shared	= proc_tgid_net_readdir,
 };
 
@@ -510,15 +363,10 @@ static __net_init int proc_net_ns_init(struct net *net)
 		goto out;
 
 	netd->subdir = RB_ROOT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netd->data = net;
 	netd->nlink = 2;
 	netd->namelen = 3;
 	netd->parent = &proc_root;
-<<<<<<< HEAD
-	memcpy(netd->name, "net", 4);
-
-=======
 	netd->name = netd->inline_name;
 	memcpy(netd->name, "net", 4);
 
@@ -535,7 +383,6 @@ static __net_init int proc_net_ns_init(struct net *net)
 	/* Seed dentry revalidation for /proc/${pid}/net */
 	pde_force_lookup(netd);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -EEXIST;
 	net_statd = proc_net_mkdir(net, "stat", netd);
 	if (!net_statd)
@@ -546,11 +393,7 @@ static __net_init int proc_net_ns_init(struct net *net)
 	return 0;
 
 free_net:
-<<<<<<< HEAD
-	kfree(netd);
-=======
 	pde_free(netd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return err;
 }
@@ -558,11 +401,7 @@ out:
 static __net_exit void proc_net_ns_exit(struct net *net)
 {
 	remove_proc_entry("stat", net->proc_net);
-<<<<<<< HEAD
-	kfree(net->proc_net);
-=======
 	pde_free(net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pernet_operations __net_initdata proc_net_ns_ops = {

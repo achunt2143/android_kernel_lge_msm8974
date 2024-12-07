@@ -1,22 +1,7 @@
-<<<<<<< HEAD
-/*
- * HighPoint RR3xxx/4xxx controller driver for Linux
- * Copyright (C) 2006-2009 HighPoint Technologies, Inc. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * HighPoint RR3xxx/4xxx controller driver for Linux
  * Copyright (C) 2006-2015 HighPoint Technologies, Inc. All Rights Reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Please report bugs/comments/suggestions to linux@highpoint-tech.com
  *
@@ -33,11 +18,7 @@
 #include <linux/timer.h>
 #include <linux/spinlock.h>
 #include <linux/gfp.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/div64.h>
 #include <scsi/scsi_cmnd.h>
@@ -53,11 +34,7 @@ MODULE_DESCRIPTION("HighPoint RocketRAID 3xxx/4xxx Controller Driver");
 
 static char driver_name[] = "hptiop";
 static const char driver_name_long[] = "RocketRAID 3xxx/4xxx Controller driver";
-<<<<<<< HEAD
-static const char driver_ver[] = "v1.6 (090910)";
-=======
 static const char driver_ver[] = "v1.10.0";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int iop_send_sync_msg(struct hptiop_hba *hba, u32 msg, u32 millisec);
 static void hptiop_finish_scsi_req(struct hptiop_hba *hba, u32 tag,
@@ -92,14 +69,11 @@ static int iop_wait_ready_mv(struct hptiop_hba *hba, u32 millisec)
 	return iop_send_sync_msg(hba, IOPMU_INBOUND_MSG0_NOP, millisec);
 }
 
-<<<<<<< HEAD
-=======
 static int iop_wait_ready_mvfrey(struct hptiop_hba *hba, u32 millisec)
 {
 	return iop_send_sync_msg(hba, IOPMU_INBOUND_MSG0_NOP, millisec);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hptiop_request_callback_itl(struct hptiop_hba *hba, u32 tag)
 {
 	if (tag & IOPMU_QUEUE_ADDR_HOST_BIT)
@@ -253,8 +227,6 @@ static int iop_intr_mv(struct hptiop_hba *hba)
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static void hptiop_request_callback_mvfrey(struct hptiop_hba *hba, u32 _tag)
 {
 	u32 req_type = _tag & 0xf;
@@ -323,7 +295,6 @@ static int iop_intr_mvfrey(struct hptiop_hba *hba)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int iop_send_sync_request_itl(struct hptiop_hba *hba,
 					void __iomem *_req, u32 millisec)
 {
@@ -366,8 +337,6 @@ static int iop_send_sync_request_mv(struct hptiop_hba *hba,
 	return -1;
 }
 
-<<<<<<< HEAD
-=======
 static int iop_send_sync_request_mvfrey(struct hptiop_hba *hba,
 					u32 size_bits, u32 millisec)
 {
@@ -388,7 +357,6 @@ static int iop_send_sync_request_mvfrey(struct hptiop_hba *hba,
 	return hba->msg_done ? 0 : -1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hptiop_post_msg_itl(struct hptiop_hba *hba, u32 msg)
 {
 	writel(msg, &hba->u.itl.iop->inbound_msgaddr0);
@@ -402,24 +370,18 @@ static void hptiop_post_msg_mv(struct hptiop_hba *hba, u32 msg)
 	readl(&hba->u.mv.regs->inbound_doorbell);
 }
 
-<<<<<<< HEAD
-=======
 static void hptiop_post_msg_mvfrey(struct hptiop_hba *hba, u32 msg)
 {
 	writel(msg, &(hba->u.mvfrey.mu->f0_to_cpu_msg_a));
 	readl(&(hba->u.mvfrey.mu->f0_to_cpu_msg_a));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int iop_send_sync_msg(struct hptiop_hba *hba, u32 msg, u32 millisec)
 {
 	u32 i;
 
 	hba->msg_done = 0;
-<<<<<<< HEAD
-=======
 	hba->ops->disable_intr(hba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hba->ops->post_msg(hba, msg);
 
 	for (i = 0; i < millisec; i++) {
@@ -431,10 +393,7 @@ static int iop_send_sync_msg(struct hptiop_hba *hba, u32 msg, u32 millisec)
 		msleep(1);
 	}
 
-<<<<<<< HEAD
-=======
 	hba->ops->enable_intr(hba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return hba->msg_done? 0 : -1;
 }
 
@@ -488,8 +447,6 @@ static int iop_get_config_mv(struct hptiop_hba *hba,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int iop_get_config_mvfrey(struct hptiop_hba *hba,
 				struct hpt_iop_request_get_config *config)
 {
@@ -512,7 +469,6 @@ static int iop_get_config_mvfrey(struct hptiop_hba *hba,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int iop_set_config_itl(struct hptiop_hba *hba,
 				struct hpt_iop_request_set_config *config)
 {
@@ -567,8 +523,6 @@ static int iop_set_config_mv(struct hptiop_hba *hba,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int iop_set_config_mvfrey(struct hptiop_hba *hba,
 				struct hpt_iop_request_set_config *config)
 {
@@ -592,7 +546,6 @@ static int iop_set_config_mvfrey(struct hptiop_hba *hba,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hptiop_enable_intr_itl(struct hptiop_hba *hba)
 {
 	writel(~(IOPMU_OUTBOUND_INT_POSTQUEUE | IOPMU_OUTBOUND_INT_MSG0),
@@ -605,8 +558,6 @@ static void hptiop_enable_intr_mv(struct hptiop_hba *hba)
 		&hba->u.mv.regs->outbound_intmask);
 }
 
-<<<<<<< HEAD
-=======
 static void hptiop_enable_intr_mvfrey(struct hptiop_hba *hba)
 {
 	writel(CPU_TO_F0_DRBL_MSG_BIT, &(hba->u.mvfrey.mu->f0_doorbell_enable));
@@ -614,7 +565,6 @@ static void hptiop_enable_intr_mvfrey(struct hptiop_hba *hba)
 	writel(0x1010, &(hba->u.mvfrey.mu->pcie_f0_int_enable));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hptiop_initialize_iop(struct hptiop_hba *hba)
 {
 	/* enable interrupts */
@@ -697,8 +647,6 @@ static int hptiop_map_pci_bar_mv(struct hptiop_hba *hba)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int hptiop_map_pci_bar_mvfrey(struct hptiop_hba *hba)
 {
 	hba->u.mvfrey.config = hptiop_map_pci_bar(hba, 0);
@@ -714,32 +662,24 @@ static int hptiop_map_pci_bar_mvfrey(struct hptiop_hba *hba)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hptiop_unmap_pci_bar_mv(struct hptiop_hba *hba)
 {
 	iounmap(hba->u.mv.regs);
 	iounmap(hba->u.mv.mu);
 }
 
-<<<<<<< HEAD
-=======
 static void hptiop_unmap_pci_bar_mvfrey(struct hptiop_hba *hba)
 {
 	iounmap(hba->u.mvfrey.config);
 	iounmap(hba->u.mvfrey.mu);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hptiop_message_callback(struct hptiop_hba *hba, u32 msg)
 {
 	dprintk("iop message 0x%x\n", msg);
 
-<<<<<<< HEAD
-	if (msg == IOPMU_INBOUND_MSG0_NOP)
-=======
 	if (msg == IOPMU_INBOUND_MSG0_NOP ||
 		msg == IOPMU_INBOUND_MSG0_RESET_COMM)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hba->msg_done = 1;
 
 	if (!hba->initialized)
@@ -816,20 +756,6 @@ static void hptiop_finish_scsi_req(struct hptiop_hba *hba, u32 tag,
 		scsi_set_resid(scp,
 			scsi_bufflen(scp) - le32_to_cpu(req->dataxfer_length));
 		scp->result = SAM_STAT_CHECK_CONDITION;
-<<<<<<< HEAD
-		memcpy(scp->sense_buffer, &req->sg_list,
-				min_t(size_t, SCSI_SENSE_BUFFERSIZE,
-					le32_to_cpu(req->dataxfer_length)));
-		break;
-
-	default:
-		scp->result = DRIVER_INVALID << 24 | DID_ABORT << 16;
-		break;
-	}
-
-	dprintk("scsi_done(%p)\n", scp);
-	scp->scsi_done(scp);
-=======
 		memcpy(scp->sense_buffer, &req->sg_list, SCSI_SENSE_BUFFERSIZE);
 		goto skip_resid;
 
@@ -844,7 +770,6 @@ static void hptiop_finish_scsi_req(struct hptiop_hba *hba, u32 tag,
 skip_resid:
 	dprintk("scsi_done(%p)\n", scp);
 	scsi_done(scp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_req(hba, &hba->reqs[tag]);
 }
 
@@ -866,11 +791,7 @@ static void hptiop_host_request_callback_itl(struct hptiop_hba *hba, u32 _tag)
 	hptiop_finish_scsi_req(hba, tag, req);
 }
 
-<<<<<<< HEAD
-void hptiop_iop_request_callback_itl(struct hptiop_hba *hba, u32 tag)
-=======
 static void hptiop_iop_request_callback_itl(struct hptiop_hba *hba, u32 tag)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hpt_iop_request_header __iomem *req;
 	struct hpt_iop_request_ioctl_command __iomem *p;
@@ -940,12 +861,8 @@ static int hptiop_buildsgl(struct scsi_cmnd *scp, struct hpt_iopsg *psg)
 	BUG_ON(HPT_SCP(scp)->sgcnt > hba->max_sg_descriptors);
 
 	scsi_for_each_sg(scp, sg, HPT_SCP(scp)->sgcnt, idx) {
-<<<<<<< HEAD
-		psg[idx].pci_address = cpu_to_le64(sg_dma_address(sg));
-=======
 		psg[idx].pci_address = cpu_to_le64(sg_dma_address(sg)) |
 			hba->ops->host_phy_flag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psg[idx].size = cpu_to_le32(sg_dma_len(sg));
 		psg[idx].eot = (idx == HPT_SCP(scp)->sgcnt - 1) ?
 			cpu_to_le32(1) : 0;
@@ -1004,10 +921,6 @@ static void hptiop_post_req_mv(struct hptiop_hba *hba,
 		MVIOP_MU_QUEUE_ADDR_HOST_BIT | size_bit, hba);
 }
 
-<<<<<<< HEAD
-static int hptiop_queuecommand_lck(struct scsi_cmnd *scp,
-				void (*done)(struct scsi_cmnd *))
-=======
 static void hptiop_post_req_mvfrey(struct hptiop_hba *hba,
 					struct hptiop_request *_req)
 {
@@ -1081,7 +994,6 @@ static int hptiop_reset_comm_mvfrey(struct hptiop_hba *hba)
 }
 
 static int hptiop_queuecommand_lck(struct scsi_cmnd *scp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host = scp->device->host;
 	struct hptiop_hba *hba = (struct hptiop_hba *)host->hostdata;
@@ -1089,12 +1001,6 @@ static int hptiop_queuecommand_lck(struct scsi_cmnd *scp)
 	int sg_count = 0;
 	struct hptiop_request *_req;
 
-<<<<<<< HEAD
-	BUG_ON(!done);
-	scp->scsi_done = done;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_req = get_req(hba);
 	if (_req == NULL) {
 		dprintk("hptiop_queuecmd : no free req\n");
@@ -1103,37 +1009,22 @@ static int hptiop_queuecommand_lck(struct scsi_cmnd *scp)
 
 	_req->scp = scp;
 
-<<<<<<< HEAD
-	dprintk("hptiop_queuecmd(scp=%p) %d/%d/%d/%d cdb=(%x-%x-%x) "
-=======
 	dprintk("hptiop_queuecmd(scp=%p) %d/%d/%d/%llu cdb=(%08x-%08x-%08x-%08x) "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"req_index=%d, req=%p\n",
 			scp,
 			host->host_no, scp->device->channel,
 			scp->device->id, scp->device->lun,
-<<<<<<< HEAD
-			((u32 *)scp->cmnd)[0],
-			((u32 *)scp->cmnd)[1],
-			((u32 *)scp->cmnd)[2],
-=======
 			cpu_to_be32(((u32 *)scp->cmnd)[0]),
 			cpu_to_be32(((u32 *)scp->cmnd)[1]),
 			cpu_to_be32(((u32 *)scp->cmnd)[2]),
 			cpu_to_be32(((u32 *)scp->cmnd)[3]),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			_req->index, _req->req_virt);
 
 	scp->result = 0;
 
-<<<<<<< HEAD
-	if (scp->device->channel || scp->device->lun ||
-			scp->device->id > hba->max_devices) {
-=======
 	if (scp->device->channel ||
 			(scp->device->id > hba->max_devices) ||
 			((scp->device->id == (hba->max_devices-1)) && scp->device->lun)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scp->result = DID_BAD_TARGET << 16;
 		free_req(hba, _req);
 		goto cmd_done;
@@ -1153,14 +1044,7 @@ static int hptiop_queuecommand_lck(struct scsi_cmnd *scp)
 	req->channel = scp->device->channel;
 	req->target = scp->device->id;
 	req->lun = scp->device->lun;
-<<<<<<< HEAD
-	req->header.size = cpu_to_le32(
-				sizeof(struct hpt_iop_request_scsi_command)
-				 - sizeof(struct hpt_iopsg)
-				 + sg_count * sizeof(struct hpt_iopsg));
-=======
 	req->header.size = cpu_to_le32(struct_size(req, sg_list, sg_count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(req->cdb, scp->cmnd, sizeof(req->cdb));
 	hba->ops->post_req(hba, _req);
@@ -1168,11 +1052,7 @@ static int hptiop_queuecommand_lck(struct scsi_cmnd *scp)
 
 cmd_done:
 	dprintk("scsi_done(scp=%p)\n", scp);
-<<<<<<< HEAD
-	scp->scsi_done(scp);
-=======
 	scsi_done(scp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1210,37 +1090,15 @@ static int hptiop_reset_hba(struct hptiop_hba *hba)
 
 static int hptiop_reset(struct scsi_cmnd *scp)
 {
-<<<<<<< HEAD
-	struct Scsi_Host * host = scp->device->host;
-	struct hptiop_hba * hba = (struct hptiop_hba *)host->hostdata;
-
-	printk(KERN_WARNING "hptiop_reset(%d/%d/%d) scp=%p\n",
-			scp->device->host->host_no, scp->device->channel,
-			scp->device->id, scp);
-=======
 	struct hptiop_hba * hba = (struct hptiop_hba *)scp->device->host->hostdata;
 
 	printk(KERN_WARNING "hptiop_reset(%d/%d/%d)\n",
 	       scp->device->host->host_no, -1, -1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return hptiop_reset_hba(hba)? FAILED : SUCCESS;
 }
 
 static int hptiop_adjust_disk_queue_depth(struct scsi_device *sdev,
-<<<<<<< HEAD
-					  int queue_depth, int reason)
-{
-	struct hptiop_hba *hba = (struct hptiop_hba *)sdev->host->hostdata;
-
-	if (reason != SCSI_QDEPTH_DEFAULT)
-		return -EOPNOTSUPP;
-
-	if (queue_depth > hba->max_requests)
-		queue_depth = hba->max_requests;
-	scsi_adjust_queue_depth(sdev, MSG_ORDERED_TAG, queue_depth);
-	return queue_depth;
-=======
 					  int queue_depth)
 {
 	struct hptiop_hba *hba = (struct hptiop_hba *)sdev->host->hostdata;
@@ -1248,7 +1106,6 @@ static int hptiop_adjust_disk_queue_depth(struct scsi_device *sdev,
 	if (queue_depth > hba->max_requests)
 		queue_depth = hba->max_requests;
 	return scsi_change_queue_depth(sdev, queue_depth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t hptiop_show_version(struct device *dev,
@@ -1286,29 +1143,6 @@ static struct device_attribute hptiop_attr_fw_version = {
 	.show = hptiop_show_fw_version,
 };
 
-<<<<<<< HEAD
-static struct device_attribute *hptiop_attrs[] = {
-	&hptiop_attr_version,
-	&hptiop_attr_fw_version,
-	NULL
-};
-
-static struct scsi_host_template driver_template = {
-	.module                     = THIS_MODULE,
-	.name                       = driver_name,
-	.queuecommand               = hptiop_queuecommand,
-	.eh_device_reset_handler    = hptiop_reset,
-	.eh_bus_reset_handler       = hptiop_reset,
-	.info                       = hptiop_info,
-	.emulated                   = 0,
-	.use_clustering             = ENABLE_CLUSTERING,
-	.proc_name                  = driver_name,
-	.shost_attrs                = hptiop_attrs,
-	.this_id                    = -1,
-	.change_queue_depth         = hptiop_adjust_disk_queue_depth,
-};
-
-=======
 static struct attribute *hptiop_host_attrs[] = {
 	&hptiop_attr_version.attr,
 	&hptiop_attr_fw_version.attr,
@@ -1345,7 +1179,6 @@ static int hptiop_internal_memalloc_itl(struct hptiop_hba *hba)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hptiop_internal_memalloc_mv(struct hptiop_hba *hba)
 {
 	hba->u.mv.internal_req = dma_alloc_coherent(&hba->pcidev->dev,
@@ -1356,8 +1189,6 @@ static int hptiop_internal_memalloc_mv(struct hptiop_hba *hba)
 		return -1;
 }
 
-<<<<<<< HEAD
-=======
 static int hptiop_internal_memalloc_mvfrey(struct hptiop_hba *hba)
 {
 	u32 list_count = readl(&hba->u.mvfrey.mu->inbound_conf_ctl);
@@ -1415,7 +1246,6 @@ static int hptiop_internal_memfree_itl(struct hptiop_hba *hba)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hptiop_internal_memfree_mv(struct hptiop_hba *hba)
 {
 	if (hba->u.mv.internal_req) {
@@ -1426,13 +1256,6 @@ static int hptiop_internal_memfree_mv(struct hptiop_hba *hba)
 		return -1;
 }
 
-<<<<<<< HEAD
-static int __devinit hptiop_probe(struct pci_dev *pcidev,
-					const struct pci_device_id *id)
-{
-	struct Scsi_Host *host = NULL;
-	struct hptiop_hba *hba;
-=======
 static int hptiop_internal_memfree_mvfrey(struct hptiop_hba *hba)
 {
 	if (hba->u.mvfrey.internal_req.req_virt) {
@@ -1451,16 +1274,12 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 	struct Scsi_Host *host = NULL;
 	struct hptiop_hba *hba;
 	struct hptiop_adapter_ops *iop_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hpt_iop_request_get_config iop_config;
 	struct hpt_iop_request_set_config set_config;
 	dma_addr_t start_phy;
 	void *start_virt;
 	u32 offset, i, req_size;
-<<<<<<< HEAD
-=======
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("hptiop_probe(%p)\n", pcidev);
 
@@ -1476,13 +1295,6 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 	pci_set_master(pcidev);
 
 	/* Enable 64bit DMA if possible */
-<<<<<<< HEAD
-	if (pci_set_dma_mask(pcidev, DMA_BIT_MASK(64))) {
-		if (pci_set_dma_mask(pcidev, DMA_BIT_MASK(32))) {
-			printk(KERN_ERR "hptiop: fail to set dma_mask\n");
-			goto disable_pci_device;
-		}
-=======
 	iop_ops = (struct hptiop_adapter_ops *)id->driver_data;
 	rc = dma_set_mask(&pcidev->dev,
 			  DMA_BIT_MASK(iop_ops->hw_dma_bit_mask));
@@ -1492,7 +1304,6 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 	if (rc) {
 		printk(KERN_ERR "hptiop: fail to set dma_mask\n");
 		goto disable_pci_device;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pci_request_regions(pcidev, driver_name)) {
@@ -1507,14 +1318,9 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 	}
 
 	hba = (struct hptiop_hba *)host->hostdata;
-<<<<<<< HEAD
-
-	hba->ops = (struct hptiop_adapter_ops *)id->driver_data;
-=======
 	memset(hba, 0, sizeof(struct hptiop_hba));
 
 	hba->ops = iop_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hba->pcidev = pcidev;
 	hba->host = host;
 	hba->initialized = 0;
@@ -1526,11 +1332,7 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 	init_waitqueue_head(&hba->reset_wq);
 	init_waitqueue_head(&hba->ioctl_wq);
 
-<<<<<<< HEAD
-	host->max_lun = 1;
-=======
 	host->max_lun = 128;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host->max_channel = 0;
 	host->io_port = 0;
 	host->n_io_port = 0;
@@ -1545,11 +1347,7 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 		goto unmap_pci_bar;
 	}
 
-<<<<<<< HEAD
-	if (hba->ops->internal_memalloc) {
-=======
 	if (hba->ops->family == MV_BASED_IOP) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (hba->ops->internal_memalloc(hba)) {
 			printk(KERN_ERR "scsi%d: internal_memalloc failed\n",
 				hba->host->host_no);
@@ -1572,8 +1370,6 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 	hba->interface_version = le32_to_cpu(iop_config.interface_version);
 	hba->sdram_size = le32_to_cpu(iop_config.sdram_size);
 
-<<<<<<< HEAD
-=======
 	if (hba->ops->family == MVFREY_BASED_IOP) {
 		if (hba->ops->internal_memalloc(hba)) {
 			printk(KERN_ERR "scsi%d: internal_memalloc failed\n",
@@ -1587,7 +1383,6 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hba->firmware_version > 0x01020000 ||
 			hba->interface_version > 0x01020000)
 		hba->iopintf_v2 = 1;
@@ -1599,13 +1394,8 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 	host->cmd_per_lun = le32_to_cpu(iop_config.max_requests);
 	host->max_cmd_len = 16;
 
-<<<<<<< HEAD
-	req_size = sizeof(struct hpt_iop_request_scsi_command)
-		+ sizeof(struct hpt_iopsg) * (hba->max_sg_descriptors - 1);
-=======
 	req_size = struct_size_t(struct hpt_iop_request_scsi_command,
 				 sg_list, hba->max_sg_descriptors);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((req_size & 0x1f) != 0)
 		req_size = (req_size + 0x1f) & ~0x1f;
 
@@ -1634,30 +1424,6 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 	dprintk("req_size=%d, max_requests=%d\n", req_size, hba->max_requests);
 
 	hba->req_size = req_size;
-<<<<<<< HEAD
-	start_virt = dma_alloc_coherent(&pcidev->dev,
-				hba->req_size*hba->max_requests + 0x20,
-				&start_phy, GFP_KERNEL);
-
-	if (!start_virt) {
-		printk(KERN_ERR "scsi%d: fail to alloc request mem\n",
-					hba->host->host_no);
-		goto free_request_irq;
-	}
-
-	hba->dma_coherent = start_virt;
-	hba->dma_coherent_handle = start_phy;
-
-	if ((start_phy & 0x1f) != 0)
-	{
-		offset = ((start_phy + 0x1f) & ~0x1f) - start_phy;
-		start_phy += offset;
-		start_virt += offset;
-	}
-
-	hba->req_list = start_virt;
-	for (i = 0; i < hba->max_requests; i++) {
-=======
 	hba->req_list = NULL;
 
 	for (i = 0; i < hba->max_requests; i++) {
@@ -1680,17 +1446,11 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 			start_virt += offset;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hba->reqs[i].next = NULL;
 		hba->reqs[i].req_virt = start_virt;
 		hba->reqs[i].req_shifted_phy = start_phy >> 5;
 		hba->reqs[i].index = i;
 		free_req(hba, &hba->reqs[i]);
-<<<<<<< HEAD
-		start_virt = (char *)start_virt + hba->req_size;
-		start_phy = start_phy + hba->req_size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Enable Interrupt and start background task */
@@ -1703,28 +1463,12 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 		goto free_request_mem;
 	}
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_scan_host(host);
 
 	dprintk("scsi%d: hptiop_probe successfully\n", hba->host->host_no);
 	return 0;
 
 free_request_mem:
-<<<<<<< HEAD
-	dma_free_coherent(&hba->pcidev->dev,
-			hba->req_size * hba->max_requests + 0x20,
-			hba->dma_coherent, hba->dma_coherent_handle);
-
-free_request_irq:
-	free_irq(hba->pcidev->irq, hba);
-
-unmap_pci_bar:
-	if (hba->ops->internal_memfree)
-		hba->ops->internal_memfree(hba);
-=======
 	for (i = 0; i < hba->max_requests; i++) {
 		if (hba->dma_coherent[i] && hba->dma_coherent_handle[i])
 			dma_free_coherent(&hba->pcidev->dev,
@@ -1739,7 +1483,6 @@ unmap_pci_bar:
 
 unmap_pci_bar:
 	hba->ops->internal_memfree(hba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hba->ops->unmap_pci_bar(hba);
 
@@ -1789,8 +1532,6 @@ static void hptiop_disable_intr_mv(struct hptiop_hba *hba)
 	readl(&hba->u.mv.regs->outbound_intmask);
 }
 
-<<<<<<< HEAD
-=======
 static void hptiop_disable_intr_mvfrey(struct hptiop_hba *hba)
 {
 	writel(0, &(hba->u.mvfrey.mu->f0_doorbell_enable));
@@ -1801,15 +1542,11 @@ static void hptiop_disable_intr_mvfrey(struct hptiop_hba *hba)
 	readl(&(hba->u.mvfrey.mu->pcie_f0_int_enable));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hptiop_remove(struct pci_dev *pcidev)
 {
 	struct Scsi_Host *host = pci_get_drvdata(pcidev);
 	struct hptiop_hba *hba = (struct hptiop_hba *)host->hostdata;
-<<<<<<< HEAD
-=======
 	u32 i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("scsi%d: hptiop_remove\n", hba->host->host_no);
 
@@ -1819,15 +1556,6 @@ static void hptiop_remove(struct pci_dev *pcidev)
 
 	free_irq(hba->pcidev->irq, hba);
 
-<<<<<<< HEAD
-	dma_free_coherent(&hba->pcidev->dev,
-			hba->req_size * hba->max_requests + 0x20,
-			hba->dma_coherent,
-			hba->dma_coherent_handle);
-
-	if (hba->ops->internal_memfree)
-		hba->ops->internal_memfree(hba);
-=======
 	for (i = 0; i < hba->max_requests; i++) {
 		if (hba->dma_coherent[i] && hba->dma_coherent_handle[i])
 			dma_free_coherent(&hba->pcidev->dev,
@@ -1839,7 +1567,6 @@ static void hptiop_remove(struct pci_dev *pcidev)
 	}
 
 	hba->ops->internal_memfree(hba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hba->ops->unmap_pci_bar(hba);
 
@@ -1851,16 +1578,10 @@ static void hptiop_remove(struct pci_dev *pcidev)
 }
 
 static struct hptiop_adapter_ops hptiop_itl_ops = {
-<<<<<<< HEAD
-	.iop_wait_ready    = iop_wait_ready_itl,
-	.internal_memalloc = NULL,
-	.internal_memfree  = NULL,
-=======
 	.family            = INTEL_BASED_IOP,
 	.iop_wait_ready    = iop_wait_ready_itl,
 	.internal_memalloc = hptiop_internal_memalloc_itl,
 	.internal_memfree  = hptiop_internal_memfree_itl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.map_pci_bar       = hptiop_map_pci_bar_itl,
 	.unmap_pci_bar     = hptiop_unmap_pci_bar_itl,
 	.enable_intr       = hptiop_enable_intr_itl,
@@ -1870,11 +1591,6 @@ static struct hptiop_adapter_ops hptiop_itl_ops = {
 	.iop_intr          = iop_intr_itl,
 	.post_msg          = hptiop_post_msg_itl,
 	.post_req          = hptiop_post_req_itl,
-<<<<<<< HEAD
-};
-
-static struct hptiop_adapter_ops hptiop_mv_ops = {
-=======
 	.hw_dma_bit_mask   = 64,
 	.reset_comm        = hptiop_reset_comm_itl,
 	.host_phy_flag     = cpu_to_le64(0),
@@ -1882,7 +1598,6 @@ static struct hptiop_adapter_ops hptiop_mv_ops = {
 
 static struct hptiop_adapter_ops hptiop_mv_ops = {
 	.family            = MV_BASED_IOP,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iop_wait_ready    = iop_wait_ready_mv,
 	.internal_memalloc = hptiop_internal_memalloc_mv,
 	.internal_memfree  = hptiop_internal_memfree_mv,
@@ -1895,8 +1610,6 @@ static struct hptiop_adapter_ops hptiop_mv_ops = {
 	.iop_intr          = iop_intr_mv,
 	.post_msg          = hptiop_post_msg_mv,
 	.post_req          = hptiop_post_req_mv,
-<<<<<<< HEAD
-=======
 	.hw_dma_bit_mask   = 33,
 	.reset_comm        = hptiop_reset_comm_mv,
 	.host_phy_flag     = cpu_to_le64(0),
@@ -1919,7 +1632,6 @@ static struct hptiop_adapter_ops hptiop_mvfrey_ops = {
 	.hw_dma_bit_mask   = 64,
 	.reset_comm        = hptiop_reset_comm_mvfrey,
 	.host_phy_flag     = cpu_to_le64(1),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct pci_device_id hptiop_id_table[] = {
@@ -1945,8 +1657,6 @@ static struct pci_device_id hptiop_id_table[] = {
 	{ PCI_VDEVICE(TTI, 0x3120), (kernel_ulong_t)&hptiop_mv_ops },
 	{ PCI_VDEVICE(TTI, 0x3122), (kernel_ulong_t)&hptiop_mv_ops },
 	{ PCI_VDEVICE(TTI, 0x3020), (kernel_ulong_t)&hptiop_mv_ops },
-<<<<<<< HEAD
-=======
 	{ PCI_VDEVICE(TTI, 0x4520), (kernel_ulong_t)&hptiop_mvfrey_ops },
 	{ PCI_VDEVICE(TTI, 0x4522), (kernel_ulong_t)&hptiop_mvfrey_ops },
 	{ PCI_VDEVICE(TTI, 0x3610), (kernel_ulong_t)&hptiop_mvfrey_ops },
@@ -1957,7 +1667,6 @@ static struct pci_device_id hptiop_id_table[] = {
 	{ PCI_VDEVICE(TTI, 0x3660), (kernel_ulong_t)&hptiop_mvfrey_ops },
 	{ PCI_VDEVICE(TTI, 0x3680), (kernel_ulong_t)&hptiop_mvfrey_ops },
 	{ PCI_VDEVICE(TTI, 0x3690), (kernel_ulong_t)&hptiop_mvfrey_ops },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{},
 };
 

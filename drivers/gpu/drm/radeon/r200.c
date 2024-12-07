@@ -25,14 +25,8 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "drm.h"
-#include "radeon_drm.h"
-=======
 
 #include <drm/radeon_drm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "radeon_reg.h"
 #include "radeon.h"
 #include "radeon_asic.h"
@@ -86,15 +80,6 @@ static int r200_get_vtx_size_0(uint32_t vtx_fmt_0)
 	return vtx_size;
 }
 
-<<<<<<< HEAD
-int r200_copy_dma(struct radeon_device *rdev,
-		  uint64_t src_offset,
-		  uint64_t dst_offset,
-		  unsigned num_gpu_pages,
-		  struct radeon_fence *fence)
-{
-	struct radeon_ring *ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
-=======
 struct radeon_fence *r200_copy_dma(struct radeon_device *rdev,
 				   uint64_t src_offset,
 				   uint64_t dst_offset,
@@ -103,7 +88,6 @@ struct radeon_fence *r200_copy_dma(struct radeon_device *rdev,
 {
 	struct radeon_ring *ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
 	struct radeon_fence *fence;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t size;
 	uint32_t cur_size;
 	int i, num_loops;
@@ -115,11 +99,7 @@ struct radeon_fence *r200_copy_dma(struct radeon_device *rdev,
 	r = radeon_ring_lock(rdev, ring, num_loops * 4 + 64);
 	if (r) {
 		DRM_ERROR("radeon: moving bo (%d).\n", r);
-<<<<<<< HEAD
-		return r;
-=======
 		return ERR_PTR(r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Must wait for 2D idle & clean before DMA or hangs might happen */
 	radeon_ring_write(ring, PACKET0(RADEON_WAIT_UNTIL, 0));
@@ -139,13 +119,6 @@ struct radeon_fence *r200_copy_dma(struct radeon_device *rdev,
 	}
 	radeon_ring_write(ring, PACKET0(RADEON_WAIT_UNTIL, 0));
 	radeon_ring_write(ring, RADEON_WAIT_DMA_GUI_IDLE);
-<<<<<<< HEAD
-	if (fence) {
-		r = radeon_fence_emit(rdev, fence);
-	}
-	radeon_ring_unlock_commit(rdev, ring);
-	return r;
-=======
 	r = radeon_fence_emit(rdev, &fence, RADEON_RING_TYPE_GFX_INDEX);
 	if (r) {
 		radeon_ring_unlock_undo(rdev, ring);
@@ -153,7 +126,6 @@ struct radeon_fence *r200_copy_dma(struct radeon_device *rdev,
 	}
 	radeon_ring_unlock_commit(rdev, ring, false);
 	return fence;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -174,11 +146,7 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 		       struct radeon_cs_packet *pkt,
 		       unsigned idx, unsigned reg)
 {
-<<<<<<< HEAD
-	struct radeon_cs_reloc *reloc;
-=======
 	struct radeon_bo_list *reloc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct r100_cs_track *track;
 	volatile uint32_t *ib;
 	uint32_t tmp;
@@ -188,11 +156,7 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 	u32 tile_flags = 0;
 	u32 idx_value;
 
-<<<<<<< HEAD
-	ib = p->ib->ptr;
-=======
 	ib = p->ib.ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	track = (struct r100_cs_track *)p->track;
 	idx_value = radeon_get_ib_value(p, idx);
 	switch (reg) {
@@ -201,11 +165,7 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 		if (r) {
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
 				  idx, reg);
-<<<<<<< HEAD
-			r100_cs_dump_packet(p, pkt);
-=======
 			radeon_cs_dump_packet(p, pkt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return r;
 		}
 		break;
@@ -218,34 +178,16 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 			return r;
 		break;
 	case RADEON_RB3D_DEPTHOFFSET:
-<<<<<<< HEAD
-		r = r100_cs_packet_next_reloc(p, &reloc);
-		if (r) {
-			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
-				  idx, reg);
-			r100_cs_dump_packet(p, pkt);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
 		if (r) {
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
 				  idx, reg);
 			radeon_cs_dump_packet(p, pkt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return r;
 		}
 		track->zb.robj = reloc->robj;
 		track->zb.offset = idx_value;
 		track->zb_dirty = true;
-<<<<<<< HEAD
-		ib[idx] = idx_value + ((u32)reloc->lobj.gpu_offset);
-		break;
-	case RADEON_RB3D_COLOROFFSET:
-		r = r100_cs_packet_next_reloc(p, &reloc);
-		if (r) {
-			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
-				  idx, reg);
-			r100_cs_dump_packet(p, pkt);
-=======
 		ib[idx] = idx_value + ((u32)reloc->gpu_offset);
 		break;
 	case RADEON_RB3D_COLOROFFSET:
@@ -254,17 +196,12 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
 				  idx, reg);
 			radeon_cs_dump_packet(p, pkt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return r;
 		}
 		track->cb[0].robj = reloc->robj;
 		track->cb[0].offset = idx_value;
 		track->cb_dirty = true;
-<<<<<<< HEAD
-		ib[idx] = idx_value + ((u32)reloc->lobj.gpu_offset);
-=======
 		ib[idx] = idx_value + ((u32)reloc->gpu_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case R200_PP_TXOFFSET_0:
 	case R200_PP_TXOFFSET_1:
@@ -273,19 +210,6 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 	case R200_PP_TXOFFSET_4:
 	case R200_PP_TXOFFSET_5:
 		i = (reg - R200_PP_TXOFFSET_0) / 24;
-<<<<<<< HEAD
-		r = r100_cs_packet_next_reloc(p, &reloc);
-		if (r) {
-			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
-				  idx, reg);
-			r100_cs_dump_packet(p, pkt);
-			return r;
-		}
-		if (!(p->cs_flags & RADEON_CS_KEEP_TILING_FLAGS)) {
-			if (reloc->lobj.tiling_flags & RADEON_TILING_MACRO)
-				tile_flags |= R200_TXO_MACRO_TILE;
-			if (reloc->lobj.tiling_flags & RADEON_TILING_MICRO)
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
 		if (r) {
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
@@ -297,20 +221,13 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 			if (reloc->tiling_flags & RADEON_TILING_MACRO)
 				tile_flags |= R200_TXO_MACRO_TILE;
 			if (reloc->tiling_flags & RADEON_TILING_MICRO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				tile_flags |= R200_TXO_MICRO_TILE;
 
 			tmp = idx_value & ~(0x7 << 2);
 			tmp |= tile_flags;
-<<<<<<< HEAD
-			ib[idx] = tmp + ((u32)reloc->lobj.gpu_offset);
-		} else
-			ib[idx] = idx_value + ((u32)reloc->lobj.gpu_offset);
-=======
 			ib[idx] = tmp + ((u32)reloc->gpu_offset);
 		} else
 			ib[idx] = idx_value + ((u32)reloc->gpu_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->textures[i].robj = reloc->robj;
 		track->tex_dirty = true;
 		break;
@@ -346,17 +263,6 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 	case R200_PP_CUBIC_OFFSET_F5_5:
 		i = (reg - R200_PP_TXOFFSET_0) / 24;
 		face = (reg - ((i * 24) + R200_PP_TXOFFSET_0)) / 4;
-<<<<<<< HEAD
-		r = r100_cs_packet_next_reloc(p, &reloc);
-		if (r) {
-			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
-				  idx, reg);
-			r100_cs_dump_packet(p, pkt);
-			return r;
-		}
-		track->textures[i].cube_info[face - 1].offset = idx_value;
-		ib[idx] = idx_value + ((u32)reloc->lobj.gpu_offset);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
 		if (r) {
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
@@ -366,7 +272,6 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 		}
 		track->textures[i].cube_info[face - 1].offset = idx_value;
 		ib[idx] = idx_value + ((u32)reloc->gpu_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->textures[i].cube_info[face - 1].robj = reloc->robj;
 		track->tex_dirty = true;
 		break;
@@ -376,32 +281,18 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 		track->zb_dirty = true;
 		break;
 	case RADEON_RB3D_COLORPITCH:
-<<<<<<< HEAD
-		r = r100_cs_packet_next_reloc(p, &reloc);
-		if (r) {
-			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
-				  idx, reg);
-			r100_cs_dump_packet(p, pkt);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
 		if (r) {
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
 				  idx, reg);
 			radeon_cs_dump_packet(p, pkt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return r;
 		}
 
 		if (!(p->cs_flags & RADEON_CS_KEEP_TILING_FLAGS)) {
-<<<<<<< HEAD
-			if (reloc->lobj.tiling_flags & RADEON_TILING_MACRO)
-				tile_flags |= RADEON_COLOR_TILE_ENABLE;
-			if (reloc->lobj.tiling_flags & RADEON_TILING_MICRO)
-=======
 			if (reloc->tiling_flags & RADEON_TILING_MACRO)
 				tile_flags |= RADEON_COLOR_TILE_ENABLE;
 			if (reloc->tiling_flags & RADEON_TILING_MICRO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				tile_flags |= RADEON_COLOR_MICROTILE_ENABLE;
 
 			tmp = idx_value & ~(0x7 << 16);
@@ -467,16 +358,6 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 		track->zb_dirty = true;
 		break;
 	case RADEON_RB3D_ZPASS_ADDR:
-<<<<<<< HEAD
-		r = r100_cs_packet_next_reloc(p, &reloc);
-		if (r) {
-			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
-				  idx, reg);
-			r100_cs_dump_packet(p, pkt);
-			return r;
-		}
-		ib[idx] = idx_value + ((u32)reloc->lobj.gpu_offset);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
 		if (r) {
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
@@ -485,7 +366,6 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 			return r;
 		}
 		ib[idx] = idx_value + ((u32)reloc->gpu_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case RADEON_PP_CNTL:
 		{
@@ -596,13 +476,8 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 			track->textures[i].use_pitch = 1;
 		} else {
 			track->textures[i].use_pitch = 0;
-<<<<<<< HEAD
-			track->textures[i].width = 1 << ((idx_value >> RADEON_TXFORMAT_WIDTH_SHIFT) & RADEON_TXFORMAT_WIDTH_MASK);
-			track->textures[i].height = 1 << ((idx_value >> RADEON_TXFORMAT_HEIGHT_SHIFT) & RADEON_TXFORMAT_HEIGHT_MASK);
-=======
 			track->textures[i].width = 1 << ((idx_value & RADEON_TXFORMAT_WIDTH_MASK) >> RADEON_TXFORMAT_WIDTH_SHIFT);
 			track->textures[i].height = 1 << ((idx_value & RADEON_TXFORMAT_HEIGHT_MASK) >> RADEON_TXFORMAT_HEIGHT_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (idx_value & R200_TXFORMAT_LOOKUP_DISABLE)
 			track->textures[i].lookup_disable = true;
@@ -662,12 +537,7 @@ int r200_packet0_check(struct radeon_cs_parser *p,
 		track->tex_dirty = true;
 		break;
 	default:
-<<<<<<< HEAD
-		printk(KERN_ERR "Forbidden register 0x%04X in cs at %d\n",
-		       reg, idx);
-=======
 		pr_err("Forbidden register 0x%04X in cs at %d\n", reg, idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	return 0;

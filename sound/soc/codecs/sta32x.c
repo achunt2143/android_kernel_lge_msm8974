@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Codec driver for ST STA32x 2.1-channel high-efficiency digital audio system
  *
@@ -13,14 +10,6 @@
  *	  Mark Brown <broonie@opensource.wolfsonmicro.com>
  *	Freescale Semiconductor, Inc.
  *	  Timur Tabi <timur@freescale.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s:%d: " fmt, __func__, __LINE__
@@ -28,12 +17,6 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/delay.h>
-#include <linux/pm.h>
-#include <linux/i2c.h>
-#include <linux/regulator/consumer.h>
-=======
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
@@ -42,7 +25,6 @@
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 #include <sound/core.h>
@@ -65,22 +47,6 @@
 		      SNDRV_PCM_RATE_192000)
 
 #define STA32X_FORMATS \
-<<<<<<< HEAD
-	(SNDRV_PCM_FMTBIT_S16_LE  | SNDRV_PCM_FMTBIT_S16_BE  | \
-	 SNDRV_PCM_FMTBIT_S18_3LE | SNDRV_PCM_FMTBIT_S18_3BE | \
-	 SNDRV_PCM_FMTBIT_S20_3LE | SNDRV_PCM_FMTBIT_S20_3BE | \
-	 SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_S24_3BE | \
-	 SNDRV_PCM_FMTBIT_S24_LE  | SNDRV_PCM_FMTBIT_S24_BE  | \
-	 SNDRV_PCM_FMTBIT_S32_LE  | SNDRV_PCM_FMTBIT_S32_BE)
-
-/* Power-up register defaults */
-static const u8 sta32x_regs[STA32X_REGISTER_COUNT] = {
-	0x63, 0x80, 0xc2, 0x40, 0xc2, 0x5c, 0x10, 0xff, 0x60, 0x60,
-	0x60, 0x80, 0x00, 0x00, 0x00, 0x40, 0x80, 0x77, 0x6a, 0x69,
-	0x6a, 0x69, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2d,
-	0xc0, 0xf3, 0x33, 0x00, 0x0c,
-=======
 	(SNDRV_PCM_FMTBIT_S16_LE  | SNDRV_PCM_FMTBIT_S18_3LE | \
 	 SNDRV_PCM_FMTBIT_S20_3LE | SNDRV_PCM_FMTBIT_S24_3LE | \
 	 SNDRV_PCM_FMTBIT_S24_LE  | SNDRV_PCM_FMTBIT_S32_LE)
@@ -157,7 +123,6 @@ static const struct regmap_access_table sta32x_read_regs = {
 static const struct regmap_access_table sta32x_volatile_regs = {
 	.yes_ranges =	sta32x_volatile_regs_range,
 	.n_yes_ranges =	ARRAY_SIZE(sta32x_volatile_regs_range),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* regulator power supply names */
@@ -169,15 +134,10 @@ static const char *sta32x_supply_names[] = {
 
 /* codec private data */
 struct sta32x_priv {
-<<<<<<< HEAD
-	struct regulator_bulk_data supplies[ARRAY_SIZE(sta32x_supply_names)];
-	struct snd_soc_codec *codec;
-=======
 	struct regmap *regmap;
 	struct clk *xti_clk;
 	struct regulator_bulk_data supplies[ARRAY_SIZE(sta32x_supply_names)];
 	struct snd_soc_component *component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sta32x_platform_data *pdata;
 
 	unsigned int mclk;
@@ -186,11 +146,8 @@ struct sta32x_priv {
 	u32 coef_shadow[STA32X_COEF_COUNT];
 	struct delayed_work watchdog_work;
 	int shutdown;
-<<<<<<< HEAD
-=======
 	struct gpio_desc *gpiod_nreset;
 	struct mutex coeff_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const DECLARE_TLV_DB_SCALE(mvol_tlv, -12700, 50, 1);
@@ -224,42 +181,17 @@ static const char *sta32x_limiter_release_rate[] = {
 	"0.5116", "0.1370", "0.0744", "0.0499", "0.0360", "0.0299",
 	"0.0264", "0.0208", "0.0198", "0.0172", "0.0147", "0.0137",
 	"0.0134", "0.0117", "0.0110", "0.0104" };
-<<<<<<< HEAD
-
-static const unsigned int sta32x_limiter_ac_attack_tlv[] = {
-	TLV_DB_RANGE_HEAD(2),
-	0, 7, TLV_DB_SCALE_ITEM(-1200, 200, 0),
-	8, 16, TLV_DB_SCALE_ITEM(300, 100, 0),
-};
-
-static const unsigned int sta32x_limiter_ac_release_tlv[] = {
-	TLV_DB_RANGE_HEAD(5),
-=======
 static DECLARE_TLV_DB_RANGE(sta32x_limiter_ac_attack_tlv,
 	0, 7, TLV_DB_SCALE_ITEM(-1200, 200, 0),
 	8, 16, TLV_DB_SCALE_ITEM(300, 100, 0),
 );
 
 static DECLARE_TLV_DB_RANGE(sta32x_limiter_ac_release_tlv,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 0, TLV_DB_SCALE_ITEM(TLV_DB_GAIN_MUTE, 0, 0),
 	1, 1, TLV_DB_SCALE_ITEM(-2900, 0, 0),
 	2, 2, TLV_DB_SCALE_ITEM(-2000, 0, 0),
 	3, 8, TLV_DB_SCALE_ITEM(-1400, 200, 0),
 	8, 16, TLV_DB_SCALE_ITEM(-700, 100, 0),
-<<<<<<< HEAD
-};
-
-static const unsigned int sta32x_limiter_drc_attack_tlv[] = {
-	TLV_DB_RANGE_HEAD(3),
-	0, 7, TLV_DB_SCALE_ITEM(-3100, 200, 0),
-	8, 13, TLV_DB_SCALE_ITEM(-1600, 100, 0),
-	14, 16, TLV_DB_SCALE_ITEM(-1000, 300, 0),
-};
-
-static const unsigned int sta32x_limiter_drc_release_tlv[] = {
-	TLV_DB_RANGE_HEAD(5),
-=======
 );
 
 static DECLARE_TLV_DB_RANGE(sta32x_limiter_drc_attack_tlv,
@@ -269,17 +201,12 @@ static DECLARE_TLV_DB_RANGE(sta32x_limiter_drc_attack_tlv,
 );
 
 static DECLARE_TLV_DB_RANGE(sta32x_limiter_drc_release_tlv,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 0, TLV_DB_SCALE_ITEM(TLV_DB_GAIN_MUTE, 0, 0),
 	1, 2, TLV_DB_SCALE_ITEM(-3800, 200, 0),
 	3, 4, TLV_DB_SCALE_ITEM(-3300, 200, 0),
 	5, 12, TLV_DB_SCALE_ITEM(-3000, 200, 0),
 	13, 16, TLV_DB_SCALE_ITEM(-1500, 300, 0),
-<<<<<<< HEAD
-};
-=======
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static SOC_ENUM_SINGLE_DECL(sta32x_drc_ac_enum,
 			    STA32X_CONFD, STA32X_CONFD_DRC_SHIFT,
@@ -337,32 +264,6 @@ static int sta32x_coefficient_info(struct snd_kcontrol *kcontrol,
 static int sta32x_coefficient_get(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	int numcoef = kcontrol->private_value >> 16;
-	int index = kcontrol->private_value & 0xffff;
-	unsigned int cfud;
-	int i;
-
-	/* preserve reserved bits in STA32X_CFUD */
-	cfud = snd_soc_read(codec, STA32X_CFUD) & 0xf0;
-	/* chip documentation does not say if the bits are self clearing,
-	 * so do it explicitly */
-	snd_soc_write(codec, STA32X_CFUD, cfud);
-
-	snd_soc_write(codec, STA32X_CFADDR2, index);
-	if (numcoef == 1)
-		snd_soc_write(codec, STA32X_CFUD, cfud | 0x04);
-	else if (numcoef == 5)
-		snd_soc_write(codec, STA32X_CFUD, cfud | 0x08);
-	else
-		return -EINVAL;
-	for (i = 0; i < 3 * numcoef; i++)
-		ucontrol->value.bytes.data[i] =
-			snd_soc_read(codec, STA32X_B1CF1 + i);
-
-	return 0;
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct sta32x_priv *sta32x = snd_soc_component_get_drvdata(component);
 	int numcoef = kcontrol->private_value >> 16;
@@ -400,33 +301,19 @@ exit_unlock:
 	mutex_unlock(&sta32x->coeff_lock);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sta32x_coefficient_put(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct sta32x_priv *sta32x = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct sta32x_priv *sta32x = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int numcoef = kcontrol->private_value >> 16;
 	int index = kcontrol->private_value & 0xffff;
 	unsigned int cfud;
 	int i;
 
 	/* preserve reserved bits in STA32X_CFUD */
-<<<<<<< HEAD
-	cfud = snd_soc_read(codec, STA32X_CFUD) & 0xf0;
-	/* chip documentation does not say if the bits are self clearing,
-	 * so do it explicitly */
-	snd_soc_write(codec, STA32X_CFUD, cfud);
-
-	snd_soc_write(codec, STA32X_CFADDR2, index);
-=======
 	regmap_read(sta32x->regmap, STA32X_CFUD, &cfud);
 	cfud &= 0xf0;
 	/*
@@ -436,63 +323,31 @@ static int sta32x_coefficient_put(struct snd_kcontrol *kcontrol,
 	regmap_write(sta32x->regmap, STA32X_CFUD, cfud);
 
 	regmap_write(sta32x->regmap, STA32X_CFADDR2, index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < numcoef && (index + i < STA32X_COEF_COUNT); i++)
 		sta32x->coef_shadow[index + i] =
 			  (ucontrol->value.bytes.data[3 * i] << 16)
 			| (ucontrol->value.bytes.data[3 * i + 1] << 8)
 			| (ucontrol->value.bytes.data[3 * i + 2]);
 	for (i = 0; i < 3 * numcoef; i++)
-<<<<<<< HEAD
-		snd_soc_write(codec, STA32X_B1CF1 + i,
-			      ucontrol->value.bytes.data[i]);
-	if (numcoef == 1)
-		snd_soc_write(codec, STA32X_CFUD, cfud | 0x01);
-	else if (numcoef == 5)
-		snd_soc_write(codec, STA32X_CFUD, cfud | 0x02);
-=======
 		regmap_write(sta32x->regmap, STA32X_B1CF1 + i,
 			     ucontrol->value.bytes.data[i]);
 	if (numcoef == 1)
 		regmap_write(sta32x->regmap, STA32X_CFUD, cfud | 0x01);
 	else if (numcoef == 5)
 		regmap_write(sta32x->regmap, STA32X_CFUD, cfud | 0x02);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return -EINVAL;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sta32x_sync_coef_shadow(struct snd_soc_codec *codec)
-{
-	struct sta32x_priv *sta32x = snd_soc_codec_get_drvdata(codec);
-=======
 static int sta32x_sync_coef_shadow(struct snd_soc_component *component)
 {
 	struct sta32x_priv *sta32x = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cfud;
 	int i;
 
 	/* preserve reserved bits in STA32X_CFUD */
-<<<<<<< HEAD
-	cfud = snd_soc_read(codec, STA32X_CFUD) & 0xf0;
-
-	for (i = 0; i < STA32X_COEF_COUNT; i++) {
-		snd_soc_write(codec, STA32X_CFADDR2, i);
-		snd_soc_write(codec, STA32X_B1CF1,
-			      (sta32x->coef_shadow[i] >> 16) & 0xff);
-		snd_soc_write(codec, STA32X_B1CF2,
-			      (sta32x->coef_shadow[i] >> 8) & 0xff);
-		snd_soc_write(codec, STA32X_B1CF3,
-			      (sta32x->coef_shadow[i]) & 0xff);
-		/* chip documentation does not say if the bits are
-		 * self-clearing, so do it explicitly */
-		snd_soc_write(codec, STA32X_CFUD, cfud);
-		snd_soc_write(codec, STA32X_CFUD, cfud | 0x01);
-=======
 	regmap_read(sta32x->regmap, STA32X_CFUD, &cfud);
 	cfud &= 0xf0;
 
@@ -510,27 +365,10 @@ static int sta32x_sync_coef_shadow(struct snd_soc_component *component)
 		 */
 		regmap_write(sta32x->regmap, STA32X_CFUD, cfud);
 		regmap_write(sta32x->regmap, STA32X_CFUD, cfud | 0x01);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sta32x_cache_sync(struct snd_soc_codec *codec)
-{
-	unsigned int mute;
-	int rc;
-
-	if (!codec->cache_sync)
-		return 0;
-
-	/* mute during register sync */
-	mute = snd_soc_read(codec, STA32X_MMUTE);
-	snd_soc_write(codec, STA32X_MMUTE, mute | STA32X_MMUTE_MMUTE);
-	sta32x_sync_coef_shadow(codec);
-	rc = snd_soc_cache_sync(codec);
-	snd_soc_write(codec, STA32X_MMUTE, mute);
-=======
 static int sta32x_cache_sync(struct snd_soc_component *component)
 {
 	struct sta32x_priv *sta32x = snd_soc_component_get_drvdata(component);
@@ -543,7 +381,6 @@ static int sta32x_cache_sync(struct snd_soc_component *component)
 	sta32x_sync_coef_shadow(component);
 	rc = regcache_sync(sta32x->regmap);
 	regmap_write(sta32x->regmap, STA32X_MMUTE, mute);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -552,24 +389,6 @@ static void sta32x_watchdog(struct work_struct *work)
 {
 	struct sta32x_priv *sta32x = container_of(work, struct sta32x_priv,
 						  watchdog_work.work);
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = sta32x->codec;
-	unsigned int confa, confa_cached;
-
-	/* check if sta32x has reset itself */
-	confa_cached = snd_soc_read(codec, STA32X_CONFA);
-	codec->cache_bypass = 1;
-	confa = snd_soc_read(codec, STA32X_CONFA);
-	codec->cache_bypass = 0;
-	if (confa != confa_cached) {
-		codec->cache_sync = 1;
-		sta32x_cache_sync(codec);
-	}
-
-	if (!sta32x->shutdown)
-		schedule_delayed_work(&sta32x->watchdog_work,
-				      round_jiffies_relative(HZ));
-=======
 	struct snd_soc_component *component = sta32x->component;
 	unsigned int confa, confa_cached;
 
@@ -587,21 +406,15 @@ static void sta32x_watchdog(struct work_struct *work)
 		queue_delayed_work(system_power_efficient_wq,
 				   &sta32x->watchdog_work,
 				   round_jiffies_relative(HZ));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sta32x_watchdog_start(struct sta32x_priv *sta32x)
 {
 	if (sta32x->pdata->needs_esd_watchdog) {
 		sta32x->shutdown = 0;
-<<<<<<< HEAD
-		schedule_delayed_work(&sta32x->watchdog_work,
-				      round_jiffies_relative(HZ));
-=======
 		queue_delayed_work(system_power_efficient_wq,
 				   &sta32x->watchdog_work,
 				   round_jiffies_relative(HZ));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -735,26 +548,12 @@ static struct {
 };
 
 /* MCLK to fs clock ratios */
-<<<<<<< HEAD
-static struct {
-	int ratio;
-	int mcs;
-} mclk_ratios[3][7] = {
-	{ { 768, 0 }, { 512, 1 }, { 384, 2 }, { 256, 3 },
-	  { 128, 4 }, { 576, 5 }, { 0, 0 } },
-	{ { 384, 2 }, { 256, 3 }, { 192, 4 }, { 128, 5 }, {64, 0 }, { 0, 0 } },
-	{ { 384, 2 }, { 256, 3 }, { 192, 4 }, { 128, 5 }, {64, 0 }, { 0, 0 } },
-};
-
-
-=======
 static int mcs_ratio_table[3][7] = {
 	{ 768, 512, 384, 256, 128, 576, 0 },
 	{ 384, 256, 192, 128,  64,   0 },
 	{ 384, 256, 192, 128,  64,   0 },
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * sta32x_set_dai_sysclk - configure MCLK
  * @codec_dai: the codec DAI
@@ -777,57 +576,12 @@ static int mcs_ratio_table[3][7] = {
 static int sta32x_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		int clk_id, unsigned int freq, int dir)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	struct sta32x_priv *sta32x = snd_soc_codec_get_drvdata(codec);
-	int i, j, ir, fs;
-	unsigned int rates = 0;
-	unsigned int rate_min = -1;
-	unsigned int rate_max = 0;
-
-	pr_debug("mclk=%u\n", freq);
-	sta32x->mclk = freq;
-
-	if (sta32x->mclk) {
-		for (i = 0; i < ARRAY_SIZE(interpolation_ratios); i++) {
-			ir = interpolation_ratios[i].ir;
-			fs = interpolation_ratios[i].fs;
-			for (j = 0; mclk_ratios[ir][j].ratio; j++) {
-				if (mclk_ratios[ir][j].ratio * fs == freq) {
-					rates |= snd_pcm_rate_to_rate_bit(fs);
-					if (fs < rate_min)
-						rate_min = fs;
-					if (fs > rate_max)
-						rate_max = fs;
-					break;
-				}
-			}
-		}
-		/* FIXME: soc should support a rate list */
-		rates &= ~SNDRV_PCM_RATE_KNOT;
-
-		if (!rates) {
-			dev_err(codec->dev, "could not find a valid sample rate\n");
-			return -EINVAL;
-		}
-	} else {
-		/* enable all possible rates */
-		rates = STA32X_RATES;
-		rate_min = 32000;
-		rate_max = 192000;
-	}
-
-	codec_dai->driver->playback.rates = rates;
-	codec_dai->driver->playback.rate_min = rate_min;
-	codec_dai->driver->playback.rate_max = rate_max;
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	struct sta32x_priv *sta32x = snd_soc_component_get_drvdata(component);
 
 	dev_dbg(component->dev, "mclk=%u\n", freq);
 	sta32x->mclk = freq;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -842,24 +596,12 @@ static int sta32x_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 static int sta32x_set_dai_fmt(struct snd_soc_dai *codec_dai,
 			      unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	struct sta32x_priv *sta32x = snd_soc_codec_get_drvdata(codec);
-	u8 confb = snd_soc_read(codec, STA32X_CONFB);
-
-	pr_debug("\n");
-	confb &= ~(STA32X_CONFB_C1IM | STA32X_CONFB_C2IM);
-
-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-	case SND_SOC_DAIFMT_CBS_CFS:
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	struct sta32x_priv *sta32x = snd_soc_component_get_drvdata(component);
 	u8 confb = 0;
 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBC_CFC:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -886,13 +628,8 @@ static int sta32x_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_write(codec, STA32X_CONFB, confb);
-	return 0;
-=======
 	return regmap_update_bits(sta32x->regmap, STA32X_CONFB,
 				  STA32X_CONFB_C1IM | STA32X_CONFB_C2IM, confb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -908,18 +645,6 @@ static int sta32x_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_codec *codec = rtd->codec;
-	struct sta32x_priv *sta32x = snd_soc_codec_get_drvdata(codec);
-	unsigned int rate;
-	int i, mcs = -1, ir = -1;
-	u8 confa, confb;
-
-	rate = params_rate(params);
-	pr_debug("rate: %u\n", rate);
-	for (i = 0; i < ARRAY_SIZE(interpolation_ratios); i++)
-=======
 	struct snd_soc_component *component = dai->component;
 	struct sta32x_priv *sta32x = snd_soc_component_get_drvdata(component);
 	int i, mcs = -EINVAL, ir = -EINVAL;
@@ -938,39 +663,10 @@ static int sta32x_hw_params(struct snd_pcm_substream *substream,
 	dev_dbg(component->dev, "rate: %u, ratio: %u\n", rate, ratio);
 
 	for (i = 0; i < ARRAY_SIZE(interpolation_ratios); i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (interpolation_ratios[i].fs == rate) {
 			ir = interpolation_ratios[i].ir;
 			break;
 		}
-<<<<<<< HEAD
-	if (ir < 0)
-		return -EINVAL;
-	for (i = 0; mclk_ratios[ir][i].ratio; i++)
-		if (mclk_ratios[ir][i].ratio * rate == sta32x->mclk) {
-			mcs = mclk_ratios[ir][i].mcs;
-			break;
-		}
-	if (mcs < 0)
-		return -EINVAL;
-
-	confa = snd_soc_read(codec, STA32X_CONFA);
-	confa &= ~(STA32X_CONFA_MCS_MASK | STA32X_CONFA_IR_MASK);
-	confa |= (ir << STA32X_CONFA_IR_SHIFT) | (mcs << STA32X_CONFA_MCS_SHIFT);
-
-	confb = snd_soc_read(codec, STA32X_CONFB);
-	confb &= ~(STA32X_CONFB_SAI_MASK | STA32X_CONFB_SAIFB);
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S24_LE:
-	case SNDRV_PCM_FORMAT_S24_BE:
-	case SNDRV_PCM_FORMAT_S24_3LE:
-	case SNDRV_PCM_FORMAT_S24_3BE:
-		pr_debug("24bit\n");
-		/* fall through */
-	case SNDRV_PCM_FORMAT_S32_LE:
-	case SNDRV_PCM_FORMAT_S32_BE:
-		pr_debug("24bit or 32bit\n");
-=======
 	}
 
 	if (ir < 0) {
@@ -1000,7 +696,6 @@ static int sta32x_hw_params(struct snd_pcm_substream *substream,
 		fallthrough;
 	case 32:
 		dev_dbg(component->dev, "24bit or 32bit\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (sta32x->format) {
 		case SND_SOC_DAIFMT_I2S:
 			confb |= 0x0;
@@ -1014,14 +709,8 @@ static int sta32x_hw_params(struct snd_pcm_substream *substream,
 		}
 
 		break;
-<<<<<<< HEAD
-	case SNDRV_PCM_FORMAT_S20_3LE:
-	case SNDRV_PCM_FORMAT_S20_3BE:
-		pr_debug("20bit\n");
-=======
 	case 20:
 		dev_dbg(component->dev, "20bit\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (sta32x->format) {
 		case SND_SOC_DAIFMT_I2S:
 			confb |= 0x4;
@@ -1035,14 +724,8 @@ static int sta32x_hw_params(struct snd_pcm_substream *substream,
 		}
 
 		break;
-<<<<<<< HEAD
-	case SNDRV_PCM_FORMAT_S18_3LE:
-	case SNDRV_PCM_FORMAT_S18_3BE:
-		pr_debug("18bit\n");
-=======
 	case 18:
 		dev_dbg(component->dev, "18bit\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (sta32x->format) {
 		case SND_SOC_DAIFMT_I2S:
 			confb |= 0x8;
@@ -1056,14 +739,8 @@ static int sta32x_hw_params(struct snd_pcm_substream *substream,
 		}
 
 		break;
-<<<<<<< HEAD
-	case SNDRV_PCM_FORMAT_S16_LE:
-	case SNDRV_PCM_FORMAT_S16_BE:
-		pr_debug("16bit\n");
-=======
 	case 16:
 		dev_dbg(component->dev, "16bit\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (sta32x->format) {
 		case SND_SOC_DAIFMT_I2S:
 			confb |= 0x0;
@@ -1081,10 +758,6 @@ static int sta32x_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_write(codec, STA32X_CONFA, confa);
-	snd_soc_write(codec, STA32X_CONFB, confb);
-=======
 	ret = regmap_update_bits(sta32x->regmap, STA32X_CONFA,
 				 STA32X_CONFA_MCS_MASK | STA32X_CONFA_IR_MASK,
 				 confa);
@@ -1109,28 +782,11 @@ static int sta32x_startup_sequence(struct sta32x_priv *sta32x)
 		mdelay(1);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
  * sta32x_set_bias_level - DAPM callback
-<<<<<<< HEAD
- * @codec: the codec device
- * @level: DAPM power level
- *
- * This is called by ALSA to put the codec into low power mode
- * or to wake it up.  If the codec is powered off completely
- * all registers must be restored after power on.
- */
-static int sta32x_set_bias_level(struct snd_soc_codec *codec,
-				 enum snd_soc_bias_level level)
-{
-	int ret;
-	struct sta32x_priv *sta32x = snd_soc_codec_get_drvdata(codec);
-
-	pr_debug("level = %d\n", level);
-=======
  * @component: the component device
  * @level: DAPM power level
  *
@@ -1145,51 +801,27 @@ static int sta32x_set_bias_level(struct snd_soc_component *component,
 	struct sta32x_priv *sta32x = snd_soc_component_get_drvdata(component);
 
 	dev_dbg(component->dev, "level = %d\n", level);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
 		/* Full power on */
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, STA32X_CONFF,
-=======
 		regmap_update_bits(sta32x->regmap, STA32X_CONFF,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    STA32X_CONFF_PWDN | STA32X_CONFF_EAPD,
 				    STA32X_CONFF_PWDN | STA32X_CONFF_EAPD);
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
-<<<<<<< HEAD
-		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
-			ret = regulator_bulk_enable(ARRAY_SIZE(sta32x->supplies),
-						    sta32x->supplies);
-			if (ret != 0) {
-				dev_err(codec->dev,
-=======
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
 			ret = regulator_bulk_enable(ARRAY_SIZE(sta32x->supplies),
 						    sta32x->supplies);
 			if (ret != 0) {
 				dev_err(component->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"Failed to enable supplies: %d\n", ret);
 				return ret;
 			}
 
-<<<<<<< HEAD
-			sta32x_cache_sync(codec);
-			sta32x_watchdog_start(sta32x);
-		}
-
-		/* Power up to mute */
-		/* FIXME */
-		snd_soc_update_bits(codec, STA32X_CONFF,
-				    STA32X_CONFF_PWDN | STA32X_CONFF_EAPD,
-				    STA32X_CONFF_PWDN | STA32X_CONFF_EAPD);
-=======
 			sta32x_startup_sequence(sta32x);
 			sta32x_cache_sync(component);
 			sta32x_watchdog_start(sta32x);
@@ -1199,19 +831,11 @@ static int sta32x_set_bias_level(struct snd_soc_component *component,
 		regmap_update_bits(sta32x->regmap, STA32X_CONFF,
 				   STA32X_CONFF_PWDN | STA32X_CONFF_EAPD,
 				   0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 
 	case SND_SOC_BIAS_OFF:
 		/* The chip runs through the power down sequence for us. */
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, STA32X_CONFF,
-				    STA32X_CONFF_PWDN | STA32X_CONFF_EAPD,
-				    STA32X_CONFF_PWDN);
-		msleep(300);
-		sta32x_watchdog_stop(sta32x);
-=======
 		regmap_update_bits(sta32x->regmap, STA32X_CONFF,
 				   STA32X_CONFF_PWDN | STA32X_CONFF_EAPD, 0);
 		msleep(300);
@@ -1219,15 +843,10 @@ static int sta32x_set_bias_level(struct snd_soc_component *component,
 
 		gpiod_set_value(sta32x->gpiod_nreset, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regulator_bulk_disable(ARRAY_SIZE(sta32x->supplies),
 				       sta32x->supplies);
 		break;
 	}
-<<<<<<< HEAD
-	codec->dapm.bias_level = level;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1238,11 +857,7 @@ static const struct snd_soc_dai_ops sta32x_dai_ops = {
 };
 
 static struct snd_soc_dai_driver sta32x_dai = {
-<<<<<<< HEAD
-	.name = "STA32X",
-=======
 	.name = "sta32x-hifi",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.playback = {
 		.stream_name = "Playback",
 		.channels_min = 2,
@@ -1253,42 +868,6 @@ static struct snd_soc_dai_driver sta32x_dai = {
 	.ops = &sta32x_dai_ops,
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int sta32x_suspend(struct snd_soc_codec *codec)
-{
-	sta32x_set_bias_level(codec, SND_SOC_BIAS_OFF);
-	return 0;
-}
-
-static int sta32x_resume(struct snd_soc_codec *codec)
-{
-	sta32x_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-	return 0;
-}
-#else
-#define sta32x_suspend NULL
-#define sta32x_resume NULL
-#endif
-
-static int sta32x_probe(struct snd_soc_codec *codec)
-{
-	struct sta32x_priv *sta32x = snd_soc_codec_get_drvdata(codec);
-	int i, ret = 0, thermal = 0;
-
-	sta32x->codec = codec;
-	sta32x->pdata = dev_get_platdata(codec->dev);
-
-	/* regulators */
-	for (i = 0; i < ARRAY_SIZE(sta32x->supplies); i++)
-		sta32x->supplies[i].supply = sta32x_supply_names[i];
-
-	ret = regulator_bulk_get(codec->dev, ARRAY_SIZE(sta32x->supplies),
-				 sta32x->supplies);
-	if (ret != 0) {
-		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
-		goto err;
-=======
 static int sta32x_probe(struct snd_soc_component *component)
 {
 	struct sta32x_priv *sta32x = snd_soc_component_get_drvdata(component);
@@ -1304,69 +883,11 @@ static int sta32x_probe(struct snd_soc_component *component)
 				"Failed to enable clock: %d\n", ret);
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = regulator_bulk_enable(ARRAY_SIZE(sta32x->supplies),
 				    sta32x->supplies);
 	if (ret != 0) {
-<<<<<<< HEAD
-		dev_err(codec->dev, "Failed to enable supplies: %d\n", ret);
-		goto err_get;
-	}
-
-	/* Tell ASoC what kind of I/O to use to read the registers.  ASoC will
-	 * then do the I2C transactions itself.
-	 */
-	ret = snd_soc_codec_set_cache_io(codec, 8, 8, SND_SOC_I2C);
-	if (ret < 0) {
-		dev_err(codec->dev, "failed to set cache I/O (ret=%i)\n", ret);
-		return ret;
-	}
-
-	/* Chip documentation explicitly requires that the reset values
-	 * of reserved register bits are left untouched.
-	 * Write the register default value to cache for reserved registers,
-	 * so the write to the these registers are suppressed by the cache
-	 * restore code when it skips writes of default registers.
-	 */
-	snd_soc_cache_write(codec, STA32X_CONFC, 0xc2);
-	snd_soc_cache_write(codec, STA32X_CONFE, 0xc2);
-	snd_soc_cache_write(codec, STA32X_CONFF, 0x5c);
-	snd_soc_cache_write(codec, STA32X_MMUTE, 0x10);
-	snd_soc_cache_write(codec, STA32X_AUTO1, 0x60);
-	snd_soc_cache_write(codec, STA32X_AUTO3, 0x00);
-	snd_soc_cache_write(codec, STA32X_C3CFG, 0x40);
-
-	/* set thermal warning adjustment and recovery */
-	if (!(sta32x->pdata->thermal_conf & STA32X_THERMAL_ADJUSTMENT_ENABLE))
-		thermal |= STA32X_CONFA_TWAB;
-	if (!(sta32x->pdata->thermal_conf & STA32X_THERMAL_RECOVERY_ENABLE))
-		thermal |= STA32X_CONFA_TWRB;
-	snd_soc_update_bits(codec, STA32X_CONFA,
-			    STA32X_CONFA_TWAB | STA32X_CONFA_TWRB,
-			    thermal);
-
-	/* select output configuration  */
-	snd_soc_update_bits(codec, STA32X_CONFF,
-			    STA32X_CONFF_OCFG_MASK,
-			    sta32x->pdata->output_conf
-			    << STA32X_CONFF_OCFG_SHIFT);
-
-	/* channel to output mapping */
-	snd_soc_update_bits(codec, STA32X_C1CFG,
-			    STA32X_CxCFG_OM_MASK,
-			    sta32x->pdata->ch1_output_mapping
-			    << STA32X_CxCFG_OM_SHIFT);
-	snd_soc_update_bits(codec, STA32X_C2CFG,
-			    STA32X_CxCFG_OM_MASK,
-			    sta32x->pdata->ch2_output_mapping
-			    << STA32X_CxCFG_OM_SHIFT);
-	snd_soc_update_bits(codec, STA32X_C3CFG,
-			    STA32X_CxCFG_OM_MASK,
-			    sta32x->pdata->ch3_output_mapping
-			    << STA32X_CxCFG_OM_SHIFT);
-=======
 		dev_err(component->dev, "Failed to enable supplies: %d\n", ret);
 		goto err_clk_disable_unprepare;
 	}
@@ -1438,7 +959,6 @@ static int sta32x_probe(struct snd_soc_component *component)
 			   STA32X_CxCFG_OM_MASK,
 			   pdata->ch3_output_mapping
 				<< STA32X_CxCFG_OM_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialize coefficient shadow RAM with reset values */
 	for (i = 4; i <= 49; i += 5)
@@ -1454,70 +974,12 @@ static int sta32x_probe(struct snd_soc_component *component)
 	if (sta32x->pdata->needs_esd_watchdog)
 		INIT_DELAYED_WORK(&sta32x->watchdog_work, sta32x_watchdog);
 
-<<<<<<< HEAD
-	sta32x_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-=======
 	snd_soc_component_force_bias_level(component, SND_SOC_BIAS_STANDBY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Bias level configuration will have done an extra enable */
 	regulator_bulk_disable(ARRAY_SIZE(sta32x->supplies), sta32x->supplies);
 
 	return 0;
 
-<<<<<<< HEAD
-err_get:
-	regulator_bulk_free(ARRAY_SIZE(sta32x->supplies), sta32x->supplies);
-err:
-	return ret;
-}
-
-static int sta32x_remove(struct snd_soc_codec *codec)
-{
-	struct sta32x_priv *sta32x = snd_soc_codec_get_drvdata(codec);
-
-	sta32x_watchdog_stop(sta32x);
-	sta32x_set_bias_level(codec, SND_SOC_BIAS_OFF);
-	regulator_bulk_disable(ARRAY_SIZE(sta32x->supplies), sta32x->supplies);
-	regulator_bulk_free(ARRAY_SIZE(sta32x->supplies), sta32x->supplies);
-
-	return 0;
-}
-
-static int sta32x_reg_is_volatile(struct snd_soc_codec *codec,
-				  unsigned int reg)
-{
-	switch (reg) {
-	case STA32X_CONFA ... STA32X_L2ATRT:
-	case STA32X_MPCC1 ... STA32X_FDRC2:
-		return 0;
-	}
-	return 1;
-}
-
-static const struct snd_soc_codec_driver sta32x_codec = {
-	.probe =		sta32x_probe,
-	.remove =		sta32x_remove,
-	.suspend =		sta32x_suspend,
-	.resume =		sta32x_resume,
-	.reg_cache_size =	STA32X_REGISTER_COUNT,
-	.reg_word_size =	sizeof(u8),
-	.reg_cache_default =	sta32x_regs,
-	.volatile_register =	sta32x_reg_is_volatile,
-	.set_bias_level =	sta32x_set_bias_level,
-	.controls =		sta32x_snd_controls,
-	.num_controls =		ARRAY_SIZE(sta32x_snd_controls),
-	.dapm_widgets =		sta32x_dapm_widgets,
-	.num_dapm_widgets =	ARRAY_SIZE(sta32x_dapm_widgets),
-	.dapm_routes =		sta32x_dapm_routes,
-	.num_dapm_routes =	ARRAY_SIZE(sta32x_dapm_routes),
-};
-
-static __devinit int sta32x_i2c_probe(struct i2c_client *i2c,
-				      const struct i2c_device_id *id)
-{
-	struct sta32x_priv *sta32x;
-	int ret;
-=======
 err_regulator_bulk_disable:
 	regulator_bulk_disable(ARRAY_SIZE(sta32x->supplies), sta32x->supplies);
 err_clk_disable_unprepare:
@@ -1629,20 +1091,12 @@ static int sta32x_i2c_probe(struct i2c_client *i2c)
 	struct device *dev = &i2c->dev;
 	struct sta32x_priv *sta32x;
 	int ret, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sta32x = devm_kzalloc(&i2c->dev, sizeof(struct sta32x_priv),
 			      GFP_KERNEL);
 	if (!sta32x)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	i2c_set_clientdata(i2c, sta32x);
-
-	ret = snd_soc_register_codec(&i2c->dev, &sta32x_codec, &sta32x_dai, 1);
-	if (ret != 0)
-		dev_err(&i2c->dev, "Failed to register codec (%d)\n", ret);
-=======
 	mutex_init(&sta32x->coeff_lock);
 	sta32x->pdata = dev_get_platdata(dev);
 
@@ -1695,20 +1149,10 @@ static int sta32x_i2c_probe(struct i2c_client *i2c)
 					      &sta32x_dai, 1);
 	if (ret < 0)
 		dev_err(dev, "Failed to register component (%d)\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static __devexit int sta32x_i2c_remove(struct i2c_client *client)
-{
-	snd_soc_unregister_codec(&client->dev);
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id sta32x_i2c_id[] = {
 	{ "sta326", 0 },
 	{ "sta328", 0 },
@@ -1720,26 +1164,6 @@ MODULE_DEVICE_TABLE(i2c, sta32x_i2c_id);
 static struct i2c_driver sta32x_i2c_driver = {
 	.driver = {
 		.name = "sta32x",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe =    sta32x_i2c_probe,
-	.remove =   __devexit_p(sta32x_i2c_remove),
-	.id_table = sta32x_i2c_id,
-};
-
-static int __init sta32x_init(void)
-{
-	return i2c_add_driver(&sta32x_i2c_driver);
-}
-module_init(sta32x_init);
-
-static void __exit sta32x_exit(void)
-{
-	i2c_del_driver(&sta32x_i2c_driver);
-}
-module_exit(sta32x_exit);
-=======
 		.of_match_table = of_match_ptr(st32x_dt_ids),
 	},
 	.probe = sta32x_i2c_probe,
@@ -1747,7 +1171,6 @@ module_exit(sta32x_exit);
 };
 
 module_i2c_driver(sta32x_i2c_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC STA32X driver");
 MODULE_AUTHOR("Johannes Stezenbach <js@sig21.net>");

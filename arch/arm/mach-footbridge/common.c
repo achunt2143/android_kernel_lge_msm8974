@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-footbridge/common.c
  *
  *  Copyright (C) 1998-2000 Russell King, Dave Gilbert.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/types.h>
@@ -22,15 +12,9 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-#include <video/vga.h>
- 
-#include <asm/pgtable.h>
-=======
 #include <linux/dma-direct.h>
 #include <video/vga.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm/irq.h>
 #include <asm/mach-types.h>
@@ -40,11 +24,6 @@
 
 #include <asm/mach/irq.h>
 #include <asm/mach/map.h>
-<<<<<<< HEAD
-
-#include "common.h"
-
-=======
 #include <asm/mach/pci.h>
 
 #include "common.h"
@@ -134,7 +113,6 @@ static void dc21285_handle_irq(struct pt_regs *regs)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int mem_fclk_21285 = 50000000;
 
 EXPORT_SYMBOL(mem_fclk_21285);
@@ -210,26 +188,15 @@ static void __init __fb_init_irq(void)
 
 	for (irq = _DC21285_IRQ(0); irq < _DC21285_IRQ(20); irq++) {
 		irq_set_chip_and_handler(irq, &fb_chip, handle_level_irq);
-<<<<<<< HEAD
-		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
-=======
 		irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 void __init footbridge_init_irq(void)
 {
-<<<<<<< HEAD
-	__fb_init_irq();
-
-	if (!footbridge_cfn_mode())
-		return;
-=======
 	set_handle_irq(dc21285_handle_irq);
 
 	__fb_init_irq();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (machine_is_ebsa285())
 		/* The following is dependent on which slot
@@ -239,12 +206,6 @@ void __init footbridge_init_irq(void)
 		 */
 		isa_init_irq(IRQ_PCI);
 
-<<<<<<< HEAD
-	if (machine_is_cats())
-		isa_init_irq(IRQ_IN2);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (machine_is_netwinder())
 		isa_init_irq(IRQ_IN3);
 }
@@ -254,34 +215,13 @@ void __init footbridge_init_irq(void)
  * commented out since there is a "No Fix" problem with it.  Not mapping
  * it means that we have extra bullet protection on our feet.
  */
-<<<<<<< HEAD
-static struct map_desc fb_common_io_desc[] __initdata = {
-=======
 static struct map_desc ebsa285_host_io_desc[] __initdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.virtual	= ARMCSR_BASE,
 		.pfn		= __phys_to_pfn(DC21285_ARMCSR_BASE),
 		.length		= ARMCSR_SIZE,
 		.type		= MT_DEVICE,
-<<<<<<< HEAD
-	}, {
-		.virtual	= XBUS_BASE,
-		.pfn		= __phys_to_pfn(0x40000000),
-		.length		= XBUS_SIZE,
-		.type		= MT_DEVICE,
-	}
-};
-
-/*
- * The mapping when the footbridge is in host mode.  We don't map any of
- * this when we are in add-in mode.
- */
-static struct map_desc ebsa285_host_io_desc[] __initdata = {
-#if defined(CONFIG_ARCH_FOOTBRIDGE) && defined(CONFIG_FOOTBRIDGE_HOST)
-=======
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.virtual	= PCIMEM_BASE,
 		.pfn		= __phys_to_pfn(DC21285_PCI_MEM),
@@ -302,42 +242,11 @@ static struct map_desc ebsa285_host_io_desc[] __initdata = {
 		.pfn		= __phys_to_pfn(DC21285_PCI_IACK),
 		.length		= PCIIACK_SIZE,
 		.type		= MT_DEVICE,
-<<<<<<< HEAD
-	}, {
-		.virtual	= PCIO_BASE,
-		.pfn		= __phys_to_pfn(DC21285_PCI_IO),
-		.length		= PCIO_SIZE,
-		.type		= MT_DEVICE,
 	},
-#endif
-=======
-	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init footbridge_map_io(void)
 {
-<<<<<<< HEAD
-	/*
-	 * Set up the common mapping first; we need this to
-	 * determine whether we're in host mode or not.
-	 */
-	iotable_init(fb_common_io_desc, ARRAY_SIZE(fb_common_io_desc));
-
-	/*
-	 * Now, work out what we've got to map in addition on this
-	 * platform.
-	 */
-	if (footbridge_cfn_mode())
-		iotable_init(ebsa285_host_io_desc, ARRAY_SIZE(ebsa285_host_io_desc));
-
-	vga_base = PCIMEM_BASE;
-}
-
-void footbridge_restart(char mode, const char *cmd)
-{
-	if (mode == 's') {
-=======
 	iotable_init(ebsa285_host_io_desc, ARRAY_SIZE(ebsa285_host_io_desc));
 	pci_map_io_early(__phys_to_pfn(DC21285_PCI_IO));
 	vga_base = PCIMEM_BASE;
@@ -346,7 +255,6 @@ void footbridge_restart(char mode, const char *cmd)
 void footbridge_restart(enum reboot_mode mode, const char *cmd)
 {
 	if (mode == REBOOT_SOFT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Jump into the ROM */
 		soft_restart(0x41000000);
 	} else {
@@ -370,50 +278,3 @@ void footbridge_restart(enum reboot_mode mode, const char *cmd)
 		*CSR_SA110_CNTL |= (1 << 13);
 	}
 }
-<<<<<<< HEAD
-
-#ifdef CONFIG_FOOTBRIDGE_ADDIN
-
-static inline unsigned long fb_bus_sdram_offset(void)
-{
-	return *CSR_PCISDRAMBASE & 0xfffffff0;
-}
-
-/*
- * These two functions convert virtual addresses to PCI addresses and PCI
- * addresses to virtual addresses.  Note that it is only legal to use these
- * on memory obtained via get_zeroed_page or kmalloc.
- */
-unsigned long __virt_to_bus(unsigned long res)
-{
-	WARN_ON(res < PAGE_OFFSET || res >= (unsigned long)high_memory);
-
-	return res + (fb_bus_sdram_offset() - PAGE_OFFSET);
-}
-EXPORT_SYMBOL(__virt_to_bus);
-
-unsigned long __bus_to_virt(unsigned long res)
-{
-	res = res - (fb_bus_sdram_offset() - PAGE_OFFSET);
-
-	WARN_ON(res < PAGE_OFFSET || res >= (unsigned long)high_memory);
-
-	return res;
-}
-EXPORT_SYMBOL(__bus_to_virt);
-
-unsigned long __pfn_to_bus(unsigned long pfn)
-{
-	return __pfn_to_phys(pfn) + (fb_bus_sdram_offset() - PHYS_OFFSET);
-}
-EXPORT_SYMBOL(__pfn_to_bus);
-
-unsigned long __bus_to_pfn(unsigned long bus)
-{
-	return __phys_to_pfn(bus - (fb_bus_sdram_offset() - PHYS_OFFSET));
-}
-EXPORT_SYMBOL(__bus_to_pfn);
-
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

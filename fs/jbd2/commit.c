@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/jbd2/commit.c
  *
@@ -9,13 +6,6 @@
  *
  * Copyright 1998 Red Hat corp --- All Rights Reserved
  *
-<<<<<<< HEAD
- * This file is part of the Linux kernel and is made available under
- * the terms of the GNU General Public License, version 2, or at your
- * option, any later version, incorporated herein by reference.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Journal commit routines for the generic filesystem journaling code;
  * part of the ext2fs journaling system.
  */
@@ -37,32 +27,22 @@
 #include <trace/events/jbd2.h>
 
 /*
-<<<<<<< HEAD
- * Default IO end handler for temporary BJ_IO buffer_heads.
- */
-static void journal_end_buffer_io_sync(struct buffer_head *bh, int uptodate)
-{
-=======
  * IO end handler for temporary buffer_heads handling writes to the journal.
  */
 static void journal_end_buffer_io_sync(struct buffer_head *bh, int uptodate)
 {
 	struct buffer_head *orig_bh = bh->b_private;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUFFER_TRACE(bh, "");
 	if (uptodate)
 		set_buffer_uptodate(bh);
 	else
 		clear_buffer_uptodate(bh);
-<<<<<<< HEAD
-=======
 	if (orig_bh) {
 		clear_bit_unlock(BH_Shadow, &orig_bh->b_state);
 		smp_mb__after_atomic();
 		wake_up_bit(&orig_bh->b_state, BH_Shadow);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unlock_buffer(bh);
 }
 
@@ -82,33 +62,12 @@ static void journal_end_buffer_io_sync(struct buffer_head *bh, int uptodate)
  */
 static void release_buffer_page(struct buffer_head *bh)
 {
-<<<<<<< HEAD
-	struct page *page;
-=======
 	struct folio *folio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (buffer_dirty(bh))
 		goto nope;
 	if (atomic_read(&bh->b_count) != 1)
 		goto nope;
-<<<<<<< HEAD
-	page = bh->b_page;
-	if (!page)
-		goto nope;
-	if (page->mapping)
-		goto nope;
-
-	/* OK, it's a truncated page */
-	if (!trylock_page(page))
-		goto nope;
-
-	page_cache_get(page);
-	__brelse(bh);
-	try_to_free_buffers(page);
-	unlock_page(page);
-	page_cache_release(page);
-=======
 	folio = bh->b_folio;
 	if (folio->mapping)
 		goto nope;
@@ -122,15 +81,12 @@ static void release_buffer_page(struct buffer_head *bh)
 	try_to_free_buffers(folio);
 	folio_unlock(folio);
 	folio_put(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 nope:
 	__brelse(bh);
 }
 
-<<<<<<< HEAD
-=======
 static void jbd2_commit_block_csum_set(journal_t *j, struct buffer_head *bh)
 {
 	struct commit_header *h;
@@ -147,7 +103,6 @@ static void jbd2_commit_block_csum_set(journal_t *j, struct buffer_head *bh)
 	h->h_chksum[0] = cpu_to_be32(csum);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Done it all: now submit the commit record.  We should have
  * cleaned up our previous buffers by now, so if we are in abort
@@ -161,41 +116,16 @@ static int journal_submit_commit_record(journal_t *journal,
 					struct buffer_head **cbh,
 					__u32 crc32_sum)
 {
-<<<<<<< HEAD
-	struct journal_head *descriptor;
-	struct commit_header *tmp;
-	struct buffer_head *bh;
-	int ret;
-	struct timespec now = current_kernel_time();
-=======
 	struct commit_header *tmp;
 	struct buffer_head *bh;
 	struct timespec64 now;
 	blk_opf_t write_flags = REQ_OP_WRITE | JBD2_JOURNAL_REQ_FLAGS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*cbh = NULL;
 
 	if (is_journal_aborted(journal))
 		return 0;
 
-<<<<<<< HEAD
-	descriptor = jbd2_journal_get_descriptor_buffer(journal);
-	if (!descriptor)
-		return 1;
-
-	bh = jh2bh(descriptor);
-
-	tmp = (struct commit_header *)bh->b_data;
-	tmp->h_magic = cpu_to_be32(JBD2_MAGIC_NUMBER);
-	tmp->h_blocktype = cpu_to_be32(JBD2_COMMIT_BLOCK);
-	tmp->h_sequence = cpu_to_be32(commit_transaction->t_tid);
-	tmp->h_commit_sec = cpu_to_be64(now.tv_sec);
-	tmp->h_commit_nsec = cpu_to_be32(now.tv_nsec);
-
-	if (JBD2_HAS_COMPAT_FEATURE(journal,
-				    JBD2_FEATURE_COMPAT_CHECKSUM)) {
-=======
 	bh = jbd2_journal_get_descriptor_buffer(commit_transaction,
 						JBD2_COMMIT_BLOCK);
 	if (!bh)
@@ -207,42 +137,25 @@ static int journal_submit_commit_record(journal_t *journal,
 	tmp->h_commit_nsec = cpu_to_be32(now.tv_nsec);
 
 	if (jbd2_has_feature_checksum(journal)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp->h_chksum_type 	= JBD2_CRC32_CHKSUM;
 		tmp->h_chksum_size 	= JBD2_CRC32_CHKSUM_SIZE;
 		tmp->h_chksum[0] 	= cpu_to_be32(crc32_sum);
 	}
-<<<<<<< HEAD
-
-	JBUFFER_TRACE(descriptor, "submit commit block");
-=======
 	jbd2_commit_block_csum_set(journal, bh);
 
 	BUFFER_TRACE(bh, "submit commit block");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock_buffer(bh);
 	clear_buffer_dirty(bh);
 	set_buffer_uptodate(bh);
 	bh->b_end_io = journal_end_buffer_io_sync;
 
 	if (journal->j_flags & JBD2_BARRIER &&
-<<<<<<< HEAD
-	    !JBD2_HAS_INCOMPAT_FEATURE(journal,
-				       JBD2_FEATURE_INCOMPAT_ASYNC_COMMIT))
-		ret = submit_bh(WRITE_SYNC | WRITE_FLUSH_FUA, bh);
-	else
-		ret = submit_bh(WRITE_SYNC, bh);
-
-	*cbh = bh;
-	return ret;
-=======
 	    !jbd2_has_feature_async_commit(journal))
 		write_flags |= REQ_PREFLUSH | REQ_FUA;
 
 	submit_bh(write_flags, bh);
 	*cbh = bh;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -260,35 +173,10 @@ static int journal_wait_on_commit_record(journal_t *journal,
 	if (unlikely(!buffer_uptodate(bh)))
 		ret = -EIO;
 	put_bh(bh);            /* One for getblk() */
-<<<<<<< HEAD
-	jbd2_journal_put_journal_head(bh2jh(bh));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-/*
- * write the filemap data using writepage() address_space_operations.
- * We don't do block allocation here even for delalloc. We don't
- * use writepages() because with dealyed allocation we may be doing
- * block allocation in writepages().
- */
-static int journal_submit_inode_data_buffers(struct address_space *mapping)
-{
-	int ret;
-	struct writeback_control wbc = {
-		.sync_mode =  WB_SYNC_ALL,
-		.nr_to_write = mapping->nrpages * 2,
-		.range_start = 0,
-		.range_end = i_size_read(mapping->host),
-	};
-
-	ret = generic_writepages(mapping, &wbc);
-	return ret;
-}
-=======
 /* Send all the data buffers related to an inode */
 int jbd2_submit_inode_data(journal_t *journal, struct jbd2_inode *jinode)
 {
@@ -311,7 +199,6 @@ int jbd2_wait_inode_data(journal_t *journal, struct jbd2_inode *jinode)
 		jinode->i_dirty_end);
 }
 EXPORT_SYMBOL(jbd2_wait_inode_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Submit all the data buffers of inode associated with the transaction to
@@ -326,29 +213,6 @@ static int journal_submit_data_buffers(journal_t *journal,
 {
 	struct jbd2_inode *jinode;
 	int err, ret = 0;
-<<<<<<< HEAD
-	struct address_space *mapping;
-
-	spin_lock(&journal->j_list_lock);
-	list_for_each_entry(jinode, &commit_transaction->t_inode_list, i_list) {
-		mapping = jinode->i_vfs_inode->i_mapping;
-		set_bit(__JI_COMMIT_RUNNING, &jinode->i_flags);
-		spin_unlock(&journal->j_list_lock);
-		/*
-		 * submit the inode data buffers. We use writepage
-		 * instead of writepages. Because writepages can do
-		 * block allocation  with delalloc. We need to write
-		 * only allocated blocks here.
-		 */
-		trace_jbd2_submit_inode_data(jinode->i_vfs_inode);
-		err = journal_submit_inode_data_buffers(mapping);
-		if (!ret)
-			ret = err;
-		spin_lock(&journal->j_list_lock);
-		J_ASSERT(jinode->i_transaction == commit_transaction);
-		clear_bit(__JI_COMMIT_RUNNING, &jinode->i_flags);
-		smp_mb__after_clear_bit();
-=======
 
 	spin_lock(&journal->j_list_lock);
 	list_for_each_entry(jinode, &commit_transaction->t_inode_list, i_list) {
@@ -367,15 +231,12 @@ static int journal_submit_data_buffers(journal_t *journal,
 		J_ASSERT(jinode->i_transaction == commit_transaction);
 		jinode->i_flags &= ~JI_COMMIT_RUNNING;
 		smp_mb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up_bit(&jinode->i_flags, __JI_COMMIT_RUNNING);
 	}
 	spin_unlock(&journal->j_list_lock);
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 int jbd2_journal_finish_inode_data_buffers(struct jbd2_inode *jinode)
 {
 	struct address_space *mapping = jinode->i_vfs_inode->i_mapping;
@@ -385,7 +246,6 @@ int jbd2_journal_finish_inode_data_buffers(struct jbd2_inode *jinode)
 						   jinode->i_dirty_end);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Wait for data submitted for writeout, refile inodes to proper
  * transaction if needed.
@@ -400,26 +260,6 @@ static int journal_finish_inode_data_buffers(journal_t *journal,
 	/* For locking, see the comment in journal_submit_data_buffers() */
 	spin_lock(&journal->j_list_lock);
 	list_for_each_entry(jinode, &commit_transaction->t_inode_list, i_list) {
-<<<<<<< HEAD
-		set_bit(__JI_COMMIT_RUNNING, &jinode->i_flags);
-		spin_unlock(&journal->j_list_lock);
-		err = filemap_fdatawait(jinode->i_vfs_inode->i_mapping);
-		if (err) {
-			/*
-			 * Because AS_EIO is cleared by
-			 * filemap_fdatawait_range(), set it again so
-			 * that user process can get -EIO from fsync().
-			 */
-			set_bit(AS_EIO,
-				&jinode->i_vfs_inode->i_mapping->flags);
-
-			if (!ret)
-				ret = err;
-		}
-		spin_lock(&journal->j_list_lock);
-		clear_bit(__JI_COMMIT_RUNNING, &jinode->i_flags);
-		smp_mb__after_clear_bit();
-=======
 		if (!(jinode->i_flags & JI_WAIT_DATA))
 			continue;
 		jinode->i_flags |= JI_COMMIT_RUNNING;
@@ -434,7 +274,6 @@ static int journal_finish_inode_data_buffers(journal_t *journal,
 		spin_lock(&journal->j_list_lock);
 		jinode->i_flags &= ~JI_COMMIT_RUNNING;
 		smp_mb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up_bit(&jinode->i_flags, __JI_COMMIT_RUNNING);
 	}
 
@@ -449,11 +288,8 @@ static int journal_finish_inode_data_buffers(journal_t *journal,
 				&jinode->i_transaction->t_inode_list);
 		} else {
 			jinode->i_transaction = NULL;
-<<<<<<< HEAD
-=======
 			jinode->i_dirty_start = 0;
 			jinode->i_dirty_end = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	spin_unlock(&journal->j_list_lock);
@@ -463,37 +299,16 @@ static int journal_finish_inode_data_buffers(journal_t *journal,
 
 static __u32 jbd2_checksum_data(__u32 crc32_sum, struct buffer_head *bh)
 {
-<<<<<<< HEAD
-	struct page *page = bh->b_page;
-	char *addr;
-	__u32 checksum;
-
-	addr = kmap_atomic(page);
-	checksum = crc32_be(crc32_sum,
-		(void *)(addr + offset_in_page(bh->b_data)), bh->b_size);
-	kunmap_atomic(addr);
-=======
 	char *addr;
 	__u32 checksum;
 
 	addr = kmap_local_folio(bh->b_folio, bh_offset(bh));
 	checksum = crc32_be(crc32_sum, addr, bh->b_size);
 	kunmap_local(addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return checksum;
 }
 
-<<<<<<< HEAD
-static void write_tag_block(int tag_bytes, journal_block_tag_t *tag,
-				   unsigned long long block)
-{
-	tag->t_blocknr = cpu_to_be32(block & (u32)~0);
-	if (tag_bytes > JBD2_TAG_SIZE32)
-		tag->t_blocknr_high = cpu_to_be32((block >> 31) >> 1);
-}
-
-=======
 static void write_tag_block(journal_t *j, journal_block_tag_t *tag,
 				   unsigned long long block)
 {
@@ -524,7 +339,6 @@ static void jbd2_block_tag_csum_set(journal_t *j, journal_block_tag_t *tag,
 	else
 		tag->t_checksum = cpu_to_be16(csum32);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * jbd2_journal_commit_transaction
  *
@@ -535,12 +349,8 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 {
 	struct transaction_stats_s stats;
 	transaction_t *commit_transaction;
-<<<<<<< HEAD
-	struct journal_head *jh, *new_jh, *descriptor;
-=======
 	struct journal_head *jh;
 	struct buffer_head *descriptor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head **wbuf = journal->j_wbuf;
 	int bufs;
 	int flags;
@@ -549,10 +359,6 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 	ktime_t start_time;
 	u64 commit_time;
 	char *tagp = NULL;
-<<<<<<< HEAD
-	journal_header_t *header;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	journal_block_tag_t *tag = NULL;
 	int space_left = 0;
 	int first_tag = 0;
@@ -566,15 +372,12 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 	unsigned long first_block;
 	tid_t first_tid;
 	int update_tail;
-<<<<<<< HEAD
-=======
 	int csum_size = 0;
 	LIST_HEAD(io_bufs);
 	LIST_HEAD(log_bufs);
 
 	if (jbd2_journal_has_csum_v2or3(journal))
 		csum_size = sizeof(struct jbd2_journal_block_tail);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * First job: lock down the current transaction and wait for
@@ -583,13 +386,8 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 
 	/* Do we need to erase the effects of a prior jbd2_journal_flush? */
 	if (journal->j_flags & JBD2_FLUSHED) {
-<<<<<<< HEAD
-		jbd_debug(3, "super block updated\n");
-		mutex_lock(&journal->j_checkpoint_mutex);
-=======
 		jbd2_debug(3, "super block updated\n");
 		mutex_lock_io(&journal->j_checkpoint_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * We hold j_checkpoint_mutex so tail cannot change under us.
 		 * We don't need any special data guarantees for writing sb
@@ -598,33 +396,15 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 		 */
 		jbd2_journal_update_sb_log_tail(journal,
 						journal->j_tail_sequence,
-<<<<<<< HEAD
-						journal->j_tail,
-						WRITE_SYNC);
-		mutex_unlock(&journal->j_checkpoint_mutex);
-	} else {
-		jbd_debug(3, "superblock not updated\n");
-=======
 						journal->j_tail, 0);
 		mutex_unlock(&journal->j_checkpoint_mutex);
 	} else {
 		jbd2_debug(3, "superblock not updated\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	J_ASSERT(journal->j_running_transaction != NULL);
 	J_ASSERT(journal->j_committing_transaction == NULL);
 
-<<<<<<< HEAD
-	commit_transaction = journal->j_running_transaction;
-	J_ASSERT(commit_transaction->t_state == T_RUNNING);
-
-	trace_jbd2_start_commit(journal, commit_transaction);
-	jbd_debug(1, "JBD2: starting commit of transaction %d\n",
-			commit_transaction->t_tid);
-
-	write_lock(&journal->j_state_lock);
-=======
 	write_lock(&journal->j_state_lock);
 	journal->j_flags |= JBD2_FULL_COMMIT_ONGOING;
 	while (journal->j_flags & JBD2_FAST_COMMIT_ONGOING) {
@@ -657,33 +437,10 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 	write_lock(&journal->j_state_lock);
 	journal->j_fc_off = 0;
 	J_ASSERT(commit_transaction->t_state == T_RUNNING);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	commit_transaction->t_state = T_LOCKED;
 
 	trace_jbd2_commit_locking(journal, commit_transaction);
 	stats.run.rs_wait = commit_transaction->t_max_wait;
-<<<<<<< HEAD
-	stats.run.rs_locked = jiffies;
-	stats.run.rs_running = jbd2_time_diff(commit_transaction->t_start,
-					      stats.run.rs_locked);
-
-	spin_lock(&commit_transaction->t_handle_lock);
-	while (atomic_read(&commit_transaction->t_updates)) {
-		DEFINE_WAIT(wait);
-
-		prepare_to_wait(&journal->j_wait_updates, &wait,
-					TASK_UNINTERRUPTIBLE);
-		if (atomic_read(&commit_transaction->t_updates)) {
-			spin_unlock(&commit_transaction->t_handle_lock);
-			write_unlock(&journal->j_state_lock);
-			schedule();
-			write_lock(&journal->j_state_lock);
-			spin_lock(&commit_transaction->t_handle_lock);
-		}
-		finish_wait(&journal->j_wait_updates, &wait);
-	}
-	spin_unlock(&commit_transaction->t_handle_lock);
-=======
 	stats.run.rs_request_delay = 0;
 	stats.run.rs_locked = jiffies;
 	if (commit_transaction->t_requested)
@@ -697,7 +454,6 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 	jbd2_journal_wait_updates(journal);
 
 	commit_transaction->t_state = T_SWITCH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	J_ASSERT (atomic_read(&commit_transaction->t_outstanding_credits) <=
 			journal->j_max_transaction_buffers);
@@ -717,11 +473,8 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 	 * has reserved.  This is consistent with the existing behaviour
 	 * that multiple jbd2_journal_get_write_access() calls to the same
 	 * buffer are perfectly permissible.
-<<<<<<< HEAD
-=======
 	 * We use journal->j_state_lock here to serialize processing of
 	 * t_reserved_list with eviction of buffers from journal_unmap_buffer().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	while (commit_transaction->t_reserved_list) {
 		jh = commit_transaction->t_reserved_list;
@@ -733,25 +486,15 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 		if (jh->b_committed_data) {
 			struct buffer_head *bh = jh2bh(jh);
 
-<<<<<<< HEAD
-			jbd_lock_bh_state(bh);
-			jbd2_free(jh->b_committed_data, bh->b_size);
-			jh->b_committed_data = NULL;
-			jbd_unlock_bh_state(bh);
-=======
 			spin_lock(&jh->b_state_lock);
 			jbd2_free(jh->b_committed_data, bh->b_size);
 			jh->b_committed_data = NULL;
 			spin_unlock(&jh->b_state_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		jbd2_journal_refile_buffer(journal, jh);
 	}
 
-<<<<<<< HEAD
-=======
 	write_unlock(&journal->j_state_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Now try to drop any written-back buffers from the journal's
 	 * checkpoint lists.  We do this *before* commit because it potentially
@@ -761,11 +504,7 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 	__jbd2_journal_clean_checkpoint_list(journal, false);
 	spin_unlock(&journal->j_list_lock);
 
-<<<<<<< HEAD
-	jbd_debug(3, "JBD2: commit phase 1\n");
-=======
 	jbd2_debug(3, "JBD2: commit phase 1\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Clear revoked flag to reflect there is no revoked buffers
@@ -778,8 +517,6 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 	 */
 	jbd2_journal_switch_revoke_table(journal);
 
-<<<<<<< HEAD
-=======
 	write_lock(&journal->j_state_lock);
 	/*
 	 * Reserved credits cannot be claimed anymore, free them
@@ -787,7 +524,6 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 	atomic_sub(atomic_read(&journal->j_reserved_credits),
 		   &commit_transaction->t_outstanding_credits);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace_jbd2_commit_flushing(journal, commit_transaction);
 	stats.run.rs_flushing = jiffies;
 	stats.run.rs_locked = jbd2_time_diff(stats.run.rs_locked,
@@ -798,17 +534,10 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 	journal->j_running_transaction = NULL;
 	start_time = ktime_get();
 	commit_transaction->t_log_start = journal->j_head;
-<<<<<<< HEAD
-	wake_up(&journal->j_wait_transaction_locked);
-	write_unlock(&journal->j_state_lock);
-
-	jbd_debug(3, "JBD2: commit phase 2\n");
-=======
 	wake_up_all(&journal->j_wait_transaction_locked);
 	write_unlock(&journal->j_state_lock);
 
 	jbd2_debug(3, "JBD2: commit phase 2a\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Now start flushing things to disk, in the order they appear
@@ -819,17 +548,9 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 		jbd2_journal_abort(journal, err);
 
 	blk_start_plug(&plug);
-<<<<<<< HEAD
-	jbd2_journal_write_revoke_records(journal, commit_transaction,
-					  WRITE_SYNC);
-	blk_finish_plug(&plug);
-
-	jbd_debug(3, "JBD2: commit phase 2\n");
-=======
 	jbd2_journal_write_revoke_records(commit_transaction, &log_bufs);
 
 	jbd2_debug(3, "JBD2: commit phase 2b\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Way to go: we have now written out all of the data for a
@@ -844,26 +565,15 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 	stats.run.rs_logging = jiffies;
 	stats.run.rs_flushing = jbd2_time_diff(stats.run.rs_flushing,
 					       stats.run.rs_logging);
-<<<<<<< HEAD
-	stats.run.rs_blocks =
-		atomic_read(&commit_transaction->t_outstanding_credits);
-=======
 	stats.run.rs_blocks = commit_transaction->t_nr_buffers;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stats.run.rs_blocks_logged = 0;
 
 	J_ASSERT(commit_transaction->t_nr_buffers <=
 		 atomic_read(&commit_transaction->t_outstanding_credits));
 
 	err = 0;
-<<<<<<< HEAD
-	descriptor = NULL;
-	bufs = 0;
-	blk_start_plug(&plug);
-=======
 	bufs = 0;
 	descriptor = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (commit_transaction->t_buffers) {
 
 		/* Find the next buffer to be journaled... */
@@ -894,15 +604,6 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 		   record the metadata buffer. */
 
 		if (!descriptor) {
-<<<<<<< HEAD
-			struct buffer_head *bh;
-
-			J_ASSERT (bufs == 0);
-
-			jbd_debug(4, "JBD2: get descriptor\n");
-
-			descriptor = jbd2_journal_get_descriptor_buffer(journal);
-=======
 			J_ASSERT (bufs == 0);
 
 			jbd2_debug(4, "JBD2: get descriptor\n");
@@ -910,34 +611,11 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 			descriptor = jbd2_journal_get_descriptor_buffer(
 							commit_transaction,
 							JBD2_DESCRIPTOR_BLOCK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!descriptor) {
 				jbd2_journal_abort(journal, -EIO);
 				continue;
 			}
 
-<<<<<<< HEAD
-			bh = jh2bh(descriptor);
-			jbd_debug(4, "JBD2: got buffer %llu (%p)\n",
-				(unsigned long long)bh->b_blocknr, bh->b_data);
-			header = (journal_header_t *)&bh->b_data[0];
-			header->h_magic     = cpu_to_be32(JBD2_MAGIC_NUMBER);
-			header->h_blocktype = cpu_to_be32(JBD2_DESCRIPTOR_BLOCK);
-			header->h_sequence  = cpu_to_be32(commit_transaction->t_tid);
-
-			tagp = &bh->b_data[sizeof(journal_header_t)];
-			space_left = bh->b_size - sizeof(journal_header_t);
-			first_tag = 1;
-			set_buffer_jwrite(bh);
-			set_buffer_dirty(bh);
-			wbuf[bufs++] = bh;
-
-			/* Record it so that we can wait for IO
-                           completion later */
-			BUFFER_TRACE(bh, "ph3: file as descriptor");
-			jbd2_journal_file_buffer(descriptor, commit_transaction,
-					BJ_LogCtl);
-=======
 			jbd2_debug(4, "JBD2: got buffer %llu (%p)\n",
 				(unsigned long long)descriptor->b_blocknr,
 				descriptor->b_data);
@@ -953,7 +631,6 @@ void jbd2_journal_commit_transaction(journal_t *journal)
                            completion later */
 			BUFFER_TRACE(descriptor, "ph3: file as descriptor");
 			jbd2_file_log_bh(&log_bufs, descriptor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Where is the buffer to be written? */
@@ -969,36 +646,12 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 
 		/*
 		 * start_this_handle() uses t_outstanding_credits to determine
-<<<<<<< HEAD
-		 * the free space in the log, but this counter is changed
-		 * by jbd2_journal_next_log_block() also.
-=======
 		 * the free space in the log.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		atomic_dec(&commit_transaction->t_outstanding_credits);
 
 		/* Bump b_count to prevent truncate from stumbling over
                    the shadowed buffer!  @@@ This can go if we ever get
-<<<<<<< HEAD
-                   rid of the BJ_IO/BJ_Shadow pairing of buffers. */
-		atomic_inc(&jh2bh(jh)->b_count);
-
-		/* Make a temporary IO buffer with which to write it out
-                   (this will requeue both the metadata buffer and the
-                   temporary IO buffer). new_bh goes on BJ_IO*/
-
-		set_bit(BH_JWrite, &jh2bh(jh)->b_state);
-		/*
-		 * akpm: jbd2_journal_write_metadata_buffer() sets
-		 * new_bh->b_transaction to commit_transaction.
-		 * We need to clean this up before we release new_bh
-		 * (which is of type BJ_IO)
-		 */
-		JBUFFER_TRACE(jh, "ph3: write metadata");
-		flags = jbd2_journal_write_metadata_buffer(commit_transaction,
-						      jh, &new_jh, blocknr);
-=======
                    rid of the shadow pairing of buffers. */
 		atomic_inc(&jh2bh(jh)->b_count);
 
@@ -1010,17 +663,11 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 		JBUFFER_TRACE(jh, "ph3: write metadata");
 		flags = jbd2_journal_write_metadata_buffer(commit_transaction,
 						jh, &wbuf[bufs], blocknr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (flags < 0) {
 			jbd2_journal_abort(journal, flags);
 			continue;
 		}
-<<<<<<< HEAD
-		set_bit(BH_JWrite, &jh2bh(new_jh)->b_state);
-		wbuf[bufs++] = jh2bh(new_jh);
-=======
 		jbd2_file_log_bh(&io_bufs, wbuf[bufs]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Record the new block's tag in the current descriptor
                    buffer */
@@ -1032,12 +679,6 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 			tag_flag |= JBD2_FLAG_SAME_UUID;
 
 		tag = (journal_block_tag_t *) tagp;
-<<<<<<< HEAD
-		write_tag_block(tag_bytes, tag, jh2bh(jh)->b_blocknr);
-		tag->t_flags = cpu_to_be32(tag_flag);
-		tagp += tag_bytes;
-		space_left -= tag_bytes;
-=======
 		write_tag_block(journal, tag, jh2bh(jh)->b_blocknr);
 		tag->t_flags = cpu_to_be16(tag_flag);
 		jbd2_block_tag_csum_set(journal, tag, wbuf[bufs],
@@ -1045,7 +686,6 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 		tagp += tag_bytes;
 		space_left -= tag_bytes;
 		bufs++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (first_tag) {
 			memcpy (tagp, journal->j_uuid, 16);
@@ -1059,32 +699,14 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 
 		if (bufs == journal->j_wbufsize ||
 		    commit_transaction->t_buffers == NULL ||
-<<<<<<< HEAD
-		    space_left < tag_bytes + 16) {
-
-			jbd_debug(4, "JBD2: Submit %d IOs\n", bufs);
-=======
 		    space_left < tag_bytes + 16 + csum_size) {
 
 			jbd2_debug(4, "JBD2: Submit %d IOs\n", bufs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Write an end-of-descriptor marker before
                            submitting the IOs.  "tag" still points to
                            the last tag we set up. */
 
-<<<<<<< HEAD
-			tag->t_flags |= cpu_to_be32(JBD2_FLAG_LAST_TAG);
-
-start_journal_io:
-			for (i = 0; i < bufs; i++) {
-				struct buffer_head *bh = wbuf[i];
-				/*
-				 * Compute checksum.
-				 */
-				if (JBD2_HAS_COMPAT_FEATURE(journal,
-					JBD2_FEATURE_COMPAT_CHECKSUM)) {
-=======
 			tag->t_flags |= cpu_to_be16(JBD2_FLAG_LAST_TAG);
 start_journal_io:
 			if (descriptor)
@@ -1098,7 +720,6 @@ start_journal_io:
 				 * Compute checksum.
 				 */
 				if (jbd2_has_feature_checksum(journal)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					crc32_sum =
 					    jbd2_checksum_data(crc32_sum, bh);
 				}
@@ -1107,17 +728,10 @@ start_journal_io:
 				clear_buffer_dirty(bh);
 				set_buffer_uptodate(bh);
 				bh->b_end_io = journal_end_buffer_io_sync;
-<<<<<<< HEAD
-				submit_bh(WRITE_SYNC, bh);
-			}
-			cond_resched();
-			stats.run.rs_blocks_logged += bufs;
-=======
 				submit_bh(REQ_OP_WRITE | JBD2_JOURNAL_REQ_FLAGS,
 					  bh);
 			}
 			cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Force a new descriptor to be generated next
                            time round the loop. */
@@ -1153,22 +767,14 @@ start_journal_io:
 		if (first_block < journal->j_tail)
 			freed += journal->j_last - journal->j_first;
 		/* Update tail only if we free significant amount of space */
-<<<<<<< HEAD
-		if (freed < journal->j_maxlen / 4)
-=======
 		if (freed < jbd2_journal_get_max_txn_bufs(journal))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			update_tail = 0;
 	}
 	J_ASSERT(commit_transaction->t_state == T_COMMIT);
 	commit_transaction->t_state = T_COMMIT_DFLUSH;
 	write_unlock(&journal->j_state_lock);
 
-<<<<<<< HEAD
-	/* 
-=======
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * If the journal is not located on the file system device,
 	 * then we must flush the file system device before we issue
 	 * the commit record
@@ -1176,17 +782,6 @@ start_journal_io:
 	if (commit_transaction->t_need_data_flush &&
 	    (journal->j_fs_dev != journal->j_dev) &&
 	    (journal->j_flags & JBD2_BARRIER))
-<<<<<<< HEAD
-		blkdev_issue_flush(journal->j_fs_dev, GFP_NOFS, NULL);
-
-	/* Done it all: now write the commit record asynchronously. */
-	if (JBD2_HAS_INCOMPAT_FEATURE(journal,
-				      JBD2_FEATURE_INCOMPAT_ASYNC_COMMIT)) {
-		err = journal_submit_commit_record(journal, commit_transaction,
-						 &cbh, crc32_sum);
-		if (err)
-			__jbd2_journal_abort_hard(journal);
-=======
 		blkdev_issue_flush(journal->j_fs_dev);
 
 	/* Done it all: now write the commit record asynchronously. */
@@ -1195,7 +790,6 @@ start_journal_io:
 						 &cbh, crc32_sum);
 		if (err)
 			jbd2_journal_abort(journal, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	blk_finish_plug(&plug);
@@ -1204,52 +798,13 @@ start_journal_io:
            the log.  Before we can commit it, wait for the IO so far to
            complete.  Control buffers being written are on the
            transaction's t_log_list queue, and metadata buffers are on
-<<<<<<< HEAD
-           the t_iobuf_list queue.
-=======
            the io_bufs list.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	   Wait for the buffers in reverse order.  That way we are
 	   less likely to be woken up until all IOs have completed, and
 	   so we incur less scheduling load.
 	*/
 
-<<<<<<< HEAD
-	jbd_debug(3, "JBD2: commit phase 3\n");
-
-	/*
-	 * akpm: these are BJ_IO, and j_list_lock is not needed.
-	 * See __journal_try_to_free_buffer.
-	 */
-wait_for_iobuf:
-	while (commit_transaction->t_iobuf_list != NULL) {
-		struct buffer_head *bh;
-
-		jh = commit_transaction->t_iobuf_list->b_tprev;
-		bh = jh2bh(jh);
-		if (buffer_locked(bh)) {
-			wait_on_buffer(bh);
-			goto wait_for_iobuf;
-		}
-		if (cond_resched())
-			goto wait_for_iobuf;
-
-		if (unlikely(!buffer_uptodate(bh)))
-			err = -EIO;
-
-		clear_buffer_jwrite(bh);
-
-		JBUFFER_TRACE(jh, "ph4: unfile after journal write");
-		jbd2_journal_unfile_buffer(journal, jh);
-
-		/*
-		 * ->t_iobuf_list should contain only dummy buffer_heads
-		 * which were created by jbd2_journal_write_metadata_buffer().
-		 */
-		BUFFER_TRACE(bh, "dumping temporary bh");
-		jbd2_journal_put_journal_head(jh);
-=======
 	jbd2_debug(3, "JBD2: commit phase 3\n");
 
 	while (!list_empty(&io_bufs)) {
@@ -1270,26 +825,16 @@ wait_for_iobuf:
 		 * jbd2_journal_write_metadata_buffer().
 		 */
 		BUFFER_TRACE(bh, "dumping temporary bh");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__brelse(bh);
 		J_ASSERT_BH(bh, atomic_read(&bh->b_count) == 0);
 		free_buffer_head(bh);
 
-<<<<<<< HEAD
-		/* We also have to unlock and free the corresponding
-                   shadowed buffer */
-		jh = commit_transaction->t_shadow_list->b_tprev;
-		bh = jh2bh(jh);
-		clear_bit(BH_JWrite, &bh->b_state);
-		J_ASSERT_BH(bh, buffer_jbddirty(bh));
-=======
 		/* We also have to refile the corresponding shadowed buffer */
 		jh = commit_transaction->t_shadow_list->b_tprev;
 		bh = jh2bh(jh);
 		clear_buffer_jwrite(bh);
 		J_ASSERT_BH(bh, buffer_jbddirty(bh));
 		J_ASSERT_BH(bh, !buffer_shadow(bh));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* The metadata is now released for reuse, but we need
                    to remember it against this transaction so that when
@@ -1297,40 +842,12 @@ wait_for_iobuf:
                    required. */
 		JBUFFER_TRACE(jh, "file as BJ_Forget");
 		jbd2_journal_file_buffer(jh, commit_transaction, BJ_Forget);
-<<<<<<< HEAD
-		/*
-		 * Wake up any transactions which were waiting for this IO to
-		 * complete. The barrier must be here so that changes by
-		 * jbd2_journal_file_buffer() take effect before wake_up_bit()
-		 * does the waitqueue check.
-		 */
-		smp_mb();
-		wake_up_bit(&bh->b_state, BH_Unshadow);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		JBUFFER_TRACE(jh, "brelse shadowed buffer");
 		__brelse(bh);
 	}
 
 	J_ASSERT (commit_transaction->t_shadow_list == NULL);
 
-<<<<<<< HEAD
-	jbd_debug(3, "JBD2: commit phase 4\n");
-
-	/* Here we wait for the revoke record and descriptor record buffers */
- wait_for_ctlbuf:
-	while (commit_transaction->t_log_list != NULL) {
-		struct buffer_head *bh;
-
-		jh = commit_transaction->t_log_list->b_tprev;
-		bh = jh2bh(jh);
-		if (buffer_locked(bh)) {
-			wait_on_buffer(bh);
-			goto wait_for_ctlbuf;
-		}
-		if (cond_resched())
-			goto wait_for_ctlbuf;
-=======
 	jbd2_debug(3, "JBD2: commit phase 4\n");
 
 	/* Here we wait for the revoke record and descriptor record buffers */
@@ -1340,20 +857,14 @@ wait_for_iobuf:
 		bh = list_entry(log_bufs.prev, struct buffer_head, b_assoc_buffers);
 		wait_on_buffer(bh);
 		cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (unlikely(!buffer_uptodate(bh)))
 			err = -EIO;
 
 		BUFFER_TRACE(bh, "ph5: control buffer writeout done: unfile");
 		clear_buffer_jwrite(bh);
-<<<<<<< HEAD
-		jbd2_journal_unfile_buffer(journal, jh);
-		jbd2_journal_put_journal_head(jh);
-=======
 		jbd2_unfile_log_bh(bh);
 		stats.run.rs_blocks_logged++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__brelse(bh);		/* One for getblk */
 		/* AKPM: bforget here */
 	}
@@ -1361,31 +872,12 @@ wait_for_iobuf:
 	if (err)
 		jbd2_journal_abort(journal, err);
 
-<<<<<<< HEAD
-	jbd_debug(3, "JBD2: commit phase 5\n");
-=======
 	jbd2_debug(3, "JBD2: commit phase 5\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	write_lock(&journal->j_state_lock);
 	J_ASSERT(commit_transaction->t_state == T_COMMIT_DFLUSH);
 	commit_transaction->t_state = T_COMMIT_JFLUSH;
 	write_unlock(&journal->j_state_lock);
 
-<<<<<<< HEAD
-	if (!JBD2_HAS_INCOMPAT_FEATURE(journal,
-				       JBD2_FEATURE_INCOMPAT_ASYNC_COMMIT)) {
-		err = journal_submit_commit_record(journal, commit_transaction,
-						&cbh, crc32_sum);
-		if (err)
-			__jbd2_journal_abort_hard(journal);
-	}
-	if (cbh)
-		err = journal_wait_on_commit_record(journal, cbh);
-	if (JBD2_HAS_INCOMPAT_FEATURE(journal,
-				      JBD2_FEATURE_INCOMPAT_ASYNC_COMMIT) &&
-	    journal->j_flags & JBD2_BARRIER) {
-		blkdev_issue_flush(journal->j_dev, GFP_NOFS, NULL);
-=======
 	if (!jbd2_has_feature_async_commit(journal)) {
 		err = journal_submit_commit_record(journal, commit_transaction,
 						&cbh, crc32_sum);
@@ -1398,18 +890,14 @@ wait_for_iobuf:
 	if (jbd2_has_feature_async_commit(journal) &&
 	    journal->j_flags & JBD2_BARRIER) {
 		blkdev_issue_flush(journal->j_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (err)
 		jbd2_journal_abort(journal, err);
 
-<<<<<<< HEAD
-=======
 	WARN_ON_ONCE(
 		atomic_read(&commit_transaction->t_outstanding_credits) < 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Now disk caches for filesystem device are flushed so we are safe to
 	 * erase checkpointed transactions from the log by updating journal
@@ -1423,22 +911,12 @@ wait_for_iobuf:
            transaction can be removed from any checkpoint list it was on
            before. */
 
-<<<<<<< HEAD
-	jbd_debug(3, "JBD2: commit phase 6\n");
-=======
 	jbd2_debug(3, "JBD2: commit phase 6\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	J_ASSERT(list_empty(&commit_transaction->t_inode_list));
 	J_ASSERT(commit_transaction->t_buffers == NULL);
 	J_ASSERT(commit_transaction->t_checkpoint_list == NULL);
-<<<<<<< HEAD
-	J_ASSERT(commit_transaction->t_iobuf_list == NULL);
 	J_ASSERT(commit_transaction->t_shadow_list == NULL);
-	J_ASSERT(commit_transaction->t_log_list == NULL);
-=======
-	J_ASSERT(commit_transaction->t_shadow_list == NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 restart_loop:
 	/*
@@ -1450,10 +928,7 @@ restart_loop:
 		transaction_t *cp_transaction;
 		struct buffer_head *bh;
 		int try_to_free = 0;
-<<<<<<< HEAD
-=======
 		bool drop_ref;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		jh = commit_transaction->t_forget;
 		spin_unlock(&journal->j_list_lock);
@@ -1463,11 +938,7 @@ restart_loop:
 		 * done with it.
 		 */
 		get_bh(bh);
-<<<<<<< HEAD
-		jbd_lock_bh_state(bh);
-=======
 		spin_lock(&jh->b_state_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		J_ASSERT_JH(jh,	jh->b_transaction == commit_transaction);
 
 		/*
@@ -1511,19 +982,6 @@ restart_loop:
 		 * there's no point in keeping a checkpoint record for
 		 * it. */
 
-<<<<<<< HEAD
-		/* A buffer which has been freed while still being
-		 * journaled by a previous transaction may end up still
-		 * being dirty here, but we want to avoid writing back
-		 * that buffer in the future after the "add to orphan"
-		 * operation been committed,  That's not only a performance
-		 * gain, it also stops aliasing problems if the buffer is
-		 * left behind for writeback and gets reallocated for another
-		 * use in a different page. */
-		if (buffer_freed(bh) && !jh->b_next_transaction) {
-			clear_buffer_freed(bh);
-			clear_buffer_jbddirty(bh);
-=======
 		/*
 		 * A buffer which has been freed while still being journaled
 		 * by a previous transaction, refile the buffer to BJ_Forget of
@@ -1558,7 +1016,6 @@ restart_loop:
 				clear_buffer_req(bh);
 				bh->b_bdev = NULL;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (buffer_jbddirty(bh)) {
@@ -1581,15 +1038,10 @@ restart_loop:
 				try_to_free = 1;
 		}
 		JBUFFER_TRACE(jh, "refile or unfile buffer");
-<<<<<<< HEAD
-		__jbd2_journal_refile_buffer(jh);
-		jbd_unlock_bh_state(bh);
-=======
 		drop_ref = __jbd2_journal_refile_buffer(jh);
 		spin_unlock(&jh->b_state_lock);
 		if (drop_ref)
 			jbd2_journal_put_journal_head(jh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (try_to_free)
 			release_buffer_page(bh);	/* Drops bh reference */
 		else
@@ -1615,11 +1067,6 @@ restart_loop:
 		goto restart_loop;
 	}
 
-<<<<<<< HEAD
-	/* Done with this transaction! */
-
-	jbd_debug(3, "JBD2: commit phase 7\n");
-=======
 	/* Add the transaction to the checkpoint list
 	 * __journal_remove_checkpoint() can not destroy transaction
 	 * under us because it is not marked as T_FINISHED yet */
@@ -1642,7 +1089,6 @@ restart_loop:
 	/* Done with this transaction! */
 
 	jbd2_debug(3, "JBD2: commit phase 7\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	J_ASSERT(commit_transaction->t_state == T_COMMIT_JFLUSH);
 
@@ -1658,25 +1104,7 @@ restart_loop:
 		atomic_read(&commit_transaction->t_handle_count);
 	trace_jbd2_run_stats(journal->j_fs_dev->bd_dev,
 			     commit_transaction->t_tid, &stats.run);
-<<<<<<< HEAD
-
-	/*
-	 * Calculate overall stats
-	 */
-	spin_lock(&journal->j_history_lock);
-	journal->j_stats.ts_tid++;
-	journal->j_stats.run.rs_wait += stats.run.rs_wait;
-	journal->j_stats.run.rs_running += stats.run.rs_running;
-	journal->j_stats.run.rs_locked += stats.run.rs_locked;
-	journal->j_stats.run.rs_flushing += stats.run.rs_flushing;
-	journal->j_stats.run.rs_logging += stats.run.rs_logging;
-	journal->j_stats.run.rs_handle_count += stats.run.rs_handle_count;
-	journal->j_stats.run.rs_blocks += stats.run.rs_blocks;
-	journal->j_stats.run.rs_blocks_logged += stats.run.rs_blocks_logged;
-	spin_unlock(&journal->j_history_lock);
-=======
 	stats.ts_requested = (commit_transaction->t_requested) ? 1 : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	commit_transaction->t_state = T_COMMIT_CALLBACK;
 	J_ASSERT(commit_transaction == journal->j_committing_transaction);
@@ -1696,39 +1124,6 @@ restart_loop:
 
 	write_unlock(&journal->j_state_lock);
 
-<<<<<<< HEAD
-	if (journal->j_checkpoint_transactions == NULL) {
-		journal->j_checkpoint_transactions = commit_transaction;
-		commit_transaction->t_cpnext = commit_transaction;
-		commit_transaction->t_cpprev = commit_transaction;
-	} else {
-		commit_transaction->t_cpnext =
-			journal->j_checkpoint_transactions;
-		commit_transaction->t_cpprev =
-			commit_transaction->t_cpnext->t_cpprev;
-		commit_transaction->t_cpnext->t_cpprev =
-			commit_transaction;
-		commit_transaction->t_cpprev->t_cpnext =
-				commit_transaction;
-	}
-	spin_unlock(&journal->j_list_lock);
-	/* Drop all spin_locks because commit_callback may be block.
-	 * __journal_remove_checkpoint() can not destroy transaction
-	 * under us because it is not marked as T_FINISHED yet */
-	if (journal->j_commit_callback)
-		journal->j_commit_callback(journal, commit_transaction);
-
-	trace_jbd2_end_commit(journal, commit_transaction);
-	jbd_debug(1, "JBD2: commit %d complete, head %d\n",
-		  journal->j_commit_sequence, journal->j_tail_sequence);
-
-	write_lock(&journal->j_state_lock);
-	spin_lock(&journal->j_list_lock);
-	commit_transaction->t_state = T_FINISHED;
-	/* Recheck checkpoint lists after j_list_lock was dropped */
-	if (commit_transaction->t_checkpoint_list == NULL &&
-	    commit_transaction->t_checkpoint_io_list == NULL) {
-=======
 	if (journal->j_commit_callback)
 		journal->j_commit_callback(journal, commit_transaction);
 	if (journal->j_fc_cleanup_callback)
@@ -1745,15 +1140,12 @@ restart_loop:
 	commit_transaction->t_state = T_FINISHED;
 	/* Check if the transaction can be dropped now that we are finished */
 	if (commit_transaction->t_checkpoint_list == NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__jbd2_journal_drop_transaction(journal, commit_transaction);
 		jbd2_journal_free_transaction(commit_transaction);
 	}
 	spin_unlock(&journal->j_list_lock);
 	write_unlock(&journal->j_state_lock);
 	wake_up(&journal->j_wait_done_commit);
-<<<<<<< HEAD
-=======
 	wake_up(&journal->j_fc_wait);
 
 	/*
@@ -1772,5 +1164,4 @@ restart_loop:
 	journal->j_stats.run.rs_blocks += stats.run.rs_blocks;
 	journal->j_stats.run.rs_blocks_logged += stats.run.rs_blocks_logged;
 	spin_unlock(&journal->j_history_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

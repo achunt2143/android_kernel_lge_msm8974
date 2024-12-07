@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Declarations of Rose type objects.
  *
@@ -12,10 +9,7 @@
 #define _ROSE_H 
 
 #include <linux/rose.h>
-<<<<<<< HEAD
-=======
 #include <net/ax25.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/sock.h>
 
 #define	ROSE_ADDR_LEN			5
@@ -138,12 +132,8 @@ struct rose_sock {
 	ax25_address		source_digis[ROSE_MAX_DIGIS];
 	ax25_address		dest_digis[ROSE_MAX_DIGIS];
 	struct rose_neigh	*neighbour;
-<<<<<<< HEAD
-	struct net_device		*device;
-=======
 	struct net_device	*device;
 	netdevice_tracker	dev_tracker;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		lci, rand;
 	unsigned char		state, condition, qbitincl, defer;
 	unsigned char		cause, diagnostic;
@@ -173,85 +163,6 @@ extern int  sysctl_rose_routing_control;
 extern int  sysctl_rose_link_fail_timeout;
 extern int  sysctl_rose_maximum_vcs;
 extern int  sysctl_rose_window_size;
-<<<<<<< HEAD
-extern int  rosecmp(rose_address *, rose_address *);
-extern int  rosecmpm(rose_address *, rose_address *, unsigned short);
-extern char *rose2asc(char *buf, const rose_address *);
-extern struct sock *rose_find_socket(unsigned int, struct rose_neigh *);
-extern void rose_kill_by_neigh(struct rose_neigh *);
-extern unsigned int rose_new_lci(struct rose_neigh *);
-extern int  rose_rx_call_request(struct sk_buff *, struct net_device *, struct rose_neigh *, unsigned int);
-extern void rose_destroy_socket(struct sock *);
-
-/* rose_dev.c */
-extern void  rose_setup(struct net_device *);
-
-/* rose_in.c */
-extern int  rose_process_rx_frame(struct sock *, struct sk_buff *);
-
-/* rose_link.c */
-extern void rose_start_ftimer(struct rose_neigh *);
-extern void rose_stop_ftimer(struct rose_neigh *);
-extern void rose_stop_t0timer(struct rose_neigh *);
-extern int  rose_ftimer_running(struct rose_neigh *);
-extern void rose_link_rx_restart(struct sk_buff *, struct rose_neigh *, unsigned short);
-extern void rose_transmit_clear_request(struct rose_neigh *, unsigned int, unsigned char, unsigned char);
-extern void rose_transmit_link(struct sk_buff *, struct rose_neigh *);
-
-/* rose_loopback.c */
-extern void rose_loopback_init(void);
-extern void rose_loopback_clear(void);
-extern int  rose_loopback_queue(struct sk_buff *, struct rose_neigh *);
-
-/* rose_out.c */
-extern void rose_kick(struct sock *);
-extern void rose_enquiry_response(struct sock *);
-
-/* rose_route.c */
-extern struct rose_neigh *rose_loopback_neigh;
-extern const struct file_operations rose_neigh_fops;
-extern const struct file_operations rose_nodes_fops;
-extern const struct file_operations rose_routes_fops;
-
-extern void rose_add_loopback_neigh(void);
-extern int __must_check rose_add_loopback_node(rose_address *);
-extern void rose_del_loopback_node(rose_address *);
-extern void rose_rt_device_down(struct net_device *);
-extern void rose_link_device_down(struct net_device *);
-extern struct net_device *rose_dev_first(void);
-extern struct net_device *rose_dev_get(rose_address *);
-extern struct rose_route *rose_route_free_lci(unsigned int, struct rose_neigh *);
-extern struct rose_neigh *rose_get_neigh(rose_address *, unsigned char *, unsigned char *, int);
-extern int  rose_rt_ioctl(unsigned int, void __user *);
-extern void rose_link_failed(ax25_cb *, int);
-extern int  rose_route_frame(struct sk_buff *, ax25_cb *);
-extern void rose_rt_free(void);
-
-/* rose_subr.c */
-extern void rose_clear_queues(struct sock *);
-extern void rose_frames_acked(struct sock *, unsigned short);
-extern void rose_requeue_frames(struct sock *);
-extern int  rose_validate_nr(struct sock *, unsigned short);
-extern void rose_write_internal(struct sock *, int);
-extern int  rose_decode(struct sk_buff *, int *, int *, int *, int *, int *);
-extern int  rose_parse_facilities(unsigned char *, unsigned int, struct rose_facilities_struct *);
-extern void rose_disconnect(struct sock *, int, int, int);
-
-/* rose_timer.c */
-extern void rose_start_heartbeat(struct sock *);
-extern void rose_start_t1timer(struct sock *);
-extern void rose_start_t2timer(struct sock *);
-extern void rose_start_t3timer(struct sock *);
-extern void rose_start_hbtimer(struct sock *);
-extern void rose_start_idletimer(struct sock *);
-extern void rose_stop_heartbeat(struct sock *);
-extern void rose_stop_timer(struct sock *);
-extern void rose_stop_idletimer(struct sock *);
-
-/* sysctl_net_rose.c */
-extern void rose_register_sysctl(void);
-extern void rose_unregister_sysctl(void);
-=======
 
 int rosecmp(const rose_address *, const rose_address *);
 int rosecmpm(const rose_address *, const rose_address *, unsigned short);
@@ -335,6 +246,5 @@ void rose_stop_idletimer(struct sock *);
 /* sysctl_net_rose.c */
 void rose_register_sysctl(void);
 void rose_unregister_sysctl(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

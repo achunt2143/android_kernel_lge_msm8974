@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2010 QLogic Corporation
- *
- * See LICENSE.qla4xxx for copyright and licensing details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic iSCSI HBA Driver
  * Copyright (c)  2003-2013 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ql4_def.h"
@@ -85,20 +77,12 @@ static int qla4xxx_get_req_pkt(struct scsi_qla_host *ha,
  * @ha: Pointer to host adapter structure.
  * @ddb_entry: Pointer to device database entry
  * @lun: SCSI LUN
-<<<<<<< HEAD
- * @marker_type: marker identifier
-=======
  * @mrkr_mod: marker identifier
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine issues a marker IOCB.
  **/
 int qla4xxx_send_marker_iocb(struct scsi_qla_host *ha,
-<<<<<<< HEAD
-	struct ddb_entry *ddb_entry, int lun, uint16_t mrkr_mod)
-=======
 	struct ddb_entry *ddb_entry, uint64_t lun, uint16_t mrkr_mod)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qla4_marker_entry *marker_entry;
 	unsigned long flags = 0;
@@ -176,11 +160,7 @@ static void qla4xxx_build_scsi_iocbs(struct srb *srb,
 
 	if (!scsi_bufflen(cmd) || cmd->sc_data_direction == DMA_NONE) {
 		/* No data being transferred */
-<<<<<<< HEAD
-		cmd_entry->ttlByteCnt = __constant_cpu_to_le32(0);
-=======
 		cmd_entry->ttlByteCnt = cpu_to_le32(0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -211,10 +191,6 @@ static void qla4xxx_build_scsi_iocbs(struct srb *srb,
 	}
 }
 
-<<<<<<< HEAD
-/**
- * qla4_8xxx_queue_iocb - Tell ISP it's got new request(s)
-=======
 void qla4_83xx_queue_iocb(struct scsi_qla_host *ha)
 {
 	writel(ha->request_in, &ha->qla4_83xx_reg->req_q_in);
@@ -229,53 +205,33 @@ void qla4_83xx_complete_iocb(struct scsi_qla_host *ha)
 
 /**
  * qla4_82xx_queue_iocb - Tell ISP it's got new request(s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ha: pointer to host adapter structure.
  *
  * This routine notifies the ISP that one or more new request
  * queue entries have been placed on the request queue.
  **/
-<<<<<<< HEAD
-void qla4_8xxx_queue_iocb(struct scsi_qla_host *ha)
-=======
 void qla4_82xx_queue_iocb(struct scsi_qla_host *ha)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint32_t dbval = 0;
 
 	dbval = 0x14 | (ha->func_num << 5);
 	dbval = dbval | (0 << 8) | (ha->request_in << 16);
 
-<<<<<<< HEAD
-	qla4_8xxx_wr_32(ha, ha->nx_db_wr_ptr, ha->request_in);
-}
-
-/**
- * qla4_8xxx_complete_iocb - Tell ISP we're done with response(s)
-=======
 	qla4_82xx_wr_32(ha, ha->nx_db_wr_ptr, ha->request_in);
 }
 
 /**
  * qla4_82xx_complete_iocb - Tell ISP we're done with response(s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ha: pointer to host adapter structure.
  *
  * This routine notifies the ISP that one or more response/completion
  * queue entries have been processed by the driver.
  * This also clears the interrupt.
  **/
-<<<<<<< HEAD
-void qla4_8xxx_complete_iocb(struct scsi_qla_host *ha)
-{
-	writel(ha->response_out, &ha->qla4_8xxx_reg->rsp_q_out);
-	readl(&ha->qla4_8xxx_reg->rsp_q_out);
-=======
 void qla4_82xx_complete_iocb(struct scsi_qla_host *ha)
 {
 	writel(ha->response_out, &ha->qla4_82xx_reg->rsp_q_out);
 	readl(&ha->qla4_82xx_reg->rsp_q_out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -323,10 +279,6 @@ int qla4xxx_send_command_to_isp(struct scsi_qla_host *ha, struct srb * srb)
 	uint16_t req_cnt;
 	unsigned long flags;
 	uint32_t index;
-<<<<<<< HEAD
-	char tag[2];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get real lun and adapter */
 	ddb_entry = srb->ddb;
@@ -336,11 +288,7 @@ int qla4xxx_send_command_to_isp(struct scsi_qla_host *ha, struct srb * srb)
 	/* Acquire hardware specific lock */
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
-<<<<<<< HEAD
-	index = (uint32_t)cmd->request->tag;
-=======
 	index = scsi_cmd_to_rq(cmd)->tag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check to see if adapter is online before placing request on
@@ -366,11 +314,7 @@ int qla4xxx_send_command_to_isp(struct scsi_qla_host *ha, struct srb * srb)
 		goto queuing_error;
 
 	/* total iocbs active */
-<<<<<<< HEAD
-	if ((ha->iocb_cnt + req_cnt) >= REQUEST_QUEUE_DEPTH)
-=======
 	if ((ha->iocb_cnt + req_cnt) >= ha->iocb_hiwat)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto queuing_error;
 
 	/* Build command packet */
@@ -406,18 +350,6 @@ int qla4xxx_send_command_to_isp(struct scsi_qla_host *ha, struct srb * srb)
 
 	/* Set tagged queueing control flags */
 	cmd_entry->control_flags |= CF_SIMPLE_TAG;
-<<<<<<< HEAD
-	if (scsi_populate_tag_msg(cmd, tag))
-		switch (tag[0]) {
-		case MSG_HEAD_TAG:
-			cmd_entry->control_flags |= CF_HEAD_TAG;
-			break;
-		case MSG_ORDERED_TAG:
-			cmd_entry->control_flags |= CF_ORDERED_TAG;
-			break;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	qla4xxx_advance_req_ring_ptr(ha);
 	qla4xxx_build_scsi_iocbs(srb, cmd_entry, tot_dsds);
@@ -564,10 +496,7 @@ static int qla4xxx_send_mbox_iocb(struct scsi_qla_host *ha, struct mrb *mrb,
 	mrb->mbox_cmd = in_mbox[0];
 	wmb();
 
-<<<<<<< HEAD
-=======
 	ha->iocb_cnt += mrb->iocb_cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ha->isp_ops->queue_iocb(ha);
 exit_mbox_iocb:
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);

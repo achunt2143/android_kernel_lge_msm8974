@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- *   Copyright (C) International Business Machines Corp., 2000-2004
- *   Portions Copyright (C) Christoph Hellwig, 2001-2002
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2004
  *   Portions Copyright (C) Christoph Hellwig, 2001-2002
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -174,11 +154,7 @@ do {						\
  * Global list of active external journals
  */
 static LIST_HEAD(jfs_external_logs);
-<<<<<<< HEAD
-static struct jfs_log *dummy_log = NULL;
-=======
 static struct jfs_log *dummy_log;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_MUTEX(jfs_log_mutex);
 
 /*
@@ -412,17 +388,6 @@ lmWriteRecord(struct jfs_log * log, struct tblock * tblk, struct lrd * lrd,
 			p = (caddr_t) &JFS_IP(tlck->ip)->i_xtroot;
 		linelock = (struct linelock *) & tlck->lock;
 	}
-<<<<<<< HEAD
-#ifdef	_JFS_WIP
-	else if (tlck->flag & tlckINLINELOCK) {
-
-		inlinelock = (struct inlinelock *) & tlck;
-		p = (caddr_t) & inlinelock->pxd;
-		linelock = (struct linelock *) & tlck;
-	}
-#endif				/* _JFS_WIP */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		jfs_err("lmWriteRecord: UFO tlck:0x%p", tlck);
 		return 0;	/* Probably should trap */
@@ -1093,11 +1058,7 @@ void jfs_syncpt(struct jfs_log *log, int hard_sync)
 int lmLogOpen(struct super_block *sb)
 {
 	int rc;
-<<<<<<< HEAD
-	struct block_device *bdev;
-=======
 	struct file *bdev_file;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct jfs_log *log;
 	struct jfs_sb_info *sbi = JFS_SBI(sb);
 
@@ -1109,16 +1070,9 @@ int lmLogOpen(struct super_block *sb)
 
 	mutex_lock(&jfs_log_mutex);
 	list_for_each_entry(log, &jfs_external_logs, journal_list) {
-<<<<<<< HEAD
-		if (log->bdev->bd_dev == sbi->logdev) {
-			if (memcmp(log->uuid, sbi->loguuid,
-				   sizeof(log->uuid))) {
-				jfs_warn("wrong uuid on JFS journal\n");
-=======
 		if (file_bdev(log->bdev_file)->bd_dev == sbi->logdev) {
 			if (!uuid_equal(&log->uuid, &sbi->loguuid)) {
 				jfs_warn("wrong uuid on JFS journal");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mutex_unlock(&jfs_log_mutex);
 				return -EINVAL;
 			}
@@ -1146,17 +1100,6 @@ int lmLogOpen(struct super_block *sb)
 	 * file systems to log may have n-to-1 relationship;
 	 */
 
-<<<<<<< HEAD
-	bdev = blkdev_get_by_dev(sbi->logdev, FMODE_READ|FMODE_WRITE|FMODE_EXCL,
-				 log);
-	if (IS_ERR(bdev)) {
-		rc = PTR_ERR(bdev);
-		goto free;
-	}
-
-	log->bdev = bdev;
-	memcpy(log->uuid, sbi->loguuid, sizeof(log->uuid));
-=======
 	bdev_file = bdev_file_open_by_dev(sbi->logdev,
 			BLK_OPEN_READ | BLK_OPEN_WRITE, log, NULL);
 	if (IS_ERR(bdev_file)) {
@@ -1166,7 +1109,6 @@ int lmLogOpen(struct super_block *sb)
 
 	log->bdev_file = bdev_file;
 	uuid_copy(&log->uuid, &sbi->loguuid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * initialize log:
@@ -1199,11 +1141,7 @@ journal_found:
 	lbmLogShutdown(log);
 
       close:		/* close external log device */
-<<<<<<< HEAD
-	blkdev_put(bdev, FMODE_READ|FMODE_WRITE|FMODE_EXCL);
-=======
 	bdev_fput(bdev_file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
       free:		/* free log descriptor */
 	mutex_unlock(&jfs_log_mutex);
@@ -1224,11 +1162,7 @@ static int open_inline_log(struct super_block *sb)
 	init_waitqueue_head(&log->syncwait);
 
 	set_bit(log_INLINELOG, &log->flag);
-<<<<<<< HEAD
-	log->bdev = sb->s_bdev;
-=======
 	log->bdev_file = sb->s_bdev_file;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	log->base = addressPXD(&JFS_SBI(sb)->logpxd);
 	log->size = lengthPXD(&JFS_SBI(sb)->logpxd) >>
 	    (L2LOGPSIZE - sb->s_blocksize_bits);
@@ -1377,33 +1311,18 @@ int lmLogInit(struct jfs_log * log)
 				rc = -EINVAL;
 				goto errout20;
 			}
-<<<<<<< HEAD
-			jfs_info("lmLogInit: inline log:0x%p base:0x%Lx "
-				 "size:0x%x", log,
-				 (unsigned long long) log->base, log->size);
-		} else {
-			if (memcmp(logsuper->uuid, log->uuid, 16)) {
-				jfs_warn("wrong uuid on JFS log device");
-=======
 			jfs_info("lmLogInit: inline log:0x%p base:0x%Lx size:0x%x",
 				 log, (unsigned long long)log->base, log->size);
 		} else {
 			if (!uuid_equal(&logsuper->uuid, &log->uuid)) {
 				jfs_warn("wrong uuid on JFS log device");
 				rc = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto errout20;
 			}
 			log->size = le32_to_cpu(logsuper->size);
 			log->l2bsize = le32_to_cpu(logsuper->l2bsize);
-<<<<<<< HEAD
-			jfs_info("lmLogInit: external log:0x%p base:0x%Lx "
-				 "size:0x%x", log,
-				 (unsigned long long) log->base, log->size);
-=======
 			jfs_info("lmLogInit: external log:0x%p base:0x%Lx size:0x%x",
 				 log, (unsigned long long)log->base, log->size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		log->page = le32_to_cpu(logsuper->end) / LOGPSIZE;
@@ -1517,11 +1436,7 @@ int lmLogClose(struct super_block *sb)
 {
 	struct jfs_sb_info *sbi = JFS_SBI(sb);
 	struct jfs_log *log = sbi->log;
-<<<<<<< HEAD
-	struct block_device *bdev;
-=======
 	struct file *bdev_file;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	jfs_info("lmLogClose: log:0x%p", log);
@@ -1567,17 +1482,10 @@ int lmLogClose(struct super_block *sb)
 	 *	external log as separate logical volume
 	 */
 	list_del(&log->journal_list);
-<<<<<<< HEAD
-	bdev = log->bdev;
-	rc = lmLogShutdown(log);
-
-	blkdev_put(bdev, FMODE_READ|FMODE_WRITE|FMODE_EXCL);
-=======
 	bdev_file = log->bdev_file;
 	rc = lmLogShutdown(log);
 
 	bdev_fput(bdev_file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(log);
 
@@ -1654,10 +1562,6 @@ void jfs_flush_journal(struct jfs_log *log, int wait)
 		set_current_state(TASK_UNINTERRUPTIBLE);
 		LOGGC_UNLOCK(log);
 		schedule();
-<<<<<<< HEAD
-		__set_current_state(TASK_RUNNING);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		LOGGC_LOCK(log);
 		remove_wait_queue(&target->gcwait, &__wait);
 	}
@@ -1807,11 +1711,7 @@ static int lmLogFileSystem(struct jfs_log * log, struct jfs_sb_info *sbi,
 	int i;
 	struct logsuper *logsuper;
 	struct lbuf *bpsuper;
-<<<<<<< HEAD
-	char *uuid = sbi->uuid;
-=======
 	uuid_t *uuid = &sbi->uuid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * insert/remove file system device to log active file system list.
@@ -1822,13 +1722,8 @@ static int lmLogFileSystem(struct jfs_log * log, struct jfs_sb_info *sbi,
 	logsuper = (struct logsuper *) bpsuper->l_ldata;
 	if (activate) {
 		for (i = 0; i < MAX_ACTIVE; i++)
-<<<<<<< HEAD
-			if (!memcmp(logsuper->active[i].uuid, NULL_UUID, 16)) {
-				memcpy(logsuper->active[i].uuid, uuid, 16);
-=======
 			if (uuid_is_null(&logsuper->active[i].uuid)) {
 				uuid_copy(&logsuper->active[i].uuid, uuid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sbi->aggregate = i;
 				break;
 			}
@@ -1839,14 +1734,9 @@ static int lmLogFileSystem(struct jfs_log * log, struct jfs_sb_info *sbi,
 		}
 	} else {
 		for (i = 0; i < MAX_ACTIVE; i++)
-<<<<<<< HEAD
-			if (!memcmp(logsuper->active[i].uuid, uuid, 16)) {
-				memcpy(logsuper->active[i].uuid, NULL_UUID, 16);
-=======
 			if (uuid_equal(&logsuper->active[i].uuid, uuid)) {
 				uuid_copy(&logsuper->active[i].uuid,
 					  &uuid_null);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		if (i == MAX_ACTIVE) {
@@ -1923,29 +1813,16 @@ static int lbmLogInit(struct jfs_log * log)
 	for (i = 0; i < LOGPAGES;) {
 		char *buffer;
 		uint offset;
-<<<<<<< HEAD
-		struct page *page;
-
-		buffer = (char *) get_zeroed_page(GFP_KERNEL);
-		if (buffer == NULL)
-			goto error;
-		page = virt_to_page(buffer);
-=======
 		struct page *page = alloc_page(GFP_KERNEL | __GFP_ZERO);
 
 		if (!page)
 			goto error;
 		buffer = page_address(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (offset = 0; offset < PAGE_SIZE; offset += LOGPSIZE) {
 			lbuf = kmalloc(sizeof(struct lbuf), GFP_KERNEL);
 			if (lbuf == NULL) {
 				if (offset == 0)
-<<<<<<< HEAD
-					free_page((unsigned long) buffer);
-=======
 					__free_page(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto error;
 			}
 			if (offset) /* we already have one reference */
@@ -2095,23 +1972,6 @@ static int lbmRead(struct jfs_log * log, int pn, struct lbuf ** bpp)
 
 	bp->l_flag |= lbmREAD;
 
-<<<<<<< HEAD
-	bio = bio_alloc(GFP_NOFS, 1);
-
-	bio->bi_sector = bp->l_blkno << (log->l2bsize - 9);
-	bio->bi_bdev = log->bdev;
-	bio->bi_io_vec[0].bv_page = bp->l_page;
-	bio->bi_io_vec[0].bv_len = LOGPSIZE;
-	bio->bi_io_vec[0].bv_offset = bp->l_offset;
-
-	bio->bi_vcnt = 1;
-	bio->bi_idx = 0;
-	bio->bi_size = LOGPSIZE;
-
-	bio->bi_end_io = lbmIODone;
-	bio->bi_private = bp;
-	submit_bio(READ_SYNC, bio);
-=======
 	bio = bio_alloc(file_bdev(log->bdev_file), 1, REQ_OP_READ, GFP_NOFS);
 	bio->bi_iter.bi_sector = bp->l_blkno << (log->l2bsize - 9);
 	__bio_add_page(bio, bp->l_page, LOGPSIZE, bp->l_offset);
@@ -2126,7 +1986,6 @@ static int lbmRead(struct jfs_log * log, int pn, struct lbuf ** bpp)
 	} else {
 		submit_bio(bio);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wait_event(bp->l_ioevent, (bp->l_flag != lbmREAD));
 
@@ -2251,21 +2110,6 @@ static void lbmStartIO(struct lbuf * bp)
 {
 	struct bio *bio;
 	struct jfs_log *log = bp->l_log;
-<<<<<<< HEAD
-
-	jfs_info("lbmStartIO\n");
-
-	bio = bio_alloc(GFP_NOFS, 1);
-	bio->bi_sector = bp->l_blkno << (log->l2bsize - 9);
-	bio->bi_bdev = log->bdev;
-	bio->bi_io_vec[0].bv_page = bp->l_page;
-	bio->bi_io_vec[0].bv_len = LOGPSIZE;
-	bio->bi_io_vec[0].bv_offset = bp->l_offset;
-
-	bio->bi_vcnt = 1;
-	bio->bi_idx = 0;
-	bio->bi_size = LOGPSIZE;
-=======
 	struct block_device *bdev = NULL;
 
 	jfs_info("lbmStartIO");
@@ -2278,24 +2122,16 @@ static void lbmStartIO(struct lbuf * bp)
 	bio->bi_iter.bi_sector = bp->l_blkno << (log->l2bsize - 9);
 	__bio_add_page(bio, bp->l_page, LOGPSIZE, bp->l_offset);
 	BUG_ON(bio->bi_iter.bi_size != LOGPSIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bio->bi_end_io = lbmIODone;
 	bio->bi_private = bp;
 
 	/* check if journaling to disk has been disabled */
 	if (log->no_integrity) {
-<<<<<<< HEAD
-		bio->bi_size = 0;
-		lbmIODone(bio, 0);
-	} else {
-		submit_bio(WRITE_SYNC, bio);
-=======
 		bio->bi_iter.bi_size = 0;
 		lbmIODone(bio);
 	} else {
 		submit_bio(bio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		INCREMENT(lmStat.submitted);
 	}
 }
@@ -2331,11 +2167,7 @@ static int lbmIOWait(struct lbuf * bp, int flag)
  *
  * executed at INTIODONE level
  */
-<<<<<<< HEAD
-static void lbmIODone(struct bio *bio, int error)
-=======
 static void lbmIODone(struct bio *bio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lbuf *bp = bio->bi_private;
 	struct lbuf *nextbp, *tail;
@@ -2351,11 +2183,7 @@ static void lbmIODone(struct bio *bio)
 
 	bp->l_flag |= lbmDONE;
 
-<<<<<<< HEAD
-	if (!test_bit(BIO_UPTODATE, &bio->bi_flags)) {
-=======
 	if (bio->bi_status) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bp->l_flag |= lbmERROR;
 
 		jfs_err("lbmIODone: I/O error in JFS log");
@@ -2501,10 +2329,6 @@ int jfsIOWait(void *arg)
 			set_current_state(TASK_INTERRUPTIBLE);
 			spin_unlock_irq(&log_redrive_lock);
 			schedule();
-<<<<<<< HEAD
-			__set_current_state(TASK_RUNNING);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} while (!kthread_should_stop());
 
@@ -2647,11 +2471,7 @@ exit:
 }
 
 #ifdef CONFIG_JFS_STATISTICS
-<<<<<<< HEAD
-static int jfs_lmstats_proc_show(struct seq_file *m, void *v)
-=======
 int jfs_lmstats_proc_show(struct seq_file *m, void *v)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	seq_printf(m,
 		       "JFS Logmgr stats\n"
@@ -2668,20 +2488,4 @@ int jfs_lmstats_proc_show(struct seq_file *m, void *v)
 		       lmStat.partial_page);
 	return 0;
 }
-<<<<<<< HEAD
-
-static int jfs_lmstats_proc_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, jfs_lmstats_proc_show, NULL);
-}
-
-const struct file_operations jfs_lmstats_proc_fops = {
-	.owner		= THIS_MODULE,
-	.open		= jfs_lmstats_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_JFS_STATISTICS */

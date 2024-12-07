@@ -1,28 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2002-2005, Instant802 Networks, Inc.
  * Copyright 2005-2006, Devicescape Software, Inc.
  * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
  * Copyright 2007-2008	Johannes Berg <johannes@sipsolutions.net>
-<<<<<<< HEAD
- * Copyright 2015-2017	Intel Deutschland GmbH
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-=======
  * Copyright 2013-2014  Intel Mobile Communications GmbH
  * Copyright 2015-2017	Intel Deutschland GmbH
  * Copyright 2018-2020, 2022-2024  Intel Corporation
  */
 
 #include <crypto/utils.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/if_ether.h>
 #include <linux/etherdevice.h>
 #include <linux/list.h>
@@ -31,21 +18,14 @@
 #include <linux/slab.h>
 #include <linux/export.h>
 #include <net/mac80211.h>
-<<<<<<< HEAD
-#include <crypto/algapi.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unaligned.h>
 #include "ieee80211_i.h"
 #include "driver-ops.h"
 #include "debugfs_key.h"
 #include "aes_ccm.h"
 #include "aes_cmac.h"
-<<<<<<< HEAD
-=======
 #include "aes_gmac.h"
 #include "aes_gcm.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /**
@@ -73,11 +53,6 @@
 
 static const u8 bcast_addr[ETH_ALEN] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
-<<<<<<< HEAD
-static void assert_key_lock(struct ieee80211_local *local)
-{
-	lockdep_assert_held(&local->key_mtx);
-=======
 static void
 update_vlan_tailroom_need_count(struct ieee80211_sub_if_data *sdata, int delta)
 {
@@ -95,7 +70,6 @@ update_vlan_tailroom_need_count(struct ieee80211_sub_if_data *sdata, int delta)
 		vlan->crypto_tx_tailroom_needed_cnt += delta;
 
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void increment_tailroom_need_count(struct ieee80211_sub_if_data *sdata)
@@ -119,13 +93,10 @@ static void increment_tailroom_need_count(struct ieee80211_sub_if_data *sdata)
 	 * http://mid.gmane.org/1308590980.4322.19.camel@jlt3.sipsolutions.net
 	 */
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
 
 	update_vlan_tailroom_need_count(sdata, 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sdata->crypto_tx_tailroom_needed_cnt++) {
 		/*
 		 * Flush all XMIT packets currently using HW encryption or no
@@ -135,15 +106,6 @@ static void increment_tailroom_need_count(struct ieee80211_sub_if_data *sdata)
 	}
 }
 
-<<<<<<< HEAD
-static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
-{
-	struct ieee80211_sub_if_data *sdata;
-	struct sta_info *sta;
-	int ret;
-
-	might_sleep();
-=======
 static void decrease_tailroom_need_count(struct ieee80211_sub_if_data *sdata,
 					 int delta)
 {
@@ -181,16 +143,10 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
 		key->flags &= ~KEY_FLAG_UPLOADED_TO_HARDWARE;
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!key->local->ops->set_key)
 		goto out_unsupported;
 
-<<<<<<< HEAD
-	assert_key_lock(key->local);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sta = key->sta;
 
 	/*
@@ -198,31 +154,17 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
 	 * is supported; if not, return.
 	 */
 	if (sta && !(key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE) &&
-<<<<<<< HEAD
-	    !(key->local->hw.flags & IEEE80211_HW_SUPPORTS_PER_STA_GTK))
-=======
 	    !ieee80211_hw_check(&key->local->hw, SUPPORTS_PER_STA_GTK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unsupported;
 
 	if (sta && !sta->uploaded)
 		goto out_unsupported;
 
-<<<<<<< HEAD
-	sdata = key->sdata;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sdata->vif.type == NL80211_IFTYPE_AP_VLAN) {
 		/*
 		 * The driver doesn't know anything about VLAN interfaces.
 		 * Hence, don't send GTKs for VLAN interfaces to the driver.
 		 */
-<<<<<<< HEAD
-		if (!(key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE))
-			goto out_unsupported;
-	}
-
-=======
 		if (!(key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE)) {
 			ret = 1;
 			goto out_unsupported;
@@ -233,35 +175,20 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
 	    !(sdata->vif.active_links & BIT(key->conf.link_id)))
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = drv_set_key(key->local, SET_KEY, sdata,
 			  sta ? &sta->sta : NULL, &key->conf);
 
 	if (!ret) {
 		key->flags |= KEY_FLAG_UPLOADED_TO_HARDWARE;
 
-<<<<<<< HEAD
-		if (!((key->conf.flags & IEEE80211_KEY_FLAG_GENERATE_MMIC) ||
-		      (key->conf.flags & IEEE80211_KEY_FLAG_GENERATE_IV) ||
-		      (key->conf.flags & IEEE80211_KEY_FLAG_PUT_IV_SPACE)))
-			sdata->crypto_tx_tailroom_needed_cnt--;
-=======
 		if (!(key->conf.flags & (IEEE80211_KEY_FLAG_GENERATE_MMIC |
 					 IEEE80211_KEY_FLAG_PUT_MIC_SPACE |
 					 IEEE80211_KEY_FLAG_RESERVE_TAILROOM)))
 			decrease_tailroom_need_count(sdata, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		WARN_ON((key->conf.flags & IEEE80211_KEY_FLAG_PUT_IV_SPACE) &&
 			(key->conf.flags & IEEE80211_KEY_FLAG_GENERATE_IV));
 
-<<<<<<< HEAD
-		return 0;
-	}
-
-	if (ret != -ENOSPC && ret != -EOPNOTSUPP)
-		wiphy_err(key->local->hw.wiphy,
-=======
 		WARN_ON((key->conf.flags & IEEE80211_KEY_FLAG_PUT_MIC_SPACE) &&
 			(key->conf.flags & IEEE80211_KEY_FLAG_GENERATE_MMIC));
 
@@ -270,7 +197,6 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
 
 	if (ret != -ENOSPC && ret != -EOPNOTSUPP && ret != 1)
 		sdata_err(sdata,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  "failed to set key (%d, %pM) to hardware (%d)\n",
 			  key->conf.keyidx,
 			  sta ? sta->sta.addr : bcast_addr, ret);
@@ -281,10 +207,6 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
 	case WLAN_CIPHER_SUITE_WEP104:
 	case WLAN_CIPHER_SUITE_TKIP:
 	case WLAN_CIPHER_SUITE_CCMP:
-<<<<<<< HEAD
-	case WLAN_CIPHER_SUITE_AES_CMAC:
-		/* all of these we can do in software */
-=======
 	case WLAN_CIPHER_SUITE_CCMP_256:
 	case WLAN_CIPHER_SUITE_GCMP:
 	case WLAN_CIPHER_SUITE_GCMP_256:
@@ -297,7 +219,6 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
 			return 0;
 		if (ieee80211_hw_check(&key->local->hw, SW_CRYPTO_CONTROL))
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	default:
 		return -EINVAL;
@@ -315,24 +236,12 @@ static void ieee80211_key_disable_hw_accel(struct ieee80211_key *key)
 	if (!key || !key->local->ops->set_key)
 		return;
 
-<<<<<<< HEAD
-	assert_key_lock(key->local);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(key->flags & KEY_FLAG_UPLOADED_TO_HARDWARE))
 		return;
 
 	sta = key->sta;
 	sdata = key->sdata;
 
-<<<<<<< HEAD
-	if (!((key->conf.flags & IEEE80211_KEY_FLAG_GENERATE_MMIC) ||
-	      (key->conf.flags & IEEE80211_KEY_FLAG_GENERATE_IV) ||
-	      (key->conf.flags & IEEE80211_KEY_FLAG_PUT_IV_SPACE)))
-		increment_tailroom_need_count(sdata);
-
-=======
 	lockdep_assert_wiphy(key->local->hw.wiphy);
 
 	if (key->conf.link_id >= 0 && sdata->vif.active_links &&
@@ -345,55 +254,10 @@ static void ieee80211_key_disable_hw_accel(struct ieee80211_key *key)
 		increment_tailroom_need_count(sdata);
 
 	key->flags &= ~KEY_FLAG_UPLOADED_TO_HARDWARE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = drv_set_key(key->local, DISABLE_KEY, sdata,
 			  sta ? &sta->sta : NULL, &key->conf);
 
 	if (ret)
-<<<<<<< HEAD
-		wiphy_err(key->local->hw.wiphy,
-			  "failed to remove key (%d, %pM) from hardware (%d)\n",
-			  key->conf.keyidx,
-			  sta ? sta->sta.addr : bcast_addr, ret);
-
-	key->flags &= ~KEY_FLAG_UPLOADED_TO_HARDWARE;
-}
-
-void ieee80211_key_removed(struct ieee80211_key_conf *key_conf)
-{
-	struct ieee80211_key *key;
-
-	key = container_of(key_conf, struct ieee80211_key, conf);
-
-	might_sleep();
-	assert_key_lock(key->local);
-
-	key->flags &= ~KEY_FLAG_UPLOADED_TO_HARDWARE;
-
-	/*
-	 * Flush TX path to avoid attempts to use this key
-	 * after this function returns. Until then, drivers
-	 * must be prepared to handle the key.
-	 */
-	synchronize_rcu();
-}
-EXPORT_SYMBOL_GPL(ieee80211_key_removed);
-
-static void __ieee80211_set_default_key(struct ieee80211_sub_if_data *sdata,
-					int idx, bool uni, bool multi)
-{
-	struct ieee80211_key *key = NULL;
-
-	assert_key_lock(sdata->local);
-
-	if (idx >= 0 && idx < NUM_DEFAULT_KEYS)
-		key = key_mtx_dereference(sdata->local, sdata->keys[idx]);
-
-	if (uni)
-		rcu_assign_pointer(sdata->default_unicast_key, key);
-	if (multi)
-		rcu_assign_pointer(sdata->default_multicast_key, key);
-=======
 		sdata_err(sdata,
 			  "failed to remove key (%d, %pM) from hardware (%d)\n",
 			  key->conf.keyidx,
@@ -505,33 +369,10 @@ static void __ieee80211_set_default_key(struct ieee80211_link_data *link,
 
 	if (multi)
 		rcu_assign_pointer(link->default_multicast_key, key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ieee80211_debugfs_key_update_default(sdata);
 }
 
-<<<<<<< HEAD
-void ieee80211_set_default_key(struct ieee80211_sub_if_data *sdata, int idx,
-			       bool uni, bool multi)
-{
-	mutex_lock(&sdata->local->key_mtx);
-	__ieee80211_set_default_key(sdata, idx, uni, multi);
-	mutex_unlock(&sdata->local->key_mtx);
-}
-
-static void
-__ieee80211_set_default_mgmt_key(struct ieee80211_sub_if_data *sdata, int idx)
-{
-	struct ieee80211_key *key = NULL;
-
-	assert_key_lock(sdata->local);
-
-	if (idx >= NUM_DEFAULT_KEYS &&
-	    idx < NUM_DEFAULT_KEYS + NUM_DEFAULT_MGMT_KEYS)
-		key = key_mtx_dereference(sdata->local, sdata->keys[idx]);
-
-	rcu_assign_pointer(sdata->default_mgmt_key, key);
-=======
 void ieee80211_set_default_key(struct ieee80211_link_data *link, int idx,
 			       bool uni, bool multi)
 {
@@ -554,86 +395,10 @@ __ieee80211_set_default_mgmt_key(struct ieee80211_link_data *link, int idx)
 					link->gtk[idx]);
 
 	rcu_assign_pointer(link->default_mgmt_key, key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ieee80211_debugfs_key_update_default(sdata);
 }
 
-<<<<<<< HEAD
-void ieee80211_set_default_mgmt_key(struct ieee80211_sub_if_data *sdata,
-				    int idx)
-{
-	mutex_lock(&sdata->local->key_mtx);
-	__ieee80211_set_default_mgmt_key(sdata, idx);
-	mutex_unlock(&sdata->local->key_mtx);
-}
-
-
-static void __ieee80211_key_replace(struct ieee80211_sub_if_data *sdata,
-				    struct sta_info *sta,
-				    bool pairwise,
-				    struct ieee80211_key *old,
-				    struct ieee80211_key *new)
-{
-	int idx;
-	bool defunikey, defmultikey, defmgmtkey;
-
-	if (new)
-		list_add_tail(&new->list, &sdata->key_list);
-
-	if (sta && pairwise) {
-		rcu_assign_pointer(sta->ptk, new);
-	} else if (sta) {
-		if (old)
-			idx = old->conf.keyidx;
-		else
-			idx = new->conf.keyidx;
-		rcu_assign_pointer(sta->gtk[idx], new);
-	} else {
-		WARN_ON(new && old && new->conf.keyidx != old->conf.keyidx);
-
-		if (old)
-			idx = old->conf.keyidx;
-		else
-			idx = new->conf.keyidx;
-
-		defunikey = old &&
-			old == key_mtx_dereference(sdata->local,
-						sdata->default_unicast_key);
-		defmultikey = old &&
-			old == key_mtx_dereference(sdata->local,
-						sdata->default_multicast_key);
-		defmgmtkey = old &&
-			old == key_mtx_dereference(sdata->local,
-						sdata->default_mgmt_key);
-
-		if (defunikey && !new)
-			__ieee80211_set_default_key(sdata, -1, true, false);
-		if (defmultikey && !new)
-			__ieee80211_set_default_key(sdata, -1, false, true);
-		if (defmgmtkey && !new)
-			__ieee80211_set_default_mgmt_key(sdata, -1);
-
-		rcu_assign_pointer(sdata->keys[idx], new);
-		if (defunikey && new)
-			__ieee80211_set_default_key(sdata, new->conf.keyidx,
-						    true, false);
-		if (defmultikey && new)
-			__ieee80211_set_default_key(sdata, new->conf.keyidx,
-						    false, true);
-		if (defmgmtkey && new)
-			__ieee80211_set_default_mgmt_key(sdata,
-							 new->conf.keyidx);
-	}
-
-	if (old)
-		list_del(&old->list);
-}
-
-struct ieee80211_key *ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
-					  const u8 *key_data,
-					  size_t seq_len, const u8 *seq)
-=======
 void ieee80211_set_default_mgmt_key(struct ieee80211_link_data *link,
 				    int idx)
 {
@@ -822,19 +587,14 @@ struct ieee80211_key *
 ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 		    const u8 *key_data,
 		    size_t seq_len, const u8 *seq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_key *key;
 	int i, j, err;
 
-<<<<<<< HEAD
-	BUG_ON(idx < 0 || idx >= NUM_DEFAULT_KEYS + NUM_DEFAULT_MGMT_KEYS);
-=======
 	if (WARN_ON(idx < 0 ||
 		    idx >= NUM_DEFAULT_KEYS + NUM_DEFAULT_MGMT_KEYS +
 		    NUM_DEFAULT_BEACON_KEYS))
 		return ERR_PTR(-EINVAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	key = kzalloc(sizeof(struct ieee80211_key) + key_len, GFP_KERNEL);
 	if (!key)
@@ -847,26 +607,13 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 	key->conf.flags = 0;
 	key->flags = 0;
 
-<<<<<<< HEAD
-=======
 	key->conf.link_id = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key->conf.cipher = cipher;
 	key->conf.keyidx = idx;
 	key->conf.keylen = key_len;
 	switch (cipher) {
 	case WLAN_CIPHER_SUITE_WEP40:
 	case WLAN_CIPHER_SUITE_WEP104:
-<<<<<<< HEAD
-		key->conf.iv_len = WEP_IV_LEN;
-		key->conf.icv_len = WEP_ICV_LEN;
-		break;
-	case WLAN_CIPHER_SUITE_TKIP:
-		key->conf.iv_len = TKIP_IV_LEN;
-		key->conf.icv_len = TKIP_ICV_LEN;
-		if (seq) {
-			for (i = 0; i < NUM_RX_DATA_QUEUES; i++) {
-=======
 		key->conf.iv_len = IEEE80211_WEP_IV_LEN;
 		key->conf.icv_len = IEEE80211_WEP_ICV_LEN;
 		break;
@@ -875,7 +622,6 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 		key->conf.icv_len = IEEE80211_TKIP_ICV_LEN;
 		if (seq) {
 			for (i = 0; i < IEEE80211_NUM_TIDS; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				key->u.tkip.rx[i].iv32 =
 					get_unaligned_le32(&seq[2]);
 				key->u.tkip.rx[i].iv16 =
@@ -885,15 +631,6 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 		spin_lock_init(&key->u.tkip.txlock);
 		break;
 	case WLAN_CIPHER_SUITE_CCMP:
-<<<<<<< HEAD
-		key->conf.iv_len = CCMP_HDR_LEN;
-		key->conf.icv_len = CCMP_MIC_LEN;
-		if (seq) {
-			for (i = 0; i < NUM_RX_DATA_QUEUES + 1; i++)
-				for (j = 0; j < CCMP_PN_LEN; j++)
-					key->u.ccmp.rx_pn[i][j] =
-						seq[CCMP_PN_LEN - j - 1];
-=======
 		key->conf.iv_len = IEEE80211_CCMP_HDR_LEN;
 		key->conf.icv_len = IEEE80211_CCMP_MIC_LEN;
 		if (seq) {
@@ -901,15 +638,11 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 				for (j = 0; j < IEEE80211_CCMP_PN_LEN; j++)
 					key->u.ccmp.rx_pn[i][j] =
 						seq[IEEE80211_CCMP_PN_LEN - j - 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/*
 		 * Initialize AES key state here as an optimization so that
 		 * it does not need to be initialized for every packet.
 		 */
-<<<<<<< HEAD
-		key->u.ccmp.tfm = ieee80211_aes_key_setup_encrypt(key_data);
-=======
 		key->u.ccmp.tfm = ieee80211_aes_key_setup_encrypt(
 			key_data, key_len, IEEE80211_CCMP_MIC_LEN);
 		if (IS_ERR(key->u.ccmp.tfm)) {
@@ -930,7 +663,6 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 		 */
 		key->u.ccmp.tfm = ieee80211_aes_key_setup_encrypt(
 			key_data, key_len, IEEE80211_CCMP_256_MIC_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(key->u.ccmp.tfm)) {
 			err = PTR_ERR(key->u.ccmp.tfm);
 			kfree(key);
@@ -938,13 +670,6 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 		}
 		break;
 	case WLAN_CIPHER_SUITE_AES_CMAC:
-<<<<<<< HEAD
-		key->conf.iv_len = 0;
-		key->conf.icv_len = sizeof(struct ieee80211_mmie);
-		if (seq)
-			for (j = 0; j < 6; j++)
-				key->u.aes_cmac.rx_pn[j] = seq[6 - j - 1];
-=======
 	case WLAN_CIPHER_SUITE_BIP_CMAC_256:
 		key->conf.iv_len = 0;
 		if (cipher == WLAN_CIPHER_SUITE_AES_CMAC)
@@ -955,25 +680,18 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 			for (j = 0; j < IEEE80211_CMAC_PN_LEN; j++)
 				key->u.aes_cmac.rx_pn[j] =
 					seq[IEEE80211_CMAC_PN_LEN - j - 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Initialize AES key state here as an optimization so that
 		 * it does not need to be initialized for every packet.
 		 */
 		key->u.aes_cmac.tfm =
-<<<<<<< HEAD
-			ieee80211_aes_cmac_key_setup(key_data);
-=======
 			ieee80211_aes_cmac_key_setup(key_data, key_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(key->u.aes_cmac.tfm)) {
 			err = PTR_ERR(key->u.aes_cmac.tfm);
 			kfree(key);
 			return ERR_PTR(err);
 		}
 		break;
-<<<<<<< HEAD
-=======
 	case WLAN_CIPHER_SUITE_BIP_GMAC_128:
 	case WLAN_CIPHER_SUITE_BIP_GMAC_256:
 		key->conf.iv_len = 0;
@@ -1012,7 +730,6 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 			return ERR_PTR(err);
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	memcpy(key->conf.key, key_data, key_len);
 	INIT_LIST_HEAD(&key->list);
@@ -1020,9 +737,6 @@ ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 	return key;
 }
 
-<<<<<<< HEAD
-static void __ieee80211_key_destroy(struct ieee80211_key *key)
-=======
 static void ieee80211_key_free_common(struct ieee80211_key *key)
 {
 	switch (key->conf.cipher) {
@@ -1070,82 +784,11 @@ static void __ieee80211_key_destroy(struct ieee80211_key *key,
 
 static void ieee80211_key_destroy(struct ieee80211_key *key,
 				  bool delay_tailroom)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!key)
 		return;
 
 	/*
-<<<<<<< HEAD
-	 * Synchronize so the TX path can no longer be using
-	 * this key before we free/remove it.
-	 */
-	synchronize_rcu();
-
-	if (key->local)
-		ieee80211_key_disable_hw_accel(key);
-
-	if (key->conf.cipher == WLAN_CIPHER_SUITE_CCMP)
-		ieee80211_aes_key_free(key->u.ccmp.tfm);
-	if (key->conf.cipher == WLAN_CIPHER_SUITE_AES_CMAC)
-		ieee80211_aes_cmac_key_free(key->u.aes_cmac.tfm);
-	if (key->local) {
-		ieee80211_debugfs_key_remove(key);
-		key->sdata->crypto_tx_tailroom_needed_cnt--;
-	}
-
-	kfree(key);
-}
-
-int ieee80211_key_link(struct ieee80211_key *key,
-		       struct ieee80211_sub_if_data *sdata,
-		       struct sta_info *sta)
-{
-	struct ieee80211_key *old_key;
-	int idx, ret;
-	bool pairwise;
-
-	BUG_ON(!sdata);
-	BUG_ON(!key);
-
-	pairwise = key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE;
-	idx = key->conf.keyidx;
-
-	if (sta) {
-		/*
-		 * some hardware cannot handle TKIP with QoS, so
-		 * we indicate whether QoS could be in use.
-		 */
-		if (test_sta_flag(sta, WLAN_STA_WME))
-			key->conf.flags |= IEEE80211_KEY_FLAG_WMM_STA;
-	} else {
-		if (sdata->vif.type == NL80211_IFTYPE_STATION) {
-			struct sta_info *ap;
-
-			/*
-			 * We're getting a sta pointer in, so must be under
-			 * appropriate locking for sta_info_get().
-			 */
-
-			/* same here, the AP could be using QoS */
-			ap = sta_info_get(key->sdata, key->sdata->u.mgd.bssid);
-			if (ap) {
-				if (test_sta_flag(ap, WLAN_STA_WME))
-					key->conf.flags |=
-						IEEE80211_KEY_FLAG_WMM_STA;
-			}
-		}
-	}
-
-	mutex_lock(&sdata->local->key_mtx);
-
-	if (sta && pairwise)
-		old_key = key_mtx_dereference(sdata->local, sta->ptk);
-	else if (sta)
-		old_key = key_mtx_dereference(sdata->local, sta->gtk[idx]);
-	else
-		old_key = key_mtx_dereference(sdata->local, sdata->keys[idx]);
-=======
 	 * Synchronize so the TX path and rcu key iterators
 	 * can no longer be using this key before we free/remove it.
 	 */
@@ -1262,21 +905,13 @@ int ieee80211_key_link(struct ieee80211_key *key,
 			goto out;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Silently accept key re-installation without really installing the
 	 * new version of the key to avoid nonce reuse or replay issues.
 	 */
-<<<<<<< HEAD
-	if (old_key && key->conf.keylen == old_key->conf.keylen &&
-	    !crypto_memneq(key->conf.key, old_key->conf.key, key->conf.keylen)) {
-		ieee80211_key_free_unused(key);
-		ret = 0;
-=======
 	if (ieee80211_key_identical(sdata, old_key, key)) {
 		ret = -EALREADY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -1284,24 +919,6 @@ int ieee80211_key_link(struct ieee80211_key *key,
 	key->sdata = sdata;
 	key->sta = sta;
 
-<<<<<<< HEAD
-	increment_tailroom_need_count(sdata);
-
-	__ieee80211_key_replace(sdata, sta, pairwise, old_key, key);
-	__ieee80211_key_destroy(old_key);
-
-	ieee80211_debugfs_key_add(key);
-
-	ret = ieee80211_key_enable_hw_accel(key);
-
- out:
-	mutex_unlock(&sdata->local->key_mtx);
-
-	return ret;
-}
-
-void __ieee80211_key_free(struct ieee80211_key *key)
-=======
 	/*
 	 * Assign a unique ID to every key so we can easily prevent mixed
 	 * key and fragment cache attacks.
@@ -1331,7 +948,6 @@ void __ieee80211_key_free(struct ieee80211_key *key)
 }
 
 void ieee80211_key_free(struct ieee80211_key *key, bool delay_tailroom)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!key)
 		return;
@@ -1340,41 +956,6 @@ void ieee80211_key_free(struct ieee80211_key *key, bool delay_tailroom)
 	 * Replace key with nothingness if it was ever used.
 	 */
 	if (key->sdata)
-<<<<<<< HEAD
-		__ieee80211_key_replace(key->sdata, key->sta,
-				key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE,
-				key, NULL);
-	__ieee80211_key_destroy(key);
-}
-
-void ieee80211_key_free(struct ieee80211_local *local,
-			struct ieee80211_key *key)
-{
-	mutex_lock(&local->key_mtx);
-	__ieee80211_key_free(key);
-	mutex_unlock(&local->key_mtx);
-}
-
-void ieee80211_enable_keys(struct ieee80211_sub_if_data *sdata)
-{
-	struct ieee80211_key *key;
-
-	ASSERT_RTNL();
-
-	if (WARN_ON(!ieee80211_sdata_running(sdata)))
-		return;
-
-	mutex_lock(&sdata->local->key_mtx);
-
-	sdata->crypto_tx_tailroom_needed_cnt = 0;
-
-	list_for_each_entry(key, &sdata->key_list, list) {
-		increment_tailroom_need_count(sdata);
-		ieee80211_key_enable_hw_accel(key);
-	}
-
-	mutex_unlock(&sdata->local->key_mtx);
-=======
 		ieee80211_key_replace(key->sdata, NULL, key->sta,
 				      key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE,
 				      key, NULL);
@@ -1404,7 +985,6 @@ void ieee80211_reenable_keys(struct ieee80211_sub_if_data *sdata)
 			ieee80211_key_enable_hw_accel(key);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ieee80211_iter_keys(struct ieee80211_hw *hw,
@@ -1417,17 +997,6 @@ void ieee80211_iter_keys(struct ieee80211_hw *hw,
 			 void *iter_data)
 {
 	struct ieee80211_local *local = hw_to_local(hw);
-<<<<<<< HEAD
-	struct ieee80211_key *key;
-	struct ieee80211_sub_if_data *sdata;
-
-	ASSERT_RTNL();
-
-	mutex_lock(&local->key_mtx);
-	if (vif) {
-		sdata = vif_to_sdata(vif);
-		list_for_each_entry(key, &sdata->key_list, list)
-=======
 	struct ieee80211_key *key, *tmp;
 	struct ieee80211_sub_if_data *sdata;
 
@@ -1436,58 +1005,17 @@ void ieee80211_iter_keys(struct ieee80211_hw *hw,
 	if (vif) {
 		sdata = vif_to_sdata(vif);
 		list_for_each_entry_safe(key, tmp, &sdata->key_list, list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iter(hw, &sdata->vif,
 			     key->sta ? &key->sta->sta : NULL,
 			     &key->conf, iter_data);
 	} else {
 		list_for_each_entry(sdata, &local->interfaces, list)
-<<<<<<< HEAD
-			list_for_each_entry(key, &sdata->key_list, list)
-=======
 			list_for_each_entry_safe(key, tmp,
 						 &sdata->key_list, list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				iter(hw, &sdata->vif,
 				     key->sta ? &key->sta->sta : NULL,
 				     &key->conf, iter_data);
 	}
-<<<<<<< HEAD
-	mutex_unlock(&local->key_mtx);
-}
-EXPORT_SYMBOL(ieee80211_iter_keys);
-
-void ieee80211_disable_keys(struct ieee80211_sub_if_data *sdata)
-{
-	struct ieee80211_key *key;
-
-	ASSERT_RTNL();
-
-	mutex_lock(&sdata->local->key_mtx);
-
-	list_for_each_entry(key, &sdata->key_list, list)
-		ieee80211_key_disable_hw_accel(key);
-
-	mutex_unlock(&sdata->local->key_mtx);
-}
-
-void ieee80211_free_keys(struct ieee80211_sub_if_data *sdata)
-{
-	struct ieee80211_key *key, *tmp;
-
-	mutex_lock(&sdata->local->key_mtx);
-
-	ieee80211_debugfs_key_remove_mgmt_default(sdata);
-
-	list_for_each_entry_safe(key, tmp, &sdata->key_list, list)
-		__ieee80211_key_free(key);
-
-	ieee80211_debugfs_key_update_default(sdata);
-
-	mutex_unlock(&sdata->local->key_mtx);
-}
-
-=======
 }
 EXPORT_SYMBOL(ieee80211_iter_keys);
 
@@ -1696,7 +1224,6 @@ void ieee80211_delayed_tailroom_dec(struct wiphy *wiphy,
 				     sdata->crypto_tx_tailroom_pending_dec);
 	sdata->crypto_tx_tailroom_pending_dec = 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ieee80211_gtk_rekey_notify(struct ieee80211_vif *vif, const u8 *bssid,
 				const u8 *replay_ctr, gfp_t gfp)
@@ -1709,49 +1236,6 @@ void ieee80211_gtk_rekey_notify(struct ieee80211_vif *vif, const u8 *bssid,
 }
 EXPORT_SYMBOL_GPL(ieee80211_gtk_rekey_notify);
 
-<<<<<<< HEAD
-void ieee80211_get_key_tx_seq(struct ieee80211_key_conf *keyconf,
-			      struct ieee80211_key_seq *seq)
-{
-	struct ieee80211_key *key;
-	u64 pn64;
-
-	if (WARN_ON(!(keyconf->flags & IEEE80211_KEY_FLAG_GENERATE_IV)))
-		return;
-
-	key = container_of(keyconf, struct ieee80211_key, conf);
-
-	switch (key->conf.cipher) {
-	case WLAN_CIPHER_SUITE_TKIP:
-		seq->tkip.iv32 = key->u.tkip.tx.iv32;
-		seq->tkip.iv16 = key->u.tkip.tx.iv16;
-		break;
-	case WLAN_CIPHER_SUITE_CCMP:
-		pn64 = atomic64_read(&key->u.ccmp.tx_pn);
-		seq->ccmp.pn[5] = pn64;
-		seq->ccmp.pn[4] = pn64 >> 8;
-		seq->ccmp.pn[3] = pn64 >> 16;
-		seq->ccmp.pn[2] = pn64 >> 24;
-		seq->ccmp.pn[1] = pn64 >> 32;
-		seq->ccmp.pn[0] = pn64 >> 40;
-		break;
-	case WLAN_CIPHER_SUITE_AES_CMAC:
-		pn64 = atomic64_read(&key->u.aes_cmac.tx_pn);
-		seq->ccmp.pn[5] = pn64;
-		seq->ccmp.pn[4] = pn64 >> 8;
-		seq->ccmp.pn[3] = pn64 >> 16;
-		seq->ccmp.pn[2] = pn64 >> 24;
-		seq->ccmp.pn[1] = pn64 >> 32;
-		seq->ccmp.pn[0] = pn64 >> 40;
-		break;
-	default:
-		WARN_ON(1);
-	}
-}
-EXPORT_SYMBOL(ieee80211_get_key_tx_seq);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ieee80211_get_key_rx_seq(struct ieee80211_key_conf *keyconf,
 			      int tid, struct ieee80211_key_seq *seq)
 {
@@ -1762,31 +1246,12 @@ void ieee80211_get_key_rx_seq(struct ieee80211_key_conf *keyconf,
 
 	switch (key->conf.cipher) {
 	case WLAN_CIPHER_SUITE_TKIP:
-<<<<<<< HEAD
-		if (WARN_ON(tid < 0 || tid >= NUM_RX_DATA_QUEUES))
-=======
 		if (WARN_ON(tid < 0 || tid >= IEEE80211_NUM_TIDS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		seq->tkip.iv32 = key->u.tkip.rx[tid].iv32;
 		seq->tkip.iv16 = key->u.tkip.rx[tid].iv16;
 		break;
 	case WLAN_CIPHER_SUITE_CCMP:
-<<<<<<< HEAD
-		if (WARN_ON(tid < -1 || tid >= NUM_RX_DATA_QUEUES))
-			return;
-		if (tid < 0)
-			pn = key->u.ccmp.rx_pn[NUM_RX_DATA_QUEUES];
-		else
-			pn = key->u.ccmp.rx_pn[tid];
-		memcpy(seq->ccmp.pn, pn, CCMP_PN_LEN);
-		break;
-	case WLAN_CIPHER_SUITE_AES_CMAC:
-		if (WARN_ON(tid != 0))
-			return;
-		pn = key->u.aes_cmac.rx_pn;
-		memcpy(seq->aes_cmac.pn, pn, CMAC_PN_LEN);
-=======
 	case WLAN_CIPHER_SUITE_CCMP_256:
 		if (WARN_ON(tid < -1 || tid >= IEEE80211_NUM_TIDS))
 			return;
@@ -1819,13 +1284,10 @@ void ieee80211_get_key_rx_seq(struct ieee80211_key_conf *keyconf,
 		else
 			pn = key->u.gcmp.rx_pn[tid];
 		memcpy(seq->gcmp.pn, pn, IEEE80211_GCMP_PN_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 EXPORT_SYMBOL(ieee80211_get_key_rx_seq);
-<<<<<<< HEAD
-=======
 
 void ieee80211_set_key_rx_seq(struct ieee80211_key_conf *keyconf,
 			      int tid, struct ieee80211_key_seq *seq)
@@ -2031,4 +1493,3 @@ int ieee80211_key_switch_links(struct ieee80211_sub_if_data *sdata,
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

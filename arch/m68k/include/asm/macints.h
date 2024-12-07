@@ -14,25 +14,6 @@
 
 #include <asm/irq.h>
 
-<<<<<<< HEAD
-/* Setting this prints debugging info for unclaimed interrupts */
-
-#define DEBUG_SPURIOUS
-
-/* Setting this prints debugging info on each autovector interrupt */
-
-/* #define DEBUG_IRQS */
-
-/* Setting this prints debugging info on each Nubus interrupt */
-
-/* #define DEBUG_NUBUS_INT */
-
-/* Setting this prints debugging info on irqs as they enabled and disabled. */
-
-/* #define DEBUG_IRQUSE */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Base IRQ number for all Mac68K interrupt sources. Each source
  * has eight indexes (base -> base+7).
@@ -140,10 +121,4 @@
 #define SLOT2IRQ(x)	  (x + 47)
 #define IRQ2SLOT(x)	  (x - 47)
 
-<<<<<<< HEAD
-#define INT_CLK   24576	    /* CLK while int_clk =2.456MHz and divide = 100 */
-#define INT_TICKS 246	    /* to make sched_time = 99.902... HZ */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* asm/macints.h */

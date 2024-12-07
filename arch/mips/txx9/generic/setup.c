@@ -14,13 +14,6 @@
 #include <linux/types.h>
 #include <linux/interrupt.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/clk.h>
-#include <linux/err.h>
-#include <linux/gpio.h>
-#include <linux/platform_device.h>
-=======
 #include <linux/export.h>
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
@@ -28,24 +21,11 @@
 #include <linux/gpio/driver.h>
 #include <linux/platform_device.h>
 #include <linux/platform_data/txx9/ndfmc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_core.h>
 #include <linux/mtd/physmap.h>
 #include <linux/leds.h>
 #include <linux/device.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/irq.h>
-#include <asm/bootinfo.h>
-#include <asm/time.h>
-#include <asm/reboot.h>
-#include <asm/r4kcache.h>
-#include <asm/sections.h>
-#include <asm/txx9/generic.h>
-#include <asm/txx9/pci.h>
-#include <asm/txx9tmr.h>
-#include <asm/txx9/ndfmc.h>
-=======
 #include <linux/io.h>
 #include <linux/irq.h>
 #include <asm/bootinfo.h>
@@ -57,7 +37,6 @@
 #include <asm/txx9/generic.h>
 #include <asm/txx9/pci.h>
 #include <asm/txx9tmr.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/txx9/dmac.h>
 #ifdef CONFIG_CPU_TX49XX
 #include <asm/txx9/tx4938.h>
@@ -99,66 +78,7 @@ unsigned int txx9_master_clock;
 unsigned int txx9_cpu_clock;
 unsigned int txx9_gbus_clock;
 
-<<<<<<< HEAD
-#ifdef CONFIG_CPU_TX39XX
-/* don't enable by default - see errata */
-int txx9_ccfg_toeon __initdata;
-#else
 int txx9_ccfg_toeon __initdata = 1;
-#endif
-
-/* Minimum CLK support */
-
-struct clk *clk_get(struct device *dev, const char *id)
-{
-	if (!strcmp(id, "spi-baseclk"))
-		return (struct clk *)((unsigned long)txx9_gbus_clock / 2 / 2);
-	if (!strcmp(id, "imbus_clk"))
-		return (struct clk *)((unsigned long)txx9_gbus_clock / 2);
-	return ERR_PTR(-ENOENT);
-}
-EXPORT_SYMBOL(clk_get);
-
-int clk_enable(struct clk *clk)
-{
-	return 0;
-}
-EXPORT_SYMBOL(clk_enable);
-
-void clk_disable(struct clk *clk)
-{
-}
-EXPORT_SYMBOL(clk_disable);
-
-unsigned long clk_get_rate(struct clk *clk)
-{
-	return (unsigned long)clk;
-}
-EXPORT_SYMBOL(clk_get_rate);
-
-void clk_put(struct clk *clk)
-{
-}
-EXPORT_SYMBOL(clk_put);
-
-/* GPIO support */
-
-#ifdef CONFIG_GENERIC_GPIO
-int gpio_to_irq(unsigned gpio)
-{
-	return -EINVAL;
-}
-EXPORT_SYMBOL(gpio_to_irq);
-
-int irq_to_gpio(unsigned irq)
-{
-	return -EINVAL;
-}
-EXPORT_SYMBOL(irq_to_gpio);
-#endif
-=======
-int txx9_ccfg_toeon __initdata = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BOARD_VEC(board)	extern struct txx9_board_vec board;
 #include <asm/txx9/boards.h>
@@ -269,56 +189,6 @@ static void __init txx9_cache_fixup(void)
 	if (conf & TX49_CONF_DC)
 		pr_info("TX49XX D-Cache disabled.\n");
 }
-<<<<<<< HEAD
-#elif defined(CONFIG_CPU_TX39XX)
-/* flush all cache on very early stage (before tx39_cache_init) */
-static void __init early_flush_dcache(void)
-{
-	unsigned int conf = read_c0_config();
-	unsigned int dc_size = 1 << (10 + ((conf & TX39_CONF_DCS_MASK) >>
-					   TX39_CONF_DCS_SHIFT));
-	unsigned int linesz = 16;
-	unsigned long addr, end;
-
-	end = INDEX_BASE + dc_size / 2;
-	/* 2way, waybit=0 */
-	for (addr = INDEX_BASE; addr < end; addr += linesz) {
-		cache_op(Index_Writeback_Inv_D, addr | 0);
-		cache_op(Index_Writeback_Inv_D, addr | 1);
-	}
-}
-
-static void __init txx9_cache_fixup(void)
-{
-	unsigned int conf;
-
-	conf = read_c0_config();
-	/* flush and disable */
-	if (txx9_ic_disable) {
-		conf &= ~TX39_CONF_ICE;
-		write_c0_config(conf);
-	}
-	if (txx9_dc_disable) {
-		early_flush_dcache();
-		conf &= ~TX39_CONF_DCE;
-		write_c0_config(conf);
-	}
-
-	/* enable cache */
-	conf = read_c0_config();
-	if (!txx9_ic_disable)
-		conf |= TX39_CONF_ICE;
-	if (!txx9_dc_disable)
-		conf |= TX39_CONF_DCE;
-	write_c0_config(conf);
-
-	if (!(conf & TX39_CONF_ICE))
-		pr_info("TX39XX I-Cache disabled.\n");
-	if (!(conf & TX39_CONF_DCE))
-		pr_info("TX39XX D-Cache disabled.\n");
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void txx9_cache_fixup(void)
 {
@@ -339,13 +209,8 @@ static void __init preprocess_cmdline(void)
 			txx9_board_vec = find_board_byname(str + 6);
 			continue;
 		} else if (strncmp(str, "masterclk=", 10) == 0) {
-<<<<<<< HEAD
-			unsigned long val;
-			if (strict_strtoul(str + 10, 10, &val) == 0)
-=======
 			unsigned int val;
 			if (kstrtouint(str + 10, 10, &val) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				txx9_master_clock = val;
 			continue;
 		} else if (strcmp(str, "icdisable") == 0) {
@@ -385,12 +250,6 @@ static void __init select_board(void)
 	}
 
 	/* select "default" board */
-<<<<<<< HEAD
-#ifdef CONFIG_CPU_TX39XX
-	txx9_board_vec = &jmr3927_vec;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CPU_TX49XX
 	switch (TX4938_REV_PCODE()) {
 #ifdef CONFIG_TOSHIBA_RBTX4927
@@ -401,19 +260,6 @@ static void __init select_board(void)
 		txx9_board_vec = &rbtx4937_vec;
 		break;
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_TOSHIBA_RBTX4938
-	case 0x4938:
-		txx9_board_vec = &rbtx4938_vec;
-		break;
-#endif
-#ifdef CONFIG_TOSHIBA_RBTX4939
-	case 0x4939:
-		txx9_board_vec = &rbtx4939_vec;
-		break;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 }
@@ -429,18 +275,6 @@ void __init prom_init(void)
 	txx9_board_vec->prom_init();
 }
 
-<<<<<<< HEAD
-void __init prom_free_prom_memory(void)
-{
-	unsigned long saddr = PAGE_SIZE;
-	unsigned long eaddr = __pa_symbol(&_text);
-
-	if (saddr < eaddr)
-		free_init_pages("prom memory", saddr, eaddr);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const char *get_system_type(void)
 {
 	return txx9_system_type;
@@ -558,32 +392,19 @@ void __init txx9_sio_init(unsigned long baseaddr, int irq,
 }
 
 #ifdef CONFIG_EARLY_PRINTK
-<<<<<<< HEAD
-static void __init null_prom_putchar(char c)
-{
-}
-void (*txx9_prom_putchar)(char c) __initdata = null_prom_putchar;
-
-void __init prom_putchar(char c)
-=======
 static void null_prom_putchar(char c)
 {
 }
 void (*txx9_prom_putchar)(char c) = null_prom_putchar;
 
 void prom_putchar(char c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	txx9_prom_putchar(c);
 }
 
 static void __iomem *early_txx9_sio_port;
 
-<<<<<<< HEAD
-static void __init early_txx9_sio_putchar(char c)
-=======
 static void early_txx9_sio_putchar(char c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #define TXX9_SICISR	0x0c
 #define TXX9_SITFIFO	0x1c
@@ -633,10 +454,6 @@ void __init plat_time_init(void)
 	txx9_board_vec->time_init();
 }
 
-<<<<<<< HEAD
-static int __init _txx9_arch_init(void)
-{
-=======
 static void txx9_clk_init(void)
 {
 	struct clk_hw *hw;
@@ -672,7 +489,6 @@ static int __init _txx9_arch_init(void)
 {
 	txx9_clk_init();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (txx9_board_vec->arch_init)
 		txx9_board_vec->arch_init();
 	return 0;
@@ -709,33 +525,11 @@ unsigned long (*__swizzle_addr_b)(unsigned long port) = __swizzle_addr_none;
 EXPORT_SYMBOL(__swizzle_addr_b);
 #endif
 
-<<<<<<< HEAD
-#ifdef NEEDS_TXX9_IOSWABW
-static u16 ioswabw_default(volatile u16 *a, u16 x)
-{
-	return le16_to_cpu(x);
-}
-static u16 __mem_ioswabw_default(volatile u16 *a, u16 x)
-{
-	return x;
-}
-u16 (*ioswabw)(volatile u16 *a, u16 x) = ioswabw_default;
-EXPORT_SYMBOL(ioswabw);
-u16 (*__mem_ioswabw)(volatile u16 *a, u16 x) = __mem_ioswabw_default;
-EXPORT_SYMBOL(__mem_ioswabw);
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init txx9_physmap_flash_init(int no, unsigned long addr,
 				    unsigned long size,
 				    const struct physmap_flash_data *pdata)
 {
-<<<<<<< HEAD
-#if defined(CONFIG_MTD_PHYSMAP) || defined(CONFIG_MTD_PHYSMAP_MODULE)
-=======
 #if IS_ENABLED(CONFIG_MTD_PHYSMAP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource res = {
 		.start = addr,
 		.end = addr + size - 1,
@@ -773,12 +567,7 @@ void __init txx9_physmap_flash_init(int no, unsigned long addr,
 void __init txx9_ndfmc_init(unsigned long baseaddr,
 			    const struct txx9ndfmc_platform_data *pdata)
 {
-<<<<<<< HEAD
-#if defined(CONFIG_MTD_NAND_TXX9NDFMC) || \
-	defined(CONFIG_MTD_NAND_TXX9NDFMC_MODULE)
-=======
 #if IS_ENABLED(CONFIG_MTD_NAND_TXX9NDFMC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource res = {
 		.start = baseaddr,
 		.end = baseaddr + 0x1000 - 1,
@@ -794,11 +583,7 @@ void __init txx9_ndfmc_init(unsigned long baseaddr,
 #endif
 }
 
-<<<<<<< HEAD
-#if defined(CONFIG_LEDS_GPIO) || defined(CONFIG_LEDS_GPIO_MODULE)
-=======
 #if IS_ENABLED(CONFIG_LEDS_GPIO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_SPINLOCK(txx9_iocled_lock);
 
 #define TXX9_IOCLED_MAXLEDS 8
@@ -814,25 +599,14 @@ struct txx9_iocled_data {
 
 static int txx9_iocled_get(struct gpio_chip *chip, unsigned int offset)
 {
-<<<<<<< HEAD
-	struct txx9_iocled_data *data =
-		container_of(chip, struct txx9_iocled_data, chip);
-	return data->cur_val & (1 << offset);
-=======
 	struct txx9_iocled_data *data = gpiochip_get_data(chip);
 	return !!(data->cur_val & (1 << offset));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void txx9_iocled_set(struct gpio_chip *chip, unsigned int offset,
 			    int value)
 {
-<<<<<<< HEAD
-	struct txx9_iocled_data *data =
-		container_of(chip, struct txx9_iocled_data, chip);
-=======
 	struct txx9_iocled_data *data = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	spin_lock_irqsave(&txx9_iocled_lock, flags);
 	if (value)
@@ -865,11 +639,7 @@ void __init txx9_iocled_init(unsigned long baseaddr,
 	int i;
 	static char *default_triggers[] __initdata = {
 		"heartbeat",
-<<<<<<< HEAD
-		"ide-disk",
-=======
 		"disk-activity",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"nand-disk",
 		NULL,
 	};
@@ -889,11 +659,7 @@ void __init txx9_iocled_init(unsigned long baseaddr,
 	iocled->chip.label = "iocled";
 	iocled->chip.base = basenum;
 	iocled->chip.ngpio = num;
-<<<<<<< HEAD
-	if (gpiochip_add(&iocled->chip))
-=======
 	if (gpiochip_add_data(&iocled->chip, iocled))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unmap;
 	if (basenum < 0)
 		basenum = iocled->chip.base;
@@ -917,19 +683,11 @@ void __init txx9_iocled_init(unsigned long baseaddr,
 	if (platform_device_add(pdev))
 		goto out_pdev;
 	return;
-<<<<<<< HEAD
-out_pdev:
-	platform_device_put(pdev);
-out_gpio:
-	if (gpiochip_remove(&iocled->chip))
-		return;
-=======
 
 out_pdev:
 	platform_device_put(pdev);
 out_gpio:
 	gpiochip_remove(&iocled->chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_unmap:
 	iounmap(iocled->mmioaddr);
 out_free:
@@ -946,11 +704,7 @@ void __init txx9_iocled_init(unsigned long baseaddr,
 void __init txx9_dmac_init(int id, unsigned long baseaddr, int irq,
 			   const struct txx9dmac_platform_data *pdata)
 {
-<<<<<<< HEAD
-#if defined(CONFIG_TXX9_DMAC) || defined(CONFIG_TXX9_DMAC_MODULE)
-=======
 #if IS_ENABLED(CONFIG_TXX9_DMAC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource res[] = {
 		{
 			.start = baseaddr,
@@ -1006,44 +760,9 @@ void __init txx9_aclc_init(unsigned long baseaddr, int irq,
 			   unsigned int dma_chan_out,
 			   unsigned int dma_chan_in)
 {
-<<<<<<< HEAD
-#if defined(CONFIG_SND_SOC_TXX9ACLC) || \
-	defined(CONFIG_SND_SOC_TXX9ACLC_MODULE)
-	unsigned int dma_base = dmac_id * TXX9_DMA_MAX_NR_CHANNELS;
-	struct resource res[] = {
-		{
-			.start = baseaddr,
-			.end = baseaddr + 0x100 - 1,
-			.flags = IORESOURCE_MEM,
-		}, {
-			.start = irq,
-			.flags = IORESOURCE_IRQ,
-		}, {
-			.name = "txx9dmac-chan",
-			.start = dma_base + dma_chan_out,
-			.flags = IORESOURCE_DMA,
-		}, {
-			.name = "txx9dmac-chan",
-			.start = dma_base + dma_chan_in,
-			.flags = IORESOURCE_DMA,
-		}
-	};
-	struct platform_device *pdev =
-		platform_device_alloc("txx9aclc-ac97", -1);
-
-	if (!pdev ||
-	    platform_device_add_resources(pdev, res, ARRAY_SIZE(res)) ||
-	    platform_device_add(pdev))
-		platform_device_put(pdev);
-#endif
-}
-
-static struct bus_type txx9_sramc_subsys = {
-=======
 }
 
 static const struct bus_type txx9_sramc_subsys = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "txx9_sram",
 	.dev_name = "txx9_sram",
 };
@@ -1084,8 +803,6 @@ static ssize_t txx9_sram_write(struct file *filp, struct kobject *kobj,
 	return size;
 }
 
-<<<<<<< HEAD
-=======
 static void txx9_device_release(struct device *dev)
 {
 	struct txx9_sramc_dev *tdev;
@@ -1094,7 +811,6 @@ static void txx9_device_release(struct device *dev)
 	kfree(tdev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init txx9_sramc_init(struct resource *r)
 {
 	struct txx9_sramc_dev *dev;
@@ -1109,16 +825,11 @@ void __init txx9_sramc_init(struct resource *r)
 		return;
 	size = resource_size(r);
 	dev->base = ioremap(r->start, size);
-<<<<<<< HEAD
-	if (!dev->base)
-		goto exit;
-=======
 	if (!dev->base) {
 		kfree(dev);
 		return;
 	}
 	dev->dev.release = &txx9_device_release;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->dev.bus = &txx9_sramc_subsys;
 	sysfs_bin_attr_init(&dev->bindata_attr);
 	dev->bindata_attr.attr.name = "bindata";
@@ -1129,21 +840,6 @@ void __init txx9_sramc_init(struct resource *r)
 	dev->bindata_attr.private = dev;
 	err = device_register(&dev->dev);
 	if (err)
-<<<<<<< HEAD
-		goto exit;
-	err = sysfs_create_bin_file(&dev->dev.kobj, &dev->bindata_attr);
-	if (err) {
-		device_unregister(&dev->dev);
-		goto exit;
-	}
-	return;
-exit:
-	if (dev) {
-		if (dev->base)
-			iounmap(dev->base);
-		kfree(dev);
-	}
-=======
 		goto exit_put;
 	err = sysfs_create_bin_file(&dev->dev.kobj, &dev->bindata_attr);
 	if (err) {
@@ -1154,5 +850,4 @@ exit:
 exit_put:
 	iounmap(dev->base);
 	put_device(&dev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

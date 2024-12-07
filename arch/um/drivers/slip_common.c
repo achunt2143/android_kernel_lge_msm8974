@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-#include <string.h>
-#include "slip_common.h"
-#include "net_user.h"
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <string.h>
 #include "slip_common.h"
 #include <net_user.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int slip_proto_read(int fd, void *buf, int len, struct slip_proto *slip)
 {

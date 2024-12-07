@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/mmc/core/sdio_cis.c
  *
@@ -10,14 +7,6 @@
  * Copyright:	MontaVista Software Inc.
  *
  * Copyright 2007 Pierre Ossman
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -31,14 +20,6 @@
 #include "sdio_cis.h"
 #include "sdio_ops.h"
 
-<<<<<<< HEAD
-static int cistpl_vers_1(struct mmc_card *card, struct sdio_func *func,
-			 const unsigned char *buf, unsigned size)
-{
-	unsigned i, nr_strings;
-	char **buffer, *string;
-
-=======
 #define SDIO_READ_CIS_TIMEOUT_MS  (10 * 1000) /* 10s */
 
 static int cistpl_vers_1(struct mmc_card *card, struct sdio_func *func,
@@ -54,7 +35,6 @@ static int cistpl_vers_1(struct mmc_card *card, struct sdio_func *func,
 	major_rev = buf[0];
 	minor_rev = buf[1];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Find all null-terminated (including zero length) strings in
 	   the TPLLV1_INFO field. Trailing garbage is ignored. */
 	buf += 2;
@@ -80,21 +60,12 @@ static int cistpl_vers_1(struct mmc_card *card, struct sdio_func *func,
 
 	for (i = 0; i < nr_strings; i++) {
 		buffer[i] = string;
-<<<<<<< HEAD
-		strlcpy(string, buf, strlen(buf) + 1);
-=======
 		strcpy(string, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		string += strlen(string) + 1;
 		buf += strlen(buf) + 1;
 	}
 
 	if (func) {
-<<<<<<< HEAD
-		func->num_info = nr_strings;
-		func->info = (const char**)buffer;
-	} else {
-=======
 		func->major_rev = major_rev;
 		func->minor_rev = minor_rev;
 		func->num_info = nr_strings;
@@ -102,7 +73,6 @@ static int cistpl_vers_1(struct mmc_card *card, struct sdio_func *func,
 	} else {
 		card->major_rev = major_rev;
 		card->minor_rev = minor_rev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		card->num_info = nr_strings;
 		card->info = (const char**)buffer;
 	}
@@ -216,10 +186,6 @@ static int cistpl_funce_func(struct mmc_card *card, struct sdio_func *func,
 	vsn = func->card->cccr.sdio_vsn;
 	min_size = (vsn == SDIO_SDIO_REV_1_00) ? 28 : 42;
 
-<<<<<<< HEAD
-	if (size < min_size)
-		return -EINVAL;
-=======
 	if (size == 28 && vsn == SDIO_SDIO_REV_1_10) {
 		pr_warn("%s: card has broken SDIO 1.1 CIS, forcing SDIO 1.0\n",
 			mmc_hostname(card->host));
@@ -227,7 +193,6 @@ static int cistpl_funce_func(struct mmc_card *card, struct sdio_func *func,
 	} else if (size < min_size) {
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* TPLFE_MAX_BLK_SIZE */
 	func->max_blksize = buf[12] | (buf[13] << 8);
@@ -272,10 +237,7 @@ static const struct cis_tpl cis_tpl_list[] = {
 	{	0x20,	4,	cistpl_manfid		},
 	{	0x21,	2,	/* cistpl_funcid */	},
 	{	0x22,	0,	cistpl_funce		},
-<<<<<<< HEAD
-=======
 	{	0x91,	2,	/* cistpl_sdio_std */	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int sdio_read_cis(struct mmc_card *card, struct sdio_func *func)
@@ -309,12 +271,6 @@ static int sdio_read_cis(struct mmc_card *card, struct sdio_func *func)
 	else
 		prev = &card->tuples;
 
-<<<<<<< HEAD
-	BUG_ON(*prev);
-
-	do {
-		unsigned char tpl_code, tpl_link;
-=======
 	if (*prev)
 		return -EINVAL;
 
@@ -322,7 +278,6 @@ static int sdio_read_cis(struct mmc_card *card, struct sdio_func *func)
 		unsigned char tpl_code, tpl_link;
 		unsigned long timeout = jiffies +
 			msecs_to_jiffies(SDIO_READ_CIS_TIMEOUT_MS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = mmc_io_rw_direct(card, 0, 0, ptr++, 0, &tpl_code);
 		if (ret)
@@ -333,21 +288,8 @@ static int sdio_read_cis(struct mmc_card *card, struct sdio_func *func)
 			break;
 
 		/* null entries have no link field or data */
-<<<<<<< HEAD
-		if (tpl_code == 0x00) {
-			if (card->cis.vendor == 0x70 &&
-				(card->cis.device == 0x2460 ||
-				 card->cis.device == 0x0460 ||
-				 card->cis.device == 0x23F1 ||
-				 card->cis.device == 0x23F0))
-				break;
-			else
-				continue;
-		}
-=======
 		if (tpl_code == 0x00)
 			continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = mmc_io_rw_direct(card, 0, 0, ptr++, 0, &tpl_link);
 		if (ret)
@@ -388,13 +330,6 @@ static int sdio_read_cis(struct mmc_card *card, struct sdio_func *func)
 			prev = &this->next;
 
 			if (ret == -ENOENT) {
-<<<<<<< HEAD
-				/* warn about unknown tuples */
-				pr_warning("%s: queuing unknown"
-				       " CIS tuple 0x%02x (%u bytes)\n",
-				       mmc_hostname(card->host),
-				       tpl_code, tpl_link);
-=======
 
 				if (time_after(jiffies, timeout))
 					break;
@@ -414,7 +349,6 @@ static int sdio_read_cis(struct mmc_card *card, struct sdio_func *func)
 						mmc_hostname(card->host),
 						tpl_code, tpl_link, this->data,
 						tpl_link);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			/* keep on analyzing tuples */
@@ -470,15 +404,6 @@ int sdio_read_func_cis(struct sdio_func *func)
 		return ret;
 
 	/*
-<<<<<<< HEAD
-	 * Since we've linked to tuples in the card structure,
-	 * we must make sure we have a reference to it.
-	 */
-	get_device(&func->card->dev);
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Vendor/device id is optional for function CIS, so
 	 * copy it from the card structure as needed.
 	 */
@@ -503,14 +428,5 @@ void sdio_free_func_cis(struct sdio_func *func)
 	}
 
 	func->tuples = NULL;
-<<<<<<< HEAD
-
-	/*
-	 * We have now removed the link to the tuples in the
-	 * card structure, so remove the reference.
-	 */
-	put_device(&func->card->dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

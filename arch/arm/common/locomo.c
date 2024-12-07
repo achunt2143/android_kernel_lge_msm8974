@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/common/locomo.c
  *
  * Sharp LoCoMo support
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file contains all generic LoCoMo support.
  *
  * All initialization functions provided here are intended to be called
@@ -33,10 +23,6 @@
 #include <linux/spinlock.h>
 #include <linux/io.h>
 
-<<<<<<< HEAD
-#include <mach/hardware.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 #include <asm/mach/irq.h>
 
@@ -82,11 +68,8 @@ struct locomo {
 #endif
 };
 
-<<<<<<< HEAD
-=======
 static const struct bus_type locomo_bus_type;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct locomo_dev_info {
 	unsigned long	offset;
 	unsigned long	length;
@@ -153,15 +136,9 @@ static struct locomo_dev_info locomo_devices[] = {
 	},
 };
 
-<<<<<<< HEAD
-static void locomo_handler(unsigned int irq, struct irq_desc *desc)
-{
-	struct locomo *lchip = irq_get_chip_data(irq);
-=======
 static void locomo_handler(struct irq_desc *desc)
 {
 	struct locomo *lchip = irq_desc_get_handler_data(desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int req, i;
 
 	/* Acknowledge the parent IRQ */
@@ -171,11 +148,8 @@ static void locomo_handler(struct irq_desc *desc)
 	req = locomo_readl(lchip->base + LOCOMO_ICR) & 0x0f00;
 
 	if (req) {
-<<<<<<< HEAD
-=======
 		unsigned int irq;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* generate the next interrupt(s) */
 		irq = lchip->irq_base;
 		for (i = 0; i <= 3; i++, irq++) {
@@ -224,22 +198,13 @@ static void locomo_setup_irq(struct locomo *lchip)
 	 * Install handler for IRQ_LOCOMO_HW.
 	 */
 	irq_set_irq_type(lchip->irq, IRQ_TYPE_EDGE_FALLING);
-<<<<<<< HEAD
-	irq_set_chip_data(lchip->irq, lchip);
-	irq_set_chained_handler(lchip->irq, locomo_handler);
-=======
 	irq_set_chained_handler_and_data(lchip->irq, locomo_handler, lchip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Install handlers for IRQ_LOCOMO_* */
 	for ( ; irq <= lchip->irq_base + 3; irq++) {
 		irq_set_chip_and_handler(irq, &locomo_chip, handle_level_irq);
 		irq_set_chip_data(irq, lchip);
-<<<<<<< HEAD
-		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
-=======
 		irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -387,22 +352,6 @@ static int locomo_resume(struct platform_device *dev)
 }
 #endif
 
-<<<<<<< HEAD
-
-/**
- *	locomo_probe - probe for a single LoCoMo chip.
- *	@phys_addr: physical address of device.
- *
- *	Probe for a LoCoMo chip.  This must be called
- *	before any other locomo-specific code.
- *
- *	Returns:
- *	%-ENODEV	device not found.
- *	%-EBUSY		physical address already marked in-use.
- *	%0		successful.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 __locomo_probe(struct device *me, struct resource *mem, int irq)
 {
@@ -512,20 +461,13 @@ static void __locomo_remove(struct locomo *lchip)
 	device_for_each_child(lchip->dev, NULL, locomo_remove_child);
 
 	if (lchip->irq != NO_IRQ) {
-<<<<<<< HEAD
-		irq_set_chained_handler(lchip->irq, NULL);
-		irq_set_handler_data(lchip->irq, NULL);
-=======
 		irq_set_chained_handler_and_data(lchip->irq, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	iounmap(lchip->base);
 	kfree(lchip);
 }
 
-<<<<<<< HEAD
-=======
 /**
  *	locomo_probe - probe for a single LoCoMo chip.
  *	@dev: platform device
@@ -541,7 +483,6 @@ static void __locomo_remove(struct locomo *lchip)
  *	* %-ENOMEM	- could not allocate or iomap memory.
  *	* %0		- successful.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int locomo_probe(struct platform_device *dev)
 {
 	struct resource *mem;
@@ -557,11 +498,7 @@ static int locomo_probe(struct platform_device *dev)
 	return __locomo_probe(&dev->dev, mem, irq);
 }
 
-<<<<<<< HEAD
-static int locomo_remove(struct platform_device *dev)
-=======
 static void locomo_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct locomo *lchip = platform_get_drvdata(dev);
 
@@ -569,11 +506,6 @@ static void locomo_remove(struct platform_device *dev)
 		__locomo_remove(lchip);
 		platform_set_drvdata(dev, NULL);
 	}
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -584,11 +516,7 @@ static void locomo_remove(struct platform_device *dev)
  */
 static struct platform_driver locomo_device_driver = {
 	.probe		= locomo_probe,
-<<<<<<< HEAD
-	.remove		= locomo_remove,
-=======
 	.remove_new	= locomo_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= locomo_suspend,
 	.resume		= locomo_resume,
@@ -896,31 +824,6 @@ static int locomo_match(struct device *_dev, struct device_driver *_drv)
 	return dev->devid == drv->devid;
 }
 
-<<<<<<< HEAD
-static int locomo_bus_suspend(struct device *dev, pm_message_t state)
-{
-	struct locomo_dev *ldev = LOCOMO_DEV(dev);
-	struct locomo_driver *drv = LOCOMO_DRV(dev->driver);
-	int ret = 0;
-
-	if (drv && drv->suspend)
-		ret = drv->suspend(ldev, state);
-	return ret;
-}
-
-static int locomo_bus_resume(struct device *dev)
-{
-	struct locomo_dev *ldev = LOCOMO_DEV(dev);
-	struct locomo_driver *drv = LOCOMO_DRV(dev->driver);
-	int ret = 0;
-
-	if (drv && drv->resume)
-		ret = drv->resume(ldev);
-	return ret;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int locomo_bus_probe(struct device *dev)
 {
 	struct locomo_dev *ldev = LOCOMO_DEV(dev);
@@ -932,20 +835,6 @@ static int locomo_bus_probe(struct device *dev)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int locomo_bus_remove(struct device *dev)
-{
-	struct locomo_dev *ldev = LOCOMO_DEV(dev);
-	struct locomo_driver *drv = LOCOMO_DRV(dev->driver);
-	int ret = 0;
-
-	if (drv->remove)
-		ret = drv->remove(ldev);
-	return ret;
-}
-
-struct bus_type locomo_bus_type = {
-=======
 static void locomo_bus_remove(struct device *dev)
 {
 	struct locomo_dev *ldev = LOCOMO_DEV(dev);
@@ -956,16 +845,10 @@ static void locomo_bus_remove(struct device *dev)
 }
 
 static const struct bus_type locomo_bus_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "locomo-bus",
 	.match		= locomo_match,
 	.probe		= locomo_bus_probe,
 	.remove		= locomo_bus_remove,
-<<<<<<< HEAD
-	.suspend	= locomo_bus_suspend,
-	.resume		= locomo_bus_resume,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int locomo_driver_register(struct locomo_driver *driver)

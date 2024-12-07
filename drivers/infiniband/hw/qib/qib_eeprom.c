@@ -1,10 +1,6 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2006, 2007, 2008, 2009 QLogic Corporation. All rights reserved.
-=======
  * Copyright (c) 2012 Intel Corporation. All rights reserved.
  * Copyright (c) 2006 - 2012 QLogic Corporation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2003, 2004, 2005, 2006 PathScale, Inc. All rights reserved.
  *
  * This software is available to you under a choice of one of two
@@ -51,11 +47,7 @@
  * qib_eeprom_read - receives bytes from the eeprom via I2C
  * @dd: the qlogic_ib device
  * @eeprom_offset: address to read from
-<<<<<<< HEAD
- * @buffer: where to store result
-=======
  * @buff: where to store result
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @len: number of bytes to receive
  */
 int qib_eeprom_read(struct qib_devdata *dd, u8 eeprom_offset,
@@ -102,11 +94,7 @@ static int eeprom_write_with_enable(struct qib_devdata *dd, u8 offset,
  * qib_eeprom_write - writes data to the eeprom via I2C
  * @dd: the qlogic_ib device
  * @eeprom_offset: where to place data
-<<<<<<< HEAD
- * @buffer: data to write
-=======
  * @buff: data to write
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @len: number of bytes to write
  */
 int qib_eeprom_write(struct qib_devdata *dd, u8 eeprom_offset,
@@ -165,10 +153,7 @@ void qib_get_eeprom_info(struct qib_devdata *dd)
 
 	if (t && dd0->nguid > 1 && t <= dd0->nguid) {
 		u8 oguid;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dd->base_guid = dd0->base_guid;
 		bguid = (u8 *) &dd->base_guid;
 
@@ -177,15 +162,8 @@ void qib_get_eeprom_info(struct qib_devdata *dd)
 		if (oguid > bguid[7]) {
 			if (bguid[6] == 0xff) {
 				if (bguid[5] == 0xff) {
-<<<<<<< HEAD
-					qib_dev_err(dd, "Can't set %s GUID"
-						    " from base, wraps to"
-						    " OUI!\n",
-						    qib_get_unit_name(t));
-=======
 					qib_dev_err(dd,
 						    "Can't set GUID from base, wraps to OUI!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					dd->base_guid = 0;
 					goto bail;
 				}
@@ -203,16 +181,8 @@ void qib_get_eeprom_info(struct qib_devdata *dd)
 	 * */
 	len = sizeof(struct qib_flash);
 	buf = vmalloc(len);
-<<<<<<< HEAD
-	if (!buf) {
-		qib_dev_err(dd, "Couldn't allocate memory to read %u "
-			    "bytes from eeprom for GUID\n", len);
-		goto bail;
-	}
-=======
 	if (!buf)
 		goto bail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Use "public" eeprom read function, which does locking and
@@ -228,41 +198,25 @@ void qib_get_eeprom_info(struct qib_devdata *dd)
 
 	csum = flash_csum(ifp, 0);
 	if (csum != ifp->if_csum) {
-<<<<<<< HEAD
-		qib_devinfo(dd->pcidev, "Bad I2C flash checksum: "
-			 "0x%x, not 0x%x\n", csum, ifp->if_csum);
-=======
 		qib_devinfo(dd->pcidev,
 			"Bad I2C flash checksum: 0x%x, not 0x%x\n",
 			csum, ifp->if_csum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto done;
 	}
 	if (*(__be64 *) ifp->if_guid == cpu_to_be64(0) ||
 	    *(__be64 *) ifp->if_guid == ~cpu_to_be64(0)) {
-<<<<<<< HEAD
-		qib_dev_err(dd, "Invalid GUID %llx from flash; ignoring\n",
-			    *(unsigned long long *) ifp->if_guid);
-=======
 		qib_dev_err(dd,
 			"Invalid GUID %llx from flash; ignoring\n",
 			*(unsigned long long *) ifp->if_guid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* don't allow GUID if all 0 or all 1's */
 		goto done;
 	}
 
 	/* complain, but allow it */
 	if (*(u64 *) ifp->if_guid == 0x100007511000000ULL)
-<<<<<<< HEAD
-		qib_devinfo(dd->pcidev, "Warning, GUID %llx is "
-			 "default, probably not correct!\n",
-			 *(unsigned long long *) ifp->if_guid);
-=======
 		qib_devinfo(dd->pcidev,
 			"Warning, GUID %llx is default, probably not correct!\n",
 			*(unsigned long long *) ifp->if_guid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bguid = ifp->if_guid;
 	if (!bguid[0] && !bguid[1] && !bguid[2]) {
@@ -293,22 +247,6 @@ void qib_get_eeprom_info(struct qib_devdata *dd)
 		 * This board has a Serial-prefix, which is stored
 		 * elsewhere for backward-compatibility.
 		 */
-<<<<<<< HEAD
-		memcpy(snp, ifp->if_sprefix, sizeof ifp->if_sprefix);
-		snp[sizeof ifp->if_sprefix] = '\0';
-		len = strlen(snp);
-		snp += len;
-		len = (sizeof dd->serial) - len;
-		if (len > sizeof ifp->if_serial)
-			len = sizeof ifp->if_serial;
-		memcpy(snp, ifp->if_serial, len);
-	} else
-		memcpy(dd->serial, ifp->if_serial,
-		       sizeof ifp->if_serial);
-	if (!strstr(ifp->if_comment, "Tested successfully"))
-		qib_dev_err(dd, "Board SN %s did not pass functional "
-			    "test: %s\n", dd->serial, ifp->if_comment);
-=======
 		memcpy(snp, ifp->if_sprefix, sizeof(ifp->if_sprefix));
 		snp[sizeof(ifp->if_sprefix)] = '\0';
 		len = strlen(snp);
@@ -324,14 +262,10 @@ void qib_get_eeprom_info(struct qib_devdata *dd)
 		qib_dev_err(dd,
 			"Board SN %s did not pass functional test: %s\n",
 			dd->serial, ifp->if_comment);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 done:
 	vfree(buf);
 
 bail:;
 }
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

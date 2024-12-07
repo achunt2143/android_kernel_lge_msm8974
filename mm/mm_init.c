@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * mm_init.c - Memory initialisation verification and debugging
  *
@@ -13,19 +10,6 @@
 #include <linux/init.h>
 #include <linux/kobject.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-#include "internal.h"
-
-#ifdef CONFIG_DEBUG_MEMORY_INIT
-int mminit_loglevel;
-
-#ifndef SECTIONS_SHIFT
-#define SECTIONS_SHIFT	0
-#endif
-
-/* The zonelists are simply reported, validation is manual. */
-void mminit_verify_zonelist(void)
-=======
 #include <linux/memory.h>
 #include <linux/notifier.h>
 #include <linux/sched.h>
@@ -54,7 +38,6 @@ int __meminitdata mminit_loglevel;
 
 /* The zonelists are simply reported, validation is manual. */
 void __init mminit_verify_zonelist(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nid;
 
@@ -68,11 +51,7 @@ void __init mminit_verify_zonelist(void)
 		struct zonelist *zonelist;
 		int i, listid, zoneid;
 
-<<<<<<< HEAD
-		BUG_ON(MAX_ZONELISTS > 2);
-=======
 		BUILD_BUG_ON(MAX_ZONELISTS > 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < MAX_ZONELISTS * MAX_NR_ZONES; i++) {
 
 			/* Identify the zone and nodelist */
@@ -89,21 +68,9 @@ void __init mminit_verify_zonelist(void)
 				zone->name);
 
 			/* Iterate the zonelist */
-<<<<<<< HEAD
-			for_each_zone_zonelist(zone, z, zonelist, zoneid) {
-#ifdef CONFIG_NUMA
-				printk(KERN_CONT "%d:%s ",
-					zone->node, zone->name);
-#else
-				printk(KERN_CONT "0:%s ", zone->name);
-#endif /* CONFIG_NUMA */
-			}
-			printk(KERN_CONT "\n");
-=======
 			for_each_zone_zonelist(zone, z, zonelist, zoneid)
 				pr_cont("%d:%s ", zone_to_nid(zone), zone->name);
 			pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -113,32 +80,6 @@ void __init mminit_verify_pageflags_layout(void)
 	int shift, width;
 	unsigned long or_mask, add_mask;
 
-<<<<<<< HEAD
-	shift = 8 * sizeof(unsigned long);
-	width = shift - SECTIONS_WIDTH - NODES_WIDTH - ZONES_WIDTH;
-	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_widths",
-		"Section %d Node %d Zone %d Flags %d\n",
-		SECTIONS_WIDTH,
-		NODES_WIDTH,
-		ZONES_WIDTH,
-		NR_PAGEFLAGS);
-	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_shifts",
-		"Section %d Node %d Zone %d\n",
-		SECTIONS_SHIFT,
-		NODES_SHIFT,
-		ZONES_SHIFT);
-	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_offsets",
-		"Section %lu Node %lu Zone %lu\n",
-		(unsigned long)SECTIONS_PGSHIFT,
-		(unsigned long)NODES_PGSHIFT,
-		(unsigned long)ZONES_PGSHIFT);
-	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_zoneid",
-		"Zone ID: %lu -> %lu\n",
-		(unsigned long)ZONEID_PGOFF,
-		(unsigned long)(ZONEID_PGOFF + ZONEID_SHIFT));
-	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_usage",
-		"location: %d -> %d unused %d -> %d flags %d -> %d\n",
-=======
 	shift = BITS_PER_LONG;
 	width = shift - SECTIONS_WIDTH - NODES_WIDTH - ZONES_WIDTH
 		- LAST_CPUPID_SHIFT - KASAN_TAG_WIDTH - LRU_GEN_WIDTH - LRU_REFS_WIDTH;
@@ -172,19 +113,15 @@ void __init mminit_verify_pageflags_layout(void)
 		(unsigned long)ZONEID_PGOFF);
 	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_usage",
 		"location: %d -> %d layout %d -> %d unused %d -> %d page-flags\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		shift, width, width, NR_PAGEFLAGS, NR_PAGEFLAGS, 0);
 #ifdef NODE_NOT_IN_PAGE_FLAGS
 	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_nodeflags",
 		"Node not in page flags");
 #endif
-<<<<<<< HEAD
-=======
 #ifdef LAST_CPUPID_NOT_IN_PAGE_FLAGS
 	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_nodeflags",
 		"Last cpupid not in page flags");
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (SECTIONS_WIDTH) {
 		shift -= SECTIONS_WIDTH;
@@ -209,17 +146,6 @@ void __init mminit_verify_pageflags_layout(void)
 	BUG_ON(or_mask != add_mask);
 }
 
-<<<<<<< HEAD
-void __meminit mminit_verify_page_links(struct page *page, enum zone_type zone,
-			unsigned long nid, unsigned long pfn)
-{
-	BUG_ON(page_to_nid(page) != nid);
-	BUG_ON(page_zonenum(page) != zone);
-	BUG_ON(page_to_pfn(page) != pfn);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __init int set_mminit_loglevel(char *str)
 {
 	get_option(&str, &mminit_loglevel);
@@ -229,9 +155,6 @@ early_param("mminit_loglevel", set_mminit_loglevel);
 #endif /* CONFIG_DEBUG_MEMORY_INIT */
 
 struct kobject *mm_kobj;
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(mm_kobj);
-=======
 
 #ifdef CONFIG_SMP
 s32 vm_committed_as_batch = 32;
@@ -281,7 +204,6 @@ static int __init mm_compute_batch_init(void)
 __initcall(mm_compute_batch_init);
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init mm_sysfs_init(void)
 {
@@ -291,10 +213,6 @@ static int __init mm_sysfs_init(void)
 
 	return 0;
 }
-<<<<<<< HEAD
-
-__initcall(mm_sysfs_init);
-=======
 postcore_initcall(mm_sysfs_init);
 
 static unsigned long arch_zone_lowest_possible_pfn[MAX_NR_ZONES] __initdata;
@@ -2876,4 +2794,3 @@ void __init mm_core_init(void)
 	kmsan_init_runtime();
 	mm_cache_init();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale QUICC Engine USB Host Controller Driver
  *
@@ -12,14 +9,6 @@
  *               Peter Barada <peterb@logicpd.com>
  * Copyright (c) MontaVista Software, Inc. 2008.
  *               Anton Vorontsov <avorontsov@ru.mvista.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -92,11 +81,7 @@ static struct usb_td __iomem *next_bd(struct usb_td __iomem *base,
 
 void fhci_push_dummy_bd(struct endpoint *ep)
 {
-<<<<<<< HEAD
-	if (ep->already_pushed_dummy_bd == false) {
-=======
 	if (!ep->already_pushed_dummy_bd) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u16 td_status = in_be16(&ep->empty_td->status);
 
 		out_be32(&ep->empty_td->buf_ptr, DUMMY_BD_BUFFER);
@@ -166,11 +151,7 @@ u32 fhci_create_ep(struct fhci_usb *usb, enum fhci_mem_alloc data_mem,
 	struct endpoint *ep;
 	struct usb_td __iomem *td;
 	unsigned long ep_offset;
-<<<<<<< HEAD
-	char *err_for = "enpoint PRAM";
-=======
 	char *err_for = "endpoint PRAM";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ep_mem_size;
 	u32 i;
 
@@ -208,11 +189,7 @@ u32 fhci_create_ep(struct fhci_usb *usb, enum fhci_mem_alloc data_mem,
 			goto err;
 		}
 
-<<<<<<< HEAD
-		buff = kmalloc(1028 * sizeof(*buff), GFP_KERNEL);
-=======
 		buff = kmalloc_array(1028, sizeof(*buff), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!buff) {
 			kfree(pkt);
 			err_for = "buffer";
@@ -268,11 +245,7 @@ void fhci_init_ep_registers(struct fhci_usb *usb, struct endpoint *ep,
 	u8 rt;
 
 	/* set the endpoint registers according to the endpoint */
-<<<<<<< HEAD
-	out_be16(&usb->fhci->regs->usb_ep[0],
-=======
 	out_be16(&usb->fhci->regs->usb_usep[0],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 USB_TRANS_CTR | USB_EP_MF | USB_EP_RTE);
 	out_be16(&usb->fhci->pram->ep_ptr[0],
 		 cpm_muram_offset(ep->ep_pram_ptr));
@@ -486,11 +459,7 @@ u32 fhci_host_transaction(struct fhci_usb *usb,
 	cq_put(&ep->conf_frame_Q, pkt);
 
 	if (cq_howmany(&ep->conf_frame_Q) == 1)
-<<<<<<< HEAD
-		out_8(&usb->fhci->regs->usb_comm, USB_CMD_STR_FIFO);
-=======
 		out_8(&usb->fhci->regs->usb_uscom, USB_CMD_STR_FIFO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -498,26 +467,15 @@ u32 fhci_host_transaction(struct fhci_usb *usb,
 /* Reset the Tx BD ring */
 void fhci_flush_bds(struct fhci_usb *usb)
 {
-<<<<<<< HEAD
-	u16 extra_data;
 	u16 td_status;
-	u32 buf;
-=======
-	u16 td_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_td __iomem *td;
 	struct endpoint *ep = usb->ep0;
 
 	td = ep->td_base;
 	while (1) {
 		td_status = in_be16(&td->status);
-<<<<<<< HEAD
-		buf = in_be32(&td->buf_ptr);
-		extra_data = in_be16(&td->extra);
-=======
 		in_be32(&td->buf_ptr);
 		in_be16(&td->extra);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* if the TD is not empty - we'll confirm it as Timeout */
 		if (td_status & TD_R)
@@ -564,33 +522,20 @@ void fhci_flush_actual_frame(struct fhci_usb *usb)
 {
 	u8 mode;
 	u16 tb_ptr;
-<<<<<<< HEAD
-	u16 extra_data;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 td_status;
 	u32 buf_ptr;
 	struct usb_td __iomem *td;
 	struct endpoint *ep = usb->ep0;
 
 	/* disable the USB controller */
-<<<<<<< HEAD
-	mode = in_8(&usb->fhci->regs->usb_mod);
-	out_8(&usb->fhci->regs->usb_mod, mode & ~USB_MODE_EN);
-=======
 	mode = in_8(&usb->fhci->regs->usb_usmod);
 	out_8(&usb->fhci->regs->usb_usmod, mode & ~USB_MODE_EN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tb_ptr = in_be16(&ep->ep_pram_ptr->tx_bd_ptr);
 	td = cpm_muram_addr(tb_ptr);
 	td_status = in_be16(&td->status);
 	buf_ptr = in_be32(&td->buf_ptr);
-<<<<<<< HEAD
-	extra_data = in_be16(&td->extra);
-=======
 	in_be16(&td->extra);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		if (td_status & TD_R) {
 			out_be16(&td->status, (td_status & ~TD_R) | TD_TO);
@@ -604,11 +549,7 @@ void fhci_flush_actual_frame(struct fhci_usb *usb)
 		td = next_bd(ep->td_base, td, td_status);
 		td_status = in_be16(&td->status);
 		buf_ptr = in_be32(&td->buf_ptr);
-<<<<<<< HEAD
-		extra_data = in_be16(&td->extra);
-=======
 		in_be16(&td->extra);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while ((td_status & TD_R) || buf_ptr);
 
 	fhci_td_transaction_confirm(usb);
@@ -623,15 +564,9 @@ void fhci_flush_actual_frame(struct fhci_usb *usb)
 	usb->actual_frame->frame_status = FRAME_TIMER_END_TRANSMISSION;
 
 	/* reset the event register */
-<<<<<<< HEAD
-	out_be16(&usb->fhci->regs->usb_event, 0xffff);
-	/* enable the USB controller */
-	out_8(&usb->fhci->regs->usb_mod, mode | USB_MODE_EN);
-=======
 	out_be16(&usb->fhci->regs->usb_usber, 0xffff);
 	/* enable the USB controller */
 	out_8(&usb->fhci->regs->usb_usmod, mode | USB_MODE_EN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* handles Tx confirm and Tx error interrupt */
@@ -671,11 +606,7 @@ void fhci_host_transmit_actual_frame(struct fhci_usb *usb)
 
 		/* start transmit only if we have something in the TDs */
 		if (in_be16(&td->status) & TD_R)
-<<<<<<< HEAD
-			out_8(&usb->fhci->regs->usb_comm, USB_CMD_STR_FIFO);
-=======
 			out_8(&usb->fhci->regs->usb_uscom, USB_CMD_STR_FIFO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (in_be32(&ep->conf_td->buf_ptr) == DUMMY_BD_BUFFER) {
 			out_be32(&old_td->buf_ptr, 0);

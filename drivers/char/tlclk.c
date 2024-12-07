@@ -44,11 +44,7 @@
 #include <linux/miscdevice.h>
 #include <linux/platform_device.h>
 #include <asm/io.h>		/* inb/outb */
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Sebastien Bouchard <sebastien.bouchard@ca.kontron.com>");
 MODULE_LICENSE("GPL");
@@ -188,14 +184,8 @@ static unsigned int telclk_interrupt;
 static int int_events;		/* Event that generate a interrupt */
 static int got_event;		/* if events processing have been done */
 
-<<<<<<< HEAD
-static void switchover_timeout(unsigned long data);
-static struct timer_list switchover_timer =
-	TIMER_INITIALIZER(switchover_timeout , 0, 0);
-=======
 static void switchover_timeout(struct timer_list *t);
 static struct timer_list switchover_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long tlclk_timer_data;
 
 static struct tlclk_alarms *alarm_events;
@@ -231,11 +221,7 @@ static int tlclk_open(struct inode *inode, struct file *filp)
 	/* This device is wired through the FPGA IO space of the ATCA blade
 	 * we can't share this IRQ */
 	result = request_irq(telclk_interrupt, &tlclk_interrupt,
-<<<<<<< HEAD
-			     IRQF_DISABLED, "telco_clock", tlclk_interrupt);
-=======
 			     0, "telco_clock", tlclk_interrupt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result == -EBUSY)
 		printk(KERN_ERR "tlclk: Interrupt can't be reserved.\n");
 	else
@@ -520,30 +506,6 @@ static ssize_t store_select_amcb2_transmit_clock(struct device *d,
 
 	val = (unsigned char)tmp;
 	spin_lock_irqsave(&event_lock, flags);
-<<<<<<< HEAD
-		if ((val == CLK_8kHz) || (val == CLK_16_384MHz)) {
-			SET_PORT_BITS(TLCLK_REG3, 0xc7, 0x28);
-			SET_PORT_BITS(TLCLK_REG1, 0xfb, ~val);
-		} else if (val >= CLK_8_592MHz) {
-			SET_PORT_BITS(TLCLK_REG3, 0xc7, 0x38);
-			switch (val) {
-			case CLK_8_592MHz:
-				SET_PORT_BITS(TLCLK_REG0, 0xfc, 2);
-				break;
-			case CLK_11_184MHz:
-				SET_PORT_BITS(TLCLK_REG0, 0xfc, 0);
-				break;
-			case CLK_34_368MHz:
-				SET_PORT_BITS(TLCLK_REG0, 0xfc, 3);
-				break;
-			case CLK_44_736MHz:
-				SET_PORT_BITS(TLCLK_REG0, 0xfc, 1);
-				break;
-			}
-		} else
-			SET_PORT_BITS(TLCLK_REG3, 0xc7, val << 3);
-
-=======
 	if ((val == CLK_8kHz) || (val == CLK_16_384MHz)) {
 		SET_PORT_BITS(TLCLK_REG3, 0xc7, 0x28);
 		SET_PORT_BITS(TLCLK_REG1, 0xfb, ~val);
@@ -566,7 +528,6 @@ static ssize_t store_select_amcb2_transmit_clock(struct device *d,
 	} else {
 		SET_PORT_BITS(TLCLK_REG3, 0xc7, val << 3);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&event_lock, flags);
 
 	return strnlen(buf, count);
@@ -587,29 +548,6 @@ static ssize_t store_select_amcb1_transmit_clock(struct device *d,
 
 	val = (unsigned char)tmp;
 	spin_lock_irqsave(&event_lock, flags);
-<<<<<<< HEAD
-		if ((val == CLK_8kHz) || (val == CLK_16_384MHz)) {
-			SET_PORT_BITS(TLCLK_REG3, 0xf8, 0x5);
-			SET_PORT_BITS(TLCLK_REG1, 0xfb, ~val);
-		} else if (val >= CLK_8_592MHz) {
-			SET_PORT_BITS(TLCLK_REG3, 0xf8, 0x7);
-			switch (val) {
-			case CLK_8_592MHz:
-				SET_PORT_BITS(TLCLK_REG0, 0xfc, 2);
-				break;
-			case CLK_11_184MHz:
-				SET_PORT_BITS(TLCLK_REG0, 0xfc, 0);
-				break;
-			case CLK_34_368MHz:
-				SET_PORT_BITS(TLCLK_REG0, 0xfc, 3);
-				break;
-			case CLK_44_736MHz:
-				SET_PORT_BITS(TLCLK_REG0, 0xfc, 1);
-				break;
-			}
-		} else
-			SET_PORT_BITS(TLCLK_REG3, 0xf8, val);
-=======
 	if ((val == CLK_8kHz) || (val == CLK_16_384MHz)) {
 		SET_PORT_BITS(TLCLK_REG3, 0xf8, 0x5);
 		SET_PORT_BITS(TLCLK_REG1, 0xfb, ~val);
@@ -632,7 +570,6 @@ static ssize_t store_select_amcb1_transmit_clock(struct device *d,
 	} else {
 		SET_PORT_BITS(TLCLK_REG3, 0xf8, val);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&event_lock, flags);
 
 	return strnlen(buf, count);
@@ -829,11 +766,7 @@ static struct attribute *tlclk_sysfs_entries[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group tlclk_attribute_group = {
-=======
 static const struct attribute_group tlclk_attribute_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = NULL,		/* put in device directory */
 	.attrs = tlclk_sysfs_entries,
 };
@@ -844,17 +777,6 @@ static int __init tlclk_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	ret = register_chrdev(tlclk_major, "telco_clock", &tlclk_fops);
-	if (ret < 0) {
-		printk(KERN_ERR "tlclk: can't get major %d.\n", tlclk_major);
-		return ret;
-	}
-	tlclk_major = ret;
-	alarm_events = kzalloc( sizeof(struct tlclk_alarms), GFP_KERNEL);
-	if (!alarm_events)
-		goto out1;
-=======
 	telclk_interrupt = (inb(TLCLK_REG7) & 0x0f);
 
 	alarm_events = kzalloc( sizeof(struct tlclk_alarms), GFP_KERNEL);
@@ -870,7 +792,6 @@ static int __init tlclk_init(void)
 		return ret;
 	}
 	tlclk_major = ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read telecom clock IRQ number (Set by BIOS) */
 	if (!request_region(TLCLK_BASE, 8, "telco_clock")) {
@@ -879,10 +800,6 @@ static int __init tlclk_init(void)
 		ret = -EBUSY;
 		goto out2;
 	}
-<<<<<<< HEAD
-	telclk_interrupt = (inb(TLCLK_REG7) & 0x0f);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (0x0F == telclk_interrupt ) { /* not MCPBL0010 ? */
 		printk(KERN_ERR "telclk_interrupt = 0x%x non-mcpbl0010 hw.\n",
@@ -891,11 +808,7 @@ static int __init tlclk_init(void)
 		goto out3;
 	}
 
-<<<<<<< HEAD
-	init_timer(&switchover_timer);
-=======
 	timer_setup(&switchover_timer, switchover_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = misc_register(&tlclk_miscdev);
 	if (ret < 0) {
@@ -927,13 +840,8 @@ out3:
 	release_region(TLCLK_BASE, 8);
 out2:
 	kfree(alarm_events);
-<<<<<<< HEAD
-out1:
-	unregister_chrdev(tlclk_major, "telco_clock");
-=======
 	unregister_chrdev(tlclk_major, "telco_clock");
 out1:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -950,15 +858,9 @@ static void __exit tlclk_cleanup(void)
 
 }
 
-<<<<<<< HEAD
-static void switchover_timeout(unsigned long data)
-{
-	unsigned long flags = *(unsigned long *) data;
-=======
 static void switchover_timeout(struct timer_list *unused)
 {
 	unsigned long flags = tlclk_timer_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((flags & 1)) {
 		if ((inb(TLCLK_REG1) & 0x08) != (flags & 0x08))
@@ -1023,10 +925,6 @@ static irqreturn_t tlclk_interrupt(int irq, void *dev_id)
 		/* TIMEOUT in ~10ms */
 		switchover_timer.expires = jiffies + msecs_to_jiffies(10);
 		tlclk_timer_data = inb(TLCLK_REG1);
-<<<<<<< HEAD
-		switchover_timer.data = (unsigned long) &tlclk_timer_data;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mod_timer(&switchover_timer, switchover_timer.expires);
 	} else {
 		got_event = 1;

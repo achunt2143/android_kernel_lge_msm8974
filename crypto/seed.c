@@ -1,36 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cryptographic API.
  *
  * SEED Cipher Algorithm.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Documentation of SEED can be found in RFC 4269.
  * Copyright (C) 2007 Korea Information Security Agency (KISA).
  */
 
-<<<<<<< HEAD
-=======
 #include <crypto/algapi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/types.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/crypto.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/byteorder.h>
 
 #define SEED_NUM_KCONSTANTS	16
@@ -340,11 +322,7 @@ static const u32 KC[SEED_NUM_KCONSTANTS] = {
 		SS2[byte(t1, 2)] ^ SS3[byte(t1, 3)];	\
 	t0 += t1;					\
 	X1 ^= t0;					\
-<<<<<<< HEAD
-	X2 ^= t1;
-=======
 	X2 ^= t1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int seed_set_key(struct crypto_tfm *tfm, const u8 *in_key,
 		        unsigned int key_len)
@@ -467,10 +445,6 @@ static struct crypto_alg seed_alg = {
 	.cra_ctxsize		=	sizeof(struct seed_ctx),
 	.cra_alignmask		=	3,
 	.cra_module		=	THIS_MODULE,
-<<<<<<< HEAD
-	.cra_list		=	LIST_HEAD_INIT(seed_alg.cra_list),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_u			=	{
 		.cipher = {
 			.cia_min_keysize	=	SEED_KEY_SIZE,
@@ -492,17 +466,10 @@ static void __exit seed_fini(void)
 	crypto_unregister_alg(&seed_alg);
 }
 
-<<<<<<< HEAD
-module_init(seed_init);
-=======
 subsys_initcall(seed_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(seed_fini);
 
 MODULE_DESCRIPTION("SEED Cipher Algorithm");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Hye-Shik Chang <perky@FreeBSD.org>, Kim Hyun <hkim@kisa.or.kr>");
-<<<<<<< HEAD
-=======
 MODULE_ALIAS_CRYPTO("seed");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

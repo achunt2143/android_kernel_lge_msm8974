@@ -1,29 +1,7 @@
-<<<<<<< HEAD
-/*
- *  Digital Audio (PCM) abstract layer / OSS compatible
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Digital Audio (PCM) abstract layer / OSS compatible
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #if 0
@@ -35,19 +13,13 @@
 
 #include <linux/init.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/time.h>
 #include <linux/vmalloc.h>
 #include <linux/module.h>
 #include <linux/math64.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-=======
 #include <linux/compat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/minors.h>
 #include <sound/pcm.h>
@@ -80,21 +52,6 @@ static int snd_pcm_oss_get_rate(struct snd_pcm_oss_file *pcm_oss_file);
 static int snd_pcm_oss_get_channels(struct snd_pcm_oss_file *pcm_oss_file);
 static int snd_pcm_oss_get_format(struct snd_pcm_oss_file *pcm_oss_file);
 
-<<<<<<< HEAD
-static inline mm_segment_t snd_enter_user(void)
-{
-	mm_segment_t fs = get_fs();
-	set_fs(get_ds());
-	return fs;
-}
-
-static inline void snd_leave_user(mm_segment_t fs)
-{
-	set_fs(fs);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * helper functions to process hw_params
  */
@@ -190,11 +147,7 @@ snd_pcm_hw_param_value_min(const struct snd_pcm_hw_params *params,
  *
  * Return the maximum value for field PAR.
  */
-<<<<<<< HEAD
-static unsigned int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_pcm_hw_param_value_max(const struct snd_pcm_hw_params *params,
 			   snd_pcm_hw_param_t var, int *dir)
 {
@@ -218,11 +171,7 @@ static int _snd_pcm_hw_param_mask(struct snd_pcm_hw_params *params,
 {
 	int changed;
 	changed = snd_mask_refine(hw_param_mask(params, var), val);
-<<<<<<< HEAD
-	if (changed) {
-=======
 	if (changed > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		params->cmask |= 1 << var;
 		params->rmask |= 1 << var;
 	}
@@ -269,11 +218,7 @@ static int _snd_pcm_hw_param_min(struct snd_pcm_hw_params *params,
 						  val, open);
 	else
 		return -EINVAL;
-<<<<<<< HEAD
-	if (changed) {
-=======
 	if (changed > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		params->cmask |= 1 << var;
 		params->rmask |= 1 << var;
 	}
@@ -334,11 +279,7 @@ static int _snd_pcm_hw_param_max(struct snd_pcm_hw_params *params,
 						  val, open);
 	else
 		return -EINVAL;
-<<<<<<< HEAD
-	if (changed) {
-=======
 	if (changed > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		params->cmask |= 1 << var;
 		params->rmask |= 1 << var;
 	}
@@ -436,11 +377,7 @@ static int snd_pcm_hw_param_near(struct snd_pcm_substream *pcm,
 				 snd_pcm_hw_param_t var, unsigned int best,
 				 int *dir)
 {
-<<<<<<< HEAD
-	struct snd_pcm_hw_params *save = NULL;
-=======
 	struct snd_pcm_hw_params *save __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int v;
 	unsigned int saved_min;
 	int last = 0;
@@ -467,53 +404,22 @@ static int snd_pcm_hw_param_near(struct snd_pcm_substream *pcm,
 	saved_min = min;
 	min = snd_pcm_hw_param_min(pcm, params, var, min, &mindir);
 	if (min >= 0) {
-<<<<<<< HEAD
-		struct snd_pcm_hw_params *params1;
-=======
 		struct snd_pcm_hw_params *params1 __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (max < 0)
 			goto _end;
 		if ((unsigned int)min == saved_min && mindir == valdir)
 			goto _end;
 		params1 = kmalloc(sizeof(*params1), GFP_KERNEL);
-<<<<<<< HEAD
-		if (params1 == NULL) {
-			kfree(save);
-			return -ENOMEM;
-		}
-		*params1 = *save;
-		max = snd_pcm_hw_param_max(pcm, params1, var, max, &maxdir);
-		if (max < 0) {
-			kfree(params1);
-			goto _end;
-		}
-=======
 		if (params1 == NULL)
 			return -ENOMEM;
 		*params1 = *save;
 		max = snd_pcm_hw_param_max(pcm, params1, var, max, &maxdir);
 		if (max < 0)
 			goto _end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (boundary_nearer(max, maxdir, best, valdir, min, mindir)) {
 			*params = *params1;
 			last = 1;
 		}
-<<<<<<< HEAD
-		kfree(params1);
-	} else {
-		*params = *save;
-		max = snd_pcm_hw_param_max(pcm, params, var, max, &maxdir);
-		if (max < 0) {
-			kfree(save);
-			return max;
-		}
-		last = 1;
-	}
- _end:
- 	kfree(save);
-=======
 	} else {
 		*params = *save;
 		max = snd_pcm_hw_param_max(pcm, params, var, max, &maxdir);
@@ -522,15 +428,10 @@ static int snd_pcm_hw_param_near(struct snd_pcm_substream *pcm,
 		last = 1;
 	}
  _end:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (last)
 		v = snd_pcm_hw_param_last(pcm, params, var, dir);
 	else
 		v = snd_pcm_hw_param_first(pcm, params, var, dir);
-<<<<<<< HEAD
-	snd_BUG_ON(v < 0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return v;
 }
 
@@ -575,11 +476,7 @@ static int _snd_pcm_hw_param_set(struct snd_pcm_hw_params *params,
 		}
 	} else
 		return -EINVAL;
-<<<<<<< HEAD
-	if (changed) {
-=======
 	if (changed > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		params->cmask |= 1 << var;
 		params->rmask |= 1 << var;
 	}
@@ -619,11 +516,7 @@ static int _snd_pcm_hw_param_setinteger(struct snd_pcm_hw_params *params,
 {
 	int changed;
 	changed = snd_interval_setinteger(hw_param_interval(params, var));
-<<<<<<< HEAD
-	if (changed) {
-=======
 	if (changed > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		params->cmask |= 1 << var;
 		params->rmask |= 1 << var;
 	}
@@ -781,27 +674,16 @@ static int snd_pcm_oss_period_size(struct snd_pcm_substream *substream,
 				   struct snd_pcm_hw_params *oss_params,
 				   struct snd_pcm_hw_params *slave_params)
 {
-<<<<<<< HEAD
-	size_t s;
-	size_t oss_buffer_size, oss_period_size, oss_periods;
-	size_t min_period_size, max_period_size;
-=======
 	ssize_t s;
 	ssize_t oss_buffer_size;
 	ssize_t oss_period_size, oss_periods;
 	ssize_t min_period_size, max_period_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	size_t oss_frame_size;
 
 	oss_frame_size = snd_pcm_format_physical_width(params_format(oss_params)) *
 			 params_channels(oss_params) / 8;
 
-<<<<<<< HEAD
-	oss_buffer_size = snd_pcm_plug_client_size(substream,
-						   snd_pcm_hw_param_value_max(slave_params, SNDRV_PCM_HW_PARAM_BUFFER_SIZE, NULL)) * oss_frame_size;
-	oss_buffer_size = 1 << ld2(oss_buffer_size);
-=======
 	oss_buffer_size = snd_pcm_hw_param_value_max(slave_params,
 						     SNDRV_PCM_HW_PARAM_BUFFER_SIZE,
 						     NULL);
@@ -812,7 +694,6 @@ static int snd_pcm_oss_period_size(struct snd_pcm_substream *substream,
 	if (oss_buffer_size <= 0)
 		return -EINVAL;
 	oss_buffer_size = rounddown_pow_of_two(oss_buffer_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (atomic_read(&substream->mmap_count)) {
 		if (oss_buffer_size > runtime->oss.mmap_bytes)
 			oss_buffer_size = runtime->oss.mmap_bytes;
@@ -847,19 +728,6 @@ static int snd_pcm_oss_period_size(struct snd_pcm_substream *substream,
 
 	min_period_size = snd_pcm_plug_client_size(substream,
 						   snd_pcm_hw_param_value_min(slave_params, SNDRV_PCM_HW_PARAM_PERIOD_SIZE, NULL));
-<<<<<<< HEAD
-	min_period_size *= oss_frame_size;
-	min_period_size = 1 << (ld2(min_period_size - 1) + 1);
-	if (oss_period_size < min_period_size)
-		oss_period_size = min_period_size;
-
-	max_period_size = snd_pcm_plug_client_size(substream,
-						   snd_pcm_hw_param_value_max(slave_params, SNDRV_PCM_HW_PARAM_PERIOD_SIZE, NULL));
-	max_period_size *= oss_frame_size;
-	max_period_size = 1 << ld2(max_period_size);
-	if (oss_period_size > max_period_size)
-		oss_period_size = max_period_size;
-=======
 	if (min_period_size > 0) {
 		min_period_size *= oss_frame_size;
 		min_period_size = roundup_pow_of_two(min_period_size);
@@ -875,7 +743,6 @@ static int snd_pcm_oss_period_size(struct snd_pcm_substream *substream,
 		if (oss_period_size > max_period_size)
 			oss_period_size = max_period_size;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	oss_periods = oss_buffer_size / oss_period_size;
 
@@ -883,11 +750,7 @@ static int snd_pcm_oss_period_size(struct snd_pcm_substream *substream,
 		oss_periods = substream->oss.setup.periods;
 
 	s = snd_pcm_hw_param_value_max(slave_params, SNDRV_PCM_HW_PARAM_PERIODS, NULL);
-<<<<<<< HEAD
-	if (runtime->oss.maxfrags && s > runtime->oss.maxfrags)
-=======
 	if (s > 0 && runtime->oss.maxfrags && s > runtime->oss.maxfrags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		s = runtime->oss.maxfrags;
 	if (oss_periods > s)
 		oss_periods = s;
@@ -903,14 +766,11 @@ static int snd_pcm_oss_period_size(struct snd_pcm_substream *substream,
 
 	if (oss_period_size < 16)
 		return -EINVAL;
-<<<<<<< HEAD
-=======
 
 	/* don't allocate too large period; 1MB period must be enough */
 	if (oss_period_size > 1024 * 1024)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	runtime->oss.period_bytes = oss_period_size;
 	runtime->oss.period_frames = 1;
 	runtime->oss.periods = oss_periods;
@@ -920,24 +780,15 @@ static int snd_pcm_oss_period_size(struct snd_pcm_substream *substream,
 static int choose_rate(struct snd_pcm_substream *substream,
 		       struct snd_pcm_hw_params *params, unsigned int best_rate)
 {
-<<<<<<< HEAD
-	struct snd_interval *it;
-	struct snd_pcm_hw_params *save;
-=======
 	const struct snd_interval *it;
 	struct snd_pcm_hw_params *save __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int rate, prev;
 
 	save = kmalloc(sizeof(*save), GFP_KERNEL);
 	if (save == NULL)
 		return -ENOMEM;
 	*save = *params;
-<<<<<<< HEAD
-	it = hw_param_interval(save, SNDRV_PCM_HW_PARAM_RATE);
-=======
 	it = hw_param_interval_c(save, SNDRV_PCM_HW_PARAM_RATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* try multiples of the best rate */
 	rate = best_rate;
@@ -949,15 +800,8 @@ static int choose_rate(struct snd_pcm_substream *substream,
 			ret = snd_pcm_hw_param_set(substream, params,
 						   SNDRV_PCM_HW_PARAM_RATE,
 						   rate, 0);
-<<<<<<< HEAD
-			if (ret == (int)rate) {
-				kfree(save);
-				return rate;
-			}
-=======
 			if (ret == (int)rate)
 				return rate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*params = *save;
 		}
 		prev = rate;
@@ -967,13 +811,6 @@ static int choose_rate(struct snd_pcm_substream *substream,
 	}
 
 	/* not found, use the nearest rate */
-<<<<<<< HEAD
-	kfree(save);
-	return snd_pcm_hw_param_near(substream, params, SNDRV_PCM_HW_PARAM_RATE, best_rate, NULL);
-}
-
-static int snd_pcm_oss_change_params(struct snd_pcm_substream *substream)
-=======
 	return snd_pcm_hw_param_near(substream, params, SNDRV_PCM_HW_PARAM_RATE, best_rate, NULL);
 }
 
@@ -1007,7 +844,6 @@ static void snd_pcm_oss_release_buffers(struct snd_pcm_substream *substream)
 
 /* call with params_lock held */
 static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_pcm_hw_params *params, *sparams;
@@ -1018,18 +854,6 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 	int direct;
 	snd_pcm_format_t format, sformat;
 	int n;
-<<<<<<< HEAD
-	struct snd_mask sformat_mask;
-	struct snd_mask mask;
-
-	if (mutex_lock_interruptible(&runtime->oss.params_lock))
-		return -EINTR;
-	sw_params = kmalloc(sizeof(*sw_params), GFP_KERNEL);
-	params = kmalloc(sizeof(*params), GFP_KERNEL);
-	sparams = kmalloc(sizeof(*sparams), GFP_KERNEL);
-	if (!sw_params || !params || !sparams) {
-		snd_printd("No memory\n");
-=======
 	const struct snd_mask *sformat_mask;
 	struct snd_mask mask;
 
@@ -1039,7 +863,6 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 	params = kmalloc(sizeof(*params), GFP_KERNEL);
 	sparams = kmalloc(sizeof(*sparams), GFP_KERNEL);
 	if (!sw_params || !params || !sparams) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto failure;
 	}
@@ -1062,38 +885,6 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 	}
 	err = snd_pcm_hw_param_mask(substream, sparams, SNDRV_PCM_HW_PARAM_ACCESS, &mask);
 	if (err < 0) {
-<<<<<<< HEAD
-		snd_printd("No usable accesses\n");
-		err = -EINVAL;
-		goto failure;
-	}
-	choose_rate(substream, sparams, runtime->oss.rate);
-	snd_pcm_hw_param_near(substream, sparams, SNDRV_PCM_HW_PARAM_CHANNELS, runtime->oss.channels, NULL);
-
-	format = snd_pcm_oss_format_from(runtime->oss.format);
-
-	sformat_mask = *hw_param_mask(sparams, SNDRV_PCM_HW_PARAM_FORMAT);
-	if (direct)
-		sformat = format;
-	else
-		sformat = snd_pcm_plug_slave_format(format, &sformat_mask);
-
-	if ((__force int)sformat < 0 ||
-	    !snd_mask_test(&sformat_mask, (__force int)sformat)) {
-		for (sformat = (__force snd_pcm_format_t)0;
-		     (__force int)sformat <= (__force int)SNDRV_PCM_FORMAT_LAST;
-		     sformat = (__force snd_pcm_format_t)((__force int)sformat + 1)) {
-			if (snd_mask_test(&sformat_mask, (__force int)sformat) &&
-			    snd_pcm_oss_format_to(sformat) >= 0)
-				break;
-		}
-		if ((__force int)sformat > (__force int)SNDRV_PCM_FORMAT_LAST) {
-			snd_printd("Cannot find a format!!!\n");
-			err = -EINVAL;
-			goto failure;
-		}
-	}
-=======
 		pcm_dbg(substream->pcm, "No usable accesses\n");
 		err = -EINVAL;
 		goto failure;
@@ -1128,7 +919,6 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 		goto failure;
 	}
  format_found:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = _snd_pcm_hw_param_set(sparams, SNDRV_PCM_HW_PARAM_FORMAT, (__force int)sformat, 0);
 	if (err < 0)
 		goto failure;
@@ -1156,41 +946,6 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 	oss_frame_size = snd_pcm_format_physical_width(params_format(params)) *
 			 params_channels(params) / 8;
 
-<<<<<<< HEAD
-#ifdef CONFIG_SND_PCM_OSS_PLUGINS
-	snd_pcm_oss_plugin_clear(substream);
-	if (!direct) {
-		/* add necessary plugins */
-		snd_pcm_oss_plugin_clear(substream);
-		if ((err = snd_pcm_plug_format_plugins(substream,
-						       params, 
-						       sparams)) < 0) {
-			snd_printd("snd_pcm_plug_format_plugins failed: %i\n", err);
-			snd_pcm_oss_plugin_clear(substream);
-			goto failure;
-		}
-		if (runtime->oss.plugin_first) {
-			struct snd_pcm_plugin *plugin;
-			if ((err = snd_pcm_plugin_build_io(substream, sparams, &plugin)) < 0) {
-				snd_printd("snd_pcm_plugin_build_io failed: %i\n", err);
-				snd_pcm_oss_plugin_clear(substream);
-				goto failure;
-			}
-			if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-				err = snd_pcm_plugin_append(plugin);
-			} else {
-				err = snd_pcm_plugin_insert(plugin);
-			}
-			if (err < 0) {
-				snd_pcm_oss_plugin_clear(substream);
-				goto failure;
-			}
-		}
-	}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = snd_pcm_oss_period_size(substream, params, sparams);
 	if (err < 0)
 		goto failure;
@@ -1207,14 +962,6 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 
 	snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_DROP, NULL);
 
-<<<<<<< HEAD
-	if ((err = snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_HW_PARAMS, sparams)) < 0) {
-		snd_printd("HW_PARAMS failed: %i\n", err);
-		goto failure;
-	}
-
-	memset(sw_params, 0, sizeof(*sw_params));
-=======
 	err = snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_HW_PARAMS, sparams);
 	if (err < 0) {
 		pcm_dbg(substream->pcm, "HW_PARAMS failed: %i\n", err);
@@ -1250,7 +997,6 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 	}
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (runtime->oss.trigger) {
 		sw_params->start_threshold = 1;
 	} else {
@@ -1278,14 +1024,9 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 		sw_params->silence_size = frames;
 	}
 
-<<<<<<< HEAD
-	if ((err = snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_SW_PARAMS, sw_params)) < 0) {
-		snd_printd("SW_PARAMS failed: %i\n", err);
-=======
 	err = snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_SW_PARAMS, sw_params);
 	if (err < 0) {
 		pcm_dbg(substream->pcm, "SW_PARAMS failed: %i\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failure;
 	}
 
@@ -1302,16 +1043,9 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 			goto failure;
 	}
 #endif
-<<<<<<< HEAD
-	oss_period_size *= oss_frame_size;
-
-	oss_buffer_size = oss_period_size * runtime->oss.periods;
-	if (oss_buffer_size < 0) {
-=======
 	oss_period_size = array_size(oss_period_size, oss_frame_size);
 	oss_buffer_size = array_size(oss_period_size, runtime->oss.periods);
 	if (oss_buffer_size <= 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto failure;
 	}
@@ -1330,13 +1064,8 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 	runtime->oss.channels = params_channels(params);
 	runtime->oss.rate = params_rate(params);
 
-<<<<<<< HEAD
-	vfree(runtime->oss.buffer);
-	runtime->oss.buffer = vmalloc(runtime->oss.period_bytes);
-=======
 	kvfree(runtime->oss.buffer);
 	runtime->oss.buffer = kvzalloc(runtime->oss.period_bytes, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!runtime->oss.buffer) {
 		err = -ENOMEM;
 		goto failure;
@@ -1352,11 +1081,6 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 
 	err = 0;
 failure:
-<<<<<<< HEAD
-	kfree(sw_params);
-	kfree(params);
-	kfree(sparams);
-=======
 	if (err)
 		snd_pcm_oss_release_buffers(substream);
 	kfree(sw_params);
@@ -1379,7 +1103,6 @@ static int snd_pcm_oss_change_params(struct snd_pcm_substream *substream,
 		return -ERESTARTSYS;
 
 	err = snd_pcm_oss_change_params_locked(substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&runtime->oss.params_lock);
 	return err;
 }
@@ -1396,11 +1119,7 @@ static int snd_pcm_oss_get_active_substream(struct snd_pcm_oss_file *pcm_oss_fil
 		if (asubstream == NULL)
 			asubstream = substream;
 		if (substream->runtime->oss.params) {
-<<<<<<< HEAD
-			err = snd_pcm_oss_change_params(substream);
-=======
 			err = snd_pcm_oss_change_params(substream, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err < 0)
 				return err;
 		}
@@ -1412,13 +1131,10 @@ static int snd_pcm_oss_get_active_substream(struct snd_pcm_oss_file *pcm_oss_fil
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /* call with params_lock held */
 /* NOTE: this always call PREPARE unconditionally no matter whether
  * runtime->oss.prepare is set or not
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_pcm_oss_prepare(struct snd_pcm_substream *substream)
 {
 	int err;
@@ -1426,12 +1142,8 @@ static int snd_pcm_oss_prepare(struct snd_pcm_substream *substream)
 
 	err = snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_PREPARE, NULL);
 	if (err < 0) {
-<<<<<<< HEAD
-		snd_printd("snd_pcm_oss_prepare: SNDRV_PCM_IOCTL_PREPARE failed\n");
-=======
 		pcm_dbg(substream->pcm,
 			"snd_pcm_oss_prepare: SNDRV_PCM_IOCTL_PREPARE failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	runtime->oss.prepare = 0;
@@ -1447,13 +1159,6 @@ static int snd_pcm_oss_make_ready(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime;
 	int err;
 
-<<<<<<< HEAD
-	if (substream == NULL)
-		return 0;
-	runtime = substream->runtime;
-	if (runtime->oss.params) {
-		err = snd_pcm_oss_change_params(substream);
-=======
 	runtime = substream->runtime;
 	if (runtime->oss.params) {
 		err = snd_pcm_oss_change_params(substream, false);
@@ -1480,7 +1185,6 @@ static int snd_pcm_oss_make_ready_locked(struct snd_pcm_substream *substream)
 	runtime = substream->runtime;
 	if (runtime->oss.params) {
 		err = snd_pcm_oss_change_params_locked(substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 	}
@@ -1522,17 +1226,6 @@ snd_pcm_sframes_t snd_pcm_oss_write3(struct snd_pcm_substream *substream, const 
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int ret;
 	while (1) {
-<<<<<<< HEAD
-		if (runtime->status->state == SNDRV_PCM_STATE_XRUN ||
-		    runtime->status->state == SNDRV_PCM_STATE_SUSPENDED) {
-#ifdef OSS_DEBUG
-			if (runtime->status->state == SNDRV_PCM_STATE_XRUN)
-				printk(KERN_DEBUG "pcm_oss: write: "
-				       "recovering from XRUN\n");
-			else
-				printk(KERN_DEBUG "pcm_oss: write: "
-				       "recovering from SUSPEND\n");
-=======
 		if (runtime->state == SNDRV_PCM_STATE_XRUN ||
 		    runtime->state == SNDRV_PCM_STATE_SUSPENDED) {
 #ifdef OSS_DEBUG
@@ -1540,36 +1233,20 @@ snd_pcm_sframes_t snd_pcm_oss_write3(struct snd_pcm_substream *substream, const 
 				"pcm_oss: write: recovering from %s\n",
 				runtime->state == SNDRV_PCM_STATE_XRUN ?
 				"XRUN" : "SUSPEND");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			ret = snd_pcm_oss_prepare(substream);
 			if (ret < 0)
 				break;
 		}
-<<<<<<< HEAD
-		if (in_kernel) {
-			mm_segment_t fs;
-			fs = snd_enter_user();
-			ret = snd_pcm_lib_write(substream, (void __force __user *)ptr, frames);
-			snd_leave_user(fs);
-		} else {
-			ret = snd_pcm_lib_write(substream, (void __force __user *)ptr, frames);
-		}
-=======
 		mutex_unlock(&runtime->oss.params_lock);
 		ret = __snd_pcm_lib_xfer(substream, (void *)ptr, true,
 					 frames, in_kernel);
 		mutex_lock(&runtime->oss.params_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret != -EPIPE && ret != -ESTRPIPE)
 			break;
 		/* test, if we can't store new data, because the stream */
 		/* has not been started */
-<<<<<<< HEAD
-		if (runtime->status->state == SNDRV_PCM_STATE_PREPARED)
-=======
 		if (runtime->state == SNDRV_PCM_STATE_PREPARED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EAGAIN;
 	}
 	return ret;
@@ -1581,17 +1258,6 @@ snd_pcm_sframes_t snd_pcm_oss_read3(struct snd_pcm_substream *substream, char *p
 	snd_pcm_sframes_t delay;
 	int ret;
 	while (1) {
-<<<<<<< HEAD
-		if (runtime->status->state == SNDRV_PCM_STATE_XRUN ||
-		    runtime->status->state == SNDRV_PCM_STATE_SUSPENDED) {
-#ifdef OSS_DEBUG
-			if (runtime->status->state == SNDRV_PCM_STATE_XRUN)
-				printk(KERN_DEBUG "pcm_oss: read: "
-				       "recovering from XRUN\n");
-			else
-				printk(KERN_DEBUG "pcm_oss: read: "
-				       "recovering from SUSPEND\n");
-=======
 		if (runtime->state == SNDRV_PCM_STATE_XRUN ||
 		    runtime->state == SNDRV_PCM_STATE_SUSPENDED) {
 #ifdef OSS_DEBUG
@@ -1599,16 +1265,11 @@ snd_pcm_sframes_t snd_pcm_oss_read3(struct snd_pcm_substream *substream, char *p
 				"pcm_oss: read: recovering from %s\n",
 				runtime->state == SNDRV_PCM_STATE_XRUN ?
 				"XRUN" : "SUSPEND");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			ret = snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_DRAIN, NULL);
 			if (ret < 0)
 				break;
-<<<<<<< HEAD
-		} else if (runtime->status->state == SNDRV_PCM_STATE_SETUP) {
-=======
 		} else if (runtime->state == SNDRV_PCM_STATE_SETUP) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = snd_pcm_oss_prepare(substream);
 			if (ret < 0)
 				break;
@@ -1616,25 +1277,12 @@ snd_pcm_sframes_t snd_pcm_oss_read3(struct snd_pcm_substream *substream, char *p
 		ret = snd_pcm_oss_capture_position_fixup(substream, &delay);
 		if (ret < 0)
 			break;
-<<<<<<< HEAD
-		if (in_kernel) {
-			mm_segment_t fs;
-			fs = snd_enter_user();
-			ret = snd_pcm_lib_read(substream, (void __force __user *)ptr, frames);
-			snd_leave_user(fs);
-		} else {
-			ret = snd_pcm_lib_read(substream, (void __force __user *)ptr, frames);
-		}
-		if (ret == -EPIPE) {
-			if (runtime->status->state == SNDRV_PCM_STATE_DRAINING) {
-=======
 		mutex_unlock(&runtime->oss.params_lock);
 		ret = __snd_pcm_lib_xfer(substream, (void *)ptr, true,
 					 frames, in_kernel);
 		mutex_lock(&runtime->oss.params_lock);
 		if (ret == -EPIPE) {
 			if (runtime->state == SNDRV_PCM_STATE_DRAINING) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_DROP, NULL);
 				if (ret < 0)
 					break;
@@ -1647,27 +1295,12 @@ snd_pcm_sframes_t snd_pcm_oss_read3(struct snd_pcm_substream *substream, char *p
 	return ret;
 }
 
-<<<<<<< HEAD
-snd_pcm_sframes_t snd_pcm_oss_writev3(struct snd_pcm_substream *substream, void **bufs, snd_pcm_uframes_t frames, int in_kernel)
-=======
 #ifdef CONFIG_SND_PCM_OSS_PLUGINS
 snd_pcm_sframes_t snd_pcm_oss_writev3(struct snd_pcm_substream *substream, void **bufs, snd_pcm_uframes_t frames)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int ret;
 	while (1) {
-<<<<<<< HEAD
-		if (runtime->status->state == SNDRV_PCM_STATE_XRUN ||
-		    runtime->status->state == SNDRV_PCM_STATE_SUSPENDED) {
-#ifdef OSS_DEBUG
-			if (runtime->status->state == SNDRV_PCM_STATE_XRUN)
-				printk(KERN_DEBUG "pcm_oss: writev: "
-				       "recovering from XRUN\n");
-			else
-				printk(KERN_DEBUG "pcm_oss: writev: "
-				       "recovering from SUSPEND\n");
-=======
 		if (runtime->state == SNDRV_PCM_STATE_XRUN ||
 		    runtime->state == SNDRV_PCM_STATE_SUSPENDED) {
 #ifdef OSS_DEBUG
@@ -1675,59 +1308,28 @@ snd_pcm_sframes_t snd_pcm_oss_writev3(struct snd_pcm_substream *substream, void 
 				"pcm_oss: writev: recovering from %s\n",
 				runtime->state == SNDRV_PCM_STATE_XRUN ?
 				"XRUN" : "SUSPEND");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			ret = snd_pcm_oss_prepare(substream);
 			if (ret < 0)
 				break;
 		}
-<<<<<<< HEAD
-		if (in_kernel) {
-			mm_segment_t fs;
-			fs = snd_enter_user();
-			ret = snd_pcm_lib_writev(substream, (void __user **)bufs, frames);
-			snd_leave_user(fs);
-		} else {
-			ret = snd_pcm_lib_writev(substream, (void __user **)bufs, frames);
-		}
-=======
 		ret = snd_pcm_kernel_writev(substream, bufs, frames);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret != -EPIPE && ret != -ESTRPIPE)
 			break;
 
 		/* test, if we can't store new data, because the stream */
 		/* has not been started */
-<<<<<<< HEAD
-		if (runtime->status->state == SNDRV_PCM_STATE_PREPARED)
-=======
 		if (runtime->state == SNDRV_PCM_STATE_PREPARED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EAGAIN;
 	}
 	return ret;
 }
 	
-<<<<<<< HEAD
-snd_pcm_sframes_t snd_pcm_oss_readv3(struct snd_pcm_substream *substream, void **bufs, snd_pcm_uframes_t frames, int in_kernel)
-=======
 snd_pcm_sframes_t snd_pcm_oss_readv3(struct snd_pcm_substream *substream, void **bufs, snd_pcm_uframes_t frames)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int ret;
 	while (1) {
-<<<<<<< HEAD
-		if (runtime->status->state == SNDRV_PCM_STATE_XRUN ||
-		    runtime->status->state == SNDRV_PCM_STATE_SUSPENDED) {
-#ifdef OSS_DEBUG
-			if (runtime->status->state == SNDRV_PCM_STATE_XRUN)
-				printk(KERN_DEBUG "pcm_oss: readv: "
-				       "recovering from XRUN\n");
-			else
-				printk(KERN_DEBUG "pcm_oss: readv: "
-				       "recovering from SUSPEND\n");
-=======
 		if (runtime->state == SNDRV_PCM_STATE_XRUN ||
 		    runtime->state == SNDRV_PCM_STATE_SUSPENDED) {
 #ifdef OSS_DEBUG
@@ -1735,41 +1337,22 @@ snd_pcm_sframes_t snd_pcm_oss_readv3(struct snd_pcm_substream *substream, void *
 				"pcm_oss: readv: recovering from %s\n",
 				runtime->state == SNDRV_PCM_STATE_XRUN ?
 				"XRUN" : "SUSPEND");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			ret = snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_DRAIN, NULL);
 			if (ret < 0)
 				break;
-<<<<<<< HEAD
-		} else if (runtime->status->state == SNDRV_PCM_STATE_SETUP) {
-=======
 		} else if (runtime->state == SNDRV_PCM_STATE_SETUP) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = snd_pcm_oss_prepare(substream);
 			if (ret < 0)
 				break;
 		}
-<<<<<<< HEAD
-		if (in_kernel) {
-			mm_segment_t fs;
-			fs = snd_enter_user();
-			ret = snd_pcm_lib_readv(substream, (void __user **)bufs, frames);
-			snd_leave_user(fs);
-		} else {
-			ret = snd_pcm_lib_readv(substream, (void __user **)bufs, frames);
-		}
-=======
 		ret = snd_pcm_kernel_readv(substream, bufs, frames);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret != -EPIPE && ret != -ESTRPIPE)
 			break;
 	}
 	return ret;
 }
-<<<<<<< HEAD
-=======
 #endif /* CONFIG_SND_PCM_OSS_PLUGINS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t snd_pcm_oss_write2(struct snd_pcm_substream *substream, const char *buf, size_t bytes, int in_kernel)
 {
@@ -1807,22 +1390,12 @@ static ssize_t snd_pcm_oss_write2(struct snd_pcm_substream *substream, const cha
 static ssize_t snd_pcm_oss_write1(struct snd_pcm_substream *substream, const char __user *buf, size_t bytes)
 {
 	size_t xfer = 0;
-<<<<<<< HEAD
-	ssize_t tmp;
-=======
 	ssize_t tmp = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
 	if (atomic_read(&substream->mmap_count))
 		return -ENXIO;
 
-<<<<<<< HEAD
-	if ((tmp = snd_pcm_oss_make_ready(substream)) < 0)
-		return tmp;
-	mutex_lock(&runtime->oss.params_lock);
-	while (bytes > 0) {
-=======
 	atomic_inc(&runtime->oss.rw_ref);
 	while (bytes > 0) {
 		if (mutex_lock_interruptible(&runtime->oss.params_lock)) {
@@ -1832,7 +1405,6 @@ static ssize_t snd_pcm_oss_write1(struct snd_pcm_substream *substream, const cha
 		tmp = snd_pcm_oss_make_ready_locked(substream);
 		if (tmp < 0)
 			goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bytes < runtime->oss.period_bytes || runtime->oss.buffer_used > 0) {
 			tmp = bytes;
 			if (tmp + runtime->oss.buffer_used > runtime->oss.period_bytes)
@@ -1876,16 +1448,6 @@ static ssize_t snd_pcm_oss_write1(struct snd_pcm_substream *substream, const cha
 			xfer += tmp;
 			if ((substream->f_flags & O_NONBLOCK) != 0 &&
 			    tmp != runtime->oss.period_bytes)
-<<<<<<< HEAD
-				break;
-		}
-	}
-	mutex_unlock(&runtime->oss.params_lock);
-	return xfer;
-
- err:
-	mutex_unlock(&runtime->oss.params_lock);
-=======
 				tmp = -EAGAIN;
 		}
  err:
@@ -1899,7 +1461,6 @@ static ssize_t snd_pcm_oss_write1(struct snd_pcm_substream *substream, const cha
 		tmp = 0;
 	}
 	atomic_dec(&runtime->oss.rw_ref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return xfer > 0 ? (snd_pcm_sframes_t)xfer : tmp;
 }
 
@@ -1939,22 +1500,12 @@ static ssize_t snd_pcm_oss_read2(struct snd_pcm_substream *substream, char *buf,
 static ssize_t snd_pcm_oss_read1(struct snd_pcm_substream *substream, char __user *buf, size_t bytes)
 {
 	size_t xfer = 0;
-<<<<<<< HEAD
-	ssize_t tmp;
-=======
 	ssize_t tmp = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
 	if (atomic_read(&substream->mmap_count))
 		return -ENXIO;
 
-<<<<<<< HEAD
-	if ((tmp = snd_pcm_oss_make_ready(substream)) < 0)
-		return tmp;
-	mutex_lock(&runtime->oss.params_lock);
-	while (bytes > 0) {
-=======
 	atomic_inc(&runtime->oss.rw_ref);
 	while (bytes > 0) {
 		if (mutex_lock_interruptible(&runtime->oss.params_lock)) {
@@ -1964,7 +1515,6 @@ static ssize_t snd_pcm_oss_read1(struct snd_pcm_substream *substream, char __use
 		tmp = snd_pcm_oss_make_ready_locked(substream);
 		if (tmp < 0)
 			goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bytes < runtime->oss.period_bytes || runtime->oss.buffer_used > 0) {
 			if (runtime->oss.buffer_used == 0) {
 				tmp = snd_pcm_oss_read2(substream, runtime->oss.buffer, runtime->oss.period_bytes, 1);
@@ -1995,14 +1545,6 @@ static ssize_t snd_pcm_oss_read1(struct snd_pcm_substream *substream, char __use
 			bytes -= tmp;
 			xfer += tmp;
 		}
-<<<<<<< HEAD
-	}
-	mutex_unlock(&runtime->oss.params_lock);
-	return xfer;
-
- err:
-	mutex_unlock(&runtime->oss.params_lock);
-=======
  err:
 		mutex_unlock(&runtime->oss.params_lock);
 		if (tmp < 0)
@@ -2014,7 +1556,6 @@ static ssize_t snd_pcm_oss_read1(struct snd_pcm_substream *substream, char __use
 		tmp = 0;
 	}
 	atomic_dec(&runtime->oss.rw_ref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return xfer > 0 ? (snd_pcm_sframes_t)xfer : tmp;
 }
 
@@ -2030,18 +1571,12 @@ static int snd_pcm_oss_reset(struct snd_pcm_oss_file *pcm_oss_file)
 			continue;
 		runtime = substream->runtime;
 		snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_DROP, NULL);
-<<<<<<< HEAD
-=======
 		mutex_lock(&runtime->oss.params_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		runtime->oss.prepare = 1;
 		runtime->oss.buffer_used = 0;
 		runtime->oss.prev_hw_ptr_period = 0;
 		runtime->oss.period_ptr = 0;
-<<<<<<< HEAD
-=======
 		mutex_unlock(&runtime->oss.params_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -2053,12 +1588,8 @@ static int snd_pcm_oss_post(struct snd_pcm_oss_file *pcm_oss_file)
 
 	substream = pcm_oss_file->streams[SNDRV_PCM_STREAM_PLAYBACK];
 	if (substream != NULL) {
-<<<<<<< HEAD
-		if ((err = snd_pcm_oss_make_ready(substream)) < 0)
-=======
 		err = snd_pcm_oss_make_ready(substream);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_START, NULL);
 	}
@@ -2073,21 +1604,13 @@ static int snd_pcm_oss_sync1(struct snd_pcm_substream *substream, size_t size)
 	ssize_t result = 0;
 	snd_pcm_state_t state;
 	long res;
-<<<<<<< HEAD
-	wait_queue_t wait;
-=======
 	wait_queue_entry_t wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	runtime = substream->runtime;
 	init_waitqueue_entry(&wait, current);
 	add_wait_queue(&runtime->sleep, &wait);
 #ifdef OSS_DEBUG
-<<<<<<< HEAD
-	printk(KERN_DEBUG "sync1: size = %li\n", size);
-=======
 	pcm_dbg(substream->pcm, "sync1: size = %li\n", size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	while (1) {
 		result = snd_pcm_oss_write2(substream, runtime->oss.buffer, size, 1);
@@ -2100,14 +1623,8 @@ static int snd_pcm_oss_sync1(struct snd_pcm_substream *substream, size_t size)
 			break;
 		result = 0;
 		set_current_state(TASK_INTERRUPTIBLE);
-<<<<<<< HEAD
-		snd_pcm_stream_lock_irq(substream);
-		state = runtime->status->state;
-		snd_pcm_stream_unlock_irq(substream);
-=======
 		scoped_guard(pcm_stream_lock_irq, substream)
 			state = runtime->state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (state != SNDRV_PCM_STATE_RUNNING) {
 			set_current_state(TASK_RUNNING);
 			break;
@@ -2118,12 +1635,8 @@ static int snd_pcm_oss_sync1(struct snd_pcm_substream *substream, size_t size)
 			break;
 		}
 		if (res == 0) {
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "OSS sync error - DMA timeout\n");
-=======
 			pcm_err(substream->pcm,
 				"OSS sync error - DMA timeout\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result = -EIO;
 			break;
 		}
@@ -2147,16 +1660,6 @@ static int snd_pcm_oss_sync(struct snd_pcm_oss_file *pcm_oss_file)
 		runtime = substream->runtime;
 		if (atomic_read(&substream->mmap_count))
 			goto __direct;
-<<<<<<< HEAD
-		if ((err = snd_pcm_oss_make_ready(substream)) < 0)
-			return err;
-		format = snd_pcm_oss_format_from(runtime->oss.format);
-		width = snd_pcm_format_physical_width(format);
-		mutex_lock(&runtime->oss.params_lock);
-		if (runtime->oss.buffer_used > 0) {
-#ifdef OSS_DEBUG
-			printk(KERN_DEBUG "sync: buffer_used\n");
-=======
 		atomic_inc(&runtime->oss.rw_ref);
 		if (mutex_lock_interruptible(&runtime->oss.params_lock)) {
 			atomic_dec(&runtime->oss.rw_ref);
@@ -2170,43 +1673,25 @@ static int snd_pcm_oss_sync(struct snd_pcm_oss_file *pcm_oss_file)
 		if (runtime->oss.buffer_used > 0) {
 #ifdef OSS_DEBUG
 			pcm_dbg(substream->pcm, "sync: buffer_used\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			size = (8 * (runtime->oss.period_bytes - runtime->oss.buffer_used) + 7) / width;
 			snd_pcm_format_set_silence(format,
 						   runtime->oss.buffer + runtime->oss.buffer_used,
 						   size);
 			err = snd_pcm_oss_sync1(substream, runtime->oss.period_bytes);
-<<<<<<< HEAD
-			if (err < 0) {
-				mutex_unlock(&runtime->oss.params_lock);
-				return err;
-			}
-		} else if (runtime->oss.period_ptr > 0) {
-#ifdef OSS_DEBUG
-			printk(KERN_DEBUG "sync: period_ptr\n");
-=======
 			if (err < 0)
 				goto unlock;
 		} else if (runtime->oss.period_ptr > 0) {
 #ifdef OSS_DEBUG
 			pcm_dbg(substream->pcm, "sync: period_ptr\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			size = runtime->oss.period_bytes - runtime->oss.period_ptr;
 			snd_pcm_format_set_silence(format,
 						   runtime->oss.buffer,
 						   size * 8 / width);
 			err = snd_pcm_oss_sync1(substream, size);
-<<<<<<< HEAD
-			if (err < 0) {
-				mutex_unlock(&runtime->oss.params_lock);
-				return err;
-			}
-=======
 			if (err < 0)
 				goto unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/*
 		 * The ALSA's period might be a bit large than OSS one.
@@ -2215,31 +1700,6 @@ static int snd_pcm_oss_sync(struct snd_pcm_oss_file *pcm_oss_file)
 		size = runtime->control->appl_ptr % runtime->period_size;
 		if (size > 0) {
 			size = runtime->period_size - size;
-<<<<<<< HEAD
-			if (runtime->access == SNDRV_PCM_ACCESS_RW_INTERLEAVED) {
-				size = (runtime->frame_bits * size) / 8;
-				while (size > 0) {
-					mm_segment_t fs;
-					size_t size1 = size < runtime->oss.period_bytes ? size : runtime->oss.period_bytes;
-					size -= size1;
-					size1 *= 8;
-					size1 /= runtime->sample_bits;
-					snd_pcm_format_set_silence(runtime->format,
-								   runtime->oss.buffer,
-								   size1);
-					size1 /= runtime->channels; /* frames */
-					fs = snd_enter_user();
-					snd_pcm_lib_write(substream, (void __force __user *)runtime->oss.buffer, size1);
-					snd_leave_user(fs);
-				}
-			} else if (runtime->access == SNDRV_PCM_ACCESS_RW_NONINTERLEAVED) {
-				void __user *buffers[runtime->channels];
-				memset(buffers, 0, runtime->channels * sizeof(void *));
-				snd_pcm_lib_writev(substream, buffers, size);
-			}
-		}
-		mutex_unlock(&runtime->oss.params_lock);
-=======
 			if (runtime->access == SNDRV_PCM_ACCESS_RW_INTERLEAVED)
 				snd_pcm_lib_write(substream, NULL, size);
 			else if (runtime->access == SNDRV_PCM_ACCESS_RW_NONINTERLEAVED)
@@ -2250,7 +1710,6 @@ unlock:
 		atomic_dec(&runtime->oss.rw_ref);
 		if (err < 0)
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * finish sync: drain the buffer
 		 */
@@ -2261,37 +1720,24 @@ unlock:
 		substream->f_flags = saved_f_flags;
 		if (err < 0)
 			return err;
-<<<<<<< HEAD
-		runtime->oss.prepare = 1;
-=======
 		mutex_lock(&runtime->oss.params_lock);
 		runtime->oss.prepare = 1;
 		mutex_unlock(&runtime->oss.params_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	substream = pcm_oss_file->streams[SNDRV_PCM_STREAM_CAPTURE];
 	if (substream != NULL) {
-<<<<<<< HEAD
-		if ((err = snd_pcm_oss_make_ready(substream)) < 0)
-=======
 		err = snd_pcm_oss_make_ready(substream);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		runtime = substream->runtime;
 		err = snd_pcm_kernel_ioctl(substream, SNDRV_PCM_IOCTL_DROP, NULL);
 		if (err < 0)
 			return err;
-<<<<<<< HEAD
-		runtime->oss.buffer_used = 0;
-		runtime->oss.prepare = 1;
-=======
 		mutex_lock(&runtime->oss.params_lock);
 		runtime->oss.buffer_used = 0;
 		runtime->oss.prepare = 1;
 		mutex_unlock(&runtime->oss.params_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -2303,11 +1749,8 @@ static int snd_pcm_oss_set_rate(struct snd_pcm_oss_file *pcm_oss_file, int rate)
 	for (idx = 1; idx >= 0; --idx) {
 		struct snd_pcm_substream *substream = pcm_oss_file->streams[idx];
 		struct snd_pcm_runtime *runtime;
-<<<<<<< HEAD
-=======
 		int err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (substream == NULL)
 			continue;
 		runtime = substream->runtime;
@@ -2315,20 +1758,14 @@ static int snd_pcm_oss_set_rate(struct snd_pcm_oss_file *pcm_oss_file, int rate)
 			rate = 1000;
 		else if (rate > 192000)
 			rate = 192000;
-<<<<<<< HEAD
-=======
 		err = lock_params(runtime);
 		if (err < 0)
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (runtime->oss.rate != rate) {
 			runtime->oss.params = 1;
 			runtime->oss.rate = rate;
 		}
-<<<<<<< HEAD
-=======
 		unlock_params(runtime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return snd_pcm_oss_get_rate(pcm_oss_file);
 }
@@ -2338,12 +1775,8 @@ static int snd_pcm_oss_get_rate(struct snd_pcm_oss_file *pcm_oss_file)
 	struct snd_pcm_substream *substream;
 	int err;
 	
-<<<<<<< HEAD
-	if ((err = snd_pcm_oss_get_active_substream(pcm_oss_file, &substream)) < 0)
-=======
 	err = snd_pcm_oss_get_active_substream(pcm_oss_file, &substream);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return substream->runtime->oss.rate;
 }
@@ -2358,11 +1791,6 @@ static int snd_pcm_oss_set_channels(struct snd_pcm_oss_file *pcm_oss_file, unsig
 	for (idx = 1; idx >= 0; --idx) {
 		struct snd_pcm_substream *substream = pcm_oss_file->streams[idx];
 		struct snd_pcm_runtime *runtime;
-<<<<<<< HEAD
-		if (substream == NULL)
-			continue;
-		runtime = substream->runtime;
-=======
 		int err;
 
 		if (substream == NULL)
@@ -2371,15 +1799,11 @@ static int snd_pcm_oss_set_channels(struct snd_pcm_oss_file *pcm_oss_file, unsig
 		err = lock_params(runtime);
 		if (err < 0)
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (runtime->oss.channels != channels) {
 			runtime->oss.params = 1;
 			runtime->oss.channels = channels;
 		}
-<<<<<<< HEAD
-=======
 		unlock_params(runtime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return snd_pcm_oss_get_channels(pcm_oss_file);
 }
@@ -2389,12 +1813,8 @@ static int snd_pcm_oss_get_channels(struct snd_pcm_oss_file *pcm_oss_file)
 	struct snd_pcm_substream *substream;
 	int err;
 	
-<<<<<<< HEAD
-	if ((err = snd_pcm_oss_get_active_substream(pcm_oss_file, &substream)) < 0)
-=======
 	err = snd_pcm_oss_get_active_substream(pcm_oss_file, &substream);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return substream->runtime->oss.channels;
 }
@@ -2404,12 +1824,8 @@ static int snd_pcm_oss_get_block_size(struct snd_pcm_oss_file *pcm_oss_file)
 	struct snd_pcm_substream *substream;
 	int err;
 	
-<<<<<<< HEAD
-	if ((err = snd_pcm_oss_get_active_substream(pcm_oss_file, &substream)) < 0)
-=======
 	err = snd_pcm_oss_get_active_substream(pcm_oss_file, &substream);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return substream->runtime->oss.period_bytes;
 }
@@ -2419,14 +1835,6 @@ static int snd_pcm_oss_get_formats(struct snd_pcm_oss_file *pcm_oss_file)
 	struct snd_pcm_substream *substream;
 	int err;
 	int direct;
-<<<<<<< HEAD
-	struct snd_pcm_hw_params *params;
-	unsigned int formats = 0;
-	struct snd_mask format_mask;
-	int fmt;
-
-	if ((err = snd_pcm_oss_get_active_substream(pcm_oss_file, &substream)) < 0)
-=======
 	struct snd_pcm_hw_params *params __free(kfree) = NULL;
 	unsigned int formats = 0;
 	const struct snd_mask *format_mask;
@@ -2434,7 +1842,6 @@ static int snd_pcm_oss_get_formats(struct snd_pcm_oss_file *pcm_oss_file)
 
 	err = snd_pcm_oss_get_active_substream(pcm_oss_file, &substream);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	if (atomic_read(&substream->mmap_count))
 		direct = 1;
@@ -2453,40 +1860,24 @@ static int snd_pcm_oss_get_formats(struct snd_pcm_oss_file *pcm_oss_file)
 		return -ENOMEM;
 	_snd_pcm_hw_params_any(params);
 	err = snd_pcm_hw_refine(substream, params);
-<<<<<<< HEAD
-	format_mask = *hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT); 
-	kfree(params);
-	if (err < 0)
-		return err;
-	for (fmt = 0; fmt < 32; ++fmt) {
-		if (snd_mask_test(&format_mask, fmt)) {
-			int f = snd_pcm_oss_format_to(fmt);
-=======
 	if (err < 0)
 		return err;
 	format_mask = hw_param_mask_c(params, SNDRV_PCM_HW_PARAM_FORMAT);
 	for (fmt = 0; fmt < 32; ++fmt) {
 		if (snd_mask_test(format_mask, fmt)) {
 			int f = snd_pcm_oss_format_to((__force snd_pcm_format_t)fmt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (f >= 0)
 				formats |= f;
 		}
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return formats;
 }
 
 static int snd_pcm_oss_set_format(struct snd_pcm_oss_file *pcm_oss_file, int format)
 {
 	int formats, idx;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	if (format != AFMT_QUERY) {
 		formats = snd_pcm_oss_get_formats(pcm_oss_file);
@@ -2500,20 +1891,14 @@ static int snd_pcm_oss_set_format(struct snd_pcm_oss_file *pcm_oss_file, int for
 			if (substream == NULL)
 				continue;
 			runtime = substream->runtime;
-<<<<<<< HEAD
-=======
 			err = lock_params(runtime);
 			if (err < 0)
 				return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (runtime->oss.format != format) {
 				runtime->oss.params = 1;
 				runtime->oss.format = format;
 			}
-<<<<<<< HEAD
-=======
 			unlock_params(runtime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return snd_pcm_oss_get_format(pcm_oss_file);
@@ -2524,12 +1909,8 @@ static int snd_pcm_oss_get_format(struct snd_pcm_oss_file *pcm_oss_file)
 	struct snd_pcm_substream *substream;
 	int err;
 	
-<<<<<<< HEAD
-	if ((err = snd_pcm_oss_get_active_substream(pcm_oss_file, &substream)) < 0)
-=======
 	err = snd_pcm_oss_get_active_substream(pcm_oss_file, &substream);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return substream->runtime->oss.format;
 }
@@ -2538,11 +1919,6 @@ static int snd_pcm_oss_set_subdivide1(struct snd_pcm_substream *substream, int s
 {
 	struct snd_pcm_runtime *runtime;
 
-<<<<<<< HEAD
-	if (substream == NULL)
-		return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	runtime = substream->runtime;
 	if (subdivide == 0) {
 		subdivide = runtime->oss.subdivision;
@@ -2566,11 +1942,6 @@ static int snd_pcm_oss_set_subdivide(struct snd_pcm_oss_file *pcm_oss_file, int 
 
 	for (idx = 1; idx >= 0; --idx) {
 		struct snd_pcm_substream *substream = pcm_oss_file->streams[idx];
-<<<<<<< HEAD
-		if (substream == NULL)
-			continue;
-		if ((err = snd_pcm_oss_set_subdivide1(substream, subdivide)) < 0)
-=======
 		struct snd_pcm_runtime *runtime;
 
 		if (substream == NULL)
@@ -2582,7 +1953,6 @@ static int snd_pcm_oss_set_subdivide(struct snd_pcm_oss_file *pcm_oss_file, int 
 		err = snd_pcm_oss_set_subdivide1(substream, subdivide);
 		unlock_params(runtime);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	return err;
@@ -2591,15 +1961,6 @@ static int snd_pcm_oss_set_subdivide(struct snd_pcm_oss_file *pcm_oss_file, int 
 static int snd_pcm_oss_set_fragment1(struct snd_pcm_substream *substream, unsigned int val)
 {
 	struct snd_pcm_runtime *runtime;
-<<<<<<< HEAD
-
-	if (substream == NULL)
-		return 0;
-	runtime = substream->runtime;
-	if (runtime->oss.subdivision || runtime->oss.fragshift)
-		return -EINVAL;
-	runtime->oss.fragshift = val & 0xffff;
-=======
 	int fragshift;
 
 	runtime = substream->runtime;
@@ -2609,7 +1970,6 @@ static int snd_pcm_oss_set_fragment1(struct snd_pcm_substream *substream, unsign
 	if (fragshift >= 25) /* should be large enough */
 		return -EINVAL;
 	runtime->oss.fragshift = fragshift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	runtime->oss.maxfrags = (val >> 16) & 0xffff;
 	if (runtime->oss.fragshift < 4)		/* < 16 */
 		runtime->oss.fragshift = 4;
@@ -2625,11 +1985,6 @@ static int snd_pcm_oss_set_fragment(struct snd_pcm_oss_file *pcm_oss_file, unsig
 
 	for (idx = 1; idx >= 0; --idx) {
 		struct snd_pcm_substream *substream = pcm_oss_file->streams[idx];
-<<<<<<< HEAD
-		if (substream == NULL)
-			continue;
-		if ((err = snd_pcm_oss_set_fragment1(substream, val)) < 0)
-=======
 		struct snd_pcm_runtime *runtime;
 
 		if (substream == NULL)
@@ -2641,7 +1996,6 @@ static int snd_pcm_oss_set_fragment(struct snd_pcm_oss_file *pcm_oss_file, unsig
 		err = snd_pcm_oss_set_fragment1(substream, val);
 		unlock_params(runtime);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	return err;
@@ -2709,24 +2063,13 @@ static int snd_pcm_oss_set_trigger(struct snd_pcm_oss_file *pcm_oss_file, int tr
 	int err, cmd;
 
 #ifdef OSS_DEBUG
-<<<<<<< HEAD
-	printk(KERN_DEBUG "pcm_oss: trigger = 0x%x\n", trigger);
-=======
 	pr_debug("pcm_oss: trigger = 0x%x\n", trigger);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	
 	psubstream = pcm_oss_file->streams[SNDRV_PCM_STREAM_PLAYBACK];
 	csubstream = pcm_oss_file->streams[SNDRV_PCM_STREAM_CAPTURE];
 
 	if (psubstream) {
-<<<<<<< HEAD
-		if ((err = snd_pcm_oss_make_ready(psubstream)) < 0)
-			return err;
-	}
-	if (csubstream) {
-		if ((err = snd_pcm_oss_make_ready(csubstream)) < 0)
-=======
 		err = snd_pcm_oss_make_ready(psubstream);
 		if (err < 0)
 			return err;
@@ -2734,17 +2077,13 @@ static int snd_pcm_oss_set_trigger(struct snd_pcm_oss_file *pcm_oss_file, int tr
 	if (csubstream) {
 		err = snd_pcm_oss_make_ready(csubstream);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
       	if (psubstream) {
       		runtime = psubstream->runtime;
-<<<<<<< HEAD
-=======
 		cmd = 0;
 		if (mutex_lock_interruptible(&runtime->oss.params_lock))
 			return -ERESTARTSYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (trigger & PCM_ENABLE_OUTPUT) {
 			if (runtime->oss.trigger)
 				goto _skip1;
@@ -2762,15 +2101,6 @@ static int snd_pcm_oss_set_trigger(struct snd_pcm_oss_file *pcm_oss_file, int tr
 			cmd = SNDRV_PCM_IOCTL_DROP;
 			runtime->oss.prepare = 1;
 		}
-<<<<<<< HEAD
-		err = snd_pcm_kernel_ioctl(psubstream, cmd, NULL);
-		if (err < 0)
-			return err;
-	}
- _skip1:
-	if (csubstream) {
-      		runtime = csubstream->runtime;
-=======
  _skip1:
 		mutex_unlock(&runtime->oss.params_lock);
 		if (cmd) {
@@ -2784,7 +2114,6 @@ static int snd_pcm_oss_set_trigger(struct snd_pcm_oss_file *pcm_oss_file, int tr
 		cmd = 0;
 		if (mutex_lock_interruptible(&runtime->oss.params_lock))
 			return -ERESTARTSYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (trigger & PCM_ENABLE_INPUT) {
 			if (runtime->oss.trigger)
 				goto _skip2;
@@ -2799,13 +2128,6 @@ static int snd_pcm_oss_set_trigger(struct snd_pcm_oss_file *pcm_oss_file, int tr
 			cmd = SNDRV_PCM_IOCTL_DROP;
 			runtime->oss.prepare = 1;
 		}
-<<<<<<< HEAD
-		err = snd_pcm_kernel_ioctl(csubstream, cmd, NULL);
-		if (err < 0)
-			return err;
-	}
- _skip2:
-=======
  _skip2:
 		mutex_unlock(&runtime->oss.params_lock);
 		if (cmd) {
@@ -2814,7 +2136,6 @@ static int snd_pcm_oss_set_trigger(struct snd_pcm_oss_file *pcm_oss_file, int tr
 				return err;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2842,12 +2163,8 @@ static int snd_pcm_oss_get_odelay(struct snd_pcm_oss_file *pcm_oss_file)
 	substream = pcm_oss_file->streams[SNDRV_PCM_STREAM_PLAYBACK];
 	if (substream == NULL)
 		return -EINVAL;
-<<<<<<< HEAD
-	if ((err = snd_pcm_oss_make_ready(substream)) < 0)
-=======
 	err = snd_pcm_oss_make_ready(substream);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	runtime = substream->runtime;
 	if (runtime->oss.params || runtime->oss.prepare)
@@ -2874,12 +2191,8 @@ static int snd_pcm_oss_get_ptr(struct snd_pcm_oss_file *pcm_oss_file, int stream
 	substream = pcm_oss_file->streams[stream];
 	if (substream == NULL)
 		return -EINVAL;
-<<<<<<< HEAD
-	if ((err = snd_pcm_oss_make_ready(substream)) < 0)
-=======
 	err = snd_pcm_oss_make_ready(substream);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	runtime = substream->runtime;
 	if (runtime->oss.params || runtime->oss.prepare) {
@@ -2950,17 +2263,11 @@ static int snd_pcm_oss_get_space(struct snd_pcm_oss_file *pcm_oss_file, int stre
 		return -EINVAL;
 	runtime = substream->runtime;
 
-<<<<<<< HEAD
-	if (runtime->oss.params &&
-	    (err = snd_pcm_oss_change_params(substream)) < 0)
-		return err;
-=======
 	if (runtime->oss.params) {
 		err = snd_pcm_oss_change_params(substream, false);
 		if (err < 0)
 			return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info.fragsize = runtime->oss.period_bytes;
 	info.fragstotal = runtime->periods;
@@ -2994,15 +2301,9 @@ static int snd_pcm_oss_get_space(struct snd_pcm_oss_file *pcm_oss_file, int stre
 	}
 
 #ifdef OSS_DEBUG
-<<<<<<< HEAD
-	printk(KERN_DEBUG "pcm_oss: space: bytes = %i, fragments = %i, "
-	       "fragstotal = %i, fragsize = %i\n",
-	       info.bytes, info.fragments, info.fragstotal, info.fragsize);
-=======
 	pcm_dbg(substream->pcm,
 		"pcm_oss: space: bytes = %i, fragments = %i, fragstotal = %i, fragsize = %i\n",
 		info.bytes, info.fragments, info.fragstotal, info.fragsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	if (copy_to_user(_info, &info, sizeof(info)))
 		return -EFAULT;
@@ -3012,11 +2313,7 @@ static int snd_pcm_oss_get_space(struct snd_pcm_oss_file *pcm_oss_file, int stre
 static int snd_pcm_oss_get_mapbuf(struct snd_pcm_oss_file *pcm_oss_file, int stream, struct buffmem_desc __user * _info)
 {
 	// it won't be probably implemented
-<<<<<<< HEAD
-	// snd_printd("TODO: snd_pcm_oss_get_mapbuf\n");
-=======
 	// pr_debug("TODO: snd_pcm_oss_get_mapbuf\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
@@ -3036,11 +2333,7 @@ static void snd_pcm_oss_look_for_setup(struct snd_pcm *pcm, int stream,
 {
 	struct snd_pcm_oss_setup *setup;
 
-<<<<<<< HEAD
-	mutex_lock(&pcm->streams[stream].oss.setup_mutex);
-=======
 	guard(mutex)(&pcm->streams[stream].oss.setup_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		for (setup = pcm->streams[stream].oss.setup_list; setup;
 		     setup = setup->next) {
@@ -3051,25 +2344,11 @@ static void snd_pcm_oss_look_for_setup(struct snd_pcm *pcm, int stream,
  out:
 	if (setup)
 		*rsetup = *setup;
-<<<<<<< HEAD
-	mutex_unlock(&pcm->streams[stream].oss.setup_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void snd_pcm_oss_release_substream(struct snd_pcm_substream *substream)
 {
-<<<<<<< HEAD
-	struct snd_pcm_runtime *runtime;
-	runtime = substream->runtime;
-	vfree(runtime->oss.buffer);
-	runtime->oss.buffer = NULL;
-#ifdef CONFIG_SND_PCM_OSS_PLUGINS
-	snd_pcm_oss_plugin_clear(substream);
-#endif
-=======
 	snd_pcm_oss_release_buffers(substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	substream->oss.oss = 0;
 }
 
@@ -3105,10 +2384,7 @@ static void snd_pcm_oss_init_substream(struct snd_pcm_substream *substream,
 	runtime->oss.maxfrags = 0;
 	runtime->oss.subdivision = 0;
 	substream->pcm_release = snd_pcm_oss_release_substream;
-<<<<<<< HEAD
-=======
 	atomic_set(&runtime->oss.rw_ref, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_pcm_oss_release_file(struct snd_pcm_oss_file *pcm_oss_file)
@@ -3167,10 +2443,6 @@ static int snd_pcm_oss_open_file(struct file *file,
 		}
 
 		pcm_oss_file->streams[idx] = substream;
-<<<<<<< HEAD
-		substream->file = pcm_oss_file;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_pcm_oss_init_substream(substream, &setup[idx], minor);
 	}
 	
@@ -3206,11 +2478,7 @@ static int snd_pcm_oss_open(struct inode *inode, struct file *file)
 	struct snd_pcm_oss_file *pcm_oss_file;
 	struct snd_pcm_oss_setup setup[2];
 	int nonblock;
-<<<<<<< HEAD
-	wait_queue_t wait;
-=======
 	wait_queue_entry_t wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = nonseekable_open(inode, file);
 	if (err < 0)
@@ -3325,11 +2593,7 @@ static long snd_pcm_oss_ioctl(struct file *file, unsigned int cmd, unsigned long
 		return put_user(SNDRV_OSS_VERSION, p);
 	if (cmd == OSS_ALSAEMULVER)
 		return put_user(1, p);
-<<<<<<< HEAD
-#if defined(CONFIG_SND_MIXER_OSS) || (defined(MODULE) && defined(CONFIG_SND_MIXER_OSS_MODULE))
-=======
 #if IS_REACHABLE(CONFIG_SND_MIXER_OSS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (((cmd >> 8) & 0xff) == 'M')	{	/* mixer ioctl - for OSS compatibility */
 		struct snd_pcm_substream *substream;
 		int idx;
@@ -3346,11 +2610,7 @@ static long snd_pcm_oss_ioctl(struct file *file, unsigned int cmd, unsigned long
 	if (((cmd >> 8) & 0xff) != 'P')
 		return -EINVAL;
 #ifdef OSS_DEBUG
-<<<<<<< HEAD
-	printk(KERN_DEBUG "pcm_oss: ioctl = 0x%x\n", cmd);
-=======
 	pr_debug("pcm_oss: ioctl = 0x%x\n", cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	switch (cmd) {
 	case SNDCTL_DSP_RESET:
@@ -3360,12 +2620,8 @@ static long snd_pcm_oss_ioctl(struct file *file, unsigned int cmd, unsigned long
 	case SNDCTL_DSP_SPEED:
 		if (get_user(res, p))
 			return -EFAULT;
-<<<<<<< HEAD
-		if ((res = snd_pcm_oss_set_rate(pcm_oss_file, res))<0)
-=======
 		res = snd_pcm_oss_set_rate(pcm_oss_file, res);
 		if (res < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return res;
 		return put_user(res, p);
 	case SOUND_PCM_READ_RATE:
@@ -3377,12 +2633,8 @@ static long snd_pcm_oss_ioctl(struct file *file, unsigned int cmd, unsigned long
 		if (get_user(res, p))
 			return -EFAULT;
 		res = res > 0 ? 2 : 1;
-<<<<<<< HEAD
-		if ((res = snd_pcm_oss_set_channels(pcm_oss_file, res)) < 0)
-=======
 		res = snd_pcm_oss_set_channels(pcm_oss_file, res);
 		if (res < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return res;
 		return put_user(--res, p);
 	case SNDCTL_DSP_GETBLKSIZE:
@@ -3487,20 +2739,13 @@ static long snd_pcm_oss_ioctl(struct file *file, unsigned int cmd, unsigned long
 	case SNDCTL_DSP_PROFILE:
 		return 0;	/* silently ignore */
 	default:
-<<<<<<< HEAD
-		snd_printd("pcm_oss: unknown command = 0x%x\n", cmd);
-=======
 		pr_debug("pcm_oss: unknown command = 0x%x\n", cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -EINVAL;
 }
 
 #ifdef CONFIG_COMPAT
 /* all compatible */
-<<<<<<< HEAD
-#define snd_pcm_oss_ioctl_compat	snd_pcm_oss_ioctl
-=======
 static long snd_pcm_oss_ioctl_compat(struct file *file, unsigned int cmd,
 				     unsigned long arg)
 {
@@ -3510,7 +2755,6 @@ static long snd_pcm_oss_ioctl_compat(struct file *file, unsigned int cmd,
 	 */
 	return snd_pcm_oss_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define snd_pcm_oss_ioctl_compat	NULL
 #endif
@@ -3530,14 +2774,9 @@ static ssize_t snd_pcm_oss_read(struct file *file, char __user *buf, size_t coun
 #else
 	{
 		ssize_t res = snd_pcm_oss_read1(substream, buf, count);
-<<<<<<< HEAD
-		printk(KERN_DEBUG "pcm_oss: read %li bytes "
-		       "(returned %li bytes)\n", (long)count, (long)res);
-=======
 		pcm_dbg(substream->pcm,
 			"pcm_oss: read %li bytes (returned %li bytes)\n",
 			(long)count, (long)res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return res;
 	}
 #endif
@@ -3556,11 +2795,7 @@ static ssize_t snd_pcm_oss_write(struct file *file, const char __user *buf, size
 	substream->f_flags = file->f_flags & O_NONBLOCK;
 	result = snd_pcm_oss_write1(substream, buf, count);
 #ifdef OSS_DEBUG
-<<<<<<< HEAD
-	printk(KERN_DEBUG "pcm_oss: write %li bytes (wrote %li bytes)\n",
-=======
 	pcm_dbg(substream->pcm, "pcm_oss: write %li bytes (wrote %li bytes)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       (long)count, (long)result);
 #endif
 	return result;
@@ -3588,17 +2823,10 @@ static int snd_pcm_oss_capture_ready(struct snd_pcm_substream *substream)
 						runtime->oss.period_frames;
 }
 
-<<<<<<< HEAD
-static unsigned int snd_pcm_oss_poll(struct file *file, poll_table * wait)
-{
-	struct snd_pcm_oss_file *pcm_oss_file;
-	unsigned int mask;
-=======
 static __poll_t snd_pcm_oss_poll(struct file *file, poll_table * wait)
 {
 	struct snd_pcm_oss_file *pcm_oss_file;
 	__poll_t mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm_substream *psubstream = NULL, *csubstream = NULL;
 	
 	pcm_oss_file = file->private_data;
@@ -3610,40 +2838,23 @@ static __poll_t snd_pcm_oss_poll(struct file *file, poll_table * wait)
 	if (psubstream != NULL) {
 		struct snd_pcm_runtime *runtime = psubstream->runtime;
 		poll_wait(file, &runtime->sleep, wait);
-<<<<<<< HEAD
-		snd_pcm_stream_lock_irq(psubstream);
-		if (runtime->status->state != SNDRV_PCM_STATE_DRAINING &&
-		    (runtime->status->state != SNDRV_PCM_STATE_RUNNING ||
-		     snd_pcm_oss_playback_ready(psubstream)))
-			mask |= POLLOUT | POLLWRNORM;
-		snd_pcm_stream_unlock_irq(psubstream);
-=======
 		scoped_guard(pcm_stream_lock_irq, psubstream) {
 			if (runtime->state != SNDRV_PCM_STATE_DRAINING &&
 			    (runtime->state != SNDRV_PCM_STATE_RUNNING ||
 			     snd_pcm_oss_playback_ready(psubstream)))
 				mask |= EPOLLOUT | EPOLLWRNORM;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (csubstream != NULL) {
 		struct snd_pcm_runtime *runtime = csubstream->runtime;
 		snd_pcm_state_t ostate;
 		poll_wait(file, &runtime->sleep, wait);
-<<<<<<< HEAD
-		snd_pcm_stream_lock_irq(csubstream);
-		if ((ostate = runtime->status->state) != SNDRV_PCM_STATE_RUNNING ||
-		    snd_pcm_oss_capture_ready(csubstream))
-			mask |= POLLIN | POLLRDNORM;
-		snd_pcm_stream_unlock_irq(csubstream);
-=======
 		scoped_guard(pcm_stream_lock_irq, csubstream) {
 			ostate = runtime->state;
 			if (ostate != SNDRV_PCM_STATE_RUNNING ||
 			    snd_pcm_oss_capture_ready(csubstream))
 				mask |= EPOLLIN | EPOLLRDNORM;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ostate != SNDRV_PCM_STATE_RUNNING && runtime->oss.trigger) {
 			struct snd_pcm_oss_file ofile;
 			memset(&ofile, 0, sizeof(ofile));
@@ -3664,11 +2875,7 @@ static int snd_pcm_oss_mmap(struct file *file, struct vm_area_struct *area)
 	int err;
 
 #ifdef OSS_DEBUG
-<<<<<<< HEAD
-	printk(KERN_DEBUG "pcm_oss: mmap begin\n");
-=======
 	pr_debug("pcm_oss: mmap begin\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	pcm_oss_file = file->private_data;
 	switch ((area->vm_flags & (VM_READ | VM_WRITE))) {
@@ -3676,11 +2883,7 @@ static int snd_pcm_oss_mmap(struct file *file, struct vm_area_struct *area)
 		substream = pcm_oss_file->streams[SNDRV_PCM_STREAM_PLAYBACK];
 		if (substream)
 			break;
-<<<<<<< HEAD
-		/* Fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case VM_READ:
 		substream = pcm_oss_file->streams[SNDRV_PCM_STREAM_CAPTURE];
 		break;
@@ -3692,11 +2895,7 @@ static int snd_pcm_oss_mmap(struct file *file, struct vm_area_struct *area)
 	}
 	/* set VM_READ access as well to fix memset() routines that do
 	   reads before writes (to improve performance) */
-<<<<<<< HEAD
-	area->vm_flags |= VM_READ;
-=======
 	vm_flags_set(area, VM_READ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (substream == NULL)
 		return -ENXIO;
 	runtime = substream->runtime;
@@ -3708,16 +2907,12 @@ static int snd_pcm_oss_mmap(struct file *file, struct vm_area_struct *area)
 		return -EIO;
 	
 	if (runtime->oss.params) {
-<<<<<<< HEAD
-		if ((err = snd_pcm_oss_change_params(substream)) < 0)
-=======
 		/* use mutex_trylock() for params_lock for avoiding a deadlock
 		 * between mmap_lock and params_lock taken by
 		 * copy_from/to_user() in snd_pcm_oss_write/read()
 		 */
 		err = snd_pcm_oss_change_params(substream, true);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 #ifdef CONFIG_SND_PCM_OSS_PLUGINS
@@ -3735,11 +2930,7 @@ static int snd_pcm_oss_mmap(struct file *file, struct vm_area_struct *area)
 	runtime->silence_threshold = 0;
 	runtime->silence_size = 0;
 #ifdef OSS_DEBUG
-<<<<<<< HEAD
-	printk(KERN_DEBUG "pcm_oss: mmap ok, bytes = 0x%x\n",
-=======
 	pr_debug("pcm_oss: mmap ok, bytes = 0x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       runtime->oss.mmap_bytes);
 #endif
 	/* In mmap mode we never stop */
@@ -3758,11 +2949,7 @@ static void snd_pcm_oss_proc_read(struct snd_info_entry *entry,
 {
 	struct snd_pcm_str *pstr = entry->private_data;
 	struct snd_pcm_oss_setup *setup = pstr->oss.setup_list;
-<<<<<<< HEAD
-	mutex_lock(&pstr->oss.setup_mutex);
-=======
 	guard(mutex)(&pstr->oss.setup_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (setup) {
 		snd_iprintf(buffer, "%s %u %u%s%s%s%s%s%s\n",
 			    setup->task_name,
@@ -3776,10 +2963,6 @@ static void snd_pcm_oss_proc_read(struct snd_info_entry *entry,
 			    setup->nosilence ? " no-silence" : "");
 		setup = setup->next;
 	}
-<<<<<<< HEAD
-	mutex_unlock(&pstr->oss.setup_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void snd_pcm_oss_proc_free_setup_list(struct snd_pcm_str * pstr)
@@ -3805,19 +2988,11 @@ static void snd_pcm_oss_proc_write(struct snd_info_entry *entry,
 	struct snd_pcm_oss_setup *setup, *setup1, template;
 
 	while (!snd_info_get_line(buffer, line, sizeof(line))) {
-<<<<<<< HEAD
-		mutex_lock(&pstr->oss.setup_mutex);
-=======
 		guard(mutex)(&pstr->oss.setup_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(&template, 0, sizeof(template));
 		ptr = snd_info_get_str(task_name, line, sizeof(task_name));
 		if (!strcmp(task_name, "clear") || !strcmp(task_name, "erase")) {
 			snd_pcm_oss_proc_free_setup_list(pstr);
-<<<<<<< HEAD
-			mutex_unlock(&pstr->oss.setup_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		for (setup = pstr->oss.setup_list; setup; setup = setup->next) {
@@ -3857,10 +3032,6 @@ static void snd_pcm_oss_proc_write(struct snd_info_entry *entry,
 			setup = kmalloc(sizeof(*setup), GFP_KERNEL);
 			if (! setup) {
 				buffer->error = -ENOMEM;
-<<<<<<< HEAD
-				mutex_unlock(&pstr->oss.setup_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return;
 			}
 			if (pstr->oss.setup_list == NULL)
@@ -3874,18 +3045,10 @@ static void snd_pcm_oss_proc_write(struct snd_info_entry *entry,
 			if (! template.task_name) {
 				kfree(setup);
 				buffer->error = -ENOMEM;
-<<<<<<< HEAD
-				mutex_unlock(&pstr->oss.setup_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return;
 			}
 		}
 		*setup = template;
-<<<<<<< HEAD
-		mutex_unlock(&pstr->oss.setup_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -3897,16 +3060,10 @@ static void snd_pcm_oss_proc_init(struct snd_pcm *pcm)
 		struct snd_pcm_str *pstr = &pcm->streams[stream];
 		if (pstr->substream_count == 0)
 			continue;
-<<<<<<< HEAD
-		if ((entry = snd_info_create_card_entry(pcm->card, "oss", pstr->proc_root)) != NULL) {
-			entry->content = SNDRV_INFO_CONTENT_TEXT;
-			entry->mode = S_IFREG | S_IRUGO | S_IWUSR;
-=======
 		entry = snd_info_create_card_entry(pcm->card, "oss", pstr->proc_root);
 		if (entry) {
 			entry->content = SNDRV_INFO_CONTENT_TEXT;
 			entry->mode = S_IFREG | 0644;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			entry->c.text.read = snd_pcm_oss_proc_read;
 			entry->c.text.write = snd_pcm_oss_proc_write;
 			entry->private_data = pstr;
@@ -3930,17 +3087,12 @@ static void snd_pcm_oss_proc_done(struct snd_pcm *pcm)
 	}
 }
 #else /* !CONFIG_SND_VERBOSE_PROCFS */
-<<<<<<< HEAD
-#define snd_pcm_oss_proc_init(pcm)
-#define snd_pcm_oss_proc_done(pcm)
-=======
 static inline void snd_pcm_oss_proc_init(struct snd_pcm *pcm)
 {
 }
 static inline void snd_pcm_oss_proc_done(struct snd_pcm *pcm)
 {
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SND_VERBOSE_PROCFS */
 
 /*
@@ -3963,19 +3115,10 @@ static const struct file_operations snd_pcm_oss_f_reg =
 
 static void register_oss_dsp(struct snd_pcm *pcm, int index)
 {
-<<<<<<< HEAD
-	char name[128];
-	sprintf(name, "dsp%i%i", pcm->card->number, pcm->device);
-	if (snd_register_oss_device(SNDRV_OSS_DEVICE_TYPE_PCM,
-				    pcm->card, index, &snd_pcm_oss_f_reg,
-				    pcm, name) < 0) {
-		snd_printk(KERN_ERR "unable to register OSS PCM device %i:%i\n",
-=======
 	if (snd_register_oss_device(SNDRV_OSS_DEVICE_TYPE_PCM,
 				    pcm->card, index, &snd_pcm_oss_f_reg,
 				    pcm) < 0) {
 		pcm_err(pcm, "unable to register OSS PCM device %i:%i\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   pcm->card->number, pcm->device);
 	}
 }
@@ -4056,30 +3199,18 @@ static int __init alsa_pcm_oss_init(void)
 	/* check device map table */
 	for (i = 0; i < SNDRV_CARDS; i++) {
 		if (dsp_map[i] < 0 || dsp_map[i] >= SNDRV_PCM_DEVICES) {
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "invalid dsp_map[%d] = %d\n",
-=======
 			pr_err("ALSA: pcm_oss: invalid dsp_map[%d] = %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   i, dsp_map[i]);
 			dsp_map[i] = 0;
 		}
 		if (adsp_map[i] < 0 || adsp_map[i] >= SNDRV_PCM_DEVICES) {
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "invalid adsp_map[%d] = %d\n",
-=======
 			pr_err("ALSA: pcm_oss: invalid adsp_map[%d] = %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   i, adsp_map[i]);
 			adsp_map[i] = 1;
 		}
 	}
-<<<<<<< HEAD
-	if ((err = snd_pcm_notify(&snd_pcm_oss_notify, 0)) < 0)
-=======
 	err = snd_pcm_notify(&snd_pcm_oss_notify, 0);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return 0;
 }

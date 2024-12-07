@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 ** Tablewalk MMU emulator
 **
@@ -10,28 +7,12 @@
 ** Started 1/16/98 @ 2:22 am
 */
 
-<<<<<<< HEAD
-=======
 #include <linux/init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mman.h>
 #include <linux/mm.h>
 #include <linux/kernel.h>
 #include <linux/ptrace.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-#include <linux/bitops.h>
-#include <linux/module.h>
-
-#include <asm/setup.h>
-#include <asm/traps.h>
-#include <asm/uaccess.h>
-#include <asm/page.h>
-#include <asm/pgtable.h>
-#include <asm/sun3mmu.h>
-#include <asm/segment.h>
-=======
 #include <linux/memblock.h>
 #include <linux/bitops.h>
 #include <linux/module.h>
@@ -42,15 +23,11 @@
 #include <linux/uaccess.h>
 #include <asm/page.h>
 #include <asm/sun3mmu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/oplib.h>
 #include <asm/mmu_context.h>
 #include <asm/dvma.h>
 
-<<<<<<< HEAD
-=======
 #include "sun3.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef DEBUG_MMU_EMU
 #define DEBUG_PROM_MAPS
@@ -91,32 +68,11 @@ static unsigned char ctx_avail = CONTEXTS_NUM-1;
 unsigned long rom_pages[256];
 
 /* Print a PTE value in symbolic form. For debugging. */
-<<<<<<< HEAD
-void print_pte (pte_t pte)
-=======
 static void print_pte(pte_t pte)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #if 0
 	/* Verbose version. */
 	unsigned long val = pte_val (pte);
-<<<<<<< HEAD
-	printk (" pte=%lx [addr=%lx",
-		val, (val & SUN3_PAGE_PGNUM_MASK) << PAGE_SHIFT);
-	if (val & SUN3_PAGE_VALID)	printk (" valid");
-	if (val & SUN3_PAGE_WRITEABLE)	printk (" write");
-	if (val & SUN3_PAGE_SYSTEM)	printk (" sys");
-	if (val & SUN3_PAGE_NOCACHE)	printk (" nocache");
-	if (val & SUN3_PAGE_ACCESSED)	printk (" accessed");
-	if (val & SUN3_PAGE_MODIFIED)	printk (" modified");
-	switch (val & SUN3_PAGE_TYPE_MASK) {
-		case SUN3_PAGE_TYPE_MEMORY: printk (" memory"); break;
-		case SUN3_PAGE_TYPE_IO:     printk (" io");     break;
-		case SUN3_PAGE_TYPE_VME16:  printk (" vme16");  break;
-		case SUN3_PAGE_TYPE_VME32:  printk (" vme32");  break;
-	}
-	printk ("]\n");
-=======
 	pr_cont(" pte=%lx [addr=%lx",
 		val, (val & SUN3_PAGE_PGNUM_MASK) << PAGE_SHIFT);
 	if (val & SUN3_PAGE_VALID)	pr_cont(" valid");
@@ -132,7 +88,6 @@ static void print_pte(pte_t pte)
 		case SUN3_PAGE_TYPE_VME32:  pr_cont(" vme32");  break;
 	}
 	pr_cont("]\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	/* Terse version. More likely to fit on a line. */
 	unsigned long val = pte_val (pte);
@@ -154,11 +109,7 @@ static void print_pte(pte_t pte)
 		default: type = "unknown?"; break;
 	}
 
-<<<<<<< HEAD
-	printk (" pte=%08lx [%07lx %s %s]\n",
-=======
 	pr_cont(" pte=%08lx [%07lx %s %s]\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val, (val & SUN3_PAGE_PGNUM_MASK) << PAGE_SHIFT, flags, type);
 #endif
 }
@@ -166,22 +117,14 @@ static void print_pte(pte_t pte)
 /* Print the PTE value for a given virtual address. For debugging. */
 void print_pte_vaddr (unsigned long vaddr)
 {
-<<<<<<< HEAD
-	printk (" vaddr=%lx [%02lx]", vaddr, sun3_get_segmap (vaddr));
-=======
 	pr_cont(" vaddr=%lx [%02lx]", vaddr, sun3_get_segmap (vaddr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	print_pte (__pte (sun3_get_pte (vaddr)));
 }
 
 /*
  * Initialise the MMU emulator.
  */
-<<<<<<< HEAD
-void mmu_emu_init(unsigned long bootmem_end)
-=======
 void __init mmu_emu_init(unsigned long bootmem_end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long seg, num;
 	int i,j;
@@ -211,11 +154,7 @@ void __init mmu_emu_init(unsigned long bootmem_end)
 
 		if(!pmeg_alloc[i]) {
 #ifdef DEBUG_MMU_EMU
-<<<<<<< HEAD
-			printk("freed: ");
-=======
 			pr_info("freed:");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			print_pte_vaddr (seg);
 #endif
 			sun3_put_segmap(seg, SUN3_INVALID_PMEG);
@@ -227,11 +166,7 @@ void __init mmu_emu_init(unsigned long bootmem_end)
 		if (sun3_get_segmap (seg) != SUN3_INVALID_PMEG) {
 #ifdef DEBUG_PROM_MAPS
 			for(i = 0; i < 16; i++) {
-<<<<<<< HEAD
-				printk ("mapped:");
-=======
 				pr_info("mapped:");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				print_pte_vaddr (seg + (i*PAGE_SIZE));
 				break;
 			}
@@ -256,22 +191,13 @@ void __init mmu_emu_init(unsigned long bootmem_end)
 	for(seg = 0; seg < PAGE_OFFSET; seg += SUN3_PMEG_SIZE)
 		sun3_put_segmap(seg, SUN3_INVALID_PMEG);
 
-<<<<<<< HEAD
-	set_fs(MAKE_MM_SEG(3));
-=======
 	set_fc(3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for(seg = 0; seg < 0x10000000; seg += SUN3_PMEG_SIZE) {
 		i = sun3_get_segmap(seg);
 		for(j = 1; j < CONTEXTS_NUM; j++)
 			(*(romvec->pv_setctxt))(j, (void *)seg, i);
 	}
-<<<<<<< HEAD
-	set_fs(KERNEL_DS);
-
-=======
 	set_fc(USER_DATA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* erase the mappings for a dead context.  Uses the pg_dir for hints
@@ -281,34 +207,6 @@ void __init mmu_emu_init(unsigned long bootmem_end)
    context for when they're cleared */
 void clear_context(unsigned long context)
 {
-<<<<<<< HEAD
-     unsigned char oldctx;
-     unsigned long i;
-
-     if(context) {
-	     if(!ctx_alloc[context])
-		     panic("clear_context: context not allocated\n");
-
-	     ctx_alloc[context]->context = SUN3_INVALID_CONTEXT;
-	     ctx_alloc[context] = (struct mm_struct *)0;
-	     ctx_avail++;
-     }
-
-     oldctx = sun3_get_context();
-
-     sun3_put_context(context);
-
-     for(i = 0; i < SUN3_INVALID_PMEG; i++) {
-	     if((pmeg_ctx[i] == context) && (pmeg_alloc[i] == 1)) {
-		     sun3_put_segmap(pmeg_vaddr[i], SUN3_INVALID_PMEG);
-		     pmeg_ctx[i] = 0;
-		     pmeg_alloc[i] = 0;
-		     pmeg_vaddr[i] = 0;
-	     }
-     }
-
-     sun3_put_context(oldctx);
-=======
 	unsigned char oldctx;
 	unsigned long i;
 
@@ -335,7 +233,6 @@ void clear_context(unsigned long context)
 	}
 
 	sun3_put_context(oldctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* gets an empty context.  if full, kills the next context listed to
@@ -365,11 +262,7 @@ unsigned long get_free_context(struct mm_struct *mm)
 		}
 		// check to make sure one was really free...
 		if(new == CONTEXTS_NUM)
-<<<<<<< HEAD
-			panic("get_free_context: failed to find free context");
-=======
 			panic("%s: failed to find free context", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ctx_alloc[new] = mm;
@@ -400,13 +293,8 @@ inline void mmu_emu_map_pmeg (int context, int vaddr)
 
 
 #ifdef DEBUG_MMU_EMU
-<<<<<<< HEAD
-printk("mmu_emu_map_pmeg: pmeg %x to context %d vaddr %x\n",
-       curr_pmeg, context, vaddr);
-=======
 	pr_info("mmu_emu_map_pmeg: pmeg %x to context %d vaddr %x\n",
 		curr_pmeg, context, vaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* Invalidate old mapping for the pmeg, if any */
@@ -482,35 +370,22 @@ int mmu_emu_handle_fault (unsigned long vaddr, int read_flag, int kernel_fault)
 	}
 
 #ifdef DEBUG_MMU_EMU
-<<<<<<< HEAD
-	printk ("mmu_emu_handle_fault: vaddr=%lx type=%s crp=%p\n",
-		vaddr, read_flag ? "read" : "write", crp);
-=======
 	pr_info("%s: vaddr=%lx type=%s crp=%p\n", __func__, vaddr,
 		read_flag ? "read" : "write", crp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	segment = (vaddr >> SUN3_PMEG_SIZE_BITS) & 0x7FF;
 	offset  = (vaddr >> SUN3_PTE_SIZE_BITS) & 0xF;
 
 #ifdef DEBUG_MMU_EMU
-<<<<<<< HEAD
-	printk ("mmu_emu_handle_fault: segment=%lx offset=%lx\n", segment, offset);
-=======
 	pr_info("%s: segment=%lx offset=%lx\n", __func__, segment, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	pte = (pte_t *) pgd_val (*(crp + segment));
 
 //todo: next line should check for valid pmd properly.
 	if (!pte) {
-<<<<<<< HEAD
-//                printk ("mmu_emu_handle_fault: invalid pmd\n");
-=======
 //                pr_info("mmu_emu_handle_fault: invalid pmd\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 return 0;
         }
 
@@ -542,15 +417,9 @@ int mmu_emu_handle_fault (unsigned long vaddr, int read_flag, int kernel_fault)
 		pte_val (*pte) |= SUN3_PAGE_ACCESSED;
 
 #ifdef DEBUG_MMU_EMU
-<<<<<<< HEAD
-	printk ("seg:%d crp:%p ->", get_fs().seg, crp);
-	print_pte_vaddr (vaddr);
-	printk ("\n");
-=======
 	pr_info("seg:%ld crp:%p ->", get_fs().seg, crp);
 	print_pte_vaddr (vaddr);
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	return 1;

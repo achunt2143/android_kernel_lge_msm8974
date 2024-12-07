@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for RME Hammerfall DSP audio interface(s)
  *
  *      Copyright (c) 2002  Paul Davis
  *                          Marcus Andersson
  *                          Thomas Charbonnel
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -35,12 +14,9 @@
 #include <linux/firmware.h>
 #include <linux/module.h>
 #include <linux/math64.h>
-<<<<<<< HEAD
-=======
 #include <linux/vmalloc.h>
 #include <linux/io.h>
 #include <linux/nospec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/control.h>
@@ -54,10 +30,6 @@
 
 #include <asm/byteorder.h>
 #include <asm/current.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -72,22 +44,11 @@ MODULE_PARM_DESC(enable, "Enable/disable specific Hammerfall DSP soundcards.");
 MODULE_AUTHOR("Paul Davis <paul@linuxaudiosystems.com>, Marcus Andersson, Thomas Charbonnel <thomas@undata.org>");
 MODULE_DESCRIPTION("RME Hammerfall DSP");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{RME Hammerfall-DSP},"
-	        "{RME HDSP-9652},"
-		"{RME HDSP-9632}}");
-#ifdef HDSP_FW_LOADER
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_FIRMWARE("rpm_firmware.bin");
 MODULE_FIRMWARE("multiface_firmware.bin");
 MODULE_FIRMWARE("multiface_firmware_rev11.bin");
 MODULE_FIRMWARE("digiface_firmware.bin");
 MODULE_FIRMWARE("digiface_firmware_rev11.bin");
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HDSP_MAX_CHANNELS        26
 #define HDSP_MAX_DS_CHANNELS     14
@@ -177,12 +138,6 @@ MODULE_FIRMWARE("digiface_firmware_rev11.bin");
 #define HDSP_BIGENDIAN_MODE     0x200
 #define HDSP_RD_MULTIPLE        0x400
 #define HDSP_9652_ENABLE_MIXER  0x800
-<<<<<<< HEAD
-#define HDSP_TDO                0x10000000
-
-#define HDSP_S_PROGRAM     	(HDSP_PROGRAM|HDSP_CONFIG_MODE_0)
-#define HDSP_S_LOAD		(HDSP_PROGRAM|HDSP_CONFIG_MODE_1)
-=======
 #define HDSP_S200		0x800
 #define HDSP_S300		(0x100 | HDSP_S200) /* dummy, purpose of 0x100 unknown */
 #define HDSP_CYCLIC_MODE	0x1000
@@ -190,7 +145,6 @@ MODULE_FIRMWARE("digiface_firmware_rev11.bin");
 
 #define HDSP_S_PROGRAM	    (HDSP_CYCLIC_MODE|HDSP_PROGRAM|HDSP_CONFIG_MODE_0)
 #define HDSP_S_LOAD	    (HDSP_CYCLIC_MODE|HDSP_PROGRAM|HDSP_CONFIG_MODE_1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Control Register bits */
 
@@ -335,11 +289,7 @@ MODULE_FIRMWARE("digiface_firmware_rev11.bin");
 	return 104857600000000 / rate; // 100 MHz
 	return 110100480000000 / rate; // 105 MHz
 */
-<<<<<<< HEAD
-#define DDS_NUMERATOR 104857600000000ULL;  /*  =  2^20 * 10^8 */
-=======
 #define DDS_NUMERATOR 104857600000000ULL  /*  =  2^20 * 10^8 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define hdsp_encode_latency(x)       (((x)<<1) & HDSP_LatencyMask)
 #define hdsp_decode_latency(x)       (((x) & HDSP_LatencyMask)>>1)
@@ -459,16 +409,7 @@ MODULE_FIRMWARE("digiface_firmware_rev11.bin");
 #define HDSP_DMA_AREA_BYTES ((HDSP_MAX_CHANNELS+1) * HDSP_CHANNEL_BUFFER_BYTES)
 #define HDSP_DMA_AREA_KILOBYTES (HDSP_DMA_AREA_BYTES/1024)
 
-<<<<<<< HEAD
-/* use hotplug firmware loader? */
-#if defined(CONFIG_FW_LOADER) || defined(CONFIG_FW_LOADER_MODULE)
-#if !defined(HDSP_USE_HWDEP_LOADER)
-#define HDSP_FW_LOADER
-#endif
-#endif
-=======
 #define HDSP_FIRMWARE_SIZE	(24413 * 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hdsp_9632_meters {
     u32 input_peak[16];
@@ -492,11 +433,7 @@ struct hdsp_midi {
     struct snd_rawmidi           *rmidi;
     struct snd_rawmidi_substream *input;
     struct snd_rawmidi_substream *output;
-<<<<<<< HEAD
-    char                     istimer; /* timer in use */
-=======
     signed char		     istimer; /* timer in use */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct timer_list	     timer;
     spinlock_t               lock;
     int			     pending;
@@ -507,13 +444,8 @@ struct hdsp {
 	struct snd_pcm_substream *capture_substream;
 	struct snd_pcm_substream *playback_substream;
         struct hdsp_midi      midi[2];
-<<<<<<< HEAD
-	struct tasklet_struct midi_tasklet;
-	int		      use_midi_tasklet;
-=======
 	struct work_struct    midi_work;
 	int		      use_midi_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int                   precise_ptr;
 	u32                   control_register;	     /* cached value */
 	u32                   control2_register;     /* cached value */
@@ -524,12 +456,8 @@ struct hdsp {
 	enum HDSP_IO_Type     io_type;               /* ditto, but for code use */
         unsigned short        firmware_rev;
 	unsigned short	      state;		     /* stores state bits */
-<<<<<<< HEAD
-	u32		      firmware_cache[24413]; /* this helps recover from accidental iobox power failure */
-=======
 	const struct firmware *firmware;
 	u32                  *fw_uploaded;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t                period_bytes; 	     /* guess what this is */
 	unsigned char	      max_channels;
 	unsigned char	      qs_in_channels;	     /* quad speed mode for H9632 */
@@ -538,15 +466,11 @@ struct hdsp {
 	unsigned char	      qs_out_channels;
 	unsigned char         ds_out_channels;
 	unsigned char         ss_out_channels;
-<<<<<<< HEAD
-
-=======
 	u32                   io_loopback;          /* output loopback channel states*/
 
 	/* DMA buffers; those are copied instances from the original snd_dma_buf
 	 * objects (which are managed via devres) for the address alignments
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_dma_buffer capture_dma_buf;
 	struct snd_dma_buffer playback_dma_buf;
 	unsigned char        *capture_buffer;	    /* suitably aligned address */
@@ -556,11 +480,7 @@ struct hdsp {
 	pid_t                 playback_pid;
 	int                   running;
 	int                   system_sample_rate;
-<<<<<<< HEAD
-	char                 *channel_map;
-=======
 	const signed char    *channel_map;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int                   dev;
 	int                   irq;
 	unsigned long         port;
@@ -582,20 +502,12 @@ struct hdsp {
    where the data for that channel can be read/written from/to.
 */
 
-<<<<<<< HEAD
-static char channel_map_df_ss[HDSP_MAX_CHANNELS] = {
-=======
 static const signed char channel_map_df_ss[HDSP_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
 	18, 19, 20, 21, 22, 23, 24, 25
 };
 
-<<<<<<< HEAD
-static char channel_map_mf_ss[HDSP_MAX_CHANNELS] = { /* Multiface */
-=======
 static const char channel_map_mf_ss[HDSP_MAX_CHANNELS] = { /* Multiface */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Analog */
 	0, 1, 2, 3, 4, 5, 6, 7,
 	/* ADAT 2 */
@@ -605,11 +517,7 @@ static const char channel_map_mf_ss[HDSP_MAX_CHANNELS] = { /* Multiface */
 	-1, -1, -1, -1, -1, -1, -1, -1
 };
 
-<<<<<<< HEAD
-static char channel_map_ds[HDSP_MAX_CHANNELS] = {
-=======
 static const signed char channel_map_ds[HDSP_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ADAT channels are remapped */
 	1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23,
 	/* channels 12 and 13 are S/PDIF */
@@ -618,11 +526,7 @@ static const signed char channel_map_ds[HDSP_MAX_CHANNELS] = {
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
-<<<<<<< HEAD
-static char channel_map_H9632_ss[HDSP_MAX_CHANNELS] = {
-=======
 static const signed char channel_map_H9632_ss[HDSP_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ADAT channels */
 	0, 1, 2, 3, 4, 5, 6, 7,
 	/* SPDIF */
@@ -636,11 +540,7 @@ static const signed char channel_map_H9632_ss[HDSP_MAX_CHANNELS] = {
 	-1, -1
 };
 
-<<<<<<< HEAD
-static char channel_map_H9632_ds[HDSP_MAX_CHANNELS] = {
-=======
 static const signed char channel_map_H9632_ds[HDSP_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ADAT */
 	1, 3, 5, 7,
 	/* SPDIF */
@@ -654,11 +554,7 @@ static const signed char channel_map_H9632_ds[HDSP_MAX_CHANNELS] = {
 	-1, -1, -1, -1, -1, -1
 };
 
-<<<<<<< HEAD
-static char channel_map_H9632_qs[HDSP_MAX_CHANNELS] = {
-=======
 static const signed char channel_map_H9632_qs[HDSP_MAX_CHANNELS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ADAT is disabled in this mode */
 	/* SPDIF */
 	8, 9,
@@ -672,32 +568,6 @@ static const signed char channel_map_H9632_qs[HDSP_MAX_CHANNELS] = {
 	-1, -1
 };
 
-<<<<<<< HEAD
-static int snd_hammerfall_get_buffer(struct pci_dev *pci, struct snd_dma_buffer *dmab, size_t size)
-{
-	dmab->dev.type = SNDRV_DMA_TYPE_DEV;
-	dmab->dev.dev = snd_dma_pci_data(pci);
-	if (snd_dma_get_reserved_buf(dmab, snd_dma_pci_buf_id(pci))) {
-		if (dmab->bytes >= size)
-			return 0;
-	}
-	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(pci),
-				size, dmab) < 0)
-		return -ENOMEM;
-	return 0;
-}
-
-static void snd_hammerfall_free_buffer(struct snd_dma_buffer *dmab, struct pci_dev *pci)
-{
-	if (dmab->area) {
-		dmab->dev.dev = NULL; /* make it anonymous */
-		snd_dma_reserve_buf(dmab, snd_dma_pci_buf_id(pci));
-	}
-}
-
-
-static DEFINE_PCI_DEVICE_TABLE(snd_hdsp_ids) = {
-=======
 static struct snd_dma_buffer *
 snd_hammerfall_get_buffer(struct pci_dev *pci, size_t size)
 {
@@ -705,7 +575,6 @@ snd_hammerfall_get_buffer(struct pci_dev *pci, size_t size)
 }
 
 static const struct pci_device_id snd_hdsp_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.vendor = PCI_VENDOR_ID_XILINX,
 		.device = PCI_DEVICE_ID_XILINX_HAMMERFALL_DSP,
@@ -776,15 +645,6 @@ static unsigned int hdsp_read(struct hdsp *hdsp, int reg)
 
 static int hdsp_check_for_iobox (struct hdsp *hdsp)
 {
-<<<<<<< HEAD
-	if (hdsp->io_type == H9652 || hdsp->io_type == H9632) return 0;
-	if (hdsp_read (hdsp, HDSP_statusRegister) & HDSP_ConfigError) {
-		snd_printk("Hammerfall-DSP: no IO box connected!\n");
-		hdsp->state &= ~HDSP_FirmwareLoaded;
-		return -EIO;
-	}
-	return 0;
-=======
 	int i;
 
 	if (hdsp->io_type == H9652 || hdsp->io_type == H9632) return 0;
@@ -803,7 +663,6 @@ static int hdsp_check_for_iobox (struct hdsp *hdsp)
 	dev_err(hdsp->card->dev, "no IO box connected!\n");
 	hdsp->state &= ~HDSP_FirmwareLoaded;
 	return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hdsp_wait_for_iobox(struct hdsp *hdsp, unsigned int loops,
@@ -818,21 +677,13 @@ static int hdsp_wait_for_iobox(struct hdsp *hdsp, unsigned int loops,
 		if (hdsp_read(hdsp, HDSP_statusRegister) & HDSP_ConfigError)
 			msleep(delay);
 		else {
-<<<<<<< HEAD
-			snd_printd("Hammerfall-DSP: iobox found after %ums!\n",
-=======
 			dev_dbg(hdsp->card->dev, "iobox found after %ums!\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   i * delay);
 			return 0;
 		}
 	}
 
-<<<<<<< HEAD
-	snd_printk("Hammerfall-DSP: no IO box connected!\n");
-=======
 	dev_info(hdsp->card->dev, "no IO box connected!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdsp->state &= ~HDSP_FirmwareLoaded;
 	return -EIO;
 }
@@ -841,12 +692,6 @@ static int snd_hdsp_load_firmware_from_cache(struct hdsp *hdsp) {
 
 	int i;
 	unsigned long flags;
-<<<<<<< HEAD
-
-	if ((hdsp_read (hdsp, HDSP_statusRegister) & HDSP_DllError) != 0) {
-
-		snd_printk ("Hammerfall-DSP: loading firmware\n");
-=======
 	const u32 *cache;
 
 	if (hdsp->fw_uploaded)
@@ -862,75 +707,45 @@ static int snd_hdsp_load_firmware_from_cache(struct hdsp *hdsp) {
 	if ((hdsp_read (hdsp, HDSP_statusRegister) & HDSP_DllError) != 0) {
 
 		dev_info(hdsp->card->dev, "loading firmware\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hdsp_write (hdsp, HDSP_control2Reg, HDSP_S_PROGRAM);
 		hdsp_write (hdsp, HDSP_fifoData, 0);
 
 		if (hdsp_fifo_wait (hdsp, 0, HDSP_LONG_WAIT)) {
-<<<<<<< HEAD
-			snd_printk ("Hammerfall-DSP: timeout waiting for download preparation\n");
-=======
 			dev_info(hdsp->card->dev,
 				 "timeout waiting for download preparation\n");
 			hdsp_write(hdsp, HDSP_control2Reg, HDSP_S200);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 
 		hdsp_write (hdsp, HDSP_control2Reg, HDSP_S_LOAD);
 
-<<<<<<< HEAD
-		for (i = 0; i < 24413; ++i) {
-			hdsp_write(hdsp, HDSP_fifoData, hdsp->firmware_cache[i]);
-			if (hdsp_fifo_wait (hdsp, 127, HDSP_LONG_WAIT)) {
-				snd_printk ("Hammerfall-DSP: timeout during firmware loading\n");
-=======
 		for (i = 0; i < HDSP_FIRMWARE_SIZE / 4; ++i) {
 			hdsp_write(hdsp, HDSP_fifoData, cache[i]);
 			if (hdsp_fifo_wait (hdsp, 127, HDSP_LONG_WAIT)) {
 				dev_info(hdsp->card->dev,
 					 "timeout during firmware loading\n");
 				hdsp_write(hdsp, HDSP_control2Reg, HDSP_S200);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EIO;
 			}
 		}
 
-<<<<<<< HEAD
-		ssleep(3);
-
-		if (hdsp_fifo_wait (hdsp, 0, HDSP_LONG_WAIT)) {
-			snd_printk ("Hammerfall-DSP: timeout at end of firmware loading\n");
-		    	return -EIO;
-		}
-
-=======
 		hdsp_fifo_wait(hdsp, 3, HDSP_LONG_WAIT);
 		hdsp_write(hdsp, HDSP_control2Reg, HDSP_S200);
 
 		ssleep(3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef SNDRV_BIG_ENDIAN
 		hdsp->control2_register = HDSP_BIGENDIAN_MODE;
 #else
 		hdsp->control2_register = 0;
 #endif
 		hdsp_write (hdsp, HDSP_control2Reg, hdsp->control2_register);
-<<<<<<< HEAD
-		snd_printk ("Hammerfall-DSP: finished firmware loading\n");
-
-	}
-	if (hdsp->state & HDSP_InitializationComplete) {
-		snd_printk(KERN_INFO "Hammerfall-DSP: firmware loaded from cache, restoring defaults\n");
-=======
 		dev_info(hdsp->card->dev, "finished firmware loading\n");
 
 	}
 	if (hdsp->state & HDSP_InitializationComplete) {
 		dev_info(hdsp->card->dev,
 			 "firmware loaded from cache, restoring defaults\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&hdsp->lock, flags);
 		snd_hdsp_set_defaults(hdsp);
 		spin_unlock_irqrestore(&hdsp->lock, flags);
@@ -945,26 +760,6 @@ static int hdsp_get_iobox_version (struct hdsp *hdsp)
 {
 	if ((hdsp_read (hdsp, HDSP_statusRegister) & HDSP_DllError) != 0) {
 
-<<<<<<< HEAD
-		hdsp_write (hdsp, HDSP_control2Reg, HDSP_PROGRAM);
-		hdsp_write (hdsp, HDSP_fifoData, 0);
-		if (hdsp_fifo_wait (hdsp, 0, HDSP_SHORT_WAIT) < 0)
-			return -EIO;
-
-		hdsp_write (hdsp, HDSP_control2Reg, HDSP_S_LOAD);
-		hdsp_write (hdsp, HDSP_fifoData, 0);
-
-		if (hdsp_fifo_wait(hdsp, 0, HDSP_SHORT_WAIT)) {
-			hdsp_write(hdsp, HDSP_control2Reg, HDSP_VERSION_BIT);
-			hdsp_write(hdsp, HDSP_control2Reg, HDSP_S_LOAD);
-			if (hdsp_fifo_wait(hdsp, 0, HDSP_SHORT_WAIT))
-				hdsp->io_type = RPM;
-			else
-				hdsp->io_type = Multiface;
-		} else {
-			hdsp->io_type = Digiface;
-		}
-=======
 		hdsp_write(hdsp, HDSP_control2Reg, HDSP_S_LOAD);
 		hdsp_write(hdsp, HDSP_fifoData, 0);
 
@@ -1001,7 +796,6 @@ static int hdsp_get_iobox_version (struct hdsp *hdsp)
 		hdsp->io_type = RPM;
 		dev_info(hdsp->card->dev, "RPM found\n");
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* firmware was already loaded, get iobox type */
 		if (hdsp_read(hdsp, HDSP_status2Register) & HDSP_version2)
@@ -1012,14 +806,6 @@ static int hdsp_get_iobox_version (struct hdsp *hdsp)
 			hdsp->io_type = Digiface;
 	}
 	return 0;
-<<<<<<< HEAD
-}
-
-
-#ifdef HDSP_FW_LOADER
-static int hdsp_request_fw_loader(struct hdsp *hdsp);
-#endif
-=======
 
 set_multi:
 	hdsp->io_type = Multiface;
@@ -1029,7 +815,6 @@ set_multi:
 
 
 static int hdsp_request_fw_loader(struct hdsp *hdsp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int hdsp_check_for_firmware (struct hdsp *hdsp, int load_on_demand)
 {
@@ -1039,24 +824,6 @@ static int hdsp_check_for_firmware (struct hdsp *hdsp, int load_on_demand)
 		hdsp->state &= ~HDSP_FirmwareLoaded;
 		if (! load_on_demand)
 			return -EIO;
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "Hammerfall-DSP: firmware not present.\n");
-		/* try to load firmware */
-		if (! (hdsp->state & HDSP_FirmwareCached)) {
-#ifdef HDSP_FW_LOADER
-			if (! hdsp_request_fw_loader(hdsp))
-				return 0;
-#endif
-			snd_printk(KERN_ERR
-				   "Hammerfall-DSP: No firmware loaded nor "
-				   "cached, please upload firmware.\n");
-			return -EIO;
-		}
-		if (snd_hdsp_load_firmware_from_cache(hdsp) != 0) {
-			snd_printk(KERN_ERR
-				   "Hammerfall-DSP: Firmware loading from "
-				   "cache failed, please upload manually.\n");
-=======
 		dev_err(hdsp->card->dev, "firmware not present.\n");
 		/* try to load firmware */
 		if (! (hdsp->state & HDSP_FirmwareCached)) {
@@ -1069,7 +836,6 @@ static int hdsp_check_for_firmware (struct hdsp *hdsp, int load_on_demand)
 		if (snd_hdsp_load_firmware_from_cache(hdsp) != 0) {
 			dev_err(hdsp->card->dev,
 				   "Firmware loading from cache failed, please upload manually.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 	}
@@ -1097,12 +863,8 @@ static int hdsp_fifo_wait(struct hdsp *hdsp, int count, int timeout)
 		udelay (100);
 	}
 
-<<<<<<< HEAD
-	snd_printk ("Hammerfall-DSP: wait for FIFO status <= %d failed after %d iterations\n",
-=======
 	dev_warn(hdsp->card->dev,
 		 "wait for FIFO status <= %d failed after %d iterations\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    count, timeout);
 	return -1;
 }
@@ -1219,13 +981,9 @@ static int hdsp_spdif_sample_rate(struct hdsp *hdsp)
 	default:
 		break;
 	}
-<<<<<<< HEAD
-	snd_printk ("Hammerfall-DSP: unknown spdif frequency status; bits = 0x%x, status = 0x%x\n", rate_bits, status);
-=======
 	dev_warn(hdsp->card->dev,
 		 "unknown spdif frequency status; bits = 0x%x, status = 0x%x\n",
 		 rate_bits, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1359,12 +1117,8 @@ static int hdsp_set_rate(struct hdsp *hdsp, int rate, int called_internally)
 	if (!(hdsp->control_register & HDSP_ClockModeMaster)) {
 		if (called_internally) {
 			/* request from ctl or card initialization */
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "Hammerfall-DSP: device is not running as a clock master: cannot set sample rate.\n");
-=======
 			dev_err(hdsp->card->dev,
 				"device is not running as a clock master: cannot set sample rate.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 		} else {
 			/* hw_param request while in AutoSync mode */
@@ -1372,13 +1126,6 @@ static int hdsp_set_rate(struct hdsp *hdsp, int rate, int called_internally)
 			int spdif_freq = hdsp_spdif_sample_rate(hdsp);
 
 			if ((spdif_freq == external_freq*2) && (hdsp_autosync_ref(hdsp) >= HDSP_AUTOSYNC_FROM_ADAT1))
-<<<<<<< HEAD
-				snd_printk(KERN_INFO "Hammerfall-DSP: Detected ADAT in double speed mode\n");
-			else if (hdsp->io_type == H9632 && (spdif_freq == external_freq*4) && (hdsp_autosync_ref(hdsp) >= HDSP_AUTOSYNC_FROM_ADAT1))
-				snd_printk(KERN_INFO "Hammerfall-DSP: Detected ADAT in quad speed mode\n");
-			else if (rate != external_freq) {
-				snd_printk(KERN_INFO "Hammerfall-DSP: No AutoSync source for requested rate\n");
-=======
 				dev_info(hdsp->card->dev,
 					 "Detected ADAT in double speed mode\n");
 			else if (hdsp->io_type == H9632 && (spdif_freq == external_freq*4) && (hdsp_autosync_ref(hdsp) >= HDSP_AUTOSYNC_FROM_ADAT1))
@@ -1387,7 +1134,6 @@ static int hdsp_set_rate(struct hdsp *hdsp, int rate, int called_internally)
 			else if (rate != external_freq) {
 				dev_info(hdsp->card->dev,
 					 "No AutoSync source for requested rate\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -1;
 			}
 		}
@@ -1459,12 +1205,8 @@ static int hdsp_set_rate(struct hdsp *hdsp, int rate, int called_internally)
 	}
 
 	if (reject_if_open && (hdsp->capture_pid >= 0 || hdsp->playback_pid >= 0)) {
-<<<<<<< HEAD
-		snd_printk ("Hammerfall-DSP: cannot change speed mode (capture PID = %d, playback PID = %d)\n",
-=======
 		dev_warn(hdsp->card->dev,
 			 "cannot change speed mode (capture PID = %d, playback PID = %d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    hdsp->capture_pid,
 			    hdsp->playback_pid);
 		return -EBUSY;
@@ -1573,13 +1315,6 @@ static int snd_hdsp_midi_output_write (struct hdsp_midi *hmidi)
 	spin_lock_irqsave (&hmidi->lock, flags);
 	if (hmidi->output) {
 		if (!snd_rawmidi_transmit_empty (hmidi->output)) {
-<<<<<<< HEAD
-			if ((n_pending = snd_hdsp_midi_output_possible (hmidi->hdsp, hmidi->id)) > 0) {
-				if (n_pending > (int)sizeof (buf))
-					n_pending = sizeof (buf);
-
-				if ((to_write = snd_rawmidi_transmit (hmidi->output, buf, n_pending)) > 0) {
-=======
 			n_pending = snd_hdsp_midi_output_possible(hmidi->hdsp, hmidi->id);
 			if (n_pending > 0) {
 				if (n_pending > (int)sizeof (buf))
@@ -1587,7 +1322,6 @@ static int snd_hdsp_midi_output_write (struct hdsp_midi *hmidi)
 
 				to_write = snd_rawmidi_transmit(hmidi->output, buf, n_pending);
 				if (to_write > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					for (i = 0; i < to_write; ++i)
 						snd_hdsp_midi_write_byte (hmidi->hdsp, hmidi->id, buf[i]);
 				}
@@ -1606,12 +1340,8 @@ static int snd_hdsp_midi_input_read (struct hdsp_midi *hmidi)
 	int i;
 
 	spin_lock_irqsave (&hmidi->lock, flags);
-<<<<<<< HEAD
-	if ((n_pending = snd_hdsp_midi_input_available (hmidi->hdsp, hmidi->id)) > 0) {
-=======
 	n_pending = snd_hdsp_midi_input_available(hmidi->hdsp, hmidi->id);
 	if (n_pending > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (hmidi->input) {
 			if (n_pending > (int)sizeof (buf))
 				n_pending = sizeof (buf);
@@ -1653,25 +1383,15 @@ static void snd_hdsp_midi_input_trigger(struct snd_rawmidi_substream *substream,
 		}
 	} else {
 		hdsp->control_register &= ~ie;
-<<<<<<< HEAD
-		tasklet_kill(&hdsp->midi_tasklet);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hdsp_write(hdsp, HDSP_controlRegister, hdsp->control_register);
 	spin_unlock_irqrestore (&hdsp->lock, flags);
 }
 
-<<<<<<< HEAD
-static void snd_hdsp_midi_output_timer(unsigned long data)
-{
-	struct hdsp_midi *hmidi = (struct hdsp_midi *) data;
-=======
 static void snd_hdsp_midi_output_timer(struct timer_list *t)
 {
 	struct hdsp_midi *hmidi = from_timer(hmidi, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	snd_hdsp_midi_output_write(hmidi);
@@ -1683,15 +1403,8 @@ static void snd_hdsp_midi_output_timer(struct timer_list *t)
 	   leaving istimer wherever it was set before.
 	*/
 
-<<<<<<< HEAD
-	if (hmidi->istimer) {
-		hmidi->timer.expires = 1 + jiffies;
-		add_timer(&hmidi->timer);
-	}
-=======
 	if (hmidi->istimer)
 		mod_timer(&hmidi->timer, 1 + jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore (&hmidi->lock, flags);
 }
@@ -1705,17 +1418,9 @@ static void snd_hdsp_midi_output_trigger(struct snd_rawmidi_substream *substream
 	spin_lock_irqsave (&hmidi->lock, flags);
 	if (up) {
 		if (!hmidi->istimer) {
-<<<<<<< HEAD
-			init_timer(&hmidi->timer);
-			hmidi->timer.function = snd_hdsp_midi_output_timer;
-			hmidi->timer.data = (unsigned long) hmidi;
-			hmidi->timer.expires = 1 + jiffies;
-			add_timer(&hmidi->timer);
-=======
 			timer_setup(&hmidi->timer, snd_hdsp_midi_output_timer,
 				    0);
 			mod_timer(&hmidi->timer, 1 + jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hmidi->istimer++;
 		}
 	} else {
@@ -1780,22 +1485,14 @@ static int snd_hdsp_midi_output_close(struct snd_rawmidi_substream *substream)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_hdsp_midi_output =
-=======
 static const struct snd_rawmidi_ops snd_hdsp_midi_output =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_hdsp_midi_output_open,
 	.close =	snd_hdsp_midi_output_close,
 	.trigger =	snd_hdsp_midi_output_trigger,
 };
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_hdsp_midi_input =
-=======
 static const struct snd_rawmidi_ops snd_hdsp_midi_input =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_hdsp_midi_input_open,
 	.close =	snd_hdsp_midi_input_close,
@@ -1804,11 +1501,7 @@ static const struct snd_rawmidi_ops snd_hdsp_midi_input =
 
 static int snd_hdsp_create_midi (struct snd_card *card, struct hdsp *hdsp, int id)
 {
-<<<<<<< HEAD
-	char buf[32];
-=======
 	char buf[40];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdsp->midi[id].id = id;
 	hdsp->midi[id].rmidi = NULL;
@@ -1819,11 +1512,7 @@ static int snd_hdsp_create_midi (struct snd_card *card, struct hdsp *hdsp, int i
 	hdsp->midi[id].pending = 0;
 	spin_lock_init (&hdsp->midi[id].lock);
 
-<<<<<<< HEAD
-	sprintf (buf, "%s MIDI %d", card->shortname, id+1);
-=======
 	snprintf(buf, sizeof(buf), "%s MIDI %d", card->shortname, id + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (snd_rawmidi_new (card, buf, id, 1, 1, &hdsp->midi[id].rmidi) < 0)
 		return -1;
 
@@ -1962,18 +1651,6 @@ static int hdsp_set_spdif_input(struct hdsp *hdsp, int in)
 
 static int snd_hdsp_info_spdif_in(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[4] = {"Optical", "Coaxial", "Internal", "AES"};
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = ((hdsp->io_type == H9632) ? 4 : 3);
-	if (uinfo->value.enumerated.item > ((hdsp->io_type == H9632) ? 3 : 2))
-		uinfo->value.enumerated.item = ((hdsp->io_type == H9632) ? 3 : 2);
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[4] = {
 		"Optical", "Coaxial", "Internal", "AES"
 	};
@@ -1981,7 +1658,6 @@ static int snd_hdsp_info_spdif_in(struct snd_kcontrol *kcontrol, struct snd_ctl_
 
 	return snd_ctl_enum_info(uinfo, 1, (hdsp->io_type == H9632) ? 4 : 3,
 				 texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdsp_get_spdif_in(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2009,85 +1685,6 @@ static int snd_hdsp_put_spdif_in(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 	return change;
 }
 
-<<<<<<< HEAD
-#define HDSP_SPDIF_OUT(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, .index = xindex, \
-  .info = snd_hdsp_info_spdif_bits, \
-  .get = snd_hdsp_get_spdif_out, .put = snd_hdsp_put_spdif_out }
-
-static int hdsp_spdif_out(struct hdsp *hdsp)
-{
-	return (hdsp->control_register & HDSP_SPDIFOpticalOut) ? 1 : 0;
-}
-
-static int hdsp_set_spdif_output(struct hdsp *hdsp, int out)
-{
-	if (out)
-		hdsp->control_register |= HDSP_SPDIFOpticalOut;
-	else
-		hdsp->control_register &= ~HDSP_SPDIFOpticalOut;
-	hdsp_write(hdsp, HDSP_controlRegister, hdsp->control_register);
-	return 0;
-}
-
-#define snd_hdsp_info_spdif_bits	snd_ctl_boolean_mono_info
-
-static int snd_hdsp_get_spdif_out(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-
-	ucontrol->value.integer.value[0] = hdsp_spdif_out(hdsp);
-	return 0;
-}
-
-static int snd_hdsp_put_spdif_out(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-	int change;
-	unsigned int val;
-
-	if (!snd_hdsp_use_is_exclusive(hdsp))
-		return -EBUSY;
-	val = ucontrol->value.integer.value[0] & 1;
-	spin_lock_irq(&hdsp->lock);
-	change = (int)val != hdsp_spdif_out(hdsp);
-	hdsp_set_spdif_output(hdsp, val);
-	spin_unlock_irq(&hdsp->lock);
-	return change;
-}
-
-#define HDSP_SPDIF_PROFESSIONAL(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, .index = xindex, \
-  .info = snd_hdsp_info_spdif_bits, \
-  .get = snd_hdsp_get_spdif_professional, .put = snd_hdsp_put_spdif_professional }
-
-static int hdsp_spdif_professional(struct hdsp *hdsp)
-{
-	return (hdsp->control_register & HDSP_SPDIFProfessional) ? 1 : 0;
-}
-
-static int hdsp_set_spdif_professional(struct hdsp *hdsp, int val)
-{
-	if (val)
-		hdsp->control_register |= HDSP_SPDIFProfessional;
-	else
-		hdsp->control_register &= ~HDSP_SPDIFProfessional;
-	hdsp_write(hdsp, HDSP_controlRegister, hdsp->control_register);
-	return 0;
-}
-
-static int snd_hdsp_get_spdif_professional(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-
-	ucontrol->value.integer.value[0] = hdsp_spdif_professional(hdsp);
-	return 0;
-}
-
-static int snd_hdsp_put_spdif_professional(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-=======
 #define HDSP_TOGGLE_SETTING(xname, xindex) \
 {   .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
 	.name = xname, \
@@ -2132,7 +1729,6 @@ static int snd_hdsp_put_toggle_setting(struct snd_kcontrol *kcontrol,
 {
 	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
 	u32 regmask = kcontrol->private_value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int change;
 	unsigned int val;
 
@@ -2140,102 +1736,9 @@ static int snd_hdsp_put_toggle_setting(struct snd_kcontrol *kcontrol,
 		return -EBUSY;
 	val = ucontrol->value.integer.value[0] & 1;
 	spin_lock_irq(&hdsp->lock);
-<<<<<<< HEAD
-	change = (int)val != hdsp_spdif_professional(hdsp);
-	hdsp_set_spdif_professional(hdsp, val);
-	spin_unlock_irq(&hdsp->lock);
-	return change;
-}
-
-#define HDSP_SPDIF_EMPHASIS(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, .index = xindex, \
-  .info = snd_hdsp_info_spdif_bits, \
-  .get = snd_hdsp_get_spdif_emphasis, .put = snd_hdsp_put_spdif_emphasis }
-
-static int hdsp_spdif_emphasis(struct hdsp *hdsp)
-{
-	return (hdsp->control_register & HDSP_SPDIFEmphasis) ? 1 : 0;
-}
-
-static int hdsp_set_spdif_emphasis(struct hdsp *hdsp, int val)
-{
-	if (val)
-		hdsp->control_register |= HDSP_SPDIFEmphasis;
-	else
-		hdsp->control_register &= ~HDSP_SPDIFEmphasis;
-	hdsp_write(hdsp, HDSP_controlRegister, hdsp->control_register);
-	return 0;
-}
-
-static int snd_hdsp_get_spdif_emphasis(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-
-	ucontrol->value.integer.value[0] = hdsp_spdif_emphasis(hdsp);
-	return 0;
-}
-
-static int snd_hdsp_put_spdif_emphasis(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-	int change;
-	unsigned int val;
-
-	if (!snd_hdsp_use_is_exclusive(hdsp))
-		return -EBUSY;
-	val = ucontrol->value.integer.value[0] & 1;
-	spin_lock_irq(&hdsp->lock);
-	change = (int)val != hdsp_spdif_emphasis(hdsp);
-	hdsp_set_spdif_emphasis(hdsp, val);
-	spin_unlock_irq(&hdsp->lock);
-	return change;
-}
-
-#define HDSP_SPDIF_NON_AUDIO(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, .index = xindex, \
-  .info = snd_hdsp_info_spdif_bits, \
-  .get = snd_hdsp_get_spdif_nonaudio, .put = snd_hdsp_put_spdif_nonaudio }
-
-static int hdsp_spdif_nonaudio(struct hdsp *hdsp)
-{
-	return (hdsp->control_register & HDSP_SPDIFNonAudio) ? 1 : 0;
-}
-
-static int hdsp_set_spdif_nonaudio(struct hdsp *hdsp, int val)
-{
-	if (val)
-		hdsp->control_register |= HDSP_SPDIFNonAudio;
-	else
-		hdsp->control_register &= ~HDSP_SPDIFNonAudio;
-	hdsp_write(hdsp, HDSP_controlRegister, hdsp->control_register);
-	return 0;
-}
-
-static int snd_hdsp_get_spdif_nonaudio(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-
-	ucontrol->value.integer.value[0] = hdsp_spdif_nonaudio(hdsp);
-	return 0;
-}
-
-static int snd_hdsp_put_spdif_nonaudio(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-	int change;
-	unsigned int val;
-
-	if (!snd_hdsp_use_is_exclusive(hdsp))
-		return -EBUSY;
-	val = ucontrol->value.integer.value[0] & 1;
-	spin_lock_irq(&hdsp->lock);
-	change = (int)val != hdsp_spdif_nonaudio(hdsp);
-	hdsp_set_spdif_nonaudio(hdsp, val);
-=======
 	change = (int) val != hdsp_toggle_setting(hdsp, regmask);
 	if (change)
 		hdsp_set_toggle_setting(hdsp, regmask, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&hdsp->lock);
 	return change;
 }
@@ -2251,18 +1754,6 @@ static int snd_hdsp_put_spdif_nonaudio(struct snd_kcontrol *kcontrol, struct snd
 
 static int snd_hdsp_info_spdif_sample_rate(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = {"32000", "44100", "48000", "64000", "88200", "96000", "None", "128000", "176400", "192000"};
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = (hdsp->io_type == H9632) ? 10 : 7;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = {
 		"32000", "44100", "48000", "64000", "88200", "96000",
 		"None", "128000", "176400", "192000"
@@ -2271,7 +1762,6 @@ static int snd_hdsp_info_spdif_sample_rate(struct snd_kcontrol *kcontrol, struct
 
 	return snd_ctl_enum_info(uinfo, 1, (hdsp->io_type == H9632) ? 10 : 7,
 				 texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdsp_get_spdif_sample_rate(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2348,16 +1838,6 @@ static int snd_hdsp_get_system_sample_rate(struct snd_kcontrol *kcontrol, struct
 static int snd_hdsp_info_autosync_sample_rate(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
 	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-<<<<<<< HEAD
-	static char *texts[] = {"32000", "44100", "48000", "64000", "88200", "96000", "None", "128000", "176400", "192000"};
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = (hdsp->io_type == H9632) ? 10 : 7 ;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = {
 		"32000", "44100", "48000", "64000", "88200", "96000",
 		"None", "128000", "176400", "192000"
@@ -2365,7 +1845,6 @@ static int snd_hdsp_info_autosync_sample_rate(struct snd_kcontrol *kcontrol, str
 
 	return snd_ctl_enum_info(uinfo, 1, (hdsp->io_type == H9632) ? 10 : 7,
 				 texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdsp_get_autosync_sample_rate(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2426,21 +1905,9 @@ static int hdsp_system_clock_mode(struct hdsp *hdsp)
 
 static int snd_hdsp_info_system_clock_mode(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = {"Master", "Slave" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 2;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = {"Master", "Slave" };
 
 	return snd_ctl_enum_info(uinfo, 1, 2, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdsp_get_system_clock_mode(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2541,21 +2008,6 @@ static int hdsp_set_clock_source(struct hdsp *hdsp, int mode)
 
 static int snd_hdsp_info_clock_source(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = {"AutoSync", "Internal 32.0 kHz", "Internal 44.1 kHz", "Internal 48.0 kHz", "Internal 64.0 kHz", "Internal 88.2 kHz", "Internal 96.0 kHz", "Internal 128 kHz", "Internal 176.4 kHz", "Internal 192.0 KHz" };
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	if (hdsp->io_type == H9632)
-	    uinfo->value.enumerated.items = 10;
-	else
-	    uinfo->value.enumerated.items = 7;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = {
 		"AutoSync", "Internal 32.0 kHz", "Internal 44.1 kHz",
 		"Internal 48.0 kHz", "Internal 64.0 kHz", "Internal 88.2 kHz",
@@ -2566,7 +2018,6 @@ static int snd_hdsp_info_clock_source(struct snd_kcontrol *kcontrol, struct snd_
 
 	return snd_ctl_enum_info(uinfo, 1, (hdsp->io_type == H9632) ? 10 : 7,
 				 texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdsp_get_clock_source(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2670,21 +2121,9 @@ static int hdsp_set_da_gain(struct hdsp *hdsp, int mode)
 
 static int snd_hdsp_info_da_gain(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = {"Hi Gain", "+4 dBu", "-10 dbV"};
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = {"Hi Gain", "+4 dBu", "-10 dbV"};
 
 	return snd_ctl_enum_info(uinfo, 1, 3, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdsp_get_da_gain(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2761,21 +2200,9 @@ static int hdsp_set_ad_gain(struct hdsp *hdsp, int mode)
 
 static int snd_hdsp_info_ad_gain(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = {"-10 dBV", "+4 dBu", "Lo Gain"};
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = {"-10 dBV", "+4 dBu", "Lo Gain"};
 
 	return snd_ctl_enum_info(uinfo, 1, 3, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdsp_get_ad_gain(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2852,21 +2279,9 @@ static int hdsp_set_phone_gain(struct hdsp *hdsp, int mode)
 
 static int snd_hdsp_info_phone_gain(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = {"0 dB", "-6 dB", "-12 dB"};
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = {"0 dB", "-6 dB", "-12 dB"};
 
 	return snd_ctl_enum_info(uinfo, 1, 3, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdsp_get_phone_gain(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2897,117 +2312,6 @@ static int snd_hdsp_put_phone_gain(struct snd_kcontrol *kcontrol, struct snd_ctl
 	return change;
 }
 
-<<<<<<< HEAD
-#define HDSP_XLR_BREAKOUT_CABLE(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdsp_info_xlr_breakout_cable, \
-  .get = snd_hdsp_get_xlr_breakout_cable, \
-  .put = snd_hdsp_put_xlr_breakout_cable \
-}
-
-static int hdsp_xlr_breakout_cable(struct hdsp *hdsp)
-{
-	if (hdsp->control_register & HDSP_XLRBreakoutCable)
-		return 1;
-	return 0;
-}
-
-static int hdsp_set_xlr_breakout_cable(struct hdsp *hdsp, int mode)
-{
-	if (mode)
-		hdsp->control_register |= HDSP_XLRBreakoutCable;
-	else
-		hdsp->control_register &= ~HDSP_XLRBreakoutCable;
-	hdsp_write(hdsp, HDSP_controlRegister, hdsp->control_register);
-	return 0;
-}
-
-#define snd_hdsp_info_xlr_breakout_cable	snd_ctl_boolean_mono_info
-
-static int snd_hdsp_get_xlr_breakout_cable(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-
-	ucontrol->value.enumerated.item[0] = hdsp_xlr_breakout_cable(hdsp);
-	return 0;
-}
-
-static int snd_hdsp_put_xlr_breakout_cable(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-	int change;
-	int val;
-
-	if (!snd_hdsp_use_is_exclusive(hdsp))
-		return -EBUSY;
-	val = ucontrol->value.integer.value[0] & 1;
-	spin_lock_irq(&hdsp->lock);
-	change = (int)val != hdsp_xlr_breakout_cable(hdsp);
-	hdsp_set_xlr_breakout_cable(hdsp, val);
-	spin_unlock_irq(&hdsp->lock);
-	return change;
-}
-
-/* (De)activates old RME Analog Extension Board
-   These are connected to the internal ADAT connector
-   Switching this on desactivates external ADAT
-*/
-#define HDSP_AEB(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdsp_info_aeb, \
-  .get = snd_hdsp_get_aeb, \
-  .put = snd_hdsp_put_aeb \
-}
-
-static int hdsp_aeb(struct hdsp *hdsp)
-{
-	if (hdsp->control_register & HDSP_AnalogExtensionBoard)
-		return 1;
-	return 0;
-}
-
-static int hdsp_set_aeb(struct hdsp *hdsp, int mode)
-{
-	if (mode)
-		hdsp->control_register |= HDSP_AnalogExtensionBoard;
-	else
-		hdsp->control_register &= ~HDSP_AnalogExtensionBoard;
-	hdsp_write(hdsp, HDSP_controlRegister, hdsp->control_register);
-	return 0;
-}
-
-#define snd_hdsp_info_aeb		snd_ctl_boolean_mono_info
-
-static int snd_hdsp_get_aeb(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-
-	ucontrol->value.enumerated.item[0] = hdsp_aeb(hdsp);
-	return 0;
-}
-
-static int snd_hdsp_put_aeb(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-	int change;
-	int val;
-
-	if (!snd_hdsp_use_is_exclusive(hdsp))
-		return -EBUSY;
-	val = ucontrol->value.integer.value[0] & 1;
-	spin_lock_irq(&hdsp->lock);
-	change = (int)val != hdsp_aeb(hdsp);
-	hdsp_set_aeb(hdsp, val);
-	spin_unlock_irq(&hdsp->lock);
-	return change;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HDSP_PREF_SYNC_REF(xname, xindex) \
 { .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
   .name = xname, \
@@ -3073,32 +2377,15 @@ static int hdsp_set_pref_sync_ref(struct hdsp *hdsp, int pref)
 
 static int snd_hdsp_info_pref_sync_ref(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = {"Word", "IEC958", "ADAT1", "ADAT Sync", "ADAT2", "ADAT3" };
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-=======
 	static const char * const texts[] = {
 		"Word", "IEC958", "ADAT1", "ADAT Sync", "ADAT2", "ADAT3"
 	};
 	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
 	int num_items;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hdsp->io_type) {
 	case Digiface:
 	case H9652:
-<<<<<<< HEAD
-		uinfo->value.enumerated.items = 6;
-		break;
-	case Multiface:
-		uinfo->value.enumerated.items = 4;
-		break;
-	case H9632:
-		uinfo->value.enumerated.items = 3;
-=======
 		num_items = 6;
 		break;
 	case Multiface:
@@ -3106,20 +2393,12 @@ static int snd_hdsp_info_pref_sync_ref(struct snd_kcontrol *kcontrol, struct snd
 		break;
 	case H9632:
 		num_items = 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	return snd_ctl_enum_info(uinfo, 1, num_items, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdsp_get_pref_sync_ref(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -3199,23 +2478,11 @@ static int hdsp_autosync_ref(struct hdsp *hdsp)
 
 static int snd_hdsp_info_autosync_ref(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = {"Word", "ADAT Sync", "IEC958", "None", "ADAT1", "ADAT2", "ADAT3" };
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 7;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = {
 		"Word", "ADAT Sync", "IEC958", "None", "ADAT1", "ADAT2", "ADAT3"
 	};
 
 	return snd_ctl_enum_info(uinfo, 1, 7, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdsp_get_autosync_ref(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -3226,61 +2493,6 @@ static int snd_hdsp_get_autosync_ref(struct snd_kcontrol *kcontrol, struct snd_c
 	return 0;
 }
 
-<<<<<<< HEAD
-#define HDSP_LINE_OUT(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdsp_info_line_out, \
-  .get = snd_hdsp_get_line_out, \
-  .put = snd_hdsp_put_line_out \
-}
-
-static int hdsp_line_out(struct hdsp *hdsp)
-{
-	return (hdsp->control_register & HDSP_LineOut) ? 1 : 0;
-}
-
-static int hdsp_set_line_output(struct hdsp *hdsp, int out)
-{
-	if (out)
-		hdsp->control_register |= HDSP_LineOut;
-	else
-		hdsp->control_register &= ~HDSP_LineOut;
-	hdsp_write(hdsp, HDSP_controlRegister, hdsp->control_register);
-	return 0;
-}
-
-#define snd_hdsp_info_line_out		snd_ctl_boolean_mono_info
-
-static int snd_hdsp_get_line_out(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-
-	spin_lock_irq(&hdsp->lock);
-	ucontrol->value.integer.value[0] = hdsp_line_out(hdsp);
-	spin_unlock_irq(&hdsp->lock);
-	return 0;
-}
-
-static int snd_hdsp_put_line_out(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
-	int change;
-	unsigned int val;
-
-	if (!snd_hdsp_use_is_exclusive(hdsp))
-		return -EBUSY;
-	val = ucontrol->value.integer.value[0] & 1;
-	spin_lock_irq(&hdsp->lock);
-	change = (int)val != hdsp_line_out(hdsp);
-	hdsp_set_line_output(hdsp, val);
-	spin_unlock_irq(&hdsp->lock);
-	return change;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HDSP_PRECISE_POINTER(xname, xindex) \
 { .iface = SNDRV_CTL_ELEM_IFACE_CARD, \
   .name = xname, \
@@ -3327,29 +2539,6 @@ static int snd_hdsp_put_precise_pointer(struct snd_kcontrol *kcontrol, struct sn
 	return change;
 }
 
-<<<<<<< HEAD
-#define HDSP_USE_MIDI_TASKLET(xname, xindex) \
-{ .iface = SNDRV_CTL_ELEM_IFACE_CARD, \
-  .name = xname, \
-  .index = xindex, \
-  .info = snd_hdsp_info_use_midi_tasklet, \
-  .get = snd_hdsp_get_use_midi_tasklet, \
-  .put = snd_hdsp_put_use_midi_tasklet \
-}
-
-static int hdsp_set_use_midi_tasklet(struct hdsp *hdsp, int use_tasklet)
-{
-	if (use_tasklet)
-		hdsp->use_midi_tasklet = 1;
-	else
-		hdsp->use_midi_tasklet = 0;
-	return 0;
-}
-
-#define snd_hdsp_info_use_midi_tasklet		snd_ctl_boolean_mono_info
-
-static int snd_hdsp_get_use_midi_tasklet(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-=======
 #define HDSP_USE_MIDI_WORK(xname, xindex) \
 { .iface = SNDRV_CTL_ELEM_IFACE_CARD, \
   .name = xname, \
@@ -3371,25 +2560,16 @@ static int hdsp_set_use_midi_work(struct hdsp *hdsp, int use_work)
 #define snd_hdsp_info_use_midi_work		snd_ctl_boolean_mono_info
 
 static int snd_hdsp_get_use_midi_work(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
 
 	spin_lock_irq(&hdsp->lock);
-<<<<<<< HEAD
-	ucontrol->value.integer.value[0] = hdsp->use_midi_tasklet;
-=======
 	ucontrol->value.integer.value[0] = hdsp->use_midi_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&hdsp->lock);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_hdsp_put_use_midi_tasklet(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-=======
 static int snd_hdsp_put_use_midi_work(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
 	int change;
@@ -3399,13 +2579,8 @@ static int snd_hdsp_put_use_midi_work(struct snd_kcontrol *kcontrol, struct snd_
 		return -EBUSY;
 	val = ucontrol->value.integer.value[0] & 1;
 	spin_lock_irq(&hdsp->lock);
-<<<<<<< HEAD
-	change = (int)val != hdsp->use_midi_tasklet;
-	hdsp_set_use_midi_tasklet(hdsp, val);
-=======
 	change = (int)val != hdsp->use_midi_work;
 	hdsp_set_use_midi_work(hdsp, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&hdsp->lock);
 	return change;
 }
@@ -3494,20 +2669,9 @@ static int snd_hdsp_put_mixer(struct snd_kcontrol *kcontrol, struct snd_ctl_elem
 
 static int snd_hdsp_info_sync_check(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = {"No Lock", "Lock", "Sync" };
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = {"No Lock", "Lock", "Sync" };
 
 	return snd_ctl_enum_info(uinfo, 1, 3, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hdsp_wc_sync_check(struct hdsp *hdsp)
@@ -3617,12 +2781,8 @@ static int snd_hdsp_get_adat_sync_check(struct snd_kcontrol *kcontrol, struct sn
 	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
 
 	offset = ucontrol->id.index - 1;
-<<<<<<< HEAD
-	snd_BUG_ON(offset < 0);
-=======
 	if (snd_BUG_ON(offset < 0))
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hdsp->io_type) {
 	case Digiface:
@@ -3694,11 +2854,7 @@ static int snd_hdsp_get_dds_offset(struct snd_kcontrol *kcontrol, struct snd_ctl
 {
 	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
 
-<<<<<<< HEAD
-	ucontrol->value.enumerated.item[0] = hdsp_dds_offset(hdsp);
-=======
 	ucontrol->value.integer.value[0] = hdsp_dds_offset(hdsp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3710,11 +2866,7 @@ static int snd_hdsp_put_dds_offset(struct snd_kcontrol *kcontrol, struct snd_ctl
 
 	if (!snd_hdsp_use_is_exclusive(hdsp))
 		return -EBUSY;
-<<<<<<< HEAD
-	val = ucontrol->value.enumerated.item[0];
-=======
 	val = ucontrol->value.integer.value[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&hdsp->lock);
 	if (val != hdsp_dds_offset(hdsp))
 		change = (hdsp_set_dds_offset(hdsp, val) == 0) ? 1 : 0;
@@ -3724,17 +2876,6 @@ static int snd_hdsp_put_dds_offset(struct snd_kcontrol *kcontrol, struct snd_ctl
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_hdsp_9632_controls[] = {
-HDSP_DA_GAIN("DA Gain", 0),
-HDSP_AD_GAIN("AD Gain", 0),
-HDSP_PHONE_GAIN("Phones Gain", 0),
-HDSP_XLR_BREAKOUT_CABLE("XLR Breakout Cable", 0),
-HDSP_DDS_OFFSET("DDS Sample Rate Offset", 0)
-};
-
-static struct snd_kcontrol_new snd_hdsp_controls[] = {
-=======
 static const struct snd_kcontrol_new snd_hdsp_9632_controls[] = {
 HDSP_DA_GAIN("DA Gain", 0),
 HDSP_AD_GAIN("AD Gain", 0),
@@ -3744,7 +2885,6 @@ HDSP_DDS_OFFSET("DDS Sample Rate Offset", 0)
 };
 
 static const struct snd_kcontrol_new snd_hdsp_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
 	.name =		SNDRV_CTL_NAME_IEC958("",PLAYBACK,DEFAULT),
@@ -3782,17 +2922,10 @@ static const struct snd_kcontrol_new snd_hdsp_controls[] = {
 },
 HDSP_MIXER("Mixer", 0),
 HDSP_SPDIF_IN("IEC958 Input Connector", 0),
-<<<<<<< HEAD
-HDSP_SPDIF_OUT("IEC958 Output also on ADAT1", 0),
-HDSP_SPDIF_PROFESSIONAL("IEC958 Professional Bit", 0),
-HDSP_SPDIF_EMPHASIS("IEC958 Emphasis Bit", 0),
-HDSP_SPDIF_NON_AUDIO("IEC958 Non-audio Bit", 0),
-=======
 HDSP_TOGGLE_SETTING("IEC958 Output also on ADAT1", HDSP_SPDIFOpticalOut),
 HDSP_TOGGLE_SETTING("IEC958 Professional Bit", HDSP_SPDIFProfessional),
 HDSP_TOGGLE_SETTING("IEC958 Emphasis Bit", HDSP_SPDIFEmphasis),
 HDSP_TOGGLE_SETTING("IEC958 Non-audio Bit", HDSP_SPDIFNonAudio),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 'Sample Clock Source' complies with the alsa control naming scheme */
 HDSP_CLOCK_SOURCE("Sample Clock Source", 0),
 {
@@ -3812,15 +2945,9 @@ HDSP_AUTOSYNC_SAMPLE_RATE("External Rate", 0),
 HDSP_WC_SYNC_CHECK("Word Clock Lock Status", 0),
 HDSP_SPDIF_SYNC_CHECK("SPDIF Lock Status", 0),
 HDSP_ADATSYNC_SYNC_CHECK("ADAT Sync Lock Status", 0),
-<<<<<<< HEAD
-HDSP_LINE_OUT("Line Out", 0),
-HDSP_PRECISE_POINTER("Precise Pointer", 0),
-HDSP_USE_MIDI_TASKLET("Use Midi Tasklet", 0),
-=======
 HDSP_TOGGLE_SETTING("Line Out", HDSP_LineOut),
 HDSP_PRECISE_POINTER("Precise Pointer", 0),
 HDSP_USE_MIDI_WORK("Use Midi Tasklet", 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -3901,23 +3028,11 @@ static int snd_hdsp_put_rpm_input12(struct snd_kcontrol *kcontrol, struct snd_ct
 
 static int snd_hdsp_info_rpm_input(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = {"Phono +6dB", "Phono 0dB", "Phono -6dB", "Line 0dB", "Line -6dB"};
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 5;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = {
 		"Phono +6dB", "Phono 0dB", "Phono -6dB", "Line 0dB", "Line -6dB"
 	};
 
 	return snd_ctl_enum_info(uinfo, 1, 5, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -4042,21 +3157,9 @@ static int snd_hdsp_put_rpm_bypass(struct snd_kcontrol *kcontrol, struct snd_ctl
 
 static int snd_hdsp_info_rpm_bypass(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = {"On", "Off"};
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 2;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[] = {"On", "Off"};
 
 	return snd_ctl_enum_info(uinfo, 1, 2, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -4105,27 +3208,12 @@ static int snd_hdsp_put_rpm_disconnect(struct snd_kcontrol *kcontrol, struct snd
 
 static int snd_hdsp_info_rpm_disconnect(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[] = {"On", "Off"};
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 2;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-}
-
-static struct snd_kcontrol_new snd_hdsp_rpm_controls[] = {
-=======
 	static const char * const texts[] = {"On", "Off"};
 
 	return snd_ctl_enum_info(uinfo, 1, 2, texts);
 }
 
 static const struct snd_kcontrol_new snd_hdsp_rpm_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = "RPM Bypass",
@@ -4158,11 +3246,6 @@ static const struct snd_kcontrol_new snd_hdsp_rpm_controls[] = {
 	HDSP_MIXER("Mixer", 0)
 };
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_hdsp_96xx_aeb = HDSP_AEB("Analog Extension Board", 0);
-static struct snd_kcontrol_new snd_hdsp_adat_sync_check = HDSP_ADAT_SYNC_CHECK;
-
-=======
 static const struct snd_kcontrol_new snd_hdsp_96xx_aeb =
 	HDSP_TOGGLE_SETTING("Analog Extension Board",
 			HDSP_AnalogExtensionBoard);
@@ -4222,7 +3305,6 @@ static struct snd_kcontrol_new snd_hdsp_loopback_control = {
 	.put = snd_hdsp_loopback_put
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_hdsp_create_controls(struct snd_card *card, struct hdsp *hdsp)
 {
 	unsigned int idx;
@@ -4232,11 +3314,7 @@ static int snd_hdsp_create_controls(struct snd_card *card, struct hdsp *hdsp)
 	if (hdsp->io_type == RPM) {
 		/* RPM Bypass, Disconnect and Input switches */
 		for (idx = 0; idx < ARRAY_SIZE(snd_hdsp_rpm_controls); idx++) {
-<<<<<<< HEAD
-			err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_hdsp_rpm_controls[idx], hdsp));
-=======
 			err = snd_ctl_add(card, snd_ctl_new1(&snd_hdsp_rpm_controls[idx], hdsp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err < 0)
 				return err;
 		}
@@ -4244,13 +3322,9 @@ static int snd_hdsp_create_controls(struct snd_card *card, struct hdsp *hdsp)
 	}
 
 	for (idx = 0; idx < ARRAY_SIZE(snd_hdsp_controls); idx++) {
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_hdsp_controls[idx], hdsp))) < 0)
-=======
 		kctl = snd_ctl_new1(&snd_hdsp_controls[idx], hdsp);
 		err = snd_ctl_add(card, kctl);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		if (idx == 1)	/* IEC958 (S/PDIF) Stream */
 			hdsp->spdif_ctl = kctl;
@@ -4259,24 +3333,16 @@ static int snd_hdsp_create_controls(struct snd_card *card, struct hdsp *hdsp)
 	/* ADAT SyncCheck status */
 	snd_hdsp_adat_sync_check.name = "ADAT Lock Status";
 	snd_hdsp_adat_sync_check.index = 1;
-<<<<<<< HEAD
-	if ((err = snd_ctl_add (card, kctl = snd_ctl_new1(&snd_hdsp_adat_sync_check, hdsp))))
-=======
 	kctl = snd_ctl_new1(&snd_hdsp_adat_sync_check, hdsp);
 	err = snd_ctl_add(card, kctl);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	if (hdsp->io_type == Digiface || hdsp->io_type == H9652) {
 		for (idx = 1; idx < 3; ++idx) {
 			snd_hdsp_adat_sync_check.index = idx+1;
-<<<<<<< HEAD
-			if ((err = snd_ctl_add (card, kctl = snd_ctl_new1(&snd_hdsp_adat_sync_check, hdsp))))
-=======
 			kctl = snd_ctl_new1(&snd_hdsp_adat_sync_check, hdsp);
 			err = snd_ctl_add(card, kctl);
 			if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 		}
 	}
@@ -4284,23 +3350,13 @@ static int snd_hdsp_create_controls(struct snd_card *card, struct hdsp *hdsp)
 	/* DA, AD and Phone gain and XLR breakout cable controls for H9632 cards */
 	if (hdsp->io_type == H9632) {
 		for (idx = 0; idx < ARRAY_SIZE(snd_hdsp_9632_controls); idx++) {
-<<<<<<< HEAD
-			if ((err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_hdsp_9632_controls[idx], hdsp))) < 0)
-=======
 			kctl = snd_ctl_new1(&snd_hdsp_9632_controls[idx], hdsp);
 			err = snd_ctl_add(card, kctl);
 			if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 		}
 	}
 
-<<<<<<< HEAD
-	/* AEB control for H96xx card */
-	if (hdsp->io_type == H9632 || hdsp->io_type == H9652) {
-		if ((err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_hdsp_96xx_aeb, hdsp))) < 0)
-				return err;
-=======
 	/* Output loopback controls for H9632 cards */
 	if (hdsp->io_type == H9632) {
 		snd_hdsp_loopback_control.count = hdsp->max_channels;
@@ -4318,7 +3374,6 @@ static int snd_hdsp_create_controls(struct snd_card *card, struct hdsp *hdsp)
 		err = snd_ctl_add(card, kctl);
 		if (err < 0)
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -4370,16 +3425,9 @@ snd_hdsp_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer)
 				return;
 			}
 		} else {
-<<<<<<< HEAD
-			int err = -EINVAL;
-#ifdef HDSP_FW_LOADER
-			err = hdsp_request_fw_loader(hdsp);
-#endif
-=======
 			int err;
 
 			err = hdsp_request_fw_loader(hdsp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err < 0) {
 				snd_iprintf(buffer,
 					    "No firmware loaded nor cached, "
@@ -4394,11 +3442,7 @@ snd_hdsp_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer)
 	snd_iprintf(buffer, "MIDI1 Input status: 0x%x\n", hdsp_read(hdsp, HDSP_midiStatusIn0));
 	snd_iprintf(buffer, "MIDI2 Output status: 0x%x\n", hdsp_read(hdsp, HDSP_midiStatusOut1));
 	snd_iprintf(buffer, "MIDI2 Input status: 0x%x\n", hdsp_read(hdsp, HDSP_midiStatusIn1));
-<<<<<<< HEAD
-	snd_iprintf(buffer, "Use Midi Tasklet: %s\n", hdsp->use_midi_tasklet ? "on" : "off");
-=======
 	snd_iprintf(buffer, "Use Midi Tasklet: %s\n", hdsp->use_midi_work ? "on" : "off");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_iprintf(buffer, "\n");
 
@@ -4703,13 +3747,9 @@ snd_hdsp_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer)
 		}
 		snd_iprintf(buffer, "Phones Gain : %s\n", tmp);
 
-<<<<<<< HEAD
-		snd_iprintf(buffer, "XLR Breakout Cable : %s\n", hdsp_xlr_breakout_cable(hdsp) ? "yes" : "no");
-=======
 		snd_iprintf(buffer, "XLR Breakout Cable : %s\n",
 			hdsp_toggle_setting(hdsp, HDSP_XLRBreakoutCable) ?
 			"yes" : "no");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (hdsp->control_register & HDSP_AnalogExtensionBoard)
 			snd_iprintf(buffer, "AEB : on (ADAT1 internal)\n");
@@ -4722,44 +3762,6 @@ snd_hdsp_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer)
 
 static void snd_hdsp_proc_init(struct hdsp *hdsp)
 {
-<<<<<<< HEAD
-	struct snd_info_entry *entry;
-
-	if (! snd_card_proc_new(hdsp->card, "hdsp", &entry))
-		snd_info_set_text_ops(entry, hdsp, snd_hdsp_proc_read);
-}
-
-static void snd_hdsp_free_buffers(struct hdsp *hdsp)
-{
-	snd_hammerfall_free_buffer(&hdsp->capture_dma_buf, hdsp->pci);
-	snd_hammerfall_free_buffer(&hdsp->playback_dma_buf, hdsp->pci);
-}
-
-static int __devinit snd_hdsp_initialize_memory(struct hdsp *hdsp)
-{
-	unsigned long pb_bus, cb_bus;
-
-	if (snd_hammerfall_get_buffer(hdsp->pci, &hdsp->capture_dma_buf, HDSP_DMA_AREA_BYTES) < 0 ||
-	    snd_hammerfall_get_buffer(hdsp->pci, &hdsp->playback_dma_buf, HDSP_DMA_AREA_BYTES) < 0) {
-		if (hdsp->capture_dma_buf.area)
-			snd_dma_free_pages(&hdsp->capture_dma_buf);
-		printk(KERN_ERR "%s: no buffers available\n", hdsp->card_name);
-		return -ENOMEM;
-	}
-
-	/* Align to bus-space 64K boundary */
-
-	cb_bus = ALIGN(hdsp->capture_dma_buf.addr, 0x10000ul);
-	pb_bus = ALIGN(hdsp->playback_dma_buf.addr, 0x10000ul);
-
-	/* Tell the card where it is */
-
-	hdsp_write(hdsp, HDSP_inputBufferAddress, cb_bus);
-	hdsp_write(hdsp, HDSP_outputBufferAddress, pb_bus);
-
-	hdsp->capture_buffer = hdsp->capture_dma_buf.area + (cb_bus - hdsp->capture_dma_buf.addr);
-	hdsp->playback_buffer = hdsp->playback_dma_buf.area + (pb_bus - hdsp->playback_dma_buf.addr);
-=======
 	snd_card_ro_proc_new(hdsp->card, "hdsp", hdsp, snd_hdsp_proc_read);
 }
 
@@ -4791,7 +3793,6 @@ static int snd_hdsp_initialize_memory(struct hdsp *hdsp)
 	hdsp->playback_dma_buf.area += hdsp->playback_dma_buf.addr - playback_dma->addr;
 	hdsp->capture_buffer = hdsp->capture_dma_buf.area;
 	hdsp->playback_buffer = hdsp->playback_dma_buf.area;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -4859,15 +3860,9 @@ static int snd_hdsp_set_defaults(struct hdsp *hdsp)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void hdsp_midi_tasklet(unsigned long arg)
-{
-	struct hdsp *hdsp = (struct hdsp *)arg;
-=======
 static void hdsp_midi_work(struct work_struct *work)
 {
 	struct hdsp *hdsp = container_of(work, struct hdsp, midi_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hdsp->midi[0].pending)
 		snd_hdsp_midi_input_read (&hdsp->midi[0]);
@@ -4912,11 +3907,7 @@ static irqreturn_t snd_hdsp_interrupt(int irq, void *dev_id)
 	}
 
 	if (midi0 && midi0status) {
-<<<<<<< HEAD
-		if (hdsp->use_midi_tasklet) {
-=======
 		if (hdsp->use_midi_work) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* we disable interrupts for this input until processing is done */
 			hdsp->control_register &= ~HDSP_Midi0InterruptEnable;
 			hdsp_write(hdsp, HDSP_controlRegister, hdsp->control_register);
@@ -4927,11 +3918,7 @@ static irqreturn_t snd_hdsp_interrupt(int irq, void *dev_id)
 		}
 	}
 	if (hdsp->io_type != Multiface && hdsp->io_type != RPM && hdsp->io_type != H9632 && midi1 && midi1status) {
-<<<<<<< HEAD
-		if (hdsp->use_midi_tasklet) {
-=======
 		if (hdsp->use_midi_work) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* we disable interrupts for this input until processing is done */
 			hdsp->control_register &= ~HDSP_Midi1InterruptEnable;
 			hdsp_write(hdsp, HDSP_controlRegister, hdsp->control_register);
@@ -4941,13 +3928,8 @@ static irqreturn_t snd_hdsp_interrupt(int irq, void *dev_id)
 			snd_hdsp_midi_input_read (&hdsp->midi[1]);
 		}
 	}
-<<<<<<< HEAD
-	if (hdsp->use_midi_tasklet && schedule)
-		tasklet_schedule(&hdsp->midi_tasklet);
-=======
 	if (hdsp->use_midi_work && schedule)
 		queue_work(system_highpri_wq, &hdsp->midi_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -4957,11 +3939,7 @@ static snd_pcm_uframes_t snd_hdsp_hw_pointer(struct snd_pcm_substream *substream
 	return hdsp_hw_pointer(hdsp);
 }
 
-<<<<<<< HEAD
-static char *hdsp_channel_buffer_location(struct hdsp *hdsp,
-=======
 static signed char *hdsp_channel_buffer_location(struct hdsp *hdsp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     int stream,
 					     int channel)
 
@@ -4971,12 +3949,8 @@ static signed char *hdsp_channel_buffer_location(struct hdsp *hdsp,
         if (snd_BUG_ON(channel < 0 || channel >= hdsp->max_channels))
 		return NULL;
 
-<<<<<<< HEAD
-	if ((mapped_channel = hdsp->channel_map[channel]) < 0)
-=======
 	mapped_channel = hdsp->channel_map[channel];
 	if (mapped_channel < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	if (stream == SNDRV_PCM_STREAM_CAPTURE)
@@ -4985,15 +3959,6 @@ static signed char *hdsp_channel_buffer_location(struct hdsp *hdsp,
 		return hdsp->playback_buffer + (mapped_channel * HDSP_CHANNEL_BUFFER_BYTES);
 }
 
-<<<<<<< HEAD
-static int snd_hdsp_playback_copy(struct snd_pcm_substream *substream, int channel,
-				  snd_pcm_uframes_t pos, void __user *src, snd_pcm_uframes_t count)
-{
-	struct hdsp *hdsp = snd_pcm_substream_chip(substream);
-	char *channel_buf;
-
-	if (snd_BUG_ON(pos + count > HDSP_CHANNEL_BUFFER_BYTES / 4))
-=======
 static int snd_hdsp_playback_copy(struct snd_pcm_substream *substream,
 				  int channel, unsigned long pos,
 				  struct iov_iter *src, unsigned long count)
@@ -5002,26 +3967,11 @@ static int snd_hdsp_playback_copy(struct snd_pcm_substream *substream,
 	signed char *channel_buf;
 
 	if (snd_BUG_ON(pos + count > HDSP_CHANNEL_BUFFER_BYTES))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	channel_buf = hdsp_channel_buffer_location (hdsp, substream->pstr->stream, channel);
 	if (snd_BUG_ON(!channel_buf))
 		return -EIO;
-<<<<<<< HEAD
-	if (copy_from_user(channel_buf + pos * 4, src, count * 4))
-		return -EFAULT;
-	return count;
-}
-
-static int snd_hdsp_capture_copy(struct snd_pcm_substream *substream, int channel,
-				 snd_pcm_uframes_t pos, void __user *dst, snd_pcm_uframes_t count)
-{
-	struct hdsp *hdsp = snd_pcm_substream_chip(substream);
-	char *channel_buf;
-
-	if (snd_BUG_ON(pos + count > HDSP_CHANNEL_BUFFER_BYTES / 4))
-=======
 	if (copy_from_iter(channel_buf + pos, count, src) != count)
 		return -EFAULT;
 	return 0;
@@ -5035,24 +3985,11 @@ static int snd_hdsp_capture_copy(struct snd_pcm_substream *substream,
 	signed char *channel_buf;
 
 	if (snd_BUG_ON(pos + count > HDSP_CHANNEL_BUFFER_BYTES))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	channel_buf = hdsp_channel_buffer_location (hdsp, substream->pstr->stream, channel);
 	if (snd_BUG_ON(!channel_buf))
 		return -EIO;
-<<<<<<< HEAD
-	if (copy_to_user(dst, channel_buf + pos * 4, count * 4))
-		return -EFAULT;
-	return count;
-}
-
-static int snd_hdsp_hw_silence(struct snd_pcm_substream *substream, int channel,
-				  snd_pcm_uframes_t pos, snd_pcm_uframes_t count)
-{
-	struct hdsp *hdsp = snd_pcm_substream_chip(substream);
-	char *channel_buf;
-=======
 	if (copy_to_iter(channel_buf + pos, count, dst) != count)
 		return -EFAULT;
 	return 0;
@@ -5064,18 +4001,12 @@ static int snd_hdsp_hw_silence(struct snd_pcm_substream *substream,
 {
 	struct hdsp *hdsp = snd_pcm_substream_chip(substream);
 	signed char *channel_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	channel_buf = hdsp_channel_buffer_location (hdsp, substream->pstr->stream, channel);
 	if (snd_BUG_ON(!channel_buf))
 		return -EIO;
-<<<<<<< HEAD
-	memset(channel_buf + pos * 4, 0, count * 4);
-	return count;
-=======
 	memset(channel_buf + pos, 0, count);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hdsp_reset(struct snd_pcm_substream *substream)
@@ -5163,12 +4094,8 @@ static int snd_hdsp_hw_params(struct snd_pcm_substream *substream,
 
 	spin_lock_irq(&hdsp->lock);
 	if (! hdsp->clock_source_locked) {
-<<<<<<< HEAD
-		if ((err = hdsp_set_rate(hdsp, params_rate(params), 0)) < 0) {
-=======
 		err = hdsp_set_rate(hdsp, params_rate(params), 0);
 		if (err < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_irq(&hdsp->lock);
 			_snd_pcm_hw_param_setempty(params, SNDRV_PCM_HW_PARAM_RATE);
 			return err;
@@ -5176,12 +4103,8 @@ static int snd_hdsp_hw_params(struct snd_pcm_substream *substream,
 	}
 	spin_unlock_irq(&hdsp->lock);
 
-<<<<<<< HEAD
-	if ((err = hdsp_set_interrupt_interval(hdsp, params_period_size(params))) < 0) {
-=======
 	err = hdsp_set_interrupt_interval(hdsp, params_period_size(params));
 	if (err < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		_snd_pcm_hw_param_setempty(params, SNDRV_PCM_HW_PARAM_PERIOD_SIZE);
 		return err;
 	}
@@ -5193,17 +4116,6 @@ static int snd_hdsp_channel_info(struct snd_pcm_substream *substream,
 				    struct snd_pcm_channel_info *info)
 {
 	struct hdsp *hdsp = snd_pcm_substream_chip(substream);
-<<<<<<< HEAD
-	int mapped_channel;
-
-	if (snd_BUG_ON(info->channel >= hdsp->max_channels))
-		return -EINVAL;
-
-	if ((mapped_channel = hdsp->channel_map[info->channel]) < 0)
-		return -EINVAL;
-
-	info->offset = mapped_channel * HDSP_CHANNEL_BUFFER_BYTES;
-=======
 	unsigned int channel = info->channel;
 
 	if (snd_BUG_ON(channel >= hdsp->max_channels))
@@ -5214,7 +4126,6 @@ static int snd_hdsp_channel_info(struct snd_pcm_substream *substream,
 		return -EINVAL;
 
 	info->offset = hdsp->channel_map[channel] * HDSP_CHANNEL_BUFFER_BYTES;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->first = 0;
 	info->step = 32;
 	return 0;
@@ -5321,11 +4232,7 @@ static int snd_hdsp_prepare(struct snd_pcm_substream *substream)
 	return result;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_hdsp_playback_subinfo =
-=======
 static const struct snd_pcm_hardware snd_hdsp_playback_subinfo =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP |
 				 SNDRV_PCM_INFO_MMAP_VALID |
@@ -5355,11 +4262,7 @@ static const struct snd_pcm_hardware snd_hdsp_playback_subinfo =
 	.fifo_size =		0
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_hdsp_capture_subinfo =
-=======
 static const struct snd_pcm_hardware snd_hdsp_capture_subinfo =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP |
 				 SNDRV_PCM_INFO_MMAP_VALID |
@@ -5388,29 +4291,17 @@ static const struct snd_pcm_hardware snd_hdsp_capture_subinfo =
 	.fifo_size =		0
 };
 
-<<<<<<< HEAD
-static unsigned int hdsp_period_sizes[] = { 64, 128, 256, 512, 1024, 2048, 4096, 8192 };
-
-static struct snd_pcm_hw_constraint_list hdsp_hw_constraints_period_sizes = {
-=======
 static const unsigned int hdsp_period_sizes[] = { 64, 128, 256, 512, 1024, 2048, 4096, 8192 };
 
 static const struct snd_pcm_hw_constraint_list hdsp_hw_constraints_period_sizes = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(hdsp_period_sizes),
 	.list = hdsp_period_sizes,
 	.mask = 0
 };
 
-<<<<<<< HEAD
-static unsigned int hdsp_9632_sample_rates[] = { 32000, 44100, 48000, 64000, 88200, 96000, 128000, 176400, 192000 };
-
-static struct snd_pcm_hw_constraint_list hdsp_hw_constraints_9632_sample_rates = {
-=======
 static const unsigned int hdsp_9632_sample_rates[] = { 32000, 44100, 48000, 64000, 88200, 96000, 128000, 176400, 192000 };
 
 static const struct snd_pcm_hw_constraint_list hdsp_hw_constraints_9632_sample_rates = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(hdsp_9632_sample_rates),
 	.list = hdsp_9632_sample_rates,
 	.mask = 0
@@ -5593,12 +4484,7 @@ static int snd_hdsp_playback_open(struct snd_pcm_substream *substream)
 	snd_pcm_set_sync(substream);
 
         runtime->hw = snd_hdsp_playback_subinfo;
-<<<<<<< HEAD
-	runtime->dma_area = hdsp->playback_buffer;
-	runtime->dma_bytes = HDSP_DMA_AREA_BYTES;
-=======
 	snd_pcm_set_runtime_buffer(substream, &hdsp->playback_dma_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdsp->playback_pid = current->pid;
 	hdsp->playback_substream = substream;
@@ -5674,12 +4560,7 @@ static int snd_hdsp_capture_open(struct snd_pcm_substream *substream)
 	snd_pcm_set_sync(substream);
 
 	runtime->hw = snd_hdsp_capture_subinfo;
-<<<<<<< HEAD
-	runtime->dma_area = hdsp->capture_buffer;
-	runtime->dma_bytes = HDSP_DMA_AREA_BYTES;
-=======
 	snd_pcm_set_runtime_buffer(substream, &hdsp->capture_dma_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdsp->capture_pid = current->pid;
 	hdsp->capture_substream = substream;
@@ -5863,12 +4744,8 @@ static int snd_hdsp_hwdep_ioctl(struct snd_hwdep *hw, struct file *file, unsigne
 			return err;
 
 		if (!(hdsp->state & HDSP_FirmwareLoaded)) {
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "Hammerfall-DSP: firmware needs to be uploaded to the card.\n");
-=======
 			dev_err(hdsp->card->dev,
 				"firmware needs to be uploaded to the card.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -5904,12 +4781,6 @@ static int snd_hdsp_hwdep_ioctl(struct snd_hwdep *hw, struct file *file, unsigne
 		for (i = 0; i < ((hdsp->io_type != Multiface && hdsp->io_type != RPM && hdsp->io_type != H9632) ? 3 : 1); ++i)
 			info.adat_sync_check[i] = (unsigned char)hdsp_adat_sync_check(hdsp, i);
 		info.spdif_in = (unsigned char)hdsp_spdif_in(hdsp);
-<<<<<<< HEAD
-		info.spdif_out = (unsigned char)hdsp_spdif_out(hdsp);
-		info.spdif_professional = (unsigned char)hdsp_spdif_professional(hdsp);
-		info.spdif_emphasis = (unsigned char)hdsp_spdif_emphasis(hdsp);
-		info.spdif_nonaudio = (unsigned char)hdsp_spdif_nonaudio(hdsp);
-=======
 		info.spdif_out = (unsigned char)hdsp_toggle_setting(hdsp,
 				HDSP_SPDIFOpticalOut);
 		info.spdif_professional = (unsigned char)
@@ -5918,43 +4789,30 @@ static int snd_hdsp_hwdep_ioctl(struct snd_hwdep *hw, struct file *file, unsigne
 			hdsp_toggle_setting(hdsp, HDSP_SPDIFEmphasis);
 		info.spdif_nonaudio = (unsigned char)
 			hdsp_toggle_setting(hdsp, HDSP_SPDIFNonAudio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info.spdif_sample_rate = hdsp_spdif_sample_rate(hdsp);
 		info.system_sample_rate = hdsp->system_sample_rate;
 		info.autosync_sample_rate = hdsp_external_sample_rate(hdsp);
 		info.system_clock_mode = (unsigned char)hdsp_system_clock_mode(hdsp);
 		info.clock_source = (unsigned char)hdsp_clock_source(hdsp);
 		info.autosync_ref = (unsigned char)hdsp_autosync_ref(hdsp);
-<<<<<<< HEAD
-		info.line_out = (unsigned char)hdsp_line_out(hdsp);
-=======
 		info.line_out = (unsigned char)
 			hdsp_toggle_setting(hdsp, HDSP_LineOut);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (hdsp->io_type == H9632) {
 			info.da_gain = (unsigned char)hdsp_da_gain(hdsp);
 			info.ad_gain = (unsigned char)hdsp_ad_gain(hdsp);
 			info.phone_gain = (unsigned char)hdsp_phone_gain(hdsp);
-<<<<<<< HEAD
-			info.xlr_breakout_cable = (unsigned char)hdsp_xlr_breakout_cable(hdsp);
-=======
 			info.xlr_breakout_cable =
 				(unsigned char)hdsp_toggle_setting(hdsp,
 					HDSP_XLRBreakoutCable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		} else if (hdsp->io_type == RPM) {
 			info.da_gain = (unsigned char) hdsp_rpm_input12(hdsp);
 			info.ad_gain = (unsigned char) hdsp_rpm_input34(hdsp);
 		}
 		if (hdsp->io_type == H9632 || hdsp->io_type == H9652)
-<<<<<<< HEAD
-			info.analog_extension_board = (unsigned char)hdsp_aeb(hdsp);
-=======
 			info.analog_extension_board =
 				(unsigned char)hdsp_toggle_setting(hdsp,
 					    HDSP_AnalogExtensionBoard);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&hdsp->lock, flags);
 		if (copy_to_user(argp, &info, sizeof(info)))
 			return -EFAULT;
@@ -5976,19 +4834,6 @@ static int snd_hdsp_hwdep_ioctl(struct snd_hwdep *hw, struct file *file, unsigne
 
 		if (hdsp->io_type == H9652 || hdsp->io_type == H9632) return -EINVAL;
 		if (hdsp->io_type == Undefined) {
-<<<<<<< HEAD
-			if ((err = hdsp_get_iobox_version(hdsp)) < 0)
-				return err;
-		}
-		hdsp_version.io_type = hdsp->io_type;
-		hdsp_version.firmware_rev = hdsp->firmware_rev;
-		if ((err = copy_to_user(argp, &hdsp_version, sizeof(hdsp_version))))
-		    	return -EFAULT;
-		break;
-	}
-	case SNDRV_HDSP_IOCTL_UPLOAD_FIRMWARE: {
-		struct hdsp_firmware __user *firmware;
-=======
 			err = hdsp_get_iobox_version(hdsp);
 			if (err < 0)
 				return err;
@@ -6002,7 +4847,6 @@ static int snd_hdsp_hwdep_ioctl(struct snd_hwdep *hw, struct file *file, unsigne
 	}
 	case SNDRV_HDSP_IOCTL_UPLOAD_FIRMWARE: {
 		struct hdsp_firmware firmware;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 __user *firmware_data;
 		int err;
 
@@ -6013,35 +4857,15 @@ static int snd_hdsp_hwdep_ioctl(struct snd_hwdep *hw, struct file *file, unsigne
 		if (hdsp->state & (HDSP_FirmwareCached | HDSP_FirmwareLoaded))
 			return -EBUSY;
 
-<<<<<<< HEAD
-		snd_printk(KERN_INFO "Hammerfall-DSP: initializing firmware upload\n");
-		firmware = (struct hdsp_firmware __user *)argp;
-
-		if (get_user(firmware_data, &firmware->firmware_data))
-			return -EFAULT;
-=======
 		dev_info(hdsp->card->dev,
 			 "initializing firmware upload\n");
 		if (copy_from_user(&firmware, argp, sizeof(firmware)))
 			return -EFAULT;
 		firmware_data = (u32 __user *)firmware.firmware_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (hdsp_check_for_iobox (hdsp))
 			return -EIO;
 
-<<<<<<< HEAD
-		if (copy_from_user(hdsp->firmware_cache, firmware_data, sizeof(hdsp->firmware_cache)) != 0)
-			return -EFAULT;
-
-		hdsp->state |= HDSP_FirmwareCached;
-
-		if ((err = snd_hdsp_load_firmware_from_cache(hdsp)) < 0)
-			return err;
-
-		if (!(hdsp->state & HDSP_InitializationComplete)) {
-			if ((err = snd_hdsp_enable_io(hdsp)) < 0)
-=======
 		if (!hdsp->fw_uploaded) {
 			hdsp->fw_uploaded = vmalloc(HDSP_FIRMWARE_SIZE);
 			if (!hdsp->fw_uploaded)
@@ -6064,21 +4888,15 @@ static int snd_hdsp_hwdep_ioctl(struct snd_hwdep *hw, struct file *file, unsigne
 		if (!(hdsp->state & HDSP_InitializationComplete)) {
 			err = snd_hdsp_enable_io(hdsp);
 			if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 
 			snd_hdsp_initialize_channels(hdsp);
 			snd_hdsp_initialize_midi_flush(hdsp);
 
-<<<<<<< HEAD
-			if ((err = snd_hdsp_create_alsa_devices(hdsp->card, hdsp)) < 0) {
-				snd_printk(KERN_ERR "Hammerfall-DSP: error creating alsa devices\n");
-=======
 			err = snd_hdsp_create_alsa_devices(hdsp->card, hdsp);
 			if (err < 0) {
 				dev_err(hdsp->card->dev,
 					"error creating alsa devices\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 			}
 		}
@@ -6096,11 +4914,7 @@ static int snd_hdsp_hwdep_ioctl(struct snd_hwdep *hw, struct file *file, unsigne
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_hdsp_playback_ops = {
-=======
 static const struct snd_pcm_ops snd_hdsp_playback_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =		snd_hdsp_playback_open,
 	.close =	snd_hdsp_playback_release,
 	.ioctl =	snd_hdsp_ioctl,
@@ -6109,17 +4923,10 @@ static const struct snd_pcm_ops snd_hdsp_playback_ops = {
 	.trigger =	snd_hdsp_trigger,
 	.pointer =	snd_hdsp_hw_pointer,
 	.copy =		snd_hdsp_playback_copy,
-<<<<<<< HEAD
-	.silence =	snd_hdsp_hw_silence,
-};
-
-static struct snd_pcm_ops snd_hdsp_capture_ops = {
-=======
 	.fill_silence =	snd_hdsp_hw_silence,
 };
 
 static const struct snd_pcm_ops snd_hdsp_capture_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =		snd_hdsp_capture_open,
 	.close =	snd_hdsp_capture_release,
 	.ioctl =	snd_hdsp_ioctl,
@@ -6135,12 +4942,8 @@ static int snd_hdsp_create_hwdep(struct snd_card *card, struct hdsp *hdsp)
 	struct snd_hwdep *hw;
 	int err;
 
-<<<<<<< HEAD
-	if ((err = snd_hwdep_new(card, "HDSP hwdep", 0, &hw)) < 0)
-=======
 	err = snd_hwdep_new(card, "HDSP hwdep", 0, &hw);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	hdsp->hwdep = hw;
@@ -6158,12 +4961,8 @@ static int snd_hdsp_create_pcm(struct snd_card *card, struct hdsp *hdsp)
 	struct snd_pcm *pcm;
 	int err;
 
-<<<<<<< HEAD
-	if ((err = snd_pcm_new(card, hdsp->card_name, 0, 1, 1, &pcm)) < 0)
-=======
 	err = snd_pcm_new(card, hdsp->card_name, 0, 1, 1, &pcm);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	hdsp->pcm = pcm;
@@ -6189,12 +4988,8 @@ static int snd_hdsp_enable_io (struct hdsp *hdsp)
 	int i;
 
 	if (hdsp_fifo_wait (hdsp, 0, 100)) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "Hammerfall-DSP: enable_io fifo_wait failed\n");
-=======
 		dev_err(hdsp->card->dev,
 			"enable_io fifo_wait failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -6208,11 +5003,7 @@ static int snd_hdsp_enable_io (struct hdsp *hdsp)
 
 static void snd_hdsp_initialize_channels(struct hdsp *hdsp)
 {
-<<<<<<< HEAD
-	int status, aebi_channels, aebo_channels;
-=======
 	int status, aebi_channels, aebo_channels, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hdsp->io_type) {
 	case Digiface:
@@ -6239,15 +5030,12 @@ static void snd_hdsp_initialize_channels(struct hdsp *hdsp)
 		hdsp->ss_out_channels = H9632_SS_CHANNELS+aebo_channels;
 		hdsp->ds_out_channels = H9632_DS_CHANNELS+aebo_channels;
 		hdsp->qs_out_channels = H9632_QS_CHANNELS+aebo_channels;
-<<<<<<< HEAD
-=======
 		/* Disable loopback of output channels, as the set function
 		 * only sets on a change we fake all bits (channels) as enabled.
 		 */
 		hdsp->io_loopback = 0xffffffff;
 		for (i = 0; i < hdsp->max_channels; ++i)
 			hdsp_loopback_set(hdsp, i, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case Multiface:
@@ -6280,54 +5068,34 @@ static int snd_hdsp_create_alsa_devices(struct snd_card *card, struct hdsp *hdsp
 {
 	int err;
 
-<<<<<<< HEAD
-	if ((err = snd_hdsp_create_pcm(card, hdsp)) < 0) {
-		snd_printk(KERN_ERR "Hammerfall-DSP: Error creating pcm interface\n");
-=======
 	err = snd_hdsp_create_pcm(card, hdsp);
 	if (err < 0) {
 		dev_err(card->dev,
 			"Error creating pcm interface\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 
-<<<<<<< HEAD
-	if ((err = snd_hdsp_create_midi(card, hdsp, 0)) < 0) {
-		snd_printk(KERN_ERR "Hammerfall-DSP: Error creating first midi interface\n");
-=======
 	err = snd_hdsp_create_midi(card, hdsp, 0);
 	if (err < 0) {
 		dev_err(card->dev,
 			"Error creating first midi interface\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	if (hdsp->io_type == Digiface || hdsp->io_type == H9652) {
-<<<<<<< HEAD
-		if ((err = snd_hdsp_create_midi(card, hdsp, 1)) < 0) {
-			snd_printk(KERN_ERR "Hammerfall-DSP: Error creating second midi interface\n");
-=======
 		err = snd_hdsp_create_midi(card, hdsp, 1);
 		if (err < 0) {
 			dev_err(card->dev,
 				"Error creating second midi interface\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 	}
 
-<<<<<<< HEAD
-	if ((err = snd_hdsp_create_controls(card, hdsp)) < 0) {
-		snd_printk(KERN_ERR "Hammerfall-DSP: Error creating ctl interface\n");
-=======
 	err = snd_hdsp_create_controls(card, hdsp);
 	if (err < 0) {
 		dev_err(card->dev,
 			"Error creating ctl interface\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -6339,15 +5107,10 @@ static int snd_hdsp_create_alsa_devices(struct snd_card *card, struct hdsp *hdsp
 	hdsp->capture_substream = NULL;
 	hdsp->playback_substream = NULL;
 
-<<<<<<< HEAD
-	if ((err = snd_hdsp_set_defaults(hdsp)) < 0) {
-		snd_printk(KERN_ERR "Hammerfall-DSP: Error setting default values\n");
-=======
 	err = snd_hdsp_set_defaults(hdsp);
 	if (err < 0) {
 		dev_err(card->dev,
 			"Error setting default values\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -6356,15 +5119,10 @@ static int snd_hdsp_create_alsa_devices(struct snd_card *card, struct hdsp *hdsp
 		sprintf(card->longname, "%s at 0x%lx, irq %d", hdsp->card_name,
 			hdsp->port, hdsp->irq);
 
-<<<<<<< HEAD
-		if ((err = snd_card_register(card)) < 0) {
-			snd_printk(KERN_ERR "Hammerfall-DSP: error registering card\n");
-=======
 		err = snd_card_register(card);
 		if (err < 0) {
 			dev_err(card->dev,
 				"error registering card\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 		hdsp->state |= HDSP_InitializationComplete;
@@ -6373,10 +5131,6 @@ static int snd_hdsp_create_alsa_devices(struct snd_card *card, struct hdsp *hdsp
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef HDSP_FW_LOADER
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* load firmware via hotplug fw loader */
 static int hdsp_request_fw_loader(struct hdsp *hdsp)
 {
@@ -6387,12 +5141,8 @@ static int hdsp_request_fw_loader(struct hdsp *hdsp)
 	if (hdsp->io_type == H9652 || hdsp->io_type == H9632)
 		return 0;
 	if (hdsp->io_type == Undefined) {
-<<<<<<< HEAD
-		if ((err = hdsp_get_iobox_version(hdsp)) < 0)
-=======
 		err = hdsp_get_iobox_version(hdsp);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		if (hdsp->io_type == H9652 || hdsp->io_type == H9632)
 			return 0;
@@ -6416,24 +5166,12 @@ static int hdsp_request_fw_loader(struct hdsp *hdsp)
 			fwfile = "digiface_firmware_rev11.bin";
 		break;
 	default:
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "Hammerfall-DSP: invalid io_type %d\n", hdsp->io_type);
-=======
 		dev_err(hdsp->card->dev,
 			"invalid io_type %d\n", hdsp->io_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (request_firmware(&fw, fwfile, &hdsp->pci->dev)) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "Hammerfall-DSP: cannot load firmware %s\n", fwfile);
-		return -ENOENT;
-	}
-	if (fw->size < sizeof(hdsp->firmware_cache)) {
-		snd_printk(KERN_ERR "Hammerfall-DSP: too short firmware size %d (expected %d)\n",
-			   (int)fw->size, (int)sizeof(hdsp->firmware_cache));
-=======
 		dev_err(hdsp->card->dev,
 			"cannot load firmware %s\n", fwfile);
 		return -ENOENT;
@@ -6442,28 +5180,10 @@ static int hdsp_request_fw_loader(struct hdsp *hdsp)
 		dev_err(hdsp->card->dev,
 			"too short firmware size %d (expected %d)\n",
 			   (int)fw->size, HDSP_FIRMWARE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_firmware(fw);
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	memcpy(hdsp->firmware_cache, fw->data, sizeof(hdsp->firmware_cache));
-
-	release_firmware(fw);
-
-	hdsp->state |= HDSP_FirmwareCached;
-
-	if ((err = snd_hdsp_load_firmware_from_cache(hdsp)) < 0)
-		return err;
-
-	if (!(hdsp->state & HDSP_InitializationComplete)) {
-		if ((err = snd_hdsp_enable_io(hdsp)) < 0)
-			return err;
-
-		if ((err = snd_hdsp_create_hwdep(hdsp->card, hdsp)) < 0) {
-			snd_printk(KERN_ERR "Hammerfall-DSP: error creating hwdep device\n");
-=======
 	hdsp->firmware = fw;
 
 	hdsp->state |= HDSP_FirmwareCached;
@@ -6481,35 +5201,22 @@ static int hdsp_request_fw_loader(struct hdsp *hdsp)
 		if (err < 0) {
 			dev_err(hdsp->card->dev,
 				"error creating hwdep device\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 		snd_hdsp_initialize_channels(hdsp);
 		snd_hdsp_initialize_midi_flush(hdsp);
-<<<<<<< HEAD
-		if ((err = snd_hdsp_create_alsa_devices(hdsp->card, hdsp)) < 0) {
-			snd_printk(KERN_ERR "Hammerfall-DSP: error creating alsa devices\n");
-=======
 		err = snd_hdsp_create_alsa_devices(hdsp->card, hdsp);
 		if (err < 0) {
 			dev_err(hdsp->card->dev,
 				"error creating alsa devices\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 	}
 	return 0;
 }
-<<<<<<< HEAD
-#endif
-
-static int __devinit snd_hdsp_create(struct snd_card *card,
-				     struct hdsp *hdsp)
-=======
 
 static int snd_hdsp_create(struct snd_card *card,
 			   struct hdsp *hdsp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pci = hdsp->pci;
 	int err;
@@ -6538,11 +5245,7 @@ static int snd_hdsp_create(struct snd_card *card,
 
 	spin_lock_init(&hdsp->lock);
 
-<<<<<<< HEAD
-	tasklet_init(&hdsp->midi_tasklet, hdsp_midi_tasklet, (unsigned long)hdsp);
-=======
 	INIT_WORK(&hdsp->midi_work, hdsp_midi_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_read_config_word(hdsp->pci, PCI_CLASS_REVISION, &hdsp->firmware_rev);
 	hdsp->firmware_rev &= 0xff;
@@ -6572,29 +5275,12 @@ static int snd_hdsp_create(struct snd_card *card,
 		is_9632 = 1;
 	}
 
-<<<<<<< HEAD
-	if ((err = pci_enable_device(pci)) < 0)
-=======
 	err = pcim_enable_device(pci);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	pci_set_master(hdsp->pci);
 
-<<<<<<< HEAD
-	if ((err = pci_request_regions(pci, "hdsp")) < 0)
-		return err;
-	hdsp->port = pci_resource_start(pci, 0);
-	if ((hdsp->iobase = ioremap_nocache(hdsp->port, HDSP_IO_EXTENT)) == NULL) {
-		snd_printk(KERN_ERR "Hammerfall-DSP: unable to remap region 0x%lx-0x%lx\n", hdsp->port, hdsp->port + HDSP_IO_EXTENT - 1);
-		return -EBUSY;
-	}
-
-	if (request_irq(pci->irq, snd_hdsp_interrupt, IRQF_SHARED,
-			KBUILD_MODNAME, hdsp)) {
-		snd_printk(KERN_ERR "Hammerfall-DSP: unable to use IRQ %d\n", pci->irq);
-=======
 	err = pci_request_regions(pci, "hdsp");
 	if (err < 0)
 		return err;
@@ -6609,18 +5295,10 @@ static int snd_hdsp_create(struct snd_card *card,
 	if (devm_request_irq(&pci->dev, pci->irq, snd_hdsp_interrupt,
 			     IRQF_SHARED, KBUILD_MODNAME, hdsp)) {
 		dev_err(hdsp->card->dev, "unable to use IRQ %d\n", pci->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
 	hdsp->irq = pci->irq;
-<<<<<<< HEAD
-	hdsp->precise_ptr = 0;
-	hdsp->use_midi_tasklet = 1;
-	hdsp->dds_value = 0;
-
-	if ((err = snd_hdsp_initialize_memory(hdsp)) < 0)
-=======
 	card->sync_irq = hdsp->irq;
 	hdsp->precise_ptr = 0;
 	hdsp->use_midi_work = 1;
@@ -6628,7 +5306,6 @@ static int snd_hdsp_create(struct snd_card *card,
 
 	err = snd_hdsp_initialize_memory(hdsp);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	if (!is_9652 && !is_9632) {
@@ -6640,31 +5317,12 @@ static int snd_hdsp_create(struct snd_card *card,
 			return err;
 
 		if ((hdsp_read (hdsp, HDSP_statusRegister) & HDSP_DllError) != 0) {
-<<<<<<< HEAD
-#ifdef HDSP_FW_LOADER
-			if ((err = hdsp_request_fw_loader(hdsp)) < 0)
-=======
 			err = hdsp_request_fw_loader(hdsp);
 			if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* we don't fail as this can happen
 				   if userspace is not ready for
 				   firmware upload
 				*/
-<<<<<<< HEAD
-				snd_printk(KERN_ERR "Hammerfall-DSP: couldn't get firmware from userspace. try using hdsploader\n");
-			else
-				/* init is complete, we return */
-				return 0;
-#endif
-			/* we defer initialization */
-			snd_printk(KERN_INFO "Hammerfall-DSP: card initialization pending : waiting for firmware\n");
-			if ((err = snd_hdsp_create_hwdep(card, hdsp)) < 0)
-				return err;
-			return 0;
-		} else {
-			snd_printk(KERN_INFO "Hammerfall-DSP: Firmware already present, initializing card.\n");
-=======
 				dev_err(hdsp->card->dev,
 					"couldn't get firmware from userspace. try using hdsploader\n");
 			else
@@ -6680,7 +5338,6 @@ static int snd_hdsp_create(struct snd_card *card,
 		} else {
 			dev_info(hdsp->card->dev,
 				 "Firmware already present, initializing card.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (hdsp_read(hdsp, HDSP_status2Register) & HDSP_version2)
 				hdsp->io_type = RPM;
 			else if (hdsp_read(hdsp, HDSP_status2Register) & HDSP_version1)
@@ -6690,12 +5347,8 @@ static int snd_hdsp_create(struct snd_card *card,
 		}
 	}
 
-<<<<<<< HEAD
-	if ((err = snd_hdsp_enable_io(hdsp)) != 0)
-=======
 	err = snd_hdsp_enable_io(hdsp);
 	if (err)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	if (is_9652)
@@ -6704,12 +5357,8 @@ static int snd_hdsp_create(struct snd_card *card,
 	if (is_9632)
 		hdsp->io_type = H9632;
 
-<<<<<<< HEAD
-	if ((err = snd_hdsp_create_hwdep(card, hdsp)) < 0)
-=======
 	err = snd_hdsp_create_hwdep(card, hdsp);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	snd_hdsp_initialize_channels(hdsp);
@@ -6717,56 +5366,17 @@ static int snd_hdsp_create(struct snd_card *card,
 
 	hdsp->state |= HDSP_FirmwareLoaded;
 
-<<<<<<< HEAD
-	if ((err = snd_hdsp_create_alsa_devices(card, hdsp)) < 0)
-=======
 	err = snd_hdsp_create_alsa_devices(card, hdsp);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_hdsp_free(struct hdsp *hdsp)
-{
-	if (hdsp->port) {
-		/* stop the audio, and cancel all interrupts */
-		tasklet_kill(&hdsp->midi_tasklet);
-		hdsp->control_register &= ~(HDSP_Start|HDSP_AudioInterruptEnable|HDSP_Midi0InterruptEnable|HDSP_Midi1InterruptEnable);
-		hdsp_write (hdsp, HDSP_controlRegister, hdsp->control_register);
-	}
-
-	if (hdsp->irq >= 0)
-		free_irq(hdsp->irq, (void *)hdsp);
-
-	snd_hdsp_free_buffers(hdsp);
-
-	if (hdsp->iobase)
-		iounmap(hdsp->iobase);
-
-	if (hdsp->port)
-		pci_release_regions(hdsp->pci);
-
-	pci_disable_device(hdsp->pci);
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void snd_hdsp_card_free(struct snd_card *card)
 {
 	struct hdsp *hdsp = card->private_data;
 
-<<<<<<< HEAD
-	if (hdsp)
-		snd_hdsp_free(hdsp);
-}
-
-static int __devinit snd_hdsp_probe(struct pci_dev *pci,
-				    const struct pci_device_id *pci_id)
-=======
 	if (hdsp->port) {
 		/* stop the audio, and cancel all interrupts */
 		cancel_work_sync(&hdsp->midi_work);
@@ -6780,7 +5390,6 @@ static int __devinit snd_hdsp_probe(struct pci_dev *pci,
 
 static int snd_hdsp_probe(struct pci_dev *pci,
 			  const struct pci_device_id *pci_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct hdsp *hdsp;
@@ -6794,13 +5403,8 @@ static int snd_hdsp_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
-<<<<<<< HEAD
-	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
-			      sizeof(struct hdsp), &card);
-=======
 	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
 				sizeof(struct hdsp), &card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -6808,59 +5412,13 @@ static int snd_hdsp_probe(struct pci_dev *pci,
 	card->private_free = snd_hdsp_card_free;
 	hdsp->dev = dev;
 	hdsp->pci = pci;
-<<<<<<< HEAD
-	snd_card_set_dev(card, &pci->dev);
-
-	if ((err = snd_hdsp_create(card, hdsp)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-=======
 	err = snd_hdsp_create(card, hdsp);
 	if (err)
 		goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->shortname, "Hammerfall DSP");
 	sprintf(card->longname, "%s at 0x%lx, irq %d", hdsp->card_name,
 		hdsp->port, hdsp->irq);
-<<<<<<< HEAD
-
-	if ((err = snd_card_register(card)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-	pci_set_drvdata(pci, card);
-	dev++;
-	return 0;
-}
-
-static void __devexit snd_hdsp_remove(struct pci_dev *pci)
-{
-	snd_card_free(pci_get_drvdata(pci));
-	pci_set_drvdata(pci, NULL);
-}
-
-static struct pci_driver driver = {
-	.name =     KBUILD_MODNAME,
-	.id_table = snd_hdsp_ids,
-	.probe =    snd_hdsp_probe,
-	.remove = __devexit_p(snd_hdsp_remove),
-};
-
-static int __init alsa_card_hdsp_init(void)
-{
-	return pci_register_driver(&driver);
-}
-
-static void __exit alsa_card_hdsp_exit(void)
-{
-	pci_unregister_driver(&driver);
-}
-
-module_init(alsa_card_hdsp_init)
-module_exit(alsa_card_hdsp_exit)
-=======
 	err = snd_card_register(card);
 	if (err)
 		goto error;
@@ -6880,4 +5438,3 @@ static struct pci_driver hdsp_driver = {
 };
 
 module_pci_driver(hdsp_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

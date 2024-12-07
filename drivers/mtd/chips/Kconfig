@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menu "RAM/ROM/Flash chip drivers"
 	depends on MTD!=n
 
@@ -14,20 +11,13 @@ config MTD_CFI
 	  AMD and other flash manufactures that provides a universal method
 	  for probing the capabilities of flash devices. If you wish to
 	  support any device that is CFI-compliant, you need to enable this
-<<<<<<< HEAD
-	  option. Visit <http://www.amd.com/products/nvd/overview/cfi.html>
-=======
 	  option. Visit <https://www.amd.com/products/nvd/overview/cfi.html>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  for more information on CFI.
 
 config MTD_JEDECPROBE
 	tristate "Detect non-CFI AMD/JEDEC-compatible flash chips"
 	select MTD_GEN_PROBE
-<<<<<<< HEAD
-=======
 	select MTD_CFI_UTIL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option enables JEDEC-style probing of flash chips which are not
 	  compatible with the Common Flash Interface, but will use the common
@@ -55,14 +45,7 @@ choice
 	prompt "Flash cmd/query data swapping"
 	depends on MTD_CFI_ADV_OPTIONS
 	default MTD_CFI_NOSWAP
-<<<<<<< HEAD
-
-config MTD_CFI_NOSWAP
-	bool "NO"
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This option defines the way in which the CPU attempts to arrange
 	  data bits when writing the 'magic' commands to the chips. Saying
 	  'NO', which is the default when CONFIG_MTD_CFI_ADV_OPTIONS isn't
@@ -71,27 +54,15 @@ config MTD_CFI_NOSWAP
 	  Specific arrangements are possible with the BIG_ENDIAN_BYTE and
 	  LITTLE_ENDIAN_BYTE, if the bytes are reversed.
 
-<<<<<<< HEAD
-	  If you have a LART, on which the data (and address) lines were
-	  connected in a fashion which ensured that the nets were as short
-	  as possible, resulting in a bit-shuffling which seems utterly
-	  random to the untrained eye, you need the LART_ENDIAN_BYTE option.
-
-	  Yes, there really exists something sicker than PDP-endian :)
-=======
 config MTD_CFI_NOSWAP
 	depends on !ARCH_IXP4XX || CPU_BIG_ENDIAN
 	bool "NO"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MTD_CFI_BE_BYTE_SWAP
 	bool "BIG_ENDIAN_BYTE"
 
 config MTD_CFI_LE_BYTE_SWAP
-<<<<<<< HEAD
-=======
 	depends on !ARCH_IXP4XX
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool "LITTLE_ENDIAN_BYTE"
 
 endchoice
@@ -99,13 +70,10 @@ endchoice
 config MTD_CFI_GEOMETRY
 	bool "Specific CFI Flash geometry selection"
 	depends on MTD_CFI_ADV_OPTIONS
-<<<<<<< HEAD
-=======
 	select MTD_MAP_BANK_WIDTH_1 if  !(MTD_MAP_BANK_WIDTH_2 || \
 		 MTD_MAP_BANK_WIDTH_4  || MTD_MAP_BANK_WIDTH_8 || \
 		 MTD_MAP_BANK_WIDTH_16 || MTD_MAP_BANK_WIDTH_32)
 	select MTD_CFI_I1 if !(MTD_CFI_I2 || MTD_CFI_I4 || MTD_CFI_I8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option does not affect the code directly, but will enable
 	  some other configuration options which would allow you to reduce
@@ -150,10 +118,7 @@ config MTD_MAP_BANK_WIDTH_16
 
 config MTD_MAP_BANK_WIDTH_32
 	bool "Support 256-bit buswidth" if MTD_CFI_GEOMETRY
-<<<<<<< HEAD
-=======
 	select MTD_COMPLEX_MAPPINGS if HAS_IOMEM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	help
 	  If you wish to support CFI devices on a physical bus which is
@@ -190,10 +155,6 @@ config MTD_CFI_I8
 config MTD_OTP
 	bool "Protection Registers aka one-time programmable (OTP) bits"
 	depends on MTD_CFI_ADV_OPTIONS
-<<<<<<< HEAD
-	select HAVE_MTD_OTP
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	help
 	  This enables support for reading, writing and locking so called
@@ -217,57 +178,33 @@ config MTD_OTP
 	  in the programming of OTP bits will waste them.
 
 config MTD_CFI_INTELEXT
-<<<<<<< HEAD
-	tristate "Support for Intel/Sharp flash chips"
-=======
 	tristate "Support for CFI command set 0001 (Intel/Sharp chips)"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on MTD_GEN_PROBE
 	select MTD_CFI_UTIL
 	help
 	  The Common Flash Interface defines a number of different command
 	  sets which a CFI-compliant chip may claim to implement. This code
-<<<<<<< HEAD
-	  provides support for one of those command sets, used on Intel
-	  StrataFlash and other parts.
-
-config MTD_CFI_AMDSTD
-	tristate "Support for AMD/Fujitsu/Spansion flash chips"
-=======
 	  provides support for command set 0001, used on Intel StrataFlash
 	  and other parts.
 
 config MTD_CFI_AMDSTD
 	tristate "Support for CFI command set 0002 (AMD/Fujitsu/Spansion chips)"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on MTD_GEN_PROBE
 	select MTD_CFI_UTIL
 	help
 	  The Common Flash Interface defines a number of different command
 	  sets which a CFI-compliant chip may claim to implement. This code
-<<<<<<< HEAD
-	  provides support for one of those command sets, used on chips
-	  including the AMD Am29LV320.
-
-config MTD_CFI_STAA
-	tristate "Support for ST (Advanced Architecture) flash chips"
-=======
 	  provides support for command set 0002, used on chips including
 	  the AMD Am29LV320.
 
 config MTD_CFI_STAA
 	tristate "Support for CFI command set 0020 (ST (Advanced Architecture) chips)"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on MTD_GEN_PROBE
 	select MTD_CFI_UTIL
 	help
 	  The Common Flash Interface defines a number of different command
 	  sets which a CFI-compliant chip may claim to implement. This code
-<<<<<<< HEAD
-	  provides support for one of those command sets.
-=======
 	  provides support for command set 0020.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MTD_CFI_UTIL
 	tristate
@@ -296,11 +233,7 @@ config MTD_ABSENT
 
 config MTD_XIP
 	bool "XIP aware MTD support"
-<<<<<<< HEAD
-	depends on !SMP && (MTD_CFI_INTELEXT || MTD_CFI_AMDSTD) && EXPERIMENTAL && ARCH_MTD_XIP
-=======
 	depends on !SMP && (MTD_CFI_INTELEXT || MTD_CFI_AMDSTD) && ARCH_MTD_XIP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y if XIP_KERNEL
 	help
 	  This allows MTD support to work with flash memory which is also

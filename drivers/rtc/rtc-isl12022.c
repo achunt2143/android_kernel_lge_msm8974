@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * An I2C driver for the Intersil ISL 12022
  *
@@ -9,21 +6,6 @@
  *
  * Based on the Philips PCF8563 RTC
  * by Alessandro Zummo <a.zummo@towertech.it>.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- */
-
-#include <linux/i2c.h>
-#include <linux/bcd.h>
-#include <linux/rtc.h>
-#include <linux/slab.h>
-#include <linux/module.h>
-
-#define DRV_VERSION "0.1"
-=======
  */
 
 #include <linux/bcd.h>
@@ -38,7 +20,6 @@
 #include <linux/slab.h>
 
 #include <asm/byteorder.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ISL register offsets */
 #define ISL12022_REG_SC		0x00
@@ -52,14 +33,11 @@
 #define ISL12022_REG_SR		0x07
 #define ISL12022_REG_INT	0x08
 
-<<<<<<< HEAD
-=======
 #define ISL12022_REG_PWR_VBAT	0x0a
 
 #define ISL12022_REG_BETA	0x0d
 #define ISL12022_REG_TEMP_L	0x28
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ISL register bits */
 #define ISL12022_HR_MIL		(1 << 7)	/* military or 24 hour time */
 
@@ -67,69 +45,6 @@
 #define ISL12022_SR_LBAT75	(1 << 1)
 
 #define ISL12022_INT_WRTC	(1 << 6)
-<<<<<<< HEAD
-
-
-static struct i2c_driver isl12022_driver;
-
-struct isl12022 {
-	struct rtc_device *rtc;
-
-	bool write_enabled;	/* true if write enable is set */
-};
-
-
-static int isl12022_read_regs(struct i2c_client *client, uint8_t reg,
-			      uint8_t *data, size_t n)
-{
-	struct i2c_msg msgs[] = {
-		{
-			.addr	= client->addr,
-			.flags	= 0,
-			.len	= 1,
-			.buf	= data
-		},		/* setup read ptr */
-		{
-			.addr	= client->addr,
-			.flags	= I2C_M_RD,
-			.len	= n,
-			.buf	= data
-		}
-	};
-
-	int ret;
-
-	data[0] = reg;
-	ret = i2c_transfer(client->adapter, msgs, ARRAY_SIZE(msgs));
-	if (ret != ARRAY_SIZE(msgs)) {
-		dev_err(&client->dev, "%s: read error, ret=%d\n",
-			__func__, ret);
-		return -EIO;
-	}
-
-	return 0;
-}
-
-
-static int isl12022_write_reg(struct i2c_client *client,
-			      uint8_t reg, uint8_t val)
-{
-	uint8_t data[2] = { reg, val };
-	int err;
-
-	err = i2c_master_send(client, data, sizeof(data));
-	if (err != sizeof(data)) {
-		dev_err(&client->dev,
-			"%s: err=%d addr=%02x, data=%02x\n",
-			__func__, err, data[0], data[1]);
-		return -EIO;
-	}
-
-	return 0;
-}
-
-
-=======
 #define ISL12022_INT_FO_MASK	GENMASK(3, 0)
 #define ISL12022_INT_FO_OFF	0x0
 #define ISL12022_INT_FO_32K	0x1
@@ -222,34 +137,10 @@ static void isl12022_hwmon_register(struct device *dev)
 		dev_warn(dev, "unable to register hwmon device: %pe\n", hwmon);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * In the routines that deal directly with the isl12022 hardware, we use
  * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch.
  */
-<<<<<<< HEAD
-static int isl12022_get_datetime(struct i2c_client *client, struct rtc_time *tm)
-{
-	uint8_t buf[ISL12022_REG_INT + 1];
-	int ret;
-
-	ret = isl12022_read_regs(client, ISL12022_REG_SC, buf, sizeof(buf));
-	if (ret)
-		return ret;
-
-	if (buf[ISL12022_REG_SR] & (ISL12022_SR_LBAT85 | ISL12022_SR_LBAT75)) {
-		dev_warn(&client->dev,
-			 "voltage dropped below %u%%, "
-			 "date and time is not reliable.\n",
-			 buf[ISL12022_REG_SR] & ISL12022_SR_LBAT85 ? 85 : 75);
-	}
-
-	dev_dbg(&client->dev,
-		"%s: raw data is sec=%02x, min=%02x, hr=%02x, "
-		"mday=%02x, mon=%02x, year=%02x, wday=%02x, "
-		"sr=%02x, int=%02x",
-		__func__,
-=======
 static int isl12022_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct regmap *regmap = dev_get_drvdata(dev);
@@ -262,7 +153,6 @@ static int isl12022_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	dev_dbg(dev,
 		"raw data is sec=%02x, min=%02x, hr=%02x, mday=%02x, mon=%02x, year=%02x, wday=%02x, sr=%02x, int=%02x",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		buf[ISL12022_REG_SC],
 		buf[ISL12022_REG_MN],
 		buf[ISL12022_REG_HR],
@@ -281,75 +171,11 @@ static int isl12022_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_mon = bcd2bin(buf[ISL12022_REG_MO] & 0x1F) - 1;
 	tm->tm_year = bcd2bin(buf[ISL12022_REG_YR]) + 100;
 
-<<<<<<< HEAD
-	dev_dbg(&client->dev, "%s: secs=%d, mins=%d, hours=%d, "
-		"mday=%d, mon=%d, year=%d, wday=%d\n",
-		__func__,
-		tm->tm_sec, tm->tm_min, tm->tm_hour,
-		tm->tm_mday, tm->tm_mon, tm->tm_year, tm->tm_wday);
-
-	/* The clock can give out invalid datetime, but we cannot return
-	 * -EINVAL otherwise hwclock will refuse to set the time on bootup. */
-	if (rtc_valid_tm(tm) < 0)
-		dev_err(&client->dev, "retrieved date and time is invalid.\n");
-=======
 	dev_dbg(dev, "%s: %ptR\n", __func__, tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int isl12022_set_datetime(struct i2c_client *client, struct rtc_time *tm)
-{
-	struct isl12022 *isl12022 = i2c_get_clientdata(client);
-	size_t i;
-	int ret;
-	uint8_t buf[ISL12022_REG_DW + 1];
-
-	dev_dbg(&client->dev, "%s: secs=%d, mins=%d, hours=%d, "
-		"mday=%d, mon=%d, year=%d, wday=%d\n",
-		__func__,
-		tm->tm_sec, tm->tm_min, tm->tm_hour,
-		tm->tm_mday, tm->tm_mon, tm->tm_year, tm->tm_wday);
-
-	if (!isl12022->write_enabled) {
-
-		ret = isl12022_read_regs(client, ISL12022_REG_INT, buf, 1);
-		if (ret)
-			return ret;
-
-		/* Check if WRTC (write rtc enable) is set factory default is
-		 * 0 (not set) */
-		if (!(buf[0] & ISL12022_INT_WRTC)) {
-			dev_info(&client->dev,
-				 "init write enable and 24 hour format\n");
-
-			/* Set the write enable bit. */
-			ret = isl12022_write_reg(client,
-						 ISL12022_REG_INT,
-						 buf[0] | ISL12022_INT_WRTC);
-			if (ret)
-				return ret;
-
-			/* Write to any RTC register to start RTC, we use the
-			 * HR register, setting the MIL bit to use the 24 hour
-			 * format. */
-			ret = isl12022_read_regs(client, ISL12022_REG_HR,
-						 buf, 1);
-			if (ret)
-				return ret;
-
-			ret = isl12022_write_reg(client,
-						 ISL12022_REG_HR,
-						 buf[0] | ISL12022_HR_MIL);
-			if (ret)
-				return ret;
-		}
-
-		isl12022->write_enabled = 1;
-	}
-=======
 static int isl12022_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct regmap *regmap = dev_get_drvdata(dev);
@@ -363,7 +189,6 @@ static int isl12022_rtc_set_time(struct device *dev, struct rtc_time *tm)
 				 ISL12022_INT_WRTC, ISL12022_INT_WRTC);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* hours, minutes and seconds */
 	buf[ISL12022_REG_SC] = bin2bcd(tm->tm_sec);
@@ -380,30 +205,6 @@ static int isl12022_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	buf[ISL12022_REG_DW] = tm->tm_wday & 0x07;
 
-<<<<<<< HEAD
-	/* write register's data */
-	for (i = 0; i < ARRAY_SIZE(buf); i++) {
-		ret = isl12022_write_reg(client, ISL12022_REG_SC + i,
-					 buf[ISL12022_REG_SC + i]);
-		if (ret)
-			return -EIO;
-	};
-
-	return 0;
-}
-
-static int isl12022_rtc_read_time(struct device *dev, struct rtc_time *tm)
-{
-	return isl12022_get_datetime(to_i2c_client(dev), tm);
-}
-
-static int isl12022_rtc_set_time(struct device *dev, struct rtc_time *tm)
-{
-	return isl12022_set_datetime(to_i2c_client(dev), tm);
-}
-
-static const struct rtc_class_ops isl12022_rtc_ops = {
-=======
 	return regmap_bulk_write(regmap, ISL12022_REG_SC, buf, sizeof(buf));
 }
 
@@ -435,19 +236,10 @@ static int isl12022_rtc_ioctl(struct device *dev, unsigned int cmd, unsigned lon
 
 static const struct rtc_class_ops isl12022_rtc_ops = {
 	.ioctl		= isl12022_rtc_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read_time	= isl12022_rtc_read_time,
 	.set_time	= isl12022_rtc_set_time,
 };
 
-<<<<<<< HEAD
-static int isl12022_probe(struct i2c_client *client,
-			  const struct i2c_device_id *id)
-{
-	struct isl12022 *isl12022;
-
-	int ret = 0;
-=======
 static const struct regmap_config regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
@@ -536,52 +328,10 @@ static int isl12022_probe(struct i2c_client *client)
 	struct rtc_device *rtc;
 	struct regmap *regmap;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	isl12022 = kzalloc(sizeof(struct isl12022), GFP_KERNEL);
-	if (!isl12022)
-		return -ENOMEM;
-
-	dev_dbg(&client->dev, "chip found, driver version " DRV_VERSION "\n");
-
-	i2c_set_clientdata(client, isl12022);
-
-	isl12022->rtc = rtc_device_register(isl12022_driver.driver.name,
-					    &client->dev,
-					    &isl12022_rtc_ops,
-					    THIS_MODULE);
-
-	if (IS_ERR(isl12022->rtc)) {
-		ret = PTR_ERR(isl12022->rtc);
-		goto exit_kfree;
-	}
-
-	return 0;
-
-exit_kfree:
-	kfree(isl12022);
-
-	return ret;
-}
-
-static int isl12022_remove(struct i2c_client *client)
-{
-	struct isl12022 *isl12022 = i2c_get_clientdata(client);
-
-	rtc_device_unregister(isl12022->rtc);
-	kfree(isl12022);
-
-	return 0;
-}
-
-static const struct i2c_device_id isl12022_id[] = {
-	{ "isl12022", 0 },
-	{ "rtc8564", 0 },
-=======
 	regmap = devm_regmap_init_i2c(client, &regmap_config);
 	if (IS_ERR(regmap)) {
 		dev_err(&client->dev, "regmap allocation failed\n");
@@ -617,7 +367,6 @@ MODULE_DEVICE_TABLE(of, isl12022_dt_match);
 
 static const struct i2c_device_id isl12022_id[] = {
 	{ "isl12022", 0 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, isl12022_id);
@@ -625,15 +374,9 @@ MODULE_DEVICE_TABLE(i2c, isl12022_id);
 static struct i2c_driver isl12022_driver = {
 	.driver		= {
 		.name	= "rtc-isl12022",
-<<<<<<< HEAD
-	},
-	.probe		= isl12022_probe,
-	.remove		= isl12022_remove,
-=======
 		.of_match_table = isl12022_dt_match,
 	},
 	.probe		= isl12022_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= isl12022_id,
 };
 
@@ -642,7 +385,3 @@ module_i2c_driver(isl12022_driver);
 MODULE_AUTHOR("roman.fietze@telemotive.de");
 MODULE_DESCRIPTION("ISL 12022 RTC driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_VERSION(DRV_VERSION);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

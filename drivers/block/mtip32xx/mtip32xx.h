@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * mtip32xx.h - Header file for the P320 SSD Block Driver
  *   Copyright (C) 2011 Micron Technology, Inc.
@@ -9,20 +6,6 @@
  * Portions of this code were derived from works subjected to the
  * following copyright:
  *    Copyright (C) 2009 Integrated Device Technology, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MTIP32XX_H__
@@ -32,11 +15,6 @@
 #include <linux/rwsem.h>
 #include <linux/ata.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/genhd.h>
-#include <linux/version.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Offset of Subsystem Device ID in pci confoguration space */
 #define PCI_SUBSYSTEM_DEVICEID	0x2E
@@ -44,27 +22,18 @@
 /* offset of Device Control register in PCIe extended capabilites space */
 #define PCIE_CONFIG_EXT_DEVICE_CONTROL_OFFSET	0x48
 
-<<<<<<< HEAD
-=======
 /* check for erase mode support during secure erase */
 #define MTIP_SEC_ERASE_MODE     0x2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* # of times to retry timed out/failed IOs */
 #define MTIP_MAX_RETRIES	2
 
 /* Various timeout values in ms */
-<<<<<<< HEAD
-#define MTIP_NCQ_COMMAND_TIMEOUT_MS       5000
-#define MTIP_IOCTL_COMMAND_TIMEOUT_MS     5000
-#define MTIP_INTERNAL_COMMAND_TIMEOUT_MS  5000
-=======
 #define MTIP_NCQ_CMD_TIMEOUT_MS      15000
 #define MTIP_IOCTL_CMD_TIMEOUT_MS    5000
 #define MTIP_INT_CMD_TIMEOUT_MS      5000
 #define MTIP_QUIESCE_IO_TIMEOUT_MS   (MTIP_NCQ_CMD_TIMEOUT_MS * \
 				     (MTIP_MAX_RETRIES + 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* check for timeouts every 500ms */
 #define MTIP_TIMEOUT_CHECK_PERIOD	500
@@ -74,12 +43,9 @@
 #define MTIP_FTL_REBUILD_MAGIC		0xED51
 #define MTIP_FTL_REBUILD_TIMEOUT_MS	2400000
 
-<<<<<<< HEAD
-=======
 /* unaligned IO handling */
 #define MTIP_MAX_UNALIGNED_SLOTS	2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Macro to extract the tag bit number from a tag value. */
 #define MTIP_TAG_BIT(tag)	(tag & 0x1F)
 
@@ -94,11 +60,7 @@
  * Maximum number of scatter gather entries
  * a single command may have.
  */
-<<<<<<< HEAD
-#define MTIP_MAX_SG		128
-=======
 #define MTIP_MAX_SG		504
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Maximum number of slot groups (Command Issue & s_active registers)
@@ -111,13 +73,6 @@
 
 /* Micron Vendor ID & P320x SSD Device ID */
 #define PCI_VENDOR_ID_MICRON    0x1344
-<<<<<<< HEAD
-#define P320_DEVICE_ID		0x5150
-
-/* Driver name and version strings */
-#define MTIP_DRV_NAME		"mtip32xx"
-#define MTIP_DRV_VERSION	"1.2.6os3"
-=======
 #define P320H_DEVICE_ID		0x5150
 #define P320M_DEVICE_ID		0x5151
 #define P320S_DEVICE_ID		0x5152
@@ -129,7 +84,6 @@
 /* Driver name and version strings */
 #define MTIP_DRV_NAME		"mtip32xx"
 #define MTIP_DRV_VERSION	"1.3.1"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Maximum number of minor device numbers per device. */
 #define MTIP_MAX_MINORS		16
@@ -159,46 +113,6 @@
  #define dbg_printk(format, arg...)
 #endif
 
-<<<<<<< HEAD
-#define __force_bit2int (unsigned int __force)
-
-/* below are bit numbers in 'flags' defined in mtip_port */
-#define MTIP_PF_IC_ACTIVE_BIT		0 /* pio/ioctl */
-#define MTIP_PF_EH_ACTIVE_BIT		1 /* error handling */
-#define MTIP_PF_SE_ACTIVE_BIT		2 /* secure erase */
-#define MTIP_PF_DM_ACTIVE_BIT		3 /* download microcde */
-#define MTIP_PF_PAUSE_IO	((1 << MTIP_PF_IC_ACTIVE_BIT) | \
-				(1 << MTIP_PF_EH_ACTIVE_BIT) | \
-				(1 << MTIP_PF_SE_ACTIVE_BIT) | \
-				(1 << MTIP_PF_DM_ACTIVE_BIT))
-
-#define MTIP_PF_SVC_THD_ACTIVE_BIT	4
-#define MTIP_PF_ISSUE_CMDS_BIT		5
-#define MTIP_PF_REBUILD_BIT		6
-#define MTIP_PF_SVC_THD_STOP_BIT	8
-
-/* below are bit numbers in 'dd_flag' defined in driver_data */
-#define MTIP_DDF_REMOVE_PENDING_BIT	1
-#define MTIP_DDF_OVER_TEMP_BIT		2
-#define MTIP_DDF_WRITE_PROTECT_BIT	3
-#define MTIP_DDF_STOP_IO	((1 << MTIP_DDF_REMOVE_PENDING_BIT) | \
-				(1 << MTIP_DDF_OVER_TEMP_BIT) | \
-				(1 << MTIP_DDF_WRITE_PROTECT_BIT))
-
-#define MTIP_DDF_CLEANUP_BIT		5
-#define MTIP_DDF_RESUME_BIT		6
-#define MTIP_DDF_INIT_DONE_BIT		7
-#define MTIP_DDF_REBUILD_FAILED_BIT	8
-
-__packed struct smart_attr{
-	u8 attr_id;
-	u16 flags;
-	u8 cur;
-	u8 worst;
-	u32 data;
-	u8 res[3];
-};
-=======
 #define MTIP_DFS_MAX_BUF_SIZE 1024
 
 enum {
@@ -266,7 +180,6 @@ struct mtip_work {
 		struct mtip_work *w = (struct mtip_work *) work;         \
 		mtip_workq_sdbfx(w->port, group, w->completed);     \
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Register Frame Information Structure (FIS), host to device. */
 struct host_to_dev_fis {
@@ -336,42 +249,24 @@ struct mtip_cmd_hdr {
 	 * - Bit 5 Unused in this implementation.
 	 * - Bits 4:0 Length of the command FIS in DWords (DWord = 4 bytes).
 	 */
-<<<<<<< HEAD
-	unsigned int opts;
-	/* This field is unsed when using NCQ. */
-	union {
-		unsigned int byte_count;
-		unsigned int status;
-=======
 	__le32 opts;
 	/* This field is unsed when using NCQ. */
 	union {
 		__le32 byte_count;
 		__le32 status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	/*
 	 * Lower 32 bits of the command table address associated with this
 	 * header. The command table addresses must be 128 byte aligned.
 	 */
-<<<<<<< HEAD
-	unsigned int ctba;
-=======
 	__le32 ctba;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If 64 bit addressing is used this field is the upper 32 bits
 	 * of the command table address associated with this command.
 	 */
-<<<<<<< HEAD
-	unsigned int ctbau;
-	/* Reserved and unused. */
-	unsigned int res[4];
-=======
 	__le32 ctbau;
 	/* Reserved and unused. */
 	u32 res[4];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Command scatter gather structure (PRD). */
@@ -381,43 +276,20 @@ struct mtip_cmd_sg {
 	 * address must be 8 byte aligned signified by bits 2:0 being
 	 * set to 0.
 	 */
-<<<<<<< HEAD
-	unsigned int dba;
-=======
 	__le32 dba;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * When 64 bit addressing is used this field is the upper
 	 * 32 bits of the data buffer address.
 	 */
-<<<<<<< HEAD
-	unsigned int dba_upper;
-	/* Unused. */
-	unsigned int reserved;
-=======
 	__le32 dba_upper;
 	/* Unused. */
 	__le32 reserved;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Bit 31: interrupt when this data block has been transferred.
 	 * Bits 30..22: reserved
 	 * Bits 21..0: byte count (minus 1).  For P320 the byte count must be
 	 * 8 byte aligned signified by bits 2:0 being set to 1.
 	 */
-<<<<<<< HEAD
-	unsigned int info;
-};
-struct mtip_port;
-
-/* Structure used to describe a command. */
-struct mtip_cmd {
-
-	struct mtip_cmd_hdr *command_header; /* ptr to command header entry */
-
-	dma_addr_t command_header_dma; /* corresponding physical address */
-
-=======
 	__le32 info;
 };
 struct mtip_port;
@@ -426,30 +298,10 @@ struct mtip_int_cmd;
 
 /* Structure used to describe a command. */
 struct mtip_cmd {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *command; /* ptr to command table entry */
 
 	dma_addr_t command_dma; /* corresponding physical address */
 
-<<<<<<< HEAD
-	void *comp_data; /* data passed to completion function comp_func() */
-	/*
-	 * Completion function called by the ISR upon completion of
-	 * a command.
-	 */
-	void (*comp_func)(struct mtip_port *port,
-				int tag,
-				void *data,
-				int status);
-	/* Additional callback function that may be called by comp_func() */
-	void (*async_callback)(void *data, int status);
-
-	void *async_data; /* Addl. data passed to async_callback() */
-
-	int scatter_ents; /* Number of scatter list entries used */
-
-	struct scatterlist sg[MTIP_MAX_SG]; /* Scatter list entries */
-=======
 	int scatter_ents; /* Number of scatter list entries used */
 
 	int unaligned; /* command is unaligned on 4k boundary */
@@ -458,19 +310,11 @@ struct mtip_cmd {
 		struct scatterlist sg[MTIP_MAX_SG]; /* Scatter list entries */
 		struct mtip_int_cmd *icmd;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int retries; /* The number of retries left for this command. */
 
 	int direction; /* Data transfer direction */
-<<<<<<< HEAD
-
-	unsigned long comp_time; /* command completion time, in jiffies */
-
-	atomic_t active; /* declares if this command sent to the drive. */
-=======
 	blk_status_t status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Structure used to describe a port. */
@@ -511,17 +355,6 @@ struct mtip_port {
 	 */
 	dma_addr_t rxfis_dma;
 	/*
-<<<<<<< HEAD
-	 * Pointer to the beginning of the command table memory as used
-	 * by the driver.
-	 */
-	void *command_table;
-	/*
-	 * Pointer to the beginning of the command table memory as used
-	 * by the DMA.
-	 */
-	dma_addr_t command_tbl_dma;
-=======
 	 * Pointer to the DMA region for RX Fis, Identify, RLE10, and SMART
 	 */
 	void *block1;
@@ -529,7 +362,6 @@ struct mtip_port {
 	 * DMA address of region for RX Fis, Identify, RLE10, and SMART
 	 */
 	dma_addr_t block1_dma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Pointer to the beginning of the identify data memory as used
 	 * by the driver.
@@ -550,40 +382,18 @@ struct mtip_port {
 	 * by the DMA when the driver issues internal commands.
 	 */
 	dma_addr_t sector_buffer_dma;
-<<<<<<< HEAD
-	/*
-	 * Bit significant, used to determine if a command slot has
-	 * been allocated. i.e. the slot is in use.  Bits are cleared
-	 * when the command slot and all associated data structures
-	 * are no longer needed.
-	 */
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 *log_buf;
 	dma_addr_t log_buf_dma;
 
 	u8 *smart_buf;
 	dma_addr_t smart_buf_dma;
 
-<<<<<<< HEAD
-	unsigned long allocated[SLOTBITS_IN_LONGS];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * used to queue commands when an internal command is in progress
 	 * or error handling is active
 	 */
 	unsigned long cmds_to_issue[SLOTBITS_IN_LONGS];
-<<<<<<< HEAD
-	/*
-	 * Array of command slots. Structure includes pointers to the
-	 * command header and command table, and completion function and data
-	 * pointers.
-	 */
-	struct mtip_cmd commands[MTIP_MAX_COMMAND_SLOTS];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Used by mtip_service_thread to wait for an event */
 	wait_queue_head_t svc_wait;
 	/*
@@ -594,17 +404,6 @@ struct mtip_port {
 	/*
 	 * Timer used to complete commands that have been active for too long.
 	 */
-<<<<<<< HEAD
-	struct timer_list cmd_timer;
-	unsigned long ic_pause_timer;
-	/*
-	 * Semaphore used to block threads if there are no
-	 * command slots available.
-	 */
-	struct semaphore cmd_slot;
-	/* Spinlock for working around command-issue bug. */
-	spinlock_t cmd_issue_lock;
-=======
 	unsigned long ic_pause_timer;
 
 	/* Counter to control queue depth of unaligned IOs */
@@ -612,7 +411,6 @@ struct mtip_port {
 
 	/* Spinlock for working around command-issue bug. */
 	spinlock_t cmd_issue_lock[MTIP_MAX_SLOT_GROUPS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -633,16 +431,9 @@ struct driver_data {
 
 	struct request_queue *queue; /* Our request queue. */
 
-<<<<<<< HEAD
-	struct mtip_port *port; /* Pointer to the port data structure. */
-
-	/* Tasklet used to process the bottom half of the ISR. */
-	struct tasklet_struct tasklet;
-=======
 	struct blk_mq_tag_set tags; /* blk_mq tags */
 
 	struct mtip_port *port; /* Pointer to the port data structure. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned product_type; /* magic value declaring the product type */
 
@@ -653,8 +444,6 @@ struct driver_data {
 	unsigned long dd_flag; /* NOTE: use atomic bit operations on this */
 
 	struct task_struct *mtip_svc_handler; /* task_struct of svc thd */
-<<<<<<< HEAD
-=======
 
 	struct dentry *dfs_node;
 
@@ -673,7 +462,6 @@ struct driver_data {
 	int isr_binding;
 
 	int unal_qdepth; /* qdepth of unaligned IO queue */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

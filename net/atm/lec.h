@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Lan Emulation client header file
  *
@@ -59,19 +56,11 @@ struct lane2_ops {
  * frames.
  *
  * 1. Dix Ethernet EtherType frames encoded by placing EtherType
-<<<<<<< HEAD
- *    field in h_type field. Data follows immediatelly after header.
- * 2. LLC Data frames whose total length, including LLC field and data,
- *    but not padding required to meet the minimum data frame length,
- *    is less than 1536(0x0600) MUST be encoded by placing that length
- *    in the h_type field. The LLC field follows header immediatelly.
-=======
  *    field in h_type field. Data follows immediately after header.
  * 2. LLC Data frames whose total length, including LLC field and data,
  *    but not padding required to meet the minimum data frame length,
  *    is less than ETH_P_802_3_MIN MUST be encoded by placing that length
  *    in the h_type field. The LLC field follows header immediately.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 3. LLC data frames longer than this maximum MUST be encoded by placing
  *    the value 0 in the h_type field.
  *
@@ -154,10 +143,6 @@ struct lec_priv {
 	int itfnum;				/* e.g. 2 for lec2, 5 for lec5 */
 	struct lane2_ops *lane2_ops;		/* can be NULL for LANE v1 */
 	int is_proxy;				/* bridge between ATM and Ethernet */
-<<<<<<< HEAD
-	int is_trdev;				/* Device type, 0 = Ethernet, 1 = TokenRing */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct lec_vcc_priv {

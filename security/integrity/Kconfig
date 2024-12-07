@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-#
-config INTEGRITY
-	def_bool y
-	depends on IMA || EVM
-
-config INTEGRITY_SIGNATURE
-	boolean "Digital signature verification using multiple keyrings"
-	depends on INTEGRITY && KEYS
-	default n
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 #
 config INTEGRITY
@@ -31,7 +20,6 @@ config INTEGRITY_SIGNATURE
 	bool "Digital signature verification using multiple keyrings"
 	default n
 	select KEYS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SIGNATURE
 	help
 	  This option enables digital signature verification support
@@ -42,10 +30,6 @@ config INTEGRITY_SIGNATURE
 	  This is useful for evm and module keyrings, when keys are
 	  usually only added from initramfs.
 
-<<<<<<< HEAD
-source security/integrity/ima/Kconfig
-source security/integrity/evm/Kconfig
-=======
 config INTEGRITY_ASYMMETRIC_KEYS
 	bool "Enable asymmetric keys support"
 	depends on INTEGRITY_SIGNATURE
@@ -150,4 +134,3 @@ source "security/integrity/ima/Kconfig"
 source "security/integrity/evm/Kconfig"
 
 endif   # if INTEGRITY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

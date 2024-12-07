@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/net/sunrpc/xprtsock.c
  *
@@ -37,10 +34,7 @@
 #include <linux/udp.h>
 #include <linux/tcp.h>
 #include <linux/sunrpc/clnt.h>
-<<<<<<< HEAD
-=======
 #include <linux/sunrpc/addr.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sunrpc/sched.h>
 #include <linux/sunrpc/svcsock.h>
 #include <linux/sunrpc/xprtsock.h>
@@ -53,12 +47,6 @@
 #include <net/checksum.h>
 #include <net/udp.h>
 #include <net/tcp.h>
-<<<<<<< HEAD
-
-#include "sunrpc.h"
-
-static void xs_close(struct rpc_xprt *xprt);
-=======
 #include <net/tls_prot.h>
 #include <net/handshake.h>
 
@@ -78,7 +66,6 @@ static void xs_reset_srcport(struct sock_xprt *transport);
 static void xs_set_srcport(struct sock_xprt *transport, struct socket *sock);
 static void xs_tcp_set_socket_timeouts(struct rpc_xprt *xprt,
 		struct socket *sock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * xprtsock tunables
@@ -95,22 +82,13 @@ static unsigned int xs_tcp_fin_timeout __read_mostly = XS_TCP_LINGER_TO;
 
 /*
  * We can register our own files under /proc/sys/sunrpc by
-<<<<<<< HEAD
- * calling register_sysctl_table() again.  The files in that
-=======
  * calling register_sysctl() again.  The files in that
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * directory become the union of all files registered there.
  *
  * We simply need to make sure that we don't collide with
  * someone else's file names!
  */
 
-<<<<<<< HEAD
-#ifdef RPC_DEBUG
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int min_slot_table_size = RPC_MIN_SLOT_TABLE;
 static unsigned int max_slot_table_size = RPC_MAX_SLOT_TABLE;
 static unsigned int max_tcp_slot_table_limit = RPC_MAX_SLOT_TABLE_LIMIT;
@@ -119,24 +97,17 @@ static unsigned int xprt_max_resvport_limit = RPC_MAX_RESVPORT;
 
 static struct ctl_table_header *sunrpc_table_header;
 
-<<<<<<< HEAD
-=======
 static struct xprt_class xs_local_transport;
 static struct xprt_class xs_udp_transport;
 static struct xprt_class xs_tcp_transport;
 static struct xprt_class xs_tcp_tls_transport;
 static struct xprt_class xs_bc_tcp_transport;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * FIXME: changing the UDP slot table size should also resize the UDP
  *        socket buffers for existing UDP transports
  */
-<<<<<<< HEAD
-static ctl_table xs_tunables_table[] = {
-=======
 static struct ctl_table xs_tunables_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "udp_slot_table_entries",
 		.data		= &xprt_udp_slot_table_entries,
@@ -192,20 +163,6 @@ static struct ctl_table xs_tunables_table[] = {
 	{ },
 };
 
-<<<<<<< HEAD
-static ctl_table sunrpc_table[] = {
-	{
-		.procname	= "sunrpc",
-		.mode		= 0555,
-		.child		= xs_tunables_table
-	},
-	{ },
-};
-
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Wait duration for a reply from the RPC portmapper.
  */
@@ -227,10 +184,6 @@ static ctl_table sunrpc_table[] = {
  * increase over time if the server is down or not responding.
  */
 #define XS_TCP_INIT_REEST_TO	(3U * HZ)
-<<<<<<< HEAD
-#define XS_TCP_MAX_REEST_TO	(5U * 60 * HZ)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * TCP idle timeout; client drops the transport socket if it is idle
@@ -239,16 +192,12 @@ static ctl_table sunrpc_table[] = {
  */
 #define XS_IDLE_DISC_TO		(5U * 60 * HZ)
 
-<<<<<<< HEAD
-#ifdef RPC_DEBUG
-=======
 /*
  * TLS handshake timeout.
  */
 #define XS_TLS_HANDSHAKE_TO	(10U * HZ)
 
 #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # undef  RPC_DEBUG_DATA
 # define RPCDBG_FACILITY	RPCDBG_TRANS
 #endif
@@ -278,70 +227,10 @@ static inline void xs_pktdump(char *msg, u32 *packet, unsigned int count)
 }
 #endif
 
-<<<<<<< HEAD
-struct sock_xprt {
-	struct rpc_xprt		xprt;
-
-	/*
-	 * Network layer
-	 */
-	struct socket *		sock;
-	struct sock *		inet;
-
-	/*
-	 * State of TCP reply receive
-	 */
-	__be32			tcp_fraghdr,
-				tcp_xid,
-				tcp_calldir;
-
-	u32			tcp_offset,
-				tcp_reclen;
-
-	unsigned long		tcp_copied,
-				tcp_flags;
-
-	/*
-	 * Connection of transports
-	 */
-	struct delayed_work	connect_worker;
-	struct sockaddr_storage	srcaddr;
-	unsigned short		srcport;
-
-	/*
-	 * UDP socket buffer size parameters
-	 */
-	size_t			rcvsize,
-				sndsize;
-
-	/*
-	 * Saved socket callback addresses
-	 */
-	void			(*old_data_ready)(struct sock *, int);
-	void			(*old_state_change)(struct sock *);
-	void			(*old_write_space)(struct sock *);
-};
-
-/*
- * TCP receive state flags
- */
-#define TCP_RCV_LAST_FRAG	(1UL << 0)
-#define TCP_RCV_COPY_FRAGHDR	(1UL << 1)
-#define TCP_RCV_COPY_XID	(1UL << 2)
-#define TCP_RCV_COPY_DATA	(1UL << 3)
-#define TCP_RCV_READ_CALLDIR	(1UL << 4)
-#define TCP_RCV_COPY_CALLDIR	(1UL << 5)
-
-/*
- * TCP RPC flags
- */
-#define TCP_RPC_REPLY		(1UL << 6)
-=======
 static inline struct rpc_xprt *xprt_from_sock(struct sock *sk)
 {
 	return (struct rpc_xprt *) sk->sk_user_data;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct sockaddr *xs_addr(struct rpc_xprt *xprt)
 {
@@ -374,16 +263,12 @@ static void xs_format_common_peer_addresses(struct rpc_xprt *xprt)
 	switch (sap->sa_family) {
 	case AF_LOCAL:
 		sun = xs_addr_un(xprt);
-<<<<<<< HEAD
-		strlcpy(buf, sun->sun_path, sizeof(buf));
-=======
 		if (sun->sun_path[0]) {
 			strscpy(buf, sun->sun_path, sizeof(buf));
 		} else {
 			buf[0] = '@';
 			strscpy(buf+1, sun->sun_path+1, sizeof(buf)-1);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xprt->address_strings[RPC_DISPLAY_ADDR] =
 						kstrdup(buf, GFP_KERNEL);
 		break;
@@ -452,180 +337,6 @@ static void xs_free_peer_addresses(struct rpc_xprt *xprt)
 		}
 }
 
-<<<<<<< HEAD
-#define XS_SENDMSG_FLAGS	(MSG_DONTWAIT | MSG_NOSIGNAL)
-
-static int xs_send_kvec(struct socket *sock, struct sockaddr *addr, int addrlen, struct kvec *vec, unsigned int base, int more)
-{
-	struct msghdr msg = {
-		.msg_name	= addr,
-		.msg_namelen	= addrlen,
-		.msg_flags	= XS_SENDMSG_FLAGS | (more ? MSG_MORE : 0),
-	};
-	struct kvec iov = {
-		.iov_base	= vec->iov_base + base,
-		.iov_len	= vec->iov_len - base,
-	};
-
-	if (iov.iov_len != 0)
-		return kernel_sendmsg(sock, &msg, &iov, 1, iov.iov_len);
-	return kernel_sendmsg(sock, &msg, NULL, 0, 0);
-}
-
-static int xs_send_pagedata(struct socket *sock, struct xdr_buf *xdr, unsigned int base, int more, bool zerocopy)
-{
-	ssize_t (*do_sendpage)(struct socket *sock, struct page *page,
-			int offset, size_t size, int flags);
-	struct page **ppage;
-	unsigned int remainder;
-	int err, sent = 0;
-
-	remainder = xdr->page_len - base;
-	base += xdr->page_base;
-	ppage = xdr->pages + (base >> PAGE_SHIFT);
-	base &= ~PAGE_MASK;
-	do_sendpage = sock->ops->sendpage;
-	if (!zerocopy)
-		do_sendpage = sock_no_sendpage;
-	for(;;) {
-		unsigned int len = min_t(unsigned int, PAGE_SIZE - base, remainder);
-		int flags = XS_SENDMSG_FLAGS;
-
-		remainder -= len;
-		if (remainder != 0 || more)
-			flags |= MSG_MORE;
-		err = do_sendpage(sock, *ppage, base, len, flags);
-		if (remainder == 0 || err != len)
-			break;
-		sent += err;
-		ppage++;
-		base = 0;
-	}
-	if (sent == 0)
-		return err;
-	if (err > 0)
-		sent += err;
-	return sent;
-}
-
-/**
- * xs_sendpages - write pages directly to a socket
- * @sock: socket to send on
- * @addr: UDP only -- address of destination
- * @addrlen: UDP only -- length of destination address
- * @xdr: buffer containing this request
- * @base: starting position in the buffer
- * @zerocopy: true if it is safe to use sendpage()
- *
- */
-static int xs_sendpages(struct socket *sock, struct sockaddr *addr, int addrlen, struct xdr_buf *xdr, unsigned int base, bool zerocopy)
-{
-	unsigned int remainder = xdr->len - base;
-	int err, sent = 0;
-
-	if (unlikely(!sock))
-		return -ENOTSOCK;
-
-	clear_bit(SOCK_ASYNC_NOSPACE, &sock->flags);
-	if (base != 0) {
-		addr = NULL;
-		addrlen = 0;
-	}
-
-	if (base < xdr->head[0].iov_len || addr != NULL) {
-		unsigned int len = xdr->head[0].iov_len - base;
-		remainder -= len;
-		err = xs_send_kvec(sock, addr, addrlen, &xdr->head[0], base, remainder != 0);
-		if (remainder == 0 || err != len)
-			goto out;
-		sent += err;
-		base = 0;
-	} else
-		base -= xdr->head[0].iov_len;
-
-	if (base < xdr->page_len) {
-		unsigned int len = xdr->page_len - base;
-		remainder -= len;
-		err = xs_send_pagedata(sock, xdr, base, remainder != 0, zerocopy);
-		if (remainder == 0 || err != len)
-			goto out;
-		sent += err;
-		base = 0;
-	} else
-		base -= xdr->page_len;
-
-	if (base >= xdr->tail[0].iov_len)
-		return sent;
-	err = xs_send_kvec(sock, NULL, 0, &xdr->tail[0], base, 0);
-out:
-	if (sent == 0)
-		return err;
-	if (err > 0)
-		sent += err;
-	return sent;
-}
-
-static void xs_nospace_callback(struct rpc_task *task)
-{
-	struct sock_xprt *transport = container_of(task->tk_rqstp->rq_xprt, struct sock_xprt, xprt);
-
-	transport->inet->sk_write_pending--;
-	clear_bit(SOCK_ASYNC_NOSPACE, &transport->sock->flags);
-}
-
-/**
- * xs_nospace - place task on wait queue if transmit was incomplete
- * @task: task to put to sleep
- *
- */
-static int xs_nospace(struct rpc_task *task)
-{
-	struct rpc_rqst *req = task->tk_rqstp;
-	struct rpc_xprt *xprt = req->rq_xprt;
-	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
-	struct sock *sk = transport->inet;
-	int ret = -EAGAIN;
-
-	dprintk("RPC: %5u xmit incomplete (%u left of %u)\n",
-			task->tk_pid, req->rq_slen - req->rq_bytes_sent,
-			req->rq_slen);
-
-	/* Protect against races with write_space */
-	spin_lock_bh(&xprt->transport_lock);
-
-	/* Don't race with disconnect */
-	if (xprt_connected(xprt)) {
-		if (test_bit(SOCK_ASYNC_NOSPACE, &transport->sock->flags)) {
-			/*
-			 * Notify TCP that we're limited by the application
-			 * window size
-			 */
-			set_bit(SOCK_NOSPACE, &transport->sock->flags);
-			sk->sk_write_pending++;
-			/* ...and wait for more buffer space */
-			xprt_wait_for_buffer_space(task, xs_nospace_callback);
-		}
-	} else {
-		clear_bit(SOCK_ASYNC_NOSPACE, &transport->sock->flags);
-		ret = -ENOTCONN;
-	}
-
-	spin_unlock_bh(&xprt->transport_lock);
-
-	/* Race breaker in case memory is freed before above code is called */
-	sk->sk_write_space(sk);
-	return ret;
-}
-
-/*
- * Construct a stream transport record marker in @buf.
- */
-static inline void xs_encode_stream_record_marker(struct xdr_buf *buf)
-{
-	u32 reclen = buf->len - sizeof(rpc_fraghdr);
-	rpc_fraghdr *base = buf->head[0].iov_base;
-	*base = cpu_to_be32(RPC_LAST_STREAM_FRAGMENT | reclen);
-=======
 static size_t
 xs_alloc_sparse_pages(struct xdr_buf *buf, size_t want, gfp_t gfp)
 {
@@ -1203,70 +914,11 @@ xs_stream_record_marker(struct xdr_buf *xdr)
 	if (!xdr->len)
 		return 0;
 	return cpu_to_be32(RPC_LAST_STREAM_FRAGMENT | (u32)xdr->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * xs_local_send_request - write an RPC request to an AF_LOCAL socket
-<<<<<<< HEAD
- * @task: RPC task that manages the state of an RPC request
- *
- * Return values:
- *        0:	The request has been sent
- *   EAGAIN:	The socket was blocked, please call again later to
- *		complete the request
- * ENOTCONN:	Caller needs to invoke connect logic then call again
- *    other:	Some other error occured, the request was not sent
- */
-static int xs_local_send_request(struct rpc_task *task)
-{
-	struct rpc_rqst *req = task->tk_rqstp;
-	struct rpc_xprt *xprt = req->rq_xprt;
-	struct sock_xprt *transport =
-				container_of(xprt, struct sock_xprt, xprt);
-	struct xdr_buf *xdr = &req->rq_snd_buf;
-	int status;
-
-	xs_encode_stream_record_marker(&req->rq_snd_buf);
-
-	xs_pktdump("packet data:",
-			req->rq_svec->iov_base, req->rq_svec->iov_len);
-
-	status = xs_sendpages(transport->sock, NULL, 0,
-						xdr, req->rq_bytes_sent, true);
-	dprintk("RPC:       %s(%u) = %d\n",
-			__func__, xdr->len - req->rq_bytes_sent, status);
-	if (likely(status >= 0)) {
-		req->rq_bytes_sent += status;
-		req->rq_xmit_bytes_sent += status;
-		if (likely(req->rq_bytes_sent >= req->rq_slen)) {
-			req->rq_bytes_sent = 0;
-			return 0;
-		}
-		status = -EAGAIN;
-	}
-
-	switch (status) {
-	case -EAGAIN:
-		status = xs_nospace(task);
-		break;
-	default:
-		dprintk("RPC:       sendmsg returned unrecognized error %d\n",
-			-status);
-	case -EPIPE:
-		xs_close(xprt);
-		status = -ENOTCONN;
-	}
-
-	return status;
-}
-
-/**
- * xs_udp_send_request - write an RPC request to a UDP socket
- * @task: address of RPC task that manages the state of an RPC request
-=======
  * @req: pointer to RPC request
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return values:
  *        0:	The request has been sent
@@ -1275,14 +927,6 @@ static int xs_local_send_request(struct rpc_task *task)
  * ENOTCONN:	Caller needs to invoke connect logic then call again
  *    other:	Some other error occurred, the request was not sent
  */
-<<<<<<< HEAD
-static int xs_udp_send_request(struct rpc_task *task)
-{
-	struct rpc_rqst *req = task->tk_rqstp;
-	struct rpc_xprt *xprt = req->rq_xprt;
-	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
-	struct xdr_buf *xdr = &req->rq_snd_buf;
-=======
 static int xs_local_send_request(struct rpc_rqst *req)
 {
 	struct rpc_xprt *xprt = req->rq_xprt;
@@ -1365,7 +1009,6 @@ static int xs_udp_send_request(struct rpc_rqst *req)
 		.msg_flags	= XS_SENDMSG_FLAGS,
 	};
 	unsigned int sent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 
 	xs_pktdump("packet data:",
@@ -1374,19 +1017,6 @@ static int xs_udp_send_request(struct rpc_rqst *req)
 
 	if (!xprt_bound(xprt))
 		return -ENOTCONN;
-<<<<<<< HEAD
-	status = xs_sendpages(transport->sock,
-			      xs_addr(xprt),
-			      xprt->addrlen, xdr,
-			      req->rq_bytes_sent, true);
-
-	dprintk("RPC:       xs_udp_send_request(%u) = %d\n",
-			xdr->len - req->rq_bytes_sent, status);
-
-	if (status >= 0) {
-		req->rq_xmit_bytes_sent += status;
-		if (status >= req->rq_slen)
-=======
 
 	if (!xprt_request_get_cong(xprt, req))
 		return -EBADSLT;
@@ -1410,25 +1040,18 @@ static int xs_udp_send_request(struct rpc_rqst *req)
 	if (sent > 0 || status == 0) {
 		req->rq_xmit_bytes_sent += sent;
 		if (sent >= req->rq_slen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		/* Still some bytes left; set up for a retry later. */
 		status = -EAGAIN;
 	}
 
-<<<<<<< HEAD
-=======
 process_status:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (status) {
 	case -ENOTSOCK:
 		status = -ENOTCONN;
 		/* Should we call xs_close() here? */
 		break;
 	case -EAGAIN:
-<<<<<<< HEAD
-		status = xs_nospace(task);
-=======
 		status = xs_sock_nospace(req);
 		break;
 	case -ENETUNREACH:
@@ -1438,49 +1061,18 @@ process_status:
 	case -EPERM:
 		/* When the server has died, an ICMP port unreachable message
 		 * prompts ECONNREFUSED. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		dprintk("RPC:       sendmsg returned unrecognized error %d\n",
 			-status);
-<<<<<<< HEAD
-	case -ENETUNREACH:
-	case -EPIPE:
-	case -ECONNREFUSED:
-		/* When the server has died, an ICMP port unreachable message
-		 * prompts ECONNREFUSED. */
-		clear_bit(SOCK_ASYNC_NOSPACE, &transport->sock->flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return status;
 }
 
 /**
-<<<<<<< HEAD
- * xs_tcp_shutdown - gracefully shut down a TCP socket
- * @xprt: transport
- *
- * Initiates a graceful shutdown of the TCP socket by calling the
- * equivalent of shutdown(SHUT_WR);
- */
-static void xs_tcp_shutdown(struct rpc_xprt *xprt)
-{
-	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
-	struct socket *sock = transport->sock;
-
-	if (sock != NULL)
-		kernel_sock_shutdown(sock, SHUT_WR);
-}
-
-/**
- * xs_tcp_send_request - write an RPC request to a TCP socket
- * @task: address of RPC task that manages the state of an RPC request
-=======
  * xs_tcp_send_request - write an RPC request to a TCP socket
  * @req: pointer to RPC request
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return values:
  *        0:	The request has been sent
@@ -1492,18 +1084,6 @@ static void xs_tcp_shutdown(struct rpc_xprt *xprt)
  * XXX: In the case of soft timeouts, should we eventually give up
  *	if sendmsg is not able to make progress?
  */
-<<<<<<< HEAD
-static int xs_tcp_send_request(struct rpc_task *task)
-{
-	struct rpc_rqst *req = task->tk_rqstp;
-	struct rpc_xprt *xprt = req->rq_xprt;
-	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
-	struct xdr_buf *xdr = &req->rq_snd_buf;
-	bool zerocopy = true;
-	int status;
-
-	xs_encode_stream_record_marker(&req->rq_snd_buf);
-=======
 static int xs_tcp_send_request(struct rpc_rqst *req)
 {
 	struct rpc_xprt *xprt = req->rq_xprt;
@@ -1526,56 +1106,19 @@ static int xs_tcp_send_request(struct rpc_rqst *req)
 	}
 	if (!transport->inet)
 		return -ENOTCONN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xs_pktdump("packet data:",
 				req->rq_svec->iov_base,
 				req->rq_svec->iov_len);
-<<<<<<< HEAD
-	/* Don't use zero copy if this is a resend. If the RPC call
-	 * completes while the socket holds a reference to the pages,
-	 * then we may end up resending corrupted data.
-	 */
-	if (task->tk_flags & RPC_TASK_SENT)
-		zerocopy = false;
-=======
 
 	if (test_bit(XPRT_SOCK_UPD_TIMEOUT, &transport->sock_state))
 		xs_tcp_set_socket_timeouts(xprt, transport->sock);
 
 	xs_set_srcport(transport, transport->sock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Continue transmitting the packet/record. We must be careful
 	 * to cope with writespace callbacks arriving _after_ we have
 	 * called sendmsg(). */
-<<<<<<< HEAD
-	while (1) {
-		status = xs_sendpages(transport->sock,
-					NULL, 0, xdr, req->rq_bytes_sent,
-					zerocopy);
-
-		dprintk("RPC:       xs_tcp_send_request(%u) = %d\n",
-				xdr->len - req->rq_bytes_sent, status);
-
-		if (unlikely(status < 0))
-			break;
-
-		/* If we've sent the entire packet, immediately
-		 * reset the count of bytes sent. */
-		req->rq_bytes_sent += status;
-		req->rq_xmit_bytes_sent += status;
-		if (likely(req->rq_bytes_sent >= req->rq_slen)) {
-			req->rq_bytes_sent = 0;
-			return 0;
-		}
-
-		if (status != 0)
-			continue;
-		status = -EAGAIN;
-		break;
-	}
-=======
 	req->rq_xtime = ktime_get();
 	tcp_sock_set_cork(transport->inet, true);
 
@@ -1606,7 +1149,6 @@ static int xs_tcp_send_request(struct rpc_rqst *req)
 			vm_wait = false;
 
 	} while (status == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (status) {
 	case -ENOTSOCK:
@@ -1614,9 +1156,6 @@ static int xs_tcp_send_request(struct rpc_rqst *req)
 		/* Should we call xs_close() here? */
 		break;
 	case -EAGAIN:
-<<<<<<< HEAD
-		status = xs_nospace(task);
-=======
 		status = xs_stream_nospace(req, vm_wait);
 		break;
 	case -ECONNRESET:
@@ -1625,66 +1164,21 @@ static int xs_tcp_send_request(struct rpc_rqst *req)
 	case -EADDRINUSE:
 	case -ENOBUFS:
 	case -EPIPE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		dprintk("RPC:       sendmsg returned unrecognized error %d\n",
 			-status);
-<<<<<<< HEAD
-	case -ECONNRESET:
-		xs_tcp_shutdown(xprt);
-	case -ECONNREFUSED:
-	case -ENOTCONN:
-	case -EPIPE:
-		clear_bit(SOCK_ASYNC_NOSPACE, &transport->sock->flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return status;
 }
 
-<<<<<<< HEAD
-/**
- * xs_tcp_release_xprt - clean up after a tcp transmission
- * @xprt: transport
- * @task: rpc task
- *
- * This cleans up if an error causes us to abort the transmission of a request.
- * In this case, the socket may need to be reset in order to avoid confusing
- * the server.
- */
-static void xs_tcp_release_xprt(struct rpc_xprt *xprt, struct rpc_task *task)
-{
-	struct rpc_rqst *req;
-
-	if (task != xprt->snd_task)
-		return;
-	if (task == NULL)
-		goto out_release;
-	req = task->tk_rqstp;
-	if (req == NULL)
-		goto out_release;
-	if (req->rq_bytes_sent == 0)
-		goto out_release;
-	if (req->rq_bytes_sent == req->rq_snd_buf.len)
-		goto out_release;
-	set_bit(XPRT_CLOSE_WAIT, &task->tk_xprt->state);
-out_release:
-	xprt_release_xprt(xprt, task);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void xs_save_old_callbacks(struct sock_xprt *transport, struct sock *sk)
 {
 	transport->old_data_ready = sk->sk_data_ready;
 	transport->old_state_change = sk->sk_state_change;
 	transport->old_write_space = sk->sk_write_space;
-<<<<<<< HEAD
-=======
 	transport->old_error_report = sk->sk_error_report;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void xs_restore_old_callbacks(struct sock_xprt *transport, struct sock *sk)
@@ -1692,8 +1186,6 @@ static void xs_restore_old_callbacks(struct sock_xprt *transport, struct sock *s
 	sk->sk_data_ready = transport->old_data_ready;
 	sk->sk_state_change = transport->old_state_change;
 	sk->sk_write_space = transport->old_write_space;
-<<<<<<< HEAD
-=======
 	sk->sk_error_report = transport->old_error_report;
 }
 
@@ -1751,7 +1243,6 @@ static void xs_error_report(struct sock *sk)
 	/* barrier ensures xprt_err is set before XPRT_SOCK_WAKE_ERROR */
 	smp_mb__before_atomic();
 	xs_run_error_worker(transport, XPRT_SOCK_WAKE_ERROR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void xs_reset_transport(struct sock_xprt *transport)
@@ -1759,17 +1250,6 @@ static void xs_reset_transport(struct sock_xprt *transport)
 	struct socket *sock = transport->sock;
 	struct sock *sk = transport->inet;
 	struct rpc_xprt *xprt = &transport->xprt;
-<<<<<<< HEAD
-
-	if (sk == NULL)
-		return;
-
-	transport->srcport = 0;
-
-	write_lock_bh(&sk->sk_callback_lock);
-	transport->inet = NULL;
-	transport->sock = NULL;
-=======
 	struct file *filp = transport->file;
 
 	if (sk == NULL)
@@ -1797,19 +1277,11 @@ static void xs_reset_transport(struct sock_xprt *transport)
 	transport->inet = NULL;
 	transport->sock = NULL;
 	transport->file = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sk->sk_user_data = NULL;
 
 	xs_restore_old_callbacks(transport, sk);
 	xprt_clear_connected(xprt);
-<<<<<<< HEAD
-	write_unlock_bh(&sk->sk_callback_lock);
-
-	sk->sk_no_check = 0;
-
-	sock_release(sock);
-=======
 	xs_sock_reset_connection_flags(xprt);
 	/* Reset stream record info */
 	xs_stream_reset_connect(transport);
@@ -1820,7 +1292,6 @@ static void xs_reset_transport(struct sock_xprt *transport)
 	__fput_sync(filp);
 
 	xprt_disconnect_done(xprt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1839,25 +1310,6 @@ static void xs_close(struct rpc_xprt *xprt)
 
 	dprintk("RPC:       xs_close xprt %p\n", xprt);
 
-<<<<<<< HEAD
-	xs_reset_transport(transport);
-	xprt->reestablish_timeout = 0;
-
-	smp_mb__before_clear_bit();
-	clear_bit(XPRT_CONNECTION_ABORT, &xprt->state);
-	clear_bit(XPRT_CLOSE_WAIT, &xprt->state);
-	clear_bit(XPRT_CLOSING, &xprt->state);
-	smp_mb__after_clear_bit();
-	xprt_disconnect_done(xprt);
-}
-
-static void xs_tcp_close(struct rpc_xprt *xprt)
-{
-	if (test_and_clear_bit(XPRT_CONNECTION_CLOSE, &xprt->state))
-		xs_close(xprt);
-	else
-		xs_tcp_shutdown(xprt);
-=======
 	if (transport->sock)
 		tls_handshake_close(transport->sock);
 	xs_reset_transport(transport);
@@ -1875,7 +1327,6 @@ static void xs_xprt_free(struct rpc_xprt *xprt)
 {
 	xs_free_peer_addresses(xprt);
 	xprt_free(xprt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1885,151 +1336,6 @@ static void xs_xprt_free(struct rpc_xprt *xprt)
  */
 static void xs_destroy(struct rpc_xprt *xprt)
 {
-<<<<<<< HEAD
-	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
-
-	dprintk("RPC:       xs_destroy xprt %p\n", xprt);
-
-	cancel_delayed_work_sync(&transport->connect_worker);
-
-	xs_close(xprt);
-	xs_free_peer_addresses(xprt);
-	xprt_free(xprt);
-	module_put(THIS_MODULE);
-}
-
-static inline struct rpc_xprt *xprt_from_sock(struct sock *sk)
-{
-	return (struct rpc_xprt *) sk->sk_user_data;
-}
-
-static int xs_local_copy_to_xdr(struct xdr_buf *xdr, struct sk_buff *skb)
-{
-	struct xdr_skb_reader desc = {
-		.skb		= skb,
-		.offset		= sizeof(rpc_fraghdr),
-		.count		= skb->len - sizeof(rpc_fraghdr),
-	};
-
-	if (xdr_partial_copy_from_skb(xdr, 0, &desc, xdr_skb_read_bits) < 0)
-		return -1;
-	if (desc.count)
-		return -1;
-	return 0;
-}
-
-/**
- * xs_local_data_ready - "data ready" callback for AF_LOCAL sockets
- * @sk: socket with data to read
- * @len: how much data to read
- *
- * Currently this assumes we can read the whole reply in a single gulp.
- */
-static void xs_local_data_ready(struct sock *sk, int len)
-{
-	struct rpc_task *task;
-	struct rpc_xprt *xprt;
-	struct rpc_rqst *rovr;
-	struct sk_buff *skb;
-	int err, repsize, copied;
-	u32 _xid;
-	__be32 *xp;
-
-	read_lock_bh(&sk->sk_callback_lock);
-	dprintk("RPC:       %s...\n", __func__);
-	xprt = xprt_from_sock(sk);
-	if (xprt == NULL)
-		goto out;
-
-	skb = skb_recv_datagram(sk, 0, 1, &err);
-	if (skb == NULL)
-		goto out;
-
-	if (xprt->shutdown)
-		goto dropit;
-
-	repsize = skb->len - sizeof(rpc_fraghdr);
-	if (repsize < 4) {
-		dprintk("RPC:       impossible RPC reply size %d\n", repsize);
-		goto dropit;
-	}
-
-	/* Copy the XID from the skb... */
-	xp = skb_header_pointer(skb, sizeof(rpc_fraghdr), sizeof(_xid), &_xid);
-	if (xp == NULL)
-		goto dropit;
-
-	/* Look up and lock the request corresponding to the given XID */
-	spin_lock(&xprt->transport_lock);
-	rovr = xprt_lookup_rqst(xprt, *xp);
-	if (!rovr)
-		goto out_unlock;
-	task = rovr->rq_task;
-
-	copied = rovr->rq_private_buf.buflen;
-	if (copied > repsize)
-		copied = repsize;
-
-	if (xs_local_copy_to_xdr(&rovr->rq_private_buf, skb)) {
-		dprintk("RPC:       sk_buff copy failed\n");
-		goto out_unlock;
-	}
-
-	xprt_complete_rqst(task, copied);
-
- out_unlock:
-	spin_unlock(&xprt->transport_lock);
- dropit:
-	skb_free_datagram(sk, skb);
- out:
-	read_unlock_bh(&sk->sk_callback_lock);
-}
-
-/**
- * xs_udp_data_ready - "data ready" callback for UDP sockets
- * @sk: socket with data to read
- * @len: how much data to read
- *
- */
-static void xs_udp_data_ready(struct sock *sk, int len)
-{
-	struct rpc_task *task;
-	struct rpc_xprt *xprt;
-	struct rpc_rqst *rovr;
-	struct sk_buff *skb;
-	int err, repsize, copied;
-	u32 _xid;
-	__be32 *xp;
-
-	read_lock_bh(&sk->sk_callback_lock);
-	dprintk("RPC:       xs_udp_data_ready...\n");
-	if (!(xprt = xprt_from_sock(sk)))
-		goto out;
-
-	if ((skb = skb_recv_datagram(sk, 0, 1, &err)) == NULL)
-		goto out;
-
-	if (xprt->shutdown)
-		goto dropit;
-
-	repsize = skb->len - sizeof(struct udphdr);
-	if (repsize < 4) {
-		dprintk("RPC:       impossible RPC reply size %d!\n", repsize);
-		goto dropit;
-	}
-
-	/* Copy the XID from the skb... */
-	xp = skb_header_pointer(skb, sizeof(struct udphdr),
-				sizeof(_xid), &_xid);
-	if (xp == NULL)
-		goto dropit;
-
-	/* Look up and lock the request corresponding to the given XID */
-	spin_lock(&xprt->transport_lock);
-	rovr = xprt_lookup_rqst(xprt, *xp);
-	if (!rovr)
-		goto out_unlock;
-=======
 	struct sock_xprt *transport = container_of(xprt,
 			struct sock_xprt, xprt);
 	dprintk("RPC:       xs_destroy xprt %p\n", xprt);
@@ -2078,7 +1384,6 @@ static void xs_udp_data_read_skb(struct rpc_xprt *xprt,
 	xprt_pin_rqst(rovr);
 	xprt_update_rtt(rovr->rq_task);
 	spin_unlock(&xprt->queue_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task = rovr->rq_task;
 
 	if ((copied = rovr->rq_private_buf.buflen) > repsize)
@@ -2086,26 +1391,6 @@ static void xs_udp_data_read_skb(struct rpc_xprt *xprt,
 
 	/* Suck it into the iovec, verify checksum if not done by hw. */
 	if (csum_partial_copy_to_xdr(&rovr->rq_private_buf, skb)) {
-<<<<<<< HEAD
-		UDPX_INC_STATS_BH(sk, UDP_MIB_INERRORS);
-		goto out_unlock;
-	}
-
-	UDPX_INC_STATS_BH(sk, UDP_MIB_INDATAGRAMS);
-
-	/* Something worked... */
-	dst_confirm(skb_dst(skb));
-
-	xprt_adjust_cwnd(task, copied);
-	xprt_complete_rqst(task, copied);
-
- out_unlock:
-	spin_unlock(&xprt->transport_lock);
- dropit:
-	skb_free_datagram(sk, skb);
- out:
-	read_unlock_bh(&sk->sk_callback_lock);
-=======
 		spin_lock(&xprt->queue_lock);
 		__UDPX_INC_STATS(sk, UDP_MIB_INERRORS);
 		goto out_unpin;
@@ -2188,7 +1473,6 @@ static void xs_data_ready(struct sock *sk)
 		if (!test_and_set_bit(XPRT_SOCK_DATA_READY, &transport->sock_state))
 			queue_work(xprtiod_workqueue, &transport->recv_worker);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2197,454 +1481,6 @@ static void xs_data_ready(struct sock *sk)
  */
 static void xs_tcp_force_close(struct rpc_xprt *xprt)
 {
-<<<<<<< HEAD
-	set_bit(XPRT_CONNECTION_CLOSE, &xprt->state);
-	xprt_force_disconnect(xprt);
-}
-
-static inline void xs_tcp_read_fraghdr(struct rpc_xprt *xprt, struct xdr_skb_reader *desc)
-{
-	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
-	size_t len, used;
-	char *p;
-
-	p = ((char *) &transport->tcp_fraghdr) + transport->tcp_offset;
-	len = sizeof(transport->tcp_fraghdr) - transport->tcp_offset;
-	used = xdr_skb_read_bits(desc, p, len);
-	transport->tcp_offset += used;
-	if (used != len)
-		return;
-
-	transport->tcp_reclen = ntohl(transport->tcp_fraghdr);
-	if (transport->tcp_reclen & RPC_LAST_STREAM_FRAGMENT)
-		transport->tcp_flags |= TCP_RCV_LAST_FRAG;
-	else
-		transport->tcp_flags &= ~TCP_RCV_LAST_FRAG;
-	transport->tcp_reclen &= RPC_FRAGMENT_SIZE_MASK;
-
-	transport->tcp_flags &= ~TCP_RCV_COPY_FRAGHDR;
-	transport->tcp_offset = 0;
-
-	/* Sanity check of the record length */
-	if (unlikely(transport->tcp_reclen < 8)) {
-		dprintk("RPC:       invalid TCP record fragment length\n");
-		xs_tcp_force_close(xprt);
-		return;
-	}
-	dprintk("RPC:       reading TCP record fragment of length %d\n",
-			transport->tcp_reclen);
-}
-
-static void xs_tcp_check_fraghdr(struct sock_xprt *transport)
-{
-	if (transport->tcp_offset == transport->tcp_reclen) {
-		transport->tcp_flags |= TCP_RCV_COPY_FRAGHDR;
-		transport->tcp_offset = 0;
-		if (transport->tcp_flags & TCP_RCV_LAST_FRAG) {
-			transport->tcp_flags &= ~TCP_RCV_COPY_DATA;
-			transport->tcp_flags |= TCP_RCV_COPY_XID;
-			transport->tcp_copied = 0;
-		}
-	}
-}
-
-static inline void xs_tcp_read_xid(struct sock_xprt *transport, struct xdr_skb_reader *desc)
-{
-	size_t len, used;
-	char *p;
-
-	len = sizeof(transport->tcp_xid) - transport->tcp_offset;
-	dprintk("RPC:       reading XID (%Zu bytes)\n", len);
-	p = ((char *) &transport->tcp_xid) + transport->tcp_offset;
-	used = xdr_skb_read_bits(desc, p, len);
-	transport->tcp_offset += used;
-	if (used != len)
-		return;
-	transport->tcp_flags &= ~TCP_RCV_COPY_XID;
-	transport->tcp_flags |= TCP_RCV_READ_CALLDIR;
-	transport->tcp_copied = 4;
-	dprintk("RPC:       reading %s XID %08x\n",
-			(transport->tcp_flags & TCP_RPC_REPLY) ? "reply for"
-							      : "request with",
-			ntohl(transport->tcp_xid));
-	xs_tcp_check_fraghdr(transport);
-}
-
-static inline void xs_tcp_read_calldir(struct sock_xprt *transport,
-				       struct xdr_skb_reader *desc)
-{
-	size_t len, used;
-	u32 offset;
-	char *p;
-
-	/*
-	 * We want transport->tcp_offset to be 8 at the end of this routine
-	 * (4 bytes for the xid and 4 bytes for the call/reply flag).
-	 * When this function is called for the first time,
-	 * transport->tcp_offset is 4 (after having already read the xid).
-	 */
-	offset = transport->tcp_offset - sizeof(transport->tcp_xid);
-	len = sizeof(transport->tcp_calldir) - offset;
-	dprintk("RPC:       reading CALL/REPLY flag (%Zu bytes)\n", len);
-	p = ((char *) &transport->tcp_calldir) + offset;
-	used = xdr_skb_read_bits(desc, p, len);
-	transport->tcp_offset += used;
-	if (used != len)
-		return;
-	transport->tcp_flags &= ~TCP_RCV_READ_CALLDIR;
-	/*
-	 * We don't yet have the XDR buffer, so we will write the calldir
-	 * out after we get the buffer from the 'struct rpc_rqst'
-	 */
-	switch (ntohl(transport->tcp_calldir)) {
-	case RPC_REPLY:
-		transport->tcp_flags |= TCP_RCV_COPY_CALLDIR;
-		transport->tcp_flags |= TCP_RCV_COPY_DATA;
-		transport->tcp_flags |= TCP_RPC_REPLY;
-		break;
-	case RPC_CALL:
-		transport->tcp_flags |= TCP_RCV_COPY_CALLDIR;
-		transport->tcp_flags |= TCP_RCV_COPY_DATA;
-		transport->tcp_flags &= ~TCP_RPC_REPLY;
-		break;
-	default:
-		dprintk("RPC:       invalid request message type\n");
-		xs_tcp_force_close(&transport->xprt);
-	}
-	xs_tcp_check_fraghdr(transport);
-}
-
-static inline void xs_tcp_read_common(struct rpc_xprt *xprt,
-				     struct xdr_skb_reader *desc,
-				     struct rpc_rqst *req)
-{
-	struct sock_xprt *transport =
-				container_of(xprt, struct sock_xprt, xprt);
-	struct xdr_buf *rcvbuf;
-	size_t len;
-	ssize_t r;
-
-	rcvbuf = &req->rq_private_buf;
-
-	if (transport->tcp_flags & TCP_RCV_COPY_CALLDIR) {
-		/*
-		 * Save the RPC direction in the XDR buffer
-		 */
-		memcpy(rcvbuf->head[0].iov_base + transport->tcp_copied,
-			&transport->tcp_calldir,
-			sizeof(transport->tcp_calldir));
-		transport->tcp_copied += sizeof(transport->tcp_calldir);
-		transport->tcp_flags &= ~TCP_RCV_COPY_CALLDIR;
-	}
-
-	len = desc->count;
-	if (len > transport->tcp_reclen - transport->tcp_offset) {
-		struct xdr_skb_reader my_desc;
-
-		len = transport->tcp_reclen - transport->tcp_offset;
-		memcpy(&my_desc, desc, sizeof(my_desc));
-		my_desc.count = len;
-		r = xdr_partial_copy_from_skb(rcvbuf, transport->tcp_copied,
-					  &my_desc, xdr_skb_read_bits);
-		desc->count -= r;
-		desc->offset += r;
-	} else
-		r = xdr_partial_copy_from_skb(rcvbuf, transport->tcp_copied,
-					  desc, xdr_skb_read_bits);
-
-	if (r > 0) {
-		transport->tcp_copied += r;
-		transport->tcp_offset += r;
-	}
-	if (r != len) {
-		/* Error when copying to the receive buffer,
-		 * usually because we weren't able to allocate
-		 * additional buffer pages. All we can do now
-		 * is turn off TCP_RCV_COPY_DATA, so the request
-		 * will not receive any additional updates,
-		 * and time out.
-		 * Any remaining data from this record will
-		 * be discarded.
-		 */
-		transport->tcp_flags &= ~TCP_RCV_COPY_DATA;
-		dprintk("RPC:       XID %08x truncated request\n",
-				ntohl(transport->tcp_xid));
-		dprintk("RPC:       xprt = %p, tcp_copied = %lu, "
-				"tcp_offset = %u, tcp_reclen = %u\n",
-				xprt, transport->tcp_copied,
-				transport->tcp_offset, transport->tcp_reclen);
-		return;
-	}
-
-	dprintk("RPC:       XID %08x read %Zd bytes\n",
-			ntohl(transport->tcp_xid), r);
-	dprintk("RPC:       xprt = %p, tcp_copied = %lu, tcp_offset = %u, "
-			"tcp_reclen = %u\n", xprt, transport->tcp_copied,
-			transport->tcp_offset, transport->tcp_reclen);
-
-	if (transport->tcp_copied == req->rq_private_buf.buflen)
-		transport->tcp_flags &= ~TCP_RCV_COPY_DATA;
-	else if (transport->tcp_offset == transport->tcp_reclen) {
-		if (transport->tcp_flags & TCP_RCV_LAST_FRAG)
-			transport->tcp_flags &= ~TCP_RCV_COPY_DATA;
-	}
-}
-
-/*
- * Finds the request corresponding to the RPC xid and invokes the common
- * tcp read code to read the data.
- */
-static inline int xs_tcp_read_reply(struct rpc_xprt *xprt,
-				    struct xdr_skb_reader *desc)
-{
-	struct sock_xprt *transport =
-				container_of(xprt, struct sock_xprt, xprt);
-	struct rpc_rqst *req;
-
-	dprintk("RPC:       read reply XID %08x\n", ntohl(transport->tcp_xid));
-
-	/* Find and lock the request corresponding to this xid */
-	spin_lock(&xprt->transport_lock);
-	req = xprt_lookup_rqst(xprt, transport->tcp_xid);
-	if (!req) {
-		dprintk("RPC:       XID %08x request not found!\n",
-				ntohl(transport->tcp_xid));
-		spin_unlock(&xprt->transport_lock);
-		return -1;
-	}
-
-	xs_tcp_read_common(xprt, desc, req);
-
-	if (!(transport->tcp_flags & TCP_RCV_COPY_DATA))
-		xprt_complete_rqst(req->rq_task, transport->tcp_copied);
-
-	spin_unlock(&xprt->transport_lock);
-	return 0;
-}
-
-#if defined(CONFIG_SUNRPC_BACKCHANNEL)
-/*
- * Obtains an rpc_rqst previously allocated and invokes the common
- * tcp read code to read the data.  The result is placed in the callback
- * queue.
- * If we're unable to obtain the rpc_rqst we schedule the closing of the
- * connection and return -1.
- */
-static inline int xs_tcp_read_callback(struct rpc_xprt *xprt,
-				       struct xdr_skb_reader *desc)
-{
-	struct sock_xprt *transport =
-				container_of(xprt, struct sock_xprt, xprt);
-	struct rpc_rqst *req;
-
-	req = xprt_alloc_bc_request(xprt);
-	if (req == NULL) {
-		printk(KERN_WARNING "Callback slot table overflowed\n");
-		xprt_force_disconnect(xprt);
-		return -1;
-	}
-
-	req->rq_xid = transport->tcp_xid;
-	dprintk("RPC:       read callback  XID %08x\n", ntohl(req->rq_xid));
-	xs_tcp_read_common(xprt, desc, req);
-
-	if (!(transport->tcp_flags & TCP_RCV_COPY_DATA)) {
-		struct svc_serv *bc_serv = xprt->bc_serv;
-
-		/*
-		 * Add callback request to callback list.  The callback
-		 * service sleeps on the sv_cb_waitq waiting for new
-		 * requests.  Wake it up after adding enqueing the
-		 * request.
-		 */
-		dprintk("RPC:       add callback request to list\n");
-		spin_lock(&bc_serv->sv_cb_lock);
-		list_add(&req->rq_bc_list, &bc_serv->sv_cb_list);
-		spin_unlock(&bc_serv->sv_cb_lock);
-		wake_up(&bc_serv->sv_cb_waitq);
-	}
-
-	req->rq_private_buf.len = transport->tcp_copied;
-
-	return 0;
-}
-
-static inline int _xs_tcp_read_data(struct rpc_xprt *xprt,
-					struct xdr_skb_reader *desc)
-{
-	struct sock_xprt *transport =
-				container_of(xprt, struct sock_xprt, xprt);
-
-	return (transport->tcp_flags & TCP_RPC_REPLY) ?
-		xs_tcp_read_reply(xprt, desc) :
-		xs_tcp_read_callback(xprt, desc);
-}
-#else
-static inline int _xs_tcp_read_data(struct rpc_xprt *xprt,
-					struct xdr_skb_reader *desc)
-{
-	return xs_tcp_read_reply(xprt, desc);
-}
-#endif /* CONFIG_SUNRPC_BACKCHANNEL */
-
-/*
- * Read data off the transport.  This can be either an RPC_CALL or an
- * RPC_REPLY.  Relay the processing to helper functions.
- */
-static void xs_tcp_read_data(struct rpc_xprt *xprt,
-				    struct xdr_skb_reader *desc)
-{
-	struct sock_xprt *transport =
-				container_of(xprt, struct sock_xprt, xprt);
-
-	if (_xs_tcp_read_data(xprt, desc) == 0)
-		xs_tcp_check_fraghdr(transport);
-	else {
-		/*
-		 * The transport_lock protects the request handling.
-		 * There's no need to hold it to update the tcp_flags.
-		 */
-		transport->tcp_flags &= ~TCP_RCV_COPY_DATA;
-	}
-}
-
-static inline void xs_tcp_read_discard(struct sock_xprt *transport, struct xdr_skb_reader *desc)
-{
-	size_t len;
-
-	len = transport->tcp_reclen - transport->tcp_offset;
-	if (len > desc->count)
-		len = desc->count;
-	desc->count -= len;
-	desc->offset += len;
-	transport->tcp_offset += len;
-	dprintk("RPC:       discarded %Zu bytes\n", len);
-	xs_tcp_check_fraghdr(transport);
-}
-
-static int xs_tcp_data_recv(read_descriptor_t *rd_desc, struct sk_buff *skb, unsigned int offset, size_t len)
-{
-	struct rpc_xprt *xprt = rd_desc->arg.data;
-	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
-	struct xdr_skb_reader desc = {
-		.skb	= skb,
-		.offset	= offset,
-		.count	= len,
-	};
-
-	dprintk("RPC:       xs_tcp_data_recv started\n");
-	do {
-		/* Read in a new fragment marker if necessary */
-		/* Can we ever really expect to get completely empty fragments? */
-		if (transport->tcp_flags & TCP_RCV_COPY_FRAGHDR) {
-			xs_tcp_read_fraghdr(xprt, &desc);
-			continue;
-		}
-		/* Read in the xid if necessary */
-		if (transport->tcp_flags & TCP_RCV_COPY_XID) {
-			xs_tcp_read_xid(transport, &desc);
-			continue;
-		}
-		/* Read in the call/reply flag */
-		if (transport->tcp_flags & TCP_RCV_READ_CALLDIR) {
-			xs_tcp_read_calldir(transport, &desc);
-			continue;
-		}
-		/* Read in the request data */
-		if (transport->tcp_flags & TCP_RCV_COPY_DATA) {
-			xs_tcp_read_data(xprt, &desc);
-			continue;
-		}
-		/* Skip over any trailing bytes on short reads */
-		xs_tcp_read_discard(transport, &desc);
-	} while (desc.count);
-	dprintk("RPC:       xs_tcp_data_recv done\n");
-	return len - desc.count;
-}
-
-/**
- * xs_tcp_data_ready - "data ready" callback for TCP sockets
- * @sk: socket with data to read
- * @bytes: how much data to read
- *
- */
-static void xs_tcp_data_ready(struct sock *sk, int bytes)
-{
-	struct rpc_xprt *xprt;
-	read_descriptor_t rd_desc;
-	int read;
-
-	dprintk("RPC:       xs_tcp_data_ready...\n");
-
-	read_lock_bh(&sk->sk_callback_lock);
-	if (!(xprt = xprt_from_sock(sk)))
-		goto out;
-	if (xprt->shutdown)
-		goto out;
-
-	/* Any data means we had a useful conversation, so
-	 * the we don't need to delay the next reconnect
-	 */
-	if (xprt->reestablish_timeout)
-		xprt->reestablish_timeout = 0;
-
-	/* We use rd_desc to pass struct xprt to xs_tcp_data_recv */
-	rd_desc.arg.data = xprt;
-	do {
-		rd_desc.count = 65536;
-		read = tcp_read_sock(sk, &rd_desc, xs_tcp_data_recv);
-	} while (read > 0);
-out:
-	read_unlock_bh(&sk->sk_callback_lock);
-}
-
-/*
- * Do the equivalent of linger/linger2 handling for dealing with
- * broken servers that don't close the socket in a timely
- * fashion
- */
-static void xs_tcp_schedule_linger_timeout(struct rpc_xprt *xprt,
-		unsigned long timeout)
-{
-	struct sock_xprt *transport;
-
-	if (xprt_test_and_set_connecting(xprt))
-		return;
-	set_bit(XPRT_CONNECTION_ABORT, &xprt->state);
-	transport = container_of(xprt, struct sock_xprt, xprt);
-	queue_delayed_work(rpciod_workqueue, &transport->connect_worker,
-			   timeout);
-}
-
-static void xs_tcp_cancel_linger_timeout(struct rpc_xprt *xprt)
-{
-	struct sock_xprt *transport;
-
-	transport = container_of(xprt, struct sock_xprt, xprt);
-
-	if (!test_bit(XPRT_CONNECTION_ABORT, &xprt->state) ||
-	    !cancel_delayed_work(&transport->connect_worker))
-		return;
-	clear_bit(XPRT_CONNECTION_ABORT, &xprt->state);
-	xprt_clear_connecting(xprt);
-}
-
-static void xs_sock_reset_connection_flags(struct rpc_xprt *xprt)
-{
-	smp_mb__before_clear_bit();
-	clear_bit(XPRT_CONNECTION_ABORT, &xprt->state);
-	clear_bit(XPRT_CONNECTION_CLOSE, &xprt->state);
-	clear_bit(XPRT_CLOSE_WAIT, &xprt->state);
-	clear_bit(XPRT_CLOSING, &xprt->state);
-	smp_mb__after_clear_bit();
-}
-
-static void xs_sock_mark_closed(struct rpc_xprt *xprt)
-{
-	xs_sock_reset_connection_flags(xprt);
-	/* Mark transport as closed and wake up all pending tasks */
-	xprt_disconnect_done(xprt);
-=======
 	xprt_force_disconnect(xprt);
 }
 
@@ -2673,7 +1509,6 @@ static void xs_local_state_change(struct sock *sk)
 		/* Trigger the socket release */
 		xs_run_error_worker(transport, XPRT_SOCK_WAKE_DISCONNECT);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2684,17 +1519,10 @@ static void xs_local_state_change(struct sock *sk)
 static void xs_tcp_state_change(struct sock *sk)
 {
 	struct rpc_xprt *xprt;
-<<<<<<< HEAD
-
-	read_lock_bh(&sk->sk_callback_lock);
-	if (!(xprt = xprt_from_sock(sk)))
-		goto out;
-=======
 	struct sock_xprt *transport;
 
 	if (!(xprt = xprt_from_sock(sk)))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dprintk("RPC:       xs_tcp_state_change client %p...\n", xprt);
 	dprintk("RPC:       state %x conn %d dead %d zapped %d sk_shutdown %d\n",
 			sk->sk_state, xprt_connected(xprt),
@@ -2702,25 +1530,6 @@ static void xs_tcp_state_change(struct sock *sk)
 			sock_flag(sk, SOCK_ZAPPED),
 			sk->sk_shutdown);
 
-<<<<<<< HEAD
-	switch (sk->sk_state) {
-	case TCP_ESTABLISHED:
-		spin_lock(&xprt->transport_lock);
-		if (!xprt_test_and_set_connected(xprt)) {
-			struct sock_xprt *transport = container_of(xprt,
-					struct sock_xprt, xprt);
-
-			/* Reset TCP record info */
-			transport->tcp_offset = 0;
-			transport->tcp_reclen = 0;
-			transport->tcp_copied = 0;
-			transport->tcp_flags =
-				TCP_RCV_COPY_FRAGHDR | TCP_RCV_COPY_XID;
-
-			xprt_wake_pending_tasks(xprt, -EAGAIN);
-		}
-		spin_unlock(&xprt->transport_lock);
-=======
 	transport = container_of(xprt, struct sock_xprt, xprt);
 	trace_rpc_socket_state_change(xprt, sk->sk_socket);
 	switch (sk->sk_state) {
@@ -2735,36 +1544,23 @@ static void xs_tcp_state_change(struct sock *sk)
 						   xprt->stat.connect_start;
 			xs_run_error_worker(transport, XPRT_SOCK_WAKE_PENDING);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case TCP_FIN_WAIT1:
 		/* The client initiated a shutdown of the socket */
 		xprt->connect_cookie++;
 		xprt->reestablish_timeout = 0;
 		set_bit(XPRT_CLOSING, &xprt->state);
-<<<<<<< HEAD
-		smp_mb__before_clear_bit();
-		clear_bit(XPRT_CONNECTED, &xprt->state);
-		clear_bit(XPRT_CLOSE_WAIT, &xprt->state);
-		smp_mb__after_clear_bit();
-		xs_tcp_schedule_linger_timeout(xprt, xs_tcp_fin_timeout);
-=======
 		smp_mb__before_atomic();
 		clear_bit(XPRT_CONNECTED, &xprt->state);
 		clear_bit(XPRT_CLOSE_WAIT, &xprt->state);
 		smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case TCP_CLOSE_WAIT:
 		/* The server initiated a shutdown of the socket */
 		xprt->connect_cookie++;
 		clear_bit(XPRT_CONNECTED, &xprt->state);
-<<<<<<< HEAD
-		xs_tcp_force_close(xprt);
-=======
 		xs_run_error_worker(transport, XPRT_SOCK_WAKE_DISCONNECT);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case TCP_CLOSING:
 		/*
 		 * If the server closed down the connection, make sure that
@@ -2775,19 +1571,6 @@ static void xs_tcp_state_change(struct sock *sk)
 		break;
 	case TCP_LAST_ACK:
 		set_bit(XPRT_CLOSING, &xprt->state);
-<<<<<<< HEAD
-		xs_tcp_schedule_linger_timeout(xprt, xs_tcp_fin_timeout);
-		smp_mb__before_clear_bit();
-		clear_bit(XPRT_CONNECTED, &xprt->state);
-		smp_mb__after_clear_bit();
-		break;
-	case TCP_CLOSE:
-		xs_tcp_cancel_linger_timeout(xprt);
-		xs_sock_mark_closed(xprt);
-	}
- out:
-	read_unlock_bh(&sk->sk_callback_lock);
-=======
 		smp_mb__before_atomic();
 		clear_bit(XPRT_CONNECTED, &xprt->state);
 		smp_mb__after_atomic();
@@ -2802,26 +1585,10 @@ static void xs_tcp_state_change(struct sock *sk)
 		/* Trigger the socket release */
 		xs_run_error_worker(transport, XPRT_SOCK_WAKE_DISCONNECT);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void xs_write_space(struct sock *sk)
 {
-<<<<<<< HEAD
-	struct socket *sock;
-	struct rpc_xprt *xprt;
-
-	if (unlikely(!(sock = sk->sk_socket)))
-		return;
-	clear_bit(SOCK_NOSPACE, &sock->flags);
-
-	if (unlikely(!(xprt = xprt_from_sock(sk))))
-		return;
-	if (test_and_clear_bit(SOCK_ASYNC_NOSPACE, &sock->flags) == 0)
-		return;
-
-	xprt_write_space(xprt);
-=======
 	struct sock_xprt *transport;
 	struct rpc_xprt *xprt;
 
@@ -2836,7 +1603,6 @@ static void xs_write_space(struct sock *sk)
 		return;
 	xs_run_error_worker(transport, XPRT_SOCK_WAKE_WRITE);
 	sk->sk_write_pending--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2851,19 +1617,9 @@ static void xs_write_space(struct sock *sk)
  */
 static void xs_udp_write_space(struct sock *sk)
 {
-<<<<<<< HEAD
-	read_lock_bh(&sk->sk_callback_lock);
-
 	/* from net/core/sock.c:sock_def_write_space */
 	if (sock_writeable(sk))
 		xs_write_space(sk);
-
-	read_unlock_bh(&sk->sk_callback_lock);
-=======
-	/* from net/core/sock.c:sock_def_write_space */
-	if (sock_writeable(sk))
-		xs_write_space(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2878,19 +1634,9 @@ static void xs_udp_write_space(struct sock *sk)
  */
 static void xs_tcp_write_space(struct sock *sk)
 {
-<<<<<<< HEAD
-	read_lock_bh(&sk->sk_callback_lock);
-
-	/* from net/core/stream.c:sk_stream_write_space */
-	if (sk_stream_wspace(sk) >= sk_stream_min_wspace(sk))
-		xs_write_space(sk);
-
-	read_unlock_bh(&sk->sk_callback_lock);
-=======
 	/* from net/core/stream.c:sk_stream_write_space */
 	if (sk_stream_is_writeable(sk))
 		xs_write_space(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void xs_udp_do_set_buffer_size(struct rpc_xprt *xprt)
@@ -2933,26 +1679,11 @@ static void xs_udp_set_buffer_size(struct rpc_xprt *xprt, size_t sndsize, size_t
 
 /**
  * xs_udp_timer - called when a retransmit timeout occurs on a UDP transport
-<<<<<<< HEAD
-=======
  * @xprt: controlling transport
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @task: task that timed out
  *
  * Adjust the congestion window after a retransmit timeout has occurred.
  */
-<<<<<<< HEAD
-static void xs_udp_timer(struct rpc_task *task)
-{
-	xprt_adjust_cwnd(task, -ETIMEDOUT);
-}
-
-static unsigned short xs_get_random_port(void)
-{
-	unsigned short range = xprt_max_resvport - xprt_min_resvport;
-	unsigned short rand = (unsigned short) net_random() % range;
-	return rand + xprt_min_resvport;
-=======
 static void xs_udp_timer(struct rpc_xprt *xprt, struct rpc_task *task)
 {
 	spin_lock(&xprt->transport_lock);
@@ -2989,7 +1720,6 @@ static unsigned short xs_sock_getport(struct socket *sock)
 	}
 out:
 	return port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3006,11 +1736,6 @@ static void xs_set_port(struct rpc_xprt *xprt, unsigned short port)
 	xs_update_peer_port(xprt);
 }
 
-<<<<<<< HEAD
-static unsigned short xs_get_srcport(struct sock_xprt *transport)
-{
-	unsigned short port = transport->srcport;
-=======
 static void xs_reset_srcport(struct sock_xprt *transport)
 {
 	transport->srcport = 0;
@@ -3025,15 +1750,12 @@ static void xs_set_srcport(struct sock_xprt *transport, struct socket *sock)
 static int xs_get_srcport(struct sock_xprt *transport)
 {
 	int port = transport->srcport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (port == 0 && transport->xprt.resvport)
 		port = xs_get_random_port();
 	return port;
 }
 
-<<<<<<< HEAD
-=======
 static unsigned short xs_sock_srcport(struct rpc_xprt *xprt)
 {
 	struct sock_xprt *sock = container_of(xprt, struct sock_xprt, xprt);
@@ -3064,7 +1786,6 @@ static int xs_sock_srcaddr(struct rpc_xprt *xprt, char *buf, size_t buflen)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned short xs_next_srcport(struct sock_xprt *transport, unsigned short port)
 {
 	if (transport->srcport != 0)
@@ -3079,11 +1800,6 @@ static int xs_bind(struct sock_xprt *transport, struct socket *sock)
 {
 	struct sockaddr_storage myaddr;
 	int err, nloop = 0;
-<<<<<<< HEAD
-	unsigned short port = xs_get_srcport(transport);
-	unsigned short last;
-
-=======
 	int port = xs_get_srcport(transport);
 	unsigned short last;
 
@@ -3105,22 +1821,14 @@ static int xs_bind(struct sock_xprt *transport, struct socket *sock)
 	if (port <= 0)
 		return port;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(&myaddr, &transport->srcaddr, transport->xprt.addrlen);
 	do {
 		rpc_set_port((struct sockaddr *)&myaddr, port);
 		err = kernel_bind(sock, (struct sockaddr *)&myaddr,
 				transport->xprt.addrlen);
-<<<<<<< HEAD
-		if (port == 0)
-			break;
-		if (err == 0) {
-			transport->srcport = port;
-=======
 		if (err == 0) {
 			if (transport->xprt.reuseport)
 				transport->srcport = port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		last = port;
@@ -3153,64 +1861,38 @@ static void xs_local_set_port(struct rpc_xprt *xprt, unsigned short port)
 }
 
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
-<<<<<<< HEAD
-static struct lock_class_key xs_key[2];
-static struct lock_class_key xs_slock_key[2];
-=======
 static struct lock_class_key xs_key[3];
 static struct lock_class_key xs_slock_key[3];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void xs_reclassify_socketu(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
 
-<<<<<<< HEAD
-	BUG_ON(sock_owned_by_user(sk));
-	sock_lock_init_class_and_name(sk, "slock-AF_LOCAL-RPC",
-		&xs_slock_key[1], "sk_lock-AF_LOCAL-RPC", &xs_key[1]);
-=======
 	sock_lock_init_class_and_name(sk, "slock-AF_LOCAL-RPC",
 		&xs_slock_key[0], "sk_lock-AF_LOCAL-RPC", &xs_key[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void xs_reclassify_socket4(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
 
-<<<<<<< HEAD
-	BUG_ON(sock_owned_by_user(sk));
-	sock_lock_init_class_and_name(sk, "slock-AF_INET-RPC",
-		&xs_slock_key[0], "sk_lock-AF_INET-RPC", &xs_key[0]);
-=======
 	sock_lock_init_class_and_name(sk, "slock-AF_INET-RPC",
 		&xs_slock_key[1], "sk_lock-AF_INET-RPC", &xs_key[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void xs_reclassify_socket6(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
 
-<<<<<<< HEAD
-	BUG_ON(sock_owned_by_user(sk));
-	sock_lock_init_class_and_name(sk, "slock-AF_INET6-RPC",
-		&xs_slock_key[1], "sk_lock-AF_INET6-RPC", &xs_key[1]);
-=======
 	sock_lock_init_class_and_name(sk, "slock-AF_INET6-RPC",
 		&xs_slock_key[2], "sk_lock-AF_INET6-RPC", &xs_key[2]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void xs_reclassify_socket(int family, struct socket *sock)
 {
-<<<<<<< HEAD
-=======
 	if (WARN_ON_ONCE(!sock_allow_reclassification(sock->sk)))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (family) {
 	case AF_LOCAL:
 		xs_reclassify_socketu(sock);
@@ -3224,31 +1906,11 @@ static inline void xs_reclassify_socket(int family, struct socket *sock)
 	}
 }
 #else
-<<<<<<< HEAD
-static inline void xs_reclassify_socketu(struct socket *sock)
-{
-}
-
-static inline void xs_reclassify_socket4(struct socket *sock)
-{
-}
-
-static inline void xs_reclassify_socket6(struct socket *sock)
-{
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void xs_reclassify_socket(int family, struct socket *sock)
 {
 }
 #endif
 
-<<<<<<< HEAD
-static struct socket *xs_create_sock(struct rpc_xprt *xprt,
-		struct sock_xprt *transport, int family, int type, int protocol)
-{
-=======
 static void xs_dummy_setup_socket(struct work_struct *work)
 {
 }
@@ -3258,7 +1920,6 @@ static struct socket *xs_create_sock(struct rpc_xprt *xprt,
 		int protocol, bool reuseport)
 {
 	struct file *filp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct socket *sock;
 	int err;
 
@@ -3270,26 +1931,20 @@ static struct socket *xs_create_sock(struct rpc_xprt *xprt,
 	}
 	xs_reclassify_socket(family, sock);
 
-<<<<<<< HEAD
-=======
 	if (reuseport)
 		sock_set_reuseport(sock->sk);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = xs_bind(transport, sock);
 	if (err) {
 		sock_release(sock);
 		goto out;
 	}
 
-<<<<<<< HEAD
-=======
 	filp = sock_alloc_file(sock, O_NONBLOCK, NULL);
 	if (IS_ERR(filp))
 		return ERR_CAST(filp);
 	transport->file = filp;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sock;
 out:
 	return ERR_PTR(err);
@@ -3304,26 +1959,16 @@ static int xs_local_finish_connecting(struct rpc_xprt *xprt,
 	if (!transport->inet) {
 		struct sock *sk = sock->sk;
 
-<<<<<<< HEAD
-		write_lock_bh(&sk->sk_callback_lock);
-=======
 		lock_sock(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		xs_save_old_callbacks(transport, sk);
 
 		sk->sk_user_data = xprt;
-<<<<<<< HEAD
-		sk->sk_data_ready = xs_local_data_ready;
-		sk->sk_write_space = xs_udp_write_space;
-		sk->sk_allocation = GFP_ATOMIC;
-=======
 		sk->sk_data_ready = xs_data_ready;
 		sk->sk_write_space = xs_udp_write_space;
 		sk->sk_state_change = xs_local_state_change;
 		sk->sk_error_report = xs_error_report;
 		sk->sk_use_task_frag = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		xprt_clear_connected(xprt);
 
@@ -3331,47 +1976,16 @@ static int xs_local_finish_connecting(struct rpc_xprt *xprt,
 		transport->sock = sock;
 		transport->inet = sk;
 
-<<<<<<< HEAD
-		write_unlock_bh(&sk->sk_callback_lock);
-	}
-
-	/* Tell the socket layer to start connecting... */
-	xprt->stat.connect_count++;
-	xprt->stat.connect_start = jiffies;
-=======
 		release_sock(sk);
 	}
 
 	xs_stream_start_connect(transport);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return kernel_connect(sock, xs_addr(xprt), xprt->addrlen, 0);
 }
 
 /**
  * xs_local_setup_socket - create AF_LOCAL socket, connect to a local endpoint
-<<<<<<< HEAD
- * @xprt: RPC transport to connect
- * @transport: socket transport to connect
- * @create_sock: function to create a socket of the correct type
- *
- * Invoked by a work queue tasklet.
- */
-static void xs_local_setup_socket(struct work_struct *work)
-{
-	struct sock_xprt *transport =
-		container_of(work, struct sock_xprt, connect_worker.work);
-	struct rpc_xprt *xprt = &transport->xprt;
-	struct socket *sock;
-	int status = -EIO;
-
-	if (xprt->shutdown)
-		goto out;
-
-	current->flags |= PF_FSTRANS;
-
-	clear_bit(XPRT_CONNECTION_ABORT, &xprt->state);
-=======
  * @transport: socket transport to connect
  */
 static int xs_local_setup_socket(struct sock_xprt *transport)
@@ -3381,7 +1995,6 @@ static int xs_local_setup_socket(struct sock_xprt *transport)
 	struct socket *sock;
 	int status;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = __sock_create(xprt->xprt_net, AF_LOCAL,
 					SOCK_STREAM, 0, &sock, 1);
 	if (status < 0) {
@@ -3389,9 +2002,6 @@ static int xs_local_setup_socket(struct sock_xprt *transport)
 			"transport socket (%d).\n", -status);
 		goto out;
 	}
-<<<<<<< HEAD
-	xs_reclassify_socketu(sock);
-=======
 	xs_reclassify_socket(AF_LOCAL, sock);
 
 	filp = sock_alloc_file(sock, O_NONBLOCK, NULL);
@@ -3400,24 +2010,16 @@ static int xs_local_setup_socket(struct sock_xprt *transport)
 		goto out;
 	}
 	transport->file = filp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("RPC:       worker connecting xprt %p via AF_LOCAL to %s\n",
 			xprt, xprt->address_strings[RPC_DISPLAY_ADDR]);
 
 	status = xs_local_finish_connecting(xprt, sock);
-<<<<<<< HEAD
-=======
 	trace_rpc_socket_connect(xprt, sock, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (status) {
 	case 0:
 		dprintk("RPC:       xprt %p connected to %s\n",
 				xprt, xprt->address_strings[RPC_DISPLAY_ADDR]);
-<<<<<<< HEAD
-		xprt_set_connected(xprt);
-		break;
-=======
 		xprt->stat.connect_count++;
 		xprt->stat.connect_time += (long)jiffies -
 					   xprt->stat.connect_start;
@@ -3425,18 +2027,14 @@ static int xs_local_setup_socket(struct sock_xprt *transport)
 		break;
 	case -ENOBUFS:
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case -ENOENT:
 		dprintk("RPC:       xprt %p: socket %s does not exist\n",
 				xprt, xprt->address_strings[RPC_DISPLAY_ADDR]);
 		break;
-<<<<<<< HEAD
-=======
 	case -ECONNREFUSED:
 		dprintk("RPC:       xprt %p: connection refused for %s\n",
 				xprt, xprt->address_strings[RPC_DISPLAY_ADDR]);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		printk(KERN_ERR "%s: unhandled error (%d) connecting to %s\n",
 				__func__, -status,
@@ -3446,11 +2044,6 @@ static int xs_local_setup_socket(struct sock_xprt *transport)
 out:
 	xprt_clear_connecting(xprt);
 	xprt_wake_pending_tasks(xprt, status);
-<<<<<<< HEAD
-	current->flags &= ~PF_FSTRANS;
-}
-
-=======
 	return status;
 }
 
@@ -3562,7 +2155,6 @@ xs_disable_swap(struct rpc_xprt *xprt)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void xs_udp_finish_connecting(struct rpc_xprt *xprt, struct socket *sock)
 {
 	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
@@ -3570,25 +2162,14 @@ static void xs_udp_finish_connecting(struct rpc_xprt *xprt, struct socket *sock)
 	if (!transport->inet) {
 		struct sock *sk = sock->sk;
 
-<<<<<<< HEAD
-		write_lock_bh(&sk->sk_callback_lock);
-=======
 		lock_sock(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		xs_save_old_callbacks(transport, sk);
 
 		sk->sk_user_data = xprt;
-<<<<<<< HEAD
-		sk->sk_data_ready = xs_udp_data_ready;
-		sk->sk_write_space = xs_udp_write_space;
-		sk->sk_no_check = UDP_CSUM_NORCV;
-		sk->sk_allocation = GFP_ATOMIC;
-=======
 		sk->sk_data_ready = xs_data_ready;
 		sk->sk_write_space = xs_udp_write_space;
 		sk->sk_use_task_frag = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		xprt_set_connected(xprt);
 
@@ -3596,11 +2177,6 @@ static void xs_udp_finish_connecting(struct rpc_xprt *xprt, struct socket *sock)
 		transport->sock = sock;
 		transport->inet = sk;
 
-<<<<<<< HEAD
-		write_unlock_bh(&sk->sk_callback_lock);
-	}
-	xs_udp_do_set_buffer_size(xprt);
-=======
 		xs_set_memalloc(xprt);
 
 		release_sock(sk);
@@ -3608,7 +2184,6 @@ static void xs_udp_finish_connecting(struct rpc_xprt *xprt, struct socket *sock)
 	xs_udp_do_set_buffer_size(xprt);
 
 	xprt->stat.connect_start = jiffies;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void xs_udp_setup_socket(struct work_struct *work)
@@ -3616,20 +2191,6 @@ static void xs_udp_setup_socket(struct work_struct *work)
 	struct sock_xprt *transport =
 		container_of(work, struct sock_xprt, connect_worker.work);
 	struct rpc_xprt *xprt = &transport->xprt;
-<<<<<<< HEAD
-	struct socket *sock = transport->sock;
-	int status = -EIO;
-
-	if (xprt->shutdown)
-		goto out;
-
-	current->flags |= PF_FSTRANS;
-
-	/* Start by resetting any existing state */
-	xs_reset_transport(transport);
-	sock = xs_create_sock(xprt, transport,
-			xs_addr(xprt)->sa_family, SOCK_DGRAM, IPPROTO_UDP);
-=======
 	struct socket *sock;
 	int status = -EIO;
 	unsigned int pflags = current->flags;
@@ -3639,7 +2200,6 @@ static void xs_udp_setup_socket(struct work_struct *work)
 	sock = xs_create_sock(xprt, transport,
 			xs_addr(xprt)->sa_family, SOCK_DGRAM,
 			IPPROTO_UDP, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(sock))
 		goto out;
 
@@ -3650,62 +2210,6 @@ static void xs_udp_setup_socket(struct work_struct *work)
 			xprt->address_strings[RPC_DISPLAY_PORT]);
 
 	xs_udp_finish_connecting(xprt, sock);
-<<<<<<< HEAD
-	status = 0;
-out:
-	xprt_clear_connecting(xprt);
-	xprt_wake_pending_tasks(xprt, status);
-	current->flags &= ~PF_FSTRANS;
-}
-
-/*
- * We need to preserve the port number so the reply cache on the server can
- * find our cached RPC replies when we get around to reconnecting.
- */
-static void xs_abort_connection(struct sock_xprt *transport)
-{
-	int result;
-	struct sockaddr any;
-
-	dprintk("RPC:       disconnecting xprt %p to reuse port\n", transport);
-
-	/*
-	 * Disconnect the transport socket by doing a connect operation
-	 * with AF_UNSPEC.  This should return immediately...
-	 */
-	memset(&any, 0, sizeof(any));
-	any.sa_family = AF_UNSPEC;
-	result = kernel_connect(transport->sock, &any, sizeof(any), 0);
-	if (!result)
-		xs_sock_reset_connection_flags(&transport->xprt);
-	dprintk("RPC:       AF_UNSPEC connect return code %d\n", result);
-}
-
-static void xs_tcp_reuse_connection(struct sock_xprt *transport)
-{
-	unsigned int state = transport->inet->sk_state;
-
-	if (state == TCP_CLOSE && transport->sock->state == SS_UNCONNECTED) {
-		/* we don't need to abort the connection if the socket
-		 * hasn't undergone a shutdown
-		 */
-		if (transport->inet->sk_shutdown == 0)
-			return;
-		dprintk("RPC:       %s: TCP_CLOSEd and sk_shutdown set to %d\n",
-				__func__, transport->inet->sk_shutdown);
-	}
-	if ((1 << state) & (TCPF_ESTABLISHED|TCPF_SYN_SENT)) {
-		/* we don't need to abort the connection if the socket
-		 * hasn't undergone a shutdown
-		 */
-		if (transport->inet->sk_shutdown == 0)
-			return;
-		dprintk("RPC:       %s: ESTABLISHED/SYN_SENT "
-				"sk_shutdown set to %d\n",
-				__func__, transport->inet->sk_shutdown);
-	}
-	xs_abort_connection(transport);
-=======
 	trace_rpc_socket_connect(xprt, sock, 0);
 	status = 0;
 out:
@@ -3821,23 +2325,15 @@ static void xs_tcp_set_connect_timeout(struct rpc_xprt *xprt,
 		xs_tcp_do_set_connect_timeout(xprt, connect_timeout);
 	set_bit(XPRT_SOCK_UPD_TIMEOUT, &transport->sock_state);
 	spin_unlock(&xprt->transport_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xs_tcp_finish_connecting(struct rpc_xprt *xprt, struct socket *sock)
 {
 	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
-<<<<<<< HEAD
-	int ret = -ENOTCONN;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!transport->inet) {
 		struct sock *sk = sock->sk;
 
-<<<<<<< HEAD
-		write_lock_bh(&sk->sk_callback_lock);
-=======
 		/* Avoid temporary address, they are bad for long-lived
 		 * connections such as NFS mounts.
 		 * RFC4941, section 3.6 suggests that:
@@ -3854,23 +2350,10 @@ static int xs_tcp_finish_connecting(struct rpc_xprt *xprt, struct socket *sock)
 		tcp_sock_set_nodelay(sk);
 
 		lock_sock(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		xs_save_old_callbacks(transport, sk);
 
 		sk->sk_user_data = xprt;
-<<<<<<< HEAD
-		sk->sk_data_ready = xs_tcp_data_ready;
-		sk->sk_state_change = xs_tcp_state_change;
-		sk->sk_write_space = xs_tcp_write_space;
-		sk->sk_allocation = GFP_ATOMIC;
-
-		/* socket options */
-		sk->sk_userlocks |= SOCK_BINDPORT_LOCK;
-		sock_reset_flag(sk, SOCK_LINGER);
-		tcp_sk(sk)->linger2 = 0;
-		tcp_sk(sk)->nonagle |= TCP_NAGLE_OFF;
-=======
 		sk->sk_data_ready = xs_data_ready;
 		sk->sk_state_change = xs_tcp_state_change;
 		sk->sk_write_space = xs_tcp_write_space;
@@ -3879,7 +2362,6 @@ static int xs_tcp_finish_connecting(struct rpc_xprt *xprt, struct socket *sock)
 
 		/* socket options */
 		sock_reset_flag(sk, SOCK_LINGER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		xprt_clear_connected(xprt);
 
@@ -3887,28 +2369,6 @@ static int xs_tcp_finish_connecting(struct rpc_xprt *xprt, struct socket *sock)
 		transport->sock = sock;
 		transport->inet = sk;
 
-<<<<<<< HEAD
-		write_unlock_bh(&sk->sk_callback_lock);
-	}
-
-	if (!xprt_bound(xprt))
-		goto out;
-
-	/* Tell the socket layer to start connecting... */
-	xprt->stat.connect_count++;
-	xprt->stat.connect_start = jiffies;
-	ret = kernel_connect(sock, xs_addr(xprt), xprt->addrlen, O_NONBLOCK);
-	switch (ret) {
-	case 0:
-	case -EINPROGRESS:
-		/* SYN_SENT! */
-		xprt->connect_cookie++;
-		if (xprt->reestablish_timeout < XS_TCP_INIT_REEST_TO)
-			xprt->reestablish_timeout = XS_TCP_INIT_REEST_TO;
-	}
-out:
-	return ret;
-=======
 		release_sock(sk);
 	}
 
@@ -3922,18 +2382,11 @@ out:
 	/* Tell the socket layer to start connecting... */
 	set_bit(XPRT_SOCK_CONNECTING, &transport->sock_state);
 	return kernel_connect(sock, xs_addr(xprt), xprt->addrlen, O_NONBLOCK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * xs_tcp_setup_socket - create a TCP socket and connect to a remote endpoint
-<<<<<<< HEAD
- * @xprt: RPC transport to connect
- * @transport: socket transport to connect
- * @create_sock: function to create a socket of the correct type
-=======
  * @work: queued work item
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Invoked by a work queue tasklet.
  */
@@ -3943,33 +2396,6 @@ static void xs_tcp_setup_socket(struct work_struct *work)
 		container_of(work, struct sock_xprt, connect_worker.work);
 	struct socket *sock = transport->sock;
 	struct rpc_xprt *xprt = &transport->xprt;
-<<<<<<< HEAD
-	int status = -EIO;
-
-	if (xprt->shutdown)
-		goto out;
-
-	current->flags |= PF_FSTRANS;
-
-	if (!sock) {
-		clear_bit(XPRT_CONNECTION_ABORT, &xprt->state);
-		sock = xs_create_sock(xprt, transport,
-				xs_addr(xprt)->sa_family, SOCK_STREAM, IPPROTO_TCP);
-		if (IS_ERR(sock)) {
-			status = PTR_ERR(sock);
-			goto out;
-		}
-	} else {
-		int abort_and_exit;
-
-		abort_and_exit = test_and_clear_bit(XPRT_CONNECTION_ABORT,
-				&xprt->state);
-		/* "close" the socket, preserving the local port */
-		xs_tcp_reuse_connection(transport);
-
-		if (abort_and_exit)
-			goto out_eagain;
-=======
 	int status;
 	unsigned int pflags = current->flags;
 
@@ -3988,7 +2414,6 @@ static void xs_tcp_setup_socket(struct work_struct *work)
 			xprt_wake_pending_tasks(xprt, PTR_ERR(sock));
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dprintk("RPC:       worker connecting xprt %p via %s to "
@@ -3998,35 +2423,11 @@ static void xs_tcp_setup_socket(struct work_struct *work)
 			xprt->address_strings[RPC_DISPLAY_PORT]);
 
 	status = xs_tcp_finish_connecting(xprt, sock);
-<<<<<<< HEAD
-=======
 	trace_rpc_socket_connect(xprt, sock, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dprintk("RPC:       %p connect status %d connected %d sock state %d\n",
 			xprt, -status, xprt_connected(xprt),
 			sock->sk->sk_state);
 	switch (status) {
-<<<<<<< HEAD
-	default:
-		printk("%s: connect returned unhandled error %d\n",
-			__func__, status);
-	case -EADDRNOTAVAIL:
-		/* We're probably in TIME_WAIT. Get rid of existing socket,
-		 * and retry
-		 */
-		xs_tcp_force_close(xprt);
-		break;
-	case -ECONNREFUSED:
-	case -ECONNRESET:
-	case -ENETUNREACH:
-		/* retry with existing socket, after a delay */
-	case 0:
-	case -EINPROGRESS:
-	case -EALREADY:
-		xprt_clear_connecting(xprt);
-		current->flags &= ~PF_FSTRANS;
-		return;
-=======
 	case 0:
 	case -EINPROGRESS:
 		/* SYN_SENT! */
@@ -4041,21 +2442,10 @@ static void xs_tcp_setup_socket(struct work_struct *work)
 		transport->srcport = 0;
 		status = -EAGAIN;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case -EINVAL:
 		/* Happens, for instance, if the user specified a link
 		 * local IPv6 address without a scope-id.
 		 */
-<<<<<<< HEAD
-		goto out;
-	}
-out_eagain:
-	status = -EAGAIN;
-out:
-	xprt_clear_connecting(xprt);
-	xprt_wake_pending_tasks(xprt, status);
-	current->flags &= ~PF_FSTRANS;
-=======
 	case -ECONNREFUSED:
 	case -ECONNRESET:
 	case -ENETDOWN:
@@ -4348,15 +2738,11 @@ out_close:
 	xs_tcp_force_close(upper_xprt);
 	xprt_clear_connecting(upper_xprt);
 	goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * xs_connect - connect a socket to a remote endpoint
-<<<<<<< HEAD
-=======
  * @xprt: pointer to transport structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @task: address of RPC task that manages state of connect request
  *
  * TCP: If the remote end dropped the connection, delay reconnecting.
@@ -4368,34 +2754,6 @@ out_close:
  * If a UDP socket connect fails, the delay behavior here prevents
  * retry floods (hard mounts).
  */
-<<<<<<< HEAD
-static void xs_connect(struct rpc_task *task)
-{
-	struct rpc_xprt *xprt = task->tk_xprt;
-	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
-
-	if (transport->sock != NULL && !RPC_IS_SOFTCONN(task)) {
-		dprintk("RPC:       xs_connect delayed xprt %p for %lu "
-				"seconds\n",
-				xprt, xprt->reestablish_timeout / HZ);
-		queue_delayed_work(rpciod_workqueue,
-				   &transport->connect_worker,
-				   xprt->reestablish_timeout);
-		xprt->reestablish_timeout <<= 1;
-		if (xprt->reestablish_timeout < XS_TCP_INIT_REEST_TO)
-			xprt->reestablish_timeout = XS_TCP_INIT_REEST_TO;
-		if (xprt->reestablish_timeout > XS_TCP_MAX_REEST_TO)
-			xprt->reestablish_timeout = XS_TCP_MAX_REEST_TO;
-	} else {
-		dprintk("RPC:       xs_connect scheduled xprt %p\n", xprt);
-		queue_delayed_work(rpciod_workqueue,
-				   &transport->connect_worker, 0);
-	}
-}
-
-/**
- * xs_local_print_stats - display AF_LOCAL socket-specifc stats
-=======
 static void xs_connect(struct rpc_xprt *xprt, struct rpc_task *task)
 {
 	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
@@ -4463,7 +2821,6 @@ static void xs_error_handle(struct work_struct *work)
 
 /**
  * xs_local_print_stats - display AF_LOCAL socket-specific stats
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @xprt: rpc_xprt struct containing statistics
  * @seq: output file
  *
@@ -4479,11 +2836,7 @@ static void xs_local_print_stats(struct rpc_xprt *xprt, struct seq_file *seq)
 			"%llu %llu %lu %llu %llu\n",
 			xprt->stat.bind_count,
 			xprt->stat.connect_count,
-<<<<<<< HEAD
-			xprt->stat.connect_time,
-=======
 			xprt->stat.connect_time / HZ,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			idle_time,
 			xprt->stat.sends,
 			xprt->stat.recvs,
@@ -4496,11 +2849,7 @@ static void xs_local_print_stats(struct rpc_xprt *xprt, struct seq_file *seq)
 }
 
 /**
-<<<<<<< HEAD
- * xs_udp_print_stats - display UDP socket-specifc stats
-=======
  * xs_udp_print_stats - display UDP socket-specific stats
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @xprt: rpc_xprt struct containing statistics
  * @seq: output file
  *
@@ -4524,11 +2873,7 @@ static void xs_udp_print_stats(struct rpc_xprt *xprt, struct seq_file *seq)
 }
 
 /**
-<<<<<<< HEAD
- * xs_tcp_print_stats - display TCP socket-specifc stats
-=======
  * xs_tcp_print_stats - display TCP socket-specific stats
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @xprt: rpc_xprt struct containing statistics
  * @seq: output file
  *
@@ -4546,11 +2891,7 @@ static void xs_tcp_print_stats(struct rpc_xprt *xprt, struct seq_file *seq)
 			transport->srcport,
 			xprt->stat.bind_count,
 			xprt->stat.connect_count,
-<<<<<<< HEAD
-			xprt->stat.connect_time,
-=======
 			xprt->stat.connect_time / HZ,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			idle_time,
 			xprt->stat.sends,
 			xprt->stat.recvs,
@@ -4567,18 +2908,6 @@ static void xs_tcp_print_stats(struct rpc_xprt *xprt, struct seq_file *seq)
  * we allocate pages instead doing a kmalloc like rpc_malloc is because we want
  * to use the server side send routines.
  */
-<<<<<<< HEAD
-static void *bc_malloc(struct rpc_task *task, size_t size)
-{
-	struct page *page;
-	struct rpc_buffer *buf;
-
-	BUG_ON(size > PAGE_SIZE - sizeof(struct rpc_buffer));
-	page = alloc_page(GFP_KERNEL);
-
-	if (!page)
-		return NULL;
-=======
 static int bc_malloc(struct rpc_task *task)
 {
 	struct rpc_rqst *rqst = task->tk_rqstp;
@@ -4595,86 +2924,27 @@ static int bc_malloc(struct rpc_task *task)
 	page = alloc_page(GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN);
 	if (!page)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf = page_address(page);
 	buf->len = PAGE_SIZE;
 
-<<<<<<< HEAD
-	return buf->data;
-=======
 	rqst->rq_buffer = buf->data;
 	rqst->rq_rbuffer = (char *)rqst->rq_buffer + rqst->rq_callsize;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Free the space allocated in the bc_alloc routine
  */
-<<<<<<< HEAD
-static void bc_free(void *buffer)
-{
-	struct rpc_buffer *buf;
-
-	if (!buffer)
-		return;
-
-=======
 static void bc_free(struct rpc_task *task)
 {
 	void *buffer = task->tk_rqstp->rq_buffer;
 	struct rpc_buffer *buf;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf = container_of(buffer, struct rpc_buffer, data);
 	free_page((unsigned long)buf);
 }
 
-<<<<<<< HEAD
-/*
- * Use the svc_sock to send the callback. Must be called with svsk->sk_mutex
- * held. Borrows heavily from svc_tcp_sendto and xs_tcp_send_request.
- */
-static int bc_sendto(struct rpc_rqst *req)
-{
-	int len;
-	struct xdr_buf *xbufp = &req->rq_snd_buf;
-	struct rpc_xprt *xprt = req->rq_xprt;
-	struct sock_xprt *transport =
-				container_of(xprt, struct sock_xprt, xprt);
-	struct socket *sock = transport->sock;
-	unsigned long headoff;
-	unsigned long tailoff;
-
-	xs_encode_stream_record_marker(xbufp);
-
-	tailoff = (unsigned long)xbufp->tail[0].iov_base & ~PAGE_MASK;
-	headoff = (unsigned long)xbufp->head[0].iov_base & ~PAGE_MASK;
-	len = svc_send_common(sock, xbufp,
-			      virt_to_page(xbufp->head[0].iov_base), headoff,
-			      xbufp->tail[0].iov_base, tailoff);
-
-	if (len != xbufp->len) {
-		printk(KERN_NOTICE "Error sending entire callback!\n");
-		len = -EAGAIN;
-	}
-
-	return len;
-}
-
-/*
- * The send routine. Borrows from svc_send
- */
-static int bc_send_request(struct rpc_task *task)
-{
-	struct rpc_rqst *req = task->tk_rqstp;
-	struct svc_xprt	*xprt;
-	struct svc_sock         *svsk;
-	u32                     len;
-
-	dprintk("sending request with xid: %08x\n", ntohl(req->rq_xid));
-=======
 static int bc_sendto(struct rpc_rqst *req)
 {
 	struct xdr_buf *xdr = &req->rq_snd_buf;
@@ -4715,30 +2985,16 @@ static int bc_send_request(struct rpc_rqst *req)
 	struct svc_xprt	*xprt;
 	int len;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Get the server socket associated with this callback xprt
 	 */
 	xprt = req->rq_xprt->bc_xprt;
-<<<<<<< HEAD
-	svsk = container_of(xprt, struct svc_sock, sk_xprt);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Grab the mutex to serialize data as the connection is shared
 	 * with the fore channel
 	 */
-<<<<<<< HEAD
-	if (!mutex_trylock(&xprt->xpt_mutex)) {
-		rpc_sleep_on(&xprt->xpt_bc_pending, task, NULL);
-		if (!mutex_trylock(&xprt->xpt_mutex))
-			return -EAGAIN;
-		rpc_wake_up_queued_task(&xprt->xpt_bc_pending, task);
-	}
-=======
 	mutex_lock(&xprt->xpt_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(XPT_DEAD, &xprt->xpt_flags))
 		len = -ENOTCONN;
 	else
@@ -4751,42 +3007,6 @@ static int bc_send_request(struct rpc_rqst *req)
 	return len;
 }
 
-<<<<<<< HEAD
-/*
- * The close routine. Since this is client initiated, we do nothing
- */
-
-static void bc_close(struct rpc_xprt *xprt)
-{
-}
-
-/*
- * The xprt destroy routine. Again, because this connection is client
- * initiated, we do nothing
- */
-
-static void bc_destroy(struct rpc_xprt *xprt)
-{
-}
-
-static struct rpc_xprt_ops xs_local_ops = {
-	.reserve_xprt		= xprt_reserve_xprt,
-	.release_xprt		= xs_tcp_release_xprt,
-	.alloc_slot		= xprt_alloc_slot,
-	.rpcbind		= xs_local_rpcbind,
-	.set_port		= xs_local_set_port,
-	.connect		= xs_connect,
-	.buf_alloc		= rpc_malloc,
-	.buf_free		= rpc_free,
-	.send_request		= xs_local_send_request,
-	.set_retrans_timeout	= xprt_set_retrans_timeout_def,
-	.close			= xs_close,
-	.destroy		= xs_destroy,
-	.print_stats		= xs_local_print_stats,
-};
-
-static struct rpc_xprt_ops xs_udp_ops = {
-=======
 static void bc_close(struct rpc_xprt *xprt)
 {
 	xprt_disconnect_done(xprt);
@@ -4822,20 +3042,10 @@ static const struct rpc_xprt_ops xs_local_ops = {
 };
 
 static const struct rpc_xprt_ops xs_udp_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_buffer_size	= xs_udp_set_buffer_size,
 	.reserve_xprt		= xprt_reserve_xprt_cong,
 	.release_xprt		= xprt_release_xprt_cong,
 	.alloc_slot		= xprt_alloc_slot,
-<<<<<<< HEAD
-	.rpcbind		= rpcb_getport_async,
-	.set_port		= xs_set_port,
-	.connect		= xs_connect,
-	.buf_alloc		= rpc_malloc,
-	.buf_free		= rpc_free,
-	.send_request		= xs_udp_send_request,
-	.set_retrans_timeout	= xprt_set_retrans_timeout_rtt,
-=======
 	.free_slot		= xprt_free_slot,
 	.rpcbind		= rpcb_getport_async,
 	.set_port		= xs_set_port,
@@ -4846,30 +3056,11 @@ static const struct rpc_xprt_ops xs_udp_ops = {
 	.buf_free		= rpc_free,
 	.send_request		= xs_udp_send_request,
 	.wait_for_reply_request	= xprt_wait_for_reply_request_rtt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.timer			= xs_udp_timer,
 	.release_request	= xprt_release_rqst_cong,
 	.close			= xs_close,
 	.destroy		= xs_destroy,
 	.print_stats		= xs_udp_print_stats,
-<<<<<<< HEAD
-};
-
-static struct rpc_xprt_ops xs_tcp_ops = {
-	.reserve_xprt		= xprt_reserve_xprt,
-	.release_xprt		= xs_tcp_release_xprt,
-	.alloc_slot		= xprt_lock_and_alloc_slot,
-	.rpcbind		= rpcb_getport_async,
-	.set_port		= xs_set_port,
-	.connect		= xs_connect,
-	.buf_alloc		= rpc_malloc,
-	.buf_free		= rpc_free,
-	.send_request		= xs_tcp_send_request,
-	.set_retrans_timeout	= xprt_set_retrans_timeout_def,
-	.close			= xs_tcp_close,
-	.destroy		= xs_destroy,
-	.print_stats		= xs_tcp_print_stats,
-=======
 	.enable_swap		= xs_enable_swap,
 	.disable_swap		= xs_disable_swap,
 	.inject_disconnect	= xs_inject_disconnect,
@@ -4905,27 +3096,12 @@ static const struct rpc_xprt_ops xs_tcp_ops = {
 	.bc_free_rqst		= xprt_free_bc_rqst,
 	.bc_destroy		= xprt_destroy_bc,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * The rpc_xprt_ops for the server backchannel
  */
 
-<<<<<<< HEAD
-static struct rpc_xprt_ops bc_tcp_ops = {
-	.reserve_xprt		= xprt_reserve_xprt,
-	.release_xprt		= xprt_release_xprt,
-	.alloc_slot		= xprt_alloc_slot,
-	.rpcbind		= xs_local_rpcbind,
-	.buf_alloc		= bc_malloc,
-	.buf_free		= bc_free,
-	.send_request		= bc_send_request,
-	.set_retrans_timeout	= xprt_set_retrans_timeout_def,
-	.close			= bc_close,
-	.destroy		= bc_destroy,
-	.print_stats		= xs_tcp_print_stats,
-=======
 static const struct rpc_xprt_ops bc_tcp_ops = {
 	.reserve_xprt		= xprt_reserve_xprt,
 	.release_xprt		= xprt_release_xprt,
@@ -4941,7 +3117,6 @@ static const struct rpc_xprt_ops bc_tcp_ops = {
 	.enable_swap		= xs_enable_swap,
 	.disable_swap		= xs_disable_swap,
 	.inject_disconnect	= xs_inject_disconnect,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int xs_init_anyaddr(const int family, struct sockaddr *sap)
@@ -4992,10 +3167,7 @@ static struct rpc_xprt *xs_setup_xprt(struct xprt_create *args,
 	}
 
 	new = container_of(xprt, struct sock_xprt, xprt);
-<<<<<<< HEAD
-=======
 	mutex_init(&new->recv_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(&xprt->addr, args->dstaddr, args->addrlen);
 	xprt->addrlen = args->addrlen;
 	if (args->srcaddr)
@@ -5039,11 +3211,7 @@ static struct rpc_xprt *xs_setup_local(struct xprt_create *args)
 	transport = container_of(xprt, struct sock_xprt, xprt);
 
 	xprt->prot = 0;
-<<<<<<< HEAD
-	xprt->tsh_size = sizeof(rpc_fraghdr) / sizeof(u32);
-=======
 	xprt->xprt_class = &xs_local_transport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xprt->max_payload = RPC_MAX_FRAGMENT_SIZE;
 
 	xprt->bind_timeout = XS_BIND_TO;
@@ -5053,11 +3221,6 @@ static struct rpc_xprt *xs_setup_local(struct xprt_create *args)
 	xprt->ops = &xs_local_ops;
 	xprt->timeout = &xs_local_default_timeout;
 
-<<<<<<< HEAD
-	switch (sun->sun_family) {
-	case AF_LOCAL:
-		if (sun->sun_path[0] != '/') {
-=======
 	INIT_WORK(&transport->recv_worker, xs_stream_data_receive_workfn);
 	INIT_WORK(&transport->error_worker, xs_error_handle);
 	INIT_DELAYED_WORK(&transport->connect_worker, xs_dummy_setup_socket);
@@ -5065,18 +3228,12 @@ static struct rpc_xprt *xs_setup_local(struct xprt_create *args)
 	switch (sun->sun_family) {
 	case AF_LOCAL:
 		if (sun->sun_path[0] != '/' && sun->sun_path[0] != '\0') {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dprintk("RPC:       bad AF_LOCAL address: %s\n",
 					sun->sun_path);
 			ret = ERR_PTR(-EINVAL);
 			goto out_err;
 		}
 		xprt_set_bound(xprt);
-<<<<<<< HEAD
-		INIT_DELAYED_WORK(&transport->connect_worker,
-					xs_local_setup_socket);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xs_format_peer_addresses(xprt, "local", RPCBIND_NETID_LOCAL);
 		break;
 	default:
@@ -5091,11 +3248,7 @@ static struct rpc_xprt *xs_setup_local(struct xprt_create *args)
 		return xprt;
 	ret = ERR_PTR(-EINVAL);
 out_err:
-<<<<<<< HEAD
-	xprt_free(xprt);
-=======
 	xs_xprt_free(xprt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -5125,11 +3278,7 @@ static struct rpc_xprt *xs_setup_udp(struct xprt_create *args)
 	transport = container_of(xprt, struct sock_xprt, xprt);
 
 	xprt->prot = IPPROTO_UDP;
-<<<<<<< HEAD
-	xprt->tsh_size = 0;
-=======
 	xprt->xprt_class = &xs_udp_transport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* XXX: header size can vary due to auth type, IPv6, etc. */
 	xprt->max_payload = (1U << 16) - (MAX_HEADER << 3);
 
@@ -5141,34 +3290,21 @@ static struct rpc_xprt *xs_setup_udp(struct xprt_create *args)
 
 	xprt->timeout = &xs_udp_default_timeout;
 
-<<<<<<< HEAD
-=======
 	INIT_WORK(&transport->recv_worker, xs_udp_data_receive_workfn);
 	INIT_WORK(&transport->error_worker, xs_error_handle);
 	INIT_DELAYED_WORK(&transport->connect_worker, xs_udp_setup_socket);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (addr->sa_family) {
 	case AF_INET:
 		if (((struct sockaddr_in *)addr)->sin_port != htons(0))
 			xprt_set_bound(xprt);
 
-<<<<<<< HEAD
-		INIT_DELAYED_WORK(&transport->connect_worker,
-					xs_udp_setup_socket);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xs_format_peer_addresses(xprt, "udp", RPCBIND_NETID_UDP);
 		break;
 	case AF_INET6:
 		if (((struct sockaddr_in6 *)addr)->sin6_port != htons(0))
 			xprt_set_bound(xprt);
 
-<<<<<<< HEAD
-		INIT_DELAYED_WORK(&transport->connect_worker,
-					xs_udp_setup_socket);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xs_format_peer_addresses(xprt, "udp", RPCBIND_NETID_UDP6);
 		break;
 	default:
@@ -5190,11 +3326,7 @@ static struct rpc_xprt *xs_setup_udp(struct xprt_create *args)
 		return xprt;
 	ret = ERR_PTR(-EINVAL);
 out_err:
-<<<<<<< HEAD
-	xprt_free(xprt);
-=======
 	xs_xprt_free(xprt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -5215,11 +3347,6 @@ static struct rpc_xprt *xs_setup_tcp(struct xprt_create *args)
 	struct rpc_xprt *xprt;
 	struct sock_xprt *transport;
 	struct rpc_xprt *ret;
-<<<<<<< HEAD
-
-	xprt = xs_setup_xprt(args, xprt_tcp_slot_table_entries,
-			xprt_max_tcp_slot_table_entries);
-=======
 	unsigned int max_slot_table_size = xprt_max_tcp_slot_table_entries;
 
 	if (args->flags & XPRT_CREATE_INFINITE_SLOTS)
@@ -5227,17 +3354,12 @@ static struct rpc_xprt *xs_setup_tcp(struct xprt_create *args)
 
 	xprt = xs_setup_xprt(args, xprt_tcp_slot_table_entries,
 			max_slot_table_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(xprt))
 		return xprt;
 	transport = container_of(xprt, struct sock_xprt, xprt);
 
 	xprt->prot = IPPROTO_TCP;
-<<<<<<< HEAD
-	xprt->tsh_size = sizeof(rpc_fraghdr) / sizeof(u32);
-=======
 	xprt->xprt_class = &xs_tcp_transport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xprt->max_payload = RPC_MAX_FRAGMENT_SIZE;
 
 	xprt->bind_timeout = XS_BIND_TO;
@@ -5247,8 +3369,6 @@ static struct rpc_xprt *xs_setup_tcp(struct xprt_create *args)
 	xprt->ops = &xs_tcp_ops;
 	xprt->timeout = &xs_tcp_default_timeout;
 
-<<<<<<< HEAD
-=======
 	xprt->max_reconnect_timeout = xprt->timeout->to_maxval;
 	if (args->reconnect_timeout)
 		xprt->max_reconnect_timeout = args->reconnect_timeout;
@@ -5262,28 +3382,17 @@ static struct rpc_xprt *xs_setup_tcp(struct xprt_create *args)
 	INIT_WORK(&transport->error_worker, xs_error_handle);
 	INIT_DELAYED_WORK(&transport->connect_worker, xs_tcp_setup_socket);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (addr->sa_family) {
 	case AF_INET:
 		if (((struct sockaddr_in *)addr)->sin_port != htons(0))
 			xprt_set_bound(xprt);
 
-<<<<<<< HEAD
-		INIT_DELAYED_WORK(&transport->connect_worker,
-					xs_tcp_setup_socket);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xs_format_peer_addresses(xprt, "tcp", RPCBIND_NETID_TCP);
 		break;
 	case AF_INET6:
 		if (((struct sockaddr_in6 *)addr)->sin6_port != htons(0))
 			xprt_set_bound(xprt);
 
-<<<<<<< HEAD
-		INIT_DELAYED_WORK(&transport->connect_worker,
-					xs_tcp_setup_socket);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xs_format_peer_addresses(xprt, "tcp", RPCBIND_NETID_TCP6);
 		break;
 	default:
@@ -5301,8 +3410,6 @@ static struct rpc_xprt *xs_setup_tcp(struct xprt_create *args)
 				xprt->address_strings[RPC_DISPLAY_ADDR],
 				xprt->address_strings[RPC_DISPLAY_PROTO]);
 
-<<<<<<< HEAD
-=======
 	if (try_module_get(THIS_MODULE))
 		return xprt;
 	ret = ERR_PTR(-EINVAL);
@@ -5390,17 +3497,12 @@ static struct rpc_xprt *xs_setup_tcp_tls(struct xprt_create *args)
 		dprintk("RPC:       set up xprt to %s (autobind) via %s\n",
 			xprt->address_strings[RPC_DISPLAY_ADDR],
 			xprt->address_strings[RPC_DISPLAY_PROTO]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (try_module_get(THIS_MODULE))
 		return xprt;
 	ret = ERR_PTR(-EINVAL);
 out_err:
-<<<<<<< HEAD
-	xprt_free(xprt);
-=======
 	xs_xprt_free(xprt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -5417,18 +3519,6 @@ static struct rpc_xprt *xs_setup_bc_tcp(struct xprt_create *args)
 	struct svc_sock *bc_sock;
 	struct rpc_xprt *ret;
 
-<<<<<<< HEAD
-	if (args->bc_xprt->xpt_bc_xprt) {
-		/*
-		 * This server connection already has a backchannel
-		 * export; we can't create a new one, as we wouldn't be
-		 * able to match replies based on xid any more.  So,
-		 * reuse the already-existing one:
-		 */
-		 return args->bc_xprt->xpt_bc_xprt;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xprt = xs_setup_xprt(args, xprt_tcp_slot_table_entries,
 			xprt_tcp_slot_table_entries);
 	if (IS_ERR(xprt))
@@ -5436,11 +3526,7 @@ static struct rpc_xprt *xs_setup_bc_tcp(struct xprt_create *args)
 	transport = container_of(xprt, struct sock_xprt, xprt);
 
 	xprt->prot = IPPROTO_TCP;
-<<<<<<< HEAD
-	xprt->tsh_size = sizeof(rpc_fraghdr) / sizeof(u32);
-=======
 	xprt->xprt_class = &xs_bc_tcp_transport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xprt->max_payload = RPC_MAX_FRAGMENT_SIZE;
 	xprt->timeout = &xs_tcp_default_timeout;
 
@@ -5473,16 +3559,9 @@ static struct rpc_xprt *xs_setup_bc_tcp(struct xprt_create *args)
 
 	/*
 	 * Once we've associated a backchannel xprt with a connection,
-<<<<<<< HEAD
-	 * we want to keep it around as long as long as the connection
-	 * lasts, in case we need to start using it for a backchannel
-	 * again; this reference won't be dropped until bc_xprt is
-	 * destroyed.
-=======
 	 * we want to keep it around as long as the connection lasts,
 	 * in case we need to start using it for a backchannel again;
 	 * this reference won't be dropped until bc_xprt is destroyed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	xprt_get(xprt);
 	args->bc_xprt->xpt_bc_xprt = xprt;
@@ -5497,15 +3576,6 @@ static struct rpc_xprt *xs_setup_bc_tcp(struct xprt_create *args)
 	 */
 	xprt_set_connected(xprt);
 
-<<<<<<< HEAD
-
-	if (try_module_get(THIS_MODULE))
-		return xprt;
-	xprt_put(xprt);
-	ret = ERR_PTR(-EINVAL);
-out_err:
-	xprt_free(xprt);
-=======
 	if (try_module_get(THIS_MODULE))
 		return xprt;
 
@@ -5515,7 +3585,6 @@ out_err:
 	ret = ERR_PTR(-EINVAL);
 out_err:
 	xs_xprt_free(xprt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -5525,10 +3594,7 @@ static struct xprt_class	xs_local_transport = {
 	.owner		= THIS_MODULE,
 	.ident		= XPRT_TRANSPORT_LOCAL,
 	.setup		= xs_setup_local,
-<<<<<<< HEAD
-=======
 	.netid		= { "" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct xprt_class	xs_udp_transport = {
@@ -5537,10 +3603,7 @@ static struct xprt_class	xs_udp_transport = {
 	.owner		= THIS_MODULE,
 	.ident		= XPRT_TRANSPORT_UDP,
 	.setup		= xs_setup_udp,
-<<<<<<< HEAD
-=======
 	.netid		= { "udp", "udp6", "" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct xprt_class	xs_tcp_transport = {
@@ -5549,8 +3612,6 @@ static struct xprt_class	xs_tcp_transport = {
 	.owner		= THIS_MODULE,
 	.ident		= XPRT_TRANSPORT_TCP,
 	.setup		= xs_setup_tcp,
-<<<<<<< HEAD
-=======
 	.netid		= { "tcp", "tcp6", "" },
 };
 
@@ -5561,7 +3622,6 @@ static struct xprt_class	xs_tcp_tls_transport = {
 	.ident		= XPRT_TRANSPORT_TCP_TLS,
 	.setup		= xs_setup_tcp_tls,
 	.netid		= { "tcp", "tcp6", "" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct xprt_class	xs_bc_tcp_transport = {
@@ -5570,10 +3630,7 @@ static struct xprt_class	xs_bc_tcp_transport = {
 	.owner		= THIS_MODULE,
 	.ident		= XPRT_TRANSPORT_BC_TCP,
 	.setup		= xs_setup_bc_tcp,
-<<<<<<< HEAD
-=======
 	.netid		= { "" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -5582,23 +3639,13 @@ static struct xprt_class	xs_bc_tcp_transport = {
  */
 int init_socket_xprt(void)
 {
-<<<<<<< HEAD
-#ifdef RPC_DEBUG
-	if (!sunrpc_table_header)
-		sunrpc_table_header = register_sysctl_table(sunrpc_table);
-#endif
-=======
 	if (!sunrpc_table_header)
 		sunrpc_table_header = register_sysctl("sunrpc", xs_tunables_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xprt_register_transport(&xs_local_transport);
 	xprt_register_transport(&xs_udp_transport);
 	xprt_register_transport(&xs_tcp_transport);
-<<<<<<< HEAD
-=======
 	xprt_register_transport(&xs_tcp_tls_transport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xprt_register_transport(&xs_bc_tcp_transport);
 
 	return 0;
@@ -5610,48 +3657,18 @@ int init_socket_xprt(void)
  */
 void cleanup_socket_xprt(void)
 {
-<<<<<<< HEAD
-#ifdef RPC_DEBUG
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sunrpc_table_header) {
 		unregister_sysctl_table(sunrpc_table_header);
 		sunrpc_table_header = NULL;
 	}
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xprt_unregister_transport(&xs_local_transport);
 	xprt_unregister_transport(&xs_udp_transport);
 	xprt_unregister_transport(&xs_tcp_transport);
-<<<<<<< HEAD
-	xprt_unregister_transport(&xs_bc_tcp_transport);
-}
-
-static int param_set_uint_minmax(const char *val,
-		const struct kernel_param *kp,
-		unsigned int min, unsigned int max)
-{
-	unsigned long num;
-	int ret;
-
-	if (!val)
-		return -EINVAL;
-	ret = strict_strtoul(val, 0, &num);
-	if (ret == -EINVAL || num < min || num > max)
-		return -EINVAL;
-	*((unsigned int *)kp->arg) = num;
-	return 0;
-}
-
-=======
 	xprt_unregister_transport(&xs_tcp_tls_transport);
 	xprt_unregister_transport(&xs_bc_tcp_transport);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int param_set_portnr(const char *val, const struct kernel_param *kp)
 {
 	return param_set_uint_minmax(val, kp,
@@ -5659,11 +3676,7 @@ static int param_set_portnr(const char *val, const struct kernel_param *kp)
 			RPC_MAX_RESVPORT);
 }
 
-<<<<<<< HEAD
-static struct kernel_param_ops param_ops_portnr = {
-=======
 static const struct kernel_param_ops param_ops_portnr = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_portnr,
 	.get = param_get_uint,
 };
@@ -5682,11 +3695,7 @@ static int param_set_slot_table_size(const char *val,
 			RPC_MAX_SLOT_TABLE);
 }
 
-<<<<<<< HEAD
-static struct kernel_param_ops param_ops_slot_table_size = {
-=======
 static const struct kernel_param_ops param_ops_slot_table_size = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_slot_table_size,
 	.get = param_get_uint,
 };
@@ -5702,11 +3711,7 @@ static int param_set_max_slot_table_size(const char *val,
 			RPC_MAX_SLOT_TABLE_LIMIT);
 }
 
-<<<<<<< HEAD
-static struct kernel_param_ops param_ops_max_slot_table_size = {
-=======
 static const struct kernel_param_ops param_ops_max_slot_table_size = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_max_slot_table_size,
 	.get = param_get_uint,
 };
@@ -5720,7 +3725,3 @@ module_param_named(tcp_max_slot_table_entries, xprt_max_tcp_slot_table_entries,
 		   max_slot_table_size, 0644);
 module_param_named(udp_slot_table_entries, xprt_udp_slot_table_entries,
 		   slot_table_size, 0644);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

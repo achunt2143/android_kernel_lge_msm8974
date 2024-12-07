@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Windfarm PowerMac thermal control.  SMU "satellite" controller sensors.
  *
  * Copyright (C) 2005 Paul Mackerras, IBM Corp. <paulus@samba.org>
-<<<<<<< HEAD
- *
- * Released under the terms of the GNU GPL v2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -21,48 +13,24 @@
 #include <linux/wait.h>
 #include <linux/i2c.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/smu.h>
 #include <asm/pmac_low_i2c.h>
 
 #include "windfarm.h"
 
-<<<<<<< HEAD
-#define VERSION "0.2"
-
-#define DEBUG
-
-#ifdef DEBUG
-#define DBG(args...)	printk(args)
-#else
-#define DBG(args...)	do { } while(0)
-#endif
-=======
 #define VERSION "1.0"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* If the cache is older than 800ms we'll refetch it */
 #define MAX_AGE		msecs_to_jiffies(800)
 
 struct wf_sat {
-<<<<<<< HEAD
-	int			nr;
-	atomic_t		refcnt;
-	struct mutex		mutex;
-	unsigned long		last_read; /* jiffies when cache last updated */
-	u8			cache[16];
-=======
 	struct kref		ref;
 	int			nr;
 	struct mutex		mutex;
 	unsigned long		last_read; /* jiffies when cache last updated */
 	u8			cache[16];
 	struct list_head	sensors;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct i2c_client	*i2c;
 	struct device_node	*node;
 };
@@ -70,20 +38,12 @@ struct wf_sat {
 static struct wf_sat *sats[2];
 
 struct wf_sat_sensor {
-<<<<<<< HEAD
-	int		index;
-	int		index2;		/* used for power sensors */
-	int		shift;
-	struct wf_sat	*sat;
-	struct wf_sensor sens;
-=======
 	struct list_head	link;
 	int			index;
 	int			index2;		/* used for power sensors */
 	int			shift;
 	struct wf_sat		*sat;
 	struct wf_sensor 	sens;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define wf_to_sat(c)	container_of(c, struct wf_sat_sensor, sens)
@@ -137,20 +97,10 @@ struct smu_sdbp_header *smu_sat_get_sdb_partition(unsigned int sat_id, int id,
 		buf[i+2] = data[3];
 		buf[i+3] = data[2];
 	}
-<<<<<<< HEAD
-#ifdef DEBUG
-	DBG(KERN_DEBUG "sat %d partition %x:", sat_id, id);
-	for (i = 0; i < len; ++i)
-		DBG(" %x", buf[i]);
-	DBG("\n");
-#endif
-
-=======
 
 	printk(KERN_DEBUG "sat %d partition %x:", sat_id, id);
 	print_hex_dump(KERN_DEBUG, "  ", DUMP_PREFIX_OFFSET,
 		       16, 1, buf, len, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (size)
 		*size = len;
 	return (struct smu_sdbp_header *) buf;
@@ -170,15 +120,6 @@ static int wf_sat_read_cache(struct wf_sat *sat)
 	if (err < 0)
 		return err;
 	sat->last_read = jiffies;
-<<<<<<< HEAD
-#ifdef LOTSA_DEBUG
-	{
-		int i;
-		DBG(KERN_DEBUG "wf_sat_get: data is");
-		for (i = 0; i < 16; ++i)
-			DBG(" %.2x", sat->cache[i]);
-		DBG("\n");
-=======
 
 #ifdef LOTSA_DEBUG
 	{
@@ -186,17 +127,12 @@ static int wf_sat_read_cache(struct wf_sat *sat)
 		printk(KERN_DEBUG "wf_sat_get: data is");
 		print_hex_dump(KERN_DEBUG, "  ", DUMP_PREFIX_OFFSET,
 			       16, 1, sat->cache, 16, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wf_sat_get(struct wf_sensor *sr, s32 *value)
-=======
 static int wf_sat_sensor_get(struct wf_sensor *sr, s32 *value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wf_sat_sensor *sens = wf_to_sat(sr);
 	struct wf_sat *sat = sens->sat;
@@ -229,9 +165,6 @@ static int wf_sat_sensor_get(struct wf_sensor *sr, s32 *value)
 	return err;
 }
 
-<<<<<<< HEAD
-static void wf_sat_release(struct wf_sensor *sr)
-=======
 static void wf_sat_release(struct kref *ref)
 {
 	struct wf_sat *sat = container_of(ref, struct wf_sat, ref);
@@ -243,68 +176,10 @@ static void wf_sat_release(struct kref *ref)
 }
 
 static void wf_sat_sensor_release(struct wf_sensor *sr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wf_sat_sensor *sens = wf_to_sat(sr);
 	struct wf_sat *sat = sens->sat;
 
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&sat->refcnt)) {
-		if (sat->nr >= 0)
-			sats[sat->nr] = NULL;
-		kfree(sat);
-	}
-	kfree(sens);
-}
-
-static struct wf_sensor_ops wf_sat_ops = {
-	.get_value	= wf_sat_get,
-	.release	= wf_sat_release,
-	.owner		= THIS_MODULE,
-};
-
-static struct i2c_driver wf_sat_driver;
-
-static void wf_sat_create(struct i2c_adapter *adapter, struct device_node *dev)
-{
-	struct i2c_board_info info;
-	struct i2c_client *client;
-	const u32 *reg;
-	u8 addr;
-
-	reg = of_get_property(dev, "reg", NULL);
-	if (reg == NULL)
-		return;
-	addr = *reg;
-	DBG(KERN_DEBUG "wf_sat: creating sat at address %x\n", addr);
-
-	memset(&info, 0, sizeof(struct i2c_board_info));
-	info.addr = (addr >> 1) & 0x7f;
-	info.platform_data = dev;
-	strlcpy(info.type, "wf_sat", I2C_NAME_SIZE);
-
-	client = i2c_new_device(adapter, &info);
-	if (client == NULL) {
-		printk(KERN_ERR "windfarm: failed to attach smu-sat to i2c\n");
-		return;
-	}
-
-	/*
-	 * Let i2c-core delete that device on driver removal.
-	 * This is safe because i2c-core holds the core_lock mutex for us.
-	 */
-	list_add_tail(&client->detected, &wf_sat_driver.clients);
-}
-
-static int wf_sat_probe(struct i2c_client *client,
-			const struct i2c_device_id *id)
-{
-	struct device_node *dev = client->dev.platform_data;
-	struct wf_sat *sat;
-	struct wf_sat_sensor *sens;
-	const u32 *reg;
-	const char *loc, *type;
-=======
 	kfree(sens);
 	kref_put(&sat->ref, wf_sat_release);
 }
@@ -322,7 +197,6 @@ static int wf_sat_probe(struct i2c_client *client)
 	struct wf_sat_sensor *sens;
 	const u32 *reg;
 	const char *loc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 chip, core;
 	struct device_node *child;
 	int shift, cpu, index;
@@ -334,29 +208,16 @@ static int wf_sat_probe(struct i2c_client *client)
 		return -ENOMEM;
 	sat->nr = -1;
 	sat->node = of_node_get(dev);
-<<<<<<< HEAD
-	atomic_set(&sat->refcnt, 0);
-	mutex_init(&sat->mutex);
-	sat->i2c = client;
-=======
 	kref_init(&sat->ref);
 	mutex_init(&sat->mutex);
 	sat->i2c = client;
 	INIT_LIST_HEAD(&sat->sensors);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_set_clientdata(client, sat);
 
 	vsens[0] = vsens[1] = -1;
 	isens[0] = isens[1] = -1;
-<<<<<<< HEAD
-	child = NULL;
-	while ((child = of_get_next_child(dev, child)) != NULL) {
-		reg = of_get_property(child, "reg", NULL);
-		type = of_get_property(child, "device_type", NULL);
-=======
 	for_each_child_of_node(dev, child) {
 		reg = of_get_property(child, "reg", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		loc = of_get_property(child, "location", NULL);
 		if (reg == NULL || loc == NULL)
 			continue;
@@ -373,11 +234,7 @@ static int wf_sat_probe(struct i2c_client *client)
 		core = loc[5] - '0';
 		if (chip > 1 || core > 1) {
 			printk(KERN_ERR "wf_sat_create: don't understand "
-<<<<<<< HEAD
-			       "location %s for %s\n", loc, child->full_name);
-=======
 			       "location %s for %pOF\n", loc, child);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		cpu = 2 * chip + core;
@@ -389,17 +246,6 @@ static int wf_sat_probe(struct i2c_client *client)
 			continue;
 		}
 
-<<<<<<< HEAD
-		if (strcmp(type, "voltage-sensor") == 0) {
-			name = "cpu-voltage";
-			shift = 4;
-			vsens[core] = index;
-		} else if (strcmp(type, "current-sensor") == 0) {
-			name = "cpu-current";
-			shift = 8;
-			isens[core] = index;
-		} else if (strcmp(type, "temp-sensor") == 0) {
-=======
 		if (of_node_is_type(child, "voltage-sensor")) {
 			name = "cpu-voltage";
 			shift = 4;
@@ -409,7 +255,6 @@ static int wf_sat_probe(struct i2c_client *client)
 			shift = 8;
 			isens[core] = index;
 		} else if (of_node_is_type(child, "temp-sensor")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			name = "cpu-temp";
 			shift = 10;
 		} else
@@ -426,16 +271,6 @@ static int wf_sat_probe(struct i2c_client *client)
 		sens->index2 = -1;
 		sens->shift = shift;
 		sens->sat = sat;
-<<<<<<< HEAD
-		atomic_inc(&sat->refcnt);
-		sens->sens.ops = &wf_sat_ops;
-		sens->sens.name = (char *) (sens + 1);
-		snprintf(sens->sens.name, 16, "%s-%d", name, cpu);
-
-		if (wf_register_sensor(&sens->sens)) {
-			atomic_dec(&sat->refcnt);
-			kfree(sens);
-=======
 		sens->sens.ops = &wf_sat_ops;
 		sens->sens.name = (char *) (sens + 1);
 		snprintf((char *)sens->sens.name, 16, "%s-%d", name, cpu);
@@ -445,7 +280,6 @@ static int wf_sat_probe(struct i2c_client *client)
 		else {
 			list_add(&sens->link, &sat->sensors);
 			kref_get(&sat->ref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -464,16 +298,6 @@ static int wf_sat_probe(struct i2c_client *client)
 		sens->index2 = isens[core];
 		sens->shift = 0;
 		sens->sat = sat;
-<<<<<<< HEAD
-		atomic_inc(&sat->refcnt);
-		sens->sens.ops = &wf_sat_ops;
-		sens->sens.name = (char *) (sens + 1);
-		snprintf(sens->sens.name, 16, "cpu-power-%d", cpu);
-
-		if (wf_register_sensor(&sens->sens)) {
-			atomic_dec(&sat->refcnt);
-			kfree(sens);
-=======
 		sens->sens.ops = &wf_sat_ops;
 		sens->sens.name = (char *) (sens + 1);
 		snprintf((char *)sens->sens.name, 16, "cpu-power-%d", cpu);
@@ -483,7 +307,6 @@ static int wf_sat_probe(struct i2c_client *client)
 		else {
 			list_add(&sens->link, &sat->sensors);
 			kref_get(&sat->ref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -493,38 +316,6 @@ static int wf_sat_probe(struct i2c_client *client)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wf_sat_attach(struct i2c_adapter *adapter)
-{
-	struct device_node *busnode, *dev = NULL;
-	struct pmac_i2c_bus *bus;
-
-	bus = pmac_i2c_adapter_to_bus(adapter);
-	if (bus == NULL)
-		return -ENODEV;
-	busnode = pmac_i2c_get_bus_node(bus);
-
-	while ((dev = of_get_next_child(busnode, dev)) != NULL)
-		if (of_device_is_compatible(dev, "smu-sat"))
-			wf_sat_create(adapter, dev);
-	return 0;
-}
-
-static int wf_sat_remove(struct i2c_client *client)
-{
-	struct wf_sat *sat = i2c_get_clientdata(client);
-
-	/* XXX TODO */
-
-	sat->i2c = NULL;
-	return 0;
-}
-
-static const struct i2c_device_id wf_sat_id[] = {
-	{ "wf_sat", 0 },
-	{ }
-};
-=======
 static void wf_sat_remove(struct i2c_client *client)
 {
 	struct wf_sat *sat = i2c_get_clientdata(client);
@@ -552,41 +343,18 @@ static const struct of_device_id wf_sat_of_id[] = {
 	{ }
 };
 MODULE_DEVICE_TABLE(of, wf_sat_of_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_driver wf_sat_driver = {
 	.driver = {
 		.name		= "wf_smu_sat",
-<<<<<<< HEAD
-	},
-	.attach_adapter	= wf_sat_attach,
-=======
 		.of_match_table = wf_sat_of_id,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe		= wf_sat_probe,
 	.remove		= wf_sat_remove,
 	.id_table	= wf_sat_id,
 };
 
-<<<<<<< HEAD
-static int __init sat_sensors_init(void)
-{
-	return i2c_add_driver(&wf_sat_driver);
-}
-
-#if 0	/* uncomment when module_exit() below is uncommented */
-static void __exit sat_sensors_exit(void)
-{
-	i2c_del_driver(&wf_sat_driver);
-}
-#endif
-
-module_init(sat_sensors_init);
-/*module_exit(sat_sensors_exit); Uncomment when cleanup is implemented */
-=======
 module_i2c_driver(wf_sat_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Paul Mackerras <paulus@samba.org>");
 MODULE_DESCRIPTION("SMU satellite sensors for PowerMac thermal control");

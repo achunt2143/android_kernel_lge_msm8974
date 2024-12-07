@@ -46,11 +46,7 @@
 
 /* PowerSurge are the first generation of PCI Pmacs. This include
  * all of the Grand-Central based machines. We currently don't
-<<<<<<< HEAD
- * differenciate most of them.
-=======
  * differentiate most of them.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define PMAC_TYPE_PSURGE		0x10	/* PowerSurge */
 #define PMAC_TYPE_ANS			0x11	/* Apple Network Server */
@@ -214,11 +210,7 @@ static inline long pmac_call_feature(int selector, struct device_node* node,
 
 /* PMAC_FTR_SOUND_CHIP_ENABLE	(struct device_node* node, 0, int value)
  * enable/disable the sound chip, whatever it is and provided it can
-<<<<<<< HEAD
- * acually be controlled
-=======
  * actually be controlled
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define PMAC_FTR_SOUND_CHIP_ENABLE	PMAC_FTR_DEF(9)
 
@@ -409,8 +401,6 @@ extern u32 __iomem *uninorth_base;
  */
 extern int pmac_get_uninorth_variant(void);
 
-<<<<<<< HEAD
-=======
 /*
  * Power macintoshes have either a CUDA, PMU or SMU controlling
  * system reset, power, NVRAM, RTC.
@@ -423,6 +413,5 @@ typedef enum sys_ctrler_kind {
 } sys_ctrler_t;
 extern sys_ctrler_t sys_ctrler;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_POWERPC_PMAC_FEATURE_H */
 #endif /* __KERNEL__ */

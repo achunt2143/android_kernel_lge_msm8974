@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Network configuration
 #
@@ -9,22 +6,14 @@
 menuconfig NET
 	bool "Networking support"
 	select NLATTR
-<<<<<<< HEAD
-	---help---
-=======
 	select GENERIC_NET_UTILS
 	select BPF
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Unless you really know what you are doing, you should say Y here.
 	  The reason is that some programs need kernel networking support even
 	  when running on a stand-alone machine that isn't connected to any
 	  other computer.
-<<<<<<< HEAD
-	  
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you are upgrading from an older kernel, you
 	  should consider updating your networking tools too because changes
 	  in the kernel and the tools often go hand in hand. The tools are
@@ -57,8 +46,6 @@ config COMPAT_NETLINK_MESSAGES
 	  Newly written code should NEVER need this option but do
 	  compat-independent messages instead!
 
-<<<<<<< HEAD
-=======
 config NET_INGRESS
 	bool
 
@@ -76,19 +63,10 @@ config NET_REDIRECT
 config SKB_EXTENSIONS
 	bool
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menu "Networking options"
 
 source "net/packet/Kconfig"
 source "net/unix/Kconfig"
-<<<<<<< HEAD
-source "net/xfrm/Kconfig"
-source "net/iucv/Kconfig"
-
-config INET
-	bool "TCP/IP networking"
-	---help---
-=======
 source "net/tls/Kconfig"
 source "net/xfrm/Kconfig"
 source "net/iucv/Kconfig"
@@ -118,7 +96,6 @@ config NET_HANDSHAKE_KUNIT_TEST
 config INET
 	bool "TCP/IP networking"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  These are the protocols used on the Internet and on most local
 	  Ethernets. It is highly recommended to say Y here (this will enlarge
 	  your kernel by about 400 KB), since some programs (e.g. the X window
@@ -134,11 +111,7 @@ config INET
 	  "Sysctl support" below, you can change various aspects of the
 	  behavior of the TCP/IP code by writing to the (virtual) files in
 	  /proc/sys/net/ipv4/*; the options are explained in the file
-<<<<<<< HEAD
-	  <file:Documentation/networking/ip-sysctl.txt>.
-=======
 	  <file:Documentation/networking/ip-sysctl.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Short answer: say Y.
 
@@ -146,30 +119,10 @@ if INET
 source "net/ipv4/Kconfig"
 source "net/ipv6/Kconfig"
 source "net/netlabel/Kconfig"
-<<<<<<< HEAD
-
-endif # if INET
-
-config ANDROID_PARANOID_NETWORK
-	bool "Only allow certain groups to create sockets"
-	default y
-	help
-		none
-
-config NET_ACTIVITY_STATS
-	bool "Network activity statistics tracking"
-	default y
-	help
-	 Network activity statistics are useful for tracking wireless
-	 modem activity on 2G, 3G, 4G wireless networks. Counts number of
-	 transmissions and groups them in specified time buckets.
-
-=======
 source "net/mptcp/Kconfig"
 
 endif # if INET
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config NETWORK_SECMARK
 	bool "Security Marking"
 	help
@@ -177,15 +130,6 @@ config NETWORK_SECMARK
 	  to nfmark, but designated for security purposes.
 	  If you are unsure how to answer this question, answer N.
 
-<<<<<<< HEAD
-config NETWORK_PHY_TIMESTAMPING
-	bool "Timestamping in PHY devices"
-	depends on EXPERIMENTAL
-	help
-	  This allows timestamping of network packets by PHYs with
-	  hardware timestamping capabilities. This option adds some
-	  overhead in the transmit and receive paths.
-=======
 config NET_PTP_CLASSIFY
 	def_bool n
 
@@ -197,17 +141,12 @@ config NETWORK_PHY_TIMESTAMPING
 	  other MII bus snooping devices) with hardware timestamping
 	  capabilities. This option adds some overhead in the transmit
 	  and receive paths.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If you are unsure how to answer this question, answer N.
 
 menuconfig NETFILTER
 	bool "Network packet filtering framework (Netfilter)"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Netfilter is a framework for filtering and mangling network packets
 	  that pass through your Linux box.
 
@@ -260,16 +199,6 @@ menuconfig NETFILTER
 
 if NETFILTER
 
-<<<<<<< HEAD
-config NETFILTER_DEBUG
-	bool "Network packet filtering debugging"
-	depends on NETFILTER
-	help
-	  You can say Y here if you want to get additional messages useful in
-	  debugging the netfilter code.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config NETFILTER_ADVANCED
 	bool "Advanced netfilter configuration"
 	depends on NETFILTER
@@ -282,13 +211,6 @@ config NETFILTER_ADVANCED
 	  If unsure, say Y.
 
 config BRIDGE_NETFILTER
-<<<<<<< HEAD
-	bool "Bridged IP/ARP packets filtering"
-	depends on BRIDGE && NETFILTER && INET
-	depends on NETFILTER_ADVANCED
-	default y
-	---help---
-=======
 	tristate "Bridged IP/ARP packets filtering"
 	depends on BRIDGE
 	depends on NETFILTER && INET
@@ -296,7 +218,6 @@ config BRIDGE_NETFILTER
 	select NETFILTER_FAMILY_BRIDGE
 	select SKB_EXTENSIONS
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Enabling this option will let arptables resp. iptables see bridged
 	  ARP resp. IP traffic. If you want a bridging firewall, you probably
 	  want this option enabled.
@@ -308,10 +229,6 @@ config BRIDGE_NETFILTER
 source "net/netfilter/Kconfig"
 source "net/ipv4/netfilter/Kconfig"
 source "net/ipv6/netfilter/Kconfig"
-<<<<<<< HEAD
-source "net/decnet/netfilter/Kconfig"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "net/bridge/netfilter/Kconfig"
 
 endif
@@ -326,18 +243,6 @@ source "net/802/Kconfig"
 source "net/bridge/Kconfig"
 source "net/dsa/Kconfig"
 source "net/8021q/Kconfig"
-<<<<<<< HEAD
-source "net/decnet/Kconfig"
-source "net/llc/Kconfig"
-source "net/ipx/Kconfig"
-source "drivers/net/appletalk/Kconfig"
-source "net/x25/Kconfig"
-source "net/lapb/Kconfig"
-source "net/econet/Kconfig"
-source "net/wanrouter/Kconfig"
-source "net/phonet/Kconfig"
-source "net/ieee802154/Kconfig"
-=======
 source "net/llc/Kconfig"
 source "net/appletalk/Kconfig"
 source "net/x25/Kconfig"
@@ -346,40 +251,11 @@ source "net/phonet/Kconfig"
 source "net/6lowpan/Kconfig"
 source "net/ieee802154/Kconfig"
 source "net/mac802154/Kconfig"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "net/sched/Kconfig"
 source "net/dcb/Kconfig"
 source "net/dns_resolver/Kconfig"
 source "net/batman-adv/Kconfig"
 source "net/openvswitch/Kconfig"
-<<<<<<< HEAD
-
-config RPS
-	boolean "RPS"
-	depends on SMP && SYSFS && USE_GENERIC_SMP_HELPERS
-	default y
-
-config RFS_ACCEL
-	boolean
-	depends on RPS && GENERIC_HARDIRQS
-	select CPU_RMAP
-	default y
-
-config XPS
-	boolean
-	depends on SMP && SYSFS && USE_GENERIC_SMP_HELPERS
-	default y
-
-config NETPRIO_CGROUP
-	tristate "Network priority cgroup"
-	depends on CGROUPS
-	---help---
-	  Cgroup subsystem for use in assigning processes to network priorities on
-	  a per-interface basis
-
-config BQL
-	boolean
-=======
 source "net/vmw_vsock/Kconfig"
 source "net/netlink/Kconfig"
 source "net/mpls/Kconfig"
@@ -456,35 +332,10 @@ config NET_RX_BUSY_POLL
 config BQL
 	bool
 	prompt "Enable Byte Queue Limits"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on SYSFS
 	select DQL
 	default y
 
-<<<<<<< HEAD
-config HAVE_BPF_JIT
-	bool
-
-config BPF_JIT
-	bool "enable BPF Just In Time compiler"
-	depends on HAVE_BPF_JIT
-	depends on MODULES
-	---help---
-	  Berkeley Packet Filter filtering capabilities are normally handled
-	  by an interpreter. This option allows kernel to generate a native
-	  code when filter is loaded in memory. This should speedup
-	  packet sniffing (libpcap/tcpdump). Note : Admin should enable
-	  this feature changing /proc/sys/net/core/bpf_jit_enable
-
-config SOCKEV_NLMCAST
-	bool "Enable SOCKEV Netlink Multicast"
-	default n
-	---help---
-	  Default client for SOCKEV notifier events. Sends multicast netlink
-	  messages whenever the socket event notifier is invoked. Enable if
-	  user space entities need to be notified of socket events without
-	  having to poll /proc
-=======
 config BPF_STREAM_PARSER
 	bool "enable BPF STREAM_PARSER"
 	depends on INET
@@ -507,63 +358,24 @@ config NET_FLOW_LIMIT
 	  maintain capacity for the other flows. This feature provides servers
 	  with many clients some protection against DoS by a single (spoofed)
 	  flow that greatly exceeds average workload.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 menu "Network testing"
 
 config NET_PKTGEN
 	tristate "Packet Generator (USE WITH CAUTION)"
-<<<<<<< HEAD
-	depends on PROC_FS
-	---help---
-=======
 	depends on INET && PROC_FS
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This module will inject preconfigured packets, at a configurable
 	  rate, out of a given interface.  It is used for network interface
 	  stress testing and performance analysis.  If you don't understand
 	  what was just said, you don't need it: say N.
 
 	  Documentation on how to use the packet generator can be found
-<<<<<<< HEAD
-	  at <file:Documentation/networking/pktgen.txt>.
-=======
 	  at <file:Documentation/networking/pktgen.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this code as a module, choose M here: the
 	  module will be called pktgen.
 
-<<<<<<< HEAD
-config NET_TCPPROBE
-	tristate "TCP connection probing"
-	depends on INET && EXPERIMENTAL && PROC_FS && KPROBES
-	---help---
-	This module allows for capturing the changes to TCP connection
-	state in response to incoming packets. It is used for debugging
-	TCP congestion avoidance modules. If you don't understand
-	what was just said, you don't need it: say N.
-
-	Documentation on how to use TCP connection probing can be found
-	at:
-	
-	  http://www.linuxfoundation.org/collaborate/workgroups/networking/tcpprobe
-
-	To compile this code as a module, choose M here: the
-	module will be called tcp_probe.
-
-config NET_DROP_MONITOR
-	boolean "Network packet drop alerting service"
-	depends on INET && EXPERIMENTAL && TRACEPOINTS
-	---help---
-	This feature provides an alerting service to userspace in the
-	event that packets are discarded in the network stack.  Alerts
-	are broadcast via netlink socket to any listening user space
-	process.  If you don't need network drop alerts, or if you are ok
-	just checking the various proc files and other utilities for
-	drop statistics, say N here.
-=======
 config NET_DROP_MONITOR
 	tristate "Network packet drop alerting service"
 	depends on INET && TRACEPOINTS
@@ -574,7 +386,6 @@ config NET_DROP_MONITOR
 	  process.  If you don't need network drop alerts, or if you are ok
 	  just checking the various proc files and other utilities for
 	  drop statistics, say N here.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endmenu
 
@@ -582,17 +393,11 @@ endmenu
 
 source "net/ax25/Kconfig"
 source "net/can/Kconfig"
-<<<<<<< HEAD
-source "net/irda/Kconfig"
-source "net/bluetooth/Kconfig"
-source "net/rxrpc/Kconfig"
-=======
 source "net/bluetooth/Kconfig"
 source "net/rxrpc/Kconfig"
 source "net/kcm/Kconfig"
 source "net/strparser/Kconfig"
 source "net/mctp/Kconfig"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config FIB_RULES
 	bool
@@ -609,19 +414,11 @@ source "net/mac80211/Kconfig"
 
 endif # WIRELESS
 
-<<<<<<< HEAD
-source "net/wimax/Kconfig"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "net/rfkill/Kconfig"
 source "net/9p/Kconfig"
 source "net/caif/Kconfig"
 source "net/ceph/Kconfig"
 source "net/nfc/Kconfig"
-<<<<<<< HEAD
-
-=======
 source "net/psample/Kconfig"
 source "net/ife/Kconfig"
 
@@ -718,6 +515,5 @@ config NET_TEST
 	  KUnit tests covering core networking infra, such as sk_buff.
 
 	  If unsure, say N.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif   # if NET

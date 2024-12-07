@@ -1,27 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
 
     AudioScience HPI driver
     Copyright (C) 1997-2011  AudioScience Inc. <support@audioscience.com>
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of version 2 of the GNU General Public License as
-    published by the Free Software Foundation;
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Debug macros.
 
@@ -47,25 +29,15 @@ enum { HPI_DEBUG_LEVEL_ERROR = 0,	/* always log errors */
    the start of each message, eg see linux kernel hpios.h */
 
 #ifdef SOURCEFILE_NAME
-<<<<<<< HEAD
-#define FILE_LINE  SOURCEFILE_NAME ":" __stringify(__LINE__) " "
-#else
-#define FILE_LINE  __FILE__ ":" __stringify(__LINE__) " "
-=======
 #undef FILE_LINE
 #define FILE_LINE  SOURCEFILE_NAME ":" __stringify(__LINE__) " "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define HPI_DEBUG_ASSERT(expression) \
 	do { \
 		if (!(expression)) { \
 			printk(KERN_ERR  FILE_LINE \
-<<<<<<< HEAD
-				"ASSERT " __stringify(expression)); \
-=======
 				" ASSERT " __stringify(expression)); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} \
 	} while (0)
 
@@ -73,11 +45,7 @@ enum { HPI_DEBUG_LEVEL_ERROR = 0,	/* always log errors */
 	do { \
 		if (hpi_debug_level >= HPI_DEBUG_LEVEL_##level) { \
 			printk(HPI_DEBUG_FLAG_##level \
-<<<<<<< HEAD
-			FILE_LINE  __VA_ARGS__); \
-=======
 			FILE_LINE " " __VA_ARGS__); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} \
 	} while (0)
 
@@ -101,11 +69,7 @@ void hpi_debug_data(u16 *pdata, u32 len);
 	do { \
 		if (hpi_debug_level >= HPI_DEBUG_LEVEL_##level) { \
 			hpi_debug_message(phm, HPI_DEBUG_FLAG_##level \
-<<<<<<< HEAD
-				FILE_LINE __stringify(level)); \
-=======
 				FILE_LINE " " __stringify(level)); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} \
 	} while (0)
 

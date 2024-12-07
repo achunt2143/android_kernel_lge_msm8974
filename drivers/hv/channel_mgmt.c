@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2009, Microsoft Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307 USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2009, Microsoft Corporation.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:
  *   Haiyang Zhang <haiyangz@microsoft.com>
  *   Hank Janssen  <hjanssen@microsoft.com>
@@ -28,10 +9,7 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
-<<<<<<< HEAD
-=======
 #include <linux/interrupt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/wait.h>
 #include <linux/mm.h>
@@ -39,59 +17,6 @@
 #include <linux/list.h>
 #include <linux/module.h>
 #include <linux/completion.h>
-<<<<<<< HEAD
-#include <linux/hyperv.h>
-
-#include "hyperv_vmbus.h"
-
-struct vmbus_channel_message_table_entry {
-	enum vmbus_channel_message_type message_type;
-	void (*message_handler)(struct vmbus_channel_message_header *msg);
-};
-
-
-/**
- * vmbus_prep_negotiate_resp() - Create default response for Hyper-V Negotiate message
- * @icmsghdrp: Pointer to msg header structure
- * @icmsg_negotiate: Pointer to negotiate message structure
- * @buf: Raw buffer channel data
- *
- * @icmsghdrp is of type &struct icmsg_hdr.
- * @negop is of type &struct icmsg_negotiate.
- * Set up and fill in default negotiate response message. This response can
- * come from both the vmbus driver and the hv_utils driver. The current api
- * will respond properly to both Windows 2008 and Windows 2008-R2 operating
- * systems.
- *
- * Mainly used by Hyper-V drivers.
- */
-void vmbus_prep_negotiate_resp(struct icmsg_hdr *icmsghdrp,
-			       struct icmsg_negotiate *negop, u8 *buf)
-{
-	if (icmsghdrp->icmsgtype == ICMSGTYPE_NEGOTIATE) {
-		icmsghdrp->icmsgsize = 0x10;
-
-		negop = (struct icmsg_negotiate *)&buf[
-			sizeof(struct vmbuspipe_hdr) +
-			sizeof(struct icmsg_hdr)];
-
-		if (negop->icframe_vercnt == 2 &&
-		   negop->icversion_data[1].major == 3) {
-			negop->icversion_data[0].major = 3;
-			negop->icversion_data[0].minor = 0;
-			negop->icversion_data[1].major = 3;
-			negop->icversion_data[1].minor = 0;
-		} else {
-			negop->icversion_data[0].major = 1;
-			negop->icversion_data[0].minor = 0;
-			negop->icversion_data[1].major = 1;
-			negop->icversion_data[1].minor = 0;
-		}
-
-		negop->icframe_vercnt = 1;
-		negop->icmsg_vercnt = 1;
-	}
-=======
 #include <linux/delay.h>
 #include <linux/cpu.h>
 #include <linux/hyperv.h>
@@ -409,7 +334,6 @@ fw_error:
 	negop->icversion_data[1].major = icmsg_major;
 	negop->icversion_data[1].minor = icmsg_minor;
 	return found_match;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(vmbus_prep_negotiate_resp);
 
@@ -424,15 +348,6 @@ static struct vmbus_channel *alloc_channel(void)
 	if (!channel)
 		return NULL;
 
-<<<<<<< HEAD
-	spin_lock_init(&channel->inbound_lock);
-
-	channel->controlwq = create_workqueue("hv_vmbus_ctl");
-	if (!channel->controlwq) {
-		kfree(channel);
-		return NULL;
-	}
-=======
 	spin_lock_init(&channel->sched_lock);
 	init_completion(&channel->rescind_event);
 
@@ -442,58 +357,15 @@ static struct vmbus_channel *alloc_channel(void)
 		     vmbus_on_event, (unsigned long)channel);
 
 	hv_ringbuffer_pre_init(channel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return channel;
 }
 
 /*
-<<<<<<< HEAD
- * release_hannel - Release the vmbus channel object itself
- */
-static void release_channel(struct work_struct *work)
-{
-	struct vmbus_channel *channel = container_of(work,
-						     struct vmbus_channel,
-						     work);
-
-	destroy_workqueue(channel->controlwq);
-
-	kfree(channel);
-}
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * free_channel - Release the resources used by the vmbus channel object
  */
 static void free_channel(struct vmbus_channel *channel)
 {
-<<<<<<< HEAD
-
-	/*
-	 * We have to release the channel's workqueue/thread in the vmbus's
-	 * workqueue/thread context
-	 * ie we can't destroy ourselves.
-	 */
-	INIT_WORK(&channel->work, release_channel);
-	queue_work(vmbus_connection.work_queue, &channel->work);
-}
-
-
-
-/*
- * vmbus_process_rescind_offer -
- * Rescind the offer by initiating a device removal
- */
-static void vmbus_process_rescind_offer(struct work_struct *work)
-{
-	struct vmbus_channel *channel = container_of(work,
-						     struct vmbus_channel,
-						     work);
-
-	vmbus_device_unregister(channel->device_obj);
-=======
 	tasklet_kill(&channel->callback_event);
 	vmbus_remove_channel_attr_group(channel);
 
@@ -602,22 +474,10 @@ void hv_process_channel_removal(struct vmbus_channel *channel)
 		vmbus_release_relid(channel->offermsg.child_relid);
 
 	free_channel(channel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void vmbus_free_channels(void)
 {
-<<<<<<< HEAD
-	struct vmbus_channel *channel;
-
-	list_for_each_entry(channel, &vmbus_connection.chn_list, listentry) {
-		vmbus_device_unregister(channel->device_obj);
-		kfree(channel->device_obj);
-		free_channel(channel);
-	}
-}
-
-=======
 	struct vmbus_channel *channel, *tmp;
 
 	list_for_each_entry_safe(channel, tmp, &vmbus_connection.chn_list,
@@ -714,35 +574,10 @@ err_deq_chan:
 	free_channel(newchannel);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * vmbus_process_offer - Process the offer by creating a channel/device
  * associated with this offer
  */
-<<<<<<< HEAD
-static void vmbus_process_offer(struct work_struct *work)
-{
-	struct vmbus_channel *newchannel = container_of(work,
-							struct vmbus_channel,
-							work);
-	struct vmbus_channel *channel;
-	bool fnew = true;
-	int ret;
-	unsigned long flags;
-
-	/* The next possible work is rescind handling */
-	INIT_WORK(&newchannel->work, vmbus_process_rescind_offer);
-
-	/* Make sure this is a new offer */
-	spin_lock_irqsave(&vmbus_connection.channel_lock, flags);
-
-	list_for_each_entry(channel, &vmbus_connection.chn_list, listentry) {
-		if (!uuid_le_cmp(channel->offermsg.offer.if_type,
-			newchannel->offermsg.offer.if_type) &&
-			!uuid_le_cmp(channel->offermsg.offer.if_instance,
-				newchannel->offermsg.offer.if_instance)) {
-			fnew = false;
-=======
 static void vmbus_process_offer(struct vmbus_channel *newchannel)
 {
 	struct vmbus_channel *channel;
@@ -783,58 +618,10 @@ static void vmbus_process_offer(struct vmbus_channel *newchannel)
 			       &newchannel->offermsg.offer.if_instance)) {
 			fnew = false;
 			newchannel->primary_channel = channel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	if (fnew)
-		list_add_tail(&newchannel->listentry,
-			      &vmbus_connection.chn_list);
-
-	spin_unlock_irqrestore(&vmbus_connection.channel_lock, flags);
-
-	if (!fnew) {
-		free_channel(newchannel);
-		return;
-	}
-
-	/*
-	 * Start the process of binding this offer to the driver
-	 * We need to set the DeviceObject field before calling
-	 * vmbus_child_dev_add()
-	 */
-	newchannel->device_obj = vmbus_device_create(
-		&newchannel->offermsg.offer.if_type,
-		&newchannel->offermsg.offer.if_instance,
-		newchannel);
-
-	/*
-	 * Add the new device to the bus. This will kick off device-driver
-	 * binding which eventually invokes the device driver's AddDevice()
-	 * method.
-	 */
-	ret = vmbus_device_register(newchannel->device_obj);
-	if (ret != 0) {
-		pr_err("unable to add child device object (relid %d)\n",
-			   newchannel->offermsg.child_relid);
-
-		spin_lock_irqsave(&vmbus_connection.channel_lock, flags);
-		list_del(&newchannel->listentry);
-		spin_unlock_irqrestore(&vmbus_connection.channel_lock, flags);
-		kfree(newchannel->device_obj);
-
-		free_channel(newchannel);
-	} else {
-		/*
-		 * This state is used to indicate a successful open
-		 * so that when we do close the channel normally, we
-		 * can cleanup properly
-		 */
-		newchannel->state = CHANNEL_OPEN_STATE;
-	}
-=======
 	init_vp_index(newchannel);
 
 	/* Remember the channels that should be cleaned up upon suspend. */
@@ -1224,7 +1011,6 @@ static bool vmbus_is_valid_offer(const struct vmbus_channel_offer_channel *offer
 			return vmbus_devs[i].allowed_in_isolated;
 	}
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1234,16 +1020,6 @@ static bool vmbus_is_valid_offer(const struct vmbus_channel_offer_channel *offer
 static void vmbus_onoffer(struct vmbus_channel_message_header *hdr)
 {
 	struct vmbus_channel_offer_channel *offer;
-<<<<<<< HEAD
-	struct vmbus_channel *newchannel;
-	uuid_le *guidtype;
-	uuid_le *guidinstance;
-
-	offer = (struct vmbus_channel_offer_channel *)hdr;
-
-	guidtype = &offer->offer.if_type;
-	guidinstance = &offer->offer.if_instance;
-=======
 	struct vmbus_channel *oldchannel, *newchannel;
 	size_t offer_sz;
 
@@ -1329,29 +1105,16 @@ static void vmbus_onoffer(struct vmbus_channel_message_header *hdr)
 		mutex_unlock(&vmbus_connection.channel_mutex);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Allocate the channel object and save this offer. */
 	newchannel = alloc_channel();
 	if (!newchannel) {
-<<<<<<< HEAD
-=======
 		vmbus_release_relid(offer->child_relid);
 		atomic_dec(&vmbus_connection.offer_in_progress);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("Unable to allocate channel object\n");
 		return;
 	}
 
-<<<<<<< HEAD
-	memcpy(&newchannel->offermsg, offer,
-	       sizeof(struct vmbus_channel_offer_channel));
-	newchannel->monitor_grp = (u8)offer->monitorid / 32;
-	newchannel->monitor_bit = (u8)offer->monitorid % 32;
-
-	INIT_WORK(&newchannel->work, vmbus_process_offer);
-	queue_work(newchannel->controlwq, &newchannel->work);
-=======
 	vmbus_setup_channel_state(newchannel, offer);
 
 	vmbus_process_offer(newchannel);
@@ -1365,7 +1128,6 @@ static void check_ready_for_suspend_event(void)
 	 */
 	if (atomic_dec_and_test(&vmbus_connection.nr_chan_close_on_suspend))
 		complete(&vmbus_connection.ready_for_suspend_event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1377,21 +1139,6 @@ static void vmbus_onoffer_rescind(struct vmbus_channel_message_header *hdr)
 {
 	struct vmbus_channel_rescind_offer *rescind;
 	struct vmbus_channel *channel;
-<<<<<<< HEAD
-
-	rescind = (struct vmbus_channel_rescind_offer *)hdr;
-	channel = relid2channel(rescind->child_relid);
-
-	if (channel == NULL)
-		/* Just return here, no channel found */
-		return;
-
-	/* work is initialized for vmbus_process_rescind_offer() from
-	 * vmbus_process_offer() where the channel got created */
-	queue_work(channel->controlwq, &channel->work);
-}
-
-=======
 	struct device *dev;
 	bool clean_up_chan_for_suspend;
 
@@ -1538,7 +1285,6 @@ void vmbus_hvsock_device_unregister(struct vmbus_channel *channel)
 EXPORT_SYMBOL_GPL(vmbus_hvsock_device_unregister);
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * vmbus_onoffers_delivered -
  * This is invoked when all offers have been delivered.
@@ -1567,11 +1313,8 @@ static void vmbus_onopen_result(struct vmbus_channel_message_header *hdr)
 
 	result = (struct vmbus_channel_open_result *)hdr;
 
-<<<<<<< HEAD
-=======
 	trace_vmbus_onopen_result(result);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Find the open msg, copy the result and signal/unblock the wait event
 	 */
@@ -1616,11 +1359,8 @@ static void vmbus_ongpadl_created(struct vmbus_channel_message_header *hdr)
 
 	gpadlcreated = (struct vmbus_channel_gpadl_created *)hdr;
 
-<<<<<<< HEAD
-=======
 	trace_vmbus_ongpadl_created(gpadlcreated);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Find the establish msg, copy the result and signal/unblock the wait
 	 * event
@@ -1652,8 +1392,6 @@ static void vmbus_ongpadl_created(struct vmbus_channel_message_header *hdr)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * vmbus_onmodifychannel_response - Modify Channel response handler.
  *
  * This is invoked when we received a response to our channel modify request.
@@ -1694,7 +1432,6 @@ static void vmbus_onmodifychannel_response(struct vmbus_channel_message_header *
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * vmbus_ongpadl_torndown - GPADL torndown handler.
  *
  * This is invoked when we received a response to our gpadl teardown request.
@@ -1712,11 +1449,8 @@ static void vmbus_ongpadl_torndown(
 
 	gpadl_torndown = (struct vmbus_channel_gpadl_torndown *)hdr;
 
-<<<<<<< HEAD
-=======
 	trace_vmbus_ongpadl_torndown(gpadl_torndown);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Find the open msg, copy the result and signal/unblock the wait event
 	 */
@@ -1756,20 +1490,13 @@ static void vmbus_onversion_response(
 {
 	struct vmbus_channel_msginfo *msginfo;
 	struct vmbus_channel_message_header *requestheader;
-<<<<<<< HEAD
-	struct vmbus_channel_initiate_contact *initiate;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vmbus_channel_version_response *version_response;
 	unsigned long flags;
 
 	version_response = (struct vmbus_channel_version_response *)hdr;
-<<<<<<< HEAD
-=======
 
 	trace_vmbus_onversion_response(version_response);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&vmbus_connection.channelmsg_lock, flags);
 
 	list_for_each_entry(msginfo, &vmbus_connection.chn_msg_list,
@@ -1779,11 +1506,6 @@ static void vmbus_onversion_response(
 
 		if (requestheader->msgtype ==
 		    CHANNELMSG_INITIATE_CONTACT) {
-<<<<<<< HEAD
-			initiate =
-			(struct vmbus_channel_initiate_contact *)requestheader;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(&msginfo->response.version_response,
 			      version_response,
 			      sizeof(struct vmbus_channel_version_response));
@@ -1794,27 +1516,6 @@ static void vmbus_onversion_response(
 }
 
 /* Channel message dispatch table */
-<<<<<<< HEAD
-static struct vmbus_channel_message_table_entry
-	channel_message_table[CHANNELMSG_COUNT] = {
-	{CHANNELMSG_INVALID,			NULL},
-	{CHANNELMSG_OFFERCHANNEL,		vmbus_onoffer},
-	{CHANNELMSG_RESCIND_CHANNELOFFER,	vmbus_onoffer_rescind},
-	{CHANNELMSG_REQUESTOFFERS,		NULL},
-	{CHANNELMSG_ALLOFFERS_DELIVERED,	vmbus_onoffers_delivered},
-	{CHANNELMSG_OPENCHANNEL,		NULL},
-	{CHANNELMSG_OPENCHANNEL_RESULT,	vmbus_onopen_result},
-	{CHANNELMSG_CLOSECHANNEL,		NULL},
-	{CHANNELMSG_GPADL_HEADER,		NULL},
-	{CHANNELMSG_GPADL_BODY,		NULL},
-	{CHANNELMSG_GPADL_CREATED,		vmbus_ongpadl_created},
-	{CHANNELMSG_GPADL_TEARDOWN,		NULL},
-	{CHANNELMSG_GPADL_TORNDOWN,		vmbus_ongpadl_torndown},
-	{CHANNELMSG_RELID_RELEASED,		NULL},
-	{CHANNELMSG_INITIATE_CONTACT,		NULL},
-	{CHANNELMSG_VERSION_RESPONSE,		vmbus_onversion_response},
-	{CHANNELMSG_UNLOAD,			NULL},
-=======
 const struct vmbus_channel_message_table_entry
 channel_message_table[CHANNELMSG_COUNT] = {
 	{ CHANNELMSG_INVALID,			0, NULL, 0},
@@ -1849,7 +1550,6 @@ channel_message_table[CHANNELMSG_COUNT] = {
 	{ CHANNELMSG_TL_CONNECT_RESULT,		0, NULL, 0},
 	{ CHANNELMSG_MODIFYCHANNEL_RESPONSE,	1, vmbus_onmodifychannel_response,
 		sizeof(struct vmbus_channel_modifychannel_response)},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1857,29 +1557,6 @@ channel_message_table[CHANNELMSG_COUNT] = {
  *
  * This is invoked in the vmbus worker thread context.
  */
-<<<<<<< HEAD
-void vmbus_onmessage(void *context)
-{
-	struct hv_message *msg = context;
-	struct vmbus_channel_message_header *hdr;
-	int size;
-
-	hdr = (struct vmbus_channel_message_header *)msg->u.payload;
-	size = msg->header.payload_size;
-
-	if (hdr->msgtype >= CHANNELMSG_COUNT) {
-		pr_err("Received invalid channel message type %d size %d\n",
-			   hdr->msgtype, size);
-		print_hex_dump_bytes("", DUMP_PREFIX_NONE,
-				     (unsigned char *)msg->u.payload, size);
-		return;
-	}
-
-	if (channel_message_table[hdr->msgtype].message_handler)
-		channel_message_table[hdr->msgtype].message_handler(hdr);
-	else
-		pr_err("Unhandled channel message type %d\n", hdr->msgtype);
-=======
 void vmbus_onmessage(struct vmbus_channel_message_header *hdr)
 {
 	trace_vmbus_on_message(hdr);
@@ -1889,7 +1566,6 @@ void vmbus_onmessage(struct vmbus_channel_message_header *hdr)
 	 * out of bound and the message_handler pointer can not be NULL.
 	 */
 	channel_message_table[hdr->msgtype].message_handler(hdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1901,11 +1577,7 @@ int vmbus_request_offers(void)
 	struct vmbus_channel_msginfo *msginfo;
 	int ret;
 
-<<<<<<< HEAD
-	msginfo = kmalloc(sizeof(*msginfo) +
-=======
 	msginfo = kzalloc(sizeof(*msginfo) +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  sizeof(struct vmbus_channel_message_header),
 			  GFP_KERNEL);
 	if (!msginfo)
@@ -1915,17 +1587,11 @@ int vmbus_request_offers(void)
 
 	msg->msgtype = CHANNELMSG_REQUESTOFFERS;
 
-<<<<<<< HEAD
-
-	ret = vmbus_post_msg(msg,
-			       sizeof(struct vmbus_channel_message_header));
-=======
 	ret = vmbus_post_msg(msg, sizeof(struct vmbus_channel_message_header),
 			     true);
 
 	trace_vmbus_request_offers(ret);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0) {
 		pr_err("Unable to request offers - %d\n", ret);
 
@@ -1938,9 +1604,6 @@ cleanup:
 	return ret;
 }
 
-<<<<<<< HEAD
-/* eof */
-=======
 void vmbus_set_sc_create_callback(struct vmbus_channel *primary_channel,
 				void (*sc_cr_cb)(struct vmbus_channel *new_sc))
 {
@@ -1954,4 +1617,3 @@ void vmbus_set_chn_rescind_callback(struct vmbus_channel *channel,
 	channel->chn_rescind_callback = chn_rescind_cb;
 }
 EXPORT_SYMBOL_GPL(vmbus_set_chn_rescind_callback);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

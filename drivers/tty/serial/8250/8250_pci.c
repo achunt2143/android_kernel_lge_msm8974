@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Probe module for 8250/16550-type PCI serial ports.
  *
  *  Based on drivers/char/serial.c, by Linus Torvalds, Theodore Ts'o.
  *
  *  Copyright (C) 2001 Russell King, All Rights Reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License.
- */
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/pci.h>
-#include <linux/string.h>
-#include <linux/kernel.h>
-#include <linux/slab.h>
-#include <linux/delay.h>
-#include <linux/tty.h>
-#include <linux/serial_core.h>
-#include <linux/8250_pci.h>
-#include <linux/bitops.h>
-=======
  */
 #undef DEBUG
 #include <linux/module.h>
@@ -41,16 +20,11 @@
 #include <linux/8250_pci.h>
 #include <linux/bitops.h>
 #include <linux/bitfield.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/byteorder.h>
 #include <asm/io.h>
 
 #include "8250.h"
-<<<<<<< HEAD
-
-#undef SERIAL_DEBUG_PCI
-=======
 #include "8250_pcilib.h"
 
 #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
@@ -130,7 +104,6 @@
 /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
 #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
 #define PCI_SUBDEVICE_ID_UNKNOWN_0x1588	0x1588
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * init function returns:
@@ -147,13 +120,6 @@ struct pci_serial_quirk {
 	int	(*init)(struct pci_dev *dev);
 	int	(*setup)(struct serial_private *,
 			 const struct pciserial_board *,
-<<<<<<< HEAD
-			 struct uart_port *, int);
-	void	(*exit)(struct pci_dev *dev);
-};
-
-#define PCI_NUM_BAR_RESOURCES	6
-=======
 			 struct uart_8250_port *, int);
 	void	(*exit)(struct pci_dev *dev);
 };
@@ -162,25 +128,10 @@ struct f815xxa_data {
 	spinlock_t lock;
 	int idx;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct serial_private {
 	struct pci_dev		*dev;
 	unsigned int		nr;
-<<<<<<< HEAD
-	void __iomem		*remapped_bar[PCI_NUM_BAR_RESOURCES];
-	struct pci_serial_quirk	*quirk;
-	int			line[0];
-};
-
-static int pci_default_setup(struct serial_private*,
-	  const struct pciserial_board*, struct uart_port*, int);
-
-static void moan_device(const char *str, struct pci_dev *dev)
-{
-	printk(KERN_WARNING
-	       "%s: %s\n"
-=======
 	struct pci_serial_quirk	*quirk;
 	const struct pciserial_board *board;
 	int			line[];
@@ -208,59 +159,19 @@ static int pci_default_setup(struct serial_private*,
 static void moan_device(const char *str, struct pci_dev *dev)
 {
 	pci_err(dev, "%s\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       "Please send the output of lspci -vv, this\n"
 	       "message (0x%04x,0x%04x,0x%04x,0x%04x), the\n"
 	       "manufacturer and name of serial board or\n"
 	       "modem board to <linux-serial@vger.kernel.org>.\n",
-<<<<<<< HEAD
-	       pci_name(dev), str, dev->vendor, dev->device,
-=======
 	       str, dev->vendor, dev->device,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       dev->subsystem_vendor, dev->subsystem_device);
 }
 
 static int
-<<<<<<< HEAD
-setup_port(struct serial_private *priv, struct uart_port *port,
-	   int bar, int offset, int regshift)
-{
-	struct pci_dev *dev = priv->dev;
-	unsigned long base, len;
-
-	if (bar >= PCI_NUM_BAR_RESOURCES)
-		return -EINVAL;
-
-	base = pci_resource_start(dev, bar);
-
-	if (pci_resource_flags(dev, bar) & IORESOURCE_MEM) {
-		len =  pci_resource_len(dev, bar);
-
-		if (!priv->remapped_bar[bar])
-			priv->remapped_bar[bar] = ioremap_nocache(base, len);
-		if (!priv->remapped_bar[bar])
-			return -ENOMEM;
-
-		port->iotype = UPIO_MEM;
-		port->iobase = 0;
-		port->mapbase = base + offset;
-		port->membase = priv->remapped_bar[bar] + offset;
-		port->regshift = regshift;
-	} else {
-		port->iotype = UPIO_PORT;
-		port->iobase = base + offset;
-		port->mapbase = 0;
-		port->membase = NULL;
-		port->regshift = 0;
-	}
-	return 0;
-=======
 setup_port(struct serial_private *priv, struct uart_8250_port *port,
 	   u8 bar, unsigned int offset, int regshift)
 {
 	return serial8250_pci_setup_port(priv->dev, port, bar, offset, regshift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -268,11 +179,7 @@ setup_port(struct serial_private *priv, struct uart_8250_port *port,
  */
 static int addidata_apci7800_setup(struct serial_private *priv,
 				const struct pciserial_board *board,
-<<<<<<< HEAD
-				struct uart_port *port, int idx)
-=======
 				struct uart_8250_port *port, int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int bar = 0, offset = board->first_offset;
 	bar = FL_GET_BASE(board->flags);
@@ -299,11 +206,7 @@ static int addidata_apci7800_setup(struct serial_private *priv,
  */
 static int
 afavlab_setup(struct serial_private *priv, const struct pciserial_board *board,
-<<<<<<< HEAD
-	      struct uart_port *port, int idx)
-=======
 	      struct uart_8250_port *port, int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int bar, offset = board->first_offset;
 
@@ -358,11 +261,7 @@ static int pci_hp_diva_init(struct pci_dev *dev)
 static int
 pci_hp_diva_setup(struct serial_private *priv,
 		const struct pciserial_board *board,
-<<<<<<< HEAD
-		struct uart_port *port, int idx)
-=======
 		struct uart_8250_port *port, int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int offset = board->first_offset;
 	unsigned int bar = FL_GET_BASE(board->flags);
@@ -392,25 +291,15 @@ pci_hp_diva_setup(struct serial_private *priv,
  */
 static int pci_inteli960ni_init(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	unsigned long oldval;
-=======
 	u32 oldval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(dev->subsystem_device & 0x1000))
 		return -ENODEV;
 
 	/* is firmware started? */
-<<<<<<< HEAD
-	pci_read_config_dword(dev, 0x44, (void *)&oldval);
-	if (oldval == 0x00001000L) { /* RESET value */
-		printk(KERN_DEBUG "Local i960 firmware missing");
-=======
 	pci_read_config_dword(dev, 0x44, &oldval);
 	if (oldval == 0x00001000L) { /* RESET value */
 		pci_dbg(dev, "Local i960 firmware missing\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	return 0;
@@ -451,11 +340,7 @@ static int pci_plx9050_init(struct pci_dev *dev)
 	/*
 	 * enable/disable interrupts
 	 */
-<<<<<<< HEAD
-	p = ioremap_nocache(pci_resource_start(dev, 0), 0x80);
-=======
 	p = ioremap(pci_resource_start(dev, 0), 0x80);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p == NULL)
 		return -ENOMEM;
 	writel(irq_config, p + 0x4c);
@@ -469,11 +354,7 @@ static int pci_plx9050_init(struct pci_dev *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit pci_plx9050_exit(struct pci_dev *dev)
-=======
 static void pci_plx9050_exit(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 __iomem *p;
 
@@ -483,11 +364,7 @@ static void pci_plx9050_exit(struct pci_dev *dev)
 	/*
 	 * disable interrupts
 	 */
-<<<<<<< HEAD
-	p = ioremap_nocache(pci_resource_start(dev, 0), 0x80);
-=======
 	p = ioremap(pci_resource_start(dev, 0), 0x80);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p != NULL) {
 		writel(0, p + 0x4c);
 
@@ -502,16 +379,9 @@ static void pci_plx9050_exit(struct pci_dev *dev)
 #define NI8420_INT_ENABLE_REG	0x38
 #define NI8420_INT_ENABLE_BIT	0x2000
 
-<<<<<<< HEAD
-static void __devexit pci_ni8420_exit(struct pci_dev *dev)
-{
-	void __iomem *p;
-	unsigned long base, len;
-=======
 static void pci_ni8420_exit(struct pci_dev *dev)
 {
 	void __iomem *p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int bar = 0;
 
 	if ((pci_resource_flags(dev, bar) & IORESOURCE_MEM) == 0) {
@@ -519,13 +389,7 @@ static void pci_ni8420_exit(struct pci_dev *dev)
 		return;
 	}
 
-<<<<<<< HEAD
-	base = pci_resource_start(dev, bar);
-	len =  pci_resource_len(dev, bar);
-	p = ioremap_nocache(base, len);
-=======
 	p = pci_ioremap_bar(dev, bar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p == NULL)
 		return;
 
@@ -544,16 +408,9 @@ static void pci_ni8420_exit(struct pci_dev *dev)
 
 #define MITE_LCIMR2_CLR_CPU_IE	(1 << 30)
 
-<<<<<<< HEAD
-static void __devexit pci_ni8430_exit(struct pci_dev *dev)
-{
-	void __iomem *p;
-	unsigned long base, len;
-=======
 static void pci_ni8430_exit(struct pci_dev *dev)
 {
 	void __iomem *p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int bar = 0;
 
 	if ((pci_resource_flags(dev, bar) & IORESOURCE_MEM) == 0) {
@@ -561,13 +418,7 @@ static void pci_ni8430_exit(struct pci_dev *dev)
 		return;
 	}
 
-<<<<<<< HEAD
-	base = pci_resource_start(dev, bar);
-	len =  pci_resource_len(dev, bar);
-	p = ioremap_nocache(base, len);
-=======
 	p = pci_ioremap_bar(dev, bar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p == NULL)
 		return;
 
@@ -579,11 +430,7 @@ static void pci_ni8430_exit(struct pci_dev *dev)
 /* SBS Technologies Inc. PMC-OCTPRO and P-OCTAL cards */
 static int
 sbs_setup(struct serial_private *priv, const struct pciserial_board *board,
-<<<<<<< HEAD
-		struct uart_port *port, int idx)
-=======
 		struct uart_8250_port *port, int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int bar, offset = board->first_offset;
 
@@ -635,11 +482,7 @@ static int sbs_init(struct pci_dev *dev)
  * Disables the global interrupt of PMC-OctalPro
  */
 
-<<<<<<< HEAD
-static void __devexit sbs_exit(struct pci_dev *dev)
-=======
 static void sbs_exit(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 __iomem *p;
 
@@ -697,11 +540,7 @@ static int pci_siig10x_init(struct pci_dev *dev)
 		break;
 	}
 
-<<<<<<< HEAD
-	p = ioremap_nocache(pci_resource_start(dev, 0), 0x80);
-=======
 	p = ioremap(pci_resource_start(dev, 0), 0x80);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p == NULL)
 		return -ENOMEM;
 
@@ -737,11 +576,7 @@ static int pci_siig_init(struct pci_dev *dev)
 
 	if (type == 0x1000)
 		return pci_siig10x_init(dev);
-<<<<<<< HEAD
-	else if (type == 0x2000)
-=======
 	if (type == 0x2000)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return pci_siig20x_init(dev);
 
 	moan_device("Unknown SIIG card", dev);
@@ -750,11 +585,7 @@ static int pci_siig_init(struct pci_dev *dev)
 
 static int pci_siig_setup(struct serial_private *priv,
 			  const struct pciserial_board *board,
-<<<<<<< HEAD
-			  struct uart_port *port, int idx)
-=======
 			  struct uart_8250_port *port, int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int bar = FL_GET_BASE(board->flags) + idx, offset = 0;
 
@@ -818,14 +649,8 @@ static int pci_timedia_probe(struct pci_dev *dev)
 	 * (0,2,3,5,6: serial only -- 7,8,9: serial + parallel)
 	 */
 	if ((dev->subsystem_device & 0x00f0) >= 0x70) {
-<<<<<<< HEAD
-		dev_info(&dev->dev,
-			"ignoring Timedia subdevice %04x for parport_serial\n",
-			dev->subsystem_device);
-=======
 		pci_info(dev, "ignoring Timedia subdevice %04x for parport_serial\n",
 			 dev->subsystem_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -853,11 +678,7 @@ static int pci_timedia_init(struct pci_dev *dev)
 static int
 pci_timedia_setup(struct serial_private *priv,
 		  const struct pciserial_board *board,
-<<<<<<< HEAD
-		  struct uart_port *port, int idx)
-=======
 		  struct uart_8250_port *port, int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int bar = 0, offset = board->first_offset;
 
@@ -874,11 +695,7 @@ pci_timedia_setup(struct serial_private *priv,
 		break;
 	case 3:
 		offset = board->uart_offset;
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 4: /* BAR 2 */
 	case 5: /* BAR 3 */
 	case 6: /* BAR 4 */
@@ -895,11 +712,7 @@ pci_timedia_setup(struct serial_private *priv,
 static int
 titan_400l_800l_setup(struct serial_private *priv,
 		      const struct pciserial_board *board,
-<<<<<<< HEAD
-		      struct uart_port *port, int idx)
-=======
 		      struct uart_8250_port *port, int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int bar, offset = board->first_offset;
 
@@ -927,10 +740,6 @@ static int pci_xircom_init(struct pci_dev *dev)
 static int pci_ni8420_init(struct pci_dev *dev)
 {
 	void __iomem *p;
-<<<<<<< HEAD
-	unsigned long base, len;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int bar = 0;
 
 	if ((pci_resource_flags(dev, bar) & IORESOURCE_MEM) == 0) {
@@ -938,13 +747,7 @@ static int pci_ni8420_init(struct pci_dev *dev)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	base = pci_resource_start(dev, bar);
-	len =  pci_resource_len(dev, bar);
-	p = ioremap_nocache(base, len);
-=======
 	p = pci_ioremap_bar(dev, bar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p == NULL)
 		return -ENOMEM;
 
@@ -966,11 +769,7 @@ static int pci_ni8420_init(struct pci_dev *dev)
 static int pci_ni8430_init(struct pci_dev *dev)
 {
 	void __iomem *p;
-<<<<<<< HEAD
-	unsigned long base, len;
-=======
 	struct pci_bus_region region;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 device_window;
 	unsigned int bar = 0;
 
@@ -979,17 +778,6 @@ static int pci_ni8430_init(struct pci_dev *dev)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	base = pci_resource_start(dev, bar);
-	len =  pci_resource_len(dev, bar);
-	p = ioremap_nocache(base, len);
-	if (p == NULL)
-		return -ENOMEM;
-
-	/* Set device window address and size in BAR0 */
-	device_window = ((base + MITE_IOWBSR1_WIN_OFFSET) & 0xffffff00)
-	                | MITE_IOWBSR1_WENAB | MITE_IOWBSR1_WSIZE;
-=======
 	p = pci_ioremap_bar(dev, bar);
 	if (p == NULL)
 		return -ENOMEM;
@@ -1002,7 +790,6 @@ static int pci_ni8430_init(struct pci_dev *dev)
 	pcibios_resource_to_bus(dev->bus, &region, &dev->resource[bar]);
 	device_window = ((region.start + MITE_IOWBSR1_WIN_OFFSET) & 0xffffff00)
 			| MITE_IOWBSR1_WENAB | MITE_IOWBSR1_WSIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(device_window, p + MITE_IOWBSR1);
 
 	/* Set window access to go to RAMSEL IO address space */
@@ -1026,17 +813,10 @@ static int pci_ni8430_init(struct pci_dev *dev)
 static int
 pci_ni8430_setup(struct serial_private *priv,
 		 const struct pciserial_board *board,
-<<<<<<< HEAD
-		 struct uart_port *port, int idx)
-{
-	void __iomem *p;
-	unsigned long base, len;
-=======
 		 struct uart_8250_port *port, int idx)
 {
 	struct pci_dev *dev = priv->dev;
 	void __iomem *p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int bar, offset = board->first_offset;
 
 	if (idx >= board->num_ports)
@@ -1045,15 +825,9 @@ pci_ni8430_setup(struct serial_private *priv,
 	bar = FL_GET_BASE(board->flags);
 	offset += idx * board->uart_offset;
 
-<<<<<<< HEAD
-	base = pci_resource_start(priv->dev, bar);
-	len =  pci_resource_len(priv->dev, bar);
-	p = ioremap_nocache(base, len);
-=======
 	p = pci_ioremap_bar(dev, bar);
 	if (!p)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* enable the transceiver */
 	writeb(readb(p + offset + NI8430_PORTCON) | NI8430_PORTCON_TXVR_ENABLE,
@@ -1066,35 +840,21 @@ pci_ni8430_setup(struct serial_private *priv,
 
 static int pci_netmos_9900_setup(struct serial_private *priv,
 				const struct pciserial_board *board,
-<<<<<<< HEAD
-				struct uart_port *port, int idx)
-{
-	unsigned int bar;
-
-	if ((priv->dev->subsystem_device & 0xff00) == 0x3000) {
-=======
 				struct uart_8250_port *port, int idx)
 {
 	unsigned int bar;
 
 	if ((priv->dev->device != PCI_DEVICE_ID_NETMOS_9865) &&
 	    (priv->dev->subsystem_device & 0xff00) == 0x3000) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* netmos apparently orders BARs by datasheet layout, so serial
 		 * ports get BARs 0 and 3 (or 1 and 4 for memmapped)
 		 */
 		bar = 3 * idx;
 
 		return setup_port(priv, port, bar, 0, board->reg_shift);
-<<<<<<< HEAD
-	} else {
-		return pci_default_setup(priv, board, port, idx);
-	}
-=======
 	}
 
 	return pci_default_setup(priv, board, port, idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* the 99xx series comes with a range of device IDs and a variety
@@ -1111,21 +871,12 @@ static int pci_netmos_9900_numports(struct pci_dev *dev)
 	unsigned int pi;
 	unsigned short sub_serports;
 
-<<<<<<< HEAD
-	pi = (c & 0xff);
-
-	if (pi == 2) {
-		return 1;
-	} else if ((pi == 0) &&
-			   (dev->device == PCI_DEVICE_ID_NETMOS_9900)) {
-=======
 	pi = c & 0xff;
 
 	if (pi == 2)
 		return 1;
 
 	if ((pi == 0) && (dev->device == PCI_DEVICE_ID_NETMOS_9900)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* two possibilities: 0x30ps encodes number of parallel and
 		 * serial ports, or 0x1000 indicates *something*. This is not
 		 * immediately obvious, since the 2s1p+4s configuration seems
@@ -1133,20 +884,11 @@ static int pci_netmos_9900_numports(struct pci_dev *dev)
 		 * advertising the same function 3 as the 4s+2s1p config.
 		 */
 		sub_serports = dev->subsystem_device & 0xf;
-<<<<<<< HEAD
-		if (sub_serports > 0) {
-			return sub_serports;
-		} else {
-			printk(KERN_NOTICE "NetMos/Mostech serial driver ignoring port on ambiguous config.\n");
-			return 0;
-		}
-=======
 		if (sub_serports > 0)
 			return sub_serports;
 
 		pci_err(dev, "NetMos/Mostech serial driver ignoring port on ambiguous config.\n");
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	moan_device("unknown NetMos/Mostech program interface", dev);
@@ -1167,23 +909,6 @@ static int pci_netmos_init(struct pci_dev *dev)
 		return 0;
 
 	switch (dev->device) { /* FALLTHROUGH on all */
-<<<<<<< HEAD
-		case PCI_DEVICE_ID_NETMOS_9904:
-		case PCI_DEVICE_ID_NETMOS_9912:
-		case PCI_DEVICE_ID_NETMOS_9922:
-		case PCI_DEVICE_ID_NETMOS_9900:
-			num_serial = pci_netmos_9900_numports(dev);
-			break;
-
-		default:
-			if (num_serial == 0 ) {
-				moan_device("unknown NetMos/Mostech device", dev);
-			}
-	}
-
-	if (num_serial == 0)
-		return -ENODEV;
-=======
 	case PCI_DEVICE_ID_NETMOS_9904:
 	case PCI_DEVICE_ID_NETMOS_9912:
 	case PCI_DEVICE_ID_NETMOS_9922:
@@ -1199,7 +924,6 @@ static int pci_netmos_init(struct pci_dev *dev)
 		moan_device("unknown NetMos/Mostech device", dev);
 		return -ENODEV;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return num_serial;
 }
@@ -1232,29 +956,16 @@ static int pci_netmos_init(struct pci_dev *dev)
 /* enable IO_Space bit */
 #define ITE_887x_POSIO_ENABLE		(1 << 31)
 
-<<<<<<< HEAD
-static int pci_ite887x_init(struct pci_dev *dev)
-{
-	/* inta_addr are the configuration addresses of the ITE */
-	static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0,
-							0x200, 0x280, 0 };
-=======
 /* inta_addr are the configuration addresses of the ITE */
 static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0, 0x200, 0x280 };
 static int pci_ite887x_init(struct pci_dev *dev)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret, i, type;
 	struct resource *iobase = NULL;
 	u32 miscr, uartbar, ioport;
 
 	/* search for the base-ioport */
-<<<<<<< HEAD
-	i = 0;
-	while (inta_addr[i] && iobase == NULL) {
-=======
 	for (i = 0; i < ARRAY_SIZE(inta_addr); i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iobase = request_region(inta_addr[i], ITE_887x_IOSIZE,
 								"ite887x");
 		if (iobase != NULL) {
@@ -1271,21 +982,11 @@ static int pci_ite887x_init(struct pci_dev *dev)
 				break;
 			}
 			release_region(iobase->start, ITE_887x_IOSIZE);
-<<<<<<< HEAD
-			iobase = NULL;
-		}
-		i++;
-	}
-
-	if (!inta_addr[i]) {
-		printk(KERN_ERR "ite887x: could not find iobase\n");
-=======
 		}
 	}
 
 	if (i == ARRAY_SIZE(inta_addr)) {
 		pci_err(dev, "could not find iobase\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -1345,11 +1046,7 @@ static int pci_ite887x_init(struct pci_dev *dev)
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __devexit pci_ite887x_exit(struct pci_dev *dev)
-=======
 static void pci_ite887x_exit(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 ioport;
 	/* the ioport is bit 0-15 in POSIO0R */
@@ -1360,10 +1057,6 @@ static void pci_ite887x_exit(struct pci_dev *dev)
 
 /*
  * Oxford Semiconductor Inc.
-<<<<<<< HEAD
- * Check that device is part of the Tornado range of devices, then determine
- * the number of ports available on the device.
-=======
  * Check if an OxSemi device is part of the Tornado range of devices.
  */
 #define PCI_VENDOR_ID_ENDRUN			0x7401
@@ -1386,7 +1079,6 @@ static bool pci_oxsemi_tornado_p(struct pci_dev *dev)
 
 /*
  * Determine the number of ports available on a Tornado device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int pci_oxsemi_tornado_init(struct pci_dev *dev)
 {
@@ -1394,13 +1086,7 @@ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
 	unsigned long deviceID;
 	unsigned int  number_uarts = 0;
 
-<<<<<<< HEAD
-	/* OxSemi Tornado devices are all 0xCxxx */
-	if (dev->vendor == PCI_VENDOR_ID_OXSEMI &&
-	    (dev->device & 0xF000) != 0xC000)
-=======
 	if (!pci_oxsemi_tornado_p(dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	p = pci_iomap(dev, 0, 5);
@@ -1411,27 +1097,15 @@ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
 	/* Tornado device */
 	if (deviceID == 0x07000200) {
 		number_uarts = ioread8(p + 4);
-<<<<<<< HEAD
-		printk(KERN_DEBUG
-			"%d ports detected on Oxford PCI Express device\n",
-								number_uarts);
-=======
 		pci_dbg(dev, "%d ports detected on %s PCI Express device\n",
 			number_uarts,
 			dev->vendor == PCI_VENDOR_ID_ENDRUN ?
 			"EndRun" : "Oxford");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pci_iounmap(dev, p);
 	return number_uarts;
 }
 
-<<<<<<< HEAD
-static int
-pci_default_setup(struct serial_private *priv,
-		  const struct pciserial_board *board,
-		  struct uart_port *port, int idx)
-=======
 /* Tornado-specific constants for the TCR and CPR registers; see below.  */
 #define OXSEMI_TORNADO_TCR_MASK	0xf
 #define OXSEMI_TORNADO_CPR_MASK	0x1ff
@@ -1877,7 +1551,6 @@ static int pci_quatech_setup(struct serial_private *priv,
 static int pci_default_setup(struct serial_private *priv,
 		  const struct pciserial_board *board,
 		  struct uart_8250_port *port, int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int bar, offset = board->first_offset, maxnr;
 
@@ -1899,17 +1572,6 @@ static int pci_default_setup(struct serial_private *priv,
 static int
 ce4100_serial_setup(struct serial_private *priv,
 		  const struct pciserial_board *board,
-<<<<<<< HEAD
-		  struct uart_port *port, int idx)
-{
-	int ret;
-
-	ret = setup_port(priv, port, 0, 0, board->reg_shift);
-	port->iotype = UPIO_MEM32;
-	port->type = PORT_XSCALE;
-	port->flags = (port->flags | UPF_FIXED_PORT | UPF_FIXED_TYPE);
-	port->regshift = 2;
-=======
 		  struct uart_8250_port *port, int idx)
 {
 	int ret;
@@ -1919,7 +1581,6 @@ ce4100_serial_setup(struct serial_private *priv,
 	port->port.type = PORT_XSCALE;
 	port->port.flags = (port->port.flags | UPF_FIXED_PORT | UPF_FIXED_TYPE);
 	port->port.regshift = 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1927,11 +1588,7 @@ ce4100_serial_setup(struct serial_private *priv,
 static int
 pci_omegapci_setup(struct serial_private *priv,
 		      const struct pciserial_board *board,
-<<<<<<< HEAD
-		      struct uart_port *port, int idx)
-=======
 		      struct uart_8250_port *port, int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return setup_port(priv, port, 2, idx * 8, 0);
 }
@@ -1939,28 +1596,6 @@ pci_omegapci_setup(struct serial_private *priv,
 static int
 pci_brcm_trumanage_setup(struct serial_private *priv,
 			 const struct pciserial_board *board,
-<<<<<<< HEAD
-			 struct uart_port *port, int idx)
-{
-	int ret = pci_default_setup(priv, board, port, idx);
-
-	port->type = PORT_BRCM_TRUMANAGE;
-	port->flags = (port->flags | UPF_FIXED_PORT | UPF_FIXED_TYPE);
-	return ret;
-}
-
-static int skip_tx_en_setup(struct serial_private *priv,
-			const struct pciserial_board *board,
-			struct uart_port *port, int idx)
-{
-	port->flags |= UPF_NO_TXEN_TEST;
-	printk(KERN_DEBUG "serial8250: skipping TxEn test for device "
-			  "[%04x:%04x] subsystem [%04x:%04x]\n",
-			  priv->dev->vendor,
-			  priv->dev->device,
-			  priv->dev->subsystem_vendor,
-			  priv->dev->subsystem_device);
-=======
 			 struct uart_8250_port *port, int idx)
 {
 	int ret = pci_default_setup(priv, board, port, idx);
@@ -2187,18 +1822,10 @@ static int skip_tx_en_setup(struct serial_private *priv,
 		"serial8250: skipping TxEn test for device [%04x:%04x] subsystem [%04x:%04x]\n",
 		priv->dev->vendor, priv->dev->device,
 		priv->dev->subsystem_vendor, priv->dev->subsystem_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pci_default_setup(priv, board, port, idx);
 }
 
-<<<<<<< HEAD
-static int kt_serial_setup(struct serial_private *priv,
-			   const struct pciserial_board *board,
-			   struct uart_port *port, int idx)
-{
-	port->flags |= UPF_BUG_THRE;
-=======
 static void kt_handle_break(struct uart_port *p)
 {
 	struct uart_8250_port *up = up_to_u8250p(p);
@@ -2240,7 +1867,6 @@ static int kt_serial_setup(struct serial_private *priv,
 	port->port.flags |= UPF_BUG_THRE;
 	port->port.serial_in = kt_serial_in;
 	port->port.handle_break = kt_handle_break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return skip_tx_en_setup(priv, board, port, idx);
 }
 
@@ -2254,55 +1880,6 @@ static int pci_eg20t_init(struct pci_dev *dev)
 }
 
 static int
-<<<<<<< HEAD
-pci_xr17c154_setup(struct serial_private *priv,
-		  const struct pciserial_board *board,
-		  struct uart_port *port, int idx)
-{
-	port->flags |= UPF_EXAR_EFR;
-	return pci_default_setup(priv, board, port, idx);
-}
-
-#define PCI_VENDOR_ID_SBSMODULARIO	0x124B
-#define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
-#define PCI_DEVICE_ID_OCTPRO		0x0001
-#define PCI_SUBDEVICE_ID_OCTPRO232	0x0108
-#define PCI_SUBDEVICE_ID_OCTPRO422	0x0208
-#define PCI_SUBDEVICE_ID_POCTAL232	0x0308
-#define PCI_SUBDEVICE_ID_POCTAL422	0x0408
-#define PCI_SUBDEVICE_ID_SIIG_DUAL_00	0x2500
-#define PCI_SUBDEVICE_ID_SIIG_DUAL_30	0x2530
-#define PCI_VENDOR_ID_ADVANTECH		0x13fe
-#define PCI_DEVICE_ID_INTEL_CE4100_UART 0x2e66
-#define PCI_DEVICE_ID_ADVANTECH_PCI3620	0x3620
-#define PCI_DEVICE_ID_TITAN_200I	0x8028
-#define PCI_DEVICE_ID_TITAN_400I	0x8048
-#define PCI_DEVICE_ID_TITAN_800I	0x8088
-#define PCI_DEVICE_ID_TITAN_800EH	0xA007
-#define PCI_DEVICE_ID_TITAN_800EHB	0xA008
-#define PCI_DEVICE_ID_TITAN_400EH	0xA009
-#define PCI_DEVICE_ID_TITAN_100E	0xA010
-#define PCI_DEVICE_ID_TITAN_200E	0xA012
-#define PCI_DEVICE_ID_TITAN_400E	0xA013
-#define PCI_DEVICE_ID_TITAN_800E	0xA014
-#define PCI_DEVICE_ID_TITAN_200EI	0xA016
-#define PCI_DEVICE_ID_TITAN_200EISI	0xA017
-#define PCI_DEVICE_ID_TITAN_200V3	0xA306
-#define PCI_DEVICE_ID_TITAN_400V3	0xA310
-#define PCI_DEVICE_ID_TITAN_410V3	0xA312
-#define PCI_DEVICE_ID_TITAN_800V3	0xA314
-#define PCI_DEVICE_ID_TITAN_800V3B	0xA315
-#define PCI_DEVICE_ID_OXSEMI_16PCI958	0x9538
-#define PCIE_DEVICE_ID_NEO_2_OX_IBM	0x00F6
-#define PCI_DEVICE_ID_PLX_CRONYX_OMEGA	0xc001
-#define PCI_DEVICE_ID_INTEL_PATSBURG_KT 0x1d3d
-#define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
-#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
-
-/* Unknown vendors/cards - this should not be in linux/pci_ids.h */
-#define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
-#define PCI_SUBDEVICE_ID_UNKNOWN_0x1588	0x1588
-=======
 pci_wch_ch353_setup(struct serial_private *priv,
 		    const struct pciserial_board *board,
 		    struct uart_8250_port *port, int idx)
@@ -2503,7 +2080,6 @@ pci_moxa_setup(struct serial_private *priv,
 
 	return setup_port(priv, port, bar, offset, 0);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Master list of serial port init/setup/exit quirks.
@@ -2513,22 +2089,13 @@ pci_moxa_setup(struct serial_private *priv,
  * This list is ordered alphabetically by vendor then device.
  * Specific entries must come before more generic entries.
  */
-<<<<<<< HEAD
-static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
-=======
 static struct pci_serial_quirk pci_serial_quirks[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	* ADDI-DATA GmbH communication cards <info@addi-data.com>
 	*/
 	{
-<<<<<<< HEAD
-		.vendor         = PCI_VENDOR_ID_ADDIDATA_OLD,
-		.device         = PCI_DEVICE_ID_ADDIDATA_APCI7800,
-=======
 		.vendor         = PCI_VENDOR_ID_AMCC,
 		.device         = PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.subvendor      = PCI_ANY_ID,
 		.subdevice      = PCI_ANY_ID,
 		.setup          = addidata_apci7800_setup,
@@ -2556,8 +2123,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.setup		= pci_hp_diva_setup,
 	},
 	/*
-<<<<<<< HEAD
-=======
 	 * HPE PCI serial device
 	 */
 	{
@@ -2568,7 +2133,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.setup		= pci_hp_diva_setup,
 	},
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Intel
 	 */
 	{
@@ -2624,11 +2188,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ite887x_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ite887x_exit),
-=======
 		.exit		= pci_ite887x_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/*
 	 * National Instruments
@@ -2640,11 +2200,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8420_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8420_exit),
-=======
 		.exit		= pci_ni8420_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_NI,
@@ -2653,11 +2209,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8420_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8420_exit),
-=======
 		.exit		= pci_ni8420_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_NI,
@@ -2666,11 +2218,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8420_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8420_exit),
-=======
 		.exit		= pci_ni8420_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_NI,
@@ -2679,11 +2227,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8420_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8420_exit),
-=======
 		.exit		= pci_ni8420_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_NI,
@@ -2692,11 +2236,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8420_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8420_exit),
-=======
 		.exit		= pci_ni8420_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_NI,
@@ -2705,11 +2245,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8420_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8420_exit),
-=======
 		.exit		= pci_ni8420_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_NI,
@@ -2718,11 +2254,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8420_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8420_exit),
-=======
 		.exit		= pci_ni8420_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_NI,
@@ -2731,11 +2263,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8420_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8420_exit),
-=======
 		.exit		= pci_ni8420_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_NI,
@@ -2744,11 +2272,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8420_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8420_exit),
-=======
 		.exit		= pci_ni8420_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_NI,
@@ -2757,11 +2281,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8420_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8420_exit),
-=======
 		.exit		= pci_ni8420_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_NI,
@@ -2770,11 +2290,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8420_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8420_exit),
-=======
 		.exit		= pci_ni8420_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_NI,
@@ -2783,11 +2299,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8420_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8420_exit),
-=======
 		.exit		= pci_ni8420_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_NI,
@@ -2796,9 +2308,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_ni8430_init,
 		.setup		= pci_ni8430_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_ni8430_exit),
-=======
 		.exit		= pci_ni8430_exit,
 	},
 	/* Quatech */
@@ -2809,7 +2318,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_quatech_init,
 		.setup		= pci_quatech_setup,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/*
 	 * Panacom
@@ -2821,11 +2329,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_plx9050_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_plx9050_exit),
-=======
 		.exit		= pci_plx9050_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_PANACOM,
@@ -2834,37 +2338,19 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_plx9050_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_plx9050_exit),
-=======
 		.exit		= pci_plx9050_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/*
 	 * PLX
 	 */
 	{
 		.vendor		= PCI_VENDOR_ID_PLX,
-<<<<<<< HEAD
-		.device		= PCI_DEVICE_ID_PLX_9030,
-		.subvendor	= PCI_SUBVENDOR_ID_PERLE,
-		.subdevice	= PCI_ANY_ID,
-		.setup		= pci_default_setup,
-	},
-	{
-		.vendor		= PCI_VENDOR_ID_PLX,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.device		= PCI_DEVICE_ID_PLX_9050,
 		.subvendor	= PCI_SUBVENDOR_ID_EXSYS,
 		.subdevice	= PCI_SUBDEVICE_ID_EXSYS_4055,
 		.init		= pci_plx9050_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_plx9050_exit),
-=======
 		.exit		= pci_plx9050_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_PLX,
@@ -2873,11 +2359,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_SUBDEVICE_ID_KEYSPAN_SX2,
 		.init		= pci_plx9050_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_plx9050_exit),
-=======
 		.exit		= pci_plx9050_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_PLX,
@@ -2886,11 +2368,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_DEVICE_ID_PLX_ROMULUS,
 		.init		= pci_plx9050_init,
 		.setup		= pci_default_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(pci_plx9050_exit),
-=======
 		.exit		= pci_plx9050_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/*
 	 * SBS Technologies, Inc., PMC-OCTALPRO 232
@@ -2902,11 +2380,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_SUBDEVICE_ID_OCTPRO232,
 		.init		= sbs_init,
 		.setup		= sbs_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(sbs_exit),
-=======
 		.exit		= sbs_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/*
 	 * SBS Technologies, Inc., PMC-OCTALPRO 422
@@ -2918,11 +2392,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_SUBDEVICE_ID_OCTPRO422,
 		.init		= sbs_init,
 		.setup		= sbs_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(sbs_exit),
-=======
 		.exit		= sbs_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/*
 	 * SBS Technologies, Inc., P-Octal 232
@@ -2934,11 +2404,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_SUBDEVICE_ID_POCTAL232,
 		.init		= sbs_init,
 		.setup		= sbs_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(sbs_exit),
-=======
 		.exit		= sbs_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/*
 	 * SBS Technologies, Inc., P-Octal 422
@@ -2950,11 +2416,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_SUBDEVICE_ID_POCTAL422,
 		.init		= sbs_init,
 		.setup		= sbs_setup,
-<<<<<<< HEAD
-		.exit		= __devexit_p(sbs_exit),
-=======
 		.exit		= sbs_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/*
 	 * SIIG cards - these may be called via parport_serial
@@ -3004,30 +2466,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.setup		= pci_timedia_setup,
 	},
 	/*
-<<<<<<< HEAD
-	 * Exar cards
-	 */
-	{
-		.vendor = PCI_VENDOR_ID_EXAR,
-		.device = PCI_DEVICE_ID_EXAR_XR17C152,
-		.subvendor	= PCI_ANY_ID,
-		.subdevice	= PCI_ANY_ID,
-		.setup		= pci_xr17c154_setup,
-	},
-	{
-		.vendor = PCI_VENDOR_ID_EXAR,
-		.device = PCI_DEVICE_ID_EXAR_XR17C154,
-		.subvendor	= PCI_ANY_ID,
-		.subdevice	= PCI_ANY_ID,
-		.setup		= pci_xr17c154_setup,
-	},
-	{
-		.vendor = PCI_VENDOR_ID_EXAR,
-		.device = PCI_DEVICE_ID_EXAR_XR17C158,
-		.subvendor	= PCI_ANY_ID,
-		.subdevice	= PCI_ANY_ID,
-		.setup		= pci_xr17c154_setup,
-=======
 	 * Sunix PCI serial boards
 	 */
 	{
@@ -3036,7 +2474,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subvendor	= PCI_VENDOR_ID_SUNIX,
 		.subdevice	= PCI_ANY_ID,
 		.setup		= pci_sunix_setup,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/*
 	 * Xircom cards
@@ -3061,8 +2498,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.setup		= pci_netmos_9900_setup,
 	},
 	/*
-<<<<<<< HEAD
-=======
 	 * EndRun Technologies
 	*/
 	{
@@ -3074,7 +2509,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.setup		= pci_default_setup,
 	},
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * For Oxford Semiconductor Tornado based devices
 	 */
 	{
@@ -3083,11 +2517,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subvendor	= PCI_ANY_ID,
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_oxsemi_tornado_init,
-<<<<<<< HEAD
-		.setup		= pci_default_setup,
-=======
 		.setup		= pci_oxsemi_tornado_setup,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_MAINPINE,
@@ -3095,11 +2525,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subvendor	= PCI_ANY_ID,
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_oxsemi_tornado_init,
-<<<<<<< HEAD
-		.setup		= pci_default_setup,
-=======
 		.setup		= pci_oxsemi_tornado_setup,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor		= PCI_VENDOR_ID_DIGI,
@@ -3107,9 +2533,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subvendor		= PCI_SUBVENDOR_ID_IBM,
 		.subdevice		= PCI_ANY_ID,
 		.init			= pci_oxsemi_tornado_init,
-<<<<<<< HEAD
-		.setup		= pci_default_setup,
-=======
 		.setup		= pci_oxsemi_tornado_setup,
 	},
 	/*
@@ -3258,7 +2681,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.init		= pci_oxsemi_tornado_init,
 		.setup		= pci_oxsemi_tornado_setup,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.vendor         = PCI_VENDOR_ID_INTEL,
@@ -3332,16 +2754,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.init		= pci_eg20t_init,
 		.setup		= pci_default_setup,
 	},
-<<<<<<< HEAD
-	{
-		.vendor		= PCI_VENDOR_ID_INTEL,
-		.device		= PCI_DEVICE_ID_INTEL_QRK_UART,
-		.subvendor	= PCI_ANY_ID,
-		.subdevice	= PCI_ANY_ID,
-		.setup		= pci_default_setup,
-	},
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Cronyx Omega PCI (PLX-chip based)
 	 */
@@ -3351,9 +2763,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subvendor	= PCI_ANY_ID,
 		.subdevice	= PCI_ANY_ID,
 		.setup		= pci_omegapci_setup,
-<<<<<<< HEAD
-	 },
-=======
 	},
 	/* WCH CH353 1S1P card (16550 clone) */
 	{
@@ -3437,7 +2846,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.exit		= pci_wch_ch38x_exit,
 		.setup          = pci_wch_ch38x_setup,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Broadcom TruManage (NetXtreme)
 	 */
@@ -3448,8 +2856,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.setup		= pci_brcm_trumanage_setup,
 	},
-<<<<<<< HEAD
-=======
 	{
 		.vendor		= 0x1c29,
 		.device		= 0x1104,
@@ -3509,7 +2915,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.setup		= pci_fintek_f815xxa_setup,
 		.init		= pci_fintek_f815xxa_init,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Default "match everything" terminator entry
@@ -3541,18 +2946,6 @@ static struct pci_serial_quirk *find_quirk(struct pci_dev *dev)
 	return quirk;
 }
 
-<<<<<<< HEAD
-static inline int get_pci_irq(struct pci_dev *dev,
-				const struct pciserial_board *board)
-{
-	if (board->flags & FL_NOIRQ)
-		return 0;
-	else
-		return dev->irq;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is the configuration table for all of the PCI serial boards
  * which we support.  It is directly indexed by the pci_board_num_t enum
@@ -3590,23 +2983,12 @@ enum pci_board_num_t {
 
 	pbn_b0_4_1152000,
 
-<<<<<<< HEAD
-	pbn_b0_2_1843200,
-	pbn_b0_4_1843200,
-
-	pbn_b0_2_1843200_200,
-	pbn_b0_4_1843200_200,
-	pbn_b0_8_1843200_200,
-
-	pbn_b0_1_4000000,
-=======
 	pbn_b0_4_1250000,
 
 	pbn_b0_2_1843200,
 	pbn_b0_4_1843200,
 
 	pbn_b0_1_15625000,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pbn_b0_bt_1_115200,
 	pbn_b0_bt_2_115200,
@@ -3683,35 +3065,18 @@ enum pci_board_num_t {
 	pbn_panacom,
 	pbn_panacom2,
 	pbn_panacom4,
-<<<<<<< HEAD
-	pbn_exsys_4055,
-	pbn_plx_romulus,
-	pbn_oxsemi,
-	pbn_oxsemi_1_4000000,
-	pbn_oxsemi_2_4000000,
-	pbn_oxsemi_4_4000000,
-	pbn_oxsemi_8_4000000,
-=======
 	pbn_plx_romulus,
 	pbn_oxsemi,
 	pbn_oxsemi_1_15625000,
 	pbn_oxsemi_2_15625000,
 	pbn_oxsemi_4_15625000,
 	pbn_oxsemi_8_15625000,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pbn_intel_i960,
 	pbn_sgi_ioc3,
 	pbn_computone_4,
 	pbn_computone_6,
 	pbn_computone_8,
 	pbn_sbsxrsio,
-<<<<<<< HEAD
-	pbn_exar_XR17C152,
-	pbn_exar_XR17C154,
-	pbn_exar_XR17C158,
-	pbn_exar_ibm_saturn,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pbn_pasemi_1682M,
 	pbn_ni8430_2,
 	pbn_ni8430_4,
@@ -3722,12 +3087,6 @@ enum pci_board_num_t {
 	pbn_ADDIDATA_PCIe_4_3906250,
 	pbn_ADDIDATA_PCIe_8_3906250,
 	pbn_ce4100_1_115200,
-<<<<<<< HEAD
-	pbn_qrk,
-	pbn_omegapci,
-	pbn_NETMOS9900_2s_115200,
-	pbn_brcm_trumanage,
-=======
 	pbn_omegapci,
 	pbn_NETMOS9900_2s_115200,
 	pbn_brcm_trumanage,
@@ -3752,7 +3111,6 @@ enum pci_board_num_t {
 	pbn_moxa_2,
 	pbn_moxa_4,
 	pbn_moxa_8,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -3765,11 +3123,7 @@ enum pci_board_num_t {
  * see first lines of serial_in() and serial_out() in 8250.c
 */
 
-<<<<<<< HEAD
-static struct pciserial_board pci_boards[] __devinitdata = {
-=======
 static struct pciserial_board pci_boards[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[pbn_default] = {
 		.flags		= FL_BASE0,
 		.num_ports	= 1,
@@ -3839,8 +3193,6 @@ static struct pciserial_board pci_boards[] = {
 		.uart_offset	= 8,
 	},
 
-<<<<<<< HEAD
-=======
 	[pbn_b0_4_1250000] = {
 		.flags		= FL_BASE0,
 		.num_ports	= 4,
@@ -3848,7 +3200,6 @@ static struct pciserial_board pci_boards[] = {
 		.uart_offset	= 8,
 	},
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[pbn_b0_2_1843200] = {
 		.flags		= FL_BASE0,
 		.num_ports	= 2,
@@ -3862,35 +3213,10 @@ static struct pciserial_board pci_boards[] = {
 		.uart_offset	= 8,
 	},
 
-<<<<<<< HEAD
-	[pbn_b0_2_1843200_200] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 2,
-		.base_baud	= 1843200,
-		.uart_offset	= 0x200,
-	},
-	[pbn_b0_4_1843200_200] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 4,
-		.base_baud	= 1843200,
-		.uart_offset	= 0x200,
-	},
-	[pbn_b0_8_1843200_200] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 8,
-		.base_baud	= 1843200,
-		.uart_offset	= 0x200,
-	},
-	[pbn_b0_1_4000000] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 1,
-		.base_baud	= 4000000,
-=======
 	[pbn_b0_1_15625000] = {
 		.flags		= FL_BASE0,
 		.num_ports	= 1,
 		.base_baud	= 15625000,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.uart_offset	= 8,
 	},
 
@@ -4251,16 +3577,6 @@ static struct pciserial_board pci_boards[] = {
 		.reg_shift	= 7,
 	},
 
-<<<<<<< HEAD
-	[pbn_exsys_4055] = {
-		.flags		= FL_BASE2,
-		.num_ports	= 4,
-		.base_baud	= 115200,
-		.uart_offset	= 8,
-	},
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* I think this entry is broken - the first_offset looks wrong --rmk */
 	[pbn_plx_romulus] = {
 		.flags		= FL_BASE2,
@@ -4281,33 +3597,6 @@ static struct pciserial_board pci_boards[] = {
 		.base_baud	= 115200,
 		.uart_offset	= 8,
 	},
-<<<<<<< HEAD
-	[pbn_oxsemi_1_4000000] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 1,
-		.base_baud	= 4000000,
-		.uart_offset	= 0x200,
-		.first_offset	= 0x1000,
-	},
-	[pbn_oxsemi_2_4000000] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 2,
-		.base_baud	= 4000000,
-		.uart_offset	= 0x200,
-		.first_offset	= 0x1000,
-	},
-	[pbn_oxsemi_4_4000000] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 4,
-		.base_baud	= 4000000,
-		.uart_offset	= 0x200,
-		.first_offset	= 0x1000,
-	},
-	[pbn_oxsemi_8_4000000] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 8,
-		.base_baud	= 4000000,
-=======
 	[pbn_oxsemi_1_15625000] = {
 		.flags		= FL_BASE0,
 		.num_ports	= 1,
@@ -4333,7 +3622,6 @@ static struct pciserial_board pci_boards[] = {
 		.flags		= FL_BASE0,
 		.num_ports	= 8,
 		.base_baud	= 15625000,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.uart_offset	= 0x200,
 		.first_offset	= 0x1000,
 	},
@@ -4395,39 +3683,6 @@ static struct pciserial_board pci_boards[] = {
 		.reg_shift	= 4,
 	},
 	/*
-<<<<<<< HEAD
-	 * Exar Corp. XR17C15[248] Dual/Quad/Octal UART
-	 *  Only basic 16550A support.
-	 *  XR17C15[24] are not tested, but they should work.
-	 */
-	[pbn_exar_XR17C152] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 2,
-		.base_baud	= 921600,
-		.uart_offset	= 0x200,
-	},
-	[pbn_exar_XR17C154] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 4,
-		.base_baud	= 921600,
-		.uart_offset	= 0x200,
-	},
-	[pbn_exar_XR17C158] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 8,
-		.base_baud	= 921600,
-		.uart_offset	= 0x200,
-	},
-	[pbn_exar_ibm_saturn] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 1,
-		.base_baud	= 921600,
-		.uart_offset	= 0x200,
-	},
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * PA Semi PWRficient PA6T-1682M on-chip UART
 	 */
 	[pbn_pasemi_1682M] = {
@@ -4498,25 +3753,11 @@ static struct pciserial_board pci_boards[] = {
 		.first_offset	= 0x1000,
 	},
 	[pbn_ce4100_1_115200] = {
-<<<<<<< HEAD
-		.flags		= FL_BASE0,
-		.num_ports	= 1,
-		.base_baud	= 921600,
-		.reg_shift      = 2,
-	},
-	[pbn_qrk] = {
-		.flags		= FL_BASE0,
-		.num_ports	= 1,
-		.base_baud	= 2764800,
-		.reg_shift	= 2,
-	},
-=======
 		.flags		= FL_BASE_BARS,
 		.num_ports	= 2,
 		.base_baud	= 921600,
 		.reg_shift      = 2,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[pbn_omegapci] = {
 		.flags		= FL_BASE0,
 		.num_ports	= 8,
@@ -4534,35 +3775,6 @@ static struct pciserial_board pci_boards[] = {
 		.reg_shift	= 2,
 		.base_baud	= 115200,
 	},
-<<<<<<< HEAD
-};
-
-static const struct pci_device_id softmodem_blacklist[] = {
-	{ PCI_VDEVICE(AL, 0x5457), }, /* ALi Corporation M5457 AC'97 Modem */
-	{ PCI_VDEVICE(MOTOROLA, 0x3052), }, /* Motorola Si3052-based modem */
-	{ PCI_DEVICE(0x1543, 0x3052), }, /* Si3052-based modem, default IDs */
-};
-
-/*
- * Given a complete unknown PCI device, try to use some heuristics to
- * guess what the configuration might be, based on the pitiful PCI
- * serial specs.  Returns 0 on success, 1 on failure.
- */
-static int __devinit
-serial_pci_guess_board(struct pci_dev *dev, struct pciserial_board *board)
-{
-	const struct pci_device_id *blacklist;
-	int num_iomem, num_port, first_port = -1, i;
-
-	/*
-	 * If it is not a communications device or the programming
-	 * interface is greater than 6, give up.
-	 *
-	 * (Should we try to make guesses for multiport serial devices
-	 * later?)
-	 */
-	if ((((dev->class >> 8) != PCI_CLASS_COMMUNICATION_SERIAL) &&
-=======
 	[pbn_fintek_4] = {
 		.num_ports	= 4,
 		.uart_offset	= 8,
@@ -4753,27 +3965,10 @@ static int serial_pci_is_class_communication(struct pci_dev *dev)
 	 */
 	if ((((dev->class >> 8) != PCI_CLASS_COMMUNICATION_SERIAL) &&
 	     ((dev->class >> 8) != PCI_CLASS_COMMUNICATION_MULTISERIAL) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     ((dev->class >> 8) != PCI_CLASS_COMMUNICATION_MODEM)) ||
 	    (dev->class & 0xff) > 6)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	/*
-	 * Do not access blacklisted devices that are known not to
-	 * feature serial ports.
-	 */
-	for (blacklist = softmodem_blacklist;
-	     blacklist < softmodem_blacklist + ARRAY_SIZE(softmodem_blacklist);
-	     blacklist++) {
-		if (dev->vendor == blacklist->vendor &&
-		    dev->device == blacklist->device)
-			return -ENODEV;
-	}
-
-	num_iomem = num_port = 0;
-	for (i = 0; i < PCI_NUM_BAR_RESOURCES; i++) {
-=======
 	return 0;
 }
 
@@ -4800,7 +3995,6 @@ serial_pci_guess_board(struct pci_dev *dev, struct pciserial_board *board)
 
 	num_iomem = num_port = 0;
 	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pci_resource_flags(dev, i) & IORESOURCE_IO) {
 			num_port++;
 			if (first_port == -1)
@@ -4828,11 +4022,7 @@ serial_pci_guess_board(struct pci_dev *dev, struct pciserial_board *board)
 	 */
 	first_port = -1;
 	num_port = 0;
-<<<<<<< HEAD
-	for (i = 0; i < PCI_NUM_BAR_RESOURCES; i++) {
-=======
 	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pci_resource_flags(dev, i) & IORESOURCE_IO &&
 		    pci_resource_len(dev, i) == 8 &&
 		    (first_port == -1 || (first_port + num_port) == i)) {
@@ -4866,11 +4056,7 @@ serial_pci_matches(const struct pciserial_board *board,
 struct serial_private *
 pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
 {
-<<<<<<< HEAD
-	struct uart_port serial_port;
-=======
 	struct uart_8250_port uart;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct serial_private *priv;
 	struct pci_serial_quirk *quirk;
 	int rc, nr_ports, i;
@@ -4899,13 +4085,7 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
 			nr_ports = rc;
 	}
 
-<<<<<<< HEAD
-	priv = kzalloc(sizeof(struct serial_private) +
-		       sizeof(unsigned int) * nr_ports,
-		       GFP_KERNEL);
-=======
 	priv = kzalloc(struct_size(priv, line, nr_ports), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!priv) {
 		priv = ERR_PTR(-ENOMEM);
 		goto err_deinit;
@@ -4914,26 +4094,6 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
 	priv->dev = dev;
 	priv->quirk = quirk;
 
-<<<<<<< HEAD
-	memset(&serial_port, 0, sizeof(struct uart_port));
-	serial_port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
-	serial_port.uartclk = board->base_baud * 16;
-	serial_port.irq = get_pci_irq(dev, board);
-	serial_port.dev = &dev->dev;
-
-	for (i = 0; i < nr_ports; i++) {
-		if (quirk->setup(priv, board, &serial_port, i))
-			break;
-
-#ifdef SERIAL_DEBUG_PCI
-		printk(KERN_DEBUG "Setup PCI port: port %lx, irq %d, type %d\n",
-		       serial_port.iobase, serial_port.irq, serial_port.iotype);
-#endif
-
-		priv->line[i] = serial8250_register_port(&serial_port);
-		if (priv->line[i] < 0) {
-			printk(KERN_WARNING "Couldn't register serial port %s: %d\n", pci_name(dev), priv->line[i]);
-=======
 	memset(&uart, 0, sizeof(uart));
 	uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
 	uart.port.uartclk = board->base_baud * 16;
@@ -4974,15 +4134,11 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
 				"Couldn't register serial port %lx, irq %d, type %d, error %d\n",
 				uart.port.iobase, uart.port.irq,
 				uart.port.iotype, priv->line[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 	priv->nr = i;
-<<<<<<< HEAD
-=======
 	priv->board = board;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return priv;
 
 err_deinit:
@@ -4993,11 +4149,7 @@ err_out:
 }
 EXPORT_SYMBOL_GPL(pciserial_init_ports);
 
-<<<<<<< HEAD
-void pciserial_remove_ports(struct serial_private *priv)
-=======
 static void pciserial_detach_ports(struct serial_private *priv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_serial_quirk *quirk;
 	int i;
@@ -5005,30 +4157,17 @@ static void pciserial_detach_ports(struct serial_private *priv)
 	for (i = 0; i < priv->nr; i++)
 		serial8250_unregister_port(priv->line[i]);
 
-<<<<<<< HEAD
-	for (i = 0; i < PCI_NUM_BAR_RESOURCES; i++) {
-		if (priv->remapped_bar[i])
-			iounmap(priv->remapped_bar[i]);
-		priv->remapped_bar[i] = NULL;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Find the exit quirks.
 	 */
 	quirk = find_quirk(priv->dev);
 	if (quirk->exit)
 		quirk->exit(priv->dev);
-<<<<<<< HEAD
-
-=======
 }
 
 void pciserial_remove_ports(struct serial_private *priv)
 {
 	pciserial_detach_ports(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(priv);
 }
 EXPORT_SYMBOL_GPL(pciserial_remove_ports);
@@ -5040,15 +4179,12 @@ void pciserial_suspend_ports(struct serial_private *priv)
 	for (i = 0; i < priv->nr; i++)
 		if (priv->line[i] >= 0)
 			serial8250_suspend_port(priv->line[i]);
-<<<<<<< HEAD
-=======
 
 	/*
 	 * Ensure that every init quirk is properly torn down
 	 */
 	if (priv->quirk->exit)
 		priv->quirk->exit(priv->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(pciserial_suspend_ports);
 
@@ -5072,20 +4208,13 @@ EXPORT_SYMBOL_GPL(pciserial_resume_ports);
  * Probe one serial board.  Unfortunately, there is no rhyme nor reason
  * to the arrangement of serial ports on a PCI card.
  */
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
 {
 	struct pci_serial_quirk *quirk;
 	struct serial_private *priv;
 	const struct pciserial_board *board;
-<<<<<<< HEAD
-=======
 	const struct pci_device_id *exclude;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pciserial_board tmp;
 	int rc;
 
@@ -5097,20 +4226,12 @@ pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
 	}
 
 	if (ent->driver_data >= ARRAY_SIZE(pci_boards)) {
-<<<<<<< HEAD
-		printk(KERN_ERR "pci_init_one: invalid driver_data: %ld\n",
-			ent->driver_data);
-=======
 		pci_err(dev, "invalid driver_data: %ld\n", ent->driver_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	board = &pci_boards[ent->driver_data];
 
-<<<<<<< HEAD
-	rc = pci_enable_device(dev);
-=======
 	exclude = pci_match_id(blacklist, dev);
 	if (exclude) {
 		if (exclude->driver_data)
@@ -5120,7 +4241,6 @@ pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
 	}
 
 	rc = pcim_enable_device(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_save_state(dev);
 	if (rc)
 		return rc;
@@ -5139,11 +4259,7 @@ pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
 		 */
 		rc = serial_pci_guess_board(dev, &tmp);
 		if (rc)
-<<<<<<< HEAD
-			goto disable;
-=======
 			return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/*
 		 * We matched an explicit entry.  If we are able to
@@ -5159,35 +4275,6 @@ pciserial_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
 	}
 
 	priv = pciserial_init_ports(dev, board);
-<<<<<<< HEAD
-	if (!IS_ERR(priv)) {
-		pci_set_drvdata(dev, priv);
-		return 0;
-	}
-
-	rc = PTR_ERR(priv);
-
- disable:
-	pci_disable_device(dev);
-	return rc;
-}
-
-static void __devexit pciserial_remove_one(struct pci_dev *dev)
-{
-	struct serial_private *priv = pci_get_drvdata(dev);
-
-	pci_set_drvdata(dev, NULL);
-
-	pciserial_remove_ports(priv);
-
-	pci_disable_device(dev);
-}
-
-#ifdef CONFIG_PM
-static int pciserial_suspend_one(struct pci_dev *dev, pm_message_t state)
-{
-	struct serial_private *priv = pci_get_drvdata(dev);
-=======
 	if (IS_ERR(priv))
 		return PTR_ERR(priv);
 
@@ -5206,25 +4293,10 @@ static void pciserial_remove_one(struct pci_dev *dev)
 static int pciserial_suspend_one(struct device *dev)
 {
 	struct serial_private *priv = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (priv)
 		pciserial_suspend_ports(priv);
 
-<<<<<<< HEAD
-	pci_save_state(dev);
-	pci_set_power_state(dev, pci_choose_state(dev, state));
-	return 0;
-}
-
-static int pciserial_resume_one(struct pci_dev *dev)
-{
-	int err;
-	struct serial_private *priv = pci_get_drvdata(dev);
-
-	pci_set_power_state(dev, PCI_D0);
-	pci_restore_state(dev);
-=======
 	return 0;
 }
 
@@ -5233,32 +4305,21 @@ static int pciserial_resume_one(struct device *dev)
 	struct pci_dev *pdev = to_pci_dev(dev);
 	struct serial_private *priv = pci_get_drvdata(pdev);
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (priv) {
 		/*
 		 * The device may have been disabled.  Re-enable it.
 		 */
-<<<<<<< HEAD
-		err = pci_enable_device(dev);
-		/* FIXME: We cannot simply error out here */
-		if (err)
-			printk(KERN_ERR "pciserial: Unable to re-enable ports, trying to continue.\n");
-=======
 		err = pci_enable_device(pdev);
 		/* FIXME: We cannot simply error out here */
 		if (err)
 			pci_err(pdev, "Unable to re-enable ports, trying to continue.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pciserial_resume_ports(priv);
 	}
 	return 0;
 }
 #endif
 
-<<<<<<< HEAD
-static struct pci_device_id serial_pci_tbl[] = {
-=======
 static SIMPLE_DEV_PM_OPS(pciserial_pm_ops, pciserial_suspend_one,
 			 pciserial_resume_one);
 
@@ -5266,13 +4327,10 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI1600,
 		PCI_DEVICE_ID_ADVANTECH_PCI1600_1611, PCI_ANY_ID, 0, 0,
 		pbn_b0_4_921600 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Advantech use PCI_DEVICE_ID_ADVANTECH_PCI3620 (0x3620) as 'PCI_SUBVENDOR_ID' */
 	{	PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI3620,
 		PCI_DEVICE_ID_ADVANTECH_PCI3620, 0x0001, 0, 0,
 		pbn_b2_8_921600 },
-<<<<<<< HEAD
-=======
 	/* Advantech also use 0x3618 and 0xf618 */
 	{	PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI3618,
 		PCI_DEVICE_ID_ADVANTECH_PCI3618, PCI_ANY_ID, 0, 0,
@@ -5280,7 +4338,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCIf618,
 		PCI_DEVICE_ID_ADVANTECH_PCI3618, PCI_ANY_ID, 0, 0,
 		pbn_b0_4_921600 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{	PCI_VENDOR_ID_V3, PCI_DEVICE_ID_V3_V960,
 		PCI_SUBVENDOR_ID_CONNECT_TECH,
 		PCI_SUBDEVICE_ID_CONNECT_TECH_BH8_232, 0, 0,
@@ -5353,61 +4410,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		PCI_VENDOR_ID_AFAVLAB,
 		PCI_SUBDEVICE_ID_AFAVLAB_P061, 0, 0,
 		pbn_b0_4_1152000 },
-<<<<<<< HEAD
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
-		PCI_SUBVENDOR_ID_CONNECT_TECH,
-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_232, 0, 0,
-		pbn_b0_2_1843200_200 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
-		PCI_SUBVENDOR_ID_CONNECT_TECH,
-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_232, 0, 0,
-		pbn_b0_4_1843200_200 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
-		PCI_SUBVENDOR_ID_CONNECT_TECH,
-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_232, 0, 0,
-		pbn_b0_8_1843200_200 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
-		PCI_SUBVENDOR_ID_CONNECT_TECH,
-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_1_1, 0, 0,
-		pbn_b0_2_1843200_200 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
-		PCI_SUBVENDOR_ID_CONNECT_TECH,
-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_2, 0, 0,
-		pbn_b0_4_1843200_200 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
-		PCI_SUBVENDOR_ID_CONNECT_TECH,
-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4, 0, 0,
-		pbn_b0_8_1843200_200 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
-		PCI_SUBVENDOR_ID_CONNECT_TECH,
-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2, 0, 0,
-		pbn_b0_2_1843200_200 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
-		PCI_SUBVENDOR_ID_CONNECT_TECH,
-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4, 0, 0,
-		pbn_b0_4_1843200_200 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
-		PCI_SUBVENDOR_ID_CONNECT_TECH,
-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8, 0, 0,
-		pbn_b0_8_1843200_200 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
-		PCI_SUBVENDOR_ID_CONNECT_TECH,
-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_485, 0, 0,
-		pbn_b0_2_1843200_200 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
-		PCI_SUBVENDOR_ID_CONNECT_TECH,
-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_485, 0, 0,
-		pbn_b0_4_1843200_200 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
-		PCI_SUBVENDOR_ID_CONNECT_TECH,
-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_485, 0, 0,
-		pbn_b0_8_1843200_200 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
-		PCI_VENDOR_ID_IBM, PCI_SUBDEVICE_ID_IBM_SATURN_SERIAL_ONE_PORT,
-		0, 0, pbn_exar_ibm_saturn },
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{	PCI_VENDOR_ID_SEALEVEL, PCI_DEVICE_ID_SEALEVEL_U530,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b2_bt_1_115200 },
@@ -5499,11 +4501,7 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9050,
 		PCI_SUBVENDOR_ID_EXSYS,
 		PCI_SUBDEVICE_ID_EXSYS_4055, 0, 0,
-<<<<<<< HEAD
-		pbn_exsys_4055 },
-=======
 		pbn_b2_4_115200 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Megawolf Romulus PCI Serial Card, from Mike Hudson
 	 * (Exoray@isys.ca)
@@ -5511,23 +4509,18 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_ROMULUS,
 		0x10b5, 0x106a, 0, 0,
 		pbn_plx_romulus },
-<<<<<<< HEAD
-=======
 	/*
 	 * Quatech cards. These actually have configurable clocks but for
 	 * now we just use the default.
 	 *
 	 * 100 series are RS232, 200 series RS422,
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_QSC100,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b1_4_115200 },
 	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_DSC100,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b1_2_115200 },
-<<<<<<< HEAD
-=======
 	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_DSC100E,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b2_2_115200 },
@@ -5540,15 +4533,12 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_QSC200,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b1_4_115200 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_ESC100D,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b1_8_115200 },
 	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_ESC100M,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b1_8_115200 },
-<<<<<<< HEAD
-=======
 	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_QSCP100,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b1_4_115200 },
@@ -5583,7 +4573,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b0_8_115200 },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{	PCI_VENDOR_ID_SPECIALIX, PCI_DEVICE_ID_OXSEMI_16PCI954,
 		PCI_VENDOR_ID_SPECIALIX, PCI_SUBDEVICE_ID_SPECIALIX_SPEED4,
 		0, 0,
@@ -5621,11 +4610,7 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b0_bt_2_921600 },
 	{	PCI_VENDOR_ID_OXSEMI, PCI_DEVICE_ID_OXSEMI_16PCI958,
-<<<<<<< HEAD
-		PCI_ANY_ID , PCI_ANY_ID, 0, 0,
-=======
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pbn_b2_8_1152000 },
 
 	/*
@@ -5633,138 +4618,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	 */
 	{	PCI_VENDOR_ID_OXSEMI, 0xc101,    /* OXPCIe952 1 Legacy UART */
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-<<<<<<< HEAD
-		pbn_b0_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc105,    /* OXPCIe952 1 Legacy UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_b0_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc11b,    /* OXPCIe952 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc11f,    /* OXPCIe952 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc120,    /* OXPCIe952 1 Legacy UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_b0_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc124,    /* OXPCIe952 1 Legacy UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_b0_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc138,    /* OXPCIe952 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc13d,    /* OXPCIe952 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc140,    /* OXPCIe952 1 Legacy UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_b0_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc141,    /* OXPCIe952 1 Legacy UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_b0_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc144,    /* OXPCIe952 1 Legacy UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_b0_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc145,    /* OXPCIe952 1 Legacy UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_b0_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc158,    /* OXPCIe952 2 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_2_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc15d,    /* OXPCIe952 2 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_2_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc208,    /* OXPCIe954 4 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_4_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc20d,    /* OXPCIe954 4 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_4_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc308,    /* OXPCIe958 8 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_8_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc30d,    /* OXPCIe958 8 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_8_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc40b,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc40f,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc41b,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc41f,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc42b,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc42f,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc43b,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc43f,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc44b,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc44f,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc45b,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc45f,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc46b,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc46f,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc47b,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc47f,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc48b,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc48f,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc49b,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc49f,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc4ab,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc4af,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc4bb,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc4bf,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc4cb,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_OXSEMI, 0xc4cf,    /* OXPCIe200 1 Native UART */
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_1_4000000 },
-=======
 		pbn_b0_1_15625000 },
 	{	PCI_VENDOR_ID_OXSEMI, 0xc105,    /* OXPCIe952 1 Legacy UART */
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
@@ -5895,24 +4748,11 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_OXSEMI, 0xc4cf,    /* OXPCIe200 1 Native UART */
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_oxsemi_1_15625000 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Mainpine Inc. IQ Express "Rev3" utilizing OxSemi Tornado
 	 */
 	{	PCI_VENDOR_ID_MAINPINE, 0x4000,	/* IQ Express 1 Port V.34 Super-G3 Fax */
 		PCI_VENDOR_ID_MAINPINE, 0x4001, 0, 0,
-<<<<<<< HEAD
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_MAINPINE, 0x4000,	/* IQ Express 2 Port V.34 Super-G3 Fax */
-		PCI_VENDOR_ID_MAINPINE, 0x4002, 0, 0,
-		pbn_oxsemi_2_4000000 },
-	{	PCI_VENDOR_ID_MAINPINE, 0x4000,	/* IQ Express 4 Port V.34 Super-G3 Fax */
-		PCI_VENDOR_ID_MAINPINE, 0x4004, 0, 0,
-		pbn_oxsemi_4_4000000 },
-	{	PCI_VENDOR_ID_MAINPINE, 0x4000,	/* IQ Express 8 Port V.34 Super-G3 Fax */
-		PCI_VENDOR_ID_MAINPINE, 0x4008, 0, 0,
-		pbn_oxsemi_8_4000000 },
-=======
 		pbn_oxsemi_1_15625000 },
 	{	PCI_VENDOR_ID_MAINPINE, 0x4000,	/* IQ Express 2 Port V.34 Super-G3 Fax */
 		PCI_VENDOR_ID_MAINPINE, 0x4002, 0, 0,
@@ -5923,16 +4763,12 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_MAINPINE, 0x4000,	/* IQ Express 8 Port V.34 Super-G3 Fax */
 		PCI_VENDOR_ID_MAINPINE, 0x4008, 0, 0,
 		pbn_oxsemi_8_15625000 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Digi/IBM PCIe 2-port Async EIA-232 Adapter utilizing OxSemi Tornado
 	 */
 	{	PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_2_OX_IBM,
 		PCI_SUBVENDOR_ID_IBM, PCI_ANY_ID, 0, 0,
-<<<<<<< HEAD
-		pbn_oxsemi_2_4000000 },
-=======
 		pbn_oxsemi_2_15625000 },
 	/*
 	 * EndRun Technologies. PCI express device range.
@@ -5941,7 +4777,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_oxsemi_2_15625000 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * SBS Technologies, Inc. P-Octal and PMC-OCTPRO cards,
@@ -6015,24 +4850,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		pbn_b0_4_921600 },
 	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_100E,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-<<<<<<< HEAD
-		pbn_oxsemi_1_4000000 },
-	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200E,
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_2_4000000 },
-	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_400E,
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_4_4000000 },
-	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_800E,
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_8_4000000 },
-	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200EI,
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_2_4000000 },
-	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200EISI,
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_oxsemi_2_4000000 },
-=======
 		pbn_titan_1_4000000 },
 	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200E,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
@@ -6049,7 +4866,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200EISI,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_titan_2_4000000 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{	PCI_VENDOR_ID_TITAN, PCI_DEVICE_ID_TITAN_200V3,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b0_bt_2_921600 },
@@ -6151,8 +4967,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		pbn_b0_bt_1_921600 },
 
 	/*
-<<<<<<< HEAD
-=======
 	 * Sunix PCI serial boards
 	 */
 	{	PCI_VENDOR_ID_SUNIX, PCI_DEVICE_ID_SUNIX_1999,
@@ -6178,7 +4992,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		pbn_sunix_pci_16s },
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * AFAVLAB serial card, from Harald Welte <laforge@gnumonks.org>
 	 */
 	{	PCI_VENDOR_ID_AFAVLAB, PCI_DEVICE_ID_AFAVLAB_P028,
@@ -6197,15 +5010,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_QUATRO_B,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b0_bt_2_115200 },
-<<<<<<< HEAD
-	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_QUATTRO_A,
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_b0_bt_2_115200 },
-	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_QUATTRO_B,
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_b0_bt_2_115200 },
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{	PCI_VENDOR_ID_LAVA, PCI_DEVICE_ID_LAVA_OCTO_A,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b0_bt_4_460800 },
@@ -6329,13 +5133,10 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_HP, PCI_DEVICE_ID_HP_DIVA_AUX,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b2_1_115200 },
-<<<<<<< HEAD
-=======
 	/* HPE PCI serial device */
 	{	PCI_VENDOR_ID_HP_3PAR, PCI_DEVICE_ID_HPE_PCI_SERIAL,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b1_1_115200 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{	PCI_VENDOR_ID_DCI, PCI_DEVICE_ID_DCI_PCCOM2,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
@@ -6346,26 +5147,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_DCI, PCI_DEVICE_ID_DCI_PCCOM8,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		pbn_b3_8_115200 },
-<<<<<<< HEAD
-
-	/*
-	 * Exar Corp. XR17C15[248] Dual/Quad/Octal UART
-	 */
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
-		PCI_ANY_ID, PCI_ANY_ID,
-		0,
-		0, pbn_exar_XR17C152 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
-		PCI_ANY_ID, PCI_ANY_ID,
-		0,
-		0, pbn_exar_XR17C154 },
-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
-		PCI_ANY_ID, PCI_ANY_ID,
-		0,
-		0, pbn_exar_XR17C158 },
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Topic TP560 Data/Fax/Voice 56k modem (reported by Evan Clarke)
 	 */
@@ -6381,12 +5162,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		pbn_b1_bt_1_115200 },
 
 	/*
-<<<<<<< HEAD
-	 * IntaShield IS-200
-	 */
-	{	PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS200,
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,	/* 135a.0811 */
-=======
 	 * IntaShield IS-100
 	 */
 	{	PCI_VENDOR_ID_INTASHIELD, 0x0D60,
@@ -6397,7 +5172,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	 */
 	{	PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS200,
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,	/* 135a.0d80 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pbn_b2_2_115200 },
 	/*
 	 * IntaShield IS-400
@@ -6406,8 +5180,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,    /* 135a.0dc0 */
 		pbn_b2_4_115200 },
 	/*
-<<<<<<< HEAD
-=======
 	 * IntaShield IX-100
 	 */
 	{	PCI_VENDOR_ID_INTASHIELD, 0x4027,
@@ -6784,7 +5556,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		pbn_oxsemi_1_15625000 },
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Perle PCI-RAS cards
 	 */
 	{       PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9030,
@@ -6990,8 +5761,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		pbn_ni8430_4 },
 
 	/*
-<<<<<<< HEAD
-=======
 	 * MOXA
 	 */
 	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP102E),	    pbn_moxa_2 },
@@ -7014,7 +5783,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP168EL_A),  pbn_moxa_8 },
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	* ADDI-DATA GmbH communication cards <info@addi-data.com>
 	*/
 	{	PCI_VENDOR_ID_ADDIDATA,
@@ -7041,13 +5809,8 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		0,
 		pbn_b0_1_115200 },
 
-<<<<<<< HEAD
-	{	PCI_VENDOR_ID_ADDIDATA_OLD,
-		PCI_DEVICE_ID_ADDIDATA_APCI7800,
-=======
 	{	PCI_VENDOR_ID_AMCC,
 		PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		PCI_ANY_ID,
 		PCI_ANY_ID,
 		0,
@@ -7146,15 +5909,12 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		PCI_VENDOR_ID_IBM, 0x0299,
 		0, 0, pbn_b0_bt_2_115200 },
 
-<<<<<<< HEAD
-=======
 	/*
 	 * other NetMos 9835 devices are most likely handled by the
 	 * parport_serial driver, check drivers/parport/parport_serial.c
 	 * before adding them here.
 	 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9901,
 		0xA000, 0x1000,
 		0, 0, pbn_b0_1_115200 },
@@ -7195,8 +5955,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9865,
 		0xA000, 0x3004,
 		0, 0, pbn_b0_bt_4_115200 },
-<<<<<<< HEAD
-=======
 
 	/*
 	 * ASIX AX99100 PCIe to Multi I/O Controller
@@ -7205,22 +5963,12 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		0xA000, 0x1000,
 		0, 0, pbn_b0_1_115200 },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Intel CE4100 */
 	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CE4100_UART,
 		PCI_ANY_ID,  PCI_ANY_ID, 0, 0,
 		pbn_ce4100_1_115200 },
 
 	/*
-<<<<<<< HEAD
-	 * Intel Quark x1000
-	 */
-	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QRK_UART,
-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-		pbn_qrk },
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Cronyx Omega PCI
 	 */
 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
@@ -7235,8 +5983,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 		pbn_brcm_trumanage },
 
 	/*
-<<<<<<< HEAD
-=======
 	 * AgeStar as-prs2-009
 	 */
 	{	PCI_VENDOR_ID_AGESTAR, PCI_DEVICE_ID_AGESTAR_9375,
@@ -7297,7 +6043,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
 	{ PCI_DEVICE(0x1d0f, 0x8250), .driver_data = pbn_b0_1_115200 },
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * These entries match devices with class COMMUNICATION_SERIAL,
 	 * COMMUNICATION_MODEM or COMMUNICATION_MULTISERIAL
 	 */
@@ -7325,11 +6070,7 @@ static pci_ers_result_t serial8250_io_error_detected(struct pci_dev *dev,
 		return PCI_ERS_RESULT_DISCONNECT;
 
 	if (priv)
-<<<<<<< HEAD
-		pciserial_suspend_ports(priv);
-=======
 		pciserial_detach_ports(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_disable_device(dev);
 
@@ -7354,14 +6095,6 @@ static pci_ers_result_t serial8250_io_slot_reset(struct pci_dev *dev)
 static void serial8250_io_resume(struct pci_dev *dev)
 {
 	struct serial_private *priv = pci_get_drvdata(dev);
-<<<<<<< HEAD
-
-	if (priv)
-		pciserial_resume_ports(priv);
-}
-
-static struct pci_error_handlers serial8250_err_handler = {
-=======
 	struct serial_private *new;
 
 	if (!priv)
@@ -7375,7 +6108,6 @@ static struct pci_error_handlers serial8250_err_handler = {
 }
 
 static const struct pci_error_handlers serial8250_err_handler = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.error_detected = serial8250_io_error_detected,
 	.slot_reset = serial8250_io_slot_reset,
 	.resume = serial8250_io_resume,
@@ -7384,43 +6116,17 @@ static const struct pci_error_handlers serial8250_err_handler = {
 static struct pci_driver serial_pci_driver = {
 	.name		= "serial",
 	.probe		= pciserial_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(pciserial_remove_one),
-#ifdef CONFIG_PM
-	.suspend	= pciserial_suspend_one,
-	.resume		= pciserial_resume_one,
-#endif
-=======
 	.remove		= pciserial_remove_one,
 	.driver         = {
 		.pm     = &pciserial_pm_ops,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= serial_pci_tbl,
 	.err_handler	= &serial8250_err_handler,
 };
 
-<<<<<<< HEAD
-static int __init serial8250_pci_init(void)
-{
-	return pci_register_driver(&serial_pci_driver);
-}
-
-static void __exit serial8250_pci_exit(void)
-{
-	pci_unregister_driver(&serial_pci_driver);
-}
-
-module_init(serial8250_pci_init);
-module_exit(serial8250_pci_exit);
-=======
 module_pci_driver(serial_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Generic 8250/16x50 PCI serial probe module");
 MODULE_DEVICE_TABLE(pci, serial_pci_tbl);
-<<<<<<< HEAD
-=======
 MODULE_IMPORT_NS(SERIAL_8250_PCI);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

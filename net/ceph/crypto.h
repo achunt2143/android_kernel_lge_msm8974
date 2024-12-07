@@ -1,19 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _FS_CEPH_CRYPTO_H
 #define _FS_CEPH_CRYPTO_H
 
 #include <linux/ceph/types.h>
 #include <linux/ceph/buffer.h>
 
-<<<<<<< HEAD
-=======
 #define CEPH_KEY_LEN			16
 #define CEPH_MAX_CON_SECRET_LEN		64
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * cryptographic secret
  */
@@ -22,47 +16,6 @@ struct ceph_crypto_key {
 	struct ceph_timespec created;
 	int len;
 	void *key;
-<<<<<<< HEAD
-};
-
-static inline void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
-{
-	if (key)
-		kfree(key->key);
-}
-
-extern int ceph_crypto_key_clone(struct ceph_crypto_key *dst,
-				 const struct ceph_crypto_key *src);
-extern int ceph_crypto_key_encode(struct ceph_crypto_key *key,
-				  void **p, void *end);
-extern int ceph_crypto_key_decode(struct ceph_crypto_key *key,
-				  void **p, void *end);
-extern int ceph_crypto_key_unarmor(struct ceph_crypto_key *key, const char *in);
-
-/* crypto.c */
-extern int ceph_decrypt(struct ceph_crypto_key *secret,
-			void *dst, size_t *dst_len,
-			const void *src, size_t src_len);
-extern int ceph_encrypt(struct ceph_crypto_key *secret,
-			void *dst, size_t *dst_len,
-			const void *src, size_t src_len);
-extern int ceph_decrypt2(struct ceph_crypto_key *secret,
-			void *dst1, size_t *dst1_len,
-			void *dst2, size_t *dst2_len,
-			const void *src, size_t src_len);
-extern int ceph_encrypt2(struct ceph_crypto_key *secret,
-			 void *dst, size_t *dst_len,
-			 const void *src1, size_t src1_len,
-			 const void *src2, size_t src2_len);
-int ceph_crypt(const struct ceph_crypto_key *key, bool encrypt,
-	       void *buf, int buf_len, int in_len, int *pout_len);
-extern int ceph_crypto_init(void);
-extern void ceph_crypto_shutdown(void);
-
-/* armor.c */
-extern int ceph_armor(char *dst, const char *src, const char *end);
-extern int ceph_unarmor(char *dst, const char *src, const char *end);
-=======
 	struct crypto_sync_skcipher *tfm;
 };
 
@@ -82,6 +35,5 @@ void ceph_crypto_shutdown(void);
 /* armor.c */
 int ceph_armor(char *dst, const char *src, const char *end);
 int ceph_unarmor(char *dst, const char *src, const char *end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

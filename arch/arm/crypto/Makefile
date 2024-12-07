@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Arch-specific CryptoAPI modules.
 #
@@ -11,12 +8,6 @@ obj-$(CONFIG_CRYPTO_AES_ARM_BS) += aes-arm-bs.o
 obj-$(CONFIG_CRYPTO_SHA1_ARM) += sha1-arm.o
 obj-$(CONFIG_CRYPTO_SHA1_ARM_NEON) += sha1-arm-neon.o
 obj-$(CONFIG_CRYPTO_SHA256_ARM) += sha256-arm.o
-<<<<<<< HEAD
-obj-$(CONFIG_CRYPTO_SHA512_ARM_NEON) += sha512-arm-neon.o
-
-aes-arm-y	:= aes-armv4.o aes_glue.o
-aes-arm-bs-y	:= aesbs-core.o aesbs-glue.o
-=======
 obj-$(CONFIG_CRYPTO_SHA512_ARM) += sha512-arm.o
 obj-$(CONFIG_CRYPTO_BLAKE2S_ARM) += libblake2s-arm.o
 obj-$(CONFIG_CRYPTO_BLAKE2B_NEON) += blake2b-neon.o
@@ -34,14 +25,10 @@ obj-$(CONFIG_CRYPTO_CRC32_ARM_CE) += crc32-arm-ce.o
 
 aes-arm-y	:= aes-cipher-core.o aes-cipher-glue.o
 aes-arm-bs-y	:= aes-neonbs-core.o aes-neonbs-glue.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sha1-arm-y	:= sha1-armv4-large.o sha1_glue.o
 sha1-arm-neon-y	:= sha1-armv7-neon.o sha1_neon_glue.o
 sha256-arm-neon-$(CONFIG_KERNEL_MODE_NEON) := sha256_neon_glue.o
 sha256-arm-y	:= sha256-core.o sha256_glue.o $(sha256-arm-neon-y)
-<<<<<<< HEAD
-sha512-arm-neon-y := sha512-armv7-neon.o sha512_neon_glue.o
-=======
 sha512-arm-neon-$(CONFIG_KERNEL_MODE_NEON) := sha512-neon-glue.o
 sha512-arm-y	:= sha512-core.o sha512-glue.o $(sha512-arm-neon-y)
 libblake2s-arm-y:= blake2s-core.o blake2s-glue.o
@@ -57,20 +44,10 @@ chacha-neon-$(CONFIG_KERNEL_MODE_NEON) += chacha-neon-core.o
 poly1305-arm-y := poly1305-core.o poly1305-glue.o
 nhpoly1305-neon-y := nh-neon-core.o nhpoly1305-neon-glue.o
 curve25519-neon-y := curve25519-core.o curve25519-glue.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 quiet_cmd_perl = PERL    $@
       cmd_perl = $(PERL) $(<) > $(@)
 
-<<<<<<< HEAD
-$(src)/aesbs-core.S_shipped: $(src)/bsaes-armv7.pl
-	$(call cmd,perl)
-
-$(src)/sha256-core.S_shipped: $(src)/sha256-armv4.pl
-	$(call cmd,perl)
-
-.PRECIOUS: $(obj)/aesbs-core.S $(obj)/sha256-core.S
-=======
 $(obj)/%-core.S: $(src)/%-armv4.pl
 	$(call cmd,perl)
 
@@ -85,4 +62,3 @@ AFLAGS_sha512-core.o += $(aflags-thumb2-y)
 poly1305-aflags-$(CONFIG_CPU_V7) := -U__LINUX_ARM_ARCH__ -D__LINUX_ARM_ARCH__=5
 poly1305-aflags-$(CONFIG_KERNEL_MODE_NEON) := -U__LINUX_ARM_ARCH__ -D__LINUX_ARM_ARCH__=7
 AFLAGS_poly1305-core.o += $(poly1305-aflags-y) $(aflags-thumb2-y)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

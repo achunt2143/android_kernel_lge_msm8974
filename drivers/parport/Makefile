@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the kernel Parallel port device drivers.
 #
@@ -21,9 +18,4 @@ obj-$(CONFIG_PARPORT_MFC3)	+= parport_mfc3.o
 obj-$(CONFIG_PARPORT_ATARI)	+= parport_atari.o
 obj-$(CONFIG_PARPORT_SUNBPP)	+= parport_sunbpp.o
 obj-$(CONFIG_PARPORT_GSC)	+= parport_gsc.o
-<<<<<<< HEAD
-obj-$(CONFIG_PARPORT_AX88796)	+= parport_ax88796.o
 obj-$(CONFIG_PARPORT_IP32)	+= parport_ip32.o
-=======
-obj-$(CONFIG_PARPORT_IP32)	+= parport_ip32.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

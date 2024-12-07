@@ -7,24 +7,13 @@
  * Copyright (C) 2001 MIPS Technologies, Inc.
  */
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-#include <linux/signal.h>
-#include <linux/module.h>
-=======
 #include <linux/sched/signal.h>
 #include <linux/signal.h>
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/branch.h>
 #include <asm/cpu.h>
 #include <asm/cpu-features.h>
 #include <asm/fpu.h>
-<<<<<<< HEAD
-#include <asm/inst.h>
-#include <asm/ptrace.h>
-#include <asm/uaccess.h>
-=======
 #include <asm/fpu_emulator.h>
 #include <asm/inst.h>
 #include <asm/mips-r2-to-r6-emul.h>
@@ -409,7 +398,6 @@ int __MIPS16e_compute_return_epc(struct pt_regs *regs)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * __compute_return_epc_for_insn - Computes the return address and do emulate
@@ -417,11 +405,6 @@ int __MIPS16e_compute_return_epc(struct pt_regs *regs)
  *
  * @regs:	Pointer to pt_regs
  * @insn:	branch instruction to decode
-<<<<<<< HEAD
- * @returns:	-EFAULT on error and forces SIGBUS, and on success
- *		returns 0 or BRANCH_LIKELY_TAKEN as appropriate after
- *		evaluating the branch.
-=======
  * Return:	-EFAULT on error and forces SIGILL, and on success
  *		returns 0 or BRANCH_LIKELY_TAKEN as appropriate after
  *		evaluating the branch.
@@ -435,18 +418,12 @@ int __MIPS16e_compute_return_epc(struct pt_regs *regs)
  *	branch instruction is that the forbidden slot has thrown one.
  *	In that case the branch was not taken, so the EPC can be safely
  *	set to EPC + 8.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int __compute_return_epc_for_insn(struct pt_regs *regs,
 				   union mips_instruction insn)
 {
-<<<<<<< HEAD
-	unsigned int bit, fcr31, dspcontrol;
-	long epc = regs->cp0_epc;
-=======
 	long epc = regs->cp0_epc;
 	unsigned int dspcontrol;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	switch (insn.i_format.opcode) {
@@ -457,15 +434,10 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 		switch (insn.r_format.func) {
 		case jalr_op:
 			regs->regs[insn.r_format.rd] = epc + 8;
-<<<<<<< HEAD
-			/* Fall through */
-		case jr_op:
-=======
 			fallthrough;
 		case jr_op:
 			if (NO_R6EMU && insn.r_format.func == jr_op)
 				goto sigill_r2r6;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			regs->cp0_epc = regs->regs[insn.r_format.rs];
 			break;
 		}
@@ -478,16 +450,11 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 	 */
 	case bcond_op:
 		switch (insn.i_format.rt) {
-<<<<<<< HEAD
-	 	case bltz_op:
-		case bltzl_op:
-=======
 		case bltzl_op:
 			if (NO_R6EMU)
 				goto sigill_r2r6;
 			fallthrough;
 		case bltz_op:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((long)regs->regs[insn.i_format.rs] < 0) {
 				epc = epc + 4 + (insn.i_format.simmediate << 2);
 				if (insn.i_format.rt == bltzl_op)
@@ -497,16 +464,11 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 			regs->cp0_epc = epc;
 			break;
 
-<<<<<<< HEAD
-		case bgez_op:
-		case bgezl_op:
-=======
 		case bgezl_op:
 			if (NO_R6EMU)
 				goto sigill_r2r6;
 			fallthrough;
 		case bgez_op:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((long)regs->regs[insn.i_format.rs] >= 0) {
 				epc = epc + 4 + (insn.i_format.simmediate << 2);
 				if (insn.i_format.rt == bgezl_op)
@@ -518,9 +480,6 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 
 		case bltzal_op:
 		case bltzall_op:
-<<<<<<< HEAD
-			regs->regs[31] = epc + 8;
-=======
 			if (NO_R6EMU && (insn.i_format.rs ||
 			    insn.i_format.rt == bltzall_op))
 				goto sigill_r2r6;
@@ -542,7 +501,6 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 				break;
 			}
 			/* Now do the real thing for non-R6 BLTZAL{,L} */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((long)regs->regs[insn.i_format.rs] < 0) {
 				epc = epc + 4 + (insn.i_format.simmediate << 2);
 				if (insn.i_format.rt == bltzall_op)
@@ -554,9 +512,6 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 
 		case bgezal_op:
 		case bgezall_op:
-<<<<<<< HEAD
-			regs->regs[31] = epc + 8;
-=======
 			if (NO_R6EMU && (insn.i_format.rs ||
 			    insn.i_format.rt == bgezall_op))
 				goto sigill_r2r6;
@@ -578,7 +533,6 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 				break;
 			}
 			/* Now do the real thing for non-R6 BGEZAL{,L} */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((long)regs->regs[insn.i_format.rs] >= 0) {
 				epc = epc + 4 + (insn.i_format.simmediate << 2);
 				if (insn.i_format.rt == bgezall_op)
@@ -590,11 +544,7 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 
 		case bposge32_op:
 			if (!cpu_has_dsp)
-<<<<<<< HEAD
-				goto sigill;
-=======
 				goto sigill_dsp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			dspcontrol = rddsp(0x01);
 
@@ -610,39 +560,23 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 	/*
 	 * These are unconditional and in j_format.
 	 */
-<<<<<<< HEAD
-	case jal_op:
-		regs->regs[31] = regs->cp0_epc + 8;
-=======
 	case jalx_op:
 	case jal_op:
 		regs->regs[31] = regs->cp0_epc + 8;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case j_op:
 		epc += 4;
 		epc >>= 28;
 		epc <<= 28;
 		epc |= (insn.j_format.target << 2);
 		regs->cp0_epc = epc;
-<<<<<<< HEAD
-=======
 		if (insn.i_format.opcode == jalx_op)
 			set_isa16_mode(regs->cp0_epc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	/*
 	 * These are conditional and in i_format.
 	 */
-<<<<<<< HEAD
-	case beq_op:
-	case beql_op:
-		if (regs->regs[insn.i_format.rs] ==
-		    regs->regs[insn.i_format.rt]) {
-			epc = epc + 4 + (insn.i_format.simmediate << 2);
-			if (insn.i_format.rt == beql_op)
-=======
 	case beql_op:
 		if (NO_R6EMU)
 			goto sigill_r2r6;
@@ -652,21 +586,12 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 		    regs->regs[insn.i_format.rt]) {
 			epc = epc + 4 + (insn.i_format.simmediate << 2);
 			if (insn.i_format.opcode == beql_op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = BRANCH_LIKELY_TAKEN;
 		} else
 			epc += 8;
 		regs->cp0_epc = epc;
 		break;
 
-<<<<<<< HEAD
-	case bne_op:
-	case bnel_op:
-		if (regs->regs[insn.i_format.rs] !=
-		    regs->regs[insn.i_format.rt]) {
-			epc = epc + 4 + (insn.i_format.simmediate << 2);
-			if (insn.i_format.rt == bnel_op)
-=======
 	case bnel_op:
 		if (NO_R6EMU)
 			goto sigill_r2r6;
@@ -676,21 +601,12 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 		    regs->regs[insn.i_format.rt]) {
 			epc = epc + 4 + (insn.i_format.simmediate << 2);
 			if (insn.i_format.opcode == bnel_op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = BRANCH_LIKELY_TAKEN;
 		} else
 			epc += 8;
 		regs->cp0_epc = epc;
 		break;
 
-<<<<<<< HEAD
-	case blez_op: /* not really i_format */
-	case blezl_op:
-		/* rt field assumed to be zero */
-		if ((long)regs->regs[insn.i_format.rs] <= 0) {
-			epc = epc + 4 + (insn.i_format.simmediate << 2);
-			if (insn.i_format.rt == bnel_op)
-=======
 	case blezl_op: /* not really i_format */
 		if (!insn.i_format.rt && NO_R6EMU)
 			goto sigill_r2r6;
@@ -721,21 +637,12 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 		if ((long)regs->regs[insn.i_format.rs] <= 0) {
 			epc = epc + 4 + (insn.i_format.simmediate << 2);
 			if (insn.i_format.opcode == blezl_op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = BRANCH_LIKELY_TAKEN;
 		} else
 			epc += 8;
 		regs->cp0_epc = epc;
 		break;
 
-<<<<<<< HEAD
-	case bgtz_op:
-	case bgtzl_op:
-		/* rt field assumed to be zero */
-		if ((long)regs->regs[insn.i_format.rs] > 0) {
-			epc = epc + 4 + (insn.i_format.simmediate << 2);
-			if (insn.i_format.rt == bnel_op)
-=======
 	case bgtzl_op:
 		if (!insn.i_format.rt && NO_R6EMU)
 			goto sigill_r2r6;
@@ -767,53 +674,12 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 		if ((long)regs->regs[insn.i_format.rs] > 0) {
 			epc = epc + 4 + (insn.i_format.simmediate << 2);
 			if (insn.i_format.opcode == bgtzl_op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = BRANCH_LIKELY_TAKEN;
 		} else
 			epc += 8;
 		regs->cp0_epc = epc;
 		break;
 
-<<<<<<< HEAD
-	/*
-	 * And now the FPA/cp1 branch instructions.
-	 */
-	case cop1_op:
-		preempt_disable();
-		if (is_fpu_owner())
-			asm volatile("cfc1\t%0,$31" : "=r" (fcr31));
-		else
-			fcr31 = current->thread.fpu.fcr31;
-		preempt_enable();
-
-		bit = (insn.i_format.rt >> 2);
-		bit += (bit != 0);
-		bit += 23;
-		switch (insn.i_format.rt & 3) {
-		case 0:	/* bc1f */
-		case 2:	/* bc1fl */
-			if (~fcr31 & (1 << bit)) {
-				epc = epc + 4 + (insn.i_format.simmediate << 2);
-				if (insn.i_format.rt == 2)
-					ret = BRANCH_LIKELY_TAKEN;
-			} else
-				epc += 8;
-			regs->cp0_epc = epc;
-			break;
-
-		case 1:	/* bc1t */
-		case 3:	/* bc1tl */
-			if (fcr31 & (1 << bit)) {
-				epc = epc + 4 + (insn.i_format.simmediate << 2);
-				if (insn.i_format.rt == 3)
-					ret = BRANCH_LIKELY_TAKEN;
-			} else
-				epc += 8;
-			regs->cp0_epc = epc;
-			break;
-		}
-		break;
-=======
 #ifdef CONFIG_MIPS_FP_SUPPORT
 	/*
 	 * And now the FPA/cp1 branch instructions.
@@ -881,7 +747,6 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 	}
 #endif /* CONFIG_MIPS_FP_SUPPORT */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CPU_CAVIUM_OCTEON
 	case lwc2_op: /* This is bbit0 on Octeon */
 		if ((regs->regs[insn.i_format.rs] & (1ull<<insn.i_format.rt))
@@ -914,9 +779,6 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 			epc += 8;
 		regs->cp0_epc = epc;
 		break;
-<<<<<<< HEAD
-#endif
-=======
 #else
 	case bc6_op:
 		/* Only valid for MIPS R6 */
@@ -962,16 +824,10 @@ int __compute_return_epc_for_insn(struct pt_regs *regs,
 			regs->regs[31] = epc + 4;
 		regs->cp0_epc += 8;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 
-<<<<<<< HEAD
-sigill:
-	printk("%s: DSP branch but not DSP ASE - sending SIGBUS.\n", current->comm);
-	force_sig(SIGBUS, current);
-=======
 sigill_dsp:
 	pr_debug("%s: DSP branch but not DSP ASE - sending SIGILL.\n",
 		 current->comm);
@@ -986,7 +842,6 @@ sigill_r6:
 	pr_debug("%s: R6 branch but no MIPSr6 ISA support - sending SIGILL.\n",
 		 current->comm);
 	force_sig(SIGILL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EFAULT;
 }
 EXPORT_SYMBOL_GPL(__compute_return_epc_for_insn);
@@ -1006,11 +861,7 @@ int __compute_return_epc(struct pt_regs *regs)
 	 */
 	addr = (unsigned int __user *) epc;
 	if (__get_user(insn.word, addr)) {
-<<<<<<< HEAD
-		force_sig(SIGSEGV, current);
-=======
 		force_sig(SIGSEGV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	}
 
@@ -1018,12 +869,6 @@ int __compute_return_epc(struct pt_regs *regs)
 
 unaligned:
 	printk("%s: unaligned epc - sending SIGBUS.\n", current->comm);
-<<<<<<< HEAD
-	force_sig(SIGBUS, current);
-	return -EFAULT;
-
-}
-=======
 	force_sig(SIGBUS);
 	return -EFAULT;
 }
@@ -1061,4 +906,3 @@ int __insn_is_compact_branch(union mips_instruction insn)
 EXPORT_SYMBOL_GPL(__insn_is_compact_branch);
 
 #endif  /* CONFIG_KPROBES || CONFIG_UPROBES */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

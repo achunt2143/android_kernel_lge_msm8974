@@ -1,51 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap1/devices.c
  *
  * OMAP1 platform device setup/initialization
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
  */
 
 #include <linux/dma-mapping.h>
-#include <linux/gpio.h>
-=======
- */
-
-#include <linux/dma-mapping.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/spi/spi.h>
 
-<<<<<<< HEAD
-#include <asm/mach/map.h>
-
-#include <plat/tc.h>
-#include <plat/board.h>
-#include <plat/mux.h>
-#include <plat/mmc.h>
-#include <plat/omap7xx.h>
-
-#include <mach/camera.h>
-#include <mach/hardware.h>
-
-#include "common.h"
-#include "clock.h"
-
-/*-------------------------------------------------------------------------*/
-
-#if defined(CONFIG_RTC_DRV_OMAP) || defined(CONFIG_RTC_DRV_OMAP_MODULE)
-=======
 #include <linux/platform_data/omap-wd-timer.h>
 #include <linux/soc/ti/omap1-io.h>
 
@@ -61,7 +27,6 @@
 #include "sram.h"
 
 #if IS_ENABLED(CONFIG_RTC_DRV_OMAP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	OMAP_RTC_BASE		0xfffb4800
 
@@ -96,48 +61,24 @@ static void omap_init_rtc(void)
 static inline void omap_init_rtc(void) {}
 #endif
 
-<<<<<<< HEAD
-static inline void omap_init_mbox(void) { }
-
-/*-------------------------------------------------------------------------*/
-
-#if defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE)
-=======
 /*-------------------------------------------------------------------------*/
 
 #if IS_ENABLED(CONFIG_MMC_OMAP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void omap1_mmc_mux(struct omap_mmc_platform_data *mmc_controller,
 			int controller_nr)
 {
 	if (controller_nr == 0) {
-<<<<<<< HEAD
-		if (cpu_is_omap7xx()) {
-			omap_cfg_reg(MMC_7XX_CMD);
-			omap_cfg_reg(MMC_7XX_CLK);
-			omap_cfg_reg(MMC_7XX_DAT0);
-		} else {
-			omap_cfg_reg(MMC_CMD);
-			omap_cfg_reg(MMC_CLK);
-			omap_cfg_reg(MMC_DAT0);
-		}
-=======
 		omap_cfg_reg(MMC_CMD);
 		omap_cfg_reg(MMC_CLK);
 		omap_cfg_reg(MMC_DAT0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (cpu_is_omap1710()) {
 			omap_cfg_reg(M15_1710_MMC_CLKI);
 			omap_cfg_reg(P19_1710_MMC_CMDDIR);
 			omap_cfg_reg(P20_1710_MMC_DATDIR0);
 		}
-<<<<<<< HEAD
-		if (mmc_controller->slots[0].wires == 4 && !cpu_is_omap7xx()) {
-=======
 		if (mmc_controller->slots[0].wires == 4) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			omap_cfg_reg(MMC_DAT1);
 			/* NOTE: DAT2 can be on W10 (here) or M15 */
 			if (!mmc_controller->slots[0].nomux)
@@ -172,8 +113,6 @@ static inline void omap1_mmc_mux(struct omap_mmc_platform_data *mmc_controller,
 	}
 }
 
-<<<<<<< HEAD
-=======
 #define OMAP_MMC_NR_RES		4
 
 /*
@@ -229,7 +168,6 @@ fail:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init omap1_init_mmc(struct omap_mmc_platform_data **mmc_data,
 			int nr_controllers)
 {
@@ -237,10 +175,7 @@ void __init omap1_init_mmc(struct omap_mmc_platform_data **mmc_data,
 
 	for (i = 0; i < nr_controllers; i++) {
 		unsigned long base, size;
-<<<<<<< HEAD
-=======
 		unsigned rx_req, tx_req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int irq = 0;
 
 		if (!mmc_data[i])
@@ -252,136 +187,31 @@ void __init omap1_init_mmc(struct omap_mmc_platform_data **mmc_data,
 		case 0:
 			base = OMAP1_MMC1_BASE;
 			irq = INT_MMC;
-<<<<<<< HEAD
-=======
 			rx_req = 22;
 			tx_req = 21;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 1:
 			if (!cpu_is_omap16xx())
 				return;
 			base = OMAP1_MMC2_BASE;
 			irq = INT_1610_MMC2;
-<<<<<<< HEAD
-=======
 			rx_req = 55;
 			tx_req = 54;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			continue;
 		}
 		size = OMAP1_MMC_SIZE;
 
-<<<<<<< HEAD
-		omap_mmc_add("mmci-omap", i, base, size, irq, mmc_data[i]);
-	};
-=======
 		omap_mmc_add("mmci-omap", i, base, size, irq,
 				rx_req, tx_req, mmc_data[i]);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-/* OMAP7xx SPI support */
-#if defined(CONFIG_SPI_OMAP_100K) || defined(CONFIG_SPI_OMAP_100K_MODULE)
-
-struct platform_device omap_spi1 = {
-	.name           = "omap1_spi100k",
-	.id             = 1,
-};
-
-struct platform_device omap_spi2 = {
-	.name           = "omap1_spi100k",
-	.id             = 2,
-};
-
-static void omap_init_spi100k(void)
-{
-	omap_spi1.dev.platform_data = ioremap(OMAP7XX_SPI1_BASE, 0x7ff);
-	if (omap_spi1.dev.platform_data)
-		platform_device_register(&omap_spi1);
-
-	omap_spi2.dev.platform_data = ioremap(OMAP7XX_SPI2_BASE, 0x7ff);
-	if (omap_spi2.dev.platform_data)
-		platform_device_register(&omap_spi2);
-}
-
-#else
-static inline void omap_init_spi100k(void)
-{
-}
-#endif
-
-
-#define OMAP1_CAMERA_BASE	0xfffb6800
-#define OMAP1_CAMERA_IOSIZE	0x1c
-
-static struct resource omap1_camera_resources[] = {
-	[0] = {
-		.start	= OMAP1_CAMERA_BASE,
-		.end	= OMAP1_CAMERA_BASE + OMAP1_CAMERA_IOSIZE - 1,
-		.flags	= IORESOURCE_MEM,
-	},
-	[1] = {
-		.start	= INT_CAMERA,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
-static u64 omap1_camera_dma_mask = DMA_BIT_MASK(32);
-
-static struct platform_device omap1_camera_device = {
-	.name		= "omap1-camera",
-	.id		= 0, /* This is used to put cameras on this interface */
-	.dev		= {
-		.dma_mask		= &omap1_camera_dma_mask,
-		.coherent_dma_mask	= DMA_BIT_MASK(32),
-	},
-	.num_resources	= ARRAY_SIZE(omap1_camera_resources),
-	.resource	= omap1_camera_resources,
-};
-
-void __init omap1_camera_init(void *info)
-{
-	struct platform_device *dev = &omap1_camera_device;
-	int ret;
-
-	dev->dev.platform_data = info;
-
-	ret = platform_device_register(dev);
-	if (ret)
-		dev_err(&dev->dev, "unable to register device: %d\n", ret);
-}
-
-
-/*-------------------------------------------------------------------------*/
-
-static inline void omap_init_sti(void) {}
-
-#if defined(CONFIG_SND_SOC) || defined(CONFIG_SND_SOC_MODULE)
-
-static struct platform_device omap_pcm = {
-	.name	= "omap-pcm-audio",
-	.id	= -1,
-};
-
-static void omap_init_audio(void)
-{
-	platform_device_register(&omap_pcm);
-}
-
-#else
-static inline void omap_init_audio(void) {}
-#endif
-
-=======
 /* Numbering for the SPI-capable controllers when used for SPI:
  * spi		= 1
  * uwire	= 2
@@ -450,7 +280,6 @@ static void omap1_init_rng(void)
 	(void) platform_device_register(&omap1_rng_device);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------*/
 
 /*
@@ -478,38 +307,22 @@ static int __init omap1_init_devices(void)
 	if (!cpu_class_is_omap1())
 		return -ENODEV;
 
-<<<<<<< HEAD
-	omap_sram_init();
-=======
 	omap1_sram_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	omap1_clk_late_init();
 
 	/* please keep these calls, and their implementations above,
 	 * in alphabetical order so they're easier to sort through.
 	 */
 
-<<<<<<< HEAD
-	omap_init_mbox();
-	omap_init_rtc();
-	omap_init_spi100k();
-	omap_init_sti();
-	omap_init_audio();
-=======
 	omap_init_rtc();
 	omap_init_uwire();
 	omap1_init_rng();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 arch_initcall(omap1_init_devices);
 
-<<<<<<< HEAD
-#if defined(CONFIG_OMAP_WATCHDOG) || defined(CONFIG_OMAP_WATCHDOG_MODULE)
-=======
 #if IS_ENABLED(CONFIG_OMAP_WATCHDOG)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct resource wdt_resources[] = {
 	{
@@ -520,25 +333,14 @@ static struct resource wdt_resources[] = {
 };
 
 static struct platform_device omap_wdt_device = {
-<<<<<<< HEAD
-	.name	   = "omap_wdt",
-	.id	     = -1,
-=======
 	.name		= "omap_wdt",
 	.id		= -1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num_resources	= ARRAY_SIZE(wdt_resources),
 	.resource	= wdt_resources,
 };
 
 static int __init omap_init_wdt(void)
 {
-<<<<<<< HEAD
-	if (!cpu_is_omap16xx())
-		return -ENODEV;
-
-	return platform_device_register(&omap_wdt_device);
-=======
 	struct omap_wd_timer_platform_data pdata;
 	int ret;
 
@@ -556,7 +358,6 @@ static int __init omap_init_wdt(void)
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 subsys_initcall(omap_init_wdt);
 #endif

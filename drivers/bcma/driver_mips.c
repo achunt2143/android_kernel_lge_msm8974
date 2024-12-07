@@ -18,14 +18,6 @@
 #include <linux/serial_core.h>
 #include <linux/serial_reg.h>
 #include <linux/time.h>
-<<<<<<< HEAD
-
-/* The 47162a0 hangs when reading MIPS DMP registers registers */
-static inline bool bcma_core_mips_bcm47162a0_quirk(struct bcma_device *dev)
-{
-	return dev->bus->chipinfo.id == 47162 && dev->bus->chipinfo.rev == 0 &&
-	       dev->id.id == BCMA_CORE_MIPS_74K;
-=======
 #ifdef CONFIG_BCM47XX
 #include <linux/bcm47xx_nvram.h>
 #endif
@@ -43,55 +35,17 @@ static inline bool bcma_core_mips_bcm47162a0_quirk(struct bcma_device *dev)
 {
 	return dev->bus->chipinfo.id == BCMA_CHIP_ID_BCM47162 &&
 	       dev->bus->chipinfo.rev == 0 && dev->id.id == BCMA_CORE_MIPS_74K;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* The 5357b0 hangs when reading USB20H DMP registers */
 static inline bool bcma_core_mips_bcm5357b0_quirk(struct bcma_device *dev)
 {
-<<<<<<< HEAD
-	return (dev->bus->chipinfo.id == 0x5357 ||
-		dev->bus->chipinfo.id == 0x4749) &&
-=======
 	return (dev->bus->chipinfo.id == BCMA_CHIP_ID_BCM5357 ||
 		dev->bus->chipinfo.id == BCMA_CHIP_ID_BCM4749) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       dev->bus->chipinfo.pkg == 11 &&
 	       dev->id.id == BCMA_CORE_USB20_HOST;
 }
 
-<<<<<<< HEAD
-static inline u32 mips_read32(struct bcma_drv_mips *mcore,
-			      u16 offset)
-{
-	return bcma_read32(mcore->core, offset);
-}
-
-static inline void mips_write32(struct bcma_drv_mips *mcore,
-				u16 offset,
-				u32 value)
-{
-	bcma_write32(mcore->core, offset, value);
-}
-
-static const u32 ipsflag_irq_mask[] = {
-	0,
-	BCMA_MIPS_IPSFLAG_IRQ1,
-	BCMA_MIPS_IPSFLAG_IRQ2,
-	BCMA_MIPS_IPSFLAG_IRQ3,
-	BCMA_MIPS_IPSFLAG_IRQ4,
-};
-
-static const u32 ipsflag_irq_shift[] = {
-	0,
-	BCMA_MIPS_IPSFLAG_IRQ1_SHIFT,
-	BCMA_MIPS_IPSFLAG_IRQ2_SHIFT,
-	BCMA_MIPS_IPSFLAG_IRQ3_SHIFT,
-	BCMA_MIPS_IPSFLAG_IRQ4_SHIFT,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 bcma_core_mips_irqflag(struct bcma_device *dev)
 {
 	u32 flag;
@@ -102,23 +56,16 @@ static u32 bcma_core_mips_irqflag(struct bcma_device *dev)
 		return dev->core_index;
 	flag = bcma_aread32(dev, BCMA_MIPS_OOBSELOUTA30);
 
-<<<<<<< HEAD
-	return flag & 0x1F;
-=======
 	if (flag)
 		return flag & 0x1F;
 	else
 		return 0x3f;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Get the MIPS IRQ assignment for a specified device.
  * If unassigned, 0 is returned.
-<<<<<<< HEAD
-=======
  * If disabled, 5 is returned.
  * If not supported, 6 is returned.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 unsigned int bcma_core_mips_irq(struct bcma_device *dev)
 {
@@ -127,27 +74,16 @@ unsigned int bcma_core_mips_irq(struct bcma_device *dev)
 	unsigned int irq;
 
 	irqflag = bcma_core_mips_irqflag(dev);
-<<<<<<< HEAD
-
-	for (irq = 1; irq <= 4; irq++)
-=======
 	if (irqflag == 0x3f)
 		return 6;
 
 	for (irq = 0; irq <= 4; irq++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bcma_read32(mdev, BCMA_MIPS_MIPS74K_INTMASK(irq)) &
 		    (1 << irqflag))
 			return irq;
 
-<<<<<<< HEAD
-	return 0;
-}
-EXPORT_SYMBOL(bcma_core_mips_irq);
-=======
 	return 5;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void bcma_core_mips_set_irq(struct bcma_device *dev, unsigned int irq)
 {
@@ -166,11 +102,7 @@ static void bcma_core_mips_set_irq(struct bcma_device *dev, unsigned int irq)
 		bcma_write32(mdev, BCMA_MIPS_MIPS74K_INTMASK(0),
 			    bcma_read32(mdev, BCMA_MIPS_MIPS74K_INTMASK(0)) &
 			    ~(1 << irqflag));
-<<<<<<< HEAD
-	else
-=======
 	else if (oldirq != 5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bcma_write32(mdev, BCMA_MIPS_MIPS74K_INTMASK(oldirq), 0);
 
 	/* assign the new one */
@@ -179,29 +111,17 @@ static void bcma_core_mips_set_irq(struct bcma_device *dev, unsigned int irq)
 			    bcma_read32(mdev, BCMA_MIPS_MIPS74K_INTMASK(0)) |
 			    (1 << irqflag));
 	} else {
-<<<<<<< HEAD
-		u32 oldirqflag = bcma_read32(mdev,
-					     BCMA_MIPS_MIPS74K_INTMASK(irq));
-		if (oldirqflag) {
-=======
 		u32 irqinitmask = bcma_read32(mdev,
 					      BCMA_MIPS_MIPS74K_INTMASK(irq));
 		if (irqinitmask) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct bcma_device *core;
 
 			/* backplane irq line is in use, find out who uses
 			 * it and set user to irq 0
 			 */
-<<<<<<< HEAD
-			list_for_each_entry_reverse(core, &bus->cores, list) {
-				if ((1 << bcma_core_mips_irqflag(core)) ==
-				    oldirqflag) {
-=======
 			list_for_each_entry(core, &bus->cores, list) {
 				if ((1 << bcma_core_mips_irqflag(core)) ==
 				    irqinitmask) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					bcma_core_mips_set_irq(core, 0);
 					break;
 				}
@@ -211,10 +131,6 @@ static void bcma_core_mips_set_irq(struct bcma_device *dev, unsigned int irq)
 			     1 << irqflag);
 	}
 
-<<<<<<< HEAD
-	pr_info("set_irq: core 0x%04x, irq %d => %d\n",
-		dev->id.id, oldirq + 2, irq + 2);
-=======
 	bcma_debug(bus, "set_irq: core 0x%04x, irq %d => %d\n",
 		   dev->id.id, oldirq <= 4 ? oldirq + 2 : 0, irq + 2);
 }
@@ -233,19 +149,12 @@ static void bcma_core_mips_set_irq_name(struct bcma_bus *bus, unsigned int irq,
 	}
 
 	bcma_core_mips_set_irq(core, irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bcma_core_mips_print_irq(struct bcma_device *dev, unsigned int irq)
 {
 	int i;
 	static const char *irq_name[] = {"2(S)", "3", "4", "5", "6", "D", "I"};
-<<<<<<< HEAD
-	printk(KERN_INFO KBUILD_MODNAME ": core 0x%04x, irq :", dev->id.id);
-	for (i = 0; i <= 6; i++)
-		printk(" %s%s", irq_name[i], i == irq ? "*" : " ");
-	printk("\n");
-=======
 	char interrupts[25];
 	char *ints = interrupts;
 
@@ -254,18 +163,13 @@ static void bcma_core_mips_print_irq(struct bcma_device *dev, unsigned int irq)
 				irq_name[i], i == irq ? '*' : ' ');
 
 	bcma_debug(dev->bus, "core 0x%04x, irq:%s\n", dev->id.id, interrupts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bcma_core_mips_dump_irq(struct bcma_bus *bus)
 {
 	struct bcma_device *core;
 
-<<<<<<< HEAD
-	list_for_each_entry_reverse(core, &bus->cores, list) {
-=======
 	list_for_each_entry(core, &bus->cores, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bcma_core_mips_print_irq(core, bcma_core_mips_irq(core));
 	}
 }
@@ -275,43 +179,13 @@ u32 bcma_cpu_clock(struct bcma_drv_mips *mcore)
 	struct bcma_bus *bus = mcore->core->bus;
 
 	if (bus->drv_cc.capabilities & BCMA_CC_CAP_PMU)
-<<<<<<< HEAD
-		return bcma_pmu_get_clockcpu(&bus->drv_cc);
-
-	pr_err("No PMU available, need this to get the cpu clock\n");
-=======
 		return bcma_pmu_get_cpu_clock(&bus->drv_cc);
 
 	bcma_err(bus, "No PMU available, need this to get the cpu clock\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(bcma_cpu_clock);
 
-<<<<<<< HEAD
-static void bcma_core_mips_flash_detect(struct bcma_drv_mips *mcore)
-{
-	struct bcma_bus *bus = mcore->core->bus;
-
-	switch (bus->drv_cc.capabilities & BCMA_CC_CAP_FLASHT) {
-	case BCMA_CC_FLASHT_STSER:
-	case BCMA_CC_FLASHT_ATSER:
-		pr_err("Serial flash not supported.\n");
-		break;
-	case BCMA_CC_FLASHT_PARA:
-		pr_info("found parallel flash.\n");
-		bus->drv_cc.pflash.window = 0x1c000000;
-		bus->drv_cc.pflash.window_size = 0x02000000;
-
-		if ((bcma_read32(bus->drv_cc.core, BCMA_CC_FLASH_CFG) &
-		     BCMA_CC_FLASH_CFG_DS) == 0)
-			bus->drv_cc.pflash.buswidth = 1;
-		else
-			bus->drv_cc.pflash.buswidth = 2;
-		break;
-	default:
-		pr_err("flash not supported.\n");
-=======
 static enum bcma_boot_dev bcma_boot_dev(struct bcma_bus *bus)
 {
 	struct bcma_drv_cc *cc = &bus->drv_cc;
@@ -413,7 +287,6 @@ static void bcma_fix_i2s_irqflag(struct bcma_bus *bus)
 		bcma_awrite32(i2s, BCMA_MIPS_OOBSELOUTA30, 0x87);
 		bcma_debug(bus,
 			   "Moved i2s interrupt to oob line 7 instead of 8\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -423,51 +296,6 @@ void bcma_core_mips_init(struct bcma_drv_mips *mcore)
 	struct bcma_device *core;
 	bus = mcore->core->bus;
 
-<<<<<<< HEAD
-	pr_info("Initializing MIPS core...\n");
-
-	if (!mcore->setup_done)
-		mcore->assigned_irqs = 1;
-
-	/* Assign IRQs to all cores on the bus */
-	list_for_each_entry_reverse(core, &bus->cores, list) {
-		int mips_irq;
-		if (core->irq)
-			continue;
-
-		mips_irq = bcma_core_mips_irq(core);
-		if (mips_irq > 4)
-			core->irq = 0;
-		else
-			core->irq = mips_irq + 2;
-		if (core->irq > 5)
-			continue;
-		switch (core->id.id) {
-		case BCMA_CORE_PCI:
-		case BCMA_CORE_PCIE:
-		case BCMA_CORE_ETHERNET:
-		case BCMA_CORE_ETHERNET_GBIT:
-		case BCMA_CORE_MAC_GBIT:
-		case BCMA_CORE_80211:
-		case BCMA_CORE_USB20_HOST:
-			/* These devices get their own IRQ line if available,
-			 * the rest goes on IRQ0
-			 */
-			if (mcore->assigned_irqs <= 4)
-				bcma_core_mips_set_irq(core,
-						       mcore->assigned_irqs++);
-			break;
-		}
-	}
-	pr_info("IRQ reconfiguration done\n");
-	bcma_core_mips_dump_irq(bus);
-
-	if (mcore->setup_done)
-		return;
-
-	bcma_chipco_serial_init(&bus->drv_cc);
-	bcma_core_mips_flash_detect(mcore);
-=======
 	if (mcore->setup_done)
 		return;
 
@@ -522,6 +350,5 @@ void bcma_core_mips_init(struct bcma_drv_mips *mcore)
 	bcma_debug(bus, "IRQ reconfiguration done\n");
 	bcma_core_mips_dump_irq(bus);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcore->setup_done = true;
 }

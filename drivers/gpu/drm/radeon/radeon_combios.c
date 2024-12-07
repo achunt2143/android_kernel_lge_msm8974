@@ -24,11 +24,6 @@
  * Authors: Dave Airlie
  *          Alex Deucher
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "radeon_drm.h"
-#include "radeon.h"
-=======
 
 #include <linux/pci.h>
 
@@ -38,7 +33,6 @@
 
 #include "radeon.h"
 #include "radeon_legacy_encoders.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "atom.h"
 
 #ifdef CONFIG_PPC_PMAC
@@ -46,35 +40,8 @@
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
 #include <asm/prom.h>
-<<<<<<< HEAD
-#include <asm/pci-bridge.h>
 #endif /* CONFIG_PPC_PMAC */
 
-/* from radeon_encoder.c */
-extern uint32_t
-radeon_get_encoder_enum(struct drm_device *dev, uint32_t supported_device,
-			uint8_t dac);
-extern void radeon_link_encoder_connector(struct drm_device *dev);
-
-/* from radeon_connector.c */
-extern void
-radeon_add_legacy_connector(struct drm_device *dev,
-			    uint32_t connector_id,
-			    uint32_t supported_device,
-			    int connector_type,
-			    struct radeon_i2c_bus_rec *i2c_bus,
-			    uint16_t connector_object_id,
-			    struct radeon_hpd *hpd);
-
-/* from radeon_legacy_encoder.c */
-extern void
-radeon_add_legacy_encoder(struct drm_device *dev, uint32_t encoder_enum,
-			  uint32_t supported_device);
-
-=======
-#endif /* CONFIG_PPC_PMAC */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* old legacy ATI BIOS routines */
 
 /* COMBIOS table offsets */
@@ -149,11 +116,7 @@ enum radeon_combios_connector {
 	CONNECTOR_UNSUPPORTED_LEGACY
 };
 
-<<<<<<< HEAD
-const int legacy_connector_convert[] = {
-=======
 static const int legacy_connector_convert[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DRM_MODE_CONNECTOR_Unknown,
 	DRM_MODE_CONNECTOR_DVID,
 	DRM_MODE_CONNECTOR_VGA,
@@ -677,8 +640,6 @@ static struct radeon_i2c_bus_rec combios_setup_i2c_bus(struct radeon_device *rde
 	return i2c;
 }
 
-<<<<<<< HEAD
-=======
 static struct radeon_i2c_bus_rec radeon_combios_get_i2c_info_from_table(struct radeon_device *rdev)
 {
 	struct drm_device *dev = rdev->ddev;
@@ -707,7 +668,6 @@ static struct radeon_i2c_bus_rec radeon_combios_get_i2c_info_from_table(struct r
 	return i2c;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_combios_i2c_init(struct radeon_device *rdev)
 {
 	struct drm_device *dev = rdev->ddev;
@@ -744,40 +704,14 @@ void radeon_combios_i2c_init(struct radeon_device *rdev)
 	} else if (rdev->family == CHIP_RS300 ||
 		   rdev->family == CHIP_RS400 ||
 		   rdev->family == CHIP_RS480) {
-<<<<<<< HEAD
-		u16 offset;
-		u8 id, blocks, clk, data;
-		int i;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* 0x68 */
 		i2c = combios_setup_i2c_bus(rdev, DDC_CRT2, 0, 0);
 		rdev->i2c_bus[3] = radeon_i2c_create(dev, &i2c, "MONID");
 
-<<<<<<< HEAD
-		offset = combios_get_table_offset(dev, COMBIOS_I2C_INFO_TABLE);
-		if (offset) {
-			blocks = RBIOS8(offset + 2);
-			for (i = 0; i < blocks; i++) {
-				id = RBIOS8(offset + 3 + (i * 5) + 0);
-				if (id == 136) {
-					clk = RBIOS8(offset + 3 + (i * 5) + 3);
-					data = RBIOS8(offset + 3 + (i * 5) + 4);
-					/* gpiopad */
-					i2c = combios_setup_i2c_bus(rdev, DDC_MONID,
-								    (1 << clk), (1 << data));
-					rdev->i2c_bus[4] = radeon_i2c_create(dev, &i2c, "GPIOPAD_MASK");
-					break;
-				}
-			}
-		}
-=======
 		/* gpiopad */
 		i2c = radeon_combios_get_i2c_info_from_table(rdev);
 		if (i2c.valid)
 			rdev->i2c_bus[4] = radeon_i2c_create(dev, &i2c, "GPIOPAD_MASK");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if ((rdev->family == CHIP_R200) ||
 		   (rdev->family >= CHIP_R300)) {
 		/* 0x68 */
@@ -930,11 +864,7 @@ struct radeon_encoder_primary_dac *radeon_combios_get_primary_dac_info(struct
 	struct radeon_device *rdev = dev->dev_private;
 	uint16_t dac_info;
 	uint8_t rev, bg, dac;
-<<<<<<< HEAD
-	struct radeon_encoder_primary_dac *p_dac = NULL;
-=======
 	struct radeon_encoder_primary_dac *p_dac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int found = 0;
 
 	p_dac = kzalloc(sizeof(struct radeon_encoder_primary_dac),
@@ -965,15 +895,6 @@ struct radeon_encoder_primary_dac *radeon_combios_get_primary_dac_info(struct
 
 	/* quirks */
 	/* Radeon 7000 (RV100) */
-<<<<<<< HEAD
-	if (((dev->pdev->device == 0x5159) &&
-	    (dev->pdev->subsystem_vendor == 0x174B) &&
-	    (dev->pdev->subsystem_device == 0x7c28)) ||
-	/* Radeon 9100 (R200) */
-	   ((dev->pdev->device == 0x514D) &&
-	    (dev->pdev->subsystem_vendor == 0x174B) &&
-	    (dev->pdev->subsystem_device == 0x7149))) {
-=======
 	if (((rdev->pdev->device == 0x5159) &&
 	    (rdev->pdev->subsystem_vendor == 0x174B) &&
 	    (rdev->pdev->subsystem_device == 0x7c28)) ||
@@ -981,7 +902,6 @@ struct radeon_encoder_primary_dac *radeon_combios_get_primary_dac_info(struct
 	   ((rdev->pdev->device == 0x514D) &&
 	    (rdev->pdev->subsystem_vendor == 0x174B) &&
 	    (rdev->pdev->subsystem_device == 0x7149))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* vbios value is bad, use the default */
 		found = 0;
 	}
@@ -1095,11 +1015,7 @@ struct radeon_encoder_tv_dac *radeon_combios_get_tv_dac_info(struct
 	struct radeon_device *rdev = dev->dev_private;
 	uint16_t dac_info;
 	uint8_t rev, bg, dac;
-<<<<<<< HEAD
-	struct radeon_encoder_tv_dac *tv_dac = NULL;
-=======
 	struct radeon_encoder_tv_dac *tv_dac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int found = 0;
 
 	tv_dac = kzalloc(sizeof(struct radeon_encoder_tv_dac), GFP_KERNEL);
@@ -1185,11 +1101,7 @@ static struct radeon_encoder_lvds *radeon_legacy_get_lvds_info_from_regs(struct
 									 radeon_device
 									 *rdev)
 {
-<<<<<<< HEAD
-	struct radeon_encoder_lvds *lvds = NULL;
-=======
 	struct radeon_encoder_lvds *lvds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t fp_vert_stretch, fp_horz_stretch;
 	uint32_t ppll_div_sel, ppll_val;
 	uint32_t lvds_ss_gen_cntl = RREG32(RADEON_LVDS_SS_GEN_CNTL);
@@ -2310,35 +2222,21 @@ static bool radeon_apply_legacy_quirks(struct drm_device *dev,
 				       struct radeon_i2c_bus_rec *ddc_i2c,
 				       struct radeon_hpd *hpd)
 {
-<<<<<<< HEAD
-
-	/* Certain IBM chipset RN50s have a BIOS reporting two VGAs,
-	   one with VGA DDC and one with CRT2 DDC. - kill the CRT2 DDC one */
-	if (dev->pdev->device == 0x515e &&
-	    dev->pdev->subsystem_vendor == 0x1014) {
-=======
 	struct radeon_device *rdev = dev->dev_private;
 
 	/* Certain IBM chipset RN50s have a BIOS reporting two VGAs,
 	   one with VGA DDC and one with CRT2 DDC. - kill the CRT2 DDC one */
 	if (rdev->pdev->device == 0x515e &&
 	    rdev->pdev->subsystem_vendor == 0x1014) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*legacy_connector == CONNECTOR_CRT_LEGACY &&
 		    ddc_i2c->mask_clk_reg == RADEON_GPIO_CRT2_DDC)
 			return false;
 	}
 
 	/* X300 card with extra non-existent DVI port */
-<<<<<<< HEAD
-	if (dev->pdev->device == 0x5B60 &&
-	    dev->pdev->subsystem_vendor == 0x17af &&
-	    dev->pdev->subsystem_device == 0x201e && bios_index == 2) {
-=======
 	if (rdev->pdev->device == 0x5B60 &&
 	    rdev->pdev->subsystem_vendor == 0x17af &&
 	    rdev->pdev->subsystem_device == 0x201e && bios_index == 2) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*legacy_connector == CONNECTOR_DVI_I_LEGACY)
 			return false;
 	}
@@ -2348,24 +2246,6 @@ static bool radeon_apply_legacy_quirks(struct drm_device *dev,
 
 static bool radeon_apply_legacy_tv_quirks(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	/* Acer 5102 has non-existent TV port */
-	if (dev->pdev->device == 0x5975 &&
-	    dev->pdev->subsystem_vendor == 0x1025 &&
-	    dev->pdev->subsystem_device == 0x009f)
-		return false;
-
-	/* HP dc5750 has non-existent TV port */
-	if (dev->pdev->device == 0x5974 &&
-	    dev->pdev->subsystem_vendor == 0x103c &&
-	    dev->pdev->subsystem_device == 0x280a)
-		return false;
-
-	/* MSI S270 has non-existent TV port */
-	if (dev->pdev->device == 0x5955 &&
-	    dev->pdev->subsystem_vendor == 0x1462 &&
-	    dev->pdev->subsystem_device == 0x0131)
-=======
 	struct radeon_device *rdev = dev->dev_private;
 
 	/* Acer 5102 has non-existent TV port */
@@ -2384,7 +2264,6 @@ static bool radeon_apply_legacy_tv_quirks(struct drm_device *dev)
 	if (rdev->pdev->device == 0x5955 &&
 	    rdev->pdev->subsystem_vendor == 0x1462 &&
 	    rdev->pdev->subsystem_device == 0x0131)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	return true;
@@ -2449,14 +2328,10 @@ bool radeon_get_legacy_connector_info_from_bios(struct drm_device *dev)
 			connector = (tmp >> 12) & 0xf;
 
 			ddc_type = (tmp >> 8) & 0xf;
-<<<<<<< HEAD
-			ddc_i2c = combios_setup_i2c_bus(rdev, ddc_type, 0, 0);
-=======
 			if (ddc_type == 5)
 				ddc_i2c = radeon_combios_get_i2c_info_from_table(rdev);
 			else
 				ddc_i2c = combios_setup_i2c_bus(rdev, ddc_type, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			switch (connector) {
 			case CONNECTOR_PROPRIETARY_LEGACY:
@@ -2542,15 +2417,9 @@ bool radeon_get_legacy_connector_info_from_bios(struct drm_device *dev)
 				/* RV100 board with external TDMS bit mis-set.
 				 * Actually uses internal TMDS, clear the bit.
 				 */
-<<<<<<< HEAD
-				if (dev->pdev->device == 0x5159 &&
-				    dev->pdev->subsystem_vendor == 0x1014 &&
-				    dev->pdev->subsystem_device == 0x029A) {
-=======
 				if (rdev->pdev->device == 0x5159 &&
 				    rdev->pdev->subsystem_vendor == 0x1014 &&
 				    rdev->pdev->subsystem_device == 0x029A) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					tmp &= ~(1 << 4);
 				}
 				if ((tmp >> 4) & 0x1) {
@@ -2770,26 +2639,13 @@ void radeon_combios_get_power_modes(struct radeon_device *rdev)
 {
 	struct drm_device *dev = rdev->ddev;
 	u16 offset, misc, misc2 = 0;
-<<<<<<< HEAD
-	u8 rev, blocks, tmp;
-=======
 	u8 rev, tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int state_index = 0;
 	struct radeon_i2c_bus_rec i2c_bus;
 
 	rdev->pm.default_power_state_index = -1;
 
 	/* allocate 2 power states */
-<<<<<<< HEAD
-	rdev->pm.power_state = kzalloc(sizeof(struct radeon_power_state) * 2, GFP_KERNEL);
-	if (rdev->pm.power_state) {
-		/* allocate 1 clock mode per state */
-		rdev->pm.power_state[0].clock_info =
-			kzalloc(sizeof(struct radeon_pm_clock_info) * 1, GFP_KERNEL);
-		rdev->pm.power_state[1].clock_info =
-			kzalloc(sizeof(struct radeon_pm_clock_info) * 1, GFP_KERNEL);
-=======
 	rdev->pm.power_state = kcalloc(2, sizeof(struct radeon_power_state),
 				       GFP_KERNEL);
 	if (rdev->pm.power_state) {
@@ -2800,7 +2656,6 @@ void radeon_combios_get_power_modes(struct radeon_device *rdev)
 		rdev->pm.power_state[1].clock_info =
 			kcalloc(1, sizeof(struct radeon_pm_clock_info),
 				GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!rdev->pm.power_state[0].clock_info ||
 		    !rdev->pm.power_state[1].clock_info)
 			goto pm_failed;
@@ -2848,41 +2703,25 @@ void radeon_combios_get_power_modes(struct radeon_device *rdev)
 				struct i2c_board_info info = { };
 				const char *name = thermal_controller_names[thermal_controller];
 				info.addr = i2c_addr >> 1;
-<<<<<<< HEAD
-				strlcpy(info.type, name, sizeof(info.type));
-				i2c_new_device(&rdev->pm.i2c_bus->adapter, &info);
-=======
 				strscpy(info.type, name, sizeof(info.type));
 				i2c_new_client_device(&rdev->pm.i2c_bus->adapter, &info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	} else {
 		/* boards with a thermal chip, but no overdrive table */
 
 		/* Asus 9600xt has an f75375 on the monid bus */
-<<<<<<< HEAD
-		if ((dev->pdev->device == 0x4152) &&
-		    (dev->pdev->subsystem_vendor == 0x1043) &&
-		    (dev->pdev->subsystem_device == 0xc002)) {
-=======
 		if ((rdev->pdev->device == 0x4152) &&
 		    (rdev->pdev->subsystem_vendor == 0x1043) &&
 		    (rdev->pdev->subsystem_device == 0xc002)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			i2c_bus = combios_setup_i2c_bus(rdev, DDC_MONID, 0, 0);
 			rdev->pm.i2c_bus = radeon_i2c_lookup(rdev, &i2c_bus);
 			if (rdev->pm.i2c_bus) {
 				struct i2c_board_info info = { };
 				const char *name = "f75375";
 				info.addr = 0x28;
-<<<<<<< HEAD
-				strlcpy(info.type, name, sizeof(info.type));
-				i2c_new_device(&rdev->pm.i2c_bus->adapter, &info);
-=======
 				strscpy(info.type, name, sizeof(info.type));
 				i2c_new_client_device(&rdev->pm.i2c_bus->adapter, &info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DRM_INFO("Possible %s thermal controller at 0x%02x\n",
 					 name, info.addr);
 			}
@@ -2893,10 +2732,6 @@ void radeon_combios_get_power_modes(struct radeon_device *rdev)
 		offset = combios_get_table_offset(dev, COMBIOS_POWERPLAY_INFO_TABLE);
 		if (offset) {
 			rev = RBIOS8(offset);
-<<<<<<< HEAD
-			blocks = RBIOS8(offset + 0x2);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* power mode 0 tends to be the only valid one */
 			rdev->pm.power_state[state_index].num_clock_modes = 1;
 			rdev->pm.power_state[state_index].clock_info[0].mclk = RBIOS32(offset + 0x5 + 0x2);
@@ -3416,17 +3251,9 @@ static uint32_t combios_detect_ram(struct drm_device *dev, int ram,
 	while (ram--) {
 		addr = ram * 1024 * 1024;
 		/* write to each page */
-<<<<<<< HEAD
-		WREG32(RADEON_MM_INDEX, (addr) | RADEON_MM_APER);
-		WREG32(RADEON_MM_DATA, 0xdeadbeef);
-		/* read back and verify */
-		WREG32(RADEON_MM_INDEX, (addr) | RADEON_MM_APER);
-		if (RREG32(RADEON_MM_DATA) != 0xdeadbeef)
-=======
 		WREG32_IDX((addr) | RADEON_MM_APER, 0xdeadbeef);
 		/* read back and verify */
 		if (RREG32_IDX((addr) | RADEON_MM_APER) != 0xdeadbeef)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 	}
 
@@ -3495,18 +3322,6 @@ static void combios_write_ram_size(struct drm_device *dev)
 	WREG32(RADEON_CONFIG_MEMSIZE, mem_size);
 }
 
-<<<<<<< HEAD
-void radeon_combios_dyn_clk_setup(struct drm_device *dev, int enable)
-{
-	uint16_t dyn_clk_info =
-	    combios_get_table_offset(dev, COMBIOS_DYN_CLK_1_TABLE);
-
-	if (dyn_clk_info)
-		combios_parse_pll_table(dev, dyn_clk_info);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_combios_asic_init(struct drm_device *dev)
 {
 	struct radeon_device *rdev = dev->dev_private;
@@ -3584,8 +3399,6 @@ void radeon_combios_asic_init(struct drm_device *dev)
 	    rdev->pdev->subsystem_vendor == 0x103c &&
 	    rdev->pdev->subsystem_device == 0x280a)
 		return;
-<<<<<<< HEAD
-=======
 	/* quirk for rs4xx Toshiba Sattellite L20-183 latop to make it resume
 	 * - it hangs on resume inside the dynclk 1 table.
 	 */
@@ -3593,7 +3406,6 @@ void radeon_combios_asic_init(struct drm_device *dev)
 	    rdev->pdev->subsystem_vendor == 0x1179 &&
 	    rdev->pdev->subsystem_device == 0xff31)
 	        return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* DYN CLK 1 */
 	table = combios_get_table_offset(dev, COMBIOS_DYN_CLK_1_TABLE);

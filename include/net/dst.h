@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * net/dst.h	Protocol independent destination cache definitions.
  *
@@ -18,126 +15,25 @@
 #include <linux/rcupdate.h>
 #include <linux/bug.h>
 #include <linux/jiffies.h>
-<<<<<<< HEAD
-#include <net/neighbour.h>
-#include <asm/processor.h>
-
-#define DST_GC_MIN	(HZ/10)
-#define DST_GC_INC	(HZ/2)
-#define DST_GC_MAX	(120*HZ)
-
-/* Each dst_entry has reference count and sits in some parent list(s).
- * When it is removed from parent list, it is "freed" (dst_free).
- * After this it enters dead state (dst->obsolete > 0) and if its refcnt
- * is zero, it can be destroyed immediately, otherwise it is added
- * to gc list and garbage collector periodically checks the refcnt.
- */
-=======
 #include <linux/refcount.h>
 #include <linux/rcuref.h>
 #include <net/neighbour.h>
 #include <asm/processor.h>
 #include <linux/indirect_call_wrapper.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sk_buff;
 
 struct dst_entry {
-<<<<<<< HEAD
-	struct rcu_head		rcu_head;
-	struct dst_entry	*child;
-	struct net_device       *dev;
-	struct  dst_ops	        *ops;
-	unsigned long		_metrics;
-	union {
-		unsigned long           expires;
-		/* point to where the dst_entry copied from */
-		struct dst_entry        *from;
-	};
-	struct dst_entry	*path;
-	struct neighbour __rcu	*_neighbour;
-=======
 	struct net_device       *dev;
 	struct  dst_ops	        *ops;
 	unsigned long		_metrics;
 	unsigned long           expires;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_XFRM
 	struct xfrm_state	*xfrm;
 #else
 	void			*__pad1;
 #endif
 	int			(*input)(struct sk_buff *);
-<<<<<<< HEAD
-	int			(*output)(struct sk_buff *);
-
-	unsigned short		flags;
-#define DST_HOST		0x0001
-#define DST_NOXFRM		0x0002
-#define DST_NOPOLICY		0x0004
-#define DST_NOHASH		0x0008
-#define DST_NOCACHE		0x0010
-#define DST_NOCOUNT		0x0020
-#define DST_NOPEER		0x0040
-#define DST_FAKE_RTABLE		0x0080
-#define DST_XFRM_TUNNEL		0x0100
-
-	unsigned short		pending_confirm;
-
-	short			error;
-	short			obsolete;
-	unsigned short		header_len;	/* more space at head required */
-	unsigned short		trailer_len;	/* space to reserve at tail */
-#ifdef CONFIG_IP_ROUTE_CLASSID
-	__u32			tclassid;
-#else
-	__u32			__pad2;
-#endif
-
-	/*
-	 * Align __refcnt to a 64 bytes alignment
-	 * (L1_CACHE_SIZE would be too much)
-	 */
-#ifdef CONFIG_64BIT
-	long			__pad_to_align_refcnt[2];
-#endif
-	/*
-	 * __refcnt wants to be on a different cache line from
-	 * input/output/ops or performance tanks badly
-	 */
-	atomic_t		__refcnt;	/* client references	*/
-	int			__use;
-	unsigned long		lastuse;
-	union {
-		struct dst_entry	*next;
-		struct rtable __rcu	*rt_next;
-		struct rt6_info		*rt6_next;
-		struct dn_route __rcu	*dn_next;
-	};
-};
-
-static inline struct neighbour *dst_get_neighbour_noref(struct dst_entry *dst)
-{
-	return rcu_dereference(dst->_neighbour);
-}
-
-static inline struct neighbour *dst_get_neighbour_noref_raw(struct dst_entry *dst)
-{
-	return rcu_dereference_raw(dst->_neighbour);
-}
-
-static inline void dst_set_neighbour(struct dst_entry *dst, struct neighbour *neigh)
-{
-	rcu_assign_pointer(dst->_neighbour, neigh);
-}
-
-extern u32 *dst_cow_metrics_generic(struct dst_entry *dst, unsigned long old);
-extern const u32 dst_default_metrics[RTAX_MAX];
-
-#define DST_METRICS_READ_ONLY	0x1UL
-#define __DST_METRICS_PTR(Y)	\
-	((u32 *)((Y) & ~DST_METRICS_READ_ONLY))
-=======
 	int			(*output)(struct net *net, struct sock *sk, struct sk_buff *skb);
 
 	unsigned short		flags;
@@ -211,7 +107,6 @@ u32 *dst_cow_metrics_generic(struct dst_entry *dst, unsigned long old);
 #define DST_METRICS_FLAGS		0x3UL
 #define __DST_METRICS_PTR(Y)	\
 	((u32 *)((Y) & ~DST_METRICS_FLAGS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DST_METRICS_PTR(X)	__DST_METRICS_PTR((X)->_metrics)
 
 static inline bool dst_metrics_read_only(const struct dst_entry *dst)
@@ -219,11 +114,7 @@ static inline bool dst_metrics_read_only(const struct dst_entry *dst)
 	return dst->_metrics & DST_METRICS_READ_ONLY;
 }
 
-<<<<<<< HEAD
-extern void __dst_destroy_metrics_generic(struct dst_entry *dst, unsigned long old);
-=======
 void __dst_destroy_metrics_generic(struct dst_entry *dst, unsigned long old);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void dst_destroy_metrics_generic(struct dst_entry *dst)
 {
@@ -306,32 +197,23 @@ static inline void dst_metric_set(struct dst_entry *dst, int metric, u32 val)
 		p[metric-1] = val;
 }
 
-<<<<<<< HEAD
-=======
 /* Kernel-internal feature bits that are unallocated in user space. */
 #define DST_FEATURE_ECN_CA	(1U << 31)
 
 #define DST_FEATURE_MASK	(DST_FEATURE_ECN_CA)
 #define DST_FEATURE_ECN_MASK	(DST_FEATURE_ECN_CA | RTAX_FEATURE_ECN)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32
 dst_feature(const struct dst_entry *dst, u32 feature)
 {
 	return dst_metric(dst, RTAX_FEATURES) & feature;
 }
 
-<<<<<<< HEAD
-static inline u32 dst_mtu(const struct dst_entry *dst)
-{
-	return dst->ops->mtu(dst);
-=======
 INDIRECT_CALLABLE_DECLARE(unsigned int ip6_mtu(const struct dst_entry *));
 INDIRECT_CALLABLE_DECLARE(unsigned int ipv4_mtu(const struct dst_entry *));
 static inline u32 dst_mtu(const struct dst_entry *dst)
 {
 	return INDIRECT_CALL_INET(dst->ops->mtu, ip6_mtu, ipv4_mtu, dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* RTT metrics are stored in milliseconds for user ABI, but used as jiffies */
@@ -340,79 +222,33 @@ static inline unsigned long dst_metric_rtt(const struct dst_entry *dst, int metr
 	return msecs_to_jiffies(dst_metric(dst, metric));
 }
 
-<<<<<<< HEAD
-static inline void set_dst_metric_rtt(struct dst_entry *dst, int metric,
-				      unsigned long rtt)
-{
-	dst_metric_set(dst, metric, jiffies_to_msecs(rtt));
-}
-
-static inline u32
-dst_allfrag(const struct dst_entry *dst)
-{
-	int ret = dst_feature(dst,  RTAX_FEATURE_ALLFRAG);
-	return ret;
-}
-
-static inline int
-dst_metric_locked(const struct dst_entry *dst, int metric)
-{
-	return dst_metric(dst, RTAX_LOCK) & (1<<metric);
-=======
 static inline int
 dst_metric_locked(const struct dst_entry *dst, int metric)
 {
 	return dst_metric(dst, RTAX_LOCK) & (1 << metric);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void dst_hold(struct dst_entry *dst)
 {
 	/*
 	 * If your kernel compilation stops here, please check
-<<<<<<< HEAD
-	 * __pad_to_align_refcnt declaration in struct dst_entry
-	 */
-	BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
-	atomic_inc(&dst->__refcnt);
-}
-
-static inline void dst_use(struct dst_entry *dst, unsigned long time)
-{
-	dst_hold(dst);
-	dst->__use++;
-	dst->lastuse = time;
-=======
 	 * the placement of __rcuref in struct dst_entry
 	 */
 	BUILD_BUG_ON(offsetof(struct dst_entry, __rcuref) & 63);
 	WARN_ON(!rcuref_get(&dst->__rcuref));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void dst_use_noref(struct dst_entry *dst, unsigned long time)
 {
-<<<<<<< HEAD
-	dst->__use++;
-	dst->lastuse = time;
-=======
 	if (unlikely(time != dst->lastuse)) {
 		dst->__use++;
 		dst->lastuse = time;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct dst_entry *dst_clone(struct dst_entry *dst)
 {
 	if (dst)
-<<<<<<< HEAD
-		atomic_inc(&dst->__refcnt);
-	return dst;
-}
-
-extern void dst_release(struct dst_entry *dst);
-=======
 		dst_hold(dst);
 	return dst;
 }
@@ -420,7 +256,6 @@ extern void dst_release(struct dst_entry *dst);
 void dst_release(struct dst_entry *dst);
 
 void dst_release_immediate(struct dst_entry *dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void refdst_drop(unsigned long refdst)
 {
@@ -442,22 +277,14 @@ static inline void skb_dst_drop(struct sk_buff *skb)
 	}
 }
 
-<<<<<<< HEAD
-static inline void skb_dst_copy(struct sk_buff *nskb, const struct sk_buff *oskb)
-{
-	nskb->_skb_refdst = oskb->_skb_refdst;
-=======
 static inline void __skb_dst_copy(struct sk_buff *nskb, unsigned long refdst)
 {
 	nskb->slow_gro |= !!refdst;
 	nskb->_skb_refdst = refdst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(nskb->_skb_refdst & SKB_DST_NOREF))
 		dst_clone(skb_dst(nskb));
 }
 
-<<<<<<< HEAD
-=======
 static inline void skb_dst_copy(struct sk_buff *nskb, const struct sk_buff *oskb)
 {
 	__skb_dst_copy(nskb, oskb->_skb_refdst);
@@ -475,22 +302,10 @@ static inline bool dst_hold_safe(struct dst_entry *dst)
 	return rcuref_get(&dst->__rcuref);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * skb_dst_force - makes sure skb dst is refcounted
  * @skb: buffer
  *
-<<<<<<< HEAD
- * If dst is not yet refcounted, let's do it
- */
-static inline void skb_dst_force(struct sk_buff *skb)
-{
-	if (skb_dst_is_noref(skb)) {
-		WARN_ON(!rcu_read_lock_held());
-		skb->_skb_refdst &= ~SKB_DST_NOREF;
-		dst_clone(skb_dst(skb));
-	}
-=======
  * If dst is not yet refcounted and not destroyed, grab a ref on it.
  * Returns true if dst is refcounted.
  */
@@ -508,7 +323,6 @@ static inline bool skb_dst_force(struct sk_buff *skb)
 	}
 
 	return skb->_skb_refdst != 0UL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -516,35 +330,17 @@ static inline bool skb_dst_force(struct sk_buff *skb)
  *	__skb_tunnel_rx - prepare skb for rx reinsert
  *	@skb: buffer
  *	@dev: tunnel device
-<<<<<<< HEAD
-=======
  *	@net: netns for packet i/o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	After decapsulation, packet is going to re-enter (netif_rx()) our stack,
  *	so make some cleanups. (no accounting done)
  */
-<<<<<<< HEAD
-static inline void __skb_tunnel_rx(struct sk_buff *skb, struct net_device *dev)
-=======
 static inline void __skb_tunnel_rx(struct sk_buff *skb, struct net_device *dev,
 				   struct net *net)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	skb->dev = dev;
 
 	/*
-<<<<<<< HEAD
-	 * Clear rxhash so that we can recalulate the hash for the
-	 * encapsulated packet, unless we have already determine the hash
-	 * over the L4 4-tuple.
-	 */
-	if (!skb->l4_rxhash)
-		skb->rxhash = 0;
-	skb_set_queue_mapping(skb, 0);
-	skb_dst_drop(skb);
-	nf_reset(skb);
-=======
 	 * Clear hash so that we can recalulate the hash for the
 	 * encapsulated packet, unless we have already determine the hash
 	 * over the L4 4-tuple.
@@ -552,89 +348,18 @@ static inline void __skb_tunnel_rx(struct sk_buff *skb, struct net_device *dev,
 	skb_clear_hash_if_not_l4(skb);
 	skb_set_queue_mapping(skb, 0);
 	skb_scrub_packet(skb, !net_eq(net, dev_net(dev)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  *	skb_tunnel_rx - prepare skb for rx reinsert
  *	@skb: buffer
  *	@dev: tunnel device
-<<<<<<< HEAD
-=======
  *	@net: netns for packet i/o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	After decapsulation, packet is going to re-enter (netif_rx()) our stack,
  *	so make some cleanups, and perform accounting.
  *	Note: this accounting is not SMP safe.
  */
-<<<<<<< HEAD
-static inline void skb_tunnel_rx(struct sk_buff *skb, struct net_device *dev)
-{
-	/* TODO : stats should be SMP safe */
-	dev->stats.rx_packets++;
-	dev->stats.rx_bytes += skb->len;
-	__skb_tunnel_rx(skb, dev);
-}
-
-/* Children define the path of the packet through the
- * Linux networking.  Thus, destinations are stackable.
- */
-
-static inline struct dst_entry *skb_dst_pop(struct sk_buff *skb)
-{
-	struct dst_entry *child = dst_clone(skb_dst(skb)->child);
-
-	skb_dst_drop(skb);
-	return child;
-}
-
-extern int dst_discard(struct sk_buff *skb);
-extern void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
-		       int initial_ref, int initial_obsolete,
-		       unsigned short flags);
-extern void __dst_free(struct dst_entry *dst);
-extern struct dst_entry *dst_destroy(struct dst_entry *dst);
-
-static inline void dst_free(struct dst_entry *dst)
-{
-	if (dst->obsolete > 1)
-		return;
-	if (!atomic_read(&dst->__refcnt)) {
-		dst = dst_destroy(dst);
-		if (!dst)
-			return;
-	}
-	__dst_free(dst);
-}
-
-static inline void dst_rcu_free(struct rcu_head *head)
-{
-	struct dst_entry *dst = container_of(head, struct dst_entry, rcu_head);
-	dst_free(dst);
-}
-
-static inline void dst_confirm(struct dst_entry *dst)
-{
-	dst->pending_confirm = 1;
-}
-
-static inline int dst_neigh_output(struct dst_entry *dst, struct neighbour *n,
-				   struct sk_buff *skb)
-{
-	struct hh_cache *hh;
-
-	if (unlikely(dst->pending_confirm)) {
-		n->confirmed = jiffies;
-		dst->pending_confirm = 0;
-	}
-
-	hh = &n->hh;
-	if ((n->nud_state & NUD_CONNECTED) && hh->hh_len)
-		return neigh_hh_output(hh, skb);
-	else
-		return n->output(n, skb);
-=======
 static inline void skb_tunnel_rx(struct sk_buff *skb, struct net_device *dev,
 				 struct net *net)
 {
@@ -669,14 +394,10 @@ void dst_dev_put(struct dst_entry *dst);
 
 static inline void dst_confirm(struct dst_entry *dst)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct neighbour *dst_neigh_lookup(const struct dst_entry *dst, const void *daddr)
 {
-<<<<<<< HEAD
-	return dst->ops->neigh_lookup(dst, daddr);
-=======
 	struct neighbour *n = dst->ops->neigh_lookup(dst, NULL, daddr);
 	return IS_ERR(n) ? NULL : n;
 }
@@ -699,7 +420,6 @@ static inline void dst_confirm_neigh(const struct dst_entry *dst,
 {
 	if (dst->ops->confirm_neigh)
 		dst->ops->confirm_neigh(dst, daddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void dst_link_failure(struct sk_buff *skb)
@@ -720,32 +440,6 @@ static inline void dst_set_expires(struct dst_entry *dst, int timeout)
 		dst->expires = expires;
 }
 
-<<<<<<< HEAD
-/* Output packet to network from transport.  */
-static inline int dst_output(struct sk_buff *skb)
-{
-	return skb_dst(skb)->output(skb);
-}
-
-/* Input packet from network to transport.  */
-static inline int dst_input(struct sk_buff *skb)
-{
-	return skb_dst(skb)->input(skb);
-}
-
-static inline struct dst_entry *dst_check(struct dst_entry *dst, u32 cookie)
-{
-	if (dst->obsolete)
-		dst = dst->ops->check(dst, cookie);
-	return dst;
-}
-
-extern void		dst_init(void);
-
-/* Flags for xfrm_lookup flags argument. */
-enum {
-	XFRM_LOOKUP_ICMP = 1 << 0,
-=======
 INDIRECT_CALLABLE_DECLARE(int ip6_output(struct net *, struct sock *,
 					 struct sk_buff *));
 INDIRECT_CALLABLE_DECLARE(int ip_output(struct net *, struct sock *,
@@ -784,20 +478,12 @@ enum {
 	XFRM_LOOKUP_ICMP = 1 << 0,
 	XFRM_LOOKUP_QUEUE = 1 << 1,
 	XFRM_LOOKUP_KEEP_DST_REF = 1 << 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct flowi;
 #ifndef CONFIG_XFRM
 static inline struct dst_entry *xfrm_lookup(struct net *net,
 					    struct dst_entry *dst_orig,
-<<<<<<< HEAD
-					    const struct flowi *fl, struct sock *sk,
-					    int flags)
-{
-	return dst_orig;
-} 
-=======
 					    const struct flowi *fl,
 					    const struct sock *sk,
 					    int flags)
@@ -821,7 +507,6 @@ static inline struct dst_entry *xfrm_lookup_route(struct net *net,
 {
 	return dst_orig;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct xfrm_state *dst_xfrm(const struct dst_entry *dst)
 {
@@ -829,11 +514,6 @@ static inline struct xfrm_state *dst_xfrm(const struct dst_entry *dst)
 }
 
 #else
-<<<<<<< HEAD
-extern struct dst_entry *xfrm_lookup(struct net *net, struct dst_entry *dst_orig,
-				     const struct flowi *fl, struct sock *sk,
-				     int flags);
-=======
 struct dst_entry *xfrm_lookup(struct net *net, struct dst_entry *dst_orig,
 			      const struct flowi *fl, const struct sock *sk,
 			      int flags);
@@ -847,7 +527,6 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
 struct dst_entry *xfrm_lookup_route(struct net *net, struct dst_entry *dst_orig,
 				    const struct flowi *fl, const struct sock *sk,
 				    int flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* skb attached with this dst needs transformation if dst->xfrm is valid */
 static inline struct xfrm_state *dst_xfrm(const struct dst_entry *dst)
@@ -856,8 +535,6 @@ static inline struct xfrm_state *dst_xfrm(const struct dst_entry *dst)
 }
 #endif
 
-<<<<<<< HEAD
-=======
 static inline void skb_dst_update_pmtu(struct sk_buff *skb, u32 mtu)
 {
 	struct dst_entry *dst = skb_dst(skb);
@@ -886,5 +563,4 @@ struct neighbour *dst_blackhole_neigh_lookup(const struct dst_entry *dst,
 					     const void *daddr);
 unsigned int dst_blackhole_mtu(const struct dst_entry *dst);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _NET_DST_H */

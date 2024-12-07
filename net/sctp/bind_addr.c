@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2003
  * Copyright (c) Cisco 1999,2000
@@ -12,47 +9,15 @@
  *
  * A collection class to handle the storage of transport addresses.
  *
-<<<<<<< HEAD
- * This SCTP implementation is free software;
- * you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This SCTP implementation is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; without even the implied
- *                 ************************
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GNU CC; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <lksctp-developers@lists.sourceforge.net>
- *
- * Or submit a bug report through the following website:
- *    http://www.sf.net/projects/lksctp
-=======
  * Please send any bug reports or fixes you make to the
  * email address(es):
  *    lksctp developers <linux-sctp@vger.kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
  *    Karl Knutson          <karl@athena.chicago.il.us>
  *    Jon Grimm             <jgrimm@us.ibm.com>
  *    Daisy Chang           <daisyc@us.ibm.com>
-<<<<<<< HEAD
- *
- * Any bugs reported given to us we will try to fix... any fixes shared will
- * be incorporated into the next SCTP release.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -65,15 +30,9 @@
 #include <net/sctp/sm.h>
 
 /* Forward declarations for internal helpers. */
-<<<<<<< HEAD
-static int sctp_copy_one_addr(struct sctp_bind_addr *, union sctp_addr *,
-			      sctp_scope_t scope, gfp_t gfp,
-			      int flags);
-=======
 static int sctp_copy_one_addr(struct net *net, struct sctp_bind_addr *dest,
 			      union sctp_addr *addr, enum sctp_scope scope,
 			      gfp_t gfp, int flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sctp_bind_addr_clean(struct sctp_bind_addr *);
 
 /* First Level Abstractions. */
@@ -81,15 +40,9 @@ static void sctp_bind_addr_clean(struct sctp_bind_addr *);
 /* Copy 'src' to 'dest' taking 'scope' into account.  Omit addresses
  * in 'src' which have a broader scope than 'scope'.
  */
-<<<<<<< HEAD
-int sctp_bind_addr_copy(struct sctp_bind_addr *dest,
-			const struct sctp_bind_addr *src,
-			sctp_scope_t scope, gfp_t gfp,
-=======
 int sctp_bind_addr_copy(struct net *net, struct sctp_bind_addr *dest,
 			const struct sctp_bind_addr *src,
 			enum sctp_scope scope, gfp_t gfp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int flags)
 {
 	struct sctp_sockaddr_entry *addr;
@@ -100,11 +53,7 @@ int sctp_bind_addr_copy(struct net *net, struct sctp_bind_addr *dest,
 
 	/* Extract the addresses which are relevant for this scope.  */
 	list_for_each_entry(addr, &src->address_list, list) {
-<<<<<<< HEAD
-		error = sctp_copy_one_addr(dest, &addr->a, scope,
-=======
 		error = sctp_copy_one_addr(net, dest, &addr->a, scope,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   gfp, flags);
 		if (error < 0)
 			goto out;
@@ -116,11 +65,7 @@ int sctp_bind_addr_copy(struct net *net, struct sctp_bind_addr *dest,
 	 */
 	if (list_empty(&dest->address_list) && (SCTP_SCOPE_GLOBAL == scope)) {
 		list_for_each_entry(addr, &src->address_list, list) {
-<<<<<<< HEAD
-			error = sctp_copy_one_addr(dest, &addr->a,
-=======
 			error = sctp_copy_one_addr(net, dest, &addr->a,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   SCTP_SCOPE_LINK, gfp,
 						   flags);
 			if (error < 0)
@@ -128,15 +73,12 @@ int sctp_bind_addr_copy(struct net *net, struct sctp_bind_addr *dest,
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	/* If somehow no addresses were found that can be used with this
 	 * scope, it's an error.
 	 */
 	if (list_empty(&dest->address_list))
 		error = -ENETUNREACH;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (error)
 		sctp_bind_addr_clean(dest);
@@ -160,12 +102,8 @@ int sctp_bind_addr_dup(struct sctp_bind_addr *dest,
 	dest->port = src->port;
 
 	list_for_each_entry(addr, &src->address_list, list) {
-<<<<<<< HEAD
-		error = sctp_add_bind_addr(dest, &addr->a, 1, gfp);
-=======
 		error = sctp_add_bind_addr(dest, &addr->a, sizeof(addr->a),
 					   1, gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error < 0)
 			break;
 	}
@@ -178,11 +116,6 @@ int sctp_bind_addr_dup(struct sctp_bind_addr *dest,
  */
 void sctp_bind_addr_init(struct sctp_bind_addr *bp, __u16 port)
 {
-<<<<<<< HEAD
-	bp->malloced = 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&bp->address_list);
 	bp->port = port;
 }
@@ -205,40 +138,20 @@ void sctp_bind_addr_free(struct sctp_bind_addr *bp)
 {
 	/* Empty the bind address list. */
 	sctp_bind_addr_clean(bp);
-<<<<<<< HEAD
-
-	if (bp->malloced) {
-		kfree(bp);
-		SCTP_DBG_OBJCNT_DEC(bind_addr);
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Add an address to the bind address list in the SCTP_bind_addr structure. */
 int sctp_add_bind_addr(struct sctp_bind_addr *bp, union sctp_addr *new,
-<<<<<<< HEAD
-		       __u8 addr_state, gfp_t gfp)
-=======
 		       int new_size, __u8 addr_state, gfp_t gfp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sctp_sockaddr_entry *addr;
 
 	/* Add the address to the bind address list.  */
-<<<<<<< HEAD
-	addr = t_new(struct sctp_sockaddr_entry, gfp);
-	if (!addr)
-		return -ENOMEM;
-
-	memcpy(&addr->a, new, sizeof(*new));
-=======
 	addr = kzalloc(sizeof(*addr), gfp);
 	if (!addr)
 		return -ENOMEM;
 
 	memcpy(&addr->a, new, min_t(size_t, sizeof(*new), new_size));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fix up the port if it has not yet been set.
 	 * Both v4 and v6 have the port at the same offset.
@@ -363,22 +276,6 @@ int sctp_raw_to_bind_addrs(struct sctp_bind_addr *bp, __u8 *raw_addr_list,
 		rawaddr = (union sctp_addr_param *)raw_addr_list;
 
 		af = sctp_get_af_specific(param_type2af(param->type));
-<<<<<<< HEAD
-		if (unlikely(!af)) {
-			retval = -EINVAL;
-			sctp_bind_addr_clean(bp);
-			break;
-		}
-
-		af->from_addr_param(&addr, rawaddr, htons(port), 0);
-		retval = sctp_add_bind_addr(bp, &addr, SCTP_ADDR_SRC, gfp);
-		if (retval) {
-			/* Can't finish building the list, clean up. */
-			sctp_bind_addr_clean(bp);
-			break;
-		}
-
-=======
 		if (unlikely(!af) ||
 		    !af->from_addr_param(&addr, rawaddr, htons(port), 0)) {
 			retval = -EINVAL;
@@ -394,22 +291,18 @@ int sctp_raw_to_bind_addrs(struct sctp_bind_addr *bp, __u8 *raw_addr_list,
 			goto out_err;
 
 next:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = ntohs(param->length);
 		addrs_len -= len;
 		raw_addr_list += len;
 	}
 
 	return retval;
-<<<<<<< HEAD
-=======
 
 out_err:
 	if (retval)
 		sctp_bind_addr_clean(bp);
 
 	return retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /********************************************************************
@@ -438,8 +331,6 @@ int sctp_bind_addr_match(struct sctp_bind_addr *bp,
 	return match;
 }
 
-<<<<<<< HEAD
-=======
 int sctp_bind_addrs_check(struct sctp_sock *sp,
 			  struct sctp_sock *sp2, int cnt2)
 {
@@ -468,7 +359,6 @@ next:
 	return (cnt == cnt2) ? 0 : (exist ? -EEXIST : 1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Does the address 'addr' conflict with any addresses in
  * the bp.
  */
@@ -512,26 +402,6 @@ int sctp_bind_addr_state(const struct sctp_bind_addr *bp,
 {
 	struct sctp_sockaddr_entry *laddr;
 	struct sctp_af *af;
-<<<<<<< HEAD
-	int state = -1;
-
-	af = sctp_get_af_specific(addr->sa.sa_family);
-	if (unlikely(!af))
-		return state;
-
-	rcu_read_lock();
-	list_for_each_entry_rcu(laddr, &bp->address_list, list) {
-		if (!laddr->valid)
-			continue;
-		if (af->cmp_addr(&laddr->a, addr)) {
-			state = laddr->state;
-			break;
-		}
-	}
-	rcu_read_unlock();
-
-	return state;
-=======
 
 	af = sctp_get_af_specific(addr->sa.sa_family);
 	if (unlikely(!af))
@@ -545,7 +415,6 @@ int sctp_bind_addr_state(const struct sctp_bind_addr *bp,
 	}
 
 	return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Find the first address in the bind address list that is not present in
@@ -587,47 +456,27 @@ union sctp_addr *sctp_find_unmatch_addr(struct sctp_bind_addr	*bp,
 }
 
 /* Copy out addresses from the global local address list. */
-<<<<<<< HEAD
-static int sctp_copy_one_addr(struct sctp_bind_addr *dest,
-			      union sctp_addr *addr,
-			      sctp_scope_t scope, gfp_t gfp,
-			      int flags)
-=======
 static int sctp_copy_one_addr(struct net *net, struct sctp_bind_addr *dest,
 			      union sctp_addr *addr, enum sctp_scope scope,
 			      gfp_t gfp, int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error = 0;
 
 	if (sctp_is_any(NULL, addr)) {
-<<<<<<< HEAD
-		error = sctp_copy_local_addr_list(dest, scope, gfp, flags);
-	} else if (sctp_in_scope(addr, scope)) {
-=======
 		error = sctp_copy_local_addr_list(net, dest, scope, gfp, flags);
 	} else if (sctp_in_scope(net, addr, scope)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Now that the address is in scope, check to see if
 		 * the address type is supported by local sock as
 		 * well as the remote peer.
 		 */
 		if ((((AF_INET == addr->sa.sa_family) &&
-<<<<<<< HEAD
-=======
 		      (flags & SCTP_ADDR4_ALLOWED) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      (flags & SCTP_ADDR4_PEERSUPP))) ||
 		    (((AF_INET6 == addr->sa.sa_family) &&
 		      (flags & SCTP_ADDR6_ALLOWED) &&
 		      (flags & SCTP_ADDR6_PEERSUPP))))
-<<<<<<< HEAD
-			error = sctp_add_bind_addr(dest, addr, SCTP_ADDR_SRC,
-						    gfp);
-=======
 			error = sctp_add_bind_addr(dest, addr, sizeof(*addr),
 						   SCTP_ADDR_SRC, gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return error;
@@ -653,16 +502,10 @@ int sctp_is_any(struct sock *sk, const union sctp_addr *addr)
 }
 
 /* Is 'addr' valid for 'scope'?  */
-<<<<<<< HEAD
-int sctp_in_scope(const union sctp_addr *addr, sctp_scope_t scope)
-{
-	sctp_scope_t addr_scope = sctp_scope(addr);
-=======
 int sctp_in_scope(struct net *net, const union sctp_addr *addr,
 		  enum sctp_scope scope)
 {
 	enum sctp_scope addr_scope = sctp_scope(addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The unusable SCTP addresses will not be considered with
 	 * any defined scopes.
@@ -671,22 +514,14 @@ int sctp_in_scope(struct net *net, const union sctp_addr *addr,
 		return 0;
 	/*
 	 * For INIT and INIT-ACK address list, let L be the level of
-<<<<<<< HEAD
-	 * of requested destination address, sender and receiver
-=======
 	 * requested destination address, sender and receiver
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * SHOULD include all of its addresses with level greater
 	 * than or equal to L.
 	 *
 	 * Address scoping can be selectively controlled via sysctl
 	 * option
 	 */
-<<<<<<< HEAD
-	switch (sctp_scope_policy) {
-=======
 	switch (net->sctp.scope_policy) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SCTP_SCOPE_POLICY_DISABLE:
 		return 1;
 	case SCTP_SCOPE_POLICY_ENABLE:
@@ -728,11 +563,7 @@ int sctp_is_ep_boundall(struct sock *sk)
  ********************************************************************/
 
 /* What is the scope of 'addr'?  */
-<<<<<<< HEAD
-sctp_scope_t sctp_scope(const union sctp_addr *addr)
-=======
 enum sctp_scope sctp_scope(const union sctp_addr *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sctp_af *af;
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  arch/sparc64/kernel/process.c
  *
  *  Copyright (C) 1995, 1996, 2008 David S. Miller (davem@davemloft.net)
@@ -12,21 +9,12 @@
 /*
  * This file handles the architecture-dependent parts of process handling..
  */
-<<<<<<< HEAD
-
-#include <stdarg.h>
-
-#include <linux/errno.h>
-#include <linux/export.h>
-#include <linux/sched.h>
-=======
 #include <linux/errno.h>
 #include <linux/export.h>
 #include <linux/sched.h>
 #include <linux/sched/debug.h>
 #include <linux/sched/task.h>
 #include <linux/sched/task_stack.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/fs.h>
@@ -40,16 +28,6 @@
 #include <linux/tick.h>
 #include <linux/init.h>
 #include <linux/cpu.h>
-<<<<<<< HEAD
-#include <linux/elfcore.h>
-#include <linux/sysrq.h>
-#include <linux/nmi.h>
-
-#include <asm/uaccess.h>
-#include <asm/page.h>
-#include <asm/pgalloc.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/perf_event.h>
 #include <linux/elfcore.h>
 #include <linux/sysrq.h>
@@ -60,7 +38,6 @@
 #include <linux/uaccess.h>
 #include <asm/page.h>
 #include <asm/pgalloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h>
 #include <asm/pstate.h>
 #include <asm/elf.h>
@@ -73,25 +50,6 @@
 #include <asm/syscalls.h>
 #include <asm/irq_regs.h>
 #include <asm/smp.h>
-<<<<<<< HEAD
-
-#include "kstack.h"
-
-static void sparc64_yield(int cpu)
-{
-	if (tlb_type != hypervisor) {
-		touch_nmi_watchdog();
-		return;
-	}
-
-	clear_thread_flag(TIF_POLLING_NRFLAG);
-	smp_mb__after_clear_bit();
-
-	while (!need_resched() && !cpu_is_offline(cpu)) {
-		unsigned long pstate;
-
-		/* Disable interrupts. */
-=======
 #include <asm/pcr.h>
 
 #include "kstack.h"
@@ -109,7 +67,6 @@ void arch_cpu_idle(void)
                 /* The sun4v sleeping code requires that we have PSTATE.IE cleared over
                  * the cpu sleep hypervisor call.
                  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__asm__ __volatile__(
 			"rdpr %%pstate, %0\n\t"
 			"andn %0, %1, %0\n\t"
@@ -117,10 +74,6 @@ void arch_cpu_idle(void)
 			: "=&r" (pstate)
 			: "i" (PSTATE_IE));
 
-<<<<<<< HEAD
-		if (!need_resched() && !cpu_is_offline(cpu))
-			sun4v_cpu_yield();
-=======
 		if (!need_resched() && !cpu_is_offline(smp_processor_id())) {
 			sun4v_cpu_yield();
 			/* If resumed by cpu_poke then we need to explicitly
@@ -128,7 +81,6 @@ void arch_cpu_idle(void)
 			 */
 			scheduler_poke();
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Re-enable interrupts. */
 		__asm__ __volatile__(
@@ -137,39 +89,6 @@ void arch_cpu_idle(void)
 			"wrpr %0, %%g0, %%pstate"
 			: "=&r" (pstate)
 			: "i" (PSTATE_IE));
-<<<<<<< HEAD
-	}
-
-	set_thread_flag(TIF_POLLING_NRFLAG);
-}
-
-/* The idle loop on sparc64. */
-void cpu_idle(void)
-{
-	int cpu = smp_processor_id();
-
-	set_thread_flag(TIF_POLLING_NRFLAG);
-
-	while(1) {
-		tick_nohz_idle_enter();
-		rcu_idle_enter();
-
-		while (!need_resched() && !cpu_is_offline(cpu))
-			sparc64_yield(cpu);
-
-		rcu_idle_exit();
-		tick_nohz_idle_exit();
-
-#ifdef CONFIG_HOTPLUG_CPU
-		if (cpu_is_offline(cpu)) {
-			sched_preempt_enable_no_resched();
-			cpu_play_dead();
-		}
-#endif
-		schedule_preempt_disabled();
-	}
-}
-=======
 
 		raw_local_irq_disable();
 	}
@@ -182,27 +101,12 @@ void __noreturn arch_cpu_idle_dead(void)
 	cpu_play_dead();
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_COMPAT
 static void show_regwindow32(struct pt_regs *regs)
 {
 	struct reg_window32 __user *rw;
 	struct reg_window32 r_w;
-<<<<<<< HEAD
-	mm_segment_t old_fs;
-	
-	__asm__ __volatile__ ("flushw");
-	rw = compat_ptr((unsigned)regs->u_regs[14]);
-	old_fs = get_fs();
-	set_fs (USER_DS);
-	if (copy_from_user (&r_w, rw, sizeof(r_w))) {
-		set_fs (old_fs);
-		return;
-	}
-
-	set_fs (old_fs);			
-=======
 	
 	__asm__ __volatile__ ("flushw");
 	rw = compat_ptr((unsigned int)regs->u_regs[14]);
@@ -210,7 +114,6 @@ static void show_regwindow32(struct pt_regs *regs)
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("l0: %08x l1: %08x l2: %08x l3: %08x "
 	       "l4: %08x l5: %08x l6: %08x l7: %08x\n",
 	       r_w.locals[0], r_w.locals[1], r_w.locals[2], r_w.locals[3],
@@ -229,10 +132,6 @@ static void show_regwindow(struct pt_regs *regs)
 	struct reg_window __user *rw;
 	struct reg_window *rwk;
 	struct reg_window r_w;
-<<<<<<< HEAD
-	mm_segment_t old_fs;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((regs->tstate & TSTATE_PRIV) || !(test_thread_flag(TIF_32BIT))) {
 		__asm__ __volatile__ ("flushw");
@@ -241,21 +140,10 @@ static void show_regwindow(struct pt_regs *regs)
 		rwk = (struct reg_window *)
 			(regs->u_regs[14] + STACK_BIAS);
 		if (!(regs->tstate & TSTATE_PRIV)) {
-<<<<<<< HEAD
-			old_fs = get_fs();
-			set_fs (USER_DS);
-			if (copy_from_user (&r_w, rw, sizeof(r_w))) {
-				set_fs (old_fs);
-				return;
-			}
-			rwk = &r_w;
-			set_fs (old_fs);			
-=======
 			if (copy_from_user (&r_w, rw, sizeof(r_w))) {
 				return;
 			}
 			rwk = &r_w;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		show_regwindow32(regs);
@@ -275,11 +163,8 @@ static void show_regwindow(struct pt_regs *regs)
 
 void show_regs(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	show_regs_print_info(KERN_DEFAULT);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("TSTATE: %016lx TPC: %016lx TNPC: %016lx Y: %08x    %s\n", regs->tstate,
 	       regs->tpc, regs->tnpc, regs->y, print_tainted());
 	printk("TPC: <%pS>\n", (void *) regs->tpc);
@@ -297,31 +182,15 @@ void show_regs(struct pt_regs *regs)
 	       regs->u_regs[15]);
 	printk("RPC: <%pS>\n", (void *) regs->u_regs[15]);
 	show_regwindow(regs);
-<<<<<<< HEAD
-	show_stack(current, (unsigned long *) regs->u_regs[UREG_FP]);
-}
-
-struct global_reg_snapshot global_reg_snapshot[NR_CPUS];
-static DEFINE_SPINLOCK(global_reg_snapshot_lock);
-=======
 	show_stack(current, (unsigned long *)regs->u_regs[UREG_FP], KERN_DEFAULT);
 }
 
 union global_cpu_snapshot global_cpu_snapshot[NR_CPUS];
 static DEFINE_SPINLOCK(global_cpu_snapshot_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __global_reg_self(struct thread_info *tp, struct pt_regs *regs,
 			      int this_cpu)
 {
-<<<<<<< HEAD
-	flushw_all();
-
-	global_reg_snapshot[this_cpu].tstate = regs->tstate;
-	global_reg_snapshot[this_cpu].tpc = regs->tpc;
-	global_reg_snapshot[this_cpu].tnpc = regs->tnpc;
-	global_reg_snapshot[this_cpu].o7 = regs->u_regs[UREG_I7];
-=======
 	struct global_reg_snapshot *rp;
 
 	flushw_all();
@@ -332,7 +201,6 @@ static void __global_reg_self(struct thread_info *tp, struct pt_regs *regs,
 	rp->tpc = regs->tpc;
 	rp->tnpc = regs->tnpc;
 	rp->o7 = regs->u_regs[UREG_I7];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (regs->tstate & TSTATE_PRIV) {
 		struct reg_window *rw;
@@ -340,19 +208,6 @@ static void __global_reg_self(struct thread_info *tp, struct pt_regs *regs,
 		rw = (struct reg_window *)
 			(regs->u_regs[UREG_FP] + STACK_BIAS);
 		if (kstack_valid(tp, (unsigned long) rw)) {
-<<<<<<< HEAD
-			global_reg_snapshot[this_cpu].i7 = rw->ins[7];
-			rw = (struct reg_window *)
-				(rw->ins[6] + STACK_BIAS);
-			if (kstack_valid(tp, (unsigned long) rw))
-				global_reg_snapshot[this_cpu].rpc = rw->ins[7];
-		}
-	} else {
-		global_reg_snapshot[this_cpu].i7 = 0;
-		global_reg_snapshot[this_cpu].rpc = 0;
-	}
-	global_reg_snapshot[this_cpu].thread = tp;
-=======
 			rp->i7 = rw->ins[7];
 			rw = (struct reg_window *)
 				(rw->ins[6] + STACK_BIAS);
@@ -364,7 +219,6 @@ static void __global_reg_self(struct thread_info *tp, struct pt_regs *regs,
 		rp->rpc = 0;
 	}
 	rp->thread = tp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* In order to avoid hangs we do not try to synchronize with the
@@ -382,11 +236,7 @@ static void __global_reg_poll(struct global_reg_snapshot *gp)
 	}
 }
 
-<<<<<<< HEAD
-void arch_trigger_all_cpu_backtrace(void)
-=======
 void arch_trigger_cpumask_backtrace(const cpumask_t *mask, int exclude_cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct thread_info *tp = current_thread_info();
 	struct pt_regs *regs = get_irq_regs();
@@ -396,20 +246,6 @@ void arch_trigger_cpumask_backtrace(const cpumask_t *mask, int exclude_cpu)
 	if (!regs)
 		regs = tp->kregs;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&global_reg_snapshot_lock, flags);
-
-	memset(global_reg_snapshot, 0, sizeof(global_reg_snapshot));
-
-	this_cpu = raw_smp_processor_id();
-
-	__global_reg_self(tp, regs, this_cpu);
-
-	smp_fetch_global_regs();
-
-	for_each_online_cpu(cpu) {
-		struct global_reg_snapshot *gp = &global_reg_snapshot[cpu];
-=======
 	spin_lock_irqsave(&global_cpu_snapshot_lock, flags);
 
 	this_cpu = raw_smp_processor_id();
@@ -428,7 +264,6 @@ void arch_trigger_cpumask_backtrace(const cpumask_t *mask, int exclude_cpu)
 			continue;
 
 		gp = &global_cpu_snapshot[cpu].reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		__global_reg_poll(gp);
 
@@ -449,13 +284,6 @@ void arch_trigger_cpumask_backtrace(const cpumask_t *mask, int exclude_cpu)
 			printk("             TPC[%lx] O7[%lx] I7[%lx] RPC[%lx]\n",
 			       gp->tpc, gp->o7, gp->i7, gp->rpc);
 		}
-<<<<<<< HEAD
-	}
-
-	memset(global_reg_snapshot, 0, sizeof(global_reg_snapshot));
-
-	spin_unlock_irqrestore(&global_reg_snapshot_lock, flags);
-=======
 
 		touch_nmi_watchdog();
 	}
@@ -463,56 +291,10 @@ void arch_trigger_cpumask_backtrace(const cpumask_t *mask, int exclude_cpu)
 	memset(global_cpu_snapshot, 0, sizeof(global_cpu_snapshot));
 
 	spin_unlock_irqrestore(&global_cpu_snapshot_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_MAGIC_SYSRQ
 
-<<<<<<< HEAD
-static void sysrq_handle_globreg(int key)
-{
-	arch_trigger_all_cpu_backtrace();
-}
-
-static struct sysrq_key_op sparc_globalreg_op = {
-	.handler	= sysrq_handle_globreg,
-	.help_msg	= "Globalregs",
-	.action_msg	= "Show Global CPU Regs",
-};
-
-static int __init sparc_globreg_init(void)
-{
-	return register_sysrq_key('y', &sparc_globalreg_op);
-}
-
-core_initcall(sparc_globreg_init);
-
-#endif
-
-unsigned long thread_saved_pc(struct task_struct *tsk)
-{
-	struct thread_info *ti = task_thread_info(tsk);
-	unsigned long ret = 0xdeadbeefUL;
-	
-	if (ti && ti->ksp) {
-		unsigned long *sp;
-		sp = (unsigned long *)(ti->ksp + STACK_BIAS);
-		if (((unsigned long)sp & (sizeof(long) - 1)) == 0UL &&
-		    sp[14]) {
-			unsigned long *fp;
-			fp = (unsigned long *)(sp[14] + STACK_BIAS);
-			if (((unsigned long)fp & (sizeof(long) - 1)) == 0UL)
-				ret = fp[15];
-		}
-	}
-	return ret;
-}
-
-/* Free current thread data structures etc.. */
-void exit_thread(void)
-{
-	struct thread_info *t = current_thread_info();
-=======
 static void sysrq_handle_globreg(u8 key)
 {
 	trigger_all_cpu_backtrace();
@@ -616,7 +398,6 @@ core_initcall(sparc_sysrq_init);
 void exit_thread(struct task_struct *tsk)
 {
 	struct thread_info *t = task_thread_info(tsk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (t->utraps) {
 		if (t->utraps[0] < 2)
@@ -644,25 +425,16 @@ void flush_thread(void)
 /* It's a bit more tricky when 64-bit tasks are involved... */
 static unsigned long clone_stackframe(unsigned long csp, unsigned long psp)
 {
-<<<<<<< HEAD
-	unsigned long fp, distance, rval;
-
-	if (!(test_thread_flag(TIF_32BIT))) {
-=======
 	bool stack_64bit = test_thread_64bit_stack(psp);
 	unsigned long fp, distance, rval;
 
 	if (stack_64bit) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		csp += STACK_BIAS;
 		psp += STACK_BIAS;
 		__get_user(fp, &(((struct reg_window __user *)psp)->ins[6]));
 		fp += STACK_BIAS;
-<<<<<<< HEAD
-=======
 		if (test_thread_flag(TIF_32BIT))
 			fp &= 0xffffffff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		__get_user(fp, &(((struct reg_window32 __user *)psp)->ins[6]));
 
@@ -674,15 +446,9 @@ static unsigned long clone_stackframe(unsigned long csp, unsigned long psp)
 
 	distance = fp - psp;
 	rval = (csp - distance);
-<<<<<<< HEAD
-	if (copy_in_user((void __user *) rval, (void __user *) psp, distance))
-		rval = 0;
-	else if (test_thread_flag(TIF_32BIT)) {
-=======
 	if (raw_copy_in_user((void __user *)rval, (void __user *)psp, distance))
 		rval = 0;
 	else if (!stack_64bit) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (put_user(((u32)csp),
 			     &(((struct reg_window32 __user *)rval)->ins[6])))
 			rval = 0;
@@ -717,20 +483,6 @@ void synchronize_user_stack(void)
 
 	flush_user_windows();
 	if ((window = get_thread_wsaved()) != 0) {
-<<<<<<< HEAD
-		int winsize = sizeof(struct reg_window);
-		int bias = 0;
-
-		if (test_thread_flag(TIF_32BIT))
-			winsize = sizeof(struct reg_window32);
-		else
-			bias = STACK_BIAS;
-
-		window -= 1;
-		do {
-			unsigned long sp = (t->rwbuf_stkptrs[window] + bias);
-			struct reg_window *rwin = &t->reg_window[window];
-=======
 		window -= 1;
 		do {
 			struct reg_window *rwin = &t->reg_window[window];
@@ -743,7 +495,6 @@ void synchronize_user_stack(void)
 				sp += STACK_BIAS;
 			else
 				winsize = sizeof(struct reg_window32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (!copy_to_user((char __user *)sp, rwin, winsize)) {
 				shift_window_buffer(window, get_thread_wsaved() - 1, t);
@@ -755,29 +506,6 @@ void synchronize_user_stack(void)
 
 static void stack_unaligned(unsigned long sp)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	info.si_signo = SIGBUS;
-	info.si_errno = 0;
-	info.si_code = BUS_ADRALN;
-	info.si_addr = (void __user *) sp;
-	info.si_trapno = 0;
-	force_sig_info(SIGBUS, &info, current);
-}
-
-void fault_in_user_windows(void)
-{
-	struct thread_info *t = current_thread_info();
-	unsigned long window;
-	int winsize = sizeof(struct reg_window);
-	int bias = 0;
-
-	if (test_thread_flag(TIF_32BIT))
-		winsize = sizeof(struct reg_window32);
-	else
-		bias = STACK_BIAS;
-=======
 	force_sig_fault(SIGBUS, BUS_ADRALN, (void __user *) sp);
 }
 
@@ -790,7 +518,6 @@ void fault_in_user_windows(struct pt_regs *regs)
 {
 	struct thread_info *t = current_thread_info();
 	unsigned long window;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	flush_user_windows();
 	window = get_thread_wsaved();
@@ -798,10 +525,6 @@ void fault_in_user_windows(struct pt_regs *regs)
 	if (likely(window != 0)) {
 		window -= 1;
 		do {
-<<<<<<< HEAD
-			unsigned long sp = (t->rwbuf_stkptrs[window] + bias);
-			struct reg_window *rwin = &t->reg_window[window];
-=======
 			struct reg_window *rwin = &t->reg_window[window];
 			int winsize = sizeof(struct reg_window);
 			unsigned long sp, orig_sp;
@@ -812,16 +535,11 @@ void fault_in_user_windows(struct pt_regs *regs)
 				sp += STACK_BIAS;
 			else
 				winsize = sizeof(struct reg_window32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (unlikely(sp & 0x7UL))
 				stack_unaligned(sp);
 
 			if (unlikely(copy_to_user((char __user *)sp,
-<<<<<<< HEAD
-						  rwin, winsize)))
-				goto barf;
-=======
 						  rwin, winsize))) {
 				if (show_unhandled_signals)
 					printk_ratelimited(is_compat_task() ?
@@ -832,7 +550,6 @@ void fault_in_user_windows(struct pt_regs *regs)
 							   regs->u_regs[UREG_I7]);
 				goto barf;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} while (window--);
 	}
 	set_thread_wsaved(0);
@@ -840,46 +557,7 @@ void fault_in_user_windows(struct pt_regs *regs)
 
 barf:
 	set_thread_wsaved(window + 1);
-<<<<<<< HEAD
-	do_exit(SIGILL);
-}
-
-asmlinkage long sparc_do_fork(unsigned long clone_flags,
-			      unsigned long stack_start,
-			      struct pt_regs *regs,
-			      unsigned long stack_size)
-{
-	int __user *parent_tid_ptr, *child_tid_ptr;
-	unsigned long orig_i1 = regs->u_regs[UREG_I1];
-	long ret;
-
-#ifdef CONFIG_COMPAT
-	if (test_thread_flag(TIF_32BIT)) {
-		parent_tid_ptr = compat_ptr(regs->u_regs[UREG_I2]);
-		child_tid_ptr = compat_ptr(regs->u_regs[UREG_I4]);
-	} else
-#endif
-	{
-		parent_tid_ptr = (int __user *) regs->u_regs[UREG_I2];
-		child_tid_ptr = (int __user *) regs->u_regs[UREG_I4];
-	}
-
-	ret = do_fork(clone_flags, stack_start,
-		      regs, stack_size,
-		      parent_tid_ptr, child_tid_ptr);
-
-	/* If we get an error and potentially restart the system
-	 * call, we're screwed because copy_thread() clobbered
-	 * the parent's %o1.  So detect that case and restore it
-	 * here.
-	 */
-	if ((unsigned long)ret >= -ERESTART_RESTARTBLOCK)
-		regs->u_regs[UREG_I1] = orig_i1;
-
-	return ret;
-=======
 	force_sig(SIGSEGV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Copy a Sparc thread.  The fork() return value conventions
@@ -887,31 +565,6 @@ asmlinkage long sparc_do_fork(unsigned long clone_flags,
  * Parent -->  %o0 == childs  pid, %o1 == 0
  * Child  -->  %o0 == parents pid, %o1 == 1
  */
-<<<<<<< HEAD
-int copy_thread(unsigned long clone_flags, unsigned long sp,
-		unsigned long unused,
-		struct task_struct *p, struct pt_regs *regs)
-{
-	struct thread_info *t = task_thread_info(p);
-	struct sparc_stackf *parent_sf;
-	unsigned long child_stack_sz;
-	char *child_trap_frame;
-	int kernel_thread;
-
-	kernel_thread = (regs->tstate & TSTATE_PRIV) ? 1 : 0;
-	parent_sf = ((struct sparc_stackf *) regs) - 1;
-
-	/* Calculate offset to stack_frame & pt_regs */
-	child_stack_sz = ((STACKFRAME_SZ + TRACEREG_SZ) +
-			  (kernel_thread ? STACKFRAME_SZ : 0));
-	child_trap_frame = (task_stack_page(p) +
-			    (THREAD_SIZE - child_stack_sz));
-	memcpy(child_trap_frame, parent_sf, child_stack_sz);
-
-	t->flags = (t->flags & ~((0xffUL << TI_FLAG_CWP_SHIFT) |
-				 (0xffUL << TI_FLAG_CURRENT_DS_SHIFT))) |
-		(((regs->tstate + 1) & TSTATE_CWP) << TI_FLAG_CWP_SHIFT);
-=======
 int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 {
 	unsigned long clone_flags = args->flags;
@@ -928,46 +581,12 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 	child_trap_frame = (task_stack_page(p) +
 			    (THREAD_SIZE - child_stack_sz));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t->new_child = 1;
 	t->ksp = ((unsigned long) child_trap_frame) - STACK_BIAS;
 	t->kregs = (struct pt_regs *) (child_trap_frame +
 				       sizeof(struct sparc_stackf));
 	t->fpsaved[0] = 0;
 
-<<<<<<< HEAD
-	if (kernel_thread) {
-		struct sparc_stackf *child_sf = (struct sparc_stackf *)
-			(child_trap_frame + (STACKFRAME_SZ + TRACEREG_SZ));
-
-		/* Zero terminate the stack backtrace.  */
-		child_sf->fp = NULL;
-		t->kregs->u_regs[UREG_FP] =
-		  ((unsigned long) child_sf) - STACK_BIAS;
-
-		t->flags |= ((long)ASI_P << TI_FLAG_CURRENT_DS_SHIFT);
-		t->kregs->u_regs[UREG_G6] = (unsigned long) t;
-		t->kregs->u_regs[UREG_G4] = (unsigned long) t->task;
-	} else {
-		if (t->flags & _TIF_32BIT) {
-			sp &= 0x00000000ffffffffUL;
-			regs->u_regs[UREG_FP] &= 0x00000000ffffffffUL;
-		}
-		t->kregs->u_regs[UREG_FP] = sp;
-		t->flags |= ((long)ASI_AIUS << TI_FLAG_CURRENT_DS_SHIFT);
-		if (sp != regs->u_regs[UREG_FP]) {
-			unsigned long csp;
-
-			csp = clone_stackframe(sp, regs->u_regs[UREG_FP]);
-			if (!csp)
-				return -EFAULT;
-			t->kregs->u_regs[UREG_FP] = csp;
-		}
-		if (t->utraps)
-			t->utraps[0]++;
-	}
-
-=======
 	if (unlikely(args->fn)) {
 		memset(child_trap_frame, 0, child_stack_sz);
 		__thread_flag_byte_ptr(t)[TI_FLAG_BYTE_CWP] = 
@@ -997,7 +616,6 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 	if (t->utraps)
 		t->utraps[0]++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set the return value for the child. */
 	t->kregs->u_regs[UREG_I0] = current->pid;
 	t->kregs->u_regs[UREG_I1] = 1;
@@ -1006,158 +624,11 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 	regs->u_regs[UREG_I1] = 0;
 
 	if (clone_flags & CLONE_SETTLS)
-<<<<<<< HEAD
-		t->kregs->u_regs[UREG_G7] = regs->u_regs[UREG_I3];
-=======
 		t->kregs->u_regs[UREG_G7] = tls;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * This is the mechanism for creating a new kernel thread.
- *
- * NOTE! Only a kernel-only process(ie the swapper or direct descendants
- * who haven't done an "execve()") should use this: it will work within
- * a system call from a "real" process, but the process memory space will
- * not be freed until both the parent and the child have exited.
- */
-pid_t kernel_thread(int (*fn)(void *), void * arg, unsigned long flags)
-{
-	long retval;
-
-	/* If the parent runs before fn(arg) is called by the child,
-	 * the input registers of this function can be clobbered.
-	 * So we stash 'fn' and 'arg' into global registers which
-	 * will not be modified by the parent.
-	 */
-	__asm__ __volatile__("mov %4, %%g2\n\t"	   /* Save FN into global */
-			     "mov %5, %%g3\n\t"	   /* Save ARG into global */
-			     "mov %1, %%g1\n\t"	   /* Clone syscall nr. */
-			     "mov %2, %%o0\n\t"	   /* Clone flags. */
-			     "mov 0, %%o1\n\t"	   /* usp arg == 0 */
-			     "t 0x6d\n\t"	   /* Linux/Sparc clone(). */
-			     "brz,a,pn %%o1, 1f\n\t" /* Parent, just return. */
-			     " mov %%o0, %0\n\t"
-			     "jmpl %%g2, %%o7\n\t"   /* Call the function. */
-			     " mov %%g3, %%o0\n\t"   /* Set arg in delay. */
-			     "mov %3, %%g1\n\t"
-			     "t 0x6d\n\t"	   /* Linux/Sparc exit(). */
-			     /* Notreached by child. */
-			     "1:" :
-			     "=r" (retval) :
-			     "i" (__NR_clone), "r" (flags | CLONE_VM | CLONE_UNTRACED),
-			     "i" (__NR_exit),  "r" (fn), "r" (arg) :
-			     "g1", "g2", "g3", "o0", "o1", "memory", "cc");
-	return retval;
-}
-EXPORT_SYMBOL(kernel_thread);
-
-typedef struct {
-	union {
-		unsigned int	pr_regs[32];
-		unsigned long	pr_dregs[16];
-	} pr_fr;
-	unsigned int __unused;
-	unsigned int	pr_fsr;
-	unsigned char	pr_qcnt;
-	unsigned char	pr_q_entrysize;
-	unsigned char	pr_en;
-	unsigned int	pr_q[64];
-} elf_fpregset_t32;
-
-/*
- * fill in the fpu structure for a core dump.
- */
-int dump_fpu (struct pt_regs * regs, elf_fpregset_t * fpregs)
-{
-	unsigned long *kfpregs = current_thread_info()->fpregs;
-	unsigned long fprs = current_thread_info()->fpsaved[0];
-
-	if (test_thread_flag(TIF_32BIT)) {
-		elf_fpregset_t32 *fpregs32 = (elf_fpregset_t32 *)fpregs;
-
-		if (fprs & FPRS_DL)
-			memcpy(&fpregs32->pr_fr.pr_regs[0], kfpregs,
-			       sizeof(unsigned int) * 32);
-		else
-			memset(&fpregs32->pr_fr.pr_regs[0], 0,
-			       sizeof(unsigned int) * 32);
-		fpregs32->pr_qcnt = 0;
-		fpregs32->pr_q_entrysize = 8;
-		memset(&fpregs32->pr_q[0], 0,
-		       (sizeof(unsigned int) * 64));
-		if (fprs & FPRS_FEF) {
-			fpregs32->pr_fsr = (unsigned int) current_thread_info()->xfsr[0];
-			fpregs32->pr_en = 1;
-		} else {
-			fpregs32->pr_fsr = 0;
-			fpregs32->pr_en = 0;
-		}
-	} else {
-		if(fprs & FPRS_DL)
-			memcpy(&fpregs->pr_regs[0], kfpregs,
-			       sizeof(unsigned int) * 32);
-		else
-			memset(&fpregs->pr_regs[0], 0,
-			       sizeof(unsigned int) * 32);
-		if(fprs & FPRS_DU)
-			memcpy(&fpregs->pr_regs[16], kfpregs+16,
-			       sizeof(unsigned int) * 32);
-		else
-			memset(&fpregs->pr_regs[16], 0,
-			       sizeof(unsigned int) * 32);
-		if(fprs & FPRS_FEF) {
-			fpregs->pr_fsr = current_thread_info()->xfsr[0];
-			fpregs->pr_gsr = current_thread_info()->gsr[0];
-		} else {
-			fpregs->pr_fsr = fpregs->pr_gsr = 0;
-		}
-		fpregs->pr_fprs = fprs;
-	}
-	return 1;
-}
-EXPORT_SYMBOL(dump_fpu);
-
-/*
- * sparc_execve() executes a new program after the asm stub has set
- * things up for us.  This should basically do what I want it to.
- */
-asmlinkage int sparc_execve(struct pt_regs *regs)
-{
-	int error, base = 0;
-	struct filename *filename;
-
-	/* User register window flush is done by entry.S */
-
-	/* Check for indirect call. */
-	if (regs->u_regs[UREG_G1] == 0)
-		base = 1;
-
-	filename = getname((char __user *)regs->u_regs[base + UREG_I0]);
-	error = PTR_ERR(filename);
-	if (IS_ERR(filename))
-		goto out;
-	error = do_execve(filename->name,
-			  (const char __user *const __user *)
-			  regs->u_regs[base + UREG_I1],
-			  (const char __user *const __user *)
-			  regs->u_regs[base + UREG_I2], regs);
-	putname(filename);
-	if (!error) {
-		fprs_write(0);
-		current_thread_info()->xfsr[0] = 0;
-		current_thread_info()->fpsaved[0] = 0;
-		regs->tstate &= ~TSTATE_PEF;
-	}
-out:
-	return error;
-}
-
-unsigned long get_wchan(struct task_struct *task)
-=======
 /* TIF_MCDPER in thread info flags for current task is updated lazily upon
  * a context switch. Update this flag in current task's thread flags
  * before dup so the dup'd task will inherit the current TIF_MCDPER flag.
@@ -1184,7 +655,6 @@ int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
 }
 
 unsigned long __get_wchan(struct task_struct *task)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long pc, fp, bias = 0;
 	struct thread_info *tp;
@@ -1192,13 +662,6 @@ unsigned long __get_wchan(struct task_struct *task)
         unsigned long ret = 0;
 	int count = 0; 
 
-<<<<<<< HEAD
-	if (!task || task == current ||
-            task->state == TASK_RUNNING)
-		goto out;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tp = task_thread_info(task);
 	bias = STACK_BIAS;
 	fp = task_thread_info(task)->ksp + bias;

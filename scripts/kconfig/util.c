@@ -1,91 +1,12 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2002-2005 Roman Zippel <zippel@linux-m68k.org>
- * Copyright (C) 2002-2005 Sam Ravnborg <sam@ravnborg.org>
- *
- * Released under the terms of the GNU GPL v2.0.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2002-2005 Roman Zippel <zippel@linux-m68k.org>
  * Copyright (C) 2002-2005 Sam Ravnborg <sam@ravnborg.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-<<<<<<< HEAD
-#include "lkc.h"
-
-/* file already present in list? If not add it */
-struct file *file_lookup(const char *name)
-{
-	struct file *file;
-	const char *file_name = sym_expand_string_value(name);
-
-	for (file = file_list; file; file = file->next) {
-		if (!strcmp(name, file->name)) {
-			free((void *)file_name);
-			return file;
-		}
-	}
-
-	file = malloc(sizeof(*file));
-	memset(file, 0, sizeof(*file));
-	file->name = file_name;
-	file->next = file_list;
-	file_list = file;
-	return file;
-}
-
-/* write a dependency file as used by kbuild to track dependencies */
-int file_write_dep(const char *name)
-{
-	struct symbol *sym, *env_sym;
-	struct expr *e;
-	struct file *file;
-	FILE *out;
-
-	if (!name)
-		name = ".kconfig.d";
-	out = fopen("..config.tmp", "w");
-	if (!out)
-		return 1;
-	fprintf(out, "deps_config := \\\n");
-	for (file = file_list; file; file = file->next) {
-		if (file->next)
-			fprintf(out, "\t%s \\\n", file->name);
-		else
-			fprintf(out, "\t%s\n", file->name);
-	}
-	fprintf(out, "\n%s: \\\n"
-		     "\t$(deps_config)\n\n", conf_get_autoconfig_name());
-
-	expr_list_for_each_sym(sym_env_list, e, sym) {
-		struct property *prop;
-		const char *value;
-
-		prop = sym_get_env_prop(sym);
-		env_sym = prop_get_symbol(prop);
-		if (!env_sym)
-			continue;
-		value = getenv(env_sym->name);
-		if (!value)
-			value = "";
-		fprintf(out, "ifneq \"$(%s)\" \"%s\"\n", env_sym->name, value);
-		fprintf(out, "%s: FORCE\n", conf_get_autoconfig_name());
-		fprintf(out, "endif\n");
-	}
-
-	fprintf(out, "\n$(deps_config): ;\n");
-	fclose(out);
-	rename("..config.tmp", name);
-	return 0;
-}
-
-
-=======
 
 #include "hashtable.h"
 #include "lkc.h"
@@ -132,44 +53,21 @@ const char *file_lookup(const char *name)
 	return file->name;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Allocate initial growable string */
 struct gstr str_new(void)
 {
 	struct gstr gs;
-<<<<<<< HEAD
-	gs.s = malloc(sizeof(char) * 64);
-=======
 	gs.s = xmalloc(sizeof(char) * 64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gs.len = 64;
 	gs.max_width = 0;
 	strcpy(gs.s, "\0");
 	return gs;
 }
 
-<<<<<<< HEAD
-/* Allocate and assign growable string */
-struct gstr str_assign(const char *s)
-{
-	struct gstr gs;
-	gs.s = strdup(s);
-	gs.len = strlen(s) + 1;
-	gs.max_width = 0;
-	return gs;
-}
-
-/* Free storage for growable string */
-void str_free(struct gstr *gs)
-{
-	if (gs->s)
-		free(gs->s);
-=======
 /* Free storage for growable string */
 void str_free(struct gstr *gs)
 {
 	free(gs->s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gs->s = NULL;
 	gs->len = 0;
 }
@@ -181,11 +79,7 @@ void str_append(struct gstr *gs, const char *s)
 	if (s) {
 		l = strlen(gs->s) + strlen(s) + 1;
 		if (l > gs->len) {
-<<<<<<< HEAD
-			gs->s   = realloc(gs->s, l);
-=======
 			gs->s = xrealloc(gs->s, l);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			gs->len = l;
 		}
 		strcat(gs->s, s);
@@ -204,17 +98,11 @@ void str_printf(struct gstr *gs, const char *fmt, ...)
 }
 
 /* Retrieve value of growable string */
-<<<<<<< HEAD
-const char *str_get(struct gstr *gs)
-=======
 char *str_get(struct gstr *gs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return gs->s;
 }
 
-<<<<<<< HEAD
-=======
 void *xmalloc(size_t size)
 {
 	void *p = malloc(size);
@@ -263,4 +151,3 @@ char *xstrndup(const char *s, size_t n)
 	fprintf(stderr, "Out of memory.\n");
 	exit(1);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

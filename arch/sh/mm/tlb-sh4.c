@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/mm/tlb-sh4.c
  *
@@ -9,11 +6,6 @@
  *
  * Copyright (C) 1999  Niibe Yutaka
  * Copyright (C) 2002 - 2007 Paul Mundt
-<<<<<<< HEAD
- *
- * Released under the terms of the GNU GPL v2.0.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/mm.h>

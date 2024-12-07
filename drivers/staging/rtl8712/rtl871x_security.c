@@ -1,29 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * rtl871x_security.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -38,10 +19,6 @@
 #include <linux/compiler.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/kref.h>
@@ -51,40 +28,23 @@
 #include <linux/uaccess.h>
 #include <asm/byteorder.h>
 #include <linux/atomic.h>
-<<<<<<< HEAD
-#include <linux/semaphore.h>
-
-#include "osdep_service.h"
-#include "drv_types.h"
-#include "wifi.h"
-=======
 #include <linux/crc32poly.h>
 #include <linux/semaphore.h>
 #include <linux/ieee80211.h>
 
 #include "osdep_service.h"
 #include "drv_types.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "osdep_intf.h"
 
 /* =====WEP related===== */
 
-<<<<<<< HEAD
-#define CRC32_POLY 0x04c11db7
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct arc4context {
 	u32 x;
 	u32 y;
 	u8 state[256];
 };
 
-<<<<<<< HEAD
-static void arcfour_init(struct arc4context *parc4ctx, u8 * key, u32 key_len)
-=======
 static void arcfour_init(struct arc4context *parc4ctx, u8 *key, u32 key_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32	t, u;
 	u32	keyindex;
@@ -151,30 +111,6 @@ static u8 crc32_reverseBit(u8 data)
 
 static void crc32_init(void)
 {
-<<<<<<< HEAD
-	if (bcrc32initialized == 1)
-		return;
-	else {
-		sint i, j;
-		u32 c;
-		u8 *p = (u8 *)&c, *p1;
-		u8 k;
-
-		c = 0x12340000;
-		for (i = 0; i < 256; ++i) {
-			k = crc32_reverseBit((u8)i);
-			for (c = ((u32)k) << 24, j = 8; j > 0; --j)
-				c = c & 0x80000000 ? (c << 1) ^ CRC32_POLY :
-				    (c << 1);
-			p1 = (u8 *)&crc32_table[i];
-			p1[0] = crc32_reverseBit(p[3]);
-			p1[1] = crc32_reverseBit(p[2]);
-			p1[2] = crc32_reverseBit(p[1]);
-			p1[3] = crc32_reverseBit(p[0]);
-		}
-		bcrc32initialized = 1;
-	}
-=======
 	sint i, j;
 	u32 c;
 	u8 *p = (u8 *)&c, *p1;
@@ -194,7 +130,6 @@ static void crc32_init(void)
 		p1[3] = crc32_reverseBit(p[0]);
 	}
 	bcrc32initialized = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 getcrc32(u8 *buf, u32 len)
@@ -202,11 +137,7 @@ static u32 getcrc32(u8 *buf, u32 len)
 	u8 *p;
 	u32  crc;
 
-<<<<<<< HEAD
-	if (bcrc32initialized == 0)
-=======
 	if (!bcrc32initialized)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		crc32_init();
 	crc = 0xffffffff; /* preload shift register, per CRC-32 spec */
 	for (p = buf; len > 0; ++p, --len)
@@ -215,22 +146,13 @@ static u32 getcrc32(u8 *buf, u32 len)
 }
 
 /*
-<<<<<<< HEAD
-	Need to consider the fragment  situation
-*/
-=======
  * Need to consider the fragment situation
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void r8712_wep_encrypt(struct _adapter *padapter, u8 *pxmitframe)
 {	/* exclude ICV */
 	unsigned char	crc[4];
 	struct arc4context  mycontext;
-<<<<<<< HEAD
-	u32 curfragnum, length, keylength;
-=======
 	u32 curfragnum, length, keylength, pki;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *pframe, *payload, *iv;    /*,*wepkey*/
 	u8 wepkey[16];
 	struct	pkt_attrib  *pattrib = &((struct xmit_frame *)
@@ -240,16 +162,6 @@ void r8712_wep_encrypt(struct _adapter *padapter, u8 *pxmitframe)
 
 	if (((struct xmit_frame *)pxmitframe)->buf_addr == NULL)
 		return;
-<<<<<<< HEAD
-	pframe = ((struct xmit_frame *)pxmitframe)->buf_addr+TXDESC_OFFSET;
-	/*start to encrypt each fragment*/
-	if ((pattrib->encrypt == _WEP40_) || (pattrib->encrypt == _WEP104_)) {
-		keylength = psecuritypriv->DefKeylen[psecuritypriv->
-			    PrivacyKeyIndex];
-		for (curfragnum = 0; curfragnum < pattrib->nr_frags;
-		     curfragnum++) {
-			iv = pframe+pattrib->hdrlen;
-=======
 	pframe = ((struct xmit_frame *)pxmitframe)->buf_addr + TXDESC_OFFSET;
 	/*start to encrypt each fragment*/
 	if ((pattrib->encrypt == _WEP40_) || (pattrib->encrypt == _WEP104_)) {
@@ -258,19 +170,10 @@ void r8712_wep_encrypt(struct _adapter *padapter, u8 *pxmitframe)
 		for (curfragnum = 0; curfragnum < pattrib->nr_frags;
 		     curfragnum++) {
 			iv = pframe + pattrib->hdrlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(&wepkey[0], iv, 3);
 			memcpy(&wepkey[3], &psecuritypriv->DefKey[
 				psecuritypriv->PrivacyKeyIndex].skey[0],
 				keylength);
-<<<<<<< HEAD
-			payload = pframe+pattrib->iv_len+pattrib->hdrlen;
-			if ((curfragnum + 1) == pattrib->nr_frags) {
-				length = pattrib->last_txcmdsz-pattrib->
-					 hdrlen-pattrib->iv_len -
-					 pattrib->icv_len;
-				*((u32 *)crc) = cpu_to_le32(getcrc32(
-=======
 			payload = pframe + pattrib->iv_len + pattrib->hdrlen;
 			if ((curfragnum + 1) == pattrib->nr_frags) {
 				length = pattrib->last_txcmdsz -
@@ -278,7 +181,6 @@ void r8712_wep_encrypt(struct _adapter *padapter, u8 *pxmitframe)
 					pattrib->iv_len -
 					pattrib->icv_len;
 				*((__le32 *)crc) = cpu_to_le32(getcrc32(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						payload, length));
 				arcfour_init(&mycontext, wepkey, 3 + keylength);
 				arcfour_encrypt(&mycontext, payload, payload,
@@ -286,25 +188,15 @@ void r8712_wep_encrypt(struct _adapter *padapter, u8 *pxmitframe)
 				arcfour_encrypt(&mycontext, payload + length,
 						crc, 4);
 			} else {
-<<<<<<< HEAD
-				length = pxmitpriv->frag_len-pattrib->hdrlen -
-					 pattrib->iv_len-pattrib->icv_len;
-				*((u32 *)crc) = cpu_to_le32(getcrc32(
-=======
 				length = pxmitpriv->frag_len -
 					 pattrib->hdrlen - pattrib->iv_len -
 					 pattrib->icv_len;
 				*((__le32 *)crc) = cpu_to_le32(getcrc32(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						payload, length));
 				arcfour_init(&mycontext, wepkey, 3 + keylength);
 				arcfour_encrypt(&mycontext, payload, payload,
 						length);
-<<<<<<< HEAD
-				arcfour_encrypt(&mycontext, payload+length,
-=======
 				arcfour_encrypt(&mycontext, payload + length,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						crc, 4);
 				pframe += pxmitpriv->frag_len;
 				pframe = (u8 *)RND4((addr_t)(pframe));
@@ -338,25 +230,14 @@ void r8712_wep_decrypt(struct _adapter  *padapter, u8 *precvframe)
 			psecuritypriv->PrivacyKeyIndex].skey[0],
 			keylength);
 		length = ((union recv_frame *)precvframe)->
-<<<<<<< HEAD
-			   u.hdr.len-prxattrib->hdrlen-prxattrib->iv_len;
-		payload = pframe+prxattrib->iv_len+prxattrib->hdrlen;
-=======
 			   u.hdr.len - prxattrib->hdrlen - prxattrib->iv_len;
 		payload = pframe + prxattrib->iv_len + prxattrib->hdrlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* decrypt payload include icv */
 		arcfour_init(&mycontext, wepkey, 3 + keylength);
 		arcfour_encrypt(&mycontext, payload, payload,  length);
 		/* calculate icv and compare the icv */
-<<<<<<< HEAD
-		*((u32 *)crc) = cpu_to_le32(getcrc32(payload, length - 4));
-	}
-	return;
-=======
 		*((__le32 *)crc) = cpu_to_le32(getcrc32(payload, length - 4));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* 3 =====TKIP related===== */
@@ -376,14 +257,9 @@ static void secmicputuint32(u8 *p, u32 val)
 /* Convert from Us4Byte32 to Byte[] in a portable way */
 {
 	long i;
-<<<<<<< HEAD
-	for (i = 0; i < 4; i++) {
-		*p++ = (u8) (val & 0xff);
-=======
 
 	for (i = 0; i < 4; i++) {
 		*p++ = (u8)(val & 0xff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val >>= 8;
 	}
 }
@@ -397,11 +273,7 @@ static void secmicclear(struct mic_data *pmicdata)
 	pmicdata->M = 0;
 }
 
-<<<<<<< HEAD
-void r8712_secmicsetkey(struct mic_data *pmicdata, u8 * key)
-=======
 void r8712_secmicsetkey(struct mic_data *pmicdata, u8 *key)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Set the key */
 	pmicdata->K0 = secmicgetuint32(key);
@@ -433,11 +305,7 @@ static void secmicappendbyte(struct mic_data *pmicdata, u8 b)
 	}
 }
 
-<<<<<<< HEAD
-void r8712_secmicappend(struct mic_data *pmicdata, u8 * src, u32 nbytes)
-=======
 void r8712_secmicappend(struct mic_data *pmicdata, u8 *src, u32 nbytes)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* This is simple */
 	while (nbytes > 0) {
@@ -513,10 +381,6 @@ void seccalctkipmic(u8 *key, u8 *header, u8 *data, u32 data_len, u8 *mic_code,
 #define P1K_SIZE         10    /*  80-bit Phase1 key                */
 #define RC4_KEY_SIZE     16    /* 128-bit RC4KEY (104 bits unknown) */
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 2-unsigned char by 2-unsigned char subset of the full AES S-box table */
 static const unsigned short Sbox1[2][256] = {/* Sbox for hash (can be in ROM) */
 	{
@@ -590,24 +454,6 @@ static const unsigned short Sbox1[2][256] = {/* Sbox for hash (can be in ROM) */
 };
 
 /*
-<<<<<<< HEAD
-**********************************************************************
-* Routine: Phase 1 -- generate P1K, given TA, TK, IV32
-*
-* Inputs:
-*     tk[]      = temporal key                         [128 bits]
-*     ta[]      = transmitter's MAC address            [ 48 bits]
-*     iv32      = upper 32 bits of IV                  [ 32 bits]
-* Output:
-*     p1k[]     = Phase 1 key                          [ 80 bits]
-*
-* Note:
-*     This function only needs to be called every 2**16 packets,
-*     although in theory it could be called every packet.
-*
-**********************************************************************
-*/
-=======
  **********************************************************************
  * Routine: Phase 1 -- generate P1K, given TA, TK, IV32
  *
@@ -624,7 +470,6 @@ static const unsigned short Sbox1[2][256] = {/* Sbox for hash (can be in ROM) */
  *
  **********************************************************************
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void phase1(u16 *p1k, const u8 *tk, const u8 *ta, u32 iv32)
 {
 	sint  i;
@@ -638,48 +483,16 @@ static void phase1(u16 *p1k, const u8 *tk, const u8 *ta, u32 iv32)
 	/* Now compute an unbalanced Feistel cipher with 80-bit block */
 	/* size on the 80-bit block P1K[], using the 128-bit key TK[] */
 	for (i = 0; i < PHASE1_LOOP_CNT; i++) {  /* Each add is mod 2**16 */
-<<<<<<< HEAD
-		p1k[0] += _S_(p1k[4] ^ TK16((i&1) + 0));
-		p1k[1] += _S_(p1k[0] ^ TK16((i&1) + 2));
-		p1k[2] += _S_(p1k[1] ^ TK16((i&1) + 4));
-		p1k[3] += _S_(p1k[2] ^ TK16((i&1) + 6));
-		p1k[4] += _S_(p1k[3] ^ TK16((i&1) + 0));
-=======
 		p1k[0] += _S_(p1k[4] ^ TK16((i & 1) + 0));
 		p1k[1] += _S_(p1k[0] ^ TK16((i & 1) + 2));
 		p1k[2] += _S_(p1k[1] ^ TK16((i & 1) + 4));
 		p1k[3] += _S_(p1k[2] ^ TK16((i & 1) + 6));
 		p1k[4] += _S_(p1k[3] ^ TK16((i & 1) + 0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p1k[4] +=  (unsigned short)i;	/* avoid "slide attacks" */
 	}
 }
 
 /*
-<<<<<<< HEAD
-**********************************************************************
-* Routine: Phase 2 -- generate RC4KEY, given TK, P1K, IV16
-*
-* Inputs:
-*     tk[]      = Temporal key                         [128 bits]
-*     p1k[]     = Phase 1 output key                   [ 80 bits]
-*     iv16      = low 16 bits of IV counter            [ 16 bits]
-* Output:
-*     rc4key[]  = the key used to encrypt the packet   [128 bits]
-*
-* Note:
-*     The value {TA,IV32,IV16} for Phase1/Phase2 must be unique
-*     across all packets using the same key TK value. Then, for a
-*     given value of TK[], this TKIP48 construction guarantees that
-*     the final RC4KEY value is unique across all packets.
-*
-* Suggested implementation optimization: if PPK[] is "overlaid"
-*     appropriately on RC4KEY[], there is no need for the final
-*     for loop below that copies the PPK[] result into RC4KEY[].
-*
-**********************************************************************
-*/
-=======
  **********************************************************************
  * Routine: Phase 2 -- generate RC4KEY, given TK, P1K, IV16
  *
@@ -702,7 +515,6 @@ static void phase1(u16 *p1k, const u8 *tk, const u8 *ta, u32 iv32)
  *
  **********************************************************************
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void phase2(u8 *rc4key, const u8 *tk, const u16 *p1k, u16 iv16)
 {
 	sint  i;
@@ -751,11 +563,7 @@ u32 r8712_tkip_encrypt(struct _adapter *padapter, u8 *pxmitframe)
 	u8 ttkey[16];
 	u8 crc[4];
 	struct arc4context mycontext;
-<<<<<<< HEAD
-	u32 curfragnum, length, prwskeylen;
-=======
 	u32 curfragnum, length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 *pframe, *payload, *iv, *prwskey;
 	union pn48 txpn;
@@ -767,11 +575,7 @@ u32 r8712_tkip_encrypt(struct _adapter *padapter, u8 *pxmitframe)
 	if (((struct xmit_frame *)pxmitframe)->buf_addr == NULL)
 		return _FAIL;
 
-<<<<<<< HEAD
-	pframe = ((struct xmit_frame *)pxmitframe)->buf_addr+TXDESC_OFFSET;
-=======
 	pframe = ((struct xmit_frame *)pxmitframe)->buf_addr + TXDESC_OFFSET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 4 start to encrypt each fragment */
 	if (pattrib->encrypt == _TKIP_) {
 		if (pattrib->psta)
@@ -779,48 +583,27 @@ u32 r8712_tkip_encrypt(struct _adapter *padapter, u8 *pxmitframe)
 		else
 			stainfo = r8712_get_stainfo(&padapter->stapriv,
 				  &pattrib->ra[0]);
-<<<<<<< HEAD
-		if (stainfo != NULL) {
-			prwskey = &stainfo->x_UncstKey.skey[0];
-			prwskeylen = 16;
-			for (curfragnum = 0; curfragnum < pattrib->nr_frags;
-			     curfragnum++) {
-				iv = pframe + pattrib->hdrlen;
-				payload = pframe+pattrib->iv_len +
-=======
 		if (stainfo) {
 			prwskey = &stainfo->x_UncstKey.skey[0];
 			for (curfragnum = 0; curfragnum < pattrib->nr_frags;
 			     curfragnum++) {
 				iv = pframe + pattrib->hdrlen;
 				payload = pframe + pattrib->iv_len +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  pattrib->hdrlen;
 				GET_TKIP_PN(iv, txpn);
 				pnl = (u16)(txpn.val);
 				pnh = (u32)(txpn.val >> 16);
-<<<<<<< HEAD
-				phase1((u16 *)&ttkey[0], prwskey, &pattrib->
-				       ta[0], pnh);
-=======
 				phase1((u16 *)&ttkey[0], prwskey,
 				       &pattrib->ta[0], pnh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				phase2(&rc4key[0], prwskey, (u16 *)&ttkey[0],
 				       pnl);
 				if ((curfragnum + 1) == pattrib->nr_frags) {
 					/* 4 the last fragment */
 					length = pattrib->last_txcmdsz -
-<<<<<<< HEAD
-					     pattrib->hdrlen-pattrib->iv_len -
-					     pattrib->icv_len;
-					*((u32 *)crc) = cpu_to_le32(
-=======
 					     pattrib->hdrlen -
 					     pattrib->iv_len -
 					     pattrib->icv_len;
 					*((__le32 *)crc) = cpu_to_le32(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						getcrc32(payload, length));
 					arcfour_init(&mycontext, rc4key, 16);
 					arcfour_encrypt(&mycontext, payload,
@@ -828,51 +611,31 @@ u32 r8712_tkip_encrypt(struct _adapter *padapter, u8 *pxmitframe)
 					arcfour_encrypt(&mycontext, payload +
 							length, crc, 4);
 				} else {
-<<<<<<< HEAD
-					length = pxmitpriv->frag_len-pattrib->
-						 hdrlen-pattrib->
-						 iv_len-pattrib->icv_len;
-					*((u32 *)crc) = cpu_to_le32(getcrc32(
-=======
 					length = pxmitpriv->frag_len -
 						 pattrib->hdrlen -
 						 pattrib->iv_len -
 						 pattrib->icv_len;
 					*((__le32 *)crc) = cpu_to_le32(getcrc32(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							payload, length));
 					arcfour_init(&mycontext, rc4key, 16);
 					arcfour_encrypt(&mycontext, payload,
 							 payload, length);
 					arcfour_encrypt(&mycontext,
-<<<<<<< HEAD
-							payload+length, crc, 4);
-=======
 							payload + length, crc,
 							4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					pframe += pxmitpriv->frag_len;
 					pframe = (u8 *)RND4((addr_t)(pframe));
 				}
 			}
-<<<<<<< HEAD
-		} else
-			res = _FAIL;
-=======
 		} else {
 			res = _FAIL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return res;
 }
 
 /* The hlen doesn't include the IV */
-<<<<<<< HEAD
-u32 r8712_tkip_decrypt(struct _adapter *padapter, u8 *precvframe)
-=======
 void r8712_tkip_decrypt(struct _adapter *padapter, u8 *precvframe)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {	/* exclude ICV */
 	u16 pnl;
 	u32 pnh;
@@ -880,11 +643,7 @@ void r8712_tkip_decrypt(struct _adapter *padapter, u8 *precvframe)
 	u8 ttkey[16];
 	u8 crc[4];
 	struct arc4context mycontext;
-<<<<<<< HEAD
-	u32 length, prwskeylen;
-=======
 	u32 length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *pframe, *payload, *iv, *prwskey, idx = 0;
 	union pn48 txpn;
 	struct	sta_info *stainfo;
@@ -898,23 +657,6 @@ void r8712_tkip_decrypt(struct _adapter *padapter, u8 *precvframe)
 	if (prxattrib->encrypt == _TKIP_) {
 		stainfo = r8712_get_stainfo(&padapter->stapriv,
 					    &prxattrib->ta[0]);
-<<<<<<< HEAD
-		if (stainfo != NULL) {
-			iv = pframe+prxattrib->hdrlen;
-			payload = pframe+prxattrib->iv_len + prxattrib->hdrlen;
-			length = ((union recv_frame *)precvframe)->
-				 u.hdr.len - prxattrib->hdrlen -
-				 prxattrib->iv_len;
-			if (IS_MCAST(prxattrib->ra)) {
-				idx = iv[3];
-				prwskey = &psecuritypriv->XGrpKey[
-					 ((idx >> 6) & 0x3) - 1].skey[0];
-				if (psecuritypriv->binstallGrpkey == false)
-					return _FAIL;
-			} else
-				prwskey = &stainfo->x_UncstKey.skey[0];
-			prwskeylen = 16;
-=======
 		if (stainfo) {
 			iv = pframe + prxattrib->hdrlen;
 			payload = pframe + prxattrib->iv_len +
@@ -931,7 +673,6 @@ void r8712_tkip_decrypt(struct _adapter *padapter, u8 *precvframe)
 			} else {
 				prwskey = &stainfo->x_UncstKey.skey[0];
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			GET_TKIP_PN(iv, txpn);
 			pnl = (u16)(txpn.val);
 			pnh = (u32)(txpn.val >> 16);
@@ -942,24 +683,10 @@ void r8712_tkip_decrypt(struct _adapter *padapter, u8 *precvframe)
 			/* 4 decrypt payload include icv */
 			arcfour_init(&mycontext, rc4key, 16);
 			arcfour_encrypt(&mycontext, payload, payload, length);
-<<<<<<< HEAD
-			*((u32 *)crc) = cpu_to_le32(getcrc32(payload,
-					length - 4));
-			if (crc[3] != payload[length - 1] ||
-			    crc[2] != payload[length - 2] ||
-			    crc[1] != payload[length - 3] ||
-			    crc[0] != payload[length - 4])
-				return _FAIL;
-		} else
-			return _FAIL;
-	}
-	return _SUCCESS;
-=======
 			*((__le32 *)crc) = cpu_to_le32(getcrc32(payload,
 					length - 4));
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* 3 =====AES related===== */
@@ -1020,10 +747,7 @@ static void xor_128(u8 *a, u8 *b, u8 *out)
 static void xor_32(u8 *a, u8 *b, u8 *out)
 {
 	sint i;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 4; i++)
 		out[i] = a[i] ^ b[i];
 }
@@ -1037,11 +761,7 @@ static void next_key(u8 *key, sint round)
 {
 	u8 rcon;
 	u8 sbox_key[4];
-<<<<<<< HEAD
-	u8 rcon_table[12] = {
-=======
 	static const u8 rcon_table[12] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80,
 		0x1b, 0x36, 0x36, 0x36
 	};
@@ -1061,10 +781,7 @@ static void next_key(u8 *key, sint round)
 static void byte_sub(u8 *in, u8 *out)
 {
 	sint i;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 16; i++)
 		out[i] = sbox(in[i]);
 }
@@ -1095,37 +812,22 @@ static void mix_column(u8 *in, u8 *out)
 	u8 add1b[4];
 	u8 add1bf7[4];
 	u8 rotl[4];
-<<<<<<< HEAD
-	u8 swap_halfs[4];
-=======
 	u8 swap_halves[4];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 andf7[4];
 	u8 rotr[4];
 	u8 temp[4];
 	u8 tempb[4];
 
-<<<<<<< HEAD
-	for (i = 0 ; i < 4; i++) {
-=======
 	for (i = 0; i < 4; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((in[i] & 0x80) == 0x80)
 			add1b[i] = 0x1b;
 		else
 			add1b[i] = 0x00;
 	}
-<<<<<<< HEAD
-	swap_halfs[0] = in[2];    /* Swap halves */
-	swap_halfs[1] = in[3];
-	swap_halfs[2] = in[0];
-	swap_halfs[3] = in[1];
-=======
 	swap_halves[0] = in[2];    /* Swap halves */
 	swap_halves[1] = in[3];
 	swap_halves[2] = in[0];
 	swap_halves[3] = in[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rotl[0] = in[3];        /* Rotate left 8 bits */
 	rotl[1] = in[0];
 	rotl[2] = in[1];
@@ -1136,11 +838,7 @@ static void mix_column(u8 *in, u8 *out)
 	andf7[3] = in[3] & 0x7f;
 	for (i = 3; i > 0; i--) {   /* logical shift left 1 bit */
 		andf7[i] = andf7[i] << 1;
-<<<<<<< HEAD
-		if ((andf7[i-1] & 0x80) == 0x80)
-=======
 		if ((andf7[i - 1] & 0x80) == 0x80)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			andf7[i] = (andf7[i] | 0x01);
 	}
 	andf7[0] = andf7[0] << 1;
@@ -1153,11 +851,7 @@ static void mix_column(u8 *in, u8 *out)
 	rotr[2] = rotr[3];
 	rotr[3] = temp[0];
 	xor_32(add1bf7, rotr, temp);
-<<<<<<< HEAD
-	xor_32(swap_halfs, rotl, tempb);
-=======
 	xor_32(swap_halves, rotl, tempb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xor_32(temp, tempb, out);
 }
 
@@ -1212,13 +906,8 @@ static void construct_mic_iv(u8 *mic_iv, sint qc_exists, sint a4_exists,
 		mic_iv[i] = mpdu[i + 8];
 	for (i = 8; i < 14; i++)
 		mic_iv[i] = pn_vector[13 - i]; /* mic_iv[8:13] = PN[5:0] */
-<<<<<<< HEAD
-	mic_iv[14] = (unsigned char) (payload_length / 256);
-	mic_iv[15] = (unsigned char) (payload_length % 256);
-=======
 	mic_iv[14] = (unsigned char)(payload_length / 256);
 	mic_iv[15] = (unsigned char)(payload_length % 256);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /************************************************/
@@ -1287,14 +976,9 @@ static void construct_mic_header2(u8 *mic_header2, u8 *mpdu, sint a4_exists,
 /* Builds the last MIC header block from        */
 /* header fields.                               */
 /************************************************/
-<<<<<<< HEAD
-static void construct_ctr_preload(u8 *ctr_preload, sint a4_exists, sint qc_exists,
-			   u8 *mpdu, u8 *pn_vector, sint c)
-=======
 static void construct_ctr_preload(u8 *ctr_preload,
 				  sint a4_exists, sint qc_exists,
 				  u8 *mpdu, u8 *pn_vector, sint c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sint i;
 
@@ -1310,13 +994,8 @@ static void construct_ctr_preload(u8 *ctr_preload,
 		ctr_preload[i] = mpdu[i + 8];
 	for (i = 8; i < 14; i++)
 		ctr_preload[i] = pn_vector[13 - i];
-<<<<<<< HEAD
-	ctr_preload[14] = (unsigned char) (c / 256); /* Ctr */
-	ctr_preload[15] = (unsigned char) (c % 256);
-=======
 	ctr_preload[14] = (unsigned char)(c / 256); /* Ctr */
 	ctr_preload[15] = (unsigned char)(c % 256);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /************************************/
@@ -1331,13 +1010,8 @@ static void bitwise_xor(u8 *ina, u8 *inb, u8 *out)
 		out[i] = ina[i] ^ inb[i];
 }
 
-<<<<<<< HEAD
-static sint aes_cipher(u8 *key, uint	hdrlen,
-			u8 *pframe, uint plen)
-=======
 static void aes_cipher(u8 *key, uint hdrlen,
 		       u8 *pframe, uint plen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint qc_exists, a4_exists, i, j, payload_remainder;
 	uint num_blocks, payload_index;
@@ -1353,17 +1027,10 @@ static void aes_cipher(u8 *key, uint hdrlen,
 	u8 aes_out[16];
 	u8 padded_buffer[16];
 	u8 mic[8];
-<<<<<<< HEAD
-	uint	frtype  = GetFrameType(pframe);
-	uint	frsubtype  = GetFrameSubType(pframe);
-
-	frsubtype = frsubtype >> 4;
-=======
 	u16 frtype  = GetFrameType(pframe);
 	u16 frsubtype  = GetFrameSubType(pframe);
 
 	frsubtype >>= 4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset((void *)mic_iv, 0, 16);
 	memset((void *)mic_header1, 0, 16);
 	memset((void *)mic_header2, 0, 16);
@@ -1377,38 +1044,16 @@ static void aes_cipher(u8 *key, uint hdrlen,
 	else
 		a4_exists = 1;
 
-<<<<<<< HEAD
-	if ((frtype == WIFI_DATA_CFACK) ||
-	     (frtype == WIFI_DATA_CFPOLL) ||
-	     (frtype == WIFI_DATA_CFACKPOLL)) {
-			qc_exists = 1;
-			if (hdrlen !=  WLAN_HDR_A3_QOS_LEN)
-				hdrlen += 2;
-=======
 	if ((frtype == (IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA_CFACK)) ||
 	    (frtype == (IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA_CFPOLL)) ||
 	    (frtype == (IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA_CFACKPOLL))) {
 		qc_exists = 1;
 		if (hdrlen !=  WLAN_HDR_A3_QOS_LEN)
 			hdrlen += 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if ((frsubtype == 0x08) ||
 		   (frsubtype == 0x09) ||
 		   (frsubtype == 0x0a) ||
 		   (frsubtype == 0x0b)) {
-<<<<<<< HEAD
-			if (hdrlen !=  WLAN_HDR_A3_QOS_LEN)
-				hdrlen += 2;
-			qc_exists = 1;
-	} else
-		qc_exists = 0;
-	pn_vector[0] = pframe[hdrlen];
-	pn_vector[1] = pframe[hdrlen+1];
-	pn_vector[2] = pframe[hdrlen+4];
-	pn_vector[3] = pframe[hdrlen+5];
-	pn_vector[4] = pframe[hdrlen+6];
-	pn_vector[5] = pframe[hdrlen+7];
-=======
 		if (hdrlen !=  WLAN_HDR_A3_QOS_LEN)
 			hdrlen += 2;
 		qc_exists = 1;
@@ -1421,18 +1066,13 @@ static void aes_cipher(u8 *key, uint hdrlen,
 	pn_vector[3] = pframe[hdrlen + 5];
 	pn_vector[4] = pframe[hdrlen + 6];
 	pn_vector[5] = pframe[hdrlen + 7];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	construct_mic_iv(mic_iv, qc_exists, a4_exists, pframe, plen, pn_vector);
 	construct_mic_header1(mic_header1, hdrlen, pframe);
 	construct_mic_header2(mic_header2, pframe, a4_exists, qc_exists);
 	payload_remainder = plen % 16;
 	num_blocks = plen / 16;
 	/* Find start of payload */
-<<<<<<< HEAD
-	payload_index = (hdrlen + 8);
-=======
 	payload_index = hdrlen + 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Calculate MIC */
 	aes128k128d(key, mic_iv, aes_out);
 	bitwise_xor(aes_out, mic_header1, chain_buffer);
@@ -1457,11 +1097,7 @@ static void aes_cipher(u8 *key, uint hdrlen,
 		mic[j] = aes_out[j];
 	/* Insert MIC into payload */
 	for (j = 0; j < 8; j++)
-<<<<<<< HEAD
-		pframe[payload_index+j] = mic[j];
-=======
 		pframe[payload_index + j] = mic[j];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	payload_index = hdrlen + 8;
 	for (i = 0; i < num_blocks; i++) {
 		construct_ctr_preload(ctr_preload, a4_exists, qc_exists,
@@ -1474,19 +1110,11 @@ static void aes_cipher(u8 *key, uint hdrlen,
 	if (payload_remainder > 0) {  /* If short final block, then pad it,*/
 				      /* encrypt and copy unpadded part back */
 		construct_ctr_preload(ctr_preload, a4_exists, qc_exists,
-<<<<<<< HEAD
-				      pframe, pn_vector, num_blocks+1);
-		for (j = 0; j < 16; j++)
-			padded_buffer[j] = 0x00;
-		for (j = 0; j < payload_remainder; j++)
-			padded_buffer[j] = pframe[payload_index+j];
-=======
 				      pframe, pn_vector, num_blocks + 1);
 		for (j = 0; j < 16; j++)
 			padded_buffer[j] = 0x00;
 		for (j = 0; j < payload_remainder; j++)
 			padded_buffer[j] = pframe[payload_index + j];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		aes128k128d(key, ctr_preload, aes_out);
 		bitwise_xor(aes_out, padded_buffer, chain_buffer);
 		for (j = 0; j < payload_remainder; j++)
@@ -1498,29 +1126,17 @@ static void aes_cipher(u8 *key, uint hdrlen,
 	for (j = 0; j < 16; j++)
 		padded_buffer[j] = 0x00;
 	for (j = 0; j < 8; j++)
-<<<<<<< HEAD
-		padded_buffer[j] = pframe[j+hdrlen+8+plen];
-=======
 		padded_buffer[j] = pframe[j + hdrlen + 8 + plen];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aes128k128d(key, ctr_preload, aes_out);
 	bitwise_xor(aes_out, padded_buffer, chain_buffer);
 	for (j = 0; j < 8; j++)
 		pframe[payload_index++] = chain_buffer[j];
-<<<<<<< HEAD
-	return _SUCCESS;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 r8712_aes_encrypt(struct _adapter *padapter, u8 *pxmitframe)
 {	/* exclude ICV */
 	/* Intermediate Buffers */
 	sint	curfragnum, length;
-<<<<<<< HEAD
-	u32	prwskeylen;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	*pframe, *prwskey;
 	struct	sta_info *stainfo;
 	struct	pkt_attrib  *pattrib = &((struct xmit_frame *)
@@ -1532,77 +1148,43 @@ u32 r8712_aes_encrypt(struct _adapter *padapter, u8 *pxmitframe)
 		return _FAIL;
 	pframe = ((struct xmit_frame *)pxmitframe)->buf_addr + TXDESC_OFFSET;
 	/* 4 start to encrypt each fragment */
-<<<<<<< HEAD
-	if ((pattrib->encrypt == _AES_)) {
-=======
 	if (pattrib->encrypt == _AES_) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pattrib->psta)
 			stainfo = pattrib->psta;
 		else
 			stainfo = r8712_get_stainfo(&padapter->stapriv,
 				  &pattrib->ra[0]);
-<<<<<<< HEAD
-		if (stainfo != NULL) {
-			prwskey = &stainfo->x_UncstKey.skey[0];
-			prwskeylen = 16;
-			for (curfragnum = 0; curfragnum < pattrib->nr_frags;
-			     curfragnum++) {
-				if ((curfragnum + 1) == pattrib->nr_frags) {\
-=======
 		if (stainfo) {
 			prwskey = &stainfo->x_UncstKey.skey[0];
 			for (curfragnum = 0; curfragnum < pattrib->nr_frags;
 			     curfragnum++) {
 				if ((curfragnum + 1) == pattrib->nr_frags) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					length = pattrib->last_txcmdsz -
 						 pattrib->hdrlen -
 						 pattrib->iv_len -
 						 pattrib->icv_len;
-<<<<<<< HEAD
-					aes_cipher(prwskey, pattrib->
-						  hdrlen, pframe, length);
-=======
 					aes_cipher(prwskey, pattrib->hdrlen,
 						   pframe, length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				} else {
 					length = pxmitpriv->frag_len -
 						 pattrib->hdrlen -
 						 pattrib->iv_len -
-<<<<<<< HEAD
-						 pattrib->icv_len ;
-					aes_cipher(prwskey, pattrib->
-						   hdrlen, pframe, length);
-=======
 						 pattrib->icv_len;
 					aes_cipher(prwskey, pattrib->hdrlen,
 						   pframe, length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					pframe += pxmitpriv->frag_len;
 					pframe = (u8 *)RND4((addr_t)(pframe));
 				}
 			}
-<<<<<<< HEAD
-		} else
-			res = _FAIL;
-=======
 		} else {
 			res = _FAIL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return res;
 }
 
-<<<<<<< HEAD
-static sint aes_decipher(u8 *key, uint	hdrlen,
-			u8 *pframe, uint plen)
-=======
 static void aes_decipher(u8 *key, uint hdrlen,
 			 u8 *pframe, uint plen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static u8 message[MAX_MSG_SIZE];
 	uint qc_exists, a4_exists, i, j, payload_remainder;
@@ -1620,11 +1202,7 @@ static void aes_decipher(u8 *key, uint hdrlen,
 	uint frtype  = GetFrameType(pframe);
 	uint frsubtype  = GetFrameSubType(pframe);
 
-<<<<<<< HEAD
-	frsubtype = frsubtype >> 4;
-=======
 	frsubtype >>= 4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset((void *)mic_iv, 0, 16);
 	memset((void *)mic_header1, 0, 16);
 	memset((void *)mic_header2, 0, 16);
@@ -1635,15 +1213,6 @@ static void aes_decipher(u8 *key, uint hdrlen,
 	/* start to decrypt the payload */
 	/*(plen including llc, payload and mic) */
 	num_blocks = (plen - 8) / 16;
-<<<<<<< HEAD
-	payload_remainder = (plen-8) % 16;
-	pn_vector[0] = pframe[hdrlen];
-	pn_vector[1] = pframe[hdrlen+1];
-	pn_vector[2] = pframe[hdrlen+4];
-	pn_vector[3] = pframe[hdrlen+5];
-	pn_vector[4] = pframe[hdrlen+6];
-	pn_vector[5] = pframe[hdrlen+7];
-=======
 	payload_remainder = (plen - 8) % 16;
 	pn_vector[0] = pframe[hdrlen];
 	pn_vector[1] = pframe[hdrlen + 1];
@@ -1651,28 +1220,10 @@ static void aes_decipher(u8 *key, uint hdrlen,
 	pn_vector[3] = pframe[hdrlen + 5];
 	pn_vector[4] = pframe[hdrlen + 6];
 	pn_vector[5] = pframe[hdrlen + 7];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((hdrlen == WLAN_HDR_A3_LEN) || (hdrlen ==  WLAN_HDR_A3_QOS_LEN))
 		a4_exists = 0;
 	else
 		a4_exists = 1;
-<<<<<<< HEAD
-	if ((frtype == WIFI_DATA_CFACK) ||
-	    (frtype == WIFI_DATA_CFPOLL) ||
-	    (frtype == WIFI_DATA_CFACKPOLL)) {
-		qc_exists = 1;
-		if (hdrlen !=  WLAN_HDR_A3_QOS_LEN)
-			hdrlen += 2;
-		}  else if ((frsubtype == 0x08) ||
-		   (frsubtype == 0x09) ||
-		   (frsubtype == 0x0a) ||
-		   (frsubtype == 0x0b)) {
-			if (hdrlen !=  WLAN_HDR_A3_QOS_LEN)
-				hdrlen += 2;
-			qc_exists = 1;
-	} else
-		qc_exists = 0;
-=======
 	if ((frtype == (IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA_CFACK)) ||
 	    (frtype == (IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA_CFPOLL)) ||
 	    (frtype == (IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA_CFACKPOLL))) {
@@ -1689,7 +1240,6 @@ static void aes_decipher(u8 *key, uint hdrlen,
 	} else {
 		qc_exists = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* now, decrypt pframe with hdrlen offset and plen long */
 	payload_index = hdrlen + 8; /* 8 is for extiv */
 	for (i = 0; i < num_blocks; i++) {
@@ -1703,11 +1253,7 @@ static void aes_decipher(u8 *key, uint hdrlen,
 	if (payload_remainder > 0) {  /* If short final block, pad it,*/
 		/* encrypt it and copy the unpadded part back   */
 		construct_ctr_preload(ctr_preload, a4_exists, qc_exists,
-<<<<<<< HEAD
-				      pframe, pn_vector, num_blocks+1);
-=======
 				      pframe, pn_vector, num_blocks + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (j = 0; j < 16; j++)
 			padded_buffer[j] = 0x00;
 		for (j = 0; j < payload_remainder; j++)
@@ -1720,32 +1266,19 @@ static void aes_decipher(u8 *key, uint hdrlen,
 	/* start to calculate the mic */
 	memcpy((void *)message, pframe, (hdrlen + plen + 8));
 	pn_vector[0] = pframe[hdrlen];
-<<<<<<< HEAD
-	pn_vector[1] = pframe[hdrlen+1];
-	pn_vector[2] = pframe[hdrlen+4];
-	pn_vector[3] = pframe[hdrlen+5];
-	pn_vector[4] = pframe[hdrlen+6];
-	pn_vector[5] = pframe[hdrlen+7];
-	construct_mic_iv(mic_iv, qc_exists, a4_exists, message, plen-8,
-=======
 	pn_vector[1] = pframe[hdrlen + 1];
 	pn_vector[2] = pframe[hdrlen + 4];
 	pn_vector[3] = pframe[hdrlen + 5];
 	pn_vector[4] = pframe[hdrlen + 6];
 	pn_vector[5] = pframe[hdrlen + 7];
 	construct_mic_iv(mic_iv, qc_exists, a4_exists, message, plen - 8,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 pn_vector);
 	construct_mic_header1(mic_header1, hdrlen, message);
 	construct_mic_header2(mic_header2, message, a4_exists, qc_exists);
 	payload_remainder = (plen - 8) % 16;
 	num_blocks = (plen - 8) / 16;
 	/* Find start of payload */
-<<<<<<< HEAD
-	payload_index = (hdrlen + 8);
-=======
 	payload_index = hdrlen + 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Calculate MIC */
 	aes128k128d(key, mic_iv, aes_out);
 	bitwise_xor(aes_out, mic_header1, chain_buffer);
@@ -1766,19 +1299,11 @@ static void aes_decipher(u8 *key, uint hdrlen,
 		bitwise_xor(aes_out, padded_buffer, chain_buffer);
 		aes128k128d(key, chain_buffer, aes_out);
 	}
-<<<<<<< HEAD
-	for (j = 0 ; j < 8; j++)
-		mic[j] = aes_out[j];
-	/* Insert MIC into payload */
-	for (j = 0; j < 8; j++)
-		message[payload_index+j] = mic[j];
-=======
 	for (j = 0; j < 8; j++)
 		mic[j] = aes_out[j];
 	/* Insert MIC into payload */
 	for (j = 0; j < 8; j++)
 		message[payload_index + j] = mic[j];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	payload_index = hdrlen + 8;
 	for (i = 0; i < num_blocks; i++) {
 		construct_ctr_preload(ctr_preload, a4_exists, qc_exists,
@@ -1791,11 +1316,7 @@ static void aes_decipher(u8 *key, uint hdrlen,
 	if (payload_remainder > 0) { /* If short final block, pad it,*/
 				     /* encrypt and copy unpadded part back */
 		construct_ctr_preload(ctr_preload, a4_exists, qc_exists,
-<<<<<<< HEAD
-				      message, pn_vector, num_blocks+1);
-=======
 				      message, pn_vector, num_blocks + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (j = 0; j < 16; j++)
 			padded_buffer[j] = 0x00;
 		for (j = 0; j < payload_remainder; j++)
@@ -1817,62 +1338,18 @@ static void aes_decipher(u8 *key, uint hdrlen,
 	for (j = 0; j < 8; j++)
 		message[payload_index++] = chain_buffer[j];
 	/* compare the mic */
-<<<<<<< HEAD
-	return _SUCCESS;
-}
-
-u32 r8712_aes_decrypt(struct _adapter *padapter, u8 *precvframe)
-{	/* exclude ICV */
-	/* Intermediate Buffers */
-	sint		length;
-	u32	prwskeylen;
-=======
 }
 
 void r8712_aes_decrypt(struct _adapter *padapter, u8 *precvframe)
 {	/* exclude ICV */
 	/* Intermediate Buffers */
 	sint		length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	*pframe, *prwskey, *iv, idx;
 	struct	sta_info *stainfo;
 	struct	rx_pkt_attrib *prxattrib = &((union recv_frame *)
 					   precvframe)->u.hdr.attrib;
 	struct	security_priv *psecuritypriv = &padapter->securitypriv;
 
-<<<<<<< HEAD
-	pframe = (unsigned char *)((union recv_frame*)precvframe)->
-		 u.hdr.rx_data;
-	/* 4 start to encrypt each fragment */
-	if ((prxattrib->encrypt == _AES_)) {
-		stainfo = r8712_get_stainfo(&padapter->stapriv,
-					    &prxattrib->ta[0]);
-		if (stainfo != NULL) {
-			if (IS_MCAST(prxattrib->ra)) {
-				iv = pframe+prxattrib->hdrlen;
-				idx = iv[3];
-				prwskey = &psecuritypriv->XGrpKey[
-					  ((idx >> 6) & 0x3) - 1].skey[0];
-				if (psecuritypriv->binstallGrpkey == false)
-					return _FAIL;
-
-			} else
-				prwskey = &stainfo->x_UncstKey.skey[0];
-			prwskeylen = 16;
-			length = ((union recv_frame *)precvframe)->
-				 u.hdr.len-prxattrib->hdrlen-prxattrib->iv_len;
-			aes_decipher(prwskey, prxattrib->hdrlen, pframe,
-				     length);
-		} else
-			return _FAIL;
-	}
-	return _SUCCESS;
-}
-
-void r8712_use_tkipkey_handler(void *FunctionContext)
-{
-	struct _adapter *padapter = (struct _adapter *)FunctionContext;
-=======
 	pframe = (unsigned char *)((union recv_frame *)precvframe)->
 		 u.hdr.rx_data;
 	/* 4 start to encrypt each fragment */
@@ -1904,7 +1381,6 @@ void r8712_use_tkipkey_handler(struct timer_list *t)
 {
 	struct _adapter *padapter =
 		from_timer(padapter, t, securitypriv.tkip_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	padapter->securitypriv.busetkipkey = true;
 }

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Adaptec AAC series RAID controller driver
  *	(c) Copyright 2001 Red Hat Inc.
@@ -10,35 +7,13 @@
  * Adaptec aacraid device driver for Linux.
  *
  * Copyright (c) 2000-2010 Adaptec, Inc.
-<<<<<<< HEAD
- *               2010 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, write to
- * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
  *               2010-2015 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
  *		 2016-2017 Microsemi Corp. (aacraid@microsemi.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Module Name:
  *  src.c
  *
  * Abstract: Hardware Device Interface for PMC SRC based controllers
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -56,40 +31,6 @@
 
 #include "aacraid.h"
 
-<<<<<<< HEAD
-static irqreturn_t aac_src_intr_message(int irq, void *dev_id)
-{
-	struct aac_dev *dev = dev_id;
-	unsigned long bellbits, bellbits_shifted;
-	int our_interrupt = 0;
-	int isFastResponse;
-	u32 index, handle;
-
-	bellbits = src_readl(dev, MUnit.ODR_R);
-	if (bellbits & PmDoorBellResponseSent) {
-		bellbits = PmDoorBellResponseSent;
-		/* handle async. status */
-		our_interrupt = 1;
-		index = dev->host_rrq_idx;
-		if (dev->host_rrq[index] == 0) {
-			u32 old_index = index;
-			/* adjust index */
-			do {
-				index++;
-				if (index == dev->scsi_host_ptr->can_queue +
-							AAC_NUM_MGT_FIB)
-					index = 0;
-				if (dev->host_rrq[index] != 0)
-					break;
-			} while (index != old_index);
-			dev->host_rrq_idx = index;
-		}
-		for (;;) {
-			isFastResponse = 0;
-			/* remove toggle bit (31) */
-			handle = (dev->host_rrq[index] & 0x7fffffff);
-			/* check fast response bit (30) */
-=======
 static int aac_src_get_sync_status(struct aac_dev *dev);
 
 static irqreturn_t aac_src_intr_message(int irq, void *dev_id)
@@ -205,69 +146,11 @@ static irqreturn_t aac_src_intr_message(int irq, void *dev_id)
 			handle = le32_to_cpu((dev->host_rrq[index])
 				& 0x7fffffff);
 			/* check fast response bits (30, 1) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (handle & 0x40000000)
 				isFastResponse = 1;
 			handle &= 0x0000ffff;
 			if (handle == 0)
 				break;
-<<<<<<< HEAD
-
-			aac_intr_normal(dev, handle-1, 0, isFastResponse, NULL);
-
-			dev->host_rrq[index++] = 0;
-			if (index == dev->scsi_host_ptr->can_queue +
-						AAC_NUM_MGT_FIB)
-				index = 0;
-			dev->host_rrq_idx = index;
-		}
-	} else {
-		bellbits_shifted = (bellbits >> SRC_ODR_SHIFT);
-		if (bellbits_shifted & DoorBellAifPending) {
-			our_interrupt = 1;
-			/* handle AIF */
-			aac_intr_normal(dev, 0, 2, 0, NULL);
-		} else if (bellbits_shifted & OUTBOUNDDOORBELL_0) {
-			unsigned long sflags;
-			struct list_head *entry;
-			int send_it = 0;
-
-			if (dev->sync_fib) {
-				our_interrupt = 1;
-				if (dev->sync_fib->callback)
-					dev->sync_fib->callback(dev->sync_fib->callback_data,
-						dev->sync_fib);
-				spin_lock_irqsave(&dev->sync_fib->event_lock, sflags);
-				if (dev->sync_fib->flags & FIB_CONTEXT_FLAG_WAIT) {
-					dev->management_fib_count--;
-					up(&dev->sync_fib->event_wait);
-				}
-				spin_unlock_irqrestore(&dev->sync_fib->event_lock, sflags);
-				spin_lock_irqsave(&dev->sync_lock, sflags);
-				if (!list_empty(&dev->sync_fib_list)) {
-					entry = dev->sync_fib_list.next;
-					dev->sync_fib = list_entry(entry, struct fib, fiblink);
-					list_del(entry);
-					send_it = 1;
-				} else {
-					dev->sync_fib = NULL;
-				}
-				spin_unlock_irqrestore(&dev->sync_lock, sflags);
-				if (send_it) {
-					aac_adapter_sync_cmd(dev, SEND_SYNCHRONOUS_FIB,
-						(u32)dev->sync_fib->hw_fib_pa, 0, 0, 0, 0, 0,
-						NULL, NULL, NULL, NULL, NULL);
-				}
-			}
-		}
-	}
-
-	if (our_interrupt) {
-		src_writel(dev, MUnit.ODR_C, bellbits);
-		return IRQ_HANDLED;
-	}
-	return IRQ_NONE;
-=======
 			handle >>= 2;
 			if (dev->msi_enabled && dev->max_msix > 1)
 				atomic_dec(&dev->rrq_outstanding[vector_no]);
@@ -281,7 +164,6 @@ static irqreturn_t aac_src_intr_message(int irq, void *dev_id)
 	}
 
 	return IRQ_HANDLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -301,11 +183,7 @@ static void aac_src_disable_interrupt(struct aac_dev *dev)
 
 static void aac_src_enable_interrupt_message(struct aac_dev *dev)
 {
-<<<<<<< HEAD
-	src_writel(dev, MUnit.OIMR, dev->OIMR = 0xfffffff8);
-=======
 	aac_src_access_devreg(dev, AAC_ENABLE_INTERRUPT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -313,9 +191,6 @@ static void aac_src_enable_interrupt_message(struct aac_dev *dev)
  *	@dev: Adapter
  *	@command: Command to execute
  *	@p1: first parameter
-<<<<<<< HEAD
- *	@ret: adapter status
-=======
  *	@p2: second parameter
  *	@p3: third parameter
  *	@p4: forth parameter
@@ -326,7 +201,6 @@ static void aac_src_enable_interrupt_message(struct aac_dev *dev)
  *	@r2: second return valu
  *	@r3: third return value
  *	@r4: forth return value
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	This routine will send a synchronous command to the adapter and wait
  *	for its	completion.
@@ -337,10 +211,7 @@ static int src_sync_cmd(struct aac_dev *dev, u32 command,
 	u32 *status, u32 * r1, u32 * r2, u32 * r3, u32 * r4)
 {
 	unsigned long start;
-<<<<<<< HEAD
-=======
 	unsigned long delay;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ok;
 
 	/*
@@ -358,14 +229,10 @@ static int src_sync_cmd(struct aac_dev *dev, u32 command,
 	/*
 	 *	Clear the synch command doorbell to start on a clean slate.
 	 */
-<<<<<<< HEAD
-	src_writel(dev, MUnit.ODR_C, OUTBOUNDDOORBELL_0 << SRC_ODR_SHIFT);
-=======
 	if (!dev->msi_enabled)
 		src_writel(dev,
 			   MUnit.ODR_C,
 			   OUTBOUNDDOORBELL_0 << SRC_ODR_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Disable doorbell interrupts
@@ -383,16 +250,6 @@ static int src_sync_cmd(struct aac_dev *dev, u32 command,
 	 */
 	src_writel(dev, MUnit.IDR, INBOUNDDOORBELL_0 << SRC_IDR_SHIFT);
 
-<<<<<<< HEAD
-	if (!dev->sync_mode || command != SEND_SYNCHRONOUS_FIB) {
-		ok = 0;
-		start = jiffies;
-
-		/*
-		 *	Wait up to 5 minutes
-		 */
-		while (time_before(jiffies, start+300*HZ)) {
-=======
 	if ((!dev->sync_mode || command != SEND_SYNCHRONOUS_FIB) &&
 		!dev->in_soft_reset) {
 		ok = 0;
@@ -406,18 +263,10 @@ static int src_sync_cmd(struct aac_dev *dev, u32 command,
 			delay = 300*HZ;
 		}
 		while (time_before(jiffies, start+delay)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			udelay(5);	/* Delay 5 microseconds to let Mon960 get info. */
 			/*
 			 *	Mon960 will set doorbell0 bit when it has completed the command.
 			 */
-<<<<<<< HEAD
-			if ((src_readl(dev, MUnit.ODR_R) >> SRC_ODR_SHIFT) & OUTBOUNDDOORBELL_0) {
-				/*
-				 *	Clear the doorbell.
-				 */
-				src_writel(dev, MUnit.ODR_C, OUTBOUNDDOORBELL_0 << SRC_ODR_SHIFT);
-=======
 			if (aac_src_get_sync_status(dev) & OUTBOUNDDOORBELL_0) {
 				/*
 				 *	Clear the doorbell.
@@ -429,7 +278,6 @@ static int src_sync_cmd(struct aac_dev *dev, u32 command,
 					src_writel(dev,
 						MUnit.ODR_C,
 						OUTBOUNDDOORBELL_0 << SRC_ODR_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ok = 1;
 				break;
 			}
@@ -458,13 +306,6 @@ static int src_sync_cmd(struct aac_dev *dev, u32 command,
 			*r3 = readl(&dev->IndexRegs->Mailbox[3]);
 		if (r4)
 			*r4 = readl(&dev->IndexRegs->Mailbox[4]);
-<<<<<<< HEAD
-
-		/*
-		 *	Clear the synch command doorbell.
-		 */
-		src_writel(dev, MUnit.ODR_C, OUTBOUNDDOORBELL_0 << SRC_ODR_SHIFT);
-=======
 		if (command == GET_COMM_PREFERRED_SETTINGS)
 			dev->max_msix =
 				readl(&dev->IndexRegs->Mailbox[5]) & 0xFFFF;
@@ -475,7 +316,6 @@ static int src_sync_cmd(struct aac_dev *dev, u32 command,
 			src_writel(dev,
 				MUnit.ODR_C,
 				OUTBOUNDDOORBELL_0 << SRC_ODR_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -551,16 +391,6 @@ static void aac_src_notify_adapter(struct aac_dev *dev, u32 event)
 
 static void aac_src_start_adapter(struct aac_dev *dev)
 {
-<<<<<<< HEAD
-	struct aac_init *init;
-
-	init = dev->init;
-	init->HostElapsedSeconds = cpu_to_le32(get_seconds());
-
-	/* We can only use a 32 bit address here */
-	src_sync_cmd(dev, INIT_STRUCT_BASE_ADDRESS, (u32)(ulong)dev->init_pa,
-	  0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL);
-=======
 	union aac_init *init;
 	int i;
 
@@ -591,7 +421,6 @@ static void aac_src_start_adapter(struct aac_dev *dev)
 			NULL, NULL, NULL, NULL, NULL);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -606,18 +435,6 @@ static int aac_src_check_health(struct aac_dev *dev)
 	u32 status = src_readl(dev, MUnit.OMR);
 
 	/*
-<<<<<<< HEAD
-	 *	Check to see if the board failed any self tests.
-	 */
-	if (unlikely(status & SELF_TEST_FAILED))
-		return -1;
-
-	/*
-	 *	Check to see if the board panic'd.
-	 */
-	if (unlikely(status & KERNEL_PANIC))
-		return (status >> 16) & 0xFF;
-=======
 	 *	Check to see if the board panic'd.
 	 */
 	if (unlikely(status & KERNEL_PANIC))
@@ -635,7 +452,6 @@ static int aac_src_check_health(struct aac_dev *dev)
 	if (unlikely(status & MONITOR_PANIC))
 		goto err_out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	Wait for the adapter to be up and running.
 	 */
@@ -645,8 +461,6 @@ static int aac_src_check_health(struct aac_dev *dev)
 	 *	Everything is OK
 	 */
 	return 0;
-<<<<<<< HEAD
-=======
 
 err_out:
 	return -1;
@@ -658,7 +472,6 @@ err_blink:
 static inline u32 aac_get_vector(struct aac_dev *dev)
 {
 	return atomic_inc_return(&dev->msix_counter)%dev->max_msix;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -671,34 +484,6 @@ static int aac_src_deliver_message(struct fib *fib)
 {
 	struct aac_dev *dev = fib->dev;
 	struct aac_queue *q = &dev->queues->queue[AdapNormCmdQueue];
-<<<<<<< HEAD
-	unsigned long qflags;
-	u32 fibsize;
-	u64 address;
-	struct aac_fib_xporthdr *pFibX;
-
-	spin_lock_irqsave(q->lock, qflags);
-	q->numpending++;
-	spin_unlock_irqrestore(q->lock, qflags);
-
-	/* Calculate the amount to the fibsize bits */
-	fibsize = (sizeof(struct aac_fib_xporthdr) +
-		fib->hw_fib_va->header.Size + 127) / 128 - 1;
-	if (fibsize > (ALIGN32 - 1))
-		fibsize = ALIGN32 - 1;
-
-    /* Fill XPORT header */
-	pFibX = (struct aac_fib_xporthdr *)
-		((unsigned char *)fib->hw_fib_va -
-		sizeof(struct aac_fib_xporthdr));
-	pFibX->Handle = fib->hw_fib_va->header.SenderData + 1;
-	pFibX->HostAddress = fib->hw_fib_pa;
-	pFibX->Size = fib->hw_fib_va->header.Size;
-	address = fib->hw_fib_pa - (u64)sizeof(struct aac_fib_xporthdr);
-
-	src_writel(dev, MUnit.IQ_H, (u32)(address >> 32));
-	src_writel(dev, MUnit.IQ_L, (u32)(address & 0xffffffff) + fibsize);
-=======
 	u32 fibsize;
 	dma_addr_t address;
 	struct aac_fib_xporthdr *pFibX;
@@ -821,27 +606,20 @@ static int aac_src_deliver_message(struct fib *fib)
 		spin_unlock_irqrestore(&fib->dev->iq_lock, flags);
 #endif
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
  *	aac_src_ioremap
-<<<<<<< HEAD
-=======
  *	@dev: device ioremap
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@size: mapping resize request
  *
  */
 static int aac_src_ioremap(struct aac_dev *dev, u32 size)
 {
 	if (!size) {
-<<<<<<< HEAD
-=======
 		iounmap(dev->regs.src.bar1);
 		dev->regs.src.bar1 = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iounmap(dev->regs.src.bar0);
 		dev->base = dev->regs.src.bar0 = NULL;
 		return 0;
@@ -851,12 +629,7 @@ static int aac_src_ioremap(struct aac_dev *dev, u32 size)
 	dev->base = NULL;
 	if (dev->regs.src.bar1 == NULL)
 		return -1;
-<<<<<<< HEAD
-	dev->base = dev->regs.src.bar0 = ioremap(dev->scsi_host_ptr->base,
-				size);
-=======
 	dev->base = dev->regs.src.bar0 = ioremap(dev->base_start, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->base == NULL) {
 		iounmap(dev->regs.src.bar1);
 		dev->regs.src.bar1 = NULL;
@@ -869,10 +642,7 @@ static int aac_src_ioremap(struct aac_dev *dev, u32 size)
 
 /**
  *  aac_srcv_ioremap
-<<<<<<< HEAD
-=======
  *	@dev: device ioremap
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@size: mapping resize request
  *
  */
@@ -883,11 +653,6 @@ static int aac_srcv_ioremap(struct aac_dev *dev, u32 size)
 		dev->base = dev->regs.src.bar0 = NULL;
 		return 0;
 	}
-<<<<<<< HEAD
-	dev->base = dev->regs.src.bar0 = ioremap(dev->scsi_host_ptr->base, size);
-	if (dev->base == NULL)
-		return -1;
-=======
 
 	dev->regs.src.bar1 =
 	ioremap(pci_resource_start(dev->pdev, 2), AAC_MIN_SRCV_BAR1_SIZE);
@@ -900,40 +665,11 @@ static int aac_srcv_ioremap(struct aac_dev *dev, u32 size)
 		dev->regs.src.bar1 = NULL;
 		return -1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->IndexRegs = &((struct src_registers __iomem *)
 		dev->base)->u.denali.IndexRegs;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int aac_src_restart_adapter(struct aac_dev *dev, int bled)
-{
-	u32 var, reset_mask;
-
-	if (bled >= 0) {
-		if (bled)
-			printk(KERN_ERR "%s%d: adapter kernel panic'd %x.\n",
-				dev->name, dev->id, bled);
-		bled = aac_adapter_sync_cmd(dev, IOP_RESET_ALWAYS,
-			0, 0, 0, 0, 0, 0, &var, &reset_mask, NULL, NULL, NULL);
-			if (bled || (var != 0x00000001))
-				return -EINVAL;
-		if (dev->supplement_adapter_info.SupportedOptions2 &
-			AAC_OPTION_DOORBELL_RESET) {
-			src_writel(dev, MUnit.IDR, reset_mask);
-			msleep(5000); /* Delay 5 seconds */
-		}
-	}
-
-	if (src_readl(dev, MUnit.OMR) & KERNEL_PANIC)
-		return -ENODEV;
-
-	if (startup_timeout < 300)
-		startup_timeout = 300;
-
-	return 0;
-=======
 void aac_set_intx_mode(struct aac_dev *dev)
 {
 	if (dev->msi_enabled) {
@@ -1118,7 +854,6 @@ invalid_out:
 	if (src_readl(dev, MUnit.OMR) & KERNEL_PANIC)
 		ret = -ENODEV;
 goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1126,18 +861,10 @@ goto out;
  *	@dev: Adapter
  *	@comm: communications method
  */
-<<<<<<< HEAD
-int aac_src_select_comm(struct aac_dev *dev, int comm)
-{
-	switch (comm) {
-	case AAC_COMM_MESSAGE:
-		dev->a_ops.adapter_enable_int = aac_src_enable_interrupt_message;
-=======
 static int aac_src_select_comm(struct aac_dev *dev, int comm)
 {
 	switch (comm) {
 	case AAC_COMM_MESSAGE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->a_ops.adapter_intr = aac_src_intr_message;
 		dev->a_ops.adapter_deliver = aac_src_deliver_message;
 		break;
@@ -1173,11 +900,6 @@ int aac_src_init(struct aac_dev *dev)
 	/* Failure to reset here is an option ... */
 	dev->a_ops.adapter_sync_cmd = src_sync_cmd;
 	dev->a_ops.adapter_enable_int = aac_src_disable_interrupt;
-<<<<<<< HEAD
-	if ((aac_reset_devices || reset_devices) &&
-		!aac_src_restart_adapter(dev, 0))
-		++restart;
-=======
 
 	if (dev->init_reset) {
 		dev->init_reset = false;
@@ -1185,18 +907,13 @@ int aac_src_init(struct aac_dev *dev)
 			++restart;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	Check to see if the board panic'd while booting.
 	 */
 	status = src_readl(dev, MUnit.OMR);
 	if (status & KERNEL_PANIC) {
-<<<<<<< HEAD
-		if (aac_src_restart_adapter(dev, aac_src_check_health(dev)))
-=======
 		if (aac_src_restart_adapter(dev,
 			aac_src_check_health(dev), IOP_HWSOFT_RESET))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error_iounmap;
 		++restart;
 	}
@@ -1237,11 +954,7 @@ int aac_src_init(struct aac_dev *dev)
 		    ? (startup_timeout - 60)
 		    : (startup_timeout / 2))))) {
 			if (likely(!aac_src_restart_adapter(dev,
-<<<<<<< HEAD
-			    aac_src_check_health(dev))))
-=======
 				aac_src_check_health(dev), IOP_HWSOFT_RESET)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				start = jiffies;
 			++restart;
 		}
@@ -1254,18 +967,12 @@ int aac_src_init(struct aac_dev *dev)
 	 */
 	dev->a_ops.adapter_interrupt = aac_src_interrupt_adapter;
 	dev->a_ops.adapter_disable_int = aac_src_disable_interrupt;
-<<<<<<< HEAD
-=======
 	dev->a_ops.adapter_enable_int = aac_src_disable_interrupt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->a_ops.adapter_notify = aac_src_notify_adapter;
 	dev->a_ops.adapter_sync_cmd = src_sync_cmd;
 	dev->a_ops.adapter_check_health = aac_src_check_health;
 	dev->a_ops.adapter_restart = aac_src_restart_adapter;
-<<<<<<< HEAD
-=======
 	dev->a_ops.adapter_start = aac_src_start_adapter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	First clear out all interrupts.  Then enable the one's that we
@@ -1281,12 +988,6 @@ int aac_src_init(struct aac_dev *dev)
 	if (dev->comm_interface != AAC_COMM_MESSAGE_TYPE1)
 		goto error_iounmap;
 
-<<<<<<< HEAD
-	dev->msi = aac_msi && !pci_enable_msi(dev->pdev);
-
-	if (request_irq(dev->pdev->irq, dev->a_ops.adapter_intr,
-			IRQF_SHARED|IRQF_DISABLED, "aacraid", dev) < 0) {
-=======
 	dev->msi = !pci_enable_msi(dev->pdev);
 
 	dev->aac_msix[0].vector_no = 0;
@@ -1294,7 +995,6 @@ int aac_src_init(struct aac_dev *dev)
 
 	if (request_irq(dev->pdev->irq, dev->a_ops.adapter_intr,
 			IRQF_SHARED, "aacraid", &(dev->aac_msix[0]))  < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (dev->msi)
 			pci_disable_msi(dev->pdev);
@@ -1306,10 +1006,7 @@ int aac_src_init(struct aac_dev *dev)
 	dev->dbg_base = pci_resource_start(dev->pdev, 2);
 	dev->dbg_base_mapped = dev->regs.src.bar1;
 	dev->dbg_size = AAC_MIN_SRC_BAR1_SIZE;
-<<<<<<< HEAD
-=======
 	dev->a_ops.adapter_enable_int = aac_src_enable_interrupt_message;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aac_adapter_enable_int(dev);
 
@@ -1327,8 +1024,6 @@ error_iounmap:
 	return -1;
 }
 
-<<<<<<< HEAD
-=======
 static int aac_src_wait_sync(struct aac_dev *dev, int *status)
 {
 	unsigned long start = jiffies;
@@ -1471,7 +1166,6 @@ out:
 
 	return rc;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *  aac_srcv_init	-	initialize an SRCv card
  *  @dev: device to configure
@@ -1498,11 +1192,6 @@ int aac_srcv_init(struct aac_dev *dev)
 	/* Failure to reset here is an option ... */
 	dev->a_ops.adapter_sync_cmd = src_sync_cmd;
 	dev->a_ops.adapter_enable_int = aac_src_disable_interrupt;
-<<<<<<< HEAD
-	if ((aac_reset_devices || reset_devices) &&
-		!aac_src_restart_adapter(dev, 0))
-		++restart;
-=======
 
 	if (dev->init_reset) {
 		dev->init_reset = false;
@@ -1534,18 +1223,13 @@ int aac_srcv_init(struct aac_dev *dev)
 		 */
 		ssleep(10);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	Check to see if the board panic'd while booting.
 	 */
 	status = src_readl(dev, MUnit.OMR);
 	if (status & KERNEL_PANIC) {
-<<<<<<< HEAD
-		if (aac_src_restart_adapter(dev, aac_src_check_health(dev)))
-=======
 		if (aac_src_restart_adapter(dev,
 			aac_src_check_health(dev), IOP_HWSOFT_RESET))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error_iounmap;
 		++restart;
 	}
@@ -1564,23 +1248,16 @@ int aac_srcv_init(struct aac_dev *dev)
 		printk(KERN_ERR "%s%d: adapter monitor panic.\n", dev->name, instance);
 		goto error_iounmap;
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	start = jiffies;
 	/*
 	 *	Wait for the adapter to be up and running. Wait up to 3 minutes
 	 */
-<<<<<<< HEAD
-	while (!((status = src_readl(dev, MUnit.OMR)) & KERNEL_UP_AND_RUNNING)) {
-=======
 	do {
 		status = src_readl(dev, MUnit.OMR);
 		if (status == INVALID_OMR)
 			status = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((restart &&
 		  (status & (KERNEL_PANIC|SELF_TEST_FAILED|MONITOR_PANIC))) ||
 		  time_after(jiffies, start+HZ*startup_timeout)) {
@@ -1594,22 +1271,14 @@ int aac_srcv_init(struct aac_dev *dev)
 		  ((startup_timeout > 60)
 		    ? (startup_timeout - 60)
 		    : (startup_timeout / 2))))) {
-<<<<<<< HEAD
-			if (likely(!aac_src_restart_adapter(dev, aac_src_check_health(dev))))
-=======
 			if (likely(!aac_src_restart_adapter(dev,
 				aac_src_check_health(dev), IOP_HWSOFT_RESET)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				start = jiffies;
 			++restart;
 		}
 		msleep(1);
-<<<<<<< HEAD
-	}
-=======
 	} while (!(status & KERNEL_UP_AND_RUNNING));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (restart && aac_commit)
 		aac_commit = 1;
 	/*
@@ -1617,18 +1286,12 @@ int aac_srcv_init(struct aac_dev *dev)
 	 */
 	dev->a_ops.adapter_interrupt = aac_src_interrupt_adapter;
 	dev->a_ops.adapter_disable_int = aac_src_disable_interrupt;
-<<<<<<< HEAD
-=======
 	dev->a_ops.adapter_enable_int = aac_src_disable_interrupt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->a_ops.adapter_notify = aac_src_notify_adapter;
 	dev->a_ops.adapter_sync_cmd = src_sync_cmd;
 	dev->a_ops.adapter_check_health = aac_src_check_health;
 	dev->a_ops.adapter_restart = aac_src_restart_adapter;
-<<<<<<< HEAD
-=======
 	dev->a_ops.adapter_start = aac_src_start_adapter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	First clear out all interrupts.  Then enable the one's that we
@@ -1641,22 +1304,6 @@ int aac_srcv_init(struct aac_dev *dev)
 
 	if (aac_init_adapter(dev) == NULL)
 		goto error_iounmap;
-<<<<<<< HEAD
-	if (dev->comm_interface != AAC_COMM_MESSAGE_TYPE1)
-		goto error_iounmap;
-	dev->msi = aac_msi && !pci_enable_msi(dev->pdev);
-	if (request_irq(dev->pdev->irq, dev->a_ops.adapter_intr,
-		IRQF_SHARED|IRQF_DISABLED, "aacraid", dev) < 0) {
-		if (dev->msi)
-			pci_disable_msi(dev->pdev);
-		printk(KERN_ERR "%s%d: Interrupt unavailable.\n",
-			name, instance);
-		goto error_iounmap;
-	}
-	dev->dbg_base = dev->scsi_host_ptr->base;
-	dev->dbg_base_mapped = dev->base;
-	dev->dbg_size = dev->base_size;
-=======
 	if ((dev->comm_interface != AAC_COMM_MESSAGE_TYPE2) &&
 		(dev->comm_interface != AAC_COMM_MESSAGE_TYPE3))
 		goto error_iounmap;
@@ -1670,7 +1317,6 @@ int aac_srcv_init(struct aac_dev *dev)
 	dev->dbg_base_mapped = dev->regs.src.bar1;
 	dev->dbg_size = AAC_MIN_SRCV_BAR1_SIZE;
 	dev->a_ops.adapter_enable_int = aac_src_enable_interrupt_message;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aac_adapter_enable_int(dev);
 
@@ -1688,8 +1334,6 @@ error_iounmap:
 	return -1;
 }
 
-<<<<<<< HEAD
-=======
 void aac_src_access_devreg(struct aac_dev *dev, int mode)
 {
 	u_int32_t val;
@@ -1790,4 +1434,3 @@ static int aac_src_get_sync_status(struct aac_dev *dev)
 
 	return msix_val;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

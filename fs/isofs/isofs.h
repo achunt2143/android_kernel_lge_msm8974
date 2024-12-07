@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/buffer_head.h>
 #include <linux/exportfs.h>
@@ -40,13 +37,6 @@ struct isofs_sb_info {
 	unsigned long s_max_size;
 	
 	int           s_rock_offset; /* offset of SUSP fields within SU area */
-<<<<<<< HEAD
-	unsigned char s_joliet_level;
-	unsigned char s_mapping;
-	unsigned int  s_high_sierra:1;
-	unsigned int  s_rock:2;
-	unsigned int  s_utf8:1;
-=======
 	s32           s_sbsector;
 	unsigned char s_joliet_level;
 	unsigned char s_mapping;
@@ -54,7 +44,6 @@ struct isofs_sb_info {
 	unsigned char s_session;
 	unsigned int  s_high_sierra:1;
 	unsigned int  s_rock:2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int  s_cruft:1; /* Broken disks with high byte of length
 				  * containing junk */
 	unsigned int  s_nocompress:1;
@@ -66,13 +55,8 @@ struct isofs_sb_info {
 
 	umode_t s_fmode;
 	umode_t s_dmode;
-<<<<<<< HEAD
-	gid_t s_gid;
-	uid_t s_uid;
-=======
 	kgid_t s_gid;
 	kuid_t s_uid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nls_table *s_nls_iocharset; /* Native language support table */
 };
 
@@ -88,25 +72,6 @@ static inline struct iso_inode_info *ISOFS_I(struct inode *inode)
 	return container_of(inode, struct iso_inode_info, vfs_inode);
 }
 
-<<<<<<< HEAD
-static inline int isonum_711(char *p)
-{
-	return *(u8 *)p;
-}
-static inline int isonum_712(char *p)
-{
-	return *(s8 *)p;
-}
-static inline unsigned int isonum_721(char *p)
-{
-	return get_unaligned_le16(p);
-}
-static inline unsigned int isonum_722(char *p)
-{
-	return get_unaligned_be16(p);
-}
-static inline unsigned int isonum_723(char *p)
-=======
 static inline int isonum_711(u8 *p)
 {
 	return *p;
@@ -124,22 +89,10 @@ static inline unsigned int isonum_722(u8 *p)
 	return get_unaligned_be16(p);
 }
 static inline unsigned int isonum_723(u8 *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Ignore bigendian datum due to broken mastering programs */
 	return get_unaligned_le16(p);
 }
-<<<<<<< HEAD
-static inline unsigned int isonum_731(char *p)
-{
-	return get_unaligned_le32(p);
-}
-static inline unsigned int isonum_732(char *p)
-{
-	return get_unaligned_be32(p);
-}
-static inline unsigned int isonum_733(char *p)
-=======
 static inline unsigned int isonum_731(u8 *p)
 {
 	return get_unaligned_le32(p);
@@ -149,16 +102,11 @@ static inline unsigned int isonum_732(u8 *p)
 	return get_unaligned_be32(p);
 }
 static inline unsigned int isonum_733(u8 *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Ignore bigendian datum due to broken mastering programs */
 	return get_unaligned_le32(p);
 }
-<<<<<<< HEAD
-extern int iso_date(char *, int);
-=======
 extern int iso_date(u8 *, int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct inode;		/* To make gcc happy */
 

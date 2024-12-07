@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Bus & driver management routines for devices within
  * a MacIO ASIC. Interface to new driver model mostly
@@ -9,14 +6,6 @@
  * 
  *  Copyright (C) 2005 Ben. Herrenschmidt (benh@kernel.crashing.org)
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TODO:
  * 
  *  - Don't probe below media bay by default, but instead provide
@@ -31,23 +20,15 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
 #include <linux/of_irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/machdep.h>
 #include <asm/macio.h>
 #include <asm/pmac_feature.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-#include <asm/pci-bridge.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef DEBUG
 
@@ -109,11 +90,7 @@ static int macio_device_probe(struct device *dev)
 	return error;
 }
 
-<<<<<<< HEAD
-static int macio_device_remove(struct device *dev)
-=======
 static void macio_device_remove(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct macio_dev * macio_dev = to_macio_device(dev);
 	struct macio_driver * drv = to_macio_driver(dev->driver);
@@ -121,11 +98,6 @@ static void macio_device_remove(struct device *dev)
 	if (dev->driver && drv->remove)
 		drv->remove(macio_dev);
 	macio_dev_put(macio_dev);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void macio_device_shutdown(struct device *dev)
@@ -157,14 +129,6 @@ static int macio_device_resume(struct device * dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-extern struct device_attribute macio_dev_attrs[];
-
-struct bus_type macio_bus_type = {
-       .name	= "macio",
-       .match	= macio_bus_match,
-       .uevent = of_device_uevent_modalias,
-=======
 static int macio_device_modalias(const struct device *dev, struct kobj_uevent_env *env)
 {
 	return of_device_uevent_modalias(dev, env);
@@ -176,17 +140,12 @@ const struct bus_type macio_bus_type = {
        .name	= "macio",
        .match	= macio_bus_match,
        .uevent	= macio_device_modalias,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
        .probe	= macio_device_probe,
        .remove	= macio_device_remove,
        .shutdown = macio_device_shutdown,
        .suspend	= macio_device_suspend,
        .resume	= macio_device_resume,
-<<<<<<< HEAD
-       .dev_attrs = macio_dev_attrs,
-=======
        .dev_groups = macio_dev_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init macio_bus_driver_init(void)
@@ -232,19 +191,11 @@ static int macio_resource_quirks(struct device_node *np, struct resource *res,
 		return 0;
 
 	/* Grand Central has too large resource 0 on some machines */
-<<<<<<< HEAD
-	if (index == 0 && !strcmp(np->name, "gc"))
-		res->end = res->start + 0x1ffff;
-
-	/* Airport has bogus resource 2 */
-	if (index >= 2 && !strcmp(np->name, "radio"))
-=======
 	if (index == 0 && of_node_name_eq(np, "gc"))
 		res->end = res->start + 0x1ffff;
 
 	/* Airport has bogus resource 2 */
 	if (index >= 2 && of_node_name_eq(np, "radio"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 #ifndef CONFIG_PPC64
@@ -257,23 +208,6 @@ static int macio_resource_quirks(struct device_node *np, struct resource *res,
 	 * level of hierarchy, but I don't really feel the need
 	 * for it
 	 */
-<<<<<<< HEAD
-	if (!strcmp(np->name, "escc"))
-		return 1;
-
-	/* ESCC has bogus resources >= 3 */
-	if (index >= 3 && !(strcmp(np->name, "ch-a") &&
-			    strcmp(np->name, "ch-b")))
-		return 1;
-
-	/* Media bay has too many resources, keep only first one */
-	if (index > 0 && !strcmp(np->name, "media-bay"))
-		return 1;
-
-	/* Some older IDE resources have bogus sizes */
-	if (!(strcmp(np->name, "IDE") && strcmp(np->name, "ATA") &&
-	      strcmp(np->type, "ide") && strcmp(np->type, "ata"))) {
-=======
 	if (of_node_name_eq(np, "escc"))
 		return 1;
 
@@ -289,7 +223,6 @@ static int macio_resource_quirks(struct device_node *np, struct resource *res,
 	/* Some older IDE resources have bogus sizes */
 	if (of_node_name_eq(np, "IDE") || of_node_name_eq(np, "ATA") ||
 	    of_node_is_type(np, "ide") || of_node_is_type(np, "ata")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (index == 0 && (res->end - res->start) > 0xfff)
 			res->end = res->start + 0xfff;
 		if (index == 1 && (res->end - res->start) > 0xff)
@@ -304,11 +237,7 @@ static void macio_create_fixup_irq(struct macio_dev *dev, int index,
 	unsigned int irq;
 
 	irq = irq_create_mapping(NULL, line);
-<<<<<<< HEAD
-	if (irq != NO_IRQ) {
-=======
 	if (!irq) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->interrupt[index].start = irq;
 		dev->interrupt[index].flags = IORESOURCE_IRQ;
 		dev->interrupt[index].name = dev_name(&dev->ofdev.dev);
@@ -332,11 +261,7 @@ static void macio_add_missing_resources(struct macio_dev *dev)
 	irq_base = 64;
 
 	/* Fix SCC */
-<<<<<<< HEAD
-	if (strcmp(np->name, "ch-a") == 0) {
-=======
 	if (of_node_name_eq(np, "ch-a")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		macio_create_fixup_irq(dev, 0, 15 + irq_base);
 		macio_create_fixup_irq(dev, 1,  4 + irq_base);
 		macio_create_fixup_irq(dev, 2,  5 + irq_base);
@@ -344,30 +269,18 @@ static void macio_add_missing_resources(struct macio_dev *dev)
 	}
 
 	/* Fix media-bay */
-<<<<<<< HEAD
-	if (strcmp(np->name, "media-bay") == 0) {
-=======
 	if (of_node_name_eq(np, "media-bay")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		macio_create_fixup_irq(dev, 0, 29 + irq_base);
 		printk(KERN_INFO "macio: fixed media-bay irq on gatwick\n");
 	}
 
 	/* Fix left media bay childs */
-<<<<<<< HEAD
-	if (dev->media_bay != NULL && strcmp(np->name, "floppy") == 0) {
-=======
 	if (dev->media_bay != NULL && of_node_name_eq(np, "floppy")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		macio_create_fixup_irq(dev, 0, 19 + irq_base);
 		macio_create_fixup_irq(dev, 1,  1 + irq_base);
 		printk(KERN_INFO "macio: fixed left floppy irqs\n");
 	}
-<<<<<<< HEAD
-	if (dev->media_bay != NULL && strcasecmp(np->name, "ata4") == 0) {
-=======
 	if (dev->media_bay != NULL && of_node_name_eq(np, "ata4")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		macio_create_fixup_irq(dev, 0, 14 + irq_base);
 		macio_create_fixup_irq(dev, 0,  3 + irq_base);
 		printk(KERN_INFO "macio: fixed left ide irqs\n");
@@ -387,11 +300,7 @@ static void macio_setup_interrupts(struct macio_dev *dev)
 			break;
 		res = &dev->interrupt[j];
 		irq = irq_of_parse_and_map(np, i++);
-<<<<<<< HEAD
-		if (irq == NO_IRQ)
-=======
 		if (!irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		res->start = irq;
 		res->flags = IORESOURCE_IRQ;
@@ -452,16 +361,10 @@ static struct macio_dev * macio_add_one_device(struct macio_chip *chip,
 					       struct macio_dev *in_bay,
 					       struct resource *parent_res)
 {
-<<<<<<< HEAD
-	struct macio_dev *dev;
-	const u32 *reg;
-	
-=======
 	char name[MAX_NODE_NAME_SIZE + 1];
 	struct macio_dev *dev;
 	const u32 *reg;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (np == NULL)
 		return NULL;
 
@@ -474,10 +377,7 @@ static struct macio_dev * macio_add_one_device(struct macio_chip *chip,
 	dev->ofdev.dev.of_node = np;
 	dev->ofdev.archdata.dma_mask = 0xffffffffUL;
 	dev->ofdev.dev.dma_mask = &dev->ofdev.archdata.dma_mask;
-<<<<<<< HEAD
-=======
 	dev->ofdev.dev.coherent_dma_mask = dev->ofdev.archdata.dma_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->ofdev.dev.parent = parent;
 	dev->ofdev.dev.bus = &macio_bus_type;
 	dev->ofdev.dev.release = macio_release_dev;
@@ -487,11 +387,7 @@ static struct macio_dev * macio_add_one_device(struct macio_chip *chip,
 	dma_set_max_seg_size(&dev->ofdev.dev, 65536);
 	dma_set_seg_boundary(&dev->ofdev.dev, 0xffffffff);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PCI
-=======
 #if defined(CONFIG_PCI) && defined(CONFIG_DMA_OPS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set the DMA ops to the ones from the PCI device, this could be
 	 * fishy if we didn't know that on PowerMac it's always direct ops
 	 * or iommu ops that will work fine
@@ -499,12 +395,8 @@ static struct macio_dev * macio_add_one_device(struct macio_chip *chip,
 	 * To get all the fields, copy all archdata
 	 */
 	dev->ofdev.dev.archdata = chip->lbus.pdev->dev.archdata;
-<<<<<<< HEAD
-#endif /* CONFIG_PCI */
-=======
 	dev->ofdev.dev.dma_ops = chip->lbus.pdev->dev.dma_ops;
 #endif /* CONFIG_PCI && CONFIG_DMA_OPS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef DEBUG
 	printk("preparing mdev @%p, ofdev @%p, dev @%p, kobj @%p\n",
@@ -512,10 +404,7 @@ static struct macio_dev * macio_add_one_device(struct macio_chip *chip,
 #endif
 
 	/* MacIO itself has a different reg, we use it's PCI base */
-<<<<<<< HEAD
-=======
 	snprintf(name, sizeof(name), "%pOFn", np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (np == chip->of_node) {
 		dev_set_name(&dev->ofdev.dev, "%1d.%08x:%.*s",
 			     chip->lbus.index,
@@ -524,20 +413,12 @@ static struct macio_dev * macio_add_one_device(struct macio_chip *chip,
 #else
 			0, /* NuBus may want to do something better here */
 #endif
-<<<<<<< HEAD
-			MAX_NODE_NAME_SIZE, np->name);
-=======
 			MAX_NODE_NAME_SIZE, name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		reg = of_get_property(np, "reg", NULL);
 		dev_set_name(&dev->ofdev.dev, "%1d.%08x:%.*s",
 			     chip->lbus.index,
-<<<<<<< HEAD
-			     reg ? *reg : 0, MAX_NODE_NAME_SIZE, np->name);
-=======
 			     reg ? *reg : 0, MAX_NODE_NAME_SIZE, name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Setup interrupts & resources */
@@ -549,11 +430,7 @@ static struct macio_dev * macio_add_one_device(struct macio_chip *chip,
 	if (of_device_register(&dev->ofdev) != 0) {
 		printk(KERN_DEBUG"macio: device registration error for %s!\n",
 		       dev_name(&dev->ofdev.dev));
-<<<<<<< HEAD
-		kfree(dev);
-=======
 		put_device(&dev->ofdev.dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -562,16 +439,8 @@ static struct macio_dev * macio_add_one_device(struct macio_chip *chip,
 
 static int macio_skip_device(struct device_node *np)
 {
-<<<<<<< HEAD
-	if (strncmp(np->name, "battery", 7) == 0)
-		return 1;
-	if (strncmp(np->name, "escc-legacy", 11) == 0)
-		return 1;
-	return 0;
-=======
 	return of_node_name_prefix(np, "battery") ||
 	       of_node_name_prefix(np, "escc-legacy");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -610,11 +479,7 @@ static void macio_pci_add_devices(struct macio_chip *chip)
 	root_res = &rdev->resource[0];
 
 	/* First scan 1st level */
-<<<<<<< HEAD
-	for (np = NULL; (np = of_get_next_child(pnode, np)) != NULL;) {
-=======
 	for_each_child_of_node(pnode, np) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (macio_skip_device(np))
 			continue;
 		of_node_get(np);
@@ -622,26 +487,16 @@ static void macio_pci_add_devices(struct macio_chip *chip)
 					    root_res);
 		if (mdev == NULL)
 			of_node_put(np);
-<<<<<<< HEAD
-		else if (strncmp(np->name, "media-bay", 9) == 0)
-			mbdev = mdev;
-		else if (strncmp(np->name, "escc", 4) == 0)
-=======
 		else if (of_node_name_prefix(np, "media-bay"))
 			mbdev = mdev;
 		else if (of_node_name_prefix(np, "escc"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sdev = mdev;
 	}
 
 	/* Add media bay devices if any */
 	if (mbdev) {
 		pnode = mbdev->ofdev.dev.of_node;
-<<<<<<< HEAD
-		for (np = NULL; (np = of_get_next_child(pnode, np)) != NULL;) {
-=======
 		for_each_child_of_node(pnode, np) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (macio_skip_device(np))
 				continue;
 			of_node_get(np);
@@ -654,11 +509,7 @@ static void macio_pci_add_devices(struct macio_chip *chip)
 	/* Add serial ports if any */
 	if (sdev) {
 		pnode = sdev->ofdev.dev.of_node;
-<<<<<<< HEAD
-		for (np = NULL; (np = of_get_next_child(pnode, np)) != NULL;) {
-=======
 		for_each_child_of_node(pnode, np) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (macio_skip_device(np))
 				continue;
 			of_node_get(np);
@@ -831,11 +682,7 @@ void macio_release_resources(struct macio_dev *dev)
 
 #ifdef CONFIG_PCI
 
-<<<<<<< HEAD
-static int __devinit macio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
-=======
 static int macio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node* np;
 	struct macio_chip* chip;
@@ -895,11 +742,7 @@ static int macio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit macio_pci_remove(struct pci_dev* pdev)
-=======
 static void macio_pci_remove(struct pci_dev* pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	panic("removing of macio-asic not supported !\n");
 }
@@ -908,11 +751,7 @@ static void macio_pci_remove(struct pci_dev* pdev)
  * MacIO is matched against any Apple ID, it's probe() function
  * will then decide wether it applies or not
  */
-<<<<<<< HEAD
-static const struct pci_device_id __devinitdata pci_ids [] = { {
-=======
 static const struct pci_device_id pci_ids[] = { {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.vendor		= PCI_VENDOR_ID_APPLE,
 	.device		= PCI_ANY_ID,
 	.subvendor	= PCI_ANY_ID,
@@ -924,11 +763,7 @@ MODULE_DEVICE_TABLE (pci, pci_ids);
 
 /* pci driver glue; this is a "new style" PCI driver module */
 static struct pci_driver macio_pci_driver = {
-<<<<<<< HEAD
-	.name		= (char *) "macio",
-=======
 	.name		= "macio",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= pci_ids,
 
 	.probe		= macio_pci_probe,

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/platform_device.h>
 
@@ -22,11 +19,7 @@ struct softing_platform_data {
 	 * 16bit, shared interrupt
 	 */
 	int generation;
-<<<<<<< HEAD
-	int nbus; /* # busses on device */
-=======
 	int nbus; /* # buses on device */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int freq; /* operating frequency in Hz */
 	unsigned int max_brp;
 	unsigned int max_sjw;

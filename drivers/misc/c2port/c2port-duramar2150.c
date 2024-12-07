@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Silicon Labs C2 port Linux support for Eurotech Duramar 2150
  *
  *  Copyright (c) 2008 Rodolfo Giometti <giometti@linux.it>
  *  Copyright (c) 2008 Eurotech S.p.A. <info@eurotech.it>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -136,13 +126,8 @@ static int __init duramar2150_c2port_init(void)
 
 	duramar2150_c2port_dev = c2port_device_register("uc",
 					&duramar2150_c2port_ops, NULL);
-<<<<<<< HEAD
-	if (!duramar2150_c2port_dev) {
-		ret = -ENODEV;
-=======
 	if (IS_ERR(duramar2150_c2port_dev)) {
 		ret = PTR_ERR(duramar2150_c2port_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto free_region;
 	}
 

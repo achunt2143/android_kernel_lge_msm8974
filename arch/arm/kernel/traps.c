@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/traps.c
  *
  *  Copyright (C) 1995-2009 Russell King
  *  Fragments that appear the same as linux/arch/i386/kernel/traps.c (C) Linus Torvalds
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  'traps.c' handles hardware exceptions after we have saved some state in
  *  'linux/arch/arm/lib/traps.S'.  Mostly a debugging aid, but will probably
  *  kill the offending process.
@@ -26,37 +16,20 @@
 #include <linux/uaccess.h>
 #include <linux/hardirq.h>
 #include <linux/kdebug.h>
-<<<<<<< HEAD
-=======
 #include <linux/kprobes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kexec.h>
 #include <linux/bug.h>
 #include <linux/delay.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-#include <linux/bug.h>
-=======
 #include <linux/sched/signal.h>
 #include <linux/sched/debug.h>
 #include <linux/sched/task_stack.h>
 #include <linux/irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/atomic.h>
 #include <asm/cacheflush.h>
 #include <asm/exception.h>
-<<<<<<< HEAD
-#include <asm/unistd.h>
-#include <asm/traps.h>
-#include <asm/unwind.h>
-#include <asm/tls.h>
-#include <asm/system_misc.h>
-
-#include <trace/events/exception.h>
-=======
 #include <asm/spectre.h>
 #include <asm/unistd.h>
 #include <asm/traps.h>
@@ -67,7 +40,6 @@
 #include <asm/system_misc.h>
 #include <asm/opcodes.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *handler[]= {
 	"prefetch abort",
@@ -90,20 +62,6 @@ static int __init user_debug_setup(char *str)
 __setup("user_debug=", user_debug_setup);
 #endif
 
-<<<<<<< HEAD
-static void dump_mem(const char *, const char *, unsigned long, unsigned long);
-
-void dump_backtrace_entry(unsigned long where, unsigned long from, unsigned long frame)
-{
-#ifdef CONFIG_KALLSYMS
-	printk("[<%08lx>] (%pS) from [<%08lx>] (%pS)\n", where, (void *)where, from, (void *)from);
-#else
-	printk("Function entered at [<%08lx>] from [<%08lx>]\n", where, from);
-#endif
-
-	if (in_exception_text(where))
-		dump_mem("", "Exception stack", frame + 4, frame + 4 + sizeof(struct pt_regs));
-=======
 void dump_backtrace_entry(unsigned long where, unsigned long from,
 			  unsigned long frame, const char *loglvl)
 {
@@ -154,7 +112,6 @@ void dump_backtrace_stm(u32 *stack, u32 instruction, const char *loglvl)
 	}
 	if (p != str)
 		printk("%s%s\n", loglvl, str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifndef CONFIG_ARM_UNWIND
@@ -166,12 +123,8 @@ void dump_backtrace_stm(u32 *stack, u32 instruction, const char *loglvl)
 static int verify_stack(unsigned long sp)
 {
 	if (sp < PAGE_OFFSET ||
-<<<<<<< HEAD
-	    (sp > (unsigned long)high_memory && high_memory != NULL))
-=======
 	    (!IS_ENABLED(CONFIG_VMAP_STACK) &&
 	     sp > (unsigned long)high_memory && high_memory != NULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	return 0;
@@ -181,30 +134,12 @@ static int verify_stack(unsigned long sp)
 /*
  * Dump out the contents of some memory nicely...
  */
-<<<<<<< HEAD
-static void dump_mem(const char *lvl, const char *str, unsigned long bottom,
-		     unsigned long top)
-{
-	unsigned long first;
-	mm_segment_t fs;
-	int i;
-
-	/*
-	 * We need to switch to kernel mode so that we can use __get_user
-	 * to safely read from kernel space.  Note that we now dump the
-	 * code first, just in case the backtrace kills us.
-	 */
-	fs = get_fs();
-	set_fs(KERNEL_DS);
-
-=======
 void dump_mem(const char *lvl, const char *str, unsigned long bottom,
 	      unsigned long top)
 {
 	unsigned long first;
 	int i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("%s%s(0x%08lx to 0x%08lx)\n", lvl, str, bottom, top);
 
 	for (first = bottom & ~31; first < top; first += 32) {
@@ -217,11 +152,7 @@ void dump_mem(const char *lvl, const char *str, unsigned long bottom,
 		for (p = first, i = 0; i < 8 && p < top; i++, p += 4) {
 			if (p >= bottom && p < top) {
 				unsigned long val;
-<<<<<<< HEAD
-				if (__get_user(val, (unsigned long *)p) == 0)
-=======
 				if (!get_kernel_nofault(val, (unsigned long *)p))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					sprintf(str + i * 9, " %08lx", val);
 				else
 					sprintf(str + i * 9, " ????????");
@@ -229,11 +160,6 @@ void dump_mem(const char *lvl, const char *str, unsigned long bottom,
 		}
 		printk("%s%04lx:%s\n", lvl, first & 0xffff, str);
 	}
-<<<<<<< HEAD
-
-	set_fs(fs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dump_instr(const char *lvl, struct pt_regs *regs)
@@ -241,36 +167,17 @@ static void dump_instr(const char *lvl, struct pt_regs *regs)
 	unsigned long addr = instruction_pointer(regs);
 	const int thumb = thumb_mode(regs);
 	const int width = thumb ? 4 : 8;
-<<<<<<< HEAD
-	mm_segment_t fs;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char str[sizeof("00000000 ") * 5 + 2 + 1], *p = str;
 	int i;
 
 	/*
-<<<<<<< HEAD
-	 * We need to switch to kernel mode so that we can use __get_user
-	 * to safely read from kernel space.  Note that we now dump the
-	 * code first, just in case the backtrace kills us.
-	 */
-	fs = get_fs();
-	set_fs(KERNEL_DS);
-=======
 	 * Note that we now dump the code first, just in case the backtrace
 	 * kills us.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = -4; i < 1 + !!thumb; i++) {
 		unsigned int val, bad;
 
-<<<<<<< HEAD
-		if (thumb)
-			bad = __get_user(val, &((u16 *)addr)[i]);
-		else
-			bad = __get_user(val, &((u32 *)addr)[i]);
-=======
 		if (thumb) {
 			u16 tmp;
 
@@ -288,7 +195,6 @@ static void dump_instr(const char *lvl, struct pt_regs *regs)
 
 			val = __mem_to_opcode_arm(val);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!bad)
 			p += sprintf(p, i == 0 ? "(%0*x) " : "%0*x ",
@@ -299,19 +205,6 @@ static void dump_instr(const char *lvl, struct pt_regs *regs)
 		}
 	}
 	printk("%sCode: %s\n", lvl, str);
-<<<<<<< HEAD
-
-	set_fs(fs);
-}
-
-#ifdef CONFIG_ARM_UNWIND
-static inline void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk)
-{
-	unwind_backtrace(regs, tsk);
-}
-#else
-static void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk)
-=======
 }
 
 #ifdef CONFIG_ARM_UNWIND
@@ -323,26 +216,17 @@ void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
 #else
 void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
 		    const char *loglvl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int fp, mode;
 	int ok = 1;
 
-<<<<<<< HEAD
-	printk("Backtrace: ");
-=======
 	printk("%sCall trace: ", loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tsk)
 		tsk = current;
 
 	if (regs) {
-<<<<<<< HEAD
-		fp = regs->ARM_fp;
-=======
 		fp = frame_pointer(regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mode = processor_mode(regs);
 	} else if (tsk != current) {
 		fp = thread_saved_fp(tsk);
@@ -353,32 +237,6 @@ void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
 	}
 
 	if (!fp) {
-<<<<<<< HEAD
-		printk("no frame pointer");
-		ok = 0;
-	} else if (verify_stack(fp)) {
-		printk("invalid frame pointer 0x%08x", fp);
-		ok = 0;
-	} else if (fp < (unsigned long)end_of_stack(tsk))
-		printk("frame pointer underflow");
-	printk("\n");
-
-	if (ok)
-		c_backtrace(fp, mode);
-}
-#endif
-
-void dump_stack(void)
-{
-	dump_backtrace(NULL, NULL);
-}
-
-EXPORT_SYMBOL(dump_stack);
-
-void show_stack(struct task_struct *tsk, unsigned long *sp)
-{
-	dump_backtrace(NULL, tsk);
-=======
 		pr_cont("no frame pointer");
 		ok = 0;
 	} else if (verify_stack(fp)) {
@@ -396,17 +254,13 @@ void show_stack(struct task_struct *tsk, unsigned long *sp)
 void show_stack(struct task_struct *tsk, unsigned long *sp, const char *loglvl)
 {
 	dump_backtrace(NULL, tsk, loglvl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	barrier();
 }
 
 #ifdef CONFIG_PREEMPT
 #define S_PREEMPT " PREEMPT"
-<<<<<<< HEAD
-=======
 #elif defined(CONFIG_PREEMPT_RT)
 #define S_PREEMPT " PREEMPT_RT"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define S_PREEMPT ""
 #endif
@@ -421,16 +275,6 @@ void show_stack(struct task_struct *tsk, unsigned long *sp, const char *loglvl)
 #define S_ISA " ARM"
 #endif
 
-<<<<<<< HEAD
-static int __die(const char *str, int err, struct thread_info *thread, struct pt_regs *regs)
-{
-	struct task_struct *tsk = thread->task;
-	static int die_counter;
-	int ret;
-
-	printk(KERN_EMERG "Internal error: %s: %x [#%d]" S_PREEMPT S_SMP
-	       S_ISA "\n", str, err, ++die_counter);
-=======
 static int __die(const char *str, int err, struct pt_regs *regs)
 {
 	struct task_struct *tsk = current;
@@ -439,58 +283,10 @@ static int __die(const char *str, int err, struct pt_regs *regs)
 
 	pr_emerg("Internal error: %s: %x [#%d]" S_PREEMPT S_SMP S_ISA "\n",
 	         str, err, ++die_counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* trap and error numbers are mostly meaningless on ARM */
 	ret = notify_die(DIE_OOPS, str, regs, err, tsk->thread.trap_no, SIGSEGV);
 	if (ret == NOTIFY_STOP)
-<<<<<<< HEAD
-		return ret;
-
-	print_modules();
-	__show_regs(regs);
-	printk(KERN_EMERG "Process %.*s (pid: %d, stack limit = 0x%p)\n",
-		TASK_COMM_LEN, tsk->comm, task_pid_nr(tsk), thread + 1);
-
-	if (!user_mode(regs) || in_interrupt()) {
-		dump_mem(KERN_EMERG, "Stack: ", regs->ARM_sp,
-			 THREAD_SIZE + (unsigned long)task_stack_page(tsk));
-		dump_backtrace(regs, tsk);
-		dump_instr(KERN_EMERG, regs);
-	}
-
-	return ret;
-}
-
-static DEFINE_RAW_SPINLOCK(die_lock);
-
-/*
- * This function is protected against re-entrancy.
- */
-void die(const char *str, struct pt_regs *regs, int err)
-{
-	struct thread_info *thread = current_thread_info();
-	int ret;
-	enum bug_trap_type bug_type = BUG_TRAP_TYPE_NONE;
-
-	oops_enter();
-
-	raw_spin_lock_irq(&die_lock);
-	console_verbose();
-	bust_spinlocks(1);
-	if (!user_mode(regs))
-		bug_type = report_bug(regs->ARM_pc, regs);
-	if (bug_type != BUG_TRAP_TYPE_NONE)
-		str = "Oops - BUG";
-	ret = __die(str, err, thread, regs);
-
-	if (regs && kexec_should_crash(thread->task))
-		crash_kexec(regs);
-
-	bust_spinlocks(0);
-	add_taint(TAINT_DIE);
-	raw_spin_unlock_irq(&die_lock);
-=======
 		return 1;
 
 	print_modules();
@@ -550,21 +346,12 @@ static void oops_end(unsigned long flags, struct pt_regs *regs, int signr)
 		/* Nest count reaches zero, release the lock. */
 		arch_spin_unlock(&die_lock);
 	raw_local_irq_restore(flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oops_exit();
 
 	if (in_interrupt())
 		panic("Fatal exception in interrupt");
 	if (panic_on_oops)
 		panic("Fatal exception");
-<<<<<<< HEAD
-	if (ret != NOTIFY_STOP)
-		do_exit(SIGSEGV);
-}
-
-void arm_notify_die(const char *str, struct pt_regs *regs,
-		struct siginfo *info, unsigned long err, unsigned long trap)
-=======
 	if (signr)
 		make_task_dead(signr);
 }
@@ -592,17 +379,12 @@ void die(const char *str, struct pt_regs *regs, int err)
 void arm_notify_die(const char *str, struct pt_regs *regs,
 		int signo, int si_code, void __user *addr,
 		unsigned long err, unsigned long trap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (user_mode(regs)) {
 		current->thread.error_code = err;
 		current->thread.trap_no = trap;
 
-<<<<<<< HEAD
-		force_sig_info(info->si_signo, info, current);
-=======
 		force_sig_fault(signo, si_code, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		die(str, regs, err);
 	}
@@ -613,17 +395,6 @@ void arm_notify_die(const char *str, struct pt_regs *regs,
 int is_valid_bugaddr(unsigned long pc)
 {
 #ifdef CONFIG_THUMB2_KERNEL
-<<<<<<< HEAD
-	unsigned short bkpt;
-#else
-	unsigned long bkpt;
-#endif
-
-	if (probe_kernel_address((unsigned *)pc, bkpt))
-		return 0;
-
-	return bkpt == BUG_INSTR_VALUE;
-=======
 	u16 bkpt;
 	u16 insn = __opcode_to_mem_thumb16(BUG_INSTR_VALUE);
 #else
@@ -635,7 +406,6 @@ int is_valid_bugaddr(unsigned long pc)
 		return 0;
 
 	return bkpt == insn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif
@@ -661,12 +431,8 @@ void unregister_undef_hook(struct undef_hook *hook)
 	raw_spin_unlock_irqrestore(&undef_lock, flags);
 }
 
-<<<<<<< HEAD
-static int call_undef_hook(struct pt_regs *regs, unsigned int instr)
-=======
 static nokprobe_inline
 int call_undef_hook(struct pt_regs *regs, unsigned int instr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct undef_hook *hook;
 	unsigned long flags;
@@ -682,16 +448,9 @@ int call_undef_hook(struct pt_regs *regs, unsigned int instr)
 	return fn ? fn(regs, instr) : 1;
 }
 
-<<<<<<< HEAD
-asmlinkage void __exception do_undefinstr(struct pt_regs *regs)
-{
-	unsigned int instr;
-	siginfo_t info;
-=======
 asmlinkage void do_undefinstr(struct pt_regs *regs)
 {
 	unsigned int instr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __user *pc;
 
 	pc = (void __user *)instruction_pointer(regs);
@@ -699,19 +458,6 @@ asmlinkage void do_undefinstr(struct pt_regs *regs)
 	if (processor_mode(regs) == SVC_MODE) {
 #ifdef CONFIG_THUMB2_KERNEL
 		if (thumb_mode(regs)) {
-<<<<<<< HEAD
-			instr = ((u16 *)pc)[0];
-			if (is_wide_instruction(instr)) {
-				instr <<= 16;
-				instr |= ((u16 *)pc)[1];
-			}
-		} else
-#endif
-			instr = *(u32 *) pc;
-	} else if (thumb_mode(regs)) {
-		if (get_user(instr, (u16 __user *)pc))
-			goto die_sig;
-=======
 			instr = __mem_to_opcode_thumb16(((u16 *)pc)[0]);
 			if (is_wide_instruction(instr)) {
 				u16 inst2;
@@ -725,18 +471,10 @@ asmlinkage void do_undefinstr(struct pt_regs *regs)
 		if (get_user(instr, (u16 __user *)pc))
 			goto die_sig;
 		instr = __mem_to_opcode_thumb16(instr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (is_wide_instruction(instr)) {
 			unsigned int instr2;
 			if (get_user(instr2, (u16 __user *)pc+1))
 				goto die_sig;
-<<<<<<< HEAD
-			instr <<= 16;
-			instr |= instr2;
-		}
-	} else if (get_user(instr, (u32 __user *)pc)) {
-		goto die_sig;
-=======
 			instr2 = __mem_to_opcode_thumb16(instr2);
 			instr = __opcode_thumb32_compose(instr, instr2);
 		}
@@ -744,37 +482,11 @@ asmlinkage void do_undefinstr(struct pt_regs *regs)
 		if (get_user(instr, (u32 __user *)pc))
 			goto die_sig;
 		instr = __mem_to_opcode_arm(instr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (call_undef_hook(regs, instr) == 0)
 		return;
 
-<<<<<<< HEAD
-	trace_undef_instr(regs, (void *)pc);
-
-die_sig:
-#ifdef CONFIG_DEBUG_USER
-	if (user_debug & UDBG_UNDEFINED) {
-		printk(KERN_INFO "%s (%d): undefined instruction: pc=%p\n",
-			current->comm, task_pid_nr(current), pc);
-		dump_instr(KERN_INFO, regs);
-	}
-#endif
-
-	info.si_signo = SIGILL;
-	info.si_errno = 0;
-	info.si_code  = ILL_ILLOPC;
-	info.si_addr  = pc;
-
-	arm_notify_die("Oops - undefined instruction", regs, &info, 0, 6);
-}
-
-asmlinkage void do_unexp_fiq (struct pt_regs *regs)
-{
-	printk("Hmm.  Unexpected FIQ received, but trying to continue\n");
-	printk("You may have a hardware problem...\n");
-=======
 die_sig:
 #ifdef CONFIG_DEBUG_USER
 	if (user_debug & UDBG_UNDEFINED) {
@@ -812,7 +524,6 @@ asmlinkage void __exception_irq_entry handle_fiq_as_nmi(struct pt_regs *regs)
 	nmi_exit();
 
 	set_irq_regs(old_regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -825,11 +536,7 @@ asmlinkage void bad_mode(struct pt_regs *regs, int reason)
 {
 	console_verbose();
 
-<<<<<<< HEAD
-	printk(KERN_CRIT "Bad mode in %s handler detected\n", handler[reason]);
-=======
 	pr_crit("Bad mode in %s handler detected\n", handler[reason]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	die("Oops - bad mode", regs, 0);
 	local_irq_disable();
@@ -838,74 +545,27 @@ asmlinkage void bad_mode(struct pt_regs *regs, int reason)
 
 static int bad_syscall(int n, struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	struct thread_info *thread = current_thread_info();
-	siginfo_t info;
-
-	if ((current->personality & PER_MASK) != PER_LINUX &&
-	    thread->exec_domain->handler) {
-		thread->exec_domain->handler(n, regs);
-=======
 	if ((current->personality & PER_MASK) != PER_LINUX) {
 		send_sig(SIGSEGV, current, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return regs->ARM_r0;
 	}
 
 #ifdef CONFIG_DEBUG_USER
 	if (user_debug & UDBG_SYSCALL) {
-<<<<<<< HEAD
-		printk(KERN_ERR "[%d] %s: obsolete system call %08x.\n",
-=======
 		pr_err("[%d] %s: obsolete system call %08x.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			task_pid_nr(current), current->comm, n);
 		dump_instr(KERN_ERR, regs);
 	}
 #endif
 
-<<<<<<< HEAD
-	info.si_signo = SIGILL;
-	info.si_errno = 0;
-	info.si_code  = ILL_ILLTRP;
-	info.si_addr  = (void __user *)instruction_pointer(regs) -
-			 (thumb_mode(regs) ? 2 : 4);
-
-	arm_notify_die("Oops - bad syscall", regs, &info, n, 0);
-=======
 	arm_notify_die("Oops - bad syscall", regs, SIGILL, ILL_ILLTRP,
 		       (void __user *)instruction_pointer(regs) -
 			 (thumb_mode(regs) ? 2 : 4),
 		       n, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return regs->ARM_r0;
 }
 
-<<<<<<< HEAD
-static inline void
-do_cache_op(unsigned long start, unsigned long end, int flags)
-{
-	struct mm_struct *mm = current->active_mm;
-	struct vm_area_struct *vma;
-
-	if (end < start || flags)
-		return;
-
-	down_read(&mm->mmap_sem);
-	vma = find_vma(mm, start);
-	if (vma && vma->vm_start < end) {
-		if (start < vma->vm_start)
-			start = vma->vm_start;
-		if (end > vma->vm_end)
-			end = vma->vm_end;
-
-		up_read(&mm->mmap_sem);
-		flush_cache_user_range(start, end);
-		return;
-	}
-	up_read(&mm->mmap_sem);
-=======
 static inline int
 __do_cache_op(unsigned long start, unsigned long end)
 {
@@ -938,7 +598,6 @@ do_cache_op(unsigned long start, unsigned long end, int flags)
 		return -EFAULT;
 
 	return __do_cache_op(start, end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -948,41 +607,18 @@ do_cache_op(unsigned long start, unsigned long end, int flags)
 #define NR(x) ((__ARM_NR_##x) - __ARM_NR_BASE)
 asmlinkage int arm_syscall(int no, struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	struct thread_info *thread = current_thread_info();
-	siginfo_t info;
-
-	/* Emulate/fallthrough. */
-	if (no == -1)
-		return regs->ARM_r0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((no >> 16) != (__ARM_NR_BASE>> 16))
 		return bad_syscall(no, regs);
 
 	switch (no & 0xffff) {
 	case 0: /* branch through 0 */
-<<<<<<< HEAD
-		info.si_signo = SIGSEGV;
-		info.si_errno = 0;
-		info.si_code  = SEGV_MAPERR;
-		info.si_addr  = NULL;
-
-		arm_notify_die("branch through zero", regs, &info, 0, 0);
-=======
 		arm_notify_die("branch through zero", regs,
 			       SIGSEGV, SEGV_MAPERR, NULL, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	case NR(breakpoint): /* SWI BREAK_POINT */
 		regs->ARM_pc -= thumb_mode(regs) ? 2 : 4;
-<<<<<<< HEAD
-		ptrace_break(current, regs);
-=======
 		ptrace_break(regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return regs->ARM_r0;
 
 	/*
@@ -1000,12 +636,7 @@ asmlinkage int arm_syscall(int no, struct pt_regs *regs)
 	 * the specified region).
 	 */
 	case NR(cacheflush):
-<<<<<<< HEAD
-		do_cache_op(regs->ARM_r0, regs->ARM_r1, regs->ARM_r2);
-		return 0;
-=======
 		return do_cache_op(regs->ARM_r0, regs->ARM_r1, regs->ARM_r2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case NR(usr26):
 		if (!(elf_hwcap & HWCAP_26BIT))
@@ -1020,82 +651,11 @@ asmlinkage int arm_syscall(int no, struct pt_regs *regs)
 		return regs->ARM_r0;
 
 	case NR(set_tls):
-<<<<<<< HEAD
-		thread->tp_value[0] = regs->ARM_r0;
-		if (tls_emu)
-			return 0;
-		if (has_tls_reg) {
-			asm ("mcr p15, 0, %0, c13, c0, 3"
-				: : "r" (regs->ARM_r0));
-		} else {
-			/*
-			 * User space must never try to access this directly.
-			 * Expect your app to break eventually if you do so.
-			 * The user helper at 0xffff0fe0 must be used instead.
-			 * (see entry-armv.S for details)
-			 */
-			*((unsigned int *)0xffff0ff0) = regs->ARM_r0;
-		}
-		return 0;
-
-#ifdef CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG
-	/*
-	 * Atomically store r1 in *r2 if *r2 is equal to r0 for user space.
-	 * Return zero in r0 if *MEM was changed or non-zero if no exchange
-	 * happened.  Also set the user C flag accordingly.
-	 * If access permissions have to be fixed up then non-zero is
-	 * returned and the operation has to be re-attempted.
-	 *
-	 * *NOTE*: This is a ghost syscall private to the kernel.  Only the
-	 * __kuser_cmpxchg code in entry-armv.S should be aware of its
-	 * existence.  Don't ever use this from user code.
-	 */
-	case NR(cmpxchg):
-	for (;;) {
-		extern void do_DataAbort(unsigned long addr, unsigned int fsr,
-					 struct pt_regs *regs);
-		unsigned long val;
-		unsigned long addr = regs->ARM_r2;
-		struct mm_struct *mm = current->mm;
-		pgd_t *pgd; pmd_t *pmd; pte_t *pte;
-		spinlock_t *ptl;
-
-		regs->ARM_cpsr &= ~PSR_C_BIT;
-		down_read(&mm->mmap_sem);
-		pgd = pgd_offset(mm, addr);
-		if (!pgd_present(*pgd))
-			goto bad_access;
-		pmd = pmd_offset(pgd, addr);
-		if (!pmd_present(*pmd))
-			goto bad_access;
-		pte = pte_offset_map_lock(mm, pmd, addr, &ptl);
-		if (!pte_present(*pte) || !pte_write(*pte) || !pte_dirty(*pte)) {
-			pte_unmap_unlock(pte, ptl);
-			goto bad_access;
-		}
-		val = *(unsigned long *)addr;
-		val -= regs->ARM_r0;
-		if (val == 0) {
-			*(unsigned long *)addr = regs->ARM_r1;
-			regs->ARM_cpsr |= PSR_C_BIT;
-		}
-		pte_unmap_unlock(pte, ptl);
-		up_read(&mm->mmap_sem);
-		return val;
-
-		bad_access:
-		up_read(&mm->mmap_sem);
-		/* simulate a write access fault */
-		do_DataAbort(addr, 15 + (1 << 11), regs);
-	}
-#endif
-=======
 		set_tls(regs->ARM_r0);
 		return 0;
 
 	case NR(get_tls):
 		return current_thread_info()->tp_value[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		/* Calls 9f00xx..9f07ff are defined to return -ENOSYS
@@ -1112,24 +672,6 @@ asmlinkage int arm_syscall(int no, struct pt_regs *regs)
 	 * something catastrophic has happened
 	 */
 	if (user_debug & UDBG_SYSCALL) {
-<<<<<<< HEAD
-		printk("[%d] %s: arm syscall %d\n",
-		       task_pid_nr(current), current->comm, no);
-		dump_instr("", regs);
-		if (user_mode(regs)) {
-			__show_regs(regs);
-			c_backtrace(regs->ARM_fp, processor_mode(regs));
-		}
-	}
-#endif
-	info.si_signo = SIGILL;
-	info.si_errno = 0;
-	info.si_code  = ILL_ILLTRP;
-	info.si_addr  = (void __user *)instruction_pointer(regs) -
-			 (thumb_mode(regs) ? 2 : 4);
-
-	arm_notify_die("Oops - bad syscall(2)", regs, &info, no, 0);
-=======
 		pr_err("[%d] %s: arm syscall %d\n",
 		       task_pid_nr(current), current->comm, no);
 		dump_instr(KERN_ERR, regs);
@@ -1143,7 +685,6 @@ asmlinkage int arm_syscall(int no, struct pt_regs *regs)
 		       (void __user *)instruction_pointer(regs) -
 			 (thumb_mode(regs) ? 2 : 4),
 		       no, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1185,17 +726,6 @@ late_initcall(arm_mrc_hook_init);
 
 #endif
 
-<<<<<<< HEAD
-void __bad_xchg(volatile void *ptr, int size)
-{
-	printk("xchg: bad data size: pc 0x%p, ptr 0x%p, size %d\n",
-		__builtin_return_address(0), ptr, size);
-	BUG();
-}
-EXPORT_SYMBOL(__bad_xchg);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A data abort trap was taken, but we did not handle the instruction.
  * Try to abort the user program, or panic if it was the kernel.
@@ -1204,25 +734,6 @@ asmlinkage void
 baddataabort(int code, unsigned long instr, struct pt_regs *regs)
 {
 	unsigned long addr = instruction_pointer(regs);
-<<<<<<< HEAD
-	siginfo_t info;
-
-#ifdef CONFIG_DEBUG_USER
-	if (user_debug & UDBG_BADABORT) {
-		printk(KERN_ERR "[%d] %s: bad data abort: code %d instr 0x%08lx\n",
-			task_pid_nr(current), current->comm, code, instr);
-		dump_instr(KERN_ERR, regs);
-		show_pte(current->mm, addr);
-	}
-#endif
-
-	info.si_signo = SIGILL;
-	info.si_errno = 0;
-	info.si_code  = ILL_ILLOPC;
-	info.si_addr  = (void __user *)addr;
-
-	arm_notify_die("unknown data abort code", regs, &info, instr, 0);
-=======
 
 #ifdef CONFIG_DEBUG_USER
 	if (user_debug & UDBG_BADABORT) {
@@ -1236,52 +747,28 @@ baddataabort(int code, unsigned long instr, struct pt_regs *regs)
 
 	arm_notify_die("unknown data abort code", regs,
 		       SIGILL, ILL_ILLOPC, (void __user *)addr, instr, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __readwrite_bug(const char *fn)
 {
-<<<<<<< HEAD
-	printk("%s called, but not implemented\n", fn);
-=======
 	pr_err("%s called, but not implemented\n", fn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG();
 }
 EXPORT_SYMBOL(__readwrite_bug);
 
-<<<<<<< HEAD
-void __pte_error(const char *file, int line, pte_t pte)
-{
-	printk("%s:%d: bad pte %08llx.\n", file, line, (long long)pte_val(pte));
-=======
 #ifdef CONFIG_MMU
 void __pte_error(const char *file, int line, pte_t pte)
 {
 	pr_err("%s:%d: bad pte %08llx.\n", file, line, (long long)pte_val(pte));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __pmd_error(const char *file, int line, pmd_t pmd)
 {
-<<<<<<< HEAD
-	printk("%s:%d: bad pmd %08llx.\n", file, line, (long long)pmd_val(pmd));
-=======
 	pr_err("%s:%d: bad pmd %08llx.\n", file, line, (long long)pmd_val(pmd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __pgd_error(const char *file, int line, pgd_t pgd)
 {
-<<<<<<< HEAD
-	printk("%s:%d: bad pgd %08llx.\n", file, line, (long long)pgd_val(pgd));
-}
-
-asmlinkage void __div0(void)
-{
-	printk("Division by zero in kernel.\n");
-	BUG_ON(PANIC_CORRUPTION);
-=======
 	pr_err("%s:%d: bad pgd %08llx.\n", file, line, (long long)pgd_val(pgd));
 }
 #endif
@@ -1289,7 +776,6 @@ asmlinkage void __div0(void)
 asmlinkage void __div0(void)
 {
 	pr_err("Division by zero in kernel.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_stack();
 }
 EXPORT_SYMBOL(__div0);
@@ -1301,15 +787,6 @@ void abort(void)
 	/* if that doesn't kill us, halt */
 	panic("Oops failed to kill thread");
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(abort);
-
-void __init trap_init(void)
-{
-	return;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_KUSER_HELPERS
 static void __init kuser_init(void *vectors)
@@ -1327,20 +804,11 @@ static void __init kuser_init(void *vectors)
 		memcpy(vectors + 0xfe0, vectors + 0xfe8, 4);
 }
 #else
-<<<<<<< HEAD
-static void __init kuser_init(void *vectors)
-=======
 static inline void __init kuser_init(void *vectors)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif
 
-<<<<<<< HEAD
-void __init early_trap_init(void *vectors_base)
-{
-	unsigned long vectors = (unsigned long)vectors_base;
-=======
 #ifndef CONFIG_CPU_V7M
 static void copy_from_lma(void *vma, void *lma_start, void *lma_end)
 {
@@ -1394,7 +862,6 @@ int spectre_bhb_update_vectors(unsigned int method)
 
 void __init early_trap_init(void *vectors_base)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	extern char __stubs_start[], __stubs_end[];
 	extern char __vectors_start[], __vectors_end[];
 	unsigned i;
@@ -1415,16 +882,6 @@ void __init early_trap_init(void *vectors_base)
 	 * into the vector page, mapped at 0xffff0000, and ensure these
 	 * are visible to the instruction stream.
 	 */
-<<<<<<< HEAD
-	memcpy((void *)vectors, __vectors_start, __vectors_end - __vectors_start);
-	memcpy((void *)vectors + 0x1000, __stubs_start, __stubs_end - __stubs_start);
-
-	kuser_init(vectors_base);
-
-	flush_icache_range(vectors, vectors + PAGE_SIZE * 2);
-	modify_domain(DOMAIN_USER, DOMAIN_CLIENT);
-}
-=======
 	copy_from_lma(vectors_base, __vectors_start, __vectors_end);
 	copy_from_lma(vectors_base + 0x1000, __stubs_start, __stubs_end);
 
@@ -1509,4 +966,3 @@ void arch_sync_kernel_mappings(unsigned long start, unsigned long end)
 }
 #endif
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

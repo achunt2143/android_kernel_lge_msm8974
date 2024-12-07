@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # USB Miscellaneous driver configuration
 #
 comment "USB Miscellaneous drivers"
-<<<<<<< HEAD
-	depends on USB
-
-config USB_EMI62
-	tristate "EMI 6|2m USB Audio interface support"
-	depends on USB
-	---help---
-=======
 
 config USB_USS720
 	tristate "USS720 parport driver"
@@ -47,7 +36,6 @@ config USB_USS720
 config USB_EMI62
 	tristate "EMI 6|2m USB Audio interface support"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver loads firmware to Emagic EMI 6|2m low latency USB
 	  Audio and Midi interface.
 
@@ -57,20 +45,11 @@ config USB_EMI62
 	  This code is also available as a module ( = code which can be
 	  inserted in and removed from the running kernel whenever you want).
 	  The module will be called audio. If you want to compile it as a
-<<<<<<< HEAD
-	  module, say M here and read <file:Documentation/kbuild/modules.txt>.
-
-config USB_EMI26
-	tristate "EMI 2|6 USB Audio interface support"
-	depends on USB
-	---help---
-=======
 	  module, say M here and read <file:Documentation/kbuild/modules.rst>.
 
 config USB_EMI26
 	tristate "EMI 2|6 USB Audio interface support"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver loads firmware to Emagic EMI 2|6 low latency USB
 	  Audio interface.
 
@@ -82,10 +61,6 @@ config USB_EMI26
 
 config USB_ADUTUX
 	tristate "ADU devices from Ontrak Control Systems"
-<<<<<<< HEAD
-	depends on USB
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y if you want to use an ADU device from Ontrak Control
 	  Systems.
@@ -95,35 +70,14 @@ config USB_ADUTUX
 
 config USB_SEVSEG
 	tristate "USB 7-Segment LED Display"
-<<<<<<< HEAD
-	depends on USB
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you have a USB 7-Segment Display by Delcom
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called usbsevseg.
 
-<<<<<<< HEAD
-config USB_RIO500
-	tristate "USB Diamond Rio500 support"
-	depends on USB
-	help
-	  Say Y here if you want to connect a USB Rio500 mp3 player to your
-	  computer's USB port. Please read <file:Documentation/usb/rio.txt>
-	  for more information.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called rio500.
-
 config USB_LEGOTOWER
 	tristate "USB Lego Infrared Tower support"
-	depends on USB
-=======
-config USB_LEGOTOWER
-	tristate "USB Lego Infrared Tower support"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to connect a USB Lego Infrared Tower to your
 	  computer's USB port.
@@ -132,18 +86,10 @@ config USB_LEGOTOWER
 	  inserted in and removed from the running kernel whenever you want).
 	  The module will be called legousbtower. If you want to compile it as
 	  a module, say M here and read
-<<<<<<< HEAD
-	  <file:Documentation/kbuild/modules.txt>.
-
-config USB_LCD
-	tristate "USB LCD driver support"
-	depends on USB
-=======
 	  <file:Documentation/kbuild/modules.rst>.
 
 config USB_LCD
 	tristate "USB LCD driver support"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to connect an USBLCD to your computer's
 	  USB port. The USBLCD is a small USB interface board for
@@ -153,45 +99,21 @@ config USB_LCD
 	  To compile this driver as a module, choose M here: the
 	  module will be called usblcd.
 
-<<<<<<< HEAD
-config USB_LED
-	tristate "USB LED driver support"
-	depends on USB
-	help
-	  Say Y here if you want to connect an USBLED device to your 
-	  computer's USB port.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called usbled.
-
 config USB_CYPRESS_CY7C63
 	tristate "Cypress CY7C63xxx USB driver support"
-	depends on USB
-=======
-config USB_CYPRESS_CY7C63
-	tristate "Cypress CY7C63xxx USB driver support"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to connect a Cypress CY7C63xxx
 	  micro controller to your computer's USB port. Currently this
 	  driver supports the pre-programmed devices (incl. firmware)
 	  by AK Modul-Bus Computer GmbH.
 
-<<<<<<< HEAD
-	  Please see: http://www.ak-modul-bus.de/stat/mikrocontroller.html
-=======
 	  Please see: https://www.ak-modul-bus.de/stat/mikrocontroller.html
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called cypress_cy7c63.
 
 config USB_CYTHERM
 	tristate "Cypress USB thermometer driver support"
-<<<<<<< HEAD
-	depends on USB
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to connect a Cypress USB thermometer
 	  device to your computer's USB port. This device is also known
@@ -204,10 +126,6 @@ config USB_CYTHERM
 
 config USB_IDMOUSE
 	tristate "Siemens ID USB Mouse Fingerprint sensor support"
-<<<<<<< HEAD
-	depends on USB
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to use the fingerprint sensor on
 	  the Siemens ID Mouse. There is also a Siemens ID Mouse
@@ -217,50 +135,15 @@ config USB_IDMOUSE
 	  This driver creates an entry "/dev/idmouseX" or "/dev/usb/idmouseX",
 	  which can be used by, e.g.,"cat /dev/idmouse0 > fingerprint.pnm".
 
-<<<<<<< HEAD
-	  See also <http://www.fs.tum.de/~echtler/idmouse/>.
-
-config USB_FTDI_ELAN
-	tristate "Elan PCMCIA CardBus Adapter USB Client"
-	depends on USB
-	default M
-	help
-	  ELAN's Uxxx series of adapters are USB to PCMCIA CardBus adapters.
-	  Currently only the U132 adapter is available.
-
-	  The U132 is specifically designed for CardBus PC cards that contain
-	  an OHCI host controller. Typical PC cards are the Orange Mobile 3G
-	  Option GlobeTrotter Fusion card. The U132 adapter will *NOT* work
-	  with PC cards that do not contain an OHCI controller. To use a U132
-	  adapter you will need this "ftdi-elan" module as well as the "u132-hcd"
-	  module which is a USB host controller driver that talks to the OHCI
-	  controller within CardBus card that are inserted in the U132 adapter.
-
-	  This driver has been tested with a CardBus OHCI USB adapter, and
-	  worked with a USB PEN Drive inserted into the first USB port of
-	  the PCCARD. A rather pointless thing to do, but useful for testing.
-
-	  See also the USB_U132_HCD entry "Elan U132 Adapter Host Controller"
-
-	  It is safe to say M here.
-
-config USB_APPLEDISPLAY
-	tristate "Apple Cinema Display support"
-	depends on USB
-	select BACKLIGHT_LCD_SUPPORT
-=======
 	  See also <https://www.fs.tum.de/~echtler/idmouse/>.
 
 config USB_APPLEDISPLAY
 	tristate "Apple Cinema Display support"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select BACKLIGHT_CLASS_DEVICE
 	help
 	  Say Y here if you want to control the backlight of Apple Cinema
 	  Displays over USB. This driver provides a sysfs interface.
 
-<<<<<<< HEAD
-=======
 config USB_QCOM_EUD
 	tristate "QCOM Embedded USB Debugger(EUD) Driver"
 	depends on ARCH_QCOM || COMPILE_TEST
@@ -295,15 +178,10 @@ config USB_LJCA
 	  This driver can also be built as a module. If so, the module
 	  will be called usb-ljca.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "drivers/usb/misc/sisusbvga/Kconfig"
 
 config USB_LD
 	tristate "USB LD driver"
-<<<<<<< HEAD
-	depends on USB
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This driver is for generic USB devices that use interrupt transfers,
 	  like LD Didactic's USB devices.
@@ -313,10 +191,6 @@ config USB_LD
 
 config USB_TRANCEVIBRATOR
 	tristate "PlayStation 2 Trance Vibrator driver support"
-<<<<<<< HEAD
-	depends on USB
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to connect a PlayStation 2 Trance Vibrator
 	  device to your computer's USB port.
@@ -326,10 +200,6 @@ config USB_TRANCEVIBRATOR
 
 config USB_IOWARRIOR
 	tristate "IO Warrior driver support"
-<<<<<<< HEAD
-	depends on USB
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to support the IO Warrior devices from Code
 	  Mercenaries.  This includes support for the following devices:
@@ -343,10 +213,6 @@ config USB_IOWARRIOR
 
 config USB_TEST
 	tristate "USB testing driver"
-<<<<<<< HEAD
-	depends on USB
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This driver is for testing host controller software.  It is used
 	  with specialized device firmware for regression and stress testing,
@@ -356,25 +222,6 @@ config USB_TEST
 	  including sample test device firmware and "how to use it".
 
 config USB_EHSET_TEST_FIXTURE
-<<<<<<< HEAD
-	tristate "USB EHSET Test Fixture Driver"
-	depends on USB && USB_EHCI_EHSET
-	default n
-	help
-	  Say Y here if you want to use EHSET Test Fixture device for host
-	  compliance testing.
-
-	  This driver initiates test modes on the downstream port to which the
-	  test fixture is attached.
-
-	  See <http://www.usb.org/developers/onthego/EHSET_v1.01.pdf>
-	  for more information.
-
-
-config USB_ISIGHTFW
-	tristate "iSight firmware loading support"
-	depends on USB
-=======
 	tristate "USB EHSET Test Fixture driver"
 	help
 	  Say Y here if you want to support the special test fixture device
@@ -389,7 +236,6 @@ config USB_ISIGHTFW
 
 config USB_ISIGHTFW
 	tristate "iSight firmware loading support"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select FW_LOADER
 	help
 	  This driver loads firmware for USB Apple iSight cameras, allowing
@@ -402,10 +248,6 @@ config USB_ISIGHTFW
 
 config USB_YUREX
 	tristate "USB YUREX driver support"
-<<<<<<< HEAD
-	depends on USB
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to connect a YUREX to your computer's
 	  USB port. The YUREX is a leg-shakes sensor. See
@@ -416,52 +258,6 @@ config USB_YUREX
 	  To compile this driver as a module, choose M here: the
 	  module will be called yurex.
 
-<<<<<<< HEAD
-config USB_QCOM_DIAG_BRIDGE
-	tristate "USB Qualcomm diagnostic bridge driver"
-	depends on USB
-	help
-	  Say Y here if you have a Qualcomm modem device connected via USB that
-	  will be bridged in kernel space. This driver communicates with the
-	  diagnostic interface and allows for bridging with the diag forwarding
-	  driver.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called diag_bridge.  If unsure, choose N.
-
-config USB_QCOM_DIAG_BRIDGE_TEST
-	tristate "USB Qualcomm diagnostic bridge driver test"
-	depends on USB && USB_QCOM_DIAG_BRIDGE
-	help
-	  Say Y here if you want to enable the test hook for the
-	  Qualcomm diag bridge driver. When enabled, this will create
-	  a debugfs file entry named "diag_bridge_test" which can be used
-	  to send a ping command to the diag port of the modem over USB.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called diag_bridge_test.  If unsure, choose N.
-
-config USB_QCOM_MDM_BRIDGE
-	tristate "USB Qualcomm modem bridge driver for DUN and RMNET"
-	depends on USB
-	help
-	  Say Y here if you have a Qualcomm modem device connected via USB that
-	  will be bridged in kernel space. This driver works as a bridge to pass
-	  control and data packets between the modem and peripheral usb gadget
-	  driver for dial up network and RMNET.
-	  To compile this driver as a module, choose M here: the module
-	  will be called mdm_bridge. If unsure, choose N.
-
-config USB_QCOM_KS_BRIDGE
-	tristate "USB Qualcomm kick start bridge"
-	depends on USB
-	help
-	  Say Y here if you have a Qualcomm modem device connected via USB that
-	  will be bridged in kernel space. This driver works as a bridge to pass
-	  boot images, ram-dumps and efs sync
-	  To compile this driver as a module, choose M here: the module
-	  will be called ks_bridge. If unsure, choose N.
-=======
 config USB_EZUSB_FX2
 	tristate "Functions for loading firmware on EZUSB chips"
 	help
@@ -535,4 +331,3 @@ config USB_ONBOARD_HUB
 	  this config will enable the driver and it will automatically
 	  match the state of the USB subsystem. If this driver is a
 	  module it will be called onboard_usb_hub.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

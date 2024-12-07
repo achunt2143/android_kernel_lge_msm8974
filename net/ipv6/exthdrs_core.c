@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IPv6 library code, needed by static components when full IPv6 support is
  * not configured or static.
@@ -13,11 +10,7 @@
  * find out if nexthdr is a well-known extension header or a protocol
  */
 
-<<<<<<< HEAD
-int ipv6_ext_hdr(u8 nexthdr)
-=======
 bool ipv6_ext_hdr(u8 nexthdr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * find out if nexthdr is an extension header or a protocol
@@ -29,10 +22,7 @@ bool ipv6_ext_hdr(u8 nexthdr)
 		 (nexthdr == NEXTHDR_NONE)	||
 		 (nexthdr == NEXTHDR_DEST);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(ipv6_ext_hdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Skip any extension headers. This is used by the ICMP module.
@@ -93,11 +83,7 @@ int ipv6_skip_exthdr(const struct sk_buff *skb, int start, u8 *nexthdrp,
 		if (nexthdr == NEXTHDR_NONE)
 			return -1;
 		hp = skb_header_pointer(skb, start, sizeof(_hdr), &_hdr);
-<<<<<<< HEAD
-		if (hp == NULL)
-=======
 		if (!hp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 		if (nexthdr == NEXTHDR_FRAGMENT) {
 			__be16 _frag_off, *fp;
@@ -106,11 +92,7 @@ int ipv6_skip_exthdr(const struct sk_buff *skb, int start, u8 *nexthdrp,
 							       frag_off),
 						sizeof(_frag_off),
 						&_frag_off);
-<<<<<<< HEAD
-			if (fp == NULL)
-=======
 			if (!fp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -1;
 
 			*frag_offp = *fp;
@@ -118,11 +100,7 @@ int ipv6_skip_exthdr(const struct sk_buff *skb, int start, u8 *nexthdrp,
 				break;
 			hdrlen = 8;
 		} else if (nexthdr == NEXTHDR_AUTH)
-<<<<<<< HEAD
-			hdrlen = (hp->hdrlen+2)<<2;
-=======
 			hdrlen = ipv6_authlen(hp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			hdrlen = ipv6_optlen(hp);
 
@@ -133,11 +111,6 @@ int ipv6_skip_exthdr(const struct sk_buff *skb, int start, u8 *nexthdrp,
 	*nexthdrp = nexthdr;
 	return start;
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(ipv6_ext_hdr);
-EXPORT_SYMBOL(ipv6_skip_exthdr);
-=======
 EXPORT_SYMBOL(ipv6_skip_exthdr);
 
 int ipv6_find_tlv(const struct sk_buff *skb, int offset, int type)
@@ -307,4 +280,3 @@ int ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset,
 	return nexthdr;
 }
 EXPORT_SYMBOL(ipv6_find_hdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,27 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Manroland uc101 board Device Tree Source
  *
  * Copyright (C) 2009 DENX Software Engineering GmbH
  * Heiko Schocher <hs@denx.de>
  * Copyright 2006-2007 Secret Lab Technologies Ltd.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /include/ "mpc5200b.dtsi"
 
-<<<<<<< HEAD
-=======
 &gpt0 { gpio-controller; };
 &gpt1 { gpio-controller; };
 &gpt2 { gpio-controller; };
@@ -31,58 +18,11 @@
 &gpt6 { gpio-controller; };
 &gpt7 { gpio-controller; };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 / {
 	model = "manroland,uc101";
 	compatible = "manroland,uc101";
 
 	soc5200@f0000000 {
-<<<<<<< HEAD
-		gpt0: timer@600 {	// General Purpose Timer in GPIO mode
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		gpt1: timer@610 {	// General Purpose Timer in GPIO mode
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		gpt2: timer@620 {	// General Purpose Timer in GPIO mode
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		gpt3: timer@630 {	// General Purpose Timer in GPIO mode
-			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
-			reg = <0x630 0x10>;
-			interrupts = <1 12 0>;
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		gpt4: timer@640 {	// General Purpose Timer in GPIO mode
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		gpt5: timer@650 {	// General Purpose Timer in GPIO mode
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		gpt6: timer@660 {	// General Purpose Timer in GPIO mode
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		gpt7: timer@670 {	// General Purpose Timer in GPIO mode
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rtc@800 {
 			status = "disabled";
 		};

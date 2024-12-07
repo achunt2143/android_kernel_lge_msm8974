@@ -1,26 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright © 1999-2010 David Woodhouse <dwmw2@infradead.org> et al.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright © 1999-2010 David Woodhouse <dwmw2@infradead.org> et al.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MTD_MTD_H__
@@ -28,63 +8,29 @@
 
 #include <linux/types.h>
 #include <linux/uio.h>
-<<<<<<< HEAD
-#include <linux/notifier.h>
-#include <linux/device.h>
-=======
 #include <linux/list.h>
 #include <linux/notifier.h>
 #include <linux/device.h>
 #include <linux/of.h>
 #include <linux/nvmem-provider.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <mtd/mtd-abi.h>
 
 #include <asm/div64.h>
 
-<<<<<<< HEAD
-#define MTD_CHAR_MAJOR 90
-#define MTD_BLOCK_MAJOR 31
-
-#define MTD_ERASE_PENDING	0x01
-#define MTD_ERASING		0x02
-#define MTD_ERASE_SUSPEND	0x04
-#define MTD_ERASE_DONE		0x08
-#define MTD_ERASE_FAILED	0x10
-
-#define MTD_FAIL_ADDR_UNKNOWN -1LL
-
-=======
 #define MTD_FAIL_ADDR_UNKNOWN -1LL
 
 struct mtd_info;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * If the erase fails, fail_addr might indicate exactly which block failed. If
  * fail_addr = MTD_FAIL_ADDR_UNKNOWN, the failure was not at the device level
  * or was not specific to any particular block.
  */
 struct erase_info {
-<<<<<<< HEAD
-	struct mtd_info *mtd;
 	uint64_t addr;
 	uint64_t len;
 	uint64_t fail_addr;
-	u_long time;
-	u_long retries;
-	unsigned dev;
-	unsigned cell;
-	void (*callback) (struct erase_info *self);
-	u_long priv;
-	u_char state;
-	struct erase_info *next;
-=======
-	uint64_t addr;
-	uint64_t len;
-	uint64_t fail_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mtd_erase_region_info {
@@ -94,15 +40,12 @@ struct mtd_erase_region_info {
 	unsigned long *lockmap;		/* If keeping bitmap of locks */
 };
 
-<<<<<<< HEAD
-=======
 struct mtd_req_stats {
 	unsigned int uncorrectable_errors;
 	unsigned int corrected_bitflips;
 	unsigned int max_bitflips;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct mtd_oob_ops - oob operation operands
  * @mode:	operation mode
@@ -118,17 +61,11 @@ struct mtd_req_stats {
  * @datbuf:	data buffer - if NULL only oob data are read/written
  * @oobbuf:	oob data buffer
  *
-<<<<<<< HEAD
- * Note, it is allowed to read more than one OOB area at one go, but not write.
- * The interface assumes that the OOB write requests program only one page's
- * OOB area.
-=======
  * Note, some MTD drivers do not allow you to write more than one OOB area at
  * one go. If you try to do that on such an MTD device, -EINVAL will be
  * returned. If you want to make your implementation portable on all kind of MTD
  * devices you should split the write request into several sub-requests when the
  * request crosses a page boundary.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct mtd_oob_ops {
 	unsigned int	mode;
@@ -139,23 +76,6 @@ struct mtd_oob_ops {
 	uint32_t	ooboffs;
 	uint8_t		*datbuf;
 	uint8_t		*oobbuf;
-<<<<<<< HEAD
-};
-
-#define MTD_MAX_OOBFREE_ENTRIES_LARGE	32
-#define MTD_MAX_ECCPOS_ENTRIES_LARGE	448
-/*
- * Internal ECC layout control structure. For historical reasons, there is a
- * similar, smaller struct nand_ecclayout_user (in mtd-abi.h) that is retained
- * for export to user-space via the ECCGETLAYOUT ioctl.
- * nand_ecclayout should be expandable in the future simply by the above macros.
- */
-struct nand_ecclayout {
-	__u32 eccbytes;
-	__u32 eccpos[MTD_MAX_ECCPOS_ENTRIES_LARGE];
-	__u32 oobavail;
-	struct nand_oobfree oobfree[MTD_MAX_OOBFREE_ENTRIES_LARGE];
-=======
 	struct mtd_req_stats *stats;
 };
 
@@ -264,13 +184,10 @@ struct mtd_pairing_scheme {
 			struct mtd_pairing_info *info);
 	int (*get_wunit)(struct mtd_info *mtd,
 			 const struct mtd_pairing_info *info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct module;	/* only needed for owner field in mtd_info */
 
-<<<<<<< HEAD
-=======
 /**
  * struct mtd_debug_info - debugging information for an MTD device.
  *
@@ -318,7 +235,6 @@ struct mtd_master {
 	unsigned int suspended : 1;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mtd_info {
 	u_char type;
 	uint32_t flags;
@@ -362,16 +278,6 @@ struct mtd_info {
 	unsigned int erasesize_mask;
 	unsigned int writesize_mask;
 
-<<<<<<< HEAD
-	// Kernel-only stuff starts here.
-	const char *name;
-	int index;
-
-	/* ECC layout structure pointer - read only! */
-	struct nand_ecclayout *ecclayout;
-
-	/* max number of correctible bit errors per writesize */
-=======
 	/*
 	 * read ops return -EUCLEAN if max number of bitflips corrected on any
 	 * one region comprising an ecc step equals or exceeds this value.
@@ -395,7 +301,6 @@ struct mtd_info {
 	unsigned int ecc_step_size;
 
 	/* max number of correctible bit errors per ecc step */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int ecc_strength;
 
 	/* Data for variable erase regions. If numeraseregions is zero,
@@ -412,13 +317,6 @@ struct mtd_info {
 	int (*_point) (struct mtd_info *mtd, loff_t from, size_t len,
 		       size_t *retlen, void **virt, resource_size_t *phys);
 	int (*_unpoint) (struct mtd_info *mtd, loff_t from, size_t len);
-<<<<<<< HEAD
-	unsigned long (*_get_unmapped_area) (struct mtd_info *mtd,
-					     unsigned long len,
-					     unsigned long offset,
-					     unsigned long flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*_read) (struct mtd_info *mtd, loff_t from, size_t len,
 		      size_t *retlen, u_char *buf);
 	int (*_write) (struct mtd_info *mtd, loff_t to, size_t len,
@@ -429,20 +327,6 @@ struct mtd_info {
 			  struct mtd_oob_ops *ops);
 	int (*_write_oob) (struct mtd_info *mtd, loff_t to,
 			   struct mtd_oob_ops *ops);
-<<<<<<< HEAD
-	int (*_get_fact_prot_info) (struct mtd_info *mtd, struct otp_info *buf,
-				    size_t len);
-	int (*_read_fact_prot_reg) (struct mtd_info *mtd, loff_t from,
-				    size_t len, size_t *retlen, u_char *buf);
-	int (*_get_user_prot_info) (struct mtd_info *mtd, struct otp_info *buf,
-				    size_t len);
-	int (*_read_user_prot_reg) (struct mtd_info *mtd, loff_t from,
-				    size_t len, size_t *retlen, u_char *buf);
-	int (*_write_user_prot_reg) (struct mtd_info *mtd, loff_t to,
-				     size_t len, size_t *retlen, u_char *buf);
-	int (*_lock_user_prot_reg) (struct mtd_info *mtd, loff_t from,
-				    size_t len);
-=======
 	int (*_get_fact_prot_info) (struct mtd_info *mtd, size_t len,
 				    size_t *retlen, struct otp_info *buf);
 	int (*_read_fact_prot_reg) (struct mtd_info *mtd, loff_t from,
@@ -458,19 +342,12 @@ struct mtd_info {
 				    size_t len);
 	int (*_erase_user_prot_reg) (struct mtd_info *mtd, loff_t from,
 				     size_t len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*_writev) (struct mtd_info *mtd, const struct kvec *vecs,
 			unsigned long count, loff_t to, size_t *retlen);
 	void (*_sync) (struct mtd_info *mtd);
 	int (*_lock) (struct mtd_info *mtd, loff_t ofs, uint64_t len);
 	int (*_unlock) (struct mtd_info *mtd, loff_t ofs, uint64_t len);
 	int (*_is_locked) (struct mtd_info *mtd, loff_t ofs, uint64_t len);
-<<<<<<< HEAD
-	int (*_block_isbad) (struct mtd_info *mtd, loff_t ofs);
-	int (*_block_markbad) (struct mtd_info *mtd, loff_t ofs);
-	int (*_suspend) (struct mtd_info *mtd);
-	void (*_resume) (struct mtd_info *mtd);
-=======
 	int (*_block_isreserved) (struct mtd_info *mtd, loff_t ofs);
 	int (*_block_isbad) (struct mtd_info *mtd, loff_t ofs);
 	int (*_block_markbad) (struct mtd_info *mtd, loff_t ofs);
@@ -478,7 +355,6 @@ struct mtd_info {
 	int (*_suspend) (struct mtd_info *mtd);
 	void (*_resume) (struct mtd_info *mtd);
 	void (*_reboot) (struct mtd_info *mtd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If the driver is something smart, like UBI, it may need to maintain
 	 * its own reference counting. The below functions are only for driver.
@@ -486,18 +362,11 @@ struct mtd_info {
 	int (*_get_device) (struct mtd_info *mtd);
 	void (*_put_device) (struct mtd_info *mtd);
 
-<<<<<<< HEAD
-	/* Backing device capabilities for this device
-	 * - provides mmap capabilities
-	 */
-	struct backing_dev_info *backing_dev_info;
-=======
 	/*
 	 * flag indicates a panic write, low level drivers can take appropriate
 	 * action if required to ensure writes go through
 	 */
 	bool oops_panic_write;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct notifier_block reboot_notifier;  /* default mode before reboot */
 
@@ -510,11 +379,6 @@ struct mtd_info {
 
 	struct module *owner;
 	struct device dev;
-<<<<<<< HEAD
-	int usecount;
-};
-
-=======
 	struct kref refcnt;
 	struct mtd_debug_info dbg;
 	struct nvmem_device *nvmem;
@@ -632,7 +496,6 @@ int mtd_wunit_to_pairing_info(struct mtd_info *mtd, int wunit,
 int mtd_pairing_info_to_wunit(struct mtd_info *mtd,
 			      const struct mtd_pairing_info *info);
 int mtd_pairing_groups(struct mtd_info *mtd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mtd_erase(struct mtd_info *mtd, struct erase_info *instr);
 int mtd_point(struct mtd_info *mtd, loff_t from, size_t len, size_t *retlen,
 	      void **virt, resource_size_t *phys);
@@ -646,39 +509,6 @@ int mtd_write(struct mtd_info *mtd, loff_t to, size_t len, size_t *retlen,
 int mtd_panic_write(struct mtd_info *mtd, loff_t to, size_t len, size_t *retlen,
 		    const u_char *buf);
 
-<<<<<<< HEAD
-static inline int mtd_read_oob(struct mtd_info *mtd, loff_t from,
-			       struct mtd_oob_ops *ops)
-{
-	ops->retlen = ops->oobretlen = 0;
-	if (!mtd->_read_oob)
-		return -EOPNOTSUPP;
-	return mtd->_read_oob(mtd, from, ops);
-}
-
-static inline int mtd_write_oob(struct mtd_info *mtd, loff_t to,
-				struct mtd_oob_ops *ops)
-{
-	ops->retlen = ops->oobretlen = 0;
-	if (!mtd->_write_oob)
-		return -EOPNOTSUPP;
-	if (!(mtd->flags & MTD_WRITEABLE))
-		return -EROFS;
-	return mtd->_write_oob(mtd, to, ops);
-}
-
-int mtd_get_fact_prot_info(struct mtd_info *mtd, struct otp_info *buf,
-			   size_t len);
-int mtd_read_fact_prot_reg(struct mtd_info *mtd, loff_t from, size_t len,
-			   size_t *retlen, u_char *buf);
-int mtd_get_user_prot_info(struct mtd_info *mtd, struct otp_info *buf,
-			   size_t len);
-int mtd_read_user_prot_reg(struct mtd_info *mtd, loff_t from, size_t len,
-			   size_t *retlen, u_char *buf);
-int mtd_write_user_prot_reg(struct mtd_info *mtd, loff_t to, size_t len,
-			    size_t *retlen, u_char *buf);
-int mtd_lock_user_prot_reg(struct mtd_info *mtd, loff_t from, size_t len);
-=======
 int mtd_read_oob(struct mtd_info *mtd, loff_t from, struct mtd_oob_ops *ops);
 int mtd_write_oob(struct mtd_info *mtd, loff_t to, struct mtd_oob_ops *ops);
 
@@ -694,39 +524,27 @@ int mtd_write_user_prot_reg(struct mtd_info *mtd, loff_t to, size_t len,
 			    size_t *retlen, const u_char *buf);
 int mtd_lock_user_prot_reg(struct mtd_info *mtd, loff_t from, size_t len);
 int mtd_erase_user_prot_reg(struct mtd_info *mtd, loff_t from, size_t len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int mtd_writev(struct mtd_info *mtd, const struct kvec *vecs,
 	       unsigned long count, loff_t to, size_t *retlen);
 
 static inline void mtd_sync(struct mtd_info *mtd)
 {
-<<<<<<< HEAD
-	if (mtd->_sync)
-		mtd->_sync(mtd);
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 
 	if (master->_sync)
 		master->_sync(master);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mtd_lock(struct mtd_info *mtd, loff_t ofs, uint64_t len);
 int mtd_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len);
 int mtd_is_locked(struct mtd_info *mtd, loff_t ofs, uint64_t len);
-<<<<<<< HEAD
-=======
 int mtd_block_isreserved(struct mtd_info *mtd, loff_t ofs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mtd_block_isbad(struct mtd_info *mtd, loff_t ofs);
 int mtd_block_markbad(struct mtd_info *mtd, loff_t ofs);
 
 static inline int mtd_suspend(struct mtd_info *mtd)
 {
-<<<<<<< HEAD
-	return mtd->_suspend ? mtd->_suspend(mtd) : 0;
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 	int ret;
 
@@ -739,15 +557,10 @@ static inline int mtd_suspend(struct mtd_info *mtd)
 
 	master->master.suspended = 1;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void mtd_resume(struct mtd_info *mtd)
 {
-<<<<<<< HEAD
-	if (mtd->_resume)
-		mtd->_resume(mtd);
-=======
 	struct mtd_info *master = mtd_get_master(mtd);
 
 	if (!master->master.suspended)
@@ -757,7 +570,6 @@ static inline void mtd_resume(struct mtd_info *mtd)
 		master->_resume(master);
 
 	master->master.suspended = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline uint32_t mtd_div_by_eb(uint64_t sz, struct mtd_info *mtd)
@@ -775,8 +587,6 @@ static inline uint32_t mtd_mod_by_eb(uint64_t sz, struct mtd_info *mtd)
 	return do_div(sz, mtd->erasesize);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * mtd_align_erase_req - Adjust an erase request to align things on eraseblock
  *			 boundaries.
@@ -805,7 +615,6 @@ static inline void mtd_align_erase_req(struct mtd_info *mtd,
 		req->len += mtd->erasesize - mod;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline uint32_t mtd_div_by_ws(uint64_t sz, struct mtd_info *mtd)
 {
 	if (mtd->writesize_shift)
@@ -821,11 +630,6 @@ static inline uint32_t mtd_mod_by_ws(uint64_t sz, struct mtd_info *mtd)
 	return do_div(sz, mtd->writesize);
 }
 
-<<<<<<< HEAD
-static inline int mtd_has_oob(const struct mtd_info *mtd)
-{
-	return mtd->_read_oob && mtd->_write_oob;
-=======
 static inline int mtd_wunit_per_eb(struct mtd_info *mtd)
 {
 	struct mtd_info *master = mtd_get_master(mtd);
@@ -855,18 +659,13 @@ static inline int mtd_has_oob(const struct mtd_info *mtd)
 static inline int mtd_type_is_nand(const struct mtd_info *mtd)
 {
 	return mtd->type == MTD_NANDFLASH || mtd->type == MTD_MLCNANDFLASH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int mtd_can_have_bb(const struct mtd_info *mtd)
 {
-<<<<<<< HEAD
-	return !!mtd->_block_isbad;
-=======
 	struct mtd_info *master = mtd_get_master((struct mtd_info *)mtd);
 
 	return !!master->_block_isbad;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 	/* Kernel-side ioctl definitions */
@@ -875,27 +674,17 @@ struct mtd_partition;
 struct mtd_part_parser_data;
 
 extern int mtd_device_parse_register(struct mtd_info *mtd,
-<<<<<<< HEAD
-			      const char **part_probe_types,
-			      struct mtd_part_parser_data *parser_data,
-			      const struct mtd_partition *defparts,
-			      int defnr_parts);
-=======
 				     const char * const *part_probe_types,
 				     struct mtd_part_parser_data *parser_data,
 				     const struct mtd_partition *defparts,
 				     int defnr_parts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define mtd_device_register(master, parts, nr_parts)	\
 	mtd_device_parse_register(master, NULL, NULL, parts, nr_parts)
 extern int mtd_device_unregister(struct mtd_info *master);
 extern struct mtd_info *get_mtd_device(struct mtd_info *mtd, int num);
 extern int __get_mtd_device(struct mtd_info *mtd);
 extern void __put_mtd_device(struct mtd_info *mtd);
-<<<<<<< HEAD
-=======
 extern struct mtd_info *of_get_mtd_device_by_node(struct device_node *np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct mtd_info *get_mtd_device_nm(const char *name);
 extern void put_mtd_device(struct mtd_info *mtd);
 
@@ -911,11 +700,6 @@ extern void register_mtd_user (struct mtd_notifier *new);
 extern int unregister_mtd_user (struct mtd_notifier *old);
 void *mtd_kmalloc_up_to(const struct mtd_info *mtd, size_t *size);
 
-<<<<<<< HEAD
-void mtd_erase_callback(struct erase_info *instr);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int mtd_is_bitflip(int err) {
 	return err == -EUCLEAN;
 }
@@ -928,8 +712,6 @@ static inline int mtd_is_bitflip_or_eccerr(int err) {
 	return mtd_is_bitflip(err) || mtd_is_eccerr(err);
 }
 
-<<<<<<< HEAD
-=======
 unsigned mtd_mmap_capabilities(struct mtd_info *mtd);
 
 #ifdef CONFIG_DEBUG_FS
@@ -939,5 +721,4 @@ static inline bool mtd_check_expert_analysis_mode(void) { return false; }
 #endif
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __MTD_MTD_H__ */

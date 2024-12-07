@@ -1,29 +1,14 @@
-<<<<<<< HEAD
-/*
- * OMAP2+ MPU WD_TIMER-specific code
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * OMAP2+ MPU WD_TIMER-specific code
  *
  * Copyright (C) 2012 Texas Instruments, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/io.h>
 #include <linux/err.h>
 
-<<<<<<< HEAD
-#include <plat/omap_hwmod.h>
-
-#include "wd_timer.h"
-=======
 #include <linux/platform_data/omap-wd-timer.h>
 
 #include "omap_hwmod.h"
@@ -32,7 +17,6 @@
 #include "common.h"
 #include "prm.h"
 #include "soc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * In order to avoid any assumptions from bootloader regarding WDT
@@ -44,10 +28,6 @@
 #define OMAP_WDT_WPS		0x34
 #define OMAP_WDT_SPR		0x48
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int omap2_wd_timer_disable(struct omap_hwmod *oh)
 {
 	void __iomem *base;
@@ -65,28 +45,17 @@ int omap2_wd_timer_disable(struct omap_hwmod *oh)
 	}
 
 	/* sequence required to disable watchdog */
-<<<<<<< HEAD
-	__raw_writel(0xAAAA, base + OMAP_WDT_SPR);
-	while (__raw_readl(base + OMAP_WDT_WPS) & 0x10)
-		cpu_relax();
-
-	__raw_writel(0x5555, base + OMAP_WDT_SPR);
-	while (__raw_readl(base + OMAP_WDT_WPS) & 0x10)
-=======
 	writel_relaxed(0xAAAA, base + OMAP_WDT_SPR);
 	while (readl_relaxed(base + OMAP_WDT_WPS) & 0x10)
 		cpu_relax();
 
 	writel_relaxed(0x5555, base + OMAP_WDT_SPR);
 	while (readl_relaxed(base + OMAP_WDT_WPS) & 0x10)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cpu_relax();
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * omap2_wd_timer_reset - reset and disable the WDTIMER IP block
  * @oh: struct omap_hwmod *
@@ -131,4 +100,3 @@ int omap2_wd_timer_reset(struct omap_hwmod *oh)
 	return (c == MAX_MODULE_SOFTRESET_WAIT) ? -ETIMEDOUT :
 		omap2_wd_timer_disable(oh);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

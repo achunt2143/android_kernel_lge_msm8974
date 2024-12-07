@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-/* Header file for Special Initializers for certain USB Mass Storage devices
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Header file for Special Initializers for certain USB Mass Storage devices
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Current development and maintenance by:
  *   (c) 1999, 2000 Matthew Dharm (mdharm-usb@one-eyed-alien.net)
@@ -22,39 +18,11 @@
  *
  * Also, for certain devices, the interrupt endpoint is used to convey
  * status of a command.
-<<<<<<< HEAD
- *
- * Please see http://www.one-eyed-alien.net/~mdharm/linux-usb for more
- * information about this driver.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "usb.h"
 #include "transport.h"
 
-<<<<<<< HEAD
-/* This places the Shuttle/SCM USB<->SCSI bridge devices in multi-target
- * mode */
-int usb_stor_euscsi_init(struct us_data *us);
-
-/* This function is required to activate all four slots on the UCR-61S2B
- * flash reader */
-=======
 /*
  * This places the Shuttle/SCM USB<->SCSI bridge devices in multi-target
  * mode
@@ -65,7 +33,6 @@ int usb_stor_euscsi_init(struct us_data *us);
  * This function is required to activate all four slots on the UCR-61S2B
  * flash reader
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int usb_stor_ucr61s2b_init(struct us_data *us);
 
 /* This places the HUAWEI E220 devices in multi-port mode */

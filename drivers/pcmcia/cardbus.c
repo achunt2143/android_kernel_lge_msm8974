@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * cardbus.c -- 16-bit PCMCIA core support
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * cardbus.c -- 16-bit PCMCIA core support
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The initial developer of the original code is David A. Hinds
  * <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
  * are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
@@ -32,13 +22,9 @@
 #include <linux/pci.h>
 
 #include <pcmcia/ss.h>
-<<<<<<< HEAD
-
-=======
 #include <pcmcia/cistpl.h>
 
 #include "cs_internal.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void cardbus_config_irq_and_cls(struct pci_bus *bus, int irq)
 {
@@ -83,17 +69,6 @@ int __ref cb_alloc(struct pcmcia_socket *s)
 	struct pci_dev *dev;
 	unsigned int max, pass;
 
-<<<<<<< HEAD
-	s->functions = pci_scan_slot(bus, PCI_DEVFN(0, 0));
-	pci_fixup_cardbus(bus);
-
-	max = bus->secondary;
-	for (pass = 0; pass < 2; pass++)
-		list_for_each_entry(dev, &bus->devices, bus_list)
-			if (dev->hdr_type == PCI_HEADER_TYPE_BRIDGE ||
-			    dev->hdr_type == PCI_HEADER_TYPE_CARDBUS)
-				max = pci_scan_bridge(bus, dev, max, pass);
-=======
 	pci_lock_rescan_remove();
 
 	s->functions = pci_scan_slot(bus, PCI_DEVFN(0, 0));
@@ -103,7 +78,6 @@ int __ref cb_alloc(struct pcmcia_socket *s)
 	for (pass = 0; pass < 2; pass++)
 		for_each_pci_bridge(dev, bus)
 			max = pci_scan_bridge(bus, dev, max, pass);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Size all resources below the CardBus controller.
@@ -116,15 +90,9 @@ int __ref cb_alloc(struct pcmcia_socket *s)
 	if (s->tune_bridge)
 		s->tune_bridge(s, bus);
 
-<<<<<<< HEAD
-	pci_enable_bridges(bus);
-	pci_bus_add_devices(bus);
-
-=======
 	pci_bus_add_devices(bus);
 
 	pci_unlock_rescan_remove();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -136,12 +104,6 @@ int __ref cb_alloc(struct pcmcia_socket *s)
  */
 void cb_free(struct pcmcia_socket *s)
 {
-<<<<<<< HEAD
-	struct pci_dev *bridge = s->cb_dev;
-
-	if (bridge)
-		pci_stop_and_remove_behind_bridge(bridge);
-=======
 	struct pci_dev *bridge, *dev, *tmp;
 	struct pci_bus *bus;
 
@@ -159,5 +121,4 @@ void cb_free(struct pcmcia_socket *s)
 		pci_stop_and_remove_bus_device(dev);
 
 	pci_unlock_rescan_remove();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

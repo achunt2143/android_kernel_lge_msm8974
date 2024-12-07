@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * HP Quicksilver AGP GART routines
  *
@@ -10,14 +7,6 @@
  * Based on drivers/char/agpgart/hp-agp.c which is
  * (c) Copyright 2002, 2003 Hewlett-Packard Development Company, L.P.
  *	Bjorn Helgaas <bjorn.helgaas@hp.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -49,11 +38,7 @@ static struct _parisc_agp_info {
 
 	int lba_cap_offset;
 
-<<<<<<< HEAD
-	u64 *gatt;
-=======
 	__le64 *gatt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 gatt_entries;
 
 	u64 gart_base;
@@ -105,12 +90,9 @@ parisc_agp_tlbflush(struct agp_memory *mem)
 {
 	struct _parisc_agp_info *info = &parisc_agp_info;
 
-<<<<<<< HEAD
-=======
 	/* force fdc ops to be visible to IOMMU */
 	asm_io_sync();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writeq(info->gart_base | ilog2(info->gart_size), info->ioc_regs+IOC_PCOM);
 	readq(info->ioc_regs+IOC_PCOM);	/* flush */
 }
@@ -122,11 +104,7 @@ parisc_agp_create_gatt_table(struct agp_bridge_data *bridge)
 	int i;
 
 	for (i = 0; i < info->gatt_entries; i++) {
-<<<<<<< HEAD
-		info->gatt[i] = (unsigned long)agp_bridge->scratch_page;
-=======
 		info->gatt[i] = cpu_to_le64(agp_bridge->scratch_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -150,12 +128,8 @@ parisc_agp_insert_memory(struct agp_memory *mem, off_t pg_start, int type)
 	off_t j, io_pg_start;
 	int io_pg_count;
 
-<<<<<<< HEAD
-	if (type != 0 || mem->type != 0) {
-=======
 	if (type != mem->type ||
 		agp_bridge->driver->agp_type_to_mask_type(agp_bridge, type)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -184,16 +158,10 @@ parisc_agp_insert_memory(struct agp_memory *mem, off_t pg_start, int type)
 		for (k = 0;
 		     k < info->io_pages_per_kpage;
 		     k++, j++, paddr += info->io_page_size) {
-<<<<<<< HEAD
-			info->gatt[j] =
-				parisc_agp_mask_memory(agp_bridge,
-					paddr, type);
-=======
 			info->gatt[j] = cpu_to_le64(
 				parisc_agp_mask_memory(agp_bridge,
 					paddr, type));
 			asm_io_fdc(&info->gatt[j]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -208,23 +176,15 @@ parisc_agp_remove_memory(struct agp_memory *mem, off_t pg_start, int type)
 	struct _parisc_agp_info *info = &parisc_agp_info;
 	int i, io_pg_start, io_pg_count;
 
-<<<<<<< HEAD
-	if (type != 0 || mem->type != 0) {
-=======
 	if (type != mem->type ||
 		agp_bridge->driver->agp_type_to_mask_type(agp_bridge, type)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	io_pg_start = info->io_pages_per_kpage * pg_start;
 	io_pg_count = info->io_pages_per_kpage * mem->page_count;
 	for (i = io_pg_start; i < io_pg_count + io_pg_start; i++) {
-<<<<<<< HEAD
-		info->gatt[i] = agp_bridge->scratch_page;
-=======
 		info->gatt[i] = cpu_to_le64(agp_bridge->scratch_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	agp_bridge->driver->tlb_flush(mem);
@@ -235,9 +195,6 @@ static unsigned long
 parisc_agp_mask_memory(struct agp_bridge_data *bridge, dma_addr_t addr,
 		       int type)
 {
-<<<<<<< HEAD
-	return SBA_PDIR_VALID_BIT | addr;
-=======
 	unsigned ci;			/* coherent index */
 	dma_addr_t pa;
 
@@ -249,7 +206,6 @@ parisc_agp_mask_memory(struct agp_bridge_data *bridge, dma_addr_t addr,
 
 	/* return native (big-endian) PDIR entry */
 	return pa;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -296,12 +252,8 @@ static int __init
 agp_ioc_init(void __iomem *ioc_regs)
 {
 	struct _parisc_agp_info *info = &parisc_agp_info;
-<<<<<<< HEAD
-        u64 iova_base, *io_pdir, io_tlb_ps;
-=======
         u64 iova_base, io_tlb_ps;
 	__le64 *io_pdir;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         int io_tlb_shift;
 
         printk(KERN_INFO DRVPFX "IO PDIR shared with sba_iommu\n");
@@ -344,11 +296,7 @@ agp_ioc_init(void __iomem *ioc_regs)
         return 0;
 }
 
-<<<<<<< HEAD
-static int
-=======
 static int __init
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lba_find_capability(int cap)
 {
 	struct _parisc_agp_info *info = &parisc_agp_info;
@@ -398,11 +346,7 @@ parisc_agp_setup(void __iomem *ioc_hpa, void __iomem *lba_hpa)
 	struct agp_bridge_data *bridge;
 	int error = 0;
 
-<<<<<<< HEAD
-	fake_bridge_dev = alloc_pci_dev();
-=======
 	fake_bridge_dev = pci_alloc_dev(NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fake_bridge_dev) {
 		error = -ENOMEM;
 		goto fail;
@@ -437,11 +381,7 @@ fail:
 	return error;
 }
 
-<<<<<<< HEAD
-static int
-=======
 static int __init
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 find_quicksilver(struct device *dev, void *data)
 {
 	struct parisc_device **lba = data;
@@ -453,17 +393,9 @@ find_quicksilver(struct device *dev, void *data)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int
-parisc_agp_init(void)
-{
-	extern struct sba_device *sba_list;
-
-=======
 static int __init
 parisc_agp_init(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = -1;
 	struct parisc_device *sba = NULL, *lba = NULL;
 	struct lba_device *lbadev = NULL;

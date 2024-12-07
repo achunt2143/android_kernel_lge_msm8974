@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-*-linux-c-*-*/
 
 /*
   Copyright (C) 2006 Lennart Poettering <mzxreary (at) 0pointer (dot) de>
 
-<<<<<<< HEAD
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-  02110-1301, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -71,12 +51,7 @@
 #include <linux/i8042.h>
 #include <linux/input.h>
 #include <linux/input/sparse-keymap.h>
-<<<<<<< HEAD
-
-#define MSI_DRIVER_VERSION "0.5"
-=======
 #include <acpi/video.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MSI_LCD_LEVEL_MAX 9
 
@@ -93,12 +68,6 @@
 #define MSI_STANDARD_EC_SCM_LOAD_ADDRESS	0x2d
 #define MSI_STANDARD_EC_SCM_LOAD_MASK		(1 << 0)
 
-<<<<<<< HEAD
-#define MSI_STANDARD_EC_TOUCHPAD_ADDRESS	0xe4
-#define MSI_STANDARD_EC_TOUCHPAD_MASK		(1 << 4)
-
-static int msi_laptop_resume(struct platform_device *device);
-=======
 #define MSI_STANDARD_EC_FUNCTIONS_ADDRESS	0xe4
 /* Power LED is orange - Turbo mode */
 #define MSI_STANDARD_EC_TURBO_MASK		(1 << 1)
@@ -117,7 +86,6 @@ static int msi_laptop_resume(struct platform_device *device);
 static int msi_laptop_resume(struct device *device);
 #endif
 static SIMPLE_DEV_PM_OPS(msi_laptop_pm, NULL, msi_laptop_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MSI_STANDARD_EC_DEVICES_EXISTS_ADDRESS	0x2f
 
@@ -137,25 +105,6 @@ static const struct key_entry msi_laptop_keymap[] = {
 
 static struct input_dev *msi_laptop_input_dev;
 
-<<<<<<< HEAD
-static bool old_ec_model;
-static int wlan_s, bluetooth_s, threeg_s;
-static int threeg_exists;
-
-/* Some MSI 3G netbook only have one fn key to control Wlan/Bluetooth/3G,
- * those netbook will load the SCM (windows app) to disable the original
- * Wlan/Bluetooth control by BIOS when user press fn key, then control
- * Wlan/Bluetooth/3G by SCM (software control by OS). Without SCM, user
- * cann't on/off 3G module on those 3G netbook.
- * On Linux, msi-laptop driver will do the same thing to disable the
- * original BIOS control, then might need use HAL or other userland
- * application to do the software control that simulate with SCM.
- * e.g. MSI N034 netbook
- */
-static bool load_scm_model;
-static struct rfkill *rfk_wlan, *rfk_bluetooth, *rfk_threeg;
-
-=======
 static int wlan_s, bluetooth_s, threeg_s;
 static int threeg_exists;
 static struct rfkill *rfk_wlan, *rfk_bluetooth, *rfk_threeg;
@@ -188,7 +137,6 @@ struct quirk_entry {
 
 static struct quirk_entry *quirks;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Hardware access */
 
 static int set_lcd_level(int level)
@@ -259,12 +207,6 @@ static ssize_t set_device_state(const char *buf, size_t count, u8 mask)
 	if (sscanf(buf, "%i", &status) != 1 || (status < 0 || status > 1))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	/* read current device state */
-	result = ec_read(MSI_STANDARD_EC_COMMAND_ADDRESS, &rdata);
-	if (result < 0)
-		return -EINVAL;
-=======
 	if (quirks->ec_read_only)
 		return 0;
 
@@ -272,7 +214,6 @@ static ssize_t set_device_state(const char *buf, size_t count, u8 mask)
 	result = ec_read(MSI_STANDARD_EC_COMMAND_ADDRESS, &rdata);
 	if (result < 0)
 		return result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!!(rdata & mask) != status) {
 		/* reverse device bit */
@@ -283,11 +224,7 @@ static ssize_t set_device_state(const char *buf, size_t count, u8 mask)
 
 		result = ec_write(MSI_STANDARD_EC_COMMAND_ADDRESS, wdata);
 		if (result < 0)
-<<<<<<< HEAD
-			return -EINVAL;
-=======
 			return result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return count;
@@ -300,11 +237,7 @@ static int get_wireless_state(int *wlan, int *bluetooth)
 
 	result = ec_transaction(MSI_EC_COMMAND_WIRELESS, &wdata, 1, &rdata, 1);
 	if (result < 0)
-<<<<<<< HEAD
-		return -1;
-=======
 		return result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (wlan)
 		*wlan = !!(rdata & 8);
@@ -322,11 +255,7 @@ static int get_wireless_state_ec_standard(void)
 
 	result = ec_read(MSI_STANDARD_EC_COMMAND_ADDRESS, &rdata);
 	if (result < 0)
-<<<<<<< HEAD
-		return -1;
-=======
 		return result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wlan_s = !!(rdata & MSI_STANDARD_EC_WLAN_MASK);
 
@@ -344,11 +273,7 @@ static int get_threeg_exists(void)
 
 	result = ec_read(MSI_STANDARD_EC_DEVICES_EXISTS_ADDRESS, &rdata);
 	if (result < 0)
-<<<<<<< HEAD
-		return -1;
-=======
 		return result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	threeg_exists = !!(rdata & MSI_STANDARD_EC_3G_MASK);
 
@@ -381,15 +306,9 @@ static ssize_t show_wlan(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
 
-<<<<<<< HEAD
-	int ret, enabled;
-
-	if (old_ec_model) {
-=======
 	int ret, enabled = 0;
 
 	if (quirks->old_ec_model) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = get_wireless_state(&enabled, NULL);
 	} else {
 		ret = get_wireless_state_ec_standard();
@@ -411,15 +330,9 @@ static ssize_t show_bluetooth(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
 
-<<<<<<< HEAD
-	int ret, enabled;
-
-	if (old_ec_model) {
-=======
 	int ret, enabled = 0;
 
 	if (quirks->old_ec_model) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = get_wireless_state(NULL, &enabled);
 	} else {
 		ret = get_wireless_state_ec_standard();
@@ -444,13 +357,8 @@ static ssize_t show_threeg(struct device *dev,
 	int ret;
 
 	/* old msi ec not support 3G */
-<<<<<<< HEAD
-	if (old_ec_model)
-		return -1;
-=======
 	if (quirks->old_ec_model)
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = get_wireless_state_ec_standard();
 	if (ret < 0)
@@ -524,8 +432,6 @@ static ssize_t store_auto_brightness(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t show_touchpad(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
@@ -613,34 +519,12 @@ static ssize_t store_auto_fan(struct device *dev,
 	return count;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEVICE_ATTR(lcd_level, 0644, show_lcd_level, store_lcd_level);
 static DEVICE_ATTR(auto_brightness, 0644, show_auto_brightness,
 		   store_auto_brightness);
 static DEVICE_ATTR(bluetooth, 0444, show_bluetooth, NULL);
 static DEVICE_ATTR(wlan, 0444, show_wlan, NULL);
 static DEVICE_ATTR(threeg, 0444, show_threeg, NULL);
-<<<<<<< HEAD
-
-static struct attribute *msipf_attributes[] = {
-	&dev_attr_lcd_level.attr,
-	&dev_attr_auto_brightness.attr,
-	&dev_attr_bluetooth.attr,
-	&dev_attr_wlan.attr,
-	NULL
-};
-
-static struct attribute_group msipf_attribute_group = {
-	.attrs = msipf_attributes
-};
-
-static struct platform_driver msipf_driver = {
-	.driver = {
-		.name = "msi-laptop-pf",
-		.owner = THIS_MODULE,
-	},
-	.resume = msi_laptop_resume,
-=======
 static DEVICE_ATTR(touchpad, 0444, show_touchpad, NULL);
 static DEVICE_ATTR(turbo_mode, 0444, show_turbo, NULL);
 static DEVICE_ATTR(eco_mode, 0444, show_eco, NULL);
@@ -677,31 +561,12 @@ static struct platform_driver msipf_driver = {
 		.name = "msi-laptop-pf",
 		.pm = &msi_laptop_pm,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device *msipf_device;
 
 /* Initialization */
 
-<<<<<<< HEAD
-static int dmi_check_cb(const struct dmi_system_id *id)
-{
-	pr_info("Identified laptop model '%s'\n", id->ident);
-	return 1;
-}
-
-static struct dmi_system_id __initdata msi_dmi_table[] = {
-	{
-		.ident = "MSI S270",
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "MICRO-STAR INT'L CO.,LTD"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "MS-1013"),
-			DMI_MATCH(DMI_PRODUCT_VERSION, "0131"),
-			DMI_MATCH(DMI_CHASSIS_VENDOR,
-				  "MICRO-STAR INT'L CO.,LTD")
-		},
-=======
 static struct quirk_entry quirk_old_ec_model = {
 	.old_ec_model = true,
 };
@@ -743,7 +608,6 @@ static const struct dmi_system_id msi_dmi_table[] __initconst = {
 			DMI_MATCH(DMI_CHASSIS_VENDOR, "MICRO-STAR INT")
 		},
 		.driver_data = &quirk_old_ec_model,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.callback = dmi_check_cb
 	},
 	{
@@ -754,10 +618,7 @@ static const struct dmi_system_id msi_dmi_table[] __initconst = {
 			DMI_MATCH(DMI_PRODUCT_VERSION, "0581"),
 			DMI_MATCH(DMI_BOARD_NAME, "MS-1058")
 		},
-<<<<<<< HEAD
-=======
 		.driver_data = &quirk_old_ec_model,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.callback = dmi_check_cb
 	},
 	{
@@ -768,10 +629,7 @@ static const struct dmi_system_id msi_dmi_table[] __initconst = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "MSI"),
 			DMI_MATCH(DMI_BOARD_NAME, "MS-1412")
 		},
-<<<<<<< HEAD
-=======
 		.driver_data = &quirk_old_ec_model,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.callback = dmi_check_cb
 	},
 	{
@@ -780,23 +638,11 @@ static const struct dmi_system_id msi_dmi_table[] __initconst = {
 			DMI_MATCH(DMI_SYS_VENDOR, "NOTEBOOK"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "SAM2000"),
 			DMI_MATCH(DMI_PRODUCT_VERSION, "0131"),
-<<<<<<< HEAD
-			DMI_MATCH(DMI_CHASSIS_VENDOR,
-				  "MICRO-STAR INT'L CO.,LTD")
-		},
-		.callback = dmi_check_cb
-	},
-	{ }
-};
-
-static struct dmi_system_id __initdata msi_load_scm_models_dmi_table[] = {
-=======
 			DMI_MATCH(DMI_CHASSIS_VENDOR, "MICRO-STAR INT")
 		},
 		.driver_data = &quirk_old_ec_model,
 		.callback = dmi_check_cb
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "MSI N034",
 		.matches = {
@@ -806,10 +652,7 @@ static struct dmi_system_id __initdata msi_load_scm_models_dmi_table[] = {
 			DMI_MATCH(DMI_CHASSIS_VENDOR,
 			"MICRO-STAR INTERNATIONAL CO., LTD")
 		},
-<<<<<<< HEAD
-=======
 		.driver_data = &quirk_load_scm_model,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.callback = dmi_check_cb
 	},
 	{
@@ -821,10 +664,7 @@ static struct dmi_system_id __initdata msi_load_scm_models_dmi_table[] = {
 			DMI_MATCH(DMI_CHASSIS_VENDOR,
 			"MICRO-STAR INTERNATIONAL CO., LTD")
 		},
-<<<<<<< HEAD
-=======
 		.driver_data = &quirk_load_scm_model,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.callback = dmi_check_cb
 	},
 	{
@@ -834,10 +674,7 @@ static struct dmi_system_id __initdata msi_load_scm_models_dmi_table[] = {
 				"MICRO-STAR INTERNATIONAL CO., LTD"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "MS-N014"),
 		},
-<<<<<<< HEAD
-=======
 		.driver_data = &quirk_load_scm_model,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.callback = dmi_check_cb
 	},
 	{
@@ -847,10 +684,7 @@ static struct dmi_system_id __initdata msi_load_scm_models_dmi_table[] = {
 				"Micro-Star International"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "CR620"),
 		},
-<<<<<<< HEAD
-=======
 		.driver_data = &quirk_load_scm_model,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.callback = dmi_check_cb
 	},
 	{
@@ -860,8 +694,6 @@ static struct dmi_system_id __initdata msi_load_scm_models_dmi_table[] = {
 				"Micro-Star International Co., Ltd."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "U270 series"),
 		},
-<<<<<<< HEAD
-=======
 		.driver_data = &quirk_load_scm_model,
 		.callback = dmi_check_cb
 	},
@@ -873,15 +705,11 @@ static struct dmi_system_id __initdata msi_load_scm_models_dmi_table[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "U90/U100"),
 		},
 		.driver_data = &quirk_load_scm_ro_model,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.callback = dmi_check_cb
 	},
 	{ }
 };
-<<<<<<< HEAD
-=======
 MODULE_DEVICE_TABLE(dmi, msi_dmi_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int rfkill_bluetooth_set(void *data, bool blocked)
 {
@@ -890,53 +718,26 @@ static int rfkill_bluetooth_set(void *data, bool blocked)
 	 * blocked == false is on
 	 * blocked == true is off
 	 */
-<<<<<<< HEAD
-	if (blocked)
-		set_device_state("0", 0, MSI_STANDARD_EC_BLUETOOTH_MASK);
-	else
-		set_device_state("1", 0, MSI_STANDARD_EC_BLUETOOTH_MASK);
-
-	return 0;
-=======
 	int result = set_device_state(blocked ? "0" : "1", 0,
 			MSI_STANDARD_EC_BLUETOOTH_MASK);
 
 	return min(result, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rfkill_wlan_set(void *data, bool blocked)
 {
-<<<<<<< HEAD
-	if (blocked)
-		set_device_state("0", 0, MSI_STANDARD_EC_WLAN_MASK);
-	else
-		set_device_state("1", 0, MSI_STANDARD_EC_WLAN_MASK);
-
-	return 0;
-=======
 	int result = set_device_state(blocked ? "0" : "1", 0,
 			MSI_STANDARD_EC_WLAN_MASK);
 
 	return min(result, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rfkill_threeg_set(void *data, bool blocked)
 {
-<<<<<<< HEAD
-	if (blocked)
-		set_device_state("0", 0, MSI_STANDARD_EC_3G_MASK);
-	else
-		set_device_state("1", 0, MSI_STANDARD_EC_3G_MASK);
-
-	return 0;
-=======
 	int result = set_device_state(blocked ? "0" : "1", 0,
 			MSI_STANDARD_EC_3G_MASK);
 
 	return min(result, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct rfkill_ops rfkill_bluetooth_ops = {
@@ -969,8 +770,6 @@ static void rfkill_cleanup(void)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static bool msi_rfkill_set_state(struct rfkill *rfkill, bool blocked)
 {
 	if (quirks->ec_read_only)
@@ -979,21 +778,11 @@ static bool msi_rfkill_set_state(struct rfkill *rfkill, bool blocked)
 		return rfkill_set_sw_state(rfkill, blocked);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void msi_update_rfkill(struct work_struct *ignored)
 {
 	get_wireless_state_ec_standard();
 
 	if (rfk_wlan)
-<<<<<<< HEAD
-		rfkill_set_sw_state(rfk_wlan, !wlan_s);
-	if (rfk_bluetooth)
-		rfkill_set_sw_state(rfk_bluetooth, !bluetooth_s);
-	if (rfk_threeg)
-		rfkill_set_sw_state(rfk_threeg, !threeg_s);
-}
-static DECLARE_DELAYED_WORK(msi_rfkill_work, msi_update_rfkill);
-=======
 		msi_rfkill_set_state(rfk_wlan, !wlan_s);
 	if (rfk_bluetooth)
 		msi_rfkill_set_state(rfk_bluetooth, !bluetooth_s);
@@ -1001,18 +790,13 @@ static DECLARE_DELAYED_WORK(msi_rfkill_work, msi_update_rfkill);
 		msi_rfkill_set_state(rfk_threeg, !threeg_s);
 }
 static DECLARE_DELAYED_WORK(msi_rfkill_dwork, msi_update_rfkill);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void msi_send_touchpad_key(struct work_struct *ignored)
 {
 	u8 rdata;
 	int result;
 
-<<<<<<< HEAD
-	result = ec_read(MSI_STANDARD_EC_TOUCHPAD_ADDRESS, &rdata);
-=======
 	result = ec_read(MSI_STANDARD_EC_FUNCTIONS_ADDRESS, &rdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result < 0)
 		return;
 
@@ -1020,22 +804,14 @@ static void msi_send_touchpad_key(struct work_struct *ignored)
 		(rdata & MSI_STANDARD_EC_TOUCHPAD_MASK) ?
 		KEY_TOUCHPAD_ON : KEY_TOUCHPAD_OFF, 1, true);
 }
-<<<<<<< HEAD
-static DECLARE_DELAYED_WORK(msi_touchpad_work, msi_send_touchpad_key);
-=======
 static DECLARE_DELAYED_WORK(msi_touchpad_dwork, msi_send_touchpad_key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool msi_laptop_i8042_filter(unsigned char data, unsigned char str,
 				struct serio *port)
 {
 	static bool extended;
 
-<<<<<<< HEAD
-	if (str & 0x20)
-=======
 	if (str & I8042_STR_AUXDATA)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	/* 0x54 wwan, 0x62 bluetooth, 0x76 wlan, 0xE4 touchpad toggle*/
@@ -1046,22 +822,12 @@ static bool msi_laptop_i8042_filter(unsigned char data, unsigned char str,
 		extended = false;
 		switch (data) {
 		case 0xE4:
-<<<<<<< HEAD
-			schedule_delayed_work(&msi_touchpad_work,
-				round_jiffies_relative(0.5 * HZ));
-=======
 			schedule_delayed_work(&msi_touchpad_dwork, msi_work_delay(500));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 0x54:
 		case 0x62:
 		case 0x76:
-<<<<<<< HEAD
-			schedule_delayed_work(&msi_rfkill_work,
-				round_jiffies_relative(0.5 * HZ));
-=======
 			schedule_delayed_work(&msi_rfkill_dwork, msi_work_delay(500));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -1072,17 +838,6 @@ static bool msi_laptop_i8042_filter(unsigned char data, unsigned char str,
 static void msi_init_rfkill(struct work_struct *ignored)
 {
 	if (rfk_wlan) {
-<<<<<<< HEAD
-		rfkill_set_sw_state(rfk_wlan, !wlan_s);
-		rfkill_wlan_set(NULL, !wlan_s);
-	}
-	if (rfk_bluetooth) {
-		rfkill_set_sw_state(rfk_bluetooth, !bluetooth_s);
-		rfkill_bluetooth_set(NULL, !bluetooth_s);
-	}
-	if (rfk_threeg) {
-		rfkill_set_sw_state(rfk_threeg, !threeg_s);
-=======
 		msi_rfkill_set_state(rfk_wlan, !wlan_s);
 		rfkill_wlan_set(NULL, !wlan_s);
 	}
@@ -1092,7 +847,6 @@ static void msi_init_rfkill(struct work_struct *ignored)
 	}
 	if (rfk_threeg) {
 		msi_rfkill_set_state(rfk_threeg, !threeg_s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rfkill_threeg_set(NULL, !threeg_s);
 	}
 }
@@ -1140,13 +894,7 @@ static int rfkill_init(struct platform_device *sdev)
 	}
 
 	/* schedule to run rfkill state initial */
-<<<<<<< HEAD
-	schedule_delayed_work(&msi_rfkill_init,
-				round_jiffies_relative(1 * HZ));
-
-=======
 	schedule_delayed_work(&msi_rfkill_init, msi_work_delay(1000));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_threeg:
@@ -1163,20 +911,12 @@ err_bluetooth:
 	return retval;
 }
 
-<<<<<<< HEAD
-static int msi_laptop_resume(struct platform_device *device)
-=======
 static int msi_scm_disable_hw_fn_handling(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 data;
 	int result;
 
-<<<<<<< HEAD
-	if (!load_scm_model)
-=======
 	if (!quirks->load_scm_model)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* set load SCM to disable hardware control by fn key */
@@ -1192,8 +932,6 @@ static int msi_scm_disable_hw_fn_handling(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PM_SLEEP
 static int msi_laptop_resume(struct device *device)
 {
@@ -1201,7 +939,6 @@ static int msi_laptop_resume(struct device *device)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init msi_laptop_input_setup(void)
 {
 	int err;
@@ -1221,52 +958,15 @@ static int __init msi_laptop_input_setup(void)
 
 	err = input_register_device(msi_laptop_input_dev);
 	if (err)
-<<<<<<< HEAD
-		goto err_free_keymap;
-
-	return 0;
-
-err_free_keymap:
-	sparse_keymap_free(msi_laptop_input_dev);
-=======
 		goto err_free_dev;
 
 	return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free_dev:
 	input_free_device(msi_laptop_input_dev);
 	return err;
 }
 
-<<<<<<< HEAD
-static void msi_laptop_input_destroy(void)
-{
-	sparse_keymap_free(msi_laptop_input_dev);
-	input_unregister_device(msi_laptop_input_dev);
-}
-
-static int __init load_scm_model_init(struct platform_device *sdev)
-{
-	u8 data;
-	int result;
-
-	/* allow userland write sysfs file  */
-	dev_attr_bluetooth.store = store_bluetooth;
-	dev_attr_wlan.store = store_wlan;
-	dev_attr_threeg.store = store_threeg;
-	dev_attr_bluetooth.attr.mode |= S_IWUSR;
-	dev_attr_wlan.attr.mode |= S_IWUSR;
-	dev_attr_threeg.attr.mode |= S_IWUSR;
-
-	/* disable hardware control by fn key */
-	result = ec_read(MSI_STANDARD_EC_SCM_LOAD_ADDRESS, &data);
-	if (result < 0)
-		return result;
-
-	result = ec_write(MSI_STANDARD_EC_SCM_LOAD_ADDRESS,
-		data | MSI_STANDARD_EC_SCM_LOAD_MASK);
-=======
 static int __init load_scm_model_init(struct platform_device *sdev)
 {
 	int result;
@@ -1283,7 +983,6 @@ static int __init load_scm_model_init(struct platform_device *sdev)
 
 	/* disable hardware control by fn key */
 	result = msi_scm_disable_hw_fn_handling();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result < 0)
 		return result;
 
@@ -1306,21 +1005,12 @@ static int __init load_scm_model_init(struct platform_device *sdev)
 	return 0;
 
 fail_filter:
-<<<<<<< HEAD
-	msi_laptop_input_destroy();
-=======
 	input_unregister_device(msi_laptop_input_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 fail_input:
 	rfkill_cleanup();
 
 fail_rfkill:
-<<<<<<< HEAD
-
-	return result;
-
-=======
 	return result;
 }
 
@@ -1334,7 +1024,6 @@ static void msi_scm_model_exit(void)
 	input_unregister_device(msi_laptop_input_dev);
 	cancel_delayed_work_sync(&msi_rfkill_dwork);
 	rfkill_cleanup();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init msi_init(void)
@@ -1344,17 +1033,6 @@ static int __init msi_init(void)
 	if (acpi_disabled)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (force || dmi_check_system(msi_dmi_table))
-		old_ec_model = 1;
-
-	if (!old_ec_model)
-		get_threeg_exists();
-
-	if (!old_ec_model && dmi_check_system(msi_load_scm_models_dmi_table))
-		load_scm_model = 1;
-
-=======
 	dmi_check_system(msi_dmi_table);
 	if (!quirks)
 		/* quirks may be NULL if no match in DMI table */
@@ -1365,20 +1043,12 @@ static int __init msi_init(void)
 	if (!quirks->old_ec_model)
 		get_threeg_exists();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (auto_brightness < 0 || auto_brightness > 2)
 		return -EINVAL;
 
 	/* Register backlight stuff */
-<<<<<<< HEAD
-
-	if (acpi_video_backlight_support()) {
-		pr_info("Brightness ignored, must be controlled by ACPI video driver\n");
-	} else {
-=======
 	if (quirks->old_ec_model &&
 	    acpi_video_get_backlight_type() == acpi_backlight_vendor) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct backlight_properties props;
 		memset(&props, 0, sizeof(struct backlight_properties));
 		props.type = BACKLIGHT_PLATFORM;
@@ -1396,11 +1066,7 @@ static int __init msi_init(void)
 
 	/* Register platform stuff */
 
-<<<<<<< HEAD
-	msipf_device = platform_device_alloc("msi-laptop-pf", -1);
-=======
 	msipf_device = platform_device_alloc("msi-laptop-pf", PLATFORM_DEVID_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!msipf_device) {
 		ret = -ENOMEM;
 		goto fail_platform_driver;
@@ -1408,72 +1074,23 @@ static int __init msi_init(void)
 
 	ret = platform_device_add(msipf_device);
 	if (ret)
-<<<<<<< HEAD
-		goto fail_platform_device1;
-
-	if (load_scm_model && (load_scm_model_init(msipf_device) < 0)) {
-		ret = -EINVAL;
-		goto fail_platform_device1;
-=======
 		goto fail_device_add;
 
 	if (quirks->load_scm_model && (load_scm_model_init(msipf_device) < 0)) {
 		ret = -EINVAL;
 		goto fail_scm_model_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = sysfs_create_group(&msipf_device->dev.kobj,
 				 &msipf_attribute_group);
 	if (ret)
-<<<<<<< HEAD
-		goto fail_platform_device2;
-
-	if (!old_ec_model) {
-=======
 		goto fail_create_group;
 
 	if (!quirks->old_ec_model) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (threeg_exists)
 			ret = device_create_file(&msipf_device->dev,
 						&dev_attr_threeg);
 		if (ret)
-<<<<<<< HEAD
-			goto fail_platform_device2;
-	}
-
-	/* Disable automatic brightness control by default because
-	 * this module was probably loaded to do brightness control in
-	 * software. */
-
-	if (auto_brightness != 2)
-		set_auto_brightness(auto_brightness);
-
-	pr_info("driver " MSI_DRIVER_VERSION " successfully loaded\n");
-
-	return 0;
-
-fail_platform_device2:
-
-	if (load_scm_model) {
-		i8042_remove_filter(msi_laptop_i8042_filter);
-		cancel_delayed_work_sync(&msi_rfkill_work);
-		rfkill_cleanup();
-	}
-	platform_device_del(msipf_device);
-
-fail_platform_device1:
-
-	platform_device_put(msipf_device);
-
-fail_platform_driver:
-
-	platform_driver_unregister(&msipf_driver);
-
-fail_backlight:
-
-=======
 			goto fail_create_attr;
 	} else {
 		ret = sysfs_create_group(&msipf_device->dev.kobj,
@@ -1502,7 +1119,6 @@ fail_device_add:
 fail_platform_driver:
 	platform_driver_unregister(&msipf_driver);
 fail_backlight:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	backlight_device_unregister(msibl_device);
 
 	return ret;
@@ -1510,39 +1126,19 @@ fail_backlight:
 
 static void __exit msi_cleanup(void)
 {
-<<<<<<< HEAD
-	if (load_scm_model) {
-		i8042_remove_filter(msi_laptop_i8042_filter);
-		msi_laptop_input_destroy();
-		cancel_delayed_work_sync(&msi_rfkill_work);
-		rfkill_cleanup();
-	}
-
-	sysfs_remove_group(&msipf_device->dev.kobj, &msipf_attribute_group);
-	if (!old_ec_model && threeg_exists)
-=======
 	msi_scm_model_exit();
 	sysfs_remove_group(&msipf_device->dev.kobj, &msipf_attribute_group);
 	if (!quirks->old_ec_model && threeg_exists)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		device_remove_file(&msipf_device->dev, &dev_attr_threeg);
 	platform_device_unregister(msipf_device);
 	platform_driver_unregister(&msipf_driver);
 	backlight_device_unregister(msibl_device);
 
-<<<<<<< HEAD
-	/* Enable automatic brightness control again */
-	if (auto_brightness != 2)
-		set_auto_brightness(1);
-
-	pr_info("driver unloaded\n");
-=======
 	if (quirks->old_ec_model) {
 		/* Enable automatic brightness control again */
 		if (auto_brightness != 2)
 			set_auto_brightness(1);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(msi_init);
@@ -1550,19 +1146,4 @@ module_exit(msi_cleanup);
 
 MODULE_AUTHOR("Lennart Poettering");
 MODULE_DESCRIPTION("MSI Laptop Support");
-<<<<<<< HEAD
-MODULE_VERSION(MSI_DRIVER_VERSION);
 MODULE_LICENSE("GPL");
-
-MODULE_ALIAS("dmi:*:svnMICRO-STARINT'LCO.,LTD:pnMS-1013:pvr0131*:cvnMICRO-STARINT'LCO.,LTD:ct10:*");
-MODULE_ALIAS("dmi:*:svnMicro-StarInternational:pnMS-1058:pvr0581:rvnMSI:rnMS-1058:*:ct10:*");
-MODULE_ALIAS("dmi:*:svnMicro-StarInternational:pnMS-1412:*:rvnMSI:rnMS-1412:*:cvnMICRO-STARINT'LCO.,LTD:ct10:*");
-MODULE_ALIAS("dmi:*:svnNOTEBOOK:pnSAM2000:pvr0131*:cvnMICRO-STARINT'LCO.,LTD:ct10:*");
-MODULE_ALIAS("dmi:*:svnMICRO-STARINTERNATIONAL*:pnMS-N034:*");
-MODULE_ALIAS("dmi:*:svnMICRO-STARINTERNATIONAL*:pnMS-N051:*");
-MODULE_ALIAS("dmi:*:svnMICRO-STARINTERNATIONAL*:pnMS-N014:*");
-MODULE_ALIAS("dmi:*:svnMicro-StarInternational*:pnCR620:*");
-MODULE_ALIAS("dmi:*:svnMicro-StarInternational*:pnU270series:*");
-=======
-MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

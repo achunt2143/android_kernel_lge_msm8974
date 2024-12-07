@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_STATFS_H
 #define _LINUX_STATFS_H
 
 #include <linux/types.h>
 #include <asm/statfs.h>
-<<<<<<< HEAD
-=======
 #include <asm/byteorder.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct kstatfs {
 	long f_type;
@@ -47,8 +41,6 @@ struct kstatfs {
 #define ST_NOATIME	0x0400	/* do not update access times */
 #define ST_NODIRATIME	0x0800	/* do not update directory access times */
 #define ST_RELATIME	0x1000	/* update atime relative to mtime/ctime */
-<<<<<<< HEAD
-=======
 #define ST_NOSYMFOLLOW	0x2000	/* do not follow symlinks */
 
 struct dentry;
@@ -65,6 +57,5 @@ static inline __kernel_fsid_t uuid_to_fsid(__u8 *uuid)
 	return u64_to_fsid(le64_to_cpup((void *)uuid) ^
 		le64_to_cpup((void *)(uuid + sizeof(u64))));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

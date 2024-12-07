@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/mach/dma.h
  *
  *  Copyright (C) 1998-2000 Russell King
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  This header file describes the interface between the generic DMA handler
  *  (dma.c) and the architecture-specific DMA backends (dma-*.c)
  */
@@ -54,11 +44,3 @@ struct dma_struct {
  * isa_dma_add - add an ISA-style DMA channel
  */
 extern int isa_dma_add(unsigned int, dma_t *dma);
-<<<<<<< HEAD
-
-/*
- * Add the ISA DMA controller.  Always takes channels 0-7.
- */
-extern void isa_init_dma(void);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-/*
- *  drivers/s390/char/tape.h
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    tape device driver for 3480/3490E/3590 tapes.
  *
  *  S390 and zSeries version
@@ -21,10 +16,6 @@
 #include <asm/ccwdev.h>
 #include <asm/debug.h>
 #include <asm/idals.h>
-<<<<<<< HEAD
-#include <linux/blkdev.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/mtio.h>
@@ -138,10 +129,7 @@ struct tape_request {
 	int options;			/* options for execution. */
 	int retries;			/* retry counter for error recovery. */
 	int rescnt;			/* residual count from devstat. */
-<<<<<<< HEAD
-=======
 	struct timer_list timer;	/* timer for std_assign_timeout(). */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Callback for delivering final status. */
 	void (*callback)(struct tape_request *, void *);
@@ -166,15 +154,6 @@ struct tape_discipline {
 	struct tape_request *(*read_block)(struct tape_device *, size_t);
 	struct tape_request *(*write_block)(struct tape_device *, size_t);
 	void (*process_eov)(struct tape_device*);
-<<<<<<< HEAD
-#ifdef CONFIG_S390_TAPE_BLOCK
-	/* Block device stuff. */
-	struct tape_request *(*bread)(struct tape_device *, struct request *);
-	void (*check_locate)(struct tape_device *, struct tape_request *);
-	void (*free_bread)(struct tape_request *);
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ioctl function for additional ioctls. */
 	int (*ioctl_fn)(struct tape_device *, unsigned int, unsigned long);
 	/* Array of tape commands with TAPE_NR_MTOPS entries */
@@ -197,29 +176,6 @@ struct tape_char_data {
 	int block_size;			/*   of size block_size. */
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_S390_TAPE_BLOCK
-/* Block Frontend Data */
-struct tape_blk_data
-{
-	struct tape_device *	device;
-	/* Block device request queue. */
-	struct request_queue *	request_queue;
-	spinlock_t		request_queue_lock;
-
-	/* Task to move entries from block request to CCS request queue. */
-	struct work_struct	requeue_task;
-	atomic_t		requeue_scheduled;
-
-	/* Current position on the tape. */
-	long			block_position;
-	int			medium_changed;
-	struct gendisk *	disk;
-};
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Tape Info */
 struct tape_device {
 	/* entry in tape_device_list */
@@ -266,13 +222,6 @@ struct tape_device {
 
 	/* Character device frontend data */
 	struct tape_char_data		char_data;
-<<<<<<< HEAD
-#ifdef CONFIG_S390_TAPE_BLOCK
-	/* Block dev frontend data */
-	struct tape_blk_data		blk_data;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Function to start or stop the next request later. */
 	struct delayed_work		tape_dnr;
@@ -289,10 +238,6 @@ extern int tape_do_io(struct tape_device *, struct tape_request *);
 extern int tape_do_io_async(struct tape_device *, struct tape_request *);
 extern int tape_do_io_interruptible(struct tape_device *, struct tape_request *);
 extern int tape_cancel_io(struct tape_device *, struct tape_request *);
-<<<<<<< HEAD
-void tape_hotplug_event(struct tape_device *, int major, int action);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int
 tape_do_io_free(struct tape_device *device, struct tape_request *request)
@@ -312,11 +257,6 @@ tape_do_io_async_free(struct tape_device *device, struct tape_request *request)
 	tape_do_io_async(device, request);
 }
 
-<<<<<<< HEAD
-extern int tape_oper_handler(int irq, int status);
-extern void tape_noper_handler(int irq, int status);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int tape_open(struct tape_device *);
 extern int tape_release(struct tape_device *);
 extern int tape_mtop(struct tape_device *, int, int);
@@ -324,10 +264,6 @@ extern void tape_state_set(struct tape_device *, enum tape_state);
 
 extern int tape_generic_online(struct tape_device *, struct tape_discipline *);
 extern int tape_generic_offline(struct ccw_device *);
-<<<<<<< HEAD
-extern int tape_generic_pm_suspend(struct ccw_device *);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Externals from tape_devmap.c */
 extern int tape_generic_probe(struct ccw_device *);
@@ -343,22 +279,6 @@ extern void tapechar_exit(void);
 extern int  tapechar_setup_device(struct tape_device *);
 extern void tapechar_cleanup_device(struct tape_device *);
 
-<<<<<<< HEAD
-/* Externals from tape_block.c */
-#ifdef CONFIG_S390_TAPE_BLOCK
-extern int tapeblock_init (void);
-extern void tapeblock_exit(void);
-extern int tapeblock_setup_device(struct tape_device *);
-extern void tapeblock_cleanup_device(struct tape_device *);
-#else
-static inline int tapeblock_init (void) {return 0;}
-static inline void tapeblock_exit (void) {;}
-static inline int tapeblock_setup_device(struct tape_device *t) {return 0;}
-static inline void tapeblock_cleanup_device (struct tape_device *t) {;}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* tape initialisation functions */
 #ifdef CONFIG_PROC_FS
 extern void tape_proc_init (void);
@@ -385,13 +305,9 @@ tape_ccw_cc(struct ccw1 *ccw, __u8 cmd_code, __u16 memsize, void *cda)
 	ccw->cmd_code = cmd_code;
 	ccw->flags = CCW_FLAG_CC;
 	ccw->count = memsize;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) cda;
-=======
 	ccw->cda = 0;
 	if (cda)
 		ccw->cda = virt_to_dma32(cda);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ccw + 1;
 }
 
@@ -401,13 +317,9 @@ tape_ccw_end(struct ccw1 *ccw, __u8 cmd_code, __u16 memsize, void *cda)
 	ccw->cmd_code = cmd_code;
 	ccw->flags = 0;
 	ccw->count = memsize;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) cda;
-=======
 	ccw->cda = 0;
 	if (cda)
 		ccw->cda = virt_to_dma32(cda);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ccw + 1;
 }
 
@@ -417,11 +329,7 @@ tape_ccw_cmd(struct ccw1 *ccw, __u8 cmd_code)
 	ccw->cmd_code = cmd_code;
 	ccw->flags = 0;
 	ccw->count = 0;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) &ccw->cmd_code;
-=======
 	ccw->cda = virt_to_dma32(&ccw->cmd_code);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ccw + 1;
 }
 
@@ -432,11 +340,7 @@ tape_ccw_repeat(struct ccw1 *ccw, __u8 cmd_code, int count)
 		ccw->cmd_code = cmd_code;
 		ccw->flags = CCW_FLAG_CC;
 		ccw->count = 0;
-<<<<<<< HEAD
-		ccw->cda = (__u32)(addr_t) &ccw->cmd_code;
-=======
 		ccw->cda = virt_to_dma32(&ccw->cmd_code);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ccw++;
 	}
 	return ccw;

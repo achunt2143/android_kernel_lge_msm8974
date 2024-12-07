@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/base/core.c - core driver model code (device registration, etc)
  *
@@ -9,19 +6,6 @@
  * Copyright (c) 2002-3 Open Source Development Labs
  * Copyright (c) 2006 Greg Kroah-Hartman <gregkh@suse.de>
  * Copyright (c) 2006 Novell, Inc.
-<<<<<<< HEAD
- *
- * This file is released under the GPLv2
- *
- */
-
-#include <linux/device.h>
-#include <linux/err.h>
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/slab.h>
-#include <linux/string.h>
-=======
  */
 
 #include <linux/acpi.h>
@@ -33,40 +17,10 @@
 #include <linux/kstrtox.h>
 #include <linux/module.h>
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kdev_t.h>
 #include <linux/notifier.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
-<<<<<<< HEAD
-#include <linux/genhd.h>
-#include <linux/kallsyms.h>
-#include <linux/mutex.h>
-#include <linux/async.h>
-#include <linux/pm_runtime.h>
-
-#include "base.h"
-#include "power/power.h"
-
-#ifdef CONFIG_SYSFS_DEPRECATED
-#ifdef CONFIG_SYSFS_DEPRECATED_V2
-long sysfs_deprecated = 1;
-#else
-long sysfs_deprecated = 0;
-#endif
-static __init int sysfs_deprecated_setup(char *arg)
-{
-	return strict_strtol(arg, 10, &sysfs_deprecated);
-}
-early_param("sysfs.deprecated", sysfs_deprecated_setup);
-#endif
-
-int (*platform_notify)(struct device *dev) = NULL;
-int (*platform_notify_remove)(struct device *dev) = NULL;
-static struct kobject *dev_kobj;
-struct kobject *sysfs_dev_char_kobj;
-struct kobject *sysfs_dev_block_kobj;
-=======
 #include <linux/blkdev.h>
 #include <linux/mutex.h>
 #include <linux/pm_runtime.h>
@@ -2423,7 +2377,6 @@ int lock_device_hotplug_sysfs(void)
 	msleep(5);
 	return restart_syscall();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_BLOCK
 static inline int device_is_not_partition(struct device *dev)
@@ -2437,8 +2390,6 @@ static inline int device_is_not_partition(struct device *dev)
 }
 #endif
 
-<<<<<<< HEAD
-=======
 static void device_platform_notify(struct device *dev)
 {
 	acpi_device_notify(dev);
@@ -2459,17 +2410,12 @@ static void device_platform_notify_remove(struct device *dev)
 	acpi_device_notify_remove(dev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * dev_driver_string - Return a device's driver name, if at all possible
  * @dev: struct device to get the name of
  *
  * Will return the device's driver's name if it is bound to a device.  If
-<<<<<<< HEAD
- * the device is not bound to a device, it will return the name of the bus
-=======
  * the device is not bound to a driver, it will return the name of the bus
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * it is attached to.  If it is not attached to a bus either, an empty
  * string will be returned.
  */
@@ -2481,45 +2427,25 @@ const char *dev_driver_string(const struct device *dev)
 	 * so be careful about accessing it.  dev->bus and dev->class should
 	 * never change once they are set, so they don't need special care.
 	 */
-<<<<<<< HEAD
-	drv = ACCESS_ONCE(dev->driver);
-	return drv ? drv->name :
-			(dev->bus ? dev->bus->name :
-			(dev->class ? dev->class->name : ""));
-}
-EXPORT_SYMBOL(dev_driver_string);
-
-#define to_dev(obj) container_of(obj, struct device, kobj)
-=======
 	drv = READ_ONCE(dev->driver);
 	return drv ? drv->name : dev_bus_name(dev);
 }
 EXPORT_SYMBOL(dev_driver_string);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define to_dev_attr(_attr) container_of(_attr, struct device_attribute, attr)
 
 static ssize_t dev_attr_show(struct kobject *kobj, struct attribute *attr,
 			     char *buf)
 {
 	struct device_attribute *dev_attr = to_dev_attr(attr);
-<<<<<<< HEAD
-	struct device *dev = to_dev(kobj);
-=======
 	struct device *dev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t ret = -EIO;
 
 	if (dev_attr->show)
 		ret = dev_attr->show(dev, dev_attr, buf);
 	if (ret >= (ssize_t)PAGE_SIZE) {
-<<<<<<< HEAD
-		print_symbol("dev_attr_show: %s returned bad count\n",
-				(unsigned long)dev_attr->show);
-=======
 		printk("dev_attr_show: %pS returned bad count\n",
 				dev_attr->show);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
@@ -2528,11 +2454,7 @@ static ssize_t dev_attr_store(struct kobject *kobj, struct attribute *attr,
 			      const char *buf, size_t count)
 {
 	struct device_attribute *dev_attr = to_dev_attr(attr);
-<<<<<<< HEAD
-	struct device *dev = to_dev(kobj);
-=======
 	struct device *dev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t ret = -EIO;
 
 	if (dev_attr->store)
@@ -2552,19 +2474,12 @@ ssize_t device_store_ulong(struct device *dev,
 			   const char *buf, size_t size)
 {
 	struct dev_ext_attribute *ea = to_ext_attr(attr);
-<<<<<<< HEAD
-	char *end;
-	unsigned long new = simple_strtoul(buf, &end, 0);
-	if (end == buf)
-		return -EINVAL;
-=======
 	int ret;
 	unsigned long new;
 
 	ret = kstrtoul(buf, 0, &new);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*(unsigned long *)(ea->var) = new;
 	/* Always return full write size even if we didn't consume all */
 	return size;
@@ -2576,11 +2491,7 @@ ssize_t device_show_ulong(struct device *dev,
 			  char *buf)
 {
 	struct dev_ext_attribute *ea = to_ext_attr(attr);
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%lx\n", *(unsigned long *)(ea->var));
-=======
 	return sysfs_emit(buf, "%lx\n", *(unsigned long *)(ea->var));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(device_show_ulong);
 
@@ -2589,11 +2500,6 @@ ssize_t device_store_int(struct device *dev,
 			 const char *buf, size_t size)
 {
 	struct dev_ext_attribute *ea = to_ext_attr(attr);
-<<<<<<< HEAD
-	char *end;
-	long new = simple_strtol(buf, &end, 0);
-	if (end == buf || new > INT_MAX || new < INT_MIN)
-=======
 	int ret;
 	long new;
 
@@ -2602,7 +2508,6 @@ ssize_t device_store_int(struct device *dev,
 		return ret;
 
 	if (new > INT_MAX || new < INT_MIN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	*(int *)(ea->var) = new;
 	/* Always return full write size even if we didn't consume all */
@@ -2616,25 +2521,6 @@ ssize_t device_show_int(struct device *dev,
 {
 	struct dev_ext_attribute *ea = to_ext_attr(attr);
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", *(int *)(ea->var));
-}
-EXPORT_SYMBOL_GPL(device_show_int);
-
-/**
- *	device_release - free device structure.
- *	@kobj:	device's kobject.
- *
- *	This is called once the reference count for the object
- *	reaches 0. We forward the call to the device's release
- *	method, which should handle actually freeing the structure.
- */
-static void device_release(struct kobject *kobj)
-{
-	struct device *dev = to_dev(kobj);
-	struct device_private *p = dev->p;
-
-=======
 	return sysfs_emit(buf, "%d\n", *(int *)(ea->var));
 }
 EXPORT_SYMBOL_GPL(device_show_int);
@@ -2686,7 +2572,6 @@ static void device_release(struct kobject *kobj)
 
 	kfree(dev->dma_range_map);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->release)
 		dev->release(dev);
 	else if (dev->type && dev->type->release)
@@ -2694,25 +2579,14 @@ static void device_release(struct kobject *kobj)
 	else if (dev->class && dev->class->dev_release)
 		dev->class->dev_release(dev);
 	else
-<<<<<<< HEAD
-		WARN(1, KERN_ERR "Device '%s' does not have a release() "
-			"function, it is broken and must be fixed.\n",
-=======
 		WARN(1, KERN_ERR "Device '%s' does not have a release() function, it is broken and must be fixed. See Documentation/core-api/kobject.rst.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_name(dev));
 	kfree(p);
 }
 
-<<<<<<< HEAD
-static const void *device_namespace(struct kobject *kobj)
-{
-	struct device *dev = to_dev(kobj);
-=======
 static const void *device_namespace(const struct kobject *kobj)
 {
 	const struct device *dev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const void *ns = NULL;
 
 	if (dev->class && dev->class->ns_type)
@@ -2721,21 +2595,6 @@ static const void *device_namespace(const struct kobject *kobj)
 	return ns;
 }
 
-<<<<<<< HEAD
-static struct kobj_type device_ktype = {
-	.release	= device_release,
-	.sysfs_ops	= &dev_sysfs_ops,
-	.namespace	= device_namespace,
-};
-
-
-static int dev_uevent_filter(struct kset *kset, struct kobject *kobj)
-{
-	struct kobj_type *ktype = get_ktype(kobj);
-
-	if (ktype == &device_ktype) {
-		struct device *dev = to_dev(kobj);
-=======
 static void device_get_ownership(const struct kobject *kobj, kuid_t *uid, kgid_t *gid)
 {
 	const struct device *dev = kobj_to_dev(kobj);
@@ -2758,7 +2617,6 @@ static int dev_uevent_filter(const struct kobject *kobj)
 
 	if (ktype == &device_ktype) {
 		const struct device *dev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dev->bus)
 			return 1;
 		if (dev->class)
@@ -2767,15 +2625,9 @@ static int dev_uevent_filter(const struct kobject *kobj)
 	return 0;
 }
 
-<<<<<<< HEAD
-static const char *dev_uevent_name(struct kset *kset, struct kobject *kobj)
-{
-	struct device *dev = to_dev(kobj);
-=======
 static const char *dev_uevent_name(const struct kobject *kobj)
 {
 	const struct device *dev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->bus)
 		return dev->bus->name;
@@ -2784,16 +2636,9 @@ static const char *dev_uevent_name(const struct kobject *kobj)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static int dev_uevent(struct kset *kset, struct kobject *kobj,
-		      struct kobj_uevent_env *env)
-{
-	struct device *dev = to_dev(kobj);
-=======
 static int dev_uevent(const struct kobject *kobj, struct kobj_uevent_env *env)
 {
 	const struct device *dev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval = 0;
 
 	/* add device node properties if present */
@@ -2801,17 +2646,6 @@ static int dev_uevent(const struct kobject *kobj, struct kobj_uevent_env *env)
 		const char *tmp;
 		const char *name;
 		umode_t mode = 0;
-<<<<<<< HEAD
-
-		add_uevent_var(env, "MAJOR=%u", MAJOR(dev->devt));
-		add_uevent_var(env, "MINOR=%u", MINOR(dev->devt));
-		name = device_get_devnode(dev, &mode, &tmp);
-		if (name) {
-			add_uevent_var(env, "DEVNAME=%s", name);
-			kfree(tmp);
-			if (mode)
-				add_uevent_var(env, "DEVMODE=%#o", mode & 0777);
-=======
 		kuid_t uid = GLOBAL_ROOT_UID;
 		kgid_t gid = GLOBAL_ROOT_GID;
 
@@ -2827,7 +2661,6 @@ static int dev_uevent(const struct kobject *kobj, struct kobj_uevent_env *env)
 			if (!gid_eq(gid, GLOBAL_ROOT_GID))
 				add_uevent_var(env, "DEVGID=%u", from_kgid(&init_user_ns, gid));
 			kfree(tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -2875,22 +2708,14 @@ static const struct kset_uevent_ops device_uevent_ops = {
 	.uevent =	dev_uevent,
 };
 
-<<<<<<< HEAD
-static ssize_t show_uevent(struct device *dev, struct device_attribute *attr,
-=======
 static ssize_t uevent_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   char *buf)
 {
 	struct kobject *top_kobj;
 	struct kset *kset;
 	struct kobj_uevent_env *env = NULL;
 	int i;
-<<<<<<< HEAD
-	size_t count = 0;
-=======
 	int len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 
 	/* search the kset, the device belongs to */
@@ -2906,11 +2731,7 @@ static ssize_t uevent_show(struct device *dev, struct device_attribute *attr,
 
 	/* respect filter */
 	if (kset->uevent_ops && kset->uevent_ops->filter)
-<<<<<<< HEAD
-		if (!kset->uevent_ops->filter(kset, &dev->kobj))
-=======
 		if (!kset->uevent_ops->filter(&dev->kobj))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 
 	env = kzalloc(sizeof(struct kobj_uevent_env), GFP_KERNEL);
@@ -2918,130 +2739,12 @@ static ssize_t uevent_show(struct device *dev, struct device_attribute *attr,
 		return -ENOMEM;
 
 	/* let the kset specific function add its keys */
-<<<<<<< HEAD
-	retval = kset->uevent_ops->uevent(kset, &dev->kobj, env);
-=======
 	retval = kset->uevent_ops->uevent(&dev->kobj, env);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		goto out;
 
 	/* copy keys to file */
 	for (i = 0; i < env->envp_idx; i++)
-<<<<<<< HEAD
-		count += sprintf(&buf[count], "%s\n", env->envp[i]);
-out:
-	kfree(env);
-	return count;
-}
-
-static ssize_t store_uevent(struct device *dev, struct device_attribute *attr,
-			    const char *buf, size_t count)
-{
-	enum kobject_action action;
-
-	if (kobject_action_type(buf, count, &action) == 0)
-		kobject_uevent(&dev->kobj, action);
-	else
-		dev_err(dev, "uevent: unknown action-string\n");
-	return count;
-}
-
-static struct device_attribute uevent_attr =
-	__ATTR(uevent, S_IRUGO | S_IWUSR, show_uevent, store_uevent);
-
-static int device_add_attributes(struct device *dev,
-				 struct device_attribute *attrs)
-{
-	int error = 0;
-	int i;
-
-	if (attrs) {
-		for (i = 0; attr_name(attrs[i]); i++) {
-			error = device_create_file(dev, &attrs[i]);
-			if (error)
-				break;
-		}
-		if (error)
-			while (--i >= 0)
-				device_remove_file(dev, &attrs[i]);
-	}
-	return error;
-}
-
-static void device_remove_attributes(struct device *dev,
-				     struct device_attribute *attrs)
-{
-	int i;
-
-	if (attrs)
-		for (i = 0; attr_name(attrs[i]); i++)
-			device_remove_file(dev, &attrs[i]);
-}
-
-static int device_add_bin_attributes(struct device *dev,
-				     struct bin_attribute *attrs)
-{
-	int error = 0;
-	int i;
-
-	if (attrs) {
-		for (i = 0; attr_name(attrs[i]); i++) {
-			error = device_create_bin_file(dev, &attrs[i]);
-			if (error)
-				break;
-		}
-		if (error)
-			while (--i >= 0)
-				device_remove_bin_file(dev, &attrs[i]);
-	}
-	return error;
-}
-
-static void device_remove_bin_attributes(struct device *dev,
-					 struct bin_attribute *attrs)
-{
-	int i;
-
-	if (attrs)
-		for (i = 0; attr_name(attrs[i]); i++)
-			device_remove_bin_file(dev, &attrs[i]);
-}
-
-static int device_add_groups(struct device *dev,
-			     const struct attribute_group **groups)
-{
-	int error = 0;
-	int i;
-
-	if (groups) {
-		for (i = 0; groups[i]; i++) {
-			error = sysfs_create_group(&dev->kobj, groups[i]);
-			if (error) {
-				while (--i >= 0)
-					sysfs_remove_group(&dev->kobj,
-							   groups[i]);
-				break;
-			}
-		}
-	}
-	return error;
-}
-
-static void device_remove_groups(struct device *dev,
-				 const struct attribute_group **groups)
-{
-	int i;
-
-	if (groups)
-		for (i = 0; groups[i]; i++)
-			sysfs_remove_group(&dev->kobj, groups[i]);
-}
-
-static int device_add_attrs(struct device *dev)
-{
-	struct class *class = dev->class;
-=======
 		len += sysfs_emit_at(buf, len, "%s\n", env->envp[i]);
 out:
 	kfree(env);
@@ -3221,52 +2924,25 @@ EXPORT_SYMBOL_GPL(devm_device_add_groups);
 static int device_add_attrs(struct device *dev)
 {
 	const struct class *class = dev->class;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct device_type *type = dev->type;
 	int error;
 
 	if (class) {
-<<<<<<< HEAD
-		error = device_add_attributes(dev, class->dev_attrs);
-		if (error)
-			return error;
-		error = device_add_bin_attributes(dev, class->dev_bin_attrs);
-		if (error)
-			goto err_remove_class_attrs;
-=======
 		error = device_add_groups(dev, class->dev_groups);
 		if (error)
 			return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (type) {
 		error = device_add_groups(dev, type->groups);
 		if (error)
-<<<<<<< HEAD
-			goto err_remove_class_bin_attrs;
-=======
 			goto err_remove_class_groups;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = device_add_groups(dev, dev->groups);
 	if (error)
 		goto err_remove_type_groups;
 
-<<<<<<< HEAD
-	return 0;
-
- err_remove_type_groups:
-	if (type)
-		device_remove_groups(dev, type->groups);
- err_remove_class_bin_attrs:
-	if (class)
-		device_remove_bin_attributes(dev, class->dev_bin_attrs);
- err_remove_class_attrs:
-	if (class)
-		device_remove_attributes(dev, class->dev_attrs);
-=======
 	if (device_supports_offline(dev) && !dev->offline_disabled) {
 		error = device_create_file(dev, &dev_attr_online);
 		if (error)
@@ -3308,18 +2984,12 @@ static int device_add_attrs(struct device *dev)
  err_remove_class_groups:
 	if (class)
 		device_remove_groups(dev, class->dev_groups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 
 static void device_remove_attrs(struct device *dev)
 {
-<<<<<<< HEAD
-	struct class *class = dev->class;
-	const struct device_type *type = dev->type;
-
-=======
 	const struct class *class = dev->class;
 	const struct device_type *type = dev->type;
 
@@ -3331,46 +3001,26 @@ static void device_remove_attrs(struct device *dev)
 	device_remove_file(dev, &dev_attr_removable);
 	device_remove_file(dev, &dev_attr_waiting_for_supplier);
 	device_remove_file(dev, &dev_attr_online);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_remove_groups(dev, dev->groups);
 
 	if (type)
 		device_remove_groups(dev, type->groups);
 
-<<<<<<< HEAD
-	if (class) {
-		device_remove_attributes(dev, class->dev_attrs);
-		device_remove_bin_attributes(dev, class->dev_bin_attrs);
-	}
-}
-
-
-static ssize_t show_dev(struct device *dev, struct device_attribute *attr,
-=======
 	if (class)
 		device_remove_groups(dev, class->dev_groups);
 }
 
 static ssize_t dev_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			char *buf)
 {
 	return print_dev_t(buf, dev->devt);
 }
-<<<<<<< HEAD
-
-static struct device_attribute devt_attr =
-	__ATTR(dev, S_IRUGO, show_dev, NULL);
-=======
 static DEVICE_ATTR_RO(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* /sys/devices/ */
 struct kset *devices_kset;
 
 /**
-<<<<<<< HEAD
-=======
  * devices_kset_move_before - Move device in the devices_kset's list.
  * @deva: Device to move.
  * @devb: Device @deva should come before.
@@ -3417,7 +3067,6 @@ void devices_kset_move_last(struct device *dev)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * device_create_file - create sysfs attribute file for device.
  * @dev: device.
  * @attr: device attribute descriptor.
@@ -3426,12 +3075,6 @@ int device_create_file(struct device *dev,
 		       const struct device_attribute *attr)
 {
 	int error = 0;
-<<<<<<< HEAD
-	if (dev)
-		error = sysfs_create_file(&dev->kobj, &attr->attr);
-	return error;
-}
-=======
 
 	if (dev) {
 		WARN(((attr->attr.mode & S_IWUGO) && !attr->store),
@@ -3446,7 +3089,6 @@ int device_create_file(struct device *dev,
 	return error;
 }
 EXPORT_SYMBOL_GPL(device_create_file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * device_remove_file - remove sysfs attribute file.
@@ -3459,8 +3101,6 @@ void device_remove_file(struct device *dev,
 	if (dev)
 		sysfs_remove_file(&dev->kobj, &attr->attr);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(device_remove_file);
 
 /**
@@ -3479,7 +3119,6 @@ bool device_remove_file_self(struct device *dev,
 		return false;
 }
 EXPORT_SYMBOL_GPL(device_remove_file_self);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * device_create_bin_file - create sysfs binary attribute file for device.
@@ -3509,42 +3148,6 @@ void device_remove_bin_file(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(device_remove_bin_file);
 
-<<<<<<< HEAD
-/**
- * device_schedule_callback_owner - helper to schedule a callback for a device
- * @dev: device.
- * @func: callback function to invoke later.
- * @owner: module owning the callback routine
- *
- * Attribute methods must not unregister themselves or their parent device
- * (which would amount to the same thing).  Attempts to do so will deadlock,
- * since unregistration is mutually exclusive with driver callbacks.
- *
- * Instead methods can call this routine, which will attempt to allocate
- * and schedule a workqueue request to call back @func with @dev as its
- * argument in the workqueue's process context.  @dev will be pinned until
- * @func returns.
- *
- * This routine is usually called via the inline device_schedule_callback(),
- * which automatically sets @owner to THIS_MODULE.
- *
- * Returns 0 if the request was submitted, -ENOMEM if storage could not
- * be allocated, -ENODEV if a reference to @owner isn't available.
- *
- * NOTE: This routine won't work if CONFIG_SYSFS isn't set!  It uses an
- * underlying sysfs routine (since it is intended for use by attribute
- * methods), and if sysfs isn't available you'll get nothing but -ENOSYS.
- */
-int device_schedule_callback_owner(struct device *dev,
-		void (*func)(struct device *), struct module *owner)
-{
-	return sysfs_schedule_callback(&dev->kobj,
-			(void (*)(void *)) func, dev, owner);
-}
-EXPORT_SYMBOL_GPL(device_schedule_callback_owner);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void klist_children_get(struct klist_node *n)
 {
 	struct device_private *p = to_device_private_parent(n);
@@ -3591,12 +3194,6 @@ void device_initialize(struct device *dev)
 	spin_lock_init(&dev->devres_lock);
 	INIT_LIST_HEAD(&dev->devres_head);
 	device_pm_init(dev);
-<<<<<<< HEAD
-	set_dev_node(dev, -1);
-}
-
-static struct kobject *virtual_device_parent(struct device *dev)
-=======
 	set_dev_node(dev, NUMA_NO_NODE);
 	INIT_LIST_HEAD(&dev->links.consumers);
 	INIT_LIST_HEAD(&dev->links.suppliers);
@@ -3612,7 +3209,6 @@ static struct kobject *virtual_device_parent(struct device *dev)
 EXPORT_SYMBOL_GPL(device_initialize);
 
 struct kobject *virtual_device_parent(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static struct kobject *virtual_dir = NULL;
 
@@ -3625,11 +3221,7 @@ struct kobject *virtual_device_parent(struct device *dev)
 
 struct class_dir {
 	struct kobject kobj;
-<<<<<<< HEAD
-	struct class *class;
-=======
 	const struct class *class;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define to_class_dir(obj) container_of(obj, struct class_dir, kobj)
@@ -3641,15 +3233,6 @@ static void class_dir_release(struct kobject *kobj)
 }
 
 static const
-<<<<<<< HEAD
-struct kobj_ns_type_operations *class_dir_child_ns_type(struct kobject *kobj)
-{
-	struct class_dir *dir = to_class_dir(kobj);
-	return dir->class->ns_type;
-}
-
-static struct kobj_type class_dir_ktype = {
-=======
 struct kobj_ns_type_operations *class_dir_child_ns_type(const struct kobject *kobj)
 {
 	const struct class_dir *dir = to_class_dir(kobj);
@@ -3657,38 +3240,19 @@ struct kobj_ns_type_operations *class_dir_child_ns_type(const struct kobject *ko
 }
 
 static const struct kobj_type class_dir_ktype = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.release	= class_dir_release,
 	.sysfs_ops	= &kobj_sysfs_ops,
 	.child_ns_type	= class_dir_child_ns_type
 };
 
-<<<<<<< HEAD
-static struct kobject *
-class_dir_create_and_add(struct class *class, struct kobject *parent_kobj)
-=======
 static struct kobject *class_dir_create_and_add(struct subsys_private *sp,
 						struct kobject *parent_kobj)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct class_dir *dir;
 	int retval;
 
 	dir = kzalloc(sizeof(*dir), GFP_KERNEL);
 	if (!dir)
-<<<<<<< HEAD
-		return NULL;
-
-	dir->class = class;
-	kobject_init(&dir->kobj, &class_dir_ktype);
-
-	dir->kobj.kset = &class->p->glue_dirs;
-
-	retval = kobject_add(&dir->kobj, parent_kobj, "%s", class->name);
-	if (retval < 0) {
-		kobject_put(&dir->kobj);
-		return NULL;
-=======
 		return ERR_PTR(-ENOMEM);
 
 	dir->class = sp->class;
@@ -3700,7 +3264,6 @@ static struct kobject *class_dir_create_and_add(struct subsys_private *sp,
 	if (retval < 0) {
 		kobject_put(&dir->kobj);
 		return ERR_PTR(retval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return &dir->kobj;
 }
@@ -3710,22 +3273,6 @@ static DEFINE_MUTEX(gdp_mutex);
 static struct kobject *get_device_parent(struct device *dev,
 					 struct device *parent)
 {
-<<<<<<< HEAD
-	if (dev->class) {
-		struct kobject *kobj = NULL;
-		struct kobject *parent_kobj;
-		struct kobject *k;
-
-#ifdef CONFIG_BLOCK
-		/* block disks show up in /sys/block */
-		if (sysfs_deprecated && dev->class == &block_class) {
-			if (parent && parent->class == &block_class)
-				return &parent->kobj;
-			return &block_class.p->subsys.kobj;
-		}
-#endif
-
-=======
 	struct subsys_private *sp = class_to_subsys(dev->class);
 	struct kobject *kobj = NULL;
 
@@ -3733,7 +3280,6 @@ static struct kobject *get_device_parent(struct device *dev,
 		struct kobject *parent_kobj;
 		struct kobject *k;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If we have no parent, we live in "virtual".
 		 * Class-devices with a non class-device as parent, live
@@ -3741,66 +3287,38 @@ static struct kobject *get_device_parent(struct device *dev,
 		 */
 		if (parent == NULL)
 			parent_kobj = virtual_device_parent(dev);
-<<<<<<< HEAD
-		else if (parent->class && !dev->class->ns_type)
-			return &parent->kobj;
-		else
-			parent_kobj = &parent->kobj;
-=======
 		else if (parent->class && !dev->class->ns_type) {
 			subsys_put(sp);
 			return &parent->kobj;
 		} else {
 			parent_kobj = &parent->kobj;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mutex_lock(&gdp_mutex);
 
 		/* find our class-directory at the parent and reference it */
-<<<<<<< HEAD
-		spin_lock(&dev->class->p->glue_dirs.list_lock);
-		list_for_each_entry(k, &dev->class->p->glue_dirs.list, entry)
-=======
 		spin_lock(&sp->glue_dirs.list_lock);
 		list_for_each_entry(k, &sp->glue_dirs.list, entry)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (k->parent == parent_kobj) {
 				kobj = kobject_get(k);
 				break;
 			}
-<<<<<<< HEAD
-		spin_unlock(&dev->class->p->glue_dirs.list_lock);
-		if (kobj) {
-			mutex_unlock(&gdp_mutex);
-=======
 		spin_unlock(&sp->glue_dirs.list_lock);
 		if (kobj) {
 			mutex_unlock(&gdp_mutex);
 			subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return kobj;
 		}
 
 		/* or create a new class-directory at the parent device */
-<<<<<<< HEAD
-		k = class_dir_create_and_add(dev->class, parent_kobj);
-		/* do not emit an uevent for this simple "glue" directory */
-		mutex_unlock(&gdp_mutex);
-=======
 		k = class_dir_create_and_add(sp, parent_kobj);
 		/* do not emit an uevent for this simple "glue" directory */
 		mutex_unlock(&gdp_mutex);
 		subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return k;
 	}
 
 	/* subsystems can specify a default root directory for their devices */
-<<<<<<< HEAD
-	if (!parent && dev->bus && dev->bus->dev_root)
-		return &dev->bus->dev_root->kobj;
-=======
 	if (!parent && dev->bus) {
 		struct device *dev_root = bus_get_dev_root(dev->bus);
 
@@ -3810,23 +3328,12 @@ static struct kobject *get_device_parent(struct device *dev,
 			return kobj;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (parent)
 		return &parent->kobj;
 	return NULL;
 }
 
-<<<<<<< HEAD
-static void cleanup_glue_dir(struct device *dev, struct kobject *glue_dir)
-{
-	/* see if we live in a "glue" directory */
-	if (!glue_dir || !dev->class ||
-	    glue_dir->kset != &dev->class->p->glue_dirs)
-		return;
-
-	mutex_lock(&gdp_mutex);
-=======
 static inline bool live_in_glue_dir(struct kobject *kobj,
 				    struct device *dev)
 {
@@ -3936,30 +3443,10 @@ static void cleanup_glue_dir(struct device *dev, struct kobject *glue_dir)
 	ref = kref_read(&glue_dir->kref);
 	if (!kobject_has_children(glue_dir) && !--ref)
 		kobject_del(glue_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kobject_put(glue_dir);
 	mutex_unlock(&gdp_mutex);
 }
 
-<<<<<<< HEAD
-static void cleanup_device_parent(struct device *dev)
-{
-	cleanup_glue_dir(dev, dev->kobj.parent);
-}
-
-static int device_add_class_symlinks(struct device *dev)
-{
-	int error;
-
-	if (!dev->class)
-		return 0;
-
-	error = sysfs_create_link(&dev->kobj,
-				  &dev->class->p->subsys.kobj,
-				  "subsystem");
-	if (error)
-		goto out;
-=======
 static int device_add_class_symlinks(struct device *dev)
 {
 	struct device_node *of_node = dev_of_node(dev);
@@ -3980,7 +3467,6 @@ static int device_add_class_symlinks(struct device *dev)
 	error = sysfs_create_link(&dev->kobj, &sp->subsys.kobj, "subsystem");
 	if (error)
 		goto out_devnode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->parent && device_is_not_partition(dev)) {
 		error = sysfs_create_link(&dev->kobj, &dev->parent->kobj,
@@ -3989,28 +3475,6 @@ static int device_add_class_symlinks(struct device *dev)
 			goto out_subsys;
 	}
 
-<<<<<<< HEAD
-#ifdef CONFIG_BLOCK
-	/* /sys/block has directories and does not need symlinks */
-	if (sysfs_deprecated && dev->class == &block_class)
-		return 0;
-#endif
-
-	/* link in the class directory pointing to the device */
-	error = sysfs_create_link(&dev->class->p->subsys.kobj,
-				  &dev->kobj, dev_name(dev));
-	if (error)
-		goto out_device;
-
-	return 0;
-
-out_device:
-	sysfs_remove_link(&dev->kobj, "device");
-
-out_subsys:
-	sysfs_remove_link(&dev->kobj, "subsystem");
-out:
-=======
 	/* link in the class directory pointing to the device */
 	error = sysfs_create_link(&sp->subsys.kobj, &dev->kobj, dev_name(dev));
 	if (error)
@@ -4025,37 +3489,24 @@ out_devnode:
 	sysfs_remove_link(&dev->kobj, "of_node");
 exit:
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 static void device_remove_class_symlinks(struct device *dev)
 {
-<<<<<<< HEAD
-	if (!dev->class)
-=======
 	struct subsys_private *sp = class_to_subsys(dev->class);
 
 	if (dev_of_node(dev))
 		sysfs_remove_link(&dev->kobj, "of_node");
 
 	if (!sp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (dev->parent && device_is_not_partition(dev))
 		sysfs_remove_link(&dev->kobj, "device");
 	sysfs_remove_link(&dev->kobj, "subsystem");
-<<<<<<< HEAD
-#ifdef CONFIG_BLOCK
-	if (sysfs_deprecated && dev->class == &block_class)
-		return;
-#endif
-	sysfs_delete_link(&dev->class->p->subsys.kobj, &dev->kobj, dev_name(dev));
-=======
 	sysfs_delete_link(&sp->subsys.kobj, &dev->kobj, dev_name(dev));
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -4075,29 +3526,6 @@ int dev_set_name(struct device *dev, const char *fmt, ...)
 }
 EXPORT_SYMBOL_GPL(dev_set_name);
 
-<<<<<<< HEAD
-/**
- * device_to_dev_kobj - select a /sys/dev/ directory for the device
- * @dev: device
- *
- * By default we select char/ for new entries.  Setting class->dev_obj
- * to NULL prevents an entry from being created.  class->dev_kobj must
- * be set (or cleared) before any devices are registered to the class
- * otherwise device_create_sys_dev_entry() and
- * device_remove_sys_dev_entry() will disagree about the the presence
- * of the link.
- */
-static struct kobject *device_to_dev_kobj(struct device *dev)
-{
-	struct kobject *kobj;
-
-	if (dev->class)
-		kobj = dev->class->dev_kobj;
-	else
-		kobj = sysfs_dev_char_kobj;
-
-	return kobj;
-=======
 /* select a /sys/dev/ directory for the device */
 static struct kobject *device_to_dev_kobj(struct device *dev)
 {
@@ -4105,7 +3533,6 @@ static struct kobject *device_to_dev_kobj(struct device *dev)
 		return sysfs_dev_block_kobj;
 	else
 		return sysfs_dev_char_kobj;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int device_create_sys_dev_entry(struct device *dev)
@@ -4133,11 +3560,7 @@ static void device_remove_sys_dev_entry(struct device *dev)
 	}
 }
 
-<<<<<<< HEAD
-int device_private_init(struct device *dev)
-=======
 static int device_private_init(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dev->p = kzalloc(sizeof(*dev->p), GFP_KERNEL);
 	if (!dev->p)
@@ -4170,15 +3593,6 @@ static int device_private_init(struct device *dev)
  * NOTE: _Never_ directly free @dev after calling this function, even
  * if it returned an error! Always use put_device() to give up your
  * reference instead.
-<<<<<<< HEAD
- */
-int device_add(struct device *dev)
-{
-	struct device *parent = NULL;
-	struct kobject *kobj;
-	struct class_interface *class_intf;
-	int error = -EINVAL;
-=======
  *
  * Rule of thumb is: if device_add() succeeds, you should call
  * device_del() when you want to get rid of it. If device_add() has
@@ -4193,7 +3607,6 @@ int device_add(struct device *dev)
 	struct class_interface *class_intf;
 	int error = -EINVAL;
 	struct kobject *glue_dir = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = get_device(dev);
 	if (!dev)
@@ -4211,20 +3624,6 @@ int device_add(struct device *dev)
 	 * the name, and force the use of dev_name()
 	 */
 	if (dev->init_name) {
-<<<<<<< HEAD
-		dev_set_name(dev, "%s", dev->init_name);
-		dev->init_name = NULL;
-	}
-
-	/* subsystems can specify simple device enumeration */
-	if (!dev_name(dev) && dev->bus && dev->bus->dev_name)
-		dev_set_name(dev, "%s%u", dev->bus->dev_name, dev->id);
-
-	if (!dev_name(dev)) {
-		error = -EINVAL;
-		goto name_error;
-	}
-=======
 		error = dev_set_name(dev, "%s", dev->init_name);
 		dev->init_name = NULL;
 	}
@@ -4238,58 +3637,25 @@ int device_add(struct device *dev)
 		error = -EINVAL;
 	if (error)
 		goto name_error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("device: '%s': %s\n", dev_name(dev), __func__);
 
 	parent = get_device(dev->parent);
 	kobj = get_device_parent(dev, parent);
-<<<<<<< HEAD
-=======
 	if (IS_ERR(kobj)) {
 		error = PTR_ERR(kobj);
 		goto parent_error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (kobj)
 		dev->kobj.parent = kobj;
 
 	/* use parent numa_node */
-<<<<<<< HEAD
-	if (parent)
-=======
 	if (parent && (dev_to_node(dev) == NUMA_NO_NODE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_dev_node(dev, dev_to_node(parent));
 
 	/* first, register with generic layer. */
 	/* we require the name to be set before, and pass NULL */
 	error = kobject_add(&dev->kobj, dev->kobj.parent, NULL);
-<<<<<<< HEAD
-	if (error)
-		goto Error;
-
-	/* notify platform of device entry */
-	if (platform_notify)
-		platform_notify(dev);
-
-	error = device_create_file(dev, &uevent_attr);
-	if (error)
-		goto attrError;
-
-	if (MAJOR(dev->devt)) {
-		error = device_create_file(dev, &devt_attr);
-		if (error)
-			goto ueventattrError;
-
-		error = device_create_sys_dev_entry(dev);
-		if (error)
-			goto devtattrError;
-
-		devtmpfs_create_node(dev);
-	}
-
-=======
 	if (error) {
 		glue_dir = kobj;
 		goto Error;
@@ -4302,7 +3668,6 @@ int device_add(struct device *dev)
 	if (error)
 		goto attrError;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = device_add_class_symlinks(dev);
 	if (error)
 		goto SymlinkError;
@@ -4317,17 +3682,6 @@ int device_add(struct device *dev)
 		goto DPMError;
 	device_pm_add(dev);
 
-<<<<<<< HEAD
-	/* Notify clients of device addition.  This call must come
-	 * after dpm_sysfs_add() and before kobject_uevent().
-	 */
-	if (dev->bus)
-		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-					     BUS_NOTIFY_ADD_DEVICE, dev);
-
-	kobject_uevent(&dev->kobj, KOBJ_ADD);
-	bus_probe_device(dev);
-=======
 	if (MAJOR(dev->devt)) {
 		error = device_create_file(dev, &dev_attr_dev);
 		if (error)
@@ -4373,25 +3727,10 @@ int device_add(struct device *dev)
 	if (dev->fwnode && fw_devlink_drv_reg_done && !dev->can_match)
 		fw_devlink_unblock_consumers(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (parent)
 		klist_add_tail(&dev->p->knode_parent,
 			       &parent->p->klist_children);
 
-<<<<<<< HEAD
-	if (dev->class) {
-		mutex_lock(&dev->class->p->mutex);
-		/* tie the class to the device */
-		klist_add_tail(&dev->knode_class,
-			       &dev->class->p->klist_devices);
-
-		/* notify any interfaces that the device is here */
-		list_for_each_entry(class_intf,
-				    &dev->class->p->interfaces, node)
-			if (class_intf->add_dev)
-				class_intf->add_dev(dev, class_intf);
-		mutex_unlock(&dev->class->p->mutex);
-=======
 	sp = class_to_subsys(dev->class);
 	if (sp) {
 		mutex_lock(&sp->mutex);
@@ -4404,14 +3743,10 @@ int device_add(struct device *dev)
 				class_intf->add_dev(dev);
 		mutex_unlock(&sp->mutex);
 		subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 done:
 	put_device(dev);
 	return error;
-<<<<<<< HEAD
- DPMError:
-=======
  SysEntryError:
 	if (MAJOR(dev->devt))
 		device_remove_file(dev, &dev_attr_dev);
@@ -4420,31 +3755,12 @@ done:
 	dpm_sysfs_remove(dev);
  DPMError:
 	dev->driver = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bus_remove_device(dev);
  BusError:
 	device_remove_attrs(dev);
  AttrsError:
 	device_remove_class_symlinks(dev);
  SymlinkError:
-<<<<<<< HEAD
-	if (MAJOR(dev->devt))
-		devtmpfs_delete_node(dev);
-	if (MAJOR(dev->devt))
-		device_remove_sys_dev_entry(dev);
- devtattrError:
-	if (MAJOR(dev->devt))
-		device_remove_file(dev, &devt_attr);
- ueventattrError:
-	device_remove_file(dev, &uevent_attr);
- attrError:
-	kobject_uevent(&dev->kobj, KOBJ_REMOVE);
-	kobject_del(&dev->kobj);
- Error:
-	cleanup_device_parent(dev);
-	if (parent)
-		put_device(parent);
-=======
 	device_remove_file(dev, &dev_attr_uevent);
  attrError:
 	device_platform_notify_remove(dev);
@@ -4455,16 +3771,12 @@ done:
 	cleanup_glue_dir(dev, glue_dir);
 parent_error:
 	put_device(parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 name_error:
 	kfree(dev->p);
 	dev->p = NULL;
 	goto done;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(device_add);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * device_register - register a device with the system.
@@ -4489,10 +3801,7 @@ int device_register(struct device *dev)
 	device_initialize(dev);
 	return device_add(dev);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(device_register);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * get_device - increment reference count for device.
@@ -4504,14 +3813,9 @@ EXPORT_SYMBOL_GPL(device_register);
  */
 struct device *get_device(struct device *dev)
 {
-<<<<<<< HEAD
-	return dev ? to_dev(kobject_get(&dev->kobj)) : NULL;
-}
-=======
 	return dev ? kobj_to_dev(kobject_get(&dev->kobj)) : NULL;
 }
 EXPORT_SYMBOL_GPL(get_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * put_device - decrement reference count.
@@ -4523,8 +3827,6 @@ void put_device(struct device *dev)
 	if (dev)
 		kobject_put(&dev->kobj);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(put_device);
 
 bool kill_device(struct device *dev)
@@ -4544,7 +3846,6 @@ bool kill_device(struct device *dev)
 	return true;
 }
 EXPORT_SYMBOL_GPL(kill_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * device_del - delete device from system.
@@ -4561,10 +3862,6 @@ EXPORT_SYMBOL_GPL(kill_device);
  */
 void device_del(struct device *dev)
 {
-<<<<<<< HEAD
-	struct device *parent = dev->parent;
-	struct class_interface *class_intf;
-=======
 	struct subsys_private *sp;
 	struct device *parent = dev->parent;
 	struct kobject *glue_dir = NULL;
@@ -4577,66 +3874,19 @@ void device_del(struct device *dev)
 
 	if (dev->fwnode && dev->fwnode->dev == dev)
 		dev->fwnode->dev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Notify clients of device removal.  This call must come
 	 * before dpm_sysfs_remove().
 	 */
-<<<<<<< HEAD
-	if (dev->bus)
-		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-					     BUS_NOTIFY_DEL_DEVICE, dev);
-	device_pm_remove(dev);
-=======
 	noio_flag = memalloc_noio_save();
 	bus_notify(dev, BUS_NOTIFY_DEL_DEVICE);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dpm_sysfs_remove(dev);
 	if (parent)
 		klist_del(&dev->p->knode_parent);
 	if (MAJOR(dev->devt)) {
 		devtmpfs_delete_node(dev);
 		device_remove_sys_dev_entry(dev);
-<<<<<<< HEAD
-		device_remove_file(dev, &devt_attr);
-	}
-	if (dev->class) {
-		device_remove_class_symlinks(dev);
-
-		mutex_lock(&dev->class->p->mutex);
-		/* notify any interfaces that the device is now gone */
-		list_for_each_entry(class_intf,
-				    &dev->class->p->interfaces, node)
-			if (class_intf->remove_dev)
-				class_intf->remove_dev(dev, class_intf);
-		/* remove the device from the class list */
-		klist_del(&dev->knode_class);
-		mutex_unlock(&dev->class->p->mutex);
-	}
-	device_remove_file(dev, &uevent_attr);
-	device_remove_attrs(dev);
-	bus_remove_device(dev);
-	driver_deferred_probe_del(dev);
-
-	/*
-	 * Some platform devices are driven without driver attached
-	 * and managed resources may have been acquired.  Make sure
-	 * all resources are released.
-	 */
-	devres_release_all(dev);
-
-	/* Notify the platform of the removal, in case they
-	 * need to do anything...
-	 */
-	if (platform_notify_remove)
-		platform_notify_remove(dev);
-	kobject_uevent(&dev->kobj, KOBJ_REMOVE);
-	cleanup_device_parent(dev);
-	kobject_del(&dev->kobj);
-	put_device(parent);
-}
-=======
 		device_remove_file(dev, &dev_attr_dev);
 	}
 
@@ -4682,7 +3932,6 @@ void device_del(struct device *dev)
 	put_device(parent);
 }
 EXPORT_SYMBOL_GPL(device_del);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * device_unregister - unregister device from system.
@@ -4701,8 +3950,6 @@ void device_unregister(struct device *dev)
 	device_del(dev);
 	put_device(dev);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(device_unregister);
 
 static struct device *prev_device(struct klist_iter *i)
@@ -4717,7 +3964,6 @@ static struct device *prev_device(struct klist_iter *i)
 	}
 	return dev;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct device *next_device(struct klist_iter *i)
 {
@@ -4736,11 +3982,8 @@ static struct device *next_device(struct klist_iter *i)
  * device_get_devnode - path of device node file
  * @dev: device
  * @mode: returned file access mode
-<<<<<<< HEAD
-=======
  * @uid: returned file owner
  * @gid: returned file group
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @tmp: possibly allocated string
  *
  * Return the relative path of a possible device node.
@@ -4748,14 +3991,9 @@ static struct device *next_device(struct klist_iter *i)
  * a name. This memory is returned in tmp and needs to be
  * freed by the caller.
  */
-<<<<<<< HEAD
-const char *device_get_devnode(struct device *dev,
-			       umode_t *mode, const char **tmp)
-=======
 const char *device_get_devnode(const struct device *dev,
 			       umode_t *mode, kuid_t *uid, kgid_t *gid,
 			       const char **tmp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *s;
 
@@ -4763,11 +4001,7 @@ const char *device_get_devnode(const struct device *dev,
 
 	/* the device type may provide a specific name */
 	if (dev->type && dev->type->devnode)
-<<<<<<< HEAD
-		*tmp = dev->type->devnode(dev, mode);
-=======
 		*tmp = dev->type->devnode(dev, mode, uid, gid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*tmp)
 		return *tmp;
 
@@ -4782,31 +4016,17 @@ const char *device_get_devnode(const struct device *dev,
 		return dev_name(dev);
 
 	/* replace '!' in the name with '/' */
-<<<<<<< HEAD
-	*tmp = kstrdup(dev_name(dev), GFP_KERNEL);
-	if (!*tmp)
-		return NULL;
-	while ((s = strchr(*tmp, '!')))
-		s[0] = '/';
-	return *tmp;
-=======
 	s = kstrdup_and_replace(dev_name(dev), '!', '/', GFP_KERNEL);
 	if (!s)
 		return NULL;
 	return *tmp = s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * device_for_each_child - device child iterator.
  * @parent: parent struct device.
-<<<<<<< HEAD
- * @data: data for the callback.
- * @fn: function to be called for each device.
-=======
  * @fn: function to be called for each device.
  * @data: data for the callback.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Iterate over @parent's child devices, and call @fn for each,
  * passing it @data.
@@ -4825,17 +4045,11 @@ int device_for_each_child(struct device *parent, void *data,
 		return 0;
 
 	klist_iter_init(&parent->p->klist_children, &i);
-<<<<<<< HEAD
-	while ((child = next_device(&i)) && !error)
-=======
 	while (!error && (child = next_device(&i)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = fn(child, data);
 	klist_iter_exit(&i);
 	return error;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(device_for_each_child);
 
 /**
@@ -4867,18 +4081,12 @@ int device_for_each_child_reverse(struct device *parent, void *data,
 	return error;
 }
 EXPORT_SYMBOL_GPL(device_for_each_child_reverse);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * device_find_child - device iterator for locating a particular device.
  * @parent: parent struct device
-<<<<<<< HEAD
- * @data: Data to pass to match function
- * @match: Callback function to check device
-=======
  * @match: Callback function to check device
  * @data: Data to pass to match function
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is similar to the device_for_each_child() function above, but it
  * returns a reference to a device that is 'found' for later use, as
@@ -4888,11 +4096,8 @@ EXPORT_SYMBOL_GPL(device_for_each_child_reverse);
  * if it does.  If the callback returns non-zero and a reference to the
  * current device can be obtained, this function will return to the caller
  * and not iterate over any more devices.
-<<<<<<< HEAD
-=======
  *
  * NOTE: you will need to drop the reference with put_device() after use.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct device *device_find_child(struct device *parent, void *data,
 				 int (*match)(struct device *dev, void *data))
@@ -4910,8 +4115,6 @@ struct device *device_find_child(struct device *parent, void *data,
 	klist_iter_exit(&i);
 	return child;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(device_find_child);
 
 /**
@@ -4961,7 +4164,6 @@ struct device *device_find_any_child(struct device *parent)
 	return device_find_child(parent, NULL, match_any);
 }
 EXPORT_SYMBOL_GPL(device_find_any_child);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int __init devices_init(void)
 {
@@ -4977,11 +4179,6 @@ int __init devices_init(void)
 	sysfs_dev_char_kobj = kobject_create_and_add("char", dev_kobj);
 	if (!sysfs_dev_char_kobj)
 		goto char_kobj_err;
-<<<<<<< HEAD
-
-	return 0;
-
-=======
 	device_link_wq = alloc_workqueue("device_link_wq", 0, 0);
 	if (!device_link_wq)
 		goto wq_err;
@@ -4990,7 +4187,6 @@ int __init devices_init(void)
 
  wq_err:
 	kobject_put(sysfs_dev_char_kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  char_kobj_err:
 	kobject_put(sysfs_dev_block_kobj);
  block_kobj_err:
@@ -5000,22 +4196,6 @@ int __init devices_init(void)
 	return -ENOMEM;
 }
 
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(device_for_each_child);
-EXPORT_SYMBOL_GPL(device_find_child);
-
-EXPORT_SYMBOL_GPL(device_initialize);
-EXPORT_SYMBOL_GPL(device_add);
-EXPORT_SYMBOL_GPL(device_register);
-
-EXPORT_SYMBOL_GPL(device_del);
-EXPORT_SYMBOL_GPL(device_unregister);
-EXPORT_SYMBOL_GPL(get_device);
-EXPORT_SYMBOL_GPL(put_device);
-
-EXPORT_SYMBOL_GPL(device_create_file);
-EXPORT_SYMBOL_GPL(device_remove_file);
-=======
 static int device_check_offline(struct device *dev, void *not_used)
 {
 	int ret;
@@ -5096,18 +4276,13 @@ int device_online(struct device *dev)
 
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct root_device {
 	struct device dev;
 	struct module *owner;
 };
 
-<<<<<<< HEAD
-inline struct root_device *to_root_device(struct device *d)
-=======
 static inline struct root_device *to_root_device(struct device *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return container_of(d, struct root_device, dev);
 }
@@ -5204,13 +4379,8 @@ static void device_create_release(struct device *dev)
 	kfree(dev);
 }
 
-<<<<<<< HEAD
-static struct device *
-device_create_groups_vargs(struct class *class, struct device *parent,
-=======
 static __printf(6, 0) struct device *
 device_create_groups_vargs(const struct class *class, struct device *parent,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   dev_t devt, void *drvdata,
 			   const struct attribute_group **groups,
 			   const char *fmt, va_list args)
@@ -5218,11 +4388,7 @@ device_create_groups_vargs(const struct class *class, struct device *parent,
 	struct device *dev = NULL;
 	int retval = -ENODEV;
 
-<<<<<<< HEAD
-	if (class == NULL || IS_ERR(class))
-=======
 	if (IS_ERR_OR_NULL(class))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
@@ -5231,10 +4397,7 @@ device_create_groups_vargs(const struct class *class, struct device *parent,
 		goto error;
 	}
 
-<<<<<<< HEAD
-=======
 	device_initialize(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->devt = devt;
 	dev->class = class;
 	dev->parent = parent;
@@ -5246,11 +4409,7 @@ device_create_groups_vargs(const struct class *class, struct device *parent,
 	if (retval)
 		goto error;
 
-<<<<<<< HEAD
-	retval = device_register(dev);
-=======
 	retval = device_add(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		goto error;
 
@@ -5262,43 +4421,6 @@ error:
 }
 
 /**
-<<<<<<< HEAD
- * device_create_vargs - creates a device and registers it with sysfs
- * @class: pointer to the struct class that this device should be registered to
- * @parent: pointer to the parent struct device of this new device, if any
- * @devt: the dev_t for the char device to be added
- * @drvdata: the data to be added to the device for callbacks
- * @fmt: string for the device's name
- * @args: va_list for the device's name
- *
- * This function can be used by char device classes.  A struct device
- * will be created in sysfs, registered to the specified class.
- *
- * A "dev" file will be created, showing the dev_t for the device, if
- * the dev_t is not 0,0.
- * If a pointer to a parent struct device is passed in, the newly created
- * struct device will be a child of that device in sysfs.
- * The pointer to the struct device will be returned from the call.
- * Any further sysfs files that might be required can be created using this
- * pointer.
- *
- * Returns &struct device pointer on success, or ERR_PTR() on error.
- *
- * Note: the struct class passed to this function must have previously
- * been created with a call to class_create().
- */
-struct device *device_create_vargs(struct class *class, struct device *parent,
-				   dev_t devt, void *drvdata, const char *fmt,
-				   va_list args)
-{
-	return device_create_groups_vargs(class, parent, devt, drvdata, NULL,
-					  fmt, args);
-}
-EXPORT_SYMBOL_GPL(device_create_vargs);
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * device_create - creates a device and registers it with sysfs
  * @class: pointer to the struct class that this device should be registered to
  * @parent: pointer to the parent struct device of this new device, if any
@@ -5318,28 +4440,16 @@ EXPORT_SYMBOL_GPL(device_create_vargs);
  * pointer.
  *
  * Returns &struct device pointer on success, or ERR_PTR() on error.
-<<<<<<< HEAD
- *
- * Note: the struct class passed to this function must have previously
- * been created with a call to class_create().
- */
-struct device *device_create(struct class *class, struct device *parent,
-=======
  */
 struct device *device_create(const struct class *class, struct device *parent,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     dev_t devt, void *drvdata, const char *fmt, ...)
 {
 	va_list vargs;
 	struct device *dev;
 
 	va_start(vargs, fmt);
-<<<<<<< HEAD
-	dev = device_create_vargs(class, parent, devt, drvdata, fmt, vargs);
-=======
 	dev = device_create_groups_vargs(class, parent, devt, drvdata, NULL,
 					  fmt, vargs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	va_end(vargs);
 	return dev;
 }
@@ -5368,16 +4478,8 @@ EXPORT_SYMBOL_GPL(device_create);
  * pointer.
  *
  * Returns &struct device pointer on success, or ERR_PTR() on error.
-<<<<<<< HEAD
- *
- * Note: the struct class passed to this function must have previously
- * been created with a call to class_create().
- */
-struct device *device_create_with_groups(struct class *class,
-=======
  */
 struct device *device_create_with_groups(const struct class *class,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 struct device *parent, dev_t devt,
 					 void *drvdata,
 					 const struct attribute_group **groups,
@@ -5394,16 +4496,6 @@ struct device *device_create_with_groups(const struct class *class,
 }
 EXPORT_SYMBOL_GPL(device_create_with_groups);
 
-<<<<<<< HEAD
-static int __match_devt(struct device *dev, void *data)
-{
-	dev_t *devt = data;
-
-	return dev->devt == *devt;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * device_destroy - removes a device that was created with device_create()
  * @class: pointer to the struct class that this device was registered with
@@ -5412,19 +4504,11 @@ static int __match_devt(struct device *dev, void *data)
  * This call unregisters and cleans up a device that was created with a
  * call to device_create().
  */
-<<<<<<< HEAD
-void device_destroy(struct class *class, dev_t devt)
-{
-	struct device *dev;
-
-	dev = class_find_device(class, NULL, &devt, __match_devt);
-=======
 void device_destroy(const struct class *class, dev_t devt)
 {
 	struct device *dev;
 
 	dev = class_find_device_by_devt(class, devt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev) {
 		put_device(dev);
 		device_unregister(dev);
@@ -5442,18 +4526,12 @@ EXPORT_SYMBOL_GPL(device_destroy);
  * on the same device to ensure that new_name is valid and
  * won't conflict with other devices.
  *
-<<<<<<< HEAD
- * Note: Don't call this function.  Currently, the networking layer calls this
- * function, but that will change.  The following text from Kay Sievers offers
- * some insight:
-=======
  * Note: given that some subsystems (networking and infiniband) use this
  * function, with no immediate plans for this to change, we cannot assume or
  * require that this function not be called at all.
  *
  * However, if you're writing new code, do not call this function. The following
  * text from Kay Sievers offers some insight:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Renaming devices is racy at many levels, symlinks and other stuff are not
  * replaced atomically, and you get a "move" uevent, but it's not easy to
@@ -5467,16 +4545,6 @@ EXPORT_SYMBOL_GPL(device_destroy);
  * kernel device renaming. Besides that, it's not even implemented now for
  * other things than (driver-core wise very simple) network devices.
  *
-<<<<<<< HEAD
- * We are currently about to change network renaming in udev to completely
- * disallow renaming of devices in the same namespace as the kernel uses,
- * because we can't solve the problems properly, that arise with swapping names
- * of multiple interfaces without races. Means, renaming of eth[0-9]* will only
- * be allowed to some other name than eth[0-9]*, for the aforementioned
- * reasons.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Make up a "real" name in the driver before you register anything, or add
  * some other attributes for userspace to find the device, or use udev to add
  * symlinks -- but never rename kernel devices later, it's a complete mess. We
@@ -5485,12 +4553,7 @@ EXPORT_SYMBOL_GPL(device_destroy);
  */
 int device_rename(struct device *dev, const char *new_name)
 {
-<<<<<<< HEAD
-	char *old_class_name = NULL;
-	char *new_class_name = NULL;
-=======
 	struct kobject *kobj = &dev->kobj;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *old_device_name = NULL;
 	int error;
 
@@ -5498,12 +4561,7 @@ int device_rename(struct device *dev, const char *new_name)
 	if (!dev)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	pr_debug("device: '%s': %s: renaming to '%s'\n", dev_name(dev),
-		 __func__, new_name);
-=======
 	dev_dbg(dev, "renaming to %s\n", new_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	old_device_name = kstrdup(dev_name(dev), GFP_KERNEL);
 	if (!old_device_name) {
@@ -5512,10 +4570,6 @@ int device_rename(struct device *dev, const char *new_name)
 	}
 
 	if (dev->class) {
-<<<<<<< HEAD
-		error = sysfs_rename_link(&dev->class->p->subsys.kobj,
-			&dev->kobj, old_device_name, new_name);
-=======
 		struct subsys_private *sp = class_to_subsys(dev->class);
 
 		if (!sp) {
@@ -5526,27 +4580,17 @@ int device_rename(struct device *dev, const char *new_name)
 		error = sysfs_rename_link_ns(&sp->subsys.kobj, kobj, old_device_name,
 					     new_name, kobject_namespace(kobj));
 		subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			goto out;
 	}
 
-<<<<<<< HEAD
-	error = kobject_rename(&dev->kobj, new_name);
-=======
 	error = kobject_rename(kobj, new_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out;
 
 out:
 	put_device(dev);
 
-<<<<<<< HEAD
-	kfree(new_class_name);
-	kfree(old_class_name);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(old_device_name);
 
 	return error;
@@ -5570,11 +4614,7 @@ static int device_move_class_links(struct device *dev,
 /**
  * device_move - moves a device to a new parent
  * @dev: the pointer to the struct device to be moved
-<<<<<<< HEAD
- * @new_parent: the new parent of the device (can by NULL)
-=======
  * @new_parent: the new parent of the device (can be NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dpm_order: how to reorder the dpm_list
  */
 int device_move(struct device *dev, struct device *new_parent,
@@ -5591,14 +4631,11 @@ int device_move(struct device *dev, struct device *new_parent,
 	device_pm_lock();
 	new_parent = get_device(new_parent);
 	new_parent_kobj = get_device_parent(dev, new_parent);
-<<<<<<< HEAD
-=======
 	if (IS_ERR(new_parent_kobj)) {
 		error = PTR_ERR(new_parent_kobj);
 		put_device(new_parent);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("device: '%s': %s: moving to '%s'\n", dev_name(dev),
 		 __func__, new_parent ? dev_name(new_parent) : "<NULL>");
@@ -5618,27 +4655,6 @@ int device_move(struct device *dev, struct device *new_parent,
 		set_dev_node(dev, dev_to_node(new_parent));
 	}
 
-<<<<<<< HEAD
-	if (!dev->class)
-		goto out_put;
-	error = device_move_class_links(dev, old_parent, new_parent);
-	if (error) {
-		/* We ignore errors on cleanup since we're hosed anyway... */
-		device_move_class_links(dev, new_parent, old_parent);
-		if (!kobject_move(&dev->kobj, &old_parent->kobj)) {
-			if (new_parent)
-				klist_remove(&dev->p->knode_parent);
-			dev->parent = old_parent;
-			if (old_parent) {
-				klist_add_tail(&dev->p->knode_parent,
-					       &old_parent->p->klist_children);
-				set_dev_node(dev, dev_to_node(old_parent));
-			}
-		}
-		cleanup_glue_dir(dev, new_parent_kobj);
-		put_device(new_parent);
-		goto out;
-=======
 	if (dev->class) {
 		error = device_move_class_links(dev, old_parent, new_parent);
 		if (error) {
@@ -5658,24 +4674,12 @@ int device_move(struct device *dev, struct device *new_parent,
 			put_device(new_parent);
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	switch (dpm_order) {
 	case DPM_ORDER_NONE:
 		break;
 	case DPM_ORDER_DEV_AFTER_PARENT:
 		device_pm_move_after(dev, new_parent);
-<<<<<<< HEAD
-		break;
-	case DPM_ORDER_PARENT_BEFORE_DEV:
-		device_pm_move_before(new_parent, dev);
-		break;
-	case DPM_ORDER_DEV_LAST:
-		device_pm_move_last(dev);
-		break;
-	}
-out_put:
-=======
 		devices_kset_move_after(dev, new_parent);
 		break;
 	case DPM_ORDER_PARENT_BEFORE_DEV:
@@ -5688,7 +4692,6 @@ out_put:
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_device(old_parent);
 out:
 	device_pm_unlock();
@@ -5697,8 +4700,6 @@ out:
 }
 EXPORT_SYMBOL_GPL(device_move);
 
-<<<<<<< HEAD
-=======
 static int device_attrs_change_owner(struct device *dev, kuid_t kuid,
 				     kgid_t kgid)
 {
@@ -5818,22 +4819,17 @@ out:
 }
 EXPORT_SYMBOL_GPL(device_change_owner);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * device_shutdown - call ->shutdown() on each device to shutdown.
  */
 void device_shutdown(void)
 {
-<<<<<<< HEAD
-	struct device *dev;
-=======
 	struct device *dev, *parent;
 
 	wait_for_device_probe();
 	device_block_probing();
 
 	cpufreq_suspend();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&devices_kset->list_lock);
 	/*
@@ -5844,8 +4840,6 @@ void device_shutdown(void)
 	while (!list_empty(&devices_kset->list)) {
 		dev = list_entry(devices_kset->list.prev, struct device,
 				kobj.entry);
-<<<<<<< HEAD
-=======
 
 		/*
 		 * hold reference count of device's parent to
@@ -5853,7 +4847,6 @@ void device_shutdown(void)
 		 * lock is to be held
 		 */
 		parent = get_device(dev->parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		get_device(dev);
 		/*
 		 * Make sure the device is off the kset list, in the
@@ -5862,28 +4855,15 @@ void device_shutdown(void)
 		list_del_init(&dev->kobj.entry);
 		spin_unlock(&devices_kset->list_lock);
 
-<<<<<<< HEAD
-=======
 		/* hold lock to avoid race with probe/release */
 		if (parent)
 			device_lock(parent);
 		device_lock(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Don't allow any more runtime suspends */
 		pm_runtime_get_noresume(dev);
 		pm_runtime_barrier(dev);
 
-<<<<<<< HEAD
-		if (dev->bus && dev->bus->shutdown) {
-			dev_dbg(dev, "shutdown\n");
-			dev->bus->shutdown(dev);
-		} else if (dev->driver && dev->driver->shutdown) {
-			dev_dbg(dev, "shutdown\n");
-			dev->driver->shutdown(dev);
-		}
-		put_device(dev);
-=======
 		if (dev->class && dev->class->shutdown_pre) {
 			if (initcall_debug)
 				dev_info(dev, "shutdown_pre\n");
@@ -5905,15 +4885,10 @@ void device_shutdown(void)
 
 		put_device(dev);
 		put_device(parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_lock(&devices_kset->list_lock);
 	}
 	spin_unlock(&devices_kset->list_lock);
-<<<<<<< HEAD
-	async_synchronize_full();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -5921,26 +4896,6 @@ void device_shutdown(void)
  */
 
 #ifdef CONFIG_PRINTK
-<<<<<<< HEAD
-
-int __dev_printk(const char *level, const struct device *dev,
-		 struct va_format *vaf)
-{
-	if (!dev)
-		return printk("%s(NULL device *): %pV", level, vaf);
-
-	return printk("%s%s %s: %pV",
-		      level, dev_driver_string(dev), dev_name(dev), vaf);
-}
-EXPORT_SYMBOL(__dev_printk);
-
-int dev_printk(const char *level, const struct device *dev,
-	       const char *fmt, ...)
-{
-	struct va_format vaf;
-	va_list args;
-	int r;
-=======
 static void
 set_dev_info(const struct device *dev, struct dev_printk_info *dev_info)
 {
@@ -6026,28 +4981,12 @@ void _dev_printk(const char *level, const struct device *dev,
 {
 	struct va_format vaf;
 	va_list args;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	va_start(args, fmt);
 
 	vaf.fmt = fmt;
 	vaf.va = &args;
 
-<<<<<<< HEAD
-	r = __dev_printk(level, dev, &vaf);
-	va_end(args);
-
-	return r;
-}
-EXPORT_SYMBOL(dev_printk);
-
-#define define_dev_printk_level(func, kern_level)		\
-int func(const struct device *dev, const char *fmt, ...)	\
-{								\
-	struct va_format vaf;					\
-	va_list args;						\
-	int r;							\
-=======
 	__dev_printk(level, dev, &vaf);
 
 	va_end(args);
@@ -6059,31 +4998,12 @@ void func(const struct device *dev, const char *fmt, ...)	\
 {								\
 	struct va_format vaf;					\
 	va_list args;						\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								\
 	va_start(args, fmt);					\
 								\
 	vaf.fmt = fmt;						\
 	vaf.va = &args;						\
 								\
-<<<<<<< HEAD
-	r = __dev_printk(kern_level, dev, &vaf);		\
-	va_end(args);						\
-								\
-	return r;						\
-}								\
-EXPORT_SYMBOL(func);
-
-define_dev_printk_level(dev_emerg, KERN_EMERG);
-define_dev_printk_level(dev_alert, KERN_ALERT);
-define_dev_printk_level(dev_crit, KERN_CRIT);
-define_dev_printk_level(dev_err, KERN_ERR);
-define_dev_printk_level(dev_warn, KERN_WARNING);
-define_dev_printk_level(dev_notice, KERN_NOTICE);
-define_dev_printk_level(_dev_info, KERN_INFO);
-
-#endif
-=======
 	__dev_printk(kern_level, dev, &vaf);			\
 								\
 	va_end(args);						\
@@ -6290,4 +5210,3 @@ int device_match_any(struct device *dev, const void *unused)
 	return 1;
 }
 EXPORT_SYMBOL_GPL(device_match_any);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

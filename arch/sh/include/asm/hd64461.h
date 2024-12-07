@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_HD64461
 #define __ASM_SH_HD64461
 /*
@@ -232,11 +229,7 @@
 #define	HD64461_NIMR		HD64461_IO_OFFSET(0x5002)
 
 #define	HD64461_IRQBASE		OFFCHIP_IRQ_BASE
-<<<<<<< HEAD
-#define	OFFCHIP_IRQ_BASE	64
-=======
 #define	OFFCHIP_IRQ_BASE	(64 + 16)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	HD64461_IRQ_NUM		16
 
 #define	HD64461_IRQ_UART	(HD64461_IRQBASE+5)

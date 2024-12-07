@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the netfilter modules for Link Layer filtering on a bridge.
 #
 
-<<<<<<< HEAD
-obj-$(CONFIG_BRIDGE_NF_EBTABLES) += ebtables.o
-=======
 obj-$(CONFIG_NFT_BRIDGE_META)  += nft_meta_bridge.o
 obj-$(CONFIG_NFT_BRIDGE_REJECT)  += nft_reject_bridge.o
 
@@ -16,7 +10,6 @@ obj-$(CONFIG_NFT_BRIDGE_REJECT)  += nft_reject_bridge.o
 obj-$(CONFIG_NF_CONNTRACK_BRIDGE) += nf_conntrack_bridge.o
 
 obj-$(CONFIG_BRIDGE_NF_EBTABLES_LEGACY) += ebtables.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # tables
 obj-$(CONFIG_BRIDGE_EBT_BROUTE) += ebtable_broute.o
@@ -44,8 +37,4 @@ obj-$(CONFIG_BRIDGE_EBT_SNAT) += ebt_snat.o
 
 # watchers
 obj-$(CONFIG_BRIDGE_EBT_LOG) += ebt_log.o
-<<<<<<< HEAD
-obj-$(CONFIG_BRIDGE_EBT_ULOG) += ebt_ulog.o
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_BRIDGE_EBT_NFLOG) += ebt_nflog.o

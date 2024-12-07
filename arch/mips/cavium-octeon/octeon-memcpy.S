@@ -13,10 +13,7 @@
  * Mnemonic names for arguments to memcpy/__copy_user
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/asm.h>
 #include <asm/asm-offsets.h>
 #include <asm/regdef.h>
@@ -77,24 +74,12 @@
 #define EXC(inst_reg,addr,handler)		\
 9:	inst_reg, addr;				\
 	.section __ex_table,"a";		\
-<<<<<<< HEAD
-	PTR	9b, handler;			\
-=======
 	PTR_WD	9b, handler;			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.previous
 
 /*
  * Only on the 64-bit kernel we can made use of 64-bit registers.
  */
-<<<<<<< HEAD
-#ifdef CONFIG_64BIT
-#define USE_DOUBLE
-#endif
-
-#ifdef USE_DOUBLE
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LOAD   ld
 #define LOADL  ldl
@@ -130,39 +115,6 @@
 #define t6	$14
 #define t7	$15
 
-<<<<<<< HEAD
-#else
-
-#define LOAD   lw
-#define LOADL  lwl
-#define LOADR  lwr
-#define STOREL swl
-#define STORER swr
-#define STORE  sw
-#define ADD    addu
-#define SUB    subu
-#define SRL    srl
-#define SLL    sll
-#define SRA    sra
-#define SLLV   sllv
-#define SRLV   srlv
-#define NBYTES 4
-#define LOG_NBYTES 2
-
-#endif /* USE_DOUBLE */
-
-#ifdef CONFIG_CPU_LITTLE_ENDIAN
-#define LDFIRST LOADR
-#define LDREST  LOADL
-#define STFIRST STORER
-#define STREST  STOREL
-#define SHIFT_DISCARD SLLV
-#else
-#define LDFIRST LOADL
-#define LDREST  LOADR
-#define STFIRST STOREL
-#define STREST  STORER
-=======
 #ifdef CONFIG_CPU_LITTLE_ENDIAN
 #define LDFIRST LOADR
 #define LDREST	LOADL
@@ -174,7 +126,6 @@
 #define LDREST	LOADR
 #define STFIRST STOREL
 #define STREST	STORER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SHIFT_DISCARD SRLV
 #endif
 
@@ -196,11 +147,6 @@
  */
 	.align	5
 LEAF(memcpy)					/* a0=dst a1=src a2=len */
-<<<<<<< HEAD
-	move	v0, dst				/* return value */
-__memcpy:
-FEXPORT(__copy_user)
-=======
 EXPORT_SYMBOL(memcpy)
 	move	v0, dst				/* return value */
 __memcpy:
@@ -208,7 +154,6 @@ FEXPORT(__raw_copy_from_user)
 EXPORT_SYMBOL(__raw_copy_from_user)
 FEXPORT(__raw_copy_to_user)
 EXPORT_SYMBOL(__raw_copy_to_user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Note: dst & src may be unaligned, len may be 0
 	 * Temps
@@ -258,32 +203,18 @@ EXC(	STORE	t2, UNIT(6)(dst),	s_exc_p10u)
 	ADD	src, src, 16*NBYTES
 EXC(	STORE	t3, UNIT(7)(dst),	s_exc_p9u)
 	ADD	dst, dst, 16*NBYTES
-<<<<<<< HEAD
-EXC(	LOAD	t0, UNIT(-8)(src),	l_exc_copy)
-EXC(	LOAD	t1, UNIT(-7)(src),	l_exc_copy)
-EXC(	LOAD	t2, UNIT(-6)(src),	l_exc_copy)
-EXC(	LOAD	t3, UNIT(-5)(src),	l_exc_copy)
-=======
 EXC(	LOAD	t0, UNIT(-8)(src),	l_exc_copy_rewind16)
 EXC(	LOAD	t1, UNIT(-7)(src),	l_exc_copy_rewind16)
 EXC(	LOAD	t2, UNIT(-6)(src),	l_exc_copy_rewind16)
 EXC(	LOAD	t3, UNIT(-5)(src),	l_exc_copy_rewind16)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXC(	STORE	t0, UNIT(-8)(dst),	s_exc_p8u)
 EXC(	STORE	t1, UNIT(-7)(dst),	s_exc_p7u)
 EXC(	STORE	t2, UNIT(-6)(dst),	s_exc_p6u)
 EXC(	STORE	t3, UNIT(-5)(dst),	s_exc_p5u)
-<<<<<<< HEAD
-EXC(	LOAD	t0, UNIT(-4)(src),	l_exc_copy)
-EXC(	LOAD	t1, UNIT(-3)(src),	l_exc_copy)
-EXC(	LOAD	t2, UNIT(-2)(src),	l_exc_copy)
-EXC(	LOAD	t3, UNIT(-1)(src),	l_exc_copy)
-=======
 EXC(	LOAD	t0, UNIT(-4)(src),	l_exc_copy_rewind16)
 EXC(	LOAD	t1, UNIT(-3)(src),	l_exc_copy_rewind16)
 EXC(	LOAD	t2, UNIT(-2)(src),	l_exc_copy_rewind16)
 EXC(	LOAD	t3, UNIT(-1)(src),	l_exc_copy_rewind16)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXC(	STORE	t0, UNIT(-4)(dst),	s_exc_p4u)
 EXC(	STORE	t1, UNIT(-3)(dst),	s_exc_p3u)
 EXC(	STORE	t2, UNIT(-2)(dst),	s_exc_p2u)
@@ -380,15 +311,9 @@ EXC(	 STORE	t0, -8(dst),		s_exc_p1u)
 
 src_unaligned:
 #define rem t8
-<<<<<<< HEAD
-	SRL	t0, len, LOG_NBYTES+2    # +2 for 4 units/iter
-	beqz	t0, cleanup_src_unaligned
-	 and	rem, len, (4*NBYTES-1)   # rem = len % 4*NBYTES
-=======
 	SRL	t0, len, LOG_NBYTES+2	 # +2 for 4 units/iter
 	beqz	t0, cleanup_src_unaligned
 	 and	rem, len, (4*NBYTES-1)	 # rem = len % 4*NBYTES
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:
 /*
  * Avoid consecutive LD*'s to the same register since some mips
@@ -396,15 +321,6 @@ src_unaligned:
  * It's OK to load FIRST(N+1) before REST(N) because the two addresses
  * are to the same unit (unless src is aligned, but it's not).
  */
-<<<<<<< HEAD
-EXC(	LDFIRST	t0, FIRST(0)(src),	l_exc)
-EXC(	LDFIRST	t1, FIRST(1)(src),	l_exc_copy)
-	SUB     len, len, 4*NBYTES
-EXC(	LDREST	t0, REST(0)(src),	l_exc_copy)
-EXC(	LDREST	t1, REST(1)(src),	l_exc_copy)
-EXC(	LDFIRST	t2, FIRST(2)(src),	l_exc_copy)
-EXC(	LDFIRST	t3, FIRST(3)(src),	l_exc_copy)
-=======
 EXC(	LDFIRST t0, FIRST(0)(src),	l_exc)
 EXC(	LDFIRST t1, FIRST(1)(src),	l_exc_copy)
 	SUB	len, len, 4*NBYTES
@@ -412,7 +328,6 @@ EXC(	LDREST	t0, REST(0)(src),	l_exc_copy)
 EXC(	LDREST	t1, REST(1)(src),	l_exc_copy)
 EXC(	LDFIRST t2, FIRST(2)(src),	l_exc_copy)
 EXC(	LDFIRST t3, FIRST(3)(src),	l_exc_copy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXC(	LDREST	t2, REST(2)(src),	l_exc_copy)
 EXC(	LDREST	t3, REST(3)(src),	l_exc_copy)
 	ADD	src, src, 4*NBYTES
@@ -450,18 +365,10 @@ EXC(	 sb	t0, N(dst), s_exc_p1)
 
 	COPY_BYTE(0)
 	COPY_BYTE(1)
-<<<<<<< HEAD
-#ifdef USE_DOUBLE
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	COPY_BYTE(2)
 	COPY_BYTE(3)
 	COPY_BYTE(4)
 	COPY_BYTE(5)
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXC(	lb	t0, NBYTES-2(src), l_exc)
 	SUB	len, len, 1
 	jr	ra
@@ -471,13 +378,10 @@ done:
 	 nop
 	END(memcpy)
 
-<<<<<<< HEAD
-=======
 l_exc_copy_rewind16:
 	/* Rewind src and dst by 16*NBYTES for l_exc_copy */
 	SUB	src, src, 16*NBYTES
 	SUB	dst, dst, 16*NBYTES
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 l_exc_copy:
 	/*
 	 * Copy bytes from src until faulting load address (or until a
@@ -490,10 +394,6 @@ l_exc_copy:
 	 * Assumes src < THREAD_BUADDR($28)
 	 */
 	LOAD	t0, TI_TASK($28)
-<<<<<<< HEAD
-	 nop
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LOAD	t0, THREAD_BUADDR(t0)
 1:
 EXC(	lb	t1, 0(src),	l_exc)
@@ -503,32 +403,8 @@ EXC(	lb	t1, 0(src),	l_exc)
 	 ADD	dst, dst, 1
 l_exc:
 	LOAD	t0, TI_TASK($28)
-<<<<<<< HEAD
-	 nop
-	LOAD	t0, THREAD_BUADDR(t0)	# t0 is just past last good address
-	 nop
-	SUB	len, AT, t0		# len number of uncopied bytes
-	/*
-	 * Here's where we rely on src and dst being incremented in tandem,
-	 *   See (3) above.
-	 * dst += (fault addr - src) to put dst at first byte to clear
-	 */
-	ADD	dst, t0			# compute start address in a1
-	SUB	dst, src
-	/*
-	 * Clear len bytes starting at dst.  Can't call __bzero because it
-	 * might modify len.  An inefficient loop for these rare times...
-	 */
-	beqz	len, done
-	 SUB	src, len, 1
-1:	sb	zero, 0(dst)
-	ADD	dst, dst, 1
-	bnez	src, 1b
-	 SUB	src, src, 1
-=======
 	LOAD	t0, THREAD_BUADDR(t0)	# t0 is just past last good address
 	SUB	len, AT, t0		# len number of uncopied bytes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jr	ra
 	 nop
 
@@ -564,10 +440,7 @@ s_exc:
 
 	.align	5
 LEAF(memmove)
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(memmove)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ADD	t0, a0, a2
 	ADD	t1, a1, a2
 	sltu	t0, a1, t0			# dst + len <= src -> memcpy

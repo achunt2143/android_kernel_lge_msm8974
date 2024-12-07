@@ -22,15 +22,6 @@
  *  675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-<<<<<<< HEAD
-#include <linux/types.h>
-#include <linux/interrupt.h>
-#include <linux/irq.h>
-#include <asm/irq_cpu.h>
-#include <bcm47xx.h>
-
-void plat_irq_dispatch(void)
-=======
 #include "bcm47xx_private.h"
 
 #include <linux/types.h>
@@ -41,7 +32,6 @@ void plat_irq_dispatch(void)
 #include <bcm47xx.h>
 
 asmlinkage void plat_irq_dispatch(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 cause;
 
@@ -63,10 +53,6 @@ asmlinkage void plat_irq_dispatch(void)
 		do_IRQ(6);
 }
 
-<<<<<<< HEAD
-void __init arch_init_irq(void)
-{
-=======
 #define DEFINE_HWx_IRQDISPATCH(x)					\
 	static void bcm47xx_hw ## x ## _irqdispatch(void)		\
 	{								\
@@ -87,7 +73,6 @@ void __init arch_init_irq(void)
 	 */
 	bcm47xx_bus_setup();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_BCM47XX_BCMA
 	if (bcm47xx_bus_type == BCM47XX_BUS_TYPE_BCMA) {
 		bcma_write32(bcm47xx_bus.bcma.bus.drv_mips.core,
@@ -100,8 +85,6 @@ void __init arch_init_irq(void)
 	}
 #endif
 	mips_cpu_irq_init();
-<<<<<<< HEAD
-=======
 
 	if (cpu_has_vint) {
 		pr_info("Setting up vectored interrupts\n");
@@ -112,5 +95,4 @@ void __init arch_init_irq(void)
 		set_vi_handler(6, bcm47xx_hw6_irqdispatch);
 		set_vi_handler(7, bcm47xx_hw7_irqdispatch);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,32 +1,18 @@
-<<<<<<< HEAD
-config SND_MPU401_UART
-        tristate
-        select SND_RAWMIDI
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config SND_MPU401_UART
 	tristate
 	select SND_RAWMIDI
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SND_OPL3_LIB
 	tristate
 	select SND_TIMER
 	select SND_HWDEP
-<<<<<<< HEAD
-=======
 	select SND_SEQ_DEVICE if SND_SEQUENCER != n
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SND_OPL4_LIB
 	tristate
 	select SND_TIMER
 	select SND_HWDEP
-<<<<<<< HEAD
-
-config SND_VX_LIB
-	tristate
-=======
 	select SND_SEQ_DEVICE if SND_SEQUENCER != n
 
 # select SEQ stuff to min(SND_SEQUENCER,SND_XXX)
@@ -43,7 +29,6 @@ config SND_OPL4_LIB_SEQ
 config SND_VX_LIB
 	tristate
 	select FW_LOADER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_HWDEP
 	select SND_PCM
 
@@ -65,10 +50,6 @@ config SND_PCSP
 	tristate "PC-Speaker support (READ HELP!)"
 	depends on PCSPKR_PLATFORM && X86 && HIGH_RES_TIMERS
 	depends on INPUT
-<<<<<<< HEAD
-	depends on EXPERIMENTAL
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_PCM
 	help
 	  If you don't have a sound card in your computer, you can include a
@@ -109,20 +90,6 @@ config SND_DUMMY
 	  will be called snd-dummy.
 
 config SND_ALOOP
-<<<<<<< HEAD
-        tristate "Generic loopback driver (PCM)"
-        select SND_PCM
-        help
-          Say 'Y' or 'M' to include support for the PCM loopback device.
-	  This module returns played samples back to the user space using
-	  the standard ALSA PCM device. The devices are routed 0->1 and
-          1->0, where first number is the playback PCM device and second
-	  number is the capture device. Module creates two PCM devices and
-	  configured number of substreams (see the pcm_substreams module
-          parameter).
-
-	  The looback device allow time sychronization with an external
-=======
 	tristate "Generic loopback driver (PCM)"
 	select SND_PCM
 	select SND_TIMER
@@ -136,15 +103,12 @@ config SND_ALOOP
 	  parameter).
 
 	  The loopback device allows time synchronization with an external
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  timing source using the time shift universal control (+-20%
 	  of system time).
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-aloop.
 
-<<<<<<< HEAD
-=======
 config SND_PCMTEST
 	tristate "Virtual PCM test driver"
 	depends on DEBUG_FS
@@ -162,17 +126,13 @@ config SND_PCMTEST
 	  modes. You can find the corresponding selftest in the 'alsa'
 	  selftests folder.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SND_VIRMIDI
 	tristate "Virtual MIDI soundcard"
 	depends on SND_SEQUENCER
 	select SND_TIMER
 	select SND_RAWMIDI
-<<<<<<< HEAD
-=======
 	select SND_SEQ_VIRMIDI
 	select SND_SEQ_MIDI_EVENT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include the virtual MIDI driver.  This driver
 	  allows to connect applications using raw MIDI devices to
@@ -185,10 +145,7 @@ config SND_VIRMIDI
 
 config SND_MTPAV
 	tristate "MOTU MidiTimePiece AV multiport MIDI"
-<<<<<<< HEAD
-=======
 	depends on HAS_IOPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_RAWMIDI
 	help
 	  To use a MOTU MidiTimePiece AV multiport MIDI adapter
@@ -204,25 +161,11 @@ config SND_MTS64
 	select SND_RAWMIDI
 	help
 	  The ESI Miditerminal 4140 is a 4 In 4 Out MIDI Interface with 
-<<<<<<< HEAD
-          additional SMPTE Timecode capabilities for the parallel port.
-=======
 	  additional SMPTE Timecode capabilities for the parallel port.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Say 'Y' to include support for this device.
 
 	  To compile this driver as a module, chose 'M' here: the module 
-<<<<<<< HEAD
-          will be called snd-mts64.
-
-config SND_SERIAL_U16550
-	tristate "UART16550 serial MIDI driver"
-	select SND_RAWMIDI
-	help
-	  To include support for MIDI serial port interfaces, say Y here
-	  and read <file:Documentation/sound/alsa/serial-u16550.txt>.
-=======
 	  will be called snd-mts64.
 
 config SND_SERIAL_U16550
@@ -232,7 +175,6 @@ config SND_SERIAL_U16550
 	help
 	  To include support for MIDI serial port interfaces, say Y here
 	  and read <file:Documentation/sound/cards/serial-u16550.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver works with serial UARTs 16550 and better.
 
 	  This driver accesses the serial port hardware directly, so
@@ -242,10 +184,6 @@ config SND_SERIAL_U16550
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-serial-u16550.
 
-<<<<<<< HEAD
-config SND_MPU401
-	tristate "Generic MPU-401 UART driver"
-=======
 config SND_SERIAL_GENERIC
 	tristate "Generic serial MIDI driver"
 	depends on SERIAL_DEV_BUS
@@ -267,7 +205,6 @@ config SND_SERIAL_GENERIC
 config SND_MPU401
 	tristate "Generic MPU-401 UART driver"
 	depends on HAS_IOPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_MPU401_UART
 	help
 	  Say Y here to include support for MIDI ports compatible with
@@ -287,21 +224,6 @@ config SND_PORTMAN2X4
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-portman2x4.
 
-<<<<<<< HEAD
-config SND_ML403_AC97CR
-	tristate "Xilinx ML403 AC97 Controller Reference"
-	depends on XILINX_VIRTEX
-	select SND_AC97_CODEC
-	help
-	  Say Y here to include support for the
-	  opb_ac97_controller_ref_v1_00_a ip core found in Xilinx's ML403
-	  reference design.
-
-	  To compile this driver as a module, choose M here: the module
-	  will be called snd-ml403_ac97cr.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SND_AC97_POWER_SAVE
 	bool "AC97 Power-Saving Mode"
 	depends on SND_AC97_CODEC
@@ -329,11 +251,7 @@ config SND_AC97_POWER_SAVE
 	  the device frequently.  A value of 10 seconds would be a
 	  good choice for normal operations.
 
-<<<<<<< HEAD
-	  See Documentation/sound/alsa/powersave.txt for more details.
-=======
 	  See Documentation/sound/designs/powersave.rst for more details.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SND_AC97_POWER_SAVE_DEFAULT
 	int "Default time-out for AC97 power-save mode"

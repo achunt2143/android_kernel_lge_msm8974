@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-config SYSFS
-	bool "sysfs file system support" if EXPERT
-	default y
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config SYSFS
 	bool "sysfs file system support" if EXPERT
 	default y
 	select KERNFS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	The sysfs filesystem is a virtual filesystem that the kernel uses to
 	export internal kernel objects, their attributes, and their

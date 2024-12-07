@@ -1,28 +1,17 @@
-<<<<<<< HEAD
-#ifndef _LINUX_LIST_H
-#define _LINUX_LIST_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_LIST_H
 #define _LINUX_LIST_H
 
 #include <linux/container_of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/stddef.h>
 #include <linux/poison.h>
 #include <linux/const.h>
 
-<<<<<<< HEAD
-/*
- * Simple doubly linked list implementation.
-=======
 #include <asm/barrier.h>
 
 /*
  * Circular doubly linked list implementation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Some of the internal functions ("__xxx") are useful when
  * manipulating whole lists rather than single entries, as
@@ -36,14 +25,6 @@
 #define LIST_HEAD(name) \
 	struct list_head name = LIST_HEAD_INIT(name)
 
-<<<<<<< HEAD
-static inline void INIT_LIST_HEAD(struct list_head *list)
-{
-	list->next = list;
-	list->prev = list;
-}
-
-=======
 /**
  * INIT_LIST_HEAD - Initialize a list_head structure
  * @list: list_head structure to be initialized.
@@ -156,33 +137,16 @@ static inline bool __list_del_entry_valid(struct list_head *entry)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Insert a new entry between two known consecutive entries.
  *
  * This is only for internal list manipulation where we know
  * the prev/next entries already!
  */
-<<<<<<< HEAD
-#ifndef CONFIG_DEBUG_LIST
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void __list_add(struct list_head *new,
 			      struct list_head *prev,
 			      struct list_head *next)
 {
-<<<<<<< HEAD
-	next->prev = new;
-	new->next = next;
-	new->prev = prev;
-	prev->next = new;
-}
-#else
-extern void __list_add(struct list_head *new,
-			      struct list_head *prev,
-			      struct list_head *next);
-#endif
-=======
 	if (!__list_add_valid(new, prev, next))
 		return;
 
@@ -191,7 +155,6 @@ extern void __list_add(struct list_head *new,
 	new->prev = prev;
 	WRITE_ONCE(prev->next, new);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_add - add a new entry
@@ -230,9 +193,6 @@ static inline void list_add_tail(struct list_head *new, struct list_head *head)
 static inline void __list_del(struct list_head * prev, struct list_head * next)
 {
 	next->prev = prev;
-<<<<<<< HEAD
-	prev->next = next;
-=======
 	WRITE_ONCE(prev->next, next);
 }
 
@@ -256,7 +216,6 @@ static inline void __list_del_entry(struct list_head *entry)
 		return;
 
 	__list_del(entry->prev, entry->next);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -265,31 +224,12 @@ static inline void __list_del_entry(struct list_head *entry)
  * Note: list_empty() on entry does not return true after this, the entry is
  * in an undefined state.
  */
-<<<<<<< HEAD
-#ifndef CONFIG_DEBUG_LIST
-static inline void __list_del_entry(struct list_head *entry)
-{
-	__list_del(entry->prev, entry->next);
-}
-
-static inline void list_del(struct list_head *entry)
-{
-	__list_del(entry->prev, entry->next);
-	entry->next = LIST_POISON1;
-	entry->prev = LIST_POISON2;
-}
-#else
-extern void __list_del_entry(struct list_head *entry);
-extern void list_del(struct list_head *entry);
-#endif
-=======
 static inline void list_del(struct list_head *entry)
 {
 	__list_del_entry(entry);
 	entry->next = LIST_POISON1;
 	entry->prev = LIST_POISON2;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_replace - replace old entry by new one
@@ -307,10 +247,6 @@ static inline void list_replace(struct list_head *old,
 	new->prev->next = new;
 }
 
-<<<<<<< HEAD
-static inline void list_replace_init(struct list_head *old,
-					struct list_head *new)
-=======
 /**
  * list_replace_init - replace old entry by new one and initialize the old one
  * @old : the element to be replaced
@@ -320,15 +256,12 @@ static inline void list_replace_init(struct list_head *old,
  */
 static inline void list_replace_init(struct list_head *old,
 				     struct list_head *new)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	list_replace(old, new);
 	INIT_LIST_HEAD(old);
 }
 
 /**
-<<<<<<< HEAD
-=======
  * list_swap - replace entry1 with entry2 and re-add entry1 at entry2's position
  * @entry1: the location to place entry2
  * @entry2: the location to place entry1
@@ -346,7 +279,6 @@ static inline void list_swap(struct list_head *entry1,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * list_del_init - deletes entry from list and reinitialize it.
  * @entry: the element to delete from the list.
  */
@@ -380,8 +312,6 @@ static inline void list_move_tail(struct list_head *list,
 }
 
 /**
-<<<<<<< HEAD
-=======
  * list_bulk_move_tail - move a subsection of a list to its tail
  * @head: the head that will follow our entry
  * @first: first entry to move
@@ -415,24 +345,16 @@ static inline int list_is_first(const struct list_head *list, const struct list_
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * list_is_last - tests whether @list is the last entry in list @head
  * @list: the entry to test
  * @head: the head of the list
  */
-<<<<<<< HEAD
-static inline int list_is_last(const struct list_head *list,
-				const struct list_head *head)
-=======
 static inline int list_is_last(const struct list_head *list, const struct list_head *head)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return list->next == head;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * list_is_head - tests whether @list is the list @head
  * @list: the entry to test
  * @head: the head of the list
@@ -443,15 +365,11 @@ static inline int list_is_head(const struct list_head *list, const struct list_h
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * list_empty - tests whether a list is empty
  * @head: the list to test.
  */
 static inline int list_empty(const struct list_head *head)
 {
-<<<<<<< HEAD
-	return head->next == head;
-=======
 	return READ_ONCE(head->next) == head;
 }
 
@@ -471,7 +389,6 @@ static inline void list_del_init_careful(struct list_head *entry)
 	__list_del_entry(entry);
 	WRITE_ONCE(entry->prev, entry);
 	smp_store_release(&entry->next, entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -489,13 +406,8 @@ static inline void list_del_init_careful(struct list_head *entry)
  */
 static inline int list_empty_careful(const struct list_head *head)
 {
-<<<<<<< HEAD
-	struct list_head *next = head->next;
-	return (next == head) && (next == head->prev);
-=======
 	struct list_head *next = smp_load_acquire(&head->next);
 	return list_is_head(next, head) && (next == READ_ONCE(head->prev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -513,8 +425,6 @@ static inline void list_rotate_left(struct list_head *head)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * list_rotate_to_front() - Rotate list to specific item.
  * @list: The desired new front of the list.
  * @head: The head of the list.
@@ -533,7 +443,6 @@ static inline void list_rotate_to_front(struct list_head *list,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * list_is_singular - tests whether a list has just one entry.
  * @head: the list to test.
  */
@@ -573,23 +482,14 @@ static inline void list_cut_position(struct list_head *list,
 {
 	if (list_empty(head))
 		return;
-<<<<<<< HEAD
-	if (list_is_singular(head) &&
-		(head->next != entry && head != entry))
-		return;
-	if (entry == head)
-=======
 	if (list_is_singular(head) && !list_is_head(entry, head) && (entry != head->next))
 		return;
 	if (list_is_head(entry, head))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		INIT_LIST_HEAD(list);
 	else
 		__list_cut_position(list, head, entry);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * list_cut_before - cut a list into two, before given entry
  * @list: a new list to add all removed entries
@@ -620,7 +520,6 @@ static inline void list_cut_before(struct list_head *list,
 	entry->prev = head;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void __list_splice(const struct list_head *list,
 				 struct list_head *prev,
 				 struct list_head *next)
@@ -696,11 +595,7 @@ static inline void list_splice_tail_init(struct list_head *list,
  * list_entry - get the struct for this entry
  * @ptr:	the &struct list_head pointer.
  * @type:	the type of the struct this is embedded in.
-<<<<<<< HEAD
- * @member:	the name of the list_struct within the struct.
-=======
  * @member:	the name of the list_head within the struct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define list_entry(ptr, type, member) \
 	container_of(ptr, type, member)
@@ -709,11 +604,7 @@ static inline void list_splice_tail_init(struct list_head *list,
  * list_first_entry - get the first element from a list
  * @ptr:	the list head to take the element from.
  * @type:	the type of the struct this is embedded in.
-<<<<<<< HEAD
- * @member:	the name of the list_struct within the struct.
-=======
  * @member:	the name of the list_head within the struct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note, that list is expected to be not empty.
  */
@@ -721,11 +612,6 @@ static inline void list_splice_tail_init(struct list_head *list,
 	list_entry((ptr)->next, type, member)
 
 /**
-<<<<<<< HEAD
- * list_next_entry - get the next element in list
- * @pos:	the type * to cursor
- * @member:	the name of the list_struct within the struct.
-=======
  * list_last_entry - get the last element from a list
  * @ptr:	the list head to take the element from.
  * @type:	the type of the struct this is embedded in.
@@ -754,17 +640,11 @@ static inline void list_splice_tail_init(struct list_head *list,
  * list_next_entry - get the next element in list
  * @pos:	the type * to cursor
  * @member:	the name of the list_head within the struct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define list_next_entry(pos, member) \
 	list_entry((pos)->member.next, typeof(*(pos)), member)
 
 /**
-<<<<<<< HEAD
- * list_prev_entry - get the prev element in list
- * @pos:	the type * to cursor
- * @member:	the name of the list_struct within the struct.
-=======
  * list_next_entry_circular - get the next element in list
  * @pos:	the type * to cursor.
  * @head:	the list head to take the element from.
@@ -781,14 +661,11 @@ static inline void list_splice_tail_init(struct list_head *list,
  * list_prev_entry - get the prev element in list
  * @pos:	the type * to cursor
  * @member:	the name of the list_head within the struct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define list_prev_entry(pos, member) \
 	list_entry((pos)->member.prev, typeof(*(pos)), member)
 
 /**
-<<<<<<< HEAD
-=======
  * list_prev_entry_circular - get the prev element in list
  * @pos:	the type * to cursor.
  * @head:	the list head to take the element from.
@@ -802,26 +679,11 @@ static inline void list_splice_tail_init(struct list_head *list,
 	list_last_entry(head, typeof(*(pos)), member) : list_prev_entry(pos, member))
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * list_for_each	-	iterate over a list
  * @pos:	the &struct list_head to use as a loop cursor.
  * @head:	the head for your list.
  */
 #define list_for_each(pos, head) \
-<<<<<<< HEAD
-	for (pos = (head)->next; pos != (head); pos = pos->next)
-
-/**
- * __list_for_each	-	iterate over a list
- * @pos:	the &struct list_head to use as a loop cursor.
- * @head:	the head for your list.
- *
- * This variant doesn't differ from list_for_each() any more.
- * We don't do prefetching in either case.
- */
-#define __list_for_each(pos, head) \
-	for (pos = (head)->next; pos != (head); pos = pos->next)
-=======
 	for (pos = (head)->next; !list_is_head(pos, (head)); pos = pos->next)
 
 /**
@@ -851,7 +713,6 @@ static inline void list_splice_tail_init(struct list_head *list,
  */
 #define list_for_each_continue(pos, head) \
 	for (pos = pos->next; !list_is_head(pos, (head)); pos = pos->next)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_for_each_prev	-	iterate over a list backwards
@@ -859,11 +720,7 @@ static inline void list_splice_tail_init(struct list_head *list,
  * @head:	the head for your list.
  */
 #define list_for_each_prev(pos, head) \
-<<<<<<< HEAD
-	for (pos = (head)->prev; pos != (head); pos = pos->prev)
-=======
 	for (pos = (head)->prev; !list_is_head(pos, (head)); pos = pos->prev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_for_each_safe - iterate over a list safe against removal of list entry
@@ -872,14 +729,9 @@ static inline void list_splice_tail_init(struct list_head *list,
  * @head:	the head for your list.
  */
 #define list_for_each_safe(pos, n, head) \
-<<<<<<< HEAD
-	for (pos = (head)->next, n = pos->next; pos != (head); \
-		pos = n, n = pos->next)
-=======
 	for (pos = (head)->next, n = pos->next; \
 	     !list_is_head(pos, (head)); \
 	     pos = n, n = pos->next)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_for_each_prev_safe - iterate over a list backwards safe against removal of list entry
@@ -889,21 +741,6 @@ static inline void list_splice_tail_init(struct list_head *list,
  */
 #define list_for_each_prev_safe(pos, n, head) \
 	for (pos = (head)->prev, n = pos->prev; \
-<<<<<<< HEAD
-	     pos != (head); \
-	     pos = n, n = pos->prev)
-
-/**
- * list_for_each_entry	-	iterate over list of given type
- * @pos:	the type * to use as a loop cursor.
- * @head:	the head for your list.
- * @member:	the name of the list_struct within the struct.
- */
-#define list_for_each_entry(pos, head, member)				\
-	for (pos = list_entry((head)->next, typeof(*pos), member);	\
-	     &pos->member != (head); 	\
-	     pos = list_entry(pos->member.next, typeof(*pos), member))
-=======
 	     !list_is_head(pos, (head)); \
 	     pos = n, n = pos->prev)
 
@@ -941,37 +778,23 @@ static inline size_t list_count_nodes(struct list_head *head)
 	for (pos = list_first_entry(head, typeof(*pos), member);	\
 	     !list_entry_is_head(pos, head, member);			\
 	     pos = list_next_entry(pos, member))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_for_each_entry_reverse - iterate backwards over list of given type.
  * @pos:	the type * to use as a loop cursor.
  * @head:	the head for your list.
-<<<<<<< HEAD
- * @member:	the name of the list_struct within the struct.
- */
-#define list_for_each_entry_reverse(pos, head, member)			\
-	for (pos = list_entry((head)->prev, typeof(*pos), member);	\
-	     &pos->member != (head); 	\
-	     pos = list_entry(pos->member.prev, typeof(*pos), member))
-=======
  * @member:	the name of the list_head within the struct.
  */
 #define list_for_each_entry_reverse(pos, head, member)			\
 	for (pos = list_last_entry(head, typeof(*pos), member);		\
 	     !list_entry_is_head(pos, head, member); 			\
 	     pos = list_prev_entry(pos, member))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_prepare_entry - prepare a pos entry for use in list_for_each_entry_continue()
  * @pos:	the type * to use as a start point
  * @head:	the head of the list
-<<<<<<< HEAD
- * @member:	the name of the list_struct within the struct.
-=======
  * @member:	the name of the list_head within the struct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Prepares a pos entry for use as a start point in list_for_each_entry_continue().
  */
@@ -982,67 +805,39 @@ static inline size_t list_count_nodes(struct list_head *head)
  * list_for_each_entry_continue - continue iteration over list of given type
  * @pos:	the type * to use as a loop cursor.
  * @head:	the head for your list.
-<<<<<<< HEAD
- * @member:	the name of the list_struct within the struct.
-=======
  * @member:	the name of the list_head within the struct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Continue to iterate over list of given type, continuing after
  * the current position.
  */
 #define list_for_each_entry_continue(pos, head, member) 		\
-<<<<<<< HEAD
-	for (pos = list_entry(pos->member.next, typeof(*pos), member);	\
-	     &pos->member != (head);	\
-	     pos = list_entry(pos->member.next, typeof(*pos), member))
-=======
 	for (pos = list_next_entry(pos, member);			\
 	     !list_entry_is_head(pos, head, member);			\
 	     pos = list_next_entry(pos, member))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_for_each_entry_continue_reverse - iterate backwards from the given point
  * @pos:	the type * to use as a loop cursor.
  * @head:	the head for your list.
-<<<<<<< HEAD
- * @member:	the name of the list_struct within the struct.
-=======
  * @member:	the name of the list_head within the struct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Start to iterate over list of given type backwards, continuing after
  * the current position.
  */
 #define list_for_each_entry_continue_reverse(pos, head, member)		\
-<<<<<<< HEAD
-	for (pos = list_entry(pos->member.prev, typeof(*pos), member);	\
-	     &pos->member != (head);	\
-	     pos = list_entry(pos->member.prev, typeof(*pos), member))
-=======
 	for (pos = list_prev_entry(pos, member);			\
 	     !list_entry_is_head(pos, head, member);			\
 	     pos = list_prev_entry(pos, member))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_for_each_entry_from - iterate over list of given type from the current point
  * @pos:	the type * to use as a loop cursor.
  * @head:	the head for your list.
-<<<<<<< HEAD
- * @member:	the name of the list_struct within the struct.
-=======
  * @member:	the name of the list_head within the struct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Iterate over list of given type, continuing from current position.
  */
 #define list_for_each_entry_from(pos, head, member) 			\
-<<<<<<< HEAD
-	for (; &pos->member != (head);	\
-	     pos = list_entry(pos->member.next, typeof(*pos), member))
-=======
 	for (; !list_entry_is_head(pos, head, member);			\
 	     pos = list_next_entry(pos, member))
 
@@ -1058,22 +853,12 @@ static inline size_t list_count_nodes(struct list_head *head)
 #define list_for_each_entry_from_reverse(pos, head, member)		\
 	for (; !list_entry_is_head(pos, head, member);			\
 	     pos = list_prev_entry(pos, member))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_for_each_entry_safe - iterate over list of given type safe against removal of list entry
  * @pos:	the type * to use as a loop cursor.
  * @n:		another type * to use as temporary storage
  * @head:	the head for your list.
-<<<<<<< HEAD
- * @member:	the name of the list_struct within the struct.
- */
-#define list_for_each_entry_safe(pos, n, head, member)			\
-	for (pos = list_entry((head)->next, typeof(*pos), member),	\
-		n = list_entry(pos->member.next, typeof(*pos), member);	\
-	     &pos->member != (head); 					\
-	     pos = n, n = list_entry(n->member.next, typeof(*n), member))
-=======
  * @member:	the name of the list_head within the struct.
  */
 #define list_for_each_entry_safe(pos, n, head, member)			\
@@ -1081,96 +866,59 @@ static inline size_t list_count_nodes(struct list_head *head)
 		n = list_next_entry(pos, member);			\
 	     !list_entry_is_head(pos, head, member); 			\
 	     pos = n, n = list_next_entry(n, member))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_for_each_entry_safe_continue - continue list iteration safe against removal
  * @pos:	the type * to use as a loop cursor.
  * @n:		another type * to use as temporary storage
  * @head:	the head for your list.
-<<<<<<< HEAD
- * @member:	the name of the list_struct within the struct.
-=======
  * @member:	the name of the list_head within the struct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Iterate over list of given type, continuing after current point,
  * safe against removal of list entry.
  */
 #define list_for_each_entry_safe_continue(pos, n, head, member) 		\
-<<<<<<< HEAD
-	for (pos = list_entry(pos->member.next, typeof(*pos), member), 		\
-		n = list_entry(pos->member.next, typeof(*pos), member);		\
-	     &pos->member != (head);						\
-	     pos = n, n = list_entry(n->member.next, typeof(*n), member))
-=======
 	for (pos = list_next_entry(pos, member), 				\
 		n = list_next_entry(pos, member);				\
 	     !list_entry_is_head(pos, head, member);				\
 	     pos = n, n = list_next_entry(n, member))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_for_each_entry_safe_from - iterate over list from current point safe against removal
  * @pos:	the type * to use as a loop cursor.
  * @n:		another type * to use as temporary storage
  * @head:	the head for your list.
-<<<<<<< HEAD
- * @member:	the name of the list_struct within the struct.
-=======
  * @member:	the name of the list_head within the struct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Iterate over list of given type from current point, safe against
  * removal of list entry.
  */
 #define list_for_each_entry_safe_from(pos, n, head, member) 			\
-<<<<<<< HEAD
-	for (n = list_entry(pos->member.next, typeof(*pos), member);		\
-	     &pos->member != (head);						\
-	     pos = n, n = list_entry(n->member.next, typeof(*n), member))
-=======
 	for (n = list_next_entry(pos, member);					\
 	     !list_entry_is_head(pos, head, member);				\
 	     pos = n, n = list_next_entry(n, member))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_for_each_entry_safe_reverse - iterate backwards over list safe against removal
  * @pos:	the type * to use as a loop cursor.
  * @n:		another type * to use as temporary storage
  * @head:	the head for your list.
-<<<<<<< HEAD
- * @member:	the name of the list_struct within the struct.
-=======
  * @member:	the name of the list_head within the struct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Iterate backwards over list of given type, safe against removal
  * of list entry.
  */
 #define list_for_each_entry_safe_reverse(pos, n, head, member)		\
-<<<<<<< HEAD
-	for (pos = list_entry((head)->prev, typeof(*pos), member),	\
-		n = list_entry(pos->member.prev, typeof(*pos), member);	\
-	     &pos->member != (head); 					\
-	     pos = n, n = list_entry(n->member.prev, typeof(*n), member))
-=======
 	for (pos = list_last_entry(head, typeof(*pos), member),		\
 		n = list_prev_entry(pos, member);			\
 	     !list_entry_is_head(pos, head, member); 			\
 	     pos = n, n = list_prev_entry(n, member))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * list_safe_reset_next - reset a stale list_for_each_entry_safe loop
  * @pos:	the loop cursor used in the list_for_each_entry_safe loop
  * @n:		temporary storage used in list_for_each_entry_safe
-<<<<<<< HEAD
- * @member:	the name of the list_struct within the struct.
-=======
  * @member:	the name of the list_head within the struct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * list_safe_reset_next is not safe to use in general if the list may be
  * modified concurrently (eg. the lock is dropped in the loop body). An
@@ -1179,11 +927,7 @@ static inline size_t list_count_nodes(struct list_head *head)
  * completing the current iteration of the loop body.
  */
 #define list_safe_reset_next(pos, n, member)				\
-<<<<<<< HEAD
-	n = list_entry(pos->member.next, typeof(*pos), member)
-=======
 	n = list_next_entry(pos, member)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Double linked lists with a single pointer list head.
@@ -1201,8 +945,6 @@ static inline void INIT_HLIST_NODE(struct hlist_node *h)
 	h->pprev = NULL;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * hlist_unhashed - Has node been removed from list and reinitialized?
  * @h: Node to be checked
@@ -1211,17 +953,11 @@ static inline void INIT_HLIST_NODE(struct hlist_node *h)
  * state.  For example, hlist_nulls_del_init_rcu() does leave the
  * node in unhashed state, but hlist_nulls_del() does not.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int hlist_unhashed(const struct hlist_node *h)
 {
 	return !h->pprev;
 }
 
-<<<<<<< HEAD
-static inline int hlist_empty(const struct hlist_head *h)
-{
-	return !h->first;
-=======
 /**
  * hlist_unhashed_lockless - Version of hlist_unhashed for lockless use
  * @h: Node to be checked
@@ -1242,20 +978,12 @@ static inline int hlist_unhashed_lockless(const struct hlist_node *h)
 static inline int hlist_empty(const struct hlist_head *h)
 {
 	return !READ_ONCE(h->first);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void __hlist_del(struct hlist_node *n)
 {
 	struct hlist_node *next = n->next;
 	struct hlist_node **pprev = n->pprev;
-<<<<<<< HEAD
-	*pprev = next;
-	if (next)
-		next->pprev = pprev;
-}
-
-=======
 
 	WRITE_ONCE(*pprev, next);
 	if (next)
@@ -1269,7 +997,6 @@ static inline void __hlist_del(struct hlist_node *n)
  * Note that this function leaves the node in hashed state.  Use
  * hlist_del_init() or similar instead to unhash @n.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void hlist_del(struct hlist_node *n)
 {
 	__hlist_del(n);
@@ -1277,15 +1004,12 @@ static inline void hlist_del(struct hlist_node *n)
 	n->pprev = LIST_POISON2;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * hlist_del_init - Delete the specified hlist_node from its list and initialize
  * @n: Node to delete.
  *
  * Note that this function leaves the node in unhashed state.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void hlist_del_init(struct hlist_node *n)
 {
 	if (!hlist_unhashed(n)) {
@@ -1294,40 +1018,6 @@ static inline void hlist_del_init(struct hlist_node *n)
 	}
 }
 
-<<<<<<< HEAD
-static inline void hlist_add_head(struct hlist_node *n, struct hlist_head *h)
-{
-	struct hlist_node *first = h->first;
-	n->next = first;
-	if (first)
-		first->pprev = &n->next;
-	h->first = n;
-	n->pprev = &h->first;
-}
-
-/* next must be != NULL */
-static inline void hlist_add_before(struct hlist_node *n,
-					struct hlist_node *next)
-{
-	n->pprev = next->pprev;
-	n->next = next;
-	next->pprev = &n->next;
-	*(n->pprev) = n;
-}
-
-static inline void hlist_add_after(struct hlist_node *n,
-					struct hlist_node *next)
-{
-	next->next = n->next;
-	n->next = next;
-	next->pprev = &n->next;
-
-	if(next->next)
-		next->next->pprev  = &next->next;
-}
-
-/* after that we'll appear to be on some hlist and hlist_del will work */
-=======
 /**
  * hlist_add_head - add a new entry at the beginning of the hlist
  * @n: new entry to be added
@@ -1384,15 +1074,11 @@ static inline void hlist_add_behind(struct hlist_node *n,
  * The point of this is to allow things like hlist_del() to work correctly
  * in cases where there is no list.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void hlist_add_fake(struct hlist_node *n)
 {
 	n->pprev = &n->next;
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
  * hlist_fake: Is this node a fake hlist?
  * @h: Node to check for being a self-referential fake hlist.
@@ -1421,7 +1107,6 @@ hlist_is_singular_node(struct hlist_node *n, struct hlist_head *h)
  * @old: hlist_head for old list.
  * @new: hlist_head for new list.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Move a list from one list head to another. Fixup the pprev
  * reference of the first entry if it exists.
  */
@@ -1434,14 +1119,6 @@ static inline void hlist_move_list(struct hlist_head *old,
 	old->first = NULL;
 }
 
-<<<<<<< HEAD
-#define hlist_entry(ptr, type, member) container_of(ptr,type,member)
-
-#define hlist_entry_safe(ptr, type, member) \
-	({ typeof(ptr) ____ptr = (ptr); \
-	   ____ptr ? hlist_entry(____ptr, type, member) : NULL; \
-	})
-=======
 /**
  * hlist_splice_init() - move all entries from one list to another
  * @from: hlist_head from which entries will be moved
@@ -1463,7 +1140,6 @@ static inline void hlist_splice_init(struct hlist_head *from,
 }
 
 #define hlist_entry(ptr, type, member) container_of(ptr,type,member)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define hlist_for_each(pos, head) \
 	for (pos = (head)->first; pos ; pos = pos->next)
@@ -1472,66 +1148,6 @@ static inline void hlist_splice_init(struct hlist_head *from,
 	for (pos = (head)->first; pos && ({ n = pos->next; 1; }); \
 	     pos = n)
 
-<<<<<<< HEAD
-/**
- * hlist_for_each_entry	- iterate over list of given type
- * @tpos:	the type * to use as a loop cursor.
- * @pos:	the &struct hlist_node to use as a loop cursor.
- * @head:	the head for your list.
- * @member:	the name of the hlist_node within the struct.
- */
-#define hlist_for_each_entry(tpos, pos, head, member)			 \
-	for (pos = (head)->first;					 \
-	     pos &&							 \
-		({ tpos = hlist_entry(pos, typeof(*tpos), member); 1;}); \
-	     pos = pos->next)
-
-/**
- * hlist_for_each_entry_continue - iterate over a hlist continuing after current point
- * @tpos:	the type * to use as a loop cursor.
- * @pos:	the &struct hlist_node to use as a loop cursor.
- * @member:	the name of the hlist_node within the struct.
- */
-#define hlist_for_each_entry_continue(tpos, pos, member)		 \
-	for (pos = (pos)->next;						 \
-	     pos &&							 \
-		({ tpos = hlist_entry(pos, typeof(*tpos), member); 1;}); \
-	     pos = pos->next)
-
-/**
- * hlist_for_each_entry_from - iterate over a hlist continuing from current point
- * @tpos:	the type * to use as a loop cursor.
- * @pos:	the &struct hlist_node to use as a loop cursor.
- * @member:	the name of the hlist_node within the struct.
- */
-#define hlist_for_each_entry_from(tpos, pos, member)			 \
-	for (; pos &&							 \
-		({ tpos = hlist_entry(pos, typeof(*tpos), member); 1;}); \
-	     pos = pos->next)
-
-/**
- * hlist_for_each_entry_safe - iterate over list of given type safe against removal of list entry
- * @tpos:	the type * to use as a loop cursor.
- * @pos:	the &struct hlist_node to use as a loop cursor.
- * @n:		another &struct hlist_node to use as temporary storage
- * @head:	the head for your list.
- * @member:	the name of the hlist_node within the struct.
- */
-#define hlist_for_each_entry_safe(tpos, pos, n, head, member) 		 \
-	for (pos = (head)->first;					 \
-	     pos && ({ n = pos->next; 1; }) && 				 \
-		({ tpos = hlist_entry(pos, typeof(*tpos), member); 1;}); \
-	     pos = n)
-
-/**
- * hlist_for_each_entry_safe_new - iterate over list of given type safe against removal of list entry
- * @pos:	the type * to use as a loop cursor.
- * @n:		another &struct hlist_node to use as temporary storage
- * @head:	the head for your list.
- * @member:	the name of the hlist_node within the struct.
- */
-#define hlist_for_each_entry_safe_new(pos, n, head, member) 		\
-=======
 #define hlist_entry_safe(ptr, type, member) \
 	({ typeof(ptr) ____ptr = (ptr); \
 	   ____ptr ? hlist_entry(____ptr, type, member) : NULL; \
@@ -1575,13 +1191,10 @@ static inline void hlist_splice_init(struct hlist_head *from,
  * @member:	the name of the hlist_node within the struct.
  */
 #define hlist_for_each_entry_safe(pos, n, head, member) 		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (pos = hlist_entry_safe((head)->first, typeof(*pos), member);\
 	     pos && ({ n = pos->member.next; 1; });			\
 	     pos = hlist_entry_safe(n, typeof(*pos), member))
 
-<<<<<<< HEAD
-=======
 /**
  * hlist_count_nodes - count nodes in the hlist
  * @head:	the head for your hlist.
@@ -1597,5 +1210,4 @@ static inline size_t hlist_count_nodes(struct hlist_head *head)
 	return count;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

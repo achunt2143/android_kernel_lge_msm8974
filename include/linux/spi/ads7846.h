@@ -1,22 +1,6 @@
-<<<<<<< HEAD
-/* linux/spi/ads7846.h */
-
-/* Touchscreen characteristics vary between boards and models.  The
- * platform_data for the device's "struct device" holds this information.
- *
- * It's OK if the min/max values are zero.
- */
-enum ads7846_filter {
-	ADS7846_FILTER_OK,
-	ADS7846_FILTER_REPEAT,
-	ADS7846_FILTER_IGNORE,
-};
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /* linux/spi/ads7846.h */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ads7846_platform_data {
 	u16	model;			/* 7843, 7845, 7846, 7873. */
 	u16	vref_delay_usecs;	/* 0 for external vref; etc */
@@ -51,20 +35,9 @@ struct ads7846_platform_data {
 	u16	debounce_tol;		/* tolerance used for filtering */
 	u16	debounce_rep;		/* additional consecutive good readings
 					 * required after the first two */
-<<<<<<< HEAD
-	int	gpio_pendown;		/* the GPIO used to decide the pendown
-					 * state if get_pendown_state == NULL
-					 */
-	int	(*get_pendown_state)(void);
-	int	(*filter_init)	(const struct ads7846_platform_data *pdata,
-				 void **filter_data);
-	int	(*filter)	(void *filter_data, int data_idx, int *val);
-	void	(*filter_cleanup)(void *filter_data);
-=======
 	int	gpio_pendown_debounce;	/* platform specific debounce time for
 					 * the gpio_pendown */
 	int	(*get_pendown_state)(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void	(*wait_for_sync)(void);
 	bool	wakeup;
 	unsigned long irq_flags;

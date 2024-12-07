@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-/*
- *   Copyright (c) 2007 Daniel Mack
- *   friendly supported by NI.
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *   Copyright (c) 2007 Daniel Mack
@@ -26,7 +5,6 @@
  */
 
 #include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/usb.h>
 #include <sound/control.h>
@@ -37,20 +15,13 @@
 #include "control.h"
 
 #define CNT_INTVAL 0x10000
-<<<<<<< HEAD
-=======
 #define MASCHINE_BANK_SIZE 32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int control_info(struct snd_kcontrol *kcontrol,
 			struct snd_ctl_elem_info *uinfo)
 {
 	struct snd_usb_audio *chip = snd_kcontrol_chip(kcontrol);
-<<<<<<< HEAD
-	struct snd_usb_caiaqdev *dev = caiaqdev(chip->card);
-=======
 	struct snd_usb_caiaqdev *cdev = caiaqdev(chip->card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pos = kcontrol->private_value;
 	int is_intval = pos & CNT_INTVAL;
 	int maxval = 63;
@@ -58,11 +29,7 @@ static int control_info(struct snd_kcontrol *kcontrol,
 	uinfo->count = 1;
 	pos &= ~CNT_INTVAL;
 
-<<<<<<< HEAD
-	switch (dev->chip.usb_id) {
-=======
 	switch (cdev->chip.usb_id) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_AUDIO8DJ):
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_AUDIO4DJ):
 		if (pos == 0) {
@@ -100,26 +67,15 @@ static int control_get(struct snd_kcontrol *kcontrol,
 		       struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_usb_audio *chip = snd_kcontrol_chip(kcontrol);
-<<<<<<< HEAD
-	struct snd_usb_caiaqdev *dev = caiaqdev(chip->card);
-=======
 	struct snd_usb_caiaqdev *cdev = caiaqdev(chip->card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pos = kcontrol->private_value;
 
 	if (pos & CNT_INTVAL)
 		ucontrol->value.integer.value[0]
-<<<<<<< HEAD
-			= dev->control_state[pos & ~CNT_INTVAL];
-	else
-		ucontrol->value.integer.value[0]
-			= !!(dev->control_state[pos / 8] & (1 << pos % 8));
-=======
 			= cdev->control_state[pos & ~CNT_INTVAL];
 	else
 		ucontrol->value.integer.value[0]
 			= !!(cdev->control_state[pos / 8] & (1 << pos % 8));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -128,16 +84,6 @@ static int control_put(struct snd_kcontrol *kcontrol,
 		       struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_usb_audio *chip = snd_kcontrol_chip(kcontrol);
-<<<<<<< HEAD
-	struct snd_usb_caiaqdev *dev = caiaqdev(chip->card);
-	int pos = kcontrol->private_value;
-	int v = ucontrol->value.integer.value[0];
-	unsigned char cmd = EP1_CMD_WRITE_IO;
-
-	if (dev->chip.usb_id ==
-		USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1))
-		cmd = EP1_CMD_DIMM_LEDS;
-=======
 	struct snd_usb_caiaqdev *cdev = caiaqdev(chip->card);
 	int pos = kcontrol->private_value;
 	int v = ucontrol->value.integer.value[0];
@@ -154,38 +100,10 @@ static int control_put(struct snd_kcontrol *kcontrol,
 		cmd = EP1_CMD_WRITE_IO;
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pos & CNT_INTVAL) {
 		int i = pos & ~CNT_INTVAL;
 
-<<<<<<< HEAD
-		dev->control_state[i] = v;
-
-		if (dev->chip.usb_id ==
-			USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLS4)) {
-			int actual_len;
-
-			dev->ep8_out_buf[0] = i;
-			dev->ep8_out_buf[1] = v;
-
-			usb_bulk_msg(dev->chip.dev,
-				     usb_sndbulkpipe(dev->chip.dev, 8),
-				     dev->ep8_out_buf, sizeof(dev->ep8_out_buf),
-				     &actual_len, 200);
-		} else {
-			snd_usb_caiaq_send_command(dev, cmd,
-					dev->control_state, sizeof(dev->control_state));
-		}
-	} else {
-		if (v)
-			dev->control_state[pos / 8] |= 1 << (pos % 8);
-		else
-			dev->control_state[pos / 8] &= ~(1 << (pos % 8));
-
-		snd_usb_caiaq_send_command(dev, cmd,
-				dev->control_state, sizeof(dev->control_state));
-=======
 		cdev->control_state[i] = v;
 
 		if (cdev->chip.usb_id ==
@@ -225,17 +143,12 @@ static int control_put(struct snd_kcontrol *kcontrol,
 
 		snd_usb_caiaq_send_command(cdev, cmd,
 				cdev->control_state, sizeof(cdev->control_state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 1;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new kcontrol_template __devinitdata = {
-=======
 static struct snd_kcontrol_new kcontrol_template = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_HWDEP,
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
 	.index = 0,
@@ -250,22 +163,14 @@ struct caiaq_controller {
 	int index;
 };
 
-<<<<<<< HEAD
-static struct caiaq_controller ak1_controller[] = {
-=======
 static const struct caiaq_controller ak1_controller[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "LED left", 	2 },
 	{ "LED middle", 1 },
 	{ "LED right", 	0 },
 	{ "LED ring", 	3 }
 };
 
-<<<<<<< HEAD
-static struct caiaq_controller rk2_controller[] = {
-=======
 static const struct caiaq_controller rk2_controller[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "LED 1",		5  },
 	{ "LED 2",		4  },
 	{ "LED 3",		3  },
@@ -291,11 +196,7 @@ static const struct caiaq_controller rk2_controller[] = {
 	{ "LED 7seg_3g",	23 }
 };
 
-<<<<<<< HEAD
-static struct caiaq_controller rk3_controller[] = {
-=======
 static const struct caiaq_controller rk3_controller[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "LED 7seg_1a",        0 + 0 },
 	{ "LED 7seg_1b",        0 + 1 },
 	{ "LED 7seg_1c",        0 + 2 },
@@ -343,11 +244,7 @@ static const struct caiaq_controller rk3_controller[] = {
 	{ "LED pedal",		32 + 8 }
 };
 
-<<<<<<< HEAD
-static struct caiaq_controller kore_controller[] = {
-=======
 static const struct caiaq_controller kore_controller[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "LED F1",		8   | CNT_INTVAL },
 	{ "LED F2",		12  | CNT_INTVAL },
 	{ "LED F3",		0   | CNT_INTVAL },
@@ -381,11 +278,7 @@ static const struct caiaq_controller kore_controller[] = {
 	{ "LED control",	26  | CNT_INTVAL }
 };
 
-<<<<<<< HEAD
-static struct caiaq_controller a8dj_controller[] = {
-=======
 static const struct caiaq_controller a8dj_controller[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "Current input mode",			0 | CNT_INTVAL 	},
 	{ "GND lift for TC Vinyl mode", 	24 + 0 		},
 	{ "GND lift for TC CD/Line mode", 	24 + 1 		},
@@ -393,19 +286,11 @@ static const struct caiaq_controller a8dj_controller[] = {
 	{ "Software lock", 			40 		}
 };
 
-<<<<<<< HEAD
-static struct caiaq_controller a4dj_controller[] = {
-	{ "Current input mode",	0 | CNT_INTVAL 	}
-};
-
-static struct caiaq_controller kontrolx1_controller[] = {
-=======
 static const struct caiaq_controller a4dj_controller[] = {
 	{ "Current input mode",	0 | CNT_INTVAL 	}
 };
 
 static const struct caiaq_controller kontrolx1_controller[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "LED FX A: ON",		7 | CNT_INTVAL	},
 	{ "LED FX A: 1",		6 | CNT_INTVAL	},
 	{ "LED FX A: 2",		5 | CNT_INTVAL	},
@@ -442,11 +327,7 @@ static const struct caiaq_controller kontrolx1_controller[] = {
 	{ "LED Deck B: SYNC",		8  | CNT_INTVAL	},
 };
 
-<<<<<<< HEAD
-static struct caiaq_controller kontrols4_controller[] = {
-=======
 static const struct caiaq_controller kontrols4_controller[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "LED: Master: Quant",			10  | CNT_INTVAL },
 	{ "LED: Master: Headphone",		11  | CNT_INTVAL },
 	{ "LED: Master: Master",		12  | CNT_INTVAL },
@@ -619,10 +500,6 @@ static const struct caiaq_controller kontrols4_controller[] = {
 	{ "LED: FX2: Mode",			133 | CNT_INTVAL },
 };
 
-<<<<<<< HEAD
-static int __devinit add_controls(struct caiaq_controller *c, int num,
-				  struct snd_usb_caiaqdev *dev)
-=======
 static const struct caiaq_controller maschine_controller[] = {
 	{ "LED: Pad 1",				3  | CNT_INTVAL },
 	{ "LED: Pad 2",				2  | CNT_INTVAL },
@@ -693,7 +570,6 @@ static const struct caiaq_controller maschine_controller[] = {
 
 static int add_controls(const struct caiaq_controller *c, int num,
 			struct snd_usb_caiaqdev *cdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, ret;
 	struct snd_kcontrol *kc;
@@ -701,13 +577,8 @@ static int add_controls(const struct caiaq_controller *c, int num,
 	for (i = 0; i < num; i++, c++) {
 		kcontrol_template.name = c->name;
 		kcontrol_template.private_value = c->index;
-<<<<<<< HEAD
-		kc = snd_ctl_new1(&kcontrol_template, dev);
-		ret = snd_ctl_add(dev->chip.card, kc);
-=======
 		kc = snd_ctl_new1(&kcontrol_template, cdev);
 		ret = snd_ctl_add(cdev->chip.card, kc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return ret;
 	}
@@ -715,16 +586,6 @@ static int add_controls(const struct caiaq_controller *c, int num,
 	return 0;
 }
 
-<<<<<<< HEAD
-int __devinit snd_usb_caiaq_control_init(struct snd_usb_caiaqdev *dev)
-{
-	int ret = 0;
-
-	switch (dev->chip.usb_id) {
-	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_AK1):
-		ret = add_controls(ak1_controller,
-			ARRAY_SIZE(ak1_controller), dev);
-=======
 int snd_usb_caiaq_control_init(struct snd_usb_caiaqdev *cdev)
 {
 	int ret = 0;
@@ -733,76 +594,47 @@ int snd_usb_caiaq_control_init(struct snd_usb_caiaqdev *cdev)
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_AK1):
 		ret = add_controls(ak1_controller,
 			ARRAY_SIZE(ak1_controller), cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_RIGKONTROL2):
 		ret = add_controls(rk2_controller,
-<<<<<<< HEAD
-			ARRAY_SIZE(rk2_controller), dev);
-=======
 			ARRAY_SIZE(rk2_controller), cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_RIGKONTROL3):
 		ret = add_controls(rk3_controller,
-<<<<<<< HEAD
-			ARRAY_SIZE(rk3_controller), dev);
-=======
 			ARRAY_SIZE(rk3_controller), cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER):
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER2):
 		ret = add_controls(kore_controller,
-<<<<<<< HEAD
-			ARRAY_SIZE(kore_controller), dev);
-=======
 			ARRAY_SIZE(kore_controller), cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_AUDIO8DJ):
 		ret = add_controls(a8dj_controller,
-<<<<<<< HEAD
-			ARRAY_SIZE(a8dj_controller), dev);
-=======
 			ARRAY_SIZE(a8dj_controller), cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_AUDIO4DJ):
 		ret = add_controls(a4dj_controller,
-<<<<<<< HEAD
-			ARRAY_SIZE(a4dj_controller), dev);
-=======
 			ARRAY_SIZE(a4dj_controller), cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1):
 		ret = add_controls(kontrolx1_controller,
-<<<<<<< HEAD
-			ARRAY_SIZE(kontrolx1_controller), dev);
-=======
 			ARRAY_SIZE(kontrolx1_controller), cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLS4):
 		ret = add_controls(kontrols4_controller,
-<<<<<<< HEAD
-			ARRAY_SIZE(kontrols4_controller), dev);
-=======
 			ARRAY_SIZE(kontrols4_controller), cdev);
 		break;
 
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_MASCHINECONTROLLER):
 		ret = add_controls(maschine_controller,
 			ARRAY_SIZE(maschine_controller), cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 

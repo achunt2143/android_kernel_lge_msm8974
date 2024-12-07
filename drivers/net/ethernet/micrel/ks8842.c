@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * ks8842.c timberdale KS8842 ethernet driver
- * Copyright (c) 2009 Intel Corporation
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * ks8842.c timberdale KS8842 ethernet driver
  * Copyright (c) 2009 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Supports:
@@ -367,24 +348,15 @@ static void ks8842_reset_hw(struct ks8842_adapter *adapter)
 	ks8842_write16(adapter, 32, 0x1, REG_SW_ID_AND_ENABLE);
 }
 
-<<<<<<< HEAD
-static void ks8842_read_mac_addr(struct ks8842_adapter *adapter, u8 *dest)
-{
-=======
 static void ks8842_init_mac_addr(struct ks8842_adapter *adapter)
 {
 	u8 addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	u16 mac;
 
 	for (i = 0; i < ETH_ALEN; i++)
-<<<<<<< HEAD
-		dest[ETH_ALEN - i - 1] = ks8842_read8(adapter, 2, REG_MARL + i);
-=======
 		addr[ETH_ALEN - i - 1] = ks8842_read8(adapter, 2, REG_MARL + i);
 	eth_hw_addr_set(adapter->netdev, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adapter->conf_flags & MICREL_KS884X) {
 		/*
@@ -410,11 +382,7 @@ static void ks8842_init_mac_addr(struct ks8842_adapter *adapter)
 	}
 }
 
-<<<<<<< HEAD
-static void ks8842_write_mac_addr(struct ks8842_adapter *adapter, u8 *mac)
-=======
 static void ks8842_write_mac_addr(struct ks8842_adapter *adapter, const u8 *mac)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	unsigned i;
@@ -481,12 +449,7 @@ static int ks8842_tx_frame_dma(struct sk_buff *skb, struct net_device *netdev)
 		sg_dma_len(&ctl->sg) += 4 - sg_dma_len(&ctl->sg) % 4;
 
 	ctl->adesc = dmaengine_prep_slave_sg(ctl->chan,
-<<<<<<< HEAD
-		&ctl->sg, 1, DMA_MEM_TO_DEV,
-		DMA_PREP_INTERRUPT | DMA_COMPL_SKIP_SRC_UNMAP);
-=======
 		&ctl->sg, 1, DMA_MEM_TO_DEV, DMA_PREP_INTERRUPT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ctl->adesc)
 		return NETDEV_TX_BUSY;
 
@@ -588,13 +551,8 @@ static int __ks8842_start_new_rx_dma(struct net_device *netdev)
 		sg_init_table(sg, 1);
 		sg_dma_address(sg) = dma_map_single(adapter->dev,
 			ctl->skb->data, DMA_BUFFER_SIZE, DMA_FROM_DEVICE);
-<<<<<<< HEAD
-		err = dma_mapping_error(adapter->dev, sg_dma_address(sg));
-		if (unlikely(err)) {
-=======
 		if (dma_mapping_error(adapter->dev, sg_dma_address(sg))) {
 			err = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sg_dma_address(sg) = 0;
 			goto out;
 		}
@@ -602,20 +560,12 @@ static int __ks8842_start_new_rx_dma(struct net_device *netdev)
 		sg_dma_len(sg) = DMA_BUFFER_SIZE;
 
 		ctl->adesc = dmaengine_prep_slave_sg(ctl->chan,
-<<<<<<< HEAD
-			sg, 1, DMA_DEV_TO_MEM,
-			DMA_PREP_INTERRUPT | DMA_COMPL_SKIP_SRC_UNMAP);
-
-		if (!ctl->adesc)
-			goto out;
-=======
 			sg, 1, DMA_DEV_TO_MEM, DMA_PREP_INTERRUPT);
 
 		if (!ctl->adesc) {
 			err = -ENOMEM;
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ctl->adesc->callback_param = netdev;
 		ctl->adesc->callback = ks8842_dma_rx_cb;
@@ -626,40 +576,23 @@ static int __ks8842_start_new_rx_dma(struct net_device *netdev)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	return err;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (sg_dma_address(sg))
 		dma_unmap_single(adapter->dev, sg_dma_address(sg),
 			DMA_BUFFER_SIZE, DMA_FROM_DEVICE);
 	sg_dma_address(sg) = 0;
-<<<<<<< HEAD
-	if (ctl->skb)
-		dev_kfree_skb(ctl->skb);
-
-=======
 	dev_kfree_skb(ctl->skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctl->skb = NULL;
 
 	printk(KERN_ERR DRV_NAME": Failed to start RX DMA: %d\n", err);
 	return err;
 }
 
-<<<<<<< HEAD
-static void ks8842_rx_frame_dma_tasklet(unsigned long arg)
-{
-	struct net_device *netdev = (struct net_device *)arg;
-	struct ks8842_adapter *adapter = netdev_priv(netdev);
-=======
 static void ks8842_rx_frame_dma_tasklet(struct tasklet_struct *t)
 {
 	struct ks8842_adapter *adapter = from_tasklet(adapter, t, dma_rx.tasklet);
 	struct net_device *netdev = adapter->netdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ks8842_rx_dma_ctl *ctl = &adapter->dma_rx;
 	struct sk_buff *skb = ctl->skb;
 	dma_addr_t addr = sg_dma_address(&ctl->sg);
@@ -724,11 +657,7 @@ static void ks8842_rx_frame(struct net_device *netdev,
 			ks8842_update_rx_counters(netdev, status, len);
 
 			if (adapter->conf_flags & KS884X_16BIT) {
-<<<<<<< HEAD
-				u16 *data16 = (u16 *)skb_put(skb, len);
-=======
 				u16 *data16 = skb_put(skb, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ks8842_select_bank(adapter, 17);
 				while (len > 0) {
 					*data16++ = ioread16(adapter->hw_addr +
@@ -738,11 +667,7 @@ static void ks8842_rx_frame(struct net_device *netdev,
 					len -= sizeof(u32);
 				}
 			} else {
-<<<<<<< HEAD
-				u32 *data = (u32 *)skb_put(skb, len);
-=======
 				u32 *data = skb_put(skb, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				ks8842_select_bank(adapter, 17);
 				while (len > 0) {
@@ -768,12 +693,8 @@ static void ks8842_rx_frame(struct net_device *netdev,
 	ks8842_enable_bits(adapter, 0, 1 << 12, REG_QRFCR);
 }
 
-<<<<<<< HEAD
-void ks8842_handle_rx(struct net_device *netdev, struct ks8842_adapter *adapter)
-=======
 static void ks8842_handle_rx(struct net_device *netdev,
 	struct ks8842_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 rx_data = ks8842_read16(adapter, 16, REG_RXMIR) & 0x1fff;
 	netdev_dbg(netdev, "%s Entry - rx_data: %d\n", __func__, rx_data);
@@ -783,12 +704,8 @@ static void ks8842_handle_rx(struct net_device *netdev,
 	}
 }
 
-<<<<<<< HEAD
-void ks8842_handle_tx(struct net_device *netdev, struct ks8842_adapter *adapter)
-=======
 static void ks8842_handle_tx(struct net_device *netdev,
 	struct ks8842_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 sr = ks8842_read16(adapter, 16, REG_TXSR);
 	netdev_dbg(netdev, "%s - entry, sr: %x\n", __func__, sr);
@@ -797,11 +714,7 @@ static void ks8842_handle_tx(struct net_device *netdev,
 		netif_wake_queue(netdev);
 }
 
-<<<<<<< HEAD
-void ks8842_handle_rx_overrun(struct net_device *netdev,
-=======
 static void ks8842_handle_rx_overrun(struct net_device *netdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ks8842_adapter *adapter)
 {
 	netdev_dbg(netdev, "%s: entry\n", __func__);
@@ -809,17 +722,10 @@ static void ks8842_handle_rx_overrun(struct net_device *netdev,
 	netdev->stats.rx_fifo_errors++;
 }
 
-<<<<<<< HEAD
-void ks8842_tasklet(unsigned long arg)
-{
-	struct net_device *netdev = (struct net_device *)arg;
-	struct ks8842_adapter *adapter = netdev_priv(netdev);
-=======
 static void ks8842_tasklet(struct tasklet_struct *t)
 {
 	struct ks8842_adapter *adapter = from_tasklet(adapter, t, tasklet);
 	struct net_device *netdev = adapter->netdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 isr;
 	unsigned long flags;
 	u16 entry_bank;
@@ -959,21 +865,11 @@ static void ks8842_stop_dma(struct ks8842_adapter *adapter)
 
 	tx_ctl->adesc = NULL;
 	if (tx_ctl->chan)
-<<<<<<< HEAD
-		tx_ctl->chan->device->device_control(tx_ctl->chan,
-			DMA_TERMINATE_ALL, 0);
-
-	rx_ctl->adesc = NULL;
-	if (rx_ctl->chan)
-		rx_ctl->chan->device->device_control(rx_ctl->chan,
-			DMA_TERMINATE_ALL, 0);
-=======
 		dmaengine_terminate_all(tx_ctl->chan);
 
 	rx_ctl->adesc = NULL;
 	if (rx_ctl->chan)
 		dmaengine_terminate_all(rx_ctl->chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sg_dma_address(&rx_ctl->sg))
 		dma_unmap_single(adapter->dev, sg_dma_address(&rx_ctl->sg),
@@ -1046,14 +942,8 @@ static int ks8842_alloc_dma_bufs(struct net_device *netdev)
 
 	sg_dma_address(&tx_ctl->sg) = dma_map_single(adapter->dev,
 		tx_ctl->buf, DMA_BUFFER_SIZE, DMA_TO_DEVICE);
-<<<<<<< HEAD
-	err = dma_mapping_error(adapter->dev,
-		sg_dma_address(&tx_ctl->sg));
-	if (err) {
-=======
 	if (dma_mapping_error(adapter->dev, sg_dma_address(&tx_ctl->sg))) {
 		err = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sg_dma_address(&tx_ctl->sg) = 0;
 		goto err;
 	}
@@ -1065,12 +955,7 @@ static int ks8842_alloc_dma_bufs(struct net_device *netdev)
 		goto err;
 	}
 
-<<<<<<< HEAD
-	tasklet_init(&rx_ctl->tasklet, ks8842_rx_frame_dma_tasklet,
-		(unsigned long)netdev);
-=======
 	tasklet_setup(&rx_ctl->tasklet, ks8842_rx_frame_dma_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 err:
@@ -1181,12 +1066,7 @@ static int ks8842_set_mac(struct net_device *netdev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
-<<<<<<< HEAD
-	netdev->addr_assign_type &= ~NET_ADDR_RANDOM;
-	memcpy(netdev->dev_addr, mac, netdev->addr_len);
-=======
 	eth_hw_addr_set(netdev, mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ks8842_write_mac_addr(adapter, mac);
 	return 0;
@@ -1224,11 +1104,7 @@ static void ks8842_tx_timeout_work(struct work_struct *work)
 		__ks8842_start_new_rx_dma(netdev);
 }
 
-<<<<<<< HEAD
-static void ks8842_tx_timeout(struct net_device *netdev)
-=======
 static void ks8842_tx_timeout(struct net_device *netdev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ks8842_adapter *adapter = netdev_priv(netdev);
 
@@ -1250,32 +1126,21 @@ static const struct ethtool_ops ks8842_ethtool_ops = {
 	.get_link		= ethtool_op_get_link,
 };
 
-<<<<<<< HEAD
-static int __devinit ks8842_probe(struct platform_device *pdev)
-=======
 static int ks8842_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = -ENOMEM;
 	struct resource *iomem;
 	struct net_device *netdev;
 	struct ks8842_adapter *adapter;
-<<<<<<< HEAD
-	struct ks8842_platform_data *pdata = pdev->dev.platform_data;
-=======
 	struct ks8842_platform_data *pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 id;
 	unsigned i;
 
 	iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-<<<<<<< HEAD
-=======
 	if (!iomem) {
 		dev_err(&pdev->dev, "Invalid resource\n");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!request_mem_region(iomem->start, resource_size(iomem), DRV_NAME))
 		goto err_mem_region;
 
@@ -1313,11 +1178,7 @@ static int ks8842_probe(struct platform_device *pdev)
 		adapter->dma_tx.channel = -1;
 	}
 
-<<<<<<< HEAD
-	tasklet_init(&adapter->tasklet, ks8842_tasklet, (unsigned long)netdev);
-=======
 	tasklet_setup(&adapter->tasklet, ks8842_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&adapter->lock);
 
 	netdev->netdev_ops = &ks8842_netdev_ops;
@@ -1332,20 +1193,11 @@ static int ks8842_probe(struct platform_device *pdev)
 
 		if (i < netdev->addr_len)
 			/* an address was passed, use it */
-<<<<<<< HEAD
-			memcpy(netdev->dev_addr, pdata->macaddr,
-				netdev->addr_len);
-	}
-
-	if (i == netdev->addr_len) {
-		ks8842_read_mac_addr(adapter, netdev->dev_addr);
-=======
 			eth_hw_addr_set(netdev, pdata->macaddr);
 	}
 
 	if (i == netdev->addr_len) {
 		ks8842_init_mac_addr(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!is_valid_ether_addr(netdev->dev_addr))
 			eth_hw_addr_random(netdev);
@@ -1376,11 +1228,7 @@ err_mem_region:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit ks8842_remove(struct platform_device *pdev)
-=======
 static void ks8842_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = platform_get_drvdata(pdev);
 	struct ks8842_adapter *adapter = netdev_priv(netdev);
@@ -1391,27 +1239,15 @@ static void ks8842_remove(struct platform_device *pdev)
 	iounmap(adapter->hw_addr);
 	free_netdev(netdev);
 	release_mem_region(iomem->start, resource_size(iomem));
-<<<<<<< HEAD
-	platform_set_drvdata(pdev, NULL);
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static struct platform_driver ks8842_platform_driver = {
 	.driver = {
 		.name	= DRV_NAME,
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= ks8842_probe,
-	.remove		= ks8842_remove,
-=======
 	},
 	.probe		= ks8842_probe,
 	.remove_new	= ks8842_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(ks8842_platform_driver);

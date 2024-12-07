@@ -136,11 +136,7 @@ int jffs2_scan_medium(struct jffs2_sb_info *c)
 		if (!s) {
 			JFFS2_WARNING("Can't allocate memory for summary\n");
 			ret = -ENOMEM;
-<<<<<<< HEAD
-			goto out;
-=======
 			goto out_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -265,12 +261,8 @@ int jffs2_scan_medium(struct jffs2_sb_info *c)
 	}
 #endif
 	if (c->nr_erasing_blocks) {
-<<<<<<< HEAD
-		if ( !c->used_size && ((c->nr_free_blocks+empty_blocks+bad_blocks)!= c->nr_blocks || bad_blocks == c->nr_blocks) ) {
-=======
 		if (!c->used_size && !c->unchecked_size &&
 			((c->nr_free_blocks+empty_blocks+bad_blocks) != c->nr_blocks || bad_blocks == c->nr_blocks)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_notice("Cowardly refusing to erase blocks on filesystem with no valid JFFS2 nodes\n");
 			pr_notice("empty_blocks %d, bad_blocks %d, c->nr_blocks %d\n",
 				  empty_blocks, bad_blocks, c->nr_blocks);
@@ -283,22 +275,15 @@ int jffs2_scan_medium(struct jffs2_sb_info *c)
 	}
 	ret = 0;
  out:
-<<<<<<< HEAD
-=======
 	jffs2_sum_reset_collected(s);
 	kfree(s);
  out_buf:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (buf_size)
 		kfree(flashbuf);
 #ifndef __ECOS
 	else
 		mtd_unpoint(c->mtd, 0, c->mtd->size);
 #endif
-<<<<<<< HEAD
-	kfree(s);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -545,16 +530,11 @@ static int jffs2_scan_eraseblock (struct jffs2_sb_info *c, struct jffs2_eraseblo
 					err = jffs2_fill_scan_buf(c, sumptr, 
 								  jeb->offset + c->sector_size - sumlen,
 								  sumlen - buf_len);				
-<<<<<<< HEAD
-					if (err)
-						return err;
-=======
 					if (err) {
 						if (sumlen > buf_size)
 							kfree(sumptr);
 						return err;
 					}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 
@@ -1101,11 +1081,7 @@ static int jffs2_scan_dirent_node(struct jffs2_sb_info *c, struct jffs2_eraseblo
 	memcpy(&fd->name, rd->name, checkedlen);
 	fd->name[checkedlen] = 0;
 
-<<<<<<< HEAD
-	crc = crc32(0, fd->name, rd->nsize);
-=======
 	crc = crc32(0, fd->name, checkedlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (crc != je32_to_cpu(rd->name_crc)) {
 		pr_notice("%s(): Name CRC failed on node at 0x%08x: Read 0x%08x, calculated 0x%08x\n",
 			  __func__, ofs, je32_to_cpu(rd->name_crc), crc);
@@ -1130,11 +1106,7 @@ static int jffs2_scan_dirent_node(struct jffs2_sb_info *c, struct jffs2_eraseblo
 	fd->next = NULL;
 	fd->version = je32_to_cpu(rd->version);
 	fd->ino = je32_to_cpu(rd->ino);
-<<<<<<< HEAD
-	fd->nhash = full_name_hash(fd->name, checkedlen);
-=======
 	fd->nhash = full_name_hash(NULL, fd->name, checkedlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fd->type = rd->type;
 	jffs2_add_fd_to_list(c, fd, &ic->scan_dents);
 

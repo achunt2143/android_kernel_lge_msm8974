@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -38,27 +20,6 @@
 BFA_TRC_FILE(FCS, FCS);
 
 /*
-<<<<<<< HEAD
- * FCS sub-modules
- */
-struct bfa_fcs_mod_s {
-	void		(*attach) (struct bfa_fcs_s *fcs);
-	void		(*modinit) (struct bfa_fcs_s *fcs);
-	void		(*modexit) (struct bfa_fcs_s *fcs);
-};
-
-#define BFA_FCS_MODULE(_mod) { _mod ## _modinit, _mod ## _modexit }
-
-static struct bfa_fcs_mod_s fcs_modules[] = {
-	{ bfa_fcs_port_attach, NULL, NULL },
-	{ bfa_fcs_uf_attach, NULL, NULL },
-	{ bfa_fcs_fabric_attach, bfa_fcs_fabric_modinit,
-	  bfa_fcs_fabric_modexit },
-};
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  fcs_api BFA FCS API
  */
 
@@ -71,58 +32,12 @@ bfa_fcs_exit_comp(void *fcs_cbarg)
 	complete(&bfad->comp);
 }
 
-<<<<<<< HEAD
-
-
-/*
- *  fcs_api BFA FCS API
- */
-
-/*
- * fcs attach -- called once to initialize data structures at driver attach time
- */
-void
-bfa_fcs_attach(struct bfa_fcs_s *fcs, struct bfa_s *bfa, struct bfad_s *bfad,
-	       bfa_boolean_t min_cfg)
-{
-	int		i;
-	struct bfa_fcs_mod_s  *mod;
-
-	fcs->bfa = bfa;
-	fcs->bfad = bfad;
-	fcs->min_cfg = min_cfg;
-
-	bfa->fcs = BFA_TRUE;
-	fcbuild_init();
-
-	for (i = 0; i < sizeof(fcs_modules) / sizeof(fcs_modules[0]); i++) {
-		mod = &fcs_modules[i];
-		if (mod->attach)
-			mod->attach(fcs);
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fcs initialization, called once after bfa initialization is complete
  */
 void
 bfa_fcs_init(struct bfa_fcs_s *fcs)
 {
-<<<<<<< HEAD
-	int	i;
-	struct bfa_fcs_mod_s  *mod;
-
-	for (i = 0; i < sizeof(fcs_modules) / sizeof(fcs_modules[0]); i++) {
-		mod = &fcs_modules[i];
-		if (mod->modinit)
-			mod->modinit(fcs);
-	}
-}
-
-/*
-=======
 	bfa_sm_send_event(&fcs->fabric, BFA_FCS_FABRIC_SM_CREATE);
 	bfa_trc(fcs, 0);
 }
@@ -132,7 +47,6 @@ bfa_fcs_init(struct bfa_fcs_s *fcs)
  */
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FCS update cfg - reset the pwwn/nwwn of fabric base logical port
  * with values learned during bfa_init firmware GETATTR REQ.
  */
@@ -148,8 +62,6 @@ bfa_fcs_update_cfg(struct bfa_fcs_s *fcs)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Stop FCS operations.
  */
 void
@@ -162,7 +74,6 @@ bfa_fcs_stop(struct bfa_fcs_s *fcs)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fcs pbc vport initialization
  */
 void
@@ -197,10 +108,7 @@ bfa_fcs_driver_info_init(struct bfa_fcs_s *fcs,
 	fcs->driver_info = *driver_info;
 
 	bfa_fcs_fabric_psymb_init(&fcs->fabric);
-<<<<<<< HEAD
-=======
 	bfa_fcs_fabric_nsymb_init(&fcs->fabric);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -213,28 +121,6 @@ bfa_fcs_driver_info_init(struct bfa_fcs_s *fcs,
 void
 bfa_fcs_exit(struct bfa_fcs_s *fcs)
 {
-<<<<<<< HEAD
-	struct bfa_fcs_mod_s  *mod;
-	int		nmods, i;
-
-	bfa_wc_init(&fcs->wc, bfa_fcs_exit_comp, fcs);
-
-	nmods = sizeof(fcs_modules) / sizeof(fcs_modules[0]);
-
-	for (i = 0; i < nmods; i++) {
-
-		mod = &fcs_modules[i];
-		if (mod->modexit) {
-			bfa_wc_up(&fcs->wc);
-			mod->modexit(fcs);
-		}
-	}
-
-	bfa_wc_wait(&fcs->wc);
-}
-
-
-=======
 	bfa_wc_init(&fcs->wc, bfa_fcs_exit_comp, fcs);
 	bfa_wc_up(&fcs->wc);
 	bfa_trc(fcs, 0);
@@ -243,7 +129,6 @@ bfa_fcs_exit(struct bfa_fcs_s *fcs)
 	bfa_wc_wait(&fcs->wc);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Fabric module implementation.
  */
@@ -272,11 +157,8 @@ static void bfa_fcs_fabric_notify_offline(struct bfa_fcs_fabric_s *fabric);
 static void bfa_fcs_fabric_delay(void *cbarg);
 static void bfa_fcs_fabric_delete(struct bfa_fcs_fabric_s *fabric);
 static void bfa_fcs_fabric_delete_comp(void *cbarg);
-<<<<<<< HEAD
-=======
 static void bfa_fcs_fabric_stop(struct bfa_fcs_fabric_s *fabric);
 static void bfa_fcs_fabric_stop_comp(void *cbarg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bfa_fcs_fabric_process_uf(struct bfa_fcs_fabric_s *fabric,
 				      struct fchs_s *fchs, u16 len);
 static void bfa_fcs_fabric_process_flogi(struct bfa_fcs_fabric_s *fabric,
@@ -288,12 +170,6 @@ static void bfa_fcs_fabric_flogiacc_comp(void *fcsarg,
 					 u32 rsp_len,
 					 u32 resid_len,
 					 struct fchs_s *rspfchs);
-<<<<<<< HEAD
-static u8 bfa_fcs_fabric_oper_bbscn(struct bfa_fcs_fabric_s *fabric);
-static bfa_boolean_t bfa_fcs_fabric_is_bbscn_enabled(
-				struct bfa_fcs_fabric_s *fabric);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void	bfa_fcs_fabric_sm_uninit(struct bfa_fcs_fabric_s *fabric,
 					 enum bfa_fcs_fabric_event event);
@@ -317,13 +193,10 @@ static void	bfa_fcs_fabric_sm_isolated(struct bfa_fcs_fabric_s *fabric,
 					   enum bfa_fcs_fabric_event event);
 static void	bfa_fcs_fabric_sm_deleting(struct bfa_fcs_fabric_s *fabric,
 					   enum bfa_fcs_fabric_event event);
-<<<<<<< HEAD
-=======
 static void	bfa_fcs_fabric_sm_stopping(struct bfa_fcs_fabric_s *fabric,
 					   enum bfa_fcs_fabric_event event);
 static void	bfa_fcs_fabric_sm_cleanup(struct bfa_fcs_fabric_s *fabric,
 					  enum bfa_fcs_fabric_event event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   Beginning state before fabric creation.
  */
@@ -357,23 +230,13 @@ static void
 bfa_fcs_fabric_sm_created(struct bfa_fcs_fabric_s *fabric,
 			  enum bfa_fcs_fabric_event event)
 {
-<<<<<<< HEAD
-=======
 	struct bfa_s	*bfa = fabric->fcs->bfa;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_trc(fabric->fcs, fabric->bport.port_cfg.pwwn);
 	bfa_trc(fabric->fcs, event);
 
 	switch (event) {
 	case BFA_FCS_FABRIC_SM_START:
-<<<<<<< HEAD
-		if (bfa_fcport_is_linkup(fabric->fcs->bfa)) {
-			bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_flogi);
-			bfa_fcs_fabric_login(fabric);
-		} else
-			bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_linkdown);
-=======
 		if (!bfa_fcport_is_linkup(fabric->fcs->bfa)) {
 			bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_linkdown);
 			break;
@@ -391,7 +254,6 @@ bfa_fcs_fabric_sm_created(struct bfa_fcs_fabric_s *fabric,
 			bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_flogi);
 			bfa_fcs_fabric_login(fabric);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFA_FCS_FABRIC_SM_LINK_UP:
@@ -416,23 +278,13 @@ static void
 bfa_fcs_fabric_sm_linkdown(struct bfa_fcs_fabric_s *fabric,
 			   enum bfa_fcs_fabric_event event)
 {
-<<<<<<< HEAD
-=======
 	struct bfa_s	*bfa = fabric->fcs->bfa;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_trc(fabric->fcs, fabric->bport.port_cfg.pwwn);
 	bfa_trc(fabric->fcs, event);
 
 	switch (event) {
 	case BFA_FCS_FABRIC_SM_LINK_UP:
-<<<<<<< HEAD
-		bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_flogi);
-		bfa_fcs_fabric_login(fabric);
-		break;
-
-	case BFA_FCS_FABRIC_SM_RETRY_OP:
-=======
 		if (bfa_fcport_get_topology(bfa) != BFA_PORT_TOPOLOGY_LOOP) {
 			bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_flogi);
 			bfa_fcs_fabric_login(fabric);
@@ -448,7 +300,6 @@ bfa_fcs_fabric_sm_linkdown(struct bfa_fcs_fabric_s *fabric,
 
 	case BFA_FCS_FABRIC_SM_RETRY_OP:
 	case BFA_FCS_FABRIC_SM_LOOPBACK:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFA_FCS_FABRIC_SM_DELETE:
@@ -456,14 +307,11 @@ bfa_fcs_fabric_sm_linkdown(struct bfa_fcs_fabric_s *fabric,
 		bfa_fcs_fabric_delete(fabric);
 		break;
 
-<<<<<<< HEAD
-=======
 	case BFA_FCS_FABRIC_SM_STOP:
 		bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_cleanup);
 		bfa_fcs_fabric_stop(fabric);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfa_sm_fault(fabric->fcs, event);
 	}
@@ -483,12 +331,7 @@ bfa_fcs_fabric_sm_flogi(struct bfa_fcs_fabric_s *fabric,
 	case BFA_FCS_FABRIC_SM_CONT_OP:
 
 		bfa_fcport_set_tx_bbcredit(fabric->fcs->bfa,
-<<<<<<< HEAD
-					   fabric->bb_credit,
-					   bfa_fcs_fabric_oper_bbscn(fabric));
-=======
 					   fabric->bb_credit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fabric->fab_type = BFA_FCS_FABRIC_SWITCHED;
 
 		if (fabric->auth_reqd && fabric->is_auth) {
@@ -516,12 +359,7 @@ bfa_fcs_fabric_sm_flogi(struct bfa_fcs_fabric_s *fabric,
 	case BFA_FCS_FABRIC_SM_NO_FABRIC:
 		fabric->fab_type = BFA_FCS_FABRIC_N2N;
 		bfa_fcport_set_tx_bbcredit(fabric->fcs->bfa,
-<<<<<<< HEAD
-					   fabric->bb_credit,
-					   bfa_fcs_fabric_oper_bbscn(fabric));
-=======
 					   fabric->bb_credit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bfa_fcs_fabric_notify_online(fabric);
 		bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_nofabric);
 		break;
@@ -689,12 +527,7 @@ bfa_fcs_fabric_sm_nofabric(struct bfa_fcs_fabric_s *fabric,
 	case BFA_FCS_FABRIC_SM_NO_FABRIC:
 		bfa_trc(fabric->fcs, fabric->bb_credit);
 		bfa_fcport_set_tx_bbcredit(fabric->fcs->bfa,
-<<<<<<< HEAD
-					   fabric->bb_credit,
-					   bfa_fcs_fabric_oper_bbscn(fabric));
-=======
 					   fabric->bb_credit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFA_FCS_FABRIC_SM_RETRY_OP:
@@ -712,28 +545,20 @@ void
 bfa_fcs_fabric_sm_online(struct bfa_fcs_fabric_s *fabric,
 			 enum bfa_fcs_fabric_event event)
 {
-<<<<<<< HEAD
-=======
 	struct bfa_s	*bfa = fabric->fcs->bfa;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_trc(fabric->fcs, fabric->bport.port_cfg.pwwn);
 	bfa_trc(fabric->fcs, event);
 
 	switch (event) {
 	case BFA_FCS_FABRIC_SM_LINK_DOWN:
 		bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_linkdown);
-<<<<<<< HEAD
-		bfa_sm_send_event(fabric->lps, BFA_LPS_SM_OFFLINE);
-		bfa_fcs_fabric_notify_offline(fabric);
-=======
 		if (bfa_fcport_get_topology(bfa) == BFA_PORT_TOPOLOGY_LOOP) {
 			bfa_fcs_lport_offline(&fabric->bport);
 		} else {
 			bfa_sm_send_event(fabric->lps, BFA_LPS_SM_OFFLINE);
 			bfa_fcs_fabric_notify_offline(fabric);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFA_FCS_FABRIC_SM_DELETE:
@@ -741,14 +566,11 @@ bfa_fcs_fabric_sm_online(struct bfa_fcs_fabric_s *fabric,
 		bfa_fcs_fabric_delete(fabric);
 		break;
 
-<<<<<<< HEAD
-=======
 	case BFA_FCS_FABRIC_SM_STOP:
 		bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_stopping);
 		bfa_fcs_fabric_stop(fabric);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BFA_FCS_FABRIC_SM_AUTH_FAILED:
 		bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_auth_failed);
 		bfa_sm_send_event(fabric->lps, BFA_LPS_SM_OFFLINE);
@@ -846,9 +668,6 @@ bfa_fcs_fabric_sm_deleting(struct bfa_fcs_fabric_s *fabric,
 	}
 }
 
-<<<<<<< HEAD
-
-=======
 /*
  * Fabric is being stopped, awaiting vport stop completions.
  */
@@ -914,7 +733,6 @@ bfa_fcs_fabric_sm_cleanup(struct bfa_fcs_fabric_s *fabric,
 		bfa_sm_fault(fabric->fcs, event);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  fcs_fabric_private fabric private functions
@@ -943,25 +761,6 @@ bfa_fcs_fabric_psymb_init(struct bfa_fcs_fabric_s *fabric)
 	bfa_ioc_get_adapter_model(&fabric->fcs->bfa->ioc, model);
 
 	/* Model name/number */
-<<<<<<< HEAD
-	strncpy((char *)&port_cfg->sym_name, model,
-		BFA_FCS_PORT_SYMBNAME_MODEL_SZ);
-	strncat((char *)&port_cfg->sym_name, BFA_FCS_PORT_SYMBNAME_SEPARATOR,
-		sizeof(BFA_FCS_PORT_SYMBNAME_SEPARATOR));
-
-	/* Driver Version */
-	strncat((char *)&port_cfg->sym_name, (char *)driver_info->version,
-		BFA_FCS_PORT_SYMBNAME_VERSION_SZ);
-	strncat((char *)&port_cfg->sym_name, BFA_FCS_PORT_SYMBNAME_SEPARATOR,
-		sizeof(BFA_FCS_PORT_SYMBNAME_SEPARATOR));
-
-	/* Host machine name */
-	strncat((char *)&port_cfg->sym_name,
-		(char *)driver_info->host_machine_name,
-		BFA_FCS_PORT_SYMBNAME_MACHINENAME_SZ);
-	strncat((char *)&port_cfg->sym_name, BFA_FCS_PORT_SYMBNAME_SEPARATOR,
-		sizeof(BFA_FCS_PORT_SYMBNAME_SEPARATOR));
-=======
 	strscpy(port_cfg->sym_name.symname, model,
 		BFA_SYMNAME_MAXLEN);
 	strlcat(port_cfg->sym_name.symname, BFA_FCS_PORT_SYMBNAME_SEPARATOR,
@@ -979,7 +778,6 @@ bfa_fcs_fabric_psymb_init(struct bfa_fcs_fabric_s *fabric)
 		BFA_SYMNAME_MAXLEN);
 	strlcat(port_cfg->sym_name.symname, BFA_FCS_PORT_SYMBNAME_SEPARATOR,
 		BFA_SYMNAME_MAXLEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Host OS Info :
@@ -987,26 +785,6 @@ bfa_fcs_fabric_psymb_init(struct bfa_fcs_fabric_s *fabric)
 	 * OS name string and instead copy the entire OS info string (64 bytes).
 	 */
 	if (driver_info->host_os_patch[0] == '\0') {
-<<<<<<< HEAD
-		strncat((char *)&port_cfg->sym_name,
-			(char *)driver_info->host_os_name,
-			BFA_FCS_OS_STR_LEN);
-		strncat((char *)&port_cfg->sym_name,
-			BFA_FCS_PORT_SYMBNAME_SEPARATOR,
-			sizeof(BFA_FCS_PORT_SYMBNAME_SEPARATOR));
-	} else {
-		strncat((char *)&port_cfg->sym_name,
-			(char *)driver_info->host_os_name,
-			BFA_FCS_PORT_SYMBNAME_OSINFO_SZ);
-		strncat((char *)&port_cfg->sym_name,
-			BFA_FCS_PORT_SYMBNAME_SEPARATOR,
-			sizeof(BFA_FCS_PORT_SYMBNAME_SEPARATOR));
-
-		/* Append host OS Patch Info */
-		strncat((char *)&port_cfg->sym_name,
-			(char *)driver_info->host_os_patch,
-			BFA_FCS_PORT_SYMBNAME_OSPATCH_SZ);
-=======
 		strlcat(port_cfg->sym_name.symname,
 			driver_info->host_os_name,
 			BFA_SYMNAME_MAXLEN);
@@ -1025,7 +803,6 @@ bfa_fcs_fabric_psymb_init(struct bfa_fcs_fabric_s *fabric)
 		strlcat(port_cfg->sym_name.symname,
 			driver_info->host_os_patch,
 			BFA_SYMNAME_MAXLEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* null terminate */
@@ -1033,8 +810,6 @@ bfa_fcs_fabric_psymb_init(struct bfa_fcs_fabric_s *fabric)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Node Symbolic Name Creation for base port and all vports
  */
 void
@@ -1073,7 +848,6 @@ bfa_fcs_fabric_nsymb_init(struct bfa_fcs_fabric_s *fabric)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * bfa lps login completion callback
  */
 void
@@ -1115,13 +889,6 @@ bfa_cb_lps_flogi_comp(void *bfad, void *uarg, bfa_status_t status)
 
 	case BFA_STATUS_FABRIC_RJT:
 		fabric->stats.flogi_rejects++;
-<<<<<<< HEAD
-		if (fabric->lps->lsrjt_rsn == FC_LS_RJT_RSN_LOGICAL_ERROR &&
-		    fabric->lps->lsrjt_expl == FC_LS_RJT_EXP_NO_ADDL_INFO)
-			fabric->fcs->bbscn_flogi_rjt = BFA_TRUE;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bfa_sm_send_event(fabric, BFA_FCS_FABRIC_SM_RETRY_OP);
 		return;
 
@@ -1167,25 +934,11 @@ bfa_fcs_fabric_login(struct bfa_fcs_fabric_s *fabric)
 {
 	struct bfa_s		*bfa = fabric->fcs->bfa;
 	struct bfa_lport_cfg_s	*pcfg = &fabric->bport.port_cfg;
-<<<<<<< HEAD
-	u8			alpa = 0, bb_scn = 0;
-
-	if (bfa_fcport_get_topology(bfa) == BFA_PORT_TOPOLOGY_LOOP)
-		alpa = bfa_fcport_get_myalpa(bfa);
-
-	if (bfa_fcs_fabric_is_bbscn_enabled(fabric) &&
-	    (!fabric->fcs->bbscn_flogi_rjt))
-		bb_scn = BFA_FCS_PORT_DEF_BB_SCN;
-
-	bfa_lps_flogi(fabric->lps, fabric, alpa, bfa_fcport_get_maxfrsize(bfa),
-		      pcfg->pwwn, pcfg->nwwn, fabric->auth_reqd, bb_scn);
-=======
 	u8			alpa = 0;
 
 
 	bfa_lps_flogi(fabric->lps, fabric, alpa, bfa_fcport_get_maxfrsize(bfa),
 		      pcfg->pwwn, pcfg->nwwn, fabric->auth_reqd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fabric->stats.flogi_sent++;
 }
@@ -1244,39 +997,6 @@ bfa_fcs_fabric_delay(void *cbarg)
 }
 
 /*
-<<<<<<< HEAD
- * Computes operating BB_SCN value
- */
-static u8
-bfa_fcs_fabric_oper_bbscn(struct bfa_fcs_fabric_s *fabric)
-{
-	u8	pr_bbscn = fabric->lps->pr_bbscn;
-	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(fabric->fcs->bfa);
-
-	if (!(fcport->cfg.bb_scn_state && pr_bbscn))
-		return 0;
-
-	/* return max of local/remote bb_scn values */
-	return ((pr_bbscn > BFA_FCS_PORT_DEF_BB_SCN) ?
-		pr_bbscn : BFA_FCS_PORT_DEF_BB_SCN);
-}
-
-/*
- * Check if BB_SCN can be enabled.
- */
-static bfa_boolean_t
-bfa_fcs_fabric_is_bbscn_enabled(struct bfa_fcs_fabric_s *fabric)
-{
-	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(fabric->fcs->bfa);
-
-	if (bfa_ioc_get_fcmode(&fabric->fcs->bfa->ioc) &&
-			fcport->cfg.bb_scn_state &&
-			!bfa_fcport_is_qos_enabled(fabric->fcs->bfa) &&
-			!bfa_fcport_is_trunk_enabled(fabric->fcs->bfa))
-		return BFA_TRUE;
-	else
-		return BFA_FALSE;
-=======
  * Stop all vports and wait for vport stop completions.
  */
 static void
@@ -1296,7 +1016,6 @@ bfa_fcs_fabric_stop(struct bfa_fcs_fabric_s *fabric)
 	bfa_wc_up(&fabric->stop_wc);
 	bfa_fcs_lport_stop(&fabric->bport);
 	bfa_wc_wait(&fabric->stop_wc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1325,8 +1044,6 @@ bfa_fcs_fabric_delete_comp(void *cbarg)
 	bfa_sm_send_event(fabric, BFA_FCS_FABRIC_SM_DELCOMP);
 }
 
-<<<<<<< HEAD
-=======
 static void
 bfa_fcs_fabric_stop_comp(void *cbarg)
 {
@@ -1335,77 +1052,21 @@ bfa_fcs_fabric_stop_comp(void *cbarg)
 	bfa_sm_send_event(fabric, BFA_FCS_FABRIC_SM_STOPCOMP);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fcs_fabric_public fabric public functions
  */
 
 /*
-<<<<<<< HEAD
- * Attach time initialization.
- */
-void
-bfa_fcs_fabric_attach(struct bfa_fcs_s *fcs)
-{
-	struct bfa_fcs_fabric_s *fabric;
-
-	fabric = &fcs->fabric;
-	memset(fabric, 0, sizeof(struct bfa_fcs_fabric_s));
-
-	/*
-	 * Initialize base fabric.
-	 */
-	fabric->fcs = fcs;
-	INIT_LIST_HEAD(&fabric->vport_q);
-	INIT_LIST_HEAD(&fabric->vf_q);
-	fabric->lps = bfa_lps_alloc(fcs->bfa);
-	WARN_ON(!fabric->lps);
-
-	/*
-	 * Initialize fabric delete completion handler. Fabric deletion is
-	 * complete when the last vport delete is complete.
-	 */
-	bfa_wc_init(&fabric->wc, bfa_fcs_fabric_delete_comp, fabric);
-	bfa_wc_up(&fabric->wc); /* For the base port */
-
-	bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_uninit);
-	bfa_fcs_lport_attach(&fabric->bport, fabric->fcs, FC_VF_ID_NULL, NULL);
-}
-
-void
-bfa_fcs_fabric_modinit(struct bfa_fcs_s *fcs)
-{
-	bfa_sm_send_event(&fcs->fabric, BFA_FCS_FABRIC_SM_CREATE);
-	bfa_trc(fcs, 0);
-}
-
-/*
- *   Module cleanup
- */
-void
-bfa_fcs_fabric_modexit(struct bfa_fcs_s *fcs)
-=======
  * Fabric module stop -- stop FCS actions
  */
 void
 bfa_fcs_fabric_modstop(struct bfa_fcs_s *fcs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bfa_fcs_fabric_s *fabric;
 
 	bfa_trc(fcs, 0);
-<<<<<<< HEAD
-
-	/*
-	 * Cleanup base fabric.
-	 */
-	fabric = &fcs->fabric;
-	bfa_lps_delete(fabric->lps);
-	bfa_sm_send_event(fabric, BFA_FCS_FABRIC_SM_DELETE);
-=======
 	fabric = &fcs->fabric;
 	bfa_sm_send_event(fabric, BFA_FCS_FABRIC_SM_STOP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1439,10 +1100,6 @@ void
 bfa_fcs_fabric_link_down(struct bfa_fcs_fabric_s *fabric)
 {
 	bfa_trc(fabric->fcs, fabric->bport.port_cfg.pwwn);
-<<<<<<< HEAD
-	fabric->fcs->bbscn_flogi_rjt = BFA_FALSE;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_sm_send_event(fabric, BFA_FCS_FABRIC_SM_LINK_DOWN);
 }
 
@@ -1592,16 +1249,11 @@ bfa_fcs_fabric_uf_recv(struct bfa_fcs_fabric_s *fabric, struct fchs_s *fchs,
 			return;
 		}
 	}
-<<<<<<< HEAD
-	bfa_trc(fabric->fcs, els_cmd->els_code);
-	bfa_fcs_lport_uf_recv(&fabric->bport, fchs, len);
-=======
 
 	if (!bfa_fcs_fabric_is_switched(fabric))
 		bfa_fcs_lport_uf_recv(&fabric->bport, fchs, len);
 
 	bfa_trc(fabric->fcs, fchs->type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1654,10 +1306,6 @@ bfa_fcs_fabric_process_flogi(struct bfa_fcs_fabric_s *fabric,
 	}
 
 	fabric->bb_credit = be16_to_cpu(flogi->csp.bbcred);
-<<<<<<< HEAD
-	fabric->lps->pr_bbscn = (be16_to_cpu(flogi->csp.rxsz) >> 12);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bport->port_topo.pn2n.rem_port_wwn = flogi->port_name;
 	bport->port_topo.pn2n.reply_oxid = fchs->ox_id;
 
@@ -1678,11 +1326,7 @@ bfa_fcs_fabric_send_flogi_acc(struct bfa_fcs_fabric_s *fabric)
 	u16	reqlen;
 	struct fchs_s	fchs;
 
-<<<<<<< HEAD
-	fcxp = bfa_fcs_fcxp_alloc(fabric->fcs);
-=======
 	fcxp = bfa_fcs_fcxp_alloc(fabric->fcs, BFA_FALSE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Do not expect this failure -- expect remote node to retry
 	 */
@@ -1694,12 +1338,7 @@ bfa_fcs_fabric_send_flogi_acc(struct bfa_fcs_fabric_s *fabric)
 				    n2n_port->reply_oxid, pcfg->pwwn,
 				    pcfg->nwwn,
 				    bfa_fcport_get_maxfrsize(bfa),
-<<<<<<< HEAD
-				    bfa_fcport_get_rx_bbcredit(bfa),
-				    bfa_fcs_fabric_oper_bbscn(fabric));
-=======
 				    bfa_fcport_get_rx_bbcredit(bfa), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bfa_fcxp_send(fcxp, NULL, fabric->vf_id, fabric->lps->bfa_tag,
 		      BFA_FALSE, FC_CLASS_3,
@@ -1779,8 +1418,6 @@ bfa_fcs_fabric_set_fabric_name(struct bfa_fcs_fabric_s *fabric,
 	}
 }
 
-<<<<<<< HEAD
-=======
 void
 bfa_cb_lps_flogo_comp(void *bfad, void *uarg)
 {
@@ -1788,7 +1425,6 @@ bfa_cb_lps_flogo_comp(void *bfad, void *uarg)
 	bfa_sm_send_event(fabric, BFA_FCS_FABRIC_SM_LOGOCOMP);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Returns FCS vf structure for a given vf_id.
  *
@@ -1870,15 +1506,6 @@ bfa_fcs_port_event_handler(void *cbarg, enum bfa_port_linkstate event)
 	}
 }
 
-<<<<<<< HEAD
-void
-bfa_fcs_port_attach(struct bfa_fcs_s *fcs)
-{
-	bfa_fcport_event_register(fcs->bfa, bfa_fcs_port_event_handler, fcs);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * BFA FCS UF ( Unsolicited Frames)
  */
@@ -1946,12 +1573,6 @@ bfa_fcs_uf_recv(void *cbarg, struct bfa_uf_s *uf)
 	bfa_uf_free(uf);
 }
 
-<<<<<<< HEAD
-void
-bfa_fcs_uf_attach(struct bfa_fcs_s *fcs)
-{
-	bfa_uf_recv_register(fcs->bfa, bfa_fcs_uf_recv, fcs);
-=======
 /*
  * fcs attach -- called once to initialize data structures at driver attach time
  */
@@ -1992,5 +1613,4 @@ bfa_fcs_attach(struct bfa_fcs_s *fcs, struct bfa_s *bfa, struct bfad_s *bfad,
 
 	bfa_sm_set_state(fabric, bfa_fcs_fabric_sm_uninit);
 	bfa_fcs_lport_attach(&fabric->bport, fabric->fcs, FC_VF_ID_NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

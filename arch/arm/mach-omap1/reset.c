@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP1 reset support
  */
 #include <linux/kernel.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-
-#include <plat/prcm.h>
-
-#include <mach/hardware.h>
-
-void omap1_restart(char mode, const char *cmd)
-=======
 #include <linux/reboot.h>
 
 #include "hardware.h"
@@ -35,7 +24,6 @@ void omap1_restart(char mode, const char *cmd)
 
 
 void omap1_restart(enum reboot_mode mode, const char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Workaround for 5912/1611b bug mentioned in sprz209d.pdf p. 28
@@ -48,8 +36,6 @@ void omap1_restart(enum reboot_mode mode, const char *cmd)
 
 	omap_writew(1, ARM_RSTCT1);
 }
-<<<<<<< HEAD
-=======
 
 /**
  * omap1_get_reset_sources - return the source of the SoC's last reset
@@ -75,4 +61,3 @@ u32 omap1_get_reset_sources(void)
 
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

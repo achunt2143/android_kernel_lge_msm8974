@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#ifndef __ASM_GENERIC_FB_H_
-#define __ASM_GENERIC_FB_H_
-#include <linux/fb.h>
-
-#define fb_pgprotect(...) do {} while (0)
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 
 #ifndef __ASM_GENERIC_FB_H_
@@ -33,13 +25,10 @@ static inline pgprot_t pgprot_framebuffer(pgprot_t prot,
 
 #ifndef fb_is_primary_device
 #define fb_is_primary_device fb_is_primary_device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int fb_is_primary_device(struct fb_info *info)
 {
 	return 0;
 }
-<<<<<<< HEAD
-=======
 #endif
 
 /*
@@ -142,6 +131,5 @@ static inline void fb_memset_io(volatile void __iomem *addr, int c, size_t n)
 }
 #define fb_memset fb_memset_io
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_GENERIC_FB_H_ */

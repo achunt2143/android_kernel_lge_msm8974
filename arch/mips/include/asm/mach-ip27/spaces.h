@@ -10,17 +10,6 @@
 #ifndef _ASM_MACH_IP27_SPACES_H
 #define _ASM_MACH_IP27_SPACES_H
 
-<<<<<<< HEAD
-/*
- * IP27 uses the R10000's uncached attribute feature.  Attribute 3 selects
- * uncached memory addressing.
- */
-
-#define HSPEC_BASE		0x9000000000000000
-#define IO_BASE			0x9200000000000000
-#define MSPEC_BASE		0x9400000000000000
-#define UNCAC_BASE		0x9600000000000000
-=======
 #include <linux/const.h>
 
 /*
@@ -35,7 +24,6 @@
 #define UNCAC_BASE		_AC(0x9600000000000000, UL)
 #define CAC_BASE		_AC(0xa800000000000000, UL)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TO_MSPEC(x)		(MSPEC_BASE | ((x) & TO_PHYS_MASK))
 #define TO_HSPEC(x)		(HSPEC_BASE | ((x) & TO_PHYS_MASK))

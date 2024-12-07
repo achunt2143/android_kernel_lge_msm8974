@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-#
-# NFC sybsystem configuration
-#
-
-menuconfig NFC
-	depends on NET && EXPERIMENTAL
-	tristate "NFC subsystem support (EXPERIMENTAL)"
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 #
 # NFC subsystem configuration
@@ -15,7 +6,6 @@ menuconfig NFC
 menuconfig NFC
 	depends on RFKILL || !RFKILL
 	tristate "NFC subsystem support"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	help
 	  Say Y here if you want to build support for NFC (Near field
@@ -24,10 +14,6 @@ menuconfig NFC
 	  To compile this support as a module, choose M here: the module will
 	  be called nfc.
 
-<<<<<<< HEAD
-source "net/nfc/nci/Kconfig"
-source "net/nfc/llcp/Kconfig"
-=======
 config NFC_DIGITAL
 	depends on NFC
 	select CRC_CCITT
@@ -44,6 +30,5 @@ config NFC_DIGITAL
 
 source "net/nfc/nci/Kconfig"
 source "net/nfc/hci/Kconfig"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 source "drivers/nfc/Kconfig"

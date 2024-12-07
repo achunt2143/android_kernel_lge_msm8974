@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2001-2002 by David Brownell
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright (c) 2001-2002 by David Brownell
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_EHCI_HCD_H
@@ -44,22 +25,15 @@ typedef __u16 __bitwise __hc16;
 #endif
 
 /* statistics can be kept for tuning/monitoring */
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_DYNAMIC_DEBUG
 #define EHCI_STATS
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ehci_stats {
 	/* irq usage */
 	unsigned long		normal;
 	unsigned long		error;
-<<<<<<< HEAD
-	unsigned long		reclaim;
-=======
 	unsigned long		iaa;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		lost_iaa;
 
 	/* termination of urbs from core */
@@ -67,10 +41,6 @@ struct ehci_stats {
 	unsigned long		unlink;
 };
 
-<<<<<<< HEAD
-/* ehci_hcd->lock guards shared data against other CPUs:
- *   ehci_hcd:	async, reclaim, periodic (and shadow), ...
-=======
 /*
  * Scheduling and budgeting information for periodic transfers, for both
  * high-speed devices and full/low-speed devices lying behind a TT.
@@ -95,7 +65,6 @@ struct ehci_per_sched {
 
 /* ehci_hcd->lock guards shared data against other CPUs:
  *   ehci_hcd:	async, unlink, periodic (and shadow), ...
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   usb_host_endpoint: hcpriv
  *   ehci_qh:	qh_next, qtd_list
  *   ehci_qtd:	qtd_list
@@ -106,15 +75,6 @@ struct ehci_per_sched {
 
 #define	EHCI_MAX_ROOT_PORTS	15		/* see HCS_N_PORTS */
 
-<<<<<<< HEAD
-enum ehci_rh_state {
-	EHCI_RH_HALTED,
-	EHCI_RH_SUSPENDED,
-	EHCI_RH_RUNNING
-};
-
-struct ehci_hcd {			/* one per controller */
-=======
 /*
  * ehci_rh_state values of EHCI_RH_RUNNING or above mean that the
  * controller may be doing DMA.  Lower values mean there's no DMA.
@@ -159,7 +119,6 @@ struct ehci_hcd {			/* one per controller */
 	int			ASS_poll_count;
 	int			died_poll_count;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* glue to PCI and HCD framework */
 	struct ehci_caps __iomem *caps;
 	struct ehci_regs __iomem *regs;
@@ -169,14 +128,6 @@ struct ehci_hcd {			/* one per controller */
 	spinlock_t		lock;
 	enum ehci_rh_state	rh_state;
 
-<<<<<<< HEAD
-	/* async schedule support */
-	struct ehci_qh		*async;
-	struct ehci_qh		*dummy;		/* For AMD quirk use */
-	struct ehci_qh		*reclaim;
-	struct ehci_qh		*qh_scan_next;
-	unsigned		scanning : 1;
-=======
 	/* general schedule support */
 	bool			scanning:1;
 	bool			need_rescan:1;
@@ -195,30 +146,12 @@ struct ehci_hcd {			/* one per controller */
 	unsigned		async_count;	/* async activity count */
 	__hc32			old_current;	/* Test for QH becoming */
 	__hc32			old_token;	/*  inactive during unlink */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* periodic schedule support */
 #define	DEFAULT_I_TDPS		1024		/* some HCs can do less */
 	unsigned		periodic_size;
 	__hc32			*periodic;	/* hw periodic table */
 	dma_addr_t		periodic_dma;
-<<<<<<< HEAD
-	unsigned		i_thresh;	/* uframes HC might cache */
-
-	union ehci_shadow	*pshadow;	/* mirror hw periodic table */
-	int			next_uframe;	/* scan periodic, start here */
-	unsigned		periodic_sched;	/* periodic activity count */
-	unsigned		uframe_periodic_max; /* max periodic time per uframe */
-
-
-	/* list of itds & sitds completed while clock_frame was still active */
-	struct list_head	cached_itd_list;
-	struct list_head	cached_sitd_list;
-	unsigned		clock_frame;
-
-	/* per root hub port */
-	unsigned long		reset_done [EHCI_MAX_ROOT_PORTS];
-=======
 	struct list_head	intr_qh_list;
 	unsigned		i_thresh;	/* uframes HC might cache */
 
@@ -243,7 +176,6 @@ struct ehci_hcd {			/* one per controller */
 
 	/* per root hub port */
 	unsigned long		reset_done[EHCI_MAX_ROOT_PORTS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* bit vectors (one bit per port) */
 	unsigned long		bus_suspended;		/* which ports were
@@ -265,50 +197,22 @@ struct ehci_hcd {			/* one per controller */
 	struct dma_pool		*itd_pool;	/* itd per iso urb */
 	struct dma_pool		*sitd_pool;	/* sitd per split iso urb */
 
-<<<<<<< HEAD
-	struct timer_list	iaa_watchdog;
-	struct timer_list	watchdog;
-	unsigned long		actions;
-	unsigned		periodic_stamp;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned		random_frame;
 	unsigned long		next_statechange;
 	ktime_t			last_periodic_enable;
 	u32			command;
 
-<<<<<<< HEAD
-	unsigned		log2_irq_thresh;
-
-	/* SILICON QUIRKS */
-	unsigned		no_selective_suspend:1;
-	unsigned		has_fsl_port_bug:1; /* FreeScale */
-=======
 	/* SILICON QUIRKS */
 	unsigned		no_selective_suspend:1;
 	unsigned		has_fsl_port_bug:1; /* FreeScale */
 	unsigned		has_fsl_hs_errata:1;	/* Freescale HS quirk */
 	unsigned		has_fsl_susp_errata:1;	/* NXP SUSP quirk */
 	unsigned		has_ci_pec_bug:1;	/* ChipIdea PEC bug */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned		big_endian_mmio:1;
 	unsigned		big_endian_desc:1;
 	unsigned		big_endian_capbase:1;
 	unsigned		has_amcc_usb23:1;
 	unsigned		need_io_watchdog:1;
-<<<<<<< HEAD
-	unsigned		broken_periodic:1;
-	unsigned		amd_pll_fix:1;
-	unsigned		fs_i_thresh:1;	/* Intel iso scheduling */
-	unsigned		use_dummy_qh:1;	/* AMD Frame List table quirk*/
-	unsigned		has_synopsys_hc_bug:1; /* Synopsys HC */
-	unsigned		frame_index_bug:1; /* MosChip (AKA NetMos) */
-	unsigned		susp_sof_bug:1; /*Chip Idea HC*/
-	unsigned		resume_sof_bug:1;/*Chip Idea HC*/
-	unsigned		reset_sof_bug:1; /*Chip Idea HC*/
-	bool			disable_cerr;
-	u32			reset_delay;
-=======
 	unsigned		amd_pll_fix:1;
 	unsigned		use_dummy_qh:1;	/* AMD Frame List table quirk*/
 	unsigned		has_synopsys_hc_bug:1; /* Synopsys HC */
@@ -318,7 +222,6 @@ struct ehci_hcd {			/* one per controller */
 	unsigned		spurious_oc:1;
 	unsigned		is_aspeed:1;
 	unsigned		zx_wakeup_clear_needed:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* required for usb32 quirk */
 	#define OHCI_CTRL_HCFS          (3 << 6)
@@ -329,74 +232,13 @@ struct ehci_hcd {			/* one per controller */
 	#define OHCI_HCCTRL_LEN         0x4
 	__hc32			*ohci_hcctrl_reg;
 	unsigned		has_hostpc:1;
-<<<<<<< HEAD
-	unsigned		has_lpm:1;  /* support link power management */
-	unsigned		has_ppcd:1; /* support per-port change bits */
-	unsigned		pool_64_bit_align:1; /* for 64 bit alignment */
-=======
 	unsigned		has_tdi_phy_lpm:1;
 	unsigned		has_ppcd:1; /* support per-port change bits */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			sbrn;		/* packed release number */
 
 	/* irq statistics */
 #ifdef EHCI_STATS
 	struct ehci_stats	stats;
-<<<<<<< HEAD
-#	define COUNT(x) do { (x)++; } while (0)
-#else
-#	define COUNT(x) do {} while (0)
-#endif
-
-	/* debug files */
-#ifdef DEBUG
-	struct dentry		*debug_dir;
-#endif
-	/*
-	 * OTG controllers and transceivers need software interaction
-	 */
-	struct usb_phy	*transceiver;
-};
-
-/* convert between an HCD pointer and the corresponding EHCI_HCD */
-static inline struct ehci_hcd *hcd_to_ehci (struct usb_hcd *hcd)
-{
-	return (struct ehci_hcd *) (hcd->hcd_priv);
-}
-static inline struct usb_hcd *ehci_to_hcd (struct ehci_hcd *ehci)
-{
-	return container_of ((void *) ehci, struct usb_hcd, hcd_priv);
-}
-
-
-static inline void
-iaa_watchdog_start(struct ehci_hcd *ehci)
-{
-	WARN_ON(timer_pending(&ehci->iaa_watchdog));
-	mod_timer(&ehci->iaa_watchdog,
-			jiffies + msecs_to_jiffies(EHCI_IAA_MSECS));
-}
-
-static inline void iaa_watchdog_done(struct ehci_hcd *ehci)
-{
-	del_timer(&ehci->iaa_watchdog);
-}
-
-enum ehci_timer_action {
-	TIMER_IO_WATCHDOG,
-	TIMER_ASYNC_SHRINK,
-	TIMER_ASYNC_OFF,
-};
-
-static inline void
-timer_action_done (struct ehci_hcd *ehci, enum ehci_timer_action action)
-{
-	clear_bit (action, &ehci->actions);
-}
-
-static void free_cached_lists(struct ehci_hcd *ehci);
-
-=======
 #	define INCR(x) ((x)++)
 #else
 #	define INCR(x) do {} while (0)
@@ -430,7 +272,6 @@ static inline struct usb_hcd *ehci_to_hcd(struct ehci_hcd *ehci)
 	return container_of((void *) ehci, struct usb_hcd, hcd_priv);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------*/
 
 #include <linux/usb/ehci_def.h>
@@ -470,43 +311,25 @@ struct ehci_qtd {
 #define HALT_BIT(ehci)		cpu_to_hc32(ehci, QTD_STS_HALT)
 #define STATUS_BIT(ehci)	cpu_to_hc32(ehci, QTD_STS_STS)
 
-<<<<<<< HEAD
-	__hc32			hw_buf [5];        /* see EHCI 3.5.4 */
-	__hc32			hw_buf_hi [5];        /* Appendix B */
-=======
 	__hc32			hw_buf[5];        /* see EHCI 3.5.4 */
 	__hc32			hw_buf_hi[5];        /* Appendix B */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* the rest is HCD-private */
 	dma_addr_t		qtd_dma;		/* qtd address */
 	struct list_head	qtd_list;		/* sw qtd list */
 	struct urb		*urb;			/* qtd's urb */
 	size_t			length;			/* length of buffer */
-<<<<<<< HEAD
-} __attribute__ ((aligned (32)));
-
-/* mask NakCnt+T in qh->hw_alt_next */
-#define QTD_MASK(ehci)	cpu_to_hc32 (ehci, ~0x1f)
-
-#define IS_SHORT_READ(token) (QTD_LENGTH (token) != 0 && QTD_PID (token) == 1)
-=======
 } __aligned(32);
 
 /* mask NakCnt+T in qh->hw_alt_next */
 #define QTD_MASK(ehci)	cpu_to_hc32(ehci, ~0x1f)
 
 #define IS_SHORT_READ(token) (QTD_LENGTH(token) != 0 && QTD_PID(token) == 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*-------------------------------------------------------------------------*/
 
 /* type tag from {qh,itd,sitd,fstn}->hw_next */
-<<<<<<< HEAD
-#define Q_NEXT_TYPE(ehci,dma)	((dma) & cpu_to_hc32(ehci, 3 << 1))
-=======
 #define Q_NEXT_TYPE(ehci, dma)	((dma) & cpu_to_hc32(ehci, 3 << 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Now the following defines are not converted using the
@@ -522,12 +345,8 @@ struct ehci_qtd {
 #define Q_TYPE_FSTN	(3 << 1)
 
 /* next async queue entry, or pointer to interrupt/periodic QH */
-<<<<<<< HEAD
-#define QH_NEXT(ehci,dma)	(cpu_to_hc32(ehci, (((u32)dma)&~0x01f)|Q_TYPE_QH))
-=======
 #define QH_NEXT(ehci, dma) \
 		(cpu_to_hc32(ehci, (((u32) dma) & ~0x01f) | Q_TYPE_QH))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* for periodic/async schedules and qtd lists, mark end of list */
 #define EHCI_LIST_END(ehci)	cpu_to_hc32(ehci, 1) /* "null pointer" to hw */
@@ -563,9 +382,6 @@ union ehci_shadow {
 struct ehci_qh_hw {
 	__hc32			hw_next;	/* see EHCI 3.6.1 */
 	__hc32			hw_info1;       /* see EHCI 3.6.2 */
-<<<<<<< HEAD
-#define	QH_HEAD		0x00008000
-=======
 #define	QH_CONTROL_EP	(1 << 27)	/* FS/LS control endpoint */
 #define	QH_HEAD		(1 << 15)	/* Head of async reclamation list */
 #define	QH_TOGGLE_CTL	(1 << 14)	/* Data toggle control */
@@ -573,7 +389,6 @@ struct ehci_qh_hw {
 #define	QH_LOW_SPEED	(1 << 12)
 #define	QH_FULL_SPEED	(0 << 12)
 #define	QH_INACTIVATE	(1 << 7)	/* Inactivate on next transaction */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__hc32			hw_info2;        /* see EHCI 3.6.2 */
 #define	QH_SMASK	0x000000ff
 #define	QH_CMASK	0x0000ff00
@@ -586,43 +401,16 @@ struct ehci_qh_hw {
 	__hc32			hw_qtd_next;
 	__hc32			hw_alt_next;
 	__hc32			hw_token;
-<<<<<<< HEAD
-	__hc32			hw_buf [5];
-	__hc32			hw_buf_hi [5];
-} __attribute__ ((aligned(32)));
-
-struct ehci_qh {
-	struct ehci_qh_hw	*hw;
-=======
 	__hc32			hw_buf[5];
 	__hc32			hw_buf_hi[5];
 } __aligned(32);
 
 struct ehci_qh {
 	struct ehci_qh_hw	*hw;		/* Must come first */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* the rest is HCD-private */
 	dma_addr_t		qh_dma;		/* address of qh */
 	union ehci_shadow	qh_next;	/* ptr to qh; or periodic */
 	struct list_head	qtd_list;	/* sw qtd list */
-<<<<<<< HEAD
-	struct ehci_qtd		*dummy;
-	struct ehci_qh		*reclaim;	/* next to reclaim */
-
-	struct ehci_hcd		*ehci;
-	unsigned long		unlink_time;
-
-	/*
-	 * Do NOT use atomic operations for QH refcounting. On some CPUs
-	 * (PPC7448 for example), atomic operations cannot be performed on
-	 * memory that is cache-inhibited (i.e. being used for DMA).
-	 * Spinlocks are used to protect all QH fields.
-	 */
-	u32			refcount;
-	unsigned		stamp;
-
-	u8			needs_rescan;	/* Dequeue during giveback */
-=======
 	struct list_head	intr_node;	/* list of intr QHs */
 	struct ehci_qtd		*dummy;
 	struct list_head	unlink_node;
@@ -630,35 +418,16 @@ struct ehci_qh {
 
 	unsigned		unlink_cycle;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			qh_state;
 #define	QH_STATE_LINKED		1		/* HC sees this */
 #define	QH_STATE_UNLINK		2		/* HC may still see this */
 #define	QH_STATE_IDLE		3		/* HC doesn't see this */
-<<<<<<< HEAD
-#define	QH_STATE_UNLINK_WAIT	4		/* LINKED and on reclaim q */
-=======
 #define	QH_STATE_UNLINK_WAIT	4		/* LINKED and on unlink q */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	QH_STATE_COMPLETING	5		/* don't touch token.HALT */
 
 	u8			xacterrs;	/* XactErr retry counter */
 #define	QH_XACTERR_MAX		32		/* XactErr retry limit */
 
-<<<<<<< HEAD
-	/* periodic schedule info */
-	u8			usecs;		/* intr bandwidth */
-	u8			gap_uf;		/* uframes split/csplit gap */
-	u8			c_usecs;	/* ... split completion bw */
-	u16			tt_usecs;	/* tt downstream bandwidth */
-	unsigned short		period;		/* polling interval */
-	unsigned short		start;		/* where polling starts */
-#define NO_FRAME ((unsigned short)~0)			/* pick new start */
-
-	struct usb_device	*dev;		/* access to TT */
-	unsigned		is_out:1;	/* bulk or intr OUT */
-	unsigned		clearing_tt:1;	/* Clear-TT-Buf in progress */
-=======
 	u8			unlink_reason;
 #define QH_UNLINK_HALTED	0x01		/* Halt flag is set */
 #define QH_UNLINK_SHORT_READ	0x02		/* Recover from a short read */
@@ -673,7 +442,6 @@ struct ehci_qh {
 	unsigned		clearing_tt:1;	/* Clear-TT-Buf in progress */
 	unsigned		dequeue_during_giveback:1;
 	unsigned		should_be_inactive:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*-------------------------------------------------------------------------*/
@@ -695,12 +463,8 @@ struct ehci_iso_packet {
 struct ehci_iso_sched {
 	struct list_head	td_list;
 	unsigned		span;
-<<<<<<< HEAD
-	struct ehci_iso_packet	packet [0];
-=======
 	unsigned		first_packet;
 	struct ehci_iso_packet	packet[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -708,38 +472,13 @@ struct ehci_iso_sched {
  * acts like a qh would, if EHCI had them for ISO.
  */
 struct ehci_iso_stream {
-<<<<<<< HEAD
-	/* first field matches ehci_hq, but is NULL */
-	struct ehci_qh_hw	*hw;
-
-	u32			refcount;
-=======
 	/* first field matches ehci_qh, but is NULL */
 	struct ehci_qh_hw	*hw;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			bEndpointAddress;
 	u8			highspeed;
 	struct list_head	td_list;	/* queued itds/sitds */
 	struct list_head	free_list;	/* list of unused itds/sitds */
-<<<<<<< HEAD
-	struct usb_device	*udev;
-	struct usb_host_endpoint *ep;
-
-	/* output of (re)scheduling */
-	int			next_uframe;
-	__hc32			splits;
-
-	/* the rest is derived from the endpoint descriptor,
-	 * trusting urb->interval == f(epdesc->bInterval) and
-	 * including the extra info for hw_bufp[0..2]
-	 */
-	u8			usecs, c_usecs;
-	u16			interval;
-	u16			tt_usecs;
-	u16			maxp;
-	u16			raw_mask;
-=======
 
 	/* output of (re)scheduling */
 	struct ehci_per_sched	ps;		/* scheduling info */
@@ -751,7 +490,6 @@ struct ehci_iso_stream {
 	 */
 	u16			uperiod;	/* period in uframes */
 	u16			maxp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned		bandwidth;
 
 	/* This is used to initialize iTD's hw_bufp fields */
@@ -774,11 +512,7 @@ struct ehci_iso_stream {
 struct ehci_itd {
 	/* first part defined by EHCI spec */
 	__hc32			hw_next;           /* see EHCI 3.3.1 */
-<<<<<<< HEAD
-	__hc32			hw_transaction [8]; /* see EHCI 3.3.2 */
-=======
 	__hc32			hw_transaction[8]; /* see EHCI 3.3.2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EHCI_ISOC_ACTIVE        (1<<31)        /* activate transfer this slot */
 #define EHCI_ISOC_BUF_ERR       (1<<30)        /* Data buffer error */
 #define EHCI_ISOC_BABBLE        (1<<29)        /* babble detected */
@@ -788,13 +522,8 @@ struct ehci_itd {
 
 #define ITD_ACTIVE(ehci)	cpu_to_hc32(ehci, EHCI_ISOC_ACTIVE)
 
-<<<<<<< HEAD
-	__hc32			hw_bufp [7];	/* see EHCI 3.3.3 */
-	__hc32			hw_bufp_hi [7];	/* Appendix B */
-=======
 	__hc32			hw_bufp[7];	/* see EHCI 3.3.3 */
 	__hc32			hw_bufp_hi[7];	/* Appendix B */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* the rest is HCD-private */
 	dma_addr_t		itd_dma;	/* for this itd */
@@ -808,11 +537,7 @@ struct ehci_itd {
 	unsigned		frame;		/* where scheduled */
 	unsigned		pg;
 	unsigned		index[8];	/* in urb->iso_frame_desc */
-<<<<<<< HEAD
-} __attribute__ ((aligned (32)));
-=======
 } __aligned(32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*-------------------------------------------------------------------------*/
 
@@ -831,11 +556,7 @@ struct ehci_sitd {
 	__hc32			hw_results;		/* EHCI table 3-11 */
 #define	SITD_IOC	(1 << 31)	/* interrupt on completion */
 #define	SITD_PAGE	(1 << 30)	/* buffer 0/1 */
-<<<<<<< HEAD
-#define	SITD_LENGTH(x)	(0x3ff & ((x)>>16))
-=======
 #define	SITD_LENGTH(x)	(((x) >> 16) & 0x3ff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	SITD_STS_ACTIVE	(1 << 7)	/* HC may execute this */
 #define	SITD_STS_ERR	(1 << 6)	/* error from TT */
 #define	SITD_STS_DBE	(1 << 5)	/* data buffer error (in HC) */
@@ -846,15 +567,9 @@ struct ehci_sitd {
 
 #define SITD_ACTIVE(ehci)	cpu_to_hc32(ehci, SITD_STS_ACTIVE)
 
-<<<<<<< HEAD
-	__hc32			hw_buf [2];		/* EHCI table 3-12 */
-	__hc32			hw_backpointer;		/* EHCI table 3-13 */
-	__hc32			hw_buf_hi [2];		/* Appendix B */
-=======
 	__hc32			hw_buf[2];		/* EHCI table 3-12 */
 	__hc32			hw_backpointer;		/* EHCI table 3-13 */
 	__hc32			hw_buf_hi[2];		/* Appendix B */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* the rest is HCD-private */
 	dma_addr_t		sitd_dma;
@@ -865,11 +580,7 @@ struct ehci_sitd {
 	struct list_head	sitd_list;	/* list of stream's sitds */
 	unsigned		frame;
 	unsigned		index;
-<<<<<<< HEAD
-} __attribute__ ((aligned (32)));
-=======
 } __aligned(32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*-------------------------------------------------------------------------*/
 
@@ -889,9 +600,6 @@ struct ehci_fstn {
 	/* the rest is HCD-private */
 	dma_addr_t		fstn_dma;
 	union ehci_shadow	fstn_next;	/* ptr to periodic q entry */
-<<<<<<< HEAD
-} __attribute__ ((aligned (32)));
-=======
 } __aligned(32);
 
 /*-------------------------------------------------------------------------*/
@@ -922,24 +630,16 @@ struct ehci_tt {
 	struct usb_tt		*usb_tt;
 	int			tt_port;	/* TT port number */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*-------------------------------------------------------------------------*/
 
 /* Prepare the PORTSC wakeup flags during controller suspend/resume */
 
 #define ehci_prepare_ports_for_controller_suspend(ehci, do_wakeup)	\
-<<<<<<< HEAD
-		ehci_adjust_port_wakeup_flags(ehci, true, do_wakeup);
-
-#define ehci_prepare_ports_for_controller_resume(ehci)			\
-		ehci_adjust_port_wakeup_flags(ehci, false, false);
-=======
 		ehci_adjust_port_wakeup_flags(ehci, true, do_wakeup)
 
 #define ehci_prepare_ports_for_controller_resume(ehci)			\
 		ehci_adjust_port_wakeup_flags(ehci, false, false)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*-------------------------------------------------------------------------*/
 
@@ -990,8 +690,6 @@ ehci_port_speed(struct ehci_hcd *ehci, unsigned int portsc)
 #define	ehci_has_fsl_portno_bug(e)		(0)
 #endif
 
-<<<<<<< HEAD
-=======
 #define PORTSC_FSL_PFSC	24	/* Port Force Full-Speed Connect */
 
 #if defined(CONFIG_PPC_85xx)
@@ -1019,7 +717,6 @@ ehci_port_speed(struct ehci_hcd *ehci, unsigned int portsc)
 	((e)->has_ci_pec_bug && ((e)->command & CMD_PSE) \
 	 && !(portsc & PORT_PEC) && !(portsc & PORT_PE))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * While most USB host controllers implement their registers in
  * little-endian format, a minority (celleb companion chip) implement
@@ -1052,11 +749,7 @@ ehci_port_speed(struct ehci_hcd *ehci, unsigned int portsc)
 #endif
 
 static inline unsigned int ehci_readl(const struct ehci_hcd *ehci,
-<<<<<<< HEAD
-		__u32 __iomem * regs)
-=======
 		__u32 __iomem *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_USB_EHCI_BIG_ENDIAN_MMIO
 	return ehci_big_endian_mmio(ehci) ?
@@ -1067,8 +760,6 @@ static inline unsigned int ehci_readl(const struct ehci_hcd *ehci,
 #endif
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SOC_IMX28
 static inline void imx28_ehci_writel(const unsigned int val,
 		volatile __u32 __iomem *addr)
@@ -1081,7 +772,6 @@ static inline void imx28_ehci_writel(const unsigned int val,
 {
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ehci_writel(const struct ehci_hcd *ehci,
 		const unsigned int val, __u32 __iomem *regs)
 {
@@ -1090,14 +780,10 @@ static inline void ehci_writel(const struct ehci_hcd *ehci,
 		writel_be(val, regs) :
 		writel(val, regs);
 #else
-<<<<<<< HEAD
-	writel(val, regs);
-=======
 	if (ehci->imx28_write_fix)
 		imx28_ehci_writel(val, regs);
 	else
 		writel(val, regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -1138,11 +824,7 @@ static inline void set_ohci_hcfs(struct ehci_hcd *ehci, int operational)
 #define ehci_big_endian_desc(e)		((e)->big_endian_desc)
 
 /* cpu to ehci */
-<<<<<<< HEAD
-static inline __hc32 cpu_to_hc32 (const struct ehci_hcd *ehci, const u32 x)
-=======
 static inline __hc32 cpu_to_hc32(const struct ehci_hcd *ehci, const u32 x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ehci_big_endian_desc(ehci)
 		? (__force __hc32)cpu_to_be32(x)
@@ -1150,22 +832,14 @@ static inline __hc32 cpu_to_hc32(const struct ehci_hcd *ehci, const u32 x)
 }
 
 /* ehci to cpu */
-<<<<<<< HEAD
-static inline u32 hc32_to_cpu (const struct ehci_hcd *ehci, const __hc32 x)
-=======
 static inline u32 hc32_to_cpu(const struct ehci_hcd *ehci, const __hc32 x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ehci_big_endian_desc(ehci)
 		? be32_to_cpu((__force __be32)x)
 		: le32_to_cpu((__force __le32)x);
 }
 
-<<<<<<< HEAD
-static inline u32 hc32_to_cpup (const struct ehci_hcd *ehci, const __hc32 *x)
-=======
 static inline u32 hc32_to_cpup(const struct ehci_hcd *ehci, const __hc32 *x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ehci_big_endian_desc(ehci)
 		? be32_to_cpup((__force __be32 *)x)
@@ -1175,30 +849,18 @@ static inline u32 hc32_to_cpup(const struct ehci_hcd *ehci, const __hc32 *x)
 #else
 
 /* cpu to ehci */
-<<<<<<< HEAD
-static inline __hc32 cpu_to_hc32 (const struct ehci_hcd *ehci, const u32 x)
-=======
 static inline __hc32 cpu_to_hc32(const struct ehci_hcd *ehci, const u32 x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return cpu_to_le32(x);
 }
 
 /* ehci to cpu */
-<<<<<<< HEAD
-static inline u32 hc32_to_cpu (const struct ehci_hcd *ehci, const __hc32 x)
-=======
 static inline u32 hc32_to_cpu(const struct ehci_hcd *ehci, const __hc32 x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return le32_to_cpu(x);
 }
 
-<<<<<<< HEAD
-static inline u32 hc32_to_cpup (const struct ehci_hcd *ehci, const __hc32 *x)
-=======
 static inline u32 hc32_to_cpup(const struct ehci_hcd *ehci, const __hc32 *x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return le32_to_cpup(x);
 }
@@ -1207,29 +869,6 @@ static inline u32 hc32_to_cpup(const struct ehci_hcd *ehci, const __hc32 *x)
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-#ifdef CONFIG_PCI
-
-/* For working around the MosChip frame-index-register bug */
-static unsigned ehci_read_frame_index(struct ehci_hcd *ehci);
-
-#else
-
-static inline unsigned ehci_read_frame_index(struct ehci_hcd *ehci)
-{
-	return ehci_readl(ehci, &ehci->regs->frame_index);
-}
-
-#endif
-
-/*-------------------------------------------------------------------------*/
-
-#ifndef DEBUG
-#define STUB_DEBUG_FILES
-#endif	/* DEBUG */
-
-/*-------------------------------------------------------------------------*/
-=======
 #define ehci_dbg(ehci, fmt, args...) \
 	dev_dbg(ehci_to_hcd(ehci)->self.controller, fmt, ## args)
 #define ehci_err(ehci, fmt, args...) \
@@ -1264,6 +903,5 @@ extern void	ehci_adjust_port_wakeup_flags(struct ehci_hcd *ehci,
 
 extern int	ehci_hub_control(struct usb_hcd	*hcd, u16 typeReq, u16 wValue,
 				 u16 wIndex, char *buf, u16 wLength);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __LINUX_EHCI_HCD_H */

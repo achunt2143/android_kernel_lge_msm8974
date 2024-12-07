@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SuperH EHCI host controller driver
  *
  * Copyright (C) 2010  Paul Mundt
  *
  * Based on ohci-sh.c and ehci-atmel.c.
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/platform_device.h>
 #include <linux/clk.h>
@@ -27,38 +17,10 @@ struct ehci_sh_priv {
 static int ehci_sh_reset(struct usb_hcd *hcd)
 {
 	struct ehci_hcd	*ehci = hcd_to_ehci(hcd);
-<<<<<<< HEAD
-	int ret;
-
-	ehci->caps = hcd->regs;
-	ehci->regs = hcd->regs + HC_LENGTH(ehci, ehci_readl(ehci,
-		&ehci->caps->hc_capbase));
-
-	dbg_hcs_params(ehci, "reset");
-	dbg_hcc_params(ehci, "reset");
-
-	ehci->hcs_params = ehci_readl(ehci, &ehci->caps->hcs_params);
-
-	ret = ehci_halt(ehci);
-	if (unlikely(ret))
-		return ret;
-
-	ret = ehci_init(hcd);
-	if (unlikely(ret))
-		return ret;
-
-	ehci->sbrn = 0x20;
-
-	ehci_reset(ehci);
-	ehci_port_power(ehci, 0);
-
-	return ret;
-=======
 
 	ehci->caps = hcd->regs;
 
 	return ehci_setup(hcd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct hc_driver ehci_sh_hc_driver = {
@@ -70,11 +32,7 @@ static const struct hc_driver ehci_sh_hc_driver = {
 	 * generic hardware linkage
 	 */
 	.irq				= ehci_irq,
-<<<<<<< HEAD
-	.flags				= HCD_USB2 | HCD_MEMORY,
-=======
 	.flags				= HCD_USB2 | HCD_DMA | HCD_MEMORY | HCD_BH,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * basic lifecycle operations
@@ -115,10 +73,6 @@ static const struct hc_driver ehci_sh_hc_driver = {
 
 static int ehci_hcd_sh_probe(struct platform_device *pdev)
 {
-<<<<<<< HEAD
-	const struct hc_driver *driver = &ehci_sh_hc_driver;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource *res;
 	struct ehci_sh_priv *priv;
 	struct usb_hcd *hcd;
@@ -127,27 +81,9 @@ static int ehci_hcd_sh_probe(struct platform_device *pdev)
 	if (usb_disabled())
 		return -ENODEV;
 
-<<<<<<< HEAD
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		dev_err(&pdev->dev,
-			"Found HC with no register addr. Check %s setup!\n",
-			dev_name(&pdev->dev));
-		ret = -ENODEV;
-		goto fail_create_hcd;
-	}
-
-	irq = platform_get_irq(pdev, 0);
-	if (irq <= 0) {
-		dev_err(&pdev->dev,
-			"Found HC with no IRQ. Check %s setup!\n",
-			dev_name(&pdev->dev));
-		ret = -ENODEV;
-=======
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		ret = irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_create_hcd;
 	}
 
@@ -159,38 +95,6 @@ static int ehci_hcd_sh_probe(struct platform_device *pdev)
 		goto fail_create_hcd;
 	}
 
-<<<<<<< HEAD
-	hcd->rsrc_start = res->start;
-	hcd->rsrc_len = resource_size(res);
-
-	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len,
-				driver->description)) {
-		dev_dbg(&pdev->dev, "controller already in use\n");
-		ret = -EBUSY;
-		goto fail_request_resource;
-	}
-
-	hcd->regs = ioremap_nocache(hcd->rsrc_start, hcd->rsrc_len);
-	if (hcd->regs == NULL) {
-		dev_dbg(&pdev->dev, "error mapping memory\n");
-		ret = -ENXIO;
-		goto fail_ioremap;
-	}
-
-	priv = kmalloc(sizeof(struct ehci_sh_priv), GFP_KERNEL);
-	if (!priv) {
-		dev_dbg(&pdev->dev, "error allocating priv data\n");
-		ret = -ENOMEM;
-		goto fail_alloc;
-	}
-
-	/* These are optional, we don't care if they fail */
-	priv->fclk = clk_get(&pdev->dev, "usb_fck");
-	if (IS_ERR(priv->fclk))
-		priv->fclk = NULL;
-
-	priv->iclk = clk_get(&pdev->dev, "usb_ick");
-=======
 	hcd->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(hcd->regs)) {
 		ret = PTR_ERR(hcd->regs);
@@ -212,7 +116,6 @@ static int ehci_hcd_sh_probe(struct platform_device *pdev)
 		priv->fclk = NULL;
 
 	priv->iclk = devm_clk_get(&pdev->dev, "usb_ick");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(priv->iclk))
 		priv->iclk = NULL;
 
@@ -224,10 +127,7 @@ static int ehci_hcd_sh_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Failed to add hcd");
 		goto fail_add_hcd;
 	}
-<<<<<<< HEAD
-=======
 	device_wakeup_enable(hcd->self.controller);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->hcd = hcd;
 	platform_set_drvdata(pdev, priv);
@@ -238,17 +138,6 @@ fail_add_hcd:
 	clk_disable(priv->iclk);
 	clk_disable(priv->fclk);
 
-<<<<<<< HEAD
-	clk_put(priv->iclk);
-	clk_put(priv->fclk);
-
-	kfree(priv);
-fail_alloc:
-	iounmap(hcd->regs);
-fail_ioremap:
-	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_request_resource:
 	usb_put_hcd(hcd);
 fail_create_hcd:
@@ -257,37 +146,16 @@ fail_create_hcd:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __exit ehci_hcd_sh_remove(struct platform_device *pdev)
-=======
 static void ehci_hcd_sh_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehci_sh_priv *priv = platform_get_drvdata(pdev);
 	struct usb_hcd *hcd = priv->hcd;
 
 	usb_remove_hcd(hcd);
-<<<<<<< HEAD
-	iounmap(hcd->regs);
-	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
-	usb_put_hcd(hcd);
-	platform_set_drvdata(pdev, NULL);
-
-	clk_disable(priv->fclk);
-	clk_disable(priv->iclk);
-
-	clk_put(priv->fclk);
-	clk_put(priv->iclk);
-
-	kfree(priv);
-
-	return 0;
-=======
 	usb_put_hcd(hcd);
 
 	clk_disable(priv->fclk);
 	clk_disable(priv->iclk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ehci_hcd_sh_shutdown(struct platform_device *pdev)
@@ -301,18 +169,10 @@ static void ehci_hcd_sh_shutdown(struct platform_device *pdev)
 
 static struct platform_driver ehci_hcd_sh_driver = {
 	.probe		= ehci_hcd_sh_probe,
-<<<<<<< HEAD
-	.remove		= __exit_p(ehci_hcd_sh_remove),
-	.shutdown	= ehci_hcd_sh_shutdown,
-	.driver		= {
-		.name	= "sh_ehci",
-		.owner	= THIS_MODULE,
-=======
 	.remove_new	= ehci_hcd_sh_remove,
 	.shutdown	= ehci_hcd_sh_shutdown,
 	.driver		= {
 		.name	= "sh_ehci",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

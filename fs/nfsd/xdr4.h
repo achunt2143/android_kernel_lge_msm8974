@@ -46,11 +46,6 @@
 #define CURRENT_STATE_ID_FLAG (1<<0)
 #define SAVED_STATE_ID_FLAG (1<<1)
 
-<<<<<<< HEAD
-#define SET_STATE_ID(c, f) ((c)->sid_flags |= (f))
-#define HAS_STATE_ID(c, f) ((c)->sid_flags & (f))
-#define CLEAR_STATE_ID(c, f) ((c)->sid_flags &= ~(f))
-=======
 #define SET_CSTATE_FLAG(c, f) ((c)->sid_flags |= (f))
 #define HAS_CSTATE_FLAG(c, f) ((c)->sid_flags & (f))
 #define CLEAR_CSTATE_FLAG(c, f) ((c)->sid_flags &= ~(f))
@@ -182,21 +177,11 @@ nfsd4_encode_opaque(struct xdr_stream *xdr, const void *data, size_t size)
 }
 
 #define nfsd4_encode_component4(x, d, s)	nfsd4_encode_opaque(x, d, s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nfsd4_compound_state {
 	struct svc_fh		current_fh;
 	struct svc_fh		save_fh;
 	struct nfs4_stateowner	*replay_owner;
-<<<<<<< HEAD
-	/* For sessions DRC */
-	struct nfsd4_session	*session;
-	struct nfsd4_slot	*slot;
-	__be32			*datap;
-	size_t			iovlen;
-	u32			minorversion;
-	u32			status;
-=======
 	struct nfs4_client	*clp;
 	/* For sessions DRC */
 	struct nfsd4_session	*session;
@@ -206,7 +191,6 @@ struct nfsd4_compound_state {
 	size_t			iovlen;
 	u32			minorversion;
 	__be32			status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stateid_t	current_stateid;
 	stateid_t	save_stateid;
 	/* to indicate current and saved state id presents */
@@ -220,16 +204,7 @@ static inline bool nfsd4_has_session(struct nfsd4_compound_state *cs)
 
 struct nfsd4_change_info {
 	u32		atomic;
-<<<<<<< HEAD
-	bool		change_supported;
-	u32		before_ctime_sec;
-	u32		before_ctime_nsec;
 	u64		before_change;
-	u32		after_ctime_sec;
-	u32		after_ctime_nsec;
-=======
-	u64		before_change;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64		after_change;
 };
 
@@ -256,14 +231,9 @@ struct nfsd4_create {
 	u32		cr_type;            /* request */
 	union {                             /* request */
 		struct {
-<<<<<<< HEAD
-			u32 namelen;
-			char *name;
-=======
 			u32 datalen;
 			char *data;
 			struct kvec first;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} link;   /* NF4LNK */
 		struct {
 			u32 specdata1;
@@ -272,13 +242,6 @@ struct nfsd4_create {
 	} u;
 	u32		cr_bmval[3];        /* request */
 	struct iattr	cr_iattr;           /* request */
-<<<<<<< HEAD
-	struct nfsd4_change_info  cr_cinfo; /* response */
-	struct nfs4_acl *cr_acl;
-};
-#define cr_linklen	u.link.namelen
-#define cr_linkname	u.link.name
-=======
 	int		cr_umask;           /* request */
 	struct nfsd4_change_info  cr_cinfo; /* response */
 	struct nfs4_acl *cr_acl;
@@ -287,7 +250,6 @@ struct nfsd4_create {
 #define cr_datalen	u.link.datalen
 #define cr_data		u.link.data
 #define cr_first	u.link.first
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define cr_specdata1	u.dev.specdata1
 #define cr_specdata2	u.dev.specdata2
 
@@ -336,17 +298,8 @@ struct nfsd4_lock {
 	} v;
 
 	/* response */
-<<<<<<< HEAD
-	union {
-		struct {
-			stateid_t               stateid;
-		} ok;
-		struct nfsd4_lock_denied        denied;
-	} u;
-=======
 	stateid_t			lk_resp_stateid;
 	struct nfsd4_lock_denied        lk_denied;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define lk_new_open_seqid       v.new.open_seqid
 #define lk_new_open_stateid     v.new.open_stateid
@@ -356,30 +309,15 @@ struct nfsd4_lock {
 #define lk_old_lock_stateid     v.old.lock_stateid
 #define lk_old_lock_seqid       v.old.lock_seqid
 
-<<<<<<< HEAD
-#define lk_rflags       u.ok.rflags
-#define lk_resp_stateid u.ok.stateid
-#define lk_denied       u.denied
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nfsd4_lockt {
 	u32				lt_type;
 	clientid_t			lt_clientid;
 	struct xdr_netobj		lt_owner;
 	u64				lt_offset;
 	u64				lt_length;
-<<<<<<< HEAD
-	struct nfsd4_lock_denied  	lt_denied;
-};
-
- 
-=======
 	struct nfsd4_lock_denied	lt_denied;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nfsd4_locku {
 	u32             lu_type;
 	u32             lu_seqid;
@@ -397,8 +335,6 @@ struct nfsd4_lookup {
 struct nfsd4_putfh {
 	u32		pf_fhlen;           /* request */
 	char		*pf_fhval;          /* request */
-<<<<<<< HEAD
-=======
 	bool		no_verify;	    /* represents foreigh fh */
 };
 
@@ -426,30 +362,20 @@ struct nfsd4_listxattrs {
 	u32		lsxa_maxcount;		/* request */
 	char		*lsxa_buf;		/* unfiltered buffer (reply) */
 	u32		lsxa_len;		/* unfiltered len (reply) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfsd4_open {
 	u32		op_claim_type;      /* request */
-<<<<<<< HEAD
-	struct xdr_netobj op_fname;	    /* request - everything but CLAIM_PREV */
-=======
 	u32		op_fnamelen;
 	char *		op_fname;	    /* request - everything but CLAIM_PREV */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		op_delegate_type;   /* request - CLAIM_PREV only */
 	stateid_t       op_delegate_stateid; /* request - response */
 	u32		op_why_no_deleg;    /* response - DELEG_NONE_EXT only */
 	u32		op_create;     	    /* request */
 	u32		op_createmode;      /* request */
-<<<<<<< HEAD
-	u32		op_bmval[3];        /* request */
-	struct iattr	iattr;              /* UNCHECKED4, GUARDED4, EXCLUSIVE4_1 */
-=======
 	int		op_umask;           /* request */
 	u32		op_bmval[3];        /* request */
 	struct iattr	op_iattr;           /* UNCHECKED4, GUARDED4, EXCLUSIVE4_1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nfs4_verifier	op_verf __attribute__((aligned(32)));
 					    /* EXCLUSIVE4 */
 	clientid_t	op_clientid;        /* request */
@@ -459,19 +385,6 @@ struct nfsd4_open {
 	u32		op_share_deny;      /* request */
 	u32		op_deleg_want;      /* request */
 	stateid_t	op_stateid;         /* response */
-<<<<<<< HEAD
-	u32		op_recall;          /* recall */
-	struct nfsd4_change_info  op_cinfo; /* response */
-	u32		op_rflags;          /* response */
-	bool		op_truncate;        /* used during processing */
-	bool		op_created;         /* used during processing */
-	struct nfs4_openowner *op_openowner; /* used during processing */
-	struct nfs4_file *op_file;          /* used during processing */
-	struct nfs4_ol_stateid *op_stp;	    /* used during processing */
-	struct nfs4_acl *op_acl;
-};
-#define op_iattr	iattr
-=======
 	__be32		op_xdr_error;       /* see nfsd4_open_omfg() */
 	struct nfsd4_change_info  op_cinfo; /* response */
 	u32		op_rflags;          /* response */
@@ -487,7 +400,6 @@ struct nfsd4_open {
 	struct xdr_netobj op_label;
 	struct svc_rqst *op_rqstp;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nfsd4_open_confirm {
 	stateid_t	oc_req_stateid		/* request */;
@@ -505,16 +417,6 @@ struct nfsd4_open_downgrade {
 
 
 struct nfsd4_read {
-<<<<<<< HEAD
-	stateid_t	rd_stateid;         /* request */
-	u64		rd_offset;          /* request */
-	u32		rd_length;          /* request */
-	int		rd_vlen;
-	struct file     *rd_filp;
-	
-	struct svc_rqst *rd_rqstp;          /* response */
-	struct svc_fh * rd_fhp;             /* response */
-=======
 	stateid_t		rd_stateid;         /* request */
 	u64			rd_offset;          /* request */
 	u32			rd_length;          /* request */
@@ -524,7 +426,6 @@ struct nfsd4_read {
 	struct svc_rqst		*rd_rqstp;          /* response */
 	struct svc_fh		*rd_fhp;            /* response */
 	u32			rd_eof;             /* response */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfsd4_readdir {
@@ -537,14 +438,8 @@ struct nfsd4_readdir {
 	struct svc_fh * rd_fhp;             /* response */
 
 	struct readdir_cd	common;
-<<<<<<< HEAD
-	__be32 *		buffer;
-	int			buflen;
-	__be32 *		offset;
-=======
 	struct xdr_stream	*xdr;
 	int			cookie_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfsd4_release_lockowner {
@@ -587,10 +482,7 @@ struct nfsd4_setattr {
 	u32		sa_bmval[3];        /* request */
 	struct iattr	sa_iattr;           /* request */
 	struct nfs4_acl *sa_acl;
-<<<<<<< HEAD
-=======
 	struct xdr_netobj sa_label;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfsd4_setclientid {
@@ -611,16 +503,6 @@ struct nfsd4_setclientid_confirm {
 	nfs4_verifier	sc_confirm;
 };
 
-<<<<<<< HEAD
-struct nfsd4_saved_compoundargs {
-	__be32 *p;
-	__be32 *end;
-	int pagelen;
-	struct page **pagelist;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nfsd4_test_stateid_id {
 	__be32			ts_id_status;
 	stateid_t		ts_id_stateid;
@@ -628,20 +510,12 @@ struct nfsd4_test_stateid_id {
 };
 
 struct nfsd4_test_stateid {
-<<<<<<< HEAD
-	__be32		ts_num_ids;
-=======
 	u32		ts_num_ids;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head ts_stateid_list;
 };
 
 struct nfsd4_free_stateid {
 	stateid_t	fr_stateid;         /* request */
-<<<<<<< HEAD
-	__be32		fr_status;          /* response */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* also used for NVERIFY */
@@ -656,11 +530,7 @@ struct nfsd4_write {
 	u64		wr_offset;          /* request */
 	u32		wr_stable_how;      /* request */
 	u32		wr_buflen;          /* request */
-<<<<<<< HEAD
-	int		wr_vlen;
-=======
 	struct xdr_buf	wr_payload;         /* request */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32		wr_bytes_written;   /* response */
 	u32		wr_how_written;     /* response */
@@ -673,16 +543,12 @@ struct nfsd4_exchange_id {
 	u32		flags;
 	clientid_t	clientid;
 	u32		seqid;
-<<<<<<< HEAD
-	int		spa_how;
-=======
 	u32		spa_how;
 	u32             spo_must_enforce[3];
 	u32             spo_must_allow[3];
 	struct xdr_netobj nii_domain;
 	struct xdr_netobj nii_name;
 	struct timespec64 nii_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfsd4_sequence {
@@ -709,12 +575,6 @@ struct nfsd4_reclaim_complete {
 	u32 rca_one_fs;
 };
 
-<<<<<<< HEAD
-struct nfsd4_op {
-	int					opnum;
-	__be32					status;
-	union {
-=======
 struct nfsd4_deviceid {
 	u64			fsid_idx;
 	u32			generation;
@@ -895,7 +755,6 @@ struct nfsd4_op {
 	const struct nfsd4_operation		*opdesc;
 	struct nfs4_replay			*replay;
 	union nfsd4_op_u {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct nfsd4_access		access;
 		struct nfsd4_close		close;
 		struct nfsd4_commit		commit;
@@ -929,25 +788,15 @@ struct nfsd4_op {
 
 		/* NFSv4.1 */
 		struct nfsd4_exchange_id	exchange_id;
-<<<<<<< HEAD
-		struct nfsd4_bind_conn_to_session bind_conn_to_session;
-		struct nfsd4_create_session	create_session;
-		struct nfsd4_destroy_session	destroy_session;
-=======
 		struct nfsd4_backchannel_ctl	backchannel_ctl;
 		struct nfsd4_bind_conn_to_session bind_conn_to_session;
 		struct nfsd4_create_session	create_session;
 		struct nfsd4_destroy_session	destroy_session;
 		struct nfsd4_destroy_clientid	destroy_clientid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct nfsd4_sequence		sequence;
 		struct nfsd4_reclaim_complete	reclaim_complete;
 		struct nfsd4_test_stateid	test_stateid;
 		struct nfsd4_free_stateid	free_stateid;
-<<<<<<< HEAD
-	} u;
-	struct nfs4_replay *			replay;
-=======
 		struct nfsd4_getdeviceinfo	getdeviceinfo;
 		struct nfsd4_layoutget		layoutget;
 		struct nfsd4_layoutcommit	layoutcommit;
@@ -968,36 +817,10 @@ struct nfsd4_op {
 		struct nfsd4_listxattrs		listxattrs;
 		struct nfsd4_removexattr	removexattr;
 	} u;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 bool nfsd4_cache_this_op(struct nfsd4_op *);
 
-<<<<<<< HEAD
-struct nfsd4_compoundargs {
-	/* scratch variables for XDR decode */
-	__be32 *			p;
-	__be32 *			end;
-	struct page **			pagelist;
-	int				pagelen;
-	__be32				tmp[8];
-	__be32 *			tmpp;
-	struct tmpbuf {
-		struct tmpbuf *next;
-		void (*release)(const void *);
-		void *buf;
-	}				*to_free;
-
-	struct svc_rqst			*rqstp;
-
-	u32				taglen;
-	char *				tag;
-	u32				minorversion;
-	u32				opcnt;
-	struct nfsd4_op			*ops;
-	struct nfsd4_op			iops[8];
-	int				cachetype;
-=======
 /*
  * Memory needed just for the duration of processing one compound:
  */
@@ -1020,22 +843,10 @@ struct nfsd4_compoundargs {
 	bool				splice_ok;
 	struct nfsd4_op			*ops;
 	struct nfsd4_op			iops[8];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfsd4_compoundres {
 	/* scratch variables for XDR encode */
-<<<<<<< HEAD
-	__be32 *			p;
-	__be32 *			end;
-	struct xdr_buf *		xbuf;
-	struct svc_rqst *		rqstp;
-
-	u32				taglen;
-	char *				tag;
-	u32				opcnt;
-	__be32 *			tagp; /* tag, opcount encode location */
-=======
 	struct xdr_stream		*xdr;
 	struct svc_rqst *		rqstp;
 
@@ -1044,7 +855,6 @@ struct nfsd4_compoundres {
 	u32				taglen;
 	u32				opcnt;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nfsd4_compound_state	cstate;
 };
 
@@ -1054,107 +864,6 @@ static inline bool nfsd4_is_solo_sequence(struct nfsd4_compoundres *resp)
 	return resp->opcnt == 1 && args->ops[0].opnum == OP_SEQUENCE;
 }
 
-<<<<<<< HEAD
-static inline bool nfsd4_not_cached(struct nfsd4_compoundres *resp)
-{
-	return !(resp->cstate.slot->sl_flags & NFSD4_SLOT_CACHETHIS)
-		|| nfsd4_is_solo_sequence(resp);
-}
-
-#define NFS4_SVC_XDRSIZE		sizeof(struct nfsd4_compoundargs)
-
-static inline void
-set_change_info(struct nfsd4_change_info *cinfo, struct svc_fh *fhp)
-{
-	BUG_ON(!fhp->fh_pre_saved);
-	cinfo->atomic = fhp->fh_post_saved;
-	cinfo->change_supported = IS_I_VERSION(fhp->fh_dentry->d_inode);
-
-	cinfo->before_change = fhp->fh_pre_change;
-	cinfo->after_change = fhp->fh_post_change;
-	cinfo->before_ctime_sec = fhp->fh_pre_ctime.tv_sec;
-	cinfo->before_ctime_nsec = fhp->fh_pre_ctime.tv_nsec;
-	cinfo->after_ctime_sec = fhp->fh_post_attr.ctime.tv_sec;
-	cinfo->after_ctime_nsec = fhp->fh_post_attr.ctime.tv_nsec;
-
-}
-
-int nfs4svc_encode_voidres(struct svc_rqst *, __be32 *, void *);
-int nfs4svc_decode_compoundargs(struct svc_rqst *, __be32 *,
-		struct nfsd4_compoundargs *);
-int nfs4svc_encode_compoundres(struct svc_rqst *, __be32 *,
-		struct nfsd4_compoundres *);
-int nfsd4_check_resp_size(struct nfsd4_compoundres *, u32);
-void nfsd4_encode_operation(struct nfsd4_compoundres *, struct nfsd4_op *);
-void nfsd4_encode_replay(struct nfsd4_compoundres *resp, struct nfsd4_op *op);
-__be32 nfsd4_encode_fattr(struct svc_fh *fhp, struct svc_export *exp,
-		       struct dentry *dentry, __be32 *buffer, int *countp,
-		       u32 *bmval, struct svc_rqst *, int ignore_crossmnt);
-extern __be32 nfsd4_setclientid(struct svc_rqst *rqstp,
-		struct nfsd4_compound_state *,
-		struct nfsd4_setclientid *setclid);
-extern __be32 nfsd4_setclientid_confirm(struct svc_rqst *rqstp,
-		struct nfsd4_compound_state *,
-		struct nfsd4_setclientid_confirm *setclientid_confirm);
-extern void nfsd4_store_cache_entry(struct nfsd4_compoundres *resp);
-extern __be32 nfsd4_replay_cache_entry(struct nfsd4_compoundres *resp,
-		struct nfsd4_sequence *seq);
-extern __be32 nfsd4_exchange_id(struct svc_rqst *rqstp,
-		struct nfsd4_compound_state *, struct nfsd4_exchange_id *);
-extern __be32 nfsd4_bind_conn_to_session(struct svc_rqst *, struct nfsd4_compound_state *, struct nfsd4_bind_conn_to_session *);
-extern __be32 nfsd4_create_session(struct svc_rqst *,
-		struct nfsd4_compound_state *,
-		struct nfsd4_create_session *);
-extern __be32 nfsd4_sequence(struct svc_rqst *,
-		struct nfsd4_compound_state *,
-		struct nfsd4_sequence *);
-extern __be32 nfsd4_destroy_session(struct svc_rqst *,
-		struct nfsd4_compound_state *,
-		struct nfsd4_destroy_session *);
-extern __be32 nfsd4_destroy_clientid(struct svc_rqst *, struct nfsd4_compound_state *, struct nfsd4_destroy_clientid *);
-__be32 nfsd4_reclaim_complete(struct svc_rqst *, struct nfsd4_compound_state *, struct nfsd4_reclaim_complete *);
-extern __be32 nfsd4_process_open1(struct nfsd4_compound_state *,
-		struct nfsd4_open *open);
-extern __be32 nfsd4_process_open2(struct svc_rqst *rqstp,
-		struct svc_fh *current_fh, struct nfsd4_open *open);
-extern void nfsd4_cleanup_open_state(struct nfsd4_open *open, __be32 status);
-extern __be32 nfsd4_open_confirm(struct svc_rqst *rqstp,
-		struct nfsd4_compound_state *, struct nfsd4_open_confirm *oc);
-extern __be32 nfsd4_close(struct svc_rqst *rqstp,
-		struct nfsd4_compound_state *,
-		struct nfsd4_close *close);
-extern __be32 nfsd4_open_downgrade(struct svc_rqst *rqstp,
-		struct nfsd4_compound_state *,
-		struct nfsd4_open_downgrade *od);
-extern __be32 nfsd4_lock(struct svc_rqst *rqstp, struct nfsd4_compound_state *,
-		struct nfsd4_lock *lock);
-extern __be32 nfsd4_lockt(struct svc_rqst *rqstp,
-		struct nfsd4_compound_state *,
-		struct nfsd4_lockt *lockt);
-extern __be32 nfsd4_locku(struct svc_rqst *rqstp,
-		struct nfsd4_compound_state *,
-		struct nfsd4_locku *locku);
-extern __be32
-nfsd4_release_lockowner(struct svc_rqst *rqstp,
-		struct nfsd4_compound_state *,
-		struct nfsd4_release_lockowner *rlockowner);
-extern int nfsd4_release_compoundargs(void *rq, __be32 *p, void *resp);
-extern __be32 nfsd4_delegreturn(struct svc_rqst *rqstp,
-		struct nfsd4_compound_state *, struct nfsd4_delegreturn *dr);
-extern __be32 nfsd4_renew(struct svc_rqst *rqstp,
-			  struct nfsd4_compound_state *, clientid_t *clid);
-extern __be32 nfsd4_test_stateid(struct svc_rqst *rqstp,
-		struct nfsd4_compound_state *, struct nfsd4_test_stateid *test_stateid);
-extern __be32 nfsd4_free_stateid(struct svc_rqst *rqstp,
-		struct nfsd4_compound_state *, struct nfsd4_free_stateid *free_stateid);
-#endif
-
-/*
- * Local variables:
- *  c-basic-offset: 8
- * End:
- */
-=======
 /*
  * The session reply cache only needs to cache replies that the client
  * actually asked us to.  But it's almost free for us to cache compounds
@@ -1304,4 +1013,3 @@ struct nfsd4_cb_recall_any {
 };
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

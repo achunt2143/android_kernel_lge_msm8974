@@ -34,27 +34,6 @@
 #define DBG_RES(x...)
 #endif
 
-<<<<<<< HEAD
-/* To be used as: mdelay(pci_post_reset_delay);
- *
- * post_reset is the time the kernel should stall to prevent anyone from
- * accessing the PCI bus once #RESET is de-asserted. 
- * PCI spec somewhere says 1 second but with multi-PCI bus systems,
- * this makes the boot time much longer than necessary.
- * 20ms seems to work for all the HP PCI implementations to date.
- *
- * #define pci_post_reset_delay 50
- */
-
-struct pci_port_ops *pci_port __read_mostly;
-struct pci_bios_ops *pci_bios __read_mostly;
-
-static int pci_hba_count __read_mostly;
-
-/* parisc_pci_hba used by pci_port->in/out() ops to lookup bus data.  */
-#define PCI_HBA_MAX 32
-static struct pci_hba_data *parisc_pci_hba[PCI_HBA_MAX] __read_mostly;
-=======
 struct pci_port_ops *pci_port __ro_after_init;
 struct pci_bios_ops *pci_bios __ro_after_init;
 
@@ -63,7 +42,6 @@ static int pci_hba_count __ro_after_init;
 /* parisc_pci_hba used by pci_port->in/out() ops to lookup bus data.  */
 #define PCI_HBA_MAX 32
 static struct pci_hba_data *parisc_pci_hba[PCI_HBA_MAX] __ro_after_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /********************************************************************
@@ -150,14 +128,6 @@ void pcibios_fixup_bus(struct pci_bus *bus)
 }
 
 
-<<<<<<< HEAD
-char *pcibios_setup(char *str)
-{
-	return str;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Called by pci_set_master() - a driver interface.
  *
@@ -189,13 +159,6 @@ void pcibios_set_master(struct pci_dev *dev)
 			      (0x80 << 8) | pci_cache_line_size);
 }
 
-<<<<<<< HEAD
-
-void __init pcibios_init_bus(struct pci_bus *bus)
-{
-	struct pci_dev *dev = bus->self;
-	unsigned short bridge_ctl;
-=======
 /*
  * pcibios_init_bridge() initializes cache line and default latency
  * for pci controllers and pci-pci bridges
@@ -203,21 +166,12 @@ void __init pcibios_init_bus(struct pci_bus *bus)
 void __ref pcibios_init_bridge(struct pci_dev *dev)
 {
 	unsigned short bridge_ctl, bridge_ctl_new;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We deal only with pci controllers and pci-pci bridges. */
 	if (!dev || (dev->class >> 8) != PCI_CLASS_BRIDGE_PCI)
 		return;
 
 	/* PCI-PCI bridge - set the cache line and default latency
-<<<<<<< HEAD
-	   (32) for primary and secondary buses. */
-	pci_write_config_byte(dev, PCI_SEC_LATENCY_TIMER, 32);
-
-	pci_read_config_word(dev, PCI_BRIDGE_CONTROL, &bridge_ctl);
-	bridge_ctl |= PCI_BRIDGE_CTL_PARITY | PCI_BRIDGE_CTL_SERR;
-	pci_write_config_word(dev, PCI_BRIDGE_CONTROL, bridge_ctl);
-=======
 	 * (32) for primary and secondary buses.
 	 */
 	pci_write_config_byte(dev, PCI_SEC_LATENCY_TIMER, 32);
@@ -230,7 +184,6 @@ void __ref pcibios_init_bridge(struct pci_dev *dev)
 		bridge_ctl, bridge_ctl_new);
 
 	pci_write_config_word(dev, PCI_BRIDGE_CONTROL, bridge_ctl_new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -263,10 +216,6 @@ resource_size_t pcibios_align_resource(void *data, const struct resource *res,
 	return start;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A driver is enabling the device.  We make sure that all the appropriate
  * bits are set to allow the device to operate as the driver is expecting.

@@ -1,21 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright IBM Corp. 2007
  *
@@ -28,15 +12,6 @@
 #include <linux/kvm_host.h>
 #include <linux/vmalloc.h>
 #include <linux/hrtimer.h>
-<<<<<<< HEAD
-#include <linux/fs.h>
-#include <linux/slab.h>
-#include <asm/cputable.h>
-#include <asm/uaccess.h>
-#include <asm/kvm_ppc.h>
-#include <asm/tlbflush.h>
-#include <asm/cputhreads.h>
-=======
 #include <linux/sched/signal.h>
 #include <linux/fs.h>
 #include <linux/slab.h>
@@ -60,22 +35,12 @@
 #include <asm/ultravisor.h>
 #include <asm/setup.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "timing.h"
 #include "../mm/mmu_decl.h"
 
 #define CREATE_TRACE_POINTS
 #include "trace.h"
 
-<<<<<<< HEAD
-int kvm_arch_vcpu_runnable(struct kvm_vcpu *v)
-{
-	return !(v->arch.shared->msr & MSR_WE) ||
-	       !!(v->arch.pending_exceptions) ||
-	       v->requests;
-}
-
-=======
 struct kvmppc_ops *kvmppc_hv_ops;
 EXPORT_SYMBOL_GPL(kvmppc_hv_ops);
 struct kvmppc_ops *kvmppc_pr_ops;
@@ -194,7 +159,6 @@ static void kvmppc_swab_shared(struct kvm_vcpu *vcpu)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kvmppc_kvm_pv(struct kvm_vcpu *vcpu)
 {
 	int nr = kvmppc_get_gpr(vcpu, 11);
@@ -205,11 +169,7 @@ int kvmppc_kvm_pv(struct kvm_vcpu *vcpu)
 	unsigned long __maybe_unused param4 = kvmppc_get_gpr(vcpu, 6);
 	unsigned long r2 = 0;
 
-<<<<<<< HEAD
-	if (!(vcpu->arch.shared->msr & MSR_SF)) {
-=======
 	if (!(kvmppc_get_msr(vcpu) & MSR_SF)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* 32 bit mode */
 		param1 &= 0xffffffff;
 		param2 &= 0xffffffff;
@@ -218,22 +178,6 @@ int kvmppc_kvm_pv(struct kvm_vcpu *vcpu)
 	}
 
 	switch (nr) {
-<<<<<<< HEAD
-	case HC_VENDOR_KVM | KVM_HC_PPC_MAP_MAGIC_PAGE:
-	{
-		vcpu->arch.magic_page_pa = param1;
-		vcpu->arch.magic_page_ea = param2;
-
-		r2 = KVM_MAGIC_FEAT_SR | KVM_MAGIC_FEAT_MAS0_TO_SPRG7;
-
-		r = HC_EV_SUCCESS;
-		break;
-	}
-	case HC_VENDOR_KVM | KVM_HC_FEATURES:
-		r = HC_EV_SUCCESS;
-#if defined(CONFIG_PPC_BOOK3S) || defined(CONFIG_KVM_E500)
-		/* XXX Missing magic page on 44x */
-=======
 	case KVM_HCALL_TOKEN(KVM_HC_PPC_MAP_MAGIC_PAGE):
 	{
 #if defined(CONFIG_PPC_BOOK3S_64) && defined(CONFIG_KVM_BOOK3S_PR_POSSIBLE)
@@ -286,23 +230,17 @@ int kvmppc_kvm_pv(struct kvm_vcpu *vcpu)
 	case KVM_HCALL_TOKEN(KVM_HC_FEATURES):
 		r = EV_SUCCESS;
 #if defined(CONFIG_PPC_BOOK3S) || defined(CONFIG_KVM_E500V2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r2 |= (1 << KVM_FEATURE_MAGIC_PAGE);
 #endif
 
 		/* Second return value is in r4 */
 		break;
-<<<<<<< HEAD
-	default:
-		r = HC_EV_UNIMPLEMENTED;
-=======
 	case EV_HCALL_TOKEN(EV_IDLE):
 		r = EV_SUCCESS;
 		kvm_vcpu_halt(vcpu);
 		break;
 	default:
 		r = EV_UNIMPLEMENTED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -310,10 +248,7 @@ int kvmppc_kvm_pv(struct kvm_vcpu *vcpu)
 
 	return r;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(kvmppc_kvm_pv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int kvmppc_sanity_check(struct kvm_vcpu *vcpu)
 {
@@ -327,18 +262,12 @@ int kvmppc_sanity_check(struct kvm_vcpu *vcpu)
 	if ((vcpu->arch.cpu_type != KVM_CPU_3S_64) && vcpu->arch.papr_enabled)
 		goto out;
 
-<<<<<<< HEAD
-#ifdef CONFIG_KVM_BOOK3S_64_HV
-	/* HV KVM can only do PAPR mode for now */
-	if (!vcpu->arch.papr_enabled)
-=======
 	/* HV KVM can only do PAPR mode for now */
 	if (!vcpu->arch.papr_enabled && is_kvmppc_hv_enabled(vcpu->kvm))
 		goto out;
 
 #ifdef CONFIG_KVM_BOOKE_HV
 	if (!cpu_has_feature(CPU_FTR_EMB_HV))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 #endif
 
@@ -348,39 +277,25 @@ out:
 	vcpu->arch.sane = r;
 	return r ? 0 : -EINVAL;
 }
-<<<<<<< HEAD
-
-int kvmppc_emulate_mmio(struct kvm_run *run, struct kvm_vcpu *vcpu)
-=======
 EXPORT_SYMBOL_GPL(kvmppc_sanity_check);
 
 int kvmppc_emulate_mmio(struct kvm_vcpu *vcpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	enum emulation_result er;
 	int r;
 
-<<<<<<< HEAD
-	er = kvmppc_emulate_instruction(run, vcpu);
-=======
 	er = kvmppc_emulate_loadstore(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (er) {
 	case EMULATE_DONE:
 		/* Future optimization: only reload non-volatiles if they were
 		 * actually modified. */
 		r = RESUME_GUEST_NV;
 		break;
-<<<<<<< HEAD
-	case EMULATE_DO_MMIO:
-		run->exit_reason = KVM_EXIT_MMIO;
-=======
 	case EMULATE_AGAIN:
 		r = RESUME_GUEST;
 		break;
 	case EMULATE_DO_MMIO:
 		vcpu->run->exit_reason = KVM_EXIT_MMIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* We must reload nonvolatiles because "update" load/store
 		 * instructions modify register state. */
 		/* Future optimization: only reload non-volatiles if they were
@@ -388,15 +303,6 @@ int kvmppc_emulate_mmio(struct kvm_vcpu *vcpu)
 		r = RESUME_HOST_NV;
 		break;
 	case EMULATE_FAIL:
-<<<<<<< HEAD
-		/* XXX Deliver Program interrupt to guest. */
-		printk(KERN_EMERG "%s: emulation failed (%08x)\n", __func__,
-		       kvmppc_get_last_inst(vcpu));
-		r = RESUME_HOST;
-		break;
-	default:
-		BUG();
-=======
 	{
 		ppc_inst_t last_inst;
 
@@ -433,43 +339,10 @@ int kvmppc_emulate_mmio(struct kvm_vcpu *vcpu)
 	default:
 		WARN_ON(1);
 		r = RESUME_GUEST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return r;
 }
-<<<<<<< HEAD
-
-int kvm_arch_hardware_enable(void *garbage)
-{
-	return 0;
-}
-
-void kvm_arch_hardware_disable(void *garbage)
-{
-}
-
-int kvm_arch_hardware_setup(void)
-{
-	return 0;
-}
-
-void kvm_arch_hardware_unsetup(void)
-{
-}
-
-void kvm_arch_check_processor_compat(void *rtn)
-{
-	*(int *)rtn = kvmppc_core_check_processor_compat();
-}
-
-int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
-{
-	if (type)
-		return -EINVAL;
-
-	return kvmppc_core_init_vm(kvm);
-=======
 EXPORT_SYMBOL_GPL(kvmppc_emulate_mmio);
 
 int kvmppc_st(struct kvm_vcpu *vcpu, ulong *eaddr, int size, void *ptr,
@@ -600,24 +473,10 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
 	return r;
 err_out:
 	return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void kvm_arch_destroy_vm(struct kvm *kvm)
 {
-<<<<<<< HEAD
-	unsigned int i;
-	struct kvm_vcpu *vcpu;
-
-	kvm_for_each_vcpu(i, vcpu, kvm)
-		kvm_arch_vcpu_free(vcpu);
-
-	mutex_lock(&kvm->lock);
-	for (i = 0; i < atomic_read(&kvm->online_vcpus); i++)
-		kvm->vcpus[i] = NULL;
-
-	atomic_set(&kvm->online_vcpus, 0);
-=======
 #ifdef CONFIG_KVM_XICS
 	/*
 	 * We call kick_all_cpus_sync() to ensure that all
@@ -631,22 +490,10 @@ void kvm_arch_destroy_vm(struct kvm *kvm)
 	kvm_destroy_vcpus(kvm);
 
 	mutex_lock(&kvm->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kvmppc_core_destroy_vm(kvm);
 
 	mutex_unlock(&kvm->lock);
-<<<<<<< HEAD
-}
-
-void kvm_arch_sync_events(struct kvm *kvm)
-{
-}
-
-int kvm_dev_ioctl_check_extension(long ext)
-{
-	int r;
-=======
 
 	/* drop the module reference */
 	module_put(kvm->arch.kvm_ops->owner);
@@ -665,16 +512,12 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
 		 */
 		hv_enabled = is_kvmppc_hv_enabled(kvm);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (ext) {
 #ifdef CONFIG_BOOKE
 	case KVM_CAP_PPC_BOOKE_SREGS:
-<<<<<<< HEAD
-=======
 	case KVM_CAP_PPC_BOOKE_WATCHDOG:
 	case KVM_CAP_PPC_EPR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	case KVM_CAP_PPC_SEGSTATE:
 	case KVM_CAP_PPC_HIOR:
@@ -684,38 +527,6 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
 	case KVM_CAP_PPC_IRQ_LEVEL:
 	case KVM_CAP_ENABLE_CAP:
 	case KVM_CAP_ONE_REG:
-<<<<<<< HEAD
-		r = 1;
-		break;
-#ifndef CONFIG_KVM_BOOK3S_64_HV
-	case KVM_CAP_PPC_PAIRED_SINGLES:
-	case KVM_CAP_PPC_OSI:
-	case KVM_CAP_PPC_GET_PVINFO:
-#ifdef CONFIG_KVM_E500
-	case KVM_CAP_SW_TLB:
-#endif
-		r = 1;
-		break;
-	case KVM_CAP_COALESCED_MMIO:
-		r = KVM_COALESCED_MMIO_PAGE_OFFSET;
-		break;
-#endif
-#ifdef CONFIG_KVM_BOOK3S_64_HV
-	case KVM_CAP_SPAPR_TCE:
-		r = 1;
-		break;
-	case KVM_CAP_PPC_SMT:
-		r = threads_per_core;
-		break;
-	case KVM_CAP_PPC_RMA:
-		r = 1;
-		/* PPC970 requires an RMA */
-		if (cpu_has_feature(CPU_FTR_ARCH_201))
-			r = 2;
-		break;
-	case KVM_CAP_SYNC_MMU:
-		r = cpu_has_feature(CPU_FTR_ARCH_206) ? 1 : 0;
-=======
 	case KVM_CAP_IOEVENTFD:
 	case KVM_CAP_IMMEDIATE_EXIT:
 	case KVM_CAP_SET_GUEST_DEBUG:
@@ -826,7 +637,6 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
 #ifdef CONFIG_KVM_BOOK3S_HV_POSSIBLE
 	case KVM_CAP_PPC_HTAB_FD:
 		r = hv_enabled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif
 	case KVM_CAP_NR_VCPUS:
@@ -836,24 +646,14 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
 		 * will have secondary threads "offline"), and for other KVM
 		 * implementations just count online CPUs.
 		 */
-<<<<<<< HEAD
-#ifdef CONFIG_KVM_BOOK3S_64_HV
-		r = num_present_cpus();
-#else
-		r = num_online_cpus();
-#endif
-=======
 		if (hv_enabled)
 			r = min_t(unsigned int, num_present_cpus(), KVM_MAX_VCPUS);
 		else
 			r = min_t(unsigned int, num_online_cpus(), KVM_MAX_VCPUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case KVM_CAP_MAX_VCPUS:
 		r = KVM_MAX_VCPUS;
 		break;
-<<<<<<< HEAD
-=======
 	case KVM_CAP_MAX_VCPU_ID:
 		r = KVM_MAX_VCPU_IDS;
 		break;
@@ -909,7 +709,6 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
 			}
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		r = 0;
 		break;
@@ -924,14 +723,6 @@ long kvm_arch_dev_ioctl(struct file *filp,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-void kvm_arch_free_memslot(struct kvm_memory_slot *free,
-			   struct kvm_memory_slot *dont)
-{
-}
-
-int kvm_arch_create_memslot(struct kvm_memory_slot *slot, unsigned long npages)
-=======
 void kvm_arch_free_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
 {
 	kvmppc_core_free_memslot(kvm, slot);
@@ -960,54 +751,10 @@ void kvm_arch_flush_shadow_memslot(struct kvm *kvm,
 }
 
 int kvm_arch_vcpu_precreate(struct kvm *kvm, unsigned int id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-int kvm_arch_prepare_memory_region(struct kvm *kvm,
-                                   struct kvm_memory_slot *memslot,
-                                   struct kvm_memory_slot old,
-                                   struct kvm_userspace_memory_region *mem,
-                                   int user_alloc)
-{
-	return kvmppc_core_prepare_memory_region(kvm, mem);
-}
-
-void kvm_arch_commit_memory_region(struct kvm *kvm,
-               struct kvm_userspace_memory_region *mem,
-               struct kvm_memory_slot old,
-               int user_alloc)
-{
-	kvmppc_core_commit_memory_region(kvm, mem);
-}
-
-
-void kvm_arch_flush_shadow(struct kvm *kvm)
-{
-}
-
-struct kvm_vcpu *kvm_arch_vcpu_create(struct kvm *kvm, unsigned int id)
-{
-	struct kvm_vcpu *vcpu;
-	vcpu = kvmppc_core_vcpu_create(kvm, id);
-	if (!IS_ERR(vcpu)) {
-		vcpu->arch.wqp = &vcpu->wq;
-		kvmppc_create_vcpu_debugfs(vcpu, id);
-	}
-	return vcpu;
-}
-
-void kvm_arch_vcpu_free(struct kvm_vcpu *vcpu)
-{
-	/* Make sure we're not using the vcpu anymore */
-	hrtimer_cancel(&vcpu->arch.dec_timer);
-	tasklet_kill(&vcpu->arch.tasklet);
-
-	kvmppc_remove_vcpu_debugfs(vcpu);
-	kvmppc_core_vcpu_free(vcpu);
-=======
 static enum hrtimer_restart kvmppc_decrementer_wakeup(struct hrtimer *timer)
 {
 	struct kvm_vcpu *vcpu;
@@ -1047,14 +794,10 @@ out_vcpu_uninit:
 
 void kvm_arch_vcpu_postcreate(struct kvm_vcpu *vcpu)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void kvm_arch_vcpu_destroy(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	kvm_arch_vcpu_free(vcpu);
-=======
 	/* Make sure we're not using the vcpu anymore */
 	hrtimer_cancel(&vcpu->arch.dec_timer);
 
@@ -1076,7 +819,6 @@ void kvm_arch_vcpu_destroy(struct kvm_vcpu *vcpu)
 	kvmppc_core_vcpu_free(vcpu);
 
 	kvmppc_subarch_vcpu_uninit(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_cpu_has_pending_timer(struct kvm_vcpu *vcpu)
@@ -1084,42 +826,6 @@ int kvm_cpu_has_pending_timer(struct kvm_vcpu *vcpu)
 	return kvmppc_core_pending_dec(vcpu);
 }
 
-<<<<<<< HEAD
-/*
- * low level hrtimer wake routine. Because this runs in hardirq context
- * we schedule a tasklet to do the real work.
- */
-enum hrtimer_restart kvmppc_decrementer_wakeup(struct hrtimer *timer)
-{
-	struct kvm_vcpu *vcpu;
-
-	vcpu = container_of(timer, struct kvm_vcpu, arch.dec_timer);
-	tasklet_schedule(&vcpu->arch.tasklet);
-
-	return HRTIMER_NORESTART;
-}
-
-int kvm_arch_vcpu_init(struct kvm_vcpu *vcpu)
-{
-	hrtimer_init(&vcpu->arch.dec_timer, CLOCK_REALTIME, HRTIMER_MODE_ABS);
-	tasklet_init(&vcpu->arch.tasklet, kvmppc_decrementer_func, (ulong)vcpu);
-	vcpu->arch.dec_timer.function = kvmppc_decrementer_wakeup;
-	vcpu->arch.dec_expires = ~(u64)0;
-
-#ifdef CONFIG_KVM_EXIT_TIMING
-	mutex_init(&vcpu->arch.exit_timing_lock);
-#endif
-
-	return 0;
-}
-
-void kvm_arch_vcpu_uninit(struct kvm_vcpu *vcpu)
-{
-	kvmppc_mmu_destroy(vcpu);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void kvm_arch_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
 {
 #ifdef CONFIG_BOOKE
@@ -1133,10 +839,6 @@ void kvm_arch_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
 	mtspr(SPRN_VRSAVE, vcpu->arch.vrsave);
 #endif
 	kvmppc_core_vcpu_load(vcpu, cpu);
-<<<<<<< HEAD
-	vcpu->cpu = smp_processor_id();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
@@ -1145,34 +847,6 @@ void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
 #ifdef CONFIG_BOOKE
 	vcpu->arch.vrsave = mfspr(SPRN_VRSAVE);
 #endif
-<<<<<<< HEAD
-	vcpu->cpu = -1;
-}
-
-int kvm_arch_vcpu_ioctl_set_guest_debug(struct kvm_vcpu *vcpu,
-                                        struct kvm_guest_debug *dbg)
-{
-	return -EINVAL;
-}
-
-static void kvmppc_complete_dcr_load(struct kvm_vcpu *vcpu,
-                                     struct kvm_run *run)
-{
-	kvmppc_set_gpr(vcpu, vcpu->arch.io_gpr, run->dcr.data);
-}
-
-static void kvmppc_complete_mmio_load(struct kvm_vcpu *vcpu,
-                                      struct kvm_run *run)
-{
-	u64 uninitialized_var(gpr);
-
-	if (run->mmio.len > sizeof(gpr)) {
-		printk(KERN_ERR "bad MMIO length: %d\n", run->mmio.len);
-		return;
-	}
-
-	if (vcpu->arch.mmio_is_bigendian) {
-=======
 }
 
 /*
@@ -1471,7 +1145,6 @@ static void kvmppc_complete_mmio_load(struct kvm_vcpu *vcpu)
 		return;
 
 	if (!vcpu->arch.mmio_host_swabbed) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (run->mmio.len) {
 		case 8: gpr = *(u64 *)run->mmio.data; break;
 		case 4: gpr = *(u32 *)run->mmio.data; break;
@@ -1479,28 +1152,18 @@ static void kvmppc_complete_mmio_load(struct kvm_vcpu *vcpu)
 		case 1: gpr = *(u8 *)run->mmio.data; break;
 		}
 	} else {
-<<<<<<< HEAD
-		/* Convert BE data from userland back to LE. */
-		switch (run->mmio.len) {
-		case 4: gpr = ld_le32((u32 *)run->mmio.data); break;
-		case 2: gpr = ld_le16((u16 *)run->mmio.data); break;
-=======
 		switch (run->mmio.len) {
 		case 8: gpr = swab64(*(u64 *)run->mmio.data); break;
 		case 4: gpr = swab32(*(u32 *)run->mmio.data); break;
 		case 2: gpr = swab16(*(u16 *)run->mmio.data); break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 1: gpr = *(u8 *)run->mmio.data; break;
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	/* conversion between single and double precision */
 	if ((vcpu->arch.mmio_sp64_extend) && (run->mmio.len == 4))
 		gpr = sp_to_dp(gpr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vcpu->arch.mmio_sign_extend) {
 		switch (run->mmio.len) {
 #ifdef CONFIG_PPC64
@@ -1517,36 +1180,21 @@ static void kvmppc_complete_mmio_load(struct kvm_vcpu *vcpu)
 		}
 	}
 
-<<<<<<< HEAD
-	kvmppc_set_gpr(vcpu, vcpu->arch.io_gpr, gpr);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (vcpu->arch.io_gpr & KVM_MMIO_REG_EXT_MASK) {
 	case KVM_MMIO_REG_GPR:
 		kvmppc_set_gpr(vcpu, vcpu->arch.io_gpr, gpr);
 		break;
 	case KVM_MMIO_REG_FPR:
-<<<<<<< HEAD
-		vcpu->arch.fpr[vcpu->arch.io_gpr & KVM_MMIO_REG_MASK] = gpr;
-=======
 		if (vcpu->kvm->arch.kvm_ops->giveup_ext)
 			vcpu->kvm->arch.kvm_ops->giveup_ext(vcpu, MSR_FP);
 
 		kvmppc_set_fpr(vcpu, vcpu->arch.io_gpr & KVM_MMIO_REG_MASK, gpr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #ifdef CONFIG_PPC_BOOK3S
 	case KVM_MMIO_REG_QPR:
 		vcpu->arch.qpr[vcpu->arch.io_gpr & KVM_MMIO_REG_MASK] = gpr;
 		break;
 	case KVM_MMIO_REG_FQPR:
-<<<<<<< HEAD
-		vcpu->arch.fpr[vcpu->arch.io_gpr & KVM_MMIO_REG_MASK] = gpr;
-		vcpu->arch.qpr[vcpu->arch.io_gpr & KVM_MMIO_REG_MASK] = gpr;
-		break;
-#endif
-=======
 		kvmppc_set_fpr(vcpu, vcpu->arch.io_gpr & KVM_MMIO_REG_MASK, gpr);
 		vcpu->arch.qpr[vcpu->arch.io_gpr & KVM_MMIO_REG_MASK] = gpr;
 		break;
@@ -1593,22 +1241,11 @@ static void kvmppc_complete_mmio_load(struct kvm_vcpu *vcpu)
 				     sizeof(gpr));
 		break;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		BUG();
 	}
 }
 
-<<<<<<< HEAD
-int kvmppc_handle_load(struct kvm_run *run, struct kvm_vcpu *vcpu,
-                       unsigned int rt, unsigned int bytes, int is_bigendian)
-{
-	if (bytes > sizeof(run->mmio.data)) {
-		printk(KERN_ERR "%s: bad MMIO length: %d\n", __func__,
-		       run->mmio.len);
-	}
-
-=======
 static int __kvmppc_handle_load(struct kvm_vcpu *vcpu,
 				unsigned int rt, unsigned int bytes,
 				int is_default_endian, int sign_extend)
@@ -1627,18 +1264,11 @@ static int __kvmppc_handle_load(struct kvm_vcpu *vcpu,
 	if (bytes > sizeof(run->mmio.data))
 		return EMULATE_FAIL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	run->mmio.phys_addr = vcpu->arch.paddr_accessed;
 	run->mmio.len = bytes;
 	run->mmio.is_write = 0;
 
 	vcpu->arch.io_gpr = rt;
-<<<<<<< HEAD
-	vcpu->arch.mmio_is_bigendian = is_bigendian;
-	vcpu->mmio_needed = 1;
-	vcpu->mmio_is_write = 0;
-	vcpu->arch.mmio_sign_extend = 0;
-=======
 	vcpu->arch.mmio_host_swabbed = host_swabbed;
 	vcpu->mmio_needed = 1;
 	vcpu->mmio_is_write = 0;
@@ -1656,34 +1286,10 @@ static int __kvmppc_handle_load(struct kvm_vcpu *vcpu,
 		vcpu->mmio_needed = 0;
 		return EMULATE_DONE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return EMULATE_DO_MMIO;
 }
 
-<<<<<<< HEAD
-/* Same as above, but sign extends */
-int kvmppc_handle_loads(struct kvm_run *run, struct kvm_vcpu *vcpu,
-                        unsigned int rt, unsigned int bytes, int is_bigendian)
-{
-	int r;
-
-	r = kvmppc_handle_load(run, vcpu, rt, bytes, is_bigendian);
-	vcpu->arch.mmio_sign_extend = 1;
-
-	return r;
-}
-
-int kvmppc_handle_store(struct kvm_run *run, struct kvm_vcpu *vcpu,
-                        u64 val, unsigned int bytes, int is_bigendian)
-{
-	void *data = run->mmio.data;
-
-	if (bytes > sizeof(run->mmio.data)) {
-		printk(KERN_ERR "%s: bad MMIO length: %d\n", __func__,
-		       run->mmio.len);
-	}
-=======
 int kvmppc_handle_load(struct kvm_vcpu *vcpu,
 		       unsigned int rt, unsigned int bytes,
 		       int is_default_endian)
@@ -1744,7 +1350,6 @@ int kvmppc_handle_store(struct kvm_vcpu *vcpu,
 
 	if (bytes > sizeof(run->mmio.data))
 		return EMULATE_FAIL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	run->mmio.phys_addr = vcpu->arch.paddr_accessed;
 	run->mmio.len = bytes;
@@ -1752,16 +1357,11 @@ int kvmppc_handle_store(struct kvm_vcpu *vcpu,
 	vcpu->mmio_needed = 1;
 	vcpu->mmio_is_write = 1;
 
-<<<<<<< HEAD
-	/* Store the value at the lowest bytes in 'data'. */
-	if (is_bigendian) {
-=======
 	if ((vcpu->arch.mmio_sp64_extend) && (bytes == 4))
 		val = dp_to_sp(val);
 
 	/* Store the value at the lowest bytes in 'data'. */
 	if (!host_swabbed) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (bytes) {
 		case 8: *(u64 *)data = val; break;
 		case 4: *(u32 *)data = val; break;
@@ -1769,35 +1369,6 @@ int kvmppc_handle_store(struct kvm_vcpu *vcpu,
 		case 1: *(u8  *)data = val; break;
 		}
 	} else {
-<<<<<<< HEAD
-		/* Store LE value into 'data'. */
-		switch (bytes) {
-		case 4: st_le32(data, val); break;
-		case 2: st_le16(data, val); break;
-		case 1: *(u8 *)data = val; break;
-		}
-	}
-
-	return EMULATE_DO_MMIO;
-}
-
-int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *run)
-{
-	int r;
-	sigset_t sigsaved;
-
-	if (vcpu->sigset_active)
-		sigprocmask(SIG_SETMASK, &vcpu->sigset, &sigsaved);
-
-	if (vcpu->mmio_needed) {
-		if (!vcpu->mmio_is_write)
-			kvmppc_complete_mmio_load(vcpu, run);
-		vcpu->mmio_needed = 0;
-	} else if (vcpu->arch.dcr_needed) {
-		if (!vcpu->arch.dcr_is_write)
-			kvmppc_complete_dcr_load(vcpu, run);
-		vcpu->arch.dcr_needed = 0;
-=======
 		switch (bytes) {
 		case 8: *(u64 *)data = swab64(val); break;
 		case 4: *(u32 *)data = swab32(val); break;
@@ -2258,7 +1829,6 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
 			}
 		}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (vcpu->arch.osi_needed) {
 		u64 *gprs = run->osi.gprs;
 		int i;
@@ -2273,37 +1843,6 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
 		for (i = 0; i < 9; ++i)
 			kvmppc_set_gpr(vcpu, 4 + i, run->papr_hcall.args[i]);
 		vcpu->arch.hcall_needed = 0;
-<<<<<<< HEAD
-	}
-
-	r = kvmppc_vcpu_run(run, vcpu);
-
-	if (vcpu->sigset_active)
-		sigprocmask(SIG_SETMASK, &sigsaved, NULL);
-
-	return r;
-}
-
-void kvm_vcpu_kick(struct kvm_vcpu *vcpu)
-{
-	int me;
-	int cpu = vcpu->cpu;
-
-	me = get_cpu();
-	if (waitqueue_active(vcpu->arch.wqp)) {
-		wake_up_interruptible(vcpu->arch.wqp);
-		vcpu->stat.halt_wakeup++;
-	} else if (cpu != me && cpu != -1) {
-		smp_send_reschedule(vcpu->cpu);
-	}
-	put_cpu();
-}
-
-int kvm_vcpu_ioctl_interrupt(struct kvm_vcpu *vcpu, struct kvm_interrupt *irq)
-{
-	if (irq->irq == KVM_INTERRUPT_UNSET) {
-		kvmppc_core_dequeue_external(vcpu, irq);
-=======
 #ifdef CONFIG_BOOKE
 	} else if (vcpu->arch.epr_needed) {
 		kvmppc_set_epr(vcpu, run->epr.epr);
@@ -2339,15 +1878,11 @@ int kvm_vcpu_ioctl_interrupt(struct kvm_vcpu *vcpu, struct kvm_interrupt *irq)
 {
 	if (irq->irq == KVM_INTERRUPT_UNSET) {
 		kvmppc_core_dequeue_external(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	kvmppc_core_queue_external(vcpu, irq);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kvm_vcpu_kick(vcpu);
 
 	return 0;
@@ -2370,9 +1905,6 @@ static int kvm_vcpu_ioctl_enable_cap(struct kvm_vcpu *vcpu,
 		r = 0;
 		vcpu->arch.papr_enabled = true;
 		break;
-<<<<<<< HEAD
-#ifdef CONFIG_KVM_E500
-=======
 	case KVM_CAP_PPC_EPR:
 		r = 0;
 		if (cap->args[0])
@@ -2387,7 +1919,6 @@ static int kvm_vcpu_ioctl_enable_cap(struct kvm_vcpu *vcpu,
 		break;
 #endif
 #if defined(CONFIG_KVM_E500V2) || defined(CONFIG_KVM_E500MC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KVM_CAP_SW_TLB: {
 		struct kvm_config_tlb cfg;
 		void __user *user_ptr = (void __user *)(uintptr_t)cap->args[0];
@@ -2400,8 +1931,6 @@ static int kvm_vcpu_ioctl_enable_cap(struct kvm_vcpu *vcpu,
 		break;
 	}
 #endif
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_KVM_MPIC
 	case KVM_CAP_IRQ_MPIC: {
 		struct fd f;
@@ -2477,7 +2006,6 @@ static int kvm_vcpu_ioctl_enable_cap(struct kvm_vcpu *vcpu,
 		vcpu->kvm->arch.fwnmi_enabled = true;
 		break;
 #endif /* CONFIG_KVM_BOOK3S_HV_POSSIBLE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		r = -EINVAL;
 		break;
@@ -2489,8 +2017,6 @@ static int kvm_vcpu_ioctl_enable_cap(struct kvm_vcpu *vcpu,
 	return r;
 }
 
-<<<<<<< HEAD
-=======
 bool kvm_arch_intc_initialized(struct kvm *kvm)
 {
 #ifdef CONFIG_KVM_MPIC
@@ -2504,7 +2030,6 @@ bool kvm_arch_intc_initialized(struct kvm *kvm)
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kvm_arch_vcpu_ioctl_get_mpstate(struct kvm_vcpu *vcpu,
                                     struct kvm_mp_state *mp_state)
 {
@@ -2517,8 +2042,6 @@ int kvm_arch_vcpu_ioctl_set_mpstate(struct kvm_vcpu *vcpu,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 long kvm_arch_vcpu_async_ioctl(struct file *filp,
 			       unsigned int ioctl, unsigned long arg)
 {
@@ -2534,7 +2057,6 @@ long kvm_arch_vcpu_async_ioctl(struct file *filp,
 	return -ENOIOCTLCMD;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 long kvm_arch_vcpu_ioctl(struct file *filp,
                          unsigned int ioctl, unsigned long arg)
 {
@@ -2543,31 +2065,15 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
 	long r;
 
 	switch (ioctl) {
-<<<<<<< HEAD
-	case KVM_INTERRUPT: {
-		struct kvm_interrupt irq;
-		r = -EFAULT;
-		if (copy_from_user(&irq, argp, sizeof(irq)))
-			goto out;
-		r = kvm_vcpu_ioctl_interrupt(vcpu, &irq);
-		goto out;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KVM_ENABLE_CAP:
 	{
 		struct kvm_enable_cap cap;
 		r = -EFAULT;
 		if (copy_from_user(&cap, argp, sizeof(cap)))
 			goto out;
-<<<<<<< HEAD
-		r = kvm_vcpu_ioctl_enable_cap(vcpu, &cap);
-=======
 		vcpu_load(vcpu);
 		r = kvm_vcpu_ioctl_enable_cap(vcpu, &cap);
 		vcpu_put(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -2585,30 +2091,18 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
 		break;
 	}
 
-<<<<<<< HEAD
-#ifdef CONFIG_KVM_E500
-=======
 #if defined(CONFIG_KVM_E500V2) || defined(CONFIG_KVM_E500MC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KVM_DIRTY_TLB: {
 		struct kvm_dirty_tlb dirty;
 		r = -EFAULT;
 		if (copy_from_user(&dirty, argp, sizeof(dirty)))
 			goto out;
-<<<<<<< HEAD
-		r = kvm_vcpu_ioctl_dirty_tlb(vcpu, &dirty);
-		break;
-	}
-#endif
-
-=======
 		vcpu_load(vcpu);
 		r = kvm_vcpu_ioctl_dirty_tlb(vcpu, &dirty);
 		vcpu_put(vcpu);
 		break;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		r = -EINVAL;
 	}
@@ -2617,22 +2111,13 @@ out:
 	return r;
 }
 
-<<<<<<< HEAD
-int kvm_arch_vcpu_fault(struct kvm_vcpu *vcpu, struct vm_fault *vmf)
-=======
 vm_fault_t kvm_arch_vcpu_fault(struct kvm_vcpu *vcpu, struct vm_fault *vmf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return VM_FAULT_SIGBUS;
 }
 
 static int kvm_vm_ioctl_get_pvinfo(struct kvm_ppc_pvinfo *pvinfo)
 {
-<<<<<<< HEAD
-	u32 inst_lis = 0x3c000000;
-	u32 inst_ori = 0x60000000;
-	u32 inst_nop = 0x60000000;
-=======
 	u32 inst_nop = 0x60000000;
 #ifdef CONFIG_KVM_BOOKE_HV
 	u32 inst_sc1 = 0x44000022;
@@ -2643,7 +2128,6 @@ static int kvm_vm_ioctl_get_pvinfo(struct kvm_ppc_pvinfo *pvinfo)
 #else
 	u32 inst_lis = 0x3c000000;
 	u32 inst_ori = 0x60000000;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 inst_sc = 0x44000002;
 	u32 inst_imm_mask = 0xffff;
 
@@ -2656,12 +2140,6 @@ static int kvm_vm_ioctl_get_pvinfo(struct kvm_ppc_pvinfo *pvinfo)
 	 *    sc
 	 *    nop
 	 */
-<<<<<<< HEAD
-	pvinfo->hcall[0] = inst_lis | ((KVM_SC_MAGIC_R0 >> 16) & inst_imm_mask);
-	pvinfo->hcall[1] = inst_ori | (KVM_SC_MAGIC_R0 & inst_imm_mask);
-	pvinfo->hcall[2] = inst_sc;
-	pvinfo->hcall[3] = inst_nop;
-=======
 	pvinfo->hcall[0] = cpu_to_be32(inst_lis | ((KVM_SC_MAGIC_R0 >> 16) & inst_imm_mask));
 	pvinfo->hcall[1] = cpu_to_be32(inst_ori | (KVM_SC_MAGIC_R0 & inst_imm_mask));
 	pvinfo->hcall[2] = cpu_to_be32(inst_sc);
@@ -2669,18 +2147,10 @@ static int kvm_vm_ioctl_get_pvinfo(struct kvm_ppc_pvinfo *pvinfo)
 #endif
 
 	pvinfo->flags = KVM_PPC_PVINFO_FLAGS_EV_IDLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-long kvm_arch_vm_ioctl(struct file *filp,
-                       unsigned int ioctl, unsigned long arg)
-{
-	void __user *argp = (void __user *)arg;
-	long r;
-=======
 bool kvm_arch_irqchip_in_kernel(struct kvm *kvm)
 {
 	int ret = 0;
@@ -2908,7 +2378,6 @@ int kvm_arch_vm_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
 	struct kvm *kvm __maybe_unused = filp->private_data;
 	void __user *argp = (void __user *)arg;
 	int r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (ioctl) {
 	case KVM_PPC_GET_PVINFO: {
@@ -2922,12 +2391,6 @@ int kvm_arch_vm_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
 
 		break;
 	}
-<<<<<<< HEAD
-#ifdef CONFIG_KVM_BOOK3S_64_HV
-	case KVM_CREATE_SPAPR_TCE: {
-		struct kvm_create_spapr_tce create_tce;
-		struct kvm *kvm = filp->private_data;
-=======
 #ifdef CONFIG_SPAPR_TCE_IOMMU
 	case KVM_CREATE_SPAPR_TCE_64: {
 		struct kvm_create_spapr_tce_64 create_tce_64;
@@ -2945,32 +2408,10 @@ int kvm_arch_vm_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
 	case KVM_CREATE_SPAPR_TCE: {
 		struct kvm_create_spapr_tce create_tce;
 		struct kvm_create_spapr_tce_64 create_tce_64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		r = -EFAULT;
 		if (copy_from_user(&create_tce, argp, sizeof(create_tce)))
 			goto out;
-<<<<<<< HEAD
-		r = kvm_vm_ioctl_create_spapr_tce(kvm, &create_tce);
-		goto out;
-	}
-
-	case KVM_ALLOCATE_RMA: {
-		struct kvm *kvm = filp->private_data;
-		struct kvm_allocate_rma rma;
-
-		r = kvm_vm_ioctl_allocate_rma(kvm, &rma);
-		if (r >= 0 && copy_to_user(argp, &rma, sizeof(rma)))
-			r = -EFAULT;
-		break;
-	}
-#endif /* CONFIG_KVM_BOOK3S_64_HV */
-
-	default:
-		r = -ENOTTY;
-	}
-
-=======
 
 		create_tce_64.liobn = create_tce.liobn;
 		create_tce_64.page_shift = IOMMU_PAGE_SHIFT_4K;
@@ -3051,20 +2492,10 @@ int kvm_arch_vm_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
 		r = -ENOTTY;
 #endif
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return r;
 }
 
-<<<<<<< HEAD
-int kvm_arch_init(void *opaque)
-{
-	return 0;
-}
-
-void kvm_arch_exit(void)
-{
-=======
 static DEFINE_IDA(lpid_inuse);
 static unsigned long nr_lpids;
 
@@ -3111,5 +2542,4 @@ void kvm_arch_create_vm_debugfs(struct kvm *kvm)
 {
 	if (kvm->arch.kvm_ops->create_vm_debugfs)
 		kvm->arch.kvm_ops->create_vm_debugfs(kvm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,27 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1999, 2000 Ralf Baechle (ralf@gnu.org)
  * Copyright (C) 1999, 2000 Silcon Graphics, Inc.
  * Copyright (C) 2004 Christoph Hellwig.
-<<<<<<< HEAD
- *	Released under GPL v2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Generic XTALK initialization code
  */
 
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/kernel.h>
-#include <linux/smp.h>
-#include <asm/sn/types.h>
-#include <asm/sn/klconfig.h>
-#include <asm/sn/hub.h>
-=======
 #include <linux/kernel.h>
 #include <linux/smp.h>
 #include <linux/platform_device.h>
@@ -30,22 +15,10 @@
 #include <asm/sn/addrs.h>
 #include <asm/sn/types.h>
 #include <asm/sn/klconfig.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pci/bridge.h>
 #include <asm/xtalk/xtalk.h>
 
 
-<<<<<<< HEAD
-#define XBOW_WIDGET_PART_NUM    0x0
-#define XXBOW_WIDGET_PART_NUM   0xd000  /* Xbow in Xbridge */
-#define BASE_XBOW_PORT  	8     /* Lowest external port */
-
-extern int bridge_probe(nasid_t nasid, int widget, int masterwid);
-
-static int __cpuinit probe_one_port(nasid_t nasid, int widget, int masterwid)
-{
-	widgetreg_t 		widget_id;
-=======
 #define XBOW_WIDGET_PART_NUM	0x0
 #define XXBOW_WIDGET_PART_NUM	0xd000	/* Xbow in Xbridge */
 #define BASE_XBOW_PORT		8     /* Lowest external port */
@@ -155,24 +128,12 @@ err_kfree_wd:
 static int probe_one_port(nasid_t nasid, int widget, int masterwid)
 {
 	widgetreg_t		widget_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xwidget_part_num_t	partnum;
 
 	widget_id = *(volatile widgetreg_t *)
 		(RAW_NODE_SWIN_BASE(nasid, widget) + WIDGET_ID);
 	partnum = XWIDGET_PART_NUM(widget_id);
 
-<<<<<<< HEAD
-	printk(KERN_INFO "Cpu %d, Nasid 0x%x, widget 0x%x (partnum 0x%x) is ",
-			smp_processor_id(), nasid, widget, partnum);
-
-	switch (partnum) {
-	case BRIDGE_WIDGET_PART_NUM:
-	case XBRIDGE_WIDGET_PART_NUM:
-		bridge_probe(nasid, widget, masterwid);
-		break;
-	default:
-=======
 	switch (partnum) {
 	case BRIDGE_WIDGET_PART_NUM:
 	case XBRIDGE_WIDGET_PART_NUM:
@@ -181,28 +142,18 @@ static int probe_one_port(nasid_t nasid, int widget, int masterwid)
 	default:
 		pr_info("xtalk:n%d/%d unknown widget (0x%x)\n",
 			nasid, widget, partnum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __cpuinit xbow_probe(nasid_t nasid)
-=======
 static int xbow_probe(nasid_t nasid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	lboard_t *brd;
 	klxbow_t *xbow_p;
 	unsigned masterwid, i;
 
-<<<<<<< HEAD
-	printk("is xbow\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * found xbow, so may have multiple bridges
 	 * need to probe xbow
@@ -216,11 +167,7 @@ static int xbow_probe(nasid_t nasid)
 		return -ENODEV;
 
 	/*
-<<<<<<< HEAD
-	 * Okay, here's a xbow. Lets arbitrate and find
-=======
 	 * Okay, here's a xbow. Let's arbitrate and find
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * out if we should initialize it. Set enabled
 	 * hub connected at highest or lowest widget as
 	 * master.
@@ -252,23 +199,12 @@ static int xbow_probe(nasid_t nasid)
 	return 0;
 }
 
-<<<<<<< HEAD
-void __cpuinit xtalk_probe_node(cnodeid_t nid)
-{
-	volatile u64 		hubreg;
-	nasid_t	 		nasid;
-	xwidget_part_num_t	partnum;
-	widgetreg_t 		widget_id;
-
-	nasid = COMPACT_TO_NASID_NODEID(nid);
-=======
 static void xtalk_probe_node(nasid_t nasid)
 {
 	volatile u64		hubreg;
 	xwidget_part_num_t	partnum;
 	widgetreg_t		widget_id;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hubreg = REMOTE_HUB_L(nasid, IIO_LLP_CSR);
 
 	/* check whether the link is up */
@@ -276,27 +212,6 @@ static void xtalk_probe_node(nasid_t nasid)
 		return;
 
 	widget_id = *(volatile widgetreg_t *)
-<<<<<<< HEAD
-                       (RAW_NODE_SWIN_BASE(nasid, 0x0) + WIDGET_ID);
-	partnum = XWIDGET_PART_NUM(widget_id);
-
-	printk(KERN_INFO "Cpu %d, Nasid 0x%x: partnum 0x%x is ",
-			smp_processor_id(), nasid, partnum);
-
-	switch (partnum) {
-	case BRIDGE_WIDGET_PART_NUM:
-		bridge_probe(nasid, 0x8, 0xa);
-		break;
-	case XBOW_WIDGET_PART_NUM:
-	case XXBOW_WIDGET_PART_NUM:
-		xbow_probe(nasid);
-		break;
-	default:
-		printk(" unknown widget??\n");
-		break;
-	}
-}
-=======
 		       (RAW_NODE_SWIN_BASE(nasid, 0x0) + WIDGET_ID);
 	partnum = XWIDGET_PART_NUM(widget_id);
 
@@ -325,4 +240,3 @@ static int __init xtalk_init(void)
 	return 0;
 }
 arch_initcall(xtalk_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

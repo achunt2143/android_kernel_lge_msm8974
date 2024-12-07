@@ -10,10 +10,7 @@
 
 #include <linux/init.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/fs_context.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FUSE_CTL_SUPER_MAGIC 0x65735543
 
@@ -27,11 +24,7 @@ static struct fuse_conn *fuse_ctl_file_conn_get(struct file *file)
 {
 	struct fuse_conn *fc;
 	mutex_lock(&fuse_mutex);
-<<<<<<< HEAD
-	fc = file->f_path.dentry->d_inode->i_private;
-=======
 	fc = file_inode(file)->i_private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fc)
 		fc = fuse_conn_get(fc);
 	mutex_unlock(&fuse_mutex);
@@ -43,11 +36,8 @@ static ssize_t fuse_conn_abort_write(struct file *file, const char __user *buf,
 {
 	struct fuse_conn *fc = fuse_ctl_file_conn_get(file);
 	if (fc) {
-<<<<<<< HEAD
-=======
 		if (fc->abort_err)
 			fc->aborted = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fuse_abort_conn(fc);
 		fuse_conn_put(fc);
 	}
@@ -88,21 +78,6 @@ static ssize_t fuse_conn_limit_write(struct file *file, const char __user *buf,
 				     unsigned global_limit)
 {
 	unsigned long t;
-<<<<<<< HEAD
-	char tmp[32];
-	unsigned limit = (1 << 16) - 1;
-	int err;
-
-	if (*ppos || count >= sizeof(tmp) - 1)
-		return -EINVAL;
-
-	if (copy_from_user(tmp, buf, count))
-		return -EINVAL;
-
-	tmp[count] = '\0';
-
-	err = strict_strtoul(tmp, 0, &t);
-=======
 	unsigned limit = (1 << 16) - 1;
 	int err;
 
@@ -110,7 +85,6 @@ static ssize_t fuse_conn_limit_write(struct file *file, const char __user *buf,
 		return -EINVAL;
 
 	err = kstrtoul_from_user(buf, count, 0, &t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -136,11 +110,7 @@ static ssize_t fuse_conn_max_background_read(struct file *file,
 	if (!fc)
 		return 0;
 
-<<<<<<< HEAD
-	val = fc->max_background;
-=======
 	val = READ_ONCE(fc->max_background);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fuse_conn_put(fc);
 
 	return fuse_conn_limit_read(file, buf, len, ppos, val);
@@ -158,16 +128,12 @@ static ssize_t fuse_conn_max_background_write(struct file *file,
 	if (ret > 0) {
 		struct fuse_conn *fc = fuse_ctl_file_conn_get(file);
 		if (fc) {
-<<<<<<< HEAD
-			fc->max_background = val;
-=======
 			spin_lock(&fc->bg_lock);
 			fc->max_background = val;
 			fc->blocked = fc->num_background >= fc->max_background;
 			if (!fc->blocked)
 				wake_up(&fc->blocked_waitq);
 			spin_unlock(&fc->bg_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fuse_conn_put(fc);
 		}
 	}
@@ -186,11 +152,7 @@ static ssize_t fuse_conn_congestion_threshold_read(struct file *file,
 	if (!fc)
 		return 0;
 
-<<<<<<< HEAD
-	val = fc->congestion_threshold;
-=======
 	val = READ_ONCE(fc->congestion_threshold);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fuse_conn_put(fc);
 
 	return fuse_conn_limit_read(file, buf, len, ppos, val);
@@ -201,24 +163,11 @@ static ssize_t fuse_conn_congestion_threshold_write(struct file *file,
 						    size_t count, loff_t *ppos)
 {
 	unsigned val;
-<<<<<<< HEAD
-=======
 	struct fuse_conn *fc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t ret;
 
 	ret = fuse_conn_limit_write(file, buf, count, ppos, &val,
 				    max_user_congthresh);
-<<<<<<< HEAD
-	if (ret > 0) {
-		struct fuse_conn *fc = fuse_ctl_file_conn_get(file);
-		if (fc) {
-			fc->congestion_threshold = val;
-			fuse_conn_put(fc);
-		}
-	}
-
-=======
 	if (ret <= 0)
 		goto out;
 	fc = fuse_ctl_file_conn_get(file);
@@ -228,7 +177,6 @@ static ssize_t fuse_conn_congestion_threshold_write(struct file *file,
 	WRITE_ONCE(fc->congestion_threshold, val);
 	fuse_conn_put(fc);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -273,28 +221,17 @@ static struct dentry *fuse_ctl_add_dentry(struct dentry *parent,
 	if (!dentry)
 		return NULL;
 
-<<<<<<< HEAD
-	fc->ctl_dentry[fc->ctl_ndents++] = dentry;
-	inode = new_inode(fuse_control_sb);
-	if (!inode)
-		return NULL;
-=======
 	inode = new_inode(fuse_control_sb);
 	if (!inode) {
 		dput(dentry);
 		return NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inode->i_ino = get_next_ino();
 	inode->i_mode = mode;
 	inode->i_uid = fc->user_id;
 	inode->i_gid = fc->group_id;
-<<<<<<< HEAD
-	inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
-=======
 	simple_inode_init_ts(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* setting ->i_op to NULL is not allowed */
 	if (iop)
 		inode->i_op = iop;
@@ -302,12 +239,9 @@ static struct dentry *fuse_ctl_add_dentry(struct dentry *parent,
 	set_nlink(inode, nlink);
 	inode->i_private = fc;
 	d_add(dentry, inode);
-<<<<<<< HEAD
-=======
 
 	fc->ctl_dentry[fc->ctl_ndents++] = dentry;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dentry;
 }
 
@@ -320,19 +254,11 @@ int fuse_ctl_add_conn(struct fuse_conn *fc)
 	struct dentry *parent;
 	char name[32];
 
-<<<<<<< HEAD
-	if (!fuse_control_sb)
-		return 0;
-
-	parent = fuse_control_sb->s_root;
-	inc_nlink(parent->d_inode);
-=======
 	if (!fuse_control_sb || fc->no_control)
 		return 0;
 
 	parent = fuse_control_sb->s_root;
 	inc_nlink(d_inode(parent));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sprintf(name, "%u", fc->dev);
 	parent = fuse_ctl_add_dentry(parent, fc, name, S_IFDIR | 0500, 2,
 				     &simple_dir_inode_operations,
@@ -366,27 +292,11 @@ void fuse_ctl_remove_conn(struct fuse_conn *fc)
 {
 	int i;
 
-<<<<<<< HEAD
-	if (!fuse_control_sb)
-=======
 	if (!fuse_control_sb || fc->no_control)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	for (i = fc->ctl_ndents - 1; i >= 0; i--) {
 		struct dentry *dentry = fc->ctl_dentry[i];
-<<<<<<< HEAD
-		dentry->d_inode->i_private = NULL;
-		d_drop(dentry);
-		dput(dentry);
-	}
-	drop_nlink(fuse_control_sb->s_root->d_inode);
-}
-
-static int fuse_ctl_fill_super(struct super_block *sb, void *data, int silent)
-{
-	struct tree_descr empty_descr = {""};
-=======
 		d_inode(dentry)->i_private = NULL;
 		if (!i) {
 			/* Get rid of submounts: */
@@ -400,7 +310,6 @@ static int fuse_ctl_fill_super(struct super_block *sb, void *data, int silent)
 static int fuse_ctl_fill_super(struct super_block *sb, struct fs_context *fsc)
 {
 	static const struct tree_descr empty_descr = {""};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fuse_conn *fc;
 	int err;
 
@@ -424,12 +333,6 @@ static int fuse_ctl_fill_super(struct super_block *sb, struct fs_context *fsc)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct dentry *fuse_ctl_mount(struct file_system_type *fs_type,
-			int flags, const char *dev_name, void *raw_data)
-{
-	return mount_single(fs_type, flags, raw_data, fuse_ctl_fill_super);
-=======
 static int fuse_ctl_get_tree(struct fs_context *fsc)
 {
 	return get_tree_single(fsc, fuse_ctl_fill_super);
@@ -443,7 +346,6 @@ static int fuse_ctl_init_fs_context(struct fs_context *fsc)
 {
 	fsc->ops = &fuse_ctl_context_ops;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fuse_ctl_kill_sb(struct super_block *sb)
@@ -462,11 +364,7 @@ static void fuse_ctl_kill_sb(struct super_block *sb)
 static struct file_system_type fuse_ctl_fs_type = {
 	.owner		= THIS_MODULE,
 	.name		= "fusectl",
-<<<<<<< HEAD
-	.mount		= fuse_ctl_mount,
-=======
 	.init_fs_context = fuse_ctl_init_fs_context,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.kill_sb	= fuse_ctl_kill_sb,
 };
 MODULE_ALIAS_FS("fusectl");
@@ -476,11 +374,7 @@ int __init fuse_ctl_init(void)
 	return register_filesystem(&fuse_ctl_fs_type);
 }
 
-<<<<<<< HEAD
-void fuse_ctl_cleanup(void)
-=======
 void __exit fuse_ctl_cleanup(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unregister_filesystem(&fuse_ctl_fs_type);
 }

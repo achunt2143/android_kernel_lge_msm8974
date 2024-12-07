@@ -12,12 +12,6 @@
  */
 
 #include <linux/ctype.h>
-<<<<<<< HEAD
-#include <linux/string.h>
-#include <linux/kernel.h>
-#include <linux/reboot.h>
-#include <linux/sched.h>
-=======
 #include <linux/types.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
@@ -27,17 +21,12 @@
 #include <linux/sched/loadavg.h>
 #include <linux/sched/stat.h>
 #include <linux/sched/debug.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sysrq.h>
 #include <linux/smp.h>
 #include <linux/utsname.h>
 #include <linux/vmalloc.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/atomic.h>
 #include <linux/moduleparam.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/init.h>
 #include <linux/kallsyms.h>
@@ -55,12 +44,6 @@
 #include <linux/proc_fs.h>
 #include <linux/uaccess.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include "kdb_private.h"
-
-#define GREP_LEN 256
-char kdb_grep_string[GREP_LEN];
-=======
 #include <linux/security.h>
 #include "kdb_private.h"
 
@@ -71,7 +54,6 @@ static int kdb_cmd_enabled = CONFIG_KDB_DEFAULT_ENABLE;
 module_param_named(cmd_enable, kdb_cmd_enabled, int, 0600);
 
 char kdb_grep_string[KDB_GREP_STRLEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kdb_grepping_flag;
 EXPORT_SYMBOL(kdb_grepping_flag);
 int kdb_grep_leading;
@@ -80,12 +62,7 @@ int kdb_grep_trailing;
 /*
  * Kernel debugger state flags
  */
-<<<<<<< HEAD
-int kdb_flags;
-atomic_t kdb_event;
-=======
 unsigned int kdb_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * kdb_lock protects updates to kdb_initial_cpu.  Used to
@@ -96,10 +73,6 @@ int kdb_nextline = 1;
 int kdb_state;			/* General KDB state */
 
 struct task_struct *kdb_current_task;
-<<<<<<< HEAD
-EXPORT_SYMBOL(kdb_current_task);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pt_regs *kdb_current_regs;
 
 const char *kdb_diemsg;
@@ -111,20 +84,8 @@ static unsigned int kdb_continue_catastrophic =
 static unsigned int kdb_continue_catastrophic;
 #endif
 
-<<<<<<< HEAD
-/* kdb_commands describes the available commands. */
-static kdbtab_t *kdb_commands;
-#define KDB_BASE_CMD_MAX 50
-static int kdb_max_commands = KDB_BASE_CMD_MAX;
-static kdbtab_t kdb_base_commands[KDB_BASE_CMD_MAX];
-#define for_each_kdbcmd(cmd, num)					\
-	for ((cmd) = kdb_base_commands, (num) = 0;			\
-	     num < kdb_max_commands;					\
-	     num++, num == KDB_BASE_CMD_MAX ? cmd = kdb_commands : cmd++)
-=======
 /* kdb_cmds_head describes the available commands. */
 static LIST_HEAD(kdb_cmds_head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct _kdbmsg {
 	int	km_diag;	/* kdb diagnostic */
@@ -161,18 +122,11 @@ static kdbmsg_t kdbmsgs[] = {
 	KDBMSG(BADLENGTH, "Invalid length field"),
 	KDBMSG(NOBP, "No Breakpoint exists"),
 	KDBMSG(BADADDR, "Invalid address"),
-<<<<<<< HEAD
-};
-#undef KDBMSG
-
-static const int __nkdb_err = sizeof(kdbmsgs) / sizeof(kdbmsg_t);
-=======
 	KDBMSG(NOPERM, "Permission denied"),
 };
 #undef KDBMSG
 
 static const int __nkdb_err = ARRAY_SIZE(kdbmsgs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -185,48 +139,6 @@ static const int __nkdb_err = ARRAY_SIZE(kdbmsgs);
  * KDB_ENVBUFSIZE if required).
  */
 
-<<<<<<< HEAD
-static char *__env[] = {
-#if defined(CONFIG_SMP)
- "PROMPT=[%d]kdb> ",
- "MOREPROMPT=[%d]more> ",
-#else
- "PROMPT=kdb> ",
- "MOREPROMPT=more> ",
-#endif
- "RADIX=16",
- "MDCOUNT=8",			/* lines of md output */
- KDB_PLATFORM_ENV,
- "DTABCOUNT=30",
- "NOSECT=1",
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
- (char *)0,
-};
-
-static const int __nenv = (sizeof(__env) / sizeof(char *));
-=======
 static char *__env[31] = {
 #if defined(CONFIG_SMP)
 	"PROMPT=[%d]kdb> ",
@@ -242,7 +154,6 @@ static char *__env[31] = {
 };
 
 static const int __nenv = ARRAY_SIZE(__env);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct task_struct *kdb_curr_task(int cpu)
 {
@@ -255,8 +166,6 @@ struct task_struct *kdb_curr_task(int cpu)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Update the permissions flags (kdb_cmd_enabled) to match the
  * current lockdown state.
  *
@@ -329,7 +238,6 @@ static bool kdb_check_flags(kdb_cmdflags_t flags, int permissions,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * kdbgetenv - This function will return the character string value of
  *	an environment variable.
  * Parameters:
@@ -364,18 +272,10 @@ char *kdbgetenv(const char *match)
  * kdballocenv - This function is used to allocate bytes for
  *	environment entries.
  * Parameters:
-<<<<<<< HEAD
- *	match	A character string representing a numeric value
- * Outputs:
- *	*value  the unsigned long representation of the env variable 'match'
- * Returns:
- *	Zero on success, a kdb diagnostic on failure.
-=======
  *	bytes	The number of bytes to allocate in the static buffer.
  * Returns:
  *	A pointer to the allocated space in the buffer on success.
  *	NULL if bytes > size available in the envbuffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Remarks:
  *	We use a static environment buffer (envbuffer) to hold the values
  *	of dynamically generated environment variables (see kdb_set).  Buffer
@@ -403,11 +303,7 @@ static char *kdballocenv(size_t bytes)
  * Parameters:
  *	match	A character string representing a numeric value
  * Outputs:
-<<<<<<< HEAD
- *	*value  the unsigned long represntation of the env variable 'match'
-=======
  *	*value  the unsigned long representation of the env variable 'match'
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns:
  *	Zero on success, a kdb diagnostic on failure.
  */
@@ -448,8 +344,6 @@ int kdbgetintenv(const char *match, int *value)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * kdb_setenv() - Alter an existing environment variable or create a new one.
  * @var: Name of the variable
  * @val: Value of the variable
@@ -507,17 +401,12 @@ static void kdb_printenv(void)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * kdbgetularg - This function will convert a numeric string into an
  *	unsigned long value.
  * Parameters:
  *	arg	A character string representing a numeric value
  * Outputs:
-<<<<<<< HEAD
- *	*value  the unsigned long represntation of arg.
-=======
  *	*value  the unsigned long representation of arg.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns:
  *	Zero on success, a kdb diagnostic on failure.
  */
@@ -568,13 +457,6 @@ int kdbgetu64arg(const char *arg, u64 *value)
  */
 int kdb_set(int argc, const char **argv)
 {
-<<<<<<< HEAD
-	int i;
-	char *ep;
-	size_t varlen, vallen;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * we can be invoked two ways:
 	 *   set var=value    argv[1]="var", argv[2]="value"
@@ -590,8 +472,6 @@ int kdb_set(int argc, const char **argv)
 		return KDB_ARGCOUNT;
 
 	/*
-<<<<<<< HEAD
-=======
 	 * Censor sensitive variables
 	 */
 	if (strcmp(argv[1], "PROMPT") == 0 &&
@@ -599,7 +479,6 @@ int kdb_set(int argc, const char **argv)
 		return KDB_NOPERM;
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Check for internal variables
 	 */
 	if (strcmp(argv[1], "KDBDEBUG") == 0) {
@@ -612,12 +491,7 @@ int kdb_set(int argc, const char **argv)
 				    argv[2]);
 			return 0;
 		}
-<<<<<<< HEAD
-		kdb_flags = (kdb_flags &
-			     ~(KDB_DEBUG_FLAG_MASK << KDB_DEBUG_FLAG_SHIFT))
-=======
 		kdb_flags = (kdb_flags & ~KDB_DEBUG(MASK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			| (debugflags << KDB_DEBUG_FLAG_SHIFT);
 
 		return 0;
@@ -627,41 +501,7 @@ int kdb_set(int argc, const char **argv)
 	 * Tokenizer squashed the '=' sign.  argv[1] is variable
 	 * name, argv[2] = value.
 	 */
-<<<<<<< HEAD
-	varlen = strlen(argv[1]);
-	vallen = strlen(argv[2]);
-	ep = kdballocenv(varlen + vallen + 2);
-	if (ep == (char *)0)
-		return KDB_ENVBUFFULL;
-
-	sprintf(ep, "%s=%s", argv[1], argv[2]);
-
-	ep[varlen+vallen+1] = '\0';
-
-	for (i = 0; i < __nenv; i++) {
-		if (__env[i]
-		 && ((strncmp(__env[i], argv[1], varlen) == 0)
-		   && ((__env[i][varlen] == '\0')
-		    || (__env[i][varlen] == '=')))) {
-			__env[i] = ep;
-			return 0;
-		}
-	}
-
-	/*
-	 * Wasn't existing variable.  Fit into slot.
-	 */
-	for (i = 0; i < __nenv-1; i++) {
-		if (__env[i] == (char *)0) {
-			__env[i] = ep;
-			return 0;
-		}
-	}
-
-	return KDB_ENVFULL;
-=======
 	return kdb_setenv(argv[1], argv[2]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int kdb_check_regs(void)
@@ -680,11 +520,7 @@ static int kdb_check_regs(void)
  *	symbol name, and offset to the caller.
  *
  *	The argument may consist of a numeric value (decimal or
-<<<<<<< HEAD
- *	hexidecimal), a symbol name, a register name (preceded by the
-=======
  *	hexadecimal), a symbol name, a register name (preceded by the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	percent sign), an environment variable with a numeric value
  *	(preceded by a dollar sign) or a simple arithmetic expression
  *	consisting of a symbol name, +/-, and a numeric constant value
@@ -718,8 +554,6 @@ int kdbgetaddrarg(int argc, const char **argv, int *nextarg,
 	kdb_symtab_t symtab;
 
 	/*
-<<<<<<< HEAD
-=======
 	 * If the enable flags prohibit both arbitrary memory access
 	 * and flow control then there are no reasonable grounds to
 	 * provide symbol lookup.
@@ -729,7 +563,6 @@ int kdbgetaddrarg(int argc, const char **argv, int *nextarg,
 		return KDB_NOPERM;
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Process arguments which follow the following syntax:
 	 *
 	 *  symbol | numeric-address [+/- numeric-offset]
@@ -871,19 +704,6 @@ static void kdb_cmderror(int diag)
  * Returns:
  *	zero for success, a kdb diagnostic if error
  */
-<<<<<<< HEAD
-struct defcmd_set {
-	int count;
-	int usable;
-	char *name;
-	char *usage;
-	char *help;
-	char **command;
-};
-static struct defcmd_set *defcmd_set;
-static int defcmd_set_count;
-static int defcmd_in_progress;
-=======
 struct kdb_macro {
 	kdbtab_t cmd;			/* Macro command */
 	struct list_head statements;	/* Associated statement list */
@@ -896,38 +716,12 @@ struct kdb_macro_statement {
 
 static struct kdb_macro *kdb_macro;
 static bool defcmd_in_progress;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Forward references */
 static int kdb_exec_defcmd(int argc, const char **argv);
 
 static int kdb_defcmd2(const char *cmdstr, const char *argv0)
 {
-<<<<<<< HEAD
-	struct defcmd_set *s = defcmd_set + defcmd_set_count - 1;
-	char **save_command = s->command;
-	if (strcmp(argv0, "endefcmd") == 0) {
-		defcmd_in_progress = 0;
-		if (!s->count)
-			s->usable = 0;
-		if (s->usable)
-			kdb_register(s->name, kdb_exec_defcmd,
-				     s->usage, s->help, 0);
-		return 0;
-	}
-	if (!s->usable)
-		return KDB_NOTIMP;
-	s->command = kzalloc((s->count + 1) * sizeof(*(s->command)), GFP_KDB);
-	if (!s->command) {
-		kdb_printf("Could not allocate new kdb_defcmd table for %s\n",
-			   cmdstr);
-		s->usable = 0;
-		return KDB_NOTIMP;
-	}
-	memcpy(s->command, save_command, s->count * sizeof(*(s->command)));
-	s->command[s->count++] = kdb_strdup(cmdstr, GFP_KDB);
-	kfree(save_command);
-=======
 	struct kdb_macro_statement *kms;
 
 	if (!kdb_macro)
@@ -950,33 +744,19 @@ static int kdb_defcmd2(const char *cmdstr, const char *argv0)
 	kms->statement = kdb_strdup(cmdstr, GFP_KDB);
 	list_add_tail(&kms->list_node, &kdb_macro->statements);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int kdb_defcmd(int argc, const char **argv)
 {
-<<<<<<< HEAD
-	struct defcmd_set *save_defcmd_set = defcmd_set, *s;
-=======
 	kdbtab_t *mp;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (defcmd_in_progress) {
 		kdb_printf("kdb: nested defcmd detected, assuming missing "
 			   "endefcmd\n");
 		kdb_defcmd2("endefcmd", "endefcmd");
 	}
 	if (argc == 0) {
-<<<<<<< HEAD
-		int i;
-		for (s = defcmd_set; s < defcmd_set + defcmd_set_count; ++s) {
-			kdb_printf("defcmd %s \"%s\" \"%s\"\n", s->name,
-				   s->usage, s->help);
-			for (i = 0; i < s->count; ++i)
-				kdb_printf("%s", s->command[i]);
-			kdb_printf("endefcmd\n");
-=======
 		kdbtab_t *kp;
 		struct kdb_macro *kmp;
 		struct kdb_macro_statement *kms;
@@ -991,42 +771,11 @@ static int kdb_defcmd(int argc, const char **argv)
 					kdb_printf("%s", kms->statement);
 				kdb_printf("endefcmd\n");
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return 0;
 	}
 	if (argc != 3)
 		return KDB_ARGCOUNT;
-<<<<<<< HEAD
-	defcmd_set = kmalloc((defcmd_set_count + 1) * sizeof(*defcmd_set),
-			     GFP_KDB);
-	if (!defcmd_set) {
-		kdb_printf("Could not allocate new defcmd_set entry for %s\n",
-			   argv[1]);
-		defcmd_set = save_defcmd_set;
-		return KDB_NOTIMP;
-	}
-	memcpy(defcmd_set, save_defcmd_set,
-	       defcmd_set_count * sizeof(*defcmd_set));
-	kfree(save_defcmd_set);
-	s = defcmd_set + defcmd_set_count;
-	memset(s, 0, sizeof(*s));
-	s->usable = 1;
-	s->name = kdb_strdup(argv[1], GFP_KDB);
-	s->usage = kdb_strdup(argv[2], GFP_KDB);
-	s->help = kdb_strdup(argv[3], GFP_KDB);
-	if (s->usage[0] == '"') {
-		strcpy(s->usage, s->usage+1);
-		s->usage[strlen(s->usage)-1] = '\0';
-	}
-	if (s->help[0] == '"') {
-		strcpy(s->help, s->help+1);
-		s->help[strlen(s->help)-1] = '\0';
-	}
-	++defcmd_set_count;
-	defcmd_in_progress = 1;
-	return 0;
-=======
 	if (in_dbg_master()) {
 		kdb_printf("Command only available during kdb_init()\n");
 		return KDB_NOTIMP;
@@ -1069,7 +818,6 @@ fail_name:
 fail_defcmd:
 	kdb_printf("Could not allocate new kdb_macro entry for %s\n", argv[1]);
 	return KDB_NOTIMP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1083,17 +831,6 @@ fail_defcmd:
  */
 static int kdb_exec_defcmd(int argc, const char **argv)
 {
-<<<<<<< HEAD
-	int i, ret;
-	struct defcmd_set *s;
-	if (argc != 0)
-		return KDB_ARGCOUNT;
-	for (s = defcmd_set, i = 0; i < defcmd_set_count; ++i, ++s) {
-		if (strcmp(s->name, argv[0]) == 0)
-			break;
-	}
-	if (i == defcmd_set_count) {
-=======
 	int ret;
 	kdbtab_t *kp;
 	struct kdb_macro *kmp;
@@ -1107,19 +844,10 @@ static int kdb_exec_defcmd(int argc, const char **argv)
 			break;
 	}
 	if (list_entry_is_head(kp, &kdb_cmds_head, list_node)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kdb_printf("kdb_exec_defcmd: could not find commands for %s\n",
 			   argv[0]);
 		return KDB_NOTIMP;
 	}
-<<<<<<< HEAD
-	for (i = 0; i < s->count; ++i) {
-		/* Recursive use of kdb_parse, do not use argv after
-		 * this point */
-		argv = NULL;
-		kdb_printf("[%s]kdb> %s\n", s->name, s->command[i]);
-		ret = kdb_parse(s->command[i]);
-=======
 	kmp = container_of(kp, struct kdb_macro, cmd);
 	list_for_each_entry(kms, &kmp->statements, list_node) {
 		/*
@@ -1128,7 +856,6 @@ static int kdb_exec_defcmd(int argc, const char **argv)
 		argv = NULL;
 		kdb_printf("[%s]kdb> %s\n", kmp->cmd.name, kms->statement);
 		ret = kdb_parse(kms->statement);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 	}
@@ -1158,11 +885,7 @@ static void parse_grep(const char *str)
 	cp++;
 	while (isspace(*cp))
 		cp++;
-<<<<<<< HEAD
-	if (strncmp(cp, "grep ", 5)) {
-=======
 	if (!str_has_prefix(cp, "grep ")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kdb_printf("invalid 'pipe', see grephelp\n");
 		return;
 	}
@@ -1203,11 +926,7 @@ static void parse_grep(const char *str)
 	len = strlen(cp);
 	if (!len)
 		return;
-<<<<<<< HEAD
-	if (len >= GREP_LEN) {
-=======
 	if (len >= KDB_GREP_STRLEN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kdb_printf("search string too long\n");
 		return;
 	}
@@ -1232,11 +951,7 @@ static void parse_grep(const char *str)
  *	Limited to 20 tokens.
  *
  *	Real rudimentary tokenization. Basically only whitespace
-<<<<<<< HEAD
- *	is considered a token delimeter (but special consideration
-=======
  *	is considered a token delimiter (but special consideration
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	is taken of the '=' sign as used by the 'set' command).
  *
  *	The algorithm used to tokenize the input string relies on
@@ -1256,20 +971,12 @@ int kdb_parse(const char *cmdstr)
 	char *cp;
 	char *cpp, quoted;
 	kdbtab_t *tp;
-<<<<<<< HEAD
-	int i, escaped, ignore_errors = 0, check_grep;
-=======
 	int escaped, ignore_errors = 0, check_grep = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * First tokenize the command string.
 	 */
 	cp = (char *)cmdstr;
-<<<<<<< HEAD
-	kdb_grepping_flag = check_grep = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (KDB_FLAG(CMD_INTERRUPT)) {
 		/* Previous command was interrupted, newline must not
@@ -1354,27 +1061,6 @@ int kdb_parse(const char *cmdstr)
 		++argv[0];
 	}
 
-<<<<<<< HEAD
-	for_each_kdbcmd(tp, i) {
-		if (tp->cmd_name) {
-			/*
-			 * If this command is allowed to be abbreviated,
-			 * check to see if this is it.
-			 */
-
-			if (tp->cmd_minlen
-			 && (strlen(argv[0]) <= tp->cmd_minlen)) {
-				if (strncmp(argv[0],
-					    tp->cmd_name,
-					    tp->cmd_minlen) == 0) {
-					break;
-				}
-			}
-
-			if (strcmp(argv[0], tp->cmd_name) == 0)
-				break;
-		}
-=======
 	list_for_each_entry(tp, &kdb_cmds_head, list_node) {
 		/*
 		 * If this command is allowed to be abbreviated,
@@ -1386,7 +1072,6 @@ int kdb_parse(const char *cmdstr)
 
 		if (strcmp(argv[0], tp->name) == 0)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1394,41 +1079,6 @@ int kdb_parse(const char *cmdstr)
 	 * few characters of this match any of the known commands.
 	 * e.g., md1c20 should match md.
 	 */
-<<<<<<< HEAD
-	if (i == kdb_max_commands) {
-		for_each_kdbcmd(tp, i) {
-			if (tp->cmd_name) {
-				if (strncmp(argv[0],
-					    tp->cmd_name,
-					    strlen(tp->cmd_name)) == 0) {
-					break;
-				}
-			}
-		}
-	}
-
-	if (i < kdb_max_commands) {
-		int result;
-		KDB_STATE_SET(CMD);
-		result = (*tp->cmd_func)(argc-1, (const char **)argv);
-		if (result && ignore_errors && result > KDB_CMD_GO)
-			result = 0;
-		KDB_STATE_CLEAR(CMD);
-		switch (tp->cmd_repeat) {
-		case KDB_REPEAT_NONE:
-			argc = 0;
-			if (argv[0])
-				*(argv[0]) = '\0';
-			break;
-		case KDB_REPEAT_NO_ARGS:
-			argc = 1;
-			if (argv[1])
-				*(argv[1]) = '\0';
-			break;
-		case KDB_REPEAT_WITH_ARGS:
-			break;
-		}
-=======
 	if (list_entry_is_head(tp, &kdb_cmds_head, list_node)) {
 		list_for_each_entry(tp, &kdb_cmds_head, list_node) {
 			if (strncmp(argv[0], tp->name, strlen(tp->name)) == 0)
@@ -1454,7 +1104,6 @@ int kdb_parse(const char *cmdstr)
 		argc = tp->flags & KDB_REPEAT_NO_ARGS ? 1 : 0;
 		if (argv[argc])
 			*(argv[argc]) = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return result;
 	}
 
@@ -1495,23 +1144,14 @@ static int handle_ctrl_cmd(char *cmd)
 	switch (*cmd) {
 	case CTRL_P:
 		if (cmdptr != cmd_tail)
-<<<<<<< HEAD
-			cmdptr = (cmdptr-1) % KDB_CMD_HISTORY_COUNT;
-		strncpy(cmd_cur, cmd_hist[cmdptr], CMD_BUFLEN);
-=======
 			cmdptr = (cmdptr + KDB_CMD_HISTORY_COUNT - 1) %
 				 KDB_CMD_HISTORY_COUNT;
 		strscpy(cmd_cur, cmd_hist[cmdptr], CMD_BUFLEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	case CTRL_N:
 		if (cmdptr != cmd_head)
 			cmdptr = (cmdptr+1) % KDB_CMD_HISTORY_COUNT;
-<<<<<<< HEAD
-		strncpy(cmd_cur, cmd_hist[cmdptr], CMD_BUFLEN);
-=======
 		strscpy(cmd_cur, cmd_hist[cmdptr], CMD_BUFLEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 	return 0;
@@ -1534,11 +1174,7 @@ static int kdb_reboot(int argc, const char **argv)
 static void kdb_dumpregs(struct pt_regs *regs)
 {
 	int old_lvl = console_loglevel;
-<<<<<<< HEAD
-	console_loglevel = 15;
-=======
 	console_loglevel = CONSOLE_LOGLEVEL_MOTORMOUTH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kdb_trap_printk++;
 	show_regs(regs);
 	kdb_trap_printk--;
@@ -1546,11 +1182,7 @@ static void kdb_dumpregs(struct pt_regs *regs)
 	console_loglevel = old_lvl;
 }
 
-<<<<<<< HEAD
-void kdb_set_current_task(struct task_struct *p)
-=======
 static void kdb_set_current_task(struct task_struct *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	kdb_current_task = p;
 
@@ -1561,8 +1193,6 @@ static void kdb_set_current_task(struct task_struct *p)
 	kdb_current_regs = NULL;
 }
 
-<<<<<<< HEAD
-=======
 static void drop_newline(char *buf)
 {
 	size_t len = strlen(buf);
@@ -1573,7 +1203,6 @@ static void drop_newline(char *buf)
 		*(buf + len - 1) = '\0';
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kdb_local - The main code for kdb.  This routine is invoked on a
  *	specific processor, it is not global.  The main kdb() routine
@@ -1592,10 +1221,6 @@ static void drop_newline(char *buf)
  *	KDB_CMD_GO	User typed 'go'.
  *	KDB_CMD_CPU	User switched to another cpu.
  *	KDB_CMD_SS	Single step.
-<<<<<<< HEAD
- *	KDB_CMD_SSB	Single step until branch.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int kdb_local(kdb_reason_t reason, int error, struct pt_regs *regs,
 		     kdb_dbtrap_t db_result)
@@ -1606,21 +1231,14 @@ static int kdb_local(kdb_reason_t reason, int error, struct pt_regs *regs,
 		kdb_curr_task(raw_smp_processor_id());
 
 	KDB_DEBUG_STATE("kdb_local 1", reason);
-<<<<<<< HEAD
-=======
 
 	kdb_check_for_lockdown();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kdb_go_count = 0;
 	if (reason == KDB_REASON_DEBUG) {
 		/* special case below */
 	} else {
-<<<<<<< HEAD
-		kdb_printf("\nEntering kdb (current=0x%p, pid %d) ",
-=======
 		kdb_printf("\nEntering kdb (current=0x%px, pid %d) ",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   kdb_current, kdb_current ? kdb_current->pid : 0);
 #if defined(CONFIG_SMP)
 		kdb_printf("on processor %d ", raw_smp_processor_id());
@@ -1636,11 +1254,7 @@ static int kdb_local(kdb_reason_t reason, int error, struct pt_regs *regs,
 		 */
 		switch (db_result) {
 		case KDB_DB_BPT:
-<<<<<<< HEAD
-			kdb_printf("\nEntering kdb (0x%p, pid %d) ",
-=======
 			kdb_printf("\nEntering kdb (0x%px, pid %d) ",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   kdb_current, kdb_current->pid);
 #if defined(CONFIG_SMP)
 			kdb_printf("on processor %d ", raw_smp_processor_id());
@@ -1648,17 +1262,6 @@ static int kdb_local(kdb_reason_t reason, int error, struct pt_regs *regs,
 			kdb_printf("due to Debug @ " kdb_machreg_fmt "\n",
 				   instruction_pointer(regs));
 			break;
-<<<<<<< HEAD
-		case KDB_DB_SSB:
-			/*
-			 * In the midst of ssb command. Just return.
-			 */
-			KDB_DEBUG_STATE("kdb_local 3", reason);
-			return KDB_CMD_SSB;	/* Continue with SSB command */
-
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case KDB_DB_SS:
 			break;
 		case KDB_DB_SSBPT:
@@ -1693,20 +1296,13 @@ static int kdb_local(kdb_reason_t reason, int error, struct pt_regs *regs,
 			   instruction_pointer(regs));
 		kdb_dumpregs(regs);
 		break;
-<<<<<<< HEAD
-=======
 	case KDB_REASON_SYSTEM_NMI:
 		kdb_printf("due to System NonMaskable Interrupt\n");
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KDB_REASON_NMI:
 		kdb_printf("due to NonMaskable Interrupt @ "
 			   kdb_machreg_fmt "\n",
 			   instruction_pointer(regs));
-<<<<<<< HEAD
-		kdb_dumpregs(regs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case KDB_REASON_SSTEP:
 	case KDB_REASON_BREAK:
@@ -1740,45 +1336,18 @@ static int kdb_local(kdb_reason_t reason, int error, struct pt_regs *regs,
 		 */
 		kdb_nextline = 1;
 		KDB_STATE_CLEAR(SUPPRESS);
-<<<<<<< HEAD
-=======
 		kdb_grepping_flag = 0;
 		/* ensure the old search does not leak into '/' commands */
 		kdb_grep_string[0] = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cmdbuf = cmd_cur;
 		*cmdbuf = '\0';
 		*(cmd_hist[cmd_head]) = '\0';
 
-<<<<<<< HEAD
-		if (KDB_FLAG(ONLY_DO_DUMP)) {
-			/* kdb is off but a catastrophic error requires a dump.
-			 * Take the dump and reboot.
-			 * Turn on logging so the kdb output appears in the log
-			 * buffer in the dump.
-			 */
-			const char *setargs[] = { "set", "LOGGING", "1" };
-			kdb_set(2, setargs);
-			kdb_reboot(0, NULL);
-			/*NOTREACHED*/
-		}
-
-do_full_getstr:
-#if defined(CONFIG_SMP)
-		snprintf(kdb_prompt_str, CMD_BUFLEN, kdbgetenv("PROMPT"),
-			 raw_smp_processor_id());
-#else
-		snprintf(kdb_prompt_str, CMD_BUFLEN, kdbgetenv("PROMPT"));
-#endif
-		if (defcmd_in_progress)
-			strncat(kdb_prompt_str, "[defcmd]", CMD_BUFLEN);
-=======
 do_full_getstr:
 		/* PROMPT can only be set if we have MEM_READ permission. */
 		snprintf(kdb_prompt_str, CMD_BUFLEN, kdbgetenv("PROMPT"),
 			 raw_smp_processor_id());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Fetch command from keyboard
@@ -1787,11 +1356,7 @@ do_full_getstr:
 		if (*cmdbuf != '\n') {
 			if (*cmdbuf < 32) {
 				if (cmdptr == cmd_head) {
-<<<<<<< HEAD
-					strncpy(cmd_hist[cmd_head], cmd_cur,
-=======
 					strscpy(cmd_hist[cmd_head], cmd_cur,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						CMD_BUFLEN);
 					*(cmd_hist[cmd_head] +
 					  strlen(cmd_hist[cmd_head])-1) = '\0';
@@ -1801,11 +1366,7 @@ do_full_getstr:
 				cmdbuf = cmd_cur;
 				goto do_full_getstr;
 			} else {
-<<<<<<< HEAD
-				strncpy(cmd_hist[cmd_head], cmd_cur,
-=======
 				strscpy(cmd_hist[cmd_head], cmd_cur,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					CMD_BUFLEN);
 			}
 
@@ -1817,20 +1378,13 @@ do_full_getstr:
 		cmdptr = cmd_head;
 		diag = kdb_parse(cmdbuf);
 		if (diag == KDB_NOTFOUND) {
-<<<<<<< HEAD
-=======
 			drop_newline(cmdbuf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kdb_printf("Unknown kdb command: '%s'\n", cmdbuf);
 			diag = 0;
 		}
 		if (diag == KDB_CMD_GO
 		 || diag == KDB_CMD_CPU
 		 || diag == KDB_CMD_SS
-<<<<<<< HEAD
-		 || diag == KDB_CMD_SSB
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 || diag == KDB_CMD_KGDB)
 			break;
 
@@ -1917,15 +1471,6 @@ int kdb_main_loop(kdb_reason_t reason, kdb_reason_t reason2, int error,
 			break;
 		}
 
-<<<<<<< HEAD
-		if (result == KDB_CMD_SSB) {
-			KDB_STATE_SET(DOING_SS);
-			KDB_STATE_SET(DOING_SSB);
-			break;
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (result == KDB_CMD_KGDB) {
 			if (!KDB_STATE(DOING_KGDB))
 				kdb_printf("Entering please attach debugger "
@@ -1989,10 +1534,7 @@ static void kdb_md_line(const char *fmtstr, unsigned long addr,
 	char cbuf[32];
 	char *c = cbuf;
 	int i;
-<<<<<<< HEAD
-=======
 	int j;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long word;
 
 	memset(cbuf, '\0', sizeof(cbuf));
@@ -2038,31 +1580,9 @@ static void kdb_md_line(const char *fmtstr, unsigned long addr,
 			wc.word = word;
 #define printable_char(c) \
 	({unsigned char __c = c; isascii(__c) && isprint(__c) ? __c : '.'; })
-<<<<<<< HEAD
-			switch (bytesperword) {
-			case 8:
-				*c++ = printable_char(*cp++);
-				*c++ = printable_char(*cp++);
-				*c++ = printable_char(*cp++);
-				*c++ = printable_char(*cp++);
-				addr += 4;
-			case 4:
-				*c++ = printable_char(*cp++);
-				*c++ = printable_char(*cp++);
-				addr += 2;
-			case 2:
-				*c++ = printable_char(*cp++);
-				addr++;
-			case 1:
-				*c++ = printable_char(*cp++);
-				addr++;
-				break;
-			}
-=======
 			for (j = 0; j < bytesperword; j++)
 				*c++ = printable_char(*cp++);
 			addr += bytesperword;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef printable_char
 		}
 	}
@@ -2083,10 +1603,7 @@ static int kdb_md(int argc, const char **argv)
 	int symbolic = 0;
 	int valid = 0;
 	int phys = 0;
-<<<<<<< HEAD
-=======
 	int raw = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kdbgetintenv("MDCOUNT", &mdcount);
 	kdbgetintenv("RADIX", &radix);
@@ -2096,16 +1613,10 @@ static int kdb_md(int argc, const char **argv)
 	repeat = mdcount * 16 / bytesperword;
 
 	if (strcmp(argv[0], "mdr") == 0) {
-<<<<<<< HEAD
-		if (argc != 2)
-			return KDB_ARGCOUNT;
-		valid = 1;
-=======
 		if (argc == 2 || (argc == 0 && last_addr != 0))
 			valid = raw = 1;
 		else
 			return KDB_ARGCOUNT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (isdigit(argv[0][2])) {
 		bytesperword = (int)(argv[0][2] - '0');
 		if (bytesperword == 0) {
@@ -2141,14 +1652,10 @@ static int kdb_md(int argc, const char **argv)
 		radix = last_radix;
 		bytesperword = last_bytesperword;
 		repeat = last_repeat;
-<<<<<<< HEAD
-		mdcount = ((repeat * bytesperword) + 15) / 16;
-=======
 		if (raw)
 			mdcount = repeat;
 		else
 			mdcount = ((repeat * bytesperword) + 15) / 16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (argc) {
@@ -2165,14 +1672,10 @@ static int kdb_md(int argc, const char **argv)
 			diag = kdbgetularg(argv[nextarg], &val);
 			if (!diag) {
 				mdcount = (int) val;
-<<<<<<< HEAD
-				repeat = mdcount * 16 / bytesperword;
-=======
 				if (raw)
 					repeat = mdcount;
 				else
 					repeat = mdcount * 16 / bytesperword;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		if (argc >= nextarg+1) {
@@ -2182,10 +1685,6 @@ static int kdb_md(int argc, const char **argv)
 		}
 	}
 
-<<<<<<< HEAD
-	if (strcmp(argv[0], "mdr") == 0)
-		return kdb_mdr(addr, mdcount);
-=======
 	if (strcmp(argv[0], "mdr") == 0) {
 		int ret;
 		last_addr = addr;
@@ -2195,7 +1694,6 @@ static int kdb_md(int argc, const char **argv)
 		last_bytesperword = bytesperword; // to make REPEAT happy
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (radix) {
 	case 10:
@@ -2517,12 +2015,6 @@ static int kdb_rm(int argc, const char **argv)
  */
 static int kdb_sr(int argc, const char **argv)
 {
-<<<<<<< HEAD
-	if (argc != 1)
-		return KDB_ARGCOUNT;
-	kdb_trap_printk++;
-	__handle_sysrq(*argv[1], false);
-=======
 	bool check_mask =
 	    !kdb_check_flags(KDB_ENABLE_ALL, kdb_cmd_enabled, false);
 
@@ -2531,7 +2023,6 @@ static int kdb_sr(int argc, const char **argv)
 
 	kdb_trap_printk++;
 	__handle_sysrq(*argv[1], check_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kdb_trap_printk--;
 
 	return 0;
@@ -2565,55 +2056,6 @@ static int kdb_ef(int argc, const char **argv)
 	return 0;
 }
 
-<<<<<<< HEAD
-#if defined(CONFIG_MODULES)
-/*
- * kdb_lsmod - This function implements the 'lsmod' command.  Lists
- *	currently loaded kernel modules.
- *	Mostly taken from userland lsmod.
- */
-static int kdb_lsmod(int argc, const char **argv)
-{
-	struct module *mod;
-
-	if (argc != 0)
-		return KDB_ARGCOUNT;
-
-	kdb_printf("Module                  Size  modstruct     Used by\n");
-	list_for_each_entry(mod, kdb_modules, list) {
-
-		kdb_printf("%-20s%8u  0x%p ", mod->name,
-			   mod->core_size, (void *)mod);
-#ifdef CONFIG_MODULE_UNLOAD
-		kdb_printf("%4ld ", module_refcount(mod));
-#endif
-		if (mod->state == MODULE_STATE_GOING)
-			kdb_printf(" (Unloading)");
-		else if (mod->state == MODULE_STATE_COMING)
-			kdb_printf(" (Loading)");
-		else
-			kdb_printf(" (Live)");
-		kdb_printf(" 0x%p", mod->module_core);
-
-#ifdef CONFIG_MODULE_UNLOAD
-		{
-			struct module_use *use;
-			kdb_printf(" [ ");
-			list_for_each_entry(use, &mod->source_list,
-					    source_list)
-				kdb_printf("%s ", use->target->name);
-			kdb_printf("]\n");
-		}
-#endif
-	}
-
-	return 0;
-}
-
-#endif	/* CONFIG_MODULES */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kdb_env - This function implements the 'env' command.  Display the
  *	current environment variables.
@@ -2621,23 +2063,11 @@ static int kdb_lsmod(int argc, const char **argv)
 
 static int kdb_env(int argc, const char **argv)
 {
-<<<<<<< HEAD
-	int i;
-
-	for (i = 0; i < __nenv; i++) {
-		if (__env[i])
-			kdb_printf("%s\n", __env[i]);
-	}
-
-	if (KDB_DEBUG(MASK))
-		kdb_printf("KDBFLAGS=0x%x\n", kdb_flags);
-=======
 	kdb_printenv();
 
 	if (KDB_DEBUG(MASK))
 		kdb_printf("KDBDEBUG=0x%x\n",
 			(kdb_flags & KDB_DEBUG(MASK)) >> KDB_DEBUG_FLAG_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2650,10 +2080,6 @@ static int kdb_env(int argc, const char **argv)
  */
 static int kdb_dmesg(int argc, const char **argv)
 {
-<<<<<<< HEAD
-	char *syslog_data[4], *start, *end, c = '\0', *p;
-	int diag, logging, logsize, lines = 0, adjust = 0, n;
-=======
 	int diag;
 	int logging;
 	int lines = 0;
@@ -2663,7 +2089,6 @@ static int kdb_dmesg(int argc, const char **argv)
 	struct kmsg_dump_iter iter;
 	size_t len;
 	char buf[201];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (argc > 2)
 		return KDB_ARGCOUNT;
@@ -2686,29 +2111,10 @@ static int kdb_dmesg(int argc, const char **argv)
 		kdb_set(2, setargs);
 	}
 
-<<<<<<< HEAD
-	/* syslog_data[0,1] physical start, end+1.  syslog_data[2,3]
-	 * logical start, end+1. */
-	kdb_syslog_data(syslog_data);
-	if (syslog_data[2] == syslog_data[3])
-		return 0;
-	logsize = syslog_data[1] - syslog_data[0];
-	start = syslog_data[2];
-	end = syslog_data[3];
-#define KDB_WRAP(p) (((p - syslog_data[0]) % logsize) + syslog_data[0])
-	for (n = 0, p = start; p < end; ++p) {
-		c = *KDB_WRAP(p);
-		if (c == '\n')
-			++n;
-	}
-	if (c != '\n')
-		++n;
-=======
 	kmsg_dump_rewind(&iter);
 	while (kmsg_dump_get_line(&iter, 1, NULL, 0, NULL))
 		n++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lines < 0) {
 		if (adjust >= n)
 			kdb_printf("buffer only contains %d lines, nothing "
@@ -2716,29 +2122,11 @@ static int kdb_dmesg(int argc, const char **argv)
 		else if (adjust - lines >= n)
 			kdb_printf("buffer only contains %d lines, last %d "
 				   "lines printed\n", n, n - adjust);
-<<<<<<< HEAD
-		if (adjust) {
-			for (; start < end && adjust; ++start) {
-				if (*KDB_WRAP(start) == '\n')
-					--adjust;
-			}
-			if (start < end)
-				++start;
-		}
-		for (p = start; p < end && lines; ++p) {
-			if (*KDB_WRAP(p) == '\n')
-				++lines;
-		}
-		end = p;
-	} else if (lines > 0) {
-		int skip = n - (adjust + lines);
-=======
 		skip = adjust;
 		lines = abs(lines);
 	} else if (lines > 0) {
 		skip = n - lines - adjust;
 		lines = abs(lines);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (adjust >= n) {
 			kdb_printf("buffer only contains %d lines, "
 				   "nothing printed\n", n);
@@ -2749,37 +2137,6 @@ static int kdb_dmesg(int argc, const char **argv)
 			kdb_printf("buffer only contains %d lines, first "
 				   "%d lines printed\n", n, lines);
 		}
-<<<<<<< HEAD
-		for (; start < end && skip; ++start) {
-			if (*KDB_WRAP(start) == '\n')
-				--skip;
-		}
-		for (p = start; p < end && lines; ++p) {
-			if (*KDB_WRAP(p) == '\n')
-				--lines;
-		}
-		end = p;
-	}
-	/* Do a line at a time (max 200 chars) to reduce protocol overhead */
-	c = '\n';
-	while (start != end) {
-		char buf[201];
-		p = buf;
-		if (KDB_FLAG(CMD_INTERRUPT))
-			return 0;
-		while (start < end && (c = *KDB_WRAP(start)) &&
-		       (p - buf) < sizeof(buf)-1) {
-			++start;
-			*p++ = c;
-			if (c == '\n')
-				break;
-		}
-		*p = '\0';
-		kdb_printf("%s", buf);
-	}
-	if (c != '\n')
-		kdb_printf("\n");
-=======
 	} else {
 		lines = n;
 	}
@@ -2800,13 +2157,10 @@ static int kdb_dmesg(int argc, const char **argv)
 
 		kdb_printf("%.*s\n", (int)len - 1, buf);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 #endif /* CONFIG_PRINTK */
-<<<<<<< HEAD
-=======
 
 /* Make sure we balance enable/disable calls, must disable first. */
 static atomic_t kdb_nmi_disabled;
@@ -2833,7 +2187,6 @@ static const struct kernel_param_ops kdb_param_ops_enable_nmi = {
 };
 module_param_cb(enable_nmi, &kdb_param_ops_enable_nmi, NULL, 0600);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kdb_cpu - This function implements the 'cpu' command.
  *	cpu	[<cpunum>]
@@ -2850,19 +2203,12 @@ static void kdb_cpu_status(void)
 	for (start_cpu = -1, i = 0; i < NR_CPUS; i++) {
 		if (!cpu_online(i)) {
 			state = 'F';	/* cpu is offline */
-<<<<<<< HEAD
-		} else {
-			state = ' ';	/* cpu is responding to kdb */
-			if (kdb_task_state_char(KDB_TSK(i)) == 'I')
-				state = 'I';	/* idle task */
-=======
 		} else if (!kgdb_info[i].enter_kgdb) {
 			state = 'D';	/* cpu is online but unresponsive */
 		} else {
 			state = ' ';	/* cpu is responding to kdb */
 			if (kdb_task_state_char(KDB_TSK(i)) == '-')
 				state = '-';	/* idle task */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (state != prev_state) {
 			if (prev_state != '?') {
@@ -2912,11 +2258,7 @@ static int kdb_cpu(int argc, const char **argv)
 	/*
 	 * Validate cpunum
 	 */
-<<<<<<< HEAD
-	if ((cpunum > NR_CPUS) || !cpu_online(cpunum))
-=======
 	if ((cpunum >= CONFIG_NR_CPUS) || !kgdb_info[cpunum].enter_kgdb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return KDB_BADCPUNUM;
 
 	dbg_switch_cpu = cpunum;
@@ -2933,31 +2275,10 @@ static int kdb_cpu(int argc, const char **argv)
 void kdb_ps_suppressed(void)
 {
 	int idle = 0, daemon = 0;
-<<<<<<< HEAD
-	unsigned long mask_I = kdb_task_state_string("I"),
-		      mask_M = kdb_task_state_string("M");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long cpu;
 	const struct task_struct *p, *g;
 	for_each_online_cpu(cpu) {
 		p = kdb_curr_task(cpu);
-<<<<<<< HEAD
-		if (kdb_task_state(p, mask_I))
-			++idle;
-	}
-	kdb_do_each_thread(g, p) {
-		if (kdb_task_state(p, mask_M))
-			++daemon;
-	} kdb_while_each_thread(g, p);
-	if (idle || daemon) {
-		if (idle)
-			kdb_printf("%d idle process%s (state I)%s\n",
-				   idle, idle == 1 ? "" : "es",
-				   daemon ? " and " : "");
-		if (daemon)
-			kdb_printf("%d sleeping system daemon (state M) "
-=======
 		if (kdb_task_state(p, "-"))
 			++idle;
 	}
@@ -2972,40 +2293,23 @@ void kdb_ps_suppressed(void)
 				   daemon ? " and " : "");
 		if (daemon)
 			kdb_printf("%d sleeping system daemon (state [ims]) "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   "process%s", daemon,
 				   daemon == 1 ? "" : "es");
 		kdb_printf(" suppressed,\nuse 'ps A' to see all.\n");
 	}
 }
 
-<<<<<<< HEAD
-/*
- * kdb_ps - This function implements the 'ps' command which shows a
- *	list of the active processes.
- *		ps [DRSTCZEUIMA]   All processes, optionally filtered by state
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void kdb_ps1(const struct task_struct *p)
 {
 	int cpu;
 	unsigned long tmp;
 
-<<<<<<< HEAD
-	if (!p || probe_kernel_read(&tmp, (char *)p, sizeof(unsigned long)))
-		return;
-
-	cpu = kdb_process_cpu(p);
-	kdb_printf("0x%p %8d %8d  %d %4d   %c  0x%p %c%s\n",
-=======
 	if (!p ||
 	    copy_from_kernel_nofault(&tmp, (char *)p, sizeof(unsigned long)))
 		return;
 
 	cpu = kdb_process_cpu(p);
 	kdb_printf("0x%px %8d %8d  %d %4d   %c  0x%px %c%s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   (void *)p, p->pid, p->parent->pid,
 		   kdb_task_has_cpu(p), kdb_process_cpu(p),
 		   kdb_task_state_char(p),
@@ -3018,21 +2322,11 @@ void kdb_ps1(const struct task_struct *p)
 		} else {
 			if (KDB_TSK(cpu) != p)
 				kdb_printf("  Error: does not match running "
-<<<<<<< HEAD
-				   "process table (0x%p)\n", KDB_TSK(cpu));
-=======
 				   "process table (0x%px)\n", KDB_TSK(cpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-static int kdb_ps(int argc, const char **argv)
-{
-	struct task_struct *g, *p;
-	unsigned long mask, cpu;
-=======
 /*
  * kdb_ps - This function implements the 'ps' command which shows a
  *	    list of the active processes.
@@ -3045,18 +2339,13 @@ static int kdb_ps(int argc, const char **argv)
 	struct task_struct *g, *p;
 	const char *mask;
 	unsigned long cpu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (argc == 0)
 		kdb_ps_suppressed();
 	kdb_printf("%-*s      Pid   Parent [*] cpu State %-*s Command\n",
 		(int)(2*sizeof(void *))+2, "Task Addr",
 		(int)(2*sizeof(void *))+2, "Thread");
-<<<<<<< HEAD
-	mask = kdb_task_state_string(argc ? argv[1] : NULL);
-=======
 	mask = argc ? argv[1] : kdbgetenv("PS");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Run the active tasks first */
 	for_each_online_cpu(cpu) {
 		if (KDB_FLAG(CMD_INTERRUPT))
@@ -3067,20 +2356,12 @@ static int kdb_ps(int argc, const char **argv)
 	}
 	kdb_printf("\n");
 	/* Now the real tasks */
-<<<<<<< HEAD
-	kdb_do_each_thread(g, p) {
-=======
 	for_each_process_thread(g, p) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (KDB_FLAG(CMD_INTERRUPT))
 			return 0;
 		if (kdb_task_state(p, mask))
 			kdb_ps1(p);
-<<<<<<< HEAD
-	} kdb_while_each_thread(g, p);
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3122,72 +2403,6 @@ static int kdb_pid(int argc, const char **argv)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * kdb_ll - This function implements the 'll' command which follows a
- *	linked list and executes an arbitrary command for each
- *	element.
- */
-static int kdb_ll(int argc, const char **argv)
-{
-	int diag = 0;
-	unsigned long addr;
-	long offset = 0;
-	unsigned long va;
-	unsigned long linkoffset;
-	int nextarg;
-	const char *command;
-
-	if (argc != 3)
-		return KDB_ARGCOUNT;
-
-	nextarg = 1;
-	diag = kdbgetaddrarg(argc, argv, &nextarg, &addr, &offset, NULL);
-	if (diag)
-		return diag;
-
-	diag = kdbgetularg(argv[2], &linkoffset);
-	if (diag)
-		return diag;
-
-	/*
-	 * Using the starting address as
-	 * the first element in the list, and assuming that
-	 * the list ends with a null pointer.
-	 */
-
-	va = addr;
-	command = kdb_strdup(argv[3], GFP_KDB);
-	if (!command) {
-		kdb_printf("%s: cannot duplicate command\n", __func__);
-		return 0;
-	}
-	/* Recursive use of kdb_parse, do not use argv after this point */
-	argv = NULL;
-
-	while (va) {
-		char buf[80];
-
-		if (KDB_FLAG(CMD_INTERRUPT))
-			goto out;
-
-		sprintf(buf, "%s " kdb_machreg_fmt "\n", command, va);
-		diag = kdb_parse(buf);
-		if (diag)
-			goto out;
-
-		addr = va + linkoffset;
-		if (kdb_getword(&va, addr, sizeof(va)))
-			goto out;
-	}
-
-out:
-	kfree(command);
-	return diag;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int kdb_kgdb(int argc, const char **argv)
 {
 	return KDB_CMD_KGDB;
@@ -3199,22 +2414,10 @@ static int kdb_kgdb(int argc, const char **argv)
 static int kdb_help(int argc, const char **argv)
 {
 	kdbtab_t *kt;
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kdb_printf("%-15.15s %-20.20s %s\n", "Command", "Usage", "Description");
 	kdb_printf("-----------------------------"
 		   "-----------------------------\n");
-<<<<<<< HEAD
-	for_each_kdbcmd(kt, i) {
-		if (kt->cmd_name)
-			kdb_printf("%-15.15s %-20.20s %s\n", kt->cmd_name,
-				   kt->cmd_usage, kt->cmd_help);
-		if (KDB_FLAG(CMD_INTERRUPT))
-			return 0;
-=======
 	list_for_each_entry(kt, &kdb_cmds_head, list_node) {
 		char *space = "";
 		if (KDB_FLAG(CMD_INTERRUPT))
@@ -3225,7 +2428,6 @@ static int kdb_help(int argc, const char **argv)
 			space = "\n                                    ";
 		kdb_printf("%-15.15s %-20s%s%s\n", kt->name,
 			   kt->usage, space, kt->help);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -3238,10 +2440,6 @@ static int kdb_kill(int argc, const char **argv)
 	long sig, pid;
 	char *endp;
 	struct task_struct *p;
-<<<<<<< HEAD
-	struct siginfo info;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (argc != 2)
 		return KDB_ARGCOUNT;
@@ -3249,11 +2447,7 @@ static int kdb_kill(int argc, const char **argv)
 	sig = simple_strtol(argv[1], &endp, 0);
 	if (*endp)
 		return KDB_BADINT;
-<<<<<<< HEAD
-	if (sig >= 0) {
-=======
 	if ((sig >= 0) || !valid_signal(-sig)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kdb_printf("Invalid signal parameter.<-signal>\n");
 		return 0;
 	}
@@ -3274,57 +2468,10 @@ static int kdb_kill(int argc, const char **argv)
 		return 0;
 	}
 	p = p->group_leader;
-<<<<<<< HEAD
-	info.si_signo = sig;
-	info.si_errno = 0;
-	info.si_code = SI_USER;
-	info.si_pid = pid;  /* same capabilities as process being signalled */
-	info.si_uid = 0;    /* kdb has root authority */
-	kdb_send_sig_info(p, &info);
-	return 0;
-}
-
-struct kdb_tm {
-	int tm_sec;	/* seconds */
-	int tm_min;	/* minutes */
-	int tm_hour;	/* hours */
-	int tm_mday;	/* day of the month */
-	int tm_mon;	/* month */
-	int tm_year;	/* year */
-};
-
-static void kdb_gmtime(struct timespec *tv, struct kdb_tm *tm)
-{
-	/* This will work from 1970-2099, 2100 is not a leap year */
-	static int mon_day[] = { 31, 29, 31, 30, 31, 30, 31,
-				 31, 30, 31, 30, 31 };
-	memset(tm, 0, sizeof(*tm));
-	tm->tm_sec  = tv->tv_sec % (24 * 60 * 60);
-	tm->tm_mday = tv->tv_sec / (24 * 60 * 60) +
-		(2 * 365 + 1); /* shift base from 1970 to 1968 */
-	tm->tm_min =  tm->tm_sec / 60 % 60;
-	tm->tm_hour = tm->tm_sec / 60 / 60;
-	tm->tm_sec =  tm->tm_sec % 60;
-	tm->tm_year = 68 + 4*(tm->tm_mday / (4*365+1));
-	tm->tm_mday %= (4*365+1);
-	mon_day[1] = 29;
-	while (tm->tm_mday >= mon_day[tm->tm_mon]) {
-		tm->tm_mday -= mon_day[tm->tm_mon];
-		if (++tm->tm_mon == 12) {
-			tm->tm_mon = 0;
-			++tm->tm_year;
-			mon_day[1] = 28;
-		}
-	}
-	++tm->tm_mday;
-}
-
-=======
 	kdb_send_sig(p, sig);
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Most of this code has been lifted from kernel/timer.c::sys_sysinfo().
  * I cannot call that code directly from kdb, it has an unconditional
@@ -3332,17 +2479,10 @@ static void kdb_gmtime(struct timespec *tv, struct kdb_tm *tm)
  */
 static void kdb_sysinfo(struct sysinfo *val)
 {
-<<<<<<< HEAD
-	struct timespec uptime;
-	do_posix_clock_monotonic_gettime(&uptime);
-	memset(val, 0, sizeof(*val));
-	val->uptime = uptime.tv_sec;
-=======
 	u64 uptime = ktime_get_mono_fast_ns();
 
 	memset(val, 0, sizeof(*val));
 	val->uptime = div_u64(uptime, NSEC_PER_SEC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val->loads[0] = avenrun[0];
 	val->loads[1] = avenrun[1];
 	val->loads[2] = avenrun[2];
@@ -3357,12 +2497,7 @@ static void kdb_sysinfo(struct sysinfo *val)
  */
 static int kdb_summary(int argc, const char **argv)
 {
-<<<<<<< HEAD
-	struct timespec now;
-	struct kdb_tm tm;
-=======
 	time64_t now;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sysinfo val;
 
 	if (argc)
@@ -3374,22 +2509,9 @@ static int kdb_summary(int argc, const char **argv)
 	kdb_printf("machine    %s\n", init_uts_ns.name.machine);
 	kdb_printf("nodename   %s\n", init_uts_ns.name.nodename);
 	kdb_printf("domainname %s\n", init_uts_ns.name.domainname);
-<<<<<<< HEAD
-	kdb_printf("ccversion  %s\n", __stringify(CCVERSION));
-
-	now = __current_kernel_time();
-	kdb_gmtime(&now, &tm);
-	kdb_printf("date       %04d-%02d-%02d %02d:%02d:%02d "
-		   "tz_minuteswest %d\n",
-		1900+tm.tm_year, tm.tm_mon+1, tm.tm_mday,
-		tm.tm_hour, tm.tm_min, tm.tm_sec,
-		sys_tz.tz_minuteswest);
-
-=======
 
 	now = __ktime_get_real_seconds();
 	kdb_printf("date       %ptTs tz_minuteswest %d\n", &now, sys_tz.tz_minuteswest);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kdb_sysinfo(&val);
 	kdb_printf("uptime     ");
 	if (val.uptime > (24*60*60)) {
@@ -3399,23 +2521,11 @@ static int kdb_summary(int argc, const char **argv)
 	}
 	kdb_printf("%02ld:%02ld\n", val.uptime/(60*60), (val.uptime/60)%60);
 
-<<<<<<< HEAD
-	/* lifted from fs/proc/proc_misc.c::loadavg_read_proc() */
-
-#define LOAD_INT(x) ((x) >> FSHIFT)
-#define LOAD_FRAC(x) LOAD_INT(((x) & (FIXED_1-1)) * 100)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kdb_printf("load avg   %ld.%02ld %ld.%02ld %ld.%02ld\n",
 		LOAD_INT(val.loads[0]), LOAD_FRAC(val.loads[0]),
 		LOAD_INT(val.loads[1]), LOAD_FRAC(val.loads[1]),
 		LOAD_INT(val.loads[2]), LOAD_FRAC(val.loads[2]));
-<<<<<<< HEAD
-#undef LOAD_INT
-#undef LOAD_FRAC
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Display in kilobytes */
 #define K(x) ((x) << (PAGE_SHIFT - 10))
 	kdb_printf("\nMemTotal:       %8lu kB\nMemFree:        %8lu kB\n"
@@ -3454,11 +2564,7 @@ static int kdb_per_cpu(int argc, const char **argv)
 		diag = kdbgetularg(argv[3], &whichcpu);
 		if (diag)
 			return diag;
-<<<<<<< HEAD
-		if (!cpu_online(whichcpu)) {
-=======
 		if (whichcpu >= nr_cpu_ids || !cpu_online(whichcpu)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kdb_printf("cpu %ld is not online\n", whichcpu);
 			return KDB_BADCPUNUM;
 		}
@@ -3517,38 +2623,6 @@ static int kdb_grep_help(int argc, const char **argv)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * kdb_register_repeat - This function is used to register a kernel
- * 	debugger command.
- * Inputs:
- *	cmd	Command name
- *	func	Function to execute the command
- *	usage	A simple usage string showing arguments
- *	help	A simple help string describing command
- *	repeat	Does the command auto repeat on enter?
- * Returns:
- *	zero for success, one if a duplicate command.
- */
-#define kdb_command_extend 50	/* arbitrary */
-int kdb_register_repeat(char *cmd,
-			kdb_func_t func,
-			char *usage,
-			char *help,
-			short minlen,
-			kdb_repeat_t repeat)
-{
-	int i;
-	kdbtab_t *kp;
-
-	/*
-	 *  Brute force method to determine duplicates
-	 */
-	for_each_kdbcmd(kp, i) {
-		if (kp->cmd_name && (strcmp(kp->cmd_name, cmd) == 0)) {
-			kdb_printf("Duplicate kdb command registered: "
-				"%s, func %p help %s\n", cmd, func, help);
-=======
 /**
  * kdb_register() - This function is used to register a kernel debugger
  *                  command.
@@ -3565,187 +2639,10 @@ int kdb_register(kdbtab_t *cmd)
 		if (strcmp(kp->name, cmd->name) == 0) {
 			kdb_printf("Duplicate kdb cmd: %s, func %p help %s\n",
 				   cmd->name, cmd->func, cmd->help);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 		}
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Insert command into first available location in table
-	 */
-	for_each_kdbcmd(kp, i) {
-		if (kp->cmd_name == NULL)
-			break;
-	}
-
-	if (i >= kdb_max_commands) {
-		kdbtab_t *new = kmalloc((kdb_max_commands - KDB_BASE_CMD_MAX +
-			 kdb_command_extend) * sizeof(*new), GFP_KDB);
-		if (!new) {
-			kdb_printf("Could not allocate new kdb_command "
-				   "table\n");
-			return 1;
-		}
-		if (kdb_commands) {
-			memcpy(new, kdb_commands,
-			  (kdb_max_commands - KDB_BASE_CMD_MAX) * sizeof(*new));
-			kfree(kdb_commands);
-		}
-		memset(new + kdb_max_commands, 0,
-		       kdb_command_extend * sizeof(*new));
-		kdb_commands = new;
-		kp = kdb_commands + kdb_max_commands - KDB_BASE_CMD_MAX;
-		kdb_max_commands += kdb_command_extend;
-	}
-
-	kp->cmd_name   = cmd;
-	kp->cmd_func   = func;
-	kp->cmd_usage  = usage;
-	kp->cmd_help   = help;
-	kp->cmd_flags  = 0;
-	kp->cmd_minlen = minlen;
-	kp->cmd_repeat = repeat;
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(kdb_register_repeat);
-
-
-/*
- * kdb_register - Compatibility register function for commands that do
- *	not need to specify a repeat state.  Equivalent to
- *	kdb_register_repeat with KDB_REPEAT_NONE.
- * Inputs:
- *	cmd	Command name
- *	func	Function to execute the command
- *	usage	A simple usage string showing arguments
- *	help	A simple help string describing command
- * Returns:
- *	zero for success, one if a duplicate command.
- */
-int kdb_register(char *cmd,
-	     kdb_func_t func,
-	     char *usage,
-	     char *help,
-	     short minlen)
-{
-	return kdb_register_repeat(cmd, func, usage, help, minlen,
-				   KDB_REPEAT_NONE);
-}
-EXPORT_SYMBOL_GPL(kdb_register);
-
-/*
- * kdb_unregister - This function is used to unregister a kernel
- *	debugger command.  It is generally called when a module which
- *	implements kdb commands is unloaded.
- * Inputs:
- *	cmd	Command name
- * Returns:
- *	zero for success, one command not registered.
- */
-int kdb_unregister(char *cmd)
-{
-	int i;
-	kdbtab_t *kp;
-
-	/*
-	 *  find the command.
-	 */
-	for_each_kdbcmd(kp, i) {
-		if (kp->cmd_name && (strcmp(kp->cmd_name, cmd) == 0)) {
-			kp->cmd_name = NULL;
-			return 0;
-		}
-	}
-
-	/* Couldn't find it.  */
-	return 1;
-}
-EXPORT_SYMBOL_GPL(kdb_unregister);
-
-/* Initialize the kdb command table. */
-static void __init kdb_inittab(void)
-{
-	int i;
-	kdbtab_t *kp;
-
-	for_each_kdbcmd(kp, i)
-		kp->cmd_name = NULL;
-
-	kdb_register_repeat("md", kdb_md, "<vaddr>",
-	  "Display Memory Contents, also mdWcN, e.g. md8c1", 1,
-			    KDB_REPEAT_NO_ARGS);
-	kdb_register_repeat("mdr", kdb_md, "<vaddr> <bytes>",
-	  "Display Raw Memory", 0, KDB_REPEAT_NO_ARGS);
-	kdb_register_repeat("mdp", kdb_md, "<paddr> <bytes>",
-	  "Display Physical Memory", 0, KDB_REPEAT_NO_ARGS);
-	kdb_register_repeat("mds", kdb_md, "<vaddr>",
-	  "Display Memory Symbolically", 0, KDB_REPEAT_NO_ARGS);
-	kdb_register_repeat("mm", kdb_mm, "<vaddr> <contents>",
-	  "Modify Memory Contents", 0, KDB_REPEAT_NO_ARGS);
-	kdb_register_repeat("go", kdb_go, "[<vaddr>]",
-	  "Continue Execution", 1, KDB_REPEAT_NONE);
-	kdb_register_repeat("rd", kdb_rd, "",
-	  "Display Registers", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("rm", kdb_rm, "<reg> <contents>",
-	  "Modify Registers", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("ef", kdb_ef, "<vaddr>",
-	  "Display exception frame", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("bt", kdb_bt, "[<vaddr>]",
-	  "Stack traceback", 1, KDB_REPEAT_NONE);
-	kdb_register_repeat("btp", kdb_bt, "<pid>",
-	  "Display stack for process <pid>", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("bta", kdb_bt, "[DRSTCZEUIMA]",
-	  "Display stack all processes", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("btc", kdb_bt, "",
-	  "Backtrace current process on each cpu", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("btt", kdb_bt, "<vaddr>",
-	  "Backtrace process given its struct task address", 0,
-			    KDB_REPEAT_NONE);
-	kdb_register_repeat("ll", kdb_ll, "<first-element> <linkoffset> <cmd>",
-	  "Execute cmd for each element in linked list", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("env", kdb_env, "",
-	  "Show environment variables", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("set", kdb_set, "",
-	  "Set environment variables", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("help", kdb_help, "",
-	  "Display Help Message", 1, KDB_REPEAT_NONE);
-	kdb_register_repeat("?", kdb_help, "",
-	  "Display Help Message", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("cpu", kdb_cpu, "<cpunum>",
-	  "Switch to new cpu", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("kgdb", kdb_kgdb, "",
-	  "Enter kgdb mode", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("ps", kdb_ps, "[<flags>|A]",
-	  "Display active task list", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("pid", kdb_pid, "<pidnum>",
-	  "Switch to another task", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("reboot", kdb_reboot, "",
-	  "Reboot the machine immediately", 0, KDB_REPEAT_NONE);
-#if defined(CONFIG_MODULES)
-	kdb_register_repeat("lsmod", kdb_lsmod, "",
-	  "List loaded kernel modules", 0, KDB_REPEAT_NONE);
-#endif
-#if defined(CONFIG_MAGIC_SYSRQ)
-	kdb_register_repeat("sr", kdb_sr, "<key>",
-	  "Magic SysRq key", 0, KDB_REPEAT_NONE);
-#endif
-#if defined(CONFIG_PRINTK)
-	kdb_register_repeat("dmesg", kdb_dmesg, "[lines]",
-	  "Display syslog buffer", 0, KDB_REPEAT_NONE);
-#endif
-	kdb_register_repeat("defcmd", kdb_defcmd, "name \"usage\" \"help\"",
-	  "Define a set of commands, down to endefcmd", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("kill", kdb_kill, "<-signal> <pid>",
-	  "Send a signal to a process", 0, KDB_REPEAT_NONE);
-	kdb_register_repeat("summary", kdb_summary, "",
-	  "Summarize the system", 4, KDB_REPEAT_NONE);
-	kdb_register_repeat("per_cpu", kdb_per_cpu, "<sym> [<bytes>] [<cpu>]",
-	  "Display per_cpu variables", 3, KDB_REPEAT_NONE);
-	kdb_register_repeat("grephelp", kdb_grep_help, "",
-	  "Display help on | grep", 0, KDB_REPEAT_NONE);
-=======
 	list_add_tail(&cmd->list_node, &kdb_cmds_head);
 	return 0;
 }
@@ -3998,7 +2895,6 @@ static void __init kdb_inittab(void)
 	kdb_register_table(maintab, ARRAY_SIZE(maintab));
 	if (arch_kgdb_ops.enable_nmi)
 		kdb_register_table(&nmicmd, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Execute any commands defined in kdb_cmds.  */

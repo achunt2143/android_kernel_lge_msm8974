@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fault.c:  Page fault handlers for the Sparc.
  *
@@ -25,79 +22,6 @@
 #include <linux/perf_event.h>
 #include <linux/interrupt.h>
 #include <linux/kdebug.h>
-<<<<<<< HEAD
-
-#include <asm/page.h>
-#include <asm/pgtable.h>
-#include <asm/memreg.h>
-#include <asm/openprom.h>
-#include <asm/oplib.h>
-#include <asm/smp.h>
-#include <asm/traps.h>
-#include <asm/uaccess.h>
-
-extern int prom_node_root;
-
-int show_unhandled_signals = 1;
-
-/* At boot time we determine these two values necessary for setting
- * up the segment maps and page table entries (pte's).
- */
-
-int num_segmaps, num_contexts;
-int invalid_segment;
-
-/* various Virtual Address Cache parameters we find at boot time... */
-
-int vac_size, vac_linesize, vac_do_hw_vac_flushes;
-int vac_entries_per_context, vac_entries_per_segment;
-int vac_entries_per_page;
-
-/* Return how much physical memory we have.  */
-unsigned long probe_memory(void)
-{
-	unsigned long total = 0;
-	int i;
-
-	for (i = 0; sp_banks[i].num_bytes; i++)
-		total += sp_banks[i].num_bytes;
-
-	return total;
-}
-
-extern void sun4c_complete_all_stores(void);
-
-/* Whee, a level 15 NMI interrupt memory error.  Let's have fun... */
-asmlinkage void sparc_lvl15_nmi(struct pt_regs *regs, unsigned long serr,
-				unsigned long svaddr, unsigned long aerr,
-				unsigned long avaddr)
-{
-	sun4c_complete_all_stores();
-	printk("FAULT: NMI received\n");
-	printk("SREGS: Synchronous Error %08lx\n", serr);
-	printk("       Synchronous Vaddr %08lx\n", svaddr);
-	printk("      Asynchronous Error %08lx\n", aerr);
-	printk("      Asynchronous Vaddr %08lx\n", avaddr);
-	if (sun4c_memerr_reg)
-		printk("     Memory Parity Error %08lx\n", *sun4c_memerr_reg);
-	printk("REGISTER DUMP:\n");
-	show_regs(regs);
-	prom_halt();
-}
-
-static void unhandled_fault(unsigned long, struct task_struct *,
-		struct pt_regs *) __attribute__ ((noreturn));
-
-static void unhandled_fault(unsigned long address, struct task_struct *tsk,
-                     struct pt_regs *regs)
-{
-	if((unsigned long) address < PAGE_SIZE) {
-		printk(KERN_ALERT
-		    "Unable to handle kernel NULL pointer dereference\n");
-	} else {
-		printk(KERN_ALERT "Unable to handle kernel paging request "
-		       "at virtual address %08lx\n", address);
-=======
 #include <linux/uaccess.h>
 #include <linux/extable.h>
 
@@ -122,71 +46,15 @@ static void __noreturn unhandled_fault(unsigned long address,
 	} else {
 		printk(KERN_ALERT "Unable to handle kernel paging request at virtual address %08lx\n",
 		       address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	printk(KERN_ALERT "tsk->{mm,active_mm}->context = %08lx\n",
 		(tsk->mm ? tsk->mm->context : tsk->active_mm->context));
 	printk(KERN_ALERT "tsk->{mm,active_mm}->pgd = %08lx\n",
 		(tsk->mm ? (unsigned long) tsk->mm->pgd :
-<<<<<<< HEAD
-		 	(unsigned long) tsk->active_mm->pgd));
-	die_if_kernel("Oops", regs);
-}
-
-asmlinkage int lookup_fault(unsigned long pc, unsigned long ret_pc, 
-			    unsigned long address)
-{
-	struct pt_regs regs;
-	unsigned long g2;
-	unsigned int insn;
-	int i;
-	
-	i = search_extables_range(ret_pc, &g2);
-	switch (i) {
-	case 3:
-		/* load & store will be handled by fixup */
-		return 3;
-
-	case 1:
-		/* store will be handled by fixup, load will bump out */
-		/* for _to_ macros */
-		insn = *((unsigned int *) pc);
-		if ((insn >> 21) & 1)
-			return 1;
-		break;
-
-	case 2:
-		/* load will be handled by fixup, store will bump out */
-		/* for _from_ macros */
-		insn = *((unsigned int *) pc);
-		if (!((insn >> 21) & 1) || ((insn>>19)&0x3f) == 15)
-			return 2; 
-		break; 
-
-	default:
-		break;
-	}
-
-	memset(&regs, 0, sizeof (regs));
-	regs.pc = pc;
-	regs.npc = pc + 4;
-	__asm__ __volatile__(
-		"rd %%psr, %0\n\t"
-		"nop\n\t"
-		"nop\n\t"
-		"nop\n" : "=r" (regs.psr));
-	unhandled_fault(address, current, &regs);
-
-	/* Not reached */
-	return 0;
-}
-
-=======
 			(unsigned long) tsk->active_mm->pgd));
 	die_if_kernel("Oops", regs);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void
 show_signal_msg(struct pt_regs *regs, int sig, int code,
 		unsigned long address, struct task_struct *tsk)
@@ -197,11 +65,7 @@ show_signal_msg(struct pt_regs *regs, int sig, int code,
 	if (!printk_ratelimit())
 		return;
 
-<<<<<<< HEAD
-	printk("%s%s[%d]: segfault at %lx ip %p (rpc %p) sp %p error %x",
-=======
 	printk("%s%s[%d]: segfault at %lx ip %px (rpc %px) sp %px error %x",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       task_pid_nr(tsk) > 1 ? KERN_INFO : KERN_EMERG,
 	       tsk->comm, task_pid_nr(tsk), address,
 	       (void *)regs->pc, (void *)regs->u_regs[UREG_I7],
@@ -215,26 +79,6 @@ show_signal_msg(struct pt_regs *regs, int sig, int code,
 static void __do_fault_siginfo(int code, int sig, struct pt_regs *regs,
 			       unsigned long addr)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	info.si_signo = sig;
-	info.si_code = code;
-	info.si_errno = 0;
-	info.si_addr = (void __user *) addr;
-	info.si_trapno = 0;
-
-	if (unlikely(show_unhandled_signals))
-		show_signal_msg(regs, sig, info.si_code,
-				addr, current);
-
-	force_sig_info (sig, &info, current);
-}
-
-extern unsigned long safe_compute_effective_address(struct pt_regs *,
-						    unsigned int);
-
-=======
 	if (unlikely(show_unhandled_signals))
 		show_signal_msg(regs, sig, code,
 				addr, current);
@@ -242,7 +86,6 @@ extern unsigned long safe_compute_effective_address(struct pt_regs *,
 	force_sig_fault(sig, code, (void __user *) addr);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long compute_si_addr(struct pt_regs *regs, int text_fault)
 {
 	unsigned int insn;
@@ -250,18 +93,10 @@ static unsigned long compute_si_addr(struct pt_regs *regs, int text_fault)
 	if (text_fault)
 		return regs->pc;
 
-<<<<<<< HEAD
-	if (regs->psr & PSR_PS) {
-		insn = *(unsigned int *) regs->pc;
-	} else {
-		__get_user(insn, (unsigned int *) regs->pc);
-	}
-=======
 	if (regs->psr & PSR_PS)
 		insn = *(unsigned int *) regs->pc;
 	else
 		__get_user(insn, (unsigned int *) regs->pc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return safe_compute_effective_address(regs, insn);
 }
@@ -280,23 +115,12 @@ asmlinkage void do_sparc_fault(struct pt_regs *regs, int text_fault, int write,
 	struct vm_area_struct *vma;
 	struct task_struct *tsk = current;
 	struct mm_struct *mm = tsk->mm;
-<<<<<<< HEAD
-	unsigned int fixup;
-	unsigned long g2;
-	int from_user = !(regs->psr & PSR_PS);
-	int fault, code;
-	unsigned int flags = (FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE |
-			      (write ? FAULT_FLAG_WRITE : 0));
-
-	if(text_fault)
-=======
 	int from_user = !(regs->psr & PSR_PS);
 	int code;
 	vm_fault_t fault;
 	unsigned int flags = FAULT_FLAG_DEFAULT;
 
 	if (text_fault)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		address = regs->pc;
 
 	/*
@@ -309,72 +133,29 @@ asmlinkage void do_sparc_fault(struct pt_regs *regs, int text_fault, int write,
 	 * nothing more.
 	 */
 	code = SEGV_MAPERR;
-<<<<<<< HEAD
-	if (!ARCH_SUN4C && address >= TASK_SIZE)
-=======
 	if (address >= TASK_SIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto vmalloc_fault;
 
 	/*
 	 * If we're in an interrupt or have no user
 	 * context, we must not take the fault..
 	 */
-<<<<<<< HEAD
-        if (in_atomic() || !mm)
-                goto no_context;
-=======
 	if (pagefault_disabled() || !mm)
 		goto no_context;
 
 	if (!from_user && address >= PAGE_OFFSET)
 		goto no_context;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
 
 retry:
-<<<<<<< HEAD
-	down_read(&mm->mmap_sem);
-
-	/*
-	 * The kernel referencing a bad kernel pointer can lock up
-	 * a sun4c machine completely, so we must attempt recovery.
-	 */
-	if(!from_user && address >= PAGE_OFFSET)
-		goto bad_area;
-
-	vma = find_vma(mm, address);
-	if(!vma)
-		goto bad_area;
-	if(vma->vm_start <= address)
-		goto good_area;
-	if(!(vma->vm_flags & VM_GROWSDOWN))
-		goto bad_area;
-	if(expand_stack(vma, address))
-		goto bad_area;
-=======
 	vma = lock_mm_and_find_vma(mm, address, regs);
 	if (!vma)
 		goto bad_area_nosemaphore;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Ok, we have a good vm_area for this memory access, so
 	 * we can handle it..
 	 */
-<<<<<<< HEAD
-good_area:
-	code = SEGV_ACCERR;
-	if(write) {
-		if(!(vma->vm_flags & VM_WRITE))
-			goto bad_area;
-	} else {
-		/* Allow reads even for write-only mappings */
-		if(!(vma->vm_flags & (VM_READ | VM_EXEC)))
-			goto bad_area;
-	}
-
-=======
 	code = SEGV_ACCERR;
 	if (write) {
 		if (!(vma->vm_flags & VM_WRITE))
@@ -390,17 +171,11 @@ good_area:
 	if (write)
 		flags |= FAULT_FLAG_WRITE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If for any reason at all we couldn't handle the fault,
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
-<<<<<<< HEAD
-	fault = handle_mm_fault(mm, vma, address, flags);
-
-	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
-=======
 	fault = handle_mm_fault(vma, address, flags, regs);
 
 	if (fault_signal_pending(fault, regs)) {
@@ -411,7 +186,6 @@ good_area:
 
 	/* The fault is fully completed (including releasing mmap lock) */
 	if (fault & VM_FAULT_COMPLETED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (unlikely(fault & VM_FAULT_ERROR)) {
@@ -424,31 +198,6 @@ good_area:
 		BUG();
 	}
 
-<<<<<<< HEAD
-	if (flags & FAULT_FLAG_ALLOW_RETRY) {
-		if (fault & VM_FAULT_MAJOR) {
-			current->maj_flt++;
-			perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS_MAJ,
-				      1, regs, address);
-		} else {
-			current->min_flt++;
-			perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS_MIN,
-				      1, regs, address);
-		}
-		if (fault & VM_FAULT_RETRY) {
-			flags &= ~FAULT_FLAG_ALLOW_RETRY;
-
-			/* No need to up_read(&mm->mmap_sem) as we would
-			 * have already released it in __lock_page_or_retry
-			 * in mm/filemap.c.
-			 */
-
-			goto retry;
-		}
-	}
-
-	up_read(&mm->mmap_sem);
-=======
 	if (fault & VM_FAULT_RETRY) {
 		flags |= FAULT_FLAG_TRIED;
 
@@ -461,7 +210,6 @@ good_area:
 	}
 
 	mmap_read_unlock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 	/*
@@ -469,11 +217,7 @@ good_area:
 	 * Fix it, but check if it's kernel or user first..
 	 */
 bad_area:
-<<<<<<< HEAD
-	up_read(&mm->mmap_sem);
-=======
 	mmap_read_unlock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 bad_area_nosemaphore:
 	/* User mode accesses just cause a SIGSEGV */
@@ -484,38 +228,6 @@ bad_area_nosemaphore:
 
 	/* Is this in ex_table? */
 no_context:
-<<<<<<< HEAD
-	g2 = regs->u_regs[UREG_G2];
-	if (!from_user) {
-		fixup = search_extables_range(regs->pc, &g2);
-		if (fixup > 10) { /* Values below are reserved for other things */
-			extern const unsigned __memset_start[];
-			extern const unsigned __memset_end[];
-			extern const unsigned __csum_partial_copy_start[];
-			extern const unsigned __csum_partial_copy_end[];
-
-#ifdef DEBUG_EXCEPTIONS
-			printk("Exception: PC<%08lx> faddr<%08lx>\n", regs->pc, address);
-			printk("EX_TABLE: insn<%08lx> fixup<%08x> g2<%08lx>\n",
-				regs->pc, fixup, g2);
-#endif
-			if ((regs->pc >= (unsigned long)__memset_start &&
-			     regs->pc < (unsigned long)__memset_end) ||
-			    (regs->pc >= (unsigned long)__csum_partial_copy_start &&
-			     regs->pc < (unsigned long)__csum_partial_copy_end)) {
-			        regs->u_regs[UREG_I4] = address;
-				regs->u_regs[UREG_I5] = regs->pc;
-			}
-			regs->u_regs[UREG_G2] = g2;
-			regs->pc = fixup;
-			regs->npc = regs->pc + 4;
-			return;
-		}
-	}
-	
-	unhandled_fault (address, tsk, regs);
-	do_exit(SIGKILL);
-=======
 	if (!from_user) {
 		const struct exception_table_entry *entry;
 
@@ -532,18 +244,13 @@ no_context:
 	}
 
 	unhandled_fault(address, tsk, regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We ran out of memory, or some other thing happened to us that made
  * us unable to handle the page fault gracefully.
  */
 out_of_memory:
-<<<<<<< HEAD
-	up_read(&mm->mmap_sem);
-=======
 	mmap_read_unlock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (from_user) {
 		pagefault_out_of_memory();
 		return;
@@ -551,11 +258,7 @@ out_of_memory:
 	goto no_context;
 
 do_sigbus:
-<<<<<<< HEAD
-	up_read(&mm->mmap_sem);
-=======
 	mmap_read_unlock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do_fault_siginfo(BUS_ADRERR, SIGBUS, regs, text_fault);
 	if (!from_user)
 		goto no_context;
@@ -568,11 +271,8 @@ vmalloc_fault:
 		 */
 		int offset = pgd_index(address);
 		pgd_t *pgd, *pgd_k;
-<<<<<<< HEAD
-=======
 		p4d_t *p4d, *p4d_k;
 		pud_t *pud, *pud_k;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pmd_t *pmd, *pmd_k;
 
 		pgd = tsk->active_mm->pgd + offset;
@@ -585,13 +285,6 @@ vmalloc_fault:
 			return;
 		}
 
-<<<<<<< HEAD
-		pmd = pmd_offset(pgd, address);
-		pmd_k = pmd_offset(pgd_k, address);
-
-		if (pmd_present(*pmd) || !pmd_present(*pmd_k))
-			goto bad_area_nosemaphore;
-=======
 		p4d = p4d_offset(pgd, address);
 		pud = pud_offset(p4d, address);
 		pmd = pmd_offset(pud, address);
@@ -603,137 +296,22 @@ vmalloc_fault:
 		if (pmd_present(*pmd) || !pmd_present(*pmd_k))
 			goto bad_area_nosemaphore;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*pmd = *pmd_k;
 		return;
 	}
 }
 
-<<<<<<< HEAD
-asmlinkage void do_sun4c_fault(struct pt_regs *regs, int text_fault, int write,
-			       unsigned long address)
-{
-	extern void sun4c_update_mmu_cache(struct vm_area_struct *,
-					   unsigned long,pte_t *);
-	extern pte_t *sun4c_pte_offset_kernel(pmd_t *,unsigned long);
-	struct task_struct *tsk = current;
-	struct mm_struct *mm = tsk->mm;
-	pgd_t *pgdp;
-	pte_t *ptep;
-
-	if (text_fault) {
-		address = regs->pc;
-	} else if (!write &&
-		   !(regs->psr & PSR_PS)) {
-		unsigned int insn, __user *ip;
-
-		ip = (unsigned int __user *)regs->pc;
-		if (!get_user(insn, ip)) {
-			if ((insn & 0xc1680000) == 0xc0680000)
-				write = 1;
-		}
-	}
-
-	if (!mm) {
-		/* We are oopsing. */
-		do_sparc_fault(regs, text_fault, write, address);
-		BUG();	/* P3 Oops already, you bitch */
-	}
-
-	pgdp = pgd_offset(mm, address);
-	ptep = sun4c_pte_offset_kernel((pmd_t *) pgdp, address);
-
-	if (pgd_val(*pgdp)) {
-	    if (write) {
-		if ((pte_val(*ptep) & (_SUN4C_PAGE_WRITE|_SUN4C_PAGE_PRESENT))
-				   == (_SUN4C_PAGE_WRITE|_SUN4C_PAGE_PRESENT)) {
-			unsigned long flags;
-
-			*ptep = __pte(pte_val(*ptep) | _SUN4C_PAGE_ACCESSED |
-				      _SUN4C_PAGE_MODIFIED |
-				      _SUN4C_PAGE_VALID |
-				      _SUN4C_PAGE_DIRTY);
-
-			local_irq_save(flags);
-			if (sun4c_get_segmap(address) != invalid_segment) {
-				sun4c_put_pte(address, pte_val(*ptep));
-				local_irq_restore(flags);
-				return;
-			}
-			local_irq_restore(flags);
-		}
-	    } else {
-		if ((pte_val(*ptep) & (_SUN4C_PAGE_READ|_SUN4C_PAGE_PRESENT))
-				   == (_SUN4C_PAGE_READ|_SUN4C_PAGE_PRESENT)) {
-			unsigned long flags;
-
-			*ptep = __pte(pte_val(*ptep) | _SUN4C_PAGE_ACCESSED |
-				      _SUN4C_PAGE_VALID);
-
-			local_irq_save(flags);
-			if (sun4c_get_segmap(address) != invalid_segment) {
-				sun4c_put_pte(address, pte_val(*ptep));
-				local_irq_restore(flags);
-				return;
-			}
-			local_irq_restore(flags);
-		}
-	    }
-	}
-
-	/* This conditional is 'interesting'. */
-	if (pgd_val(*pgdp) && !(write && !(pte_val(*ptep) & _SUN4C_PAGE_WRITE))
-	    && (pte_val(*ptep) & _SUN4C_PAGE_VALID))
-		/* Note: It is safe to not grab the MMAP semaphore here because
-		 *       we know that update_mmu_cache() will not sleep for
-		 *       any reason (at least not in the current implementation)
-		 *       and therefore there is no danger of another thread getting
-		 *       on the CPU and doing a shrink_mmap() on this vma.
-		 */
-		sun4c_update_mmu_cache (find_vma(current->mm, address), address,
-					ptep);
-	else
-		do_sparc_fault(regs, text_fault, write, address);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This always deals with user addresses. */
 static void force_user_fault(unsigned long address, int write)
 {
 	struct vm_area_struct *vma;
 	struct task_struct *tsk = current;
 	struct mm_struct *mm = tsk->mm;
-<<<<<<< HEAD
-=======
 	unsigned int flags = FAULT_FLAG_USER;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int code;
 
 	code = SEGV_MAPERR;
 
-<<<<<<< HEAD
-	down_read(&mm->mmap_sem);
-	vma = find_vma(mm, address);
-	if(!vma)
-		goto bad_area;
-	if(vma->vm_start <= address)
-		goto good_area;
-	if(!(vma->vm_flags & VM_GROWSDOWN))
-		goto bad_area;
-	if(expand_stack(vma, address))
-		goto bad_area;
-good_area:
-	code = SEGV_ACCERR;
-	if(write) {
-		if(!(vma->vm_flags & VM_WRITE))
-			goto bad_area;
-	} else {
-		if(!(vma->vm_flags & (VM_READ | VM_EXEC)))
-			goto bad_area;
-	}
-	switch (handle_mm_fault(mm, vma, address, write ? FAULT_FLAG_WRITE : 0)) {
-=======
 	vma = lock_mm_and_find_vma(mm, address, NULL);
 	if (!vma)
 		goto bad_area_nosemaphore;
@@ -747,43 +325,27 @@ good_area:
 			goto bad_area;
 	}
 	switch (handle_mm_fault(vma, address, flags, NULL)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case VM_FAULT_SIGBUS:
 	case VM_FAULT_OOM:
 		goto do_sigbus;
 	}
-<<<<<<< HEAD
-	up_read(&mm->mmap_sem);
-	return;
-bad_area:
-	up_read(&mm->mmap_sem);
-=======
 	mmap_read_unlock(mm);
 	return;
 bad_area:
 	mmap_read_unlock(mm);
 bad_area_nosemaphore:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__do_fault_siginfo(code, SIGSEGV, tsk->thread.kregs, address);
 	return;
 
 do_sigbus:
-<<<<<<< HEAD
-	up_read(&mm->mmap_sem);
-=======
 	mmap_read_unlock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__do_fault_siginfo(BUS_ADRERR, SIGBUS, tsk->thread.kregs, address);
 }
 
 static void check_stack_aligned(unsigned long sp)
 {
 	if (sp & 0x7UL)
-<<<<<<< HEAD
-		force_sig(SIGILL, current);
-=======
 		force_sig(SIGILL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void window_overflow_fault(void)
@@ -791,11 +353,7 @@ void window_overflow_fault(void)
 	unsigned long sp;
 
 	sp = current_thread_info()->rwbuf_stkptrs[0];
-<<<<<<< HEAD
-	if(((sp + 0x38) & PAGE_MASK) != (sp & PAGE_MASK))
-=======
 	if (((sp + 0x38) & PAGE_MASK) != (sp & PAGE_MASK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		force_user_fault(sp + 0x38, 1);
 	force_user_fault(sp, 1);
 
@@ -804,11 +362,7 @@ void window_overflow_fault(void)
 
 void window_underflow_fault(unsigned long sp)
 {
-<<<<<<< HEAD
-	if(((sp + 0x38) & PAGE_MASK) != (sp & PAGE_MASK))
-=======
 	if (((sp + 0x38) & PAGE_MASK) != (sp & PAGE_MASK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		force_user_fault(sp + 0x38, 0);
 	force_user_fault(sp, 0);
 
@@ -820,11 +374,7 @@ void window_ret_fault(struct pt_regs *regs)
 	unsigned long sp;
 
 	sp = regs->u_regs[UREG_FP];
-<<<<<<< HEAD
-	if(((sp + 0x38) & PAGE_MASK) != (sp & PAGE_MASK))
-=======
 	if (((sp + 0x38) & PAGE_MASK) != (sp & PAGE_MASK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		force_user_fault(sp + 0x38, 0);
 	force_user_fault(sp, 0);
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/mm/mempool.c
  *
@@ -10,25 +7,11 @@
  *  extreme VM load.
  *
  *  started by Ingo Molnar, Copyright (C) 2001
-<<<<<<< HEAD
-=======
  *  debugging by David Rientjes, Copyright (C) 2015
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mm.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/export.h>
-#include <linux/mempool.h>
-#include <linux/blkdev.h>
-#include <linux/writeback.h>
-
-static void add_element(mempool_t *pool, void *element)
-{
-	BUG_ON(pool->curr_nr >= pool->min_nr);
-	pool->elements[pool->curr_nr++] = element;
-=======
 #include <linux/highmem.h>
 #include <linux/kasan.h>
 #include <linux/kmemleak.h>
@@ -157,18 +140,10 @@ static __always_inline void add_element(mempool_t *pool, void *element)
 	poison_element(pool, element);
 	if (kasan_poison_element(pool, element))
 		pool->elements[pool->curr_nr++] = element;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *remove_element(mempool_t *pool)
 {
-<<<<<<< HEAD
-	BUG_ON(pool->curr_nr <= 0);
-	return pool->elements[--pool->curr_nr];
-}
-
-/**
-=======
 	void *element = pool->elements[--pool->curr_nr];
 
 	BUG_ON(pool->curr_nr < 0);
@@ -200,7 +175,6 @@ void mempool_exit(mempool_t *pool)
 EXPORT_SYMBOL(mempool_exit);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * mempool_destroy - deallocate a memory pool
  * @pool:      pointer to the memory pool which was allocated via
  *             mempool_create().
@@ -210,24 +184,14 @@ EXPORT_SYMBOL(mempool_exit);
  */
 void mempool_destroy(mempool_t *pool)
 {
-<<<<<<< HEAD
-	while (pool->curr_nr) {
-		void *element = remove_element(pool);
-		pool->free(element, pool->pool_data);
-	}
-	kfree(pool->elements);
-=======
 	if (unlikely(!pool))
 		return;
 
 	mempool_exit(pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(pool);
 }
 EXPORT_SYMBOL(mempool_destroy);
 
-<<<<<<< HEAD
-=======
 int mempool_init_node(mempool_t *pool, int min_nr, mempool_alloc_t *alloc_fn,
 		      mempool_free_t *free_fn, void *pool_data,
 		      gfp_t gfp_mask, int node_id)
@@ -285,7 +249,6 @@ int mempool_init(mempool_t *pool, int min_nr, mempool_alloc_t *alloc_fn,
 }
 EXPORT_SYMBOL(mempool_init);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * mempool_create - create a memory pool
  * @min_nr:    the minimum number of elements guaranteed to be
@@ -299,59 +262,18 @@ EXPORT_SYMBOL(mempool_init);
  * functions. This function might sleep. Both the alloc_fn() and the free_fn()
  * functions might sleep - as long as the mempool_alloc() function is not called
  * from IRQ contexts.
-<<<<<<< HEAD
-=======
  *
  * Return: pointer to the created memory pool object or %NULL on error.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 mempool_t *mempool_create(int min_nr, mempool_alloc_t *alloc_fn,
 				mempool_free_t *free_fn, void *pool_data)
 {
-<<<<<<< HEAD
-	return  mempool_create_node(min_nr,alloc_fn,free_fn, pool_data,-1);
-=======
 	return mempool_create_node(min_nr, alloc_fn, free_fn, pool_data,
 				   GFP_KERNEL, NUMA_NO_NODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mempool_create);
 
 mempool_t *mempool_create_node(int min_nr, mempool_alloc_t *alloc_fn,
-<<<<<<< HEAD
-			mempool_free_t *free_fn, void *pool_data, int node_id)
-{
-	mempool_t *pool;
-	pool = kmalloc_node(sizeof(*pool), GFP_KERNEL | __GFP_ZERO, node_id);
-	if (!pool)
-		return NULL;
-	pool->elements = kmalloc_node(min_nr * sizeof(void *),
-					GFP_KERNEL, node_id);
-	if (!pool->elements) {
-		kfree(pool);
-		return NULL;
-	}
-	spin_lock_init(&pool->lock);
-	pool->min_nr = min_nr;
-	pool->pool_data = pool_data;
-	init_waitqueue_head(&pool->wait);
-	pool->alloc = alloc_fn;
-	pool->free = free_fn;
-
-	/*
-	 * First pre-allocate the guaranteed number of buffers.
-	 */
-	while (pool->curr_nr < pool->min_nr) {
-		void *element;
-
-		element = pool->alloc(GFP_KERNEL, pool->pool_data);
-		if (unlikely(!element)) {
-			mempool_destroy(pool);
-			return NULL;
-		}
-		add_element(pool, element);
-	}
-=======
 			       mempool_free_t *free_fn, void *pool_data,
 			       gfp_t gfp_mask, int node_id)
 {
@@ -367,7 +289,6 @@ mempool_t *mempool_create_node(int min_nr, mempool_alloc_t *alloc_fn,
 		return NULL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pool;
 }
 EXPORT_SYMBOL(mempool_create_node);
@@ -378,41 +299,26 @@ EXPORT_SYMBOL(mempool_create_node);
  *              mempool_create().
  * @new_min_nr: the new minimum number of elements guaranteed to be
  *              allocated for this pool.
-<<<<<<< HEAD
- * @gfp_mask:   the usual allocation bitmask.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function shrinks/grows the pool. In the case of growing,
  * it cannot be guaranteed that the pool will be grown to the new
  * size immediately, but new mempool_free() calls will refill it.
-<<<<<<< HEAD
-=======
  * This function may sleep.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note, the caller must guarantee that no mempool_destroy is called
  * while this function is running. mempool_alloc() & mempool_free()
  * might be called (eg. from IRQ contexts) while this function executes.
-<<<<<<< HEAD
- */
-int mempool_resize(mempool_t *pool, int new_min_nr, gfp_t gfp_mask)
-=======
  *
  * Return: %0 on success, negative error code otherwise.
  */
 int mempool_resize(mempool_t *pool, int new_min_nr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *element;
 	void **new_elements;
 	unsigned long flags;
 
 	BUG_ON(new_min_nr <= 0);
-<<<<<<< HEAD
-=======
 	might_sleep();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pool->lock, flags);
 	if (new_min_nr <= pool->min_nr) {
@@ -428,12 +334,8 @@ int mempool_resize(mempool_t *pool, int new_min_nr)
 	spin_unlock_irqrestore(&pool->lock, flags);
 
 	/* Grow the pool */
-<<<<<<< HEAD
-	new_elements = kmalloc(new_min_nr * sizeof(*new_elements), gfp_mask);
-=======
 	new_elements = kmalloc_array(new_min_nr, sizeof(*new_elements),
 				     GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!new_elements)
 		return -ENOMEM;
 
@@ -452,11 +354,7 @@ int mempool_resize(mempool_t *pool, int new_min_nr)
 
 	while (pool->curr_nr < pool->min_nr) {
 		spin_unlock_irqrestore(&pool->lock, flags);
-<<<<<<< HEAD
-		element = pool->alloc(gfp_mask, pool->pool_data);
-=======
 		element = pool->alloc(GFP_KERNEL, pool->pool_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!element)
 			goto out;
 		spin_lock_irqsave(&pool->lock, flags);
@@ -485,17 +383,6 @@ EXPORT_SYMBOL(mempool_resize);
  * returns NULL. Note that due to preallocation, this function
  * *never* fails when called from process contexts. (it might
  * fail if called from an IRQ context.)
-<<<<<<< HEAD
- */
-void * mempool_alloc(mempool_t *pool, gfp_t gfp_mask)
-{
-	void *element;
-	unsigned long flags;
-	wait_queue_t wait;
-	gfp_t gfp_temp;
-
-	might_sleep_if(gfp_mask & __GFP_WAIT);
-=======
  * Note: using __GFP_ZERO is not supported.
  *
  * Return: pointer to the allocated element or %NULL on error.
@@ -509,17 +396,12 @@ void *mempool_alloc(mempool_t *pool, gfp_t gfp_mask)
 
 	VM_WARN_ON_ONCE(gfp_mask & __GFP_ZERO);
 	might_alloc(gfp_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gfp_mask |= __GFP_NOMEMALLOC;	/* don't allocate emergency reserves */
 	gfp_mask |= __GFP_NORETRY;	/* don't loop in __alloc_pages */
 	gfp_mask |= __GFP_NOWARN;	/* failures are OK */
 
-<<<<<<< HEAD
-	gfp_temp = gfp_mask & ~(__GFP_WAIT|__GFP_IO);
-=======
 	gfp_temp = gfp_mask & ~(__GFP_DIRECT_RECLAIM|__GFP_IO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 repeat_alloc:
 
@@ -533,23 +415,16 @@ repeat_alloc:
 		spin_unlock_irqrestore(&pool->lock, flags);
 		/* paired with rmb in mempool_free(), read comment there */
 		smp_wmb();
-<<<<<<< HEAD
-=======
 		/*
 		 * Update the allocation stack trace as this is more useful
 		 * for debugging.
 		 */
 		kmemleak_update_trace(element);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return element;
 	}
 
 	/*
-<<<<<<< HEAD
-	 * We use gfp mask w/o __GFP_WAIT or IO for the first round.  If
-=======
 	 * We use gfp mask w/o direct reclaim or IO for the first round.  If
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * alloc failed with that and @pool was empty, retry immediately.
 	 */
 	if (gfp_temp != gfp_mask) {
@@ -558,13 +433,8 @@ repeat_alloc:
 		goto repeat_alloc;
 	}
 
-<<<<<<< HEAD
-	/* We must not sleep if !__GFP_WAIT */
-	if (!(gfp_mask & __GFP_WAIT)) {
-=======
 	/* We must not sleep if !__GFP_DIRECT_RECLAIM */
 	if (!(gfp_mask & __GFP_DIRECT_RECLAIM)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&pool->lock, flags);
 		return NULL;
 	}
@@ -587,8 +457,6 @@ repeat_alloc:
 EXPORT_SYMBOL(mempool_alloc);
 
 /**
-<<<<<<< HEAD
-=======
  * mempool_alloc_preallocated - allocate an element from preallocated elements
  *                              belonging to a specific memory pool
  * @pool:      pointer to the memory pool which was allocated via
@@ -626,7 +494,6 @@ void *mempool_alloc_preallocated(mempool_t *pool)
 EXPORT_SYMBOL(mempool_alloc_preallocated);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * mempool_free - return an element to the pool.
  * @element:   pool element pointer.
  * @pool:      pointer to the memory pool which was allocated via
@@ -674,15 +541,9 @@ void mempool_free(void *element, mempool_t *pool)
 	 * ensures that there will be frees which return elements to the
 	 * pool waking up the waiters.
 	 */
-<<<<<<< HEAD
-	if (pool->curr_nr < pool->min_nr) {
-		spin_lock_irqsave(&pool->lock, flags);
-		if (pool->curr_nr < pool->min_nr) {
-=======
 	if (unlikely(READ_ONCE(pool->curr_nr) < pool->min_nr)) {
 		spin_lock_irqsave(&pool->lock, flags);
 		if (likely(pool->curr_nr < pool->min_nr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			add_element(pool, element);
 			spin_unlock_irqrestore(&pool->lock, flags);
 			wake_up(&pool->wait);
@@ -700,10 +561,7 @@ EXPORT_SYMBOL(mempool_free);
 void *mempool_alloc_slab(gfp_t gfp_mask, void *pool_data)
 {
 	struct kmem_cache *mem = pool_data;
-<<<<<<< HEAD
-=======
 	VM_BUG_ON(mem->ctor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return kmem_cache_alloc(mem, gfp_mask);
 }
 EXPORT_SYMBOL(mempool_alloc_slab);
@@ -732,8 +590,6 @@ void mempool_kfree(void *element, void *pool_data)
 }
 EXPORT_SYMBOL(mempool_kfree);
 
-<<<<<<< HEAD
-=======
 void *mempool_kvmalloc(gfp_t gfp_mask, void *pool_data)
 {
 	size_t size = (size_t)pool_data;
@@ -747,7 +603,6 @@ void mempool_kvfree(void *element, void *pool_data)
 }
 EXPORT_SYMBOL(mempool_kvfree);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A simple mempool-backed page allocator that allocates pages
  * of the order specified by pool_data.

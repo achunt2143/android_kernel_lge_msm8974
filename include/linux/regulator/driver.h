@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * driver.h -- SoC Regulator driver support.
  *
@@ -9,13 +6,6 @@
  *
  * Author: Liam Girdwood <lrg@slimlogic.co.uk>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Regulator Driver Interface.
  */
 
@@ -23,13 +13,6 @@
 #define __LINUX_REGULATOR_DRIVER_H_
 
 #include <linux/device.h>
-<<<<<<< HEAD
-#include <linux/notifier.h>
-#include <linux/regulator/consumer.h>
-
-struct regulator_dev;
-struct regulator_init_data;
-=======
 #include <linux/linear_range.h>
 #include <linux/notifier.h>
 #include <linux/regulator/consumer.h>
@@ -41,7 +24,6 @@ struct regulator_dev;
 struct regulator_config;
 struct regulator_init_data;
 struct regulator_enable_gpio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum regulator_status {
 	REGULATOR_STATUS_OFF,
@@ -52,10 +34,6 @@ enum regulator_status {
 	REGULATOR_STATUS_NORMAL,
 	REGULATOR_STATUS_IDLE,
 	REGULATOR_STATUS_STANDBY,
-<<<<<<< HEAD
-};
-
-=======
 	/* The regulator is enabled but not regulating */
 	REGULATOR_STATUS_BYPASS,
 	/* in case that any other status doesn't apply */
@@ -75,7 +53,6 @@ enum regulator_detection_severity {
 #define REGULATOR_LINEAR_RANGE(_min_uV, _min_sel, _max_sel, _step_uV)	\
 	LINEAR_RANGE(_min_uV, _min_sel, _max_sel, _step_uV)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct regulator_ops - regulator operations.
  *
@@ -88,11 +65,6 @@ enum regulator_detection_severity {
  *               The driver should select the voltage closest to min_uV.
  * @set_voltage_sel: Set the voltage for the regulator using the specified
  *                   selector.
-<<<<<<< HEAD
- * @get_voltage: Return the currently configured voltage for the regulator.
- * @get_voltage_sel: Return the currently configured voltage selector for the
- *                   regulator.
-=======
  * @map_voltage: Convert a voltage into a selector
  * @get_voltage: Return the currently configured voltage for the regulator;
  *                   return -ENOTRECOVERABLE if regulator can't be read at
@@ -100,19 +72,12 @@ enum regulator_detection_severity {
  * @get_voltage_sel: Return the currently configured voltage selector for the
  *                   regulator; return -ENOTRECOVERABLE if regulator can't
  *                   be read at bootup and hasn't been set yet.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @list_voltage: Return one of the supported voltages, in microvolts; zero
  *	if the selector indicates a voltage that is unusable on this system;
  *	or negative errno.  Selectors range from zero to one less than
  *	regulator_desc.n_voltages.  Voltages may be reported in any order.
  *
  * @set_current_limit: Configure a limit for a current-limited regulator.
-<<<<<<< HEAD
- * @get_current_limit: Get the configured limit for a current-limited regulator.
- *
- * @set_mode: Set the configured operating mode for the regulator.
- * @get_mode: Get the configured operating mode for the regulator.
-=======
  *                     The driver should select the current closest to max_uA.
  * @get_current_limit: Get the configured limit for a current-limited regulator.
  * @set_input_current_limit: Configure an input limit.
@@ -148,20 +113,10 @@ enum regulator_detection_severity {
  * @set_mode: Set the configured operating mode for the regulator.
  * @get_mode: Get the configured operating mode for the regulator.
  * @get_error_flags: Get the current error(s) for the regulator.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @get_status: Return actual (not as-configured) status of regulator, as a
  *	REGULATOR_STATUS value (or negative errno)
  * @get_optimum_mode: Get the most efficient operating mode for the regulator
  *                    when running with the specified parameters.
-<<<<<<< HEAD
- *
- * @enable_time: Time taken for the regulator voltage output voltage to
- *               stabilise after being enabled, in microseconds.
- * @set_voltage_time_sel: Time taken for the regulator voltage output voltage
- *               to stabilise after being set to a new value, in microseconds.
- *               The function provides the from and to voltage selector, the
- *               function should return the worst case.
-=======
  * @set_load: Set the load for the regulator.
  *
  * @set_bypass: Set the regulator in bypass mode.
@@ -180,7 +135,6 @@ enum regulator_detection_severity {
  *               The function receives the from and to voltage selector as
  *               input, it should return the worst case.
  * @set_soft_start: Enable soft start for the regulator.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @set_suspend_voltage: Set the voltage for the regulator when the system
  *                       is suspended.
@@ -190,12 +144,9 @@ enum regulator_detection_severity {
  *                       suspended.
  * @set_suspend_mode: Set the operating mode for the regulator when the
  *                    system is suspended.
-<<<<<<< HEAD
-=======
  * @resume: Resume operation of suspended regulator.
  * @set_pull_down: Configure the regulator to pull down when the regulator
  *		   is disabled.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This struct describes regulator operations which can be implemented by
  * regulator chip drivers.
@@ -208,10 +159,7 @@ struct regulator_ops {
 	/* get/set regulator voltage */
 	int (*set_voltage) (struct regulator_dev *, int min_uV, int max_uV,
 			    unsigned *selector);
-<<<<<<< HEAD
-=======
 	int (*map_voltage)(struct regulator_dev *, int min_uV, int max_uV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*set_voltage_sel) (struct regulator_dev *, unsigned selector);
 	int (*get_voltage) (struct regulator_dev *);
 	int (*get_voltage_sel) (struct regulator_dev *);
@@ -221,8 +169,6 @@ struct regulator_ops {
 				 int min_uA, int max_uA);
 	int (*get_current_limit) (struct regulator_dev *);
 
-<<<<<<< HEAD
-=======
 	int (*set_input_current_limit) (struct regulator_dev *, int lim_uA);
 	int (*set_over_current_protection)(struct regulator_dev *, int lim_uA,
 					   int severity, bool enable);
@@ -234,7 +180,6 @@ struct regulator_ops {
 				      int severity, bool enable);
 	int (*set_active_discharge)(struct regulator_dev *, bool enable);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable/disable regulator */
 	int (*enable) (struct regulator_dev *);
 	int (*disable) (struct regulator_dev *);
@@ -244,10 +189,6 @@ struct regulator_ops {
 	int (*set_mode) (struct regulator_dev *, unsigned int mode);
 	unsigned int (*get_mode) (struct regulator_dev *);
 
-<<<<<<< HEAD
-	/* Time taken to enable or set voltage on the regulator */
-	int (*enable_time) (struct regulator_dev *);
-=======
 	/* retrieve current error flags on the regulator */
 	int (*get_error_flags)(struct regulator_dev *, unsigned int *flags);
 
@@ -256,16 +197,12 @@ struct regulator_ops {
 	int (*set_ramp_delay) (struct regulator_dev *, int ramp_delay);
 	int (*set_voltage_time) (struct regulator_dev *, int old_uV,
 				 int new_uV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*set_voltage_time_sel) (struct regulator_dev *,
 				     unsigned int old_selector,
 				     unsigned int new_selector);
 
-<<<<<<< HEAD
-=======
 	int (*set_soft_start) (struct regulator_dev *);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* report regulator status ... most other accessors report
 	 * control inputs, this reports results of combining inputs
 	 * from Linux (and other sources) with the actual load.
@@ -276,15 +213,12 @@ struct regulator_ops {
 	/* get most efficient regulator operating mode for load */
 	unsigned int (*get_optimum_mode) (struct regulator_dev *, int input_uV,
 					  int output_uV, int load_uA);
-<<<<<<< HEAD
-=======
 	/* set the load on the regulator */
 	int (*set_load)(struct regulator_dev *, int load_uA);
 
 	/* control and report on bypass mode */
 	int (*set_bypass)(struct regulator_dev *dev, bool enable);
 	int (*get_bypass)(struct regulator_dev *dev, bool *enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* the operations below are for configuration of regulator state when
 	 * its parent PMIC enters a global STANDBY/HIBERNATE state */
@@ -298,13 +232,10 @@ struct regulator_ops {
 
 	/* set regulator suspend operating mode (defined in consumer.h) */
 	int (*set_suspend_mode) (struct regulator_dev *, unsigned int mode);
-<<<<<<< HEAD
-=======
 
 	int (*resume)(struct regulator_dev *rdev);
 
 	int (*set_pull_down) (struct regulator_dev *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -316,17 +247,6 @@ enum regulator_type {
 };
 
 /**
-<<<<<<< HEAD
- * struct regulator_desc - Regulator descriptor
- *
- * Each regulator registered with the core is described with a structure of
- * this type.
- *
- * @name: Identifying name for the regulator.
- * @supply_name: Identifying the regulator supply
- * @id: Numerical identifier for the regulator.
- * @n_voltages: Number of selectors available for ops.list_voltage().
-=======
  * struct regulator_desc - Static regulator descriptor
  *
  * Each regulator registered with the core is described with a
@@ -350,13 +270,10 @@ enum regulator_type {
  *               Callback should return 0 on success or negative ERRNO
  *               indicating failure.
  * @id: Numerical identifier for the regulator.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ops: Regulator operations table.
  * @irq: Interrupt number for the regulator.
  * @type: Indicates if the regulator is a voltage or current regulator.
  * @owner: Module providing the regulator, used for refcounting.
-<<<<<<< HEAD
-=======
  *
  * @continuous_voltage_range: Indicates if the regulator can set any
  *                            voltage within constrains range.
@@ -436,19 +353,10 @@ enum regulator_type {
  *                     the regulator was actually enabled. Max upto enable_time.
  *
  * @of_map_mode: Maps a hardware mode defined in a DeviceTree to a standard mode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct regulator_desc {
 	const char *name;
 	const char *supply_name;
-<<<<<<< HEAD
-	int id;
-	unsigned n_voltages;
-	struct regulator_ops *ops;
-	int irq;
-	enum regulator_type type;
-	struct module *owner;
-=======
 	const char *of_match;
 	bool of_match_full_name;
 	const char *regulators_node;
@@ -684,7 +592,6 @@ struct coupling_desc {
 	struct regulator_coupler *coupler;
 	int n_resolved;
 	int n_coupled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -698,18 +605,11 @@ struct coupling_desc {
  * no other direct access).
  */
 struct regulator_dev {
-<<<<<<< HEAD
-	struct regulator_desc *desc;
-	int exclusive;
-	u32 use_count;
-	u32 open_count;
-=======
 	const struct regulator_desc *desc;
 	int exclusive;
 	u32 use_count;
 	u32 open_count;
 	u32 bypass_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* lists we belong to */
 	struct list_head list; /* list of all regulators */
@@ -717,42 +617,24 @@ struct regulator_dev {
 	/* lists we own */
 	struct list_head consumer_list; /* consumers we supply */
 
-<<<<<<< HEAD
-	struct blocking_notifier_head notifier;
-	struct mutex mutex; /* consumer lock */
-=======
 	struct coupling_desc coupling_desc;
 
 	struct blocking_notifier_head notifier;
 	struct ww_mutex mutex; /* consumer lock */
 	struct task_struct *mutex_owner;
 	int ref_cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct module *owner;
 	struct device dev;
 	struct regulation_constraints *constraints;
 	struct regulator *supply;	/* for tree */
-<<<<<<< HEAD
-
-	struct delayed_work disable_work;
-	int deferred_disables;
-=======
 	const char *supply_name;
 	struct regmap *regmap;
 
 	struct delayed_work disable_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void *reg_data;		/* regulator_dev data */
 
 	struct dentry *debugfs;
-<<<<<<< HEAD
-};
-
-struct regulator_dev *regulator_register(struct regulator_desc *regulator_desc,
-	struct device *dev, const struct regulator_init_data *init_data,
-	void *driver_data, struct device_node *of_node);
-=======
 
 	struct regulator_enable_gpio *ena_pin;
 	unsigned int ena_gpio_state:1;
@@ -808,16 +690,10 @@ struct regulator_dev *
 devm_regulator_register(struct device *dev,
 			const struct regulator_desc *regulator_desc,
 			const struct regulator_config *config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void regulator_unregister(struct regulator_dev *rdev);
 
 int regulator_notifier_call_chain(struct regulator_dev *rdev,
 				  unsigned long event, void *data);
-<<<<<<< HEAD
-
-void *rdev_get_drvdata(struct regulator_dev *rdev);
-struct device *rdev_get_dev(struct regulator_dev *rdev);
-=======
 void *devm_regulator_irq_helper(struct device *dev,
 				const struct regulator_irq_desc *d, int irq,
 				int irq_flags, int common_errs,
@@ -834,14 +710,10 @@ int regulator_irq_map_event_simple(int irq, struct regulator_irq_data *rid,
 void *rdev_get_drvdata(struct regulator_dev *rdev);
 struct device *rdev_get_dev(struct regulator_dev *rdev);
 struct regmap *rdev_get_regmap(struct regulator_dev *rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int rdev_get_id(struct regulator_dev *rdev);
 
 int regulator_mode_to_status(unsigned int);
 
-<<<<<<< HEAD
-void *regulator_get_init_drvdata(struct regulator_init_data *reg_init_data);
-=======
 int regulator_list_voltage_linear(struct regulator_dev *rdev,
 				  unsigned int selector);
 int regulator_list_voltage_pickable_linear_range(struct regulator_dev *rdev,
@@ -905,6 +777,5 @@ static inline const char *rdev_get_name(struct regulator_dev *rdev)
 	return NULL;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

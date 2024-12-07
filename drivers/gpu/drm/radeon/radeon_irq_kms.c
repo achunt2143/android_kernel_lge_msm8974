@@ -25,21 +25,6 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "drm_crtc_helper.h"
-#include "radeon_drm.h"
-#include "radeon_reg.h"
-#include "radeon.h"
-#include "atom.h"
-
-irqreturn_t radeon_driver_irq_handler_kms(DRM_IRQ_ARGS)
-{
-	struct drm_device *dev = (struct drm_device *) arg;
-	struct radeon_device *rdev = dev->dev_private;
-
-	return radeon_irq_process(rdev);
-=======
 
 #include <linux/pci.h>
 #include <linux/pm_runtime.h>
@@ -75,18 +60,11 @@ static irqreturn_t radeon_driver_irq_handler_kms(int irq, void *arg)
 	if (ret == IRQ_HANDLED)
 		pm_runtime_mark_last_busy(dev->dev);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Handle hotplug events outside the interrupt handler proper.
  */
-<<<<<<< HEAD
-static void radeon_hotplug_work_func(struct work_struct *work)
-{
-	struct radeon_device *rdev = container_of(work, struct radeon_device,
-						  hotplug_work);
-=======
 /**
  * radeon_hotplug_work_func - display hotplug work handler
  *
@@ -102,7 +80,6 @@ static void radeon_hotplug_work_func(struct work_struct *work)
 {
 	struct radeon_device *rdev = container_of(work, struct radeon_device,
 						  hotplug_work.work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct drm_device *dev = rdev->ddev;
 	struct drm_mode_config *mode_config = &dev->mode_config;
 	struct drm_connector *connector;
@@ -113,31 +90,13 @@ static void radeon_hotplug_work_func(struct work_struct *work)
 		return;
 
 	mutex_lock(&mode_config->mutex);
-<<<<<<< HEAD
-	if (mode_config->num_connector) {
-		list_for_each_entry(connector, &mode_config->connector_list, head)
-			radeon_connector_hotplug(connector);
-	}
-=======
 	list_for_each_entry(connector, &mode_config->connector_list, head)
 		radeon_connector_hotplug(connector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&mode_config->mutex);
 	/* Just fire off a uevent and let userspace tell us what to do */
 	drm_helper_hpd_irq_event(dev);
 }
 
-<<<<<<< HEAD
-void radeon_driver_irq_preinstall_kms(struct drm_device *dev)
-{
-	struct radeon_device *rdev = dev->dev_private;
-	unsigned i;
-
-	/* Disable *all* interrupts */
-	for (i = 0; i < RADEON_NUM_RINGS; i++)
-		rdev->irq.sw_int[i] = false;
-	rdev->irq.gui_idle = false;
-=======
 static void radeon_dp_work_func(struct work_struct *work)
 {
 	struct radeon_device *rdev = container_of(work, struct radeon_device,
@@ -171,43 +130,19 @@ static void radeon_driver_irq_preinstall_kms(struct drm_device *dev)
 	for (i = 0; i < RADEON_NUM_RINGS; i++)
 		atomic_set(&rdev->irq.ring_int[i], 0);
 	rdev->irq.dpm_thermal = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < RADEON_MAX_HPD_PINS; i++)
 		rdev->irq.hpd[i] = false;
 	for (i = 0; i < RADEON_MAX_CRTCS; i++) {
 		rdev->irq.crtc_vblank_int[i] = false;
-<<<<<<< HEAD
-		rdev->irq.pflip[i] = false;
-	}
-	radeon_irq_set(rdev);
-=======
 		atomic_set(&rdev->irq.pflip[i], 0);
 		rdev->irq.afmt[i] = false;
 	}
 	radeon_irq_set(rdev);
 	spin_unlock_irqrestore(&rdev->irq.lock, irqflags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Clear bits */
 	radeon_irq_process(rdev);
 }
 
-<<<<<<< HEAD
-int radeon_driver_irq_postinstall_kms(struct drm_device *dev)
-{
-	struct radeon_device *rdev = dev->dev_private;
-	unsigned i;
-
-	dev->max_vblank_count = 0x001fffff;
-	for (i = 0; i < RADEON_NUM_RINGS; i++)
-		rdev->irq.sw_int[i] = true;
-	radeon_irq_set(rdev);
-	return 0;
-}
-
-void radeon_driver_irq_uninstall_kms(struct drm_device *dev)
-{
-	struct radeon_device *rdev = dev->dev_private;
-=======
 /**
  * radeon_driver_irq_postinstall_kms - drm irq preinstall callback
  *
@@ -239,35 +174,20 @@ static void radeon_driver_irq_uninstall_kms(struct drm_device *dev)
 {
 	struct radeon_device *rdev = dev->dev_private;
 	unsigned long irqflags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned i;
 
 	if (rdev == NULL) {
 		return;
 	}
-<<<<<<< HEAD
-	/* Disable *all* interrupts */
-	for (i = 0; i < RADEON_NUM_RINGS; i++)
-		rdev->irq.sw_int[i] = false;
-	rdev->irq.gui_idle = false;
-=======
 	spin_lock_irqsave(&rdev->irq.lock, irqflags);
 	/* Disable *all* interrupts */
 	for (i = 0; i < RADEON_NUM_RINGS; i++)
 		atomic_set(&rdev->irq.ring_int[i], 0);
 	rdev->irq.dpm_thermal = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < RADEON_MAX_HPD_PINS; i++)
 		rdev->irq.hpd[i] = false;
 	for (i = 0; i < RADEON_MAX_CRTCS; i++) {
 		rdev->irq.crtc_vblank_int[i] = false;
-<<<<<<< HEAD
-		rdev->irq.pflip[i] = false;
-	}
-	radeon_irq_set(rdev);
-}
-
-=======
 		atomic_set(&rdev->irq.pflip[i], 0);
 		rdev->irq.afmt[i] = false;
 	}
@@ -315,7 +235,6 @@ static void radeon_irq_uninstall(struct radeon_device *rdev)
  * Returns true if MSIs should be enabled, false if MSIs
  * should not be enabled.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool radeon_msi_ok(struct radeon_device *rdev)
 {
 	/* RV370/RV380 was first asic with MSI support */
@@ -326,8 +245,6 @@ static bool radeon_msi_ok(struct radeon_device *rdev)
 	if (rdev->flags & RADEON_IS_AGP)
 		return false;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Older chips have a HW limitation, they can only generate 40 bits
 	 * of address for "64-bit" MSIs which breaks on some platforms, notably
@@ -338,7 +255,6 @@ static bool radeon_msi_ok(struct radeon_device *rdev)
 		rdev->pdev->no_64bit_msi = 1;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* force MSI on */
 	if (radeon_msi == 1)
 		return true;
@@ -391,18 +307,6 @@ static bool radeon_msi_ok(struct radeon_device *rdev)
 	return true;
 }
 
-<<<<<<< HEAD
-int radeon_irq_kms_init(struct radeon_device *rdev)
-{
-	int i;
-	int r = 0;
-
-	INIT_WORK(&rdev->hotplug_work, radeon_hotplug_work_func);
-
-	spin_lock_init(&rdev->irq.sw_lock);
-	for (i = 0; i < rdev->num_crtc; i++)
-		spin_lock_init(&rdev->irq.pflip_lock[i]);
-=======
 /**
  * radeon_irq_kms_init - init driver interrupt info
  *
@@ -420,15 +324,11 @@ int radeon_irq_kms_init(struct radeon_device *rdev)
 	/* Disable vblank irqs aggressively for power-saving */
 	rdev->ddev->vblank_disable_immediate = true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = drm_vblank_init(rdev->ddev, rdev->num_crtc);
 	if (r) {
 		return r;
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable msi */
 	rdev->msi_enabled = 0;
 
@@ -439,14 +339,6 @@ int radeon_irq_kms_init(struct radeon_device *rdev)
 			dev_info(rdev->dev, "radeon: using MSI.\n");
 		}
 	}
-<<<<<<< HEAD
-	rdev->irq.installed = true;
-	r = drm_irq_install(rdev->ddev);
-	if (r) {
-		rdev->irq.installed = false;
-		return r;
-	}
-=======
 
 	INIT_DELAYED_WORK(&rdev->hotplug_work, radeon_hotplug_work_func);
 	INIT_WORK(&rdev->dp_work, radeon_dp_work_func);
@@ -460,25 +352,10 @@ int radeon_irq_kms_init(struct radeon_device *rdev)
 		return r;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DRM_INFO("radeon: irq initialized.\n");
 	return 0;
 }
 
-<<<<<<< HEAD
-void radeon_irq_kms_fini(struct radeon_device *rdev)
-{
-	drm_vblank_cleanup(rdev->ddev);
-	if (rdev->irq.installed) {
-		drm_irq_uninstall(rdev->ddev);
-		rdev->irq.installed = false;
-		if (rdev->msi_enabled)
-			pci_disable_msi(rdev->pdev);
-	}
-	flush_work_sync(&rdev->hotplug_work);
-}
-
-=======
 /**
  * radeon_irq_kms_fini - tear down driver interrupt info
  *
@@ -507,21 +384,10 @@ void radeon_irq_kms_fini(struct radeon_device *rdev)
  * The software interrupt is generally used to signal a fence on
  * a particular ring.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_irq_kms_sw_irq_get(struct radeon_device *rdev, int ring)
 {
 	unsigned long irqflags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&rdev->irq.sw_lock, irqflags);
-	if (rdev->ddev->irq_enabled && (++rdev->irq.sw_refcount[ring] == 1)) {
-		rdev->irq.sw_int[ring] = true;
-		radeon_irq_set(rdev);
-	}
-	spin_unlock_irqrestore(&rdev->irq.sw_lock, irqflags);
-}
-
-=======
 	if (!rdev->irq.installed)
 		return;
 
@@ -557,22 +423,10 @@ bool radeon_irq_kms_sw_irq_get_delayed(struct radeon_device *rdev, int ring)
  * The software interrupt is generally used to signal a fence on
  * a particular ring.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_irq_kms_sw_irq_put(struct radeon_device *rdev, int ring)
 {
 	unsigned long irqflags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&rdev->irq.sw_lock, irqflags);
-	BUG_ON(rdev->ddev->irq_enabled && rdev->irq.sw_refcount[ring] <= 0);
-	if (rdev->ddev->irq_enabled && (--rdev->irq.sw_refcount[ring] == 0)) {
-		rdev->irq.sw_int[ring] = false;
-		radeon_irq_set(rdev);
-	}
-	spin_unlock_irqrestore(&rdev->irq.sw_lock, irqflags);
-}
-
-=======
 	if (!rdev->irq.installed)
 		return;
 
@@ -592,7 +446,6 @@ void radeon_irq_kms_sw_irq_put(struct radeon_device *rdev, int ring)
  * Enables the pageflip interrupt for a specific crtc (all asics).
  * For pageflips we use the vblank interrupt source.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_irq_kms_pflip_irq_get(struct radeon_device *rdev, int crtc)
 {
 	unsigned long irqflags;
@@ -600,16 +453,6 @@ void radeon_irq_kms_pflip_irq_get(struct radeon_device *rdev, int crtc)
 	if (crtc < 0 || crtc >= rdev->num_crtc)
 		return;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&rdev->irq.pflip_lock[crtc], irqflags);
-	if (rdev->ddev->irq_enabled && (++rdev->irq.pflip_refcount[crtc] == 1)) {
-		rdev->irq.pflip[crtc] = true;
-		radeon_irq_set(rdev);
-	}
-	spin_unlock_irqrestore(&rdev->irq.pflip_lock[crtc], irqflags);
-}
-
-=======
 	if (!rdev->irq.installed)
 		return;
 
@@ -629,7 +472,6 @@ void radeon_irq_kms_pflip_irq_get(struct radeon_device *rdev, int crtc)
  * Disables the pageflip interrupt for a specific crtc (all asics).
  * For pageflips we use the vblank interrupt source.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_irq_kms_pflip_irq_put(struct radeon_device *rdev, int crtc)
 {
 	unsigned long irqflags;
@@ -637,17 +479,6 @@ void radeon_irq_kms_pflip_irq_put(struct radeon_device *rdev, int crtc)
 	if (crtc < 0 || crtc >= rdev->num_crtc)
 		return;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&rdev->irq.pflip_lock[crtc], irqflags);
-	BUG_ON(rdev->ddev->irq_enabled && rdev->irq.pflip_refcount[crtc] <= 0);
-	if (rdev->ddev->irq_enabled && (--rdev->irq.pflip_refcount[crtc] == 0)) {
-		rdev->irq.pflip[crtc] = false;
-		radeon_irq_set(rdev);
-	}
-	spin_unlock_irqrestore(&rdev->irq.pflip_lock[crtc], irqflags);
-}
-
-=======
 	if (!rdev->irq.installed)
 		return;
 
@@ -782,4 +613,3 @@ void radeon_irq_kms_set_irq_n_enabled(struct radeon_device *rdev,
 		WREG32(reg, tmp & ~mask);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

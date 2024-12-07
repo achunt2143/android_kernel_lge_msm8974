@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*---------------------------------------------------------------------------+
  |  fpu_emu.h                                                                |
  |                                                                           |
@@ -75,11 +72,7 @@
 
 #include "fpu_system.h"
 
-<<<<<<< HEAD
-#include <asm/sigcontext.h>	/* for struct _fpstate */
-=======
 #include <uapi/asm/sigcontext.h>	/* for struct _fpstate */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/math_emu.h>
 #include <linux/linkage.h>
 
@@ -165,11 +158,7 @@ extern u_char const data_sizes_16[32];
 
 #define signbyte(a) (((u_char *)(a))[9])
 #define getsign(a) (signbyte(a) & 0x80)
-<<<<<<< HEAD
-#define setsign(a,b) { if (b) signbyte(a) |= 0x80; else signbyte(a) &= 0x7f; }
-=======
 #define setsign(a,b) { if ((b) != 0) signbyte(a) |= 0x80; else signbyte(a) &= 0x7f; }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define copysign(a,b) { if (getsign(a)) signbyte(b) |= 0x80; \
                         else signbyte(b) &= 0x7f; }
 #define changesign(a) { signbyte(a) ^= 0x80; }
@@ -188,11 +177,7 @@ static inline void reg_copy(FPU_REG const *x, FPU_REG *y)
 #define setexponentpos(x,y) { (*(short *)&((x)->exp)) = \
   ((y) + EXTENDED_Ebias) & 0x7fff; }
 #define exponent16(x)         (*(short *)&((x)->exp))
-<<<<<<< HEAD
-#define setexponent16(x,y)  { (*(short *)&((x)->exp)) = (y); }
-=======
 #define setexponent16(x,y)  { (*(short *)&((x)->exp)) = (u16)(y); }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define addexponent(x,y)    { (*(short *)&((x)->exp)) += (y); }
 #define stdexp(x)           { (*(short *)&((x)->exp)) += EXTENDED_Ebias; }
 

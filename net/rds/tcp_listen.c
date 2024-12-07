@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2006 Oracle.  All rights reserved.
-=======
  * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -38,24 +34,11 @@
 #include <linux/gfp.h>
 #include <linux/in.h>
 #include <net/tcp.h>
-<<<<<<< HEAD
-=======
 #include <trace/events/sock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "rds.h"
 #include "tcp.h"
 
-<<<<<<< HEAD
-/*
- * cheesy, but simple..
- */
-static void rds_tcp_accept_worker(struct work_struct *work);
-static DECLARE_WORK(rds_tcp_listen_work, rds_tcp_accept_worker);
-static struct socket *rds_tcp_listen_sock;
-
-static int rds_tcp_accept_one(struct socket *sock)
-=======
 void rds_tcp_keepalive(struct socket *sock)
 {
 	/* values below based on xs_udp_default_timeout */
@@ -113,36 +96,11 @@ struct rds_tcp_connection *rds_tcp_accept_one_path(struct rds_connection *conn)
 }
 
 int rds_tcp_accept_one(struct socket *sock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct socket *new_sock = NULL;
 	struct rds_connection *conn;
 	int ret;
 	struct inet_sock *inet;
-<<<<<<< HEAD
-
-	ret = sock_create_lite(sock->sk->sk_family, sock->sk->sk_type,
-			       sock->sk->sk_protocol, &new_sock);
-	if (ret)
-		goto out;
-
-	new_sock->type = sock->type;
-	new_sock->ops = sock->ops;
-	ret = sock->ops->accept(sock, new_sock, O_NONBLOCK);
-	if (ret < 0)
-		goto out;
-
-	rds_tcp_tune(new_sock);
-
-	inet = inet_sk(new_sock->sk);
-
-	rdsdebug("accepted tcp %pI4:%u -> %pI4:%u\n",
-		 &inet->inet_saddr, ntohs(inet->inet_sport),
-		 &inet->inet_daddr, ntohs(inet->inet_dport));
-
-	conn = rds_conn_create(inet->inet_saddr, inet->inet_daddr,
-			       &rds_tcp_transport, GFP_KERNEL);
-=======
 	struct rds_tcp_connection *rs_tcp = NULL;
 	int conn_state;
 	struct rds_conn_path *cp;
@@ -223,33 +181,10 @@ int rds_tcp_accept_one(struct socket *sock)
 			       my_addr, peer_addr,
 			       &rds_tcp_transport, 0, GFP_KERNEL, dev_if);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(conn)) {
 		ret = PTR_ERR(conn);
 		goto out;
 	}
-<<<<<<< HEAD
-
-	/*
-	 * see the comment above rds_queue_delayed_reconnect()
-	 */
-	if (!rds_conn_transition(conn, RDS_CONN_DOWN, RDS_CONN_CONNECTING)) {
-		if (rds_conn_state(conn) == RDS_CONN_UP)
-			rds_tcp_stats_inc(s_tcp_listen_closed_stale);
-		else
-			rds_tcp_stats_inc(s_tcp_connect_raced);
-		rds_conn_drop(conn);
-		ret = 0;
-		goto out;
-	}
-
-	rds_tcp_set_callbacks(new_sock, conn);
-	rds_connect_complete(conn);
-	new_sock = NULL;
-	ret = 0;
-
-out:
-=======
 	/* An incoming SYN request came in, and TCP just accepted it.
 	 *
 	 * If the client reboots, this conn will need to be cleaned up.
@@ -291,30 +226,16 @@ rst_nsk:
 out:
 	if (rs_tcp)
 		mutex_unlock(&rs_tcp->t_conn_path_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (new_sock)
 		sock_release(new_sock);
 	return ret;
 }
 
-<<<<<<< HEAD
-static void rds_tcp_accept_worker(struct work_struct *work)
-{
-	while (rds_tcp_accept_one(rds_tcp_listen_sock) == 0)
-		cond_resched();
-}
-
-void rds_tcp_listen_data_ready(struct sock *sk, int bytes)
-{
-	void (*ready)(struct sock *sk, int bytes);
-
-=======
 void rds_tcp_listen_data_ready(struct sock *sk)
 {
 	void (*ready)(struct sock *sk);
 
 	trace_sk_data_ready(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdsdebug("listen data ready sk %p\n", sk);
 
 	read_lock_bh(&sk->sk_callback_lock);
@@ -329,29 +250,6 @@ void rds_tcp_listen_data_ready(struct sock *sk)
 	 * before it has been accepted and the accepter has set up their
 	 * data_ready.. we only want to queue listen work for our listening
 	 * socket
-<<<<<<< HEAD
-	 */
-	if (sk->sk_state == TCP_LISTEN)
-		queue_work(rds_wq, &rds_tcp_listen_work);
-
-out:
-	read_unlock_bh(&sk->sk_callback_lock);
-	ready(sk, bytes);
-}
-
-int rds_tcp_listen_init(void)
-{
-	struct sockaddr_in sin;
-	struct socket *sock = NULL;
-	int ret;
-
-	ret = sock_create(PF_INET, SOCK_STREAM, IPPROTO_TCP, &sock);
-	if (ret < 0)
-		goto out;
-
-	sock->sk->sk_reuse = 1;
-	rds_tcp_nonagle(sock);
-=======
 	 *
 	 * (*ready)() may be null if we are racing with netns delete, and
 	 * the listen socket is being torn down.
@@ -386,22 +284,12 @@ struct socket *rds_tcp_listen_init(struct net *net, bool isv6)
 
 	sock->sk->sk_reuse = SK_CAN_REUSE;
 	tcp_sock_set_nodelay(sock->sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_lock_bh(&sock->sk->sk_callback_lock);
 	sock->sk->sk_user_data = sock->sk->sk_data_ready;
 	sock->sk->sk_data_ready = rds_tcp_listen_data_ready;
 	write_unlock_bh(&sock->sk->sk_callback_lock);
 
-<<<<<<< HEAD
-	sin.sin_family = PF_INET,
-	sin.sin_addr.s_addr = (__force u32)htonl(INADDR_ANY);
-	sin.sin_port = (__force u16)htons(RDS_TCP_PORT);
-
-	ret = sock->ops->bind(sock, (struct sockaddr *)&sin, sizeof(sin));
-	if (ret < 0)
-		goto out;
-=======
 	if (isv6) {
 		sin6 = (struct sockaddr_in6 *)&ss;
 		sin6->sin6_family = PF_INET6;
@@ -424,25 +312,11 @@ struct socket *rds_tcp_listen_init(struct net *net, bool isv6)
 			 isv6 ? "IPv6" : "IPv4", ret);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = sock->ops->listen(sock, 64);
 	if (ret < 0)
 		goto out;
 
-<<<<<<< HEAD
-	rds_tcp_listen_sock = sock;
-	sock = NULL;
-out:
-	if (sock)
-		sock_release(sock);
-	return ret;
-}
-
-void rds_tcp_listen_stop(void)
-{
-	struct socket *sock = rds_tcp_listen_sock;
-=======
 	return sock;
 out:
 	if (sock)
@@ -452,7 +326,6 @@ out:
 
 void rds_tcp_listen_stop(struct socket *sock, struct work_struct *acceptor)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock *sk;
 
 	if (!sock)
@@ -472,11 +345,6 @@ void rds_tcp_listen_stop(struct socket *sock, struct work_struct *acceptor)
 
 	/* wait for accepts to stop and close the socket */
 	flush_workqueue(rds_wq);
-<<<<<<< HEAD
-	sock_release(sock);
-	rds_tcp_listen_sock = NULL;
-=======
 	flush_work(acceptor);
 	sock_release(sock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

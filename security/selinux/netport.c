@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Network port table
  *
@@ -14,27 +11,10 @@
  * This code is heavily based on the "netif" concept originally developed by
  * James Morris <jmorris@redhat.com>
  *   (see security/selinux/netif.c for more information)
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * (c) Copyright Hewlett-Packard Development Company, L.P., 2008
-<<<<<<< HEAD
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -73,10 +53,6 @@ struct sel_netport {
  * if this becomes a problem we can always add a hash table for each address
  * family later */
 
-<<<<<<< HEAD
-static LIST_HEAD(sel_netport_list);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_SPINLOCK(sel_netport_lock);
 static struct sel_netport_bkt sel_netport_hash[SEL_NETPORT_HASH_SIZE];
 
@@ -97,11 +73,7 @@ static unsigned int sel_netport_hashfn(u16 pnum)
 /**
  * sel_netport_find - Search for a port record
  * @protocol: protocol
-<<<<<<< HEAD
- * @port: pnum
-=======
  * @pnum: port
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  * Search the network port table and return the matching record.  If an entry
@@ -141,11 +113,7 @@ static void sel_netport_insert(struct sel_netport *port)
 		struct sel_netport *tail;
 		tail = list_entry(
 			rcu_dereference_protected(
-<<<<<<< HEAD
-				sel_netport_hash[idx].list.prev,
-=======
 				list_tail_rcu(&sel_netport_hash[idx].list),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lockdep_is_held(&sel_netport_lock)),
 			struct sel_netport, list);
 		list_del_rcu(&tail->list);
@@ -161,26 +129,16 @@ static void sel_netport_insert(struct sel_netport *port)
  * @sid: port SID
  *
  * Description:
-<<<<<<< HEAD
- * This function determines the SID of a network port by quering the security
-=======
  * This function determines the SID of a network port by querying the security
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * policy.  The result is added to the network port table to speedup future
  * queries.  Returns zero on success, negative values on failure.
  *
  */
 static int sel_netport_sid_slow(u8 protocol, u16 pnum, u32 *sid)
 {
-<<<<<<< HEAD
-	int ret = -ENOMEM;
-	struct sel_netport *port;
-	struct sel_netport *new = NULL;
-=======
 	int ret;
 	struct sel_netport *port;
 	struct sel_netport *new;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&sel_netport_lock);
 	port = sel_netport_find(protocol, pnum);
@@ -189,28 +147,6 @@ static int sel_netport_sid_slow(u8 protocol, u16 pnum, u32 *sid)
 		spin_unlock_bh(&sel_netport_lock);
 		return 0;
 	}
-<<<<<<< HEAD
-	new = kzalloc(sizeof(*new), GFP_ATOMIC);
-	if (new == NULL)
-		goto out;
-	ret = security_port_sid(protocol, pnum, sid);
-	if (ret != 0)
-		goto out;
-
-	new->psec.port = pnum;
-	new->psec.protocol = protocol;
-	new->psec.sid = *sid;
-	sel_netport_insert(new);
-
-out:
-	spin_unlock_bh(&sel_netport_lock);
-	if (unlikely(ret)) {
-		printk(KERN_WARNING
-		       "SELinux: failure in sel_netport_sid_slow(),"
-		       " unable to determine network port label\n");
-		kfree(new);
-	}
-=======
 
 	ret = security_port_sid(protocol, pnum, sid);
 	if (ret != 0)
@@ -228,7 +164,6 @@ out:
 	if (unlikely(ret))
 		pr_warn("SELinux: failure in %s(), unable to determine network port label\n",
 			__func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -268,11 +203,7 @@ int sel_netport_sid(u8 protocol, u16 pnum, u32 *sid)
  * Remove all entries from the network address table.
  *
  */
-<<<<<<< HEAD
-static void sel_netport_flush(void)
-=======
 void sel_netport_flush(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int idx;
 	struct sel_netport *port, *port_tmp;
@@ -289,30 +220,11 @@ void sel_netport_flush(void)
 	spin_unlock_bh(&sel_netport_lock);
 }
 
-<<<<<<< HEAD
-static int sel_netport_avc_callback(u32 event, u32 ssid, u32 tsid,
-				    u16 class, u32 perms, u32 *retained)
-{
-	if (event == AVC_CALLBACK_RESET) {
-		sel_netport_flush();
-		synchronize_net();
-	}
-	return 0;
-}
-
-static __init int sel_netport_init(void)
-{
-	int iter;
-	int ret;
-
-	if (!selinux_enabled)
-=======
 static __init int sel_netport_init(void)
 {
 	int iter;
 
 	if (!selinux_enabled_boot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	for (iter = 0; iter < SEL_NETPORT_HASH_SIZE; iter++) {
@@ -320,16 +232,7 @@ static __init int sel_netport_init(void)
 		sel_netport_hash[iter].size = 0;
 	}
 
-<<<<<<< HEAD
-	ret = avc_add_callback(sel_netport_avc_callback, AVC_CALLBACK_RESET,
-			       SECSID_NULL, SECSID_NULL, SECCLASS_NULL, 0);
-	if (ret != 0)
-		panic("avc_add_callback() failed, error %d\n", ret);
-
-	return ret;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __initcall(sel_netport_init);

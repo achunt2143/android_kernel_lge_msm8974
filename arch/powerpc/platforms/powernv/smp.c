@@ -1,28 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SMP support for PowerNV machines.
  *
  * Copyright 2011 IBM Corp.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/hotplug.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smp.h>
 #include <linux/interrupt.h>
 #include <linux/delay.h>
@@ -36,13 +22,6 @@
 #include <asm/machdep.h>
 #include <asm/cputable.h>
 #include <asm/firmware.h>
-<<<<<<< HEAD
-#include <asm/rtas.h>
-#include <asm/vdso_datapage.h>
-#include <asm/cputhreads.h>
-#include <asm/xics.h>
-#include <asm/opal.h>
-=======
 #include <asm/vdso_datapage.h>
 #include <asm/cputhreads.h>
 #include <asm/xics.h>
@@ -57,7 +36,6 @@
 #include <asm/kexec.h>
 #include <asm/reg.h>
 #include <asm/powernv.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "powernv.h"
 
@@ -65,52 +43,6 @@
 #include <asm/udbg.h>
 #define DBG(fmt...) udbg_printf(fmt)
 #else
-<<<<<<< HEAD
-#define DBG(fmt...)
-#endif
-
-static void __cpuinit pnv_smp_setup_cpu(int cpu)
-{
-	if (cpu != boot_cpuid)
-		xics_setup_cpu();
-}
-
-static int pnv_smp_cpu_bootable(unsigned int nr)
-{
-	/* Special case - we inhibit secondary thread startup
-	 * during boot if the user requests it.
-	 */
-	if (system_state < SYSTEM_RUNNING && cpu_has_feature(CPU_FTR_SMT)) {
-		if (!smt_enabled_at_boot && cpu_thread_in_core(nr) != 0)
-			return 0;
-		if (smt_enabled_at_boot
-		    && cpu_thread_in_core(nr) >= smt_enabled_at_boot)
-			return 0;
-	}
-
-	return 1;
-}
-
-int __devinit pnv_smp_kick_cpu(int nr)
-{
-	unsigned int pcpu = get_hard_smp_processor_id(nr);
-	unsigned long start_here = __pa(*((unsigned long *)
-					  generic_secondary_smp_init));
-	long rc;
-
-	BUG_ON(nr < 0 || nr >= NR_CPUS);
-
-	/* On OPAL v2 the CPU are still spinning inside OPAL itself,
-	 * get them back now
-	 */
-	if (!paca[nr].cpu_start && firmware_has_feature(FW_FEATURE_OPALv2)) {
-		pr_devel("OPAL: Starting CPU %d (HW 0x%x)...\n", nr, pcpu);
-		rc = opal_start_cpu(pcpu, start_here);
-		if (rc != OPAL_SUCCESS)
-			pr_warn("OPAL Error %ld starting CPU %d\n",
-				rc, nr);
-	}
-=======
 #define DBG(fmt...) do { } while (0)
 #endif
 
@@ -190,7 +122,6 @@ static int pnv_smp_kick_cpu(int nr)
 	}
 
 kick:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return smp_generic_kick_cpu(nr);
 }
 
@@ -208,28 +139,6 @@ static int pnv_smp_cpu_disable(void)
 	vdso_data->processorCount--;
 	if (cpu == boot_cpuid)
 		boot_cpuid = cpumask_any(cpu_online_mask);
-<<<<<<< HEAD
-	xics_migrate_irqs_away();
-	return 0;
-}
-
-static void pnv_smp_cpu_kill_self(void)
-{
-	unsigned int cpu;
-
-	/* If powersave_nap is enabled, use NAP mode, else just
-	 * spin aimlessly
-	 */
-	if (!powersave_nap) {
-		generic_mach_cpu_die();
-		return;
-	}
-
-	/* Standard hot unplug procedure */
-	local_irq_disable();
-	idle_task_exit();
-	current->active_mm = NULL; /* for sanity */
-=======
 	if (xive_enabled())
 		xive_smp_disable_cpu();
 	else
@@ -261,31 +170,11 @@ static void pnv_cpu_offline_self(void)
 	/* Standard hot unplug procedure */
 
 	idle_task_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpu = smp_processor_id();
 	DBG("CPU%d offline\n", cpu);
 	generic_set_cpu_dead(cpu);
 	smp_wmb();
 
-<<<<<<< HEAD
-	/* We don't want to take decrementer interrupts while we are offline,
-	 * so clear LPCR:PECE1. We keep PECE2 enabled.
-	 */
-	mtspr(SPRN_LPCR, mfspr(SPRN_LPCR) & ~(u64)LPCR_PECE1);
-	while (!generic_check_cpu_restart(cpu)) {
-		power7_idle();
-		if (!generic_check_cpu_restart(cpu)) {
-			DBG("CPU%d Unexpected exit while offline !\n", cpu);
-			/* We may be getting an IPI, so we re-enable
-			 * interrupts to process it, it will be ignored
-			 * since we aren't online (hopefully)
-			 */
-			local_irq_enable();
-			local_irq_disable();
-		}
-	}
-	mtspr(SPRN_LPCR, mfspr(SPRN_LPCR) | LPCR_PECE1);
-=======
 	wmask = SRR1_WAKEMASK;
 	if (cpu_has_feature(CPU_FTR_ARCH_207S))
 		wmask = SRR1_WAKEMASK_P8;
@@ -401,24 +290,11 @@ static void pnv_cpu_offline_self(void)
 	lpcr_val = mfspr(SPRN_LPCR) | (u64)LPCR_PECE1;
 	pnv_program_cpu_hotplug_lpcr(cpu, lpcr_val);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DBG("CPU%d coming online...\n", cpu);
 }
 
 #endif /* CONFIG_HOTPLUG_CPU */
 
-<<<<<<< HEAD
-static struct smp_ops_t pnv_smp_ops = {
-	.message_pass	= smp_muxed_ipi_message_pass,
-	.cause_ipi	= NULL,	/* Filled at runtime by xics_smp_probe() */
-	.probe		= xics_smp_probe,
-	.kick_cpu	= pnv_smp_kick_cpu,
-	.setup_cpu	= pnv_smp_setup_cpu,
-	.cpu_bootable	= pnv_smp_cpu_bootable,
-#ifdef CONFIG_HOTPLUG_CPU
-	.cpu_disable	= pnv_smp_cpu_disable,
-	.cpu_die	= generic_cpu_die,
-=======
 static int pnv_cpu_bootable(unsigned int nr)
 {
 	/*
@@ -545,31 +421,12 @@ static struct smp_ops_t pnv_smp_ops = {
 	.cpu_disable	= pnv_smp_cpu_disable,
 	.cpu_die	= generic_cpu_die,
 	.cpu_offline_self = pnv_cpu_offline_self,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_HOTPLUG_CPU */
 };
 
 /* This is called very early during platform setup_arch */
 void __init pnv_smp_init(void)
 {
-<<<<<<< HEAD
-	smp_ops = &pnv_smp_ops;
-
-	/* XXX We don't yet have a proper entry point from HAL, for
-	 * now we rely on kexec-style entry from BML
-	 */
-
-#ifdef CONFIG_PPC_RTAS
-	/* Non-lpar has additional take/give timebase */
-	if (rtas_token("freeze-time-base") != RTAS_UNKNOWN_SERVICE) {
-		smp_ops->give_timebase = rtas_give_timebase;
-		smp_ops->take_timebase = rtas_take_timebase;
-	}
-#endif /* CONFIG_PPC_RTAS */
-
-#ifdef CONFIG_HOTPLUG_CPU
-	ppc_md.cpu_die	= pnv_smp_cpu_kill_self;
-=======
 	if (opal_check_token(OPAL_SIGNAL_SYSTEM_RESET)) {
 		ppc_md.system_reset_exception = pnv_system_reset_exception;
 		pnv_smp_ops.cause_nmi_ipi = pnv_cause_nmi_ipi;
@@ -580,6 +437,5 @@ void __init pnv_smp_init(void)
 #ifdef CONFIG_CRASH_DUMP
 	crash_wake_offline = 1;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }

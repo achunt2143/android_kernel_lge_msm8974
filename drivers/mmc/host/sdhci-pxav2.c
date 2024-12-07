@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2010 Marvell International Ltd.
  *		Zhangfei Gao <zhangfei.gao@marvell.com>
@@ -9,19 +6,6 @@
  *		Jun Nie <njun@marvell.com>
  *		Qiming Wu <wuqm@marvell.com>
  *		Philip Rakity <prakity@marvell.com>
-<<<<<<< HEAD
- *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/err.h>
@@ -30,22 +14,15 @@
 #include <linux/clk.h>
 #include <linux/module.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mmc/card.h>
 #include <linux/mmc/host.h>
 #include <linux/platform_data/pxa_sdhci.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
 #include <linux/mmc/sdio.h>
 #include <linux/mmc/mmc.h>
 #include <linux/pinctrl/consumer.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "sdhci.h"
 #include "sdhci-pltfm.h"
 
@@ -66,9 +43,6 @@
 #define MMC_CARD		0x1000
 #define MMC_WIDTH		0x0100
 
-<<<<<<< HEAD
-static void pxav2_set_private_registers(struct sdhci_host *host, u8 mask)
-=======
 struct sdhci_pxav2_host {
 	struct mmc_request *sdio_mrq;
 	struct pinctrl *pinctrl;
@@ -77,16 +51,12 @@ struct sdhci_pxav2_host {
 };
 
 static void pxav2_reset(struct sdhci_host *host, u8 mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *pdev = to_platform_device(mmc_dev(host->mmc));
 	struct sdhci_pxa_platdata *pdata = pdev->dev.platform_data;
 
-<<<<<<< HEAD
-=======
 	sdhci_reset(host, mask);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mask == SDHCI_RESET_ALL) {
 		u16 tmp = 0;
 
@@ -119,9 +89,6 @@ static void pxav2_reset(struct sdhci_host *host, u8 mask)
 	}
 }
 
-<<<<<<< HEAD
-static int pxav2_mmc_set_width(struct sdhci_host *host, int width)
-=======
 static u16 pxav1_readw(struct sdhci_host *host, int reg)
 {
 	/* Workaround for data abort exception on SDH2 and SDH4 on PXA168 */
@@ -188,7 +155,6 @@ static void pxav1_request_done(struct sdhci_host *host, struct mmc_request *mrq)
 }
 
 static void pxav2_mmc_set_bus_width(struct sdhci_host *host, int width)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 ctrl;
 	u16 tmp;
@@ -207,55 +173,6 @@ static void pxav2_mmc_set_bus_width(struct sdhci_host *host, int width)
 	}
 	writew(tmp, host->ioaddr + SD_CE_ATA_2);
 	writeb(ctrl, host->ioaddr + SDHCI_HOST_CONTROL);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-static u32 pxav2_get_max_clock(struct sdhci_host *host)
-{
-	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-
-	return clk_get_rate(pltfm_host->clk);
-}
-
-static struct sdhci_ops pxav2_sdhci_ops = {
-	.get_max_clock = pxav2_get_max_clock,
-	.platform_reset_exit = pxav2_set_private_registers,
-	.platform_8bit_width = pxav2_mmc_set_width,
-};
-
-static int __devinit sdhci_pxav2_probe(struct platform_device *pdev)
-{
-	struct sdhci_pltfm_host *pltfm_host;
-	struct sdhci_pxa_platdata *pdata = pdev->dev.platform_data;
-	struct device *dev = &pdev->dev;
-	struct sdhci_host *host = NULL;
-	struct sdhci_pxa *pxa = NULL;
-	int ret;
-	struct clk *clk;
-
-	pxa = kzalloc(sizeof(struct sdhci_pxa), GFP_KERNEL);
-	if (!pxa)
-		return -ENOMEM;
-
-	host = sdhci_pltfm_init(pdev, NULL);
-	if (IS_ERR(host)) {
-		kfree(pxa);
-		return PTR_ERR(host);
-	}
-	pltfm_host = sdhci_priv(host);
-	pltfm_host->priv = pxa;
-
-	clk = clk_get(dev, "PXA-SDHCLK");
-	if (IS_ERR(clk)) {
-		dev_err(dev, "failed to get io clock\n");
-		ret = PTR_ERR(clk);
-		goto err_clk_get;
-	}
-	pltfm_host->clk = clk;
-	clk_enable(clk);
-=======
 }
 
 struct sdhci_pxa_variant {
@@ -367,21 +284,17 @@ static int sdhci_pxav2_probe(struct platform_device *pdev)
 		dev_err_probe(dev, ret, "failed to enable core clock\n");
 		goto free;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host->quirks = SDHCI_QUIRK_BROKEN_ADMA
 		| SDHCI_QUIRK_BROKEN_TIMEOUT_VAL
 		| SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN;
 
-<<<<<<< HEAD
-=======
 	variant = of_device_get_match_data(dev);
 	if (variant)
 		pdata = pxav2_get_mmc_pdata(dev);
 	else
 		variant = &pxav2_variant;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdata) {
 		if (pdata->flags & PXA_FLAG_CARD_PERMANENT) {
 			/* on-chip device */
@@ -401,55 +314,6 @@ static int sdhci_pxav2_probe(struct platform_device *pdev)
 			host->mmc->pm_caps |= pdata->pm_caps;
 	}
 
-<<<<<<< HEAD
-	host->ops = &pxav2_sdhci_ops;
-
-	ret = sdhci_add_host(host);
-	if (ret) {
-		dev_err(&pdev->dev, "failed to add host\n");
-		goto err_add_host;
-	}
-
-	platform_set_drvdata(pdev, host);
-
-	return 0;
-
-err_add_host:
-	clk_disable(clk);
-	clk_put(clk);
-err_clk_get:
-	sdhci_pltfm_free(pdev);
-	kfree(pxa);
-	return ret;
-}
-
-static int __devexit sdhci_pxav2_remove(struct platform_device *pdev)
-{
-	struct sdhci_host *host = platform_get_drvdata(pdev);
-	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-	struct sdhci_pxa *pxa = pltfm_host->priv;
-
-	sdhci_remove_host(host, 1);
-
-	clk_disable(pltfm_host->clk);
-	clk_put(pltfm_host->clk);
-	sdhci_pltfm_free(pdev);
-	kfree(pxa);
-
-	platform_set_drvdata(pdev, NULL);
-
-	return 0;
-}
-
-static struct platform_driver sdhci_pxav2_driver = {
-	.driver		= {
-		.name	= "sdhci-pxav2",
-		.owner	= THIS_MODULE,
-		.pm	= SDHCI_PLTFM_PMOPS,
-	},
-	.probe		= sdhci_pxav2_probe,
-	.remove		= __devexit_p(sdhci_pxav2_remove),
-=======
 	host->quirks |= variant->extra_quirks;
 	host->ops = variant->ops;
 
@@ -488,7 +352,6 @@ static struct platform_driver sdhci_pxav2_driver = {
 	},
 	.probe		= sdhci_pxav2_probe,
 	.remove_new	= sdhci_pltfm_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(sdhci_pxav2_driver);

@@ -1,39 +1,12 @@
-<<<<<<< HEAD
-/*
- *  Routines for driver control interface
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Routines for driver control interface
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/threads.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/slab.h>
-#include <linux/vmalloc.h>
-#include <linux/time.h>
-=======
 #include <linux/moduleparam.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
@@ -41,22 +14,16 @@
 #include <linux/mm.h>
 #include <linux/math64.h>
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/minors.h>
 #include <sound/info.h>
 #include <sound/control.h>
 
-<<<<<<< HEAD
-/* max number of user-defined controls */
-#define MAX_USER_CONTROLS	32
-=======
 // Max allocation size for user controls.
 static int max_user_ctl_alloc_size = 8 * 1024 * 1024;
 module_param_named(max_user_ctl_alloc_size, max_user_ctl_alloc_size, int, 0444);
 MODULE_PARM_DESC(max_user_ctl_alloc_size, "Max allocation size for user controls");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_CONTROL_COUNT	1028
 
 struct snd_kctl_ioctl {
@@ -65,25 +32,11 @@ struct snd_kctl_ioctl {
 };
 
 static DECLARE_RWSEM(snd_ioctl_rwsem);
-<<<<<<< HEAD
-=======
 static DECLARE_RWSEM(snd_ctl_layer_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(snd_control_ioctls);
 #ifdef CONFIG_COMPAT
 static LIST_HEAD(snd_control_compat_ioctls);
 #endif
-<<<<<<< HEAD
-
-static int snd_ctl_open(struct inode *inode, struct file *file)
-{
-	unsigned long flags;
-	struct snd_card *card;
-	struct snd_ctl_file *ctl;
-	int err;
-
-	err = nonseekable_open(inode, file);
-=======
 static struct snd_ctl_layer_ops *snd_ctl_layer;
 
 static int snd_ctl_remove_locked(struct snd_card *card,
@@ -96,7 +49,6 @@ static int snd_ctl_open(struct inode *inode, struct file *file)
 	int i, err;
 
 	err = stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -123,22 +75,12 @@ static int snd_ctl_open(struct inode *inode, struct file *file)
 	init_waitqueue_head(&ctl->change_sleep);
 	spin_lock_init(&ctl->read_lock);
 	ctl->card = card;
-<<<<<<< HEAD
-	ctl->prefer_pcm_subdevice = -1;
-	ctl->prefer_rawmidi_subdevice = -1;
-	ctl->pid = get_pid(task_pid(current));
-	file->private_data = ctl;
-	write_lock_irqsave(&card->ctl_files_rwlock, flags);
-	list_add_tail(&ctl->list, &card->ctl_files);
-	write_unlock_irqrestore(&card->ctl_files_rwlock, flags);
-=======
 	for (i = 0; i < SND_CTL_SUBDEV_ITEMS; i++)
 		ctl->preferred_subdevice[i] = -1;
 	ctl->pid = get_pid(task_pid(current));
 	file->private_data = ctl;
 	scoped_guard(write_lock_irqsave, &card->ctl_files_rwlock)
 		list_add_tail(&ctl->list, &card->ctl_files);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_card_unref(card);
 	return 0;
 
@@ -154,33 +96,18 @@ static int snd_ctl_open(struct inode *inode, struct file *file)
 
 static void snd_ctl_empty_read_queue(struct snd_ctl_file * ctl)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-	struct snd_kctl_event *cread;
-	
-	spin_lock_irqsave(&ctl->read_lock, flags);
-=======
 	struct snd_kctl_event *cread;
 
 	guard(spinlock_irqsave)(&ctl->read_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (!list_empty(&ctl->events)) {
 		cread = snd_kctl_event(ctl->events.next);
 		list_del(&cread->list);
 		kfree(cread);
 	}
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&ctl->read_lock, flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ctl_release(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_card *card;
 	struct snd_ctl_file *ctl;
 	struct snd_kcontrol *control;
@@ -189,17 +116,6 @@ static int snd_ctl_release(struct inode *inode, struct file *file)
 	ctl = file->private_data;
 	file->private_data = NULL;
 	card = ctl->card;
-<<<<<<< HEAD
-	write_lock_irqsave(&card->ctl_files_rwlock, flags);
-	list_del(&ctl->list);
-	write_unlock_irqrestore(&card->ctl_files_rwlock, flags);
-	down_write(&card->controls_rwsem);
-	list_for_each_entry(control, &card->controls, list)
-		for (idx = 0; idx < control->count; idx++)
-			if (control->vd[idx].owner == ctl)
-				control->vd[idx].owner = NULL;
-	up_write(&card->controls_rwsem);
-=======
 
 	scoped_guard(write_lock_irqsave, &card->ctl_files_rwlock)
 		list_del(&ctl->list);
@@ -212,7 +128,6 @@ static int snd_ctl_release(struct inode *inode, struct file *file)
 	}
 
 	snd_fasync_free(ctl->fasync);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_ctl_empty_read_queue(ctl);
 	put_pid(ctl->pid);
 	kfree(ctl);
@@ -221,19 +136,6 @@ static int snd_ctl_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-<<<<<<< HEAD
-void snd_ctl_notify(struct snd_card *card, unsigned int mask,
-		    struct snd_ctl_elem_id *id)
-{
-	unsigned long flags;
-	struct snd_ctl_file *ctl;
-	struct snd_kctl_event *ev;
-	
-	if (snd_BUG_ON(!card || !id))
-		return;
-	read_lock(&card->ctl_files_rwlock);
-#if defined(CONFIG_SND_MIXER_OSS) || defined(CONFIG_SND_MIXER_OSS_MODULE)
-=======
 /**
  * snd_ctl_notify - Send notification to user-space for a control change
  * @card: the card to send notification
@@ -257,70 +159,11 @@ void snd_ctl_notify(struct snd_card *card, unsigned int mask,
 
 	guard(read_lock_irqsave)(&card->ctl_files_rwlock);
 #if IS_ENABLED(CONFIG_SND_MIXER_OSS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	card->mixer_oss_change_count++;
 #endif
 	list_for_each_entry(ctl, &card->ctl_files, list) {
 		if (!ctl->subscribed)
 			continue;
-<<<<<<< HEAD
-		spin_lock_irqsave(&ctl->read_lock, flags);
-		list_for_each_entry(ev, &ctl->events, list) {
-			if (ev->id.numid == id->numid) {
-				ev->mask |= mask;
-				goto _found;
-			}
-		}
-		ev = kzalloc(sizeof(*ev), GFP_ATOMIC);
-		if (ev) {
-			ev->id = *id;
-			ev->mask = mask;
-			list_add_tail(&ev->list, &ctl->events);
-		} else {
-			snd_printk(KERN_ERR "No memory available to allocate event\n");
-		}
-	_found:
-		wake_up(&ctl->change_sleep);
-		spin_unlock_irqrestore(&ctl->read_lock, flags);
-		kill_fasync(&ctl->fasync, SIGIO, POLL_IN);
-	}
-	read_unlock(&card->ctl_files_rwlock);
-}
-
-EXPORT_SYMBOL(snd_ctl_notify);
-
-/**
- * snd_ctl_new - create a control instance from the template
- * @control: the control template
- * @access: the default control access
- *
- * Allocates a new struct snd_kcontrol instance and copies the given template 
- * to the new instance. It does not copy volatile data (access).
- *
- * Returns the pointer of the new instance, or NULL on failure.
- */
-static struct snd_kcontrol *snd_ctl_new(struct snd_kcontrol *control,
-					unsigned int access)
-{
-	struct snd_kcontrol *kctl;
-	unsigned int idx;
-	
-	if (snd_BUG_ON(!control || !control->count))
-		return NULL;
-
-	if (control->count > MAX_CONTROL_COUNT)
-		return NULL;
-
-	kctl = kzalloc(sizeof(*kctl) + sizeof(struct snd_kcontrol_volatile) * control->count, GFP_KERNEL);
-	if (kctl == NULL) {
-		snd_printk(KERN_ERR "Cannot allocate control instance\n");
-		return NULL;
-	}
-	*kctl = *control;
-	for (idx = 0; idx < kctl->count; idx++)
-		kctl->vd[idx].access = access;
-	return kctl;
-=======
 		scoped_guard(spinlock, &ctl->read_lock) {
 			list_for_each_entry(ev, &ctl->events, list) {
 				if (ev->id.numid == id->numid) {
@@ -401,7 +244,6 @@ static int snd_ctl_new(struct snd_kcontrol **kctl, unsigned int count,
 	(*kctl)->count = count;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -409,58 +251,15 @@ static int snd_ctl_new(struct snd_kcontrol **kctl, unsigned int count,
  * @ncontrol: the initialization record
  * @private_data: the private data to set
  *
-<<<<<<< HEAD
- * Allocates a new struct snd_kcontrol instance and initialize from the given 
- * template.  When the access field of ncontrol is 0, it's assumed as
- * READWRITE access. When the count field is 0, it's assumes as one.
- *
- * Returns the pointer of the newly generated instance, or NULL on failure.
-=======
  * Allocates a new struct snd_kcontrol instance and initialize from the given
  * template.  When the access field of ncontrol is 0, it's assumed as
  * READWRITE access. When the count field is 0, it's assumes as one.
  *
  * Return: The pointer of the newly generated instance, or %NULL on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct snd_kcontrol *snd_ctl_new1(const struct snd_kcontrol_new *ncontrol,
 				  void *private_data)
 {
-<<<<<<< HEAD
-	struct snd_kcontrol kctl;
-	unsigned int access;
-	
-	if (snd_BUG_ON(!ncontrol || !ncontrol->info))
-		return NULL;
-	memset(&kctl, 0, sizeof(kctl));
-	kctl.id.iface = ncontrol->iface;
-	kctl.id.device = ncontrol->device;
-	kctl.id.subdevice = ncontrol->subdevice;
-	if (ncontrol->name) {
-		strlcpy(kctl.id.name, ncontrol->name, sizeof(kctl.id.name));
-		if (strcmp(ncontrol->name, kctl.id.name) != 0)
-			snd_printk(KERN_WARNING
-				   "Control name '%s' truncated to '%s'\n",
-				   ncontrol->name, kctl.id.name);
-	}
-	kctl.id.index = ncontrol->index;
-	kctl.count = ncontrol->count ? ncontrol->count : 1;
-	access = ncontrol->access == 0 ? SNDRV_CTL_ELEM_ACCESS_READWRITE :
-		 (ncontrol->access & (SNDRV_CTL_ELEM_ACCESS_READWRITE|
-				      SNDRV_CTL_ELEM_ACCESS_INACTIVE|
-				      SNDRV_CTL_ELEM_ACCESS_TLV_READWRITE|
-				      SNDRV_CTL_ELEM_ACCESS_TLV_COMMAND|
-				      SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK));
-	kctl.info = ncontrol->info;
-	kctl.get = ncontrol->get;
-	kctl.put = ncontrol->put;
-	kctl.tlv.p = ncontrol->tlv.p;
-	kctl.private_value = ncontrol->private_value;
-	kctl.private_data = private_data;
-	return snd_ctl_new(&kctl, access);
-}
-
-=======
 	struct snd_kcontrol *kctl;
 	unsigned int count;
 	unsigned int access;
@@ -511,7 +310,6 @@ struct snd_kcontrol *snd_ctl_new1(const struct snd_kcontrol_new *ncontrol,
 
 	return kctl;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_ctl_new1);
 
 /**
@@ -530,10 +328,6 @@ void snd_ctl_free_one(struct snd_kcontrol *kcontrol)
 		kfree(kcontrol);
 	}
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_ctl_free_one);
 
 static bool snd_ctl_remove_numid_conflict(struct snd_card *card,
@@ -562,19 +356,13 @@ static int snd_ctl_find_hole(struct snd_card *card, unsigned int count)
 	while (snd_ctl_remove_numid_conflict(card, count)) {
 		if (--iter == 0) {
 			/* this situation is very unlikely */
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "unable to allocate new control numid\n");
-=======
 			dev_err(card->dev, "unable to allocate new control numid\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /* check whether the given id is contained in the given kctl */
 static bool elem_id_matches(const struct snd_kcontrol *kctl,
 			    const struct snd_ctl_elem_id *id)
@@ -739,7 +527,6 @@ static int snd_ctl_add_replace(struct snd_card *card,
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * snd_ctl_add - add the control instance to the card
  * @card: the card instance
@@ -749,59 +536,6 @@ static int snd_ctl_add_replace(struct snd_card *card,
  * snd_ctl_new1() to the given card. Assigns also an unique
  * numid used for fast search.
  *
-<<<<<<< HEAD
- * Returns zero if successful, or a negative error code on failure.
- *
- * It frees automatically the control which cannot be added.
- */
-int snd_ctl_add(struct snd_card *card, struct snd_kcontrol *kcontrol)
-{
-	struct snd_ctl_elem_id id;
-	unsigned int idx;
-	unsigned int count;
-	int err = -EINVAL;
-
-	if (! kcontrol)
-		return err;
-	if (snd_BUG_ON(!card || !kcontrol->info))
-		goto error;
-	id = kcontrol->id;
-	if (id.index > UINT_MAX - kcontrol->count)
-		goto error;
-
-	down_write(&card->controls_rwsem);
-	if (snd_ctl_find_id(card, &id)) {
-		up_write(&card->controls_rwsem);
-		snd_printd(KERN_ERR "control %i:%i:%i:%s:%i is already present\n",
-					id.iface,
-					id.device,
-					id.subdevice,
-					id.name,
-					id.index);
-		err = -EBUSY;
-		goto error;
-	}
-	if (snd_ctl_find_hole(card, kcontrol->count) < 0) {
-		up_write(&card->controls_rwsem);
-		err = -ENOMEM;
-		goto error;
-	}
-	list_add_tail(&kcontrol->list, &card->controls);
-	card->controls_count += kcontrol->count;
-	kcontrol->id.numid = card->last_numid + 1;
-	card->last_numid += kcontrol->count;
-	count = kcontrol->count;
-	up_write(&card->controls_rwsem);
-	for (idx = 0; idx < count; idx++, id.index++, id.numid++)
-		snd_ctl_notify(card, SNDRV_CTL_EVENT_MASK_ADD, &id);
-	return 0;
-
- error:
-	snd_ctl_free_one(kcontrol);
-	return err;
-}
-
-=======
  * It frees automatically the control which cannot be added.
  *
  * Return: Zero if successful, or a negative error code on failure.
@@ -811,7 +545,6 @@ int snd_ctl_add(struct snd_card *card, struct snd_kcontrol *kcontrol)
 {
 	return snd_ctl_add_replace(card, kcontrol, CTL_ADD_EXCLUSIVE);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_ctl_add);
 
 /**
@@ -824,70 +557,13 @@ EXPORT_SYMBOL(snd_ctl_add);
  * and the add_on_replace flag is set, the control is added.  If the
  * control exists, it is destroyed first.
  *
-<<<<<<< HEAD
- * Returns zero if successful, or a negative error code on failure.
- *
- * It frees automatically the control which cannot be added or replaced.
-=======
  * It frees automatically the control which cannot be added or replaced.
  *
  * Return: Zero if successful, or a negative error code on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_ctl_replace(struct snd_card *card, struct snd_kcontrol *kcontrol,
 		    bool add_on_replace)
 {
-<<<<<<< HEAD
-	struct snd_ctl_elem_id id;
-	unsigned int count;
-	unsigned int idx;
-	struct snd_kcontrol *old;
-	int ret;
-
-	if (!kcontrol)
-		return -EINVAL;
-	if (snd_BUG_ON(!card || !kcontrol->info)) {
-		ret = -EINVAL;
-		goto error;
-	}
-	id = kcontrol->id;
-	down_write(&card->controls_rwsem);
-	old = snd_ctl_find_id(card, &id);
-	if (!old) {
-		if (add_on_replace)
-			goto add;
-		up_write(&card->controls_rwsem);
-		ret = -EINVAL;
-		goto error;
-	}
-	ret = snd_ctl_remove(card, old);
-	if (ret < 0) {
-		up_write(&card->controls_rwsem);
-		goto error;
-	}
-add:
-	if (snd_ctl_find_hole(card, kcontrol->count) < 0) {
-		up_write(&card->controls_rwsem);
-		ret = -ENOMEM;
-		goto error;
-	}
-	list_add_tail(&kcontrol->list, &card->controls);
-	card->controls_count += kcontrol->count;
-	kcontrol->id.numid = card->last_numid + 1;
-	card->last_numid += kcontrol->count;
-	count = kcontrol->count;
-	up_write(&card->controls_rwsem);
-	for (idx = 0; idx < count; idx++, id.index++, id.numid++)
-		snd_ctl_notify(card, SNDRV_CTL_EVENT_MASK_ADD, &id);
-	return 0;
-
-error:
-	snd_ctl_free_one(kcontrol);
-	return ret;
-}
-EXPORT_SYMBOL(snd_ctl_replace);
-
-=======
 	return snd_ctl_add_replace(card, kcontrol,
 				   add_on_replace ? CTL_ADD_ON_REPLACE : CTL_REPLACE);
 }
@@ -921,36 +597,12 @@ static inline int snd_ctl_remove_locked(struct snd_card *card,
 	return __snd_ctl_remove(card, kcontrol, true);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * snd_ctl_remove - remove the control from the card and release it
  * @card: the card instance
  * @kcontrol: the control instance to remove
  *
  * Removes the control from the card and then releases the instance.
-<<<<<<< HEAD
- * You don't need to call snd_ctl_free_one(). You must be in
- * the write lock - down_write(&card->controls_rwsem).
- * 
- * Returns 0 if successful, or a negative error code on failure.
- */
-int snd_ctl_remove(struct snd_card *card, struct snd_kcontrol *kcontrol)
-{
-	struct snd_ctl_elem_id id;
-	unsigned int idx;
-
-	if (snd_BUG_ON(!card || !kcontrol))
-		return -EINVAL;
-	list_del(&kcontrol->list);
-	card->controls_count -= kcontrol->count;
-	id = kcontrol->id;
-	for (idx = 0; idx < kcontrol->count; idx++, id.index++, id.numid++)
-		snd_ctl_notify(card, SNDRV_CTL_EVENT_MASK_REMOVE, &id);
-	snd_ctl_free_one(kcontrol);
-	return 0;
-}
-
-=======
  * You don't need to call snd_ctl_free_one().
  *
  * Return: 0 if successful, or a negative error code on failure.
@@ -962,7 +614,6 @@ int snd_ctl_remove(struct snd_card *card, struct snd_kcontrol *kcontrol)
 	guard(rwsem_write)(&card->controls_rwsem);
 	return snd_ctl_remove_locked(card, kcontrol);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_ctl_remove);
 
 /**
@@ -972,32 +623,12 @@ EXPORT_SYMBOL(snd_ctl_remove);
  *
  * Finds the control instance with the given id, removes it from the
  * card list and releases it.
-<<<<<<< HEAD
- * 
- * Returns 0 if successful, or a negative error code on failure.
-=======
  *
  * Return: 0 if successful, or a negative error code on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_ctl_remove_id(struct snd_card *card, struct snd_ctl_elem_id *id)
 {
 	struct snd_kcontrol *kctl;
-<<<<<<< HEAD
-	int ret;
-
-	down_write(&card->controls_rwsem);
-	kctl = snd_ctl_find_id(card, id);
-	if (kctl == NULL) {
-		up_write(&card->controls_rwsem);
-		return -ENOENT;
-	}
-	ret = snd_ctl_remove(card, kctl);
-	up_write(&card->controls_rwsem);
-	return ret;
-}
-
-=======
 
 	guard(rwsem_write)(&card->controls_rwsem);
 	kctl = snd_ctl_find_id_locked(card, id);
@@ -1005,7 +636,6 @@ int snd_ctl_remove_id(struct snd_card *card, struct snd_ctl_elem_id *id)
 		return -ENOENT;
 	return snd_ctl_remove_locked(card, kctl);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_ctl_remove_id);
 
 /**
@@ -1015,45 +645,14 @@ EXPORT_SYMBOL(snd_ctl_remove_id);
  *
  * Finds the control instance with the given id, removes it from the
  * card list and releases it.
-<<<<<<< HEAD
- * 
- * Returns 0 if successful, or a negative error code on failure.
-=======
  *
  * Return: 0 if successful, or a negative error code on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int snd_ctl_remove_user_ctl(struct snd_ctl_file * file,
 				   struct snd_ctl_elem_id *id)
 {
 	struct snd_card *card = file->card;
 	struct snd_kcontrol *kctl;
-<<<<<<< HEAD
-	int idx, ret;
-
-	down_write(&card->controls_rwsem);
-	kctl = snd_ctl_find_id(card, id);
-	if (kctl == NULL) {
-		ret = -ENOENT;
-		goto error;
-	}
-	if (!(kctl->vd[0].access & SNDRV_CTL_ELEM_ACCESS_USER)) {
-		ret = -EINVAL;
-		goto error;
-	}
-	for (idx = 0; idx < kctl->count; idx++)
-		if (kctl->vd[idx].owner != NULL && kctl->vd[idx].owner != file) {
-			ret = -EBUSY;
-			goto error;
-		}
-	ret = snd_ctl_remove(card, kctl);
-	if (ret < 0)
-		goto error;
-	card->user_ctl_count--;
-error:
-	up_write(&card->controls_rwsem);
-	return ret;
-=======
 	int idx;
 
 	guard(rwsem_write)(&card->controls_rwsem);
@@ -1066,7 +665,6 @@ error:
 		if (kctl->vd[idx].owner != NULL && kctl->vd[idx].owner != file)
 			return -EBUSY;
 	return snd_ctl_remove_locked(card, kctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1077,14 +675,9 @@ error:
  *
  * Finds the control instance with the given id, and activate or
  * inactivate the control together with notification, if changed.
-<<<<<<< HEAD
- *
- * Returns 0 if unchanged, 1 if changed, or a negative error code on failure.
-=======
  * The given ID data is filled with full information.
  *
  * Return: 0 if unchanged, 1 if changed, or a negative error code on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_ctl_activate_id(struct snd_card *card, struct snd_ctl_elem_id *id,
 			int active)
@@ -1095,20 +688,12 @@ int snd_ctl_activate_id(struct snd_card *card, struct snd_ctl_elem_id *id,
 	int ret;
 
 	down_write(&card->controls_rwsem);
-<<<<<<< HEAD
-	kctl = snd_ctl_find_id(card, id);
-=======
 	kctl = snd_ctl_find_id_locked(card, id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (kctl == NULL) {
 		ret = -ENOENT;
 		goto unlock;
 	}
-<<<<<<< HEAD
-	index_offset = snd_ctl_get_ioff(kctl, &kctl->id);
-=======
 	index_offset = snd_ctl_get_ioff(kctl, id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vd = &kctl->vd[index_offset];
 	ret = 0;
 	if (active) {
@@ -1120,13 +705,6 @@ int snd_ctl_activate_id(struct snd_card *card, struct snd_ctl_elem_id *id,
 			goto unlock;
 		vd->access |= SNDRV_CTL_ELEM_ACCESS_INACTIVE;
 	}
-<<<<<<< HEAD
-	ret = 1;
- unlock:
-	up_write(&card->controls_rwsem);
-	if (ret > 0)
-		snd_ctl_notify(card, SNDRV_CTL_EVENT_MASK_INFO, id);
-=======
 	snd_ctl_build_ioff(id, kctl, index_offset);
 	downgrade_write(&card->controls_rwsem);
 	snd_ctl_notify_one(card, SNDRV_CTL_EVENT_MASK_INFO, kctl, index_offset);
@@ -1135,7 +713,6 @@ int snd_ctl_activate_id(struct snd_card *card, struct snd_ctl_elem_id *id,
 
  unlock:
 	up_write(&card->controls_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(snd_ctl_activate_id);
@@ -1149,9 +726,6 @@ EXPORT_SYMBOL_GPL(snd_ctl_activate_id);
  * Finds the control with the old id from the card, and replaces the
  * id with the new one.
  *
-<<<<<<< HEAD
- * Returns zero if successful, or a negative error code on failure.
-=======
  * The function tries to keep the already assigned numid while replacing
  * the rest.
  *
@@ -1160,31 +734,11 @@ EXPORT_SYMBOL_GPL(snd_ctl_activate_id);
  * user-space expecting persistent numids.
  *
  * Return: Zero if successful, or a negative error code on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_ctl_rename_id(struct snd_card *card, struct snd_ctl_elem_id *src_id,
 		      struct snd_ctl_elem_id *dst_id)
 {
 	struct snd_kcontrol *kctl;
-<<<<<<< HEAD
-
-	down_write(&card->controls_rwsem);
-	kctl = snd_ctl_find_id(card, src_id);
-	if (kctl == NULL) {
-		up_write(&card->controls_rwsem);
-		return -ENOENT;
-	}
-	kctl->id = *dst_id;
-	kctl->id.numid = card->last_numid + 1;
-	card->last_numid += kctl->count;
-	up_write(&card->controls_rwsem);
-	return 0;
-}
-
-EXPORT_SYMBOL(snd_ctl_rename_id);
-
-/**
-=======
 	int saved_numid;
 
 	guard(rwsem_write)(&card->controls_rwsem);
@@ -1265,34 +819,12 @@ snd_ctl_find_numid_locked(struct snd_card *card, unsigned int numid)
 EXPORT_SYMBOL(snd_ctl_find_numid_locked);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * snd_ctl_find_numid - find the control instance with the given number-id
  * @card: the card instance
  * @numid: the number-id to search
  *
  * Finds the control instance with the given number-id from the card.
  *
-<<<<<<< HEAD
- * Returns the pointer of the instance if found, or NULL if not.
- *
- * The caller must down card->controls_rwsem before calling this function
- * (if the race condition can happen).
- */
-struct snd_kcontrol *snd_ctl_find_numid(struct snd_card *card, unsigned int numid)
-{
-	struct snd_kcontrol *kctl;
-
-	if (snd_BUG_ON(!card || !numid))
-		return NULL;
-	list_for_each_entry(kctl, &card->controls, list) {
-		if (kctl->id.numid <= numid && kctl->id.numid + kctl->count > numid)
-			return kctl;
-	}
-	return NULL;
-}
-
-EXPORT_SYMBOL(snd_ctl_find_numid);
-=======
  * Return: The pointer of the instance if found, or %NULL if not.
  *
  * Note that this function takes card->controls_rwsem lock internally.
@@ -1342,7 +874,6 @@ struct snd_kcontrol *snd_ctl_find_id_locked(struct snd_card *card,
 	return NULL;
 }
 EXPORT_SYMBOL(snd_ctl_find_id_locked);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * snd_ctl_find_id - find the control instance with the given id
@@ -1351,40 +882,6 @@ EXPORT_SYMBOL(snd_ctl_find_id_locked);
  *
  * Finds the control instance with the given id from the card.
  *
-<<<<<<< HEAD
- * Returns the pointer of the instance if found, or NULL if not.
- *
- * The caller must down card->controls_rwsem before calling this function
- * (if the race condition can happen).
- */
-struct snd_kcontrol *snd_ctl_find_id(struct snd_card *card,
-				     struct snd_ctl_elem_id *id)
-{
-	struct snd_kcontrol *kctl;
-
-	if (snd_BUG_ON(!card || !id))
-		return NULL;
-	if (id->numid != 0)
-		return snd_ctl_find_numid(card, id->numid);
-	list_for_each_entry(kctl, &card->controls, list) {
-		if (kctl->id.iface != id->iface)
-			continue;
-		if (kctl->id.device != id->device)
-			continue;
-		if (kctl->id.subdevice != id->subdevice)
-			continue;
-		if (strncmp(kctl->id.name, id->name, sizeof(kctl->id.name)))
-			continue;
-		if (kctl->id.index > id->index)
-			continue;
-		if (kctl->id.index + kctl->count <= id->index)
-			continue;
-		return kctl;
-	}
-	return NULL;
-}
-
-=======
  * Return: The pointer of the instance if found, or %NULL if not.
  *
  * Note that this function takes card->controls_rwsem lock internally.
@@ -1395,37 +892,16 @@ struct snd_kcontrol *snd_ctl_find_id(struct snd_card *card,
 	guard(rwsem_read)(&card->controls_rwsem);
 	return snd_ctl_find_id_locked(card, id);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_ctl_find_id);
 
 static int snd_ctl_card_info(struct snd_card *card, struct snd_ctl_file * ctl,
 			     unsigned int cmd, void __user *arg)
 {
-<<<<<<< HEAD
-	struct snd_ctl_card_info *info;
-=======
 	struct snd_ctl_card_info *info __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
 	if (! info)
 		return -ENOMEM;
-<<<<<<< HEAD
-	down_read(&snd_ioctl_rwsem);
-	info->card = card->number;
-	strlcpy(info->id, card->id, sizeof(info->id));
-	strlcpy(info->driver, card->driver, sizeof(info->driver));
-	strlcpy(info->name, card->shortname, sizeof(info->name));
-	strlcpy(info->longname, card->longname, sizeof(info->longname));
-	strlcpy(info->mixername, card->mixername, sizeof(info->mixername));
-	strlcpy(info->components, card->components, sizeof(info->components));
-	up_read(&snd_ioctl_rwsem);
-	if (copy_to_user(arg, info, sizeof(struct snd_ctl_card_info))) {
-		kfree(info);
-		return -EFAULT;
-	}
-	kfree(info);
-=======
 	scoped_guard(rwsem_read, &snd_ioctl_rwsem) {
 		info->card = card->number;
 		strscpy(info->id, card->id, sizeof(info->id));
@@ -1437,95 +913,10 @@ static int snd_ctl_card_info(struct snd_card *card, struct snd_ctl_file * ctl,
 	}
 	if (copy_to_user(arg, info, sizeof(struct snd_ctl_card_info)))
 		return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int snd_ctl_elem_list(struct snd_card *card,
-<<<<<<< HEAD
-			     struct snd_ctl_elem_list __user *_list)
-{
-	struct list_head *plist;
-	struct snd_ctl_elem_list list;
-	struct snd_kcontrol *kctl;
-	struct snd_ctl_elem_id *dst, *id;
-	unsigned int offset, space, jidx;
-	
-	if (copy_from_user(&list, _list, sizeof(list)))
-		return -EFAULT;
-	offset = list.offset;
-	space = list.space;
-	/* try limit maximum space */
-	if (space > 16384)
-		return -ENOMEM;
-	if (space > 0) {
-		/* allocate temporary buffer for atomic operation */
-		dst = vmalloc(space * sizeof(struct snd_ctl_elem_id));
-		if (dst == NULL)
-			return -ENOMEM;
-		down_read(&card->controls_rwsem);
-		list.count = card->controls_count;
-		plist = card->controls.next;
-		while (plist != &card->controls) {
-			if (offset == 0)
-				break;
-			kctl = snd_kcontrol(plist);
-			if (offset < kctl->count)
-				break;
-			offset -= kctl->count;
-			plist = plist->next;
-		}
-		list.used = 0;
-		id = dst;
-		while (space > 0 && plist != &card->controls) {
-			kctl = snd_kcontrol(plist);
-			for (jidx = offset; space > 0 && jidx < kctl->count; jidx++) {
-				snd_ctl_build_ioff(id, kctl, jidx);
-				id++;
-				space--;
-				list.used++;
-			}
-			plist = plist->next;
-			offset = 0;
-		}
-		up_read(&card->controls_rwsem);
-		if (list.used > 0 &&
-		    copy_to_user(list.pids, dst,
-				 list.used * sizeof(struct snd_ctl_elem_id))) {
-			vfree(dst);
-			return -EFAULT;
-		}
-		vfree(dst);
-	} else {
-		down_read(&card->controls_rwsem);
-		list.count = card->controls_count;
-		up_read(&card->controls_rwsem);
-	}
-	if (copy_to_user(_list, &list, sizeof(list)))
-		return -EFAULT;
-	return 0;
-}
-
-static int snd_ctl_elem_info(struct snd_ctl_file *ctl,
-			     struct snd_ctl_elem_info *info)
-{
-	struct snd_card *card = ctl->card;
-	struct snd_kcontrol *kctl;
-	struct snd_kcontrol_volatile *vd;
-	unsigned int index_offset;
-	int result;
-	
-	down_read(&card->controls_rwsem);
-	kctl = snd_ctl_find_id(card, &info->id);
-	if (kctl == NULL) {
-		up_read(&card->controls_rwsem);
-		return -ENOENT;
-	}
-#ifdef CONFIG_SND_DEBUG
-	info->access = 0;
-#endif
-	result = kctl->info(kctl, info);
-=======
 			     struct snd_ctl_elem_list *list)
 {
 	struct snd_kcontrol *kctl;
@@ -1777,7 +1168,6 @@ static int __snd_ctl_elem_info(struct snd_card *card,
 	if (!result)
 		result = kctl->info(kctl, info);
 	snd_power_unref(card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result >= 0) {
 		snd_BUG_ON(info->access);
 		index_offset = snd_ctl_get_ioff(kctl, &info->id);
@@ -1792,13 +1182,6 @@ static int __snd_ctl_elem_info(struct snd_card *card,
 		} else {
 			info->owner = -1;
 		}
-<<<<<<< HEAD
-	}
-	up_read(&card->controls_rwsem);
-	return result;
-}
-
-=======
 		if (!snd_ctl_skip_validation(info) &&
 		    snd_ctl_check_elem_info(card, info) < 0)
 			result = -EINVAL;
@@ -1819,7 +1202,6 @@ static int snd_ctl_elem_info(struct snd_ctl_file *ctl,
 	return __snd_ctl_elem_info(card, kctl, info, ctl);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_ctl_elem_info_user(struct snd_ctl_file *ctl,
 				  struct snd_ctl_elem_info __user *_info)
 {
@@ -1828,16 +1210,6 @@ static int snd_ctl_elem_info_user(struct snd_ctl_file *ctl,
 
 	if (copy_from_user(&info, _info, sizeof(info)))
 		return -EFAULT;
-<<<<<<< HEAD
-	snd_power_lock(ctl->card);
-	result = snd_power_wait(ctl->card, SNDRV_CTL_POWER_D0);
-	if (result >= 0)
-		result = snd_ctl_elem_info(ctl, &info);
-	snd_power_unlock(ctl->card);
-	if (result >= 0)
-		if (copy_to_user(_info, &info, sizeof(info)))
-			return -EFAULT;
-=======
 	result = snd_ctl_elem_info(ctl, &info);
 	if (result < 0)
 		return result;
@@ -1846,7 +1218,6 @@ static int snd_ctl_elem_info_user(struct snd_ctl_file *ctl,
 			 SNDRV_CTL_ELEM_ACCESS_LED_MASK);
 	if (copy_to_user(_info, &info, sizeof(info)))
 		return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -1856,26 +1227,6 @@ static int snd_ctl_elem_read(struct snd_card *card,
 	struct snd_kcontrol *kctl;
 	struct snd_kcontrol_volatile *vd;
 	unsigned int index_offset;
-<<<<<<< HEAD
-	int result;
-
-	down_read(&card->controls_rwsem);
-	kctl = snd_ctl_find_id(card, &control->id);
-	if (kctl == NULL) {
-		result = -ENOENT;
-	} else {
-		index_offset = snd_ctl_get_ioff(kctl, &control->id);
-		vd = &kctl->vd[index_offset];
-		if ((vd->access & SNDRV_CTL_ELEM_ACCESS_READ) &&
-		    kctl->get != NULL) {
-			snd_ctl_build_ioff(&control->id, kctl, index_offset);
-			result = kctl->get(kctl, control);
-		} else
-			result = -EPERM;
-	}
-	up_read(&card->controls_rwsem);
-	return result;
-=======
 	struct snd_ctl_elem_info info;
 	const u32 pattern = 0xdeadbeef;
 	int ret;
@@ -1919,34 +1270,16 @@ static int snd_ctl_elem_read(struct snd_card *card,
 		return -EINVAL;
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ctl_elem_read_user(struct snd_card *card,
 				  struct snd_ctl_elem_value __user *_control)
 {
-<<<<<<< HEAD
-	struct snd_ctl_elem_value *control;
-=======
 	struct snd_ctl_elem_value *control __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result;
 
 	control = memdup_user(_control, sizeof(*control));
 	if (IS_ERR(control))
-<<<<<<< HEAD
-		return PTR_ERR(control);
-
-	snd_power_lock(card);
-	result = snd_power_wait(card, SNDRV_CTL_POWER_D0);
-	if (result >= 0)
-		result = snd_ctl_elem_read(card, control);
-	snd_power_unlock(card);
-	if (result >= 0)
-		if (copy_to_user(_control, control, sizeof(*control)))
-			result = -EFAULT;
-	kfree(control);
-=======
 		return PTR_ERR(no_free_ptr(control));
 
 	result = snd_ctl_elem_read(card, control);
@@ -1955,7 +1288,6 @@ static int snd_ctl_elem_read_user(struct snd_card *card,
 
 	if (copy_to_user(_control, control, sizeof(*control)))
 		return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -1967,32 +1299,6 @@ static int snd_ctl_elem_write(struct snd_card *card, struct snd_ctl_file *file,
 	unsigned int index_offset;
 	int result;
 
-<<<<<<< HEAD
-	down_read(&card->controls_rwsem);
-	kctl = snd_ctl_find_id(card, &control->id);
-	if (kctl == NULL) {
-		result = -ENOENT;
-	} else {
-		index_offset = snd_ctl_get_ioff(kctl, &control->id);
-		vd = &kctl->vd[index_offset];
-		if (!(vd->access & SNDRV_CTL_ELEM_ACCESS_WRITE) ||
-		    kctl->put == NULL ||
-		    (file && vd->owner && vd->owner != file)) {
-			result = -EPERM;
-		} else {
-			snd_ctl_build_ioff(&control->id, kctl, index_offset);
-			result = kctl->put(kctl, control);
-		}
-		if (result > 0) {
-			struct snd_ctl_elem_id id = control->id;
-			up_read(&card->controls_rwsem);
-			snd_ctl_notify(card, SNDRV_CTL_EVENT_MASK_VALUE, &id);
-			return 0;
-		}
-	}
-	up_read(&card->controls_rwsem);
-	return result;
-=======
 	down_write(&card->controls_rwsem);
 	kctl = snd_ctl_find_id_locked(card, &control->id);
 	if (kctl == NULL) {
@@ -2038,36 +1344,17 @@ static int snd_ctl_elem_write(struct snd_card *card, struct snd_ctl_file *file,
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ctl_elem_write_user(struct snd_ctl_file *file,
 				   struct snd_ctl_elem_value __user *_control)
 {
-<<<<<<< HEAD
-	struct snd_ctl_elem_value *control;
-=======
 	struct snd_ctl_elem_value *control __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_card *card;
 	int result;
 
 	control = memdup_user(_control, sizeof(*control));
 	if (IS_ERR(control))
-<<<<<<< HEAD
-		return PTR_ERR(control);
-
-	card = file->card;
-	snd_power_lock(card);
-	result = snd_power_wait(card, SNDRV_CTL_POWER_D0);
-	if (result >= 0)
-		result = snd_ctl_elem_write(card, file, control);
-	snd_power_unlock(card);
-	if (result >= 0)
-		if (copy_to_user(_control, control, sizeof(*control)))
-			result = -EFAULT;
-	kfree(control);
-=======
 		return PTR_ERR(no_free_ptr(control));
 
 	card = file->card;
@@ -2077,7 +1364,6 @@ static int snd_ctl_elem_write_user(struct snd_ctl_file *file,
 
 	if (copy_to_user(_control, control, sizeof(*control)))
 		return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -2088,27 +1374,6 @@ static int snd_ctl_elem_lock(struct snd_ctl_file *file,
 	struct snd_ctl_elem_id id;
 	struct snd_kcontrol *kctl;
 	struct snd_kcontrol_volatile *vd;
-<<<<<<< HEAD
-	int result;
-	
-	if (copy_from_user(&id, _id, sizeof(id)))
-		return -EFAULT;
-	down_write(&card->controls_rwsem);
-	kctl = snd_ctl_find_id(card, &id);
-	if (kctl == NULL) {
-		result = -ENOENT;
-	} else {
-		vd = &kctl->vd[snd_ctl_get_ioff(kctl, &id)];
-		if (vd->owner != NULL)
-			result = -EBUSY;
-		else {
-			vd->owner = file;
-			result = 0;
-		}
-	}
-	up_write(&card->controls_rwsem);
-	return result;
-=======
 
 	if (copy_from_user(&id, _id, sizeof(id)))
 		return -EFAULT;
@@ -2121,7 +1386,6 @@ static int snd_ctl_elem_lock(struct snd_ctl_file *file,
 		return -EBUSY;
 	vd->owner = file;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ctl_elem_unlock(struct snd_ctl_file *file,
@@ -2131,29 +1395,6 @@ static int snd_ctl_elem_unlock(struct snd_ctl_file *file,
 	struct snd_ctl_elem_id id;
 	struct snd_kcontrol *kctl;
 	struct snd_kcontrol_volatile *vd;
-<<<<<<< HEAD
-	int result;
-	
-	if (copy_from_user(&id, _id, sizeof(id)))
-		return -EFAULT;
-	down_write(&card->controls_rwsem);
-	kctl = snd_ctl_find_id(card, &id);
-	if (kctl == NULL) {
-		result = -ENOENT;
-	} else {
-		vd = &kctl->vd[snd_ctl_get_ioff(kctl, &id)];
-		if (vd->owner == NULL)
-			result = -EINVAL;
-		else if (vd->owner != file)
-			result = -EPERM;
-		else {
-			vd->owner = NULL;
-			result = 0;
-		}
-	}
-	up_write(&card->controls_rwsem);
-	return result;
-=======
 
 	if (copy_from_user(&id, _id, sizeof(id)))
 		return -EFAULT;
@@ -2168,47 +1409,34 @@ static int snd_ctl_elem_unlock(struct snd_ctl_file *file,
 		return -EPERM;
 	vd->owner = NULL;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct user_element {
 	struct snd_ctl_elem_info info;
 	struct snd_card *card;
-<<<<<<< HEAD
-	void *elem_data;		/* element data */
-=======
 	char *elem_data;		/* element data */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long elem_data_size;	/* size of element data in bytes */
 	void *tlv_data;			/* TLV data */
 	unsigned long tlv_data_size;	/* TLV data size */
 	void *priv_data;		/* private data (like strings for enumerated type) */
 };
 
-<<<<<<< HEAD
-=======
 // check whether the addition (in bytes) of user ctl element may overflow the limit.
 static bool check_user_elem_overflow(struct snd_card *card, ssize_t add)
 {
 	return (ssize_t)card->user_ctl_alloc_size + add > max_user_ctl_alloc_size;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_ctl_elem_user_info(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_info *uinfo)
 {
 	struct user_element *ue = kcontrol->private_data;
-<<<<<<< HEAD
-
-	*uinfo = ue->info;
-=======
 	unsigned int offset;
 
 	offset = snd_ctl_get_ioff(kcontrol, &uinfo->id);
 	*uinfo = ue->info;
 	snd_ctl_build_ioff(&uinfo->id, kcontrol, offset);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2218,12 +1446,6 @@ static int snd_ctl_elem_user_enum_info(struct snd_kcontrol *kcontrol,
 	struct user_element *ue = kcontrol->private_data;
 	const char *names;
 	unsigned int item;
-<<<<<<< HEAD
-
-	item = uinfo->value.enumerated.item;
-
-	*uinfo = ue->info;
-=======
 	unsigned int offset;
 
 	item = uinfo->value.enumerated.item;
@@ -2231,7 +1453,6 @@ static int snd_ctl_elem_user_enum_info(struct snd_kcontrol *kcontrol,
 	offset = snd_ctl_get_ioff(kcontrol, &uinfo->id);
 	*uinfo = ue->info;
 	snd_ctl_build_ioff(&uinfo->id, kcontrol, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	item = min(item, uinfo->value.enumerated.items - 1);
 	uinfo->value.enumerated.item = item;
@@ -2248,18 +1469,11 @@ static int snd_ctl_elem_user_get(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
 {
 	struct user_element *ue = kcontrol->private_data;
-<<<<<<< HEAD
-
-	mutex_lock(&ue->card->user_ctl_lock);
-	memcpy(&ucontrol->value, ue->elem_data, ue->elem_data_size);
-	mutex_unlock(&ue->card->user_ctl_lock);
-=======
 	unsigned int size = ue->elem_data_size;
 	char *src = ue->elem_data +
 			snd_ctl_get_ioff(kcontrol, &ucontrol->id) * size;
 
 	memcpy(&ucontrol->value, src, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2268,63 +1482,6 @@ static int snd_ctl_elem_user_put(struct snd_kcontrol *kcontrol,
 {
 	int change;
 	struct user_element *ue = kcontrol->private_data;
-<<<<<<< HEAD
-
-	mutex_lock(&ue->card->user_ctl_lock);
-	change = memcmp(&ucontrol->value, ue->elem_data, ue->elem_data_size) != 0;
-	if (change)
-		memcpy(ue->elem_data, &ucontrol->value, ue->elem_data_size);
-	mutex_unlock(&ue->card->user_ctl_lock);
-	return change;
-}
-
-static int snd_ctl_elem_user_tlv(struct snd_kcontrol *kcontrol,
-				 int op_flag,
-				 unsigned int size,
-				 unsigned int __user *tlv)
-{
-	struct user_element *ue = kcontrol->private_data;
-	int change = 0;
-	void *new_data;
-
-	if (op_flag > 0) {
-		if (size > 1024 * 128)	/* sane value */
-			return -EINVAL;
-
-		new_data = memdup_user(tlv, size);
-		if (IS_ERR(new_data))
-			return PTR_ERR(new_data);
-		mutex_lock(&ue->card->user_ctl_lock);
-		change = ue->tlv_data_size != size;
-		if (!change)
-			change = memcmp(ue->tlv_data, new_data, size);
-		kfree(ue->tlv_data);
-		ue->tlv_data = new_data;
-		ue->tlv_data_size = size;
-		mutex_unlock(&ue->card->user_ctl_lock);
-	} else {
-		int ret = 0;
-
-		mutex_lock(&ue->card->user_ctl_lock);
-		if (!ue->tlv_data_size || !ue->tlv_data) {
-			ret = -ENXIO;
-			goto err_unlock;
-		}
-		if (size < ue->tlv_data_size) {
-			ret = -ENOSPC;
-			goto err_unlock;
-		}
-		if (copy_to_user(tlv, ue->tlv_data, ue->tlv_data_size))
-			ret = -EFAULT;
-err_unlock:
-		mutex_unlock(&ue->card->user_ctl_lock);
-		if (ret)
-			return ret;
-	}
-	return change;
-}
-
-=======
 	unsigned int size = ue->elem_data_size;
 	char *dst = ue->elem_data +
 			snd_ctl_get_ioff(kcontrol, &ucontrol->id) * size;
@@ -2416,7 +1573,6 @@ static int snd_ctl_elem_user_tlv(struct snd_kcontrol *kctl, int op_flag,
 }
 
 /* called in controls_rwsem write lock */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_ctl_elem_init_enum_names(struct user_element *ue)
 {
 	char *names, *p;
@@ -2424,13 +1580,6 @@ static int snd_ctl_elem_init_enum_names(struct user_element *ue)
 	unsigned int i;
 	const uintptr_t user_ptrval = ue->info.value.enumerated.names_ptr;
 
-<<<<<<< HEAD
-	if (ue->info.value.enumerated.names_length > 64 * 1024)
-		return -EINVAL;
-
-	names = memdup_user((const void __user *)user_ptrval,
-		ue->info.value.enumerated.names_length);
-=======
 	lockdep_assert_held_write(&ue->card->controls_rwsem);
 
 	buf_len = ue->info.value.enumerated.names_length;
@@ -2440,24 +1589,15 @@ static int snd_ctl_elem_init_enum_names(struct user_element *ue)
 	if (check_user_elem_overflow(ue->card, buf_len))
 		return -ENOMEM;
 	names = vmemdup_user((const void __user *)user_ptrval, buf_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(names))
 		return PTR_ERR(names);
 
 	/* check that there are enough valid names */
-<<<<<<< HEAD
-	buf_len = ue->info.value.enumerated.names_length;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = names;
 	for (i = 0; i < ue->info.value.enumerated.items; ++i) {
 		name_len = strnlen(p, buf_len);
 		if (name_len == 0 || name_len >= 64 || name_len == buf_len) {
-<<<<<<< HEAD
-			kfree(names);
-=======
 			kvfree(names);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		p += name_len + 1;
@@ -2466,31 +1606,21 @@ static int snd_ctl_elem_init_enum_names(struct user_element *ue)
 
 	ue->priv_data = names;
 	ue->info.value.enumerated.names_ptr = 0;
-<<<<<<< HEAD
-=======
 	// increment the allocation size; decremented again at private_free.
 	ue->card->user_ctl_alloc_size += ue->info.value.enumerated.names_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static size_t compute_user_elem_size(size_t size, unsigned int count)
 {
 	return sizeof(struct user_element) + size * count;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void snd_ctl_elem_user_free(struct snd_kcontrol *kcontrol)
 {
 	struct user_element *ue = kcontrol->private_data;
 
-<<<<<<< HEAD
-	kfree(ue->tlv_data);
-	kfree(ue->priv_data);
-=======
 	// decrement the allocation size.
 	ue->card->user_ctl_alloc_size -= compute_user_elem_size(ue->elem_data_size, kcontrol->count);
 	ue->card->user_ctl_alloc_size -= ue->tlv_data_size;
@@ -2499,7 +1629,6 @@ static void snd_ctl_elem_user_free(struct snd_kcontrol *kcontrol)
 
 	kvfree(ue->tlv_data);
 	kvfree(ue->priv_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ue);
 }
 
@@ -2507,16 +1636,6 @@ static int snd_ctl_elem_add(struct snd_ctl_file *file,
 			    struct snd_ctl_elem_info *info, int replace)
 {
 	struct snd_card *card = file->card;
-<<<<<<< HEAD
-	struct snd_kcontrol kctl, *_kctl;
-	unsigned int access;
-	long private_size;
-	struct user_element *ue;
-	int idx, err;
-
-	if (info->count < 1)
-		return -EINVAL;
-=======
 	struct snd_kcontrol *kctl;
 	unsigned int count;
 	unsigned int access;
@@ -2526,85 +1645,19 @@ static int snd_ctl_elem_add(struct snd_ctl_file *file,
 	unsigned int offset;
 	int err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!*info->id.name)
 		return -EINVAL;
 	if (strnlen(info->id.name, sizeof(info->id.name)) >= sizeof(info->id.name))
 		return -EINVAL;
-<<<<<<< HEAD
-	access = info->access == 0 ? SNDRV_CTL_ELEM_ACCESS_READWRITE :
-		(info->access & (SNDRV_CTL_ELEM_ACCESS_READWRITE|
-				 SNDRV_CTL_ELEM_ACCESS_INACTIVE|
-				 SNDRV_CTL_ELEM_ACCESS_TLV_READWRITE));
-	info->id.numid = 0;
-	memset(&kctl, 0, sizeof(kctl));
-
-	if (replace) {
-=======
 
 	/* Delete a control to replace them if needed. */
 	if (replace) {
 		info->id.numid = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = snd_ctl_remove_user_ctl(file, &info->id);
 		if (err)
 			return err;
 	}
 
-<<<<<<< HEAD
-	if (card->user_ctl_count >= MAX_USER_CONTROLS)
-		return -ENOMEM;
-
-	memcpy(&kctl.id, &info->id, sizeof(info->id));
-	kctl.count = info->owner ? info->owner : 1;
-	access |= SNDRV_CTL_ELEM_ACCESS_USER;
-	if (info->type == SNDRV_CTL_ELEM_TYPE_ENUMERATED)
-		kctl.info = snd_ctl_elem_user_enum_info;
-	else
-		kctl.info = snd_ctl_elem_user_info;
-	if (access & SNDRV_CTL_ELEM_ACCESS_READ)
-		kctl.get = snd_ctl_elem_user_get;
-	if (access & SNDRV_CTL_ELEM_ACCESS_WRITE)
-		kctl.put = snd_ctl_elem_user_put;
-	if (access & SNDRV_CTL_ELEM_ACCESS_TLV_READWRITE) {
-		kctl.tlv.c = snd_ctl_elem_user_tlv;
-		access |= SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK;
-	}
-	switch (info->type) {
-	case SNDRV_CTL_ELEM_TYPE_BOOLEAN:
-	case SNDRV_CTL_ELEM_TYPE_INTEGER:
-		private_size = sizeof(long);
-		if (info->count > 128)
-			return -EINVAL;
-		break;
-	case SNDRV_CTL_ELEM_TYPE_INTEGER64:
-		private_size = sizeof(long long);
-		if (info->count > 64)
-			return -EINVAL;
-		break;
-	case SNDRV_CTL_ELEM_TYPE_ENUMERATED:
-		private_size = sizeof(unsigned int);
-		if (info->count > 128 || info->value.enumerated.items == 0)
-			return -EINVAL;
-		break;
-	case SNDRV_CTL_ELEM_TYPE_BYTES:
-		private_size = sizeof(unsigned char);
-		if (info->count > 512)
-			return -EINVAL;
-		break;
-	case SNDRV_CTL_ELEM_TYPE_IEC958:
-		private_size = sizeof(struct snd_aes_iec958);
-		if (info->count != 1)
-			return -EINVAL;
-		break;
-	default:
-		return -EINVAL;
-	}
-	private_size *= info->count;
-	ue = kzalloc(sizeof(struct user_element) + private_size, GFP_KERNEL);
-	if (ue == NULL)
-		return -ENOMEM;
-=======
 	/* Check the number of elements for this userspace control. */
 	count = info->owner;
 	if (count == 0)
@@ -2663,7 +1716,6 @@ static int snd_ctl_elem_add(struct snd_ctl_file *file,
 	card->user_ctl_alloc_size += alloc_size;
 
 	/* Set private data for this userspace control. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ue->card = card;
 	ue->info = *info;
 	ue->info.access = 0;
@@ -2672,30 +1724,6 @@ static int snd_ctl_elem_add(struct snd_ctl_file *file,
 	if (ue->info.type == SNDRV_CTL_ELEM_TYPE_ENUMERATED) {
 		err = snd_ctl_elem_init_enum_names(ue);
 		if (err < 0) {
-<<<<<<< HEAD
-			kfree(ue);
-			return err;
-		}
-	}
-	kctl.private_free = snd_ctl_elem_user_free;
-	_kctl = snd_ctl_new(&kctl, access);
-	if (_kctl == NULL) {
-		kfree(ue->priv_data);
-		kfree(ue);
-		return -ENOMEM;
-	}
-	_kctl->private_data = ue;
-	for (idx = 0; idx < _kctl->count; idx++)
-		_kctl->vd[idx].owner = file;
-	err = snd_ctl_add(card, _kctl);
-	if (err < 0)
-		return err;
-
-	down_write(&card->controls_rwsem);
-	card->user_ctl_count++;
-	up_write(&card->controls_rwsem);
-
-=======
 			snd_ctl_free_one(kctl);
 			return err;
 		}
@@ -2728,7 +1756,6 @@ static int snd_ctl_elem_add(struct snd_ctl_file *file,
 	 * applications because the field originally means PID of a process
 	 * which locks the element.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2736,11 +1763,6 @@ static int snd_ctl_elem_add_user(struct snd_ctl_file *file,
 				 struct snd_ctl_elem_info __user *_info, int replace)
 {
 	struct snd_ctl_elem_info info;
-<<<<<<< HEAD
-	if (copy_from_user(&info, _info, sizeof(info)))
-		return -EFAULT;
-	return snd_ctl_elem_add(file, &info, replace);
-=======
 	int err;
 
 	if (copy_from_user(&info, _info, sizeof(info)))
@@ -2754,7 +1776,6 @@ static int snd_ctl_elem_add_user(struct snd_ctl_file *file,
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ctl_elem_remove(struct snd_ctl_file *file,
@@ -2788,68 +1809,6 @@ static int snd_ctl_subscribe_events(struct snd_ctl_file *file, int __user *ptr)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_ctl_tlv_ioctl(struct snd_ctl_file *file,
-                             struct snd_ctl_tlv __user *_tlv,
-                             int op_flag)
-{
-	struct snd_card *card = file->card;
-	struct snd_ctl_tlv tlv;
-	struct snd_kcontrol *kctl;
-	struct snd_kcontrol_volatile *vd;
-	unsigned int len;
-	int err = 0;
-
-	if (copy_from_user(&tlv, _tlv, sizeof(tlv)))
-		return -EFAULT;
-	if (tlv.length < sizeof(unsigned int) * 2)
-		return -EINVAL;
-	down_read(&card->controls_rwsem);
-	kctl = snd_ctl_find_numid(card, tlv.numid);
-	if (kctl == NULL) {
-		err = -ENOENT;
-		goto __kctl_end;
-	}
-	if (kctl->tlv.p == NULL) {
-		err = -ENXIO;
-		goto __kctl_end;
-	}
-	vd = &kctl->vd[tlv.numid - kctl->id.numid];
-	if ((op_flag == 0 && (vd->access & SNDRV_CTL_ELEM_ACCESS_TLV_READ) == 0) ||
-	    (op_flag > 0 && (vd->access & SNDRV_CTL_ELEM_ACCESS_TLV_WRITE) == 0) ||
-	    (op_flag < 0 && (vd->access & SNDRV_CTL_ELEM_ACCESS_TLV_COMMAND) == 0)) {
-	    	err = -ENXIO;
-	    	goto __kctl_end;
-	}
-	if (vd->access & SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK) {
-		if (vd->owner != NULL && vd->owner != file) {
-			err = -EPERM;
-			goto __kctl_end;
-		}
-		err = kctl->tlv.c(kctl, op_flag, tlv.length, _tlv->tlv);
-		if (err > 0) {
-			struct snd_ctl_elem_id id = kctl->id;
-			up_read(&card->controls_rwsem);
-			snd_ctl_notify(card, SNDRV_CTL_EVENT_MASK_TLV, &id);
-			return 0;
-		}
-	} else {
-		if (op_flag) {
-			err = -ENXIO;
-			goto __kctl_end;
-		}
-		len = kctl->tlv.p[1] + 2 * sizeof(unsigned int);
-		if (tlv.length < len) {
-			err = -ENOMEM;
-			goto __kctl_end;
-		}
-		if (copy_to_user(_tlv->tlv, kctl->tlv.p, len))
-			err = -EFAULT;
-	}
-      __kctl_end:
-	up_read(&card->controls_rwsem);
-	return err;
-=======
 static int call_tlv_handler(struct snd_ctl_file *file, int op_flag,
 			    struct snd_kcontrol *kctl,
 			    struct snd_ctl_elem_id *id,
@@ -2958,7 +1917,6 @@ static int snd_ctl_tlv_ioctl(struct snd_ctl_file *file,
 
 	/* Not supported. */
 	return -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static long snd_ctl_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
@@ -2980,11 +1938,7 @@ static long snd_ctl_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 	case SNDRV_CTL_IOCTL_CARD_INFO:
 		return snd_ctl_card_info(card, ctl, cmd, argp);
 	case SNDRV_CTL_IOCTL_ELEM_LIST:
-<<<<<<< HEAD
-		return snd_ctl_elem_list(card, argp);
-=======
 		return snd_ctl_elem_list_user(card, argp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_CTL_IOCTL_ELEM_INFO:
 		return snd_ctl_elem_info_user(ctl, argp);
 	case SNDRV_CTL_IOCTL_ELEM_READ:
@@ -3004,32 +1958,6 @@ static long snd_ctl_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 	case SNDRV_CTL_IOCTL_SUBSCRIBE_EVENTS:
 		return snd_ctl_subscribe_events(ctl, ip);
 	case SNDRV_CTL_IOCTL_TLV_READ:
-<<<<<<< HEAD
-		return snd_ctl_tlv_ioctl(ctl, argp, 0);
-	case SNDRV_CTL_IOCTL_TLV_WRITE:
-		return snd_ctl_tlv_ioctl(ctl, argp, 1);
-	case SNDRV_CTL_IOCTL_TLV_COMMAND:
-		return snd_ctl_tlv_ioctl(ctl, argp, -1);
-	case SNDRV_CTL_IOCTL_POWER:
-		return -ENOPROTOOPT;
-	case SNDRV_CTL_IOCTL_POWER_STATE:
-#ifdef CONFIG_PM
-		return put_user(card->power_state, ip) ? -EFAULT : 0;
-#else
-		return put_user(SNDRV_CTL_POWER_D0, ip) ? -EFAULT : 0;
-#endif
-	}
-	down_read(&snd_ioctl_rwsem);
-	list_for_each_entry(p, &snd_control_ioctls, list) {
-		err = p->fioctl(card, ctl, cmd, arg);
-		if (err != -ENOIOCTLCMD) {
-			up_read(&snd_ioctl_rwsem);
-			return err;
-		}
-	}
-	up_read(&snd_ioctl_rwsem);
-	snd_printdd("unknown ioctl = 0x%x\n", cmd);
-=======
 		scoped_guard(rwsem_read, &ctl->card->controls_rwsem)
 			err = snd_ctl_tlv_ioctl(ctl, argp, SNDRV_CTL_TLV_OP_READ);
 		return err;
@@ -3054,7 +1982,6 @@ static long snd_ctl_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 			return err;
 	}
 	dev_dbg(card->dev, "unknown ioctl = 0x%x\n", cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOTTY;
 }
 
@@ -3077,11 +2004,7 @@ static ssize_t snd_ctl_read(struct file *file, char __user *buffer,
 		struct snd_ctl_event ev;
 		struct snd_kctl_event *kev;
 		while (list_empty(&ctl->events)) {
-<<<<<<< HEAD
-			wait_queue_t wait;
-=======
 			wait_queue_entry_t wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((file->f_flags & O_NONBLOCK) != 0 || result > 0) {
 				err = -EAGAIN;
 				goto __end_lock;
@@ -3120,15 +2043,9 @@ static ssize_t snd_ctl_read(struct file *file, char __user *buffer,
       	return result > 0 ? result : err;
 }
 
-<<<<<<< HEAD
-static unsigned int snd_ctl_poll(struct file *file, poll_table * wait)
-{
-	unsigned int mask;
-=======
 static __poll_t snd_ctl_poll(struct file *file, poll_table * wait)
 {
 	__poll_t mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_ctl_file *ctl;
 
 	ctl = file->private_data;
@@ -3138,11 +2055,7 @@ static __poll_t snd_ctl_poll(struct file *file, poll_table * wait)
 
 	mask = 0;
 	if (!list_empty(&ctl->events))
-<<<<<<< HEAD
-		mask |= POLLIN | POLLRDNORM;
-=======
 		mask |= EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mask;
 }
@@ -3159,14 +2072,6 @@ static int _snd_ctl_register_ioctl(snd_kctl_ioctl_func_t fcn, struct list_head *
 	if (pn == NULL)
 		return -ENOMEM;
 	pn->fioctl = fcn;
-<<<<<<< HEAD
-	down_write(&snd_ioctl_rwsem);
-	list_add_tail(&pn->list, lists);
-	up_write(&snd_ioctl_rwsem);
-	return 0;
-}
-
-=======
 	guard(rwsem_write)(&snd_ioctl_rwsem);
 	list_add_tail(&pn->list, lists);
 	return 0;
@@ -3180,17 +2085,10 @@ static int _snd_ctl_register_ioctl(snd_kctl_ioctl_func_t fcn, struct list_head *
  *
  * Return: zero if successful, or a negative error code
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_ctl_register_ioctl(snd_kctl_ioctl_func_t fcn)
 {
 	return _snd_ctl_register_ioctl(fcn, &snd_control_ioctls);
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(snd_ctl_register_ioctl);
-
-#ifdef CONFIG_COMPAT
-=======
 EXPORT_SYMBOL(snd_ctl_register_ioctl);
 
 #ifdef CONFIG_COMPAT
@@ -3201,15 +2099,10 @@ EXPORT_SYMBOL(snd_ctl_register_ioctl);
  *
  * Return: zero if successful, or a negative error code
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_ctl_register_ioctl_compat(snd_kctl_ioctl_func_t fcn)
 {
 	return _snd_ctl_register_ioctl(fcn, &snd_control_compat_ioctls);
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_ctl_register_ioctl_compat);
 #endif
 
@@ -3223,49 +2116,28 @@ static int _snd_ctl_unregister_ioctl(snd_kctl_ioctl_func_t fcn,
 
 	if (snd_BUG_ON(!fcn))
 		return -EINVAL;
-<<<<<<< HEAD
-	down_write(&snd_ioctl_rwsem);
-	list_for_each_entry(p, lists, list) {
-		if (p->fioctl == fcn) {
-			list_del(&p->list);
-			up_write(&snd_ioctl_rwsem);
-=======
 	guard(rwsem_write)(&snd_ioctl_rwsem);
 	list_for_each_entry(p, lists, list) {
 		if (p->fioctl == fcn) {
 			list_del(&p->list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(p);
 			return 0;
 		}
 	}
-<<<<<<< HEAD
-	up_write(&snd_ioctl_rwsem);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_BUG();
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * snd_ctl_unregister_ioctl - de-register the device-specific control-ioctls
  * @fcn: ioctl callback function to unregister
  *
  * Return: zero if successful, or a negative error code
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_ctl_unregister_ioctl(snd_kctl_ioctl_func_t fcn)
 {
 	return _snd_ctl_unregister_ioctl(fcn, &snd_control_ioctls);
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(snd_ctl_unregister_ioctl);
-
-#ifdef CONFIG_COMPAT
-=======
 EXPORT_SYMBOL(snd_ctl_unregister_ioctl);
 
 #ifdef CONFIG_COMPAT
@@ -3276,15 +2148,10 @@ EXPORT_SYMBOL(snd_ctl_unregister_ioctl);
  *
  * Return: zero if successful, or a negative error code
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_ctl_unregister_ioctl_compat(snd_kctl_ioctl_func_t fcn)
 {
 	return _snd_ctl_unregister_ioctl(fcn, &snd_control_compat_ioctls);
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_ctl_unregister_ioctl_compat);
 #endif
 
@@ -3293,11 +2160,6 @@ static int snd_ctl_fasync(int fd, struct file * file, int on)
 	struct snd_ctl_file *ctl;
 
 	ctl = file->private_data;
-<<<<<<< HEAD
-	return fasync_helper(fd, file, on, &ctl->fasync);
-}
-
-=======
 	return snd_fasync_helper(fd, file, on, &ctl->fasync);
 }
 
@@ -3321,7 +2183,6 @@ int snd_ctl_get_preferred_subdevice(struct snd_card *card, int type)
 }
 EXPORT_SYMBOL_GPL(snd_ctl_get_preferred_subdevice);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ioctl32 compat
  */
@@ -3332,8 +2193,6 @@ EXPORT_SYMBOL_GPL(snd_ctl_get_preferred_subdevice);
 #endif
 
 /*
-<<<<<<< HEAD
-=======
  * control layers (audio LED etc.)
  */
 
@@ -3412,7 +2271,6 @@ void snd_ctl_disconnect_layer(struct snd_ctl_layer_ops *lops)
 EXPORT_SYMBOL_GPL(snd_ctl_disconnect_layer);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  INIT PART
  */
 
@@ -3429,8 +2287,6 @@ static const struct file_operations snd_ctl_f_ops =
 	.fasync =	snd_ctl_fasync,
 };
 
-<<<<<<< HEAD
-=======
 /* call lops under rwsems; called from snd_ctl_dev_*() below() */
 #define call_snd_ctl_lops(_card, _op)				    \
 	do {							    \
@@ -3441,27 +2297,12 @@ static const struct file_operations snd_ctl_f_ops =
 			lops->_op(_card);			    \
 	} while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * registration of the control device
  */
 static int snd_ctl_dev_register(struct snd_device *device)
 {
 	struct snd_card *card = device->device_data;
-<<<<<<< HEAD
-	int err, cardnum;
-	char name[16];
-
-	if (snd_BUG_ON(!card))
-		return -ENXIO;
-	cardnum = card->number;
-	if (snd_BUG_ON(cardnum < 0 || cardnum >= SNDRV_CARDS))
-		return -ENXIO;
-	sprintf(name, "controlC%i", cardnum);
-	if ((err = snd_register_device(SNDRV_DEVICE_TYPE_CONTROL, card, -1,
-				       &snd_ctl_f_ops, card, name)) < 0)
-		return err;
-=======
 	int err;
 
 	err = snd_register_device(SNDRV_DEVICE_TYPE_CONTROL, card, -1,
@@ -3469,7 +2310,6 @@ static int snd_ctl_dev_register(struct snd_device *device)
 	if (err < 0)
 		return err;
 	call_snd_ctl_lops(card, lregister);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3480,27 +2320,6 @@ static int snd_ctl_dev_disconnect(struct snd_device *device)
 {
 	struct snd_card *card = device->device_data;
 	struct snd_ctl_file *ctl;
-<<<<<<< HEAD
-	int err, cardnum;
-
-	if (snd_BUG_ON(!card))
-		return -ENXIO;
-	cardnum = card->number;
-	if (snd_BUG_ON(cardnum < 0 || cardnum >= SNDRV_CARDS))
-		return -ENXIO;
-
-	read_lock(&card->ctl_files_rwlock);
-	list_for_each_entry(ctl, &card->ctl_files, list) {
-		wake_up(&ctl->change_sleep);
-		kill_fasync(&ctl->fasync, SIGIO, POLL_ERR);
-	}
-	read_unlock(&card->ctl_files_rwlock);
-
-	if ((err = snd_unregister_device(SNDRV_DEVICE_TYPE_CONTROL,
-					 card, -1)) < 0)
-		return err;
-	return 0;
-=======
 
 	scoped_guard(read_lock_irqsave, &card->ctl_files_rwlock) {
 		list_for_each_entry(ctl, &card->ctl_files, list) {
@@ -3511,7 +2330,6 @@ static int snd_ctl_dev_disconnect(struct snd_device *device)
 
 	call_snd_ctl_lops(card, ldisconnect);
 	return snd_unregister_device(card->ctl_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3522,14 +2340,6 @@ static int snd_ctl_dev_free(struct snd_device *device)
 	struct snd_card *card = device->device_data;
 	struct snd_kcontrol *control;
 
-<<<<<<< HEAD
-	down_write(&card->controls_rwsem);
-	while (!list_empty(&card->controls)) {
-		control = snd_kcontrol(card->controls.next);
-		snd_ctl_remove(card, control);
-	}
-	up_write(&card->controls_rwsem);
-=======
 	scoped_guard(rwsem_write, &card->controls_rwsem) {
 		while (!list_empty(&card->controls)) {
 			control = snd_kcontrol(card->controls.next);
@@ -3542,7 +2352,6 @@ static int snd_ctl_dev_free(struct snd_device *device)
 #endif
 	}
 	put_device(card->ctl_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3552,21 +2361,11 @@ static int snd_ctl_dev_free(struct snd_device *device)
  */
 int snd_ctl_create(struct snd_card *card)
 {
-<<<<<<< HEAD
-	static struct snd_device_ops ops = {
-=======
 	static const struct snd_device_ops ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.dev_free = snd_ctl_dev_free,
 		.dev_register =	snd_ctl_dev_register,
 		.dev_disconnect = snd_ctl_dev_disconnect,
 	};
-<<<<<<< HEAD
-
-	if (snd_BUG_ON(!card))
-		return -ENXIO;
-	return snd_device_new(card, SNDRV_DEV_CONTROL, card, &ops);
-=======
 	int err;
 
 	if (snd_BUG_ON(!card))
@@ -3583,14 +2382,11 @@ int snd_ctl_create(struct snd_card *card)
 	if (err < 0)
 		put_device(card->ctl_dev);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Frequently used control callbacks/helpers
  */
-<<<<<<< HEAD
-=======
 
 /**
  * snd_ctl_boolean_mono_info - Helper function for a standard boolean info
@@ -3603,7 +2399,6 @@ int snd_ctl_create(struct snd_card *card)
  *
  * Return: Zero (always successful)
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_ctl_boolean_mono_info(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_info *uinfo)
 {
@@ -3613,11 +2408,6 @@ int snd_ctl_boolean_mono_info(struct snd_kcontrol *kcontrol,
 	uinfo->value.integer.max = 1;
 	return 0;
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(snd_ctl_boolean_mono_info);
-
-=======
 EXPORT_SYMBOL(snd_ctl_boolean_mono_info);
 
 /**
@@ -3631,7 +2421,6 @@ EXPORT_SYMBOL(snd_ctl_boolean_mono_info);
  *
  * Return: Zero (always successful)
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_ctl_boolean_stereo_info(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_info *uinfo)
 {
@@ -3641,10 +2430,6 @@ int snd_ctl_boolean_stereo_info(struct snd_kcontrol *kcontrol,
 	uinfo->value.integer.max = 1;
 	return 0;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_ctl_boolean_stereo_info);
 
 /**
@@ -3657,11 +2442,8 @@ EXPORT_SYMBOL(snd_ctl_boolean_stereo_info);
  * Sets all required fields in @info to their appropriate values.
  * If the control's accessibility is not the default (readable and writable),
  * the caller has to fill @info->access.
-<<<<<<< HEAD
-=======
  *
  * Return: Zero (always successful)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_ctl_enum_info(struct snd_ctl_elem_info *info, unsigned int channels,
 		      unsigned int items, const char *const names[])
@@ -3669,11 +2451,6 @@ int snd_ctl_enum_info(struct snd_ctl_elem_info *info, unsigned int channels,
 	info->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	info->count = channels;
 	info->value.enumerated.items = items;
-<<<<<<< HEAD
-	if (info->value.enumerated.item >= items)
-		info->value.enumerated.item = items - 1;
-	strlcpy(info->value.enumerated.name,
-=======
 	if (!items)
 		return 0;
 	if (info->value.enumerated.item >= items)
@@ -3682,7 +2459,6 @@ int snd_ctl_enum_info(struct snd_ctl_elem_info *info, unsigned int channels,
 	     "ALSA: too long item name '%s'\n",
 	     names[info->value.enumerated.item]);
 	strscpy(info->value.enumerated.name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		names[info->value.enumerated.item],
 		sizeof(info->value.enumerated.name));
 	return 0;

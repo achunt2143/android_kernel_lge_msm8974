@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_IA32_H
-#define _ASM_X86_IA32_H
-
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_IA32_H
 #define _ASM_X86_IA32_H
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_IA32_EMULATION
 
 #include <linux/compat.h>
@@ -17,56 +10,15 @@
  * 32 bit structures for IA32 support.
  */
 
-<<<<<<< HEAD
-#include <asm/sigcontext32.h>
-
-/* signal.h */
-struct sigaction32 {
-	unsigned int  sa_handler;	/* Really a pointer, but need to deal
-					   with 32 bits */
-	unsigned int sa_flags;
-	unsigned int sa_restorer;	/* Another 32 bit pointer */
-	compat_sigset_t sa_mask;	/* A 32 bit mask */
-};
-
-struct old_sigaction32 {
-	unsigned int  sa_handler;	/* Really a pointer, but need to deal
-					   with 32 bits */
-	compat_old_sigset_t sa_mask;	/* A 32 bit mask */
-	unsigned int sa_flags;
-	unsigned int sa_restorer;	/* Another 32 bit pointer */
-};
-
-typedef struct sigaltstack_ia32 {
-	unsigned int	ss_sp;
-	int		ss_flags;
-	unsigned int	ss_size;
-} stack_ia32_t;
-=======
 #include <uapi/asm/sigcontext.h>
 
 /* signal.h */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ucontext_ia32 {
 	unsigned int	  uc_flags;
 	unsigned int 	  uc_link;
-<<<<<<< HEAD
-	stack_ia32_t	  uc_stack;
-	struct sigcontext_ia32 uc_mcontext;
-	compat_sigset_t	  uc_sigmask;	/* mask last for extensibility */
-};
-
-struct ucontext_x32 {
-	unsigned int	  uc_flags;
-	unsigned int 	  uc_link;
-	stack_ia32_t	  uc_stack;
-	unsigned int	  uc__pad0;     /* needed for alignment */
-	struct sigcontext uc_mcontext;  /* the 64-bit sigcontext type */
-=======
 	compat_stack_t	  uc_stack;
 	struct sigcontext_32 uc_mcontext;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	compat_sigset_t	  uc_sigmask;	/* mask last for extensibility */
 };
 
@@ -104,76 +56,6 @@ struct stat64 {
 	unsigned long long	st_ino;
 } __attribute__((packed));
 
-<<<<<<< HEAD
-typedef struct compat_siginfo {
-	int si_signo;
-	int si_errno;
-	int si_code;
-
-	union {
-		int _pad[((128 / sizeof(int)) - 3)];
-
-		/* kill() */
-		struct {
-			unsigned int _pid;	/* sender's pid */
-			unsigned int _uid;	/* sender's uid */
-		} _kill;
-
-		/* POSIX.1b timers */
-		struct {
-			compat_timer_t _tid;	/* timer id */
-			int _overrun;		/* overrun count */
-			compat_sigval_t _sigval;	/* same as below */
-			int _sys_private;	/* not to be passed to user */
-			int _overrun_incr;	/* amount to add to overrun */
-		} _timer;
-
-		/* POSIX.1b signals */
-		struct {
-			unsigned int _pid;	/* sender's pid */
-			unsigned int _uid;	/* sender's uid */
-			compat_sigval_t _sigval;
-		} _rt;
-
-		/* SIGCHLD */
-		struct {
-			unsigned int _pid;	/* which child */
-			unsigned int _uid;	/* sender's uid */
-			int _status;		/* exit code */
-			compat_clock_t _utime;
-			compat_clock_t _stime;
-		} _sigchld;
-
-		/* SIGCHLD (x32 version) */
-		struct {
-			unsigned int _pid;	/* which child */
-			unsigned int _uid;	/* sender's uid */
-			int _status;		/* exit code */
-			compat_s64 _utime;
-			compat_s64 _stime;
-		} _sigchld_x32;
-
-		/* SIGILL, SIGFPE, SIGSEGV, SIGBUS */
-		struct {
-			unsigned int _addr;	/* faulting insn/memory ref. */
-		} _sigfault;
-
-		/* SIGPOLL */
-		struct {
-			int _band;	/* POLL_IN, POLL_OUT, POLL_MSG */
-			int _fd;
-		} _sigpoll;
-
-		struct {
-			unsigned int _call_addr; /* calling insn */
-			int _syscall;	/* triggering system call number */
-			unsigned int _arch;	/* AUDIT_ARCH_* of syscall */
-		} _sigsys;
-	} _sifields;
-} compat_siginfo_t;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IA32_STACK_TOP IA32_PAGE_OFFSET
 
 #ifdef __KERNEL__
@@ -185,9 +67,6 @@ extern void ia32_pick_mmap_layout(struct mm_struct *mm);
 
 #endif
 
-<<<<<<< HEAD
-#endif /* !CONFIG_IA32_SUPPORT */
-=======
 extern bool __ia32_enabled;
 
 static __always_inline bool ia32_enabled(void)
@@ -220,6 +99,5 @@ static inline bool ia32_enabled_verbose(void)
 
 	return enabled;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_IA32_H */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-1.0+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Industrial Computer Source WDT500/501 driver
  *
@@ -15,16 +12,7 @@
  *
  *	http://www.cymru.net
  *
-<<<<<<< HEAD
- *	This driver is provided under the GNU General Public License,
- *	incorporated herein by reference. The driver is provided without
- *	warranty or support.
- *
  *	Release 0.04.
- *
-=======
- *	Release 0.04.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 

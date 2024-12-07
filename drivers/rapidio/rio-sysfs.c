@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RapidIO sysfs attributes and support
  *
  * Copyright 2005 MontaVista Software, Inc.
  * Matt Porter <mporter@kernel.crashing.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -34,10 +23,7 @@ field##_show(struct device *dev, struct device_attribute *attr, char *buf)			\
 									\
 	return sprintf(buf, format_string, rdev->field);		\
 }									\
-<<<<<<< HEAD
-=======
 static DEVICE_ATTR_RO(field);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 rio_config_attr(did, "0x%04x\n");
 rio_config_attr(vid, "0x%04x\n");
@@ -65,10 +51,7 @@ static ssize_t routes_show(struct device *dev, struct device_attribute *attr, ch
 
 	return (str - buf);
 }
-<<<<<<< HEAD
-=======
 static DEVICE_ATTR_RO(routes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t lprev_show(struct device *dev,
 			  struct device_attribute *attr, char *buf)
@@ -78,10 +61,7 @@ static ssize_t lprev_show(struct device *dev,
 	return sprintf(buf, "%s\n",
 			(rdev->prev) ? rio_name(rdev->prev) : "root");
 }
-<<<<<<< HEAD
-=======
 static DEVICE_ATTR_RO(lprev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t lnext_show(struct device *dev,
 			  struct device_attribute *attr, char *buf)
@@ -102,25 +82,6 @@ static ssize_t lnext_show(struct device *dev,
 
 	return str - buf;
 }
-<<<<<<< HEAD
-
-struct device_attribute rio_dev_attrs[] = {
-	__ATTR_RO(did),
-	__ATTR_RO(vid),
-	__ATTR_RO(device_rev),
-	__ATTR_RO(asm_did),
-	__ATTR_RO(asm_vid),
-	__ATTR_RO(asm_rev),
-	__ATTR_RO(lprev),
-	__ATTR_RO(destid),
-	__ATTR_NULL,
-};
-
-static DEVICE_ATTR(routes, S_IRUGO, routes_show, NULL);
-static DEVICE_ATTR(lnext, S_IRUGO, lnext_show, NULL);
-static DEVICE_ATTR(hopcount, S_IRUGO, hopcount_show, NULL);
-
-=======
 static DEVICE_ATTR_RO(lnext);
 
 static ssize_t modalias_show(struct device *dev,
@@ -151,18 +112,12 @@ static struct attribute *rio_dev_attrs[] = {
 	NULL,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 rio_read_config(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *bin_attr,
 		char *buf, loff_t off, size_t count)
 {
-<<<<<<< HEAD
-	struct rio_dev *dev =
-	    to_rio_dev(container_of(kobj, struct device, kobj));
-=======
 	struct rio_dev *dev = to_rio_dev(kobj_to_dev(kobj));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int size = 0x100;
 	loff_t init_off = off;
 	u8 *data = (u8 *) buf;
@@ -233,12 +188,7 @@ rio_write_config(struct file *filp, struct kobject *kobj,
 		 struct bin_attribute *bin_attr,
 		 char *buf, loff_t off, size_t count)
 {
-<<<<<<< HEAD
-	struct rio_dev *dev =
-	    to_rio_dev(container_of(kobj, struct device, kobj));
-=======
 	struct rio_dev *dev = to_rio_dev(kobj_to_dev(kobj));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int size = count;
 	loff_t init_off = off;
 	u8 *data = (u8 *) buf;
@@ -301,52 +251,6 @@ static struct bin_attribute rio_config_attr = {
 	.write = rio_write_config,
 };
 
-<<<<<<< HEAD
-/**
- * rio_create_sysfs_dev_files - create RIO specific sysfs files
- * @rdev: device whose entries should be created
- *
- * Create files when @rdev is added to sysfs.
- */
-int rio_create_sysfs_dev_files(struct rio_dev *rdev)
-{
-	int err = 0;
-
-	err = device_create_bin_file(&rdev->dev, &rio_config_attr);
-
-	if (!err && (rdev->pef & RIO_PEF_SWITCH)) {
-		err |= device_create_file(&rdev->dev, &dev_attr_routes);
-		err |= device_create_file(&rdev->dev, &dev_attr_lnext);
-		err |= device_create_file(&rdev->dev, &dev_attr_hopcount);
-		if (!err && rdev->rswitch->sw_sysfs)
-			err = rdev->rswitch->sw_sysfs(rdev, RIO_SW_SYSFS_CREATE);
-	}
-
-	if (err)
-		pr_warning("RIO: Failed to create attribute file(s) for %s\n",
-			   rio_name(rdev));
-
-	return err;
-}
-
-/**
- * rio_remove_sysfs_dev_files - cleanup RIO specific sysfs files
- * @rdev: device whose entries we should free
- *
- * Cleanup when @rdev is removed from sysfs.
- */
-void rio_remove_sysfs_dev_files(struct rio_dev *rdev)
-{
-	device_remove_bin_file(&rdev->dev, &rio_config_attr);
-	if (rdev->pef & RIO_PEF_SWITCH) {
-		device_remove_file(&rdev->dev, &dev_attr_routes);
-		device_remove_file(&rdev->dev, &dev_attr_lnext);
-		device_remove_file(&rdev->dev, &dev_attr_hopcount);
-		if (rdev->rswitch->sw_sysfs)
-			rdev->rswitch->sw_sysfs(rdev, RIO_SW_SYSFS_REMOVE);
-	}
-}
-=======
 static struct bin_attribute *rio_dev_bin_attrs[] = {
 	&rio_config_attr,
 	NULL,
@@ -460,4 +364,3 @@ const struct attribute_group *rio_mport_groups[] = {
 	&rio_mport_group,
 	NULL,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

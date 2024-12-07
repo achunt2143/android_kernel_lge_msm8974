@@ -8,10 +8,6 @@
 
 #define __ARCH_FORCE_SHMLBA	1
 
-<<<<<<< HEAD
-#define	SHMLBA 0x40000			/* attach addr a multiple of this */
-=======
 #define SHMLBA 0x40000			/* attach addr a multiple of this */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_SHMPARAM_H */

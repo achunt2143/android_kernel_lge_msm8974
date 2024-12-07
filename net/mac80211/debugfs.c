@@ -1,28 +1,15 @@
-<<<<<<< HEAD
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * mac80211 debugfs for wireless PHYs
  *
  * Copyright 2007	Johannes Berg <johannes@sipsolutions.net>
-<<<<<<< HEAD
- *
- * GPLv2
- *
-=======
  * Copyright 2013-2014  Intel Mobile Communications GmbH
  * Copyright (C) 2018 - 2019, 2021-2024 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/debugfs.h>
 #include <linux/rtnetlink.h>
-<<<<<<< HEAD
-=======
 #include <linux/vmalloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ieee80211_i.h"
 #include "driver-ops.h"
 #include "rate.h"
@@ -66,30 +53,18 @@ static const struct file_operations name## _ops = {			\
 	DEBUGFS_READONLY_FILE_OPS(name)
 
 #define DEBUGFS_ADD(name)						\
-<<<<<<< HEAD
-	debugfs_create_file(#name, 0400, phyd, local, &name## _ops);
-=======
 	debugfs_create_file(#name, 0400, phyd, local, &name## _ops)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DEBUGFS_ADD_MODE(name, mode)					\
 	debugfs_create_file(#name, mode, phyd, local, &name## _ops);
 
 
-<<<<<<< HEAD
-=======
 DEBUGFS_READONLY_FILE(hw_conf, "%x",
 		      local->hw.conf.flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEBUGFS_READONLY_FILE(user_power, "%d",
 		      local->user_power_level);
 DEBUGFS_READONLY_FILE(power, "%d",
 		      local->hw.conf.power_level);
-<<<<<<< HEAD
-DEBUGFS_READONLY_FILE(frequency, "%d",
-		      local->hw.conf.channel->center_freq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEBUGFS_READONLY_FILE(total_ps_buffered, "%d",
 		      local->total_ps_buffered);
 DEBUGFS_READONLY_FILE(wep_iv, "%#08x",
@@ -97,8 +72,6 @@ DEBUGFS_READONLY_FILE(wep_iv, "%#08x",
 DEBUGFS_READONLY_FILE(rate_ctrl_alg, "%s",
 	local->rate_ctrl ? local->rate_ctrl->ops->name : "hw/driver");
 
-<<<<<<< HEAD
-=======
 static ssize_t aqm_read(struct file *file,
 			char __user *user_buf,
 			size_t count,
@@ -441,17 +414,10 @@ static const struct file_operations force_tx_status_ops = {
 };
 
 #ifdef CONFIG_PM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t reset_write(struct file *file, const char __user *user_buf,
 			   size_t count, loff_t *ppos)
 {
 	struct ieee80211_local *local = file->private_data;
-<<<<<<< HEAD
-
-	rtnl_lock();
-	__ieee80211_suspend(&local->hw, NULL);
-	__ieee80211_resume(&local->hw);
-=======
 	int ret;
 
 	rtnl_lock();
@@ -463,7 +429,6 @@ static ssize_t reset_write(struct file *file, const char __user *user_buf,
 	if (ret)
 		cfg80211_shutdown_all_interfaces(local->hw.wiphy);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rtnl_unlock();
 
 	return count;
@@ -474,35 +439,6 @@ static const struct file_operations reset_ops = {
 	.open = simple_open,
 	.llseek = noop_llseek,
 };
-<<<<<<< HEAD
-
-static ssize_t channel_type_read(struct file *file, char __user *user_buf,
-		       size_t count, loff_t *ppos)
-{
-	struct ieee80211_local *local = file->private_data;
-	const char *buf;
-
-	switch (local->hw.conf.channel_type) {
-	case NL80211_CHAN_NO_HT:
-		buf = "no ht\n";
-		break;
-	case NL80211_CHAN_HT20:
-		buf = "ht20\n";
-		break;
-	case NL80211_CHAN_HT40MINUS:
-		buf = "ht40-\n";
-		break;
-	case NL80211_CHAN_HT40PLUS:
-		buf = "ht40+\n";
-		break;
-	default:
-		buf = "???";
-		break;
-	}
-
-	return simple_read_from_buffer(user_buf, count, ppos, buf, strlen(buf));
-}
-=======
 #endif
 
 static const char *hw_flag_names[] = {
@@ -565,72 +501,11 @@ static const char *hw_flag_names[] = {
 	FLAG(HANDLES_QUIET_CSA),
 #undef FLAG
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t hwflags_read(struct file *file, char __user *user_buf,
 			    size_t count, loff_t *ppos)
 {
 	struct ieee80211_local *local = file->private_data;
-<<<<<<< HEAD
-	int mxln = 500;
-	ssize_t rv;
-	char *buf = kzalloc(mxln, GFP_KERNEL);
-	int sf = 0; /* how many written so far */
-
-	if (!buf)
-		return 0;
-
-	sf += snprintf(buf, mxln - sf, "0x%x\n", local->hw.flags);
-	if (local->hw.flags & IEEE80211_HW_HAS_RATE_CONTROL)
-		sf += snprintf(buf + sf, mxln - sf, "HAS_RATE_CONTROL\n");
-	if (local->hw.flags & IEEE80211_HW_RX_INCLUDES_FCS)
-		sf += snprintf(buf + sf, mxln - sf, "RX_INCLUDES_FCS\n");
-	if (local->hw.flags & IEEE80211_HW_HOST_BROADCAST_PS_BUFFERING)
-		sf += snprintf(buf + sf, mxln - sf,
-			       "HOST_BCAST_PS_BUFFERING\n");
-	if (local->hw.flags & IEEE80211_HW_2GHZ_SHORT_SLOT_INCAPABLE)
-		sf += snprintf(buf + sf, mxln - sf,
-			       "2GHZ_SHORT_SLOT_INCAPABLE\n");
-	if (local->hw.flags & IEEE80211_HW_2GHZ_SHORT_PREAMBLE_INCAPABLE)
-		sf += snprintf(buf + sf, mxln - sf,
-			       "2GHZ_SHORT_PREAMBLE_INCAPABLE\n");
-	if (local->hw.flags & IEEE80211_HW_SIGNAL_UNSPEC)
-		sf += snprintf(buf + sf, mxln - sf, "SIGNAL_UNSPEC\n");
-	if (local->hw.flags & IEEE80211_HW_SIGNAL_DBM)
-		sf += snprintf(buf + sf, mxln - sf, "SIGNAL_DBM\n");
-	if (local->hw.flags & IEEE80211_HW_NEED_DTIM_PERIOD)
-		sf += snprintf(buf + sf, mxln - sf, "NEED_DTIM_PERIOD\n");
-	if (local->hw.flags & IEEE80211_HW_SPECTRUM_MGMT)
-		sf += snprintf(buf + sf, mxln - sf, "SPECTRUM_MGMT\n");
-	if (local->hw.flags & IEEE80211_HW_AMPDU_AGGREGATION)
-		sf += snprintf(buf + sf, mxln - sf, "AMPDU_AGGREGATION\n");
-	if (local->hw.flags & IEEE80211_HW_SUPPORTS_PS)
-		sf += snprintf(buf + sf, mxln - sf, "SUPPORTS_PS\n");
-	if (local->hw.flags & IEEE80211_HW_PS_NULLFUNC_STACK)
-		sf += snprintf(buf + sf, mxln - sf, "PS_NULLFUNC_STACK\n");
-	if (local->hw.flags & IEEE80211_HW_SUPPORTS_DYNAMIC_PS)
-		sf += snprintf(buf + sf, mxln - sf, "SUPPORTS_DYNAMIC_PS\n");
-	if (local->hw.flags & IEEE80211_HW_MFP_CAPABLE)
-		sf += snprintf(buf + sf, mxln - sf, "MFP_CAPABLE\n");
-	if (local->hw.flags & IEEE80211_HW_SUPPORTS_STATIC_SMPS)
-		sf += snprintf(buf + sf, mxln - sf, "SUPPORTS_STATIC_SMPS\n");
-	if (local->hw.flags & IEEE80211_HW_SUPPORTS_DYNAMIC_SMPS)
-		sf += snprintf(buf + sf, mxln - sf, "SUPPORTS_DYNAMIC_SMPS\n");
-	if (local->hw.flags & IEEE80211_HW_SUPPORTS_UAPSD)
-		sf += snprintf(buf + sf, mxln - sf, "SUPPORTS_UAPSD\n");
-	if (local->hw.flags & IEEE80211_HW_REPORTS_TX_ACK_STATUS)
-		sf += snprintf(buf + sf, mxln - sf, "REPORTS_TX_ACK_STATUS\n");
-	if (local->hw.flags & IEEE80211_HW_CONNECTION_MONITOR)
-		sf += snprintf(buf + sf, mxln - sf, "CONNECTION_MONITOR\n");
-	if (local->hw.flags & IEEE80211_HW_SUPPORTS_PER_STA_GTK)
-		sf += snprintf(buf + sf, mxln - sf, "SUPPORTS_PER_STA_GTK\n");
-	if (local->hw.flags & IEEE80211_HW_AP_LINK_PS)
-		sf += snprintf(buf + sf, mxln - sf, "AP_LINK_PS\n");
-	if (local->hw.flags & IEEE80211_HW_TX_AMPDU_SETUP_IN_HW)
-		sf += snprintf(buf + sf, mxln - sf, "TX_AMPDU_SETUP_IN_HW\n");
-	if (local->hw.flags & IEEE80211_HW_SCAN_WHILE_IDLE)
-		sf += snprintf(buf + sf, mxln - sf, "SCAN_WHILE_IDLE\n");
-=======
 	size_t bufsz = 30 * NUM_IEEE80211_HW_FLAGS;
 	char *buf = kzalloc(bufsz, GFP_KERNEL);
 	char *pos = buf, *end = buf + bufsz - 1;
@@ -682,7 +557,6 @@ static ssize_t misc_read(struct file *file, char __user *user_buf,
 		pos += scnprintf(pos, end - pos, "[%i] %d\n",
 				 i, ln);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rv = simple_read_from_buffer(user_buf, count, ppos, buf, strlen(buf));
 	kfree(buf);
@@ -708,13 +582,8 @@ static ssize_t queues_read(struct file *file, char __user *user_buf,
 }
 
 DEBUGFS_READONLY_FILE_OPS(hwflags);
-<<<<<<< HEAD
-DEBUGFS_READONLY_FILE_OPS(channel_type);
-DEBUGFS_READONLY_FILE_OPS(queues);
-=======
 DEBUGFS_READONLY_FILE_OPS(queues);
 DEBUGFS_READONLY_FILE_OPS(misc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* statistics stuff */
 
@@ -728,15 +597,9 @@ static ssize_t format_devstat_counter(struct ieee80211_local *local,
 	char buf[20];
 	int res;
 
-<<<<<<< HEAD
-	rtnl_lock();
-	res = drv_get_stats(local, &stats);
-	rtnl_unlock();
-=======
 	wiphy_lock(local->hw.wiphy);
 	res = drv_get_stats(local, &stats);
 	wiphy_unlock(local->hw.wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res)
 		return res;
 	res = printvalue(&stats, buf, sizeof(buf));
@@ -766,15 +629,10 @@ static const struct file_operations stats_ ##name## _ops = {		\
 	.llseek = generic_file_llseek,					\
 };
 
-<<<<<<< HEAD
-#define DEBUGFS_STATS_ADD(name, field)					\
-	debugfs_create_u32(#name, 0400, statsd, (u32 *) &field);
-=======
 #ifdef CONFIG_MAC80211_DEBUG_COUNTERS
 #define DEBUGFS_STATS_ADD(name)					\
 	debugfs_create_u32(#name, 0400, statsd, &local->name);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEBUGFS_DEVSTATS_ADD(name)					\
 	debugfs_create_file(#name, 0400, statsd, local, &stats_ ##name## _ops);
 
@@ -793,75 +651,6 @@ void debugfs_hw_add(struct ieee80211_local *local)
 
 	local->debugfs.keys = debugfs_create_dir("keys", phyd);
 
-<<<<<<< HEAD
-	DEBUGFS_ADD(frequency);
-	DEBUGFS_ADD(total_ps_buffered);
-	DEBUGFS_ADD(wep_iv);
-	DEBUGFS_ADD(queues);
-	DEBUGFS_ADD_MODE(reset, 0200);
-	DEBUGFS_ADD(channel_type);
-	DEBUGFS_ADD(hwflags);
-	DEBUGFS_ADD(user_power);
-	DEBUGFS_ADD(power);
-
-	statsd = debugfs_create_dir("statistics", phyd);
-
-	/* if the dir failed, don't put all the other things into the root! */
-	if (!statsd)
-		return;
-
-	DEBUGFS_STATS_ADD(transmitted_fragment_count,
-		local->dot11TransmittedFragmentCount);
-	DEBUGFS_STATS_ADD(multicast_transmitted_frame_count,
-		local->dot11MulticastTransmittedFrameCount);
-	DEBUGFS_STATS_ADD(failed_count, local->dot11FailedCount);
-	DEBUGFS_STATS_ADD(retry_count, local->dot11RetryCount);
-	DEBUGFS_STATS_ADD(multiple_retry_count,
-		local->dot11MultipleRetryCount);
-	DEBUGFS_STATS_ADD(frame_duplicate_count,
-		local->dot11FrameDuplicateCount);
-	DEBUGFS_STATS_ADD(received_fragment_count,
-		local->dot11ReceivedFragmentCount);
-	DEBUGFS_STATS_ADD(multicast_received_frame_count,
-		local->dot11MulticastReceivedFrameCount);
-	DEBUGFS_STATS_ADD(transmitted_frame_count,
-		local->dot11TransmittedFrameCount);
-#ifdef CONFIG_MAC80211_DEBUG_COUNTERS
-	DEBUGFS_STATS_ADD(tx_handlers_drop, local->tx_handlers_drop);
-	DEBUGFS_STATS_ADD(tx_handlers_queued, local->tx_handlers_queued);
-	DEBUGFS_STATS_ADD(tx_handlers_drop_unencrypted,
-		local->tx_handlers_drop_unencrypted);
-	DEBUGFS_STATS_ADD(tx_handlers_drop_fragment,
-		local->tx_handlers_drop_fragment);
-	DEBUGFS_STATS_ADD(tx_handlers_drop_wep,
-		local->tx_handlers_drop_wep);
-	DEBUGFS_STATS_ADD(tx_handlers_drop_not_assoc,
-		local->tx_handlers_drop_not_assoc);
-	DEBUGFS_STATS_ADD(tx_handlers_drop_unauth_port,
-		local->tx_handlers_drop_unauth_port);
-	DEBUGFS_STATS_ADD(rx_handlers_drop, local->rx_handlers_drop);
-	DEBUGFS_STATS_ADD(rx_handlers_queued, local->rx_handlers_queued);
-	DEBUGFS_STATS_ADD(rx_handlers_drop_nullfunc,
-		local->rx_handlers_drop_nullfunc);
-	DEBUGFS_STATS_ADD(rx_handlers_drop_defrag,
-		local->rx_handlers_drop_defrag);
-	DEBUGFS_STATS_ADD(rx_handlers_drop_short,
-		local->rx_handlers_drop_short);
-	DEBUGFS_STATS_ADD(rx_handlers_drop_passive_scan,
-		local->rx_handlers_drop_passive_scan);
-	DEBUGFS_STATS_ADD(tx_expand_skb_head,
-		local->tx_expand_skb_head);
-	DEBUGFS_STATS_ADD(tx_expand_skb_head_cloned,
-		local->tx_expand_skb_head_cloned);
-	DEBUGFS_STATS_ADD(rx_expand_skb_head,
-		local->rx_expand_skb_head);
-	DEBUGFS_STATS_ADD(rx_expand_skb_head2,
-		local->rx_expand_skb_head2);
-	DEBUGFS_STATS_ADD(rx_handlers_fragments,
-		local->rx_handlers_fragments);
-	DEBUGFS_STATS_ADD(tx_status_drop,
-		local->tx_status_drop);
-=======
 	DEBUGFS_ADD(total_ps_buffered);
 	DEBUGFS_ADD(wep_iv);
 	DEBUGFS_ADD(rate_ctrl_alg);
@@ -911,7 +700,6 @@ void debugfs_hw_add(struct ieee80211_local *local)
 	DEBUGFS_STATS_ADD(rx_expand_skb_head_defrag);
 	DEBUGFS_STATS_ADD(rx_handlers_fragments);
 	DEBUGFS_STATS_ADD(tx_status_drop);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	DEBUGFS_DEVSTATS_ADD(dot11ACKFailureCount);
 	DEBUGFS_DEVSTATS_ADD(dot11RTSFailureCount);

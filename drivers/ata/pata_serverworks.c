@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_serverworks.c 	- Serverworks PATA for new ATA layer
  *			  (C) 2005 Red Hat Inc
@@ -38,10 +35,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -157,11 +150,7 @@ static u8 serverworks_is_csb(struct pci_dev *pdev)
  *	bug we hit.
  */
 
-<<<<<<< HEAD
-static unsigned long serverworks_osb4_filter(struct ata_device *adev, unsigned long mask)
-=======
 static unsigned int serverworks_osb4_filter(struct ata_device *adev, unsigned int mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (adev->class == ATA_DEV_ATA)
 		mask &= ~ATA_MASK_UDMA;
@@ -177,11 +166,7 @@ static unsigned int serverworks_osb4_filter(struct ata_device *adev, unsigned in
  *	Check the blacklist and disable UDMA5 if matched
  */
 
-<<<<<<< HEAD
-static unsigned long serverworks_csb_filter(struct ata_device *adev, unsigned long mask)
-=======
 static unsigned int serverworks_csb_filter(struct ata_device *adev, unsigned int mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *p;
 	char model_num[ATA_ID_PROD_LEN + 1];
@@ -267,14 +252,6 @@ static void serverworks_set_dmamode(struct ata_port *ap, struct ata_device *adev
 	pci_write_config_byte(pdev, 0x54, ultra_cfg);
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template serverworks_osb4_sht = {
-	ATA_BMDMA_SHT(DRV_NAME),
-	.sg_tablesize	= LIBATA_DUMB_MAX_PRD,
-};
-
-static struct scsi_host_template serverworks_csb_sht = {
-=======
 static const struct scsi_host_template serverworks_osb4_sht = {
 	ATA_BASE_SHT(DRV_NAME),
 	.sg_tablesize	= LIBATA_DUMB_MAX_PRD,
@@ -282,7 +259,6 @@ static const struct scsi_host_template serverworks_osb4_sht = {
 };
 
 static const struct scsi_host_template serverworks_csb_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -310,21 +286,13 @@ static int serverworks_fixup_osb4(struct pci_dev *pdev)
 		pci_read_config_dword(isa_dev, 0x64, &reg);
 		reg &= ~0x00002000; /* disable 600ns interrupt mask */
 		if (!(reg & 0x00004000))
-<<<<<<< HEAD
-			printk(KERN_DEBUG DRV_NAME ": UDMA not BIOS enabled.\n");
-=======
 			dev_info(&pdev->dev, "UDMA not BIOS enabled.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg |=  0x00004000; /* enable UDMA/33 support */
 		pci_write_config_dword(isa_dev, 0x64, reg);
 		pci_dev_put(isa_dev);
 		return 0;
 	}
-<<<<<<< HEAD
-	printk(KERN_WARNING DRV_NAME ": Unable to find bridge.\n");
-=======
 	dev_warn(&pdev->dev, "Unable to find bridge.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
 }
 
@@ -402,11 +370,7 @@ static int serverworks_fixup(struct pci_dev *pdev)
 		break;
 	case PCI_DEVICE_ID_SERVERWORKS_CSB5IDE:
 		ata_pci_bmdma_clear_simplex(pdev);
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PCI_DEVICE_ID_SERVERWORKS_CSB6IDE:
 	case PCI_DEVICE_ID_SERVERWORKS_CSB6IDE2:
 		rc = serverworks_fixup_csb(pdev);
@@ -449,11 +413,7 @@ static int serverworks_init_one(struct pci_dev *pdev, const struct pci_device_id
 		}
 	};
 	const struct ata_port_info *ppi[] = { &info[id->driver_data], NULL };
-<<<<<<< HEAD
-	struct scsi_host_template *sht = &serverworks_csb_sht;
-=======
 	const struct scsi_host_template *sht = &serverworks_csb_sht;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = pcim_enable_device(pdev);
@@ -487,17 +447,10 @@ static int serverworks_init_one(struct pci_dev *pdev, const struct pci_device_id
 	return ata_pci_bmdma_init_one(pdev, ppi, sht, NULL, 0);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int serverworks_reinit_one(struct pci_dev *pdev)
-{
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-=======
 #ifdef CONFIG_PM_SLEEP
 static int serverworks_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -526,38 +479,16 @@ static struct pci_driver serverworks_pci_driver = {
 	.id_table	= serverworks,
 	.probe 		= serverworks_init_one,
 	.remove		= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= serverworks_reinit_one,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init serverworks_init(void)
-{
-	return pci_register_driver(&serverworks_pci_driver);
-}
-
-static void __exit serverworks_exit(void)
-{
-	pci_unregister_driver(&serverworks_pci_driver);
-}
-=======
 module_pci_driver(serverworks_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for Serverworks OSB4/CSB5/CSB6");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, serverworks);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(serverworks_init);
-module_exit(serverworks_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

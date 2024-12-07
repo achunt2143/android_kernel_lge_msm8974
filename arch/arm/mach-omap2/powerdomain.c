@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP powerdomain control
  *
@@ -11,29 +8,16 @@
  * Written by Paul Walmsley
  * Added OMAP4 specific support by Abhijit Pagare <abhijitpagare@ti.com>
  * State counting code by Tero Kristo <tero.kristo@nokia.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#undef DEBUG
-
-=======
  */
 #undef DEBUG
 
 #include <linux/cpu_pm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/list.h>
 #include <linux/errno.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-=======
 #include <linux/spinlock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <trace/events/power.h>
 
 #include "cm2xxx_3xxx.h"
@@ -43,37 +27,24 @@
 #include "prm44xx.h"
 
 #include <asm/cpu.h>
-<<<<<<< HEAD
-#include <plat/cpu.h>
-#include "powerdomain.h"
-#include "clockdomain.h"
-#include <plat/prcm.h>
-
-=======
 
 #include "powerdomain.h"
 #include "clockdomain.h"
 #include "voltage.h"
 
 #include "soc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "pm.h"
 
 #define PWRDM_TRACE_STATES_FLAG	(1<<31)
 
-<<<<<<< HEAD
-=======
 static void pwrdms_save_context(void);
 static void pwrdms_restore_context(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	PWRDM_STATE_NOW = 0,
 	PWRDM_STATE_PREV,
 };
 
-<<<<<<< HEAD
-=======
 /*
  * Types of sleep_switch used internally in omap_set_pwrdm_state()
  * and its associated static functions
@@ -83,7 +54,6 @@ enum {
 #define ALREADYACTIVE_SWITCH		0
 #define FORCEWAKEUP_SWITCH		1
 #define LOWPOWERSTATE_SWITCH		2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* pwrdm_list contains all registered struct powerdomains */
 static LIST_HEAD(pwrdm_list);
@@ -134,13 +104,10 @@ static int _pwrdm_register(struct powerdomain *pwrdm)
 	if (_pwrdm_lookup(pwrdm->name))
 		return -EEXIST;
 
-<<<<<<< HEAD
-=======
 	if (arch_pwrdm && arch_pwrdm->pwrdm_has_voltdm)
 		if (!arch_pwrdm->pwrdm_has_voltdm())
 			goto skip_voltdm;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	voltdm = voltdm_lookup(pwrdm->voltdm.name);
 	if (!voltdm) {
 		pr_err("powerdomain: %s: voltagedomain %s does not exist\n",
@@ -149,12 +116,8 @@ static int _pwrdm_register(struct powerdomain *pwrdm)
 	}
 	pwrdm->voltdm.ptr = voltdm;
 	INIT_LIST_HEAD(&pwrdm->voltdm_node);
-<<<<<<< HEAD
-	voltdm_add_pwrdm(voltdm, pwrdm);
-=======
 skip_voltdm:
 	spin_lock_init(&pwrdm->_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_add(&pwrdm->node, &pwrdm_list);
 
@@ -166,12 +129,8 @@ skip_voltdm:
 	for (i = 0; i < pwrdm->banks; i++)
 		pwrdm->ret_mem_off_counter[i] = 0;
 
-<<<<<<< HEAD
-	pwrdm_wait_transition(pwrdm);
-=======
 	if (arch_pwrdm && arch_pwrdm->pwrdm_wait_transition)
 		arch_pwrdm->pwrdm_wait_transition(pwrdm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pwrdm->state = pwrdm_read_pwrst(pwrdm);
 	pwrdm->state_counter[pwrdm->state] = 1;
 
@@ -202,11 +161,7 @@ static void _update_logic_membank_counters(struct powerdomain *pwrdm)
 static int _pwrdm_state_switch(struct powerdomain *pwrdm, int flag)
 {
 
-<<<<<<< HEAD
-	int prev, state, trace_state = 0;
-=======
 	int prev, next, state, trace_state = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pwrdm == NULL)
 		return -EINVAL;
@@ -219,11 +174,7 @@ static int _pwrdm_state_switch(struct powerdomain *pwrdm, int flag)
 		break;
 	case PWRDM_STATE_PREV:
 		prev = pwrdm_read_prev_pwrst(pwrdm);
-<<<<<<< HEAD
-		if (pwrdm->state != prev)
-=======
 		if (prev >= 0 && pwrdm->state != prev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pwrdm->state_counter[prev]++;
 		if (prev == PWRDM_POWER_RET)
 			_update_logic_membank_counters(pwrdm);
@@ -231,14 +182,6 @@ static int _pwrdm_state_switch(struct powerdomain *pwrdm, int flag)
 		 * If the power domain did not hit the desired state,
 		 * generate a trace event with both the desired and hit states
 		 */
-<<<<<<< HEAD
-		if (state != prev) {
-			trace_state = (PWRDM_TRACE_STATES_FLAG |
-				       ((state & OMAP_POWERSTATE_MASK) << 8) |
-				       ((prev & OMAP_POWERSTATE_MASK) << 0));
-			trace_power_domain_target(pwrdm->name, trace_state,
-						  smp_processor_id());
-=======
 		next = pwrdm_read_next_pwrst(pwrdm);
 		if (next != prev) {
 			trace_state = (PWRDM_TRACE_STATES_FLAG |
@@ -247,7 +190,6 @@ static int _pwrdm_state_switch(struct powerdomain *pwrdm, int flag)
 			trace_power_domain_target(pwrdm->name,
 						  trace_state,
 						  raw_smp_processor_id());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	default:
@@ -277,8 +219,6 @@ static int _pwrdm_post_transition_cb(struct powerdomain *pwrdm, void *unused)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * _pwrdm_save_clkdm_state_and_activate - prepare for power state change
  * @pwrdm: struct powerdomain * to operate on
@@ -343,7 +283,6 @@ static void _pwrdm_restore_clkdm_state(struct powerdomain *pwrdm,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Public functions */
 
 /**
@@ -395,8 +334,6 @@ int pwrdm_register_pwrdms(struct powerdomain **ps)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int cpu_notifier(struct notifier_block *nb, unsigned long cmd, void *v)
 {
 	switch (cmd) {
@@ -413,7 +350,6 @@ static int cpu_notifier(struct notifier_block *nb, unsigned long cmd, void *v)
 	return NOTIFY_OK;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pwrdm_complete_init - set up the powerdomain layer
  *
@@ -428,10 +364,7 @@ static int cpu_notifier(struct notifier_block *nb, unsigned long cmd, void *v)
 int pwrdm_complete_init(void)
 {
 	struct powerdomain *temp_p;
-<<<<<<< HEAD
-=======
 	static struct notifier_block nb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (list_empty(&pwrdm_list))
 		return -EACCES;
@@ -439,21 +372,16 @@ int pwrdm_complete_init(void)
 	list_for_each_entry(temp_p, &pwrdm_list, node)
 		pwrdm_set_next_pwrst(temp_p, PWRDM_POWER_ON);
 
-<<<<<<< HEAD
-=======
 	/* Only AM43XX can lose pwrdm context during rtc-ddr suspend */
 	if (soc_is_am43xx()) {
 		nb.notifier_call = cpu_notifier;
 		cpu_pm_register_notifier(&nb);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * pwrdm_lock - acquire a Linux spinlock on a powerdomain
  * @pwrdm: struct powerdomain * to lock
  *
@@ -478,7 +406,6 @@ void pwrdm_unlock(struct powerdomain *pwrdm)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pwrdm_lookup - look up a powerdomain by name, return a pointer
  * @name: name of powerdomain
  *
@@ -543,13 +470,8 @@ int pwrdm_add_clkdm(struct powerdomain *pwrdm, struct clockdomain *clkdm)
 	if (!pwrdm || !clkdm)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	pr_debug("powerdomain: associating clockdomain %s with powerdomain "
-		 "%s\n", clkdm->name, pwrdm->name);
-=======
 	pr_debug("powerdomain: %s: associating clockdomain %s\n",
 		 pwrdm->name, clkdm->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < PWRDM_MAX_CLKDMS; i++) {
 		if (!pwrdm->pwrdm_clkdms[i])
@@ -563,13 +485,8 @@ int pwrdm_add_clkdm(struct powerdomain *pwrdm, struct clockdomain *clkdm)
 	}
 
 	if (i == PWRDM_MAX_CLKDMS) {
-<<<<<<< HEAD
-		pr_debug("powerdomain: increase PWRDM_MAX_CLKDMS for "
-			 "pwrdm %s clkdm %s\n", pwrdm->name, clkdm->name);
-=======
 		pr_debug("powerdomain: %s: increase PWRDM_MAX_CLKDMS for clkdm %s\n",
 			 pwrdm->name, clkdm->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		WARN_ON(1);
 		ret = -ENOMEM;
 		goto pac_exit;
@@ -584,89 +501,6 @@ pac_exit:
 }
 
 /**
-<<<<<<< HEAD
- * pwrdm_del_clkdm - remove a clockdomain from a powerdomain
- * @pwrdm: struct powerdomain * to add the clockdomain to
- * @clkdm: struct clockdomain * to associate with a powerdomain
- *
- * Dissociate the clockdomain @clkdm from the powerdomain
- * @pwrdm. Returns -EINVAL if presented with invalid pointers; -ENOENT
- * if @clkdm was not associated with the powerdomain, or 0 upon
- * success.
- */
-int pwrdm_del_clkdm(struct powerdomain *pwrdm, struct clockdomain *clkdm)
-{
-	int ret = -EINVAL;
-	int i;
-
-	if (!pwrdm || !clkdm)
-		return -EINVAL;
-
-	pr_debug("powerdomain: dissociating clockdomain %s from powerdomain "
-		 "%s\n", clkdm->name, pwrdm->name);
-
-	for (i = 0; i < PWRDM_MAX_CLKDMS; i++)
-		if (pwrdm->pwrdm_clkdms[i] == clkdm)
-			break;
-
-	if (i == PWRDM_MAX_CLKDMS) {
-		pr_debug("powerdomain: clkdm %s not associated with pwrdm "
-			 "%s ?!\n", clkdm->name, pwrdm->name);
-		ret = -ENOENT;
-		goto pdc_exit;
-	}
-
-	pwrdm->pwrdm_clkdms[i] = NULL;
-
-	ret = 0;
-
-pdc_exit:
-	return ret;
-}
-
-/**
- * pwrdm_for_each_clkdm - call function on each clkdm in a pwrdm
- * @pwrdm: struct powerdomain * to iterate over
- * @fn: callback function *
- *
- * Call the supplied function @fn for each clockdomain in the powerdomain
- * @pwrdm.  The callback function can return anything but 0 to bail
- * out early from the iterator.  Returns -EINVAL if presented with
- * invalid pointers; or passes along the last return value of the
- * callback function, which should be 0 for success or anything else
- * to indicate failure.
- */
-int pwrdm_for_each_clkdm(struct powerdomain *pwrdm,
-			 int (*fn)(struct powerdomain *pwrdm,
-				   struct clockdomain *clkdm))
-{
-	int ret = 0;
-	int i;
-
-	if (!fn)
-		return -EINVAL;
-
-	for (i = 0; i < PWRDM_MAX_CLKDMS && !ret; i++)
-		ret = (*fn)(pwrdm, pwrdm->pwrdm_clkdms[i]);
-
-	return ret;
-}
-
-/**
- * pwrdm_get_voltdm - return a ptr to the voltdm that this pwrdm resides in
- * @pwrdm: struct powerdomain *
- *
- * Return a pointer to the struct voltageomain that the specified powerdomain
- * @pwrdm exists in.
- */
-struct voltagedomain *pwrdm_get_voltdm(struct powerdomain *pwrdm)
-{
-	return pwrdm->voltdm.ptr;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pwrdm_get_mem_bank_count - get number of memory banks in this powerdomain
  * @pwrdm: struct powerdomain *
  *
@@ -702,21 +536,13 @@ int pwrdm_set_next_pwrst(struct powerdomain *pwrdm, u8 pwrst)
 	if (!(pwrdm->pwrsts & (1 << pwrst)))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	pr_debug("powerdomain: setting next powerstate for %s to %0x\n",
-=======
 	pr_debug("powerdomain: %s: setting next powerstate to %0x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 pwrdm->name, pwrst);
 
 	if (arch_pwrdm && arch_pwrdm->pwrdm_set_next_pwrst) {
 		/* Trace the pwrdm desired target state */
 		trace_power_domain_target(pwrdm->name, pwrst,
-<<<<<<< HEAD
-					  smp_processor_id());
-=======
 					  raw_smp_processor_id());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Program the pwrdm desired target state */
 		ret = arch_pwrdm->pwrdm_set_next_pwrst(pwrdm, pwrst);
 	}
@@ -751,12 +577,8 @@ int pwrdm_read_next_pwrst(struct powerdomain *pwrdm)
  *
  * Return the powerdomain @pwrdm's current power state.	Returns -EINVAL
  * if the powerdomain pointer is null or returns the current power state
-<<<<<<< HEAD
- * upon success.
-=======
  * upon success. Note that if the power domain only supports the ON state
  * then just return ON as the current state.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int pwrdm_read_pwrst(struct powerdomain *pwrdm)
 {
@@ -765,12 +587,9 @@ int pwrdm_read_pwrst(struct powerdomain *pwrdm)
 	if (!pwrdm)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	if (pwrdm->pwrsts == PWRSTS_ON)
 		return PWRDM_POWER_ON;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (arch_pwrdm && arch_pwrdm->pwrdm_read_pwrst)
 		ret = arch_pwrdm->pwrdm_read_pwrst(pwrdm);
 
@@ -807,11 +626,7 @@ int pwrdm_read_prev_pwrst(struct powerdomain *pwrdm)
  * powerdomain @pwrdm will enter when the powerdomain enters retention.
  * This will be either RETENTION or OFF, if supported.  Returns
  * -EINVAL if the powerdomain pointer is null or the target power
-<<<<<<< HEAD
- * state is not not supported, or returns 0 upon success.
-=======
  * state is not supported, or returns 0 upon success.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int pwrdm_set_logic_retst(struct powerdomain *pwrdm, u8 pwrst)
 {
@@ -823,11 +638,7 @@ int pwrdm_set_logic_retst(struct powerdomain *pwrdm, u8 pwrst)
 	if (!(pwrdm->pwrsts_logic_ret & (1 << pwrst)))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	pr_debug("powerdomain: setting next logic powerstate for %s to %0x\n",
-=======
 	pr_debug("powerdomain: %s: setting next logic powerstate to %0x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 pwrdm->name, pwrst);
 
 	if (arch_pwrdm && arch_pwrdm->pwrdm_set_logic_retst)
@@ -847,11 +658,7 @@ int pwrdm_set_logic_retst(struct powerdomain *pwrdm, u8 pwrst)
  * state.  @bank will be a number from 0 to 3, and represents different
  * types of memory, depending on the powerdomain.  Returns -EINVAL if
  * the powerdomain pointer is null or the target power state is not
-<<<<<<< HEAD
- * not supported for this memory bank, -EEXIST if the target memory
-=======
  * supported for this memory bank, -EEXIST if the target memory
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * bank does not exist or is not controllable, or returns 0 upon
  * success.
  */
@@ -868,13 +675,8 @@ int pwrdm_set_mem_onst(struct powerdomain *pwrdm, u8 bank, u8 pwrst)
 	if (!(pwrdm->pwrsts_mem_on[bank] & (1 << pwrst)))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	pr_debug("powerdomain: setting next memory powerstate for domain %s "
-		 "bank %0x while pwrdm-ON to %0x\n", pwrdm->name, bank, pwrst);
-=======
 	pr_debug("powerdomain: %s: setting next memory powerstate for bank %0x while pwrdm-ON to %0x\n",
 		 pwrdm->name, bank, pwrst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (arch_pwrdm && arch_pwrdm->pwrdm_set_mem_onst)
 		ret = arch_pwrdm->pwrdm_set_mem_onst(pwrdm, bank, pwrst);
@@ -894,11 +696,7 @@ int pwrdm_set_mem_onst(struct powerdomain *pwrdm, u8 bank, u8 pwrst)
  * different types of memory, depending on the powerdomain.  @pwrst
  * will be either RETENTION or OFF, if supported.  Returns -EINVAL if
  * the powerdomain pointer is null or the target power state is not
-<<<<<<< HEAD
- * not supported for this memory bank, -EEXIST if the target memory
-=======
  * supported for this memory bank, -EEXIST if the target memory
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * bank does not exist or is not controllable, or returns 0 upon
  * success.
  */
@@ -915,13 +713,8 @@ int pwrdm_set_mem_retst(struct powerdomain *pwrdm, u8 bank, u8 pwrst)
 	if (!(pwrdm->pwrsts_mem_ret[bank] & (1 << pwrst)))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	pr_debug("powerdomain: setting next memory powerstate for domain %s "
-		 "bank %0x while pwrdm-RET to %0x\n", pwrdm->name, bank, pwrst);
-=======
 	pr_debug("powerdomain: %s: setting next memory powerstate for bank %0x while pwrdm-RET to %0x\n",
 		 pwrdm->name, bank, pwrst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (arch_pwrdm && arch_pwrdm->pwrdm_set_mem_retst)
 		ret = arch_pwrdm->pwrdm_set_mem_retst(pwrdm, bank, pwrst);
@@ -1099,11 +892,7 @@ int pwrdm_clear_all_prev_pwrst(struct powerdomain *pwrdm)
 	 * warn & fail if it is not ON.
 	 */
 
-<<<<<<< HEAD
-	pr_debug("powerdomain: clearing previous power state reg for %s\n",
-=======
 	pr_debug("powerdomain: %s: clearing previous power state reg\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 pwrdm->name);
 
 	if (arch_pwrdm && arch_pwrdm->pwrdm_clear_all_prev_pwrst)
@@ -1133,12 +922,7 @@ int pwrdm_enable_hdwr_sar(struct powerdomain *pwrdm)
 	if (!(pwrdm->flags & PWRDM_HAS_HDWR_SAR))
 		return ret;
 
-<<<<<<< HEAD
-	pr_debug("powerdomain: %s: setting SAVEANDRESTORE bit\n",
-		 pwrdm->name);
-=======
 	pr_debug("powerdomain: %s: setting SAVEANDRESTORE bit\n", pwrdm->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (arch_pwrdm && arch_pwrdm->pwrdm_enable_hdwr_sar)
 		ret = arch_pwrdm->pwrdm_enable_hdwr_sar(pwrdm);
@@ -1167,12 +951,7 @@ int pwrdm_disable_hdwr_sar(struct powerdomain *pwrdm)
 	if (!(pwrdm->flags & PWRDM_HAS_HDWR_SAR))
 		return ret;
 
-<<<<<<< HEAD
-	pr_debug("powerdomain: %s: clearing SAVEANDRESTORE bit\n",
-		 pwrdm->name);
-=======
 	pr_debug("powerdomain: %s: clearing SAVEANDRESTORE bit\n", pwrdm->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (arch_pwrdm && arch_pwrdm->pwrdm_disable_hdwr_sar)
 		ret = arch_pwrdm->pwrdm_disable_hdwr_sar(pwrdm);
@@ -1192,65 +971,6 @@ bool pwrdm_has_hdwr_sar(struct powerdomain *pwrdm)
 	return (pwrdm && pwrdm->flags & PWRDM_HAS_HDWR_SAR) ? 1 : 0;
 }
 
-<<<<<<< HEAD
-/**
- * pwrdm_set_lowpwrstchange - Request a low power state change
- * @pwrdm: struct powerdomain *
- *
- * Allows a powerdomain to transtion to a lower power sleep state
- * from an existing sleep state without waking up the powerdomain.
- * Returns -EINVAL if the powerdomain pointer is null or if the
- * powerdomain does not support LOWPOWERSTATECHANGE, or returns 0
- * upon success.
- */
-int pwrdm_set_lowpwrstchange(struct powerdomain *pwrdm)
-{
-	int ret = -EINVAL;
-
-	if (!pwrdm)
-		return -EINVAL;
-
-	if (!(pwrdm->flags & PWRDM_HAS_LOWPOWERSTATECHANGE))
-		return -EINVAL;
-
-	pr_debug("powerdomain: %s: setting LOWPOWERSTATECHANGE bit\n",
-		 pwrdm->name);
-
-	if (arch_pwrdm && arch_pwrdm->pwrdm_set_lowpwrstchange)
-		ret = arch_pwrdm->pwrdm_set_lowpwrstchange(pwrdm);
-
-	return ret;
-}
-
-/**
- * pwrdm_wait_transition - wait for powerdomain power transition to finish
- * @pwrdm: struct powerdomain * to wait for
- *
- * If the powerdomain @pwrdm is in the process of a state transition,
- * spin until it completes the power transition, or until an iteration
- * bailout value is reached. Returns -EINVAL if the powerdomain
- * pointer is null, -EAGAIN if the bailout value was reached, or
- * returns 0 upon success.
- */
-int pwrdm_wait_transition(struct powerdomain *pwrdm)
-{
-	int ret = -EINVAL;
-
-	if (!pwrdm)
-		return -EINVAL;
-
-	if (arch_pwrdm && arch_pwrdm->pwrdm_wait_transition)
-		ret = arch_pwrdm->pwrdm_wait_transition(pwrdm);
-
-	return ret;
-}
-
-int pwrdm_state_switch(struct powerdomain *pwrdm)
-{
-	int ret;
-
-	ret = pwrdm_wait_transition(pwrdm);
-=======
 int pwrdm_state_switch_nolock(struct powerdomain *pwrdm)
 {
 	int ret;
@@ -1259,34 +979,12 @@ int pwrdm_state_switch_nolock(struct powerdomain *pwrdm)
 		return -EINVAL;
 
 	ret = arch_pwrdm->pwrdm_wait_transition(pwrdm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret)
 		ret = _pwrdm_state_switch(pwrdm, PWRDM_STATE_NOW);
 
 	return ret;
 }
 
-<<<<<<< HEAD
-int pwrdm_clkdm_state_switch(struct clockdomain *clkdm)
-{
-	if (clkdm != NULL && clkdm->pwrdm.ptr != NULL) {
-		pwrdm_wait_transition(clkdm->pwrdm.ptr);
-		return pwrdm_state_switch(clkdm->pwrdm.ptr);
-	}
-
-	return -EINVAL;
-}
-
-int pwrdm_pre_transition(void)
-{
-	pwrdm_for_each(_pwrdm_pre_transition_cb, NULL);
-	return 0;
-}
-
-int pwrdm_post_transition(void)
-{
-	pwrdm_for_each(_pwrdm_post_transition_cb, NULL);
-=======
 int __deprecated pwrdm_state_switch(struct powerdomain *pwrdm)
 {
 	int ret;
@@ -1315,87 +1013,10 @@ int pwrdm_post_transition(struct powerdomain *pwrdm)
 	else
 		pwrdm_for_each(_pwrdm_post_transition_cb, NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- * pwrdm_get_context_loss_count - get powerdomain's context loss count
- * @pwrdm: struct powerdomain * to wait for
- *
- * Context loss count is the sum of powerdomain off-mode counter, the
- * logic off counter and the per-bank memory off counter.  Returns negative
- * (and WARNs) upon error, otherwise, returns the context loss count.
- */
-int pwrdm_get_context_loss_count(struct powerdomain *pwrdm)
-{
-	int i, count;
-
-	if (!pwrdm) {
-		WARN(1, "powerdomain: %s: pwrdm is null\n", __func__);
-		return -ENODEV;
-	}
-
-	count = pwrdm->state_counter[PWRDM_POWER_OFF];
-	count += pwrdm->ret_logic_off_counter;
-
-	for (i = 0; i < pwrdm->banks; i++)
-		count += pwrdm->ret_mem_off_counter[i];
-
-	/*
-	 * Context loss count has to be a non-negative value. Clear the sign
-	 * bit to get a value range from 0 to INT_MAX.
-	 */
-	count &= INT_MAX;
-
-	pr_debug("powerdomain: %s: context loss count = %d\n",
-		 pwrdm->name, count);
-
-	return count;
-}
-
-/**
- * pwrdm_can_ever_lose_context - can this powerdomain ever lose context?
- * @pwrdm: struct powerdomain *
- *
- * Given a struct powerdomain * @pwrdm, returns 1 if the powerdomain
- * can lose either memory or logic context or if @pwrdm is invalid, or
- * returns 0 otherwise.  This function is not concerned with how the
- * powerdomain registers are programmed (i.e., to go off or not); it's
- * concerned with whether it's ever possible for this powerdomain to
- * go off while some other part of the chip is active.  This function
- * assumes that every powerdomain can go to either ON or INACTIVE.
- */
-bool pwrdm_can_ever_lose_context(struct powerdomain *pwrdm)
-{
-	int i;
-
-	if (IS_ERR_OR_NULL(pwrdm)) {
-		pr_debug("powerdomain: %s: invalid powerdomain pointer\n",
-			 __func__);
-		return 1;
-	}
-
-	if (pwrdm->pwrsts & PWRSTS_OFF)
-		return 1;
-
-	if (pwrdm->pwrsts & PWRSTS_RET) {
-		if (pwrdm->pwrsts_logic_ret & PWRSTS_OFF)
-			return 1;
-
-		for (i = 0; i < pwrdm->banks; i++)
-			if (pwrdm->pwrsts_mem_ret[i] & PWRSTS_OFF)
-				return 1;
-	}
-
-	for (i = 0; i < pwrdm->banks; i++)
-		if (pwrdm->pwrsts_mem_on[i] & PWRSTS_OFF)
-			return 1;
-
-	return 0;
-}
-=======
  * pwrdm_get_valid_lp_state() - Find best match deep power state
  * @pwrdm:	power domain for which we want to find best match
  * @is_logic_state: Are we looking for logic state match here? Should
@@ -1562,4 +1183,3 @@ static void pwrdms_restore_context(void)
 {
 	pwrdm_for_each(pwrdm_restore_context, NULL);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

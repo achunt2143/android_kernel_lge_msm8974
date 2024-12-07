@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Adrian Hunter
  *          Artem Bityutskiy (Битюцкий Артём)
  */
@@ -89,8 +70,6 @@ static int nothing_to_commit(struct ubifs_info *c)
 		return 0;
 
 	/*
-<<<<<<< HEAD
-=======
 	 * Increasing @c->dirty_pn_cnt/@c->dirty_nn_cnt and marking
 	 * nnodes/pnodes as dirty in run_gc() could race with following
 	 * checking, which leads inconsistent states between @c->nroot
@@ -99,21 +78,12 @@ static int nothing_to_commit(struct ubifs_info *c)
 	 */
 	mutex_lock(&c->lp_mutex);
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Even though the TNC is clean, the LPT tree may have dirty nodes. For
 	 * example, this may happen if the budgeting subsystem invoked GC to
 	 * make some free space, and the GC found an LEB with only dirty and
 	 * free space. In this case GC would just change the lprops of this
 	 * LEB (by turning all space into free space) and unmap it.
 	 */
-<<<<<<< HEAD
-	if (c->nroot && test_bit(DIRTY_CNODE, &c->nroot->flags))
-		return 0;
-
-	ubifs_assert(atomic_long_read(&c->dirty_zn_cnt) == 0);
-	ubifs_assert(c->dirty_pn_cnt == 0);
-	ubifs_assert(c->dirty_nn_cnt == 0);
-=======
 	if (c->nroot && test_bit(DIRTY_CNODE, &c->nroot->flags)) {
 		mutex_unlock(&c->lp_mutex);
 		return 0;
@@ -123,7 +93,6 @@ static int nothing_to_commit(struct ubifs_info *c)
 	ubifs_assert(c, c->dirty_pn_cnt == 0);
 	ubifs_assert(c, c->dirty_nn_cnt == 0);
 	mutex_unlock(&c->lp_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -143,11 +112,7 @@ static int do_commit(struct ubifs_info *c)
 	struct ubifs_lp_stats lst;
 
 	dbg_cmt("start");
-<<<<<<< HEAD
-	ubifs_assert(!c->ro_media && !c->ro_mount);
-=======
 	ubifs_assert(c, !c->ro_media && !c->ro_mount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (c->ro_error) {
 		err = -EROFS;
@@ -259,11 +224,7 @@ out_cancel:
 out_up:
 	up_write(&c->commit_sem);
 out:
-<<<<<<< HEAD
-	ubifs_err("commit failed, error %d", err);
-=======
 	ubifs_err(c, "commit failed, error %d", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&c->cs_lock);
 	c->cmt_state = COMMIT_BROKEN;
 	wake_up(&c->cmt_wq);
@@ -327,13 +288,8 @@ int ubifs_bg_thread(void *info)
 	int err;
 	struct ubifs_info *c = info;
 
-<<<<<<< HEAD
-	dbg_msg("background thread \"%s\" started, PID %d",
-		c->bgt_name, current->pid);
-=======
 	ubifs_msg(c, "background thread \"%s\" started, PID %d",
 		  c->bgt_name, current->pid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_freezable();
 
 	while (1) {
@@ -367,11 +323,7 @@ int ubifs_bg_thread(void *info)
 		cond_resched();
 	}
 
-<<<<<<< HEAD
-	dbg_msg("background thread \"%s\" stops", c->bgt_name);
-=======
 	ubifs_msg(c, "background thread \"%s\" stops", c->bgt_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -539,13 +491,9 @@ int ubifs_gc_should_commit(struct ubifs_info *c)
 	return ret;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_UBIFS_FS_DEBUG
-=======
 /*
  * Everything below is related to debugging.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct idx_node - hold index nodes during index tree traversal.
@@ -561,11 +509,7 @@ struct idx_node {
 	struct list_head list;
 	int iip;
 	union ubifs_key upper_key;
-<<<<<<< HEAD
-	struct ubifs_idx_node idx __attribute__((aligned(8)));
-=======
 	struct ubifs_idx_node idx __aligned(8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -619,19 +563,11 @@ out:
  */
 int dbg_check_old_index(struct ubifs_info *c, struct ubifs_zbranch *zroot)
 {
-<<<<<<< HEAD
-	int lnum, offs, len, err = 0, uninitialized_var(last_level), child_cnt;
-	int first = 1, iip;
-	struct ubifs_debug_info *d = c->dbg;
-	union ubifs_key uninitialized_var(lower_key), upper_key, l_key, u_key;
-	unsigned long long uninitialized_var(last_sqnum);
-=======
 	int lnum, offs, len, err = 0, last_level, child_cnt;
 	int first = 1, iip;
 	struct ubifs_debug_info *d = c->dbg;
 	union ubifs_key lower_key, upper_key, l_key, u_key;
 	unsigned long long last_sqnum;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ubifs_idx_node *idx;
 	struct list_head list;
 	struct idx_node *i;
@@ -775,24 +711,14 @@ out:
 	return 0;
 
 out_dump:
-<<<<<<< HEAD
-	dbg_err("dumping index node (iip=%d)", i->iip);
-	dbg_dump_node(c, idx);
-=======
 	ubifs_err(c, "dumping index node (iip=%d)", i->iip);
 	ubifs_dump_node(c, idx, ubifs_idx_node_sz(c, c->fanout));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del(&i->list);
 	kfree(i);
 	if (!list_empty(&list)) {
 		i = list_entry(list.prev, struct idx_node, list);
-<<<<<<< HEAD
-		dbg_err("dumping parent index node");
-		dbg_dump_node(c, &i->idx);
-=======
 		ubifs_err(c, "dumping parent index node");
 		ubifs_dump_node(c, &i->idx, ubifs_idx_node_sz(c, c->fanout));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out_free:
 	while (!list_empty(&list)) {
@@ -800,17 +726,8 @@ out_free:
 		list_del(&i->list);
 		kfree(i);
 	}
-<<<<<<< HEAD
-	ubifs_err("failed, error %d", err);
-=======
 	ubifs_err(c, "failed, error %d", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err > 0)
 		err = -EINVAL;
 	return err;
 }
-<<<<<<< HEAD
-
-#endif /* CONFIG_UBIFS_FS_DEBUG */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ARM KGDB support
  *
@@ -15,10 +12,7 @@
 #define __ARM_KGDB_H__
 
 #include <linux/ptrace.h>
-<<<<<<< HEAD
-=======
 #include <asm/opcodes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * GDB assumes that we're a user process being debugged, so
@@ -49,11 +43,7 @@
 
 static inline void arch_kgdb_breakpoint(void)
 {
-<<<<<<< HEAD
-	asm(".word 0xe7ffdeff");
-=======
 	asm(__inst_arm(0xe7ffdeff));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 extern void kgdb_handle_bus_error(void);
@@ -87,11 +77,7 @@ extern int kgdb_fault_expected;
 
 #define KGDB_MAX_NO_CPUS	1
 #define BUFMAX			400
-<<<<<<< HEAD
-#define NUMREGBYTES		(DBG_MAX_REG_NUM << 2)
-=======
 #define NUMREGBYTES		(GDB_MAX_REGS << 2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NUMCRITREGBYTES		(32 << 2)
 
 #define _R0			0

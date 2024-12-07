@@ -1,23 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Generic HWSPINLOCK framework
 #
 
-<<<<<<< HEAD
-# HWSPINLOCK always gets selected by whoever wants it.
-config HWSPINLOCK
-	tristate
-
-menu "Hardware Spinlock drivers"
-
-config HWSPINLOCK_OMAP
-	tristate "OMAP Hardware Spinlock device"
-	depends on ARCH_OMAP4
-	select HWSPINLOCK
-=======
 menuconfig HWSPINLOCK
 	bool "Hardware Spinlock drivers"
 
@@ -26,19 +11,12 @@ if HWSPINLOCK
 config HWSPINLOCK_OMAP
 	tristate "OMAP Hardware Spinlock device"
 	depends on ARCH_OMAP4 || SOC_OMAP5 || SOC_DRA7XX || SOC_AM33XX || SOC_AM43XX || ARCH_K3 || COMPILE_TEST
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say y here to support the OMAP Hardware Spinlock device (firstly
 	  introduced in OMAP4).
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-config HSEM_U8500
-	tristate "STE Hardware Semaphore functionality"
-	depends on ARCH_U8500
-	select HWSPINLOCK
-=======
 config HWSPINLOCK_QCOM
 	tristate "Qualcomm Hardware Spinlock device"
 	depends on ARCH_QCOM || COMPILE_TEST
@@ -78,7 +56,6 @@ config HWSPINLOCK_SUN6I
 config HSEM_U8500
 	tristate "STE Hardware Semaphore functionality"
 	depends on ARCH_U8500 || COMPILE_TEST
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say y here to support the STE Hardware Semaphore functionality, which
 	  provides a synchronisation mechanism for the various processor on the
@@ -86,8 +63,4 @@ config HSEM_U8500
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-endmenu
-=======
 endif # HWSPINLOCK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

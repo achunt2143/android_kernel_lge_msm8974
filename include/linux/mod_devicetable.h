@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Device tables which are exported to userspace via
  * scripts/mod/file2alias.c.  You must keep that file in sync with this
@@ -12,20 +9,14 @@
 #define LINUX_MOD_DEVICETABLE_H
 
 #ifdef __KERNEL__
-<<<<<<< HEAD
-#include <linux/types.h>
-=======
 #include <linux/mei.h>
 #include <linux/types.h>
 #include <linux/uuid.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef unsigned long kernel_ulong_t;
 #endif
 
 #define PCI_ANY_ID (~0)
 
-<<<<<<< HEAD
-=======
 enum {
 	PCI_ID_F_VFIO_DRIVER_OVERRIDE = 1,
 };
@@ -50,16 +41,12 @@ enum {
  *			instead of using it as a pointer.
  * @override_only:	Match only when dev->driver_override is this driver.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pci_device_id {
 	__u32 vendor, device;		/* Vendor and device ID or PCI_ANY_ID*/
 	__u32 subvendor, subdevice;	/* Subsystem ID's or PCI_ANY_ID */
 	__u32 class, class_mask;	/* (class,subclass,prog-if) triplet */
 	kernel_ulong_t driver_data;	/* Data private to the driver */
-<<<<<<< HEAD
-=======
 	__u32 override_only;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -74,12 +61,7 @@ struct ieee1394_device_id {
 	__u32 model_id;
 	__u32 specifier_id;
 	__u32 version;
-<<<<<<< HEAD
-	kernel_ulong_t driver_data
-		__attribute__((aligned(sizeof(kernel_ulong_t))));
-=======
 	kernel_ulong_t driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -98,15 +80,9 @@ struct ieee1394_device_id {
 
 /**
  * struct usb_device_id - identifies USB devices for probing and hotplugging
-<<<<<<< HEAD
- * @match_flags: Bit mask controlling of the other fields are used to match
- *	against new devices.  Any field except for driver_info may be used,
- *	although some only make sense in conjunction with other fields.
-=======
  * @match_flags: Bit mask controlling which of the other fields are used to
  *	match against new devices. Any field except for driver_info may be
  *	used, although some only make sense in conjunction with other fields.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	This is usually set by a USB_DEVICE_*() macro, which sets all
  *	other fields in this structure except for driver_info.
  * @idVendor: USB vendor ID for a device; numbers are assigned
@@ -120,11 +96,7 @@ struct ieee1394_device_id {
  * @bDeviceClass: Class of device; numbers are assigned
  *	by the USB forum.  Products may choose to implement classes,
  *	or be vendor-specific.  Device classes specify behavior of all
-<<<<<<< HEAD
- *	the interfaces on a devices.
-=======
  *	the interfaces on a device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bDeviceSubClass: Subclass of device; associated with bDeviceClass.
  * @bDeviceProtocol: Protocol of device; associated with bDeviceClass.
  * @bInterfaceClass: Class of interface; numbers are assigned
@@ -177,12 +149,8 @@ struct usb_device_id {
 	__u8		bInterfaceNumber;
 
 	/* not matched against */
-<<<<<<< HEAD
-	kernel_ulong_t	driver_info;
-=======
 	kernel_ulong_t	driver_info
 		__attribute__((aligned(sizeof(kernel_ulong_t))));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Some useful macros to use to create struct usb_device_id */
@@ -199,16 +167,6 @@ struct usb_device_id {
 #define USB_DEVICE_ID_MATCH_INT_NUMBER		0x0400
 
 #define HID_ANY_ID				(~0)
-<<<<<<< HEAD
-
-struct hid_device_id {
-	__u16 bus;
-	__u16 pad1;
-	__u32 vendor;
-	__u32 product;
-	kernel_ulong_t driver_data
-		__attribute__((aligned(sizeof(kernel_ulong_t))));
-=======
 #define HID_BUS_ANY				0xffff
 #define HID_GROUP_ANY				0x0000
 
@@ -218,7 +176,6 @@ struct hid_device_id {
 	__u32 vendor;
 	__u32 product;
 	kernel_ulong_t driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* s390 CCW devices */
@@ -242,47 +199,24 @@ struct ccw_device_id {
 struct ap_device_id {
 	__u16 match_flags;	/* which fields to match against */
 	__u8 dev_type;		/* device type */
-<<<<<<< HEAD
-	__u8 pad1;
-	__u32 pad2;
-	kernel_ulong_t driver_info;
-};
-
-#define AP_DEVICE_ID_MATCH_DEVICE_TYPE		0x01
-=======
 	kernel_ulong_t driver_info;
 };
 
 #define AP_DEVICE_ID_MATCH_CARD_TYPE		0x01
 #define AP_DEVICE_ID_MATCH_QUEUE_TYPE		0x02
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* s390 css bus devices (subchannels) */
 struct css_device_id {
 	__u8 match_flags;
 	__u8 type; /* subchannel type */
-<<<<<<< HEAD
-	__u16 pad2;
-	__u32 pad3;
-	kernel_ulong_t driver_data;
-};
-
-#define ACPI_ID_LEN	16 /* only 9 bytes needed here, 16 bytes are used */
-			   /* to workaround crosscompile issues */
-=======
 	kernel_ulong_t driver_data;
 };
 
 #define ACPI_ID_LEN	16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct acpi_device_id {
 	__u8 id[ACPI_ID_LEN];
 	kernel_ulong_t driver_data;
-<<<<<<< HEAD
-};
-
-=======
 	__u32 cls;
 	__u32 cls_msk;
 };
@@ -300,7 +234,6 @@ struct acpi_device_id {
  */
 #define ACPI_DEVICE_CLASS(_cls, _msk)	.cls = (_cls), .cls_msk = (_msk),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PNP_ID_LEN	8
 #define PNP_MAX_DEVICES	8
 
@@ -327,21 +260,6 @@ struct serio_device_id {
 	__u8 proto;
 };
 
-<<<<<<< HEAD
-/*
- * Struct used for matching a device
- */
-struct of_device_id
-{
-	char	name[32];
-	char	type[32];
-	char	compatible[128];
-#ifdef __KERNEL__
-	void	*data;
-#else
-	kernel_ulong_t data;
-#endif
-=======
 struct hda_device_id {
 	__u32 vendor_id;
 	__u32 rev_id;
@@ -366,7 +284,6 @@ struct of_device_id {
 	char	type[32];
 	char	compatible[128];
 	const void *data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* VIO */
@@ -381,36 +298,6 @@ struct pcmcia_device_id {
 	__u16		match_flags;
 
 	__u16		manf_id;
-<<<<<<< HEAD
-	__u16 		card_id;
-
-	__u8  		func_id;
-
-	/* for real multi-function devices */
-	__u8  		function;
-
-	/* for pseudo multi-function devices */
-	__u8  		device_no;
-
-	__u32 		prod_id_hash[4]
-		__attribute__((aligned(sizeof(__u32))));
-
-	/* not matched against in kernelspace*/
-#ifdef __KERNEL__
-	const char *	prod_id[4];
-#else
-	kernel_ulong_t	prod_id[4]
-		__attribute__((aligned(sizeof(kernel_ulong_t))));
-#endif
-
-	/* not matched against */
-	kernel_ulong_t	driver_info;
-#ifdef __KERNEL__
-	char *		cisfile;
-#else
-	kernel_ulong_t	cisfile;
-#endif
-=======
 	__u16		card_id;
 
 	__u8		func_id;
@@ -429,7 +316,6 @@ struct pcmcia_device_id {
 	/* not matched against */
 	kernel_ulong_t	driver_info;
 	char *		cisfile;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define PCMCIA_DEV_ID_MATCH_MANF_ID	0x0001
@@ -454,12 +340,8 @@ struct pcmcia_device_id {
 #define INPUT_DEVICE_ID_LED_MAX		0x0f
 #define INPUT_DEVICE_ID_SND_MAX		0x07
 #define INPUT_DEVICE_ID_FF_MAX		0x7f
-<<<<<<< HEAD
-#define INPUT_DEVICE_ID_SW_MAX		0x20
-=======
 #define INPUT_DEVICE_ID_SW_MAX		0x10
 #define INPUT_DEVICE_ID_PROP_MAX	0x1f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define INPUT_DEVICE_ID_MATCH_BUS	1
 #define INPUT_DEVICE_ID_MATCH_VENDOR	2
@@ -475,10 +357,7 @@ struct pcmcia_device_id {
 #define INPUT_DEVICE_ID_MATCH_SNDBIT	0x0400
 #define INPUT_DEVICE_ID_MATCH_FFBIT	0x0800
 #define INPUT_DEVICE_ID_MATCH_SWBIT	0x1000
-<<<<<<< HEAD
-=======
 #define INPUT_DEVICE_ID_MATCH_PROPBIT	0x2000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct input_device_id {
 
@@ -498,10 +377,7 @@ struct input_device_id {
 	kernel_ulong_t sndbit[INPUT_DEVICE_ID_SND_MAX / BITS_PER_LONG + 1];
 	kernel_ulong_t ffbit[INPUT_DEVICE_ID_FF_MAX / BITS_PER_LONG + 1];
 	kernel_ulong_t swbit[INPUT_DEVICE_ID_SW_MAX / BITS_PER_LONG + 1];
-<<<<<<< HEAD
-=======
 	kernel_ulong_t propbit[INPUT_DEVICE_ID_PROP_MAX / BITS_PER_LONG + 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kernel_ulong_t driver_info;
 };
@@ -538,12 +414,7 @@ struct sdio_device_id {
 	__u8	class;			/* Standard interface or SDIO_ANY_ID */
 	__u16	vendor;			/* Vendor or SDIO_ANY_ID */
 	__u16	device;			/* Device ID or SDIO_ANY_ID */
-<<<<<<< HEAD
-	kernel_ulong_t driver_data	/* Data private to the driver */
-		__attribute__((aligned(sizeof(kernel_ulong_t))));
-=======
 	kernel_ulong_t driver_data;	/* Data private to the driver */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* SSB core, see drivers/ssb/ */
@@ -551,18 +422,10 @@ struct ssb_device_id {
 	__u16	vendor;
 	__u16	coreid;
 	__u8	revision;
-<<<<<<< HEAD
-};
-#define SSB_DEVICE(_vendor, _coreid, _revision)  \
-	{ .vendor = _vendor, .coreid = _coreid, .revision = _revision, }
-#define SSB_DEVTABLE_END  \
-	{ 0, },
-=======
 	__u8	__pad;
 } __attribute__((packed, aligned(2)));
 #define SSB_DEVICE(_vendor, _coreid, _revision)  \
 	{ .vendor = _vendor, .coreid = _coreid, .revision = _revision, }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SSB_ANY_VENDOR		0xFFFF
 #define SSB_ANY_ID		0xFFFF
@@ -574,17 +437,9 @@ struct bcma_device_id {
 	__u16	id;
 	__u8	rev;
 	__u8	class;
-<<<<<<< HEAD
-};
-#define BCMA_CORE(_manuf, _id, _rev, _class)  \
-	{ .manuf = _manuf, .id = _id, .rev = _rev, .class = _class, }
-#define BCMA_CORETABLE_END  \
-	{ 0, },
-=======
 } __attribute__((packed,aligned(2)));
 #define BCMA_CORE(_manuf, _id, _rev, _class)  \
 	{ .manuf = _manuf, .id = _id, .rev = _rev, .class = _class, }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BCMA_ANY_MANUF		0xFFFF
 #define BCMA_ANY_ID		0xFFFF
@@ -601,14 +456,8 @@ struct virtio_device_id {
  * For Hyper-V devices we use the device guid as the id.
  */
 struct hv_vmbus_device_id {
-<<<<<<< HEAD
-	__u8 guid[16];
-	kernel_ulong_t driver_data	/* Data private to the driver */
-			__attribute__((aligned(sizeof(kernel_ulong_t))));
-=======
 	guid_t guid;
 	kernel_ulong_t driver_data;	/* Data private to the driver */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* rpmsg */
@@ -618,10 +467,7 @@ struct hv_vmbus_device_id {
 
 struct rpmsg_device_id {
 	char name[RPMSG_NAME_SIZE];
-<<<<<<< HEAD
-=======
 	kernel_ulong_t driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* i2c */
@@ -631,10 +477,6 @@ struct rpmsg_device_id {
 
 struct i2c_device_id {
 	char name[I2C_NAME_SIZE];
-<<<<<<< HEAD
-	kernel_ulong_t driver_data	/* Data private to the driver */
-			__attribute__((aligned(sizeof(kernel_ulong_t))));
-=======
 	kernel_ulong_t driver_data;	/* Data private to the driver */
 };
 
@@ -663,7 +505,6 @@ struct i3c_device_id {
 	__u16 extra_info;
 
 	const void *data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* spi */
@@ -673,19 +514,6 @@ struct i3c_device_id {
 
 struct spi_device_id {
 	char name[SPI_NAME_SIZE];
-<<<<<<< HEAD
-	kernel_ulong_t driver_data	/* Data private to the driver */
-			__attribute__((aligned(sizeof(kernel_ulong_t))));
-};
-
-#define SLIMBUS_NAME_SIZE	32
-#define SLIMBUS_MODULE_PREFIX "slim:"
-
-struct slim_device_id {
-	char name[SLIMBUS_NAME_SIZE];
-	kernel_ulong_t driver_data	/* Data private to the driver */
-			__attribute__((aligned(sizeof(kernel_ulong_t))));
-=======
 	kernel_ulong_t driver_data;	/* Data private to the driver */
 };
 
@@ -711,7 +539,6 @@ struct apr_device_id {
 	__u32 svc_id;
 	__u32 svc_version;
 	kernel_ulong_t driver_data;	/* Data private to the driver */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define SPMI_NAME_SIZE	32
@@ -719,12 +546,7 @@ struct apr_device_id {
 
 struct spmi_device_id {
 	char name[SPMI_NAME_SIZE];
-<<<<<<< HEAD
-	kernel_ulong_t driver_data	/* Data private to the driver */
-			__attribute__((aligned(sizeof(kernel_ulong_t))));
-=======
 	kernel_ulong_t driver_data;	/* Data private to the driver */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* dmi */
@@ -733,21 +555,15 @@ enum dmi_field {
 	DMI_BIOS_VENDOR,
 	DMI_BIOS_VERSION,
 	DMI_BIOS_DATE,
-<<<<<<< HEAD
-=======
 	DMI_BIOS_RELEASE,
 	DMI_EC_FIRMWARE_RELEASE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DMI_SYS_VENDOR,
 	DMI_PRODUCT_NAME,
 	DMI_PRODUCT_VERSION,
 	DMI_PRODUCT_SERIAL,
 	DMI_PRODUCT_UUID,
-<<<<<<< HEAD
-=======
 	DMI_PRODUCT_SKU,
 	DMI_PRODUCT_FAMILY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DMI_BOARD_VENDOR,
 	DMI_BOARD_NAME,
 	DMI_BOARD_VERSION,
@@ -759,24 +575,6 @@ enum dmi_field {
 	DMI_CHASSIS_SERIAL,
 	DMI_CHASSIS_ASSET_TAG,
 	DMI_STRING_MAX,
-<<<<<<< HEAD
-};
-
-struct dmi_strmatch {
-	unsigned char slot;
-	char substr[79];
-};
-
-#ifndef __KERNEL__
-struct dmi_system_id {
-	kernel_ulong_t callback;
-	kernel_ulong_t ident;
-	struct dmi_strmatch matches[4];
-	kernel_ulong_t driver_data
-			__attribute__((aligned(sizeof(kernel_ulong_t))));
-};
-#else
-=======
 	DMI_OEM_STRING,	/* special case - will not be in dmi_ident */
 };
 
@@ -786,7 +584,6 @@ struct dmi_strmatch {
 	char substr[79];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dmi_system_id {
 	int (*callback)(const struct dmi_system_id *);
 	const char *ident;
@@ -800,32 +597,15 @@ struct dmi_system_id {
  *	error: storage size of '__mod_dmi_device_table' isn't known
  */
 #define dmi_device_id dmi_system_id
-<<<<<<< HEAD
-#endif
-
-#define DMI_MATCH(a, b)	{ a, b }
-=======
 
 #define DMI_MATCH(a, b)	{ .slot = a, .substr = b }
 #define DMI_EXACT_MATCH(a, b)	{ .slot = a, .substr = b, .exact_match = 1 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PLATFORM_NAME_SIZE	20
 #define PLATFORM_MODULE_PREFIX	"platform:"
 
 struct platform_device_id {
 	char name[PLATFORM_NAME_SIZE];
-<<<<<<< HEAD
-	kernel_ulong_t driver_data
-			__attribute__((aligned(sizeof(kernel_ulong_t))));
-};
-
-#define MDIO_MODULE_PREFIX	"mdio:"
-
-#define MDIO_ID_FMT "%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d"
-#define MDIO_ID_ARGS(_id) \
-	(_id)>>31, ((_id)>>30) & 1, ((_id)>>29) & 1, ((_id)>>28) & 1,	\
-=======
 	kernel_ulong_t driver_data;
 };
 
@@ -835,7 +615,6 @@ struct platform_device_id {
 #define MDIO_ID_FMT "%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u"
 #define MDIO_ID_ARGS(_id) \
 	((_id)>>31) & 1, ((_id)>>30) & 1, ((_id)>>29) & 1, ((_id)>>28) & 1, \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	((_id)>>27) & 1, ((_id)>>26) & 1, ((_id)>>25) & 1, ((_id)>>24) & 1, \
 	((_id)>>23) & 1, ((_id)>>22) & 1, ((_id)>>21) & 1, ((_id)>>20) & 1, \
 	((_id)>>19) & 1, ((_id)>>18) & 1, ((_id)>>17) & 1, ((_id)>>16) & 1, \
@@ -847,11 +626,7 @@ struct platform_device_id {
 /**
  * struct mdio_device_id - identifies PHY devices on an MDIO/MII bus
  * @phy_id: The result of
-<<<<<<< HEAD
- *     (mdio_read(&MII_PHYSID1) << 16 | mdio_read(&PHYSID2)) & @phy_id_mask
-=======
  *     (mdio_read(&MII_PHYSID1) << 16 | mdio_read(&MII_PHYSID2)) & @phy_id_mask
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *     for this PHY type
  * @phy_id_mask: Defines the significant bits of @phy_id.  A value of 0
  *     is used to terminate an array of struct mdio_device_id.
@@ -888,13 +663,6 @@ struct isapnp_device_id {
 struct amba_id {
 	unsigned int		id;
 	unsigned int		mask;
-<<<<<<< HEAD
-#ifndef __KERNEL__
-	kernel_ulong_t		data;
-#else
-	void			*data;
-#endif
-=======
 	void			*data;
 };
 
@@ -904,7 +672,6 @@ struct amba_id {
  */
 struct mips_cdmm_device_id {
 	__u8	type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -912,36 +679,20 @@ struct mips_cdmm_device_id {
  * See documentation of "x86_match_cpu" for details.
  */
 
-<<<<<<< HEAD
-=======
 /*
  * MODULE_DEVICE_TABLE expects this struct to be called x86cpu_device_id.
  * Although gcc seems to ignore this error, clang fails without this define.
  */
 #define x86cpu_device_id x86_cpu_id
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct x86_cpu_id {
 	__u16 vendor;
 	__u16 family;
 	__u16 model;
-<<<<<<< HEAD
-=======
 	__u16 steppings;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u16 feature;	/* bit index */
 	kernel_ulong_t driver_data;
 };
 
-<<<<<<< HEAD
-#define X86_FEATURE_MATCH(x) \
-	{ X86_VENDOR_ANY, X86_FAMILY_ANY, X86_MODEL_ANY, x }
-
-#define X86_VENDOR_ANY 0xffff
-#define X86_FAMILY_ANY 0
-#define X86_MODEL_ANY  0
-#define X86_FEATURE_ANY 0	/* Same as FPU, you can't test for that */
-
-=======
 /* Wild cards for x86_cpu_id::vendor, family, model and feature */
 #define X86_VENDOR_ANY 0xffff
 #define X86_FAMILY_ANY 0
@@ -1219,5 +970,4 @@ struct coreboot_device_id {
 	kernel_ulong_t driver_data;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LINUX_MOD_DEVICETABLE_H */

@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-obj-y	:=  init.o init_$(BITS).o fault.o ioremap.o extable.o pageattr.o mmap.o \
-	    pat.o pgtable.o physaddr.o gup.o setup_nx.o
-
-# Make sure __phys_addr has no stackprotector
-nostackp := $(call cc-option, -fno-stack-protector)
-CFLAGS_physaddr.o		:= $(nostackp)
-CFLAGS_setup_nx.o		:= $(nostackp)
-
-obj-$(CONFIG_X86_PAT)		+= pat_rbtree.o
-obj-$(CONFIG_SMP)		+= tlb.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 # Kernel does not boot with instrumentation of tlb.c and mem_encrypt*.c
 KCOV_INSTRUMENT_tlb.o			:= n
@@ -47,18 +35,10 @@ CFLAGS_physaddr.o		:= -fno-stack-protector
 CFLAGS_mem_encrypt_identity.o	:= -fno-stack-protector
 
 CFLAGS_fault.o := -I $(srctree)/$(src)/../include/asm/trace
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_X86_32)		+= pgtable_32.o iomap_32.o
 
 obj-$(CONFIG_HUGETLB_PAGE)	+= hugetlbpage.o
-<<<<<<< HEAD
-obj-$(CONFIG_X86_PTDUMP)	+= dump_pagetables.o
-
-obj-$(CONFIG_HIGHMEM)		+= highmem_32.o
-
-obj-$(CONFIG_KMEMCHECK)		+= kmemcheck/
-=======
 obj-$(CONFIG_PTDUMP_CORE)	+= dump_pagetables.o
 obj-$(CONFIG_PTDUMP_DEBUGFS)	+= debug_pagetables.o
 
@@ -69,7 +49,6 @@ obj-$(CONFIG_KASAN)		+= kasan_init_$(BITS).o
 
 KMSAN_SANITIZE_kmsan_shadow.o	:= n
 obj-$(CONFIG_KMSAN)		+= kmsan_shadow.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_MMIOTRACE)		+= mmiotrace.o
 mmiotrace-y			:= kmmio.o pf_in.o mmio-mod.o
@@ -80,9 +59,6 @@ obj-$(CONFIG_AMD_NUMA)		+= amdtopology.o
 obj-$(CONFIG_ACPI_NUMA)		+= srat.o
 obj-$(CONFIG_NUMA_EMU)		+= numa_emulation.o
 
-<<<<<<< HEAD
-obj-$(CONFIG_MEMTEST)		+= memtest.o
-=======
 obj-$(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS)	+= pkeys.o
 obj-$(CONFIG_RANDOMIZE_MEMORY)			+= kaslr.o
 obj-$(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)	+= pti.o
@@ -92,4 +68,3 @@ obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= mem_encrypt_amd.o
 
 obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= mem_encrypt_identity.o
 obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= mem_encrypt_boot.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

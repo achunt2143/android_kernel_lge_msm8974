@@ -1,35 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * hwmon.c - part of lm_sensors, Linux kernel modules for hardware monitoring
  *
  * This file defines the sysfs class "hwmon", for use by sensors drivers.
  *
  * Copyright (C) 2005 Mark M. Hoffman <mhoffman@lightlink.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/device.h>
-#include <linux/err.h>
-#include <linux/kdev_t.h>
-#include <linux/idr.h>
-#include <linux/hwmon.h>
-#include <linux/gfp.h>
-#include <linux/spinlock.h>
-#include <linux/pci.h>
-=======
 #include <linux/bitops.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -47,17 +26,10 @@
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/hwmon.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HWMON_ID_PREFIX "hwmon"
 #define HWMON_ID_FORMAT HWMON_ID_PREFIX "%d"
 
-<<<<<<< HEAD
-static struct class *hwmon_class;
-
-static DEFINE_IDA(hwmon_ida);
-
-=======
 struct hwmon_device {
 	const char *name;
 	const char *label;
@@ -978,7 +950,6 @@ hwmon_device_register_for_thermal(struct device *dev, const char *name,
 }
 EXPORT_SYMBOL_NS_GPL(hwmon_device_register_for_thermal, HWMON_THERMAL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * hwmon_device_register - register w/ hwmon
  * @dev: the device to register
@@ -990,27 +961,10 @@ EXPORT_SYMBOL_NS_GPL(hwmon_device_register_for_thermal, HWMON_THERMAL);
  */
 struct device *hwmon_device_register(struct device *dev)
 {
-<<<<<<< HEAD
-	struct device *hwdev;
-	int id;
-
-	id = ida_simple_get(&hwmon_ida, 0, 0, GFP_KERNEL);
-	if (id < 0)
-		return ERR_PTR(id);
-
-	hwdev = device_create(hwmon_class, dev, MKDEV(0, 0), NULL,
-			      HWMON_ID_FORMAT, id);
-
-	if (IS_ERR(hwdev))
-		ida_simple_remove(&hwmon_ida, id);
-
-	return hwdev;
-=======
 	dev_warn(dev,
 		 "hwmon_device_register() is deprecated. Please convert the driver to use hwmon_device_register_with_info().\n");
 
 	return __hwmon_device_register(dev, NULL, NULL, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(hwmon_device_register);
 
@@ -1025,19 +979,13 @@ void hwmon_device_unregister(struct device *dev)
 
 	if (likely(sscanf(dev_name(dev), HWMON_ID_FORMAT, &id) == 1)) {
 		device_unregister(dev);
-<<<<<<< HEAD
-		ida_simple_remove(&hwmon_ida, id);
-=======
 		ida_free(&hwmon_ida, id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		dev_dbg(dev->parent,
 			"hwmon_device_unregister() failed: bad class ID!\n");
 }
 EXPORT_SYMBOL_GPL(hwmon_device_unregister);
 
-<<<<<<< HEAD
-=======
 static void devm_hwmon_release(struct device *dev, void *res)
 {
 	struct device *hwdev = *(struct device **)res;
@@ -1196,7 +1144,6 @@ char *devm_hwmon_sanitize_name(struct device *dev, const char *name)
 }
 EXPORT_SYMBOL_GPL(devm_hwmon_sanitize_name);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init hwmon_pci_quirks(void)
 {
 #if defined CONFIG_X86 && defined CONFIG_PCI
@@ -1206,21 +1153,6 @@ static void __init hwmon_pci_quirks(void)
 
 	/* Open access to 0x295-0x296 on MSI MS-7031 */
 	sb = pci_get_device(PCI_VENDOR_ID_ATI, 0x436c, NULL);
-<<<<<<< HEAD
-	if (sb &&
-	    (sb->subsystem_vendor == 0x1462 &&	/* MSI */
-	     sb->subsystem_device == 0x0031)) {	/* MS-7031 */
-
-		pci_read_config_byte(sb, 0x48, &enable);
-		pci_read_config_word(sb, 0x64, &base);
-
-		if (base == 0 && !(enable & BIT(2))) {
-			dev_info(&sb->dev,
-				 "Opening wide generic port at 0x295\n");
-			pci_write_config_word(sb, 0x64, 0x295);
-			pci_write_config_byte(sb, 0x48, enable | BIT(2));
-		}
-=======
 	if (sb) {
 		if (sb->subsystem_vendor == 0x1462 &&	/* MSI */
 		    sb->subsystem_device == 0x0031) {	/* MS-7031 */
@@ -1236,21 +1168,12 @@ static void __init hwmon_pci_quirks(void)
 			}
 		}
 		pci_dev_put(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 }
 
 static int __init hwmon_init(void)
 {
-<<<<<<< HEAD
-	hwmon_pci_quirks();
-
-	hwmon_class = class_create(THIS_MODULE, "hwmon");
-	if (IS_ERR(hwmon_class)) {
-		pr_err("couldn't create sysfs class\n");
-		return PTR_ERR(hwmon_class);
-=======
 	int err;
 
 	hwmon_pci_quirks();
@@ -1259,18 +1182,13 @@ static int __init hwmon_init(void)
 	if (err) {
 		pr_err("couldn't register hwmon sysfs class\n");
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
 static void __exit hwmon_exit(void)
 {
-<<<<<<< HEAD
-	class_destroy(hwmon_class);
-=======
 	class_unregister(&hwmon_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 subsys_initcall(hwmon_init);

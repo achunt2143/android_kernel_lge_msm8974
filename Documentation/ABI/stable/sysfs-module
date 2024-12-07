@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-What:		/sys/module
-Description:
-	The /sys/module tree consists of the following structure:
-
-	/sys/module/MODULENAME
-		The name of the module that is in the kernel.  This
-		module name will show up either if the module is built
-		directly into the kernel, or if it is loaded as a
-		dynamic module.
-
-	/sys/module/MODULENAME/parameters
-=======
 The /sys/module tree consists of the following structure:
 
 What:		/sys/module/<MODULENAME>
@@ -26,7 +13,6 @@ Description:
 
 What:		/sys/module/<MODULENAME>/parameters
 Description:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		This directory contains individual files that are each
 		individual parameters of the module that are able to be
 		changed at runtime.  See the individual module
@@ -39,20 +25,14 @@ Description:
 		individual driver documentation for details as to the
 		stability of the different parameters.
 
-<<<<<<< HEAD
-	/sys/module/MODULENAME/refcnt
-=======
 What:		/sys/module/<MODULENAME>/refcnt
 Description:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		If the module is able to be unloaded from the kernel, this file
 		will contain the current reference count of the module.
 
 		Note: If the module is built into the kernel, or if the
 		CONFIG_MODULE_UNLOAD kernel configuration value is not enabled,
 		this file will not be present.
-<<<<<<< HEAD
-=======
 
 What:		/sys/module/<MODULENAME>/srcversion
 Date:		Jun 2005
@@ -65,4 +45,3 @@ Date:		Jun 2005
 Description:
 		If the module source has MODULE_VERSION, this file will contain
 		the version of the source code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

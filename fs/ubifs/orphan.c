@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Adrian Hunter
  */
 
@@ -59,13 +40,6 @@
  * than the maximum number of orphans allowed.
  */
 
-<<<<<<< HEAD
-#ifdef CONFIG_UBIFS_FS_DEBUG
-static int dbg_check_orphans(struct ubifs_info *c);
-#else
-#define dbg_check_orphans(c) 0
-#endif
-=======
 static int dbg_check_orphans(struct ubifs_info *c);
 
 static struct ubifs_orphan *orphan_add(struct ubifs_info *c, ino_t inum,
@@ -169,7 +143,6 @@ static void orphan_delete(struct ubifs_info *c, struct ubifs_orphan *orph)
 
 	__orphan_drop(c, orph);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ubifs_add_orphan - add an orphan.
@@ -181,46 +154,6 @@ static void orphan_delete(struct ubifs_info *c, struct ubifs_orphan *orph)
  */
 int ubifs_add_orphan(struct ubifs_info *c, ino_t inum)
 {
-<<<<<<< HEAD
-	struct ubifs_orphan *orphan, *o;
-	struct rb_node **p, *parent = NULL;
-
-	orphan = kzalloc(sizeof(struct ubifs_orphan), GFP_NOFS);
-	if (!orphan)
-		return -ENOMEM;
-	orphan->inum = inum;
-	orphan->new = 1;
-
-	spin_lock(&c->orphan_lock);
-	if (c->tot_orphans >= c->max_orphans) {
-		spin_unlock(&c->orphan_lock);
-		kfree(orphan);
-		return -ENFILE;
-	}
-	p = &c->orph_tree.rb_node;
-	while (*p) {
-		parent = *p;
-		o = rb_entry(parent, struct ubifs_orphan, rb);
-		if (inum < o->inum)
-			p = &(*p)->rb_left;
-		else if (inum > o->inum)
-			p = &(*p)->rb_right;
-		else {
-			dbg_err("orphaned twice");
-			spin_unlock(&c->orphan_lock);
-			kfree(orphan);
-			return 0;
-		}
-	}
-	c->tot_orphans += 1;
-	c->new_orphans += 1;
-	rb_link_node(&orphan->rb, parent, p);
-	rb_insert_color(&orphan->rb, &c->orph_tree);
-	list_add_tail(&orphan->list, &c->orph_list);
-	list_add_tail(&orphan->new_list, &c->orph_new);
-	spin_unlock(&c->orphan_lock);
-	dbg_gen("ino %lu", (unsigned long)inum);
-=======
 	int err = 0;
 	ino_t xattr_inum;
 	union ubifs_key key;
@@ -261,7 +194,6 @@ int ubifs_add_orphan(struct ubifs_info *c, ino_t inum)
 	}
 	kfree(pxent);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -274,51 +206,6 @@ int ubifs_add_orphan(struct ubifs_info *c, ino_t inum)
  */
 void ubifs_delete_orphan(struct ubifs_info *c, ino_t inum)
 {
-<<<<<<< HEAD
-	struct ubifs_orphan *o;
-	struct rb_node *p;
-
-	spin_lock(&c->orphan_lock);
-	p = c->orph_tree.rb_node;
-	while (p) {
-		o = rb_entry(p, struct ubifs_orphan, rb);
-		if (inum < o->inum)
-			p = p->rb_left;
-		else if (inum > o->inum)
-			p = p->rb_right;
-		else {
-			if (o->del) {
-				spin_unlock(&c->orphan_lock);
-				dbg_gen("deleted twice ino %lu",
-					(unsigned long)inum);
-				return;
-			}
-			if (o->cnext) {
-				o->del = 1;
-				o->dnext = c->orph_dnext;
-				c->orph_dnext = o;
-				spin_unlock(&c->orphan_lock);
-				dbg_gen("delete later ino %lu",
-					(unsigned long)inum);
-				return;
-			}
-			rb_erase(p, &c->orph_tree);
-			list_del(&o->list);
-			c->tot_orphans -= 1;
-			if (o->new) {
-				list_del(&o->new_list);
-				c->new_orphans -= 1;
-			}
-			spin_unlock(&c->orphan_lock);
-			kfree(o);
-			dbg_gen("inum %lu", (unsigned long)inum);
-			return;
-		}
-	}
-	spin_unlock(&c->orphan_lock);
-	dbg_err("missing orphan ino %lu", (unsigned long)inum);
-	dbg_dump_stack();
-=======
 	struct ubifs_orphan *orph, *child_orph, *tmp_o;
 
 	spin_lock(&c->orphan_lock);
@@ -340,7 +227,6 @@ void ubifs_delete_orphan(struct ubifs_info *c, ino_t inum)
 	orphan_delete(c, orph);
 
 	spin_unlock(&c->orphan_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -356,14 +242,6 @@ int ubifs_orphan_start_commit(struct ubifs_info *c)
 	spin_lock(&c->orphan_lock);
 	last = &c->orph_cnext;
 	list_for_each_entry(orphan, &c->orph_new, new_list) {
-<<<<<<< HEAD
-		ubifs_assert(orphan->new);
-		orphan->new = 0;
-		*last = orphan;
-		last = &orphan->cnext;
-	}
-	*last = orphan->cnext;
-=======
 		ubifs_assert(c, orphan->new);
 		ubifs_assert(c, !orphan->cmt);
 		orphan->new = 0;
@@ -372,7 +250,6 @@ int ubifs_orphan_start_commit(struct ubifs_info *c)
 		last = &orphan->cnext;
 	}
 	*last = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->cmt_orphans = c->new_orphans;
 	c->new_orphans = 0;
 	dbg_cmt("%d orphans to commit", c->cmt_orphans);
@@ -437,18 +314,10 @@ static int do_write_orph_node(struct ubifs_info *c, int len, int atomic)
 	int err = 0;
 
 	if (atomic) {
-<<<<<<< HEAD
-		ubifs_assert(c->ohead_offs == 0);
-		ubifs_prepare_node(c, c->orph_buf, len, 1);
-		len = ALIGN(len, c->min_io_size);
-		err = ubifs_leb_change(c, c->ohead_lnum, c->orph_buf, len,
-				       UBI_SHORTTERM);
-=======
 		ubifs_assert(c, c->ohead_offs == 0);
 		ubifs_prepare_node(c, c->orph_buf, len, 1);
 		len = ALIGN(len, c->min_io_size);
 		err = ubifs_leb_change(c, c->ohead_lnum, c->orph_buf, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (c->ohead_offs == 0) {
 			/* Ensure LEB has been unmapped */
@@ -457,11 +326,7 @@ static int do_write_orph_node(struct ubifs_info *c, int len, int atomic)
 				return err;
 		}
 		err = ubifs_write_node(c, c->orph_buf, len, c->ohead_lnum,
-<<<<<<< HEAD
-				       c->ohead_offs, UBI_SHORTTERM);
-=======
 				       c->ohead_offs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
@@ -481,11 +346,7 @@ static int write_orph_node(struct ubifs_info *c, int atomic)
 	struct ubifs_orph_node *orph;
 	int gap, err, len, cnt, i;
 
-<<<<<<< HEAD
-	ubifs_assert(c->cmt_orphans > 0);
-=======
 	ubifs_assert(c, c->cmt_orphans > 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gap = c->leb_size - c->ohead_offs;
 	if (gap < UBIFS_ORPH_NODE_SZ + sizeof(__le64)) {
 		c->ohead_lnum += 1;
@@ -496,11 +357,7 @@ static int write_orph_node(struct ubifs_info *c, int atomic)
 			 * We limit the number of orphans so that this should
 			 * never happen.
 			 */
-<<<<<<< HEAD
-			ubifs_err("out of space in orphan area");
-=======
 			ubifs_err(c, "out of space in orphan area");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
@@ -508,24 +365,16 @@ static int write_orph_node(struct ubifs_info *c, int atomic)
 	if (cnt > c->cmt_orphans)
 		cnt = c->cmt_orphans;
 	len = UBIFS_ORPH_NODE_SZ + cnt * sizeof(__le64);
-<<<<<<< HEAD
-	ubifs_assert(c->orph_buf);
-=======
 	ubifs_assert(c, c->orph_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	orph = c->orph_buf;
 	orph->ch.node_type = UBIFS_ORPH_NODE;
 	spin_lock(&c->orphan_lock);
 	cnext = c->orph_cnext;
 	for (i = 0; i < cnt; i++) {
 		orphan = cnext;
-<<<<<<< HEAD
-		orph->inos[i] = cpu_to_le64(orphan->inum);
-=======
 		ubifs_assert(c, orphan->cmt);
 		orph->inos[i] = cpu_to_le64(orphan->inum);
 		orphan->cmt = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cnext = orphan->cnext;
 		orphan->cnext = NULL;
 	}
@@ -537,15 +386,9 @@ static int write_orph_node(struct ubifs_info *c, int atomic)
 	else
 		/* Mark the last node of the commit */
 		orph->cmt_no = cpu_to_le64((c->cmt_no) | (1ULL << 63));
-<<<<<<< HEAD
-	ubifs_assert(c->ohead_offs + len <= c->leb_size);
-	ubifs_assert(c->ohead_lnum >= c->orph_first);
-	ubifs_assert(c->ohead_lnum <= c->orph_last);
-=======
 	ubifs_assert(c, c->ohead_offs + len <= c->leb_size);
 	ubifs_assert(c, c->ohead_lnum >= c->orph_first);
 	ubifs_assert(c, c->ohead_lnum <= c->orph_last);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = do_write_orph_node(c, len, atomic);
 	c->ohead_offs += ALIGN(len, c->min_io_size);
 	c->ohead_offs = ALIGN(c->ohead_offs, 8);
@@ -573,10 +416,6 @@ static int write_orph_nodes(struct ubifs_info *c, int atomic)
 		int lnum;
 
 		/* Unmap any unused LEBs after consolidation */
-<<<<<<< HEAD
-		lnum = c->ohead_lnum + 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (lnum = c->ohead_lnum + 1; lnum <= c->orph_last; lnum++) {
 			err = ubifs_leb_unmap(c, lnum);
 			if (err)
@@ -613,21 +452,13 @@ static int consolidate(struct ubifs_info *c)
 		list_for_each_entry(orphan, &c->orph_list, list) {
 			if (orphan->new)
 				continue;
-<<<<<<< HEAD
-=======
 			orphan->cmt = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*last = orphan;
 			last = &orphan->cnext;
 			cnt += 1;
 		}
-<<<<<<< HEAD
-		*last = orphan->cnext;
-		ubifs_assert(cnt == c->tot_orphans - c->new_orphans);
-=======
 		*last = NULL;
 		ubifs_assert(c, cnt == c->tot_orphans - c->new_orphans);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->cmt_orphans = cnt;
 		c->ohead_lnum = c->orph_first;
 		c->ohead_offs = 0;
@@ -636,11 +467,7 @@ static int consolidate(struct ubifs_info *c)
 		 * We limit the number of orphans so that this should
 		 * never happen.
 		 */
-<<<<<<< HEAD
-		ubifs_err("out of space in orphan area");
-=======
 		ubifs_err(c, "out of space in orphan area");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 	}
 	spin_unlock(&c->orphan_lock);
@@ -658,11 +485,7 @@ static int commit_orphans(struct ubifs_info *c)
 {
 	int avail, atomic = 0, err;
 
-<<<<<<< HEAD
-	ubifs_assert(c->cmt_orphans > 0);
-=======
 	ubifs_assert(c, c->cmt_orphans > 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	avail = avail_orphs(c);
 	if (avail < c->cmt_orphans) {
 		/* Not enough space to write new orphans, so consolidate */
@@ -693,13 +516,8 @@ static void erase_deleted(struct ubifs_info *c)
 	while (dnext) {
 		orphan = dnext;
 		dnext = orphan->dnext;
-<<<<<<< HEAD
-		ubifs_assert(!orphan->new);
-		ubifs_assert(orphan->del);
-=======
 		ubifs_assert(c, !orphan->new);
 		ubifs_assert(c, orphan->del);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rb_erase(&orphan->rb, &c->orph_tree);
 		list_del(&orphan->list);
 		c->tot_orphans -= 1;
@@ -815,22 +633,11 @@ static int do_kill_orphans(struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 {
 	struct ubifs_scan_node *snod;
 	struct ubifs_orph_node *orph;
-<<<<<<< HEAD
-=======
 	struct ubifs_ino_node *ino = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long long cmt_no;
 	ino_t inum;
 	int i, n, err, first = 1;
 
-<<<<<<< HEAD
-	list_for_each_entry(snod, &sleb->nodes, list) {
-		if (snod->type != UBIFS_ORPH_NODE) {
-			ubifs_err("invalid node type %d in orphan area at "
-				  "%d:%d", snod->type, sleb->lnum, snod->offs);
-			dbg_dump_node(c, snod->node);
-			return -EINVAL;
-=======
 	ino = kmalloc(UBIFS_MAX_INO_NODE_SZ, GFP_NOFS);
 	if (!ino)
 		return -ENOMEM;
@@ -843,7 +650,6 @@ static int do_kill_orphans(struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 					c->leb_size - snod->offs);
 			err = -EINVAL;
 			goto out_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		orph = snod->node;
@@ -867,17 +673,6 @@ static int do_kill_orphans(struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 			 * number. That makes this orphan node, out of date.
 			 */
 			if (!first) {
-<<<<<<< HEAD
-				ubifs_err("out of order commit number %llu in "
-					  "orphan node at %d:%d",
-					  cmt_no, sleb->lnum, snod->offs);
-				dbg_dump_node(c, snod->node);
-				return -EINVAL;
-			}
-			dbg_rcvry("out of date LEB %d", sleb->lnum);
-			*outofdate = 1;
-			return 0;
-=======
 				ubifs_err(c, "out of order commit number %llu in orphan node at %d:%d",
 					  cmt_no, sleb->lnum, snod->offs);
 				ubifs_dump_node(c, snod->node,
@@ -889,7 +684,6 @@ static int do_kill_orphans(struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 			*outofdate = 1;
 			err = 0;
 			goto out_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (first)
@@ -897,17 +691,6 @@ static int do_kill_orphans(struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 
 		n = (le32_to_cpu(orph->ch.len) - UBIFS_ORPH_NODE_SZ) >> 3;
 		for (i = 0; i < n; i++) {
-<<<<<<< HEAD
-			inum = le64_to_cpu(orph->inos[i]);
-			dbg_rcvry("deleting orphaned inode %lu",
-				  (unsigned long)inum);
-			err = ubifs_tnc_remove_ino(c, inum);
-			if (err)
-				return err;
-			err = insert_dead_orphan(c, inum);
-			if (err)
-				return err;
-=======
 			union ubifs_key key1, key2;
 
 			inum = le64_to_cpu(orph->inos[i]);
@@ -936,7 +719,6 @@ static int do_kill_orphans(struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 			err = insert_dead_orphan(c, inum);
 			if (err)
 				goto out_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		*last_cmt_no = cmt_no;
@@ -948,9 +730,6 @@ static int do_kill_orphans(struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 			*last_flagged = 0;
 	}
 
-<<<<<<< HEAD
-	return 0;
-=======
 	err = 0;
 out_free:
 	kfree(ino);
@@ -960,7 +739,6 @@ out_ro:
 	ubifs_ro_mode(c, err);
 	kfree(ino);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1055,13 +833,9 @@ int ubifs_mount_orphans(struct ubifs_info *c, int unclean, int read_only)
 	return err;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_UBIFS_FS_DEBUG
-=======
 /*
  * Everything below is related to debugging.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct check_orphan {
 	struct rb_node rb;
@@ -1077,28 +851,6 @@ struct check_info {
 	struct rb_root root;
 };
 
-<<<<<<< HEAD
-static int dbg_find_orphan(struct ubifs_info *c, ino_t inum)
-{
-	struct ubifs_orphan *o;
-	struct rb_node *p;
-
-	spin_lock(&c->orphan_lock);
-	p = c->orph_tree.rb_node;
-	while (p) {
-		o = rb_entry(p, struct ubifs_orphan, rb);
-		if (inum < o->inum)
-			p = p->rb_left;
-		else if (inum > o->inum)
-			p = p->rb_right;
-		else {
-			spin_unlock(&c->orphan_lock);
-			return 1;
-		}
-	}
-	spin_unlock(&c->orphan_lock);
-	return 0;
-=======
 static bool dbg_find_orphan(struct ubifs_info *c, ino_t inum)
 {
 	bool found = false;
@@ -1108,7 +860,6 @@ static bool dbg_find_orphan(struct ubifs_info *c, ino_t inum)
 	spin_unlock(&c->orphan_lock);
 
 	return found;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dbg_ins_check_orphan(struct rb_root *root, ino_t inum)
@@ -1159,34 +910,10 @@ static int dbg_find_check_orphan(struct rb_root *root, ino_t inum)
 
 static void dbg_free_check_tree(struct rb_root *root)
 {
-<<<<<<< HEAD
-	struct rb_node *this = root->rb_node;
-	struct check_orphan *o;
-
-	while (this) {
-		if (this->rb_left) {
-			this = this->rb_left;
-			continue;
-		} else if (this->rb_right) {
-			this = this->rb_right;
-			continue;
-		}
-		o = rb_entry(this, struct check_orphan, rb);
-		this = rb_parent(this);
-		if (this) {
-			if (this->rb_left == &o->rb)
-				this->rb_left = NULL;
-			else
-				this->rb_right = NULL;
-		}
-		kfree(o);
-	}
-=======
 	struct check_orphan *o, *n;
 
 	rbtree_postorder_for_each_entry_safe(o, n, root, rb)
 		kfree(o);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dbg_orphan_check(struct ubifs_info *c, struct ubifs_zbranch *zbr,
@@ -1200,32 +927,20 @@ static int dbg_orphan_check(struct ubifs_info *c, struct ubifs_zbranch *zbr,
 	if (inum != ci->last_ino) {
 		/* Lowest node type is the inode node, so it comes first */
 		if (key_type(c, &zbr->key) != UBIFS_INO_KEY)
-<<<<<<< HEAD
-			ubifs_err("found orphan node ino %lu, type %d",
-=======
 			ubifs_err(c, "found orphan node ino %lu, type %d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  (unsigned long)inum, key_type(c, &zbr->key));
 		ci->last_ino = inum;
 		ci->tot_inos += 1;
 		err = ubifs_tnc_read_node(c, zbr, ci->node);
 		if (err) {
-<<<<<<< HEAD
-			ubifs_err("node read failed, error %d", err);
-=======
 			ubifs_err(c, "node read failed, error %d", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 		if (ci->node->nlink == 0)
 			/* Must be recorded as an orphan */
 			if (!dbg_find_check_orphan(&ci->root, inum) &&
 			    !dbg_find_orphan(c, inum)) {
-<<<<<<< HEAD
-				ubifs_err("missing orphan, ino %lu",
-=======
 				ubifs_err(c, "missing orphan, ino %lu",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  (unsigned long)inum);
 				ci->missing += 1;
 			}
@@ -1266,15 +981,9 @@ static int dbg_scan_orphans(struct ubifs_info *c, struct check_info *ci)
 	if (c->no_orphs)
 		return 0;
 
-<<<<<<< HEAD
-	buf = __vmalloc(c->leb_size, GFP_NOFS, PAGE_KERNEL);
-	if (!buf) {
-		ubifs_err("cannot allocate memory to check orphans");
-=======
 	buf = __vmalloc(c->leb_size, GFP_NOFS);
 	if (!buf) {
 		ubifs_err(c, "cannot allocate memory to check orphans");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -1312,11 +1021,7 @@ static int dbg_check_orphans(struct ubifs_info *c)
 	ci.root = RB_ROOT;
 	ci.node = kmalloc(UBIFS_MAX_INO_NODE_SZ, GFP_NOFS);
 	if (!ci.node) {
-<<<<<<< HEAD
-		ubifs_err("out of memory");
-=======
 		ubifs_err(c, "out of memory");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -1326,20 +1031,12 @@ static int dbg_check_orphans(struct ubifs_info *c)
 
 	err = dbg_walk_index(c, &dbg_orphan_check, NULL, &ci);
 	if (err) {
-<<<<<<< HEAD
-		ubifs_err("cannot scan TNC, error %d", err);
-=======
 		ubifs_err(c, "cannot scan TNC, error %d", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	if (ci.missing) {
-<<<<<<< HEAD
-		ubifs_err("%lu missing orphan(s)", ci.missing);
-=======
 		ubifs_err(c, "%lu missing orphan(s)", ci.missing);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto out;
 	}
@@ -1353,8 +1050,3 @@ out:
 	kfree(ci.node);
 	return err;
 }
-<<<<<<< HEAD
-
-#endif /* CONFIG_UBIFS_FS_DEBUG */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

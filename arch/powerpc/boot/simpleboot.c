@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The simple platform -- for booting when firmware doesn't supply a device
  *                        tree or any platform configuration information.
@@ -13,13 +10,6 @@
  *
  * Copyright (c) 2007 Freescale Semiconductor, Inc.
  * Copyright (c) 2008 Secret Lab Technologies Ltd.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ops.h"
@@ -68,11 +58,7 @@ void platform_init(unsigned long r3, unsigned long r4, unsigned long r5,
 		if (*reg++ != 0)
 			fatal("Memory range is not based at address 0\n");
 
-<<<<<<< HEAD
-	/* get the memsize and trucate it to under 4G on 32 bit machines */
-=======
 	/* get the memsize and truncate it to under 4G on 32 bit machines */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memsize64 = 0;
 	for (i = 0; i < *ns; i++)
 		memsize64 = (memsize64 << 32) | *reg++;

@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-/*
- * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
- *                                                                   USA
- */
-
-#include "dtc.h"
-#include "srcpos.h"
-
-#include "version_gen.h"
-
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
@@ -35,18 +8,10 @@
 #include "dtc.h"
 #include "srcpos.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Command line options
  */
 int quiet;		/* Level of quietness */
-<<<<<<< HEAD
-int reservenum;		/* Number of memory reservation slots */
-int minsize;		/* Minimum blob size */
-int padsize;		/* Additional padding to blob */
-int phandle_format = PHANDLE_BOTH;	/* Use linux,phandle or phandle properties */
-int show_deleted_list;
-=======
 unsigned int reservenum;/* Number of memory reservation slots */
 int minsize;		/* Minimum blob size */
 int padsize;		/* Additional padding to blob */
@@ -62,7 +27,6 @@ static int is_power_of_2(int x)
 {
 	return (x > 0) && ((x & (x - 1)) == 0);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void fill_fullpaths(struct node *tree, const char *prefix)
 {
@@ -81,60 +45,6 @@ static void fill_fullpaths(struct node *tree, const char *prefix)
 		fill_fullpaths(child, tree->fullpath);
 }
 
-<<<<<<< HEAD
-static void  __attribute__ ((noreturn)) usage(void)
-{
-	fprintf(stderr, "Usage:\n");
-	fprintf(stderr, "\tdtc [options] <input file>\n");
-	fprintf(stderr, "\nOptions:\n");
-	fprintf(stderr, "\t-h\n");
-	fprintf(stderr, "\t\tThis help text\n");
-	fprintf(stderr, "\t-q\n");
-	fprintf(stderr, "\t\tQuiet: -q suppress warnings, -qq errors, -qqq all\n");
-	fprintf(stderr, "\t-I <input format>\n");
-	fprintf(stderr, "\t\tInput formats are:\n");
-	fprintf(stderr, "\t\t\tdts - device tree source text\n");
-	fprintf(stderr, "\t\t\tdtb - device tree blob\n");
-	fprintf(stderr, "\t\t\tfs - /proc/device-tree style directory\n");
-	fprintf(stderr, "\t-o <output file>\n");
-	fprintf(stderr, "\t-O <output format>\n");
-	fprintf(stderr, "\t\tOutput formats are:\n");
-	fprintf(stderr, "\t\t\tdts - device tree source text\n");
-	fprintf(stderr, "\t\t\tdtb - device tree blob\n");
-	fprintf(stderr, "\t\t\tasm - assembler source\n");
-	fprintf(stderr, "\t-V <output version>\n");
-	fprintf(stderr, "\t\tBlob version to produce, defaults to %d (relevant for dtb\n\t\tand asm output only)\n", DEFAULT_FDT_VERSION);
-	fprintf(stderr, "\t-d <output dependency file>\n");
-	fprintf(stderr, "\t-R <number>\n");
-	fprintf(stderr, "\t\tMake space for <number> reserve map entries (relevant for \n\t\tdtb and asm output only)\n");
-	fprintf(stderr, "\t-S <bytes>\n");
-	fprintf(stderr, "\t\tMake the blob at least <bytes> long (extra space)\n");
-	fprintf(stderr, "\t-p <bytes>\n");
-	fprintf(stderr, "\t\tAdd padding to the blob of <bytes> long (extra space)\n");
-	fprintf(stderr, "\t-b <number>\n");
-	fprintf(stderr, "\t\tSet the physical boot cpu\n");
-	fprintf(stderr, "\t-f\n");
-	fprintf(stderr, "\t\tForce - try to produce output even if the input tree has errors\n");
-	fprintf(stderr, "\t-i\n");
-	fprintf(stderr, "\t\tAdd a path to search for include files\n");
-	fprintf(stderr, "\t-s\n");
-	fprintf(stderr, "\t\tSort nodes and properties before outputting (only useful for\n\t\tcomparing trees)\n");
-	fprintf(stderr, "\t-v\n");
-	fprintf(stderr, "\t\tPrint DTC version and exit\n");
-	fprintf(stderr, "\t-H <phandle format>\n");
-	fprintf(stderr, "\t\tphandle formats are:\n");
-	fprintf(stderr, "\t\t\tlegacy - \"linux,phandle\" properties only\n");
-	fprintf(stderr, "\t\t\tepapr - \"phandle\" properties only\n");
-	fprintf(stderr, "\t\t\tboth - Both \"linux,phandle\" and \"phandle\" properties\n");
-	fprintf(stderr, "\t\t\tspecific - '&phandle' appears instead \n\t\t\tof phandle id to distinguish between cell data and\n\t\t\tphandle. It is just for only comparing trees. \n\t\t\tSo, do not use output as runtime dts.\n");
-	fprintf(stderr, "\t\t\tspecific2 - '&phandle(id)' instead of\n\t\t\t'&phandle'\n");
-	fprintf(stderr, "\t-W [no-]<checkname>\n");
-	fprintf(stderr, "\t-E [no-]<checkname>\n");
-	fprintf(stderr, "\t\t\tenable or disable warnings and errors\n");
-	fprintf(stderr, "\t-D\n");
-	fprintf(stderr, "\t\tshow list of deleted nodes and properties at end of dts(dts to dts only)\n");
-	exit(3);
-=======
 /* Usage related data. */
 static const char usage_synopsis[] = "dtc [options] <input file>";
 static const char usage_short_opts[] = "qI:O:o:V:d:R:S:p:a:fb:i:H:sW:E:@AThv";
@@ -247,26 +157,16 @@ static const char *guess_input_format(const char *fname, const char *fallback)
 		return "dtb";
 
 	return guess_type_by_name(fname, fallback);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int main(int argc, char *argv[])
 {
-<<<<<<< HEAD
-	struct boot_info *bi;
-	const char *inform = "dts";
-	const char *outform = "dts";
-	const char *outname = "-";
-	const char *depname = NULL;
-	int force = 0, sort = 0;
-=======
 	struct dt_info *dti;
 	const char *inform = NULL;
 	const char *outform = NULL;
 	const char *outname = "-";
 	const char *depname = NULL;
 	bool force = false, sort = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *arg;
 	int opt;
 	FILE *outf = NULL;
@@ -277,15 +177,9 @@ int main(int argc, char *argv[])
 	reservenum = 0;
 	minsize    = 0;
 	padsize    = 0;
-<<<<<<< HEAD
-
-	while ((opt = getopt(argc, argv, "hI:O:o:V:d:R:S:p:fqb:i:vH:sW:E:D"))
-			!= EOF) {
-=======
 	alignsize  = 0;
 
 	while ((opt = util_getopt_long()) != EOF) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (opt) {
 		case 'I':
 			inform = optarg;
@@ -303,11 +197,7 @@ int main(int argc, char *argv[])
 			depname = optarg;
 			break;
 		case 'R':
-<<<<<<< HEAD
-			reservenum = strtol(optarg, NULL, 0);
-=======
 			reservenum = strtoul(optarg, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 'S':
 			minsize = strtol(optarg, NULL, 0);
@@ -315,10 +205,6 @@ int main(int argc, char *argv[])
 		case 'p':
 			padsize = strtol(optarg, NULL, 0);
 			break;
-<<<<<<< HEAD
-		case 'f':
-			force = 1;
-=======
 		case 'a':
 			alignsize = strtol(optarg, NULL, 0);
 			if (!is_power_of_2(alignsize))
@@ -327,7 +213,6 @@ int main(int argc, char *argv[])
 			break;
 		case 'f':
 			force = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 'q':
 			quiet++;
@@ -339,12 +224,7 @@ int main(int argc, char *argv[])
 			srcfile_add_search_path(optarg);
 			break;
 		case 'v':
-<<<<<<< HEAD
-			printf("Version: %s\n", DTC_VERSION);
-			exit(0);
-=======
 			util_version();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 'H':
 			if (streq(optarg, "legacy"))
 				phandle_format = PHANDLE_LEGACY;
@@ -352,24 +232,13 @@ int main(int argc, char *argv[])
 				phandle_format = PHANDLE_EPAPR;
 			else if (streq(optarg, "both"))
 				phandle_format = PHANDLE_BOTH;
-<<<<<<< HEAD
-			else if (streq(optarg, "specific"))
-				phandle_format = PHANDLE_SPECIFIC;
-			else if (streq(optarg, "specific2"))
-				phandle_format = PHANDLE_SPECIFIC2;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else
 				die("Invalid argument \"%s\" to -H option\n",
 				    optarg);
 			break;
 
 		case 's':
-<<<<<<< HEAD
-			sort = 1;
-=======
 			sort = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case 'W':
@@ -380,15 +249,6 @@ int main(int argc, char *argv[])
 			parse_checks_option(false, true, optarg);
 			break;
 
-<<<<<<< HEAD
-		case 'D':
-			show_deleted_list = 1;
-			break;
-
-		case 'h':
-		default:
-			usage();
-=======
 		case '@':
 			generate_symbols = 1;
 			break;
@@ -403,16 +263,11 @@ int main(int argc, char *argv[])
 			usage(NULL);
 		default:
 			usage("unknown option");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	if (argc > (optind+1))
-<<<<<<< HEAD
-		usage();
-=======
 		usage("missing files");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (argc < (optind+1))
 		arg = "-";
 	else
@@ -422,12 +277,6 @@ int main(int argc, char *argv[])
 	if (minsize && padsize)
 		die("Can't set both -p and -S\n");
 
-<<<<<<< HEAD
-	if (minsize)
-		fprintf(stderr, "DTC: Use of \"-S\" is deprecated; it will be removed soon, use \"-p\" instead\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (depname) {
 		depfile = fopen(depname, "w");
 		if (!depfile)
@@ -436,17 +285,6 @@ int main(int argc, char *argv[])
 		fprintf(depfile, "%s:", outname);
 	}
 
-<<<<<<< HEAD
-	if (streq(inform, "dts"))
-		bi = dt_from_source(arg);
-	else if (streq(inform, "fs"))
-		bi = dt_from_fs(arg);
-	else if(streq(inform, "dtb"))
-		bi = dt_from_blob(arg);
-	else
-		die("Unknown input format \"%s\"\n", inform);
-
-=======
 	if (inform == NULL)
 		inform = guess_input_format(arg, "dts");
 	if (outform == NULL) {
@@ -471,22 +309,12 @@ int main(int argc, char *argv[])
 
 	dti->outname = outname;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (depfile) {
 		fputc('\n', depfile);
 		fclose(depfile);
 	}
 
 	if (cmdline_boot_cpuid != -1)
-<<<<<<< HEAD
-		bi->boot_cpuid_phys = cmdline_boot_cpuid;
-
-	fill_fullpaths(bi->dt, "");
-	process_checks(force, bi);
-
-	if (sort)
-		sort_tree(bi);
-=======
 		dti->boot_cpuid_phys = cmdline_boot_cpuid;
 
 	fill_fullpaths(dti->dt, "");
@@ -511,29 +339,17 @@ int main(int argc, char *argv[])
 
 	if (sort)
 		sort_tree(dti);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (streq(outname, "-")) {
 		outf = stdout;
 	} else {
-<<<<<<< HEAD
-		outf = fopen(outname, "w");
-=======
 		outf = fopen(outname, "wb");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (! outf)
 			die("Couldn't open output file %s: %s\n",
 			    outname, strerror(errno));
 	}
 
 	if (streq(outform, "dts")) {
-<<<<<<< HEAD
-		dt_to_source(outf, bi);
-	} else if (streq(outform, "dtb")) {
-		dt_to_blob(outf, bi, outversion);
-	} else if (streq(outform, "asm")) {
-		dt_to_asm(outf, bi, outversion);
-=======
 		dt_to_source(outf, dti);
 #ifndef NO_YAML
 	} else if (streq(outform, "yaml")) {
@@ -545,7 +361,6 @@ int main(int argc, char *argv[])
 		dt_to_blob(outf, dti, outversion);
 	} else if (streq(outform, "asm")) {
 		dt_to_asm(outf, dti, outversion);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (streq(outform, "null")) {
 		/* do nothing */
 	} else {

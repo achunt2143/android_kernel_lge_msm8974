@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     i2c-dev.c - i2c-bus driver, char device interface
 
@@ -9,23 +6,6 @@
     Copyright (C) 1998-99 Frodo Looijaard <frodol@dds.nl>
     Copyright (C) 2003 Greg Kroah-Hartman <greg@kroah.com>
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-    MA 02110-1301 USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 /* Note that this is a complete rewrite of Simon Vogl's i2c-dev module.
@@ -34,19 +14,6 @@
 
 /* The I2C_RDWR ioctl code is written by Kolja Waschk <waschk@telos.de> */
 
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/device.h>
-#include <linux/notifier.h>
-#include <linux/fs.h>
-#include <linux/slab.h>
-#include <linux/init.h>
-#include <linux/list.h>
-#include <linux/i2c.h>
-#include <linux/i2c-dev.h>
-#include <linux/jiffies.h>
-=======
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
 #include <linux/cdev.h>
@@ -62,7 +29,6 @@
 #include <linux/module.h>
 #include <linux/notifier.h>
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/uaccess.h>
 
 /*
@@ -76,18 +42,11 @@
 struct i2c_dev {
 	struct list_head list;
 	struct i2c_adapter *adap;
-<<<<<<< HEAD
-	struct device *dev;
-};
-
-#define I2C_MINORS	256
-=======
 	struct device dev;
 	struct cdev cdev;
 };
 
 #define I2C_MINORS	(MINORMASK + 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(i2c_dev_list);
 static DEFINE_SPINLOCK(i2c_dev_list_lock);
 
@@ -111,12 +70,7 @@ static struct i2c_dev *get_free_i2c_dev(struct i2c_adapter *adap)
 	struct i2c_dev *i2c_dev;
 
 	if (adap->nr >= I2C_MINORS) {
-<<<<<<< HEAD
-		printk(KERN_ERR "i2c-dev: Out of device minors (%d)\n",
-		       adap->nr);
-=======
 		pr_err("Out of device minors (%d)\n", adap->nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(-ENODEV);
 	}
 
@@ -131,22 +85,11 @@ static struct i2c_dev *get_free_i2c_dev(struct i2c_adapter *adap)
 	return i2c_dev;
 }
 
-<<<<<<< HEAD
-static void return_i2c_dev(struct i2c_dev *i2c_dev)
-=======
 static void put_i2c_dev(struct i2c_dev *i2c_dev, bool del_cdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock(&i2c_dev_list_lock);
 	list_del(&i2c_dev->list);
 	spin_unlock(&i2c_dev_list_lock);
-<<<<<<< HEAD
-	kfree(i2c_dev);
-}
-
-static ssize_t show_adapter_name(struct device *dev,
-				 struct device_attribute *attr, char *buf)
-=======
 	if (del_cdev)
 		cdev_device_del(&i2c_dev->cdev, &i2c_dev->dev);
 	put_device(&i2c_dev->dev);
@@ -154,17 +97,11 @@ static ssize_t show_adapter_name(struct device *dev,
 
 static ssize_t name_show(struct device *dev,
 			 struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i2c_dev *i2c_dev = i2c_dev_get_by_minor(MINOR(dev->devt));
 
 	if (!i2c_dev)
 		return -ENODEV;
-<<<<<<< HEAD
-	return sprintf(buf, "%s\n", i2c_dev->adap->name);
-}
-static DEVICE_ATTR(name, S_IRUGO, show_adapter_name, NULL);
-=======
 	return sysfs_emit(buf, "%s\n", i2c_dev->adap->name);
 }
 static DEVICE_ATTR_RO(name);
@@ -174,7 +111,6 @@ static struct attribute *i2c_attrs[] = {
 	NULL,
 };
 ATTRIBUTE_GROUPS(i2c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ------------------------------------------------------------------------- */
 
@@ -206,18 +142,6 @@ static ssize_t i2cdev_read(struct file *file, char __user *buf, size_t count,
 	if (count > 8192)
 		count = 8192;
 
-<<<<<<< HEAD
-	tmp = kmalloc(count, GFP_KERNEL);
-	if (tmp == NULL)
-		return -ENOMEM;
-
-	pr_debug("i2c-dev: i2c-%d reading %zu bytes.\n",
-		iminor(file->f_path.dentry->d_inode), count);
-
-	ret = i2c_master_recv(client, tmp, count);
-	if (ret >= 0)
-		ret = copy_to_user(buf, tmp, count) ? -EFAULT : ret;
-=======
 	tmp = kzalloc(count, GFP_KERNEL);
 	if (tmp == NULL)
 		return -ENOMEM;
@@ -228,7 +152,6 @@ static ssize_t i2cdev_read(struct file *file, char __user *buf, size_t count,
 	if (ret >= 0)
 		if (copy_to_user(buf, tmp, ret))
 			ret = -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(tmp);
 	return ret;
 }
@@ -247,12 +170,7 @@ static ssize_t i2cdev_write(struct file *file, const char __user *buf,
 	if (IS_ERR(tmp))
 		return PTR_ERR(tmp);
 
-<<<<<<< HEAD
-	pr_debug("i2c-dev: i2c-%d writing %zu bytes.\n",
-		iminor(file->f_path.dentry->d_inode), count);
-=======
 	pr_debug("i2c-%d writing %zu bytes.\n", iminor(file_inode(file)), count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = i2c_master_send(client, tmp, count);
 	kfree(tmp);
@@ -314,34 +232,6 @@ static int i2cdev_check_addr(struct i2c_adapter *adapter, unsigned int addr)
 	return result;
 }
 
-<<<<<<< HEAD
-static noinline int i2cdev_ioctl_rdrw(struct i2c_client *client,
-		unsigned long arg)
-{
-	struct i2c_rdwr_ioctl_data rdwr_arg;
-	struct i2c_msg *rdwr_pa;
-	u8 __user **data_ptrs;
-	int i, res;
-
-	if (copy_from_user(&rdwr_arg,
-			   (struct i2c_rdwr_ioctl_data __user *)arg,
-			   sizeof(rdwr_arg)))
-		return -EFAULT;
-
-	/* Put an arbitrary limit on the number of messages that can
-	 * be sent at once */
-	if (rdwr_arg.nmsgs > I2C_RDRW_IOCTL_MAX_MSGS)
-		return -EINVAL;
-
-	rdwr_pa = memdup_user(rdwr_arg.msgs,
-			      rdwr_arg.nmsgs * sizeof(struct i2c_msg));
-	if (IS_ERR(rdwr_pa))
-		return PTR_ERR(rdwr_pa);
-
-	data_ptrs = kmalloc(rdwr_arg.nmsgs * sizeof(u8 __user *), GFP_KERNEL);
-	if (data_ptrs == NULL) {
-		kfree(rdwr_pa);
-=======
 static noinline int i2cdev_ioctl_rdwr(struct i2c_client *client,
 		unsigned nmsgs, struct i2c_msg *msgs)
 {
@@ -351,27 +241,10 @@ static noinline int i2cdev_ioctl_rdwr(struct i2c_client *client,
 	data_ptrs = kmalloc_array(nmsgs, sizeof(u8 __user *), GFP_KERNEL);
 	if (data_ptrs == NULL) {
 		kfree(msgs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	res = 0;
-<<<<<<< HEAD
-	for (i = 0; i < rdwr_arg.nmsgs; i++) {
-		/* Limit the size of the message to a sane amount;
-		 * and don't let length change either. */
-		if ((rdwr_pa[i].len > 8192) ||
-		    (rdwr_pa[i].flags & I2C_M_RECV_LEN)) {
-			res = -EINVAL;
-			break;
-		}
-		data_ptrs[i] = (u8 __user *)rdwr_pa[i].buf;
-		rdwr_pa[i].buf = memdup_user(data_ptrs[i], rdwr_pa[i].len);
-		if (IS_ERR(rdwr_pa[i].buf)) {
-			res = PTR_ERR(rdwr_pa[i].buf);
-			break;
-		}
-=======
 	for (i = 0; i < nmsgs; i++) {
 		/* Limit the size of the message to a sane amount */
 		if (msgs[i].len > 8192) {
@@ -411,30 +284,10 @@ static noinline int i2cdev_ioctl_rdwr(struct i2c_client *client,
 
 			msgs[i].len = msgs[i].buf[0];
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (res < 0) {
 		int j;
 		for (j = 0; j < i; ++j)
-<<<<<<< HEAD
-			kfree(rdwr_pa[j].buf);
-		kfree(data_ptrs);
-		kfree(rdwr_pa);
-		return res;
-	}
-
-	res = i2c_transfer(client->adapter, rdwr_pa, rdwr_arg.nmsgs);
-	while (i-- > 0) {
-		if (res >= 0 && (rdwr_pa[i].flags & I2C_M_RD)) {
-			if (copy_to_user(data_ptrs[i], rdwr_pa[i].buf,
-					 rdwr_pa[i].len))
-				res = -EFAULT;
-		}
-		kfree(rdwr_pa[i].buf);
-	}
-	kfree(data_ptrs);
-	kfree(rdwr_pa);
-=======
 			kfree(msgs[j].buf);
 		kfree(data_ptrs);
 		kfree(msgs);
@@ -452,35 +305,10 @@ static noinline int i2cdev_ioctl_rdwr(struct i2c_client *client,
 	}
 	kfree(data_ptrs);
 	kfree(msgs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
 static noinline int i2cdev_ioctl_smbus(struct i2c_client *client,
-<<<<<<< HEAD
-		unsigned long arg)
-{
-	struct i2c_smbus_ioctl_data data_arg;
-	union i2c_smbus_data temp;
-	int datasize, res;
-
-	if (copy_from_user(&data_arg,
-			   (struct i2c_smbus_ioctl_data __user *) arg,
-			   sizeof(struct i2c_smbus_ioctl_data)))
-		return -EFAULT;
-	if ((data_arg.size != I2C_SMBUS_BYTE) &&
-	    (data_arg.size != I2C_SMBUS_QUICK) &&
-	    (data_arg.size != I2C_SMBUS_BYTE_DATA) &&
-	    (data_arg.size != I2C_SMBUS_WORD_DATA) &&
-	    (data_arg.size != I2C_SMBUS_PROC_CALL) &&
-	    (data_arg.size != I2C_SMBUS_BLOCK_DATA) &&
-	    (data_arg.size != I2C_SMBUS_I2C_BLOCK_BROKEN) &&
-	    (data_arg.size != I2C_SMBUS_I2C_BLOCK_DATA) &&
-	    (data_arg.size != I2C_SMBUS_BLOCK_PROC_CALL)) {
-		dev_dbg(&client->adapter->dev,
-			"size out of range (%x) in ioctl I2C_SMBUS.\n",
-			data_arg.size);
-=======
 		u8 read_write, u8 command, u32 size,
 		union i2c_smbus_data __user *data)
 {
@@ -499,40 +327,20 @@ static noinline int i2cdev_ioctl_smbus(struct i2c_client *client,
 		dev_dbg(&client->adapter->dev,
 			"size out of range (%x) in ioctl I2C_SMBUS.\n",
 			size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	/* Note that I2C_SMBUS_READ and I2C_SMBUS_WRITE are 0 and 1,
 	   so the check is valid if size==I2C_SMBUS_QUICK too. */
-<<<<<<< HEAD
-	if ((data_arg.read_write != I2C_SMBUS_READ) &&
-	    (data_arg.read_write != I2C_SMBUS_WRITE)) {
-		dev_dbg(&client->adapter->dev,
-			"read_write out of range (%x) in ioctl I2C_SMBUS.\n",
-			data_arg.read_write);
-=======
 	if ((read_write != I2C_SMBUS_READ) &&
 	    (read_write != I2C_SMBUS_WRITE)) {
 		dev_dbg(&client->adapter->dev,
 			"read_write out of range (%x) in ioctl I2C_SMBUS.\n",
 			read_write);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* Note that command values are always valid! */
 
-<<<<<<< HEAD
-	if ((data_arg.size == I2C_SMBUS_QUICK) ||
-	    ((data_arg.size == I2C_SMBUS_BYTE) &&
-	    (data_arg.read_write == I2C_SMBUS_WRITE)))
-		/* These are special: we do not use data */
-		return i2c_smbus_xfer(client->adapter, client->addr,
-				      client->flags, data_arg.read_write,
-				      data_arg.command, data_arg.size, NULL);
-
-	if (data_arg.data == NULL) {
-=======
 	if ((size == I2C_SMBUS_QUICK) ||
 	    ((size == I2C_SMBUS_BYTE) &&
 	    (read_write == I2C_SMBUS_WRITE)))
@@ -542,43 +350,11 @@ static noinline int i2cdev_ioctl_smbus(struct i2c_client *client,
 				      command, size, NULL);
 
 	if (data == NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(&client->adapter->dev,
 			"data is NULL pointer in ioctl I2C_SMBUS.\n");
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if ((data_arg.size == I2C_SMBUS_BYTE_DATA) ||
-	    (data_arg.size == I2C_SMBUS_BYTE))
-		datasize = sizeof(data_arg.data->byte);
-	else if ((data_arg.size == I2C_SMBUS_WORD_DATA) ||
-		 (data_arg.size == I2C_SMBUS_PROC_CALL))
-		datasize = sizeof(data_arg.data->word);
-	else /* size == smbus block, i2c block, or block proc. call */
-		datasize = sizeof(data_arg.data->block);
-
-	if ((data_arg.size == I2C_SMBUS_PROC_CALL) ||
-	    (data_arg.size == I2C_SMBUS_BLOCK_PROC_CALL) ||
-	    (data_arg.size == I2C_SMBUS_I2C_BLOCK_DATA) ||
-	    (data_arg.read_write == I2C_SMBUS_WRITE)) {
-		if (copy_from_user(&temp, data_arg.data, datasize))
-			return -EFAULT;
-	}
-	if (data_arg.size == I2C_SMBUS_I2C_BLOCK_BROKEN) {
-		/* Convert old I2C block commands to the new
-		   convention. This preserves binary compatibility. */
-		data_arg.size = I2C_SMBUS_I2C_BLOCK_DATA;
-		if (data_arg.read_write == I2C_SMBUS_READ)
-			temp.block[0] = I2C_SMBUS_BLOCK_MAX;
-	}
-	res = i2c_smbus_xfer(client->adapter, client->addr, client->flags,
-	      data_arg.read_write, data_arg.command, data_arg.size, &temp);
-	if (!res && ((data_arg.size == I2C_SMBUS_PROC_CALL) ||
-		     (data_arg.size == I2C_SMBUS_BLOCK_PROC_CALL) ||
-		     (data_arg.read_write == I2C_SMBUS_READ))) {
-		if (copy_to_user(data_arg.data, &temp, datasize))
-=======
 	if ((size == I2C_SMBUS_BYTE_DATA) ||
 	    (size == I2C_SMBUS_BYTE))
 		datasize = sizeof(data->byte);
@@ -608,7 +384,6 @@ static noinline int i2cdev_ioctl_smbus(struct i2c_client *client,
 		     (size == I2C_SMBUS_BLOCK_PROC_CALL) ||
 		     (read_write == I2C_SMBUS_READ))) {
 		if (copy_to_user(data, &temp, datasize))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 	}
 	return res;
@@ -625,19 +400,6 @@ static long i2cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	switch (cmd) {
 	case I2C_SLAVE:
 	case I2C_SLAVE_FORCE:
-<<<<<<< HEAD
-		/* NOTE:  devices set up to work with "new style" drivers
-		 * can't use I2C_SLAVE, even when the device node is not
-		 * bound to a driver.  Only I2C_SLAVE_FORCE will work.
-		 *
-		 * Setting the PEC flag here won't affect kernel drivers,
-		 * which will be using the i2c_client node registered with
-		 * the driver model core.  Likewise, when that client has
-		 * the PEC flag already set, the i2c-dev driver won't see
-		 * (or use) this setting.
-		 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((arg > 0x3ff) ||
 		    (((client->flags & I2C_M_TEN) == 0) && arg > 0x7f))
 			return -EINVAL;
@@ -653,8 +415,6 @@ static long i2cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			client->flags &= ~I2C_M_TEN;
 		return 0;
 	case I2C_PEC:
-<<<<<<< HEAD
-=======
 		/*
 		 * Setting the PEC flag here won't affect kernel drivers,
 		 * which will be using the i2c_client node registered with
@@ -662,7 +422,6 @@ static long i2cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		 * the PEC flag already set, the i2c-dev driver won't see
 		 * (or use) this setting.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (arg)
 			client->flags |= I2C_CLIENT_PEC;
 		else
@@ -672,18 +431,6 @@ static long i2cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		funcs = i2c_get_functionality(client->adapter);
 		return put_user(funcs, (unsigned long __user *)arg);
 
-<<<<<<< HEAD
-	case I2C_RDWR:
-		return i2cdev_ioctl_rdrw(client, arg);
-
-	case I2C_SMBUS:
-		return i2cdev_ioctl_smbus(client, arg);
-
-	case I2C_RETRIES:
-		client->adapter->retries = arg;
-		break;
-	case I2C_TIMEOUT:
-=======
 	case I2C_RDWR: {
 		struct i2c_rdwr_ioctl_data rdwr_arg;
 		struct i2c_msg *rdwr_pa;
@@ -732,7 +479,6 @@ static long i2cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (arg > INT_MAX)
 			return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* For historical reasons, user-space sets the timeout
 		 * value in units of 10 ms.
 		 */
@@ -749,8 +495,6 @@ static long i2cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_COMPAT
 
 struct i2c_smbus_ioctl_data32 {
@@ -838,24 +582,13 @@ static long compat_i2cdev_ioctl(struct file *file, unsigned int cmd, unsigned lo
 #define compat_i2cdev_ioctl NULL
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int i2cdev_open(struct inode *inode, struct file *file)
 {
 	unsigned int minor = iminor(inode);
 	struct i2c_client *client;
 	struct i2c_adapter *adap;
-<<<<<<< HEAD
-	struct i2c_dev *i2c_dev;
-
-	i2c_dev = i2c_dev_get_by_minor(minor);
-	if (!i2c_dev)
-		return -ENODEV;
-
-	adap = i2c_get_adapter(i2c_dev->adap->nr);
-=======
 
 	adap = i2c_get_adapter(minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!adap)
 		return -ENODEV;
 
@@ -896,21 +629,13 @@ static const struct file_operations i2cdev_fops = {
 	.read		= i2cdev_read,
 	.write		= i2cdev_write,
 	.unlocked_ioctl	= i2cdev_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_i2cdev_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= i2cdev_open,
 	.release	= i2cdev_release,
 };
 
 /* ------------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static struct class *i2c_dev_class;
-
-static int i2cdev_attach_adapter(struct device *dev, void *dummy)
-=======
 static const struct class i2c_dev_class = {
 	.name = "i2c-dev",
 	.dev_groups = i2c_groups,
@@ -925,49 +650,17 @@ static void i2cdev_dev_release(struct device *dev)
 }
 
 static int i2cdev_attach_adapter(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i2c_adapter *adap;
 	struct i2c_dev *i2c_dev;
 	int res;
 
 	if (dev->type != &i2c_adapter_type)
-<<<<<<< HEAD
-		return 0;
-=======
 		return NOTIFY_DONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adap = to_i2c_adapter(dev);
 
 	i2c_dev = get_free_i2c_dev(adap);
 	if (IS_ERR(i2c_dev))
-<<<<<<< HEAD
-		return PTR_ERR(i2c_dev);
-
-	/* register this i2c device with the driver core */
-	i2c_dev->dev = device_create(i2c_dev_class, &adap->dev,
-				     MKDEV(I2C_MAJOR, adap->nr), NULL,
-				     "i2c-%d", adap->nr);
-	if (IS_ERR(i2c_dev->dev)) {
-		res = PTR_ERR(i2c_dev->dev);
-		goto error;
-	}
-	res = device_create_file(i2c_dev->dev, &dev_attr_name);
-	if (res)
-		goto error_destroy;
-
-	pr_debug("i2c-dev: adapter [%s] registered as minor %d\n",
-		 adap->name, adap->nr);
-	return 0;
-error_destroy:
-	device_destroy(i2c_dev_class, MKDEV(I2C_MAJOR, adap->nr));
-error:
-	return_i2c_dev(i2c_dev);
-	return res;
-}
-
-static int i2cdev_detach_adapter(struct device *dev, void *dummy)
-=======
 		return NOTIFY_DONE;
 
 	cdev_init(&i2c_dev->cdev, &i2cdev_fops);
@@ -996,38 +689,22 @@ err_put_i2c_dev:
 }
 
 static int i2cdev_detach_adapter(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i2c_adapter *adap;
 	struct i2c_dev *i2c_dev;
 
 	if (dev->type != &i2c_adapter_type)
-<<<<<<< HEAD
-		return 0;
-=======
 		return NOTIFY_DONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adap = to_i2c_adapter(dev);
 
 	i2c_dev = i2c_dev_get_by_minor(adap->nr);
 	if (!i2c_dev) /* attach_adapter must have failed */
-<<<<<<< HEAD
-		return 0;
-
-	device_remove_file(i2c_dev->dev, &dev_attr_name);
-	return_i2c_dev(i2c_dev);
-	device_destroy(i2c_dev_class, MKDEV(I2C_MAJOR, adap->nr));
-
-	pr_debug("i2c-dev: adapter [%s] unregistered\n", adap->name);
-	return 0;
-=======
 		return NOTIFY_DONE;
 
 	put_i2c_dev(i2c_dev, true);
 
 	pr_debug("adapter [%s] unregistered\n", adap->name);
 	return NOTIFY_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int i2cdev_notifier_call(struct notifier_block *nb, unsigned long action,
@@ -1037,21 +714,12 @@ static int i2cdev_notifier_call(struct notifier_block *nb, unsigned long action,
 
 	switch (action) {
 	case BUS_NOTIFY_ADD_DEVICE:
-<<<<<<< HEAD
-		return i2cdev_attach_adapter(dev, NULL);
-	case BUS_NOTIFY_DEL_DEVICE:
-		return i2cdev_detach_adapter(dev, NULL);
-	}
-
-	return 0;
-=======
 		return i2cdev_attach_adapter(dev);
 	case BUS_NOTIFY_DEL_DEVICE:
 		return i2cdev_detach_adapter(dev);
 	}
 
 	return NOTIFY_DONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct notifier_block i2cdev_notifier = {
@@ -1060,8 +728,6 @@ static struct notifier_block i2cdev_notifier = {
 
 /* ------------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-=======
 static int __init i2c_dev_attach_adapter(struct device *dev, void *dummy)
 {
 	i2cdev_attach_adapter(dev);
@@ -1074,7 +740,6 @@ static int __exit i2c_dev_detach_adapter(struct device *dev, void *dummy)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * module load/unload record keeping
  */
@@ -1083,19 +748,6 @@ static int __init i2c_dev_init(void)
 {
 	int res;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "i2c /dev entries driver\n");
-
-	res = register_chrdev(I2C_MAJOR, "i2c", &i2cdev_fops);
-	if (res)
-		goto out;
-
-	i2c_dev_class = class_create(THIS_MODULE, "i2c-dev");
-	if (IS_ERR(i2c_dev_class)) {
-		res = PTR_ERR(i2c_dev_class);
-		goto out_unreg_chrdev;
-	}
-=======
 	pr_info("i2c /dev entries driver\n");
 
 	res = register_chrdev_region(MKDEV(I2C_MAJOR, 0), I2C_MINORS, "i2c");
@@ -1105,7 +757,6 @@ static int __init i2c_dev_init(void)
 	res = class_register(&i2c_dev_class);
 	if (res)
 		goto out_unreg_chrdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Keep track of adapters which will be added or removed later */
 	res = bus_register_notifier(&i2c_bus_type, &i2cdev_notifier);
@@ -1113,43 +764,22 @@ static int __init i2c_dev_init(void)
 		goto out_unreg_class;
 
 	/* Bind to already existing adapters right away */
-<<<<<<< HEAD
-	i2c_for_each_dev(NULL, i2cdev_attach_adapter);
-=======
 	i2c_for_each_dev(NULL, i2c_dev_attach_adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 out_unreg_class:
-<<<<<<< HEAD
-	class_destroy(i2c_dev_class);
-out_unreg_chrdev:
-	unregister_chrdev(I2C_MAJOR, "i2c");
-out:
-	printk(KERN_ERR "%s: Driver Initialisation failed\n", __FILE__);
-=======
 	class_unregister(&i2c_dev_class);
 out_unreg_chrdev:
 	unregister_chrdev_region(MKDEV(I2C_MAJOR, 0), I2C_MINORS);
 out:
 	pr_err("Driver Initialisation failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
 static void __exit i2c_dev_exit(void)
 {
 	bus_unregister_notifier(&i2c_bus_type, &i2cdev_notifier);
-<<<<<<< HEAD
-	i2c_for_each_dev(NULL, i2cdev_detach_adapter);
-	class_destroy(i2c_dev_class);
-	unregister_chrdev(I2C_MAJOR, "i2c");
-}
-
-MODULE_AUTHOR("Frodo Looijaard <frodol@dds.nl> and "
-		"Simon G. Vogl <simon@tk.uni-linz.ac.at>");
-=======
 	i2c_for_each_dev(NULL, i2c_dev_detach_adapter);
 	class_unregister(&i2c_dev_class);
 	unregister_chrdev_region(MKDEV(I2C_MAJOR, 0), I2C_MINORS);
@@ -1157,7 +787,6 @@ MODULE_AUTHOR("Frodo Looijaard <frodol@dds.nl> and "
 
 MODULE_AUTHOR("Frodo Looijaard <frodol@dds.nl>");
 MODULE_AUTHOR("Simon G. Vogl <simon@tk.uni-linz.ac.at>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("I2C /dev entries driver");
 MODULE_LICENSE("GPL");
 

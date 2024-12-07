@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_IRQ_H
 #define _LINUX_IRQ_H
 
@@ -13,22 +10,6 @@
  * Thanks. --rmk
  */
 
-<<<<<<< HEAD
-#include <linux/smp.h>
-
-#ifndef CONFIG_S390
-
-#include <linux/linkage.h>
-#include <linux/cache.h>
-#include <linux/spinlock.h>
-#include <linux/cpumask.h>
-#include <linux/gfp.h>
-#include <linux/irqreturn.h>
-#include <linux/irqnr.h>
-#include <linux/errno.h>
-#include <linux/topology.h>
-#include <linux/wait.h>
-=======
 #include <linux/cache.h>
 #include <linux/spinlock.h>
 #include <linux/cpumask.h>
@@ -38,7 +19,6 @@
 #include <linux/topology.h>
 #include <linux/io.h>
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/irq.h>
 #include <asm/ptrace.h>
@@ -46,17 +26,9 @@
 
 struct seq_file;
 struct module;
-<<<<<<< HEAD
-struct irq_desc;
-struct irq_data;
-typedef	void (*irq_flow_handler_t)(unsigned int irq,
-					    struct irq_desc *desc);
-typedef	void (*irq_preflow_handler_t)(struct irq_data *data);
-=======
 struct msi_msg;
 struct irq_affinity_desc;
 enum irqchip_irq_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IRQ line status.
@@ -93,10 +65,6 @@ enum irqchip_irq_state;
  *				  request/setup_irq()
  * IRQ_NO_BALANCING		- Interrupt cannot be balanced (affinity set)
  * IRQ_MOVE_PCNTXT		- Interrupt can be migrated from process context
-<<<<<<< HEAD
- * IRQ_NESTED_TRHEAD		- Interrupt nests into another thread
- * IRQ_PER_CPU_DEVID		- Dev_id is a per-cpu variable
-=======
  * IRQ_NESTED_THREAD		- Interrupt nests into another thread
  * IRQ_PER_CPU_DEVID		- Dev_id is a per-cpu variable
  * IRQ_IS_POLLED		- Always polled by another interrupt. Exclude
@@ -105,7 +73,6 @@ enum irqchip_irq_state;
  * IRQ_DISABLE_UNLAZY		- Disable lazy irq disable
  * IRQ_HIDDEN			- Don't show up in /proc/interrupts
  * IRQ_NO_DEBUG			- Exclude from note_interrupt() debugging
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum {
 	IRQ_TYPE_NONE		= 0x00000000,
@@ -130,84 +97,39 @@ enum {
 	IRQ_NESTED_THREAD	= (1 << 15),
 	IRQ_NOTHREAD		= (1 << 16),
 	IRQ_PER_CPU_DEVID	= (1 << 17),
-<<<<<<< HEAD
-=======
 	IRQ_IS_POLLED		= (1 << 18),
 	IRQ_DISABLE_UNLAZY	= (1 << 19),
 	IRQ_HIDDEN		= (1 << 20),
 	IRQ_NO_DEBUG		= (1 << 21),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define IRQF_MODIFY_MASK	\
 	(IRQ_TYPE_SENSE_MASK | IRQ_NOPROBE | IRQ_NOREQUEST | \
 	 IRQ_NOAUTOEN | IRQ_MOVE_PCNTXT | IRQ_LEVEL | IRQ_NO_BALANCING | \
-<<<<<<< HEAD
-	 IRQ_PER_CPU | IRQ_NESTED_THREAD | IRQ_NOTHREAD | IRQ_PER_CPU_DEVID)
-=======
 	 IRQ_PER_CPU | IRQ_NESTED_THREAD | IRQ_NOTHREAD | IRQ_PER_CPU_DEVID | \
 	 IRQ_IS_POLLED | IRQ_DISABLE_UNLAZY | IRQ_HIDDEN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IRQ_NO_BALANCING_MASK	(IRQ_PER_CPU | IRQ_NO_BALANCING)
 
 /*
  * Return value for chip->irq_set_affinity()
  *
-<<<<<<< HEAD
- * IRQ_SET_MASK_OK	- OK, core updates irq_data.affinity
- * IRQ_SET_MASK_NOCPY	- OK, chip did update irq_data.affinity
-=======
  * IRQ_SET_MASK_OK	- OK, core updates irq_common_data.affinity
  * IRQ_SET_MASK_NOCPY	- OK, chip did update irq_common_data.affinity
  * IRQ_SET_MASK_OK_DONE	- Same as IRQ_SET_MASK_OK for core. Special code to
  *			  support stacked irqchips, which indicates skipping
  *			  all descendant irqchips.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum {
 	IRQ_SET_MASK_OK = 0,
 	IRQ_SET_MASK_OK_NOCOPY,
-<<<<<<< HEAD
-=======
 	IRQ_SET_MASK_OK_DONE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct msi_desc;
 struct irq_domain;
 
 /**
-<<<<<<< HEAD
- * struct irq_data - per irq and irq chip data passed down to chip functions
- * @irq:		interrupt number
- * @hwirq:		hardware interrupt number, local to the interrupt domain
- * @node:		node index useful for balancing
- * @state_use_accessors: status information for irq chip functions.
- *			Use accessor functions to deal with it
- * @chip:		low level interrupt hardware access
- * @domain:		Interrupt translation domain; responsible for mapping
- *			between hwirq number and linux irq number.
- * @handler_data:	per-IRQ data for the irq_chip methods
- * @chip_data:		platform-specific per-chip private data for the chip
- *			methods, to allow shared chip implementations
- * @msi_desc:		MSI descriptor
- * @affinity:		IRQ affinity on SMP
- *
- * The fields here need to overlay the ones in irq_desc until we
- * cleaned up the direct references and switched everything over to
- * irq_data.
- */
-struct irq_data {
-	unsigned int		irq;
-	unsigned long		hwirq;
-	unsigned int		node;
-	unsigned int		state_use_accessors;
-	struct irq_chip		*chip;
-	struct irq_domain	*domain;
-	void			*handler_data;
-	void			*chip_data;
-=======
  * struct irq_common_data - per irq data shared by all irqchips
  * @state_use_accessors: status information for irq chip functions.
  *			Use accessor functions to deal with it
@@ -228,20 +150,10 @@ struct irq_common_data {
 	unsigned int		node;
 #endif
 	void			*handler_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct msi_desc		*msi_desc;
 #ifdef CONFIG_SMP
 	cpumask_var_t		affinity;
 #endif
-<<<<<<< HEAD
-};
-
-/*
- * Bit masks for irq_data.state
- *
- * IRQD_TRIGGER_MASK		- Mask for the trigger type bits
- * IRQD_SETAFFINITY_PENDING	- Affinity setting is pending
-=======
 #ifdef CONFIG_GENERIC_IRQ_EFFECTIVE_AFF_MASK
 	cpumask_var_t		effective_affinity;
 #endif
@@ -283,42 +195,17 @@ struct irq_data {
  * IRQD_TRIGGER_MASK		- Mask for the trigger type bits
  * IRQD_SETAFFINITY_PENDING	- Affinity setting is pending
  * IRQD_ACTIVATED		- Interrupt has already been activated
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * IRQD_NO_BALANCING		- Balancing disabled for this IRQ
  * IRQD_PER_CPU			- Interrupt is per cpu
  * IRQD_AFFINITY_SET		- Interrupt affinity was set
  * IRQD_LEVEL			- Interrupt is level triggered
  * IRQD_WAKEUP_STATE		- Interrupt is configured for wakeup
  *				  from suspend
-<<<<<<< HEAD
- * IRDQ_MOVE_PCNTXT		- Interrupt can be moved in process
-=======
  * IRQD_MOVE_PCNTXT		- Interrupt can be moved in process
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *				  context
  * IRQD_IRQ_DISABLED		- Disabled state of the interrupt
  * IRQD_IRQ_MASKED		- Masked state of the interrupt
  * IRQD_IRQ_INPROGRESS		- In progress state of the interrupt
-<<<<<<< HEAD
- */
-enum {
-	IRQD_TRIGGER_MASK		= 0xf,
-	IRQD_SETAFFINITY_PENDING	= (1 <<  8),
-	IRQD_NO_BALANCING		= (1 << 10),
-	IRQD_PER_CPU			= (1 << 11),
-	IRQD_AFFINITY_SET		= (1 << 12),
-	IRQD_LEVEL			= (1 << 13),
-	IRQD_WAKEUP_STATE		= (1 << 14),
-	IRQD_MOVE_PCNTXT		= (1 << 15),
-	IRQD_IRQ_DISABLED		= (1 << 16),
-	IRQD_IRQ_MASKED			= (1 << 17),
-	IRQD_IRQ_INPROGRESS		= (1 << 18),
-};
-
-static inline bool irqd_is_setaffinity_pending(struct irq_data *d)
-{
-	return d->state_use_accessors & IRQD_SETAFFINITY_PENDING;
-=======
  * IRQD_WAKEUP_ARMED		- Wakeup mode armed
  * IRQD_FORWARDED_TO_VCPU	- The interrupt is forwarded to a VCPU
  * IRQD_AFFINITY_MANAGED	- Affinity is auto-managed by the kernel
@@ -369,64 +256,35 @@ enum {
 static inline bool irqd_is_setaffinity_pending(struct irq_data *d)
 {
 	return __irqd_to_state(d) & IRQD_SETAFFINITY_PENDING;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool irqd_is_per_cpu(struct irq_data *d)
 {
-<<<<<<< HEAD
-	return d->state_use_accessors & IRQD_PER_CPU;
-=======
 	return __irqd_to_state(d) & IRQD_PER_CPU;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool irqd_can_balance(struct irq_data *d)
 {
-<<<<<<< HEAD
-	return !(d->state_use_accessors & (IRQD_PER_CPU | IRQD_NO_BALANCING));
-=======
 	return !(__irqd_to_state(d) & (IRQD_PER_CPU | IRQD_NO_BALANCING));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool irqd_affinity_was_set(struct irq_data *d)
 {
-<<<<<<< HEAD
-	return d->state_use_accessors & IRQD_AFFINITY_SET;
-=======
 	return __irqd_to_state(d) & IRQD_AFFINITY_SET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void irqd_mark_affinity_was_set(struct irq_data *d)
 {
-<<<<<<< HEAD
-	d->state_use_accessors |= IRQD_AFFINITY_SET;
-=======
 	__irqd_to_state(d) |= IRQD_AFFINITY_SET;
 }
 
 static inline bool irqd_trigger_type_was_set(struct irq_data *d)
 {
 	return __irqd_to_state(d) & IRQD_DEFAULT_TRIGGER_SET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 irqd_get_trigger_type(struct irq_data *d)
 {
-<<<<<<< HEAD
-	return d->state_use_accessors & IRQD_TRIGGER_MASK;
-}
-
-/*
- * Must only be called inside irq_chip.irq_set_type() functions.
- */
-static inline void irqd_set_trigger_type(struct irq_data *d, u32 type)
-{
-	d->state_use_accessors &= ~IRQD_TRIGGER_MASK;
-	d->state_use_accessors |= type & IRQD_TRIGGER_MASK;
-=======
 	return __irqd_to_state(d) & IRQD_TRIGGER_MASK;
 }
 
@@ -439,14 +297,10 @@ static inline void irqd_set_trigger_type(struct irq_data *d, u32 type)
 	__irqd_to_state(d) &= ~IRQD_TRIGGER_MASK;
 	__irqd_to_state(d) |= type & IRQD_TRIGGER_MASK;
 	__irqd_to_state(d) |= IRQD_DEFAULT_TRIGGER_SET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool irqd_is_level_type(struct irq_data *d)
 {
-<<<<<<< HEAD
-	return d->state_use_accessors & IRQD_LEVEL;
-=======
 	return __irqd_to_state(d) & IRQD_LEVEL;
 }
 
@@ -477,67 +331,30 @@ static inline bool irqd_is_handle_enforce_irqctx(struct irq_data *d)
 static inline bool irqd_is_enabled_on_suspend(struct irq_data *d)
 {
 	return __irqd_to_state(d) & IRQD_IRQ_ENABLED_ON_SUSPEND;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool irqd_is_wakeup_set(struct irq_data *d)
 {
-<<<<<<< HEAD
-	return d->state_use_accessors & IRQD_WAKEUP_STATE;
-=======
 	return __irqd_to_state(d) & IRQD_WAKEUP_STATE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool irqd_can_move_in_process_context(struct irq_data *d)
 {
-<<<<<<< HEAD
-	return d->state_use_accessors & IRQD_MOVE_PCNTXT;
-=======
 	return __irqd_to_state(d) & IRQD_MOVE_PCNTXT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool irqd_irq_disabled(struct irq_data *d)
 {
-<<<<<<< HEAD
-	return d->state_use_accessors & IRQD_IRQ_DISABLED;
-=======
 	return __irqd_to_state(d) & IRQD_IRQ_DISABLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool irqd_irq_masked(struct irq_data *d)
 {
-<<<<<<< HEAD
-	return d->state_use_accessors & IRQD_IRQ_MASKED;
-=======
 	return __irqd_to_state(d) & IRQD_IRQ_MASKED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool irqd_irq_inprogress(struct irq_data *d)
 {
-<<<<<<< HEAD
-	return d->state_use_accessors & IRQD_IRQ_INPROGRESS;
-}
-
-/*
- * Functions for chained handlers which can be enabled/disabled by the
- * standard disable_irq/enable_irq calls. Must be called with
- * irq_desc->lock held.
- */
-static inline void irqd_set_chained_irq_inprogress(struct irq_data *d)
-{
-	d->state_use_accessors |= IRQD_IRQ_INPROGRESS;
-}
-
-static inline void irqd_clr_chained_irq_inprogress(struct irq_data *d)
-{
-	d->state_use_accessors &= ~IRQD_IRQ_INPROGRESS;
-}
-
-=======
 	return __irqd_to_state(d) & IRQD_IRQ_INPROGRESS;
 }
 
@@ -628,7 +445,6 @@ static inline bool irqd_needs_resend_when_in_progress(struct irq_data *d)
 
 #undef __irqd_to_state
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
 {
 	return d->hwirq;
@@ -647,13 +463,6 @@ static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
  * @irq_mask_ack:	ack and mask an interrupt source
  * @irq_unmask:		unmask an interrupt source
  * @irq_eoi:		end of interrupt
-<<<<<<< HEAD
- * @irq_set_affinity:	set the CPU affinity on SMP machines
- * @irq_retrigger:	resend an IRQ to the CPU
- * @irq_set_type:	set the flow type (IRQ_TYPE_LEVEL/etc.) of an IRQ
- * @irq_set_wake:	enable/disable power-management wake-on of an IRQ
- * @irq_read_line:	return the current value on the irq line
-=======
  * @irq_set_affinity:	Set the CPU affinity on SMP machines. If the force
  *			argument is true, it tells the driver to
  *			unconditionally apply the affinity setting. Sanity
@@ -663,20 +472,10 @@ static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
  * @irq_retrigger:	resend an IRQ to the CPU
  * @irq_set_type:	set the flow type (IRQ_TYPE_LEVEL/etc.) of an IRQ
  * @irq_set_wake:	enable/disable power-management wake-on of an IRQ
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @irq_bus_lock:	function to lock access to slow bus (i2c) chips
  * @irq_bus_sync_unlock:function to sync and unlock slow bus (i2c) chips
  * @irq_cpu_online:	configure an interrupt source for a secondary CPU
  * @irq_cpu_offline:	un-configure an interrupt source for a secondary CPU
-<<<<<<< HEAD
- * @irq_suspend:	function called from core code on suspend once per chip
- * @irq_resume:		function called from core code on resume once per chip
- * @irq_pm_shutdown:	function called from core code on shutdown once per chip
- * @irq_print_chip:	optional to print special chip info in show_interrupts
- * @flags:		chip specific flags
- *
- * @release:		release function solely used by UML
-=======
  * @irq_suspend:	function called from core code on suspend once per
  *			chip, when one or more interrupts are installed
  * @irq_resume:		function called from core code on resume once per chip,
@@ -698,7 +497,6 @@ static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
  * @irq_nmi_setup:	function called from core code before enabling an NMI
  * @irq_nmi_teardown:	function called from core code after disabling an NMI
  * @flags:		chip specific flags
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct irq_chip {
 	const char	*name;
@@ -716,39 +514,19 @@ struct irq_chip {
 	int		(*irq_set_affinity)(struct irq_data *data, const struct cpumask *dest, bool force);
 	int		(*irq_retrigger)(struct irq_data *data);
 	int		(*irq_set_type)(struct irq_data *data, unsigned int flow_type);
-<<<<<<< HEAD
-	int		(*irq_read_line)(struct irq_data *data);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		(*irq_set_wake)(struct irq_data *data, unsigned int on);
 
 	void		(*irq_bus_lock)(struct irq_data *data);
 	void		(*irq_bus_sync_unlock)(struct irq_data *data);
 
-<<<<<<< HEAD
-	void		(*irq_cpu_online)(struct irq_data *data);
-	void		(*irq_cpu_offline)(struct irq_data *data);
-
-=======
 #ifdef CONFIG_DEPRECATED_IRQ_CPU_ONOFFLINE
 	void		(*irq_cpu_online)(struct irq_data *data);
 	void		(*irq_cpu_offline)(struct irq_data *data);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void		(*irq_suspend)(struct irq_data *data);
 	void		(*irq_resume)(struct irq_data *data);
 	void		(*irq_pm_shutdown)(struct irq_data *data);
 
-<<<<<<< HEAD
-	void		(*irq_print_chip)(struct irq_data *data, struct seq_file *p);
-
-	unsigned long	flags;
-
-	/* Currently used only by UML, might disappear one day.*/
-#ifdef CONFIG_IRQ_RELEASE_METHOD
-	void		(*release)(unsigned int irq, void *dev_id);
-#endif
-=======
 	void		(*irq_calc_mask)(struct irq_data *data);
 
 	void		(*irq_print_chip)(struct irq_data *data, struct seq_file *p);
@@ -770,30 +548,11 @@ struct irq_chip {
 	void		(*irq_nmi_teardown)(struct irq_data *data);
 
 	unsigned long	flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * irq_chip specific flags
  *
-<<<<<<< HEAD
- * IRQCHIP_SET_TYPE_MASKED:	Mask before calling chip.irq_set_type()
- * IRQCHIP_EOI_IF_HANDLED:	Only issue irq_eoi() when irq was handled
- * IRQCHIP_MASK_ON_SUSPEND:	Mask non wake irqs in the suspend path
- * IRQCHIP_ONOFFLINE_ENABLED:	Only call irq_on/off_line callbacks
- *				when irq enabled
- * IRQCHIP_SKIP_SET_WAKE:	Skip chip.irq_set_wake(), for this irq chip
- */
-enum {
-	IRQCHIP_SET_TYPE_MASKED		= (1 <<  0),
-	IRQCHIP_EOI_IF_HANDLED		= (1 <<  1),
-	IRQCHIP_MASK_ON_SUSPEND		= (1 <<  2),
-	IRQCHIP_ONOFFLINE_ENABLED	= (1 <<  3),
-	IRQCHIP_SKIP_SET_WAKE		= (1 <<  4),
-};
-
-/* This include will go away once we isolated irq_desc usage to core code */
-=======
  * IRQCHIP_SET_TYPE_MASKED:           Mask before calling chip.irq_set_type()
  * IRQCHIP_EOI_IF_HANDLED:            Only issue irq_eoi() when irq was handled
  * IRQCHIP_MASK_ON_SUSPEND:           Mask non wake irqs in the suspend path
@@ -824,7 +583,6 @@ enum {
 	IRQCHIP_IMMUTABLE			= (1 << 11),
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/irqdesc.h>
 
 /*
@@ -843,25 +601,6 @@ enum {
 #define IRQ_DEFAULT_INIT_FLAGS	ARCH_IRQ_INIT_FLAGS
 
 struct irqaction;
-<<<<<<< HEAD
-extern int setup_irq(unsigned int irq, struct irqaction *new);
-extern void remove_irq(unsigned int irq, struct irqaction *act);
-extern int setup_percpu_irq(unsigned int irq, struct irqaction *new);
-extern void remove_percpu_irq(unsigned int irq, struct irqaction *act);
-
-extern void irq_cpu_online(void);
-extern void irq_cpu_offline(void);
-extern int __irq_set_affinity_locked(struct irq_data *data,  const struct cpumask *cpumask);
-
-#ifdef CONFIG_GENERIC_HARDIRQS
-
-#if defined(CONFIG_SMP) && defined(CONFIG_GENERIC_PENDING_IRQ)
-void irq_move_irq(struct irq_data *data);
-void irq_move_masked_irq(struct irq_data *data);
-#else
-static inline void irq_move_irq(struct irq_data *data) { }
-static inline void irq_move_masked_irq(struct irq_data *data) { }
-=======
 extern int setup_percpu_irq(unsigned int irq, struct irqaction *new);
 extern void remove_percpu_irq(unsigned int irq, struct irqaction *act);
 
@@ -893,13 +632,10 @@ void irq_force_complete_move(struct irq_desc *desc);
 static inline void irq_move_irq(struct irq_data *data) { }
 static inline void irq_move_masked_irq(struct irq_data *data) { }
 static inline void irq_force_complete_move(struct irq_desc *desc) { }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 extern int no_irq_affinity;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_HARDIRQS_SW_RESEND
 int irq_set_parent(int irq, int parent_irq);
 #else
@@ -909,29 +645,10 @@ static inline int irq_set_parent(int irq, int parent_irq)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Built-in IRQ handlers for various IRQ types,
  * callable via desc->handle_irq()
  */
-<<<<<<< HEAD
-extern void handle_level_irq(unsigned int irq, struct irq_desc *desc);
-extern void handle_fasteoi_irq(unsigned int irq, struct irq_desc *desc);
-extern void handle_edge_irq(unsigned int irq, struct irq_desc *desc);
-extern void handle_edge_eoi_irq(unsigned int irq, struct irq_desc *desc);
-extern void handle_simple_irq(unsigned int irq, struct irq_desc *desc);
-extern void handle_percpu_irq(unsigned int irq, struct irq_desc *desc);
-extern void handle_percpu_devid_irq(unsigned int irq, struct irq_desc *desc);
-extern void handle_bad_irq(unsigned int irq, struct irq_desc *desc);
-extern void handle_nested_irq(unsigned int irq);
-
-/* Handling of unhandled and spurious interrupts: */
-extern void note_interrupt(unsigned int irq, struct irq_desc *desc,
-			   irqreturn_t action_ret);
-
-/* Resending of interrupts :*/
-void check_irq_resend(struct irq_desc *desc, unsigned int irq);
-=======
 extern void handle_level_irq(struct irq_desc *desc);
 extern void handle_fasteoi_irq(struct irq_desc *desc);
 extern void handle_edge_irq(struct irq_desc *desc);
@@ -980,7 +697,6 @@ extern void irq_chip_release_resources_parent(struct irq_data *data);
 /* Handling of unhandled and spurious interrupts: */
 extern void note_interrupt(struct irq_desc *desc, irqreturn_t action_ret);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Enable/disable irq debugging output: */
 extern int noirqdebug_setup(char *str);
@@ -993,31 +709,21 @@ extern struct irq_chip no_irq_chip;
 extern struct irq_chip dummy_irq_chip;
 
 extern void
-<<<<<<< HEAD
-irq_set_chip_and_handler_name(unsigned int irq, struct irq_chip *chip,
-			      irq_flow_handler_t handle, const char *name);
-
-static inline void irq_set_chip_and_handler(unsigned int irq, struct irq_chip *chip,
-=======
 irq_set_chip_and_handler_name(unsigned int irq, const struct irq_chip *chip,
 			      irq_flow_handler_t handle, const char *name);
 
 static inline void irq_set_chip_and_handler(unsigned int irq,
 					    const struct irq_chip *chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    irq_flow_handler_t handle)
 {
 	irq_set_chip_and_handler_name(irq, chip, handle, NULL);
 }
 
 extern int irq_set_percpu_devid(unsigned int irq);
-<<<<<<< HEAD
-=======
 extern int irq_set_percpu_devid_partition(unsigned int irq,
 					  const struct cpumask *affinity);
 extern int irq_get_percpu_devid_partition(unsigned int irq,
 					  struct cpumask *affinity);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void
 __irq_set_handler(unsigned int irq, irq_flow_handler_t handle, int is_chained,
@@ -1040,8 +746,6 @@ irq_set_chained_handler(unsigned int irq, irq_flow_handler_t handle)
 	__irq_set_handler(irq, handle, 1, NULL);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Set a highlevel chained flow handler and its data for a given IRQ.
  * (a chained handler is automatically enabled and set to
@@ -1051,7 +755,6 @@ void
 irq_set_chained_handler_and_data(unsigned int irq, irq_flow_handler_t handle,
 				 void *data);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void irq_modify_status(unsigned int irq, unsigned long clr, unsigned long set);
 
 static inline void irq_set_status_flags(unsigned int irq, unsigned long set)
@@ -1099,37 +802,14 @@ static inline void irq_set_percpu_devid_flags(unsigned int irq)
 			     IRQ_NOPROBE | IRQ_PER_CPU_DEVID);
 }
 
-<<<<<<< HEAD
-/* Handle dynamic irq creation and destruction */
-extern unsigned int create_irq_nr(unsigned int irq_want, int node);
-extern int create_irq(void);
-extern void destroy_irq(unsigned int irq);
-
-/*
- * Dynamic irq helper functions. Obsolete. Use irq_alloc_desc* and
- * irq_free_desc instead.
- */
-extern void dynamic_irq_cleanup(unsigned int irq);
-static inline void dynamic_irq_init(unsigned int irq)
-{
-	dynamic_irq_cleanup(irq);
-}
-
-/* Set/get chip/data for an IRQ: */
-extern int irq_set_chip(unsigned int irq, struct irq_chip *chip);
-=======
 /* Set/get chip/data for an IRQ: */
 extern int irq_set_chip(unsigned int irq, const struct irq_chip *chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int irq_set_handler_data(unsigned int irq, void *data);
 extern int irq_set_chip_data(unsigned int irq, void *data);
 extern int irq_set_irq_type(unsigned int irq, unsigned int type);
 extern int irq_set_msi_desc(unsigned int irq, struct msi_desc *entry);
-<<<<<<< HEAD
-=======
 extern int irq_set_msi_desc_off(unsigned int irq_base, unsigned int irq_offset,
 				struct msi_desc *entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct irq_data *irq_get_irq_data(unsigned int irq);
 
 static inline struct irq_chip *irq_get_chip(unsigned int irq)
@@ -1157,44 +837,17 @@ static inline void *irq_data_get_irq_chip_data(struct irq_data *d)
 static inline void *irq_get_handler_data(unsigned int irq)
 {
 	struct irq_data *d = irq_get_irq_data(irq);
-<<<<<<< HEAD
-	return d ? d->handler_data : NULL;
-=======
 	return d ? d->common->handler_data : NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void *irq_data_get_irq_handler_data(struct irq_data *d)
 {
-<<<<<<< HEAD
-	return d->handler_data;
-=======
 	return d->common->handler_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct msi_desc *irq_get_msi_desc(unsigned int irq)
 {
 	struct irq_data *d = irq_get_irq_data(irq);
-<<<<<<< HEAD
-	return d ? d->msi_desc : NULL;
-}
-
-static inline struct msi_desc *irq_data_get_msi(struct irq_data *d)
-{
-	return d->msi_desc;
-}
-
-int __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
-		struct module *owner);
-
-/* use macros to avoid needing export.h for THIS_MODULE */
-#define irq_alloc_descs(irq, from, cnt, node)	\
-	__irq_alloc_descs(irq, from, cnt, node, THIS_MODULE)
-
-#define irq_alloc_desc(node)			\
-	irq_alloc_descs(-1, 0, 1, node)
-=======
 	return d ? d->common->msi_desc : NULL;
 }
 
@@ -1295,7 +948,6 @@ int __devm_irq_alloc_descs(struct device *dev, int irq, unsigned int from,
 
 #define irq_alloc_desc(node)			\
 	irq_alloc_descs(-1, 1, 1, node)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define irq_alloc_desc_at(at, node)		\
 	irq_alloc_descs(at, at, 1, node)
@@ -1303,11 +955,6 @@ int __devm_irq_alloc_descs(struct device *dev, int irq, unsigned int from,
 #define irq_alloc_desc_from(from, node)		\
 	irq_alloc_descs(-1, from, 1, node)
 
-<<<<<<< HEAD
-void irq_free_descs(unsigned int irq, unsigned int cnt);
-int irq_reserve_irqs(unsigned int from, unsigned int cnt);
-
-=======
 #define irq_alloc_descs_from(from, cnt, node)	\
 	irq_alloc_descs(-1, from, cnt, node)
 
@@ -1327,27 +974,13 @@ int irq_reserve_irqs(unsigned int from, unsigned int cnt);
 	devm_irq_alloc_descs(dev, -1, from, cnt, node)
 
 void irq_free_descs(unsigned int irq, unsigned int cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void irq_free_desc(unsigned int irq)
 {
 	irq_free_descs(irq, 1);
 }
 
-<<<<<<< HEAD
-static inline int irq_reserve_irq(unsigned int irq)
-{
-	return irq_reserve_irqs(irq, 1);
-}
-
-#ifndef irq_reg_writel
-# define irq_reg_writel(val, addr)	writel(val, addr)
-#endif
-#ifndef irq_reg_readl
-# define irq_reg_readl(addr)		readl(addr)
-=======
 #ifdef CONFIG_GENERIC_IRQ_LEGACY
 void irq_init_desc(unsigned int irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /**
@@ -1376,11 +1009,8 @@ struct irq_chip_regs {
  * @regs:		Register offsets for this chip
  * @handler:		Flow handler associated with this chip
  * @type:		Chip can handle these flow types
-<<<<<<< HEAD
-=======
  * @mask_cache_priv:	Cached mask register private to the chip type
  * @mask_cache:		Pointer to cached mask register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * A irq_generic_chip can have several instances of irq_chip_type when
  * it requires different functions and register offsets for different
@@ -1391,22 +1021,14 @@ struct irq_chip_type {
 	struct irq_chip_regs	regs;
 	irq_flow_handler_t	handler;
 	u32			type;
-<<<<<<< HEAD
-=======
 	u32			mask_cache_priv;
 	u32			*mask_cache;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct irq_chip_generic - Generic irq chip data structure
  * @lock:		Lock to protect register and cache data access
  * @reg_base:		Register base address (virtual)
-<<<<<<< HEAD
- * @irq_base:		Interrupt base nr for this chip
- * @irq_cnt:		Number of interrupts handled by this chip
- * @mask_cache:		Cached mask register
-=======
  * @reg_readl:		Alternate I/O accessor (defaults to readl if NULL)
  * @reg_writel:		Alternate I/O accessor (defaults to writel if NULL)
  * @suspend:		Function called from core code on suspend once per
@@ -1418,19 +1040,15 @@ struct irq_chip_type {
  * @irq_base:		Interrupt base nr for this chip
  * @irq_cnt:		Number of interrupts handled by this chip
  * @mask_cache:		Cached mask register shared between all chip types
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @type_cache:		Cached type register
  * @polarity_cache:	Cached polarity register
  * @wake_enabled:	Interrupt can wakeup from suspend
  * @wake_active:	Interrupt is marked as an wakeup from suspend source
  * @num_ct:		Number of available irq_chip_type instances (usually 1)
  * @private:		Private data for non generic chip callbacks
-<<<<<<< HEAD
-=======
  * @installed:		bitfield to denote installed interrupts
  * @unused:		bitfield to denote unused interrupts
  * @domain:		irq domain pointer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @list:		List head for keeping track of instances
  * @chip_types:		Array of interrupt irq_chip_types
  *
@@ -1443,13 +1061,10 @@ struct irq_chip_type {
 struct irq_chip_generic {
 	raw_spinlock_t		lock;
 	void __iomem		*reg_base;
-<<<<<<< HEAD
-=======
 	u32			(*reg_readl)(void __iomem *addr);
 	void			(*reg_writel)(u32 val, void __iomem *addr);
 	void			(*suspend)(struct irq_chip_generic *gc);
 	void			(*resume)(struct irq_chip_generic *gc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		irq_base;
 	unsigned int		irq_cnt;
 	u32			mask_cache;
@@ -1459,16 +1074,11 @@ struct irq_chip_generic {
 	u32			wake_active;
 	unsigned int		num_ct;
 	void			*private;
-<<<<<<< HEAD
-	struct list_head	list;
-	struct irq_chip_type	chip_types[0];
-=======
 	unsigned long		installed;
 	unsigned long		unused;
 	struct irq_domain	*domain;
 	struct list_head	list;
 	struct irq_chip_type	chip_types[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -1477,18 +1087,13 @@ struct irq_chip_generic {
  * @IRQ_GC_INIT_NESTED_LOCK:	Set the lock class of the irqs to nested for
  *				irq chips which need to call irq_set_wake() on
  *				the parent irq. Usually GPIO implementations
-<<<<<<< HEAD
-=======
  * @IRQ_GC_MASK_CACHE_PER_TYPE:	Mask cache is chip type private
  * @IRQ_GC_NO_MASK:		Do not calculate irq_data->mask
  * @IRQ_GC_BE_IO:		Use big-endian register accesses (default: LE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum irq_gc_flags {
 	IRQ_GC_INIT_MASK_CACHE		= 1 << 0,
 	IRQ_GC_INIT_NESTED_LOCK		= 1 << 1,
-<<<<<<< HEAD
-=======
 	IRQ_GC_MASK_CACHE_PER_TYPE	= 1 << 2,
 	IRQ_GC_NO_MASK			= 1 << 3,
 	IRQ_GC_BE_IO			= 1 << 4,
@@ -1510,7 +1115,6 @@ struct irq_domain_chip_generic {
 	unsigned int		irq_flags_to_set;
 	enum irq_gc_flags	gc_flags;
 	struct irq_chip_generic	*gc[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Generic chip callback functions */
@@ -1521,21 +1125,14 @@ void irq_gc_mask_clr_bit(struct irq_data *d);
 void irq_gc_unmask_enable_reg(struct irq_data *d);
 void irq_gc_ack_set_bit(struct irq_data *d);
 void irq_gc_ack_clr_bit(struct irq_data *d);
-<<<<<<< HEAD
-void irq_gc_mask_disable_reg_and_ack(struct irq_data *d);
-=======
 void irq_gc_mask_disable_and_ack_set(struct irq_data *d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void irq_gc_eoi(struct irq_data *d);
 int irq_gc_set_wake(struct irq_data *d, unsigned int on);
 
 /* Setup functions for irq_chip_generic */
-<<<<<<< HEAD
-=======
 int irq_map_generic_chip(struct irq_domain *d, unsigned int virq,
 			 irq_hw_number_t hw_irq);
 void irq_unmap_generic_chip(struct irq_domain *d, unsigned int virq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct irq_chip_generic *
 irq_alloc_generic_chip(const char *name, int nr_ct, unsigned int irq_base,
 		       void __iomem *reg_base, irq_flow_handler_t handler);
@@ -1546,8 +1143,6 @@ int irq_setup_alt_chip(struct irq_data *d, unsigned int type);
 void irq_remove_generic_chip(struct irq_chip_generic *gc, u32 msk,
 			     unsigned int clr, unsigned int set);
 
-<<<<<<< HEAD
-=======
 struct irq_chip_generic *
 devm_irq_alloc_generic_chip(struct device *dev, const char *name, int num_ct,
 			    unsigned int irq_base, void __iomem *reg_base,
@@ -1585,7 +1180,6 @@ static inline void irq_destroy_generic_chip(struct irq_chip_generic *gc,
 	irq_free_generic_chip(gc);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct irq_chip_type *irq_data_get_chip_type(struct irq_data *d)
 {
 	return container_of(d->chip, struct irq_chip_type, chip);
@@ -1608,11 +1202,6 @@ static inline void irq_gc_lock(struct irq_chip_generic *gc) { }
 static inline void irq_gc_unlock(struct irq_chip_generic *gc) { }
 #endif
 
-<<<<<<< HEAD
-#endif /* CONFIG_GENERIC_HARDIRQS */
-
-#endif /* !CONFIG_S390 */
-=======
 /*
  * The irqsave variants are for usage in non interrupt code. Do not use
  * them in irq_chip callbacks. Use irq_gc_lock() instead.
@@ -1701,6 +1290,5 @@ asmlinkage void generic_handle_arch_irq(struct pt_regs *regs);
 	} while (0)
 #endif
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_IRQ_H */

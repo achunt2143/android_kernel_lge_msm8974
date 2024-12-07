@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Contains register definitions common to PowerPC 8xx CPUs.  Notice
  */
@@ -18,8 +15,6 @@
 #define SPRN_DC_ADR	569	/* Address needed for some commands */
 #define SPRN_DC_DAT	570	/* Read-only data register */
 
-<<<<<<< HEAD
-=======
 /* Misc Debug */
 #define SPRN_DPDR	630
 #define SPRN_MI_CAM	816
@@ -60,7 +55,6 @@
 #endif
 #define SPRN_BAR	159
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Commands.  Only the first few are available to the instruction cache.
 */
 #define	IDC_ENABLE	0x02000000	/* Cache enable */

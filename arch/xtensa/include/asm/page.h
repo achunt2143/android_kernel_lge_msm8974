@@ -11,49 +11,17 @@
 #ifndef _XTENSA_PAGE_H
 #define _XTENSA_PAGE_H
 
-<<<<<<< HEAD
-#include <asm/processor.h>
-#include <asm/types.h>
-#include <asm/cache.h>
-#include <platform/hardware.h>
-
-/*
- * Fixed TLB translations in the processor.
- */
-
-#define XCHAL_KSEG_CACHED_VADDR 0xd0000000
-#define XCHAL_KSEG_BYPASS_VADDR 0xd8000000
-#define XCHAL_KSEG_PADDR        0x00000000
-#define XCHAL_KSEG_SIZE         0x08000000
-=======
 #include <linux/const.h>
 
 #include <asm/processor.h>
 #include <asm/types.h>
 #include <asm/cache.h>
 #include <asm/kmem_layout.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * PAGE_SHIFT determines the page size
  */
 
-<<<<<<< HEAD
-#define PAGE_SHIFT		12
-#define PAGE_SIZE		(__XTENSA_UL_CONST(1) << PAGE_SHIFT)
-#define PAGE_MASK		(~(PAGE_SIZE-1))
-
-#ifdef CONFIG_MMU
-#define PAGE_OFFSET		XCHAL_KSEG_CACHED_VADDR
-#define MAX_MEM_PFN		XCHAL_KSEG_SIZE
-#else
-#define PAGE_OFFSET		0
-#define MAX_MEM_PFN		(PLATFORM_DEFAULT_MEM_START + PLATFORM_DEFAULT_MEM_SIZE)
-#endif
-
-#define PGTABLE_START		0x80000000
-
-=======
 #define PAGE_SHIFT	CONFIG_PAGE_SHIFT
 #define PAGE_SIZE	(__XTENSA_UL_CONST(1) << PAGE_SHIFT)
 #define PAGE_MASK	(~(PAGE_SIZE-1))
@@ -69,7 +37,6 @@
 #define MAX_LOW_PFN	PHYS_PFN(0xfffffffful)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cache aliasing:
  *
@@ -105,13 +72,9 @@
 # define DCACHE_ALIAS_EQ(a,b)	((((a) ^ (b)) & DCACHE_ALIAS_MASK) == 0)
 #else
 # define DCACHE_ALIAS_ORDER	0
-<<<<<<< HEAD
-#endif
-=======
 # define DCACHE_ALIAS(a)	((void)(a), 0)
 #endif
 #define DCACHE_N_COLORS		(1 << DCACHE_ALIAS_ORDER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if ICACHE_WAY_SIZE > PAGE_SIZE
 # define ICACHE_ALIAS_ORDER	(ICACHE_WAY_SHIFT - PAGE_SHIFT)
@@ -167,10 +130,7 @@ static inline __attribute_const__ int get_order(unsigned long size)
 #endif
 
 struct page;
-<<<<<<< HEAD
-=======
 struct vm_area_struct;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void clear_page(void *page);
 extern void copy_page(void *to, void *from);
 
@@ -179,11 +139,6 @@ extern void copy_page(void *to, void *from);
  * some extra work
  */
 
-<<<<<<< HEAD
-#if DCACHE_WAY_SIZE > PAGE_SIZE
-extern void clear_user_page(void*, unsigned long, struct page*);
-extern void copy_user_page(void*, void*, unsigned long, struct page*);
-=======
 #if defined(CONFIG_MMU) && DCACHE_WAY_SIZE > PAGE_SIZE
 extern void clear_page_alias(void *vaddr, unsigned long paddr);
 extern void copy_page_alias(void *to, void *from,
@@ -194,7 +149,6 @@ void clear_user_highpage(struct page *page, unsigned long vaddr);
 #define __HAVE_ARCH_COPY_USER_HIGHPAGE
 void copy_user_highpage(struct page *to, struct page *from,
 			unsigned long vaddr, struct vm_area_struct *vma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 # define clear_user_page(page, vaddr, pg)	clear_page(page)
 # define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
@@ -207,16 +161,6 @@ void copy_user_highpage(struct page *to, struct page *from,
  * addresses.
  */
 
-<<<<<<< HEAD
-#define ARCH_PFN_OFFSET		(PLATFORM_DEFAULT_MEM_START >> PAGE_SHIFT)
-
-#define __pa(x)			((unsigned long) (x) - PAGE_OFFSET)
-#define __va(x)			((void *)((unsigned long) (x) + PAGE_OFFSET))
-#define pfn_valid(pfn)		((pfn) >= ARCH_PFN_OFFSET && ((pfn) - ARCH_PFN_OFFSET) < max_mapnr)
-#ifdef CONFIG_DISCONTIGMEM
-# error CONFIG_DISCONTIGMEM not supported
-#endif
-=======
 #define ARCH_PFN_OFFSET		(PHYS_OFFSET >> PAGE_SHIFT)
 
 #ifdef CONFIG_MMU
@@ -247,7 +191,6 @@ static inline unsigned long ___pa(unsigned long va)
 #endif
 #define __va(x)	\
 	((void *)((unsigned long) (x) - PHYS_OFFSET + PAGE_OFFSET))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define virt_to_page(kaddr)	pfn_to_page(__pa(kaddr) >> PAGE_SHIFT)
 #define page_to_virt(page)	__va(page_to_pfn(page) << PAGE_SHIFT)
@@ -256,11 +199,5 @@ static inline unsigned long ___pa(unsigned long va)
 
 #endif /* __ASSEMBLY__ */
 
-<<<<<<< HEAD
-#define VM_DATA_DEFAULT_FLAGS	(VM_READ | VM_WRITE | VM_EXEC | \
-				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/memory_model.h>
 #endif /* _XTENSA_PAGE_H */

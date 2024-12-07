@@ -1,31 +1,3 @@
-<<<<<<< HEAD
-/* 
- * Copyright (C) 2000, 2001 Jeff Dike (jdike@karaya.com)
- * Licensed under the GPL
- */
-
-#include "linux/posix_types.h"
-#include "linux/tty.h"
-#include "linux/tty_flip.h"
-#include "linux/types.h"
-#include "linux/major.h"
-#include "linux/kdev_t.h"
-#include "linux/console.h"
-#include "linux/string.h"
-#include "linux/sched.h"
-#include "linux/list.h"
-#include "linux/init.h"
-#include "linux/interrupt.h"
-#include "linux/slab.h"
-#include "linux/hardirq.h"
-#include "asm/current.h"
-#include "asm/irq.h"
-#include "stdio_console.h"
-#include "chan.h"
-#include "irq_user.h"
-#include "mconsole_kern.h"
-#include "init.h"
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* 
  * Copyright (C) 2000, 2001 Jeff Dike (jdike@karaya.com)
@@ -52,7 +24,6 @@
 #include <irq_user.h>
 #include "mconsole_kern.h"
 #include <init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_TTYS (16)
 
@@ -82,13 +53,7 @@ static struct line_driver driver = {
 	.minor_start 		= 0,
 	.type 		 	= TTY_DRIVER_TYPE_CONSOLE,
 	.subtype 	 	= SYSTEM_TYPE_CONSOLE,
-<<<<<<< HEAD
-	.read_irq 		= CONSOLE_IRQ,
 	.read_irq_name 		= "console",
-	.write_irq 		= CONSOLE_WRITE_IRQ,
-=======
-	.read_irq_name 		= "console",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write_irq_name 	= "console-write",
 	.mc  = {
 		.list		= LIST_HEAD_INIT(driver.mc.list),
@@ -122,26 +87,6 @@ static int con_remove(int n, char **error_out)
 	return line_remove(vts, ARRAY_SIZE(vts), n, error_out);
 }
 
-<<<<<<< HEAD
-static int con_open(struct tty_struct *tty, struct file *filp)
-{
-	int err = line_open(vts, tty);
-	if (err)
-		printk(KERN_ERR "Failed to open console %d, err = %d\n",
-		       tty->index, err);
-
-	return err;
-}
-
-/* Set in an initcall, checked in an exitcall */
-static int con_init_done = 0;
-
-static const struct tty_operations console_ops = {
-	.open 	 		= con_open,
-	.close 	 		= line_close,
-	.write 	 		= line_write,
-	.put_char 		= line_put_char,
-=======
 /* Set in an initcall, checked in an exitcall */
 static int con_init_done;
 
@@ -155,21 +100,13 @@ static const struct tty_operations console_ops = {
 	.install		= con_install,
 	.close 	 		= line_close,
 	.write 	 		= line_write,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write_room		= line_write_room,
 	.chars_in_buffer 	= line_chars_in_buffer,
 	.flush_buffer 		= line_flush_buffer,
 	.flush_chars 		= line_flush_chars,
-<<<<<<< HEAD
-	.set_termios 		= line_set_termios,
-	.ioctl 	 		= line_ioctl,
-	.throttle 		= line_throttle,
-	.unthrottle 		= line_unthrottle,
-=======
 	.throttle 		= line_throttle,
 	.unthrottle 		= line_unthrottle,
 	.hangup			= line_hangup,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void uml_console_write(struct console *console, const char *string,
@@ -251,12 +188,9 @@ __uml_exitcall(console_exit);
 
 static int console_chan_setup(char *str)
 {
-<<<<<<< HEAD
-=======
 	if (!strncmp(str, "sole=", 5))	/* console= option specifies tty */
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	line_setup(vt_conf, MAX_TTYS, &def_conf, str, "console");
 	return 1;
 }

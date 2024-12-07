@@ -25,31 +25,18 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "radeon.h"
-=======
 
 #include "radeon.h"
 #include "radeon_asic.h"
 #include "r600.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "evergreend.h"
 #include "evergreen_reg_safe.h"
 #include "cayman_reg_safe.h"
 
-<<<<<<< HEAD
-#define MAX(a,b)                   (((a)>(b))?(a):(b))
-#define MIN(a,b)                   (((a)<(b))?(a):(b))
-
-static int evergreen_cs_packet_next_reloc(struct radeon_cs_parser *p,
-					  struct radeon_cs_reloc **cs_reloc);
-=======
 #define MAX(a, b)                   (((a) > (b)) ? (a) : (b))
 #define MIN(a, b)                   (((a) < (b)) ? (a) : (b))
 
 #define REG_SAFE_BM_SIZE ARRAY_SIZE(evergreen_reg_safe_bm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct evergreen_cs_track {
 	u32			group_size;
@@ -98,11 +85,8 @@ struct evergreen_cs_track {
 	u32			htile_offset;
 	u32			htile_surface;
 	struct radeon_bo	*htile_bo;
-<<<<<<< HEAD
-=======
 	unsigned long		indirect_draw_buffer_size;
 	const unsigned		*reg_safe_bm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static u32 evergreen_cs_get_aray_mode(u32 tiling_flags)
@@ -283,11 +267,7 @@ static int evergreen_surface_check_2d(struct radeon_cs_parser *p,
 	/* macro tile width & height */
 	palign = (8 * surf->bankw * track->npipes) * surf->mtilea;
 	halign = (8 * surf->bankh * surf->nbanks) / surf->mtilea;
-<<<<<<< HEAD
-	mtileb = (palign / 8) * (halign / 8) * tileb;;
-=======
 	mtileb = (palign / 8) * (halign / 8) * tileb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtile_pr = surf->nbx / palign;
 	mtile_ps = (mtile_pr * surf->nby) / halign;
 	surf->layer_size = mtile_ps * mtileb * slice_pt;
@@ -467,11 +447,7 @@ static int evergreen_cs_track_validate_cb(struct radeon_cs_parser *p, unsigned i
 		 * command stream.
 		 */
 		if (!surf.mode) {
-<<<<<<< HEAD
-			volatile u32 *ib = p->ib->ptr;
-=======
 			uint32_t *ib = p->ib.ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned long tmp, nby, bsize, size, min = 0;
 
 			/* find the height the ddx wants */
@@ -534,10 +510,6 @@ static int evergreen_cs_track_validate_htile(struct radeon_cs_parser *p,
 		/* height is npipes htiles aligned == npipes * 8 pixel aligned */
 		nby = round_up(nby, track->npipes * 8);
 	} else {
-<<<<<<< HEAD
-		switch (track->npipes) {
-		case 8:
-=======
 		/* always assume 8x8 htile */
 		/* align is htile align * 8, htile align vary according to
 		 * number of pipe and tile width and nby
@@ -545,31 +517,21 @@ static int evergreen_cs_track_validate_htile(struct radeon_cs_parser *p,
 		switch (track->npipes) {
 		case 8:
 			/* HTILE_WIDTH = 8 & HTILE_HEIGHT = 8*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nbx = round_up(nbx, 64 * 8);
 			nby = round_up(nby, 64 * 8);
 			break;
 		case 4:
-<<<<<<< HEAD
-=======
 			/* HTILE_WIDTH = 8 & HTILE_HEIGHT = 8*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nbx = round_up(nbx, 64 * 8);
 			nby = round_up(nby, 32 * 8);
 			break;
 		case 2:
-<<<<<<< HEAD
-=======
 			/* HTILE_WIDTH = 8 & HTILE_HEIGHT = 8*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nbx = round_up(nbx, 32 * 8);
 			nby = round_up(nby, 32 * 8);
 			break;
 		case 1:
-<<<<<<< HEAD
-=======
 			/* HTILE_WIDTH = 8 & HTILE_HEIGHT = 8*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nbx = round_up(nbx, 32 * 8);
 			nby = round_up(nby, 16 * 8);
 			break;
@@ -580,16 +542,10 @@ static int evergreen_cs_track_validate_htile(struct radeon_cs_parser *p,
 		}
 	}
 	/* compute number of htile */
-<<<<<<< HEAD
-	nbx = nbx / 8;
-	nby = nby / 8;
-	size = nbx * nby * 4;
-=======
 	nbx = nbx >> 3;
 	nby = nby >> 3;
 	/* size must be aligned on npipes * 2K boundary */
 	size = roundup(nbx * nby * 4, track->npipes * (2 << 10));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size += track->htile_offset;
 
 	if (size > radeon_bo_size(track->htile_bo)) {
@@ -844,8 +800,6 @@ static int evergreen_cs_track_validate_texture(struct radeon_cs_parser *p,
 	case V_030000_SQ_TEX_DIM_1D_ARRAY:
 	case V_030000_SQ_TEX_DIM_2D_ARRAY:
 		depth = 1;
-<<<<<<< HEAD
-=======
 		break;
 	case V_030000_SQ_TEX_DIM_2D_MSAA:
 	case V_030000_SQ_TEX_DIM_2D_ARRAY_MSAA:
@@ -853,7 +807,6 @@ static int evergreen_cs_track_validate_texture(struct radeon_cs_parser *p,
 		llevel = 0;
 		depth = 1;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case V_030000_SQ_TEX_DIM_3D:
 		break;
 	default:
@@ -885,11 +838,7 @@ static int evergreen_cs_track_validate_texture(struct radeon_cs_parser *p,
 			 __func__, __LINE__, toffset, surf.base_align);
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	if (moffset & (surf.base_align - 1)) {
-=======
 	if (surf.nsamples <= 1 && moffset & (surf.base_align - 1)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_warn(p->dev, "%s:%d mipmap bo base %ld not aligned with %ld\n",
 			 __func__, __LINE__, moffset, surf.base_align);
 		return -EINVAL;
@@ -909,8 +858,6 @@ static int evergreen_cs_track_validate_texture(struct radeon_cs_parser *p,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-=======
 	if (!mipmap) {
 		if (llevel) {
 			dev_warn(p->dev, "%s:%i got NULL MIP_ADDRESS relocation\n",
@@ -921,7 +868,6 @@ static int evergreen_cs_track_validate_texture(struct radeon_cs_parser *p,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* check mipmap size */
 	for (i = 1; i <= llevel; i++) {
 		unsigned w, h, d;
@@ -1047,23 +993,15 @@ static int evergreen_cs_track_check(struct radeon_cs_parser *p)
 
 	if (track->db_dirty) {
 		/* Check stencil buffer */
-<<<<<<< HEAD
-		if (G_028800_STENCIL_ENABLE(track->db_depth_control)) {
-=======
 		if (G_028044_FORMAT(track->db_s_info) != V_028044_STENCIL_INVALID &&
 		    G_028800_STENCIL_ENABLE(track->db_depth_control)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = evergreen_cs_track_validate_stencil(p);
 			if (r)
 				return r;
 		}
 		/* Check depth buffer */
-<<<<<<< HEAD
-		if (G_028800_Z_ENABLE(track->db_depth_control)) {
-=======
 		if (G_028040_FORMAT(track->db_z_info) != V_028040_Z_INVALID &&
 		    G_028800_Z_ENABLE(track->db_depth_control)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = evergreen_cs_track_validate_depth(p);
 			if (r)
 				return r;
@@ -1075,204 +1013,6 @@ static int evergreen_cs_track_check(struct radeon_cs_parser *p)
 }
 
 /**
-<<<<<<< HEAD
- * evergreen_cs_packet_parse() - parse cp packet and point ib index to next packet
- * @parser:	parser structure holding parsing context.
- * @pkt:	where to store packet informations
- *
- * Assume that chunk_ib_index is properly set. Will return -EINVAL
- * if packet is bigger than remaining ib size. or if packets is unknown.
- **/
-int evergreen_cs_packet_parse(struct radeon_cs_parser *p,
-			      struct radeon_cs_packet *pkt,
-			      unsigned idx)
-{
-	struct radeon_cs_chunk *ib_chunk = &p->chunks[p->chunk_ib_idx];
-	uint32_t header;
-
-	if (idx >= ib_chunk->length_dw) {
-		DRM_ERROR("Can not parse packet at %d after CS end %d !\n",
-			  idx, ib_chunk->length_dw);
-		return -EINVAL;
-	}
-	header = radeon_get_ib_value(p, idx);
-	pkt->idx = idx;
-	pkt->type = CP_PACKET_GET_TYPE(header);
-	pkt->count = CP_PACKET_GET_COUNT(header);
-	pkt->one_reg_wr = 0;
-	switch (pkt->type) {
-	case PACKET_TYPE0:
-		pkt->reg = CP_PACKET0_GET_REG(header);
-		break;
-	case PACKET_TYPE3:
-		pkt->opcode = CP_PACKET3_GET_OPCODE(header);
-		break;
-	case PACKET_TYPE2:
-		pkt->count = -1;
-		break;
-	default:
-		DRM_ERROR("Unknown packet type %d at %d !\n", pkt->type, idx);
-		return -EINVAL;
-	}
-	if ((pkt->count + 1 + pkt->idx) >= ib_chunk->length_dw) {
-		DRM_ERROR("Packet (%d:%d:%d) end after CS buffer (%d) !\n",
-			  pkt->idx, pkt->type, pkt->count, ib_chunk->length_dw);
-		return -EINVAL;
-	}
-	return 0;
-}
-
-/**
- * evergreen_cs_packet_next_reloc() - parse next packet which should be reloc packet3
- * @parser:		parser structure holding parsing context.
- * @data:		pointer to relocation data
- * @offset_start:	starting offset
- * @offset_mask:	offset mask (to align start offset on)
- * @reloc:		reloc informations
- *
- * Check next packet is relocation packet3, do bo validation and compute
- * GPU offset using the provided start.
- **/
-static int evergreen_cs_packet_next_reloc(struct radeon_cs_parser *p,
-					  struct radeon_cs_reloc **cs_reloc)
-{
-	struct radeon_cs_chunk *relocs_chunk;
-	struct radeon_cs_packet p3reloc;
-	unsigned idx;
-	int r;
-
-	if (p->chunk_relocs_idx == -1) {
-		DRM_ERROR("No relocation chunk !\n");
-		return -EINVAL;
-	}
-	*cs_reloc = NULL;
-	relocs_chunk = &p->chunks[p->chunk_relocs_idx];
-	r = evergreen_cs_packet_parse(p, &p3reloc, p->idx);
-	if (r) {
-		return r;
-	}
-	p->idx += p3reloc.count + 2;
-	if (p3reloc.type != PACKET_TYPE3 || p3reloc.opcode != PACKET3_NOP) {
-		DRM_ERROR("No packet3 for relocation for packet at %d.\n",
-			  p3reloc.idx);
-		return -EINVAL;
-	}
-	idx = radeon_get_ib_value(p, p3reloc.idx + 1);
-	if (idx >= relocs_chunk->length_dw) {
-		DRM_ERROR("Relocs at %d after relocations chunk end %d !\n",
-			  idx, relocs_chunk->length_dw);
-		return -EINVAL;
-	}
-	/* FIXME: we assume reloc size is 4 dwords */
-	*cs_reloc = p->relocs_ptr[(idx / 4)];
-	return 0;
-}
-
-/**
- * evergreen_cs_packet_next_vline() - parse userspace VLINE packet
- * @parser:		parser structure holding parsing context.
- *
- * Userspace sends a special sequence for VLINE waits.
- * PACKET0 - VLINE_START_END + value
- * PACKET3 - WAIT_REG_MEM poll vline status reg
- * RELOC (P3) - crtc_id in reloc.
- *
- * This function parses this and relocates the VLINE START END
- * and WAIT_REG_MEM packets to the correct crtc.
- * It also detects a switched off crtc and nulls out the
- * wait in that case.
- */
-static int evergreen_cs_packet_parse_vline(struct radeon_cs_parser *p)
-{
-	struct drm_mode_object *obj;
-	struct drm_crtc *crtc;
-	struct radeon_crtc *radeon_crtc;
-	struct radeon_cs_packet p3reloc, wait_reg_mem;
-	int crtc_id;
-	int r;
-	uint32_t header, h_idx, reg, wait_reg_mem_info;
-	volatile uint32_t *ib;
-
-	ib = p->ib->ptr;
-
-	/* parse the WAIT_REG_MEM */
-	r = evergreen_cs_packet_parse(p, &wait_reg_mem, p->idx);
-	if (r)
-		return r;
-
-	/* check its a WAIT_REG_MEM */
-	if (wait_reg_mem.type != PACKET_TYPE3 ||
-	    wait_reg_mem.opcode != PACKET3_WAIT_REG_MEM) {
-		DRM_ERROR("vline wait missing WAIT_REG_MEM segment\n");
-		return -EINVAL;
-	}
-
-	wait_reg_mem_info = radeon_get_ib_value(p, wait_reg_mem.idx + 1);
-	/* bit 4 is reg (0) or mem (1) */
-	if (wait_reg_mem_info & 0x10) {
-		DRM_ERROR("vline WAIT_REG_MEM waiting on MEM rather than REG\n");
-		return -EINVAL;
-	}
-	/* waiting for value to be equal */
-	if ((wait_reg_mem_info & 0x7) != 0x3) {
-		DRM_ERROR("vline WAIT_REG_MEM function not equal\n");
-		return -EINVAL;
-	}
-	if ((radeon_get_ib_value(p, wait_reg_mem.idx + 2) << 2) != EVERGREEN_VLINE_STATUS) {
-		DRM_ERROR("vline WAIT_REG_MEM bad reg\n");
-		return -EINVAL;
-	}
-
-	if (radeon_get_ib_value(p, wait_reg_mem.idx + 5) != EVERGREEN_VLINE_STAT) {
-		DRM_ERROR("vline WAIT_REG_MEM bad bit mask\n");
-		return -EINVAL;
-	}
-
-	/* jump over the NOP */
-	r = evergreen_cs_packet_parse(p, &p3reloc, p->idx + wait_reg_mem.count + 2);
-	if (r)
-		return r;
-
-	h_idx = p->idx - 2;
-	p->idx += wait_reg_mem.count + 2;
-	p->idx += p3reloc.count + 2;
-
-	header = radeon_get_ib_value(p, h_idx);
-	crtc_id = radeon_get_ib_value(p, h_idx + 2 + 7 + 1);
-	reg = CP_PACKET0_GET_REG(header);
-	obj = drm_mode_object_find(p->rdev->ddev, crtc_id, DRM_MODE_OBJECT_CRTC);
-	if (!obj) {
-		DRM_ERROR("cannot find crtc %d\n", crtc_id);
-		return -EINVAL;
-	}
-	crtc = obj_to_crtc(obj);
-	radeon_crtc = to_radeon_crtc(crtc);
-	crtc_id = radeon_crtc->crtc_id;
-
-	if (!crtc->enabled) {
-		/* if the CRTC isn't enabled - we need to nop out the WAIT_REG_MEM */
-		ib[h_idx + 2] = PACKET2(0);
-		ib[h_idx + 3] = PACKET2(0);
-		ib[h_idx + 4] = PACKET2(0);
-		ib[h_idx + 5] = PACKET2(0);
-		ib[h_idx + 6] = PACKET2(0);
-		ib[h_idx + 7] = PACKET2(0);
-		ib[h_idx + 8] = PACKET2(0);
-	} else {
-		switch (reg) {
-		case EVERGREEN_VLINE_START_END:
-			header &= ~R600_CP_PACKET0_REG_MASK;
-			header |= (EVERGREEN_VLINE_START_END + radeon_crtc->crtc_offset) >> 2;
-			ib[h_idx] = header;
-			ib[h_idx + 4] = (EVERGREEN_VLINE_STATUS + radeon_crtc->crtc_offset) >> 2;
-			break;
-		default:
-			DRM_ERROR("unknown crtc reloc\n");
-			return -EINVAL;
-		}
-	}
-	return 0;
-=======
  * evergreen_cs_packet_parse_vline() - parse userspace VLINE packet
  * @p:		parser structure holding parsing context.
  *
@@ -1302,7 +1042,6 @@ static int evergreen_cs_packet_parse_vline(struct radeon_cs_parser *p)
 	};
 
 	return r600_cs_common_vline_parse(p, vline_start_end, vline_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int evergreen_packet0_check(struct radeon_cs_parser *p,
@@ -1321,12 +1060,7 @@ static int evergreen_packet0_check(struct radeon_cs_parser *p,
 		}
 		break;
 	default:
-<<<<<<< HEAD
-		printk(KERN_ERR "Forbidden register 0x%04X in cs at %d\n",
-		       reg, idx);
-=======
 		pr_err("Forbidden register 0x%04X in cs at %d\n", reg, idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	return 0;
@@ -1351,44 +1085,6 @@ static int evergreen_cs_parse_packet0(struct radeon_cs_parser *p,
 }
 
 /**
-<<<<<<< HEAD
- * evergreen_cs_check_reg() - check if register is authorized or not
- * @parser: parser structure holding parsing context
- * @reg: register we are testing
- * @idx: index into the cs buffer
- *
- * This function will test against evergreen_reg_safe_bm and return 0
- * if register is safe. If register is not flag as safe this function
- * will test it against a list of register needind special handling.
- */
-static int evergreen_cs_check_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
-{
-	struct evergreen_cs_track *track = (struct evergreen_cs_track *)p->track;
-	struct radeon_cs_reloc *reloc;
-	u32 last_reg;
-	u32 m, i, tmp, *ib;
-	int r;
-
-	if (p->rdev->family >= CHIP_CAYMAN)
-		last_reg = ARRAY_SIZE(cayman_reg_safe_bm);
-	else
-		last_reg = ARRAY_SIZE(evergreen_reg_safe_bm);
-
-	i = (reg >> 7);
-	if (i >= last_reg) {
-		dev_warn(p->dev, "forbidden register 0x%08x at %d\n", reg, idx);
-		return -EINVAL;
-	}
-	m = 1 << ((reg >> 2) & 31);
-	if (p->rdev->family >= CHIP_CAYMAN) {
-		if (!(cayman_reg_safe_bm[i] & m))
-			return 0;
-	} else {
-		if (!(evergreen_reg_safe_bm[i] & m))
-			return 0;
-	}
-	ib = p->ib->ptr;
-=======
  * evergreen_cs_handle_reg() - process registers that need special handling.
  * @p: parser structure holding parsing context
  * @reg: register we are testing
@@ -1402,7 +1098,6 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	int r;
 
 	ib = p->ib.ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (reg) {
 	/* force following reg to 0 in an attempt to disable out buffer
 	 * which will need us to better understand how it works to perform
@@ -1444,21 +1139,13 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	case SQ_LSTMP_RING_BASE:
 	case SQ_PSTMP_RING_BASE:
 	case SQ_VSTMP_RING_BASE:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case DB_DEPTH_CONTROL:
 		track->db_depth_control = radeon_get_ib_value(p, idx);
@@ -1481,11 +1168,7 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	case DB_Z_INFO:
 		track->db_z_info = radeon_get_ib_value(p, idx);
 		if (!(p->cs_flags & RADEON_CS_KEEP_TILING_FLAGS)) {
-<<<<<<< HEAD
-			r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r) {
 				dev_warn(p->dev, "bad SET_CONTEXT_REG "
 						"0x%04X\n", reg);
@@ -1493,21 +1176,12 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 			}
 			ib[idx] &= ~Z_ARRAY_MODE(0xf);
 			track->db_z_info &= ~Z_ARRAY_MODE(0xf);
-<<<<<<< HEAD
-			ib[idx] |= Z_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->lobj.tiling_flags));
-			track->db_z_info |= Z_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->lobj.tiling_flags));
-			if (reloc->lobj.tiling_flags & RADEON_TILING_MACRO) {
-				unsigned bankw, bankh, mtaspect, tile_split;
-
-				evergreen_tiling_fields(reloc->lobj.tiling_flags,
-=======
 			ib[idx] |= Z_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->tiling_flags));
 			track->db_z_info |= Z_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->tiling_flags));
 			if (reloc->tiling_flags & RADEON_TILING_MACRO) {
 				unsigned bankw, bankh, mtaspect, tile_split;
 
 				evergreen_tiling_fields(reloc->tiling_flags,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							&bankw, &bankh, &mtaspect,
 							&tile_split);
 				ib[idx] |= DB_NUM_BANKS(evergreen_cs_get_num_banks(track->nbanks));
@@ -1536,82 +1210,50 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 		track->db_dirty = true;
 		break;
 	case DB_Z_READ_BASE:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
 			return -EINVAL;
 		}
 		track->db_z_read_offset = radeon_get_ib_value(p, idx);
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->db_z_read_bo = reloc->robj;
 		track->db_dirty = true;
 		break;
 	case DB_Z_WRITE_BASE:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
 			return -EINVAL;
 		}
 		track->db_z_write_offset = radeon_get_ib_value(p, idx);
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->db_z_write_bo = reloc->robj;
 		track->db_dirty = true;
 		break;
 	case DB_STENCIL_READ_BASE:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
 			return -EINVAL;
 		}
 		track->db_s_read_offset = radeon_get_ib_value(p, idx);
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->db_s_read_bo = reloc->robj;
 		track->db_dirty = true;
 		break;
 	case DB_STENCIL_WRITE_BASE:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
 			return -EINVAL;
 		}
 		track->db_s_write_offset = radeon_get_ib_value(p, idx);
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->db_s_write_bo = reloc->robj;
 		track->db_dirty = true;
 		break;
@@ -1627,11 +1269,7 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	case VGT_STRMOUT_BUFFER_BASE_1:
 	case VGT_STRMOUT_BUFFER_BASE_2:
 	case VGT_STRMOUT_BUFFER_BASE_3:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
@@ -1639,11 +1277,7 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 		}
 		tmp = (reg - VGT_STRMOUT_BUFFER_BASE_0) / 16;
 		track->vgt_strmout_bo_offset[tmp] = radeon_get_ib_value(p, idx) << 8;
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->vgt_strmout_bo[tmp] = reloc->robj;
 		track->streamout_dirty = true;
 		break;
@@ -1657,22 +1291,14 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 		track->streamout_dirty = true;
 		break;
 	case CP_COHER_BASE:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "missing reloc for CP_COHER_BASE "
 					"0x%04X\n", reg);
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CB_TARGET_MASK:
 		track->cb_target_mask = radeon_get_ib_value(p, idx);
 		track->cb_dirty = true;
@@ -1730,23 +1356,14 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 		tmp = (reg - CB_COLOR0_INFO) / 0x3c;
 		track->cb_color_info[tmp] = radeon_get_ib_value(p, idx);
 		if (!(p->cs_flags & RADEON_CS_KEEP_TILING_FLAGS)) {
-<<<<<<< HEAD
-			r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r) {
 				dev_warn(p->dev, "bad SET_CONTEXT_REG "
 						"0x%04X\n", reg);
 				return -EINVAL;
 			}
-<<<<<<< HEAD
-			ib[idx] |= CB_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->lobj.tiling_flags));
-			track->cb_color_info[tmp] |= CB_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->lobj.tiling_flags));
-=======
 			ib[idx] |= CB_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->tiling_flags));
 			track->cb_color_info[tmp] |= CB_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->tiling_flags));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		track->cb_dirty = true;
 		break;
@@ -1757,23 +1374,14 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 		tmp = ((reg - CB_COLOR8_INFO) / 0x1c) + 8;
 		track->cb_color_info[tmp] = radeon_get_ib_value(p, idx);
 		if (!(p->cs_flags & RADEON_CS_KEEP_TILING_FLAGS)) {
-<<<<<<< HEAD
-			r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r) {
 				dev_warn(p->dev, "bad SET_CONTEXT_REG "
 						"0x%04X\n", reg);
 				return -EINVAL;
 			}
-<<<<<<< HEAD
-			ib[idx] |= CB_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->lobj.tiling_flags));
-			track->cb_color_info[tmp] |= CB_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->lobj.tiling_flags));
-=======
 			ib[idx] |= CB_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->tiling_flags));
 			track->cb_color_info[tmp] |= CB_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->tiling_flags));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		track->cb_dirty = true;
 		break;
@@ -1827,28 +1435,17 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	case CB_COLOR5_ATTRIB:
 	case CB_COLOR6_ATTRIB:
 	case CB_COLOR7_ATTRIB:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
 			return -EINVAL;
 		}
 		if (!(p->cs_flags & RADEON_CS_KEEP_TILING_FLAGS)) {
-<<<<<<< HEAD
-			if (reloc->lobj.tiling_flags & RADEON_TILING_MACRO) {
-				unsigned bankw, bankh, mtaspect, tile_split;
-
-				evergreen_tiling_fields(reloc->lobj.tiling_flags,
-=======
 			if (reloc->tiling_flags & RADEON_TILING_MACRO) {
 				unsigned bankw, bankh, mtaspect, tile_split;
 
 				evergreen_tiling_fields(reloc->tiling_flags,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							&bankw, &bankh, &mtaspect,
 							&tile_split);
 				ib[idx] |= CB_NUM_BANKS(evergreen_cs_get_num_banks(track->nbanks));
@@ -1866,28 +1463,17 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	case CB_COLOR9_ATTRIB:
 	case CB_COLOR10_ATTRIB:
 	case CB_COLOR11_ATTRIB:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
 			return -EINVAL;
 		}
 		if (!(p->cs_flags & RADEON_CS_KEEP_TILING_FLAGS)) {
-<<<<<<< HEAD
-			if (reloc->lobj.tiling_flags & RADEON_TILING_MACRO) {
-				unsigned bankw, bankh, mtaspect, tile_split;
-
-				evergreen_tiling_fields(reloc->lobj.tiling_flags,
-=======
 			if (reloc->tiling_flags & RADEON_TILING_MACRO) {
 				unsigned bankw, bankh, mtaspect, tile_split;
 
 				evergreen_tiling_fields(reloc->tiling_flags,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							&bankw, &bankh, &mtaspect,
 							&tile_split);
 				ib[idx] |= CB_NUM_BANKS(evergreen_cs_get_num_banks(track->nbanks));
@@ -1910,20 +1496,12 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	case CB_COLOR6_FMASK:
 	case CB_COLOR7_FMASK:
 		tmp = (reg - CB_COLOR0_FMASK) / 0x3c;
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_err(p->dev, "bad SET_CONTEXT_REG 0x%04X\n", reg);
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->cb_color_fmask_bo[tmp] = reloc->robj;
 		break;
 	case CB_COLOR0_CMASK:
@@ -1935,20 +1513,12 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	case CB_COLOR6_CMASK:
 	case CB_COLOR7_CMASK:
 		tmp = (reg - CB_COLOR0_CMASK) / 0x3c;
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_err(p->dev, "bad SET_CONTEXT_REG 0x%04X\n", reg);
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->cb_color_cmask_bo[tmp] = reloc->robj;
 		break;
 	case CB_COLOR0_FMASK_SLICE:
@@ -1981,11 +1551,7 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	case CB_COLOR5_BASE:
 	case CB_COLOR6_BASE:
 	case CB_COLOR7_BASE:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
@@ -1993,11 +1559,7 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 		}
 		tmp = (reg - CB_COLOR0_BASE) / 0x3c;
 		track->cb_color_bo_offset[tmp] = radeon_get_ib_value(p, idx);
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->cb_color_bo[tmp] = reloc->robj;
 		track->cb_dirty = true;
 		break;
@@ -2005,11 +1567,7 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	case CB_COLOR9_BASE:
 	case CB_COLOR10_BASE:
 	case CB_COLOR11_BASE:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
@@ -2017,42 +1575,27 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 		}
 		tmp = ((reg - CB_COLOR8_BASE) / 0x1c) + 8;
 		track->cb_color_bo_offset[tmp] = radeon_get_ib_value(p, idx);
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->cb_color_bo[tmp] = reloc->robj;
 		track->cb_dirty = true;
 		break;
 	case DB_HTILE_DATA_BASE:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
 			return -EINVAL;
 		}
 		track->htile_offset = radeon_get_ib_value(p, idx);
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->htile_bo = reloc->robj;
 		track->db_dirty = true;
 		break;
 	case DB_HTILE_SURFACE:
 		/* 8x8 only */
 		track->htile_surface = radeon_get_ib_value(p, idx);
-<<<<<<< HEAD
-=======
 		/* force 8x8 htile width and height */
 		ib[idx] |= 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		track->db_dirty = true;
 		break;
 	case CB_IMMED0_BASE:
@@ -2155,21 +1698,13 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	case SQ_ALU_CONST_CACHE_LS_13:
 	case SQ_ALU_CONST_CACHE_LS_14:
 	case SQ_ALU_CONST_CACHE_LS_15:
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SX_MEMORY_EXPORT_BASE:
 		if (p->rdev->family >= CHIP_CAYMAN) {
@@ -2177,21 +1712,13 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 				 "0x%04X\n", reg);
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONFIG_REG "
 					"0x%04X\n", reg);
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CAYMAN_SX_SCATTER_EXPORT_BASE:
 		if (p->rdev->family < CHIP_CAYMAN) {
@@ -2199,21 +1726,13 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 				 "0x%04X\n", reg);
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			dev_warn(p->dev, "bad SET_CONTEXT_REG "
 					"0x%04X\n", reg);
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 		ib[idx] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SX_MISC:
 		track->sx_misc_kill_all_prims = (radeon_get_ib_value(p, idx) & 0x1) != 0;
@@ -2225,31 +1744,6 @@ static int evergreen_cs_handle_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
 	return 0;
 }
 
-<<<<<<< HEAD
-static bool evergreen_is_safe_reg(struct radeon_cs_parser *p, u32 reg, u32 idx)
-{
-	u32 last_reg, m, i;
-
-	if (p->rdev->family >= CHIP_CAYMAN)
-		last_reg = ARRAY_SIZE(cayman_reg_safe_bm);
-	else
-		last_reg = ARRAY_SIZE(evergreen_reg_safe_bm);
-
-	i = (reg >> 7);
-	if (i >= last_reg) {
-		dev_warn(p->dev, "forbidden register 0x%08x at %d\n", reg, idx);
-		return false;
-	}
-	m = 1 << ((reg >> 2) & 31);
-	if (p->rdev->family >= CHIP_CAYMAN) {
-		if (!(cayman_reg_safe_bm[i] & m))
-			return true;
-	} else {
-		if (!(evergreen_reg_safe_bm[i] & m))
-			return true;
-	}
-	dev_warn(p->dev, "forbidden register 0x%08x at %d\n", reg, idx);
-=======
 /**
  * evergreen_is_safe_reg() - check if register is authorized or not
  * @p: parser structure holding parsing context
@@ -2271,22 +1765,15 @@ static inline bool evergreen_is_safe_reg(struct radeon_cs_parser *p, u32 reg)
 	if (!(track->reg_safe_bm[i] & m))
 		return true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return false;
 }
 
 static int evergreen_packet3_check(struct radeon_cs_parser *p,
 				   struct radeon_cs_packet *pkt)
 {
-<<<<<<< HEAD
-	struct radeon_cs_reloc *reloc;
-	struct evergreen_cs_track *track;
-	volatile u32 *ib;
-=======
 	struct radeon_bo_list *reloc;
 	struct evergreen_cs_track *track;
 	uint32_t *ib;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned idx;
 	unsigned i;
 	unsigned start_reg, end_reg, reg;
@@ -2294,11 +1781,7 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 	u32 idx_value;
 
 	track = (struct evergreen_cs_track *)p->track;
-<<<<<<< HEAD
-	ib = p->ib->ptr;
-=======
 	ib = p->ib.ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	idx = pkt->idx + 1;
 	idx_value = radeon_get_ib_value(p, idx);
 
@@ -2326,25 +1809,15 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			return -EINVAL;
 		}
 
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			DRM_ERROR("bad SET PREDICATION\n");
 			return -EINVAL;
 		}
 
-<<<<<<< HEAD
-		offset = reloc->lobj.gpu_offset +
-		         (idx_value & 0xfffffff0) +
-		         ((u64)(tmp & 0xff) << 32);
-=======
 		offset = reloc->gpu_offset +
 			 (idx_value & 0xfffffff0) +
 			 ((u64)(tmp & 0xff) << 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ib[idx + 0] = offset;
 		ib[idx + 1] = (tmp & 0xffffff00) | (upper_32_bits(offset) & 0xff);
@@ -2382,25 +1855,15 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			DRM_ERROR("bad INDEX_BASE\n");
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			DRM_ERROR("bad INDEX_BASE\n");
 			return -EINVAL;
 		}
 
-<<<<<<< HEAD
-		offset = reloc->lobj.gpu_offset +
-		         idx_value +
-		         ((u64)(radeon_get_ib_value(p, idx+1) & 0xff) << 32);
-=======
 		offset = reloc->gpu_offset +
 			 idx_value +
 			 ((u64)(radeon_get_ib_value(p, idx+1) & 0xff) << 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ib[idx+0] = offset;
 		ib[idx+1] = upper_32_bits(offset) & 0xff;
@@ -2412,8 +1875,6 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		}
 		break;
 	}
-<<<<<<< HEAD
-=======
 	case PACKET3_INDEX_BUFFER_SIZE:
 	{
 		if (pkt->count != 0) {
@@ -2422,7 +1883,6 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		}
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PACKET3_DRAW_INDEX:
 	{
 		uint64_t offset;
@@ -2430,25 +1890,15 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			DRM_ERROR("bad DRAW_INDEX\n");
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			DRM_ERROR("bad DRAW_INDEX\n");
 			return -EINVAL;
 		}
 
-<<<<<<< HEAD
-		offset = reloc->lobj.gpu_offset +
-		         idx_value +
-		         ((u64)(radeon_get_ib_value(p, idx+1) & 0xff) << 32);
-=======
 		offset = reloc->gpu_offset +
 			 idx_value +
 			 ((u64)(radeon_get_ib_value(p, idx+1) & 0xff) << 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ib[idx+0] = offset;
 		ib[idx+1] = upper_32_bits(offset) & 0xff;
@@ -2468,25 +1918,15 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			DRM_ERROR("bad DRAW_INDEX_2\n");
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			DRM_ERROR("bad DRAW_INDEX_2\n");
 			return -EINVAL;
 		}
 
-<<<<<<< HEAD
-		offset = reloc->lobj.gpu_offset +
-		         radeon_get_ib_value(p, idx+1) +
-		         ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
-=======
 		offset = reloc->gpu_offset +
 			 radeon_get_ib_value(p, idx+1) +
 			 ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ib[idx+1] = offset;
 		ib[idx+2] = upper_32_bits(offset) & 0xff;
@@ -2553,8 +1993,6 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			return r;
 		}
 		break;
-<<<<<<< HEAD
-=======
 	case PACKET3_SET_BASE:
 	{
 		/*
@@ -2616,7 +2054,6 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		}
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PACKET3_DISPATCH_DIRECT:
 		if (pkt->count != 3) {
 			DRM_ERROR("bad DISPATCH_DIRECT\n");
@@ -2633,20 +2070,12 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			DRM_ERROR("bad DISPATCH_INDIRECT\n");
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			DRM_ERROR("bad DISPATCH_INDIRECT\n");
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		ib[idx+0] = idx_value + (u32)(reloc->lobj.gpu_offset & 0xffffffff);
-=======
 		ib[idx+0] = idx_value + (u32)(reloc->gpu_offset & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = evergreen_cs_track_check(p);
 		if (r) {
 			dev_warn(p->dev, "%s:%d invalid cmd stream\n", __func__, __LINE__);
@@ -2662,24 +2091,12 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		if (idx_value & 0x10) {
 			uint64_t offset;
 
-<<<<<<< HEAD
-			r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r) {
 				DRM_ERROR("bad WAIT_REG_MEM\n");
 				return -EINVAL;
 			}
 
-<<<<<<< HEAD
-			offset = reloc->lobj.gpu_offset +
-			         (radeon_get_ib_value(p, idx+1) & 0xfffffffc) +
-			         ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
-
-			ib[idx+1] = (ib[idx+1] & 0x3) | (offset & 0xfffffffc);
-			ib[idx+2] = upper_32_bits(offset) & 0xff;
-=======
 			offset = reloc->gpu_offset +
 				 (radeon_get_ib_value(p, idx+1) & 0xfffffffc) +
 				 ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
@@ -2796,7 +2213,6 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		if (pkt->count) {
 			DRM_ERROR("bad PFP_SYNC_ME\n");
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case PACKET3_SURFACE_SYNC:
@@ -2807,20 +2223,12 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		/* 0xffffffff/0x0 is flush all cache flag */
 		if (radeon_get_ib_value(p, idx + 1) != 0xffffffff ||
 		    radeon_get_ib_value(p, idx + 2) != 0) {
-<<<<<<< HEAD
-			r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r) {
 				DRM_ERROR("bad SURFACE_SYNC\n");
 				return -EINVAL;
 			}
-<<<<<<< HEAD
-			ib[idx+2] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-=======
 			ib[idx+2] += (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case PACKET3_EVENT_WRITE:
@@ -2831,24 +2239,14 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		if (pkt->count) {
 			uint64_t offset;
 
-<<<<<<< HEAD
-			r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r) {
 				DRM_ERROR("bad EVENT_WRITE\n");
 				return -EINVAL;
 			}
-<<<<<<< HEAD
-			offset = reloc->lobj.gpu_offset +
-			         (radeon_get_ib_value(p, idx+1) & 0xfffffff8) +
-			         ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
-=======
 			offset = reloc->gpu_offset +
 				 (radeon_get_ib_value(p, idx+1) & 0xfffffff8) +
 				 ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			ib[idx+1] = offset & 0xfffffff8;
 			ib[idx+2] = upper_32_bits(offset) & 0xff;
@@ -2862,25 +2260,15 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			DRM_ERROR("bad EVENT_WRITE_EOP\n");
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			DRM_ERROR("bad EVENT_WRITE_EOP\n");
 			return -EINVAL;
 		}
 
-<<<<<<< HEAD
-		offset = reloc->lobj.gpu_offset +
-		         (radeon_get_ib_value(p, idx+1) & 0xfffffffc) +
-		         ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
-=======
 		offset = reloc->gpu_offset +
 			 (radeon_get_ib_value(p, idx+1) & 0xfffffffc) +
 			 ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ib[idx+1] = offset & 0xfffffffc;
 		ib[idx+2] = (ib[idx+2] & 0xffffff00) | (upper_32_bits(offset) & 0xff);
@@ -2894,25 +2282,15 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			DRM_ERROR("bad EVENT_WRITE_EOS\n");
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			DRM_ERROR("bad EVENT_WRITE_EOS\n");
 			return -EINVAL;
 		}
 
-<<<<<<< HEAD
-		offset = reloc->lobj.gpu_offset +
-		         (radeon_get_ib_value(p, idx+1) & 0xfffffffc) +
-		         ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
-=======
 		offset = reloc->gpu_offset +
 			 (radeon_get_ib_value(p, idx+1) & 0xfffffffc) +
 			 ((u64)(radeon_get_ib_value(p, idx+2) & 0xff) << 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ib[idx+1] = offset & 0xfffffffc;
 		ib[idx+2] = (ib[idx+2] & 0xffffff00) | (upper_32_bits(offset) & 0xff);
@@ -2927,16 +2305,10 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			DRM_ERROR("bad PACKET3_SET_CONFIG_REG\n");
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		for (i = 0; i < pkt->count; i++) {
-			reg = start_reg + (4 * i);
-			r = evergreen_cs_check_reg(p, reg, idx+1+i);
-=======
 		for (reg = start_reg, idx++; reg <= end_reg; reg += 4, idx++) {
 			if (evergreen_is_safe_reg(p, reg))
 				continue;
 			r = evergreen_cs_handle_reg(p, reg, idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r)
 				return r;
 		}
@@ -2950,16 +2322,10 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			DRM_ERROR("bad PACKET3_SET_CONTEXT_REG\n");
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		for (i = 0; i < pkt->count; i++) {
-			reg = start_reg + (4 * i);
-			r = evergreen_cs_check_reg(p, reg, idx+1+i);
-=======
 		for (reg = start_reg, idx++; reg <= end_reg; reg += 4, idx++) {
 			if (evergreen_is_safe_reg(p, reg))
 				continue;
 			r = evergreen_cs_handle_reg(p, reg, idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r)
 				return r;
 		}
@@ -2980,39 +2346,23 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		for (i = 0; i < (pkt->count / 8); i++) {
 			struct radeon_bo *texture, *mipmap;
 			u32 toffset, moffset;
-<<<<<<< HEAD
-			u32 size, offset;
-=======
 			u32 size, offset, mip_address, tex_dim;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			switch (G__SQ_CONSTANT_TYPE(radeon_get_ib_value(p, idx+1+(i*8)+7))) {
 			case SQ_TEX_VTX_VALID_TEXTURE:
 				/* tex base */
-<<<<<<< HEAD
-				r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 				r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (r) {
 					DRM_ERROR("bad SET_RESOURCE (tex)\n");
 					return -EINVAL;
 				}
 				if (!(p->cs_flags & RADEON_CS_KEEP_TILING_FLAGS)) {
 					ib[idx+1+(i*8)+1] |=
-<<<<<<< HEAD
-						TEX_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->lobj.tiling_flags));
-					if (reloc->lobj.tiling_flags & RADEON_TILING_MACRO) {
-						unsigned bankw, bankh, mtaspect, tile_split;
-
-						evergreen_tiling_fields(reloc->lobj.tiling_flags,
-=======
 						TEX_ARRAY_MODE(evergreen_cs_get_aray_mode(reloc->tiling_flags));
 					if (reloc->tiling_flags & RADEON_TILING_MACRO) {
 						unsigned bankw, bankh, mtaspect, tile_split;
 
 						evergreen_tiling_fields(reloc->tiling_flags,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 									&bankw, &bankh, &mtaspect,
 									&tile_split);
 						ib[idx+1+(i*8)+6] |= TEX_TILE_SPLIT(tile_split);
@@ -3024,17 +2374,6 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 					}
 				}
 				texture = reloc->robj;
-<<<<<<< HEAD
-				toffset = (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-				/* tex mip base */
-				r = evergreen_cs_packet_next_reloc(p, &reloc);
-				if (r) {
-					DRM_ERROR("bad SET_RESOURCE (tex)\n");
-					return -EINVAL;
-				}
-				moffset = (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
-				mipmap = reloc->robj;
-=======
 				toffset = (u32)((reloc->gpu_offset >> 8) & 0xffffffff);
 
 				/* tex mip base */
@@ -3058,7 +2397,6 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 					mipmap = reloc->robj;
 				}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				r = evergreen_cs_track_validate_texture(p, texture, mipmap, idx+1+(i*8));
 				if (r)
 					return r;
@@ -3069,11 +2407,7 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 			{
 				uint64_t offset64;
 				/* vtx base */
-<<<<<<< HEAD
-				r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 				r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (r) {
 					DRM_ERROR("bad SET_RESOURCE (vtx)\n");
 					return -EINVAL;
@@ -3082,19 +2416,11 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 				size = radeon_get_ib_value(p, idx+1+(i*8)+1);
 				if (p->rdev && (size + offset) > radeon_bo_size(reloc->robj)) {
 					/* force size to size of the buffer */
-<<<<<<< HEAD
-					dev_warn(p->dev, "vbo resource seems too big for the bo\n");
-					ib[idx+1+(i*8)+1] = radeon_bo_size(reloc->robj) - offset;
-				}
-
-				offset64 = reloc->lobj.gpu_offset + offset;
-=======
 					dev_warn_ratelimited(p->dev, "vbo resource seems too big for the bo\n");
 					ib[idx+1+(i*8)+1] = radeon_bo_size(reloc->robj) - offset;
 				}
 
 				offset64 = reloc->gpu_offset + offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ib[idx+1+(i*8)+0] = offset64;
 				ib[idx+1+(i*8)+2] = (ib[idx+1+(i*8)+2] & 0xffffff00) |
 						    (upper_32_bits(offset64) & 0xff);
@@ -3163,11 +2489,7 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		/* Updating memory at DST_ADDRESS. */
 		if (idx_value & 0x1) {
 			u64 offset;
-<<<<<<< HEAD
-			r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r) {
 				DRM_ERROR("bad STRMOUT_BUFFER_UPDATE (missing dst reloc)\n");
 				return -EINVAL;
@@ -3179,22 +2501,14 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 					  offset + 4, radeon_bo_size(reloc->robj));
 				return -EINVAL;
 			}
-<<<<<<< HEAD
-			offset += reloc->lobj.gpu_offset;
-=======
 			offset += reloc->gpu_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ib[idx+1] = offset;
 			ib[idx+2] = upper_32_bits(offset) & 0xff;
 		}
 		/* Reading data from SRC_ADDRESS. */
 		if (((idx_value >> 1) & 0x3) == 2) {
 			u64 offset;
-<<<<<<< HEAD
-			r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r) {
 				DRM_ERROR("bad STRMOUT_BUFFER_UPDATE (missing src reloc)\n");
 				return -EINVAL;
@@ -3206,17 +2520,11 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 					  offset + 4, radeon_bo_size(reloc->robj));
 				return -EINVAL;
 			}
-<<<<<<< HEAD
-			offset += reloc->lobj.gpu_offset;
-=======
 			offset += reloc->gpu_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ib[idx+3] = offset;
 			ib[idx+4] = upper_32_bits(offset) & 0xff;
 		}
 		break;
-<<<<<<< HEAD
-=======
 	case PACKET3_MEM_WRITE:
 	{
 		u64 offset;
@@ -3246,7 +2554,6 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		ib[idx+1] = upper_32_bits(offset) & 0xff;
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PACKET3_COPY_DW:
 		if (pkt->count != 4) {
 			DRM_ERROR("bad COPY_DW (invalid count)\n");
@@ -3255,11 +2562,7 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		if (idx_value & 0x1) {
 			u64 offset;
 			/* SRC is memory. */
-<<<<<<< HEAD
-			r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r) {
 				DRM_ERROR("bad COPY_DW (missing src reloc)\n");
 				return -EINVAL;
@@ -3271,35 +2574,22 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 					  offset + 4, radeon_bo_size(reloc->robj));
 				return -EINVAL;
 			}
-<<<<<<< HEAD
-			offset += reloc->lobj.gpu_offset;
-=======
 			offset += reloc->gpu_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ib[idx+1] = offset;
 			ib[idx+2] = upper_32_bits(offset) & 0xff;
 		} else {
 			/* SRC is a reg. */
 			reg = radeon_get_ib_value(p, idx+1) << 2;
-<<<<<<< HEAD
-			if (!evergreen_is_safe_reg(p, reg, idx+1))
-				return -EINVAL;
-=======
 			if (!evergreen_is_safe_reg(p, reg)) {
 				dev_warn(p->dev, "forbidden register 0x%08x at %d\n",
 					 reg, idx + 1);
 				return -EINVAL;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (idx_value & 0x2) {
 			u64 offset;
 			/* DST is memory. */
-<<<<<<< HEAD
-			r = evergreen_cs_packet_next_reloc(p, &reloc);
-=======
 			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r) {
 				DRM_ERROR("bad COPY_DW (missing dst reloc)\n");
 				return -EINVAL;
@@ -3311,22 +2601,12 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 					  offset + 4, radeon_bo_size(reloc->robj));
 				return -EINVAL;
 			}
-<<<<<<< HEAD
-			offset += reloc->lobj.gpu_offset;
-=======
 			offset += reloc->gpu_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ib[idx+3] = offset;
 			ib[idx+4] = upper_32_bits(offset) & 0xff;
 		} else {
 			/* DST is a reg. */
 			reg = radeon_get_ib_value(p, idx+3) << 2;
-<<<<<<< HEAD
-			if (!evergreen_is_safe_reg(p, reg, idx+3))
-				return -EINVAL;
-		}
-		break;
-=======
 			if (!evergreen_is_safe_reg(p, reg)) {
 				dev_warn(p->dev, "forbidden register 0x%08x at %d\n",
 					 reg, idx + 3);
@@ -3379,7 +2659,6 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		}
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PACKET3_NOP:
 		break;
 	default:
@@ -3402,13 +2681,6 @@ int evergreen_cs_parse(struct radeon_cs_parser *p)
 		if (track == NULL)
 			return -ENOMEM;
 		evergreen_cs_track_init(track);
-<<<<<<< HEAD
-		if (p->rdev->family >= CHIP_CAYMAN)
-			tmp = p->rdev->config.cayman.tile_config;
-		else
-			tmp = p->rdev->config.evergreen.tile_config;
-
-=======
 		if (p->rdev->family >= CHIP_CAYMAN) {
 			tmp = p->rdev->config.cayman.tile_config;
 			track->reg_safe_bm = cayman_reg_safe_bm;
@@ -3418,7 +2690,6 @@ int evergreen_cs_parse(struct radeon_cs_parser *p)
 		}
 		BUILD_BUG_ON(ARRAY_SIZE(cayman_reg_safe_bm) != REG_SAFE_BM_SIZE);
 		BUILD_BUG_ON(ARRAY_SIZE(evergreen_reg_safe_bm) != REG_SAFE_BM_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (tmp & 0xf) {
 		case 0:
 			track->npipes = 1;
@@ -3474,11 +2745,7 @@ int evergreen_cs_parse(struct radeon_cs_parser *p)
 		p->track = track;
 	}
 	do {
-<<<<<<< HEAD
-		r = evergreen_cs_packet_parse(p, &pkt, p->idx);
-=======
 		r = radeon_cs_packet_parse(p, &pkt, p->idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			kfree(p->track);
 			p->track = NULL;
@@ -3486,21 +2753,12 @@ int evergreen_cs_parse(struct radeon_cs_parser *p)
 		}
 		p->idx += pkt.count + 2;
 		switch (pkt.type) {
-<<<<<<< HEAD
-		case PACKET_TYPE0:
-			r = evergreen_cs_parse_packet0(p, &pkt);
-			break;
-		case PACKET_TYPE2:
-			break;
-		case PACKET_TYPE3:
-=======
 		case RADEON_PACKET_TYPE0:
 			r = evergreen_cs_parse_packet0(p, &pkt);
 			break;
 		case RADEON_PACKET_TYPE2:
 			break;
 		case RADEON_PACKET_TYPE3:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = evergreen_packet3_check(p, &pkt);
 			break;
 		default:
@@ -3514,17 +2772,10 @@ int evergreen_cs_parse(struct radeon_cs_parser *p)
 			p->track = NULL;
 			return r;
 		}
-<<<<<<< HEAD
-	} while (p->idx < p->chunks[p->chunk_ib_idx].length_dw);
-#if 0
-	for (r = 0; r < p->ib->length_dw; r++) {
-		printk(KERN_INFO "%05d  0x%08X\n", r, p->ib->ptr[r]);
-=======
 	} while (p->idx < p->chunk_ib->length_dw);
 #if 0
 	for (r = 0; r < p->ib.length_dw; r++) {
 		pr_info("%05d  0x%08X\n", r, p->ib.ptr[r]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdelay(1);
 	}
 #endif
@@ -3533,8 +2784,6 @@ int evergreen_cs_parse(struct radeon_cs_parser *p)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * evergreen_dma_cs_parse() - parse the DMA IB
  * @p:		parser structure holding parsing context.
@@ -3972,7 +3221,6 @@ int evergreen_dma_cs_parse(struct radeon_cs_parser *p)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* vm parser */
 static bool evergreen_vm_reg_valid(u32 reg)
 {
@@ -4102,12 +3350,6 @@ static int evergreen_vm_packet3_check(struct radeon_device *rdev,
 	u32 idx = pkt->idx + 1;
 	u32 idx_value = ib[idx];
 	u32 start_reg, end_reg, reg, i;
-<<<<<<< HEAD
-
-	switch (pkt->opcode) {
-	case PACKET3_NOP:
-	case PACKET3_SET_BASE:
-=======
 	u32 command, info;
 
 	switch (pkt->opcode) {
@@ -4119,7 +3361,6 @@ static int evergreen_vm_packet3_check(struct radeon_device *rdev,
 			return -EINVAL;
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PACKET3_CLEAR_STATE:
 	case PACKET3_INDEX_BUFFER_SIZE:
 	case PACKET3_DISPATCH_DIRECT:
@@ -4146,10 +3387,7 @@ static int evergreen_vm_packet3_check(struct radeon_device *rdev,
 	case PACKET3_MPEG_INDEX:
 	case PACKET3_WAIT_REG_MEM:
 	case PACKET3_MEM_WRITE:
-<<<<<<< HEAD
-=======
 	case PACKET3_PFP_SYNC_ME:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PACKET3_SURFACE_SYNC:
 	case PACKET3_EVENT_WRITE:
 	case PACKET3_EVENT_WRITE_EOP:
@@ -4194,8 +3432,6 @@ static int evergreen_vm_packet3_check(struct radeon_device *rdev,
 				return -EINVAL;
 		}
 		break;
-<<<<<<< HEAD
-=======
 	case PACKET3_CP_DMA:
 		command = ib[idx + 4];
 		info = ib[idx + 1];
@@ -4275,7 +3511,6 @@ static int evergreen_vm_packet3_check(struct radeon_device *rdev,
 		}
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EINVAL;
 	}
@@ -4290,21 +3525,6 @@ int evergreen_ib_parse(struct radeon_device *rdev, struct radeon_ib *ib)
 
 	do {
 		pkt.idx = idx;
-<<<<<<< HEAD
-		pkt.type = CP_PACKET_GET_TYPE(ib->ptr[idx]);
-		pkt.count = CP_PACKET_GET_COUNT(ib->ptr[idx]);
-		pkt.one_reg_wr = 0;
-		switch (pkt.type) {
-		case PACKET_TYPE0:
-			dev_err(rdev->dev, "Packet0 not allowed!\n");
-			ret = -EINVAL;
-			break;
-		case PACKET_TYPE2:
-			idx += 1;
-			break;
-		case PACKET_TYPE3:
-			pkt.opcode = CP_PACKET3_GET_OPCODE(ib->ptr[idx]);
-=======
 		pkt.type = RADEON_CP_PACKET_GET_TYPE(ib->ptr[idx]);
 		pkt.count = RADEON_CP_PACKET_GET_COUNT(ib->ptr[idx]);
 		pkt.one_reg_wr = 0;
@@ -4318,7 +3538,6 @@ int evergreen_ib_parse(struct radeon_device *rdev, struct radeon_ib *ib)
 			break;
 		case RADEON_PACKET_TYPE3:
 			pkt.opcode = RADEON_CP_PACKET3_GET_OPCODE(ib->ptr[idx]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = evergreen_vm_packet3_check(rdev, ib->ptr, &pkt);
 			idx += pkt.count + 2;
 			break;
@@ -4333,8 +3552,6 @@ int evergreen_ib_parse(struct radeon_device *rdev, struct radeon_ib *ib)
 
 	return ret;
 }
-<<<<<<< HEAD
-=======
 
 /**
  * evergreen_dma_ib_parse() - parse the DMA IB for VM
@@ -4437,4 +3654,3 @@ int evergreen_dma_ib_parse(struct radeon_device *rdev, struct radeon_ib *ib)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

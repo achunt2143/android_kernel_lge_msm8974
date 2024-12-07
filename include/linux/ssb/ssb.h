@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINUX_SSB_H_
 #define LINUX_SSB_H_
 
@@ -10,15 +7,10 @@
 #include <linux/types.h>
 #include <linux/spinlock.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/mod_devicetable.h>
-#include <linux/dma-mapping.h>
-=======
 #include <linux/gpio/driver.h>
 #include <linux/mod_devicetable.h>
 #include <linux/dma-mapping.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/ssb/ssb_regs.h>
 
@@ -35,15 +27,6 @@ struct ssb_sprom_core_pwr_info {
 
 struct ssb_sprom {
 	u8 revision;
-<<<<<<< HEAD
-	u8 il0mac[6];		/* MAC address for 802.11b/g */
-	u8 et0mac[6];		/* MAC address for Ethernet */
-	u8 et1mac[6];		/* MAC address for 802.11a */
-	u8 et0phyaddr;		/* MII address for enet0 */
-	u8 et1phyaddr;		/* MII address for enet1 */
-	u8 et0mdcport;		/* MDIO for enet0 */
-	u8 et1mdcport;		/* MDIO for enet1 */
-=======
 	u8 il0mac[6] __aligned(sizeof(u16));	/* MAC address for 802.11b/g */
 	u8 et0mac[6] __aligned(sizeof(u16));	/* MAC address for Ethernet */
 	u8 et1mac[6] __aligned(sizeof(u16));	/* MAC address for 802.11a */
@@ -55,7 +38,6 @@ struct ssb_sprom {
 	u8 et1mdcport;		/* MDIO for enet1 */
 	u8 et2mdcport;		/* MDIO for enet2 */
 	u16 dev_id;		/* Device ID overriding e.g. PCI ID */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 board_rev;		/* Board revision number from SPROM. */
 	u16 board_num;		/* Board number from SPROM. */
 	u16 board_type;		/* Board type from SPROM. */
@@ -110,21 +92,14 @@ struct ssb_sprom {
 	u32 ofdm5glpo;		/* 5.2GHz OFDM power offset */
 	u32 ofdm5gpo;		/* 5.3GHz OFDM power offset */
 	u32 ofdm5ghpo;		/* 5.8GHz OFDM power offset */
-<<<<<<< HEAD
-=======
 	u32 boardflags;
 	u32 boardflags2;
 	u32 boardflags3;
 	/* TODO: Switch all drivers to new u32 fields and drop below ones */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 boardflags_lo;	/* Board flags (bits 0-15) */
 	u16 boardflags_hi;	/* Board flags (bits 16-31) */
 	u16 boardflags2_lo;	/* Board flags (bits 32-47) */
 	u16 boardflags2_hi;	/* Board flags (bits 48-63) */
-<<<<<<< HEAD
-	/* TODO store board flags in a single u64 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ssb_sprom_core_pwr_info core_pwr_info[4];
 
@@ -223,10 +198,6 @@ struct ssb_sprom {
 struct ssb_boardinfo {
 	u16 vendor;
 	u16 type;
-<<<<<<< HEAD
-	u8  rev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -282,10 +253,7 @@ struct ssb_bus_ops {
 #define SSB_DEV_MINI_MACPHY	0x823
 #define SSB_DEV_ARM_1176	0x824
 #define SSB_DEV_ARM_7TDMI	0x825
-<<<<<<< HEAD
-=======
 #define SSB_DEV_ARM_CM3		0x82A
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Vendor-ID values */
 #define SSB_VENDOR_BROADCOM	0x4243
@@ -317,11 +285,7 @@ struct ssb_device {
 
 /* Go from struct device to struct ssb_device. */
 static inline
-<<<<<<< HEAD
-struct ssb_device * dev_to_ssb_dev(struct device *dev)
-=======
 struct ssb_device * dev_to_ssb_dev(const struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct __ssb_dev_wrapper *wrap;
 	wrap = container_of(dev, struct __ssb_dev_wrapper, dev);
@@ -384,15 +348,6 @@ enum ssb_bustype {
 #define SSB_BOARDVENDOR_DELL	0x1028	/* Dell */
 #define SSB_BOARDVENDOR_HP	0x0E11	/* HP */
 /* board_type */
-<<<<<<< HEAD
-#define SSB_BOARD_BCM94306MP	0x0418
-#define SSB_BOARD_BCM4309G	0x0421
-#define SSB_BOARD_BCM4306CB	0x0417
-#define SSB_BOARD_BCM4309MP	0x040C
-#define SSB_BOARD_MP4318	0x044A
-#define SSB_BOARD_BU4306	0x0416
-#define SSB_BOARD_BU4309	0x040A
-=======
 #define SSB_BOARD_BCM94301CB	0x0406
 #define SSB_BOARD_BCM94301MP	0x0407
 #define SSB_BOARD_BU4309	0x040A
@@ -448,7 +403,6 @@ enum ssb_bustype {
 /* 4312 boards */
 #define SSB_BOARD_BU4312	0x048A
 #define SSB_BOARD_BCM4312MCGSG	0x04B5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* chip_package */
 #define SSB_CHIPPACK_BCM4712S	1	/* Small 200pin 4712 */
 #define SSB_CHIPPACK_BCM4712M	2	/* Medium 225pin 4712 */
@@ -536,17 +490,6 @@ struct ssb_bus {
 #ifdef CONFIG_SSB_EMBEDDED
 	/* Lock for GPIO register access. */
 	spinlock_t gpio_lock;
-<<<<<<< HEAD
-#endif /* EMBEDDED */
-
-	/* Internal-only stuff follows. Do not touch. */
-	struct list_head list;
-#ifdef CONFIG_SSB_DEBUG
-	/* Is the bus already powered up? */
-	bool powered_up;
-	int power_warn_count;
-#endif /* DEBUG */
-=======
 	struct platform_device *watchdog;
 #endif /* EMBEDDED */
 #ifdef CONFIG_SSB_DRIVER_GPIO
@@ -559,7 +502,6 @@ struct ssb_bus {
 	/* Is the bus already powered up? */
 	bool powered_up;
 	int power_warn_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum ssb_quirks {
@@ -581,19 +523,9 @@ struct ssb_init_invariants {
 typedef int (*ssb_invariants_func_t)(struct ssb_bus *bus,
 				     struct ssb_init_invariants *iv);
 
-<<<<<<< HEAD
-/* Register a SSB system bus. get_invariants() is called after the
- * basic system devices are initialized.
- * The invariants are usually fetched from some NVRAM.
- * Put the invariants into the struct pointed to by iv. */
-extern int ssb_bus_ssbbus_register(struct ssb_bus *bus,
-				   unsigned long baseaddr,
-				   ssb_invariants_func_t get_invariants);
-=======
 /* Register SoC bus. */
 extern int ssb_bus_host_soc_register(struct ssb_bus *bus,
 				     unsigned long baseaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SSB_PCIHOST
 extern int ssb_bus_pcibus_register(struct ssb_bus *bus,
 				   struct pci_dev *host_pci);

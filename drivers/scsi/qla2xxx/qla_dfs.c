@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2011 QLogic Corporation
- *
- * See LICENSE.qla2xxx for copyright and licensing details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic Fibre Channel HBA Driver
  * Copyright (c)  2003-2014 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include "qla_def.h"
 
@@ -19,8 +11,6 @@
 static struct dentry *qla2x00_dfs_root;
 static atomic_t qla2x00_dfs_root_count;
 
-<<<<<<< HEAD
-=======
 #define QLA_DFS_RPORT_DEVLOSS_TMO	1
 
 static int
@@ -408,7 +398,6 @@ qla_dfs_tgt_counters_show(struct seq_file *s, void *unused)
 
 DEFINE_SHOW_ATTRIBUTE(qla_dfs_tgt_counters);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 qla2x00_dfs_fce_show(struct seq_file *s, void *unused)
 {
@@ -420,17 +409,10 @@ qla2x00_dfs_fce_show(struct seq_file *s, void *unused)
 
 	mutex_lock(&ha->fce_mutex);
 
-<<<<<<< HEAD
-	seq_printf(s, "FCE Trace Buffer\n");
-	seq_printf(s, "In Pointer = %llx\n\n", (unsigned long long)ha->fce_wr);
-	seq_printf(s, "Base = %llx\n\n", (unsigned long long) ha->fce_dma);
-	seq_printf(s, "FCE Enable Registers\n");
-=======
 	seq_puts(s, "FCE Trace Buffer\n");
 	seq_printf(s, "In Pointer = %llx\n\n", (unsigned long long)ha->fce_wr);
 	seq_printf(s, "Base = %llx\n\n", (unsigned long long) ha->fce_dma);
 	seq_puts(s, "FCE Enable Registers\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(s, "%08x %08x %08x %08x %08x %08x\n",
 	    ha->fce_mb[0], ha->fce_mb[2], ha->fce_mb[3], ha->fce_mb[4],
 	    ha->fce_mb[5], ha->fce_mb[6]);
@@ -442,19 +424,11 @@ qla2x00_dfs_fce_show(struct seq_file *s, void *unused)
 			seq_printf(s, "\n%llx: ",
 			    (unsigned long long)((cnt * 4) + fce_start));
 		else
-<<<<<<< HEAD
-			seq_printf(s, " ");
-		seq_printf(s, "%08x", *fce++);
-	}
-
-	seq_printf(s, "\nEnd\n");
-=======
 			seq_putc(s, ' ');
 		seq_printf(s, "%08x", *fce++);
 	}
 
 	seq_puts(s, "\nEnd\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&ha->fce_mutex);
 
@@ -521,8 +495,6 @@ static const struct file_operations dfs_fce_ops = {
 	.release	= qla2x00_dfs_fce_release,
 };
 
-<<<<<<< HEAD
-=======
 static int
 qla_dfs_naqp_show(struct seq_file *s, void *unused)
 {
@@ -646,18 +618,13 @@ out_free:
 }
 QLA_DFS_SETUP_RW(naqp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int
 qla2x00_dfs_setup(scsi_qla_host_t *vha)
 {
 	struct qla_hw_data *ha = vha->hw;
 
-<<<<<<< HEAD
-	if (!IS_QLA25XX(ha) && !IS_QLA81XX(ha) && !IS_QLA83XX(ha))
-=======
 	if (!IS_QLA25XX(ha) && !IS_QLA81XX(ha) && !IS_QLA83XX(ha) &&
 	    !IS_QLA27XX(ha) && !IS_QLA28XX(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	if (!ha->fce)
 		goto out;
@@ -667,14 +634,6 @@ qla2x00_dfs_setup(scsi_qla_host_t *vha)
 
 	atomic_set(&qla2x00_dfs_root_count, 0);
 	qla2x00_dfs_root = debugfs_create_dir(QLA2XXX_DRIVER_NAME, NULL);
-<<<<<<< HEAD
-	if (!qla2x00_dfs_root) {
-		ql_log(ql_log_warn, vha, 0x00f7,
-		    "Unable to create debugfs root directory.\n");
-		goto out;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 create_dir:
 	if (ha->dfs_dir)
@@ -682,25 +641,10 @@ create_dir:
 
 	mutex_init(&ha->fce_mutex);
 	ha->dfs_dir = debugfs_create_dir(vha->host_str, qla2x00_dfs_root);
-<<<<<<< HEAD
-	if (!ha->dfs_dir) {
-		ql_log(ql_log_warn, vha, 0x00f8,
-		    "Unable to create debugfs ha directory.\n");
-		goto out;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_inc(&qla2x00_dfs_root_count);
 
 create_nodes:
-<<<<<<< HEAD
-	ha->dfs_fce = debugfs_create_file("fce", S_IRUSR, ha->dfs_dir, vha,
-	    &dfs_fce_ops);
-	if (!ha->dfs_fce) {
-		ql_log(ql_log_warn, vha, 0x00f9,
-		    "Unable to create debugfs fce node.\n");
-=======
 	ha->dfs_fw_resource_cnt = debugfs_create_file("fw_resource_count",
 	    S_IRUSR, ha->dfs_dir, vha, &qla_dfs_fw_resource_cnt_fops);
 
@@ -729,7 +673,6 @@ create_nodes:
 	if (IS_ERR(vha->dfs_rport_root)) {
 		ql_log(ql_log_warn, vha, 0xd012,
 		       "Unable to create debugFS rports node.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 out:
@@ -740,8 +683,6 @@ int
 qla2x00_dfs_remove(scsi_qla_host_t *vha)
 {
 	struct qla_hw_data *ha = vha->hw;
-<<<<<<< HEAD
-=======
 
 	if (ha->tgt.dfs_naqp) {
 		debugfs_remove(ha->tgt.dfs_naqp);
@@ -768,20 +709,16 @@ qla2x00_dfs_remove(scsi_qla_host_t *vha)
 		ha->dfs_tgt_counters = NULL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ha->dfs_fce) {
 		debugfs_remove(ha->dfs_fce);
 		ha->dfs_fce = NULL;
 	}
 
-<<<<<<< HEAD
-=======
 	if (vha->dfs_rport_root) {
 		debugfs_remove_recursive(vha->dfs_rport_root);
 		vha->dfs_rport_root = NULL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ha->dfs_dir) {
 		debugfs_remove(ha->dfs_dir);
 		ha->dfs_dir = NULL;

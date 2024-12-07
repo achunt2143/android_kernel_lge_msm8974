@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_BITREV_H
 #define _LINUX_BITREV_H
 
 #include <linux/types.h>
 
-<<<<<<< HEAD
-extern u8 const byte_rev_table[256];
-
-static inline u8 bitrev8(u8 byte)
-=======
 #ifdef CONFIG_HAVE_ARCH_BITREVERSE
 #include <asm/bitrev.h>
 
@@ -22,16 +14,10 @@ static inline u8 bitrev8(u8 byte)
 #else
 extern u8 const byte_rev_table[256];
 static inline u8 __bitrev8(u8 byte)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return byte_rev_table[byte];
 }
 
-<<<<<<< HEAD
-extern u16 bitrev16(u16 in);
-extern u32 bitrev32(u32 in);
-
-=======
 static inline u16 __bitrev16(u16 x)
 {
 	return (__bitrev8(x & 0xff) << 8) | __bitrev8(x >> 8);
@@ -116,5 +102,4 @@ static inline u32 __bitrev32(u32 x)
 	__constant_bitrev8(__x) :			\
 	__bitrev8(__x)	;			\
  })
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_BITREV_H */

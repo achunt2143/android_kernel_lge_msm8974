@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* qlogicpti.c: Performance Technologies QlogicISP sbus card driver.
  *
  * Copyright (C) 1996, 2006, 2008 David S. Miller (davem@davemloft.net)
@@ -31,14 +28,9 @@
 #include <linux/jiffies.h>
 #include <linux/dma-mapping.h>
 #include <linux/of.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-#include <linux/firmware.h>
-=======
 #include <linux/platform_device.h>
 #include <linux/firmware.h>
 #include <linux/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/byteorder.h>
 
@@ -46,10 +38,6 @@
 
 #include <asm/dma.h>
 #include <asm/ptrace.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/oplib.h>
 #include <asm/io.h>
 #include <asm/irq.h>
@@ -212,12 +200,6 @@ static int qlogicpti_mbox_command(struct qlogicpti *qpti, u_short param[], int f
 	/* Write mailbox command registers. */
 	switch (mbox_param[param[0]] >> 4) {
 	case 6: sbus_writew(param[5], qpti->qregs + MBOX5);
-<<<<<<< HEAD
-	case 5: sbus_writew(param[4], qpti->qregs + MBOX4);
-	case 4: sbus_writew(param[3], qpti->qregs + MBOX3);
-	case 3: sbus_writew(param[2], qpti->qregs + MBOX2);
-	case 2: sbus_writew(param[1], qpti->qregs + MBOX1);
-=======
 		fallthrough;
 	case 5: sbus_writew(param[4], qpti->qregs + MBOX4);
 		fallthrough;
@@ -227,7 +209,6 @@ static int qlogicpti_mbox_command(struct qlogicpti *qpti, u_short param[], int f
 		fallthrough;
 	case 2: sbus_writew(param[1], qpti->qregs + MBOX1);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1: sbus_writew(param[0], qpti->qregs + MBOX0);
 	}
 
@@ -278,12 +259,6 @@ static int qlogicpti_mbox_command(struct qlogicpti *qpti, u_short param[], int f
 	/* Read back output parameters. */
 	switch (mbox_param[param[0]] & 0xf) {
 	case 6: param[5] = sbus_readw(qpti->qregs + MBOX5);
-<<<<<<< HEAD
-	case 5: param[4] = sbus_readw(qpti->qregs + MBOX4);
-	case 4: param[3] = sbus_readw(qpti->qregs + MBOX3);
-	case 3: param[2] = sbus_readw(qpti->qregs + MBOX2);
-	case 2: param[1] = sbus_readw(qpti->qregs + MBOX1);
-=======
 		fallthrough;
 	case 5: param[4] = sbus_readw(qpti->qregs + MBOX4);
 		fallthrough;
@@ -293,7 +268,6 @@ static int qlogicpti_mbox_command(struct qlogicpti *qpti, u_short param[], int f
 		fallthrough;
 	case 2: param[1] = sbus_readw(qpti->qregs + MBOX1);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1: param[0] = sbus_readw(qpti->qregs + MBOX0);
 	}
 
@@ -498,11 +472,7 @@ static int qlogicpti_reset_hardware(struct Scsi_Host *host)
 
 #define PTI_RESET_LIMIT 400
 
-<<<<<<< HEAD
-static int __devinit qlogicpti_load_firmware(struct qlogicpti *qpti)
-=======
 static int qlogicpti_load_firmware(struct qlogicpti *qpti)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct firmware *fw;
 	const char fwname[] = "qlogic/isp1000.bin";
@@ -543,11 +513,7 @@ static int qlogicpti_load_firmware(struct qlogicpti *qpti)
 		       qpti->qpti_id);
 		err = 1;
 		goto out;
-<<<<<<< HEAD
-	}		
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbus_writew(SBUS_CTRL_RESET, qpti->qregs + SBUS_CTRL);
 	sbus_writew((DMA_CTRL_CCLEAR | DMA_CTRL_CIRQ), qpti->qregs + CMD_DMA_CTRL);
 	sbus_writew((DMA_CTRL_CCLEAR | DMA_CTRL_CIRQ), qpti->qregs + DATA_DMA_CTRL);
@@ -597,11 +563,7 @@ static int qlogicpti_load_firmware(struct qlogicpti *qpti)
 		       qpti->qpti_id);
 		err = 1;
 		goto out;
-<<<<<<< HEAD
-	}		
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Load it up.. */
 	for (i = 0; i < risc_code_length; i++) {
@@ -719,11 +681,7 @@ static int qlogicpti_verify_tmon(struct qlogicpti *qpti)
 
 static irqreturn_t qpti_intr(int irq, void *dev_id);
 
-<<<<<<< HEAD
-static void __devinit qpti_chain_add(struct qlogicpti *qpti)
-=======
 static void qpti_chain_add(struct qlogicpti *qpti)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_irq(&qptichain_lock);
 	if (qptichain != NULL) {
@@ -739,11 +697,7 @@ static void qpti_chain_add(struct qlogicpti *qpti)
 	spin_unlock_irq(&qptichain_lock);
 }
 
-<<<<<<< HEAD
-static void __devexit qpti_chain_del(struct qlogicpti *qpti)
-=======
 static void qpti_chain_del(struct qlogicpti *qpti)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_irq(&qptichain_lock);
 	if (qptichain == qpti) {
@@ -758,11 +712,7 @@ static void qpti_chain_del(struct qlogicpti *qpti)
 	spin_unlock_irq(&qptichain_lock);
 }
 
-<<<<<<< HEAD
-static int __devinit qpti_map_regs(struct qlogicpti *qpti)
-=======
 static int qpti_map_regs(struct qlogicpti *qpti)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *op = qpti->op;
 
@@ -771,11 +721,7 @@ static int qpti_map_regs(struct qlogicpti *qpti)
 				 "PTI Qlogic/ISP");
 	if (!qpti->qregs) {
 		printk("PTI: Qlogic/ISP registers are unmappable\n");
-<<<<<<< HEAD
-		return -1;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (qpti->is_pti) {
 		qpti->sreg = of_ioremap(&op->resource[0], (16 * 4096),
@@ -783,21 +729,13 @@ static int qpti_map_regs(struct qlogicpti *qpti)
 					"PTI Qlogic/ISP statreg");
 		if (!qpti->sreg) {
 			printk("PTI: Qlogic/ISP status register is unmappable\n");
-<<<<<<< HEAD
-			return -1;
-=======
 			return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit qpti_register_irq(struct qlogicpti *qpti)
-=======
 static int qpti_register_irq(struct qlogicpti *qpti)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *op = qpti->op;
 
@@ -822,11 +760,7 @@ fail:
 	return -1;
 }
 
-<<<<<<< HEAD
-static void __devinit qpti_get_scsi_id(struct qlogicpti *qpti)
-=======
 static void qpti_get_scsi_id(struct qlogicpti *qpti)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *op = qpti->op;
 	struct device_node *dp;
@@ -880,11 +814,7 @@ static void qpti_get_clock(struct qlogicpti *qpti)
 /* The request and response queues must each be aligned
  * on a page boundary.
  */
-<<<<<<< HEAD
-static int __devinit qpti_map_queues(struct qlogicpti *qpti)
-=======
 static int qpti_map_queues(struct qlogicpti *qpti)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *op = qpti->op;
 
@@ -913,11 +843,7 @@ static int qpti_map_queues(struct qlogicpti *qpti)
 	return 0;
 }
 
-<<<<<<< HEAD
-const char *qlogicpti_info(struct Scsi_Host *host)
-=======
 static const char *qlogicpti_info(struct Scsi_Host *host)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static char buf[80];
 	struct qlogicpti *qpti = (struct qlogicpti *) host->hostdata;
@@ -964,11 +890,7 @@ static inline void cmd_frob(struct Command_Entry *cmd, struct scsi_cmnd *Cmnd,
 		cmd->control_flags |= CFLAG_WRITE;
 	else
 		cmd->control_flags |= CFLAG_READ;
-<<<<<<< HEAD
-	cmd->time_out = Cmnd->request->timeout/HZ;
-=======
 	cmd->time_out = scsi_cmd_to_rq(Cmnd)->timeout / HZ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(cmd->cdb, Cmnd->cmnd, Cmnd->cmd_len);
 }
 
@@ -987,12 +909,8 @@ static inline int load_cmd(struct scsi_cmnd *Cmnd, struct Command_Entry *cmd,
 		sg_count = dma_map_sg(&qpti->op->dev, sg,
 				      scsi_sg_count(Cmnd),
 				      Cmnd->sc_data_direction);
-<<<<<<< HEAD
-
-=======
 		if (!sg_count)
 			return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ds = cmd->dataseg;
 		cmd->segment_cnt = sg_count;
 
@@ -1053,11 +971,7 @@ static inline void update_can_queue(struct Scsi_Host *host, u_int in_ptr, u_int 
 	/* Temporary workaround until bug is found and fixed (one bug has been found
 	   already, but fixing it makes things even worse) -jj */
 	int num_free = QLOGICPTI_REQ_QUEUE_LEN - REQ_QUEUE_DEPTH(in_ptr, out_ptr) - 64;
-<<<<<<< HEAD
-	host->can_queue = host->host_busy + num_free;
-=======
 	host->can_queue = scsi_host_busy(host) + num_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host->sg_tablesize = QLOGICPTI_MAX_SG(num_free);
 }
 
@@ -1100,25 +1014,15 @@ static int qlogicpti_slave_configure(struct scsi_device *sdev)
  *
  * "This code must fly." -davem
  */
-<<<<<<< HEAD
-static int qlogicpti_queuecommand_lck(struct scsi_cmnd *Cmnd, void (*done)(struct scsi_cmnd *))
-{
-=======
 static int qlogicpti_queuecommand_lck(struct scsi_cmnd *Cmnd)
 {
 	void (*done)(struct scsi_cmnd *) = scsi_done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *host = Cmnd->device->host;
 	struct qlogicpti *qpti = (struct qlogicpti *) host->hostdata;
 	struct Command_Entry *cmd;
 	u_int out_ptr;
 	int in_ptr;
 
-<<<<<<< HEAD
-	Cmnd->scsi_done = done;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	in_ptr = qpti->req_in_ptr;
 	cmd = (struct Command_Entry *) &qpti->req_cpu[in_ptr];
 	out_ptr = sbus_readw(qpti->qregs + MBOX4);
@@ -1232,11 +1136,7 @@ static struct scsi_cmnd *qlogicpti_intr_handler(struct qlogicpti *qpti)
 
 	if (!(sbus_readw(qpti->qregs + SBUS_STAT) & SBUS_STAT_RINT))
 		return NULL;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	in_ptr = sbus_readw(qpti->qregs + MBOX5);
 	sbus_writew(HCCTRL_CRIRQ, qpti->qregs + HCCTRL);
 	if (sbus_readw(qpti->qregs + SBUS_SEMAPHORE) & SBUS_SEMAPHORE_LCK) {
@@ -1314,11 +1214,7 @@ static irqreturn_t qpti_intr(int irq, void *dev_id)
 			struct scsi_cmnd *next;
 
 			next = (struct scsi_cmnd *) dq->host_scribble;
-<<<<<<< HEAD
-			dq->scsi_done(dq);
-=======
 			scsi_done(dq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dq = next;
 		} while (dq != NULL);
 	}
@@ -1391,32 +1287,13 @@ static int qlogicpti_reset(struct scsi_cmnd *Cmnd)
 	return return_status;
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template qpti_template = {
-=======
 static const struct scsi_host_template qpti_template = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module			= THIS_MODULE,
 	.name			= "qlogicpti",
 	.info			= qlogicpti_info,
 	.queuecommand		= qlogicpti_queuecommand,
 	.slave_configure	= qlogicpti_slave_configure,
 	.eh_abort_handler	= qlogicpti_abort,
-<<<<<<< HEAD
-	.eh_bus_reset_handler	= qlogicpti_reset,
-	.can_queue		= QLOGICPTI_REQ_QUEUE_LEN,
-	.this_id		= 7,
-	.sg_tablesize		= QLOGICPTI_MAX_SG(QLOGICPTI_REQ_QUEUE_LEN),
-	.cmd_per_lun		= 1,
-	.use_clustering		= ENABLE_CLUSTERING,
-};
-
-static const struct of_device_id qpti_match[];
-static int __devinit qpti_sbus_probe(struct platform_device *op)
-{
-	const struct of_device_id *match;
-	struct scsi_host_template *tpnt;
-=======
 	.eh_host_reset_handler	= qlogicpti_reset,
 	.can_queue		= QLOGICPTI_REQ_QUEUE_LEN,
 	.this_id		= 7,
@@ -1426,32 +1303,19 @@ static int __devinit qpti_sbus_probe(struct platform_device *op)
 static const struct of_device_id qpti_match[];
 static int qpti_sbus_probe(struct platform_device *op)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_node *dp = op->dev.of_node;
 	struct Scsi_Host *host;
 	struct qlogicpti *qpti;
 	static int nqptis;
 	const char *fcode;
 
-<<<<<<< HEAD
-	match = of_match_device(qpti_match, &op->dev);
-	if (!match)
-		return -EINVAL;
-	tpnt = match->data;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Sometimes Antares cards come up not completely
 	 * setup, and we get a report of a zero IRQ.
 	 */
 	if (op->archdata.irqs[0] == 0)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	host = scsi_host_alloc(tpnt, sizeof(struct qlogicpti));
-=======
 	host = scsi_host_alloc(&qpti_template, sizeof(struct qlogicpti));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!host)
 		return -ENOMEM;
 
@@ -1461,12 +1325,7 @@ static int qpti_sbus_probe(struct platform_device *op)
 	qpti->qhost = host;
 	qpti->op = op;
 	qpti->qpti_id = nqptis;
-<<<<<<< HEAD
-	strcpy(qpti->prom_name, op->dev.of_node->name);
-	qpti->is_pti = strcmp(qpti->prom_name, "QLGC,isp");
-=======
 	qpti->is_pti = !of_node_name_eq(op->dev.of_node, "QLGC,isp");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (qpti_map_regs(qpti) < 0)
 		goto fail_unlink;
@@ -1503,14 +1362,8 @@ static int qpti_sbus_probe(struct platform_device *op)
 	fcode = of_get_property(dp, "isp-fcode", NULL);
 	if (fcode && fcode[0])
 		printk("(FCode %s)", fcode);
-<<<<<<< HEAD
-	if (of_find_property(dp, "differential", NULL) != NULL)
-		qpti->differential = 1;
-			
-=======
 	qpti->differential = of_property_read_bool(dp, "differential");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("\nqlogicpti%d: [%s Wide, using %s interface]\n",
 		qpti->qpti_id,
 		(qpti->ultra ? "Ultra" : "Fast"),
@@ -1540,12 +1393,9 @@ fail_unmap_queues:
 			  qpti->req_cpu, qpti->req_dvma);
 #undef QSIZE
 
-<<<<<<< HEAD
-=======
 fail_free_irq:
 	free_irq(qpti->irq, qpti);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_unmap_regs:
 	of_iounmap(&op->resource[0], qpti->qregs,
 		   resource_size(&op->resource[0]));
@@ -1553,23 +1403,13 @@ fail_unmap_regs:
 		of_iounmap(&op->resource[0], qpti->sreg,
 			   sizeof(unsigned char));
 
-<<<<<<< HEAD
-fail_free_irq:
-	free_irq(qpti->irq, qpti);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_unlink:
 	scsi_host_put(host);
 
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static int __devexit qpti_sbus_remove(struct platform_device *op)
-=======
 static void qpti_sbus_remove(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qlogicpti *qpti = dev_get_drvdata(&op->dev);
 
@@ -1598,31 +1438,11 @@ static void qpti_sbus_remove(struct platform_device *op)
 		of_iounmap(&op->resource[0], qpti->sreg, sizeof(unsigned char));
 
 	scsi_host_put(qpti->qhost);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id qpti_match[] = {
 	{
 		.name = "ptisp",
-<<<<<<< HEAD
-		.data = &qpti_template,
-	},
-	{
-		.name = "PTI,ptisp",
-		.data = &qpti_template,
-	},
-	{
-		.name = "QLGC,isp",
-		.data = &qpti_template,
-	},
-	{
-		.name = "SUNW,isp",
-		.data = &qpti_template,
-=======
 	},
 	{
 		.name = "PTI,ptisp",
@@ -1632,7 +1452,6 @@ static const struct of_device_id qpti_match[] = {
 	},
 	{
 		.name = "SUNW,isp",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{},
 };
@@ -1641,33 +1460,6 @@ MODULE_DEVICE_TABLE(of, qpti_match);
 static struct platform_driver qpti_sbus_driver = {
 	.driver = {
 		.name = "qpti",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = qpti_match,
-	},
-	.probe		= qpti_sbus_probe,
-	.remove		= __devexit_p(qpti_sbus_remove),
-};
-
-static int __init qpti_init(void)
-{
-	return platform_driver_register(&qpti_sbus_driver);
-}
-
-static void __exit qpti_exit(void)
-{
-	platform_driver_unregister(&qpti_sbus_driver);
-}
-
-MODULE_DESCRIPTION("QlogicISP SBUS driver");
-MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
-MODULE_LICENSE("GPL");
-MODULE_VERSION("2.1");
-MODULE_FIRMWARE("qlogic/isp1000.bin");
-
-module_init(qpti_init);
-module_exit(qpti_exit);
-=======
 		.of_match_table = qpti_match,
 	},
 	.probe		= qpti_sbus_probe,
@@ -1680,4 +1472,3 @@ MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("2.1");
 MODULE_FIRMWARE("qlogic/isp1000.bin");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

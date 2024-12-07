@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2006 Oracle.  All rights reserved.
-=======
  * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -38,13 +34,9 @@
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-#include <net/inet_hashtables.h>
-=======
 #include <net/ipv6.h>
 #include <net/inet6_hashtables.h>
 #include <net/addrconf.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "rds.h"
 #include "loop.h"
@@ -59,14 +51,6 @@ static unsigned long rds_conn_count;
 static struct hlist_head rds_conn_hash[RDS_CONNECTION_HASH_ENTRIES];
 static struct kmem_cache *rds_conn_slab;
 
-<<<<<<< HEAD
-static struct hlist_head *rds_conn_bucket(__be32 laddr, __be32 faddr)
-{
-	/* Pass NULL, don't need struct net for hash */
-	unsigned long hash = inet_ehashfn(NULL,
-					  be32_to_cpu(laddr), 0,
-					  be32_to_cpu(faddr), 0);
-=======
 static struct hlist_head *rds_conn_bucket(const struct in6_addr *laddr,
 					  const struct in6_addr *faddr)
 {
@@ -86,7 +70,6 @@ static struct hlist_head *rds_conn_bucket(const struct in6_addr *laddr,
 #endif
 	hash = __inet_ehashfn(lhash, 0, fhash, 0, rds_hash_secret);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return &rds_conn_hash[hash & RDS_CONNECTION_HASH_MASK];
 }
 
@@ -96,18 +79,6 @@ static struct hlist_head *rds_conn_bucket(const struct in6_addr *laddr,
 } while (0)
 
 /* rcu read lock must be held or the connection spinlock */
-<<<<<<< HEAD
-static struct rds_connection *rds_conn_lookup(struct hlist_head *head,
-					      __be32 laddr, __be32 faddr,
-					      struct rds_transport *trans)
-{
-	struct rds_connection *conn, *ret = NULL;
-	struct hlist_node *pos;
-
-	hlist_for_each_entry_rcu(conn, pos, head, c_hash_node) {
-		if (conn->c_faddr == faddr && conn->c_laddr == laddr &&
-				conn->c_trans == trans) {
-=======
 static struct rds_connection *rds_conn_lookup(struct net *net,
 					      struct hlist_head *head,
 					      const struct in6_addr *laddr,
@@ -124,18 +95,12 @@ static struct rds_connection *rds_conn_lookup(struct net *net,
 		    conn->c_tos == tos &&
 		    net == rds_conn_net(conn) &&
 		    conn->c_dev_if == dev_if) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = conn;
 			break;
 		}
 	}
-<<<<<<< HEAD
-	rdsdebug("returning conn %p for %pI4 -> %pI4\n", ret,
-		 &laddr, &faddr);
-=======
 	rdsdebug("returning conn %p for %pI6c -> %pI6c\n", ret,
 		 laddr, faddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -145,16 +110,6 @@ static struct rds_connection *rds_conn_lookup(struct net *net,
  * and receiving over this connection again in the future.  It is up to
  * the transport to have serialized this call with its send and recv.
  */
-<<<<<<< HEAD
-static void rds_conn_reset(struct rds_connection *conn)
-{
-	rdsdebug("connection %pI4 to %pI4 reset\n",
-	  &conn->c_laddr, &conn->c_faddr);
-
-	rds_stats_inc(s_conn_reset);
-	rds_send_reset(conn);
-	conn->c_flags = 0;
-=======
 static void rds_conn_path_reset(struct rds_conn_path *cp)
 {
 	struct rds_connection *conn = cp->cp_conn;
@@ -165,7 +120,6 @@ static void rds_conn_path_reset(struct rds_conn_path *cp)
 	rds_stats_inc(s_conn_reset);
 	rds_send_path_reset(cp);
 	cp->cp_flags = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Do not clear next_rx_seq here, else we cannot distinguish
 	 * retransmitted packets from new packets, and will hand all
@@ -173,8 +127,6 @@ static void rds_conn_path_reset(struct rds_conn_path *cp)
 	 * reliability guarantees of RDS. */
 }
 
-<<<<<<< HEAD
-=======
 static void __rds_conn_path_init(struct rds_connection *conn,
 				 struct rds_conn_path *cp, bool is_outgoing)
 {
@@ -197,7 +149,6 @@ static void __rds_conn_path_init(struct rds_connection *conn,
 	cp->cp_flags = 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * There is only every one 'conn' for a given pair of addresses in the
  * system at a time.  They contain messages to be retransmitted and so
@@ -206,11 +157,6 @@ static void __rds_conn_path_init(struct rds_connection *conn,
  * For now they are not garbage collected once they're created.  They
  * are torn down as the module is removed, if ever.
  */
-<<<<<<< HEAD
-static struct rds_connection *__rds_conn_create(__be32 laddr, __be32 faddr,
-				       struct rds_transport *trans, gfp_t gfp,
-				       int is_outgoing)
-=======
 static struct rds_connection *__rds_conn_create(struct net *net,
 						const struct in6_addr *laddr,
 						const struct in6_addr *faddr,
@@ -218,19 +164,11 @@ static struct rds_connection *__rds_conn_create(struct net *net,
 						gfp_t gfp, u8 tos,
 						int is_outgoing,
 						int dev_if)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rds_connection *conn, *parent = NULL;
 	struct hlist_head *head = rds_conn_bucket(laddr, faddr);
 	struct rds_transport *loop_trans;
 	unsigned long flags;
-<<<<<<< HEAD
-	int ret;
-
-	rcu_read_lock();
-	conn = rds_conn_lookup(head, laddr, faddr, trans);
-	if (conn && conn->c_loopback && conn->c_trans != &rds_loop_transport &&
-=======
 	int ret, i;
 	int npaths = (trans->t_mp_capable ? RDS_MPATH_WORKERS : 1);
 
@@ -240,7 +178,6 @@ static struct rds_connection *__rds_conn_create(struct net *net,
 	    conn->c_loopback &&
 	    conn->c_trans != &rds_loop_transport &&
 	    ipv6_addr_equal(laddr, faddr) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !is_outgoing) {
 		/* This is a looped back IB connection, and we're
 		 * called by the code handling the incoming connect.
@@ -258,21 +195,6 @@ static struct rds_connection *__rds_conn_create(struct net *net,
 		conn = ERR_PTR(-ENOMEM);
 		goto out;
 	}
-<<<<<<< HEAD
-
-	INIT_HLIST_NODE(&conn->c_hash_node);
-	conn->c_laddr = laddr;
-	conn->c_faddr = faddr;
-	spin_lock_init(&conn->c_lock);
-	conn->c_next_tx_seq = 1;
-
-	init_waitqueue_head(&conn->c_waitq);
-	INIT_LIST_HEAD(&conn->c_send_queue);
-	INIT_LIST_HEAD(&conn->c_retrans);
-
-	ret = rds_cong_get_maps(conn);
-	if (ret) {
-=======
 	conn->c_path = kcalloc(npaths, sizeof(struct rds_conn_path), gfp);
 	if (!conn->c_path) {
 		kmem_cache_free(rds_conn_slab, conn);
@@ -304,7 +226,6 @@ static struct rds_connection *__rds_conn_create(struct net *net,
 	ret = rds_cong_get_maps(conn);
 	if (ret) {
 		kfree(conn->c_path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kmem_cache_free(rds_conn_slab, conn);
 		conn = ERR_PTR(ret);
 		goto out;
@@ -315,18 +236,6 @@ static struct rds_connection *__rds_conn_create(struct net *net,
 	 * can bind to the destination address then we'd rather the messages
 	 * flow through loopback rather than either transport.
 	 */
-<<<<<<< HEAD
-	loop_trans = rds_trans_get_preferred(faddr);
-	if (loop_trans) {
-		rds_trans_put(loop_trans);
-		conn->c_loopback = 1;
-		if (is_outgoing && trans->t_prefer_loopback) {
-			/* "outgoing" connection - and the transport
-			 * says it wants the connection handled by the
-			 * loopback transport. This is what TCP does.
-			 */
-			trans = &rds_loop_transport;
-=======
 	loop_trans = rds_trans_get_preferred(net, faddr, conn->c_dev_if);
 	if (loop_trans) {
 		rds_trans_put(loop_trans);
@@ -349,16 +258,11 @@ static struct rds_connection *__rds_conn_create(struct net *net,
 				conn = ERR_PTR(-EOPNOTSUPP);
 				goto out;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	conn->c_trans = trans;
 
-<<<<<<< HEAD
-	ret = trans->conn_alloc(conn, gfp);
-	if (ret) {
-=======
 	init_waitqueue_head(&conn->c_hs_waitq);
 	for (i = 0; i < npaths; i++) {
 		__rds_conn_path_init(conn, &conn->c_path[i],
@@ -373,32 +277,15 @@ static struct rds_connection *__rds_conn_create(struct net *net,
 	if (ret) {
 		rcu_read_unlock();
 		kfree(conn->c_path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kmem_cache_free(rds_conn_slab, conn);
 		conn = ERR_PTR(ret);
 		goto out;
 	}
 
-<<<<<<< HEAD
-	atomic_set(&conn->c_state, RDS_CONN_DOWN);
-	conn->c_reconnect_jiffies = 0;
-	INIT_DELAYED_WORK(&conn->c_send_w, rds_send_worker);
-	INIT_DELAYED_WORK(&conn->c_recv_w, rds_recv_worker);
-	INIT_DELAYED_WORK(&conn->c_conn_w, rds_connect_worker);
-	INIT_WORK(&conn->c_down_w, rds_shutdown_worker);
-	mutex_init(&conn->c_cm_lock);
-	conn->c_flags = 0;
-
-	rdsdebug("allocated conn %p for %pI4 -> %pI4 over %s %s\n",
-	  conn, &laddr, &faddr,
-	  trans->t_name ? trans->t_name : "[unknown]",
-	  is_outgoing ? "(outgoing)" : "");
-=======
 	rdsdebug("allocated conn %p for %pI6c -> %pI6c over %s %s\n",
 		 conn, laddr, faddr,
 		 strnlen(trans->t_name, sizeof(trans->t_name)) ?
 		 trans->t_name : "[unknown]", is_outgoing ? "(outgoing)" : "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Since we ran without holding the conn lock, someone could
@@ -411,12 +298,8 @@ static struct rds_connection *__rds_conn_create(struct net *net,
 	if (parent) {
 		/* Creating passive conn */
 		if (parent->c_passive) {
-<<<<<<< HEAD
-			trans->conn_free(conn->c_transport_data);
-=======
 			trans->conn_free(conn->c_path[0].cp_transport_data);
 			kfree(conn->c_path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kmem_cache_free(rds_conn_slab, conn);
 			conn = parent->c_passive;
 		} else {
@@ -428,14 +311,6 @@ static struct rds_connection *__rds_conn_create(struct net *net,
 		/* Creating normal conn */
 		struct rds_connection *found;
 
-<<<<<<< HEAD
-		found = rds_conn_lookup(head, laddr, faddr, trans);
-		if (found) {
-			trans->conn_free(conn->c_transport_data);
-			kmem_cache_free(rds_conn_slab, conn);
-			conn = found;
-		} else {
-=======
 		found = rds_conn_lookup(net, head, laddr, faddr, trans,
 					tos, dev_if);
 		if (found) {
@@ -457,42 +332,18 @@ static struct rds_connection *__rds_conn_create(struct net *net,
 		} else {
 			conn->c_my_gen_num = rds_gen_num;
 			conn->c_peer_gen_num = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hlist_add_head_rcu(&conn->c_hash_node, head);
 			rds_cong_add_conn(conn);
 			rds_conn_count++;
 		}
 	}
 	spin_unlock_irqrestore(&rds_conn_lock, flags);
-<<<<<<< HEAD
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return conn;
 }
 
-<<<<<<< HEAD
-struct rds_connection *rds_conn_create(__be32 laddr, __be32 faddr,
-				       struct rds_transport *trans, gfp_t gfp)
-{
-	return __rds_conn_create(laddr, faddr, trans, gfp, 0);
-}
-EXPORT_SYMBOL_GPL(rds_conn_create);
-
-struct rds_connection *rds_conn_create_outgoing(__be32 laddr, __be32 faddr,
-				       struct rds_transport *trans, gfp_t gfp)
-{
-	return __rds_conn_create(laddr, faddr, trans, gfp, 1);
-}
-EXPORT_SYMBOL_GPL(rds_conn_create_outgoing);
-
-void rds_conn_shutdown(struct rds_connection *conn)
-{
-	/* shut it down unless it's down already */
-	if (!rds_conn_transition(conn, RDS_CONN_DOWN, RDS_CONN_DOWN)) {
-=======
 struct rds_connection *rds_conn_create(struct net *net,
 				       const struct in6_addr *laddr,
 				       const struct in6_addr *faddr,
@@ -519,7 +370,6 @@ void rds_conn_shutdown(struct rds_conn_path *cp)
 
 	/* shut it down unless it's down already */
 	if (!rds_conn_path_transition(cp, RDS_CONN_DOWN, RDS_CONN_DOWN)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Quiesce the connection mgmt handlers before we start tearing
 		 * things down. We don't hold the mutex for the entire
@@ -527,35 +377,6 @@ void rds_conn_shutdown(struct rds_conn_path *cp)
 		 * deadlocking with the CM handler. Instead, the CM event
 		 * handler is supposed to check for state DISCONNECTING
 		 */
-<<<<<<< HEAD
-		mutex_lock(&conn->c_cm_lock);
-		if (!rds_conn_transition(conn, RDS_CONN_UP, RDS_CONN_DISCONNECTING)
-		 && !rds_conn_transition(conn, RDS_CONN_ERROR, RDS_CONN_DISCONNECTING)) {
-			rds_conn_error(conn, "shutdown called in state %d\n",
-					atomic_read(&conn->c_state));
-			mutex_unlock(&conn->c_cm_lock);
-			return;
-		}
-		mutex_unlock(&conn->c_cm_lock);
-
-		wait_event(conn->c_waitq,
-			   !test_bit(RDS_IN_XMIT, &conn->c_flags));
-
-		conn->c_trans->conn_shutdown(conn);
-		rds_conn_reset(conn);
-
-		if (!rds_conn_transition(conn, RDS_CONN_DISCONNECTING, RDS_CONN_DOWN)) {
-			/* This can happen - eg when we're in the middle of tearing
-			 * down the connection, and someone unloads the rds module.
-			 * Quite reproduceable with loopback connections.
-			 * Mostly harmless.
-			 */
-			rds_conn_error(conn,
-				"%s: failed to transition to state DOWN, "
-				"current state is %d\n",
-				__func__,
-				atomic_read(&conn->c_state));
-=======
 		mutex_lock(&cp->cp_cm_lock);
 		if (!rds_conn_path_transition(cp, RDS_CONN_UP,
 					      RDS_CONN_DISCONNECTING) &&
@@ -596,7 +417,6 @@ void rds_conn_shutdown(struct rds_conn_path *cp)
 					    "to state DOWN, current state "
 					    "is %d\n", __func__,
 					    atomic_read(&cp->cp_state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
@@ -605,26 +425,16 @@ void rds_conn_shutdown(struct rds_conn_path *cp)
 	 * The passive side of an IB loopback connection is never added
 	 * to the conn hash, so we never trigger a reconnect on this
 	 * conn - the reconnect is always triggered by the active peer. */
-<<<<<<< HEAD
-	cancel_delayed_work_sync(&conn->c_conn_w);
-	rcu_read_lock();
-	if (!hlist_unhashed(&conn->c_hash_node)) {
-		rcu_read_unlock();
-		rds_queue_reconnect(conn);
-=======
 	cancel_delayed_work_sync(&cp->cp_conn_w);
 	rcu_read_lock();
 	if (!hlist_unhashed(&conn->c_hash_node)) {
 		rcu_read_unlock();
 		rds_queue_reconnect(cp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		rcu_read_unlock();
 	}
 }
 
-<<<<<<< HEAD
-=======
 /* destroy a single rds_conn_path. rds_conn_destroy() iterates over
  * all paths using rds_conn_path_destroy()
  */
@@ -661,7 +471,6 @@ static void rds_conn_path_destroy(struct rds_conn_path *cp)
 	cp->cp_conn->c_trans->conn_free(cp->cp_transport_data);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Stop and free a connection.
  *
@@ -671,15 +480,10 @@ static void rds_conn_path_destroy(struct rds_conn_path *cp)
  */
 void rds_conn_destroy(struct rds_connection *conn)
 {
-<<<<<<< HEAD
-	struct rds_message *rm, *rtmp;
-	unsigned long flags;
-=======
 	unsigned long flags;
 	int i;
 	struct rds_conn_path *cp;
 	int npaths = (conn->c_trans->t_mp_capable ? RDS_MPATH_WORKERS : 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rdsdebug("freeing conn %p for %pI4 -> "
 		 "%pI4\n", conn, &conn->c_laddr,
@@ -692,33 +496,11 @@ void rds_conn_destroy(struct rds_connection *conn)
 	synchronize_rcu();
 
 	/* shut the connection down */
-<<<<<<< HEAD
-	rds_conn_drop(conn);
-	flush_work(&conn->c_down_w);
-
-	/* make sure lingering queued work won't try to ref the conn */
-	cancel_delayed_work_sync(&conn->c_send_w);
-	cancel_delayed_work_sync(&conn->c_recv_w);
-
-	/* tear down queued messages */
-	list_for_each_entry_safe(rm, rtmp,
-				 &conn->c_send_queue,
-				 m_conn_item) {
-		list_del_init(&rm->m_conn_item);
-		BUG_ON(!list_empty(&rm->m_sock_item));
-		rds_message_put(rm);
-	}
-	if (conn->c_xmit_rm)
-		rds_message_put(conn->c_xmit_rm);
-
-	conn->c_trans->conn_free(conn->c_transport_data);
-=======
 	for (i = 0; i < npaths; i++) {
 		cp = &conn->c_path[i];
 		rds_conn_path_destroy(cp);
 		BUG_ON(!list_empty(&cp->cp_retrans));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The congestion maps aren't freed up here.  They're
@@ -727,11 +509,7 @@ void rds_conn_destroy(struct rds_connection *conn)
 	 */
 	rds_cong_remove_conn(conn);
 
-<<<<<<< HEAD
-	BUG_ON(!list_empty(&conn->c_retrans));
-=======
 	kfree(conn->c_path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_free(rds_conn_slab, conn);
 
 	spin_lock_irqsave(&rds_conn_lock, flags);
@@ -740,15 +518,6 @@ void rds_conn_destroy(struct rds_connection *conn)
 }
 EXPORT_SYMBOL_GPL(rds_conn_destroy);
 
-<<<<<<< HEAD
-static void rds_conn_message_info(struct socket *sock, unsigned int len,
-				  struct rds_info_iterator *iter,
-				  struct rds_info_lengths *lens,
-				  int want_send)
-{
-	struct hlist_head *head;
-	struct hlist_node *pos;
-=======
 static void __rds_inc_msg_cp(struct rds_incoming *inc,
 			     struct rds_info_iterator *iter,
 			     void *saddr, void *daddr, int flip, bool isv6)
@@ -768,49 +537,23 @@ static void rds_conn_message_info_cmn(struct socket *sock, unsigned int len,
 				      int want_send, bool isv6)
 {
 	struct hlist_head *head;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head *list;
 	struct rds_connection *conn;
 	struct rds_message *rm;
 	unsigned int total = 0;
 	unsigned long flags;
 	size_t i;
-<<<<<<< HEAD
-
-	len /= sizeof(struct rds_info_message);
-=======
 	int j;
 
 	if (isv6)
 		len /= sizeof(struct rds6_info_message);
 	else
 		len /= sizeof(struct rds_info_message);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 
 	for (i = 0, head = rds_conn_hash; i < ARRAY_SIZE(rds_conn_hash);
 	     i++, head++) {
-<<<<<<< HEAD
-		hlist_for_each_entry_rcu(conn, pos, head, c_hash_node) {
-			if (want_send)
-				list = &conn->c_send_queue;
-			else
-				list = &conn->c_retrans;
-
-			spin_lock_irqsave(&conn->c_lock, flags);
-
-			/* XXX too lazy to maintain counts.. */
-			list_for_each_entry(rm, list, m_conn_item) {
-				total++;
-				if (total <= len)
-					rds_inc_info_copy(&rm->m_inc, iter,
-							  conn->c_laddr,
-							  conn->c_faddr, 0);
-			}
-
-			spin_unlock_irqrestore(&conn->c_lock, flags);
-=======
 		hlist_for_each_entry_rcu(conn, head, c_hash_node) {
 			struct rds_conn_path *cp;
 			int npaths;
@@ -843,17 +586,11 @@ static void rds_conn_message_info_cmn(struct socket *sock, unsigned int len,
 
 				spin_unlock_irqrestore(&cp->cp_lock, flags);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	rcu_read_unlock();
 
 	lens->nr = total;
-<<<<<<< HEAD
-	lens->each = sizeof(struct rds_info_message);
-}
-
-=======
 	if (isv6)
 		lens->each = sizeof(struct rds6_info_message);
 	else
@@ -878,7 +615,6 @@ static void rds6_conn_message_info(struct socket *sock, unsigned int len,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rds_conn_message_info_send(struct socket *sock, unsigned int len,
 				       struct rds_info_iterator *iter,
 				       struct rds_info_lengths *lens)
@@ -886,8 +622,6 @@ static void rds_conn_message_info_send(struct socket *sock, unsigned int len,
 	rds_conn_message_info(sock, len, iter, lens, 1);
 }
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 static void rds6_conn_message_info_send(struct socket *sock, unsigned int len,
 					struct rds_info_iterator *iter,
@@ -897,7 +631,6 @@ static void rds6_conn_message_info_send(struct socket *sock, unsigned int len,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rds_conn_message_info_retrans(struct socket *sock,
 					  unsigned int len,
 					  struct rds_info_iterator *iter,
@@ -906,8 +639,6 @@ static void rds_conn_message_info_retrans(struct socket *sock,
 	rds_conn_message_info(sock, len, iter, lens, 0);
 }
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 static void rds6_conn_message_info_retrans(struct socket *sock,
 					   unsigned int len,
@@ -918,23 +649,14 @@ static void rds6_conn_message_info_retrans(struct socket *sock,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rds_for_each_conn_info(struct socket *sock, unsigned int len,
 			  struct rds_info_iterator *iter,
 			  struct rds_info_lengths *lens,
 			  int (*visitor)(struct rds_connection *, void *),
-<<<<<<< HEAD
-			  size_t item_len)
-{
-	uint64_t buffer[(item_len + 7) / 8];
-	struct hlist_head *head;
-	struct hlist_node *pos;
-=======
 			  u64 *buffer,
 			  size_t item_len)
 {
 	struct hlist_head *head;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rds_connection *conn;
 	size_t i;
 
@@ -945,11 +667,7 @@ void rds_for_each_conn_info(struct socket *sock, unsigned int len,
 
 	for (i = 0, head = rds_conn_hash; i < ARRAY_SIZE(rds_conn_hash);
 	     i++, head++) {
-<<<<<<< HEAD
-		hlist_for_each_entry_rcu(conn, pos, head, c_hash_node) {
-=======
 		hlist_for_each_entry_rcu(conn, head, c_hash_node) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* XXX no c_lock usage.. */
 			if (!visitor(conn, buffer))
@@ -969,17 +687,6 @@ void rds_for_each_conn_info(struct socket *sock, unsigned int len,
 }
 EXPORT_SYMBOL_GPL(rds_for_each_conn_info);
 
-<<<<<<< HEAD
-static int rds_conn_info_visitor(struct rds_connection *conn,
-				  void *buffer)
-{
-	struct rds_info_connection *cinfo = buffer;
-
-	cinfo->next_tx_seq = conn->c_next_tx_seq;
-	cinfo->next_rx_seq = conn->c_next_rx_seq;
-	cinfo->laddr = conn->c_laddr;
-	cinfo->faddr = conn->c_faddr;
-=======
 static void rds_walk_conn_path_info(struct socket *sock, unsigned int len,
 				    struct rds_info_iterator *iter,
 				    struct rds_info_lengths *lens,
@@ -1042,21 +749,10 @@ static int rds_conn_info_visitor(struct rds_conn_path *cp, void *buffer)
 	cinfo->laddr = conn->c_laddr.s6_addr32[3];
 	cinfo->faddr = conn->c_faddr.s6_addr32[3];
 	cinfo->tos = conn->c_tos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strncpy(cinfo->transport, conn->c_trans->t_name,
 		sizeof(cinfo->transport));
 	cinfo->flags = 0;
 
-<<<<<<< HEAD
-	rds_conn_info_set(cinfo->flags, test_bit(RDS_IN_XMIT, &conn->c_flags),
-			  SENDING);
-	/* XXX Future: return the state rather than these funky bits */
-	rds_conn_info_set(cinfo->flags,
-			  atomic_read(&conn->c_state) == RDS_CONN_CONNECTING,
-			  CONNECTING);
-	rds_conn_info_set(cinfo->flags,
-			  atomic_read(&conn->c_state) == RDS_CONN_UP,
-=======
 	rds_conn_info_set(cinfo->flags, test_bit(RDS_IN_XMIT, &cp->cp_flags),
 			  SENDING);
 	/* XXX Future: return the state rather than these funky bits */
@@ -1065,13 +761,10 @@ static int rds_conn_info_visitor(struct rds_conn_path *cp, void *buffer)
 			  CONNECTING);
 	rds_conn_info_set(cinfo->flags,
 			  atomic_read(&cp->cp_state) == RDS_CONN_UP,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  CONNECTED);
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 static int rds6_conn_info_visitor(struct rds_conn_path *cp, void *buffer)
 {
@@ -1102,25 +795,10 @@ static int rds6_conn_info_visitor(struct rds_conn_path *cp, void *buffer)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rds_conn_info(struct socket *sock, unsigned int len,
 			  struct rds_info_iterator *iter,
 			  struct rds_info_lengths *lens)
 {
-<<<<<<< HEAD
-	rds_for_each_conn_info(sock, len, iter, lens,
-				rds_conn_info_visitor,
-				sizeof(struct rds_info_connection));
-}
-
-int rds_conn_init(void)
-{
-	rds_conn_slab = kmem_cache_create("rds_connection",
-					  sizeof(struct rds_connection),
-					  0, 0, NULL);
-	if (!rds_conn_slab)
-		return -ENOMEM;
-=======
 	u64 buffer[(sizeof(struct rds_info_connection) + 7) / 8];
 
 	rds_walk_conn_path_info(sock, len, iter, lens,
@@ -1156,16 +834,12 @@ int rds_conn_init(void)
 		rds_loop_net_exit();
 		return -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rds_info_register_func(RDS_INFO_CONNECTIONS, rds_conn_info);
 	rds_info_register_func(RDS_INFO_SEND_MESSAGES,
 			       rds_conn_message_info_send);
 	rds_info_register_func(RDS_INFO_RETRANS_MESSAGES,
 			       rds_conn_message_info_retrans);
-<<<<<<< HEAD
-
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 	rds_info_register_func(RDS6_INFO_CONNECTIONS, rds6_conn_info);
 	rds_info_register_func(RDS6_INFO_SEND_MESSAGES,
@@ -1173,16 +847,12 @@ int rds_conn_init(void)
 	rds_info_register_func(RDS6_INFO_RETRANS_MESSAGES,
 			       rds6_conn_message_info_retrans);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 void rds_conn_exit(void)
 {
-<<<<<<< HEAD
-=======
 	rds_loop_net_exit(); /* unregister pernet callback */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rds_loop_exit();
 
 	WARN_ON(!hlist_empty(rds_conn_hash));
@@ -1194,8 +864,6 @@ void rds_conn_exit(void)
 				 rds_conn_message_info_send);
 	rds_info_deregister_func(RDS_INFO_RETRANS_MESSAGES,
 				 rds_conn_message_info_retrans);
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 	rds_info_deregister_func(RDS6_INFO_CONNECTIONS, rds6_conn_info);
 	rds_info_deregister_func(RDS6_INFO_SEND_MESSAGES,
@@ -1203,18 +871,11 @@ void rds_conn_exit(void)
 	rds_info_deregister_func(RDS6_INFO_RETRANS_MESSAGES,
 				 rds6_conn_message_info_retrans);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Force a disconnect
  */
-<<<<<<< HEAD
-void rds_conn_drop(struct rds_connection *conn)
-{
-	atomic_set(&conn->c_state, RDS_CONN_ERROR);
-	queue_work(rds_wq, &conn->c_down_w);
-=======
 void rds_conn_path_drop(struct rds_conn_path *cp, bool destroy)
 {
 	atomic_set(&cp->cp_state, RDS_CONN_ERROR);
@@ -1233,7 +894,6 @@ void rds_conn_drop(struct rds_connection *conn)
 {
 	WARN_ON(conn->c_trans->t_mp_capable);
 	rds_conn_path_drop(&conn->c_path[0], false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(rds_conn_drop);
 
@@ -1241,21 +901,6 @@ EXPORT_SYMBOL_GPL(rds_conn_drop);
  * If the connection is down, trigger a connect. We may have scheduled a
  * delayed reconnect however - in this case we should not interfere.
  */
-<<<<<<< HEAD
-void rds_conn_connect_if_down(struct rds_connection *conn)
-{
-	if (rds_conn_state(conn) == RDS_CONN_DOWN &&
-	    !test_and_set_bit(RDS_RECONNECT_PENDING, &conn->c_flags))
-		queue_delayed_work(rds_wq, &conn->c_conn_w, 0);
-}
-EXPORT_SYMBOL_GPL(rds_conn_connect_if_down);
-
-/*
- * An error occurred on the connection
- */
-void
-__rds_conn_error(struct rds_connection *conn, const char *fmt, ...)
-=======
 void rds_conn_path_connect_if_down(struct rds_conn_path *cp)
 {
 	rcu_read_lock();
@@ -1290,7 +935,6 @@ EXPORT_SYMBOL_GPL(rds_conn_connect_if_down);
 
 void
 __rds_conn_path_error(struct rds_conn_path *cp, const char *fmt, ...)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	va_list ap;
 
@@ -1298,9 +942,5 @@ __rds_conn_path_error(struct rds_conn_path *cp, const char *fmt, ...)
 	vprintk(fmt, ap);
 	va_end(ap);
 
-<<<<<<< HEAD
-	rds_conn_drop(conn);
-=======
 	rds_conn_path_drop(cp, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Force feedback support for Linux input subsystem
  *
@@ -9,31 +6,8 @@
  *  Copyright (c) 2006 Dmitry Torokhov <dtor@mail.ru>
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
 /* #define DEBUG */
 
-#define pr_fmt(fmt) KBUILD_BASENAME ": " fmt
-
-=======
-/* #define DEBUG */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -81,11 +55,7 @@ static int compat_effect(struct ff_device *ff, struct ff_effect *effect)
 			return -EINVAL;
 
 		/*
-<<<<<<< HEAD
-		 * calculate manginude of sine wave as average of rumble's
-=======
 		 * calculate magnitude of sine wave as average of rumble's
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * 2/3 of strong magnitude and 1/3 of weak magnitude
 		 */
 		magnitude = effect->u.rumble.strong_magnitude / 3 +
@@ -94,11 +64,7 @@ static int compat_effect(struct ff_device *ff, struct ff_effect *effect)
 		effect->type = FF_PERIODIC;
 		effect->u.periodic.waveform = FF_SINE;
 		effect->u.periodic.period = 50;
-<<<<<<< HEAD
-		effect->u.periodic.magnitude = max(magnitude, 0x7fff);
-=======
 		effect->u.periodic.magnitude = magnitude;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		effect->u.periodic.offset = 0;
 		effect->u.periodic.phase = 0;
 		effect->u.periodic.envelope.attack_length = 0;
@@ -133,11 +99,7 @@ int input_ff_upload(struct input_dev *dev, struct ff_effect *effect,
 
 	if (effect->type < FF_EFFECT_MIN || effect->type > FF_EFFECT_MAX ||
 	    !test_bit(effect->type, dev->ffbit)) {
-<<<<<<< HEAD
-		pr_debug("invalid or not supported effect type in upload\n");
-=======
 		dev_dbg(&dev->dev, "invalid or not supported effect type in upload\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -145,11 +107,7 @@ int input_ff_upload(struct input_dev *dev, struct ff_effect *effect,
 	    (effect->u.periodic.waveform < FF_WAVEFORM_MIN ||
 	     effect->u.periodic.waveform > FF_WAVEFORM_MAX ||
 	     !test_bit(effect->u.periodic.waveform, dev->ffbit))) {
-<<<<<<< HEAD
-		pr_debug("invalid or not supported wave form in upload\n");
-=======
 		dev_dbg(&dev->dev, "invalid or not supported wave form in upload\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -163,13 +121,8 @@ int input_ff_upload(struct input_dev *dev, struct ff_effect *effect,
 
 	if (effect->id == -1) {
 		for (id = 0; id < ff->max_effects; id++)
-<<<<<<< HEAD
-		     if (!ff->effect_owners[id])
-			break;
-=======
 			if (!ff->effect_owners[id])
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (id >= ff->max_effects) {
 			ret = -ENOSPC;
@@ -245,11 +198,7 @@ static int erase_effect(struct input_dev *dev, int effect_id,
 /**
  * input_ff_erase - erase a force-feedback effect from device
  * @dev: input device to erase effect from
-<<<<<<< HEAD
- * @effect_id: id of the ffect to be erased
-=======
  * @effect_id: id of the effect to be erased
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @file: purported owner of the request
  *
  * This function erases a force-feedback effect from specified device.
@@ -273,11 +222,6 @@ int input_ff_erase(struct input_dev *dev, int effect_id, struct file *file)
 EXPORT_SYMBOL_GPL(input_ff_erase);
 
 /*
-<<<<<<< HEAD
- * flush_effects - erase all effects owned by a file handle
- */
-static int flush_effects(struct input_dev *dev, struct file *file)
-=======
  * input_ff_flush - erase all effects owned by a file handle
  * @dev: input device to erase effect from
  * @file: purported owner of the effects
@@ -287,16 +231,11 @@ static int flush_effects(struct input_dev *dev, struct file *file)
  * in which case all effects will be erased.
  */
 int input_ff_flush(struct input_dev *dev, struct file *file)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ff_device *ff = dev->ff;
 	int i;
 
-<<<<<<< HEAD
-	pr_debug("flushing now\n");
-=======
 	dev_dbg(&dev->dev, "flushing now\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&ff->mutex);
 
@@ -307,10 +246,7 @@ int input_ff_flush(struct input_dev *dev, struct file *file)
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(input_ff_flush);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * input_ff_event() - generic handler for force-feedback events
@@ -329,22 +265,14 @@ int input_ff_event(struct input_dev *dev, unsigned int type,
 
 	switch (code) {
 	case FF_GAIN:
-<<<<<<< HEAD
-		if (!test_bit(FF_GAIN, dev->ffbit) || value > 0xffff)
-=======
 		if (!test_bit(FF_GAIN, dev->ffbit) || value > 0xffffU)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		ff->set_gain(dev, value);
 		break;
 
 	case FF_AUTOCENTER:
-<<<<<<< HEAD
-		if (!test_bit(FF_AUTOCENTER, dev->ffbit) || value > 0xffff)
-=======
 		if (!test_bit(FF_AUTOCENTER, dev->ffbit) || value > 0xffffU)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		ff->set_autocenter(dev, value);
@@ -378,16 +306,12 @@ int input_ff_create(struct input_dev *dev, unsigned int max_effects)
 	int i;
 
 	if (!max_effects) {
-<<<<<<< HEAD
-		pr_err("cannot allocate device without any effects\n");
-=======
 		dev_err(&dev->dev, "cannot allocate device without any effects\n");
 		return -EINVAL;
 	}
 
 	if (max_effects > FF_MAX_EFFECTS) {
 		dev_err(&dev->dev, "cannot allocate more than FF_MAX_EFFECTS effects\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -411,23 +335,13 @@ int input_ff_create(struct input_dev *dev, unsigned int max_effects)
 	mutex_init(&ff->mutex);
 
 	dev->ff = ff;
-<<<<<<< HEAD
-	dev->flush = flush_effects;
-=======
 	dev->flush = input_ff_flush;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->event = input_ff_event;
 	__set_bit(EV_FF, dev->evbit);
 
 	/* Copy "true" bits into ff device bitmap */
-<<<<<<< HEAD
-	for (i = 0; i <= FF_MAX; i++)
-		if (test_bit(i, dev->ffbit))
-			__set_bit(i, ff->ffbit);
-=======
 	for_each_set_bit(i, dev->ffbit, FF_CNT)
 		__set_bit(i, ff->ffbit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we can emulate RUMBLE with periodic effects */
 	if (test_bit(FF_PERIODIC, ff->ffbit))

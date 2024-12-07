@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/ext2/xattr_security.c
  * Handler for storing security labels as extended attributes.
@@ -11,54 +8,16 @@
 #include <linux/security.h>
 #include "xattr.h"
 
-<<<<<<< HEAD
-static size_t
-ext2_xattr_security_list(struct dentry *dentry, char *list, size_t list_size,
-			 const char *name, size_t name_len, int type)
-{
-	const int prefix_len = XATTR_SECURITY_PREFIX_LEN;
-	const size_t total_len = prefix_len + name_len + 1;
-
-	if (list && total_len <= list_size) {
-		memcpy(list, XATTR_SECURITY_PREFIX, prefix_len);
-		memcpy(list+prefix_len, name, name_len);
-		list[prefix_len + name_len] = '\0';
-	}
-	return total_len;
-}
-
-static int
-ext2_xattr_security_get(struct dentry *dentry, const char *name,
-		       void *buffer, size_t size, int type)
-{
-	if (strcmp(name, "") == 0)
-		return -EINVAL;
-	return ext2_xattr_get(dentry->d_inode, EXT2_XATTR_INDEX_SECURITY, name,
-=======
 static int
 ext2_xattr_security_get(const struct xattr_handler *handler,
 			struct dentry *unused, struct inode *inode,
 			const char *name, void *buffer, size_t size)
 {
 	return ext2_xattr_get(inode, EXT2_XATTR_INDEX_SECURITY, name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      buffer, size);
 }
 
 static int
-<<<<<<< HEAD
-ext2_xattr_security_set(struct dentry *dentry, const char *name,
-		const void *value, size_t size, int flags, int type)
-{
-	if (strcmp(name, "") == 0)
-		return -EINVAL;
-	return ext2_xattr_set(dentry->d_inode, EXT2_XATTR_INDEX_SECURITY, name,
-			      value, size, flags);
-}
-
-int ext2_initxattrs(struct inode *inode, const struct xattr *xattr_array,
-		    void *fs_info)
-=======
 ext2_xattr_security_set(const struct xattr_handler *handler,
 			struct mnt_idmap *idmap,
 			struct dentry *unused, struct inode *inode,
@@ -71,7 +30,6 @@ ext2_xattr_security_set(const struct xattr_handler *handler,
 
 static int ext2_initxattrs(struct inode *inode, const struct xattr *xattr_array,
 			   void *fs_info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct xattr *xattr;
 	int err = 0;
@@ -96,10 +54,6 @@ ext2_init_security(struct inode *inode, struct inode *dir,
 
 const struct xattr_handler ext2_xattr_security_handler = {
 	.prefix	= XATTR_SECURITY_PREFIX,
-<<<<<<< HEAD
-	.list	= ext2_xattr_security_list,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get	= ext2_xattr_security_get,
 	.set	= ext2_xattr_security_set,
 };

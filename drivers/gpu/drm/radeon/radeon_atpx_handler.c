@@ -1,75 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2010 Red Hat Inc.
  * Author : Dave Airlie <airlied@redhat.com>
  *
-<<<<<<< HEAD
- * Licensed under GPLv2
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ATPX support for both Intel/ATI
  */
 #include <linux/vga_switcheroo.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <acpi/acpi.h>
-#include <acpi/acpi_bus.h>
-#include <linux/pci.h>
-
-#define ATPX_VERSION 0
-#define ATPX_GPU_PWR 2
-#define ATPX_MUX_SELECT 3
-#define ATPX_I2C_MUX_SELECT 4
-#define ATPX_SWITCH_START 5
-#define ATPX_SWITCH_END 6
-
-#define ATPX_INTEGRATED 0
-#define ATPX_DISCRETE 1
-
-#define ATPX_MUX_IGD 0
-#define ATPX_MUX_DISCRETE 1
-
-static struct radeon_atpx_priv {
-	bool atpx_detected;
-	/* handle for device - and atpx */
-	acpi_handle dhandle;
-	acpi_handle atpx_handle;
-} radeon_atpx_priv;
-
-static int radeon_atpx_get_version(acpi_handle handle)
-{
-	acpi_status status;
-	union acpi_object atpx_arg_elements[2], *obj;
-	struct acpi_object_list atpx_arg;
-	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-
-	atpx_arg.count = 2;
-	atpx_arg.pointer = &atpx_arg_elements[0];
-
-	atpx_arg_elements[0].type = ACPI_TYPE_INTEGER;
-	atpx_arg_elements[0].integer.value = ATPX_VERSION;
-
-	atpx_arg_elements[1].type = ACPI_TYPE_INTEGER;
-	atpx_arg_elements[1].integer.value = ATPX_VERSION;
-
-	status = acpi_evaluate_object(handle, NULL, &atpx_arg, &buffer);
-	if (ACPI_FAILURE(status)) {
-		printk("%s: failed to call ATPX: %s\n", __func__, acpi_format_exception(status));
-		return -ENOSYS;
-	}
-	obj = (union acpi_object *)buffer.pointer;
-	if (obj && (obj->type == ACPI_TYPE_BUFFER))
-		printk(KERN_INFO "radeon atpx: version is %d\n", *((u8 *)(obj->buffer.pointer) + 2));
-	kfree(buffer.pointer);
-	return 0;
-}
-
-static int radeon_atpx_execute(acpi_handle handle, int cmd_id, u16 value)
-=======
 #include <linux/acpi.h>
 #include <linux/pci.h>
 #include <linux/delay.h>
@@ -156,41 +93,16 @@ bool radeon_atpx_dgpu_req_power_for_displays(void)
  */
 static union acpi_object *radeon_atpx_call(acpi_handle handle, int function,
 					   struct acpi_buffer *params)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 	union acpi_object atpx_arg_elements[2];
 	struct acpi_object_list atpx_arg;
 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-<<<<<<< HEAD
-	uint8_t buf[4] = {0};
-
-	if (!handle)
-		return -EINVAL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atpx_arg.count = 2;
 	atpx_arg.pointer = &atpx_arg_elements[0];
 
 	atpx_arg_elements[0].type = ACPI_TYPE_INTEGER;
-<<<<<<< HEAD
-	atpx_arg_elements[0].integer.value = cmd_id;
-
-	buf[2] = value & 0xff;
-	buf[3] = (value >> 8) & 0xff;
-
-	atpx_arg_elements[1].type = ACPI_TYPE_BUFFER;
-	atpx_arg_elements[1].buffer.length = 4;
-	atpx_arg_elements[1].buffer.pointer = buf;
-
-	status = acpi_evaluate_object(handle, NULL, &atpx_arg, &buffer);
-	if (ACPI_FAILURE(status)) {
-		printk("%s: failed to call ATPX: %s\n", __func__, acpi_format_exception(status));
-		return -ENOSYS;
-	}
-	kfree(buffer.pointer);
-=======
 	atpx_arg_elements[0].integer.value = function;
 
 	if (params) {
@@ -302,51 +214,10 @@ static int radeon_atpx_validate(struct radeon_atpx *atpx)
 		atpx->functions.power_cntl = !radeon_atpx_priv.bridge_pm_usable;
 		atpx->is_hybrid = true;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int radeon_atpx_set_discrete_state(acpi_handle handle, int state)
-{
-	return radeon_atpx_execute(handle, ATPX_GPU_PWR, state);
-}
-
-static int radeon_atpx_switch_mux(acpi_handle handle, int mux_id)
-{
-	return radeon_atpx_execute(handle, ATPX_MUX_SELECT, mux_id);
-}
-
-static int radeon_atpx_switch_i2c_mux(acpi_handle handle, int mux_id)
-{
-	return radeon_atpx_execute(handle, ATPX_I2C_MUX_SELECT, mux_id);
-}
-
-static int radeon_atpx_switch_start(acpi_handle handle, int gpu_id)
-{
-	return radeon_atpx_execute(handle, ATPX_SWITCH_START, gpu_id);
-}
-
-static int radeon_atpx_switch_end(acpi_handle handle, int gpu_id)
-{
-	return radeon_atpx_execute(handle, ATPX_SWITCH_END, gpu_id);
-}
-
-static int radeon_atpx_switchto(enum vga_switcheroo_client_id id)
-{
-	int gpu_id;
-
-	if (id == VGA_SWITCHEROO_IGD)
-		gpu_id = ATPX_INTEGRATED;
-	else
-		gpu_id = ATPX_DISCRETE;
-
-	radeon_atpx_switch_start(radeon_atpx_priv.atpx_handle, gpu_id);
-	radeon_atpx_switch_mux(radeon_atpx_priv.atpx_handle, gpu_id);
-	radeon_atpx_switch_i2c_mux(radeon_atpx_priv.atpx_handle, gpu_id);
-	radeon_atpx_switch_end(radeon_atpx_priv.atpx_handle, gpu_id);
-=======
 /**
  * radeon_atpx_verify_interface - verify ATPX
  *
@@ -576,13 +447,10 @@ static int radeon_atpx_switchto(enum vga_switcheroo_client_id id)
 	radeon_atpx_switch_disp_mux(&radeon_atpx_priv.atpx, gpu_id);
 	radeon_atpx_switch_i2c_mux(&radeon_atpx_priv.atpx, gpu_id);
 	radeon_atpx_switch_end(&radeon_atpx_priv.atpx, gpu_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * radeon_atpx_power_state - power down/up the requested GPU
  *
@@ -593,7 +461,6 @@ static int radeon_atpx_switchto(enum vga_switcheroo_client_id id)
  * (all asics).
  * Returns 0 on success, error on failure.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int radeon_atpx_power_state(enum vga_switcheroo_client_id id,
 				   enum vga_switcheroo_state state)
 {
@@ -601,12 +468,6 @@ static int radeon_atpx_power_state(enum vga_switcheroo_client_id id,
 	if (id == VGA_SWITCHEROO_IGD)
 		return 0;
 
-<<<<<<< HEAD
-	radeon_atpx_set_discrete_state(radeon_atpx_priv.atpx_handle, state);
-	return 0;
-}
-
-=======
 	radeon_atpx_set_discrete_state(&radeon_atpx_priv.atpx, state);
 	return 0;
 }
@@ -619,17 +480,12 @@ static int radeon_atpx_power_state(enum vga_switcheroo_client_id id,
  * Look up the ATPX handles (all asics).
  * Returns true if the handles are found, false if not.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool radeon_atpx_pci_probe_handle(struct pci_dev *pdev)
 {
 	acpi_handle dhandle, atpx_handle;
 	acpi_status status;
 
-<<<<<<< HEAD
-	dhandle = DEVICE_ACPI_HANDLE(&pdev->dev);
-=======
 	dhandle = ACPI_HANDLE(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dhandle)
 		return false;
 
@@ -638,23 +494,6 @@ static bool radeon_atpx_pci_probe_handle(struct pci_dev *pdev)
 		return false;
 
 	radeon_atpx_priv.dhandle = dhandle;
-<<<<<<< HEAD
-	radeon_atpx_priv.atpx_handle = atpx_handle;
-	return true;
-}
-
-static int radeon_atpx_init(void)
-{
-	/* set up the ATPX handle */
-
-	radeon_atpx_get_version(radeon_atpx_priv.atpx_handle);
-	return 0;
-}
-
-static int radeon_atpx_get_client_id(struct pci_dev *pdev)
-{
-	if (radeon_atpx_priv.dhandle == DEVICE_ACPI_HANDLE(&pdev->dev))
-=======
 	radeon_atpx_priv.atpx.handle = atpx_handle;
 	return true;
 }
@@ -693,21 +532,11 @@ static int radeon_atpx_init(void)
 static enum vga_switcheroo_client_id radeon_atpx_get_client_id(struct pci_dev *pdev)
 {
 	if (radeon_atpx_priv.dhandle == ACPI_HANDLE(&pdev->dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return VGA_SWITCHEROO_IGD;
 	else
 		return VGA_SWITCHEROO_DIS;
 }
 
-<<<<<<< HEAD
-static struct vga_switcheroo_handler radeon_atpx_handler = {
-	.switchto = radeon_atpx_switchto,
-	.power_state = radeon_atpx_power_state,
-	.init = radeon_atpx_init,
-	.get_client_id = radeon_atpx_get_client_id,
-};
-
-=======
 static const struct vga_switcheroo_handler radeon_atpx_handler = {
 	.switchto = radeon_atpx_switchto,
 	.power_state = radeon_atpx_power_state,
@@ -720,7 +549,6 @@ static const struct vga_switcheroo_handler radeon_atpx_handler = {
  * Check if we have a PX system (all asics).
  * Returns true if we have a PX system, false if not.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool radeon_atpx_detect(void)
 {
 	char acpi_method_name[255] = { 0 };
@@ -728,22 +556,16 @@ static bool radeon_atpx_detect(void)
 	struct pci_dev *pdev = NULL;
 	bool has_atpx = false;
 	int vga_count = 0;
-<<<<<<< HEAD
-=======
 	bool d3_supported = false;
 	struct pci_dev *parent_pdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while ((pdev = pci_get_class(PCI_CLASS_DISPLAY_VGA << 8, pdev)) != NULL) {
 		vga_count++;
 
 		has_atpx |= (radeon_atpx_pci_probe_handle(pdev) == true);
-<<<<<<< HEAD
-=======
 
 		parent_pdev = pci_upstream_bridge(pdev);
 		d3_supported |= parent_pdev && parent_pdev->bridge_d3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* some newer PX laptops mark the dGPU as a non-VGA display device */
@@ -751,15 +573,6 @@ static bool radeon_atpx_detect(void)
 		vga_count++;
 
 		has_atpx |= (radeon_atpx_pci_probe_handle(pdev) == true);
-<<<<<<< HEAD
-	}
-
-	if (has_atpx && vga_count == 2) {
-		acpi_get_name(radeon_atpx_priv.atpx_handle, ACPI_FULL_PATHNAME, &buffer);
-		printk(KERN_INFO "VGA switcheroo: detected switching method %s handle\n",
-		       acpi_method_name);
-		radeon_atpx_priv.atpx_detected = true;
-=======
 
 		parent_pdev = pci_upstream_bridge(pdev);
 		d3_supported |= parent_pdev && parent_pdev->bridge_d3;
@@ -772,17 +585,11 @@ static bool radeon_atpx_detect(void)
 		radeon_atpx_priv.atpx_detected = true;
 		radeon_atpx_priv.bridge_pm_usable = d3_supported;
 		radeon_atpx_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return true;
 	}
 	return false;
 }
 
-<<<<<<< HEAD
-void radeon_register_atpx_handler(void)
-{
-	bool r;
-=======
 /**
  * radeon_register_atpx_handler - register with vga_switcheroo
  *
@@ -792,18 +599,12 @@ void radeon_register_atpx_handler(void)
 {
 	bool r;
 	enum vga_switcheroo_handler_flags_t handler_flags = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* detect if we have any ATPX + 2 VGA in the system */
 	r = radeon_atpx_detect();
 	if (!r)
 		return;
 
-<<<<<<< HEAD
-	vga_switcheroo_register_handler(&radeon_atpx_handler);
-}
-
-=======
 	vga_switcheroo_register_handler(&radeon_atpx_handler, handler_flags);
 }
 
@@ -812,7 +613,6 @@ void radeon_register_atpx_handler(void)
  *
  * Unregister the PX callbacks with vga_switcheroo (all asics).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_unregister_atpx_handler(void)
 {
 	vga_switcheroo_unregister_handler();

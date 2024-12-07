@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Interface for Dynamic Logical Partitioning of I/O Slots on
  * RPA-compliant PPC64 platform.
@@ -10,23 +7,12 @@
  * October 2003
  *
  * Copyright (C) 2003 IBM.
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kobject.h>
 #include <linux/string.h>
 #include <linux/pci.h>
 #include <linux/pci_hotplug.h>
-<<<<<<< HEAD
-=======
 #include "rpaphp.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "rpadlpar.h"
 #include "../pci.h"
 
@@ -38,11 +24,6 @@
 #define ADD_SLOT_ATTR_NAME    add_slot
 #define REMOVE_SLOT_ATTR_NAME remove_slot
 
-<<<<<<< HEAD
-#define MAX_DRC_NAME_LEN 64
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t add_slot_store(struct kobject *kobj, struct kobj_attribute *attr,
 			      const char *buf, size_t nbytes)
 {
@@ -53,20 +34,11 @@ static ssize_t add_slot_store(struct kobject *kobj, struct kobj_attribute *attr,
 	if (nbytes >= MAX_DRC_NAME_LEN)
 		return 0;
 
-<<<<<<< HEAD
-	memcpy(drc_name, buf, nbytes);
-
-	end = strchr(drc_name, '\n');
-	if (!end)
-		end = &drc_name[nbytes];
-	*end = '\0';
-=======
 	strscpy(drc_name, buf, nbytes + 1);
 
 	end = strchr(drc_name, '\n');
 	if (end)
 		*end = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = dlpar_add_slot(drc_name);
 	if (rc)
@@ -78,11 +50,7 @@ static ssize_t add_slot_store(struct kobject *kobj, struct kobj_attribute *attr,
 static ssize_t add_slot_show(struct kobject *kobj,
 			     struct kobj_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
-	return sprintf(buf, "0\n");
-=======
 	return sysfs_emit(buf, "0\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t remove_slot_store(struct kobject *kobj,
@@ -96,20 +64,11 @@ static ssize_t remove_slot_store(struct kobject *kobj,
 	if (nbytes >= MAX_DRC_NAME_LEN)
 		return 0;
 
-<<<<<<< HEAD
-	memcpy(drc_name, buf, nbytes);
-
-	end = strchr(drc_name, '\n');
-	if (!end)
-		end = &drc_name[nbytes];
-	*end = '\0';
-=======
 	strscpy(drc_name, buf, nbytes + 1);
 
 	end = strchr(drc_name, '\n');
 	if (end)
 		*end = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = dlpar_remove_slot(drc_name);
 	if (rc)
@@ -121,11 +80,7 @@ static ssize_t remove_slot_store(struct kobject *kobj,
 static ssize_t remove_slot_show(struct kobject *kobj,
 				struct kobj_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
-	return sprintf(buf, "0\n");
-=======
 	return sysfs_emit(buf, "0\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct kobj_attribute add_slot_attr =
@@ -140,11 +95,7 @@ static struct attribute *default_attrs[] = {
 	NULL,
 };
 
-<<<<<<< HEAD
-static struct attribute_group dlpar_attr_group = {
-=======
 static const struct attribute_group dlpar_attr_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = default_attrs,
 };
 

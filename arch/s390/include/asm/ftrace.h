@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASM_S390_FTRACE_H
-#define _ASM_S390_FTRACE_H
-
-#ifndef __ASSEMBLY__
-
-extern void _mcount(void);
-
-struct dyn_arch_ftrace { };
-
-#define MCOUNT_ADDR ((long)_mcount)
-
-#ifdef CONFIG_64BIT
-#define MCOUNT_INSN_SIZE  12
-#else
-#define MCOUNT_INSN_SIZE  20
-#endif
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_S390_FTRACE_H
 #define _ASM_S390_FTRACE_H
@@ -53,16 +35,12 @@ bool ftrace_need_init_nop(void);
 
 int ftrace_init_nop(struct module *mod, struct dyn_ftrace *rec);
 #define ftrace_init_nop ftrace_init_nop
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned long ftrace_call_adjust(unsigned long addr)
 {
 	return addr;
 }
 
-<<<<<<< HEAD
-#endif /* __ASSEMBLY__ */
-=======
 struct ftrace_regs {
 	struct pt_regs regs;
 };
@@ -188,5 +166,4 @@ static inline bool arch_syscall_match_sym_name(const char *sym,
 
 #endif /* CONFIG_FUNCTION_TRACER */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_S390_FTRACE_H */

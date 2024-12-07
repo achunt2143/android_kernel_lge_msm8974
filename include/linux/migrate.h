@@ -1,66 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_MIGRATE_H
 #define _LINUX_MIGRATE_H
 
 #include <linux/mm.h>
 #include <linux/mempolicy.h>
 #include <linux/migrate_mode.h>
-<<<<<<< HEAD
-
-typedef struct page *new_page_t(struct page *, unsigned long private, int **);
-
-#ifdef CONFIG_MIGRATION
-
-extern void putback_lru_pages(struct list_head *l);
-extern int migrate_page(struct address_space *,
-			struct page *, struct page *, enum migrate_mode);
-extern int migrate_pages(struct list_head *l, new_page_t x,
-			unsigned long private, bool offlining,
-			enum migrate_mode mode);
-extern int migrate_huge_pages(struct list_head *l, new_page_t x,
-			unsigned long private, bool offlining,
-			enum migrate_mode mode);
-
-extern int fail_migrate_page(struct address_space *,
-			struct page *, struct page *);
-
-extern int migrate_prep(void);
-extern int migrate_prep_local(void);
-extern int migrate_vmas(struct mm_struct *mm,
-		const nodemask_t *from, const nodemask_t *to,
-		unsigned long flags);
-extern void migrate_page_copy(struct page *newpage, struct page *page);
-extern int migrate_huge_page_move_mapping(struct address_space *mapping,
-				  struct page *newpage, struct page *page);
-#else
-
-static inline void putback_lru_pages(struct list_head *l) {}
-static inline int migrate_pages(struct list_head *l, new_page_t x,
-		unsigned long private, bool offlining,
-		enum migrate_mode mode) { return -ENOSYS; }
-static inline int migrate_huge_pages(struct list_head *l, new_page_t x,
-		unsigned long private, bool offlining,
-		enum migrate_mode mode) { return -ENOSYS; }
-
-static inline int migrate_prep(void) { return -ENOSYS; }
-static inline int migrate_prep_local(void) { return -ENOSYS; }
-
-static inline int migrate_vmas(struct mm_struct *mm,
-		const nodemask_t *from, const nodemask_t *to,
-		unsigned long flags)
-{
-	return -ENOSYS;
-}
-
-static inline void migrate_page_copy(struct page *newpage,
-				     struct page *page) {}
-
-static inline int migrate_huge_page_move_mapping(struct address_space *mapping,
-				  struct page *newpage, struct page *page)
-=======
 #include <linux/hugetlb.h>
 
 typedef struct folio *new_folio_t(struct folio *folio, unsigned long private);
@@ -153,18 +97,10 @@ static inline bool isolate_movable_page(struct page *page, isolate_mode_t mode)
 
 static inline int migrate_huge_page_move_mapping(struct address_space *mapping,
 				  struct folio *dst, struct folio *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-/* Possible settings for the migrate_page() method in address_operations */
-#define migrate_page NULL
-#define fail_migrate_page NULL
-
-#endif /* CONFIG_MIGRATION */
-=======
 #endif /* CONFIG_MIGRATION */
 
 #ifdef CONFIG_COMPACTION
@@ -293,5 +229,4 @@ void migrate_device_finalize(unsigned long *src_pfns,
 
 #endif /* CONFIG_MIGRATION */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_MIGRATE_H */

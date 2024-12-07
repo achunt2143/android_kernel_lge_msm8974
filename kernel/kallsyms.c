@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kallsyms.c: in-kernel printing of symbolic oopses and stack traces.
  *
@@ -16,10 +13,6 @@
  *      compression (see scripts/kallsyms.c for a more complete description)
  */
 #include <linux/kallsyms.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/seq_file.h>
 #include <linux/fs.h>
@@ -27,78 +20,6 @@
 #include <linux/err.h>
 #include <linux/proc_fs.h>
 #include <linux/sched.h>	/* for cond_resched */
-<<<<<<< HEAD
-#include <linux/mm.h>
-#include <linux/ctype.h>
-#include <linux/slab.h>
-
-#include <asm/sections.h>
-
-#ifdef CONFIG_KALLSYMS_ALL
-#define all_var 1
-#else
-#define all_var 0
-#endif
-
-/*
- * These will be re-linked against their real values
- * during the second link stage.
- */
-extern const unsigned long kallsyms_addresses[] __attribute__((weak));
-extern const u8 kallsyms_names[] __attribute__((weak));
-
-/*
- * Tell the compiler that the count isn't in the small data section if the arch
- * has one (eg: FRV).
- */
-extern const unsigned long kallsyms_num_syms
-__attribute__((weak, section(".rodata")));
-
-extern const u8 kallsyms_token_table[] __attribute__((weak));
-extern const u16 kallsyms_token_index[] __attribute__((weak));
-
-extern const unsigned long kallsyms_markers[] __attribute__((weak));
-
-static inline int is_kernel_inittext(unsigned long addr)
-{
-	if (addr >= (unsigned long)_sinittext
-	    && addr <= (unsigned long)_einittext)
-		return 1;
-	return 0;
-}
-
-static inline int is_kernel_text(unsigned long addr)
-{
-	if ((addr >= (unsigned long)_stext && addr <= (unsigned long)_etext) ||
-	    arch_is_kernel_text(addr))
-		return 1;
-	return in_gate_area_no_mm(addr);
-}
-
-static inline int is_kernel(unsigned long addr)
-{
-	if (addr >= (unsigned long)_stext && addr <= (unsigned long)_end)
-		return 1;
-	return in_gate_area_no_mm(addr);
-}
-
-static int is_ksym_addr(unsigned long addr)
-{
-	if (all_var)
-		return is_kernel(addr);
-
-	return is_kernel_text(addr) || is_kernel_inittext(addr);
-}
-
-/*
- * Expand a compressed symbol data into the resulting uncompressed string,
- * given the offset to where the symbol is in the compressed stream.
- */
-static unsigned int kallsyms_expand_symbol(unsigned int off, char *result)
-{
-	int len, skipped_first = 0;
-	const u8 *tptr, *data;
-=======
 #include <linux/ctype.h>
 #include <linux/slab.h>
 #include <linux/filter.h>
@@ -124,14 +45,11 @@ static unsigned int kallsyms_expand_symbol(unsigned int off,
 	int len, skipped_first = 0;
 	const char *tptr;
 	const u8 *data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the compressed symbol length from the first symbol byte. */
 	data = &kallsyms_names[off];
 	len = *data;
 	data++;
-<<<<<<< HEAD
-=======
 	off++;
 
 	/* If MSB is 1, it is a "big" symbol, so needs an additional byte. */
@@ -140,17 +58,12 @@ static unsigned int kallsyms_expand_symbol(unsigned int off,
 		data++;
 		off++;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Update the offset to return the offset for the next symbol on
 	 * the compressed stream.
 	 */
-<<<<<<< HEAD
-	off += len + 1;
-=======
 	off += len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * For every byte on the compressed symbol data, copy the table
@@ -163,29 +76,20 @@ static unsigned int kallsyms_expand_symbol(unsigned int off,
 
 		while (*tptr) {
 			if (skipped_first) {
-<<<<<<< HEAD
-				*result = *tptr;
-				result++;
-=======
 				if (maxlen <= 1)
 					goto tail;
 				*result = *tptr;
 				result++;
 				maxlen--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else
 				skipped_first = 1;
 			tptr++;
 		}
 	}
 
-<<<<<<< HEAD
-	*result = '\0';
-=======
 tail:
 	if (maxlen)
 		*result = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Return to offset to the next symbol. */
 	return off;
@@ -212,11 +116,7 @@ static char kallsyms_get_symbol_type(unsigned int off)
 static unsigned int get_symbol_offset(unsigned long pos)
 {
 	const u8 *name;
-<<<<<<< HEAD
-	int i;
-=======
 	int i, len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Use the closest marker we have. We have markers every 256 positions,
@@ -230,10 +130,6 @@ static unsigned int get_symbol_offset(unsigned long pos)
 	 * so we just need to add the len to the current pointer for every
 	 * symbol we wish to skip.
 	 */
-<<<<<<< HEAD
-	for (i = 0; i < (pos & 0xFF); i++)
-		name = name + (*name) + 1;
-=======
 	for (i = 0; i < (pos & 0xFF); i++) {
 		len = *name;
 
@@ -246,32 +142,10 @@ static unsigned int get_symbol_offset(unsigned long pos)
 
 		name = name + len + 1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return name - kallsyms_names;
 }
 
-<<<<<<< HEAD
-/* Lookup the address for this symbol. Returns 0 if not found. */
-unsigned long kallsyms_lookup_name(const char *name)
-{
-	char namebuf[KSYM_NAME_LEN];
-	unsigned long i;
-	unsigned int off;
-
-	for (i = 0, off = 0; i < kallsyms_num_syms; i++) {
-		off = kallsyms_expand_symbol(off, namebuf);
-
-		if (strcmp(namebuf, name) == 0)
-			return kallsyms_addresses[i];
-	}
-	return module_kallsyms_lookup_name(name);
-}
-EXPORT_SYMBOL_GPL(kallsyms_lookup_name);
-
-int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
-				      unsigned long),
-=======
 unsigned long kallsyms_sym_address(int idx)
 {
 	if (!IS_ENABLED(CONFIG_KALLSYMS_BASE_RELATIVE))
@@ -409,7 +283,6 @@ unsigned long kallsyms_lookup_name(const char *name)
  * module_kallsyms_on_each_symbol instead.
  */
 int kallsyms_on_each_symbol(int (*fn)(void *, const char *, unsigned long),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    void *data)
 {
 	char namebuf[KSYM_NAME_LEN];
@@ -418,16 +291,6 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, unsigned long),
 	int ret;
 
 	for (i = 0, off = 0; i < kallsyms_num_syms; i++) {
-<<<<<<< HEAD
-		off = kallsyms_expand_symbol(off, namebuf);
-		ret = fn(data, namebuf, NULL, kallsyms_addresses[i]);
-		if (ret != 0)
-			return ret;
-	}
-	return module_kallsyms_on_each_symbol(fn, data);
-}
-EXPORT_SYMBOL_GPL(kallsyms_on_each_symbol);
-=======
 		off = kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
 		ret = fn(data, namebuf, kallsyms_sym_address(i));
 		if (ret != 0)
@@ -454,7 +317,6 @@ int kallsyms_on_each_match_symbol(int (*fn)(void *, unsigned long),
 
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned long get_symbol_pos(unsigned long addr,
 				    unsigned long *symbolsize,
@@ -464,14 +326,10 @@ static unsigned long get_symbol_pos(unsigned long addr,
 	unsigned long i, low, high, mid;
 
 	/* This kernel should never had been booted. */
-<<<<<<< HEAD
-	BUG_ON(!kallsyms_addresses);
-=======
 	if (!IS_ENABLED(CONFIG_KALLSYMS_BASE_RELATIVE))
 		BUG_ON(!kallsyms_addresses);
 	else
 		BUG_ON(!kallsyms_offsets);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Do a binary search on the sorted kallsyms_addresses array. */
 	low = 0;
@@ -479,11 +337,7 @@ static unsigned long get_symbol_pos(unsigned long addr,
 
 	while (high - low > 1) {
 		mid = low + (high - low) / 2;
-<<<<<<< HEAD
-		if (kallsyms_addresses[mid] <= addr)
-=======
 		if (kallsyms_sym_address(mid) <= addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			low = mid;
 		else
 			high = mid;
@@ -493,17 +347,6 @@ static unsigned long get_symbol_pos(unsigned long addr,
 	 * Search for the first aliased symbol. Aliased
 	 * symbols are symbols with the same address.
 	 */
-<<<<<<< HEAD
-	while (low && kallsyms_addresses[low-1] == kallsyms_addresses[low])
-		--low;
-
-	symbol_start = kallsyms_addresses[low];
-
-	/* Search for next non-aliased symbol. */
-	for (i = low + 1; i < kallsyms_num_syms; i++) {
-		if (kallsyms_addresses[i] > symbol_start) {
-			symbol_end = kallsyms_addresses[i];
-=======
 	while (low && kallsyms_sym_address(low-1) == kallsyms_sym_address(low))
 		--low;
 
@@ -513,7 +356,6 @@ static unsigned long get_symbol_pos(unsigned long addr,
 	for (i = low + 1; i < kallsyms_num_syms; i++) {
 		if (kallsyms_sym_address(i) > symbol_start) {
 			symbol_end = kallsyms_sym_address(i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -522,11 +364,7 @@ static unsigned long get_symbol_pos(unsigned long addr,
 	if (!symbol_end) {
 		if (is_kernel_inittext(addr))
 			symbol_end = (unsigned long)_einittext;
-<<<<<<< HEAD
-		else if (all_var)
-=======
 		else if (IS_ENABLED(CONFIG_KALLSYMS_ALL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			symbol_end = (unsigned long)_end;
 		else
 			symbol_end = (unsigned long)_etext;
@@ -547,12 +385,6 @@ int kallsyms_lookup_size_offset(unsigned long addr, unsigned long *symbolsize,
 				unsigned long *offset)
 {
 	char namebuf[KSYM_NAME_LEN];
-<<<<<<< HEAD
-	if (is_ksym_addr(addr))
-		return !!get_symbol_pos(addr, symbolsize, offset);
-
-	return !!module_address_lookup(addr, symbolsize, offset, NULL, namebuf);
-=======
 
 	if (is_ksym_addr(addr)) {
 		get_symbol_pos(addr, symbolsize, offset);
@@ -602,7 +434,6 @@ static const char *kallsyms_lookup_buildid(unsigned long addr,
 found:
 	cleanup_symbol_name(namebuf);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -617,37 +448,14 @@ const char *kallsyms_lookup(unsigned long addr,
 			    unsigned long *offset,
 			    char **modname, char *namebuf)
 {
-<<<<<<< HEAD
-	namebuf[KSYM_NAME_LEN - 1] = 0;
-	namebuf[0] = 0;
-
-	if (is_ksym_addr(addr)) {
-		unsigned long pos;
-
-		pos = get_symbol_pos(addr, symbolsize, offset);
-		/* Grab name */
-		kallsyms_expand_symbol(get_symbol_offset(pos), namebuf);
-		if (modname)
-			*modname = NULL;
-		return namebuf;
-	}
-
-	/* See if it's in a module. */
-	return module_address_lookup(addr, symbolsize, offset, modname,
-				     namebuf);
-=======
 	return kallsyms_lookup_buildid(addr, symbolsize, offset, modname,
 				       NULL, namebuf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int lookup_symbol_name(unsigned long addr, char *symname)
 {
-<<<<<<< HEAD
-=======
 	int res;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	symname[0] = '\0';
 	symname[KSYM_NAME_LEN - 1] = '\0';
 
@@ -656,32 +464,6 @@ int lookup_symbol_name(unsigned long addr, char *symname)
 
 		pos = get_symbol_pos(addr, NULL, NULL);
 		/* Grab name */
-<<<<<<< HEAD
-		kallsyms_expand_symbol(get_symbol_offset(pos), symname);
-		return 0;
-	}
-	/* See if it's in a module. */
-	return lookup_module_symbol_name(addr, symname);
-}
-
-int lookup_symbol_attrs(unsigned long addr, unsigned long *size,
-			unsigned long *offset, char *modname, char *name)
-{
-	name[0] = '\0';
-	name[KSYM_NAME_LEN - 1] = '\0';
-
-	if (is_ksym_addr(addr)) {
-		unsigned long pos;
-
-		pos = get_symbol_pos(addr, size, offset);
-		/* Grab name */
-		kallsyms_expand_symbol(get_symbol_offset(pos), name);
-		modname[0] = '\0';
-		return 0;
-	}
-	/* See if it's in a module. */
-	return lookup_module_symbol_attrs(addr, size, offset, modname, name);
-=======
 		kallsyms_expand_symbol(get_symbol_offset(pos),
 				       symname, KSYM_NAME_LEN);
 		goto found;
@@ -694,36 +476,23 @@ int lookup_symbol_attrs(unsigned long addr, unsigned long *size,
 found:
 	cleanup_symbol_name(symname);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Look up a kernel symbol and return it in a text buffer. */
 static int __sprint_symbol(char *buffer, unsigned long address,
-<<<<<<< HEAD
-			   int symbol_offset, int add_offset)
-{
-	char *modname;
-=======
 			   int symbol_offset, int add_offset, int add_buildid)
 {
 	char *modname;
 	const unsigned char *buildid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *name;
 	unsigned long offset, size;
 	int len;
 
 	address += symbol_offset;
-<<<<<<< HEAD
-	name = kallsyms_lookup(address, &size, &offset, &modname, buffer);
-	if (!name)
-		return sprintf(buffer, "0x%lx", address);
-=======
 	name = kallsyms_lookup_buildid(address, &size, &offset, &modname, &buildid,
 				       buffer);
 	if (!name)
 		return sprintf(buffer, "0x%lx", address - symbol_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (name != buffer)
 		strcpy(buffer, name);
@@ -733,10 +502,6 @@ static int __sprint_symbol(char *buffer, unsigned long address,
 	if (add_offset)
 		len += sprintf(buffer + len, "+%#lx/%#lx", offset, size);
 
-<<<<<<< HEAD
-	if (modname)
-		len += sprintf(buffer + len, " [%s]", modname);
-=======
 	if (modname) {
 		len += sprintf(buffer + len, " [%s", modname);
 #if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
@@ -750,7 +515,6 @@ static int __sprint_symbol(char *buffer, unsigned long address,
 #endif
 		len += sprintf(buffer + len, "]");
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return len;
 }
@@ -768,17 +532,11 @@ static int __sprint_symbol(char *buffer, unsigned long address,
  */
 int sprint_symbol(char *buffer, unsigned long address)
 {
-<<<<<<< HEAD
-	return __sprint_symbol(buffer, address, 0, 1);
-=======
 	return __sprint_symbol(buffer, address, 0, 1, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(sprint_symbol);
 
 /**
-<<<<<<< HEAD
-=======
  * sprint_symbol_build_id - Look up a kernel symbol and return it in a text buffer
  * @buffer: buffer to be stored
  * @address: address to lookup
@@ -796,7 +554,6 @@ int sprint_symbol_build_id(char *buffer, unsigned long address)
 EXPORT_SYMBOL_GPL(sprint_symbol_build_id);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * sprint_symbol_no_offset - Look up a kernel symbol and return it in a text buffer
  * @buffer: buffer to be stored
  * @address: address to lookup
@@ -809,11 +566,7 @@ EXPORT_SYMBOL_GPL(sprint_symbol_build_id);
  */
 int sprint_symbol_no_offset(char *buffer, unsigned long address)
 {
-<<<<<<< HEAD
-	return __sprint_symbol(buffer, address, 0, 0);
-=======
 	return __sprint_symbol(buffer, address, 0, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(sprint_symbol_no_offset);
 
@@ -833,21 +586,6 @@ EXPORT_SYMBOL_GPL(sprint_symbol_no_offset);
  */
 int sprint_backtrace(char *buffer, unsigned long address)
 {
-<<<<<<< HEAD
-	return __sprint_symbol(buffer, address, -1, 1);
-}
-
-/* Look up a kernel symbol and print it to the kernel messages. */
-void __print_symbol(const char *fmt, unsigned long address)
-{
-	char buffer[KSYM_SYMBOL_LEN];
-
-	sprint_symbol(buffer, address);
-
-	printk(fmt, buffer);
-}
-EXPORT_SYMBOL(__print_symbol);
-=======
 	return __sprint_symbol(buffer, address, -1, 1, 0);
 }
 
@@ -870,40 +608,24 @@ int sprint_backtrace_build_id(char *buffer, unsigned long address)
 {
 	return __sprint_symbol(buffer, address, -1, 1, 1);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* To avoid using get_symbol_offset for every symbol, we carry prefix along. */
 struct kallsym_iter {
 	loff_t pos;
-<<<<<<< HEAD
-=======
 	loff_t pos_mod_end;
 	loff_t pos_ftrace_mod_end;
 	loff_t pos_bpf_end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long value;
 	unsigned int nameoff; /* If iterating in core kernel symbols. */
 	char type;
 	char name[KSYM_NAME_LEN];
 	char module_name[MODULE_NAME_LEN];
 	int exported;
-<<<<<<< HEAD
-=======
 	int show_value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int get_ksymbol_mod(struct kallsym_iter *iter)
 {
-<<<<<<< HEAD
-	if (module_get_kallsym(iter->pos - kallsyms_num_syms, &iter->value,
-				&iter->type, iter->name, iter->module_name,
-				&iter->exported) < 0)
-		return 0;
-	return 1;
-}
-
-=======
 	int ret = module_get_kallsym(iter->pos - kallsyms_num_syms,
 				     &iter->value, &iter->type,
 				     iter->name, iter->module_name,
@@ -966,26 +688,17 @@ static int get_ksymbol_kprobe(struct kallsym_iter *iter)
 				  iter->name) < 0 ? 0 : 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Returns space to next name. */
 static unsigned long get_ksymbol_core(struct kallsym_iter *iter)
 {
 	unsigned off = iter->nameoff;
 
 	iter->module_name[0] = '\0';
-<<<<<<< HEAD
-	iter->value = kallsyms_addresses[iter->pos];
-
-	iter->type = kallsyms_get_symbol_type(off);
-
-	off = kallsyms_expand_symbol(off, iter->name);
-=======
 	iter->value = kallsyms_sym_address(iter->pos);
 
 	iter->type = kallsyms_get_symbol_type(off);
 
 	off = kallsyms_expand_symbol(off, iter->name, ARRAY_SIZE(iter->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return off - iter->nameoff;
 }
@@ -995,8 +708,6 @@ static void reset_iter(struct kallsym_iter *iter, loff_t new_pos)
 	iter->name[0] = '\0';
 	iter->nameoff = get_symbol_offset(new_pos);
 	iter->pos = new_pos;
-<<<<<<< HEAD
-=======
 	if (new_pos == 0) {
 		iter->pos_mod_end = 0;
 		iter->pos_ftrace_mod_end = 0;
@@ -1026,22 +737,14 @@ static int update_iter_mod(struct kallsym_iter *iter, loff_t pos)
 		return 1;
 
 	return get_ksymbol_kprobe(iter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Returns false if pos at or past end of file. */
 static int update_iter(struct kallsym_iter *iter, loff_t pos)
 {
 	/* Module symbols can be accessed randomly. */
-<<<<<<< HEAD
-	if (pos >= kallsyms_num_syms) {
-		iter->pos = pos;
-		return get_ksymbol_mod(iter);
-	}
-=======
 	if (pos >= kallsyms_num_syms)
 		return update_iter_mod(iter, pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If we're not on the desired position, reset to new position. */
 	if (pos != iter->pos)
@@ -1075,21 +778,15 @@ static void s_stop(struct seq_file *m, void *p)
 
 static int s_show(struct seq_file *m, void *p)
 {
-<<<<<<< HEAD
-=======
 	void *value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kallsym_iter *iter = m->private;
 
 	/* Some debugging symbols have no name.  Ignore them. */
 	if (!iter->name[0])
 		return 0;
 
-<<<<<<< HEAD
-=======
 	value = iter->show_value ? (void *)iter->value : NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (iter->module_name[0]) {
 		char type;
 
@@ -1099,17 +796,10 @@ static int s_show(struct seq_file *m, void *p)
 		 */
 		type = iter->exported ? toupper(iter->type) :
 					tolower(iter->type);
-<<<<<<< HEAD
-		seq_printf(m, "%pK %c %s\t[%s]\n", (void *)iter->value,
-			   type, iter->name, iter->module_name);
-	} else
-		seq_printf(m, "%pK %c %s\n", (void *)iter->value,
-=======
 		seq_printf(m, "%px %c %s\t[%s]\n", value,
 			   type, iter->name, iter->module_name);
 	} else
 		seq_printf(m, "%px %c %s\n", value,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   iter->type, iter->name);
 	return 0;
 }
@@ -1121,8 +811,6 @@ static const struct seq_operations kallsyms_op = {
 	.show = s_show
 };
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_BPF_SYSCALL
 
 struct bpf_iter__ksym {
@@ -1213,7 +901,6 @@ late_initcall(bpf_ksym_iter_register);
 
 #endif /* CONFIG_BPF_SYSCALL */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int kallsyms_open(struct inode *inode, struct file *file)
 {
 	/*
@@ -1222,32 +909,17 @@ static int kallsyms_open(struct inode *inode, struct file *file)
 	 * using get_symbol_offset for every symbol.
 	 */
 	struct kallsym_iter *iter;
-<<<<<<< HEAD
-	int ret;
-
-	iter = kmalloc(sizeof(*iter), GFP_KERNEL);
-=======
 	iter = __seq_open_private(file, &kallsyms_op, sizeof(*iter));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!iter)
 		return -ENOMEM;
 	reset_iter(iter, 0);
 
-<<<<<<< HEAD
-	ret = seq_open(file, &kallsyms_op);
-	if (ret == 0)
-		((struct seq_file *)file->private_data)->private = iter;
-	else
-		kfree(iter);
-	return ret;
-=======
 	/*
 	 * Instead of checking this on every s_show() call, cache
 	 * the result here at open time.
 	 */
 	iter->show_value = kallsyms_show_value(file->f_cred);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef	CONFIG_KGDB_KDB
@@ -1270,28 +942,16 @@ const char *kdb_walk_kallsyms(loff_t *pos)
 }
 #endif	/* CONFIG_KGDB_KDB */
 
-<<<<<<< HEAD
-static const struct file_operations kallsyms_operations = {
-	.open = kallsyms_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = seq_release_private,
-=======
 static const struct proc_ops kallsyms_proc_ops = {
 	.proc_open	= kallsyms_open,
 	.proc_read	= seq_read,
 	.proc_lseek	= seq_lseek,
 	.proc_release	= seq_release_private,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init kallsyms_init(void)
 {
-<<<<<<< HEAD
-	proc_create("kallsyms", 0444, NULL, &kallsyms_operations);
-=======
 	proc_create("kallsyms", 0444, NULL, &kallsyms_proc_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 device_initcall(kallsyms_init);

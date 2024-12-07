@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/fat/misc.c
  *
@@ -10,16 +7,8 @@
  *		 and date_dos2unix for date==0 by Igor Zhbanov(bsg@uniyar.ac.ru)
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/fs.h>
-#include <linux/buffer_head.h>
-#include <linux/time.h>
-#include "fat.h"
-=======
 #include "fat.h"
 #include <linux/iversion.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * fat_fs_error reports a file system problem that might indicate fa data
@@ -39,37 +28,20 @@ void __fat_fs_error(struct super_block *sb, int report, const char *fmt, ...)
 		va_start(args, fmt);
 		vaf.fmt = fmt;
 		vaf.va = &args;
-<<<<<<< HEAD
-		printk(KERN_ERR "FAT-fs (%s): error, %pV\n", sb->s_id, &vaf);
-=======
 		fat_msg(sb, KERN_ERR, "error, %pV", &vaf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		va_end(args);
 	}
 
 	if (opts->errors == FAT_ERRORS_PANIC)
 		panic("FAT-fs (%s): fs panic from previous error\n", sb->s_id);
-<<<<<<< HEAD
-	else if (opts->errors == FAT_ERRORS_RO && !(sb->s_flags & MS_RDONLY)) {
-		sb->s_flags |= MS_RDONLY;
-		printk(KERN_ERR "FAT-fs (%s): Filesystem has been "
-				"set read-only\n", sb->s_id);
-=======
 	else if (opts->errors == FAT_ERRORS_RO && !sb_rdonly(sb)) {
 		sb->s_flags |= SB_RDONLY;
 		fat_msg(sb, KERN_ERR, "Filesystem has been set read-only");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL_GPL(__fat_fs_error);
 
 /**
-<<<<<<< HEAD
- * fat_msg() - print preformated FAT specific messages. Every thing what is
- * not fat_fs_error() should be fat_msg().
- */
-void fat_msg(struct super_block *sb, const char *level, const char *fmt, ...)
-=======
  * _fat_msg() - Print a preformatted FAT message based on a superblock.
  * @sb: A pointer to a &struct super_block
  * @level: A Kernel printk level constant
@@ -80,7 +52,6 @@ void fat_msg(struct super_block *sb, const char *level, const char *fmt, ...)
  * fat_msg() wraps _fat_msg() for printk indexing.
  */
 void _fat_msg(struct super_block *sb, const char *level, const char *fmt, ...)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct va_format vaf;
 	va_list args;
@@ -88,15 +59,7 @@ void _fat_msg(struct super_block *sb, const char *level, const char *fmt, ...)
 	va_start(args, fmt);
 	vaf.fmt = fmt;
 	vaf.va = &args;
-<<<<<<< HEAD
-	if (!strncmp(level, KERN_ERR, sizeof(KERN_ERR)))
-		printk_ratelimited("%sFAT-fs (%s): %pV\n", level,
-				   sb->s_id, &vaf);
-	else
-		printk("%sFAT-fs (%s): %pV\n", level, sb->s_id, &vaf);
-=======
 	_printk(FAT_PRINTK_PREFIX "%pV\n", level, sb->s_id, &vaf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	va_end(args);
 }
 
@@ -108,11 +71,7 @@ int fat_clusters_flush(struct super_block *sb)
 	struct buffer_head *bh;
 	struct fat_boot_fsinfo *fsinfo;
 
-<<<<<<< HEAD
-	if (sbi->fat_bits != 32)
-=======
 	if (!is_fat32(sbi))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	bh = sb_bread(sb, sbi->fsinfo_sector);
@@ -179,13 +138,10 @@ int fat_chain_add(struct inode *inode, int new_dclus, int nr_cluster)
 		}
 		if (ret < 0)
 			return ret;
-<<<<<<< HEAD
-=======
 		/*
 		 * FIXME:Although we can add this cache, fat_cache_add() is
 		 * assuming to be called after linear search with fat_cache_id.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 //		fat_cache_add(inode, new_fclus, new_dclus);
 	} else {
 		MSDOS_I(inode)->i_start = new_dclus;
@@ -212,11 +168,6 @@ int fat_chain_add(struct inode *inode, int new_dclus, int nr_cluster)
 	return 0;
 }
 
-<<<<<<< HEAD
-extern struct timezone sys_tz;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The epoch of FAT timestamp is 1980.
  *     :  bits :     value
@@ -237,23 +188,11 @@ extern struct timezone sys_tz;
 #define IS_LEAP_YEAR(y)	(!((y) & 3) && (y) != YEAR_2100)
 
 /* Linear day numbers of the respective 1sts in non-leap years. */
-<<<<<<< HEAD
-static time_t days_in_year[] = {
-=======
 static long days_in_year[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec */
 	0,   0,  31,  59,  90, 120, 151, 181, 212, 243, 273, 304, 334, 0, 0, 0,
 };
 
-<<<<<<< HEAD
-/* Convert a FAT time/date pair to a UNIX date (seconds since 1 1 70). */
-void fat_time_fat2unix(struct msdos_sb_info *sbi, struct timespec *ts,
-		       __le16 __time, __le16 __date, u8 time_cs)
-{
-	u16 time = le16_to_cpu(__time), date = le16_to_cpu(__date);
-	time_t second, day, leap_day, month, year;
-=======
 static inline int fat_tz_offset(const struct msdos_sb_info *sbi)
 {
 	return (sbi->options.tz_set ?
@@ -268,7 +207,6 @@ void fat_time_fat2unix(struct msdos_sb_info *sbi, struct timespec64 *ts,
 	u16 time = le16_to_cpu(__time), date = le16_to_cpu(__date);
 	time64_t second;
 	long day, leap_day, month, year;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	year  = date >> 9;
 	month = max(1, (date >> 5) & 0xf);
@@ -283,20 +221,11 @@ void fat_time_fat2unix(struct msdos_sb_info *sbi, struct timespec64 *ts,
 	second =  (time & 0x1f) << 1;
 	second += ((time >> 5) & 0x3f) * SECS_PER_MIN;
 	second += (time >> 11) * SECS_PER_HOUR;
-<<<<<<< HEAD
-	second += (year * 365 + leap_day
-		   + days_in_year[month] + day
-		   + DAYS_DELTA) * SECS_PER_DAY;
-
-	if (!sbi->options.tz_utc)
-		second += sys_tz.tz_minuteswest * SECS_PER_MIN;
-=======
 	second += (time64_t)(year * 365 + leap_day
 		   + days_in_year[month] + day
 		   + DAYS_DELTA) * SECS_PER_DAY;
 
 	second += fat_tz_offset(sbi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (time_cs) {
 		ts->tv_sec = second + (time_cs / 100);
@@ -307,15 +236,6 @@ void fat_time_fat2unix(struct msdos_sb_info *sbi, struct timespec64 *ts,
 	}
 }
 
-<<<<<<< HEAD
-/* Convert linear UNIX date to a FAT time/date pair. */
-void fat_time_unix2fat(struct msdos_sb_info *sbi, struct timespec *ts,
-		       __le16 *time, __le16 *date, u8 *time_cs)
-{
-	struct tm tm;
-	time_to_tm(ts->tv_sec, sbi->options.tz_utc ? 0 :
-		   -sys_tz.tz_minuteswest * 60, &tm);
-=======
 /* Export fat_time_fat2unix() for the fat_test KUnit tests. */
 EXPORT_SYMBOL_GPL(fat_time_fat2unix);
 
@@ -325,7 +245,6 @@ void fat_time_unix2fat(struct msdos_sb_info *sbi, struct timespec64 *ts,
 {
 	struct tm tm;
 	time64_to_tm(ts->tv_sec, -fat_tz_offset(sbi), &tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*  FAT can only support year between 1980 to 2107 */
 	if (tm.tm_year < 1980 - 1900) {
@@ -357,8 +276,6 @@ void fat_time_unix2fat(struct msdos_sb_info *sbi, struct timespec64 *ts,
 }
 EXPORT_SYMBOL_GPL(fat_time_unix2fat);
 
-<<<<<<< HEAD
-=======
 static inline struct timespec64 fat_timespec64_trunc_2secs(struct timespec64 ts)
 {
 	return (struct timespec64){ ts.tv_sec & ~1ULL, 0 };
@@ -442,17 +359,12 @@ int fat_update_time(struct inode *inode, int flags)
 }
 EXPORT_SYMBOL_GPL(fat_update_time);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int fat_sync_bhs(struct buffer_head **bhs, int nr_bhs)
 {
 	int i, err = 0;
 
 	for (i = 0; i < nr_bhs; i++)
-<<<<<<< HEAD
-		write_dirty_buffer(bhs[i], WRITE_SYNC);
-=======
 		write_dirty_buffer(bhs[i], 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < nr_bhs; i++) {
 		wait_on_buffer(bhs[i]);

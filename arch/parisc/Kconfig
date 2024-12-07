@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-config PARISC
-	def_bool y
-	select HAVE_IDE
-	select HAVE_OPROFILE
-	select HAVE_FUNCTION_TRACER if 64BIT
-	select HAVE_FUNCTION_GRAPH_TRACER if 64BIT
-	select HAVE_FUNCTION_TRACE_MCOUNT_TEST if 64BIT
-=======
 # SPDX-License-Identifier: GPL-2.0
 config PARISC
 	def_bool y
@@ -31,21 +22,10 @@ config PARISC
 	select ARCH_HAS_DEBUG_VM_PGTABLE
 	select HAVE_RELIABLE_STACKTRACE
 	select DMA_OPS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select RTC_CLASS
 	select RTC_DRV_GENERIC
 	select INIT_ALL_POSSIBLE
 	select BUG
-<<<<<<< HEAD
-	select HAVE_IRQ_WORK
-	select HAVE_PERF_EVENTS
-	select GENERIC_ATOMIC64 if !64BIT
-	select HAVE_GENERIC_HARDIRQS
-	select GENERIC_IRQ_PROBE
-	select GENERIC_PCI_IOMAP
-	select IRQ_PER_CPU
-	select ARCH_HAVE_NMI_SAFE_CMPXCHG
-=======
 	select HAVE_KERNEL_UNCOMPRESSED
 	select HAVE_PCI
 	select HAVE_PERF_EVENTS
@@ -105,20 +85,15 @@ config PARISC
 	select HAVE_SOFTIRQ_ON_OWN_STACK if IRQSTACKS
 	select TRACE_IRQFLAGS_SUPPORT
 	select HAVE_FUNCTION_DESCRIPTORS if 64BIT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	help
 	  The PA-RISC microprocessor is designed by Hewlett-Packard and used
 	  in many of their workstations & servers (HP9000 700 and 800 series,
 	  and later HP3000 series).  The PA-RISC Linux project home page is
-<<<<<<< HEAD
-	  at <http://www.parisc-linux.org/>.
-=======
 	  at <https://parisc.wiki.kernel.org>.
 
 config CPU_BIG_ENDIAN
 	def_bool y
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MMU
 	def_bool y
@@ -129,17 +104,7 @@ config STACK_GROWSUP
 config GENERIC_LOCKBREAK
 	bool
 	default y
-<<<<<<< HEAD
-	depends on SMP && PREEMPT
-
-config RWSEM_GENERIC_SPINLOCK
-	def_bool y
-
-config RWSEM_XCHGADD_ALGORITHM
-	bool
-=======
 	depends on SMP && PREEMPTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ARCH_HAS_ILOG2_U32
 	bool
@@ -150,18 +115,12 @@ config ARCH_HAS_ILOG2_U64
 	default n
 
 config GENERIC_BUG
-<<<<<<< HEAD
-	bool
-	default y
-	depends on BUG
-=======
 	def_bool y
 	depends on BUG
 	select GENERIC_BUG_RELATIVE_POINTERS if 64BIT
 
 config GENERIC_BUG_RELATIVE_POINTERS
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config GENERIC_HWEIGHT
 	bool
@@ -176,10 +135,6 @@ config TIME_LOW_RES
 	depends on SMP
 	default y
 
-<<<<<<< HEAD
-config HAVE_LATENCYTOP_SUPPORT
-        def_bool y
-=======
 config ARCH_MMAP_RND_BITS_MIN
 	default 18 if 64BIT
 	default 8
@@ -193,7 +148,6 @@ config ARCH_MMAP_RND_BITS_MAX
 
 config ARCH_MMAP_RND_COMPAT_BITS_MAX
 	default 13
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # unless you want to implement ACPI on PA-RISC ... ;-)
 config PM
@@ -202,17 +156,9 @@ config PM
 config STACKTRACE_SUPPORT
 	def_bool y
 
-<<<<<<< HEAD
-config NEED_DMA_MAP_STATE
-	def_bool y
-
-config NEED_SG_DMA_LENGTH
-	def_bool y
-=======
 config LOCKDEP_SUPPORT
 	bool
 	default y
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ISA_DMA_API
 	bool
@@ -222,35 +168,20 @@ config ARCH_MAY_HAVE_PC_FDC
 	depends on BROKEN
 	default y
 
-<<<<<<< HEAD
-source "init/Kconfig"
-
-source "kernel/Kconfig.freezer"
-
-=======
 config PGTABLE_LEVELS
 	int
 	default 3 if 64BIT && PARISC_PAGE_SIZE_4KB
 	default 2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 menu "Processor type and features"
 
 choice
 	prompt "Processor type"
-<<<<<<< HEAD
-	default PA7000
-
-config PA7000
-	bool "PA7000/PA7100"
-	---help---
-=======
 	default PA7000 if "$(ARCH)" = "parisc"
 
 config PA7000
 	bool "PA7000/PA7100" if "$(ARCH)" = "parisc"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is the processor type of your CPU.  This information is
 	  used for optimizing purposes.  In order to compile a kernel
 	  that can run on all 32-bit PA CPUs (albeit not optimally fast),
@@ -260,33 +191,21 @@ config PA7000
 	  which is required on some machines.
 
 config PA7100LC
-<<<<<<< HEAD
-	bool "PA7100LC"
-=======
 	bool "PA7100LC" if "$(ARCH)" = "parisc"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Select this option for the PCX-L processor, as used in the
 	  712, 715/64, 715/80, 715/100, 715/100XC, 725/100, 743, 748,
 	  D200, D210, D300, D310 and E-class
 
 config PA7200
-<<<<<<< HEAD
-	bool "PA7200"
-=======
 	bool "PA7200" if "$(ARCH)" = "parisc"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Select this option for the PCX-T' processor, as used in the
 	  C100, C110, J100, J110, J210XC, D250, D260, D350, D360,
 	  K100, K200, K210, K220, K400, K410 and K420
 
 config PA7300LC
-<<<<<<< HEAD
-	bool "PA7300LC"
-=======
 	bool "PA7300LC" if "$(ARCH)" = "parisc"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Select this option for the PCX-L2 processor, as used in the
 	  744, A180, B132L, B160L, B180L, C132L, C160L, C180L,
@@ -308,21 +227,13 @@ config PA20
 config PA11
 	def_bool y
 	depends on PA7000 || PA7100LC || PA7200 || PA7300LC
-<<<<<<< HEAD
-=======
 	select ARCH_HAS_SYNC_DMA_FOR_CPU
 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PREFETCH
 	def_bool y
 	depends on PA8X00 || PA7200
 
-<<<<<<< HEAD
-config 64BIT
-	bool "64-bit kernel"
-	depends on PA8X00
-=======
 config PARISC_HUGE_KERNEL
 	def_bool y if !MODULES || UBSAN || FTRACE || COMPILE_TEST
 
@@ -347,7 +258,6 @@ config 64BIT
 	bool "64-bit kernel" if "$(ARCH)" = "parisc"
 	depends on PA8X00
 	default "$(ARCH)" = "parisc64"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Enable this if you want to support 64bit kernel on PA-RISC platform.
 
@@ -364,10 +274,7 @@ choice
 
 config PARISC_PAGE_SIZE_4KB
 	bool "4KB"
-<<<<<<< HEAD
-=======
 	select HAVE_PAGE_SIZE_4KB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This lets you select the page size of the kernel.  For best
 	  performance, a page size of 16KB is recommended.  For best
@@ -382,14 +289,6 @@ config PARISC_PAGE_SIZE_4KB
 	  If you don't know what to do, choose 4KB.
 
 config PARISC_PAGE_SIZE_16KB
-<<<<<<< HEAD
-	bool "16KB (EXPERIMENTAL)"
-	depends on PA8X00 && EXPERIMENTAL
-
-config PARISC_PAGE_SIZE_64KB
-	bool "64KB (EXPERIMENTAL)"
-	depends on PA8X00 && EXPERIMENTAL
-=======
 	bool "16KB"
 	select HAVE_PAGE_SIZE_16KB
 	depends on PA8X00 && BROKEN && !KFENCE
@@ -398,35 +297,11 @@ config PARISC_PAGE_SIZE_64KB
 	bool "64KB"
 	select HAVE_PAGE_SIZE_64KB
 	depends on PA8X00 && BROKEN && !KFENCE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endchoice
 
 config SMP
 	bool "Symmetric multi-processing support"
-<<<<<<< HEAD
-	select USE_GENERIC_SMP_HELPERS
-	---help---
-	  This enables support for systems with more than one CPU. If you have
-	  a system with only one CPU, like most personal computers, say N. If
-	  you have a system with more than one CPU, say Y.
-
-	  If you say N here, the kernel will run on single and multiprocessor
-	  machines, but will use only one CPU of a multiprocessor machine. If
-	  you say Y here, the kernel will run on many, but not all,
-	  singleprocessor machines. On a singleprocessor machine, the kernel
-	  will run faster if you say N here.
-
-	  See also <file:Documentation/nmi_watchdog.txt> and the SMP-HOWTO
-	  available at <http://www.tldp.org/docs.html#howto>.
-
-	  If you don't know what to do here, say N.
-
-config HOTPLUG_CPU
-	bool
-	default y if SMP
-	select HOTPLUG
-=======
 	help
 	  This enables support for systems with more than one CPU. If you have
 	  a system with only one CPU, say N. If you have a system with more
@@ -460,90 +335,35 @@ config IRQSTACKS
 config HOTPLUG_CPU
 	bool
 	default y if SMP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ARCH_SELECT_MEMORY_MODEL
 	def_bool y
 	depends on 64BIT
 
-<<<<<<< HEAD
-config ARCH_DISCONTIGMEM_ENABLE
-=======
 config ARCH_SPARSEMEM_ENABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	def_bool y
 	depends on 64BIT
 
 config ARCH_FLATMEM_ENABLE
 	def_bool y
 
-<<<<<<< HEAD
-config ARCH_DISCONTIGMEM_DEFAULT
-	def_bool y
-	depends on ARCH_DISCONTIGMEM_ENABLE
-
-config NODES_SHIFT
-	int
-	default "3"
-	depends on NEED_MULTIPLE_NODES
-
-source "kernel/Kconfig.preempt"
-source "kernel/Kconfig.hz"
-source "mm/Kconfig"
-=======
 config ARCH_SPARSEMEM_DEFAULT
 	def_bool y
 	depends on ARCH_SPARSEMEM_ENABLE
 
 source "kernel/Kconfig.hz"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config COMPAT
 	def_bool y
 	depends on 64BIT
 
-<<<<<<< HEAD
-config HPUX
-	bool "Support for HP-UX binaries"
-	depends on !64BIT
-=======
 config AUDIT_ARCH
 	def_bool y
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config NR_CPUS
 	int "Maximum number of CPUs (2-32)"
 	range 2 32
 	depends on SMP
-<<<<<<< HEAD
-	default "32"
-
-endmenu
-
-
-source "drivers/parisc/Kconfig"
-
-
-menu "Executable file formats"
-
-source "fs/Kconfig.binfmt"
-
-endmenu
-
-source "net/Kconfig"
-
-source "drivers/Kconfig"
-
-source "fs/Kconfig"
-
-source "arch/parisc/Kconfig.debug"
-
-source "security/Kconfig"
-
-source "crypto/Kconfig"
-
-source "lib/Kconfig"
-=======
 	default "8" if 64BIT
 	default "16"
 
@@ -561,4 +381,3 @@ config ARCH_SELECTS_KEXEC_FILE
 	select KEXEC_ELF
 
 source "drivers/parisc/Kconfig"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

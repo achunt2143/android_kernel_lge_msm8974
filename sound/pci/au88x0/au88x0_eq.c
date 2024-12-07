@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /***************************************************************************
  *            au88x0_eq.c
  *  Aureal Vortex Hardware EQ control/access.
@@ -19,22 +16,6 @@
  ****************************************************************************/
 
 /*
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Library General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -70,11 +51,7 @@ static inline u16 sign_invert(u16 a)
 		return -a;
 }
 
-<<<<<<< HEAD
-static void vortex_EqHw_SetLeftCoefs(vortex_t * vortex, u16 coefs[])
-=======
 static void vortex_EqHw_SetLeftCoefs(vortex_t *vortex, const u16 coefs[])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	eqhw_t *eqhw = &(vortex->eq.this04);
 	int i = 0, n /*esp2c */;
@@ -96,11 +73,7 @@ static void vortex_EqHw_SetLeftCoefs(vortex_t *vortex, const u16 coefs[])
 	}
 }
 
-<<<<<<< HEAD
-static void vortex_EqHw_SetRightCoefs(vortex_t * vortex, u16 coefs[])
-=======
 static void vortex_EqHw_SetRightCoefs(vortex_t *vortex, const u16 coefs[])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	eqhw_t *eqhw = &(vortex->eq.this04);
 	int i = 0, n /*esp2c */;
@@ -123,11 +96,7 @@ static void vortex_EqHw_SetRightCoefs(vortex_t *vortex, const u16 coefs[])
 
 }
 
-<<<<<<< HEAD
-static void vortex_EqHw_SetLeftStates(vortex_t * vortex, u16 a[], u16 b[])
-=======
 static void vortex_EqHw_SetLeftStates(vortex_t *vortex, const u16 a[], const u16 b[])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	eqhw_t *eqhw = &(vortex->eq.this04);
 	int i = 0, ebx;
@@ -144,11 +113,7 @@ static void vortex_EqHw_SetLeftStates(vortex_t *vortex, const u16 a[], const u16
 	}
 }
 
-<<<<<<< HEAD
-static void vortex_EqHw_SetRightStates(vortex_t * vortex, u16 a[], u16 b[])
-=======
 static void vortex_EqHw_SetRightStates(vortex_t *vortex, const u16 a[], const u16 b[])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	eqhw_t *eqhw = &(vortex->eq.this04);
 	int i = 0, ebx;
@@ -241,11 +206,7 @@ vortex_EqHw_SetRightGainsSingleTarget(vortex_t * vortex, u16 index, u16 b)
 	hwwrite(vortex->mmio, 0x2b20c + (index * 0x30), b);
 }
 
-<<<<<<< HEAD
-static void vortex_EqHw_SetLeftGainsTarget(vortex_t * vortex, u16 a[])
-=======
 static void vortex_EqHw_SetLeftGainsTarget(vortex_t *vortex, const u16 a[])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	eqhw_t *eqhw = &(vortex->eq.this04);
 	int ebx;
@@ -255,11 +216,7 @@ static void vortex_EqHw_SetLeftGainsTarget(vortex_t *vortex, const u16 a[])
 	}
 }
 
-<<<<<<< HEAD
-static void vortex_EqHw_SetRightGainsTarget(vortex_t * vortex, u16 a[])
-=======
 static void vortex_EqHw_SetRightGainsTarget(vortex_t *vortex, const u16 a[])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	eqhw_t *eqhw = &(vortex->eq.this04);
 	int ebx;
@@ -269,11 +226,7 @@ static void vortex_EqHw_SetRightGainsTarget(vortex_t *vortex, const u16 a[])
 	}
 }
 
-<<<<<<< HEAD
-static void vortex_EqHw_SetLeftGainsCurrent(vortex_t * vortex, u16 a[])
-=======
 static void vortex_EqHw_SetLeftGainsCurrent(vortex_t *vortex, const u16 a[])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	eqhw_t *eqhw = &(vortex->eq.this04);
 	int ebx;
@@ -283,11 +236,7 @@ static void vortex_EqHw_SetLeftGainsCurrent(vortex_t *vortex, const u16 a[])
 	}
 }
 
-<<<<<<< HEAD
-static void vortex_EqHw_SetRightGainsCurrent(vortex_t * vortex, u16 a[])
-=======
 static void vortex_EqHw_SetRightGainsCurrent(vortex_t *vortex, const u16 a[])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	eqhw_t *eqhw = &(vortex->eq.this04);
 	int ebx;
@@ -360,11 +309,7 @@ static void vortex_EqHw_GetRightGainsCurrent(vortex_t * vortex, u16 a[])
 
 #endif
 /* EQ band levels settings */
-<<<<<<< HEAD
-static void vortex_EqHw_SetLevels(vortex_t * vortex, u16 peaks[])
-=======
 static void vortex_EqHw_SetLevels(vortex_t *vortex, const u16 peaks[])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	eqhw_t *eqhw = &(vortex->eq.this04);
 	int i;
@@ -629,11 +574,7 @@ static int vortex_Eqlzr_SetAllBandsFromActiveCoeffSet(vortex_t * vortex)
 }
 
 static int
-<<<<<<< HEAD
-vortex_Eqlzr_SetAllBands(vortex_t * vortex, u16 gains[], s32 count)
-=======
 vortex_Eqlzr_SetAllBands(vortex_t *vortex, const u16 gains[], s32 count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	eqlzr_t *eq = &(vortex->eq);
 	int i;
@@ -804,11 +745,7 @@ snd_vortex_eqtoggle_put(struct snd_kcontrol *kcontrol,
 	return 1;		/* Allways changes */
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new vortex_eqtoggle_kcontrol __devinitdata = {
-=======
 static const struct snd_kcontrol_new vortex_eqtoggle_kcontrol = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "EQ Enable",
 	.index = 0,
@@ -866,11 +803,7 @@ snd_vortex_eq_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucon
 	return changed;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new vortex_eq_kcontrol __devinitdata = {
-=======
 static const struct snd_kcontrol_new vortex_eq_kcontrol = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "                        .",
 	.index = 0,
@@ -900,12 +833,8 @@ snd_vortex_peaks_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *u
 
 	vortex_Eqlzr_GetAllPeaks(vortex, peaks, &count);
 	if (count != 20) {
-<<<<<<< HEAD
-		printk(KERN_ERR "vortex: peak count error 20 != %d \n", count);
-=======
 		dev_err(vortex->card->dev,
 			"peak count error 20 != %d\n", count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 	for (i = 0; i < 20; i++)
@@ -914,11 +843,7 @@ snd_vortex_peaks_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *u
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new vortex_levels_kcontrol __devinitdata = {
-=======
 static const struct snd_kcontrol_new vortex_levels_kcontrol = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "EQ Peaks",
 	.access = SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_VOLATILE,
@@ -927,11 +852,7 @@ static const struct snd_kcontrol_new vortex_levels_kcontrol = {
 };
 
 /* EQ band gain labels. */
-<<<<<<< HEAD
-static char *EqBandLabels[10] __devinitdata = {
-=======
 static const char * const EqBandLabels[10] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"EQ0 31Hz\0",
 	"EQ1 63Hz\0",
 	"EQ2 125Hz\0",
@@ -945,67 +866,40 @@ static const char * const EqBandLabels[10] = {
 };
 
 /* ALSA driver entry points. Init and exit. */
-<<<<<<< HEAD
-static int __devinit vortex_eq_init(vortex_t * vortex)
-=======
 static int vortex_eq_init(vortex_t *vortex)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_kcontrol *kcontrol;
 	int err, i;
 
 	vortex_Eqlzr_init(vortex);
 
-<<<<<<< HEAD
-	if ((kcontrol =
-	     snd_ctl_new1(&vortex_eqtoggle_kcontrol, vortex)) == NULL)
-		return -ENOMEM;
-	kcontrol->private_value = 0;
-	if ((err = snd_ctl_add(vortex->card, kcontrol)) < 0)
-=======
 	kcontrol = snd_ctl_new1(&vortex_eqtoggle_kcontrol, vortex);
 	if (!kcontrol)
 		return -ENOMEM;
 	kcontrol->private_value = 0;
 	err = snd_ctl_add(vortex->card, kcontrol);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	/* EQ gain controls */
 	for (i = 0; i < 10; i++) {
-<<<<<<< HEAD
-		if ((kcontrol =
-		     snd_ctl_new1(&vortex_eq_kcontrol, vortex)) == NULL)
-=======
 		kcontrol = snd_ctl_new1(&vortex_eq_kcontrol, vortex);
 		if (!kcontrol)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		snprintf(kcontrol->id.name, sizeof(kcontrol->id.name),
 			"%s Playback Volume", EqBandLabels[i]);
 		kcontrol->private_value = i;
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(vortex->card, kcontrol)) < 0)
-=======
 		err = snd_ctl_add(vortex->card, kcontrol);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		//vortex->eqctrl[i] = kcontrol;
 	}
 	/* EQ band levels */
-<<<<<<< HEAD
-	if ((kcontrol = snd_ctl_new1(&vortex_levels_kcontrol, vortex)) == NULL)
-		return -ENOMEM;
-	if ((err = snd_ctl_add(vortex->card, kcontrol)) < 0)
-=======
 	kcontrol = snd_ctl_new1(&vortex_levels_kcontrol, vortex);
 	if (!kcontrol)
 		return -ENOMEM;
 	err = snd_ctl_add(vortex->card, kcontrol);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	return 0;

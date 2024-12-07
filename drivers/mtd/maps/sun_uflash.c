@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sun_uflash.c - Driver for user-programmable flash on
  *                Sun Microsystems SME boardsets.
  *
@@ -15,22 +12,12 @@
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/ioport.h>
-#include <linux/of.h>
-#include <linux/of_device.h>
-#include <linux/slab.h>
-#include <asm/prom.h>
-#include <asm/uaccess.h>
-=======
 #include <linux/ioport.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <asm/prom.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 #include <linux/mtd/mtd.h>
@@ -45,10 +32,6 @@
 
 MODULE_AUTHOR("Eric Brower <ebrower@usa.net>");
 MODULE_DESCRIPTION("User-programmable flash device on Sun Microsystems boardsets");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE(DRIVER_NAME);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_VERSION("2.1");
 
@@ -64,11 +47,7 @@ struct map_info uflash_map_templ = {
 	.bankwidth =	UFLASH_BUSWIDTH,
 };
 
-<<<<<<< HEAD
-int uflash_devinit(struct platform_device *op, struct device_node *dp)
-=======
 static int uflash_devinit(struct platform_device *op, struct device_node *dp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uflash_dev *up;
 
@@ -76,27 +55,15 @@ static int uflash_devinit(struct platform_device *op, struct device_node *dp)
 		/* Non-CFI userflash device-- once I find one we
 		 * can work on supporting it.
 		 */
-<<<<<<< HEAD
-		printk(KERN_ERR PFX "Unsupported device at %s, 0x%llx\n",
-		       dp->full_name, (unsigned long long)op->resource[0].start);
-=======
 		printk(KERN_ERR PFX "Unsupported device at %pOF, 0x%llx\n",
 		       dp, (unsigned long long)op->resource[0].start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return -ENODEV;
 	}
 
 	up = kzalloc(sizeof(struct uflash_dev), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!up) {
-		printk(KERN_ERR PFX "Cannot allocate struct uflash_dev\n");
-		return -ENOMEM;
-	}
-=======
 	if (!up)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* copy defaults and tweak parameters */
 	memcpy(&up->map, &uflash_map_templ, sizeof(uflash_map_templ));
@@ -105,11 +72,7 @@ static int uflash_devinit(struct platform_device *op, struct device_node *dp)
 
 	up->name = of_get_property(dp, "model", NULL);
 	if (up->name && 0 < strlen(up->name))
-<<<<<<< HEAD
-		up->map.name = (char *)up->name;
-=======
 		up->map.name = up->name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	up->map.phys = op->resource[0].start;
 
@@ -142,32 +105,20 @@ static int uflash_devinit(struct platform_device *op, struct device_node *dp)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit uflash_probe(struct platform_device *op)
-=======
 static int uflash_probe(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dp = op->dev.of_node;
 
 	/* Flashprom must have the "user" property in order to
 	 * be used by this driver.
 	 */
-<<<<<<< HEAD
-	if (!of_find_property(dp, "user", NULL))
-=======
 	if (!of_property_read_bool(dp, "user"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	return uflash_devinit(op, dp);
 }
 
-<<<<<<< HEAD
-static int __devexit uflash_remove(struct platform_device *op)
-=======
 static void uflash_remove(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uflash_dev *up = dev_get_drvdata(&op->dev);
 
@@ -181,11 +132,6 @@ static void uflash_remove(struct platform_device *op)
 	}
 
 	kfree(up);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id uflash_match[] = {
@@ -200,18 +146,10 @@ MODULE_DEVICE_TABLE(of, uflash_match);
 static struct platform_driver uflash_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = uflash_match,
-	},
-	.probe		= uflash_probe,
-	.remove		= __devexit_p(uflash_remove),
-=======
 		.of_match_table = uflash_match,
 	},
 	.probe		= uflash_probe,
 	.remove_new	= uflash_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(uflash_driver);

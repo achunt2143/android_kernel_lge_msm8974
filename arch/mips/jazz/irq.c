@@ -14,19 +14,12 @@
 #include <linux/smp.h>
 #include <linux/spinlock.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-=======
 #include <linux/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/irq_cpu.h>
 #include <asm/i8259.h>
 #include <asm/io.h>
 #include <asm/jazz.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tlbmisc.h>
 
 static DEFINE_RAW_SPINLOCK(r4030_lock);
@@ -117,24 +110,11 @@ asmlinkage void plat_irq_dispatch(void)
 	}
 }
 
-<<<<<<< HEAD
-static void r4030_set_mode(enum clock_event_mode mode,
-                           struct clock_event_device *evt)
-{
-	/* Nothing to do ...  */
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct clock_event_device r4030_clockevent = {
 	.name		= "r4030",
 	.features	= CLOCK_EVT_FEAT_PERIODIC,
 	.rating		= 300,
 	.irq		= JAZZ_TIMER_IRQ,
-<<<<<<< HEAD
-	.set_mode	= r4030_set_mode,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t r4030_timer_interrupt(int irq, void *dev_id)
@@ -145,47 +125,23 @@ static irqreturn_t r4030_timer_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static struct irqaction r4030_timer_irqaction = {
-	.handler	= r4030_timer_interrupt,
-	.flags		= IRQF_TIMER,
-	.name		= "R4030 timer",
-};
-
 void __init plat_time_init(void)
 {
 	struct clock_event_device *cd = &r4030_clockevent;
-	struct irqaction *action = &r4030_timer_irqaction;
-=======
-void __init plat_time_init(void)
-{
-	struct clock_event_device *cd = &r4030_clockevent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cpu = smp_processor_id();
 
 	BUG_ON(HZ != 100);
 
-<<<<<<< HEAD
-	cd->cpumask             = cpumask_of(cpu);
-	clockevents_register_device(cd);
-	action->dev_id = cd;
-	setup_irq(JAZZ_TIMER_IRQ, action);
-=======
 	cd->cpumask		= cpumask_of(cpu);
 	clockevents_register_device(cd);
 	if (request_irq(JAZZ_TIMER_IRQ, r4030_timer_interrupt, IRQF_TIMER,
 			"R4030 timer", cd))
 		pr_err("Failed to register R4030 timer interrupt\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Set clock to 100Hz.
 	 *
-<<<<<<< HEAD
-	 * The R4030 timer receives an input clock of 1kHz which is divieded by
-=======
 	 * The R4030 timer receives an input clock of 1kHz which is divided by
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * a programmable 4-bit divider.  This makes it fairly inflexible.
 	 */
 	r4030_write_reg32(JAZZ_TIMER_INTERVAL, 9);

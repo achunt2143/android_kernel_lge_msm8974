@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * misc.c
  * 
@@ -25,13 +22,6 @@ unsigned int __machine_arch_type;
 #include <linux/compiler.h>	/* for inline */
 #include <linux/types.h>
 #include <linux/linkage.h>
-<<<<<<< HEAD
-
-static void putstr(const char *ptr);
-extern void error(char *x);
-
-#include <mach/uncompress.h>
-=======
 #include "misc.h"
 #ifdef CONFIG_ARCH_EP93XX
 #include "misc-ep93xx.h"
@@ -40,7 +30,6 @@ extern void error(char *x);
 static void putstr(const char *ptr);
 
 #include CONFIG_UNCOMPRESS_INCLUDE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_DEBUG_ICEDCC
 
@@ -114,12 +103,6 @@ static void putstr(const char *ptr)
 /*
  * gzip declarations
  */
-<<<<<<< HEAD
-extern char input_data[];
-extern char input_data_end[];
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned char *output_data;
 
 unsigned long free_mem_ptr;
@@ -145,12 +128,6 @@ asmlinkage void __div0(void)
 	error("Attempting division by 0!");
 }
 
-<<<<<<< HEAD
-extern int do_decompress(u8 *input, int len, u8 *output, void (*error)(char *x));
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 decompress_kernel(unsigned long output_start, unsigned long free_mem_ptr_p,
 		unsigned long free_mem_ptr_end_p,
@@ -163,12 +140,9 @@ decompress_kernel(unsigned long output_start, unsigned long free_mem_ptr_p,
 	free_mem_end_ptr	= free_mem_ptr_end_p;
 	__machine_arch_type	= arch_id;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_ARCH_EP93XX
 	ep93xx_decomp_setup();
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	arch_decomp_setup();
 
 	putstr("Uncompressing Linux...");
@@ -179,11 +153,8 @@ decompress_kernel(unsigned long output_start, unsigned long free_mem_ptr_p,
 	else
 		putstr(" done, booting the kernel.\n");
 }
-<<<<<<< HEAD
-=======
 
 void __fortify_panic(const u8 reason, size_t avail, size_t size)
 {
 	error("detected buffer overflow");
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Joystick device driver for the input driver suite.
  *
  * Copyright (c) 1999-2002 Vojtech Pavlik
  * Copyright (c) 1999 Colin Van Dyke
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -29,25 +18,14 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/mm.h>
-<<<<<<< HEAD
-#include <linux/miscdevice.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/poll.h>
 #include <linux/init.h>
 #include <linux/device.h>
-<<<<<<< HEAD
-
-MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
-MODULE_DESCRIPTION("Joystick device interfaces");
-MODULE_SUPPORTED_DEVICE("input/js");
-=======
 #include <linux/cdev.h>
 
 MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
 MODULE_DESCRIPTION("Joystick device interfaces");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 #define JOYDEV_MINOR_BASE	0
@@ -56,20 +34,13 @@ MODULE_LICENSE("GPL");
 
 struct joydev {
 	int open;
-<<<<<<< HEAD
-	int minor;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_handle handle;
 	wait_queue_head_t wait;
 	struct list_head client_list;
 	spinlock_t client_lock; /* protects client_list */
 	struct mutex mutex;
 	struct device dev;
-<<<<<<< HEAD
-=======
 	struct cdev cdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool exist;
 
 	struct js_corr corr[ABS_CNT];
@@ -94,12 +65,6 @@ struct joydev_client {
 	struct list_head node;
 };
 
-<<<<<<< HEAD
-static struct joydev *joydev_table[JOYDEV_MINORS];
-static DEFINE_MUTEX(joydev_table_mutex);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int joydev_correct(int value, struct js_corr *corr)
 {
 	switch (corr->type) {
@@ -117,11 +82,7 @@ static int joydev_correct(int value, struct js_corr *corr)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	return value < -32767 ? -32767 : (value > 32767 ? 32767 : value);
-=======
 	return clamp(value, -32767, 32767);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void joydev_pass_event(struct joydev_client *client,
@@ -221,8 +182,6 @@ static void joydev_detach_client(struct joydev *joydev,
 	synchronize_rcu();
 }
 
-<<<<<<< HEAD
-=======
 static void joydev_refresh_state(struct joydev *joydev)
 {
 	struct input_dev *dev = joydev->handle.dev;
@@ -234,7 +193,6 @@ static void joydev_refresh_state(struct joydev *joydev)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int joydev_open_device(struct joydev *joydev)
 {
 	int retval;
@@ -249,11 +207,8 @@ static int joydev_open_device(struct joydev *joydev)
 		retval = input_open_device(&joydev->handle);
 		if (retval)
 			joydev->open--;
-<<<<<<< HEAD
-=======
 		else
 			joydev_refresh_state(joydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&joydev->mutex);
@@ -295,42 +250,12 @@ static int joydev_release(struct inode *inode, struct file *file)
 	kfree(client);
 
 	joydev_close_device(joydev);
-<<<<<<< HEAD
-	put_device(&joydev->dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int joydev_open(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	struct joydev_client *client;
-	struct joydev *joydev;
-	int i = iminor(inode) - JOYDEV_MINOR_BASE;
-	int error;
-
-	if (i >= JOYDEV_MINORS)
-		return -ENODEV;
-
-	error = mutex_lock_interruptible(&joydev_table_mutex);
-	if (error)
-		return error;
-	joydev = joydev_table[i];
-	if (joydev)
-		get_device(&joydev->dev);
-	mutex_unlock(&joydev_table_mutex);
-
-	if (!joydev)
-		return -ENODEV;
-
-	client = kzalloc(sizeof(struct joydev_client), GFP_KERNEL);
-	if (!client) {
-		error = -ENOMEM;
-		goto err_put_joydev;
-	}
-=======
 	struct joydev *joydev =
 			container_of(inode->i_cdev, struct joydev, cdev);
 	struct joydev_client *client;
@@ -339,7 +264,6 @@ static int joydev_open(struct inode *inode, struct file *file)
 	client = kzalloc(sizeof(struct joydev_client), GFP_KERNEL);
 	if (!client)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&client->buffer_lock);
 	client->joydev = joydev;
@@ -350,22 +274,13 @@ static int joydev_open(struct inode *inode, struct file *file)
 		goto err_free_client;
 
 	file->private_data = client;
-<<<<<<< HEAD
-	nonseekable_open(inode, file);
-=======
 	stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
  err_free_client:
 	joydev_detach_client(joydev, client);
 	kfree(client);
-<<<<<<< HEAD
- err_put_joydev:
-	put_device(&joydev->dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -516,23 +431,14 @@ static ssize_t joydev_read(struct file *file, char __user *buf,
 }
 
 /* No kernel lock - fine */
-<<<<<<< HEAD
-static unsigned int joydev_poll(struct file *file, poll_table *wait)
-=======
 static __poll_t joydev_poll(struct file *file, poll_table *wait)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct joydev_client *client = file->private_data;
 	struct joydev *joydev = client->joydev;
 
 	poll_wait(file, &joydev->wait, wait);
-<<<<<<< HEAD
-	return (joydev_data_pending(client) ? (POLLIN | POLLRDNORM) : 0) |
-		(joydev->exist ?  0 : (POLLHUP | POLLERR));
-=======
 	return (joydev_data_pending(client) ? (EPOLLIN | EPOLLRDNORM) : 0) |
 		(joydev->exist ?  0 : (EPOLLHUP | EPOLLERR));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int joydev_handle_JSIOCSAXMAP(struct joydev *joydev,
@@ -545,24 +451,11 @@ static int joydev_handle_JSIOCSAXMAP(struct joydev *joydev,
 	len = min(len, sizeof(joydev->abspam));
 
 	/* Validate the map. */
-<<<<<<< HEAD
-	abspam = kmalloc(len, GFP_KERNEL);
-	if (!abspam)
-		return -ENOMEM;
-
-	if (copy_from_user(abspam, argp, len)) {
-		retval = -EFAULT;
-		goto out;
-	}
-
-	for (i = 0; i < joydev->nabs; i++) {
-=======
 	abspam = memdup_user(argp, len);
 	if (IS_ERR(abspam))
 		return PTR_ERR(abspam);
 
 	for (i = 0; i < len && i < joydev->nabs; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (abspam[i] > ABS_MAX) {
 			retval = -EINVAL;
 			goto out;
@@ -586,21 +479,6 @@ static int joydev_handle_JSIOCSBTNMAP(struct joydev *joydev,
 	int i;
 	int retval = 0;
 
-<<<<<<< HEAD
-	len = min(len, sizeof(joydev->keypam));
-
-	/* Validate the map. */
-	keypam = kmalloc(len, GFP_KERNEL);
-	if (!keypam)
-		return -ENOMEM;
-
-	if (copy_from_user(keypam, argp, len)) {
-		retval = -EFAULT;
-		goto out;
-	}
-
-	for (i = 0; i < joydev->nkey; i++) {
-=======
 	if (len % sizeof(*keypam))
 		return -EINVAL;
 
@@ -612,7 +490,6 @@ static int joydev_handle_JSIOCSBTNMAP(struct joydev *joydev,
 		return PTR_ERR(keypam);
 
 	for (i = 0; i < (len / 2) && i < joydev->nkey; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (keypam[i] > KEY_MAX || keypam[i] < BTN_MISC) {
 			retval = -EINVAL;
 			goto out;
@@ -622,11 +499,7 @@ static int joydev_handle_JSIOCSBTNMAP(struct joydev *joydev,
 	memcpy(joydev->keypam, keypam, len);
 
 	for (i = 0; i < joydev->nkey; i++)
-<<<<<<< HEAD
-		joydev->keymap[keypam[i] - BTN_MISC] = i;
-=======
 		joydev->keymap[joydev->keypam[i] - BTN_MISC] = i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  out:
 	kfree(keypam);
@@ -817,11 +690,7 @@ static long joydev_ioctl(struct file *file,
 
 	case JS_SET_ALL:
 		retval = copy_from_user(&joydev->glue, argp,
-<<<<<<< HEAD
-					sizeof(joydev->glue)) ? -EFAULT: 0;
-=======
 					sizeof(joydev->glue)) ? -EFAULT : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case JS_GET_ALL:
@@ -852,22 +721,6 @@ static const struct file_operations joydev_fops = {
 	.llseek		= no_llseek,
 };
 
-<<<<<<< HEAD
-static int joydev_install_chrdev(struct joydev *joydev)
-{
-	joydev_table[joydev->minor] = joydev;
-	return 0;
-}
-
-static void joydev_remove_chrdev(struct joydev *joydev)
-{
-	mutex_lock(&joydev_table_mutex);
-	joydev_table[joydev->minor] = NULL;
-	mutex_unlock(&joydev_table_mutex);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Mark device non-existent. This disables writes, ioctls and
  * prevents new users from opening the device. Already posted
@@ -886,27 +739,12 @@ static void joydev_cleanup(struct joydev *joydev)
 
 	joydev_mark_dead(joydev);
 	joydev_hangup(joydev);
-<<<<<<< HEAD
-	joydev_remove_chrdev(joydev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* joydev is marked dead so no one else accesses joydev->open */
 	if (joydev->open)
 		input_close_device(handle);
 }
 
-<<<<<<< HEAD
-
-static bool joydev_match(struct input_handler *handler, struct input_dev *dev)
-{
-	/* Avoid touchpads and touchscreens */
-	if (test_bit(EV_KEY, dev->evbit) && test_bit(BTN_TOUCH, dev->keybit))
-		return false;
-
-	/* Avoid tablets, digitisers and similar devices */
-	if (test_bit(EV_KEY, dev->evbit) && test_bit(BTN_DIGI, dev->keybit))
-=======
 /*
  * These codes are copied from hid-ids.h, unfortunately there is no common
  * usb_ids/bt_ids.h header.
@@ -1065,7 +903,6 @@ static bool joydev_match(struct input_handler *handler, struct input_dev *dev)
 
 	/* Avoid absolute mice */
 	if (joydev_dev_is_absolute_mouse(dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	return true;
@@ -1075,23 +912,6 @@ static int joydev_connect(struct input_handler *handler, struct input_dev *dev,
 			  const struct input_device_id *id)
 {
 	struct joydev *joydev;
-<<<<<<< HEAD
-	int i, j, t, minor;
-	int error;
-
-	for (minor = 0; minor < JOYDEV_MINORS; minor++)
-		if (!joydev_table[minor])
-			break;
-
-	if (minor == JOYDEV_MINORS) {
-		pr_err("no more free joydev devices\n");
-		return -ENFILE;
-	}
-
-	joydev = kzalloc(sizeof(struct joydev), GFP_KERNEL);
-	if (!joydev)
-		return -ENOMEM;
-=======
 	int i, j, t, minor, dev_no;
 	int error;
 
@@ -1107,18 +927,11 @@ static int joydev_connect(struct input_handler *handler, struct input_dev *dev,
 		error = -ENOMEM;
 		goto err_free_minor;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&joydev->client_list);
 	spin_lock_init(&joydev->client_lock);
 	mutex_init(&joydev->mutex);
 	init_waitqueue_head(&joydev->wait);
-<<<<<<< HEAD
-
-	dev_set_name(&joydev->dev, "js%d", minor);
-	joydev->exist = true;
-	joydev->minor = minor;
-=======
 	joydev->exist = true;
 
 	dev_no = minor;
@@ -1126,27 +939,17 @@ static int joydev_connect(struct input_handler *handler, struct input_dev *dev,
 	if (dev_no < JOYDEV_MINOR_BASE + JOYDEV_MINORS)
 		dev_no -= JOYDEV_MINOR_BASE;
 	dev_set_name(&joydev->dev, "js%d", dev_no);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	joydev->handle.dev = input_get_device(dev);
 	joydev->handle.name = dev_name(&joydev->dev);
 	joydev->handle.handler = handler;
 	joydev->handle.private = joydev;
 
-<<<<<<< HEAD
-	for (i = 0; i < ABS_CNT; i++)
-		if (test_bit(i, dev->absbit)) {
-			joydev->absmap[i] = joydev->nabs;
-			joydev->abspam[joydev->nabs] = i;
-			joydev->nabs++;
-		}
-=======
 	for_each_set_bit(i, dev->absbit, ABS_CNT) {
 		joydev->absmap[i] = joydev->nabs;
 		joydev->abspam[joydev->nabs] = i;
 		joydev->nabs++;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = BTN_JOYSTICK - BTN_MISC; i < KEY_MAX - BTN_MISC + 1; i++)
 		if (test_bit(i + BTN_MISC, dev->keybit)) {
@@ -1166,10 +969,6 @@ static int joydev_connect(struct input_handler *handler, struct input_dev *dev,
 		j = joydev->abspam[i];
 		if (input_abs_get_max(dev, j) == input_abs_get_min(dev, j)) {
 			joydev->corr[i].type = JS_CORR_NONE;
-<<<<<<< HEAD
-			joydev->abs[i] = input_abs_get_val(dev, j);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		joydev->corr[i].type = JS_CORR_BROKEN;
@@ -1184,21 +983,10 @@ static int joydev_connect(struct input_handler *handler, struct input_dev *dev,
 		if (t) {
 			joydev->corr[i].coef[2] = (1 << 29) / t;
 			joydev->corr[i].coef[3] = (1 << 29) / t;
-<<<<<<< HEAD
-
-			joydev->abs[i] =
-				joydev_correct(input_abs_get_val(dev, j),
-					       joydev->corr + i);
-		}
-	}
-
-	joydev->dev.devt = MKDEV(INPUT_MAJOR, JOYDEV_MINOR_BASE + minor);
-=======
 		}
 	}
 
 	joydev->dev.devt = MKDEV(INPUT_MAJOR, minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	joydev->dev.class = &input_class;
 	joydev->dev.parent = &dev->dev;
 	joydev->dev.release = joydev_free;
@@ -1208,17 +996,9 @@ static int joydev_connect(struct input_handler *handler, struct input_dev *dev,
 	if (error)
 		goto err_free_joydev;
 
-<<<<<<< HEAD
-	error = joydev_install_chrdev(joydev);
-	if (error)
-		goto err_unregister_handle;
-
-	error = device_add(&joydev->dev);
-=======
 	cdev_init(&joydev->cdev, &joydev_fops);
 
 	error = cdev_device_add(&joydev->cdev, &joydev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto err_cleanup_joydev;
 
@@ -1226,18 +1006,11 @@ static int joydev_connect(struct input_handler *handler, struct input_dev *dev,
 
  err_cleanup_joydev:
 	joydev_cleanup(joydev);
-<<<<<<< HEAD
- err_unregister_handle:
-	input_unregister_handle(&joydev->handle);
- err_free_joydev:
-	put_device(&joydev->dev);
-=======
 	input_unregister_handle(&joydev->handle);
  err_free_joydev:
 	put_device(&joydev->dev);
  err_free_minor:
 	input_free_minor(minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1245,14 +1018,9 @@ static void joydev_disconnect(struct input_handle *handle)
 {
 	struct joydev *joydev = handle->private;
 
-<<<<<<< HEAD
-	device_del(&joydev->dev);
-	joydev_cleanup(joydev);
-=======
 	cdev_device_del(&joydev->cdev, &joydev->dev);
 	joydev_cleanup(joydev);
 	input_free_minor(MINOR(joydev->dev.devt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_unregister_handle(handle);
 	put_device(&joydev->dev);
 }
@@ -1268,15 +1036,12 @@ static const struct input_device_id joydev_ids[] = {
 		.flags = INPUT_DEVICE_ID_MATCH_EVBIT |
 				INPUT_DEVICE_ID_MATCH_ABSBIT,
 		.evbit = { BIT_MASK(EV_ABS) },
-<<<<<<< HEAD
-=======
 		.absbit = { BIT_MASK(ABS_Z) },
 	},
 	{
 		.flags = INPUT_DEVICE_ID_MATCH_EVBIT |
 				INPUT_DEVICE_ID_MATCH_ABSBIT,
 		.evbit = { BIT_MASK(EV_ABS) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.absbit = { BIT_MASK(ABS_WHEEL) },
 	},
 	{
@@ -1313,11 +1078,7 @@ static struct input_handler joydev_handler = {
 	.match		= joydev_match,
 	.connect	= joydev_connect,
 	.disconnect	= joydev_disconnect,
-<<<<<<< HEAD
-	.fops		= &joydev_fops,
-=======
 	.legacy_minors	= true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.minor		= JOYDEV_MINOR_BASE,
 	.name		= "joydev",
 	.id_table	= joydev_ids,

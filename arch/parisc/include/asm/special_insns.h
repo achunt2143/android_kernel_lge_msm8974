@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#ifndef __PARISC_SPECIAL_INSNS_H
-#define __PARISC_SPECIAL_INSNS_H
-
-#define mfctl(reg)	({		\
-	unsigned long cr;		\
-	__asm__ __volatile__(		\
-		"mfctl " #reg ",%0" :	\
-		 "=r" (cr)		\
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __PARISC_SPECIAL_INSNS_H
 #define __PARISC_SPECIAL_INSNS_H
@@ -51,7 +41,6 @@
 	__asm__ __volatile__(		\
 		"mfctl %1,%0" :		\
 		 "=r" (cr) : "i" (reg)	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	);				\
 	cr;				\
 })
@@ -61,39 +50,18 @@
 		: /* no outputs */ \
 		: "r" (gr), "i" (cr) : "memory")
 
-<<<<<<< HEAD
-/* these are here to de-mystefy the calling code, and to provide hooks */
-/* which I needed for debugging EIEM problems -PB */
-#define get_eiem() mfctl(15)
-static inline void set_eiem(unsigned long val)
-{
-	mtctl(val, 15);
-}
-=======
 #define get_eiem()	mfctl(CR_EIEM)
 #define set_eiem(val)	mtctl(val, CR_EIEM)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define mfsp(reg)	({		\
 	unsigned long cr;		\
 	__asm__ __volatile__(		\
-<<<<<<< HEAD
-		"mfsp " #reg ",%0" :	\
-		 "=r" (cr)		\
-=======
 		"mfsp %%sr%1,%0"	\
 		: "=r" (cr) : "i"(reg)	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	);				\
 	cr;				\
 })
 
-<<<<<<< HEAD
-#define mtsp(gr, cr) \
-	__asm__ __volatile__("mtsp %0,%1" \
-		: /* no outputs */ \
-		: "r" (gr), "i" (cr) : "memory")
-=======
 #define mtsp(val, cr) \
 	{ if (__builtin_constant_p(val) && ((val) == 0)) \
 	 __asm__ __volatile__("mtsp %%r0,%0" : : "i" (cr) : "memory"); \
@@ -101,6 +69,5 @@ static inline void set_eiem(unsigned long val)
 	 __asm__ __volatile__("mtsp %0,%1" \
 		: /* no outputs */ \
 		: "r" (val), "i" (cr) : "memory"); }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __PARISC_SPECIAL_INSNS_H */

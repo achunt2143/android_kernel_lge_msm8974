@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM compaction
 
@@ -9,19 +6,6 @@
 #define _TRACE_COMPACTION_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/tracepoint.h>
-#include "gfpflags.h"
-
-DECLARE_EVENT_CLASS(mm_compaction_isolate_template,
-
-	TP_PROTO(unsigned long nr_scanned,
-		unsigned long nr_taken),
-
-	TP_ARGS(nr_scanned, nr_taken),
-
-	TP_STRUCT__entry(
-=======
 #include <linux/list.h>
 #include <linux/tracepoint.h>
 #include <trace/events/mmflags.h>
@@ -40,55 +24,26 @@ DECLARE_EVENT_CLASS(mm_compaction_isolate_template,
 	TP_STRUCT__entry(
 		__field(unsigned long, start_pfn)
 		__field(unsigned long, end_pfn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(unsigned long, nr_scanned)
 		__field(unsigned long, nr_taken)
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-=======
 		__entry->start_pfn = start_pfn;
 		__entry->end_pfn = end_pfn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->nr_scanned = nr_scanned;
 		__entry->nr_taken = nr_taken;
 	),
 
-<<<<<<< HEAD
-	TP_printk("nr_scanned=%lu nr_taken=%lu",
-=======
 	TP_printk("range=(0x%lx ~ 0x%lx) nr_scanned=%lu nr_taken=%lu",
 		__entry->start_pfn,
 		__entry->end_pfn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->nr_scanned,
 		__entry->nr_taken)
 );
 
 DEFINE_EVENT(mm_compaction_isolate_template, mm_compaction_isolate_migratepages,
 
-<<<<<<< HEAD
-	TP_PROTO(unsigned long nr_scanned,
-		unsigned long nr_taken),
-
-	TP_ARGS(nr_scanned, nr_taken)
-);
-
-DEFINE_EVENT(mm_compaction_isolate_template, mm_compaction_isolate_freepages,
-	TP_PROTO(unsigned long nr_scanned,
-		unsigned long nr_taken),
-
-	TP_ARGS(nr_scanned, nr_taken)
-);
-
-TRACE_EVENT(mm_compaction_migratepages,
-
-	TP_PROTO(unsigned long nr_migrated,
-		unsigned long nr_failed),
-
-	TP_ARGS(nr_migrated, nr_failed),
-=======
 	TP_PROTO(
 		unsigned long start_pfn,
 		unsigned long end_pfn,
@@ -127,7 +82,6 @@ TRACE_EVENT(mm_compaction_migratepages,
 		unsigned int nr_succeeded),
 
 	TP_ARGS(nr_migratepages, nr_succeeded),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(unsigned long, nr_migrated)
@@ -135,13 +89,8 @@ TRACE_EVENT(mm_compaction_migratepages,
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->nr_migrated = nr_migrated;
-		__entry->nr_failed = nr_failed;
-=======
 		__entry->nr_migrated = nr_succeeded;
 		__entry->nr_failed = nr_migratepages - nr_succeeded;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("nr_migrated=%lu nr_failed=%lu",
@@ -149,8 +98,6 @@ TRACE_EVENT(mm_compaction_migratepages,
 		__entry->nr_failed)
 );
 
-<<<<<<< HEAD
-=======
 TRACE_EVENT(mm_compaction_begin,
 	TP_PROTO(struct compact_control *cc, unsigned long zone_start,
 		unsigned long zone_end, bool sync),
@@ -402,7 +349,6 @@ DEFINE_EVENT(kcompactd_wake_template, mm_compaction_kcompactd_wake,
 	TP_ARGS(nid, order, highest_zoneidx)
 );
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _TRACE_COMPACTION_H */
 

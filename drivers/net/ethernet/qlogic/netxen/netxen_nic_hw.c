@@ -1,38 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2003 - 2009 NetXen, Inc.
  * Copyright (C) 2009 - QLogic Corporation.
  * All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston,
- * MA  02111-1307, USA.
- *
- * The full GNU General Public License is included in this distribution
- * in the file called "COPYING".
- *
- */
-
-=======
  */
 
 #include <linux/io-64-nonatomic-lo-hi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include "netxen_nic.h"
 #include "netxen_nic_hw.h"
@@ -56,23 +29,6 @@ static void netxen_nic_io_write_128M(struct netxen_adapter *adapter,
 		void __iomem *addr, u32 data);
 static u32 netxen_nic_io_read_128M(struct netxen_adapter *adapter,
 		void __iomem *addr);
-<<<<<<< HEAD
-#ifndef readq
-static inline u64 readq(void __iomem *addr)
-{
-	return readl(addr) | (((u64) readl(addr + 4)) << 32LL);
-}
-#endif
-
-#ifndef writeq
-static inline void writeq(u64 val, void __iomem *addr)
-{
-	writel(((u32) (val)), (addr));
-	writel(((u32) (val >> 32)), (addr + 4));
-}
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCI_OFFSET_FIRST_RANGE(adapter, off)    \
 	((adapter)->ahw.pci_base0 + (off))
@@ -378,11 +334,7 @@ static int netxen_niu_disable_xg_port(struct netxen_adapter *adapter)
 	if (NX_IS_REVISION_P3(adapter->ahw.revision_id))
 		return 0;
 
-<<<<<<< HEAD
-	if (port > NETXEN_NIU_MAX_XG_PORTS)
-=======
 	if (port >= NETXEN_NIU_MAX_XG_PORTS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	mac_cfg = 0;
@@ -409,11 +361,7 @@ static int netxen_p2_nic_set_promisc(struct netxen_adapter *adapter, u32 mode)
 	u32 port = adapter->physical_port;
 	u16 board_type = adapter->ahw.board_type;
 
-<<<<<<< HEAD
-	if (port > NETXEN_NIU_MAX_XG_PORTS)
-=======
 	if (port >= NETXEN_NIU_MAX_XG_PORTS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	mac_cfg = NXRD32(adapter, NETXEN_NIU_XGE_CONFIG_0 + (0x10000 * port));
@@ -557,17 +505,10 @@ static void netxen_p2_nic_set_multi(struct net_device *netdev)
 {
 	struct netxen_adapter *adapter = netdev_priv(netdev);
 	struct netdev_hw_addr *ha;
-<<<<<<< HEAD
-	u8 null_addr[6];
-	int i;
-
-	memset(null_addr, 0, 6);
-=======
 	u8 null_addr[ETH_ALEN];
 	int i;
 
 	eth_zero_addr(null_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netdev->flags & IFF_PROMISC) {
 
@@ -609,14 +550,8 @@ static int
 netxen_send_cmd_descs(struct netxen_adapter *adapter,
 		struct cmd_desc_type0 *cmd_desc_arr, int nr_desc)
 {
-<<<<<<< HEAD
-	u32 i, producer, consumer;
-	struct netxen_cmd_buffer *pbuf;
-	struct cmd_desc_type0 *cmd_desc;
-=======
 	u32 i, producer;
 	struct netxen_cmd_buffer *pbuf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nx_host_tx_ring *tx_ring;
 
 	i = 0;
@@ -628,10 +563,6 @@ netxen_send_cmd_descs(struct netxen_adapter *adapter,
 	__netif_tx_lock_bh(tx_ring->txq);
 
 	producer = tx_ring->producer;
-<<<<<<< HEAD
-	consumer = tx_ring->sw_consumer;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (nr_desc >= netxen_tx_avail(tx_ring)) {
 		netif_tx_stop_queue(tx_ring->txq);
@@ -646,11 +577,6 @@ netxen_send_cmd_descs(struct netxen_adapter *adapter,
 	}
 
 	do {
-<<<<<<< HEAD
-		cmd_desc = &cmd_desc_arr[i];
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pbuf = &tx_ring->cmd_buf_arr[producer];
 		pbuf->skb = NULL;
 		pbuf->frag_count = 0;
@@ -687,11 +613,7 @@ nx_p3_sre_macaddr_change(struct netxen_adapter *adapter, u8 *addr, unsigned op)
 
 	mac_req = (nx_mac_req_t *)&req.words[0];
 	mac_req->op = op;
-<<<<<<< HEAD
-	memcpy(mac_req->mac_addr, addr, 6);
-=======
 	memcpy(mac_req->mac_addr, addr, ETH_ALEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return netxen_send_cmd_descs(adapter, (struct cmd_desc_type0 *)&req, 1);
 }
@@ -706,28 +628,16 @@ static int nx_p3_nic_add_mac(struct netxen_adapter *adapter,
 	list_for_each(head, del_list) {
 		cur = list_entry(head, nx_mac_list_t, list);
 
-<<<<<<< HEAD
-		if (memcmp(addr, cur->mac_addr, ETH_ALEN) == 0) {
-=======
 		if (ether_addr_equal(addr, cur->mac_addr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_move_tail(head, &adapter->mac_list);
 			return 0;
 		}
 	}
 
 	cur = kzalloc(sizeof(nx_mac_list_t), GFP_ATOMIC);
-<<<<<<< HEAD
-	if (cur == NULL) {
-		printk(KERN_ERR "%s: failed to add mac address filter\n",
-				adapter->netdev->name);
-		return -ENOMEM;
-	}
-=======
 	if (cur == NULL)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(cur->mac_addr, addr, ETH_ALEN);
 	list_add_tail(&cur->list, &adapter->mac_list);
 	return nx_p3_sre_macaddr_change(adapter,
@@ -979,11 +889,7 @@ int netxen_config_ipaddr(struct netxen_adapter *adapter, __be32 ip, int cmd)
 
 	rv = netxen_send_cmd_descs(adapter, (struct cmd_desc_type0 *)&req, 1);
 	if (rv != 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR "%s: could not notify %s IP 0x%x reuqest\n",
-=======
 		printk(KERN_ERR "%s: could not notify %s IP 0x%x request\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				adapter->netdev->name,
 				(cmd == NX_IP_UP) ? "Add" : "Remove", ip);
 	}
@@ -1048,25 +954,8 @@ int netxen_send_lro_cleanup(struct netxen_adapter *adapter)
 int netxen_nic_change_mtu(struct net_device *netdev, int mtu)
 {
 	struct netxen_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	int max_mtu;
 	int rc = 0;
 
-	if (NX_IS_REVISION_P3(adapter->ahw.revision_id))
-		max_mtu = P3_MAX_MTU;
-	else
-		max_mtu = P2_MAX_MTU;
-
-	if (mtu > max_mtu) {
-		printk(KERN_ERR "%s: mtu > %d bytes unsupported\n",
-				netdev->name, max_mtu);
-		return -EINVAL;
-	}
-
-=======
-	int rc = 0;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (adapter->set_mtu)
 		rc = adapter->set_mtu(adapter, mtu);
 
@@ -1081,37 +970,24 @@ static int netxen_get_flash_block(struct netxen_adapter *adapter, int base,
 {
 	int i, v, addr;
 	__le32 *ptr32;
-<<<<<<< HEAD
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	addr = base;
 	ptr32 = buf;
 	for (i = 0; i < size / sizeof(u32); i++) {
-<<<<<<< HEAD
-		if (netxen_rom_fast_read(adapter, addr, &v) == -1)
-			return -1;
-=======
 		ret = netxen_rom_fast_read(adapter, addr, &v);
 		if (ret)
 			return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*ptr32 = cpu_to_le32(v);
 		ptr32++;
 		addr += sizeof(u32);
 	}
 	if ((char *)buf + size > (char *)ptr32) {
 		__le32 local;
-<<<<<<< HEAD
-		if (netxen_rom_fast_read(adapter, addr, &v) == -1)
-			return -1;
-=======
 		ret = netxen_rom_fast_read(adapter, addr, &v);
 		if (ret)
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local = cpu_to_le32(v);
 		memcpy(ptr32, &local, (char *)buf + size - (char *)ptr32);
 	}
@@ -2023,11 +1899,7 @@ void netxen_nic_set_link_parameters(struct netxen_adapter *adapter)
 				if (adapter->phy_read &&
 				    adapter->phy_read(adapter,
 						      NETXEN_NIU_GB_MII_MGMT_ADDR_AUTONEG,
-<<<<<<< HEAD
-						      &autoneg) != 0)
-=======
 						      &autoneg) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					adapter->link_autoneg = autoneg;
 			} else
 				goto link_down;
@@ -2419,11 +2291,7 @@ netxen_md_rdqueue(struct netxen_adapter *adapter,
 				 loop_cnt++) {
 		NX_WR_DUMP_REG(select_addr, adapter->ahw.pci_base0, queue_id);
 		read_addr = queueEntry->read_addr;
-<<<<<<< HEAD
-		for (k = 0; k < read_cnt; k--) {
-=======
 		for (k = 0; k < read_cnt; k++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			NX_RD_DUMP_REG(read_addr, adapter->ahw.pci_base0,
 							&read_value);
 			*data_buff++ = read_value;
@@ -2462,11 +2330,7 @@ static int netxen_md_entry_err_chk(struct netxen_adapter *adapter,
 static int netxen_parse_md_template(struct netxen_adapter *adapter)
 {
 	int num_of_entries, buff_level, e_cnt, esize;
-<<<<<<< HEAD
-	int end_cnt = 0, rv = 0, sane_start = 0, sane_end = 0;
-=======
 	int rv = 0, sane_start = 0, sane_end = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *dbuff;
 	void *template_buff = adapter->mdump.md_template;
 	char *dump_buff = adapter->mdump.md_capture_buff;
@@ -2502,11 +2366,6 @@ static int netxen_parse_md_template(struct netxen_adapter *adapter)
 			break;
 		case RDEND:
 			entry->hdr.driver_flags |= NX_DUMP_SKIP;
-<<<<<<< HEAD
-			if (!sane_end)
-				end_cnt = e_cnt;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sane_end += 1;
 			break;
 		case CNTRL:
@@ -2621,19 +2480,10 @@ netxen_collect_minidump(struct netxen_adapter *adapter)
 {
 	int ret = 0;
 	struct netxen_minidump_template_hdr *hdr;
-<<<<<<< HEAD
-	struct timespec val;
-	hdr = (struct netxen_minidump_template_hdr *)
-				adapter->mdump.md_template;
-	hdr->driver_capture_mask = adapter->mdump.md_capture_mask;
-	jiffies_to_timespec(jiffies, &val);
-	hdr->driver_timestamp = (u32) val.tv_sec;
-=======
 	hdr = (struct netxen_minidump_template_hdr *)
 				adapter->mdump.md_template;
 	hdr->driver_capture_mask = adapter->mdump.md_capture_mask;
 	hdr->driver_timestamp = ktime_get_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr->driver_info_word2 = adapter->fw_version;
 	hdr->driver_info_word3 = NXRD32(adapter, CRB_DRIVER_VERSION);
 	ret = netxen_parse_md_template(adapter);
@@ -2669,23 +2519,10 @@ netxen_dump_fw(struct netxen_adapter *adapter)
 					adapter->mdump.md_capture_size;
 	if (!adapter->mdump.md_capture_buff) {
 		adapter->mdump.md_capture_buff =
-<<<<<<< HEAD
-				vmalloc(adapter->mdump.md_dump_size);
-		if (!adapter->mdump.md_capture_buff) {
-			dev_info(&adapter->pdev->dev,
-				"Unable to allocate memory for minidump "
-				"capture_buffer(%d bytes).\n",
-					adapter->mdump.md_dump_size);
-			return;
-		}
-		memset(adapter->mdump.md_capture_buff, 0,
-				adapter->mdump.md_dump_size);
-=======
 				vzalloc(adapter->mdump.md_dump_size);
 		if (!adapter->mdump.md_capture_buff)
 			return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (netxen_collect_minidump(adapter)) {
 			adapter->mdump.has_valid_dump = 0;
 			adapter->mdump.md_dump_size = 0;

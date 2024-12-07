@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_OF_H
 #define _LINUX_OF_H
 /*
@@ -13,23 +10,6 @@
  * Updates for PPC64 by Peter Bergner & David Engebretsen, IBM Corp.
  * Updates for SPARC64 by David S. Miller
  * Derived from PowerPC and Sparc prom.h files by Stephen Rothwell, IBM Corp.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-#include <linux/types.h>
-#include <linux/bitops.h>
-#include <linux/errno.h>
-#include <linux/kref.h>
-#include <linux/mod_devicetable.h>
-#include <linux/spinlock.h>
-
-#include <asm/byteorder.h>
-#include <asm/errno.h>
-=======
  */
 #include <linux/types.h>
 #include <linux/bitops.h>
@@ -41,7 +21,6 @@
 #include <linux/list.h>
 
 #include <asm/byteorder.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef u32 phandle;
 typedef u32 ihandle;
@@ -51,10 +30,6 @@ struct property {
 	int	length;
 	void	*value;
 	struct property *next;
-<<<<<<< HEAD
-	unsigned long _flags;
-	unsigned int unique_id;
-=======
 #if defined(CONFIG_OF_DYNAMIC) || defined(CONFIG_SPARC)
 	unsigned long _flags;
 #endif
@@ -64,7 +39,6 @@ struct property {
 #if defined(CONFIG_OF_KOBJ)
 	struct bin_attribute attr;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #if defined(CONFIG_SPARC)
@@ -73,56 +47,33 @@ struct of_irq_controller;
 
 struct device_node {
 	const char *name;
-<<<<<<< HEAD
-	const char *type;
-	phandle phandle;
-	char	*full_name;
-=======
 	phandle phandle;
 	const char *full_name;
 	struct fwnode_handle fwnode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct	property *properties;
 	struct	property *deadprops;	/* removed properties */
 	struct	device_node *parent;
 	struct	device_node *child;
 	struct	device_node *sibling;
-<<<<<<< HEAD
-	struct	device_node *next;	/* next device of same type */
-	struct	device_node *allnext;	/* next in list of all nodes */
-	struct	proc_dir_entry *pde;	/* this node's proc directory */
-	struct	kref kref;
-	unsigned long _flags;
-	void	*data;
-#if defined(CONFIG_SPARC)
-	char	*path_component_name;
-=======
 #if defined(CONFIG_OF_KOBJ)
 	struct	kobject kobj;
 #endif
 	unsigned long _flags;
 	void	*data;
 #if defined(CONFIG_SPARC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int unique_id;
 	struct of_irq_controller *irq_trans;
 #endif
 };
 
-<<<<<<< HEAD
-#define MAX_PHANDLE_ARGS 8
-=======
 #define MAX_PHANDLE_ARGS 16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct of_phandle_args {
 	struct device_node *np;
 	int args_count;
 	uint32_t args[MAX_PHANDLE_ARGS];
 };
 
-<<<<<<< HEAD
-=======
 struct of_phandle_iterator {
 	/* Common iterator information */
 	const char *cells_name;
@@ -173,7 +124,6 @@ static inline void of_node_init(struct device_node *node)
 #define of_node_kobj(n) NULL
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_OF_DYNAMIC
 extern struct device_node *of_node_get(struct device_node *node);
 extern void of_node_put(struct device_node *node);
@@ -185,22 +135,6 @@ static inline struct device_node *of_node_get(struct device_node *node)
 }
 static inline void of_node_put(struct device_node *node) { }
 #endif /* !CONFIG_OF_DYNAMIC */
-<<<<<<< HEAD
-
-#ifdef CONFIG_OF
-
-/* Pointer for first entry in chain of all nodes. */
-extern struct device_node *allnodes;
-extern struct device_node *of_chosen;
-extern struct device_node *of_aliases;
-extern rwlock_t devtree_lock;
-
-static inline bool of_have_populated_dt(void)
-{
-	return allnodes != NULL;
-}
-
-=======
 DEFINE_FREE(device_node, struct device_node *, if (_T) of_node_put(_T))
 
 /* Pointer for first entry in chain of all nodes. */
@@ -248,37 +182,27 @@ static inline bool is_of_node(const struct fwnode_handle *fwnode)
 			&__of_fwnode_handle_node->fwnode : NULL;	\
 	})
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool of_node_is_root(const struct device_node *node)
 {
 	return node && (node->parent == NULL);
 }
 
-<<<<<<< HEAD
-static inline int of_node_check_flag(struct device_node *n, unsigned long flag)
-=======
 static inline int of_node_check_flag(const struct device_node *n, unsigned long flag)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return test_bit(flag, &n->_flags);
 }
 
-<<<<<<< HEAD
-=======
 static inline int of_node_test_and_set_flag(struct device_node *n,
 					    unsigned long flag)
 {
 	return test_and_set_bit(flag, &n->_flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void of_node_set_flag(struct device_node *n, unsigned long flag)
 {
 	set_bit(flag, &n->_flags);
 }
 
-<<<<<<< HEAD
-=======
 static inline void of_node_clear_flag(struct device_node *n, unsigned long flag)
 {
 	clear_bit(flag, &n->_flags);
@@ -302,7 +226,6 @@ static inline void of_property_clear_flag(struct property *p, unsigned long flag
 #endif
 
 extern struct device_node *__of_find_all_nodes(struct device_node *prev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct device_node *of_find_all_nodes(struct device_node *prev);
 
 /*
@@ -313,13 +236,8 @@ extern struct device_node *of_find_all_nodes(struct device_node *prev);
 static inline u64 of_read_number(const __be32 *cell, int size)
 {
 	u64 r = 0;
-<<<<<<< HEAD
-	while (size--)
-		r = (r << 32) | be32_to_cpu(*(cell++));
-=======
 	for (; size--; cell++)
 		r = (r << 32) | be32_to_cpu(*cell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
@@ -330,58 +248,6 @@ static inline unsigned long of_read_ulong(const __be32 *cell, int size)
 	return of_read_number(cell, size);
 }
 
-<<<<<<< HEAD
-#include <asm/prom.h>
-
-/* Default #address and #size cells.  Allow arch asm/prom.h to override */
-#if !defined(OF_ROOT_NODE_ADDR_CELLS_DEFAULT)
-#define OF_ROOT_NODE_ADDR_CELLS_DEFAULT 1
-#define OF_ROOT_NODE_SIZE_CELLS_DEFAULT 1
-#endif
-
-/* Default string compare functions, Allow arch asm/prom.h to override */
-#if !defined(of_compat_cmp)
-#define of_compat_cmp(s1, s2, l)	strcasecmp((s1), (s2))
-#define of_prop_cmp(s1, s2)		strcmp((s1), (s2))
-#define of_node_cmp(s1, s2)		strcasecmp((s1), (s2))
-#endif
-
-/* flag descriptions */
-#define OF_DYNAMIC	1 /* node and properties were allocated via kmalloc */
-#define OF_DETACHED	2 /* node has been detached from the device tree */
-
-#define OF_IS_DYNAMIC(x) test_bit(OF_DYNAMIC, &x->_flags)
-#define OF_MARK_DYNAMIC(x) set_bit(OF_DYNAMIC, &x->_flags)
-
-#define OF_BAD_ADDR	((u64)-1)
-
-#ifndef of_node_to_nid
-static inline int of_node_to_nid(struct device_node *np) { return -1; }
-#define of_node_to_nid of_node_to_nid
-#endif
-
-extern struct device_node *of_find_node_by_name(struct device_node *from,
-	const char *name);
-#define for_each_node_by_name(dn, name) \
-	for (dn = of_find_node_by_name(NULL, name); dn; \
-	     dn = of_find_node_by_name(dn, name))
-extern struct device_node *of_find_node_by_type(struct device_node *from,
-	const char *type);
-#define for_each_node_by_type(dn, type) \
-	for (dn = of_find_node_by_type(NULL, type); dn; \
-	     dn = of_find_node_by_type(dn, type))
-extern struct device_node *of_find_compatible_node(struct device_node *from,
-	const char *type, const char *compat);
-#define for_each_compatible_node(dn, type, compatible) \
-	for (dn = of_find_compatible_node(NULL, type, compatible); dn; \
-	     dn = of_find_compatible_node(dn, type, compatible))
-extern struct device_node *of_find_matching_node(struct device_node *from,
-	const struct of_device_id *matches);
-#define for_each_matching_node(dn, matches) \
-	for (dn = of_find_matching_node(NULL, matches); dn; \
-	     dn = of_find_matching_node(dn, matches))
-extern struct device_node *of_find_node_by_path(const char *path);
-=======
 #if defined(CONFIG_SPARC)
 #include <asm/prom.h>
 #endif
@@ -418,7 +284,6 @@ static inline struct device_node *of_find_node_by_path(const char *path)
 	return of_find_node_opts_by_path(path, NULL);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct device_node *of_find_node_by_phandle(phandle handle);
 extern struct device_node *of_get_parent(const struct device_node *node);
 extern struct device_node *of_get_next_parent(struct device_node *node);
@@ -426,22 +291,6 @@ extern struct device_node *of_get_next_child(const struct device_node *node,
 					     struct device_node *prev);
 extern struct device_node *of_get_next_available_child(
 	const struct device_node *node, struct device_node *prev);
-<<<<<<< HEAD
-
-#define for_each_child_of_node(parent, child) \
-	for (child = of_get_next_child(parent, NULL); child != NULL; \
-	     child = of_get_next_child(parent, child))
-
-#define for_each_available_child_of_node(parent, child) \
-	for (child = of_get_next_available_child(parent, NULL); child != NULL; \
-	     child = of_get_next_available_child(parent, child))
-
-extern struct device_node *of_find_node_with_property(
-	struct device_node *from, const char *prop_name);
-#define for_each_node_with_property(dn, prop_name) \
-	for (dn = of_find_node_with_property(NULL, prop_name); dn; \
-	     dn = of_find_node_with_property(dn, prop_name))
-=======
 extern struct device_node *of_get_next_reserved_child(
 	const struct device_node *node, struct device_node *prev);
 
@@ -455,27 +304,10 @@ extern struct device_node *of_find_next_cache_node(const struct device_node *);
 extern int of_find_last_cache_level(unsigned int cpu);
 extern struct device_node *of_find_node_with_property(
 	struct device_node *from, const char *prop_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct property *of_find_property(const struct device_node *np,
 					 const char *name,
 					 int *lenp);
-<<<<<<< HEAD
-extern int of_property_read_u32_array(const struct device_node *np,
-				      const char *propname,
-				      u32 *out_values,
-				      size_t sz);
-extern int of_property_read_u64(const struct device_node *np,
-				const char *propname, u64 *out_value);
-
-extern int of_property_read_string(struct device_node *np,
-				   const char *propname,
-				   const char **out_string);
-extern int of_property_match_string(struct device_node *np,
-				    const char *propname,
-				    const char *string);
-extern int of_property_read_string_helper(struct device_node *np,
-=======
 extern int of_property_count_elems_of_size(const struct device_node *np,
 				const char *propname, int elem_size);
 extern int of_property_read_u32_index(const struct device_node *np,
@@ -510,22 +342,10 @@ extern int of_property_match_string(const struct device_node *np,
 				    const char *propname,
 				    const char *string);
 extern int of_property_read_string_helper(const struct device_node *np,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      const char *propname,
 					      const char **out_strs, size_t sz, int index);
 extern int of_device_is_compatible(const struct device_node *device,
 				   const char *);
-<<<<<<< HEAD
-extern int of_device_is_available(const struct device_node *device);
-#ifdef CONFIG_MACH_LGE
-extern int of_device_is_available_revision(struct device_node *device);
-#endif
-extern const void *of_get_property(const struct device_node *node,
-				const char *name,
-				int *lenp);
-#define for_each_property_of_node(dn, pp) \
-	for (pp = dn->properties; pp != NULL; pp = pp->next)
-=======
 extern int of_device_compatible_match(const struct device_node *device,
 				      const char *const *compat);
 extern bool of_device_is_available(const struct device_node *device);
@@ -540,43 +360,11 @@ extern struct device_node *of_get_next_cpu_node(struct device_node *prev);
 extern struct device_node *of_get_cpu_state_node(struct device_node *cpu_node,
 						 int index);
 extern u64 of_get_cpu_hwid(struct device_node *cpun, unsigned int thread);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int of_n_addr_cells(struct device_node *np);
 extern int of_n_size_cells(struct device_node *np);
 extern const struct of_device_id *of_match_node(
 	const struct of_device_id *matches, const struct device_node *node);
-<<<<<<< HEAD
-extern int of_modalias_node(struct device_node *node, char *modalias, int len);
-extern struct device_node *of_parse_phandle(struct device_node *np,
-					    const char *phandle_name,
-					    int index);
-extern int of_parse_phandle_with_args(struct device_node *np,
-	const char *list_name, const char *cells_name, int index,
-	struct of_phandle_args *out_args);
-
-extern void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align));
-extern int of_alias_get_id(struct device_node *np, const char *stem);
-
-extern int of_machine_is_compatible(const char *compat);
-
-extern int prom_add_property(struct device_node* np, struct property* prop);
-extern int prom_remove_property(struct device_node *np, struct property *prop);
-extern int prom_update_property(struct device_node *np,
-				struct property *newprop,
-				struct property *oldprop);
-
-#if defined(CONFIG_OF_DYNAMIC)
-/* For updating the device tree at runtime */
-extern void of_attach_node(struct device_node *);
-extern void of_detach_node(struct device_node *);
-#endif
-
-#define of_match_ptr(_ptr)	(_ptr)
-#else /* CONFIG_OF */
-
-static inline bool of_have_populated_dt(void)
-=======
 extern const void *of_device_get_match_data(const struct device *dev);
 extern int of_alias_from_compatible(const struct device_node *node, char *alias,
 				    int len);
@@ -680,15 +468,10 @@ static inline void of_core_init(void)
 }
 
 static inline bool is_of_node(const struct fwnode_handle *fwnode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return false;
 }
 
-<<<<<<< HEAD
-#define for_each_child_of_node(parent, child) \
-	while (0)
-=======
 static inline struct device_node *to_of_node(const struct fwnode_handle *fwnode)
 {
 	return NULL;
@@ -793,7 +576,6 @@ static inline struct device_node *of_get_child_by_name(
 {
 	return NULL;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int of_device_is_compatible(const struct device_node *device,
 					  const char *name)
@@ -801,8 +583,6 @@ static inline int of_device_is_compatible(const struct device_node *device,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline  int of_device_compatible_match(const struct device_node *device,
 					      const char *const *compat)
 {
@@ -819,7 +599,6 @@ static inline bool of_device_is_big_endian(const struct device_node *device)
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct property *of_find_property(const struct device_node *np,
 						const char *name,
 						int *lenp)
@@ -835,38 +614,20 @@ static inline struct device_node *of_find_compatible_node(
 	return NULL;
 }
 
-<<<<<<< HEAD
-static inline int of_property_read_u32_array(const struct device_node *np,
-					     const char *propname,
-					     u32 *out_values, size_t sz)
-=======
 static inline int of_property_count_elems_of_size(const struct device_node *np,
 			const char *propname, int elem_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-static inline int of_property_read_string(struct device_node *np,
-					  const char *propname,
-					  const char **out_string)
-=======
 static inline int of_property_read_u32_index(const struct device_node *np,
 			const char *propname, u32 index, u32 *out_value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-static inline int of_property_read_string_helper(struct device_node *np,
-						 const char *propname,
-						 const char **out_strs, size_t sz, int index)
-=======
 static inline int of_property_read_u64_index(const struct device_node *np,
 			const char *propname, u32 index, u64 *out_value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOSYS;
 }
@@ -878,8 +639,6 @@ static inline const void *of_get_property(const struct device_node *node,
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 static inline struct device_node *of_get_cpu_node(int cpu,
 					unsigned int *thread)
 {
@@ -940,20 +699,12 @@ static inline int of_property_read_variable_u32_array(const struct device_node *
 	return -ENOSYS;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int of_property_read_u64(const struct device_node *np,
 				       const char *propname, u64 *out_value)
 {
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-static inline struct device_node *of_parse_phandle(struct device_node *np,
-						   const char *phandle_name,
-						   int index)
-{
-	return NULL;
-=======
 static inline int of_property_read_variable_u64_array(const struct device_node *np,
 					const char *propname,
 					u64 *out_values,
@@ -1040,7 +791,6 @@ static inline int of_phandle_iterator_args(struct of_phandle_iterator *it,
 					   int size)
 {
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int of_alias_get_id(struct device_node *np, const char *stem)
@@ -1048,21 +798,16 @@ static inline int of_alias_get_id(struct device_node *np, const char *stem)
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-=======
 static inline int of_alias_get_highest_id(const char *stem)
 {
 	return -ENOSYS;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int of_machine_is_compatible(const char *compat)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline int of_add_property(struct device_node *np, struct property *prop)
 {
 	return 0;
@@ -1145,13 +890,10 @@ static inline const void *of_device_get_match_data(const struct device *dev)
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define of_match_ptr(_ptr)	NULL
 #define of_match_node(_matches, _node)	NULL
 #endif /* CONFIG_OF */
 
-<<<<<<< HEAD
-=======
 /* Default string compare functions, Allow arch asm/prom.h to override */
 #if !defined(of_compat_cmp)
 #define of_compat_cmp(s1, s2, l)	strcasecmp((s1), (s2))
@@ -1433,7 +1175,6 @@ static inline int of_property_count_u64_elems(const struct device_node *np,
 	return of_property_count_elems_of_size(np, propname, sizeof(u64));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * of_property_read_string_array() - Read an array of strings from a multiple
  * strings property.
@@ -1445,15 +1186,9 @@ static inline int of_property_count_u64_elems(const struct device_node *np,
  * Search for a property in a device tree node and retrieve a list of
  * terminated string values (pointer to data, not a copy) in that property.
  *
-<<<<<<< HEAD
- * If @out_strs is NULL, the number of strings in the property is returned.
- */
-static inline int of_property_read_string_array(struct device_node *np,
-=======
  * Return: If @out_strs is NULL, the number of strings in the property is returned.
  */
 static inline int of_property_read_string_array(const struct device_node *np,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						const char *propname, const char **out_strs,
 						size_t sz)
 {
@@ -1467,14 +1202,6 @@ static inline int of_property_read_string_array(const struct device_node *np,
  * @propname:	name of the property to be searched.
  *
  * Search for a property in a device tree node and retrieve the number of null
-<<<<<<< HEAD
- * terminated string contain in it. Returns the number of strings on
- * success, -EINVAL if the property does not exist, -ENODATA if property
- * does not have a value, and -EILSEQ if the string is not null-terminated
- * within the length of the property data.
- */
-static inline int of_property_count_strings(struct device_node *np,
-=======
  * terminated string contain in it.
  *
  * Return: The number of strings on success, -EINVAL if the property does not
@@ -1482,7 +1209,6 @@ static inline int of_property_count_strings(struct device_node *np,
  * is not null-terminated within the length of the property data.
  */
 static inline int of_property_count_strings(const struct device_node *np,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    const char *propname)
 {
 	return of_property_read_string_helper(np, propname, NULL, 0, 0);
@@ -1494,32 +1220,20 @@ static inline int of_property_count_strings(const struct device_node *np,
  * @np:		device node from which the property value is to be read.
  * @propname:	name of the property to be searched.
  * @index:	index of the string in the list of strings
-<<<<<<< HEAD
- * @out_string:	pointer to null terminated return string, modified only if
-=======
  * @output:	pointer to null terminated return string, modified only if
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		return value is 0.
  *
  * Search for a property in a device tree node and retrieve a null
  * terminated string value (pointer to data, not a copy) in the list of strings
  * contained in that property.
-<<<<<<< HEAD
- * Returns 0 on success, -EINVAL if the property does not exist, -ENODATA if
-=======
  *
  * Return: 0 on success, -EINVAL if the property does not exist, -ENODATA if
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * property does not have a value, and -EILSEQ if the string is not
  * null-terminated within the length of the property data.
  *
  * The out_string pointer is modified only if a valid string can be decoded.
  */
-<<<<<<< HEAD
-static inline int of_property_read_string_index(struct device_node *np,
-=======
 static inline int of_property_read_string_index(const struct device_node *np,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						const char *propname,
 						int index, const char **output)
 {
@@ -1528,14 +1242,6 @@ static inline int of_property_read_string_index(const struct device_node *np,
 }
 
 /**
-<<<<<<< HEAD
- * of_property_read_bool - Findfrom a property
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- *
- * Search for a property in a device node.
- * Returns true if the property exist false otherwise.
-=======
  * of_property_read_bool - Find a property
  * @np:		device node from which the property value is to be read.
  * @propname:	name of the property to be searched.
@@ -1544,7 +1250,6 @@ static inline int of_property_read_string_index(const struct device_node *np,
  * property types is deprecated.
  *
  * Return: true if the property exists false otherwise.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline bool of_property_read_bool(const struct device_node *np,
 					 const char *propname)
@@ -1554,8 +1259,6 @@ static inline bool of_property_read_bool(const struct device_node *np,
 	return prop ? true : false;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * of_property_present - Test if a property is present in a node
  * @np:		device node to search for the property.
@@ -1708,7 +1411,6 @@ static inline int of_property_read_u16(const struct device_node *np,
 	return of_property_read_u16_array(np, propname, out_value, 1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int of_property_read_u32(const struct device_node *np,
 				       const char *propname,
 				       u32 *out_value)
@@ -1716,8 +1418,6 @@ static inline int of_property_read_u32(const struct device_node *np,
 	return of_property_read_u32_array(np, propname, out_value, 1);
 }
 
-<<<<<<< HEAD
-=======
 static inline int of_property_read_s32(const struct device_node *np,
 				       const char *propname,
 				       s32 *out_value)
@@ -2069,5 +1769,4 @@ static inline int of_overlay_notifier_unregister(struct notifier_block *nb)
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_OF_H */

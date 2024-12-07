@@ -1,9 +1,5 @@
 #
 # Cobalt Server
 #
-<<<<<<< HEAD
-platform-$(CONFIG_MIPS_COBALT)	+= cobalt/
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cflags-$(CONFIG_MIPS_COBALT)	+= -I$(srctree)/arch/mips/include/asm/mach-cobalt
 load-$(CONFIG_MIPS_COBALT)	+= 0xffffffff80080000

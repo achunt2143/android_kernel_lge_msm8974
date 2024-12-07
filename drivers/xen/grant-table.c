@@ -31,22 +31,16 @@
  * IN THE SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
 
 #include <linux/bitmap.h>
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
 #include <linux/uaccess.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include <linux/delay.h>
 #include <linux/hardirq.h>
 #include <linux/workqueue.h>
@@ -55,7 +49,6 @@
 #ifdef CONFIG_XEN_GRANT_DMA_ALLOC
 #include <linux/dma-mapping.h>
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <xen/xen.h>
 #include <xen/interface/xen.h>
@@ -63,15 +56,6 @@
 #include <xen/grant_table.h>
 #include <xen/interface/memory.h>
 #include <xen/hvc-console.h>
-<<<<<<< HEAD
-#include <asm/xen/hypercall.h>
-
-#include <asm/pgtable.h>
-#include <asm/sync_bitops.h>
-
-/* External tools reserve first few grant table entries. */
-#define NR_RESERVED_ENTRIES 8
-=======
 #include <xen/swiotlb-xen.h>
 #include <xen/balloon.h>
 #ifdef CONFIG_X86
@@ -83,19 +67,10 @@
 
 #include <asm/sync_bitops.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GNTTAB_LIST_END 0xffffffff
 
 static grant_ref_t **gnttab_list;
 static unsigned int nr_grant_frames;
-<<<<<<< HEAD
-static unsigned int boot_max_nr_grant_frames;
-static int gnttab_free_count;
-static grant_ref_t gnttab_free_head;
-static DEFINE_SPINLOCK(gnttab_list_lock);
-unsigned long xen_hvm_resume_frames;
-EXPORT_SYMBOL_GPL(xen_hvm_resume_frames);
-=======
 
 /*
  * Handling of free grants:
@@ -125,7 +100,6 @@ static DEFINE_SPINLOCK(gnttab_list_lock);
 struct grant_frames xen_auto_xlat_grant_frames;
 static unsigned int xen_gnttab_version;
 module_param_named(version, xen_gnttab_version, uint, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static union {
 	struct grant_entry_v1 *v1;
@@ -136,8 +110,6 @@ static union {
 /*This is a structure of function pointers for grant table*/
 struct gnttab_ops {
 	/*
-<<<<<<< HEAD
-=======
 	 * Version of the grant interface.
 	 */
 	unsigned int version;
@@ -146,17 +118,12 @@ struct gnttab_ops {
 	 */
 	unsigned int grefs_per_grant_frame;
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Mapping a list of frames for storing grant entries. Frames parameter
 	 * is used to store grant table address when grant table being setup,
 	 * nr_gframes is the number of frames to map grant table. Returning
 	 * GNTST_okay means success and negative value means failure.
 	 */
-<<<<<<< HEAD
-	int (*map_frames)(unsigned long *frames, unsigned int nr_gframes);
-=======
 	int (*map_frames)(xen_pfn_t *frames, unsigned int nr_gframes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Release a list of frames which are mapped in map_frames for grant
 	 * entry status.
@@ -164,11 +131,7 @@ struct gnttab_ops {
 	void (*unmap_frames)(void);
 	/*
 	 * Introducing a valid entry into the grant table, granting the frame of
-<<<<<<< HEAD
-	 * this grant entry to domain for accessing or transfering. Ref
-=======
 	 * this grant entry to domain for accessing. Ref
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * parameter is reference of this introduced grant entry, domid is id of
 	 * granted domain, frame is the page frame to be granted, and flags is
 	 * status of the grant entry to be updated.
@@ -177,63 +140,6 @@ struct gnttab_ops {
 			     unsigned long frame, unsigned flags);
 	/*
 	 * Stop granting a grant entry to domain for accessing. Ref parameter is
-<<<<<<< HEAD
-	 * reference of a grant entry whose grant access will be stopped,
-	 * readonly is not in use in this function. If the grant entry is
-	 * currently mapped for reading or writing, just return failure(==0)
-	 * directly and don't tear down the grant access. Otherwise, stop grant
-	 * access for this entry and return success(==1).
-	 */
-	int (*end_foreign_access_ref)(grant_ref_t ref, int readonly);
-	/*
-	 * Stop granting a grant entry to domain for transfer. Ref parameter is
-	 * reference of a grant entry whose grant transfer will be stopped. If
-	 * tranfer has not started, just reclaim the grant entry and return
-	 * failure(==0). Otherwise, wait for the transfer to complete and then
-	 * return the frame.
-	 */
-	unsigned long (*end_foreign_transfer_ref)(grant_ref_t ref);
-	/*
-	 * Query the status of a grant entry. Ref parameter is reference of
-	 * queried grant entry, return value is the status of queried entry.
-	 * Detailed status(writing/reading) can be gotten from the return value
-	 * by bit operations.
-	 */
-	int (*query_foreign_access)(grant_ref_t ref);
-	/*
-	 * Grant a domain to access a range of bytes within the page referred by
-	 * an available grant entry. Ref parameter is reference of a grant entry
-	 * which will be sub-page accessed, domid is id of grantee domain, frame
-	 * is frame address of subpage grant, flags is grant type and flag
-	 * information, page_off is offset of the range of bytes, and length is
-	 * length of bytes to be accessed.
-	 */
-	void (*update_subpage_entry)(grant_ref_t ref, domid_t domid,
-				     unsigned long frame, int flags,
-				     unsigned page_off, unsigned length);
-	/*
-	 * Redirect an available grant entry on domain A to another grant
-	 * reference of domain B, then allow domain C to use grant reference
-	 * of domain B transitively. Ref parameter is an available grant entry
-	 * reference on domain A, domid is id of domain C which accesses grant
-	 * entry transitively, flags is grant type and flag information,
-	 * trans_domid is id of domain B whose grant entry is finally accessed
-	 * transitively, trans_gref is grant entry transitive reference of
-	 * domain B.
-	 */
-	void (*update_trans_entry)(grant_ref_t ref, domid_t domid, int flags,
-				   domid_t trans_domid, grant_ref_t trans_gref);
-};
-
-static struct gnttab_ops *gnttab_interface;
-
-/*This reflects status of grant entries, so act as a global value*/
-static grant_status_t *grstatus;
-
-static int grant_table_version;
-static int grefs_per_grant_frame;
-
-=======
 	 * reference of a grant entry whose grant access will be stopped.
 	 * If the grant entry is currently mapped for reading or writing, just
 	 * return failure(==0) directly and don't tear down the grant access.
@@ -256,7 +162,6 @@ static const struct gnttab_ops *gnttab_interface;
 /* This reflects status of grant entries, so act as a global value. */
 static grant_status_t *grstatus;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct gnttab_free_callback *gnttab_free_callback_list;
 
 static int gnttab_expand(unsigned int req_entries);
@@ -287,13 +192,6 @@ static int get_free_entries(unsigned count)
 
 	ref = head = gnttab_free_head;
 	gnttab_free_count -= count;
-<<<<<<< HEAD
-	while (count-- > 1)
-		head = gnttab_entry(head);
-	gnttab_free_head = gnttab_entry(head);
-	gnttab_entry(head) = GNTTAB_LIST_END;
-
-=======
 	while (count--) {
 		bitmap_clear(gnttab_free_bitmap, head, 1);
 		if (gnttab_free_tail_ptr == __gnttab_entry(head))
@@ -309,14 +207,11 @@ static int get_free_entries(unsigned count)
 		gnttab_free_tail_ptr = NULL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&gnttab_list_lock, flags);
 
 	return ref;
 }
 
-<<<<<<< HEAD
-=======
 static int get_seq_entry_count(void)
 {
 	if (gnttab_last_free == GNTTAB_LIST_END || !gnttab_free_tail_ptr ||
@@ -407,7 +302,6 @@ static int get_free_entries_seq(unsigned int count)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void do_free_callbacks(void)
 {
 	struct gnttab_free_callback *callback, *next;
@@ -434,15 +328,6 @@ static inline void check_free_callbacks(void)
 		do_free_callbacks();
 }
 
-<<<<<<< HEAD
-static void put_free_entry(grant_ref_t ref)
-{
-	unsigned long flags;
-	spin_lock_irqsave(&gnttab_list_lock, flags);
-	gnttab_entry(ref) = gnttab_free_head;
-	gnttab_free_head = ref;
-	gnttab_free_count++;
-=======
 static void put_free_entry_locked(grant_ref_t ref)
 {
 	if (unlikely(ref < GNTTAB_NR_RESERVED_ENTRIES))
@@ -464,13 +349,10 @@ static void put_free_entry(grant_ref_t ref)
 
 	spin_lock_irqsave(&gnttab_list_lock, flags);
 	put_free_entry_locked(ref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	check_free_callbacks();
 	spin_unlock_irqrestore(&gnttab_list_lock, flags);
 }
 
-<<<<<<< HEAD
-=======
 static void gnttab_set_free(unsigned int start, unsigned int n)
 {
 	unsigned int i;
@@ -491,19 +373,11 @@ static void gnttab_set_free(unsigned int start, unsigned int n)
 	bitmap_set(gnttab_free_bitmap, start, n);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Following applies to gnttab_update_entry_v1 and gnttab_update_entry_v2.
  * Introducing a valid entry into the grant table:
  *  1. Write ent->domid.
-<<<<<<< HEAD
- *  2. Write ent->frame:
- *      GTF_permit_access:   Frame to which access is permitted.
- *      GTF_accept_transfer: Pseudo-phys frame slot being filled by new
- *                           frame, or zero if none.
-=======
  *  2. Write ent->frame: Frame to which access is permitted.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  3. Write memory barrier (WMB).
  *  4. Write ent->flags, inc. valid type.
  */
@@ -517,19 +391,11 @@ static void gnttab_update_entry_v1(grant_ref_t ref, domid_t domid,
 }
 
 static void gnttab_update_entry_v2(grant_ref_t ref, domid_t domid,
-<<<<<<< HEAD
-				   unsigned long frame, unsigned flags)
-{
-	gnttab_shared.v2[ref].hdr.domid = domid;
-	gnttab_shared.v2[ref].full_page.frame = frame;
-	wmb();
-=======
 				   unsigned long frame, unsigned int flags)
 {
 	gnttab_shared.v2[ref].hdr.domid = domid;
 	gnttab_shared.v2[ref].full_page.frame = frame;
 	wmb();	/* Hypervisor concurrent accesses. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gnttab_shared.v2[ref].hdr.flags = GTF_permit_access | flags;
 }
 
@@ -559,155 +425,6 @@ int gnttab_grant_foreign_access(domid_t domid, unsigned long frame,
 }
 EXPORT_SYMBOL_GPL(gnttab_grant_foreign_access);
 
-<<<<<<< HEAD
-void gnttab_update_subpage_entry_v2(grant_ref_t ref, domid_t domid,
-				    unsigned long frame, int flags,
-				    unsigned page_off,
-				    unsigned length)
-{
-	gnttab_shared.v2[ref].sub_page.frame = frame;
-	gnttab_shared.v2[ref].sub_page.page_off = page_off;
-	gnttab_shared.v2[ref].sub_page.length = length;
-	gnttab_shared.v2[ref].hdr.domid = domid;
-	wmb();
-	gnttab_shared.v2[ref].hdr.flags =
-				GTF_permit_access | GTF_sub_page | flags;
-}
-
-int gnttab_grant_foreign_access_subpage_ref(grant_ref_t ref, domid_t domid,
-					    unsigned long frame, int flags,
-					    unsigned page_off,
-					    unsigned length)
-{
-	if (flags & (GTF_accept_transfer | GTF_reading |
-		     GTF_writing | GTF_transitive))
-		return -EPERM;
-
-	if (gnttab_interface->update_subpage_entry == NULL)
-		return -ENOSYS;
-
-	gnttab_interface->update_subpage_entry(ref, domid, frame, flags,
-					       page_off, length);
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(gnttab_grant_foreign_access_subpage_ref);
-
-int gnttab_grant_foreign_access_subpage(domid_t domid, unsigned long frame,
-					int flags, unsigned page_off,
-					unsigned length)
-{
-	int ref, rc;
-
-	ref = get_free_entries(1);
-	if (unlikely(ref < 0))
-		return -ENOSPC;
-
-	rc = gnttab_grant_foreign_access_subpage_ref(ref, domid, frame, flags,
-						     page_off, length);
-	if (rc < 0) {
-		put_free_entry(ref);
-		return rc;
-	}
-
-	return ref;
-}
-EXPORT_SYMBOL_GPL(gnttab_grant_foreign_access_subpage);
-
-bool gnttab_subpage_grants_available(void)
-{
-	return gnttab_interface->update_subpage_entry != NULL;
-}
-EXPORT_SYMBOL_GPL(gnttab_subpage_grants_available);
-
-void gnttab_update_trans_entry_v2(grant_ref_t ref, domid_t domid,
-				  int flags, domid_t trans_domid,
-				  grant_ref_t trans_gref)
-{
-	gnttab_shared.v2[ref].transitive.trans_domid = trans_domid;
-	gnttab_shared.v2[ref].transitive.gref = trans_gref;
-	gnttab_shared.v2[ref].hdr.domid = domid;
-	wmb();
-	gnttab_shared.v2[ref].hdr.flags =
-				GTF_permit_access | GTF_transitive | flags;
-}
-
-int gnttab_grant_foreign_access_trans_ref(grant_ref_t ref, domid_t domid,
-					  int flags, domid_t trans_domid,
-					  grant_ref_t trans_gref)
-{
-	if (flags & (GTF_accept_transfer | GTF_reading |
-		     GTF_writing | GTF_sub_page))
-		return -EPERM;
-
-	if (gnttab_interface->update_trans_entry == NULL)
-		return -ENOSYS;
-
-	gnttab_interface->update_trans_entry(ref, domid, flags, trans_domid,
-					     trans_gref);
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(gnttab_grant_foreign_access_trans_ref);
-
-int gnttab_grant_foreign_access_trans(domid_t domid, int flags,
-				      domid_t trans_domid,
-				      grant_ref_t trans_gref)
-{
-	int ref, rc;
-
-	ref = get_free_entries(1);
-	if (unlikely(ref < 0))
-		return -ENOSPC;
-
-	rc = gnttab_grant_foreign_access_trans_ref(ref, domid, flags,
-						   trans_domid, trans_gref);
-	if (rc < 0) {
-		put_free_entry(ref);
-		return rc;
-	}
-
-	return ref;
-}
-EXPORT_SYMBOL_GPL(gnttab_grant_foreign_access_trans);
-
-bool gnttab_trans_grants_available(void)
-{
-	return gnttab_interface->update_trans_entry != NULL;
-}
-EXPORT_SYMBOL_GPL(gnttab_trans_grants_available);
-
-static int gnttab_query_foreign_access_v1(grant_ref_t ref)
-{
-	return gnttab_shared.v1[ref].flags & (GTF_reading|GTF_writing);
-}
-
-static int gnttab_query_foreign_access_v2(grant_ref_t ref)
-{
-	return grstatus[ref] & (GTF_reading|GTF_writing);
-}
-
-int gnttab_query_foreign_access(grant_ref_t ref)
-{
-	return gnttab_interface->query_foreign_access(ref);
-}
-EXPORT_SYMBOL_GPL(gnttab_query_foreign_access);
-
-static int gnttab_end_foreign_access_ref_v1(grant_ref_t ref, int readonly)
-{
-	u16 flags, nflags;
-	u16 *pflags;
-
-	pflags = &gnttab_shared.v1[ref].flags;
-	nflags = *pflags;
-	do {
-		flags = nflags;
-		if (flags & (GTF_reading|GTF_writing)) {
-			printk(KERN_ALERT "WARNING: g.e. still in use!\n");
-			return 0;
-		}
-	} while ((nflags = sync_cmpxchg(pflags, flags, 0)) != flags);
-=======
 static int gnttab_end_foreign_access_ref_v1(grant_ref_t ref)
 {
 	u16 *pflags = &gnttab_shared.v1[ref].flags;
@@ -718,26 +435,10 @@ static int gnttab_end_foreign_access_ref_v1(grant_ref_t ref)
 		if (flags & (GTF_reading|GTF_writing))
 			return 0;
 	} while (!sync_try_cmpxchg(pflags, &flags, 0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
 
-<<<<<<< HEAD
-static int gnttab_end_foreign_access_ref_v2(grant_ref_t ref, int readonly)
-{
-	gnttab_shared.v2[ref].hdr.flags = 0;
-	mb();
-	if (grstatus[ref] & (GTF_reading|GTF_writing)) {
-		return 0;
-	} else {
-		/* The read of grstatus needs to have acquire
-		semantics.  On x86, reads already have
-		that, and we just need to protect against
-		compiler reorderings.  On other
-		architectures we may need a full
-		barrier. */
-=======
 static int gnttab_end_foreign_access_ref_v2(grant_ref_t ref)
 {
 	gnttab_shared.v2[ref].hdr.flags = 0;
@@ -751,7 +452,6 @@ static int gnttab_end_foreign_access_ref_v2(grant_ref_t ref)
 		 * protect against compiler reorderings.
 		 * On other architectures we may need a full barrier.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_X86
 		barrier();
 #else
@@ -762,126 +462,6 @@ static int gnttab_end_foreign_access_ref_v2(grant_ref_t ref)
 	return 1;
 }
 
-<<<<<<< HEAD
-int gnttab_end_foreign_access_ref(grant_ref_t ref, int readonly)
-{
-	return gnttab_interface->end_foreign_access_ref(ref, readonly);
-}
-EXPORT_SYMBOL_GPL(gnttab_end_foreign_access_ref);
-
-void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
-			       unsigned long page)
-{
-	if (gnttab_end_foreign_access_ref(ref, readonly)) {
-		put_free_entry(ref);
-		if (page != 0)
-			free_page(page);
-	} else {
-		/* XXX This needs to be fixed so that the ref and page are
-		   placed on a list to be freed up later. */
-		printk(KERN_WARNING
-		       "WARNING: leaking g.e. and page still in use!\n");
-	}
-}
-EXPORT_SYMBOL_GPL(gnttab_end_foreign_access);
-
-int gnttab_grant_foreign_transfer(domid_t domid, unsigned long pfn)
-{
-	int ref;
-
-	ref = get_free_entries(1);
-	if (unlikely(ref < 0))
-		return -ENOSPC;
-	gnttab_grant_foreign_transfer_ref(ref, domid, pfn);
-
-	return ref;
-}
-EXPORT_SYMBOL_GPL(gnttab_grant_foreign_transfer);
-
-void gnttab_grant_foreign_transfer_ref(grant_ref_t ref, domid_t domid,
-				       unsigned long pfn)
-{
-	gnttab_interface->update_entry(ref, domid, pfn, GTF_accept_transfer);
-}
-EXPORT_SYMBOL_GPL(gnttab_grant_foreign_transfer_ref);
-
-static unsigned long gnttab_end_foreign_transfer_ref_v1(grant_ref_t ref)
-{
-	unsigned long frame;
-	u16           flags;
-	u16          *pflags;
-
-	pflags = &gnttab_shared.v1[ref].flags;
-
-	/*
-	 * If a transfer is not even yet started, try to reclaim the grant
-	 * reference and return failure (== 0).
-	 */
-	while (!((flags = *pflags) & GTF_transfer_committed)) {
-		if (sync_cmpxchg(pflags, flags, 0) == flags)
-			return 0;
-		cpu_relax();
-	}
-
-	/* If a transfer is in progress then wait until it is completed. */
-	while (!(flags & GTF_transfer_completed)) {
-		flags = *pflags;
-		cpu_relax();
-	}
-
-	rmb();	/* Read the frame number /after/ reading completion status. */
-	frame = gnttab_shared.v1[ref].frame;
-	BUG_ON(frame == 0);
-
-	return frame;
-}
-
-static unsigned long gnttab_end_foreign_transfer_ref_v2(grant_ref_t ref)
-{
-	unsigned long frame;
-	u16           flags;
-	u16          *pflags;
-
-	pflags = &gnttab_shared.v2[ref].hdr.flags;
-
-	/*
-	 * If a transfer is not even yet started, try to reclaim the grant
-	 * reference and return failure (== 0).
-	 */
-	while (!((flags = *pflags) & GTF_transfer_committed)) {
-		if (sync_cmpxchg(pflags, flags, 0) == flags)
-			return 0;
-		cpu_relax();
-	}
-
-	/* If a transfer is in progress then wait until it is completed. */
-	while (!(flags & GTF_transfer_completed)) {
-		flags = *pflags;
-		cpu_relax();
-	}
-
-	rmb();  /* Read the frame number /after/ reading completion status. */
-	frame = gnttab_shared.v2[ref].full_page.frame;
-	BUG_ON(frame == 0);
-
-	return frame;
-}
-
-unsigned long gnttab_end_foreign_transfer_ref(grant_ref_t ref)
-{
-	return gnttab_interface->end_foreign_transfer_ref(ref);
-}
-EXPORT_SYMBOL_GPL(gnttab_end_foreign_transfer_ref);
-
-unsigned long gnttab_end_foreign_transfer(grant_ref_t ref)
-{
-	unsigned long frame = gnttab_end_foreign_transfer_ref(ref);
-	put_free_entry(ref);
-	return frame;
-}
-EXPORT_SYMBOL_GPL(gnttab_end_foreign_transfer);
-
-=======
 static inline int _gnttab_end_foreign_access_ref(grant_ref_t ref)
 {
 	return gnttab_interface->end_foreign_access_ref(ref);
@@ -1030,7 +610,6 @@ void gnttab_end_foreign_access(grant_ref_t ref, struct page *page)
 }
 EXPORT_SYMBOL_GPL(gnttab_end_foreign_access);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void gnttab_free_grant_reference(grant_ref_t ref)
 {
 	put_free_entry(ref);
@@ -1041,20 +620,6 @@ void gnttab_free_grant_references(grant_ref_t head)
 {
 	grant_ref_t ref;
 	unsigned long flags;
-<<<<<<< HEAD
-	int count = 1;
-	if (head == GNTTAB_LIST_END)
-		return;
-	spin_lock_irqsave(&gnttab_list_lock, flags);
-	ref = head;
-	while (gnttab_entry(ref) != GNTTAB_LIST_END) {
-		ref = gnttab_entry(ref);
-		count++;
-	}
-	gnttab_entry(ref) = gnttab_free_head;
-	gnttab_free_head = head;
-	gnttab_free_count += count;
-=======
 
 	spin_lock_irqsave(&gnttab_list_lock, flags);
 	while (head != GNTTAB_LIST_END) {
@@ -1062,14 +627,11 @@ void gnttab_free_grant_references(grant_ref_t head)
 		put_free_entry_locked(head);
 		head = ref;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	check_free_callbacks();
 	spin_unlock_irqrestore(&gnttab_list_lock, flags);
 }
 EXPORT_SYMBOL_GPL(gnttab_free_grant_references);
 
-<<<<<<< HEAD
-=======
 void gnttab_free_grant_reference_seq(grant_ref_t head, unsigned int count)
 {
 	unsigned long flags;
@@ -1083,7 +645,6 @@ void gnttab_free_grant_reference_seq(grant_ref_t head, unsigned int count)
 }
 EXPORT_SYMBOL_GPL(gnttab_free_grant_reference_seq);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int gnttab_alloc_grant_references(u16 count, grant_ref_t *head)
 {
 	int h = get_free_entries(count);
@@ -1097,8 +658,6 @@ int gnttab_alloc_grant_references(u16 count, grant_ref_t *head)
 }
 EXPORT_SYMBOL_GPL(gnttab_alloc_grant_references);
 
-<<<<<<< HEAD
-=======
 int gnttab_alloc_grant_reference_seq(unsigned int count, grant_ref_t *first)
 {
 	int h;
@@ -1117,7 +676,6 @@ int gnttab_alloc_grant_reference_seq(unsigned int count, grant_ref_t *first)
 }
 EXPORT_SYMBOL_GPL(gnttab_alloc_grant_reference_seq);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int gnttab_empty_grant_references(const grant_ref_t *private_head)
 {
 	return (*private_head == GNTTAB_LIST_END);
@@ -1185,30 +743,16 @@ void gnttab_cancel_free_callback(struct gnttab_free_callback *callback)
 }
 EXPORT_SYMBOL_GPL(gnttab_cancel_free_callback);
 
-<<<<<<< HEAD
-=======
 static unsigned int gnttab_frames(unsigned int frames, unsigned int align)
 {
 	return (frames * gnttab_interface->grefs_per_grant_frame + align - 1) /
 	       align;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int grow_gnttab_list(unsigned int more_frames)
 {
 	unsigned int new_nr_grant_frames, extra_entries, i;
 	unsigned int nr_glist_frames, new_nr_glist_frames;
-<<<<<<< HEAD
-
-	BUG_ON(grefs_per_grant_frame == 0);
-
-	new_nr_grant_frames = nr_grant_frames + more_frames;
-	extra_entries       = more_frames * grefs_per_grant_frame;
-
-	nr_glist_frames = (nr_grant_frames * grefs_per_grant_frame + RPP - 1) / RPP;
-	new_nr_glist_frames =
-		(new_nr_grant_frames * grefs_per_grant_frame + RPP - 1) / RPP;
-=======
 	unsigned int grefs_per_frame;
 
 	grefs_per_frame = gnttab_interface->grefs_per_grant_frame;
@@ -1218,25 +762,12 @@ static int grow_gnttab_list(unsigned int more_frames)
 
 	nr_glist_frames = gnttab_frames(nr_grant_frames, RPP);
 	new_nr_glist_frames = gnttab_frames(new_nr_grant_frames, RPP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = nr_glist_frames; i < new_nr_glist_frames; i++) {
 		gnttab_list[i] = (grant_ref_t *)__get_free_page(GFP_ATOMIC);
 		if (!gnttab_list[i])
 			goto grow_nomem;
 	}
 
-<<<<<<< HEAD
-
-	for (i = grefs_per_grant_frame * nr_grant_frames;
-	     i < grefs_per_grant_frame * new_nr_grant_frames - 1; i++)
-		gnttab_entry(i) = i + 1;
-
-	gnttab_entry(i) = gnttab_free_head;
-	gnttab_free_head = grefs_per_grant_frame * nr_grant_frames;
-	gnttab_free_count += extra_entries;
-
-	nr_grant_frames = new_nr_grant_frames;
-=======
 	gnttab_set_free(gnttab_size, extra_entries);
 
 	if (!gnttab_free_tail_ptr)
@@ -1244,18 +775,13 @@ static int grow_gnttab_list(unsigned int more_frames)
 
 	nr_grant_frames = new_nr_grant_frames;
 	gnttab_size += extra_entries;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	check_free_callbacks();
 
 	return 0;
 
 grow_nomem:
-<<<<<<< HEAD
-	for ( ; i >= nr_glist_frames; i--)
-=======
 	while (i-- > nr_glist_frames)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_page((unsigned long) gnttab_list[i]);
 	return -ENOMEM;
 }
@@ -1277,14 +803,11 @@ static unsigned int __max_nr_grant_frames(void)
 unsigned int gnttab_max_grant_frames(void)
 {
 	unsigned int xen_max = __max_nr_grant_frames();
-<<<<<<< HEAD
-=======
 	static unsigned int boot_max_nr_grant_frames;
 
 	/* First time, initialize it properly. */
 	if (!boot_max_nr_grant_frames)
 		boot_max_nr_grant_frames = __max_nr_grant_frames();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (xen_max > boot_max_nr_grant_frames)
 		return boot_max_nr_grant_frames;
@@ -1292,8 +815,6 @@ unsigned int gnttab_max_grant_frames(void)
 }
 EXPORT_SYMBOL_GPL(gnttab_max_grant_frames);
 
-<<<<<<< HEAD
-=======
 int gnttab_setup_auto_xlat_frames(phys_addr_t addr)
 {
 	xen_pfn_t *pfn;
@@ -1721,46 +1242,16 @@ void gnttab_foreach_grant(struct page **pages,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int gnttab_map_refs(struct gnttab_map_grant_ref *map_ops,
 		    struct gnttab_map_grant_ref *kmap_ops,
 		    struct page **pages, unsigned int count)
 {
 	int i, ret;
-<<<<<<< HEAD
-	pte_t *pte;
-	unsigned long mfn;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = HYPERVISOR_grant_table_op(GNTTABOP_map_grant_ref, map_ops, count);
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	if (xen_feature(XENFEAT_auto_translated_physmap))
-		return ret;
-
-	for (i = 0; i < count; i++) {
-		/* Do not add to override if the map failed. */
-		if (map_ops[i].status)
-			continue;
-
-		if (map_ops[i].flags & GNTMAP_contains_pte) {
-			pte = (pte_t *) (mfn_to_virt(PFN_DOWN(map_ops[i].host_addr)) +
-				(map_ops[i].host_addr & ~PAGE_MASK));
-			mfn = pte_mfn(*pte);
-		} else {
-			mfn = PFN_DOWN(map_ops[i].dev_bus_addr);
-		}
-		ret = m2p_add_override(mfn, pages[i], kmap_ops ?
-				       &kmap_ops[i] : NULL);
-		if (ret)
-			return ret;
-	}
-
-	return ret;
-=======
 	for (i = 0; i < count; i++) {
 		switch (map_ops[i].status) {
 		case GNTST_okay:
@@ -1793,51 +1284,20 @@ int gnttab_map_refs(struct gnttab_map_grant_ref *map_ops,
 	}
 
 	return set_foreign_p2m_mapping(map_ops, kmap_ops, pages, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(gnttab_map_refs);
 
 int gnttab_unmap_refs(struct gnttab_unmap_grant_ref *unmap_ops,
-<<<<<<< HEAD
-		      struct gnttab_map_grant_ref *kmap_ops,
-		      struct page **pages, unsigned int count)
-{
-	int i, ret;
-=======
 		      struct gnttab_unmap_grant_ref *kunmap_ops,
 		      struct page **pages, unsigned int count)
 {
 	unsigned int i;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = HYPERVISOR_grant_table_op(GNTTABOP_unmap_grant_ref, unmap_ops, count);
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	if (xen_feature(XENFEAT_auto_translated_physmap))
-		return ret;
-
-	for (i = 0; i < count; i++) {
-		ret = m2p_remove_override(pages[i], kmap_ops ?
-				       &kmap_ops[i] : NULL);
-		if (ret)
-			return ret;
-	}
-
-	return ret;
-}
-EXPORT_SYMBOL_GPL(gnttab_unmap_refs);
-
-static unsigned nr_status_frames(unsigned nr_grant_frames)
-{
-	BUG_ON(grefs_per_grant_frame == 0);
-	return (nr_grant_frames * grefs_per_grant_frame + SPP - 1) / SPP;
-}
-
-static int gnttab_map_frames_v1(unsigned long *frames, unsigned int nr_gframes)
-=======
 	for (i = 0; i < count; i++)
 		ClearPageForeign(pages[i]);
 
@@ -1917,7 +1377,6 @@ static unsigned int nr_status_frames(unsigned int nr_grant_frames)
 }
 
 static int gnttab_map_frames_v1(xen_pfn_t *frames, unsigned int nr_gframes)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 
@@ -1934,11 +1393,7 @@ static void gnttab_unmap_frames_v1(void)
 	arch_gnttab_unmap(gnttab_shared.addr, nr_grant_frames);
 }
 
-<<<<<<< HEAD
-static int gnttab_map_frames_v2(unsigned long *frames, unsigned int nr_gframes)
-=======
 static int gnttab_map_frames_v2(xen_pfn_t *frames, unsigned int nr_gframes)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint64_t *sframes;
 	unsigned int nr_sframes;
@@ -1950,11 +1405,7 @@ static int gnttab_map_frames_v2(xen_pfn_t *frames, unsigned int nr_gframes)
 	/* No need for kzalloc as it is initialized in following hypercall
 	 * GNTTABOP_get_status_frames.
 	 */
-<<<<<<< HEAD
-	sframes = kmalloc(nr_sframes  * sizeof(uint64_t), GFP_ATOMIC);
-=======
 	sframes = kmalloc_array(nr_sframes, sizeof(uint64_t), GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sframes)
 		return -ENOMEM;
 
@@ -1994,16 +1445,6 @@ static void gnttab_unmap_frames_v2(void)
 static int gnttab_map(unsigned int start_idx, unsigned int end_idx)
 {
 	struct gnttab_setup_table setup;
-<<<<<<< HEAD
-	unsigned long *frames;
-	unsigned int nr_gframes = end_idx + 1;
-	int rc;
-
-	if (xen_hvm_domain()) {
-		struct xen_add_to_physmap xatp;
-		unsigned int i = end_idx;
-		rc = 0;
-=======
 	xen_pfn_t *frames;
 	unsigned int nr_gframes = end_idx + 1;
 	int rc;
@@ -2013,7 +1454,6 @@ static int gnttab_map(unsigned int start_idx, unsigned int end_idx)
 		unsigned int i = end_idx;
 		rc = 0;
 		BUG_ON(xen_auto_xlat_grant_frames.count < nr_gframes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Loop backwards, so that the first hypercall has the largest
 		 * index, ensuring that the table will grow only once.
@@ -2022,19 +1462,11 @@ static int gnttab_map(unsigned int start_idx, unsigned int end_idx)
 			xatp.domid = DOMID_SELF;
 			xatp.idx = i;
 			xatp.space = XENMAPSPACE_grant_table;
-<<<<<<< HEAD
-			xatp.gpfn = (xen_hvm_resume_frames >> PAGE_SHIFT) + i;
-			rc = HYPERVISOR_memory_op(XENMEM_add_to_physmap, &xatp);
-			if (rc != 0) {
-				printk(KERN_WARNING
-						"grant table add_to_physmap failed, err=%d\n", rc);
-=======
 			xatp.gpfn = xen_auto_xlat_grant_frames.pfn[i];
 			rc = HYPERVISOR_memory_op(XENMEM_add_to_physmap, &xatp);
 			if (rc != 0) {
 				pr_warn("grant table add_to_physmap failed, err=%d\n",
 					rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		} while (i-- > start_idx);
@@ -2045,11 +1477,7 @@ static int gnttab_map(unsigned int start_idx, unsigned int end_idx)
 	/* No need for kzalloc as it is initialized in following hypercall
 	 * GNTTABOP_setup_table.
 	 */
-<<<<<<< HEAD
-	frames = kmalloc(nr_gframes * sizeof(unsigned long), GFP_ATOMIC);
-=======
 	frames = kmalloc_array(nr_gframes, sizeof(unsigned long), GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!frames)
 		return -ENOMEM;
 
@@ -2072,25 +1500,14 @@ static int gnttab_map(unsigned int start_idx, unsigned int end_idx)
 	return rc;
 }
 
-<<<<<<< HEAD
-static struct gnttab_ops gnttab_v1_ops = {
-=======
 static const struct gnttab_ops gnttab_v1_ops = {
 	.version			= 1,
 	.grefs_per_grant_frame		= XEN_PAGE_SIZE /
 					  sizeof(struct grant_entry_v1),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.map_frames			= gnttab_map_frames_v1,
 	.unmap_frames			= gnttab_unmap_frames_v1,
 	.update_entry			= gnttab_update_entry_v1,
 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v1,
-<<<<<<< HEAD
-	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v1,
-	.query_foreign_access		= gnttab_query_foreign_access_v1,
-};
-
-static struct gnttab_ops gnttab_v2_ops = {
-=======
 	.read_frame			= gnttab_read_frame_v1,
 };
 
@@ -2098,49 +1515,10 @@ static const struct gnttab_ops gnttab_v2_ops = {
 	.version			= 2,
 	.grefs_per_grant_frame		= XEN_PAGE_SIZE /
 					  sizeof(union grant_entry_v2),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.map_frames			= gnttab_map_frames_v2,
 	.unmap_frames			= gnttab_unmap_frames_v2,
 	.update_entry			= gnttab_update_entry_v2,
 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v2,
-<<<<<<< HEAD
-	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v2,
-	.query_foreign_access		= gnttab_query_foreign_access_v2,
-	.update_subpage_entry		= gnttab_update_subpage_entry_v2,
-	.update_trans_entry		= gnttab_update_trans_entry_v2,
-};
-
-static void gnttab_request_version(void)
-{
-	int rc;
-	struct gnttab_set_version gsv;
-
-	if (xen_hvm_domain())
-		gsv.version = 1;
-	else
-		gsv.version = 2;
-	rc = HYPERVISOR_grant_table_op(GNTTABOP_set_version, &gsv, 1);
-	if (rc == 0 && gsv.version == 2) {
-		grant_table_version = 2;
-		grefs_per_grant_frame = PAGE_SIZE / sizeof(union grant_entry_v2);
-		gnttab_interface = &gnttab_v2_ops;
-	} else if (grant_table_version == 2) {
-		/*
-		 * If we've already used version 2 features,
-		 * but then suddenly discover that they're not
-		 * available (e.g. migrating to an older
-		 * version of Xen), almost unbounded badness
-		 * can happen.
-		 */
-		panic("we need grant tables version 2, but only version 1 is available");
-	} else {
-		grant_table_version = 1;
-		grefs_per_grant_frame = PAGE_SIZE / sizeof(struct grant_entry_v1);
-		gnttab_interface = &gnttab_v1_ops;
-	}
-	printk(KERN_INFO "Grant tables using version %d layout.\n",
-		grant_table_version);
-=======
 	.read_frame			= gnttab_read_frame_v2,
 };
 
@@ -2182,7 +1560,6 @@ static void gnttab_request_version(void)
 		gnttab_interface = &gnttab_v1_ops;
 	pr_info("Grant tables using version %d layout\n",
 		gnttab_interface->version);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int gnttab_setup(void)
@@ -2193,24 +1570,6 @@ static int gnttab_setup(void)
 	if (max_nr_gframes < nr_grant_frames)
 		return -ENOSYS;
 
-<<<<<<< HEAD
-	if (xen_pv_domain())
-		return gnttab_map(0, nr_grant_frames - 1);
-
-	if (gnttab_shared.addr == NULL) {
-		gnttab_shared.addr = ioremap(xen_hvm_resume_frames,
-						PAGE_SIZE * max_nr_gframes);
-		if (gnttab_shared.addr == NULL) {
-			printk(KERN_WARNING
-					"Failed to ioremap gnttab share frames!");
-			return -ENOMEM;
-		}
-	}
-
-	gnttab_map(0, nr_grant_frames - 1);
-
-	return 0;
-=======
 	if (xen_feature(XENFEAT_auto_translated_physmap) && gnttab_shared.addr == NULL) {
 		gnttab_shared.addr = xen_auto_xlat_grant_frames.vaddr;
 		if (gnttab_shared.addr == NULL) {
@@ -2219,7 +1578,6 @@ static int gnttab_setup(void)
 		}
 	}
 	return gnttab_map(0, nr_grant_frames - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int gnttab_resume(void)
@@ -2230,12 +1588,8 @@ int gnttab_resume(void)
 
 int gnttab_suspend(void)
 {
-<<<<<<< HEAD
-	gnttab_interface->unmap_frames();
-=======
 	if (!xen_feature(XENFEAT_auto_translated_physmap))
 		gnttab_interface->unmap_frames();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2244,14 +1598,6 @@ static int gnttab_expand(unsigned int req_entries)
 	int rc;
 	unsigned int cur, extra;
 
-<<<<<<< HEAD
-	BUG_ON(grefs_per_grant_frame == 0);
-	cur = nr_grant_frames;
-	extra = ((req_entries + (grefs_per_grant_frame-1)) /
-		 grefs_per_grant_frame);
-	if (cur + extra > gnttab_max_grant_frames())
-		return -ENOSPC;
-=======
 	cur = nr_grant_frames;
 	extra = ((req_entries + gnttab_interface->grefs_per_grant_frame - 1) /
 		 gnttab_interface->grefs_per_grant_frame);
@@ -2263,7 +1609,6 @@ static int gnttab_expand(unsigned int req_entries)
 				    gnttab_free_count, req_entries);
 		return -ENOSPC;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = gnttab_map(cur, cur + extra - 1);
 	if (rc == 0)
@@ -2275,15 +1620,6 @@ static int gnttab_expand(unsigned int req_entries)
 int gnttab_init(void)
 {
 	int i;
-<<<<<<< HEAD
-	unsigned int max_nr_glist_frames, nr_glist_frames;
-	unsigned int nr_init_grefs;
-	int ret;
-
-	gnttab_request_version();
-	nr_grant_frames = 1;
-	boot_max_nr_grant_frames = __max_nr_grant_frames();
-=======
 	unsigned long max_nr_grant_frames, max_nr_grefs;
 	unsigned int max_nr_glist_frames, nr_glist_frames;
 	int ret;
@@ -2293,23 +1629,10 @@ int gnttab_init(void)
 	max_nr_grefs = max_nr_grant_frames *
 			gnttab_interface->grefs_per_grant_frame;
 	nr_grant_frames = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Determine the maximum number of frames required for the
 	 * grant reference free list on the current hypervisor.
 	 */
-<<<<<<< HEAD
-	BUG_ON(grefs_per_grant_frame == 0);
-	max_nr_glist_frames = (boot_max_nr_grant_frames *
-			       grefs_per_grant_frame / RPP);
-
-	gnttab_list = kmalloc(max_nr_glist_frames * sizeof(grant_ref_t *),
-			      GFP_KERNEL);
-	if (gnttab_list == NULL)
-		return -ENOMEM;
-
-	nr_glist_frames = (nr_grant_frames * grefs_per_grant_frame + RPP - 1) / RPP;
-=======
 	max_nr_glist_frames = max_nr_grefs / RPP;
 
 	gnttab_list = kmalloc_array(max_nr_glist_frames,
@@ -2319,7 +1642,6 @@ int gnttab_init(void)
 		return -ENOMEM;
 
 	nr_glist_frames = gnttab_frames(nr_grant_frames, RPP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < nr_glist_frames; i++) {
 		gnttab_list[i] = (grant_ref_t *)__get_free_page(GFP_KERNEL);
 		if (gnttab_list[i] == NULL) {
@@ -2328,8 +1650,6 @@ int gnttab_init(void)
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	gnttab_free_bitmap = bitmap_zalloc(max_nr_grefs, GFP_KERNEL);
 	if (!gnttab_free_bitmap) {
 		ret = -ENOMEM;
@@ -2341,27 +1661,15 @@ int gnttab_init(void)
 	if (ret < 0)
 		goto ini_nomem;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (gnttab_setup() < 0) {
 		ret = -ENODEV;
 		goto ini_nomem;
 	}
 
-<<<<<<< HEAD
-	nr_init_grefs = nr_grant_frames * grefs_per_grant_frame;
-
-	for (i = NR_RESERVED_ENTRIES; i < nr_init_grefs - 1; i++)
-		gnttab_entry(i) = i + 1;
-
-	gnttab_entry(nr_init_grefs - 1) = GNTTAB_LIST_END;
-	gnttab_free_count = nr_init_grefs - NR_RESERVED_ENTRIES;
-	gnttab_free_head  = NR_RESERVED_ENTRIES;
-=======
 	gnttab_size = nr_grant_frames * gnttab_interface->grefs_per_grant_frame;
 
 	gnttab_set_free(GNTTAB_NR_RESERVED_ENTRIES,
 			gnttab_size - GNTTAB_NR_RESERVED_ENTRIES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk("Grant table initialized\n");
 	return 0;
@@ -2370,29 +1678,11 @@ int gnttab_init(void)
 	for (i--; i >= 0; i--)
 		free_page((unsigned long)gnttab_list[i]);
 	kfree(gnttab_list);
-<<<<<<< HEAD
-=======
 	bitmap_free(gnttab_free_bitmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(gnttab_init);
 
-<<<<<<< HEAD
-static int __devinit __gnttab_init(void)
-{
-	/* Delay grant-table initialization in the PV on HVM case */
-	if (xen_hvm_domain())
-		return 0;
-
-	if (!xen_pv_domain())
-		return -ENODEV;
-
-	return gnttab_init();
-}
-
-core_initcall(__gnttab_init);
-=======
 static int __gnttab_init(void)
 {
 	if (!xen_domain())
@@ -2407,4 +1697,3 @@ static int __gnttab_init(void)
 /* Starts after core_initcall so that xen_pvh_gnttab_setup can be called
  * beforehand to initialize xen_auto_xlat_grant_frames. */
 core_initcall_sync(__gnttab_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

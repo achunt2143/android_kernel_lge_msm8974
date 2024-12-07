@@ -24,14 +24,10 @@
 #define __HIDP_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <net/bluetooth/bluetooth.h>
-=======
 #include <linux/hid.h>
 #include <linux/kref.h>
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/l2cap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* HIDP header masks */
 #define HIDP_HEADER_TRANS_MASK			0xf0
@@ -87,11 +83,8 @@
 #define HIDP_VIRTUAL_CABLE_UNPLUG	0
 #define HIDP_BOOT_PROTOCOL_MODE		1
 #define HIDP_BLUETOOTH_VENDOR_ID	9
-<<<<<<< HEAD
-=======
 #define HIDP_WAITING_FOR_RETURN		10
 #define HIDP_WAITING_FOR_SEND_ACK	11
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hidp_connadd_req {
 	int   ctrl_sock;	/* Connected control socket */
@@ -129,44 +122,6 @@ struct hidp_connlist_req {
 	struct hidp_conninfo __user *ci;
 };
 
-<<<<<<< HEAD
-int hidp_add_connection(struct hidp_connadd_req *req, struct socket *ctrl_sock, struct socket *intr_sock);
-int hidp_del_connection(struct hidp_conndel_req *req);
-int hidp_get_connlist(struct hidp_connlist_req *req);
-int hidp_get_conninfo(struct hidp_conninfo *ci);
-
-/* HIDP session defines */
-struct hidp_session {
-	struct list_head list;
-
-	struct hci_conn *conn;
-
-	struct socket *ctrl_sock;
-	struct socket *intr_sock;
-
-	bdaddr_t bdaddr;
-
-	unsigned long state;
-	unsigned long flags;
-	unsigned long idle_to;
-
-	uint ctrl_mtu;
-	uint intr_mtu;
-
-	atomic_t terminate;
-
-	unsigned char keys[8];
-	unsigned char leds;
-
-	struct input_dev *input;
-
-	struct hid_device *hid;
-
-	struct timer_list timer;
-
-	struct sk_buff_head ctrl_transmit;
-	struct sk_buff_head intr_transmit;
-=======
 int hidp_connection_add(const struct hidp_connadd_req *req, struct socket *ctrl_sock, struct socket *intr_sock);
 int hidp_connection_del(struct hidp_conndel_req *req);
 int hidp_get_connlist(struct hidp_connlist_req *req);
@@ -207,27 +162,10 @@ struct hidp_session {
 	struct input_dev *input;
 	struct hid_device *hid;
 	struct timer_list timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Report descriptor */
 	__u8 *rd_data;
 	uint rd_size;
-<<<<<<< HEAD
-};
-
-static inline void hidp_schedule(struct hidp_session *session)
-{
-	struct sock *ctrl_sk = session->ctrl_sock->sk;
-	struct sock *intr_sk = session->intr_sock->sk;
-
-	wake_up_interruptible(sk_sleep(ctrl_sk));
-	wake_up_interruptible(sk_sleep(intr_sk));
-}
-
-/* HIDP init defines */
-extern int __init hidp_init_sockets(void);
-extern void __exit hidp_cleanup_sockets(void);
-=======
 
 	/* session data */
 	unsigned char keys[8];
@@ -250,6 +188,5 @@ extern void __exit hidp_cleanup_sockets(void);
 /* HIDP init defines */
 int __init hidp_init_sockets(void);
 void __exit hidp_cleanup_sockets(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __HIDP_H */

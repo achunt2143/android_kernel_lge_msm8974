@@ -1,54 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  boot.c - Architecture-Specific Low-Level ACPI Boot Support
  *
  *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
  *  Copyright (C) 2001 Jun Nakajima <jun.nakajima@intel.com>
-<<<<<<< HEAD
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
-=======
  */
 #define pr_fmt(fmt) "ACPI: " fmt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/init.h>
 #include <linux/acpi.h>
 #include <linux/acpi_pmtmr.h>
 #include <linux/efi.h>
 #include <linux/cpumask.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/dmi.h>
-#include <linux/irq.h>
-#include <linux/slab.h>
-#include <linux/bootmem.h>
-#include <linux/ioport.h>
-#include <linux/pci.h>
-
-#include <asm/pci_x86.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/export.h>
 #include <linux/dmi.h>
 #include <linux/irq.h>
@@ -63,75 +26,43 @@
 #include <asm/e820/api.h>
 #include <asm/irqdomain.h>
 #include <asm/pci_x86.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io_apic.h>
 #include <asm/apic.h>
 #include <asm/io.h>
 #include <asm/mpspec.h>
 #include <asm/smp.h>
-<<<<<<< HEAD
-
-static int __initdata acpi_force = 0;
-u32 acpi_rsdt_forced;
-=======
 #include <asm/i8259.h>
 #include <asm/setup.h>
 
 #include "sleep.h" /* To include x86_acpi_suspend_lowlevel */
 static int __initdata acpi_force = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int acpi_disabled;
 EXPORT_SYMBOL(acpi_disabled);
 
 #ifdef	CONFIG_X86_64
 # include <asm/proto.h>
-<<<<<<< HEAD
-# include <asm/numa_64.h>
-#endif				/* X86 */
-
-#define BAD_MADT_ENTRY(entry, end) (					    \
-		(!entry) || (unsigned long)entry + sizeof(*entry) > end ||  \
-		((struct acpi_subtable_header *)entry)->length < sizeof(*entry))
-
-#define PREFIX			"ACPI: "
-
-int acpi_noirq;				/* skip ACPI IRQ initialization */
-=======
 #endif				/* X86 */
 
 int acpi_noirq;				/* skip ACPI IRQ initialization */
 static int acpi_nobgrt;			/* skip ACPI BGRT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int acpi_pci_disabled;		/* skip ACPI PCI scan and IRQ initialization */
 EXPORT_SYMBOL(acpi_pci_disabled);
 
 int acpi_lapic;
 int acpi_ioapic;
 int acpi_strict;
-<<<<<<< HEAD
-
-u8 acpi_sci_flags __initdata;
-int acpi_sci_override_gsi __initdata;
-=======
 int acpi_disable_cmcff;
 bool acpi_int_src_ovr[NR_IRQS_LEGACY];
 
 /* ACPI SCI override configuration */
 u8 acpi_sci_flags __initdata;
 u32 acpi_sci_override_gsi __initdata = INVALID_ACPI_IRQ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int acpi_skip_timer_override __initdata;
 int acpi_use_timer_override __initdata;
 int acpi_fix_pin2_polarity __initdata;
 
 #ifdef CONFIG_X86_LOCAL_APIC
 static u64 acpi_lapic_addr __initdata = APIC_DEFAULT_PHYS_BASE;
-<<<<<<< HEAD
-#endif
-
-#ifndef __HAVE_ARCH_CMPXCHG
-#warning ACPI uses CMPXCHG, i486 and later hardware
-=======
 static bool has_lapic_cpus __initdata;
 static bool acpi_support_online_capable;
 #endif
@@ -156,7 +87,6 @@ static struct acpi_madt_multiproc_wakeup_mailbox *acpi_mp_wake_mailbox;
  *			->ioapic_lock
  */
 static DEFINE_MUTEX(acpi_ioapic_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* --------------------------------------------------------------------------
@@ -178,90 +108,25 @@ static u32 isa_irq_to_gsi[NR_IRQS_LEGACY] __read_mostly = {
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 };
 
-<<<<<<< HEAD
-static unsigned int gsi_to_irq(unsigned int gsi)
-{
-	unsigned int irq = gsi + NR_IRQS_LEGACY;
-	unsigned int i;
-
-	for (i = 0; i < NR_IRQS_LEGACY; i++) {
-		if (isa_irq_to_gsi[i] == gsi) {
-			return i;
-		}
-	}
-
-	/* Provide an identity mapping of gsi == irq
-	 * except on truly weird platforms that have
-	 * non isa irqs in the first 16 gsis.
-	 */
-	if (gsi >= NR_IRQS_LEGACY)
-		irq = gsi;
-	else
-		irq = gsi_top + gsi;
-
-	return irq;
-}
-
-static u32 irq_to_gsi(int irq)
-{
-	unsigned int gsi;
-
-	if (irq < NR_IRQS_LEGACY)
-		gsi = isa_irq_to_gsi[irq];
-	else if (irq < gsi_top)
-		gsi = irq;
-	else if (irq < (gsi_top + NR_IRQS_LEGACY))
-		gsi = irq - gsi_top;
-	else
-		gsi = 0xffffffff;
-
-	return gsi;
-}
-
-/*
- * Temporarily use the virtual area starting from FIX_IO_APIC_BASE_END,
- * to map the target physical address. The problem is that set_fixmap()
- * provides a single page, and it is possible that the page is not
- * sufficient.
- * By using this area, we can map up to MAX_IO_APICS pages temporarily,
- * i.e. until the next __va_range() call.
- *
- * Important Safety Note:  The fixed I/O APIC page numbers are *subtracted*
- * from the fixed base.  That's why we start at FIX_IO_APIC_BASE_END and
- * count idx down while incrementing the phys address.
- */
-char *__init __acpi_map_table(unsigned long phys, unsigned long size)
-=======
 /*
  * This is just a simple wrapper around early_memremap(),
  * with sanity checks for phys == 0 and size == 0.
  */
 void __init __iomem *__acpi_map_table(unsigned long phys, unsigned long size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	if (!phys || !size)
 		return NULL;
 
-<<<<<<< HEAD
-	return early_ioremap(phys, size);
-}
-void __init __acpi_unmap_table(char *map, unsigned long size)
-=======
 	return early_memremap(phys, size);
 }
 
 void __init __acpi_unmap_table(void __iomem *map, unsigned long size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!map || !size)
 		return;
 
-<<<<<<< HEAD
-	early_iounmap(map, size);
-=======
 	early_memunmap(map, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_X86_LOCAL_APIC
@@ -269,32 +134,18 @@ static int __init acpi_parse_madt(struct acpi_table_header *table)
 {
 	struct acpi_table_madt *madt = NULL;
 
-<<<<<<< HEAD
-	if (!cpu_has_apic)
-=======
 	if (!boot_cpu_has(X86_FEATURE_APIC))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	madt = (struct acpi_table_madt *)table;
 	if (!madt) {
-<<<<<<< HEAD
-		printk(KERN_WARNING PREFIX "Unable to map MADT\n");
-=======
 		pr_warn("Unable to map MADT\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	if (madt->address) {
 		acpi_lapic_addr = (u64) madt->address;
 
-<<<<<<< HEAD
-		printk(KERN_DEBUG PREFIX "Local APIC address 0x%08x\n",
-		       madt->address);
-	}
-
-=======
 		pr_debug("Local APIC address 0x%08x\n", madt->address);
 	}
 
@@ -307,41 +158,12 @@ static int __init acpi_parse_madt(struct acpi_table_header *table)
 	     acpi_gbl_FADT.minor_revision >= 3))
 		acpi_support_online_capable = true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default_acpi_madt_oem_check(madt->header.oem_id,
 				    madt->header.oem_table_id);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __cpuinit acpi_register_lapic(int id, u8 enabled)
-{
-	unsigned int ver = 0;
-
-	if (id >= (MAX_LOCAL_APIC-1)) {
-		printk(KERN_INFO PREFIX "skipped apicid that is too big\n");
-		return;
-	}
-
-	if (!enabled) {
-		++disabled_cpus;
-		return;
-	}
-
-	if (boot_cpu_physical_apicid != -1U)
-		ver = apic_version[boot_cpu_physical_apicid];
-
-	generic_processor_info(id, ver);
-}
-
-static int __init
-acpi_parse_x2apic(struct acpi_subtable_header *header, const unsigned long end)
-{
-	struct acpi_madt_local_x2apic *processor = NULL;
-	int apic_id;
-	u8 enabled;
-=======
 static bool __init acpi_is_processor_usable(u32 lapic_flags)
 {
 	if (lapic_flags & ACPI_MADT_ENABLED)
@@ -362,20 +184,12 @@ acpi_parse_x2apic(union acpi_subtable_headers *header, const unsigned long end)
 	u32 apic_id;
 	u8 enabled;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	processor = (struct acpi_madt_local_x2apic *)header;
 
 	if (BAD_MADT_ENTRY(processor, end))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	acpi_table_print_madt_entry(header);
-
-	apic_id = processor->local_apic_id;
-	enabled = processor->lapic_flags & ACPI_MADT_ENABLED;
-#ifdef CONFIG_X86_X2APIC
-=======
 	acpi_table_print_madt_entry(&header->common);
 
 #ifdef CONFIG_X86_X2APIC
@@ -398,7 +212,6 @@ acpi_parse_x2apic(union acpi_subtable_headers *header, const unsigned long end)
 	if (has_lapic_cpus && apic_id < 0xff)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We need to register disabled CPU as well to permit
 	 * counting disabled CPUs. This allows us to size
@@ -406,14 +219,6 @@ acpi_parse_x2apic(union acpi_subtable_headers *header, const unsigned long end)
 	 * to not preallocating memory for all NR_CPUS
 	 * when we use CPU hotplug.
 	 */
-<<<<<<< HEAD
-	if (!apic->apic_id_valid(apic_id) && enabled)
-		printk(KERN_WARNING PREFIX "x2apic entry ignored\n");
-	else
-		acpi_register_lapic(apic_id, enabled);
-#else
-	printk(KERN_WARNING PREFIX "x2apic entry ignored\n");
-=======
 	if (!apic_id_valid(apic_id)) {
 		if (enabled)
 			pr_warn("x2apic entry ignored\n");
@@ -423,18 +228,13 @@ acpi_parse_x2apic(union acpi_subtable_headers *header, const unsigned long end)
 	topology_register_apic(apic_id, processor->uid, enabled);
 #else
 	pr_warn("x2apic entry ignored\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	return 0;
 }
 
 static int __init
-<<<<<<< HEAD
-acpi_parse_lapic(struct acpi_subtable_header * header, const unsigned long end)
-=======
 acpi_parse_lapic(union acpi_subtable_headers * header, const unsigned long end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_madt_local_apic *processor = NULL;
 
@@ -443,9 +243,6 @@ acpi_parse_lapic(union acpi_subtable_headers * header, const unsigned long end)
 	if (BAD_MADT_ENTRY(processor, end))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	acpi_table_print_madt_entry(header);
-=======
 	acpi_table_print_madt_entry(&header->common);
 
 	/* Ignore invalid ID */
@@ -455,7 +252,6 @@ acpi_parse_lapic(union acpi_subtable_headers * header, const unsigned long end)
 	/* don't register processors that can not be onlined */
 	if (!acpi_is_processor_usable(processor->lapic_flags))
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We need to register disabled CPU as well to permit
@@ -464,26 +260,16 @@ acpi_parse_lapic(union acpi_subtable_headers * header, const unsigned long end)
 	 * to not preallocating memory for all NR_CPUS
 	 * when we use CPU hotplug.
 	 */
-<<<<<<< HEAD
-	acpi_register_lapic(processor->id,	/* APIC ID */
-			    processor->lapic_flags & ACPI_MADT_ENABLED);
-
-=======
 	topology_register_apic(processor->id,	/* APIC ID */
 			       processor->processor_id, /* ACPI ID */
 			       processor->lapic_flags & ACPI_MADT_ENABLED);
 
 	has_lapic_cpus = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int __init
-<<<<<<< HEAD
-acpi_parse_sapic(struct acpi_subtable_header *header, const unsigned long end)
-=======
 acpi_parse_sapic(union acpi_subtable_headers *header, const unsigned long end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_madt_local_sapic *processor = NULL;
 
@@ -492,28 +278,17 @@ acpi_parse_sapic(union acpi_subtable_headers *header, const unsigned long end)
 	if (BAD_MADT_ENTRY(processor, end))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	acpi_table_print_madt_entry(header);
-
-	acpi_register_lapic((processor->id << 8) | processor->eid,/* APIC ID */
-			    processor->lapic_flags & ACPI_MADT_ENABLED);
-=======
 	acpi_table_print_madt_entry(&header->common);
 
 	topology_register_apic((processor->id << 8) | processor->eid,/* APIC ID */
 			       processor->processor_id, /* ACPI ID */
 			       processor->lapic_flags & ACPI_MADT_ENABLED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int __init
-<<<<<<< HEAD
-acpi_parse_lapic_addr_ovr(struct acpi_subtable_header * header,
-=======
 acpi_parse_lapic_addr_ovr(union acpi_subtable_headers * header,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  const unsigned long end)
 {
 	struct acpi_madt_local_apic_override *lapic_addr_ovr = NULL;
@@ -523,22 +298,15 @@ acpi_parse_lapic_addr_ovr(union acpi_subtable_headers * header,
 	if (BAD_MADT_ENTRY(lapic_addr_ovr, end))
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	acpi_table_print_madt_entry(&header->common);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_lapic_addr = lapic_addr_ovr->address;
 
 	return 0;
 }
 
 static int __init
-<<<<<<< HEAD
-acpi_parse_x2apic_nmi(struct acpi_subtable_header *header,
-=======
 acpi_parse_x2apic_nmi(union acpi_subtable_headers *header,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      const unsigned long end)
 {
 	struct acpi_madt_local_x2apic_nmi *x2apic_nmi = NULL;
@@ -548,27 +316,16 @@ acpi_parse_x2apic_nmi(union acpi_subtable_headers *header,
 	if (BAD_MADT_ENTRY(x2apic_nmi, end))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	acpi_table_print_madt_entry(header);
-
-	if (x2apic_nmi->lint != 1)
-		printk(KERN_WARNING PREFIX "NMI not connected to LINT 1!\n");
-=======
 	acpi_table_print_madt_entry(&header->common);
 
 	if (x2apic_nmi->lint != 1)
 		pr_warn("NMI not connected to LINT 1!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int __init
-<<<<<<< HEAD
-acpi_parse_lapic_nmi(struct acpi_subtable_header * header, const unsigned long end)
-=======
 acpi_parse_lapic_nmi(union acpi_subtable_headers * header, const unsigned long end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_madt_local_apic_nmi *lapic_nmi = NULL;
 
@@ -577,31 +334,14 @@ acpi_parse_lapic_nmi(union acpi_subtable_headers * header, const unsigned long e
 	if (BAD_MADT_ENTRY(lapic_nmi, end))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	acpi_table_print_madt_entry(header);
-
-	if (lapic_nmi->lint != 1)
-		printk(KERN_WARNING PREFIX "NMI not connected to LINT 1!\n");
-=======
 	acpi_table_print_madt_entry(&header->common);
 
 	if (lapic_nmi->lint != 1)
 		pr_warn("NMI not connected to LINT 1!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#endif				/*CONFIG_X86_LOCAL_APIC */
-
-#ifdef CONFIG_X86_IO_APIC
-
-static int __init
-acpi_parse_ioapic(struct acpi_subtable_header * header, const unsigned long end)
-{
-	struct acpi_madt_io_apic *ioapic = NULL;
-=======
 #ifdef CONFIG_X86_64
 static int acpi_wakeup_cpu(u32 apicid, unsigned long start_ip)
 {
@@ -765,19 +505,12 @@ acpi_parse_ioapic(union acpi_subtable_headers * header, const unsigned long end)
 		.type = IOAPIC_DOMAIN_DYNAMIC,
 		.ops = &mp_ioapic_irqdomain_ops,
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ioapic = (struct acpi_madt_io_apic *)header;
 
 	if (BAD_MADT_ENTRY(ioapic, end))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	acpi_table_print_madt_entry(header);
-
-	mp_register_ioapic(ioapic->id,
-			   ioapic->address, ioapic->global_irq_base);
-=======
 	acpi_table_print_madt_entry(&header->common);
 
 	/* Statically assign IRQ numbers for IOAPICs hosting legacy IRQs */
@@ -786,7 +519,6 @@ acpi_parse_ioapic(union acpi_subtable_headers * header, const unsigned long end)
 
 	mp_register_ioapic(ioapic->id, ioapic->address, ioapic->global_irq_base,
 			   &cfg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -809,21 +541,12 @@ static void __init acpi_sci_ioapic_setup(u8 bus_irq, u16 polarity, u16 trigger, 
 	if (acpi_sci_flags & ACPI_MADT_POLARITY_MASK)
 		polarity = acpi_sci_flags & ACPI_MADT_POLARITY_MASK;
 
-<<<<<<< HEAD
-	/*
-	 * mp_config_acpi_legacy_irqs() already setup IRQs < 16
-	 * If GSI is < 16, this will update its flags,
-	 * else it will create a new mp_irqs[] entry.
-	 */
-	mp_override_legacy_irq(bus_irq, polarity, trigger, gsi);
-=======
 	if (bus_irq < NR_IRQS_LEGACY)
 		mp_override_legacy_irq(bus_irq, polarity, trigger, gsi);
 	else
 		mp_register_ioapic_irq(bus_irq, polarity, trigger, gsi);
 
 	acpi_penalize_sci_irq(bus_irq, trigger, polarity);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * stash over-ride to indicate we've been here
@@ -834,11 +557,7 @@ static void __init acpi_sci_ioapic_setup(u8 bus_irq, u16 polarity, u16 trigger, 
 }
 
 static int __init
-<<<<<<< HEAD
-acpi_parse_int_src_ovr(struct acpi_subtable_header * header,
-=======
 acpi_parse_int_src_ovr(union acpi_subtable_headers * header,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       const unsigned long end)
 {
 	struct acpi_madt_interrupt_override *intsrc = NULL;
@@ -848,14 +567,10 @@ acpi_parse_int_src_ovr(union acpi_subtable_headers * header,
 	if (BAD_MADT_ENTRY(intsrc, end))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	acpi_table_print_madt_entry(header);
-=======
 	acpi_table_print_madt_entry(&header->common);
 
 	if (intsrc->source_irq < NR_IRQS_LEGACY)
 		acpi_int_src_ovr[intsrc->source_irq] = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (intsrc->source_irq == acpi_gbl_FADT.sci_interrupt) {
 		acpi_sci_ioapic_setup(intsrc->source_irq,
@@ -867,22 +582,14 @@ acpi_parse_int_src_ovr(union acpi_subtable_headers * header,
 
 	if (intsrc->source_irq == 0) {
 		if (acpi_skip_timer_override) {
-<<<<<<< HEAD
-			printk(PREFIX "BIOS IRQ0 override ignored.\n");
-=======
 			pr_warn("BIOS IRQ0 override ignored.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 
 		if ((intsrc->global_irq == 2) && acpi_fix_pin2_polarity
 			&& (intsrc->inti_flags & ACPI_MADT_POLARITY_MASK)) {
 			intsrc->inti_flags &= ~ACPI_MADT_POLARITY_MASK;
-<<<<<<< HEAD
-			printk(PREFIX "BIOS IRQ0 pin2 override: forcing polarity to high active.\n");
-=======
 			pr_warn("BIOS IRQ0 pin2 override: forcing polarity to high active.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -895,11 +602,7 @@ acpi_parse_int_src_ovr(union acpi_subtable_headers * header,
 }
 
 static int __init
-<<<<<<< HEAD
-acpi_parse_nmi_src(struct acpi_subtable_header * header, const unsigned long end)
-=======
 acpi_parse_nmi_src(union acpi_subtable_headers * header, const unsigned long end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_madt_nmi_source *nmi_src = NULL;
 
@@ -908,11 +611,7 @@ acpi_parse_nmi_src(union acpi_subtable_headers * header, const unsigned long end
 	if (BAD_MADT_ENTRY(nmi_src, end))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	acpi_table_print_madt_entry(header);
-=======
 	acpi_table_print_madt_entry(&header->common);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* TBD: Support nimsrc entries? */
 
@@ -929,17 +628,10 @@ acpi_parse_nmi_src(union acpi_subtable_headers * header, const unsigned long end
  * If a PIC-mode SCI is not recognized or gives spurious IRQ7's
  * it may require Edge Trigger -- use "acpi_sci=edge"
  *
-<<<<<<< HEAD
- * Port 0x4d0-4d1 are ECLR1 and ECLR2, the Edge/Level Control Registers
- * for the 8259 PIC.  bit[n] = 1 means irq[n] is Level, otherwise Edge.
- * ECLR1 is IRQs 0-7 (IRQ 0, 1, 2 must be 0)
- * ECLR2 is IRQs 8-15 (IRQ 8, 13 must be 0)
-=======
  * Port 0x4d0-4d1 are ELCR1 and ELCR2, the Edge/Level Control Registers
  * for the 8259 PIC.  bit[n] = 1 means irq[n] is Level, otherwise Edge.
  * ELCR1 is IRQs 0-7 (IRQ 0, 1, 2 must be 0)
  * ELCR2 is IRQs 8-15 (IRQ 8, 13 must be 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 void __init acpi_pic_sci_set_trigger(unsigned int irq, u16 trigger)
@@ -948,11 +640,7 @@ void __init acpi_pic_sci_set_trigger(unsigned int irq, u16 trigger)
 	unsigned int old, new;
 
 	/* Real old ELCR mask */
-<<<<<<< HEAD
-	old = inb(0x4d0) | (inb(0x4d1) << 8);
-=======
 	old = inb(PIC_ELCR1) | (inb(PIC_ELCR2) << 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we use ACPI to set PCI IRQs, then we should clear ELCR
@@ -977,22 +665,6 @@ void __init acpi_pic_sci_set_trigger(unsigned int irq, u16 trigger)
 	if (old == new)
 		return;
 
-<<<<<<< HEAD
-	printk(PREFIX "setting ELCR to %04x (from %04x)\n", new, old);
-	outb(new, 0x4d0);
-	outb(new >> 8, 0x4d1);
-}
-
-int acpi_gsi_to_irq(u32 gsi, unsigned int *irq)
-{
-	*irq = gsi_to_irq(gsi);
-
-#ifdef CONFIG_X86_IO_APIC
-	if (acpi_irq_model == ACPI_IRQ_MODEL_IOAPIC)
-		setup_IO_APIC_irq_extra(gsi);
-#endif
-
-=======
 	pr_warn("setting ELCR to %04x (from %04x)\n", new, old);
 	outb(new, PIC_ELCR1);
 	outb(new >> 8, PIC_ELCR2);
@@ -1018,19 +690,12 @@ int acpi_gsi_to_irq(u32 gsi, unsigned int *irqp)
 		return irq;
 
 	*irqp = irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(acpi_gsi_to_irq);
 
 int acpi_isa_irq_to_gsi(unsigned isa_irq, u32 *gsi)
 {
-<<<<<<< HEAD
-	if (isa_irq >= 16)
-		return -1;
-	*gsi = irq_to_gsi(isa_irq);
-	return 0;
-=======
 	if (isa_irq < nr_legacy_irqs() &&
 	    isa_irq_to_gsi[isa_irq] != INVALID_ACPI_IRQ) {
 		*gsi = isa_irq_to_gsi[isa_irq];
@@ -1038,7 +703,6 @@ int acpi_isa_irq_to_gsi(unsigned isa_irq, u32 *gsi)
 	}
 
 	return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int acpi_register_gsi_pic(struct device *dev, u32 gsi,
@@ -1049,30 +713,12 @@ static int acpi_register_gsi_pic(struct device *dev, u32 gsi,
 	 * Make sure all (legacy) PCI IRQs are set as level-triggered.
 	 */
 	if (trigger == ACPI_LEVEL_SENSITIVE)
-<<<<<<< HEAD
-		eisa_set_level_irq(gsi);
-=======
 		elcr_set_level_irq(gsi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	return gsi;
 }
 
-<<<<<<< HEAD
-static int acpi_register_gsi_ioapic(struct device *dev, u32 gsi,
-				    int trigger, int polarity)
-{
-#ifdef CONFIG_X86_IO_APIC
-	gsi = mp_register_gsi(dev, gsi, trigger, polarity);
-#endif
-
-	return gsi;
-}
-
-int (*__acpi_register_gsi)(struct device *dev, u32 gsi,
-			   int trigger, int polarity) = acpi_register_gsi_pic;
-=======
 #ifdef CONFIG_X86_LOCAL_APIC
 static int acpi_register_gsi_ioapic(struct device *dev, u32 gsi,
 				    int trigger, int polarity)
@@ -1121,7 +767,6 @@ int (*acpi_suspend_lowlevel)(void) = x86_acpi_suspend_lowlevel;
 #else
 int (*acpi_suspend_lowlevel)(void);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * success: return IRQ number (>=0)
@@ -1129,30 +774,6 @@ int (*acpi_suspend_lowlevel)(void);
  */
 int acpi_register_gsi(struct device *dev, u32 gsi, int trigger, int polarity)
 {
-<<<<<<< HEAD
-	unsigned int irq;
-	unsigned int plat_gsi = gsi;
-
-	plat_gsi = (*__acpi_register_gsi)(dev, gsi, trigger, polarity);
-	irq = gsi_to_irq(plat_gsi);
-
-	return irq;
-}
-
-void __init acpi_set_irq_model_pic(void)
-{
-	acpi_irq_model = ACPI_IRQ_MODEL_PIC;
-	__acpi_register_gsi = acpi_register_gsi_pic;
-	acpi_ioapic = 0;
-}
-
-void __init acpi_set_irq_model_ioapic(void)
-{
-	acpi_irq_model = ACPI_IRQ_MODEL_IOAPIC;
-	__acpi_register_gsi = acpi_register_gsi_ioapic;
-	acpi_ioapic = 1;
-}
-=======
 	return __acpi_register_gsi(dev, gsi, trigger, polarity);
 }
 EXPORT_SYMBOL_GPL(acpi_register_gsi);
@@ -1173,7 +794,6 @@ static void __init acpi_set_irq_model_ioapic(void)
 	acpi_ioapic = 1;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  ACPI based hotplug support for CPU
@@ -1181,124 +801,12 @@ static void __init acpi_set_irq_model_ioapic(void)
 #ifdef CONFIG_ACPI_HOTPLUG_CPU
 #include <acpi/processor.h>
 
-<<<<<<< HEAD
-static void __cpuinit acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
-=======
 static int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_ACPI_NUMA
 	int nid;
 
 	nid = acpi_get_node(handle);
-<<<<<<< HEAD
-	if (nid == -1 || !node_online(nid))
-		return;
-	set_apicid_to_node(physid, nid);
-	numa_set_node(cpu, nid);
-#endif
-}
-
-static int __cpuinit _acpi_map_lsapic(acpi_handle handle, int *pcpu)
-{
-	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-	union acpi_object *obj;
-	struct acpi_madt_local_apic *lapic;
-	cpumask_var_t tmp_map, new_map;
-	u8 physid;
-	int cpu;
-	int retval = -ENOMEM;
-
-	if (ACPI_FAILURE(acpi_evaluate_object(handle, "_MAT", NULL, &buffer)))
-		return -EINVAL;
-
-	if (!buffer.length || !buffer.pointer)
-		return -EINVAL;
-
-	obj = buffer.pointer;
-	if (obj->type != ACPI_TYPE_BUFFER ||
-	    obj->buffer.length < sizeof(*lapic)) {
-		kfree(buffer.pointer);
-		return -EINVAL;
-	}
-
-	lapic = (struct acpi_madt_local_apic *)obj->buffer.pointer;
-
-	if (lapic->header.type != ACPI_MADT_TYPE_LOCAL_APIC ||
-	    !(lapic->lapic_flags & ACPI_MADT_ENABLED)) {
-		kfree(buffer.pointer);
-		return -EINVAL;
-	}
-
-	physid = lapic->id;
-
-	kfree(buffer.pointer);
-	buffer.length = ACPI_ALLOCATE_BUFFER;
-	buffer.pointer = NULL;
-	lapic = NULL;
-
-	if (!alloc_cpumask_var(&tmp_map, GFP_KERNEL))
-		goto out;
-
-	if (!alloc_cpumask_var(&new_map, GFP_KERNEL))
-		goto free_tmp_map;
-
-	cpumask_copy(tmp_map, cpu_present_mask);
-	acpi_register_lapic(physid, ACPI_MADT_ENABLED);
-
-	/*
-	 * If mp_register_lapic successfully generates a new logical cpu
-	 * number, then the following will get us exactly what was mapped
-	 */
-	cpumask_andnot(new_map, cpu_present_mask, tmp_map);
-	if (cpumask_empty(new_map)) {
-		printk ("Unable to map lapic to logical cpu number\n");
-		retval = -EINVAL;
-		goto free_new_map;
-	}
-
-	acpi_processor_set_pdc(handle);
-
-	cpu = cpumask_first(new_map);
-	acpi_map_cpu2node(handle, cpu, physid);
-
-	*pcpu = cpu;
-	retval = 0;
-
-free_new_map:
-	free_cpumask_var(new_map);
-free_tmp_map:
-	free_cpumask_var(tmp_map);
-out:
-	return retval;
-}
-
-/* wrapper to silence section mismatch warning */
-int __ref acpi_map_lsapic(acpi_handle handle, int *pcpu)
-{
-	return _acpi_map_lsapic(handle, pcpu);
-}
-EXPORT_SYMBOL(acpi_map_lsapic);
-
-int acpi_unmap_lsapic(int cpu)
-{
-	per_cpu(x86_cpu_to_apicid, cpu) = -1;
-	set_cpu_present(cpu, false);
-	num_processors--;
-
-	return (0);
-}
-
-EXPORT_SYMBOL(acpi_unmap_lsapic);
-#endif				/* CONFIG_ACPI_HOTPLUG_CPU */
-
-int acpi_register_ioapic(acpi_handle handle, u64 phys_addr, u32 gsi_base)
-{
-	/* TBD */
-	return -EINVAL;
-}
-
-=======
 	if (nid != NUMA_NO_NODE) {
 		set_apicid_to_node(physid, nid);
 		numa_set_node(cpu, nid);
@@ -1367,28 +875,10 @@ int acpi_register_ioapic(acpi_handle handle, u64 phys_addr, u32 gsi_base)
 
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(acpi_register_ioapic);
 
 int acpi_unregister_ioapic(acpi_handle handle, u32 gsi_base)
 {
-<<<<<<< HEAD
-	/* TBD */
-	return -EINVAL;
-}
-
-EXPORT_SYMBOL(acpi_unregister_ioapic);
-
-static int __init acpi_parse_sbf(struct acpi_table_header *table)
-{
-	struct acpi_table_boot *sb;
-
-	sb = (struct acpi_table_boot *)table;
-	if (!sb) {
-		printk(KERN_WARNING PREFIX "Unable to map SBF\n");
-		return -ENODEV;
-	}
-=======
 	int ret = -ENOSYS;
 
 #ifdef CONFIG_ACPI_HOTPLUG_IOAPIC
@@ -1426,7 +916,6 @@ int acpi_ioapic_registered(acpi_handle handle, u32 gsi_base)
 static int __init acpi_parse_sbf(struct acpi_table_header *table)
 {
 	struct acpi_table_boot *sb = (struct acpi_table_boot *)table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sbf_port = sb->cmos_index;	/* Save CMOS port */
 
@@ -1436,23 +925,6 @@ static int __init acpi_parse_sbf(struct acpi_table_header *table)
 #ifdef CONFIG_HPET_TIMER
 #include <asm/hpet.h>
 
-<<<<<<< HEAD
-static struct __initdata resource *hpet_res;
-
-static int __init acpi_parse_hpet(struct acpi_table_header *table)
-{
-	struct acpi_table_hpet *hpet_tbl;
-
-	hpet_tbl = (struct acpi_table_hpet *)table;
-	if (!hpet_tbl) {
-		printk(KERN_WARNING PREFIX "Unable to map HPET\n");
-		return -ENODEV;
-	}
-
-	if (hpet_tbl->address.space_id != ACPI_SPACE_MEM) {
-		printk(KERN_WARNING PREFIX "HPET timers must be located in "
-		       "memory.\n");
-=======
 static struct resource *hpet_res __initdata;
 
 static int __init acpi_parse_hpet(struct acpi_table_header *table)
@@ -1461,7 +933,6 @@ static int __init acpi_parse_hpet(struct acpi_table_header *table)
 
 	if (hpet_tbl->address.space_id != ACPI_SPACE_MEM) {
 		pr_warn("HPET timers must be located in memory.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -1473,13 +944,7 @@ static int __init acpi_parse_hpet(struct acpi_table_header *table)
 	 * want to allocate a resource there.
 	 */
 	if (!hpet_address) {
-<<<<<<< HEAD
-		printk(KERN_WARNING PREFIX
-		       "HPET id: %#x base: %#lx is invalid\n",
-		       hpet_tbl->id, hpet_address);
-=======
 		pr_warn("HPET id: %#x base: %#lx is invalid\n", hpet_tbl->id, hpet_address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 #ifdef CONFIG_X86_64
@@ -1490,23 +955,6 @@ static int __init acpi_parse_hpet(struct acpi_table_header *table)
 	 */
 	if (hpet_address == 0xfed0000000000000UL) {
 		if (!hpet_force_user) {
-<<<<<<< HEAD
-			printk(KERN_WARNING PREFIX "HPET id: %#x "
-			       "base: 0xfed0000000000000 is bogus\n "
-			       "try hpet=force on the kernel command line to "
-			       "fix it up to 0xfed00000.\n", hpet_tbl->id);
-			hpet_address = 0;
-			return 0;
-		}
-		printk(KERN_WARNING PREFIX
-		       "HPET id: %#x base: 0xfed0000000000000 fixed up "
-		       "to 0xfed00000.\n", hpet_tbl->id);
-		hpet_address >>= 32;
-	}
-#endif
-	printk(KERN_INFO PREFIX "HPET id: %#x base: %#lx\n",
-	       hpet_tbl->id, hpet_address);
-=======
 			pr_warn("HPET id: %#x base: 0xfed0000000000000 is bogus, try hpet=force on the kernel command line to fix it up to 0xfed00000.\n",
 				hpet_tbl->id);
 			hpet_address = 0;
@@ -1518,22 +966,17 @@ static int __init acpi_parse_hpet(struct acpi_table_header *table)
 	}
 #endif
 	pr_info("HPET id: %#x base: %#lx\n", hpet_tbl->id, hpet_address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Allocate and initialize the HPET firmware resource for adding into
 	 * the resource tree during the lateinit timeframe.
 	 */
 #define HPET_RESOURCE_NAME_SIZE 9
-<<<<<<< HEAD
-	hpet_res = alloc_bootmem(sizeof(*hpet_res) + HPET_RESOURCE_NAME_SIZE);
-=======
 	hpet_res = memblock_alloc(sizeof(*hpet_res) + HPET_RESOURCE_NAME_SIZE,
 				  SMP_CACHE_BYTES);
 	if (!hpet_res)
 		panic("%s: Failed to allocate %zu bytes\n", __func__,
 		      sizeof(*hpet_res) + HPET_RESOURCE_NAME_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hpet_res->name = (void *)&hpet_res[1];
 	hpet_res->flags = IORESOURCE_MEM;
@@ -1566,8 +1009,6 @@ late_initcall(hpet_insert_resource);
 
 static int __init acpi_parse_fadt(struct acpi_table_header *table)
 {
-<<<<<<< HEAD
-=======
 	if (!(acpi_gbl_FADT.boot_flags & ACPI_FADT_LEGACY_DEVICES)) {
 		pr_debug("no legacy devices present\n");
 		x86_platform.legacy.devices.pnpbios = 0;
@@ -1589,7 +1030,6 @@ static int __init acpi_parse_fadt(struct acpi_table_header *table)
 		pr_debug("probing for VGA not safe\n");
 		x86_platform.legacy.no_vga = 1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_X86_PM_TIMER
 	/* detect the location of the ACPI PM Timer */
@@ -1612,12 +1052,7 @@ static int __init acpi_parse_fadt(struct acpi_table_header *table)
 		pmtmr_ioport = acpi_gbl_FADT.pm_timer_block;
 	}
 	if (pmtmr_ioport)
-<<<<<<< HEAD
-		printk(KERN_INFO PREFIX "PM-Timer IO Port: %#x\n",
-		       pmtmr_ioport);
-=======
 		pr_info("PM-Timer IO Port: %#x\n", pmtmr_ioport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return 0;
 }
@@ -1632,26 +1067,11 @@ static int __init early_acpi_parse_madt_lapic_addr_ovr(void)
 {
 	int count;
 
-<<<<<<< HEAD
-	if (!cpu_has_apic)
-=======
 	if (!boot_cpu_has(X86_FEATURE_APIC))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	/*
 	 * Note that the LAPIC address is obtained from the MADT (32-bit value)
-<<<<<<< HEAD
-	 * and (optionally) overriden by a LAPIC_ADDR_OVR entry (64-bit value).
-	 */
-
-	count =
-	    acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE,
-				  acpi_parse_lapic_addr_ovr, 0);
-	if (count < 0) {
-		printk(KERN_ERR PREFIX
-		       "Error parsing LAPIC address override entry\n");
-=======
 	 * and (optionally) overridden by a LAPIC_ADDR_OVR entry (64-bit value).
 	 */
 
@@ -1659,7 +1079,6 @@ static int __init early_acpi_parse_madt_lapic_addr_ovr(void)
 				      acpi_parse_lapic_addr_ovr, 0);
 	if (count < 0) {
 		pr_err("Error parsing LAPIC address override entry\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return count;
 	}
 
@@ -1670,53 +1089,15 @@ static int __init early_acpi_parse_madt_lapic_addr_ovr(void)
 
 static int __init acpi_parse_madt_lapic_entries(void)
 {
-<<<<<<< HEAD
-	int count;
-	int x2count = 0;
-
-	if (!cpu_has_apic)
-		return -ENODEV;
-
-	/*
-	 * Note that the LAPIC address is obtained from the MADT (32-bit value)
-	 * and (optionally) overriden by a LAPIC_ADDR_OVR entry (64-bit value).
-	 */
-
-	count =
-	    acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE,
-				  acpi_parse_lapic_addr_ovr, 0);
-	if (count < 0) {
-		printk(KERN_ERR PREFIX
-		       "Error parsing LAPIC address override entry\n");
-		return count;
-	}
-
-	register_lapic_address(acpi_lapic_addr);
-
-=======
 	int count, x2count = 0;
 
 	if (!boot_cpu_has(X86_FEATURE_APIC))
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	count = acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_SAPIC,
 				      acpi_parse_sapic, MAX_LOCAL_APIC);
 
 	if (!count) {
-<<<<<<< HEAD
-		x2count = acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_X2APIC,
-					acpi_parse_x2apic, MAX_LOCAL_APIC);
-		count = acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_APIC,
-					acpi_parse_lapic, MAX_LOCAL_APIC);
-	}
-	if (!count && !x2count) {
-		printk(KERN_ERR PREFIX "No LAPIC entries present\n");
-		/* TBD: Cleanup to allow fallback to MPS */
-		return -ENODEV;
-	} else if (count < 0 || x2count < 0) {
-		printk(KERN_ERR PREFIX "Error parsing LAPIC entry\n");
-=======
 		count = acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_APIC,
 					acpi_parse_lapic, MAX_LOCAL_APIC);
 		x2count = acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_X2APIC,
@@ -1728,79 +1109,21 @@ static int __init acpi_parse_madt_lapic_entries(void)
 		return -ENODEV;
 	} else if (count < 0 || x2count < 0) {
 		pr_err("Error parsing LAPIC entry\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* TBD: Cleanup to allow fallback to MPS */
 		return count;
 	}
 
-<<<<<<< HEAD
-	x2count =
-	    acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_X2APIC_NMI,
-				  acpi_parse_x2apic_nmi, 0);
-	count =
-	    acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_APIC_NMI, acpi_parse_lapic_nmi, 0);
-	if (count < 0 || x2count < 0) {
-		printk(KERN_ERR PREFIX "Error parsing LAPIC NMI entry\n");
-=======
 	x2count = acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_X2APIC_NMI,
 					acpi_parse_x2apic_nmi, 0);
 	count = acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_APIC_NMI,
 				      acpi_parse_lapic_nmi, 0);
 	if (count < 0 || x2count < 0) {
 		pr_err("Error parsing LAPIC NMI entry\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* TBD: Cleanup to allow fallback to MPS */
 		return count;
 	}
 	return 0;
 }
-<<<<<<< HEAD
-#endif				/* CONFIG_X86_LOCAL_APIC */
-
-#ifdef	CONFIG_X86_IO_APIC
-#define MP_ISA_BUS		0
-
-#ifdef CONFIG_X86_ES7000
-extern int es7000_plat;
-#endif
-
-void __init mp_override_legacy_irq(u8 bus_irq, u8 polarity, u8 trigger, u32 gsi)
-{
-	int ioapic;
-	int pin;
-	struct mpc_intsrc mp_irq;
-
-	/*
-	 * Convert 'gsi' to 'ioapic.pin'.
-	 */
-	ioapic = mp_find_ioapic(gsi);
-	if (ioapic < 0)
-		return;
-	pin = mp_find_ioapic_pin(ioapic, gsi);
-
-	/*
-	 * TBD: This check is for faulty timer entries, where the override
-	 *      erroneously sets the trigger to level, resulting in a HUGE
-	 *      increase of timer interrupts!
-	 */
-	if ((bus_irq == 0) && (trigger == 3))
-		trigger = 1;
-
-	mp_irq.type = MP_INTSRC;
-	mp_irq.irqtype = mp_INT;
-	mp_irq.irqflag = (trigger << 2) | polarity;
-	mp_irq.srcbus = MP_ISA_BUS;
-	mp_irq.srcbusirq = bus_irq;	/* IRQ */
-	mp_irq.dstapic = mpc_ioapic_id(ioapic); /* APIC ID */
-	mp_irq.dstirq = pin;	/* INTIN# */
-
-	mp_save_irq(&mp_irq);
-
-	isa_irq_to_gsi[bus_irq] = gsi;
-}
-
-void __init mp_config_acpi_legacy_irqs(void)
-=======
 
 #ifdef CONFIG_X86_64
 static int __init acpi_parse_mp_wake(union acpi_subtable_headers *header,
@@ -1828,45 +1151,24 @@ static int __init acpi_parse_mp_wake(union acpi_subtable_headers *header,
 
 #ifdef	CONFIG_X86_IO_APIC
 static void __init mp_config_acpi_legacy_irqs(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct mpc_intsrc mp_irq;
 
-<<<<<<< HEAD
-#if defined (CONFIG_MCA) || defined (CONFIG_EISA)
-=======
 #ifdef CONFIG_EISA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Fabricate the legacy ISA bus (bus #31).
 	 */
 	mp_bus_id_to_type[MP_ISA_BUS] = MP_BUS_ISA;
 #endif
 	set_bit(MP_ISA_BUS, mp_bus_not_pci);
-<<<<<<< HEAD
-	pr_debug("Bus #%d is ISA\n", MP_ISA_BUS);
-
-#ifdef CONFIG_X86_ES7000
-	/*
-	 * Older generations of ES7000 have no legacy identity mappings
-	 */
-	if (es7000_plat == 1)
-		return;
-#endif
-=======
 	pr_debug("Bus #%d is ISA (nIRQs: %d)\n", MP_ISA_BUS, nr_legacy_irqs());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Use the default configuration for the IRQs 0-15.  Unless
 	 * overridden by (MADT) interrupt source override entries.
 	 */
-<<<<<<< HEAD
-	for (i = 0; i < 16; i++) {
-=======
 	for (i = 0; i < nr_legacy_irqs(); i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int ioapic, pin;
 		unsigned int dstapic;
 		int idx;
@@ -1898,11 +1200,7 @@ static void __init mp_config_acpi_legacy_irqs(void)
 		}
 
 		if (idx != mp_irq_entries) {
-<<<<<<< HEAD
-			printk(KERN_DEBUG "ACPI: IRQ%d used by override.\n", i);
-=======
 			pr_debug("ACPI: IRQ%d used by override.\n", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;	/* IRQ already used */
 		}
 
@@ -1918,86 +1216,6 @@ static void __init mp_config_acpi_legacy_irqs(void)
 	}
 }
 
-<<<<<<< HEAD
-static int mp_config_acpi_gsi(struct device *dev, u32 gsi, int trigger,
-			int polarity)
-{
-#ifdef CONFIG_X86_MPPARSE
-	struct mpc_intsrc mp_irq;
-	struct pci_dev *pdev;
-	unsigned char number;
-	unsigned int devfn;
-	int ioapic;
-	u8 pin;
-
-	if (!acpi_ioapic)
-		return 0;
-	if (!dev)
-		return 0;
-	if (dev->bus != &pci_bus_type)
-		return 0;
-
-	pdev = to_pci_dev(dev);
-	number = pdev->bus->number;
-	devfn = pdev->devfn;
-	pin = pdev->pin;
-	/* print the entry should happen on mptable identically */
-	mp_irq.type = MP_INTSRC;
-	mp_irq.irqtype = mp_INT;
-	mp_irq.irqflag = (trigger == ACPI_EDGE_SENSITIVE ? 4 : 0x0c) |
-				(polarity == ACPI_ACTIVE_HIGH ? 1 : 3);
-	mp_irq.srcbus = number;
-	mp_irq.srcbusirq = (((devfn >> 3) & 0x1f) << 2) | ((pin - 1) & 3);
-	ioapic = mp_find_ioapic(gsi);
-	mp_irq.dstapic = mpc_ioapic_id(ioapic);
-	mp_irq.dstirq = mp_find_ioapic_pin(ioapic, gsi);
-
-	mp_save_irq(&mp_irq);
-#endif
-	return 0;
-}
-
-int mp_register_gsi(struct device *dev, u32 gsi, int trigger, int polarity)
-{
-	int ioapic;
-	int ioapic_pin;
-	struct io_apic_irq_attr irq_attr;
-
-	if (acpi_irq_model != ACPI_IRQ_MODEL_IOAPIC)
-		return gsi;
-
-	/* Don't set up the ACPI SCI because it's already set up */
-	if (acpi_gbl_FADT.sci_interrupt == gsi)
-		return gsi;
-
-	ioapic = mp_find_ioapic(gsi);
-	if (ioapic < 0) {
-		printk(KERN_WARNING "No IOAPIC for GSI %u\n", gsi);
-		return gsi;
-	}
-
-	ioapic_pin = mp_find_ioapic_pin(ioapic, gsi);
-
-	if (ioapic_pin > MP_MAX_IOAPIC_PIN) {
-		printk(KERN_ERR "Invalid reference to IOAPIC pin "
-		       "%d-%d\n", mpc_ioapic_id(ioapic),
-		       ioapic_pin);
-		return gsi;
-	}
-
-	if (enable_update_mptable)
-		mp_config_acpi_gsi(dev, gsi, trigger, polarity);
-
-	set_io_apic_irq_attr(&irq_attr, ioapic, ioapic_pin,
-			     trigger == ACPI_EDGE_SENSITIVE ? 0 : 1,
-			     polarity == ACPI_ACTIVE_HIGH ? 0 : 1);
-	io_apic_set_pci_routing(dev, gsi_to_irq(gsi), &irq_attr);
-
-	return gsi;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Parse IOAPIC related entries in MADT
  * returns 0 on success, < 0 on error
@@ -2015,41 +1233,12 @@ static int __init acpi_parse_madt_ioapic_entries(void)
 	if (acpi_disabled || acpi_noirq)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (!cpu_has_apic)
-=======
 	if (!boot_cpu_has(X86_FEATURE_APIC))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	/*
 	 * if "noapic" boot option, don't look for IO-APICs
 	 */
-<<<<<<< HEAD
-	if (skip_ioapic_setup) {
-		printk(KERN_INFO PREFIX "Skipping IOAPIC probe "
-		       "due to 'noapic' option.\n");
-		return -ENODEV;
-	}
-
-	count =
-	    acpi_table_parse_madt(ACPI_MADT_TYPE_IO_APIC, acpi_parse_ioapic,
-				  MAX_IO_APICS);
-	if (!count) {
-		printk(KERN_ERR PREFIX "No IOAPIC entries present\n");
-		return -ENODEV;
-	} else if (count < 0) {
-		printk(KERN_ERR PREFIX "Error parsing IOAPIC entry\n");
-		return count;
-	}
-
-	count =
-	    acpi_table_parse_madt(ACPI_MADT_TYPE_INTERRUPT_OVERRIDE, acpi_parse_int_src_ovr,
-				  nr_irqs);
-	if (count < 0) {
-		printk(KERN_ERR PREFIX
-		       "Error parsing interrupt source overrides entry\n");
-=======
 	if (ioapic_is_disabled) {
 		pr_info("Skipping IOAPIC probe due to 'noapic' option.\n");
 		return -ENODEV;
@@ -2069,7 +1258,6 @@ static int __init acpi_parse_madt_ioapic_entries(void)
 				      acpi_parse_int_src_ovr, nr_irqs);
 	if (count < 0) {
 		pr_err("Error parsing interrupt source overrides entry\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* TBD: Cleanup to allow fallback to MPS */
 		return count;
 	}
@@ -2077,32 +1265,19 @@ static int __init acpi_parse_madt_ioapic_entries(void)
 	/*
 	 * If BIOS did not supply an INT_SRC_OVR for the SCI
 	 * pretend we got one so we can set the SCI flags.
-<<<<<<< HEAD
-	 */
-	if (!acpi_sci_override_gsi)
-=======
 	 * But ignore setting up SCI on hardware reduced platforms.
 	 */
 	if (acpi_sci_override_gsi == INVALID_ACPI_IRQ && !acpi_gbl_reduced_hardware)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acpi_sci_ioapic_setup(acpi_gbl_FADT.sci_interrupt, 0, 0,
 				      acpi_gbl_FADT.sci_interrupt);
 
 	/* Fill in identity legacy mappings where no override */
 	mp_config_acpi_legacy_irqs();
 
-<<<<<<< HEAD
-	count =
-	    acpi_table_parse_madt(ACPI_MADT_TYPE_NMI_SOURCE, acpi_parse_nmi_src,
-				  nr_irqs);
-	if (count < 0) {
-		printk(KERN_ERR PREFIX "Error parsing NMI SRC entry\n");
-=======
 	count = acpi_table_parse_madt(ACPI_MADT_TYPE_NMI_SOURCE,
 				      acpi_parse_nmi_src, nr_irqs);
 	if (count < 0) {
 		pr_err("Error parsing NMI SRC entry\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* TBD: Cleanup to allow fallback to MPS */
 		return count;
 	}
@@ -2135,12 +1310,7 @@ static void __init early_acpi_process_madt(void)
 			/*
 			 * Dell Precision Workstation 410, 610 come here.
 			 */
-<<<<<<< HEAD
-			printk(KERN_ERR PREFIX
-			       "Invalid BIOS MADT, disabling ACPI\n");
-=======
 			pr_err("Invalid BIOS MADT, disabling ACPI\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			disable_acpi();
 		}
 	}
@@ -2164,20 +1334,14 @@ static void __init acpi_process_madt(void)
 			/*
 			 * Parse MADT IO-APIC entries
 			 */
-<<<<<<< HEAD
-			error = acpi_parse_madt_ioapic_entries();
-=======
 			mutex_lock(&acpi_ioapic_lock);
 			error = acpi_parse_madt_ioapic_entries();
 			mutex_unlock(&acpi_ioapic_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!error) {
 				acpi_set_irq_model_ioapic();
 
 				smp_found_config = 1;
 			}
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_X86_64
 			/*
@@ -2186,18 +1350,12 @@ static void __init acpi_process_madt(void)
 			acpi_table_parse_madt(ACPI_MADT_TYPE_MULTIPROC_WAKEUP,
 					      acpi_parse_mp_wake, 1);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (error == -EINVAL) {
 			/*
 			 * Dell Precision Workstation 410, 610 come here.
 			 */
-<<<<<<< HEAD
-			printk(KERN_ERR PREFIX
-			       "Invalid BIOS MADT, disabling ACPI\n");
-=======
 			pr_err("Invalid BIOS MADT, disabling ACPI\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			disable_acpi();
 		}
 	} else {
@@ -2207,12 +1365,7 @@ static void __init acpi_process_madt(void)
  		 * Boot with "acpi=off" to use MPS on such a system.
  		 */
 		if (smp_found_config) {
-<<<<<<< HEAD
-			printk(KERN_WARNING PREFIX
-				"No APIC-table, disabling MPS\n");
-=======
 			pr_warn("No APIC-table, disabling MPS\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			smp_found_config = 0;
 		}
 	}
@@ -2222,17 +1375,9 @@ static void __init acpi_process_madt(void)
 	 * processors, where MPS only supports physical.
 	 */
 	if (acpi_lapic && acpi_ioapic)
-<<<<<<< HEAD
-		printk(KERN_INFO "Using ACPI (MADT) for SMP configuration "
-		       "information\n");
-	else if (acpi_lapic)
-		printk(KERN_INFO "Using ACPI for processor (LAPIC) "
-		       "configuration information\n");
-=======
 		pr_info("Using ACPI (MADT) for SMP configuration information\n");
 	else if (acpi_lapic)
 		pr_info("Using ACPI for processor (LAPIC) configuration information\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return;
 }
@@ -2240,12 +1385,7 @@ static void __init acpi_process_madt(void)
 static int __init disable_acpi_irq(const struct dmi_system_id *d)
 {
 	if (!acpi_force) {
-<<<<<<< HEAD
-		printk(KERN_NOTICE "%s detected: force use of acpi=noirq\n",
-		       d->ident);
-=======
 		pr_notice("%s detected: force use of acpi=noirq\n", d->ident);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acpi_noirq_set();
 	}
 	return 0;
@@ -2254,27 +1394,12 @@ static int __init disable_acpi_irq(const struct dmi_system_id *d)
 static int __init disable_acpi_pci(const struct dmi_system_id *d)
 {
 	if (!acpi_force) {
-<<<<<<< HEAD
-		printk(KERN_NOTICE "%s detected: force use of pci=noacpi\n",
-		       d->ident);
-=======
 		pr_notice("%s detected: force use of pci=noacpi\n", d->ident);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acpi_disable_pci();
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __init dmi_disable_acpi(const struct dmi_system_id *d)
-{
-	if (!acpi_force) {
-		printk(KERN_NOTICE "%s detected: acpi off\n", d->ident);
-		disable_acpi();
-	} else {
-		printk(KERN_NOTICE
-		       "Warning: DMI blacklist says broken, but acpi forced\n");
-=======
 static int __init disable_acpi_xsdt(const struct dmi_system_id *d)
 {
 	if (!acpi_force) {
@@ -2293,7 +1418,6 @@ static int __init dmi_disable_acpi(const struct dmi_system_id *d)
 		disable_acpi();
 	} else {
 		pr_notice("Warning: DMI blacklist says broken, but acpi forced\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -2312,12 +1436,6 @@ static int __init dmi_ignore_irq0_timer_override(const struct dmi_system_id *d)
 }
 
 /*
-<<<<<<< HEAD
- * If your system is blacklisted here, but you find that acpi=force
- * works for you, please contact linux-acpi@vger.kernel.org
- */
-static struct dmi_system_id __initdata acpi_dmi_table[] = {
-=======
  * ACPI offers an alternative platform interface model that removes
  * ACPI hardware requirements for platforms that do not implement
  * the PC Architecture.
@@ -2346,7 +1464,6 @@ static void __init acpi_reduced_hw_init(void)
  * works for you, please contact linux-acpi@vger.kernel.org
  */
 static const struct dmi_system_id acpi_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Boxes that need ACPI disabled
 	 */
@@ -2417,8 +1534,6 @@ static const struct dmi_system_id acpi_dmi_table[] __initconst = {
 		     DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate 360"),
 		     },
 	 },
-<<<<<<< HEAD
-=======
 	/*
 	 * Boxes that need ACPI XSDT use disabled due to corrupted tables
 	 */
@@ -2432,16 +1547,11 @@ static const struct dmi_system_id acpi_dmi_table[] __initconst = {
 		     DMI_MATCH(DMI_BIOS_DATE, "02/01/2011"),
 		     },
 	 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 
 /* second table for DMI checks that should run after early-quirks */
-<<<<<<< HEAD
-static struct dmi_system_id __initdata acpi_dmi_table_late[] = {
-=======
 static const struct dmi_system_id acpi_dmi_table_late[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * HP laptops which use a DSDT reporting as HP/SB400/10000,
 	 * which includes some code which overrides all temperature
@@ -2522,21 +1632,11 @@ void __init acpi_boot_table_init(void)
 	 * If acpi_disabled, bail out
 	 */
 	if (acpi_disabled)
-<<<<<<< HEAD
-		return; 
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Initialize the ACPI boot-time table parser.
 	 */
-<<<<<<< HEAD
-	if (acpi_table_init()) {
-		disable_acpi();
-		return;
-	}
-=======
 	if (acpi_locate_initial_tables())
 		disable_acpi();
 	else
@@ -2549,7 +1649,6 @@ int __init early_acpi_boot_init(void)
 		return 1;
 
 	acpi_table_init_complete();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acpi_table_parse(ACPI_SIG_BOOT, acpi_parse_sbf);
 
@@ -2558,24 +1657,6 @@ int __init early_acpi_boot_init(void)
 	 */
 	if (acpi_blacklisted()) {
 		if (acpi_force) {
-<<<<<<< HEAD
-			printk(KERN_WARNING PREFIX "acpi=force override\n");
-		} else {
-			printk(KERN_WARNING PREFIX "Disabling ACPI support\n");
-			disable_acpi();
-			return;
-		}
-	}
-}
-
-int __init early_acpi_boot_init(void)
-{
-	/*
-	 * If acpi_disabled, bail out
-	 */
-	if (acpi_disabled)
-		return 1;
-=======
 			pr_warn("acpi=force override\n");
 		} else {
 			pr_warn("Disabling ACPI support\n");
@@ -2583,21 +1664,17 @@ int __init early_acpi_boot_init(void)
 			return 1;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Process the Multiple APIC Description Table (MADT), if present
 	 */
 	early_acpi_process_madt();
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Hardware-reduced ACPI mode initialization:
 	 */
 	acpi_reduced_hw_init();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2625,20 +1702,14 @@ int __init acpi_boot_init(void)
 	acpi_process_madt();
 
 	acpi_table_parse(ACPI_SIG_HPET, acpi_parse_hpet);
-<<<<<<< HEAD
-=======
 	if (IS_ENABLED(CONFIG_ACPI_BGRT) && !acpi_nobgrt)
 		acpi_table_parse(ACPI_SIG_BGRT, acpi_parse_bgrt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!acpi_noirq)
 		x86_init.pci.init = pci_acpi_init;
 
-<<<<<<< HEAD
-=======
 	/* Do not enable ACPI SPCR console by default */
 	acpi_parse_spcr(earlycon_acpi_spcr_enable, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2662,21 +1733,12 @@ static int __init parse_acpi(char *arg)
 	}
 	/* acpi=rsdt use RSDT instead of XSDT */
 	else if (strcmp(arg, "rsdt") == 0) {
-<<<<<<< HEAD
-		acpi_rsdt_forced = 1;
-=======
 		acpi_gbl_do_not_use_xsdt = TRUE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* "acpi=noirq" disables ACPI interrupt routing */
 	else if (strcmp(arg, "noirq") == 0) {
 		acpi_noirq_set();
 	}
-<<<<<<< HEAD
-	/* "acpi=copy_dsdt" copys DSDT */
-	else if (strcmp(arg, "copy_dsdt") == 0) {
-		acpi_gbl_copy_dsdt_locally = 1;
-=======
 	/* "acpi=copy_dsdt" copies DSDT */
 	else if (strcmp(arg, "copy_dsdt") == 0) {
 		acpi_gbl_copy_dsdt_locally = 1;
@@ -2684,7 +1746,6 @@ static int __init parse_acpi(char *arg)
 	/* "acpi=nocmcff" disables FF mode for corrected errors */
 	else if (strcmp(arg, "nocmcff") == 0) {
 		acpi_disable_cmcff = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Core will printk when we return error. */
 		return -EINVAL;
@@ -2693,8 +1754,6 @@ static int __init parse_acpi(char *arg)
 }
 early_param("acpi", parse_acpi);
 
-<<<<<<< HEAD
-=======
 static int __init parse_acpi_bgrt(char *arg)
 {
 	acpi_nobgrt = true;
@@ -2702,7 +1761,6 @@ static int __init parse_acpi_bgrt(char *arg)
 }
 early_param("bgrt_disable", parse_acpi_bgrt);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* FIXME: Using pci= for an ACPI parameter is a travesty. */
 static int __init parse_pci(char *arg)
 {
@@ -2717,13 +1775,7 @@ int __init acpi_mps_check(void)
 #if defined(CONFIG_X86_LOCAL_APIC) && !defined(CONFIG_X86_MPPARSE)
 /* mptable code is not built-in*/
 	if (acpi_disabled || acpi_noirq) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "MPS support code is not built-in.\n"
-		       "Using acpi=off or acpi=noirq or pci=noacpi "
-		       "may have problem\n");
-=======
 		pr_warn("MPS support code is not built-in, using acpi=off or acpi=noirq or pci=noacpi may have problem\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 #endif
@@ -2771,14 +1823,6 @@ early_param("acpi_sci", setup_acpi_sci);
 int __acpi_acquire_global_lock(unsigned int *lock)
 {
 	unsigned int old, new, val;
-<<<<<<< HEAD
-	do {
-		old = *lock;
-		new = (((old & ~0x3) + 2) + ((old >> 1) & 0x1));
-		val = cmpxchg(lock, old, new);
-	} while (unlikely (val != old));
-	return (new < 3) ? -1 : 0;
-=======
 
 	old = READ_ONCE(*lock);
 	do {
@@ -2790,21 +1834,10 @@ int __acpi_acquire_global_lock(unsigned int *lock)
 		return 0;
 
 	return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __acpi_release_global_lock(unsigned int *lock)
 {
-<<<<<<< HEAD
-	unsigned int old, new, val;
-	do {
-		old = *lock;
-		new = old & ~0x3;
-		val = cmpxchg(lock, old, new);
-	} while (unlikely (val != old));
-	return old & 0x1;
-}
-=======
 	unsigned int old, new;
 
 	old = READ_ONCE(*lock);
@@ -2829,4 +1862,3 @@ u64 x86_default_get_root_pointer(void)
 {
 	return boot_params.acpi_rsdp_addr;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

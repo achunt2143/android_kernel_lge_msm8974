@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006-2007 PA Semi, Inc
  *
@@ -11,22 +8,6 @@
  * Maintained by: Olof Johansson <olof@lixom.net>
  *
  * Based on arch/powerpc/platforms/maple/setup.c
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -35,14 +16,6 @@
 #include <linux/console.h>
 #include <linux/export.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-#include <linux/gfp.h>
-
-#include <asm/prom.h>
-#include <asm/iommu.h>
-#include <asm/machdep.h>
-=======
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
@@ -52,7 +25,6 @@
 #include <asm/iommu.h>
 #include <asm/machdep.h>
 #include <asm/i8259.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mpic.h>
 #include <asm/smp.h>
 #include <asm/time.h>
@@ -78,17 +50,10 @@ struct mce_regs {
 
 static struct mce_regs mce_regs[MAX_MCE_REGS];
 static int num_mce_regs;
-<<<<<<< HEAD
-static int nmi_virq = NO_IRQ;
-
-
-static void pas_restart(char *cmd)
-=======
 static int nmi_virq = 0;
 
 
 static void __noreturn pas_restart(char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Need to put others cpu in hold loop so they're not sleeping */
 	smp_send_stop();
@@ -98,8 +63,6 @@ static void __noreturn pas_restart(char *cmd)
 		out_le32(reset_reg, 0x6000000);
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC_PASEMI_NEMO
 static void pas_shutdown(void)
 {
@@ -134,16 +97,11 @@ static inline void nemo_init_rtc(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 static arch_spinlock_t timebase_lock;
 static unsigned long timebase;
 
-<<<<<<< HEAD
-static void __devinit pas_give_timebase(void)
-=======
 static void pas_give_timebase(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -161,11 +119,7 @@ static void pas_give_timebase(void)
 	local_irq_restore(flags);
 }
 
-<<<<<<< HEAD
-static void __devinit pas_take_timebase(void)
-=======
 static void pas_take_timebase(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (!timebase)
 		smp_rmb();
@@ -176,11 +130,7 @@ static void pas_take_timebase(void)
 	arch_spin_unlock(&timebase_lock);
 }
 
-<<<<<<< HEAD
-struct smp_ops_t pas_smp_ops = {
-=======
 static struct smp_ops_t pas_smp_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe		= smp_mpic_probe,
 	.message_pass	= smp_mpic_message_pass,
 	.kick_cpu	= smp_generic_kick_cpu,
@@ -190,25 +140,12 @@ static struct smp_ops_t pas_smp_ops = {
 };
 #endif /* CONFIG_SMP */
 
-<<<<<<< HEAD
-void __init pas_setup_arch(void)
-=======
 static void __init pas_setup_arch(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_SMP
 	/* Setup SMP callback */
 	smp_ops = &pas_smp_ops;
 #endif
-<<<<<<< HEAD
-	/* Lookup PCI hosts */
-	pas_pci_init();
-
-#ifdef CONFIG_DUMMY_CONSOLE
-	conswitchp = &dummy_con;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Remap SDC register for doing reset */
 	/* XXXOJN This should maybe come out of the device tree */
@@ -265,8 +202,6 @@ static int __init pas_setup_mce_regs(void)
 }
 machine_device_initcall(pasemi, pas_setup_mce_regs);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC_PASEMI_NEMO
 static void sb600_8259_cascade(struct irq_desc *desc)
 {
@@ -303,7 +238,6 @@ static inline void nemo_init_IRQ(struct mpic *mpic)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __init void pas_init_IRQ(void)
 {
 	struct device_node *np;
@@ -328,12 +262,7 @@ static __init void pas_init_IRQ(void)
 			break;
 		}
 	if (!mpic_node) {
-<<<<<<< HEAD
-		printk(KERN_ERR
-			"Failed to locate the MPIC interrupt controller\n");
-=======
 		pr_err("Failed to locate the MPIC interrupt controller\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -342,20 +271,12 @@ static __init void pas_init_IRQ(void)
 	naddr = of_n_addr_cells(root);
 	opprop = of_get_property(root, "platform-open-pic", &opplen);
 	if (!opprop) {
-<<<<<<< HEAD
-		printk(KERN_ERR "No platform-open-pic property.\n");
-=======
 		pr_err("No platform-open-pic property.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_node_put(root);
 		return;
 	}
 	openpic_addr = of_read_number(opprop, naddr);
-<<<<<<< HEAD
-	printk(KERN_DEBUG "OpenPIC addr: %lx\n", openpic_addr);
-=======
 	pr_debug("OpenPIC addr: %lx\n", openpic_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpic_flags = MPIC_LARGE_VECTORS | MPIC_NO_BIAS | MPIC_NO_RESET;
 
@@ -377,11 +298,8 @@ static __init void pas_init_IRQ(void)
 		mpic_unmask_irq(irq_get_irq_data(nmi_virq));
 	}
 
-<<<<<<< HEAD
-=======
 	nemo_init_IRQ(mpic);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	of_node_put(mpic_node);
 	of_node_put(root);
 }
@@ -402,56 +320,14 @@ static int pas_machine_check_handler(struct pt_regs *regs)
 	srr0 = regs->nip;
 	srr1 = regs->msr;
 
-<<<<<<< HEAD
-	if (nmi_virq != NO_IRQ && mpic_get_mcirq() == nmi_virq) {
-		printk(KERN_ERR "NMI delivered\n");
-=======
 	if (nmi_virq && mpic_get_mcirq() == nmi_virq) {
 		pr_err("NMI delivered\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		debugger(regs);
 		mpic_end_irq(irq_get_irq_data(nmi_virq));
 		goto out;
 	}
 
 	dsisr = mfspr(SPRN_DSISR);
-<<<<<<< HEAD
-	printk(KERN_ERR "Machine Check on CPU %d\n", cpu);
-	printk(KERN_ERR "SRR0  0x%016lx SRR1 0x%016lx\n", srr0, srr1);
-	printk(KERN_ERR "DSISR 0x%016lx DAR  0x%016lx\n", dsisr, regs->dar);
-	printk(KERN_ERR "BER   0x%016lx MER  0x%016lx\n", mfspr(SPRN_PA6T_BER),
-		mfspr(SPRN_PA6T_MER));
-	printk(KERN_ERR "IER   0x%016lx DER  0x%016lx\n", mfspr(SPRN_PA6T_IER),
-		mfspr(SPRN_PA6T_DER));
-	printk(KERN_ERR "Cause:\n");
-
-	if (srr1 & 0x200000)
-		printk(KERN_ERR "Signalled by SDC\n");
-
-	if (srr1 & 0x100000) {
-		printk(KERN_ERR "Load/Store detected error:\n");
-		if (dsisr & 0x8000)
-			printk(KERN_ERR "D-cache ECC double-bit error or bus error\n");
-		if (dsisr & 0x4000)
-			printk(KERN_ERR "LSU snoop response error\n");
-		if (dsisr & 0x2000) {
-			printk(KERN_ERR "MMU SLB multi-hit or invalid B field\n");
-			dump_slb = 1;
-		}
-		if (dsisr & 0x1000)
-			printk(KERN_ERR "Recoverable Duptags\n");
-		if (dsisr & 0x800)
-			printk(KERN_ERR "Recoverable D-cache parity error count overflow\n");
-		if (dsisr & 0x400)
-			printk(KERN_ERR "TLB parity error count overflow\n");
-	}
-
-	if (srr1 & 0x80000)
-		printk(KERN_ERR "Bus Error\n");
-
-	if (srr1 & 0x40000) {
-		printk(KERN_ERR "I-side SLB multiple hit\n");
-=======
 	pr_err("Machine Check on CPU %d\n", cpu);
 	pr_err("SRR0  0x%016lx SRR1 0x%016lx\n", srr0, srr1);
 	pr_err("DSISR 0x%016lx DAR  0x%016lx\n", dsisr, regs->dar);
@@ -487,22 +363,10 @@ static int pas_machine_check_handler(struct pt_regs *regs)
 
 	if (srr1 & 0x40000) {
 		pr_err("I-side SLB multiple hit\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dump_slb = 1;
 	}
 
 	if (srr1 & 0x20000)
-<<<<<<< HEAD
-		printk(KERN_ERR "I-cache parity error hit\n");
-
-	if (num_mce_regs == 0)
-		printk(KERN_ERR "No MCE registers mapped yet, can't dump\n");
-	else
-		printk(KERN_ERR "SoC debug registers:\n");
-
-	for (i = 0; i < num_mce_regs; i++)
-		printk(KERN_ERR "%s: 0x%08x\n", mce_regs[i].name,
-=======
 		pr_err("I-cache parity error hit\n");
 
 	if (num_mce_regs == 0)
@@ -512,26 +376,17 @@ static int pas_machine_check_handler(struct pt_regs *regs)
 
 	for (i = 0; i < num_mce_regs; i++)
 		pr_err("%s: 0x%08x\n", mce_regs[i].name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			in_le32(mce_regs[i].addr));
 
 	if (dump_slb) {
 		unsigned long e, v;
 		int i;
 
-<<<<<<< HEAD
-		printk(KERN_ERR "slb contents:\n");
-		for (i = 0; i < mmu_slb_size; i++) {
-			asm volatile("slbmfee  %0,%1" : "=r" (e) : "r" (i));
-			asm volatile("slbmfev  %0,%1" : "=r" (v) : "r" (i));
-			printk(KERN_ERR "%02d %016lx %016lx\n", i, e, v);
-=======
 		pr_err("slb contents:\n");
 		for (i = 0; i < mmu_slb_size; i++) {
 			asm volatile("slbmfee  %0,%1" : "=r" (e) : "r" (i));
 			asm volatile("slbmfev  %0,%1" : "=r" (v) : "r" (i));
 			pr_err("%02d %016lx %016lx\n", i, e, v);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -540,65 +395,7 @@ out:
 	return !!(srr1 & 0x2);
 }
 
-<<<<<<< HEAD
-static void __init pas_init_early(void)
-{
-	iommu_init_early_pasemi();
-}
-
-#ifdef CONFIG_PCMCIA
-static int pcmcia_notify(struct notifier_block *nb, unsigned long action,
-			 void *data)
-{
-	struct device *dev = data;
-	struct device *parent;
-	struct pcmcia_device *pdev = to_pcmcia_dev(dev);
-
-	/* We are only intereted in device addition */
-	if (action != BUS_NOTIFY_ADD_DEVICE)
-		return 0;
-
-	parent = pdev->socket->dev.parent;
-
-	/* We know electra_cf devices will always have of_node set, since
-	 * electra_cf is an of_platform driver.
-	 */
-	if (!parent->of_node)
-		return 0;
-
-	if (!of_device_is_compatible(parent->of_node, "electra-cf"))
-		return 0;
-
-	/* We use the direct ops for localbus */
-	dev->archdata.dma_ops = &dma_direct_ops;
-
-	return 0;
-}
-
-static struct notifier_block pcmcia_notifier = {
-	.notifier_call = pcmcia_notify,
-};
-
-static inline void pasemi_pcmcia_init(void)
-{
-	extern struct bus_type pcmcia_bus_type;
-
-	bus_register_notifier(&pcmcia_bus_type, &pcmcia_notifier);
-}
-
-#else
-
-static inline void pasemi_pcmcia_init(void)
-{
-}
-
-#endif
-
-
-static struct of_device_id pasemi_bus_ids[] = {
-=======
 static const struct of_device_id pasemi_bus_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Unfortunately needed for legacy firmwares */
 	{ .type = "localbus", },
 	{ .type = "sdc", },
@@ -610,19 +407,11 @@ static const struct of_device_id pasemi_bus_ids[] = {
 
 static int __init pasemi_publish_devices(void)
 {
-<<<<<<< HEAD
-	pasemi_pcmcia_init();
-
-	/* Publish OF platform devices for SDC and other non-PCI devices */
-	of_platform_bus_probe(NULL, pasemi_bus_ids, NULL);
-
-=======
 	/* Publish OF platform devices for SDC and other non-PCI devices */
 	of_platform_bus_probe(NULL, pasemi_bus_ids, NULL);
 
 	nemo_init_rtc();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 machine_device_initcall(pasemi, pasemi_publish_devices);
@@ -633,17 +422,6 @@ machine_device_initcall(pasemi, pasemi_publish_devices);
  */
 static int __init pas_probe(void)
 {
-<<<<<<< HEAD
-	unsigned long root = of_get_flat_dt_root();
-
-	if (!of_flat_dt_is_compatible(root, "PA6T-1682M") &&
-	    !of_flat_dt_is_compatible(root, "pasemi,pwrficient"))
-		return 0;
-
-	hpte_init_native();
-
-	alloc_iobmap_l2();
-=======
 	if (!of_machine_is_compatible("PA6T-1682M") &&
 	    !of_machine_is_compatible("pasemi,pwrficient"))
 		return 0;
@@ -660,7 +438,6 @@ static int __init pas_probe(void)
 #endif
 
 	iommu_init_early_pasemi();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -669,19 +446,11 @@ define_machine(pasemi) {
 	.name			= "PA Semi PWRficient",
 	.probe			= pas_probe,
 	.setup_arch		= pas_setup_arch,
-<<<<<<< HEAD
-	.init_early		= pas_init_early,
-=======
 	.discover_phbs		= pas_pci_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_IRQ		= pas_init_IRQ,
 	.get_irq		= mpic_get_irq,
 	.restart		= pas_restart,
 	.get_boot_time		= pas_get_boot_time,
-<<<<<<< HEAD
-	.calibrate_decr		= generic_calibrate_decr,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= pas_progress,
 	.machine_check_exception = pas_machine_check_handler,
 };

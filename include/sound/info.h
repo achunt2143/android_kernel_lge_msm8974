@@ -1,40 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_INFO_H
 #define __SOUND_INFO_H
 
 /*
  *  Header file for info interface
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
-<<<<<<< HEAD
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- */
-
-#include <linux/poll.h>
-=======
  */
 
 #include <linux/poll.h>
 #include <linux/seq_file.h>
 #include <sound/core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* buffer for information */
 struct snd_info_buffer {
@@ -72,11 +47,7 @@ struct snd_info_entry_ops {
 	loff_t (*llseek)(struct snd_info_entry *entry,
 			 void *file_private_data, struct file *file,
 			 loff_t offset, int orig);
-<<<<<<< HEAD
-	unsigned int (*poll)(struct snd_info_entry *entry,
-=======
 	__poll_t (*poll)(struct snd_info_entry *entry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     void *file_private_data, struct file *file,
 			     poll_table *wait);
 	int (*ioctl)(struct snd_info_entry *entry, void *file_private_data,
@@ -93,16 +64,9 @@ struct snd_info_entry {
 	unsigned short content;
 	union {
 		struct snd_info_entry_text text;
-<<<<<<< HEAD
-		struct snd_info_entry_ops *ops;
-	} c;
-	struct snd_info_entry *parent;
-	struct snd_card *card;
-=======
 		const struct snd_info_entry_ops *ops;
 	} c;
 	struct snd_info_entry *parent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct module *module;
 	void *private_data;
 	void (*private_free)(struct snd_info_entry *entry);
@@ -112,18 +76,6 @@ struct snd_info_entry {
 	struct list_head list;
 };
 
-<<<<<<< HEAD
-#if defined(CONFIG_SND_OSSEMUL) && defined(CONFIG_PROC_FS)
-int snd_info_minor_register(void);
-int snd_info_minor_unregister(void);
-#else
-#define snd_info_minor_register() /* NOP */
-#define snd_info_minor_unregister() /* NOP */
-#endif
-
-
-#ifdef CONFIG_PROC_FS
-=======
 #if defined(CONFIG_SND_OSSEMUL) && defined(CONFIG_SND_PROC_FS)
 int snd_info_minor_register(void);
 #else
@@ -132,7 +84,6 @@ int snd_info_minor_register(void);
 
 
 #ifdef CONFIG_SND_PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct snd_info_entry *snd_seq_root;
 #ifdef CONFIG_SND_OSSEMUL
@@ -143,10 +94,6 @@ void snd_card_info_read_oss(struct snd_info_buffer *buffer);
 static inline void snd_card_info_read_oss(struct snd_info_buffer *buffer) {}
 #endif
 
-<<<<<<< HEAD
-__printf(2, 3)
-int snd_iprintf(struct snd_info_buffer *buffer, const char *fmt, ...);
-=======
 /**
  * snd_iprintf - printf on the procfs buffer
  * @buf: the procfs buffer
@@ -159,7 +106,6 @@ int snd_iprintf(struct snd_info_buffer *buffer, const char *fmt, ...);
 #define snd_iprintf(buf, fmt, args...) \
 	seq_printf((struct seq_file *)(buf)->buffer, fmt, ##args)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_info_init(void);
 int snd_info_done(void);
 
@@ -172,11 +118,6 @@ struct snd_info_entry *snd_info_create_card_entry(struct snd_card *card,
 					     const char *name,
 					     struct snd_info_entry *parent);
 void snd_info_free_entry(struct snd_info_entry *entry);
-<<<<<<< HEAD
-int snd_info_store_text(struct snd_info_entry *entry);
-int snd_info_restore_text(struct snd_info_entry *entry);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int snd_info_card_create(struct snd_card *card);
 int snd_info_card_register(struct snd_card *card);
@@ -186,17 +127,12 @@ void snd_info_card_id_change(struct snd_card *card);
 int snd_info_register(struct snd_info_entry *entry);
 
 /* for card drivers */
-<<<<<<< HEAD
-int snd_card_proc_new(struct snd_card *card, const char *name,
-		      struct snd_info_entry **entryp);
-=======
 static inline int snd_card_proc_new(struct snd_card *card, const char *name,
 				    struct snd_info_entry **entryp)
 {
 	*entryp = snd_info_create_card_entry(card, name, card->proc_root);
 	return *entryp ? 0 : -ENOMEM;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void snd_info_set_text_ops(struct snd_info_entry *entry, 
 	void *private_data,
@@ -206,8 +142,6 @@ static inline void snd_info_set_text_ops(struct snd_info_entry *entry,
 	entry->c.text.read = read;
 }
 
-<<<<<<< HEAD
-=======
 int snd_card_rw_proc_new(struct snd_card *card, const char *name,
 			 void *private_data,
 			 void (*read)(struct snd_info_entry *,
@@ -215,7 +149,6 @@ int snd_card_rw_proc_new(struct snd_card *card, const char *name,
 			 void (*write)(struct snd_info_entry *entry,
 				       struct snd_info_buffer *buffer));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_info_check_reserved_words(const char *str);
 
 #else
@@ -245,9 +178,6 @@ static inline int snd_card_proc_new(struct snd_card *card, const char *name,
 static inline void snd_info_set_text_ops(struct snd_info_entry *entry __attribute__((unused)),
 					 void *private_data,
 					 void (*read)(struct snd_info_entry *, struct snd_info_buffer *)) {}
-<<<<<<< HEAD
-
-=======
 static inline int snd_card_rw_proc_new(struct snd_card *card, const char *name,
 				       void *private_data,
 				       void (*read)(struct snd_info_entry *,
@@ -257,13 +187,10 @@ static inline int snd_card_rw_proc_new(struct snd_card *card, const char *name,
 {
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int snd_info_check_reserved_words(const char *str) { return 1; }
 
 #endif
 
-<<<<<<< HEAD
-=======
 /**
  * snd_card_ro_proc_new - Create a read-only text proc file entry for the card
  * @card: the card instance
@@ -283,16 +210,11 @@ snd_card_ro_proc_new(struct snd_card *card, const char *name,
 	return snd_card_rw_proc_new(card, name, private_data, read, NULL);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OSS info part
  */
 
-<<<<<<< HEAD
-#if defined(CONFIG_SND_OSSEMUL) && defined(CONFIG_PROC_FS)
-=======
 #if defined(CONFIG_SND_OSSEMUL) && defined(CONFIG_SND_PROC_FS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SNDRV_OSS_INFO_DEV_AUDIO	0
 #define SNDRV_OSS_INFO_DEV_SYNTH	1
@@ -305,10 +227,6 @@ snd_card_ro_proc_new(struct snd_card *card, const char *name,
 int snd_oss_info_register(int dev, int num, char *string);
 #define snd_oss_info_unregister(dev, num) snd_oss_info_register(dev, num, NULL)
 
-<<<<<<< HEAD
-#endif /* CONFIG_SND_OSSEMUL && CONFIG_PROC_FS */
-=======
 #endif /* CONFIG_SND_OSSEMUL && CONFIG_SND_PROC_FS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __SOUND_INFO_H */

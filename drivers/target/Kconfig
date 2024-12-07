@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-
-menuconfig TARGET_CORE
-	tristate "Generic Target Core Mod (TCM) and ConfigFS Infrastructure"
-	depends on SCSI && BLOCK
-	select CONFIGFS_FS
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 
 menuconfig TARGET_CORE
@@ -14,7 +7,6 @@ menuconfig TARGET_CORE
 	select CRC_T10DIF
 	select SCSI_COMMON
 	select SGL_ALLOC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	help
 	Say Y or M here to enable the TCM Storage Engine and ConfigFS enabled
@@ -25,10 +17,7 @@ if TARGET_CORE
 
 config TCM_IBLOCK
 	tristate "TCM/IBLOCK Subsystem Plugin for Linux/BLOCK"
-<<<<<<< HEAD
-=======
 	select BLK_DEV_INTEGRITY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	Say Y here to enable the TCM/IBLOCK subsystem plugin for non-buffered
 	access to Linux/Block devices using BIO
@@ -41,19 +30,11 @@ config TCM_FILEIO
 
 config TCM_PSCSI
 	tristate "TCM/pSCSI Subsystem Plugin for Linux/SCSI"
-<<<<<<< HEAD
-=======
 	depends on SCSI
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	Say Y here to enable the TCM/pSCSI subsystem plugin for non-buffered
 	passthrough access to Linux/SCSI device
 
-<<<<<<< HEAD
-source "drivers/target/loopback/Kconfig"
-source "drivers/target/tcm_fc/Kconfig"
-source "drivers/target/iscsi/Kconfig"
-=======
 config TCM_USER2
 	tristate "TCM/USER Subsystem Plugin for Linux"
 	depends on UIO && NET
@@ -67,6 +48,5 @@ source "drivers/target/tcm_fc/Kconfig"
 source "drivers/target/iscsi/Kconfig"
 source "drivers/target/sbp/Kconfig"
 source "drivers/target/tcm_remote/Kconfig"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif

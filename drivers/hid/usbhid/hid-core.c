@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  USB HID support for Linux
  *
@@ -13,13 +10,6 @@
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -35,10 +25,7 @@
 #include <linux/input.h>
 #include <linux/wait.h>
 #include <linux/workqueue.h>
-<<<<<<< HEAD
-=======
 #include <linux/string.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/usb.h>
 
@@ -53,10 +40,6 @@
  */
 
 #define DRIVER_DESC "USB HID core driver"
-<<<<<<< HEAD
-#define DRIVER_LICENSE "GPL"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Module parameters.
@@ -66,8 +49,6 @@ static unsigned int hid_mousepoll_interval;
 module_param_named(mousepoll, hid_mousepoll_interval, uint, 0644);
 MODULE_PARM_DESC(mousepoll, "Polling interval of mice");
 
-<<<<<<< HEAD
-=======
 static unsigned int hid_jspoll_interval;
 module_param_named(jspoll, hid_jspoll_interval, uint, 0644);
 MODULE_PARM_DESC(jspoll, "Polling interval of joysticks");
@@ -76,17 +57,12 @@ static unsigned int hid_kbpoll_interval;
 module_param_named(kbpoll, hid_kbpoll_interval, uint, 0644);
 MODULE_PARM_DESC(kbpoll, "Polling interval of keyboards");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int ignoreled;
 module_param_named(ignoreled, ignoreled, uint, 0644);
 MODULE_PARM_DESC(ignoreled, "Autosuspend with active leds");
 
 /* Quirks specified at module load time */
-<<<<<<< HEAD
-static char *quirks_param[MAX_USBHID_BOOT_QUIRKS] = { [ 0 ... (MAX_USBHID_BOOT_QUIRKS - 1) ] = NULL };
-=======
 static char *quirks_param[MAX_USBHID_BOOT_QUIRKS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_array_named(quirks, quirks_param, charp, NULL, 0444);
 MODULE_PARM_DESC(quirks, "Add/modify USB HID quirks by specifying "
 		" quirks=vendorID:productID:quirks"
@@ -95,11 +71,6 @@ MODULE_PARM_DESC(quirks, "Add/modify USB HID quirks by specifying "
 /*
  * Input submission and I/O error handler.
  */
-<<<<<<< HEAD
-static DEFINE_MUTEX(hid_open_mut);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hid_io_error(struct hid_device *hid);
 static int hid_submit_out(struct hid_device *hid);
 static int hid_submit_ctrl(struct hid_device *hid);
@@ -113,15 +84,6 @@ static int hid_start_in(struct hid_device *hid)
 	struct usbhid_device *usbhid = hid->driver_data;
 
 	spin_lock_irqsave(&usbhid->lock, flags);
-<<<<<<< HEAD
-	if (hid->open > 0 &&
-			!test_bit(HID_DISCONNECTED, &usbhid->iofl) &&
-			!test_bit(HID_REPORTED_IDLE, &usbhid->iofl) &&
-			!test_and_set_bit(HID_IN_RUNNING, &usbhid->iofl)) {
-		rc = usb_submit_urb(usbhid->urbin, GFP_ATOMIC);
-		if (rc != 0)
-			clear_bit(HID_IN_RUNNING, &usbhid->iofl);
-=======
 	if (test_bit(HID_IN_POLLING, &usbhid->iofl) &&
 	    !test_bit(HID_DISCONNECTED, &usbhid->iofl) &&
 	    !test_bit(HID_SUSPENDED, &usbhid->iofl) &&
@@ -134,24 +96,16 @@ static int hid_start_in(struct hid_device *hid)
 		} else {
 			clear_bit(HID_NO_BANDWIDTH, &usbhid->iofl);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&usbhid->lock, flags);
 	return rc;
 }
 
 /* I/O retry timer routine */
-<<<<<<< HEAD
-static void hid_retry_timeout(unsigned long _hid)
-{
-	struct hid_device *hid = (struct hid_device *) _hid;
-	struct usbhid_device *usbhid = hid->driver_data;
-=======
 static void hid_retry_timeout(struct timer_list *t)
 {
 	struct usbhid_device *usbhid = from_timer(usbhid, t, io_retry);
 	struct hid_device *hid = usbhid->hid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&usbhid->intf->dev, "retrying intr urb\n");
 	if (hid_start_in(hid))
@@ -164,46 +118,12 @@ static void hid_reset(struct work_struct *work)
 	struct usbhid_device *usbhid =
 		container_of(work, struct usbhid_device, reset_work);
 	struct hid_device *hid = usbhid->hid;
-<<<<<<< HEAD
-	int rc = 0;
-=======
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_bit(HID_CLEAR_HALT, &usbhid->iofl)) {
 		dev_dbg(&usbhid->intf->dev, "clear halt\n");
 		rc = usb_clear_halt(hid_to_usb_dev(hid), usbhid->urbin->pipe);
 		clear_bit(HID_CLEAR_HALT, &usbhid->iofl);
-<<<<<<< HEAD
-		hid_start_in(hid);
-	}
-
-	else if (test_bit(HID_RESET_PENDING, &usbhid->iofl)) {
-		dev_dbg(&usbhid->intf->dev, "resetting device\n");
-		rc = usb_lock_device_for_reset(hid_to_usb_dev(hid), usbhid->intf);
-		if (rc == 0) {
-			rc = usb_reset_device(hid_to_usb_dev(hid));
-			usb_unlock_device(hid_to_usb_dev(hid));
-		}
-		clear_bit(HID_RESET_PENDING, &usbhid->iofl);
-	}
-
-	switch (rc) {
-	case 0:
-		if (!test_bit(HID_IN_RUNNING, &usbhid->iofl))
-			hid_io_error(hid);
-		break;
-	default:
-		hid_err(hid, "can't reset device, %s-%s/input%d, status %d\n",
-			hid_to_usb_dev(hid)->bus->bus_name,
-			hid_to_usb_dev(hid)->devpath,
-			usbhid->ifnum, rc);
-		/* FALLTHROUGH */
-	case -EHOSTUNREACH:
-	case -ENODEV:
-	case -EINTR:
-		break;
-=======
 		if (rc == 0) {
 			hid_start_in(hid);
 		} else {
@@ -216,7 +136,6 @@ static void hid_reset(struct work_struct *work)
 	if (test_bit(HID_RESET_PENDING, &usbhid->iofl)) {
 		dev_dbg(&usbhid->intf->dev, "resetting device\n");
 		usb_queue_reset_device(usbhid->intf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -246,15 +165,10 @@ static void hid_io_error(struct hid_device *hid)
 
 	if (time_after(jiffies, usbhid->stop_retry)) {
 
-<<<<<<< HEAD
-		/* Retries failed, so do a port reset */
-		if (!test_and_set_bit(HID_RESET_PENDING, &usbhid->iofl)) {
-=======
 		/* Retries failed, so do a port reset unless we lack bandwidth*/
 		if (!test_bit(HID_NO_BANDWIDTH, &usbhid->iofl)
 		     && !test_and_set_bit(HID_RESET_PENDING, &usbhid->iofl)) {
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			schedule_work(&usbhid->reset_work);
 			goto done;
 		}
@@ -279,17 +193,6 @@ static int usbhid_restart_out_queue(struct usbhid_device *usbhid)
 	int kicked;
 	int r;
 
-<<<<<<< HEAD
-	if (!hid)
-		return 0;
-
-	if ((kicked = (usbhid->outhead != usbhid->outtail))) {
-		dbg("Kicking head %d tail %d", usbhid->outhead, usbhid->outtail);
-
-		r = usb_autopm_get_interface_async(usbhid->intf);
-		if (r < 0)
-			return r;
-=======
 	if (!hid || test_bit(HID_RESET_PENDING, &usbhid->iofl) ||
 			test_bit(HID_SUSPENDED, &usbhid->iofl))
 		return 0;
@@ -311,7 +214,6 @@ static int usbhid_restart_out_queue(struct usbhid_device *usbhid)
 			return r;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Asynchronously flush queue. */
 		set_bit(HID_OUT_RUNNING, &usbhid->iofl);
 		if (hid_submit_out(hid)) {
@@ -330,17 +232,6 @@ static int usbhid_restart_ctrl_queue(struct usbhid_device *usbhid)
 	int r;
 
 	WARN_ON(hid == NULL);
-<<<<<<< HEAD
-	if (!hid)
-		return 0;
-
-	if ((kicked = (usbhid->ctrlhead != usbhid->ctrltail))) {
-		dbg("Kicking head %d tail %d", usbhid->ctrlhead, usbhid->ctrltail);
-
-		r = usb_autopm_get_interface_async(usbhid->intf);
-		if (r < 0)
-			return r;
-=======
 	if (!hid || test_bit(HID_RESET_PENDING, &usbhid->iofl) ||
 			test_bit(HID_SUSPENDED, &usbhid->iofl))
 		return 0;
@@ -362,7 +253,6 @@ static int usbhid_restart_ctrl_queue(struct usbhid_device *usbhid)
 			return r;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Asynchronously flush queue. */
 		set_bit(HID_CTRL_RUNNING, &usbhid->iofl);
 		if (hid_submit_ctrl(hid)) {
@@ -381,31 +271,11 @@ static int usbhid_restart_ctrl_queue(struct usbhid_device *usbhid)
 static void hid_irq_in(struct urb *urb)
 {
 	struct hid_device	*hid = urb->context;
-<<<<<<< HEAD
-	struct usbhid_device 	*usbhid = hid->driver_data;
-=======
 	struct usbhid_device	*usbhid = hid->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			status;
 
 	switch (urb->status) {
 	case 0:			/* success */
-<<<<<<< HEAD
-		usbhid_mark_busy(usbhid);
-		usbhid->retry_delay = 0;
-		hid_input_report(urb->context, HID_INPUT_REPORT,
-				 urb->transfer_buffer,
-				 urb->actual_length, 1);
-		/*
-		 * autosuspend refused while keys are pressed
-		 * because most keyboards don't wake up when
-		 * a key is released
-		 */
-		if (hid_check_keys_pressed(hid))
-			set_bit(HID_KEYS_PRESSED, &usbhid->iofl);
-		else
-			clear_bit(HID_KEYS_PRESSED, &usbhid->iofl);
-=======
 		usbhid->retry_delay = 0;
 		if (!test_bit(HID_OPENED, &usbhid->iofl))
 			break;
@@ -424,7 +294,6 @@ static void hid_irq_in(struct urb *urb)
 			else
 				clear_bit(HID_KEYS_PRESSED, &usbhid->iofl);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case -EPIPE:		/* stall */
 		usbhid_mark_busy(usbhid);
@@ -473,14 +342,6 @@ static int hid_submit_out(struct hid_device *hid)
 	report = usbhid->out[usbhid->outtail].report;
 	raw_report = usbhid->out[usbhid->outtail].raw_report;
 
-<<<<<<< HEAD
-	usbhid->urbout->transfer_buffer_length = ((report->size - 1) >> 3) +
-						 1 + (report->id > 0);
-	usbhid->urbout->dev = hid_to_usb_dev(hid);
-	memcpy(usbhid->outbuf, raw_report,
-	       usbhid->urbout->transfer_buffer_length);
-	kfree(raw_report);
-=======
 	usbhid->urbout->transfer_buffer_length = hid_report_len(report);
 	usbhid->urbout->dev = hid_to_usb_dev(hid);
 	if (raw_report) {
@@ -489,7 +350,6 @@ static int hid_submit_out(struct hid_device *hid)
 		kfree(raw_report);
 		usbhid->out[usbhid->outtail].raw_report = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg_hid("submitting out urb\n");
 
@@ -514,29 +374,6 @@ static int hid_submit_ctrl(struct hid_device *hid)
 	raw_report = usbhid->ctrl[usbhid->ctrltail].raw_report;
 	dir = usbhid->ctrl[usbhid->ctrltail].dir;
 
-<<<<<<< HEAD
-	len = ((report->size - 1) >> 3) + 1 + (report->id > 0);
-	if (dir == USB_DIR_OUT) {
-		usbhid->urbctrl->pipe = usb_sndctrlpipe(hid_to_usb_dev(hid), 0);
-		usbhid->urbctrl->transfer_buffer_length = len;
-		memcpy(usbhid->ctrlbuf, raw_report, len);
-		kfree(raw_report);
-	} else {
-		int maxpacket, padlen;
-
-		usbhid->urbctrl->pipe = usb_rcvctrlpipe(hid_to_usb_dev(hid), 0);
-		maxpacket = usb_maxpacket(hid_to_usb_dev(hid),
-					  usbhid->urbctrl->pipe, 0);
-		if (maxpacket > 0) {
-			padlen = DIV_ROUND_UP(len, maxpacket);
-			padlen *= maxpacket;
-			if (padlen > usbhid->bufsize)
-				padlen = usbhid->bufsize;
-		} else
-			padlen = 0;
-		usbhid->urbctrl->transfer_buffer_length = padlen;
-	}
-=======
 	len = hid_report_len(report);
 	if (dir == USB_DIR_OUT) {
 		usbhid->urbctrl->pipe = usb_sndctrlpipe(hid_to_usb_dev(hid), 0);
@@ -557,7 +394,6 @@ static int hid_submit_ctrl(struct hid_device *hid)
 			len = usbhid->bufsize;
 	}
 	usbhid->urbctrl->transfer_buffer_length = len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usbhid->urbctrl->dev = hid_to_usb_dev(hid);
 
 	usbhid->cr->bRequestType = USB_TYPE_CLASS | USB_RECIP_INTERFACE | dir;
@@ -586,19 +422,6 @@ static int hid_submit_ctrl(struct hid_device *hid)
  * Output interrupt completion handler.
  */
 
-<<<<<<< HEAD
-static int irq_out_pump_restart(struct hid_device *hid)
-{
-	struct usbhid_device *usbhid = hid->driver_data;
-
-	if (usbhid->outhead != usbhid->outtail)
-		return hid_submit_out(hid);
-	else
-		return -1;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hid_irq_out(struct urb *urb)
 {
 	struct hid_device *hid = urb->context;
@@ -611,10 +434,7 @@ static void hid_irq_out(struct urb *urb)
 		break;
 	case -ESHUTDOWN:	/* unplug */
 		unplug = 1;
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case -EILSEQ:		/* protocol error or unplug */
 	case -EPROTO:		/* protocol error or unplug */
 	case -ECONNRESET:	/* unlink */
@@ -627,17 +447,6 @@ static void hid_irq_out(struct urb *urb)
 
 	spin_lock_irqsave(&usbhid->lock, flags);
 
-<<<<<<< HEAD
-	if (unplug)
-		usbhid->outtail = usbhid->outhead;
-	else
-		usbhid->outtail = (usbhid->outtail + 1) & (HID_OUTPUT_FIFO_SIZE - 1);
-
-	if (!irq_out_pump_restart(hid)) {
-		/* Successfully submitted next urb in queue */
-		spin_unlock_irqrestore(&usbhid->lock, flags);
-		return;
-=======
 	if (unplug) {
 		usbhid->outtail = usbhid->outhead;
 	} else {
@@ -649,7 +458,6 @@ static void hid_irq_out(struct urb *urb)
 			spin_unlock_irqrestore(&usbhid->lock, flags);
 			return;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	clear_bit(HID_OUT_RUNNING, &usbhid->iofl);
@@ -661,33 +469,14 @@ static void hid_irq_out(struct urb *urb)
 /*
  * Control pipe completion handler.
  */
-<<<<<<< HEAD
-static int ctrl_pump_restart(struct hid_device *hid)
-{
-	struct usbhid_device *usbhid = hid->driver_data;
-
-	if (usbhid->ctrlhead != usbhid->ctrltail)
-		return hid_submit_ctrl(hid);
-	else
-		return -1;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void hid_ctrl(struct urb *urb)
 {
 	struct hid_device *hid = urb->context;
 	struct usbhid_device *usbhid = hid->driver_data;
-<<<<<<< HEAD
-	int unplug = 0, status = urb->status;
-
-	spin_lock(&usbhid->lock);
-
-=======
 	unsigned long flags;
 	int unplug = 0, status = urb->status;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (status) {
 	case 0:			/* success */
 		if (usbhid->ctrl[usbhid->ctrltail].dir == USB_DIR_IN)
@@ -697,10 +486,7 @@ static void hid_ctrl(struct urb *urb)
 		break;
 	case -ESHUTDOWN:	/* unplug */
 		unplug = 1;
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case -EILSEQ:		/* protocol error or unplug */
 	case -EPROTO:		/* protocol error or unplug */
 	case -ECONNRESET:	/* unlink */
@@ -711,21 +497,6 @@ static void hid_ctrl(struct urb *urb)
 		hid_warn(urb->dev, "ctrl urb status %d received\n", status);
 	}
 
-<<<<<<< HEAD
-	if (unplug)
-		usbhid->ctrltail = usbhid->ctrlhead;
-	else
-		usbhid->ctrltail = (usbhid->ctrltail + 1) & (HID_CONTROL_FIFO_SIZE - 1);
-
-	if (!ctrl_pump_restart(hid)) {
-		/* Successfully submitted next urb in queue */
-		spin_unlock(&usbhid->lock);
-		return;
-	}
-
-	clear_bit(HID_CTRL_RUNNING, &usbhid->iofl);
-	spin_unlock(&usbhid->lock);
-=======
 	spin_lock_irqsave(&usbhid->lock, flags);
 
 	if (unplug) {
@@ -743,7 +514,6 @@ static void hid_ctrl(struct urb *urb)
 
 	clear_bit(HID_CTRL_RUNNING, &usbhid->iofl);
 	spin_unlock_irqrestore(&usbhid->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_autopm_put_interface_async(usbhid->intf);
 	wake_up(&usbhid->wait);
 }
@@ -753,15 +523,9 @@ static void __usbhid_submit_report(struct hid_device *hid, struct hid_report *re
 {
 	int head;
 	struct usbhid_device *usbhid = hid->driver_data;
-<<<<<<< HEAD
-	int len = ((report->size - 1) >> 3) + 1 + (report->id > 0);
-
-	if ((hid->quirks & HID_QUIRK_NOGET) && dir == USB_DIR_IN)
-=======
 
 	if (((hid->quirks & HID_QUIRK_NOGET) && dir == USB_DIR_IN) ||
 		test_bit(HID_DISCONNECTED, &usbhid->iofl))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (usbhid->urbout && dir == USB_DIR_OUT && report->type == HID_OUTPUT_REPORT) {
@@ -770,11 +534,7 @@ static void __usbhid_submit_report(struct hid_device *hid, struct hid_report *re
 			return;
 		}
 
-<<<<<<< HEAD
-		usbhid->out[usbhid->outhead].raw_report = kmalloc(len, GFP_ATOMIC);
-=======
 		usbhid->out[usbhid->outhead].raw_report = hid_alloc_report_buf(report, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!usbhid->out[usbhid->outhead].raw_report) {
 			hid_warn(hid, "output queueing failed\n");
 			return;
@@ -783,51 +543,6 @@ static void __usbhid_submit_report(struct hid_device *hid, struct hid_report *re
 		usbhid->out[usbhid->outhead].report = report;
 		usbhid->outhead = head;
 
-<<<<<<< HEAD
-		/* Try to awake from autosuspend... */
-		if (usb_autopm_get_interface_async(usbhid->intf) < 0)
-			return;
-
-		/*
-		 * But if still suspended, leave urb enqueued, don't submit.
-		 * Submission will occur if/when resume() drains the queue.
-		 */
-		if (test_bit(HID_REPORTED_IDLE, &usbhid->iofl))
-			return;
-
-		if (!test_and_set_bit(HID_OUT_RUNNING, &usbhid->iofl)) {
-			if (hid_submit_out(hid)) {
-				clear_bit(HID_OUT_RUNNING, &usbhid->iofl);
-				usb_autopm_put_interface_async(usbhid->intf);
-			}
-			wake_up(&usbhid->wait);
-		} else {
-			/*
-			 * the queue is known to run
-			 * but an earlier request may be stuck
-			 * we may need to time out
-			 * no race because the URB is blocked under
-			 * spinlock
-			 */
-			if (time_after(jiffies, usbhid->last_out + HZ * 5)) {
-				usb_block_urb(usbhid->urbout);
-				/* drop lock to not deadlock if the callback is called */
-				spin_unlock(&usbhid->lock);
-				usb_unlink_urb(usbhid->urbout);
-				spin_lock(&usbhid->lock);
-				usb_unblock_urb(usbhid->urbout);
-				/*
-				 * if the unlinking has already completed
-				 * the pump will have been stopped
-				 * it must be restarted now
-				 */
-				if (!test_bit(HID_OUT_RUNNING, &usbhid->iofl))
-					if (!irq_out_pump_restart(hid))
-						set_bit(HID_OUT_RUNNING, &usbhid->iofl);
-
-
-			}
-=======
 		/* If the queue isn't running, restart it */
 		if (!test_bit(HID_OUT_RUNNING, &usbhid->iofl)) {
 			usbhid_restart_out_queue(usbhid);
@@ -858,7 +573,6 @@ static void __usbhid_submit_report(struct hid_device *hid, struct hid_report *re
 
 			/* Now we can allow autosuspend again */
 			usb_autopm_put_interface_async(usbhid->intf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return;
 	}
@@ -869,11 +583,7 @@ static void __usbhid_submit_report(struct hid_device *hid, struct hid_report *re
 	}
 
 	if (dir == USB_DIR_OUT) {
-<<<<<<< HEAD
-		usbhid->ctrl[usbhid->ctrlhead].raw_report = kmalloc(len, GFP_ATOMIC);
-=======
 		usbhid->ctrl[usbhid->ctrlhead].raw_report = hid_alloc_report_buf(report, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!usbhid->ctrl[usbhid->ctrlhead].raw_report) {
 			hid_warn(hid, "control queueing failed\n");
 			return;
@@ -884,53 +594,6 @@ static void __usbhid_submit_report(struct hid_device *hid, struct hid_report *re
 	usbhid->ctrl[usbhid->ctrlhead].dir = dir;
 	usbhid->ctrlhead = head;
 
-<<<<<<< HEAD
-	/* Try to awake from autosuspend... */
-	if (usb_autopm_get_interface_async(usbhid->intf) < 0)
-		return;
-
-	/*
-	 * If already suspended, leave urb enqueued, but don't submit.
-	 * Submission will occur if/when resume() drains the queue.
-	 */
-	if (test_bit(HID_REPORTED_IDLE, &usbhid->iofl))
-		return;
-
-	if (!test_and_set_bit(HID_CTRL_RUNNING, &usbhid->iofl)) {
-		if (hid_submit_ctrl(hid)) {
-			clear_bit(HID_CTRL_RUNNING, &usbhid->iofl);
-			usb_autopm_put_interface_async(usbhid->intf);
-		}
-		wake_up(&usbhid->wait);
-	} else {
-		/*
-		 * the queue is known to run
-		 * but an earlier request may be stuck
-		 * we may need to time out
-		 * no race because the URB is blocked under
-		 * spinlock
-		 */
-		if (time_after(jiffies, usbhid->last_ctrl + HZ * 5)) {
-			usb_block_urb(usbhid->urbctrl);
-			/* drop lock to not deadlock if the callback is called */
-			spin_unlock(&usbhid->lock);
-			usb_unlink_urb(usbhid->urbctrl);
-			spin_lock(&usbhid->lock);
-			usb_unblock_urb(usbhid->urbctrl);
-			/*
-			 * if the unlinking has already completed
-			 * the pump will have been stopped
-			 * it must be restarted now
-			 */
-			if (!test_bit(HID_CTRL_RUNNING, &usbhid->iofl))
-				if (!ctrl_pump_restart(hid))
-					set_bit(HID_CTRL_RUNNING, &usbhid->iofl);
-		}
-	}
-}
-
-void usbhid_submit_report(struct hid_device *hid, struct hid_report *report, unsigned char dir)
-=======
 	/* If the queue isn't running, restart it */
 	if (!test_bit(HID_CTRL_RUNNING, &usbhid->iofl)) {
 		usbhid_restart_ctrl_queue(usbhid);
@@ -965,7 +628,6 @@ void usbhid_submit_report(struct hid_device *hid, struct hid_report *report, uns
 }
 
 static void usbhid_submit_report(struct hid_device *hid, struct hid_report *report, unsigned char dir)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbhid_device *usbhid = hid->driver_data;
 	unsigned long flags;
@@ -974,70 +636,8 @@ static void usbhid_submit_report(struct hid_device *hid, struct hid_report *repo
 	__usbhid_submit_report(hid, report, dir);
 	spin_unlock_irqrestore(&usbhid->lock, flags);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(usbhid_submit_report);
-
-/* Workqueue routine to send requests to change LEDs */
-static void hid_led(struct work_struct *work)
-{
-	struct usbhid_device *usbhid =
-		container_of(work, struct usbhid_device, led_work);
-	struct hid_device *hid = usbhid->hid;
-	struct hid_field *field;
-	unsigned long flags;
-
-	field = hidinput_get_led_field(hid);
-	if (!field) {
-		hid_warn(hid, "LED event field not found\n");
-		return;
-	}
-
-	spin_lock_irqsave(&usbhid->lock, flags);
-	if (!test_bit(HID_DISCONNECTED, &usbhid->iofl)) {
-		usbhid->ledcount = hidinput_count_leds(hid);
-		hid_dbg(usbhid->hid, "New ledcount = %u\n", usbhid->ledcount);
-		__usbhid_submit_report(hid, field->report, USB_DIR_OUT);
-	}
-	spin_unlock_irqrestore(&usbhid->lock, flags);
-}
-
-static int usb_hidinput_input_event(struct input_dev *dev, unsigned int type, unsigned int code, int value)
-{
-	struct hid_device *hid = input_get_drvdata(dev);
-	struct usbhid_device *usbhid = hid->driver_data;
-	struct hid_field *field;
-	unsigned long flags;
-	int offset;
-
-	if (type == EV_FF)
-		return input_ff_event(dev, type, code, value);
-
-	if (type != EV_LED)
-		return -1;
-
-	if ((offset = hidinput_find_field(hid, type, code, &field)) == -1) {
-		hid_warn(dev, "event field not found\n");
-		return -1;
-	}
-
-	spin_lock_irqsave(&usbhid->lock, flags);
-	hid_set_field(field, offset, value);
-	spin_unlock_irqrestore(&usbhid->lock, flags);
-
-	/*
-	 * Defer performing requested LED action.
-	 * This is more likely gather all LED changes into a single URB.
-	 */
-	schedule_work(&usbhid->led_work);
-
-	return 0;
-}
-
-int usbhid_wait_io(struct hid_device *hid)
-=======
 
 static int usbhid_wait_io(struct hid_device *hid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbhid_device *usbhid = hid->driver_data;
 
@@ -1051,10 +651,6 @@ static int usbhid_wait_io(struct hid_device *hid)
 
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(usbhid_wait_io);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int hid_set_idle(struct usb_device *dev, int ifnum, int report, int idle)
 {
@@ -1079,56 +675,11 @@ static int hid_get_class_descriptor(struct usb_device *dev, int ifnum,
 	return result;
 }
 
-<<<<<<< HEAD
-int usbhid_open(struct hid_device *hid)
-=======
 static int usbhid_open(struct hid_device *hid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbhid_device *usbhid = hid->driver_data;
 	int res;
 
-<<<<<<< HEAD
-	mutex_lock(&hid_open_mut);
-	if (!hid->open++) {
-		res = usb_autopm_get_interface(usbhid->intf);
-		/* the device must be awake to reliably request remote wakeup */
-		if (res < 0) {
-			hid->open--;
-			mutex_unlock(&hid_open_mut);
-			return -EIO;
-		}
-		usbhid->intf->needs_remote_wakeup = 1;
-		if (hid_start_in(hid))
-			hid_io_error(hid);
- 
-		usb_autopm_put_interface(usbhid->intf);
-	}
-	mutex_unlock(&hid_open_mut);
-	return 0;
-}
-
-void usbhid_close(struct hid_device *hid)
-{
-	struct usbhid_device *usbhid = hid->driver_data;
-
-	mutex_lock(&hid_open_mut);
-
-	/* protecting hid->open to make sure we don't restart
-	 * data acquistion due to a resumption we no longer
-	 * care about
-	 */
-	spin_lock_irq(&usbhid->lock);
-	if (!--hid->open) {
-		spin_unlock_irq(&usbhid->lock);
-		hid_cancel_delayed_stuff(usbhid);
-		usb_kill_urb(usbhid->urbin);
-		usbhid->intf->needs_remote_wakeup = 0;
-	} else {
-		spin_unlock_irq(&usbhid->lock);
-	}
-	mutex_unlock(&hid_open_mut);
-=======
 	mutex_lock(&usbhid->mutex);
 
 	set_bit(HID_OPENED, &usbhid->iofl);
@@ -1207,7 +758,6 @@ static void usbhid_close(struct hid_device *hid)
 	}
 
 	mutex_unlock(&usbhid->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1218,14 +768,6 @@ void usbhid_init_reports(struct hid_device *hid)
 {
 	struct hid_report *report;
 	struct usbhid_device *usbhid = hid->driver_data;
-<<<<<<< HEAD
-	int err, ret;
-
-	list_for_each_entry(report, &hid->report_enum[HID_INPUT_REPORT].report_list, list)
-		usbhid_submit_report(hid, report, USB_DIR_IN);
-
-	list_for_each_entry(report, &hid->report_enum[HID_FEATURE_REPORT].report_list, list)
-=======
 	struct hid_report_enum *report_enum;
 	int err, ret;
 
@@ -1235,7 +777,6 @@ void usbhid_init_reports(struct hid_device *hid)
 
 	report_enum = &hid->report_enum[HID_FEATURE_REPORT];
 	list_for_each_entry(report, &report_enum->report_list, list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usbhid_submit_report(hid, report, USB_DIR_IN);
 
 	err = 0;
@@ -1280,11 +821,7 @@ static int hid_find_field_early(struct hid_device *hid, unsigned int page,
 	return -1;
 }
 
-<<<<<<< HEAD
-void usbhid_set_leds(struct hid_device *hid)
-=======
 static void usbhid_set_leds(struct hid_device *hid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hid_field *field;
 	int offset;
@@ -1294,10 +831,6 @@ static void usbhid_set_leds(struct hid_device *hid)
 		usbhid_submit_report(hid, field->report, USB_DIR_OUT);
 	}
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(usbhid_set_leds);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Traverse the supplied list of reports and find the longest
@@ -1367,61 +900,13 @@ static int usbhid_get_raw_report(struct hid_device *hid,
 	return ret;
 }
 
-<<<<<<< HEAD
-static int usbhid_output_raw_report(struct hid_device *hid, __u8 *buf, size_t count,
-		unsigned char report_type)
-=======
 static int usbhid_set_raw_report(struct hid_device *hid, unsigned int reportnum,
 				 __u8 *buf, size_t count, unsigned char rtype)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbhid_device *usbhid = hid->driver_data;
 	struct usb_device *dev = hid_to_usb_dev(hid);
 	struct usb_interface *intf = usbhid->intf;
 	struct usb_host_interface *interface = intf->cur_altsetting;
-<<<<<<< HEAD
-	int ret;
-
-	if (usbhid->urbout && report_type != HID_FEATURE_REPORT) {
-		int actual_length;
-		int skipped_report_id = 0;
-
-		if (buf[0] == 0x0) {
-			/* Don't send the Report ID */
-			buf++;
-			count--;
-			skipped_report_id = 1;
-		}
-		ret = usb_interrupt_msg(dev, usbhid->urbout->pipe,
-			buf, count, &actual_length,
-			USB_CTRL_SET_TIMEOUT);
-		/* return the number of bytes transferred */
-		if (ret == 0) {
-			ret = actual_length;
-			/* count also the report id */
-			if (skipped_report_id)
-				ret++;
-		}
-	} else {
-		int skipped_report_id = 0;
-		int report_id = buf[0];
-		if (buf[0] == 0x0) {
-			/* Don't send the Report ID */
-			buf++;
-			count--;
-			skipped_report_id = 1;
-		}
-		ret = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
-			HID_REQ_SET_REPORT,
-			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-			((report_type + 1) << 8) | report_id,
-			interface->desc.bInterfaceNumber, buf, count,
-			USB_CTRL_SET_TIMEOUT);
-		/* count also the report id, if this was a numbered report. */
-		if (ret > 0 && skipped_report_id)
-			ret++;
-	}
-=======
 	int ret, skipped_report_id = 0;
 
 	/* Byte 0 is the report number. Report data starts at byte 1.*/
@@ -1447,18 +932,10 @@ static int usbhid_set_raw_report(struct hid_device *hid, unsigned int reportnum,
 	/* count also the report id, if this was a numbered report. */
 	if (ret > 0 && skipped_report_id)
 		ret++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static void usbhid_restart_queues(struct usbhid_device *usbhid)
-{
-	if (usbhid->urbout)
-		usbhid_restart_out_queue(usbhid);
-	usbhid_restart_ctrl_queue(usbhid);
-=======
 static int usbhid_output_report(struct hid_device *hid, __u8 *buf, size_t count)
 {
 	struct usbhid_device *usbhid = hid->driver_data;
@@ -1487,7 +964,6 @@ static int usbhid_output_report(struct hid_device *hid, __u8 *buf, size_t count)
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hid_free_buffers(struct usb_device *dev, struct hid_device *hid)
@@ -1513,12 +989,7 @@ static int usbhid_parse(struct hid_device *hid)
 	int num_descriptors;
 	size_t offset = offsetof(struct hid_descriptor, desc);
 
-<<<<<<< HEAD
-	quirks = usbhid_lookup_quirk(le16_to_cpu(dev->descriptor.idVendor),
-			le16_to_cpu(dev->descriptor.idProduct));
-=======
 	quirks = hid_lookup_quirk(hid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (quirks & HID_QUIRK_IGNORE)
 		return -ENODEV;
@@ -1558,16 +1029,9 @@ static int usbhid_parse(struct hid_device *hid)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (!(rdesc = kmalloc(rsize, GFP_KERNEL))) {
-		dbg_hid("couldn't allocate rdesc memory\n");
-		return -ENOMEM;
-	}
-=======
 	rdesc = kmalloc(rsize, GFP_KERNEL);
 	if (!rdesc)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hid_set_idle(dev, interface->desc.bInterfaceNumber, 0, 0);
 
@@ -1602,11 +1066,8 @@ static int usbhid_start(struct hid_device *hid)
 	unsigned int n, insize = 0;
 	int ret;
 
-<<<<<<< HEAD
-=======
 	mutex_lock(&usbhid->mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(HID_DISCONNECTED, &usbhid->iofl);
 
 	usbhid->bufsize = HID_MIN_BUFFER_SIZE;
@@ -1642,15 +1103,6 @@ static int usbhid_start(struct hid_device *hid)
 		if (hid->quirks & HID_QUIRK_FULLSPEED_INTERVAL &&
 		    dev->speed == USB_SPEED_HIGH) {
 			interval = fls(endpoint->bInterval*8);
-<<<<<<< HEAD
-			printk(KERN_INFO "%s: Fixing fullspeed to highspeed interval: %d -> %d\n",
-			       hid->name, endpoint->bInterval, interval);
-		}
-
-		/* Change the polling interval of mice. */
-		if (hid->collection->usage == HID_GD_MOUSE && hid_mousepoll_interval > 0)
-			interval = hid_mousepoll_interval;
-=======
 			pr_info("%s: Fixing fullspeed to highspeed interval: %d -> %d\n",
 				hid->name, endpoint->bInterval, interval);
 		}
@@ -1672,7 +1124,6 @@ static int usbhid_start(struct hid_device *hid)
 				interval = hid_kbpoll_interval;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = -ENOMEM;
 		if (usb_endpoint_dir_in(endpoint)) {
@@ -1709,13 +1160,6 @@ static int usbhid_start(struct hid_device *hid)
 	usbhid->urbctrl->transfer_dma = usbhid->ctrlbuf_dma;
 	usbhid->urbctrl->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
-<<<<<<< HEAD
-	if (!(hid->quirks & HID_QUIRK_NO_INIT_REPORTS))
-		usbhid_init_reports(hid);
-
-	set_bit(HID_STARTED, &usbhid->iofl);
-
-=======
 	set_bit(HID_STARTED, &usbhid->iofl);
 
 	if (hid->quirks & HID_QUIRK_ALWAYS_POLL) {
@@ -1732,7 +1176,6 @@ static int usbhid_start(struct hid_device *hid)
 		usb_autopm_put_interface(usbhid->intf);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Some keyboards don't work until their LEDs have been set.
 	 * Since BIOSes do set the LEDs, it must be safe for any device
 	 * that supports the keyboard boot protocol.
@@ -1745,11 +1188,8 @@ static int usbhid_start(struct hid_device *hid)
 		usbhid_set_leds(hid);
 		device_set_wakeup_enable(&dev->dev, 1);
 	}
-<<<<<<< HEAD
-=======
 
 	mutex_unlock(&usbhid->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 fail:
@@ -1760,10 +1200,7 @@ fail:
 	usbhid->urbout = NULL;
 	usbhid->urbctrl = NULL;
 	hid_free_buffers(dev, hid);
-<<<<<<< HEAD
-=======
 	mutex_unlock(&usbhid->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1774,12 +1211,6 @@ static void usbhid_stop(struct hid_device *hid)
 	if (WARN_ON(!usbhid))
 		return;
 
-<<<<<<< HEAD
-	clear_bit(HID_STARTED, &usbhid->iofl);
-	spin_lock_irq(&usbhid->lock);	/* Sync with error and led handlers */
-	set_bit(HID_DISCONNECTED, &usbhid->iofl);
-	spin_unlock_irq(&usbhid->lock);
-=======
 	if (hid->quirks & HID_QUIRK_ALWAYS_POLL) {
 		clear_bit(HID_IN_POLLING, &usbhid->iofl);
 		usbhid->intf->needs_remote_wakeup = 0;
@@ -1802,7 +1233,6 @@ static void usbhid_stop(struct hid_device *hid)
 	}
 	spin_unlock_irq(&usbhid->lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_kill_urb(usbhid->urbin);
 	usb_kill_urb(usbhid->urbout);
 	usb_kill_urb(usbhid->urbctrl);
@@ -1819,35 +1249,17 @@ static void usbhid_stop(struct hid_device *hid)
 	usbhid->urbout = NULL;
 
 	hid_free_buffers(hid_to_usb_dev(hid), hid);
-<<<<<<< HEAD
-=======
 
 	mutex_unlock(&usbhid->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int usbhid_power(struct hid_device *hid, int lvl)
 {
-<<<<<<< HEAD
-=======
 	struct usbhid_device *usbhid = hid->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int r = 0;
 
 	switch (lvl) {
 	case PM_HINT_FULLON:
-<<<<<<< HEAD
-		r = usbhid_get_power(hid);
-		break;
-	case PM_HINT_NORMAL:
-		usbhid_put_power(hid);
-		break;
-	}
-	return r;
-}
-
-static struct hid_ll_driver usb_hid_driver = {
-=======
 		r = usb_autopm_get_interface(usbhid->intf);
 		break;
 
@@ -1907,18 +1319,12 @@ static bool usbhid_may_wakeup(struct hid_device *hid)
 }
 
 static const struct hid_ll_driver usb_hid_driver = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.parse = usbhid_parse,
 	.start = usbhid_start,
 	.stop = usbhid_stop,
 	.open = usbhid_open,
 	.close = usbhid_close,
 	.power = usbhid_power,
-<<<<<<< HEAD
-	.hidinput_input_event = usb_hidinput_input_event,
-};
-
-=======
 	.request = usbhid_request,
 	.wait = usbhid_wait_io,
 	.raw_request = usbhid_raw_request,
@@ -1933,7 +1339,6 @@ bool hid_is_usb(const struct hid_device *hdev)
 }
 EXPORT_SYMBOL_GPL(hid_is_usb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int usbhid_probe(struct usb_interface *intf, const struct usb_device_id *id)
 {
 	struct usb_host_interface *interface = intf->cur_altsetting;
@@ -1961,11 +1366,6 @@ static int usbhid_probe(struct usb_interface *intf, const struct usb_device_id *
 
 	usb_set_intfdata(intf, hid);
 	hid->ll_driver = &usb_hid_driver;
-<<<<<<< HEAD
-	hid->hid_get_raw_report = usbhid_get_raw_report;
-	hid->hid_output_raw_report = usbhid_output_raw_report;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hid->ff_init = hid_pidff_init;
 #ifdef CONFIG_USB_HIDDEV
 	hid->hiddev_connect = hiddev_connect;
@@ -1977,13 +1377,8 @@ static int usbhid_probe(struct usb_interface *intf, const struct usb_device_id *
 	hid->bus = BUS_USB;
 	hid->vendor = le16_to_cpu(dev->descriptor.idVendor);
 	hid->product = le16_to_cpu(dev->descriptor.idProduct);
-<<<<<<< HEAD
-	hid->name[0] = 0;
-	hid->quirks = usbhid_lookup_quirk(hid->vendor, hid->product);
-=======
 	hid->version = le16_to_cpu(dev->descriptor.bcdDevice);
 	hid->name[0] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (intf->cur_altsetting->desc.bInterfaceProtocol ==
 			USB_INTERFACE_PROTOCOL_MOUSE)
 		hid->type = HID_TYPE_USBMOUSE;
@@ -1991,11 +1386,7 @@ static int usbhid_probe(struct usb_interface *intf, const struct usb_device_id *
 		hid->type = HID_TYPE_USBNONE;
 
 	if (dev->manufacturer)
-<<<<<<< HEAD
-		strlcpy(hid->name, dev->manufacturer, sizeof(hid->name));
-=======
 		strscpy(hid->name, dev->manufacturer, sizeof(hid->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->product) {
 		if (dev->manufacturer)
@@ -2031,16 +1422,9 @@ static int usbhid_probe(struct usb_interface *intf, const struct usb_device_id *
 
 	init_waitqueue_head(&usbhid->wait);
 	INIT_WORK(&usbhid->reset_work, hid_reset);
-<<<<<<< HEAD
-	setup_timer(&usbhid->io_retry, hid_retry_timeout, (unsigned long) hid);
-	spin_lock_init(&usbhid->lock);
-
-	INIT_WORK(&usbhid->led_work, hid_led);
-=======
 	timer_setup(&usbhid->io_retry, hid_retry_timeout, 0);
 	spin_lock_init(&usbhid->lock);
 	mutex_init(&usbhid->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = hid_add_device(hid);
 	if (ret) {
@@ -2066,12 +1450,9 @@ static void usbhid_disconnect(struct usb_interface *intf)
 		return;
 
 	usbhid = hid->driver_data;
-<<<<<<< HEAD
-=======
 	spin_lock_irq(&usbhid->lock);	/* Sync with error and led handlers */
 	set_bit(HID_DISCONNECTED, &usbhid->iofl);
 	spin_unlock_irq(&usbhid->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hid_destroy_device(hid);
 	kfree(usbhid);
 }
@@ -2080,10 +1461,6 @@ static void hid_cancel_delayed_stuff(struct usbhid_device *usbhid)
 {
 	del_timer_sync(&usbhid->io_retry);
 	cancel_work_sync(&usbhid->reset_work);
-<<<<<<< HEAD
-	cancel_work_sync(&usbhid->led_work);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hid_cease_io(struct usbhid_device *usbhid)
@@ -2094,8 +1471,6 @@ static void hid_cease_io(struct usbhid_device *usbhid)
 	usb_kill_urb(usbhid->urbout);
 }
 
-<<<<<<< HEAD
-=======
 static void hid_restart_io(struct hid_device *hid)
 {
 	struct usbhid_device *usbhid = hid->driver_data;
@@ -2127,7 +1502,6 @@ static void hid_restart_io(struct hid_device *hid)
 	spin_unlock_irq(&usbhid->lock);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Treat USB reset pretty much the same as suspend/resume */
 static int hid_pre_reset(struct usb_interface *intf)
 {
@@ -2148,18 +1522,6 @@ static int hid_post_reset(struct usb_interface *intf)
 	struct usb_device *dev = interface_to_usbdev (intf);
 	struct hid_device *hid = usb_get_intfdata(intf);
 	struct usbhid_device *usbhid = hid->driver_data;
-<<<<<<< HEAD
-	int status;
-
-	spin_lock_irq(&usbhid->lock);
-	clear_bit(HID_RESET_PENDING, &usbhid->iofl);
-	spin_unlock_irq(&usbhid->lock);
-	hid_set_idle(dev, intf->cur_altsetting->desc.bInterfaceNumber, 0, 0);
-	status = hid_start_in(hid);
-	if (status < 0)
-		hid_io_error(hid);
-	usbhid_restart_queues(usbhid);
-=======
 	struct usb_host_interface *interface = intf->cur_altsetting;
 	int status;
 	char *rdesc;
@@ -2196,29 +1558,10 @@ static int hid_post_reset(struct usb_interface *intf)
 	hid_set_idle(dev, intf->cur_altsetting->desc.bInterfaceNumber, 0, 0);
 
 	hid_restart_io(hid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int usbhid_get_power(struct hid_device *hid)
-{
-	struct usbhid_device *usbhid = hid->driver_data;
-
-	return usb_autopm_get_interface(usbhid->intf);
-}
-
-void usbhid_put_power(struct hid_device *hid)
-{
-	struct usbhid_device *usbhid = hid->driver_data;
-
-	usb_autopm_put_interface(usbhid->intf);
-}
-
-
-#ifdef CONFIG_PM
-=======
 static int hid_resume_common(struct hid_device *hid, bool driver_suspended)
 {
 	int status = 0;
@@ -2229,40 +1572,22 @@ static int hid_resume_common(struct hid_device *hid, bool driver_suspended)
 	return status;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hid_suspend(struct usb_interface *intf, pm_message_t message)
 {
 	struct hid_device *hid = usb_get_intfdata(intf);
 	struct usbhid_device *usbhid = hid->driver_data;
-<<<<<<< HEAD
-	int status;
-
-	if (PMSG_IS_AUTO(message)) {
-=======
 	int status = 0;
 	bool driver_suspended = false;
 	unsigned int ledcount;
 
 	if (PMSG_IS_AUTO(message)) {
 		ledcount = hidinput_count_leds(hid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irq(&usbhid->lock);	/* Sync with error handler */
 		if (!test_bit(HID_RESET_PENDING, &usbhid->iofl)
 		    && !test_bit(HID_CLEAR_HALT, &usbhid->iofl)
 		    && !test_bit(HID_OUT_RUNNING, &usbhid->iofl)
 		    && !test_bit(HID_CTRL_RUNNING, &usbhid->iofl)
 		    && !test_bit(HID_KEYS_PRESSED, &usbhid->iofl)
-<<<<<<< HEAD
-		    && (!usbhid->ledcount || ignoreled))
-		{
-			set_bit(HID_REPORTED_IDLE, &usbhid->iofl);
-			spin_unlock_irq(&usbhid->lock);
-			if (hid->driver && hid->driver->suspend) {
-				status = hid->driver->suspend(hid, message);
-				if (status < 0)
-					return status;
-			}
-=======
 		    && (!ledcount || ignoreled))
 		{
 			set_bit(HID_SUSPENDED, &usbhid->iofl);
@@ -2271,7 +1596,6 @@ static int hid_suspend(struct usb_interface *intf, pm_message_t message)
 			if (status < 0)
 				goto failed;
 			driver_suspended = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			usbhid_mark_busy(usbhid);
 			spin_unlock_irq(&usbhid->lock);
@@ -2279,18 +1603,6 @@ static int hid_suspend(struct usb_interface *intf, pm_message_t message)
 		}
 
 	} else {
-<<<<<<< HEAD
-		if (hid->driver && hid->driver->suspend) {
-			status = hid->driver->suspend(hid, message);
-			if (status < 0)
-				return status;
-		}
-		spin_lock_irq(&usbhid->lock);
-		set_bit(HID_REPORTED_IDLE, &usbhid->iofl);
-		spin_unlock_irq(&usbhid->lock);
-		if (usbhid_wait_io(hid) < 0)
-			return -EIO;
-=======
 		/* TODO: resume() might need to handle suspend failure */
 		status = hid_driver_suspend(hid, message);
 		driver_suspended = true;
@@ -2299,7 +1611,6 @@ static int hid_suspend(struct usb_interface *intf, pm_message_t message)
 		spin_unlock_irq(&usbhid->lock);
 		if (usbhid_wait_io(hid) < 0)
 			status = -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hid_cancel_delayed_stuff(usbhid);
@@ -2307,16 +1618,6 @@ static int hid_suspend(struct usb_interface *intf, pm_message_t message)
 
 	if (PMSG_IS_AUTO(message) && test_bit(HID_KEYS_PRESSED, &usbhid->iofl)) {
 		/* lost race against keypresses */
-<<<<<<< HEAD
-		status = hid_start_in(hid);
-		if (status < 0)
-			hid_io_error(hid);
-		usbhid_mark_busy(usbhid);
-		return -EBUSY;
-	}
-	dev_dbg(&intf->dev, "suspend\n");
-	return 0;
-=======
 		status = -EBUSY;
 		goto failed;
 	}
@@ -2326,41 +1627,14 @@ static int hid_suspend(struct usb_interface *intf, pm_message_t message)
  failed:
 	hid_resume_common(hid, driver_suspended);
 	return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hid_resume(struct usb_interface *intf)
 {
 	struct hid_device *hid = usb_get_intfdata (intf);
-<<<<<<< HEAD
-	struct usbhid_device *usbhid = hid->driver_data;
-	int status;
-
-	if (!test_bit(HID_STARTED, &usbhid->iofl))
-		return 0;
-
-	clear_bit(HID_REPORTED_IDLE, &usbhid->iofl);
-	usbhid_mark_busy(usbhid);
-
-	if (test_bit(HID_CLEAR_HALT, &usbhid->iofl) ||
-	    test_bit(HID_RESET_PENDING, &usbhid->iofl))
-		schedule_work(&usbhid->reset_work);
-	usbhid->retry_delay = 0;
-	status = hid_start_in(hid);
-	if (status < 0)
-		hid_io_error(hid);
-	usbhid_restart_queues(usbhid);
-
-	if (status >= 0 && hid->driver && hid->driver->resume) {
-		int ret = hid->driver->resume(hid);
-		if (ret < 0)
-			status = ret;
-	}
-=======
 	int status;
 
 	status = hid_resume_common(hid, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(&intf->dev, "resume status %d\n", status);
 	return 0;
 }
@@ -2368,32 +1642,17 @@ static int hid_resume(struct usb_interface *intf)
 static int hid_reset_resume(struct usb_interface *intf)
 {
 	struct hid_device *hid = usb_get_intfdata(intf);
-<<<<<<< HEAD
-	struct usbhid_device *usbhid = hid->driver_data;
-	int status;
-
-	clear_bit(HID_REPORTED_IDLE, &usbhid->iofl);
-	status = hid_post_reset(intf);
-	if (status >= 0 && hid->driver && hid->driver->reset_resume) {
-		int ret = hid->driver->reset_resume(hid);
-=======
 	int status;
 
 	status = hid_post_reset(intf);
 	if (status >= 0) {
 		int ret = hid_driver_reset_resume(hid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			status = ret;
 	}
 	return status;
 }
 
-<<<<<<< HEAD
-#endif /* CONFIG_PM */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct usb_device_id hid_usb_ids[] = {
 	{ .match_flags = USB_DEVICE_ID_MATCH_INT_CLASS,
 		.bInterfaceClass = USB_INTERFACE_CLASS_HID },
@@ -2406,91 +1665,43 @@ static struct usb_driver hid_driver = {
 	.name =		"usbhid",
 	.probe =	usbhid_probe,
 	.disconnect =	usbhid_disconnect,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-	.suspend =	hid_suspend,
-	.resume =	hid_resume,
-	.reset_resume =	hid_reset_resume,
-#endif
-=======
 	.suspend =	pm_ptr(hid_suspend),
 	.resume =	pm_ptr(hid_resume),
 	.reset_resume =	pm_ptr(hid_reset_resume),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pre_reset =	hid_pre_reset,
 	.post_reset =	hid_post_reset,
 	.id_table =	hid_usb_ids,
 	.supports_autosuspend = 1,
 };
 
-<<<<<<< HEAD
-static const struct hid_device_id hid_usb_table[] = {
-	{ HID_USB_DEVICE(HID_ANY_ID, HID_ANY_ID) },
-	{ }
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct usb_interface *usbhid_find_interface(int minor)
 {
 	return usb_find_interface(&hid_driver, minor);
 }
 
-<<<<<<< HEAD
-static struct hid_driver hid_usb_driver = {
-	.name = "generic-usb",
-	.id_table = hid_usb_table,
-};
-
-static int __init hid_init(void)
-{
-	int retval = -ENOMEM;
-
-	retval = hid_register_driver(&hid_usb_driver);
-	if (retval)
-		goto hid_register_fail;
-	retval = usbhid_quirks_init(quirks_param);
-=======
 static int __init hid_init(void)
 {
 	int retval;
 
 	retval = hid_quirks_init(quirks_param, BUS_USB, MAX_USBHID_BOOT_QUIRKS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		goto usbhid_quirks_init_fail;
 	retval = usb_register(&hid_driver);
 	if (retval)
 		goto usb_register_fail;
-<<<<<<< HEAD
-	printk(KERN_INFO KBUILD_MODNAME ": " DRIVER_DESC "\n");
-
-	return 0;
-usb_register_fail:
-	usbhid_quirks_exit();
-usbhid_quirks_init_fail:
-	hid_unregister_driver(&hid_usb_driver);
-hid_register_fail:
-=======
 	pr_info(KBUILD_MODNAME ": " DRIVER_DESC "\n");
 
 	return 0;
 usb_register_fail:
 	hid_quirks_exit(BUS_USB);
 usbhid_quirks_init_fail:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
 static void __exit hid_exit(void)
 {
 	usb_deregister(&hid_driver);
-<<<<<<< HEAD
-	usbhid_quirks_exit();
-	hid_unregister_driver(&hid_usb_driver);
-=======
 	hid_quirks_exit(BUS_USB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(hid_init);
@@ -2500,8 +1711,4 @@ MODULE_AUTHOR("Andreas Gal");
 MODULE_AUTHOR("Vojtech Pavlik");
 MODULE_AUTHOR("Jiri Kosina");
 MODULE_DESCRIPTION(DRIVER_DESC);
-<<<<<<< HEAD
-MODULE_LICENSE(DRIVER_LICENSE);
-=======
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

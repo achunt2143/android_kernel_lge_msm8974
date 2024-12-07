@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "reiserfs.h"
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -10,50 +7,6 @@
 #include <linux/slab.h>
 #include "xattr.h"
 #include <linux/security.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-
-static int
-security_get(struct dentry *dentry, const char *name, void *buffer, size_t size,
-		int handler_flags)
-{
-	if (strlen(name) < sizeof(XATTR_SECURITY_PREFIX))
-		return -EINVAL;
-
-	if (IS_PRIVATE(dentry->d_inode))
-		return -EPERM;
-
-	return reiserfs_xattr_get(dentry->d_inode, name, buffer, size);
-}
-
-static int
-security_set(struct dentry *dentry, const char *name, const void *buffer,
-	     size_t size, int flags, int handler_flags)
-{
-	if (strlen(name) < sizeof(XATTR_SECURITY_PREFIX))
-		return -EINVAL;
-
-	if (IS_PRIVATE(dentry->d_inode))
-		return -EPERM;
-
-	return reiserfs_xattr_set(dentry->d_inode, name, buffer, size, flags);
-}
-
-static size_t security_list(struct dentry *dentry, char *list, size_t list_len,
-			    const char *name, size_t namelen, int handler_flags)
-{
-	const size_t len = namelen + 1;
-
-	if (IS_PRIVATE(dentry->d_inode))
-		return 0;
-
-	if (list && len <= list_len) {
-		memcpy(list, name, namelen);
-		list[namelen] = '\0';
-	}
-
-	return len;
-=======
 #include <linux/uaccess.h>
 
 static int
@@ -100,7 +53,6 @@ reiserfs_initxattrs(struct inode *inode, const struct xattr *xattr_array,
 	sec->name = xattr_array->name;
 	sec->length = xattr_array->value_len;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Initializes the security context for a new inode and returns the number
@@ -114,28 +66,16 @@ int reiserfs_security_init(struct inode *dir, struct inode *inode,
 	int error;
 
 	sec->name = NULL;
-<<<<<<< HEAD
-=======
 	sec->value = NULL;
 	sec->length = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Don't add selinux attributes on xattrs - they'll never get used */
 	if (IS_PRIVATE(dir))
 		return 0;
 
-<<<<<<< HEAD
-	error = security_old_inode_init_security(inode, dir, qstr, &sec->name,
-						 &sec->value, &sec->length);
-	if (error) {
-		if (error == -EOPNOTSUPP)
-			error = 0;
-
-=======
 	error = security_inode_init_security(inode, dir, qstr,
 					     &reiserfs_initxattrs, sec);
 	if (error) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sec->name = NULL;
 		sec->value = NULL;
 		sec->length = 0;
@@ -156,13 +96,6 @@ int reiserfs_security_write(struct reiserfs_transaction_handle *th,
 			    struct inode *inode,
 			    struct reiserfs_security_handle *sec)
 {
-<<<<<<< HEAD
-	int error;
-	if (strlen(sec->name) < sizeof(XATTR_SECURITY_PREFIX))
-		return -EINVAL;
-
-	error = reiserfs_xattr_set_handle(th, inode, sec->name, sec->value,
-=======
 	char xattr_name[XATTR_NAME_MAX + 1] = XATTR_SECURITY_PREFIX;
 	int error;
 
@@ -172,7 +105,6 @@ int reiserfs_security_write(struct reiserfs_transaction_handle *th,
 	strlcat(xattr_name, sec->name, sizeof(xattr_name));
 
 	error = reiserfs_xattr_set_handle(th, inode, xattr_name, sec->value,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  sec->length, XATTR_CREATE);
 	if (error == -ENODATA || error == -EOPNOTSUPP)
 		error = 0;
@@ -182,10 +114,6 @@ int reiserfs_security_write(struct reiserfs_transaction_handle *th,
 
 void reiserfs_security_free(struct reiserfs_security_handle *sec)
 {
-<<<<<<< HEAD
-	kfree(sec->name);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(sec->value);
 	sec->name = NULL;
 	sec->value = NULL;

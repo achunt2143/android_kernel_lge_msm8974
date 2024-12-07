@@ -1,25 +1,12 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-=======
 #include <linux/compat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/completion.h>
 #include <linux/buffer_head.h>
 #include <linux/pagemap.h>
@@ -28,35 +15,23 @@
 #include <linux/mm.h>
 #include <linux/mount.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-=======
 #include <linux/filelock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gfs2_ondisk.h>
 #include <linux/falloc.h>
 #include <linux/swap.h>
 #include <linux/crc32.h>
 #include <linux/writeback.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <linux/dlm.h>
-#include <linux/dlm_plock.h>
-=======
 #include <linux/uaccess.h>
 #include <linux/dlm.h>
 #include <linux/dlm_plock.h>
 #include <linux/delay.h>
 #include <linux/backing-dev.h>
 #include <linux/fileattr.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "gfs2.h"
 #include "incore.h"
 #include "bmap.h"
-<<<<<<< HEAD
-=======
 #include "aops.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "dir.h"
 #include "glock.h"
 #include "glops.h"
@@ -72,11 +47,7 @@
  * gfs2_llseek - seek to a location in a file
  * @file: the file
  * @offset: the offset
-<<<<<<< HEAD
- * @origin: Where to seek from (SEEK_SET, SEEK_CUR, or SEEK_END)
-=======
  * @whence: Where to seek from (SEEK_SET, SEEK_CUR, or SEEK_END)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * SEEK_END requires the glock for the file because it references the
  * file's size.
@@ -84,32 +55,12 @@
  * Returns: The new offset, or errno
  */
 
-<<<<<<< HEAD
-static loff_t gfs2_llseek(struct file *file, loff_t offset, int origin)
-=======
 static loff_t gfs2_llseek(struct file *file, loff_t offset, int whence)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gfs2_inode *ip = GFS2_I(file->f_mapping->host);
 	struct gfs2_holder i_gh;
 	loff_t error;
 
-<<<<<<< HEAD
-	switch (origin) {
-	case SEEK_END: /* These reference inode->i_size */
-	case SEEK_DATA:
-	case SEEK_HOLE:
-		error = gfs2_glock_nq_init(ip->i_gl, LM_ST_SHARED, LM_FLAG_ANY,
-					   &i_gh);
-		if (!error) {
-			error = generic_file_llseek(file, offset, origin);
-			gfs2_glock_dq_uninit(&i_gh);
-		}
-		break;
-	case SEEK_CUR:
-	case SEEK_SET:
-		error = generic_file_llseek(file, offset, origin);
-=======
 	switch (whence) {
 	case SEEK_END:
 		error = gfs2_glock_nq_init(ip->i_gl, LM_ST_SHARED, LM_FLAG_ANY,
@@ -135,7 +86,6 @@ static loff_t gfs2_llseek(struct file *file, loff_t offset, int whence)
 		 * block mapping, so we don't need the glock.
 		 */
 		error = generic_file_llseek(file, offset, whence);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		error = -EINVAL;
@@ -145,93 +95,18 @@ static loff_t gfs2_llseek(struct file *file, loff_t offset, int whence)
 }
 
 /**
-<<<<<<< HEAD
- * gfs2_readdir - Read directory entries from a directory
- * @file: The directory to read from
- * @dirent: Buffer for dirents
- * @filldir: Function used to do the copying
-=======
  * gfs2_readdir - Iterator for a directory
  * @file: The directory to read from
  * @ctx: What to feed directory entries to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: errno
  */
 
-<<<<<<< HEAD
-static int gfs2_readdir(struct file *file, void *dirent, filldir_t filldir)
-=======
 static int gfs2_readdir(struct file *file, struct dir_context *ctx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *dir = file->f_mapping->host;
 	struct gfs2_inode *dip = GFS2_I(dir);
 	struct gfs2_holder d_gh;
-<<<<<<< HEAD
-	u64 offset = file->f_pos;
-	int error;
-
-	gfs2_holder_init(dip->i_gl, LM_ST_SHARED, 0, &d_gh);
-	error = gfs2_glock_nq(&d_gh);
-	if (error) {
-		gfs2_holder_uninit(&d_gh);
-		return error;
-	}
-
-	error = gfs2_dir_read(dir, &offset, dirent, filldir, &file->f_ra);
-
-	gfs2_glock_dq_uninit(&d_gh);
-
-	file->f_pos = offset;
-
-	return error;
-}
-
-/**
- * fsflags_cvt
- * @table: A table of 32 u32 flags
- * @val: a 32 bit value to convert
- *
- * This function can be used to convert between fsflags values and
- * GFS2's own flags values.
- *
- * Returns: the converted flags
- */
-static u32 fsflags_cvt(const u32 *table, u32 val)
-{
-	u32 res = 0;
-	while(val) {
-		if (val & 1)
-			res |= *table;
-		table++;
-		val >>= 1;
-	}
-	return res;
-}
-
-static const u32 fsflags_to_gfs2[32] = {
-	[3] = GFS2_DIF_SYNC,
-	[4] = GFS2_DIF_IMMUTABLE,
-	[5] = GFS2_DIF_APPENDONLY,
-	[7] = GFS2_DIF_NOATIME,
-	[12] = GFS2_DIF_EXHASH,
-	[14] = GFS2_DIF_INHERIT_JDATA,
-};
-
-static const u32 gfs2_to_fsflags[32] = {
-	[gfs2fl_Sync] = FS_SYNC_FL,
-	[gfs2fl_Immutable] = FS_IMMUTABLE_FL,
-	[gfs2fl_AppendOnly] = FS_APPEND_FL,
-	[gfs2fl_NoAtime] = FS_NOATIME_FL,
-	[gfs2fl_ExHash] = FS_INDEX_FL,
-	[gfs2fl_InheritJdata] = FS_JOURNAL_DATA_FL,
-};
-
-static int gfs2_get_flags(struct file *filp, u32 __user *ptr)
-{
-	struct inode *inode = filp->f_path.dentry->d_inode;
-=======
 	int error;
 
 	error = gfs2_glock_nq_init(dip->i_gl, LM_ST_SHARED, 0, &d_gh);
@@ -283,26 +158,11 @@ static inline u32 gfs2_gfsflags_to_fsflags(struct inode *inode, u32 gfsflags)
 int gfs2_fileattr_get(struct dentry *dentry, struct fileattr *fa)
 {
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gfs2_inode *ip = GFS2_I(inode);
 	struct gfs2_holder gh;
 	int error;
 	u32 fsflags;
 
-<<<<<<< HEAD
-	gfs2_holder_init(ip->i_gl, LM_ST_SHARED, 0, &gh);
-	error = gfs2_glock_nq(&gh);
-	if (error)
-		return error;
-
-	fsflags = fsflags_cvt(gfs2_to_fsflags, ip->i_diskflags);
-	if (!S_ISDIR(inode->i_mode) && ip->i_diskflags & GFS2_DIF_JDATA)
-		fsflags |= FS_JOURNAL_DATA_FL;
-	if (put_user(fsflags, ptr))
-		error = -EFAULT;
-
-	gfs2_glock_dq(&gh);
-=======
 	if (d_is_special(dentry))
 		return -ENOTTY;
 
@@ -317,7 +177,6 @@ int gfs2_fileattr_get(struct dentry *dentry, struct fileattr *fa)
 
 	gfs2_glock_dq(&gh);
 out_uninit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_holder_uninit(&gh);
 	return error;
 }
@@ -329,11 +188,7 @@ void gfs2_set_inode_flags(struct inode *inode)
 
 	flags &= ~(S_SYNC|S_APPEND|S_IMMUTABLE|S_NOATIME|S_DIRSYNC|S_NOSEC);
 	if ((ip->i_eattr == 0) && !is_sxid(inode->i_mode))
-<<<<<<< HEAD
-		inode->i_flags |= S_NOSEC;
-=======
 		flags |= S_NOSEC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ip->i_diskflags & GFS2_DIF_IMMUTABLE)
 		flags |= S_IMMUTABLE;
 	if (ip->i_diskflags & GFS2_DIF_APPENDONLY)
@@ -351,21 +206,6 @@ void gfs2_set_inode_flags(struct inode *inode)
 			     GFS2_DIF_APPENDONLY|		\
 			     GFS2_DIF_NOATIME|			\
 			     GFS2_DIF_SYNC|			\
-<<<<<<< HEAD
-			     GFS2_DIF_SYSTEM|			\
-			     GFS2_DIF_INHERIT_JDATA)
-
-/**
- * gfs2_set_flags - set flags on an inode
- * @inode: The inode
- * @flags: The flags to set
- * @mask: Indicates which flags are valid
- *
- */
-static int do_gfs2_set_flags(struct file *filp, u32 reqflags, u32 mask)
-{
-	struct inode *inode = filp->f_path.dentry->d_inode;
-=======
 			     GFS2_DIF_TOPDIR|			\
 			     GFS2_DIF_INHERIT_JDATA)
 
@@ -378,7 +218,6 @@ static int do_gfs2_set_flags(struct file *filp, u32 reqflags, u32 mask)
  */
 static int do_gfs2_set_flags(struct inode *inode, u32 reqflags, u32 mask)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gfs2_inode *ip = GFS2_I(inode);
 	struct gfs2_sbd *sdp = GFS2_SB(inode);
 	struct buffer_head *bh;
@@ -386,23 +225,9 @@ static int do_gfs2_set_flags(struct inode *inode, u32 reqflags, u32 mask)
 	int error;
 	u32 new_flags, flags;
 
-<<<<<<< HEAD
-	error = mnt_want_write_file(filp);
-	if (error)
-		return error;
-
-	error = gfs2_glock_nq_init(ip->i_gl, LM_ST_EXCLUSIVE, 0, &gh);
-	if (error)
-		goto out_drop_write;
-
-	error = -EACCES;
-	if (!inode_owner_or_capable(inode))
-		goto out;
-=======
 	error = gfs2_glock_nq_init(ip->i_gl, LM_ST_EXCLUSIVE, 0, &gh);
 	if (error)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = 0;
 	flags = ip->i_diskflags;
@@ -410,49 +235,24 @@ static int do_gfs2_set_flags(struct inode *inode, u32 reqflags, u32 mask)
 	if ((new_flags ^ flags) == 0)
 		goto out;
 
-<<<<<<< HEAD
-	error = -EINVAL;
-	if ((new_flags ^ flags) & ~GFS2_FLAGS_USER_SET)
-		goto out;
-
-	error = -EPERM;
-	if (IS_IMMUTABLE(inode) && (new_flags & GFS2_DIF_IMMUTABLE))
-		goto out;
-	if (IS_APPEND(inode) && (new_flags & GFS2_DIF_APPENDONLY))
-		goto out;
-	if (((new_flags ^ flags) & GFS2_DIF_IMMUTABLE) &&
-	    !capable(CAP_LINUX_IMMUTABLE))
-		goto out;
-	if (!IS_IMMUTABLE(inode)) {
-		error = gfs2_permission(inode, MAY_WRITE);
-=======
 	if (!IS_IMMUTABLE(inode)) {
 		error = gfs2_permission(&nop_mnt_idmap, inode, MAY_WRITE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			goto out;
 	}
 	if ((flags ^ new_flags) & GFS2_DIF_JDATA) {
-<<<<<<< HEAD
-		if (flags & GFS2_DIF_JDATA)
-			gfs2_log_flush(sdp, ip->i_gl);
-=======
 		if (new_flags & GFS2_DIF_JDATA)
 			gfs2_log_flush(sdp, ip->i_gl,
 				       GFS2_LOG_HEAD_FLUSH_NORMAL |
 				       GFS2_LFC_SET_FLAGS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = filemap_fdatawrite(inode->i_mapping);
 		if (error)
 			goto out;
 		error = filemap_fdatawait(inode->i_mapping);
 		if (error)
 			goto out;
-<<<<<<< HEAD
-=======
 		if (new_flags & GFS2_DIF_JDATA)
 			gfs2_ordered_del_inode(ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	error = gfs2_trans_begin(sdp, RES_DINODE, 0);
 	if (error)
@@ -460,12 +260,8 @@ static int do_gfs2_set_flags(struct inode *inode, u32 reqflags, u32 mask)
 	error = gfs2_meta_inode_buffer(ip, &bh);
 	if (error)
 		goto out_trans_end;
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, bh, 1);
-=======
 	inode_set_ctime_current(inode);
 	gfs2_trans_add_meta(ip->i_gl, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ip->i_diskflags = new_flags;
 	gfs2_dinode_out(ip, bh->b_data);
 	brelse(bh);
@@ -475,28 +271,6 @@ out_trans_end:
 	gfs2_trans_end(sdp);
 out:
 	gfs2_glock_dq_uninit(&gh);
-<<<<<<< HEAD
-out_drop_write:
-	mnt_drop_write_file(filp);
-	return error;
-}
-
-static int gfs2_set_flags(struct file *filp, u32 __user *ptr)
-{
-	struct inode *inode = filp->f_path.dentry->d_inode;
-	u32 fsflags, gfsflags;
-
-	if (get_user(fsflags, ptr))
-		return -EFAULT;
-
-	gfsflags = fsflags_cvt(fsflags_to_gfs2, fsflags);
-	if (!S_ISDIR(inode->i_mode)) {
-		if (gfsflags & GFS2_DIF_INHERIT_JDATA)
-			gfsflags ^= (GFS2_DIF_JDATA | GFS2_DIF_INHERIT_JDATA);
-		return do_gfs2_set_flags(filp, gfsflags, ~0);
-	}
-	return do_gfs2_set_flags(filp, gfsflags, ~GFS2_DIF_JDATA);
-=======
 	return error;
 }
 
@@ -545,50 +319,11 @@ static int gfs2_getlabel(struct file *filp, char __user *label)
 		return -EFAULT;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static long gfs2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	switch(cmd) {
-<<<<<<< HEAD
-	case FS_IOC_GETFLAGS:
-		return gfs2_get_flags(filp, (u32 __user *)arg);
-	case FS_IOC_SETFLAGS:
-		return gfs2_set_flags(filp, (u32 __user *)arg);
-	case FITRIM:
-		return gfs2_fitrim(filp, (void __user *)arg);
-	}
-	return -ENOTTY;
-}
-
-/**
- * gfs2_allocate_page_backing - Use bmap to allocate blocks
- * @page: The (locked) page to allocate backing for
- *
- * We try to allocate all the blocks required for the page in
- * one go. This might fail for various reasons, so we keep
- * trying until all the blocks to back this page are allocated.
- * If some of the blocks are already allocated, thats ok too.
- */
-
-static int gfs2_allocate_page_backing(struct page *page)
-{
-	struct inode *inode = page->mapping->host;
-	struct buffer_head bh;
-	unsigned long size = PAGE_CACHE_SIZE;
-	u64 lblock = page->index << (PAGE_CACHE_SHIFT - inode->i_blkbits);
-
-	do {
-		bh.b_state = 0;
-		bh.b_size = size;
-		gfs2_block_map(inode, lblock, &bh, 1);
-		if (!buffer_mapped(&bh))
-			return -EIO;
-		size -= bh.b_size;
-		lblock += (bh.b_size >> inode->i_blkbits);
-	} while(size > 0);
-=======
 	case FITRIM:
 		return gfs2_fitrim(filp, (void __user *)arg);
 	case FS_IOC_GETFSLABEL:
@@ -666,49 +401,17 @@ static int gfs2_allocate_page_backing(struct page *page, unsigned int length)
 		pos += iomap.length;
 	} while (length > 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
  * gfs2_page_mkwrite - Make a shared, mmap()ed, page writable
-<<<<<<< HEAD
- * @vma: The virtual memory area
- * @page: The page which is about to become writable
-=======
  * @vmf: The virtual memory fault containing the page to become writable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * When the page becomes writable, we need to ensure that we have
  * blocks allocated on disk to back that page.
  */
 
-<<<<<<< HEAD
-static int gfs2_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-	struct page *page = vmf->page;
-	struct inode *inode = vma->vm_file->f_path.dentry->d_inode;
-	struct gfs2_inode *ip = GFS2_I(inode);
-	struct gfs2_sbd *sdp = GFS2_SB(inode);
-	unsigned long last_index;
-	u64 pos = page->index << PAGE_CACHE_SHIFT;
-	unsigned int data_blocks, ind_blocks, rblocks;
-	struct gfs2_holder gh;
-	struct gfs2_qadata *qa;
-	loff_t size;
-	int ret;
-
-	/* Wait if fs is frozen. This is racy so we check again later on
-	 * and retry if the fs has been frozen after the page lock has
-	 * been acquired
-	 */
-	vfs_check_frozen(inode->i_sb, SB_FREEZE_WRITE);
-
-	gfs2_holder_init(ip->i_gl, LM_ST_EXCLUSIVE, 0, &gh);
-	ret = gfs2_glock_nq(&gh);
-	if (ret)
-		goto out;
-=======
 static vm_fault_t gfs2_page_mkwrite(struct vm_fault *vmf)
 {
 	struct page *page = vmf->page;
@@ -750,17 +453,10 @@ static vm_fault_t gfs2_page_mkwrite(struct vm_fault *vmf)
 		length = PAGE_SIZE;
 
 	gfs2_size_hint(vmf->vma->vm_file, offset, length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_bit(GLF_DIRTY, &ip->i_gl->gl_flags);
 	set_bit(GIF_SW_PAGED, &ip->i_flags);
 
-<<<<<<< HEAD
-	if (!gfs2_write_alloc_required(ip, pos, PAGE_CACHE_SIZE)) {
-		lock_page(page);
-		if (!PageUptodate(page) || page->mapping != inode->i_mapping) {
-			ret = -EAGAIN;
-=======
 	/*
 	 * iomap_writepage / iomap_writepages currently don't support inline
 	 * files, so always unstuff here.
@@ -771,26 +467,11 @@ static vm_fault_t gfs2_page_mkwrite(struct vm_fault *vmf)
 		lock_page(page);
 		if (!PageUptodate(page) || page->mapping != inode->i_mapping) {
 			ret = VM_FAULT_NOPAGE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unlock_page(page);
 		}
 		goto out_unlock;
 	}
 
-<<<<<<< HEAD
-	ret = -ENOMEM;
-	qa = gfs2_qadata_get(ip);
-	if (qa == NULL)
-		goto out_unlock;
-
-	ret = gfs2_quota_lock_check(ip);
-	if (ret)
-		goto out_alloc_put;
-	gfs2_write_calc_reserv(ip, PAGE_CACHE_SIZE, &data_blocks, &ind_blocks);
-	ret = gfs2_inplace_reserve(ip, data_blocks + ind_blocks);
-	if (ret)
-		goto out_quota_unlock;
-=======
 	err = gfs2_rindex_update(sdp);
 	if (err) {
 		ret = vmf_fs_error(err);
@@ -809,46 +490,12 @@ static vm_fault_t gfs2_page_mkwrite(struct vm_fault *vmf)
 		ret = vmf_fs_error(err);
 		goto out_quota_unlock;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rblocks = RES_DINODE + ind_blocks;
 	if (gfs2_is_jdata(ip))
 		rblocks += data_blocks ? data_blocks : 1;
 	if (ind_blocks || data_blocks) {
 		rblocks += RES_STATFS + RES_QUOTA;
-<<<<<<< HEAD
-		rblocks += gfs2_rg_blocks(ip);
-	}
-	ret = gfs2_trans_begin(sdp, rblocks, 0);
-	if (ret)
-		goto out_trans_fail;
-
-	lock_page(page);
-	ret = -EINVAL;
-	size = i_size_read(inode);
-	last_index = (size - 1) >> PAGE_CACHE_SHIFT;
-	/* Check page index against inode size */
-	if (size == 0 || (page->index > last_index))
-		goto out_trans_end;
-
-	ret = -EAGAIN;
-	/* If truncated, we must retry the operation, we may have raced
-	 * with the glock demotion code.
-	 */
-	if (!PageUptodate(page) || page->mapping != inode->i_mapping)
-		goto out_trans_end;
-
-	/* Unstuff, if required, and allocate backing blocks for page */
-	ret = 0;
-	if (gfs2_is_stuffed(ip))
-		ret = gfs2_unstuff_dinode(ip, page);
-	if (ret == 0)
-		ret = gfs2_allocate_page_backing(page);
-
-out_trans_end:
-	if (ret)
-		unlock_page(page);
-=======
 		rblocks += gfs2_rg_blocks(ip, data_blocks + ind_blocks);
 	}
 	err = gfs2_trans_begin(sdp, rblocks, 0);
@@ -883,35 +530,11 @@ out_page_locked:
 	if (ret != VM_FAULT_LOCKED)
 		unlock_page(page);
 out_trans_end:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_trans_end(sdp);
 out_trans_fail:
 	gfs2_inplace_release(ip);
 out_quota_unlock:
 	gfs2_quota_unlock(ip);
-<<<<<<< HEAD
-out_alloc_put:
-	gfs2_qadata_put(ip);
-out_unlock:
-	gfs2_glock_dq(&gh);
-out:
-	gfs2_holder_uninit(&gh);
-	if (ret == 0) {
-		set_page_dirty(page);
-		/* This check must be post dropping of transaction lock */
-		if (inode->i_sb->s_frozen == SB_UNFROZEN) {
-			wait_on_page_writeback(page);
-		} else {
-			ret = -EAGAIN;
-			unlock_page(page);
-		}
-	}
-	return block_page_mkwrite_return(ret);
-}
-
-static const struct vm_operations_struct gfs2_vm_ops = {
-	.fault = filemap_fault,
-=======
 out_unlock:
 	gfs2_glock_dq(&gh);
 out_uninit:
@@ -948,16 +571,11 @@ out_uninit:
 static const struct vm_operations_struct gfs2_vm_ops = {
 	.fault = gfs2_fault,
 	.map_pages = filemap_map_pages,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.page_mkwrite = gfs2_page_mkwrite,
 };
 
 /**
-<<<<<<< HEAD
- * gfs2_mmap -
-=======
  * gfs2_mmap
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @file: The file to map
  * @vma: The VMA which described the mapping
  *
@@ -977,20 +595,6 @@ static int gfs2_mmap(struct file *file, struct vm_area_struct *vma)
 		struct gfs2_holder i_gh;
 		int error;
 
-<<<<<<< HEAD
-		gfs2_holder_init(ip->i_gl, LM_ST_SHARED, LM_FLAG_ANY, &i_gh);
-		error = gfs2_glock_nq(&i_gh);
-		if (error == 0) {
-			file_accessed(file);
-			gfs2_glock_dq(&i_gh);
-		}
-		gfs2_holder_uninit(&i_gh);
-		if (error)
-			return error;
-	}
-	vma->vm_ops = &gfs2_vm_ops;
-	vma->vm_flags |= VM_CAN_NONLINEAR;
-=======
 		error = gfs2_glock_nq_init(ip->i_gl, LM_ST_SHARED, LM_FLAG_ANY,
 					   &i_gh);
 		if (error)
@@ -1000,14 +604,11 @@ static int gfs2_mmap(struct file *file, struct vm_area_struct *vma)
 		file_accessed(file);
 	}
 	vma->vm_ops = &gfs2_vm_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * gfs2_open_common - This is common to open and atomic_open
  * @inode: The inode being opened
  * @file: The file being opened
@@ -1056,20 +657,16 @@ fail:
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * gfs2_open - open a file
  * @inode: the inode to open
  * @file: the struct file for this opening
  *
-<<<<<<< HEAD
-=======
  * After atomic_open, this function is only used for opening files
  * which are already cached. We must still get the glock for regular
  * files to ensure that we have the file size uptodate for the large
  * file check which is in the common code. That is only an issue for
  * regular files though.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns: errno
  */
 
@@ -1077,47 +674,13 @@ static int gfs2_open(struct inode *inode, struct file *file)
 {
 	struct gfs2_inode *ip = GFS2_I(inode);
 	struct gfs2_holder i_gh;
-<<<<<<< HEAD
-	struct gfs2_file *fp;
-	int error;
-
-	fp = kzalloc(sizeof(struct gfs2_file), GFP_KERNEL);
-	if (!fp)
-		return -ENOMEM;
-
-	mutex_init(&fp->f_fl_mutex);
-
-	gfs2_assert_warn(GFS2_SB(inode), !file->private_data);
-	file->private_data = fp;
-=======
 	int error;
 	bool need_unlock = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (S_ISREG(ip->i_inode.i_mode)) {
 		error = gfs2_glock_nq_init(ip->i_gl, LM_ST_SHARED, LM_FLAG_ANY,
 					   &i_gh);
 		if (error)
-<<<<<<< HEAD
-			goto fail;
-
-		if (!(file->f_flags & O_LARGEFILE) &&
-		    i_size_read(inode) > MAX_NON_LFS) {
-			error = -EOVERFLOW;
-			goto fail_gunlock;
-		}
-
-		gfs2_glock_dq_uninit(&i_gh);
-	}
-
-	return 0;
-
-fail_gunlock:
-	gfs2_glock_dq_uninit(&i_gh);
-fail:
-	file->private_data = NULL;
-	kfree(fp);
-=======
 			return error;
 		need_unlock = true;
 	}
@@ -1127,37 +690,17 @@ fail:
 	if (need_unlock)
 		gfs2_glock_dq_uninit(&i_gh);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 /**
-<<<<<<< HEAD
- * gfs2_close - called to close a struct file
-=======
  * gfs2_release - called to close a struct file
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @inode: the inode the struct file belongs to
  * @file: the struct file being closed
  *
  * Returns: errno
  */
 
-<<<<<<< HEAD
-static int gfs2_close(struct inode *inode, struct file *file)
-{
-	struct gfs2_sbd *sdp = inode->i_sb->s_fs_info;
-	struct gfs2_file *fp;
-
-	fp = file->private_data;
-	file->private_data = NULL;
-
-	if (gfs2_assert_warn(sdp, fp))
-		return -EIO;
-
-	kfree(fp);
-
-=======
 static int gfs2_release(struct inode *inode, struct file *file)
 {
 	struct gfs2_inode *ip = GFS2_I(inode);
@@ -1170,7 +713,6 @@ static int gfs2_release(struct inode *inode, struct file *file)
 			gfs2_rs_delete(ip);
 		gfs2_qa_put(ip);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1200,11 +742,7 @@ static int gfs2_fsync(struct file *file, loff_t start, loff_t end,
 {
 	struct address_space *mapping = file->f_mapping;
 	struct inode *inode = mapping->host;
-<<<<<<< HEAD
-	int sync_state = inode->i_state & (I_DIRTY_SYNC|I_DIRTY_DATASYNC);
-=======
 	int sync_state = inode->i_state & I_DIRTY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gfs2_inode *ip = GFS2_I(inode);
 	int ret = 0, ret1 = 0;
 
@@ -1214,11 +752,8 @@ static int gfs2_fsync(struct file *file, loff_t start, loff_t end,
 			return ret1;
 	}
 
-<<<<<<< HEAD
-=======
 	if (!gfs2_is_jdata(ip))
 		sync_state &= ~I_DIRTY_PAGES;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (datasync)
 		sync_state &= ~I_DIRTY_SYNC;
 
@@ -1227,34 +762,18 @@ static int gfs2_fsync(struct file *file, loff_t start, loff_t end,
 		if (ret)
 			return ret;
 		if (gfs2_is_jdata(ip))
-<<<<<<< HEAD
-			filemap_write_and_wait(mapping);
-=======
 			ret = file_write_and_wait(file);
 		if (ret)
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfs2_ail_flush(ip->i_gl, 1);
 	}
 
 	if (mapping->nrpages)
-<<<<<<< HEAD
-		ret = filemap_fdatawait_range(mapping, start, end);
-=======
 		ret = file_fdatawait_range(file, start, end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret ? ret : ret1;
 }
 
-<<<<<<< HEAD
-/**
- * gfs2_file_aio_write - Perform a write to a file
- * @iocb: The io context
- * @iov: The data to write
- * @nr_segs: Number of @iov segments
- * @pos: The file position
-=======
 static inline bool should_fault_in_pages(struct iov_iter *i,
 					 struct kiocb *iocb,
 					 size_t *prev_count,
@@ -1567,7 +1086,6 @@ out_uninit:
  * gfs2_file_write_iter - Perform a write to a file
  * @iocb: The io context
  * @from: The data to write
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * We have to do a lock/unlock here to refresh the inode size for
  * O_APPEND writes, otherwise we can land up writing at the wrong
@@ -1576,19 +1094,6 @@ out_uninit:
  *
  */
 
-<<<<<<< HEAD
-static ssize_t gfs2_file_aio_write(struct kiocb *iocb, const struct iovec *iov,
-				   unsigned long nr_segs, loff_t pos)
-{
-	struct file *file = iocb->ki_filp;
-
-	if (file->f_flags & O_APPEND) {
-		struct dentry *dentry = file->f_dentry;
-		struct gfs2_inode *ip = GFS2_I(dentry->d_inode);
-		struct gfs2_holder gh;
-		int ret;
-
-=======
 static ssize_t gfs2_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 {
 	struct file *file = iocb->ki_filp;
@@ -1600,16 +1105,12 @@ static ssize_t gfs2_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 	gfs2_size_hint(file, iocb->ki_pos, iov_iter_count(from));
 
 	if (iocb->ki_flags & IOCB_APPEND) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = gfs2_glock_nq_init(ip->i_gl, LM_ST_SHARED, 0, &gh);
 		if (ret)
 			return ret;
 		gfs2_glock_dq_uninit(&gh);
 	}
 
-<<<<<<< HEAD
-	return generic_file_aio_write(iocb, iov, nr_segs, pos);
-=======
 	inode_lock(inode);
 	ret = generic_write_checks(iocb, from);
 	if (ret <= 0)
@@ -1667,71 +1168,29 @@ static ssize_t gfs2_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 out_unlock:
 	inode_unlock(inode);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fallocate_chunk(struct inode *inode, loff_t offset, loff_t len,
 			   int mode)
 {
-<<<<<<< HEAD
-	struct gfs2_inode *ip = GFS2_I(inode);
-	struct buffer_head *dibh;
-	int error;
-	loff_t size = len;
-	unsigned int nr_blks;
-	sector_t lblock = offset >> inode->i_blkbits;
-=======
 	struct super_block *sb = inode->i_sb;
 	struct gfs2_inode *ip = GFS2_I(inode);
 	loff_t end = offset + len;
 	struct buffer_head *dibh;
 	int error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = gfs2_meta_inode_buffer(ip, &dibh);
 	if (unlikely(error))
 		return error;
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-
-	if (gfs2_is_stuffed(ip)) {
-		error = gfs2_unstuff_dinode(ip, NULL);
-=======
 	gfs2_trans_add_meta(ip->i_gl, dibh);
 
 	if (gfs2_is_stuffed(ip)) {
 		error = gfs2_unstuff_dinode(ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(error))
 			goto out;
 	}
 
-<<<<<<< HEAD
-	while (len) {
-		struct buffer_head bh_map = { .b_state = 0, .b_blocknr = 0 };
-		bh_map.b_size = len;
-		set_buffer_zeronew(&bh_map);
-
-		error = gfs2_block_map(inode, lblock, &bh_map, 1);
-		if (unlikely(error))
-			goto out;
-		len -= bh_map.b_size;
-		nr_blks = bh_map.b_size >> inode->i_blkbits;
-		lblock += nr_blks;
-		if (!buffer_new(&bh_map))
-			continue;
-		if (unlikely(!buffer_zeronew(&bh_map))) {
-			error = -EIO;
-			goto out;
-		}
-	}
-	if (offset + size > inode->i_size && !(mode & FALLOC_FL_KEEP_SIZE))
-		i_size_write(inode, offset + size);
-
-	mark_inode_dirty(inode);
-
-=======
 	while (offset < end) {
 		struct iomap iomap = { };
 
@@ -1749,19 +1208,11 @@ static int fallocate_chunk(struct inode *inode, loff_t offset, loff_t len,
 			goto out;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	brelse(dibh);
 	return error;
 }
 
-<<<<<<< HEAD
-static void calc_max_reserv(struct gfs2_inode *ip, loff_t max, loff_t *len,
-			    unsigned int *data_blocks, unsigned int *ind_blocks)
-{
-	const struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-	unsigned int max_blocks = ip->i_rgd->rd_free_clone;
-=======
 /**
  * calc_max_reserv() - Reverse of write_calc_reserv. Given a number of
  *                     blocks, determine how many bytes can be written.
@@ -1779,21 +1230,13 @@ static void calc_max_reserv(struct gfs2_inode *ip, loff_t *len,
 {
 	loff_t max = *len;
 	const struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int tmp, max_data = max_blocks - 3 * (sdp->sd_max_height - 1);
 
 	for (tmp = max_data; tmp > sdp->sd_diptrs;) {
 		tmp = DIV_ROUND_UP(tmp, sdp->sd_inptrs);
 		max_data -= tmp;
 	}
-<<<<<<< HEAD
-	/* This calculation isn't the exact reverse of gfs2_write_calc_reserve,
-	   so it might end up with fewer data blocks */
-	if (max_data <= *data_blocks)
-		return;
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*data_blocks = max_data;
 	*ind_blocks = max_blocks - max_data;
 	*len = ((loff_t)max_data - 3) << sdp->sd_sb.sb_bsize_shift;
@@ -1803,17 +1246,6 @@ static void calc_max_reserv(struct gfs2_inode *ip, loff_t *len,
 	}
 }
 
-<<<<<<< HEAD
-static long gfs2_fallocate(struct file *file, int mode, loff_t offset,
-			   loff_t len)
-{
-	struct inode *inode = file->f_path.dentry->d_inode;
-	struct gfs2_sbd *sdp = GFS2_SB(inode);
-	struct gfs2_inode *ip = GFS2_I(inode);
-	unsigned int data_blocks = 0, ind_blocks = 0, rblocks;
-	loff_t bytes, max_bytes;
-	struct gfs2_qadata *qa;
-=======
 static long __gfs2_fallocate(struct file *file, int mode, loff_t offset, loff_t len)
 {
 	struct inode *inode = file_inode(file);
@@ -1822,23 +1254,14 @@ static long __gfs2_fallocate(struct file *file, int mode, loff_t offset, loff_t 
 	struct gfs2_alloc_parms ap = {};
 	unsigned int data_blocks = 0, ind_blocks = 0, rblocks;
 	loff_t bytes, max_bytes, max_blks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 	const loff_t pos = offset;
 	const loff_t count = len;
 	loff_t bsize_mask = ~((loff_t)sdp->sd_sb.sb_bsize - 1);
 	loff_t next = (offset + len - 1) >> sdp->sd_sb.sb_bsize_shift;
 	loff_t max_chunk_size = UINT_MAX & bsize_mask;
-<<<<<<< HEAD
-	next = (next + 1) << sdp->sd_sb.sb_bsize_shift;
-
-	/* We only support the FALLOC_FL_KEEP_SIZE mode */
-	if (mode & ~FALLOC_FL_KEEP_SIZE)
-		return -EOPNOTSUPP;
-=======
 
 	next = (next + 1) << sdp->sd_sb.sb_bsize_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	offset &= bsize_mask;
 
@@ -1850,17 +1273,10 @@ static long __gfs2_fallocate(struct file *file, int mode, loff_t offset, loff_t 
 	if (bytes == 0)
 		bytes = sdp->sd_sb.sb_bsize;
 
-<<<<<<< HEAD
-	gfs2_holder_init(ip->i_gl, LM_ST_EXCLUSIVE, 0, &ip->i_gh);
-	error = gfs2_glock_nq(&ip->i_gh);
-	if (unlikely(error))
-		goto out_uninit;
-=======
 	gfs2_size_hint(file, offset, len);
 
 	gfs2_write_calc_reserv(ip, PAGE_SIZE, &data_blocks, &ind_blocks);
 	ap.min_target = data_blocks + ind_blocks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (len > 0) {
 		if (len < bytes)
@@ -1870,38 +1286,6 @@ static long __gfs2_fallocate(struct file *file, int mode, loff_t offset, loff_t 
 			offset += bytes;
 			continue;
 		}
-<<<<<<< HEAD
-		qa = gfs2_qadata_get(ip);
-		if (!qa) {
-			error = -ENOMEM;
-			goto out_unlock;
-		}
-
-		error = gfs2_quota_lock_check(ip);
-		if (error)
-			goto out_alloc_put;
-
-retry:
-		gfs2_write_calc_reserv(ip, bytes, &data_blocks, &ind_blocks);
-
-		error = gfs2_inplace_reserve(ip, data_blocks + ind_blocks);
-		if (error) {
-			if (error == -ENOSPC && bytes > sdp->sd_sb.sb_bsize) {
-				bytes >>= 1;
-				bytes &= bsize_mask;
-				if (bytes == 0)
-					bytes = sdp->sd_sb.sb_bsize;
-				goto retry;
-			}
-			goto out_qunlock;
-		}
-		max_bytes = bytes;
-		calc_max_reserv(ip, (len > max_chunk_size)? max_chunk_size: len,
-				&max_bytes, &data_blocks, &ind_blocks);
-
-		rblocks = RES_DINODE + ind_blocks + RES_STATFS + RES_QUOTA +
-			  RES_RG_HDR + gfs2_rg_blocks(ip);
-=======
 
 		/* We need to determine how many bytes we can actually
 		 * fallocate without exceeding quota or going over the
@@ -1941,16 +1325,11 @@ retry:
 
 		rblocks = RES_DINODE + ind_blocks + RES_STATFS + RES_QUOTA +
 			  RES_RG_HDR + gfs2_rg_blocks(ip, data_blocks + ind_blocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (gfs2_is_jdata(ip))
 			rblocks += data_blocks ? data_blocks : 1;
 
 		error = gfs2_trans_begin(sdp, rblocks,
-<<<<<<< HEAD
-					 PAGE_CACHE_SIZE/sdp->sd_sb.sb_bsize);
-=======
 					 PAGE_SIZE >> inode->i_blkbits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			goto out_trans_fail;
 
@@ -1964,14 +1343,6 @@ retry:
 		offset += max_bytes;
 		gfs2_inplace_release(ip);
 		gfs2_quota_unlock(ip);
-<<<<<<< HEAD
-		gfs2_qadata_put(ip);
-	}
-
-	if (error == 0)
-		error = generic_write_sync(file, pos, count);
-	goto out_unlock;
-=======
 	}
 
 	if (!(mode & FALLOC_FL_KEEP_SIZE) && (pos + count) > inode->i_size)
@@ -1983,45 +1354,11 @@ retry:
 		return vfs_fsync_range(file, pos, pos + count - 1,
 			       (file->f_flags & __O_SYNC) ? 0 : 1);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_trans_fail:
 	gfs2_inplace_release(ip);
 out_qunlock:
 	gfs2_quota_unlock(ip);
-<<<<<<< HEAD
-out_alloc_put:
-	gfs2_qadata_put(ip);
-out_unlock:
-	gfs2_glock_dq(&ip->i_gh);
-out_uninit:
-	gfs2_holder_uninit(&ip->i_gh);
-	return error;
-}
-
-#ifdef CONFIG_GFS2_FS_LOCKING_DLM
-
-/**
- * gfs2_setlease - acquire/release a file lease
- * @file: the file pointer
- * @arg: lease type
- * @fl: file lock
- *
- * We don't currently have a way to enforce a lease across the whole
- * cluster; until we do, disable leases (by just returning -EINVAL),
- * unless the administrator has requested purely local locking.
- *
- * Locking: called under lock_flocks
- *
- * Returns: errno
- */
-
-static int gfs2_setlease(struct file *file, long arg, struct file_lock **fl)
-{
-	return -EINVAL;
-}
-
-=======
 	return error;
 }
 
@@ -2088,7 +1425,6 @@ static ssize_t gfs2_file_splice_write(struct pipe_inode_info *pipe,
 
 #ifdef CONFIG_GFS2_FS_LOCKING_DLM
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * gfs2_lock - acquire/release a posix lock on a file
  * @file: the file pointer
@@ -2104,23 +1440,6 @@ static int gfs2_lock(struct file *file, int cmd, struct file_lock *fl)
 	struct gfs2_sbd *sdp = GFS2_SB(file->f_mapping->host);
 	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
 
-<<<<<<< HEAD
-	if (!(fl->fl_flags & FL_POSIX))
-		return -ENOLCK;
-	if (__mandatory_lock(&ip->i_inode) && fl->fl_type != F_UNLCK)
-		return -ENOLCK;
-
-	if (cmd == F_CANCELLK) {
-		/* Hack: */
-		cmd = F_SETLK;
-		fl->fl_type = F_UNLCK;
-	}
-	if (unlikely(test_bit(SDF_SHUTDOWN, &sdp->sd_flags)))
-		return -EIO;
-	if (IS_GETLK(cmd))
-		return dlm_posix_get(ls->ls_dlm, ip->i_no_addr, file, fl);
-	else if (fl->fl_type == F_UNLCK)
-=======
 	if (!(fl->c.flc_flags & FL_POSIX))
 		return -ENOLCK;
 	if (gfs2_withdrawing_or_withdrawn(sdp)) {
@@ -2133,14 +1452,11 @@ static int gfs2_lock(struct file *file, int cmd, struct file_lock *fl)
 	else if (IS_GETLK(cmd))
 		return dlm_posix_get(ls->ls_dlm, ip->i_no_addr, file, fl);
 	else if (lock_is_unlock(fl))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return dlm_posix_unlock(ls->ls_dlm, ip->i_no_addr, file, fl);
 	else
 		return dlm_posix_lock(ls->ls_dlm, ip->i_no_addr, file, cmd, fl);
 }
 
-<<<<<<< HEAD
-=======
 static void __flock_holder_uninit(struct file *file, struct gfs2_holder *fl_gh)
 {
 	struct gfs2_glock *gl = gfs2_glock_hold(fl_gh->gh_gl);
@@ -2156,31 +1472,10 @@ static void __flock_holder_uninit(struct file *file, struct gfs2_holder *fl_gh)
 	gfs2_glock_put(gl);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int do_flock(struct file *file, int cmd, struct file_lock *fl)
 {
 	struct gfs2_file *fp = file->private_data;
 	struct gfs2_holder *fl_gh = &fp->f_fl_gh;
-<<<<<<< HEAD
-	struct gfs2_inode *ip = GFS2_I(file->f_path.dentry->d_inode);
-	struct gfs2_glock *gl;
-	unsigned int state;
-	int flags;
-	int error = 0;
-
-	state = (fl->fl_type == F_WRLCK) ? LM_ST_EXCLUSIVE : LM_ST_SHARED;
-	flags = (IS_SETLKW(cmd) ? 0 : LM_FLAG_TRY) | GL_EXACT | GL_NOCACHE;
-
-	mutex_lock(&fp->f_fl_mutex);
-
-	gl = fl_gh->gh_gl;
-	if (gl) {
-		if (fl_gh->gh_state == state)
-			goto out;
-		flock_lock_file_wait(file,
-				     &(struct file_lock){.fl_type = F_UNLCK});
-		gfs2_glock_dq_wait(fl_gh);
-=======
 	struct gfs2_inode *ip = GFS2_I(file_inode(file));
 	struct gfs2_glock *gl;
 	unsigned int state;
@@ -2204,25 +1499,12 @@ static int do_flock(struct file *file, int cmd, struct file_lock *fl)
 		request.c.flc_flags = FL_FLOCK;
 		locks_lock_file_wait(file, &request);
 		gfs2_glock_dq(fl_gh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfs2_holder_reinit(state, flags, fl_gh);
 	} else {
 		error = gfs2_glock_get(GFS2_SB(&ip->i_inode), ip->i_no_addr,
 				       &gfs2_flock_glops, CREATE, &gl);
 		if (error)
 			goto out;
-<<<<<<< HEAD
-		gfs2_holder_init(gl, state, flags, fl_gh);
-		gfs2_glock_put(gl);
-	}
-	error = gfs2_glock_nq(fl_gh);
-	if (error) {
-		gfs2_holder_uninit(fl_gh);
-		if (error == GLR_TRYFAILED)
-			error = -EAGAIN;
-	} else {
-		error = flock_lock_file_wait(file, fl);
-=======
 		spin_lock(&file->f_lock);
 		gfs2_holder_init(gl, state, flags, fl_gh);
 		spin_unlock(&file->f_lock);
@@ -2242,7 +1524,6 @@ static int do_flock(struct file *file, int cmd, struct file_lock *fl)
 			error = -EAGAIN;
 	} else {
 		error = locks_lock_file_wait(file, fl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfs2_assert_warn(GFS2_SB(&ip->i_inode), !error);
 	}
 
@@ -2257,17 +1538,10 @@ static void do_unflock(struct file *file, struct file_lock *fl)
 	struct gfs2_holder *fl_gh = &fp->f_fl_gh;
 
 	mutex_lock(&fp->f_fl_mutex);
-<<<<<<< HEAD
-	flock_lock_file_wait(file, fl);
-	if (fl_gh->gh_gl) {
-		gfs2_glock_dq_wait(fl_gh);
-		gfs2_holder_uninit(fl_gh);
-=======
 	locks_lock_file_wait(file, fl);
 	if (gfs2_holder_initialized(fl_gh)) {
 		gfs2_glock_dq(fl_gh);
 		__flock_holder_uninit(file, fl_gh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&fp->f_fl_mutex);
 }
@@ -2283,19 +1557,10 @@ static void do_unflock(struct file *file, struct file_lock *fl)
 
 static int gfs2_flock(struct file *file, int cmd, struct file_lock *fl)
 {
-<<<<<<< HEAD
-	if (!(fl->fl_flags & FL_FLOCK))
-		return -ENOLCK;
-	if (fl->fl_type & LOCK_MAND)
-		return -EOPNOTSUPP;
-
-	if (fl->fl_type == F_UNLCK) {
-=======
 	if (!(fl->c.flc_flags & FL_FLOCK))
 		return -ENOLCK;
 
 	if (lock_is_unlock(fl)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		do_unflock(file, fl);
 		return 0;
 	} else {
@@ -2305,22 +1570,6 @@ static int gfs2_flock(struct file *file, int cmd, struct file_lock *fl)
 
 const struct file_operations gfs2_file_fops = {
 	.llseek		= gfs2_llseek,
-<<<<<<< HEAD
-	.read		= do_sync_read,
-	.aio_read	= generic_file_aio_read,
-	.write		= do_sync_write,
-	.aio_write	= gfs2_file_aio_write,
-	.unlocked_ioctl	= gfs2_ioctl,
-	.mmap		= gfs2_mmap,
-	.open		= gfs2_open,
-	.release	= gfs2_close,
-	.fsync		= gfs2_fsync,
-	.lock		= gfs2_lock,
-	.flock		= gfs2_flock,
-	.splice_read	= generic_file_splice_read,
-	.splice_write	= generic_file_splice_write,
-	.setlease	= gfs2_setlease,
-=======
 	.read_iter	= gfs2_file_read_iter,
 	.write_iter	= gfs2_file_write_iter,
 	.iopoll		= iocb_bio_iopoll,
@@ -2335,23 +1584,15 @@ const struct file_operations gfs2_file_fops = {
 	.splice_read	= copy_splice_read,
 	.splice_write	= gfs2_file_splice_write,
 	.setlease	= simple_nosetlease,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fallocate	= gfs2_fallocate,
 };
 
 const struct file_operations gfs2_dir_fops = {
-<<<<<<< HEAD
-	.readdir	= gfs2_readdir,
-	.unlocked_ioctl	= gfs2_ioctl,
-	.open		= gfs2_open,
-	.release	= gfs2_close,
-=======
 	.iterate_shared	= gfs2_readdir,
 	.unlocked_ioctl	= gfs2_ioctl,
 	.compat_ioctl	= gfs2_compat_ioctl,
 	.open		= gfs2_open,
 	.release	= gfs2_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fsync		= gfs2_fsync,
 	.lock		= gfs2_lock,
 	.flock		= gfs2_flock,
@@ -2362,19 +1603,6 @@ const struct file_operations gfs2_dir_fops = {
 
 const struct file_operations gfs2_file_fops_nolock = {
 	.llseek		= gfs2_llseek,
-<<<<<<< HEAD
-	.read		= do_sync_read,
-	.aio_read	= generic_file_aio_read,
-	.write		= do_sync_write,
-	.aio_write	= gfs2_file_aio_write,
-	.unlocked_ioctl	= gfs2_ioctl,
-	.mmap		= gfs2_mmap,
-	.open		= gfs2_open,
-	.release	= gfs2_close,
-	.fsync		= gfs2_fsync,
-	.splice_read	= generic_file_splice_read,
-	.splice_write	= generic_file_splice_write,
-=======
 	.read_iter	= gfs2_file_read_iter,
 	.write_iter	= gfs2_file_write_iter,
 	.iopoll		= iocb_bio_iopoll,
@@ -2386,24 +1614,16 @@ const struct file_operations gfs2_file_fops_nolock = {
 	.fsync		= gfs2_fsync,
 	.splice_read	= copy_splice_read,
 	.splice_write	= gfs2_file_splice_write,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setlease	= generic_setlease,
 	.fallocate	= gfs2_fallocate,
 };
 
 const struct file_operations gfs2_dir_fops_nolock = {
-<<<<<<< HEAD
-	.readdir	= gfs2_readdir,
-	.unlocked_ioctl	= gfs2_ioctl,
-	.open		= gfs2_open,
-	.release	= gfs2_close,
-=======
 	.iterate_shared	= gfs2_readdir,
 	.unlocked_ioctl	= gfs2_ioctl,
 	.compat_ioctl	= gfs2_compat_ioctl,
 	.open		= gfs2_open,
 	.release	= gfs2_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fsync		= gfs2_fsync,
 	.llseek		= default_llseek,
 };

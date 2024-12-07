@@ -1,33 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Symmetric key ciphers.
  * 
  * Copyright (c) 2007 Herbert Xu <herbert@gondor.apana.org.au>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) 
- * any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _CRYPTO_INTERNAL_SKCIPHER_H
 #define _CRYPTO_INTERNAL_SKCIPHER_H
 
 #include <crypto/algapi.h>
-<<<<<<< HEAD
-#include <crypto/skcipher.h>
-#include <linux/types.h>
-
-struct rtattr;
-
-=======
 #include <crypto/internal/cipher.h>
 #include <crypto/skcipher.h>
 #include <linux/list.h>
@@ -66,25 +47,10 @@ struct lskcipher_instance {
 	};
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct crypto_skcipher_spawn {
 	struct crypto_spawn base;
 };
 
-<<<<<<< HEAD
-extern const struct crypto_type crypto_givcipher_type;
-
-static inline void crypto_set_skcipher_spawn(
-	struct crypto_skcipher_spawn *spawn, struct crypto_instance *inst)
-{
-	crypto_set_spawn(&spawn->base, inst);
-}
-
-int crypto_grab_skcipher(struct crypto_skcipher_spawn *spawn, const char *name,
-			 u32 type, u32 mask);
-
-struct crypto_alg *crypto_lookup_skcipher(const char *name, u32 type, u32 mask);
-=======
 struct crypto_lskcipher_spawn {
 	struct crypto_spawn base;
 };
@@ -171,78 +137,12 @@ int crypto_grab_skcipher(struct crypto_skcipher_spawn *spawn,
 int crypto_grab_lskcipher(struct crypto_lskcipher_spawn *spawn,
 			  struct crypto_instance *inst,
 			  const char *name, u32 type, u32 mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void crypto_drop_skcipher(struct crypto_skcipher_spawn *spawn)
 {
 	crypto_drop_spawn(&spawn->base);
 }
 
-<<<<<<< HEAD
-static inline struct crypto_alg *crypto_skcipher_spawn_alg(
-	struct crypto_skcipher_spawn *spawn)
-{
-	return spawn->base.alg;
-}
-
-static inline struct crypto_ablkcipher *crypto_spawn_skcipher(
-	struct crypto_skcipher_spawn *spawn)
-{
-	return __crypto_ablkcipher_cast(
-		crypto_spawn_tfm(&spawn->base, crypto_skcipher_type(0),
-				 crypto_skcipher_mask(0)));
-}
-
-int skcipher_null_givencrypt(struct skcipher_givcrypt_request *req);
-int skcipher_null_givdecrypt(struct skcipher_givcrypt_request *req);
-const char *crypto_default_geniv(const struct crypto_alg *alg);
-
-struct crypto_instance *skcipher_geniv_alloc(struct crypto_template *tmpl,
-					     struct rtattr **tb, u32 type,
-					     u32 mask);
-void skcipher_geniv_free(struct crypto_instance *inst);
-int skcipher_geniv_init(struct crypto_tfm *tfm);
-void skcipher_geniv_exit(struct crypto_tfm *tfm);
-
-static inline struct crypto_ablkcipher *skcipher_geniv_cipher(
-	struct crypto_ablkcipher *geniv)
-{
-	return crypto_ablkcipher_crt(geniv)->base;
-}
-
-static inline int skcipher_enqueue_givcrypt(
-	struct crypto_queue *queue, struct skcipher_givcrypt_request *request)
-{
-	return ablkcipher_enqueue_request(queue, &request->creq);
-}
-
-static inline struct skcipher_givcrypt_request *skcipher_dequeue_givcrypt(
-	struct crypto_queue *queue)
-{
-	return __crypto_dequeue_request(
-		queue, offsetof(struct skcipher_givcrypt_request, creq.base));
-}
-
-static inline void *skcipher_givcrypt_reqctx(
-	struct skcipher_givcrypt_request *req)
-{
-	return ablkcipher_request_ctx(&req->creq);
-}
-
-static inline void ablkcipher_request_complete(struct ablkcipher_request *req,
-					       int err)
-{
-	req->base.complete(&req->base, err);
-}
-
-static inline void skcipher_givcrypt_complete(
-	struct skcipher_givcrypt_request *req, int err)
-{
-	ablkcipher_request_complete(&req->creq, err);
-}
-
-static inline u32 ablkcipher_request_flags(struct ablkcipher_request *req)
-=======
 static inline void crypto_drop_lskcipher(struct crypto_lskcipher_spawn *spawn)
 {
 	crypto_drop_spawn(&spawn->base);
@@ -353,13 +253,10 @@ static inline void *skcipher_request_ctx_dma(struct skcipher_request *req)
 }
 
 static inline u32 skcipher_request_flags(struct skcipher_request *req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return req->base.flags;
 }
 
-<<<<<<< HEAD
-=======
 /* Helpers for simple block cipher modes of operation */
 struct skcipher_ctx_simple {
 	struct crypto_cipher *cipher;	/* underlying block cipher */
@@ -402,6 +299,5 @@ static inline struct lskcipher_alg *lskcipher_ialg_simple(
 	return crypto_lskcipher_spawn_alg(spawn);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _CRYPTO_INTERNAL_SKCIPHER_H */
 

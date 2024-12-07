@@ -1,57 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -66,15 +21,9 @@ ACPI_MODULE_NAME("exdump")
  */
 #if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 /* Local prototypes */
-<<<<<<< HEAD
-static void acpi_ex_out_string(char *title, char *value);
-
-static void acpi_ex_out_pointer(char *title, void *value);
-=======
 static void acpi_ex_out_string(const char *title, const char *value);
 
 static void acpi_ex_out_pointer(const char *title, const void *value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 acpi_ex_dump_object(union acpi_operand_object *obj_desc,
@@ -111,16 +60,6 @@ static struct acpi_exdump_info acpi_ex_dump_buffer[5] = {
 	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_buffer), NULL},
 	{ACPI_EXD_UINT32, ACPI_EXD_OFFSET(buffer.length), "Length"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(buffer.pointer), "Pointer"},
-<<<<<<< HEAD
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(buffer.node), "Parent Node"},
-	{ACPI_EXD_BUFFER, 0, NULL}
-};
-
-static struct acpi_exdump_info acpi_ex_dump_package[5] = {
-	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_package), NULL},
-	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(package.flags), "Flags"},
-	{ACPI_EXD_UINT32, ACPI_EXD_OFFSET(package.count), "Elements"},
-=======
 	{ACPI_EXD_NODE, ACPI_EXD_OFFSET(buffer.node), "Parent Node"},
 	{ACPI_EXD_BUFFER, 0, NULL}
 };
@@ -130,26 +69,17 @@ static struct acpi_exdump_info acpi_ex_dump_package[6] = {
 	{ACPI_EXD_NODE, ACPI_EXD_OFFSET(package.node), "Parent Node"},
 	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(package.flags), "Flags"},
 	{ACPI_EXD_UINT32, ACPI_EXD_OFFSET(package.count), "Element Count"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(package.elements), "Element List"},
 	{ACPI_EXD_PACKAGE, 0, NULL}
 };
 
 static struct acpi_exdump_info acpi_ex_dump_device[4] = {
 	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_device), NULL},
-<<<<<<< HEAD
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(device.handler), "Handler"},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(device.system_notify),
-	 "System Notify"},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(device.device_notify),
-	 "Device Notify"}
-=======
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(device.notify_list[0]),
 	 "System Notify"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(device.notify_list[1]),
 	 "Device Notify"},
 	{ACPI_EXD_HDLR_LIST, ACPI_EXD_OFFSET(device.handler), "Handler"}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct acpi_exdump_info acpi_ex_dump_event[2] = {
@@ -164,46 +94,23 @@ static struct acpi_exdump_info acpi_ex_dump_method[9] = {
 	 "Parameter Count"},
 	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(method.sync_level), "Sync Level"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(method.mutex), "Mutex"},
-<<<<<<< HEAD
-	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(method.owner_id), "Owner Id"},
-=======
 	{ACPI_EXD_UINT16, ACPI_EXD_OFFSET(method.owner_id), "Owner Id"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(method.thread_count), "Thread Count"},
 	{ACPI_EXD_UINT32, ACPI_EXD_OFFSET(method.aml_length), "Aml Length"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(method.aml_start), "Aml Start"}
 };
 
-<<<<<<< HEAD
-static struct acpi_exdump_info acpi_ex_dump_mutex[5] = {
-	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_mutex), NULL},
-	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(mutex.sync_level), "Sync Level"},
-=======
 static struct acpi_exdump_info acpi_ex_dump_mutex[6] = {
 	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_mutex), NULL},
 	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(mutex.sync_level), "Sync Level"},
 	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(mutex.original_sync_level),
 	 "Original Sync Level"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(mutex.owner_thread), "Owner Thread"},
 	{ACPI_EXD_UINT16, ACPI_EXD_OFFSET(mutex.acquisition_depth),
 	 "Acquire Depth"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(mutex.os_mutex), "OsMutex"}
 };
 
-<<<<<<< HEAD
-static struct acpi_exdump_info acpi_ex_dump_region[7] = {
-	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_region), NULL},
-	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(region.space_id), "Space Id"},
-	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(region.flags), "Flags"},
-	{ACPI_EXD_ADDRESS, ACPI_EXD_OFFSET(region.address), "Address"},
-	{ACPI_EXD_UINT32, ACPI_EXD_OFFSET(region.length), "Length"},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(region.handler), "Handler"},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(region.next), "Next"}
-};
-
-static struct acpi_exdump_info acpi_ex_dump_power[5] = {
-=======
 static struct acpi_exdump_info acpi_ex_dump_region[8] = {
 	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_region), NULL},
 	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(region.space_id), "Space Id"},
@@ -216,24 +123,16 @@ static struct acpi_exdump_info acpi_ex_dump_region[8] = {
 };
 
 static struct acpi_exdump_info acpi_ex_dump_power[6] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_power), NULL},
 	{ACPI_EXD_UINT32, ACPI_EXD_OFFSET(power_resource.system_level),
 	 "System Level"},
 	{ACPI_EXD_UINT32, ACPI_EXD_OFFSET(power_resource.resource_order),
 	 "Resource Order"},
-<<<<<<< HEAD
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(power_resource.system_notify),
-	 "System Notify"},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(power_resource.device_notify),
-	 "Device Notify"}
-=======
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(power_resource.notify_list[0]),
 	 "System Notify"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(power_resource.notify_list[1]),
 	 "Device Notify"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(power_resource.handler), "Handler"}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct acpi_exdump_info acpi_ex_dump_processor[7] = {
@@ -241,30 +140,18 @@ static struct acpi_exdump_info acpi_ex_dump_processor[7] = {
 	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(processor.proc_id), "Processor ID"},
 	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(processor.length), "Length"},
 	{ACPI_EXD_ADDRESS, ACPI_EXD_OFFSET(processor.address), "Address"},
-<<<<<<< HEAD
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(processor.system_notify),
-	 "System Notify"},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(processor.device_notify),
-=======
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(processor.notify_list[0]),
 	 "System Notify"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(processor.notify_list[1]),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 "Device Notify"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(processor.handler), "Handler"}
 };
 
 static struct acpi_exdump_info acpi_ex_dump_thermal[4] = {
 	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_thermal), NULL},
-<<<<<<< HEAD
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(thermal_zone.system_notify),
-	 "System Notify"},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(thermal_zone.device_notify),
-=======
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(thermal_zone.notify_list[0]),
 	 "System Notify"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(thermal_zone.notify_list[1]),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 "Device Notify"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(thermal_zone.handler), "Handler"}
 };
@@ -303,25 +190,16 @@ static struct acpi_exdump_info acpi_ex_dump_index_field[5] = {
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(index_field.data_obj), "Data Object"}
 };
 
-<<<<<<< HEAD
-static struct acpi_exdump_info acpi_ex_dump_reference[8] = {
-=======
 static struct acpi_exdump_info acpi_ex_dump_reference[9] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_reference), NULL},
 	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(reference.class), "Class"},
 	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(reference.target_type), "Target Type"},
 	{ACPI_EXD_UINT32, ACPI_EXD_OFFSET(reference.value), "Value"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(reference.object), "Object Desc"},
-<<<<<<< HEAD
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(reference.node), "Node"},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(reference.where), "Where"},
-=======
 	{ACPI_EXD_NODE, ACPI_EXD_OFFSET(reference.node), "Node"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(reference.where), "Where"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(reference.index_pointer),
 	 "Index Pointer"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_EXD_REFERENCE, 0, NULL}
 };
 
@@ -329,19 +207,6 @@ static struct acpi_exdump_info acpi_ex_dump_address_handler[6] = {
 	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_address_handler),
 	 NULL},
 	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(address_space.space_id), "Space Id"},
-<<<<<<< HEAD
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(address_space.next), "Next"},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(address_space.region_list),
-	 "Region List"},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(address_space.node), "Node"},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(address_space.context), "Context"}
-};
-
-static struct acpi_exdump_info acpi_ex_dump_notify[3] = {
-	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_notify), NULL},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(notify.node), "Node"},
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(notify.context), "Context"}
-=======
 	{ACPI_EXD_HDLR_LIST, ACPI_EXD_OFFSET(address_space.next), "Next"},
 	{ACPI_EXD_RGN_LIST, ACPI_EXD_OFFSET(address_space.region_list),
 	 "Region List"},
@@ -374,26 +239,17 @@ static struct acpi_exdump_info acpi_ex_dump_data[3] = {
 	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_data), NULL},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(data.handler), "Handler"},
 	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(data.pointer), "Raw Data"}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Miscellaneous tables */
 
-<<<<<<< HEAD
-static struct acpi_exdump_info acpi_ex_dump_common[4] = {
-=======
 static struct acpi_exdump_info acpi_ex_dump_common[5] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_common), NULL},
 	{ACPI_EXD_TYPE, 0, NULL},
 	{ACPI_EXD_UINT16, ACPI_EXD_OFFSET(common.reference_count),
 	 "Reference Count"},
-<<<<<<< HEAD
-	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(common.flags), "Flags"}
-=======
 	{ACPI_EXD_UINT8, ACPI_EXD_OFFSET(common.flags), "Flags"},
 	{ACPI_EXD_LIST, ACPI_EXD_OFFSET(common.next_object), "Object List"}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct acpi_exdump_info acpi_ex_dump_field_common[7] = {
@@ -408,17 +264,6 @@ static struct acpi_exdump_info acpi_ex_dump_field_common[7] = {
 	 "Field Bit Offset"},
 	{ACPI_EXD_UINT32, ACPI_EXD_OFFSET(common_field.base_byte_offset),
 	 "Base Byte Offset"},
-<<<<<<< HEAD
-	{ACPI_EXD_POINTER, ACPI_EXD_OFFSET(common_field.node), "Parent Node"}
-};
-
-static struct acpi_exdump_info acpi_ex_dump_node[5] = {
-	{ACPI_EXD_INIT, ACPI_EXD_TABLE_SIZE(acpi_ex_dump_node), NULL},
-	{ACPI_EXD_UINT8, ACPI_EXD_NSOFFSET(flags), "Flags"},
-	{ACPI_EXD_UINT8, ACPI_EXD_NSOFFSET(owner_id), "Owner Id"},
-	{ACPI_EXD_POINTER, ACPI_EXD_NSOFFSET(child), "Child List"},
-	{ACPI_EXD_POINTER, ACPI_EXD_NSOFFSET(peer), "Next Peer"}
-=======
 	{ACPI_EXD_NODE, ACPI_EXD_OFFSET(common_field.node), "Parent Node"}
 };
 
@@ -430,7 +275,6 @@ static struct acpi_exdump_info acpi_ex_dump_node[7] = {
 	{ACPI_EXD_NODE, ACPI_EXD_NSOFFSET(parent), "Parent"},
 	{ACPI_EXD_NODE, ACPI_EXD_NSOFFSET(child), "Child"},
 	{ACPI_EXD_NODE, ACPI_EXD_NSOFFSET(peer), "Peer"}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Dispatch table, indexed by object type */
@@ -463,13 +307,9 @@ static struct acpi_exdump_info *acpi_ex_dump_info[] = {
 	acpi_ex_dump_address_handler,
 	NULL,
 	NULL,
-<<<<<<< HEAD
-	NULL
-=======
 	NULL,
 	acpi_ex_dump_extra,
 	acpi_ex_dump_data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*******************************************************************************
@@ -477,11 +317,7 @@ static struct acpi_exdump_info *acpi_ex_dump_info[] = {
  * FUNCTION:    acpi_ex_dump_object
  *
  * PARAMETERS:  obj_desc            - Descriptor to dump
-<<<<<<< HEAD
- *              Info                - Info table corresponding to this object
-=======
  *              info                - Info table corresponding to this object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                    type
  *
  * RETURN:      None
@@ -495,17 +331,12 @@ acpi_ex_dump_object(union acpi_operand_object *obj_desc,
 		    struct acpi_exdump_info *info)
 {
 	u8 *target;
-<<<<<<< HEAD
-	char *name;
-	u8 count;
-=======
 	const char *name;
 	u8 count;
 	union acpi_operand_object *start;
 	union acpi_operand_object *data = NULL;
 	union acpi_operand_object *next;
 	struct acpi_namespace_node *node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!info) {
 		acpi_os_printf
@@ -519,35 +350,23 @@ acpi_ex_dump_object(union acpi_operand_object *obj_desc,
 	count = info->offset;
 
 	while (count) {
-<<<<<<< HEAD
-=======
 		if (!obj_desc) {
 			return;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		target = ACPI_ADD_PTR(u8, obj_desc, info->offset);
 		name = info->name;
 
 		switch (info->opcode) {
 		case ACPI_EXD_INIT:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_EXD_TYPE:
 
-<<<<<<< HEAD
-			acpi_ex_out_string("Type",
-					   acpi_ut_get_object_type_name
-					   (obj_desc));
-=======
 			acpi_os_printf("%20s : %2.2X [%s]\n", "Type",
 				       obj_desc->common.type,
 				       acpi_ut_get_object_type_name(obj_desc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_EXD_UINT8:
@@ -610,14 +429,6 @@ acpi_ex_dump_object(union acpi_operand_object *obj_desc,
 		case ACPI_EXD_REFERENCE:
 
 			acpi_ex_out_string("Class Name",
-<<<<<<< HEAD
-					   ACPI_CAST_PTR(char,
-							 acpi_ut_get_reference_name
-							 (obj_desc)));
-			acpi_ex_dump_reference_obj(obj_desc);
-			break;
-
-=======
 					   acpi_ut_get_reference_name
 					   (obj_desc));
 			acpi_ex_dump_reference_obj(obj_desc);
@@ -742,7 +553,6 @@ acpi_ex_dump_object(union acpi_operand_object *obj_desc,
 			acpi_os_printf("\n");
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 
 			acpi_os_printf("**** Invalid table opcode [%X] ****\n",
@@ -760,11 +570,7 @@ acpi_ex_dump_object(union acpi_operand_object *obj_desc,
  * FUNCTION:    acpi_ex_dump_operand
  *
  * PARAMETERS:  *obj_desc       - Pointer to entry to be dumped
-<<<<<<< HEAD
- *              Depth           - Current nesting depth
-=======
  *              depth           - Current nesting depth
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -777,18 +583,11 @@ void acpi_ex_dump_operand(union acpi_operand_object *obj_desc, u32 depth)
 	u32 length;
 	u32 index;
 
-<<<<<<< HEAD
-	ACPI_FUNCTION_NAME(ex_dump_operand)
-
-	    if (!((ACPI_LV_EXEC & acpi_dbg_level)
-		  && (_COMPONENT & acpi_dbg_layer))) {
-=======
 	ACPI_FUNCTION_NAME(ex_dump_operand);
 
 	/* Check if debug output enabled */
 
 	if (!ACPI_IS_DEBUG_ENABLED(ACPI_LV_EXEC, _COMPONENT)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -819,19 +618,12 @@ void acpi_ex_dump_operand(union acpi_operand_object *obj_desc, u32 depth)
 	/* obj_desc is a valid object */
 
 	if (depth > 0) {
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "%*s[%u] %p ",
-				  depth, " ", depth, obj_desc));
-	} else {
-		ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "%p ", obj_desc));
-=======
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "%*s[%u] %p Refs=%u ",
 				  depth, " ", depth, obj_desc,
 				  obj_desc->common.reference_count));
 	} else {
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "%p Refs=%u ",
 				  obj_desc, obj_desc->common.reference_count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Decode object type */
@@ -873,16 +665,11 @@ void acpi_ex_dump_operand(union acpi_operand_object *obj_desc, u32 depth)
 
 		case ACPI_REFCLASS_NAME:
 
-<<<<<<< HEAD
-			acpi_os_printf("- [%4.4s]\n",
-				       obj_desc->reference.node->name.ascii);
-=======
 			acpi_ut_repair_name(obj_desc->reference.node->name.
 					    ascii);
 			acpi_os_printf("- [%4.4s] (Node %p)\n",
 				       obj_desc->reference.node->name.ascii,
 				       obj_desc->reference.node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_REFCLASS_ARG:
@@ -961,13 +748,8 @@ void acpi_ex_dump_operand(union acpi_operand_object *obj_desc, u32 depth)
 			acpi_os_printf("\n");
 		} else {
 			acpi_os_printf(" base %8.8X%8.8X Length %X\n",
-<<<<<<< HEAD
-				       ACPI_FORMAT_NATIVE_UINT(obj_desc->region.
-							       address),
-=======
 				       ACPI_FORMAT_UINT64(obj_desc->region.
 							  address),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       obj_desc->region.length);
 		}
 		break;
@@ -1063,10 +845,7 @@ void acpi_ex_dump_operand(union acpi_operand_object *obj_desc, u32 depth)
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Unknown Type */
 
 		acpi_os_printf("Unknown Type %X\n", obj_desc->common.type);
@@ -1080,11 +859,7 @@ void acpi_ex_dump_operand(union acpi_operand_object *obj_desc, u32 depth)
  *
  * FUNCTION:    acpi_ex_dump_operands
  *
-<<<<<<< HEAD
- * PARAMETERS:	Operands	    - A list of Operand objects
-=======
  * PARAMETERS:  operands            - A list of Operand objects
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		opcode_name	    - AML opcode name
  *		num_operands	    - Operand count for this opcode
  *
@@ -1096,11 +871,7 @@ void
 acpi_ex_dump_operands(union acpi_operand_object **operands,
 		      const char *opcode_name, u32 num_operands)
 {
-<<<<<<< HEAD
-	ACPI_FUNCTION_NAME(ex_dump_operands);
-=======
 	ACPI_FUNCTION_TRACE(ex_dump_operands);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!opcode_name) {
 		opcode_name = "UNKNOWN";
@@ -1124,47 +895,28 @@ acpi_ex_dump_operands(union acpi_operand_object **operands,
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 			  "**** End operand dump for [%s]\n", opcode_name));
-<<<<<<< HEAD
-	return;
-=======
 	return_VOID;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ex_out* functions
  *
-<<<<<<< HEAD
- * PARAMETERS:  Title               - Descriptive text
- *              Value               - Value to be displayed
- *
- * DESCRIPTION: Object dump output formatting functions.  These functions
-=======
  * PARAMETERS:  title               - Descriptive text
  *              value               - Value to be displayed
  *
  * DESCRIPTION: Object dump output formatting functions. These functions
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              reduce the number of format strings required and keeps them
  *              all in one place for easy modification.
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-static void acpi_ex_out_string(char *title, char *value)
-=======
 static void acpi_ex_out_string(const char *title, const char *value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_os_printf("%20s : %s\n", title, value);
 }
 
-<<<<<<< HEAD
-static void acpi_ex_out_pointer(char *title, void *value)
-=======
 static void acpi_ex_out_pointer(const char *title, const void *value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_os_printf("%20s : %p\n", title, value);
 }
@@ -1173,13 +925,8 @@ static void acpi_ex_out_pointer(const char *title, const void *value)
  *
  * FUNCTION:    acpi_ex_dump_namespace_node
  *
-<<<<<<< HEAD
- * PARAMETERS:  Node                - Descriptor to dump
- *              Flags               - Force display if TRUE
-=======
  * PARAMETERS:  node                - Descriptor to dump
  *              flags               - Force display if TRUE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * DESCRIPTION: Dumps the members of the given.Node
  *
@@ -1191,29 +938,17 @@ void acpi_ex_dump_namespace_node(struct acpi_namespace_node *node, u32 flags)
 	ACPI_FUNCTION_ENTRY();
 
 	if (!flags) {
-<<<<<<< HEAD
-		if (!((ACPI_LV_OBJECTS & acpi_dbg_level)
-		      && (_COMPONENT & acpi_dbg_layer))) {
-=======
 
 		/* Check if debug output enabled */
 
 		if (!ACPI_IS_DEBUG_ENABLED(ACPI_LV_OBJECTS, _COMPONENT)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
 
 	acpi_os_printf("%20s : %4.4s\n", "Name", acpi_ut_get_node_name(node));
-<<<<<<< HEAD
-	acpi_ex_out_string("Type", acpi_ut_get_type_name(node->type));
-	acpi_ex_out_pointer("Attached Object",
-			    acpi_ns_get_attached_object(node));
-	acpi_ex_out_pointer("Parent", node->parent);
-=======
 	acpi_os_printf("%20s : %2.2X [%s]\n", "Type",
 		       node->type, acpi_ut_get_type_name(node->type));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acpi_ex_dump_object(ACPI_CAST_PTR(union acpi_operand_object, node),
 			    acpi_ex_dump_node);
@@ -1223,11 +958,7 @@ void acpi_ex_dump_namespace_node(struct acpi_namespace_node *node, u32 flags)
  *
  * FUNCTION:    acpi_ex_dump_reference_obj
  *
-<<<<<<< HEAD
- * PARAMETERS:  Object              - Descriptor to dump
-=======
  * PARAMETERS:  object              - Descriptor to dump
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * DESCRIPTION: Dumps a reference object
  *
@@ -1243,15 +974,6 @@ static void acpi_ex_dump_reference_obj(union acpi_operand_object *obj_desc)
 	if (obj_desc->reference.class == ACPI_REFCLASS_NAME) {
 		acpi_os_printf(" %p ", obj_desc->reference.node);
 
-<<<<<<< HEAD
-		status =
-		    acpi_ns_handle_to_pathname(obj_desc->reference.node,
-					       &ret_buf);
-		if (ACPI_FAILURE(status)) {
-			acpi_os_printf(" Could not convert name to pathname\n");
-		} else {
-			acpi_os_printf("%s\n", (char *)ret_buf.pointer);
-=======
 		status = acpi_ns_handle_to_pathname(obj_desc->reference.node,
 						    &ret_buf, TRUE);
 		if (ACPI_FAILURE(status)) {
@@ -1264,28 +986,18 @@ static void acpi_ex_dump_reference_obj(union acpi_operand_object *obj_desc)
 							     reference.node->
 							     type),
 				       (char *)ret_buf.pointer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ACPI_FREE(ret_buf.pointer);
 		}
 	} else if (obj_desc->reference.object) {
 		if (ACPI_GET_DESCRIPTOR_TYPE(obj_desc) ==
 		    ACPI_DESC_TYPE_OPERAND) {
-<<<<<<< HEAD
-			acpi_os_printf(" Target: %p",
-=======
 			acpi_os_printf("%22s %p", "Target :",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       obj_desc->reference.object);
 			if (obj_desc->reference.class == ACPI_REFCLASS_TABLE) {
 				acpi_os_printf(" Table Index: %X\n",
 					       obj_desc->reference.value);
 			} else {
-<<<<<<< HEAD
-				acpi_os_printf(" Target: %p [%s]\n",
-					       obj_desc->reference.object,
-=======
 				acpi_os_printf(" [%s]\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       acpi_ut_get_type_name(((union
 								       acpi_operand_object
 								       *)
@@ -1307,13 +1019,8 @@ static void acpi_ex_dump_reference_obj(union acpi_operand_object *obj_desc)
  * FUNCTION:    acpi_ex_dump_package_obj
  *
  * PARAMETERS:  obj_desc            - Descriptor to dump
-<<<<<<< HEAD
- *              Level               - Indentation Level
- *              Index               - Package index for this object
-=======
  *              level               - Indentation Level
  *              index               - Package index for this object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * DESCRIPTION: Dumps the elements of the package
  *
@@ -1356,13 +1063,7 @@ acpi_ex_dump_package_obj(union acpi_operand_object *obj_desc,
 	case ACPI_TYPE_STRING:
 
 		acpi_os_printf("[String] Value: ");
-<<<<<<< HEAD
-		for (i = 0; i < obj_desc->string.length; i++) {
-			acpi_os_printf("%c", obj_desc->string.pointer[i]);
-		}
-=======
 		acpi_ut_print_string(obj_desc->string.pointer, ACPI_UINT8_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acpi_os_printf("\n");
 		break;
 
@@ -1371,18 +1072,11 @@ acpi_ex_dump_package_obj(union acpi_operand_object *obj_desc,
 		acpi_os_printf("[Buffer] Length %.2X = ",
 			       obj_desc->buffer.length);
 		if (obj_desc->buffer.length) {
-<<<<<<< HEAD
-			acpi_ut_dump_buffer(ACPI_CAST_PTR
-					    (u8, obj_desc->buffer.pointer),
-					    obj_desc->buffer.length,
-					    DB_DWORD_DISPLAY, _COMPONENT);
-=======
 			acpi_ut_debug_dump_buffer(ACPI_CAST_PTR
 						  (u8,
 						   obj_desc->buffer.pointer),
 						  obj_desc->buffer.length,
 						  DB_DWORD_DISPLAY, _COMPONENT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			acpi_os_printf("\n");
 		}
@@ -1401,26 +1095,16 @@ acpi_ex_dump_package_obj(union acpi_operand_object *obj_desc,
 
 	case ACPI_TYPE_LOCAL_REFERENCE:
 
-<<<<<<< HEAD
-		acpi_os_printf("[Object Reference] Type [%s] %2.2X",
-			       acpi_ut_get_reference_name(obj_desc),
-			       obj_desc->reference.class);
-=======
 		acpi_os_printf("[Object Reference] Class [%s]",
 			       acpi_ut_get_reference_name(obj_desc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acpi_ex_dump_reference_obj(obj_desc);
 		break;
 
 	default:
 
-<<<<<<< HEAD
-		acpi_os_printf("[Unknown Type] %X\n", obj_desc->common.type);
-=======
 		acpi_os_printf("[%s] Type: %2.2X\n",
 			       acpi_ut_get_type_name(obj_desc->common.type),
 			       obj_desc->common.type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -1430,11 +1114,7 @@ acpi_ex_dump_package_obj(union acpi_operand_object *obj_desc,
  * FUNCTION:    acpi_ex_dump_object_descriptor
  *
  * PARAMETERS:  obj_desc            - Descriptor to dump
-<<<<<<< HEAD
- *              Flags               - Force display if TRUE
-=======
  *              flags               - Force display if TRUE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * DESCRIPTION: Dumps the members of the object descriptor given.
  *
@@ -1450,15 +1130,10 @@ acpi_ex_dump_object_descriptor(union acpi_operand_object *obj_desc, u32 flags)
 	}
 
 	if (!flags) {
-<<<<<<< HEAD
-		if (!((ACPI_LV_OBJECTS & acpi_dbg_level)
-		      && (_COMPONENT & acpi_dbg_layer))) {
-=======
 
 		/* Check if debug output enabled */
 
 		if (!ACPI_IS_DEBUG_ENABLED(ACPI_LV_OBJECTS, _COMPONENT)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return_VOID;
 		}
 	}
@@ -1467,25 +1142,6 @@ acpi_ex_dump_object_descriptor(union acpi_operand_object *obj_desc, u32 flags)
 		acpi_ex_dump_namespace_node((struct acpi_namespace_node *)
 					    obj_desc, flags);
 
-<<<<<<< HEAD
-		acpi_os_printf("\nAttached Object (%p):\n",
-			       ((struct acpi_namespace_node *)obj_desc)->
-			       object);
-
-		acpi_ex_dump_object_descriptor(((struct acpi_namespace_node *)
-						obj_desc)->object, flags);
-		return_VOID;
-	}
-
-	if (ACPI_GET_DESCRIPTOR_TYPE(obj_desc) != ACPI_DESC_TYPE_OPERAND) {
-		acpi_os_printf
-		    ("ExDumpObjectDescriptor: %p is not an ACPI operand object: [%s]\n",
-		     obj_desc, acpi_ut_get_descriptor_name(obj_desc));
-		return_VOID;
-	}
-
-	if (obj_desc->common.type > ACPI_TYPE_NS_NODE_MAX) {
-=======
 		obj_desc = ((struct acpi_namespace_node *)obj_desc)->object;
 		if (!obj_desc) {
 			return_VOID;
@@ -1517,7 +1173,6 @@ acpi_ex_dump_object_descriptor(union acpi_operand_object *obj_desc, u32 flags)
 dump_object:
 
 	if (!obj_desc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_VOID;
 	}
 
@@ -1528,8 +1183,6 @@ dump_object:
 	/* Object-specific fields */
 
 	acpi_ex_dump_object(obj_desc, acpi_ex_dump_info[obj_desc->common.type]);
-<<<<<<< HEAD
-=======
 
 	if (obj_desc->common.type == ACPI_TYPE_REGION) {
 		obj_desc = obj_desc->common.next_object;
@@ -1546,7 +1199,6 @@ dump_object:
 				    acpi_ex_dump_info[obj_desc->common.type]);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_VOID;
 }
 

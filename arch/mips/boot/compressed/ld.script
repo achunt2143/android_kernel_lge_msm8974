@@ -8,12 +8,9 @@
 
 OUTPUT_ARCH(mips)
 ENTRY(start)
-<<<<<<< HEAD
-=======
 PHDRS {
 	text PT_LOAD FLAGS(7); /* RWX */
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SECTIONS
 {
 	/* Text and read-only data */
@@ -21,11 +18,7 @@ SECTIONS
 	.text : {
 		*(.text)
 		*(.rodata)
-<<<<<<< HEAD
-	}
-=======
 	}: text
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* End of text section */
 
 	/* Writable data */
@@ -36,10 +29,6 @@ SECTIONS
 		*(.image)
 		__image_end = .;
 		CONSTRUCTORS
-<<<<<<< HEAD
-	}
-	. = ALIGN(16);
-=======
 		. = ALIGN(16);
 	}
 
@@ -49,7 +38,6 @@ SECTIONS
 		. += 0x100000;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_edata = .;
 	/* End of data section */
 

@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- * Released under the terms of the GNU GPL v2.0.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
@@ -12,7 +5,6 @@
 
 #include <ctype.h>
 #include <errno.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,17 +13,11 @@
 
 #define DEBUG_EXPR	0
 
-<<<<<<< HEAD
-struct expr *expr_alloc_symbol(struct symbol *sym)
-{
-	struct expr *e = calloc(1, sizeof(*e));
-=======
 static struct expr *expr_eliminate_yn(struct expr *e);
 
 struct expr *expr_alloc_symbol(struct symbol *sym)
 {
 	struct expr *e = xcalloc(1, sizeof(*e));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e->type = E_SYMBOL;
 	e->left.sym = sym;
 	return e;
@@ -39,11 +25,7 @@ struct expr *expr_alloc_symbol(struct symbol *sym)
 
 struct expr *expr_alloc_one(enum expr_type type, struct expr *ce)
 {
-<<<<<<< HEAD
-	struct expr *e = calloc(1, sizeof(*e));
-=======
 	struct expr *e = xcalloc(1, sizeof(*e));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e->type = type;
 	e->left.expr = ce;
 	return e;
@@ -51,11 +33,7 @@ struct expr *expr_alloc_one(enum expr_type type, struct expr *ce)
 
 struct expr *expr_alloc_two(enum expr_type type, struct expr *e1, struct expr *e2)
 {
-<<<<<<< HEAD
-	struct expr *e = calloc(1, sizeof(*e));
-=======
 	struct expr *e = xcalloc(1, sizeof(*e));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e->type = type;
 	e->left.expr = e1;
 	e->right.expr = e2;
@@ -64,11 +42,7 @@ struct expr *expr_alloc_two(enum expr_type type, struct expr *e1, struct expr *e
 
 struct expr *expr_alloc_comp(enum expr_type type, struct symbol *s1, struct symbol *s2)
 {
-<<<<<<< HEAD
-	struct expr *e = calloc(1, sizeof(*e));
-=======
 	struct expr *e = xcalloc(1, sizeof(*e));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e->type = type;
 	e->left.sym = s1;
 	e->right.sym = s2;
@@ -96,11 +70,7 @@ struct expr *expr_copy(const struct expr *org)
 	if (!org)
 		return NULL;
 
-<<<<<<< HEAD
-	e = malloc(sizeof(*org));
-=======
 	e = xmalloc(sizeof(*org));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(e, org, sizeof(*org));
 	switch (org->type) {
 	case E_SYMBOL:
@@ -110,13 +80,10 @@ struct expr *expr_copy(const struct expr *org)
 		e->left.expr = expr_copy(org->left.expr);
 		break;
 	case E_EQUAL:
-<<<<<<< HEAD
-=======
 	case E_GEQ:
 	case E_GTH:
 	case E_LEQ:
 	case E_LTH:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case E_UNEQUAL:
 		e->left.sym = org->left.sym;
 		e->right.sym = org->right.sym;
@@ -128,11 +95,7 @@ struct expr *expr_copy(const struct expr *org)
 		e->right.expr = expr_copy(org->right.expr);
 		break;
 	default:
-<<<<<<< HEAD
-		printf("can't copy type %d\n", e->type);
-=======
 		fprintf(stderr, "can't copy type %d\n", e->type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free(e);
 		e = NULL;
 		break;
@@ -151,17 +114,12 @@ void expr_free(struct expr *e)
 		break;
 	case E_NOT:
 		expr_free(e->left.expr);
-<<<<<<< HEAD
-		return;
-	case E_EQUAL:
-=======
 		break;
 	case E_EQUAL:
 	case E_GEQ:
 	case E_GTH:
 	case E_LEQ:
 	case E_LTH:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case E_UNEQUAL:
 		break;
 	case E_OR:
@@ -170,11 +128,7 @@ void expr_free(struct expr *e)
 		expr_free(e->right.expr);
 		break;
 	default:
-<<<<<<< HEAD
-		printf("how to free type %d?\n", e->type);
-=======
 		fprintf(stderr, "how to free type %d?\n", e->type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	free(e);
@@ -185,10 +139,6 @@ static int trans_count;
 #define e1 (*ep1)
 #define e2 (*ep2)
 
-<<<<<<< HEAD
-static void __expr_eliminate_eq(enum expr_type type, struct expr **ep1, struct expr **ep2)
-{
-=======
 /*
  * expr_eliminate_eq() helper.
  *
@@ -201,7 +151,6 @@ static void __expr_eliminate_eq(enum expr_type type, struct expr **ep1, struct e
 {
 	/* Recurse down to leaves */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (e1->type == type) {
 		__expr_eliminate_eq(type, &e1->left.expr, &e2);
 		__expr_eliminate_eq(type, &e1->right.expr, &e2);
@@ -212,24 +161,18 @@ static void __expr_eliminate_eq(enum expr_type type, struct expr **ep1, struct e
 		__expr_eliminate_eq(type, &e1, &e2->right.expr);
 		return;
 	}
-<<<<<<< HEAD
-=======
 
 	/* e1 and e2 are leaves. Compare them. */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (e1->type == E_SYMBOL && e2->type == E_SYMBOL &&
 	    e1->left.sym == e2->left.sym &&
 	    (e1->left.sym == &symbol_yes || e1->left.sym == &symbol_no))
 		return;
 	if (!expr_eq(e1, e2))
 		return;
-<<<<<<< HEAD
-=======
 
 	/* e1 and e2 are equal leaves. Prepare them for elimination. */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trans_count++;
 	expr_free(e1); expr_free(e2);
 	switch (type) {
@@ -246,8 +189,6 @@ static void __expr_eliminate_eq(enum expr_type type, struct expr **ep1, struct e
 	}
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Rewrites the expressions 'ep1' and 'ep2' to remove operands common to both.
  * Example reductions:
@@ -277,7 +218,6 @@ static void __expr_eliminate_eq(enum expr_type type, struct expr **ep1, struct e
  *
  * See __expr_eliminate_eq() as well.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void expr_eliminate_eq(struct expr **ep1, struct expr **ep2)
 {
 	if (!e1 || !e2)
@@ -303,21 +243,16 @@ void expr_eliminate_eq(struct expr **ep1, struct expr **ep2)
 #undef e1
 #undef e2
 
-<<<<<<< HEAD
-=======
 /*
  * Returns true if 'e1' and 'e2' are equal, after minor simplification. Two
  * &&/|| expressions are considered equal if every operand in one expression
  * equals some operand in the other (operands do not need to appear in the same
  * order), recursively.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int expr_eq(struct expr *e1, struct expr *e2)
 {
 	int res, old_count;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * A NULL expr is taken to be yes, but there's also a different way to
 	 * represent yes. expr_is_yes() checks for either representation.
@@ -325,18 +260,14 @@ int expr_eq(struct expr *e1, struct expr *e2)
 	if (!e1 || !e2)
 		return expr_is_yes(e1) && expr_is_yes(e2);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (e1->type != e2->type)
 		return 0;
 	switch (e1->type) {
 	case E_EQUAL:
-<<<<<<< HEAD
-=======
 	case E_GEQ:
 	case E_GTH:
 	case E_LEQ:
 	case E_LTH:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case E_UNEQUAL:
 		return e1->left.sym == e2->left.sym && e1->right.sym == e2->right.sym;
 	case E_SYMBOL:
@@ -371,9 +302,6 @@ int expr_eq(struct expr *e1, struct expr *e2)
 	return 0;
 }
 
-<<<<<<< HEAD
-struct expr *expr_eliminate_yn(struct expr *e)
-=======
 /*
  * Recursively performs the following simplifications in-place (as well as the
  * corresponding simplifications with swapped operands):
@@ -386,7 +314,6 @@ struct expr *expr_eliminate_yn(struct expr *e)
  * Returns the optimized expression.
  */
 static struct expr *expr_eliminate_yn(struct expr *e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct expr *tmp;
 
@@ -659,8 +586,6 @@ static struct expr *expr_join_and(struct expr *e1, struct expr *e2)
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * expr_eliminate_dups() helper.
  *
@@ -668,18 +593,14 @@ static struct expr *expr_join_and(struct expr *e1, struct expr *e2)
  * not have type 'type' (E_OR/E_AND) is considered a leaf, and is compared
  * against all other leaves to look for simplifications.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void expr_eliminate_dups1(enum expr_type type, struct expr **ep1, struct expr **ep2)
 {
 #define e1 (*ep1)
 #define e2 (*ep2)
 	struct expr *tmp;
 
-<<<<<<< HEAD
-=======
 	/* Recurse down to leaves */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (e1->type == type) {
 		expr_eliminate_dups1(type, &e1->left.expr, &e2);
 		expr_eliminate_dups1(type, &e1->right.expr, &e2);
@@ -690,12 +611,9 @@ static void expr_eliminate_dups1(enum expr_type type, struct expr **ep1, struct 
 		expr_eliminate_dups1(type, &e1, &e2->right.expr);
 		return;
 	}
-<<<<<<< HEAD
-=======
 
 	/* e1 and e2 are leaves. Compare and process them. */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (e1 == e2)
 		return;
 
@@ -732,64 +650,6 @@ static void expr_eliminate_dups1(enum expr_type type, struct expr **ep1, struct 
 #undef e2
 }
 
-<<<<<<< HEAD
-static void expr_eliminate_dups2(enum expr_type type, struct expr **ep1, struct expr **ep2)
-{
-#define e1 (*ep1)
-#define e2 (*ep2)
-	struct expr *tmp, *tmp1, *tmp2;
-
-	if (e1->type == type) {
-		expr_eliminate_dups2(type, &e1->left.expr, &e2);
-		expr_eliminate_dups2(type, &e1->right.expr, &e2);
-		return;
-	}
-	if (e2->type == type) {
-		expr_eliminate_dups2(type, &e1, &e2->left.expr);
-		expr_eliminate_dups2(type, &e1, &e2->right.expr);
-	}
-	if (e1 == e2)
-		return;
-
-	switch (e1->type) {
-	case E_OR:
-		expr_eliminate_dups2(e1->type, &e1, &e1);
-		// (FOO || BAR) && (!FOO && !BAR) -> n
-		tmp1 = expr_transform(expr_alloc_one(E_NOT, expr_copy(e1)));
-		tmp2 = expr_copy(e2);
-		tmp = expr_extract_eq_and(&tmp1, &tmp2);
-		if (expr_is_yes(tmp1)) {
-			expr_free(e1);
-			e1 = expr_alloc_symbol(&symbol_no);
-			trans_count++;
-		}
-		expr_free(tmp2);
-		expr_free(tmp1);
-		expr_free(tmp);
-		break;
-	case E_AND:
-		expr_eliminate_dups2(e1->type, &e1, &e1);
-		// (FOO && BAR) || (!FOO || !BAR) -> y
-		tmp1 = expr_transform(expr_alloc_one(E_NOT, expr_copy(e1)));
-		tmp2 = expr_copy(e2);
-		tmp = expr_extract_eq_or(&tmp1, &tmp2);
-		if (expr_is_no(tmp1)) {
-			expr_free(e1);
-			e1 = expr_alloc_symbol(&symbol_yes);
-			trans_count++;
-		}
-		expr_free(tmp2);
-		expr_free(tmp1);
-		expr_free(tmp);
-		break;
-	default:
-		;
-	}
-#undef e1
-#undef e2
-}
-
-=======
 /*
  * Rewrites 'e' in-place to remove ("join") duplicate and other redundant
  * operands.
@@ -801,7 +661,6 @@ static void expr_eliminate_dups2(enum expr_type type, struct expr **ep1, struct 
  *
  * Returns the deduplicated expression.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct expr *expr_eliminate_dups(struct expr *e)
 {
 	int oldcount;
@@ -814,18 +673,11 @@ struct expr *expr_eliminate_dups(struct expr *e)
 		switch (e->type) {
 		case E_OR: case E_AND:
 			expr_eliminate_dups1(e->type, &e, &e);
-<<<<<<< HEAD
-			expr_eliminate_dups2(e->type, &e, &e);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			;
 		}
 		if (!trans_count)
-<<<<<<< HEAD
-=======
 			/* No simplifications done in this pass. We're done */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		e = expr_eliminate_yn(e);
 	}
@@ -833,15 +685,12 @@ struct expr *expr_eliminate_dups(struct expr *e)
 	return e;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Performs various simplifications involving logical operators and
  * comparisons.
  *
  * Allocates and returns a new expression.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct expr *expr_transform(struct expr *e)
 {
 	struct expr *tmp;
@@ -850,13 +699,10 @@ struct expr *expr_transform(struct expr *e)
 		return NULL;
 	switch (e->type) {
 	case E_EQUAL:
-<<<<<<< HEAD
-=======
 	case E_GEQ:
 	case E_GTH:
 	case E_LEQ:
 	case E_LTH:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case E_UNEQUAL:
 	case E_SYMBOL:
 	case E_LIST:
@@ -929,8 +775,6 @@ struct expr *expr_transform(struct expr *e)
 			e = tmp;
 			e->type = e->type == E_EQUAL ? E_UNEQUAL : E_EQUAL;
 			break;
-<<<<<<< HEAD
-=======
 		case E_LEQ:
 		case E_GEQ:
 			// !a<='x' -> a>'x'
@@ -947,7 +791,6 @@ struct expr *expr_transform(struct expr *e)
 			e = tmp;
 			e->type = e->type == E_LTH ? E_GEQ : E_LEQ;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case E_OR:
 			// !(a || b) -> !a && !b
 			tmp = e->left.expr;
@@ -1018,13 +861,10 @@ int expr_contains_symbol(struct expr *dep, struct symbol *sym)
 	case E_SYMBOL:
 		return dep->left.sym == sym;
 	case E_EQUAL:
-<<<<<<< HEAD
-=======
 	case E_GEQ:
 	case E_GTH:
 	case E_LEQ:
 	case E_LTH:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case E_UNEQUAL:
 		return dep->left.sym == sym ||
 		       dep->right.sym == sym;
@@ -1065,59 +905,6 @@ bool expr_depends_symbol(struct expr *dep, struct symbol *sym)
  	return false;
 }
 
-<<<<<<< HEAD
-struct expr *expr_extract_eq_and(struct expr **ep1, struct expr **ep2)
-{
-	struct expr *tmp = NULL;
-	expr_extract_eq(E_AND, &tmp, ep1, ep2);
-	if (tmp) {
-		*ep1 = expr_eliminate_yn(*ep1);
-		*ep2 = expr_eliminate_yn(*ep2);
-	}
-	return tmp;
-}
-
-struct expr *expr_extract_eq_or(struct expr **ep1, struct expr **ep2)
-{
-	struct expr *tmp = NULL;
-	expr_extract_eq(E_OR, &tmp, ep1, ep2);
-	if (tmp) {
-		*ep1 = expr_eliminate_yn(*ep1);
-		*ep2 = expr_eliminate_yn(*ep2);
-	}
-	return tmp;
-}
-
-void expr_extract_eq(enum expr_type type, struct expr **ep, struct expr **ep1, struct expr **ep2)
-{
-#define e1 (*ep1)
-#define e2 (*ep2)
-	if (e1->type == type) {
-		expr_extract_eq(type, ep, &e1->left.expr, &e2);
-		expr_extract_eq(type, ep, &e1->right.expr, &e2);
-		return;
-	}
-	if (e2->type == type) {
-		expr_extract_eq(type, ep, ep1, &e2->left.expr);
-		expr_extract_eq(type, ep, ep1, &e2->right.expr);
-		return;
-	}
-	if (expr_eq(e1, e2)) {
-		*ep = *ep ? expr_alloc_two(type, *ep, e1) : e1;
-		expr_free(e2);
-		if (type == E_AND) {
-			e1 = expr_alloc_symbol(&symbol_yes);
-			e2 = expr_alloc_symbol(&symbol_yes);
-		} else if (type == E_OR) {
-			e1 = expr_alloc_symbol(&symbol_no);
-			e2 = expr_alloc_symbol(&symbol_no);
-		}
-	}
-#undef e1
-#undef e2
-}
-
-=======
 /*
  * Inserts explicit comparisons of type 'type' to symbol 'sym' into the
  * expression 'e'.
@@ -1132,7 +919,6 @@ void expr_extract_eq(enum expr_type type, struct expr **ep, struct expr **ep1, s
  *
  * Allocates and returns a new expression.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct expr *expr_trans_compare(struct expr *e, enum expr_type type, struct symbol *sym)
 {
 	struct expr *e1, *e2;
@@ -1167,13 +953,10 @@ struct expr *expr_trans_compare(struct expr *e, enum expr_type type, struct symb
 	case E_NOT:
 		return expr_trans_compare(e->left.expr, type == E_EQUAL ? E_UNEQUAL : E_EQUAL, sym);
 	case E_UNEQUAL:
-<<<<<<< HEAD
-=======
 	case E_LTH:
 	case E_LEQ:
 	case E_GTH:
 	case E_GEQ:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case E_EQUAL:
 		if (type == E_EQUAL) {
 			if (sym == &symbol_yes)
@@ -1201,8 +984,6 @@ struct expr *expr_trans_compare(struct expr *e, enum expr_type type, struct symb
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 enum string_value_kind {
 	k_string,
 	k_signed,
@@ -1246,17 +1027,13 @@ static enum string_value_kind expr_parse_string(const char *str,
 	       ? kind : k_string;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 tristate expr_calc_value(struct expr *e)
 {
 	tristate val1, val2;
 	const char *str1, *str2;
-<<<<<<< HEAD
-=======
 	enum string_value_kind k1 = k_string, k2 = k_string;
 	union string_value lval = {}, rval = {};
 	int res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!e)
 		return yes;
@@ -1277,42 +1054,16 @@ tristate expr_calc_value(struct expr *e)
 		val1 = expr_calc_value(e->left.expr);
 		return EXPR_NOT(val1);
 	case E_EQUAL:
-<<<<<<< HEAD
-		sym_calc_value(e->left.sym);
-		sym_calc_value(e->right.sym);
-		str1 = sym_get_string_value(e->left.sym);
-		str2 = sym_get_string_value(e->right.sym);
-		return !strcmp(str1, str2) ? yes : no;
-	case E_UNEQUAL:
-		sym_calc_value(e->left.sym);
-		sym_calc_value(e->right.sym);
-		str1 = sym_get_string_value(e->left.sym);
-		str2 = sym_get_string_value(e->right.sym);
-		return !strcmp(str1, str2) ? no : yes;
-=======
 	case E_GEQ:
 	case E_GTH:
 	case E_LEQ:
 	case E_LTH:
 	case E_UNEQUAL:
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		printf("expr_calc_value: %d?\n", e->type);
 		return no;
 	}
-<<<<<<< HEAD
-}
-
-int expr_compare_type(enum expr_type t1, enum expr_type t2)
-{
-#if 0
-	return 1;
-#else
-	if (t1 == t2)
-		return 0;
-	switch (t1) {
-=======
 
 	sym_calc_value(e->left.sym);
 	sym_calc_value(e->right.sym);
@@ -1361,7 +1112,6 @@ static int expr_compare_type(enum expr_type t1, enum expr_type t2)
 	case E_GTH:
 		if (t2 == E_EQUAL || t2 == E_UNEQUAL)
 			return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case E_EQUAL:
 	case E_UNEQUAL:
 		if (t2 == E_NOT)
@@ -1381,63 +1131,12 @@ static int expr_compare_type(enum expr_type t1, enum expr_type t2)
 	default:
 		return -1;
 	}
-<<<<<<< HEAD
-	printf("[%dgt%d?]", t1, t2);
-	return 0;
-#endif
-}
-
-static inline struct expr *
-expr_get_leftmost_symbol(const struct expr *e)
-{
-
-	if (e == NULL)
-		return NULL;
-
-	while (e->type != E_SYMBOL)
-		e = e->left.expr;
-
-	return expr_copy(e);
-}
-
-/*
- * Given expression `e1' and `e2', returns the leaf of the longest
- * sub-expression of `e1' not containing 'e2.
- */
-struct expr *expr_simplify_unmet_dep(struct expr *e1, struct expr *e2)
-{
-	struct expr *ret;
-
-	switch (e1->type) {
-	case E_OR:
-		return expr_alloc_and(
-		    expr_simplify_unmet_dep(e1->left.expr, e2),
-		    expr_simplify_unmet_dep(e1->right.expr, e2));
-	case E_AND: {
-		struct expr *e;
-		e = expr_alloc_and(expr_copy(e1), expr_copy(e2));
-		e = expr_eliminate_dups(e);
-		ret = (!expr_eq(e, e1)) ? e1 : NULL;
-		expr_free(e);
-		break;
-		}
-	default:
-		ret = e1;
-		break;
-	}
-
-	return expr_get_leftmost_symbol(ret);
-}
-
-void expr_print(struct expr *e, void (*fn)(void *, struct symbol *, const char *), void *data, int prevtoken)
-=======
 	return 0;
 }
 
 void expr_print(struct expr *e,
 		void (*fn)(void *, struct symbol *, const char *),
 		void *data, int prevtoken)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!e) {
 		fn(data, NULL, "y");
@@ -1465,8 +1164,6 @@ void expr_print(struct expr *e,
 		fn(data, NULL, "=");
 		fn(data, e->right.sym, e->right.sym->name);
 		break;
-<<<<<<< HEAD
-=======
 	case E_LEQ:
 	case E_LTH:
 		if (e->left.sym->name)
@@ -1485,7 +1182,6 @@ void expr_print(struct expr *e,
 		fn(data, NULL, e->type == E_GEQ ? ">=" : ">");
 		fn(data, e->right.sym, e->right.sym->name);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case E_UNEQUAL:
 		if (e->left.sym->name)
 			fn(data, e->left.sym, e->left.sym->name);
@@ -1574,8 +1270,6 @@ void expr_gstr_print(struct expr *e, struct gstr *gs)
 {
 	expr_print(e, expr_print_gstr_helper, gs, E_NONE);
 }
-<<<<<<< HEAD
-=======
 
 /*
  * Transform the top level "||" tokens into newlines and prepend each
@@ -1606,4 +1300,3 @@ void expr_gstr_print_revdep(struct expr *e, struct gstr *gs,
 {
 	expr_print_revdep(e, expr_print_gstr_helper, gs, pr_type, &title);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

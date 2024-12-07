@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#ifndef __LINUX_GPIO_H
-#define __LINUX_GPIO_H
-
-/* see Documentation/gpio.txt */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * <linux/gpio.h>
@@ -23,7 +17,6 @@
 struct device;
 
 /* see Documentation/driver-api/gpio/legacy.rst */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* make these flag values available regardless of GPIO kconfig options */
 #define GPIOF_DIR_OUT	(0 << 0)
@@ -36,16 +29,8 @@ struct device;
 #define GPIOF_OUT_INIT_LOW	(GPIOF_DIR_OUT | GPIOF_INIT_LOW)
 #define GPIOF_OUT_INIT_HIGH	(GPIOF_DIR_OUT | GPIOF_INIT_HIGH)
 
-<<<<<<< HEAD
-/* Gpio pin is open drain */
-#define GPIOF_OPEN_DRAIN	(1 << 2)
-
-/* Gpio pin is open source */
-#define GPIOF_OPEN_SOURCE	(1 << 3)
-=======
 /* Gpio pin is active-low */
 #define GPIOF_ACTIVE_LOW        (1 << 2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct gpio - a structure describing a GPIO with configuration
@@ -59,20 +44,6 @@ struct gpio {
 	const char	*label;
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_GENERIC_GPIO
-#include <asm/gpio.h>
-
-#else
-
-#include <linux/kernel.h>
-#include <linux/types.h>
-#include <linux/errno.h>
-#include <linux/bug.h>
-
-struct device;
-struct gpio_chip;
-=======
 #ifdef CONFIG_GPIOLIB
 
 #include <linux/gpio/consumer.h>
@@ -158,7 +129,6 @@ int devm_gpio_request_one(struct device *dev, unsigned gpio,
 
 #include <asm/bug.h>
 #include <asm/errno.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline bool gpio_is_valid(int number)
 {
@@ -207,14 +177,6 @@ static inline int gpio_direction_output(unsigned gpio, int value)
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-static inline int gpio_set_debounce(unsigned gpio, unsigned debounce)
-{
-	return -ENOSYS;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int gpio_get_value(unsigned gpio)
 {
 	/* GPIO can never have been requested or set as {in,out}put */
@@ -228,16 +190,6 @@ static inline void gpio_set_value(unsigned gpio, int value)
 	WARN_ON(1);
 }
 
-<<<<<<< HEAD
-static inline int gpio_cansleep(unsigned gpio)
-{
-	/* GPIO can never have been requested or set as {in,out}put */
-	WARN_ON(1);
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int gpio_get_value_cansleep(unsigned gpio)
 {
 	/* GPIO can never have been requested or set as {in,out}put */
@@ -251,37 +203,6 @@ static inline void gpio_set_value_cansleep(unsigned gpio, int value)
 	WARN_ON(1);
 }
 
-<<<<<<< HEAD
-static inline int gpio_export(unsigned gpio, bool direction_may_change)
-{
-	/* GPIO can never have been requested or set as {in,out}put */
-	WARN_ON(1);
-	return -EINVAL;
-}
-
-static inline int gpio_export_link(struct device *dev, const char *name,
-				unsigned gpio)
-{
-	/* GPIO can never have been exported */
-	WARN_ON(1);
-	return -EINVAL;
-}
-
-static inline int gpio_sysfs_set_active_low(unsigned gpio, int value)
-{
-	/* GPIO can never have been requested */
-	WARN_ON(1);
-	return -EINVAL;
-}
-
-static inline void gpio_unexport(unsigned gpio)
-{
-	/* GPIO can never have been exported */
-	WARN_ON(1);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int gpio_to_irq(unsigned gpio)
 {
 	/* GPIO can never have been requested or set as input */
@@ -289,37 +210,13 @@ static inline int gpio_to_irq(unsigned gpio)
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static inline int irq_to_gpio(unsigned irq)
-{
-	/* irq can never have been returned from gpio_to_irq() */
-=======
 static inline int devm_gpio_request(struct device *dev, unsigned gpio,
 				    const char *label)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON(1);
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PINCTRL
-
-static inline int
-gpiochip_add_pin_range(struct gpio_chip *chip, const char *pinctl_name,
-		       unsigned int pin_base, unsigned int npins)
-{
-}
-
-static inline void
-gpiochip_remove_pin_ranges(struct gpio_chip *chip)
-{
-}
-
-#endif /* CONFIG_PINCTRL */
-
-#endif /* ! CONFIG_GENERIC_GPIO */
-=======
 static inline int devm_gpio_request_one(struct device *dev, unsigned gpio,
 					unsigned long flags, const char *label)
 {
@@ -328,6 +225,5 @@ static inline int devm_gpio_request_one(struct device *dev, unsigned gpio,
 }
 
 #endif /* ! CONFIG_GPIOLIB */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __LINUX_GPIO_H */

@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Generic parts
  *	Linux ethernet bridge
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -26,11 +15,6 @@
 #include <linux/llc.h>
 #include <net/llc.h>
 #include <net/stp.h>
-<<<<<<< HEAD
-
-#include "br_private.h"
-
-=======
 #include <net/switchdev.h>
 
 #include "br_private.h"
@@ -389,27 +373,16 @@ static struct pernet_operations br_net_ops = {
 	.exit_batch_rtnl = br_net_exit_batch_rtnl,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct stp_proto br_stp_proto = {
 	.rcv	= br_stp_rcv,
 };
 
-<<<<<<< HEAD
-static struct pernet_operations br_net_ops = {
-	.exit	= br_net_exit,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init br_init(void)
 {
 	int err;
 
-<<<<<<< HEAD
-=======
 	BUILD_BUG_ON(sizeof(struct br_input_skb_cb) > sizeof_field(struct sk_buff, cb));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = stp_proto_register(&br_stp_proto);
 	if (err < 0) {
 		pr_err("bridge: can't register sap for STP\n");
@@ -424,11 +397,7 @@ static int __init br_init(void)
 	if (err)
 		goto err_out1;
 
-<<<<<<< HEAD
-	err = br_netfilter_init();
-=======
 	err = br_nf_core_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto err_out2;
 
@@ -436,13 +405,6 @@ static int __init br_init(void)
 	if (err)
 		goto err_out3;
 
-<<<<<<< HEAD
-	err = br_netlink_init();
-	if (err)
-		goto err_out4;
-
-	brioctl_set(br_ioctl_deviceless_stub);
-=======
 	err = register_switchdev_notifier(&br_switchdev_notifier);
 	if (err)
 		goto err_out4;
@@ -456,19 +418,11 @@ static int __init br_init(void)
 		goto err_out6;
 
 	brioctl_set(br_ioctl_stub);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if IS_ENABLED(CONFIG_ATM_LANE)
 	br_fdb_test_addr_hook = br_fdb_test_addr;
 #endif
 
-<<<<<<< HEAD
-	return 0;
-err_out4:
-	unregister_netdevice_notifier(&br_device_notifier);
-err_out3:
-	br_netfilter_fini();
-=======
 #if IS_MODULE(CONFIG_BRIDGE_NETFILTER)
 	pr_info("bridge: filtering via arp/ip/ip6tables is no longer available "
 		"by default. Update your scripts to load br_netfilter if you "
@@ -485,7 +439,6 @@ err_out4:
 	unregister_netdevice_notifier(&br_device_notifier);
 err_out3:
 	br_nf_core_fini();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out2:
 	unregister_pernet_subsys(&br_net_ops);
 err_out1:
@@ -498,35 +451,19 @@ err_out:
 static void __exit br_deinit(void)
 {
 	stp_proto_unregister(&br_stp_proto);
-<<<<<<< HEAD
-
-	br_netlink_fini();
-	unregister_netdevice_notifier(&br_device_notifier);
-	brioctl_set(NULL);
-
-=======
 	br_netlink_fini();
 	unregister_switchdev_blocking_notifier(&br_switchdev_blocking_notifier);
 	unregister_switchdev_notifier(&br_switchdev_notifier);
 	unregister_netdevice_notifier(&br_device_notifier);
 	brioctl_set(NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_pernet_subsys(&br_net_ops);
 
 	rcu_barrier(); /* Wait for completion of call_rcu()'s */
 
-<<<<<<< HEAD
-	br_netfilter_fini();
-#if IS_ENABLED(CONFIG_ATM_LANE)
-	br_fdb_test_addr_hook = NULL;
-#endif
-
-=======
 	br_nf_core_fini();
 #if IS_ENABLED(CONFIG_ATM_LANE)
 	br_fdb_test_addr_hook = NULL;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	br_fdb_fini();
 }
 
@@ -535,7 +472,4 @@ module_exit(br_deinit)
 MODULE_LICENSE("GPL");
 MODULE_VERSION(BR_VERSION);
 MODULE_ALIAS_RTNL_LINK("bridge");
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("Ethernet bridge driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

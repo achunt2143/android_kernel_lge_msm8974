@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # I2C subsystem configuration
 #
 
-<<<<<<< HEAD
-menuconfig I2C
-	tristate "I2C support"
-	depends on HAS_IOMEM
-	select RT_MUTEXES
-	---help---
-=======
 menu "I2C support"
 
 config I2C
@@ -20,7 +10,6 @@ config I2C
 	select RT_MUTEXES
 	select IRQ_DOMAIN
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  I2C (pronounce: I-squared-C) is a slow serial bus protocol used in
 	  many micro controller applications and developed by Philips.  SMBus,
 	  or System Management Bus is a subset of the I2C protocol.  More
@@ -36,16 +25,6 @@ config I2C
 	  This I2C support can also be built as a module.  If so, the module
 	  will be called i2c-core.
 
-<<<<<<< HEAD
-if I2C
-
-config I2C_BOARDINFO
-	boolean
-	default y
-
-config I2C_COMPAT
-	boolean "Enable compatibility bits for old user-space"
-=======
 config ACPI_I2C_OPREGION
 	bool "ACPI I2C Operation region support"
 	depends on I2C=y && ACPI
@@ -63,7 +42,6 @@ config I2C_BOARDINFO
 
 config I2C_COMPAT
 	bool "Enable compatibility bits for old user-space"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	help
 	  Say Y here if you intend to run lm-sensors 3.1.1 or older, or any
@@ -76,21 +54,13 @@ config I2C_CHARDEV
 	  Say Y here to use i2c-* device files, usually found in the /dev
 	  directory on your system.  They make it possible to have user-space
 	  programs use the I2C bus.  Information on how to do this is
-<<<<<<< HEAD
-	  contained in the file <file:Documentation/i2c/dev-interface>.
-=======
 	  contained in the file <file:Documentation/i2c/dev-interface.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  This support is also available as a module.  If so, the module 
 	  will be called i2c-dev.
 
 config I2C_MUX
 	tristate "I2C bus multiplexing support"
-<<<<<<< HEAD
-	depends on EXPERIMENTAL
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want the I2C core to support the ability to
 	  handle multiplexed I2C bus topologies, by presenting each
@@ -99,9 +69,6 @@ config I2C_MUX
 	  This support is also available as a module.  If so, the module
 	  will be called i2c-mux.
 
-<<<<<<< HEAD
-source drivers/i2c/muxes/Kconfig
-=======
 source "drivers/i2c/muxes/Kconfig"
 
 config I2C_ATR
@@ -112,7 +79,6 @@ config I2C_ATR
 	  An ATR allows accessing multiple I2C busses from a single
 	  physical bus via address translation instead of bus selection as
 	  i2c-muxes do.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config I2C_HELPER_AUTO
 	bool "Autoselect pertinent helper modules"
@@ -132,21 +98,12 @@ config I2C_SMBUS
 	tristate "SMBus-specific protocols" if !I2C_HELPER_AUTO
 	help
 	  Say Y here if you want support for SMBus extensions to the I2C
-<<<<<<< HEAD
-	  specification. At the moment, the only supported extension is
-	  the SMBus alert protocol.
-=======
 	  specification. At the moment, two extensions are supported:
 	  the SMBus Alert protocol and the SMBus Host Notify protocol.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  This support is also available as a module.  If so, the module
 	  will be called i2c-smbus.
 
-<<<<<<< HEAD
-source drivers/i2c/algos/Kconfig
-source drivers/i2c/busses/Kconfig
-=======
 source "drivers/i2c/algos/Kconfig"
 source "drivers/i2c/busses/Kconfig"
 
@@ -186,7 +143,6 @@ config I2C_SLAVE_TESTUNIT
 	  Documentation/i2c/slave-testunit-backend.rst for further details.
 
 endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config I2C_DEBUG_CORE
 	bool "I2C Core debugging messages"
@@ -205,10 +161,7 @@ config I2C_DEBUG_ALGO
 
 config I2C_DEBUG_BUS
 	bool "I2C Bus debugging messages"
-<<<<<<< HEAD
-=======
 	depends on HAS_IOMEM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want the I2C bus drivers to produce a bunch of
 	  debug messages to the system log.  Select this if you are having
@@ -216,8 +169,5 @@ config I2C_DEBUG_BUS
 	  on.
 
 endif # I2C
-<<<<<<< HEAD
-=======
 
 endmenu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

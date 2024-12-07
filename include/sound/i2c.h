@@ -1,31 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_I2C_H
 #define __SOUND_I2C_H
 
 /*
-<<<<<<< HEAD
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define SND_I2C_DEVICE_ADDRTEN	(1<<0)	/* 10-bit I2C address */
@@ -73,11 +50,7 @@ struct snd_i2c_bus {
 		struct snd_i2c_bit_ops *bit;
 		void *ops;
 	} hw_ops;		/* lowlevel operations */
-<<<<<<< HEAD
-	struct snd_i2c_ops *ops;	/* midlevel operations */
-=======
 	const struct snd_i2c_ops *ops;	/* midlevel operations */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long private_value;
 	void *private_data;

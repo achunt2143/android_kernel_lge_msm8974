@@ -1,34 +1,19 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SH7091/SH7750/SH7750S/SH7750R/SH7751/SH7751R Setup
  *
  *  Copyright (C) 2006  Paul Mundt
  *  Copyright (C) 2006  Jamie Lenehan
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/platform_device.h>
 #include <linux/init.h>
 #include <linux/serial.h>
 #include <linux/io.h>
 #include <linux/sh_timer.h>
-<<<<<<< HEAD
-#include <linux/serial_sci.h>
-#include <generated/machtypes.h>
-=======
 #include <linux/sh_intc.h>
 #include <linux/serial_sci.h>
 #include <generated/machtypes.h>
 #include <asm/platform_early.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct resource rtc_resources[] = {
 	[0] = {
@@ -38,11 +23,7 @@ static struct resource rtc_resources[] = {
 	},
 	[1] = {
 		/* Shared Period/Carry/Alarm IRQ */
-<<<<<<< HEAD
-		.start	= 20,
-=======
 		.start	= evt2irq(0x480),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -55,47 +36,25 @@ static struct platform_device rtc_device = {
 };
 
 static struct plat_sci_port sci_platform_data = {
-<<<<<<< HEAD
-	.mapbase	= 0xffe00000,
-	.port_reg	= 0xffe0001C,
-	.flags		= UPF_BOOT_AUTOCONF,
-	.scscr		= SCSCR_TE | SCSCR_RE,
-	.scbrr_algo_id	= SCBRR_ALGO_2,
-	.type		= PORT_SCI,
-	.irqs		= { 23, 23, 23, 0 },
-	.regshift	= 2,
-=======
 	.type		= PORT_SCI,
 };
 
 static struct resource sci_resources[] = {
 	DEFINE_RES_MEM(0xffe00000, 0x20),
 	DEFINE_RES_IRQ(evt2irq(0x4e0)),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device sci_device = {
 	.name		= "sh-sci",
 	.id		= 0,
-<<<<<<< HEAD
-=======
 	.resource	= sci_resources,
 	.num_resources	= ARRAY_SIZE(sci_resources),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dev		= {
 		.platform_data	= &sci_platform_data,
 	},
 };
 
 static struct plat_sci_port scif_platform_data = {
-<<<<<<< HEAD
-	.mapbase	= 0xffe80000,
-	.flags		= UPF_BOOT_AUTOCONF,
-	.scscr		= SCSCR_TE | SCSCR_RE | SCSCR_REIE,
-	.scbrr_algo_id	= SCBRR_ALGO_2,
-	.type		= PORT_SCIF,
-	.irqs		= { 40, 40, 40, 40 },
-=======
 	.scscr		= SCSCR_REIE,
 	.type		= PORT_SCIF,
 };
@@ -103,44 +62,19 @@ static struct plat_sci_port scif_platform_data = {
 static struct resource scif_resources[] = {
 	DEFINE_RES_MEM(0xffe80000, 0x100),
 	DEFINE_RES_IRQ(evt2irq(0x700)),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device scif_device = {
 	.name		= "sh-sci",
 	.id		= 1,
-<<<<<<< HEAD
-=======
 	.resource	= scif_resources,
 	.num_resources	= ARRAY_SIZE(scif_resources),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dev		= {
 		.platform_data	= &scif_platform_data,
 	},
 };
 
 static struct sh_timer_config tmu0_platform_data = {
-<<<<<<< HEAD
-	.channel_offset = 0x04,
-	.timer_bit = 0,
-	.clockevent_rating = 200,
-};
-
-static struct resource tmu0_resources[] = {
-	[0] = {
-		.start	= 0xffd80008,
-		.end	= 0xffd80013,
-		.flags	= IORESOURCE_MEM,
-	},
-	[1] = {
-		.start	= 16,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
-static struct platform_device tmu0_device = {
-	.name		= "sh_tmu",
-=======
 	.channels_mask = 7,
 };
 
@@ -153,7 +87,6 @@ static struct resource tmu0_resources[] = {
 
 static struct platform_device tmu0_device = {
 	.name		= "sh-tmu",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id		= 0,
 	.dev = {
 		.platform_data	= &tmu0_platform_data,
@@ -162,28 +95,6 @@ static struct platform_device tmu0_device = {
 	.num_resources	= ARRAY_SIZE(tmu0_resources),
 };
 
-<<<<<<< HEAD
-static struct sh_timer_config tmu1_platform_data = {
-	.channel_offset = 0x10,
-	.timer_bit = 1,
-	.clocksource_rating = 200,
-};
-
-static struct resource tmu1_resources[] = {
-	[0] = {
-		.start	= 0xffd80014,
-		.end	= 0xffd8001f,
-		.flags	= IORESOURCE_MEM,
-	},
-	[1] = {
-		.start	= 17,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
-static struct platform_device tmu1_device = {
-	.name		= "sh_tmu",
-=======
 /* SH7750R, SH7751 and SH7751R all have two extra timer channels */
 #if defined(CONFIG_CPU_SUBTYPE_SH7750R) || \
 	defined(CONFIG_CPU_SUBTYPE_SH7751) || \
@@ -201,7 +112,6 @@ static struct resource tmu1_resources[] = {
 
 static struct platform_device tmu1_device = {
 	.name		= "sh-tmu",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id		= 1,
 	.dev = {
 		.platform_data	= &tmu1_platform_data,
@@ -210,114 +120,15 @@ static struct platform_device tmu1_device = {
 	.num_resources	= ARRAY_SIZE(tmu1_resources),
 };
 
-<<<<<<< HEAD
-static struct sh_timer_config tmu2_platform_data = {
-	.channel_offset = 0x1c,
-	.timer_bit = 2,
-};
-
-static struct resource tmu2_resources[] = {
-	[0] = {
-		.start	= 0xffd80020,
-		.end	= 0xffd8002f,
-		.flags	= IORESOURCE_MEM,
-	},
-	[1] = {
-		.start	= 18,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
-static struct platform_device tmu2_device = {
-	.name		= "sh_tmu",
-	.id		= 2,
-	.dev = {
-		.platform_data	= &tmu2_platform_data,
-	},
-	.resource	= tmu2_resources,
-	.num_resources	= ARRAY_SIZE(tmu2_resources),
-};
-
-/* SH7750R, SH7751 and SH7751R all have two extra timer channels */
-#if defined(CONFIG_CPU_SUBTYPE_SH7750R) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7751) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7751R)
-
-static struct sh_timer_config tmu3_platform_data = {
-	.channel_offset = 0x04,
-	.timer_bit = 0,
-};
-
-static struct resource tmu3_resources[] = {
-	[0] = {
-		.start	= 0xfe100008,
-		.end	= 0xfe100013,
-		.flags	= IORESOURCE_MEM,
-	},
-	[1] = {
-		.start	= 72,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
-static struct platform_device tmu3_device = {
-	.name		= "sh_tmu",
-	.id		= 3,
-	.dev = {
-		.platform_data	= &tmu3_platform_data,
-	},
-	.resource	= tmu3_resources,
-	.num_resources	= ARRAY_SIZE(tmu3_resources),
-};
-
-static struct sh_timer_config tmu4_platform_data = {
-	.channel_offset = 0x10,
-	.timer_bit = 1,
-};
-
-static struct resource tmu4_resources[] = {
-	[0] = {
-		.start	= 0xfe100014,
-		.end	= 0xfe10001f,
-		.flags	= IORESOURCE_MEM,
-	},
-	[1] = {
-		.start	= 76,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
-static struct platform_device tmu4_device = {
-	.name		= "sh_tmu",
-	.id		= 4,
-	.dev = {
-		.platform_data	= &tmu4_platform_data,
-	},
-	.resource	= tmu4_resources,
-	.num_resources	= ARRAY_SIZE(tmu4_resources),
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static struct platform_device *sh7750_devices[] __initdata = {
 	&rtc_device,
 	&tmu0_device,
-<<<<<<< HEAD
-	&tmu1_device,
-	&tmu2_device,
-#if defined(CONFIG_CPU_SUBTYPE_SH7750R) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7751) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7751R)
-	&tmu3_device,
-	&tmu4_device,
-=======
 #if defined(CONFIG_CPU_SUBTYPE_SH7750R) || \
 	defined(CONFIG_CPU_SUBTYPE_SH7751) || \
 	defined(CONFIG_CPU_SUBTYPE_SH7751R)
 	&tmu1_device,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
@@ -337,20 +148,10 @@ arch_initcall(sh7750_devices_setup);
 
 static struct platform_device *sh7750_early_devices[] __initdata = {
 	&tmu0_device,
-<<<<<<< HEAD
-	&tmu1_device,
-	&tmu2_device,
-#if defined(CONFIG_CPU_SUBTYPE_SH7750R) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7751) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7751R)
-	&tmu3_device,
-	&tmu4_device,
-=======
 #if defined(CONFIG_CPU_SUBTYPE_SH7750R) || \
 	defined(CONFIG_CPU_SUBTYPE_SH7751) || \
 	defined(CONFIG_CPU_SUBTYPE_SH7751R)
 	&tmu1_device,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
@@ -361,17 +162,6 @@ void __init plat_early_device_setup(void)
 	if (mach_is_rts7751r2d()) {
 		scif_platform_data.scscr |= SCSCR_CKE1;
 		dev[0] = &scif_device;
-<<<<<<< HEAD
-		early_platform_add_devices(dev, 1);
-	} else {
-		dev[0] = &sci_device;
-		early_platform_add_devices(dev, 1);
-		dev[0] = &scif_device;
-		early_platform_add_devices(dev, 1);
-	}
-
-	early_platform_add_devices(sh7750_early_devices,
-=======
 		sh_early_platform_add_devices(dev, 1);
 	} else {
 		dev[0] = &sci_device;
@@ -381,7 +171,6 @@ void __init plat_early_device_setup(void)
 	}
 
 	sh_early_platform_add_devices(sh7750_early_devices,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   ARRAY_SIZE(sh7750_early_devices));
 }
 

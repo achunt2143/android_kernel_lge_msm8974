@@ -22,11 +22,6 @@
 #include <linux/kernel.h>
 #include <linux/cache.h>
 
-<<<<<<< HEAD
-#undef DEBUG_RELOCATE
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 decode_calln_opcode (unsigned char *location)
 {
@@ -56,25 +51,14 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
 		       struct module *mod)
 {
 	unsigned int i;
-<<<<<<< HEAD
-        Elf32_Rela *rela = (void *)sechdrs[relsec].sh_addr;
-=======
 	Elf32_Rela *rela = (void *)sechdrs[relsec].sh_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Elf32_Sym *sym;
 	unsigned char *location;
 	uint32_t value;
 
-<<<<<<< HEAD
-#ifdef DEBUG_RELOCATE
-	printk("Applying relocate section %u to %u\n", relsec,
-	       sechdrs[relsec].sh_info);
-#endif
-=======
 	pr_debug("Applying relocate section %u to %u\n", relsec,
 		 sechdrs[relsec].sh_info);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rela); i++) {
 		location = (char *)sechdrs[sechdrs[relsec].sh_info].sh_addr
 			+ rela[i].r_offset;
@@ -100,11 +84,7 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
 				value -= ((unsigned long)location & -4) + 4;
 				if ((value & 3) != 0 ||
 				    ((value + (1 << 19)) >> 20) != 0) {
-<<<<<<< HEAD
-					printk("%s: relocation out of range, "
-=======
 					pr_err("%s: relocation out of range, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       "section %d reloc %d "
 					       "sym '%s'\n",
 					       mod->name, relsec, i,
@@ -128,11 +108,7 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
 				value -= (((unsigned long)location + 3) & -4);
 				if ((value & 3) != 0 ||
 				    (signed int)value >> 18 != -1) {
-<<<<<<< HEAD
-					printk("%s: relocation out of range, "
-=======
 					pr_err("%s: relocation out of range, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       "section %d reloc %d "
 					       "sym '%s'\n",
 					       mod->name, relsec, i,
@@ -177,11 +153,7 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
 		case R_XTENSA_SLOT12_OP:
 		case R_XTENSA_SLOT13_OP:
 		case R_XTENSA_SLOT14_OP:
-<<<<<<< HEAD
-			printk("%s: unexpected FLIX relocation: %u\n",
-=======
 			pr_err("%s: unexpected FLIX relocation: %u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       mod->name,
 			       ELF32_R_TYPE(rela[i].r_info));
 			return -ENOEXEC;
@@ -201,21 +173,13 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
 		case R_XTENSA_SLOT12_ALT:
 		case R_XTENSA_SLOT13_ALT:
 		case R_XTENSA_SLOT14_ALT:
-<<<<<<< HEAD
-			printk("%s: unexpected ALT relocation: %u\n",
-=======
 			pr_err("%s: unexpected ALT relocation: %u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       mod->name,
 			       ELF32_R_TYPE(rela[i].r_info));
 			return -ENOEXEC;
 
 		default:
-<<<<<<< HEAD
-			printk("%s: unexpected relocation: %u\n",
-=======
 			pr_err("%s: unexpected relocation: %u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       mod->name,
 			       ELF32_R_TYPE(rela[i].r_info));
 			return -ENOEXEC;

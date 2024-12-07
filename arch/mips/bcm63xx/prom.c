@@ -7,25 +7,16 @@
  */
 
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-#include <asm/bootinfo.h>
-=======
 #include <linux/memblock.h>
 #include <linux/smp.h>
 #include <asm/bootinfo.h>
 #include <asm/bmips.h>
 #include <asm/smp-ops.h>
 #include <asm/mipsregs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <bcm63xx_board.h>
 #include <bcm63xx_cpu.h>
 #include <bcm63xx_io.h>
 #include <bcm63xx_regs.h>
-<<<<<<< HEAD
-#include <bcm63xx_gpio.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init prom_init(void)
 {
@@ -38,15 +29,11 @@ void __init prom_init(void)
 	bcm_wdt_writel(WDT_STOP_2, WDT_CTL_REG);
 
 	/* disable all hardware blocks clock for now */
-<<<<<<< HEAD
-	if (BCMCPU_IS_6338())
-=======
 	if (BCMCPU_IS_3368())
 		mask = CKCTL_3368_ALL_SAFE_EN;
 	else if (BCMCPU_IS_6328())
 		mask = CKCTL_6328_ALL_SAFE_EN;
 	else if (BCMCPU_IS_6338())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mask = CKCTL_6338_ALL_SAFE_EN;
 	else if (BCMCPU_IS_6345())
 		mask = CKCTL_6345_ALL_SAFE_EN;
@@ -54,11 +41,8 @@ void __init prom_init(void)
 		mask = CKCTL_6348_ALL_SAFE_EN;
 	else if (BCMCPU_IS_6358())
 		mask = CKCTL_6358_ALL_SAFE_EN;
-<<<<<<< HEAD
-=======
 	else if (BCMCPU_IS_6362())
 		mask = CKCTL_6362_ALL_SAFE_EN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (BCMCPU_IS_6368())
 		mask = CKCTL_6368_ALL_SAFE_EN;
 	else
@@ -68,17 +52,6 @@ void __init prom_init(void)
 	reg &= ~mask;
 	bcm_perf_writel(reg, PERF_CKCTL_REG);
 
-<<<<<<< HEAD
-	/* register gpiochip */
-	bcm63xx_gpio_init();
-
-	/* do low level board init */
-	board_prom_init();
-}
-
-void __init prom_free_prom_memory(void)
-{
-=======
 	/* do low level board init */
 	board_prom_init();
 
@@ -120,5 +93,4 @@ void __init prom_free_prom_memory(void)
 		 * FIXME: we really should have some sort of hazard barrier here
 		 */
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

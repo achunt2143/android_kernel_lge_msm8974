@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-/*
- * Register map access API
- *
- * Copyright 2011 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0
 //
 // Register map access API
@@ -18,24 +5,12 @@
 // Copyright 2011 Wolfson Microelectronics plc
 //
 // Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/device.h>
 #include <linux/slab.h>
 #include <linux/export.h>
 #include <linux/mutex.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-
-#define CREATE_TRACE_POINTS
-#include <trace/events/regmap.h>
-
-#include "internal.h"
-
-bool regmap_writeable(struct regmap *map, unsigned int reg)
-{
-	if (map->max_register && reg > map->max_register)
-=======
 #include <linux/property.h>
 #include <linux/rbtree.h>
 #include <linux/sched.h>
@@ -115,14 +90,11 @@ EXPORT_SYMBOL_GPL(regmap_check_range_table);
 bool regmap_writeable(struct regmap *map, unsigned int reg)
 {
 	if (map->max_register_is_set && reg > map->max_register)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	if (map->writeable_reg)
 		return map->writeable_reg(map->dev, reg);
 
-<<<<<<< HEAD
-=======
 	if (map->wr_table)
 		return regmap_check_range_table(map, reg, map->wr_table);
 
@@ -149,20 +121,15 @@ bool regmap_cached(struct regmap *map, unsigned int reg)
 	if (ret)
 		return false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
 bool regmap_readable(struct regmap *map, unsigned int reg)
 {
-<<<<<<< HEAD
-	if (map->max_register && reg > map->max_register)
-=======
 	if (!map->reg_read)
 		return false;
 
 	if (map->max_register_is_set && reg > map->max_register)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	if (map->format.format_write)
@@ -171,12 +138,9 @@ bool regmap_readable(struct regmap *map, unsigned int reg)
 	if (map->readable_reg)
 		return map->readable_reg(map->dev, reg);
 
-<<<<<<< HEAD
-=======
 	if (map->rd_table)
 		return regmap_check_range_table(map, reg, map->rd_table);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
@@ -188,9 +152,6 @@ bool regmap_volatile(struct regmap *map, unsigned int reg)
 	if (map->volatile_reg)
 		return map->volatile_reg(map->dev, reg);
 
-<<<<<<< HEAD
-	return true;
-=======
 	if (map->volatile_table)
 		return regmap_check_range_table(map, reg, map->volatile_table);
 
@@ -198,7 +159,6 @@ bool regmap_volatile(struct regmap *map, unsigned int reg)
 		return false;
 	else
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 bool regmap_precious(struct regmap *map, unsigned int reg)
@@ -209,11 +169,6 @@ bool regmap_precious(struct regmap *map, unsigned int reg)
 	if (map->precious_reg)
 		return map->precious_reg(map->dev, reg);
 
-<<<<<<< HEAD
-	return false;
-}
-
-=======
 	if (map->precious_table)
 		return regmap_check_range_table(map, reg, map->precious_table);
 
@@ -242,25 +197,18 @@ bool regmap_readable_noinc(struct regmap *map, unsigned int reg)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool regmap_volatile_range(struct regmap *map, unsigned int reg,
 	size_t num)
 {
 	unsigned int i;
 
 	for (i = 0; i < num; i++)
-<<<<<<< HEAD
-		if (!regmap_volatile(map, reg + i))
-=======
 		if (!regmap_volatile(map, reg + regmap_get_offset(map, i)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return false;
 
 	return true;
 }
 
-<<<<<<< HEAD
-=======
 static void regmap_format_12_20_write(struct regmap *map,
 				     unsigned int reg, unsigned int val)
 {
@@ -273,7 +221,6 @@ static void regmap_format_12_20_write(struct regmap *map,
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void regmap_format_2_6_write(struct regmap *map,
 				     unsigned int reg, unsigned int val)
 {
@@ -296,8 +243,6 @@ static void regmap_format_7_9_write(struct regmap *map,
 	*out = cpu_to_be16((reg << 9) | val);
 }
 
-<<<<<<< HEAD
-=======
 static void regmap_format_7_17_write(struct regmap *map,
 				    unsigned int reg, unsigned int val)
 {
@@ -308,7 +253,6 @@ static void regmap_format_7_17_write(struct regmap *map,
 	out[0] = (val >> 16) | (reg << 1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void regmap_format_10_14_write(struct regmap *map,
 				    unsigned int reg, unsigned int val)
 {
@@ -319,32 +263,6 @@ static void regmap_format_10_14_write(struct regmap *map,
 	out[0] = reg >> 2;
 }
 
-<<<<<<< HEAD
-static void regmap_format_8(void *buf, unsigned int val)
-{
-	u8 *b = buf;
-
-	b[0] = val;
-}
-
-static void regmap_format_16(void *buf, unsigned int val)
-{
-	__be16 *b = buf;
-
-	b[0] = cpu_to_be16(val);
-}
-
-static void regmap_format_32(void *buf, unsigned int val)
-{
-	__be32 *b = buf;
-
-	b[0] = cpu_to_be32(val);
-}
-
-static unsigned int regmap_parse_8(void *buf)
-{
-	u8 *b = buf;
-=======
 static void regmap_format_8(void *buf, unsigned int val, unsigned int shift)
 {
 	u8 *b = buf;
@@ -400,50 +318,10 @@ static void regmap_parse_inplace_noop(void *buf)
 static unsigned int regmap_parse_8(const void *buf)
 {
 	const u8 *b = buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return b[0];
 }
 
-<<<<<<< HEAD
-static unsigned int regmap_parse_16(void *buf)
-{
-	__be16 *b = buf;
-
-	b[0] = be16_to_cpu(b[0]);
-
-	return b[0];
-}
-
-static unsigned int regmap_parse_32(void *buf)
-{
-	__be32 *b = buf;
-
-	b[0] = be32_to_cpu(b[0]);
-
-	return b[0];
-}
-
-/**
- * regmap_init(): Initialise register map
- *
- * @dev: Device that will be interacted with
- * @bus: Bus-specific callbacks to use with device
- * @config: Configuration for register map
- *
- * The return value will be an ERR_PTR() on error or a valid pointer to
- * a struct regmap.  This function should generally not be called
- * directly, it should be called by bus-specific init functions.
- */
-struct regmap *regmap_init(struct device *dev,
-			   const struct regmap_bus *bus,
-			   const struct regmap_config *config)
-{
-	struct regmap *map;
-	int ret = -EINVAL;
-
-	if (!bus || !config)
-=======
 static unsigned int regmap_parse_16_be(const void *buf)
 {
 	return get_unaligned_be16(buf);
@@ -796,7 +674,6 @@ struct regmap *__regmap_init(struct device *dev,
 	int i, j;
 
 	if (!config)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 
 	map = kzalloc(sizeof(*map), GFP_KERNEL);
@@ -805,17 +682,6 @@ struct regmap *__regmap_init(struct device *dev,
 		goto err;
 	}
 
-<<<<<<< HEAD
-	mutex_init(&map->lock);
-	map->format.buf_size = (config->reg_bits + config->val_bits) / 8;
-	map->format.reg_bytes = DIV_ROUND_UP(config->reg_bits, 8);
-	map->format.pad_bytes = config->pad_bits / 8;
-	map->format.val_bytes = DIV_ROUND_UP(config->val_bits, 8);
-	map->format.buf_size += map->format.pad_bytes;
-	map->dev = dev;
-	map->bus = bus;
-	map->max_register = config->max_register;
-=======
 	ret = regmap_set_name(map, config);
 	if (ret)
 		goto err_map;
@@ -928,23 +794,10 @@ struct regmap *__regmap_init(struct device *dev,
 	map->precious_table = config->precious_table;
 	map->wr_noinc_table = config->wr_noinc_table;
 	map->rd_noinc_table = config->rd_noinc_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	map->writeable_reg = config->writeable_reg;
 	map->readable_reg = config->readable_reg;
 	map->volatile_reg = config->volatile_reg;
 	map->precious_reg = config->precious_reg;
-<<<<<<< HEAD
-	map->cache_type = config->cache_type;
-
-	if (config->read_flag_mask || config->write_flag_mask) {
-		map->read_flag_mask = config->read_flag_mask;
-		map->write_flag_mask = config->write_flag_mask;
-	} else {
-		map->read_flag_mask = bus->read_flag_mask;
-	}
-
-	switch (config->reg_bits) {
-=======
 	map->writeable_noinc_reg = config->writeable_noinc_reg;
 	map->readable_noinc_reg = config->readable_noinc_reg;
 	map->cache_type = config->cache_type;
@@ -1000,18 +853,13 @@ struct regmap *__regmap_init(struct device *dev,
 	}
 
 	switch (config->reg_bits + map->reg_shift) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 2:
 		switch (config->val_bits) {
 		case 6:
 			map->format.format_write = regmap_format_2_6_write;
 			break;
 		default:
-<<<<<<< HEAD
-			goto err_map;
-=======
 			goto err_hwlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -1021,11 +869,7 @@ struct regmap *__regmap_init(struct device *dev,
 			map->format.format_write = regmap_format_4_12_write;
 			break;
 		default:
-<<<<<<< HEAD
-			goto err_map;
-=======
 			goto err_hwlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -1034,16 +878,11 @@ struct regmap *__regmap_init(struct device *dev,
 		case 9:
 			map->format.format_write = regmap_format_7_9_write;
 			break;
-<<<<<<< HEAD
-		default:
-			goto err_map;
-=======
 		case 17:
 			map->format.format_write = regmap_format_7_17_write;
 			break;
 		default:
 			goto err_hwlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -1053,9 +892,6 @@ struct regmap *__regmap_init(struct device *dev,
 			map->format.format_write = regmap_format_10_14_write;
 			break;
 		default:
-<<<<<<< HEAD
-			goto err_map;
-=======
 			goto err_hwlock;
 		}
 		break;
@@ -1067,7 +903,6 @@ struct regmap *__regmap_init(struct device *dev,
 			break;
 		default:
 			goto err_hwlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -1076,19 +911,6 @@ struct regmap *__regmap_init(struct device *dev,
 		break;
 
 	case 16:
-<<<<<<< HEAD
-		map->format.format_reg = regmap_format_16;
-		break;
-
-	case 32:
-		map->format.format_reg = regmap_format_32;
-		break;
-
-	default:
-		goto err_map;
-	}
-
-=======
 		switch (reg_endian) {
 		case REGMAP_ENDIAN_BIG:
 			map->format.format_reg = regmap_format_16_be;
@@ -1137,27 +959,10 @@ struct regmap *__regmap_init(struct device *dev,
 	if (val_endian == REGMAP_ENDIAN_NATIVE)
 		map->format.parse_inplace = regmap_parse_inplace_noop;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (config->val_bits) {
 	case 8:
 		map->format.format_val = regmap_format_8;
 		map->format.parse_val = regmap_parse_8;
-<<<<<<< HEAD
-		break;
-	case 16:
-		map->format.format_val = regmap_format_16;
-		map->format.parse_val = regmap_parse_16;
-		break;
-	case 32:
-		map->format.format_val = regmap_format_32;
-		map->format.parse_val = regmap_parse_32;
-		break;
-	}
-
-	if (!map->format.format_write &&
-	    !(map->format.format_reg && map->format.format_val))
-		goto err_map;
-=======
 		map->format.parse_inplace = regmap_parse_inplace_noop;
 		break;
 	case 16:
@@ -1222,26 +1027,10 @@ struct regmap *__regmap_init(struct device *dev,
 	if (!map->format.format_write &&
 	    !(map->format.format_reg && map->format.format_val))
 		goto err_hwlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	map->work_buf = kzalloc(map->format.buf_size, GFP_KERNEL);
 	if (map->work_buf == NULL) {
 		ret = -ENOMEM;
-<<<<<<< HEAD
-		goto err_map;
-	}
-
-	regmap_debugfs_init(map);
-
-	ret = regcache_init(map, config);
-	if (ret < 0)
-		goto err_free_workbuf;
-
-	return map;
-
-err_free_workbuf:
-	kfree(map->work_buf);
-=======
 		goto err_hwlock;
 	}
 
@@ -1370,47 +1159,24 @@ err_hwlock:
 		hwspin_lock_free(map->hwlock);
 err_name:
 	kfree_const(map->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_map:
 	kfree(map);
 err:
 	return ERR_PTR(ret);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(regmap_init);
-=======
 EXPORT_SYMBOL_GPL(__regmap_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void devm_regmap_release(struct device *dev, void *res)
 {
 	regmap_exit(*(struct regmap **)res);
 }
 
-<<<<<<< HEAD
-/**
- * devm_regmap_init(): Initialise managed register map
- *
- * @dev: Device that will be interacted with
- * @bus: Bus-specific callbacks to use with device
- * @config: Configuration for register map
- *
- * The return value will be an ERR_PTR() on error or a valid pointer
- * to a struct regmap.  This function should generally not be called
- * directly, it should be called by bus-specific init functions.  The
- * map will be automatically freed by the device management code.
- */
-struct regmap *devm_regmap_init(struct device *dev,
-				const struct regmap_bus *bus,
-				const struct regmap_config *config)
-=======
 struct regmap *__devm_regmap_init(struct device *dev,
 				  const struct regmap_bus *bus,
 				  void *bus_context,
 				  const struct regmap_config *config,
 				  struct lock_class_key *lock_key,
 				  const char *lock_name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct regmap **ptr, *regmap;
 
@@ -1418,12 +1184,8 @@ struct regmap *__devm_regmap_init(struct device *dev,
 	if (!ptr)
 		return ERR_PTR(-ENOMEM);
 
-<<<<<<< HEAD
-	regmap = regmap_init(dev, bus, config);
-=======
 	regmap = __regmap_init(dev, bus, bus_context, config,
 			       lock_key, lock_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!IS_ERR(regmap)) {
 		*ptr = regmap;
 		devres_add(dev, ptr);
@@ -1433,12 +1195,6 @@ struct regmap *__devm_regmap_init(struct device *dev,
 
 	return regmap;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(devm_regmap_init);
-
-/**
- * regmap_reinit_cache(): Reinitialise the current register cache
-=======
 EXPORT_SYMBOL_GPL(__devm_regmap_init);
 
 static void regmap_field_init(struct regmap_field *rm_field,
@@ -1637,7 +1393,6 @@ EXPORT_SYMBOL_GPL(regmap_field_free);
 
 /**
  * regmap_reinit_cache() - Reinitialise the current register cache
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @map: Register map to operate on.
  * @config: New configuration.  Only the cache data will be used.
@@ -1646,38 +1401,23 @@ EXPORT_SYMBOL_GPL(regmap_field_free);
  * new cache.  This can be used to restore the cache to defaults or to
  * update the cache configuration to reflect runtime discovery of the
  * hardware.
-<<<<<<< HEAD
-=======
  *
  * No explicit locking is done here, the user needs to ensure that
  * this function will not race with other calls to regmap.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int regmap_reinit_cache(struct regmap *map, const struct regmap_config *config)
 {
 	int ret;
 
-<<<<<<< HEAD
-	mutex_lock(&map->lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regcache_exit(map);
 	regmap_debugfs_exit(map);
 
 	map->max_register = config->max_register;
-<<<<<<< HEAD
-=======
 	map->max_register_is_set = map->max_register ?: config->max_register_is_0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	map->writeable_reg = config->writeable_reg;
 	map->readable_reg = config->readable_reg;
 	map->volatile_reg = config->volatile_reg;
 	map->precious_reg = config->precious_reg;
-<<<<<<< HEAD
-	map->cache_type = config->cache_type;
-
-=======
 	map->writeable_noinc_reg = config->writeable_noinc_reg;
 	map->readable_noinc_reg = config->readable_noinc_reg;
 	map->cache_type = config->cache_type;
@@ -1686,29 +1426,11 @@ int regmap_reinit_cache(struct regmap *map, const struct regmap_config *config)
 	if (ret)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regmap_debugfs_init(map);
 
 	map->cache_bypass = false;
 	map->cache_only = false;
 
-<<<<<<< HEAD
-	ret = regcache_init(map, config);
-
-	mutex_unlock(&map->lock);
-
-	return ret;
-}
-
-/**
- * regmap_exit(): Free a previously allocated register map
- */
-void regmap_exit(struct regmap *map)
-{
-	regcache_exit(map);
-	regmap_debugfs_exit(map);
-	kfree(map->work_buf);
-=======
 	return regcache_init(map, config);
 }
 EXPORT_SYMBOL_GPL(regmap_reinit_cache);
@@ -1744,17 +1466,10 @@ void regmap_exit(struct regmap *map)
 	kfree(map->patch);
 	if (map->bus && map->bus->free_on_exit)
 		kfree(map->bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(map);
 }
 EXPORT_SYMBOL_GPL(regmap_exit);
 
-<<<<<<< HEAD
-static int _regmap_raw_write(struct regmap *map, unsigned int reg,
-			     const void *val, size_t val_len)
-{
-	u8 *u8 = map->work_buf;
-=======
 static int dev_get_regmap_match(struct device *dev, void *res, void *data)
 {
 	struct regmap **r = res;
@@ -1888,31 +1603,11 @@ static int _regmap_raw_write_impl(struct regmap *map, unsigned int reg,
 	unsigned long flags;
 	void *work_val = map->work_buf + map->format.reg_bytes +
 		map->format.pad_bytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *buf;
 	int ret = -ENOTSUPP;
 	size_t len;
 	int i;
 
-<<<<<<< HEAD
-	/* Check for unwritable registers before we start */
-	if (map->writeable_reg)
-		for (i = 0; i < val_len / map->format.val_bytes; i++)
-			if (!map->writeable_reg(map->dev, reg + i))
-				return -EINVAL;
-
-	if (!map->cache_bypass && map->format.parse_val) {
-		unsigned int ival;
-		int val_bytes = map->format.val_bytes;
-		for (i = 0; i < val_len / val_bytes; i++) {
-			memcpy(map->work_buf, val + (i * val_bytes), val_bytes);
-			ival = map->format.parse_val(map->work_buf);
-			ret = regcache_write(map, reg + i, ival);
-			if (ret) {
-				dev_err(map->dev,
-				   "Error in caching of register: %u ret: %d\n",
-					reg + i, ret);
-=======
 	/* Check for unwritable or noinc registers in range
 	 * before we start
 	 */
@@ -1940,7 +1635,6 @@ static int _regmap_raw_write_impl(struct regmap *map, unsigned int reg,
 				dev_err(map->dev,
 					"Error in caching of register: %x ret: %d\n",
 					reg + offset, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return ret;
 			}
 		}
@@ -1950,14 +1644,6 @@ static int _regmap_raw_write_impl(struct regmap *map, unsigned int reg,
 		}
 	}
 
-<<<<<<< HEAD
-	map->format.format_reg(map->work_buf, reg);
-
-	u8[0] |= map->write_flag_mask;
-
-	trace_regmap_hw_write_start(map->dev, reg,
-				    val_len / map->format.val_bytes);
-=======
 	range = _regmap_range_lookup(map, reg);
 	if (range) {
 		int val_num = val_len / map->format.val_bytes;
@@ -2066,25 +1752,11 @@ static int _regmap_raw_write_impl(struct regmap *map, unsigned int reg,
 	}
 
 	trace_regmap_hw_write_start(map, reg, val_len / map->format.val_bytes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If we're doing a single register write we can probably just
 	 * send the work_buf directly, otherwise try to do a gather
 	 * write.
 	 */
-<<<<<<< HEAD
-	if (val == (map->work_buf + map->format.pad_bytes +
-		    map->format.reg_bytes))
-		ret = map->bus->write(map->dev, map->work_buf,
-				      map->format.reg_bytes +
-				      map->format.pad_bytes +
-				      val_len);
-	else if (map->bus->gather_write)
-		ret = map->bus->gather_write(map->dev, map->work_buf,
-					     map->format.reg_bytes +
-					     map->format.pad_bytes,
-					     val, val_len);
-=======
 	if (val == work_val)
 		ret = map->write(map->bus_context, map->work_buf,
 				 map->format.reg_bytes +
@@ -2097,7 +1769,6 @@ static int _regmap_raw_write_impl(struct regmap *map, unsigned int reg,
 					     val, val_len);
 	else
 		ret = -ENOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If that didn't work fall back on linearising by hand. */
 	if (ret == -ENOTSUPP) {
@@ -2109,15 +1780,6 @@ static int _regmap_raw_write_impl(struct regmap *map, unsigned int reg,
 		memcpy(buf, map->work_buf, map->format.reg_bytes);
 		memcpy(buf + map->format.reg_bytes + map->format.pad_bytes,
 		       val, val_len);
-<<<<<<< HEAD
-		ret = map->bus->write(map->dev, buf, len);
-
-		kfree(buf);
-	}
-
-	trace_regmap_hw_write_done(map->dev, reg,
-				   val_len / map->format.val_bytes);
-=======
 		ret = map->write(map->bus_context, buf, len);
 
 		kfree(buf);
@@ -2130,13 +1792,10 @@ static int _regmap_raw_write_impl(struct regmap *map, unsigned int reg,
 	}
 
 	trace_regmap_hw_write_done(map, reg, val_len / map->format.val_bytes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * regmap_can_raw_write - Test if regmap_raw_write() is supported
  *
@@ -2238,23 +1897,16 @@ static inline void *_regmap_map_get_context(struct regmap *map)
 	return (map->bus || (!map->bus && map->read)) ? map : map->bus_context;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int _regmap_write(struct regmap *map, unsigned int reg,
 		  unsigned int val)
 {
 	int ret;
-<<<<<<< HEAD
-	BUG_ON(!map->format.format_write && !map->format.format_val);
-
-	if (!map->cache_bypass && map->format.format_write) {
-=======
 	void *context = _regmap_map_get_context(map);
 
 	if (!regmap_writeable(map, reg))
 		return -EIO;
 
 	if (!map->cache_bypass && !map->defer_caching) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = regcache_write(map, reg, val);
 		if (ret != 0)
 			return ret;
@@ -2264,34 +1916,6 @@ int _regmap_write(struct regmap *map, unsigned int reg,
 		}
 	}
 
-<<<<<<< HEAD
-	trace_regmap_reg_write(map->dev, reg, val);
-
-	if (map->format.format_write) {
-		map->format.format_write(map, reg, val);
-
-		trace_regmap_hw_write_start(map->dev, reg, 1);
-
-		ret = map->bus->write(map->dev, map->work_buf,
-				      map->format.buf_size);
-
-		trace_regmap_hw_write_done(map->dev, reg, 1);
-
-		return ret;
-	} else {
-		map->format.format_val(map->work_buf + map->format.reg_bytes
-				       + map->format.pad_bytes, val);
-		return _regmap_raw_write(map, reg,
-					 map->work_buf +
-					 map->format.reg_bytes +
-					 map->format.pad_bytes,
-					 map->format.val_bytes);
-	}
-}
-
-/**
- * regmap_write(): Write a value to a single register
-=======
 	ret = map->reg_write(context, reg, val);
 	if (ret == 0) {
 		if (regmap_should_log(map))
@@ -2305,7 +1929,6 @@ int _regmap_write(struct regmap *map, unsigned int reg,
 
 /**
  * regmap_write() - Write a value to a single register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @map: Register map to write to
  * @reg: Register to write to
@@ -2318,13 +1941,6 @@ int regmap_write(struct regmap *map, unsigned int reg, unsigned int val)
 {
 	int ret;
 
-<<<<<<< HEAD
-	mutex_lock(&map->lock);
-
-	ret = _regmap_write(map, reg, val);
-
-	mutex_unlock(&map->lock);
-=======
 	if (!IS_ALIGNED(reg, map->reg_stride))
 		return -EINVAL;
 
@@ -2333,16 +1949,12 @@ int regmap_write(struct regmap *map, unsigned int reg, unsigned int val)
 	ret = _regmap_write(map, reg, val);
 
 	map->unlock(map->lock_arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 EXPORT_SYMBOL_GPL(regmap_write);
 
 /**
-<<<<<<< HEAD
- * regmap_raw_write(): Write raw values to one or more registers
-=======
  * regmap_write_async() - Write a value to a single register asynchronously
  *
  * @map: Register map to write to
@@ -2413,7 +2025,6 @@ int _regmap_raw_write(struct regmap *map, unsigned int reg,
 
 /**
  * regmap_raw_write() - Write raw values to one or more registers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @map: Register map to write to
  * @reg: Initial register to write to
@@ -2433,13 +2044,6 @@ int regmap_raw_write(struct regmap *map, unsigned int reg,
 {
 	int ret;
 
-<<<<<<< HEAD
-	mutex_lock(&map->lock);
-
-	ret = _regmap_raw_write(map, reg, val, val_len);
-
-	mutex_unlock(&map->lock);
-=======
 	if (!regmap_can_raw_write(map))
 		return -EINVAL;
 	if (val_len % map->format.val_bytes)
@@ -2450,16 +2054,11 @@ int regmap_raw_write(struct regmap *map, unsigned int reg,
 	ret = _regmap_raw_write(map, reg, val, val_len, false);
 
 	map->unlock(map->lock_arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 EXPORT_SYMBOL_GPL(regmap_raw_write);
 
-<<<<<<< HEAD
-/*
- * regmap_bulk_write(): Write multiple registers to the device
-=======
 static int regmap_noinc_readwrite(struct regmap *map, unsigned int reg,
 				  void *val, unsigned int val_len, bool write)
 {
@@ -2692,7 +2291,6 @@ EXPORT_SYMBOL_GPL(regmap_fields_update_bits_base);
 
 /**
  * regmap_bulk_write() - Write multiple registers to the device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @map: Register map to write to
  * @reg: First register to be write from
@@ -2700,11 +2298,7 @@ EXPORT_SYMBOL_GPL(regmap_fields_update_bits_base);
  * @val_count: Number of registers to write
  *
  * This function is intended to be used for writing a large block of
-<<<<<<< HEAD
- * data to be device either in single transfer or multiple transfer.
-=======
  * data to the device either in single transfer or multiple transfer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * A value of zero will be returned on success, a negative errno will
  * be returned in error cases.
@@ -2714,40 +2308,6 @@ int regmap_bulk_write(struct regmap *map, unsigned int reg, const void *val,
 {
 	int ret = 0, i;
 	size_t val_bytes = map->format.val_bytes;
-<<<<<<< HEAD
-	void *wval;
-
-	if (!map->format.parse_val)
-		return -EINVAL;
-
-	mutex_lock(&map->lock);
-
-	/* No formatting is require if val_byte is 1 */
-	if (val_bytes == 1) {
-		wval = (void *)val;
-	} else {
-		if (!val_count) {
-			ret = -EINVAL;
-			goto out;
-		}
-
-		wval = kmemdup(val, val_count * val_bytes, GFP_KERNEL);
-		if (!wval) {
-			ret = -ENOMEM;
-			dev_err(map->dev, "Error in memory allocation\n");
-			goto out;
-		}
-		for (i = 0; i < val_count * val_bytes; i += val_bytes)
-			map->format.parse_val(wval + i);
-	}
-	ret = _regmap_raw_write(map, reg, wval, val_bytes * val_count);
-
-	if (val_bytes != 1)
-		kfree(wval);
-
-out:
-	mutex_unlock(&map->lock);
-=======
 
 	if (!IS_ALIGNED(reg, map->reg_stride))
 		return -EINVAL;
@@ -2802,38 +2362,10 @@ out:
 	if (!ret)
 		trace_regmap_bulk_write(map, reg, val, val_bytes * val_count);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(regmap_bulk_write);
 
-<<<<<<< HEAD
-static int _regmap_raw_read(struct regmap *map, unsigned int reg, void *val,
-			    unsigned int val_len)
-{
-	u8 *u8 = map->work_buf;
-	int ret;
-
-	map->format.format_reg(map->work_buf, reg);
-
-	/*
-	 * Some buses or devices flag reads by setting the high bits in the
-	 * register addresss; since it's always the high bits for all
-	 * current formats we can do this here rather than in
-	 * formatting.  This may break if we get interesting formats.
-	 */
-	u8[0] |= map->read_flag_mask;
-
-	trace_regmap_hw_read_start(map->dev, reg,
-				   val_len / map->format.val_bytes);
-
-	ret = map->bus->read(map->dev, map->work_buf,
-			     map->format.reg_bytes + map->format.pad_bytes,
-			     val, val_len);
-
-	trace_regmap_hw_read_done(map->dev, reg,
-				  val_len / map->format.val_bytes);
-=======
 /*
  * _regmap_raw_multi_reg_write()
  *
@@ -3243,7 +2775,6 @@ static int _regmap_bus_read(void *context, unsigned int reg,
 	ret = _regmap_raw_read(map, reg, work_val, map->format.val_bytes, false);
 	if (ret == 0)
 		*val = map->format.parse_val(work_val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -3252,10 +2783,7 @@ static int _regmap_read(struct regmap *map, unsigned int reg,
 			unsigned int *val)
 {
 	int ret;
-<<<<<<< HEAD
-=======
 	void *context = _regmap_map_get_context(map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!map->cache_bypass) {
 		ret = regcache_read(map, reg, val);
@@ -3263,18 +2791,6 @@ static int _regmap_read(struct regmap *map, unsigned int reg,
 			return 0;
 	}
 
-<<<<<<< HEAD
-	if (!map->format.parse_val)
-		return -EINVAL;
-
-	if (map->cache_only)
-		return -EBUSY;
-
-	ret = _regmap_raw_read(map, reg, map->work_buf, map->format.val_bytes);
-	if (ret == 0) {
-		*val = map->format.parse_val(map->work_buf);
-		trace_regmap_reg_read(map->dev, reg, *val);
-=======
 	if (map->cache_only)
 		return -EBUSY;
 
@@ -3290,22 +2806,15 @@ static int _regmap_read(struct regmap *map, unsigned int reg,
 
 		if (!map->cache_bypass)
 			regcache_write(map, reg, *val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 }
 
 /**
-<<<<<<< HEAD
- * regmap_read(): Read a value from a single register
- *
- * @map: Register map to write to
-=======
  * regmap_read() - Read a value from a single register
  *
  * @map: Register map to read from
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg: Register to be read from
  * @val: Pointer to store read value
  *
@@ -3316,13 +2825,6 @@ int regmap_read(struct regmap *map, unsigned int reg, unsigned int *val)
 {
 	int ret;
 
-<<<<<<< HEAD
-	mutex_lock(&map->lock);
-
-	ret = _regmap_read(map, reg, val);
-
-	mutex_unlock(&map->lock);
-=======
 	if (!IS_ALIGNED(reg, map->reg_stride))
 		return -EINVAL;
 
@@ -3331,18 +2833,12 @@ int regmap_read(struct regmap *map, unsigned int reg, unsigned int *val)
 	ret = _regmap_read(map, reg, val);
 
 	map->unlock(map->lock_arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 EXPORT_SYMBOL_GPL(regmap_read);
 
 /**
-<<<<<<< HEAD
- * regmap_raw_read(): Read raw data from the device
- *
- * @map: Register map to write to
-=======
  * regmap_read_bypassed() - Read a value from a single register direct
  *			    from the device, bypassing the cache
  *
@@ -3383,7 +2879,6 @@ EXPORT_SYMBOL_GPL(regmap_read_bypassed);
  * regmap_raw_read() - Read raw data from the device
  *
  * @map: Register map to read from
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg: First register to be read from
  * @val: Pointer to store read value
  * @val_len: Size of data to read
@@ -3399,15 +2894,6 @@ int regmap_raw_read(struct regmap *map, unsigned int reg, void *val,
 	unsigned int v;
 	int ret, i;
 
-<<<<<<< HEAD
-	mutex_lock(&map->lock);
-
-	if (regmap_volatile_range(map, reg, val_count) || map->cache_bypass ||
-	    map->cache_type == REGCACHE_NONE) {
-		/* Physical block read if there's no cache involved */
-		ret = _regmap_raw_read(map, reg, val, val_len);
-
-=======
 	if (val_len % map->format.val_bytes)
 		return -EINVAL;
 	if (!IS_ALIGNED(reg, map->reg_stride))
@@ -3457,46 +2943,28 @@ int regmap_raw_read(struct regmap *map, unsigned int reg, void *val,
 			if (ret != 0)
 				goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Otherwise go word by word for the cache; should be low
 		 * cost as we expect to hit the cache.
 		 */
 		for (i = 0; i < val_count; i++) {
-<<<<<<< HEAD
-			ret = _regmap_read(map, reg + i, &v);
-			if (ret != 0)
-				goto out;
-
-			map->format.format_val(val + (i * val_bytes), v);
-=======
 			ret = _regmap_read(map, reg + regmap_get_offset(map, i),
 					   &v);
 			if (ret != 0)
 				goto out;
 
 			map->format.format_val(val + (i * val_bytes), v, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
  out:
-<<<<<<< HEAD
-	mutex_unlock(&map->lock);
-=======
 	map->unlock(map->lock_arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 EXPORT_SYMBOL_GPL(regmap_raw_read);
 
 /**
-<<<<<<< HEAD
- * regmap_bulk_read(): Read multiple registers from the device
- *
- * @map: Register map to write to
-=======
  * regmap_noinc_read(): Read data from a register without incrementing the
  *			register number
  *
@@ -3637,7 +3105,6 @@ EXPORT_SYMBOL_GPL(regmap_fields_read);
  * regmap_bulk_read() - Read multiple registers from the device
  *
  * @map: Register map to read from
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg: First register to be read from
  * @val: Pointer to store read value, in native register size for device
  * @val_count: Number of registers to read
@@ -3652,38 +3119,17 @@ int regmap_bulk_read(struct regmap *map, unsigned int reg, void *val,
 	size_t val_bytes = map->format.val_bytes;
 	bool vol = regmap_volatile_range(map, reg, val_count);
 
-<<<<<<< HEAD
-	if (!map->format.parse_val)
-		return -EINVAL;
-
-	if (vol || map->cache_type == REGCACHE_NONE) {
-=======
 	if (!IS_ALIGNED(reg, map->reg_stride))
 		return -EINVAL;
 	if (val_count == 0)
 		return -EINVAL;
 
 	if (map->read && map->format.parse_inplace && (vol || map->cache_type == REGCACHE_NONE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = regmap_raw_read(map, reg, val, val_bytes * val_count);
 		if (ret != 0)
 			return ret;
 
 		for (i = 0; i < val_count * val_bytes; i += val_bytes)
-<<<<<<< HEAD
-			map->format.parse_val(val + i);
-	} else {
-		for (i = 0; i < val_count; i++) {
-			unsigned int ival;
-			ret = regmap_read(map, reg + i, &ival);
-			if (ret != 0)
-				return ret;
-			map->format.format_val(val + (i * val_bytes), ival);
-		}
-	}
-
-	return 0;
-=======
 			map->format.parse_inplace(val + i);
 	} else {
 		u32 *u32 = val;
@@ -3724,41 +3170,16 @@ out:
 		trace_regmap_bulk_read(map, reg, val, val_bytes * val_count);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(regmap_bulk_read);
 
 static int _regmap_update_bits(struct regmap *map, unsigned int reg,
 			       unsigned int mask, unsigned int val,
-<<<<<<< HEAD
-			       bool *change)
-=======
 			       bool *change, bool force_write)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	unsigned int tmp, orig;
 
-<<<<<<< HEAD
-	mutex_lock(&map->lock);
-
-	ret = _regmap_read(map, reg, &orig);
-	if (ret != 0)
-		goto out;
-
-	tmp = orig & ~mask;
-	tmp |= val & mask;
-
-	if (tmp != orig) {
-		ret = _regmap_write(map, reg, tmp);
-		*change = true;
-	} else {
-		*change = false;
-	}
-
-out:
-	mutex_unlock(&map->lock);
-=======
 	if (change)
 		*change = false;
 
@@ -3781,58 +3202,18 @@ out:
 				*change = true;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 /**
-<<<<<<< HEAD
- * regmap_update_bits: Perform a read/modify/write cycle on the register map
- *
- * @map: Register map to update
- * @reg: Register to update
- * @mask: Bitmask to change
- * @val: New value for bitmask
- *
- * Returns zero for success, a negative number on error.
- */
-int regmap_update_bits(struct regmap *map, unsigned int reg,
-		       unsigned int mask, unsigned int val)
-{
-	bool change;
-	return _regmap_update_bits(map, reg, mask, val, &change);
-}
-EXPORT_SYMBOL_GPL(regmap_update_bits);
-
-/**
- * regmap_update_bits_check: Perform a read/modify/write cycle on the
- *                           register map and report if updated
-=======
  * regmap_update_bits_base() - Perform a read/modify/write cycle on a register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @map: Register map to update
  * @reg: Register to update
  * @mask: Bitmask to change
  * @val: New value for bitmask
  * @change: Boolean indicating if a write was done
-<<<<<<< HEAD
- *
- * Returns zero for success, a negative number on error.
- */
-int regmap_update_bits_check(struct regmap *map, unsigned int reg,
-			     unsigned int mask, unsigned int val,
-			     bool *change)
-{
-	return _regmap_update_bits(map, reg, mask, val, change);
-}
-EXPORT_SYMBOL_GPL(regmap_update_bits_check);
-
-/**
- * regmap_register_patch: Register and apply register updates to be applied
- *                        on device initialistion
-=======
  * @async: Boolean indicating asynchronously
  * @force: Boolean indicating use force update
  *
@@ -3958,7 +3339,6 @@ EXPORT_SYMBOL_GPL(regmap_async_complete);
 /**
  * regmap_register_patch - Register and apply register updates to be applied
  *                         on device initialistion
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @map: Register map to apply updates to.
  * @regs: Values to update.
@@ -3969,20 +3349,6 @@ EXPORT_SYMBOL_GPL(regmap_async_complete);
  * apply them immediately.  Typically this is used to apply
  * corrections to be applied to the device defaults on startup, such
  * as the updates some vendors provide to undocumented registers.
-<<<<<<< HEAD
- */
-int regmap_register_patch(struct regmap *map, const struct reg_default *regs,
-			  int num_regs)
-{
-	int i, ret;
-	bool bypass;
-
-	/* If needed the implementation can be extended to support this */
-	if (map->patch)
-		return -EBUSY;
-
-	mutex_lock(&map->lock);
-=======
  *
  * The caller must ensure that this function cannot be called
  * concurrently with either itself or regcache_sync().
@@ -4010,37 +3376,10 @@ int regmap_register_patch(struct regmap *map, const struct reg_sequence *regs,
 	}
 
 	map->lock(map->lock_arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bypass = map->cache_bypass;
 
 	map->cache_bypass = true;
-<<<<<<< HEAD
-
-	/* Write out first; it's useful to apply even if we fail later. */
-	for (i = 0; i < num_regs; i++) {
-		ret = _regmap_write(map, regs[i].reg, regs[i].def);
-		if (ret != 0) {
-			dev_err(map->dev, "Failed to write %x = %x: %d\n",
-				regs[i].reg, regs[i].def, ret);
-			goto out;
-		}
-	}
-
-	map->patch = kcalloc(num_regs, sizeof(struct reg_default), GFP_KERNEL);
-	if (map->patch != NULL) {
-		memcpy(map->patch, regs,
-		       num_regs * sizeof(struct reg_default));
-		map->patch_regs = num_regs;
-	} else {
-		ret = -ENOMEM;
-	}
-
-out:
-	map->cache_bypass = bypass;
-
-	mutex_unlock(&map->lock);
-=======
 	map->async = true;
 
 	ret = _regmap_multi_reg_write(map, regs, num_regs);
@@ -4051,21 +3390,15 @@ out:
 	map->unlock(map->lock_arg);
 
 	regmap_async_complete(map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 EXPORT_SYMBOL_GPL(regmap_register_patch);
 
-<<<<<<< HEAD
-/*
- * regmap_get_val_bytes(): Report the size of a register value
-=======
 /**
  * regmap_get_val_bytes() - Report the size of a register value
  *
  * @map: Register map to operate on.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Report the size of a register value, mainly intended to for use by
  * generic infrastructure built on top of regmap.
@@ -4079,8 +3412,6 @@ int regmap_get_val_bytes(struct regmap *map)
 }
 EXPORT_SYMBOL_GPL(regmap_get_val_bytes);
 
-<<<<<<< HEAD
-=======
 /**
  * regmap_get_max_register() - Report the max register value
  *
@@ -4134,7 +3465,6 @@ int regmap_parse_val(struct regmap *map, const void *buf,
 }
 EXPORT_SYMBOL_GPL(regmap_parse_val);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init regmap_initcall(void)
 {
 	regmap_debugfs_initcall();

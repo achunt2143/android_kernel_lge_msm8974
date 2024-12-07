@@ -7,12 +7,9 @@
 
 #include "bcma_private.h"
 #include "scan.h"
-<<<<<<< HEAD
-=======
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/of_address.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bcma/bcma.h>
 #include <linux/bcma/bcma_soc.h>
 
@@ -140,30 +137,20 @@ static void bcma_host_soc_block_write(struct bcma_device *core,
 
 static u32 bcma_host_soc_aread32(struct bcma_device *core, u16 offset)
 {
-<<<<<<< HEAD
-=======
 	if (WARN_ONCE(!core->io_wrap, "Accessed core has no wrapper/agent\n"))
 		return ~0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return readl(core->io_wrap + offset);
 }
 
 static void bcma_host_soc_awrite32(struct bcma_device *core, u16 offset,
 				  u32 value)
 {
-<<<<<<< HEAD
-	writel(value, core->io_wrap + offset);
-}
-
-const struct bcma_host_ops bcma_host_soc_ops = {
-=======
 	if (WARN_ONCE(!core->io_wrap, "Accessed core has no wrapper/agent\n"))
 		return;
 	writel(value, core->io_wrap + offset);
 }
 
 static const struct bcma_host_ops bcma_host_soc_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read8		= bcma_host_soc_read8,
 	.read16		= bcma_host_soc_read16,
 	.read32		= bcma_host_soc_read32,
@@ -181,19 +168,11 @@ static const struct bcma_host_ops bcma_host_soc_ops = {
 int __init bcma_host_soc_register(struct bcma_soc *soc)
 {
 	struct bcma_bus *bus = &soc->bus;
-<<<<<<< HEAD
-	int err;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* iomap only first core. We have to read some register on this core
 	 * to scan the bus.
 	 */
-<<<<<<< HEAD
-	bus->mmio = ioremap_nocache(BCMA_ADDR_BASE, BCMA_CORE_SIZE * 1);
-=======
 	bus->mmio = ioremap(BCMA_ADDR_BASE, BCMA_CORE_SIZE * 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!bus->mmio)
 		return -ENOMEM;
 
@@ -201,10 +180,6 @@ int __init bcma_host_soc_register(struct bcma_soc *soc)
 	bus->hosttype = BCMA_HOSTTYPE_SOC;
 	bus->ops = &bcma_host_soc_ops;
 
-<<<<<<< HEAD
-	/* Register */
-	err = bcma_bus_early_register(bus, &soc->core_cc, &soc->core_mips);
-=======
 	/* Initialize struct, detect chip */
 	bcma_init_bus(bus);
 
@@ -218,14 +193,11 @@ int __init bcma_host_soc_init(struct bcma_soc *soc)
 
 	/* Scan bus and initialize it */
 	err = bcma_bus_early_register(bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		iounmap(bus->mmio);
 
 	return err;
 }
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_OF
 static int bcma_host_soc_probe(struct platform_device *pdev)
@@ -304,4 +276,3 @@ void __exit bcma_host_soc_unregister_driver(void)
 	platform_driver_unregister(&bcma_host_soc_driver);
 }
 #endif /* CONFIG_OF */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

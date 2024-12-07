@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define A_SG_CONTROL 0x0
 
 #define S_CONGMODE    29
@@ -689,13 +686,6 @@
 #define V_BUSY(x) ((x) << S_BUSY)
 #define F_BUSY    V_BUSY(1U)
 
-<<<<<<< HEAD
-#define S_BUSY    31
-#define V_BUSY(x) ((x) << S_BUSY)
-#define F_BUSY    V_BUSY(1U)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define A_MC7_EXT_MODE1 0x108
 
 #define A_MC7_EXT_MODE2 0x10c
@@ -756,17 +746,6 @@
 
 #define A_MC7_CAL 0x128
 
-<<<<<<< HEAD
-#define S_BUSY    31
-#define V_BUSY(x) ((x) << S_BUSY)
-#define F_BUSY    V_BUSY(1U)
-
-#define S_BUSY    31
-#define V_BUSY(x) ((x) << S_BUSY)
-#define F_BUSY    V_BUSY(1U)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define S_CAL_FAULT    30
 #define V_CAL_FAULT(x) ((x) << S_CAL_FAULT)
 #define F_CAL_FAULT    V_CAL_FAULT(1U)
@@ -825,12 +804,6 @@
 #define V_OP(x) ((x) << S_OP)
 #define F_OP    V_OP(1U)
 
-<<<<<<< HEAD
-#define F_OP    V_OP(1U)
-#define A_SF_OP 0x6dc
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define A_MC7_BIST_ADDR_BEG 0x168
 
 #define A_MC7_BIST_ADDR_END 0x16c
@@ -843,11 +816,6 @@
 #define V_CONT(x) ((x) << S_CONT)
 #define F_CONT    V_CONT(1U)
 
-<<<<<<< HEAD
-#define F_CONT    V_CONT(1U)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define A_MC7_INT_ENABLE 0x178
 
 #define S_AE    17
@@ -1033,11 +1001,6 @@
 #define V_NICMODE(x) ((x) << S_NICMODE)
 #define F_NICMODE    V_NICMODE(1U)
 
-<<<<<<< HEAD
-#define F_NICMODE    V_NICMODE(1U)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define S_IPV6ENABLE    15
 #define V_IPV6ENABLE(x) ((x) << S_IPV6ENABLE)
 #define F_IPV6ENABLE    V_IPV6ENABLE(1U)
@@ -1581,38 +1544,15 @@
 #define A_ULPRX_STAG_ULIMIT 0x530
 
 #define A_ULPRX_RQ_LLIMIT 0x534
-<<<<<<< HEAD
-#define A_ULPRX_RQ_LLIMIT 0x534
 
 #define A_ULPRX_RQ_ULIMIT 0x538
-#define A_ULPRX_RQ_ULIMIT 0x538
-=======
-
-#define A_ULPRX_RQ_ULIMIT 0x538
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define A_ULPRX_PBL_LLIMIT 0x53c
 
 #define A_ULPRX_PBL_ULIMIT 0x540
-<<<<<<< HEAD
-#define A_ULPRX_PBL_ULIMIT 0x540
 
 #define A_ULPRX_TDDP_TAGMASK 0x524
 
-#define A_ULPRX_RQ_LLIMIT 0x534
-#define A_ULPRX_RQ_LLIMIT 0x534
-
-#define A_ULPRX_RQ_ULIMIT 0x538
-#define A_ULPRX_RQ_ULIMIT 0x538
-
-#define A_ULPRX_PBL_ULIMIT 0x540
-#define A_ULPRX_PBL_ULIMIT 0x540
-
-=======
-
-#define A_ULPRX_TDDP_TAGMASK 0x524
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define A_ULPTX_CONFIG 0x580
 
 #define S_CFG_CQE_SOP_MASK    1
@@ -2083,11 +2023,6 @@
 #define V_TMMODE(x) ((x) << S_TMMODE)
 #define F_TMMODE    V_TMMODE(1U)
 
-<<<<<<< HEAD
-#define F_TMMODE    V_TMMODE(1U)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define A_MC5_DB_ROUTING_TABLE_INDEX 0x70c
 
 #define A_MC5_DB_FILTER_TABLE 0x710
@@ -2487,11 +2422,6 @@
 #define V_TXACTENABLE(x) ((x) << S_TXACTENABLE)
 #define F_TXACTENABLE    V_TXACTENABLE(1U)
 
-<<<<<<< HEAD
-#define A_XGM_SERDES_CTRL0 0x8e0
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define S_RESET3    23
 #define V_RESET3(x) ((x) << S_RESET3)
 #define F_RESET3    V_RESET3(1U)

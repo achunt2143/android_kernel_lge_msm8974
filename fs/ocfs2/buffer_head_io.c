@@ -1,43 +1,16 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * io.c
  *
  * Buffer cache handling
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
 #include <linux/types.h>
 #include <linux/highmem.h>
-<<<<<<< HEAD
-=======
 #include <linux/bio.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <cluster/masklog.h>
 
@@ -91,11 +64,7 @@ int ocfs2_write_block(struct ocfs2_super *osb, struct buffer_head *bh,
 
 	get_bh(bh); /* for end_buffer_write_sync() */
 	bh->b_end_io = end_buffer_write_sync;
-<<<<<<< HEAD
-	submit_bh(WRITE, bh);
-=======
 	submit_bh(REQ_OP_WRITE, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wait_on_buffer(bh);
 
@@ -114,49 +83,34 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 /* Caller must provide a bhs[] with all NULL or non-NULL entries, so it
  * will be easier to handle read failure.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ocfs2_read_blocks_sync(struct ocfs2_super *osb, u64 block,
 			   unsigned int nr, struct buffer_head *bhs[])
 {
 	int status = 0;
 	unsigned int i;
 	struct buffer_head *bh;
-<<<<<<< HEAD
-=======
 	int new_bh = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_read_blocks_sync((unsigned long long)block, nr);
 
 	if (!nr)
 		goto bail;
 
-<<<<<<< HEAD
-=======
 	/* Don't put buffer head and re-assign it to NULL if it is allocated
 	 * outside since the caller can't be aware of this alternation!
 	 */
 	new_bh = (bhs[0] == NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0 ; i < nr ; i++) {
 		if (bhs[i] == NULL) {
 			bhs[i] = sb_getblk(osb->sb, block++);
 			if (bhs[i] == NULL) {
-<<<<<<< HEAD
-				status = -EIO;
-				mlog_errno(status);
-				goto bail;
-=======
 				status = -ENOMEM;
 				mlog_errno(status);
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		bh = bhs[i];
@@ -179,28 +133,12 @@ int ocfs2_read_blocks_sync(struct ocfs2_super *osb, u64 block,
 
 		lock_buffer(bh);
 		if (buffer_jbd(bh)) {
-<<<<<<< HEAD
-=======
 #ifdef CATCH_BH_JBD_RACES
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mlog(ML_ERROR,
 			     "block %llu had the JBD bit set "
 			     "while I was in lock_buffer!",
 			     (unsigned long long)bh->b_blocknr);
 			BUG();
-<<<<<<< HEAD
-		}
-
-		clear_buffer_uptodate(bh);
-		get_bh(bh); /* for end_buffer_read_sync() */
-		bh->b_end_io = end_buffer_read_sync;
-		submit_bh(READ, bh);
-	}
-
-	for (i = nr; i > 0; i--) {
-		bh = bhs[i - 1];
-
-=======
 #else
 			unlock_buffer(bh);
 			continue;
@@ -232,7 +170,6 @@ read_failure:
 			continue;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* No need to wait on the buffer if it's managed by JBD. */
 		if (!buffer_jbd(bh))
 			wait_on_buffer(bh);
@@ -242,12 +179,7 @@ read_failure:
 			 * so we can safely record this and loop back
 			 * to cleanup the other buffers. */
 			status = -EIO;
-<<<<<<< HEAD
-			put_bh(bh);
-			bhs[i - 1] = NULL;
-=======
 			goto read_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -255,12 +187,9 @@ bail:
 	return status;
 }
 
-<<<<<<< HEAD
-=======
 /* Caller must provide a bhs[] with all NULL or non-NULL entries, so it
  * will be easier to handle read failure.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ocfs2_read_blocks(struct ocfs2_caching_info *ci, u64 block, int nr,
 		      struct buffer_head *bhs[], int flags,
 		      int (*validate)(struct super_block *sb,
@@ -270,10 +199,7 @@ int ocfs2_read_blocks(struct ocfs2_caching_info *ci, u64 block, int nr,
 	int i, ignore_cache = 0;
 	struct buffer_head *bh;
 	struct super_block *sb = ocfs2_metadata_cache_get_super(ci);
-<<<<<<< HEAD
-=======
 	int new_bh = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_read_blocks_begin(ci, (unsigned long long)block, nr, flags);
 
@@ -299,30 +225,21 @@ int ocfs2_read_blocks(struct ocfs2_caching_info *ci, u64 block, int nr,
 		goto bail;
 	}
 
-<<<<<<< HEAD
-=======
 	/* Don't put buffer head and re-assign it to NULL if it is allocated
 	 * outside since the caller can't be aware of this alternation!
 	 */
 	new_bh = (bhs[0] == NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_metadata_cache_io_lock(ci);
 	for (i = 0 ; i < nr ; i++) {
 		if (bhs[i] == NULL) {
 			bhs[i] = sb_getblk(sb, block++);
 			if (bhs[i] == NULL) {
 				ocfs2_metadata_cache_io_unlock(ci);
-<<<<<<< HEAD
-				status = -EIO;
-				mlog_errno(status);
-				goto bail;
-=======
 				status = -ENOMEM;
 				mlog_errno(status);
 				/* Don't forget to put previous bh! */
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		bh = bhs[i];
@@ -407,35 +324,20 @@ int ocfs2_read_blocks(struct ocfs2_caching_info *ci, u64 block, int nr,
 				continue;
 			}
 
-<<<<<<< HEAD
-			clear_buffer_uptodate(bh);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			get_bh(bh); /* for end_buffer_read_sync() */
 			if (validate)
 				set_buffer_needs_validate(bh);
 			bh->b_end_io = end_buffer_read_sync;
-<<<<<<< HEAD
-			submit_bh(READ, bh);
-=======
 			submit_bh(REQ_OP_READ, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 	}
 
-<<<<<<< HEAD
-	status = 0;
-
-=======
 read_failure:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = (nr - 1); i >= 0; i--) {
 		bh = bhs[i];
 
 		if (!(flags & OCFS2_BH_READAHEAD)) {
-<<<<<<< HEAD
-=======
 			if (unlikely(status)) {
 				/* Clear the buffers on error including those
 				 * ever succeeded in reading
@@ -454,7 +356,6 @@ read_failure:
 				}
 				continue;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* We know this can't have changed as we hold the
 			 * owner sem. Avoid doing any work on the bh if the
 			 * journal has it. */
@@ -469,14 +370,8 @@ read_failure:
 				 * for this bh as it's not marked locally
 				 * uptodate. */
 				status = -EIO;
-<<<<<<< HEAD
-				put_bh(bh);
-				bhs[i] = NULL;
-				continue;
-=======
 				clear_buffer_needs_validate(bh);
 				goto read_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			if (buffer_needs_validate(bh)) {
@@ -486,16 +381,8 @@ read_failure:
 				BUG_ON(buffer_jbd(bh));
 				clear_buffer_needs_validate(bh);
 				status = validate(sb, bh);
-<<<<<<< HEAD
-				if (status) {
-					put_bh(bh);
-					bhs[i] = NULL;
-					continue;
-				}
-=======
 				if (status)
 					goto read_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -562,11 +449,7 @@ int ocfs2_write_super_or_backup(struct ocfs2_super *osb,
 	get_bh(bh); /* for end_buffer_write_sync() */
 	bh->b_end_io = end_buffer_write_sync;
 	ocfs2_compute_meta_ecc(osb->sb, bh->b_data, &di->i_check);
-<<<<<<< HEAD
-	submit_bh(WRITE, bh);
-=======
 	submit_bh(REQ_OP_WRITE, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wait_on_buffer(bh);
 

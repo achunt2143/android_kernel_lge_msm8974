@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* U1copy_from_user.S: UltraSparc-I/II/IIi/IIe optimized copy from userspace.
  *
  * Copyright (C) 1999, 2000, 2004 David S. Miller (davem@redhat.com)
  */
 
-<<<<<<< HEAD
-#define EX_LD(x)		\
-98:	x;			\
-	.section __ex_table,"a";\
-	.align 4;		\
-	.word 98b, __retl_one;	\
-	.text;			\
-	.align 4;
-
-#define FUNC_NAME		___copy_from_user
-=======
 #define EX_LD(x,y)		\
 98:	x;			\
 	.section __ex_table,"a";\
@@ -35,7 +21,6 @@
 	.align 4;
 
 #define FUNC_NAME		raw_copy_from_user
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LOAD(type,addr,dest)	type##a [addr] %asi, dest
 #define LOAD_BLK(addr,dest)	ldda [addr] ASI_BLK_AIUS, dest
 #define EX_RETVAL(x)		0
@@ -47,11 +32,7 @@
 #define PREAMBLE					\
 	rd		%asi, %g1;			\
 	cmp		%g1, ASI_AIUS;			\
-<<<<<<< HEAD
-	bne,pn		%icc, ___copy_in_user;		\
-=======
 	bne,pn		%icc, raw_copy_in_user;		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 nop;						\
 
 #include "U1memcpy.S"

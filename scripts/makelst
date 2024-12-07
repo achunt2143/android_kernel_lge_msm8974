@@ -1,8 +1,5 @@
 #!/bin/sh
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # A script to dump mixed source code & assembly
 # with correct relocations from System.map
 # Requires the following lines in makefile:

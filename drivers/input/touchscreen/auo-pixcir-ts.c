@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for AUO in-cell touchscreens
  *
@@ -11,25 +8,9 @@
  *
  * Copyright (c) 2008 QUALCOMM Incorporated.
  * Copyright (c) 2008 QUALCOMM USA, INC.
-<<<<<<< HEAD
- *
- *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- */
-
-=======
  */
 
 #include <linux/err.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -39,14 +20,9 @@
 #include <linux/i2c.h>
 #include <linux/mutex.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-#include <linux/input/auo-pixcir-ts.h>
-=======
 #include <linux/gpio/consumer.h>
 #include <linux/of.h>
 #include <linux/property.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Coordinate calculation:
@@ -93,8 +69,6 @@
 #define AUO_PIXCIR_INT_RELEASE		(1 << 4)
 #define AUO_PIXCIR_INT_ENABLE		(1 << 3)
 #define AUO_PIXCIR_INT_POL_HIGH		(1 << 2)
-<<<<<<< HEAD
-=======
 
 /*
  * Interrupt modes:
@@ -105,7 +79,6 @@
 #define AUO_PIXCIR_INT_PERIODICAL	0x00
 #define AUO_PIXCIR_INT_COMP_COORD	0x01
 #define AUO_PIXCIR_INT_TOUCH_IND	0x02
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AUO_PIXCIR_INT_MODE_MASK	0x03
 
 /*
@@ -140,11 +113,6 @@
 struct auo_pixcir_ts {
 	struct i2c_client	*client;
 	struct input_dev	*input;
-<<<<<<< HEAD
-	char			phys[32];
-
-	/* special handling for touch_indicate interupt mode */
-=======
 	struct gpio_desc	*gpio_int;
 	struct gpio_desc	*gpio_rst;
 	char			phys[32];
@@ -153,7 +121,6 @@ struct auo_pixcir_ts {
 	unsigned int		y_max;
 
 	/* special handling for touch_indicate interrupt mode */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool			touch_ind_mode;
 
 	wait_queue_head_t	wait;
@@ -172,10 +139,6 @@ static int auo_pixcir_collect_data(struct auo_pixcir_ts *ts,
 				   struct auo_point_t *point)
 {
 	struct i2c_client *client = ts->client;
-<<<<<<< HEAD
-	const struct auo_pixcir_ts_platdata *pdata = client->dev.platform_data;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t raw_coord[8];
 	uint8_t raw_area[4];
 	int i, ret;
@@ -202,13 +165,8 @@ static int auo_pixcir_collect_data(struct auo_pixcir_ts *ts,
 		point[i].coord_y =
 			raw_coord[4 * i + 3] << 8 | raw_coord[4 * i + 2];
 
-<<<<<<< HEAD
-		if (point[i].coord_x > pdata->x_max ||
-		    point[i].coord_y > pdata->y_max) {
-=======
 		if (point[i].coord_x > ts->x_max ||
 		    point[i].coord_y > ts->y_max) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_warn(&client->dev, "coordinates (%d,%d) invalid\n",
 				point[i].coord_x, point[i].coord_y);
 			point[i].coord_x = point[i].coord_y = 0;
@@ -226,11 +184,6 @@ static int auo_pixcir_collect_data(struct auo_pixcir_ts *ts,
 static irqreturn_t auo_pixcir_interrupt(int irq, void *dev_id)
 {
 	struct auo_pixcir_ts *ts = dev_id;
-<<<<<<< HEAD
-	struct i2c_client *client = ts->client;
-	const struct auo_pixcir_ts_platdata *pdata = client->dev.platform_data;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct auo_point_t point[AUO_PIXCIR_REPORT_POINTS];
 	int i;
 	int ret;
@@ -241,11 +194,7 @@ static irqreturn_t auo_pixcir_interrupt(int irq, void *dev_id)
 
 		/* check for up event in touch touch_ind_mode */
 		if (ts->touch_ind_mode) {
-<<<<<<< HEAD
-			if (gpio_get_value(pdata->gpio_int) == 0) {
-=======
 			if (gpiod_get_value_cansleep(ts->gpio_int) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				input_mt_sync(ts->input);
 				input_report_key(ts->input, BTN_TOUCH, 0);
 				input_sync(ts->input);
@@ -341,17 +290,9 @@ static int auo_pixcir_power_mode(struct auo_pixcir_ts *ts, int mode)
 	return 0;
 }
 
-<<<<<<< HEAD
-static __devinit int auo_pixcir_int_config(struct auo_pixcir_ts *ts,
-					   int int_setting)
-{
-	struct i2c_client *client = ts->client;
-	struct auo_pixcir_ts_platdata *pdata = client->dev.platform_data;
-=======
 static int auo_pixcir_int_config(struct auo_pixcir_ts *ts, int int_setting)
 {
 	struct i2c_client *client = ts->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = i2c_smbus_read_byte_data(client, AUO_PIXCIR_REG_INT_SETTING);
@@ -373,11 +314,7 @@ static int auo_pixcir_int_config(struct auo_pixcir_ts *ts, int int_setting)
 		return ret;
 	}
 
-<<<<<<< HEAD
-	ts->touch_ind_mode = pdata->int_setting == AUO_PIXCIR_INT_TOUCH_IND;
-=======
 	ts->touch_ind_mode = int_setting == AUO_PIXCIR_INT_TOUCH_IND;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -462,18 +399,8 @@ static int auo_pixcir_stop(struct auo_pixcir_ts *ts)
 static int auo_pixcir_input_open(struct input_dev *dev)
 {
 	struct auo_pixcir_ts *ts = input_get_drvdata(dev);
-<<<<<<< HEAD
-	int ret;
-
-	ret = auo_pixcir_start(ts);
-	if (ret)
-		return ret;
-
-	return 0;
-=======
 
 	return auo_pixcir_start(ts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void auo_pixcir_input_close(struct input_dev *dev)
@@ -481,16 +408,8 @@ static void auo_pixcir_input_close(struct input_dev *dev)
 	struct auo_pixcir_ts *ts = input_get_drvdata(dev);
 
 	auo_pixcir_stop(ts);
-<<<<<<< HEAD
-
-	return;
 }
 
-#ifdef CONFIG_PM_SLEEP
-=======
-}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int auo_pixcir_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -505,11 +424,7 @@ static int auo_pixcir_suspend(struct device *dev)
 	 */
 	if (device_may_wakeup(&client->dev)) {
 		/* need to start device if not open, to be wakeup source */
-<<<<<<< HEAD
-		if (!input->users) {
-=======
 		if (!input_device_enabled(input)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = auo_pixcir_start(ts);
 			if (ret)
 				goto unlock;
@@ -517,11 +432,7 @@ static int auo_pixcir_suspend(struct device *dev)
 
 		enable_irq_wake(client->irq);
 		ret = auo_pixcir_power_mode(ts, AUO_PIXCIR_POWER_SLEEP);
-<<<<<<< HEAD
-	} else if (input->users) {
-=======
 	} else if (input_device_enabled(input)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = auo_pixcir_stop(ts);
 	}
 
@@ -544,22 +455,14 @@ static int auo_pixcir_resume(struct device *dev)
 		disable_irq_wake(client->irq);
 
 		/* need to stop device if it was not open on suspend */
-<<<<<<< HEAD
-		if (!input->users) {
-=======
 		if (!input_device_enabled(input)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = auo_pixcir_stop(ts);
 			if (ret)
 				goto unlock;
 		}
 
 		/* device wakes automatically from SLEEP */
-<<<<<<< HEAD
-	} else if (input->users) {
-=======
 	} else if (input_device_enabled(input)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = auo_pixcir_start(ts);
 	}
 
@@ -568,40 +471,6 @@ unlock:
 
 	return ret;
 }
-<<<<<<< HEAD
-#endif
-
-static SIMPLE_DEV_PM_OPS(auo_pixcir_pm_ops, auo_pixcir_suspend,
-			 auo_pixcir_resume);
-
-static int __devinit auo_pixcir_probe(struct i2c_client *client,
-				      const struct i2c_device_id *id)
-{
-	const struct auo_pixcir_ts_platdata *pdata = client->dev.platform_data;
-	struct auo_pixcir_ts *ts;
-	struct input_dev *input_dev;
-	int ret;
-
-	if (!pdata)
-		return -EINVAL;
-
-	ts = kzalloc(sizeof(struct auo_pixcir_ts), GFP_KERNEL);
-	if (!ts)
-		return -ENOMEM;
-
-	ret = gpio_request(pdata->gpio_int, "auo_pixcir_ts_int");
-	if (ret) {
-		dev_err(&client->dev, "request of gpio %d failed, %d\n",
-			pdata->gpio_int, ret);
-		goto err_gpio_int;
-	}
-
-	if (pdata->init_hw)
-		pdata->init_hw(client);
-
-	ts->client = client;
-	ts->touch_ind_mode = 0;
-=======
 
 static DEFINE_SIMPLE_DEV_PM_OPS(auo_pixcir_pm_ops,
 				auo_pixcir_suspend, auo_pixcir_resume);
@@ -634,21 +503,11 @@ static int auo_pixcir_probe(struct i2c_client *client)
 	ts->input = input_dev;
 	ts->touch_ind_mode = 0;
 	ts->stopped = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_waitqueue_head(&ts->wait);
 
 	snprintf(ts->phys, sizeof(ts->phys),
 		 "%s/input0", dev_name(&client->dev));
 
-<<<<<<< HEAD
-	input_dev = input_allocate_device();
-	if (!input_dev) {
-		dev_err(&client->dev, "could not allocate input device\n");
-		goto err_input_alloc;
-	}
-
-	ts->input = input_dev;
-=======
 	if (device_property_read_u32(&client->dev, "x-size", &ts->x_max)) {
 		dev_err(&client->dev, "failed to get x-size property\n");
 		return -EINVAL;
@@ -658,15 +517,10 @@ static int auo_pixcir_probe(struct i2c_client *client)
 		dev_err(&client->dev, "failed to get y-size property\n");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_dev->name = "AUO-Pixcir touchscreen";
 	input_dev->phys = ts->phys;
 	input_dev->id.bustype = BUS_I2C;
-<<<<<<< HEAD
-	input_dev->dev.parent = &client->dev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_dev->open = auo_pixcir_input_open;
 	input_dev->close = auo_pixcir_input_close;
@@ -677,51 +531,6 @@ static int auo_pixcir_probe(struct i2c_client *client)
 	__set_bit(BTN_TOUCH, input_dev->keybit);
 
 	/* For single touch */
-<<<<<<< HEAD
-	input_set_abs_params(input_dev, ABS_X, 0, pdata->x_max, 0, 0);
-	input_set_abs_params(input_dev, ABS_Y, 0, pdata->y_max, 0, 0);
-
-	/* For multi touch */
-	input_set_abs_params(input_dev, ABS_MT_POSITION_X, 0,
-			     pdata->x_max, 0, 0);
-	input_set_abs_params(input_dev, ABS_MT_POSITION_Y, 0,
-			     pdata->y_max, 0, 0);
-	input_set_abs_params(input_dev, ABS_MT_TOUCH_MAJOR, 0,
-			     AUO_PIXCIR_MAX_AREA, 0, 0);
-	input_set_abs_params(input_dev, ABS_MT_TOUCH_MINOR, 0,
-			     AUO_PIXCIR_MAX_AREA, 0, 0);
-	input_set_abs_params(input_dev, ABS_MT_ORIENTATION, 0, 1, 0, 0);
-
-	ret = i2c_smbus_read_byte_data(client, AUO_PIXCIR_REG_VERSION);
-	if (ret < 0)
-		goto err_fw_vers;
-	dev_info(&client->dev, "firmware version 0x%X\n", ret);
-
-	ret = auo_pixcir_int_config(ts, pdata->int_setting);
-	if (ret)
-		goto err_fw_vers;
-
-	input_set_drvdata(ts->input, ts);
-	ts->stopped = true;
-
-	ret = request_threaded_irq(client->irq, NULL, auo_pixcir_interrupt,
-				   IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-				   input_dev->name, ts);
-	if (ret) {
-		dev_err(&client->dev, "irq %d requested failed\n", client->irq);
-		goto err_fw_vers;
-	}
-
-	/* stop device and put it into deep sleep until it is opened */
-	ret = auo_pixcir_stop(ts);
-	if (ret < 0)
-		goto err_input_register;
-
-	ret = input_register_device(input_dev);
-	if (ret) {
-		dev_err(&client->dev, "could not register input device\n");
-		goto err_input_register;
-=======
 	input_set_abs_params(input_dev, ABS_X, 0, ts->x_max, 0, 0);
 	input_set_abs_params(input_dev, ABS_Y, 0, ts->y_max, 0, 0);
 
@@ -800,47 +609,11 @@ static int auo_pixcir_probe(struct i2c_client *client)
 		dev_err(&client->dev, "could not register input device, %d\n",
 			error);
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	i2c_set_clientdata(client, ts);
 
 	return 0;
-<<<<<<< HEAD
-
-err_input_register:
-	free_irq(client->irq, ts);
-err_fw_vers:
-	input_free_device(input_dev);
-err_input_alloc:
-	if (pdata->exit_hw)
-		pdata->exit_hw(client);
-	gpio_free(pdata->gpio_int);
-err_gpio_int:
-	kfree(ts);
-
-	return ret;
-}
-
-static int __devexit auo_pixcir_remove(struct i2c_client *client)
-{
-	struct auo_pixcir_ts *ts = i2c_get_clientdata(client);
-	const struct auo_pixcir_ts_platdata *pdata = client->dev.platform_data;
-
-	free_irq(client->irq, ts);
-
-	input_unregister_device(ts->input);
-
-	if (pdata->exit_hw)
-		pdata->exit_hw(client);
-
-	gpio_free(pdata->gpio_int);
-
-	kfree(ts);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id auo_pixcir_idtable[] = {
@@ -849,16 +622,6 @@ static const struct i2c_device_id auo_pixcir_idtable[] = {
 };
 MODULE_DEVICE_TABLE(i2c, auo_pixcir_idtable);
 
-<<<<<<< HEAD
-static struct i2c_driver auo_pixcir_driver = {
-	.driver = {
-		.owner	= THIS_MODULE,
-		.name	= "auo_pixcir_ts",
-		.pm	= &auo_pixcir_pm_ops,
-	},
-	.probe		= auo_pixcir_probe,
-	.remove		= __devexit_p(auo_pixcir_remove),
-=======
 #ifdef CONFIG_OF
 static const struct of_device_id auo_pixcir_ts_dt_idtable[] = {
 	{ .compatible = "auo,auo_pixcir_ts" },
@@ -874,7 +637,6 @@ static struct i2c_driver auo_pixcir_driver = {
 		.of_match_table	= of_match_ptr(auo_pixcir_ts_dt_idtable),
 	},
 	.probe		= auo_pixcir_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= auo_pixcir_idtable,
 };
 

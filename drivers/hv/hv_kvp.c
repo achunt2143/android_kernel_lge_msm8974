@@ -27,22 +27,6 @@
 #include <linux/connector.h>
 #include <linux/workqueue.h>
 #include <linux/hyperv.h>
-<<<<<<< HEAD
-
-
-
-/*
- * Global state maintained for transaction that is being processed.
- * Note that only one transaction can be active at any point in time.
- *
- * This state is set when we receive a request from the host; we
- * cleanup this state when the transaction is completed - when we respond
- * to the host with the key value.
- */
-
-static struct {
-	bool active; /* transaction status - active or not */
-=======
 #include <asm/hyperv-tlfs.h>
 
 #include "hyperv_vmbus.h"
@@ -92,60 +76,10 @@ static const int fw_versions[] = {
 
 static struct {
 	int state;   /* hvutil_device_state */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int recv_len; /* number of bytes received. */
 	struct hv_kvp_msg  *kvp_msg; /* current message */
 	struct vmbus_channel *recv_channel; /* chn we got the request */
 	u64 recv_req_id; /* request ID. */
-<<<<<<< HEAD
-	void *kvp_context; /* for the channel callback */
-} kvp_transaction;
-
-static void kvp_send_key(struct work_struct *dummy);
-
-#define TIMEOUT_FIRED 1
-
-static void kvp_respond_to_host(char *key, char *value, int error);
-static void kvp_work_func(struct work_struct *dummy);
-static void kvp_register(void);
-
-static DECLARE_DELAYED_WORK(kvp_work, kvp_work_func);
-static DECLARE_WORK(kvp_sendkey_work, kvp_send_key);
-
-static struct cb_id kvp_id = { CN_KVP_IDX, CN_KVP_VAL };
-static const char kvp_name[] = "kvp_kernel_module";
-static u8 *recv_buffer;
-/*
- * Register the kernel component with the user-level daemon.
- * As part of this registration, pass the LIC version number.
- */
-
-static void
-kvp_register(void)
-{
-
-	struct cn_msg *msg;
-	struct hv_kvp_msg *kvp_msg;
-	char *version;
-
-	msg = kzalloc(sizeof(*msg) + sizeof(struct hv_kvp_msg), GFP_ATOMIC);
-
-	if (msg) {
-		kvp_msg = (struct hv_kvp_msg *)msg->data;
-		version = kvp_msg->body.kvp_register.version;
-		msg->id.idx =  CN_KVP_IDX;
-		msg->id.val = CN_KVP_VAL;
-
-		kvp_msg->kvp_hdr.operation = KVP_OP_REGISTER;
-		strcpy(version, HV_DRV_VERSION);
-		msg->len = sizeof(struct hv_kvp_msg);
-		cn_netlink_send(msg, 0, GFP_ATOMIC);
-		kfree(msg);
-	}
-}
-static void
-kvp_work_func(struct work_struct *dummy)
-=======
 } kvp_transaction;
 
 /*
@@ -214,17 +148,11 @@ kvp_register(int reg_value)
 }
 
 static void kvp_timeout_func(struct work_struct *dummy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * If the timer fires, the user-mode component has not responded;
 	 * process the pending transaction.
 	 */
-<<<<<<< HEAD
-	kvp_respond_to_host("Unknown key", "Guest timed out", TIMEOUT_FIRED);
-}
-
-=======
 	kvp_respond_to_host(NULL, HV_E_FAIL);
 
 	hv_poll_channel(kvp_transaction.recv_channel, kvp_poll_wrapper);
@@ -264,45 +192,10 @@ static int kvp_handle_handshake(struct hv_kvp_msg *msg)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Callback when data is received from user mode.
  */
 
-<<<<<<< HEAD
-static void
-kvp_cn_callback(struct cn_msg *msg, struct netlink_skb_parms *nsp)
-{
-	struct hv_kvp_msg *message;
-	struct hv_kvp_msg_enumerate *data;
-
-	message = (struct hv_kvp_msg *)msg->data;
-	switch (message->kvp_hdr.operation) {
-	case KVP_OP_REGISTER:
-		pr_info("KVP: user-mode registering done.\n");
-		kvp_register();
-		kvp_transaction.active = false;
-		hv_kvp_onchannelcallback(kvp_transaction.kvp_context);
-		break;
-
-	default:
-		data = &message->body.kvp_enum_data;
-		/*
-		 * Complete the transaction by forwarding the key value
-		 * to the host. But first, cancel the timeout.
-		 */
-		if (cancel_delayed_work_sync(&kvp_work))
-			kvp_respond_to_host(data->data.key,
-					 data->data.value,
-					!strlen(data->data.key));
-	}
-}
-
-static void
-kvp_send_key(struct work_struct *dummy)
-{
-	struct cn_msg *msg;
-=======
 static int kvp_on_msg(void *msg, int len)
 {
 	struct hv_kvp_msg *message = (struct hv_kvp_msg *)msg;
@@ -480,24 +373,12 @@ static void process_ib_ipinfo(void *in_msg, void *out_msg, int op)
 static void
 kvp_send_key(struct work_struct *dummy)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hv_kvp_msg *message;
 	struct hv_kvp_msg *in_msg;
 	__u8 operation = kvp_transaction.kvp_msg->kvp_hdr.operation;
 	__u8 pool = kvp_transaction.kvp_msg->kvp_hdr.pool;
 	__u32 val32;
 	__u64 val64;
-<<<<<<< HEAD
-
-	msg = kzalloc(sizeof(*msg) + sizeof(struct hv_kvp_msg) , GFP_ATOMIC);
-	if (!msg)
-		return;
-
-	msg->id.idx =  CN_KVP_IDX;
-	msg->id.val = CN_KVP_VAL;
-
-	message = (struct hv_kvp_msg *)msg->data;
-=======
 	int rc;
 
 	/* The transaction state is wrong. */
@@ -508,33 +389,22 @@ kvp_send_key(struct work_struct *dummy)
 	if (!message)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	message->kvp_hdr.operation = operation;
 	message->kvp_hdr.pool = pool;
 	in_msg = kvp_transaction.kvp_msg;
 
 	/*
-<<<<<<< HEAD
-	 * The key/value strings sent from the host are encoded in
-=======
 	 * The key/value strings sent from the host are encoded
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * in utf16; convert it to utf8 strings.
 	 * The host assures us that the utf16 strings will not exceed
 	 * the max lengths specified. We will however, reserve room
 	 * for the string terminating character - in the utf16s_utf8s()
 	 * function we limit the size of the buffer where the converted
-<<<<<<< HEAD
-	 * string is placed to HV_KVP_EXCHANGE_MAX_*_SIZE -1 to gaurantee
-=======
 	 * string is placed to HV_KVP_EXCHANGE_MAX_*_SIZE -1 to guarantee
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * that the strings can be properly terminated!
 	 */
 
 	switch (message->kvp_hdr.operation) {
-<<<<<<< HEAD
-=======
 	case KVP_OP_SET_IP_INFO:
 		process_ib_ipinfo(in_msg, message, KVP_OP_SET_IP_INFO);
 		break;
@@ -545,7 +415,6 @@ kvp_send_key(struct work_struct *dummy)
 		 */
 		process_ib_ipinfo(in_msg, message, KVP_OP_GET_IP_INFO);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KVP_OP_SET:
 		switch (in_msg->body.kvp_set.data.value_type) {
 		case REG_SZ:
@@ -559,11 +428,7 @@ kvp_send_key(struct work_struct *dummy)
 				UTF16_LITTLE_ENDIAN,
 				message->body.kvp_set.data.value,
 				HV_KVP_EXCHANGE_MAX_VALUE_SIZE - 1) + 1;
-<<<<<<< HEAD
-				break;
-=======
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case REG_U32:
 			/*
@@ -573,11 +438,7 @@ kvp_send_key(struct work_struct *dummy)
 			val32 = in_msg->body.kvp_set.data.value_u32;
 			message->body.kvp_set.data.value_size =
 				sprintf(message->body.kvp_set.data.value,
-<<<<<<< HEAD
-					"%d", val32) + 1;
-=======
 					"%u", val32) + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case REG_U64:
@@ -592,14 +453,10 @@ kvp_send_key(struct work_struct *dummy)
 			break;
 
 		}
-<<<<<<< HEAD
-	case KVP_OP_GET:
-=======
 
 		/*
 		 * The key is always a string - utf16 encoding.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		message->body.kvp_set.data.key_size =
 			utf16s_to_utf8s(
 			(wchar_t *)in_msg->body.kvp_set.data.key,
@@ -607,9 +464,6 @@ kvp_send_key(struct work_struct *dummy)
 			UTF16_LITTLE_ENDIAN,
 			message->body.kvp_set.data.key,
 			HV_KVP_EXCHANGE_MAX_KEY_SIZE - 1) + 1;
-<<<<<<< HEAD
-			break;
-=======
 
 		break;
 
@@ -622,7 +476,6 @@ kvp_send_key(struct work_struct *dummy)
 			message->body.kvp_get.data.key,
 			HV_KVP_EXCHANGE_MAX_KEY_SIZE - 1) + 1;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case KVP_OP_DELETE:
 		message->body.kvp_delete.key_size =
@@ -632,25 +485,11 @@ kvp_send_key(struct work_struct *dummy)
 			UTF16_LITTLE_ENDIAN,
 			message->body.kvp_delete.key,
 			HV_KVP_EXCHANGE_MAX_KEY_SIZE - 1) + 1;
-<<<<<<< HEAD
-			break;
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case KVP_OP_ENUMERATE:
 		message->body.kvp_enum_data.index =
 			in_msg->body.kvp_enum_data.index;
-<<<<<<< HEAD
-			break;
-	}
-
-	msg->len = sizeof(struct hv_kvp_msg);
-	cn_netlink_send(msg, 0, GFP_ATOMIC);
-	kfree(msg);
-
-	return;
-=======
 		break;
 	}
 
@@ -665,7 +504,6 @@ kvp_send_key(struct work_struct *dummy)
 	}
 
 	kfree(message);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -673,44 +511,21 @@ kvp_send_key(struct work_struct *dummy)
  */
 
 static void
-<<<<<<< HEAD
-kvp_respond_to_host(char *key, char *value, int error)
-=======
 kvp_respond_to_host(struct hv_kvp_msg *msg_to_host, int error)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hv_kvp_msg  *kvp_msg;
 	struct hv_kvp_exchg_msg_value  *kvp_data;
 	char	*key_name;
-<<<<<<< HEAD
-=======
 	char	*value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct icmsg_hdr *icmsghdrp;
 	int	keylen = 0;
 	int	valuelen = 0;
 	u32	buf_len;
 	struct vmbus_channel *channel;
 	u64	req_id;
-<<<<<<< HEAD
-
-	/*
-	 * If a transaction is not active; log and return.
-	 */
-
-	if (!kvp_transaction.active) {
-		/*
-		 * This is a spurious call!
-		 */
-		pr_warn("KVP: Transaction not active\n");
-		return;
-	}
-	/*
-=======
 	int ret;
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Copy the global state for completing the transaction. Note that
 	 * only one transaction can be active at a time.
 	 */
@@ -719,11 +534,6 @@ kvp_respond_to_host(struct hv_kvp_msg *msg_to_host, int error)
 	channel = kvp_transaction.recv_channel;
 	req_id = kvp_transaction.recv_req_id;
 
-<<<<<<< HEAD
-	kvp_transaction.active = false;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	icmsghdrp = (struct icmsg_hdr *)
 			&recv_buffer[sizeof(struct vmbuspipe_hdr)];
 
@@ -734,10 +544,7 @@ kvp_respond_to_host(struct hv_kvp_msg *msg_to_host, int error)
 		 */
 		return;
 
-<<<<<<< HEAD
-=======
 	icmsghdrp->status = error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the error parameter is set, terminate the host's enumeration
@@ -745,31 +552,17 @@ kvp_respond_to_host(struct hv_kvp_msg *msg_to_host, int error)
 	 */
 	if (error) {
 		/*
-<<<<<<< HEAD
-		 * Something failed or the we have timedout;
-		 * terminate the current  host-side iteration.
-		 */
-		icmsghdrp->status = HV_S_CONT;
-		goto response_done;
-	}
-
-	icmsghdrp->status = HV_S_OK;
-
-=======
 		 * Something failed or we have timed out;
 		 * terminate the current host-side iteration.
 		 */
 		goto response_done;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kvp_msg = (struct hv_kvp_msg *)
 			&recv_buffer[sizeof(struct vmbuspipe_hdr) +
 			sizeof(struct icmsg_hdr)];
 
 	switch (kvp_transaction.kvp_msg->kvp_hdr.operation) {
-<<<<<<< HEAD
-=======
 	case KVP_OP_GET_IP_INFO:
 		ret = process_ob_ipinfo(msg_to_host,
 				 (struct hv_kvp_ip_msg *)kvp_msg,
@@ -780,7 +573,6 @@ kvp_respond_to_host(struct hv_kvp_msg *msg_to_host, int error)
 		goto response_done;
 	case KVP_OP_SET_IP_INFO:
 		goto response_done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KVP_OP_GET:
 		kvp_data = &kvp_msg->body.kvp_get.data;
 		goto copy_value;
@@ -794,11 +586,7 @@ kvp_respond_to_host(struct hv_kvp_msg *msg_to_host, int error)
 	}
 
 	kvp_data = &kvp_msg->body.kvp_enum_data.data;
-<<<<<<< HEAD
-	key_name = key;
-=======
 	key_name = msg_to_host->body.kvp_enum_data.data.key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The windows host expects the key/value pair to be encoded
@@ -812,10 +600,7 @@ kvp_respond_to_host(struct hv_kvp_msg *msg_to_host, int error)
 	kvp_data->key_size = 2*(keylen + 1); /* utf16 encoding */
 
 copy_value:
-<<<<<<< HEAD
-=======
 	value = msg_to_host->body.kvp_enum_data.data.value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	valuelen = utf8s_to_utf16s(value, strlen(value), UTF16_HOST_ENDIAN,
 				(wchar_t *) kvp_data->value,
 				(HV_KVP_EXCHANGE_MAX_VALUE_SIZE / 2) - 2);
@@ -835,23 +620,14 @@ response_done:
 
 	vmbus_sendpacket(channel, recv_buffer, buf_len, req_id,
 				VM_PKT_DATA_INBAND, 0);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * This callback is invoked when we get a KVP message from the host.
  * The host ensures that only one KVP transaction can be active at a time.
  * KVP implementation in Linux needs to forward the key to a user-mde
-<<<<<<< HEAD
- * component to retrive the corresponding value. Consequently, we cannot
- * respond to the host in the conext of this callback. Since the host
-=======
  * component to retrieve the corresponding value. Consequently, we cannot
  * respond to the host in the context of this callback. Since the host
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * guarantees that at most only one transaction can be active at a time,
  * we stash away the transaction state in a set of global variables.
  */
@@ -865,67 +641,6 @@ void hv_kvp_onchannelcallback(void *context)
 	struct hv_kvp_msg *kvp_msg;
 
 	struct icmsg_hdr *icmsghdrp;
-<<<<<<< HEAD
-	struct icmsg_negotiate *negop = NULL;
-
-	if (kvp_transaction.active) {
-		/*
-		 * We will defer processing this callback once
-		 * the current transaction is complete.
-		 */
-		kvp_transaction.kvp_context = context;
-		return;
-	}
-
-	vmbus_recvpacket(channel, recv_buffer, PAGE_SIZE, &recvlen, &requestid);
-
-	if (recvlen > 0) {
-		icmsghdrp = (struct icmsg_hdr *)&recv_buffer[
-			sizeof(struct vmbuspipe_hdr)];
-
-		if (icmsghdrp->icmsgtype == ICMSGTYPE_NEGOTIATE) {
-			vmbus_prep_negotiate_resp(icmsghdrp, negop, recv_buffer);
-		} else {
-			kvp_msg = (struct hv_kvp_msg *)&recv_buffer[
-				sizeof(struct vmbuspipe_hdr) +
-				sizeof(struct icmsg_hdr)];
-
-			/*
-			 * Stash away this global state for completing the
-			 * transaction; note transactions are serialized.
-			 */
-
-			kvp_transaction.recv_len = recvlen;
-			kvp_transaction.recv_channel = channel;
-			kvp_transaction.recv_req_id = requestid;
-			kvp_transaction.active = true;
-			kvp_transaction.kvp_msg = kvp_msg;
-
-			/*
-			 * Get the information from the
-			 * user-mode component.
-			 * component. This transaction will be
-			 * completed when we get the value from
-			 * the user-mode component.
-			 * Set a timeout to deal with
-			 * user-mode not responding.
-			 */
-			schedule_work(&kvp_sendkey_work);
-			schedule_delayed_work(&kvp_work, 5*HZ);
-
-			return;
-
-		}
-
-		icmsghdrp->icflags = ICMSGHDRFLAG_TRANSACTION
-			| ICMSGHDRFLAG_RESPONSE;
-
-		vmbus_sendpacket(channel, recv_buffer,
-				       recvlen, requestid,
-				       VM_PKT_DATA_INBAND, 0);
-	}
-
-=======
 	int kvp_srv_version;
 	static enum {NEGO_NOT_STARTED,
 		     NEGO_IN_PROGRESS,
@@ -1035,24 +750,14 @@ static void kvp_on_reset(void)
 	if (cancel_delayed_work_sync(&kvp_timeout_work))
 		kvp_respond_to_host(NULL, HV_E_FAIL);
 	kvp_transaction.state = HVUTIL_DEVICE_INIT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int
 hv_kvp_init(struct hv_util_service *srv)
 {
-<<<<<<< HEAD
-	int err;
-
-	err = cn_add_callback(&kvp_id, kvp_name, kvp_cn_callback);
-	if (err)
-		return err;
-	recv_buffer = srv->recv_buffer;
-=======
 	recv_buffer = srv->recv_buffer;
 	kvp_transaction.recv_channel = srv->channel;
 	kvp_transaction.recv_channel->max_pkt_size = HV_HYP_PAGE_SIZE * 4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * When this driver loads, the user level daemon that
@@ -1060,9 +765,6 @@ hv_kvp_init(struct hv_util_service *srv)
 	 * Defer processing channel callbacks until the daemon
 	 * has registered.
 	 */
-<<<<<<< HEAD
-	kvp_transaction.active = true;
-=======
 	kvp_transaction.state = HVUTIL_DEVICE_INIT;
 
 	hvt = hvutil_transport_init(kvp_devname, CN_KVP_IDX, CN_KVP_VAL,
@@ -1108,22 +810,15 @@ int hv_kvp_pre_resume(void)
 	struct vmbus_channel *channel = kvp_transaction.recv_channel;
 
 	tasklet_enable(&channel->callback_event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 void hv_kvp_deinit(void)
 {
-<<<<<<< HEAD
-	cn_del_callback(&kvp_id);
-	cancel_delayed_work_sync(&kvp_work);
-	cancel_work_sync(&kvp_sendkey_work);
-=======
 	kvp_transaction.state = HVUTIL_DEVICE_DYING;
 
 	hv_kvp_cancel_work();
 
 	hvutil_transport_destroy(hvt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

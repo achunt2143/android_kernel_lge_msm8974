@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-/*
- *    pata_ns87415.c - NS87415 (non PARISC) PATA
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *    pata_ns87415.c - NS87415 (and PARISC SUPERIO 87560) PATA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	(C) 2005 Red Hat <alan@lxorguk.ukuu.org.uk>
  *
@@ -21,10 +16,6 @@
  *    systems. This has its own special mountain of errata.
  *
  *    TODO:
-<<<<<<< HEAD
- *	Test PARISC SuperIO
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Get someone to test on SPARC
  *	Implement lazy pio/dma switching for better performance
  *	8bit shared timing.
@@ -34,10 +25,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -126,11 +113,7 @@ static void ns87415_set_piomode(struct ata_port *ap, struct ata_device *adev)
  *	ns87415_bmdma_setup		-	Set up DMA
  *	@qc: Command block
  *
-<<<<<<< HEAD
- *	Set up for bus masterng DMA. We have to do this ourselves
-=======
  *	Set up for bus mastering DMA. We have to do this ourselves
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	rather than use the helper due to a chip erratum
  */
 
@@ -191,11 +174,7 @@ static void ns87415_bmdma_stop(struct ata_queued_cmd *qc)
  *	ns87415_irq_clear		-	Clear interrupt
  *	@ap: Channel to clear
  *
-<<<<<<< HEAD
- *	Erratum: Due to a chip bug regisers 02 and 0A bit 1 and 2 (the
-=======
  *	Erratum: Due to a chip bug registers 02 and 0A bit 1 and 2 (the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	error bits) are reset by writing to register 00 or 08.
  */
 
@@ -281,21 +260,12 @@ static u8 ns87560_check_status(struct ata_port *ap)
  *	LOCKING:
  *	Inherited from caller.
  */
-<<<<<<< HEAD
-void ns87560_tf_read(struct ata_port *ap, struct ata_taskfile *tf)
-{
-	struct ata_ioports *ioaddr = &ap->ioaddr;
-
-	tf->command = ns87560_check_status(ap);
-	tf->feature = ioread8(ioaddr->error_addr);
-=======
 static void ns87560_tf_read(struct ata_port *ap, struct ata_taskfile *tf)
 {
 	struct ata_ioports *ioaddr = &ap->ioaddr;
 
 	tf->status = ns87560_check_status(ap);
 	tf->error = ioread8(ioaddr->error_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tf->nsect = ioread8(ioaddr->nsect_addr);
 	tf->lbal = ioread8(ioaddr->lbal_addr);
 	tf->lbam = ioread8(ioaddr->lbam_addr);
@@ -350,11 +320,7 @@ static struct ata_port_operations ns87560_pata_ops = {
 };
 #endif
 
-<<<<<<< HEAD
-static struct scsi_host_template ns87415_sht = {
-=======
 static const struct scsi_host_template ns87415_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -419,17 +385,10 @@ static const struct pci_device_id ns87415_pci_tbl[] = {
 	{ }	/* terminate list */
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int ns87415_reinit_one(struct pci_dev *pdev)
-{
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-=======
 #ifdef CONFIG_PM_SLEEP
 static int ns87415_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -448,32 +407,13 @@ static struct pci_driver ns87415_pci_driver = {
 	.id_table		= ns87415_pci_tbl,
 	.probe			= ns87415_init_one,
 	.remove			= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ns87415_reinit_one,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init ns87415_init(void)
-{
-	return pci_register_driver(&ns87415_pci_driver);
-}
-
-static void __exit ns87415_exit(void)
-{
-	pci_unregister_driver(&ns87415_pci_driver);
-}
-
-module_init(ns87415_init);
-module_exit(ns87415_exit);
-=======
 module_pci_driver(ns87415_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("ATA low-level driver for NS87415 controllers");

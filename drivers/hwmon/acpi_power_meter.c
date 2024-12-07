@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A hwmon driver for ACPI 4.0 power meters
  * Copyright (C) 2009 IBM
  *
-<<<<<<< HEAD
- * Author: Darrick J. Wong <djwong@us.ibm.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
  * Author: Darrick J. Wong <darrick.wong@oracle.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -37,18 +16,10 @@
 #include <linux/kdev_t.h>
 #include <linux/sched.h>
 #include <linux/time.h>
-<<<<<<< HEAD
-#include <acpi/acpi_drivers.h>
-#include <acpi/acpi_bus.h>
-
-#define ACPI_POWER_METER_NAME		"power_meter"
-ACPI_MODULE_NAME(ACPI_POWER_METER_NAME);
-=======
 #include <linux/err.h>
 #include <linux/acpi.h>
 
 #define ACPI_POWER_METER_NAME		"power_meter"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_POWER_METER_DEVICE_NAME	"Power Meter"
 #define ACPI_POWER_METER_CLASS		"pwr_meter_resource"
 
@@ -60,10 +31,7 @@ ACPI_MODULE_NAME(ACPI_POWER_METER_NAME);
 #define POWER_METER_CAN_NOTIFY	(1 << 3)
 #define POWER_METER_IS_BATTERY	(1 << 8)
 #define UNKNOWN_HYSTERESIS	0xFFFFFFFF
-<<<<<<< HEAD
-=======
 #define UNKNOWN_POWER		0xFFFFFFFF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define METER_NOTIFY_CONFIG	0x80
 #define METER_NOTIFY_TRIP	0x81
@@ -120,29 +88,13 @@ struct acpi_power_meter_resource {
 	unsigned long		sensors_last_updated;
 	struct sensor_device_attribute	sensors[NUM_SENSORS];
 	int			num_sensors;
-<<<<<<< HEAD
-	int			trip[2];
-=======
 	s64			trip[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			num_domain_devices;
 	struct acpi_device	**domain_devices;
 	struct kobject		*holders_dir;
 };
 
-<<<<<<< HEAD
-struct ro_sensor_template {
-	char *label;
-	ssize_t (*show)(struct device *dev,
-			struct device_attribute *devattr,
-			char *buf);
-	int index;
-};
-
-struct rw_sensor_template {
-=======
 struct sensor_template {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *label;
 	ssize_t (*show)(struct device *dev,
 			struct device_attribute *devattr,
@@ -162,12 +114,8 @@ static int update_avg_interval(struct acpi_power_meter_resource *resource)
 	status = acpi_evaluate_integer(resource->acpi_dev->handle, "_GAI",
 				       NULL, &data);
 	if (ACPI_FAILURE(status)) {
-<<<<<<< HEAD
-		ACPI_EXCEPTION((AE_INFO, status, "Evaluating _GAI"));
-=======
 		acpi_evaluation_failure_warn(resource->acpi_dev->handle, "_GAI",
 					     status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -214,21 +162,13 @@ static ssize_t set_avg_interval(struct device *dev,
 	mutex_lock(&resource->lock);
 	status = acpi_evaluate_integer(resource->acpi_dev->handle, "_PAI",
 				       &args, &data);
-<<<<<<< HEAD
-	if (!ACPI_FAILURE(status))
-=======
 	if (ACPI_SUCCESS(status))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		resource->avg_interval = temp;
 	mutex_unlock(&resource->lock);
 
 	if (ACPI_FAILURE(status)) {
-<<<<<<< HEAD
-		ACPI_EXCEPTION((AE_INFO, status, "Evaluating _PAI"));
-=======
 		acpi_evaluation_failure_warn(resource->acpi_dev->handle, "_PAI",
 					     status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -248,12 +188,8 @@ static int update_cap(struct acpi_power_meter_resource *resource)
 	status = acpi_evaluate_integer(resource->acpi_dev->handle, "_GHL",
 				       NULL, &data);
 	if (ACPI_FAILURE(status)) {
-<<<<<<< HEAD
-		ACPI_EXCEPTION((AE_INFO, status, "Evaluating _GHL"));
-=======
 		acpi_evaluation_failure_warn(resource->acpi_dev->handle, "_GHL",
 					     status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -291,11 +227,7 @@ static ssize_t set_cap(struct device *dev, struct device_attribute *devattr,
 	if (res)
 		return res;
 
-<<<<<<< HEAD
-	temp /= 1000;
-=======
 	temp = DIV_ROUND_CLOSEST(temp, 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (temp > resource->caps.max_cap || temp < resource->caps.min_cap)
 		return -EINVAL;
 	arg0.integer.value = temp;
@@ -303,21 +235,13 @@ static ssize_t set_cap(struct device *dev, struct device_attribute *devattr,
 	mutex_lock(&resource->lock);
 	status = acpi_evaluate_integer(resource->acpi_dev->handle, "_SHL",
 				       &args, &data);
-<<<<<<< HEAD
-	if (!ACPI_FAILURE(status))
-=======
 	if (ACPI_SUCCESS(status))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		resource->cap = temp;
 	mutex_unlock(&resource->lock);
 
 	if (ACPI_FAILURE(status)) {
-<<<<<<< HEAD
-		ACPI_EXCEPTION((AE_INFO, status, "Evaluating _SHL"));
-=======
 		acpi_evaluation_failure_warn(resource->acpi_dev->handle, "_SHL",
 					     status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -350,12 +274,8 @@ static int set_acpi_trip(struct acpi_power_meter_resource *resource)
 	status = acpi_evaluate_integer(resource->acpi_dev->handle, "_PTP",
 				       &args, &data);
 	if (ACPI_FAILURE(status)) {
-<<<<<<< HEAD
-		ACPI_EXCEPTION((AE_INFO, status, "Evaluating _PTP"));
-=======
 		acpi_evaluation_failure_warn(resource->acpi_dev->handle, "_PTP",
 					     status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -379,13 +299,7 @@ static ssize_t set_trip(struct device *dev, struct device_attribute *devattr,
 	if (res)
 		return res;
 
-<<<<<<< HEAD
-	temp /= 1000;
-	if (temp < 0)
-		return -EINVAL;
-=======
 	temp = DIV_ROUND_CLOSEST(temp, 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&resource->lock);
 	resource->trip[attr->index - 7] = temp;
@@ -413,12 +327,8 @@ static int update_meter(struct acpi_power_meter_resource *resource)
 	status = acpi_evaluate_integer(resource->acpi_dev->handle, "_PMM",
 				       NULL, &data);
 	if (ACPI_FAILURE(status)) {
-<<<<<<< HEAD
-		ACPI_EXCEPTION((AE_INFO, status, "Evaluating _PMM"));
-=======
 		acpi_evaluation_failure_warn(resource->acpi_dev->handle, "_PMM",
 					     status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -439,12 +349,9 @@ static ssize_t show_power(struct device *dev,
 	update_meter(resource);
 	mutex_unlock(&resource->lock);
 
-<<<<<<< HEAD
-=======
 	if (resource->power == UNKNOWN_POWER)
 		return -ENODATA;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sprintf(buf, "%llu\n", resource->power * 1000);
 }
 
@@ -457,13 +364,9 @@ static ssize_t show_str(struct device *dev,
 	struct acpi_device *acpi_dev = to_acpi_device(dev);
 	struct acpi_power_meter_resource *resource = acpi_dev->driver_data;
 	acpi_string val;
-<<<<<<< HEAD
-
-=======
 	int ret;
 
 	mutex_lock(&resource->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (attr->index) {
 	case 0:
 		val = resource->model_number;
@@ -475,13 +378,6 @@ static ssize_t show_str(struct device *dev,
 		val = resource->oem_info;
 		break;
 	default:
-<<<<<<< HEAD
-		BUG();
-		val = "";
-	}
-
-	return sprintf(buf, "%s\n", val);
-=======
 		WARN(1, "Implementation error: unexpected attribute index %d\n",
 		     attr->index);
 		val = "";
@@ -490,7 +386,6 @@ static ssize_t show_str(struct device *dev,
 	ret = sprintf(buf, "%s\n", val);
 	mutex_unlock(&resource->lock);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t show_val(struct device *dev,
@@ -541,13 +436,9 @@ static ssize_t show_val(struct device *dev,
 		val = resource->trip[attr->index - 7] * 1000;
 		break;
 	default:
-<<<<<<< HEAD
-		BUG();
-=======
 		WARN(1, "Implementation error: unexpected attribute index %d\n",
 		     attr->index);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return sprintf(buf, "%llu\n", val);
@@ -571,54 +462,6 @@ static ssize_t show_name(struct device *dev,
 	return sprintf(buf, "%s\n", ACPI_POWER_METER_NAME);
 }
 
-<<<<<<< HEAD
-/* Sensor descriptions.  If you add a sensor, update NUM_SENSORS above! */
-static struct ro_sensor_template meter_ro_attrs[] = {
-{POWER_AVERAGE_NAME, show_power, 0},
-{"power1_accuracy", show_accuracy, 0},
-{"power1_average_interval_min", show_val, 0},
-{"power1_average_interval_max", show_val, 1},
-{"power1_is_battery", show_val, 5},
-{NULL, NULL, 0},
-};
-
-static struct rw_sensor_template meter_rw_attrs[] = {
-{POWER_AVG_INTERVAL_NAME, show_avg_interval, set_avg_interval, 0},
-{NULL, NULL, NULL, 0},
-};
-
-static struct ro_sensor_template misc_cap_attrs[] = {
-{"power1_cap_min", show_val, 2},
-{"power1_cap_max", show_val, 3},
-{"power1_cap_hyst", show_val, 4},
-{POWER_ALARM_NAME, show_val, 6},
-{NULL, NULL, 0},
-};
-
-static struct ro_sensor_template ro_cap_attrs[] = {
-{POWER_CAP_NAME, show_cap, 0},
-{NULL, NULL, 0},
-};
-
-static struct rw_sensor_template rw_cap_attrs[] = {
-{POWER_CAP_NAME, show_cap, set_cap, 0},
-{NULL, NULL, NULL, 0},
-};
-
-static struct rw_sensor_template trip_attrs[] = {
-{"power1_average_min", show_val, set_trip, 7},
-{"power1_average_max", show_val, set_trip, 8},
-{NULL, NULL, NULL, 0},
-};
-
-static struct ro_sensor_template misc_attrs[] = {
-{"name", show_name, 0},
-{"power1_model_number", show_str, 0},
-{"power1_oem_info", show_str, 2},
-{"power1_serial_number", show_str, 1},
-{NULL, NULL, 0},
-};
-=======
 #define RO_SENSOR_TEMPLATE(_label, _show, _index)	\
 	{						\
 		.label = _label,			\
@@ -680,7 +523,6 @@ static struct sensor_template misc_attrs[] = {
 
 #undef RO_SENSOR_TEMPLATE
 #undef RW_SENSOR_TEMPLATE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Read power domain data */
 static void remove_domain_devices(struct acpi_power_meter_resource *resource)
@@ -692,20 +534,13 @@ static void remove_domain_devices(struct acpi_power_meter_resource *resource)
 
 	for (i = 0; i < resource->num_domain_devices; i++) {
 		struct acpi_device *obj = resource->domain_devices[i];
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!obj)
 			continue;
 
 		sysfs_remove_link(resource->holders_dir,
 				  kobject_name(&obj->dev.kobj));
-<<<<<<< HEAD
-		put_device(&obj->dev);
-=======
 		acpi_dev_put(obj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kfree(resource->domain_devices);
@@ -724,12 +559,8 @@ static int read_domain_devices(struct acpi_power_meter_resource *resource)
 	status = acpi_evaluate_object(resource->acpi_dev->handle, "_PMD", NULL,
 				      &buffer);
 	if (ACPI_FAILURE(status)) {
-<<<<<<< HEAD
-		ACPI_EXCEPTION((AE_INFO, status, "Evaluating _PMD"));
-=======
 		acpi_evaluation_failure_warn(resource->acpi_dev->handle, "_PMD",
 					     status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -745,25 +576,16 @@ static int read_domain_devices(struct acpi_power_meter_resource *resource)
 	if (!pss->package.count)
 		goto end;
 
-<<<<<<< HEAD
-	resource->domain_devices = kzalloc(sizeof(struct acpi_device *) *
-					   pss->package.count, GFP_KERNEL);
-=======
 	resource->domain_devices = kcalloc(pss->package.count,
 					   sizeof(struct acpi_device *),
 					   GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!resource->domain_devices) {
 		res = -ENOMEM;
 		goto end;
 	}
 
 	resource->holders_dir = kobject_create_and_add("measures",
-<<<<<<< HEAD
-					&resource->acpi_dev->dev.kobj);
-=======
 						       &resource->acpi_dev->dev.kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!resource->holders_dir) {
 		res = -ENOMEM;
 		goto exit_free;
@@ -773,32 +595,13 @@ static int read_domain_devices(struct acpi_power_meter_resource *resource)
 
 	for (i = 0; i < pss->package.count; i++) {
 		struct acpi_device *obj;
-<<<<<<< HEAD
-		union acpi_object *element = &(pss->package.elements[i]);
-=======
 		union acpi_object *element = &pss->package.elements[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Refuse non-references */
 		if (element->type != ACPI_TYPE_LOCAL_REFERENCE)
 			continue;
 
 		/* Create a symlink to domain objects */
-<<<<<<< HEAD
-		resource->domain_devices[i] = NULL;
-		status = acpi_bus_get_device(element->reference.handle,
-					     &resource->domain_devices[i]);
-		if (ACPI_FAILURE(status))
-			continue;
-
-		obj = resource->domain_devices[i];
-		get_device(&obj->dev);
-
-		res = sysfs_create_link(resource->holders_dir, &obj->dev.kobj,
-				      kobject_name(&obj->dev.kobj));
-		if (res) {
-			put_device(&obj->dev);
-=======
 		obj = acpi_get_acpi_dev(element->reference.handle);
 		resource->domain_devices[i] = obj;
 		if (!obj)
@@ -808,7 +611,6 @@ static int read_domain_devices(struct acpi_power_meter_resource *resource)
 					kobject_name(&obj->dev.kobj));
 		if (res) {
 			acpi_dev_put(obj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			resource->domain_devices[i] = NULL;
 		}
 	}
@@ -824,26 +626,14 @@ end:
 }
 
 /* Registration and deregistration */
-<<<<<<< HEAD
-static int register_ro_attrs(struct acpi_power_meter_resource *resource,
-			     struct ro_sensor_template *ro)
-=======
 static int register_attrs(struct acpi_power_meter_resource *resource,
 			  struct sensor_template *attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = &resource->acpi_dev->dev;
 	struct sensor_device_attribute *sensors =
 		&resource->sensors[resource->num_sensors];
 	int res = 0;
 
-<<<<<<< HEAD
-	while (ro->label) {
-		sensors->dev_attr.attr.name = ro->label;
-		sensors->dev_attr.attr.mode = S_IRUGO;
-		sensors->dev_attr.show = ro->show;
-		sensors->index = ro->index;
-=======
 	while (attrs->label) {
 		sensors->dev_attr.attr.name = attrs->label;
 		sensors->dev_attr.attr.mode = 0444;
@@ -854,7 +644,6 @@ static int register_attrs(struct acpi_power_meter_resource *resource,
 			sensors->dev_attr.attr.mode |= 0200;
 			sensors->dev_attr.store = attrs->set;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sysfs_attr_init(&sensors->dev_attr.attr);
 		res = device_create_file(dev, &sensors->dev_attr);
@@ -864,41 +653,7 @@ static int register_attrs(struct acpi_power_meter_resource *resource,
 		}
 		sensors++;
 		resource->num_sensors++;
-<<<<<<< HEAD
-		ro++;
-	}
-
-error:
-	return res;
-}
-
-static int register_rw_attrs(struct acpi_power_meter_resource *resource,
-			     struct rw_sensor_template *rw)
-{
-	struct device *dev = &resource->acpi_dev->dev;
-	struct sensor_device_attribute *sensors =
-		&resource->sensors[resource->num_sensors];
-	int res = 0;
-
-	while (rw->label) {
-		sensors->dev_attr.attr.name = rw->label;
-		sensors->dev_attr.attr.mode = S_IRUGO | S_IWUSR;
-		sensors->dev_attr.show = rw->show;
-		sensors->dev_attr.store = rw->set;
-		sensors->index = rw->index;
-
-		sysfs_attr_init(&sensors->dev_attr.attr);
-		res = device_create_file(dev, &sensors->dev_attr);
-		if (res) {
-			sensors->dev_attr.attr.name = NULL;
-			goto error;
-		}
-		sensors++;
-		resource->num_sensors++;
-		rw++;
-=======
 		attrs++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 error:
@@ -930,44 +685,13 @@ static int setup_attrs(struct acpi_power_meter_resource *resource)
 		return res;
 
 	if (resource->caps.flags & POWER_METER_CAN_MEASURE) {
-<<<<<<< HEAD
-		res = register_ro_attrs(resource, meter_ro_attrs);
-		if (res)
-			goto error;
-		res = register_rw_attrs(resource, meter_rw_attrs);
-=======
 		res = register_attrs(resource, meter_attrs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res)
 			goto error;
 	}
 
 	if (resource->caps.flags & POWER_METER_CAN_CAP) {
 		if (!can_cap_in_hardware()) {
-<<<<<<< HEAD
-			dev_err(&resource->acpi_dev->dev,
-				"Ignoring unsafe software power cap!\n");
-			goto skip_unsafe_cap;
-		}
-
-		if (resource->caps.configurable_cap) {
-			res = register_rw_attrs(resource, rw_cap_attrs);
-			if (res)
-				goto error;
-		} else {
-			res = register_ro_attrs(resource, ro_cap_attrs);
-			if (res)
-				goto error;
-		}
-		res = register_ro_attrs(resource, misc_cap_attrs);
-		if (res)
-			goto error;
-	}
-skip_unsafe_cap:
-
-	if (resource->caps.flags & POWER_METER_CAN_TRIP) {
-		res = register_rw_attrs(resource, trip_attrs);
-=======
 			dev_warn(&resource->acpi_dev->dev,
 				 "Ignoring unsafe software power cap!\n");
 			goto skip_unsafe_cap;
@@ -989,16 +713,11 @@ skip_unsafe_cap:
 skip_unsafe_cap:
 	if (resource->caps.flags & POWER_METER_CAN_TRIP) {
 		res = register_attrs(resource, trip_attrs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res)
 			goto error;
 	}
 
-<<<<<<< HEAD
-	res = register_ro_attrs(resource, misc_attrs);
-=======
 	res = register_attrs(resource, misc_attrs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res)
 		goto error;
 
@@ -1014,15 +733,10 @@ static void free_capabilities(struct acpi_power_meter_resource *resource)
 	int i;
 
 	str = &resource->model_number;
-<<<<<<< HEAD
-	for (i = 0; i < 3; i++, str++)
-		kfree(*str);
-=======
 	for (i = 0; i < 3; i++, str++) {
 		kfree(*str);
 		*str = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int read_capabilities(struct acpi_power_meter_resource *resource)
@@ -1039,12 +753,8 @@ static int read_capabilities(struct acpi_power_meter_resource *resource)
 	status = acpi_evaluate_object(resource->acpi_dev->handle, "_PMC", NULL,
 				      &buffer);
 	if (ACPI_FAILURE(status)) {
-<<<<<<< HEAD
-		ACPI_EXCEPTION((AE_INFO, status, "Evaluating _PMC"));
-=======
 		acpi_evaluation_failure_warn(resource->acpi_dev->handle, "_PMC",
 					     status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -1064,13 +774,9 @@ static int read_capabilities(struct acpi_power_meter_resource *resource)
 
 	status = acpi_extract_package(pss, &format, &state);
 	if (ACPI_FAILURE(status)) {
-<<<<<<< HEAD
-		ACPI_EXCEPTION((AE_INFO, status, "Invalid data"));
-=======
 		dev_err(&resource->acpi_dev->dev, ACPI_POWER_METER_NAME
 			"_PMC package parsing failed: %s\n",
 			acpi_format_exception(status));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res = -EFAULT;
 		goto end;
 	}
@@ -1087,46 +793,27 @@ static int read_capabilities(struct acpi_power_meter_resource *resource)
 	str = &resource->model_number;
 
 	for (i = 11; i < 14; i++) {
-<<<<<<< HEAD
-		union acpi_object *element = &(pss->package.elements[i]);
-=======
 		union acpi_object *element = &pss->package.elements[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (element->type != ACPI_TYPE_STRING) {
 			res = -EINVAL;
 			goto error;
 		}
 
-<<<<<<< HEAD
-		*str = kzalloc(sizeof(u8) * (element->string.length + 1),
-			       GFP_KERNEL);
-=======
 		*str = kmemdup_nul(element->string.pointer, element->string.length,
 				   GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!*str) {
 			res = -ENOMEM;
 			goto error;
 		}
 
-<<<<<<< HEAD
-		strncpy(*str, element->string.pointer, element->string.length);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		str++;
 	}
 
 	dev_info(&resource->acpi_dev->dev, "Found ACPI power meter.\n");
 	goto end;
 error:
-<<<<<<< HEAD
-	str = &resource->model_number;
-	for (i = 0; i < 3; i++, str++)
-		kfree(*str);
-=======
 	free_capabilities(resource);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 end:
 	kfree(buffer.pointer);
 	return res;
@@ -1143,20 +830,12 @@ static void acpi_power_meter_notify(struct acpi_device *device, u32 event)
 
 	resource = acpi_driver_data(device);
 
-<<<<<<< HEAD
-	mutex_lock(&resource->lock);
-	switch (event) {
-	case METER_NOTIFY_CONFIG:
-		free_capabilities(resource);
-		res = read_capabilities(resource);
-=======
 	switch (event) {
 	case METER_NOTIFY_CONFIG:
 		mutex_lock(&resource->lock);
 		free_capabilities(resource);
 		res = read_capabilities(resource);
 		mutex_unlock(&resource->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res)
 			break;
 
@@ -1165,39 +844,21 @@ static void acpi_power_meter_notify(struct acpi_device *device, u32 event)
 		break;
 	case METER_NOTIFY_TRIP:
 		sysfs_notify(&device->dev.kobj, NULL, POWER_AVERAGE_NAME);
-<<<<<<< HEAD
-		update_meter(resource);
-		break;
-	case METER_NOTIFY_CAP:
-		sysfs_notify(&device->dev.kobj, NULL, POWER_CAP_NAME);
-		update_cap(resource);
-		break;
-	case METER_NOTIFY_INTERVAL:
-		sysfs_notify(&device->dev.kobj, NULL, POWER_AVG_INTERVAL_NAME);
-		update_avg_interval(resource);
-=======
 		break;
 	case METER_NOTIFY_CAP:
 		sysfs_notify(&device->dev.kobj, NULL, POWER_CAP_NAME);
 		break;
 	case METER_NOTIFY_INTERVAL:
 		sysfs_notify(&device->dev.kobj, NULL, POWER_AVG_INTERVAL_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case METER_NOTIFY_CAPPING:
 		sysfs_notify(&device->dev.kobj, NULL, POWER_ALARM_NAME);
 		dev_info(&device->dev, "Capping in progress.\n");
 		break;
 	default:
-<<<<<<< HEAD
-		BUG();
-	}
-	mutex_unlock(&resource->lock);
-=======
 		WARN(1, "Unexpected event %d\n", event);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acpi_bus_generate_netlink_event(ACPI_POWER_METER_CLASS,
 					dev_name(&device->dev), event, 0);
@@ -1211,12 +872,7 @@ static int acpi_power_meter_add(struct acpi_device *device)
 	if (!device)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	resource = kzalloc(sizeof(struct acpi_power_meter_resource),
-			   GFP_KERNEL);
-=======
 	resource = kzalloc(sizeof(*resource), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!resource)
 		return -ENOMEM;
 
@@ -1227,28 +883,16 @@ static int acpi_power_meter_add(struct acpi_device *device)
 	strcpy(acpi_device_class(device), ACPI_POWER_METER_CLASS);
 	device->driver_data = resource;
 
-<<<<<<< HEAD
-	free_capabilities(resource);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = read_capabilities(resource);
 	if (res)
 		goto exit_free;
 
-<<<<<<< HEAD
-	resource->trip[0] = resource->trip[1] = -1;
-
-	res = setup_attrs(resource);
-	if (res)
-		goto exit_free;
-=======
 	resource->trip[0] = -1;
 	resource->trip[1] = -1;
 
 	res = setup_attrs(resource);
 	if (res)
 		goto exit_free_capability;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	resource->hwmon_dev = hwmon_device_register(&device->dev);
 	if (IS_ERR(resource->hwmon_dev)) {
@@ -1261,52 +905,24 @@ static int acpi_power_meter_add(struct acpi_device *device)
 
 exit_remove:
 	remove_attrs(resource);
-<<<<<<< HEAD
-=======
 exit_free_capability:
 	free_capabilities(resource);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit_free:
 	kfree(resource);
 exit:
 	return res;
 }
 
-<<<<<<< HEAD
-static int acpi_power_meter_remove(struct acpi_device *device, int type)
-=======
 static void acpi_power_meter_remove(struct acpi_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_power_meter_resource *resource;
 
 	if (!device || !acpi_driver_data(device))
-<<<<<<< HEAD
-		return -EINVAL;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	resource = acpi_driver_data(device);
 	hwmon_device_unregister(resource->hwmon_dev);
 
-<<<<<<< HEAD
-	free_capabilities(resource);
-	remove_attrs(resource);
-
-	kfree(resource);
-	return 0;
-}
-
-static int acpi_power_meter_resume(struct acpi_device *device)
-{
-	struct acpi_power_meter_resource *resource;
-
-	if (!device || !acpi_driver_data(device))
-		return -EINVAL;
-
-	resource = acpi_driver_data(device);
-=======
 	remove_attrs(resource);
 	free_capabilities(resource);
 
@@ -1324,19 +940,15 @@ static int acpi_power_meter_resume(struct device *dev)
 	if (!resource)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_capabilities(resource);
 	read_capabilities(resource);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static DEFINE_SIMPLE_DEV_PM_OPS(acpi_power_meter_pm, NULL,
 				acpi_power_meter_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct acpi_driver acpi_power_meter_driver = {
 	.name = "power_meter",
 	.class = ACPI_POWER_METER_CLASS,
@@ -1344,15 +956,9 @@ static struct acpi_driver acpi_power_meter_driver = {
 	.ops = {
 		.add = acpi_power_meter_add,
 		.remove = acpi_power_meter_remove,
-<<<<<<< HEAD
-		.resume = acpi_power_meter_resume,
-		.notify = acpi_power_meter_notify,
-		},
-=======
 		.notify = acpi_power_meter_notify,
 		},
 	.drv.pm = pm_sleep_ptr(&acpi_power_meter_pm),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Module init/exit routines */
@@ -1362,11 +968,7 @@ static int __init enable_cap_knobs(const struct dmi_system_id *d)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct dmi_system_id __initdata pm_dmi_table[] = {
-=======
 static const struct dmi_system_id pm_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		enable_cap_knobs, "IBM Active Energy Manager",
 		{
@@ -1387,11 +989,7 @@ static int __init acpi_power_meter_init(void)
 
 	result = acpi_bus_register_driver(&acpi_power_meter_driver);
 	if (result < 0)
-<<<<<<< HEAD
-		return -ENODEV;
-=======
 		return result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1401,11 +999,7 @@ static void __exit acpi_power_meter_exit(void)
 	acpi_bus_unregister_driver(&acpi_power_meter_driver);
 }
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Darrick J. Wong <djwong@us.ibm.com>");
-=======
 MODULE_AUTHOR("Darrick J. Wong <darrick.wong@oracle.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("ACPI 4.0 power meter driver");
 MODULE_LICENSE("GPL");
 

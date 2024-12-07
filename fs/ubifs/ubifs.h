@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Artem Bityutskiy (Битюцкий Артём)
  *          Adrian Hunter
  */
@@ -43,8 +24,6 @@
 #include <linux/mtd/ubi.h>
 #include <linux/pagemap.h>
 #include <linux/backing-dev.h>
-<<<<<<< HEAD
-=======
 #include <linux/security.h>
 #include <linux/xattr.h>
 #include <linux/random.h>
@@ -56,38 +35,17 @@
 
 #include <linux/fscrypt.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ubifs-media.h"
 
 /* Version of this UBIFS implementation */
 #define UBIFS_VERSION 1
 
-<<<<<<< HEAD
-/* Normal UBIFS messages */
-#define ubifs_msg(fmt, ...) \
-		printk(KERN_NOTICE "UBIFS: " fmt "\n", ##__VA_ARGS__)
-/* UBIFS error messages */
-#define ubifs_err(fmt, ...)                                                  \
-	printk(KERN_ERR "UBIFS error (pid %d): %s: " fmt "\n", current->pid, \
-	       __func__, ##__VA_ARGS__)
-/* UBIFS warning messages */
-#define ubifs_warn(fmt, ...)                                         \
-	printk(KERN_WARNING "UBIFS warning (pid %d): %s: " fmt "\n", \
-	       current->pid, __func__, ##__VA_ARGS__)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* UBIFS file system VFS magic number */
 #define UBIFS_SUPER_MAGIC 0x24051905
 
 /* Number of UBIFS blocks per VFS page */
-<<<<<<< HEAD
-#define UBIFS_BLOCKS_PER_PAGE (PAGE_CACHE_SIZE / UBIFS_BLOCK_SIZE)
-#define UBIFS_BLOCKS_PER_PAGE_SHIFT (PAGE_CACHE_SHIFT - UBIFS_BLOCK_SHIFT)
-=======
 #define UBIFS_BLOCKS_PER_PAGE (PAGE_SIZE / UBIFS_BLOCK_SIZE)
 #define UBIFS_BLOCKS_PER_PAGE_SHIFT (PAGE_SHIFT - UBIFS_BLOCK_SHIFT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* "File system end of life" sequence number watermark */
 #define SQNUM_WARN_WATERMARK 0xFFFFFFFF00000000ULL
@@ -122,13 +80,6 @@
  */
 #define BGT_NAME_PATTERN "ubifs_bgt%d_%d"
 
-<<<<<<< HEAD
-/* Write-buffer synchronization timeout interval in seconds */
-#define WBUF_TIMEOUT_SOFTLIMIT 3
-#define WBUF_TIMEOUT_HARDLIMIT 5
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Maximum possible inode number (only 32-bit inodes are supported now) */
 #define MAX_INUM 0xFFFFFFFF
 
@@ -180,10 +131,6 @@
  */
 #define WORST_COMPR_FACTOR 2
 
-<<<<<<< HEAD
-/*
- * How much memory is needed for a buffer where we comress a data node.
-=======
 #ifdef CONFIG_FS_ENCRYPTION
 #define UBIFS_CIPHER_BLOCK_SIZE FSCRYPT_CONTENTS_ALIGNMENT
 #else
@@ -192,7 +139,6 @@
 
 /*
  * How much memory is needed for a buffer where we compress a data node.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define COMPRESSED_DATA_NODE_BUF_SZ \
 	(UBIFS_DATA_NODE_SZ + UBIFS_BLOCK_SIZE * WORST_COMPR_FACTOR)
@@ -203,8 +149,6 @@
 /* Maximum number of data nodes to bulk-read */
 #define UBIFS_MAX_BULK_READ 32
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_UBIFS_FS_AUTHENTICATION
 #define UBIFS_HASH_ARR_SZ UBIFS_MAX_HASH_LEN
 #define UBIFS_HMAC_ARR_SZ UBIFS_MAX_HMAC_LEN
@@ -220,7 +164,6 @@
 #define UBIFS_DFS_DIR_NAME "ubi%d_%d"
 #define UBIFS_DFS_DIR_LEN  (3 + 1 + 2*2 + 1)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Lockdep classes for UBIFS inode @ui_mutex.
  */
@@ -228,10 +171,7 @@ enum {
 	WB_MUTEX_1 = 0,
 	WB_MUTEX_2 = 1,
 	WB_MUTEX_3 = 2,
-<<<<<<< HEAD
-=======
 	WB_MUTEX_4 = 3,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -325,8 +265,6 @@ enum {
 	LEB_RETAINED,
 };
 
-<<<<<<< HEAD
-=======
 /*
  * Action taken upon a failed ubifs_assert().
  * @ASSACT_REPORT: just report the failed assertion
@@ -339,7 +277,6 @@ enum {
 	ASSACT_PANIC,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct ubifs_old_idx - index node obsoleted since last commit start.
  * @rb: rb-tree node
@@ -386,10 +323,6 @@ struct ubifs_scan_node {
  * @nodes_cnt: number of nodes scanned
  * @nodes: list of struct ubifs_scan_node
  * @endpt: end point (and therefore the start of empty space)
-<<<<<<< HEAD
- * @ecc: read returned -EBADMSG
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: buffer containing entire LEB scanned
  */
 struct ubifs_scan_leb {
@@ -397,10 +330,6 @@ struct ubifs_scan_leb {
 	int nodes_cnt;
 	struct list_head nodes;
 	int endpt;
-<<<<<<< HEAD
-	int ecc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *buf;
 };
 
@@ -436,10 +365,7 @@ struct ubifs_gced_idx_leb {
  * @ui_mutex: serializes inode write-back with the rest of VFS operations,
  *            serializes "clean <-> dirty" state changes, serializes bulk-read,
  *            protects @dirty, @bulk_read, @ui_size, and @xattr_size
-<<<<<<< HEAD
-=======
  * @xattr_sem: serilizes write operations (remove|set|create) on xattr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ui_lock: protects @synced_i_size
  * @synced_i_size: synchronized size of inode, i.e. the value of inode size
  *                 currently stored on the flash; used only for regular file
@@ -455,11 +381,7 @@ struct ubifs_gced_idx_leb {
  * @ui_mutex exists for two main reasons. At first it prevents inodes from
  * being written back while UBIFS changing them, being in the middle of an VFS
  * operation. This way UBIFS makes sure the inode fields are consistent. For
-<<<<<<< HEAD
- * example, in 'ubifs_rename()' we change 3 inodes simultaneously, and
-=======
  * example, in 'ubifs_rename()' we change 4 inodes simultaneously, and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * write-back must not write any of them before we have finished.
  *
  * The second reason is budgeting - UBIFS has to budget all operations. If an
@@ -497,10 +419,7 @@ struct ubifs_inode {
 	unsigned int bulk_read:1;
 	unsigned int compr_type:2;
 	struct mutex ui_mutex;
-<<<<<<< HEAD
-=======
 	struct rw_semaphore xattr_sem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t ui_lock;
 	loff_t synced_i_size;
 	loff_t ui_size;
@@ -748,23 +667,12 @@ typedef int (*ubifs_lpt_scan_callback)(struct ubifs_info *c,
  * @avail: number of bytes available in the write-buffer
  * @used:  number of used bytes in the write-buffer
  * @size: write-buffer size (in [@c->min_io_size, @c->max_write_size] range)
-<<<<<<< HEAD
- * @dtype: type of data stored in this LEB (%UBI_LONGTERM, %UBI_SHORTTERM,
- * %UBI_UNKNOWN)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @jhead: journal head the mutex belongs to (note, needed only to shut lockdep
  *         up by 'mutex_lock_nested()).
  * @sync_callback: write-buffer synchronization callback
  * @io_mutex: serializes write-buffer I/O
  * @lock: serializes @buf, @lnum, @offs, @avail, @used, @next_ino and @inodes
  *        fields
-<<<<<<< HEAD
- * @softlimit: soft write-buffer timeout interval
- * @delta: hard and soft timeouts delta (the timer expire inteval is @softlimit
- *         and @softlimit + @delta)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @timer: write-buffer timer
  * @no_timer: non-zero if this write-buffer does not have a timer
  * @need_sync: non-zero if the timer expired and the wbuf needs sync'ing
@@ -789,19 +697,10 @@ struct ubifs_wbuf {
 	int avail;
 	int used;
 	int size;
-<<<<<<< HEAD
-	int dtype;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int jhead;
 	int (*sync_callback)(struct ubifs_info *c, int lnum, int free, int pad);
 	struct mutex io_mutex;
 	spinlock_t lock;
-<<<<<<< HEAD
-	ktime_t softlimit;
-	unsigned long long delta;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hrtimer timer;
 	unsigned int no_timer:1;
 	unsigned int need_sync:1;
@@ -816,10 +715,7 @@ struct ubifs_wbuf {
  * @jhead: journal head number this bud belongs to
  * @list: link in the list buds belonging to the same journal head
  * @rb: link in the tree of all buds
-<<<<<<< HEAD
-=======
  * @log_hash: the log hash from the commit start node up to this bud
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ubifs_bud {
 	int lnum;
@@ -827,10 +723,7 @@ struct ubifs_bud {
 	int jhead;
 	struct list_head list;
 	struct rb_node rb;
-<<<<<<< HEAD
-=======
 	struct shash_desc *log_hash;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -838,10 +731,7 @@ struct ubifs_bud {
  * @wbuf: head's write-buffer
  * @buds_list: list of bud LEBs belonging to this journal head
  * @grouped: non-zero if UBIFS groups nodes when writing to this journal head
-<<<<<<< HEAD
-=======
  * @log_hash: the log hash from the commit start node up to this journal head
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note, the @buds list is protected by the @c->buds_lock.
  */
@@ -849,10 +739,7 @@ struct ubifs_jhead {
 	struct ubifs_wbuf wbuf;
 	struct list_head buds_list;
 	unsigned int grouped:1;
-<<<<<<< HEAD
-=======
 	struct shash_desc *log_hash;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -862,10 +749,7 @@ struct ubifs_jhead {
  * @lnum: LEB number of the target node (indexing node or data node)
  * @offs: target node offset within @lnum
  * @len: target node length
-<<<<<<< HEAD
-=======
  * @hash: the hash of the target node
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ubifs_zbranch {
 	union ubifs_key key;
@@ -876,21 +760,15 @@ struct ubifs_zbranch {
 	int lnum;
 	int offs;
 	int len;
-<<<<<<< HEAD
-=======
 	u8 hash[UBIFS_HASH_ARR_SZ];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct ubifs_znode - in-memory representation of an indexing node.
  * @parent: parent znode or NULL if it is the root
  * @cnext: next znode to commit
-<<<<<<< HEAD
-=======
  * @cparent: parent node for this commit
  * @ciip: index in cparent's zbranch array
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @flags: znode flags (%DIRTY_ZNODE, %COW_ZNODE or %OBSOLETE_ZNODE)
  * @time: last access time (seconds)
  * @level: level of the entry in the TNC tree
@@ -901,38 +779,24 @@ struct ubifs_zbranch {
  * @offs: offset of the corresponding indexing node
  * @len: length  of the corresponding indexing node
  * @zbranch: array of znode branches (@c->fanout elements)
-<<<<<<< HEAD
-=======
  *
  * Note! The @lnum, @offs, and @len fields are not really needed - we have them
  * only for internal consistency check. They could be removed to save some RAM.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ubifs_znode {
 	struct ubifs_znode *parent;
 	struct ubifs_znode *cnext;
-<<<<<<< HEAD
-	unsigned long flags;
-	unsigned long time;
-=======
 	struct ubifs_znode *cparent;
 	int ciip;
 	unsigned long flags;
 	time64_t time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int level;
 	int child_cnt;
 	int iip;
 	int alt;
-<<<<<<< HEAD
-#ifdef CONFIG_UBIFS_FS_DEBUG
-	int lnum, offs, len;
-#endif
-=======
 	int lnum;
 	int offs;
 	int len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ubifs_zbranch zbranch[];
 };
 
@@ -1005,15 +869,9 @@ struct ubifs_compressor {
  * @mod_dent: non-zero if the operation removes or modifies an existing
  *            directory entry
  * @new_ino: non-zero if the operation adds a new inode
-<<<<<<< HEAD
- * @new_ino_d: now much data newly created inode contains
- * @dirtied_ino: how many inodes the operation makes dirty
- * @dirtied_ino_d: now much data dirtied inode contains
-=======
  * @new_ino_d: how much data newly created inode contains
  * @dirtied_ino: how many inodes the operation makes dirty
  * @dirtied_ino_d: how much data dirtied inode contains
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @idx_growth: how much the index will supposedly grow
  * @data_growth: how much new data the operation will supposedly add
  * @dd_growth: how much data that makes other data dirty the operation will
@@ -1065,53 +923,34 @@ struct ubifs_budget_req {
  * @rb: rb-tree node of rb-tree of orphans sorted by inode number
  * @list: list head of list of orphans in order added
  * @new_list: list head of list of orphans added since the last commit
-<<<<<<< HEAD
-=======
  * @child_list: list of xattr children if this orphan hosts xattrs, list head
  * if this orphan is a xattr, not used otherwise.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cnext: next orphan to commit
  * @dnext: next orphan to delete
  * @inum: inode number
  * @new: %1 => added since the last commit, otherwise %0
-<<<<<<< HEAD
-=======
  * @cmt: %1 => commit pending, otherwise %0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @del: %1 => delete pending, otherwise %0
  */
 struct ubifs_orphan {
 	struct rb_node rb;
 	struct list_head list;
 	struct list_head new_list;
-<<<<<<< HEAD
-	struct ubifs_orphan *cnext;
-	struct ubifs_orphan *dnext;
-	ino_t inum;
-	int new;
-=======
 	struct list_head child_list;
 	struct ubifs_orphan *cnext;
 	struct ubifs_orphan *dnext;
 	ino_t inum;
 	unsigned new:1;
 	unsigned cmt:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned del:1;
 };
 
 /**
  * struct ubifs_mount_opts - UBIFS-specific mount options information.
  * @unmount_mode: selected unmount mode (%0 default, %1 normal, %2 fast)
-<<<<<<< HEAD
- * @bulk_read: enable/disable bulk-reads (%0 default, %1 disabe, %2 enable)
- * @chk_data_crc: enable/disable CRC data checking when reading data nodes
- *                (%0 default, %1 disabe, %2 enable)
-=======
  * @bulk_read: enable/disable bulk-reads (%0 default, %1 disable, %2 enable)
  * @chk_data_crc: enable/disable CRC data checking when reading data nodes
  *                (%0 default, %1 disable, %2 enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @override_compr: override default compressor (%0 - do not override and use
  *                  superblock compressor, %1 - override and use compressor
  *                  specified in @compr_type)
@@ -1141,15 +980,9 @@ struct ubifs_mount_opts {
  *           optimization)
  * @nospace_rp: the same as @nospace, but additionally means that even reserved
  *              pool is full
-<<<<<<< HEAD
- * @page_budget: budget for a page (constant, nenver changed after mount)
- * @inode_budget: budget for an inode (constant, nenver changed after mount)
- * @dent_budget: budget for a directory entry (constant, nenver changed after
-=======
  * @page_budget: budget for a page (constant, never changed after mount)
  * @inode_budget: budget for an inode (constant, never changed after mount)
  * @dent_budget: budget for a directory entry (constant, never changed after
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *               mount)
  */
 struct ubifs_budg_info {
@@ -1166,8 +999,6 @@ struct ubifs_budg_info {
 	int dent_budget;
 };
 
-<<<<<<< HEAD
-=======
 /**
  * ubifs_stats_info - per-FS statistics information.
  * @magic_errors: number of bad magic numbers (will be reset with a new mount).
@@ -1180,18 +1011,13 @@ struct ubifs_stats_info {
 	unsigned int crc_errors;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ubifs_debug_info;
 
 /**
  * struct ubifs_info - UBIFS file-system description data structure
  * (per-superblock).
  * @vfs_sb: VFS @struct super_block object
-<<<<<<< HEAD
- * @bdi: backing device info object to make VFS happy and disable read-ahead
-=======
  * @sup_node: The super block node as read from the device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @highest_inum: highest used inode number
  * @max_sqnum: current global sequence number
@@ -1221,11 +1047,8 @@ struct ubifs_debug_info;
  * @bg_bud_bytes: number of bud bytes when background commit is initiated
  * @old_buds: buds to be released after commit ends
  * @max_bud_cnt: maximum number of buds
-<<<<<<< HEAD
-=======
  * @need_wait_space: Non %0 means space reservation tasks need to wait in queue
  * @reserve_space_wq: wait queue to sleep on if @need_wait_space is not %0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @commit_sem: synchronizes committer with other processes
  * @cmt_state: commit state
@@ -1234,21 +1057,15 @@ struct ubifs_debug_info;
  *
  * @big_lpt: flag that LPT is too big to write whole during commit
  * @space_fixup: flag indicating that free space in LEBs needs to be cleaned up
-<<<<<<< HEAD
-=======
  * @double_hash: flag indicating that we can do lookups by hash
  * @encrypted: flag indicating that this file system contains encrypted files
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @no_chk_data_crc: do not check CRCs when reading data nodes (except during
  *                   recovery)
  * @bulk_read: enable bulk-reads
  * @default_compr: default compression algorithm (%UBIFS_COMPR_LZO, etc)
  * @rw_incompat: the media is not R/W compatible
-<<<<<<< HEAD
-=======
  * @assert_action: action to take when a ubifs_assert() fails
  * @authenticated: flag indigating the FS is mounted in authenticated mode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @tnc_mutex: protects the Tree Node Cache (TNC), @zroot, @cnext, @enext, and
  *             @calc_idx_sz
@@ -1296,10 +1113,7 @@ struct ubifs_debug_info;
  * @key_hash: direntry key hash function
  * @key_fmt: key format
  * @key_len: key length
-<<<<<<< HEAD
-=======
  * @hash_len: The length of the index node hashes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @fanout: fanout of the index tree (number of links per indexing node)
  *
  * @min_io_size: minimal input/output unit size
@@ -1315,10 +1129,6 @@ struct ubifs_debug_info;
  *                used to store indexing nodes (@leb_size - @max_idx_node_sz)
  * @leb_cnt: count of logical eraseblocks
  * @max_leb_cnt: maximum count of logical eraseblocks
-<<<<<<< HEAD
- * @old_leb_cnt: count of logical eraseblocks before re-size
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ro_media: the underlying UBI volume is read-only
  * @ro_mount: the file-system was mounted as read-only
  * @ro_error: UBIFS switched to R/O mode because an error happened
@@ -1438,8 +1248,6 @@ struct ubifs_debug_info;
  * @rp_uid: reserved pool user ID
  * @rp_gid: reserved pool group ID
  *
-<<<<<<< HEAD
-=======
  * @hash_tfm: the hash transformation used for hashing nodes
  * @hmac_tfm: the HMAC transformation for this filesystem
  * @hmac_desc_len: length of the HMAC used for authentication
@@ -1449,23 +1257,15 @@ struct ubifs_debug_info;
  * @log_hash: the log hash from the commit start node up to the latest reference
  *            node.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @empty: %1 if the UBI device is empty
  * @need_recovery: %1 if the file-system needs recovery
  * @replaying: %1 during journal replay
  * @mounting: %1 while mounting
-<<<<<<< HEAD
-=======
  * @probing: %1 while attempting to mount if SB_SILENT mount flag is set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @remounting_rw: %1 while re-mounting from R/O mode to R/W mode
  * @replay_list: temporary list used during journal replay
  * @replay_buds: list of buds to replay
  * @cs_sqnum: sequence number of first node in the log (commit start node)
-<<<<<<< HEAD
- * @replay_sqnum: sequence number of node currently being replayed
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @unclean_leb_list: LEBs to recover when re-mounting R/O mounted FS to R/W
  *                    mode
  * @rcvrd_mst_node: recovered master node to write when re-mounting R/O mounted
@@ -1474,12 +1274,6 @@ struct ubifs_debug_info;
  * @mount_opts: UBIFS-specific mount options
  *
  * @dbg: debugging-related information
-<<<<<<< HEAD
- */
-struct ubifs_info {
-	struct super_block *vfs_sb;
-	struct backing_dev_info bdi;
-=======
  * @stats: statistics exported over sysfs
  *
  * @kobj: kobject for /sys/fs/ubifs/
@@ -1488,7 +1282,6 @@ struct ubifs_info {
 struct ubifs_info {
 	struct super_block *vfs_sb;
 	struct ubifs_sb_node *sup_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ino_t highest_inum;
 	unsigned long long max_sqnum;
@@ -1514,21 +1307,14 @@ struct ubifs_info {
 	long long bg_bud_bytes;
 	struct list_head old_buds;
 	int max_bud_cnt;
-<<<<<<< HEAD
-=======
 	atomic_t need_wait_space;
 	wait_queue_head_t reserve_space_wq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct rw_semaphore commit_sem;
 	int cmt_state;
 	spinlock_t cs_lock;
 	wait_queue_head_t cmt_wq;
 
-<<<<<<< HEAD
-	unsigned int big_lpt:1;
-	unsigned int space_fixup:1;
-=======
 	struct kobject kobj;
 	struct completion kobj_unregister;
 
@@ -1536,17 +1322,13 @@ struct ubifs_info {
 	unsigned int space_fixup:1;
 	unsigned int double_hash:1;
 	unsigned int encrypted:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int no_chk_data_crc:1;
 	unsigned int bulk_read:1;
 	unsigned int default_compr:2;
 	unsigned int rw_incompat:1;
-<<<<<<< HEAD
-=======
 	unsigned int assert_action:2;
 	unsigned int authenticated:1;
 	unsigned int superblock_need_write:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex tnc_mutex;
 	struct ubifs_zbranch zroot;
@@ -1591,10 +1373,7 @@ struct ubifs_info {
 	uint32_t (*key_hash)(const char *str, int len);
 	int key_fmt;
 	int key_len;
-<<<<<<< HEAD
-=======
 	int hash_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int fanout;
 
 	int min_io_size;
@@ -1607,10 +1386,6 @@ struct ubifs_info {
 	int idx_leb_size;
 	int leb_cnt;
 	int max_leb_cnt;
-<<<<<<< HEAD
-	int old_leb_cnt;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int ro_media:1;
 	unsigned int ro_mount:1;
 	unsigned int ro_error:1;
@@ -1722,10 +1497,6 @@ struct ubifs_info {
 
 	long long rp_size;
 	long long report_rp_size;
-<<<<<<< HEAD
-	uid_t rp_uid;
-	gid_t rp_gid;
-=======
 	kuid_t rp_uid;
 	kgid_t rp_gid;
 
@@ -1737,7 +1508,6 @@ struct ubifs_info {
 	enum hash_algo auth_hash_algo;
 
 	struct shash_desc *log_hash;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The below fields are used only during mounting and re-mounting */
 	unsigned int empty:1;
@@ -1745,39 +1515,22 @@ struct ubifs_info {
 	unsigned int replaying:1;
 	unsigned int mounting:1;
 	unsigned int remounting_rw:1;
-<<<<<<< HEAD
-	struct list_head replay_list;
-	struct list_head replay_buds;
-	unsigned long long cs_sqnum;
-	unsigned long long replay_sqnum;
-=======
 	unsigned int probing:1;
 	struct list_head replay_list;
 	struct list_head replay_buds;
 	unsigned long long cs_sqnum;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head unclean_leb_list;
 	struct ubifs_mst_node *rcvrd_mst_node;
 	struct rb_root size_tree;
 	struct ubifs_mount_opts mount_opts;
 
-<<<<<<< HEAD
-#ifdef CONFIG_UBIFS_FS_DEBUG
-	struct ubifs_debug_info *dbg;
-#endif
-=======
 	struct ubifs_debug_info *dbg;
 	struct ubifs_stats_info *stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct list_head ubifs_infos;
 extern spinlock_t ubifs_infos_lock;
 extern atomic_long_t ubifs_clean_zn_cnt;
-<<<<<<< HEAD
-extern struct kmem_cache *ubifs_inode_slab;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct super_operations ubifs_super_operations;
 extern const struct address_space_operations ubifs_file_address_operations;
 extern const struct file_operations ubifs_file_operations;
@@ -1785,10 +1538,6 @@ extern const struct inode_operations ubifs_file_inode_operations;
 extern const struct file_operations ubifs_dir_operations;
 extern const struct inode_operations ubifs_dir_inode_operations;
 extern const struct inode_operations ubifs_symlink_inode_operations;
-<<<<<<< HEAD
-extern struct backing_dev_info ubifs_backing_dev_info;
-extern struct ubifs_compressor *ubifs_compressors[UBIFS_COMPR_TYPES_CNT];
-=======
 extern struct ubifs_compressor *ubifs_compressors[UBIFS_COMPR_TYPES_CNT];
 extern int ubifs_default_version;
 
@@ -1988,24 +1737,12 @@ static inline int ubifs_shash_copy_state(const struct ubifs_info *c,
 	else
 		return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* io.c */
 void ubifs_ro_mode(struct ubifs_info *c, int err);
 int ubifs_leb_read(const struct ubifs_info *c, int lnum, void *buf, int offs,
 		   int len, int even_ebadmsg);
 int ubifs_leb_write(struct ubifs_info *c, int lnum, const void *buf, int offs,
-<<<<<<< HEAD
-		    int len, int dtype);
-int ubifs_leb_change(struct ubifs_info *c, int lnum, const void *buf, int len,
-		     int dtype);
-int ubifs_leb_unmap(struct ubifs_info *c, int lnum);
-int ubifs_leb_map(struct ubifs_info *c, int lnum, int dtype);
-int ubifs_is_mapped(const struct ubifs_info *c, int lnum);
-int ubifs_wbuf_write_nolock(struct ubifs_wbuf *wbuf, void *buf, int len);
-int ubifs_wbuf_seek_nolock(struct ubifs_wbuf *wbuf, int lnum, int offs,
-			   int dtype);
-=======
 		    int len);
 int ubifs_leb_change(struct ubifs_info *c, int lnum, const void *buf, int len);
 int ubifs_leb_unmap(struct ubifs_info *c, int lnum);
@@ -2013,19 +1750,12 @@ int ubifs_leb_map(struct ubifs_info *c, int lnum);
 int ubifs_is_mapped(const struct ubifs_info *c, int lnum);
 int ubifs_wbuf_write_nolock(struct ubifs_wbuf *wbuf, void *buf, int len);
 int ubifs_wbuf_seek_nolock(struct ubifs_wbuf *wbuf, int lnum, int offs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ubifs_wbuf_init(struct ubifs_info *c, struct ubifs_wbuf *wbuf);
 int ubifs_read_node(const struct ubifs_info *c, void *buf, int type, int len,
 		    int lnum, int offs);
 int ubifs_read_node_wbuf(struct ubifs_wbuf *wbuf, void *buf, int type, int len,
 			 int lnum, int offs);
 int ubifs_write_node(struct ubifs_info *c, void *node, int len, int lnum,
-<<<<<<< HEAD
-		     int offs, int dtype);
-int ubifs_check_node(const struct ubifs_info *c, const void *buf, int lnum,
-		     int offs, int quiet, int must_chk_crc);
-void ubifs_prepare_node(struct ubifs_info *c, void *buf, int len, int pad);
-=======
 		     int offs);
 int ubifs_write_node_hmac(struct ubifs_info *c, void *buf, int len, int lnum,
 			  int offs, int hmac_offs);
@@ -2036,7 +1766,6 @@ void ubifs_crc_node(struct ubifs_info *c, void *buf, int len);
 void ubifs_prepare_node(struct ubifs_info *c, void *buf, int len, int pad);
 int ubifs_prepare_node_hmac(struct ubifs_info *c, void *node, int len,
 			    int hmac_offs, int pad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ubifs_prep_grp_node(struct ubifs_info *c, void *node, int len, int last);
 int ubifs_io_init(struct ubifs_info *c);
 void ubifs_pad(const struct ubifs_info *c, void *buf, int pad);
@@ -2073,26 +1802,12 @@ int ubifs_consolidate_log(struct ubifs_info *c);
 
 /* journal.c */
 int ubifs_jnl_update(struct ubifs_info *c, const struct inode *dir,
-<<<<<<< HEAD
-		     const struct qstr *nm, const struct inode *inode,
-=======
 		     const struct fscrypt_name *nm, const struct inode *inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     int deletion, int xent);
 int ubifs_jnl_write_data(struct ubifs_info *c, const struct inode *inode,
 			 const union ubifs_key *key, const void *buf, int len);
 int ubifs_jnl_write_inode(struct ubifs_info *c, const struct inode *inode);
 int ubifs_jnl_delete_inode(struct ubifs_info *c, const struct inode *inode);
-<<<<<<< HEAD
-int ubifs_jnl_rename(struct ubifs_info *c, const struct inode *old_dir,
-		     const struct dentry *old_dentry,
-		     const struct inode *new_dir,
-		     const struct dentry *new_dentry, int sync);
-int ubifs_jnl_truncate(struct ubifs_info *c, const struct inode *inode,
-		       loff_t old_size, loff_t new_size);
-int ubifs_jnl_delete_xattr(struct ubifs_info *c, const struct inode *host,
-			   const struct inode *inode, const struct qstr *nm);
-=======
 int ubifs_jnl_xrename(struct ubifs_info *c, const struct inode *fst_dir,
 		      const struct inode *fst_inode,
 		      const struct fscrypt_name *fst_nm,
@@ -2110,7 +1825,6 @@ int ubifs_jnl_truncate(struct ubifs_info *c, const struct inode *inode,
 		       loff_t old_size, loff_t new_size);
 int ubifs_jnl_delete_xattr(struct ubifs_info *c, const struct inode *host,
 			   const struct inode *inode, const struct fscrypt_name *nm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ubifs_jnl_change_xattr(struct ubifs_info *c, const struct inode *inode1,
 			   const struct inode *inode2);
 
@@ -2145,20 +1859,6 @@ int ubifs_save_dirty_idx_lnums(struct ubifs_info *c);
 int ubifs_lookup_level0(struct ubifs_info *c, const union ubifs_key *key,
 			struct ubifs_znode **zn, int *n);
 int ubifs_tnc_lookup_nm(struct ubifs_info *c, const union ubifs_key *key,
-<<<<<<< HEAD
-			void *node, const struct qstr *nm);
-int ubifs_tnc_locate(struct ubifs_info *c, const union ubifs_key *key,
-		     void *node, int *lnum, int *offs);
-int ubifs_tnc_add(struct ubifs_info *c, const union ubifs_key *key, int lnum,
-		  int offs, int len);
-int ubifs_tnc_replace(struct ubifs_info *c, const union ubifs_key *key,
-		      int old_lnum, int old_offs, int lnum, int offs, int len);
-int ubifs_tnc_add_nm(struct ubifs_info *c, const union ubifs_key *key,
-		     int lnum, int offs, int len, const struct qstr *nm);
-int ubifs_tnc_remove(struct ubifs_info *c, const union ubifs_key *key);
-int ubifs_tnc_remove_nm(struct ubifs_info *c, const union ubifs_key *key,
-			const struct qstr *nm);
-=======
 			void *node, const struct fscrypt_name *nm);
 int ubifs_tnc_lookup_dh(struct ubifs_info *c, const union ubifs_key *key,
 			void *node, uint32_t secondary_hash);
@@ -2176,17 +1876,12 @@ int ubifs_tnc_remove_nm(struct ubifs_info *c, const union ubifs_key *key,
 			const struct fscrypt_name *nm);
 int ubifs_tnc_remove_dh(struct ubifs_info *c, const union ubifs_key *key,
 			uint32_t cookie);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ubifs_tnc_remove_range(struct ubifs_info *c, union ubifs_key *from_key,
 			   union ubifs_key *to_key);
 int ubifs_tnc_remove_ino(struct ubifs_info *c, ino_t inum);
 struct ubifs_dent_node *ubifs_tnc_next_ent(struct ubifs_info *c,
 					   union ubifs_key *key,
-<<<<<<< HEAD
-					   const struct qstr *nm);
-=======
 					   const struct fscrypt_name *nm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ubifs_tnc_close(struct ubifs_info *c);
 int ubifs_tnc_has_node(struct ubifs_info *c, union ubifs_key *key, int level,
 		       int lnum, int offs, int is_idx);
@@ -2201,27 +1896,18 @@ int ubifs_tnc_get_bu_keys(struct ubifs_info *c, struct bu_info *bu);
 int ubifs_tnc_bulk_read(struct ubifs_info *c, struct bu_info *bu);
 
 /* tnc_misc.c */
-<<<<<<< HEAD
-struct ubifs_znode *ubifs_tnc_levelorder_next(struct ubifs_znode *zr,
-=======
 struct ubifs_znode *ubifs_tnc_levelorder_next(const struct ubifs_info *c,
 					      struct ubifs_znode *zr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      struct ubifs_znode *znode);
 int ubifs_search_zbranch(const struct ubifs_info *c,
 			 const struct ubifs_znode *znode,
 			 const union ubifs_key *key, int *n);
 struct ubifs_znode *ubifs_tnc_postorder_first(struct ubifs_znode *znode);
-<<<<<<< HEAD
-struct ubifs_znode *ubifs_tnc_postorder_next(struct ubifs_znode *znode);
-long ubifs_destroy_tnc_subtree(struct ubifs_znode *zr);
-=======
 struct ubifs_znode *ubifs_tnc_postorder_next(const struct ubifs_info *c,
 					     struct ubifs_znode *znode);
 long ubifs_destroy_tnc_subtree(const struct ubifs_info *c,
 			       struct ubifs_znode *zr);
 void ubifs_destroy_tnc_tree(struct ubifs_info *c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ubifs_znode *ubifs_load_znode(struct ubifs_info *c,
 				     struct ubifs_zbranch *zbr,
 				     struct ubifs_znode *parent, int iip);
@@ -2233,14 +1919,10 @@ int ubifs_tnc_start_commit(struct ubifs_info *c, struct ubifs_zbranch *zroot);
 int ubifs_tnc_end_commit(struct ubifs_info *c);
 
 /* shrinker.c */
-<<<<<<< HEAD
-int ubifs_shrinker(struct shrinker *shrink, struct shrink_control *sc);
-=======
 unsigned long ubifs_shrink_scan(struct shrinker *shrink,
 				struct shrink_control *sc);
 unsigned long ubifs_shrink_count(struct shrinker *shrink,
 				 struct shrink_control *sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* commit.c */
 int ubifs_bg_thread(void *info);
@@ -2252,24 +1934,15 @@ int ubifs_gc_should_commit(struct ubifs_info *c);
 void ubifs_wait_for_commit(struct ubifs_info *c);
 
 /* master.c */
-<<<<<<< HEAD
-=======
 int ubifs_compare_master_node(struct ubifs_info *c, void *m1, void *m2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ubifs_read_master(struct ubifs_info *c);
 int ubifs_write_master(struct ubifs_info *c);
 
 /* sb.c */
 int ubifs_read_superblock(struct ubifs_info *c);
-<<<<<<< HEAD
-struct ubifs_sb_node *ubifs_read_sb_node(struct ubifs_info *c);
-int ubifs_write_sb_node(struct ubifs_info *c, struct ubifs_sb_node *sup);
-int ubifs_fixup_free_space(struct ubifs_info *c);
-=======
 int ubifs_write_sb_node(struct ubifs_info *c, struct ubifs_sb_node *sup);
 int ubifs_fixup_free_space(struct ubifs_info *c);
 int ubifs_enable_encryption(struct ubifs_info *c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* replay.c */
 int ubifs_validate_entry(struct ubifs_info *c,
@@ -2295,11 +1968,7 @@ int ubifs_clear_orphans(struct ubifs_info *c);
 /* lpt.c */
 int ubifs_calc_lpt_geom(struct ubifs_info *c);
 int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
-<<<<<<< HEAD
-			  int *lpt_lebs, int *big_lpt);
-=======
 			  int *lpt_lebs, int *big_lpt, u8 *hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ubifs_lpt_init(struct ubifs_info *c, int rd, int wr);
 struct ubifs_lprops *ubifs_lpt_lookup(struct ubifs_info *c, int lnum);
 struct ubifs_lprops *ubifs_lpt_lookup_dirty(struct ubifs_info *c, int lnum);
@@ -2318,26 +1987,16 @@ struct ubifs_pnode *ubifs_get_pnode(struct ubifs_info *c,
 				    struct ubifs_nnode *parent, int iip);
 struct ubifs_nnode *ubifs_get_nnode(struct ubifs_info *c,
 				    struct ubifs_nnode *parent, int iip);
-<<<<<<< HEAD
-int ubifs_read_nnode(struct ubifs_info *c, struct ubifs_nnode *parent, int iip);
-void ubifs_add_lpt_dirt(struct ubifs_info *c, int lnum, int dirty);
-void ubifs_add_nnode_dirt(struct ubifs_info *c, struct ubifs_nnode *nnode);
-uint32_t ubifs_unpack_bits(uint8_t **addr, int *pos, int nrbits);
-=======
 struct ubifs_pnode *ubifs_pnode_lookup(struct ubifs_info *c, int i);
 int ubifs_read_nnode(struct ubifs_info *c, struct ubifs_nnode *parent, int iip);
 void ubifs_add_lpt_dirt(struct ubifs_info *c, int lnum, int dirty);
 void ubifs_add_nnode_dirt(struct ubifs_info *c, struct ubifs_nnode *nnode);
 uint32_t ubifs_unpack_bits(const struct ubifs_info *c, uint8_t **addr, int *pos, int nrbits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ubifs_nnode *ubifs_first_nnode(struct ubifs_info *c, int *hght);
 /* Needed only in debugging code in lpt_commit.c */
 int ubifs_unpack_nnode(const struct ubifs_info *c, void *buf,
 		       struct ubifs_nnode *nnode);
-<<<<<<< HEAD
-=======
 int ubifs_lpt_calc_hash(struct ubifs_info *c, u8 *hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* lpt_commit.c */
 int ubifs_lpt_start_commit(struct ubifs_info *c);
@@ -2371,23 +2030,6 @@ int ubifs_calc_dark(const struct ubifs_info *c, int spc);
 
 /* file.c */
 int ubifs_fsync(struct file *file, loff_t start, loff_t end, int datasync);
-<<<<<<< HEAD
-int ubifs_setattr(struct dentry *dentry, struct iattr *attr);
-
-/* dir.c */
-struct inode *ubifs_new_inode(struct ubifs_info *c, const struct inode *dir,
-			      umode_t mode);
-int ubifs_getattr(struct vfsmount *mnt, struct dentry *dentry,
-		  struct kstat *stat);
-
-/* xattr.c */
-int ubifs_setxattr(struct dentry *dentry, const char *name,
-		   const void *value, size_t size, int flags);
-ssize_t ubifs_getxattr(struct dentry *dentry, const char *name, void *buf,
-		       size_t size);
-ssize_t ubifs_listxattr(struct dentry *dentry, char *buffer, size_t size);
-int ubifs_removexattr(struct dentry *dentry, const char *name);
-=======
 int ubifs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		  struct iattr *attr);
 int ubifs_update_time(struct inode *inode, int flags);
@@ -2432,7 +2074,6 @@ static inline int ubifs_init_security(struct inode *dentry,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* super.c */
 struct inode *ubifs_iget(struct super_block *sb, unsigned long inum);
@@ -2449,12 +2090,6 @@ int ubifs_clean_lebs(struct ubifs_info *c, void *sbuf);
 int ubifs_rcvry_gc_commit(struct ubifs_info *c);
 int ubifs_recover_size_accum(struct ubifs_info *c, union ubifs_key *key,
 			     int deletion, loff_t new_size);
-<<<<<<< HEAD
-int ubifs_recover_size(struct ubifs_info *c);
-void ubifs_destroy_size_tree(struct ubifs_info *c);
-
-/* ioctl.c */
-=======
 int ubifs_recover_size(struct ubifs_info *c, bool in_place);
 void ubifs_destroy_size_tree(struct ubifs_info *c);
 
@@ -2462,7 +2097,6 @@ void ubifs_destroy_size_tree(struct ubifs_info *c);
 int ubifs_fileattr_get(struct dentry *dentry, struct fileattr *fa);
 int ubifs_fileattr_set(struct mnt_idmap *idmap,
 		       struct dentry *dentry, struct fileattr *fa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 long ubifs_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
 void ubifs_set_inode_flags(struct inode *inode);
 #ifdef CONFIG_COMPAT
@@ -2472,12 +2106,6 @@ long ubifs_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
 /* compressor.c */
 int __init ubifs_compressors_init(void);
 void ubifs_compressors_exit(void);
-<<<<<<< HEAD
-void ubifs_compress(const void *in_buf, int in_len, void *out_buf, int *out_len,
-		    int *compr_type);
-int ubifs_decompress(const void *buf, int len, void *out, int *out_len,
-		     int compr_type);
-=======
 void ubifs_compress(const struct ubifs_info *c, const void *in_buf, int in_len,
 		    void *out_buf, int *out_len, int *compr_type);
 int ubifs_decompress(const struct ubifs_info *c, const void *buf, int len,
@@ -2488,14 +2116,11 @@ int ubifs_sysfs_init(void);
 void ubifs_sysfs_exit(void);
 int ubifs_sysfs_register(struct ubifs_info *c);
 void ubifs_sysfs_unregister(struct ubifs_info *c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "debug.h"
 #include "misc.h"
 #include "key.h"
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_FS_ENCRYPTION
 static inline int ubifs_encrypt(const struct inode *inode,
 				struct ubifs_data_node *dn,
@@ -2541,5 +2166,4 @@ do {									\
 		ubifs_err(c, fmt, ##__VA_ARGS__);			\
 } while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !__UBIFS_H__ */

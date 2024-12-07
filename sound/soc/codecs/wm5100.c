@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-/*
- * wm5100.c  --  WM5100 ALSA SoC Audio driver
- *
- * Copyright 2011 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * wm5100.c  --  WM5100 ALSA SoC Audio driver
@@ -17,24 +5,17 @@
  * Copyright 2011-2 Wolfson Microelectronics plc
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/pm.h>
-#include <linux/gcd.h>
-#include <linux/gpio.h>
-=======
 #include <linux/export.h>
 #include <linux/pm.h>
 #include <linux/gcd.h>
 #include <linux/gpio/driver.h>
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/i2c.h>
 #include <linux/pm_runtime.h>
 #include <linux/regulator/consumer.h>
@@ -71,18 +52,12 @@ struct wm5100_fll {
 struct wm5100_priv {
 	struct device *dev;
 	struct regmap *regmap;
-<<<<<<< HEAD
-	struct snd_soc_codec *codec;
-
-	struct regulator_bulk_data core_supplies[WM5100_NUM_CORE_SUPPLIES];
-=======
 	struct snd_soc_component *component;
 
 	struct regulator_bulk_data core_supplies[WM5100_NUM_CORE_SUPPLIES];
 	struct gpio_desc *reset;
 	struct gpio_desc *ldo_ena;
 	struct gpio_desc *hp_pol;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int rev;
 
@@ -143,26 +118,16 @@ static int wm5100_sr_regs[WM5100_SYNC_SRS] = {
 	WM5100_CLOCKING_6,
 };
 
-<<<<<<< HEAD
-static int wm5100_alloc_sr(struct snd_soc_codec *codec, int rate)
-{
-	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
-=======
 static int wm5100_alloc_sr(struct snd_soc_component *component, int rate)
 {
 	struct wm5100_priv *wm5100 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sr_code, sr_free, i;
 
 	for (i = 0; i < ARRAY_SIZE(wm5100_sr_code); i++)
 		if (wm5100_sr_code[i] == rate)
 			break;
 	if (i == ARRAY_SIZE(wm5100_sr_code)) {
-<<<<<<< HEAD
-		dev_err(codec->dev, "Unsupported sample rate: %dHz\n", rate);
-=======
 		dev_err(component->dev, "Unsupported sample rate: %dHz\n", rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	sr_code = i;
@@ -175,37 +140,19 @@ static int wm5100_alloc_sr(struct snd_soc_component *component, int rate)
 				sr_free = i;
 				continue;
 			}
-<<<<<<< HEAD
-			if ((snd_soc_read(codec, wm5100_sr_regs[i]) &
-=======
 			if ((snd_soc_component_read(component, wm5100_sr_regs[i]) &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     WM5100_SAMPLE_RATE_1_MASK) == sr_code)
 				break;
 		}
 
 		if (i < ARRAY_SIZE(wm5100_sr_regs)) {
 			wm5100->sr_ref[i]++;
-<<<<<<< HEAD
-			dev_dbg(codec->dev, "SR %dHz, slot %d, ref %d\n",
-=======
 			dev_dbg(component->dev, "SR %dHz, slot %d, ref %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rate, i, wm5100->sr_ref[i]);
 			return i;
 		}
 
 		if (sr_free == -1) {
-<<<<<<< HEAD
-			dev_err(codec->dev, "All SR slots already in use\n");
-			return -EBUSY;
-		}
-
-		dev_dbg(codec->dev, "Allocating SR slot %d for %dHz\n",
-			sr_free, rate);
-		wm5100->sr_ref[sr_free]++;
-		snd_soc_update_bits(codec, wm5100_sr_regs[sr_free],
-=======
 			dev_err(component->dev, "All SR slots already in use\n");
 			return -EBUSY;
 		}
@@ -214,44 +161,29 @@ static int wm5100_alloc_sr(struct snd_soc_component *component, int rate)
 			sr_free, rate);
 		wm5100->sr_ref[sr_free]++;
 		snd_soc_component_update_bits(component, wm5100_sr_regs[sr_free],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM5100_SAMPLE_RATE_1_MASK,
 				    sr_code);
 
 		return sr_free;
 
 	} else {
-<<<<<<< HEAD
-		dev_err(codec->dev,
-=======
 		dev_err(component->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"SR %dHz incompatible with %dHz SYSCLK and %dHz ASYNCCLK\n",
 			rate, wm5100->sysclk, wm5100->asyncclk);
 		return -EINVAL;
 	}
 }
 
-<<<<<<< HEAD
-static void wm5100_free_sr(struct snd_soc_codec *codec, int rate)
-{
-	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
-=======
 static void wm5100_free_sr(struct snd_soc_component *component, int rate)
 {
 	struct wm5100_priv *wm5100 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, sr_code;
 
 	for (i = 0; i < ARRAY_SIZE(wm5100_sr_code); i++)
 		if (wm5100_sr_code[i] == rate)
 			break;
 	if (i == ARRAY_SIZE(wm5100_sr_code)) {
-<<<<<<< HEAD
-		dev_err(codec->dev, "Unsupported sample rate: %dHz\n", rate);
-=======
 		dev_err(component->dev, "Unsupported sample rate: %dHz\n", rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	sr_code = wm5100_sr_code[i];
@@ -260,42 +192,25 @@ static void wm5100_free_sr(struct snd_soc_component *component, int rate)
 		if (!wm5100->sr_ref[i])
 			continue;
 
-<<<<<<< HEAD
-		if ((snd_soc_read(codec, wm5100_sr_regs[i]) &
-=======
 		if ((snd_soc_component_read(component, wm5100_sr_regs[i]) &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     WM5100_SAMPLE_RATE_1_MASK) == sr_code)
 			break;
 	}
 	if (i < ARRAY_SIZE(wm5100_sr_regs)) {
 		wm5100->sr_ref[i]--;
-<<<<<<< HEAD
-		dev_dbg(codec->dev, "Dereference SR %dHz, count now %d\n",
-			rate, wm5100->sr_ref[i]);
-	} else {
-		dev_warn(codec->dev, "Freeing unreferenced sample rate %dHz\n",
-=======
 		dev_dbg(component->dev, "Dereference SR %dHz, count now %d\n",
 			rate, wm5100->sr_ref[i]);
 	} else {
 		dev_warn(component->dev, "Freeing unreferenced sample rate %dHz\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 rate);
 	}
 }
 
 static int wm5100_reset(struct wm5100_priv *wm5100)
 {
-<<<<<<< HEAD
-	if (wm5100->pdata.reset) {
-		gpio_set_value_cansleep(wm5100->pdata.reset, 0);
-		gpio_set_value_cansleep(wm5100->pdata.reset, 1);
-=======
 	if (wm5100->reset) {
 		gpiod_set_value_cansleep(wm5100->reset, 1);
 		gpiod_set_value_cansleep(wm5100->reset, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return 0;
 	} else {
@@ -476,11 +391,7 @@ static int wm5100_mixer_values[] = {
 
 #define WM5100_MUX_CTL_DECL(name) \
 	const struct snd_kcontrol_new name##_mux =	\
-<<<<<<< HEAD
-		SOC_DAPM_VALUE_ENUM("Route", name##_enum)
-=======
 		SOC_DAPM_ENUM("Route", name##_enum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WM5100_MIXER_ENUMS(name, base_reg) \
 	static WM5100_MUX_ENUM_DECL(name##_in1_enum, base_reg);	     \
@@ -538,11 +449,7 @@ WM5100_MIXER_ENUMS(LHPF3, WM5100_HPLP3MIX_INPUT_1_SOURCE);
 WM5100_MIXER_ENUMS(LHPF4, WM5100_HPLP4MIX_INPUT_1_SOURCE);
 
 #define WM5100_MUX(name, ctrl) \
-<<<<<<< HEAD
-	SND_SOC_DAPM_VALUE_MUX(name, SND_SOC_NOPM, 0, 0, ctrl)
-=======
 	SND_SOC_DAPM_MUX(name, SND_SOC_NOPM, 0, 0, ctrl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WM5100_MIXER_WIDGETS(name, name_str)	\
 	WM5100_MUX(name_str " Input 1", &name##_in1_mux), \
@@ -600,23 +507,6 @@ static const char *wm5100_lhpf_mode_text[] = {
 	"Low-pass", "High-pass"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum wm5100_lhpf1_mode =
-	SOC_ENUM_SINGLE(WM5100_HPLPF1_1, WM5100_LHPF1_MODE_SHIFT, 2,
-			wm5100_lhpf_mode_text);
-
-static const struct soc_enum wm5100_lhpf2_mode =
-	SOC_ENUM_SINGLE(WM5100_HPLPF2_1, WM5100_LHPF2_MODE_SHIFT, 2,
-			wm5100_lhpf_mode_text);
-
-static const struct soc_enum wm5100_lhpf3_mode =
-	SOC_ENUM_SINGLE(WM5100_HPLPF3_1, WM5100_LHPF3_MODE_SHIFT, 2,
-			wm5100_lhpf_mode_text);
-
-static const struct soc_enum wm5100_lhpf4_mode =
-	SOC_ENUM_SINGLE(WM5100_HPLPF4_1, WM5100_LHPF4_MODE_SHIFT, 2,
-			wm5100_lhpf_mode_text);
-=======
 static SOC_ENUM_SINGLE_DECL(wm5100_lhpf1_mode,
 			    WM5100_HPLPF1_1, WM5100_LHPF1_MODE_SHIFT,
 			    wm5100_lhpf_mode_text);
@@ -632,7 +522,6 @@ static SOC_ENUM_SINGLE_DECL(wm5100_lhpf3_mode,
 static SOC_ENUM_SINGLE_DECL(wm5100_lhpf4_mode,
 			    WM5100_HPLPF4_1, WM5100_LHPF4_MODE_SHIFT,
 			    wm5100_lhpf_mode_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new wm5100_snd_controls[] = {
 SOC_SINGLE("IN1 High Performance Switch", WM5100_IN1L_CONTROL,
@@ -676,8 +565,6 @@ SOC_DOUBLE_R("IN3 Switch", WM5100_ADC_DIGITAL_VOLUME_3L,
 SOC_DOUBLE_R("IN4 Switch", WM5100_ADC_DIGITAL_VOLUME_4L,
 	     WM5100_ADC_DIGITAL_VOLUME_4R, WM5100_IN4L_MUTE_SHIFT, 1, 1),
 
-<<<<<<< HEAD
-=======
 SND_SOC_BYTES_MASK("EQ1 Coefficients", WM5100_EQ1_1, 20, WM5100_EQ1_ENA),
 SND_SOC_BYTES_MASK("EQ2 Coefficients", WM5100_EQ2_1, 20, WM5100_EQ2_ENA),
 SND_SOC_BYTES_MASK("EQ3 Coefficients", WM5100_EQ3_1, 20, WM5100_EQ3_ENA),
@@ -691,7 +578,6 @@ SND_SOC_BYTES("LHPF2 Coefficients", WM5100_HPLPF2_2, 1),
 SND_SOC_BYTES("LHPF3 Coefficients", WM5100_HPLPF3_2, 1),
 SND_SOC_BYTES("LHPF4 Coefficients", WM5100_HPLPF4_2, 1),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SOC_SINGLE("HPOUT1 High Performance Switch", WM5100_OUT_VOLUME_1L,
 	   WM5100_OUT1_OSR_SHIFT, 1, 0),
 SOC_SINGLE("HPOUT2 High Performance Switch", WM5100_OUT_VOLUME_2L,
@@ -847,68 +733,39 @@ WM5100_MIXER_CONTROLS("LHPF3", WM5100_HPLP3MIX_INPUT_1_SOURCE),
 WM5100_MIXER_CONTROLS("LHPF4", WM5100_HPLP4MIX_INPUT_1_SOURCE),
 };
 
-<<<<<<< HEAD
-static void wm5100_seq_notifier(struct snd_soc_dapm_context *dapm,
-				enum snd_soc_dapm_type event, int subseq)
-{
-	struct snd_soc_codec *codec = container_of(dapm,
-						   struct snd_soc_codec, dapm);
-	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
-=======
 static void wm5100_seq_notifier(struct snd_soc_component *component,
 				enum snd_soc_dapm_type event, int subseq)
 {
 	struct wm5100_priv *wm5100 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 val, expect, i;
 
 	/* Wait for the outputs to flag themselves as enabled */
 	if (wm5100->out_ena[0]) {
-<<<<<<< HEAD
-		expect = snd_soc_read(codec, WM5100_CHANNEL_ENABLES_1);
-		for (i = 0; i < 200; i++) {
-			val = snd_soc_read(codec, WM5100_OUTPUT_STATUS_1);
-=======
 		expect = snd_soc_component_read(component, WM5100_CHANNEL_ENABLES_1);
 		for (i = 0; i < 200; i++) {
 			val = snd_soc_component_read(component, WM5100_OUTPUT_STATUS_1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (val == expect) {
 				wm5100->out_ena[0] = false;
 				break;
 			}
 		}
 		if (i == 200) {
-<<<<<<< HEAD
-			dev_err(codec->dev, "Timeout waiting for OUTPUT1 %x\n",
-=======
 			dev_err(component->dev, "Timeout waiting for OUTPUT1 %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				expect);
 		}
 	}
 
 	if (wm5100->out_ena[1]) {
-<<<<<<< HEAD
-		expect = snd_soc_read(codec, WM5100_OUTPUT_ENABLES_2);
-		for (i = 0; i < 200; i++) {
-			val = snd_soc_read(codec, WM5100_OUTPUT_STATUS_2);
-=======
 		expect = snd_soc_component_read(component, WM5100_OUTPUT_ENABLES_2);
 		for (i = 0; i < 200; i++) {
 			val = snd_soc_component_read(component, WM5100_OUTPUT_STATUS_2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (val == expect) {
 				wm5100->out_ena[1] = false;
 				break;
 			}
 		}
 		if (i == 200) {
-<<<<<<< HEAD
-			dev_err(codec->dev, "Timeout waiting for OUTPUT2 %x\n",
-=======
 			dev_err(component->dev, "Timeout waiting for OUTPUT2 %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				expect);
 		}
 	}
@@ -918,12 +775,8 @@ static int wm5100_out_ev(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *kcontrol,
 			 int event)
 {
-<<<<<<< HEAD
-	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(w->codec);
-=======
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	struct wm5100_priv *wm5100 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (w->reg) {
 	case WM5100_CHANNEL_ENABLES_1:
@@ -987,29 +840,17 @@ static int wm5100_post_ev(struct snd_soc_dapm_widget *w,
 			  struct snd_kcontrol *kcontrol,
 			  int event)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = w->codec;
-	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
-	int ret;
-
-	ret = snd_soc_read(codec, WM5100_INTERRUPT_RAW_STATUS_3);
-=======
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	struct wm5100_priv *wm5100 = snd_soc_component_get_drvdata(component);
 	int ret;
 
 	ret = snd_soc_component_read(component, WM5100_INTERRUPT_RAW_STATUS_3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret &= WM5100_SPK_SHUTDOWN_WARN_STS |
 		WM5100_SPK_SHUTDOWN_STS | WM5100_CLKGEN_ERR_STS |
 		WM5100_CLKGEN_ERR_ASYNC_STS;
 	wm5100_log_status3(wm5100, ret);
 
-<<<<<<< HEAD
-	ret = snd_soc_read(codec, WM5100_INTERRUPT_RAW_STATUS_4);
-=======
 	ret = snd_soc_component_read(component, WM5100_INTERRUPT_RAW_STATUS_4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wm5100_log_status4(wm5100, ret);
 
 	return 0;
@@ -1021,15 +862,9 @@ SND_SOC_DAPM_SUPPLY("SYSCLK", WM5100_CLOCKING_3, WM5100_SYSCLK_ENA_SHIFT, 0,
 SND_SOC_DAPM_SUPPLY("ASYNCCLK", WM5100_CLOCKING_6, WM5100_ASYNC_CLK_ENA_SHIFT,
 		    0, NULL, 0),
 
-<<<<<<< HEAD
-SND_SOC_DAPM_REGULATOR_SUPPLY("CPVDD", 20),
-SND_SOC_DAPM_REGULATOR_SUPPLY("DBVDD2", 0),
-SND_SOC_DAPM_REGULATOR_SUPPLY("DBVDD3", 0),
-=======
 SND_SOC_DAPM_REGULATOR_SUPPLY("CPVDD", 20, 0),
 SND_SOC_DAPM_REGULATOR_SUPPLY("DBVDD2", 0, 0),
 SND_SOC_DAPM_REGULATOR_SUPPLY("DBVDD3", 0, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SND_SOC_DAPM_SUPPLY("CP1", WM5100_HP_CHARGE_PUMP_1, WM5100_CP1_ENA_SHIFT, 0,
 		    NULL, 0),
@@ -1412,11 +1247,7 @@ static const struct snd_soc_dapm_route wm5100_dapm_routes[] = {
 	{ "PWM2", NULL, "PWM2 Driver" },
 };
 
-<<<<<<< HEAD
-static const __devinitdata struct reg_default wm5100_reva_patches[] = {
-=======
 static const struct reg_sequence wm5100_reva_patches[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ WM5100_AUDIO_IF_1_10, 0 },
 	{ WM5100_AUDIO_IF_1_11, 1 },
 	{ WM5100_AUDIO_IF_1_12, 2 },
@@ -1448,38 +1279,12 @@ static const struct reg_sequence wm5100_reva_patches[] = {
 	{ WM5100_AUDIO_IF_3_19, 1 },
 };
 
-<<<<<<< HEAD
-static int wm5100_dai_to_base(struct snd_soc_dai *dai)
-{
-	switch (dai->id) {
-	case 0:
-		return WM5100_AUDIO_IF_1_1 - 1;
-	case 1:
-		return WM5100_AUDIO_IF_2_1 - 1;
-	case 2:
-		return WM5100_AUDIO_IF_3_1 - 1;
-	default:
-		BUG();
-		return -EINVAL;
-	}
-}
-
-static int wm5100_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
-{
-	struct snd_soc_codec *codec = dai->codec;
-	int lrclk, bclk, mask, base;
-
-	base = wm5100_dai_to_base(dai);
-	if (base < 0)
-		return base;
-=======
 static int wm5100_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
 	struct snd_soc_component *component = dai->component;
 	int lrclk, bclk, mask, base;
 
 	base = dai->driver->base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lrclk = 0;
 	bclk = 0;
@@ -1492,11 +1297,7 @@ static int wm5100_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		mask = 2;
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Unsupported DAI format %d\n",
-=======
 		dev_err(component->dev, "Unsupported DAI format %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fmt & SND_SOC_DAIFMT_FORMAT_MASK);
 		return -EINVAL;
 	}
@@ -1515,11 +1316,7 @@ static int wm5100_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		bclk |= WM5100_AIF1_BCLK_MSTR;
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Unsupported master mode %d\n",
-=======
 		dev_err(component->dev, "Unsupported master mode %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fmt & SND_SOC_DAIFMT_MASTER_MASK);
 		return -EINVAL;
 	}
@@ -1541,15 +1338,6 @@ static int wm5100_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, base + 1, WM5100_AIF1_BCLK_MSTR |
-			    WM5100_AIF1_BCLK_INV, bclk);
-	snd_soc_update_bits(codec, base + 2, WM5100_AIF1TX_LRCLK_MSTR |
-			    WM5100_AIF1TX_LRCLK_INV, lrclk);
-	snd_soc_update_bits(codec, base + 3, WM5100_AIF1TX_LRCLK_MSTR |
-			    WM5100_AIF1TX_LRCLK_INV, lrclk);
-	snd_soc_update_bits(codec, base + 5, WM5100_AIF1_FMT_MASK, mask);
-=======
 	snd_soc_component_update_bits(component, base + 1, WM5100_AIF1_BCLK_MSTR |
 			    WM5100_AIF1_BCLK_INV, bclk);
 	snd_soc_component_update_bits(component, base + 2, WM5100_AIF1TX_LRCLK_MSTR |
@@ -1557,7 +1345,6 @@ static int wm5100_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	snd_soc_component_update_bits(component, base + 3, WM5100_AIF1TX_LRCLK_MSTR |
 			    WM5100_AIF1TX_LRCLK_INV, lrclk);
 	snd_soc_component_update_bits(component, base + 5, WM5100_AIF1_FMT_MASK, mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1612,41 +1399,23 @@ static int wm5100_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = dai->component;
 	struct wm5100_priv *wm5100 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool async = wm5100->aif_async[dai->id];
 	int i, base, bclk, aif_rate, lrclk, wl, fl, sr;
 	int *bclk_rates;
 
-<<<<<<< HEAD
-	base = wm5100_dai_to_base(dai);
-	if (base < 0)
-		return base;
-
-	/* Data sizes if not using TDM */
-	wl = snd_pcm_format_width(params_format(params));
-=======
 	base = dai->driver->base;
 
 	/* Data sizes if not using TDM */
 	wl = params_width(params);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wl < 0)
 		return wl;
 	fl = snd_soc_params_to_frame_size(params);
 	if (fl < 0)
 		return fl;
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Word length %d bits, frame length %d bits\n",
-=======
 	dev_dbg(component->dev, "Word length %d bits, frame length %d bits\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wl, fl);
 
 	/* Target BCLK rate */
@@ -1657,11 +1426,7 @@ static int wm5100_hw_params(struct snd_pcm_substream *substream,
 	/* Root for BCLK depends on SYS/ASYNCCLK */
 	if (!async) {
 		aif_rate = wm5100->sysclk;
-<<<<<<< HEAD
-		sr = wm5100_alloc_sr(codec, params_rate(params));
-=======
 		sr = wm5100_alloc_sr(component, params_rate(params));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sr < 0)
 			return sr;
 	} else {
@@ -1673,39 +1438,23 @@ static int wm5100_hw_params(struct snd_pcm_substream *substream,
 			if (params_rate(params) == wm5100_sr_code[i])
 				break;
 		if (i == ARRAY_SIZE(wm5100_sr_code)) {
-<<<<<<< HEAD
-			dev_err(codec->dev, "Invalid rate %dHzn",
-=======
 			dev_err(component->dev, "Invalid rate %dHzn",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				params_rate(params));
 			return -EINVAL;
 		}
 
 		/* TODO: We should really check for symmetry */
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM5100_CLOCKING_8,
-=======
 		snd_soc_component_update_bits(component, WM5100_CLOCKING_8,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM5100_ASYNC_SAMPLE_RATE_MASK, i);
 	}
 
 	if (!aif_rate) {
-<<<<<<< HEAD
-		dev_err(codec->dev, "%s has no rate set\n",
-=======
 		dev_err(component->dev, "%s has no rate set\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			async ? "ASYNCCLK" : "SYSCLK");
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Target BCLK is %dHz, using %dHz %s\n",
-=======
 	dev_dbg(component->dev, "Target BCLK is %dHz, using %dHz %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bclk, aif_rate, async ? "ASYNCCLK" : "SYSCLK");
 
 	if (aif_rate % 4000)
@@ -1717,30 +1466,13 @@ static int wm5100_hw_params(struct snd_pcm_substream *substream,
 		if (bclk_rates[i] >= bclk && (bclk_rates[i] % bclk == 0))
 			break;
 	if (i == WM5100_NUM_BCLK_RATES) {
-<<<<<<< HEAD
-		dev_err(codec->dev,
-=======
 		dev_err(component->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"No valid BCLK for %dHz found from %dHz %s\n",
 			bclk, aif_rate, async ? "ASYNCCLK" : "SYSCLK");
 		return -EINVAL;
 	}
 
 	bclk = i;
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Setting %dHz BCLK\n", bclk_rates[bclk]);
-	snd_soc_update_bits(codec, base + 1, WM5100_AIF1_BCLK_FREQ_MASK, bclk);
-
-	lrclk = bclk_rates[bclk] / params_rate(params);
-	dev_dbg(codec->dev, "Setting %dHz LRCLK\n", bclk_rates[bclk] / lrclk);
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK ||
-	    wm5100->aif_symmetric[dai->id])
-		snd_soc_update_bits(codec, base + 7,
-				    WM5100_AIF1RX_BCPF_MASK, lrclk);
-	else
-		snd_soc_update_bits(codec, base + 6,
-=======
 	dev_dbg(component->dev, "Setting %dHz BCLK\n", bclk_rates[bclk]);
 	snd_soc_component_update_bits(component, base + 1, WM5100_AIF1_BCLK_FREQ_MASK, bclk);
 
@@ -1752,22 +1484,10 @@ static int wm5100_hw_params(struct snd_pcm_substream *substream,
 				    WM5100_AIF1RX_BCPF_MASK, lrclk);
 	else
 		snd_soc_component_update_bits(component, base + 6,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM5100_AIF1TX_BCPF_MASK, lrclk);
 
 	i = (wl << WM5100_AIF1TX_WL_SHIFT) | fl;
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, base + 9,
-				    WM5100_AIF1RX_WL_MASK |
-				    WM5100_AIF1RX_SLOT_LEN_MASK, i);
-	else
-		snd_soc_update_bits(codec, base + 8,
-				    WM5100_AIF1TX_WL_MASK |
-				    WM5100_AIF1TX_SLOT_LEN_MASK, i);
-
-	snd_soc_update_bits(codec, base + 4, WM5100_AIF1_RATE_MASK, sr);
-=======
 		snd_soc_component_update_bits(component, base + 9,
 				    WM5100_AIF1RX_WL_MASK |
 				    WM5100_AIF1RX_SLOT_LEN_MASK, i);
@@ -1777,7 +1497,6 @@ static int wm5100_hw_params(struct snd_pcm_substream *substream,
 				    WM5100_AIF1TX_SLOT_LEN_MASK, i);
 
 	snd_soc_component_update_bits(component, base + 4, WM5100_AIF1_RATE_MASK, sr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1787,17 +1506,10 @@ static const struct snd_soc_dai_ops wm5100_dai_ops = {
 	.hw_params = wm5100_hw_params,
 };
 
-<<<<<<< HEAD
-static int wm5100_set_sysclk(struct snd_soc_codec *codec, int clk_id,
-			     int source, unsigned int freq, int dir)
-{
-	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
-=======
 static int wm5100_set_sysclk(struct snd_soc_component *component, int clk_id,
 			     int source, unsigned int freq, int dir)
 {
 	struct wm5100_priv *wm5100 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int *rate_store;
 	int fval, audio_rate, ret, reg;
 
@@ -1816,11 +1528,7 @@ static int wm5100_set_sysclk(struct snd_soc_component *component, int clk_id,
 		case WM5100_CLKSRC_MCLK1:
 		case WM5100_CLKSRC_MCLK2:
 		case WM5100_CLKSRC_SYSCLK:
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM5100_CLOCKING_1,
-=======
 			snd_soc_component_update_bits(component, WM5100_CLOCKING_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM5100_CLK_32K_SRC_MASK,
 					    source);
 			break;
@@ -1841,11 +1549,7 @@ static int wm5100_set_sysclk(struct snd_soc_component *component, int clk_id,
 			wm5100->aif_async[clk_id - 1] = true;
 			break;
 		default:
-<<<<<<< HEAD
-			dev_err(codec->dev, "Invalid source %d\n", source);
-=======
 			dev_err(component->dev, "Invalid source %d\n", source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}	
 		return 0;
@@ -1854,59 +1558,35 @@ static int wm5100_set_sysclk(struct snd_soc_component *component, int clk_id,
 		switch (freq) {
 		case 5644800:
 		case 6144000:
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM5100_MISC_GPIO_1,
-=======
 			snd_soc_component_update_bits(component, WM5100_MISC_GPIO_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM5100_OPCLK_SEL_MASK, 0);
 			break;
 		case 11289600:
 		case 12288000:
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM5100_MISC_GPIO_1,
-=======
 			snd_soc_component_update_bits(component, WM5100_MISC_GPIO_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM5100_OPCLK_SEL_MASK, 0);
 			break;
 		case 22579200:
 		case 24576000:
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM5100_MISC_GPIO_1,
-					    WM5100_OPCLK_SEL_MASK, 0);
-			break;
-		default:
-			dev_err(codec->dev, "Unsupported OPCLK %dHz\n",
-=======
 			snd_soc_component_update_bits(component, WM5100_MISC_GPIO_1,
 					    WM5100_OPCLK_SEL_MASK, 0);
 			break;
 		default:
 			dev_err(component->dev, "Unsupported OPCLK %dHz\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				freq);
 			return -EINVAL;
 		}
 		return 0;
 
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Unknown clock %d\n", clk_id);
-=======
 		dev_err(component->dev, "Unknown clock %d\n", clk_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	switch (source) {
 	case WM5100_CLKSRC_SYSCLK:
 	case WM5100_CLKSRC_ASYNCCLK:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Invalid source %d\n", source);
-=======
 		dev_err(component->dev, "Invalid source %d\n", source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1924,11 +1604,7 @@ static int wm5100_set_sysclk(struct snd_soc_component *component, int clk_id,
 		fval = 2;
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Invalid clock rate: %d\n", freq);
-=======
 		dev_err(component->dev, "Invalid clock rate: %d\n", freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1955,11 +1631,7 @@ static int wm5100_set_sysclk(struct snd_soc_component *component, int clk_id,
 	 * match.
 	 */
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, reg, WM5100_SYSCLK_FREQ_MASK |
-=======
 	snd_soc_component_update_bits(component, reg, WM5100_SYSCLK_FREQ_MASK |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM5100_SYSCLK_SRC_MASK,
 			    fval << WM5100_SYSCLK_FREQ_SHIFT | source);
 
@@ -1968,15 +1640,6 @@ static int wm5100_set_sysclk(struct snd_soc_component *component, int clk_id,
 	 * this clock rate.
 	 */
 	if (clk_id == WM5100_CLK_SYSCLK) {
-<<<<<<< HEAD
-		dev_dbg(codec->dev, "Setting primary audio rate to %dHz",
-			audio_rate);
-		if (0 && *rate_store)
-			wm5100_free_sr(codec, audio_rate);
-		ret = wm5100_alloc_sr(codec, audio_rate);
-		if (ret != 0)
-			dev_warn(codec->dev, "Primary audio slot is %d\n",
-=======
 		dev_dbg(component->dev, "Setting primary audio rate to %dHz",
 			audio_rate);
 		if (0 && *rate_store)
@@ -1984,7 +1647,6 @@ static int wm5100_set_sysclk(struct snd_soc_component *component, int clk_id,
 		ret = wm5100_alloc_sr(component, audio_rate);
 		if (ret != 0)
 			dev_warn(component->dev, "Primary audio slot is %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 ret);
 	}
 
@@ -2092,16 +1754,6 @@ static int fll_factors(struct _fll_div *fll_div, unsigned int Fref,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wm5100_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
-			  unsigned int Fref, unsigned int Fout)
-{
-	struct i2c_client *i2c = to_i2c_client(codec->dev);
-	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
-	struct _fll_div factors;
-	struct wm5100_fll *fll;
-	int ret, base, lock, i, timeout;
-=======
 static int wm5100_set_fll(struct snd_soc_component *component, int fll_id, int source,
 			  unsigned int Fref, unsigned int Fout)
 {
@@ -2111,7 +1763,6 @@ static int wm5100_set_fll(struct snd_soc_component *component, int fll_id, int s
 	struct wm5100_fll *fll;
 	int ret, base, lock, i, timeout;
 	unsigned long time_left;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (fll_id) {
 	case WM5100_FLL1:
@@ -2125,28 +1776,16 @@ static int wm5100_set_fll(struct snd_soc_component *component, int fll_id, int s
 		lock = WM5100_FLL2_LOCK_STS;
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Unknown FLL %d\n",fll_id);
-=======
 		dev_err(component->dev, "Unknown FLL %d\n",fll_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (!Fout) {
-<<<<<<< HEAD
-		dev_dbg(codec->dev, "FLL%d disabled", fll_id);
-		if (fll->fout)
-			pm_runtime_put(codec->dev);
-		fll->fout = 0;
-		snd_soc_update_bits(codec, base + 1, WM5100_FLL1_ENA, 0);
-=======
 		dev_dbg(component->dev, "FLL%d disabled", fll_id);
 		if (fll->fout)
 			pm_runtime_put(component->dev);
 		fll->fout = 0;
 		snd_soc_component_update_bits(component, base + 1, WM5100_FLL1_ENA, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -2160,11 +1799,7 @@ static int wm5100_set_fll(struct snd_soc_component *component, int fll_id, int s
 	case WM5100_FLL_SRC_AIF3BCLK:
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(codec->dev, "Invalid FLL source %d\n", source);
-=======
 		dev_err(component->dev, "Invalid FLL source %d\n", source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -2173,18 +1808,6 @@ static int wm5100_set_fll(struct snd_soc_component *component, int fll_id, int s
 		return ret;
 
 	/* Disable the FLL while we reconfigure */
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, base + 1, WM5100_FLL1_ENA, 0);
-
-	snd_soc_update_bits(codec, base + 2,
-			    WM5100_FLL1_OUTDIV_MASK | WM5100_FLL1_FRATIO_MASK,
-			    (factors.fll_outdiv << WM5100_FLL1_OUTDIV_SHIFT) |
-			    factors.fll_fratio);
-	snd_soc_update_bits(codec, base + 3, WM5100_FLL1_THETA_MASK,
-			    factors.theta);
-	snd_soc_update_bits(codec, base + 5, WM5100_FLL1_N_MASK, factors.n);
-	snd_soc_update_bits(codec, base + 6,
-=======
 	snd_soc_component_update_bits(component, base + 1, WM5100_FLL1_ENA, 0);
 
 	snd_soc_component_update_bits(component, base + 2,
@@ -2195,71 +1818,43 @@ static int wm5100_set_fll(struct snd_soc_component *component, int fll_id, int s
 			    factors.theta);
 	snd_soc_component_update_bits(component, base + 5, WM5100_FLL1_N_MASK, factors.n);
 	snd_soc_component_update_bits(component, base + 6,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM5100_FLL1_REFCLK_DIV_MASK |
 			    WM5100_FLL1_REFCLK_SRC_MASK,
 			    (factors.fll_refclk_div
 			     << WM5100_FLL1_REFCLK_DIV_SHIFT) | source);
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, base + 7, WM5100_FLL1_LAMBDA_MASK,
-=======
 	snd_soc_component_update_bits(component, base + 7, WM5100_FLL1_LAMBDA_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    factors.lambda);
 
 	/* Clear any pending completions */
 	try_wait_for_completion(&fll->lock);
 
-<<<<<<< HEAD
-	pm_runtime_get_sync(codec->dev);
-
-	snd_soc_update_bits(codec, base + 1, WM5100_FLL1_ENA, WM5100_FLL1_ENA);
-=======
 	pm_runtime_get_sync(component->dev);
 
 	snd_soc_component_update_bits(component, base + 1, WM5100_FLL1_ENA, WM5100_FLL1_ENA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (i2c->irq)
 		timeout = 2;
 	else
 		timeout = 50;
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM5100_CLOCKING_3, WM5100_SYSCLK_ENA,
-=======
 	snd_soc_component_update_bits(component, WM5100_CLOCKING_3, WM5100_SYSCLK_ENA,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM5100_SYSCLK_ENA);
 
 	/* Poll for the lock; will use interrupt when we can test */
 	for (i = 0; i < timeout; i++) {
 		if (i2c->irq) {
-<<<<<<< HEAD
-			ret = wait_for_completion_timeout(&fll->lock,
-							  msecs_to_jiffies(25));
-			if (ret > 0)
-=======
 			time_left = wait_for_completion_timeout(&fll->lock,
 							msecs_to_jiffies(25));
 			if (time_left > 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 		} else {
 			msleep(1);
 		}
 
-<<<<<<< HEAD
-		ret = snd_soc_read(codec,
-				   WM5100_INTERRUPT_RAW_STATUS_3);
-		if (ret < 0) {
-			dev_err(codec->dev,
-=======
 		ret = snd_soc_component_read(component,
 				   WM5100_INTERRUPT_RAW_STATUS_3);
 		if (ret < 0) {
 			dev_err(component->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Failed to read FLL status: %d\n",
 				ret);
 			continue;
@@ -2268,13 +1863,8 @@ static int wm5100_set_fll(struct snd_soc_component *component, int fll_id, int s
 			break;
 	}
 	if (i == timeout) {
-<<<<<<< HEAD
-		dev_err(codec->dev, "FLL%d lock timed out\n", fll_id);
-		pm_runtime_put(codec->dev);
-=======
 		dev_err(component->dev, "FLL%d lock timed out\n", fll_id);
 		pm_runtime_put(component->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ETIMEDOUT;
 	}
 
@@ -2282,11 +1872,7 @@ static int wm5100_set_fll(struct snd_soc_component *component, int fll_id, int s
 	fll->fref = Fref;
 	fll->fout = Fout;
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "FLL%d running %dHz->%dHz\n", fll_id,
-=======
 	dev_dbg(component->dev, "FLL%d running %dHz->%dHz\n", fll_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		Fref, Fout);
 
 	return 0;
@@ -2301,10 +1887,7 @@ static int wm5100_set_fll(struct snd_soc_component *component, int fll_id, int s
 static struct snd_soc_dai_driver wm5100_dai[] = {
 	{
 		.name = "wm5100-aif1",
-<<<<<<< HEAD
-=======
 		.base = WM5100_AUDIO_IF_1_1 - 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.playback = {
 			.stream_name = "AIF1 Playback",
 			.channels_min = 2,
@@ -2324,10 +1907,7 @@ static struct snd_soc_dai_driver wm5100_dai[] = {
 	{
 		.name = "wm5100-aif2",
 		.id = 1,
-<<<<<<< HEAD
-=======
 		.base = WM5100_AUDIO_IF_2_1 - 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.playback = {
 			.stream_name = "AIF2 Playback",
 			.channels_min = 2,
@@ -2347,10 +1927,7 @@ static struct snd_soc_dai_driver wm5100_dai[] = {
 	{
 		.name = "wm5100-aif3",
 		.id = 2,
-<<<<<<< HEAD
-=======
 		.base = WM5100_AUDIO_IF_3_1 - 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.playback = {
 			.stream_name = "AIF3 Playback",
 			.channels_min = 2,
@@ -2397,16 +1974,10 @@ static void wm5100_set_detect_mode(struct wm5100_priv *wm5100, int the_mode)
 {
 	struct wm5100_jack_mode *mode = &wm5100->pdata.jack_modes[the_mode];
 
-<<<<<<< HEAD
-	BUG_ON(the_mode >= ARRAY_SIZE(wm5100->pdata.jack_modes));
-
-	gpio_set_value_cansleep(wm5100->pdata.hp_pol, mode->hp_pol);
-=======
 	if (WARN_ON(the_mode >= ARRAY_SIZE(wm5100->pdata.jack_modes)))
 		return;
 
 	gpiod_set_value_cansleep(wm5100->hp_pol, mode->hp_pol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regmap_update_bits(wm5100->regmap, WM5100_ACCESSORY_DETECT_MODE_1,
 			   WM5100_ACCDET_BIAS_SRC_MASK |
 			   WM5100_ACCDET_SRC,
@@ -2442,11 +2013,7 @@ static void wm5100_micd_irq(struct wm5100_priv *wm5100)
 
 	ret = regmap_read(wm5100->regmap, WM5100_MIC_DETECT_3, &val);
 	if (ret != 0) {
-<<<<<<< HEAD
-		dev_err(wm5100->dev, "Failed to read micropone status: %d\n",
-=======
 		dev_err(wm5100->dev, "Failed to read microphone status: %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret);
 		return;
 	}
@@ -2531,16 +2098,10 @@ static void wm5100_micd_irq(struct wm5100_priv *wm5100)
 	}
 }
 
-<<<<<<< HEAD
-int wm5100_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack)
-{
-	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
-=======
 int wm5100_detect(struct snd_soc_component *component, struct snd_soc_jack *jack)
 {
 	struct wm5100_priv *wm5100 = snd_soc_component_get_drvdata(component);
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (jack) {
 		wm5100->jack = jack;
@@ -2551,22 +2112,13 @@ int wm5100_detect(struct snd_soc_component *component, struct snd_soc_jack *jack
 
 		/* Slowest detection rate, gives debounce for initial
 		 * detection */
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM5100_MIC_DETECT_1,
-=======
 		snd_soc_component_update_bits(component, WM5100_MIC_DETECT_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM5100_ACCDET_BIAS_STARTTIME_MASK |
 				    WM5100_ACCDET_RATE_MASK,
 				    (7 << WM5100_ACCDET_BIAS_STARTTIME_SHIFT) |
 				    WM5100_ACCDET_RATE_MASK);
 
 		/* We need the charge pump to power MICBIAS */
-<<<<<<< HEAD
-		snd_soc_dapm_force_enable_pin(&codec->dapm, "CP2");
-		snd_soc_dapm_force_enable_pin(&codec->dapm, "SYSCLK");
-		snd_soc_dapm_sync(&codec->dapm);
-=======
 		snd_soc_dapm_mutex_lock(dapm);
 
 		snd_soc_dapm_force_enable_pin_unlocked(dapm, "CP2");
@@ -2575,20 +2127,10 @@ int wm5100_detect(struct snd_soc_component *component, struct snd_soc_jack *jack
 		snd_soc_dapm_sync_unlocked(dapm);
 
 		snd_soc_dapm_mutex_unlock(dapm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* We start off just enabling microphone detection - even a
 		 * plain headphone will trigger detection.
 		 */
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM5100_MIC_DETECT_1,
-				    WM5100_ACCDET_ENA, WM5100_ACCDET_ENA);
-
-		snd_soc_update_bits(codec, WM5100_INTERRUPT_STATUS_3_MASK,
-				    WM5100_IM_ACCDET_EINT, 0);
-	} else {
-		snd_soc_update_bits(codec, WM5100_INTERRUPT_STATUS_3_MASK,
-=======
 		snd_soc_component_update_bits(component, WM5100_MIC_DETECT_1,
 				    WM5100_ACCDET_ENA, WM5100_ACCDET_ENA);
 
@@ -2596,26 +2138,18 @@ int wm5100_detect(struct snd_soc_component *component, struct snd_soc_jack *jack
 				    WM5100_IM_ACCDET_EINT, 0);
 	} else {
 		snd_soc_component_update_bits(component, WM5100_INTERRUPT_STATUS_3_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM5100_IM_HPDET_EINT |
 				    WM5100_IM_ACCDET_EINT,
 				    WM5100_IM_HPDET_EINT |
 				    WM5100_IM_ACCDET_EINT);
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM5100_MIC_DETECT_1,
-=======
 		snd_soc_component_update_bits(component, WM5100_MIC_DETECT_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM5100_ACCDET_ENA, 0);
 		wm5100->jack = NULL;
 	}
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(wm5100_detect);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static irqreturn_t wm5100_irq(int irq, void *data)
 {
@@ -2702,20 +2236,9 @@ static irqreturn_t wm5100_edge_irq(int irq, void *data)
 }
 
 #ifdef CONFIG_GPIOLIB
-<<<<<<< HEAD
-static inline struct wm5100_priv *gpio_to_wm5100(struct gpio_chip *chip)
-{
-	return container_of(chip, struct wm5100_priv, gpio_chip);
-}
-
-static void wm5100_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
-{
-	struct wm5100_priv *wm5100 = gpio_to_wm5100(chip);
-=======
 static void wm5100_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
 	struct wm5100_priv *wm5100 = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	regmap_update_bits(wm5100->regmap, WM5100_GPIO_CTRL_1 + offset,
 			   WM5100_GP1_LVL, !!value << WM5100_GP1_LVL_SHIFT);
@@ -2724,11 +2247,7 @@ static void wm5100_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 static int wm5100_gpio_direction_out(struct gpio_chip *chip,
 				     unsigned offset, int value)
 {
-<<<<<<< HEAD
-	struct wm5100_priv *wm5100 = gpio_to_wm5100(chip);
-=======
 	struct wm5100_priv *wm5100 = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int val, ret;
 
 	val = (1 << WM5100_GP1_FN_SHIFT) | (!!value << WM5100_GP1_LVL_SHIFT);
@@ -2744,11 +2263,7 @@ static int wm5100_gpio_direction_out(struct gpio_chip *chip,
 
 static int wm5100_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	struct wm5100_priv *wm5100 = gpio_to_wm5100(chip);
-=======
 	struct wm5100_priv *wm5100 = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int reg;
 	int ret;
 
@@ -2761,11 +2276,7 @@ static int wm5100_gpio_get(struct gpio_chip *chip, unsigned offset)
 
 static int wm5100_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	struct wm5100_priv *wm5100 = gpio_to_wm5100(chip);
-=======
 	struct wm5100_priv *wm5100 = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return regmap_update_bits(wm5100->regmap, WM5100_GPIO_CTRL_1 + offset,
 				  WM5100_GP1_FN_MASK | WM5100_GP1_DIR,
@@ -2773,11 +2284,7 @@ static int wm5100_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 				  (1 << WM5100_GP1_DIR_SHIFT));
 }
 
-<<<<<<< HEAD
-static struct gpio_chip wm5100_template_chip = {
-=======
 static const struct gpio_chip wm5100_template_chip = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.label			= "wm5100",
 	.owner			= THIS_MODULE,
 	.direction_output	= wm5100_gpio_direction_out,
@@ -2794,21 +2301,10 @@ static void wm5100_init_gpio(struct i2c_client *i2c)
 
 	wm5100->gpio_chip = wm5100_template_chip;
 	wm5100->gpio_chip.ngpio = 6;
-<<<<<<< HEAD
-	wm5100->gpio_chip.dev = &i2c->dev;
-
-	if (wm5100->pdata.gpio_base)
-		wm5100->gpio_chip.base = wm5100->pdata.gpio_base;
-	else
-		wm5100->gpio_chip.base = -1;
-
-	ret = gpiochip_add(&wm5100->gpio_chip);
-=======
 	wm5100->gpio_chip.parent = &i2c->dev;
 	wm5100->gpio_chip.base = -1;
 
 	ret = gpiochip_add_data(&wm5100->gpio_chip, wm5100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0)
 		dev_err(&i2c->dev, "Failed to add GPIOs: %d\n", ret);
 }
@@ -2816,16 +2312,8 @@ static void wm5100_init_gpio(struct i2c_client *i2c)
 static void wm5100_free_gpio(struct i2c_client *i2c)
 {
 	struct wm5100_priv *wm5100 = i2c_get_clientdata(i2c);
-<<<<<<< HEAD
-	int ret;
-
-	ret = gpiochip_remove(&wm5100->gpio_chip);
-	if (ret != 0)
-		dev_err(&i2c->dev, "Failed to remove GPIOs: %d\n", ret);
-=======
 
 	gpiochip_remove(&wm5100->gpio_chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 static void wm5100_init_gpio(struct i2c_client *i2c)
@@ -2837,30 +2325,6 @@ static void wm5100_free_gpio(struct i2c_client *i2c)
 }
 #endif
 
-<<<<<<< HEAD
-static int wm5100_probe(struct snd_soc_codec *codec)
-{
-	struct i2c_client *i2c = to_i2c_client(codec->dev);
-	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
-	int ret, i;
-
-	wm5100->codec = codec;
-	codec->control_data = wm5100->regmap;
-
-	ret = snd_soc_codec_set_cache_io(codec, 16, 16, SND_SOC_REGMAP);
-	if (ret != 0) {
-		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
-		return ret;
-	}
-
-	for (i = 0; i < ARRAY_SIZE(wm5100_dig_vu); i++)
-		snd_soc_update_bits(codec, wm5100_dig_vu[i], WM5100_OUT_VU,
-				    WM5100_OUT_VU);
-
-	/* Don't debounce interrupts to support use of SYSCLK only */
-	snd_soc_write(codec, WM5100_IRQ_DEBOUNCE_1, 0);
-	snd_soc_write(codec, WM5100_IRQ_DEBOUNCE_2, 0);
-=======
 static int wm5100_probe(struct snd_soc_component *component)
 {
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
@@ -2877,40 +2341,10 @@ static int wm5100_probe(struct snd_soc_component *component)
 	/* Don't debounce interrupts to support use of SYSCLK only */
 	snd_soc_component_write(component, WM5100_IRQ_DEBOUNCE_1, 0);
 	snd_soc_component_write(component, WM5100_IRQ_DEBOUNCE_2, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* TODO: check if we're symmetric */
 
 	if (i2c->irq)
-<<<<<<< HEAD
-		snd_soc_dapm_new_controls(&codec->dapm,
-					  wm5100_dapm_widgets_noirq,
-					  ARRAY_SIZE(wm5100_dapm_widgets_noirq));
-
-	if (wm5100->pdata.hp_pol) {
-		ret = gpio_request_one(wm5100->pdata.hp_pol,
-				       GPIOF_OUT_INIT_HIGH, "WM5100 HP_POL");
-		if (ret < 0) {
-			dev_err(&i2c->dev, "Failed to request HP_POL %d: %d\n",
-				wm5100->pdata.hp_pol, ret);
-			goto err_gpio;
-		}
-	}
-
-	return 0;
-
-err_gpio:
-
-	return ret;
-}
-
-static int wm5100_remove(struct snd_soc_codec *codec)
-{
-	struct wm5100_priv *wm5100 = snd_soc_codec_get_drvdata(codec);
-
-	if (wm5100->pdata.hp_pol) {
-		gpio_free(wm5100->pdata.hp_pol);
-=======
 		snd_soc_dapm_new_controls(dapm, wm5100_dapm_widgets_noirq,
 					  ARRAY_SIZE(wm5100_dapm_widgets_noirq));
 
@@ -2921,38 +2355,11 @@ static int wm5100_remove(struct snd_soc_codec *codec)
 		dev_err(&i2c->dev, "Failed to request HP_POL GPIO: %d\n",
 			ret);
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wm5100_soc_volatile(struct snd_soc_codec *codec,
-			       unsigned int reg)
-{
-	return true;
-}
-
-
-static struct snd_soc_codec_driver soc_codec_dev_wm5100 = {
-	.probe =	wm5100_probe,
-	.remove =	wm5100_remove,
-
-	.set_sysclk = wm5100_set_sysclk,
-	.set_pll = wm5100_set_fll,
-	.idle_bias_off = 1,
-	.reg_cache_size = WM5100_MAX_REGISTER,
-	.volatile_register = wm5100_soc_volatile,
-
-	.seq_notifier = wm5100_seq_notifier,
-	.controls = wm5100_snd_controls,
-	.num_controls = ARRAY_SIZE(wm5100_snd_controls),
-	.dapm_widgets = wm5100_dapm_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(wm5100_dapm_widgets),
-	.dapm_routes = wm5100_dapm_routes,
-	.num_dapm_routes = ARRAY_SIZE(wm5100_dapm_routes),
-=======
 static const struct snd_soc_component_driver soc_component_dev_wm5100 = {
 	.probe			= wm5100_probe,
 	.set_sysclk		= wm5100_set_sysclk,
@@ -2966,7 +2373,6 @@ static const struct snd_soc_component_driver soc_component_dev_wm5100 = {
 	.num_dapm_routes	= ARRAY_SIZE(wm5100_dapm_routes),
 	.use_pmdown_time	= 1,
 	.endianness		= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct regmap_config wm5100_regmap = {
@@ -2978,11 +2384,7 @@ static const struct regmap_config wm5100_regmap = {
 	.num_reg_defaults = ARRAY_SIZE(wm5100_reg_defaults),
 	.volatile_reg = wm5100_volatile_register,
 	.readable_reg = wm5100_readable_register,
-<<<<<<< HEAD
-	.cache_type = REGCACHE_RBTREE,
-=======
 	.cache_type = REGCACHE_MAPLE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const unsigned int wm5100_mic_ctrl_reg[] = {
@@ -2992,12 +2394,7 @@ static const unsigned int wm5100_mic_ctrl_reg[] = {
 	WM5100_IN4L_CONTROL,
 };
 
-<<<<<<< HEAD
-static __devinit int wm5100_i2c_probe(struct i2c_client *i2c,
-				      const struct i2c_device_id *id)
-=======
 static int wm5100_i2c_probe(struct i2c_client *i2c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm5100_pdata *pdata = dev_get_platdata(&i2c->dev);
 	struct wm5100_priv *wm5100;
@@ -3011,11 +2408,7 @@ static int wm5100_i2c_probe(struct i2c_client *i2c)
 
 	wm5100->dev = &i2c->dev;
 
-<<<<<<< HEAD
-	wm5100->regmap = regmap_init_i2c(i2c, &wm5100_regmap);
-=======
 	wm5100->regmap = devm_regmap_init_i2c(i2c, &wm5100_regmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(wm5100->regmap)) {
 		ret = PTR_ERR(wm5100->regmap);
 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
@@ -3040,11 +2433,7 @@ static int wm5100_i2c_probe(struct i2c_client *i2c)
 	if (ret != 0) {
 		dev_err(&i2c->dev, "Failed to request core supplies: %d\n",
 			ret);
-<<<<<<< HEAD
-		goto err_regmap;
-=======
 		goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = regulator_bulk_enable(ARRAY_SIZE(wm5100->core_supplies),
@@ -3052,31 +2441,6 @@ static int wm5100_i2c_probe(struct i2c_client *i2c)
 	if (ret != 0) {
 		dev_err(&i2c->dev, "Failed to enable core supplies: %d\n",
 			ret);
-<<<<<<< HEAD
-		goto err_regmap;
-	}
-
-	if (wm5100->pdata.ldo_ena) {
-		ret = gpio_request_one(wm5100->pdata.ldo_ena,
-				       GPIOF_OUT_INIT_HIGH, "WM5100 LDOENA");
-		if (ret < 0) {
-			dev_err(&i2c->dev, "Failed to request LDOENA %d: %d\n",
-				wm5100->pdata.ldo_ena, ret);
-			goto err_enable;
-		}
-		msleep(2);
-	}
-
-	if (wm5100->pdata.reset) {
-		ret = gpio_request_one(wm5100->pdata.reset,
-				       GPIOF_OUT_INIT_HIGH, "WM5100 /RESET");
-		if (ret < 0) {
-			dev_err(&i2c->dev, "Failed to request /RESET %d: %d\n",
-				wm5100->pdata.reset, ret);
-			goto err_ldo;
-		}
-	}
-=======
 		goto err;
 	}
 
@@ -3100,7 +2464,6 @@ static int wm5100_i2c_probe(struct i2c_client *i2c)
 		goto err_ldo;
 	}
 	gpiod_set_consumer_name(wm5100->reset, "WM5100 /RESET");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = regmap_read(wm5100->regmap, WM5100_SOFTWARE_RESET, &reg);
 	if (ret < 0) {
@@ -3225,13 +2588,8 @@ static int wm5100_i2c_probe(struct i2c_client *i2c)
 	pm_runtime_enable(&i2c->dev);
 	pm_request_idle(&i2c->dev);
 
-<<<<<<< HEAD
-	ret = snd_soc_register_codec(&i2c->dev,
-				     &soc_codec_dev_wm5100, wm5100_dai,
-=======
 	ret = devm_snd_soc_register_component(&i2c->dev,
 				     &soc_component_dev_wm5100, wm5100_dai,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     ARRAY_SIZE(wm5100_dai));
 	if (ret < 0) {
 		dev_err(&i2c->dev, "Failed to register WM5100: %d\n", ret);
@@ -3241,25 +2599,6 @@ static int wm5100_i2c_probe(struct i2c_client *i2c)
 	return ret;
 
 err_reset:
-<<<<<<< HEAD
-	if (i2c->irq)
-		free_irq(i2c->irq, wm5100);
-	wm5100_free_gpio(i2c);
-	if (wm5100->pdata.reset) {
-		gpio_set_value_cansleep(wm5100->pdata.reset, 0);
-		gpio_free(wm5100->pdata.reset);
-	}
-err_ldo:
-	if (wm5100->pdata.ldo_ena) {
-		gpio_set_value_cansleep(wm5100->pdata.ldo_ena, 0);
-		gpio_free(wm5100->pdata.ldo_ena);
-	}
-err_enable:
-	regulator_bulk_disable(ARRAY_SIZE(wm5100->core_supplies),
-			       wm5100->core_supplies);
-err_regmap:
-	regmap_exit(wm5100->regmap);
-=======
 	pm_runtime_disable(&i2c->dev);
 	if (i2c->irq)
 		free_irq(i2c->irq, wm5100);
@@ -3270,35 +2609,10 @@ err_ldo:
 err_enable:
 	regulator_bulk_disable(ARRAY_SIZE(wm5100->core_supplies),
 			       wm5100->core_supplies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	return ret;
 }
 
-<<<<<<< HEAD
-static __devexit int wm5100_i2c_remove(struct i2c_client *i2c)
-{
-	struct wm5100_priv *wm5100 = i2c_get_clientdata(i2c);
-
-	snd_soc_unregister_codec(&i2c->dev);
-	if (i2c->irq)
-		free_irq(i2c->irq, wm5100);
-	wm5100_free_gpio(i2c);
-	if (wm5100->pdata.reset) {
-		gpio_set_value_cansleep(wm5100->pdata.reset, 0);
-		gpio_free(wm5100->pdata.reset);
-	}
-	if (wm5100->pdata.ldo_ena) {
-		gpio_set_value_cansleep(wm5100->pdata.ldo_ena, 0);
-		gpio_free(wm5100->pdata.ldo_ena);
-	}
-	regmap_exit(wm5100->regmap);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM_RUNTIME
-=======
 static void wm5100_i2c_remove(struct i2c_client *i2c)
 {
 	struct wm5100_priv *wm5100 = i2c_get_clientdata(i2c);
@@ -3312,19 +2626,13 @@ static void wm5100_i2c_remove(struct i2c_client *i2c)
 }
 
 #ifdef CONFIG_PM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int wm5100_runtime_suspend(struct device *dev)
 {
 	struct wm5100_priv *wm5100 = dev_get_drvdata(dev);
 
 	regcache_cache_only(wm5100->regmap, true);
 	regcache_mark_dirty(wm5100->regmap);
-<<<<<<< HEAD
-	if (wm5100->pdata.ldo_ena)
-		gpio_set_value_cansleep(wm5100->pdata.ldo_ena, 0);
-=======
 	gpiod_set_value_cansleep(wm5100->ldo_ena, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regulator_bulk_disable(ARRAY_SIZE(wm5100->core_supplies),
 			       wm5100->core_supplies);
 
@@ -3344,13 +2652,8 @@ static int wm5100_runtime_resume(struct device *dev)
 		return ret;
 	}
 
-<<<<<<< HEAD
-	if (wm5100->pdata.ldo_ena) {
-		gpio_set_value_cansleep(wm5100->pdata.ldo_ena, 1);
-=======
 	if (wm5100->ldo_ena) {
 		gpiod_set_value_cansleep(wm5100->ldo_ena, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(2);
 	}
 
@@ -3361,11 +2664,7 @@ static int wm5100_runtime_resume(struct device *dev)
 }
 #endif
 
-<<<<<<< HEAD
-static struct dev_pm_ops wm5100_pm = {
-=======
 static const struct dev_pm_ops wm5100_pm = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SET_RUNTIME_PM_OPS(wm5100_runtime_suspend, wm5100_runtime_resume,
 			   NULL)
 };
@@ -3379,27 +2678,6 @@ MODULE_DEVICE_TABLE(i2c, wm5100_i2c_id);
 static struct i2c_driver wm5100_i2c_driver = {
 	.driver = {
 		.name = "wm5100",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.pm = &wm5100_pm,
-	},
-	.probe =    wm5100_i2c_probe,
-	.remove =   __devexit_p(wm5100_i2c_remove),
-	.id_table = wm5100_i2c_id,
-};
-
-static int __init wm5100_modinit(void)
-{
-	return i2c_add_driver(&wm5100_i2c_driver);
-}
-module_init(wm5100_modinit);
-
-static void __exit wm5100_exit(void)
-{
-	i2c_del_driver(&wm5100_i2c_driver);
-}
-module_exit(wm5100_exit);
-=======
 		.pm = &wm5100_pm,
 	},
 	.probe =    wm5100_i2c_probe,
@@ -3408,7 +2686,6 @@ module_exit(wm5100_exit);
 };
 
 module_i2c_driver(wm5100_i2c_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC WM5100 driver");
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");

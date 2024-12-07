@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Ebony board specific routines
  *
@@ -13,14 +10,6 @@
  *
  * Rewritten and ported to the merged powerpc tree:
  * Copyright 2007 David Gibson <dwg@au1.ibm.com>, IBM Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -35,11 +24,7 @@
 #include <asm/pci-bridge.h>
 #include <asm/ppc4xx.h>
 
-<<<<<<< HEAD
-static __initdata struct of_device_id ebony_of_bus[] = {
-=======
 static const struct of_device_id ebony_of_bus[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "ibm,plb4", },
 	{ .compatible = "ibm,opb", },
 	{ .compatible = "ibm,ebc", },
@@ -60,14 +45,6 @@ machine_device_initcall(ebony, ebony_device_probe);
  */
 static int __init ebony_probe(void)
 {
-<<<<<<< HEAD
-	unsigned long root = of_get_flat_dt_root();
-
-	if (!of_flat_dt_is_compatible(root, "ibm,ebony"))
-		return 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_flags(PCI_REASSIGN_ALL_RSRC);
 
 	return 1;
@@ -75,17 +52,10 @@ static int __init ebony_probe(void)
 
 define_machine(ebony) {
 	.name			= "Ebony",
-<<<<<<< HEAD
-=======
 	.compatible		= "ibm,ebony",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe			= ebony_probe,
 	.progress		= udbg_progress,
 	.init_IRQ		= uic_init_tree,
 	.get_irq		= uic_get_irq,
 	.restart		= ppc4xx_reset_system,
-<<<<<<< HEAD
-	.calibrate_decr		= generic_calibrate_decr,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

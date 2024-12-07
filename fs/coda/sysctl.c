@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sysctl operations for Coda filesystem
  * Original version: (C) 1996 P. Braam and M. Callahan
@@ -15,16 +12,9 @@
 
 #include "coda_int.h"
 
-<<<<<<< HEAD
-#ifdef CONFIG_SYSCTL
-static struct ctl_table_header *fs_table_header;
-
-static ctl_table coda_table[] = {
-=======
 static struct ctl_table_header *fs_table_header;
 
 static struct ctl_table coda_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "timeout",
 		.data		= &coda_timeout,
@@ -46,29 +36,12 @@ static struct ctl_table coda_table[] = {
 		.mode		= 0600,
 		.proc_handler	= proc_dointvec
 	},
-<<<<<<< HEAD
-	{}
-};
-
-static ctl_table fs_table[] = {
-	{
-		.procname	= "coda",
-		.mode		= 0555,
-		.child		= coda_table
-	},
-	{}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void coda_sysctl_init(void)
 {
 	if ( !fs_table_header )
-<<<<<<< HEAD
-		fs_table_header = register_sysctl_table(fs_table);
-=======
 		fs_table_header = register_sysctl("coda", coda_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void coda_sysctl_clean(void)
@@ -78,16 +51,3 @@ void coda_sysctl_clean(void)
 		fs_table_header = NULL;
 	}
 }
-<<<<<<< HEAD
-
-#else
-void coda_sysctl_init(void)
-{
-}
-
-void coda_sysctl_clean(void)
-{
-}
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

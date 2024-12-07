@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	mm/mremap.c
  *
@@ -12,10 +9,7 @@
  */
 
 #include <linux/mm.h>
-<<<<<<< HEAD
-=======
 #include <linux/mm_inline.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hugetlb.h>
 #include <linux/shm.h>
 #include <linux/ksm.h>
@@ -23,28 +17,11 @@
 #include <linux/swap.h>
 #include <linux/capability.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-=======
 #include <linux/swapops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/highmem.h>
 #include <linux/security.h>
 #include <linux/syscalls.h>
 #include <linux/mmu_notifier.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-#include <asm/cacheflush.h>
-#include <asm/tlbflush.h>
-
-#include "internal.h"
-
-static pmd_t *get_old_pmd(struct mm_struct *mm, unsigned long addr)
-{
-	pgd_t *pgd;
-	pud_t *pud;
-	pmd_t *pmd;
-=======
 #include <linux/uaccess.h>
 #include <linux/userfaultfd_k.h>
 #include <linux/mempolicy.h>
@@ -60,18 +37,11 @@ static pud_t *get_old_pud(struct mm_struct *mm, unsigned long addr)
 	pgd_t *pgd;
 	p4d_t *p4d;
 	pud_t *pud;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pgd = pgd_offset(mm, addr);
 	if (pgd_none_or_clear_bad(pgd))
 		return NULL;
 
-<<<<<<< HEAD
-	pud = pud_offset(pgd, addr);
-	if (pud_none_or_clear_bad(pud))
-		return NULL;
-
-=======
 	p4d = p4d_offset(pgd, addr);
 	if (p4d_none_or_clear_bad(p4d))
 		return NULL;
@@ -92,7 +62,6 @@ static pmd_t *get_old_pmd(struct mm_struct *mm, unsigned long addr)
 	if (!pud)
 		return NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmd = pmd_offset(pud, addr);
 	if (pmd_none(*pmd))
 		return NULL;
@@ -100,17 +69,6 @@ static pmd_t *get_old_pmd(struct mm_struct *mm, unsigned long addr)
 	return pmd;
 }
 
-<<<<<<< HEAD
-static pmd_t *alloc_new_pmd(struct mm_struct *mm, struct vm_area_struct *vma,
-			    unsigned long addr)
-{
-	pgd_t *pgd;
-	pud_t *pud;
-	pmd_t *pmd;
-
-	pgd = pgd_offset(mm, addr);
-	pud = pud_alloc(mm, pgd, addr);
-=======
 static pud_t *alloc_new_pud(struct mm_struct *mm, struct vm_area_struct *vma,
 			    unsigned long addr)
 {
@@ -132,7 +90,6 @@ static pmd_t *alloc_new_pmd(struct mm_struct *mm, struct vm_area_struct *vma,
 	pmd_t *pmd;
 
 	pud = alloc_new_pud(mm, vma, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pud)
 		return NULL;
 
@@ -145,38 +102,6 @@ static pmd_t *alloc_new_pmd(struct mm_struct *mm, struct vm_area_struct *vma,
 	return pmd;
 }
 
-<<<<<<< HEAD
-static void move_ptes(struct vm_area_struct *vma, pmd_t *old_pmd,
-		unsigned long old_addr, unsigned long old_end,
-		struct vm_area_struct *new_vma, pmd_t *new_pmd,
-		unsigned long new_addr)
-{
-	struct address_space *mapping = NULL;
-	struct mm_struct *mm = vma->vm_mm;
-	pte_t *old_pte, *new_pte, pte;
-	spinlock_t *old_ptl, *new_ptl;
-
-	if (vma->vm_file) {
-		/*
-		 * Subtle point from Rajesh Venkatasubramanian: before
-		 * moving file-based ptes, we must lock truncate_pagecache
-		 * out, since it might clean the dst vma before the src vma,
-		 * and we propagate stale pages into the dst afterward.
-		 */
-		mapping = vma->vm_file->f_mapping;
-		mutex_lock(&mapping->i_mmap_mutex);
-	}
-
-	/*
-	 * We don't have to worry about the ordering of src and dst
-	 * pte locks because exclusive mmap_sem prevents deadlock.
-	 */
-	old_pte = pte_offset_map_lock(mm, old_pmd, old_addr, &old_ptl);
-	new_pte = pte_offset_map(new_pmd, new_addr);
-	new_ptl = pte_lockptr(mm, new_pmd);
-	if (new_ptl != old_ptl)
-		spin_lock_nested(new_ptl, SINGLE_DEPTH_NESTING);
-=======
 static void take_rmap_locks(struct vm_area_struct *vma)
 {
 	if (vma->vm_file)
@@ -259,17 +184,10 @@ static int move_ptes(struct vm_area_struct *vma, pmd_t *old_pmd,
 	if (new_ptl != old_ptl)
 		spin_lock_nested(new_ptl, SINGLE_DEPTH_NESTING);
 	flush_tlb_batched_pending(vma->vm_mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	arch_enter_lazy_mmu_mode();
 
 	for (; old_addr < old_end; old_pte++, old_addr += PAGE_SIZE,
 				   new_pte++, new_addr += PAGE_SIZE) {
-<<<<<<< HEAD
-		if (pte_none(*old_pte))
-			continue;
-		pte = ptep_get_and_clear(mm, old_addr, old_pte);
-		pte = move_pte(pte, new_vma->vm_page_prot, old_addr, new_addr);
-=======
 		if (pte_none(ptep_get(old_pte)))
 			continue;
 
@@ -289,48 +207,16 @@ static int move_ptes(struct vm_area_struct *vma, pmd_t *old_pmd,
 			force_flush = true;
 		pte = move_pte(pte, new_vma->vm_page_prot, old_addr, new_addr);
 		pte = move_soft_dirty_pte(pte);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_pte_at(mm, new_addr, new_pte, pte);
 	}
 
 	arch_leave_lazy_mmu_mode();
-<<<<<<< HEAD
-=======
 	if (force_flush)
 		flush_tlb_range(vma, old_end - len, old_end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (new_ptl != old_ptl)
 		spin_unlock(new_ptl);
 	pte_unmap(new_pte - 1);
 	pte_unmap_unlock(old_pte - 1, old_ptl);
-<<<<<<< HEAD
-	if (mapping)
-		mutex_unlock(&mapping->i_mmap_mutex);
-}
-
-#define LATENCY_LIMIT	(64 * PAGE_SIZE)
-
-unsigned long move_page_tables(struct vm_area_struct *vma,
-		unsigned long old_addr, struct vm_area_struct *new_vma,
-		unsigned long new_addr, unsigned long len)
-{
-	unsigned long extent, next, old_end;
-	pmd_t *old_pmd, *new_pmd;
-	bool need_flush = false;
-
-	old_end = old_addr + len;
-	flush_cache_range(vma, old_addr, old_end);
-
-	mmu_notifier_invalidate_range_start(vma->vm_mm, old_addr, old_end);
-
-	for (; old_addr < old_end; old_addr += extent, new_addr += extent) {
-		cond_resched();
-		next = (old_addr + PMD_SIZE) & PMD_MASK;
-		/* even if next overflowed, extent below will be ok */
-		extent = next - old_addr;
-		if (extent > old_end - old_addr)
-			extent = old_end - old_addr;
-=======
 out:
 	if (need_rmap_locks)
 		drop_rmap_locks(vma);
@@ -716,45 +602,12 @@ unsigned long move_page_tables(struct vm_area_struct *vma,
 		}
 
 		extent = get_extent(NORMAL_PMD, old_addr, old_end, new_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		old_pmd = get_old_pmd(vma->vm_mm, old_addr);
 		if (!old_pmd)
 			continue;
 		new_pmd = alloc_new_pmd(vma->vm_mm, vma, new_addr);
 		if (!new_pmd)
 			break;
-<<<<<<< HEAD
-		if (pmd_trans_huge(*old_pmd)) {
-			int err = 0;
-			if (extent == HPAGE_PMD_SIZE)
-				err = move_huge_pmd(vma, new_vma, old_addr,
-						    new_addr, old_end,
-						    old_pmd, new_pmd);
-			if (err > 0) {
-				need_flush = true;
-				continue;
-			} else if (!err) {
-				split_huge_page_pmd(vma->vm_mm, old_pmd);
-			}
-			VM_BUG_ON(pmd_trans_huge(*old_pmd));
-		}
-		if (pmd_none(*new_pmd) && __pte_alloc(new_vma->vm_mm, new_vma,
-						      new_pmd, new_addr))
-			break;
-		next = (new_addr + PMD_SIZE) & PMD_MASK;
-		if (extent > next - new_addr)
-			extent = next - new_addr;
-		if (extent > LATENCY_LIMIT)
-			extent = LATENCY_LIMIT;
-		move_ptes(vma, old_pmd, old_addr, old_addr + extent,
-				new_vma, new_pmd, new_addr);
-		need_flush = true;
-	}
-	if (likely(need_flush))
-		flush_tlb_range(vma, old_end-len, old_addr);
-
-	mmu_notifier_invalidate_range_end(vma->vm_mm, old_end-len, old_end);
-=======
 again:
 		if (is_swap_pmd(*old_pmd) || pmd_trans_huge(*old_pmd) ||
 		    pmd_devmap(*old_pmd)) {
@@ -790,41 +643,28 @@ again:
 	 */
 	if (len + old_addr < old_end)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return len + old_addr - old_end;	/* how much done */
 }
 
 static unsigned long move_vma(struct vm_area_struct *vma,
 		unsigned long old_addr, unsigned long old_len,
-<<<<<<< HEAD
-		unsigned long new_len, unsigned long new_addr)
-{
-=======
 		unsigned long new_len, unsigned long new_addr,
 		bool *locked, unsigned long flags,
 		struct vm_userfaultfd_ctx *uf, struct list_head *uf_unmap)
 {
 	long to_account = new_len - old_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mm_struct *mm = vma->vm_mm;
 	struct vm_area_struct *new_vma;
 	unsigned long vm_flags = vma->vm_flags;
 	unsigned long new_pgoff;
 	unsigned long moved_len;
-<<<<<<< HEAD
-	unsigned long excess = 0;
-	unsigned long hiwater_vm;
-	int split = 0;
-	int err;
-=======
 	unsigned long account_start = 0;
 	unsigned long account_end = 0;
 	unsigned long hiwater_vm;
 	int err = 0;
 	bool need_rmap_locks;
 	struct vma_iterator vmi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We'd prefer to avoid failure later on in do_munmap:
@@ -833,8 +673,6 @@ static unsigned long move_vma(struct vm_area_struct *vma,
 	if (mm->map_count >= sysctl_max_map_count - 3)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	if (unlikely(flags & MREMAP_DONTUNMAP))
 		to_account = new_len;
 
@@ -847,7 +685,6 @@ static unsigned long move_vma(struct vm_area_struct *vma,
 			return err;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Advise KSM to break any KSM pages in the area to be moved:
 	 * it would be confusing if they were to turn up at the new
@@ -860,24 +697,6 @@ static unsigned long move_vma(struct vm_area_struct *vma,
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	new_pgoff = vma->vm_pgoff + ((old_addr - vma->vm_start) >> PAGE_SHIFT);
-	new_vma = copy_vma(&vma, new_addr, new_len, new_pgoff);
-	if (!new_vma)
-		return -ENOMEM;
-
-	moved_len = move_page_tables(vma, old_addr, new_vma, new_addr, old_len);
-	if (moved_len < old_len) {
-		/*
-		 * Before moving the page tables from the new vma to
-		 * the old vma, we need to be sure the old vma is
-		 * queued after new vma in the same_anon_vma list to
-		 * prevent SMP races with rmap_walk (that could lead
-		 * rmap_walk to miss some page table).
-		 */
-		anon_vma_moveto_tail(vma);
-
-=======
 	if (vm_flags & VM_ACCOUNT) {
 		if (security_vm_enough_memory_mm(mm, to_account >> PAGE_SHIFT))
 			return -ENOMEM;
@@ -902,28 +721,11 @@ static unsigned long move_vma(struct vm_area_struct *vma,
 	}
 
 	if (unlikely(err)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * On error, move entries back from new area to old,
 		 * which will succeed since page tables still there,
 		 * and then proceed to unmap new area instead of old.
 		 */
-<<<<<<< HEAD
-		move_page_tables(new_vma, new_addr, vma, old_addr, moved_len);
-		vma = new_vma;
-		old_len = new_len;
-		old_addr = new_addr;
-		new_addr = -ENOMEM;
-	}
-
-	/* Conceal VM_ACCOUNT so old reservation is not undone */
-	if (vm_flags & VM_ACCOUNT) {
-		vma->vm_flags &= ~VM_ACCOUNT;
-		excess = vma->vm_end - vma->vm_start - old_len;
-		if (old_addr > vma->vm_start &&
-		    old_addr + old_len < vma->vm_end)
-			split = 1;
-=======
 		move_page_tables(new_vma, new_addr, vma, old_addr, moved_len,
 				 true, false);
 		vma = new_vma;
@@ -945,7 +747,6 @@ static unsigned long move_vma(struct vm_area_struct *vma,
 			account_start = vma->vm_start;
 		if (vma->vm_end > old_addr + old_len)
 			account_end = vma->vm_end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -958,23 +759,6 @@ static unsigned long move_vma(struct vm_area_struct *vma,
 	 * If this were a serious issue, we'd add a flag to do_munmap().
 	 */
 	hiwater_vm = mm->hiwater_vm;
-<<<<<<< HEAD
-	mm->total_vm += new_len >> PAGE_SHIFT;
-	vm_stat_account(mm, vma->vm_flags, vma->vm_file, new_len>>PAGE_SHIFT);
-
-	if (do_munmap(mm, old_addr, old_len) < 0) {
-		/* OOM: unable to split vma, just get accounts right */
-		vm_unacct_memory(excess >> PAGE_SHIFT);
-		excess = 0;
-	}
-	mm->hiwater_vm = hiwater_vm;
-
-	/* Restore VM_ACCOUNT if one or two pieces of vma left */
-	if (excess) {
-		vma->vm_flags |= VM_ACCOUNT;
-		if (split)
-			vma->vm_next->vm_flags |= VM_ACCOUNT;
-=======
 	vm_stat_account(mm, vma->vm_flags, new_len >> PAGE_SHIFT);
 
 	/* Tell pfnmap has moved from this vma */
@@ -1003,16 +787,10 @@ static unsigned long move_vma(struct vm_area_struct *vma,
 		if (vm_flags & VM_ACCOUNT && !(flags & MREMAP_DONTUNMAP))
 			vm_acct_memory(old_len >> PAGE_SHIFT);
 		account_start = account_end = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (vm_flags & VM_LOCKED) {
 		mm->locked_vm += new_len >> PAGE_SHIFT;
-<<<<<<< HEAD
-		if (new_len > old_len)
-			mlock_vma_pages_range(new_vma, new_addr + old_len,
-						       new_addr + new_len);
-=======
 		*locked = true;
 	}
 
@@ -1027,76 +805,12 @@ static unsigned long move_vma(struct vm_area_struct *vma,
 	if (account_end) {
 		vma = vma_next(&vmi);
 		vm_flags_set(vma, VM_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return new_addr;
 }
 
 static struct vm_area_struct *vma_to_resize(unsigned long addr,
-<<<<<<< HEAD
-	unsigned long old_len, unsigned long new_len, unsigned long *p)
-{
-	struct mm_struct *mm = current->mm;
-	struct vm_area_struct *vma = find_vma(mm, addr);
-
-	if (!vma || vma->vm_start > addr)
-		goto Efault;
-
-	if (is_vm_hugetlb_page(vma))
-		goto Einval;
-
-	/* We can't remap across vm area boundaries */
-	if (old_len > vma->vm_end - addr)
-		goto Efault;
-
-	/* Need to be careful about a growing mapping */
-	if (new_len > old_len) {
-		unsigned long pgoff;
-
-		if (vma->vm_flags & (VM_DONTEXPAND | VM_PFNMAP))
-			goto Efault;
-		pgoff = (addr - vma->vm_start) >> PAGE_SHIFT;
-		pgoff += vma->vm_pgoff;
-		if (pgoff + (new_len >> PAGE_SHIFT) < pgoff)
-			goto Einval;
-	}
-
-	if (vma->vm_flags & VM_LOCKED) {
-		unsigned long locked, lock_limit;
-		locked = mm->locked_vm << PAGE_SHIFT;
-		lock_limit = rlimit(RLIMIT_MEMLOCK);
-		locked += new_len - old_len;
-		if (locked > lock_limit && !capable(CAP_IPC_LOCK))
-			goto Eagain;
-	}
-
-	if (!may_expand_vm(mm, (new_len - old_len) >> PAGE_SHIFT))
-		goto Enomem;
-
-	if (vma->vm_flags & VM_ACCOUNT) {
-		unsigned long charged = (new_len - old_len) >> PAGE_SHIFT;
-		if (security_vm_enough_memory_mm(mm, charged))
-			goto Efault;
-		*p = charged;
-	}
-
-	return vma;
-
-Efault:	/* very odd choice for most of the cases, but... */
-	return ERR_PTR(-EFAULT);
-Einval:
-	return ERR_PTR(-EINVAL);
-Enomem:
-	return ERR_PTR(-ENOMEM);
-Eagain:
-	return ERR_PTR(-EAGAIN);
-}
-
-static unsigned long mremap_to(unsigned long addr,
-	unsigned long old_len, unsigned long new_addr,
-	unsigned long new_len)
-=======
 	unsigned long old_len, unsigned long new_len, unsigned long flags)
 {
 	struct mm_struct *mm = current->mm;
@@ -1155,48 +869,18 @@ static unsigned long mremap_to(unsigned long addr, unsigned long old_len,
 		unsigned long flags, struct vm_userfaultfd_ctx *uf,
 		struct list_head *uf_unmap_early,
 		struct list_head *uf_unmap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mm_struct *mm = current->mm;
 	struct vm_area_struct *vma;
 	unsigned long ret = -EINVAL;
-<<<<<<< HEAD
-	unsigned long charged = 0;
-	unsigned long map_flags;
-
-	if (new_addr & ~PAGE_MASK)
-=======
 	unsigned long map_flags = 0;
 
 	if (offset_in_page(new_addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	if (new_len > TASK_SIZE || new_addr > TASK_SIZE - new_len)
 		goto out;
 
-<<<<<<< HEAD
-	/* Check if the location we're moving into overlaps the
-	 * old location at all, and fail if it does.
-	 */
-	if ((new_addr <= addr) && (new_addr+new_len) > addr)
-		goto out;
-
-	if ((addr <= new_addr) && (addr+old_len) > new_addr)
-		goto out;
-
-	ret = security_file_mmap(NULL, 0, 0, 0, new_addr, 1);
-	if (ret)
-		goto out;
-
-	ret = do_munmap(mm, new_addr, new_len);
-	if (ret)
-		goto out;
-
-	if (old_len >= new_len) {
-		ret = do_munmap(mm, addr+new_len, old_len - new_len);
-		if (ret && old_len != new_len)
-=======
 	/* Ensure the old/new locations do not overlap */
 	if (addr + old_len > new_addr && new_addr + new_len > addr)
 		goto out;
@@ -1227,24 +911,16 @@ static unsigned long mremap_to(unsigned long addr, unsigned long old_len,
 	if (old_len > new_len) {
 		ret = do_munmap(mm, addr+new_len, old_len - new_len, uf_unmap);
 		if (ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		old_len = new_len;
 	}
 
-<<<<<<< HEAD
-	vma = vma_to_resize(addr, old_len, new_len, &charged);
-=======
 	vma = vma_to_resize(addr, old_len, new_len, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(vma)) {
 		ret = PTR_ERR(vma);
 		goto out;
 	}
 
-<<<<<<< HEAD
-	map_flags = MAP_FIXED;
-=======
 	/* MREMAP_DONTUNMAP expands by old_len since old_len == new_len */
 	if (flags & MREMAP_DONTUNMAP &&
 		!may_expand_vm(mm, vma->vm_flags, old_len >> PAGE_SHIFT)) {
@@ -1255,23 +931,12 @@ static unsigned long mremap_to(unsigned long addr, unsigned long old_len,
 	if (flags & MREMAP_FIXED)
 		map_flags |= MAP_FIXED;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vma->vm_flags & VM_MAYSHARE)
 		map_flags |= MAP_SHARED;
 
 	ret = get_unmapped_area(vma->vm_file, new_addr, new_len, vma->vm_pgoff +
 				((addr - vma->vm_start) >> PAGE_SHIFT),
 				map_flags);
-<<<<<<< HEAD
-	if (ret & ~PAGE_MASK)
-		goto out1;
-
-	ret = move_vma(vma, addr, old_len, new_len, new_addr);
-	if (!(ret & ~PAGE_MASK))
-		goto out;
-out1:
-	vm_unacct_memory(charged);
-=======
 	if (IS_ERR_VALUE(ret))
 		goto out;
 
@@ -1281,7 +946,6 @@ out1:
 
 	ret = move_vma(vma, addr, old_len, new_len, new_addr, locked, flags, uf,
 		       uf_unmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return ret;
@@ -1290,16 +954,10 @@ out:
 static int vma_expandable(struct vm_area_struct *vma, unsigned long delta)
 {
 	unsigned long end = vma->vm_end + delta;
-<<<<<<< HEAD
-	if (end < vma->vm_end) /* overflow */
-		return 0;
-	if (vma->vm_next && vma->vm_next->vm_start < end) /* intersection */
-=======
 
 	if (end < vma->vm_end) /* overflow */
 		return 0;
 	if (find_vma_intersection(vma->vm_mm, vma->vm_end, end))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	if (get_unmapped_area(NULL, vma->vm_start, end - vma->vm_start,
 			      0, MAP_FIXED) & ~PAGE_MASK)
@@ -1314,28 +972,13 @@ static int vma_expandable(struct vm_area_struct *vma, unsigned long delta)
  * MREMAP_FIXED option added 5-Dec-1999 by Benjamin LaHaise
  * This option implies MREMAP_MAYMOVE.
  */
-<<<<<<< HEAD
-unsigned long do_mremap(unsigned long addr,
-	unsigned long old_len, unsigned long new_len,
-	unsigned long flags, unsigned long new_addr)
-=======
 SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
 		unsigned long, new_len, unsigned long, flags,
 		unsigned long, new_addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mm_struct *mm = current->mm;
 	struct vm_area_struct *vma;
 	unsigned long ret = -EINVAL;
-<<<<<<< HEAD
-	unsigned long charged = 0;
-
-	if (flags & ~(MREMAP_FIXED | MREMAP_MAYMOVE))
-		goto out;
-
-	if (addr & ~PAGE_MASK)
-		goto out;
-=======
 	bool locked = false;
 	struct vm_userfaultfd_ctx uf = NULL_VM_UFFD_CTX;
 	LIST_HEAD(uf_unmap_early);
@@ -1371,7 +1014,6 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
 
 	if (offset_in_page(addr))
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	old_len = PAGE_ALIGN(old_len);
 	new_len = PAGE_ALIGN(new_len);
@@ -1382,13 +1024,6 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
 	 * a zero new-len is nonsensical.
 	 */
 	if (!new_len)
-<<<<<<< HEAD
-		goto out;
-
-	if (flags & MREMAP_FIXED) {
-		if (flags & MREMAP_MAYMOVE)
-			ret = mremap_to(addr, old_len, new_addr, new_len);
-=======
 		return ret;
 
 	if (mmap_write_lock_killable(current->mm))
@@ -1423,23 +1058,12 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
 		ret = mremap_to(addr, old_len, new_addr, new_len,
 				&locked, flags, &uf, &uf_unmap_early,
 				&uf_unmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	/*
 	 * Always allow a shrinking remap: that just unmaps
 	 * the unnecessary pages..
-<<<<<<< HEAD
-	 * do_munmap does all the needed commit accounting
-	 */
-	if (old_len >= new_len) {
-		ret = do_munmap(mm, addr+new_len, old_len - new_len);
-		if (ret && old_len != new_len)
-			goto out;
-		ret = addr;
-		goto out;
-=======
 	 * do_vmi_munmap does all the needed commit accounting, and
 	 * unlocks the mmap_lock if so directed.
 	 */
@@ -1458,17 +1082,12 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
 
 		ret = addr;
 		goto out_unlocked;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Ok, we need to grow..
 	 */
-<<<<<<< HEAD
-	vma = vma_to_resize(addr, old_len, new_len, &charged);
-=======
 	vma = vma_to_resize(addr, old_len, new_len, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(vma)) {
 		ret = PTR_ERR(vma);
 		goto out;
@@ -1477,14 +1096,6 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
 	/* old_len exactly to the end of the area..
 	 */
 	if (old_len == vma->vm_end - addr) {
-<<<<<<< HEAD
-		/* can we just expand the current mapping? */
-		if (vma_expandable(vma, new_len - old_len)) {
-			int pages = (new_len - old_len) >> PAGE_SHIFT;
-
-			if (vma_adjust(vma, vma->vm_start, addr + new_len,
-				       vma->vm_pgoff, NULL)) {
-=======
 		unsigned long delta = new_len - old_len;
 
 		/* can we just expand the current mapping? */
@@ -1513,25 +1124,15 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
 			vma = vma_merge_extend(&vmi, vma, delta);
 			if (!vma) {
 				vm_unacct_memory(charged);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -ENOMEM;
 				goto out;
 			}
 
-<<<<<<< HEAD
-			mm->total_vm += pages;
-			vm_stat_account(mm, vma->vm_flags, vma->vm_file, pages);
-			if (vma->vm_flags & VM_LOCKED) {
-				mm->locked_vm += pages;
-				mlock_vma_pages_range(vma, addr + old_len,
-						   addr + new_len);
-=======
 			vm_stat_account(mm, vma->vm_flags, pages);
 			if (vma->vm_flags & VM_LOCKED) {
 				mm->locked_vm += pages;
 				locked = true;
 				new_addr = addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			ret = addr;
 			goto out;
@@ -1552,37 +1153,11 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
 					vma->vm_pgoff +
 					((addr - vma->vm_start) >> PAGE_SHIFT),
 					map_flags);
-<<<<<<< HEAD
-		if (new_addr & ~PAGE_MASK) {
-=======
 		if (IS_ERR_VALUE(new_addr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = new_addr;
 			goto out;
 		}
 
-<<<<<<< HEAD
-		ret = security_file_mmap(NULL, 0, 0, 0, new_addr, 1);
-		if (ret)
-			goto out;
-		ret = move_vma(vma, addr, old_len, new_len, new_addr);
-	}
-out:
-	if (ret & ~PAGE_MASK)
-		vm_unacct_memory(charged);
-	return ret;
-}
-
-SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
-		unsigned long, new_len, unsigned long, flags,
-		unsigned long, new_addr)
-{
-	unsigned long ret;
-
-	down_write(&current->mm->mmap_sem);
-	ret = do_mremap(addr, old_len, new_len, flags, new_addr);
-	up_write(&current->mm->mmap_sem);
-=======
 		ret = move_vma(vma, addr, old_len, new_len, new_addr,
 			       &locked, flags, &uf, &uf_unmap);
 	}
@@ -1596,6 +1171,5 @@ out_unlocked:
 	userfaultfd_unmap_complete(mm, &uf_unmap_early);
 	mremap_userfaultfd_complete(&uf, addr, ret, old_len);
 	userfaultfd_unmap_complete(mm, &uf_unmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }

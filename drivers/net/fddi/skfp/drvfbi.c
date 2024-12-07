@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
@@ -9,14 +6,6 @@
  *
  *	See the file "skfddi.c" for further information.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
@@ -31,14 +20,7 @@
 #include "h/supern_2.h"
 #include "h/skfbiinc.h"
 #include <linux/bitrev.h>
-<<<<<<< HEAD
-
-#ifndef	lint
-static const char ID_sccs[] = "@(#)drvfbi.c	1.63 99/02/11 (C) SK " ;
-#endif
-=======
 #include <linux/pci.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * PCM active state
@@ -126,11 +108,7 @@ static void card_start(struct s_smc *smc)
 	 */
 	outp(ADDR(B0_TST_CTRL), TST_CFG_WRITE_ON) ;	/* enable for writes */
 	word = inpw(PCI_C(PCI_STATUS)) ;
-<<<<<<< HEAD
-	outpw(PCI_C(PCI_STATUS), word | PCI_ERRBITS) ;
-=======
 	outpw(PCI_C(PCI_STATUS), word | PCI_STATUS_ERROR_BITS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outp(ADDR(B0_TST_CTRL), TST_CFG_WRITE_OFF) ;	/* disable writes */
 
 	/*
@@ -146,11 +124,7 @@ static void card_start(struct s_smc *smc)
 	 *	 at very first before any other initialization functions is
 	 *	 executed.
 	 */
-<<<<<<< HEAD
-	rev_id = inp(PCI_C(PCI_REV_ID)) ;
-=======
 	rev_id = inp(PCI_C(PCI_REVISION_ID)) ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((rev_id & 0xf0) == SK_ML_ID_1 || (rev_id & 0xf0) == SK_ML_ID_2) {
 		smc->hw.hw_is_64bit = TRUE ;
 	} else {
@@ -362,13 +336,8 @@ void init_board(struct s_smc *smc, u_char *mac_addr)
  */
 void sm_pm_bypass_req(struct s_smc *smc, int mode)
 {
-<<<<<<< HEAD
-	DB_ECMN(1,"ECM : sm_pm_bypass_req(%s)\n",(mode == BP_INSERT) ?
-					"BP_INSERT" : "BP_DEINSERT",0) ;
-=======
 	DB_ECMN(1, "ECM : sm_pm_bypass_req(%s)",
 		mode == BP_INSERT ? "BP_INSERT" : "BP_DEINSERT");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (smc->s.sas != SMT_DAS)
 		return ;

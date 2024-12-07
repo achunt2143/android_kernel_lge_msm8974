@@ -1,53 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -67,11 +24,7 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action);
  *
  * FUNCTION:    acpi_ut_delete_internal_obj
  *
-<<<<<<< HEAD
- * PARAMETERS:  Object         - Object to be deleted
-=======
  * PARAMETERS:  object         - Object to be deleted
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -86,10 +39,7 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 	union acpi_operand_object *handler_desc;
 	union acpi_operand_object *second_desc;
 	union acpi_operand_object *next_desc;
-<<<<<<< HEAD
-=======
 	union acpi_operand_object *start_desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union acpi_operand_object **last_obj_ptr;
 
 	ACPI_FUNCTION_TRACE_PTR(ut_delete_internal_obj, object);
@@ -162,20 +112,12 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 						       gpe_block);
 		}
 
-<<<<<<< HEAD
-		/*lint -fallthrough */
-=======
 		ACPI_FALLTHROUGH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case ACPI_TYPE_PROCESSOR:
 	case ACPI_TYPE_THERMAL:
 
-<<<<<<< HEAD
-		/* Walk the notify handler list for this object */
-=======
 		/* Walk the address handler list for this object */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		handler_desc = object->common_notify.handler;
 		while (handler_desc) {
@@ -231,13 +173,10 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 			acpi_ut_delete_object_desc(object->method.mutex);
 			object->method.mutex = NULL;
 		}
-<<<<<<< HEAD
-=======
 
 		if (object->method.node) {
 			object->method.node = NULL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_TYPE_REGION:
@@ -265,18 +204,11 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 			if (handler_desc) {
 				next_desc =
 				    handler_desc->address_space.region_list;
-<<<<<<< HEAD
-				last_obj_ptr =
-				    &handler_desc->address_space.region_list;
-
-				/* Remove the region object from the handler's list */
-=======
 				start_desc = next_desc;
 				last_obj_ptr =
 				    &handler_desc->address_space.region_list;
 
 				/* Remove the region object from the handler list */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				while (next_desc) {
 					if (next_desc == object) {
@@ -285,12 +217,6 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 						break;
 					}
 
-<<<<<<< HEAD
-					/* Walk the linked list of handler */
-
-					last_obj_ptr = &next_desc->region.next;
-					next_desc = next_desc->region.next;
-=======
 					/* Walk the linked list of handlers */
 
 					last_obj_ptr = &next_desc->region.next;
@@ -304,7 +230,6 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 							    handler_desc));
 						return_VOID;
 					}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 
 				if (handler_desc->address_space.handler_flags &
@@ -332,13 +257,10 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 
 			acpi_ut_delete_object_desc(second_desc);
 		}
-<<<<<<< HEAD
-=======
 		if (object->field.internal_pcc_buffer) {
 			ACPI_FREE(object->field.internal_pcc_buffer);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_TYPE_BUFFER_FIELD:
@@ -363,9 +285,6 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 		}
 		break;
 
-<<<<<<< HEAD
-	default:
-=======
 	case ACPI_TYPE_LOCAL_ADDRESS_HANDLER:
 
 		ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
@@ -376,7 +295,6 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 
 	default:
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -390,15 +308,10 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 
 	/* Now the object can be safely deleted */
 
-<<<<<<< HEAD
-	ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS, "Deleting Object %p [%s]\n",
-			  object, acpi_ut_get_object_type_name(object)));
-=======
 	ACPI_DEBUG_PRINT_RAW((ACPI_DB_ALLOCATIONS,
 			      "%s: Deleting Object %p [%s]\n",
 			      ACPI_GET_FUNCTION_NAME, object,
 			      acpi_ut_get_object_type_name(object)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acpi_ut_delete_object_desc(object);
 	return_VOID;
@@ -421,11 +334,7 @@ void acpi_ut_delete_internal_object_list(union acpi_operand_object **obj_list)
 {
 	union acpi_operand_object **internal_obj;
 
-<<<<<<< HEAD
-	ACPI_FUNCTION_TRACE(ut_delete_internal_object_list);
-=======
 	ACPI_FUNCTION_ENTRY();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Walk the null-terminated internal list */
 
@@ -436,47 +345,29 @@ void acpi_ut_delete_internal_object_list(union acpi_operand_object **obj_list)
 	/* Free the combined parameter pointer list and object array */
 
 	ACPI_FREE(obj_list);
-<<<<<<< HEAD
-	return_VOID;
-=======
 	return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_update_ref_count
  *
-<<<<<<< HEAD
- * PARAMETERS:  Object          - Object whose ref count is to be updated
- *              Action          - What to do
- *
- * RETURN:      New ref count
- *
- * DESCRIPTION: Modify the ref count and return it.
-=======
  * PARAMETERS:  object          - Object whose ref count is to be updated
  *              action          - What to do (REF_INCREMENT or REF_DECREMENT)
  *
  * RETURN:      None. Sets new reference count within the object
  *
  * DESCRIPTION: Modify the reference count for an internal acpi object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
 static void
 acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
 {
-<<<<<<< HEAD
-	u16 count;
-	u16 new_count;
-=======
 	u16 original_count;
 	u16 new_count = 0;
 	acpi_cpu_flags lock_flags;
 	char *message;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_NAME(ut_update_ref_count);
 
@@ -484,23 +375,6 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
 		return;
 	}
 
-<<<<<<< HEAD
-	count = object->common.reference_count;
-	new_count = count;
-
-	/*
-	 * Perform the reference count action (increment, decrement, force delete)
-	 */
-	switch (action) {
-	case REF_INCREMENT:
-
-		new_count++;
-		object->common.reference_count = new_count;
-
-		ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
-				  "Obj %p Refs=%X, [Incremented]\n",
-				  object, new_count));
-=======
 	/*
 	 * Always get the reference count lock. Note: Interpreter and/or
 	 * Namespace is not always locked when this function is called.
@@ -531,48 +405,10 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
 				  acpi_ut_get_object_type_name(object),
 				  new_count));
 		message = "Incremement";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case REF_DECREMENT:
 
-<<<<<<< HEAD
-		if (count < 1) {
-			ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
-					  "Obj %p Refs=%X, can't decrement! (Set to 0)\n",
-					  object, new_count));
-
-			new_count = 0;
-		} else {
-			new_count--;
-
-			ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
-					  "Obj %p Refs=%X, [Decremented]\n",
-					  object, new_count));
-		}
-
-		if (object->common.type == ACPI_TYPE_METHOD) {
-			ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
-					  "Method Obj %p Refs=%X, [Decremented]\n",
-					  object, new_count));
-		}
-
-		object->common.reference_count = new_count;
-		if (new_count == 0) {
-			acpi_ut_delete_internal_obj(object);
-		}
-		break;
-
-	case REF_FORCE_DELETE:
-
-		ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
-				  "Obj %p Refs=%X, Force delete! (Set to 0)\n",
-				  object, count));
-
-		new_count = 0;
-		object->common.reference_count = new_count;
-		acpi_ut_delete_internal_obj(object);
-=======
 		/* The current reference count must be non-zero */
 
 		if (original_count) {
@@ -600,37 +436,24 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
 			acpi_ut_delete_internal_obj(object);
 		}
 		message = "Decrement";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
 
-<<<<<<< HEAD
-		ACPI_ERROR((AE_INFO, "Unknown action (0x%X)", action));
-		break;
-=======
 		acpi_os_release_lock(acpi_gbl_reference_count_lock, lock_flags);
 		ACPI_ERROR((AE_INFO, "Unknown Reference Count action (0x%X)",
 			    action));
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Sanity check the reference count, for debug purposes only.
 	 * (A deleted object will have a huge reference count)
 	 */
-<<<<<<< HEAD
-	if (count > ACPI_MAX_REFERENCE_COUNT) {
-		ACPI_WARNING((AE_INFO,
-			      "Large Reference Count (0x%X) in object %p",
-			      count, object));
-=======
 	if (new_count > ACPI_MAX_REFERENCE_COUNT) {
 		ACPI_WARNING((AE_INFO,
 			      "Large Reference Count (0x%X) in object %p, Type=0x%.2X Operation=%s",
 			      new_count, object, object->common.type, message));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -638,16 +461,6 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
  *
  * FUNCTION:    acpi_ut_update_object_reference
  *
-<<<<<<< HEAD
- * PARAMETERS:  Object              - Increment ref count for this object
- *                                    and all sub-objects
- *              Action              - Either REF_INCREMENT or REF_DECREMENT or
- *                                    REF_FORCE_DELETE
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Increment the object reference count
-=======
  * PARAMETERS:  object              - Increment or decrement the ref count for
  *                                    this object and all sub-objects
  *              action              - Either REF_INCREMENT or REF_DECREMENT
@@ -655,7 +468,6 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
  * RETURN:      Status
  *
  * DESCRIPTION: Increment or decrement the object reference count
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Object references are incremented when:
  * 1) An object is attached to a Node (namespace object)
@@ -672,18 +484,11 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 	acpi_status status = AE_OK;
 	union acpi_generic_state *state_list = NULL;
 	union acpi_operand_object *next_object = NULL;
-<<<<<<< HEAD
-	union acpi_generic_state *state;
-	u32 i;
-
-	ACPI_FUNCTION_TRACE_PTR(ut_update_object_reference, object);
-=======
 	union acpi_operand_object *prev_object;
 	union acpi_generic_state *state;
 	u32 i;
 
 	ACPI_FUNCTION_NAME(ut_update_object_reference);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (object) {
 
@@ -692,36 +497,18 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 		if (ACPI_GET_DESCRIPTOR_TYPE(object) == ACPI_DESC_TYPE_NAMED) {
 			ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
 					  "Object %p is NS handle\n", object));
-<<<<<<< HEAD
-			return_ACPI_STATUS(AE_OK);
-		}
-
-		/*
-		 * All sub-objects must have their reference count incremented also.
-		 * Different object types have different subobjects.
-=======
 			return (AE_OK);
 		}
 
 		/*
 		 * All sub-objects must have their reference count updated
 		 * also. Different object types have different subobjects.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		switch (object->common.type) {
 		case ACPI_TYPE_DEVICE:
 		case ACPI_TYPE_PROCESSOR:
 		case ACPI_TYPE_POWER:
 		case ACPI_TYPE_THERMAL:
-<<<<<<< HEAD
-
-			/* Update the notify objects for these types (if present) */
-
-			acpi_ut_update_ref_count(object->common_notify.
-						 system_notify, action);
-			acpi_ut_update_ref_count(object->common_notify.
-						 device_notify, action);
-=======
 			/*
 			 * Update the notify objects for these types (if present)
 			 * Two lists, system and device notify handlers.
@@ -737,7 +524,6 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 					prev_object = next_object;
 				}
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_TYPE_PACKAGE:
@@ -747,20 +533,6 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 			 */
 			for (i = 0; i < object->package.count; i++) {
 				/*
-<<<<<<< HEAD
-				 * Push each element onto the stack for later processing.
-				 * Note: There can be null elements within the package,
-				 * these are simply ignored
-				 */
-				status =
-				    acpi_ut_create_update_state_and_push
-				    (object->package.elements[i], action,
-				     &state_list);
-				if (ACPI_FAILURE(status)) {
-					goto error_exit;
-				}
-			}
-=======
 				 * Null package elements are legal and can be simply
 				 * ignored.
 				 */
@@ -798,7 +570,6 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 			}
 
 			next_object = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_TYPE_BUFFER_FIELD:
@@ -806,14 +577,6 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 			next_object = object->buffer_field.buffer_obj;
 			break;
 
-<<<<<<< HEAD
-		case ACPI_TYPE_LOCAL_REGION_FIELD:
-
-			next_object = object->field.region_obj;
-			break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ACPI_TYPE_LOCAL_BANK_FIELD:
 
 			next_object = object->bank_field.bank_obj;
@@ -854,15 +617,10 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 			}
 			break;
 
-<<<<<<< HEAD
-		case ACPI_TYPE_REGION:
-		default:
-=======
 		case ACPI_TYPE_LOCAL_REGION_FIELD:
 		case ACPI_TYPE_REGION:
 		default:
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;	/* No subobjects for all other types */
 		}
 
@@ -886,15 +644,9 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 		}
 	}
 
-<<<<<<< HEAD
-	return_ACPI_STATUS(AE_OK);
-
-      error_exit:
-=======
 	return (AE_OK);
 
 error_exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_EXCEPTION((AE_INFO, status,
 			"Could not update object reference count"));
@@ -906,22 +658,14 @@ error_exit:
 		acpi_ut_delete_generic_state(state);
 	}
 
-<<<<<<< HEAD
-	return_ACPI_STATUS(status);
-=======
 	return (status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_add_reference
  *
-<<<<<<< HEAD
- * PARAMETERS:  Object          - Object whose reference count is to be
-=======
  * PARAMETERS:  object          - Object whose reference count is to be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                incremented
  *
  * RETURN:      None
@@ -933,20 +677,12 @@ error_exit:
 void acpi_ut_add_reference(union acpi_operand_object *object)
 {
 
-<<<<<<< HEAD
-	ACPI_FUNCTION_TRACE_PTR(ut_add_reference, object);
-=======
 	ACPI_FUNCTION_NAME(ut_add_reference);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ensure that we have a valid object */
 
 	if (!acpi_ut_valid_internal_object(object)) {
-<<<<<<< HEAD
-		return_VOID;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
@@ -956,22 +692,14 @@ void acpi_ut_add_reference(union acpi_operand_object *object)
 	/* Increment the reference count */
 
 	(void)acpi_ut_update_object_reference(object, REF_INCREMENT);
-<<<<<<< HEAD
-	return_VOID;
-=======
 	return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_remove_reference
  *
-<<<<<<< HEAD
- * PARAMETERS:  Object         - Object whose ref count will be decremented
-=======
  * PARAMETERS:  object         - Object whose ref count will be decremented
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -982,40 +710,20 @@ void acpi_ut_add_reference(union acpi_operand_object *object)
 void acpi_ut_remove_reference(union acpi_operand_object *object)
 {
 
-<<<<<<< HEAD
-	ACPI_FUNCTION_TRACE_PTR(ut_remove_reference, object);
-=======
 	ACPI_FUNCTION_NAME(ut_remove_reference);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Allow a NULL pointer to be passed in, just ignore it. This saves
 	 * each caller from having to check. Also, ignore NS nodes.
-<<<<<<< HEAD
-	 *
-	 */
-	if (!object ||
-	    (ACPI_GET_DESCRIPTOR_TYPE(object) == ACPI_DESC_TYPE_NAMED)) {
-		return_VOID;
-=======
 	 */
 	if (!object ||
 	    (ACPI_GET_DESCRIPTOR_TYPE(object) == ACPI_DESC_TYPE_NAMED)) {
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Ensure that we have a valid object */
 
 	if (!acpi_ut_valid_internal_object(object)) {
-<<<<<<< HEAD
-		return_VOID;
-	}
-
-	ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
-			  "Obj %p Current Refs=%X [To Be Decremented]\n",
-			  object, object->common.reference_count));
-=======
 		return;
 	}
 
@@ -1023,7 +731,6 @@ void acpi_ut_remove_reference(union acpi_operand_object *object)
 			      "%s: Obj %p Current Refs=%X [To Be Decremented]\n",
 			      ACPI_GET_FUNCTION_NAME, object,
 			      object->common.reference_count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Decrement the reference count, and only actually delete the object
@@ -1031,9 +738,5 @@ void acpi_ut_remove_reference(union acpi_operand_object *object)
 	 * of all subobjects!)
 	 */
 	(void)acpi_ut_update_object_reference(object, REF_DECREMENT);
-<<<<<<< HEAD
-	return_VOID;
-=======
 	return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Apple USB BCM5974 (Macbook Air and Penryn Macbook Pro) multitouch driver
  *
  * Copyright (C) 2008	   Henrik Rydberg (rydberg@euromail.se)
-<<<<<<< HEAD
-=======
  * Copyright (C) 2015      John Horan (knasher@gmail.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The USB initialization and package decoding was made by
  * Scott Shawcroft as part of the touchd user-space driver project:
@@ -23,41 +17,16 @@
  * Copyright (C) 2005	   Peter Osterlund (petero2@telia.com)
  * Copyright (C) 2005	   Michael Hanselmann (linux-kernel@hansmi.ch)
  * Copyright (C) 2006	   Nicolas Boichat (nicolas@boichat.ch)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/usb/input.h>
 #include <linux/hid.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-=======
 #include <linux/input/mt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define USB_VENDOR_ID_APPLE		0x05ac
 
@@ -101,8 +70,6 @@
 #define USB_DEVICE_ID_APPLE_WELLSPRING7_ANSI	0x0262
 #define USB_DEVICE_ID_APPLE_WELLSPRING7_ISO	0x0263
 #define USB_DEVICE_ID_APPLE_WELLSPRING7_JIS	0x0264
-<<<<<<< HEAD
-=======
 /* MacbookPro10,2 (unibody, October 2012) */
 #define USB_DEVICE_ID_APPLE_WELLSPRING7A_ANSI	0x0259
 #define USB_DEVICE_ID_APPLE_WELLSPRING7A_ISO	0x025a
@@ -115,7 +82,6 @@
 #define USB_DEVICE_ID_APPLE_WELLSPRING9_ANSI	0x0272
 #define USB_DEVICE_ID_APPLE_WELLSPRING9_ISO	0x0273
 #define USB_DEVICE_ID_APPLE_WELLSPRING9_JIS	0x0274
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BCM5974_DEVICE(prod) {					\
 	.match_flags = (USB_DEVICE_ID_MATCH_DEVICE |		\
@@ -169,8 +135,6 @@ static const struct usb_device_id bcm5974_table[] = {
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING7_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING7_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING7_JIS),
-<<<<<<< HEAD
-=======
 	/* MacbookPro10,2 */
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING7A_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING7A_ISO),
@@ -183,7 +147,6 @@ static const struct usb_device_id bcm5974_table[] = {
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING9_ANSI),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING9_ISO),
 	BCM5974_DEVICE(USB_DEVICE_ID_APPLE_WELLSPRING9_JIS),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Terminating entry */
 	{}
 };
@@ -211,17 +174,6 @@ struct bt_data {
 /* trackpad header types */
 enum tp_type {
 	TYPE1,			/* plain trackpad */
-<<<<<<< HEAD
-	TYPE2			/* button integrated in trackpad */
-};
-
-/* trackpad finger data offsets, le16-aligned */
-#define FINGER_TYPE1		(13 * sizeof(__le16))
-#define FINGER_TYPE2		(15 * sizeof(__le16))
-
-/* trackpad button data offsets */
-#define BUTTON_TYPE2		15
-=======
 	TYPE2,			/* button integrated in trackpad */
 	TYPE3,			/* additional header fields since June 2013 */
 	TYPE4			/* additional header field for pressure data */
@@ -238,13 +190,10 @@ enum tp_type {
 #define BUTTON_TYPE2		15
 #define BUTTON_TYPE3		23
 #define BUTTON_TYPE4		31
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* list of device capability bits */
 #define HAS_INTEGRATED_BUTTON	1
 
-<<<<<<< HEAD
-=======
 /* trackpad finger data block size */
 #define FSIZE_TYPE1		(14 * sizeof(__le16))
 #define FSIZE_TYPE2		(14 * sizeof(__le16))
@@ -267,7 +216,6 @@ enum tp_type {
 #define BCM5974_WELLSPRING_MODE_READ_REQUEST_ID		1
 #define BCM5974_WELLSPRING_MODE_WRITE_REQUEST_ID	9
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* trackpad finger structure, le16-aligned */
 struct tp_finger {
 	__le16 origin;		/* zero when switching track finger */
@@ -275,14 +223,6 @@ struct tp_finger {
 	__le16 abs_y;		/* absolute y coodinate */
 	__le16 rel_x;		/* relative x coodinate */
 	__le16 rel_y;		/* relative y coodinate */
-<<<<<<< HEAD
-	__le16 size_major;	/* finger size, major axis? */
-	__le16 size_minor;	/* finger size, minor axis? */
-	__le16 orientation;	/* 16384 when point, else 15 bit angle */
-	__le16 force_major;	/* trackpad force, major axis? */
-	__le16 force_minor;	/* trackpad force, minor axis? */
-	__le16 unused[3];	/* zeros */
-=======
 	__le16 tool_major;	/* tool area, major axis */
 	__le16 tool_minor;	/* tool area, minor axis */
 	__le16 orientation;	/* 16384 when point, else 15 bit angle */
@@ -290,31 +230,18 @@ struct tp_finger {
 	__le16 touch_minor;	/* touch area, minor axis */
 	__le16 unused[2];	/* zeros */
 	__le16 pressure;	/* pressure on forcetouch touchpad */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16 multi;		/* one finger: varies, more fingers: constant */
 } __attribute__((packed,aligned(2)));
 
 /* trackpad finger data size, empirically at least ten fingers */
-<<<<<<< HEAD
-#define SIZEOF_FINGER		sizeof(struct tp_finger)
-#define SIZEOF_ALL_FINGERS	(16 * SIZEOF_FINGER)
-=======
 #define MAX_FINGERS		16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_FINGER_ORIENTATION	16384
 
 /* device-specific parameters */
 struct bcm5974_param {
-<<<<<<< HEAD
-	int dim;		/* logical dimension */
-	int fuzz;		/* logical noise value */
-	int devmin;		/* device minimum reading */
-	int devmax;		/* device maximum reading */
-=======
 	int snratio;		/* signal-to-noise ratio */
 	int min;		/* device minimum reading */
 	int max;		/* device maximum reading */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* device-specific configuration */
@@ -325,10 +252,6 @@ struct bcm5974_config {
 	int bt_datalen;		/* data length of the button interface */
 	int tp_ep;		/* the endpoint of the trackpad interface */
 	enum tp_type tp_type;	/* type of trackpad interface */
-<<<<<<< HEAD
-	int tp_offset;		/* offset to trackpad finger data */
-	int tp_datalen;		/* data length of the trackpad interface */
-=======
 	int tp_header;		/* bytes in header block */
 	int tp_datalen;		/* data length of the trackpad interface */
 	int tp_button;		/* offset to button data */
@@ -340,15 +263,11 @@ struct bcm5974_config {
 	int um_switch_idx;	/* usb control message mode switch index */
 	int um_switch_on;	/* usb control message mode switch on */
 	int um_switch_off;	/* usb control message mode switch off */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bcm5974_param p;	/* finger pressure limits */
 	struct bcm5974_param w;	/* finger width limits */
 	struct bcm5974_param x;	/* horizontal limits */
 	struct bcm5974_param y;	/* vertical limits */
-<<<<<<< HEAD
-=======
 	struct bcm5974_param o;	/* orientation limits */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* logical device structure */
@@ -364,25 +283,6 @@ struct bcm5974 {
 	struct bt_data *bt_data;	/* button transferred data */
 	struct urb *tp_urb;		/* trackpad usb request block */
 	u8 *tp_data;			/* trackpad transferred data */
-<<<<<<< HEAD
-	int fingers;			/* number of fingers on trackpad */
-};
-
-/* logical dimensions */
-#define DIM_PRESSURE	256		/* maximum finger pressure */
-#define DIM_WIDTH	16		/* maximum finger width */
-#define DIM_X		1280		/* maximum trackpad x value */
-#define DIM_Y		800		/* maximum trackpad y value */
-
-/* logical signal quality */
-#define SN_PRESSURE	45		/* pressure signal-to-noise ratio */
-#define SN_WIDTH	100		/* width signal-to-noise ratio */
-#define SN_COORD	250		/* coordinate signal-to-noise ratio */
-
-/* pressure thresholds */
-#define PRESSURE_LOW	(2 * DIM_PRESSURE / SN_PRESSURE)
-#define PRESSURE_HIGH	(3 * PRESSURE_LOW)
-=======
 	const struct tp_finger *index[MAX_FINGERS];	/* finger index data */
 	struct input_mt_pos pos[MAX_FINGERS];		/* position array */
 	int slots[MAX_FINGERS];				/* slot assignments */
@@ -411,7 +311,6 @@ static const struct tp_finger *get_tp_finger(const struct bcm5974 *dev, int i)
 #define SN_WIDTH	25		/* width signal-to-noise ratio */
 #define SN_COORD	250		/* coordinate signal-to-noise ratio */
 #define SN_ORIENT	10		/* orientation signal-to-noise ratio */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* device constants */
 static const struct bcm5974_config bcm5974_config_table[] = {
@@ -421,20 +320,12 @@ static const struct bcm5974_config bcm5974_config_table[] = {
 		USB_DEVICE_ID_APPLE_WELLSPRING_JIS,
 		0,
 		0x84, sizeof(struct bt_data),
-<<<<<<< HEAD
-		0x81, TYPE1, FINGER_TYPE1, FINGER_TYPE1 + SIZEOF_ALL_FINGERS,
-		{ DIM_PRESSURE, DIM_PRESSURE / SN_PRESSURE, 0, 256 },
-		{ DIM_WIDTH, DIM_WIDTH / SN_WIDTH, 0, 2048 },
-		{ DIM_X, DIM_X / SN_COORD, -4824, 5342 },
-		{ DIM_Y, DIM_Y / SN_COORD, -172, 5820 }
-=======
 		0x81, DATAFORMAT(TYPE1),
 		{ SN_PRESSURE, 0, 256 },
 		{ SN_WIDTH, 0, 2048 },
 		{ SN_COORD, -4824, 5342 },
 		{ SN_COORD, -172, 5820 },
 		{ SN_ORIENT, -MAX_FINGER_ORIENTATION, MAX_FINGER_ORIENTATION }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		USB_DEVICE_ID_APPLE_WELLSPRING2_ANSI,
@@ -442,20 +333,12 @@ static const struct bcm5974_config bcm5974_config_table[] = {
 		USB_DEVICE_ID_APPLE_WELLSPRING2_JIS,
 		0,
 		0x84, sizeof(struct bt_data),
-<<<<<<< HEAD
-		0x81, TYPE1, FINGER_TYPE1, FINGER_TYPE1 + SIZEOF_ALL_FINGERS,
-		{ DIM_PRESSURE, DIM_PRESSURE / SN_PRESSURE, 0, 256 },
-		{ DIM_WIDTH, DIM_WIDTH / SN_WIDTH, 0, 2048 },
-		{ DIM_X, DIM_X / SN_COORD, -4824, 4824 },
-		{ DIM_Y, DIM_Y / SN_COORD, -172, 4290 }
-=======
 		0x81, DATAFORMAT(TYPE1),
 		{ SN_PRESSURE, 0, 256 },
 		{ SN_WIDTH, 0, 2048 },
 		{ SN_COORD, -4824, 4824 },
 		{ SN_COORD, -172, 4290 },
 		{ SN_ORIENT, -MAX_FINGER_ORIENTATION, MAX_FINGER_ORIENTATION }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		USB_DEVICE_ID_APPLE_WELLSPRING3_ANSI,
@@ -463,20 +346,12 @@ static const struct bcm5974_config bcm5974_config_table[] = {
 		USB_DEVICE_ID_APPLE_WELLSPRING3_JIS,
 		HAS_INTEGRATED_BUTTON,
 		0x84, sizeof(struct bt_data),
-<<<<<<< HEAD
-		0x81, TYPE2, FINGER_TYPE2, FINGER_TYPE2 + SIZEOF_ALL_FINGERS,
-		{ DIM_PRESSURE, DIM_PRESSURE / SN_PRESSURE, 0, 300 },
-		{ DIM_WIDTH, DIM_WIDTH / SN_WIDTH, 0, 2048 },
-		{ DIM_X, DIM_X / SN_COORD, -4460, 5166 },
-		{ DIM_Y, DIM_Y / SN_COORD, -75, 6700 }
-=======
 		0x81, DATAFORMAT(TYPE2),
 		{ SN_PRESSURE, 0, 300 },
 		{ SN_WIDTH, 0, 2048 },
 		{ SN_COORD, -4460, 5166 },
 		{ SN_COORD, -75, 6700 },
 		{ SN_ORIENT, -MAX_FINGER_ORIENTATION, MAX_FINGER_ORIENTATION }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		USB_DEVICE_ID_APPLE_WELLSPRING4_ANSI,
@@ -484,20 +359,12 @@ static const struct bcm5974_config bcm5974_config_table[] = {
 		USB_DEVICE_ID_APPLE_WELLSPRING4_JIS,
 		HAS_INTEGRATED_BUTTON,
 		0x84, sizeof(struct bt_data),
-<<<<<<< HEAD
-		0x81, TYPE2, FINGER_TYPE2, FINGER_TYPE2 + SIZEOF_ALL_FINGERS,
-		{ DIM_PRESSURE, DIM_PRESSURE / SN_PRESSURE, 0, 300 },
-		{ DIM_WIDTH, DIM_WIDTH / SN_WIDTH, 0, 2048 },
-		{ DIM_X, DIM_X / SN_COORD, -4620, 5140 },
-		{ DIM_Y, DIM_Y / SN_COORD, -150, 6600 }
-=======
 		0x81, DATAFORMAT(TYPE2),
 		{ SN_PRESSURE, 0, 300 },
 		{ SN_WIDTH, 0, 2048 },
 		{ SN_COORD, -4620, 5140 },
 		{ SN_COORD, -150, 6600 },
 		{ SN_ORIENT, -MAX_FINGER_ORIENTATION, MAX_FINGER_ORIENTATION }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		USB_DEVICE_ID_APPLE_WELLSPRING4A_ANSI,
@@ -505,20 +372,12 @@ static const struct bcm5974_config bcm5974_config_table[] = {
 		USB_DEVICE_ID_APPLE_WELLSPRING4A_JIS,
 		HAS_INTEGRATED_BUTTON,
 		0x84, sizeof(struct bt_data),
-<<<<<<< HEAD
-		0x81, TYPE2, FINGER_TYPE2, FINGER_TYPE2 + SIZEOF_ALL_FINGERS,
-		{ DIM_PRESSURE, DIM_PRESSURE / SN_PRESSURE, 0, 300 },
-		{ DIM_WIDTH, DIM_WIDTH / SN_WIDTH, 0, 2048 },
-		{ DIM_X, DIM_X / SN_COORD, -4616, 5112 },
-		{ DIM_Y, DIM_Y / SN_COORD, -142, 5234 }
-=======
 		0x81, DATAFORMAT(TYPE2),
 		{ SN_PRESSURE, 0, 300 },
 		{ SN_WIDTH, 0, 2048 },
 		{ SN_COORD, -4616, 5112 },
 		{ SN_COORD, -142, 5234 },
 		{ SN_ORIENT, -MAX_FINGER_ORIENTATION, MAX_FINGER_ORIENTATION }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		USB_DEVICE_ID_APPLE_WELLSPRING5_ANSI,
@@ -526,20 +385,12 @@ static const struct bcm5974_config bcm5974_config_table[] = {
 		USB_DEVICE_ID_APPLE_WELLSPRING5_JIS,
 		HAS_INTEGRATED_BUTTON,
 		0x84, sizeof(struct bt_data),
-<<<<<<< HEAD
-		0x81, TYPE2, FINGER_TYPE2, FINGER_TYPE2 + SIZEOF_ALL_FINGERS,
-		{ DIM_PRESSURE, DIM_PRESSURE / SN_PRESSURE, 0, 300 },
-		{ DIM_WIDTH, DIM_WIDTH / SN_WIDTH, 0, 2048 },
-		{ DIM_X, DIM_X / SN_COORD, -4415, 5050 },
-		{ DIM_Y, DIM_Y / SN_COORD, -55, 6680 }
-=======
 		0x81, DATAFORMAT(TYPE2),
 		{ SN_PRESSURE, 0, 300 },
 		{ SN_WIDTH, 0, 2048 },
 		{ SN_COORD, -4415, 5050 },
 		{ SN_COORD, -55, 6680 },
 		{ SN_ORIENT, -MAX_FINGER_ORIENTATION, MAX_FINGER_ORIENTATION }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		USB_DEVICE_ID_APPLE_WELLSPRING6_ANSI,
@@ -547,20 +398,12 @@ static const struct bcm5974_config bcm5974_config_table[] = {
 		USB_DEVICE_ID_APPLE_WELLSPRING6_JIS,
 		HAS_INTEGRATED_BUTTON,
 		0x84, sizeof(struct bt_data),
-<<<<<<< HEAD
-		0x81, TYPE2, FINGER_TYPE2, FINGER_TYPE2 + SIZEOF_ALL_FINGERS,
-		{ DIM_PRESSURE, DIM_PRESSURE / SN_PRESSURE, 0, 300 },
-		{ DIM_WIDTH, DIM_WIDTH / SN_WIDTH, 0, 2048 },
-		{ DIM_X, DIM_X / SN_COORD, -4620, 5140 },
-		{ DIM_Y, DIM_Y / SN_COORD, -150, 6600 }
-=======
 		0x81, DATAFORMAT(TYPE2),
 		{ SN_PRESSURE, 0, 300 },
 		{ SN_WIDTH, 0, 2048 },
 		{ SN_COORD, -4620, 5140 },
 		{ SN_COORD, -150, 6600 },
 		{ SN_ORIENT, -MAX_FINGER_ORIENTATION, MAX_FINGER_ORIENTATION }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		USB_DEVICE_ID_APPLE_WELLSPRING5A_ANSI,
@@ -568,20 +411,12 @@ static const struct bcm5974_config bcm5974_config_table[] = {
 		USB_DEVICE_ID_APPLE_WELLSPRING5A_JIS,
 		HAS_INTEGRATED_BUTTON,
 		0x84, sizeof(struct bt_data),
-<<<<<<< HEAD
-		0x81, TYPE2, FINGER_TYPE2, FINGER_TYPE2 + SIZEOF_ALL_FINGERS,
-		{ DIM_PRESSURE, DIM_PRESSURE / SN_PRESSURE, 0, 300 },
-		{ DIM_WIDTH, DIM_WIDTH / SN_WIDTH, 0, 2048 },
-		{ DIM_X, DIM_X / SN_COORD, -4750, 5280 },
-		{ DIM_Y, DIM_Y / SN_COORD, -150, 6730 }
-=======
 		0x81, DATAFORMAT(TYPE2),
 		{ SN_PRESSURE, 0, 300 },
 		{ SN_WIDTH, 0, 2048 },
 		{ SN_COORD, -4750, 5280 },
 		{ SN_COORD, -150, 6730 },
 		{ SN_ORIENT, -MAX_FINGER_ORIENTATION, MAX_FINGER_ORIENTATION }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		USB_DEVICE_ID_APPLE_WELLSPRING6A_ANSI,
@@ -589,20 +424,12 @@ static const struct bcm5974_config bcm5974_config_table[] = {
 		USB_DEVICE_ID_APPLE_WELLSPRING6A_JIS,
 		HAS_INTEGRATED_BUTTON,
 		0x84, sizeof(struct bt_data),
-<<<<<<< HEAD
-		0x81, TYPE2, FINGER_TYPE2, FINGER_TYPE2 + SIZEOF_ALL_FINGERS,
-		{ DIM_PRESSURE, DIM_PRESSURE / SN_PRESSURE, 0, 300 },
-		{ DIM_WIDTH, DIM_WIDTH / SN_WIDTH, 0, 2048 },
-		{ DIM_X, DIM_X / SN_COORD, -4620, 5140 },
-		{ DIM_Y, DIM_Y / SN_COORD, -150, 6600 }
-=======
 		0x81, DATAFORMAT(TYPE2),
 		{ SN_PRESSURE, 0, 300 },
 		{ SN_WIDTH, 0, 2048 },
 		{ SN_COORD, -4620, 5140 },
 		{ SN_COORD, -150, 6600 },
 		{ SN_ORIENT, -MAX_FINGER_ORIENTATION, MAX_FINGER_ORIENTATION }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		USB_DEVICE_ID_APPLE_WELLSPRING7_ANSI,
@@ -610,13 +437,6 @@ static const struct bcm5974_config bcm5974_config_table[] = {
 		USB_DEVICE_ID_APPLE_WELLSPRING7_JIS,
 		HAS_INTEGRATED_BUTTON,
 		0x84, sizeof(struct bt_data),
-<<<<<<< HEAD
-		0x81, TYPE2, FINGER_TYPE2, FINGER_TYPE2 + SIZEOF_ALL_FINGERS,
-		{ DIM_PRESSURE, DIM_PRESSURE / SN_PRESSURE, 0, 300 },
-		{ DIM_WIDTH, DIM_WIDTH / SN_WIDTH, 0, 2048 },
-		{ DIM_X, DIM_X / SN_COORD, -4750, 5280 },
-		{ DIM_Y, DIM_Y / SN_COORD, -150, 6730 }
-=======
 		0x81, DATAFORMAT(TYPE2),
 		{ SN_PRESSURE, 0, 300 },
 		{ SN_WIDTH, 0, 2048 },
@@ -662,7 +482,6 @@ static const struct bcm5974_config bcm5974_config_table[] = {
 		{ SN_COORD, -4828, 5345 },
 		{ SN_COORD, -203, 6803 },
 		{ SN_ORIENT, -MAX_FINGER_ORIENTATION, MAX_FINGER_ORIENTATION }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{}
 };
@@ -686,26 +505,11 @@ static inline int raw2int(__le16 x)
 	return (signed short)le16_to_cpu(x);
 }
 
-<<<<<<< HEAD
-/* scale device data to logical dimensions (asserts devmin < devmax) */
-static inline int int2scale(const struct bcm5974_param *p, int x)
-{
-	return x * p->dim / (p->devmax - p->devmin);
-}
-
-/* all logical value ranges are [0,dim). */
-static inline int int2bound(const struct bcm5974_param *p, int x)
-{
-	int s = int2scale(p, x);
-
-	return clamp_val(s, 0, p->dim - 1);
-=======
 static void set_abs(struct input_dev *input, unsigned int code,
 		    const struct bcm5974_param *p)
 {
 	int fuzz = p->snratio ? (p->max - p->min) / p->snratio : 0;
 	input_set_abs_params(input, code, p->min, p->max, fuzz, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* setup which logical events to report */
@@ -714,50 +518,6 @@ static void setup_events_to_report(struct input_dev *input_dev,
 {
 	__set_bit(EV_ABS, input_dev->evbit);
 
-<<<<<<< HEAD
-	input_set_abs_params(input_dev, ABS_PRESSURE,
-				0, cfg->p.dim, cfg->p.fuzz, 0);
-	input_set_abs_params(input_dev, ABS_TOOL_WIDTH,
-				0, cfg->w.dim, cfg->w.fuzz, 0);
-	input_set_abs_params(input_dev, ABS_X,
-				0, cfg->x.dim, cfg->x.fuzz, 0);
-	input_set_abs_params(input_dev, ABS_Y,
-				0, cfg->y.dim, cfg->y.fuzz, 0);
-
-	/* finger touch area */
-	input_set_abs_params(input_dev, ABS_MT_TOUCH_MAJOR,
-			     cfg->w.devmin, cfg->w.devmax, 0, 0);
-	input_set_abs_params(input_dev, ABS_MT_TOUCH_MINOR,
-			     cfg->w.devmin, cfg->w.devmax, 0, 0);
-	/* finger approach area */
-	input_set_abs_params(input_dev, ABS_MT_WIDTH_MAJOR,
-			     cfg->w.devmin, cfg->w.devmax, 0, 0);
-	input_set_abs_params(input_dev, ABS_MT_WIDTH_MINOR,
-			     cfg->w.devmin, cfg->w.devmax, 0, 0);
-	/* finger orientation */
-	input_set_abs_params(input_dev, ABS_MT_ORIENTATION,
-			     -MAX_FINGER_ORIENTATION,
-			     MAX_FINGER_ORIENTATION, 0, 0);
-	/* finger position */
-	input_set_abs_params(input_dev, ABS_MT_POSITION_X,
-			     cfg->x.devmin, cfg->x.devmax, 0, 0);
-	input_set_abs_params(input_dev, ABS_MT_POSITION_Y,
-			     cfg->y.devmin, cfg->y.devmax, 0, 0);
-
-	__set_bit(EV_KEY, input_dev->evbit);
-	__set_bit(BTN_TOUCH, input_dev->keybit);
-	__set_bit(BTN_TOOL_FINGER, input_dev->keybit);
-	__set_bit(BTN_TOOL_DOUBLETAP, input_dev->keybit);
-	__set_bit(BTN_TOOL_TRIPLETAP, input_dev->keybit);
-	__set_bit(BTN_TOOL_QUADTAP, input_dev->keybit);
-	__set_bit(BTN_LEFT, input_dev->keybit);
-
-	__set_bit(INPUT_PROP_POINTER, input_dev->propbit);
-	if (cfg->caps & HAS_INTEGRATED_BUTTON)
-		__set_bit(INPUT_PROP_BUTTONPAD, input_dev->propbit);
-
-	input_set_events_per_packet(input_dev, 60);
-=======
 	/* for synaptics only */
 	input_set_abs_params(input_dev, ABS_PRESSURE, 0, 256, 5, 0);
 	input_set_abs_params(input_dev, ABS_TOOL_WIDTH, 0, 16, 0, 0);
@@ -782,7 +542,6 @@ static void setup_events_to_report(struct input_dev *input_dev,
 
 	input_mt_init_slots(input_dev, MAX_FINGERS,
 		INPUT_MT_POINTER | INPUT_MT_DROP_UNUSED | INPUT_MT_TRACK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* report button data as logical button state */
@@ -802,26 +561,6 @@ static int report_bt_state(struct bcm5974 *dev, int size)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void report_finger_data(struct input_dev *input,
-			       const struct bcm5974_config *cfg,
-			       const struct tp_finger *f)
-{
-	input_report_abs(input, ABS_MT_TOUCH_MAJOR,
-			 raw2int(f->force_major) << 1);
-	input_report_abs(input, ABS_MT_TOUCH_MINOR,
-			 raw2int(f->force_minor) << 1);
-	input_report_abs(input, ABS_MT_WIDTH_MAJOR,
-			 raw2int(f->size_major) << 1);
-	input_report_abs(input, ABS_MT_WIDTH_MINOR,
-			 raw2int(f->size_minor) << 1);
-	input_report_abs(input, ABS_MT_ORIENTATION,
-			 MAX_FINGER_ORIENTATION - raw2int(f->orientation));
-	input_report_abs(input, ABS_MT_POSITION_X, raw2int(f->abs_x));
-	input_report_abs(input, ABS_MT_POSITION_Y,
-			 cfg->y.devmin + cfg->y.devmax - raw2int(f->abs_y));
-	input_mt_sync(input);
-=======
 static void report_finger_data(struct input_dev *input, int slot,
 			       const struct input_mt_pos *pos,
 			       const struct tp_finger *f)
@@ -860,7 +599,6 @@ static void report_synaptics_data(struct input_dev *input,
 
 	input_report_abs(input, ABS_PRESSURE, abs_p);
 	input_report_abs(input, ABS_TOOL_WIDTH, abs_w);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* report trackpad data as logical trackpad state */
@@ -869,89 +607,6 @@ static int report_tp_state(struct bcm5974 *dev, int size)
 	const struct bcm5974_config *c = &dev->cfg;
 	const struct tp_finger *f;
 	struct input_dev *input = dev->input;
-<<<<<<< HEAD
-	int raw_p, raw_w, raw_x, raw_y, raw_n, i;
-	int ptest, origin, ibt = 0, nmin = 0, nmax = 0;
-	int abs_p = 0, abs_w = 0, abs_x = 0, abs_y = 0;
-
-	if (size < c->tp_offset || (size - c->tp_offset) % SIZEOF_FINGER != 0)
-		return -EIO;
-
-	/* finger data, le16-aligned */
-	f = (const struct tp_finger *)(dev->tp_data + c->tp_offset);
-	raw_n = (size - c->tp_offset) / SIZEOF_FINGER;
-
-	/* always track the first finger; when detached, start over */
-	if (raw_n) {
-
-		/* report raw trackpad data */
-		for (i = 0; i < raw_n; i++)
-			report_finger_data(input, c, &f[i]);
-
-		raw_p = raw2int(f->force_major);
-		raw_w = raw2int(f->size_major);
-		raw_x = raw2int(f->abs_x);
-		raw_y = raw2int(f->abs_y);
-
-		dprintk(9,
-			"bcm5974: "
-			"raw: p: %+05d w: %+05d x: %+05d y: %+05d n: %d\n",
-			raw_p, raw_w, raw_x, raw_y, raw_n);
-
-		ptest = int2bound(&c->p, raw_p);
-		origin = raw2int(f->origin);
-
-		/* while tracking finger still valid, count all fingers */
-		if (ptest > PRESSURE_LOW && origin) {
-			abs_p = ptest;
-			abs_w = int2bound(&c->w, raw_w);
-			abs_x = int2bound(&c->x, raw_x - c->x.devmin);
-			abs_y = int2bound(&c->y, c->y.devmax - raw_y);
-			while (raw_n--) {
-				ptest = int2bound(&c->p,
-						  raw2int(f->force_major));
-				if (ptest > PRESSURE_LOW)
-					nmax++;
-				if (ptest > PRESSURE_HIGH)
-					nmin++;
-				f++;
-			}
-		}
-	}
-
-	/* set the integrated button if applicable */
-	if (c->tp_type == TYPE2)
-		ibt = raw2int(dev->tp_data[BUTTON_TYPE2]);
-
-	if (dev->fingers < nmin)
-		dev->fingers = nmin;
-	if (dev->fingers > nmax)
-		dev->fingers = nmax;
-
-	input_report_key(input, BTN_TOUCH, dev->fingers > 0);
-	input_report_key(input, BTN_TOOL_FINGER, dev->fingers == 1);
-	input_report_key(input, BTN_TOOL_DOUBLETAP, dev->fingers == 2);
-	input_report_key(input, BTN_TOOL_TRIPLETAP, dev->fingers == 3);
-	input_report_key(input, BTN_TOOL_QUADTAP, dev->fingers > 3);
-
-	input_report_abs(input, ABS_PRESSURE, abs_p);
-	input_report_abs(input, ABS_TOOL_WIDTH, abs_w);
-
-	if (abs_p) {
-		input_report_abs(input, ABS_X, abs_x);
-		input_report_abs(input, ABS_Y, abs_y);
-
-		dprintk(8,
-			"bcm5974: abs: p: %+05d w: %+05d x: %+05d y: %+05d "
-			"nmin: %d nmax: %d n: %d ibt: %d\n", abs_p, abs_w,
-			abs_x, abs_y, nmin, nmax, dev->fingers, ibt);
-
-	}
-
-	/* type 2 reports button events via ibt only */
-	if (c->tp_type == TYPE2)
-		input_report_key(input, BTN_LEFT, ibt);
-=======
 	int raw_n, i, n = 0;
 
 	if (size < c->tp_header || (size - c->tp_header) % c->tp_fsize != 0)
@@ -983,30 +638,12 @@ static int report_tp_state(struct bcm5974 *dev, int size)
 		int ibt = raw2int(dev->tp_data[c->tp_button]);
 		input_report_key(input, BTN_LEFT, ibt);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_sync(input);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* Wellspring initialization constants */
-#define BCM5974_WELLSPRING_MODE_READ_REQUEST_ID		1
-#define BCM5974_WELLSPRING_MODE_WRITE_REQUEST_ID	9
-#define BCM5974_WELLSPRING_MODE_REQUEST_VALUE		0x300
-#define BCM5974_WELLSPRING_MODE_REQUEST_INDEX		0
-#define BCM5974_WELLSPRING_MODE_VENDOR_VALUE		0x01
-#define BCM5974_WELLSPRING_MODE_NORMAL_VALUE		0x08
-
-static int bcm5974_wellspring_mode(struct bcm5974 *dev, bool on)
-{
-	char *data = kmalloc(8, GFP_KERNEL);
-	int retval = 0, size;
-
-	if (!data) {
-		err("bcm5974: out of memory");
-=======
 static int bcm5974_wellspring_mode(struct bcm5974 *dev, bool on)
 {
 	const struct bcm5974_config *c = &dev->cfg;
@@ -1020,7 +657,6 @@ static int bcm5974_wellspring_mode(struct bcm5974 *dev, bool on)
 	data = kmalloc(c->um_size, GFP_KERNEL);
 	if (!data) {
 		dev_err(&dev->intf->dev, "out of memory\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENOMEM;
 		goto out;
 	}
@@ -1029,47 +665,25 @@ static int bcm5974_wellspring_mode(struct bcm5974 *dev, bool on)
 	size = usb_control_msg(dev->udev, usb_rcvctrlpipe(dev->udev, 0),
 			BCM5974_WELLSPRING_MODE_READ_REQUEST_ID,
 			USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-<<<<<<< HEAD
-			BCM5974_WELLSPRING_MODE_REQUEST_VALUE,
-			BCM5974_WELLSPRING_MODE_REQUEST_INDEX, data, 8, 5000);
-
-	if (size != 8) {
-		err("bcm5974: could not read from device");
-=======
 			c->um_req_val, c->um_req_idx, data, c->um_size, 5000);
 
 	if (size != c->um_size) {
 		dev_err(&dev->intf->dev, "could not read from device\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EIO;
 		goto out;
 	}
 
 	/* apply the mode switch */
-<<<<<<< HEAD
-	data[0] = on ?
-		BCM5974_WELLSPRING_MODE_VENDOR_VALUE :
-		BCM5974_WELLSPRING_MODE_NORMAL_VALUE;
-=======
 	data[c->um_switch_idx] = on ? c->um_switch_on : c->um_switch_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* write configuration */
 	size = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, 0),
 			BCM5974_WELLSPRING_MODE_WRITE_REQUEST_ID,
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-<<<<<<< HEAD
-			BCM5974_WELLSPRING_MODE_REQUEST_VALUE,
-			BCM5974_WELLSPRING_MODE_REQUEST_INDEX, data, 8, 5000);
-
-	if (size != 8) {
-		err("bcm5974: could not write to device");
-=======
 			c->um_req_val, c->um_req_idx, data, c->um_size, 5000);
 
 	if (size != c->um_size) {
 		dev_err(&dev->intf->dev, "could not write to device\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EIO;
 		goto out;
 	}
@@ -1085,10 +699,7 @@ static int bcm5974_wellspring_mode(struct bcm5974 *dev, bool on)
 static void bcm5974_irq_button(struct urb *urb)
 {
 	struct bcm5974 *dev = urb->context;
-<<<<<<< HEAD
-=======
 	struct usb_interface *intf = dev->intf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	switch (urb->status) {
@@ -1098,18 +709,11 @@ static void bcm5974_irq_button(struct urb *urb)
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-<<<<<<< HEAD
-		dbg("bcm5974: button urb shutting down: %d", urb->status);
-		return;
-	default:
-		dbg("bcm5974: button urb status: %d", urb->status);
-=======
 		dev_dbg(&intf->dev, "button urb shutting down: %d\n",
 			urb->status);
 		return;
 	default:
 		dev_dbg(&intf->dev, "button urb status: %d\n", urb->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
@@ -1120,20 +724,13 @@ static void bcm5974_irq_button(struct urb *urb)
 exit:
 	error = usb_submit_urb(dev->bt_urb, GFP_ATOMIC);
 	if (error)
-<<<<<<< HEAD
-		err("bcm5974: button urb failed: %d", error);
-=======
 		dev_err(&intf->dev, "button urb failed: %d\n", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bcm5974_irq_trackpad(struct urb *urb)
 {
 	struct bcm5974 *dev = urb->context;
-<<<<<<< HEAD
-=======
 	struct usb_interface *intf = dev->intf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	switch (urb->status) {
@@ -1143,18 +740,11 @@ static void bcm5974_irq_trackpad(struct urb *urb)
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-<<<<<<< HEAD
-		dbg("bcm5974: trackpad urb shutting down: %d", urb->status);
-		return;
-	default:
-		dbg("bcm5974: trackpad urb status: %d", urb->status);
-=======
 		dev_dbg(&intf->dev, "trackpad urb shutting down: %d\n",
 			urb->status);
 		return;
 	default:
 		dev_dbg(&intf->dev, "trackpad urb status: %d\n", urb->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
@@ -1169,11 +759,7 @@ static void bcm5974_irq_trackpad(struct urb *urb)
 exit:
 	error = usb_submit_urb(dev->tp_urb, GFP_ATOMIC);
 	if (error)
-<<<<<<< HEAD
-		err("bcm5974: trackpad urb failed: %d", error);
-=======
 		dev_err(&intf->dev, "trackpad urb failed: %d\n", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1204,17 +790,11 @@ static int bcm5974_start_traffic(struct bcm5974 *dev)
 		goto err_out;
 	}
 
-<<<<<<< HEAD
-	error = usb_submit_urb(dev->bt_urb, GFP_KERNEL);
-	if (error)
-		goto err_reset_mode;
-=======
 	if (dev->bt_urb) {
 		error = usb_submit_urb(dev->bt_urb, GFP_KERNEL);
 		if (error)
 			goto err_reset_mode;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = usb_submit_urb(dev->tp_urb, GFP_KERNEL);
 	if (error)
@@ -1327,11 +907,7 @@ static int bcm5974_probe(struct usb_interface *iface,
 	dev = kzalloc(sizeof(struct bcm5974), GFP_KERNEL);
 	input_dev = input_allocate_device();
 	if (!dev || !input_dev) {
-<<<<<<< HEAD
-		err("bcm5974: out of memory");
-=======
 		dev_err(&iface->dev, "out of memory\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free_devs;
 	}
 
@@ -1342,29 +918,16 @@ static int bcm5974_probe(struct usb_interface *iface,
 	mutex_init(&dev->pm_mutex);
 
 	/* setup urbs */
-<<<<<<< HEAD
-	dev->bt_urb = usb_alloc_urb(0, GFP_KERNEL);
-	if (!dev->bt_urb)
-		goto err_free_devs;
-=======
 	if (cfg->tp_type == TYPE1) {
 		dev->bt_urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!dev->bt_urb)
 			goto err_free_devs;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->tp_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!dev->tp_urb)
 		goto err_free_bt_urb;
 
-<<<<<<< HEAD
-	dev->bt_data = usb_alloc_coherent(dev->udev,
-					  dev->cfg.bt_datalen, GFP_KERNEL,
-					  &dev->bt_urb->transfer_dma);
-	if (!dev->bt_data)
-		goto err_free_urb;
-=======
 	if (dev->bt_urb) {
 		dev->bt_data = usb_alloc_coherent(dev->udev,
 					  dev->cfg.bt_datalen, GFP_KERNEL,
@@ -1372,7 +935,6 @@ static int bcm5974_probe(struct usb_interface *iface,
 		if (!dev->bt_data)
 			goto err_free_urb;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->tp_data = usb_alloc_coherent(dev->udev,
 					  dev->cfg.tp_datalen, GFP_KERNEL,
@@ -1380,12 +942,6 @@ static int bcm5974_probe(struct usb_interface *iface,
 	if (!dev->tp_data)
 		goto err_free_bt_buffer;
 
-<<<<<<< HEAD
-	usb_fill_int_urb(dev->bt_urb, udev,
-			 usb_rcvintpipe(udev, cfg->bt_ep),
-			 dev->bt_data, dev->cfg.bt_datalen,
-			 bcm5974_irq_button, dev, 1);
-=======
 	if (dev->bt_urb) {
 		usb_fill_int_urb(dev->bt_urb, udev,
 				 usb_rcvintpipe(udev, cfg->bt_ep),
@@ -1394,18 +950,14 @@ static int bcm5974_probe(struct usb_interface *iface,
 
 		dev->bt_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_fill_int_urb(dev->tp_urb, udev,
 			 usb_rcvintpipe(udev, cfg->tp_ep),
 			 dev->tp_data, dev->cfg.tp_datalen,
 			 bcm5974_irq_trackpad, dev, 1);
 
-<<<<<<< HEAD
-=======
 	dev->tp_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* create bcm5974 device */
 	usb_make_path(udev, dev->phys, sizeof(dev->phys));
 	strlcat(dev->phys, "/input0", sizeof(dev->phys));
@@ -1437,14 +989,9 @@ err_free_buffer:
 	usb_free_coherent(dev->udev, dev->cfg.tp_datalen,
 		dev->tp_data, dev->tp_urb->transfer_dma);
 err_free_bt_buffer:
-<<<<<<< HEAD
-	usb_free_coherent(dev->udev, dev->cfg.bt_datalen,
-		dev->bt_data, dev->bt_urb->transfer_dma);
-=======
 	if (dev->bt_urb)
 		usb_free_coherent(dev->udev, dev->cfg.bt_datalen,
 				  dev->bt_data, dev->bt_urb->transfer_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free_urb:
 	usb_free_urb(dev->tp_urb);
 err_free_bt_urb:
@@ -1465,14 +1012,9 @@ static void bcm5974_disconnect(struct usb_interface *iface)
 	input_unregister_device(dev->input);
 	usb_free_coherent(dev->udev, dev->cfg.tp_datalen,
 			  dev->tp_data, dev->tp_urb->transfer_dma);
-<<<<<<< HEAD
-	usb_free_coherent(dev->udev, dev->cfg.bt_datalen,
-			  dev->bt_data, dev->bt_urb->transfer_dma);
-=======
 	if (dev->bt_urb)
 		usb_free_coherent(dev->udev, dev->cfg.bt_datalen,
 				  dev->bt_data, dev->bt_urb->transfer_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_free_urb(dev->tp_urb);
 	usb_free_urb(dev->bt_urb);
 	kfree(dev);

@@ -10,11 +10,7 @@ Required properties:
 
 Example:
 
-<<<<<<< HEAD
-codec: wm8770@1 {
-=======
 wm8770: codec@1 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	compatible = "wlf,wm8770";
 	reg = <1>;
 };

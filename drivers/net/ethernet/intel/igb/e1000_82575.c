@@ -1,34 +1,5 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel(R) Gigabit Ethernet Linux driver
-  Copyright(c) 2007-2012 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright(c) 2007 - 2018 Intel Corporation. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* e1000_82575
  * e1000_82576
@@ -38,18 +9,12 @@
 
 #include <linux/types.h>
 #include <linux/if_ether.h>
-<<<<<<< HEAD
-
-#include "e1000_mac.h"
-#include "e1000_82575.h"
-=======
 #include <linux/i2c.h>
 
 #include "e1000_mac.h"
 #include "e1000_82575.h"
 #include "e1000_i210.h"
 #include "igb.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static s32  igb_get_invariants_82575(struct e1000_hw *);
 static s32  igb_acquire_phy_82575(struct e1000_hw *);
@@ -61,19 +26,11 @@ static s32  igb_get_cfg_done_82575(struct e1000_hw *);
 static s32  igb_init_hw_82575(struct e1000_hw *);
 static s32  igb_phy_hw_reset_sgmii_82575(struct e1000_hw *);
 static s32  igb_read_phy_reg_sgmii_82575(struct e1000_hw *, u32, u16 *);
-<<<<<<< HEAD
-static s32  igb_read_phy_reg_82580(struct e1000_hw *, u32, u16 *);
-static s32  igb_write_phy_reg_82580(struct e1000_hw *, u32, u16);
-static s32  igb_reset_hw_82575(struct e1000_hw *);
-static s32  igb_reset_hw_82580(struct e1000_hw *);
-static s32  igb_set_d0_lplu_state_82575(struct e1000_hw *, bool);
-=======
 static s32  igb_reset_hw_82575(struct e1000_hw *);
 static s32  igb_reset_hw_82580(struct e1000_hw *);
 static s32  igb_set_d0_lplu_state_82575(struct e1000_hw *, bool);
 static s32  igb_set_d0_lplu_state_82580(struct e1000_hw *, bool);
 static s32  igb_set_d3_lplu_state_82580(struct e1000_hw *, bool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static s32  igb_setup_copper_link_82575(struct e1000_hw *);
 static s32  igb_setup_serdes_link_82575(struct e1000_hw *);
 static s32  igb_write_phy_reg_sgmii_82575(struct e1000_hw *, u32, u16);
@@ -92,13 +49,6 @@ static s32  igb_validate_nvm_checksum_82580(struct e1000_hw *hw);
 static s32  igb_update_nvm_checksum_82580(struct e1000_hw *hw);
 static s32 igb_validate_nvm_checksum_i350(struct e1000_hw *hw);
 static s32 igb_update_nvm_checksum_i350(struct e1000_hw *hw);
-<<<<<<< HEAD
-static const u16 e1000_82580_rxpbs_table[] =
-	{ 36, 72, 144, 1, 2, 4, 8, 16,
-	  35, 70, 140 };
-#define E1000_82580_RXPBS_TABLE_SIZE \
-	(sizeof(e1000_82580_rxpbs_table)/sizeof(u16))
-=======
 static const u16 e1000_82580_rxpbs_table[] = {
 	36, 72, 144, 1, 2, 4, 8, 16, 35, 70, 140 };
 
@@ -127,7 +77,6 @@ static void igb_write_vfta_i350(struct e1000_hw *hw, u32 offset, u32 value)
 	wrfl();
 	adapter->shadow_vfta[offset] = value;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *  igb_sgmii_uses_mdio_82575 - Determine if I2C pins are for external MDIO
@@ -149,12 +98,9 @@ static bool igb_sgmii_uses_mdio_82575(struct e1000_hw *hw)
 		break;
 	case e1000_82580:
 	case e1000_i350:
-<<<<<<< HEAD
-=======
 	case e1000_i354:
 	case e1000_i210:
 	case e1000_i211:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg = rd32(E1000_MDICNFG);
 		ext_mdio = !!(reg & E1000_MDICNFG_EXT_MDIO);
 		break;
@@ -164,18 +110,6 @@ static bool igb_sgmii_uses_mdio_82575(struct e1000_hw *hw)
 	return ext_mdio;
 }
 
-<<<<<<< HEAD
-static s32 igb_get_invariants_82575(struct e1000_hw *hw)
-{
-	struct e1000_phy_info *phy = &hw->phy;
-	struct e1000_nvm_info *nvm = &hw->nvm;
-	struct e1000_mac_info *mac = &hw->mac;
-	struct e1000_dev_spec_82575 * dev_spec = &hw->dev_spec._82575;
-	u32 eecd;
-	s32 ret_val;
-	u16 size;
-	u32 ctrl_ext = 0;
-=======
 /**
  *  igb_check_for_link_media_swap - Check which M88E1112 interface linked
  *  @hw: pointer to the HW structure
@@ -622,7 +556,6 @@ static s32 igb_get_invariants_82575(struct e1000_hw *hw)
 	s32 ret_val;
 	u32 ctrl_ext = 0;
 	u32 link_mode = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hw->device_id) {
 	case E1000_DEV_ID_82575EB_COPPER:
@@ -658,16 +591,6 @@ static s32 igb_get_invariants_82575(struct e1000_hw *hw)
 	case E1000_DEV_ID_I350_SGMII:
 		mac->type = e1000_i350;
 		break;
-<<<<<<< HEAD
-	default:
-		return -E1000_ERR_MAC_INIT;
-		break;
-	}
-
-	/* Set media type */
-	/*
-	 * The 82575 uses bits 22:23 for link mode. The mode can be changed
-=======
 	case E1000_DEV_ID_I210_COPPER:
 	case E1000_DEV_ID_I210_FIBER:
 	case E1000_DEV_ID_I210_SERDES:
@@ -690,26 +613,11 @@ static s32 igb_get_invariants_82575(struct e1000_hw *hw)
 
 	/* Set media type */
 	/* The 82575 uses bits 22:23 for link mode. The mode can be changed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * based on the EEPROM. We cannot rely upon device ID. There
 	 * is no distinguishable difference between fiber and internal
 	 * SerDes mode on the 82575. There can be an external PHY attached
 	 * on the SGMII interface. For this, we'll set sgmii_active to true.
 	 */
-<<<<<<< HEAD
-	phy->media_type = e1000_media_type_copper;
-	dev_spec->sgmii_active = false;
-
-	ctrl_ext = rd32(E1000_CTRL_EXT);
-	switch (ctrl_ext & E1000_CTRL_EXT_LINK_MODE_MASK) {
-	case E1000_CTRL_EXT_LINK_MODE_SGMII:
-		dev_spec->sgmii_active = true;
-		break;
-	case E1000_CTRL_EXT_LINK_MODE_1000BASE_KX:
-	case E1000_CTRL_EXT_LINK_MODE_PCIE_SERDES:
-		hw->phy.media_type = e1000_media_type_internal_serdes;
-		break;
-=======
 	hw->phy.media_type = e1000_media_type_copper;
 	dev_spec->sgmii_active = false;
 	dev_spec->module_plugged = false;
@@ -758,109 +666,10 @@ static s32 igb_get_invariants_82575(struct e1000_hw *hw)
 		wr32(E1000_CTRL_EXT, ctrl_ext);
 
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
 
-<<<<<<< HEAD
-	/* Set mta register count */
-	mac->mta_reg_count = 128;
-	/* Set rar entry count */
-	mac->rar_entry_count = E1000_RAR_ENTRIES_82575;
-	if (mac->type == e1000_82576)
-		mac->rar_entry_count = E1000_RAR_ENTRIES_82576;
-	if (mac->type == e1000_82580)
-		mac->rar_entry_count = E1000_RAR_ENTRIES_82580;
-	if (mac->type == e1000_i350)
-		mac->rar_entry_count = E1000_RAR_ENTRIES_I350;
-	/* reset */
-	if (mac->type >= e1000_82580)
-		mac->ops.reset_hw = igb_reset_hw_82580;
-	else
-		mac->ops.reset_hw = igb_reset_hw_82575;
-	/* Set if part includes ASF firmware */
-	mac->asf_firmware_present = true;
-	/* Set if manageability features are enabled. */
-	mac->arc_subsystem_valid =
-		(rd32(E1000_FWSM) & E1000_FWSM_MODE_MASK)
-			? true : false;
-	/* enable EEE on i350 parts */
-	if (mac->type == e1000_i350)
-		dev_spec->eee_disable = false;
-	else
-		dev_spec->eee_disable = true;
-	/* physical interface link setup */
-	mac->ops.setup_physical_interface =
-		(hw->phy.media_type == e1000_media_type_copper)
-			? igb_setup_copper_link_82575
-			: igb_setup_serdes_link_82575;
-
-	/* NVM initialization */
-	eecd = rd32(E1000_EECD);
-
-	nvm->opcode_bits        = 8;
-	nvm->delay_usec         = 1;
-	switch (nvm->override) {
-	case e1000_nvm_override_spi_large:
-		nvm->page_size    = 32;
-		nvm->address_bits = 16;
-		break;
-	case e1000_nvm_override_spi_small:
-		nvm->page_size    = 8;
-		nvm->address_bits = 8;
-		break;
-	default:
-		nvm->page_size    = eecd & E1000_EECD_ADDR_BITS ? 32 : 8;
-		nvm->address_bits = eecd & E1000_EECD_ADDR_BITS ? 16 : 8;
-		break;
-	}
-
-	nvm->type = e1000_nvm_eeprom_spi;
-
-	size = (u16)((eecd & E1000_EECD_SIZE_EX_MASK) >>
-		     E1000_EECD_SIZE_EX_SHIFT);
-
-	/*
-	 * Added to a constant, "size" becomes the left-shift value
-	 * for setting word_size.
-	 */
-	size += NVM_WORD_SIZE_BASE_SHIFT;
-
-	/*
-	 * Check for invalid size
-	 */
-	if ((hw->mac.type == e1000_82576) && (size > 15)) {
-		pr_notice("The NVM size is not valid, defaulting to 32K\n");
-		size = 15;
-	}
-	nvm->word_size = 1 << size;
-	if (nvm->word_size == (1 << 15))
-		nvm->page_size = 128;
-
-	/* NVM Function Pointers */
-	nvm->ops.acquire = igb_acquire_nvm_82575;
-	if (nvm->word_size < (1 << 15))
-		nvm->ops.read = igb_read_nvm_eerd;
-	else
-		nvm->ops.read = igb_read_nvm_spi;
-
-	nvm->ops.release = igb_release_nvm_82575;
-	switch (hw->mac.type) {
-	case e1000_82580:
-		nvm->ops.validate = igb_validate_nvm_checksum_82580;
-		nvm->ops.update = igb_update_nvm_checksum_82580;
-		break;
-	case e1000_i350:
-		nvm->ops.validate = igb_validate_nvm_checksum_i350;
-		nvm->ops.update = igb_update_nvm_checksum_i350;
-		break;
-	default:
-		nvm->ops.validate = igb_validate_nvm_checksum;
-		nvm->ops.update = igb_update_nvm_checksum;
-	}
-	nvm->ops.write = igb_write_nvm_spi;
-=======
 	/* mac initialization and operations */
 	ret_val = igb_init_mac_params_82575(hw);
 	if (ret_val)
@@ -879,7 +688,6 @@ static s32 igb_get_invariants_82575(struct e1000_hw *hw)
 
 	if (ret_val)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if part supports SR-IOV then initialize mailbox parameters */
 	switch (mac->type) {
@@ -892,91 +700,10 @@ static s32 igb_get_invariants_82575(struct e1000_hw *hw)
 	}
 
 	/* setup PHY parameters */
-<<<<<<< HEAD
-	if (phy->media_type != e1000_media_type_copper) {
-		phy->type = e1000_phy_none;
-		return 0;
-	}
-
-	phy->autoneg_mask        = AUTONEG_ADVERTISE_SPEED_DEFAULT;
-	phy->reset_delay_us      = 100;
-
-	ctrl_ext = rd32(E1000_CTRL_EXT);
-
-	/* PHY function pointers */
-	if (igb_sgmii_active_82575(hw)) {
-		phy->ops.reset      = igb_phy_hw_reset_sgmii_82575;
-		ctrl_ext |= E1000_CTRL_I2C_ENA;
-	} else {
-		phy->ops.reset      = igb_phy_hw_reset;
-		ctrl_ext &= ~E1000_CTRL_I2C_ENA;
-	}
-
-	wr32(E1000_CTRL_EXT, ctrl_ext);
-	igb_reset_mdicnfg_82580(hw);
-
-	if (igb_sgmii_active_82575(hw) && !igb_sgmii_uses_mdio_82575(hw)) {
-		phy->ops.read_reg   = igb_read_phy_reg_sgmii_82575;
-		phy->ops.write_reg  = igb_write_phy_reg_sgmii_82575;
-	} else if (hw->mac.type >= e1000_82580) {
-		phy->ops.read_reg   = igb_read_phy_reg_82580;
-		phy->ops.write_reg  = igb_write_phy_reg_82580;
-	} else {
-		phy->ops.read_reg   = igb_read_phy_reg_igp;
-		phy->ops.write_reg  = igb_write_phy_reg_igp;
-	}
-
-	/* set lan id */
-	hw->bus.func = (rd32(E1000_STATUS) & E1000_STATUS_FUNC_MASK) >>
-	               E1000_STATUS_FUNC_SHIFT;
-
-	/* Set phy->phy_addr and phy->id. */
-	ret_val = igb_get_phy_id_82575(hw);
-	if (ret_val)
-		return ret_val;
-
-	/* Verify phy id and set remaining function pointers */
-	switch (phy->id) {
-	case I347AT4_E_PHY_ID:
-	case M88E1112_E_PHY_ID:
-	case M88E1111_I_PHY_ID:
-		phy->type                   = e1000_phy_m88;
-		phy->ops.get_phy_info       = igb_get_phy_info_m88;
-
-		if (phy->id == I347AT4_E_PHY_ID ||
-		    phy->id == M88E1112_E_PHY_ID)
-			phy->ops.get_cable_length = igb_get_cable_length_m88_gen2;
-		else
-			phy->ops.get_cable_length = igb_get_cable_length_m88;
-
-		phy->ops.force_speed_duplex = igb_phy_force_speed_duplex_m88;
-		break;
-	case IGP03E1000_E_PHY_ID:
-		phy->type                   = e1000_phy_igp_3;
-		phy->ops.get_phy_info       = igb_get_phy_info_igp;
-		phy->ops.get_cable_length   = igb_get_cable_length_igp_2;
-		phy->ops.force_speed_duplex = igb_phy_force_speed_duplex_igp;
-		phy->ops.set_d0_lplu_state  = igb_set_d0_lplu_state_82575;
-		phy->ops.set_d3_lplu_state  = igb_set_d3_lplu_state;
-		break;
-	case I82580_I_PHY_ID:
-	case I350_I_PHY_ID:
-		phy->type                   = e1000_phy_82580;
-		phy->ops.force_speed_duplex = igb_phy_force_speed_duplex_82580;
-		phy->ops.get_cable_length   = igb_get_cable_length_82580;
-		phy->ops.get_phy_info       = igb_get_phy_info_82580;
-		break;
-	default:
-		return -E1000_ERR_PHY;
-	}
-
-	return 0;
-=======
 	ret_val = igb_init_phy_params_82575(hw);
 
 out:
 	return ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -997,11 +724,7 @@ static s32 igb_acquire_phy_82575(struct e1000_hw *hw)
 	else if (hw->bus.func == E1000_FUNC_3)
 		mask = E1000_SWFW_PHY3_SM;
 
-<<<<<<< HEAD
-	return igb_acquire_swfw_sync_82575(hw, mask);
-=======
 	return hw->mac.ops.acquire_swfw_sync(hw, mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1022,11 +745,7 @@ static void igb_release_phy_82575(struct e1000_hw *hw)
 	else if (hw->bus.func == E1000_FUNC_3)
 		mask = E1000_SWFW_PHY3_SM;
 
-<<<<<<< HEAD
-	igb_release_swfw_sync_82575(hw, mask);
-=======
 	hw->mac.ops.release_swfw_sync(hw, mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1107,16 +826,11 @@ static s32 igb_get_phy_id_82575(struct e1000_hw *hw)
 	u32 ctrl_ext;
 	u32 mdic;
 
-<<<<<<< HEAD
-	/*
-	 * For SGMII PHYs, we try the list of possible addresses until
-=======
 	/* Extra read required for some PHY's on i354 */
 	if (hw->mac.type == e1000_i354)
 		igb_get_phy_id(hw);
 
 	/* For SGMII PHYs, we try the list of possible addresses until
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * we find one that works.  For non-SGMII PHYs
 	 * (e.g. integrated copper PHYs), an address of 1 should
 	 * work.  The result of this function should mean phy->phy_addr
@@ -1138,12 +852,9 @@ static s32 igb_get_phy_id_82575(struct e1000_hw *hw)
 			break;
 		case e1000_82580:
 		case e1000_i350:
-<<<<<<< HEAD
-=======
 		case e1000_i354:
 		case e1000_i210:
 		case e1000_i211:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mdic = rd32(E1000_MDICNFG);
 			mdic &= E1000_MDICNFG_PHY_MASK;
 			phy->addr = mdic >> E1000_MDICNFG_PHY_SHIFT;
@@ -1151,10 +862,6 @@ static s32 igb_get_phy_id_82575(struct e1000_hw *hw)
 		default:
 			ret_val = -E1000_ERR_PHY;
 			goto out;
-<<<<<<< HEAD
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		ret_val = igb_get_phy_id(hw);
 		goto out;
@@ -1166,12 +873,7 @@ static s32 igb_get_phy_id_82575(struct e1000_hw *hw)
 	wrfl();
 	msleep(300);
 
-<<<<<<< HEAD
-	/*
-	 * The address field in the I2CCMD register is 3 bits and 0 is invalid.
-=======
 	/* The address field in the I2CCMD register is 3 bits and 0 is invalid.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Therefore, we need to test 1-7
 	 */
 	for (phy->addr = 1; phy->addr < 8; phy->addr++) {
@@ -1179,12 +881,7 @@ static s32 igb_get_phy_id_82575(struct e1000_hw *hw)
 		if (ret_val == 0) {
 			hw_dbg("Vendor ID 0x%08X read at address %u\n",
 			       phy_id, phy->addr);
-<<<<<<< HEAD
-			/*
-			 * At the time of this writing, The M88 part is
-=======
 			/* At the time of this writing, The M88 part is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * the only supported SGMII PHY product.
 			 */
 			if (phy_id == M88_VENDOR)
@@ -1218,28 +915,16 @@ out:
  **/
 static s32 igb_phy_hw_reset_sgmii_82575(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	s32 ret_val;
-
-	/*
-	 * This isn't a true "hard" reset, but is the only reset
-=======
 	struct e1000_phy_info *phy = &hw->phy;
 	s32 ret_val;
 
 	/* This isn't a true "hard" reset, but is the only reset
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * available to us at this time.
 	 */
 
 	hw_dbg("Soft resetting SGMII attached PHY...\n");
 
-<<<<<<< HEAD
-	/*
-	 * SFP documentation requires the following to configure the SPF module
-=======
 	/* SFP documentation requires the following to configure the SPF module
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * to work on SGMII.  No further documentation is given.
 	 */
 	ret_val = hw->phy.ops.write_reg(hw, 0x1B, 0x8084);
@@ -1247,9 +932,6 @@ static s32 igb_phy_hw_reset_sgmii_82575(struct e1000_hw *hw)
 		goto out;
 
 	ret_val = igb_phy_sw_reset(hw);
-<<<<<<< HEAD
-
-=======
 	if (ret_val)
 		goto out;
 
@@ -1257,7 +939,6 @@ static s32 igb_phy_hw_reset_sgmii_82575(struct e1000_hw *hw)
 		ret_val = igb_initialize_M88E1512_phy(hw);
 	if (phy->id == M88E1543_E_PHY_ID)
 		ret_val = igb_initialize_M88E1543_phy(hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret_val;
 }
@@ -1304,12 +985,7 @@ static s32 igb_set_d0_lplu_state_82575(struct e1000_hw *hw, bool active)
 		data &= ~IGP02E1000_PM_D0_LPLU;
 		ret_val = phy->ops.write_reg(hw, IGP02E1000_PHY_POWER_MGMT,
 						 data);
-<<<<<<< HEAD
-		/*
-		 * LPLU and SmartSpeed are mutually exclusive.  LPLU is used
-=======
 		/* LPLU and SmartSpeed are mutually exclusive.  LPLU is used
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * during Dx states where the power conservation is most
 		 * important.  During driver activity we should enable
 		 * SmartSpeed, so performance is maintained.
@@ -1344,8 +1020,6 @@ out:
 }
 
 /**
-<<<<<<< HEAD
-=======
  *  igb_set_d0_lplu_state_82580 - Set Low Power Linkup D0 state
  *  @hw: pointer to the HW structure
  *  @active: true to enable LPLU, false to disable
@@ -1432,7 +1106,6 @@ static s32 igb_set_d3_lplu_state_82580(struct e1000_hw *hw, bool active)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  igb_acquire_nvm_82575 - Request for access to EEPROM
  *  @hw: pointer to the HW structure
  *
@@ -1445,22 +1118,14 @@ static s32 igb_acquire_nvm_82575(struct e1000_hw *hw)
 {
 	s32 ret_val;
 
-<<<<<<< HEAD
-	ret_val = igb_acquire_swfw_sync_82575(hw, E1000_SWFW_EEP_SM);
-=======
 	ret_val = hw->mac.ops.acquire_swfw_sync(hw, E1000_SWFW_EEP_SM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		goto out;
 
 	ret_val = igb_acquire_nvm(hw);
 
 	if (ret_val)
-<<<<<<< HEAD
-		igb_release_swfw_sync_82575(hw, E1000_SWFW_EEP_SM);
-=======
 		hw->mac.ops.release_swfw_sync(hw, E1000_SWFW_EEP_SM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return ret_val;
@@ -1476,11 +1141,7 @@ out:
 static void igb_release_nvm_82575(struct e1000_hw *hw)
 {
 	igb_release_nvm(hw);
-<<<<<<< HEAD
-	igb_release_swfw_sync_82575(hw, E1000_SWFW_EEP_SM);
-=======
 	hw->mac.ops.release_swfw_sync(hw, E1000_SWFW_EEP_SM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1497,11 +1158,7 @@ static s32 igb_acquire_swfw_sync_82575(struct e1000_hw *hw, u16 mask)
 	u32 swmask = mask;
 	u32 fwmask = mask << 16;
 	s32 ret_val = 0;
-<<<<<<< HEAD
-	s32 i = 0, timeout = 200; /* FIXME: find real value to use here */
-=======
 	s32 i = 0, timeout = 200;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (i < timeout) {
 		if (igb_get_hw_semaphore(hw)) {
@@ -1513,12 +1170,7 @@ static s32 igb_acquire_swfw_sync_82575(struct e1000_hw *hw, u16 mask)
 		if (!(swfw_sync & (fwmask | swmask)))
 			break;
 
-<<<<<<< HEAD
-		/*
-		 * Firmware currently using resource (fwmask)
-=======
 		/* Firmware currently using resource (fwmask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * or other software thread using resource (swmask)
 		 */
 		igb_put_hw_semaphore(hw);
@@ -1553,13 +1205,8 @@ static void igb_release_swfw_sync_82575(struct e1000_hw *hw, u16 mask)
 {
 	u32 swfw_sync;
 
-<<<<<<< HEAD
-	while (igb_get_hw_semaphore(hw) != 0);
-	/* Empty */
-=======
 	while (igb_get_hw_semaphore(hw) != 0)
 		; /* Empty */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	swfw_sync = rd32(E1000_SW_FW_SYNC);
 	swfw_sync &= ~mask;
@@ -1581,10 +1228,6 @@ static void igb_release_swfw_sync_82575(struct e1000_hw *hw, u16 mask)
 static s32 igb_get_cfg_done_82575(struct e1000_hw *hw)
 {
 	s32 timeout = PHY_CFG_TIMEOUT;
-<<<<<<< HEAD
-	s32 ret_val = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mask = E1000_NVM_CFG_DONE_PORT_0;
 
 	if (hw->bus.func == 1)
@@ -1597,11 +1240,7 @@ static s32 igb_get_cfg_done_82575(struct e1000_hw *hw)
 	while (timeout) {
 		if (rd32(E1000_EEMNGCTL) & mask)
 			break;
-<<<<<<< HEAD
-		msleep(1);
-=======
 		usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		timeout--;
 	}
 	if (!timeout)
@@ -1612,8 +1251,6 @@ static s32 igb_get_cfg_done_82575(struct e1000_hw *hw)
 	    (hw->phy.type == e1000_phy_igp_3))
 		igb_phy_init_script_igp3(hw);
 
-<<<<<<< HEAD
-=======
 	return 0;
 }
 
@@ -1639,7 +1276,6 @@ static s32 igb_get_link_up_info_82575(struct e1000_hw *hw, u16 *speed,
 		ret_val = igb_get_speed_and_duplex_copper(hw, speed,
 								    duplex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret_val;
 }
 
@@ -1657,20 +1293,12 @@ static s32 igb_check_for_link_82575(struct e1000_hw *hw)
 
 	if (hw->phy.media_type != e1000_media_type_copper) {
 		ret_val = igb_get_pcs_speed_and_duplex_82575(hw, &speed,
-<<<<<<< HEAD
-		                                             &duplex);
-		/*
-		 * Use this flag to determine if link needs to be checked or
-=======
 							     &duplex);
 		/* Use this flag to determine if link needs to be checked or
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * not.  If  we have link clear the flag so that we do not
 		 * continue to check for link.
 		 */
 		hw->mac.get_link_status = !hw->mac.serdes_has_link;
-<<<<<<< HEAD
-=======
 
 		/* Configure Flow Control now that Auto-Neg has completed.
 		 * First, we need to restore the desired flow control
@@ -1680,7 +1308,6 @@ static s32 igb_check_for_link_82575(struct e1000_hw *hw)
 		ret_val = igb_config_fc_after_link_up(hw);
 		if (ret_val)
 			hw_dbg("Error configuring flow control\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		ret_val = igb_check_for_copper_link(hw);
 	}
@@ -1713,11 +1340,7 @@ void igb_power_up_serdes_link_82575(struct e1000_hw *hw)
 
 	/* flush the write to verify completion */
 	wrfl();
-<<<<<<< HEAD
-	msleep(1);
-=======
 	usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1733,34 +1356,20 @@ static s32 igb_get_pcs_speed_and_duplex_82575(struct e1000_hw *hw, u16 *speed,
 						u16 *duplex)
 {
 	struct e1000_mac_info *mac = &hw->mac;
-<<<<<<< HEAD
-	u32 pcs;
-=======
 	u32 pcs, status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set up defaults for the return values of this function */
 	mac->serdes_has_link = false;
 	*speed = 0;
 	*duplex = 0;
 
-<<<<<<< HEAD
-	/*
-	 * Read the PCS Status register for link state. For non-copper mode,
-=======
 	/* Read the PCS Status register for link state. For non-copper mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the status register is not accurate. The PCS status register is
 	 * used instead.
 	 */
 	pcs = rd32(E1000_PCS_LSTAT);
 
-<<<<<<< HEAD
-	/*
-	 * The link up bit determines when link is up on autoneg. The sync ok
-=======
 	/* The link up bit determines when link is up on autoneg. The sync ok
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * gets set once both sides sync up and agree upon link. Stable link
 	 * can be determined by checking for both link up and link sync ok
 	 */
@@ -1768,22 +1377,6 @@ static s32 igb_get_pcs_speed_and_duplex_82575(struct e1000_hw *hw, u16 *speed,
 		mac->serdes_has_link = true;
 
 		/* Detect and store PCS speed */
-<<<<<<< HEAD
-		if (pcs & E1000_PCS_LSTS_SPEED_1000) {
-			*speed = SPEED_1000;
-		} else if (pcs & E1000_PCS_LSTS_SPEED_100) {
-			*speed = SPEED_100;
-		} else {
-			*speed = SPEED_10;
-		}
-
-		/* Detect and store PCS duplex */
-		if (pcs & E1000_PCS_LSTS_DUPLEX_FULL) {
-			*duplex = FULL_DUPLEX;
-		} else {
-			*duplex = HALF_DUPLEX;
-		}
-=======
 		if (pcs & E1000_PCS_LSTS_SPEED_1000)
 			*speed = SPEED_1000;
 		else if (pcs & E1000_PCS_LSTS_SPEED_100)
@@ -1809,7 +1402,6 @@ static s32 igb_get_pcs_speed_and_duplex_82575(struct e1000_hw *hw, u16 *speed,
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1843,11 +1435,7 @@ void igb_shutdown_serdes_link_82575(struct e1000_hw *hw)
 
 		/* flush the write to verify completion */
 		wrfl();
-<<<<<<< HEAD
-		msleep(1);
-=======
 		usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1860,18 +1448,10 @@ void igb_shutdown_serdes_link_82575(struct e1000_hw *hw)
  **/
 static s32 igb_reset_hw_82575(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	u32 ctrl, icr;
-	s32 ret_val;
-
-	/*
-	 * Prevent the PCI-E bus from sticking if there is no TLP connection
-=======
 	u32 ctrl;
 	s32 ret_val;
 
 	/* Prevent the PCI-E bus from sticking if there is no TLP connection
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * on the last TLP read/write transaction when MAC is reset.
 	 */
 	ret_val = igb_disable_pcie_master(hw);
@@ -1880,14 +1460,8 @@ static s32 igb_reset_hw_82575(struct e1000_hw *hw)
 
 	/* set the completion timeout for interface */
 	ret_val = igb_set_pcie_completion_timeout(hw);
-<<<<<<< HEAD
-	if (ret_val) {
-		hw_dbg("PCI-E Set completion timeout has failed.\n");
-	}
-=======
 	if (ret_val)
 		hw_dbg("PCI-E Set completion timeout has failed.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hw_dbg("Masking off all interrupts\n");
 	wr32(E1000_IMC, 0xffffffff);
@@ -1896,11 +1470,7 @@ static s32 igb_reset_hw_82575(struct e1000_hw *hw)
 	wr32(E1000_TCTL, E1000_TCTL_PSP);
 	wrfl();
 
-<<<<<<< HEAD
-	msleep(10);
-=======
 	usleep_range(10000, 20000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctrl = rd32(E1000_CTRL);
 
@@ -1909,12 +1479,7 @@ static s32 igb_reset_hw_82575(struct e1000_hw *hw)
 
 	ret_val = igb_get_auto_rd_done(hw);
 	if (ret_val) {
-<<<<<<< HEAD
-		/*
-		 * When auto config read does not complete, do not
-=======
 		/* When auto config read does not complete, do not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * return with an error. This can happen in situations
 		 * where there is no eeprom and prevents getting link.
 		 */
@@ -1927,11 +1492,7 @@ static s32 igb_reset_hw_82575(struct e1000_hw *hw)
 
 	/* Clear any pending interrupt events. */
 	wr32(E1000_IMC, 0xffffffff);
-<<<<<<< HEAD
-	icr = rd32(E1000_ICR);
-=======
 	rd32(E1000_ICR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Install any alternate MAC address into RAR0 */
 	ret_val = igb_check_alt_mac_addr(hw);
@@ -1951,8 +1512,6 @@ static s32 igb_init_hw_82575(struct e1000_hw *hw)
 	s32 ret_val;
 	u16 i, rar_count = mac->rar_entry_count;
 
-<<<<<<< HEAD
-=======
 	if ((hw->mac.type >= e1000_i210) &&
 	    !(igb_get_flash_presence_i210(hw))) {
 		ret_val = igb_pll_workaround_i210(hw);
@@ -1960,7 +1519,6 @@ static s32 igb_init_hw_82575(struct e1000_hw *hw)
 			return ret_val;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Initialize identification LED */
 	ret_val = igb_id_led_init(hw);
 	if (ret_val) {
@@ -1970,14 +1528,7 @@ static s32 igb_init_hw_82575(struct e1000_hw *hw)
 
 	/* Disabling VLAN filtering */
 	hw_dbg("Initializing the IEEE VLAN\n");
-<<<<<<< HEAD
-	if (hw->mac.type == e1000_i350)
-		igb_clear_vfta_i350(hw);
-	else
-		igb_clear_vfta(hw);
-=======
 	igb_clear_vfta(hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup the receive address */
 	igb_init_rx_addrs(hw, rar_count);
@@ -1995,21 +1546,12 @@ static s32 igb_init_hw_82575(struct e1000_hw *hw)
 	/* Setup link and flow control */
 	ret_val = igb_setup_link(hw);
 
-<<<<<<< HEAD
-	/*
-	 * Clear all of the statistics registers (clear on read).  It is
-=======
 	/* Clear all of the statistics registers (clear on read).  It is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * important that we do this after we have tried to establish link
 	 * because the symbol error count will increment wildly if there
 	 * is no link.
 	 */
 	igb_clear_hw_cntrs_82575(hw);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret_val;
 }
 
@@ -2025,18 +1567,13 @@ static s32 igb_setup_copper_link_82575(struct e1000_hw *hw)
 {
 	u32 ctrl;
 	s32  ret_val;
-<<<<<<< HEAD
-=======
 	u32 phpm_reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctrl = rd32(E1000_CTRL);
 	ctrl |= E1000_CTRL_SLU;
 	ctrl &= ~(E1000_CTRL_FRCSPD | E1000_CTRL_FRCDPX);
 	wr32(E1000_CTRL, ctrl);
 
-<<<<<<< HEAD
-=======
 	/* Clear Go Link Disconnect bit on supported devices */
 	switch (hw->mac.type) {
 	case e1000_82580:
@@ -2051,7 +1588,6 @@ static s32 igb_setup_copper_link_82575(struct e1000_hw *hw)
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret_val = igb_setup_serdes_link_82575(hw);
 	if (ret_val)
 		goto out;
@@ -2067,14 +1603,6 @@ static s32 igb_setup_copper_link_82575(struct e1000_hw *hw)
 		}
 	}
 	switch (hw->phy.type) {
-<<<<<<< HEAD
-	case e1000_phy_m88:
-		if (hw->phy.id == I347AT4_E_PHY_ID ||
-		    hw->phy.id == M88E1112_E_PHY_ID)
-			ret_val = igb_copper_link_setup_m88_gen2(hw);
-		else
-			ret_val = igb_copper_link_setup_m88(hw);
-=======
 	case e1000_phy_i210:
 	case e1000_phy_m88:
 		switch (hw->phy.id) {
@@ -2089,7 +1617,6 @@ static s32 igb_setup_copper_link_82575(struct e1000_hw *hw)
 			ret_val = igb_copper_link_setup_m88(hw);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case e1000_phy_igp_3:
 		ret_val = igb_copper_link_setup_igp(hw);
@@ -2097,12 +1624,9 @@ static s32 igb_setup_copper_link_82575(struct e1000_hw *hw)
 	case e1000_phy_82580:
 		ret_val = igb_copper_link_setup_82580(hw);
 		break;
-<<<<<<< HEAD
-=======
 	case e1000_phy_bcm54616:
 		ret_val = 0;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		ret_val = -E1000_ERR_PHY;
 		break;
@@ -2127,15 +1651,9 @@ out:
  **/
 static s32 igb_setup_serdes_link_82575(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	u32 ctrl_ext, ctrl_reg, reg;
-	bool pcs_autoneg;
-	s32 ret_val = E1000_SUCCESS;
-=======
 	u32 ctrl_ext, ctrl_reg, reg, anadv_reg;
 	bool pcs_autoneg;
 	s32 ret_val = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 data;
 
 	if ((hw->phy.media_type != e1000_media_type_internal_serdes) &&
@@ -2143,28 +1661,17 @@ static s32 igb_setup_serdes_link_82575(struct e1000_hw *hw)
 		return ret_val;
 
 
-<<<<<<< HEAD
-	/*
-	 * On the 82575, SerDes loopback mode persists until it is
-=======
 	/* On the 82575, SerDes loopback mode persists until it is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * explicitly turned off or a power cycle is performed.  A read to
 	 * the register does not indicate its status.  Therefore, we ensure
 	 * loopback mode is disabled during initialization.
 	 */
 	wr32(E1000_SCTL, E1000_SCTL_DISABLE_SERDES_LOOPBACK);
 
-<<<<<<< HEAD
-	/* power on the sfp cage if present */
-	ctrl_ext = rd32(E1000_CTRL_EXT);
-	ctrl_ext &= ~E1000_CTRL_EXT_SDP3_DATA;
-=======
 	/* power on the sfp cage if present and turn on I2C */
 	ctrl_ext = rd32(E1000_CTRL_EXT);
 	ctrl_ext &= ~E1000_CTRL_EXT_SDP3_DATA;
 	ctrl_ext |= E1000_CTRL_I2C_ENA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wr32(E1000_CTRL_EXT, ctrl_ext);
 
 	ctrl_reg = rd32(E1000_CTRL);
@@ -2195,20 +1702,13 @@ static s32 igb_setup_serdes_link_82575(struct e1000_hw *hw)
 	case E1000_CTRL_EXT_LINK_MODE_1000BASE_KX:
 		/* disable PCS autoneg and support parallel detect only */
 		pcs_autoneg = false;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		if (hw->mac.type == e1000_82575 ||
 		    hw->mac.type == e1000_82576) {
 			ret_val = hw->nvm.ops.read(hw, NVM_COMPAT, 1, &data);
 			if (ret_val) {
-<<<<<<< HEAD
-				printk(KERN_DEBUG "NVM Read Error\n\n");
-=======
 				hw_dbg(KERN_DEBUG "NVM Read Error\n\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return ret_val;
 			}
 
@@ -2216,21 +1716,12 @@ static s32 igb_setup_serdes_link_82575(struct e1000_hw *hw)
 				pcs_autoneg = false;
 		}
 
-<<<<<<< HEAD
-		/*
-		 * non-SGMII modes only supports a speed of 1000/Full for the
-=======
 		/* non-SGMII modes only supports a speed of 1000/Full for the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * link so it is best to just force the MAC and let the pcs
 		 * link either autoneg or be forced to 1000/Full
 		 */
 		ctrl_reg |= E1000_CTRL_SPD_1000 | E1000_CTRL_FRCSPD |
-<<<<<<< HEAD
-		            E1000_CTRL_FD | E1000_CTRL_FRCDPX;
-=======
 				E1000_CTRL_FD | E1000_CTRL_FRCDPX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* set speed of 1000/Full if speed/duplex is forced */
 		reg |= E1000_PCS_LCTL_FSV_1000 | E1000_PCS_LCTL_FDV_FULL;
@@ -2239,12 +1730,7 @@ static s32 igb_setup_serdes_link_82575(struct e1000_hw *hw)
 
 	wr32(E1000_CTRL, ctrl_reg);
 
-<<<<<<< HEAD
-	/*
-	 * New SerDes mode allows for forcing speed or autonegotiating speed
-=======
 	/* New SerDes mode allows for forcing speed or autonegotiating speed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * at 1gb. Autoneg should be default set by most drivers. This is the
 	 * mode that will be compatible with older link partners and switches.
 	 * However, both are supported by the hardware and some drivers/tools.
@@ -2252,21 +1738,10 @@ static s32 igb_setup_serdes_link_82575(struct e1000_hw *hw)
 	reg &= ~(E1000_PCS_LCTL_AN_ENABLE | E1000_PCS_LCTL_FLV_LINK_UP |
 		E1000_PCS_LCTL_FSD | E1000_PCS_LCTL_FORCE_LINK);
 
-<<<<<<< HEAD
-	/*
-	 * We force flow control to prevent the CTRL register values from being
-	 * overwritten by the autonegotiated flow control values
-	 */
-	reg |= E1000_PCS_LCTL_FORCE_FCTRL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pcs_autoneg) {
 		/* Set PCS register for autoneg */
 		reg |= E1000_PCS_LCTL_AN_ENABLE | /* Enable Autoneg */
 		       E1000_PCS_LCTL_AN_RESTART; /* Restart autoneg */
-<<<<<<< HEAD
-=======
 
 		/* Disable force flow control for autoneg */
 		reg &= ~E1000_PCS_LCTL_FORCE_FCTRL;
@@ -2288,28 +1763,20 @@ static s32 igb_setup_serdes_link_82575(struct e1000_hw *hw)
 		}
 		wr32(E1000_PCS_ANADV, anadv_reg);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw_dbg("Configuring Autoneg:PCS_LCTL=0x%08X\n", reg);
 	} else {
 		/* Set PCS register for forced link */
 		reg |= E1000_PCS_LCTL_FSD;        /* Force Speed */
 
-<<<<<<< HEAD
-=======
 		/* Force flow control for forced link */
 		reg |= E1000_PCS_LCTL_FORCE_FCTRL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw_dbg("Configuring Forced Link:PCS_LCTL=0x%08X\n", reg);
 	}
 
 	wr32(E1000_PCS_LCTL, reg);
 
-<<<<<<< HEAD
-	if (!igb_sgmii_active_82575(hw))
-=======
 	if (!pcs_autoneg && !igb_sgmii_active_82575(hw))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		igb_force_mac_fc(hw);
 
 	return ret_val;
@@ -2373,12 +1840,7 @@ static s32 igb_read_mac_addr_82575(struct e1000_hw *hw)
 {
 	s32 ret_val = 0;
 
-<<<<<<< HEAD
-	/*
-	 * If there's an alternate MAC address place it in RAR0
-=======
 	/* If there's an alternate MAC address place it in RAR0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * so that it will override the Si installed default perm
 	 * address.
 	 */
@@ -2473,13 +1935,8 @@ static void igb_clear_hw_cntrs_82575(struct e1000_hw *hw)
  *  igb_rx_fifo_flush_82575 - Clean rx fifo after RX enable
  *  @hw: pointer to the HW structure
  *
-<<<<<<< HEAD
- *  After rx enable if managability is enabled then there is likely some
- *  bad data at the start of the fifo and possibly in the DMA fifo.  This
-=======
  *  After rx enable if manageability is enabled then there is likely some
  *  bad data at the start of the fifo and possibly in the DMA fifo. This
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  function clears the fifos and flushes any packets that came in as rx was
  *  being enabled.
  **/
@@ -2488,14 +1945,11 @@ void igb_rx_fifo_flush_82575(struct e1000_hw *hw)
 	u32 rctl, rlpml, rxdctl[4], rfctl, temp_rctl, rx_enabled;
 	int i, ms_wait;
 
-<<<<<<< HEAD
-=======
 	/* disable IPv6 options as per hardware errata */
 	rfctl = rd32(E1000_RFCTL);
 	rfctl |= E1000_RFCTL_IPV6_EX_DIS;
 	wr32(E1000_RFCTL, rfctl);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->mac.type != e1000_82575 ||
 	    !(rd32(E1000_MANC) & E1000_MANC_RCV_TCO_EN))
 		return;
@@ -2508,11 +1962,7 @@ void igb_rx_fifo_flush_82575(struct e1000_hw *hw)
 	}
 	/* Poll all queues to verify they have shut down */
 	for (ms_wait = 0; ms_wait < 10; ms_wait++) {
-<<<<<<< HEAD
-		msleep(1);
-=======
 		usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rx_enabled = 0;
 		for (i = 0; i < 4; i++)
 			rx_enabled |= rd32(E1000_RXDCTL(i));
@@ -2527,10 +1977,6 @@ void igb_rx_fifo_flush_82575(struct e1000_hw *hw)
 	 * incoming packets are rejected.  Set enable and wait 2ms so that
 	 * any packet that was coming in as RCTL.EN was set is flushed
 	 */
-<<<<<<< HEAD
-	rfctl = rd32(E1000_RFCTL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wr32(E1000_RFCTL, rfctl & ~E1000_RFCTL_LEF);
 
 	rlpml = rd32(E1000_RLPML);
@@ -2543,11 +1989,7 @@ void igb_rx_fifo_flush_82575(struct e1000_hw *hw)
 	wr32(E1000_RCTL, temp_rctl);
 	wr32(E1000_RCTL, temp_rctl | E1000_RCTL_EN);
 	wrfl();
-<<<<<<< HEAD
-	msleep(2);
-=======
 	usleep_range(2000, 3000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable RX queues that were previously enabled and restore our
 	 * previous state
@@ -2586,12 +2028,7 @@ static s32 igb_set_pcie_completion_timeout(struct e1000_hw *hw)
 	if (gcr & E1000_GCR_CMPL_TMOUT_MASK)
 		goto out;
 
-<<<<<<< HEAD
-	/*
-	 * if capababilities version is type 1 we can write the
-=======
 	/* if capabilities version is type 1 we can write the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * timeout of 10ms to 200ms through the GCR register
 	 */
 	if (!(gcr & E1000_GCR_CAP_VER2)) {
@@ -2599,32 +2036,19 @@ static s32 igb_set_pcie_completion_timeout(struct e1000_hw *hw)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * for version 2 capabilities we need to write the config space
-=======
 	/* for version 2 capabilities we need to write the config space
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * directly in order to set the completion timeout value for
 	 * 16ms to 55ms
 	 */
 	ret_val = igb_read_pcie_cap_reg(hw, PCIE_DEVICE_CONTROL2,
-<<<<<<< HEAD
-	                                &pcie_devctl2);
-=======
 					&pcie_devctl2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		goto out;
 
 	pcie_devctl2 |= PCIE_DEVICE_CONTROL2_16ms;
 
 	ret_val = igb_write_pcie_cap_reg(hw, PCIE_DEVICE_CONTROL2,
-<<<<<<< HEAD
-	                                 &pcie_devctl2);
-=======
 					 &pcie_devctl2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	/* disable completion timeout resend */
 	gcr &= ~E1000_GCR_CMPL_TMOUT_RESEND;
@@ -2643,29 +2067,6 @@ out:
  **/
 void igb_vmdq_set_anti_spoofing_pf(struct e1000_hw *hw, bool enable, int pf)
 {
-<<<<<<< HEAD
-	u32 dtxswc;
-
-	switch (hw->mac.type) {
-	case e1000_82576:
-	case e1000_i350:
-		dtxswc = rd32(E1000_DTXSWC);
-		if (enable) {
-			dtxswc |= (E1000_DTXSWC_MAC_SPOOF_MASK |
-				   E1000_DTXSWC_VLAN_SPOOF_MASK);
-			/* The PF can spoof - it has to in order to
-			 * support emulation mode NICs */
-			dtxswc ^= (1 << pf | 1 << (pf + MAX_NUM_VFS));
-		} else {
-			dtxswc &= ~(E1000_DTXSWC_MAC_SPOOF_MASK |
-				    E1000_DTXSWC_VLAN_SPOOF_MASK);
-		}
-		wr32(E1000_DTXSWC, dtxswc);
-		break;
-	default:
-		break;
-	}
-=======
 	u32 reg_val, reg_offset;
 
 	switch (hw->mac.type) {
@@ -2693,7 +2094,6 @@ void igb_vmdq_set_anti_spoofing_pf(struct e1000_hw *hw, bool enable, int pf)
 			     E1000_DTXSWC_VLAN_SPOOF_MASK);
 	}
 	wr32(reg_offset, reg_val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2716,10 +2116,7 @@ void igb_vmdq_set_loopback_pf(struct e1000_hw *hw, bool enable)
 			dtxswc &= ~E1000_DTXSWC_VMDQ_LOOPBACK_EN;
 		wr32(E1000_DTXSWC, dtxswc);
 		break;
-<<<<<<< HEAD
-=======
 	case e1000_i354:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case e1000_i350:
 		dtxswc = rd32(E1000_TXSWC);
 		if (enable)
@@ -2733,10 +2130,6 @@ void igb_vmdq_set_loopback_pf(struct e1000_hw *hw, bool enable)
 		break;
 	}
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2767,18 +2160,10 @@ void igb_vmdq_set_replication_pf(struct e1000_hw *hw, bool enable)
  *  Reads the MDI control register in the PHY at offset and stores the
  *  information read to data.
  **/
-<<<<<<< HEAD
-static s32 igb_read_phy_reg_82580(struct e1000_hw *hw, u32 offset, u16 *data)
-{
-	s32 ret_val;
-
-
-=======
 s32 igb_read_phy_reg_82580(struct e1000_hw *hw, u32 offset, u16 *data)
 {
 	s32 ret_val;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret_val = hw->phy.ops.acquire(hw);
 	if (ret_val)
 		goto out;
@@ -2799,11 +2184,7 @@ out:
  *
  *  Writes data to MDI control register in the PHY at offset.
  **/
-<<<<<<< HEAD
-static s32 igb_write_phy_reg_82580(struct e1000_hw *hw, u32 offset, u16 data)
-=======
 s32 igb_write_phy_reg_82580(struct e1000_hw *hw, u32 offset, u16 data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	s32 ret_val;
 
@@ -2824,11 +2205,7 @@ out:
  *  igb_reset_mdicnfg_82580 - Reset MDICNFG destination and com_mdio bits
  *  @hw: pointer to the HW structure
  *
-<<<<<<< HEAD
- *  This resets the the MDICNFG.Destination and MDICNFG.Com_MDIO bits based on
-=======
  *  This resets the MDICNFG.Destination and MDICNFG.Com_MDIO bits based on
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  the values found in the EEPROM.  This addresses an issue in which these
  *  bits are not restored from EEPROM after reset.
  **/
@@ -2873,19 +2250,6 @@ static s32 igb_reset_hw_82580(struct e1000_hw *hw)
 	s32 ret_val = 0;
 	/* BH SW mailbox bit in SW_FW_SYNC */
 	u16 swmbsw_mask = E1000_SW_SYNCH_MB;
-<<<<<<< HEAD
-	u32 ctrl, icr;
-	bool global_device_reset = hw->dev_spec._82575.global_device_reset;
-
-
-	hw->dev_spec._82575.global_device_reset = false;
-
-	/* Get current control state. */
-	ctrl = rd32(E1000_CTRL);
-
-	/*
-	 * Prevent the PCI-E bus from sticking if there is no TLP connection
-=======
 	u32 ctrl;
 	bool global_device_reset = hw->dev_spec._82575.global_device_reset;
 
@@ -2901,7 +2265,6 @@ static s32 igb_reset_hw_82580(struct e1000_hw *hw)
 	ctrl = rd32(E1000_CTRL);
 
 	/* Prevent the PCI-E bus from sticking if there is no TLP connection
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * on the last TLP read/write transaction when MAC is reset.
 	 */
 	ret_val = igb_disable_pcie_master(hw);
@@ -2914,19 +2277,11 @@ static s32 igb_reset_hw_82580(struct e1000_hw *hw)
 	wr32(E1000_TCTL, E1000_TCTL_PSP);
 	wrfl();
 
-<<<<<<< HEAD
-	msleep(10);
-
-	/* Determine whether or not a global dev reset is requested */
-	if (global_device_reset &&
-		igb_acquire_swfw_sync_82575(hw, swmbsw_mask))
-=======
 	usleep_range(10000, 11000);
 
 	/* Determine whether or not a global dev reset is requested */
 	if (global_device_reset &&
 		hw->mac.ops.acquire_swfw_sync(hw, swmbsw_mask))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			global_device_reset = false;
 
 	if (global_device_reset &&
@@ -2940,43 +2295,23 @@ static s32 igb_reset_hw_82580(struct e1000_hw *hw)
 
 	/* Add delay to insure DEV_RST has time to complete */
 	if (global_device_reset)
-<<<<<<< HEAD
-		msleep(5);
-
-	ret_val = igb_get_auto_rd_done(hw);
-	if (ret_val) {
-		/*
-		 * When auto config read does not complete, do not
-=======
 		usleep_range(5000, 6000);
 
 	ret_val = igb_get_auto_rd_done(hw);
 	if (ret_val) {
 		/* When auto config read does not complete, do not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * return with an error. This can happen in situations
 		 * where there is no eeprom and prevents getting link.
 		 */
 		hw_dbg("Auto Read Done did not complete\n");
 	}
 
-<<<<<<< HEAD
-	/* If EEPROM is not present, run manual init scripts */
-	if ((rd32(E1000_EECD) & E1000_EECD_PRES) == 0)
-		igb_reset_init_script_82575(hw);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clear global device reset status bit */
 	wr32(E1000_STATUS, E1000_STAT_DEV_RST_SET);
 
 	/* Clear any pending interrupt events. */
 	wr32(E1000_IMC, 0xffffffff);
-<<<<<<< HEAD
-	icr = rd32(E1000_ICR);
-=======
 	rd32(E1000_ICR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret_val = igb_reset_mdicnfg_82580(hw);
 	if (ret_val)
@@ -2987,11 +2322,7 @@ static s32 igb_reset_hw_82580(struct e1000_hw *hw)
 
 	/* Release semaphore */
 	if (global_device_reset)
-<<<<<<< HEAD
-		igb_release_swfw_sync_82575(hw, swmbsw_mask);
-=======
 		hw->mac.ops.release_swfw_sync(hw, swmbsw_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret_val;
 }
@@ -3010,11 +2341,7 @@ u16 igb_rxpbs_adjust_82580(u32 data)
 {
 	u16 ret_val = 0;
 
-<<<<<<< HEAD
-	if (data < E1000_82580_RXPBS_TABLE_SIZE)
-=======
 	if (data < ARRAY_SIZE(e1000_82580_rxpbs_table))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = e1000_82580_rxpbs_table[data];
 
 	return ret_val;
@@ -3112,12 +2439,8 @@ static s32 igb_validate_nvm_checksum_82580(struct e1000_hw *hw)
 
 	if (nvm_data & NVM_COMPATIBILITY_BIT_MASK) {
 		/* if checksums compatibility bit is set validate checksums
-<<<<<<< HEAD
-		 * for all 4 ports. */
-=======
 		 * for all 4 ports.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eeprom_regions_count = 4;
 	}
 
@@ -3149,12 +2472,7 @@ static s32 igb_update_nvm_checksum_82580(struct e1000_hw *hw)
 
 	ret_val = hw->nvm.ops.read(hw, NVM_COMPATIBILITY_REG_3, 1, &nvm_data);
 	if (ret_val) {
-<<<<<<< HEAD
-		hw_dbg("NVM Read Error while updating checksum"
-			" compatibility bit.\n");
-=======
 		hw_dbg("NVM Read Error while updating checksum compatibility bit.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -3164,12 +2482,7 @@ static s32 igb_update_nvm_checksum_82580(struct e1000_hw *hw)
 		ret_val = hw->nvm.ops.write(hw, NVM_COMPATIBILITY_REG_3, 1,
 					&nvm_data);
 		if (ret_val) {
-<<<<<<< HEAD
-			hw_dbg("NVM Write Error while updating checksum"
-				" compatibility bit.\n");
-=======
 			hw_dbg("NVM Write Error while updating checksum compatibility bit.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
@@ -3237,10 +2550,6 @@ out:
 }
 
 /**
-<<<<<<< HEAD
- *  igb_set_eee_i350 - Enable/disable EEE support
- *  @hw: pointer to the HW structure
-=======
  *  __igb_access_emi_reg - Read/write EMI register
  *  @hw: pointer to the HW structure
  *  @address: EMI address to program
@@ -3280,42 +2589,22 @@ s32 igb_read_emi_reg(struct e1000_hw *hw, u16 addr, u16 *data)
  *  @hw: pointer to the HW structure
  *  @adv1G: boolean flag enabling 1G EEE advertisement
  *  @adv100M: boolean flag enabling 100M EEE advertisement
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Enable/disable EEE based on setting in dev_spec structure.
  *
  **/
-<<<<<<< HEAD
-s32 igb_set_eee_i350(struct e1000_hw *hw)
-{
-	s32 ret_val = 0;
-	u32 ipcnfg, eeer, ctrl_ext;
-
-	ctrl_ext = rd32(E1000_CTRL_EXT);
-	if ((hw->mac.type != e1000_i350) ||
-	    (ctrl_ext & E1000_CTRL_EXT_LINK_MODE_MASK))
-=======
 s32 igb_set_eee_i350(struct e1000_hw *hw, bool adv1G, bool adv100M)
 {
 	u32 ipcnfg, eeer;
 
 	if ((hw->mac.type < e1000_i350) ||
 	    (hw->phy.media_type != e1000_media_type_copper))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	ipcnfg = rd32(E1000_IPCNFG);
 	eeer = rd32(E1000_EEER);
 
 	/* enable or disable per user setting */
 	if (!(hw->dev_spec._82575.eee_disable)) {
-<<<<<<< HEAD
-		ipcnfg |= (E1000_IPCNFG_EEE_1G_AN |
-			E1000_IPCNFG_EEE_100M_AN);
-		eeer |= (E1000_EEER_TX_LPI_EN |
-			E1000_EEER_RX_LPI_EN |
-			E1000_EEER_LPI_FC);
-
-=======
 		u32 eee_su = rd32(E1000_EEE_SU);
 
 		if (adv100M)
@@ -3335,7 +2624,6 @@ s32 igb_set_eee_i350(struct e1000_hw *hw, bool adv1G, bool adv100M)
 		if (eee_su & E1000_EEE_SU_LPI_CLK_STP)
 			hw_dbg("LPI Clock Stop Bit should not be set!\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		ipcnfg &= ~(E1000_IPCNFG_EEE_1G_AN |
 			E1000_IPCNFG_EEE_100M_AN);
@@ -3345,13 +2633,6 @@ s32 igb_set_eee_i350(struct e1000_hw *hw, bool adv1G, bool adv100M)
 	}
 	wr32(E1000_IPCNFG, ipcnfg);
 	wr32(E1000_EEER, eeer);
-<<<<<<< HEAD
-out:
-
-	return ret_val;
-}
-
-=======
 	rd32(E1000_IPCNFG);
 	rd32(E1000_EEER);
 out:
@@ -3603,21 +2884,11 @@ static s32 igb_init_thermal_sensor_thresh_generic(struct e1000_hw *hw)
 }
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct e1000_mac_operations e1000_mac_ops_82575 = {
 	.init_hw              = igb_init_hw_82575,
 	.check_for_link       = igb_check_for_link_82575,
 	.rar_set              = igb_rar_set,
 	.read_mac_addr        = igb_read_mac_addr_82575,
-<<<<<<< HEAD
-	.get_speed_and_duplex = igb_get_speed_and_duplex_copper,
-};
-
-static struct e1000_phy_operations e1000_phy_ops_82575 = {
-	.acquire              = igb_acquire_phy_82575,
-	.get_cfg_done         = igb_get_cfg_done_82575,
-	.release              = igb_release_phy_82575,
-=======
 	.get_speed_and_duplex = igb_get_link_up_info_82575,
 #ifdef CONFIG_IGB_HWMON
 	.get_thermal_sensor_data = igb_get_thermal_sensor_data_generic,
@@ -3631,7 +2902,6 @@ static const struct e1000_phy_operations e1000_phy_ops_82575 = {
 	.release              = igb_release_phy_82575,
 	.write_i2c_byte       = igb_write_i2c_byte,
 	.read_i2c_byte        = igb_read_i2c_byte,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct e1000_nvm_operations e1000_nvm_ops_82575 = {

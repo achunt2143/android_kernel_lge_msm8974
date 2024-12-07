@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * New-style PCI core.
  *
@@ -10,23 +7,12 @@
  *
  * Modelled after arch/mips/pci/pci.c:
  *  Copyright (C) 2003, 04 Ralf Baechle (ralf@linux-mips.org)
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/pci.h>
 #include <linux/init.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/dma-debug.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
@@ -42,37 +28,25 @@ static struct pci_channel *hose_head, **hose_tail = &hose_head;
 
 static int pci_initialized;
 
-<<<<<<< HEAD
-static void __devinit pcibios_scanbus(struct pci_channel *hose)
-=======
 static void pcibios_scanbus(struct pci_channel *hose)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int next_busno;
 	static int need_domain_info;
 	LIST_HEAD(resources);
 	struct resource *res;
 	resource_size_t offset;
-<<<<<<< HEAD
-	int i;
-	struct pci_bus *bus;
-=======
 	int i, ret;
 	struct pci_host_bridge *bridge;
 
 	bridge = pci_alloc_host_bridge(0);
 	if (!bridge)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < hose->nr_resources; i++) {
 		res = hose->resources + i;
 		offset = 0;
-<<<<<<< HEAD
-=======
 		if (res->flags & IORESOURCE_DISABLED)
 			continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res->flags & IORESOURCE_IO)
 			offset = hose->io_offset;
 		else if (res->flags & IORESOURCE_MEM)
@@ -80,29 +54,6 @@ static void pcibios_scanbus(struct pci_channel *hose)
 		pci_add_resource_offset(&resources, res, offset);
 	}
 
-<<<<<<< HEAD
-	bus = pci_scan_root_bus(NULL, next_busno, hose->pci_ops, hose,
-				&resources);
-	hose->bus = bus;
-
-	need_domain_info = need_domain_info || hose->index;
-	hose->need_domain_info = need_domain_info;
-	if (bus) {
-		next_busno = bus->subordinate + 1;
-		/* Don't allow 8-bit bus number overflow inside the hose -
-		   reserve some space for bridges. */
-		if (next_busno > 224) {
-			next_busno = 0;
-			need_domain_info = 1;
-		}
-
-		pci_bus_size_bridges(bus);
-		pci_bus_assign_resources(bus);
-		pci_enable_bridges(bus);
-	} else {
-		pci_free_resource_list(&resources);
-	}
-=======
 	list_splice_init(&resources, &bridge->windows);
 	bridge->dev.parent = NULL;
 	bridge->sysdata = hose;
@@ -133,7 +84,6 @@ static void pcibios_scanbus(struct pci_channel *hose)
 	pci_bus_size_bridges(hose->bus);
 	pci_bus_assign_resources(hose->bus);
 	pci_bus_add_devices(hose->bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -143,23 +93,16 @@ static void pcibios_scanbus(struct pci_channel *hose)
 DEFINE_RAW_SPINLOCK(pci_config_lock);
 static DEFINE_MUTEX(pci_scan_mutex);
 
-<<<<<<< HEAD
-int __devinit register_pci_controller(struct pci_channel *hose)
-=======
 int register_pci_controller(struct pci_channel *hose)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	for (i = 0; i < hose->nr_resources; i++) {
 		struct resource *res = hose->resources + i;
 
-<<<<<<< HEAD
-=======
 		if (res->flags & IORESOURCE_DISABLED)
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res->flags & IORESOURCE_IO) {
 			if (request_resource(&ioport_resource, res) < 0)
 				goto out;
@@ -176,12 +119,7 @@ int register_pci_controller(struct pci_channel *hose)
 	 * Do not panic here but later - this might happen before console init.
 	 */
 	if (!hose->io_map_base) {
-<<<<<<< HEAD
-		printk(KERN_WARNING
-		       "registering PCI controller with io_map_base unset\n");
-=======
 		pr_warn("registering PCI controller with io_map_base unset\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -205,11 +143,7 @@ out:
 	for (--i; i >= 0; i--)
 		release_resource(&hose->resources[i]);
 
-<<<<<<< HEAD
-	printk(KERN_WARNING "Skipping PCI bus scan due to resource conflict\n");
-=======
 	pr_warn("Skipping PCI bus scan due to resource conflict\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 
@@ -221,13 +155,6 @@ static int __init pcibios_init(void)
 	for (hose = hose_head; hose; hose = hose->next)
 		pcibios_scanbus(hose);
 
-<<<<<<< HEAD
-	pci_fixup_irqs(pci_common_swizzle, pcibios_map_platform_irq);
-
-	dma_debug_add_bus(&pci_bus_type);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_initialized = 1;
 
 	return 0;
@@ -235,17 +162,6 @@ static int __init pcibios_init(void)
 subsys_initcall(pcibios_init);
 
 /*
-<<<<<<< HEAD
- *  Called after each bus is probed, but before its children
- *  are examined.
- */
-void __devinit pcibios_fixup_bus(struct pci_bus *bus)
-{
-}
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * We need to avoid collisions with `mirrored' VGA ports
  * and other strange ISA hardware, so we always want the
  * addresses to be allocated in the 0x000-0x0ff region
@@ -272,24 +188,6 @@ resource_size_t pcibios_align_resource(void *data, const struct resource *res,
 	return start;
 }
 
-<<<<<<< HEAD
-int pcibios_enable_device(struct pci_dev *dev, int mask)
-{
-	return pci_enable_resources(dev, mask);
-}
-
-void __init pcibios_update_irq(struct pci_dev *dev, int irq)
-{
-	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
-}
-
-char * __devinit __weak pcibios_setup(char *str)
-{
-	return str;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init
 pcibios_bus_report_status_early(struct pci_channel *hose,
 				int top_bus, int current_bus,
@@ -313,13 +211,8 @@ pcibios_bus_report_status_early(struct pci_channel *hose,
 					pci_devfn, PCI_STATUS,
 					status & status_mask);
 		if (warn)
-<<<<<<< HEAD
-			printk("(%02x:%02x: %04X) ", current_bus,
-			       pci_devfn, status);
-=======
 			pr_cont("(%02x:%02x: %04X) ", current_bus, pci_devfn,
 				status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -327,11 +220,7 @@ pcibios_bus_report_status_early(struct pci_channel *hose,
  * We can't use pci_find_device() here since we are
  * called from interrupt context.
  */
-<<<<<<< HEAD
-static void __init_refok
-=======
 static void __ref
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 pcibios_bus_report_status(struct pci_bus *bus, unsigned int status_mask,
 			  int warn)
 {
@@ -358,11 +247,7 @@ pcibios_bus_report_status(struct pci_bus *bus, unsigned int status_mask,
 		pci_write_config_word(dev, PCI_STATUS, status & status_mask);
 
 		if (warn)
-<<<<<<< HEAD
-			printk("(%s: %04X) ", pci_name(dev), status);
-=======
 			pr_cont("(%s: %04X) ", pci_name(dev), status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	list_for_each_entry(dev, &bus->devices, bus_list)
@@ -370,11 +255,7 @@ pcibios_bus_report_status(struct pci_bus *bus, unsigned int status_mask,
 			pcibios_bus_report_status(dev->subordinate, status_mask, warn);
 }
 
-<<<<<<< HEAD
-void __init_refok pcibios_report_status(unsigned int status_mask, int warn)
-=======
 void __ref pcibios_report_status(unsigned int status_mask, int warn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_channel *hose;
 
@@ -387,30 +268,6 @@ void __ref pcibios_report_status(unsigned int status_mask, int warn)
 	}
 }
 
-<<<<<<< HEAD
-int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
-			enum pci_mmap_state mmap_state, int write_combine)
-{
-	/*
-	 * I/O space can be accessed via normal processor loads and stores on
-	 * this platform but for now we elect not to do this and portable
-	 * drivers should not do this anyway.
-	 */
-	if (mmap_state == pci_mmap_io)
-		return -EINVAL;
-
-	/*
-	 * Ignore write-combine; for now only return uncached mappings.
-	 */
-	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-
-	return remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,
-			       vma->vm_end - vma->vm_start,
-			       vma->vm_page_prot);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_GENERIC_IOMAP
 
 void __iomem *__pci_ioport_map(struct pci_dev *dev,
@@ -437,12 +294,5 @@ EXPORT_SYMBOL(pci_iounmap);
 
 #endif /* CONFIG_GENERIC_IOMAP */
 
-<<<<<<< HEAD
-#ifdef CONFIG_HOTPLUG
 EXPORT_SYMBOL(PCIBIOS_MIN_IO);
 EXPORT_SYMBOL(PCIBIOS_MIN_MEM);
-#endif
-=======
-EXPORT_SYMBOL(PCIBIOS_MIN_IO);
-EXPORT_SYMBOL(PCIBIOS_MIN_MEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

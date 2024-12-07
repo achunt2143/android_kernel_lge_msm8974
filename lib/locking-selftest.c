@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * lib/locking-selftest.c
  *
@@ -16,13 +13,9 @@
  */
 #include <linux/rwsem.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/ww_mutex.h>
 #include <linux/sched.h>
 #include <linux/sched/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/lockdep.h>
 #include <linux/spinlock.h>
@@ -30,8 +23,6 @@
 #include <linux/interrupt.h>
 #include <linux/debug_locks.h>
 #include <linux/irqflags.h>
-<<<<<<< HEAD
-=======
 #include <linux/rtmutex.h>
 #include <linux/local_lock.h>
 
@@ -40,18 +31,14 @@
 #else
 # define NON_RT(...)	__VA_ARGS__
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Change this to 1 if you want to see the failure printouts:
  */
 static unsigned int debug_locks_verbose;
-<<<<<<< HEAD
-=======
 unsigned int force_read_lock_recursive;
 
 static DEFINE_WD_CLASS(ww_lockdep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init setup_debug_locks_verbose(char *str)
 {
@@ -69,8 +56,6 @@ __setup("debug_locks_verbose=", setup_debug_locks_verbose);
 #define LOCKTYPE_RWLOCK	0x2
 #define LOCKTYPE_MUTEX	0x4
 #define LOCKTYPE_RWSEM	0x8
-<<<<<<< HEAD
-=======
 #define LOCKTYPE_WW	0x10
 #define LOCKTYPE_RTMUTEX 0x20
 #define LOCKTYPE_LL	0x40
@@ -78,7 +63,6 @@ __setup("debug_locks_verbose=", setup_debug_locks_verbose);
 
 static struct ww_acquire_ctx t, t2;
 static struct ww_mutex o, o2, o3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Normal standalone locks, for the circular and irq-context
@@ -89,12 +73,9 @@ static DEFINE_SPINLOCK(lock_B);
 static DEFINE_SPINLOCK(lock_C);
 static DEFINE_SPINLOCK(lock_D);
 
-<<<<<<< HEAD
-=======
 static DEFINE_RAW_SPINLOCK(raw_lock_A);
 static DEFINE_RAW_SPINLOCK(raw_lock_B);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_RWLOCK(rwlock_A);
 static DEFINE_RWLOCK(rwlock_B);
 static DEFINE_RWLOCK(rwlock_C);
@@ -110,8 +91,6 @@ static DECLARE_RWSEM(rwsem_B);
 static DECLARE_RWSEM(rwsem_C);
 static DECLARE_RWSEM(rwsem_D);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RT_MUTEXES
 
 static DEFINE_RT_MUTEX(rtmutex_A);
@@ -121,7 +100,6 @@ static DEFINE_RT_MUTEX(rtmutex_D);
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Locks that we initialize dynamically as well so that
  * e.g. X1 and X2 becomes two instances of the same class,
@@ -156,8 +134,6 @@ static DECLARE_RWSEM(rwsem_Y2);
 static DECLARE_RWSEM(rwsem_Z1);
 static DECLARE_RWSEM(rwsem_Z2);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RT_MUTEXES
 
 static DEFINE_RT_MUTEX(rtmutex_X1);
@@ -171,24 +147,16 @@ static DEFINE_RT_MUTEX(rtmutex_Z2);
 
 static DEFINE_PER_CPU(local_lock_t, local_A);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * non-inlined runtime initializers, to let separate locks share
  * the same lock-class:
  */
 #define INIT_CLASS_FUNC(class) 				\
 static noinline void					\
-<<<<<<< HEAD
-init_class_##class(spinlock_t *lock, rwlock_t *rwlock, struct mutex *mutex, \
-		 struct rw_semaphore *rwsem)		\
-{							\
-	spin_lock_init(lock);				\
-=======
 init_class_##class(spinlock_t *lock, rwlock_t *rwlock, \
 	struct mutex *mutex, struct rw_semaphore *rwsem)\
 {							\
 	spin_lock_init(lock);			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rwlock_init(rwlock);				\
 	mutex_init(mutex);				\
 	init_rwsem(rwsem);				\
@@ -200,8 +168,6 @@ INIT_CLASS_FUNC(Z)
 
 static void init_shared_classes(void)
 {
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RT_MUTEXES
 	static struct lock_class_key rt_X, rt_Y, rt_Z;
 
@@ -213,7 +179,6 @@ static void init_shared_classes(void)
 	__rt_mutex_init(&rtmutex_Z2, __func__, &rt_Z);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_class_X(&lock_X1, &rwlock_X1, &mutex_X1, &rwsem_X1);
 	init_class_X(&lock_X2, &rwlock_X2, &mutex_X2, &rwsem_X2);
 
@@ -236,10 +201,7 @@ static void init_shared_classes(void)
 #define HARDIRQ_ENTER()				\
 	local_irq_disable();			\
 	__irq_enter();				\
-<<<<<<< HEAD
-=======
 	lockdep_hardirq_threaded();		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON(!in_irq());
 
 #define HARDIRQ_EXIT()				\
@@ -282,13 +244,10 @@ static void init_shared_classes(void)
 #define MU(x)			mutex_unlock(&mutex_##x)
 #define MI(x)			mutex_init(&mutex_##x)
 
-<<<<<<< HEAD
-=======
 #define RTL(x)			rt_mutex_lock(&rtmutex_##x)
 #define RTU(x)			rt_mutex_unlock(&rtmutex_##x)
 #define RTI(x)			rt_mutex_init(&rtmutex_##x)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WSL(x)			down_write(&rwsem_##x)
 #define WSU(x)			up_write(&rwsem_##x)
 
@@ -296,8 +255,6 @@ static void init_shared_classes(void)
 #define RSU(x)			up_read(&rwsem_##x)
 #define RWSI(x)			init_rwsem(&rwsem_##x)
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_DEBUG_WW_MUTEX_SLOWPATH
 #define WWAI(x)			ww_acquire_init(x, &ww_lockdep)
 #else
@@ -312,7 +269,6 @@ static void init_shared_classes(void)
 #define WWU(x)			ww_mutex_unlock(x)
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LOCK_UNLOCK_2(x,y)	LOCK(x); LOCK(y); UNLOCK(y); UNLOCK(x)
 
 /*
@@ -363,14 +319,11 @@ GENERATE_TESTCASE(AA_wsem)
 #include "locking-selftest-rsem.h"
 GENERATE_TESTCASE(AA_rsem)
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RT_MUTEXES
 #include "locking-selftest-rtmutex.h"
 GENERATE_TESTCASE(AA_rtmutex);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef E
 
 /*
@@ -428,8 +381,6 @@ static void rsem_AA3(void)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * read_lock(A)
  * spin_lock(B)
  *		spin_lock(B)
@@ -570,7 +521,6 @@ static void rwsem_ABBA3(void)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ABBA deadlock:
  */
 
@@ -595,14 +545,11 @@ GENERATE_TESTCASE(ABBA_wsem)
 #include "locking-selftest-rsem.h"
 GENERATE_TESTCASE(ABBA_rsem)
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RT_MUTEXES
 #include "locking-selftest-rtmutex.h"
 GENERATE_TESTCASE(ABBA_rtmutex);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef E
 
 /*
@@ -631,14 +578,11 @@ GENERATE_TESTCASE(ABBCCA_wsem)
 #include "locking-selftest-rsem.h"
 GENERATE_TESTCASE(ABBCCA_rsem)
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RT_MUTEXES
 #include "locking-selftest-rtmutex.h"
 GENERATE_TESTCASE(ABBCCA_rtmutex);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef E
 
 /*
@@ -667,14 +611,11 @@ GENERATE_TESTCASE(ABCABC_wsem)
 #include "locking-selftest-rsem.h"
 GENERATE_TESTCASE(ABCABC_rsem)
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RT_MUTEXES
 #include "locking-selftest-rtmutex.h"
 GENERATE_TESTCASE(ABCABC_rtmutex);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef E
 
 /*
@@ -704,14 +645,11 @@ GENERATE_TESTCASE(ABBCCDDA_wsem)
 #include "locking-selftest-rsem.h"
 GENERATE_TESTCASE(ABBCCDDA_rsem)
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RT_MUTEXES
 #include "locking-selftest-rtmutex.h"
 GENERATE_TESTCASE(ABBCCDDA_rtmutex);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef E
 
 /*
@@ -740,14 +678,11 @@ GENERATE_TESTCASE(ABCDBDDA_wsem)
 #include "locking-selftest-rsem.h"
 GENERATE_TESTCASE(ABCDBDDA_rsem)
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RT_MUTEXES
 #include "locking-selftest-rtmutex.h"
 GENERATE_TESTCASE(ABCDBDDA_rtmutex);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef E
 
 /*
@@ -776,10 +711,6 @@ GENERATE_TESTCASE(ABCDBCDA_wsem)
 #include "locking-selftest-rsem.h"
 GENERATE_TESTCASE(ABCDBCDA_rsem)
 
-<<<<<<< HEAD
-#undef E
-
-=======
 #ifdef CONFIG_RT_MUTEXES
 #include "locking-selftest-rtmutex.h"
 GENERATE_TESTCASE(ABCDBCDA_rtmutex);
@@ -792,17 +723,13 @@ GENERATE_TESTCASE(ABCDBCDA_rtmutex);
 #else
 # define RT_PREPARE_DBL_UNLOCK()
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Double unlock:
  */
 #define E()					\
 						\
 	LOCK(A);				\
-<<<<<<< HEAD
-=======
 	RT_PREPARE_DBL_UNLOCK();		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	UNLOCK(A);				\
 	UNLOCK(A); /* fail */
 
@@ -822,40 +749,10 @@ GENERATE_TESTCASE(double_unlock_wsem)
 #include "locking-selftest-rsem.h"
 GENERATE_TESTCASE(double_unlock_rsem)
 
-<<<<<<< HEAD
-#undef E
-
-/*
- * Bad unlock ordering:
- */
-#define E()					\
-						\
-	LOCK(A);				\
-	LOCK(B);				\
-	UNLOCK(A); /* fail */			\
-	UNLOCK(B);
-
-/*
- * 6 testcases:
- */
-#include "locking-selftest-spin.h"
-GENERATE_TESTCASE(bad_unlock_order_spin)
-#include "locking-selftest-wlock.h"
-GENERATE_TESTCASE(bad_unlock_order_wlock)
-#include "locking-selftest-rlock.h"
-GENERATE_TESTCASE(bad_unlock_order_rlock)
-#include "locking-selftest-mutex.h"
-GENERATE_TESTCASE(bad_unlock_order_mutex)
-#include "locking-selftest-wsem.h"
-GENERATE_TESTCASE(bad_unlock_order_wsem)
-#include "locking-selftest-rsem.h"
-GENERATE_TESTCASE(bad_unlock_order_rsem)
-=======
 #ifdef CONFIG_RT_MUTEXES
 #include "locking-selftest-rtmutex.h"
 GENERATE_TESTCASE(double_unlock_rtmutex);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef E
 
@@ -883,14 +780,11 @@ GENERATE_TESTCASE(init_held_wsem)
 #include "locking-selftest-rsem.h"
 GENERATE_TESTCASE(init_held_rsem)
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RT_MUTEXES
 #include "locking-selftest-rtmutex.h"
 GENERATE_TESTCASE(init_held_rtmutex);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef E
 
 /*
@@ -920,10 +814,7 @@ GENERATE_PERMUTATIONS_2_EVENTS(irqsafe1_hard_rlock)
 #include "locking-selftest-wlock-hardirq.h"
 GENERATE_PERMUTATIONS_2_EVENTS(irqsafe1_hard_wlock)
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_PREEMPT_RT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "locking-selftest-spin-softirq.h"
 GENERATE_PERMUTATIONS_2_EVENTS(irqsafe1_soft_spin)
 
@@ -932,18 +823,12 @@ GENERATE_PERMUTATIONS_2_EVENTS(irqsafe1_soft_rlock)
 
 #include "locking-selftest-wlock-softirq.h"
 GENERATE_PERMUTATIONS_2_EVENTS(irqsafe1_soft_wlock)
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef E1
 #undef E2
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_PREEMPT_RT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Enabling hardirqs with a softirq-safe lock held:
  */
@@ -976,11 +861,8 @@ GENERATE_PERMUTATIONS_2_EVENTS(irqsafe2A_rlock)
 #undef E1
 #undef E2
 
-<<<<<<< HEAD
-=======
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Enabling irqs with an irq-safe lock held:
  */
@@ -1010,10 +892,7 @@ GENERATE_PERMUTATIONS_2_EVENTS(irqsafe2B_hard_rlock)
 #include "locking-selftest-wlock-hardirq.h"
 GENERATE_PERMUTATIONS_2_EVENTS(irqsafe2B_hard_wlock)
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_PREEMPT_RT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "locking-selftest-spin-softirq.h"
 GENERATE_PERMUTATIONS_2_EVENTS(irqsafe2B_soft_spin)
 
@@ -1022,10 +901,7 @@ GENERATE_PERMUTATIONS_2_EVENTS(irqsafe2B_soft_rlock)
 
 #include "locking-selftest-wlock-softirq.h"
 GENERATE_PERMUTATIONS_2_EVENTS(irqsafe2B_soft_wlock)
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef E1
 #undef E2
@@ -1064,10 +940,7 @@ GENERATE_PERMUTATIONS_3_EVENTS(irqsafe3_hard_rlock)
 #include "locking-selftest-wlock-hardirq.h"
 GENERATE_PERMUTATIONS_3_EVENTS(irqsafe3_hard_wlock)
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_PREEMPT_RT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "locking-selftest-spin-softirq.h"
 GENERATE_PERMUTATIONS_3_EVENTS(irqsafe3_soft_spin)
 
@@ -1076,10 +949,7 @@ GENERATE_PERMUTATIONS_3_EVENTS(irqsafe3_soft_rlock)
 
 #include "locking-selftest-wlock-softirq.h"
 GENERATE_PERMUTATIONS_3_EVENTS(irqsafe3_soft_wlock)
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef E1
 #undef E2
@@ -1120,10 +990,7 @@ GENERATE_PERMUTATIONS_3_EVENTS(irqsafe4_hard_rlock)
 #include "locking-selftest-wlock-hardirq.h"
 GENERATE_PERMUTATIONS_3_EVENTS(irqsafe4_hard_wlock)
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_PREEMPT_RT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "locking-selftest-spin-softirq.h"
 GENERATE_PERMUTATIONS_3_EVENTS(irqsafe4_soft_spin)
 
@@ -1132,10 +999,7 @@ GENERATE_PERMUTATIONS_3_EVENTS(irqsafe4_soft_rlock)
 
 #include "locking-selftest-wlock-softirq.h"
 GENERATE_PERMUTATIONS_3_EVENTS(irqsafe4_soft_wlock)
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef E1
 #undef E2
@@ -1190,10 +1054,7 @@ GENERATE_PERMUTATIONS_3_EVENTS(irq_inversion_hard_rlock)
 #include "locking-selftest-wlock-hardirq.h"
 GENERATE_PERMUTATIONS_3_EVENTS(irq_inversion_hard_wlock)
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_PREEMPT_RT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "locking-selftest-spin-softirq.h"
 GENERATE_PERMUTATIONS_3_EVENTS(irq_inversion_soft_spin)
 
@@ -1202,18 +1063,13 @@ GENERATE_PERMUTATIONS_3_EVENTS(irq_inversion_soft_rlock)
 
 #include "locking-selftest-wlock-softirq.h"
 GENERATE_PERMUTATIONS_3_EVENTS(irq_inversion_soft_wlock)
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef E1
 #undef E2
 #undef E3
 
 /*
-<<<<<<< HEAD
-=======
  * write-read / write-read / write-read deadlock even if read is recursive
  */
 
@@ -1341,7 +1197,6 @@ GENERATE_PERMUTATIONS_3_EVENTS(W1W2_R2R3_R3W1)
 #undef E2
 #undef E3
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * read-lock / write-lock recursion that is actually safe.
  */
 
@@ -1360,22 +1215,6 @@ GENERATE_PERMUTATIONS_3_EVENTS(W1W2_R2R3_R3W1)
 #define E3()				\
 					\
 	IRQ_ENTER();			\
-<<<<<<< HEAD
-	RL(A);				\
-	L(B);				\
-	U(B);				\
-	RU(A);				\
-	IRQ_EXIT();
-
-/*
- * Generate 12 testcases:
- */
-#include "locking-selftest-hardirq.h"
-GENERATE_PERMUTATIONS_3_EVENTS(irq_read_recursion_hard)
-
-#include "locking-selftest-softirq.h"
-GENERATE_PERMUTATIONS_3_EVENTS(irq_read_recursion_soft)
-=======
 	LOCK(A);			\
 	L(B);				\
 	U(B);				\
@@ -1400,7 +1239,6 @@ GENERATE_PERMUTATIONS_3_EVENTS(irq_read_recursion_soft_rlock)
 #include "locking-selftest-wlock.h"
 GENERATE_PERMUTATIONS_3_EVENTS(irq_read_recursion_soft_wlock)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef E1
 #undef E2
@@ -1414,13 +1252,8 @@ GENERATE_PERMUTATIONS_3_EVENTS(irq_read_recursion_soft_wlock)
 					\
 	IRQ_DISABLE();			\
 	L(B);				\
-<<<<<<< HEAD
-	WL(A);				\
-	WU(A);				\
-=======
 	LOCK(A);			\
 	UNLOCK(A);			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	U(B);				\
 	IRQ_ENABLE();
 
@@ -1437,26 +1270,6 @@ GENERATE_PERMUTATIONS_3_EVENTS(irq_read_recursion_soft_wlock)
 	IRQ_EXIT();
 
 /*
-<<<<<<< HEAD
- * Generate 12 testcases:
- */
-#include "locking-selftest-hardirq.h"
-// GENERATE_PERMUTATIONS_3_EVENTS(irq_read_recursion2_hard)
-
-#include "locking-selftest-softirq.h"
-// GENERATE_PERMUTATIONS_3_EVENTS(irq_read_recursion2_soft)
-
-#ifdef CONFIG_DEBUG_LOCK_ALLOC
-# define I_SPINLOCK(x)	lockdep_reset_lock(&lock_##x.dep_map)
-# define I_RWLOCK(x)	lockdep_reset_lock(&rwlock_##x.dep_map)
-# define I_MUTEX(x)	lockdep_reset_lock(&mutex_##x.dep_map)
-# define I_RWSEM(x)	lockdep_reset_lock(&rwsem_##x.dep_map)
-#else
-# define I_SPINLOCK(x)
-# define I_RWLOCK(x)
-# define I_MUTEX(x)
-# define I_RWSEM(x)
-=======
  * Generate 24 testcases:
  */
 #include "locking-selftest-hardirq.h"
@@ -1560,7 +1373,6 @@ GENERATE_PERMUTATIONS_3_EVENTS(irq_read_recursion3_soft_wlock)
 #define I2_RTMUTEX(x)	rt_mutex_init(&rtmutex_##x)
 #else
 #define I2_RTMUTEX(x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define I1(x)					\
@@ -1569,10 +1381,7 @@ GENERATE_PERMUTATIONS_3_EVENTS(irq_read_recursion3_soft_wlock)
 		I_RWLOCK(x);			\
 		I_MUTEX(x);			\
 		I_RWSEM(x);			\
-<<<<<<< HEAD
-=======
 		I_RTMUTEX(x);			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 #define I2(x)					\
@@ -1581,22 +1390,12 @@ GENERATE_PERMUTATIONS_3_EVENTS(irq_read_recursion3_soft_wlock)
 		rwlock_init(&rwlock_##x);	\
 		mutex_init(&mutex_##x);		\
 		init_rwsem(&rwsem_##x);		\
-<<<<<<< HEAD
-=======
 		I2_RTMUTEX(x);			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 static void reset_locks(void)
 {
 	local_irq_disable();
-<<<<<<< HEAD
-	I1(A); I1(B); I1(C); I1(D);
-	I1(X1); I1(X2); I1(Y1); I1(Y2); I1(Z1); I1(Z2);
-	lockdep_reset();
-	I2(A); I2(B); I2(C); I2(D);
-	init_shared_classes();
-=======
 	lockdep_free_key_range(&ww_lockdep.acquire_key, 1);
 	lockdep_free_key_range(&ww_lockdep.mutex_key, 1);
 
@@ -1618,7 +1417,6 @@ static void reset_locks(void)
 	memset(&t, 0, sizeof(t)); memset(&t2, 0, sizeof(t2));
 	memset(&ww_lockdep.acquire_key, 0, sizeof(ww_lockdep.acquire_key));
 	memset(&ww_lockdep.mutex_key, 0, sizeof(ww_lockdep.mutex_key));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_enable();
 }
 
@@ -1631,13 +1429,6 @@ static int unexpected_testcase_failures;
 
 static void dotest(void (*testcase_fn)(void), int expected, int lockclass_mask)
 {
-<<<<<<< HEAD
-	unsigned long saved_preempt_count = preempt_count();
-	int expected_failure = 0;
-
-	WARN_ON(irqs_disabled());
-
-=======
 	int saved_preempt_count = preempt_count();
 #ifdef CONFIG_PREEMPT_RT
 #ifdef CONFIG_SMP
@@ -1650,41 +1441,11 @@ static void dotest(void (*testcase_fn)(void), int expected, int lockclass_mask)
 
 	debug_locks_silent = !(debug_locks_verbose & lockclass_mask);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	testcase_fn();
 	/*
 	 * Filter out expected failures:
 	 */
 #ifndef CONFIG_PROVE_LOCKING
-<<<<<<< HEAD
-	if ((lockclass_mask & LOCKTYPE_SPIN) && debug_locks != expected)
-		expected_failure = 1;
-	if ((lockclass_mask & LOCKTYPE_RWLOCK) && debug_locks != expected)
-		expected_failure = 1;
-	if ((lockclass_mask & LOCKTYPE_MUTEX) && debug_locks != expected)
-		expected_failure = 1;
-	if ((lockclass_mask & LOCKTYPE_RWSEM) && debug_locks != expected)
-		expected_failure = 1;
-#endif
-	if (debug_locks != expected) {
-		if (expected_failure) {
-			expected_testcase_failures++;
-			printk("failed|");
-		} else {
-			unexpected_testcase_failures++;
-
-			printk("FAILED|");
-			dump_stack();
-		}
-	} else {
-		testcase_successes++;
-		printk("  ok  |");
-	}
-	testcase_total++;
-
-	if (debug_locks_verbose)
-		printk(" lockclass mask: %x, debug_locks: %d, expected: %d\n",
-=======
 	if (expected == FAILURE && debug_locks) {
 		expected_testcase_failures++;
 		pr_cont("failed|");
@@ -1702,15 +1463,11 @@ static void dotest(void (*testcase_fn)(void), int expected, int lockclass_mask)
 
 	if (debug_locks_verbose & lockclass_mask)
 		pr_cont(" lockclass mask: %x, debug_locks: %d, expected: %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lockclass_mask, debug_locks, expected);
 	/*
 	 * Some tests (e.g. double-unlock) might corrupt the preemption
 	 * count, so restore it:
 	 */
-<<<<<<< HEAD
-	preempt_count() = saved_preempt_count;
-=======
 	preempt_count_set(saved_preempt_count);
 
 #ifdef CONFIG_PREEMPT_RT
@@ -1724,7 +1481,6 @@ static void dotest(void (*testcase_fn)(void), int expected, int lockclass_mask)
 	WARN_ON_ONCE(current->rcu_read_lock_nesting < saved_rcu_count);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_TRACE_IRQFLAGS
 	if (softirq_count())
 		current->softirqs_enabled = 0;
@@ -1735,15 +1491,12 @@ static void dotest(void (*testcase_fn)(void), int expected, int lockclass_mask)
 	reset_locks();
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RT_MUTEXES
 #define dotest_rt(fn, e, m)	dotest((fn), (e), (m))
 #else
 #define dotest_rt(fn, e, m)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void print_testname(const char *testname)
 {
 	printk("%33s:", testname);
@@ -1752,18 +1505,11 @@ static inline void print_testname(const char *testname)
 #define DO_TESTCASE_1(desc, name, nr)				\
 	print_testname(desc"/"#nr);				\
 	dotest(name##_##nr, SUCCESS, LOCKTYPE_RWLOCK);		\
-<<<<<<< HEAD
-	printk("\n");
-=======
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DO_TESTCASE_1B(desc, name, nr)				\
 	print_testname(desc"/"#nr);				\
 	dotest(name##_##nr, FAILURE, LOCKTYPE_RWLOCK);		\
-<<<<<<< HEAD
-	printk("\n");
-=======
 	pr_cont("\n");
 
 #define DO_TESTCASE_1RR(desc, name, nr)				\
@@ -1778,27 +1524,19 @@ static inline void print_testname(const char *testname)
 	dotest(name##_##nr, FAILURE, LOCKTYPE_RWLOCK);		\
 	pr_cont("\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DO_TESTCASE_3(desc, name, nr)				\
 	print_testname(desc"/"#nr);				\
 	dotest(name##_spin_##nr, FAILURE, LOCKTYPE_SPIN);	\
 	dotest(name##_wlock_##nr, FAILURE, LOCKTYPE_RWLOCK);	\
 	dotest(name##_rlock_##nr, SUCCESS, LOCKTYPE_RWLOCK);	\
-<<<<<<< HEAD
-	printk("\n");
-=======
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DO_TESTCASE_3RW(desc, name, nr)				\
 	print_testname(desc"/"#nr);				\
 	dotest(name##_spin_##nr, FAILURE, LOCKTYPE_SPIN|LOCKTYPE_RWLOCK);\
 	dotest(name##_wlock_##nr, FAILURE, LOCKTYPE_RWLOCK);	\
 	dotest(name##_rlock_##nr, SUCCESS, LOCKTYPE_RWLOCK);	\
-<<<<<<< HEAD
-	printk("\n");
-=======
 	pr_cont("\n");
 
 #define DO_TESTCASE_2RW(desc, name, nr)				\
@@ -1819,7 +1557,6 @@ static inline void print_testname(const char *testname)
 	DO_TESTCASE_2x2RW(desc, name, 231);			\
 	DO_TESTCASE_2x2RW(desc, name, 312);			\
 	DO_TESTCASE_2x2RW(desc, name, 321);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DO_TESTCASE_6(desc, name)				\
 	print_testname(desc);					\
@@ -1829,12 +1566,8 @@ static inline void print_testname(const char *testname)
 	dotest(name##_mutex, FAILURE, LOCKTYPE_MUTEX);		\
 	dotest(name##_wsem, FAILURE, LOCKTYPE_RWSEM);		\
 	dotest(name##_rsem, FAILURE, LOCKTYPE_RWSEM);		\
-<<<<<<< HEAD
-	printk("\n");
-=======
 	dotest_rt(name##_rtmutex, FAILURE, LOCKTYPE_RTMUTEX);	\
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DO_TESTCASE_6_SUCCESS(desc, name)			\
 	print_testname(desc);					\
@@ -1844,12 +1577,8 @@ static inline void print_testname(const char *testname)
 	dotest(name##_mutex, SUCCESS, LOCKTYPE_MUTEX);		\
 	dotest(name##_wsem, SUCCESS, LOCKTYPE_RWSEM);		\
 	dotest(name##_rsem, SUCCESS, LOCKTYPE_RWSEM);		\
-<<<<<<< HEAD
-	printk("\n");
-=======
 	dotest_rt(name##_rtmutex, SUCCESS, LOCKTYPE_RTMUTEX);	\
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 'read' variant: rlocks must not trigger.
@@ -1862,25 +1591,6 @@ static inline void print_testname(const char *testname)
 	dotest(name##_mutex, FAILURE, LOCKTYPE_MUTEX);		\
 	dotest(name##_wsem, FAILURE, LOCKTYPE_RWSEM);		\
 	dotest(name##_rsem, FAILURE, LOCKTYPE_RWSEM);		\
-<<<<<<< HEAD
-	printk("\n");
-
-#define DO_TESTCASE_2I(desc, name, nr)				\
-	DO_TESTCASE_1("hard-"desc, name##_hard, nr);		\
-	DO_TESTCASE_1("soft-"desc, name##_soft, nr);
-
-#define DO_TESTCASE_2IB(desc, name, nr)				\
-	DO_TESTCASE_1B("hard-"desc, name##_hard, nr);		\
-	DO_TESTCASE_1B("soft-"desc, name##_soft, nr);
-
-#define DO_TESTCASE_6I(desc, name, nr)				\
-	DO_TESTCASE_3("hard-"desc, name##_hard, nr);		\
-	DO_TESTCASE_3("soft-"desc, name##_soft, nr);
-
-#define DO_TESTCASE_6IRW(desc, name, nr)			\
-	DO_TESTCASE_3RW("hard-"desc, name##_hard, nr);		\
-	DO_TESTCASE_3RW("soft-"desc, name##_soft, nr);
-=======
 	dotest_rt(name##_rtmutex, FAILURE, LOCKTYPE_RTMUTEX);	\
 	pr_cont("\n");
 
@@ -1899,7 +1609,6 @@ static inline void print_testname(const char *testname)
 #define DO_TESTCASE_6IRW(desc, name, nr)			\
 	DO_TESTCASE_3RW("hard-"desc, name##_hard, nr);		\
 	NON_RT(DO_TESTCASE_3RW("soft-"desc, name##_soft, nr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DO_TESTCASE_2x3(desc, name)				\
 	DO_TESTCASE_3(desc, name, 12);				\
@@ -1925,8 +1634,6 @@ static inline void print_testname(const char *testname)
 	DO_TESTCASE_2IB(desc, name, 312);			\
 	DO_TESTCASE_2IB(desc, name, 321);
 
-<<<<<<< HEAD
-=======
 #define DO_TESTCASE_6x1RR(desc, name)				\
 	DO_TESTCASE_1RR(desc, name, 123);			\
 	DO_TESTCASE_1RR(desc, name, 132);			\
@@ -1943,7 +1650,6 @@ static inline void print_testname(const char *testname)
 	DO_TESTCASE_1RRB(desc, name, 312);			\
 	DO_TESTCASE_1RRB(desc, name, 321);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DO_TESTCASE_6x6(desc, name)				\
 	DO_TESTCASE_6I(desc, name, 123);			\
 	DO_TESTCASE_6I(desc, name, 132);			\
@@ -1960,8 +1666,6 @@ static inline void print_testname(const char *testname)
 	DO_TESTCASE_6IRW(desc, name, 312);			\
 	DO_TESTCASE_6IRW(desc, name, 321);
 
-<<<<<<< HEAD
-=======
 static void ww_test_fail_acquire(void)
 {
 	int ret;
@@ -3084,7 +2788,6 @@ static void hardirq_deadlock_softirq_not_deadlock(void)
 	spin_unlock(&lock_C);
 	HARDIRQ_ENABLE();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void locking_selftest(void)
 {
@@ -3099,32 +2802,21 @@ void locking_selftest(void)
 	}
 
 	/*
-<<<<<<< HEAD
-=======
 	 * treats read_lock() as recursive read locks for testing purpose
 	 */
 	force_read_lock_recursive = 1;
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Run the testsuite:
 	 */
 	printk("------------------------\n");
 	printk("| Locking API testsuite:\n");
 	printk("----------------------------------------------------------------------------\n");
-<<<<<<< HEAD
-	printk("                                 | spin |wlock |rlock |mutex | wsem | rsem |\n");
-	printk("  --------------------------------------------------------------------------\n");
-
-	init_shared_classes();
-	debug_locks_silent = !debug_locks_verbose;
-=======
 	printk("                                 | spin |wlock |rlock |mutex | wsem | rsem |rtmutex\n");
 	printk("  --------------------------------------------------------------------------\n");
 
 	init_shared_classes();
 	lockdep_set_selftest_task(current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DO_TESTCASE_6R("A-A deadlock", AA);
 	DO_TESTCASE_6R("A-B-B-A deadlock", ABBA);
@@ -3135,41 +2827,6 @@ void locking_selftest(void)
 	DO_TESTCASE_6R("A-B-C-D-B-C-D-A deadlock", ABCDBCDA);
 	DO_TESTCASE_6("double unlock", double_unlock);
 	DO_TESTCASE_6("initialize held", init_held);
-<<<<<<< HEAD
-	DO_TESTCASE_6_SUCCESS("bad unlock order", bad_unlock_order);
-
-	printk("  --------------------------------------------------------------------------\n");
-	print_testname("recursive read-lock");
-	printk("             |");
-	dotest(rlock_AA1, SUCCESS, LOCKTYPE_RWLOCK);
-	printk("             |");
-	dotest(rsem_AA1, FAILURE, LOCKTYPE_RWSEM);
-	printk("\n");
-
-	print_testname("recursive read-lock #2");
-	printk("             |");
-	dotest(rlock_AA1B, SUCCESS, LOCKTYPE_RWLOCK);
-	printk("             |");
-	dotest(rsem_AA1B, FAILURE, LOCKTYPE_RWSEM);
-	printk("\n");
-
-	print_testname("mixed read-write-lock");
-	printk("             |");
-	dotest(rlock_AA2, FAILURE, LOCKTYPE_RWLOCK);
-	printk("             |");
-	dotest(rsem_AA2, FAILURE, LOCKTYPE_RWSEM);
-	printk("\n");
-
-	print_testname("mixed write-read-lock");
-	printk("             |");
-	dotest(rlock_AA3, FAILURE, LOCKTYPE_RWLOCK);
-	printk("             |");
-	dotest(rsem_AA3, FAILURE, LOCKTYPE_RWSEM);
-	printk("\n");
-
-	printk("  --------------------------------------------------------------------------\n");
-
-=======
 
 	printk("  --------------------------------------------------------------------------\n");
 	print_testname("recursive read-lock");
@@ -3228,25 +2885,16 @@ void locking_selftest(void)
 	DO_TESTCASE_6x1RR("rlock W1R2/R2R3/W3W1", W1R2_R2R3_W3W1);
 
 	printk("  --------------------------------------------------------------------------\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * irq-context testcases:
 	 */
 	DO_TESTCASE_2x6("irqs-on + irq-safe-A", irqsafe1);
-<<<<<<< HEAD
-	DO_TESTCASE_2x3("sirq-safe-A => hirqs-on", irqsafe2A);
-=======
 	NON_RT(DO_TESTCASE_2x3("sirq-safe-A => hirqs-on", irqsafe2A));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DO_TESTCASE_2x6("safe-A + irqs-on", irqsafe2B);
 	DO_TESTCASE_6x6("safe-A + unsafe-B #1", irqsafe3);
 	DO_TESTCASE_6x6("safe-A + unsafe-B #2", irqsafe4);
 	DO_TESTCASE_6x6RW("irq lock-inversion", irq_inversion);
 
-<<<<<<< HEAD
-	DO_TESTCASE_6x2("irq read-recursion", irq_read_recursion);
-//	DO_TESTCASE_6x2B("irq read-recursion #2", irq_read_recursion2);
-=======
 	DO_TESTCASE_6x2x2RW("irq read-recursion", irq_read_recursion);
 	DO_TESTCASE_6x2x2RW("irq read-recursion #2", irq_read_recursion2);
 	DO_TESTCASE_6x2x2RW("irq read-recursion #3", irq_read_recursion3);
@@ -3271,7 +2919,6 @@ void locking_selftest(void)
 	print_testname("hardirq_unsafe_softirq_safe");
 	dotest(hardirq_deadlock_softirq_not_deadlock, FAILURE, LOCKTYPE_SPECIAL);
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unexpected_testcase_failures) {
 		printk("-----------------------------------------------------------------\n");
@@ -3298,9 +2945,6 @@ void locking_selftest(void)
 		printk("---------------------------------\n");
 		debug_locks = 1;
 	}
-<<<<<<< HEAD
-=======
 	lockdep_set_selftest_task(NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	debug_locks_silent = 0;
 }

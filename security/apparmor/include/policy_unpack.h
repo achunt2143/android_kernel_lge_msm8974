@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AppArmor security module
  *
@@ -9,22 +6,11 @@
  *
  * Copyright (C) 1998-2008 Novell/SUSE
  * Copyright 2009-2010 Canonical Ltd.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __POLICY_INTERFACE_H
 #define __POLICY_INTERFACE_H
 
-<<<<<<< HEAD
-struct aa_profile *aa_unpack(void *udata, size_t size, const char **ns);
-=======
 #include <linux/list.h>
 #include <linux/kref.h>
 #include <linux/dcache.h>
@@ -191,6 +177,5 @@ size_t aa_unpack_blob(struct aa_ext *e, char **blob, const char *name);
 int aa_unpack_str(struct aa_ext *e, const char **string, const char *name);
 int aa_unpack_strdup(struct aa_ext *e, char **string, const char *name);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __POLICY_INTERFACE_H */

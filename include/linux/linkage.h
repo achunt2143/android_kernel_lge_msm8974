@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_LINKAGE_H
-#define _LINUX_LINKAGE_H
-
-#include <linux/compiler.h>
-#include <asm/linkage.h>
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_LINKAGE_H
 #define _LINUX_LINKAGE_H
@@ -20,7 +12,6 @@
 #define ASM_NL		 ;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __cplusplus
 #define CPP_ASMLINKAGE extern "C"
 #else
@@ -31,10 +22,6 @@
 #define asmlinkage CPP_ASMLINKAGE
 #endif
 
-<<<<<<< HEAD
-#define __page_aligned_data	__section(.data..page_aligned) __aligned(PAGE_SIZE)
-#define __page_aligned_bss	__section(.bss..page_aligned) __aligned(PAGE_SIZE)
-=======
 #ifndef cond_syscall
 #define cond_syscall(x)	asm(				\
 	".weak " __stringify(x) "\n\t"			\
@@ -51,7 +38,6 @@
 
 #define __page_aligned_data	__section(".data..page_aligned") __aligned(PAGE_SIZE)
 #define __page_aligned_bss	__section(".bss..page_aligned") __aligned(PAGE_SIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * For assembly routines.
@@ -83,19 +69,12 @@
 #endif
 
 #ifndef __ALIGN
-<<<<<<< HEAD
-#define __ALIGN		.align 4,0x90
-#define __ALIGN_STR	".align 4,0x90"
-=======
 #define __ALIGN			.balign CONFIG_FUNCTION_ALIGNMENT
 #define __ALIGN_STR		__stringify(__ALIGN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef __ASSEMBLY__
 
-<<<<<<< HEAD
-=======
 /* SYM_T_FUNC -- type used by assembler to mark functions */
 #ifndef SYM_T_FUNC
 #define SYM_T_FUNC				STT_FUNC
@@ -120,30 +99,10 @@
 #define SYM_L_WEAK(name)			.weak name
 #define SYM_L_LOCAL(name)			/* nothing */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINKER_SCRIPT
 #define ALIGN __ALIGN
 #define ALIGN_STR __ALIGN_STR
 
-<<<<<<< HEAD
-#ifndef ENTRY
-#define ENTRY(name) \
-  .globl name; \
-  ALIGN; \
-  name:
-#endif
-#endif /* LINKER_SCRIPT */
-
-#ifndef WEAK
-#define WEAK(name)	   \
-	.weak name;	   \
-	name:
-#endif
-
-#ifndef END
-#define END(name) \
-  .size name, .-name
-=======
 /* === DEPRECATED annotations === */
 
 #ifndef CONFIG_ARCH_USE_SYM_ANNOTATIONS
@@ -173,7 +132,6 @@
 /* deprecated, use SYM_FUNC_END, SYM_DATA_END, or SYM_END */
 #define END(name) \
 	.size name, .-name
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* If symbol 'name' is treated as a subroutine (gets called, and returns)
@@ -181,16 +139,6 @@
  * static analysis tools such as stack depth analyzer.
  */
 #ifndef ENDPROC
-<<<<<<< HEAD
-#define ENDPROC(name) \
-  .type name, @function; \
-  END(name)
-#endif
-
-#endif
-
-#endif
-=======
 /* deprecated, use SYM_FUNC_END */
 #define ENDPROC(name) \
 	SYM_FUNC_END(name)
@@ -410,4 +358,3 @@
 #endif /* __ASSEMBLY__ */
 
 #endif /* _LINUX_LINKAGE_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

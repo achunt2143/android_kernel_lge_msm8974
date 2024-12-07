@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Input core configuration
 #
@@ -20,8 +17,6 @@ config SERIO
 	  To compile this driver as a module, choose M here: the
 	  module will be called serio.
 
-<<<<<<< HEAD
-=======
 config ARCH_MIGHT_HAVE_PC_SERIO
 	bool
 	help
@@ -29,18 +24,12 @@ config ARCH_MIGHT_HAVE_PC_SERIO
 	  the architecture might use a PC serio device (i8042) to
 	  communicate with keyboard, mouse, etc.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if SERIO
 
 config SERIO_I8042
 	tristate "i8042 PC Keyboard controller"
 	default y
-<<<<<<< HEAD
-	depends on !PARISC && (!ARM || ARCH_SHARK || FOOTBRIDGE_HOST) && \
-		   (!SUPERH || SH_CAYMAN) && !M68K && !BLACKFIN
-=======
 	depends on ARCH_MIGHT_HAVE_PC_SERIO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  i8042 is the chip over which the standard AT keyboard and PS/2
 	  mouse are connected to the computer. If you use these devices,
@@ -54,19 +43,12 @@ config SERIO_I8042
 config SERIO_SERPORT
 	tristate "Serial port line discipline"
 	default y
-<<<<<<< HEAD
-=======
 	depends on TTY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you plan to use an input device (mouse, joystick,
 	  tablet, 6dof) that communicates over the RS232 serial (COM) port.
 
-<<<<<<< HEAD
-	  More information is available: <file:Documentation/input/input.txt>
-=======
 	  More information is available: <file:Documentation/input/input.rst>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If unsure, say Y.
 
@@ -97,11 +79,7 @@ config SERIO_PARKBD
 	  Say Y here if you built a simple parallel port adapter to attach
 	  an additional AT keyboard, XT keyboard or PS/2 mouse.
 
-<<<<<<< HEAD
-	  More information is available: <file:Documentation/input/input.txt>
-=======
 	  More information is available: <file:Documentation/input/input.rst>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If unsure, say N.
 
@@ -119,19 +97,6 @@ config SERIO_RPCKBD
 	  To compile this driver as a module, choose M here: the
 	  module will be called rpckbd.
 
-<<<<<<< HEAD
-config SERIO_AT32PSIF
-	tristate "AVR32 PSIF PS/2 keyboard and mouse controller"
-	depends on AVR32
-	help
-	  Say Y here if you want to use the PSIF peripheral on AVR32 devices
-	  and connect a PS/2 keyboard and/or mouse to it.
-
-	  To compile this driver as a module, choose M here: the module will
-	  be called at32psif.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SERIO_AMBAKMI
 	tristate "AMBA KMI keyboard controller"
 	depends on ARM_AMBA
@@ -183,10 +148,7 @@ config HIL_MLC
 config SERIO_PCIPS2
 	tristate "PCI PS/2 keyboard and PS/2 mouse controller"
 	depends on PCI
-<<<<<<< HEAD
-=======
 	depends on HAS_IOPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you have a Mobility Docking station with PS/2
 	  keyboard and mice ports.
@@ -204,8 +166,6 @@ config SERIO_MACEPS2
 	  To compile this driver as a module, choose M here: the
 	  module will be called maceps2.
 
-<<<<<<< HEAD
-=======
 config SERIO_SGI_IOC3
 	tristate "SGI IOC3 PS/2 controller"
 	depends on SGI_MFD_IOC3
@@ -216,7 +176,6 @@ config SERIO_SGI_IOC3
 	  To compile this driver as a module, choose M here: the
 	  module will be called ioc3kbd.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SERIO_LIBPS2
 	tristate "PS/2 driver library"
 	depends on SERIO_I8042 || SERIO_I8042=n
@@ -254,10 +213,7 @@ config SERIO_XILINX_XPS_PS2
 
 config SERIO_ALTERA_PS2
 	tristate "Altera UP PS/2 controller"
-<<<<<<< HEAD
-=======
 	depends on HAS_IOMEM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you have Altera University Program PS/2 ports.
 
@@ -268,11 +224,7 @@ config SERIO_AMS_DELTA
 	tristate "Amstrad Delta (E3) mailboard support"
 	depends on MACH_AMS_DELTA
 	default y
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here if you have an E3 and want to use its mailboard,
 	  or any standard AT keyboard connected to the mailboard port.
 
@@ -292,8 +244,6 @@ config SERIO_PS2MULT
 	  To compile this driver as a module, choose M here: the
 	  module will be called ps2mult.
 
-<<<<<<< HEAD
-=======
 config SERIO_ARC_PS2
 	tristate "ARC PS/2 support"
 	depends on HAS_IOMEM
@@ -369,5 +319,4 @@ config USERIO
 
 	  If you are unsure, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif

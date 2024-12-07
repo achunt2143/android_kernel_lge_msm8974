@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * radio-aztech.c - Aztech radio card driver
  *
  * Converted to the radio-isa framework by Hans Verkuil <hans.verkuil@xs4all.nl>
-<<<<<<< HEAD
- * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@infradead.org>
-=======
  * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Adapted to support the Video for Linux API by
  * Russell Kroll <rkroll@exploits.org>.  Based on original tuner code by:
  *
@@ -23,11 +16,7 @@
  * Fully tested with the Keene USB FM Transmitter and the v4l2-compliance tool.
 */
 
-<<<<<<< HEAD
-#include <linux/module.h>	/* Modules 			*/
-=======
 #include <linux/module.h>	/* Modules			*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>		/* Initdata			*/
 #include <linux/ioport.h>	/* request_region		*/
 #include <linux/delay.h>	/* udelay			*/
@@ -38,10 +27,7 @@
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-ctrls.h>
 #include "radio-isa.h"
-<<<<<<< HEAD
-=======
 #include "lm7000.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Russell Kroll, Quay Lu, Donald Song, Jason Lewis, Scott McGrath, William McGrath");
 MODULE_DESCRIPTION("A driver for the Aztech radio card.");
@@ -58,10 +44,6 @@ MODULE_VERSION("1.0.0");
 static int io[AZTECH_MAX] = { [0] = CONFIG_RADIO_AZTECH_PORT,
 			      [1 ... (AZTECH_MAX - 1)] = -1 };
 static int radio_nr[AZTECH_MAX]	= { [0 ... (AZTECH_MAX - 1)] = -1 };
-<<<<<<< HEAD
-static const int radio_wait_time = 1000;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_array(io, int, NULL, 0444);
 MODULE_PARM_DESC(io, "I/O addresses of the Aztech card (0x350 or 0x358)");
@@ -73,20 +55,6 @@ struct aztech {
 	int curvol;
 };
 
-<<<<<<< HEAD
-static void send_0_byte(struct aztech *az)
-{
-	udelay(radio_wait_time);
-	outb_p(2 + az->curvol, az->isa.io);
-	outb_p(64 + 2 + az->curvol, az->isa.io);
-}
-
-static void send_1_byte(struct aztech *az)
-{
-	udelay(radio_wait_time);
-	outb_p(128 + 2 + az->curvol, az->isa.io);
-	outb_p(128 + 64 + 2 + az->curvol, az->isa.io);
-=======
 /* bit definitions for register read */
 #define AZTECH_BIT_NOT_TUNED	(1 << 0)
 #define AZTECH_BIT_MONO		(1 << 1)
@@ -110,7 +78,6 @@ static void aztech_set_pins(void *handle, u8 pins)
 		bits |= AZTECH_BIT_TUN_CE;
 
 	outb_p(bits, az->isa.io);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct radio_isa_card *aztech_alloc(void)
@@ -122,74 +89,21 @@ static struct radio_isa_card *aztech_alloc(void)
 
 static int aztech_s_frequency(struct radio_isa_card *isa, u32 freq)
 {
-<<<<<<< HEAD
-	struct aztech *az = container_of(isa, struct aztech, isa);
-	int  i;
-
-	freq += 171200;			/* Add 10.7 MHz IF		*/
-	freq /= 800;			/* Convert to 50 kHz units	*/
-
-	send_0_byte(az);		/*  0: LSB of frequency       */
-
-	for (i = 0; i < 13; i++)	/*   : frequency bits (1-13)  */
-		if (freq & (1 << i))
-			send_1_byte(az);
-		else
-			send_0_byte(az);
-
-	send_0_byte(az);		/* 14: test bit - always 0    */
-	send_0_byte(az);		/* 15: test bit - always 0    */
-	send_0_byte(az);		/* 16: band data 0 - always 0 */
-	if (isa->stereo)		/* 17: stereo (1 to enable)   */
-		send_1_byte(az);
-	else
-		send_0_byte(az);
-
-	send_1_byte(az);		/* 18: band data 1 - unknown  */
-	send_0_byte(az);		/* 19: time base - always 0   */
-	send_0_byte(az);		/* 20: spacing (0 = 25 kHz)   */
-	send_1_byte(az);		/* 21: spacing (1 = 25 kHz)   */
-	send_0_byte(az);		/* 22: spacing (0 = 25 kHz)   */
-	send_1_byte(az);		/* 23: AM/FM (FM = 1, always) */
-
-	/* latch frequency */
-
-	udelay(radio_wait_time);
-	outb_p(128 + 64 + az->curvol, az->isa.io);
-=======
 	lm7000_set_freq(freq, isa, aztech_set_pins);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* thanks to Michael Dwyer for giving me a dose of clues in
- * the signal strength department..
- *
- * This card has a stereo bit - bit 0 set = mono, not set = stereo
- */
-static u32 aztech_g_rxsubchans(struct radio_isa_card *isa)
-{
-	if (inb(isa->io) & 1)
-=======
 static u32 aztech_g_rxsubchans(struct radio_isa_card *isa)
 {
 	if (inb(isa->io) & AZTECH_BIT_MONO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return V4L2_TUNER_SUB_MONO;
 	return V4L2_TUNER_SUB_STEREO;
 }
 
-<<<<<<< HEAD
-static int aztech_s_stereo(struct radio_isa_card *isa, bool stereo)
-{
-	return aztech_s_frequency(isa, isa->freq);
-=======
 static u32 aztech_g_signal(struct radio_isa_card *isa)
 {
 	return (inb(isa->io) & AZTECH_BIT_NOT_TUNED) ? 0 : 0xffff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int aztech_s_mute_volume(struct radio_isa_card *isa, bool mute, int vol)
@@ -207,13 +121,8 @@ static const struct radio_isa_ops aztech_ops = {
 	.alloc = aztech_alloc,
 	.s_mute_volume = aztech_s_mute_volume,
 	.s_frequency = aztech_s_frequency,
-<<<<<<< HEAD
-	.s_stereo = aztech_s_stereo,
-	.g_rxsubchans = aztech_g_rxsubchans,
-=======
 	.g_rxsubchans = aztech_g_rxsubchans,
 	.g_signal = aztech_g_signal,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const int aztech_ioports[] = { 0x350, 0x358 };
@@ -231,11 +140,7 @@ static struct radio_isa_driver aztech_driver = {
 	.radio_nr_params = radio_nr,
 	.io_ports = aztech_ioports,
 	.num_of_io_ports = ARRAY_SIZE(aztech_ioports),
-<<<<<<< HEAD
-	.region_size = 2,
-=======
 	.region_size = 8,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.card = "Aztech Radio",
 	.ops = &aztech_ops,
 	.has_stereo = true,

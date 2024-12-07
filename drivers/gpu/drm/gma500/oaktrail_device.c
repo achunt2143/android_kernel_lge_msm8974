@@ -1,45 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************
  * Copyright (c) 2011, Intel Corporation.
  * All Rights Reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
- **************************************************************************/
-
-#include <linux/backlight.h>
-#include <linux/module.h>
-#include <linux/dmi.h>
-#include <drm/drmP.h>
-#include <drm/drm.h>
-#include "gma_drm.h"
-#include "psb_drv.h"
-#include "psb_reg.h"
-#include "psb_intel_reg.h"
-#include <asm/mrst.h>
-#include <asm/intel_scu_ipc.h>
-#include "mid_bios.h"
-#include "intel_bios.h"
-
-static int oaktrail_output_init(struct drm_device *dev)
-{
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
  **************************************************************************/
 
 #include <linux/delay.h>
@@ -57,19 +20,15 @@ static int oaktrail_output_init(struct drm_device *dev)
 static int oaktrail_output_init(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev_priv->iLVDS_enable)
 		oaktrail_lvds_init(dev, &dev_priv->mode_dev);
 	else
 		dev_err(dev->dev, "DSI is not supported\n");
 	if (dev_priv->hdmi_priv)
 		oaktrail_hdmi_init(dev, &dev_priv->mode_dev);
-<<<<<<< HEAD
-=======
 
 	psb_intel_sdvo_init(dev, SDVOB);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -77,41 +36,18 @@ static int oaktrail_output_init(struct drm_device *dev)
  *	Provide the low level interfaces for the Moorestown backlight
  */
 
-<<<<<<< HEAD
-#ifdef CONFIG_BACKLIGHT_CLASS_DEVICE
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MRST_BLC_MAX_PWM_REG_FREQ	    0xFFFF
 #define BLC_PWM_PRECISION_FACTOR 100	/* 10000000 */
 #define BLC_PWM_FREQ_CALC_CONSTANT 32
 #define MHz 1000000
 #define BLC_ADJUSTMENT_MAX 100
 
-<<<<<<< HEAD
-static struct backlight_device *oaktrail_backlight_device;
-static int oaktrail_brightness;
-
-static int oaktrail_set_brightness(struct backlight_device *bd)
-{
-	struct drm_device *dev = bl_get_data(oaktrail_backlight_device);
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	int level = bd->props.brightness;
-	u32 blc_pwm_ctl;
-	u32 max_pwm_blc;
-
-	/* Percentage 1-100% being valid */
-	if (level < 1)
-		level = 1;
-
-=======
 static void oaktrail_set_brightness(struct drm_device *dev, int level)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 	u32 blc_pwm_ctl;
 	u32 max_pwm_blc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (gma_power_begin(dev, 0)) {
 		/* Calculate and set the brightness value */
 		max_pwm_blc = REG_READ(BLC_PWM_CTL) >> 16;
@@ -134,29 +70,11 @@ static void oaktrail_set_brightness(struct drm_device *dev, int level)
 		REG_WRITE(BLC_PWM_CTL, (max_pwm_blc << 16) | blc_pwm_ctl);
 		gma_power_end(dev);
 	}
-<<<<<<< HEAD
-	oaktrail_brightness = level;
-	return 0;
-}
-
-static int oaktrail_get_brightness(struct backlight_device *bd)
-{
-	/* return locally cached var instead of HW read (due to DPST etc.) */
-	/* FIXME: ideally return actual value in case firmware fiddled with
-	   it */
-	return oaktrail_brightness;
-}
-
-static int device_backlight_init(struct drm_device *dev)
-{
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 }
 
 static int oaktrail_backlight_init(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long core_clock;
 	u16 bl_max_freq;
 	uint32_t value;
@@ -183,52 +101,11 @@ static int oaktrail_backlight_init(struct drm_device *dev)
 		REG_WRITE(BLC_PWM_CTL, value | (value << 16));
 		gma_power_end(dev);
 	}
-<<<<<<< HEAD
-	return 0;
-}
-
-static const struct backlight_ops oaktrail_ops = {
-	.get_brightness = oaktrail_get_brightness,
-	.update_status  = oaktrail_set_brightness,
-};
-
-static int oaktrail_backlight_init(struct drm_device *dev)
-{
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	int ret;
-	struct backlight_properties props;
-
-	memset(&props, 0, sizeof(struct backlight_properties));
-	props.max_brightness = 100;
-	props.type = BACKLIGHT_PLATFORM;
-
-	oaktrail_backlight_device = backlight_device_register("oaktrail-bl",
-				NULL, (void *)dev, &oaktrail_ops, &props);
-
-	if (IS_ERR(oaktrail_backlight_device))
-		return PTR_ERR(oaktrail_backlight_device);
-
-	ret = device_backlight_init(dev);
-	if (ret < 0) {
-		backlight_device_unregister(oaktrail_backlight_device);
-		return ret;
-	}
-	oaktrail_backlight_device->props.brightness = 100;
-	oaktrail_backlight_device->props.max_brightness = 100;
-	backlight_update_status(oaktrail_backlight_device);
-	dev_priv->backlight_device = oaktrail_backlight_device;
-	return 0;
-}
-
-#endif
-
-=======
 
 	oaktrail_set_brightness(dev, PSB_MAX_BRIGHTNESS);
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Provide the Moorestown specific chip logic and low level methods
  *	for power management
@@ -243,14 +120,9 @@ static int oaktrail_backlight_init(struct drm_device *dev)
  */
 static int oaktrail_save_display_registers(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	struct psb_save_area *regs = &dev_priv->regs;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 	struct psb_save_area *regs = &dev_priv->regs;
 	struct psb_pipe *p = &regs->pipe[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	u32 pp_stat;
 
@@ -265,26 +137,6 @@ static int oaktrail_save_display_registers(struct drm_device *dev)
 	regs->psb.saveCHICKENBIT = PSB_RVDC32(DSPCHICKENBIT);
 
 	/* Pipe & plane A info */
-<<<<<<< HEAD
-	regs->psb.savePIPEACONF = PSB_RVDC32(PIPEACONF);
-	regs->psb.savePIPEASRC = PSB_RVDC32(PIPEASRC);
-	regs->psb.saveFPA0 = PSB_RVDC32(MRST_FPA0);
-	regs->psb.saveFPA1 = PSB_RVDC32(MRST_FPA1);
-	regs->psb.saveDPLL_A = PSB_RVDC32(MRST_DPLL_A);
-	regs->psb.saveHTOTAL_A = PSB_RVDC32(HTOTAL_A);
-	regs->psb.saveHBLANK_A = PSB_RVDC32(HBLANK_A);
-	regs->psb.saveHSYNC_A = PSB_RVDC32(HSYNC_A);
-	regs->psb.saveVTOTAL_A = PSB_RVDC32(VTOTAL_A);
-	regs->psb.saveVBLANK_A = PSB_RVDC32(VBLANK_A);
-	regs->psb.saveVSYNC_A = PSB_RVDC32(VSYNC_A);
-	regs->psb.saveBCLRPAT_A = PSB_RVDC32(BCLRPAT_A);
-	regs->psb.saveDSPACNTR = PSB_RVDC32(DSPACNTR);
-	regs->psb.saveDSPASTRIDE = PSB_RVDC32(DSPASTRIDE);
-	regs->psb.saveDSPAADDR = PSB_RVDC32(DSPABASE);
-	regs->psb.saveDSPASURF = PSB_RVDC32(DSPASURF);
-	regs->psb.saveDSPALINOFF = PSB_RVDC32(DSPALINOFF);
-	regs->psb.saveDSPATILEOFF = PSB_RVDC32(DSPATILEOFF);
-=======
 	p->conf = PSB_RVDC32(PIPEACONF);
 	p->src = PSB_RVDC32(PIPEASRC);
 	p->fp0 = PSB_RVDC32(MRST_FPA0);
@@ -303,7 +155,6 @@ static int oaktrail_save_display_registers(struct drm_device *dev)
 	p->surf = PSB_RVDC32(DSPASURF);
 	p->linoff = PSB_RVDC32(DSPALINOFF);
 	p->tileoff = PSB_RVDC32(DSPATILEOFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Save cursor regs */
 	regs->psb.saveDSPACURSOR_CTRL = PSB_RVDC32(CURACNTR);
@@ -312,11 +163,7 @@ static int oaktrail_save_display_registers(struct drm_device *dev)
 
 	/* Save palette (gamma) */
 	for (i = 0; i < 256; i++)
-<<<<<<< HEAD
-		regs->psb.save_palette_a[i] = PSB_RVDC32(PALETTE_A + (i << 2));
-=======
 		p->palette[i] = PSB_RVDC32(PALETTE_A + (i << 2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev_priv->hdmi_priv)
 		oaktrail_hdmi_save(dev);
@@ -387,14 +234,9 @@ static int oaktrail_save_display_registers(struct drm_device *dev)
  */
 static int oaktrail_restore_display_registers(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	struct psb_save_area *regs = &dev_priv->regs;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 	struct psb_save_area *regs = &dev_priv->regs;
 	struct psb_pipe *p = &regs->pipe[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 pp_stat;
 	int i;
 
@@ -412,23 +254,6 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
 	PSB_WVDC32(0x80000000, VGACNTRL);
 
 	/* set the plls */
-<<<<<<< HEAD
-	PSB_WVDC32(regs->psb.saveFPA0, MRST_FPA0);
-	PSB_WVDC32(regs->psb.saveFPA1, MRST_FPA1);
-
-	/* Actually enable it */
-	PSB_WVDC32(regs->psb.saveDPLL_A, MRST_DPLL_A);
-	DRM_UDELAY(150);
-
-	/* Restore mode */
-	PSB_WVDC32(regs->psb.saveHTOTAL_A, HTOTAL_A);
-	PSB_WVDC32(regs->psb.saveHBLANK_A, HBLANK_A);
-	PSB_WVDC32(regs->psb.saveHSYNC_A, HSYNC_A);
-	PSB_WVDC32(regs->psb.saveVTOTAL_A, VTOTAL_A);
-	PSB_WVDC32(regs->psb.saveVBLANK_A, VBLANK_A);
-	PSB_WVDC32(regs->psb.saveVSYNC_A, VSYNC_A);
-	PSB_WVDC32(regs->psb.savePIPEASRC, PIPEASRC);
-=======
 	PSB_WVDC32(p->fp0, MRST_FPA0);
 	PSB_WVDC32(p->fp1, MRST_FPA1);
 
@@ -444,7 +269,6 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
 	PSB_WVDC32(p->vblank, VBLANK_A);
 	PSB_WVDC32(p->vsync, VSYNC_A);
 	PSB_WVDC32(p->src, PIPEASRC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PSB_WVDC32(regs->psb.saveBCLRPAT_A, BCLRPAT_A);
 
 	/* Restore performance mode*/
@@ -452,18 +276,6 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
 
 	/* Enable the pipe*/
 	if (dev_priv->iLVDS_enable)
-<<<<<<< HEAD
-		PSB_WVDC32(regs->psb.savePIPEACONF, PIPEACONF);
-
-	/* Set up the plane*/
-	PSB_WVDC32(regs->psb.saveDSPALINOFF, DSPALINOFF);
-	PSB_WVDC32(regs->psb.saveDSPASTRIDE, DSPASTRIDE);
-	PSB_WVDC32(regs->psb.saveDSPATILEOFF, DSPATILEOFF);
-
-	/* Enable the plane */
-	PSB_WVDC32(regs->psb.saveDSPACNTR, DSPACNTR);
-	PSB_WVDC32(regs->psb.saveDSPASURF, DSPASURF);
-=======
 		PSB_WVDC32(p->conf, PIPEACONF);
 
 	/* Set up the plane*/
@@ -474,7 +286,6 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
 	/* Enable the plane */
 	PSB_WVDC32(p->cntr, DSPACNTR);
 	PSB_WVDC32(p->surf, DSPASURF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable Cursor A */
 	PSB_WVDC32(regs->psb.saveDSPACURSOR_CTRL, CURACNTR);
@@ -483,11 +294,7 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
 
 	/* Restore palette (gamma) */
 	for (i = 0; i < 256; i++)
-<<<<<<< HEAD
-		PSB_WVDC32(regs->psb.save_palette_a[i], PALETTE_A + (i << 2));
-=======
 		PSB_WVDC32(p->palette[i], PALETTE_A + (i << 2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev_priv->hdmi_priv)
 		oaktrail_hdmi_restore(dev);
@@ -542,11 +349,7 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
  */
 static int oaktrail_power_down(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 pwr_mask ;
 	u32 pwr_sts;
 
@@ -570,11 +373,7 @@ static int oaktrail_power_down(struct drm_device *dev)
  */
 static int oaktrail_power_up(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 pwr_mask = PSB_PWRGT_DISPLAY_MASK;
 	u32 pwr_sts, pwr_cnt;
 
@@ -592,23 +391,6 @@ static int oaktrail_power_up(struct drm_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-
-static int oaktrail_chip_setup(struct drm_device *dev)
-{
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	struct oaktrail_vbt *vbt = &dev_priv->vbt_data;
-	int ret;
-	
-	ret = mid_chip_setup(dev);
-	if (ret < 0)
-		return ret;
-	if (vbt->size == 0) {
-		/* Now pull the BIOS data */
-		gma_intel_opregion_init(dev);
-		psb_intel_init_bios(dev);
-	}
-=======
 /* Oaktrail */
 static const struct psb_offset oaktrail_regmap[2] = {
 	{
@@ -679,59 +461,32 @@ static int oaktrail_chip_setup(struct drm_device *dev)
 	}
 	gma_intel_setup_gmbus(dev);
 	oaktrail_hdmi_setup(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void oaktrail_teardown(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	struct oaktrail_vbt *vbt = &dev_priv->vbt_data;
-
-	oaktrail_hdmi_teardown(dev);
-	if (vbt->size == 0)
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 
 	gma_intel_teardown_gmbus(dev);
 	oaktrail_hdmi_teardown(dev);
 	if (!dev_priv->has_gct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psb_intel_destroy_bios(dev);
 }
 
 const struct psb_ops oaktrail_chip_ops = {
 	.name = "Oaktrail",
-<<<<<<< HEAD
-	.accel_2d = 1,
-	.pipes = 2,
-	.crtcs = 2,
-=======
 	.pipes = 2,
 	.crtcs = 2,
 	.hdmi_mask = (1 << 1),
 	.lvds_mask = (1 << 0),
 	.sdvo_mask = (1 << 1),
 	.cursor_needs_phys = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sgx_offset = MRST_SGX_OFFSET,
 
 	.chip_setup = oaktrail_chip_setup,
 	.chip_teardown = oaktrail_teardown,
 	.crtc_helper = &oaktrail_helper_funcs,
-<<<<<<< HEAD
-	.crtc_funcs = &psb_intel_crtc_funcs,
-
-	.output_init = oaktrail_output_init,
-
-#ifdef CONFIG_BACKLIGHT_CLASS_DEVICE
-	.backlight_init = oaktrail_backlight_init,
-#endif
-
-	.save_regs = oaktrail_save_display_registers,
-	.restore_regs = oaktrail_restore_display_registers,
-=======
 
 	.output_init = oaktrail_output_init,
 
@@ -743,7 +498,6 @@ const struct psb_ops oaktrail_chip_ops = {
 	.restore_regs = oaktrail_restore_display_registers,
 	.save_crtc = gma_crtc_save,
 	.restore_crtc = gma_crtc_restore,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.power_down = oaktrail_power_down,
 	.power_up = oaktrail_power_up,
 

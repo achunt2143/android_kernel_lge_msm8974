@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -17,14 +14,6 @@
  *
  * Changes:
  *		Mike McLagan    :       Routing by source
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _IP_H
 #define _IP_H
@@ -33,12 +22,6 @@
 #include <linux/ip.h>
 #include <linux/in.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-
-#include <net/inet_sock.h>
-#include <net/snmp.h>
-#include <net/flow.h>
-=======
 #include <linux/jhash.h>
 #include <linux/sockptr.h>
 #include <linux/static_key.h>
@@ -57,19 +40,13 @@
 extern unsigned int sysctl_fib_sync_mem;
 extern unsigned int sysctl_fib_sync_mem_min;
 extern unsigned int sysctl_fib_sync_mem_max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sock;
 
 struct inet_skb_parm {
-<<<<<<< HEAD
-	struct ip_options	opt;		/* Compiled IP options		*/
-	unsigned char		flags;
-=======
 	int			iif;
 	struct ip_options	opt;		/* Compiled IP options		*/
 	u16			flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IPSKB_FORWARDED		BIT(0)
 #define IPSKB_XFRM_TUNNEL_SIZE	BIT(1)
@@ -77,40 +54,25 @@ struct inet_skb_parm {
 #define IPSKB_FRAG_COMPLETE	BIT(3)
 #define IPSKB_REROUTED		BIT(4)
 #define IPSKB_DOREDIRECT	BIT(5)
-<<<<<<< HEAD
-=======
 #define IPSKB_FRAG_PMTU		BIT(6)
 #define IPSKB_L3SLAVE		BIT(7)
 #define IPSKB_NOPOLICY		BIT(8)
 #define IPSKB_MULTIPATH		BIT(9)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u16			frag_max_size;
 };
 
-<<<<<<< HEAD
-=======
 static inline bool ipv4_l3mdev_skb(u16 flags)
 {
 	return !!(flags & IPSKB_L3SLAVE);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int ip_hdrlen(const struct sk_buff *skb)
 {
 	return ip_hdr(skb)->ihl * 4;
 }
 
 struct ipcm_cookie {
-<<<<<<< HEAD
-	__be32			addr;
-	int			oif;
-	struct ip_options_rcu	*opt;
-	__u8			tx_flags;
-};
-
-#define IPCB(skb) ((struct inet_skb_parm*)((skb)->cb))
-=======
 	struct sockcm_cookie	sockc;
 	__be32			addr;
 	int			oif;
@@ -162,7 +124,6 @@ static inline int inet_sdif(const struct sk_buff *skb)
    but receiver should be enough clever f.e. to forward mtrace requests,
    sent to multicast group to reach destination designated router.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ip_ra_chain {
 	struct ip_ra_chain __rcu *next;
@@ -174,11 +135,6 @@ struct ip_ra_chain {
 	struct rcu_head		rcu;
 };
 
-<<<<<<< HEAD
-extern struct ip_ra_chain __rcu *ip_ra_chain;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IP flags. */
 #define IP_CE		0x8000		/* Flag: "Congestion"		*/
 #define IP_DF		0x4000		/* Flag: "Don't Fragment"	*/
@@ -193,59 +149,12 @@ struct packet_type;
 struct rtable;
 struct sockaddr;
 
-<<<<<<< HEAD
-extern int		igmp_mc_proc_init(void);
-=======
 int igmp_mc_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Functions provided by ip.c
  */
 
-<<<<<<< HEAD
-extern int		ip_build_and_send_pkt(struct sk_buff *skb, struct sock *sk,
-					      __be32 saddr, __be32 daddr,
-					      struct ip_options_rcu *opt);
-extern int		ip_rcv(struct sk_buff *skb, struct net_device *dev,
-			       struct packet_type *pt, struct net_device *orig_dev);
-extern int		ip_local_deliver(struct sk_buff *skb);
-extern int		ip_mr_input(struct sk_buff *skb);
-extern int		ip_output(struct sk_buff *skb);
-extern int		ip_mc_output(struct sk_buff *skb);
-extern int		ip_fragment(struct sk_buff *skb, int (*output)(struct sk_buff *));
-extern int		ip_do_nat(struct sk_buff *skb);
-extern void		ip_send_check(struct iphdr *ip);
-extern int		__ip_local_out(struct sk_buff *skb);
-extern int		ip_local_out(struct sk_buff *skb);
-extern int		ip_queue_xmit(struct sk_buff *skb, struct flowi *fl);
-extern void		ip_init(void);
-extern int		ip_append_data(struct sock *sk, struct flowi4 *fl4,
-				       int getfrag(void *from, char *to, int offset, int len,
-						   int odd, struct sk_buff *skb),
-				void *from, int len, int protolen,
-				struct ipcm_cookie *ipc,
-				struct rtable **rt,
-				unsigned int flags);
-extern int		ip_generic_getfrag(void *from, char *to, int offset, int len, int odd, struct sk_buff *skb);
-extern ssize_t		ip_append_page(struct sock *sk, struct flowi4 *fl4, struct page *page,
-				int offset, size_t size, int flags);
-extern struct sk_buff  *__ip_make_skb(struct sock *sk,
-				      struct flowi4 *fl4,
-				      struct sk_buff_head *queue,
-				      struct inet_cork *cork);
-extern int		ip_send_skb(struct sk_buff *skb);
-extern int		ip_push_pending_frames(struct sock *sk, struct flowi4 *fl4);
-extern void		ip_flush_pending_frames(struct sock *sk);
-extern struct sk_buff  *ip_make_skb(struct sock *sk,
-				    struct flowi4 *fl4,
-				    int getfrag(void *from, char *to, int offset, int len,
-						int odd, struct sk_buff *skb),
-				    void *from, int length, int transhdrlen,
-				    struct ipcm_cookie *ipc,
-				    struct rtable **rtp,
-				    unsigned int flags);
-=======
 int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
 			  __be32 saddr, __be32 daddr,
 			  struct ip_options_rcu *opt, u8 tos);
@@ -328,46 +237,12 @@ struct sk_buff *ip_make_skb(struct sock *sk, struct flowi4 *fl4,
 			    struct inet_cork *cork, unsigned int flags);
 
 int ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct sk_buff *ip_finish_skb(struct sock *sk, struct flowi4 *fl4)
 {
 	return __ip_make_skb(sk, fl4, &sk->sk_write_queue, &inet_sk(sk)->cork.base);
 }
 
-<<<<<<< HEAD
-/* datagram.c */
-extern int		ip4_datagram_connect(struct sock *sk, 
-					     struct sockaddr *uaddr, int addr_len);
-
-/*
- *	Map a multicast IP onto multicast MAC for type Token Ring.
- *      This conforms to RFC1469 Option 2 Multicasting i.e.
- *      using a functional address to transmit / receive 
- *      multicast packets.
- */
-
-static inline void ip_tr_mc_map(__be32 addr, char *buf)
-{
-	buf[0]=0xC0;
-	buf[1]=0x00;
-	buf[2]=0x00;
-	buf[3]=0x04;
-	buf[4]=0x00;
-	buf[5]=0x00;
-}
-
-struct ip_reply_arg {
-	struct kvec iov[1];   
-	int	    flags;
-	__wsum 	    csum;
-	int	    csumoffset; /* u16 offset of csum in iov[0].iov_base */
-				/* -1 if not needed */ 
-	int	    bound_dev_if;
-	u8  	    tos;
-	kuid_t	    uid;
-}; 
-=======
 /* Get the route scope that should be used when sending a packet. */
 static inline u8 ip_sendmsg_scope(const struct inet_sock *inet,
 				  const struct ipcm_cookie *ipc,
@@ -402,7 +277,6 @@ struct ip_reply_arg {
 	u8  	    tos;
 	kuid_t	    uid;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IP_REPLY_ARG_NOSRCCHECK 1
 
@@ -411,34 +285,6 @@ static inline __u8 ip_reply_arg_flowi_flags(const struct ip_reply_arg *arg)
 	return (arg->flags & IP_REPLY_ARG_NOSRCCHECK) ? FLOWI_FLAG_ANYSRC : 0;
 }
 
-<<<<<<< HEAD
-void ip_send_reply(struct sock *sk, struct sk_buff *skb, __be32 daddr,
-		   const struct ip_reply_arg *arg, unsigned int len);
-
-struct ipv4_config {
-	int	log_martians;
-	int	no_pmtu_disc;
-};
-
-extern struct ipv4_config ipv4_config;
-#define IP_INC_STATS(net, field)	SNMP_INC_STATS64((net)->mib.ip_statistics, field)
-#define IP_INC_STATS_BH(net, field)	SNMP_INC_STATS64_BH((net)->mib.ip_statistics, field)
-#define IP_ADD_STATS(net, field, val)	SNMP_ADD_STATS64((net)->mib.ip_statistics, field, val)
-#define IP_ADD_STATS_BH(net, field, val) SNMP_ADD_STATS64_BH((net)->mib.ip_statistics, field, val)
-#define IP_UPD_PO_STATS(net, field, val) SNMP_UPD_PO_STATS64((net)->mib.ip_statistics, field, val)
-#define IP_UPD_PO_STATS_BH(net, field, val) SNMP_UPD_PO_STATS64_BH((net)->mib.ip_statistics, field, val)
-#define NET_INC_STATS(net, field)	SNMP_INC_STATS((net)->mib.net_statistics, field)
-#define NET_INC_STATS_BH(net, field)	SNMP_INC_STATS_BH((net)->mib.net_statistics, field)
-#define NET_INC_STATS_USER(net, field) 	SNMP_INC_STATS_USER((net)->mib.net_statistics, field)
-#define NET_ADD_STATS_BH(net, field, adnd) SNMP_ADD_STATS_BH((net)->mib.net_statistics, field, adnd)
-#define NET_ADD_STATS_USER(net, field, adnd) SNMP_ADD_STATS_USER((net)->mib.net_statistics, field, adnd)
-
-extern unsigned long snmp_fold_field(void __percpu *mib[], int offt);
-#if BITS_PER_LONG==32
-extern u64 snmp_fold_field64(void __percpu *mib[], int offt, size_t sync_off);
-#else
-static inline u64 snmp_fold_field64(void __percpu *mib[], int offt, size_t syncp_off)
-=======
 void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
 			   const struct ip_options *sopt,
 			   __be32 daddr, __be32 saddr,
@@ -475,32 +321,10 @@ static inline u64  snmp_get_cpu_field64(void __percpu *mib, int cpu, int offct,
 }
 
 static inline u64 snmp_fold_field64(void __percpu *mib, int offt, size_t syncp_off)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return snmp_fold_field(mib, offt);
 }
 #endif
-<<<<<<< HEAD
-extern int snmp_mib_init(void __percpu *ptr[2], size_t mibsize, size_t align);
-extern void snmp_mib_free(void __percpu *ptr[2]);
-
-extern struct local_ports {
-	seqlock_t	lock;
-	int		range[2];
-} sysctl_local_ports;
-extern void inet_get_local_port_range(int *low, int *high);
-
-extern unsigned long *sysctl_local_reserved_ports;
-static inline int inet_is_reserved_local_port(int port)
-{
-	return test_bit(port, sysctl_local_reserved_ports);
-}
-
-extern int sysctl_ip_nonlocal_bind;
-
-extern struct ctl_path net_core_path[];
-extern struct ctl_path net_ipv4_ctl_path[];
-=======
 
 #define snmp_get_cpu_field64_batch(buff64, stats_list, mib_statistic, offset) \
 { \
@@ -565,31 +389,18 @@ static inline bool inet_port_requires_bind_service(struct net *net, unsigned sho
 #endif
 
 __be32 inet_current_timestamp(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* From inetpeer.c */
 extern int inet_peer_threshold;
 extern int inet_peer_minttl;
 extern int inet_peer_maxttl;
 
-<<<<<<< HEAD
-/* From ip_output.c */
-extern int sysctl_ip_dynaddr;
-
-extern void ipfrag_init(void);
-
-extern void ip_static_sysctl_init(void);
-
-#define IP4_REPLY_MARK(net, mark) \
-	((net)->ipv4.sysctl_fwmark_reflect ? (mark) : 0)
-=======
 void ipfrag_init(void);
 
 void ip_static_sysctl_init(void);
 
 #define IP4_REPLY_MARK(net, mark) \
 	(READ_ONCE((net)->ipv4.sysctl_fwmark_reflect) ? (mark) : 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline bool ip_is_fragment(const struct iphdr *iph)
 {
@@ -610,43 +421,6 @@ int ip_decrease_ttl(struct iphdr *iph)
 	return --iph->ttl;
 }
 
-<<<<<<< HEAD
-static inline
-int ip_dont_fragment(struct sock *sk, struct dst_entry *dst)
-{
-	return  inet_sk(sk)->pmtudisc == IP_PMTUDISC_DO ||
-		(inet_sk(sk)->pmtudisc == IP_PMTUDISC_WANT &&
-		 !(dst_metric_locked(dst, RTAX_MTU)));
-}
-
-u32 ip_idents_reserve(u32 hash, int segs);
-void __ip_select_ident(struct iphdr *iph, int segs);
-
-static inline void ip_select_ident_segs(struct sk_buff *skb, struct sock *sk, int segs)
-{
-	struct iphdr *iph = ip_hdr(skb);
-
-	if ((iph->frag_off & htons(IP_DF)) && !skb->local_df) {
-		/* This is only to work around buggy Windows95/2000
-		 * VJ compression implementations.  If the ID field
-		 * does not change, they drop every other packet in
-		 * a TCP stream using header compression.
-		 */
-		if (sk && inet_sk(sk)->inet_daddr) {
-			iph->id = htons(inet_sk(sk)->inet_id);
-			inet_sk(sk)->inet_id += segs;
-		} else {
-			iph->id = 0;
-		}
-	} else {
-		__ip_select_ident(iph, segs);
-	}
-}
-
-static inline void ip_select_ident(struct sk_buff *skb, struct sock *sk)
-{
-	ip_select_ident_segs(skb, sk, 1);
-=======
 static inline int ip_mtu_locked(const struct dst_entry *dst)
 {
 	const struct rtable *rt = (const struct rtable *)dst;
@@ -821,7 +595,6 @@ static inline void iph_to_flow_copy_v4addrs(struct flow_keys *flow,
 			      sizeof(flow->addrs.v4addrs.src));
 	memcpy(&flow->addrs.v4addrs, &iph->addrs, sizeof(flow->addrs.v4addrs));
 	flow->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -897,36 +670,13 @@ static __inline__ void inet_reset_saddr(struct sock *sk)
 		struct ipv6_pinfo *np = inet6_sk(sk);
 
 		memset(&np->saddr, 0, sizeof(np->saddr));
-<<<<<<< HEAD
-		memset(&np->rcv_saddr, 0, sizeof(np->rcv_saddr));
-=======
 		memset(&sk->sk_v6_rcv_saddr, 0, sizeof(sk->sk_v6_rcv_saddr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 }
 
 #endif
 
-<<<<<<< HEAD
-static inline int sk_mc_loop(struct sock *sk)
-{
-	if (!sk)
-		return 1;
-	switch (sk->sk_family) {
-	case AF_INET:
-		return inet_sk(sk)->mc_loop;
-#if IS_ENABLED(CONFIG_IPV6)
-	case AF_INET6:
-		return inet6_sk(sk)->mc_loop;
-#endif
-	}
-	WARN_ON(1);
-	return 1;
-}
-
-extern bool ip_call_ra_chain(struct sk_buff *skb);
-=======
 static inline unsigned int ipv4_addr_hash(__be32 ip)
 {
 	return (__force unsigned int) ip;
@@ -940,7 +690,6 @@ static inline u32 ipv4_portaddr_hash(const struct net *net,
 }
 
 bool ip_call_ra_chain(struct sk_buff *skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Functions provided by ip_fragment.c
@@ -962,13 +711,6 @@ enum ip_defrag_users {
 	IP_DEFRAG_MACVLAN,
 };
 
-<<<<<<< HEAD
-int ip_defrag(struct sk_buff *skb, u32 user);
-#ifdef CONFIG_INET
-struct sk_buff *ip_check_defrag(struct sk_buff *skb, u32 user);
-#else
-static inline struct sk_buff *ip_check_defrag(struct sk_buff *skb, u32 user)
-=======
 /* Return true if the value of 'user' is between 'lower_bond'
  * and 'upper_bond' inclusively.
  */
@@ -984,42 +726,14 @@ int ip_defrag(struct net *net, struct sk_buff *skb, u32 user);
 struct sk_buff *ip_check_defrag(struct net *net, struct sk_buff *skb, u32 user);
 #else
 static inline struct sk_buff *ip_check_defrag(struct net *net, struct sk_buff *skb, u32 user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return skb;
 }
 #endif
-<<<<<<< HEAD
-int ip_frag_mem(struct net *net);
-int ip_frag_nqueues(struct net *net);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Functions provided by ip_forward.c
  */
-<<<<<<< HEAD
- 
-extern int ip_forward(struct sk_buff *skb);
- 
-/*
- *	Functions provided by ip_options.c
- */
- 
-extern void ip_options_build(struct sk_buff *skb, struct ip_options *opt,
-			     __be32 daddr, struct rtable *rt, int is_frag);
-extern int ip_options_echo(struct ip_options *dopt, struct sk_buff *skb);
-extern void ip_options_fragment(struct sk_buff *skb);
-extern int ip_options_compile(struct net *net,
-			      struct ip_options *opt, struct sk_buff *skb);
-extern int ip_options_get(struct net *net, struct ip_options_rcu **optp,
-			  unsigned char *data, int optlen);
-extern int ip_options_get_from_user(struct net *net, struct ip_options_rcu **optp,
-				    unsigned char __user *data, int optlen);
-extern void ip_options_undo(struct ip_options * opt);
-extern void ip_forward_options(struct sk_buff *skb);
-extern int ip_options_rcv_srr(struct sk_buff *skb);
-=======
 
 int ip_forward(struct sk_buff *skb);
 
@@ -1048,36 +762,11 @@ int ip_options_get(struct net *net, struct ip_options_rcu **optp,
 void ip_options_undo(struct ip_options *opt);
 void ip_forward_options(struct sk_buff *skb);
 int ip_options_rcv_srr(struct sk_buff *skb, struct net_device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Functions provided by ip_sockglue.c
  */
 
-<<<<<<< HEAD
-extern void	ipv4_pktinfo_prepare(struct sk_buff *skb);
-extern void	ip_cmsg_recv(struct msghdr *msg, struct sk_buff *skb);
-extern int	ip_cmsg_send(struct net *net,
-			     struct msghdr *msg, struct ipcm_cookie *ipc);
-extern int	ip_setsockopt(struct sock *sk, int level, int optname, char __user *optval, unsigned int optlen);
-extern int	ip_getsockopt(struct sock *sk, int level, int optname, char __user *optval, int __user *optlen);
-extern int	compat_ip_setsockopt(struct sock *sk, int level,
-			int optname, char __user *optval, unsigned int optlen);
-extern int	compat_ip_getsockopt(struct sock *sk, int level,
-			int optname, char __user *optval, int __user *optlen);
-extern int	ip_ra_control(struct sock *sk, unsigned char on, void (*destructor)(struct sock *));
-
-extern int 	ip_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len);
-extern void	ip_icmp_error(struct sock *sk, struct sk_buff *skb, int err, 
-			      __be16 port, u32 info, u8 *payload);
-extern void	ip_local_error(struct sock *sk, int err, __be32 daddr, __be16 dport,
-			       u32 info);
-
-#ifdef CONFIG_PROC_FS
-extern int ip_misc_proc_init(void);
-#endif
-
-=======
 void ipv4_pktinfo_prepare(const struct sock *sk, struct sk_buff *skb, bool drop_dst);
 void ip_cmsg_recv_offset(struct msghdr *msg, struct sock *sk,
 			 struct sk_buff *skb, int tlen, int offset);
@@ -1129,5 +818,4 @@ void ip_sock_set_recverr(struct sock *sk);
 void ip_sock_set_tos(struct sock *sk, int val);
 void  __ip_sock_set_tos(struct sock *sk, int val);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _IP_H */

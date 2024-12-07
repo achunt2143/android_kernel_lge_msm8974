@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#include <linux/dma-mapping.h>
-#include <linux/dma-debug.h>
-#include <linux/dmar.h>
-#include <linux/export.h>
-#include <linux/bootmem.h>
-#include <linux/gfp.h>
-#include <linux/pci.h>
-#include <linux/kmemleak.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/dma-map-ops.h>
 #include <linux/dma-direct.h>
@@ -18,25 +8,11 @@
 #include <linux/gfp.h>
 #include <linux/pci.h>
 #include <linux/amd-iommu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/proto.h>
 #include <asm/dma.h>
 #include <asm/iommu.h>
 #include <asm/gart.h>
-<<<<<<< HEAD
-#include <asm/calgary.h>
-#include <asm/x86_init.h>
-#include <asm/iommu_table.h>
-
-static int forbid_dac __read_mostly;
-
-struct dma_map_ops *dma_ops = &nommu_dma_ops;
-EXPORT_SYMBOL(dma_ops);
-
-static int iommu_sac_force __read_mostly;
-
-=======
 #include <asm/x86_init.h>
 
 #include <xen/xen.h>
@@ -47,7 +23,6 @@ static bool disable_dac_quirk __read_mostly;
 const struct dma_map_ops *dma_ops;
 EXPORT_SYMBOL(dma_ops);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_IOMMU_DEBUG
 int panic_on_overflow __read_mostly = 1;
 int force_iommu __read_mostly = 1;
@@ -62,115 +37,6 @@ int no_iommu __read_mostly;
 /* Set this to 1 if there is a HW IOMMU in the system */
 int iommu_detected __read_mostly = 0;
 
-<<<<<<< HEAD
-/*
- * This variable becomes 1 if iommu=pt is passed on the kernel command line.
- * If this variable is 1, IOMMU implementations do no DMA translation for
- * devices and allow every device to access to whole physical memory. This is
- * useful if a user wants to use an IOMMU only for KVM device assignment to
- * guests and not for driver dma translation.
- */
-int iommu_pass_through __read_mostly;
-
-/*
- * Group multi-function PCI devices into a single device-group for the
- * iommu_device_group interface.  This tells the iommu driver to pretend
- * it cannot distinguish between functions of a device, exposing only one
- * group for the device.  Useful for disallowing use of individual PCI
- * functions from userspace drivers.
- */
-int iommu_group_mf __read_mostly;
-
-extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
-
-/* Dummy device used for NULL arguments (normally ISA). */
-struct device x86_dma_fallback_dev = {
-	.init_name = "fallback device",
-	.coherent_dma_mask = ISA_DMA_BIT_MASK,
-	.dma_mask = &x86_dma_fallback_dev.coherent_dma_mask,
-};
-EXPORT_SYMBOL(x86_dma_fallback_dev);
-
-/* Number of entries preallocated for DMA-API debugging */
-#define PREALLOC_DMA_DEBUG_ENTRIES       32768
-
-int dma_set_mask(struct device *dev, u64 mask)
-{
-	if (!dev->dma_mask || !dma_supported(dev, mask))
-		return -EIO;
-
-	*dev->dma_mask = mask;
-
-	return 0;
-}
-EXPORT_SYMBOL(dma_set_mask);
-
-void __init pci_iommu_alloc(void)
-{
-	struct iommu_table_entry *p;
-
-	sort_iommu_table(__iommu_table, __iommu_table_end);
-	check_iommu_entries(__iommu_table, __iommu_table_end);
-
-	for (p = __iommu_table; p < __iommu_table_end; p++) {
-		if (p && p->detect && p->detect() > 0) {
-			p->flags |= IOMMU_DETECTED;
-			if (p->early_init)
-				p->early_init();
-			if (p->flags & IOMMU_FINISH_IF_DETECTED)
-				break;
-		}
-	}
-}
-void *dma_generic_alloc_coherent(struct device *dev, size_t size,
-				 dma_addr_t *dma_addr, gfp_t flag,
-				 struct dma_attrs *attrs)
-{
-	unsigned long dma_mask;
-	struct page *page = NULL;
-	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-	dma_addr_t addr;
-
-	dma_mask = dma_alloc_coherent_mask(dev, flag);
-
-	flag |= __GFP_ZERO;
-again:
-	if (!(flag & GFP_ATOMIC))
-		page = dma_alloc_from_contiguous(dev, count, get_order(size));
-	if (!page)
-		page = alloc_pages_node(dev_to_node(dev), flag, get_order(size));
-	if (!page)
-		return NULL;
-
-	addr = page_to_phys(page);
-	if (addr + size > dma_mask) {
-		__free_pages(page, get_order(size));
-
-		if (dma_mask < DMA_BIT_MASK(32) && !(flag & GFP_DMA)) {
-			flag = (flag & ~GFP_DMA32) | GFP_DMA;
-			goto again;
-		}
-
-		return NULL;
-	}
-
-	*dma_addr = addr;
-	return page_address(page);
-}
-
-void dma_generic_free_coherent(struct device *dev, size_t size, void *vaddr,
-			       dma_addr_t dma_addr, struct dma_attrs *attrs)
-{
-	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-	struct page *page = virt_to_page(vaddr);
-
-	if (!dma_release_from_contiguous(dev, page, count))
-		free_pages((unsigned long)vaddr, get_order(size));
-}
-
-/*
- * See <Documentation/x86/x86_64/boot-options.txt> for the iommu kernel
-=======
 #ifdef CONFIG_SWIOTLB
 bool x86_swiotlb_enable;
 static unsigned int x86_swiotlb_flags;
@@ -244,7 +110,6 @@ void __init pci_iommu_alloc(void)
 
 /*
  * See <Documentation/arch/x86/x86_64/boot-options.rst> for the iommu kernel
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * parameter documentation.
  */
 static __init int iommu_setup(char *p)
@@ -280,15 +145,6 @@ static __init int iommu_setup(char *p)
 		if (!strncmp(p, "nomerge", 7))
 			iommu_merge = 0;
 		if (!strncmp(p, "forcesac", 8))
-<<<<<<< HEAD
-			iommu_sac_force = 1;
-		if (!strncmp(p, "allowdac", 8))
-			forbid_dac = 0;
-		if (!strncmp(p, "nodac", 5))
-			forbid_dac = 1;
-		if (!strncmp(p, "usedac", 6)) {
-			forbid_dac = -1;
-=======
 			pr_warn("forcesac option ignored.\n");
 		if (!strncmp(p, "allowdac", 8))
 			pr_warn("allowdac option ignored.\n");
@@ -296,27 +152,10 @@ static __init int iommu_setup(char *p)
 			pr_warn("nodac option ignored.\n");
 		if (!strncmp(p, "usedac", 6)) {
 			disable_dac_quirk = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 		}
 #ifdef CONFIG_SWIOTLB
 		if (!strncmp(p, "soft", 4))
-<<<<<<< HEAD
-			swiotlb = 1;
-#endif
-		if (!strncmp(p, "pt", 2))
-			iommu_pass_through = 1;
-		if (!strncmp(p, "group_mf", 8))
-			iommu_group_mf = 1;
-
-		gart_parse_options(p);
-
-#ifdef CONFIG_CALGARY_IOMMU
-		if (!strncmp(p, "calgary", 7))
-			use_calgary = 1;
-#endif /* CONFIG_CALGARY_IOMMU */
-
-=======
 			x86_swiotlb_enable = true;
 #endif
 		if (!strncmp(p, "pt", 2))
@@ -326,7 +165,6 @@ static __init int iommu_setup(char *p)
 
 		gart_parse_options(p);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p += strcspn(p, ",");
 		if (*p == ',')
 			++p;
@@ -335,63 +173,6 @@ static __init int iommu_setup(char *p)
 }
 early_param("iommu", iommu_setup);
 
-<<<<<<< HEAD
-int dma_supported(struct device *dev, u64 mask)
-{
-	struct dma_map_ops *ops = get_dma_ops(dev);
-
-#ifdef CONFIG_PCI
-	if (mask > 0xffffffff && forbid_dac > 0) {
-		dev_info(dev, "PCI: Disallowing DAC for device\n");
-		return 0;
-	}
-#endif
-
-	if (ops->dma_supported)
-		return ops->dma_supported(dev, mask);
-
-	/* Copied from i386. Doesn't make much sense, because it will
-	   only work for pci_alloc_coherent.
-	   The caller just has to use GFP_DMA in this case. */
-	if (mask < DMA_BIT_MASK(24))
-		return 0;
-
-	/* Tell the device to use SAC when IOMMU force is on.  This
-	   allows the driver to use cheaper accesses in some cases.
-
-	   Problem with this is that if we overflow the IOMMU area and
-	   return DAC as fallback address the device may not handle it
-	   correctly.
-
-	   As a special case some controllers have a 39bit address
-	   mode that is as efficient as 32bit (aic79xx). Don't force
-	   SAC for these.  Assume all masks <= 40 bits are of this
-	   type. Normally this doesn't make any difference, but gives
-	   more gentle handling of IOMMU overflow. */
-	if (iommu_sac_force && (mask >= DMA_BIT_MASK(40))) {
-		dev_info(dev, "Force SAC with mask %Lx\n", mask);
-		return 0;
-	}
-
-	return 1;
-}
-EXPORT_SYMBOL(dma_supported);
-
-static int __init pci_iommu_init(void)
-{
-	struct iommu_table_entry *p;
-	dma_debug_init(PREALLOC_DMA_DEBUG_ENTRIES);
-
-#ifdef CONFIG_PCI
-	dma_debug_add_bus(&pci_bus_type);
-#endif
-	x86_init.iommu.iommu_init();
-
-	for (p = __iommu_table; p < __iommu_table_end; p++) {
-		if (p && (p->flags & IOMMU_DETECTED) && p->late_init)
-			p->late_init();
-	}
-=======
 static int __init pci_iommu_init(void)
 {
 	x86_init.iommu.iommu_init();
@@ -405,7 +186,6 @@ static int __init pci_iommu_init(void)
 		swiotlb_exit();
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -415,13 +195,6 @@ rootfs_initcall(pci_iommu_init);
 #ifdef CONFIG_PCI
 /* Many VIA bridges seem to corrupt data for DAC. Disable it here */
 
-<<<<<<< HEAD
-static __devinit void via_no_dac(struct pci_dev *dev)
-{
-	if (forbid_dac == 0) {
-		dev_info(&dev->dev, "disabling DAC on VIA PCI bridge\n");
-		forbid_dac = 1;
-=======
 static int via_no_dac_cb(struct pci_dev *pdev, void *data)
 {
 	pdev->dev.bus_dma_limit = DMA_BIT_MASK(32);
@@ -433,7 +206,6 @@ static void via_no_dac(struct pci_dev *dev)
 	if (!disable_dac_quirk) {
 		dev_info(&dev->dev, "disabling DAC on VIA PCI bridge\n");
 		pci_walk_bus(dev->subordinate, via_no_dac_cb, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 DECLARE_PCI_FIXUP_CLASS_FINAL(PCI_VENDOR_ID_VIA, PCI_ANY_ID,

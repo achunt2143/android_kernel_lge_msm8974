@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This program is used to generate definitions needed by
  * assembly language modules.
@@ -15,13 +12,6 @@
  */
 
 #include <linux/sched.h>
-<<<<<<< HEAD
-// #include <linux/mm.h>
-#include <linux/kbuild.h>
-
-#ifdef CONFIG_SPARC32
-int sparc32_foo(void)
-=======
 #include <linux/mm_types.h>
 // #include <linux/mm.h>
 #include <linux/kbuild.h>
@@ -30,17 +20,12 @@ int sparc32_foo(void)
 
 #ifdef CONFIG_SPARC32
 static int __used sparc32_foo(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	DEFINE(AOFF_thread_fork_kpsr,
 			offsetof(struct thread_struct, fork_kpsr));
 	return 0;
 }
 #else
-<<<<<<< HEAD
-int sparc64_foo(void)
-{
-=======
 static int __used sparc64_foo(void)
 {
 #ifdef CONFIG_HIBERNATION
@@ -56,16 +41,11 @@ static int __used sparc64_foo(void)
 	OFFSET(SC_REG_G5, saved_context, g5);
 	OFFSET(SC_REG_G6, saved_context, g6);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 #endif
 
-<<<<<<< HEAD
-int foo(void)
-=======
 static int __used foo(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BLANK();
 	DEFINE(AOFF_task_thread, offsetof(struct task_struct, thread));

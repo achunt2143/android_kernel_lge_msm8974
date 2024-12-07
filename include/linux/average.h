@@ -1,33 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_AVERAGE_H
-#define _LINUX_AVERAGE_H
-
-/* Exponentially weighted moving average (EWMA) */
-
-/* For more documentation see lib/average.c */
-
-struct ewma {
-	unsigned long internal;
-	unsigned long factor;
-	unsigned long weight;
-};
-
-extern void ewma_init(struct ewma *avg, unsigned long factor,
-		      unsigned long weight);
-
-extern struct ewma *ewma_add(struct ewma *avg, unsigned long val);
-
-/**
- * ewma_read() - Get average value
- * @avg: Average structure
- *
- * Returns the average value held in @avg.
- */
-static inline unsigned long ewma_read(const struct ewma *avg)
-{
-	return avg->internal >> avg->factor;
-}
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_AVERAGE_H
 #define _LINUX_AVERAGE_H
@@ -97,6 +67,5 @@ static inline unsigned long ewma_read(const struct ewma *avg)
 				(val << precision)) >> weight_rcp :	\
 			(val << precision));				\
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_AVERAGE_H */

@@ -13,10 +13,7 @@
 #endif
 
 #include <linux/compiler.h>
-<<<<<<< HEAD
-=======
 #include <asm/barrier.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Bit access functions vary across the ColdFire and 68k families.
@@ -68,22 +65,11 @@ static inline void bfset_mem_set_bit(int nr, volatile unsigned long *vaddr)
 				bfset_mem_set_bit(nr, vaddr))
 #endif
 
-<<<<<<< HEAD
-#define __set_bit(nr, vaddr)	set_bit(nr, vaddr)
-
-
-/*
- * clear_bit() doesn't provide any barrier for the compiler.
- */
-#define smp_mb__before_clear_bit()	barrier()
-#define smp_mb__after_clear_bit()	barrier()
-=======
 static __always_inline void
 arch___set_bit(unsigned long nr, volatile unsigned long *addr)
 {
 	set_bit(nr, addr);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void bclr_reg_clear_bit(int nr, volatile unsigned long *vaddr)
 {
@@ -122,16 +108,11 @@ static inline void bfclr_mem_clear_bit(int nr, volatile unsigned long *vaddr)
 				bfclr_mem_clear_bit(nr, vaddr))
 #endif
 
-<<<<<<< HEAD
-#define __clear_bit(nr, vaddr)	clear_bit(nr, vaddr)
-
-=======
 static __always_inline void
 arch___clear_bit(unsigned long nr, volatile unsigned long *addr)
 {
 	clear_bit(nr, addr);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void bchg_reg_change_bit(int nr, volatile unsigned long *vaddr)
 {
@@ -170,16 +151,6 @@ static inline void bfchg_mem_change_bit(int nr, volatile unsigned long *vaddr)
 				bfchg_mem_change_bit(nr, vaddr))
 #endif
 
-<<<<<<< HEAD
-#define __change_bit(nr, vaddr)	change_bit(nr, vaddr)
-
-
-static inline int test_bit(int nr, const unsigned long *vaddr)
-{
-	return (vaddr[nr >> 5] & (1UL << (nr & 31))) != 0;
-}
-
-=======
 static __always_inline void
 arch___change_bit(unsigned long nr, volatile unsigned long *addr)
 {
@@ -188,7 +159,6 @@ arch___change_bit(unsigned long nr, volatile unsigned long *addr)
 
 #define arch_test_bit generic_test_bit
 #define arch_test_bit_acquire generic_test_bit_acquire
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int bset_reg_test_and_set_bit(int nr,
 					    volatile unsigned long *vaddr)
@@ -237,16 +207,11 @@ static inline int bfset_mem_test_and_set_bit(int nr,
 					bfset_mem_test_and_set_bit(nr, vaddr))
 #endif
 
-<<<<<<< HEAD
-#define __test_and_set_bit(nr, vaddr)	test_and_set_bit(nr, vaddr)
-
-=======
 static __always_inline bool
 arch___test_and_set_bit(unsigned long nr, volatile unsigned long *addr)
 {
 	return test_and_set_bit(nr, addr);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int bclr_reg_test_and_clear_bit(int nr,
 					      volatile unsigned long *vaddr)
@@ -295,16 +260,11 @@ static inline int bfclr_mem_test_and_clear_bit(int nr,
 					bfclr_mem_test_and_clear_bit(nr, vaddr))
 #endif
 
-<<<<<<< HEAD
-#define __test_and_clear_bit(nr, vaddr)	test_and_clear_bit(nr, vaddr)
-
-=======
 static __always_inline bool
 arch___test_and_clear_bit(unsigned long nr, volatile unsigned long *addr)
 {
 	return test_and_clear_bit(nr, addr);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int bchg_reg_test_and_change_bit(int nr,
 					       volatile unsigned long *vaddr)
@@ -353,10 +313,6 @@ static inline int bfchg_mem_test_and_change_bit(int nr,
 					bfchg_mem_test_and_change_bit(nr, vaddr))
 #endif
 
-<<<<<<< HEAD
-#define __test_and_change_bit(nr, vaddr) test_and_change_bit(nr, vaddr)
-
-=======
 static __always_inline bool
 arch___test_and_change_bit(unsigned long nr, volatile unsigned long *addr)
 {
@@ -383,7 +339,6 @@ static inline bool xor_unlock_is_negative_byte(unsigned long mask,
 	return result;
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	The true 68020 and more advanced processors support the "bfffo"
@@ -392,10 +347,6 @@ static inline bool xor_unlock_is_negative_byte(unsigned long mask,
  *	functions.
  */
 #if defined(CONFIG_CPU_HAS_NO_BITFIELDS)
-<<<<<<< HEAD
-#include <asm-generic/bitops/find.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/bitops/ffz.h>
 #else
 
@@ -536,13 +487,8 @@ static inline unsigned long ffz(unsigned long word)
  *	generic functions for those.
  */
 #if (defined(__mcfisaaplus__) || defined(__mcfisac__)) && \
-<<<<<<< HEAD
-	!defined(CONFIG_M68000) && !defined(CONFIG_MCPU32)
-static inline int __ffs(int x)
-=======
 	!defined(CONFIG_M68000)
 static inline unsigned long __ffs(unsigned long x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__asm__ __volatile__ ("bitrev %0; ff1 %0"
 		: "=d" (x)
@@ -581,24 +527,16 @@ static inline int ffs(int x)
 		: "dm" (x & -x));
 	return 32 - cnt;
 }
-<<<<<<< HEAD
-#define __ffs(x) (ffs(x) - 1)
-=======
 
 static inline unsigned long __ffs(unsigned long x)
 {
 	return ffs(x) - 1;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	fls: find last bit set.
  */
-<<<<<<< HEAD
-static inline int fls(int x)
-=======
 static inline int fls(unsigned int x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cnt;
 
@@ -608,25 +546,13 @@ static inline int fls(unsigned int x)
 	return 32 - cnt;
 }
 
-<<<<<<< HEAD
-static inline int __fls(int x)
-=======
 static inline unsigned long __fls(unsigned long x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return fls(x) - 1;
 }
 
 #endif
 
-<<<<<<< HEAD
-#include <asm-generic/bitops/ext2-atomic.h>
-#include <asm-generic/bitops/le.h>
-#include <asm-generic/bitops/fls64.h>
-#include <asm-generic/bitops/sched.h>
-#include <asm-generic/bitops/hweight.h>
-#include <asm-generic/bitops/lock.h>
-=======
 /* Simple test-and-set bit locks */
 #define test_and_set_bit_lock	test_and_set_bit
 #define clear_bit_unlock	clear_bit
@@ -638,7 +564,6 @@ static inline unsigned long __fls(unsigned long x)
 #include <asm-generic/bitops/sched.h>
 #include <asm-generic/bitops/hweight.h>
 #include <asm-generic/bitops/le.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KERNEL__ */
 
 #endif /* _M68K_BITOPS_H */

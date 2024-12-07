@@ -42,10 +42,7 @@
 #include <rdma/ib_verbs.h>
 #include <rdma/ib_cache.h>
 #include <rdma/ib_pack.h>
-<<<<<<< HEAD
-=======
 #include <rdma/uverbs_ioctl.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "mthca_dev.h"
 #include "mthca_cmd.h"
@@ -118,11 +115,7 @@ struct mthca_qp_path {
 	u8     hop_limit;
 	__be32 sl_tclass_flowlabel;
 	u8     rgid[16];
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mthca_qp_context {
 	__be32 flags;
@@ -161,22 +154,14 @@ struct mthca_qp_context {
 	__be16 rq_wqe_counter;	/* reserved on Tavor */
 	__be16 sq_wqe_counter;	/* reserved on Tavor */
 	u32    reserved3[18];
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mthca_qp_param {
 	__be32 opt_param_mask;
 	u32    reserved1;
 	struct mthca_qp_context context;
 	u32    reserved2[62];
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	MTHCA_QP_OPTPAR_ALT_ADDR_PATH     = 1 << 0,
@@ -263,12 +248,8 @@ void mthca_qp_event(struct mthca_dev *dev, u32 qpn,
 	spin_unlock(&dev->qp_table.lock);
 
 	if (!qp) {
-<<<<<<< HEAD
-		mthca_warn(dev, "Async event for bogus QP %08x\n", qpn);
-=======
 		mthca_warn(dev, "Async event %d for bogus QP %08x\n",
 			   event_type, qpn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -413,33 +394,6 @@ static int to_ib_qp_access_flags(int mthca_flags)
 	return ib_flags;
 }
 
-<<<<<<< HEAD
-static void to_ib_ah_attr(struct mthca_dev *dev, struct ib_ah_attr *ib_ah_attr,
-				struct mthca_qp_path *path)
-{
-	memset(ib_ah_attr, 0, sizeof *ib_ah_attr);
-	ib_ah_attr->port_num 	  = (be32_to_cpu(path->port_pkey) >> 24) & 0x3;
-
-	if (ib_ah_attr->port_num == 0 || ib_ah_attr->port_num > dev->limits.num_ports)
-		return;
-
-	ib_ah_attr->dlid     	  = be16_to_cpu(path->rlid);
-	ib_ah_attr->sl       	  = be32_to_cpu(path->sl_tclass_flowlabel) >> 28;
-	ib_ah_attr->src_path_bits = path->g_mylmc & 0x7f;
-	ib_ah_attr->static_rate   = mthca_rate_to_ib(dev,
-						     path->static_rate & 0xf,
-						     ib_ah_attr->port_num);
-	ib_ah_attr->ah_flags      = (path->g_mylmc & (1 << 7)) ? IB_AH_GRH : 0;
-	if (ib_ah_attr->ah_flags) {
-		ib_ah_attr->grh.sgid_index = path->mgid_index & (dev->limits.gid_table_len - 1);
-		ib_ah_attr->grh.hop_limit  = path->hop_limit;
-		ib_ah_attr->grh.traffic_class =
-			(be32_to_cpu(path->sl_tclass_flowlabel) >> 20) & 0xff;
-		ib_ah_attr->grh.flow_label =
-			be32_to_cpu(path->sl_tclass_flowlabel) & 0xfffff;
-		memcpy(ib_ah_attr->grh.dgid.raw,
-			path->rgid, sizeof ib_ah_attr->grh.dgid.raw);
-=======
 static void to_rdma_ah_attr(struct mthca_dev *dev,
 			    struct rdma_ah_attr *ah_attr,
 			    struct mthca_qp_path *path)
@@ -470,7 +424,6 @@ static void to_rdma_ah_attr(struct mthca_dev *dev,
 				path->hop_limit,
 				(tc_fl >> 20) & 0xff);
 		rdma_ah_set_dgid_raw(ah_attr, path->rgid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -521,20 +474,12 @@ int mthca_query_qp(struct ib_qp *ibqp, struct ib_qp_attr *qp_attr, int qp_attr_m
 		to_ib_qp_access_flags(be32_to_cpu(context->params2));
 
 	if (qp->transport == RC || qp->transport == UC) {
-<<<<<<< HEAD
-		to_ib_ah_attr(dev, &qp_attr->ah_attr, &context->pri_path);
-		to_ib_ah_attr(dev, &qp_attr->alt_ah_attr, &context->alt_path);
-		qp_attr->alt_pkey_index =
-			be32_to_cpu(context->alt_path.port_pkey) & 0x7f;
-		qp_attr->alt_port_num 	= qp_attr->alt_ah_attr.port_num;
-=======
 		to_rdma_ah_attr(dev, &qp_attr->ah_attr, &context->pri_path);
 		to_rdma_ah_attr(dev, &qp_attr->alt_ah_attr, &context->alt_path);
 		qp_attr->alt_pkey_index =
 			be32_to_cpu(context->alt_path.port_pkey) & 0x7f;
 		qp_attr->alt_port_num	=
 			rdma_ah_get_port_num(&qp_attr->alt_ah_attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	qp_attr->pkey_index = be32_to_cpu(context->pri_path.port_pkey) & 0x7f;
@@ -564,10 +509,7 @@ done:
 	qp_attr->cap.max_inline_data = qp->max_inline_data;
 
 	qp_init_attr->cap	     = qp_attr->cap;
-<<<<<<< HEAD
-=======
 	qp_init_attr->sq_sig_type    = qp->sq_policy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_mailbox:
 	mthca_free_mailbox(dev, mailbox);
@@ -577,19 +519,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int mthca_path_set(struct mthca_dev *dev, const struct ib_ah_attr *ah,
-			  struct mthca_qp_path *path, u8 port)
-{
-	path->g_mylmc     = ah->src_path_bits & 0x7f;
-	path->rlid        = cpu_to_be16(ah->dlid);
-	path->static_rate = mthca_get_rate(dev, ah->static_rate, port);
-
-	if (ah->ah_flags & IB_AH_GRH) {
-		if (ah->grh.sgid_index >= dev->limits.gid_table_len) {
-			mthca_dbg(dev, "sgid_index (%u) too large. max is %d\n",
-				  ah->grh.sgid_index, dev->limits.gid_table_len-1);
-=======
 static int mthca_path_set(struct mthca_dev *dev, const struct rdma_ah_attr *ah,
 			  struct mthca_qp_path *path, u8 port)
 {
@@ -605,22 +534,10 @@ static int mthca_path_set(struct mthca_dev *dev, const struct rdma_ah_attr *ah,
 			mthca_dbg(dev, "sgid_index (%u) too large. max is %d\n",
 				  grh->sgid_index,
 				  dev->limits.gid_table_len - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 		}
 
 		path->g_mylmc   |= 1 << 7;
-<<<<<<< HEAD
-		path->mgid_index = ah->grh.sgid_index;
-		path->hop_limit  = ah->grh.hop_limit;
-		path->sl_tclass_flowlabel =
-			cpu_to_be32((ah->sl << 28)                |
-				    (ah->grh.traffic_class << 20) |
-				    (ah->grh.flow_label));
-		memcpy(path->rgid, ah->grh.dgid.raw, 16);
-	} else
-		path->sl_tclass_flowlabel = cpu_to_be32(ah->sl << 28);
-=======
 		path->mgid_index = grh->sgid_index;
 		path->hop_limit  = grh->hop_limit;
 		path->sl_tclass_flowlabel =
@@ -632,19 +549,12 @@ static int mthca_path_set(struct mthca_dev *dev, const struct rdma_ah_attr *ah,
 		path->sl_tclass_flowlabel = cpu_to_be32(rdma_ah_get_sl(ah) <<
 							28);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int __mthca_modify_qp(struct ib_qp *ibqp,
 			     const struct ib_qp_attr *attr, int attr_mask,
-<<<<<<< HEAD
-			     enum ib_qp_state cur_state, enum ib_qp_state new_state)
-{
-	struct mthca_dev *dev = to_mdev(ibqp->device);
-	struct mthca_qp *qp = to_mqp(ibqp);
-=======
 			     enum ib_qp_state cur_state,
 			     enum ib_qp_state new_state,
 			     struct ib_udata *udata)
@@ -653,7 +563,6 @@ static int __mthca_modify_qp(struct ib_qp *ibqp,
 	struct mthca_qp *qp = to_mqp(ibqp);
 	struct mthca_ucontext *context = rdma_udata_to_drv_context(
 		udata, struct mthca_ucontext, ibucontext);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mthca_mailbox *mailbox;
 	struct mthca_qp_param *qp_param;
 	struct mthca_qp_context *qp_context;
@@ -715,12 +624,7 @@ static int __mthca_modify_qp(struct ib_qp *ibqp,
 	/* leave arbel_sched_queue as 0 */
 
 	if (qp->ibqp.uobject)
-<<<<<<< HEAD
-		qp_context->usr_page =
-			cpu_to_be32(to_mucontext(qp->ibqp.uobject->context)->uar.index);
-=======
 		qp_context->usr_page = cpu_to_be32(context->uar.index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		qp_context->usr_page = cpu_to_be32(dev->driver_uar.index);
 	qp_context->local_qpn  = cpu_to_be32(qp->qpn);
@@ -792,11 +696,7 @@ static int __mthca_modify_qp(struct ib_qp *ibqp,
 		}
 
 		if (mthca_path_set(dev, &attr->alt_ah_attr, &qp_context->alt_path,
-<<<<<<< HEAD
-				   attr->alt_ah_attr.port_num))
-=======
 				   rdma_ah_get_port_num(&attr->alt_ah_attr)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_mailbox;
 
 		qp_context->alt_path.port_pkey |= cpu_to_be32(attr->alt_pkey_index |
@@ -909,11 +809,7 @@ static int __mthca_modify_qp(struct ib_qp *ibqp,
 		qp->alt_port = attr->alt_port_num;
 
 	if (is_sqp(dev, qp))
-<<<<<<< HEAD
-		store_attrs(to_msqp(qp), attr, attr_mask);
-=======
 		store_attrs(qp->sqp, attr, attr_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we moved QP0 to RTR, bring the IB link up; if we moved
@@ -967,12 +863,9 @@ int mthca_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr, int attr_mask,
 	enum ib_qp_state cur_state, new_state;
 	int err = -EINVAL;
 
-<<<<<<< HEAD
-=======
 	if (attr_mask & ~IB_QP_ATTR_STANDARD_BITS)
 		return -EOPNOTSUPP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&qp->mutex);
 	if (attr_mask & IB_QP_CUR_STATE) {
 		cur_state = attr->cur_qp_state;
@@ -986,12 +879,8 @@ int mthca_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr, int attr_mask,
 
 	new_state = attr_mask & IB_QP_STATE ? attr->qp_state : cur_state;
 
-<<<<<<< HEAD
-	if (!ib_modify_qp_is_ok(cur_state, new_state, ibqp->qp_type, attr_mask)) {
-=======
 	if (!ib_modify_qp_is_ok(cur_state, new_state, ibqp->qp_type,
 				attr_mask)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mthca_dbg(dev, "Bad QP transition (transport %d) "
 			  "%d->%d with attr 0x%08x\n",
 			  qp->transport, cur_state, new_state,
@@ -1031,12 +920,8 @@ int mthca_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr, int attr_mask,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	err = __mthca_modify_qp(ibqp, attr, attr_mask, cur_state, new_state);
-=======
 	err = __mthca_modify_qp(ibqp, attr, attr_mask, cur_state, new_state,
 				udata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	mutex_unlock(&qp->mutex);
@@ -1104,12 +989,8 @@ static void mthca_adjust_qp_caps(struct mthca_dev *dev,
  */
 static int mthca_alloc_wqe_buf(struct mthca_dev *dev,
 			       struct mthca_pd *pd,
-<<<<<<< HEAD
-			       struct mthca_qp *qp)
-=======
 			       struct mthca_qp *qp,
 			       struct ib_udata *udata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int size;
 	int err = -ENOMEM;
@@ -1176,23 +1057,14 @@ static int mthca_alloc_wqe_buf(struct mthca_dev *dev,
 	 * allocate anything.  All we need is to calculate the WQE
 	 * sizes and the send_wqe_offset, so we're done now.
 	 */
-<<<<<<< HEAD
-	if (pd->ibpd.uobject)
-=======
 	if (udata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	size = PAGE_ALIGN(qp->send_wqe_offset +
 			  (qp->sq.max << qp->sq.wqe_shift));
 
-<<<<<<< HEAD
-	qp->wrid = kmalloc((qp->rq.max + qp->sq.max) * sizeof (u64),
-			   GFP_KERNEL);
-=======
 	qp->wrid = kmalloc_array(qp->rq.max + qp->sq.max, sizeof(u64),
 				 GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!qp->wrid)
 		goto err_out;
 
@@ -1292,12 +1164,8 @@ static int mthca_alloc_qp_common(struct mthca_dev *dev,
 				 struct mthca_cq *send_cq,
 				 struct mthca_cq *recv_cq,
 				 enum ib_sig_type send_policy,
-<<<<<<< HEAD
-				 struct mthca_qp *qp)
-=======
 				 struct mthca_qp *qp,
 				 struct ib_udata *udata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	int i;
@@ -1320,11 +1188,7 @@ static int mthca_alloc_qp_common(struct mthca_dev *dev,
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	ret = mthca_alloc_wqe_buf(dev, pd, qp);
-=======
 	ret = mthca_alloc_wqe_buf(dev, pd, qp, udata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		mthca_unmap_memfree(dev, qp);
 		return ret;
@@ -1337,11 +1201,7 @@ static int mthca_alloc_qp_common(struct mthca_dev *dev,
 	 * will be allocated and buffers will be initialized in
 	 * userspace.
 	 */
-<<<<<<< HEAD
-	if (pd->ibpd.uobject)
-=======
 	if (udata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	ret = mthca_alloc_memfree(dev, qp);
@@ -1435,12 +1295,8 @@ int mthca_alloc_qp(struct mthca_dev *dev,
 		   enum ib_qp_type type,
 		   enum ib_sig_type send_policy,
 		   struct ib_qp_cap *cap,
-<<<<<<< HEAD
-		   struct mthca_qp *qp)
-=======
 		   struct mthca_qp *qp,
 		   struct ib_udata *udata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -1463,11 +1319,7 @@ int mthca_alloc_qp(struct mthca_dev *dev,
 	qp->port = 0;
 
 	err = mthca_alloc_qp_common(dev, pd, send_cq, recv_cq,
-<<<<<<< HEAD
-				    send_policy, qp);
-=======
 				    send_policy, qp, udata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		mthca_free(&dev->qp_table.alloc, qp->qpn);
 		return err;
@@ -1518,29 +1370,13 @@ int mthca_alloc_sqp(struct mthca_dev *dev,
 		    enum ib_sig_type send_policy,
 		    struct ib_qp_cap *cap,
 		    int qpn,
-<<<<<<< HEAD
-		    int port,
-		    struct mthca_sqp *sqp)
-=======
 		    u32 port,
 		    struct mthca_qp *qp,
 		    struct ib_udata *udata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 mqpn = qpn * 2 + dev->qp_table.sqp_start + port - 1;
 	int err;
 
-<<<<<<< HEAD
-	sqp->qp.transport = MLX;
-	err = mthca_set_qp_size(dev, cap, pd, &sqp->qp);
-	if (err)
-		return err;
-
-	sqp->header_buf_size = sqp->qp.sq.max * MTHCA_UD_HEADER_SIZE;
-	sqp->header_buf = dma_alloc_coherent(&dev->pdev->dev, sqp->header_buf_size,
-					     &sqp->header_dma, GFP_KERNEL);
-	if (!sqp->header_buf)
-=======
 	qp->transport = MLX;
 	err = mthca_set_qp_size(dev, cap, pd, qp);
 	if (err)
@@ -1551,38 +1387,24 @@ int mthca_alloc_sqp(struct mthca_dev *dev,
 		dma_alloc_coherent(&dev->pdev->dev, qp->sqp->header_buf_size,
 				   &qp->sqp->header_dma, GFP_KERNEL);
 	if (!qp->sqp->header_buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	spin_lock_irq(&dev->qp_table.lock);
 	if (mthca_array_get(&dev->qp_table.qp, mqpn))
 		err = -EBUSY;
 	else
-<<<<<<< HEAD
-		mthca_array_set(&dev->qp_table.qp, mqpn, sqp);
-=======
 		mthca_array_set(&dev->qp_table.qp, mqpn, qp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&dev->qp_table.lock);
 
 	if (err)
 		goto err_out;
 
-<<<<<<< HEAD
-	sqp->qp.port      = port;
-	sqp->qp.qpn       = mqpn;
-	sqp->qp.transport = MLX;
-
-	err = mthca_alloc_qp_common(dev, pd, send_cq, recv_cq,
-				    send_policy, &sqp->qp);
-=======
 	qp->port      = port;
 	qp->qpn       = mqpn;
 	qp->transport = MLX;
 
 	err = mthca_alloc_qp_common(dev, pd, send_cq, recv_cq,
 				    send_policy, qp, udata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto err_out_free;
 
@@ -1603,16 +1425,9 @@ int mthca_alloc_sqp(struct mthca_dev *dev,
 
 	mthca_unlock_cqs(send_cq, recv_cq);
 
-<<<<<<< HEAD
- err_out:
-	dma_free_coherent(&dev->pdev->dev, sqp->header_buf_size,
-			  sqp->header_buf, sqp->header_dma);
-
-=======
 err_out:
 	dma_free_coherent(&dev->pdev->dev, qp->sqp->header_buf_size,
 			  qp->sqp->header_buf, qp->sqp->header_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1675,49 +1490,24 @@ void mthca_free_qp(struct mthca_dev *dev,
 
 	if (is_sqp(dev, qp)) {
 		atomic_dec(&(to_mpd(qp->ibqp.pd)->sqp_count));
-<<<<<<< HEAD
-		dma_free_coherent(&dev->pdev->dev,
-				  to_msqp(qp)->header_buf_size,
-				  to_msqp(qp)->header_buf,
-				  to_msqp(qp)->header_dma);
-=======
 		dma_free_coherent(&dev->pdev->dev, qp->sqp->header_buf_size,
 				  qp->sqp->header_buf, qp->sqp->header_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		mthca_free(&dev->qp_table.alloc, qp->qpn);
 }
 
 /* Create UD header for an MLX send and build a data segment for it */
-<<<<<<< HEAD
-static int build_mlx_header(struct mthca_dev *dev, struct mthca_sqp *sqp,
-			    int ind, struct ib_send_wr *wr,
-			    struct mthca_mlx_seg *mlx,
-			    struct mthca_data_seg *data)
-{
-=======
 static int build_mlx_header(struct mthca_dev *dev, struct mthca_qp *qp, int ind,
 			    const struct ib_ud_wr *wr,
 			    struct mthca_mlx_seg *mlx,
 			    struct mthca_data_seg *data)
 {
 	struct mthca_sqp *sqp = qp->sqp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int header_size;
 	int err;
 	u16 pkey;
 
 	ib_ud_header_init(256, /* assume a MAD */ 1, 0, 0,
-<<<<<<< HEAD
-			  mthca_ah_grh_present(to_mah(wr->wr.ud.ah)), 0,
-			  &sqp->ud_header);
-
-	err = mthca_read_ah(dev, to_mah(wr->wr.ud.ah), &sqp->ud_header);
-	if (err)
-		return err;
-	mlx->flags &= ~cpu_to_be32(MTHCA_NEXT_SOLICIT | 1);
-	mlx->flags |= cpu_to_be32((!sqp->qp.ibqp.qp_num ? MTHCA_MLX_VL15 : 0) |
-=======
 			  mthca_ah_grh_present(to_mah(wr->ah)), 0, 0, 0,
 			  &sqp->ud_header);
 
@@ -1726,18 +1516,13 @@ static int build_mlx_header(struct mthca_dev *dev, struct mthca_qp *qp, int ind,
 		return err;
 	mlx->flags &= ~cpu_to_be32(MTHCA_NEXT_SOLICIT | 1);
 	mlx->flags |= cpu_to_be32((!qp->ibqp.qp_num ? MTHCA_MLX_VL15 : 0) |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  (sqp->ud_header.lrh.destination_lid ==
 				   IB_LID_PERMISSIVE ? MTHCA_MLX_SLR : 0) |
 				  (sqp->ud_header.lrh.service_level << 8));
 	mlx->rlid = sqp->ud_header.lrh.destination_lid;
 	mlx->vcrc = 0;
 
-<<<<<<< HEAD
-	switch (wr->opcode) {
-=======
 	switch (wr->wr.opcode) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IB_WR_SEND:
 		sqp->ud_header.bth.opcode = IB_OPCODE_UD_SEND_ONLY;
 		sqp->ud_header.immediate_present = 0;
@@ -1745,34 +1530,12 @@ static int build_mlx_header(struct mthca_dev *dev, struct mthca_qp *qp, int ind,
 	case IB_WR_SEND_WITH_IMM:
 		sqp->ud_header.bth.opcode = IB_OPCODE_UD_SEND_ONLY_WITH_IMMEDIATE;
 		sqp->ud_header.immediate_present = 1;
-<<<<<<< HEAD
-		sqp->ud_header.immediate_data = wr->ex.imm_data;
-=======
 		sqp->ud_header.immediate_data = wr->wr.ex.imm_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	sqp->ud_header.lrh.virtual_lane    = !sqp->qp.ibqp.qp_num ? 15 : 0;
-	if (sqp->ud_header.lrh.destination_lid == IB_LID_PERMISSIVE)
-		sqp->ud_header.lrh.source_lid = IB_LID_PERMISSIVE;
-	sqp->ud_header.bth.solicited_event = !!(wr->send_flags & IB_SEND_SOLICITED);
-	if (!sqp->qp.ibqp.qp_num)
-		ib_get_cached_pkey(&dev->ib_dev, sqp->qp.port,
-				   sqp->pkey_index, &pkey);
-	else
-		ib_get_cached_pkey(&dev->ib_dev, sqp->qp.port,
-				   wr->wr.ud.pkey_index, &pkey);
-	sqp->ud_header.bth.pkey = cpu_to_be16(pkey);
-	sqp->ud_header.bth.destination_qpn = cpu_to_be32(wr->wr.ud.remote_qpn);
-	sqp->ud_header.bth.psn = cpu_to_be32((sqp->send_psn++) & ((1 << 24) - 1));
-	sqp->ud_header.deth.qkey = cpu_to_be32(wr->wr.ud.remote_qkey & 0x80000000 ?
-					       sqp->qkey : wr->wr.ud.remote_qkey);
-	sqp->ud_header.deth.source_qpn = cpu_to_be32(sqp->qp.ibqp.qp_num);
-=======
 	sqp->ud_header.lrh.virtual_lane    = !qp->ibqp.qp_num ? 15 : 0;
 	if (sqp->ud_header.lrh.destination_lid == IB_LID_PERMISSIVE)
 		sqp->ud_header.lrh.source_lid = IB_LID_PERMISSIVE;
@@ -1789,18 +1552,13 @@ static int build_mlx_header(struct mthca_dev *dev, struct mthca_qp *qp, int ind,
 	sqp->ud_header.deth.qkey = cpu_to_be32(wr->remote_qkey & 0x80000000 ?
 					       sqp->qkey : wr->remote_qkey);
 	sqp->ud_header.deth.source_qpn = cpu_to_be32(qp->ibqp.qp_num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	header_size = ib_ud_header_pack(&sqp->ud_header,
 					sqp->header_buf +
 					ind * MTHCA_UD_HEADER_SIZE);
 
 	data->byte_count = cpu_to_be32(header_size);
-<<<<<<< HEAD
-	data->lkey       = cpu_to_be32(to_mpd(sqp->qp.ibqp.pd)->ntmr.ibmr.lkey);
-=======
 	data->lkey       = cpu_to_be32(to_mpd(qp->ibqp.pd)->ntmr.ibmr.lkey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->addr       = cpu_to_be64(sqp->header_dma +
 				       ind * MTHCA_UD_HEADER_SIZE);
 
@@ -1834,15 +1592,6 @@ static __always_inline void set_raddr_seg(struct mthca_raddr_seg *rseg,
 }
 
 static __always_inline void set_atomic_seg(struct mthca_atomic_seg *aseg,
-<<<<<<< HEAD
-					   struct ib_send_wr *wr)
-{
-	if (wr->opcode == IB_WR_ATOMIC_CMP_AND_SWP) {
-		aseg->swap_add = cpu_to_be64(wr->wr.atomic.swap);
-		aseg->compare  = cpu_to_be64(wr->wr.atomic.compare_add);
-	} else {
-		aseg->swap_add = cpu_to_be64(wr->wr.atomic.compare_add);
-=======
 					   const struct ib_atomic_wr *wr)
 {
 	if (wr->wr.opcode == IB_WR_ATOMIC_CMP_AND_SWP) {
@@ -1850,43 +1599,22 @@ static __always_inline void set_atomic_seg(struct mthca_atomic_seg *aseg,
 		aseg->compare  = cpu_to_be64(wr->compare_add);
 	} else {
 		aseg->swap_add = cpu_to_be64(wr->compare_add);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		aseg->compare  = 0;
 	}
 
 }
 
 static void set_tavor_ud_seg(struct mthca_tavor_ud_seg *useg,
-<<<<<<< HEAD
-			     struct ib_send_wr *wr)
-{
-	useg->lkey    = cpu_to_be32(to_mah(wr->wr.ud.ah)->key);
-	useg->av_addr =	cpu_to_be64(to_mah(wr->wr.ud.ah)->avdma);
-	useg->dqpn    =	cpu_to_be32(wr->wr.ud.remote_qpn);
-	useg->qkey    =	cpu_to_be32(wr->wr.ud.remote_qkey);
-=======
 			     const struct ib_ud_wr *wr)
 {
 	useg->lkey    = cpu_to_be32(to_mah(wr->ah)->key);
 	useg->av_addr =	cpu_to_be64(to_mah(wr->ah)->avdma);
 	useg->dqpn    =	cpu_to_be32(wr->remote_qpn);
 	useg->qkey    =	cpu_to_be32(wr->remote_qkey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 
 static void set_arbel_ud_seg(struct mthca_arbel_ud_seg *useg,
-<<<<<<< HEAD
-			     struct ib_send_wr *wr)
-{
-	memcpy(useg->av, to_mah(wr->wr.ud.ah)->av, MTHCA_AV_SIZE);
-	useg->dqpn = cpu_to_be32(wr->wr.ud.remote_qpn);
-	useg->qkey = cpu_to_be32(wr->wr.ud.remote_qkey);
-}
-
-int mthca_tavor_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
-			  struct ib_send_wr **bad_wr)
-=======
 			     const struct ib_ud_wr *wr)
 {
 	memcpy(useg->av, to_mah(wr->ah)->av, MTHCA_AV_SIZE);
@@ -1896,7 +1624,6 @@ int mthca_tavor_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 
 int mthca_tavor_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 			  const struct ib_send_wr **bad_wr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mthca_dev *dev = to_mdev(ibqp->device);
 	struct mthca_qp *qp = to_mqp(ibqp);
@@ -1914,13 +1641,8 @@ int mthca_tavor_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 	 * without initializing f0 and size0, and they are in fact
 	 * never used uninitialized.
 	 */
-<<<<<<< HEAD
-	int uninitialized_var(size0);
-	u32 uninitialized_var(f0);
-=======
 	int size0;
 	u32 f0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ind;
 	u8 op0 = 0;
 
@@ -1965,19 +1687,11 @@ int mthca_tavor_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 			switch (wr->opcode) {
 			case IB_WR_ATOMIC_CMP_AND_SWP:
 			case IB_WR_ATOMIC_FETCH_AND_ADD:
-<<<<<<< HEAD
-				set_raddr_seg(wqe, wr->wr.atomic.remote_addr,
-					      wr->wr.atomic.rkey);
-				wqe += sizeof (struct mthca_raddr_seg);
-
-				set_atomic_seg(wqe, wr);
-=======
 				set_raddr_seg(wqe, atomic_wr(wr)->remote_addr,
 					      atomic_wr(wr)->rkey);
 				wqe += sizeof (struct mthca_raddr_seg);
 
 				set_atomic_seg(wqe, atomic_wr(wr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				wqe += sizeof (struct mthca_atomic_seg);
 				size += (sizeof (struct mthca_raddr_seg) +
 					 sizeof (struct mthca_atomic_seg)) / 16;
@@ -1986,13 +1700,8 @@ int mthca_tavor_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 			case IB_WR_RDMA_WRITE:
 			case IB_WR_RDMA_WRITE_WITH_IMM:
 			case IB_WR_RDMA_READ:
-<<<<<<< HEAD
-				set_raddr_seg(wqe, wr->wr.rdma.remote_addr,
-					      wr->wr.rdma.rkey);
-=======
 				set_raddr_seg(wqe, rdma_wr(wr)->remote_addr,
 					      rdma_wr(wr)->rkey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				wqe  += sizeof (struct mthca_raddr_seg);
 				size += sizeof (struct mthca_raddr_seg) / 16;
 				break;
@@ -2008,13 +1717,8 @@ int mthca_tavor_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 			switch (wr->opcode) {
 			case IB_WR_RDMA_WRITE:
 			case IB_WR_RDMA_WRITE_WITH_IMM:
-<<<<<<< HEAD
-				set_raddr_seg(wqe, wr->wr.rdma.remote_addr,
-					      wr->wr.rdma.rkey);
-=======
 				set_raddr_seg(wqe, rdma_wr(wr)->remote_addr,
 					      rdma_wr(wr)->rkey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				wqe  += sizeof (struct mthca_raddr_seg);
 				size += sizeof (struct mthca_raddr_seg) / 16;
 				break;
@@ -2027,25 +1731,15 @@ int mthca_tavor_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 			break;
 
 		case UD:
-<<<<<<< HEAD
-			set_tavor_ud_seg(wqe, wr);
-=======
 			set_tavor_ud_seg(wqe, ud_wr(wr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wqe  += sizeof (struct mthca_tavor_ud_seg);
 			size += sizeof (struct mthca_tavor_ud_seg) / 16;
 			break;
 
 		case MLX:
-<<<<<<< HEAD
-			err = build_mlx_header(dev, to_msqp(qp), ind, wr,
-					       wqe - sizeof (struct mthca_next_seg),
-					       wqe);
-=======
 			err = build_mlx_header(
 				dev, qp, ind, ud_wr(wr),
 				wqe - sizeof(struct mthca_next_seg), wqe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err) {
 				*bad_wr = wr;
 				goto out;
@@ -2117,14 +1811,6 @@ out:
 			      (qp->qpn << 8) | size0,
 			      dev->kar + MTHCA_SEND_DOORBELL,
 			      MTHCA_GET_DOORBELL_LOCK(&dev->doorbell_lock));
-<<<<<<< HEAD
-		/*
-		 * Make sure doorbells don't leak out of SQ spinlock
-		 * and reach the HCA out of order:
-		 */
-		mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	qp->sq.next_ind = ind;
@@ -2134,13 +1820,8 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-int mthca_tavor_post_receive(struct ib_qp *ibqp, struct ib_recv_wr *wr,
-			     struct ib_recv_wr **bad_wr)
-=======
 int mthca_tavor_post_receive(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 			     const struct ib_recv_wr **bad_wr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mthca_dev *dev = to_mdev(ibqp->device);
 	struct mthca_qp *qp = to_mqp(ibqp);
@@ -2156,11 +1837,7 @@ int mthca_tavor_post_receive(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 	 * without initializing size0, and it is in fact never used
 	 * uninitialized.
 	 */
-<<<<<<< HEAD
-	int uninitialized_var(size0);
-=======
 	int size0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ind;
 	void *wqe;
 	void *prev_wqe;
@@ -2244,26 +1921,12 @@ out:
 	qp->rq.next_ind = ind;
 	qp->rq.head    += nreq;
 
-<<<<<<< HEAD
-	/*
-	 * Make sure doorbells don't leak out of RQ spinlock and reach
-	 * the HCA out of order:
-	 */
-	mmiowb();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&qp->rq.lock, flags);
 	return err;
 }
 
-<<<<<<< HEAD
-int mthca_arbel_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
-			  struct ib_send_wr **bad_wr)
-=======
 int mthca_arbel_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 			  const struct ib_send_wr **bad_wr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mthca_dev *dev = to_mdev(ibqp->device);
 	struct mthca_qp *qp = to_mqp(ibqp);
@@ -2282,13 +1945,8 @@ int mthca_arbel_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 	 * without initializing f0 and size0, and they are in fact
 	 * never used uninitialized.
 	 */
-<<<<<<< HEAD
-	int uninitialized_var(size0);
-	u32 uninitialized_var(f0);
-=======
 	int size0;
 	u32 f0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ind;
 	u8 op0 = 0;
 
@@ -2359,19 +2017,11 @@ int mthca_arbel_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 			switch (wr->opcode) {
 			case IB_WR_ATOMIC_CMP_AND_SWP:
 			case IB_WR_ATOMIC_FETCH_AND_ADD:
-<<<<<<< HEAD
-				set_raddr_seg(wqe, wr->wr.atomic.remote_addr,
-					      wr->wr.atomic.rkey);
-				wqe += sizeof (struct mthca_raddr_seg);
-
-				set_atomic_seg(wqe, wr);
-=======
 				set_raddr_seg(wqe, atomic_wr(wr)->remote_addr,
 					      atomic_wr(wr)->rkey);
 				wqe += sizeof (struct mthca_raddr_seg);
 
 				set_atomic_seg(wqe, atomic_wr(wr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				wqe  += sizeof (struct mthca_atomic_seg);
 				size += (sizeof (struct mthca_raddr_seg) +
 					 sizeof (struct mthca_atomic_seg)) / 16;
@@ -2380,13 +2030,8 @@ int mthca_arbel_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 			case IB_WR_RDMA_READ:
 			case IB_WR_RDMA_WRITE:
 			case IB_WR_RDMA_WRITE_WITH_IMM:
-<<<<<<< HEAD
-				set_raddr_seg(wqe, wr->wr.rdma.remote_addr,
-					      wr->wr.rdma.rkey);
-=======
 				set_raddr_seg(wqe, rdma_wr(wr)->remote_addr,
 					      rdma_wr(wr)->rkey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				wqe  += sizeof (struct mthca_raddr_seg);
 				size += sizeof (struct mthca_raddr_seg) / 16;
 				break;
@@ -2402,13 +2047,8 @@ int mthca_arbel_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 			switch (wr->opcode) {
 			case IB_WR_RDMA_WRITE:
 			case IB_WR_RDMA_WRITE_WITH_IMM:
-<<<<<<< HEAD
-				set_raddr_seg(wqe, wr->wr.rdma.remote_addr,
-					      wr->wr.rdma.rkey);
-=======
 				set_raddr_seg(wqe, rdma_wr(wr)->remote_addr,
 					      rdma_wr(wr)->rkey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				wqe  += sizeof (struct mthca_raddr_seg);
 				size += sizeof (struct mthca_raddr_seg) / 16;
 				break;
@@ -2421,25 +2061,15 @@ int mthca_arbel_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 			break;
 
 		case UD:
-<<<<<<< HEAD
-			set_arbel_ud_seg(wqe, wr);
-=======
 			set_arbel_ud_seg(wqe, ud_wr(wr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wqe  += sizeof (struct mthca_arbel_ud_seg);
 			size += sizeof (struct mthca_arbel_ud_seg) / 16;
 			break;
 
 		case MLX:
-<<<<<<< HEAD
-			err = build_mlx_header(dev, to_msqp(qp), ind, wr,
-					       wqe - sizeof (struct mthca_next_seg),
-					       wqe);
-=======
 			err = build_mlx_header(
 				dev, qp, ind, ud_wr(wr),
 				wqe - sizeof(struct mthca_next_seg), wqe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err) {
 				*bad_wr = wr;
 				goto out;
@@ -2525,26 +2155,12 @@ out:
 			      MTHCA_GET_DOORBELL_LOCK(&dev->doorbell_lock));
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Make sure doorbells don't leak out of SQ spinlock and reach
-	 * the HCA out of order:
-	 */
-	mmiowb();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&qp->sq.lock, flags);
 	return err;
 }
 
-<<<<<<< HEAD
-int mthca_arbel_post_receive(struct ib_qp *ibqp, struct ib_recv_wr *wr,
-			     struct ib_recv_wr **bad_wr)
-=======
 int mthca_arbel_post_receive(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 			     const struct ib_recv_wr **bad_wr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mthca_dev *dev = to_mdev(ibqp->device);
 	struct mthca_qp *qp = to_mqp(ibqp);

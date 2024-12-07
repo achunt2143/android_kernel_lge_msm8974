@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP3 Voltage Processor (VP) data
  *
@@ -13,13 +10,6 @@
  * Copyright (C) 2008, 2011 Nokia Corporation
  * Kalle Jokiniemi
  * Paul Walmsley
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/io.h>
@@ -35,13 +25,8 @@
 #include "vp.h"
 
 static const struct omap_vp_ops omap4_vp_ops = {
-<<<<<<< HEAD
-	.check_txdone = omap4_prm_vp_check_txdone,
-	.clear_txdone = omap4_prm_vp_clear_txdone,
-=======
 	.check_txdone = omap_prm_vp_check_txdone,
 	.clear_txdone = omap_prm_vp_clear_txdone,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -99,8 +84,6 @@ struct omap_vp_instance omap4_vp_core = {
 	.vstatus = OMAP4_PRM_VP_CORE_STATUS_OFFSET,
 	.voltage = OMAP4_PRM_VP_CORE_VOLTAGE_OFFSET,
 };
-<<<<<<< HEAD
-=======
 
 struct omap_vp_param omap4_mpu_vp_data = {
 	.vddmin			= OMAP4_VP_MPU_VLIMITTO_VDDMIN,
@@ -116,4 +99,3 @@ struct omap_vp_param omap4_core_vp_data = {
 	.vddmin			= OMAP4_VP_CORE_VLIMITTO_VDDMIN,
 	.vddmax			= OMAP4_VP_CORE_VLIMITTO_VDDMAX,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

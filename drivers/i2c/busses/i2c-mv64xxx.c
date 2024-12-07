@@ -17,25 +17,6 @@
 #include <linux/interrupt.h>
 #include <linux/mv643xx_i2c.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/io.h>
-
-/* Register defines */
-#define	MV64XXX_I2C_REG_SLAVE_ADDR			0x00
-#define	MV64XXX_I2C_REG_DATA				0x04
-#define	MV64XXX_I2C_REG_CONTROL				0x08
-#define	MV64XXX_I2C_REG_STATUS				0x0c
-#define	MV64XXX_I2C_REG_BAUD				0x0c
-#define	MV64XXX_I2C_REG_EXT_SLAVE_ADDR			0x10
-#define	MV64XXX_I2C_REG_SOFT_RESET			0x1c
-
-#define	MV64XXX_I2C_REG_CONTROL_ACK			0x00000004
-#define	MV64XXX_I2C_REG_CONTROL_IFLG			0x00000008
-#define	MV64XXX_I2C_REG_CONTROL_STOP			0x00000010
-#define	MV64XXX_I2C_REG_CONTROL_START			0x00000020
-#define	MV64XXX_I2C_REG_CONTROL_TWSIEN			0x00000040
-#define	MV64XXX_I2C_REG_CONTROL_INTEN			0x00000080
-=======
 #include <linux/pinctrl/consumer.h>
 #include <linux/pm_runtime.h>
 #include <linux/property.h>
@@ -56,7 +37,6 @@
 #define	MV64XXX_I2C_REG_CONTROL_START			BIT(5)
 #define	MV64XXX_I2C_REG_CONTROL_TWSIEN			BIT(6)
 #define	MV64XXX_I2C_REG_CONTROL_INTEN			BIT(7)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Ctlr status values */
 #define	MV64XXX_I2C_STATUS_BUS_ERR			0x00
@@ -77,8 +57,6 @@
 #define	MV64XXX_I2C_STATUS_MAST_RD_ADDR_2_NO_ACK	0xe8
 #define	MV64XXX_I2C_STATUS_NO_STATUS			0xf8
 
-<<<<<<< HEAD
-=======
 /* Register defines (I2C bridge) */
 #define	MV64XXX_I2C_REG_TX_DATA_LO			0xc0
 #define	MV64XXX_I2C_REG_TX_DATA_HI			0xc4
@@ -103,7 +81,6 @@
 /* Bridge Status values */
 #define	MV64XXX_I2C_BRIDGE_STATUS_ERROR			BIT(0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Driver states */
 enum {
 	MV64XXX_I2C_STATE_INVALID,
@@ -120,10 +97,6 @@ enum {
 enum {
 	MV64XXX_I2C_ACTION_INVALID,
 	MV64XXX_I2C_ACTION_CONTINUE,
-<<<<<<< HEAD
-	MV64XXX_I2C_ACTION_SEND_START,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MV64XXX_I2C_ACTION_SEND_RESTART,
 	MV64XXX_I2C_ACTION_SEND_ADDR_1,
 	MV64XXX_I2C_ACTION_SEND_ADDR_2,
@@ -133,9 +106,6 @@ enum {
 	MV64XXX_I2C_ACTION_SEND_STOP,
 };
 
-<<<<<<< HEAD
-struct mv64xxx_i2c_data {
-=======
 struct mv64xxx_i2c_regs {
 	u8	addr;
 	u8	ext_addr;
@@ -149,19 +119,13 @@ struct mv64xxx_i2c_regs {
 struct mv64xxx_i2c_data {
 	struct i2c_msg		*msgs;
 	int			num_msgs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			irq;
 	u32			state;
 	u32			action;
 	u32			aborting;
 	u32			cntl_bits;
 	void __iomem		*reg_base;
-<<<<<<< HEAD
-	u32			reg_base_p;
-	u32			reg_size;
-=======
 	struct mv64xxx_i2c_regs	reg_offsets;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			addr1;
 	u32			addr2;
 	u32			bytes_left;
@@ -171,19 +135,12 @@ struct mv64xxx_i2c_data {
 	int			rc;
 	u32			freq_m;
 	u32			freq_n;
-<<<<<<< HEAD
-=======
 	struct clk              *clk;
 	struct clk              *reg_clk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_queue_head_t	waitq;
 	spinlock_t		lock;
 	struct i2c_msg		*msg;
 	struct i2c_adapter	adapter;
-<<<<<<< HEAD
-};
-
-=======
 	bool			offload_enabled;
 /* 5us delay in order to avoid repeated start timing violation */
 	bool			errata_delay;
@@ -239,7 +196,6 @@ mv64xxx_i2c_prepare_for_io(struct mv64xxx_i2c_data *drv_data,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *****************************************************************************
  *
@@ -252,15 +208,6 @@ mv64xxx_i2c_prepare_for_io(struct mv64xxx_i2c_data *drv_data,
 static void
 mv64xxx_i2c_hw_init(struct mv64xxx_i2c_data *drv_data)
 {
-<<<<<<< HEAD
-	writel(0, drv_data->reg_base + MV64XXX_I2C_REG_SOFT_RESET);
-	writel((((drv_data->freq_m & 0xf) << 3) | (drv_data->freq_n & 0x7)),
-		drv_data->reg_base + MV64XXX_I2C_REG_BAUD);
-	writel(0, drv_data->reg_base + MV64XXX_I2C_REG_SLAVE_ADDR);
-	writel(0, drv_data->reg_base + MV64XXX_I2C_REG_EXT_SLAVE_ADDR);
-	writel(MV64XXX_I2C_REG_CONTROL_TWSIEN | MV64XXX_I2C_REG_CONTROL_STOP,
-		drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
-=======
 	if (drv_data->offload_enabled) {
 		writel(0, drv_data->reg_base + MV64XXX_I2C_REG_BRIDGE_CONTROL);
 		writel(0, drv_data->reg_base + MV64XXX_I2C_REG_BRIDGE_TIMING);
@@ -281,7 +228,6 @@ mv64xxx_i2c_hw_init(struct mv64xxx_i2c_data *drv_data)
 	if (drv_data->errata_delay)
 		udelay(5);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	drv_data->state = MV64XXX_I2C_STATE_IDLE;
 }
 
@@ -315,21 +261,13 @@ mv64xxx_i2c_fsm(struct mv64xxx_i2c_data *drv_data, u32 status)
 				MV64XXX_I2C_STATE_WAITING_FOR_ADDR_2_ACK;
 			break;
 		}
-<<<<<<< HEAD
-		/* FALLTHRU */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MV64XXX_I2C_STATUS_MAST_WR_ADDR_2_ACK: /* 0xd0 */
 	case MV64XXX_I2C_STATUS_MAST_WR_ACK: /* 0x28 */
 		if ((drv_data->bytes_left == 0)
 				|| (drv_data->aborting
 					&& (drv_data->byte_posn != 0))) {
-<<<<<<< HEAD
-			if (drv_data->send_stop) {
-=======
 			if (drv_data->send_stop || drv_data->aborting) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				drv_data->action = MV64XXX_I2C_ACTION_SEND_STOP;
 				drv_data->state = MV64XXX_I2C_STATE_IDLE;
 			} else {
@@ -354,22 +292,14 @@ mv64xxx_i2c_fsm(struct mv64xxx_i2c_data *drv_data, u32 status)
 				MV64XXX_I2C_STATE_WAITING_FOR_ADDR_2_ACK;
 			break;
 		}
-<<<<<<< HEAD
-		/* FALLTHRU */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MV64XXX_I2C_STATUS_MAST_RD_ADDR_2_ACK: /* 0xe0 */
 		if (drv_data->bytes_left == 0) {
 			drv_data->action = MV64XXX_I2C_ACTION_SEND_STOP;
 			drv_data->state = MV64XXX_I2C_STATE_IDLE;
 			break;
 		}
-<<<<<<< HEAD
-		/* FALLTHRU */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MV64XXX_I2C_STATUS_MAST_RD_DATA_ACK: /* 0x50 */
 		if (status != MV64XXX_I2C_STATUS_MAST_RD_DATA_ACK)
 			drv_data->action = MV64XXX_I2C_ACTION_CONTINUE;
@@ -394,11 +324,7 @@ mv64xxx_i2c_fsm(struct mv64xxx_i2c_data *drv_data, u32 status)
 		/* Doesn't seem to be a device at other end */
 		drv_data->action = MV64XXX_I2C_ACTION_SEND_STOP;
 		drv_data->state = MV64XXX_I2C_STATE_IDLE;
-<<<<<<< HEAD
-		drv_data->rc = -ENODEV;
-=======
 		drv_data->rc = -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -409,12 +335,6 @@ mv64xxx_i2c_fsm(struct mv64xxx_i2c_data *drv_data, u32 status)
 			 drv_data->msg->flags);
 		drv_data->action = MV64XXX_I2C_ACTION_SEND_STOP;
 		mv64xxx_i2c_hw_init(drv_data);
-<<<<<<< HEAD
-		drv_data->rc = -EIO;
-	}
-}
-
-=======
 		i2c_recover_bus(&drv_data->adapter);
 		drv_data->rc = -EAGAIN;
 	}
@@ -433,20 +353,11 @@ static void mv64xxx_i2c_send_start(struct mv64xxx_i2c_data *drv_data)
 	       drv_data->reg_base + drv_data->reg_offsets.control);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 mv64xxx_i2c_do_action(struct mv64xxx_i2c_data *drv_data)
 {
 	switch(drv_data->action) {
 	case MV64XXX_I2C_ACTION_SEND_RESTART:
-<<<<<<< HEAD
-		drv_data->cntl_bits |= MV64XXX_I2C_REG_CONTROL_START;
-		drv_data->cntl_bits &= ~MV64XXX_I2C_REG_CONTROL_INTEN;
-		writel(drv_data->cntl_bits,
-			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
-		drv_data->block = 0;
-		wake_up_interruptible(&drv_data->waitq);
-=======
 		/* We should only get here if we have further messages */
 		BUG_ON(drv_data->num_msgs == 0);
 
@@ -463,85 +374,43 @@ mv64xxx_i2c_do_action(struct mv64xxx_i2c_data *drv_data)
 		 * Thankfully, do not advertise support for that feature.
 		 */
 		drv_data->send_stop = drv_data->num_msgs == 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case MV64XXX_I2C_ACTION_CONTINUE:
 		writel(drv_data->cntl_bits,
-<<<<<<< HEAD
-			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
-		break;
-
-	case MV64XXX_I2C_ACTION_SEND_START:
-		writel(drv_data->cntl_bits | MV64XXX_I2C_REG_CONTROL_START,
-			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
-=======
 			drv_data->reg_base + drv_data->reg_offsets.control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case MV64XXX_I2C_ACTION_SEND_ADDR_1:
 		writel(drv_data->addr1,
-<<<<<<< HEAD
-			drv_data->reg_base + MV64XXX_I2C_REG_DATA);
-		writel(drv_data->cntl_bits,
-			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
-=======
 			drv_data->reg_base + drv_data->reg_offsets.data);
 		writel(drv_data->cntl_bits,
 			drv_data->reg_base + drv_data->reg_offsets.control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case MV64XXX_I2C_ACTION_SEND_ADDR_2:
 		writel(drv_data->addr2,
-<<<<<<< HEAD
-			drv_data->reg_base + MV64XXX_I2C_REG_DATA);
-		writel(drv_data->cntl_bits,
-			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
-=======
 			drv_data->reg_base + drv_data->reg_offsets.data);
 		writel(drv_data->cntl_bits,
 			drv_data->reg_base + drv_data->reg_offsets.control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case MV64XXX_I2C_ACTION_SEND_DATA:
 		writel(drv_data->msg->buf[drv_data->byte_posn++],
-<<<<<<< HEAD
-			drv_data->reg_base + MV64XXX_I2C_REG_DATA);
-		writel(drv_data->cntl_bits,
-			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
-=======
 			drv_data->reg_base + drv_data->reg_offsets.data);
 		writel(drv_data->cntl_bits,
 			drv_data->reg_base + drv_data->reg_offsets.control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case MV64XXX_I2C_ACTION_RCV_DATA:
 		drv_data->msg->buf[drv_data->byte_posn++] =
-<<<<<<< HEAD
-			readl(drv_data->reg_base + MV64XXX_I2C_REG_DATA);
-		writel(drv_data->cntl_bits,
-			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
-=======
 			readl(drv_data->reg_base + drv_data->reg_offsets.data);
 		writel(drv_data->cntl_bits,
 			drv_data->reg_base + drv_data->reg_offsets.control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case MV64XXX_I2C_ACTION_RCV_DATA_STOP:
 		drv_data->msg->buf[drv_data->byte_posn++] =
-<<<<<<< HEAD
-			readl(drv_data->reg_base + MV64XXX_I2C_REG_DATA);
-		drv_data->cntl_bits &= ~MV64XXX_I2C_REG_CONTROL_INTEN;
-		writel(drv_data->cntl_bits | MV64XXX_I2C_REG_CONTROL_STOP,
-			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
-		drv_data->block = 0;
-		wake_up_interruptible(&drv_data->waitq);
-=======
 			readl(drv_data->reg_base + drv_data->reg_offsets.data);
 		if (!drv_data->atomic)
 			drv_data->cntl_bits &= ~MV64XXX_I2C_REG_CONTROL_INTEN;
@@ -552,7 +421,6 @@ mv64xxx_i2c_do_action(struct mv64xxx_i2c_data *drv_data)
 			udelay(5);
 
 		wake_up(&drv_data->waitq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case MV64XXX_I2C_ACTION_INVALID:
@@ -561,15 +429,6 @@ mv64xxx_i2c_do_action(struct mv64xxx_i2c_data *drv_data)
 			"mv64xxx_i2c_do_action: Invalid action: %d\n",
 			drv_data->action);
 		drv_data->rc = -EIO;
-<<<<<<< HEAD
-		/* FALLTHRU */
-	case MV64XXX_I2C_ACTION_SEND_STOP:
-		drv_data->cntl_bits &= ~MV64XXX_I2C_REG_CONTROL_INTEN;
-		writel(drv_data->cntl_bits | MV64XXX_I2C_REG_CONTROL_STOP,
-			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
-		drv_data->block = 0;
-		wake_up_interruptible(&drv_data->waitq);
-=======
 		fallthrough;
 	case MV64XXX_I2C_ACTION_SEND_STOP:
 		if (!drv_data->atomic)
@@ -578,13 +437,10 @@ mv64xxx_i2c_do_action(struct mv64xxx_i2c_data *drv_data)
 			drv_data->reg_base + drv_data->reg_offsets.control);
 		drv_data->block = 0;
 		wake_up(&drv_data->waitq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void
 mv64xxx_i2c_read_offload_rx_data(struct mv64xxx_i2c_data *drv_data,
 				 struct i2c_msg *msg)
@@ -649,26 +505,10 @@ out:
 	return IRQ_HANDLED;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t
 mv64xxx_i2c_intr(int irq, void *dev_id)
 {
 	struct mv64xxx_i2c_data	*drv_data = dev_id;
-<<<<<<< HEAD
-	unsigned long	flags;
-	u32		status;
-	irqreturn_t	rc = IRQ_NONE;
-
-	spin_lock_irqsave(&drv_data->lock, flags);
-	while (readl(drv_data->reg_base + MV64XXX_I2C_REG_CONTROL) &
-						MV64XXX_I2C_REG_CONTROL_IFLG) {
-		status = readl(drv_data->reg_base + MV64XXX_I2C_REG_STATUS);
-		mv64xxx_i2c_fsm(drv_data, status);
-		mv64xxx_i2c_do_action(drv_data);
-		rc = IRQ_HANDLED;
-	}
-	spin_unlock_irqrestore(&drv_data->lock, flags);
-=======
 	u32		status;
 	irqreturn_t	rc = IRQ_NONE;
 
@@ -701,7 +541,6 @@ mv64xxx_i2c_intr(int irq, void *dev_id)
 		rc = IRQ_HANDLED;
 	}
 	spin_unlock(&drv_data->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -714,46 +553,13 @@ mv64xxx_i2c_intr(int irq, void *dev_id)
  *****************************************************************************
  */
 static void
-<<<<<<< HEAD
-mv64xxx_i2c_prepare_for_io(struct mv64xxx_i2c_data *drv_data,
-	struct i2c_msg *msg)
-{
-	u32	dir = 0;
-
-	drv_data->msg = msg;
-	drv_data->byte_posn = 0;
-	drv_data->bytes_left = msg->len;
-	drv_data->aborting = 0;
-	drv_data->rc = 0;
-	drv_data->cntl_bits = MV64XXX_I2C_REG_CONTROL_ACK |
-		MV64XXX_I2C_REG_CONTROL_INTEN | MV64XXX_I2C_REG_CONTROL_TWSIEN;
-
-	if (msg->flags & I2C_M_RD)
-		dir = 1;
-
-	if (msg->flags & I2C_M_TEN) {
-		drv_data->addr1 = 0xf0 | (((u32)msg->addr & 0x300) >> 7) | dir;
-		drv_data->addr2 = (u32)msg->addr & 0xff;
-	} else {
-		drv_data->addr1 = ((u32)msg->addr & 0x7f) << 1 | dir;
-		drv_data->addr2 = 0;
-	}
-}
-
-static void
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 mv64xxx_i2c_wait_for_completion(struct mv64xxx_i2c_data *drv_data)
 {
 	long		time_left;
 	unsigned long	flags;
 	char		abort = 0;
 
-<<<<<<< HEAD
-	time_left = wait_event_interruptible_timeout(drv_data->waitq,
-=======
 	time_left = wait_event_timeout(drv_data->waitq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		!drv_data->block, drv_data->adapter.timeout);
 
 	spin_lock_irqsave(&drv_data->lock, flags);
@@ -779,20 +585,12 @@ mv64xxx_i2c_wait_for_completion(struct mv64xxx_i2c_data *drv_data)
 				"time_left: %d\n", drv_data->block,
 				(int)time_left);
 			mv64xxx_i2c_hw_init(drv_data);
-<<<<<<< HEAD
-=======
 			i2c_recover_bus(&drv_data->adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else
 		spin_unlock_irqrestore(&drv_data->lock, flags);
 }
 
-<<<<<<< HEAD
-static int
-mv64xxx_i2c_execute_msg(struct mv64xxx_i2c_data *drv_data, struct i2c_msg *msg,
-				int is_first, int is_last)
-=======
 static void mv64xxx_i2c_wait_polling(struct mv64xxx_i2c_data *drv_data)
 {
 	ktime_t timeout = ktime_add_ms(ktime_get(), drv_data->adapter.timeout);
@@ -807,48 +605,10 @@ static void mv64xxx_i2c_wait_polling(struct mv64xxx_i2c_data *drv_data)
 static int
 mv64xxx_i2c_execute_msg(struct mv64xxx_i2c_data *drv_data, struct i2c_msg *msg,
 				int is_last)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long	flags;
 
 	spin_lock_irqsave(&drv_data->lock, flags);
-<<<<<<< HEAD
-	mv64xxx_i2c_prepare_for_io(drv_data, msg);
-
-	if (unlikely(msg->flags & I2C_M_NOSTART)) { /* Skip start/addr phases */
-		if (drv_data->msg->flags & I2C_M_RD) {
-			/* No action to do, wait for slave to send a byte */
-			drv_data->action = MV64XXX_I2C_ACTION_CONTINUE;
-			drv_data->state =
-				MV64XXX_I2C_STATE_WAITING_FOR_SLAVE_DATA;
-		} else {
-			drv_data->action = MV64XXX_I2C_ACTION_SEND_DATA;
-			drv_data->state =
-				MV64XXX_I2C_STATE_WAITING_FOR_SLAVE_ACK;
-			drv_data->bytes_left--;
-		}
-	} else {
-		if (is_first) {
-			drv_data->action = MV64XXX_I2C_ACTION_SEND_START;
-			drv_data->state =
-				MV64XXX_I2C_STATE_WAITING_FOR_START_COND;
-		} else {
-			drv_data->action = MV64XXX_I2C_ACTION_SEND_ADDR_1;
-			drv_data->state =
-				MV64XXX_I2C_STATE_WAITING_FOR_ADDR_1_ACK;
-		}
-	}
-
-	drv_data->send_stop = is_last;
-	drv_data->block = 1;
-	mv64xxx_i2c_do_action(drv_data);
-	spin_unlock_irqrestore(&drv_data->lock, flags);
-
-	mv64xxx_i2c_wait_for_completion(drv_data);
-	return drv_data->rc;
-}
-
-=======
 
 	drv_data->state = MV64XXX_I2C_STATE_WAITING_FOR_START_COND;
 
@@ -974,7 +734,6 @@ mv64xxx_i2c_can_offload(struct mv64xxx_i2c_data *drv_data)
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *****************************************************************************
  *
@@ -989,21 +748,6 @@ mv64xxx_i2c_functionality(struct i2c_adapter *adap)
 }
 
 static int
-<<<<<<< HEAD
-mv64xxx_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[], int num)
-{
-	struct mv64xxx_i2c_data *drv_data = i2c_get_adapdata(adap);
-	int	i, rc;
-
-	for (i = 0; i < num; i++) {
-		rc = mv64xxx_i2c_execute_msg(drv_data, &msgs[i],
-						i == 0, i + 1 == num);
-		if (rc < 0)
-			return rc;
-	}
-
-	return num;
-=======
 mv64xxx_i2c_xfer_core(struct i2c_adapter *adap, struct i2c_msg msgs[], int num)
 {
 	struct mv64xxx_i2c_data *drv_data = i2c_get_adapdata(adap);
@@ -1050,15 +794,11 @@ static int mv64xxx_i2c_xfer_atomic(struct i2c_adapter *adap,
 
 	drv_data->atomic = 1;
 	return mv64xxx_i2c_xfer_core(adap, msgs, num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_algorithm mv64xxx_i2c_algo = {
 	.master_xfer = mv64xxx_i2c_xfer,
-<<<<<<< HEAD
-=======
 	.master_xfer_atomic = mv64xxx_i2c_xfer_atomic,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.functionality = mv64xxx_i2c_functionality,
 };
 
@@ -1069,26 +809,6 @@ static const struct i2c_algorithm mv64xxx_i2c_algo = {
  *
  *****************************************************************************
  */
-<<<<<<< HEAD
-static int __devinit
-mv64xxx_i2c_map_regs(struct platform_device *pd,
-	struct mv64xxx_i2c_data *drv_data)
-{
-	int size;
-	struct resource	*r = platform_get_resource(pd, IORESOURCE_MEM, 0);
-
-	if (!r)
-		return -ENODEV;
-
-	size = resource_size(r);
-
-	if (!request_mem_region(r->start, size, drv_data->adapter.name))
-		return -EBUSY;
-
-	drv_data->reg_base = ioremap(r->start, size);
-	drv_data->reg_base_p = r->start;
-	drv_data->reg_size = size;
-=======
 static const struct of_device_id mv64xxx_i2c_of_match_table[] = {
 	{ .compatible = "allwinner,sun4i-a10-i2c", .data = &mv64xxx_i2c_regs_sun4i},
 	{ .compatible = "allwinner,sun6i-a31-i2c", .data = &mv64xxx_i2c_regs_sun4i},
@@ -1242,45 +962,10 @@ mv64xxx_i2c_runtime_suspend(struct device *dev)
 	reset_control_assert(drv_data->rstc);
 	clk_disable_unprepare(drv_data->reg_clk);
 	clk_disable_unprepare(drv_data->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void
-mv64xxx_i2c_unmap_regs(struct mv64xxx_i2c_data *drv_data)
-{
-	if (drv_data->reg_base) {
-		iounmap(drv_data->reg_base);
-		release_mem_region(drv_data->reg_base_p, drv_data->reg_size);
-	}
-
-	drv_data->reg_base = NULL;
-	drv_data->reg_base_p = 0;
-}
-
-static int __devinit
-mv64xxx_i2c_probe(struct platform_device *pd)
-{
-	struct mv64xxx_i2c_data		*drv_data;
-	struct mv64xxx_i2c_pdata	*pdata = pd->dev.platform_data;
-	int	rc;
-
-	if ((pd->id != 0) || !pdata)
-		return -ENODEV;
-
-	drv_data = kzalloc(sizeof(struct mv64xxx_i2c_data), GFP_KERNEL);
-	if (!drv_data)
-		return -ENOMEM;
-
-	if (mv64xxx_i2c_map_regs(pd, drv_data)) {
-		rc = -ENODEV;
-		goto exit_kfree;
-	}
-
-	strlcpy(drv_data->adapter.name, MV64XXX_I2C_CTLR_NAME " adapter",
-=======
 static int
 mv64xxx_i2c_runtime_resume(struct device *dev)
 {
@@ -1315,39 +1000,11 @@ mv64xxx_i2c_probe(struct platform_device *pd)
 		return PTR_ERR(drv_data->reg_base);
 
 	strscpy(drv_data->adapter.name, MV64XXX_I2C_CTLR_NAME " adapter",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(drv_data->adapter.name));
 
 	init_waitqueue_head(&drv_data->waitq);
 	spin_lock_init(&drv_data->lock);
 
-<<<<<<< HEAD
-	drv_data->freq_m = pdata->freq_m;
-	drv_data->freq_n = pdata->freq_n;
-	drv_data->irq = platform_get_irq(pd, 0);
-	if (drv_data->irq < 0) {
-		rc = -ENXIO;
-		goto exit_unmap_regs;
-	}
-	drv_data->adapter.dev.parent = &pd->dev;
-	drv_data->adapter.algo = &mv64xxx_i2c_algo;
-	drv_data->adapter.owner = THIS_MODULE;
-	drv_data->adapter.class = I2C_CLASS_HWMON | I2C_CLASS_SPD;
-	drv_data->adapter.timeout = msecs_to_jiffies(pdata->timeout);
-	drv_data->adapter.nr = pd->id;
-	platform_set_drvdata(pd, drv_data);
-	i2c_set_adapdata(&drv_data->adapter, drv_data);
-
-	mv64xxx_i2c_hw_init(drv_data);
-
-	if (request_irq(drv_data->irq, mv64xxx_i2c_intr, 0,
-			MV64XXX_I2C_CTLR_NAME, drv_data)) {
-		dev_err(&drv_data->adapter.dev,
-			"mv64xxx: Can't register intr handler irq: %d\n",
-			drv_data->irq);
-		rc = -EINVAL;
-		goto exit_unmap_regs;
-=======
 	/* Not all platforms have clocks */
 	drv_data->clk = devm_clk_get(&pd->dev, NULL);
 	if (IS_ERR(drv_data->clk)) {
@@ -1408,7 +1065,6 @@ mv64xxx_i2c_probe(struct platform_device *pd)
 			"mv64xxx: Can't register intr handler irq%d: %d\n",
 			drv_data->irq, rc);
 		goto exit_disable_pm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if ((rc = i2c_add_numbered_adapter(&drv_data->adapter)) != 0) {
 		dev_err(&drv_data->adapter.dev,
 			"mv64xxx: Can't add i2c adapter, rc: %d\n", -rc);
@@ -1417,46 +1073,16 @@ mv64xxx_i2c_probe(struct platform_device *pd)
 
 	return 0;
 
-<<<<<<< HEAD
-	exit_free_irq:
-		free_irq(drv_data->irq, drv_data);
-	exit_unmap_regs:
-		mv64xxx_i2c_unmap_regs(drv_data);
-	exit_kfree:
-		kfree(drv_data);
-	return rc;
-}
-
-static int __devexit
-mv64xxx_i2c_remove(struct platform_device *dev)
-{
-	struct mv64xxx_i2c_data		*drv_data = platform_get_drvdata(dev);
-	int	rc;
-
-	rc = i2c_del_adapter(&drv_data->adapter);
-	free_irq(drv_data->irq, drv_data);
-	mv64xxx_i2c_unmap_regs(drv_data);
-	kfree(drv_data);
-=======
 exit_free_irq:
 	free_irq(drv_data->irq, drv_data);
 exit_disable_pm:
 	pm_runtime_disable(&pd->dev);
 	if (!pm_runtime_status_suspended(&pd->dev))
 		mv64xxx_i2c_runtime_suspend(&pd->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
 
-<<<<<<< HEAD
-static struct platform_driver mv64xxx_i2c_driver = {
-	.probe	= mv64xxx_i2c_probe,
-	.remove	= __devexit_p(mv64xxx_i2c_remove),
-	.driver	= {
-		.owner	= THIS_MODULE,
-		.name	= MV64XXX_I2C_CTLR_NAME,
-=======
 static void
 mv64xxx_i2c_remove(struct platform_device *pd)
 {
@@ -1483,7 +1109,6 @@ static struct platform_driver mv64xxx_i2c_driver = {
 		.name	= MV64XXX_I2C_CTLR_NAME,
 		.pm     = &mv64xxx_i2c_pm_ops,
 		.of_match_table = mv64xxx_i2c_of_match_table,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

@@ -22,43 +22,21 @@
  */
 
 
-<<<<<<< HEAD
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <sys/poll.h>
 #include <sys/utsname.h>
-#include <linux/types.h>
-=======
-#include <sys/poll.h>
-#include <sys/utsname.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-<<<<<<< HEAD
-#include <errno.h>
-#include <arpa/inet.h>
-#include <linux/connector.h>
-#include <linux/hyperv.h>
-#include <linux/netlink.h>
-=======
 #include <ctype.h>
 #include <errno.h>
 #include <arpa/inet.h>
 #include <linux/hyperv.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <ifaddrs.h>
 #include <netdb.h>
 #include <syslog.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-<<<<<<< HEAD
-
-/*
- * KVP protocol: The user mode component first registers with the
- * the kernel component. Subsequently, the kernel component requests, data
-=======
 #include <dirent.h>
 #include <net/if.h>
 #include <limits.h>
@@ -67,7 +45,6 @@
 /*
  * KVP protocol: The user mode component first registers with the
  * kernel component. Subsequently, the kernel component requests, data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * for the specified keys. In response to this message the user mode component
  * fills in the value corresponding to the specified key. We overload the
  * sequence field in the cn_msg header to define our KVP message types.
@@ -91,11 +68,6 @@ enum key_index {
 	ProcessorArchitecture
 };
 
-<<<<<<< HEAD
-static char kvp_send_buffer[4096];
-static char kvp_recv_buffer[4096];
-static struct sockaddr_nl addr;
-=======
 
 enum {
 	IPADDR = 0,
@@ -111,25 +83,12 @@ enum {
 };
 
 static int in_hand_shake;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static char *os_name = "";
 static char *os_major = "";
 static char *os_minor = "";
 static char *processor_arch;
 static char *os_build;
-<<<<<<< HEAD
-static char *lic_version;
-static struct utsname uts_buf;
-
-
-#define MAX_FILE_NAME 100
-#define ENTRIES_PER_BLOCK 50
-
-struct kvp_record {
-	__u8 key[HV_KVP_EXCHANGE_MAX_KEY_SIZE];
-	__u8 value[HV_KVP_EXCHANGE_MAX_VALUE_SIZE];
-=======
 static char *os_version;
 static char *lic_version = "Unknown version";
 static char full_domain_name[HV_KVP_EXCHANGE_MAX_VALUE_SIZE];
@@ -158,7 +117,6 @@ static struct utsname uts_buf;
 struct kvp_record {
 	char key[HV_KVP_EXCHANGE_MAX_KEY_SIZE];
 	char value[HV_KVP_EXCHANGE_MAX_VALUE_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct kvp_file_state {
@@ -166,11 +124,7 @@ struct kvp_file_state {
 	int num_blocks;
 	struct kvp_record *records;
 	int num_records;
-<<<<<<< HEAD
-	__u8 fname[MAX_FILE_NAME];
-=======
 	char fname[MAX_FILE_NAME];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct kvp_file_state kvp_file_info[KVP_POOL_COUNT];
@@ -181,12 +135,8 @@ static void kvp_acquire_lock(int pool)
 	fl.l_pid = getpid();
 
 	if (fcntl(kvp_file_info[pool].fd, F_SETLKW, &fl) == -1) {
-<<<<<<< HEAD
-		syslog(LOG_ERR, "Failed to acquire the lock pool: %d", pool);
-=======
 		syslog(LOG_ERR, "Failed to acquire the lock pool: %d; error: %d %s", pool,
 				errno, strerror(errno));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		exit(EXIT_FAILURE);
 	}
 }
@@ -197,13 +147,8 @@ static void kvp_release_lock(int pool)
 	fl.l_pid = getpid();
 
 	if (fcntl(kvp_file_info[pool].fd, F_SETLK, &fl) == -1) {
-<<<<<<< HEAD
-		perror("fcntl");
-		syslog(LOG_ERR, "Failed to release the lock pool: %d", pool);
-=======
 		syslog(LOG_ERR, "Failed to release the lock pool: %d; error: %d %s", pool,
 				errno, strerror(errno));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		exit(EXIT_FAILURE);
 	}
 }
@@ -211,10 +156,6 @@ static void kvp_release_lock(int pool)
 static void kvp_update_file(int pool)
 {
 	FILE *filep;
-<<<<<<< HEAD
-	size_t bytes_written;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We are going to write our in-memory registry out to
@@ -222,17 +163,6 @@ static void kvp_update_file(int pool)
 	 */
 	kvp_acquire_lock(pool);
 
-<<<<<<< HEAD
-	filep = fopen(kvp_file_info[pool].fname, "w");
-	if (!filep) {
-		kvp_release_lock(pool);
-		syslog(LOG_ERR, "Failed to open file, pool: %d", pool);
-		exit(EXIT_FAILURE);
-	}
-
-	bytes_written = fwrite(kvp_file_info[pool].records,
-				sizeof(struct kvp_record),
-=======
 	filep = fopen(kvp_file_info[pool].fname, "we");
 	if (!filep) {
 		syslog(LOG_ERR, "Failed to open file, pool: %d; error: %d %s", pool,
@@ -242,7 +172,6 @@ static void kvp_update_file(int pool)
 	}
 
 	fwrite(kvp_file_info[pool].records, sizeof(struct kvp_record),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kvp_file_info[pool].num_records, filep);
 
 	if (ferror(filep) || fclose(filep)) {
@@ -265,30 +194,16 @@ static void kvp_update_mem_state(int pool)
 
 	kvp_acquire_lock(pool);
 
-<<<<<<< HEAD
-	filep = fopen(kvp_file_info[pool].fname, "r");
-	if (!filep) {
-		kvp_release_lock(pool);
-		syslog(LOG_ERR, "Failed to open file, pool: %d", pool);
-=======
 	filep = fopen(kvp_file_info[pool].fname, "re");
 	if (!filep) {
 		syslog(LOG_ERR, "Failed to open file, pool: %d; error: %d %s", pool,
 				errno, strerror(errno));
 		kvp_release_lock(pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		exit(EXIT_FAILURE);
 	}
 	for (;;) {
 		readp = &record[records_read];
 		records_read += fread(readp, sizeof(struct kvp_record),
-<<<<<<< HEAD
-					ENTRIES_PER_BLOCK * num_blocks,
-					filep);
-
-		if (ferror(filep)) {
-			syslog(LOG_ERR, "Failed to read file, pool: %d", pool);
-=======
 				ENTRIES_PER_BLOCK * num_blocks - records_read,
 				filep);
 
@@ -297,7 +212,6 @@ static void kvp_update_mem_state(int pool)
 				"Failed to read file, pool: %d; error: %d %s",
 				 pool, errno, strerror(errno));
 			kvp_release_lock(pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			exit(EXIT_FAILURE);
 		}
 
@@ -310,10 +224,7 @@ static void kvp_update_mem_state(int pool)
 
 			if (record == NULL) {
 				syslog(LOG_ERR, "malloc failed");
-<<<<<<< HEAD
-=======
 				kvp_release_lock(pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				exit(EXIT_FAILURE);
 			}
 			continue;
@@ -328,23 +239,6 @@ static void kvp_update_mem_state(int pool)
 	fclose(filep);
 	kvp_release_lock(pool);
 }
-<<<<<<< HEAD
-static int kvp_file_init(void)
-{
-	int ret, fd;
-	FILE *filep;
-	size_t records_read;
-	__u8 *fname;
-	struct kvp_record *record;
-	struct kvp_record *readp;
-	int num_blocks;
-	int i;
-	int alloc_unit = sizeof(struct kvp_record) * ENTRIES_PER_BLOCK;
-
-	if (access("/var/opt/hyperv", F_OK)) {
-		if (mkdir("/var/opt/hyperv", S_IRUSR | S_IWUSR | S_IROTH)) {
-			syslog(LOG_ERR, " Failed to create /var/opt/hyperv");
-=======
 
 static int kvp_file_init(void)
 {
@@ -357,71 +251,18 @@ static int kvp_file_init(void)
 		if (mkdir(KVP_CONFIG_LOC, 0755 /* rwxr-xr-x */)) {
 			syslog(LOG_ERR, "Failed to create '%s'; error: %d %s", KVP_CONFIG_LOC,
 					errno, strerror(errno));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			exit(EXIT_FAILURE);
 		}
 	}
 
 	for (i = 0; i < KVP_POOL_COUNT; i++) {
 		fname = kvp_file_info[i].fname;
-<<<<<<< HEAD
-		records_read = 0;
-		num_blocks = 1;
-		sprintf(fname, "/var/opt/hyperv/.kvp_pool_%d", i);
-		fd = open(fname, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IROTH);
-=======
 		sprintf(fname, "%s/.kvp_pool_%d", KVP_CONFIG_LOC, i);
 		fd = open(fname, O_RDWR | O_CREAT | O_CLOEXEC, 0644 /* rw-r--r-- */);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (fd == -1)
 			return 1;
 
-<<<<<<< HEAD
-
-		filep = fopen(fname, "r");
-		if (!filep)
-			return 1;
-
-		record = malloc(alloc_unit * num_blocks);
-		if (record == NULL) {
-			fclose(filep);
-			return 1;
-		}
-		for (;;) {
-			readp = &record[records_read];
-			records_read += fread(readp, sizeof(struct kvp_record),
-					ENTRIES_PER_BLOCK,
-					filep);
-
-			if (ferror(filep)) {
-				syslog(LOG_ERR, "Failed to read file, pool: %d",
-				       i);
-				exit(EXIT_FAILURE);
-			}
-
-			if (!feof(filep)) {
-				/*
-				 * We have more data to read.
-				 */
-				num_blocks++;
-				record = realloc(record, alloc_unit *
-						num_blocks);
-				if (record == NULL) {
-					fclose(filep);
-					return 1;
-				}
-				continue;
-			}
-			break;
-		}
-		kvp_file_info[i].fd = fd;
-		kvp_file_info[i].num_blocks = num_blocks;
-		kvp_file_info[i].records = record;
-		kvp_file_info[i].num_records = records_read;
-		fclose(filep);
-
-=======
 		kvp_file_info[i].fd = fd;
 		kvp_file_info[i].num_blocks = 1;
 		kvp_file_info[i].records = malloc(alloc_unit);
@@ -429,17 +270,12 @@ static int kvp_file_init(void)
 			return 1;
 		kvp_file_info[i].num_records = 0;
 		kvp_update_mem_state(i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int kvp_key_delete(int pool, __u8 *key, int key_size)
-=======
 static int kvp_key_delete(int pool, const __u8 *key, int key_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	int j, k;
@@ -461,11 +297,7 @@ static int kvp_key_delete(int pool, const __u8 *key, int key_size)
 		 * Found a match; just move the remaining
 		 * entries up.
 		 */
-<<<<<<< HEAD
-		if (i == num_records) {
-=======
 		if (i == (num_records - 1)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kvp_file_info[pool].num_records--;
 			kvp_update_file(pool);
 			return 0;
@@ -486,18 +318,10 @@ static int kvp_key_delete(int pool, const __u8 *key, int key_size)
 	return 1;
 }
 
-<<<<<<< HEAD
-static int kvp_key_add_or_modify(int pool, __u8 *key, int key_size, __u8 *value,
-			int value_size)
-{
-	int i;
-	int j, k;
-=======
 static int kvp_key_add_or_modify(int pool, const __u8 *key, int key_size,
 				 const __u8 *value, int value_size)
 {
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int num_records;
 	struct kvp_record *record;
 	int num_blocks;
@@ -548,11 +372,7 @@ static int kvp_key_add_or_modify(int pool, const __u8 *key, int key_size,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int kvp_get_value(int pool, __u8 *key, int key_size, __u8 *value,
-=======
 static int kvp_get_value(int pool, const __u8 *key, int key_size, __u8 *value,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int value_size)
 {
 	int i;
@@ -584,11 +404,7 @@ static int kvp_get_value(int pool, const __u8 *key, int key_size, __u8 *value,
 	return 1;
 }
 
-<<<<<<< HEAD
-static void kvp_pool_enumerate(int pool, int index, __u8 *key, int key_size,
-=======
 static int kvp_pool_enumerate(int pool, int index, __u8 *key, int key_size,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__u8 *value, int value_size)
 {
 	struct kvp_record *record;
@@ -600,24 +416,12 @@ static int kvp_pool_enumerate(int pool, int index, __u8 *key, int key_size,
 	record = kvp_file_info[pool].records;
 
 	if (index >= kvp_file_info[pool].num_records) {
-<<<<<<< HEAD
-		/*
-		 * This is an invalid index; terminate enumeration;
-		 * - a NULL value will do the trick.
-		 */
-		strcpy(value, "");
-		return;
-=======
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	memcpy(key, record[index].key, key_size);
 	memcpy(value, record[index].value, value_size);
-<<<<<<< HEAD
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -627,14 +431,10 @@ void kvp_get_os_info(void)
 	char	*p, buf[512];
 
 	uname(&uts_buf);
-<<<<<<< HEAD
-	os_build = uts_buf.release;
-=======
 	os_version = uts_buf.release;
 	os_build = strdup(uts_buf.release);
 
 	os_name = uts_buf.sysname;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	processor_arch = uts_buf.machine;
 
 	/*
@@ -642,12 +442,6 @@ void kvp_get_os_info(void)
 	 * string to be of the form: x.y.z
 	 * Strip additional information we may have.
 	 */
-<<<<<<< HEAD
-	p = strchr(os_build, '-');
-	if (p)
-		*p = '\0';
-
-=======
 	p = strchr(os_version, '-');
 	if (p)
 		*p = '\0';
@@ -706,27 +500,16 @@ void kvp_get_os_info(void)
 	}
 
 	/* Fallback for older RH/SUSE releases */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	file = fopen("/etc/SuSE-release", "r");
 	if (file != NULL)
 		goto kvp_osinfo_found;
 	file  = fopen("/etc/redhat-release", "r");
 	if (file != NULL)
 		goto kvp_osinfo_found;
-<<<<<<< HEAD
-	/*
-	 * Add code for other supported platforms.
-	 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We don't have information about the os.
 	 */
-<<<<<<< HEAD
-	os_name = uts_buf.sysname;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 kvp_osinfo_found:
@@ -770,23 +553,6 @@ done:
 	return;
 }
 
-<<<<<<< HEAD
-static int
-kvp_get_ip_address(int family, char *buffer, int length)
-{
-	struct ifaddrs *ifap;
-	struct ifaddrs *curp;
-	int ipv4_len = strlen("255.255.255.255") + 1;
-	int ipv6_len = strlen("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")+1;
-	int offset = 0;
-	const char *str;
-	char tmp[50];
-	int error = 0;
-
-	/*
-	 * On entry into this function, the buffer is capable of holding the
-	 * maximum key value (2048 bytes).
-=======
 
 
 /*
@@ -1072,74 +838,15 @@ kvp_get_ip_info(int family, char *if_name, int op,
 	/*
 	 * On entry into this function, the buffer is capable of holding the
 	 * maximum key value.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	if (getifaddrs(&ifap)) {
 		strcpy(buffer, "getifaddrs failed\n");
-<<<<<<< HEAD
-		return 1;
-=======
 		return HV_E_FAIL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	curp = ifap;
 	while (curp != NULL) {
-<<<<<<< HEAD
-		if ((curp->ifa_addr != NULL) &&
-		   (curp->ifa_addr->sa_family == family)) {
-			if (family == AF_INET) {
-				struct sockaddr_in *addr =
-				(struct sockaddr_in *) curp->ifa_addr;
-
-				str = inet_ntop(family, &addr->sin_addr,
-						tmp, 50);
-				if (str == NULL) {
-					strcpy(buffer, "inet_ntop failed\n");
-					error = 1;
-					goto getaddr_done;
-				}
-				if (offset == 0)
-					strcpy(buffer, tmp);
-				else
-					strcat(buffer, tmp);
-				strcat(buffer, ";");
-
-				offset += strlen(str) + 1;
-				if ((length - offset) < (ipv4_len + 1))
-					goto getaddr_done;
-
-			} else {
-
-			/*
-			 * We only support AF_INET and AF_INET6
-			 * and the list of addresses is separated by a ";".
-			 */
-				struct sockaddr_in6 *addr =
-				(struct sockaddr_in6 *) curp->ifa_addr;
-
-				str = inet_ntop(family,
-					&addr->sin6_addr.s6_addr,
-					tmp, 50);
-				if (str == NULL) {
-					strcpy(buffer, "inet_ntop failed\n");
-					error = 1;
-					goto getaddr_done;
-				}
-				if (offset == 0)
-					strcpy(buffer, tmp);
-				else
-					strcat(buffer, tmp);
-				strcat(buffer, ";");
-				offset += strlen(str) + 1;
-				if ((length - offset) < (ipv6_len + 1))
-					goto getaddr_done;
-
-			}
-
-		}
-=======
 		if (curp->ifa_addr == NULL) {
 			curp = curp->ifa_next;
 			continue;
@@ -1235,7 +942,6 @@ gather_ipaddr:
 		if (error)
 			goto getaddr_done;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		curp = curp->ifa_next;
 	}
 
@@ -1244,10 +950,6 @@ getaddr_done:
 	return error;
 }
 
-<<<<<<< HEAD
-
-static int
-=======
 /*
  * Retrieve the IP given the MAC address.
  */
@@ -1933,7 +1635,6 @@ setval_error:
 
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 kvp_get_domain_name(char *buffer, int length)
 {
 	struct addrinfo	hints, *info ;
@@ -1947,65 +1648,6 @@ kvp_get_domain_name(char *buffer, int length)
 
 	error = getaddrinfo(buffer, NULL, &hints, &info);
 	if (error != 0) {
-<<<<<<< HEAD
-		strcpy(buffer, "getaddrinfo failed\n");
-		return error;
-	}
-	strcpy(buffer, info->ai_canonname);
-	freeaddrinfo(info);
-	return error;
-}
-
-static int
-netlink_send(int fd, struct cn_msg *msg)
-{
-	struct nlmsghdr *nlh;
-	unsigned int size;
-	struct msghdr message;
-	char buffer[64];
-	struct iovec iov[2];
-
-	size = NLMSG_SPACE(sizeof(struct cn_msg) + msg->len);
-
-	nlh = (struct nlmsghdr *)buffer;
-	nlh->nlmsg_seq = 0;
-	nlh->nlmsg_pid = getpid();
-	nlh->nlmsg_type = NLMSG_DONE;
-	nlh->nlmsg_len = NLMSG_LENGTH(size - sizeof(*nlh));
-	nlh->nlmsg_flags = 0;
-
-	iov[0].iov_base = nlh;
-	iov[0].iov_len = sizeof(*nlh);
-
-	iov[1].iov_base = msg;
-	iov[1].iov_len = size;
-
-	memset(&message, 0, sizeof(message));
-	message.msg_name = &addr;
-	message.msg_namelen = sizeof(addr);
-	message.msg_iov = iov;
-	message.msg_iovlen = 2;
-
-	return sendmsg(fd, &message, 0);
-}
-
-int main(void)
-{
-	int fd, len, sock_opt;
-	int error;
-	struct cn_msg *message;
-	struct pollfd pfd;
-	struct nlmsghdr *incoming_msg;
-	struct cn_msg	*incoming_cn_msg;
-	struct hv_kvp_msg *hv_msg;
-	char	*p;
-	char	*key_value;
-	char	*key_name;
-
-	daemon(1, 0);
-	openlog("KVP", 0, LOG_USER);
-	syslog(LOG_INFO, "KVP starting; pid is:%d", getpid());
-=======
 		snprintf(buffer, length, "getaddrinfo failed: 0x%x %s",
 			error, gai_strerror(error));
 		return;
@@ -2064,96 +1706,21 @@ int main(int argc, char *argv[])
 	openlog("KVP", 0, LOG_USER);
 	syslog(LOG_INFO, "KVP starting; pid is:%d", getpid());
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Retrieve OS release information.
 	 */
 	kvp_get_os_info();
-<<<<<<< HEAD
-=======
 	/*
 	 * Cache Fully Qualified Domain Name because getaddrinfo takes an
 	 * unpredictable amount of time to finish.
 	 */
 	kvp_get_domain_name(full_domain_name, sizeof(full_domain_name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (kvp_file_init()) {
 		syslog(LOG_ERR, "Failed to initialize the pools");
 		exit(EXIT_FAILURE);
 	}
 
-<<<<<<< HEAD
-	fd = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_CONNECTOR);
-	if (fd < 0) {
-		syslog(LOG_ERR, "netlink socket creation failed; error:%d", fd);
-		exit(EXIT_FAILURE);
-	}
-	addr.nl_family = AF_NETLINK;
-	addr.nl_pad = 0;
-	addr.nl_pid = 0;
-	addr.nl_groups = CN_KVP_IDX;
-
-
-	error = bind(fd, (struct sockaddr *)&addr, sizeof(addr));
-	if (error < 0) {
-		syslog(LOG_ERR, "bind failed; error:%d", error);
-		close(fd);
-		exit(EXIT_FAILURE);
-	}
-	sock_opt = addr.nl_groups;
-	setsockopt(fd, 270, 1, &sock_opt, sizeof(sock_opt));
-	/*
-	 * Register ourselves with the kernel.
-	 */
-	message = (struct cn_msg *)kvp_send_buffer;
-	message->id.idx = CN_KVP_IDX;
-	message->id.val = CN_KVP_VAL;
-
-	hv_msg = (struct hv_kvp_msg *)message->data;
-	hv_msg->kvp_hdr.operation = KVP_OP_REGISTER;
-	message->ack = 0;
-	message->len = sizeof(struct hv_kvp_msg);
-
-	len = netlink_send(fd, message);
-	if (len < 0) {
-		syslog(LOG_ERR, "netlink_send failed; error:%d", len);
-		close(fd);
-		exit(EXIT_FAILURE);
-	}
-
-	pfd.fd = fd;
-
-	while (1) {
-		struct sockaddr *addr_p = (struct sockaddr *) &addr;
-		socklen_t addr_l = sizeof(addr);
-		pfd.events = POLLIN;
-		pfd.revents = 0;
-		poll(&pfd, 1, -1);
-
-		len = recvfrom(fd, kvp_recv_buffer, sizeof(kvp_recv_buffer), 0,
-				addr_p, &addr_l);
-
-		if (len < 0) {
-			syslog(LOG_ERR, "recvfrom failed; pid:%u error:%d %s",
-					addr.nl_pid, errno, strerror(errno));
-			close(fd);
-			return -1;
-		}
-
-		if (addr.nl_pid) {
-			syslog(LOG_WARNING, "Received packet from untrusted pid:%u",
-					addr.nl_pid);
-			continue;
-		}
-
-		incoming_msg = (struct nlmsghdr *)kvp_recv_buffer;
-		incoming_cn_msg = (struct cn_msg *)NLMSG_DATA(incoming_msg);
-		hv_msg = (struct hv_kvp_msg *)incoming_cn_msg->data;
-
-		switch (hv_msg->kvp_hdr.operation) {
-		case KVP_OP_REGISTER:
-=======
 reopen_kvp_fd:
 	if (kvp_fd != -1)
 		close(kvp_fd);
@@ -2212,41 +1779,21 @@ reopen_kvp_fd:
 		hv_msg->error = HV_S_OK;
 
 		if ((in_hand_shake) && (op == KVP_OP_REGISTER1)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Driver is registering with us; stash away the version
 			 * information.
 			 */
-<<<<<<< HEAD
-=======
 			in_hand_shake = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			p = (char *)hv_msg->body.kvp_register.version;
 			lic_version = malloc(strlen(p) + 1);
 			if (lic_version) {
 				strcpy(lic_version, p);
 				syslog(LOG_INFO, "KVP LIC Version: %s",
-<<<<<<< HEAD
-					lic_version);
-=======
 				       lic_version);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				syslog(LOG_ERR, "malloc failed");
 			}
 			continue;
-<<<<<<< HEAD
-
-		/*
-		 * The current protocol with the kernel component uses a
-		 * NULL key name to pass an error condition.
-		 * For the SET, GET and DELETE operations,
-		 * use the existing protocol to pass back error.
-		 */
-
-		case KVP_OP_SET:
-			if (kvp_key_add_or_modify(hv_msg->kvp_hdr.pool,
-=======
 		}
 
 		switch (op) {
@@ -2281,38 +1828,19 @@ reopen_kvp_fd:
 
 		case KVP_OP_SET:
 			if (kvp_key_add_or_modify(pool,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					hv_msg->body.kvp_set.data.key,
 					hv_msg->body.kvp_set.data.key_size,
 					hv_msg->body.kvp_set.data.value,
 					hv_msg->body.kvp_set.data.value_size))
-<<<<<<< HEAD
-				strcpy(hv_msg->body.kvp_set.data.key, "");
-			break;
-
-		case KVP_OP_GET:
-			if (kvp_get_value(hv_msg->kvp_hdr.pool,
-=======
 					hv_msg->error = HV_S_CONT;
 			break;
 
 		case KVP_OP_GET:
 			if (kvp_get_value(pool,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					hv_msg->body.kvp_set.data.key,
 					hv_msg->body.kvp_set.data.key_size,
 					hv_msg->body.kvp_set.data.value,
 					hv_msg->body.kvp_set.data.value_size))
-<<<<<<< HEAD
-				strcpy(hv_msg->body.kvp_set.data.key, "");
-			break;
-
-		case KVP_OP_DELETE:
-			if (kvp_key_delete(hv_msg->kvp_hdr.pool,
-					hv_msg->body.kvp_delete.key,
-					hv_msg->body.kvp_delete.key_size))
-				strcpy(hv_msg->body.kvp_delete.key, "");
-=======
 					hv_msg->error = HV_S_CONT;
 			break;
 
@@ -2321,18 +1849,13 @@ reopen_kvp_fd:
 					hv_msg->body.kvp_delete.key,
 					hv_msg->body.kvp_delete.key_size))
 					hv_msg->error = HV_S_CONT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		default:
 			break;
 		}
 
-<<<<<<< HEAD
-		if (hv_msg->kvp_hdr.operation != KVP_OP_ENUMERATE)
-=======
 		if (op != KVP_OP_ENUMERATE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto kvp_done;
 
 		/*
@@ -2340,41 +1863,23 @@ reopen_kvp_fd:
 		 * both the key and the value; if not read from the
 		 * appropriate pool.
 		 */
-<<<<<<< HEAD
-		if (hv_msg->kvp_hdr.pool != KVP_POOL_AUTO) {
-			kvp_pool_enumerate(hv_msg->kvp_hdr.pool,
-=======
 		if (pool != KVP_POOL_AUTO) {
 			if (kvp_pool_enumerate(pool,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					hv_msg->body.kvp_enum_data.index,
 					hv_msg->body.kvp_enum_data.data.key,
 					HV_KVP_EXCHANGE_MAX_KEY_SIZE,
 					hv_msg->body.kvp_enum_data.data.value,
-<<<<<<< HEAD
-					HV_KVP_EXCHANGE_MAX_VALUE_SIZE);
-			goto kvp_done;
-		}
-
-		hv_msg = (struct hv_kvp_msg *)incoming_cn_msg->data;
-=======
 					HV_KVP_EXCHANGE_MAX_VALUE_SIZE))
 					hv_msg->error = HV_S_CONT;
 			goto kvp_done;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		key_name = (char *)hv_msg->body.kvp_enum_data.data.key;
 		key_value = (char *)hv_msg->body.kvp_enum_data.data.value;
 
 		switch (hv_msg->body.kvp_enum_data.index) {
 		case FullyQualifiedDomainName:
-<<<<<<< HEAD
-			kvp_get_domain_name(key_value,
-					HV_KVP_EXCHANGE_MAX_VALUE_SIZE);
-=======
 			strcpy(key_value, full_domain_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			strcpy(key_name, "FullyQualifiedDomainName");
 			break;
 		case IntegrationServicesVersion:
@@ -2382,15 +1887,6 @@ reopen_kvp_fd:
 			strcpy(key_value, lic_version);
 			break;
 		case NetworkAddressIPv4:
-<<<<<<< HEAD
-			kvp_get_ip_address(AF_INET, key_value,
-					HV_KVP_EXCHANGE_MAX_VALUE_SIZE);
-			strcpy(key_name, "NetworkAddressIPv4");
-			break;
-		case NetworkAddressIPv6:
-			kvp_get_ip_address(AF_INET6, key_value,
-					HV_KVP_EXCHANGE_MAX_VALUE_SIZE);
-=======
 			kvp_get_ip_info(AF_INET, NULL, KVP_OP_ENUMERATE,
 				key_value, HV_KVP_EXCHANGE_MAX_VALUE_SIZE);
 			strcpy(key_name, "NetworkAddressIPv4");
@@ -2398,7 +1894,6 @@ reopen_kvp_fd:
 		case NetworkAddressIPv6:
 			kvp_get_ip_info(AF_INET6, NULL, KVP_OP_ENUMERATE,
 				key_value, HV_KVP_EXCHANGE_MAX_VALUE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			strcpy(key_name, "NetworkAddressIPv6");
 			break;
 		case OSBuildNumber:
@@ -2418,11 +1913,7 @@ reopen_kvp_fd:
 			strcpy(key_name, "OSMinorVersion");
 			break;
 		case OSVersion:
-<<<<<<< HEAD
-			strcpy(key_value, os_build);
-=======
 			strcpy(key_value, os_version);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			strcpy(key_name, "OSVersion");
 			break;
 		case ProcessorArchitecture:
@@ -2430,34 +1921,6 @@ reopen_kvp_fd:
 			strcpy(key_name, "ProcessorArchitecture");
 			break;
 		default:
-<<<<<<< HEAD
-			strcpy(key_value, "Unknown Key");
-			/*
-			 * We use a null key name to terminate enumeration.
-			 */
-			strcpy(key_name, "");
-			break;
-		}
-		/*
-		 * Send the value back to the kernel. The response is
-		 * already in the receive buffer. Update the cn_msg header to
-		 * reflect the key value that has been added to the message
-		 */
-kvp_done:
-
-		incoming_cn_msg->id.idx = CN_KVP_IDX;
-		incoming_cn_msg->id.val = CN_KVP_VAL;
-		incoming_cn_msg->ack = 0;
-		incoming_cn_msg->len = sizeof(struct hv_kvp_msg);
-
-		len = netlink_send(fd, incoming_cn_msg);
-		if (len < 0) {
-			syslog(LOG_ERR, "net_link send failed; error:%d", len);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-=======
 			hv_msg->error = HV_S_CONT;
 			break;
 		}
@@ -2478,5 +1941,4 @@ kvp_done:
 
 	close(kvp_fd);
 	exit(0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

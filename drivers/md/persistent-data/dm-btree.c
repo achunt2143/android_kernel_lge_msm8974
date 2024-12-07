@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Red Hat, Inc.
  *
@@ -17,17 +14,11 @@
 
 #define DM_MSG_PREFIX "btree"
 
-<<<<<<< HEAD
-/*----------------------------------------------------------------
- * Array manipulation
- *--------------------------------------------------------------*/
-=======
 /*
  *--------------------------------------------------------------
  * Array manipulation
  *--------------------------------------------------------------
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void memcpy_disk(void *dest, const void *src, size_t len)
 	__dm_written_to_disk(src)
 {
@@ -35,13 +26,8 @@ static void memcpy_disk(void *dest, const void *src, size_t len)
 	__dm_unbless_for_disk(src);
 }
 
-<<<<<<< HEAD
-static void array_insert(void *base, size_t elt_size, unsigned nr_elts,
-			 unsigned index, void *elt)
-=======
 static void array_insert(void *base, size_t elt_size, unsigned int nr_elts,
 			 unsigned int index, void *elt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__dm_written_to_disk(elt)
 {
 	if (index < nr_elts)
@@ -80,31 +66,6 @@ int lower_bound(struct btree_node *n, uint64_t key)
 	return bsearch(n, key, 0);
 }
 
-<<<<<<< HEAD
-void inc_children(struct dm_transaction_manager *tm, struct btree_node *n,
-		  struct dm_btree_value_type *vt)
-{
-	unsigned i;
-	uint32_t nr_entries = le32_to_cpu(n->header.nr_entries);
-
-	if (le32_to_cpu(n->header.flags) & INTERNAL_NODE)
-		for (i = 0; i < nr_entries; i++)
-			dm_tm_inc(tm, value64(n, i));
-	else if (vt->inc)
-		for (i = 0; i < nr_entries; i++)
-			vt->inc(vt->context, value_ptr(n, i));
-}
-
-static int insert_at(size_t value_size, struct btree_node *node, unsigned index,
-		      uint64_t key, void *value)
-		      __dm_written_to_disk(value)
-{
-	uint32_t nr_entries = le32_to_cpu(node->header.nr_entries);
-	__le64 key_le = cpu_to_le64(key);
-
-	if (index > nr_entries ||
-	    index >= le32_to_cpu(node->header.max_entries)) {
-=======
 static int upper_bound(struct btree_node *n, uint64_t key)
 {
 	return bsearch(n, key, 1);
@@ -133,7 +94,6 @@ static int insert_at(size_t value_size, struct btree_node *node, unsigned int in
 	if (index > nr_entries ||
 	    index >= max_entries ||
 	    nr_entries >= max_entries) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DMERR("too many entries in btree node for insert");
 		__dm_unbless_for_disk(value);
 		return -ENOMEM;
@@ -189,13 +149,9 @@ int dm_btree_empty(struct dm_btree_info *info, dm_block_t *root)
 	n->header.value_size = cpu_to_le32(info->value_type.size);
 
 	*root = dm_block_location(b);
-<<<<<<< HEAD
-	return unlock_block(info, b);
-=======
 	unlock_block(info, b);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(dm_btree_empty);
 
@@ -209,14 +165,6 @@ EXPORT_SYMBOL_GPL(dm_btree_empty);
 struct frame {
 	struct dm_block *b;
 	struct btree_node *n;
-<<<<<<< HEAD
-	unsigned level;
-	unsigned nr_children;
-	unsigned current_child;
-};
-
-struct del_stack {
-=======
 	unsigned int level;
 	unsigned int nr_children;
 	unsigned int current_child;
@@ -224,7 +172,6 @@ struct del_stack {
 
 struct del_stack {
 	struct dm_btree_info *info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_transaction_manager *tm;
 	int top;
 	struct frame spine[MAX_SPINE_DEPTH];
@@ -247,9 +194,6 @@ static int unprocessed_frames(struct del_stack *s)
 	return s->top >= 0;
 }
 
-<<<<<<< HEAD
-static int push_frame(struct del_stack *s, dm_block_t b, unsigned level)
-=======
 static void prefetch_children(struct del_stack *s, struct frame *f)
 {
 	unsigned int i;
@@ -265,7 +209,6 @@ static bool is_internal_level(struct dm_btree_info *info, struct frame *f)
 }
 
 static int push_frame(struct del_stack *s, dm_block_t b, unsigned int level)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	uint32_t ref_count;
@@ -287,10 +230,7 @@ static int push_frame(struct del_stack *s, dm_block_t b, unsigned int level)
 		dm_tm_dec(s->tm, b);
 
 	else {
-<<<<<<< HEAD
-=======
 		uint32_t flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct frame *f = s->spine + ++s->top;
 
 		r = dm_tm_read_lock(s->tm, b, &btree_node_validator, &f->b);
@@ -303,13 +243,10 @@ static int push_frame(struct del_stack *s, dm_block_t b, unsigned int level)
 		f->level = level;
 		f->nr_children = le32_to_cpu(f->n->header.nr_entries);
 		f->current_child = 0;
-<<<<<<< HEAD
-=======
 
 		flags = le32_to_cpu(f->n->header.flags);
 		if (flags & INTERNAL_NODE || is_internal_level(s->info, f))
 			prefetch_children(s, f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -338,15 +275,6 @@ int dm_btree_del(struct dm_btree_info *info, dm_block_t root)
 	int r;
 	struct del_stack *s;
 
-<<<<<<< HEAD
-	s = kmalloc(sizeof(*s), GFP_NOIO);
-	if (!s)
-		return -ENOMEM;
-	s->tm = info->tm;
-	s->top = -1;
-
-	r = push_frame(s, root, 1);
-=======
 	/*
 	 * dm_btree_del() is called via an ioctl, as such should be
 	 * considered an FS op.  We can't recurse back into the FS, so we
@@ -360,7 +288,6 @@ int dm_btree_del(struct dm_btree_info *info, dm_block_t root)
 	s->top = -1;
 
 	r = push_frame(s, root, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r)
 		goto out;
 
@@ -386,11 +313,7 @@ int dm_btree_del(struct dm_btree_info *info, dm_block_t root)
 			if (r)
 				goto out;
 
-<<<<<<< HEAD
-		} else if (f->level != (info->levels - 1)) {
-=======
 		} else if (is_internal_level(info, f)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			b = value64(f->n, f->current_child);
 			f->current_child++;
 			r = push_frame(s, b, f->level + 1);
@@ -398,21 +321,10 @@ int dm_btree_del(struct dm_btree_info *info, dm_block_t root)
 				goto out;
 
 		} else {
-<<<<<<< HEAD
-			if (info->value_type.dec) {
-				unsigned i;
-
-				for (i = 0; i < f->nr_children; i++)
-					info->value_type.dec(info->value_type.context,
-							     value_ptr(f->n, i));
-			}
-			f->current_child = f->nr_children;
-=======
 			if (info->value_type.dec)
 				info->value_type.dec(info->value_type.context,
 						     value_ptr(f->n, 0), f->nr_children);
 			pop_frame(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 out:
@@ -453,12 +365,8 @@ static int btree_lookup_raw(struct ro_spine *s, dm_block_t block, uint64_t key,
 	} while (!(flags & LEAF_NODE));
 
 	*result_key = le64_to_cpu(ro_node(s)->keys[i]);
-<<<<<<< HEAD
-	memcpy(v, value_ptr(ro_node(s), i), value_size);
-=======
 	if (v)
 		memcpy(v, value_ptr(ro_node(s), i), value_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -466,11 +374,7 @@ static int btree_lookup_raw(struct ro_spine *s, dm_block_t block, uint64_t key,
 int dm_btree_lookup(struct dm_btree_info *info, dm_block_t root,
 		    uint64_t *keys, void *value_le)
 {
-<<<<<<< HEAD
-	unsigned level, last_level = info->levels - 1;
-=======
 	unsigned int level, last_level = info->levels - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int r = -ENODATA;
 	uint64_t rkey;
 	__le64 internal_value_le;
@@ -512,8 +416,6 @@ int dm_btree_lookup(struct dm_btree_info *info, dm_block_t root,
 }
 EXPORT_SYMBOL_GPL(dm_btree_lookup);
 
-<<<<<<< HEAD
-=======
 static int dm_btree_lookup_next_single(struct dm_btree_info *info, dm_block_t root,
 				       uint64_t key, uint64_t *rkey, void *value_le)
 {
@@ -719,7 +621,6 @@ static void redistribute3(struct btree_node *left, struct btree_node *center,
 	right->header.nr_entries = cpu_to_le32(target_right);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Splits a node by creating a sibling node and shifting half the nodes
  * contents across.  Assumes there is a parent node, and it has room for
@@ -750,19 +651,10 @@ static void redistribute3(struct btree_node *left, struct btree_node *center,
  *
  * Where A* is a shadow of A.
  */
-<<<<<<< HEAD
-static int btree_split_sibling(struct shadow_spine *s, dm_block_t root,
-			       unsigned parent_index, uint64_t key)
-{
-	int r;
-	size_t size;
-	unsigned nr_left, nr_right;
-=======
 static int split_one_into_two(struct shadow_spine *s, unsigned int parent_index,
 			      struct dm_btree_value_type *vt, uint64_t key)
 {
 	int r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_block *left, *right, *parent;
 	struct btree_node *ln, *rn, *pn;
 	__le64 location;
@@ -776,38 +668,6 @@ static int split_one_into_two(struct shadow_spine *s, unsigned int parent_index,
 	ln = dm_block_data(left);
 	rn = dm_block_data(right);
 
-<<<<<<< HEAD
-	nr_left = le32_to_cpu(ln->header.nr_entries) / 2;
-	nr_right = le32_to_cpu(ln->header.nr_entries) - nr_left;
-
-	ln->header.nr_entries = cpu_to_le32(nr_left);
-
-	rn->header.flags = ln->header.flags;
-	rn->header.nr_entries = cpu_to_le32(nr_right);
-	rn->header.max_entries = ln->header.max_entries;
-	rn->header.value_size = ln->header.value_size;
-	memcpy(rn->keys, ln->keys + nr_left, nr_right * sizeof(rn->keys[0]));
-
-	size = le32_to_cpu(ln->header.flags) & INTERNAL_NODE ?
-		sizeof(uint64_t) : s->info->value_type.size;
-	memcpy(value_ptr(rn, 0), value_ptr(ln, nr_left),
-	       size * nr_right);
-
-	/*
-	 * Patch up the parent
-	 */
-	parent = shadow_parent(s);
-
-	pn = dm_block_data(parent);
-	location = cpu_to_le64(dm_block_location(left));
-	__dm_bless_for_disk(&location);
-	memcpy_disk(value_ptr(pn, parent_index),
-		    &location, sizeof(__le64));
-
-	location = cpu_to_le64(dm_block_location(right));
-	__dm_bless_for_disk(&location);
-
-=======
 	rn->header.flags = ln->header.flags;
 	rn->header.nr_entries = cpu_to_le32(0);
 	rn->header.max_entries = ln->header.max_entries;
@@ -820,7 +680,6 @@ static int split_one_into_two(struct shadow_spine *s, unsigned int parent_index,
 
 	location = cpu_to_le64(dm_block_location(right));
 	__dm_bless_for_disk(&location);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = insert_at(sizeof(__le64), pn, parent_index + 1,
 		      le64_to_cpu(rn->keys[0]), &location);
 	if (r) {
@@ -828,10 +687,7 @@ static int split_one_into_two(struct shadow_spine *s, unsigned int parent_index,
 		return r;
 	}
 
-<<<<<<< HEAD
-=======
 	/* patch up the spine */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (key < le64_to_cpu(rn->keys[0])) {
 		unlock_block(s->info, right);
 		s->nodes[1] = left;
@@ -844,8 +700,6 @@ static int split_one_into_two(struct shadow_spine *s, unsigned int parent_index,
 }
 
 /*
-<<<<<<< HEAD
-=======
  * We often need to modify a sibling node.  This function shadows a particular
  * child of the given parent node.  Making sure to update the parent to point
  * to the new shadow.
@@ -961,7 +815,6 @@ static int split_two_into_three(struct shadow_spine *s, unsigned int parent_inde
 /*----------------------------------------------------------------*/
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Splits a node by creating two new children beneath the given node.
  *
  * Before:
@@ -986,31 +839,22 @@ static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 {
 	int r;
 	size_t size;
-<<<<<<< HEAD
-	unsigned nr_left, nr_right;
-=======
 	unsigned int nr_left, nr_right;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_block *left, *right, *new_parent;
 	struct btree_node *pn, *ln, *rn;
 	__le64 val;
 
 	new_parent = shadow_current(s);
 
-<<<<<<< HEAD
-=======
 	pn = dm_block_data(new_parent);
 	size = le32_to_cpu(pn->header.flags) & INTERNAL_NODE ?
 		sizeof(__le64) : s->info->value_type.size;
 
 	/* create & init the left block */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = new_block(s->info, &left);
 	if (r < 0)
 		return r;
 
-<<<<<<< HEAD
-=======
 	ln = dm_block_data(left);
 	nr_left = le32_to_cpu(pn->header.nr_entries) / 2;
 
@@ -1022,46 +866,20 @@ static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 	memcpy(value_ptr(ln, 0), value_ptr(pn, 0), nr_left * size);
 
 	/* create & init the right block */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = new_block(s->info, &right);
 	if (r < 0) {
 		unlock_block(s->info, left);
 		return r;
 	}
 
-<<<<<<< HEAD
-	pn = dm_block_data(new_parent);
-	ln = dm_block_data(left);
-	rn = dm_block_data(right);
-
-	nr_left = le32_to_cpu(pn->header.nr_entries) / 2;
-	nr_right = le32_to_cpu(pn->header.nr_entries) - nr_left;
-
-	ln->header.flags = pn->header.flags;
-	ln->header.nr_entries = cpu_to_le32(nr_left);
-	ln->header.max_entries = pn->header.max_entries;
-	ln->header.value_size = pn->header.value_size;
-
-=======
 	rn = dm_block_data(right);
 	nr_right = le32_to_cpu(pn->header.nr_entries) - nr_left;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rn->header.flags = pn->header.flags;
 	rn->header.nr_entries = cpu_to_le32(nr_right);
 	rn->header.max_entries = pn->header.max_entries;
 	rn->header.value_size = pn->header.value_size;
-<<<<<<< HEAD
-
-	memcpy(ln->keys, pn->keys, nr_left * sizeof(pn->keys[0]));
 	memcpy(rn->keys, pn->keys + nr_left, nr_right * sizeof(pn->keys[0]));
-
-	size = le32_to_cpu(pn->header.flags) & INTERNAL_NODE ?
-		sizeof(__le64) : s->info->value_type.size;
-	memcpy(value_ptr(ln, 0), value_ptr(pn, 0), nr_left * size);
-=======
-	memcpy(rn->keys, pn->keys + nr_left, nr_right * sizeof(pn->keys[0]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(value_ptr(rn, 0), value_ptr(pn, nr_left),
 	       nr_right * size);
 
@@ -1084,24 +902,6 @@ static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 	pn->keys[1] = rn->keys[0];
 	memcpy_disk(value_ptr(pn, 1), &val, sizeof(__le64));
 
-<<<<<<< HEAD
-	/*
-	 * rejig the spine.  This is ugly, since it knows too
-	 * much about the spine
-	 */
-	if (s->nodes[0] != new_parent) {
-		unlock_block(s->info, s->nodes[0]);
-		s->nodes[0] = new_parent;
-	}
-	if (key < le64_to_cpu(rn->keys[0])) {
-		unlock_block(s->info, right);
-		s->nodes[1] = left;
-	} else {
-		unlock_block(s->info, left);
-		s->nodes[1] = right;
-	}
-	s->count = 2;
-=======
 	unlock_block(s->info, left);
 	unlock_block(s->info, right);
 	return 0;
@@ -1134,16 +934,10 @@ static int rebalance_left(struct shadow_spine *s, struct dm_btree_value_type *vt
 	} else {
 		unlock_block(s->info, sib);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int btree_insert_raw(struct shadow_spine *s, dm_block_t root,
-			    struct dm_btree_value_type *vt,
-			    uint64_t key, unsigned *index)
-=======
 /*
  * Redistributes a nodes entries with its right sibling.
  */
@@ -1298,7 +1092,6 @@ static bool has_space_for_insert(struct btree_node *node, uint64_t key)
 static int btree_insert_raw(struct shadow_spine *s, dm_block_t root,
 			    struct dm_btree_value_type *vt,
 			    uint64_t key, unsigned int *index)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r, i = *index, top = 1;
 	struct btree_node *node;
@@ -1325,19 +1118,6 @@ static int btree_insert_raw(struct shadow_spine *s, dm_block_t root,
 
 		node = dm_block_data(shadow_current(s));
 
-<<<<<<< HEAD
-		if (node->header.nr_entries == node->header.max_entries) {
-			if (top)
-				r = btree_split_beneath(s, key);
-			else
-				r = btree_split_sibling(s, root, i, key);
-
-			if (r < 0)
-				return r;
-		}
-
-		node = dm_block_data(shadow_current(s));
-=======
 		if (!has_space_for_insert(node, key)) {
 			if (top)
 				r = btree_split_beneath(s, key);
@@ -1350,7 +1130,6 @@ static int btree_insert_raw(struct shadow_spine *s, dm_block_t root,
 			/* making space can cause the current node to change */
 			node = dm_block_data(shadow_current(s));
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		i = lower_bound(node, key);
 
@@ -1374,8 +1153,6 @@ static int btree_insert_raw(struct shadow_spine *s, dm_block_t root,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int __btree_get_overwrite_leaf(struct shadow_spine *s, dm_block_t root,
 				      uint64_t key, int *index)
 {
@@ -1454,19 +1231,13 @@ static bool need_insert(struct btree_node *node, uint64_t *keys,
 		(le64_to_cpu(node->keys[index]) != keys[level]));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int insert(struct dm_btree_info *info, dm_block_t root,
 		  uint64_t *keys, void *value, dm_block_t *new_root,
 		  int *inserted)
 		  __dm_written_to_disk(value)
 {
-<<<<<<< HEAD
-	int r, need_insert;
-	unsigned level, index = -1, last_level = info->levels - 1;
-=======
 	int r;
 	unsigned int level, index = -1, last_level = info->levels - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dm_block_t block = root;
 	struct shadow_spine spine;
 	struct btree_node *n;
@@ -1481,15 +1252,8 @@ static int insert(struct dm_btree_info *info, dm_block_t root,
 			goto bad;
 
 		n = dm_block_data(shadow_current(&spine));
-<<<<<<< HEAD
-		need_insert = ((index >= le32_to_cpu(n->header.nr_entries)) ||
-			       (le64_to_cpu(n->keys[index]) != keys[level]));
-
-		if (need_insert) {
-=======
 
 		if (need_insert(n, keys, level, index)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dm_block_t new_tree;
 			__le64 new_le;
 
@@ -1516,15 +1280,8 @@ static int insert(struct dm_btree_info *info, dm_block_t root,
 		goto bad;
 
 	n = dm_block_data(shadow_current(&spine));
-<<<<<<< HEAD
-	need_insert = ((index >= le32_to_cpu(n->header.nr_entries)) ||
-		       (le64_to_cpu(n->keys[index]) != keys[level]));
-
-	if (need_insert) {
-=======
 
 	if (need_insert(n, keys, level, index)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (inserted)
 			*inserted = 1;
 
@@ -1543,11 +1300,7 @@ static int insert(struct dm_btree_info *info, dm_block_t root,
 			     value_ptr(n, index),
 			     value))) {
 			info->value_type.dec(info->value_type.context,
-<<<<<<< HEAD
-					     value_ptr(n, index));
-=======
 					     value_ptr(n, index), 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		memcpy_disk(value_ptr(n, index),
 			    value, info->value_type.size);
@@ -1567,11 +1320,7 @@ bad_unblessed:
 
 int dm_btree_insert(struct dm_btree_info *info, dm_block_t root,
 		    uint64_t *keys, void *value, dm_block_t *new_root)
-<<<<<<< HEAD
-		    __dm_written_to_disk(value)
-=======
 	__dm_written_to_disk(value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return insert(info, root, keys, value, new_root, NULL);
 }
@@ -1580,11 +1329,7 @@ EXPORT_SYMBOL_GPL(dm_btree_insert);
 int dm_btree_insert_notify(struct dm_btree_info *info, dm_block_t root,
 			   uint64_t *keys, void *value, dm_block_t *new_root,
 			   int *inserted)
-<<<<<<< HEAD
-			   __dm_written_to_disk(value)
-=======
 	__dm_written_to_disk(value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return insert(info, root, keys, value, new_root, inserted);
 }
@@ -1592,13 +1337,8 @@ EXPORT_SYMBOL_GPL(dm_btree_insert_notify);
 
 /*----------------------------------------------------------------*/
 
-<<<<<<< HEAD
-static int find_highest_key(struct ro_spine *s, dm_block_t block,
-			    uint64_t *result_key, dm_block_t *next_block)
-=======
 static int find_key(struct ro_spine *s, dm_block_t block, bool find_highest,
 		    uint64_t *result_key, dm_block_t *next_block)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, r;
 	uint32_t flags;
@@ -1612,14 +1352,6 @@ static int find_key(struct ro_spine *s, dm_block_t block, bool find_highest,
 		i = le32_to_cpu(ro_node(s)->header.nr_entries);
 		if (!i)
 			return -ENODATA;
-<<<<<<< HEAD
-		else
-			i--;
-
-		*result_key = le64_to_cpu(ro_node(s)->keys[i]);
-		if (next_block || flags & INTERNAL_NODE)
-			block = value64(ro_node(s), i);
-=======
 
 		i--;
 
@@ -1634,7 +1366,6 @@ static int find_key(struct ro_spine *s, dm_block_t block, bool find_highest,
 			else
 				block = value64(ro_node(s), 0);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} while (flags & INTERNAL_NODE);
 
@@ -1643,26 +1374,16 @@ static int find_key(struct ro_spine *s, dm_block_t block, bool find_highest,
 	return 0;
 }
 
-<<<<<<< HEAD
-int dm_btree_find_highest_key(struct dm_btree_info *info, dm_block_t root,
-			      uint64_t *result_keys)
-=======
 static int dm_btree_find_key(struct dm_btree_info *info, dm_block_t root,
 			     bool find_highest, uint64_t *result_keys)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r = 0, count = 0, level;
 	struct ro_spine spine;
 
 	init_ro_spine(&spine, info);
 	for (level = 0; level < info->levels; level++) {
-<<<<<<< HEAD
-		r = find_highest_key(&spine, root, result_keys + level,
-				     level == info->levels - 1 ? NULL : &root);
-=======
 		r = find_key(&spine, root, find_highest, result_keys + level,
 			     level == info->levels - 1 ? NULL : &root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r == -ENODATA) {
 			r = 0;
 			break;
@@ -1676,9 +1397,6 @@ static int dm_btree_find_key(struct dm_btree_info *info, dm_block_t root,
 
 	return r ? r : count;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(dm_btree_find_highest_key);
-=======
 
 int dm_btree_find_highest_key(struct dm_btree_info *info, dm_block_t root,
 			      uint64_t *result_keys)
@@ -1917,4 +1635,3 @@ int dm_btree_cursor_get_value(struct dm_btree_cursor *c, uint64_t *key, void *va
 		return -ENODATA;
 }
 EXPORT_SYMBOL_GPL(dm_btree_cursor_get_value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

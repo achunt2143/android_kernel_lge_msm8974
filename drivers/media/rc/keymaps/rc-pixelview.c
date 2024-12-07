@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-/* pixelview.h - Keytable for pixelview Remote Controller
- *
- * keymap imported from ir-keymaps.c
- *
- * Copyright (c) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 // pixelview.h - Keytable for pixelview Remote Controller
 //
 // keymap imported from ir-keymaps.c
 //
 // Copyright (c) 2010 by Mauro Carvalho Chehab
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -39,18 +25,6 @@ static struct rc_map_table pixelview[] = {
 	{ 0x19, KEY_ZOOM },		/* zoom */
 	{ 0x0f, KEY_TEXT },		/* min */
 
-<<<<<<< HEAD
-	{ 0x01, KEY_1 },
-	{ 0x0b, KEY_2 },
-	{ 0x1b, KEY_3 },
-	{ 0x05, KEY_4 },
-	{ 0x09, KEY_5 },
-	{ 0x15, KEY_6 },
-	{ 0x06, KEY_7 },
-	{ 0x0a, KEY_8 },
-	{ 0x12, KEY_9 },
-	{ 0x02, KEY_0 },
-=======
 	{ 0x01, KEY_NUMERIC_1 },
 	{ 0x0b, KEY_NUMERIC_2 },
 	{ 0x1b, KEY_NUMERIC_3 },
@@ -61,7 +35,6 @@ static struct rc_map_table pixelview[] = {
 	{ 0x0a, KEY_NUMERIC_8 },
 	{ 0x12, KEY_NUMERIC_9 },
 	{ 0x02, KEY_NUMERIC_0 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x10, KEY_LAST },		/* +100 */
 	{ 0x13, KEY_LIST },		/* recall */
 
@@ -81,17 +54,10 @@ static struct rc_map_table pixelview[] = {
 
 static struct rc_map_list pixelview_map = {
 	.map = {
-<<<<<<< HEAD
-		.scan    = pixelview,
-		.size    = ARRAY_SIZE(pixelview),
-		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
-		.name    = RC_MAP_PIXELVIEW,
-=======
 		.scan     = pixelview,
 		.size     = ARRAY_SIZE(pixelview),
 		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
 		.name     = RC_MAP_PIXELVIEW,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -109,9 +75,5 @@ module_init(init_rc_map_pixelview)
 module_exit(exit_rc_map_pixelview)
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
-=======
 MODULE_AUTHOR("Mauro Carvalho Chehab");
 MODULE_DESCRIPTION("pixelview remote controller keytable");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

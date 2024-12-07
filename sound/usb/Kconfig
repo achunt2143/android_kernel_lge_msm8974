@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # ALSA USB drivers
 
 menuconfig SND_USB
@@ -18,12 +15,9 @@ config SND_USB_AUDIO
 	select SND_HWDEP
 	select SND_RAWMIDI
 	select SND_PCM
-<<<<<<< HEAD
-=======
 	select SND_UMP if SND_USB_AUDIO_MIDI_V2
 	select BITREVERSE
 	select SND_USB_AUDIO_USE_MEDIA_CONTROLLER if MEDIA_CONTROLLER && (MEDIA_SUPPORT=y || MEDIA_SUPPORT=SND_USB_AUDIO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for USB audio and USB MIDI
 	  devices.
@@ -31,8 +25,6 @@ config SND_USB_AUDIO
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-usb-audio.
 
-<<<<<<< HEAD
-=======
 config SND_USB_AUDIO_MIDI_V2
 	bool "MIDI 2.0 support by USB Audio driver"
 	depends on SND_USB_AUDIO
@@ -46,7 +38,6 @@ config SND_USB_AUDIO_MIDI_V2
 config SND_USB_AUDIO_USE_MEDIA_CONTROLLER
 	bool
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SND_USB_UA101
 	tristate "Edirol UA-101/UA-1000 driver"
 	select SND_PCM
@@ -116,11 +107,7 @@ config SND_USB_CAIAQ_INPUT
 
 config SND_USB_US122L
 	tristate "Tascam US-122L USB driver"
-<<<<<<< HEAD
-	depends on X86 && EXPERIMENTAL
-=======
 	depends on X86 || COMPILE_TEST
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_HWDEP
 	select SND_RAWMIDI
 	help
@@ -131,21 +118,6 @@ config SND_USB_US122L
 	  will be called snd-usb-us122l.
 
 config SND_USB_6FIRE
-<<<<<<< HEAD
-        tristate "TerraTec DMX 6Fire USB"
-        select FW_LOADER
-        select BITREVERSE
-        select SND_RAWMIDI
-        select SND_PCM
-        select SND_VMASTER
-        help
-          Say Y here to include support for TerraTec 6fire DMX USB interface.
-
-          You will need firmware files in order to be able to use the device
-          after it has been coldstarted. An install script for the firmware
-          and further help can be found at
-          http://sixfireusb.sourceforge.net
-=======
 	tristate "TerraTec DMX 6Fire USB"
 	select FW_LOADER
 	select BITREVERSE
@@ -205,7 +177,6 @@ config SND_BCD2000
 	  will be called snd-bcd2000.
 
 source "sound/usb/line6/Kconfig"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif	# SND_USB
 

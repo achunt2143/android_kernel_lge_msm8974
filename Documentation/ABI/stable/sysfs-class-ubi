@@ -107,8 +107,6 @@ Contact:	Artem Bityutskiy <dedekind@infradead.org>
 Description:
 		Number of physical eraseblocks reserved for bad block handling.
 
-<<<<<<< HEAD
-=======
 What:		/sys/class/ubi/ubiX/ro_mode
 Date:		April 2016
 KernelVersion:	4.7
@@ -118,7 +116,6 @@ Description:
 		device, and "0\n" if it is cleared. UBI devices mark themselves
 		as read-only when they detect an unrecoverable error.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 What:		/sys/class/ubi/ubiX/total_eraseblocks
 Date:		July 2006
 KernelVersion:	2.6.22

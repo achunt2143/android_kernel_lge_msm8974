@@ -182,10 +182,7 @@
 #define AR5K_EEPROM_EEP_DELTA		10
 #define AR5K_EEPROM_N_MODES		3
 #define AR5K_EEPROM_N_5GHZ_CHAN		10
-<<<<<<< HEAD
-=======
 #define AR5K_EEPROM_N_5GHZ_RATE_CHAN	8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR5K_EEPROM_N_2GHZ_CHAN		3
 #define AR5K_EEPROM_N_2GHZ_CHAN_2413	4
 #define	AR5K_EEPROM_N_2GHZ_CHAN_MAX	4
@@ -492,14 +489,4 @@ struct ath5k_eeprom_info {
 
 	/* Spur mitigation data (fbin values for spur channels) */
 	u16	ee_spur_chans[AR5K_EEPROM_N_SPUR_CHANS][AR5K_EEPROM_N_FREQ_BANDS];
-<<<<<<< HEAD
-
-	/* Antenna raw switch tables */
-	u32	ee_antenna[AR5K_EEPROM_N_MODES][AR5K_ANT_MAX];
 };
-
-int
-ath5k_eeprom_mode_from_channel(struct ieee80211_channel *channel);
-=======
-};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

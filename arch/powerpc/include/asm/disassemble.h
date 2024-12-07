@@ -1,21 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright IBM Corp. 2008
  *
@@ -47,14 +31,11 @@ static inline unsigned int get_dcrn(u32 inst)
 	return ((inst >> 16) & 0x1f) | ((inst >> 6) & 0x3e0);
 }
 
-<<<<<<< HEAD
-=======
 static inline unsigned int get_tmrn(u32 inst)
 {
 	return ((inst >> 16) & 0x1f) | ((inst >> 6) & 0x3e0);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int get_rt(u32 inst)
 {
 	return (inst >> 21) & 0x1f;
@@ -90,8 +71,6 @@ static inline unsigned int get_d(u32 inst)
 	return inst & 0xffff;
 }
 
-<<<<<<< HEAD
-=======
 static inline unsigned int get_oc(u32 inst)
 {
 	return (inst >> 11) & 0x7fff;
@@ -135,5 +114,4 @@ static inline unsigned make_dsisr(unsigned instr)
 
 	return dsisr;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_PPC_DISASSEMBLE_H__ */

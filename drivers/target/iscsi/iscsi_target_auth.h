@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ISCSI_CHAP_H_
-#define _ISCSI_CHAP_H_
-
-#define CHAP_DIGEST_MD5		5
-#define CHAP_DIGEST_SHA		6
-
-#define CHAP_CHALLENGE_LENGTH	16
-#define CHAP_CHALLENGE_STR_LEN	4096
-#define MAX_RESPONSE_LENGTH	64	/* sufficient for MD5 */
-#define	MAX_CHAP_N_SIZE		512
-
-#define MD5_SIGNATURE_SIZE	16	/* 16 bytes in a MD5 message digest */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ISCSI_CHAP_H_
 #define _ISCSI_CHAP_H_
@@ -33,7 +19,6 @@
 #define SHA1_SIGNATURE_SIZE	20	/* 20 bytes in a SHA1 message digest */
 #define SHA256_SIGNATURE_SIZE	32	/* 32 bytes in a SHA256 message digest */
 #define SHA3_256_SIGNATURE_SIZE	32	/* 32 bytes in a SHA3 256 message digest */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CHAP_STAGE_CLIENT_A	1
 #define CHAP_STAGE_SERVER_AIC	2
@@ -41,15 +26,6 @@
 #define CHAP_STAGE_CLIENT_NRIC	4
 #define CHAP_STAGE_SERVER_NR	5
 
-<<<<<<< HEAD
-extern u32 chap_main_loop(struct iscsi_conn *, struct iscsi_node_auth *, char *, char *,
-				int *, int *);
-
-struct iscsi_chap {
-	unsigned char	digest_type;
-	unsigned char	id;
-	unsigned char	challenge[CHAP_CHALLENGE_LENGTH];
-=======
 struct iscsi_node_auth;
 struct iscsit_conn;
 
@@ -62,7 +38,6 @@ struct iscsi_chap {
 	unsigned int	challenge_len;
 	unsigned char	*digest_name;
 	unsigned int	digest_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int	authenticate_target;
 	unsigned int	chap_state;
 } ____cacheline_aligned;

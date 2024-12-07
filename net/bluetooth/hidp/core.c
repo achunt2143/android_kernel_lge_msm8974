@@ -1,11 +1,7 @@
 /*
    HIDP implementation for Linux Bluetooth stack (BlueZ).
    Copyright (C) 2003-2004 Marcel Holtmann <marcel@holtmann.org>
-<<<<<<< HEAD
-   Copyright (c) 2012-2013 The Linux Foundation.  All rights reserved.
-=======
    Copyright (C) 2013 David Herrmann <dh.herrmann@gmail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License version 2 as
@@ -25,34 +21,10 @@
    SOFTWARE IS DISCLAIMED.
 */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/interrupt.h>
-
-#include <linux/types.h>
-#include <linux/errno.h>
-#include <linux/kernel.h>
-#include <linux/sched.h>
-#include <linux/slab.h>
-#include <linux/poll.h>
-#include <linux/freezer.h>
-#include <linux/fcntl.h>
-#include <linux/skbuff.h>
-#include <linux/socket.h>
-#include <linux/ioctl.h>
-#include <linux/file.h>
-#include <linux/init.h>
-#include <linux/wait.h>
-#include <net/sock.h>
-
-#include <linux/input.h>
-#include <linux/hid.h>
-=======
 #include <linux/kref.h>
 #include <linux/module.h>
 #include <linux/file.h>
 #include <linux/kthread.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hidraw.h>
 
 #include <net/bluetooth/bluetooth.h>
@@ -64,10 +36,7 @@
 #define VERSION "1.2"
 
 static DECLARE_RWSEM(hidp_session_sem);
-<<<<<<< HEAD
-=======
 static DECLARE_WAIT_QUEUE_HEAD(hidp_session_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(hidp_session_list);
 
 static unsigned char hidp_keycode[256] = {
@@ -93,62 +62,6 @@ static unsigned char hidp_keycode[256] = {
 
 static unsigned char hidp_mkeyspat[] = { 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 };
 
-<<<<<<< HEAD
-static struct hidp_session *__hidp_get_session(bdaddr_t *bdaddr)
-{
-	struct hidp_session *session;
-	struct list_head *p;
-
-	BT_DBG("");
-
-	list_for_each(p, &hidp_session_list) {
-		session = list_entry(p, struct hidp_session, list);
-		if (!bacmp(bdaddr, &session->bdaddr))
-			return session;
-	}
-	return NULL;
-}
-
-static void __hidp_link_session(struct hidp_session *session)
-{
-	__module_get(THIS_MODULE);
-	list_add(&session->list, &hidp_session_list);
-}
-
-static void __hidp_unlink_session(struct hidp_session *session)
-{
-	bdaddr_t *dst = &session->bdaddr;
-	struct hci_dev *hdev;
-	struct device *dev = NULL;
-
-	hdev = hci_get_route(dst, BDADDR_ANY);
-	if (hdev) {
-		session->conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, dst);
-		if (session->conn && session->conn->hidp_session_valid)
-			dev = &session->conn->dev;
-
-		hci_dev_put(hdev);
-	}
-
-	if (dev)
-		hci_conn_put_device(session->conn);
-
-	list_del(&session->list);
-	module_put(THIS_MODULE);
-}
-
-static void __hidp_copy_session(struct hidp_session *session, struct hidp_conninfo *ci)
-{
-	memset(ci, 0, sizeof(*ci));
-	bacpy(&ci->bdaddr, &session->bdaddr);
-
-	ci->flags = session->flags;
-	ci->state = session->state;
-
-	ci->vendor  = 0x0000;
-	ci->product = 0x0000;
-	ci->version = 0x0000;
-=======
 static int hidp_session_probe(struct l2cap_conn *conn,
 			      struct l2cap_user *user);
 static void hidp_session_remove(struct l2cap_conn *conn,
@@ -164,35 +77,12 @@ static void hidp_copy_session(struct hidp_session *session, struct hidp_conninfo
 
 	ci->flags = session->flags & valid_flags;
 	ci->state = BT_CONNECTED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (session->input) {
 		ci->vendor  = session->input->id.vendor;
 		ci->product = session->input->id.product;
 		ci->version = session->input->id.version;
 		if (session->input->name)
-<<<<<<< HEAD
-			strncpy(ci->name, session->input->name, 128);
-		else
-			strncpy(ci->name, "HID Boot Device", 128);
-	}
-
-	if (session->hid) {
-		ci->vendor  = session->hid->vendor;
-		ci->product = session->hid->product;
-		ci->version = session->hid->version;
-		strncpy(ci->name, session->hid->name, 128);
-	}
-}
-
-static int hidp_queue_event(struct hidp_session *session, struct input_dev *dev,
-				unsigned int type, unsigned int code, int value)
-{
-	unsigned char newleds;
-	struct sk_buff *skb;
-
-	BT_DBG("session %p type %d code %d value %d", session, type, code, value);
-=======
 			strscpy(ci->name, session->input->name, 128);
 		else
 			strscpy(ci->name, "HID Boot Device", 128);
@@ -263,7 +153,6 @@ static int hidp_input_event(struct input_dev *dev, unsigned int type,
 
 	BT_DBG("session %p type %d code %d value %d",
 	       session, type, code, value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (type != EV_LED)
 		return -1;
@@ -272,55 +161,18 @@ static int hidp_input_event(struct input_dev *dev, unsigned int type,
 		  (!!test_bit(LED_COMPOSE, dev->led) << 3) |
 		  (!!test_bit(LED_SCROLLL, dev->led) << 2) |
 		  (!!test_bit(LED_CAPSL,   dev->led) << 1) |
-<<<<<<< HEAD
-		  (!!test_bit(LED_NUML,    dev->led));
-=======
 		  (!!test_bit(LED_NUML,    dev->led) << 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (session->leds == newleds)
 		return 0;
 
 	session->leds = newleds;
 
-<<<<<<< HEAD
-	skb = alloc_skb(3, GFP_ATOMIC);
-	if (!skb) {
-		BT_ERR("Can't allocate memory for new frame");
-		return -ENOMEM;
-	}
-
-	*skb_put(skb, 1) = HIDP_TRANS_DATA | HIDP_DATA_RTYPE_OUPUT;
-	*skb_put(skb, 1) = 0x01;
-	*skb_put(skb, 1) = newleds;
-
-	skb_queue_tail(&session->intr_transmit, skb);
-
-	hidp_schedule(session);
-
-	return 0;
-}
-
-static int hidp_hidinput_event(struct input_dev *dev, unsigned int type, unsigned int code, int value)
-{
-	struct hid_device *hid = input_get_drvdata(dev);
-	struct hidp_session *session = hid->driver_data;
-
-	return hidp_queue_event(session, dev, type, code, value);
-}
-
-static int hidp_input_event(struct input_dev *dev, unsigned int type, unsigned int code, int value)
-{
-	struct hidp_session *session = input_get_drvdata(dev);
-
-	return hidp_queue_event(session, dev, type, code, value);
-=======
 	hdr = HIDP_TRANS_DATA | HIDP_DATA_RTYPE_OUPUT;
 	data[0] = 0x01;
 	data[1] = newleds;
 
 	return hidp_send_intr_message(session, hdr, data, 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hidp_input_report(struct hidp_session *session, struct sk_buff *skb)
@@ -378,89 +230,6 @@ static void hidp_input_report(struct hidp_session *session, struct sk_buff *skb)
 	input_sync(dev);
 }
 
-<<<<<<< HEAD
-static int __hidp_send_ctrl_message(struct hidp_session *session,
-			unsigned char hdr, unsigned char *data, int size)
-{
-	struct sk_buff *skb;
-
-	BT_DBG("session %p data %p size %d", session, data, size);
-
-	skb = alloc_skb(size + 1, GFP_ATOMIC);
-	if (!skb) {
-		BT_ERR("Can't allocate memory for new frame");
-		return -ENOMEM;
-	}
-
-	*skb_put(skb, 1) = hdr;
-	if (data && size > 0)
-		memcpy(skb_put(skb, size), data, size);
-
-	skb_queue_tail(&session->ctrl_transmit, skb);
-
-	return 0;
-}
-
-static inline int hidp_send_ctrl_message(struct hidp_session *session,
-			unsigned char hdr, unsigned char *data, int size)
-{
-	int err;
-
-	err = __hidp_send_ctrl_message(session, hdr, data, size);
-
-	hidp_schedule(session);
-
-	return err;
-}
-
-static int hidp_queue_report(struct hidp_session *session,
-				unsigned char *data, int size)
-{
-	struct sk_buff *skb;
-
-	BT_DBG("session %p hid %p data %p size %d", session, session->hid, data, size);
-
-	skb = alloc_skb(size + 1, GFP_ATOMIC);
-	if (!skb) {
-		BT_ERR("Can't allocate memory for new frame");
-		return -ENOMEM;
-	}
-
-	*skb_put(skb, 1) = 0xa2;
-	if (size > 0)
-		memcpy(skb_put(skb, size), data, size);
-
-	skb_queue_tail(&session->intr_transmit, skb);
-
-	hidp_schedule(session);
-
-	return 0;
-}
-
-static int hidp_send_report(struct hidp_session *session, struct hid_report *report)
-{
-	unsigned char buf[32];
-	int rsize;
-
-	rsize = ((report->size - 1) >> 3) + 1 + (report->id > 0);
-	if (rsize > sizeof(buf))
-		return -EIO;
-
-	hid_output_report(report, buf);
-
-	return hidp_queue_report(session, buf, rsize);
-}
-
-static int hidp_output_raw_report(struct hid_device *hid, unsigned char *data, size_t count,
-		unsigned char report_type)
-{
-	switch (report_type) {
-	case HID_FEATURE_REPORT:
-		report_type = HIDP_TRANS_SET_REPORT | HIDP_DATA_RTYPE_FEATURE;
-		break;
-	case HID_OUTPUT_REPORT:
-		report_type = HIDP_TRANS_DATA | HIDP_DATA_RTYPE_OUPUT;
-=======
 static int hidp_get_raw_report(struct hid_device *hid,
 		unsigned char report_number,
 		unsigned char *data, size_t count,
@@ -484,26 +253,11 @@ static int hidp_get_raw_report(struct hid_device *hid,
 		break;
 	case HID_OUTPUT_REPORT:
 		report_type = HIDP_TRANS_GET_REPORT | HIDP_DATA_RTYPE_OUPUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (hidp_send_ctrl_message(hid->driver_data, report_type,
-			data, count))
-		return -ENOMEM;
-	return count;
-}
-
-static void hidp_idle_timeout(unsigned long arg)
-{
-	struct hidp_session *session = (struct hidp_session *) arg;
-
-	atomic_inc(&session->terminate);
-	hidp_schedule(session);
-=======
 	if (mutex_lock_interruptible(&session->report_mutex))
 		return -ERESTARTSYS;
 
@@ -668,7 +422,6 @@ static void hidp_idle_timeout(struct timer_list *t)
 	wake_up_interruptible(sk_sleep(session->ctrl_sock->sk));
 
 	hidp_session_terminate(session);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hidp_set_timer(struct hidp_session *session)
@@ -677,12 +430,6 @@ static void hidp_set_timer(struct hidp_session *session)
 		mod_timer(&session->timer, jiffies + HZ * session->idle_to);
 }
 
-<<<<<<< HEAD
-static inline void hidp_del_timer(struct hidp_session *session)
-{
-	if (session->idle_to > 0)
-		del_timer(&session->timer);
-=======
 static void hidp_del_timer(struct hidp_session *session)
 {
 	if (session->idle_to > 0)
@@ -697,37 +444,27 @@ static void hidp_process_report(struct hidp_session *session, int type,
 
 	memcpy(session->input_buf, data, len);
 	hid_input_report(session->hid, type, session->input_buf, len, intr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hidp_process_handshake(struct hidp_session *session,
 					unsigned char param)
 {
 	BT_DBG("session %p param 0x%02x", session, param);
-<<<<<<< HEAD
-=======
 	session->output_report_success = 0; /* default condition */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (param) {
 	case HIDP_HSHK_SUCCESSFUL:
 		/* FIXME: Call into SET_ GET_ handlers here */
-<<<<<<< HEAD
-=======
 		session->output_report_success = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case HIDP_HSHK_NOT_READY:
 	case HIDP_HSHK_ERR_INVALID_REPORT_ID:
 	case HIDP_HSHK_ERR_UNSUPPORTED_REQUEST:
 	case HIDP_HSHK_ERR_INVALID_PARAMETER:
-<<<<<<< HEAD
-=======
 		if (test_and_clear_bit(HIDP_WAITING_FOR_RETURN, &session->flags))
 			wake_up_interruptible(&session->report_queue);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* FIXME: Call into SET_ GET_ handlers here */
 		break;
 
@@ -737,21 +474,11 @@ static void hidp_process_handshake(struct hidp_session *session,
 	case HIDP_HSHK_ERR_FATAL:
 		/* Device requests a reboot, as this is the only way this error
 		 * can be recovered. */
-<<<<<<< HEAD
-		__hidp_send_ctrl_message(session,
-=======
 		hidp_send_ctrl_message(session,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			HIDP_TRANS_HID_CONTROL | HIDP_CTRL_SOFT_RESET, NULL, 0);
 		break;
 
 	default:
-<<<<<<< HEAD
-		__hidp_send_ctrl_message(session,
-			HIDP_TRANS_HANDSHAKE | HIDP_HSHK_ERR_INVALID_PARAMETER, NULL, 0);
-		break;
-	}
-=======
 		hidp_send_ctrl_message(session,
 			HIDP_TRANS_HANDSHAKE | HIDP_HSHK_ERR_INVALID_PARAMETER, NULL, 0);
 		break;
@@ -760,7 +487,6 @@ static void hidp_process_handshake(struct hidp_session *session,
 	/* Wake up the waiting thread. */
 	if (test_and_clear_bit(HIDP_WAITING_FOR_SEND_ACK, &session->flags))
 		wake_up_interruptible(&session->report_queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hidp_process_hid_control(struct hidp_session *session,
@@ -773,18 +499,6 @@ static void hidp_process_hid_control(struct hidp_session *session,
 		skb_queue_purge(&session->ctrl_transmit);
 		skb_queue_purge(&session->intr_transmit);
 
-<<<<<<< HEAD
-		/* Kill session thread */
-		atomic_inc(&session->terminate);
-		hidp_schedule(session);
-	}
-}
-
-static void hidp_process_data(struct hidp_session *session, struct sk_buff *skb,
-				unsigned char param)
-{
-	BT_DBG("session %p skb %p len %d param 0x%02x", session, skb, skb->len, param);
-=======
 		hidp_session_terminate(session);
 	}
 }
@@ -795,7 +509,6 @@ static int hidp_process_data(struct hidp_session *session, struct sk_buff *skb,
 {
 	int done_with_skb = 1;
 	BT_DBG("session %p skb %p len %u param 0x%02x", session, skb, skb->len, param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (param) {
 	case HIDP_DATA_RTYPE_INPUT:
@@ -805,13 +518,8 @@ static int hidp_process_data(struct hidp_session *session, struct sk_buff *skb,
 			hidp_input_report(session, skb);
 
 		if (session->hid)
-<<<<<<< HEAD
-			hid_input_report(session->hid, HID_INPUT_REPORT, skb->data, skb->len, 0);
-
-=======
 			hidp_process_report(session, HID_INPUT_REPORT,
 					    skb->data, skb->len, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case HIDP_DATA_RTYPE_OTHER:
@@ -820,11 +528,6 @@ static int hidp_process_data(struct hidp_session *session, struct sk_buff *skb,
 		break;
 
 	default:
-<<<<<<< HEAD
-		__hidp_send_ctrl_message(session,
-			HIDP_TRANS_HANDSHAKE | HIDP_HSHK_ERR_INVALID_PARAMETER, NULL, 0);
-	}
-=======
 		hidp_send_ctrl_message(session,
 			HIDP_TRANS_HANDSHAKE | HIDP_HSHK_ERR_INVALID_PARAMETER, NULL, 0);
 	}
@@ -842,21 +545,15 @@ static int hidp_process_data(struct hidp_session *session, struct sk_buff *skb,
 	}
 
 	return done_with_skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hidp_recv_ctrl_frame(struct hidp_session *session,
 					struct sk_buff *skb)
 {
 	unsigned char hdr, type, param;
-<<<<<<< HEAD
-
-	BT_DBG("session %p skb %p len %d", session, skb, skb->len);
-=======
 	int free_skb = 1;
 
 	BT_DBG("session %p skb %p len %u", session, skb, skb->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdr = skb->data[0];
 	skb_pull(skb, 1);
@@ -874,29 +571,17 @@ static void hidp_recv_ctrl_frame(struct hidp_session *session,
 		break;
 
 	case HIDP_TRANS_DATA:
-<<<<<<< HEAD
-		hidp_process_data(session, skb, param);
-		break;
-
-	default:
-		__hidp_send_ctrl_message(session,
-=======
 		free_skb = hidp_process_data(session, skb, param);
 		break;
 
 	default:
 		hidp_send_ctrl_message(session,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			HIDP_TRANS_HANDSHAKE | HIDP_HSHK_ERR_UNSUPPORTED_REQUEST, NULL, 0);
 		break;
 	}
 
-<<<<<<< HEAD
-	kfree_skb(skb);
-=======
 	if (free_skb)
 		kfree_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hidp_recv_intr_frame(struct hidp_session *session,
@@ -904,11 +589,7 @@ static void hidp_recv_intr_frame(struct hidp_session *session,
 {
 	unsigned char hdr;
 
-<<<<<<< HEAD
-	BT_DBG("session %p skb %p len %d", session, skb, skb->len);
-=======
 	BT_DBG("session %p skb %p len %u", session, skb, skb->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdr = skb->data[0];
 	skb_pull(skb, 1);
@@ -920,12 +601,8 @@ static void hidp_recv_intr_frame(struct hidp_session *session,
 			hidp_input_report(session, skb);
 
 		if (session->hid) {
-<<<<<<< HEAD
-			hid_input_report(session->hid, HID_INPUT_REPORT, skb->data, skb->len, 1);
-=======
 			hidp_process_report(session, HID_INPUT_REPORT,
 					    skb->data, skb->len, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BT_DBG("report len %d", skb->len);
 		}
 	} else {
@@ -950,17 +627,6 @@ static int hidp_send_frame(struct socket *sock, unsigned char *data, int len)
 	return kernel_sendmsg(sock, &msg, &iv, 1, len);
 }
 
-<<<<<<< HEAD
-static void hidp_process_transmit(struct hidp_session *session)
-{
-	struct sk_buff *skb;
-
-	BT_DBG("session %p", session);
-
-	while ((skb = skb_dequeue(&session->ctrl_transmit))) {
-		if (hidp_send_frame(session->ctrl_sock, skb->data, skb->len) < 0) {
-			skb_queue_head(&session->ctrl_transmit, skb);
-=======
 /* dequeue message from @transmit and send via @sock */
 static void hidp_process_transmit(struct hidp_session *session,
 				  struct sk_buff_head *transmit,
@@ -979,150 +645,12 @@ static void hidp_process_transmit(struct hidp_session *session,
 		} else if (ret < 0) {
 			hidp_session_terminate(session);
 			kfree_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
 		hidp_set_timer(session);
 		kfree_skb(skb);
 	}
-<<<<<<< HEAD
-
-	while ((skb = skb_dequeue(&session->intr_transmit))) {
-		if (hidp_send_frame(session->intr_sock, skb->data, skb->len) < 0) {
-			skb_queue_head(&session->intr_transmit, skb);
-			break;
-		}
-
-		hidp_set_timer(session);
-		kfree_skb(skb);
-	}
-}
-
-static int hidp_session(void *arg)
-{
-	struct hidp_session *session = arg;
-	struct sock *ctrl_sk = session->ctrl_sock->sk;
-	struct sock *intr_sk = session->intr_sock->sk;
-	struct sk_buff *skb;
-	int vendor = 0x0000, product = 0x0000;
-	wait_queue_t ctrl_wait, intr_wait;
-
-	BT_DBG("session %p", session);
-
-	if (session->input) {
-		vendor  = session->input->id.vendor;
-		product = session->input->id.product;
-	}
-
-	if (session->hid) {
-		vendor  = session->hid->vendor;
-		product = session->hid->product;
-	}
-
-	daemonize("khidpd_%04x%04x", vendor, product);
-	set_user_nice(current, -15);
-
-	init_waitqueue_entry(&ctrl_wait, current);
-	init_waitqueue_entry(&intr_wait, current);
-	add_wait_queue(sk_sleep(ctrl_sk), &ctrl_wait);
-	add_wait_queue(sk_sleep(intr_sk), &intr_wait);
-	while (!atomic_read(&session->terminate)) {
-		set_current_state(TASK_INTERRUPTIBLE);
-
-		if (ctrl_sk->sk_state != BT_CONNECTED ||
-				intr_sk->sk_state != BT_CONNECTED)
-			break;
-
-		while ((skb = skb_dequeue(&ctrl_sk->sk_receive_queue))) {
-			skb_orphan(skb);
-			if (!skb_linearize(skb))
-				hidp_recv_ctrl_frame(session, skb);
-			else
-				kfree_skb(skb);
-		}
-
-		while ((skb = skb_dequeue(&intr_sk->sk_receive_queue))) {
-			skb_orphan(skb);
-			if (!skb_linearize(skb))
-				hidp_recv_intr_frame(session, skb);
-			else
-				kfree_skb(skb);
-		}
-
-		hidp_process_transmit(session);
-
-		schedule();
-	}
-	set_current_state(TASK_RUNNING);
-	remove_wait_queue(sk_sleep(intr_sk), &intr_wait);
-	remove_wait_queue(sk_sleep(ctrl_sk), &ctrl_wait);
-
-	down_write(&hidp_session_sem);
-
-	hidp_del_timer(session);
-
-	if (session->input) {
-		input_unregister_device(session->input);
-		session->input = NULL;
-	}
-
-	if (session->hid) {
-		hid_destroy_device(session->hid);
-		session->hid = NULL;
-	}
-
-	/* Wakeup user-space polling for socket errors */
-	session->intr_sock->sk->sk_err = EUNATCH;
-	session->ctrl_sock->sk->sk_err = EUNATCH;
-
-	hidp_schedule(session);
-
-	fput(session->intr_sock->file);
-
-	wait_event_timeout(*(sk_sleep(ctrl_sk)),
-		(ctrl_sk->sk_state == BT_CLOSED), msecs_to_jiffies(500));
-
-	fput(session->ctrl_sock->file);
-
-	__hidp_unlink_session(session);
-
-	up_write(&hidp_session_sem);
-
-	kfree(session);
-	return 0;
-}
-
-static struct hci_conn *hidp_get_connection(struct hidp_session *session)
-{
-	bdaddr_t *src = &bt_sk(session->ctrl_sock->sk)->src;
-	bdaddr_t *dst = &bt_sk(session->ctrl_sock->sk)->dst;
-	struct hci_conn *conn;
-	struct hci_dev *hdev;
-
-	hdev = hci_get_route(dst, src);
-	if (!hdev)
-		return NULL;
-
-	hci_dev_lock_bh(hdev);
-	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, dst);
-	if (conn) {
-		conn->hidp_session_valid = true;
-		hci_conn_hold_device(conn);
-	}
-	hci_dev_unlock_bh(hdev);
-
-	hci_dev_put(hdev);
-
-	return conn;
-}
-
-static int hidp_setup_input(struct hidp_session *session,
-				struct hidp_connadd_req *req)
-{
-	struct input_dev *input;
-	int err, i;
-=======
 }
 
 static int hidp_setup_input(struct hidp_session *session,
@@ -1130,7 +658,6 @@ static int hidp_setup_input(struct hidp_session *session,
 {
 	struct input_dev *input;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input = input_allocate_device();
 	if (!input)
@@ -1173,23 +700,10 @@ static int hidp_setup_input(struct hidp_session *session,
 		input->relbit[0] |= BIT_MASK(REL_WHEEL);
 	}
 
-<<<<<<< HEAD
-	input->dev.parent = &session->conn->dev;
-
-	input->event = hidp_input_event;
-
-	err = input_register_device(input);
-	if (err < 0) {
-		hci_conn_put_device(session->conn);
-		return err;
-	}
-
-=======
 	input->dev.parent = &session->conn->hcon->dev;
 
 	input->event = hidp_input_event;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1212,20 +726,6 @@ static int hidp_parse(struct hid_device *hid)
 
 static int hidp_start(struct hid_device *hid)
 {
-<<<<<<< HEAD
-	struct hidp_session *session = hid->driver_data;
-	struct hid_report *report;
-
-	list_for_each_entry(report, &hid->report_enum[HID_INPUT_REPORT].
-			report_list, list)
-		hidp_send_report(session, report);
-
-	list_for_each_entry(report, &hid->report_enum[HID_FEATURE_REPORT].
-			report_list, list)
-		hidp_send_report(session, report);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1239,23 +739,12 @@ static void hidp_stop(struct hid_device *hid)
 	hid->claimed = 0;
 }
 
-<<<<<<< HEAD
-static struct hid_ll_driver hidp_hid_driver = {
-=======
 static const struct hid_ll_driver hidp_hid_driver = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.parse = hidp_parse,
 	.start = hidp_start,
 	.stop = hidp_stop,
 	.open  = hidp_open,
 	.close = hidp_close,
-<<<<<<< HEAD
-	.hidinput_input_event = hidp_hidinput_event,
-};
-
-static int hidp_setup_hid(struct hidp_session *session,
-				struct hidp_connadd_req *req)
-=======
 	.raw_request = hidp_raw_request,
 	.output_report = hidp_output_report,
 };
@@ -1264,26 +753,14 @@ static int hidp_setup_hid(struct hidp_session *session,
    to the HID system. That is done in hidp_add_connection(). */
 static int hidp_setup_hid(struct hidp_session *session,
 				const struct hidp_connadd_req *req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hid_device *hid;
 	int err;
 
-<<<<<<< HEAD
-	session->rd_data = kzalloc(req->rd_size, GFP_KERNEL);
-	if (!session->rd_data)
-		return -ENOMEM;
-
-	if (copy_from_user(session->rd_data, req->rd_data, req->rd_size)) {
-		err = -EFAULT;
-		goto fault;
-	}
-=======
 	session->rd_data = memdup_user(req->rd_data, req->rd_size);
 	if (IS_ERR(session->rd_data))
 		return PTR_ERR(session->rd_data);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	session->rd_size = req->rd_size;
 
 	hid = hid_allocate_device();
@@ -1302,27 +779,6 @@ static int hidp_setup_hid(struct hidp_session *session,
 	hid->version = req->version;
 	hid->country = req->country;
 
-<<<<<<< HEAD
-	strncpy(hid->name, req->name, 128);
-	strncpy(hid->phys, batostr(&bt_sk(session->ctrl_sock->sk)->src), 64);
-	strncpy(hid->uniq, batostr(&bt_sk(session->ctrl_sock->sk)->dst), 64);
-
-	hid->dev.parent = &session->conn->dev;
-	hid->ll_driver = &hidp_hid_driver;
-
-	hid->hid_output_raw_report = hidp_output_raw_report;
-
-	err = hid_add_device(hid);
-	if (err < 0)
-		goto failed;
-
-	return 0;
-
-failed:
-	hid_destroy_device(hid);
-	session->hid = NULL;
-
-=======
 	strscpy(hid->name, req->name, sizeof(hid->name));
 
 	snprintf(hid->phys, sizeof(hid->phys), "%pMR",
@@ -1346,7 +802,6 @@ failed:
 
 	return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fault:
 	kfree(session->rd_data);
 	session->rd_data = NULL;
@@ -1354,154 +809,6 @@ fault:
 	return err;
 }
 
-<<<<<<< HEAD
-int hidp_add_connection(struct hidp_connadd_req *req, struct socket *ctrl_sock, struct socket *intr_sock)
-{
-	struct hidp_session *session, *s;
-	int err;
-
-	BT_DBG("");
-
-	if (!l2cap_is_socket(ctrl_sock) || !l2cap_is_socket(intr_sock))
-		return -EINVAL;
-	if (bacmp(&bt_sk(ctrl_sock->sk)->src, &bt_sk(intr_sock->sk)->src) ||
-			bacmp(&bt_sk(ctrl_sock->sk)->dst, &bt_sk(intr_sock->sk)->dst))
-		return -ENOTUNIQ;
-
-	session = kzalloc(sizeof(struct hidp_session), GFP_KERNEL);
-	if (!session)
-		return -ENOMEM;
-
-	BT_DBG("rd_data %p rd_size %d", req->rd_data, req->rd_size);
-
-	down_write(&hidp_session_sem);
-
-	s = __hidp_get_session(&bt_sk(ctrl_sock->sk)->dst);
-	if (s && s->state == BT_CONNECTED) {
-		err = -EEXIST;
-		goto failed;
-	}
-
-	bacpy(&session->bdaddr, &bt_sk(ctrl_sock->sk)->dst);
-
-	session->ctrl_mtu = min_t(uint, l2cap_pi(ctrl_sock->sk)->omtu, l2cap_pi(ctrl_sock->sk)->imtu);
-	session->intr_mtu = min_t(uint, l2cap_pi(intr_sock->sk)->omtu, l2cap_pi(intr_sock->sk)->imtu);
-
-	BT_DBG("ctrl mtu %d intr mtu %d", session->ctrl_mtu, session->intr_mtu);
-
-	session->ctrl_sock = ctrl_sock;
-	session->intr_sock = intr_sock;
-	session->state     = BT_CONNECTED;
-
-	session->conn = hidp_get_connection(session);
-	if (!session->conn) {
-		err = -ENOTCONN;
-		goto failed;
-	}
-
-	setup_timer(&session->timer, hidp_idle_timeout, (unsigned long)session);
-
-	skb_queue_head_init(&session->ctrl_transmit);
-	skb_queue_head_init(&session->intr_transmit);
-
-	session->flags   = req->flags & (1 << HIDP_BLUETOOTH_VENDOR_ID);
-	session->idle_to = req->idle_to;
-
-	__hidp_link_session(session);
-
-	if (req->rd_size > 0) {
-		err = hidp_setup_hid(session, req);
-		if (err && err != -ENODEV)
-			goto purge;
-	}
-
-	if (!session->hid) {
-		err = hidp_setup_input(session, req);
-		if (err < 0)
-			goto purge;
-	}
-
-	hidp_set_timer(session);
-
-	err = kernel_thread(hidp_session, session, CLONE_KERNEL);
-	if (err < 0)
-		goto unlink;
-
-	if (session->input) {
-		hidp_send_ctrl_message(session,
-			HIDP_TRANS_SET_PROTOCOL | HIDP_PROTO_BOOT, NULL, 0);
-		session->flags |= (1 << HIDP_BOOT_PROTOCOL_MODE);
-
-		session->leds = 0xff;
-		hidp_input_event(session->input, EV_LED, 0, 0);
-	}
-
-	up_write(&hidp_session_sem);
-	return 0;
-
-unlink:
-	hidp_del_timer(session);
-
-	if (session->input) {
-		input_unregister_device(session->input);
-		session->input = NULL;
-	}
-
-	if (session->hid) {
-		hid_destroy_device(session->hid);
-		session->hid = NULL;
-	}
-
-	kfree(session->rd_data);
-	session->rd_data = NULL;
-
-purge:
-	__hidp_unlink_session(session);
-
-	skb_queue_purge(&session->ctrl_transmit);
-	skb_queue_purge(&session->intr_transmit);
-
-failed:
-	up_write(&hidp_session_sem);
-
-	input_free_device(session->input);
-	kfree(session);
-	return err;
-}
-
-int hidp_del_connection(struct hidp_conndel_req *req)
-{
-	struct hidp_session *session;
-	int err = 0;
-
-	BT_DBG("");
-
-	down_read(&hidp_session_sem);
-
-	session = __hidp_get_session(&req->bdaddr);
-	if (session) {
-		if (req->flags & (1 << HIDP_VIRTUAL_CABLE_UNPLUG)) {
-			hidp_send_ctrl_message(session,
-				HIDP_TRANS_HID_CONTROL | HIDP_CTRL_VIRTUAL_CABLE_UNPLUG, NULL, 0);
-		} else {
-			/* Flush the transmit queues */
-			skb_queue_purge(&session->ctrl_transmit);
-			skb_queue_purge(&session->intr_transmit);
-
-			/* Wakeup user-space polling for socket errors */
-			session->intr_sock->sk->sk_err = EUNATCH;
-			session->ctrl_sock->sk->sk_err = EUNATCH;
-
-			/* Kill session thread */
-			atomic_inc(&session->terminate);
-			hidp_schedule(session);
-		}
-	} else
-		err = -ENOENT;
-
-	up_read(&hidp_session_sem);
-	return err;
-=======
 /* initialize session devices */
 static int hidp_session_dev_init(struct hidp_session *session,
 				 const struct hidp_connadd_req *req)
@@ -2104,36 +1411,21 @@ int hidp_connection_del(struct hidp_conndel_req *req)
 	hidp_session_put(session);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int hidp_get_connlist(struct hidp_connlist_req *req)
 {
-<<<<<<< HEAD
-	struct list_head *p;
-=======
 	struct hidp_session *session;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0, n = 0;
 
 	BT_DBG("");
 
 	down_read(&hidp_session_sem);
 
-<<<<<<< HEAD
-	list_for_each(p, &hidp_session_list) {
-		struct hidp_session *session;
-		struct hidp_conninfo ci;
-
-		session = list_entry(p, struct hidp_session, list);
-
-		__hidp_copy_session(session, &ci);
-=======
 	list_for_each_entry(session, &hidp_session_list, list) {
 		struct hidp_conninfo ci;
 
 		hidp_copy_session(session, &ci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (copy_to_user(req->ci, &ci, sizeof(ci))) {
 			err = -EFAULT;
@@ -2154,51 +1446,6 @@ int hidp_get_connlist(struct hidp_connlist_req *req)
 int hidp_get_conninfo(struct hidp_conninfo *ci)
 {
 	struct hidp_session *session;
-<<<<<<< HEAD
-	int err = 0;
-
-	down_read(&hidp_session_sem);
-
-	session = __hidp_get_session(&ci->bdaddr);
-	if (session)
-		__hidp_copy_session(session, ci);
-	else
-		err = -ENOENT;
-
-	up_read(&hidp_session_sem);
-	return err;
-}
-
-static const struct hid_device_id hidp_table[] = {
-	{ HID_BLUETOOTH_DEVICE(HID_ANY_ID, HID_ANY_ID) },
-	{ }
-};
-
-static struct hid_driver hidp_driver = {
-	.name = "generic-bluetooth",
-	.id_table = hidp_table,
-};
-
-static int __init hidp_init(void)
-{
-	int ret;
-
-	BT_INFO("HIDP (Human Interface Emulation) ver %s", VERSION);
-
-	ret = hid_register_driver(&hidp_driver);
-	if (ret)
-		goto err;
-
-	ret = hidp_init_sockets();
-	if (ret)
-		goto err_drv;
-
-	return 0;
-err_drv:
-	hid_unregister_driver(&hidp_driver);
-err:
-	return ret;
-=======
 
 	session = hidp_session_find(&ci->bdaddr);
 	if (session) {
@@ -2214,26 +1461,18 @@ static int __init hidp_init(void)
 	BT_INFO("HIDP (Human Interface Emulation) ver %s", VERSION);
 
 	return hidp_init_sockets();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit hidp_exit(void)
 {
 	hidp_cleanup_sockets();
-<<<<<<< HEAD
-	hid_unregister_driver(&hidp_driver);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(hidp_init);
 module_exit(hidp_exit);
 
 MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
-<<<<<<< HEAD
-=======
 MODULE_AUTHOR("David Herrmann <dh.herrmann@gmail.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Bluetooth HIDP ver " VERSION);
 MODULE_VERSION(VERSION);
 MODULE_LICENSE("GPL");

@@ -1,25 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if BCM47XX
 
 config BCM47XX_SSB
 	bool "SSB Support for Broadcom BCM47XX"
-<<<<<<< HEAD
-	select SYS_HAS_CPU_MIPS32_R1
-	select SSB
-	select SSB_DRIVER_MIPS
-	select SSB_DRIVER_EXTIF
-	select SSB_EMBEDDED
-	select SSB_B43_PCI_BRIDGE if PCI
-	select SSB_PCICORE_HOSTMODE if PCI
-	default y
-	help
-	 Add support for old Broadcom BCM47xx boards with Sonics Silicon Backplane support.
-
-	 This will generate an image with support for SSB and MIPS32 R1 instruction set.
-=======
 	select SYS_HAS_CPU_BMIPS32_3300
 	select SSB
 	select SSB_HOST_SOC
@@ -36,22 +19,10 @@ config BCM47XX_SSB
 	  Add support for old Broadcom BCM47xx boards with Sonics Silicon Backplane support.
 
 	  This will generate an image with support for SSB and MIPS32 R1 instruction set.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config BCM47XX_BCMA
 	bool "BCMA Support for Broadcom BCM47XX"
 	select SYS_HAS_CPU_MIPS32_R2
-<<<<<<< HEAD
-	select BCMA
-	select BCMA_HOST_SOC
-	select BCMA_DRIVER_MIPS
-	select BCMA_DRIVER_PCI_HOSTMODE if PCI
-	default y
-	help
-	 Add support for new Broadcom BCM47xx boards with Broadcom specific Advanced Microcontroller Bus.
-
-	 This will generate an image with support for BCMA and MIPS32 R2 instruction set.
-=======
 	select SYS_SUPPORTS_HIGHMEM
 	select CPU_MIPSR2_IRQ_VI
 	select BCMA
@@ -65,6 +36,5 @@ config BCM47XX_BCMA
 	  Add support for new Broadcom BCM47xx boards with Broadcom specific Advanced Microcontroller Bus.
 
 	  This will generate an image with support for BCMA and MIPS32 R2 instruction set.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif

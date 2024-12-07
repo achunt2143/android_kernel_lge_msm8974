@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * \file mga_ioc32.c
  *
  * 32-bit ioctl compatibility routines for the MGA DRM.
@@ -37,21 +33,12 @@
 
 #include <linux/compat.h>
 
-<<<<<<< HEAD
-#include "drmP.h"
-#include "drm.h"
-
-#include "nouveau_drv.h"
-
-/**
-=======
 #include <drm/drm.h>
 #include <drm/drm_ioctl.h>
 
 #include "nouveau_ioctl.h"
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Called whenever a 32-bit process running under a 64-bit kernel
  * performs an ioctl on /dev/dri/card<n>.
  *
@@ -71,21 +58,13 @@ long nouveau_compat_ioctl(struct file *filp, unsigned int cmd,
 		return drm_compat_ioctl(filp, cmd, arg);
 
 #if 0
-<<<<<<< HEAD
-	if (nr < DRM_COMMAND_BASE + DRM_ARRAY_SIZE(mga_compat_ioctls))
-=======
 	if (nr < DRM_COMMAND_BASE + ARRAY_SIZE(mga_compat_ioctls))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fn = nouveau_compat_ioctls[nr - DRM_COMMAND_BASE];
 #endif
 	if (fn != NULL)
 		ret = (*fn)(filp, cmd, arg);
 	else
-<<<<<<< HEAD
-		ret = drm_ioctl(filp, cmd, arg);
-=======
 		ret = nouveau_drm_ioctl(filp, cmd, arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }

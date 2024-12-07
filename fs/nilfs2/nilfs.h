@@ -1,26 +1,3 @@
-<<<<<<< HEAD
-/*
- * nilfs.h - NILFS local header file.
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Written by Koji Sato <koji@osrg.net>
- *            Ryusuke Konishi <ryusuke@osrg.net>
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * NILFS local header file.
@@ -28,7 +5,6 @@
  * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
  *
  * Written by Koji Sato and Ryusuke Konishi.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _NILFS_H
@@ -38,14 +14,6 @@
 #include <linux/buffer_head.h>
 #include <linux/spinlock.h>
 #include <linux/blkdev.h>
-<<<<<<< HEAD
-#include <linux/nilfs2_fs.h>
-#include "the_nilfs.h"
-#include "bmap.h"
-
-/*
- * nilfs inode data in memory
-=======
 #include <linux/nilfs2_api.h>
 #include <linux/nilfs2_ondisk.h>
 #include "the_nilfs.h"
@@ -66,7 +34,6 @@
  * @i_bh: buffer contains disk inode
  * @i_root: root object of the current filesystem tree
  * @vfs_inode: VFS inode object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct nilfs_inode_info {
 	__u32 i_flags;
@@ -76,11 +43,7 @@ struct nilfs_inode_info {
 	__u64 i_xattr;	/* sector_t ??? */
 	__u32 i_dir_start_lookup;
 	__u64 i_cno;		/* check point number for GC inode */
-<<<<<<< HEAD
-	struct address_space i_btnode_cache;
-=======
 	struct inode *i_assoc_inode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head i_dirty;	/* List for connecting dirty files */
 
 #ifdef CONFIG_NILFS_XATTR
@@ -93,15 +56,10 @@ struct nilfs_inode_info {
 	 */
 	struct rw_semaphore xattr_sem;
 #endif
-<<<<<<< HEAD
-	struct buffer_head *i_bh;	/* i_bh contains a new or dirty
-					   disk inode */
-=======
 	struct buffer_head *i_bh;	/*
 					 * i_bh contains a new or dirty
 					 * disk inode.
 					 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nilfs_root *i_root;
 	struct inode vfs_inode;
 };
@@ -117,16 +75,6 @@ NILFS_BMAP_I(const struct nilfs_bmap *bmap)
 	return container_of(bmap, struct nilfs_inode_info, i_bmap_data);
 }
 
-<<<<<<< HEAD
-static inline struct inode *NILFS_BTNC_I(struct address_space *btnc)
-{
-	struct nilfs_inode_info *ii =
-		container_of(btnc, struct nilfs_inode_info, i_btnode_cache);
-	return &ii->vfs_inode;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Dynamic state flags of NILFS on-memory inode (i_state)
  */
@@ -134,15 +82,6 @@ enum {
 	NILFS_I_NEW = 0,		/* Inode is newly created */
 	NILFS_I_DIRTY,			/* The file is dirty */
 	NILFS_I_QUEUED,			/* inode is in dirty_files list */
-<<<<<<< HEAD
-	NILFS_I_BUSY,			/* inode is grabbed by a segment
-					   constructor */
-	NILFS_I_COLLECTED,		/* All dirty blocks are collected */
-	NILFS_I_UPDATED,		/* The file has been written back */
-	NILFS_I_INODE_DIRTY,		/* write_inode is requested */
-	NILFS_I_BMAP,			/* has bmap and btnode_cache */
-	NILFS_I_GCINODE,		/* inode for GC, on memory only */
-=======
 	NILFS_I_BUSY,			/*
 					 * Inode is grabbed by a segment
 					 * constructor
@@ -154,7 +93,6 @@ enum {
 	NILFS_I_GCINODE,		/* inode for GC, on memory only */
 	NILFS_I_BTNC,			/* inode for btree node cache */
 	NILFS_I_SHADOW,			/* inode for shadowed page cache */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -168,35 +106,19 @@ enum {
 /*
  * Macros to check inode numbers
  */
-<<<<<<< HEAD
-#define NILFS_MDT_INO_BITS   \
-	((unsigned int)(1 << NILFS_DAT_INO | 1 << NILFS_CPFILE_INO |	\
-			1 << NILFS_SUFILE_INO | 1 << NILFS_IFILE_INO |	\
-			1 << NILFS_ATIME_INO | 1 << NILFS_SKETCH_INO))
-
-#define NILFS_SYS_INO_BITS   \
-	((unsigned int)(1 << NILFS_ROOT_INO) | NILFS_MDT_INO_BITS)
-=======
 #define NILFS_MDT_INO_BITS						\
 	(BIT(NILFS_DAT_INO) | BIT(NILFS_CPFILE_INO) |			\
 	 BIT(NILFS_SUFILE_INO) | BIT(NILFS_IFILE_INO) |			\
 	 BIT(NILFS_ATIME_INO) | BIT(NILFS_SKETCH_INO))
 
 #define NILFS_SYS_INO_BITS (BIT(NILFS_ROOT_INO) | NILFS_MDT_INO_BITS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NILFS_FIRST_INO(sb) (((struct the_nilfs *)sb->s_fs_info)->ns_first_ino)
 
 #define NILFS_MDT_INODE(sb, ino) \
-<<<<<<< HEAD
-	((ino) < NILFS_FIRST_INO(sb) && (NILFS_MDT_INO_BITS & (1 << (ino))))
-#define NILFS_VALID_INODE(sb, ino) \
-	((ino) >= NILFS_FIRST_INO(sb) || (NILFS_SYS_INO_BITS & (1 << (ino))))
-=======
 	((ino) < NILFS_FIRST_INO(sb) && (NILFS_MDT_INO_BITS & BIT(ino)))
 #define NILFS_VALID_INODE(sb, ino) \
 	((ino) >= NILFS_FIRST_INO(sb) || (NILFS_SYS_INO_BITS & BIT(ino)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct nilfs_transaction_info: context information for synchronization
@@ -208,15 +130,10 @@ enum {
 struct nilfs_transaction_info {
 	u32			ti_magic;
 	void		       *ti_save;
-<<<<<<< HEAD
-				/* This should never used. If this happens,
-				   one of other filesystems has a bug. */
-=======
 				/*
 				 * This should never be used.  If it happens,
 				 * one of other filesystems has a bug.
 				 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short		ti_flags;
 	unsigned short		ti_count;
 };
@@ -226,15 +143,10 @@ struct nilfs_transaction_info {
 
 /* ti_flags */
 #define NILFS_TI_DYNAMIC_ALLOC	0x0001  /* Allocated from slab */
-<<<<<<< HEAD
-#define NILFS_TI_SYNC		0x0002	/* Force to construct segment at the
-					   end of transaction. */
-=======
 #define NILFS_TI_SYNC		0x0002	/*
 					 * Force to construct segment at the
 					 * end of transaction.
 					 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NILFS_TI_GC		0x0004	/* GC context */
 #define NILFS_TI_COMMIT		0x0008	/* Change happened or not */
 #define NILFS_TI_WRITER		0x0010	/* Constructor context */
@@ -286,12 +198,9 @@ static inline int nilfs_acl_chmod(struct inode *inode)
 
 static inline int nilfs_init_acl(struct inode *inode, struct inode *dir)
 {
-<<<<<<< HEAD
-=======
 	if (S_ISLNK(inode->i_mode))
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_mode &= ~current_umask();
 	return 0;
 }
@@ -317,18 +226,6 @@ static inline __u32 nilfs_mask_flags(umode_t mode, __u32 flags)
 }
 
 /* dir.c */
-<<<<<<< HEAD
-extern int nilfs_add_link(struct dentry *, struct inode *);
-extern ino_t nilfs_inode_by_name(struct inode *, const struct qstr *);
-extern int nilfs_make_empty(struct inode *, struct inode *);
-extern struct nilfs_dir_entry *
-nilfs_find_entry(struct inode *, const struct qstr *, struct page **);
-extern int nilfs_delete_entry(struct nilfs_dir_entry *, struct page *);
-extern int nilfs_empty_dir(struct inode *);
-extern struct nilfs_dir_entry *nilfs_dotdot(struct inode *, struct page **);
-extern void nilfs_set_link(struct inode *, struct nilfs_dir_entry *,
-			   struct page *, struct inode *);
-=======
 int nilfs_add_link(struct dentry *, struct inode *);
 ino_t nilfs_inode_by_name(struct inode *, const struct qstr *);
 int nilfs_make_empty(struct inode *, struct inode *);
@@ -339,18 +236,14 @@ int nilfs_empty_dir(struct inode *);
 struct nilfs_dir_entry *nilfs_dotdot(struct inode *, struct folio **);
 void nilfs_set_link(struct inode *, struct nilfs_dir_entry *,
 			   struct folio *, struct inode *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* file.c */
 extern int nilfs_sync_file(struct file *, loff_t, loff_t, int);
 
 /* ioctl.c */
-<<<<<<< HEAD
-=======
 int nilfs_fileattr_get(struct dentry *dentry, struct fileattr *m);
 int nilfs_fileattr_set(struct mnt_idmap *idmap,
 		       struct dentry *dentry, struct fileattr *fa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 long nilfs_ioctl(struct file *, unsigned int, unsigned long);
 long nilfs_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
 int nilfs_ioctl_prepare_clean_segments(struct the_nilfs *, struct nilfs_argv *,
@@ -360,19 +253,11 @@ int nilfs_ioctl_prepare_clean_segments(struct the_nilfs *, struct nilfs_argv *,
 void nilfs_inode_add_blocks(struct inode *inode, int n);
 void nilfs_inode_sub_blocks(struct inode *inode, int n);
 extern struct inode *nilfs_new_inode(struct inode *, umode_t);
-<<<<<<< HEAD
-extern void nilfs_free_inode(struct inode *);
-extern int nilfs_get_block(struct inode *, sector_t, struct buffer_head *, int);
-extern void nilfs_set_inode_flags(struct inode *);
-extern int nilfs_read_inode_common(struct inode *, struct nilfs_inode *);
-extern void nilfs_write_inode_common(struct inode *, struct nilfs_inode *, int);
-=======
 extern int nilfs_get_block(struct inode *, sector_t, struct buffer_head *, int);
 extern void nilfs_set_inode_flags(struct inode *);
 extern int nilfs_read_inode_common(struct inode *, struct nilfs_inode *);
 void nilfs_write_inode_common(struct inode *inode,
 			      struct nilfs_inode *raw_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct inode *nilfs_ilookup(struct super_block *sb, struct nilfs_root *root,
 			    unsigned long ino);
 struct inode *nilfs_iget_locked(struct super_block *sb, struct nilfs_root *root,
@@ -381,28 +266,6 @@ struct inode *nilfs_iget(struct super_block *sb, struct nilfs_root *root,
 			 unsigned long ino);
 extern struct inode *nilfs_iget_for_gc(struct super_block *sb,
 				       unsigned long ino, __u64 cno);
-<<<<<<< HEAD
-extern void nilfs_update_inode(struct inode *, struct buffer_head *);
-extern void nilfs_truncate(struct inode *);
-extern void nilfs_evict_inode(struct inode *);
-extern int nilfs_setattr(struct dentry *, struct iattr *);
-int nilfs_permission(struct inode *inode, int mask);
-int nilfs_load_inode_block(struct inode *inode, struct buffer_head **pbh);
-extern int nilfs_inode_dirty(struct inode *);
-int nilfs_set_file_dirty(struct inode *inode, unsigned nr_dirty);
-extern int nilfs_mark_inode_dirty(struct inode *);
-extern void nilfs_dirty_inode(struct inode *, int flags);
-int nilfs_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
-		 __u64 start, __u64 len);
-
-/* super.c */
-extern struct inode *nilfs_alloc_inode(struct super_block *);
-extern void nilfs_destroy_inode(struct inode *);
-extern __printf(3, 4)
-void nilfs_error(struct super_block *, const char *, const char *, ...);
-extern __printf(3, 4)
-void nilfs_warning(struct super_block *, const char *, const char *, ...);
-=======
 int nilfs_attach_btree_node_cache(struct inode *inode);
 void nilfs_detach_btree_node_cache(struct inode *inode);
 struct inode *nilfs_iget_for_shadow(struct inode *inode);
@@ -470,7 +333,6 @@ void __nilfs_error(struct super_block *sb, const char *function,
 #define nilfs_info(sb, fmt, ...)					\
 	nilfs_msg(sb, KERN_INFO, fmt, ##__VA_ARGS__)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct nilfs_super_block *
 nilfs_read_super_block(struct super_block *, u64, int, struct buffer_head **);
 extern int nilfs_store_magic_and_option(struct super_block *,
@@ -497,8 +359,6 @@ int nilfs_gccache_wait_and_mark_dirty(struct buffer_head *);
 int nilfs_init_gcinode(struct inode *inode);
 void nilfs_remove_all_gcinodes(struct the_nilfs *nilfs);
 
-<<<<<<< HEAD
-=======
 /* sysfs.c */
 int __init nilfs_sysfs_init(void);
 void nilfs_sysfs_exit(void);
@@ -507,7 +367,6 @@ void nilfs_sysfs_delete_device_group(struct the_nilfs *);
 int nilfs_sysfs_create_snapshot_group(struct nilfs_root *);
 void nilfs_sysfs_delete_snapshot_group(struct nilfs_root *);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Inodes and files operations
  */

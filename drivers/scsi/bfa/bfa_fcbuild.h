@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * fcbuild.h - FC link service frame building and parsing routines
@@ -173,18 +155,11 @@ enum fc_parse_status fc_abts_rsp_parse(struct fchs_s *buf, int len);
 
 u16        fc_rrq_build(struct fchs_s *buf, struct fc_rrq_s *rrq, u32 d_id,
 			     u32 s_id, u16 ox_id, u16 rrq_oxid);
-<<<<<<< HEAD
-enum fc_parse_status fc_rrq_rsp_parse(struct fchs_s *buf, int len);
-
-u16        fc_rspnid_build(struct fchs_s *fchs, void *pld, u32 s_id,
-				u16 ox_id, u8 *name);
-=======
 
 u16        fc_rspnid_build(struct fchs_s *fchs, void *pld, u32 s_id,
 				u16 ox_id, u8 *name);
 u16	fc_rsnn_nn_build(struct fchs_s *fchs, void *pld, u32 s_id,
 				wwn_t node_name, u8 *name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 u16        fc_rftid_build(struct fchs_s *fchs, void *pld, u32 s_id,
 			       u16 ox_id, enum bfa_lport_role role);
@@ -292,11 +267,6 @@ void		fc_get_fc4type_bitmask(u8 fc4_type, u8 *bit_mask);
 void		fc_els_req_build(struct fchs_s *fchs, u32 d_id, u32 s_id,
 					 __be16 ox_id);
 
-<<<<<<< HEAD
-enum fc_parse_status	fc_els_rsp_parse(struct fchs_s *fchs, int len);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum fc_parse_status	fc_plogi_rsp_parse(struct fchs_s *fchs, int len,
 					wwn_t port_name);
 
@@ -316,11 +286,6 @@ u16 fc_tprlo_acc_build(struct fchs_s *fchs, struct fc_tprlo_acc_s *tprlo_acc,
 u16 fc_prlo_acc_build(struct fchs_s *fchs, struct fc_prlo_acc_s *prlo_acc,
 		u32 d_id, u32 s_id, __be16 ox_id, int num_pages);
 
-<<<<<<< HEAD
-u16 fc_logo_rsp_parse(struct fchs_s *fchs, int len);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u16 fc_pdisc_build(struct fchs_s *fchs, u32 d_id, u32 s_id,
 		u16 ox_id, wwn_t port_name, wwn_t node_name,
 		u16 pdu_size);
@@ -330,20 +295,10 @@ u16 fc_pdisc_rsp_parse(struct fchs_s *fchs, int len, wwn_t port_name);
 u16 fc_prlo_build(struct fchs_s *fchs, u32 d_id, u32 s_id,
 		u16 ox_id, int num_pages);
 
-<<<<<<< HEAD
-u16 fc_prlo_rsp_parse(struct fchs_s *fchs, int len);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u16 fc_tprlo_build(struct fchs_s *fchs, u32 d_id, u32 s_id,
 		u16 ox_id, int num_pages, enum fc_tprlo_type tprlo_type,
 		u32 tpr_id);
 
-<<<<<<< HEAD
-u16 fc_tprlo_rsp_parse(struct fchs_s *fchs, int len);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u16 fc_ba_rjt_build(struct fchs_s *fchs, u32 d_id, u32 s_id,
 		__be16 ox_id, u32 reason_code, u32 reason_expl);
 

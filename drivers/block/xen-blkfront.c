@@ -37,19 +37,11 @@
 
 #include <linux/interrupt.h>
 #include <linux/blkdev.h>
-<<<<<<< HEAD
-=======
 #include <linux/blk-mq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hdreg.h>
 #include <linux/cdrom.h>
 #include <linux/module.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/mutex.h>
-#include <linux/scatterlist.h>
-#include <linux/bitmap.h>
-=======
 #include <linux/major.h>
 #include <linux/mutex.h>
 #include <linux/scatterlist.h>
@@ -57,7 +49,6 @@
 #include <linux/list.h>
 #include <linux/workqueue.h>
 #include <linux/sched/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <xen/xen.h>
 #include <xen/xenbus.h>
@@ -72,8 +63,6 @@
 
 #include <asm/xen/hypervisor.h>
 
-<<<<<<< HEAD
-=======
 /*
  * The minimal size of segment supported by the block framework is PAGE_SIZE.
  * When Linux is using a different page size than Xen, it may not be possible
@@ -88,13 +77,10 @@
  */
 #define HAS_EXTRA_REQ (BLKIF_MAX_SEGMENTS_PER_REQUEST < XEN_PFN_PER_PAGE)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum blkif_state {
 	BLKIF_STATE_DISCONNECTED,
 	BLKIF_STATE_CONNECTED,
 	BLKIF_STATE_SUSPENDED,
-<<<<<<< HEAD
-=======
 	BLKIF_STATE_ERROR,
 };
 
@@ -110,21 +96,11 @@ enum blk_req_status {
 	REQ_DONE,
 	REQ_ERROR,
 	REQ_EOPNOTSUPP,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct blk_shadow {
 	struct blkif_request req;
 	struct request *request;
-<<<<<<< HEAD
-	unsigned long frame[BLKIF_MAX_SEGMENTS_PER_REQUEST];
-};
-
-static DEFINE_MUTEX(blkfront_mutex);
-static const struct block_device_operations xlvbd_block_fops;
-
-#define BLK_RING_SIZE __CONST_RING_SIZE(blkif, PAGE_SIZE)
-=======
 	struct grant **grants_used;
 	struct grant **indirect_grants;
 	struct scatterlist *sg;
@@ -213,7 +189,6 @@ struct blkfront_ring_info {
 	struct blkfront_info *dev_info;
 	struct blk_shadow shadow[];
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We have one of these per vbd, whether ide, scsi or 'other'.  They
@@ -222,31 +197,6 @@ struct blkfront_ring_info {
  */
 struct blkfront_info
 {
-<<<<<<< HEAD
-	spinlock_t io_lock;
-	struct mutex mutex;
-	struct xenbus_device *xbdev;
-	struct gendisk *gd;
-	int vdevice;
-	blkif_vdev_t handle;
-	enum blkif_state connected;
-	int ring_ref;
-	struct blkif_front_ring ring;
-	struct scatterlist sg[BLKIF_MAX_SEGMENTS_PER_REQUEST];
-	unsigned int evtchn, irq;
-	struct request_queue *rq;
-	struct work_struct work;
-	struct gnttab_free_callback callback;
-	struct blk_shadow shadow[BLK_RING_SIZE];
-	unsigned long shadow_free;
-	unsigned int feature_flush;
-	unsigned int flush_op;
-	unsigned int feature_discard:1;
-	unsigned int feature_secdiscard:1;
-	unsigned int discard_granularity;
-	unsigned int discard_alignment;
-	int is_ready;
-=======
 	struct mutex mutex;
 	struct xenbus_device *xbdev;
 	struct gendisk *gd;
@@ -281,20 +231,12 @@ struct blkfront_info
 	struct list_head requests;
 	struct bio_list bio_list;
 	struct list_head info_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static unsigned int nr_minors;
 static unsigned long *minors;
 static DEFINE_SPINLOCK(minor_lock);
 
-<<<<<<< HEAD
-#define MAXIMUM_OUTSTANDING_BLOCK_REQS \
-	(BLKIF_MAX_SEGMENTS_PER_REQUEST * BLK_RING_SIZE)
-#define GRANT_INVALID_REF	0
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PARTS_PER_DISK		16
 #define PARTS_PER_EXT_DISK      256
 
@@ -312,25 +254,6 @@ static DEFINE_SPINLOCK(minor_lock);
 
 #define DEV_NAME	"xvd"	/* name in /dev */
 
-<<<<<<< HEAD
-static int get_id_from_freelist(struct blkfront_info *info)
-{
-	unsigned long free = info->shadow_free;
-	BUG_ON(free >= BLK_RING_SIZE);
-	info->shadow_free = info->shadow[free].req.u.rw.id;
-	info->shadow[free].req.u.rw.id = 0x0fffffee; /* debug */
-	return free;
-}
-
-static void add_id_to_freelist(struct blkfront_info *info,
-			       unsigned long id)
-{
-	info->shadow[id].req.u.rw.id  = info->shadow_free;
-	info->shadow[id].request = NULL;
-	info->shadow_free = id;
-}
-
-=======
 /*
  * Grants are always the same size as a Xen page (i.e 4KB).
  * A physical segment is always the same size as a Linux page.
@@ -517,7 +440,6 @@ static const char *op_name(int op)
 
 	return names[op];
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int xlbd_reserve_minors(unsigned int minor, unsigned int nr)
 {
 	unsigned int end = minor + nr;
@@ -567,13 +489,8 @@ static void xlbd_release_minors(unsigned int minor, unsigned int nr)
 
 static void blkif_restart_queue_callback(void *arg)
 {
-<<<<<<< HEAD
-	struct blkfront_info *info = (struct blkfront_info *)arg;
-	schedule_work(&info->work);
-=======
 	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)arg;
 	schedule_work(&rinfo->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int blkif_getgeo(struct block_device *bd, struct hd_geometry *hg)
@@ -592,47 +509,18 @@ static int blkif_getgeo(struct block_device *bd, struct hd_geometry *hg)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int blkif_ioctl(struct block_device *bdev, fmode_t mode,
-=======
 static int blkif_ioctl(struct block_device *bdev, blk_mode_t mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       unsigned command, unsigned long argument)
 {
 	struct blkfront_info *info = bdev->bd_disk->private_data;
 	int i;
 
-<<<<<<< HEAD
-	dev_dbg(&info->xbdev->dev, "command: 0x%x, argument: 0x%lx\n",
-		command, (long)argument);
-
 	switch (command) {
 	case CDROMMULTISESSION:
-		dev_dbg(&info->xbdev->dev, "FIXME: support multisession CDs later\n");
-=======
-	switch (command) {
-	case CDROMMULTISESSION:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < sizeof(struct cdrom_multisession); i++)
 			if (put_user(0, (char __user *)(argument + i)))
 				return -EFAULT;
 		return 0;
-<<<<<<< HEAD
-
-	case CDROM_GET_CAPABILITY: {
-		struct gendisk *gd = info->gd;
-		if (gd->flags & GENHD_FL_CD)
-			return 0;
-		return -EINVAL;
-	}
-
-	default:
-		/*printk(KERN_ALERT "ioctl %08x not supported by Xen blkdev\n",
-		  command);*/
-		return -EINVAL; /* same return as native Linux */
-	}
-
-=======
 	case CDROM_GET_CAPABILITY:
 		if (!(info->vdisk_info & VDISK_CDROM))
 			return -EINVAL;
@@ -968,7 +856,6 @@ static int blkif_queue_rw_req(struct request *req, struct blkfront_ring_info *ri
 	if (new_persistent_gnts)
 		gnttab_free_grant_references(setup.gref_head);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -978,215 +865,6 @@ static int blkif_queue_rw_req(struct request *req, struct blkfront_ring_info *ri
  *
  * @req: a request struct
  */
-<<<<<<< HEAD
-static int blkif_queue_request(struct request *req)
-{
-	struct blkfront_info *info = req->rq_disk->private_data;
-	unsigned long buffer_mfn;
-	struct blkif_request *ring_req;
-	unsigned long id;
-	unsigned int fsect, lsect;
-	int i, ref;
-	grant_ref_t gref_head;
-	struct scatterlist *sg;
-
-	if (unlikely(info->connected != BLKIF_STATE_CONNECTED))
-		return 1;
-
-	if (gnttab_alloc_grant_references(
-		BLKIF_MAX_SEGMENTS_PER_REQUEST, &gref_head) < 0) {
-		gnttab_request_free_callback(
-			&info->callback,
-			blkif_restart_queue_callback,
-			info,
-			BLKIF_MAX_SEGMENTS_PER_REQUEST);
-		return 1;
-	}
-
-	/* Fill out a communications ring structure. */
-	ring_req = RING_GET_REQUEST(&info->ring, info->ring.req_prod_pvt);
-	id = get_id_from_freelist(info);
-	info->shadow[id].request = req;
-
-	ring_req->u.rw.id = id;
-	ring_req->u.rw.sector_number = (blkif_sector_t)blk_rq_pos(req);
-	ring_req->u.rw.handle = info->handle;
-
-	ring_req->operation = rq_data_dir(req) ?
-		BLKIF_OP_WRITE : BLKIF_OP_READ;
-
-	if (req->cmd_flags & (REQ_FLUSH | REQ_FUA)) {
-		/*
-		 * Ideally we can do an unordered flush-to-disk. In case the
-		 * backend onlysupports barriers, use that. A barrier request
-		 * a superset of FUA, so we can implement it the same
-		 * way.  (It's also a FLUSH+FUA, since it is
-		 * guaranteed ordered WRT previous writes.)
-		 */
-		ring_req->operation = info->flush_op;
-	}
-
-	if (unlikely(req->cmd_flags & (REQ_DISCARD | REQ_SECURE))) {
-		/* id, sector_number and handle are set above. */
-		ring_req->operation = BLKIF_OP_DISCARD;
-		ring_req->u.discard.nr_sectors = blk_rq_sectors(req);
-		if ((req->cmd_flags & REQ_SECURE) && info->feature_secdiscard)
-			ring_req->u.discard.flag = BLKIF_DISCARD_SECURE;
-		else
-			ring_req->u.discard.flag = 0;
-	} else {
-		ring_req->u.rw.nr_segments = blk_rq_map_sg(req->q, req,
-							   info->sg);
-		BUG_ON(ring_req->u.rw.nr_segments >
-		       BLKIF_MAX_SEGMENTS_PER_REQUEST);
-
-		for_each_sg(info->sg, sg, ring_req->u.rw.nr_segments, i) {
-			buffer_mfn = pfn_to_mfn(page_to_pfn(sg_page(sg)));
-			fsect = sg->offset >> 9;
-			lsect = fsect + (sg->length >> 9) - 1;
-			/* install a grant reference. */
-			ref = gnttab_claim_grant_reference(&gref_head);
-			BUG_ON(ref == -ENOSPC);
-
-			gnttab_grant_foreign_access_ref(
-					ref,
-					info->xbdev->otherend_id,
-					buffer_mfn,
-					rq_data_dir(req));
-
-			info->shadow[id].frame[i] = mfn_to_pfn(buffer_mfn);
-			ring_req->u.rw.seg[i] =
-					(struct blkif_request_segment) {
-						.gref       = ref,
-						.first_sect = fsect,
-						.last_sect  = lsect };
-		}
-	}
-
-	info->ring.req_prod_pvt++;
-
-	/* Keep a private copy so we can reissue requests when recovering. */
-	info->shadow[id].req = *ring_req;
-
-	gnttab_free_grant_references(gref_head);
-
-	return 0;
-}
-
-
-static inline void flush_requests(struct blkfront_info *info)
-{
-	int notify;
-
-	RING_PUSH_REQUESTS_AND_CHECK_NOTIFY(&info->ring, notify);
-
-	if (notify)
-		notify_remote_via_irq(info->irq);
-}
-
-/*
- * do_blkif_request
- *  read a block; request is in a request queue
- */
-static void do_blkif_request(struct request_queue *rq)
-{
-	struct blkfront_info *info = NULL;
-	struct request *req;
-	int queued;
-
-	pr_debug("Entered do_blkif_request\n");
-
-	queued = 0;
-
-	while ((req = blk_peek_request(rq)) != NULL) {
-		info = req->rq_disk->private_data;
-
-		if (RING_FULL(&info->ring))
-			goto wait;
-
-		blk_start_request(req);
-
-		if ((req->cmd_type != REQ_TYPE_FS) ||
-		    ((req->cmd_flags & (REQ_FLUSH | REQ_FUA)) &&
-		    !info->flush_op)) {
-			__blk_end_request_all(req, -EIO);
-			continue;
-		}
-
-		pr_debug("do_blk_req %p: cmd %p, sec %lx, "
-			 "(%u/%u) buffer:%p [%s]\n",
-			 req, req->cmd, (unsigned long)blk_rq_pos(req),
-			 blk_rq_cur_sectors(req), blk_rq_sectors(req),
-			 req->buffer, rq_data_dir(req) ? "write" : "read");
-
-		if (blkif_queue_request(req)) {
-			blk_requeue_request(rq, req);
-wait:
-			/* Avoid pointless unplugs. */
-			blk_stop_queue(rq);
-			break;
-		}
-
-		queued++;
-	}
-
-	if (queued != 0)
-		flush_requests(info);
-}
-
-static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size)
-{
-	struct request_queue *rq;
-	struct blkfront_info *info = gd->private_data;
-
-	rq = blk_init_queue(do_blkif_request, &info->io_lock);
-	if (rq == NULL)
-		return -1;
-
-	queue_flag_set_unlocked(QUEUE_FLAG_VIRT, rq);
-
-	if (info->feature_discard) {
-		queue_flag_set_unlocked(QUEUE_FLAG_DISCARD, rq);
-		blk_queue_max_discard_sectors(rq, get_capacity(gd));
-		rq->limits.discard_granularity = info->discard_granularity;
-		rq->limits.discard_alignment = info->discard_alignment;
-		if (info->feature_secdiscard)
-			queue_flag_set_unlocked(QUEUE_FLAG_SECDISCARD, rq);
-	}
-
-	/* Hard sector size and max sectors impersonate the equiv. hardware. */
-	blk_queue_logical_block_size(rq, sector_size);
-	blk_queue_max_hw_sectors(rq, 512);
-
-	/* Each segment in a request is up to an aligned page in size. */
-	blk_queue_segment_boundary(rq, PAGE_SIZE - 1);
-	blk_queue_max_segment_size(rq, PAGE_SIZE);
-
-	/* Ensure a merged request will fit in a single I/O ring slot. */
-	blk_queue_max_segments(rq, BLKIF_MAX_SEGMENTS_PER_REQUEST);
-
-	/* Make sure buffer addresses are sector-aligned. */
-	blk_queue_dma_alignment(rq, 511);
-
-	/* Make sure we don't use bounce buffers. */
-	blk_queue_bounce_limit(rq, BLK_BOUNCE_ANY);
-
-	gd->queue = rq;
-
-	return 0;
-}
-
-
-static void xlvbd_flush(struct blkfront_info *info)
-{
-	blk_queue_flush(info->rq, info->feature_flush);
-	printk(KERN_INFO "blkfront: %s: %s: %s\n",
-	       info->gd->disk_name,
-	       info->flush_op == BLKIF_OP_WRITE_BARRIER ?
-		"barrier" : (info->flush_op == BLKIF_OP_FLUSH_DISKCACHE ?
-		"flush diskcache" : "barrier or flush"),
-	       info->feature_flush ? "enabled" : "disabled");
-=======
 static int blkif_queue_request(struct request *req, struct blkfront_ring_info *rinfo)
 {
 	if (unlikely(rinfo->dev_info->connected != BLKIF_STATE_CONNECTED))
@@ -1314,7 +992,6 @@ static void xlvbd_flush(struct blkfront_info *info)
 		"enabled;" : "disabled;", "indirect descriptors:",
 		info->max_indirect_segments ? "enabled;" : "disabled;",
 		"bounce buffer:", info->bounce ? "enabled" : "disabled;");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xen_translate_vdev(int vdevice, int *minor, unsigned int *offset)
@@ -1377,12 +1054,6 @@ static int xen_translate_vdev(int vdevice, int *minor, unsigned int *offset)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int xlvbd_alloc_gendisk(blkif_sector_t capacity,
-			       struct blkfront_info *info,
-			       u16 vdisk_info, u16 sector_size)
-{
-=======
 static char *encode_disk_name(char *ptr, unsigned int n)
 {
 	if (n >= 26)
@@ -1396,17 +1067,13 @@ static int xlvbd_alloc_gendisk(blkif_sector_t capacity,
 		unsigned int physical_sector_size)
 {
 	struct queue_limits lim = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gendisk *gd;
 	int nr_minors = 1;
 	int err;
 	unsigned int offset;
 	int minor;
 	int nr_parts;
-<<<<<<< HEAD
-=======
 	char *ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(info->gd != NULL);
 	BUG_ON(info->rq != NULL);
@@ -1420,13 +1087,8 @@ static int xlvbd_alloc_gendisk(blkif_sector_t capacity,
 	if (!VDEV_IS_EXTENDED(info->vdevice)) {
 		err = xen_translate_vdev(info->vdevice, &minor, &offset);
 		if (err)
-<<<<<<< HEAD
-			return err;		
- 		nr_parts = PARTS_PER_DISK;
-=======
 			return err;
 		nr_parts = PARTS_PER_DISK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		minor = BLKIF_MINOR_EXT(info->vdevice);
 		nr_parts = PARTS_PER_EXT_DISK;
@@ -1436,123 +1098,17 @@ static int xlvbd_alloc_gendisk(blkif_sector_t capacity,
 					"emulated IDE disks,\n\t choose an xvd device name"
 					"from xvde on\n", info->vdevice);
 	}
-<<<<<<< HEAD
-	err = -ENODEV;
-=======
 	if (minor >> MINORBITS) {
 		pr_warn("blkfront: %#x's minor (%#x) out of range; ignoring\n",
 			info->vdevice, minor);
 		return -ENODEV;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((minor % nr_parts) == 0)
 		nr_minors = nr_parts;
 
 	err = xlbd_reserve_minors(minor, nr_minors);
 	if (err)
-<<<<<<< HEAD
-		goto out;
-	err = -ENODEV;
-
-	gd = alloc_disk(nr_minors);
-	if (gd == NULL)
-		goto release;
-
-	if (nr_minors > 1) {
-		if (offset < 26)
-			sprintf(gd->disk_name, "%s%c", DEV_NAME, 'a' + offset);
-		else
-			sprintf(gd->disk_name, "%s%c%c", DEV_NAME,
-				'a' + ((offset / 26)-1), 'a' + (offset % 26));
-	} else {
-		if (offset < 26)
-			sprintf(gd->disk_name, "%s%c%d", DEV_NAME,
-				'a' + offset,
-				minor & (nr_parts - 1));
-		else
-			sprintf(gd->disk_name, "%s%c%c%d", DEV_NAME,
-				'a' + ((offset / 26) - 1),
-				'a' + (offset % 26),
-				minor & (nr_parts - 1));
-	}
-
-	gd->major = XENVBD_MAJOR;
-	gd->first_minor = minor;
-	gd->fops = &xlvbd_block_fops;
-	gd->private_data = info;
-	gd->driverfs_dev = &(info->xbdev->dev);
-	set_capacity(gd, capacity);
-
-	if (xlvbd_init_blk_queue(gd, sector_size)) {
-		del_gendisk(gd);
-		goto release;
-	}
-
-	info->rq = gd->queue;
-	info->gd = gd;
-
-	xlvbd_flush(info);
-
-	if (vdisk_info & VDISK_READONLY)
-		set_disk_ro(gd, 1);
-
-	if (vdisk_info & VDISK_REMOVABLE)
-		gd->flags |= GENHD_FL_REMOVABLE;
-
-	if (vdisk_info & VDISK_CDROM)
-		gd->flags |= GENHD_FL_CD;
-
-	return 0;
-
- release:
-	xlbd_release_minors(minor, nr_minors);
- out:
-	return err;
-}
-
-static void xlvbd_release_gendisk(struct blkfront_info *info)
-{
-	unsigned int minor, nr_minors;
-	unsigned long flags;
-
-	if (info->rq == NULL)
-		return;
-
-	spin_lock_irqsave(&info->io_lock, flags);
-
-	/* No more blkif_request(). */
-	blk_stop_queue(info->rq);
-
-	/* No more gnttab callback work. */
-	gnttab_cancel_free_callback(&info->callback);
-	spin_unlock_irqrestore(&info->io_lock, flags);
-
-	/* Flush gnttab callback work. Must be done with no locks held. */
-	flush_work_sync(&info->work);
-
-	del_gendisk(info->gd);
-
-	minor = info->gd->first_minor;
-	nr_minors = info->gd->minors;
-	xlbd_release_minors(minor, nr_minors);
-
-	blk_cleanup_queue(info->rq);
-	info->rq = NULL;
-
-	put_disk(info->gd);
-	info->gd = NULL;
-}
-
-static void kick_pending_request_queues(struct blkfront_info *info)
-{
-	if (!RING_FULL(&info->ring)) {
-		/* Re-enable calldowns. */
-		blk_start_queue(info->rq);
-		/* Kick things off immediately. */
-		do_blkif_request(info->rq);
-	}
-=======
 		return err;
 
 	memset(&info->tag_set, 0, sizeof(info->tag_set));
@@ -1636,19 +1192,10 @@ static void kick_pending_request_queues(struct blkfront_ring_info *rinfo)
 	spin_lock_irqsave(&rinfo->ring_lock, flags);
 	kick_pending_request_queues_locked(rinfo);
 	spin_unlock_irqrestore(&rinfo->ring_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void blkif_restart_queue(struct work_struct *work)
 {
-<<<<<<< HEAD
-	struct blkfront_info *info = container_of(work, struct blkfront_info, work);
-
-	spin_lock_irq(&info->io_lock);
-	if (info->connected == BLKIF_STATE_CONNECTED)
-		kick_pending_request_queues(info);
-	spin_unlock_irq(&info->io_lock);
-=======
 	struct blkfront_ring_info *rinfo = container_of(work, struct blkfront_ring_info, work);
 
 	if (rinfo->dev_info->connected == BLKIF_STATE_CONNECTED)
@@ -1747,54 +1294,18 @@ free_shadow:
 	if (rinfo->irq)
 		unbind_from_irqhandler(rinfo->irq, rinfo);
 	rinfo->evtchn = rinfo->irq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void blkif_free(struct blkfront_info *info, int suspend)
 {
-<<<<<<< HEAD
-	/* Prevent new requests being issued until we fix things up. */
-	spin_lock_irq(&info->io_lock);
-=======
 	unsigned int i;
 	struct blkfront_ring_info *rinfo;
 
 	/* Prevent new requests being issued until we fix things up. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->connected = suspend ?
 		BLKIF_STATE_SUSPENDED : BLKIF_STATE_DISCONNECTED;
 	/* No more blkif_request(). */
 	if (info->rq)
-<<<<<<< HEAD
-		blk_stop_queue(info->rq);
-	/* No more gnttab callback work. */
-	gnttab_cancel_free_callback(&info->callback);
-	spin_unlock_irq(&info->io_lock);
-
-	/* Flush gnttab callback work. Must be done with no locks held. */
-	flush_work_sync(&info->work);
-
-	/* Free resources associated with old device channel. */
-	if (info->ring_ref != GRANT_INVALID_REF) {
-		gnttab_end_foreign_access(info->ring_ref, 0,
-					  (unsigned long)info->ring.sring);
-		info->ring_ref = GRANT_INVALID_REF;
-		info->ring.sring = NULL;
-	}
-	if (info->irq)
-		unbind_from_irqhandler(info->irq, info);
-	info->evtchn = info->irq = 0;
-
-}
-
-static void blkif_completion(struct blk_shadow *s)
-{
-	int i;
-	/* Do not let BLKIF_OP_DISCARD as nr_segment is in the same place
-	 * flag. */
-	for (i = 0; i < s->req.u.rw.nr_segments; i++)
-		gnttab_end_foreign_access(s->req.u.rw.seg[i].gref, 0, 0UL);
-=======
 		blk_mq_stop_hw_queues(info->rq);
 
 	for_each_rinfo(info, rinfo, i)
@@ -1995,90 +1506,11 @@ static int blkif_completion(unsigned long *id,
 	}
 
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t blkif_interrupt(int irq, void *dev_id)
 {
 	struct request *req;
-<<<<<<< HEAD
-	struct blkif_response *bret;
-	RING_IDX i, rp;
-	unsigned long flags;
-	struct blkfront_info *info = (struct blkfront_info *)dev_id;
-	int error;
-
-	spin_lock_irqsave(&info->io_lock, flags);
-
-	if (unlikely(info->connected != BLKIF_STATE_CONNECTED)) {
-		spin_unlock_irqrestore(&info->io_lock, flags);
-		return IRQ_HANDLED;
-	}
-
- again:
-	rp = info->ring.sring->rsp_prod;
-	rmb(); /* Ensure we see queued responses up to 'rp'. */
-
-	for (i = info->ring.rsp_cons; i != rp; i++) {
-		unsigned long id;
-
-		bret = RING_GET_RESPONSE(&info->ring, i);
-		id   = bret->id;
-		req  = info->shadow[id].request;
-
-		if (bret->operation != BLKIF_OP_DISCARD)
-			blkif_completion(&info->shadow[id]);
-
-		add_id_to_freelist(info, id);
-
-		error = (bret->status == BLKIF_RSP_OKAY) ? 0 : -EIO;
-		switch (bret->operation) {
-		case BLKIF_OP_DISCARD:
-			if (unlikely(bret->status == BLKIF_RSP_EOPNOTSUPP)) {
-				struct request_queue *rq = info->rq;
-				printk(KERN_WARNING "blkfront: %s: discard op failed\n",
-					   info->gd->disk_name);
-				error = -EOPNOTSUPP;
-				info->feature_discard = 0;
-				info->feature_secdiscard = 0;
-				queue_flag_clear(QUEUE_FLAG_DISCARD, rq);
-				queue_flag_clear(QUEUE_FLAG_SECDISCARD, rq);
-			}
-			__blk_end_request_all(req, error);
-			break;
-		case BLKIF_OP_FLUSH_DISKCACHE:
-		case BLKIF_OP_WRITE_BARRIER:
-			if (unlikely(bret->status == BLKIF_RSP_EOPNOTSUPP)) {
-				printk(KERN_WARNING "blkfront: %s: write %s op failed\n",
-				       info->flush_op == BLKIF_OP_WRITE_BARRIER ?
-				       "barrier" :  "flush disk cache",
-				       info->gd->disk_name);
-				error = -EOPNOTSUPP;
-			}
-			if (unlikely(bret->status == BLKIF_RSP_ERROR &&
-				     info->shadow[id].req.u.rw.nr_segments == 0)) {
-				printk(KERN_WARNING "blkfront: %s: empty write %s op failed\n",
-				       info->flush_op == BLKIF_OP_WRITE_BARRIER ?
-				       "barrier" :  "flush disk cache",
-				       info->gd->disk_name);
-				error = -EOPNOTSUPP;
-			}
-			if (unlikely(error)) {
-				if (error == -EOPNOTSUPP)
-					error = 0;
-				info->feature_flush = 0;
-				info->flush_op = 0;
-				xlvbd_flush(info);
-			}
-			/* fall through */
-		case BLKIF_OP_READ:
-		case BLKIF_OP_WRITE:
-			if (unlikely(bret->status != BLKIF_RSP_OKAY))
-				dev_dbg(&info->xbdev->dev, "Bad return from blkdev data "
-					"request: %x\n", bret->status);
-
-			__blk_end_request_all(req, error);
-=======
 	struct blkif_response bret;
 	RING_IDX i, rp;
 	unsigned long flags;
@@ -2205,29 +1637,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
 					"Bad return from blkdev data request: %#x\n",
 					bret.status);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			BUG();
 		}
-<<<<<<< HEAD
-	}
-
-	info->ring.rsp_cons = i;
-
-	if (i != info->ring.req_prod_pvt) {
-		int more_to_do;
-		RING_FINAL_CHECK_FOR_RESPONSES(&info->ring, more_to_do);
-		if (more_to_do)
-			goto again;
-	} else
-		info->ring.sring->rsp_event = i + 1;
-
-	kick_pending_request_queues(info);
-
-	spin_unlock_irqrestore(&info->io_lock, flags);
-
-=======
 
 		if (likely(!blk_should_fake_timeout(req->q)))
 			blk_mq_complete_request(req);
@@ -2259,46 +1672,11 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
 	/* No EOI in order to avoid further interrupts. */
 
 	pr_alert("%s disabled for further use\n", info->gd->disk_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
 
 static int setup_blkring(struct xenbus_device *dev,
-<<<<<<< HEAD
-			 struct blkfront_info *info)
-{
-	struct blkif_sring *sring;
-	int err;
-
-	info->ring_ref = GRANT_INVALID_REF;
-
-	sring = (struct blkif_sring *)__get_free_page(GFP_NOIO | __GFP_HIGH);
-	if (!sring) {
-		xenbus_dev_fatal(dev, -ENOMEM, "allocating shared ring");
-		return -ENOMEM;
-	}
-	SHARED_RING_INIT(sring);
-	FRONT_RING_INIT(&info->ring, sring, PAGE_SIZE);
-
-	sg_init_table(info->sg, BLKIF_MAX_SEGMENTS_PER_REQUEST);
-
-	err = xenbus_grant_ring(dev, virt_to_mfn(info->ring.sring));
-	if (err < 0) {
-		free_page((unsigned long)sring);
-		info->ring.sring = NULL;
-		goto fail;
-	}
-	info->ring_ref = err;
-
-	err = xenbus_alloc_evtchn(dev, &info->evtchn);
-	if (err)
-		goto fail;
-
-	err = bind_evtchn_to_irqhandler(info->evtchn,
-					blkif_interrupt,
-					IRQF_SAMPLE_RANDOM, "blkif", info);
-=======
 			 struct blkfront_ring_info *rinfo)
 {
 	struct blkif_sring *sring;
@@ -2319,17 +1697,12 @@ static int setup_blkring(struct xenbus_device *dev,
 
 	err = bind_evtchn_to_irqhandler_lateeoi(rinfo->evtchn, blkif_interrupt,
 						0, "blkif", rinfo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err <= 0) {
 		xenbus_dev_fatal(dev, err,
 				 "bind_evtchn_to_irqhandler failed");
 		goto fail;
 	}
-<<<<<<< HEAD
-	info->irq = err;
-=======
 	rinfo->irq = err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 fail:
@@ -2337,8 +1710,6 @@ fail:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Write out per-ring/queue nodes including ring-ref and event-channel, and each
  * ring buffer may have multi pages depending on ->nr_ring_pages.
@@ -2392,7 +1763,6 @@ static bool feature_persistent = true;
 module_param(feature_persistent, bool, 0644);
 MODULE_PARM_DESC(feature_persistent,
 		"Enables the persistent grants feature");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Common code used when first setting up, and when resuming. */
 static int talk_to_blkback(struct xenbus_device *dev,
@@ -2401,13 +1771,6 @@ static int talk_to_blkback(struct xenbus_device *dev,
 	const char *message = NULL;
 	struct xenbus_transaction xbt;
 	int err;
-<<<<<<< HEAD
-
-	/* Create shared ring, alloc event channel. */
-	err = setup_blkring(dev, info);
-	if (err)
-		goto out;
-=======
 	unsigned int i, max_page_order;
 	unsigned int ring_page_order;
 	struct blkfront_ring_info *rinfo;
@@ -2434,7 +1797,6 @@ static int talk_to_blkback(struct xenbus_device *dev,
 		if (err)
 			goto destroy_blkring;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 again:
 	err = xenbus_transaction_start(&xbt);
@@ -2443,19 +1805,6 @@ again:
 		goto destroy_blkring;
 	}
 
-<<<<<<< HEAD
-	err = xenbus_printf(xbt, dev->nodename,
-			    "ring-ref", "%u", info->ring_ref);
-	if (err) {
-		message = "writing ring-ref";
-		goto abort_transaction;
-	}
-	err = xenbus_printf(xbt, dev->nodename,
-			    "event-channel", "%u", info->evtchn);
-	if (err) {
-		message = "writing event-channel";
-		goto abort_transaction;
-=======
 	if (info->nr_ring_pages > 1) {
 		err = xenbus_printf(xbt, dev->nodename, "ring-page-order", "%u",
 				    ring_page_order);
@@ -2499,7 +1848,6 @@ again:
 			}
 		}
 		kfree(path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	err = xenbus_printf(xbt, dev->nodename, "protocol", "%s",
 			    XEN_IO_PROTO_ABI_NATIVE);
@@ -2507,15 +1855,12 @@ again:
 		message = "writing protocol";
 		goto abort_transaction;
 	}
-<<<<<<< HEAD
-=======
 	info->feature_persistent_parm = feature_persistent;
 	err = xenbus_printf(xbt, dev->nodename, "feature-persistent", "%u",
 			info->feature_persistent_parm);
 	if (err)
 		dev_warn(&dev->dev,
 			 "writing persistent grants feature to xenbus");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = xenbus_transaction_end(xbt, 0);
 	if (err) {
@@ -2525,8 +1870,6 @@ again:
 		goto destroy_blkring;
 	}
 
-<<<<<<< HEAD
-=======
 	for_each_rinfo(info, rinfo, i) {
 		unsigned int j;
 
@@ -2534,7 +1877,6 @@ again:
 			rinfo->shadow[j].req.u.rw.id = j + 1;
 		rinfo->shadow[BLK_RING_SIZE(info)-1].req.u.rw.id = 0x0fffffff;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xenbus_switch_state(dev, XenbusStateInitialised);
 
 	return 0;
@@ -2545,13 +1887,6 @@ again:
 		xenbus_dev_fatal(dev, err, "%s", message);
  destroy_blkring:
 	blkif_free(info, 0);
-<<<<<<< HEAD
- out:
-	return err;
-}
-
-/**
-=======
 	return err;
 }
 
@@ -2591,7 +1926,6 @@ static int negotiate_mq(struct blkfront_info *info)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Entry point to this code when a new device is created.  Allocate the basic
  * structures and the ring buffer for communication with the backend, and
  * inform the backend of the appropriate details for those.  Switch to
@@ -2600,11 +1934,7 @@ static int negotiate_mq(struct blkfront_info *info)
 static int blkfront_probe(struct xenbus_device *dev,
 			  const struct xenbus_device_id *id)
 {
-<<<<<<< HEAD
-	int err, vdevice, i;
-=======
 	int err, vdevice;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct blkfront_info *info;
 
 	/* FIXME: Use dynamic device id if this is not set. */
@@ -2624,11 +1954,7 @@ static int blkfront_probe(struct xenbus_device *dev,
 		char *type;
 		int len;
 		/* no unplug has been done: do not hook devices != xen vbds */
-<<<<<<< HEAD
-		if (xen_platform_pci_unplug & XEN_UNPLUG_UNNECESSARY) {
-=======
 		if (xen_has_pv_and_legacy_disk_devices()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int major;
 
 			if (!VDEV_IS_EXTENDED(vdevice))
@@ -2639,11 +1965,7 @@ static int blkfront_probe(struct xenbus_device *dev,
 			if (major != XENVBD_MAJOR) {
 				printk(KERN_INFO
 						"%s: HVM does not support vbd %d as xen block device\n",
-<<<<<<< HEAD
-						__FUNCTION__, vdevice);
-=======
 						__func__, vdevice);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENODEV;
 			}
 		}
@@ -2663,113 +1985,23 @@ static int blkfront_probe(struct xenbus_device *dev,
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	mutex_init(&info->mutex);
-	spin_lock_init(&info->io_lock);
-	info->xbdev = dev;
-	info->vdevice = vdevice;
-	info->connected = BLKIF_STATE_DISCONNECTED;
-	INIT_WORK(&info->work, blkif_restart_queue);
-
-	for (i = 0; i < BLK_RING_SIZE; i++)
-		info->shadow[i].req.u.rw.id = i+1;
-	info->shadow[BLK_RING_SIZE-1].req.u.rw.id = 0x0fffffff;
-=======
 	info->xbdev = dev;
 
 	mutex_init(&info->mutex);
 	info->vdevice = vdevice;
 	info->connected = BLKIF_STATE_DISCONNECTED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Front end dir is a number, which is used as the id. */
 	info->handle = simple_strtoul(strrchr(dev->nodename, '/')+1, NULL, 0);
 	dev_set_drvdata(&dev->dev, info);
 
-<<<<<<< HEAD
-	err = talk_to_blkback(dev, info);
-	if (err) {
-		kfree(info);
-		dev_set_drvdata(&dev->dev, NULL);
-		return err;
-	}
-=======
 	mutex_lock(&blkfront_mutex);
 	list_add(&info->info_list, &info_list);
 	mutex_unlock(&blkfront_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-
-static int blkif_recover(struct blkfront_info *info)
-{
-	int i;
-	struct blkif_request *req;
-	struct blk_shadow *copy;
-	int j;
-
-	/* Stage 1: Make a safe copy of the shadow state. */
-	copy = kmalloc(sizeof(info->shadow),
-		       GFP_NOIO | __GFP_REPEAT | __GFP_HIGH);
-	if (!copy)
-		return -ENOMEM;
-	memcpy(copy, info->shadow, sizeof(info->shadow));
-
-	/* Stage 2: Set up free list. */
-	memset(&info->shadow, 0, sizeof(info->shadow));
-	for (i = 0; i < BLK_RING_SIZE; i++)
-		info->shadow[i].req.u.rw.id = i+1;
-	info->shadow_free = info->ring.req_prod_pvt;
-	info->shadow[BLK_RING_SIZE-1].req.u.rw.id = 0x0fffffff;
-
-	/* Stage 3: Find pending requests and requeue them. */
-	for (i = 0; i < BLK_RING_SIZE; i++) {
-		/* Not in use? */
-		if (!copy[i].request)
-			continue;
-
-		/* Grab a request slot and copy shadow state into it. */
-		req = RING_GET_REQUEST(&info->ring, info->ring.req_prod_pvt);
-		*req = copy[i].req;
-
-		/* We get a new request id, and must reset the shadow state. */
-		req->u.rw.id = get_id_from_freelist(info);
-		memcpy(&info->shadow[req->u.rw.id], &copy[i], sizeof(copy[i]));
-
-		if (req->operation != BLKIF_OP_DISCARD) {
-		/* Rewrite any grant references invalidated by susp/resume. */
-			for (j = 0; j < req->u.rw.nr_segments; j++)
-				gnttab_grant_foreign_access_ref(
-					req->u.rw.seg[j].gref,
-					info->xbdev->otherend_id,
-					pfn_to_mfn(info->shadow[req->u.rw.id].frame[j]),
-					rq_data_dir(info->shadow[req->u.rw.id].request));
-		}
-		info->shadow[req->u.rw.id].req = *req;
-
-		info->ring.req_prod_pvt++;
-	}
-
-	kfree(copy);
-
-	xenbus_switch_state(info->xbdev, XenbusStateConnected);
-
-	spin_lock_irq(&info->io_lock);
-
-	/* Now safe for us to use the shared ring */
-	info->connected = BLKIF_STATE_CONNECTED;
-
-	/* Send off requeued requests */
-	flush_requests(info);
-
-	/* Kick any other new requests queued since we resumed */
-	kick_pending_request_queues(info);
-
-	spin_unlock_irq(&info->io_lock);
-=======
 static int blkif_recover(struct blkfront_info *info)
 {
 	struct queue_limits lim;
@@ -2816,16 +2048,11 @@ static int blkif_recover(struct blkfront_info *info)
 		/* Traverse the list of pending bios and re-queue them */
 		submit_bio(bio);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * We are reconnecting to the backend, due to a suspend/resume, or a backend
  * driver restart.  We tear down our blkif structure and recreate it, but
  * leave the device-layer structures intact so that this is transparent to the
@@ -2834,17 +2061,6 @@ static int blkif_recover(struct blkfront_info *info)
 static int blkfront_resume(struct xenbus_device *dev)
 {
 	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
-<<<<<<< HEAD
-	int err;
-
-	dev_dbg(&dev->dev, "blkfront_resume: %s\n", dev->nodename);
-
-	blkif_free(info, info->connected == BLKIF_STATE_CONNECTED);
-
-	err = talk_to_blkback(dev, info);
-	if (info->connected == BLKIF_STATE_SUSPENDED && !err)
-		err = blkif_recover(info);
-=======
 	int err = 0;
 	unsigned int i, j;
 	struct blkfront_ring_info *rinfo;
@@ -2898,49 +2114,10 @@ static int blkfront_resume(struct xenbus_device *dev)
 	 * connected state, since we want to read which
 	 * features it supports.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-static void
-blkfront_closing(struct blkfront_info *info)
-{
-	struct xenbus_device *xbdev = info->xbdev;
-	struct block_device *bdev = NULL;
-
-	mutex_lock(&info->mutex);
-
-	if (xbdev->state == XenbusStateClosing) {
-		mutex_unlock(&info->mutex);
-		return;
-	}
-
-	if (info->gd)
-		bdev = bdget_disk(info->gd, 0);
-
-	mutex_unlock(&info->mutex);
-
-	if (!bdev) {
-		xenbus_frontend_closed(xbdev);
-		return;
-	}
-
-	mutex_lock(&bdev->bd_mutex);
-
-	if (bdev->bd_openers) {
-		xenbus_dev_error(xbdev, -EBUSY,
-				 "Device in use; refusing to close");
-		xenbus_switch_state(xbdev, XenbusStateClosing);
-	} else {
-		xlvbd_release_gendisk(info);
-		xenbus_frontend_closed(xbdev);
-	}
-
-	mutex_unlock(&bdev->bd_mutex);
-	bdput(bdev);
-=======
 static void blkfront_closing(struct blkfront_info *info)
 {
 	struct xenbus_device *xbdev = info->xbdev;
@@ -2965,44 +2142,10 @@ static void blkfront_closing(struct blkfront_info *info)
 	}
 
 	xenbus_frontend_closed(xbdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void blkfront_setup_discard(struct blkfront_info *info)
 {
-<<<<<<< HEAD
-	int err;
-	char *type;
-	unsigned int discard_granularity;
-	unsigned int discard_alignment;
-	unsigned int discard_secure;
-
-	type = xenbus_read(XBT_NIL, info->xbdev->otherend, "type", NULL);
-	if (IS_ERR(type))
-		return;
-
-	info->feature_secdiscard = 0;
-	if (strncmp(type, "phy", 3) == 0) {
-		err = xenbus_gather(XBT_NIL, info->xbdev->otherend,
-			"discard-granularity", "%u", &discard_granularity,
-			"discard-alignment", "%u", &discard_alignment,
-			NULL);
-		if (!err) {
-			info->feature_discard = 1;
-			info->discard_granularity = discard_granularity;
-			info->discard_alignment = discard_alignment;
-		}
-		err = xenbus_gather(XBT_NIL, info->xbdev->otherend,
-			    "discard-secure", "%d", &discard_secure,
-			    NULL);
-		if (!err)
-			info->feature_secdiscard = discard_secure;
-
-	} else if (strncmp(type, "file", 4) == 0)
-		info->feature_discard = 1;
-
-	kfree(type);
-=======
 	info->feature_discard = 1;
 	info->discard_granularity = xenbus_read_unsigned(info->xbdev->otherend,
 							 "discard-granularity",
@@ -3163,7 +2306,6 @@ static void blkfront_gather_backend_features(struct blkfront_info *info)
 		schedule_delayed_work(&blkfront_work, HZ * 10);
 		mutex_unlock(&blkfront_mutex);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3174,15 +2316,9 @@ static void blkfront_connect(struct blkfront_info *info)
 {
 	unsigned long long sectors;
 	unsigned long sector_size;
-<<<<<<< HEAD
-	unsigned int binfo;
-	int err;
-	int barrier, flush, discard;
-=======
 	unsigned int physical_sector_size;
 	int err, i;
 	struct blkfront_ring_info *rinfo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (info->connected) {
 	case BLKIF_STATE_CONNECTED:
@@ -3196,13 +2332,6 @@ static void blkfront_connect(struct blkfront_info *info)
 			return;
 		printk(KERN_INFO "Setting capacity to %Lu\n",
 		       sectors);
-<<<<<<< HEAD
-		set_capacity(info->gd, sectors);
-		revalidate_disk(info->gd);
-
-		/* fall through */
-	case BLKIF_STATE_SUSPENDED:
-=======
 		set_capacity_and_notify(info->gd, sectors);
 
 		return;
@@ -3214,7 +2343,6 @@ static void blkfront_connect(struct blkfront_info *info)
 		 * supports indirect descriptors, and how many.
 		 */
 		blkif_recover(info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	default:
@@ -3226,11 +2354,7 @@ static void blkfront_connect(struct blkfront_info *info)
 
 	err = xenbus_gather(XBT_NIL, info->xbdev->otherend,
 			    "sectors", "%llu", &sectors,
-<<<<<<< HEAD
-			    "info", "%u", &binfo,
-=======
 			    "info", "%u", &info->vdisk_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    "sector-size", "%lu", &sector_size,
 			    NULL);
 	if (err) {
@@ -3240,51 +2364,6 @@ static void blkfront_connect(struct blkfront_info *info)
 		return;
 	}
 
-<<<<<<< HEAD
-	info->feature_flush = 0;
-	info->flush_op = 0;
-
-	err = xenbus_gather(XBT_NIL, info->xbdev->otherend,
-			    "feature-barrier", "%d", &barrier,
-			    NULL);
-
-	/*
-	 * If there's no "feature-barrier" defined, then it means
-	 * we're dealing with a very old backend which writes
-	 * synchronously; nothing to do.
-	 *
-	 * If there are barriers, then we use flush.
-	 */
-	if (!err && barrier) {
-		info->feature_flush = REQ_FLUSH | REQ_FUA;
-		info->flush_op = BLKIF_OP_WRITE_BARRIER;
-	}
-	/*
-	 * And if there is "feature-flush-cache" use that above
-	 * barriers.
-	 */
-	err = xenbus_gather(XBT_NIL, info->xbdev->otherend,
-			    "feature-flush-cache", "%d", &flush,
-			    NULL);
-
-	if (!err && flush) {
-		info->feature_flush = REQ_FLUSH;
-		info->flush_op = BLKIF_OP_FLUSH_DISKCACHE;
-	}
-
-	err = xenbus_gather(XBT_NIL, info->xbdev->otherend,
-			    "feature-discard", "%d", &discard,
-			    NULL);
-
-	if (!err && discard)
-		blkfront_setup_discard(info);
-
-	err = xlvbd_alloc_gendisk(sectors, info, binfo, sector_size);
-	if (err) {
-		xenbus_dev_fatal(info->xbdev, err, "xlvbd_add at %s",
-				 info->xbdev->otherend);
-		return;
-=======
 	/*
 	 * physical-sector-size is a newer field, so old backends may not
 	 * provide this. Assume physical sector size to be the same as
@@ -3310,25 +2389,11 @@ static void blkfront_connect(struct blkfront_info *info)
 		xenbus_dev_fatal(info->xbdev, err, "xlvbd_add at %s",
 				 info->xbdev->otherend);
 		goto fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	xenbus_switch_state(info->xbdev, XenbusStateConnected);
 
 	/* Kick pending requests. */
-<<<<<<< HEAD
-	spin_lock_irq(&info->io_lock);
-	info->connected = BLKIF_STATE_CONNECTED;
-	kick_pending_request_queues(info);
-	spin_unlock_irq(&info->io_lock);
-
-	add_disk(info->gd);
-
-	info->is_ready = 1;
-}
-
-/**
-=======
 	info->connected = BLKIF_STATE_CONNECTED;
 	for_each_rinfo(info, rinfo, i)
 		kick_pending_request_queues(rinfo);
@@ -3350,7 +2415,6 @@ fail:
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Callback received when the backend's state changes.
  */
 static void blkback_changed(struct xenbus_device *dev,
@@ -3361,10 +2425,6 @@ static void blkback_changed(struct xenbus_device *dev,
 	dev_dbg(&dev->dev, "blkfront:blkback_changed to state %d.\n", backend_state);
 
 	switch (backend_state) {
-<<<<<<< HEAD
-	case XenbusStateInitialising:
-	case XenbusStateInitWait:
-=======
 	case XenbusStateInitWait:
 		if (dev->state != XenbusStateInitialising)
 			break;
@@ -3372,7 +2432,6 @@ static void blkback_changed(struct xenbus_device *dev,
 			break;
 		break;
 	case XenbusStateInitialising:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case XenbusStateInitialised:
 	case XenbusStateReconfiguring:
 	case XenbusStateReconfigured:
@@ -3380,8 +2439,6 @@ static void blkback_changed(struct xenbus_device *dev,
 		break;
 
 	case XenbusStateConnected:
-<<<<<<< HEAD
-=======
 		/*
 		 * talk_to_blkback sets state to XenbusStateInitialised
 		 * and blkfront_connect sets it to XenbusStateConnected
@@ -3399,76 +2456,19 @@ static void blkback_changed(struct xenbus_device *dev,
 				break;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		blkfront_connect(info);
 		break;
 
 	case XenbusStateClosed:
 		if (dev->state == XenbusStateClosed)
 			break;
-<<<<<<< HEAD
-		/* Missed the backend's Closing state -- fallthrough */
-	case XenbusStateClosing:
-		if (info)
-			blkfront_closing(info);
-=======
 		fallthrough;
 	case XenbusStateClosing:
 		blkfront_closing(info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
-<<<<<<< HEAD
-static int blkfront_remove(struct xenbus_device *xbdev)
-{
-	struct blkfront_info *info = dev_get_drvdata(&xbdev->dev);
-	struct block_device *bdev = NULL;
-	struct gendisk *disk;
-
-	dev_dbg(&xbdev->dev, "%s removed", xbdev->nodename);
-
-	blkif_free(info, 0);
-
-	mutex_lock(&info->mutex);
-
-	disk = info->gd;
-	if (disk)
-		bdev = bdget_disk(disk, 0);
-
-	info->xbdev = NULL;
-	mutex_unlock(&info->mutex);
-
-	if (!bdev) {
-		kfree(info);
-		return 0;
-	}
-
-	/*
-	 * The xbdev was removed before we reached the Closed
-	 * state. See if it's safe to remove the disk. If the bdev
-	 * isn't closed yet, we let release take care of it.
-	 */
-
-	mutex_lock(&bdev->bd_mutex);
-	info = disk->private_data;
-
-	dev_warn(disk_to_dev(disk),
-		 "%s was hot-unplugged, %d stale handles\n",
-		 xbdev->nodename, bdev->bd_openers);
-
-	if (info && !bdev->bd_openers) {
-		xlvbd_release_gendisk(info);
-		disk->private_data = NULL;
-		kfree(info);
-	}
-
-	mutex_unlock(&bdev->bd_mutex);
-	bdput(bdev);
-
-	return 0;
-=======
 static void blkfront_remove(struct xenbus_device *xbdev)
 {
 	struct blkfront_info *info = dev_get_drvdata(&xbdev->dev);
@@ -3490,7 +2490,6 @@ static void blkfront_remove(struct xenbus_device *xbdev)
 	}
 
 	kfree(info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int blkfront_is_ready(struct xenbus_device *dev)
@@ -3500,94 +2499,12 @@ static int blkfront_is_ready(struct xenbus_device *dev)
 	return info->is_ready && info->xbdev;
 }
 
-<<<<<<< HEAD
-static int blkif_open(struct block_device *bdev, fmode_t mode)
-{
-	struct gendisk *disk = bdev->bd_disk;
-	struct blkfront_info *info;
-	int err = 0;
-
-	mutex_lock(&blkfront_mutex);
-
-	info = disk->private_data;
-	if (!info) {
-		/* xbdev gone */
-		err = -ERESTARTSYS;
-		goto out;
-	}
-
-	mutex_lock(&info->mutex);
-
-	if (!info->gd)
-		/* xbdev is closed */
-		err = -ERESTARTSYS;
-
-	mutex_unlock(&info->mutex);
-
-out:
-	mutex_unlock(&blkfront_mutex);
-	return err;
-}
-
-static int blkif_release(struct gendisk *disk, fmode_t mode)
-{
-	struct blkfront_info *info = disk->private_data;
-	struct block_device *bdev;
-	struct xenbus_device *xbdev;
-
-	mutex_lock(&blkfront_mutex);
-
-	bdev = bdget_disk(disk, 0);
-
-	if (bdev->bd_openers)
-		goto out;
-
-	/*
-	 * Check if we have been instructed to close. We will have
-	 * deferred this request, because the bdev was still open.
-	 */
-
-	mutex_lock(&info->mutex);
-	xbdev = info->xbdev;
-
-	if (xbdev && xbdev->state == XenbusStateClosing) {
-		/* pending switch to state closed */
-		dev_info(disk_to_dev(bdev->bd_disk), "releasing disk\n");
-		xlvbd_release_gendisk(info);
-		xenbus_frontend_closed(info->xbdev);
- 	}
-
-	mutex_unlock(&info->mutex);
-
-	if (!xbdev) {
-		/* sudden device removal */
-		dev_info(disk_to_dev(bdev->bd_disk), "releasing disk\n");
-		xlvbd_release_gendisk(info);
-		disk->private_data = NULL;
-		kfree(info);
-	}
-
-out:
-	bdput(bdev);
-	mutex_unlock(&blkfront_mutex);
-	return 0;
-}
-
-static const struct block_device_operations xlvbd_block_fops =
-{
-	.owner = THIS_MODULE,
-	.open = blkif_open,
-	.release = blkif_release,
-	.getgeo = blkif_getgeo,
-	.ioctl = blkif_ioctl,
-=======
 static const struct block_device_operations xlvbd_block_fops =
 {
 	.owner = THIS_MODULE,
 	.getgeo = blkif_getgeo,
 	.ioctl = blkif_ioctl,
 	.compat_ioctl = blkdev_compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -3596,20 +2513,13 @@ static const struct xenbus_device_id blkfront_ids[] = {
 	{ "" }
 };
 
-<<<<<<< HEAD
-static DEFINE_XENBUS_DRIVER(blkfront, ,
-=======
 static struct xenbus_driver blkfront_driver = {
 	.ids  = blkfront_ids,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe = blkfront_probe,
 	.remove = blkfront_remove,
 	.resume = blkfront_resume,
 	.otherend_changed = blkback_changed,
 	.is_ready = blkfront_is_ready,
-<<<<<<< HEAD
-);
-=======
 };
 
 static void purge_persistent_grants(struct blkfront_info *info)
@@ -3675,30 +2585,15 @@ static void blkfront_delay_work(struct work_struct *work)
 
 	mutex_unlock(&blkfront_mutex);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init xlblk_init(void)
 {
 	int ret;
-<<<<<<< HEAD
-=======
 	int nr_cpus = num_online_cpus();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!xen_domain())
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (xen_hvm_domain() && !xen_platform_pci_unplug)
-		return -ENODEV;
-
-	if (register_blkdev(XENVBD_MAJOR, DEV_NAME)) {
-		printk(KERN_WARNING "xen_blk: can't get major %d with name %s\n",
-		       XENVBD_MAJOR, DEV_NAME);
-		return -ENODEV;
-	}
-
-=======
 	if (!xen_has_pv_disk_devices())
 		return -ENODEV;
 
@@ -3725,7 +2620,6 @@ static int __init xlblk_init(void)
 
 	INIT_DELAYED_WORK(&blkfront_work, blkfront_delay_work);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = xenbus_register_frontend(&blkfront_driver);
 	if (ret) {
 		unregister_blkdev(XENVBD_MAJOR, DEV_NAME);
@@ -3739,15 +2633,11 @@ module_init(xlblk_init);
 
 static void __exit xlblk_exit(void)
 {
-<<<<<<< HEAD
-	return xenbus_unregister_driver(&blkfront_driver);
-=======
 	cancel_delayed_work_sync(&blkfront_work);
 
 	xenbus_unregister_driver(&blkfront_driver);
 	unregister_blkdev(XENVBD_MAJOR, DEV_NAME);
 	kfree(minors);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 module_exit(xlblk_exit);
 

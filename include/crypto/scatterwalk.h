@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cryptographic scatter and gather helpers.
  *
@@ -9,64 +6,11 @@
  * Copyright (c) 2002 Adam J. Richter <adam@yggdrasil.com>
  * Copyright (c) 2004 Jean-Luc Cooke <jlcooke@certainkey.com>
  * Copyright (c) 2007 Herbert Xu <herbert@gondor.apana.org.au>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _CRYPTO_SCATTERWALK_H
 #define _CRYPTO_SCATTERWALK_H
 
-<<<<<<< HEAD
-#include <asm/kmap_types.h>
-#include <crypto/algapi.h>
-#include <linux/hardirq.h>
-#include <linux/highmem.h>
-#include <linux/kernel.h>
-#include <linux/mm.h>
-#include <linux/scatterlist.h>
-#include <linux/sched.h>
-
-static inline void crypto_yield(u32 flags)
-{
-	if (flags & CRYPTO_TFM_REQ_MAY_SLEEP)
-		cond_resched();
-}
-
-static inline void scatterwalk_sg_chain(struct scatterlist *sg1, int num,
-					struct scatterlist *sg2)
-{
-	sg_set_page(&sg1[num - 1], (void *)sg2, 0, 0);
-	sg1[num - 1].page_link &= ~0x02;
-	sg1[num - 1].page_link |= 0x01;
-}
-
-static inline struct scatterlist *scatterwalk_sg_next(struct scatterlist *sg)
-{
-	if (sg_is_last(sg))
-		return NULL;
-
-	return (++sg)->length ? sg : sg_chain_ptr(sg);
-}
-
-static inline void scatterwalk_crypto_chain(struct scatterlist *head,
-					    struct scatterlist *sg,
-					    int chain, int num)
-{
-	if (chain) {
-		head->length += sg->length;
-		sg = scatterwalk_sg_next(sg);
-	}
-
-	if (sg)
-		scatterwalk_sg_chain(head, num, sg);
-=======
 #include <crypto/algapi.h>
 
 #include <linux/highmem.h>
@@ -78,21 +22,10 @@ static inline void scatterwalk_crypto_chain(struct scatterlist *head,
 {
 	if (sg)
 		sg_chain(head, num, sg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		sg_mark_end(head);
 }
 
-<<<<<<< HEAD
-static inline unsigned long scatterwalk_samebuf(struct scatter_walk *walk_in,
-						struct scatter_walk *walk_out)
-{
-	return !(((sg_page(walk_in->sg) - sg_page(walk_out->sg)) << PAGE_SHIFT) +
-		 (int)(walk_in->offset - walk_out->offset));
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int scatterwalk_pagelen(struct scatter_walk *walk)
 {
 	unsigned int len = walk->sg->offset + walk->sg->length - walk->offset;
@@ -113,15 +46,6 @@ static inline void scatterwalk_advance(struct scatter_walk *walk,
 	walk->offset += nbytes;
 }
 
-<<<<<<< HEAD
-static inline unsigned int scatterwalk_aligned(struct scatter_walk *walk,
-					       unsigned int alignmask)
-{
-	return !(walk->offset & alignmask);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct page *scatterwalk_page(struct scatter_walk *walk)
 {
 	return sg_page(walk->sg) + (walk->offset >> PAGE_SHIFT);
@@ -129,16 +53,6 @@ static inline struct page *scatterwalk_page(struct scatter_walk *walk)
 
 static inline void scatterwalk_unmap(void *vaddr)
 {
-<<<<<<< HEAD
-	kunmap_atomic(vaddr);
-}
-
-void scatterwalk_start(struct scatter_walk *walk, struct scatterlist *sg);
-void scatterwalk_copychunks(void *buf, struct scatter_walk *walk,
-			    size_t nbytes, int out);
-void *scatterwalk_map(struct scatter_walk *walk);
-void scatterwalk_done(struct scatter_walk *walk, int out, int more);
-=======
 	kunmap_local(vaddr);
 }
 
@@ -179,16 +93,12 @@ static inline void scatterwalk_done(struct scatter_walk *walk, int out,
 
 void scatterwalk_copychunks(void *buf, struct scatter_walk *walk,
 			    size_t nbytes, int out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void scatterwalk_map_and_copy(void *buf, struct scatterlist *sg,
 			      unsigned int start, unsigned int nbytes, int out);
 
-<<<<<<< HEAD
-=======
 struct scatterlist *scatterwalk_ffwd(struct scatterlist dst[2],
 				     struct scatterlist *src,
 				     unsigned int len);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif  /* _CRYPTO_SCATTERWALK_H */

@@ -1,33 +1,3 @@
-<<<<<<< HEAD
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *                   Creative Labs, Inc.
- *  Routines for control of EMU10K1 chips / proc interface routines
- *
- *  Copyright (c) by James Courtier-Dutton <James@superbug.co.uk>
- *  	Added EMU 1010 support.
- *
- *  BUGS:
- *    --
- *
- *  TODO:
- *    --
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -37,7 +7,6 @@
  *                   Creative Labs, Inc.
  *
  *  Routines for control of EMU10K1 chips / proc interface routines
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -46,27 +15,16 @@
 #include <sound/emu10k1.h>
 #include "p16v.h"
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void snd_emu10k1_proc_spdif_status(struct snd_emu10k1 * emu,
 					  struct snd_info_buffer *buffer,
 					  char *title,
 					  int status_reg,
 					  int rate_reg)
 {
-<<<<<<< HEAD
-	static char *clkaccy[4] = { "1000ppm", "50ppm", "variable", "unknown" };
-	static int samplerate[16] = { 44100, 1, 48000, 32000, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-	static char *channel[16] = { "unspec", "left", "right", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" };
-	static char *emphasis[8] = { "none", "50/15 usec 2 channel", "2", "3", "4", "5", "6", "7" };
-=======
 	static const char * const clkaccy[4] = { "1000ppm", "50ppm", "variable", "unknown" };
 	static const int samplerate[16] = { 44100, 1, 48000, 32000, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 	static const char * const channel[16] = { "unspec", "left", "right", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" };
 	static const char * const emphasis[8] = { "none", "50/15 usec 2 channel", "2", "3", "4", "5", "6", "7" };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int status, rate = 0;
 	
 	status = snd_emu10k1_ptr_read(emu, status_reg, 0);
@@ -103,115 +61,6 @@ static void snd_emu10k1_proc_spdif_status(struct snd_emu10k1 * emu,
 static void snd_emu10k1_proc_read(struct snd_info_entry *entry, 
 				  struct snd_info_buffer *buffer)
 {
-<<<<<<< HEAD
-	/* FIXME - output names are in emufx.c too */
-	static char *creative_outs[32] = {
-		/* 00 */ "AC97 Left",
-		/* 01 */ "AC97 Right",
-		/* 02 */ "Optical IEC958 Left",
-		/* 03 */ "Optical IEC958 Right",
-		/* 04 */ "Center",
-		/* 05 */ "LFE",
-		/* 06 */ "Headphone Left",
-		/* 07 */ "Headphone Right",
-		/* 08 */ "Surround Left",
-		/* 09 */ "Surround Right",
-		/* 10 */ "PCM Capture Left",
-		/* 11 */ "PCM Capture Right",
-		/* 12 */ "MIC Capture",
-		/* 13 */ "AC97 Surround Left",
-		/* 14 */ "AC97 Surround Right",
-		/* 15 */ "???",
-		/* 16 */ "???",
-		/* 17 */ "Analog Center",
-		/* 18 */ "Analog LFE",
-		/* 19 */ "???",
-		/* 20 */ "???",
-		/* 21 */ "???",
-		/* 22 */ "???",
-		/* 23 */ "???",
-		/* 24 */ "???",
-		/* 25 */ "???",
-		/* 26 */ "???",
-		/* 27 */ "???",
-		/* 28 */ "???",
-		/* 29 */ "???",
-		/* 30 */ "???",
-		/* 31 */ "???"
-	};
-
-	static char *audigy_outs[64] = {
-		/* 00 */ "Digital Front Left",
-		/* 01 */ "Digital Front Right",
-		/* 02 */ "Digital Center",
-		/* 03 */ "Digital LEF",
-		/* 04 */ "Headphone Left",
-		/* 05 */ "Headphone Right",
-		/* 06 */ "Digital Rear Left",
-		/* 07 */ "Digital Rear Right",
-		/* 08 */ "Front Left",
-		/* 09 */ "Front Right",
-		/* 10 */ "Center",
-		/* 11 */ "LFE",
-		/* 12 */ "???",
-		/* 13 */ "???",
-		/* 14 */ "Rear Left",
-		/* 15 */ "Rear Right",
-		/* 16 */ "AC97 Front Left",
-		/* 17 */ "AC97 Front Right",
-		/* 18 */ "ADC Caputre Left",
-		/* 19 */ "ADC Capture Right",
-		/* 20 */ "???",
-		/* 21 */ "???",
-		/* 22 */ "???",
-		/* 23 */ "???",
-		/* 24 */ "???",
-		/* 25 */ "???",
-		/* 26 */ "???",
-		/* 27 */ "???",
-		/* 28 */ "???",
-		/* 29 */ "???",
-		/* 30 */ "???",
-		/* 31 */ "???",
-		/* 32 */ "FXBUS2_0",
-		/* 33 */ "FXBUS2_1",
-		/* 34 */ "FXBUS2_2",
-		/* 35 */ "FXBUS2_3",
-		/* 36 */ "FXBUS2_4",
-		/* 37 */ "FXBUS2_5",
-		/* 38 */ "FXBUS2_6",
-		/* 39 */ "FXBUS2_7",
-		/* 40 */ "FXBUS2_8",
-		/* 41 */ "FXBUS2_9",
-		/* 42 */ "FXBUS2_10",
-		/* 43 */ "FXBUS2_11",
-		/* 44 */ "FXBUS2_12",
-		/* 45 */ "FXBUS2_13",
-		/* 46 */ "FXBUS2_14",
-		/* 47 */ "FXBUS2_15",
-		/* 48 */ "FXBUS2_16",
-		/* 49 */ "FXBUS2_17",
-		/* 50 */ "FXBUS2_18",
-		/* 51 */ "FXBUS2_19",
-		/* 52 */ "FXBUS2_20",
-		/* 53 */ "FXBUS2_21",
-		/* 54 */ "FXBUS2_22",
-		/* 55 */ "FXBUS2_23",
-		/* 56 */ "FXBUS2_24",
-		/* 57 */ "FXBUS2_25",
-		/* 58 */ "FXBUS2_26",
-		/* 59 */ "FXBUS2_27",
-		/* 60 */ "FXBUS2_28",
-		/* 61 */ "FXBUS2_29",
-		/* 62 */ "FXBUS2_30",
-		/* 63 */ "FXBUS2_31"
-	};
-
-	struct snd_emu10k1 *emu = entry->private_data;
-	unsigned int val, val1;
-	int nefx = emu->audigy ? 64 : 32;
-	char **outputs = emu->audigy ? audigy_outs : creative_outs;
-=======
 	struct snd_emu10k1 *emu = entry->private_data;
 	const char * const *inputs = emu->audigy ?
 		snd_emu10k1_audigy_ins : snd_emu10k1_sblive_ins;
@@ -221,54 +70,10 @@ static void snd_emu10k1_proc_read(struct snd_info_entry *entry,
 	unsigned short extout_mask = emu->audigy ? ~0 : emu->fx8010.extout_mask;
 	unsigned int val, val1, ptrx, psst, dsl, snda;
 	int nefx = emu->audigy ? 32 : 16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int idx;
 	
 	snd_iprintf(buffer, "EMU10K1\n\n");
 	snd_iprintf(buffer, "Card                  : %s\n",
-<<<<<<< HEAD
-		    emu->audigy ? "Audigy" : (emu->card_capabilities->ecard ? "EMU APS" : "Creative"));
-	snd_iprintf(buffer, "Internal TRAM (words) : 0x%x\n", emu->fx8010.itram_size);
-	snd_iprintf(buffer, "External TRAM (words) : 0x%x\n", (int)emu->fx8010.etram_pages.bytes / 2);
-	snd_iprintf(buffer, "\n");
-	snd_iprintf(buffer, "Effect Send Routing   :\n");
-	for (idx = 0; idx < NUM_G; idx++) {
-		val = emu->audigy ?
-			snd_emu10k1_ptr_read(emu, A_FXRT1, idx) :
-			snd_emu10k1_ptr_read(emu, FXRT, idx);
-		val1 = emu->audigy ?
-			snd_emu10k1_ptr_read(emu, A_FXRT2, idx) :
-			0;
-		if (emu->audigy) {
-			snd_iprintf(buffer, "Ch%i: A=%i, B=%i, C=%i, D=%i, ",
-				idx,
-				val & 0x3f,
-				(val >> 8) & 0x3f,
-				(val >> 16) & 0x3f,
-				(val >> 24) & 0x3f);
-			snd_iprintf(buffer, "E=%i, F=%i, G=%i, H=%i\n",
-				val1 & 0x3f,
-				(val1 >> 8) & 0x3f,
-				(val1 >> 16) & 0x3f,
-				(val1 >> 24) & 0x3f);
-		} else {
-			snd_iprintf(buffer, "Ch%i: A=%i, B=%i, C=%i, D=%i\n",
-				idx,
-				(val >> 16) & 0x0f,
-				(val >> 20) & 0x0f,
-				(val >> 24) & 0x0f,
-				(val >> 28) & 0x0f);
-		}
-	}
-	snd_iprintf(buffer, "\nCaptured FX Outputs   :\n");
-	for (idx = 0; idx < nefx; idx++) {
-		if (emu->efx_voices_mask[idx/32] & (1 << (idx%32)))
-			snd_iprintf(buffer, "  Output %02i [%s]\n", idx, outputs[idx]);
-	}
-	snd_iprintf(buffer, "\nAll FX Outputs        :\n");
-	for (idx = 0; idx < (emu->audigy ? 64 : 32); idx++)
-		snd_iprintf(buffer, "  Output %02i [%s]\n", idx, outputs[idx]);
-=======
 		    emu->card_capabilities->emu_model ? "E-MU D.A.S." :
 		    emu->card_capabilities->ecard ? "E-MU A.P.S." :
 		    emu->audigy ? "SB Audigy" : "SB Live!");
@@ -350,7 +155,6 @@ static void snd_emu10k1_proc_read(struct snd_info_entry *entry,
 			}
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void snd_emu10k1_proc_spdif_read(struct snd_info_entry *entry, 
@@ -359,29 +163,6 @@ static void snd_emu10k1_proc_spdif_read(struct snd_info_entry *entry,
 	struct snd_emu10k1 *emu = entry->private_data;
 	u32 value;
 	u32 value2;
-<<<<<<< HEAD
-	u32 rate;
-
-	if (emu->card_capabilities->emu_model) {
-		snd_emu1010_fpga_read(emu, 0x38, &value);
-		if ((value & 0x1) == 0) {
-			snd_emu1010_fpga_read(emu, 0x2a, &value);
-			snd_emu1010_fpga_read(emu, 0x2b, &value2);
-			rate = 0x1770000 / (((value << 5) | value2)+1);	
-			snd_iprintf(buffer, "ADAT Locked : %u\n", rate);
-		} else {
-			snd_iprintf(buffer, "ADAT Unlocked\n");
-		}
-		snd_emu1010_fpga_read(emu, 0x20, &value);
-		if ((value & 0x4) == 0) {
-			snd_emu1010_fpga_read(emu, 0x28, &value);
-			snd_emu1010_fpga_read(emu, 0x29, &value2);
-			rate = 0x1770000 / (((value << 5) | value2)+1);	
-			snd_iprintf(buffer, "SPDIF Locked : %d\n", rate);
-		} else {
-			snd_iprintf(buffer, "SPDIF Unlocked\n");
-		}
-=======
 
 	if (emu->card_capabilities->emu_model) {
 		snd_emu1010_fpga_lock(emu);
@@ -420,7 +201,6 @@ static void snd_emu10k1_proc_spdif_read(struct snd_info_entry *entry,
 				    value & EMU_HANA_SPDIF_MODE_RX_NOCOPY ? ", no copy" : "");
 
 		snd_emu1010_fpga_unlock(emu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		snd_emu10k1_proc_spdif_status(emu, buffer, "CD-ROM S/PDIF In", CDCS, CDSRCS);
 		snd_emu10k1_proc_spdif_status(emu, buffer, "Optical or Coax S/PDIF In", GPSCS, GPSRCS);
@@ -436,18 +216,10 @@ static void snd_emu10k1_proc_spdif_read(struct snd_info_entry *entry,
 static void snd_emu10k1_proc_rates_read(struct snd_info_entry *entry, 
 				  struct snd_info_buffer *buffer)
 {
-<<<<<<< HEAD
-	static int samplerate[8] = { 44100, 48000, 96000, 192000, 4, 5, 6, 7 };
-	struct snd_emu10k1 *emu = entry->private_data;
-	unsigned int val, tmp, n;
-	val = snd_emu10k1_ptr20_read(emu, CAPTURE_RATE_STATUS, 0);
-	tmp = (val >> 16) & 0x8;
-=======
 	static const int samplerate[8] = { 44100, 48000, 96000, 192000, 4, 5, 6, 7 };
 	struct snd_emu10k1 *emu = entry->private_data;
 	unsigned int val, tmp, n;
 	val = snd_emu10k1_ptr20_read(emu, CAPTURE_RATE_STATUS, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (n = 0; n < 4; n++) {
 		tmp = val >> (16 + (n*4));
 		if (tmp & 0x8) snd_iprintf(buffer, "Channel %d: Rate=%d\n", n, samplerate[tmp & 0x7]);
@@ -455,9 +227,6 @@ static void snd_emu10k1_proc_rates_read(struct snd_info_entry *entry,
 	}
 }
 
-<<<<<<< HEAD
-static void snd_emu10k1_proc_acode_read(struct snd_info_entry *entry, 
-=======
 struct emu10k1_reg_entry {
 	unsigned short base, size;
 	const char *name;
@@ -562,48 +331,21 @@ static int disasm_audigy_reg(char *buffer, unsigned reg, const char *pfx)
 }
 
 static void snd_emu10k1_proc_acode_read(struct snd_info_entry *entry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				        struct snd_info_buffer *buffer)
 {
 	u32 pc;
 	struct snd_emu10k1 *emu = entry->private_data;
-<<<<<<< HEAD
-=======
 	static const char * const insns[16] = {
 		"MAC0", "MAC1", "MAC2", "MAC3", "MACINT0", "MACINT1", "ACC3", "MACMV",
 		"ANDXOR", "TSTNEG", "LIMITGE", "LIMITLT", "LOG", "EXP", "INTERP", "SKIP",
 	};
 	static const char spaces[] = "                              ";
 	const int nspaces = sizeof(spaces) - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_iprintf(buffer, "FX8010 Instruction List '%s'\n", emu->fx8010.name);
 	snd_iprintf(buffer, "  Code dump      :\n");
 	for (pc = 0; pc < (emu->audigy ? 1024 : 512); pc++) {
 		u32 low, high;
-<<<<<<< HEAD
-			
-		low = snd_emu10k1_efx_read(emu, pc * 2);
-		high = snd_emu10k1_efx_read(emu, pc * 2 + 1);
-		if (emu->audigy)
-			snd_iprintf(buffer, "    OP(0x%02x, 0x%03x, 0x%03x, 0x%03x, 0x%03x) /* 0x%04x: 0x%08x%08x */\n",
-				    (high >> 24) & 0x0f,
-				    (high >> 12) & 0x7ff,
-				    (high >> 0) & 0x7ff,
-				    (low >> 12) & 0x7ff,
-				    (low >> 0) & 0x7ff,
-				    pc,
-				    high, low);
-		else
-			snd_iprintf(buffer, "    OP(0x%02x, 0x%03x, 0x%03x, 0x%03x, 0x%03x) /* 0x%04x: 0x%08x%08x */\n",
-				    (high >> 20) & 0x0f,
-				    (high >> 10) & 0x3ff,
-				    (high >> 0) & 0x3ff,
-				    (low >> 10) & 0x3ff,
-				    (low >> 0) & 0x3ff,
-				    pc,
-				    high, low);
-=======
 		int len;
 		char buf[100];
 		char *bufp = buf;
@@ -627,7 +369,6 @@ static void snd_emu10k1_proc_acode_read(struct snd_info_entry *entry,
 		snd_iprintf(buffer, "%s %s /* 0x%04x: 0x%08x%08x */\n",
 			    buf, &spaces[nspaces - clamp(65 - len, 0, nspaces)],
 			    pc, high, low);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -689,19 +430,6 @@ static void snd_emu10k1_proc_voices_read(struct snd_info_entry *entry,
 	struct snd_emu10k1 *emu = entry->private_data;
 	struct snd_emu10k1_voice *voice;
 	int idx;
-<<<<<<< HEAD
-	
-	snd_iprintf(buffer, "ch\tuse\tpcm\tefx\tsynth\tmidi\n");
-	for (idx = 0; idx < NUM_G; idx++) {
-		voice = &emu->voices[idx];
-		snd_iprintf(buffer, "%i\t%i\t%i\t%i\t%i\t%i\n",
-			idx,
-			voice->use,
-			voice->pcm,
-			voice->efx,
-			voice->synth,
-			voice->midi);
-=======
 	static const char * const types[] = {
 		"Unused", "EFX", "EFX IRQ", "PCM", "PCM IRQ", "Synth"
 	};
@@ -715,13 +443,10 @@ static void snd_emu10k1_proc_voices_read(struct snd_info_entry *entry,
 			voice->dirty,
 			voice->last,
 			types[voice->use]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 #ifdef CONFIG_SND_DEBUG
-<<<<<<< HEAD
-=======
 
 static void snd_emu_proc_emu1010_link_read(struct snd_emu10k1 *emu,
 					   struct snd_info_buffer *buffer,
@@ -731,27 +456,19 @@ static void snd_emu_proc_emu1010_link_read(struct snd_emu10k1 *emu,
 	snd_iprintf(buffer, "%04x: %04x\n", dst, src);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void snd_emu_proc_emu1010_reg_read(struct snd_info_entry *entry,
 				     struct snd_info_buffer *buffer)
 {
 	struct snd_emu10k1 *emu = entry->private_data;
 	u32 value;
 	int i;
-<<<<<<< HEAD
-=======
 
 	snd_emu1010_fpga_lock(emu);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "EMU1010 Registers:\n\n");
 
 	for(i = 0; i < 0x40; i+=1) {
 		snd_emu1010_fpga_read(emu, i, &value);
-<<<<<<< HEAD
-		snd_iprintf(buffer, "%02X: %08X, %02X\n", i, value, (value >> 8) & 0x7f);
-	}
-=======
 		snd_iprintf(buffer, "%02x: %02x\n", i, value);
 	}
 
@@ -788,7 +505,6 @@ static void snd_emu_proc_emu1010_reg_read(struct snd_info_entry *entry,
 	}
 
 	snd_emu1010_fpga_unlock(emu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void snd_emu_proc_io_reg_read(struct snd_info_entry *entry,
@@ -796,20 +512,10 @@ static void snd_emu_proc_io_reg_read(struct snd_info_entry *entry,
 {
 	struct snd_emu10k1 *emu = entry->private_data;
 	unsigned long value;
-<<<<<<< HEAD
-	unsigned long flags;
-	int i;
-	snd_iprintf(buffer, "IO Registers:\n\n");
-	for(i = 0; i < 0x40; i+=4) {
-		spin_lock_irqsave(&emu->emu_lock, flags);
-		value = inl(emu->port + i);
-		spin_unlock_irqrestore(&emu->emu_lock, flags);
-=======
 	int i;
 	snd_iprintf(buffer, "IO Registers:\n\n");
 	for(i = 0; i < 0x40; i+=4) {
 		value = inl(emu->port + i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_iprintf(buffer, "%02X: %08lX\n", i, value);
 	}
 }
@@ -818,23 +524,13 @@ static void snd_emu_proc_io_reg_write(struct snd_info_entry *entry,
                                       struct snd_info_buffer *buffer)
 {
 	struct snd_emu10k1 *emu = entry->private_data;
-<<<<<<< HEAD
-	unsigned long flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char line[64];
 	u32 reg, val;
 	while (!snd_info_get_line(buffer, line, sizeof(line))) {
 		if (sscanf(line, "%x %x", &reg, &val) != 2)
 			continue;
 		if (reg < 0x40 && val <= 0xffffffff) {
-<<<<<<< HEAD
-			spin_lock_irqsave(&emu->emu_lock, flags);
 			outl(val, emu->port + (reg & 0xfffffffc));
-			spin_unlock_irqrestore(&emu->emu_lock, flags);
-=======
-			outl(val, emu->port + (reg & 0xfffffffc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -844,25 +540,14 @@ static unsigned int snd_ptr_read(struct snd_emu10k1 * emu,
 				 unsigned int reg,
 				 unsigned int chn)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int regptr, val;
 
 	regptr = (reg << 16) | chn;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&emu->emu_lock, flags);
-	outl(regptr, emu->port + iobase + PTR);
-	val = inl(emu->port + iobase + DATA);
-	spin_unlock_irqrestore(&emu->emu_lock, flags);
-=======
 	spin_lock_irq(&emu->emu_lock);
 	outl(regptr, emu->port + iobase + PTR);
 	val = inl(emu->port + iobase + DATA);
 	spin_unlock_irq(&emu->emu_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return val;
 }
 
@@ -873,16 +558,6 @@ static void snd_ptr_write(struct snd_emu10k1 *emu,
 			  unsigned int data)
 {
 	unsigned int regptr;
-<<<<<<< HEAD
-	unsigned long flags;
-
-	regptr = (reg << 16) | chn;
-
-	spin_lock_irqsave(&emu->emu_lock, flags);
-	outl(regptr, emu->port + iobase + PTR);
-	outl(data, emu->port + iobase + DATA);
-	spin_unlock_irqrestore(&emu->emu_lock, flags);
-=======
 
 	regptr = (reg << 16) | chn;
 
@@ -890,7 +565,6 @@ static void snd_ptr_write(struct snd_emu10k1 *emu,
 	outl(regptr, emu->port + iobase + PTR);
 	outl(data, emu->port + iobase + DATA);
 	spin_unlock_irq(&emu->emu_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -908,14 +582,7 @@ static void snd_emu_proc_ptr_reg_read(struct snd_info_entry *entry,
 	for(i = offset; i < offset+length; i++) {
 		snd_iprintf(buffer, "%02X: ",i);
 		for (j = 0; j < voices; j++) {
-<<<<<<< HEAD
-			if(iobase == 0)
-                		value = snd_ptr_read(emu, 0, i, j);
-			else
-                		value = snd_ptr_read(emu, 0x20, i, j);
-=======
 			value = snd_ptr_read(emu, iobase, i, j);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_iprintf(buffer, "%08lX ", value);
 		}
 		snd_iprintf(buffer, "\n");
@@ -923,12 +590,8 @@ static void snd_emu_proc_ptr_reg_read(struct snd_info_entry *entry,
 }
 
 static void snd_emu_proc_ptr_reg_write(struct snd_info_entry *entry,
-<<<<<<< HEAD
-				       struct snd_info_buffer *buffer, int iobase)
-=======
 				       struct snd_info_buffer *buffer,
 				       int iobase, int length, int voices)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_emu10k1 *emu = entry->private_data;
 	char line[64];
@@ -936,11 +599,7 @@ static void snd_emu_proc_ptr_reg_write(struct snd_info_entry *entry,
 	while (!snd_info_get_line(buffer, line, sizeof(line))) {
 		if (sscanf(line, "%x %x %x", &reg, &channel_id, &val) != 3)
 			continue;
-<<<<<<< HEAD
-		if (reg < 0xa0 && val <= 0xffffffff && channel_id <= 3)
-=======
 		if (reg < length && channel_id < voices)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_ptr_write(emu, iobase, reg, channel_id, val);
 	}
 }
@@ -948,23 +607,15 @@ static void snd_emu_proc_ptr_reg_write(struct snd_info_entry *entry,
 static void snd_emu_proc_ptr_reg_write00(struct snd_info_entry *entry,
 					 struct snd_info_buffer *buffer)
 {
-<<<<<<< HEAD
-	snd_emu_proc_ptr_reg_write(entry, buffer, 0);
-=======
 	snd_emu_proc_ptr_reg_write(entry, buffer, 0, 0x80, 64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void snd_emu_proc_ptr_reg_write20(struct snd_info_entry *entry,
 					 struct snd_info_buffer *buffer)
 {
-<<<<<<< HEAD
-	snd_emu_proc_ptr_reg_write(entry, buffer, 0x20);
-=======
 	struct snd_emu10k1 *emu = entry->private_data;
 	snd_emu_proc_ptr_reg_write(entry, buffer, 0x20,
 				   emu->card_capabilities->ca0108_chip ? 0xa0 : 0x80, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 	
 
@@ -999,74 +650,15 @@ static void snd_emu_proc_ptr_reg_read20c(struct snd_info_entry *entry,
 }
 #endif
 
-<<<<<<< HEAD
-static struct snd_info_entry_ops snd_emu10k1_proc_ops_fx8010 = {
-	.read = snd_emu10k1_fx8010_read,
-};
-
-int __devinit snd_emu10k1_proc_init(struct snd_emu10k1 * emu)
-=======
 static const struct snd_info_entry_ops snd_emu10k1_proc_ops_fx8010 = {
 	.read = snd_emu10k1_fx8010_read,
 };
 
 int snd_emu10k1_proc_init(struct snd_emu10k1 *emu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_info_entry *entry;
 #ifdef CONFIG_SND_DEBUG
 	if (emu->card_capabilities->emu_model) {
-<<<<<<< HEAD
-		if (! snd_card_proc_new(emu->card, "emu1010_regs", &entry)) 
-			snd_info_set_text_ops(entry, emu, snd_emu_proc_emu1010_reg_read);
-	}
-	if (! snd_card_proc_new(emu->card, "io_regs", &entry)) {
-		snd_info_set_text_ops(entry, emu, snd_emu_proc_io_reg_read);
-		entry->c.text.write = snd_emu_proc_io_reg_write;
-		entry->mode |= S_IWUSR;
-	}
-	if (! snd_card_proc_new(emu->card, "ptr_regs00a", &entry)) {
-		snd_info_set_text_ops(entry, emu, snd_emu_proc_ptr_reg_read00a);
-		entry->c.text.write = snd_emu_proc_ptr_reg_write00;
-		entry->mode |= S_IWUSR;
-	}
-	if (! snd_card_proc_new(emu->card, "ptr_regs00b", &entry)) {
-		snd_info_set_text_ops(entry, emu, snd_emu_proc_ptr_reg_read00b);
-		entry->c.text.write = snd_emu_proc_ptr_reg_write00;
-		entry->mode |= S_IWUSR;
-	}
-	if (! snd_card_proc_new(emu->card, "ptr_regs20a", &entry)) {
-		snd_info_set_text_ops(entry, emu, snd_emu_proc_ptr_reg_read20a);
-		entry->c.text.write = snd_emu_proc_ptr_reg_write20;
-		entry->mode |= S_IWUSR;
-	}
-	if (! snd_card_proc_new(emu->card, "ptr_regs20b", &entry)) {
-		snd_info_set_text_ops(entry, emu, snd_emu_proc_ptr_reg_read20b);
-		entry->c.text.write = snd_emu_proc_ptr_reg_write20;
-		entry->mode |= S_IWUSR;
-	}
-	if (! snd_card_proc_new(emu->card, "ptr_regs20c", &entry)) {
-		snd_info_set_text_ops(entry, emu, snd_emu_proc_ptr_reg_read20c);
-		entry->c.text.write = snd_emu_proc_ptr_reg_write20;
-		entry->mode |= S_IWUSR;
-	}
-#endif
-	
-	if (! snd_card_proc_new(emu->card, "emu10k1", &entry))
-		snd_info_set_text_ops(entry, emu, snd_emu10k1_proc_read);
-
-	if (emu->card_capabilities->emu10k2_chip) {
-		if (! snd_card_proc_new(emu->card, "spdif-in", &entry))
-			snd_info_set_text_ops(entry, emu, snd_emu10k1_proc_spdif_read);
-	}
-	if (emu->card_capabilities->ca0151_chip) {
-		if (! snd_card_proc_new(emu->card, "capture-rates", &entry))
-			snd_info_set_text_ops(entry, emu, snd_emu10k1_proc_rates_read);
-	}
-
-	if (! snd_card_proc_new(emu->card, "voices", &entry))
-		snd_info_set_text_ops(entry, emu, snd_emu10k1_proc_voices_read);
-=======
 		snd_card_ro_proc_new(emu->card, "emu1010_regs",
 				     emu, snd_emu_proc_emu1010_reg_read);
 	}
@@ -1105,59 +697,31 @@ int snd_emu10k1_proc_init(struct snd_emu10k1 *emu)
 
 	snd_card_ro_proc_new(emu->card, "voices", emu,
 			     snd_emu10k1_proc_voices_read);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (! snd_card_proc_new(emu->card, "fx8010_gpr", &entry)) {
 		entry->content = SNDRV_INFO_CONTENT_DATA;
 		entry->private_data = emu;
-<<<<<<< HEAD
-		entry->mode = S_IFREG | S_IRUGO /*| S_IWUSR*/;
-=======
 		entry->mode = S_IFREG | 0444 /*| S_IWUSR*/;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		entry->size = emu->audigy ? A_TOTAL_SIZE_GPR : TOTAL_SIZE_GPR;
 		entry->c.ops = &snd_emu10k1_proc_ops_fx8010;
 	}
 	if (! snd_card_proc_new(emu->card, "fx8010_tram_data", &entry)) {
 		entry->content = SNDRV_INFO_CONTENT_DATA;
 		entry->private_data = emu;
-<<<<<<< HEAD
-		entry->mode = S_IFREG | S_IRUGO /*| S_IWUSR*/;
-=======
 		entry->mode = S_IFREG | 0444 /*| S_IWUSR*/;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		entry->size = emu->audigy ? A_TOTAL_SIZE_TANKMEM_DATA : TOTAL_SIZE_TANKMEM_DATA ;
 		entry->c.ops = &snd_emu10k1_proc_ops_fx8010;
 	}
 	if (! snd_card_proc_new(emu->card, "fx8010_tram_addr", &entry)) {
 		entry->content = SNDRV_INFO_CONTENT_DATA;
 		entry->private_data = emu;
-<<<<<<< HEAD
-		entry->mode = S_IFREG | S_IRUGO /*| S_IWUSR*/;
-=======
 		entry->mode = S_IFREG | 0444 /*| S_IWUSR*/;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		entry->size = emu->audigy ? A_TOTAL_SIZE_TANKMEM_ADDR : TOTAL_SIZE_TANKMEM_ADDR ;
 		entry->c.ops = &snd_emu10k1_proc_ops_fx8010;
 	}
 	if (! snd_card_proc_new(emu->card, "fx8010_code", &entry)) {
 		entry->content = SNDRV_INFO_CONTENT_DATA;
 		entry->private_data = emu;
-<<<<<<< HEAD
-		entry->mode = S_IFREG | S_IRUGO /*| S_IWUSR*/;
-		entry->size = emu->audigy ? A_TOTAL_SIZE_CODE : TOTAL_SIZE_CODE;
-		entry->c.ops = &snd_emu10k1_proc_ops_fx8010;
-	}
-	if (! snd_card_proc_new(emu->card, "fx8010_acode", &entry)) {
-		entry->content = SNDRV_INFO_CONTENT_TEXT;
-		entry->private_data = emu;
-		entry->mode = S_IFREG | S_IRUGO /*| S_IWUSR*/;
-		entry->c.text.read = snd_emu10k1_proc_acode_read;
-	}
-	return 0;
-}
-#endif /* CONFIG_PROC_FS */
-=======
 		entry->mode = S_IFREG | 0444 /*| S_IWUSR*/;
 		entry->size = emu->audigy ? A_TOTAL_SIZE_CODE : TOTAL_SIZE_CODE;
 		entry->c.ops = &snd_emu10k1_proc_ops_fx8010;
@@ -1166,4 +730,3 @@ int snd_emu10k1_proc_init(struct snd_emu10k1 *emu)
 			     snd_emu10k1_proc_acode_read);
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

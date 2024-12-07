@@ -1,22 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/err.h>
 #include <linux/scatterlist.h>
-<<<<<<< HEAD
-#include <linux/slab.h>
-#include <crypto/hash.h>
-#include <linux/key-type.h>
-
-#include <keys/ceph-type.h>
-#include <linux/ceph/decode.h>
-#include "crypto.h"
-
-=======
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <crypto/aes.h>
@@ -80,19 +67,11 @@ fail:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ceph_crypto_key_clone(struct ceph_crypto_key *dst,
 			  const struct ceph_crypto_key *src)
 {
 	memcpy(dst, src, sizeof(struct ceph_crypto_key));
-<<<<<<< HEAD
-	dst->key = kmemdup(src->key, src->len, GFP_NOFS);
-	if (!dst->key)
-		return -ENOMEM;
-	return 0;
-=======
 	return set_secret(dst, src->key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ceph_crypto_key_encode(struct ceph_crypto_key *key, void **p, void *end)
@@ -109,28 +88,17 @@ int ceph_crypto_key_encode(struct ceph_crypto_key *key, void **p, void *end)
 
 int ceph_crypto_key_decode(struct ceph_crypto_key *key, void **p, void *end)
 {
-<<<<<<< HEAD
-=======
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ceph_decode_need(p, end, 2*sizeof(u16) + sizeof(key->created), bad);
 	key->type = ceph_decode_16(p);
 	ceph_decode_copy(p, &key->created, sizeof(key->created));
 	key->len = ceph_decode_16(p);
 	ceph_decode_need(p, end, key->len, bad);
-<<<<<<< HEAD
-	key->key = kmalloc(key->len, GFP_NOFS);
-	if (!key->key)
-		return -ENOMEM;
-	ceph_decode_copy(p, key->key, key->len);
-	return 0;
-=======
 	ret = set_secret(key, *p);
 	memzero_explicit(*p, key->len);
 	*p += key->len;
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 bad:
 	dout("failed to decode crypto key\n");
@@ -164,15 +132,6 @@ int ceph_crypto_key_unarmor(struct ceph_crypto_key *key, const char *inkey)
 	return 0;
 }
 
-<<<<<<< HEAD
-
-
-#define AES_KEY_SIZE 16
-
-static struct crypto_blkcipher *ceph_crypto_alloc_cipher(void)
-{
-	return crypto_alloc_blkcipher("cbc(aes)", 0, CRYPTO_ALG_ASYNC);
-=======
 void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
 {
 	if (key) {
@@ -183,17 +142,12 @@ void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
 			key->tfm = NULL;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const u8 *aes_iv = (u8 *)CEPH_AES_IV;
 
 /*
-<<<<<<< HEAD
- * Should be used for buffers allocated with ceph_kvmalloc().
-=======
  * Should be used for buffers allocated with kvmalloc().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Currently these are encrypt out-buffer (ceph_buffer) and decrypt
  * in-buffer (msg front).
  *
@@ -262,353 +216,6 @@ static void teardown_sgtable(struct sg_table *sgt)
 		sg_free_table(sgt);
 }
 
-<<<<<<< HEAD
-static int ceph_aes_encrypt(const void *key, int key_len,
-			    void *dst, size_t *dst_len,
-			    const void *src, size_t src_len)
-{
-	struct scatterlist sg_in[2], prealloc_sg;
-	struct sg_table sg_out;
-	struct crypto_blkcipher *tfm = ceph_crypto_alloc_cipher();
-	struct blkcipher_desc desc = { .tfm = tfm, .flags = 0 };
-	int ret;
-	void *iv;
-	int ivsize;
-	size_t zero_padding = (0x10 - (src_len & 0x0f));
-	char pad[16];
-
-	if (IS_ERR(tfm))
-		return PTR_ERR(tfm);
-
-	memset(pad, zero_padding, zero_padding);
-
-	*dst_len = src_len + zero_padding;
-
-	sg_init_table(sg_in, 2);
-	sg_set_buf(&sg_in[0], src, src_len);
-	sg_set_buf(&sg_in[1], pad, zero_padding);
-	ret = setup_sgtable(&sg_out, &prealloc_sg, dst, *dst_len);
-	if (ret)
-		goto out_tfm;
-
-	crypto_blkcipher_setkey((void *)tfm, key, key_len);
-	iv = crypto_blkcipher_crt(tfm)->iv;
-	ivsize = crypto_blkcipher_ivsize(tfm);
-	memcpy(iv, aes_iv, ivsize);
-
-	/*
-	print_hex_dump(KERN_ERR, "enc key: ", DUMP_PREFIX_NONE, 16, 1,
-		       key, key_len, 1);
-	print_hex_dump(KERN_ERR, "enc src: ", DUMP_PREFIX_NONE, 16, 1,
-			src, src_len, 1);
-	print_hex_dump(KERN_ERR, "enc pad: ", DUMP_PREFIX_NONE, 16, 1,
-			pad, zero_padding, 1);
-	*/
-	ret = crypto_blkcipher_encrypt(&desc, sg_out.sgl, sg_in,
-				     src_len + zero_padding);
-	if (ret < 0) {
-		pr_err("ceph_aes_crypt failed %d\n", ret);
-		goto out_sg;
-	}
-	/*
-	print_hex_dump(KERN_ERR, "enc out: ", DUMP_PREFIX_NONE, 16, 1,
-		       dst, *dst_len, 1);
-	*/
-
-out_sg:
-	teardown_sgtable(&sg_out);
-out_tfm:
-	crypto_free_blkcipher(tfm);
-	return ret;
-}
-
-static int ceph_aes_encrypt2(const void *key, int key_len, void *dst,
-			     size_t *dst_len,
-			     const void *src1, size_t src1_len,
-			     const void *src2, size_t src2_len)
-{
-	struct scatterlist sg_in[3], prealloc_sg;
-	struct sg_table sg_out;
-	struct crypto_blkcipher *tfm = ceph_crypto_alloc_cipher();
-	struct blkcipher_desc desc = { .tfm = tfm, .flags = 0 };
-	int ret;
-	void *iv;
-	int ivsize;
-	size_t zero_padding = (0x10 - ((src1_len + src2_len) & 0x0f));
-	char pad[16];
-
-	if (IS_ERR(tfm))
-		return PTR_ERR(tfm);
-
-	memset(pad, zero_padding, zero_padding);
-
-	*dst_len = src1_len + src2_len + zero_padding;
-
-	sg_init_table(sg_in, 3);
-	sg_set_buf(&sg_in[0], src1, src1_len);
-	sg_set_buf(&sg_in[1], src2, src2_len);
-	sg_set_buf(&sg_in[2], pad, zero_padding);
-	ret = setup_sgtable(&sg_out, &prealloc_sg, dst, *dst_len);
-	if (ret)
-		goto out_tfm;
-
-	crypto_blkcipher_setkey((void *)tfm, key, key_len);
-	iv = crypto_blkcipher_crt(tfm)->iv;
-	ivsize = crypto_blkcipher_ivsize(tfm);
-	memcpy(iv, aes_iv, ivsize);
-
-	/*
-	print_hex_dump(KERN_ERR, "enc  key: ", DUMP_PREFIX_NONE, 16, 1,
-		       key, key_len, 1);
-	print_hex_dump(KERN_ERR, "enc src1: ", DUMP_PREFIX_NONE, 16, 1,
-			src1, src1_len, 1);
-	print_hex_dump(KERN_ERR, "enc src2: ", DUMP_PREFIX_NONE, 16, 1,
-			src2, src2_len, 1);
-	print_hex_dump(KERN_ERR, "enc  pad: ", DUMP_PREFIX_NONE, 16, 1,
-			pad, zero_padding, 1);
-	*/
-	ret = crypto_blkcipher_encrypt(&desc, sg_out.sgl, sg_in,
-				     src1_len + src2_len + zero_padding);
-	if (ret < 0) {
-		pr_err("ceph_aes_crypt2 failed %d\n", ret);
-		goto out_sg;
-	}
-	/*
-	print_hex_dump(KERN_ERR, "enc  out: ", DUMP_PREFIX_NONE, 16, 1,
-		       dst, *dst_len, 1);
-	*/
-
-out_sg:
-	teardown_sgtable(&sg_out);
-out_tfm:
-	crypto_free_blkcipher(tfm);
-	return ret;
-}
-
-static int ceph_aes_decrypt(const void *key, int key_len,
-			    void *dst, size_t *dst_len,
-			    const void *src, size_t src_len)
-{
-	struct sg_table sg_in;
-	struct scatterlist sg_out[2], prealloc_sg;
-	struct crypto_blkcipher *tfm = ceph_crypto_alloc_cipher();
-	struct blkcipher_desc desc = { .tfm = tfm };
-	char pad[16];
-	void *iv;
-	int ivsize;
-	int ret;
-	int last_byte;
-
-	if (IS_ERR(tfm))
-		return PTR_ERR(tfm);
-
-	sg_init_table(sg_out, 2);
-	sg_set_buf(&sg_out[0], dst, *dst_len);
-	sg_set_buf(&sg_out[1], pad, sizeof(pad));
-	ret = setup_sgtable(&sg_in, &prealloc_sg, src, src_len);
-	if (ret)
-		goto out_tfm;
-
-	crypto_blkcipher_setkey((void *)tfm, key, key_len);
-	iv = crypto_blkcipher_crt(tfm)->iv;
-	ivsize = crypto_blkcipher_ivsize(tfm);
-	memcpy(iv, aes_iv, ivsize);
-
-	/*
-	print_hex_dump(KERN_ERR, "dec key: ", DUMP_PREFIX_NONE, 16, 1,
-		       key, key_len, 1);
-	print_hex_dump(KERN_ERR, "dec  in: ", DUMP_PREFIX_NONE, 16, 1,
-		       src, src_len, 1);
-	*/
-	ret = crypto_blkcipher_decrypt(&desc, sg_out, sg_in.sgl, src_len);
-	if (ret < 0) {
-		pr_err("ceph_aes_decrypt failed %d\n", ret);
-		goto out_sg;
-	}
-
-	if (src_len <= *dst_len)
-		last_byte = ((char *)dst)[src_len - 1];
-	else
-		last_byte = pad[src_len - *dst_len - 1];
-	if (last_byte <= 16 && src_len >= last_byte) {
-		*dst_len = src_len - last_byte;
-	} else {
-		pr_err("ceph_aes_decrypt got bad padding %d on src len %d\n",
-		       last_byte, (int)src_len);
-		return -EPERM;  /* bad padding */
-	}
-	/*
-	print_hex_dump(KERN_ERR, "dec out: ", DUMP_PREFIX_NONE, 16, 1,
-		       dst, *dst_len, 1);
-	*/
-
-out_sg:
-	teardown_sgtable(&sg_in);
-out_tfm:
-	crypto_free_blkcipher(tfm);
-	return ret;
-}
-
-static int ceph_aes_decrypt2(const void *key, int key_len,
-			     void *dst1, size_t *dst1_len,
-			     void *dst2, size_t *dst2_len,
-			     const void *src, size_t src_len)
-{
-	struct sg_table sg_in;
-	struct scatterlist sg_out[3], prealloc_sg;
-	struct crypto_blkcipher *tfm = ceph_crypto_alloc_cipher();
-	struct blkcipher_desc desc = { .tfm = tfm };
-	char pad[16];
-	void *iv;
-	int ivsize;
-	int ret;
-	int last_byte;
-
-	if (IS_ERR(tfm))
-		return PTR_ERR(tfm);
-
-	sg_init_table(sg_out, 3);
-	sg_set_buf(&sg_out[0], dst1, *dst1_len);
-	sg_set_buf(&sg_out[1], dst2, *dst2_len);
-	sg_set_buf(&sg_out[2], pad, sizeof(pad));
-	ret = setup_sgtable(&sg_in, &prealloc_sg, src, src_len);
-	if (ret)
-		goto out_tfm;
-
-	crypto_blkcipher_setkey((void *)tfm, key, key_len);
-	iv = crypto_blkcipher_crt(tfm)->iv;
-	ivsize = crypto_blkcipher_ivsize(tfm);
-	memcpy(iv, aes_iv, ivsize);
-
-	/*
-	print_hex_dump(KERN_ERR, "dec  key: ", DUMP_PREFIX_NONE, 16, 1,
-		       key, key_len, 1);
-	print_hex_dump(KERN_ERR, "dec   in: ", DUMP_PREFIX_NONE, 16, 1,
-		       src, src_len, 1);
-	*/
-	ret = crypto_blkcipher_decrypt(&desc, sg_out, sg_in.sgl, src_len);
-	if (ret < 0) {
-		pr_err("ceph_aes_decrypt failed %d\n", ret);
-		goto out_sg;
-	}
-
-	if (src_len <= *dst1_len)
-		last_byte = ((char *)dst1)[src_len - 1];
-	else if (src_len <= *dst1_len + *dst2_len)
-		last_byte = ((char *)dst2)[src_len - *dst1_len - 1];
-	else
-		last_byte = pad[src_len - *dst1_len - *dst2_len - 1];
-	if (last_byte <= 16 && src_len >= last_byte) {
-		src_len -= last_byte;
-	} else {
-		pr_err("ceph_aes_decrypt got bad padding %d on src len %d\n",
-		       last_byte, (int)src_len);
-		return -EPERM;  /* bad padding */
-	}
-
-	if (src_len < *dst1_len) {
-		*dst1_len = src_len;
-		*dst2_len = 0;
-	} else {
-		*dst2_len = src_len - *dst1_len;
-	}
-	/*
-	print_hex_dump(KERN_ERR, "dec  out1: ", DUMP_PREFIX_NONE, 16, 1,
-		       dst1, *dst1_len, 1);
-	print_hex_dump(KERN_ERR, "dec  out2: ", DUMP_PREFIX_NONE, 16, 1,
-		       dst2, *dst2_len, 1);
-	*/
-
-out_sg:
-	teardown_sgtable(&sg_in);
-out_tfm:
-	crypto_free_blkcipher(tfm);
-	return ret;
-}
-
-
-int ceph_decrypt(struct ceph_crypto_key *secret, void *dst, size_t *dst_len,
-		 const void *src, size_t src_len)
-{
-	switch (secret->type) {
-	case CEPH_CRYPTO_NONE:
-		if (*dst_len < src_len)
-			return -ERANGE;
-		memcpy(dst, src, src_len);
-		*dst_len = src_len;
-		return 0;
-
-	case CEPH_CRYPTO_AES:
-		return ceph_aes_decrypt(secret->key, secret->len, dst,
-					dst_len, src, src_len);
-
-	default:
-		return -EINVAL;
-	}
-}
-
-int ceph_decrypt2(struct ceph_crypto_key *secret,
-			void *dst1, size_t *dst1_len,
-			void *dst2, size_t *dst2_len,
-			const void *src, size_t src_len)
-{
-	size_t t;
-
-	switch (secret->type) {
-	case CEPH_CRYPTO_NONE:
-		if (*dst1_len + *dst2_len < src_len)
-			return -ERANGE;
-		t = min(*dst1_len, src_len);
-		memcpy(dst1, src, t);
-		*dst1_len = t;
-		src += t;
-		src_len -= t;
-		if (src_len) {
-			t = min(*dst2_len, src_len);
-			memcpy(dst2, src, t);
-			*dst2_len = t;
-		}
-		return 0;
-
-	case CEPH_CRYPTO_AES:
-		return ceph_aes_decrypt2(secret->key, secret->len,
-					 dst1, dst1_len, dst2, dst2_len,
-					 src, src_len);
-
-	default:
-		return -EINVAL;
-	}
-}
-
-int ceph_encrypt(struct ceph_crypto_key *secret, void *dst, size_t *dst_len,
-		 const void *src, size_t src_len)
-{
-	switch (secret->type) {
-	case CEPH_CRYPTO_NONE:
-		if (*dst_len < src_len)
-			return -ERANGE;
-		memcpy(dst, src, src_len);
-		*dst_len = src_len;
-		return 0;
-
-	case CEPH_CRYPTO_AES:
-		return ceph_aes_encrypt(secret->key, secret->len, dst,
-					dst_len, src, src_len);
-
-	default:
-		return -EINVAL;
-	}
-}
-
-static int ceph_aes_crypt(const struct ceph_crypto_key *key, bool encrypt,
-			  void *buf, int buf_len, int in_len, int *pout_len)
-{
-	struct crypto_skcipher *tfm = ceph_crypto_alloc_cipher();
-	SKCIPHER_REQUEST_ON_STACK(req, tfm);
-	struct sg_table sgt;
-	struct scatterlist prealloc_sg;
-	char iv[AES_BLOCK_SIZE];
-=======
 static int ceph_aes_crypt(const struct ceph_crypto_key *key, bool encrypt,
 			  void *buf, int buf_len, int in_len, int *pout_len)
 {
@@ -616,35 +223,19 @@ static int ceph_aes_crypt(const struct ceph_crypto_key *key, bool encrypt,
 	struct sg_table sgt;
 	struct scatterlist prealloc_sg;
 	char iv[AES_BLOCK_SIZE] __aligned(8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pad_byte = AES_BLOCK_SIZE - (in_len & (AES_BLOCK_SIZE - 1));
 	int crypt_len = encrypt ? in_len + pad_byte : in_len;
 	int ret;
 
-<<<<<<< HEAD
-	if (IS_ERR(tfm))
-		return PTR_ERR(tfm);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON(crypt_len > buf_len);
 	if (encrypt)
 		memset(buf + in_len, pad_byte, pad_byte);
 	ret = setup_sgtable(&sgt, &prealloc_sg, buf, crypt_len);
 	if (ret)
-<<<<<<< HEAD
-		goto out_tfm;
-
-	crypto_skcipher_setkey((void *)tfm, key->key, key->len);
-	memcpy(iv, aes_iv, AES_BLOCK_SIZE);
-
-	skcipher_request_set_tfm(req, tfm);
-=======
 		return ret;
 
 	memcpy(iv, aes_iv, AES_BLOCK_SIZE);
 	skcipher_request_set_sync_tfm(req, key->tfm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skcipher_request_set_callback(req, 0, NULL, NULL);
 	skcipher_request_set_crypt(req, sgt.sgl, sgt.sgl, crypt_len, iv);
 
@@ -686,11 +277,6 @@ static int ceph_aes_crypt(const struct ceph_crypto_key *key, bool encrypt,
 
 out_sgt:
 	teardown_sgtable(&sgt);
-<<<<<<< HEAD
-out_tfm:
-	crypto_free_skcipher(tfm);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -709,51 +295,15 @@ int ceph_crypt(const struct ceph_crypto_key *key, bool encrypt,
 	}
 }
 
-<<<<<<< HEAD
-int ceph_encrypt2(struct ceph_crypto_key *secret, void *dst, size_t *dst_len,
-		  const void *src1, size_t src1_len,
-		  const void *src2, size_t src2_len)
-{
-	switch (secret->type) {
-	case CEPH_CRYPTO_NONE:
-		if (*dst_len < src1_len + src2_len)
-			return -ERANGE;
-		memcpy(dst, src1, src1_len);
-		memcpy(dst + src1_len, src2, src2_len);
-		*dst_len = src1_len + src2_len;
-		return 0;
-
-	case CEPH_CRYPTO_AES:
-		return ceph_aes_encrypt2(secret->key, secret->len, dst, dst_len,
-					 src1, src1_len, src2, src2_len);
-
-	default:
-		return -EINVAL;
-	}
-}
-
-int ceph_key_instantiate(struct key *key, const void *data, size_t datalen)
-{
-	struct ceph_crypto_key *ckey;
-=======
 static int ceph_key_preparse(struct key_preparsed_payload *prep)
 {
 	struct ceph_crypto_key *ckey;
 	size_t datalen = prep->datalen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	void *p;
 
 	ret = -EINVAL;
-<<<<<<< HEAD
-	if (datalen <= 0 || datalen > 32767 || !data)
-		goto err;
-
-	ret = key_payload_reserve(key, datalen);
-	if (ret < 0)
-=======
 	if (datalen <= 0 || datalen > 32767 || !prep->data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 
 	ret = -ENOMEM;
@@ -762,14 +312,6 @@ static int ceph_key_preparse(struct key_preparsed_payload *prep)
 		goto err;
 
 	/* TODO ceph_crypto_key_decode should really take const input */
-<<<<<<< HEAD
-	p = (void *)data;
-	ret = ceph_crypto_key_decode(ckey, &p, (char*)data+datalen);
-	if (ret < 0)
-		goto err_ckey;
-
-	key->payload.data = ckey;
-=======
 	p = (void *)prep->data;
 	ret = ceph_crypto_key_decode(ckey, &p, (char*)prep->data+datalen);
 	if (ret < 0)
@@ -777,7 +319,6 @@ static int ceph_key_preparse(struct key_preparsed_payload *prep)
 
 	prep->payload.data[0] = ckey;
 	prep->quotalen = datalen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_ckey:
@@ -786,15 +327,6 @@ err:
 	return ret;
 }
 
-<<<<<<< HEAD
-int ceph_key_match(const struct key *key, const void *description)
-{
-	return strcmp(key->description, description) == 0;
-}
-
-void ceph_key_destroy(struct key *key) {
-	struct ceph_crypto_key *ckey = key->payload.data;
-=======
 static void ceph_key_free_preparse(struct key_preparsed_payload *prep)
 {
 	struct ceph_crypto_key *ckey = prep->payload.data[0];
@@ -805,7 +337,6 @@ static void ceph_key_free_preparse(struct key_preparsed_payload *prep)
 static void ceph_key_destroy(struct key *key)
 {
 	struct ceph_crypto_key *ckey = key->payload.data[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ceph_crypto_key_destroy(ckey);
 	kfree(ckey);
@@ -813,18 +344,6 @@ static void ceph_key_destroy(struct key *key)
 
 struct key_type key_type_ceph = {
 	.name		= "ceph",
-<<<<<<< HEAD
-	.instantiate	= ceph_key_instantiate,
-	.match		= ceph_key_match,
-	.destroy	= ceph_key_destroy,
-};
-
-int ceph_crypto_init(void) {
-	return register_key_type(&key_type_ceph);
-}
-
-void ceph_crypto_shutdown(void) {
-=======
 	.preparse	= ceph_key_preparse,
 	.free_preparse	= ceph_key_free_preparse,
 	.instantiate	= generic_key_instantiate,
@@ -838,6 +357,5 @@ int __init ceph_crypto_init(void)
 
 void ceph_crypto_shutdown(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_key_type(&key_type_ceph);
 }

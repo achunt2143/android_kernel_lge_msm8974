@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2003-2007 Network Appliance, Inc. All rights reserved.
  *
@@ -45,14 +42,6 @@
 #define _LINUX_SUNRPC_XPRTRDMA_H
 
 /*
-<<<<<<< HEAD
- * rpcbind (v3+) RDMA netid.
- */
-#define RPCBIND_NETID_RDMA	"rdma"
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Constants. Max RPC/NFS header is big enough to account for
  * additional marshaling buffers passed down by Linux client.
  *
@@ -60,19 +49,6 @@
  * fully-chunked NFS message (read chunks are the largest). Note only
  * a single chunk type per message is supported currently.
  */
-<<<<<<< HEAD
-#define RPCRDMA_MIN_SLOT_TABLE	(2U)
-#define RPCRDMA_DEF_SLOT_TABLE	(32U)
-#define RPCRDMA_MAX_SLOT_TABLE	(256U)
-
-#define RPCRDMA_DEF_INLINE  (1024)	/* default inline max */
-
-#define RPCRDMA_INLINE_PAD_THRESH  (512)/* payload threshold to pad (bytes) */
-
-/* memory registration strategies */
-#define RPCRDMA_PERSISTENT_REGISTRATION (1)
-
-=======
 #define RPCRDMA_MIN_SLOT_TABLE	(4U)
 #define RPCRDMA_DEF_SLOT_TABLE	(128U)
 #define RPCRDMA_MAX_SLOT_TABLE	(16384U)
@@ -83,18 +59,13 @@
 
 /* Memory registration strategies, by number.
  * This is part of a kernel / user space API. Do not remove. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum rpcrdma_memreg {
 	RPCRDMA_BOUNCEBUFFERS = 0,
 	RPCRDMA_REGISTER,
 	RPCRDMA_MEMWINDOWS,
 	RPCRDMA_MEMWINDOWS_ASYNC,
 	RPCRDMA_MTHCAFMR,
-<<<<<<< HEAD
-	RPCRDMA_FRMR,
-=======
 	RPCRDMA_FRWR,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RPCRDMA_ALLPHYSICAL,
 	RPCRDMA_LAST
 };

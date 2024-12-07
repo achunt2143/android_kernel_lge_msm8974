@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/workqueue.h>
 #include <linux/rtnetlink.h>
 #include <linux/cache.h>
@@ -14,12 +11,6 @@
 #include <linux/idr.h>
 #include <linux/rculist.h>
 #include <linux/nsproxy.h>
-<<<<<<< HEAD
-#include <linux/proc_fs.h>
-#include <linux/file.h>
-#include <linux/export.h>
-#include <linux/user_namespace.h>
-=======
 #include <linux/fs.h>
 #include <linux/proc_ns.h>
 #include <linux/file.h>
@@ -33,7 +24,6 @@
 
 #include <net/sock.h>
 #include <net/netlink.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>
 
@@ -43,21 +33,10 @@
 
 static LIST_HEAD(pernet_list);
 static struct list_head *first_device = &pernet_list;
-<<<<<<< HEAD
-static DEFINE_MUTEX(net_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 LIST_HEAD(net_namespace_list);
 EXPORT_SYMBOL_GPL(net_namespace_list);
 
-<<<<<<< HEAD
-struct net init_net = {
-	.dev_base_head = LIST_HEAD_INIT(init_net.dev_base_head),
-};
-EXPORT_SYMBOL(init_net);
-
-=======
 /* Protects net_namespace_list. Nests iside rtnl_lock() */
 DECLARE_RWSEM(net_rwsem);
 EXPORT_SYMBOL_GPL(net_rwsem);
@@ -82,21 +61,10 @@ EXPORT_SYMBOL_GPL(pernet_ops_rwsem);
 #define MIN_PERNET_OPS_ID	\
 	((sizeof(struct net_generic) + sizeof(void *) - 1) / sizeof(void *))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INITIAL_NET_GEN_PTRS	13 /* +1 for len +2 for rcu_head */
 
 static unsigned int max_gen_ptrs = INITIAL_NET_GEN_PTRS;
 
-<<<<<<< HEAD
-static struct net_generic *net_alloc_generic(void)
-{
-	struct net_generic *ng;
-	size_t generic_size = offsetof(struct net_generic, ptr[max_gen_ptrs]);
-
-	ng = kzalloc(generic_size, GFP_KERNEL);
-	if (ng)
-		ng->len = max_gen_ptrs;
-=======
 DEFINE_COOKIE(net_cookie);
 
 static struct net_generic *net_alloc_generic(void)
@@ -110,28 +78,10 @@ static struct net_generic *net_alloc_generic(void)
 	ng = kzalloc(generic_size, GFP_KERNEL);
 	if (ng)
 		ng->s.len = gen_ptrs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ng;
 }
 
-<<<<<<< HEAD
-static int net_assign_generic(struct net *net, int id, void *data)
-{
-	struct net_generic *ng, *old_ng;
-
-	BUG_ON(!mutex_is_locked(&net_mutex));
-	BUG_ON(id == 0);
-
-	old_ng = rcu_dereference_protected(net->gen,
-					   lockdep_is_held(&net_mutex));
-	ng = old_ng;
-	if (old_ng->len >= id)
-		goto assign;
-
-	ng = net_alloc_generic();
-	if (ng == NULL)
-=======
 static int net_assign_generic(struct net *net, unsigned int id, void *data)
 {
 	struct net_generic *ng, *old_ng;
@@ -147,7 +97,6 @@ static int net_assign_generic(struct net *net, unsigned int id, void *data)
 
 	ng = net_alloc_generic();
 	if (!ng)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	/*
@@ -161,30 +110,18 @@ static int net_assign_generic(struct net *net, unsigned int id, void *data)
 	 * the old copy for kfree after a grace period.
 	 */
 
-<<<<<<< HEAD
-	memcpy(&ng->ptr, &old_ng->ptr, old_ng->len * sizeof(void*));
-
-	rcu_assign_pointer(net->gen, ng);
-	kfree_rcu(old_ng, rcu);
-assign:
-	ng->ptr[id - 1] = data;
-=======
 	memcpy(&ng->ptr[MIN_PERNET_OPS_ID], &old_ng->ptr[MIN_PERNET_OPS_ID],
 	       (old_ng->s.len - MIN_PERNET_OPS_ID) * sizeof(void *));
 	ng->ptr[id] = data;
 
 	rcu_assign_pointer(net->gen, ng);
 	kfree_rcu(old_ng, s.rcu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int ops_init(const struct pernet_operations *ops, struct net *net)
 {
-<<<<<<< HEAD
-=======
 	struct net_generic *ng;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = -ENOMEM;
 	void *data = NULL;
 
@@ -203,15 +140,12 @@ static int ops_init(const struct pernet_operations *ops, struct net *net)
 	if (!err)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	if (ops->id && ops->size) {
 		ng = rcu_dereference_protected(net->gen,
 					       lockdep_is_held(&pernet_ops_rwsem));
 		ng->ptr[*ops->id] = NULL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cleanup:
 	kfree(data);
 
@@ -219,13 +153,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static void ops_free(const struct pernet_operations *ops, struct net *net)
-{
-	if (ops->id && ops->size) {
-		int id = *ops->id;
-		kfree(net_generic(net, id));
-=======
 static void ops_pre_exit_list(const struct pernet_operations *ops,
 			      struct list_head *net_exit_list)
 {
@@ -234,7 +161,6 @@ static void ops_pre_exit_list(const struct pernet_operations *ops,
 	if (ops->pre_exit) {
 		list_for_each_entry(net, net_exit_list, exit_list)
 			ops->pre_exit(net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -243,15 +169,10 @@ static void ops_exit_list(const struct pernet_operations *ops,
 {
 	struct net *net;
 	if (ops->exit) {
-<<<<<<< HEAD
-		list_for_each_entry(net, net_exit_list, exit_list)
-			ops->exit(net);
-=======
 		list_for_each_entry(net, net_exit_list, exit_list) {
 			ops->exit(net);
 			cond_resched();
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (ops->exit_batch)
 		ops->exit_batch(net_exit_list);
@@ -263,12 +184,6 @@ static void ops_free_list(const struct pernet_operations *ops,
 	struct net *net;
 	if (ops->size && ops->id) {
 		list_for_each_entry(net, net_exit_list, exit_list)
-<<<<<<< HEAD
-			ops_free(ops, net);
-	}
-}
-
-=======
 			kfree(net_generic(net, *ops->id));
 	}
 }
@@ -399,27 +314,11 @@ static __net_init void preinit_net(struct net *net)
 	ref_tracker_dir_init(&net->notrefcnt_tracker, 128, "net notrefcnt");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * setup_net runs the initializers for the network namespace object.
  */
 static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
 {
-<<<<<<< HEAD
-	/* Must be called with net_mutex held */
-	const struct pernet_operations *ops, *saved_ops;
-	int error = 0;
-	LIST_HEAD(net_exit_list);
-
-	atomic_set(&net->count, 1);
-	atomic_set(&net->passive, 1);
-	net->dev_base_seq = 1;
-	net->user_ns = user_ns;
-
-#ifdef NETNS_REFCNT_DEBUG
-	atomic_set(&net->use_count, 0);
-#endif
-=======
 	/* Must be called with pernet_ops_rwsem held */
 	const struct pernet_operations *ops, *saved_ops;
 	LIST_HEAD(net_exit_list);
@@ -439,19 +338,15 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
 	idr_init(&net->netns_ids);
 	spin_lock_init(&net->nsid_lock);
 	mutex_init(&net->ipv4.ra_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(ops, &pernet_list, list) {
 		error = ops_init(ops, net);
 		if (error < 0)
 			goto out_undo;
 	}
-<<<<<<< HEAD
-=======
 	down_write(&net_rwsem);
 	list_add_tail_rcu(&net->list, &net_namespace_list);
 	up_write(&net_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return error;
 
@@ -462,8 +357,6 @@ out_undo:
 	list_add(&net->exit_list, &net_exit_list);
 	saved_ops = ops;
 	list_for_each_entry_continue_reverse(ops, &pernet_list, list)
-<<<<<<< HEAD
-=======
 		ops_pre_exit_list(ops, &net_exit_list);
 
 	synchronize_rcu();
@@ -479,7 +372,6 @@ out_undo:
 
 	ops = saved_ops;
 	list_for_each_entry_continue_reverse(ops, &pernet_list, list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ops_exit_list(ops, &net_exit_list);
 
 	ops = saved_ops;
@@ -490,11 +382,6 @@ out_undo:
 	goto out;
 }
 
-<<<<<<< HEAD
-
-#ifdef CONFIG_NET_NS
-static struct kmem_cache *net_cachep;
-=======
 static int __net_init net_defaults_init_net(struct net *net)
 {
 	net->core.sysctl_somaxconn = SOMAXCONN;
@@ -533,7 +420,6 @@ static void dec_net_namespaces(struct ucounts *ucounts)
 }
 
 static struct kmem_cache *net_cachep __ro_after_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct workqueue_struct *netns_wq;
 
 static struct net *net_alloc(void)
@@ -549,8 +435,6 @@ static struct net *net_alloc(void)
 	if (!net)
 		goto out_free;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_KEYS
 	net->key_domain = kzalloc(sizeof(struct key_tag), GFP_KERNEL);
 	if (!net->key_domain)
@@ -558,19 +442,15 @@ static struct net *net_alloc(void)
 	refcount_set(&net->key_domain->usage, 1);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_assign_pointer(net->gen, ng);
 out:
 	return net;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_KEYS
 out_free_2:
 	kmem_cache_free(net_cachep, net);
 	net = NULL;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_free:
 	kfree(ng);
 	goto out;
@@ -578,17 +458,6 @@ out_free:
 
 static void net_free(struct net *net)
 {
-<<<<<<< HEAD
-#ifdef NETNS_REFCNT_DEBUG
-	if (unlikely(atomic_read(&net->use_count) != 0)) {
-		printk(KERN_EMERG "network namespace not free! Usage: %d\n",
-			atomic_read(&net->use_count));
-		return;
-	}
-#endif
-	kfree(net->gen);
-	kmem_cache_free(net_cachep, net);
-=======
 	if (refcount_dec_and_test(&net->passive)) {
 		kfree(rcu_access_pointer(net->gen));
 
@@ -597,55 +466,26 @@ static void net_free(struct net *net)
 
 		kmem_cache_free(net_cachep, net);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void net_drop_ns(void *p)
 {
-<<<<<<< HEAD
-	struct net *ns = p;
-	if (ns && atomic_dec_and_test(&ns->passive))
-		net_free(ns);
-=======
 	struct net *net = (struct net *)p;
 
 	if (net)
 		net_free(net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct net *copy_net_ns(unsigned long flags,
 			struct user_namespace *user_ns, struct net *old_net)
 {
-<<<<<<< HEAD
-=======
 	struct ucounts *ucounts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net *net;
 	int rv;
 
 	if (!(flags & CLONE_NEWNET))
 		return get_net(old_net);
 
-<<<<<<< HEAD
-	net = net_alloc();
-	if (!net)
-		return ERR_PTR(-ENOMEM);
-
-	get_user_ns(user_ns);
-
-	mutex_lock(&net_mutex);
-	rv = setup_net(net, user_ns);
-	if (rv == 0) {
-		rtnl_lock();
-		list_add_tail_rcu(&net->list, &net_namespace_list);
-		rtnl_unlock();
-	}
-	mutex_unlock(&net_mutex);
-	if (rv < 0) {
-		put_user_ns(user_ns);
-		net_drop_ns(net);
-=======
 	ucounts = inc_net_namespaces(user_ns);
 	if (!ucounts)
 		return ERR_PTR(-ENOSPC);
@@ -678,16 +518,11 @@ put_userns:
 		net_free(net);
 dec_ucounts:
 		dec_net_namespaces(ucounts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(rv);
 	}
 	return net;
 }
 
-<<<<<<< HEAD
-static DEFINE_SPINLOCK(cleanup_list_lock);
-static LIST_HEAD(cleanup_list);  /* Must hold cleanup_list_lock to touch */
-=======
 /**
  * net_ns_get_ownership - get sysfs ownership data for @net
  * @net: network namespace in question (can be NULL)
@@ -744,31 +579,10 @@ static void unhash_nsid(struct net *net, struct net *last)
 }
 
 static LLIST_HEAD(cleanup_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void cleanup_net(struct work_struct *work)
 {
 	const struct pernet_operations *ops;
-<<<<<<< HEAD
-	struct net *net, *tmp;
-	LIST_HEAD(net_kill_list);
-	LIST_HEAD(net_exit_list);
-
-	/* Atomically snapshot the list of namespaces to cleanup */
-	spin_lock_irq(&cleanup_list_lock);
-	list_replace_init(&cleanup_list, &net_kill_list);
-	spin_unlock_irq(&cleanup_list_lock);
-
-	mutex_lock(&net_mutex);
-
-	/* Don't let anyone else find us. */
-	rtnl_lock();
-	list_for_each_entry(net, &net_kill_list, cleanup_list) {
-		list_del_rcu(&net->list);
-		list_add_tail(&net->exit_list, &net_exit_list);
-	}
-	rtnl_unlock();
-=======
 	struct net *net, *tmp, *last;
 	struct llist_node *net_kill_list;
 	LIST_HEAD(net_exit_list);
@@ -804,16 +618,11 @@ static void cleanup_net(struct work_struct *work)
 	/* Run all of the network namespace pre_exit methods */
 	list_for_each_entry_reverse(ops, &pernet_list, list)
 		ops_pre_exit_list(ops, &net_exit_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Another CPU might be rcu-iterating the list, wait for it.
 	 * This needs to be before calling the exit() notifiers, so
 	 * the rcu_barrier() below isn't sufficient alone.
-<<<<<<< HEAD
-	 */
-	synchronize_rcu();
-=======
 	 * Also the pre_exit() and exit() methods need this barrier.
 	 */
 	synchronize_rcu_expedited();
@@ -825,7 +634,6 @@ static void cleanup_net(struct work_struct *work)
 	}
 	unregister_netdevice_many(&dev_kill_list);
 	rtnl_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Run all of the network namespace exit methods */
 	list_for_each_entry_reverse(ops, &pernet_list, list)
@@ -835,11 +643,7 @@ static void cleanup_net(struct work_struct *work)
 	list_for_each_entry_reverse(ops, &pernet_list, list)
 		ops_free_list(ops, &net_exit_list);
 
-<<<<<<< HEAD
-	mutex_unlock(&net_mutex);
-=======
 	up_read(&pernet_ops_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ensure there are no outstanding rcu callbacks using this
 	 * network namespace.
@@ -849,12 +653,6 @@ static void cleanup_net(struct work_struct *work)
 	/* Finally it is safe to free my network namespace structure */
 	list_for_each_entry_safe(net, tmp, &net_exit_list, exit_list) {
 		list_del_init(&net->exit_list);
-<<<<<<< HEAD
-		put_user_ns(net->user_ns);
-		net_drop_ns(net);
-	}
-}
-=======
 		dec_net_namespaces(net->ucounts);
 #ifdef CONFIG_KEYS
 		key_remove_domain(net->key_domain);
@@ -880,56 +678,10 @@ void net_ns_barrier(void)
 }
 EXPORT_SYMBOL(net_ns_barrier);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DECLARE_WORK(net_cleanup_work, cleanup_net);
 
 void __put_net(struct net *net)
 {
-<<<<<<< HEAD
-	/* Cleanup the network namespace in process context */
-	unsigned long flags;
-
-	spin_lock_irqsave(&cleanup_list_lock, flags);
-	list_add(&net->cleanup_list, &cleanup_list);
-	spin_unlock_irqrestore(&cleanup_list_lock, flags);
-
-	queue_work(netns_wq, &net_cleanup_work);
-}
-EXPORT_SYMBOL_GPL(__put_net);
-
-struct net *get_net_ns_by_fd(int fd)
-{
-	struct proc_inode *ei;
-	struct file *file;
-	struct net *net;
-
-	file = proc_ns_fget(fd);
-	if (IS_ERR(file))
-		return ERR_CAST(file);
-
-	ei = PROC_I(file->f_dentry->d_inode);
-	if (ei->ns_ops == &netns_operations)
-		net = get_net(ei->ns);
-	else
-		net = ERR_PTR(-EINVAL);
-
-	fput(file);
-	return net;
-}
-
-#else
-struct net *copy_net_ns(unsigned long flags, struct net *old_net)
-{
-	if (flags & CLONE_NEWNET)
-		return ERR_PTR(-EINVAL);
-	return old_net;
-}
-
-struct net *get_net_ns_by_fd(int fd)
-{
-	return ERR_PTR(-EINVAL);
-}
-=======
 	ref_tracker_dir_exit(&net->refcnt_tracker);
 	/* Cleanup the network namespace in process context */
 	if (llist_add(&net->cleanup_list, &cleanup_list))
@@ -967,7 +719,6 @@ struct net *get_net_ns_by_fd(int fd)
 	return net;
 }
 EXPORT_SYMBOL_GPL(get_net_ns_by_fd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 struct net *get_net_ns_by_pid(pid_t pid)
@@ -981,17 +732,11 @@ struct net *get_net_ns_by_pid(pid_t pid)
 	tsk = find_task_by_vpid(pid);
 	if (tsk) {
 		struct nsproxy *nsproxy;
-<<<<<<< HEAD
-		nsproxy = task_nsproxy(tsk);
-		if (nsproxy)
-			net = get_net(nsproxy->net_ns);
-=======
 		task_lock(tsk);
 		nsproxy = tsk->nsproxy;
 		if (nsproxy)
 			net = get_net(nsproxy->net_ns);
 		task_unlock(tsk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rcu_read_unlock();
 	return net;
@@ -1000,23 +745,15 @@ EXPORT_SYMBOL_GPL(get_net_ns_by_pid);
 
 static __net_init int net_ns_net_init(struct net *net)
 {
-<<<<<<< HEAD
-	return proc_alloc_inum(&net->proc_inum);
-=======
 #ifdef CONFIG_NET_NS
 	net->ns.ops = &netns_operations;
 #endif
 	return ns_alloc_inum(&net->ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __net_exit void net_ns_net_exit(struct net *net)
 {
-<<<<<<< HEAD
-	proc_free_inum(net->proc_inum);
-=======
 	ns_free_inum(&net->ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pernet_operations __net_initdata net_ns_ops = {
@@ -1024,9 +761,6 @@ static struct pernet_operations __net_initdata net_ns_ops = {
 	.exit = net_ns_net_exit,
 };
 
-<<<<<<< HEAD
-static int __init net_ns_init(void)
-=======
 static const struct nla_policy rtnl_net_policy[NETNSA_MAX + 1] = {
 	[NETNSA_NONE]		= { .type = NLA_UNSPEC },
 	[NETNSA_NSID]		= { .type = NLA_S32 },
@@ -1436,21 +1170,14 @@ static void __init netns_ipv4_struct_check(void)
 #endif
 
 void __init net_ns_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_generic *ng;
 
 #ifdef CONFIG_NET_NS
-<<<<<<< HEAD
-	net_cachep = kmem_cache_create("net_namespace", sizeof(struct net),
-					SMP_CACHE_BYTES,
-					SLAB_PANIC, NULL);
-=======
 	netns_ipv4_struct_check();
 	net_cachep = kmem_cache_create("net_namespace", sizeof(struct net),
 					SMP_CACHE_BYTES,
 					SLAB_PANIC|SLAB_ACCOUNT, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create workqueue for cleanup */
 	netns_wq = create_singlethread_workqueue("netns");
@@ -1464,24 +1191,6 @@ void __init net_ns_init(void)
 
 	rcu_assign_pointer(init_net.gen, ng);
 
-<<<<<<< HEAD
-	mutex_lock(&net_mutex);
-	if (setup_net(&init_net, &init_user_ns))
-		panic("Could not setup the initial network namespace");
-
-	rtnl_lock();
-	list_add_tail_rcu(&init_net.list, &net_namespace_list);
-	rtnl_unlock();
-
-	mutex_unlock(&net_mutex);
-
-	register_pernet_subsys(&net_ns_ops);
-
-	return 0;
-}
-
-pure_initcall(net_ns_init);
-=======
 #ifdef CONFIG_KEYS
 	init_net.key_domain = &init_net_key_domain;
 #endif
@@ -1519,7 +1228,6 @@ static void free_exit_list(struct pernet_operations *ops, struct list_head *net_
 
 	ops_free_list(ops, net_exit_list);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_NET_NS
 static int __register_pernet_operations(struct list_head *list,
@@ -1531,12 +1239,9 @@ static int __register_pernet_operations(struct list_head *list,
 
 	list_add_tail(&ops->list, list);
 	if (ops->init || (ops->id && ops->size)) {
-<<<<<<< HEAD
-=======
 		/* We held write locked pernet_ops_rwsem, and parallel
 		 * setup_net() and cleanup_net() are not possible.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for_each_net(net) {
 			error = ops_init(ops, net);
 			if (error)
@@ -1549,12 +1254,7 @@ static int __register_pernet_operations(struct list_head *list,
 out_undo:
 	/* If I have an error cleanup all namespaces I initialized */
 	list_del(&ops->list);
-<<<<<<< HEAD
-	ops_exit_list(ops, &net_exit_list);
-	ops_free_list(ops, &net_exit_list);
-=======
 	free_exit_list(ops, &net_exit_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1564,18 +1264,11 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
 	LIST_HEAD(net_exit_list);
 
 	list_del(&ops->list);
-<<<<<<< HEAD
-	for_each_net(net)
-		list_add_tail(&net->exit_list, &net_exit_list);
-	ops_exit_list(ops, &net_exit_list);
-	ops_free_list(ops, &net_exit_list);
-=======
 	/* See comment in __register_pernet_operations() */
 	for_each_net(net)
 		list_add_tail(&net->exit_list, &net_exit_list);
 
 	free_exit_list(ops, &net_exit_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
@@ -1583,25 +1276,16 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
 static int __register_pernet_operations(struct list_head *list,
 					struct pernet_operations *ops)
 {
-<<<<<<< HEAD
-=======
 	if (!init_net_initialized) {
 		list_add_tail(&ops->list, list);
 		return 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ops_init(ops, &init_net);
 }
 
 static void __unregister_pernet_operations(struct pernet_operations *ops)
 {
-<<<<<<< HEAD
-	LIST_HEAD(net_exit_list);
-	list_add(&init_net.exit_list, &net_exit_list);
-	ops_exit_list(ops, &net_exit_list);
-	ops_free_list(ops, &net_exit_list);
-=======
 	if (!init_net_initialized) {
 		list_del(&ops->list);
 	} else {
@@ -1609,7 +1293,6 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
 		list_add(&init_net.exit_list, &net_exit_list);
 		free_exit_list(ops, &net_exit_list);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* CONFIG_NET_NS */
@@ -1622,18 +1305,6 @@ static int register_pernet_operations(struct list_head *list,
 	int error;
 
 	if (ops->id) {
-<<<<<<< HEAD
-again:
-		error = ida_get_new_above(&net_generic_ids, 1, ops->id);
-		if (error < 0) {
-			if (error == -EAGAIN) {
-				ida_pre_get(&net_generic_ids, GFP_KERNEL);
-				goto again;
-			}
-			return error;
-		}
-		max_gen_ptrs = max_t(unsigned int, max_gen_ptrs, *ops->id);
-=======
 		error = ida_alloc_min(&net_generic_ids, MIN_PERNET_OPS_ID,
 				GFP_KERNEL);
 		if (error < 0)
@@ -1644,17 +1315,12 @@ again:
 		 * net_alloc_generic.
 		 */
 		WRITE_ONCE(max_gen_ptrs, max(max_gen_ptrs, *ops->id + 1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	error = __register_pernet_operations(list, ops);
 	if (error) {
 		rcu_barrier();
 		if (ops->id)
-<<<<<<< HEAD
-			ida_remove(&net_generic_ids, *ops->id);
-=======
 			ida_free(&net_generic_ids, *ops->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return error;
@@ -1662,18 +1328,10 @@ again:
 
 static void unregister_pernet_operations(struct pernet_operations *ops)
 {
-<<<<<<< HEAD
-	
-	__unregister_pernet_operations(ops);
-	rcu_barrier();
-	if (ops->id)
-		ida_remove(&net_generic_ids, *ops->id);
-=======
 	__unregister_pernet_operations(ops);
 	rcu_barrier();
 	if (ops->id)
 		ida_free(&net_generic_ids, *ops->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1698,15 +1356,9 @@ static void unregister_pernet_operations(struct pernet_operations *ops)
 int register_pernet_subsys(struct pernet_operations *ops)
 {
 	int error;
-<<<<<<< HEAD
-	mutex_lock(&net_mutex);
-	error =  register_pernet_operations(first_device, ops);
-	mutex_unlock(&net_mutex);
-=======
 	down_write(&pernet_ops_rwsem);
 	error =  register_pernet_operations(first_device, ops);
 	up_write(&pernet_ops_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 EXPORT_SYMBOL_GPL(register_pernet_subsys);
@@ -1722,15 +1374,9 @@ EXPORT_SYMBOL_GPL(register_pernet_subsys);
  */
 void unregister_pernet_subsys(struct pernet_operations *ops)
 {
-<<<<<<< HEAD
-	mutex_lock(&net_mutex);
-	unregister_pernet_operations(ops);
-	mutex_unlock(&net_mutex);
-=======
 	down_write(&pernet_ops_rwsem);
 	unregister_pernet_operations(ops);
 	up_write(&pernet_ops_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(unregister_pernet_subsys);
 
@@ -1756,19 +1402,11 @@ EXPORT_SYMBOL_GPL(unregister_pernet_subsys);
 int register_pernet_device(struct pernet_operations *ops)
 {
 	int error;
-<<<<<<< HEAD
-	mutex_lock(&net_mutex);
-	error = register_pernet_operations(&pernet_list, ops);
-	if (!error && (first_device == &pernet_list))
-		first_device = &ops->list;
-	mutex_unlock(&net_mutex);
-=======
 	down_write(&pernet_ops_rwsem);
 	error = register_pernet_operations(&pernet_list, ops);
 	if (!error && (first_device == &pernet_list))
 		first_device = &ops->list;
 	up_write(&pernet_ops_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 EXPORT_SYMBOL_GPL(register_pernet_device);
@@ -1784,59 +1422,20 @@ EXPORT_SYMBOL_GPL(register_pernet_device);
  */
 void unregister_pernet_device(struct pernet_operations *ops)
 {
-<<<<<<< HEAD
-	mutex_lock(&net_mutex);
-	if (&ops->list == first_device)
-		first_device = first_device->next;
-	unregister_pernet_operations(ops);
-	mutex_unlock(&net_mutex);
-=======
 	down_write(&pernet_ops_rwsem);
 	if (&ops->list == first_device)
 		first_device = first_device->next;
 	unregister_pernet_operations(ops);
 	up_write(&pernet_ops_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(unregister_pernet_device);
 
 #ifdef CONFIG_NET_NS
-<<<<<<< HEAD
-static void *netns_get(struct task_struct *task)
-=======
 static struct ns_common *netns_get(struct task_struct *task)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = NULL;
 	struct nsproxy *nsproxy;
 
-<<<<<<< HEAD
-	rcu_read_lock();
-	nsproxy = task_nsproxy(task);
-	if (nsproxy)
-		net = get_net(nsproxy->net_ns);
-	rcu_read_unlock();
-
-	return net;
-}
-
-static void netns_put(void *ns)
-{
-	put_net(ns);
-}
-
-static int netns_install(struct nsproxy *nsproxy, void *ns)
-{
-	put_net(nsproxy->net_ns);
-	nsproxy->net_ns = get_net(ns);
-	return 0;
-}
-
-static unsigned int netns_inum(void *ns)
-{
-	struct net *net = ns;
-	return net->proc_inum;
-=======
 	task_lock(task);
 	nsproxy = task->nsproxy;
 	if (nsproxy)
@@ -1873,7 +1472,6 @@ static int netns_install(struct nsset *nsset, struct ns_common *ns)
 static struct user_namespace *netns_owner(struct ns_common *ns)
 {
 	return to_net_ns(ns)->user_ns;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct proc_ns_operations netns_operations = {
@@ -1882,10 +1480,6 @@ const struct proc_ns_operations netns_operations = {
 	.get		= netns_get,
 	.put		= netns_put,
 	.install	= netns_install,
-<<<<<<< HEAD
-	.inum		= netns_inum,
-=======
 	.owner		= netns_owner,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif

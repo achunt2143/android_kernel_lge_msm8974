@@ -158,11 +158,7 @@ u32 hfs_vbm_search_free(struct super_block *sb, u32 goal, u32 *num_bits)
 		}
 	}
 
-<<<<<<< HEAD
-	dprint(DBG_BITMAP, "alloc_bits: %u,%u\n", pos, *num_bits);
-=======
 	hfs_dbg(BITMAP, "alloc_bits: %u,%u\n", pos, *num_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HFS_SB(sb)->free_ablocks -= *num_bits;
 	hfs_bitmap_dirty(sb);
 out:
@@ -204,11 +200,7 @@ int hfs_clear_vbm_bits(struct super_block *sb, u16 start, u16 count)
 	if (!count)
 		return 0;
 
-<<<<<<< HEAD
-	dprint(DBG_BITMAP, "clear_bits: %u,%u\n", start, count);
-=======
 	hfs_dbg(BITMAP, "clear_bits: %u,%u\n", start, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* are all of the bits in range? */
 	if ((start + count) > HFS_SB(sb)->fs_ablocks)
 		return -2;

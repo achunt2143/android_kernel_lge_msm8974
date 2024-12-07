@@ -1,33 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: MIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * vcpu.h
  *
  * VCPU initialisation, query, and hotplug.
  *
-<<<<<<< HEAD
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2005, Keir Fraser <keir@xensource.com>
  */
 
@@ -82,17 +58,6 @@
  */
 #define VCPUOP_get_runstate_info	 4
 struct vcpu_runstate_info {
-<<<<<<< HEAD
-		/* VCPU's current state (RUNSTATE_*). */
-		int		 state;
-		/* When was current state entered (system time, ns)? */
-		uint64_t state_entry_time;
-		/*
-		 * Time spent in each RUNSTATE_* (ns). The sum of these times is
-		 * guaranteed not to drift from system time.
-		 */
-		uint64_t time[4];
-=======
 	/* VCPU's current state (RUNSTATE_*). */
 	int		 state;
 	/* When was current state entered (system time, ns)? */
@@ -108,7 +73,6 @@ struct vcpu_runstate_info {
 	 * guaranteed not to drift from system time.
 	 */
 	uint64_t time[4];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 DEFINE_GUEST_HANDLE_STRUCT(vcpu_runstate_info);
 
@@ -195,8 +159,6 @@ struct vcpu_register_vcpu_info {
 };
 DEFINE_GUEST_HANDLE_STRUCT(vcpu_register_vcpu_info);
 
-<<<<<<< HEAD
-=======
 /* Send an NMI to the specified VCPU. @extra_arg == NULL. */
 #define VCPUOP_send_nmi             11
 
@@ -241,5 +203,4 @@ struct vcpu_register_time_memory_area {
 };
 DEFINE_GUEST_HANDLE_STRUCT(vcpu_register_time_memory_area);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __XEN_PUBLIC_VCPU_H__ */

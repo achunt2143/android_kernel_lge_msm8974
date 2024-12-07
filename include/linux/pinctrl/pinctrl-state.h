@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Standard pin control state definitions
  */
 
-<<<<<<< HEAD
-=======
 #ifndef __LINUX_PINCTRL_PINCTRL_STATE_H
 #define __LINUX_PINCTRL_PINCTRL_STATE_H
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * @PINCTRL_STATE_DEFAULT: the state the pinctrl handle shall be put
  *	into as default, usually this means the pins are up and ready to
@@ -19,8 +13,6 @@
  *	hogs to configure muxing and pins at boot, and also as a state
  *	to go into when returning from sleep and idle in
  *	.pm_runtime_resume() or ordinary .resume() for example.
-<<<<<<< HEAD
-=======
  * @PINCTRL_STATE_INIT: normally the pinctrl will be set to "default"
  *	before the driver's probe() function is called.  There are some
  *	drivers where that is not appropriate becausing doing so would
@@ -28,7 +20,6 @@
  *	which is the state of the pins before drive probe.  After probe
  *	if the pins are still in "init" state they'll be moved to
  *	"default".
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @PINCTRL_STATE_IDLE: the state the pinctrl handle shall be put into
  *	when the pins are idle. This is a state where the system is relaxed
  *	but not fully sleeping - some power may be on but clocks gated for
@@ -40,13 +31,8 @@
  *	ordinary .suspend() function.
  */
 #define PINCTRL_STATE_DEFAULT "default"
-<<<<<<< HEAD
-#define PINCTRL_STATE_IDLE "idle"
-#define PINCTRL_STATE_SLEEP "sleep"
-=======
 #define PINCTRL_STATE_INIT "init"
 #define PINCTRL_STATE_IDLE "idle"
 #define PINCTRL_STATE_SLEEP "sleep"
 
 #endif /* __LINUX_PINCTRL_PINCTRL_STATE_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

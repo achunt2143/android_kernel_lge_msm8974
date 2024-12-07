@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * (C) 2012 by Pablo Neira Ayuso <pablo@netfilter.org>
- * (C) 2012 by Vyatta Inc. <http://www.vyatta.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation (or any later at your option).
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * (C) 2012 by Pablo Neira Ayuso <pablo@netfilter.org>
  * (C) 2012 by Vyatta Inc. <http://www.vyatta.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/module.h>
@@ -30,17 +20,10 @@
 
 #include <linux/netfilter.h>
 #include <net/netlink.h>
-<<<<<<< HEAD
-#include <net/sock.h>
-#include <net/netfilter/nf_conntrack.h>
-#include <net/netfilter/nf_conntrack_core.h>
-#include <net/netfilter/nf_conntrack_l3proto.h>
-=======
 #include <net/netns/generic.h>
 #include <net/sock.h>
 #include <net/netfilter/nf_conntrack.h>
 #include <net/netfilter/nf_conntrack_core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netfilter/nf_conntrack_l4proto.h>
 #include <net/netfilter/nf_conntrack_tuple.h>
 #include <net/netfilter/nf_conntrack_timeout.h>
@@ -48,8 +31,6 @@
 #include <linux/netfilter/nfnetlink.h>
 #include <linux/netfilter/nfnetlink_cttimeout.h>
 
-<<<<<<< HEAD
-=======
 static unsigned int nfct_timeout_id __read_mostly;
 
 struct ctnl_timeout {
@@ -68,54 +49,18 @@ struct nfct_timeout_pernet {
 	struct list_head	nfct_timeout_freelist;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Pablo Neira Ayuso <pablo@netfilter.org>");
 MODULE_DESCRIPTION("cttimeout: Extended Netfilter Connection Tracking timeout tuning");
 
-<<<<<<< HEAD
-static LIST_HEAD(cttimeout_list);
-
-static const struct nla_policy cttimeout_nla_policy[CTA_TIMEOUT_MAX+1] = {
-	[CTA_TIMEOUT_NAME]	= { .type = NLA_NUL_STRING },
-=======
 static const struct nla_policy cttimeout_nla_policy[CTA_TIMEOUT_MAX+1] = {
 	[CTA_TIMEOUT_NAME]	= { .type = NLA_NUL_STRING,
 				    .len  = CTNL_TIMEOUT_NAME_MAX - 1},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[CTA_TIMEOUT_L3PROTO]	= { .type = NLA_U16 },
 	[CTA_TIMEOUT_L4PROTO]	= { .type = NLA_U8 },
 	[CTA_TIMEOUT_DATA]	= { .type = NLA_NESTED },
 };
 
-<<<<<<< HEAD
-static int
-ctnl_timeout_parse_policy(struct ctnl_timeout *timeout,
-			       struct nf_conntrack_l4proto *l4proto,
-			       const struct nlattr *attr)
-{
-	int ret = 0;
-
-	if (likely(l4proto->ctnl_timeout.nlattr_to_obj)) {
-		struct nlattr *tb[l4proto->ctnl_timeout.nlattr_max+1];
-
-		nla_parse_nested(tb, l4proto->ctnl_timeout.nlattr_max,
-				 attr, l4proto->ctnl_timeout.nla_policy);
-
-		ret = l4proto->ctnl_timeout.nlattr_to_obj(tb, &timeout->data);
-	}
-	return ret;
-}
-
-static int
-cttimeout_new_timeout(struct sock *ctnl, struct sk_buff *skb,
-		      const struct nlmsghdr *nlh,
-		      const struct nlattr * const cda[])
-{
-	__u16 l3num;
-	__u8 l4num;
-	struct nf_conntrack_l4proto *l4proto;
-=======
 static struct nfct_timeout_pernet *nfct_timeout_pernet(struct net *net)
 {
 	return net_generic(net, nfct_timeout_id);
@@ -158,7 +103,6 @@ static int cttimeout_new_timeout(struct sk_buff *skb,
 	__u16 l3num;
 	__u8 l4num;
 	const struct nf_conntrack_l4proto *l4proto;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ctnl_timeout *timeout, *matching = NULL;
 	char *name;
 	int ret;
@@ -173,28 +117,17 @@ static int cttimeout_new_timeout(struct sk_buff *skb,
 	l3num = ntohs(nla_get_be16(cda[CTA_TIMEOUT_L3PROTO]));
 	l4num = nla_get_u8(cda[CTA_TIMEOUT_L4PROTO]);
 
-<<<<<<< HEAD
-	list_for_each_entry(timeout, &cttimeout_list, head) {
-		if (strncmp(timeout->name, name, CTNL_TIMEOUT_NAME_MAX) != 0)
-			continue;
-
-		if (nlh->nlmsg_flags & NLM_F_EXCL)
-=======
 	list_for_each_entry(timeout, &pernet->nfct_timeout_list, head) {
 		if (strncmp(timeout->name, name, CTNL_TIMEOUT_NAME_MAX) != 0)
 			continue;
 
 		if (info->nlh->nlmsg_flags & NLM_F_EXCL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EEXIST;
 
 		matching = timeout;
 		break;
 	}
 
-<<<<<<< HEAD
-	l4proto = nf_ct_l4proto_find_get(l3num, l4num);
-=======
 	if (matching) {
 		if (info->nlh->nlmsg_flags & NLM_F_REPLACE) {
 			/* You cannot replace one timeout policy by another of
@@ -214,7 +147,6 @@ static int cttimeout_new_timeout(struct sk_buff *skb,
 	}
 
 	l4proto = nf_ct_l4proto_find(l4num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This protocol is not supportted, skip. */
 	if (l4proto->l4proto != l4num) {
@@ -222,28 +154,6 @@ static int cttimeout_new_timeout(struct sk_buff *skb,
 		goto err_proto_put;
 	}
 
-<<<<<<< HEAD
-	if (matching) {
-		if (nlh->nlmsg_flags & NLM_F_REPLACE) {
-			/* You cannot replace one timeout policy by another of
-			 * different kind, sorry.
-			 */
-			if (matching->l3num != l3num ||
-			    matching->l4proto->l4proto != l4num) {
-				ret = -EINVAL;
-				goto err_proto_put;
-			}
-
-			ret = ctnl_timeout_parse_policy(matching, l4proto,
-							cda[CTA_TIMEOUT_DATA]);
-			return ret;
-		}
-		ret = -EBUSY;
-		goto err_proto_put;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	timeout = kzalloc(sizeof(struct ctnl_timeout) +
 			  l4proto->ctnl_timeout.obj_size, GFP_KERNEL);
 	if (timeout == NULL) {
@@ -251,83 +161,26 @@ static int cttimeout_new_timeout(struct sk_buff *skb,
 		goto err_proto_put;
 	}
 
-<<<<<<< HEAD
-	ret = ctnl_timeout_parse_policy(timeout, l4proto,
-					cda[CTA_TIMEOUT_DATA]);
-=======
 	ret = ctnl_timeout_parse_policy(&timeout->timeout.data, l4proto,
 					info->net, cda[CTA_TIMEOUT_DATA]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto err;
 
 	strcpy(timeout->name, nla_data(cda[CTA_TIMEOUT_NAME]));
-<<<<<<< HEAD
-	timeout->l3num = l3num;
-	timeout->l4proto = l4proto;
-	atomic_set(&timeout->refcnt, 1);
-	list_add_tail_rcu(&timeout->head, &cttimeout_list);
-=======
 	timeout->timeout.l3num = l3num;
 	timeout->timeout.l4proto = l4proto;
 	refcount_set(&timeout->refcnt, 1);
 	__module_get(THIS_MODULE);
 	list_add_tail_rcu(&timeout->head, &pernet->nfct_timeout_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 err:
 	kfree(timeout);
 err_proto_put:
-<<<<<<< HEAD
-	nf_ct_l4proto_put(l4proto);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int
-<<<<<<< HEAD
-ctnl_timeout_fill_info(struct sk_buff *skb, u32 pid, u32 seq, u32 type,
-		       int event, struct ctnl_timeout *timeout)
-{
-	struct nlmsghdr *nlh;
-	struct nfgenmsg *nfmsg;
-	unsigned int flags = pid ? NLM_F_MULTI : 0;
-	struct nf_conntrack_l4proto *l4proto = timeout->l4proto;
-
-	event |= NFNL_SUBSYS_CTNETLINK_TIMEOUT << 8;
-	nlh = nlmsg_put(skb, pid, seq, event, sizeof(*nfmsg), flags);
-	if (nlh == NULL)
-		goto nlmsg_failure;
-
-	nfmsg = nlmsg_data(nlh);
-	nfmsg->nfgen_family = AF_UNSPEC;
-	nfmsg->version = NFNETLINK_V0;
-	nfmsg->res_id = 0;
-
-	NLA_PUT_STRING(skb, CTA_TIMEOUT_NAME, timeout->name);
-	NLA_PUT_BE16(skb, CTA_TIMEOUT_L3PROTO, htons(timeout->l3num));
-	NLA_PUT_U8(skb, CTA_TIMEOUT_L4PROTO, timeout->l4proto->l4proto);
-	NLA_PUT_BE32(skb, CTA_TIMEOUT_USE,
-			htonl(atomic_read(&timeout->refcnt)));
-
-	if (likely(l4proto->ctnl_timeout.obj_to_nlattr)) {
-		struct nlattr *nest_parms;
-		int ret;
-
-		nest_parms = nla_nest_start(skb,
-					    CTA_TIMEOUT_DATA | NLA_F_NESTED);
-		if (!nest_parms)
-			goto nla_put_failure;
-
-		ret = l4proto->ctnl_timeout.obj_to_nlattr(skb, &timeout->data);
-		if (ret < 0)
-			goto nla_put_failure;
-
-		nla_nest_end(skb, nest_parms);
-	}
-=======
 ctnl_timeout_fill_info(struct sk_buff *skb, u32 portid, u32 seq, u32 type,
 		       int event, struct ctnl_timeout *timeout)
 {
@@ -360,7 +213,6 @@ ctnl_timeout_fill_info(struct sk_buff *skb, u32 portid, u32 seq, u32 type,
 		goto nla_put_failure;
 
 	nla_nest_end(skb, nest_parms);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nlmsg_end(skb, nlh);
 	return skb->len;
@@ -374,11 +226,8 @@ nla_put_failure:
 static int
 ctnl_timeout_dump(struct sk_buff *skb, struct netlink_callback *cb)
 {
-<<<<<<< HEAD
-=======
 	struct nfct_timeout_pernet *pernet;
 	struct net *net = sock_net(skb->sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ctnl_timeout *cur, *last;
 
 	if (cb->args[2])
@@ -389,13 +238,6 @@ ctnl_timeout_dump(struct sk_buff *skb, struct netlink_callback *cb)
 		cb->args[1] = 0;
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	list_for_each_entry_rcu(cur, &cttimeout_list, head) {
-		if (last && cur != last)
-			continue;
-
-		if (ctnl_timeout_fill_info(skb, NETLINK_CB(cb->skb).pid,
-=======
 	pernet = nfct_timeout_pernet(net);
 	list_for_each_entry_rcu(cur, &pernet->nfct_timeout_list, head) {
 		if (last) {
@@ -405,7 +247,6 @@ ctnl_timeout_dump(struct sk_buff *skb, struct netlink_callback *cb)
 			last = NULL;
 		}
 		if (ctnl_timeout_fill_info(skb, NETLINK_CB(cb->skb).portid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   cb->nlh->nlmsg_seq,
 					   NFNL_MSG_TYPE(cb->nlh->nlmsg_type),
 					   IPCTNL_MSG_TIMEOUT_NEW, cur) < 0) {
@@ -419,47 +260,27 @@ ctnl_timeout_dump(struct sk_buff *skb, struct netlink_callback *cb)
 	return skb->len;
 }
 
-<<<<<<< HEAD
-static int
-cttimeout_get_timeout(struct sock *ctnl, struct sk_buff *skb,
-		      const struct nlmsghdr *nlh,
-		      const struct nlattr * const cda[])
-{
-=======
 static int cttimeout_get_timeout(struct sk_buff *skb,
 				 const struct nfnl_info *info,
 				 const struct nlattr * const cda[])
 {
 	struct nfct_timeout_pernet *pernet = nfct_timeout_pernet(info->net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = -ENOENT;
 	char *name;
 	struct ctnl_timeout *cur;
 
-<<<<<<< HEAD
-	if (nlh->nlmsg_flags & NLM_F_DUMP) {
-		struct netlink_dump_control c = {
-			.dump = ctnl_timeout_dump,
-		};
-		return netlink_dump_start(ctnl, skb, nlh, &c);
-=======
 	if (info->nlh->nlmsg_flags & NLM_F_DUMP) {
 		struct netlink_dump_control c = {
 			.dump = ctnl_timeout_dump,
 		};
 		return netlink_dump_start(info->sk, skb, info->nlh, &c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!cda[CTA_TIMEOUT_NAME])
 		return -EINVAL;
 	name = nla_data(cda[CTA_TIMEOUT_NAME]);
 
-<<<<<<< HEAD
-	list_for_each_entry(cur, &cttimeout_list, head) {
-=======
 	list_for_each_entry(cur, &pernet->nfct_timeout_list, head) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct sk_buff *skb2;
 
 		if (strncmp(cur->name, name, CTNL_TIMEOUT_NAME_MAX) != 0)
@@ -471,55 +292,23 @@ static int cttimeout_get_timeout(struct sk_buff *skb,
 			break;
 		}
 
-<<<<<<< HEAD
-		ret = ctnl_timeout_fill_info(skb2, NETLINK_CB(skb).pid,
-					     nlh->nlmsg_seq,
-					     NFNL_MSG_TYPE(nlh->nlmsg_type),
-=======
 		ret = ctnl_timeout_fill_info(skb2, NETLINK_CB(skb).portid,
 					     info->nlh->nlmsg_seq,
 					     NFNL_MSG_TYPE(info->nlh->nlmsg_type),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     IPCTNL_MSG_TIMEOUT_NEW, cur);
 		if (ret <= 0) {
 			kfree_skb(skb2);
 			break;
 		}
-<<<<<<< HEAD
-		ret = netlink_unicast(ctnl, skb2, NETLINK_CB(skb).pid,
-					MSG_DONTWAIT);
-		if (ret > 0)
-			ret = 0;
-
-		/* this avoids a loop in nfnetlink. */
-		return ret == -EAGAIN ? -ENOBUFS : ret;
-	}
-=======
 
 		ret = nfnetlink_unicast(skb2, info->net, NETLINK_CB(skb).portid);
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /* try to delete object, fail if it is still in use. */
-<<<<<<< HEAD
-static int ctnl_timeout_try_del(struct ctnl_timeout *timeout)
-{
-	int ret = 0;
-
-	/* we want to avoid races with nf_ct_timeout_find_get. */
-	if (atomic_dec_and_test(&timeout->refcnt)) {
-		/* We are protected by nfnl mutex. */
-		list_del_rcu(&timeout->head);
-		nf_ct_l4proto_put(timeout->l4proto);
-		kfree_rcu(timeout, rcu_head);
-	} else {
-		/* still in use, restore reference counter. */
-		atomic_inc(&timeout->refcnt);
-=======
 static int ctnl_timeout_try_del(struct net *net, struct ctnl_timeout *timeout)
 {
 	int ret = 0;
@@ -533,26 +322,11 @@ static int ctnl_timeout_try_del(struct net *net, struct ctnl_timeout *timeout)
 		nf_ct_untimeout(net, &timeout->timeout);
 		kfree_rcu(timeout, rcu_head);
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBUSY;
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-static int
-cttimeout_del_timeout(struct sock *ctnl, struct sk_buff *skb,
-		      const struct nlmsghdr *nlh,
-		      const struct nlattr * const cda[])
-{
-	char *name;
-	struct ctnl_timeout *cur;
-	int ret = -ENOENT;
-
-	if (!cda[CTA_TIMEOUT_NAME]) {
-		list_for_each_entry(cur, &cttimeout_list, head)
-			ctnl_timeout_try_del(cur);
-=======
 static int cttimeout_del_timeout(struct sk_buff *skb,
 				 const struct nfnl_info *info,
 				 const struct nlattr * const cda[])
@@ -566,25 +340,16 @@ static int cttimeout_del_timeout(struct sk_buff *skb,
 		list_for_each_entry_safe(cur, tmp, &pernet->nfct_timeout_list,
 					 head)
 			ctnl_timeout_try_del(info->net, cur);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return 0;
 	}
 	name = nla_data(cda[CTA_TIMEOUT_NAME]);
 
-<<<<<<< HEAD
-	list_for_each_entry(cur, &cttimeout_list, head) {
-		if (strncmp(cur->name, name, CTNL_TIMEOUT_NAME_MAX) != 0)
-			continue;
-
-		ret = ctnl_timeout_try_del(cur);
-=======
 	list_for_each_entry(cur, &pernet->nfct_timeout_list, head) {
 		if (strncmp(cur->name, name, CTNL_TIMEOUT_NAME_MAX) != 0)
 			continue;
 
 		ret = ctnl_timeout_try_del(info->net, cur);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return ret;
 
@@ -593,25 +358,6 @@ static int cttimeout_del_timeout(struct sk_buff *skb,
 	return ret;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_NF_CONNTRACK_TIMEOUT
-static struct ctnl_timeout *ctnl_timeout_find_get(const char *name)
-{
-	struct ctnl_timeout *timeout, *matching = NULL;
-
-	rcu_read_lock();
-	list_for_each_entry_rcu(timeout, &cttimeout_list, head) {
-		if (strncmp(timeout->name, name, CTNL_TIMEOUT_NAME_MAX) != 0)
-			continue;
-
-		if (!try_module_get(THIS_MODULE))
-			goto err;
-
-		if (!atomic_inc_not_zero(&timeout->refcnt)) {
-			module_put(THIS_MODULE);
-			goto err;
-		}
-=======
 static int cttimeout_default_set(struct sk_buff *skb,
 				 const struct nfnl_info *info,
 				 const struct nlattr * const cda[])
@@ -775,34 +521,10 @@ static struct nf_ct_timeout *ctnl_timeout_find_get(struct net *net,
 
 		if (!refcount_inc_not_zero(&timeout->refcnt))
 			goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		matching = timeout;
 		break;
 	}
 err:
-<<<<<<< HEAD
-	rcu_read_unlock();
-	return matching;
-}
-
-static void ctnl_timeout_put(struct ctnl_timeout *timeout)
-{
-	atomic_dec(&timeout->refcnt);
-	module_put(THIS_MODULE);
-}
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
-
-static const struct nfnl_callback cttimeout_cb[IPCTNL_MSG_TIMEOUT_MAX] = {
-	[IPCTNL_MSG_TIMEOUT_NEW]	= { .call = cttimeout_new_timeout,
-					    .attr_count = CTA_TIMEOUT_MAX,
-					    .policy = cttimeout_nla_policy },
-	[IPCTNL_MSG_TIMEOUT_GET]	= { .call = cttimeout_get_timeout,
-					    .attr_count = CTA_TIMEOUT_MAX,
-					    .policy = cttimeout_nla_policy },
-	[IPCTNL_MSG_TIMEOUT_DELETE]	= { .call = cttimeout_del_timeout,
-					    .attr_count = CTA_TIMEOUT_MAX,
-					    .policy = cttimeout_nla_policy },
-=======
 	return matching ? &matching->timeout : NULL;
 }
 
@@ -848,7 +570,6 @@ static const struct nfnl_callback cttimeout_cb[IPCTNL_MSG_TIMEOUT_MAX] = {
 		.attr_count	= CTA_TIMEOUT_MAX,
 		.policy		= cttimeout_nla_policy
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct nfnetlink_subsystem cttimeout_subsys = {
@@ -860,8 +581,6 @@ static const struct nfnetlink_subsystem cttimeout_subsys = {
 
 MODULE_ALIAS_NFNL_SUBSYS(NFNL_SUBSYS_CTNETLINK_TIMEOUT);
 
-<<<<<<< HEAD
-=======
 static int __net_init cttimeout_net_init(struct net *net)
 {
 	struct nfct_timeout_pernet *pernet = nfct_timeout_pernet(net);
@@ -916,55 +635,20 @@ static const struct nf_ct_timeout_hooks hooks = {
 	.timeout_put = ctnl_timeout_put,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init cttimeout_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-=======
 	ret = register_pernet_subsys(&cttimeout_ops);
 	if (ret < 0)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = nfnetlink_subsys_register(&cttimeout_subsys);
 	if (ret < 0) {
 		pr_err("cttimeout_init: cannot register cttimeout with "
 			"nfnetlink.\n");
 		goto err_out;
 	}
-<<<<<<< HEAD
-#ifdef CONFIG_NF_CONNTRACK_TIMEOUT
-	RCU_INIT_POINTER(nf_ct_timeout_find_get_hook, ctnl_timeout_find_get);
-	RCU_INIT_POINTER(nf_ct_timeout_put_hook, ctnl_timeout_put);
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
-	return 0;
-
-err_out:
-	return ret;
-}
-
-static void __exit cttimeout_exit(void)
-{
-	struct ctnl_timeout *cur, *tmp;
-
-	pr_info("cttimeout: unregistering from nfnetlink.\n");
-
-	nfnetlink_subsys_unregister(&cttimeout_subsys);
-	list_for_each_entry_safe(cur, tmp, &cttimeout_list, head) {
-		list_del_rcu(&cur->head);
-		/* We are sure that our objects have no clients at this point,
-		 * it's safe to release them all without checking refcnt.
-		 */
-		nf_ct_l4proto_put(cur->l4proto);
-		kfree_rcu(cur, rcu_head);
-	}
-#ifdef CONFIG_NF_CONNTRACK_TIMEOUT
-	RCU_INIT_POINTER(nf_ct_timeout_find_get_hook, NULL);
-	RCU_INIT_POINTER(nf_ct_timeout_put_hook, NULL);
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
-=======
 	RCU_INIT_POINTER(nf_ct_timeout_hook, &hooks);
 	return 0;
 
@@ -991,7 +675,6 @@ static void __exit cttimeout_exit(void)
 	RCU_INIT_POINTER(nf_ct_timeout_hook, NULL);
 
 	nf_ct_iterate_destroy(untimeout, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(cttimeout_init);

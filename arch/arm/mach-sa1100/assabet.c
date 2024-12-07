@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-sa1100/assabet.c
  *
  * Author: Nicolas Pitre
  *
  * This file contains all Assabet-specific tweaks.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/ioport.h>
-#include <linux/serial_core.h>
-=======
 #include <linux/gpio/driver.h>
 #include <linux/gpio/gpio-reg.h>
 #include <linux/gpio/machine.h>
@@ -34,17 +20,13 @@
 #include <linux/regulator/machine.h>
 #include <linux/serial_core.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mfd/ucb1x00.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 #include <linux/delay.h>
 #include <linux/mm.h>
-<<<<<<< HEAD
-=======
 #include <linux/leds.h>
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <video/sa1100fb.h>
 
@@ -53,25 +35,13 @@
 #include <asm/setup.h>
 #include <asm/page.h>
 #include <asm/pgtable-hwdef.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tlbflush.h>
 
 #include <asm/mach/arch.h>
 #include <asm/mach/flash.h>
-<<<<<<< HEAD
-#include <asm/mach/irda.h>
-#include <asm/mach/map.h>
-#include <asm/mach/serial_sa1100.h>
-#include <mach/assabet.h>
-#include <mach/mcp.h>
-=======
 #include <asm/mach/map.h>
 #include <mach/assabet.h>
 #include <linux/platform_data/mfd-mcp-sa11x0.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mach/irqs.h>
 
 #include "generic.h"
@@ -92,28 +62,6 @@
 unsigned long SCR_value = ASSABET_SCR_INIT;
 EXPORT_SYMBOL(SCR_value);
 
-<<<<<<< HEAD
-static unsigned long BCR_value = ASSABET_BCR_DB1110;
-
-void ASSABET_BCR_frob(unsigned int mask, unsigned int val)
-{
-	unsigned long flags;
-
-	local_irq_save(flags);
-	BCR_value = (BCR_value & ~mask) | val;
-	ASSABET_BCR = BCR_value;
-	local_irq_restore(flags);
-}
-
-EXPORT_SYMBOL(ASSABET_BCR_frob);
-
-static void assabet_ucb1x00_reset(enum ucb1x00_reset state)
-{
-	if (state == UCB_RST_PROBE)
-		ASSABET_BCR_set(ASSABET_BCR_CODEC_RST);
-}
-
-=======
 static struct gpio_chip *assabet_bcr_gc;
 
 static const char *assabet_names[] = {
@@ -288,7 +236,6 @@ void assabet_uda1341_reset(int set)
 }
 EXPORT_SYMBOL(assabet_uda1341_reset);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Assabet flash support code.
@@ -350,51 +297,10 @@ static struct resource assabet_flash_resources[] = {
 };
 
 
-<<<<<<< HEAD
-/*
- * Assabet IrDA support code.
- */
-
-static int assabet_irda_set_power(struct device *dev, unsigned int state)
-{
-	static unsigned int bcr_state[4] = {
-		ASSABET_BCR_IRDA_MD0,
-		ASSABET_BCR_IRDA_MD1|ASSABET_BCR_IRDA_MD0,
-		ASSABET_BCR_IRDA_MD1,
-		0
-	};
-
-	if (state < 4) {
-		state = bcr_state[state];
-		ASSABET_BCR_clear(state ^ (ASSABET_BCR_IRDA_MD1|
-					   ASSABET_BCR_IRDA_MD0));
-		ASSABET_BCR_set(state);
-	}
-	return 0;
-}
-
-static void assabet_irda_set_speed(struct device *dev, unsigned int speed)
-{
-	if (speed < 4000000)
-		ASSABET_BCR_clear(ASSABET_BCR_IRDA_FSEL);
-	else
-		ASSABET_BCR_set(ASSABET_BCR_IRDA_FSEL);
-}
-
-static struct irda_platform_data assabet_irda_data = {
-	.set_power	= assabet_irda_set_power,
-	.set_speed	= assabet_irda_set_speed,
-};
-
-static struct ucb1x00_plat_data assabet_ucb1x00_data = {
-	.reset		= assabet_ucb1x00_reset,
-	.gpio_base	= -1,
-=======
 static struct ucb1x00_plat_data assabet_ucb1x00_data = {
 	.reset		= assabet_ucb1x00_reset,
 	.gpio_base	= -1,
 	.can_wakeup	= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct mcp_plat_data assabet_mcp_data = {
@@ -505,8 +411,6 @@ static struct resource neponset_resources[] = {
 };
 #endif
 
-<<<<<<< HEAD
-=======
 static struct gpiod_lookup_table assabet_cf_gpio_table = {
 	.dev_id = "sa11x0-pcmcia.1",
 	.table = {
@@ -610,7 +514,6 @@ static struct gpiod_lookup_table assabet_uart3_gpio_table = {
 	},
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init assabet_init(void)
 {
 	/*
@@ -649,17 +552,6 @@ static void __init assabet_init(void)
 	sa11x0_ppc_configure_mcp();
 
 	if (machine_has_neponset()) {
-<<<<<<< HEAD
-		/*
-		 * Angel sets this, but other bootloaders may not.
-		 *
-		 * This must precede any driver calls to BCR_set()
-		 * or BCR_clear().
-		 */
-		ASSABET_BCR = BCR_value = ASSABET_BCR_DB1111;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_ASSABET_NEPONSET
 		printk( "Warning: Neponset detected but full support "
 			"hasn't been configured in the kernel\n" );
@@ -667,10 +559,6 @@ static void __init assabet_init(void)
 		platform_device_register_simple("neponset", 0,
 			neponset_resources, ARRAY_SIZE(neponset_resources));
 #endif
-<<<<<<< HEAD
-	}
-
-=======
 	} else {
 		gpiod_add_lookup_table(&assabet_uart1_gpio_table);
 		gpiod_add_lookup_table(&assabet_uart3_gpio_table);
@@ -691,7 +579,6 @@ static void __init assabet_init(void)
 	gpiod_add_lookup_table(&assabet_leds_gpio_table);
 	gpio_led_register_device(-1, &assabet_leds_pdata);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef ASSABET_PAL_VIDEO
 	sa11x0_register_lcd(&lq039q2ds54_info);
 #else
@@ -699,15 +586,10 @@ static void __init assabet_init(void)
 #endif
 	sa11x0_register_mtd(&assabet_flash_data, assabet_flash_resources,
 			    ARRAY_SIZE(assabet_flash_resources));
-<<<<<<< HEAD
-	sa11x0_register_irda(&assabet_irda_data);
-	sa11x0_register_mcp(&assabet_mcp_data);
-=======
 	sa11x0_register_mcp(&assabet_mcp_data);
 
 	if (!machine_has_neponset())
 		sa11x0_register_pcmcia(1, &assabet_cf_gpio_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -719,19 +601,11 @@ static void __init assabet_init(void)
 static void __init map_sa1100_gpio_regs( void )
 {
 	unsigned long phys = __PREG(GPLR) & PMD_MASK;
-<<<<<<< HEAD
-	unsigned long virt = io_p2v(phys);
-	int prot = PMD_TYPE_SECT | PMD_SECT_AP_WRITE | PMD_DOMAIN(DOMAIN_IO);
-	pmd_t *pmd;
-
-	pmd = pmd_offset(pud_offset(pgd_offset_k(virt), virt), virt);
-=======
 	unsigned long virt = (unsigned long)io_p2v(phys);
 	int prot = PMD_TYPE_SECT | PMD_SECT_AP_WRITE | PMD_DOMAIN(DOMAIN_IO);
 	pmd_t *pmd;
 
 	pmd = pmd_off_k(virt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*pmd = __pmd(phys | prot);
 	flush_pmd_entry(pmd);
 }
@@ -764,11 +638,7 @@ static void __init get_assabet_scr(void)
 }
 
 static void __init
-<<<<<<< HEAD
-fixup_assabet(struct tag *tags, char **cmdline, struct meminfo *mi)
-=======
 fixup_assabet(struct tag *tags, char **cmdline)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* This must be done before any call to machine_has_neponset() */
 	map_sa1100_gpio_regs();
@@ -783,76 +653,6 @@ static void assabet_uart_pm(struct uart_port *port, u_int state, u_int oldstate)
 {
 	if (port->mapbase == _Ser1UTCR0) {
 		if (state)
-<<<<<<< HEAD
-			ASSABET_BCR_clear(ASSABET_BCR_RS232EN |
-					  ASSABET_BCR_COM_RTS |
-					  ASSABET_BCR_COM_DTR);
-		else
-			ASSABET_BCR_set(ASSABET_BCR_RS232EN |
-					ASSABET_BCR_COM_RTS |
-					ASSABET_BCR_COM_DTR);
-	}
-}
-
-/*
- * Assabet uses COM_RTS and COM_DTR for both UART1 (com port)
- * and UART3 (radio module).  We only handle them for UART1 here.
- */
-static void assabet_set_mctrl(struct uart_port *port, u_int mctrl)
-{
-	if (port->mapbase == _Ser1UTCR0) {
-		u_int set = 0, clear = 0;
-
-		if (mctrl & TIOCM_RTS)
-			clear |= ASSABET_BCR_COM_RTS;
-		else
-			set |= ASSABET_BCR_COM_RTS;
-
-		if (mctrl & TIOCM_DTR)
-			clear |= ASSABET_BCR_COM_DTR;
-		else
-			set |= ASSABET_BCR_COM_DTR;
-
-		ASSABET_BCR_clear(clear);
-		ASSABET_BCR_set(set);
-	}
-}
-
-static u_int assabet_get_mctrl(struct uart_port *port)
-{
-	u_int ret = 0;
-	u_int bsr = ASSABET_BSR;
-
-	/* need 2 reads to read current value */
-	bsr = ASSABET_BSR;
-
-	if (port->mapbase == _Ser1UTCR0) {
-		if (bsr & ASSABET_BSR_COM_DCD)
-			ret |= TIOCM_CD;
-		if (bsr & ASSABET_BSR_COM_CTS)
-			ret |= TIOCM_CTS;
-		if (bsr & ASSABET_BSR_COM_DSR)
-			ret |= TIOCM_DSR;
-	} else if (port->mapbase == _Ser3UTCR0) {
-		if (bsr & ASSABET_BSR_RAD_DCD)
-			ret |= TIOCM_CD;
-		if (bsr & ASSABET_BSR_RAD_CTS)
-			ret |= TIOCM_CTS;
-		if (bsr & ASSABET_BSR_RAD_DSR)
-			ret |= TIOCM_DSR;
-		if (bsr & ASSABET_BSR_RAD_RI)
-			ret |= TIOCM_RI;
-	} else {
-		ret = TIOCM_CD | TIOCM_CTS | TIOCM_DSR;
-	}
-
-	return ret;
-}
-
-static struct sa1100_port_fns assabet_port_fns __initdata = {
-	.set_mctrl	= assabet_set_mctrl,
-	.get_mctrl	= assabet_get_mctrl,
-=======
 			ASSABET_BCR_clear(ASSABET_BCR_RS232EN);
 		else
 			ASSABET_BCR_set(ASSABET_BCR_RS232EN);
@@ -860,7 +660,6 @@ static struct sa1100_port_fns assabet_port_fns __initdata = {
 }
 
 static struct sa1100_port_fns assabet_port_fns __initdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pm		= assabet_uart_pm,
 };
 
@@ -911,8 +710,6 @@ static void __init assabet_map_io(void)
 	sa1100_register_uart(2, 3);
 }
 
-<<<<<<< HEAD
-=======
 static void __init assabet_init_irq(void)
 {
 	u32 def_val;
@@ -931,23 +728,16 @@ static void __init assabet_init_irq(void)
 	 */
 	assabet_init_gpio((void *)&ASSABET_BCR, def_val);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MACHINE_START(ASSABET, "Intel-Assabet")
 	.atag_offset	= 0x100,
 	.fixup		= fixup_assabet,
 	.map_io		= assabet_map_io,
 	.nr_irqs	= SA1100_NR_IRQS,
-<<<<<<< HEAD
-	.init_irq	= sa1100_init_irq,
-	.timer		= &sa1100_timer,
-	.init_machine	= assabet_init,
-=======
 	.init_irq	= assabet_init_irq,
 	.init_time	= sa1100_timer_init,
 	.init_machine	= assabet_init,
 	.init_late	= sa11x0_init_late,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SA1111
 	.dma_zone_size	= SZ_1M,
 #endif

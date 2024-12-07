@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#ifdef __uClinux__
-#include "uaccess_no.h"
-#else
-#include "uaccess_mm.h"
-#endif
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __M68K_UACCESS_H
 #define __M68K_UACCESS_H
@@ -457,4 +450,3 @@ unsigned long __clear_user(void __user *to, unsigned long n);
 #endif
 
 #endif /* _M68K_UACCESS_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

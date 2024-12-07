@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
  * Copyright (C) Joerg Reuter DL1BKE (jreuter@yaina.de)
@@ -28,11 +20,7 @@
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
 #include <net/sock.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fcntl.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
@@ -48,10 +36,6 @@ void ax25_ds_nr_error_recovery(ax25_cb *ax25)
 void ax25_ds_enquiry_response(ax25_cb *ax25)
 {
 	ax25_cb *ax25o;
-<<<<<<< HEAD
-	struct hlist_node *node;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Please note that neither DK4EG's nor DG2FEF's
 	 * DAMA spec mention the following behaviour as seen
@@ -92,11 +76,7 @@ void ax25_ds_enquiry_response(ax25_cb *ax25)
 	ax25_ds_set_timer(ax25->ax25_dev);
 
 	spin_lock(&ax25_list_lock);
-<<<<<<< HEAD
-	ax25_for_each(ax25o, node, &ax25_list) {
-=======
 	ax25_for_each(ax25o, &ax25_list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ax25o == ax25)
 			continue;
 
@@ -175,16 +155,9 @@ static int ax25_check_dama_slave(ax25_dev *ax25_dev)
 {
 	ax25_cb *ax25;
 	int res = 0;
-<<<<<<< HEAD
-	struct hlist_node *node;
-
-	spin_lock(&ax25_list_lock);
-	ax25_for_each(ax25, node, &ax25_list)
-=======
 
 	spin_lock(&ax25_list_lock);
 	ax25_for_each(ax25, &ax25_list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ax25->ax25_dev == ax25_dev && (ax25->condition & AX25_COND_DAMA_MODE) && ax25->state > AX25_STATE_1) {
 			res = 1;
 			break;
@@ -229,7 +202,3 @@ void ax25_dama_off(ax25_cb *ax25)
 	ax25->condition &= ~AX25_COND_DAMA_MODE;
 	ax25_dev_dama_off(ax25->ax25_dev);
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

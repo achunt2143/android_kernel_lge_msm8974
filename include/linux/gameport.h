@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-#ifndef _GAMEPORT_H
-#define _GAMEPORT_H
-
-/*
- *  Copyright (c) 1999-2002 Vojtech Pavlik
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-
-#ifdef __KERNEL__
-#include <asm/io.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  *  Copyright (c) 1999-2002 Vojtech Pavlik
@@ -20,17 +5,13 @@
 #ifndef _GAMEPORT_H
 #define _GAMEPORT_H
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/list.h>
 #include <linux/mutex.h>
 #include <linux/device.h>
 #include <linux/timer.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <uapi/linux/gameport.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct gameport {
 
@@ -82,11 +63,7 @@ struct gameport_driver {
 int gameport_open(struct gameport *gameport, struct gameport_driver *drv, int mode);
 void gameport_close(struct gameport *gameport);
 
-<<<<<<< HEAD
-#if defined(CONFIG_GAMEPORT) || (defined(MODULE) && defined(CONFIG_GAMEPORT_MODULE))
-=======
 #if IS_REACHABLE(CONFIG_GAMEPORT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __gameport_register_port(struct gameport *gameport, struct module *owner);
 /* use a define to avoid include chaining to get THIS_MODULE */
@@ -132,11 +109,7 @@ static inline void gameport_free_port(struct gameport *gameport)
 
 static inline void gameport_set_name(struct gameport *gameport, const char *name)
 {
-<<<<<<< HEAD
-	strlcpy(gameport->name, name, sizeof(gameport->name));
-=======
 	strscpy(gameport->name, name, sizeof(gameport->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -175,33 +148,6 @@ int __must_check __gameport_register_driver(struct gameport_driver *drv,
 
 void gameport_unregister_driver(struct gameport_driver *drv);
 
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-
-#define GAMEPORT_MODE_DISABLED		0
-#define GAMEPORT_MODE_RAW		1
-#define GAMEPORT_MODE_COOKED		2
-
-#define GAMEPORT_ID_VENDOR_ANALOG	0x0001
-#define GAMEPORT_ID_VENDOR_MADCATZ	0x0002
-#define GAMEPORT_ID_VENDOR_LOGITECH	0x0003
-#define GAMEPORT_ID_VENDOR_CREATIVE	0x0004
-#define GAMEPORT_ID_VENDOR_GENIUS	0x0005
-#define GAMEPORT_ID_VENDOR_INTERACT	0x0006
-#define GAMEPORT_ID_VENDOR_MICROSOFT	0x0007
-#define GAMEPORT_ID_VENDOR_THRUSTMASTER	0x0008
-#define GAMEPORT_ID_VENDOR_GRAVIS	0x0009
-#define GAMEPORT_ID_VENDOR_GUILLEMOT	0x000a
-
-#ifdef __KERNEL__
-
-static inline void gameport_trigger(struct gameport *gameport)
-{
-	if (gameport->trigger)
-		gameport->trigger(gameport);
-	else
-		outb(0xff, gameport->io);
-=======
 /**
  * module_gameport_driver() - Helper macro for registering a gameport driver
  * @__gameport_driver: gameport_driver struct
@@ -219,19 +165,11 @@ static inline void gameport_trigger(struct gameport *gameport)
 static inline void gameport_trigger(struct gameport *gameport)
 {
 	gameport->trigger(gameport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned char gameport_read(struct gameport *gameport)
 {
-<<<<<<< HEAD
-	if (gameport->read)
-		return gameport->read(gameport);
-	else
-		return inb(gameport->io);
-=======
 	return gameport->read(gameport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int gameport_cooked_read(struct gameport *gameport, int *axes, int *buttons)
@@ -268,8 +206,4 @@ static inline void gameport_set_poll_interval(struct gameport *gameport, unsigne
 void gameport_start_polling(struct gameport *gameport);
 void gameport_stop_polling(struct gameport *gameport);
 
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

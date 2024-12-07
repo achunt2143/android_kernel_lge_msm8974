@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/copypage-fa.S
  *
@@ -10,13 +7,6 @@
  *
  * Based on copypage-v4wb.S:
  *  Copyright (C) 1995-1999 Russell King
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/highmem.h>
@@ -24,28 +14,6 @@
 /*
  * Faraday optimised copy_user_page
  */
-<<<<<<< HEAD
-static void __naked
-fa_copy_user_page(void *kto, const void *kfrom)
-{
-	asm("\
-	stmfd	sp!, {r4, lr}			@ 2\n\
-	mov	r2, %0				@ 1\n\
-1:	ldmia	r1!, {r3, r4, ip, lr}		@ 4\n\
-	stmia	r0, {r3, r4, ip, lr}		@ 4\n\
-	mcr	p15, 0, r0, c7, c14, 1		@ 1   clean and invalidate D line\n\
-	add	r0, r0, #16			@ 1\n\
-	ldmia	r1!, {r3, r4, ip, lr}		@ 4\n\
-	stmia	r0, {r3, r4, ip, lr}		@ 4\n\
-	mcr	p15, 0, r0, c7, c14, 1		@ 1   clean and invalidate D line\n\
-	add	r0, r0, #16			@ 1\n\
-	subs	r2, r2, #1			@ 1\n\
-	bne	1b				@ 1\n\
-	mcr	p15, 0, r2, c7, c10, 4		@ 1   drain WB\n\
-	ldmfd	sp!, {r4, pc}			@ 3"
-	:
-	: "I" (PAGE_SIZE / 32));
-=======
 static void fa_copy_user_page(void *kto, const void *kfrom)
 {
 	int tmp;
@@ -65,7 +33,6 @@ static void fa_copy_user_page(void *kto, const void *kfrom)
 	: "+&r" (kto), "+&r" (kfrom), "=&r" (tmp)
 	: "2" (PAGE_SIZE / 32)
 	: "r3", "r4", "ip", "lr");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void fa_copy_user_highpage(struct page *to, struct page *from,

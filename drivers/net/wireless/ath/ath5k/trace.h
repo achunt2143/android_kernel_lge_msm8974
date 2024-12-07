@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if !defined(__TRACE_ATH5K_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __TRACE_ATH5K_H
 
@@ -101,11 +98,7 @@ TRACE_EVENT(ath5k_tx_complete,
 #if defined(CONFIG_ATH5K_TRACER) && !defined(__CHECKER__)
 
 #undef TRACE_INCLUDE_PATH
-<<<<<<< HEAD
-#define TRACE_INCLUDE_PATH ../../drivers/net/wireless/ath/ath5k
-=======
 #define TRACE_INCLUDE_PATH .
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 

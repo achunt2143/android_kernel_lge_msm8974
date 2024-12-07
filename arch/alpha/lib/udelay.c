@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1993, 2000 Linus Torvalds
  *
@@ -34,10 +31,7 @@ __delay(int loops)
 		"	bgt %0,1b"
 		: "=&r" (tmp), "=r" (loops) : "1"(loops));
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(__delay);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 #define LPJ	 cpu_data[smp_processor_id()].loops_per_jiffy

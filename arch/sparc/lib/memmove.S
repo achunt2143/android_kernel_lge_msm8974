@@ -1,23 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* memmove.S: Simple memmove implementation.
  *
  * Copyright (C) 1997, 2004 David S. Miller (davem@redhat.com)
  * Copyright (C) 1996, 1997, 1998, 1999 Jakub Jelinek (jj@ultra.linux.cz)
  */
 
-<<<<<<< HEAD
-	.text
-	.align		32
-	.globl		memmove
-	.type		memmove,#function
-memmove:		/* o0=dst o1=src o2=len */
-	mov		%o0, %g1
-	cmp		%o0, %o1
-	bleu,pt		%xcc, memcpy
-=======
 #include <linux/export.h>
 #include <linux/linkage.h>
 
@@ -28,7 +15,6 @@ ENTRY(memmove) /* o0=dst o1=src o2=len */
 
 	cmp		%o0, %o1
 	bleu,pt		%xcc, 2f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 add		%o1, %o2, %g7
 	cmp		%g7, %o0
 	bleu,pt		%xcc, memcpy
@@ -42,12 +28,6 @@ ENTRY(memmove) /* o0=dst o1=src o2=len */
 	stb		%g7, [%o0]
 	bne,pt		%icc, 1b
 	 sub		%o0, 1, %o0
-<<<<<<< HEAD
-
-	retl
-	 mov		%g1, %o0
-	.size		memmove, .-memmove
-=======
 99:
 	retl
 	 mov		%g1, %o0
@@ -80,4 +60,3 @@ ENTRY(memmove) /* o0=dst o1=src o2=len */
 	ba,a,pt		%xcc, 99b
 ENDPROC(memmove)
 EXPORT_SYMBOL(memmove)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

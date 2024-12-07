@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  cb710/cb710-mmc.h
  *
  *  Copyright by Michał Mirosław, 2008-2009
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef LINUX_CB710_MMC_H
 #define LINUX_CB710_MMC_H
@@ -31,21 +21,12 @@ struct cb710_mmc_reader {
 
 static inline struct mmc_host *cb710_slot_to_mmc(struct cb710_slot *slot)
 {
-<<<<<<< HEAD
-	return dev_get_drvdata(&slot->pdev.dev);
-=======
 	return platform_get_drvdata(&slot->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct cb710_slot *cb710_mmc_to_slot(struct mmc_host *mmc)
 {
-<<<<<<< HEAD
-	struct platform_device *pdev = container_of(mmc_dev(mmc),
-		struct platform_device, dev);
-=======
 	struct platform_device *pdev = to_platform_device(mmc_dev(mmc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cb710_pdev_to_slot(pdev);
 }
 

@@ -1,23 +1,13 @@
-<<<<<<< HEAD
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2011 QLogic Corporation
- *
- * See LICENSE.qla4xxx for copyright and licensing details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic iSCSI HBA Driver
  * Copyright (c)  2003-2013 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ql4_def.h"
 #include "ql4_glbl.h"
 #include "ql4_dbg.h"
 
-<<<<<<< HEAD
-=======
 static ssize_t
 qla4_8xxx_sysfs_read_fw_dump(struct file *filep, struct kobject *kobj,
 			     struct bin_attribute *ba, char *buf, loff_t off,
@@ -158,7 +148,6 @@ void qla4_8xxx_free_sysfs_attr(struct scsi_qla_host *ha)
 				      iter->attr);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Scsi_Host attributes. */
 static ssize_t
 qla4xxx_fw_version_show(struct device *dev,
@@ -166,18 +155,6 @@ qla4xxx_fw_version_show(struct device *dev,
 {
 	struct scsi_qla_host *ha = to_qla_host(class_to_shost(dev));
 
-<<<<<<< HEAD
-	if (is_qla8022(ha))
-		return snprintf(buf, PAGE_SIZE, "%d.%02d.%02d (%x)\n",
-				ha->firmware_version[0],
-				ha->firmware_version[1],
-				ha->patch_number, ha->build_number);
-	else
-		return snprintf(buf, PAGE_SIZE, "%d.%02d.%02d.%02d\n",
-				ha->firmware_version[0],
-				ha->firmware_version[1],
-				ha->patch_number, ha->build_number);
-=======
 	if (is_qla80XX(ha))
 		return snprintf(buf, PAGE_SIZE, "%d.%02d.%02d (%x)\n",
 				ha->fw_info.fw_major, ha->fw_info.fw_minor,
@@ -186,7 +163,6 @@ qla4xxx_fw_version_show(struct device *dev,
 		return snprintf(buf, PAGE_SIZE, "%d.%02d.%02d.%02d\n",
 				ha->fw_info.fw_major, ha->fw_info.fw_minor,
 				ha->fw_info.fw_patch, ha->fw_info.fw_build);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -202,13 +178,8 @@ qla4xxx_iscsi_version_show(struct device *dev, struct device_attribute *attr,
 			   char *buf)
 {
 	struct scsi_qla_host *ha = to_qla_host(class_to_shost(dev));
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d.%02d\n", ha->iscsi_major,
-			ha->iscsi_minor);
-=======
 	return snprintf(buf, PAGE_SIZE, "%d.%02d\n", ha->fw_info.iscsi_major,
 			ha->fw_info.iscsi_minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -217,13 +188,8 @@ qla4xxx_optrom_version_show(struct device *dev, struct device_attribute *attr,
 {
 	struct scsi_qla_host *ha = to_qla_host(class_to_shost(dev));
 	return snprintf(buf, PAGE_SIZE, "%d.%02d.%02d.%02d\n",
-<<<<<<< HEAD
-			ha->bootload_major, ha->bootload_minor,
-			ha->bootload_patch, ha->bootload_build);
-=======
 			ha->fw_info.bootload_major, ha->fw_info.bootload_minor,
 			ha->fw_info.bootload_patch, ha->fw_info.bootload_build);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -251,11 +217,7 @@ qla4xxx_phy_port_cnt_show(struct device *dev, struct device_attribute *attr,
 {
 	struct scsi_qla_host *ha = to_qla_host(class_to_shost(dev));
 
-<<<<<<< HEAD
-	if (!is_qla8022(ha))
-=======
 	if (is_qla40XX(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSYS;
 
 	return snprintf(buf, PAGE_SIZE, "0x%04X\n", ha->phy_port_cnt);
@@ -267,11 +229,7 @@ qla4xxx_phy_port_num_show(struct device *dev, struct device_attribute *attr,
 {
 	struct scsi_qla_host *ha = to_qla_host(class_to_shost(dev));
 
-<<<<<<< HEAD
-	if (!is_qla8022(ha))
-=======
 	if (is_qla40XX(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSYS;
 
 	return snprintf(buf, PAGE_SIZE, "0x%04X\n", ha->phy_port_num);
@@ -283,11 +241,7 @@ qla4xxx_iscsi_func_cnt_show(struct device *dev, struct device_attribute *attr,
 {
 	struct scsi_qla_host *ha = to_qla_host(class_to_shost(dev));
 
-<<<<<<< HEAD
-	if (!is_qla8022(ha))
-=======
 	if (is_qla40XX(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSYS;
 
 	return snprintf(buf, PAGE_SIZE, "0x%04X\n", ha->iscsi_pci_func_cnt);
@@ -302,8 +256,6 @@ qla4xxx_hba_model_show(struct device *dev, struct device_attribute *attr,
 	return snprintf(buf, PAGE_SIZE, "%s\n", ha->model_name);
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t
 qla4xxx_fw_timestamp_show(struct device *dev, struct device_attribute *attr,
 			  char *buf)
@@ -361,7 +313,6 @@ qla4xxx_fw_uptime_show(struct device *dev, struct device_attribute *attr,
 			ha->fw_uptime_msecs);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEVICE_ATTR(fw_version, S_IRUGO, qla4xxx_fw_version_show, NULL);
 static DEVICE_ATTR(serial_num, S_IRUGO, qla4xxx_serial_num_show, NULL);
 static DEVICE_ATTR(iscsi_version, S_IRUGO, qla4xxx_iscsi_version_show, NULL);
@@ -372,22 +323,6 @@ static DEVICE_ATTR(phy_port_cnt, S_IRUGO, qla4xxx_phy_port_cnt_show, NULL);
 static DEVICE_ATTR(phy_port_num, S_IRUGO, qla4xxx_phy_port_num_show, NULL);
 static DEVICE_ATTR(iscsi_func_cnt, S_IRUGO, qla4xxx_iscsi_func_cnt_show, NULL);
 static DEVICE_ATTR(hba_model, S_IRUGO, qla4xxx_hba_model_show, NULL);
-<<<<<<< HEAD
-
-struct device_attribute *qla4xxx_host_attrs[] = {
-	&dev_attr_fw_version,
-	&dev_attr_serial_num,
-	&dev_attr_iscsi_version,
-	&dev_attr_optrom_version,
-	&dev_attr_board_id,
-	&dev_attr_fw_state,
-	&dev_attr_phy_port_cnt,
-	&dev_attr_phy_port_num,
-	&dev_attr_iscsi_func_cnt,
-	&dev_attr_hba_model,
-	NULL,
-};
-=======
 static DEVICE_ATTR(fw_timestamp, S_IRUGO, qla4xxx_fw_timestamp_show, NULL);
 static DEVICE_ATTR(fw_build_user, S_IRUGO, qla4xxx_fw_build_user_show, NULL);
 static DEVICE_ATTR(fw_ext_timestamp, S_IRUGO, qla4xxx_fw_ext_timestamp_show,
@@ -422,4 +357,3 @@ const struct attribute_group *qla4xxx_host_groups[] = {
 	&qla4xxx_host_attr_group,
 	NULL
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

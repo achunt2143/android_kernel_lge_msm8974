@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * For License see notice in hfc_multi.c
  *
@@ -10,11 +7,7 @@
  *
  */
 
-<<<<<<< HEAD
-#include <asm/8xx_immap.h>
-=======
 #include <asm/cpm1.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Change this to the value used by your board */
 #ifndef IMAP_ADDR
@@ -128,10 +121,6 @@ setup_embedded(struct hfc_multi *hc, struct hm_map *m)
 	case HFC_IO_MODE_EMBSD:
 		test_and_set_bit(HFC_CHIP_EMBSD, &hc->chip);
 		hc->slots = 128; /* required */
-<<<<<<< HEAD
-		/* fall through */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hc->HFC_outb = HFC_outb_embsd;
 		hc->HFC_inb = HFC_inb_embsd;
 		hc->HFC_inw = HFC_inw_embsd;

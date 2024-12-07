@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-consolemap_deftbl.c
-defkeymap.c
-=======
 # SPDX-License-Identifier: GPL-2.0
 /conmakehash
 /consolemap_deftbl.c
 /defkeymap.c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

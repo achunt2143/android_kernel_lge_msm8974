@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic PowerPC 44x platform support
  *
  * Copyright 2008 IBM Corporation
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; version 2 of the License.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This implements simple platform support for PowerPC 44x chips.  This is
  * mostly used for eval boards or other simple and "generic" 44x boards.  If
  * your board has custom functions or hardware, then you will likely want to
@@ -23,10 +13,6 @@
 #include <asm/machdep.h>
 #include <asm/pci-bridge.h>
 #include <asm/ppc4xx.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/time.h>
 #include <asm/udbg.h>
 #include <asm/uic.h>
@@ -34,11 +20,7 @@
 #include <linux/init.h>
 #include <linux/of_platform.h>
 
-<<<<<<< HEAD
-static __initdata struct of_device_id ppc44x_of_bus[] = {
-=======
 static const struct of_device_id ppc44x_of_bus[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "ibm,plb4", },
 	{ .compatible = "ibm,opb", },
 	{ .compatible = "ibm,ebc", },
@@ -81,18 +63,10 @@ static char *board[] __initdata = {
 
 static int __init ppc44x_probe(void)
 {
-<<<<<<< HEAD
-	unsigned long root = of_get_flat_dt_root();
-	int i = 0;
-
-	for (i = 0; i < ARRAY_SIZE(board); i++) {
-		if (of_flat_dt_is_compatible(root, board[i])) {
-=======
 	int i = 0;
 
 	for (i = 0; i < ARRAY_SIZE(board); i++) {
 		if (of_machine_is_compatible(board[i])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_set_flags(PCI_REASSIGN_ALL_RSRC);
 			return 1;
 		}
@@ -108,8 +82,4 @@ define_machine(ppc44x_simple) {
 	.init_IRQ = uic_init_tree,
 	.get_irq = uic_get_irq,
 	.restart = ppc4xx_reset_system,
-<<<<<<< HEAD
-	.calibrate_decr = generic_calibrate_decr,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

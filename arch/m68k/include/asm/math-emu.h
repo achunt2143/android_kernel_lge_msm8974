@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_M68K_SETUP_H
 #define _ASM_M68K_SETUP_H
 
@@ -109,36 +106,21 @@ struct fp_data {
 #ifdef FPU_EMU_DEBUG
 extern unsigned int fp_debugprint;
 
-<<<<<<< HEAD
-#define dprint(bit, fmt, args...) ({			\
-	if (fp_debugprint & (1 << (bit)))		\
-		printk(fmt, ## args);			\
-})
-#else
-#define dprint(bit, fmt, args...)
-=======
 #define dprint(bit, fmt, ...) ({			\
 	if (fp_debugprint & (1 << (bit)))		\
 		pr_info(fmt, ##__VA_ARGS__);		\
 })
 #else
 #define dprint(bit, fmt, ...)	no_printk(fmt, ##__VA_ARGS__)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define uprint(str) ({					\
 	static int __count = 3;				\
 							\
 	if (__count > 0) {				\
-<<<<<<< HEAD
-		printk("You just hit an unimplemented "	\
-		       "fpu instruction (%s)\n", str);	\
-		printk("Please report this to ....\n");	\
-=======
 		pr_err("You just hit an unimplemented "	\
 		       "fpu instruction (%s)\n", str);	\
 		pr_err("Please report this to ....\n");	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__count--;				\
 	}						\
 })

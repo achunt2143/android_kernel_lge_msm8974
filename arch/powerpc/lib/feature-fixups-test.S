@@ -1,27 +1,13 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008 Michael Ellerman, IBM Corporation.
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright 2008 Michael Ellerman, IBM Corporation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/feature-fixups.h>
 #include <asm/ppc_asm.h>
 #include <asm/synch.h>
-<<<<<<< HEAD
-=======
 #include <asm/asm-compat.h>
 #include <asm/ppc-opcode.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.text
 
@@ -178,12 +164,6 @@ globl(ftr_fixup_test6_expected)
 	blt	2b
 	b	3f
 	b	1b
-<<<<<<< HEAD
-2:	or	1,1,1
-	or	2,2,2
-3:	or	3,3,3
-
-=======
 3:	or	1,1,1
 	or	2,2,2
 	or	3,3,3
@@ -224,17 +204,12 @@ globl(ftr_fixup_test7_expected)
 	b	2b
 	bdnz	3b
 1:	or	1,1,1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if 0
 /* Test that if we have a larger else case the assembler spots it and
  * reports an error. #if 0'ed so as not to break the build normally.
  */
-<<<<<<< HEAD
-ftr_fixup_test7:
-=======
 ftr_fixup_test_too_big:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	or	1,1,1
 BEGIN_FTR_SECTION
 	or	2,2,2
@@ -817,8 +792,6 @@ globl(lwsync_fixup_test_expected_SYNC)
 1:	or	1,1,1
 	sync
 
-<<<<<<< HEAD
-=======
 globl(ftr_fixup_prefix1)
 	or	1,1,1
 	.long OP_PREFIX << 26
@@ -887,4 +860,3 @@ globl(ftr_fixup_prefix3_expected)
 	.long 0x0000001
 	nop
 	or	3,3,3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

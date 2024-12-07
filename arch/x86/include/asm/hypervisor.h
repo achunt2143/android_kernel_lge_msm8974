@@ -20,17 +20,6 @@
 #ifndef _ASM_X86_HYPERVISOR_H
 #define _ASM_X86_HYPERVISOR_H
 
-<<<<<<< HEAD
-#include <asm/kvm_para.h>
-#include <asm/xen/hypervisor.h>
-
-extern void init_hypervisor(struct cpuinfo_x86 *c);
-extern void init_hypervisor_platform(void);
-
-/*
- * x86 hypervisor information
- */
-=======
 /* x86 hypervisor types  */
 enum x86_hypervisor_type {
 	X86_HYPER_NATIVE = 0,
@@ -49,40 +38,11 @@ enum x86_hypervisor_type {
 #include <asm/x86_init.h>
 #include <asm/xen/hypervisor.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hypervisor_x86 {
 	/* Hypervisor name */
 	const char	*name;
 
 	/* Detection routine */
-<<<<<<< HEAD
-	bool		(*detect)(void);
-
-	/* Adjust CPU feature bits (run once per CPU) */
-	void		(*set_cpu_features)(struct cpuinfo_x86 *);
-
-	/* Platform setup (run once per boot) */
-	void		(*init_platform)(void);
-};
-
-extern const struct hypervisor_x86 *x86_hyper;
-
-/* Recognized hypervisors */
-extern const struct hypervisor_x86 x86_hyper_vmware;
-extern const struct hypervisor_x86 x86_hyper_ms_hyperv;
-extern const struct hypervisor_x86 x86_hyper_xen_hvm;
-
-static inline bool hypervisor_x2apic_available(void)
-{
-	if (kvm_para_available())
-		return true;
-	if (xen_x2apic_para_available())
-		return true;
-	return false;
-}
-
-#endif
-=======
 	uint32_t	(*detect)(void);
 
 	/* Hypervisor type */
@@ -121,4 +81,3 @@ static inline bool hypervisor_is_type(enum x86_hypervisor_type type)
 }
 #endif /* CONFIG_HYPERVISOR_GUEST */
 #endif /* _ASM_X86_HYPERVISOR_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

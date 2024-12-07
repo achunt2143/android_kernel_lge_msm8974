@@ -1,37 +1,12 @@
-<<<<<<< HEAD
-/*
- * Copyright(c) 2004 - 2006 Intel Corporation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * The full GNU General Public License is included in this distribution in the
- * file called COPYING.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright(c) 2004 - 2006 Intel Corporation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef LINUX_DMAENGINE_H
 #define LINUX_DMAENGINE_H
 
 #include <linux/device.h>
-<<<<<<< HEAD
-=======
 #include <linux/err.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/uio.h>
 #include <linux/bug.h>
 #include <linux/scatterlist.h>
@@ -46,15 +21,6 @@
  */
 typedef s32 dma_cookie_t;
 #define DMA_MIN_COOKIE	1
-<<<<<<< HEAD
-#define DMA_MAX_COOKIE	INT_MAX
-
-#define dma_submit_error(cookie) ((cookie) < 0 ? 1 : 0)
-
-/**
- * enum dma_status - DMA transaction status
- * @DMA_SUCCESS: transaction completed successfully
-=======
 
 static inline int dma_submit_error(dma_cookie_t cookie)
 {
@@ -64,24 +30,16 @@ static inline int dma_submit_error(dma_cookie_t cookie)
 /**
  * enum dma_status - DMA transaction status
  * @DMA_COMPLETE: transaction completed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @DMA_IN_PROGRESS: transaction not yet processed
  * @DMA_PAUSED: transaction is paused
  * @DMA_ERROR: transaction failed
  */
 enum dma_status {
-<<<<<<< HEAD
-	DMA_SUCCESS,
-	DMA_IN_PROGRESS,
-	DMA_PAUSED,
-	DMA_ERROR,
-=======
 	DMA_COMPLETE,
 	DMA_IN_PROGRESS,
 	DMA_PAUSED,
 	DMA_ERROR,
 	DMA_OUT_OF_ORDER,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -97,24 +55,16 @@ enum dma_transaction_type {
 	DMA_XOR_VAL,
 	DMA_PQ_VAL,
 	DMA_MEMSET,
-<<<<<<< HEAD
-	DMA_INTERRUPT,
-	DMA_SG,
-=======
 	DMA_MEMSET_SG,
 	DMA_INTERRUPT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DMA_PRIVATE,
 	DMA_ASYNC_TX,
 	DMA_SLAVE,
 	DMA_CYCLIC,
 	DMA_INTERLEAVE,
-<<<<<<< HEAD
-=======
 	DMA_COMPLETION_NO_ORDER,
 	DMA_REPEAT,
 	DMA_LOAD_EOT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* last transaction type for creation of the capabilities mask */
 	DMA_TX_TYPE_END,
 };
@@ -137,15 +87,9 @@ enum dma_transfer_direction {
 /**
  * Interleaved Transfer Request
  * ----------------------------
-<<<<<<< HEAD
- * A chunk is collection of contiguous bytes to be transfered.
- * The gap(in bytes) between two chunks is called inter-chunk-gap(ICG).
- * ICGs may or maynot change between chunks.
-=======
  * A chunk is collection of contiguous bytes to be transferred.
  * The gap(in bytes) between two chunks is called inter-chunk-gap(ICG).
  * ICGs may or may not change between chunks.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * A FRAME is the smallest series of contiguous {chunk,icg} pairs,
  *  that when repeated an integral number of times, specifies the transfer.
  * A transfer template is specification of a Frame, the number of times
@@ -171,24 +115,18 @@ enum dma_transfer_direction {
  *	 chunk and before first src/dst address for next chunk.
  *	 Ignored for dst(assumed 0), if dst_inc is true and dst_sgl is false.
  *	 Ignored for src(assumed 0), if src_inc is true and src_sgl is false.
-<<<<<<< HEAD
-=======
  * @dst_icg: Number of bytes to jump after last dst address of this
  *	 chunk and before the first dst address for next chunk.
  *	 Ignored if dst_inc is true and dst_sgl is false.
  * @src_icg: Number of bytes to jump after last src address of this
  *	 chunk and before the first src address for next chunk.
  *	 Ignored if src_inc is true and src_sgl is false.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct data_chunk {
 	size_t size;
 	size_t icg;
-<<<<<<< HEAD
-=======
 	size_t dst_icg;
 	size_t src_icg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -219,11 +157,7 @@ struct dma_interleaved_template {
 	bool dst_sgl;
 	size_t numf;
 	size_t frame_size;
-<<<<<<< HEAD
-	struct data_chunk sgl[0];
-=======
 	struct data_chunk sgl[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -232,19 +166,8 @@ struct dma_interleaved_template {
  * @DMA_PREP_INTERRUPT - trigger an interrupt (callback) upon completion of
  *  this transaction
  * @DMA_CTRL_ACK - if clear, the descriptor cannot be reused until the client
-<<<<<<< HEAD
- *  acknowledges receipt, i.e. has has a chance to establish any dependency
- *  chains
- * @DMA_COMPL_SKIP_SRC_UNMAP - set to disable dma-unmapping the source buffer(s)
- * @DMA_COMPL_SKIP_DEST_UNMAP - set to disable dma-unmapping the destination(s)
- * @DMA_COMPL_SRC_UNMAP_SINGLE - set to do the source dma-unmapping as single
- * 	(if not set, do the source dma-unmapping as page)
- * @DMA_COMPL_DEST_UNMAP_SINGLE - set to do the destination dma-unmapping as single
- * 	(if not set, do the destination dma-unmapping as page)
-=======
  *  acknowledges receipt, i.e. has a chance to establish any dependency
  *  chains
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @DMA_PREP_PQ_DISABLE_P - prevent generation of P while generating Q
  * @DMA_PREP_PQ_DISABLE_Q - prevent generation of Q while generating P
  * @DMA_PREP_CONTINUE - indicate to a driver that it is reusing buffers as
@@ -252,8 +175,6 @@ struct dma_interleaved_template {
  *  operation it continues the calculation with new sources
  * @DMA_PREP_FENCE - tell the driver that subsequent operations depend
  *  on the result of this operation
-<<<<<<< HEAD
-=======
  * @DMA_CTRL_REUSE: client can reuse the descriptor and submit again till
  *  cleared or freed
  * @DMA_PREP_CMD: tell the driver that the data passed to DMA API is command
@@ -269,43 +190,10 @@ struct dma_interleaved_template {
  *  transaction is marked with DMA_PREP_REPEAT will cause the new transaction
  *  to never be processed and stay in the issued queue forever. The flag is
  *  ignored if the previous transaction is not a repeated transaction.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum dma_ctrl_flags {
 	DMA_PREP_INTERRUPT = (1 << 0),
 	DMA_CTRL_ACK = (1 << 1),
-<<<<<<< HEAD
-	DMA_COMPL_SKIP_SRC_UNMAP = (1 << 2),
-	DMA_COMPL_SKIP_DEST_UNMAP = (1 << 3),
-	DMA_COMPL_SRC_UNMAP_SINGLE = (1 << 4),
-	DMA_COMPL_DEST_UNMAP_SINGLE = (1 << 5),
-	DMA_PREP_PQ_DISABLE_P = (1 << 6),
-	DMA_PREP_PQ_DISABLE_Q = (1 << 7),
-	DMA_PREP_CONTINUE = (1 << 8),
-	DMA_PREP_FENCE = (1 << 9),
-};
-
-/**
- * enum dma_ctrl_cmd - DMA operations that can optionally be exercised
- * on a running channel.
- * @DMA_TERMINATE_ALL: terminate all ongoing transfers
- * @DMA_PAUSE: pause ongoing transfers
- * @DMA_RESUME: resume paused transfer
- * @DMA_SLAVE_CONFIG: this command is only implemented by DMA controllers
- * that need to runtime reconfigure the slave channels (as opposed to passing
- * configuration data in statically from the platform). An additional
- * argument of struct dma_slave_config must be passed in with this
- * command.
- * @FSLDMA_EXTERNAL_START: this command will put the Freescale DMA controller
- * into external start mode.
- */
-enum dma_ctrl_cmd {
-	DMA_TERMINATE_ALL,
-	DMA_PAUSE,
-	DMA_RESUME,
-	DMA_SLAVE_CONFIG,
-	FSLDMA_EXTERNAL_START,
-=======
 	DMA_PREP_PQ_DISABLE_P = (1 << 2),
 	DMA_PREP_PQ_DISABLE_Q = (1 << 3),
 	DMA_PREP_CONTINUE = (1 << 4),
@@ -314,7 +202,6 @@ enum dma_ctrl_cmd {
 	DMA_PREP_CMD = (1 << 7),
 	DMA_PREP_REPEAT = (1 << 8),
 	DMA_PREP_LOAD_EOT = (1 << 9),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -343,8 +230,6 @@ enum sum_check_flags {
 typedef struct { DECLARE_BITMAP(bits, DMA_TX_TYPE_END); } dma_cap_mask_t;
 
 /**
-<<<<<<< HEAD
-=======
  * enum dma_desc_metadata_mode - per descriptor metadata mode types supported
  * @DESC_METADATA_CLIENT - the metadata buffer is allocated/provided by the
  *  client driver and it is attached (via the dmaengine_desc_attach_metadata()
@@ -401,15 +286,10 @@ enum dma_desc_metadata_mode {
 };
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * struct dma_chan_percpu - the per-CPU part of struct dma_chan
  * @memcpy_count: transaction counter
  * @bytes_transferred: byte counter
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dma_chan_percpu {
 	/* stats */
 	unsigned long memcpy_count;
@@ -417,10 +297,6 @@ struct dma_chan_percpu {
 };
 
 /**
-<<<<<<< HEAD
- * struct dma_chan - devices supply DMA channels, clients use them
- * @device: ptr to the dma device who supplies this channel, always !%NULL
-=======
  * struct dma_router - DMA router structure
  * @dev: pointer to the DMA router device
  * @route_free: function to be called when the route can be disconnected
@@ -434,17 +310,10 @@ struct dma_router {
  * struct dma_chan - devices supply DMA channels, clients use them
  * @device: ptr to the dma device who supplies this channel, always !%NULL
  * @slave: ptr to the device using this channel
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cookie: last cookie value returned to client
  * @completed_cookie: last completed cookie for this channel
  * @chan_id: channel ID for sysfs
  * @dev: class device for sysfs
-<<<<<<< HEAD
- * @device_node: used to add this to the device chan list
- * @local: per-cpu pointer to a struct dma_chan_percpu
- * @client-count: how many clients are using this channel
- * @table_count: number of appearances in the mem-to-mem allocation table
-=======
  * @name: backlink name for sysfs
  * @dbg_client_name: slave name for debugfs in format:
  *	dev_name(requester's dev):channel name, for example: "2b00000.mcasp:tx"
@@ -454,86 +323,57 @@ struct dma_router {
  * @table_count: number of appearances in the mem-to-mem allocation table
  * @router: pointer to the DMA router structure
  * @route_data: channel specific data for the router
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @private: private data for certain client-channel associations
  */
 struct dma_chan {
 	struct dma_device *device;
-<<<<<<< HEAD
-=======
 	struct device *slave;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_cookie_t cookie;
 	dma_cookie_t completed_cookie;
 
 	/* sysfs */
 	int chan_id;
 	struct dma_chan_dev *dev;
-<<<<<<< HEAD
-=======
 	const char *name;
 #ifdef CONFIG_DEBUG_FS
 	char *dbg_client_name;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct list_head device_node;
 	struct dma_chan_percpu __percpu *local;
 	int client_count;
 	int table_count;
-<<<<<<< HEAD
-=======
 
 	/* DMA router */
 	struct dma_router *router;
 	void *route_data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *private;
 };
 
 /**
  * struct dma_chan_dev - relate sysfs device node to backing channel device
-<<<<<<< HEAD
- * @chan - driver channel device
- * @device - sysfs device
- * @dev_id - parent dma_device dev_id
- * @idr_ref - reference count to gate release of dma_device dev_id
-=======
  * @chan: driver channel device
  * @device: sysfs device
  * @dev_id: parent dma_device dev_id
  * @chan_dma_dev: The channel is using custom/different dma-mapping
  * compared to the parent dma_device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct dma_chan_dev {
 	struct dma_chan *chan;
 	struct device device;
 	int dev_id;
-<<<<<<< HEAD
-	atomic_t *idr_ref;
-};
-
-/**
- * enum dma_slave_buswidth - defines bus with of the DMA slave
-=======
 	bool chan_dma_dev;
 };
 
 /**
  * enum dma_slave_buswidth - defines bus width of the DMA slave
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * device, source or target buses
  */
 enum dma_slave_buswidth {
 	DMA_SLAVE_BUSWIDTH_UNDEFINED = 0,
 	DMA_SLAVE_BUSWIDTH_1_BYTE = 1,
 	DMA_SLAVE_BUSWIDTH_2_BYTES = 2,
-<<<<<<< HEAD
-	DMA_SLAVE_BUSWIDTH_4_BYTES = 4,
-	DMA_SLAVE_BUSWIDTH_8_BYTES = 8,
-=======
 	DMA_SLAVE_BUSWIDTH_3_BYTES = 3,
 	DMA_SLAVE_BUSWIDTH_4_BYTES = 4,
 	DMA_SLAVE_BUSWIDTH_8_BYTES = 8,
@@ -541,40 +381,25 @@ enum dma_slave_buswidth {
 	DMA_SLAVE_BUSWIDTH_32_BYTES = 32,
 	DMA_SLAVE_BUSWIDTH_64_BYTES = 64,
 	DMA_SLAVE_BUSWIDTH_128_BYTES = 128,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct dma_slave_config - dma slave channel runtime config
  * @direction: whether the data shall go in or out on this slave
-<<<<<<< HEAD
- * channel, right now. DMA_TO_DEVICE and DMA_FROM_DEVICE are
- * legal values, DMA_BIDIRECTIONAL is not acceptable since we
- * need to differentiate source and target addresses.
-=======
  * channel, right now. DMA_MEM_TO_DEV and DMA_DEV_TO_MEM are
  * legal values. DEPRECATED, drivers should use the direction argument
  * to the device_prep_slave_sg and device_prep_dma_cyclic functions or
  * the dir field in the dma_interleaved_template structure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @src_addr: this is the physical address where DMA slave data
  * should be read (RX), if the source is memory this argument is
  * ignored.
  * @dst_addr: this is the physical address where DMA slave data
-<<<<<<< HEAD
- * should be written (TX), if the source is memory this argument
-=======
  * should be written (TX), if the destination is memory this argument
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * is ignored.
  * @src_addr_width: this is the width in bytes of the source (RX)
  * register where DMA data shall be read. If the source
  * is memory this may be ignored depending on architecture.
-<<<<<<< HEAD
- * Legal values: 1, 2, 4, 8.
-=======
  * Legal values: 1, 2, 3, 4, 8, 16, 32, 64, 128.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dst_addr_width: same as src_addr_width but for destination
  * target (TX) mutatis mutandis.
  * @src_maxburst: the maximum number of words (note: words, as in
@@ -584,11 +409,6 @@ enum dma_slave_buswidth {
  * may or may not be applicable on memory sources.
  * @dst_maxburst: same as src_maxburst but for destination target
  * mutatis mutandis.
-<<<<<<< HEAD
- * @device_fc: Flow Controller Settings. Only valid for slave channels. Fill
- * with 'true' if peripheral should be flow controller. Direction will be
- * selected at Runtime.
-=======
  * @src_port_window_size: The length of the register area in words the data need
  * to be accessed on the device side. It is only used for devices which is using
  * an area instead of a single register to receive the data. Typically the DMA
@@ -601,31 +421,10 @@ enum dma_slave_buswidth {
  * @peripheral_config: peripheral configuration for programming peripheral
  * for dmaengine transfer
  * @peripheral_size: peripheral configuration buffer size
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This struct is passed in as configuration data to a DMA engine
  * in order to set up a certain channel for DMA transport at runtime.
  * The DMA device/engine has to provide support for an additional
-<<<<<<< HEAD
- * command in the channel config interface, DMA_SLAVE_CONFIG
- * and this struct will then be passed in as an argument to the
- * DMA engine device_control() function.
- *
- * The rationale for adding configuration information to this struct
- * is as follows: if it is likely that most DMA slave controllers in
- * the world will support the configuration option, then make it
- * generic. If not: if it is fixed so that it be sent in static from
- * the platform data, then prefer to do that. Else, if it is neither
- * fixed at runtime, nor generic enough (such as bus mastership on
- * some CPU family and whatnot) then create a custom slave config
- * struct and pass that, then make this config a member of that
- * struct, if applicable.
- */
-struct dma_slave_config {
-	enum dma_transfer_direction direction;
-	dma_addr_t src_addr;
-	dma_addr_t dst_addr;
-=======
  * callback in the dma_device structure, device_config and this struct
  * will then be passed in as an argument to the function.
  *
@@ -639,14 +438,10 @@ struct dma_slave_config {
 	enum dma_transfer_direction direction;
 	phys_addr_t src_addr;
 	phys_addr_t dst_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum dma_slave_buswidth src_addr_width;
 	enum dma_slave_buswidth dst_addr_width;
 	u32 src_maxburst;
 	u32 dst_maxburst;
-<<<<<<< HEAD
-	bool device_fc;
-=======
 	u32 src_port_window_size;
 	u32 dst_port_window_size;
 	bool device_fc;
@@ -715,7 +510,6 @@ struct dma_slave_caps {
 	bool cmd_terminate;
 	enum dma_residue_granularity residue_granularity;
 	bool descriptor_reuse;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline const char *dma_chan_name(struct dma_chan *chan)
@@ -723,11 +517,6 @@ static inline const char *dma_chan_name(struct dma_chan *chan)
 	return dev_name(&chan->dev->device);
 }
 
-<<<<<<< HEAD
-void dma_chan_cleanup(struct kref *kref);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * typedef dma_filter_fn - callback filter for dma_request_channel
  * @chan: channel to be reviewed
@@ -742,8 +531,6 @@ void dma_chan_cleanup(struct kref *kref);
 typedef bool (*dma_filter_fn)(struct dma_chan *chan, void *filter_param);
 
 typedef void (*dma_async_tx_callback)(void *dma_async_param);
-<<<<<<< HEAD
-=======
 
 enum dmaengine_tx_result {
 	DMA_TRANS_NOERROR = 0,		/* SUCCESS */
@@ -787,21 +574,12 @@ struct dma_descriptor_metadata_ops {
 		       size_t payload_len);
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct dma_async_tx_descriptor - async transaction descriptor
  * ---dma generic offload fields---
  * @cookie: tracking cookie for this transaction, set to -EBUSY if
  *	this tx is sitting on a dependency list
  * @flags: flags to augment operation preparation, control completion, and
-<<<<<<< HEAD
- * 	communicate status
- * @phys: physical address of the descriptor
- * @chan: target channel for this operation
- * @tx_submit: set the prepared descriptor(s) to be executed by the engine
- * @callback: routine to call after this operation is complete
- * @callback_param: general parameter to pass to the callback routine
-=======
  *	communicate status
  * @phys: physical address of the descriptor
  * @chan: target channel for this operation
@@ -814,7 +592,6 @@ struct dma_descriptor_metadata_ops {
  *	DESC_METADATA_NONE
  * @metadata_ops: DMA driver provided metadata mode ops, need to be set by the
  *	DMA driver if metadata mode is supported with the descriptor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ---async_tx api specific fields---
  * @next: at completion submit this descriptor
  * @parent: pointer to the next level up in the dependency chain
@@ -826,10 +603,6 @@ struct dma_async_tx_descriptor {
 	dma_addr_t phys;
 	struct dma_chan *chan;
 	dma_cookie_t (*tx_submit)(struct dma_async_tx_descriptor *tx);
-<<<<<<< HEAD
-	dma_async_tx_callback callback;
-	void *callback_param;
-=======
 	int (*desc_free)(struct dma_async_tx_descriptor *tx);
 	dma_async_tx_callback callback;
 	dma_async_tx_callback_result callback_result;
@@ -837,7 +610,6 @@ struct dma_async_tx_descriptor {
 	struct dmaengine_unmap_data *unmap;
 	enum dma_desc_metadata_mode desc_metadata_mode;
 	struct dma_descriptor_metadata_ops *metadata_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ASYNC_TX_ENABLE_CHANNEL_SWITCH
 	struct dma_async_tx_descriptor *next;
 	struct dma_async_tx_descriptor *parent;
@@ -845,8 +617,6 @@ struct dma_async_tx_descriptor {
 #endif
 };
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_DMA_ENGINE
 static inline void dma_set_unmap(struct dma_async_tx_descriptor *tx,
 				 struct dmaengine_unmap_data *unmap)
@@ -882,7 +652,6 @@ static inline void dma_descriptor_unmap(struct dma_async_tx_descriptor *tx)
 	tx->unmap = NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_ASYNC_TX_ENABLE_CHANNEL_SWITCH
 static inline void txd_lock(struct dma_async_tx_descriptor *txd)
 {
@@ -949,17 +718,12 @@ static inline struct dma_async_tx_descriptor *txd_next(struct dma_async_tx_descr
  * @residue: the remaining number of bytes left to transmit
  *	on the selected transfer for states DMA_IN_PROGRESS and
  *	DMA_PAUSED if this is implemented in the driver, else 0
-<<<<<<< HEAD
-=======
  * @in_flight_bytes: amount of data in bytes cached by the DMA.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct dma_tx_state {
 	dma_cookie_t last;
 	dma_cookie_t used;
 	u32 residue;
-<<<<<<< HEAD
-=======
 	u32 in_flight_bytes;
 };
 
@@ -1003,26 +767,18 @@ struct dma_filter {
 	dma_filter_fn fn;
 	int mapcnt;
 	const struct dma_slave_map *map;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct dma_device - info on the entity supplying DMA services
-<<<<<<< HEAD
-=======
  * @ref: reference is taken and put every time a channel is allocated or freed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @chancnt: how many DMA channels are supported
  * @privatecnt: how many DMA channels are requested by dma_request_channel
  * @channels: the list of struct dma_chan
  * @global_node: list_head for global dma_device_list
-<<<<<<< HEAD
- * @cap_mask: one or more dma_capability flags
-=======
  * @filter: information for device/slave to filter function/param mapping
  * @cap_mask: one or more dma_capability flags
  * @desc_metadata_modes: supported metadata modes by the DMA device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @max_xor: maximum number of xor sources, 0 if no capability
  * @max_pq: maximum number of PQ sources and PQ-continue capability
  * @copy_align: alignment shift for memcpy operations
@@ -1031,10 +787,6 @@ struct dma_filter {
  * @fill_align: alignment shift for memset operations
  * @dev_id: unique device ID
  * @dev: struct device reference for dma mapping api
-<<<<<<< HEAD
- * @device_alloc_chan_resources: allocate resources and return the
- *	number of allocated descriptors
-=======
  * @owner: owner module (automatically set based on the provided dev)
  * @chan_ida: unique channel ID
  * @src_addr_widths: bit mask of src addr widths the device supports
@@ -1056,7 +808,6 @@ struct dma_filter {
  * @device_alloc_chan_resources: allocate resources and return the
  *	number of allocated descriptors
  * @device_router_config: optional callback for DMA router configuration
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @device_free_chan_resources: release DMA channel's resources
  * @device_prep_dma_memcpy: prepares a memcpy operation
  * @device_prep_dma_xor: prepares a xor operation
@@ -1064,20 +815,13 @@ struct dma_filter {
  * @device_prep_dma_pq: prepares a pq operation
  * @device_prep_dma_pq_val: prepares a pqzero_sum operation
  * @device_prep_dma_memset: prepares a memset operation
-<<<<<<< HEAD
-=======
  * @device_prep_dma_memset_sg: prepares a memset operation over a scatter list
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @device_prep_dma_interrupt: prepares an end of chain interrupt operation
  * @device_prep_slave_sg: prepares a slave dma operation
  * @device_prep_dma_cyclic: prepare a cyclic dma operation suitable for audio.
  *	The function takes a buffer of size buf_len. The callback function will
  *	be called after period_len bytes have been transferred.
  * @device_prep_interleaved_dma: Transfer expression in a generic way.
-<<<<<<< HEAD
- * @device_control: manipulate all pending operations on a channel, returns
- *	zero or error code
-=======
  * @device_prep_dma_imm_data: DMA's 8 byte immediate data to the dst address
  * @device_caps: May be used to override the generic DMA slave capabilities
  *	with per-channel specific ones
@@ -1091,17 +835,11 @@ struct dma_filter {
  *	or an error code
  * @device_synchronize: Synchronizes the termination of a transfers to the
  *  current context.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @device_tx_status: poll for transaction completion, the optional
  *	txstate parameter can be supplied with a pointer to get a
  *	struct with auxiliary transfer status information, otherwise the call
  *	will just return a simple status code
  * @device_issue_pending: push pending transactions to hardware
-<<<<<<< HEAD
- */
-struct dma_device {
-
-=======
  * @device_release: called sometime atfer dma_async_device_unregister() is
  *     called and there are no further references to this structure. This
  *     must be implemented to free resources however many existing drivers
@@ -1113,20 +851,10 @@ struct dma_device {
  */
 struct dma_device {
 	struct kref ref;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int chancnt;
 	unsigned int privatecnt;
 	struct list_head channels;
 	struct list_head global_node;
-<<<<<<< HEAD
-	dma_cap_mask_t  cap_mask;
-	unsigned short max_xor;
-	unsigned short max_pq;
-	u8 copy_align;
-	u8 xor_align;
-	u8 pq_align;
-	u8 fill_align;
-=======
 	struct dma_filter filter;
 	dma_cap_mask_t cap_mask;
 	enum dma_desc_metadata_mode desc_metadata_modes;
@@ -1136,22 +864,10 @@ struct dma_device {
 	enum dmaengine_alignment xor_align;
 	enum dmaengine_alignment pq_align;
 	enum dmaengine_alignment fill_align;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	#define DMA_HAS_PQ_CONTINUE (1 << 15)
 
 	int dev_id;
 	struct device *dev;
-<<<<<<< HEAD
-
-	int (*device_alloc_chan_resources)(struct dma_chan *chan);
-	void (*device_free_chan_resources)(struct dma_chan *chan);
-
-	struct dma_async_tx_descriptor *(*device_prep_dma_memcpy)(
-		struct dma_chan *chan, dma_addr_t dest, dma_addr_t src,
-		size_t len, unsigned long flags);
-	struct dma_async_tx_descriptor *(*device_prep_dma_xor)(
-		struct dma_chan *chan, dma_addr_t dest, dma_addr_t *src,
-=======
 	struct module *owner;
 	struct ida chan_ida;
 
@@ -1173,7 +889,6 @@ struct dma_device {
 		size_t len, unsigned long flags);
 	struct dma_async_tx_descriptor *(*device_prep_dma_xor)(
 		struct dma_chan *chan, dma_addr_t dst, dma_addr_t *src,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int src_cnt, size_t len, unsigned long flags);
 	struct dma_async_tx_descriptor *(*device_prep_dma_xor_val)(
 		struct dma_chan *chan, dma_addr_t *src,	unsigned int src_cnt,
@@ -1189,21 +904,11 @@ struct dma_device {
 	struct dma_async_tx_descriptor *(*device_prep_dma_memset)(
 		struct dma_chan *chan, dma_addr_t dest, int value, size_t len,
 		unsigned long flags);
-<<<<<<< HEAD
-	struct dma_async_tx_descriptor *(*device_prep_dma_interrupt)(
-		struct dma_chan *chan, unsigned long flags);
-	struct dma_async_tx_descriptor *(*device_prep_dma_sg)(
-		struct dma_chan *chan,
-		struct scatterlist *dst_sg, unsigned int dst_nents,
-		struct scatterlist *src_sg, unsigned int src_nents,
-		unsigned long flags);
-=======
 	struct dma_async_tx_descriptor *(*device_prep_dma_memset_sg)(
 		struct dma_chan *chan, struct scatterlist *sg,
 		unsigned int nents, int value, unsigned long flags);
 	struct dma_async_tx_descriptor *(*device_prep_dma_interrupt)(
 		struct dma_chan *chan, unsigned long flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct dma_async_tx_descriptor *(*device_prep_slave_sg)(
 		struct dma_chan *chan, struct scatterlist *sgl,
@@ -1212,14 +917,6 @@ struct dma_device {
 	struct dma_async_tx_descriptor *(*device_prep_dma_cyclic)(
 		struct dma_chan *chan, dma_addr_t buf_addr, size_t buf_len,
 		size_t period_len, enum dma_transfer_direction direction,
-<<<<<<< HEAD
-		void *context);
-	struct dma_async_tx_descriptor *(*device_prep_interleaved_dma)(
-		struct dma_chan *chan, struct dma_interleaved_template *xt,
-		unsigned long flags);
-	int (*device_control)(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
-		unsigned long arg);
-=======
 		unsigned long flags);
 	struct dma_async_tx_descriptor *(*device_prep_interleaved_dma)(
 		struct dma_chan *chan, struct dma_interleaved_template *xt,
@@ -1234,36 +931,11 @@ struct dma_device {
 	int (*device_resume)(struct dma_chan *chan);
 	int (*device_terminate_all)(struct dma_chan *chan);
 	void (*device_synchronize)(struct dma_chan *chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enum dma_status (*device_tx_status)(struct dma_chan *chan,
 					    dma_cookie_t cookie,
 					    struct dma_tx_state *txstate);
 	void (*device_issue_pending)(struct dma_chan *chan);
-<<<<<<< HEAD
-};
-
-static inline int dmaengine_device_control(struct dma_chan *chan,
-					   enum dma_ctrl_cmd cmd,
-					   unsigned long arg)
-{
-	return chan->device->device_control(chan, cmd, arg);
-}
-
-static inline int dmaengine_slave_config(struct dma_chan *chan,
-					  struct dma_slave_config *config)
-{
-	return dmaengine_device_control(chan, DMA_SLAVE_CONFIG,
-			(unsigned long)config);
-}
-
-static inline struct dma_async_tx_descriptor *dmaengine_prep_slave_single(
-	struct dma_chan *chan, void *buf, size_t len,
-	enum dma_transfer_direction dir, unsigned long flags)
-{
-	struct scatterlist sg;
-	sg_init_one(&sg, buf, len);
-=======
 	void (*device_release)(struct dma_device *dev);
 	/* debugfs support */
 	void (*dbg_summary_show)(struct seq_file *s, struct dma_device *dev);
@@ -1296,7 +968,6 @@ static inline struct dma_async_tx_descriptor *dmaengine_prep_slave_single(
 
 	if (!chan || !chan->device || !chan->device->device_prep_slave_sg)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return chan->device->device_prep_slave_sg(chan, &sg, 1,
 						  dir, flags, NULL);
@@ -1306,29 +977,13 @@ static inline struct dma_async_tx_descriptor *dmaengine_prep_slave_sg(
 	struct dma_chan *chan, struct scatterlist *sgl,	unsigned int sg_len,
 	enum dma_transfer_direction dir, unsigned long flags)
 {
-<<<<<<< HEAD
-=======
 	if (!chan || !chan->device || !chan->device->device_prep_slave_sg)
 		return NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return chan->device->device_prep_slave_sg(chan, sgl, sg_len,
 						  dir, flags, NULL);
 }
 
-<<<<<<< HEAD
-static inline struct dma_async_tx_descriptor *dmaengine_prep_dma_cyclic(
-		struct dma_chan *chan, dma_addr_t buf_addr, size_t buf_len,
-		size_t period_len, enum dma_transfer_direction dir)
-{
-	return chan->device->device_prep_dma_cyclic(chan, buf_addr, buf_len,
-						period_len, dir, NULL);
-}
-
-static inline int dmaengine_terminate_all(struct dma_chan *chan)
-{
-	return dmaengine_device_control(chan, DMA_TERMINATE_ALL, 0);
-=======
 #ifdef CONFIG_RAPIDIO_DMA_ENGINE
 struct rio_dma_ext;
 static inline struct dma_async_tx_descriptor *dmaengine_prep_rio_sg(
@@ -1529,26 +1184,18 @@ static inline int dmaengine_terminate_sync(struct dma_chan *chan)
 	dmaengine_synchronize(chan);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int dmaengine_pause(struct dma_chan *chan)
 {
-<<<<<<< HEAD
-	return dmaengine_device_control(chan, DMA_PAUSE, 0);
-=======
 	if (chan->device->device_pause)
 		return chan->device->device_pause(chan);
 
 	return -ENOSYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int dmaengine_resume(struct dma_chan *chan)
 {
-<<<<<<< HEAD
-	return dmaengine_device_control(chan, DMA_RESUME, 0);
-=======
 	if (chan->device->device_resume)
 		return chan->device->device_resume(chan);
 
@@ -1559,7 +1206,6 @@ static inline enum dma_status dmaengine_tx_status(struct dma_chan *chan,
 	dma_cookie_t cookie, struct dma_tx_state *state)
 {
 	return chan->device->device_tx_status(chan, cookie, state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline dma_cookie_t dmaengine_submit(struct dma_async_tx_descriptor *desc)
@@ -1567,23 +1213,10 @@ static inline dma_cookie_t dmaengine_submit(struct dma_async_tx_descriptor *desc
 	return desc->tx_submit(desc);
 }
 
-<<<<<<< HEAD
-static inline bool dmaengine_check_align(u8 align, size_t off1, size_t off2, size_t len)
-{
-	size_t mask;
-
-	if (!align)
-		return true;
-	mask = (1 << align) - 1;
-	if (mask & (off1 | off2 | len))
-		return false;
-	return true;
-=======
 static inline bool dmaengine_check_align(enum dmaengine_alignment align,
 					 size_t off1, size_t off2, size_t len)
 {
 	return !(((1 << align) - 1) & (off1 | off2 | len));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool is_dma_copy_aligned(struct dma_device *dev, size_t off1,
@@ -1657,21 +1290,13 @@ static inline int dma_maxpq(struct dma_device *dma, enum dma_ctrl_flags flags)
 {
 	if (dma_dev_has_pq_continue(dma) || !dmaf_continue(flags))
 		return dma_dev_to_maxpq(dma);
-<<<<<<< HEAD
-	else if (dmaf_p_disabled_continue(flags))
-		return dma_dev_to_maxpq(dma) - 1;
-	else if (dmaf_continue(flags))
-=======
 	if (dmaf_p_disabled_continue(flags))
 		return dma_dev_to_maxpq(dma) - 1;
 	if (dmaf_continue(flags))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return dma_dev_to_maxpq(dma) - 3;
 	BUG();
 }
 
-<<<<<<< HEAD
-=======
 static inline size_t dmaengine_get_icg(bool inc, bool sgl, size_t icg,
 				      size_t dir_icg)
 {
@@ -1699,7 +1324,6 @@ static inline size_t dmaengine_get_src_icg(struct dma_interleaved_template *xt,
 				 chunk->icg, chunk->src_icg);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* --- public DMA engine API --- */
 
 #ifdef CONFIG_DMA_ENGINE
@@ -1714,21 +1338,6 @@ static inline void dmaengine_put(void)
 }
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_NET_DMA
-#define net_dmaengine_get()	dmaengine_get()
-#define net_dmaengine_put()	dmaengine_put()
-#else
-static inline void net_dmaengine_get(void)
-{
-}
-static inline void net_dmaengine_put(void)
-{
-}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ASYNC_TX_DMA
 #define async_dmaengine_get()	dmaengine_get()
 #define async_dmaengine_put()	dmaengine_put()
@@ -1750,21 +1359,8 @@ async_dma_find_channel(enum dma_transaction_type type)
 	return NULL;
 }
 #endif /* CONFIG_ASYNC_TX_DMA */
-<<<<<<< HEAD
-
-dma_cookie_t dma_async_memcpy_buf_to_buf(struct dma_chan *chan,
-	void *dest, void *src, size_t len);
-dma_cookie_t dma_async_memcpy_buf_to_pg(struct dma_chan *chan,
-	struct page *page, unsigned int offset, void *kdata, size_t len);
-dma_cookie_t dma_async_memcpy_pg_to_pg(struct dma_chan *chan,
-	struct page *dest_pg, unsigned int dest_off, struct page *src_pg,
-	unsigned int src_off, size_t len);
-void dma_async_tx_descriptor_init(struct dma_async_tx_descriptor *tx,
-	struct dma_chan *chan);
-=======
 void dma_async_tx_descriptor_init(struct dma_async_tx_descriptor *tx,
 				  struct dma_chan *chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void async_tx_ack(struct dma_async_tx_descriptor *tx)
 {
@@ -1781,23 +1377,6 @@ static inline bool async_tx_test_ack(struct dma_async_tx_descriptor *tx)
 	return (tx->flags & DMA_CTRL_ACK) == DMA_CTRL_ACK;
 }
 
-<<<<<<< HEAD
-#define first_dma_cap(mask) __first_dma_cap(&(mask))
-static inline int __first_dma_cap(const dma_cap_mask_t *srcp)
-{
-	return min_t(int, DMA_TX_TYPE_END,
-		find_first_bit(srcp->bits, DMA_TX_TYPE_END));
-}
-
-#define next_dma_cap(n, mask) __next_dma_cap((n), &(mask))
-static inline int __next_dma_cap(int n, const dma_cap_mask_t *srcp)
-{
-	return min_t(int, DMA_TX_TYPE_END,
-		find_next_bit(srcp->bits, DMA_TX_TYPE_END, n+1));
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define dma_cap_set(tx, mask) __dma_cap_set((tx), &(mask))
 static inline void
 __dma_cap_set(enum dma_transaction_type tx_type, dma_cap_mask_t *dstp)
@@ -1826,13 +1405,7 @@ __dma_has_cap(enum dma_transaction_type tx_type, dma_cap_mask_t *srcp)
 }
 
 #define for_each_dma_cap_mask(cap, mask) \
-<<<<<<< HEAD
-	for ((cap) = first_dma_cap(mask);	\
-		(cap) < DMA_TX_TYPE_END;	\
-		(cap) = next_dma_cap((cap), (mask)))
-=======
 	for_each_set_bit(cap, mask.bits, DMA_TX_TYPE_END)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * dma_async_issue_pending - flush pending transactions to HW
@@ -1846,11 +1419,6 @@ static inline void dma_async_issue_pending(struct dma_chan *chan)
 	chan->device->device_issue_pending(chan);
 }
 
-<<<<<<< HEAD
-#define dma_async_memcpy_issue_pending(chan) dma_async_issue_pending(chan)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * dma_async_is_tx_complete - poll for transaction completion
  * @chan: DMA channel
@@ -1876,23 +1444,13 @@ static inline enum dma_status dma_async_is_tx_complete(struct dma_chan *chan,
 	return status;
 }
 
-<<<<<<< HEAD
-#define dma_async_memcpy_complete(chan, cookie, last, used)\
-	dma_async_is_tx_complete(chan, cookie, last, used)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * dma_async_is_complete - test a cookie against chan state
  * @cookie: transaction identifier to test status of
  * @last_complete: last know completed transaction
  * @last_used: last cookie value handed out
  *
-<<<<<<< HEAD
- * dma_async_is_complete() is used in dma_async_memcpy_complete()
-=======
  * dma_async_is_complete() is used in dma_async_is_tx_complete()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * the test logic is separated for lightweight testing of multiple cookies
  */
 static inline enum dma_status dma_async_is_complete(dma_cookie_t cookie,
@@ -1900,17 +1458,10 @@ static inline enum dma_status dma_async_is_complete(dma_cookie_t cookie,
 {
 	if (last_complete <= last_used) {
 		if ((cookie <= last_complete) || (cookie > last_used))
-<<<<<<< HEAD
-			return DMA_SUCCESS;
-	} else {
-		if ((cookie <= last_complete) && (cookie > last_used))
-			return DMA_SUCCESS;
-=======
 			return DMA_COMPLETE;
 	} else {
 		if ((cookie <= last_complete) && (cookie > last_used))
 			return DMA_COMPLETE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return DMA_IN_PROGRESS;
 }
@@ -1918,25 +1469,6 @@ static inline enum dma_status dma_async_is_complete(dma_cookie_t cookie,
 static inline void
 dma_set_tx_state(struct dma_tx_state *st, dma_cookie_t last, dma_cookie_t used, u32 residue)
 {
-<<<<<<< HEAD
-	if (st) {
-		st->last = last;
-		st->used = used;
-		st->residue = residue;
-	}
-}
-
-enum dma_status dma_sync_wait(struct dma_chan *chan, dma_cookie_t cookie);
-#ifdef CONFIG_DMA_ENGINE
-enum dma_status dma_wait_for_async_tx(struct dma_async_tx_descriptor *tx);
-void dma_issue_pending_all(void);
-struct dma_chan *__dma_request_channel(dma_cap_mask_t *mask, dma_filter_fn fn, void *fn_param);
-void dma_release_channel(struct dma_chan *chan);
-#else
-static inline enum dma_status dma_wait_for_async_tx(struct dma_async_tx_descriptor *tx)
-{
-	return DMA_SUCCESS;
-=======
 	if (!st)
 		return;
 
@@ -1971,53 +1503,10 @@ static inline enum dma_status dma_sync_wait(struct dma_chan *chan, dma_cookie_t 
 static inline enum dma_status dma_wait_for_async_tx(struct dma_async_tx_descriptor *tx)
 {
 	return DMA_COMPLETE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline void dma_issue_pending_all(void)
 {
 }
-<<<<<<< HEAD
-static inline struct dma_chan *__dma_request_channel(dma_cap_mask_t *mask,
-					      dma_filter_fn fn, void *fn_param)
-{
-	return NULL;
-}
-static inline void dma_release_channel(struct dma_chan *chan)
-{
-}
-#endif
-
-/* --- DMA device --- */
-
-int dma_async_device_register(struct dma_device *device);
-void dma_async_device_unregister(struct dma_device *device);
-void dma_run_dependencies(struct dma_async_tx_descriptor *tx);
-struct dma_chan *dma_find_channel(enum dma_transaction_type tx_type);
-struct dma_chan *net_dma_find_channel(void);
-#define dma_request_channel(mask, x, y) __dma_request_channel(&(mask), x, y)
-
-/* --- Helper iov-locking functions --- */
-
-struct dma_page_list {
-	char __user *base_address;
-	int nr_pages;
-	struct page **pages;
-};
-
-struct dma_pinned_list {
-	int nr_iovecs;
-	struct dma_page_list page_list[0];
-};
-
-struct dma_pinned_list *dma_pin_iovec_pages(struct iovec *iov, size_t len);
-void dma_unpin_iovec_pages(struct dma_pinned_list* pinned_list);
-
-dma_cookie_t dma_memcpy_to_iovec(struct dma_chan *chan, struct iovec *iov,
-	struct dma_pinned_list *pinned_list, unsigned char *kdata, size_t len);
-dma_cookie_t dma_memcpy_pg_to_iovec(struct dma_chan *chan, struct iovec *iov,
-	struct dma_pinned_list *pinned_list, struct page *page,
-	unsigned int offset, size_t len);
-=======
 static inline struct dma_chan *__dma_request_channel(const dma_cap_mask_t *mask,
 						     dma_filter_fn fn,
 						     void *fn_param,
@@ -2143,6 +1632,5 @@ static inline struct device *dmaengine_get_dma_device(struct dma_chan *chan)
 
 	return chan->device->dev;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* DMAENGINE_H */

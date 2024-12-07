@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common boot and setup code for both 32-bit and 64-bit.
  * Extracted from arch/powerpc/kernel/setup_64.c.
  *
  * Copyright (C) 2001 PPC64 Team, IBM Corp
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
 
 #include <linux/export.h>
-<<<<<<< HEAD
-=======
 #include <linux/panic_notifier.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/sched.h>
 #include <linux/init.h>
@@ -32,28 +18,6 @@
 #include <linux/delay.h>
 #include <linux/initrd.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/seq_file.h>
-#include <linux/ioport.h>
-#include <linux/console.h>
-#include <linux/screen_info.h>
-#include <linux/root_dev.h>
-#include <linux/notifier.h>
-#include <linux/cpu.h>
-#include <linux/unistd.h>
-#include <linux/serial.h>
-#include <linux/serial_8250.h>
-#include <linux/debugfs.h>
-#include <linux/percpu.h>
-#include <linux/memblock.h>
-#include <linux/of_platform.h>
-#include <asm/io.h>
-#include <asm/paca.h>
-#include <asm/prom.h>
-#include <asm/processor.h>
-#include <asm/vdso_datapage.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/printk.h>
 #include <linux/seq_file.h>
 #include <linux/ioport.h>
@@ -75,7 +39,6 @@
 #include <asm/paca.h>
 #include <asm/processor.h>
 #include <asm/vdso_datapage.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/smp.h>
 #include <asm/elf.h>
 #include <asm/machdep.h>
@@ -95,9 +58,6 @@
 #include <asm/xmon.h>
 #include <asm/cputhreads.h>
 #include <mm/mmu_decl.h>
-<<<<<<< HEAD
-#include <asm/fadump.h>
-=======
 #include <asm/archrandom.h>
 #include <asm/fadump.h>
 #include <asm/udbg.h>
@@ -107,15 +67,10 @@
 #include <asm/cpu_has_feature.h>
 #include <asm/kasan.h>
 #include <asm/mce.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "setup.h"
 
 #ifdef DEBUG
-<<<<<<< HEAD
-#include <asm/udbg.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DBG(fmt...) udbg_printf(fmt)
 #else
 #define DBG(fmt...)
@@ -128,23 +83,6 @@ EXPORT_SYMBOL(ppc_md);
 struct machdep_calls *machine_id;
 EXPORT_SYMBOL(machine_id);
 
-<<<<<<< HEAD
-unsigned long klimit = (unsigned long) _end;
-
-char cmd_line[COMMAND_LINE_SIZE];
-
-/*
- * This still seems to be needed... -- paulus
- */ 
-struct screen_info screen_info = {
-	.orig_x = 0,
-	.orig_y = 25,
-	.orig_video_cols = 80,
-	.orig_video_lines = 25,
-	.orig_video_isVGA = 1,
-	.orig_video_points = 16
-};
-=======
 int boot_cpuid = -1;
 EXPORT_SYMBOL_GPL(boot_cpuid);
 int __initdata boot_core_hwid = -1;
@@ -159,7 +97,6 @@ int boot_cpu_hwid = -1;
  */
 int dcache_bsize;
 int icache_bsize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Variables required to store legacy IO irq routing */
 int of_i8042_kbd_irq;
@@ -173,12 +110,6 @@ int ppc_do_canonicalize_irqs;
 EXPORT_SYMBOL(ppc_do_canonicalize_irqs);
 #endif
 
-<<<<<<< HEAD
-/* also used by kexec */
-void machine_shutdown(void)
-{
-#ifdef CONFIG_FA_DUMP
-=======
 #ifdef CONFIG_CRASH_DUMP
 /* This keeps a track of which one is the crashing cpu. */
 int crashing_cpu = -1;
@@ -187,23 +118,16 @@ int crashing_cpu = -1;
 /* also used by kexec */
 void machine_shutdown(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * if fadump is active, cleanup the fadump registration before we
 	 * shutdown.
 	 */
 	fadump_cleanup();
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ppc_md.machine_shutdown)
 		ppc_md.machine_shutdown();
 }
 
-<<<<<<< HEAD
-=======
 static void machine_hang(void)
 {
 	pr_emerg("System Halted, OK to turn off power\n");
@@ -212,20 +136,11 @@ static void machine_hang(void)
 		;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void machine_restart(char *cmd)
 {
 	machine_shutdown();
 	if (ppc_md.restart)
 		ppc_md.restart(cmd);
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-	smp_send_stop();
-#endif
-	printk(KERN_EMERG "System Halted, OK to turn off power\n");
-	local_irq_disable();
-	while (1) ;
-=======
 
 	smp_send_stop();
 
@@ -233,35 +148,18 @@ void machine_restart(char *cmd)
 	mdelay(1000);
 
 	machine_hang();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void machine_power_off(void)
 {
 	machine_shutdown();
-<<<<<<< HEAD
-	if (ppc_md.power_off)
-		ppc_md.power_off();
-#ifdef CONFIG_SMP
-	smp_send_stop();
-#endif
-	printk(KERN_EMERG "System Halted, OK to turn off power\n");
-	local_irq_disable();
-	while (1) ;
-=======
 	do_kernel_power_off();
 	smp_send_stop();
 	machine_hang();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 /* Used by the G5 thermal driver */
 EXPORT_SYMBOL_GPL(machine_power_off);
 
-<<<<<<< HEAD
-void (*pm_power_off)(void) = machine_power_off;
-EXPORT_SYMBOL_GPL(pm_power_off);
-
-=======
 void (*pm_power_off)(void);
 EXPORT_SYMBOL_GPL(pm_power_off);
 
@@ -273,34 +171,16 @@ size_t __must_check arch_get_random_seed_longs(unsigned long *v, size_t max_long
 }
 EXPORT_SYMBOL(arch_get_random_seed_longs);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void machine_halt(void)
 {
 	machine_shutdown();
 	if (ppc_md.halt)
 		ppc_md.halt();
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-	smp_send_stop();
-#endif
-	printk(KERN_EMERG "System Halted, OK to turn off power\n");
-	local_irq_disable();
-	while (1) ;
-}
-
-
-#ifdef CONFIG_TAU
-extern u32 cpu_temp(unsigned long cpu);
-extern u32 cpu_temp_both(unsigned long cpu);
-#endif /* CONFIG_TAU */
-
-=======
 
 	smp_send_stop();
 	machine_hang();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 DEFINE_PER_CPU(unsigned int, cpu_pvr);
 #endif
@@ -309,16 +189,6 @@ static void show_cpuinfo_summary(struct seq_file *m)
 {
 	struct device_node *root;
 	const char *model = NULL;
-<<<<<<< HEAD
-#if defined(CONFIG_SMP) && defined(CONFIG_PPC32)
-	unsigned long bogosum = 0;
-	int i;
-	for_each_online_cpu(i)
-		bogosum += loops_per_jiffy;
-	seq_printf(m, "total bogomips\t: %lu.%02lu\n",
-		   bogosum/(500000/HZ), bogosum/(5000/HZ) % 100);
-#endif /* CONFIG_SMP && CONFIG_PPC32 */
-=======
 	unsigned long bogosum = 0;
 	int i;
 
@@ -328,7 +198,6 @@ static void show_cpuinfo_summary(struct seq_file *m)
 		seq_printf(m, "total bogomips\t: %lu.%02lu\n",
 			   bogosum / (500000 / HZ), bogosum / (5000 / HZ) % 100);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(m, "timebase\t: %lu\n", ppc_tb_freq);
 	if (ppc_md.name)
 		seq_printf(m, "platform\t: %s\n", ppc_md.name);
@@ -342,42 +211,20 @@ static void show_cpuinfo_summary(struct seq_file *m)
 	if (ppc_md.show_cpuinfo != NULL)
 		ppc_md.show_cpuinfo(m);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PPC32
-	/* Display the amount of memory */
-	seq_printf(m, "Memory\t\t: %d MB\n",
-		   (unsigned int)(total_memory / (1024 * 1024)));
-#endif
-=======
 	/* Display the amount of memory */
 	if (IS_ENABLED(CONFIG_PPC32))
 		seq_printf(m, "Memory\t\t: %d MB\n",
 			   (unsigned int)(total_memory / (1024 * 1024)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int show_cpuinfo(struct seq_file *m, void *v)
 {
 	unsigned long cpu_id = (unsigned long)v - 1;
 	unsigned int pvr;
-<<<<<<< HEAD
-	unsigned short maj;
-	unsigned short min;
-
-	/* We only show online cpus: disable preempt (overzealous, I
-	 * knew) to prevent cpu going down. */
-	preempt_disable();
-	if (!cpu_online(cpu_id)) {
-		preempt_enable();
-		return 0;
-	}
-
-=======
 	unsigned long proc_freq;
 	unsigned short maj;
 	unsigned short min;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 	pvr = per_cpu(cpu_pvr, cpu_id);
 #else
@@ -386,36 +233,6 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 	maj = (pvr >> 8) & 0xFF;
 	min = pvr & 0xFF;
 
-<<<<<<< HEAD
-	seq_printf(m, "processor\t: %lu\n", cpu_id);
-	seq_printf(m, "cpu\t\t: ");
-
-	if (cur_cpu_spec->pvr_mask)
-		seq_printf(m, "%s", cur_cpu_spec->cpu_name);
-	else
-		seq_printf(m, "unknown (%08x)", pvr);
-
-#ifdef CONFIG_ALTIVEC
-	if (cpu_has_feature(CPU_FTR_ALTIVEC))
-		seq_printf(m, ", altivec supported");
-#endif /* CONFIG_ALTIVEC */
-
-	seq_printf(m, "\n");
-
-#ifdef CONFIG_TAU
-	if (cur_cpu_spec->cpu_features & CPU_FTR_TAU) {
-#ifdef CONFIG_TAU_AVERAGE
-		/* more straightforward, but potentially misleading */
-		seq_printf(m,  "temperature \t: %u C (uncalibrated)\n",
-			   cpu_temp(cpu_id));
-#else
-		/* show the actual temp sensor range */
-		u32 temp;
-		temp = cpu_temp_both(cpu_id);
-		seq_printf(m, "temperature \t: %u-%u C (uncalibrated)\n",
-			   temp & 0xff, temp >> 16);
-#endif
-=======
 	seq_printf(m, "processor\t: %lu\ncpu\t\t: ", cpu_id);
 
 	if (cur_cpu_spec->pvr_mask && cur_cpu_spec->cpu_name)
@@ -441,25 +258,10 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 			seq_printf(m, "temperature \t: %u-%u C (uncalibrated)\n",
 				   temp & 0xff, temp >> 16);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif /* CONFIG_TAU */
 
 	/*
-<<<<<<< HEAD
-	 * Assume here that all clock rates are the same in a
-	 * smp system.  -- Cort
-	 */
-	if (ppc_proc_freq)
-		seq_printf(m, "clock\t\t: %lu.%06luMHz\n",
-			   ppc_proc_freq / 1000000, ppc_proc_freq % 1000000);
-
-	if (ppc_md.show_percpuinfo != NULL)
-		ppc_md.show_percpuinfo(m, cpu_id);
-
-	/* If we are a Freescale core do a simple check so
-	 * we dont have to keep adding cases in the future */
-=======
 	 * Platforms that have variable clock rates, should implement
 	 * the method ppc_md.get_proc_freq() that reports the clock
 	 * rate of a given cpu. The rest can use ppc_proc_freq to
@@ -476,7 +278,6 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 
 	/* If we are a Freescale core do a simple check so
 	 * we don't have to keep adding cases in the future */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (PVR_VER(pvr) & 0x8000) {
 		switch (PVR_VER(pvr)) {
 		case 0x8000:	/* 7441/7450/7451, Voyager */
@@ -495,25 +296,15 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 		}
 	} else {
 		switch (PVR_VER(pvr)) {
-<<<<<<< HEAD
-			case 0x0020:	/* 403 family */
-				maj = PVR_MAJ(pvr) + 1;
-				min = PVR_MIN(pvr);
-				break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 0x1008:	/* 740P/750P ?? */
 				maj = ((pvr >> 8) & 0xFF) - 1;
 				min = pvr & 0xFF;
 				break;
-<<<<<<< HEAD
-=======
 			case 0x004e: /* POWER9 bits 12-15 give chip type */
 			case 0x0080: /* POWER10 bit 12 gives SMT8/4 */
 				maj = (pvr >> 8) & 0x0F;
 				min = pvr & 0xFF;
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			default:
 				maj = (pvr >> 8) & 0xFF;
 				min = pvr & 0xFF;
@@ -524,25 +315,11 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 	seq_printf(m, "revision\t: %hd.%hd (pvr %04x %04x)\n",
 		   maj, min, PVR_VER(pvr), PVR_REV(pvr));
 
-<<<<<<< HEAD
-#ifdef CONFIG_PPC32
-	seq_printf(m, "bogomips\t: %lu.%02lu\n",
-		   loops_per_jiffy / (500000/HZ),
-		   (loops_per_jiffy / (5000/HZ)) % 100);
-#endif
-
-#ifdef CONFIG_SMP
-	seq_printf(m, "\n");
-#endif
-
-	preempt_enable();
-=======
 	if (IS_ENABLED(CONFIG_PPC32))
 		seq_printf(m, "bogomips\t: %lu.%02lu\n", loops_per_jiffy / (500000 / HZ),
 			   (loops_per_jiffy / (5000 / HZ)) % 100);
 
 	seq_putc(m, '\n');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If this is the last cpu, print the summary */
 	if (cpumask_next(cpu_id, cpu_online_mask) >= nr_cpu_ids)
@@ -573,17 +350,10 @@ static void c_stop(struct seq_file *m, void *v)
 }
 
 const struct seq_operations cpuinfo_op = {
-<<<<<<< HEAD
-	.start =c_start,
-	.next =	c_next,
-	.stop =	c_stop,
-	.show =	show_cpuinfo,
-=======
 	.start	= c_start,
 	.next	= c_next,
 	.stop	= c_stop,
 	.show	= show_cpuinfo,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init check_for_initrd(void)
@@ -602,11 +372,7 @@ void __init check_for_initrd(void)
 		initrd_start = initrd_end = 0;
 
 	if (initrd_start)
-<<<<<<< HEAD
-		printk("Found initrd at 0x%lx:0x%lx\n", initrd_start, initrd_end);
-=======
 		pr_info("Found initrd at 0x%lx:0x%lx\n", initrd_start, initrd_end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DBG(" <- check_for_initrd()\n");
 #endif /* CONFIG_BLK_DEV_INITRD */
@@ -614,16 +380,10 @@ void __init check_for_initrd(void)
 
 #ifdef CONFIG_SMP
 
-<<<<<<< HEAD
-int threads_per_core, threads_shift;
-cpumask_t threads_core_mask;
-EXPORT_SYMBOL_GPL(threads_per_core);
-=======
 int threads_per_core, threads_per_subcore, threads_shift __read_mostly;
 cpumask_t threads_core_mask __read_mostly;
 EXPORT_SYMBOL_GPL(threads_per_core);
 EXPORT_SYMBOL_GPL(threads_per_subcore);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(threads_shift);
 EXPORT_SYMBOL_GPL(threads_core_mask);
 
@@ -632,10 +392,7 @@ static void __init cpu_init_thread_core_maps(int tpc)
 	int i;
 
 	threads_per_core = tpc;
-<<<<<<< HEAD
-=======
 	threads_per_subcore = tpc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpumask_clear(&threads_core_mask);
 
 	/* This implementation only supports power of 2 number of threads
@@ -653,8 +410,6 @@ static void __init cpu_init_thread_core_maps(int tpc)
 }
 
 
-<<<<<<< HEAD
-=======
 u32 *cpu_to_phys_id = NULL;
 
 static int assign_threads(unsigned int cpu, unsigned int nthreads, bool present,
@@ -676,7 +431,6 @@ static int assign_threads(unsigned int cpu, unsigned int nthreads, bool present,
 	return cpu;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * setup_cpu_maps - initialize the following cpu maps:
  *                  cpu_possible_mask
@@ -697,23 +451,12 @@ static int assign_threads(unsigned int cpu, unsigned int nthreads, bool present,
  */
 void __init smp_setup_cpu_maps(void)
 {
-<<<<<<< HEAD
-	struct device_node *dn = NULL;
-=======
 	struct device_node *dn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cpu = 0;
 	int nthreads = 1;
 
 	DBG("smp_setup_cpu_maps()\n");
 
-<<<<<<< HEAD
-	while ((dn = of_find_node_by_type(dn, "cpu")) && cpu < nr_cpu_ids) {
-		const int *intserv;
-		int j, len;
-
-		DBG("  * %s...\n", dn->full_name);
-=======
 	cpu_to_phys_id = memblock_alloc(nr_cpu_ids * sizeof(u32),
 					__alignof__(u32));
 	if (!cpu_to_phys_id)
@@ -726,31 +469,10 @@ void __init smp_setup_cpu_maps(void)
 		int len;
 
 		DBG("  * %pOF...\n", dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		intserv = of_get_property(dn, "ibm,ppc-interrupt-server#s",
 				&len);
 		if (intserv) {
-<<<<<<< HEAD
-			nthreads = len / sizeof(int);
-			DBG("    ibm,ppc-interrupt-server#s -> %d threads\n",
-			    nthreads);
-		} else {
-			DBG("    no ibm,ppc-interrupt-server#s -> 1 thread\n");
-			intserv = of_get_property(dn, "reg", NULL);
-			if (!intserv)
-				intserv = &cpu;	/* assume logical == phys */
-		}
-
-		for (j = 0; j < nthreads && cpu < nr_cpu_ids; j++) {
-			DBG("    thread %d -> cpu %d (hard id %d)\n",
-			    j, cpu, intserv[j]);
-			set_cpu_present(cpu, true);
-			set_hard_smp_processor_id(cpu, intserv[j]);
-			set_cpu_possible(cpu, true);
-			cpu++;
-		}
-=======
 			DBG("    ibm,ppc-interrupt-server#s -> %lu threads\n",
 			    (len / sizeof(int)));
 		} else {
@@ -791,7 +513,6 @@ void __init smp_setup_cpu_maps(void)
 
 		if (cpu < nr_cpu_ids)
 			cpu = assign_threads(cpu, nthreads, avail, intserv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* If no SMT supported, nthreads is forced to 1 */
@@ -805,17 +526,10 @@ void __init smp_setup_cpu_maps(void)
 	 * On pSeries LPAR, we need to know how many cpus
 	 * could possibly be added to this partition.
 	 */
-<<<<<<< HEAD
-	if (machine_is(pseries) && firmware_has_feature(FW_FEATURE_LPAR) &&
-	    (dn = of_find_node_by_path("/rtas"))) {
-		int num_addr_cell, num_size_cell, maxcpus;
-		const unsigned int *ireg;
-=======
 	if (firmware_has_feature(FW_FEATURE_LPAR) &&
 	    (dn = of_find_node_by_path("/rtas"))) {
 		int num_addr_cell, num_size_cell, maxcpus;
 		const __be32 *ireg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		num_addr_cell = of_n_addr_cells(dn);
 		num_size_cell = of_n_size_cells(dn);
@@ -825,11 +539,7 @@ void __init smp_setup_cpu_maps(void)
 		if (!ireg)
 			goto out;
 
-<<<<<<< HEAD
-		maxcpus = ireg[num_addr_cell + num_size_cell];
-=======
 		maxcpus = be32_to_cpup(ireg + num_addr_cell + num_size_cell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Double maxcpus for processors which have SMT capability */
 		if (cpu_has_feature(CPU_FTR_SMT))
@@ -838,11 +548,7 @@ void __init smp_setup_cpu_maps(void)
 		if (maxcpus > nr_cpu_ids) {
 			printk(KERN_WARNING
 			       "Partition configured for %d cpus, "
-<<<<<<< HEAD
-			       "operating system maximum is %d.\n",
-=======
 			       "operating system maximum is %u.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       maxcpus, nr_cpu_ids);
 			maxcpus = nr_cpu_ids;
 		} else
@@ -897,12 +603,6 @@ static __init int add_pcspkr(void)
 device_initcall(add_pcspkr);
 #endif	/* CONFIG_PCSPKR_PLATFORM */
 
-<<<<<<< HEAD
-void probe_machine(void)
-{
-	extern struct machdep_calls __machine_desc_start;
-	extern struct machdep_calls __machine_desc_end;
-=======
 static char ppc_hw_desc_buf[128] __initdata;
 
 struct seq_buf ppc_hw_desc __initdata = {
@@ -916,7 +616,6 @@ static __init void probe_machine(void)
 	extern struct machdep_calls __machine_desc_start;
 	extern struct machdep_calls __machine_desc_end;
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Iterate all ppc_md structures until we find the proper
@@ -924,26 +623,6 @@ static __init void probe_machine(void)
 	 */
 	DBG("Probing machine type ...\n");
 
-<<<<<<< HEAD
-	for (machine_id = &__machine_desc_start;
-	     machine_id < &__machine_desc_end;
-	     machine_id++) {
-		DBG("  %s ...", machine_id->name);
-		memcpy(&ppc_md, machine_id, sizeof(struct machdep_calls));
-		if (ppc_md.probe()) {
-			DBG(" match !\n");
-			break;
-		}
-		DBG("\n");
-	}
-	/* What can we do if we didn't find ? */
-	if (machine_id >= &__machine_desc_end) {
-		DBG("No suitable machine found !\n");
-		for (;;);
-	}
-
-	printk(KERN_INFO "Using %s machine description\n", ppc_md.name);
-=======
 	/*
 	 * Check ppc_md is empty, if not we have a bug, ie, we setup an
 	 * entry before probe_machine() which will be overwritten
@@ -982,7 +661,6 @@ static __init void probe_machine(void)
 	dump_stack_set_arch_desc(ppc_hw_desc.buffer);
 
 	pr_info("Hardware name: %s\n", ppc_hw_desc.buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Match a class of boards, not a specific device configuration. */
@@ -1023,15 +701,6 @@ int check_legacy_ioport(unsigned long base_port)
 	case FDC_BASE: /* FDC1 */
 		np = of_find_node_by_type(NULL, "fdc");
 		break;
-<<<<<<< HEAD
-#ifdef CONFIG_PPC_PREP
-	case _PIDXR:
-	case _PNPWRP:
-	case PNPBIOS_BASE:
-		/* implement me */
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		/* ipmi is supposed to fail here */
 		break;
@@ -1040,11 +709,7 @@ int check_legacy_ioport(unsigned long base_port)
 		return ret;
 	parent = of_get_parent(np);
 	if (parent) {
-<<<<<<< HEAD
-		if (strcmp(parent->type, "isa") == 0)
-=======
 		if (of_node_is_type(parent, "isa"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = 0;
 		of_node_put(parent);
 	}
@@ -1053,23 +718,6 @@ int check_legacy_ioport(unsigned long base_port)
 }
 EXPORT_SYMBOL(check_legacy_ioport);
 
-<<<<<<< HEAD
-static int ppc_panic_event(struct notifier_block *this,
-                             unsigned long event, void *ptr)
-{
-	/*
-	 * If firmware-assisted dump has been registered then trigger
-	 * firmware-assisted dump and let firmware handle everything else.
-	 */
-	crash_fadump(NULL, ptr);
-	ppc_md.panic(ptr);  /* May not return */
-	return NOTIFY_DONE;
-}
-
-static struct notifier_block ppc_panic_block = {
-	.notifier_call = ppc_panic_event,
-	.priority = INT_MIN /* may not return; must be done last */
-=======
 /*
  * Panic notifiers setup
  *
@@ -1139,14 +787,10 @@ static struct notifier_block kernel_offset_notifier = {
 static struct notifier_block ppc_panic_block = {
 	.notifier_call = ppc_panic_platform_handler,
 	.priority = INT_MIN, /* may not return; must be done last */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init setup_panic(void)
 {
-<<<<<<< HEAD
-	atomic_notifier_chain_register(&panic_notifier_list, &ppc_panic_block);
-=======
 	/* Hard-disables IRQs + deal with FW-assisted dump (fadump) */
 	atomic_notifier_chain_register(&panic_notifier_list,
 				       &ppc_fadump_block);
@@ -1159,7 +803,6 @@ void __init setup_panic(void)
 	if (ppc_md.panic)
 		atomic_notifier_chain_register(&panic_notifier_list,
 					       &ppc_panic_block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_CHECK_CACHE_COHERENCY
@@ -1171,35 +814,19 @@ void __init setup_panic(void)
  * BUG() in that case.
  */
 
-<<<<<<< HEAD
-#ifdef CONFIG_NOT_COHERENT_CACHE
-#define KERNEL_COHERENCY	0
-#else
-#define KERNEL_COHERENCY	1
-#endif
-=======
 #define KERNEL_COHERENCY	(!IS_ENABLED(CONFIG_NOT_COHERENT_CACHE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init check_cache_coherency(void)
 {
 	struct device_node *np;
 	const void *prop;
-<<<<<<< HEAD
-	int devtree_coherency;
-=======
 	bool devtree_coherency;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	np = of_find_node_by_path("/");
 	prop = of_get_property(np, "coherency-off", NULL);
 	of_node_put(np);
 
-<<<<<<< HEAD
-	devtree_coherency = prop ? 0 : 1;
-=======
 	devtree_coherency = prop ? false : true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (devtree_coherency != KERNEL_COHERENCY) {
 		printk(KERN_ERR
@@ -1215,34 +842,11 @@ static int __init check_cache_coherency(void)
 late_initcall(check_cache_coherency);
 #endif /* CONFIG_CHECK_CACHE_COHERENCY */
 
-<<<<<<< HEAD
-#ifdef CONFIG_DEBUG_FS
-struct dentry *powerpc_debugfs_root;
-EXPORT_SYMBOL(powerpc_debugfs_root);
-
-static int powerpc_debugfs_init(void)
-{
-	powerpc_debugfs_root = debugfs_create_dir("powerpc", NULL);
-
-	return powerpc_debugfs_root == NULL;
-}
-arch_initcall(powerpc_debugfs_init);
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ppc_printk_progress(char *s, unsigned short hex)
 {
 	pr_info("%s\n", s);
 }
 
-<<<<<<< HEAD
-void arch_setup_pdev_archdata(struct platform_device *pdev)
-{
-	pdev->archdata.dma_mask = DMA_BIT_MASK(32);
-	pdev->dev.dma_mask = &pdev->archdata.dma_mask;
- 	set_dma_ops(&pdev->dev, &dma_direct_ops);
-=======
 static __init void print_system_info(void)
 {
 	pr_info("-----------------------------------------------------\n");
@@ -1415,5 +1019,4 @@ void __init setup_arch(char **cmdline_p)
 	if (IS_ENABLED(CONFIG_PPC64) && (unsigned long)_stext & 0xffff)
 		panic("Kernelbase not 64K-aligned (0x%lx)!\n",
 		      (unsigned long)_stext);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-/*
- * Xilinx EmacLite Linux driver for the Xilinx Ethernet MAC Lite device.
- *
- * This is a new flat driver which is based on the original emac_lite
- * driver from John Williams <john.williams@petalogix.com>.
- *
- * 2007-2009 (c) Xilinx, Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- */
-
-#include <linux/module.h>
-#include <linux/uaccess.h>
-#include <linux/init.h>
-#include <linux/netdevice.h>
-#include <linux/etherdevice.h>
-#include <linux/skbuff.h>
-#include <linux/io.h>
-#include <linux/slab.h>
-#include <linux/of_address.h>
-#include <linux/of_device.h>
-#include <linux/of_platform.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* Xilinx EmacLite Linux driver for the Xilinx Ethernet MAC Lite device.
  *
@@ -45,24 +18,16 @@
 #include <linux/slab.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_mdio.h>
 #include <linux/of_net.h>
 #include <linux/phy.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-=======
 #include <linux/iopoll.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_NAME "xilinx_emaclite"
 
 /* Register offsets for the EmacLite Core */
-<<<<<<< HEAD
-#define XEL_TXBUFF_OFFSET 	0x0		/* Transmit Buffer */
-=======
 #define XEL_TXBUFF_OFFSET	0x0		/* Transmit Buffer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define XEL_MDIOADDR_OFFSET	0x07E4		/* MDIO Address Register */
 #define XEL_MDIOWR_OFFSET	0x07E8		/* MDIO Write Data Register */
 #define XEL_MDIORD_OFFSET	0x07EC		/* MDIO Read Data Register */
@@ -94,17 +59,6 @@
 #define XEL_MDIOCTRL_MDIOEN_MASK  0x00000008	/* MDIO Enable */
 
 /* Global Interrupt Enable Register (GIER) Bit Masks */
-<<<<<<< HEAD
-#define XEL_GIER_GIE_MASK	0x80000000 	/* Global Enable */
-
-/* Transmit Status Register (TSR) Bit Masks */
-#define XEL_TSR_XMIT_BUSY_MASK	 0x00000001 	/* Tx complete */
-#define XEL_TSR_PROGRAM_MASK	 0x00000002 	/* Program the MAC address */
-#define XEL_TSR_XMIT_IE_MASK	 0x00000008 	/* Tx interrupt enable bit */
-#define XEL_TSR_XMIT_ACTIVE_MASK 0x80000000 	/* Buffer is active, SW bit
-						 * only. This is not documented
-						 * in the HW spec */
-=======
 #define XEL_GIER_GIE_MASK	0x80000000	/* Global Enable */
 
 /* Transmit Status Register (TSR) Bit Masks */
@@ -115,37 +69,11 @@
 						 * only. This is not documented
 						 * in the HW spec
 						 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Define for programming the MAC address into the EmacLite */
 #define XEL_TSR_PROG_MAC_ADDR	(XEL_TSR_XMIT_BUSY_MASK | XEL_TSR_PROGRAM_MASK)
 
 /* Receive Status Register (RSR) */
-<<<<<<< HEAD
-#define XEL_RSR_RECV_DONE_MASK	0x00000001 	/* Rx complete */
-#define XEL_RSR_RECV_IE_MASK	0x00000008 	/* Rx interrupt enable bit */
-
-/* Transmit Packet Length Register (TPLR) */
-#define XEL_TPLR_LENGTH_MASK	0x0000FFFF 	/* Tx packet length */
-
-/* Receive Packet Length Register (RPLR) */
-#define XEL_RPLR_LENGTH_MASK	0x0000FFFF 	/* Rx packet length */
-
-#define XEL_HEADER_OFFSET	12 		/* Offset to length field */
-#define XEL_HEADER_SHIFT	16 		/* Shift value for length */
-
-/* General Ethernet Definitions */
-#define XEL_ARP_PACKET_SIZE		28 	/* Max ARP packet size */
-#define XEL_HEADER_IP_LENGTH_OFFSET	16 	/* IP Length Offset */
-
-
-
-#define TX_TIMEOUT		(60*HZ)		/* Tx timeout is 60 seconds. */
-#define ALIGNMENT		4
-
-/* BUFFER_ALIGN(adr) calculates the number of bytes to the next alignment. */
-#define BUFFER_ALIGN(adr) ((ALIGNMENT - ((u32) adr)) % ALIGNMENT)
-=======
 #define XEL_RSR_RECV_DONE_MASK	0x00000001	/* Rx complete */
 #define XEL_RSR_RECV_IE_MASK	0x00000008	/* Rx interrupt enable bit */
 
@@ -171,7 +99,6 @@
 #define xemaclite_readl		ioread32
 #define xemaclite_writel	iowrite32
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct net_local - Our private per device data
@@ -181,28 +108,15 @@
  * @next_tx_buf_to_use:	next Tx buffer to write to
  * @next_rx_buf_to_use:	next Rx buffer to read from
  * @base_addr:		base address of the Emaclite device
-<<<<<<< HEAD
- * @reset_lock:		lock used for synchronization
-=======
  * @reset_lock:		lock to serialize xmit and tx_timeout execution
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @deferred_skb:	holds an skb (for transmission at a later time) when the
  *			Tx buffer is not free
  * @phy_dev:		pointer to the PHY device
  * @phy_node:		pointer to the PHY device node
  * @mii_bus:		pointer to the MII bus
-<<<<<<< HEAD
- * @mdio_irqs:		IRQs table for MDIO bus
- * @last_link:		last link status
- * @has_mdio:		indicates whether MDIO is included in the HW
- */
-struct net_local {
-
-=======
  * @last_link:		last link status
  */
 struct net_local {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *ndev;
 
 	bool tx_ping_pong;
@@ -211,31 +125,17 @@ struct net_local {
 	u32 next_rx_buf_to_use;
 	void __iomem *base_addr;
 
-<<<<<<< HEAD
-	spinlock_t reset_lock;
-=======
 	spinlock_t reset_lock; /* serialize xmit and tx_timeout execution */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *deferred_skb;
 
 	struct phy_device *phy_dev;
 	struct device_node *phy_node;
 
 	struct mii_bus *mii_bus;
-<<<<<<< HEAD
-	int mdio_irqs[PHY_MAX_ADDR];
-
-	int last_link;
-	bool has_mdio;
-};
-
-
-=======
 
 	int last_link;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*************************/
 /* EmacLite driver calls */
 /*************************/
@@ -252,36 +152,6 @@ static void xemaclite_enable_interrupts(struct net_local *drvdata)
 	u32 reg_data;
 
 	/* Enable the Tx interrupts for the first Buffer */
-<<<<<<< HEAD
-	reg_data = in_be32(drvdata->base_addr + XEL_TSR_OFFSET);
-	out_be32(drvdata->base_addr + XEL_TSR_OFFSET,
-		 reg_data | XEL_TSR_XMIT_IE_MASK);
-
-	/* Enable the Tx interrupts for the second Buffer if
-	 * configured in HW */
-	if (drvdata->tx_ping_pong != 0) {
-		reg_data = in_be32(drvdata->base_addr +
-				   XEL_BUFFER_OFFSET + XEL_TSR_OFFSET);
-		out_be32(drvdata->base_addr + XEL_BUFFER_OFFSET +
-			 XEL_TSR_OFFSET,
-			 reg_data | XEL_TSR_XMIT_IE_MASK);
-	}
-
-	/* Enable the Rx interrupts for the first buffer */
-	out_be32(drvdata->base_addr + XEL_RSR_OFFSET,
-		 XEL_RSR_RECV_IE_MASK);
-
-	/* Enable the Rx interrupts for the second Buffer if
-	 * configured in HW */
-	if (drvdata->rx_ping_pong != 0) {
-		out_be32(drvdata->base_addr + XEL_BUFFER_OFFSET +
-			 XEL_RSR_OFFSET,
-			 XEL_RSR_RECV_IE_MASK);
-	}
-
-	/* Enable the Global Interrupt Enable */
-	out_be32(drvdata->base_addr + XEL_GIER_OFFSET, XEL_GIER_GIE_MASK);
-=======
 	reg_data = xemaclite_readl(drvdata->base_addr + XEL_TSR_OFFSET);
 	xemaclite_writel(reg_data | XEL_TSR_XMIT_IE_MASK,
 			 drvdata->base_addr + XEL_TSR_OFFSET);
@@ -291,7 +161,6 @@ static void xemaclite_enable_interrupts(struct net_local *drvdata)
 
 	/* Enable the Global Interrupt Enable */
 	xemaclite_writel(XEL_GIER_GIE_MASK, drvdata->base_addr + XEL_GIER_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -306,40 +175,6 @@ static void xemaclite_disable_interrupts(struct net_local *drvdata)
 	u32 reg_data;
 
 	/* Disable the Global Interrupt Enable */
-<<<<<<< HEAD
-	out_be32(drvdata->base_addr + XEL_GIER_OFFSET, XEL_GIER_GIE_MASK);
-
-	/* Disable the Tx interrupts for the first buffer */
-	reg_data = in_be32(drvdata->base_addr + XEL_TSR_OFFSET);
-	out_be32(drvdata->base_addr + XEL_TSR_OFFSET,
-		 reg_data & (~XEL_TSR_XMIT_IE_MASK));
-
-	/* Disable the Tx interrupts for the second Buffer
-	 * if configured in HW */
-	if (drvdata->tx_ping_pong != 0) {
-		reg_data = in_be32(drvdata->base_addr + XEL_BUFFER_OFFSET +
-				   XEL_TSR_OFFSET);
-		out_be32(drvdata->base_addr + XEL_BUFFER_OFFSET +
-			 XEL_TSR_OFFSET,
-			 reg_data & (~XEL_TSR_XMIT_IE_MASK));
-	}
-
-	/* Disable the Rx interrupts for the first buffer */
-	reg_data = in_be32(drvdata->base_addr + XEL_RSR_OFFSET);
-	out_be32(drvdata->base_addr + XEL_RSR_OFFSET,
-		 reg_data & (~XEL_RSR_RECV_IE_MASK));
-
-	/* Disable the Rx interrupts for the second buffer
-	 * if configured in HW */
-	if (drvdata->rx_ping_pong != 0) {
-
-		reg_data = in_be32(drvdata->base_addr + XEL_BUFFER_OFFSET +
-				   XEL_RSR_OFFSET);
-		out_be32(drvdata->base_addr + XEL_BUFFER_OFFSET +
-			 XEL_RSR_OFFSET,
-			 reg_data & (~XEL_RSR_RECV_IE_MASK));
-	}
-=======
 	xemaclite_writel(XEL_GIER_GIE_MASK, drvdata->base_addr + XEL_GIER_OFFSET);
 
 	/* Disable the Tx interrupts for the first buffer */
@@ -351,7 +186,6 @@ static void xemaclite_disable_interrupts(struct net_local *drvdata)
 	reg_data = xemaclite_readl(drvdata->base_addr + XEL_RSR_OFFSET);
 	xemaclite_writel(reg_data & (~XEL_RSR_RECV_IE_MASK),
 			 drvdata->base_addr + XEL_RSR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -363,14 +197,6 @@ static void xemaclite_disable_interrupts(struct net_local *drvdata)
  * This function writes data from a 16-bit aligned buffer to a 32-bit aligned
  * address in the EmacLite device.
  */
-<<<<<<< HEAD
-static void xemaclite_aligned_write(void *src_ptr, u32 *dest_ptr,
-				    unsigned length)
-{
-	u32 align_buffer;
-	u32 *to_u32_ptr;
-	u16 *from_u16_ptr, *to_u16_ptr;
-=======
 static void xemaclite_aligned_write(const void *src_ptr, u32 *dest_ptr,
 				    unsigned int length)
 {
@@ -378,7 +204,6 @@ static void xemaclite_aligned_write(const void *src_ptr, u32 *dest_ptr,
 	u32 align_buffer;
 	u32 *to_u32_ptr;
 	u16 *to_u16_ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	to_u32_ptr = dest_ptr;
 	from_u16_ptr = src_ptr;
@@ -389,8 +214,6 @@ static void xemaclite_aligned_write(const void *src_ptr, u32 *dest_ptr,
 		*to_u16_ptr++ = *from_u16_ptr++;
 		*to_u16_ptr++ = *from_u16_ptr++;
 
-<<<<<<< HEAD
-=======
 		/* This barrier resolves occasional issues seen around
 		 * cases where the data is not properly flushed out
 		 * from the processor store buffers to the destination
@@ -398,7 +221,6 @@ static void xemaclite_aligned_write(const void *src_ptr, u32 *dest_ptr,
 		 */
 		wmb();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Output a word */
 		*to_u32_ptr++ = align_buffer;
 	}
@@ -407,27 +229,19 @@ static void xemaclite_aligned_write(const void *src_ptr, u32 *dest_ptr,
 
 		/* Set up to output the remaining data */
 		align_buffer = 0;
-<<<<<<< HEAD
-		to_u8_ptr = (u8 *) &align_buffer;
-		from_u8_ptr = (u8 *) from_u16_ptr;
-=======
 		to_u8_ptr = (u8 *)&align_buffer;
 		from_u8_ptr = (u8 *)from_u16_ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Output the remaining data */
 		for (; length > 0; length--)
 			*to_u8_ptr++ = *from_u8_ptr++;
 
-<<<<<<< HEAD
-=======
 		/* This barrier resolves occasional issues seen around
 		 * cases where the data is not properly flushed out
 		 * from the processor store buffers to the destination
 		 * memory locations.
 		 */
 		wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*to_u32_ptr = align_buffer;
 	}
 }
@@ -442,22 +256,14 @@ static void xemaclite_aligned_write(const void *src_ptr, u32 *dest_ptr,
  * to a 16-bit aligned buffer.
  */
 static void xemaclite_aligned_read(u32 *src_ptr, u8 *dest_ptr,
-<<<<<<< HEAD
-				   unsigned length)
-=======
 				   unsigned int length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 *to_u16_ptr, *from_u16_ptr;
 	u32 *from_u32_ptr;
 	u32 align_buffer;
 
 	from_u32_ptr = src_ptr;
-<<<<<<< HEAD
-	to_u16_ptr = (u16 *) dest_ptr;
-=======
 	to_u16_ptr = (u16 *)dest_ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (; length > 3; length -= 4) {
 		/* Copy each word into the temporary buffer */
@@ -473,15 +279,9 @@ static void xemaclite_aligned_read(u32 *src_ptr, u8 *dest_ptr,
 		u8 *to_u8_ptr, *from_u8_ptr;
 
 		/* Set up to read the remaining data */
-<<<<<<< HEAD
-		to_u8_ptr = (u8 *) to_u16_ptr;
-		align_buffer = *from_u32_ptr++;
-		from_u8_ptr = (u8 *) &align_buffer;
-=======
 		to_u8_ptr = (u8 *)to_u16_ptr;
 		align_buffer = *from_u32_ptr++;
 		from_u8_ptr = (u8 *)&align_buffer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Read the remaining data */
 		for (; length > 0; length--)
@@ -518,48 +318,24 @@ static int xemaclite_send_data(struct net_local *drvdata, u8 *data,
 		byte_count = ETH_FRAME_LEN;
 
 	/* Check if the expected buffer is available */
-<<<<<<< HEAD
-	reg_data = in_be32(addr + XEL_TSR_OFFSET);
-	if ((reg_data & (XEL_TSR_XMIT_BUSY_MASK |
-	     XEL_TSR_XMIT_ACTIVE_MASK)) == 0) {
-
-=======
 	reg_data = xemaclite_readl(addr + XEL_TSR_OFFSET);
 	if ((reg_data & (XEL_TSR_XMIT_BUSY_MASK |
 	     XEL_TSR_XMIT_ACTIVE_MASK)) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Switch to next buffer if configured */
 		if (drvdata->tx_ping_pong != 0)
 			drvdata->next_tx_buf_to_use ^= XEL_BUFFER_OFFSET;
 	} else if (drvdata->tx_ping_pong != 0) {
 		/* If the expected buffer is full, try the other buffer,
-<<<<<<< HEAD
-		 * if it is configured in HW */
-
-		addr = (void __iomem __force *)((u32 __force)addr ^
-						 XEL_BUFFER_OFFSET);
-		reg_data = in_be32(addr + XEL_TSR_OFFSET);
-=======
 		 * if it is configured in HW
 		 */
 
 		addr = (void __iomem __force *)((uintptr_t __force)addr ^
 						 XEL_BUFFER_OFFSET);
 		reg_data = xemaclite_readl(addr + XEL_TSR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if ((reg_data & (XEL_TSR_XMIT_BUSY_MASK |
 		     XEL_TSR_XMIT_ACTIVE_MASK)) != 0)
 			return -1; /* Buffers were full, return failure */
-<<<<<<< HEAD
-	} else
-		return -1; /* Buffer was full, return failure */
-
-	/* Write the frame to the buffer */
-	xemaclite_aligned_write(data, (u32 __force *) addr, byte_count);
-
-	out_be32(addr + XEL_TPLR_OFFSET, (byte_count & XEL_TPLR_LENGTH_MASK));
-=======
 	} else {
 		return -1; /* Buffer was full, return failure */
 	}
@@ -569,23 +345,15 @@ static int xemaclite_send_data(struct net_local *drvdata, u8 *data,
 
 	xemaclite_writel((byte_count & XEL_TPLR_LENGTH_MASK),
 			 addr + XEL_TPLR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update the Tx Status Register to indicate that there is a
 	 * frame to send. Set the XEL_TSR_XMIT_ACTIVE_MASK flag which
 	 * is used by the interrupt handler to check whether a frame
-<<<<<<< HEAD
-	 * has been transmitted */
-	reg_data = in_be32(addr + XEL_TSR_OFFSET);
-	reg_data |= (XEL_TSR_XMIT_BUSY_MASK | XEL_TSR_XMIT_ACTIVE_MASK);
-	out_be32(addr + XEL_TSR_OFFSET, reg_data);
-=======
 	 * has been transmitted
 	 */
 	reg_data = xemaclite_readl(addr + XEL_TSR_OFFSET);
 	reg_data |= (XEL_TSR_XMIT_BUSY_MASK | XEL_TSR_XMIT_ACTIVE_MASK);
 	xemaclite_writel(reg_data, addr + XEL_TSR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -594,21 +362,14 @@ static int xemaclite_send_data(struct net_local *drvdata, u8 *data,
  * xemaclite_recv_data - Receive a frame
  * @drvdata:	Pointer to the Emaclite device private data
  * @data:	Address where the data is to be received
-<<<<<<< HEAD
-=======
  * @maxlen:    Maximum supported ethernet packet length
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is intended to be called from the interrupt context or
  * with a wrapper which waits for the receive frame to be available.
  *
  * Return:	Total number of bytes received
  */
-<<<<<<< HEAD
-static u16 xemaclite_recv_data(struct net_local *drvdata, u8 *data)
-=======
 static u16 xemaclite_recv_data(struct net_local *drvdata, u8 *data, int maxlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *addr;
 	u16 length, proto_type;
@@ -618,11 +379,7 @@ static u16 xemaclite_recv_data(struct net_local *drvdata, u8 *data, int maxlen)
 	addr = (drvdata->base_addr + drvdata->next_rx_buf_to_use);
 
 	/* Verify which buffer has valid data */
-<<<<<<< HEAD
-	reg_data = in_be32(addr + XEL_RSR_OFFSET);
-=======
 	reg_data = xemaclite_readl(addr + XEL_RSR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((reg_data & XEL_RSR_RECV_DONE_MASK) == XEL_RSR_RECV_DONE_MASK) {
 		if (drvdata->rx_ping_pong != 0)
@@ -631,84 +388,38 @@ static u16 xemaclite_recv_data(struct net_local *drvdata, u8 *data, int maxlen)
 		/* The instance is out of sync, try other buffer if other
 		 * buffer is configured, return 0 otherwise. If the instance is
 		 * out of sync, do not update the 'next_rx_buf_to_use' since it
-<<<<<<< HEAD
-		 * will correct on subsequent calls */
-		if (drvdata->rx_ping_pong != 0)
-			addr = (void __iomem __force *)((u32 __force)addr ^
-							 XEL_BUFFER_OFFSET);
-=======
 		 * will correct on subsequent calls
 		 */
 		if (drvdata->rx_ping_pong != 0)
 			addr = (void __iomem __force *)
 				((uintptr_t __force)addr ^
 				 XEL_BUFFER_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			return 0;	/* No data was available */
 
 		/* Verify that buffer has valid data */
-<<<<<<< HEAD
-		reg_data = in_be32(addr + XEL_RSR_OFFSET);
-=======
 		reg_data = xemaclite_readl(addr + XEL_RSR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((reg_data & XEL_RSR_RECV_DONE_MASK) !=
 		     XEL_RSR_RECV_DONE_MASK)
 			return 0;	/* No data was available */
 	}
 
-<<<<<<< HEAD
-	/* Get the protocol type of the ethernet frame that arrived */
-	proto_type = ((ntohl(in_be32(addr + XEL_HEADER_OFFSET +
-=======
 	/* Get the protocol type of the ethernet frame that arrived
 	 */
 	proto_type = ((ntohl(xemaclite_readl(addr + XEL_HEADER_OFFSET +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			XEL_RXBUFF_OFFSET)) >> XEL_HEADER_SHIFT) &
 			XEL_RPLR_LENGTH_MASK);
 
 	/* Check if received ethernet frame is a raw ethernet frame
-<<<<<<< HEAD
-	 * or an IP packet or an ARP packet */
-	if (proto_type > (ETH_FRAME_LEN + ETH_FCS_LEN)) {
-
-		if (proto_type == ETH_P_IP) {
-			length = ((ntohl(in_be32(addr +
-=======
 	 * or an IP packet or an ARP packet
 	 */
 	if (proto_type > ETH_DATA_LEN) {
 		if (proto_type == ETH_P_IP) {
 			length = ((ntohl(xemaclite_readl(addr +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					XEL_HEADER_IP_LENGTH_OFFSET +
 					XEL_RXBUFF_OFFSET)) >>
 					XEL_HEADER_SHIFT) &
 					XEL_RPLR_LENGTH_MASK);
-<<<<<<< HEAD
-			length += ETH_HLEN + ETH_FCS_LEN;
-
-		} else if (proto_type == ETH_P_ARP)
-			length = XEL_ARP_PACKET_SIZE + ETH_HLEN + ETH_FCS_LEN;
-		else
-			/* Field contains type other than IP or ARP, use max
-			 * frame size and let user parse it */
-			length = ETH_FRAME_LEN + ETH_FCS_LEN;
-	} else
-		/* Use the length in the frame, plus the header and trailer */
-		length = proto_type + ETH_HLEN + ETH_FCS_LEN;
-
-	/* Read from the EmacLite device */
-	xemaclite_aligned_read((u32 __force *) (addr + XEL_RXBUFF_OFFSET),
-				data, length);
-
-	/* Acknowledge the frame */
-	reg_data = in_be32(addr + XEL_RSR_OFFSET);
-	reg_data &= ~XEL_RSR_RECV_DONE_MASK;
-	out_be32(addr + XEL_RSR_OFFSET, reg_data);
-=======
 			length = min_t(u16, length, ETH_DATA_LEN);
 			length += ETH_HLEN + ETH_FCS_LEN;
 
@@ -736,7 +447,6 @@ static u16 xemaclite_recv_data(struct net_local *drvdata, u8 *data, int maxlen)
 	reg_data = xemaclite_readl(addr + XEL_RSR_OFFSET);
 	reg_data &= ~XEL_RSR_RECV_DONE_MASK;
 	xemaclite_writel(reg_data, addr + XEL_RSR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return length;
 }
@@ -753,11 +463,7 @@ static u16 xemaclite_recv_data(struct net_local *drvdata, u8 *data, int maxlen)
  * buffers (if configured).
  */
 static void xemaclite_update_address(struct net_local *drvdata,
-<<<<<<< HEAD
-				     u8 *address_ptr)
-=======
 				     const u8 *address_ptr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *addr;
 	u32 reg_data;
@@ -765,18 +471,6 @@ static void xemaclite_update_address(struct net_local *drvdata,
 	/* Determine the expected Tx buffer address */
 	addr = drvdata->base_addr + drvdata->next_tx_buf_to_use;
 
-<<<<<<< HEAD
-	xemaclite_aligned_write(address_ptr, (u32 __force *) addr, ETH_ALEN);
-
-	out_be32(addr + XEL_TPLR_OFFSET, ETH_ALEN);
-
-	/* Update the MAC address in the EmacLite */
-	reg_data = in_be32(addr + XEL_TSR_OFFSET);
-	out_be32(addr + XEL_TSR_OFFSET, reg_data | XEL_TSR_PROG_MAC_ADDR);
-
-	/* Wait for EmacLite to finish with the MAC address update */
-	while ((in_be32(addr + XEL_TSR_OFFSET) &
-=======
 	xemaclite_aligned_write(address_ptr, (u32 __force *)addr, ETH_ALEN);
 
 	xemaclite_writel(ETH_ALEN, addr + XEL_TPLR_OFFSET);
@@ -787,7 +481,6 @@ static void xemaclite_update_address(struct net_local *drvdata,
 
 	/* Wait for EmacLite to finish with the MAC address update */
 	while ((xemaclite_readl(addr + XEL_TSR_OFFSET) &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		XEL_TSR_PROG_MAC_ADDR) != 0)
 		;
 }
@@ -795,15 +488,9 @@ static void xemaclite_update_address(struct net_local *drvdata,
 /**
  * xemaclite_set_mac_address - Set the MAC address for this device
  * @dev:	Pointer to the network device instance
-<<<<<<< HEAD
- * @addr:	Void pointer to the sockaddr structure
- *
- * This function copies the HW address from the sockaddr strucutre to the
-=======
  * @address:	Void pointer to the sockaddr structure
  *
  * This function copies the HW address from the sockaddr structure to the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * net_device structure and updates the address in HW.
  *
  * Return:	Error if the net device is busy or 0 if the addr is set
@@ -817,11 +504,7 @@ static int xemaclite_set_mac_address(struct net_device *dev, void *address)
 	if (netif_running(dev))
 		return -EBUSY;
 
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, addr->sa_data, dev->addr_len);
-=======
 	eth_hw_addr_set(dev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xemaclite_update_address(lp, dev->dev_addr);
 	return 0;
 }
@@ -829,18 +512,11 @@ static int xemaclite_set_mac_address(struct net_device *dev, void *address)
 /**
  * xemaclite_tx_timeout - Callback for Tx Timeout
  * @dev:	Pointer to the network device
-<<<<<<< HEAD
- *
- * This function is called when Tx time out occurs for Emaclite device.
- */
-static void xemaclite_tx_timeout(struct net_device *dev)
-=======
  * @txqueue:	Unused
  *
  * This function is called when Tx time out occurs for Emaclite device.
  */
 static void xemaclite_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_local *lp = netdev_priv(dev);
 	unsigned long flags;
@@ -860,21 +536,13 @@ static void xemaclite_tx_timeout(struct net_device *dev, unsigned int txqueue)
 	xemaclite_enable_interrupts(lp);
 
 	if (lp->deferred_skb) {
-<<<<<<< HEAD
-		dev_kfree_skb(lp->deferred_skb);
-=======
 		dev_kfree_skb_irq(lp->deferred_skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lp->deferred_skb = NULL;
 		dev->stats.tx_errors++;
 	}
 
 	/* To exclude tx timeout */
-<<<<<<< HEAD
-	dev->trans_start = jiffies; /* prevent tx timeout */
-=======
 	netif_trans_update(dev); /* prevent tx timeout */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We're all ready to go. Start the queue */
 	netif_wake_queue(dev);
@@ -897,21 +565,6 @@ static void xemaclite_tx_handler(struct net_device *dev)
 	struct net_local *lp = netdev_priv(dev);
 
 	dev->stats.tx_packets++;
-<<<<<<< HEAD
-	if (lp->deferred_skb) {
-		if (xemaclite_send_data(lp,
-					(u8 *) lp->deferred_skb->data,
-					lp->deferred_skb->len) != 0)
-			return;
-		else {
-			dev->stats.tx_bytes += lp->deferred_skb->len;
-			dev_kfree_skb_irq(lp->deferred_skb);
-			lp->deferred_skb = NULL;
-			dev->trans_start = jiffies; /* prevent tx timeout */
-			netif_wake_queue(dev);
-		}
-	}
-=======
 
 	if (!lp->deferred_skb)
 		return;
@@ -925,7 +578,6 @@ static void xemaclite_tx_handler(struct net_device *dev)
 	lp->deferred_skb = NULL;
 	netif_trans_update(dev); /* prevent tx timeout */
 	netif_wake_queue(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -939,18 +591,10 @@ static void xemaclite_rx_handler(struct net_device *dev)
 {
 	struct net_local *lp = netdev_priv(dev);
 	struct sk_buff *skb;
-<<<<<<< HEAD
-	unsigned int align;
-	u32 len;
-
-	len = ETH_FRAME_LEN + ETH_FCS_LEN;
-	skb = netdev_alloc_skb(dev, len + ALIGNMENT);
-=======
 	u32 len;
 
 	len = ETH_FRAME_LEN + ETH_FCS_LEN;
 	skb = netdev_alloc_skb(dev, len + NET_IP_ALIGN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb) {
 		/* Couldn't get memory. */
 		dev->stats.rx_dropped++;
@@ -958,24 +602,9 @@ static void xemaclite_rx_handler(struct net_device *dev)
 		return;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * A new skb should have the data halfword aligned, but this code is
-	 * here just in case that isn't true. Calculate how many
-	 * bytes we should reserve to get the data to start on a word
-	 * boundary */
-	align = BUFFER_ALIGN(skb->data);
-	if (align)
-		skb_reserve(skb, align);
-
-	skb_reserve(skb, 2);
-
-	len = xemaclite_recv_data(lp, (u8 *) skb->data);
-=======
 	skb_reserve(skb, NET_IP_ALIGN);
 
 	len = xemaclite_recv_data(lp, (u8 *)skb->data, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!len) {
 		dev->stats.rx_errors++;
@@ -1001,11 +630,8 @@ static void xemaclite_rx_handler(struct net_device *dev)
  * @dev_id:	Void pointer to the network device instance used as callback
  *		reference
  *
-<<<<<<< HEAD
-=======
  * Return:	IRQ_HANDLED
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function handles the Tx and Rx interrupts of the EmacLite device.
  */
 static irqreturn_t xemaclite_interrupt(int irq, void *dev_id)
@@ -1017,54 +643,30 @@ static irqreturn_t xemaclite_interrupt(int irq, void *dev_id)
 	u32 tx_status;
 
 	/* Check if there is Rx Data available */
-<<<<<<< HEAD
-	if ((in_be32(base_addr + XEL_RSR_OFFSET) & XEL_RSR_RECV_DONE_MASK) ||
-			(in_be32(base_addr + XEL_BUFFER_OFFSET + XEL_RSR_OFFSET)
-=======
 	if ((xemaclite_readl(base_addr + XEL_RSR_OFFSET) &
 			 XEL_RSR_RECV_DONE_MASK) ||
 	    (xemaclite_readl(base_addr + XEL_BUFFER_OFFSET + XEL_RSR_OFFSET)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 & XEL_RSR_RECV_DONE_MASK))
 
 		xemaclite_rx_handler(dev);
 
 	/* Check if the Transmission for the first buffer is completed */
-<<<<<<< HEAD
-	tx_status = in_be32(base_addr + XEL_TSR_OFFSET);
-	if (((tx_status & XEL_TSR_XMIT_BUSY_MASK) == 0) &&
-		(tx_status & XEL_TSR_XMIT_ACTIVE_MASK) != 0) {
-
-		tx_status &= ~XEL_TSR_XMIT_ACTIVE_MASK;
-		out_be32(base_addr + XEL_TSR_OFFSET, tx_status);
-=======
 	tx_status = xemaclite_readl(base_addr + XEL_TSR_OFFSET);
 	if (((tx_status & XEL_TSR_XMIT_BUSY_MASK) == 0) &&
 	    (tx_status & XEL_TSR_XMIT_ACTIVE_MASK) != 0) {
 		tx_status &= ~XEL_TSR_XMIT_ACTIVE_MASK;
 		xemaclite_writel(tx_status, base_addr + XEL_TSR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tx_complete = true;
 	}
 
 	/* Check if the Transmission for the second buffer is completed */
-<<<<<<< HEAD
-	tx_status = in_be32(base_addr + XEL_BUFFER_OFFSET + XEL_TSR_OFFSET);
-	if (((tx_status & XEL_TSR_XMIT_BUSY_MASK) == 0) &&
-		(tx_status & XEL_TSR_XMIT_ACTIVE_MASK) != 0) {
-
-		tx_status &= ~XEL_TSR_XMIT_ACTIVE_MASK;
-		out_be32(base_addr + XEL_BUFFER_OFFSET + XEL_TSR_OFFSET,
-			 tx_status);
-=======
 	tx_status = xemaclite_readl(base_addr + XEL_BUFFER_OFFSET + XEL_TSR_OFFSET);
 	if (((tx_status & XEL_TSR_XMIT_BUSY_MASK) == 0) &&
 	    (tx_status & XEL_TSR_XMIT_ACTIVE_MASK) != 0) {
 		tx_status &= ~XEL_TSR_XMIT_ACTIVE_MASK;
 		xemaclite_writel(tx_status, base_addr + XEL_BUFFER_OFFSET +
 				 XEL_TSR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tx_complete = true;
 	}
@@ -1092,22 +694,6 @@ static irqreturn_t xemaclite_interrupt(int irq, void *dev_id)
 
 static int xemaclite_mdio_wait(struct net_local *lp)
 {
-<<<<<<< HEAD
-	long end = jiffies + 2;
-
-	/* wait for the MDIO interface to not be busy or timeout
-	   after some time.
-	*/
-	while (in_be32(lp->base_addr + XEL_MDIOCTRL_OFFSET) &
-			XEL_MDIOCTRL_MDIOSTS_MASK) {
-		if (end - jiffies <= 0) {
-			WARN_ON(1);
-			return -ETIMEDOUT;
-		}
-		msleep(1);
-	}
-	return 0;
-=======
 	u32 val;
 
 	/* wait for the MDIO interface to not be busy or timeout
@@ -1117,7 +703,6 @@ static int xemaclite_mdio_wait(struct net_local *lp)
 				  lp->base_addr + XEL_MDIOCTRL_OFFSET,
 				  val, !(val & XEL_MDIOCTRL_MDIOSTS_MASK),
 				  1000, 20000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1145,36 +730,20 @@ static int xemaclite_mdio_read(struct mii_bus *bus, int phy_id, int reg)
 	 * MDIO Address register. Set the Status bit in the MDIO Control
 	 * register to start a MDIO read transaction.
 	 */
-<<<<<<< HEAD
-	ctrl_reg = in_be32(lp->base_addr + XEL_MDIOCTRL_OFFSET);
-	out_be32(lp->base_addr + XEL_MDIOADDR_OFFSET,
-		 XEL_MDIOADDR_OP_MASK |
-		 ((phy_id << XEL_MDIOADDR_PHYADR_SHIFT) | reg));
-	out_be32(lp->base_addr + XEL_MDIOCTRL_OFFSET,
-		 ctrl_reg | XEL_MDIOCTRL_MDIOSTS_MASK);
-=======
 	ctrl_reg = xemaclite_readl(lp->base_addr + XEL_MDIOCTRL_OFFSET);
 	xemaclite_writel(XEL_MDIOADDR_OP_MASK |
 			 ((phy_id << XEL_MDIOADDR_PHYADR_SHIFT) | reg),
 			 lp->base_addr + XEL_MDIOADDR_OFFSET);
 	xemaclite_writel(ctrl_reg | XEL_MDIOCTRL_MDIOSTS_MASK,
 			 lp->base_addr + XEL_MDIOCTRL_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (xemaclite_mdio_wait(lp))
 		return -ETIMEDOUT;
 
-<<<<<<< HEAD
-	rc = in_be32(lp->base_addr + XEL_MDIORD_OFFSET);
-
-	dev_dbg(&lp->ndev->dev,
-		"xemaclite_mdio_read(phy_id=%i, reg=%x) == %x\n",
-=======
 	rc = xemaclite_readl(lp->base_addr + XEL_MDIORD_OFFSET);
 
 	dev_dbg(&lp->ndev->dev,
 		"%s(phy_id=%i, reg=%x) == %x\n", __func__,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phy_id, reg, rc);
 
 	return rc;
@@ -1189,11 +758,8 @@ static int xemaclite_mdio_read(struct mii_bus *bus, int phy_id, int reg)
  *
  * This function waits till the device is ready to accept a new MDIO
  * request and then writes the val to the MDIO Write Data register.
-<<<<<<< HEAD
-=======
  *
  * Return:      0 upon success or a negative error upon failure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int xemaclite_mdio_write(struct mii_bus *bus, int phy_id, int reg,
 				u16 val)
@@ -1202,11 +768,7 @@ static int xemaclite_mdio_write(struct mii_bus *bus, int phy_id, int reg,
 	u32 ctrl_reg;
 
 	dev_dbg(&lp->ndev->dev,
-<<<<<<< HEAD
-		"xemaclite_mdio_write(phy_id=%i, reg=%x, val=%x)\n",
-=======
 		"%s(phy_id=%i, reg=%x, val=%x)\n", __func__,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phy_id, reg, val);
 
 	if (xemaclite_mdio_wait(lp))
@@ -1217,15 +779,6 @@ static int xemaclite_mdio_write(struct mii_bus *bus, int phy_id, int reg,
 	 * Data register. Finally, set the Status bit in the MDIO Control
 	 * register to start a MDIO write transaction.
 	 */
-<<<<<<< HEAD
-	ctrl_reg = in_be32(lp->base_addr + XEL_MDIOCTRL_OFFSET);
-	out_be32(lp->base_addr + XEL_MDIOADDR_OFFSET,
-		 ~XEL_MDIOADDR_OP_MASK &
-		 ((phy_id << XEL_MDIOADDR_PHYADR_SHIFT) | reg));
-	out_be32(lp->base_addr + XEL_MDIOWR_OFFSET, val);
-	out_be32(lp->base_addr + XEL_MDIOCTRL_OFFSET,
-		 ctrl_reg | XEL_MDIOCTRL_MDIOSTS_MASK);
-=======
 	ctrl_reg = xemaclite_readl(lp->base_addr + XEL_MDIOCTRL_OFFSET);
 	xemaclite_writel(~XEL_MDIOADDR_OP_MASK &
 			 ((phy_id << XEL_MDIOADDR_PHYADR_SHIFT) | reg),
@@ -1233,33 +786,14 @@ static int xemaclite_mdio_write(struct mii_bus *bus, int phy_id, int reg,
 	xemaclite_writel(val, lp->base_addr + XEL_MDIOWR_OFFSET);
 	xemaclite_writel(ctrl_reg | XEL_MDIOCTRL_MDIOSTS_MASK,
 			 lp->base_addr + XEL_MDIOCTRL_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- * xemaclite_mdio_reset - Reset the mdio bus.
- * @bus:	Pointer to the MII bus
- *
- * This function is required(?) as per Documentation/networking/phy.txt.
- * There is no reset in this device; this function always returns 0.
- */
-static int xemaclite_mdio_reset(struct mii_bus *bus)
-{
-	return 0;
-}
-
-/**
- * xemaclite_mdio_setup - Register mii_bus for the Emaclite device
- * @lp:		Pointer to the Emaclite device private data
- * @ofdev:	Pointer to OF device structure
-=======
  * xemaclite_mdio_setup - Register mii_bus for the Emaclite device
  * @lp:		Pointer to the Emaclite device private data
  * @dev:	Pointer to OF device structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function enables MDIO bus in the Emaclite device and registers a
  * mii_bus.
@@ -1269,24 +803,14 @@ static int xemaclite_mdio_reset(struct mii_bus *bus)
 static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
 {
 	struct mii_bus *bus;
-<<<<<<< HEAD
-	int rc;
-	struct resource res;
-	struct device_node *np = of_get_parent(lp->phy_node);
-=======
 	struct resource res;
 	struct device_node *np = of_get_parent(lp->phy_node);
 	struct device_node *npp;
 	int rc, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Don't register the MDIO bus if the phy_node or its parent node
 	 * can't be found.
 	 */
-<<<<<<< HEAD
-	if (!np)
-		return -ENODEV;
-=======
 	if (!np) {
 		dev_err(dev, "Failed to register mdio bus.\n");
 		return -ENODEV;
@@ -1312,21 +836,10 @@ static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
 		of_node_put(np);
 		return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable the MDIO bus by asserting the enable bit in MDIO Control
 	 * register.
 	 */
-<<<<<<< HEAD
-	out_be32(lp->base_addr + XEL_MDIOCTRL_OFFSET,
-		 XEL_MDIOCTRL_MDIOEN_MASK);
-
-	bus = mdiobus_alloc();
-	if (!bus)
-		return -ENOMEM;
-
-	of_address_to_resource(np, 0, &res);
-=======
 	xemaclite_writel(XEL_MDIOCTRL_MDIOEN_MASK,
 			 lp->base_addr + XEL_MDIOCTRL_OFFSET);
 
@@ -1337,24 +850,12 @@ static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
 		return -ENOMEM;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snprintf(bus->id, MII_BUS_ID_SIZE, "%.8llx",
 		 (unsigned long long)res.start);
 	bus->priv = lp;
 	bus->name = "Xilinx Emaclite MDIO";
 	bus->read = xemaclite_mdio_read;
 	bus->write = xemaclite_mdio_write;
-<<<<<<< HEAD
-	bus->reset = xemaclite_mdio_reset;
-	bus->parent = dev;
-	bus->irq = lp->mdio_irqs; /* preallocated IRQ table */
-
-	lp->mii_bus = bus;
-
-	rc = of_mdiobus_register(bus, np);
-	if (rc)
-		goto err_register;
-=======
 	bus->parent = dev;
 
 	rc = of_mdiobus_register(bus, np);
@@ -1365,7 +866,6 @@ static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
 	}
 
 	lp->mii_bus = bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -1381,11 +881,7 @@ err_register:
  * There's nothing in the Emaclite device to be configured when the link
  * state changes. We just print the status.
  */
-<<<<<<< HEAD
-void xemaclite_adjust_link(struct net_device *ndev)
-=======
 static void xemaclite_adjust_link(struct net_device *ndev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_local *lp = netdev_priv(ndev);
 	struct phy_device *phy = lp->phy_dev;
@@ -1407,12 +903,9 @@ static void xemaclite_adjust_link(struct net_device *ndev)
  * This function sets the MAC address, requests an IRQ and enables interrupts
  * for the Emaclite device and starts the Tx queue.
  * It also connects to the phy device, if MDIO is included in Emaclite device.
-<<<<<<< HEAD
-=======
  *
  * Return:	0 on success. -ENODEV, if PHY cannot be connected.
  *		Non-zero error value on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int xemaclite_open(struct net_device *dev)
 {
@@ -1423,11 +916,6 @@ static int xemaclite_open(struct net_device *dev)
 	xemaclite_disable_interrupts(lp);
 
 	if (lp->phy_node) {
-<<<<<<< HEAD
-		u32 bmcr;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lp->phy_dev = of_phy_connect(lp->ndev, lp->phy_node,
 					     xemaclite_adjust_link, 0,
 					     PHY_INTERFACE_MODE_MII);
@@ -1437,24 +925,7 @@ static int xemaclite_open(struct net_device *dev)
 		}
 
 		/* EmacLite doesn't support giga-bit speeds */
-<<<<<<< HEAD
-		lp->phy_dev->supported &= (PHY_BASIC_FEATURES);
-		lp->phy_dev->advertising = lp->phy_dev->supported;
-
-		/* Don't advertise 1000BASE-T Full/Half duplex speeds */
-		phy_write(lp->phy_dev, MII_CTRL1000, 0);
-
-		/* Advertise only 10 and 100mbps full/half duplex speeds */
-		phy_write(lp->phy_dev, MII_ADVERTISE, ADVERTISE_ALL);
-
-		/* Restart auto negotiation */
-		bmcr = phy_read(lp->phy_dev, MII_BMCR);
-		bmcr |= (BMCR_ANENABLE | BMCR_ANRESTART);
-		phy_write(lp->phy_dev, MII_BMCR, bmcr);
-
-=======
 		phy_set_max_speed(lp->phy_dev, SPEED_100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phy_start(lp->phy_dev);
 	}
 
@@ -1489,11 +960,8 @@ static int xemaclite_open(struct net_device *dev)
  * This function stops the Tx queue, disables interrupts and frees the IRQ for
  * the Emaclite device.
  * It also disconnects the phy device associated with the Emaclite device.
-<<<<<<< HEAD
-=======
  *
  * Return:	0, always.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int xemaclite_close(struct net_device *dev)
 {
@@ -1522,16 +990,10 @@ static int xemaclite_close(struct net_device *dev)
  * deferred and the Tx queue is stopped so that the deferred socket buffer can
  * be transmitted when the Emaclite device is free to transmit data.
  *
-<<<<<<< HEAD
- * Return:	0, always.
- */
-static int xemaclite_send(struct sk_buff *orig_skb, struct net_device *dev)
-=======
  * Return:	NETDEV_TX_OK, always.
  */
 static netdev_tx_t
 xemaclite_send(struct sk_buff *orig_skb, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_local *lp = netdev_priv(dev);
 	struct sk_buff *new_skb;
@@ -1543,61 +1005,26 @@ xemaclite_send(struct sk_buff *orig_skb, struct net_device *dev)
 	new_skb = orig_skb;
 
 	spin_lock_irqsave(&lp->reset_lock, flags);
-<<<<<<< HEAD
-	if (xemaclite_send_data(lp, (u8 *) new_skb->data, len) != 0) {
-		/* If the Emaclite Tx buffer is busy, stop the Tx queue and
-		 * defer the skb for transmission during the ISR, after the
-		 * current transmission is complete */
-=======
 	if (xemaclite_send_data(lp, (u8 *)new_skb->data, len) != 0) {
 		/* If the Emaclite Tx buffer is busy, stop the Tx queue and
 		 * defer the skb for transmission during the ISR, after the
 		 * current transmission is complete
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_stop_queue(dev);
 		lp->deferred_skb = new_skb;
 		/* Take the time stamp now, since we can't do this in an ISR. */
 		skb_tx_timestamp(new_skb);
 		spin_unlock_irqrestore(&lp->reset_lock, flags);
-<<<<<<< HEAD
-		return 0;
-=======
 		return NETDEV_TX_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&lp->reset_lock, flags);
 
 	skb_tx_timestamp(new_skb);
 
 	dev->stats.tx_bytes += len;
-<<<<<<< HEAD
-	dev_kfree_skb(new_skb);
-
-	return 0;
-}
-
-/**
- * xemaclite_remove_ndev - Free the network device
- * @ndev:	Pointer to the network device to be freed
- *
- * This function un maps the IO region of the Emaclite device and frees the net
- * device.
- */
-static void xemaclite_remove_ndev(struct net_device *ndev)
-{
-	if (ndev) {
-		struct net_local *lp = netdev_priv(ndev);
-
-		if (lp->base_addr)
-			iounmap((void __iomem __force *) (lp->base_addr));
-		free_netdev(ndev);
-	}
-=======
 	dev_consume_skb_any(new_skb);
 
 	return NETDEV_TX_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1614,18 +1041,6 @@ static bool get_bool(struct platform_device *ofdev, const char *s)
 {
 	u32 *p = (u32 *)of_get_property(ofdev->dev.of_node, s, NULL);
 
-<<<<<<< HEAD
-	if (p) {
-		return (bool)*p;
-	} else {
-		dev_warn(&ofdev->dev, "Parameter %s not found,"
-			"defaulting to false\n", s);
-		return 0;
-	}
-}
-
-static struct net_device_ops xemaclite_netdev_ops;
-=======
 	if (!p) {
 		dev_warn(&ofdev->dev, "Parameter %s not found, defaulting to false\n", s);
 		return false;
@@ -1656,15 +1071,10 @@ static const struct ethtool_ops xemaclite_ethtool_ops = {
 };
 
 static const struct net_device_ops xemaclite_netdev_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * xemaclite_of_probe - Probe method for the Emaclite device.
  * @ofdev:	Pointer to OF device structure
-<<<<<<< HEAD
- * @match:	Pointer to the structure used for matching a device
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function probes for the Emaclite device in the device tree.
  * It initializes the driver data structure and the hardware, sets the MAC
@@ -1675,45 +1085,17 @@ static const struct net_device_ops xemaclite_netdev_ops;
  * Return:	0, if the driver is bound to the Emaclite device, or
  *		a negative error if there is failure.
  */
-<<<<<<< HEAD
-static int __devinit xemaclite_of_probe(struct platform_device *ofdev)
-{
-	struct resource r_irq; /* Interrupt resources */
-	struct resource r_mem; /* IO mem resources */
-	struct net_device *ndev = NULL;
-	struct net_local *lp = NULL;
-	struct device *dev = &ofdev->dev;
-	const void *mac_address;
-=======
 static int xemaclite_of_probe(struct platform_device *ofdev)
 {
 	struct resource *res;
 	struct net_device *ndev = NULL;
 	struct net_local *lp = NULL;
 	struct device *dev = &ofdev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int rc = 0;
 
 	dev_info(dev, "Device Tree Probing\n");
 
-<<<<<<< HEAD
-	/* Get iospace for the device */
-	rc = of_address_to_resource(ofdev->dev.of_node, 0, &r_mem);
-	if (rc) {
-		dev_err(dev, "invalid address\n");
-		return rc;
-	}
-
-	/* Get IRQ for the device */
-	rc = of_irq_to_resource(ofdev->dev.of_node, 0, &r_irq);
-	if (!rc) {
-		dev_err(dev, "no IRQ found\n");
-		return rc;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Create an ethernet device instance */
 	ndev = alloc_etherdev(sizeof(struct net_local));
 	if (!ndev)
@@ -1722,31 +1104,6 @@ static int xemaclite_of_probe(struct platform_device *ofdev)
 	dev_set_drvdata(dev, ndev);
 	SET_NETDEV_DEV(ndev, &ofdev->dev);
 
-<<<<<<< HEAD
-	ndev->irq = r_irq.start;
-	ndev->mem_start = r_mem.start;
-	ndev->mem_end = r_mem.end;
-
-	lp = netdev_priv(ndev);
-	lp->ndev = ndev;
-
-	if (!request_mem_region(ndev->mem_start,
-				ndev->mem_end - ndev->mem_start + 1,
-				DRIVER_NAME)) {
-		dev_err(dev, "Couldn't lock memory region at %p\n",
-			(void *)ndev->mem_start);
-		rc = -EBUSY;
-		goto error2;
-	}
-
-	/* Get the virtual base address for the device */
-	lp->base_addr = ioremap(r_mem.start, resource_size(&r_mem));
-	if (NULL == lp->base_addr) {
-		dev_err(dev, "EmacLite: Could not allocate iomem\n");
-		rc = -EIO;
-		goto error1;
-	}
-=======
 	lp = netdev_priv(ndev);
 	lp->ndev = ndev;
 
@@ -1765,26 +1122,12 @@ static int xemaclite_of_probe(struct platform_device *ofdev)
 
 	ndev->mem_start = res->start;
 	ndev->mem_end = res->end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&lp->reset_lock);
 	lp->next_tx_buf_to_use = 0x0;
 	lp->next_rx_buf_to_use = 0x0;
 	lp->tx_ping_pong = get_bool(ofdev, "xlnx,tx-ping-pong");
 	lp->rx_ping_pong = get_bool(ofdev, "xlnx,rx-ping-pong");
-<<<<<<< HEAD
-	mac_address = of_get_mac_address(ofdev->dev.of_node);
-
-	if (mac_address)
-		/* Set the MAC address. */
-		memcpy(ndev->dev_addr, mac_address, 6);
-	else
-		dev_warn(dev, "No MAC address found\n");
-
-	/* Clear the Tx CSR's in case this is a restart */
-	out_be32(lp->base_addr + XEL_TSR_OFFSET, 0);
-	out_be32(lp->base_addr + XEL_BUFFER_OFFSET + XEL_TSR_OFFSET, 0);
-=======
 
 	rc = of_get_ethdev_address(ofdev->dev.of_node, ndev);
 	if (rc) {
@@ -1795,27 +1138,17 @@ static int xemaclite_of_probe(struct platform_device *ofdev)
 	/* Clear the Tx CSR's in case this is a restart */
 	xemaclite_writel(0, lp->base_addr + XEL_TSR_OFFSET);
 	xemaclite_writel(0, lp->base_addr + XEL_BUFFER_OFFSET + XEL_TSR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set the MAC address in the EmacLite device */
 	xemaclite_update_address(lp, ndev->dev_addr);
 
 	lp->phy_node = of_parse_phandle(ofdev->dev.of_node, "phy-handle", 0);
-<<<<<<< HEAD
-	rc = xemaclite_mdio_setup(lp, &ofdev->dev);
-	if (rc)
-		dev_warn(&ofdev->dev, "error registering MDIO bus\n");
-=======
 	xemaclite_mdio_setup(lp, &ofdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(dev, "MAC address is now %pM\n", ndev->dev_addr);
 
 	ndev->netdev_ops = &xemaclite_netdev_ops;
-<<<<<<< HEAD
-=======
 	ndev->ethtool_ops = &xemaclite_ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ndev->flags &= ~IFF_MULTICAST;
 	ndev->watchdog_timeo = TX_TIMEOUT;
 
@@ -1824,22 +1157,6 @@ static int xemaclite_of_probe(struct platform_device *ofdev)
 	if (rc) {
 		dev_err(dev,
 			"Cannot register network device, aborting\n");
-<<<<<<< HEAD
-		goto error1;
-	}
-
-	dev_info(dev,
-		 "Xilinx EmacLite at 0x%08X mapped to 0x%08X, irq=%d\n",
-		 (unsigned int __force)ndev->mem_start,
-		 (unsigned int __force)lp->base_addr, ndev->irq);
-	return 0;
-
-error1:
-	release_mem_region(ndev->mem_start, resource_size(&r_mem));
-
-error2:
-	xemaclite_remove_ndev(ndev);
-=======
 		goto put_node;
 	}
 
@@ -1852,7 +1169,6 @@ put_node:
 	of_node_put(lp->phy_node);
 error:
 	free_netdev(ndev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -1863,55 +1179,26 @@ error:
  * This function is called if a device is physically removed from the system or
  * if the driver module is being unloaded. It frees any resources allocated to
  * the device.
-<<<<<<< HEAD
- *
- * Return:	0, always.
- */
-static int __devexit xemaclite_of_remove(struct platform_device *of_dev)
-{
-	struct device *dev = &of_dev->dev;
-	struct net_device *ndev = dev_get_drvdata(dev);
-=======
  */
 static void xemaclite_of_remove(struct platform_device *of_dev)
 {
 	struct net_device *ndev = platform_get_drvdata(of_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct net_local *lp = netdev_priv(ndev);
 
 	/* Un-register the mii_bus, if configured */
-<<<<<<< HEAD
-	if (lp->has_mdio) {
-		mdiobus_unregister(lp->mii_bus);
-		kfree(lp->mii_bus->irq);
-=======
 	if (lp->mii_bus) {
 		mdiobus_unregister(lp->mii_bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdiobus_free(lp->mii_bus);
 		lp->mii_bus = NULL;
 	}
 
 	unregister_netdev(ndev);
 
-<<<<<<< HEAD
-	if (lp->phy_node)
-		of_node_put(lp->phy_node);
-	lp->phy_node = NULL;
-
-	release_mem_region(ndev->mem_start, ndev->mem_end-ndev->mem_start + 1);
-
-	xemaclite_remove_ndev(ndev);
-	dev_set_drvdata(dev, NULL);
-
-	return 0;
-=======
 	of_node_put(lp->phy_node);
 	lp->phy_node = NULL;
 
 	free_netdev(ndev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -1924,9 +1211,6 @@ xemaclite_poll_controller(struct net_device *ndev)
 }
 #endif
 
-<<<<<<< HEAD
-static struct net_device_ops xemaclite_netdev_ops = {
-=======
 /* Ioctl MII Interface */
 static int xemaclite_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
@@ -1944,27 +1228,19 @@ static int xemaclite_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 }
 
 static const struct net_device_ops xemaclite_netdev_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_open		= xemaclite_open,
 	.ndo_stop		= xemaclite_close,
 	.ndo_start_xmit		= xemaclite_send,
 	.ndo_set_mac_address	= xemaclite_set_mac_address,
 	.ndo_tx_timeout		= xemaclite_tx_timeout,
-<<<<<<< HEAD
-=======
 	.ndo_eth_ioctl		= xemaclite_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller = xemaclite_poll_controller,
 #endif
 };
 
 /* Match table for OF platform binding */
-<<<<<<< HEAD
-static struct of_device_id xemaclite_of_match[] __devinitdata = {
-=======
 static const struct of_device_id xemaclite_of_match[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "xlnx,opb-ethernetlite-1.01.a", },
 	{ .compatible = "xlnx,opb-ethernetlite-1.01.b", },
 	{ .compatible = "xlnx,xps-ethernetlite-1.00.a", },
@@ -1978,18 +1254,10 @@ MODULE_DEVICE_TABLE(of, xemaclite_of_match);
 static struct platform_driver xemaclite_of_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = xemaclite_of_match,
-	},
-	.probe		= xemaclite_of_probe,
-	.remove		= __devexit_p(xemaclite_of_remove),
-=======
 		.of_match_table = xemaclite_of_match,
 	},
 	.probe		= xemaclite_of_probe,
 	.remove_new	= xemaclite_of_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(xemaclite_of_driver);

@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-/*
- * Virtual master and slave controls
- *
- *  Copyright (c) 2008 by Takashi Iwai <tiwai@suse.de>
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License as
- *  published by the Free Software Foundation, version 2.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Virtual master and follower controls
  *
  *  Copyright (c) 2008 by Takashi Iwai <tiwai@suse.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -33,26 +21,15 @@ struct link_ctl_info {
 };
 
 /*
-<<<<<<< HEAD
- * link master - this contains a list of slave controls that are
-=======
  * link master - this contains a list of follower controls that are
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * identical types, i.e. info returns the same value type and value
  * ranges, but may have different number of counts.
  *
  * The master control is so far only mono volume/switch for simplicity.
-<<<<<<< HEAD
- * The same value will be applied to all slaves.
- */
-struct link_master {
-	struct list_head slaves;
-=======
  * The same value will be applied to all followers.
  */
 struct link_master {
 	struct list_head followers;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct link_ctl_info info;
 	int val;		/* the master value */
 	unsigned int tlv[4];
@@ -61,15 +38,6 @@ struct link_master {
 };
 
 /*
-<<<<<<< HEAD
- * link slave - this contains a slave control element
- *
- * It fakes the control callbacsk with additional attenuation by the
- * master control.  A slave may have either one or two channels.
- */
-
-struct link_slave {
-=======
  * link follower - this contains a follower control element
  *
  * It fakes the control callbacks with additional attenuation by the
@@ -77,44 +45,12 @@ struct link_slave {
  */
 
 struct link_follower {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head list;
 	struct link_master *master;
 	struct link_ctl_info info;
 	int vals[2];		/* current values */
 	unsigned int flags;
 	struct snd_kcontrol *kctl; /* original kcontrol pointer */
-<<<<<<< HEAD
-	struct snd_kcontrol slave; /* the copy of original control entry */
-};
-
-static int slave_update(struct link_slave *slave)
-{
-	struct snd_ctl_elem_value *uctl;
-	int err, ch;
-
-	uctl = kmalloc(sizeof(*uctl), GFP_KERNEL);
-	if (!uctl)
-		return -ENOMEM;
-	uctl->id = slave->slave.id;
-	err = slave->slave.get(&slave->slave, uctl);
-	for (ch = 0; ch < slave->info.count; ch++)
-		slave->vals[ch] = uctl->value.integer.value[ch];
-	kfree(uctl);
-	return 0;
-}
-
-/* get the slave ctl info and save the initial values */
-static int slave_init(struct link_slave *slave)
-{
-	struct snd_ctl_elem_info *uinfo;
-	int err;
-
-	if (slave->info.count) {
-		/* already initialized */
-		if (slave->flags & SND_CTL_SLAVE_NEED_UPDATE)
-			return slave_update(slave);
-=======
 	struct snd_kcontrol follower; /* the copy of original control entry */
 };
 
@@ -145,35 +81,12 @@ static int follower_init(struct link_follower *follower)
 		/* already initialized */
 		if (follower->flags & SND_CTL_FOLLOWER_NEED_UPDATE)
 			return follower_update(follower);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	uinfo = kmalloc(sizeof(*uinfo), GFP_KERNEL);
 	if (!uinfo)
 		return -ENOMEM;
-<<<<<<< HEAD
-	uinfo->id = slave->slave.id;
-	err = slave->slave.info(&slave->slave, uinfo);
-	if (err < 0) {
-		kfree(uinfo);
-		return err;
-	}
-	slave->info.type = uinfo->type;
-	slave->info.count = uinfo->count;
-	if (slave->info.count > 2  ||
-	    (slave->info.type != SNDRV_CTL_ELEM_TYPE_INTEGER &&
-	     slave->info.type != SNDRV_CTL_ELEM_TYPE_BOOLEAN)) {
-		snd_printk(KERN_ERR "invalid slave element\n");
-		kfree(uinfo);
-		return -EINVAL;
-	}
-	slave->info.min_val = uinfo->value.integer.min;
-	slave->info.max_val = uinfo->value.integer.max;
-	kfree(uinfo);
-
-	return slave_update(slave);
-=======
 	uinfo->id = follower->follower.id;
 	err = follower->follower.info(&follower->follower, uinfo);
 	if (err < 0)
@@ -190,34 +103,21 @@ static int follower_init(struct link_follower *follower)
 	follower->info.max_val = uinfo->value.integer.max;
 
 	return follower_update(follower);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* initialize master volume */
 static int master_init(struct link_master *master)
 {
-<<<<<<< HEAD
-	struct link_slave *slave;
-=======
 	struct link_follower *follower;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (master->info.count)
 		return 0; /* already initialized */
 
-<<<<<<< HEAD
-	list_for_each_entry(slave, &master->slaves, list) {
-		int err = slave_init(slave);
-		if (err < 0)
-			return err;
-		master->info = slave->info;
-=======
 	list_for_each_entry(follower, &master->followers, list) {
 		int err = follower_init(follower);
 		if (err < 0)
 			return err;
 		master->info = follower->info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		master->info.count = 1; /* always mono */
 		/* set full volume as default (= no attenuation) */
 		master->val = master->info.max_val;
@@ -228,45 +128,6 @@ static int master_init(struct link_master *master)
 	return -ENOENT;
 }
 
-<<<<<<< HEAD
-static int slave_get_val(struct link_slave *slave,
-			 struct snd_ctl_elem_value *ucontrol)
-{
-	int err, ch;
-
-	err = slave_init(slave);
-	if (err < 0)
-		return err;
-	for (ch = 0; ch < slave->info.count; ch++)
-		ucontrol->value.integer.value[ch] = slave->vals[ch];
-	return 0;
-}
-
-static int slave_put_val(struct link_slave *slave,
-			 struct snd_ctl_elem_value *ucontrol)
-{
-	int err, ch, vol;
-
-	err = master_init(slave->master);
-	if (err < 0)
-		return err;
-
-	switch (slave->info.type) {
-	case SNDRV_CTL_ELEM_TYPE_BOOLEAN:
-		for (ch = 0; ch < slave->info.count; ch++)
-			ucontrol->value.integer.value[ch] &=
-				!!slave->master->val;
-		break;
-	case SNDRV_CTL_ELEM_TYPE_INTEGER:
-		for (ch = 0; ch < slave->info.count; ch++) {
-			/* max master volume is supposed to be 0 dB */
-			vol = ucontrol->value.integer.value[ch];
-			vol += slave->master->val - slave->master->info.max_val;
-			if (vol < slave->info.min_val)
-				vol = slave->info.min_val;
-			else if (vol > slave->info.max_val)
-				vol = slave->info.max_val;
-=======
 static int follower_get_val(struct link_follower *follower,
 			    struct snd_ctl_elem_value *ucontrol)
 {
@@ -304,46 +165,10 @@ static int follower_put_val(struct link_follower *follower,
 				vol = follower->info.min_val;
 			else if (vol > follower->info.max_val)
 				vol = follower->info.max_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ucontrol->value.integer.value[ch] = vol;
 		}
 		break;
 	}
-<<<<<<< HEAD
-	return slave->slave.put(&slave->slave, ucontrol);
-}
-
-/*
- * ctl callbacks for slaves
- */
-static int slave_info(struct snd_kcontrol *kcontrol,
-		      struct snd_ctl_elem_info *uinfo)
-{
-	struct link_slave *slave = snd_kcontrol_chip(kcontrol);
-	return slave->slave.info(&slave->slave, uinfo);
-}
-
-static int slave_get(struct snd_kcontrol *kcontrol,
-		     struct snd_ctl_elem_value *ucontrol)
-{
-	struct link_slave *slave = snd_kcontrol_chip(kcontrol);
-	return slave_get_val(slave, ucontrol);
-}
-
-static int slave_put(struct snd_kcontrol *kcontrol,
-		     struct snd_ctl_elem_value *ucontrol)
-{
-	struct link_slave *slave = snd_kcontrol_chip(kcontrol);
-	int err, ch, changed = 0;
-
-	err = slave_init(slave);
-	if (err < 0)
-		return err;
-	for (ch = 0; ch < slave->info.count; ch++) {
-		if (slave->vals[ch] != ucontrol->value.integer.value[ch]) {
-			changed = 1;
-			slave->vals[ch] = ucontrol->value.integer.value[ch];
-=======
 	return follower->follower.put(&follower->follower, ucontrol);
 }
 
@@ -377,46 +202,16 @@ static int follower_put(struct snd_kcontrol *kcontrol,
 		if (follower->vals[ch] != ucontrol->value.integer.value[ch]) {
 			changed = 1;
 			follower->vals[ch] = ucontrol->value.integer.value[ch];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	if (!changed)
 		return 0;
-<<<<<<< HEAD
-	err = slave_put_val(slave, ucontrol);
-=======
 	err = follower_put_val(follower, ucontrol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 	return 1;
 }
 
-<<<<<<< HEAD
-static int slave_tlv_cmd(struct snd_kcontrol *kcontrol,
-			 int op_flag, unsigned int size,
-			 unsigned int __user *tlv)
-{
-	struct link_slave *slave = snd_kcontrol_chip(kcontrol);
-	/* FIXME: this assumes that the max volume is 0 dB */
-	return slave->slave.tlv.c(&slave->slave, op_flag, size, tlv);
-}
-
-static void slave_free(struct snd_kcontrol *kcontrol)
-{
-	struct link_slave *slave = snd_kcontrol_chip(kcontrol);
-	if (slave->slave.private_free)
-		slave->slave.private_free(&slave->slave);
-	if (slave->master)
-		list_del(&slave->list);
-	kfree(slave);
-}
-
-/*
- * Add a slave control to the group with the given master control
- *
- * All slaves must be the same type (returning the same information
-=======
 static int follower_tlv_cmd(struct snd_kcontrol *kcontrol,
 			    int op_flag, unsigned int size,
 			    unsigned int __user *tlv)
@@ -440,7 +235,6 @@ static void follower_free(struct snd_kcontrol *kcontrol)
  * Add a follower control to the group with the given master control
  *
  * All followers must be the same type (returning the same information
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * via info callback).  The function doesn't check it, so it's your
  * responsibility.
  *
@@ -449,21 +243,6 @@ static void follower_free(struct snd_kcontrol *kcontrol)
  * - logarithmic volume control (dB level), no linear volume
  * - master can only attenuate the volume, no gain
  */
-<<<<<<< HEAD
-int _snd_ctl_add_slave(struct snd_kcontrol *master, struct snd_kcontrol *slave,
-		       unsigned int flags)
-{
-	struct link_master *master_link = snd_kcontrol_chip(master);
-	struct link_slave *srec;
-
-	srec = kzalloc(sizeof(*srec) +
-		       slave->count * sizeof(*slave->vd), GFP_KERNEL);
-	if (!srec)
-		return -ENOMEM;
-	srec->kctl = slave;
-	srec->slave = *slave;
-	memcpy(srec->slave.vd, slave->vd, slave->count * sizeof(*slave->vd));
-=======
 int _snd_ctl_add_follower(struct snd_kcontrol *master,
 			  struct snd_kcontrol *follower,
 			  unsigned int flags)
@@ -478,25 +257,10 @@ int _snd_ctl_add_follower(struct snd_kcontrol *master,
 	srec->kctl = follower;
 	srec->follower = *follower;
 	memcpy(srec->follower.vd, follower->vd, follower->count * sizeof(*follower->vd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srec->master = master_link;
 	srec->flags = flags;
 
 	/* override callbacks */
-<<<<<<< HEAD
-	slave->info = slave_info;
-	slave->get = slave_get;
-	slave->put = slave_put;
-	if (slave->vd[0].access & SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK)
-		slave->tlv.c = slave_tlv_cmd;
-	slave->private_data = srec;
-	slave->private_free = slave_free;
-
-	list_add_tail(&srec->list, &master_link->slaves);
-	return 0;
-}
-EXPORT_SYMBOL(_snd_ctl_add_slave);
-=======
 	follower->info = follower_info;
 	follower->get = follower_get;
 	follower->put = follower_put;
@@ -537,7 +301,6 @@ int snd_ctl_add_followers(struct snd_card *card, struct snd_kcontrol *master,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(snd_ctl_add_followers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ctl callbacks for master controls
@@ -569,42 +332,14 @@ static int master_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int master_put(struct snd_kcontrol *kcontrol,
-		      struct snd_ctl_elem_value *ucontrol)
-{
-	struct link_master *master = snd_kcontrol_chip(kcontrol);
-	struct link_slave *slave;
-	struct snd_ctl_elem_value *uval;
-	int err, old_val;
-
-	err = master_init(master);
-	if (err < 0)
-		return err;
-	old_val = master->val;
-	if (ucontrol->value.integer.value[0] == old_val)
-		return 0;
-=======
 static int sync_followers(struct link_master *master, int old_val, int new_val)
 {
 	struct link_follower *follower;
 	struct snd_ctl_elem_value *uval __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uval = kmalloc(sizeof(*uval), GFP_KERNEL);
 	if (!uval)
 		return -ENOMEM;
-<<<<<<< HEAD
-	list_for_each_entry(slave, &master->slaves, list) {
-		master->val = old_val;
-		uval->id = slave->slave.id;
-		slave_get_val(slave, uval);
-		master->val = ucontrol->value.integer.value[0];
-		slave_put_val(slave, uval);
-	}
-	kfree(uval);
-	if (master->hook && !err)
-=======
 	list_for_each_entry(follower, &master->followers, list) {
 		master->val = old_val;
 		uval->id = follower->follower.id;
@@ -635,7 +370,6 @@ static int master_put(struct snd_kcontrol *kcontrol,
 	if (err < 0)
 		return err;
 	if (master->hook && !first_init)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		master->hook(master->hook_private_data, master->val);
 	return 1;
 }
@@ -643,19 +377,6 @@ static int master_put(struct snd_kcontrol *kcontrol,
 static void master_free(struct snd_kcontrol *kcontrol)
 {
 	struct link_master *master = snd_kcontrol_chip(kcontrol);
-<<<<<<< HEAD
-	struct link_slave *slave, *n;
-
-	/* free all slave links and retore the original slave kctls */
-	list_for_each_entry_safe(slave, n, &master->slaves, list) {
-		struct snd_kcontrol *sctl = slave->kctl;
-		struct list_head olist = sctl->list;
-		memcpy(sctl, &slave->slave, sizeof(*sctl));
-		memcpy(sctl->vd, slave->slave.vd,
-		       sctl->count * sizeof(*sctl->vd));
-		sctl->list = olist; /* keep the current linked-list */
-		kfree(slave);
-=======
 	struct link_follower *follower, *n;
 
 	/* free all follower links and retore the original follower kctls */
@@ -667,7 +388,6 @@ static void master_free(struct snd_kcontrol *kcontrol)
 		       sctl->count * sizeof(*sctl->vd));
 		sctl->list = olist; /* keep the current linked-list */
 		kfree(follower);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	kfree(master);
 }
@@ -678,28 +398,17 @@ static void master_free(struct snd_kcontrol *kcontrol)
  * @name: name string of the control element to create
  * @tlv: optional TLV int array for dB information
  *
-<<<<<<< HEAD
- * Creates a virtual matster control with the given name string.
- * Returns the created control element, or NULL for errors (ENOMEM).
- *
- * After creating a vmaster element, you can add the slave controls
- * via snd_ctl_add_slave() or snd_ctl_add_slave_uncached().
-=======
  * Creates a virtual master control with the given name string.
  *
  * After creating a vmaster element, you can add the follower controls
  * via snd_ctl_add_follower() or snd_ctl_add_follower_uncached().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The optional argument @tlv can be used to specify the TLV information
  * for dB scale of the master control.  It should be a single element
  * with #SNDRV_CTL_TLVT_DB_SCALE, #SNDRV_CTL_TLV_DB_MINMAX or
  * #SNDRV_CTL_TLVT_DB_MINMAX_MUTE type, and should be the max 0dB.
-<<<<<<< HEAD
-=======
  *
  * Return: The created control element, or %NULL for errors (ENOMEM).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct snd_kcontrol *snd_ctl_make_virtual_master(char *name,
 						 const unsigned int *tlv)
@@ -716,11 +425,7 @@ struct snd_kcontrol *snd_ctl_make_virtual_master(char *name,
 	master = kzalloc(sizeof(*master), GFP_KERNEL);
 	if (!master)
 		return NULL;
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&master->slaves);
-=======
 	INIT_LIST_HEAD(&master->followers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kctl = snd_ctl_new1(&knew, master);
 	if (!kctl) {
@@ -734,15 +439,6 @@ struct snd_kcontrol *snd_ctl_make_virtual_master(char *name,
 	kctl->private_free = master_free;
 
 	/* additional (constant) TLV read */
-<<<<<<< HEAD
-	if (tlv &&
-	    (tlv[0] == SNDRV_CTL_TLVT_DB_SCALE ||
-	     tlv[0] == SNDRV_CTL_TLVT_DB_MINMAX ||
-	     tlv[0] == SNDRV_CTL_TLVT_DB_MINMAX_MUTE)) {
-		kctl->vd[0].access |= SNDRV_CTL_ELEM_ACCESS_TLV_READ;
-		memcpy(master->tlv, tlv, sizeof(master->tlv));
-		kctl->tlv.p = master->tlv;
-=======
 	if (tlv) {
 		unsigned int type = tlv[SNDRV_CTL_TLVO_TYPE];
 		if (type == SNDRV_CTL_TLVT_DB_SCALE ||
@@ -752,7 +448,6 @@ struct snd_kcontrol *snd_ctl_make_virtual_master(char *name,
 			memcpy(master->tlv, tlv, sizeof(master->tlv));
 			kctl->tlv.p = master->tlv;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return kctl;
@@ -767,11 +462,8 @@ EXPORT_SYMBOL(snd_ctl_make_virtual_master);
  *
  * Adds the given hook to the vmaster control element so that it's called
  * at each time when the value is changed.
-<<<<<<< HEAD
-=======
  *
  * Return: Zero.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_ctl_add_vmaster_hook(struct snd_kcontrol *kcontrol,
 			     void (*hook)(void *private_data, int),
@@ -785,25 +477,6 @@ int snd_ctl_add_vmaster_hook(struct snd_kcontrol *kcontrol,
 EXPORT_SYMBOL_GPL(snd_ctl_add_vmaster_hook);
 
 /**
-<<<<<<< HEAD
- * snd_ctl_sync_vmaster_hook - Sync the vmaster hook
- * @kcontrol: vmaster kctl element
- *
- * Call the hook function to synchronize with the current value of the given
- * vmaster element.  NOP when NULL is passed to @kcontrol or the hook doesn't
- * exist.
- */
-void snd_ctl_sync_vmaster_hook(struct snd_kcontrol *kcontrol)
-{
-	struct link_master *master;
-	if (!kcontrol)
-		return;
-	master = snd_kcontrol_chip(kcontrol);
-	if (master->hook)
-		master->hook(master->hook_private_data, master->val);
-}
-EXPORT_SYMBOL_GPL(snd_ctl_sync_vmaster_hook);
-=======
  * snd_ctl_sync_vmaster - Sync the vmaster followers and hook
  * @kcontrol: vmaster kctl element
  * @hook_only: sync only the hook
@@ -868,4 +541,3 @@ int snd_ctl_apply_vmaster_followers(struct snd_kcontrol *kctl,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(snd_ctl_apply_vmaster_followers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

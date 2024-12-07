@@ -25,27 +25,6 @@ static struct dentry *hfs_lookup(struct inode *dir, struct dentry *dentry,
 	struct inode *inode = NULL;
 	int res;
 
-<<<<<<< HEAD
-	hfs_find_init(HFS_SB(dir->i_sb)->cat_tree, &fd);
-	hfs_cat_build_key(dir->i_sb, fd.search_key, dir->i_ino, &dentry->d_name);
-	res = hfs_brec_read(&fd, &rec, sizeof(rec));
-	if (res) {
-		hfs_find_exit(&fd);
-		if (res == -ENOENT) {
-			/* No such entry */
-			inode = NULL;
-			goto done;
-		}
-		return ERR_PTR(res);
-	}
-	inode = hfs_iget(dir->i_sb, &fd.search_key->cat, &rec);
-	hfs_find_exit(&fd);
-	if (!inode)
-		return ERR_PTR(-EACCES);
-done:
-	d_add(dentry, inode);
-	return NULL;
-=======
 	res = hfs_find_init(HFS_SB(dir->i_sb)->cat_tree, &fd);
 	if (res)
 		return ERR_PTR(res);
@@ -61,21 +40,14 @@ done:
 	}
 	hfs_find_exit(&fd);
 	return d_splice_alias(inode, dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * hfs_readdir
  */
-<<<<<<< HEAD
-static int hfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
-{
-	struct inode *inode = filp->f_path.dentry->d_inode;
-=======
 static int hfs_readdir(struct file *file, struct dir_context *ctx)
 {
 	struct inode *inode = file_inode(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct super_block *sb = inode->i_sb;
 	int len, err;
 	char strbuf[HFS_MAX_NAMELEN];
@@ -84,34 +56,17 @@ static int hfs_readdir(struct file *file, struct dir_context *ctx)
 	struct hfs_readdir_data *rd;
 	u16 type;
 
-<<<<<<< HEAD
-	if (filp->f_pos >= inode->i_size)
-		return 0;
-
-	hfs_find_init(HFS_SB(sb)->cat_tree, &fd);
-=======
 	if (ctx->pos >= inode->i_size)
 		return 0;
 
 	err = hfs_find_init(HFS_SB(sb)->cat_tree, &fd);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hfs_cat_build_key(sb, fd.search_key, inode->i_ino, NULL);
 	err = hfs_brec_find(&fd);
 	if (err)
 		goto out;
 
-<<<<<<< HEAD
-	switch ((u32)filp->f_pos) {
-	case 0:
-		/* This is completely artificial... */
-		if (filldir(dirent, ".", 1, 0, inode->i_ino, DT_DIR))
-			goto out;
-		filp->f_pos++;
-		/* fall through */
-	case 1:
-=======
 	if (ctx->pos == 0) {
 		/* This is completely artificial... */
 		if (!dir_emit_dot(file, ctx))
@@ -119,7 +74,6 @@ static int hfs_readdir(struct file *file, struct dir_context *ctx)
 		ctx->pos = 1;
 	}
 	if (ctx->pos == 1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fd.entrylength > sizeof(entry) || fd.entrylength < 0) {
 			err = -EIO;
 			goto out;
@@ -127,37 +81,11 @@ static int hfs_readdir(struct file *file, struct dir_context *ctx)
 
 		hfs_bnode_read(fd.bnode, &entry, fd.entryoffset, fd.entrylength);
 		if (entry.type != HFS_CDR_THD) {
-<<<<<<< HEAD
-			printk(KERN_ERR "hfs: bad catalog folder thread\n");
-=======
 			pr_err("bad catalog folder thread\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EIO;
 			goto out;
 		}
 		//if (fd.entrylength < HFS_MIN_THREAD_SZ) {
-<<<<<<< HEAD
-		//	printk(KERN_ERR "hfs: truncated catalog thread\n");
-		//	err = -EIO;
-		//	goto out;
-		//}
-		if (filldir(dirent, "..", 2, 1,
-			    be32_to_cpu(entry.thread.ParID), DT_DIR))
-			goto out;
-		filp->f_pos++;
-		/* fall through */
-	default:
-		if (filp->f_pos >= inode->i_size)
-			goto out;
-		err = hfs_brec_goto(&fd, filp->f_pos - 1);
-		if (err)
-			goto out;
-	}
-
-	for (;;) {
-		if (be32_to_cpu(fd.key->cat.ParID) != inode->i_ino) {
-			printk(KERN_ERR "hfs: walked past end of dir\n");
-=======
 		//	pr_err("truncated catalog thread\n");
 		//	err = -EIO;
 		//	goto out;
@@ -176,7 +104,6 @@ static int hfs_readdir(struct file *file, struct dir_context *ctx)
 	for (;;) {
 		if (be32_to_cpu(fd.key->cat.ParID) != inode->i_ino) {
 			pr_err("walked past end of dir\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EIO;
 			goto out;
 		}
@@ -191,39 +118,15 @@ static int hfs_readdir(struct file *file, struct dir_context *ctx)
 		len = hfs_mac2asc(sb, strbuf, &fd.key->cat.CName);
 		if (type == HFS_CDR_DIR) {
 			if (fd.entrylength < sizeof(struct hfs_cat_dir)) {
-<<<<<<< HEAD
-				printk(KERN_ERR "hfs: small dir entry\n");
-				err = -EIO;
-				goto out;
-			}
-			if (filldir(dirent, strbuf, len, filp->f_pos,
-=======
 				pr_err("small dir entry\n");
 				err = -EIO;
 				goto out;
 			}
 			if (!dir_emit(ctx, strbuf, len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    be32_to_cpu(entry.dir.DirID), DT_DIR))
 				break;
 		} else if (type == HFS_CDR_FIL) {
 			if (fd.entrylength < sizeof(struct hfs_cat_file)) {
-<<<<<<< HEAD
-				printk(KERN_ERR "hfs: small file entry\n");
-				err = -EIO;
-				goto out;
-			}
-			if (filldir(dirent, strbuf, len, filp->f_pos,
-				    be32_to_cpu(entry.file.FlNum), DT_REG))
-				break;
-		} else {
-			printk(KERN_ERR "hfs: bad catalog entry type %d\n", type);
-			err = -EIO;
-			goto out;
-		}
-		filp->f_pos++;
-		if (filp->f_pos >= inode->i_size)
-=======
 				pr_err("small file entry\n");
 				err = -EIO;
 				goto out;
@@ -238,30 +141,18 @@ static int hfs_readdir(struct file *file, struct dir_context *ctx)
 		}
 		ctx->pos++;
 		if (ctx->pos >= inode->i_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		err = hfs_brec_goto(&fd, 1);
 		if (err)
 			goto out;
 	}
-<<<<<<< HEAD
-	rd = filp->private_data;
-=======
 	rd = file->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rd) {
 		rd = kmalloc(sizeof(struct hfs_readdir_data), GFP_KERNEL);
 		if (!rd) {
 			err = -ENOMEM;
 			goto out;
 		}
-<<<<<<< HEAD
-		filp->private_data = rd;
-		rd->file = filp;
-		list_add(&rd->list, &HFS_I(inode)->open_dir_list);
-	}
-	memcpy(&rd->key, &fd.key, sizeof(struct hfs_cat_key));
-=======
 		file->private_data = rd;
 		rd->file = file;
 		spin_lock(&HFS_I(inode)->open_dir_lock);
@@ -273,7 +164,6 @@ static int hfs_readdir(struct file *file, struct dir_context *ctx)
 	 * hfs_delete_cat() is provided by directory lock.
 	 */
 	memcpy(&rd->key, &fd.key->cat, sizeof(struct hfs_cat_key));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	hfs_find_exit(&fd);
 	return err;
@@ -283,13 +173,9 @@ static int hfs_dir_release(struct inode *inode, struct file *file)
 {
 	struct hfs_readdir_data *rd = file->private_data;
 	if (rd) {
-<<<<<<< HEAD
-		list_del(&rd->list);
-=======
 		spin_lock(&HFS_I(inode)->open_dir_lock);
 		list_del(&rd->list);
 		spin_unlock(&HFS_I(inode)->open_dir_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(rd);
 	}
 	return 0;
@@ -303,24 +189,15 @@ static int hfs_dir_release(struct inode *inode, struct file *file)
  * a directory and return a corresponding inode, given the inode for
  * the directory and the name (and its length) of the new file.
  */
-<<<<<<< HEAD
-static int hfs_create(struct inode *dir, struct dentry *dentry, umode_t mode,
-		      bool excl)
-=======
 static int hfs_create(struct mnt_idmap *idmap, struct inode *dir,
 		      struct dentry *dentry, umode_t mode, bool excl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode;
 	int res;
 
 	inode = hfs_new_inode(dir, &dentry->d_name, mode);
 	if (!inode)
-<<<<<<< HEAD
-		return -ENOSPC;
-=======
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = hfs_cat_create(inode->i_ino, dir, &dentry->d_name, inode);
 	if (res) {
@@ -342,23 +219,15 @@ static int hfs_create(struct mnt_idmap *idmap, struct inode *dir,
  * in a directory, given the inode for the parent directory and the
  * name (and its length) of the new directory.
  */
-<<<<<<< HEAD
-static int hfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
-=======
 static int hfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 		     struct dentry *dentry, umode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode;
 	int res;
 
 	inode = hfs_new_inode(dir, &dentry->d_name, S_IFDIR | mode);
 	if (!inode)
-<<<<<<< HEAD
-		return -ENOSPC;
-=======
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = hfs_cat_create(inode->i_ino, dir, &dentry->d_name, inode);
 	if (res) {
@@ -385,11 +254,7 @@ static int hfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
  */
 static int hfs_remove(struct inode *dir, struct dentry *dentry)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-=======
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	if (S_ISDIR(inode->i_mode) && inode->i_size != 2)
@@ -398,11 +263,7 @@ static int hfs_remove(struct inode *dir, struct dentry *dentry)
 	if (res)
 		return res;
 	clear_nlink(inode);
-<<<<<<< HEAD
-	inode->i_ctime = CURRENT_TIME_SEC;
-=======
 	inode_set_ctime_current(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hfs_delete_inode(inode);
 	mark_inode_dirty(inode);
 	return 0;
@@ -419,15 +280,6 @@ static int hfs_remove(struct inode *dir, struct dentry *dentry)
  * new file/directory.
  * XXX: how do you handle must_be dir?
  */
-<<<<<<< HEAD
-static int hfs_rename(struct inode *old_dir, struct dentry *old_dentry,
-		      struct inode *new_dir, struct dentry *new_dentry)
-{
-	int res;
-
-	/* Unlink destination if it already exists */
-	if (new_dentry->d_inode) {
-=======
 static int hfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 		      struct dentry *old_dentry, struct inode *new_dir,
 		      struct dentry *new_dentry, unsigned int flags)
@@ -439,37 +291,24 @@ static int hfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 
 	/* Unlink destination if it already exists */
 	if (d_really_is_positive(new_dentry)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res = hfs_remove(new_dir, new_dentry);
 		if (res)
 			return res;
 	}
 
-<<<<<<< HEAD
-	res = hfs_cat_move(old_dentry->d_inode->i_ino,
-=======
 	res = hfs_cat_move(d_inode(old_dentry)->i_ino,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   old_dir, &old_dentry->d_name,
 			   new_dir, &new_dentry->d_name);
 	if (!res)
 		hfs_cat_build_key(old_dir->i_sb,
-<<<<<<< HEAD
-				  (btree_key *)&HFS_I(old_dentry->d_inode)->cat_key,
-=======
 				  (btree_key *)&HFS_I(d_inode(old_dentry))->cat_key,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  new_dir->i_ino, &new_dentry->d_name);
 	return res;
 }
 
 const struct file_operations hfs_dir_operations = {
 	.read		= generic_read_dir,
-<<<<<<< HEAD
-	.readdir	= hfs_readdir,
-=======
 	.iterate_shared	= hfs_readdir,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.llseek		= generic_file_llseek,
 	.release	= hfs_dir_release,
 };

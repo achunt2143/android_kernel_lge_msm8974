@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
- */
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __KVM_TYPES_H__
 #define __KVM_TYPES_H__
 
-<<<<<<< HEAD
-#include <asm/types.h>
-=======
 struct kvm;
 struct kvm_async_pf;
 struct kvm_device_ops;
@@ -46,7 +25,6 @@ enum kvm_mr_change;
 #include <linux/spinlock_types.h>
 
 #include <asm/kvm_types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Address types:
@@ -63,47 +41,13 @@ typedef unsigned long  gva_t;
 typedef u64            gpa_t;
 typedef u64            gfn_t;
 
-<<<<<<< HEAD
-=======
 #define INVALID_GPA	(~(gpa_t)0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef unsigned long  hva_t;
 typedef u64            hpa_t;
 typedef u64            hfn_t;
 
-<<<<<<< HEAD
-typedef hfn_t pfn_t;
-
-union kvm_ioapic_redirect_entry {
-	u64 bits;
-	struct {
-		u8 vector;
-		u8 delivery_mode:3;
-		u8 dest_mode:1;
-		u8 delivery_status:1;
-		u8 polarity:1;
-		u8 remote_irr:1;
-		u8 trig_mode:1;
-		u8 mask:1;
-		u8 reserve:7;
-		u8 reserved[4];
-		u8 dest_id;
-	} fields;
-};
-
-struct kvm_lapic_irq {
-	u32 vector;
-	u32 delivery_mode;
-	u32 dest_mode;
-	u32 level;
-	u32 trig_mode;
-	u32 shorthand;
-	u32 dest_id;
-};
-=======
 typedef hfn_t kvm_pfn_t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct gfn_to_hva_cache {
 	u64 generation;
@@ -113,8 +57,6 @@ struct gfn_to_hva_cache {
 	struct kvm_memory_slot *memslot;
 };
 
-<<<<<<< HEAD
-=======
 struct gfn_to_pfn_cache {
 	u64 generation;
 	gpa_t gpa;
@@ -174,5 +116,4 @@ struct kvm_vcpu_stat_generic {
 
 #define KVM_STATS_NAME_SIZE	48
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KVM_TYPES_H__ */

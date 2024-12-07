@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/ev67-strcat.S
  * 21264 version contributed by Rick Gorton <rick.gorton@alpha-processor.com>
@@ -23,11 +20,7 @@
  * string once.
  */
 
-<<<<<<< HEAD
-
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.text
 
 	.align 4
@@ -60,7 +53,4 @@ $found:	cttz	$2, $3		# U0 :
 	br	__stxcpy	# L0 :
 
 	.end strcat
-<<<<<<< HEAD
-=======
 	EXPORT_SYMBOL(strcat)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

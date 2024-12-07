@@ -1,57 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACNAMESP_H__
 #define __ACNAMESP_H__
 
@@ -70,15 +25,6 @@
 /* Flags for acpi_ns_lookup, acpi_ns_search_and_enter */
 
 #define ACPI_NS_NO_UPSEARCH         0
-<<<<<<< HEAD
-#define ACPI_NS_SEARCH_PARENT       0x01
-#define ACPI_NS_DONT_OPEN_SCOPE     0x02
-#define ACPI_NS_NO_PEER_SEARCH      0x04
-#define ACPI_NS_ERROR_IF_FOUND      0x08
-#define ACPI_NS_PREFIX_IS_SCOPE     0x10
-#define ACPI_NS_EXTERNAL            0x20
-#define ACPI_NS_TEMPORARY           0x40
-=======
 #define ACPI_NS_SEARCH_PARENT       0x0001
 #define ACPI_NS_DONT_OPEN_SCOPE     0x0002
 #define ACPI_NS_NO_PEER_SEARCH      0x0004
@@ -89,7 +35,6 @@
 #define ACPI_NS_OVERRIDE_IF_FOUND   0x0080
 #define ACPI_NS_EARLY_INIT          0x0100
 #define ACPI_NS_PREFIX_MUST_EXIST   0x0200
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flags for acpi_ns_walk_namespace */
 
@@ -100,10 +45,7 @@
 /* Object is not a package element */
 
 #define ACPI_NOT_PACKAGE_ELEMENT    ACPI_UINT32_MAX
-<<<<<<< HEAD
-=======
 #define ACPI_ALL_PACKAGE_ELEMENTS   (ACPI_UINT32_MAX-1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Always emit warning message, not dependent on node flags */
 
@@ -114,15 +56,11 @@
  */
 acpi_status acpi_ns_initialize_objects(void);
 
-<<<<<<< HEAD
-acpi_status acpi_ns_initialize_devices(void);
-=======
 acpi_status acpi_ns_initialize_devices(u32 flags);
 
 acpi_status
 acpi_ns_init_one_package(acpi_handle obj_handle,
 			 u32 level, void *context, void **return_value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * nsload -  Namespace loading
@@ -140,13 +78,8 @@ acpi_ns_walk_namespace(acpi_object_type type,
 		       acpi_handle start_object,
 		       u32 max_depth,
 		       u32 flags,
-<<<<<<< HEAD
-		       acpi_walk_callback pre_order_visit,
-		       acpi_walk_callback post_order_visit,
-=======
 		       acpi_walk_callback descending_callback,
 		       acpi_walk_callback ascending_callback,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       void *context, void **return_value);
 
 struct acpi_namespace_node *acpi_ns_get_next_node(struct acpi_namespace_node
@@ -169,12 +102,9 @@ acpi_status
 acpi_ns_parse_table(u32 table_index, struct acpi_namespace_node *start_node);
 
 acpi_status
-<<<<<<< HEAD
-=======
 acpi_ns_execute_table(u32 table_index, struct acpi_namespace_node *start_node);
 
 acpi_status
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_ns_one_complete_parse(u32 pass_number,
 			   u32 table_index,
 			   struct acpi_namespace_node *start_node);
@@ -214,13 +144,6 @@ void acpi_ns_delete_children(struct acpi_namespace_node *parent);
 int acpi_ns_compare_names(char *name1, char *name2);
 
 /*
-<<<<<<< HEAD
- * nsdump - Namespace dump/print utilities
- */
-#ifdef	ACPI_FUTURE_USAGE
-void acpi_ns_dump_tables(acpi_handle search_base, u32 max_depth);
-#endif				/* ACPI_FUTURE_USAGE */
-=======
  * nsconvert - Dynamic object conversion routines
  */
 acpi_status
@@ -254,73 +177,36 @@ acpi_ns_convert_to_reference(struct acpi_namespace_node *scope,
  * nsdump - Namespace dump/print utilities
  */
 void acpi_ns_dump_tables(acpi_handle search_base, u32 max_depth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void acpi_ns_dump_entry(acpi_handle handle, u32 debug_level);
 
 void
-<<<<<<< HEAD
-acpi_ns_dump_pathname(acpi_handle handle, char *msg, u32 level, u32 component);
-
-void acpi_ns_print_pathname(u32 num_segments, char *pathname);
-=======
 acpi_ns_dump_pathname(acpi_handle handle,
 		      const char *msg, u32 level, u32 component);
 
 void acpi_ns_print_pathname(u32 num_segments, const char *pathname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 acpi_status
 acpi_ns_dump_one_object(acpi_handle obj_handle,
 			u32 level, void *context, void **return_value);
 
-<<<<<<< HEAD
-#ifdef	ACPI_FUTURE_USAGE
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 acpi_ns_dump_objects(acpi_object_type type,
 		     u8 display_type,
 		     u32 max_depth,
 		     acpi_owner_id owner_id, acpi_handle start_handle);
-<<<<<<< HEAD
-#endif				/* ACPI_FUTURE_USAGE */
-=======
 
 void
 acpi_ns_dump_object_paths(acpi_object_type type,
 			  u8 display_type,
 			  u32 max_depth,
 			  acpi_owner_id owner_id, acpi_handle start_handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * nseval - Namespace evaluation functions
  */
 acpi_status acpi_ns_evaluate(struct acpi_evaluate_info *info);
 
-<<<<<<< HEAD
-void acpi_ns_exec_module_code_list(void);
-
-/*
- * nspredef - Support for predefined/reserved names
- */
-acpi_status
-acpi_ns_check_predefined_names(struct acpi_namespace_node *node,
-			       u32 user_param_count,
-			       acpi_status return_status,
-			       union acpi_operand_object **return_object);
-
-const union acpi_predefined_info *acpi_ns_check_for_predefined_name(struct
-								    acpi_namespace_node
-								    *node);
-
-void
-acpi_ns_check_parameter_count(char *pathname,
-			      struct acpi_namespace_node *node,
-			      u32 user_param_count,
-			      const union acpi_predefined_info *info);
-=======
 /*
  * nsarguments - Argument count/type checking for predefined/reserved names
  */
@@ -358,26 +244,12 @@ acpi_ns_check_object_type(struct acpi_evaluate_info *info,
 acpi_status
 acpi_ns_check_package(struct acpi_evaluate_info *info,
 		      union acpi_operand_object **return_object_ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * nsnames - Name and Scope manipulation
  */
 u32 acpi_ns_opens_scope(acpi_object_type type);
 
-<<<<<<< HEAD
-acpi_status
-acpi_ns_build_external_path(struct acpi_namespace_node *node,
-			    acpi_size size, char *name_buffer);
-
-char *acpi_ns_get_external_pathname(struct acpi_namespace_node *node);
-
-char *acpi_ns_name_of_current_scope(struct acpi_walk_state *walk_state);
-
-acpi_status
-acpi_ns_handle_to_pathname(acpi_handle target_handle,
-			   struct acpi_buffer *buffer);
-=======
 char *acpi_ns_get_external_pathname(struct acpi_namespace_node *node);
 
 u32
@@ -400,20 +272,16 @@ acpi_ns_handle_to_name(acpi_handle target_handle, struct acpi_buffer *buffer);
 acpi_status
 acpi_ns_handle_to_pathname(acpi_handle target_handle,
 			   struct acpi_buffer *buffer, u8 no_trailing);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 u8
 acpi_ns_pattern_match(struct acpi_namespace_node *obj_node, char *search_for);
 
 acpi_status
-<<<<<<< HEAD
-=======
 acpi_ns_get_node_unlocked(struct acpi_namespace_node *prefix_node,
 			  const char *external_pathname,
 			  u32 flags, struct acpi_namespace_node **out_node);
 
 acpi_status
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_ns_get_node(struct acpi_namespace_node *prefix_node,
 		 const char *external_pathname,
 		 u32 flags, struct acpi_namespace_node **out_node);
@@ -452,40 +320,24 @@ acpi_ns_get_attached_data(struct acpi_namespace_node *node,
  * predefined methods/objects
  */
 acpi_status
-<<<<<<< HEAD
-acpi_ns_repair_object(struct acpi_predefined_data *data,
-=======
 acpi_ns_simple_repair(struct acpi_evaluate_info *info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      u32 expected_btypes,
 		      u32 package_index,
 		      union acpi_operand_object **return_object_ptr);
 
 acpi_status
-<<<<<<< HEAD
-acpi_ns_wrap_with_package(struct acpi_predefined_data *data,
-=======
 acpi_ns_wrap_with_package(struct acpi_evaluate_info *info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  union acpi_operand_object *original_object,
 			  union acpi_operand_object **obj_desc_ptr);
 
 acpi_status
-<<<<<<< HEAD
-acpi_ns_repair_null_element(struct acpi_predefined_data *data,
-=======
 acpi_ns_repair_null_element(struct acpi_evaluate_info *info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    u32 expected_btypes,
 			    u32 package_index,
 			    union acpi_operand_object **return_object_ptr);
 
 void
-<<<<<<< HEAD
-acpi_ns_remove_null_elements(struct acpi_predefined_data *data,
-=======
 acpi_ns_remove_null_elements(struct acpi_evaluate_info *info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     u8 package_type,
 			     union acpi_operand_object *obj_desc);
 
@@ -494,11 +346,7 @@ acpi_ns_remove_null_elements(struct acpi_evaluate_info *info,
  * predefined methods/objects
  */
 acpi_status
-<<<<<<< HEAD
-acpi_ns_complex_repairs(struct acpi_predefined_data *data,
-=======
 acpi_ns_complex_repairs(struct acpi_evaluate_info *info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct acpi_namespace_node *node,
 			acpi_status validate_status,
 			union acpi_operand_object **return_object_ptr);
@@ -528,11 +376,6 @@ acpi_ns_install_node(struct acpi_walk_state *walk_state,
 /*
  * nsutils - Utility functions
  */
-<<<<<<< HEAD
-u8 acpi_ns_valid_root_prefix(char prefix);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_object_type acpi_ns_get_type(struct acpi_namespace_node *node);
 
 u32 acpi_ns_local(acpi_object_type type);

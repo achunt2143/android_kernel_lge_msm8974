@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_SIGFRAME_H
-#define _ASM_X86_SIGFRAME_H
-
-#include <asm/sigcontext.h>
-#include <asm/siginfo.h>
-#include <asm/ucontext.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_SIGFRAME_H
 #define _ASM_X86_SIGFRAME_H
@@ -14,16 +6,10 @@
 #include <asm/siginfo.h>
 #include <asm/ucontext.h>
 #include <linux/compat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_X86_32
 #define sigframe_ia32		sigframe
 #define rt_sigframe_ia32	rt_sigframe
-<<<<<<< HEAD
-#define sigcontext_ia32		sigcontext
-#define _fpstate_ia32		_fpstate
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ucontext_ia32		ucontext
 #else /* !CONFIG_X86_32 */
 
@@ -37,11 +23,7 @@
 struct sigframe_ia32 {
 	u32 pretcode;
 	int sig;
-<<<<<<< HEAD
-	struct sigcontext_ia32 sc;
-=======
 	struct sigcontext_32 sc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * fpstate is unused. fpstate is moved/allocated after
 	 * retcode[] below. This movement allows to have the FP state and the
@@ -50,17 +32,8 @@ struct sigframe_ia32 {
 	 * the offset of extramask[] in the sigframe and thus prevent any
 	 * legacy application accessing/modifying it.
 	 */
-<<<<<<< HEAD
-	struct _fpstate_ia32 fpstate_unused;
-#ifdef CONFIG_IA32_EMULATION
-	unsigned int extramask[_COMPAT_NSIG_WORDS-1];
-#else /* !CONFIG_IA32_EMULATION */
-	unsigned long extramask[_NSIG_WORDS-1];
-#endif /* CONFIG_IA32_EMULATION */
-=======
 	struct _fpstate_32 fpstate_unused;
 	unsigned int extramask[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char retcode[8];
 	/* fp state follows here */
 };
@@ -92,8 +65,6 @@ struct rt_sigframe {
 
 #ifdef CONFIG_X86_X32_ABI
 
-<<<<<<< HEAD
-=======
 struct ucontext_x32 {
 	unsigned int	  uc_flags;
 	unsigned int 	  uc_link;
@@ -103,7 +74,6 @@ struct ucontext_x32 {
 	compat_sigset_t	  uc_sigmask;	/* mask last for extensibility */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rt_sigframe_x32 {
 	u64 pretcode;
 	struct ucontext_x32 uc;

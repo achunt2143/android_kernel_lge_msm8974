@@ -1,41 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Definitions for key type implementations
  *
  * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public Licence
- * as published by the Free Software Foundation; either version
- * 2 of the Licence, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_KEY_TYPE_H
 #define _LINUX_KEY_TYPE_H
 
 #include <linux/key.h>
-<<<<<<< HEAD
-
-#ifdef CONFIG_KEYS
-
-/*
- * key under-construction record
- * - passed to the request_key actor if supplied
- */
-struct key_construction {
-	struct key	*key;	/* key being constructed */
-	struct key	*authkey;/* authorisation for key being constructed */
-};
-
-typedef int (*request_key_actor_t)(struct key_construction *key,
-				   const char *op, void *aux);
-=======
 #include <linux/errno.h>
 
 #ifdef CONFIG_KEYS
@@ -84,7 +57,6 @@ struct key_match_data {
 #define KEYRING_SEARCH_LOOKUP_DIRECT	0x0000	/* Direct lookup by description. */
 #define KEYRING_SEARCH_LOOKUP_ITERATE	0x0001	/* Iterative search. */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * kernel managed key type definition
@@ -99,11 +71,6 @@ struct key_type {
 	 */
 	size_t def_datalen;
 
-<<<<<<< HEAD
-	/* vet a description */
-	int (*vet_description)(const char *description);
-
-=======
 	unsigned int flags;
 #define KEY_TYPE_NET_DOMAIN	0x00000001 /* Keys of this type have a net namespace domain */
 #define KEY_TYPE_INSTANT_REAP	0x00000002 /* Keys of this type don't have a delay after expiring */
@@ -121,28 +88,17 @@ struct key_type {
 	 */
 	void (*free_preparse)(struct key_preparsed_payload *prep);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* instantiate a key of this type
 	 * - this method should call key_payload_reserve() to determine if the
 	 *   user's quota will hold the payload
 	 */
-<<<<<<< HEAD
-	int (*instantiate)(struct key *key, const void *data, size_t datalen);
-=======
 	int (*instantiate)(struct key *key, struct key_preparsed_payload *prep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* update a key of this type (optional)
 	 * - this method should call key_payload_reserve() to recalculate the
 	 *   quota consumption
 	 * - the key must be locked against read when modifying
 	 */
-<<<<<<< HEAD
-	int (*update)(struct key *key, const void *data, size_t datalen);
-
-	/* match a key against a description */
-	int (*match)(const struct key *key, const void *desc);
-=======
 	int (*update)(struct key *key, struct key_preparsed_payload *prep);
 
 	/* Preparse the data supplied to ->match() (optional).  The
@@ -154,7 +110,6 @@ struct key_type {
 	/* Free preparsed match data (optional).  This should be supplied it
 	 * ->match_preparse() is supplied. */
 	void (*match_free)(struct key_match_data *match_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* clear some of the data from a key on revokation (optional)
 	 * - the key's semaphore will be write-locked by the caller
@@ -174,11 +129,7 @@ struct key_type {
 	 *   much is copied into the buffer
 	 * - shouldn't do the copy if the buffer is NULL
 	 */
-<<<<<<< HEAD
-	long (*read)(const struct key *key, char __user *buffer, size_t buflen);
-=======
 	long (*read)(const struct key *key, char *buffer, size_t buflen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* handle request_key() for this type instead of invoking
 	 * /sbin/request-key (optional)
@@ -190,12 +141,6 @@ struct key_type {
 	 */
 	request_key_actor_t request_key;
 
-<<<<<<< HEAD
-	/* internal fields */
-	struct list_head	link;		/* link in types list */
-	struct lock_class_key	lock_class;	/* key->sem lock class */
-};
-=======
 	/* Look up a keyring access restriction (optional)
 	 *
 	 * - NULL is a valid return value (meaning the requested restriction
@@ -216,7 +161,6 @@ struct key_type {
 	struct list_head	link;		/* link in types list */
 	struct lock_class_key	lock_class;	/* key->sem lock class */
 } __randomize_layout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct key_type key_type_keyring;
 
@@ -228,33 +172,17 @@ extern int key_instantiate_and_link(struct key *key,
 				    const void *data,
 				    size_t datalen,
 				    struct key *keyring,
-<<<<<<< HEAD
-				    struct key *instkey);
-=======
 				    struct key *authkey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int key_reject_and_link(struct key *key,
 			       unsigned timeout,
 			       unsigned error,
 			       struct key *keyring,
-<<<<<<< HEAD
-			       struct key *instkey);
-extern void complete_request_key(struct key_construction *cons, int error);
-=======
 			       struct key *authkey);
 extern void complete_request_key(struct key *authkey, int error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int key_negate_and_link(struct key *key,
 				      unsigned timeout,
 				      struct key *keyring,
-<<<<<<< HEAD
-				      struct key *instkey)
-{
-	return key_reject_and_link(key, timeout, ENOKEY, keyring, instkey);
-}
-
-=======
 				      struct key *authkey)
 {
 	return key_reject_and_link(key, timeout, ENOKEY, keyring, authkey);
@@ -262,6 +190,5 @@ static inline int key_negate_and_link(struct key *key,
 
 extern int generic_key_instantiate(struct key *key, struct key_preparsed_payload *prep);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_KEYS */
 #endif /* _LINUX_KEY_TYPE_H */

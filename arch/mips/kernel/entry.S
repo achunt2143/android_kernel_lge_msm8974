@@ -10,27 +10,15 @@
 
 #include <asm/asm.h>
 #include <asm/asmmacro.h>
-<<<<<<< HEAD
-=======
 #include <asm/compiler.h>
 #include <asm/irqflags.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/regdef.h>
 #include <asm/mipsregs.h>
 #include <asm/stackframe.h>
 #include <asm/isadep.h>
 #include <asm/thread_info.h>
-<<<<<<< HEAD
-#include <asm/war.h>
-#ifdef CONFIG_MIPS_MT_SMTC
-#include <asm/mipsmtregs.h>
-#endif
-
-#ifndef CONFIG_PREEMPT
-=======
 
 #ifndef CONFIG_PREEMPTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define resume_kernel	restore_all
 #else
 #define __ret_from_irq	ret_from_exception
@@ -38,11 +26,7 @@
 
 	.text
 	.align	5
-<<<<<<< HEAD
-#ifndef CONFIG_PREEMPT
-=======
 #ifndef CONFIG_PREEMPTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 FEXPORT(ret_from_exception)
 	local_irq_disable			# preempt stop
 	b	__ret_from_irq
@@ -50,14 +34,11 @@ FEXPORT(ret_from_exception)
 FEXPORT(ret_from_irq)
 	LONG_S	s0, TI_REGS($28)
 FEXPORT(__ret_from_irq)
-<<<<<<< HEAD
-=======
 /*
  * We can be coming here from a syscall done in the kernel space,
  * e.g. a failed kernel_execve().
  */
 resume_userspace_check:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LONG_L	t0, PT_STATUS(sp)		# returning to kernel mode?
 	andi	t0, t0, KU_USER
 	beqz	t0, resume_kernel
@@ -71,31 +52,17 @@ resume_userspace:
 	bnez	t0, work_pending
 	j	restore_all
 
-<<<<<<< HEAD
-#ifdef CONFIG_PREEMPT
-=======
 #ifdef CONFIG_PREEMPTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 resume_kernel:
 	local_irq_disable
 	lw	t0, TI_PRE_COUNT($28)
 	bnez	t0, restore_all
-<<<<<<< HEAD
-need_resched:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LONG_L	t0, TI_FLAGS($28)
 	andi	t1, t0, _TIF_NEED_RESCHED
 	beqz	t1, restore_all
 	LONG_L	t0, PT_STATUS(sp)		# Interrupts off?
 	andi	t0, 1
 	beqz	t0, restore_all
-<<<<<<< HEAD
-	jal	preempt_schedule_irq
-	b	need_resched
-#endif
-
-=======
 	PTR_LA	ra, restore_all
 	j	preempt_schedule_irq
 #endif
@@ -106,18 +73,14 @@ FEXPORT(ret_from_kernel_thread)
 	jal	s0
 	j	syscall_exit
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 FEXPORT(ret_from_fork)
 	jal	schedule_tail		# a0 = struct task_struct *prev
 
 FEXPORT(syscall_exit)
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_DEBUG_RSEQ
 	move	a0, sp
 	jal	rseq_syscall
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_disable		# make sure need_resched and
 					# signals dont change between
 					# sampling and return
@@ -126,65 +89,18 @@ FEXPORT(syscall_exit)
 	and	t0, a2, t0
 	bnez	t0, syscall_exit_work
 
-<<<<<<< HEAD
-FEXPORT(restore_all)			# restore full frame
-#ifdef CONFIG_MIPS_MT_SMTC
-#ifdef CONFIG_MIPS_MT_SMTC_IM_BACKSTOP
-/* Re-arm any temporarily masked interrupts not explicitly "acked" */
-	mfc0	v0, CP0_TCSTATUS
-	ori	v1, v0, TCSTATUS_IXMT
-	mtc0	v1, CP0_TCSTATUS
-	andi	v0, TCSTATUS_IXMT
-	_ehb
-	mfc0	t0, CP0_TCCONTEXT
-	DMT	9				# dmt t1
-	jal	mips_ihb
-	mfc0	t2, CP0_STATUS
-	andi	t3, t0, 0xff00
-	or	t2, t2, t3
-	mtc0	t2, CP0_STATUS
-	_ehb
-	andi	t1, t1, VPECONTROL_TE
-	beqz	t1, 1f
-	EMT
-1:
-	mfc0	v1, CP0_TCSTATUS
-	/* We set IXMT above, XOR should clear it here */
-	xori	v1, v1, TCSTATUS_IXMT
-	or	v1, v0, v1
-	mtc0	v1, CP0_TCSTATUS
-	_ehb
-	xor	t0, t0, t3
-	mtc0	t0, CP0_TCCONTEXT
-#endif /* CONFIG_MIPS_MT_SMTC_IM_BACKSTOP */
-/* Detect and execute deferred IPI "interrupts" */
-	LONG_L	s0, TI_REGS($28)
-	LONG_S	sp, TI_REGS($28)
-	jal	deferred_smtc_ipi
-	LONG_S	s0, TI_REGS($28)
-#endif /* CONFIG_MIPS_MT_SMTC */
-=======
 restore_all:				# restore full frame
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set	noat
 	RESTORE_TEMP
 	RESTORE_AT
 	RESTORE_STATIC
-<<<<<<< HEAD
-FEXPORT(restore_partial)		# restore partial frame
-=======
 restore_partial:		# restore partial frame
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_TRACE_IRQFLAGS
 	SAVE_STATIC
 	SAVE_AT
 	SAVE_TEMP
 	LONG_L	v0, PT_STATUS(sp)
-<<<<<<< HEAD
-#if defined(CONFIG_CPU_R3000) || defined(CONFIG_CPU_TX39XX)
-=======
 #if defined(CONFIG_CPU_R3000)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	and	v0, ST0_IEP
 #else
 	and	v0, ST0_IE
@@ -206,10 +122,7 @@ work_pending:
 	andi	t0, a2, _TIF_NEED_RESCHED # a2 is preloaded with TI_FLAGS
 	beqz	t0, work_notifysig
 work_resched:
-<<<<<<< HEAD
-=======
 	TRACE_IRQS_OFF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jal	schedule
 
 	local_irq_disable		# make sure need_resched and
@@ -227,13 +140,6 @@ work_notifysig:				# deal with pending signals and
 	move	a0, sp
 	li	a1, 0
 	jal	do_notify_resume	# a2 already loaded
-<<<<<<< HEAD
-	j	resume_userspace
-
-FEXPORT(syscall_exit_work_partial)
-	SAVE_STATIC
-syscall_exit_work:
-=======
 	j	resume_userspace_check
 
 FEXPORT(syscall_exit_partial)
@@ -252,26 +158,18 @@ syscall_exit_work:
 	LONG_L	t0, PT_STATUS(sp)		# returning to kernel mode?
 	andi	t0, t0, KU_USER
 	beqz	t0, resume_kernel
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	t0, _TIF_WORK_SYSCALL_EXIT
 	and	t0, a2			# a2 is preloaded with TI_FLAGS
 	beqz	t0, work_pending	# trace bit set?
 	local_irq_enable		# could let syscall_trace_leave()
 					# call schedule() instead
-<<<<<<< HEAD
-=======
 	TRACE_IRQS_ON
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	move	a0, sp
 	jal	syscall_trace_leave
 	b	resume_userspace
 
-<<<<<<< HEAD
-#if defined(CONFIG_CPU_MIPSR2) || defined(CONFIG_MIPS_MT)
-=======
 #if defined(CONFIG_CPU_MIPSR2) || defined(CONFIG_CPU_MIPSR5) || \
     defined(CONFIG_CPU_MIPSR6) || defined(CONFIG_MIPS_MT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * MIPS32R2 Instruction Hazard Barrier - must be called
@@ -279,17 +177,9 @@ syscall_exit_work:
  * For C code use the inline version named instruction_hazard().
  */
 LEAF(mips_ihb)
-<<<<<<< HEAD
-	.set	mips32r2
-=======
 	.set	MIPS_ISA_LEVEL_RAW
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jr.hb	ra
 	nop
 	END(mips_ihb)
 
-<<<<<<< HEAD
-#endif /* CONFIG_CPU_MIPSR2 or CONFIG_MIPS_MT */
-=======
 #endif /* CONFIG_CPU_MIPSR2 - CONFIG_CPU_MIPSR6 or CONFIG_MIPS_MT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

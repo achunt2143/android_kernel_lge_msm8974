@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if LANTIQ
 
 config SOC_TYPE_XWAY
 	bool
-<<<<<<< HEAD
-=======
 	select PINCTRL_XWAY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 
 choice
@@ -19,21 +13,12 @@ choice
 config SOC_AMAZON_SE
 	bool "Amazon SE"
 	select SOC_TYPE_XWAY
-<<<<<<< HEAD
-=======
 	select MFD_SYSCON
 	select MFD_CORE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SOC_XWAY
 	bool "XWAY"
 	select SOC_TYPE_XWAY
-<<<<<<< HEAD
-	select HW_HAS_PCI
-endchoice
-
-source "arch/mips/lantiq/xway/Kconfig"
-=======
 	select HAVE_PCI
 	select MFD_SYSCON
 	select MFD_CORE
@@ -66,6 +51,5 @@ endchoice
 config PCI_LANTIQ
 	bool "PCI Support"
 	depends on SOC_XWAY && PCI
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif

@@ -1,92 +1,14 @@
-<<<<<<< HEAD
-/*
- * Security server interface.
- *
- * Author : Stephen Smalley, <sds@epoch.ncsc.mil>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Security server interface.
  *
  * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
 #ifndef _SELINUX_SECURITY_H_
 #define _SELINUX_SECURITY_H_
 
-<<<<<<< HEAD
-#include <linux/dcache.h>
-#include <linux/magic.h>
-#include <linux/types.h>
-#include "flask.h"
-
-#define SECSID_NULL			0x00000000 /* unspecified SID */
-#define SECSID_WILD			0xffffffff /* wildcard SID */
-#define SECCLASS_NULL			0x0000 /* no class */
-
-/* Identify specific policy version changes */
-#define POLICYDB_VERSION_BASE		15
-#define POLICYDB_VERSION_BOOL		16
-#define POLICYDB_VERSION_IPV6		17
-#define POLICYDB_VERSION_NLCLASS	18
-#define POLICYDB_VERSION_VALIDATETRANS	19
-#define POLICYDB_VERSION_MLS		19
-#define POLICYDB_VERSION_AVTAB		20
-#define POLICYDB_VERSION_RANGETRANS	21
-#define POLICYDB_VERSION_POLCAP		22
-#define POLICYDB_VERSION_PERMISSIVE	23
-#define POLICYDB_VERSION_BOUNDARY	24
-#define POLICYDB_VERSION_FILENAME_TRANS	25
-#define POLICYDB_VERSION_ROLETRANS	26
-#define POLICYDB_VERSION_NEW_OBJECT_DEFAULTS	27
-#define POLICYDB_VERSION_DEFAULT_TYPE	28
-#define POLICYDB_VERSION_CONSTRAINT_NAMES	29
-#define POLICYDB_VERSION_XPERMS_IOCTL	30
-
-/* Range of policy versions we understand*/
-#define POLICYDB_VERSION_MIN   POLICYDB_VERSION_BASE
-#ifdef CONFIG_SECURITY_SELINUX_POLICYDB_VERSION_MAX
-#define POLICYDB_VERSION_MAX	CONFIG_SECURITY_SELINUX_POLICYDB_VERSION_MAX_VALUE
-#else
-#define POLICYDB_VERSION_MAX	POLICYDB_VERSION_XPERMS_IOCTL
-#endif
-
-/* Mask for just the mount related flags */
-#define SE_MNTMASK	0x0f
-/* Super block security struct flags for mount options */
-#define CONTEXT_MNT	0x01
-#define FSCONTEXT_MNT	0x02
-#define ROOTCONTEXT_MNT	0x04
-#define DEFCONTEXT_MNT	0x08
-/* Non-mount related flags */
-#define SE_SBINITIALIZED	0x10
-#define SE_SBPROC		0x20
-#define SE_SBLABELSUPP	0x40
-#define SE_SBGENFS	0x80
-
-#define CONTEXT_STR	"context="
-#define FSCONTEXT_STR	"fscontext="
-#define ROOTCONTEXT_STR	"rootcontext="
-#define DEFCONTEXT_STR	"defcontext="
-#define LABELSUPP_STR "seclabel"
-
-struct netlbl_lsm_secattr;
-
-extern int selinux_enabled;
-
-/* Policy capabilities */
-enum {
-	POLICYDB_CAPABILITY_NETPEER,
-	POLICYDB_CAPABILITY_OPENPERM,
-	__POLICYDB_CAPABILITY_MAX
-};
-#define POLICYDB_CAPABILITY_MAX (__POLICYDB_CAPABILITY_MAX - 1)
-
-extern int selinux_policycap_netpeer;
-extern int selinux_policycap_openperm;
-=======
 #include <linux/compiler.h>
 #include <linux/dcache.h>
 #include <linux/magic.h>
@@ -154,26 +76,11 @@ extern int selinux_policycap_openperm;
 struct netlbl_lsm_secattr;
 
 extern int selinux_enabled_boot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * type_datum properties
  * available at the kernel policy version >= POLICYDB_VERSION_BOUNDARY
  */
-<<<<<<< HEAD
-#define TYPEDATUM_PROPERTY_PRIMARY	0x0001
-#define TYPEDATUM_PROPERTY_ATTRIBUTE	0x0002
-
-/* limitation of boundary depth  */
-#define POLICYDB_BOUNDS_MAXDEPTH	4
-
-int security_mls_enabled(void);
-
-int security_load_policy(void *data, size_t len);
-int security_read_policy(void **data, size_t *len);
-size_t security_policydb_len(void);
-
-=======
 #define TYPEDATUM_PROPERTY_PRIMARY   0x0001
 #define TYPEDATUM_PROPERTY_ATTRIBUTE 0x0002
 
@@ -302,7 +209,6 @@ void selinux_policy_commit(struct selinux_load_state *load_state);
 void selinux_policy_cancel(struct selinux_load_state *load_state);
 int security_read_policy(void **data, size_t *len);
 int security_read_state_kernel(void **data, size_t *len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int security_policycap_supported(unsigned int req_cap);
 
 #define SEL_VEC_MAX 32
@@ -314,21 +220,12 @@ struct av_decision {
 	u32 flags;
 };
 
-<<<<<<< HEAD
-#define XPERMS_ALLOWED 1
-#define XPERMS_AUDITALLOW 2
-#define XPERMS_DONTAUDIT 4
-
-#define security_xperm_set(perms, x) (perms[x >> 5] |= 1 << (x & 0x1f))
-#define security_xperm_test(perms, x) (1 & (perms[x >> 5] >> (x & 0x1f)))
-=======
 #define XPERMS_ALLOWED	  1
 #define XPERMS_AUDITALLOW 2
 #define XPERMS_DONTAUDIT  4
 
 #define security_xperm_set(perms, x)  ((perms)[(x) >> 5] |= 1 << ((x)&0x1f))
 #define security_xperm_test(perms, x) (1 & ((perms)[(x) >> 5] >> ((x)&0x1f)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct extended_perms_data {
 	u32 p[8];
 };
@@ -342,28 +239,11 @@ struct extended_perms_decision {
 };
 
 struct extended_perms {
-<<<<<<< HEAD
-	u16 len;	/* length associated decision chain */
-=======
 	u16 len; /* length associated decision chain */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct extended_perms_data drivers; /* flag drivers that are used */
 };
 
 /* definitions of av_decision.flags */
-<<<<<<< HEAD
-#define AVD_FLAGS_PERMISSIVE	0x0001
-
-void security_compute_av(u32 ssid, u32 tsid,
-			 u16 tclass, struct av_decision *avd,
-			 struct extended_perms *xperms);
-
-void security_compute_xperms_decision(u32 ssid, u32 tsid, u16 tclass,
-			 u8 driver, struct extended_perms_decision *xpermd);
-
-void security_compute_av_user(u32 ssid, u32 tsid,
-			     u16 tclass, struct av_decision *avd);
-=======
 #define AVD_FLAGS_PERMISSIVE 0x0001
 
 void security_compute_av(u32 ssid, u32 tsid, u16 tclass,
@@ -375,7 +255,6 @@ void security_compute_xperms_decision(u32 ssid, u32 tsid, u16 tclass, u8 driver,
 
 void security_compute_av_user(u32 ssid, u32 tsid, u16 tclass,
 			      struct av_decision *avd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int security_transition_sid(u32 ssid, u32 tsid, u16 tclass,
 			    const struct qstr *qstr, u32 *out_sid);
@@ -383,21 +262,6 @@ int security_transition_sid(u32 ssid, u32 tsid, u16 tclass,
 int security_transition_sid_user(u32 ssid, u32 tsid, u16 tclass,
 				 const char *objname, u32 *out_sid);
 
-<<<<<<< HEAD
-int security_member_sid(u32 ssid, u32 tsid,
-	u16 tclass, u32 *out_sid);
-
-int security_change_sid(u32 ssid, u32 tsid,
-	u16 tclass, u32 *out_sid);
-
-int security_sid_to_context(u32 sid, char **scontext,
-	u32 *scontext_len);
-
-int security_sid_to_context_force(u32 sid, char **scontext, u32 *scontext_len);
-
-int security_context_to_sid(const char *scontext, u32 scontext_len,
-	u32 *out_sid);
-=======
 int security_member_sid(u32 ssid, u32 tsid, u16 tclass, u32 *out_sid);
 
 int security_change_sid(u32 ssid, u32 tsid, u16 tclass, u32 *out_sid);
@@ -412,7 +276,6 @@ int security_context_to_sid(const char *scontext, u32 scontext_len,
 			    u32 *out_sid, gfp_t gfp);
 
 int security_context_str_to_sid(const char *scontext, u32 *out_sid, gfp_t gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int security_context_to_sid_default(const char *scontext, u32 scontext_len,
 				    u32 *out_sid, u32 def_sid, gfp_t gfp_flags);
@@ -420,17 +283,6 @@ int security_context_to_sid_default(const char *scontext, u32 scontext_len,
 int security_context_to_sid_force(const char *scontext, u32 scontext_len,
 				  u32 *sid);
 
-<<<<<<< HEAD
-int security_get_user_sids(u32 callsid, char *username,
-			   u32 **sids, u32 *nel);
-
-int security_port_sid(u8 protocol, u16 port, u32 *out_sid);
-
-int security_netif_sid(char *name, u32 *if_sid);
-
-int security_node_sid(u16 domain, void *addr, u32 addrlen,
-	u32 *out_sid);
-=======
 int security_get_user_sids(u32 callsid, char *username, u32 **sids, u32 *nel);
 
 int security_port_sid(u8 protocol, u16 port, u32 *out_sid);
@@ -442,44 +294,17 @@ int security_ib_endport_sid(const char *dev_name, u8 port_num, u32 *out_sid);
 int security_netif_sid(char *name, u32 *if_sid);
 
 int security_node_sid(u16 domain, void *addr, u32 addrlen, u32 *out_sid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int security_validate_transition(u32 oldsid, u32 newsid, u32 tasksid,
 				 u16 tclass);
 
-<<<<<<< HEAD
-=======
 int security_validate_transition_user(u32 oldsid, u32 newsid, u32 tasksid,
 				      u16 tclass);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int security_bounded_transition(u32 oldsid, u32 newsid);
 
 int security_sid_mls_copy(u32 sid, u32 mls_sid, u32 *new_sid);
 
-<<<<<<< HEAD
-int security_net_peersid_resolve(u32 nlbl_sid, u32 nlbl_type,
-				 u32 xfrm_sid,
-				 u32 *peer_sid);
-
-int security_get_classes(char ***classes, int *nclasses);
-int security_get_permissions(char *class, char ***perms, int *nperms);
-int security_get_reject_unknown(void);
-int security_get_allow_unknown(void);
-
-#define SECURITY_FS_USE_XATTR		1 /* use xattr */
-#define SECURITY_FS_USE_TRANS		2 /* use transition SIDs, e.g. devpts/tmpfs */
-#define SECURITY_FS_USE_TASK		3 /* use task SIDs, e.g. pipefs/sockfs */
-#define SECURITY_FS_USE_GENFS		4 /* use the genfs support */
-#define SECURITY_FS_USE_NONE		5 /* no labeling support */
-#define SECURITY_FS_USE_MNTPOINT	6 /* use mountpoint labeling */
-
-int security_fs_use(const char *fstype, unsigned int *behavior,
-	u32 *sid);
-
-int security_genfs_sid(const char *fstype, char *name, u16 sclass,
-	u32 *sid);
-=======
 int security_net_peersid_resolve(u32 nlbl_sid, u32 nlbl_type, u32 xfrm_sid,
 				 u32 *peer_sid);
 
@@ -506,36 +331,21 @@ int security_genfs_sid(const char *fstype, const char *path, u16 sclass,
 
 int selinux_policy_genfs_sid(struct selinux_policy *policy, const char *fstype,
 			     const char *path, u16 sclass, u32 *sid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_NETLABEL
 int security_netlbl_secattr_to_sid(struct netlbl_lsm_secattr *secattr,
 				   u32 *sid);
 
-<<<<<<< HEAD
-int security_netlbl_sid_to_secattr(u32 sid,
-				   struct netlbl_lsm_secattr *secattr);
-#else
-static inline int security_netlbl_secattr_to_sid(
-					    struct netlbl_lsm_secattr *secattr,
-					    u32 *sid)
-=======
 int security_netlbl_sid_to_secattr(u32 sid, struct netlbl_lsm_secattr *secattr);
 #else
 static inline int
 security_netlbl_secattr_to_sid(struct netlbl_lsm_secattr *secattr, u32 *sid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EIDRM;
 }
 
-<<<<<<< HEAD
-static inline int security_netlbl_sid_to_secattr(u32 sid,
-					   struct netlbl_lsm_secattr *secattr)
-=======
 static inline int
 security_netlbl_sid_to_secattr(u32 sid, struct netlbl_lsm_secattr *secattr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOENT;
 }
@@ -548,27 +358,6 @@ const char *security_get_initial_sid_context(u32 sid);
  */
 extern struct page *selinux_kernel_status_page(void);
 
-<<<<<<< HEAD
-#define SELINUX_KERNEL_STATUS_VERSION	1
-struct selinux_kernel_status {
-	u32	version;	/* version number of thie structure */
-	u32	sequence;	/* sequence number of seqlock logic */
-	u32	enforcing;	/* current setting of enforcing mode */
-	u32	policyload;	/* times of policy reloaded */
-	u32	deny_unknown;	/* current setting of deny_unknown */
-	/*
-	 * The version > 0 supports above members.
-	 */
-} __attribute__((packed));
-
-extern void selinux_status_update_setenforce(int enforcing);
-extern void selinux_status_update_policyload(int seqno);
-extern void selinux_complete_init(void);
-extern int selinux_disable(void);
-extern void exit_sel_fs(void);
-extern struct dentry *selinux_null;
-extern struct vfsmount *selinuxfs_mount;
-=======
 #define SELINUX_KERNEL_STATUS_VERSION 1
 struct selinux_kernel_status {
 	u32 version; /* version number of the structure */
@@ -585,19 +374,13 @@ extern void selinux_status_update_setenforce(bool enforcing);
 extern void selinux_status_update_policyload(u32 seqno);
 extern void selinux_complete_init(void);
 extern struct path selinux_null;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void selnl_notify_setenforce(int val);
 extern void selnl_notify_policyload(u32 seqno);
 extern int selinux_nlmsg_lookup(u16 sclass, u16 nlmsg_type, u32 *perm);
 
-<<<<<<< HEAD
-#endif /* _SELINUX_SECURITY_H_ */
-
-=======
 extern void avtab_cache_init(void);
 extern void ebitmap_cache_init(void);
 extern void hashtab_cache_init(void);
 extern int security_sidtab_hash_stats(char *page);
 
 #endif /* _SELINUX_SECURITY_H_ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

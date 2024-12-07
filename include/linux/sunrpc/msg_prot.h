@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/linux/sunrpc/msg_prot.h
  *
@@ -11,18 +8,8 @@
 #ifndef _LINUX_SUNRPC_MSGPROT_H_
 #define _LINUX_SUNRPC_MSGPROT_H_
 
-<<<<<<< HEAD
-#ifdef __KERNEL__ /* user programs should get these from the rpc header files */
-
 #define RPC_VERSION 2
 
-/* size of an XDR encoding unit in bytes, i.e. 32bit */
-#define XDR_UNIT	(4)
-
-=======
-#define RPC_VERSION 2
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* spec defines authentication flavor as an unsigned 32 bit integer */
 typedef u32	rpc_authflavor_t;
 
@@ -33,10 +20,7 @@ enum rpc_auth_flavors {
 	RPC_AUTH_DES   = 3,
 	RPC_AUTH_KRB   = 4,
 	RPC_AUTH_GSS   = 6,
-<<<<<<< HEAD
-=======
 	RPC_AUTH_TLS   = 7,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RPC_AUTH_MAXFLAVOR = 8,
 	/* pseudoflavors: */
 	RPC_AUTH_GSS_KRB5  = 390003,
@@ -50,14 +34,11 @@ enum rpc_auth_flavors {
 	RPC_AUTH_GSS_SPKMP = 390011,
 };
 
-<<<<<<< HEAD
-=======
 /* Maximum size (in octets) of the machinename in an AUTH_UNIX
  * credential (per RFC 5531 Appendix A)
  */
 #define RPC_MAX_MACHINENAME	(255)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Maximum size (in bytes) of an rpc credential or verifier */
 #define RPC_MAX_AUTH_SIZE (400)
 
@@ -159,15 +140,6 @@ typedef __be32	rpc_fraghdr;
 #define RPC_MAX_HEADER_WITH_AUTH \
 	(RPC_CALLHDRSIZE + 2*(2+RPC_MAX_AUTH_SIZE/4))
 
-<<<<<<< HEAD
-/*
- * RFC1833/RFC3530 rpcbind (v3+) well-known netid's.
- */
-#define RPCBIND_NETID_UDP	"udp"
-#define RPCBIND_NETID_TCP	"tcp"
-#define RPCBIND_NETID_UDP6	"udp6"
-#define RPCBIND_NETID_TCP6	"tcp6"
-=======
 #define RPC_MAX_REPHEADER_WITH_AUTH \
 	(RPC_REPHDRSIZE + (2 + RPC_MAX_AUTH_SIZE/4))
 
@@ -184,20 +156,13 @@ typedef __be32	rpc_fraghdr;
 #define RPCBIND_NETID_TCP6	"tcp6"
 #define RPCBIND_NETID_RDMA6	"rdma6"
 #define RPCBIND_NETID_SCTP6	"sctp6"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RPCBIND_NETID_LOCAL	"local"
 
 /*
  * Note that RFC 1833 does not put any size restrictions on the
-<<<<<<< HEAD
- * netid string, but all currently defined netid's fit in 4 bytes.
- */
-#define RPCBIND_MAXNETIDLEN	(4u)
-=======
  * netid string, but all currently defined netid's fit in 5 bytes.
  */
 #define RPCBIND_MAXNETIDLEN	(5u)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Universal addresses are introduced in RFC 1833 and further spelled
@@ -253,8 +218,4 @@ typedef __be32	rpc_fraghdr;
 /* Assume INET6_ADDRSTRLEN will always be larger than INET_ADDRSTRLEN... */
 #define RPCBIND_MAXUADDRLEN	RPCBIND_MAXUADDR6LEN
 
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_SUNRPC_MSGPROT_H_ */

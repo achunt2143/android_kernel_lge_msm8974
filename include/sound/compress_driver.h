@@ -1,55 +1,23 @@
-<<<<<<< HEAD
-/*
-=======
 /* SPDX-License-Identifier: GPL-2.0
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  compress_driver.h - compress offload driver definations
  *
  *  Copyright (C) 2011 Intel Corporation
  *  Authors:	Vinod Koul <vinod.koul@linux.intel.com>
  *		Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-<<<<<<< HEAD
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- */
-=======
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __COMPRESS_DRIVER_H
 #define __COMPRESS_DRIVER_H
 
 #include <linux/types.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <sound/core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/compress_offload.h>
 #include <sound/asound.h>
 #include <sound/pcm.h>
 
 struct snd_compr_ops;
-<<<<<<< HEAD
-struct snd_pcm_substream;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct snd_compr_runtime: runtime stream description
@@ -60,23 +28,15 @@ struct snd_pcm_substream;
  * @buffer_size: size of the above buffer
  * @fragment_size: size of buffer fragment in bytes
  * @fragments: number of such fragments
-<<<<<<< HEAD
- * @hw_pointer: offset of last location in buffer where DSP copied data
- * @app_pointer: offset of last location in buffer where app wrote data
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @total_bytes_available: cumulative number of bytes made available in
  *	the ring buffer
  * @total_bytes_transferred: cumulative bytes transferred by offload DSP
  * @sleep: poll sleep
-<<<<<<< HEAD
-=======
  * @private_data: driver private data pointer
  * @dma_area: virtual buffer address
  * @dma_addr: physical buffer address (not accessible from main CPU)
  * @dma_bytes: size of DMA area
  * @dma_buffer_p: runtime dma buffer pointer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct snd_compr_runtime {
 	snd_pcm_state_t state;
@@ -88,17 +48,12 @@ struct snd_compr_runtime {
 	u64 total_bytes_available;
 	u64 total_bytes_transferred;
 	wait_queue_head_t sleep;
-<<<<<<< HEAD
-	struct snd_pcm_substream *fe_substream;
-	void *private_data;
-=======
 	void *private_data;
 
 	unsigned char *dma_area;
 	dma_addr_t dma_addr;
 	size_t dma_bytes;
 	struct snd_dma_buffer *dma_buffer_p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -107,12 +62,6 @@ struct snd_compr_runtime {
  * @ops: pointer to DSP callbacks
  * @runtime: pointer to runtime structure
  * @device: device pointer
-<<<<<<< HEAD
- * @direction: stream direction, playback/recording
- * @metadata_set: metadata set flag, true when set
- * @next_track: has userspace signall next track transistion, true when set
- * @private_data: pointer to DSP private data
-=======
  * @error_work: delayed work used when closing the stream due to an error
  * @direction: stream direction, playback/recording
  * @metadata_set: metadata set flag, true when set
@@ -121,19 +70,12 @@ struct snd_compr_runtime {
  * @pause_in_draining: paused during draining state, true when set
  * @private_data: pointer to DSP private data
  * @dma_buffer: allocated buffer if any
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct snd_compr_stream {
 	const char *name;
 	struct snd_compr_ops *ops;
 	struct snd_compr_runtime *runtime;
 	struct snd_compr *device;
-<<<<<<< HEAD
-	enum snd_compr_direction direction;
-	bool metadata_set;
-	bool next_track;
-	void *private_data;
-=======
 	struct delayed_work error_work;
 	enum snd_compr_direction direction;
 	bool metadata_set;
@@ -142,7 +84,6 @@ struct snd_compr_stream {
 	bool pause_in_draining;
 	void *private_data;
 	struct snd_dma_buffer dma_buffer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -155,11 +96,8 @@ struct snd_compr_stream {
  * This can be called in during stream creation only to set codec params
  * and the stream properties
  * @get_params: retrieve the codec parameters, mandatory
-<<<<<<< HEAD
-=======
  * @set_metadata: Set the metadata values for a stream
  * @get_metadata: retrieves the requested metadata values from stream
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @trigger: Trigger operations like start, pause, resume, drain, stop.
  * This callback is mandatory
  * @pointer: Retrieve current h/w pointer information. Mandatory
@@ -199,21 +137,14 @@ struct snd_compr_ops {
 /**
  * struct snd_compr: Compressed device
  * @name: DSP device name
-<<<<<<< HEAD
- * @dev: Device pointer
-=======
  * @dev: associated device instance
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ops: pointer to DSP callbacks
  * @private_data: pointer to DSP pvt data
  * @card: sound card pointer
  * @direction: Playback or capture direction
  * @lock: device lock
  * @device: device id
-<<<<<<< HEAD
-=======
  * @use_pause_in_draining: allow pause in draining, true when set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct snd_compr {
 	const char *name;
@@ -224,16 +155,6 @@ struct snd_compr {
 	unsigned int direction;
 	struct mutex lock;
 	int device;
-<<<<<<< HEAD
-};
-
-/* compress device register APIs */
-int snd_compress_register(struct snd_compr *device);
-int snd_compress_deregister(struct snd_compr *device);
-int snd_compress_new(struct snd_card *card, int device,
-			int type, struct snd_compr *compr);
-void snd_compress_free(struct snd_card *card, struct snd_compr *compr);
-=======
 	bool use_pause_in_draining;
 #ifdef CONFIG_SND_VERBOSE_PROCFS
 	/* private: */
@@ -258,7 +179,6 @@ static inline void snd_compr_use_pause_in_draining(struct snd_compr_stream *subs
 {
 	substream->device->use_pause_in_draining = true;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* dsp driver callback apis
  * For playback: driver should call snd_compress_fragment_elapsed() to let the
@@ -273,8 +193,6 @@ static inline void snd_compr_fragment_elapsed(struct snd_compr_stream *stream)
 	wake_up(&stream->runtime->sleep);
 }
 
-<<<<<<< HEAD
-=======
 static inline void snd_compr_drain_notify(struct snd_compr_stream *stream)
 {
 	if (snd_BUG_ON(!stream))
@@ -324,5 +242,4 @@ int snd_compr_free_pages(struct snd_compr_stream *stream);
 int snd_compr_stop_error(struct snd_compr_stream *stream,
 			 snd_pcm_state_t state);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

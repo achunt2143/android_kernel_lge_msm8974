@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Red Hat, Inc.
  *
@@ -39,11 +36,7 @@ struct dm_transaction_manager;
  */
 
 /*
-<<<<<<< HEAD
- * Infomation about the values stored within the btree.
-=======
  * Information about the values stored within the btree.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct dm_btree_value_type {
 	void *context;
@@ -59,27 +52,13 @@ struct dm_btree_value_type {
 	 */
 
 	/*
-<<<<<<< HEAD
-	 * The btree is making a duplicate of the value, for instance
-=======
 	 * The btree is making a duplicate of a run of values, for instance
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * because previously-shared btree nodes have now diverged.
 	 * @value argument is the new copy that the copy function may modify.
 	 * (Probably it just wants to increment a reference count
 	 * somewhere.) This method is _not_ called for insertion of a new
 	 * value: It is assumed the ref count is already 1.
 	 */
-<<<<<<< HEAD
-	void (*inc)(void *context, void *value);
-
-	/*
-	 * This value is being deleted.  The btree takes care of freeing
-	 * the memory pointed to by @value.  Often the del function just
-	 * needs to decrement a reference count somewhere.
-	 */
-	void (*dec)(void *context, void *value);
-=======
 	void (*inc)(void *context, const void *value, unsigned int count);
 
 	/*
@@ -88,18 +67,13 @@ struct dm_btree_value_type {
 	 * needs to decrement a reference counts somewhere.
 	 */
 	void (*dec)(void *context, const void *value, unsigned int count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * A test for equality between two values.  When a value is
 	 * overwritten with a new one, the old one has the dec method
 	 * called _unless_ the new and old value are deemed equal.
 	 */
-<<<<<<< HEAD
-	int (*equal)(void *context, void *value1, void *value2);
-=======
 	int (*equal)(void *context, const void *value1, const void *value2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -111,11 +85,7 @@ struct dm_btree_info {
 	/*
 	 * Number of nested btrees. (Not the depth of a single tree.)
 	 */
-<<<<<<< HEAD
-	unsigned levels;
-=======
 	unsigned int levels;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_btree_value_type value_type;
 };
 
@@ -141,8 +111,6 @@ int dm_btree_lookup(struct dm_btree_info *info, dm_block_t root,
 		    uint64_t *keys, void *value_le);
 
 /*
-<<<<<<< HEAD
-=======
  * Tries to find the first key where the bottom level key is >= to that
  * given.  Useful for skipping empty sections of the btree.
  */
@@ -150,16 +118,11 @@ int dm_btree_lookup_next(struct dm_btree_info *info, dm_block_t root,
 			 uint64_t *keys, uint64_t *rkey, void *value_le);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Insertion (or overwrite an existing value).  O(ln(n))
  */
 int dm_btree_insert(struct dm_btree_info *info, dm_block_t root,
 		    uint64_t *keys, void *value, dm_block_t *new_root)
-<<<<<<< HEAD
-		    __dm_written_to_disk(value);
-=======
 	__dm_written_to_disk(value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * A variant of insert that indicates whether it actually inserted or just
@@ -180,8 +143,6 @@ int dm_btree_remove(struct dm_btree_info *info, dm_block_t root,
 		    uint64_t *keys, dm_block_t *new_root);
 
 /*
-<<<<<<< HEAD
-=======
  * Removes a _contiguous_ run of values starting from 'keys' and not
  * reaching keys2 (where keys2 is keys with the final key replaced with
  * 'end_key').  'end_key' is the one-past-the-end value.  'keys' may be
@@ -200,7 +161,6 @@ int dm_btree_find_lowest_key(struct dm_btree_info *info, dm_block_t root,
 			     uint64_t *result_keys);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns < 0 on failure.  Otherwise the number of key entries that have
  * been filled out.  Remember trees can have zero entries, and as such have
  * no highest key.
@@ -208,8 +168,6 @@ int dm_btree_find_lowest_key(struct dm_btree_info *info, dm_block_t root,
 int dm_btree_find_highest_key(struct dm_btree_info *info, dm_block_t root,
 			      uint64_t *result_keys);
 
-<<<<<<< HEAD
-=======
 /*
  * Iterate through the a btree, calling fn() on each entry.
  * It only works for single level trees and is internally recursive, so
@@ -255,5 +213,4 @@ int dm_btree_cursor_next(struct dm_btree_cursor *c);
 int dm_btree_cursor_skip(struct dm_btree_cursor *c, uint32_t count);
 int dm_btree_cursor_get_value(struct dm_btree_cursor *c, uint64_t *key, void *value_le);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _LINUX_DM_BTREE_H */

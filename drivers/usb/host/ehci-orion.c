@@ -1,33 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/usb/host/ehci-orion.c
  *
  * Tzachi Perelstein <tzachi@marvell.com>
-<<<<<<< HEAD
- *
- * This file is licensed under  the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/mbus.h>
-<<<<<<< HEAD
-#include <plat/ehci-orion.h>
-
-#define rdl(off)	__raw_readl(hcd->regs + (off))
-#define wrl(off, val)	__raw_writel((val), hcd->regs + (off))
-
-#define USB_CMD			0x140
-#define USB_MODE		0x1a8
-=======
 #include <linux/clk.h>
 #include <linux/platform_data/usb-ehci-orion.h>
 #include <linux/of.h>
@@ -50,7 +31,6 @@
 #define   USB_MODE_DEVICE	0x2
 #define   USB_MODE_HOST		0x3
 #define   USB_MODE_SDIS		BIT(4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define USB_CAUSE		0x310
 #define USB_MASK		0x314
 #define USB_WINDOW_CTRL(i)	(0x320 + ((i) << 4))
@@ -62,8 +42,6 @@
 #define USB_PHY_IVREF_CTRL	0x440
 #define USB_PHY_TST_GRP_CTRL	0x450
 
-<<<<<<< HEAD
-=======
 #define USB_SBUSCFG		0x90
 
 /* BAWR = BARD = 3 : Align read/write bursts packets larger than 128 bytes */
@@ -96,7 +74,6 @@ static struct hc_driver __read_mostly ehci_orion_hc_driver;
 static const u64 dma_mask_orion =	DMA_BIT_MASK(32);
 static const u64 dma_mask_ac5 =		DMA_BIT_MASK(34);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Implement Orion USB controller specification guidelines
  */
@@ -112,13 +89,8 @@ static void orion_usb_phy_v1_setup(struct usb_hcd *hcd)
 	/*
 	 * Reset controller
 	 */
-<<<<<<< HEAD
-	wrl(USB_CMD, rdl(USB_CMD) | 0x2);
-	while (rdl(USB_CMD) & 0x2);
-=======
 	wrl(USB_CMD, rdl(USB_CMD) | USB_CMD_RESET);
 	while (rdl(USB_CMD) & USB_CMD_RESET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * GL# USB-10: Set IPG for non start of frame packets
@@ -160,102 +132,19 @@ static void orion_usb_phy_v1_setup(struct usb_hcd *hcd)
 	/*
 	 * Stop and reset controller
 	 */
-<<<<<<< HEAD
-	wrl(USB_CMD, rdl(USB_CMD) & ~0x1);
-	wrl(USB_CMD, rdl(USB_CMD) | 0x2);
-	while (rdl(USB_CMD) & 0x2);
-=======
 	wrl(USB_CMD, rdl(USB_CMD) & ~USB_CMD_RUN);
 	wrl(USB_CMD, rdl(USB_CMD) | USB_CMD_RESET);
 	while (rdl(USB_CMD) & USB_CMD_RESET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * GL# USB-5 Streaming disable REG_USB_MODE[4]=1
 	 * TBD: This need to be done after each reset!
 	 * GL# USB-4 Setup USB Host mode
 	 */
-<<<<<<< HEAD
-	wrl(USB_MODE, 0x13);
-}
-
-static int ehci_orion_setup(struct usb_hcd *hcd)
-{
-	struct ehci_hcd *ehci = hcd_to_ehci(hcd);
-	int retval;
-
-	hcd->has_tt = 1;
-
-	retval = ehci_halt(ehci);
-	if (retval)
-		return retval;
-
-	/*
-	 * data structure init
-	 */
-	retval = ehci_init(hcd);
-	if (retval)
-		return retval;
-
-	ehci_reset(ehci);
-
-	ehci_port_power(ehci, 0);
-
-	return retval;
-}
-
-static const struct hc_driver ehci_orion_hc_driver = {
-	.description = hcd_name,
-	.product_desc = "Marvell Orion EHCI",
-	.hcd_priv_size = sizeof(struct ehci_hcd),
-
-	/*
-	 * generic hardware linkage
-	 */
-	.irq = ehci_irq,
-	.flags = HCD_MEMORY | HCD_USB2,
-
-	/*
-	 * basic lifecycle operations
-	 */
-	.reset = ehci_orion_setup,
-	.start = ehci_run,
-	.stop = ehci_stop,
-	.shutdown = ehci_shutdown,
-
-	/*
-	 * managing i/o requests and associated device resources
-	 */
-	.urb_enqueue = ehci_urb_enqueue,
-	.urb_dequeue = ehci_urb_dequeue,
-	.endpoint_disable = ehci_endpoint_disable,
-	.endpoint_reset = ehci_endpoint_reset,
-
-	/*
-	 * scheduling support
-	 */
-	.get_frame_number = ehci_get_frame,
-
-	/*
-	 * root hub support
-	 */
-	.hub_status_data = ehci_hub_status_data,
-	.hub_control = ehci_hub_control,
-	.bus_suspend = ehci_bus_suspend,
-	.bus_resume = ehci_bus_resume,
-	.relinquish_port = ehci_relinquish_port,
-	.port_handed_over = ehci_port_handed_over,
-
-	.clear_tt_buffer_complete = ehci_clear_tt_buffer_complete,
-};
-
-static void __init
-=======
 	wrl(USB_MODE, USB_MODE_SDIS | USB_MODE_HOST);
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ehci_orion_conf_mbus_windows(struct usb_hcd *hcd,
 			     const struct mbus_dram_target_info *dram)
 {
@@ -276,11 +165,6 @@ ehci_orion_conf_mbus_windows(struct usb_hcd *hcd,
 	}
 }
 
-<<<<<<< HEAD
-static int __devinit ehci_orion_drv_probe(struct platform_device *pdev)
-{
-	struct orion_ehci_data *pd = pdev->dev.platform_data;
-=======
 static int ehci_orion_drv_reset(struct usb_hcd *hcd)
 {
 	struct device *dev = hcd->self.controller;
@@ -328,19 +212,15 @@ static const struct ehci_driver_overrides orion_overrides __initconst = {
 static int ehci_orion_drv_probe(struct platform_device *pdev)
 {
 	struct orion_ehci_data *pd = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct mbus_dram_target_info *dram;
 	struct resource *res;
 	struct usb_hcd *hcd;
 	struct ehci_hcd *ehci;
 	void __iomem *regs;
 	int irq, err;
-<<<<<<< HEAD
-=======
 	enum orion_ehci_phy_ver phy_version;
 	struct orion_ehci_hcd *priv;
 	u64 *dma_mask_ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (usb_disabled())
 		return -ENODEV;
@@ -348,37 +228,6 @@ static int ehci_orion_drv_probe(struct platform_device *pdev)
 	pr_debug("Initializing Orion-SoC USB Host Controller\n");
 
 	irq = platform_get_irq(pdev, 0);
-<<<<<<< HEAD
-	if (irq <= 0) {
-		dev_err(&pdev->dev,
-			"Found HC with no IRQ. Check %s setup!\n",
-			dev_name(&pdev->dev));
-		err = -ENODEV;
-		goto err1;
-	}
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		dev_err(&pdev->dev,
-			"Found HC with no register addr. Check %s setup!\n",
-			dev_name(&pdev->dev));
-		err = -ENODEV;
-		goto err1;
-	}
-
-	if (!request_mem_region(res->start, resource_size(res),
-				ehci_orion_hc_driver.description)) {
-		dev_dbg(&pdev->dev, "controller already in use\n");
-		err = -EBUSY;
-		goto err1;
-	}
-
-	regs = ioremap(res->start, resource_size(res));
-	if (regs == NULL) {
-		dev_dbg(&pdev->dev, "error mapping memory\n");
-		err = -EFAULT;
-		goto err2;
-=======
 	if (irq < 0) {
 		err = irq;
 		goto err;
@@ -398,18 +247,13 @@ static int ehci_orion_drv_probe(struct platform_device *pdev)
 	if (IS_ERR(regs)) {
 		err = PTR_ERR(regs);
 		goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hcd = usb_create_hcd(&ehci_orion_hc_driver,
 			&pdev->dev, dev_name(&pdev->dev));
 	if (!hcd) {
 		err = -ENOMEM;
-<<<<<<< HEAD
-		goto err3;
-=======
 		goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hcd->rsrc_start = res->start;
@@ -418,13 +262,6 @@ static int ehci_orion_drv_probe(struct platform_device *pdev)
 
 	ehci = hcd_to_ehci(hcd);
 	ehci->caps = hcd->regs + 0x100;
-<<<<<<< HEAD
-	ehci->regs = hcd->regs + 0x100 +
-		HC_LENGTH(ehci, ehci_readl(ehci, &ehci->caps->hc_capbase));
-	ehci->hcs_params = ehci_readl(ehci, &ehci->caps->hcs_params);
-	hcd->has_tt = 1;
-	ehci->sbrn = 0x20;
-=======
 	hcd->has_tt = 1;
 
 	priv = hcd_to_orion_priv(hcd);
@@ -445,7 +282,6 @@ static int ehci_orion_drv_probe(struct platform_device *pdev)
 		if (err != -ENOSYS)
 			goto err_dis_clk;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * (Re-)program MBUS remapping windows if we are asked to.
@@ -457,16 +293,12 @@ static int ehci_orion_drv_probe(struct platform_device *pdev)
 	/*
 	 * setup Orion USB controller.
 	 */
-<<<<<<< HEAD
-	switch (pd->phy_version) {
-=======
 	if (pdev->dev.of_node)
 		phy_version = EHCI_PHY_NA;
 	else
 		phy_version = pd->phy_version;
 
 	switch (phy_version) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case EHCI_PHY_NA:	/* dont change USB phy settings */
 		break;
 	case EHCI_PHY_ORION:
@@ -475,28 +307,11 @@ static int ehci_orion_drv_probe(struct platform_device *pdev)
 	case EHCI_PHY_DD:
 	case EHCI_PHY_KW:
 	default:
-<<<<<<< HEAD
-		printk(KERN_WARNING "Orion ehci -USB phy version isn't supported.\n");
-=======
 		dev_warn(&pdev->dev, "USB phy version isn't supported.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = usb_add_hcd(hcd, irq, IRQF_SHARED);
 	if (err)
-<<<<<<< HEAD
-		goto err4;
-
-	return 0;
-
-err4:
-	usb_put_hcd(hcd);
-err3:
-	iounmap(regs);
-err2:
-	release_mem_region(res->start, resource_size(res));
-err1:
-=======
 		goto err_dis_clk;
 
 	device_wakeup_enable(hcd->self.controller);
@@ -508,35 +323,12 @@ err_dis_clk:
 err_put_hcd:
 	usb_put_hcd(hcd);
 err:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_err(&pdev->dev, "init %s fail, %d\n",
 		dev_name(&pdev->dev), err);
 
 	return err;
 }
 
-<<<<<<< HEAD
-static int __exit ehci_orion_drv_remove(struct platform_device *pdev)
-{
-	struct usb_hcd *hcd = platform_get_drvdata(pdev);
-
-	usb_remove_hcd(hcd);
-	iounmap(hcd->regs);
-	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
-	usb_put_hcd(hcd);
-
-	return 0;
-}
-
-MODULE_ALIAS("platform:orion-ehci");
-
-static struct platform_driver ehci_orion_driver = {
-	.probe		= ehci_orion_drv_probe,
-	.remove		= __exit_p(ehci_orion_drv_remove),
-	.shutdown	= usb_hcd_platform_shutdown,
-	.driver.name	= "orion-ehci",
-};
-=======
 static void ehci_orion_drv_remove(struct platform_device *pdev)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(pdev);
@@ -589,4 +381,3 @@ MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_ALIAS("platform:orion-ehci");
 MODULE_AUTHOR("Tzachi Perelstein");
 MODULE_LICENSE("GPL v2");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,14 +1,6 @@
-<<<<<<< HEAD
-/*
- *	linux/lib/crc-ccitt.c
- *
- *	This source code is licensed under the GNU General Public License,
- *	Version 2. See the file COPYING for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *	linux/lib/crc-ccitt.c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -58,12 +50,8 @@ u16 const crc_ccitt_table[256] = {
 EXPORT_SYMBOL(crc_ccitt_table);
 
 /**
-<<<<<<< HEAD
- *	crc_ccitt - recompute the CRC for the data buffer
-=======
  *	crc_ccitt - recompute the CRC (CRC-CCITT variant) for the data
  *	buffer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@crc: previous CRC value
  *	@buffer: data pointer
  *	@len: number of bytes in the buffer

@@ -1,35 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * tps65217.c
  *
  * TPS65217 chip family multi-function driver
  *
-<<<<<<< HEAD
- * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
-#include <linux/kernel.h>
-#include <linux/device.h>
-#include <linux/module.h>
-#include <linux/platform_device.h>
-#include <linux/init.h>
-#include <linux/i2c.h>
-#include <linux/slab.h>
-#include <linux/regmap.h>
-#include <linux/err.h>
-=======
  * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
  */
 
@@ -46,13 +20,10 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mfd/core.h>
 #include <linux/mfd/tps65217.h>
 
-<<<<<<< HEAD
-=======
 static const struct resource charger_resources[] = {
 	DEFINE_RES_IRQ_NAMED(TPS65217_IRQ_AC, "AC"),
 	DEFINE_RES_IRQ_NAMED(TPS65217_IRQ_USB, "USB"),
@@ -208,7 +179,6 @@ static int tps65217_irq_init(struct tps65217 *tps, int irq)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * tps65217_reg_read: Read a single tps65217 register.
  *
@@ -226,11 +196,7 @@ EXPORT_SYMBOL_GPL(tps65217_reg_read);
 /**
  * tps65217_reg_write: Write a single tps65217 register.
  *
-<<<<<<< HEAD
- * @tps65217: Device to write to.
-=======
  * @tps: Device to write to.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg: Register to write to.
  * @val: Value to write.
  * @level: Password protected level
@@ -275,21 +241,13 @@ EXPORT_SYMBOL_GPL(tps65217_reg_write);
 /**
  * tps65217_update_bits: Modify bits w.r.t mask, val and level.
  *
-<<<<<<< HEAD
- * @tps65217: Device to write to.
-=======
  * @tps: Device to write to.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg: Register to read-write to.
  * @mask: Mask.
  * @val: Value to write.
  * @level: Password protected level
  */
-<<<<<<< HEAD
-int tps65217_update_bits(struct tps65217 *tps, unsigned int reg,
-=======
 static int tps65217_update_bits(struct tps65217 *tps, unsigned int reg,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int mask, unsigned int val, unsigned int level)
 {
 	int ret;
@@ -325,20 +283,6 @@ int tps65217_clear_bits(struct tps65217 *tps, unsigned int reg,
 }
 EXPORT_SYMBOL_GPL(tps65217_clear_bits);
 
-<<<<<<< HEAD
-static struct regmap_config tps65217_regmap_config = {
-	.reg_bits = 8,
-	.val_bits = 8,
-};
-
-static int __devinit tps65217_probe(struct i2c_client *client,
-				const struct i2c_device_id *ids)
-{
-	struct tps65217 *tps;
-	struct tps65217_board *pdata = client->dev.platform_data;
-	int i, ret;
-	unsigned int version;
-=======
 static bool tps65217_volatile_reg(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
@@ -372,21 +316,15 @@ static int tps65217_probe(struct i2c_client *client)
 
 	status_off = of_property_read_bool(client->dev.of_node,
 					   "ti,pmic-shutdown-controller");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tps = devm_kzalloc(&client->dev, sizeof(*tps), GFP_KERNEL);
 	if (!tps)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	tps->pdata = pdata;
-	tps->regmap = regmap_init_i2c(client, &tps65217_regmap_config);
-=======
 	i2c_set_clientdata(client, tps);
 	tps->dev = &client->dev;
 
 	tps->regmap = devm_regmap_init_i2c(client, &tps65217_regmap_config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(tps->regmap)) {
 		ret = PTR_ERR(tps->regmap);
 		dev_err(tps->dev, "Failed to allocate register map: %d\n",
@@ -394,16 +332,6 @@ static int tps65217_probe(struct i2c_client *client)
 		return ret;
 	}
 
-<<<<<<< HEAD
-	i2c_set_clientdata(client, tps);
-	tps->dev = &client->dev;
-
-	ret = tps65217_reg_read(tps, TPS65217_REG_CHIPID, &version);
-	if (ret < 0) {
-		dev_err(tps->dev, "Failed to read revision"
-					" register: %d\n", ret);
-		goto err_regmap;
-=======
 	if (client->irq) {
 		tps65217_irq_init(tps, client->irq);
 	} else {
@@ -436,56 +364,12 @@ static int tps65217_probe(struct i2c_client *client)
 				TPS65217_PROTECT_NONE);
 		if (ret)
 			dev_warn(tps->dev, "unable to set the status OFF\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev_info(tps->dev, "TPS65217 ID %#x version 1.%d\n",
 			(version & TPS65217_CHIPID_CHIP_MASK) >> 4,
 			version & TPS65217_CHIPID_REV_MASK);
 
-<<<<<<< HEAD
-	for (i = 0; i < TPS65217_NUM_REGULATOR; i++) {
-		struct platform_device *pdev;
-
-		pdev = platform_device_alloc("tps65217-pmic", i);
-		if (!pdev) {
-			dev_err(tps->dev, "Cannot create regulator %d\n", i);
-			continue;
-		}
-
-		pdev->dev.parent = tps->dev;
-		platform_device_add_data(pdev, &pdata->tps65217_init_data[i],
-					sizeof(pdata->tps65217_init_data[i]));
-		tps->regulator_pdev[i] = pdev;
-
-		platform_device_add(pdev);
-	}
-
-	return 0;
-
-err_regmap:
-	regmap_exit(tps->regmap);
-
-	return ret;
-}
-
-static int __devexit tps65217_remove(struct i2c_client *client)
-{
-	struct tps65217 *tps = i2c_get_clientdata(client);
-	int i;
-
-	for (i = 0; i < TPS65217_NUM_REGULATOR; i++)
-		platform_device_unregister(tps->regulator_pdev[i]);
-
-	regmap_exit(tps->regmap);
-
-	return 0;
-}
-
-static const struct i2c_device_id tps65217_id_table[] = {
-	{"tps65217", 0xF0},
-	{/* end of list */}
-=======
 	return 0;
 }
 
@@ -508,25 +392,17 @@ static void tps65217_remove(struct i2c_client *client)
 static const struct i2c_device_id tps65217_id_table[] = {
 	{"tps65217", TPS65217},
 	{ /* sentinel */ }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 MODULE_DEVICE_TABLE(i2c, tps65217_id_table);
 
 static struct i2c_driver tps65217_driver = {
 	.driver		= {
 		.name	= "tps65217",
-<<<<<<< HEAD
-	},
-	.id_table	= tps65217_id_table,
-	.probe		= tps65217_probe,
-	.remove		= __devexit_p(tps65217_remove),
-=======
 		.of_match_table = tps65217_of_match,
 	},
 	.id_table	= tps65217_id_table,
 	.probe		= tps65217_probe,
 	.remove		= tps65217_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init tps65217_init(void)

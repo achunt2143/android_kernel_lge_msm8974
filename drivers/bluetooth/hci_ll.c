@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Texas Instruments' Bluetooth HCILL UART protocol
  *
@@ -15,23 +12,6 @@
  *  Acknowledgements:
  *  This file is based on hci_h4.c, which was written
  *  by Maxim Krasnyansky and Marcel Holtmann.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2
- *  as published by the Free Software Foundation
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -41,32 +21,16 @@
 #include <linux/sched.h>
 #include <linux/types.h>
 #include <linux/fcntl.h>
-<<<<<<< HEAD
-=======
 #include <linux/firmware.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/ptrace.h>
 #include <linux/poll.h>
 
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/tty.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/string.h>
 #include <linux/signal.h>
 #include <linux/ioctl.h>
-<<<<<<< HEAD
-#include <linux/skbuff.h>
-
-#include <net/bluetooth/bluetooth.h>
-#include <net/bluetooth/hci_core.h>
-
-#include "hci_uart.h"
-
-=======
 #include <linux/of.h>
 #include <linux/serdev.h>
 #include <linux/skbuff.h>
@@ -84,23 +48,12 @@
 #define HCI_VS_WRITE_BD_ADDR			0xfc06
 #define HCI_VS_UPDATE_UART_HCI_BAUDRATE		0xff36
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* HCILL commands */
 #define HCILL_GO_TO_SLEEP_IND	0x30
 #define HCILL_GO_TO_SLEEP_ACK	0x31
 #define HCILL_WAKE_UP_IND	0x32
 #define HCILL_WAKE_UP_ACK	0x33
 
-<<<<<<< HEAD
-/* HCILL receiver States */
-#define HCILL_W4_PACKET_TYPE	0
-#define HCILL_W4_EVENT_HDR	1
-#define HCILL_W4_ACL_HDR	2
-#define HCILL_W4_SCO_HDR	3
-#define HCILL_W4_DATA		4
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* HCILL states */
 enum hcill_states_e {
 	HCILL_ASLEEP,
@@ -109,15 +62,6 @@ enum hcill_states_e {
 	HCILL_AWAKE_TO_ASLEEP
 };
 
-<<<<<<< HEAD
-struct hcill_cmd {
-	u8 cmd;
-} __packed;
-
-struct ll_struct {
-	unsigned long rx_state;
-	unsigned long rx_count;
-=======
 struct ll_device {
 	struct hci_uart hu;
 	struct serdev_device *serdev;
@@ -127,7 +71,6 @@ struct ll_device {
 };
 
 struct ll_struct {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *rx_skb;
 	struct sk_buff_head txq;
 	spinlock_t hcill_lock;		/* HCILL state lock	*/
@@ -144,10 +87,6 @@ static int send_hcill_cmd(u8 cmd, struct hci_uart *hu)
 	int err = 0;
 	struct sk_buff *skb = NULL;
 	struct ll_struct *ll = hu->priv;
-<<<<<<< HEAD
-	struct hcill_cmd *hcill_packet;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("hu %p cmd 0x%x", hu, cmd);
 
@@ -160,13 +99,7 @@ static int send_hcill_cmd(u8 cmd, struct hci_uart *hu)
 	}
 
 	/* prepare packet */
-<<<<<<< HEAD
-	hcill_packet = (struct hcill_cmd *) skb_put(skb, 1);
-	hcill_packet->cmd = cmd;
-	skb->dev = (void *) hu->hdev;
-=======
 	skb_put_u8(skb, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* send packet */
 	skb_queue_tail(&ll->txq, skb);
@@ -181,11 +114,7 @@ static int ll_open(struct hci_uart *hu)
 
 	BT_DBG("hu %p", hu);
 
-<<<<<<< HEAD
-	ll = kzalloc(sizeof(*ll), GFP_ATOMIC);
-=======
 	ll = kzalloc(sizeof(*ll), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ll)
 		return -ENOMEM;
 
@@ -197,8 +126,6 @@ static int ll_open(struct hci_uart *hu)
 
 	hu->priv = ll;
 
-<<<<<<< HEAD
-=======
 	if (hu->serdev) {
 		struct ll_device *lldev = serdev_device_get_drvdata(hu->serdev);
 
@@ -206,7 +133,6 @@ static int ll_open(struct hci_uart *hu)
 			clk_prepare_enable(lldev->ext_clk);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -235,8 +161,6 @@ static int ll_close(struct hci_uart *hu)
 
 	kfree_skb(ll->rx_skb);
 
-<<<<<<< HEAD
-=======
 	if (hu->serdev) {
 		struct ll_device *lldev = serdev_device_get_drvdata(hu->serdev);
 
@@ -245,7 +169,6 @@ static int ll_close(struct hci_uart *hu)
 		clk_disable_unprepare(lldev->ext_clk);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hu->priv = NULL;
 
 	kfree(ll);
@@ -288,11 +211,7 @@ static void ll_device_want_to_wakeup(struct hci_uart *hu)
 		/*
 		 * This state means that both the host and the BRF chip
 		 * have simultaneously sent a wake-up-indication packet.
-<<<<<<< HEAD
-		 * Traditionaly, in this case, receiving a wake-up-indication
-=======
 		 * Traditionally, in this case, receiving a wake-up-indication
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * was enough and an additional wake-up-ack wasn't needed.
 		 * This has changed with the BRF6350, which does require an
 		 * explicit wake-up-ack. Other BRF versions, which do not
@@ -300,11 +219,7 @@ static void ll_device_want_to_wakeup(struct hci_uart *hu)
 		 * perfectly safe to always send one.
 		 */
 		BT_DBG("dual wake-up-indication");
-<<<<<<< HEAD
-		/* deliberate fall-through - do not add break */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case HCILL_ASLEEP:
 		/* acknowledge device wake up */
 		if (send_hcill_cmd(HCILL_WAKE_UP_ACK, hu) < 0) {
@@ -314,12 +229,8 @@ static void ll_device_want_to_wakeup(struct hci_uart *hu)
 		break;
 	default:
 		/* any other state is illegal */
-<<<<<<< HEAD
-		BT_ERR("received HCILL_WAKE_UP_IND in state %ld", ll->hcill_state);
-=======
 		BT_ERR("received HCILL_WAKE_UP_IND in state %ld",
 		       ll->hcill_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -348,12 +259,8 @@ static void ll_device_want_to_sleep(struct hci_uart *hu)
 
 	/* sanity check */
 	if (ll->hcill_state != HCILL_AWAKE)
-<<<<<<< HEAD
-		BT_ERR("ERR: HCILL_GO_TO_SLEEP_IND in state %ld", ll->hcill_state);
-=======
 		BT_ERR("ERR: HCILL_GO_TO_SLEEP_IND in state %ld",
 		       ll->hcill_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* acknowledge device sleep */
 	if (send_hcill_cmd(HCILL_GO_TO_SLEEP_ACK, hu) < 0) {
@@ -386,12 +293,8 @@ static void ll_device_woke_up(struct hci_uart *hu)
 
 	/* sanity check */
 	if (ll->hcill_state != HCILL_ASLEEP_TO_AWAKE)
-<<<<<<< HEAD
-		BT_ERR("received HCILL_WAKE_UP_ACK in state %ld", ll->hcill_state);
-=======
 		BT_ERR("received HCILL_WAKE_UP_ACK in state %ld",
 		       ll->hcill_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* send pending packets and change state to HCILL_AWAKE */
 	__ll_do_awake(ll);
@@ -412,11 +315,7 @@ static int ll_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 	BT_DBG("hu %p skb %p", hu, skb);
 
 	/* Prepend skb with frame type */
-<<<<<<< HEAD
-	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
-=======
 	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* lock hcill state */
 	spin_lock_irqsave(&ll->hcill_lock, flags);
@@ -444,14 +343,9 @@ static int ll_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 		skb_queue_tail(&ll->tx_wait_q, skb);
 		break;
 	default:
-<<<<<<< HEAD
-		BT_ERR("illegal hcill state: %ld (losing packet)", ll->hcill_state);
-		kfree_skb(skb);
-=======
 		BT_ERR("illegal hcill state: %ld (losing packet)",
 		       ll->hcill_state);
 		dev_kfree_skb_irq(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -460,158 +354,6 @@ static int ll_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int ll_check_data_len(struct ll_struct *ll, int len)
-{
-	register int room = skb_tailroom(ll->rx_skb);
-
-	BT_DBG("len %d room %d", len, room);
-
-	if (!len) {
-		hci_recv_frame(ll->rx_skb);
-	} else if (len > room) {
-		BT_ERR("Data length is too large");
-		kfree_skb(ll->rx_skb);
-	} else {
-		ll->rx_state = HCILL_W4_DATA;
-		ll->rx_count = len;
-		return len;
-	}
-
-	ll->rx_state = HCILL_W4_PACKET_TYPE;
-	ll->rx_skb   = NULL;
-	ll->rx_count = 0;
-
-	return 0;
-}
-
-/* Recv data */
-static int ll_recv(struct hci_uart *hu, void *data, int count)
-{
-	struct ll_struct *ll = hu->priv;
-	register char *ptr;
-	struct hci_event_hdr *eh;
-	struct hci_acl_hdr   *ah;
-	struct hci_sco_hdr   *sh;
-	register int len, type, dlen;
-
-	BT_DBG("hu %p count %d rx_state %ld rx_count %ld", hu, count, ll->rx_state, ll->rx_count);
-
-	ptr = data;
-	while (count) {
-		if (ll->rx_count) {
-			len = min_t(unsigned int, ll->rx_count, count);
-			memcpy(skb_put(ll->rx_skb, len), ptr, len);
-			ll->rx_count -= len; count -= len; ptr += len;
-
-			if (ll->rx_count)
-				continue;
-
-			switch (ll->rx_state) {
-			case HCILL_W4_DATA:
-				BT_DBG("Complete data");
-				hci_recv_frame(ll->rx_skb);
-
-				ll->rx_state = HCILL_W4_PACKET_TYPE;
-				ll->rx_skb = NULL;
-				continue;
-
-			case HCILL_W4_EVENT_HDR:
-				eh = hci_event_hdr(ll->rx_skb);
-
-				BT_DBG("Event header: evt 0x%2.2x plen %d", eh->evt, eh->plen);
-
-				ll_check_data_len(ll, eh->plen);
-				continue;
-
-			case HCILL_W4_ACL_HDR:
-				ah = hci_acl_hdr(ll->rx_skb);
-				dlen = __le16_to_cpu(ah->dlen);
-
-				BT_DBG("ACL header: dlen %d", dlen);
-
-				ll_check_data_len(ll, dlen);
-				continue;
-
-			case HCILL_W4_SCO_HDR:
-				sh = hci_sco_hdr(ll->rx_skb);
-
-				BT_DBG("SCO header: dlen %d", sh->dlen);
-
-				ll_check_data_len(ll, sh->dlen);
-				continue;
-			}
-		}
-
-		/* HCILL_W4_PACKET_TYPE */
-		switch (*ptr) {
-		case HCI_EVENT_PKT:
-			BT_DBG("Event packet");
-			ll->rx_state = HCILL_W4_EVENT_HDR;
-			ll->rx_count = HCI_EVENT_HDR_SIZE;
-			type = HCI_EVENT_PKT;
-			break;
-
-		case HCI_ACLDATA_PKT:
-			BT_DBG("ACL packet");
-			ll->rx_state = HCILL_W4_ACL_HDR;
-			ll->rx_count = HCI_ACL_HDR_SIZE;
-			type = HCI_ACLDATA_PKT;
-			break;
-
-		case HCI_SCODATA_PKT:
-			BT_DBG("SCO packet");
-			ll->rx_state = HCILL_W4_SCO_HDR;
-			ll->rx_count = HCI_SCO_HDR_SIZE;
-			type = HCI_SCODATA_PKT;
-			break;
-
-		/* HCILL signals */
-		case HCILL_GO_TO_SLEEP_IND:
-			BT_DBG("HCILL_GO_TO_SLEEP_IND packet");
-			ll_device_want_to_sleep(hu);
-			ptr++; count--;
-			continue;
-
-		case HCILL_GO_TO_SLEEP_ACK:
-			/* shouldn't happen */
-			BT_ERR("received HCILL_GO_TO_SLEEP_ACK (in state %ld)", ll->hcill_state);
-			ptr++; count--;
-			continue;
-
-		case HCILL_WAKE_UP_IND:
-			BT_DBG("HCILL_WAKE_UP_IND packet");
-			ll_device_want_to_wakeup(hu);
-			ptr++; count--;
-			continue;
-
-		case HCILL_WAKE_UP_ACK:
-			BT_DBG("HCILL_WAKE_UP_ACK packet");
-			ll_device_woke_up(hu);
-			ptr++; count--;
-			continue;
-
-		default:
-			BT_ERR("Unknown HCI packet type %2.2x", (__u8)*ptr);
-			hu->hdev->stat.err_rx++;
-			ptr++; count--;
-			continue;
-		};
-
-		ptr++; count--;
-
-		/* Allocate packet */
-		ll->rx_skb = bt_skb_alloc(HCI_MAX_FRAME_SIZE, GFP_ATOMIC);
-		if (!ll->rx_skb) {
-			BT_ERR("Can't allocate mem for new packet");
-			ll->rx_state = HCILL_W4_PACKET_TYPE;
-			ll->rx_count = 0;
-			return -ENOMEM;
-		}
-
-		ll->rx_skb->dev = (void *) hu->hdev;
-		bt_cb(ll->rx_skb)->pkt_type = type;
-=======
 static int ll_recv_frame(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct hci_uart *hu = hci_get_drvdata(hdev);
@@ -694,7 +436,6 @@ static int ll_recv(struct hci_uart *hu, const void *data, int count)
 		bt_dev_err(hu->hdev, "Frame reassembly failed (%d)", err);
 		ll->rx_skb = NULL;
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return count;
@@ -703,13 +444,6 @@ static int ll_recv(struct hci_uart *hu, const void *data, int count)
 static struct sk_buff *ll_dequeue(struct hci_uart *hu)
 {
 	struct ll_struct *ll = hu->priv;
-<<<<<<< HEAD
-	return skb_dequeue(&ll->txq);
-}
-
-static struct hci_uart_proto llp = {
-	.id		= HCI_UART_LL,
-=======
 
 	return skb_dequeue(&ll->txq);
 }
@@ -1065,7 +799,6 @@ static const struct hci_uart_proto llp = {
 	.id		= HCI_UART_LL,
 	.name		= "LL",
 	.setup		= ll_setup,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= ll_open,
 	.close		= ll_close,
 	.recv		= ll_recv,
@@ -1076,28 +809,14 @@ static const struct hci_uart_proto llp = {
 
 int __init ll_init(void)
 {
-<<<<<<< HEAD
-	int err = hci_uart_register_proto(&llp);
-
-	if (!err)
-		BT_INFO("HCILL protocol initialized");
-	else
-		BT_ERR("HCILL protocol registration failed");
-
-	return err;
-=======
 	serdev_device_driver_register(&hci_ti_drv);
 
 	return hci_uart_register_proto(&llp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __exit ll_deinit(void)
 {
-<<<<<<< HEAD
-=======
 	serdev_device_driver_unregister(&hci_ti_drv);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return hci_uart_unregister_proto(&llp);
 }

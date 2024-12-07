@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-
-obj-$(CONFIG_GOOGLE_SMI)		+= gsmi.o
-obj-$(CONFIG_GOOGLE_MEMCONSOLE)		+= memconsole.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 obj-$(CONFIG_GOOGLE_SMI)		+= gsmi.o
@@ -17,4 +12,3 @@ obj-$(CONFIG_GOOGLE_CBMEM)		+= cbmem.o
 
 vpd-sysfs-y := vpd.o vpd_decode.o
 obj-$(CONFIG_GOOGLE_VPD)		+= vpd-sysfs.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

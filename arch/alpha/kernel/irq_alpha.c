@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Alpha specific irq code.
  */
@@ -49,8 +46,6 @@ do_entInt(unsigned long type, unsigned long vector,
 	  unsigned long la_ptr, struct pt_regs *regs)
 {
 	struct pt_regs *old_regs;
-<<<<<<< HEAD
-=======
 
 	/*
 	 * Disable interrupts during IRQ handling.
@@ -59,7 +54,6 @@ do_entInt(unsigned long type, unsigned long vector,
 	 * (namely LX164).
 	 */
 	local_irq_disable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (type) {
 	case 0:
 #ifdef CONFIG_SMP
@@ -73,26 +67,7 @@ do_entInt(unsigned long type, unsigned long vector,
 		break;
 	case 1:
 		old_regs = set_irq_regs(regs);
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-	  {
-		long cpu;
-
-		local_irq_disable();
-		smp_percpu_timer_interrupt(regs);
-		cpu = smp_processor_id();
-		if (cpu != boot_cpuid) {
-		        kstat_incr_irqs_this_cpu(RTC_IRQ, irq_to_desc(RTC_IRQ));
-		} else {
-			handle_irq(RTC_IRQ);
-		}
-	  }
-#else
 		handle_irq(RTC_IRQ);
-#endif
-=======
-		handle_irq(RTC_IRQ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_irq_regs(old_regs);
 		return;
 	case 2:
@@ -238,38 +213,6 @@ process_mcheck_info(unsigned long vector, unsigned long la_ptr,
  * The special RTC interrupt type.  The interrupt itself was
  * processed by PALcode, and comes in via entInt vector 1.
  */
-<<<<<<< HEAD
-
-struct irqaction timer_irqaction = {
-	.handler	= timer_interrupt,
-	.flags		= IRQF_DISABLED,
-	.name		= "timer",
-};
-
-void __init
-init_rtc_irq(void)
-{
-	irq_set_chip_and_handler_name(RTC_IRQ, &dummy_irq_chip,
-				      handle_simple_irq, "RTC");
-	setup_irq(RTC_IRQ, &timer_irqaction);
-}
-
-/* Dummy irqactions.  */
-struct irqaction isa_cascade_irqaction = {
-	.handler	= no_action,
-	.name		= "isa-cascade"
-};
-
-struct irqaction timer_cascade_irqaction = {
-	.handler	= no_action,
-	.name		= "timer-cascade"
-};
-
-struct irqaction halt_switch_irqaction = {
-	.handler	= no_action,
-	.name		= "halt-switch"
-};
-=======
 void __init
 init_rtc_irq(irq_handler_t handler)
 {
@@ -280,4 +223,3 @@ init_rtc_irq(irq_handler_t handler)
 	if (request_irq(RTC_IRQ, handler, 0, "timer", NULL))
 		pr_err("Failed to register timer interrupt\n");
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

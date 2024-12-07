@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # IP netfilter configuration
 #
@@ -9,39 +6,6 @@
 menu "IPv6: Netfilter Configuration"
 	depends on INET && IPV6 && NETFILTER
 
-<<<<<<< HEAD
-config NF_DEFRAG_IPV6
-	tristate
-	default n
-
-config NF_CONNTRACK_IPV6
-	tristate "IPv6 connection tracking support"
-	depends on INET && IPV6 && NF_CONNTRACK
-	default m if NETFILTER_ADVANCED=n
-	select NF_DEFRAG_IPV6
-	---help---
-	  Connection tracking keeps a record of what packets have passed
-	  through your machine, in order to figure out how they are related
-	  into connections.
-
-	  This is IPv6 support on Layer 3 independent connection tracking.
-	  Layer 3 independent connection tracking is experimental scheme
-	  which generalize ip_conntrack to support other layer 3 protocols.
-
-	  To compile it as a module, choose M here.  If unsure, say N.
-
-config NF_NAT_IPV6
-	tristate "IPv6 NAT"
-	depends on NF_CONNTRACK_IPV6
-	depends on NETFILTER_ADVANCED
-	select NF_NAT
-	help
-	  The IPv6 NAT option allows masquerading, port forwarding and other
-	  forms of full Network Address Port Translation. It is controlled by
-	  the `nat' table in ip6tables, see the man page for ip6tables(8).
-
-	  To compile it as a module, choose M here.  If unsure, say N.
-=======
 # old sockopt interface and eval loop
 config IP6_NF_IPTABLES_LEGACY
 	tristate
@@ -105,7 +69,6 @@ config NF_LOG_IPV6
 	help
 	  This is a backwards-compat option for the user's convenience
 	  (e.g. when running oldconfig). It selects CONFIG_NF_LOG_SYSLOG.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config IP6_NF_IPTABLES
 	tristate "IP6 tables support (required for filtering)"
@@ -163,17 +126,10 @@ config IP6_NF_MATCH_HL
 	tristate '"hl" hoplimit match support'
 	depends on NETFILTER_ADVANCED
 	select NETFILTER_XT_MATCH_HL
-<<<<<<< HEAD
-	---help---
-	This is a backwards-compat option for the user's convenience
-	(e.g. when running oldconfig). It selects
-	CONFIG_NETFILTER_XT_MATCH_HL.
-=======
 	help
 	  This is a backwards-compat option for the user's convenience
 	  (e.g. when running oldconfig). It selects
 	  CONFIG_NETFILTER_XT_MATCH_HL.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config IP6_NF_MATCH_IPV6HEADER
 	tristate '"ipv6header" IPv6 Extension Headers Match'
@@ -194,14 +150,9 @@ config IP6_NF_MATCH_MH
 
 config IP6_NF_MATCH_RPFILTER
 	tristate '"rpfilter" reverse path filter match support'
-<<<<<<< HEAD
-	depends on NETFILTER_ADVANCED && (IP6_NF_MANGLE || IP6_NF_RAW)
-	---help---
-=======
 	depends on NETFILTER_ADVANCED
 	depends on IP6_NF_MANGLE || IP6_NF_RAW || NFT_COMPAT
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This option allows you to match packets whose replies would
 	  go out via the interface the packet came in.
 
@@ -217,8 +168,6 @@ config IP6_NF_MATCH_RT
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
-<<<<<<< HEAD
-=======
 config IP6_NF_MATCH_SRH
 	tristate '"srh" Segment Routing header match support'
 	depends on NETFILTER_ADVANCED
@@ -228,74 +177,21 @@ config IP6_NF_MATCH_SRH
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # The targets
 config IP6_NF_TARGET_HL
 	tristate '"HL" hoplimit target support'
 	depends on NETFILTER_ADVANCED && IP6_NF_MANGLE
 	select NETFILTER_XT_TARGET_HL
-<<<<<<< HEAD
-	---help---
-	This is a backwards-compatible option for the user's convenience
-	(e.g. when running oldconfig). It selects
-	CONFIG_NETFILTER_XT_TARGET_HL.
-
-config IP6_NF_TARGET_MASQUERADE
-	tristate "MASQUERADE target support"
-	depends on NF_NAT_IPV6
-	help
-	  Masquerading is a special case of NAT: all outgoing connections are
-	  changed to seem to come from a particular interface's address, and
-	  if the interface goes down, those connections are lost.  This is
-	  only useful for dialup accounts with dynamic IP address (ie. your IP
-	  address will be different on next dialup).
-
-	  To compile it as a module, choose M here.  If unsure, say N.
-
-config IP6_NF_TARGET_NETMAP
-	tristate "NETMAP target support"
-	depends on NF_NAT_IPV6
-	help
-	  NETMAP is an implementation of static 1:1 NAT mapping of network
-	  addresses. It maps the network address part, while keeping the host
-	  address part intact.
-
-	  To compile it as a module, choose M here.  If unsure, say N.
-
-config IP6_NF_TARGET_REDIRECT
-	tristate "REDIRECT target support"
-	depends on NF_NAT_IPV6
-	help
-	  REDIRECT is a special case of NAT: all incoming connections are
-	  mapped onto the incoming interface's address, causing the packets to
-	  come to the local machine instead of passing through.  This is
-	  useful for transparent proxies.
-
-	  To compile it as a module, choose M here.  If unsure, say N.
-
-config IP6_NF_TARGET_NPT
-	tristate "NPT (Network Prefix translation) target support"
-	depends on NETFILTER_ADVANCED
-	help
-	  This option adds the `SNPT' and `DNPT' target, which perform
-	  stateless IPv6-to-IPv6 Network Prefix Translation per RFC 6296.
-
-	  To compile it as a module, choose M here.  If unsure, say N.
-=======
 	help
 	  This is a backwards-compatible option for the user's convenience
 	  (e.g. when running oldconfig). It selects
 	  CONFIG_NETFILTER_XT_TARGET_HL.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config IP6_NF_FILTER
 	tristate "Packet filtering"
 	default m if NETFILTER_ADVANCED=n
-<<<<<<< HEAD
-=======
 	select IP6_NF_IPTABLES_LEGACY
 	tristate
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Packet filtering defines a table `filter', which has a series of
 	  rules for simple packet filtering at local input, forwarding and
@@ -305,12 +201,8 @@ config IP6_NF_FILTER
 
 config IP6_NF_TARGET_REJECT
 	tristate "REJECT target support"
-<<<<<<< HEAD
-	depends on IP6_NF_FILTER
-=======
 	depends on IP6_NF_FILTER || NFT_COMPAT
 	select NF_REJECT_IPV6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default m if NETFILTER_ADVANCED=n
 	help
 	  The REJECT target allows a filtering rule to specify that an ICMPv6
@@ -319,11 +211,6 @@ config IP6_NF_TARGET_REJECT
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
-<<<<<<< HEAD
-config IP6_NF_MANGLE
-	tristate "Packet mangling"
-	default m if NETFILTER_ADVANCED=n
-=======
 config IP6_NF_TARGET_SYNPROXY
 	tristate "SYNPROXY target support"
 	depends on NF_CONNTRACK && NETFILTER_ADVANCED
@@ -341,7 +228,6 @@ config IP6_NF_MANGLE
 	tristate "Packet mangling"
 	default m if NETFILTER_ADVANCED=n
 	select IP6_NF_IPTABLES_LEGACY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option adds a `mangle' table to iptables: see the man page for
 	  iptables(8).  This table is used for various packet alterations
@@ -351,35 +237,13 @@ config IP6_NF_MANGLE
 
 config IP6_NF_RAW
 	tristate  'raw table support (required for TRACE)'
-<<<<<<< HEAD
-=======
 	select IP6_NF_IPTABLES_LEGACY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option adds a `raw' table to ip6tables. This table is the very
 	  first in the netfilter framework and hooks in at the PREROUTING
 	  and OUTPUT chains.
 
 	  If you want to compile it as a module, say M here and read
-<<<<<<< HEAD
-	  <file:Documentation/kbuild/modules.txt>.  If unsure, say `N'.
-
-# security table for MAC policy
-config IP6_NF_SECURITY
-       tristate "Security table"
-       depends on SECURITY
-       depends on NETFILTER_ADVANCED
-       help
-         This option adds a `security' table to iptables, for use
-         with Mandatory Access Control (MAC) policy.
-        
-         If unsure, say N.
-
-endif # IP6_NF_IPTABLES
-
-endmenu
-
-=======
 	  <file:Documentation/kbuild/modules.rst>.  If unsure, say `N'.
 
 # security table for MAC policy
@@ -430,4 +294,3 @@ endmenu
 
 config NF_DEFRAG_IPV6
 	tristate
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

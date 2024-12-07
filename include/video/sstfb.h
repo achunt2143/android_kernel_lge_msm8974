@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/video/sstfb.h -- voodoo graphics frame buffer
  *
@@ -26,11 +23,7 @@
 #  define SST_DEBUG_FUNC 1
 #  define SST_DEBUG_VAR  1
 #else
-<<<<<<< HEAD
-#  define dprintk(X...)
-=======
 #  define dprintk(X...)		no_printk(X)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  define SST_DEBUG_REG  0
 #  define SST_DEBUG_FUNC 0
 #  define SST_DEBUG_VAR  0
@@ -55,11 +48,7 @@
 #if (SST_DEBUG_FUNC > 1)
 #  define f_ddprintk(X...)	dprintk(" " X)
 #else
-<<<<<<< HEAD
-#  define f_ddprintk(X...)
-=======
 #  define f_ddprintk(X...)	no_printk(X)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #if (SST_DEBUG_FUNC > 2)
 #  define f_dddprintk(X...)	dprintk(" " X)

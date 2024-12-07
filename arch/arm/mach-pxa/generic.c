@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-pxa/generic.c
  *
@@ -11,13 +8,6 @@
  *
  * Code common to all PXA machines.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Since this file should be linked before any other machine specific file,
  * the __initcall() here will be executed first.  This serves as default
  * initialization stuff for PXA machines which can be overridden later if
@@ -27,18 +17,6 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-
-#include <mach/hardware.h>
-#include <asm/mach/map.h>
-#include <asm/mach-types.h>
-
-#include <mach/reset.h>
-#include <mach/smemc.h>
-#include <mach/pxa3xx-regs.h>
-
-#include "generic.h"
-=======
 #include <linux/soc/pxa/cpu.h>
 #include <linux/soc/pxa/smemc.h>
 #include <linux/clk/pxa.h>
@@ -54,7 +32,6 @@
 
 #include "generic.h"
 #include <clocksource/pxa.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void clear_reset_status(unsigned int mask)
 {
@@ -66,37 +43,6 @@ void clear_reset_status(unsigned int mask)
 	}
 }
 
-<<<<<<< HEAD
-unsigned long get_clock_tick_rate(void)
-{
-	unsigned long clock_tick_rate;
-
-	if (cpu_is_pxa25x())
-		clock_tick_rate = 3686400;
-	else if (machine_is_mainstone())
-		clock_tick_rate = 3249600;
-	else
-		clock_tick_rate = 3250000;
-
-	return clock_tick_rate;
-}
-EXPORT_SYMBOL(get_clock_tick_rate);
-
-/*
- * Get the clock frequency as reflected by CCCR and the turbo flag.
- * We assume these values have been applied via a fcs.
- * If info is not 0 we also display the current settings.
- */
-unsigned int get_clk_frequency_khz(int info)
-{
-	if (cpu_is_pxa25x())
-		return pxa25x_get_clk_frequency_khz(info);
-	else if (cpu_is_pxa27x())
-		return pxa27x_get_clk_frequency_khz(info);
-	return 0;
-}
-EXPORT_SYMBOL(get_clk_frequency_khz);
-=======
 /*
  * For non device-tree builds, keep legacy timer init
  */
@@ -144,7 +90,6 @@ void __iomem *pxa_smemc_get_mdrefr(void)
 {
 	return MDREFR;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Intel PXA2xx internal register mapping.
@@ -154,29 +99,15 @@ void __iomem *pxa_smemc_get_mdrefr(void)
  */
 static struct map_desc common_io_desc[] __initdata = {
   	{	/* Devs */
-<<<<<<< HEAD
-		.virtual	=  0xf2000000,
-		.pfn		= __phys_to_pfn(0x40000000),
-		.length		= 0x02000000,
-		.type		= MT_DEVICE
-	}, {	/* UNCACHED_PHYS_0 */
-		.virtual	= 0xff000000,
-		.pfn		= __phys_to_pfn(0x00000000),
-		.length		= 0x00100000,
-=======
 		.virtual	= (unsigned long)PERIPH_VIRT,
 		.pfn		= __phys_to_pfn(PERIPH_PHYS),
 		.length		= PERIPH_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.type		= MT_DEVICE
 	}
 };
 
 void __init pxa_map_io(void)
 {
-<<<<<<< HEAD
-=======
 	debug_ll_io_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iotable_init(ARRAY_AND_SIZE(common_io_desc));
 }

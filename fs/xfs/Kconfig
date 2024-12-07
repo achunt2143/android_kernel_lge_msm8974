@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config XFS_FS
 	tristate "XFS filesystem support"
 	depends on BLOCK
 	select EXPORTFS
-<<<<<<< HEAD
-=======
 	select LIBCRC32C
 	select FS_IOMAP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  XFS is a high performance journaling filesystem which originated
 	  on the SGI IRIX platform.  It is completely multi-threaded, can
@@ -28,8 +22,6 @@ config XFS_FS
 	  system of your root partition is compiled as a module, you'll need
 	  to use an initial ramdisk (initrd) to boot.
 
-<<<<<<< HEAD
-=======
 config XFS_SUPPORT_V4
 	bool "Support deprecated V4 (crc=0) format"
 	depends on XFS_FS
@@ -82,7 +74,6 @@ config XFS_SUPPORT_ASCII_CI
 	  To continue supporting case-insensitivity (ascii-ci=1), say Y.
 	  To close off an attack surface, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config XFS_QUOTA
 	bool "XFS Quota support"
 	depends on XFS_FS
@@ -109,12 +100,6 @@ config XFS_POSIX_ACL
 	  POSIX Access Control Lists (ACLs) support permissions for users and
 	  groups beyond the owner/group/world scheme.
 
-<<<<<<< HEAD
-	  To learn more about Access Control Lists, visit the POSIX ACLs for
-	  Linux website <http://acl.bestbits.at/>.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you don't know what Access Control Lists are, say N.
 
 config XFS_RT
@@ -135,11 +120,6 @@ config XFS_RT
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-config XFS_DEBUG
-	bool "XFS Debugging support (EXPERIMENTAL)"
-	depends on XFS_FS && EXPERIMENTAL
-=======
 config XFS_DRAIN_INTENTS
 	bool
 	select JUMP_LABEL if HAVE_ARCH_JUMP_LABEL
@@ -227,7 +207,6 @@ config XFS_WARN
 config XFS_DEBUG
 	bool "XFS Debugging support"
 	depends on XFS_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to get an XFS build with many debugging features,
 	  including ASSERT checks, function wrappers around macros,
@@ -237,8 +216,6 @@ config XFS_DEBUG
 	  not useful unless you are debugging a particular problem.
 
 	  Say N unless you are an XFS developer, or you play one on TV.
-<<<<<<< HEAD
-=======
 
 config XFS_ASSERT_FATAL
 	bool "XFS fatal asserts"
@@ -252,4 +229,3 @@ config XFS_ASSERT_FATAL
 	  result in warnings.
 
 	  This behavior can be modified at runtime via sysfs.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

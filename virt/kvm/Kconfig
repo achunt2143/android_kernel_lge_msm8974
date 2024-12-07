@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-# KVM common configuration items and defaults
-
-config HAVE_KVM
-=======
 # SPDX-License-Identifier: GPL-2.0
 # KVM common configuration items and defaults
 
@@ -13,21 +8,11 @@ config KVM_COMMON
        select PREEMPT_NOTIFIERS
 
 config HAVE_KVM_PFNCACHE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
        bool
 
 config HAVE_KVM_IRQCHIP
        bool
 
-<<<<<<< HEAD
-config HAVE_KVM_EVENTFD
-       bool
-       select EVENTFD
-
-config KVM_APIC_ARCHITECTURE
-       bool
-
-=======
 config HAVE_KVM_IRQ_ROUTING
        bool
 
@@ -54,14 +39,11 @@ config NEED_KVM_DIRTY_RING_WITH_BITMAP
 	bool
 	depends on HAVE_KVM_DIRTY_RING
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config KVM_MMIO
        bool
 
 config KVM_ASYNC_PF
        bool
-<<<<<<< HEAD
-=======
 
 # Toggle to switch between direct notification and batch job
 config KVM_ASYNC_PF_SYNC
@@ -127,4 +109,3 @@ config KVM_GENERIC_PRIVATE_MEM
        select KVM_GENERIC_MEMORY_ATTRIBUTES
        select KVM_PRIVATE_MEM
        bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

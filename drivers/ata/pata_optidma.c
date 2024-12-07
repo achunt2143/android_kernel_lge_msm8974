@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_optidma.c 	- Opti DMA PATA for new ATA layer
  *			  (C) 2006 Red Hat Inc
@@ -29,10 +26,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -160,11 +153,7 @@ static void optidma_mode_setup(struct ata_port *ap, struct ata_device *adev, u8 
 	if (pair) {
 		u8 pair_addr;
 		/* Hardware constraint */
-<<<<<<< HEAD
-		if (pair->dma_mode)
-=======
 		if (ata_dma_enabled(pair))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pair_addr = 0;
 		else
 			pair_addr = addr_timing[pci_clock][pair->pio_mode - XFER_PIO_0];
@@ -298,11 +287,7 @@ static void optiplus_set_dma_mode(struct ata_port *ap, struct ata_device *adev)
 }
 
 /**
-<<<<<<< HEAD
- *	optidma_make_bits	-	PCI setup helper
-=======
  *	optidma_make_bits43	-	PCI setup helper
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@adev: ATA device
  *
  *	Turn the ATA device setup into PCI configuration bits
@@ -316,11 +301,7 @@ static u8 optidma_make_bits43(struct ata_device *adev)
 	};
 	if (!ata_dev_enabled(adev))
 		return 0;
-<<<<<<< HEAD
-	if (adev->dma_mode)
-=======
 	if (ata_dma_enabled(adev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return adev->dma_mode - XFER_MW_DMA_0;
 	return bits43[adev->pio_mode - XFER_PIO_0];
 }
@@ -328,10 +309,7 @@ static u8 optidma_make_bits43(struct ata_device *adev)
 /**
  *	optidma_set_mode	-	mode setup
  *	@link: link to set up
-<<<<<<< HEAD
-=======
  *	@r_failed: out parameter for failed device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Use the standard setup to tune the chipset and then finalise the
  *	configuration by writing the nibble of extra bits of data into
@@ -356,11 +334,7 @@ static int optidma_set_mode(struct ata_link *link, struct ata_device **r_failed)
 	return rc;
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template optidma_sht = {
-=======
 static const struct scsi_host_template optidma_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -381,11 +355,7 @@ static struct ata_port_operations optiplus_port_ops = {
 
 /**
  *	optiplus_with_udma	-	Look for UDMA capable setup
-<<<<<<< HEAD
- *	@pdev; ATA controller
-=======
  *	@pdev: ATA controller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static int optiplus_with_udma(struct pci_dev *pdev)
@@ -472,38 +442,16 @@ static struct pci_driver optidma_pci_driver = {
 	.id_table	= optidma,
 	.probe 		= optidma_init_one,
 	.remove		= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= ata_pci_device_resume,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init optidma_init(void)
-{
-	return pci_register_driver(&optidma_pci_driver);
-}
-
-static void __exit optidma_exit(void)
-{
-	pci_unregister_driver(&optidma_pci_driver);
-}
-=======
 module_pci_driver(optidma_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for Opti Firestar/Firestar Plus");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, optidma);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(optidma_init);
-module_exit(optidma_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

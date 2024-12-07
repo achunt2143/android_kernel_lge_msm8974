@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2003 Sistina Software Limited.
  * Copyright (C) 2004-2008 Red Hat, Inc. All rights reserved.
@@ -22,12 +19,8 @@
 
 #define	DM_MSG_PREFIX	"region hash"
 
-<<<<<<< HEAD
-/*-----------------------------------------------------------------
-=======
 /*
  *------------------------------------------------------------------
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Region hash
  *
  * The mirror splits itself up into discrete regions.  Each
@@ -62,57 +55,28 @@
  *   lists in the region_hash, with the 'state', 'list' and
  *   'delayed_bios' fields of the regions.  This is used from irq
  *   context, so all other uses will have to suspend local irqs.
-<<<<<<< HEAD
- *---------------------------------------------------------------*/
-struct dm_region_hash {
-	uint32_t region_size;
-	unsigned region_shift;
-=======
  *------------------------------------------------------------------
  */
 struct dm_region_hash {
 	uint32_t region_size;
 	unsigned int region_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* holds persistent region state */
 	struct dm_dirty_log *log;
 
 	/* hash table */
 	rwlock_t hash_lock;
-<<<<<<< HEAD
-	mempool_t *region_pool;
-	unsigned mask;
-	unsigned nr_buckets;
-	unsigned prime;
-	unsigned shift;
-	struct list_head *buckets;
-
-	unsigned max_recovery; /* Max # of regions to recover in parallel */
-
-	spinlock_t region_lock;
-	atomic_t recovery_in_flight;
-	struct semaphore recovery_count;
-	struct list_head clean_regions;
-	struct list_head quiesced_regions;
-	struct list_head recovered_regions;
-	struct list_head failed_recovered_regions;
-
-=======
 	unsigned int mask;
 	unsigned int nr_buckets;
 	unsigned int prime;
 	unsigned int shift;
 	struct list_head *buckets;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If there was a flush failure no regions can be marked clean.
 	 */
 	int flush_failure;
 
-<<<<<<< HEAD
-=======
 	unsigned int max_recovery; /* Max # of regions to recover in parallel */
 
 	spinlock_t region_lock;
@@ -125,7 +89,6 @@ struct dm_region_hash {
 
 	mempool_t region_pool;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *context;
 	sector_t target_begin;
 
@@ -167,12 +130,8 @@ EXPORT_SYMBOL_GPL(dm_rh_region_to_sector);
 
 region_t dm_rh_bio_to_region(struct dm_region_hash *rh, struct bio *bio)
 {
-<<<<<<< HEAD
-	return dm_rh_sector_to_region(rh, bio->bi_sector - rh->target_begin);
-=======
 	return dm_rh_sector_to_region(rh, bio->bi_iter.bi_sector -
 				      rh->target_begin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(dm_rh_bio_to_region);
 
@@ -207,23 +166,14 @@ struct dm_region_hash *dm_region_hash_create(
 						     struct bio_list *bios),
 		void (*wakeup_workers)(void *context),
 		void (*wakeup_all_recovery_waiters)(void *context),
-<<<<<<< HEAD
-		sector_t target_begin, unsigned max_recovery,
-=======
 		sector_t target_begin, unsigned int max_recovery,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct dm_dirty_log *log, uint32_t region_size,
 		region_t nr_regions)
 {
 	struct dm_region_hash *rh;
-<<<<<<< HEAD
-	unsigned nr_buckets, max_buckets;
-	size_t i;
-=======
 	unsigned int nr_buckets, max_buckets;
 	size_t i;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Calculate a suitable number of buckets for our hash
@@ -234,11 +184,7 @@ struct dm_region_hash *dm_region_hash_create(
 		;
 	nr_buckets >>= 1;
 
-<<<<<<< HEAD
-	rh = kmalloc(sizeof(*rh), GFP_KERNEL);
-=======
 	rh = kzalloc(sizeof(*rh), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rh) {
 		DMERR("unable to allocate region hash memory");
 		return ERR_PTR(-ENOMEM);
@@ -252,11 +198,7 @@ struct dm_region_hash *dm_region_hash_create(
 	rh->max_recovery = max_recovery;
 	rh->log = log;
 	rh->region_size = region_size;
-<<<<<<< HEAD
-	rh->region_shift = ffs(region_size) - 1;
-=======
 	rh->region_shift = __ffs(region_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rwlock_init(&rh->hash_lock);
 	rh->mask = nr_buckets - 1;
 	rh->nr_buckets = nr_buckets;
@@ -264,11 +206,7 @@ struct dm_region_hash *dm_region_hash_create(
 	rh->shift = RH_HASH_SHIFT;
 	rh->prime = RH_HASH_MULT;
 
-<<<<<<< HEAD
-	rh->buckets = vmalloc(nr_buckets * sizeof(*rh->buckets));
-=======
 	rh->buckets = vmalloc(array_size(nr_buckets, sizeof(*rh->buckets)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rh->buckets) {
 		DMERR("unable to allocate region hash bucket memory");
 		kfree(rh);
@@ -287,15 +225,9 @@ struct dm_region_hash *dm_region_hash_create(
 	INIT_LIST_HEAD(&rh->failed_recovered_regions);
 	rh->flush_failure = 0;
 
-<<<<<<< HEAD
-	rh->region_pool = mempool_create_kmalloc_pool(MIN_REGIONS,
-						      sizeof(struct dm_region));
-	if (!rh->region_pool) {
-=======
 	ret = mempool_init_kmalloc_pool(&rh->region_pool, MIN_REGIONS,
 					sizeof(struct dm_region));
 	if (ret) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vfree(rh->buckets);
 		kfree(rh);
 		rh = ERR_PTR(-ENOMEM);
@@ -307,11 +239,7 @@ EXPORT_SYMBOL_GPL(dm_region_hash_create);
 
 void dm_region_hash_destroy(struct dm_region_hash *rh)
 {
-<<<<<<< HEAD
-	unsigned h;
-=======
 	unsigned int h;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_region *reg, *nreg;
 
 	BUG_ON(!list_empty(&rh->quiesced_regions));
@@ -319,24 +247,14 @@ void dm_region_hash_destroy(struct dm_region_hash *rh)
 		list_for_each_entry_safe(reg, nreg, rh->buckets + h,
 					 hash_list) {
 			BUG_ON(atomic_read(&reg->pending));
-<<<<<<< HEAD
-			mempool_free(reg, rh->region_pool);
-=======
 			mempool_free(reg, &rh->region_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	if (rh->log)
 		dm_dirty_log_destroy(rh->log);
 
-<<<<<<< HEAD
-	if (rh->region_pool)
-		mempool_destroy(rh->region_pool);
-
-=======
 	mempool_exit(&rh->region_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vfree(rh->buckets);
 	kfree(rh);
 }
@@ -348,15 +266,9 @@ struct dm_dirty_log *dm_rh_dirty_log(struct dm_region_hash *rh)
 }
 EXPORT_SYMBOL_GPL(dm_rh_dirty_log);
 
-<<<<<<< HEAD
-static unsigned rh_hash(struct dm_region_hash *rh, region_t region)
-{
-	return (unsigned) ((region * rh->prime) >> rh->shift) & rh->mask;
-=======
 static unsigned int rh_hash(struct dm_region_hash *rh, region_t region)
 {
 	return (unsigned int) ((region * rh->prime) >> rh->shift) & rh->mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dm_region *__rh_lookup(struct dm_region_hash *rh, region_t region)
@@ -380,11 +292,7 @@ static struct dm_region *__rh_alloc(struct dm_region_hash *rh, region_t region)
 {
 	struct dm_region *reg, *nreg;
 
-<<<<<<< HEAD
-	nreg = mempool_alloc(rh->region_pool, GFP_ATOMIC);
-=======
 	nreg = mempool_alloc(&rh->region_pool, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!nreg))
 		nreg = kmalloc(sizeof(*nreg), GFP_NOIO | __GFP_NOFAIL);
 
@@ -400,11 +308,7 @@ static struct dm_region *__rh_alloc(struct dm_region_hash *rh, region_t region)
 	reg = __rh_lookup(rh, region);
 	if (reg)
 		/* We lost the race. */
-<<<<<<< HEAD
-		mempool_free(nreg, rh->region_pool);
-=======
 		mempool_free(nreg, &rh->region_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		__rh_insert(rh, nreg);
 		if (nreg->state == DM_RH_CLEAN) {
@@ -499,20 +403,12 @@ void dm_rh_mark_nosync(struct dm_region_hash *rh, struct bio *bio)
 	region_t region = dm_rh_bio_to_region(rh, bio);
 	int recovering = 0;
 
-<<<<<<< HEAD
-	if (bio->bi_rw & REQ_FLUSH) {
-=======
 	if (bio->bi_opf & REQ_PREFLUSH) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rh->flush_failure = 1;
 		return;
 	}
 
-<<<<<<< HEAD
-	if (bio->bi_rw & REQ_DISCARD)
-=======
 	if (bio_op(bio) == REQ_OP_DISCARD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/* We must inform the log that the sync count has changed. */
@@ -590,29 +486,17 @@ void dm_rh_update_states(struct dm_region_hash *rh, int errors_handled)
 	list_for_each_entry_safe(reg, next, &recovered, list) {
 		rh->log->type->clear_region(rh->log, reg->key);
 		complete_resync_work(reg, 1);
-<<<<<<< HEAD
-		mempool_free(reg, rh->region_pool);
-=======
 		mempool_free(reg, &rh->region_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	list_for_each_entry_safe(reg, next, &failed_recovered, list) {
 		complete_resync_work(reg, errors_handled ? 0 : 1);
-<<<<<<< HEAD
-		mempool_free(reg, rh->region_pool);
-=======
 		mempool_free(reg, &rh->region_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	list_for_each_entry_safe(reg, next, &clean, list) {
 		rh->log->type->clear_region(rh->log, reg->key);
-<<<<<<< HEAD
-		mempool_free(reg, rh->region_pool);
-=======
 		mempool_free(reg, &rh->region_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rh->log->type->flush(rh->log);
@@ -647,11 +531,7 @@ void dm_rh_inc_pending(struct dm_region_hash *rh, struct bio_list *bios)
 	struct bio *bio;
 
 	for (bio = bios->head; bio; bio = bio->bi_next) {
-<<<<<<< HEAD
-		if (bio->bi_rw & (REQ_FLUSH | REQ_DISCARD))
-=======
 		if (bio->bi_opf & REQ_PREFLUSH || bio_op(bio) == REQ_OP_DISCARD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		rh_inc(rh, dm_rh_bio_to_region(rh, bio));
 	}
@@ -843,9 +723,5 @@ void dm_rh_start_recovery(struct dm_region_hash *rh)
 EXPORT_SYMBOL_GPL(dm_rh_start_recovery);
 
 MODULE_DESCRIPTION(DM_NAME " region hash");
-<<<<<<< HEAD
-MODULE_AUTHOR("Joe Thornber/Heinz Mauelshagen <dm-devel@redhat.com>");
-=======
 MODULE_AUTHOR("Joe Thornber/Heinz Mauelshagen <dm-devel@lists.linux.dev>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

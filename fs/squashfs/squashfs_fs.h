@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef SQUASHFS_FS
 #define SQUASHFS_FS
 /*
@@ -10,23 +7,6 @@
  * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008
  * Phillip Lougher <phillip@squashfs.org.uk>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2,
- * or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * squashfs_fs.h
  */
 
@@ -37,10 +17,7 @@
 
 /* size of metadata (inode and directory) blocks */
 #define SQUASHFS_METADATA_SIZE		8192
-<<<<<<< HEAD
-=======
 #define SQUASHFS_BLOCK_OFFSET		2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* default size of block device I/O */
 #ifdef CONFIG_SQUASHFS_4K_DEVBLK_SIZE
@@ -98,11 +75,7 @@
 #define SQUASHFS_COMP_OPTS(flags)		SQUASHFS_BIT(flags, \
 						SQUASHFS_COMP_OPT)
 
-<<<<<<< HEAD
-/* Max number of types and file types */
-=======
 /* Inode types including extended types */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SQUASHFS_DIR_TYPE		1
 #define SQUASHFS_REG_TYPE		2
 #define SQUASHFS_SYMLINK_TYPE		3
@@ -118,12 +91,9 @@
 #define SQUASHFS_LFIFO_TYPE		13
 #define SQUASHFS_LSOCKET_TYPE		14
 
-<<<<<<< HEAD
-=======
 /* Max type value stored in directory entry */
 #define SQUASHFS_MAX_DIR_TYPE		7
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Xattr types */
 #define SQUASHFS_XATTR_USER             0
 #define SQUASHFS_XATTR_TRUSTED          1
@@ -147,15 +117,12 @@
 
 #define SQUASHFS_COMPRESSED_BLOCK(B)	(!((B) & SQUASHFS_COMPRESSED_BIT_BLOCK))
 
-<<<<<<< HEAD
-=======
 static inline int squashfs_block_size(__le32 raw)
 {
 	u32 size = le32_to_cpu(raw);
 	return (size >> 25) ? -EIO : size;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Inode number ops.  Inodes consist of a compressed block number, and an
  * uncompressed offset within that block
@@ -216,11 +183,7 @@ static inline int squashfs_block_size(__le32 raw)
 #define SQUASHFS_ID_BLOCK_BYTES(A)	(SQUASHFS_ID_BLOCKS(A) *\
 					sizeof(u64))
 /* xattr id lookup table defines */
-<<<<<<< HEAD
-#define SQUASHFS_XATTR_BYTES(A)		((A) * sizeof(struct squashfs_xattr_id))
-=======
 #define SQUASHFS_XATTR_BYTES(A)		(((u64) (A)) * sizeof(struct squashfs_xattr_id))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SQUASHFS_XATTR_BLOCK(A)		(SQUASHFS_XATTR_BYTES(A) / \
 					SQUASHFS_METADATA_SIZE)
@@ -271,11 +234,8 @@ struct meta_index {
 #define LZMA_COMPRESSION	2
 #define LZO_COMPRESSION		3
 #define XZ_COMPRESSION		4
-<<<<<<< HEAD
-=======
 #define LZ4_COMPRESSION		5
 #define ZSTD_COMPRESSION	6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct squashfs_super_block {
 	__le32			s_magic;
@@ -303,11 +263,7 @@ struct squashfs_dir_index {
 	__le32			index;
 	__le32			start_block;
 	__le32			size;
-<<<<<<< HEAD
-	unsigned char		name[0];
-=======
 	unsigned char		name[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct squashfs_base_inode {
@@ -372,11 +328,7 @@ struct squashfs_symlink_inode {
 	__le32			inode_number;
 	__le32			nlink;
 	__le32			symlink_size;
-<<<<<<< HEAD
-	char			symlink[0];
-=======
 	char			symlink[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct squashfs_reg_inode {
@@ -390,11 +342,7 @@ struct squashfs_reg_inode {
 	__le32			fragment;
 	__le32			offset;
 	__le32			file_size;
-<<<<<<< HEAD
-	__le16			block_list[0];
-=======
 	__le16			block_list[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct squashfs_lreg_inode {
@@ -411,11 +359,7 @@ struct squashfs_lreg_inode {
 	__le32			fragment;
 	__le32			offset;
 	__le32			xattr;
-<<<<<<< HEAD
-	__le16			block_list[0];
-=======
 	__le16			block_list[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct squashfs_dir_inode {
@@ -446,11 +390,7 @@ struct squashfs_ldir_inode {
 	__le16			i_count;
 	__le16			offset;
 	__le32			xattr;
-<<<<<<< HEAD
-	struct squashfs_dir_index	index[0];
-=======
 	struct squashfs_dir_index	index[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union squashfs_inode {
@@ -471,11 +411,7 @@ struct squashfs_dir_entry {
 	__le16			inode_number;
 	__le16			type;
 	__le16			size;
-<<<<<<< HEAD
-	char			name[0];
-=======
 	char			name[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct squashfs_dir_header {
@@ -493,20 +429,12 @@ struct squashfs_fragment_entry {
 struct squashfs_xattr_entry {
 	__le16			type;
 	__le16			size;
-<<<<<<< HEAD
-	char			data[0];
-=======
 	char			data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct squashfs_xattr_val {
 	__le32			vsize;
-<<<<<<< HEAD
-	char			value[0];
-=======
 	char			value[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct squashfs_xattr_id {

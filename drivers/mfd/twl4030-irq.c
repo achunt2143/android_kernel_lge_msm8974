@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * twl4030-irq.c - TWL4030/TPS659x0 irq support
  *
@@ -15,40 +12,16 @@
  *
  * Code cleanup and modifications to IRQ handler.
  * by syed khasim <x0khasim@ti.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- */
-
-#include <linux/init.h>
-=======
  */
 
 #include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/slab.h>
 #include <linux/of.h>
 #include <linux/irqdomain.h>
-<<<<<<< HEAD
-#include <linux/i2c/twl.h>
-=======
 #include <linux/mfd/twl.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "twl-core.h"
 
@@ -309,17 +282,10 @@ static irqreturn_t handle_twl4030_pih(int irq, void *devid)
 	irqreturn_t	ret;
 	u8		pih_isr;
 
-<<<<<<< HEAD
-	ret = twl_i2c_read_u8(TWL4030_MODULE_PIH, &pih_isr,
-			REG_PIH_ISR_P1);
-	if (ret) {
-		pr_warning("twl4030: I2C error %d reading PIH ISR\n", ret);
-=======
 	ret = twl_i2c_read_u8(TWL_MODULE_PIH, &pih_isr,
 			      REG_PIH_ISR_P1);
 	if (ret) {
 		pr_warn("twl4030: I2C error %d reading PIH ISR\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return IRQ_NONE;
 	}
 
@@ -360,11 +326,7 @@ static int twl4030_init_sih_modules(unsigned line)
 	irq_line = line;
 
 	/* disable all interrupts on our line */
-<<<<<<< HEAD
-	memset(buf, 0xff, sizeof buf);
-=======
 	memset(buf, 0xff, sizeof(buf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sih = sih_modules;
 	for (i = 0; i < nr_sih_modules; i++, sih++) {
 		/* skip USB -- it's funky */
@@ -422,15 +384,6 @@ static int twl4030_init_sih_modules(unsigned line)
 			status = twl_i2c_read(sih->module, rxbuf,
 				sih->mask[line].isr_offset, sih->bytes_ixr);
 			if (status < 0)
-<<<<<<< HEAD
-				pr_err("twl4030: err %d initializing %s %s\n",
-					status, sih->name, "ISR");
-
-			if (!sih->set_cor)
-				status = twl_i2c_write(sih->module, buf,
-					sih->mask[line].isr_offset,
-					sih->bytes_ixr);
-=======
 				pr_warn("twl4030: err %d initializing %s %s\n",
 					status, sih->name, "ISR");
 
@@ -442,7 +395,6 @@ static int twl4030_init_sih_modules(unsigned line)
 					pr_warn("twl4030: write failed: %d\n",
 						status);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * else COR=1 means read sufficed.
 			 * (for most SIH modules...)
@@ -455,20 +407,7 @@ static int twl4030_init_sih_modules(unsigned line)
 
 static inline void activate_irq(int irq)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_ARM
-	/*
-	 * ARM requires an extra step to clear IRQ_NOREQUEST, which it
-	 * sets on behalf of every irq_chip.  Also sets IRQ_NOPROBE.
-	 */
-	set_irq_flags(irq, IRQF_VALID);
-#else
-	/* same effect on other architectures */
-	irq_set_noprobe(irq);
-#endif
-=======
 	irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*----------------------------------------------------------------------*/
@@ -539,20 +478,12 @@ static void twl4030_sih_bus_sync_unlock(struct irq_data *data)
 
 	if (agent->imr_change_pending) {
 		union {
-<<<<<<< HEAD
-			u32	word;
-=======
 			__le32	word;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u8	bytes[4];
 		} imr;
 
 		/* byte[0] gets overwritten as we write ... */
-<<<<<<< HEAD
-		imr.word = cpu_to_le32(agent->imr << 8);
-=======
 		imr.word = cpu_to_le32(agent->imr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		agent->imr_change_pending = false;
 
 		/* write the whole mask ... simpler than subsetting it */
@@ -577,11 +508,7 @@ static void twl4030_sih_bus_sync_unlock(struct irq_data *data)
 		 * any processor on the other IRQ line, EDR registers are
 		 * shared.
 		 */
-<<<<<<< HEAD
-		status = twl_i2c_read(sih->module, bytes + 1,
-=======
 		status = twl_i2c_read(sih->module, bytes,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sih->edr_offset, sih->bytes_edr);
 		if (status) {
 			pr_err("twl4030: %s, %s --> %d\n", __func__,
@@ -592,18 +519,6 @@ static void twl4030_sih_bus_sync_unlock(struct irq_data *data)
 		/* Modify only the bits we know must change */
 		while (edge_change) {
 			int		i = fls(edge_change) - 1;
-<<<<<<< HEAD
-			struct irq_data	*idata;
-			int		byte = 1 + (i >> 2);
-			int		off = (i & 0x3) * 2;
-			unsigned int	type;
-
-			idata = irq_get_irq_data(i + agent->irq_base);
-
-			bytes[byte] &= ~(0x03 << off);
-
-			type = irqd_get_trigger_type(idata);
-=======
 			int		byte = i >> 2;
 			int		off = (i & 0x3) * 2;
 			unsigned int	type;
@@ -611,7 +526,6 @@ static void twl4030_sih_bus_sync_unlock(struct irq_data *data)
 			bytes[byte] &= ~(0x03 << off);
 
 			type = irq_get_trigger_type(i + agent->irq_base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (type & IRQ_TYPE_EDGE_RISING)
 				bytes[byte] |= BIT(off + 1);
 			if (type & IRQ_TYPE_EDGE_FALLING)
@@ -638,10 +552,7 @@ static struct irq_chip twl4030_sih_irq_chip = {
 	.irq_set_type	= twl4030_sih_set_type,
 	.irq_bus_lock	= twl4030_sih_bus_lock,
 	.irq_bus_sync_unlock = twl4030_sih_bus_sync_unlock,
-<<<<<<< HEAD
-=======
 	.flags		= IRQCHIP_SKIP_SET_WAKE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*----------------------------------------------------------------------*/
@@ -651,11 +562,7 @@ static inline int sih_read_isr(const struct sih *sih)
 	int status;
 	union {
 		u8 bytes[4];
-<<<<<<< HEAD
-		u32 word;
-=======
 		__le32 word;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} isr;
 
 	/* FIXME need retry-on-error ... */
@@ -719,19 +626,12 @@ int twl4030_sih_setup(struct device *dev, int module, int irq_base)
 		}
 	}
 
-<<<<<<< HEAD
-	if (status < 0)
-		return status;
-
-	agent = kzalloc(sizeof *agent, GFP_KERNEL);
-=======
 	if (status < 0) {
 		dev_err(dev, "module to setup SIH for not found\n");
 		return status;
 	}
 
 	agent = kzalloc(sizeof(*agent), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!agent)
 		return -ENOMEM;
 
@@ -754,12 +654,8 @@ int twl4030_sih_setup(struct device *dev, int module, int irq_base)
 	irq = sih_mod + twl4030_irq_base;
 	irq_set_handler_data(irq, agent);
 	agent->irq_name = kasprintf(GFP_KERNEL, "twl4030_%s", sih->name);
-<<<<<<< HEAD
-	status = request_threaded_irq(irq, NULL, handle_twl4030_sih, 0,
-=======
 	status = request_threaded_irq(irq, NULL, handle_twl4030_sih,
 				      IRQF_EARLY_RESUME | IRQF_ONESHOT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      agent->irq_name ?: sih->name, NULL);
 
 	dev_info(dev, "%s (irq %d) chaining IRQs %d..%d\n", sih->name,
@@ -790,11 +686,7 @@ int twl4030_init_irq(struct device *dev, int irq_num)
 	nr_irqs = TWL4030_PWR_NR_IRQS + TWL4030_CORE_NR_IRQS;
 
 	irq_base = irq_alloc_descs(-1, 0, nr_irqs, 0);
-<<<<<<< HEAD
-	if (IS_ERR_VALUE(irq_base)) {
-=======
 	if (irq_base < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(dev, "Fail to allocate IRQ descs\n");
 		return irq_base;
 	}
@@ -848,10 +740,7 @@ int twl4030_init_irq(struct device *dev, int irq_num)
 		dev_err(dev, "could not claim irq%d: %d\n", irq_num, status);
 		goto fail_rqirq;
 	}
-<<<<<<< HEAD
-=======
 	enable_irq_wake(irq_num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return irq_base;
 fail_rqirq:
@@ -865,22 +754,11 @@ fail:
 	return status;
 }
 
-<<<<<<< HEAD
-int twl4030_exit_irq(void)
-{
-	/* FIXME undo twl_init_irq() */
-	if (twl4030_irq_base) {
-		pr_err("twl4030: can't yet clean up IRQs?\n");
-		return -ENOSYS;
-	}
-	return 0;
-=======
 void twl4030_exit_irq(void)
 {
 	/* FIXME undo twl_init_irq() */
 	if (twl4030_irq_base)
 		pr_err("twl4030: can't yet clean up IRQs?\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int twl4030_init_chip_irq(const char *chip)

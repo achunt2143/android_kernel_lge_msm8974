@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	include/asm-parisc/pdc_chassis.h
  *
  *	Copyright (C) 2002 Laurent Canet <canetl@esiee.fr>
  *	Copyright (C) 2002 Thibaut Varene <varenet@parisc-linux.org>
  *
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or modify
- *      it under the terms of the GNU General Public License, version 2, as
- *      published by the Free Software Foundation.
- *      
- *      This program is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *      GNU General Public License for more details.
- *      
- *      You should have received a copy of the GNU General Public License
- *      along with this program; if not, write to the Free Software
- *      Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *      TODO:	- handle processor number on SMP systems (Reporting Entity ID)
  *      	- handle message ID
  *      	- handle timestamps
@@ -385,7 +365,3 @@ void parisc_pdc_chassis_init(void);
 					 PDC_CHASSIS_EOM_SET		)
 
 #endif /* _PARISC_PDC_CHASSIS_H */
-<<<<<<< HEAD
-/* vim: set ts=8 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

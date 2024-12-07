@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * attribute_container.c - implementation of a simple container for classes
  *
  * Copyright (c) 2005 - James Bottomley <James.Bottomley@steeleye.com>
  *
-<<<<<<< HEAD
- * This file is licensed under GPLv2
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The basic idea here is to enable a device to be attached to an
  * aritrary numer of classes without having to allocate storage for them.
  * Instead, the contained classes select the devices they need to attach
@@ -19,10 +11,6 @@
  */
 
 #include <linux/attribute_container.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -85,15 +73,9 @@ int
 attribute_container_register(struct attribute_container *cont)
 {
 	INIT_LIST_HEAD(&cont->node);
-<<<<<<< HEAD
-	klist_init(&cont->containers,internal_container_klist_get,
-		   internal_container_klist_put);
-		
-=======
 	klist_init(&cont->containers, internal_container_klist_get,
 		   internal_container_klist_put);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&attribute_container_mutex);
 	list_add_tail(&cont->node, &attribute_container_list);
 	mutex_unlock(&attribute_container_mutex);
@@ -111,10 +93,7 @@ int
 attribute_container_unregister(struct attribute_container *cont)
 {
 	int retval = -EBUSY;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&attribute_container_mutex);
 	spin_lock(&cont->containers.k_lock);
 	if (!list_empty(&cont->containers.k_list))
@@ -125,22 +104,14 @@ attribute_container_unregister(struct attribute_container *cont)
 	spin_unlock(&cont->containers.k_lock);
 	mutex_unlock(&attribute_container_mutex);
 	return retval;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(attribute_container_unregister);
 
 /* private function used as class release */
 static void attribute_container_release(struct device *classdev)
 {
-<<<<<<< HEAD
-	struct internal_container *ic 
-=======
 	struct internal_container *ic
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		= container_of(classdev, struct internal_container, classdev);
 	struct device *dev = classdev->parent;
 
@@ -186,11 +157,7 @@ attribute_container_add_device(struct device *dev,
 
 		ic = kzalloc(sizeof(*ic), GFP_KERNEL);
 		if (!ic) {
-<<<<<<< HEAD
-			dev_printk(KERN_ERR, dev, "failed to allocate class container\n");
-=======
 			dev_err(dev, "failed to allocate class container\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -199,11 +166,7 @@ attribute_container_add_device(struct device *dev,
 		ic->classdev.parent = get_device(dev);
 		ic->classdev.class = cont->class;
 		cont->class->dev_release = attribute_container_release;
-<<<<<<< HEAD
-		dev_set_name(&ic->classdev, dev_name(dev));
-=======
 		dev_set_name(&ic->classdev, "%s", dev_name(dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fn)
 			fn(cont, dev, &ic->classdev);
 		else
@@ -221,13 +184,8 @@ attribute_container_add_device(struct device *dev,
 		struct klist_node *n = klist_next(iter); \
 		n ? container_of(n, typeof(*pos), member) : \
 			({ klist_iter_exit(iter) ; NULL; }); \
-<<<<<<< HEAD
-	}) ) != NULL; )
-			
-=======
 	})) != NULL;)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * attribute_container_remove_device - make device eligible for removal.
@@ -278,8 +236,6 @@ attribute_container_remove_device(struct device *dev,
 	mutex_unlock(&attribute_container_mutex);
 }
 
-<<<<<<< HEAD
-=======
 static int
 do_attribute_container_device_trigger_safe(struct device *dev,
 					   struct attribute_container *cont,
@@ -383,29 +339,18 @@ attribute_container_device_trigger_safe(struct device *dev,
 
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * attribute_container_device_trigger - execute a trigger for each matching classdev
  *
  * @dev:  The generic device to run the trigger for
-<<<<<<< HEAD
- * @fn	  the function to execute for each classdev.
- *
- * This funcion is for executing a trigger when you need to know both
-=======
  * @fn:   the function to execute for each classdev.
  *
  * This function is for executing a trigger when you need to know both
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * the container and the classdev.  If you only care about the
  * container, then use attribute_container_trigger() instead.
  */
 void
-<<<<<<< HEAD
-attribute_container_device_trigger(struct device *dev, 
-=======
 attribute_container_device_trigger(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   int (*fn)(struct attribute_container *,
 					     struct device *,
 					     struct device *))
@@ -507,10 +452,7 @@ int
 attribute_container_add_class_device(struct device *classdev)
 {
 	int error = device_add(classdev);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 	return attribute_container_add_attrs(classdev);
@@ -519,13 +461,10 @@ attribute_container_add_class_device(struct device *classdev)
 /**
  * attribute_container_add_class_device_adapter - simple adapter for triggers
  *
-<<<<<<< HEAD
-=======
  * @cont: the container to register.
  * @dev:  the generic device to activate the trigger for
  * @classdev:	the class device to add
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function is identical to attribute_container_add_class_device except
  * that it is designed to be called from the triggers
  */

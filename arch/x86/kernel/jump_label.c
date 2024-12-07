@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * jump label x86 support
  *
@@ -17,33 +14,6 @@
 #include <linux/cpu.h>
 #include <asm/kprobes.h>
 #include <asm/alternative.h>
-<<<<<<< HEAD
-
-#ifdef HAVE_JUMP_LABEL
-
-union jump_code_union {
-	char code[JUMP_LABEL_NOP_SIZE];
-	struct {
-		char jump;
-		int offset;
-	} __attribute__((packed));
-};
-
-static void __jump_label_transform(struct jump_entry *entry,
-				   enum jump_label_type type,
-				   void *(*poker)(void *, const void *, size_t))
-{
-	union jump_code_union code;
-
-	if (type == JUMP_LABEL_ENABLE) {
-		code.jump = 0xe9;
-		code.offset = entry->target -
-				(entry->code + JUMP_LABEL_NOP_SIZE);
-	} else
-		memcpy(&code, ideal_nops[NOP_ATOMIC5], JUMP_LABEL_NOP_SIZE);
-
-	(*poker)((void *)entry->code, &code, JUMP_LABEL_NOP_SIZE);
-=======
 #include <asm/text-patching.h>
 #include <asm/insn.h>
 
@@ -142,28 +112,11 @@ static void __ref jump_label_transform(struct jump_entry *entry,
 	mutex_lock(&text_mutex);
 	__jump_label_transform(entry, type, init);
 	mutex_unlock(&text_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void arch_jump_label_transform(struct jump_entry *entry,
 			       enum jump_label_type type)
 {
-<<<<<<< HEAD
-	get_online_cpus();
-	mutex_lock(&text_mutex);
-	__jump_label_transform(entry, type, text_poke_smp);
-	mutex_unlock(&text_mutex);
-	put_online_cpus();
-}
-
-__init_or_module void arch_jump_label_transform_static(struct jump_entry *entry,
-				      enum jump_label_type type)
-{
-	__jump_label_transform(entry, type, text_poke_early);
-}
-
-#endif
-=======
 	jump_label_transform(entry, type, 0);
 }
 
@@ -193,4 +146,3 @@ void arch_jump_label_transform_apply(void)
 	text_poke_finish();
 	mutex_unlock(&text_mutex);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

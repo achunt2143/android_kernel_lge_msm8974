@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 target_core_mod-y		:= target_core_configfs.o \
 				   target_core_device.o \
@@ -13,19 +10,12 @@ target_core_mod-y		:= target_core_configfs.o \
 				   target_core_tmr.o \
 				   target_core_tpg.o \
 				   target_core_transport.o \
-<<<<<<< HEAD
-				   target_core_cdb.o \
-				   target_core_ua.o \
-				   target_core_rd.o \
-				   target_core_stat.o
-=======
 				   target_core_sbc.o \
 				   target_core_spc.o \
 				   target_core_ua.o \
 				   target_core_rd.o \
 				   target_core_stat.o \
 				   target_core_xcopy.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_TARGET_CORE)	+= target_core_mod.o
 
@@ -33,17 +23,11 @@ obj-$(CONFIG_TARGET_CORE)	+= target_core_mod.o
 obj-$(CONFIG_TCM_IBLOCK)	+= target_core_iblock.o
 obj-$(CONFIG_TCM_FILEIO)	+= target_core_file.o
 obj-$(CONFIG_TCM_PSCSI)		+= target_core_pscsi.o
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_TCM_USER2)		+= target_core_user.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Fabric modules
 obj-$(CONFIG_LOOPBACK_TARGET)	+= loopback/
 obj-$(CONFIG_TCM_FC)		+= tcm_fc/
 obj-$(CONFIG_ISCSI_TARGET)	+= iscsi/
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_SBP_TARGET)	+= sbp/
 obj-$(CONFIG_REMOTE_TARGET)	+= tcm_remote/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

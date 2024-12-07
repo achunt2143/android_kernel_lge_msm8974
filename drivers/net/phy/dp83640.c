@@ -1,34 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the National Semiconductor DP83640 PHYTER
  *
  * Copyright (C) 2010 OMICRON electronics GmbH
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/crc32.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ethtool.h>
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -36,10 +15,7 @@
 #include <linux/module.h>
 #include <linux/net_tstamp.h>
 #include <linux/netdevice.h>
-<<<<<<< HEAD
-=======
 #include <linux/if_vlan.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/phy.h>
 #include <linux/ptp_classify.h>
 #include <linux/ptp_clock_kernel.h>
@@ -48,26 +24,15 @@
 
 #define DP83640_PHY_ID	0x20005ce1
 #define PAGESEL		0x13
-<<<<<<< HEAD
-#define LAYER4		0x02
-#define LAYER2		0x01
-#define MAX_RXTS	64
-#define N_EXT_TS	6
-=======
 #define MAX_RXTS	64
 #define N_EXT_TS	6
 #define N_PER_OUT	7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PSF_PTPVER	2
 #define PSF_EVNT	0x4000
 #define PSF_RX		0x2000
 #define PSF_TX		0x1000
 #define EXT_EVENT	1
 #define CAL_EVENT	7
-<<<<<<< HEAD
-#define CAL_TRIGGER	7
-#define PER_TRIGGER	6
-=======
 #define CAL_TRIGGER	1
 #define DP83640_N_PINS	12
 
@@ -93,30 +58,22 @@
 				   MII_DP83640_MISR_DUP_INT |\
 				   MII_DP83640_MISR_SPD_INT |\
 				   MII_DP83640_MISR_LINK_INT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* phyter seems to miss the mark by 16 ns */
 #define ADJTIME_FIX	16
 
-<<<<<<< HEAD
-=======
 #define SKB_TIMESTAMP_TIMEOUT	2 /* jiffies */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(__BIG_ENDIAN)
 #define ENDIAN_FLAG	0
 #elif defined(__LITTLE_ENDIAN)
 #define ENDIAN_FLAG	PSF_ENDIAN
 #endif
 
-<<<<<<< HEAD
-#define SKB_PTP_TYPE(__skb) (*(unsigned int *)((__skb)->cb))
-=======
 struct dp83640_skb_info {
 	int ptp_type;
 	unsigned long tmo;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct phy_rxts {
 	u16 ns_lo;   /* ns[15:0] */
@@ -149,12 +106,8 @@ struct dp83640_private {
 	struct list_head list;
 	struct dp83640_clock *clock;
 	struct phy_device *phydev;
-<<<<<<< HEAD
-	struct work_struct ts_work;
-=======
 	struct mii_timestamper mii_ts;
 	struct delayed_work ts_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int hwts_tx_en;
 	int hwts_rx_en;
 	int layer;
@@ -217,13 +170,6 @@ static ushort gpio_tab[GPIO_TABLE_SIZE] = {
 module_param(chosen_phy, int, 0444);
 module_param_array(gpio_tab, ushort, NULL, 0444);
 
-<<<<<<< HEAD
-MODULE_PARM_DESC(chosen_phy, \
-	"The address of the PHY to use for the ancillary clock features");
-MODULE_PARM_DESC(gpio_tab, \
-	"Which GPIO line to use for which purpose: cal,perout,extts1,...,extts6");
-
-=======
 MODULE_PARM_DESC(chosen_phy,
 	"The address of the PHY to use for the ancillary clock features");
 MODULE_PARM_DESC(gpio_tab,
@@ -260,7 +206,6 @@ static void dp83640_gpio_defaults(struct ptp_pin_desc *pd)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* a list of clocks and a mutex to protect it */
 static LIST_HEAD(phyter_clocks);
 static DEFINE_MUTEX(phyter_clocks_lock);
@@ -271,16 +216,10 @@ static void rx_timestamp_work(struct work_struct *work);
 
 #define BROADCAST_ADDR 31
 
-<<<<<<< HEAD
-static inline int broadcast_write(struct mii_bus *bus, u32 regnum, u16 val)
-{
-	return mdiobus_write(bus, BROADCAST_ADDR, regnum, val);
-=======
 static inline int broadcast_write(struct phy_device *phydev, u32 regnum,
 				  u16 val)
 {
 	return mdiobus_write(phydev->mdio.bus, BROADCAST_ADDR, regnum, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Caller must hold extreg_lock. */
@@ -290,11 +229,7 @@ static int ext_read(struct phy_device *phydev, int page, u32 regnum)
 	int val;
 
 	if (dp83640->clock->page != page) {
-<<<<<<< HEAD
-		broadcast_write(phydev->bus, PAGESEL, page);
-=======
 		broadcast_write(phydev, PAGESEL, page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dp83640->clock->page = page;
 	}
 	val = phy_read(phydev, regnum);
@@ -309,30 +244,18 @@ static void ext_write(int broadcast, struct phy_device *phydev,
 	struct dp83640_private *dp83640 = phydev->priv;
 
 	if (dp83640->clock->page != page) {
-<<<<<<< HEAD
-		broadcast_write(phydev->bus, PAGESEL, page);
-		dp83640->clock->page = page;
-	}
-	if (broadcast)
-		broadcast_write(phydev->bus, regnum, val);
-=======
 		broadcast_write(phydev, PAGESEL, page);
 		dp83640->clock->page = page;
 	}
 	if (broadcast)
 		broadcast_write(phydev, regnum, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		phy_write(phydev, regnum, val);
 }
 
 /* Caller must hold extreg_lock. */
 static int tdr_write(int bc, struct phy_device *dev,
-<<<<<<< HEAD
-		     const struct timespec *ts, u16 cmd)
-=======
 		     const struct timespec64 *ts, u16 cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ext_write(bc, dev, PAGE4, PTP_TDR, ts->tv_nsec & 0xffff);/* ns[15:0]  */
 	ext_write(bc, dev, PAGE4, PTP_TDR, ts->tv_nsec >> 16);   /* ns[31:16] */
@@ -359,11 +282,7 @@ static void phy2rxts(struct phy_rxts *p, struct rxts *rxts)
 	rxts->seqid = p->seqid;
 	rxts->msgtype = (p->msgtype >> 12) & 0xf;
 	rxts->hash = p->msgtype & 0x0fff;
-<<<<<<< HEAD
-	rxts->tmo = jiffies + 2;
-=======
 	rxts->tmo = jiffies + SKB_TIMESTAMP_TIMEOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u64 phy2txts(struct phy_txts *p)
@@ -381,18 +300,6 @@ static u64 phy2txts(struct phy_txts *p)
 	return ns;
 }
 
-<<<<<<< HEAD
-static void periodic_output(struct dp83640_clock *clock,
-			    struct ptp_clock_request *clkreq, bool on)
-{
-	struct dp83640_private *dp83640 = clock->chosen;
-	struct phy_device *phydev = dp83640->phydev;
-	u32 sec, nsec, period;
-	u16 gpio, ptp_trig, trigger, val;
-
-	gpio = on ? gpio_tab[PEROUT_GPIO] : 0;
-	trigger = PER_TRIGGER;
-=======
 static int periodic_output(struct dp83640_clock *clock,
 			   struct ptp_clock_request *clkreq, bool on,
 			   int trigger)
@@ -410,7 +317,6 @@ static int periodic_output(struct dp83640_clock *clock,
 	} else {
 		gpio = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ptp_trig = TRIG_WR |
 		(trigger & TRIG_CSEL_MASK) << TRIG_CSEL_SHIFT |
@@ -426,23 +332,14 @@ static int periodic_output(struct dp83640_clock *clock,
 		ext_write(0, phydev, PAGE5, PTP_TRIG, ptp_trig);
 		ext_write(0, phydev, PAGE4, PTP_CTL, val);
 		mutex_unlock(&clock->extreg_lock);
-<<<<<<< HEAD
-		return;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sec = clkreq->perout.start.sec;
 	nsec = clkreq->perout.start.nsec;
-<<<<<<< HEAD
-	period = clkreq->perout.period.sec * 1000000000UL;
-	period += clkreq->perout.period.nsec;
-=======
 	pwidth = clkreq->perout.period.sec * 1000000000UL;
 	pwidth += clkreq->perout.period.nsec;
 	pwidth /= 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&clock->extreg_lock);
 
@@ -455,10 +352,6 @@ static int periodic_output(struct dp83640_clock *clock,
 	ext_write(0, phydev, PAGE4, PTP_TDR, nsec >> 16);      /* ns[31:16] */
 	ext_write(0, phydev, PAGE4, PTP_TDR, sec & 0xffff);    /* sec[15:0] */
 	ext_write(0, phydev, PAGE4, PTP_TDR, sec >> 16);       /* sec[31:16] */
-<<<<<<< HEAD
-	ext_write(0, phydev, PAGE4, PTP_TDR, period & 0xffff); /* ns[15:0] */
-	ext_write(0, phydev, PAGE4, PTP_TDR, period >> 16);    /* ns[31:16] */
-=======
 	ext_write(0, phydev, PAGE4, PTP_TDR, pwidth & 0xffff); /* ns[15:0] */
 	ext_write(0, phydev, PAGE4, PTP_TDR, pwidth >> 16);    /* ns[31:16] */
 	/* Triggers 0 and 1 has programmable pulsewidth2 */
@@ -466,7 +359,6 @@ static int periodic_output(struct dp83640_clock *clock,
 		ext_write(0, phydev, PAGE4, PTP_TDR, pwidth & 0xffff);
 		ext_write(0, phydev, PAGE4, PTP_TDR, pwidth >> 16);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*enable trigger*/
 	val &= ~TRIG_LOAD;
@@ -474,19 +366,12 @@ static int periodic_output(struct dp83640_clock *clock,
 	ext_write(0, phydev, PAGE4, PTP_CTL, val);
 
 	mutex_unlock(&clock->extreg_lock);
-<<<<<<< HEAD
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ptp clock methods */
 
-<<<<<<< HEAD
-static int ptp_dp83640_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
-=======
 static int ptp_dp83640_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dp83640_clock *clock =
 		container_of(ptp, struct dp83640_clock, caps);
@@ -495,15 +380,6 @@ static int ptp_dp83640_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 	int neg_adj = 0;
 	u16 hi, lo;
 
-<<<<<<< HEAD
-	if (ppb < 0) {
-		neg_adj = 1;
-		ppb = -ppb;
-	}
-	rate = ppb;
-	rate <<= 26;
-	rate = div_u64(rate, 1953125);
-=======
 	if (scaled_ppm < 0) {
 		neg_adj = 1;
 		scaled_ppm = -scaled_ppm;
@@ -511,7 +387,6 @@ static int ptp_dp83640_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 	rate = scaled_ppm;
 	rate <<= 13;
 	rate = div_u64(rate, 15625);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hi = (rate >> 16) & PTP_RATE_HI_MASK;
 	if (neg_adj)
@@ -534,20 +409,12 @@ static int ptp_dp83640_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	struct dp83640_clock *clock =
 		container_of(ptp, struct dp83640_clock, caps);
 	struct phy_device *phydev = clock->chosen->phydev;
-<<<<<<< HEAD
-	struct timespec ts;
-=======
 	struct timespec64 ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	delta += ADJTIME_FIX;
 
-<<<<<<< HEAD
-	ts = ns_to_timespec(delta);
-=======
 	ts = ns_to_timespec64(delta);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&clock->extreg_lock);
 
@@ -558,12 +425,8 @@ static int ptp_dp83640_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	return err;
 }
 
-<<<<<<< HEAD
-static int ptp_dp83640_gettime(struct ptp_clock_info *ptp, struct timespec *ts)
-=======
 static int ptp_dp83640_gettime(struct ptp_clock_info *ptp,
 			       struct timespec64 *ts)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dp83640_clock *clock =
 		container_of(ptp, struct dp83640_clock, caps);
@@ -588,11 +451,7 @@ static int ptp_dp83640_gettime(struct ptp_clock_info *ptp,
 }
 
 static int ptp_dp83640_settime(struct ptp_clock_info *ptp,
-<<<<<<< HEAD
-			       const struct timespec *ts)
-=======
 			       const struct timespec64 *ts)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dp83640_clock *clock =
 		container_of(ptp, struct dp83640_clock, caps);
@@ -614,19 +473,11 @@ static int ptp_dp83640_enable(struct ptp_clock_info *ptp,
 	struct dp83640_clock *clock =
 		container_of(ptp, struct dp83640_clock, caps);
 	struct phy_device *phydev = clock->chosen->phydev;
-<<<<<<< HEAD
-	int index;
-=======
 	unsigned int index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 evnt, event_num, gpio_num;
 
 	switch (rq->type) {
 	case PTP_CLK_REQ_EXTTS:
-<<<<<<< HEAD
-		index = rq->extts.index;
-		if (index < 0 || index >= N_EXT_TS)
-=======
 		/* Reject requests with unsupported flags */
 		if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
 					PTP_RISING_EDGE |
@@ -642,25 +493,10 @@ static int ptp_dp83640_enable(struct ptp_clock_info *ptp,
 
 		index = rq->extts.index;
 		if (index >= N_EXT_TS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		event_num = EXT_EVENT + index;
 		evnt = EVNT_WR | (event_num & EVNT_SEL_MASK) << EVNT_SEL_SHIFT;
 		if (on) {
-<<<<<<< HEAD
-			gpio_num = gpio_tab[EXTTS0_GPIO + index];
-			evnt |= (gpio_num & EVNT_GPIO_MASK) << EVNT_GPIO_SHIFT;
-			evnt |= EVNT_RISE;
-		}
-		ext_write(0, phydev, PAGE5, PTP_EVNT, evnt);
-		return 0;
-
-	case PTP_CLK_REQ_PEROUT:
-		if (rq->perout.index != 0)
-			return -EINVAL;
-		periodic_output(clock, rq, on);
-		return 0;
-=======
 			gpio_num = 1 + ptp_find_pin(clock->ptp_clock,
 						    PTP_PF_EXTTS, index);
 			if (gpio_num < 1)
@@ -683,7 +519,6 @@ static int ptp_dp83640_enable(struct ptp_clock_info *ptp,
 		if (rq->perout.index >= N_PER_OUT)
 			return -EINVAL;
 		return periodic_output(clock, rq, on, rq->perout.index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		break;
@@ -692,8 +527,6 @@ static int ptp_dp83640_enable(struct ptp_clock_info *ptp,
 	return -EOPNOTSUPP;
 }
 
-<<<<<<< HEAD
-=======
 static int ptp_dp83640_verify(struct ptp_clock_info *ptp, unsigned int pin,
 			      enum ptp_pin_function func, unsigned int chan)
 {
@@ -710,17 +543,13 @@ static int ptp_dp83640_verify(struct ptp_clock_info *ptp, unsigned int pin,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u8 status_frame_dst[6] = { 0x01, 0x1B, 0x19, 0x00, 0x00, 0x00 };
 static u8 status_frame_src[6] = { 0x08, 0x00, 0x17, 0x0B, 0x6B, 0x0F };
 
 static void enable_status_frames(struct phy_device *phydev, bool on)
 {
-<<<<<<< HEAD
-=======
 	struct dp83640_private *dp83640 = phydev->priv;
 	struct dp83640_clock *clock = dp83640->clock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 cfg0 = 0, ver;
 
 	if (on)
@@ -728,13 +557,6 @@ static void enable_status_frames(struct phy_device *phydev, bool on)
 
 	ver = (PSF_PTPVER & VERSIONPTP_MASK) << VERSIONPTP_SHIFT;
 
-<<<<<<< HEAD
-	ext_write(0, phydev, PAGE5, PSF_CFG0, cfg0);
-	ext_write(0, phydev, PAGE6, PSF_CFG1, ver);
-
-	if (!phydev->attached_dev) {
-		pr_warning("dp83640: expected to find an attached netdevice\n");
-=======
 	mutex_lock(&clock->extreg_lock);
 
 	ext_write(0, phydev, PAGE5, PSF_CFG0, cfg0);
@@ -745,23 +567,15 @@ static void enable_status_frames(struct phy_device *phydev, bool on)
 	if (!phydev->attached_dev) {
 		phydev_warn(phydev,
 			    "expected to find an attached netdevice\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (on) {
 		if (dev_mc_add(phydev->attached_dev, status_frame_dst))
-<<<<<<< HEAD
-			pr_warning("dp83640: failed to add mc address\n");
-	} else {
-		if (dev_mc_del(phydev->attached_dev, status_frame_dst))
-			pr_warning("dp83640: failed to delete mc address\n");
-=======
 			phydev_warn(phydev, "failed to add mc address\n");
 	} else {
 		if (dev_mc_del(phydev->attached_dev, status_frame_dst))
 			phydev_warn(phydev, "failed to delete mc address\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -801,10 +615,7 @@ static void prune_rx_ts(struct dp83640_private *dp83640)
 static void enable_broadcast(struct phy_device *phydev, int init_page, int on)
 {
 	int val;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phy_write(phydev, PAGESEL, 0);
 	val = phy_read(phydev, PHYCR2);
 	if (on)
@@ -819,38 +630,24 @@ static void recalibrate(struct dp83640_clock *clock)
 {
 	s64 now, diff;
 	struct phy_txts event_ts;
-<<<<<<< HEAD
-	struct timespec ts;
-	struct list_head *this;
-=======
 	struct timespec64 ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dp83640_private *tmp;
 	struct phy_device *master = clock->chosen->phydev;
 	u16 cal_gpio, cfg0, evnt, ptp_trig, trigger, val;
 
 	trigger = CAL_TRIGGER;
-<<<<<<< HEAD
-	cal_gpio = gpio_tab[CALIBRATE_GPIO];
-=======
 	cal_gpio = 1 + ptp_find_pin_unlocked(clock->ptp_clock, PTP_PF_PHYSYNC, 0);
 	if (cal_gpio < 1) {
 		pr_err("PHY calibration pin not available - PHY is not calibrated.");
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&clock->extreg_lock);
 
 	/*
 	 * enable broadcast, disable status frames, enable ptp clock
 	 */
-<<<<<<< HEAD
-	list_for_each(this, &clock->phylist) {
-		tmp = list_entry(this, struct dp83640_private, list);
-=======
 	list_for_each_entry(tmp, &clock->phylist, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		enable_broadcast(tmp->phydev, clock->page, 1);
 		tmp->cfg0 = ext_read(tmp->phydev, PAGE5, PSF_CFG0);
 		ext_write(0, tmp->phydev, PAGE5, PSF_CFG0, 0);
@@ -868,15 +665,8 @@ static void recalibrate(struct dp83640_clock *clock)
 	evnt |= (CAL_EVENT & EVNT_SEL_MASK) << EVNT_SEL_SHIFT;
 	evnt |= (cal_gpio & EVNT_GPIO_MASK) << EVNT_GPIO_SHIFT;
 
-<<<<<<< HEAD
-	list_for_each(this, &clock->phylist) {
-		tmp = list_entry(this, struct dp83640_private, list);
-		ext_write(0, tmp->phydev, PAGE5, PTP_EVNT, evnt);
-	}
-=======
 	list_for_each_entry(tmp, &clock->phylist, list)
 		ext_write(0, tmp->phydev, PAGE5, PTP_EVNT, evnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext_write(0, master, PAGE5, PTP_EVNT, evnt);
 
 	/*
@@ -906,65 +696,37 @@ static void recalibrate(struct dp83640_clock *clock)
 	 * read out and correct offsets
 	 */
 	val = ext_read(master, PAGE4, PTP_STS);
-<<<<<<< HEAD
-	pr_info("master PTP_STS  0x%04hx", val);
-	val = ext_read(master, PAGE4, PTP_ESTS);
-	pr_info("master PTP_ESTS 0x%04hx", val);
-=======
 	phydev_info(master, "master PTP_STS  0x%04hx\n", val);
 	val = ext_read(master, PAGE4, PTP_ESTS);
 	phydev_info(master, "master PTP_ESTS 0x%04hx\n", val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	event_ts.ns_lo  = ext_read(master, PAGE4, PTP_EDATA);
 	event_ts.ns_hi  = ext_read(master, PAGE4, PTP_EDATA);
 	event_ts.sec_lo = ext_read(master, PAGE4, PTP_EDATA);
 	event_ts.sec_hi = ext_read(master, PAGE4, PTP_EDATA);
 	now = phy2txts(&event_ts);
 
-<<<<<<< HEAD
-	list_for_each(this, &clock->phylist) {
-		tmp = list_entry(this, struct dp83640_private, list);
-		val = ext_read(tmp->phydev, PAGE4, PTP_STS);
-		pr_info("slave  PTP_STS  0x%04hx", val);
-		val = ext_read(tmp->phydev, PAGE4, PTP_ESTS);
-		pr_info("slave  PTP_ESTS 0x%04hx", val);
-=======
 	list_for_each_entry(tmp, &clock->phylist, list) {
 		val = ext_read(tmp->phydev, PAGE4, PTP_STS);
 		phydev_info(tmp->phydev, "slave  PTP_STS  0x%04hx\n", val);
 		val = ext_read(tmp->phydev, PAGE4, PTP_ESTS);
 		phydev_info(tmp->phydev, "slave  PTP_ESTS 0x%04hx\n", val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		event_ts.ns_lo  = ext_read(tmp->phydev, PAGE4, PTP_EDATA);
 		event_ts.ns_hi  = ext_read(tmp->phydev, PAGE4, PTP_EDATA);
 		event_ts.sec_lo = ext_read(tmp->phydev, PAGE4, PTP_EDATA);
 		event_ts.sec_hi = ext_read(tmp->phydev, PAGE4, PTP_EDATA);
 		diff = now - (s64) phy2txts(&event_ts);
-<<<<<<< HEAD
-		pr_info("slave offset %lld nanoseconds\n", diff);
-		diff += ADJTIME_FIX;
-		ts = ns_to_timespec(diff);
-=======
 		phydev_info(tmp->phydev, "slave offset %lld nanoseconds\n",
 			    diff);
 		diff += ADJTIME_FIX;
 		ts = ns_to_timespec64(diff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tdr_write(0, tmp->phydev, &ts, PTP_STEP_CLK);
 	}
 
 	/*
 	 * restore status frames
 	 */
-<<<<<<< HEAD
-	list_for_each(this, &clock->phylist) {
-		tmp = list_entry(this, struct dp83640_private, list);
-		ext_write(0, tmp->phydev, PAGE5, PSF_CFG0, tmp->cfg0);
-	}
-=======
 	list_for_each_entry(tmp, &clock->phylist, list)
 		ext_write(0, tmp->phydev, PAGE5, PSF_CFG0, tmp->cfg0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext_write(0, master, PAGE5, PSF_CFG0, cfg0);
 
 	mutex_unlock(&clock->extreg_lock);
@@ -978,11 +740,7 @@ static inline u16 exts_chan_to_edata(int ch)
 }
 
 static int decode_evnt(struct dp83640_private *dp83640,
-<<<<<<< HEAD
-		       void *data, u16 ests)
-=======
 		       void *data, int len, u16 ests)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct phy_txts *phy_txts;
 	struct ptp_clock_event event;
@@ -990,8 +748,6 @@ static int decode_evnt(struct dp83640_private *dp83640,
 	int words = (ests >> EVNT_TS_LEN_SHIFT) & EVNT_TS_LEN_MASK;
 	u16 ext_status = 0;
 
-<<<<<<< HEAD
-=======
 	/* calculate length of the event timestamp status message */
 	if (ests & MULT_EVNT)
 		parsed = (words + 2) * sizeof(u16);
@@ -1002,7 +758,6 @@ static int decode_evnt(struct dp83640_private *dp83640,
 	if (len < parsed)
 		return len;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ests & MULT_EVNT) {
 		ext_status = *(u16 *) data;
 		data += sizeof(ext_status);
@@ -1010,15 +765,6 @@ static int decode_evnt(struct dp83640_private *dp83640,
 
 	phy_txts = data;
 
-<<<<<<< HEAD
-	switch (words) { /* fall through in every case */
-	case 3:
-		dp83640->edata.sec_hi = phy_txts->sec_hi;
-	case 2:
-		dp83640->edata.sec_lo = phy_txts->sec_lo;
-	case 1:
-		dp83640->edata.ns_hi = phy_txts->ns_hi;
-=======
 	switch (words) {
 	case 3:
 		dp83640->edata.sec_hi = phy_txts->sec_hi;
@@ -1029,19 +775,11 @@ static int decode_evnt(struct dp83640_private *dp83640,
 	case 1:
 		dp83640->edata.ns_hi = phy_txts->ns_hi;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0:
 		dp83640->edata.ns_lo = phy_txts->ns_lo;
 	}
 
-<<<<<<< HEAD
-	if (ext_status) {
-		parsed = words + 2;
-	} else {
-		parsed = words + 1;
-=======
 	if (!ext_status) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i = ((ests >> EVNT_NUM_SHIFT) & EVNT_NUM_MASK) - EXT_EVENT;
 		ext_status = exts_chan_to_edata(i);
 	}
@@ -1049,12 +787,9 @@ static int decode_evnt(struct dp83640_private *dp83640,
 	event.type = PTP_CLOCK_EXTTS;
 	event.timestamp = phy2txts(&dp83640->edata);
 
-<<<<<<< HEAD
-=======
 	/* Compensate for input path and synchronization delays */
 	event.timestamp -= 35;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < N_EXT_TS; i++) {
 		if (ext_status & exts_chan_to_edata(i)) {
 			event.index = i;
@@ -1062,9 +797,6 @@ static int decode_evnt(struct dp83640_private *dp83640,
 		}
 	}
 
-<<<<<<< HEAD
-	return parsed * sizeof(u16);
-=======
 	return parsed;
 }
 
@@ -1098,16 +830,12 @@ static int match(struct sk_buff *skb, unsigned int type, struct rxts *rxts)
 		return 0;
 
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void decode_rxts(struct dp83640_private *dp83640,
 			struct phy_rxts *phy_rxts)
 {
 	struct rxts *rxts;
-<<<<<<< HEAD
-	unsigned long flags;
-=======
 	struct skb_shared_hwtstamps *shhwtstamps = NULL;
 	struct sk_buff *skb;
 	unsigned long flags;
@@ -1116,28 +844,18 @@ static void decode_rxts(struct dp83640_private *dp83640,
 	overflow = (phy_rxts->ns_hi >> 14) & 0x3;
 	if (overflow)
 		pr_debug("rx timestamp queue overflow, count %d\n", overflow);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&dp83640->rx_lock, flags);
 
 	prune_rx_ts(dp83640);
 
 	if (list_empty(&dp83640->rxpool)) {
-<<<<<<< HEAD
-		pr_debug("dp83640: rx timestamp pool is empty\n");
-=======
 		pr_debug("rx timestamp pool is empty\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	rxts = list_first_entry(&dp83640->rxpool, struct rxts, list);
 	list_del_init(&rxts->list);
 	phy2rxts(phy_rxts, rxts);
-<<<<<<< HEAD
-	list_add_tail(&rxts->list, &dp83640->rxts);
-out:
-	spin_unlock_irqrestore(&dp83640->rx_lock, flags);
-=======
 
 	spin_lock(&dp83640->rx_queue.lock);
 	skb_queue_walk(&dp83640->rx_queue, skb) {
@@ -1162,26 +880,12 @@ out:
 
 	if (shhwtstamps)
 		netif_rx(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void decode_txts(struct dp83640_private *dp83640,
 			struct phy_txts *phy_txts)
 {
 	struct skb_shared_hwtstamps shhwtstamps;
-<<<<<<< HEAD
-	struct sk_buff *skb;
-	u64 ns;
-
-	/* We must already have the skb that triggered this. */
-
-	skb = skb_dequeue(&dp83640->tx_queue);
-
-	if (!skb) {
-		pr_debug("dp83640: have timestamp but tx_queue empty\n");
-		return;
-	}
-=======
 	struct dp83640_skb_info *skb_info;
 	struct sk_buff *skb;
 	u8 overflow;
@@ -1210,7 +914,6 @@ again:
 		goto again;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ns = phy2txts(phy_txts);
 	memset(&shhwtstamps, 0, sizeof(shhwtstamps));
 	shhwtstamps.hwtstamp = ns_to_ktime(ns);
@@ -1248,15 +951,9 @@ static void decode_status_frame(struct dp83640_private *dp83640,
 			decode_txts(dp83640, phy_txts);
 			size = sizeof(*phy_txts);
 
-<<<<<<< HEAD
-		} else if (PSF_EVNT == type && len >= sizeof(*phy_txts)) {
-
-			size = decode_evnt(dp83640, ptr, ests);
-=======
 		} else if (PSF_EVNT == type) {
 
 			size = decode_evnt(dp83640, ptr, len, ests);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		} else {
 			size = 0;
@@ -1266,85 +963,6 @@ static void decode_status_frame(struct dp83640_private *dp83640,
 	}
 }
 
-<<<<<<< HEAD
-static int is_sync(struct sk_buff *skb, int type)
-{
-	u8 *data = skb->data, *msgtype;
-	unsigned int offset = 0;
-
-	switch (type) {
-	case PTP_CLASS_V1_IPV4:
-	case PTP_CLASS_V2_IPV4:
-		offset = ETH_HLEN + IPV4_HLEN(data) + UDP_HLEN;
-		break;
-	case PTP_CLASS_V1_IPV6:
-	case PTP_CLASS_V2_IPV6:
-		offset = OFF_PTP6;
-		break;
-	case PTP_CLASS_V2_L2:
-		offset = ETH_HLEN;
-		break;
-	case PTP_CLASS_V2_VLAN:
-		offset = ETH_HLEN + VLAN_HLEN;
-		break;
-	default:
-		return 0;
-	}
-
-	if (type & PTP_CLASS_V1)
-		offset += OFF_PTP_CONTROL;
-
-	if (skb->len < offset + 1)
-		return 0;
-
-	msgtype = data + offset;
-
-	return (*msgtype & 0xf) == 0;
-}
-
-static int match(struct sk_buff *skb, unsigned int type, struct rxts *rxts)
-{
-	u16 *seqid;
-	unsigned int offset;
-	u8 *msgtype, *data = skb_mac_header(skb);
-
-	/* check sequenceID, messageType, 12 bit hash of offset 20-29 */
-
-	switch (type) {
-	case PTP_CLASS_V1_IPV4:
-	case PTP_CLASS_V2_IPV4:
-		offset = ETH_HLEN + IPV4_HLEN(data) + UDP_HLEN;
-		break;
-	case PTP_CLASS_V1_IPV6:
-	case PTP_CLASS_V2_IPV6:
-		offset = OFF_PTP6;
-		break;
-	case PTP_CLASS_V2_L2:
-		offset = ETH_HLEN;
-		break;
-	case PTP_CLASS_V2_VLAN:
-		offset = ETH_HLEN + VLAN_HLEN;
-		break;
-	default:
-		return 0;
-	}
-
-	if (skb->len + ETH_HLEN < offset + OFF_PTP_SEQUENCE_ID + sizeof(*seqid))
-		return 0;
-
-	if (unlikely(type & PTP_CLASS_V1))
-		msgtype = data + offset + OFF_PTP_CONTROL;
-	else
-		msgtype = data + offset;
-
-	seqid = (u16 *)(data + offset + OFF_PTP_SEQUENCE_ID);
-
-	return (rxts->msgtype == (*msgtype & 0xf) &&
-		rxts->seqid   == ntohs(*seqid));
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dp83640_free_clocks(void)
 {
 	struct dp83640_clock *clock;
@@ -1355,21 +973,14 @@ static void dp83640_free_clocks(void)
 	list_for_each_safe(this, next, &phyter_clocks) {
 		clock = list_entry(this, struct dp83640_clock, list);
 		if (!list_empty(&clock->phylist)) {
-<<<<<<< HEAD
-			pr_warning("phy list non-empty while unloading");
-=======
 			pr_warn("phy list non-empty while unloading\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BUG();
 		}
 		list_del(&clock->list);
 		mutex_destroy(&clock->extreg_lock);
 		mutex_destroy(&clock->clock_lock);
 		put_device(&clock->bus->dev);
-<<<<<<< HEAD
-=======
 		kfree(clock->caps.pin_config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(clock);
 	}
 
@@ -1388,15 +999,6 @@ static void dp83640_clock_init(struct dp83640_clock *clock, struct mii_bus *bus)
 	clock->caps.max_adj	= 1953124;
 	clock->caps.n_alarm	= 0;
 	clock->caps.n_ext_ts	= N_EXT_TS;
-<<<<<<< HEAD
-	clock->caps.n_per_out	= 1;
-	clock->caps.pps		= 0;
-	clock->caps.adjfreq	= ptp_dp83640_adjfreq;
-	clock->caps.adjtime	= ptp_dp83640_adjtime;
-	clock->caps.gettime	= ptp_dp83640_gettime;
-	clock->caps.settime	= ptp_dp83640_settime;
-	clock->caps.enable	= ptp_dp83640_enable;
-=======
 	clock->caps.n_per_out	= N_PER_OUT;
 	clock->caps.n_pins	= DP83640_N_PINS;
 	clock->caps.pps		= 0;
@@ -1410,7 +1012,6 @@ static void dp83640_clock_init(struct dp83640_clock *clock, struct mii_bus *bus)
 	 * Convert the module param defaults into a dynamic pin configuration.
 	 */
 	dp83640_gpio_defaults(clock->caps.pin_config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Get a reference to this bus instance.
 	 */
@@ -1423,11 +1024,7 @@ static int choose_this_phy(struct dp83640_clock *clock,
 	if (chosen_phy == -1 && !clock->chosen)
 		return 1;
 
-<<<<<<< HEAD
-	if (chosen_phy == phydev->addr)
-=======
 	if (chosen_phy == phydev->mdio.addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	return 0;
@@ -1465,10 +1062,6 @@ static struct dp83640_clock *dp83640_clock_get_bus(struct mii_bus *bus)
 	if (!clock)
 		goto out;
 
-<<<<<<< HEAD
-	dp83640_clock_init(clock, bus);
-	list_add_tail(&phyter_clocks, &clock->list);
-=======
 	clock->caps.pin_config = kcalloc(DP83640_N_PINS,
 					 sizeof(struct ptp_pin_desc),
 					 GFP_KERNEL);
@@ -1479,7 +1072,6 @@ static struct dp83640_clock *dp83640_clock_get_bus(struct mii_bus *bus)
 	}
 	dp83640_clock_init(clock, bus);
 	list_add_tail(&clock->list, &phyter_clocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	mutex_unlock(&phyter_clocks_lock);
 
@@ -1491,8 +1083,6 @@ static void dp83640_clock_put(struct dp83640_clock *clock)
 	mutex_unlock(&clock->clock_lock);
 }
 
-<<<<<<< HEAD
-=======
 static int dp83640_soft_reset(struct phy_device *phydev)
 {
 	int ret;
@@ -1828,24 +1418,16 @@ static int dp83640_ts_info(struct mii_timestamper *mii_ts,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int dp83640_probe(struct phy_device *phydev)
 {
 	struct dp83640_clock *clock;
 	struct dp83640_private *dp83640;
 	int err = -ENOMEM, i;
 
-<<<<<<< HEAD
-	if (phydev->addr == BROADCAST_ADDR)
-		return 0;
-
-	clock = dp83640_clock_get_bus(phydev->bus);
-=======
 	if (phydev->mdio.addr == BROADCAST_ADDR)
 		return 0;
 
 	clock = dp83640_clock_get_bus(phydev->mdio.bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!clock)
 		goto no_clock;
 
@@ -1854,26 +1436,18 @@ static int dp83640_probe(struct phy_device *phydev)
 		goto no_memory;
 
 	dp83640->phydev = phydev;
-<<<<<<< HEAD
-	INIT_WORK(&dp83640->ts_work, rx_timestamp_work);
-
-=======
 	dp83640->mii_ts.rxtstamp = dp83640_rxtstamp;
 	dp83640->mii_ts.txtstamp = dp83640_txtstamp;
 	dp83640->mii_ts.hwtstamp = dp83640_hwtstamp;
 	dp83640->mii_ts.ts_info  = dp83640_ts_info;
 
 	INIT_DELAYED_WORK(&dp83640->ts_work, rx_timestamp_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&dp83640->rxts);
 	INIT_LIST_HEAD(&dp83640->rxpool);
 	for (i = 0; i < MAX_RXTS; i++)
 		list_add(&dp83640->rx_pool_data[i].list, &dp83640->rxpool);
 
-<<<<<<< HEAD
-=======
 	phydev->mii_ts = &dp83640->mii_ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phydev->priv = dp83640;
 
 	spin_lock_init(&dp83640->rx_lock);
@@ -1884,12 +1458,8 @@ static int dp83640_probe(struct phy_device *phydev)
 
 	if (choose_this_phy(clock, phydev)) {
 		clock->chosen = dp83640;
-<<<<<<< HEAD
-		clock->ptp_clock = ptp_clock_register(&clock->caps);
-=======
 		clock->ptp_clock = ptp_clock_register(&clock->caps,
 						      &phydev->mdio.dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(clock->ptp_clock)) {
 			err = PTR_ERR(clock->ptp_clock);
 			goto no_register;
@@ -1897,14 +1467,6 @@ static int dp83640_probe(struct phy_device *phydev)
 	} else
 		list_add_tail(&dp83640->list, &clock->phylist);
 
-<<<<<<< HEAD
-	if (clock->chosen && !list_empty(&clock->phylist))
-		recalibrate(clock);
-	else
-		enable_broadcast(dp83640->phydev, clock->page, 1);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dp83640_clock_put(clock);
 	return 0;
 
@@ -1922,21 +1484,6 @@ static void dp83640_remove(struct phy_device *phydev)
 	struct dp83640_clock *clock;
 	struct list_head *this, *next;
 	struct dp83640_private *tmp, *dp83640 = phydev->priv;
-<<<<<<< HEAD
-	struct sk_buff *skb;
-
-	if (phydev->addr == BROADCAST_ADDR)
-		return;
-
-	enable_status_frames(phydev, false);
-	cancel_work_sync(&dp83640->ts_work);
-
-	while ((skb = skb_dequeue(&dp83640->rx_queue)) != NULL)
-		kfree_skb(skb);
-
-	while ((skb = skb_dequeue(&dp83640->tx_queue)) != NULL)
-		skb_complete_tx_timestamp(skb, NULL);
-=======
 
 	if (phydev->mdio.addr == BROADCAST_ADDR)
 		return;
@@ -1948,7 +1495,6 @@ static void dp83640_remove(struct phy_device *phydev)
 
 	skb_queue_purge(&dp83640->rx_queue);
 	skb_queue_purge(&dp83640->tx_queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clock = dp83640_clock_get(dp83640->clock);
 
@@ -1969,200 +1515,10 @@ static void dp83640_remove(struct phy_device *phydev)
 	kfree(dp83640);
 }
 
-<<<<<<< HEAD
-static int dp83640_hwtstamp(struct phy_device *phydev, struct ifreq *ifr)
-{
-	struct dp83640_private *dp83640 = phydev->priv;
-	struct hwtstamp_config cfg;
-	u16 txcfg0, rxcfg0;
-
-	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
-		return -EFAULT;
-
-	if (cfg.flags) /* reserved for future extensions */
-		return -EINVAL;
-
-	if (cfg.tx_type < 0 || cfg.tx_type > HWTSTAMP_TX_ONESTEP_SYNC)
-		return -ERANGE;
-
-	dp83640->hwts_tx_en = cfg.tx_type;
-
-	switch (cfg.rx_filter) {
-	case HWTSTAMP_FILTER_NONE:
-		dp83640->hwts_rx_en = 0;
-		dp83640->layer = 0;
-		dp83640->version = 0;
-		break;
-	case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
-	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
-	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
-		dp83640->hwts_rx_en = 1;
-		dp83640->layer = LAYER4;
-		dp83640->version = 1;
-		break;
-	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
-	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
-	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
-		dp83640->hwts_rx_en = 1;
-		dp83640->layer = LAYER4;
-		dp83640->version = 2;
-		break;
-	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-		dp83640->hwts_rx_en = 1;
-		dp83640->layer = LAYER2;
-		dp83640->version = 2;
-		break;
-	case HWTSTAMP_FILTER_PTP_V2_EVENT:
-	case HWTSTAMP_FILTER_PTP_V2_SYNC:
-	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-		dp83640->hwts_rx_en = 1;
-		dp83640->layer = LAYER4|LAYER2;
-		dp83640->version = 2;
-		break;
-	default:
-		return -ERANGE;
-	}
-
-	txcfg0 = (dp83640->version & TX_PTP_VER_MASK) << TX_PTP_VER_SHIFT;
-	rxcfg0 = (dp83640->version & TX_PTP_VER_MASK) << TX_PTP_VER_SHIFT;
-
-	if (dp83640->layer & LAYER2) {
-		txcfg0 |= TX_L2_EN;
-		rxcfg0 |= RX_L2_EN;
-	}
-	if (dp83640->layer & LAYER4) {
-		txcfg0 |= TX_IPV6_EN | TX_IPV4_EN;
-		rxcfg0 |= RX_IPV6_EN | RX_IPV4_EN;
-	}
-
-	if (dp83640->hwts_tx_en)
-		txcfg0 |= TX_TS_EN;
-
-	if (dp83640->hwts_tx_en == HWTSTAMP_TX_ONESTEP_SYNC)
-		txcfg0 |= SYNC_1STEP | CHK_1STEP;
-
-	if (dp83640->hwts_rx_en)
-		rxcfg0 |= RX_TS_EN;
-
-	mutex_lock(&dp83640->clock->extreg_lock);
-
-	if (dp83640->hwts_tx_en || dp83640->hwts_rx_en) {
-		enable_status_frames(phydev, true);
-		ext_write(0, phydev, PAGE4, PTP_CTL, PTP_ENABLE);
-	}
-
-	ext_write(0, phydev, PAGE5, PTP_TXCFG0, txcfg0);
-	ext_write(0, phydev, PAGE5, PTP_RXCFG0, rxcfg0);
-
-	mutex_unlock(&dp83640->clock->extreg_lock);
-
-	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
-}
-
-static void rx_timestamp_work(struct work_struct *work)
-{
-	struct dp83640_private *dp83640 =
-		container_of(work, struct dp83640_private, ts_work);
-	struct list_head *this, *next;
-	struct rxts *rxts;
-	struct skb_shared_hwtstamps *shhwtstamps;
-	struct sk_buff *skb;
-	unsigned int type;
-	unsigned long flags;
-
-	/* Deliver each deferred packet, with or without a time stamp. */
-
-	while ((skb = skb_dequeue(&dp83640->rx_queue)) != NULL) {
-		type = SKB_PTP_TYPE(skb);
-		spin_lock_irqsave(&dp83640->rx_lock, flags);
-		list_for_each_safe(this, next, &dp83640->rxts) {
-			rxts = list_entry(this, struct rxts, list);
-			if (match(skb, type, rxts)) {
-				shhwtstamps = skb_hwtstamps(skb);
-				memset(shhwtstamps, 0, sizeof(*shhwtstamps));
-				shhwtstamps->hwtstamp = ns_to_ktime(rxts->ns);
-				list_del_init(&rxts->list);
-				list_add(&rxts->list, &dp83640->rxpool);
-				break;
-			}
-		}
-		spin_unlock_irqrestore(&dp83640->rx_lock, flags);
-		netif_rx_ni(skb);
-	}
-
-	/* Clear out expired time stamps. */
-
-	spin_lock_irqsave(&dp83640->rx_lock, flags);
-	prune_rx_ts(dp83640);
-	spin_unlock_irqrestore(&dp83640->rx_lock, flags);
-}
-
-static bool dp83640_rxtstamp(struct phy_device *phydev,
-			     struct sk_buff *skb, int type)
-{
-	struct dp83640_private *dp83640 = phydev->priv;
-
-	if (!dp83640->hwts_rx_en)
-		return false;
-
-	if (is_status_frame(skb, type)) {
-		decode_status_frame(dp83640, skb);
-		kfree_skb(skb);
-		return true;
-	}
-
-	SKB_PTP_TYPE(skb) = type;
-	skb_queue_tail(&dp83640->rx_queue, skb);
-	schedule_work(&dp83640->ts_work);
-
-	return true;
-}
-
-static void dp83640_txtstamp(struct phy_device *phydev,
-			     struct sk_buff *skb, int type)
-{
-	struct dp83640_private *dp83640 = phydev->priv;
-
-	switch (dp83640->hwts_tx_en) {
-
-	case HWTSTAMP_TX_ONESTEP_SYNC:
-		if (is_sync(skb, type)) {
-			skb_complete_tx_timestamp(skb, NULL);
-			return;
-		}
-		/* fall through */
-	case HWTSTAMP_TX_ON:
-		skb_queue_tail(&dp83640->tx_queue, skb);
-		schedule_work(&dp83640->ts_work);
-		break;
-
-	case HWTSTAMP_TX_OFF:
-	default:
-		skb_complete_tx_timestamp(skb, NULL);
-		break;
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct phy_driver dp83640_driver = {
 	.phy_id		= DP83640_PHY_ID,
 	.phy_id_mask	= 0xfffffff0,
 	.name		= "NatSemi DP83640",
-<<<<<<< HEAD
-	.features	= PHY_BASIC_FEATURES,
-	.flags		= 0,
-	.probe		= dp83640_probe,
-	.remove		= dp83640_remove,
-	.config_aneg	= genphy_config_aneg,
-	.read_status	= genphy_read_status,
-	.hwtstamp	= dp83640_hwtstamp,
-	.rxtstamp	= dp83640_rxtstamp,
-	.txtstamp	= dp83640_txtstamp,
-	.driver		= {.owner = THIS_MODULE,}
-=======
 	/* PHY_BASIC_FEATURES */
 	.probe		= dp83640_probe,
 	.remove		= dp83640_remove,
@@ -2170,16 +1526,11 @@ static struct phy_driver dp83640_driver = {
 	.config_init	= dp83640_config_init,
 	.config_intr    = dp83640_config_intr,
 	.handle_interrupt = dp83640_handle_interrupt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init dp83640_init(void)
 {
-<<<<<<< HEAD
-	return phy_driver_register(&dp83640_driver);
-=======
 	return phy_driver_register(&dp83640_driver, THIS_MODULE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit dp83640_exit(void)
@@ -2189,11 +1540,7 @@ static void __exit dp83640_exit(void)
 }
 
 MODULE_DESCRIPTION("National Semiconductor DP83640 PHY driver");
-<<<<<<< HEAD
-MODULE_AUTHOR("Richard Cochran <richardcochran@gmail.at>");
-=======
 MODULE_AUTHOR("Richard Cochran <richardcochran@gmail.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 module_init(dp83640_init);

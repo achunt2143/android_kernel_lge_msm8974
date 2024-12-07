@@ -1,59 +1,28 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2010 Alexey Charkov <alchark@gmail.com>
  *
  * Based on msm_serial.c, which is:
  * Copyright (C) 2007 Google, Inc.
  * Author: Robert Love <rlove@google.com>
-<<<<<<< HEAD
- *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
-#if defined(CONFIG_SERIAL_VT8500_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-# define SUPPORT_SYSRQ
-#endif
-
-#include <linux/hrtimer.h>
-#include <linux/delay.h>
-#include <linux/module.h>
-=======
  */
 
 #include <linux/hrtimer.h>
 #include <linux/delay.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/ioport.h>
 #include <linux/irq.h>
 #include <linux/init.h>
 #include <linux/console.h>
-<<<<<<< HEAD
-=======
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 #include <linux/serial_core.h>
 #include <linux/serial.h>
 #include <linux/slab.h>
 #include <linux/clk.h>
-<<<<<<< HEAD
-#include <linux/platform_device.h>
-=======
 #include <linux/of.h>
 #include <linux/err.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * UART Register offsets
@@ -96,8 +65,6 @@
 #define RX_FIFO_INTS	(RXFAF | RXFF | RXOVER | PER | FER | RXTOUT)
 #define TX_FIFO_INTS	(TXFAE | TXFE | TXUDR)
 
-<<<<<<< HEAD
-=======
 /*
  * Line control bits
  */
@@ -125,16 +92,10 @@
 #define VT8500_OVERSAMPLING_DIVISOR	13
 #define VT8500_MAX_PORTS	6
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vt8500_port {
 	struct uart_port	uart;
 	char			name[16];
 	struct clk		*clk;
-<<<<<<< HEAD
-	unsigned int		ier;
-};
-
-=======
 	unsigned int		clk_predivisor;
 	unsigned int		ier;
 	unsigned int		vt8500_uart_flags;
@@ -147,7 +108,6 @@ struct vt8500_port {
  */
 static DECLARE_BITMAP(vt8500_ports_in_use, VT8500_MAX_PORTS);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void vt8500_write(struct uart_port *port, unsigned int val,
 			     unsigned int off)
 {
@@ -191,30 +151,14 @@ static void vt8500_enable_ms(struct uart_port *port)
 
 static void handle_rx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct tty_struct *tty = tty_port_tty_get(&port->state->port);
-	if (!tty) {
-		/* Discard data: no tty available */
-		int count = (vt8500_read(port, VT8500_URFIDX) & 0x1f00) >> 8;
-		u16 ch;
-		while (count--)
-			ch = readw(port->membase + VT8500_RXFIFO);
-		return;
-	}
-=======
 	struct tty_port *tport = &port->state->port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Handle overrun
 	 */
 	if ((vt8500_read(port, VT8500_URISR) & RXOVER)) {
 		port->icount.overrun++;
-<<<<<<< HEAD
-		tty_insert_flip_char(tty, 0, TTY_OVERRUN);
-=======
 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* and now the main RX loop */
@@ -224,11 +168,7 @@ static void handle_rx(struct uart_port *port)
 
 		c = readw(port->membase + VT8500_RXFIFO) & 0x3ff;
 
-<<<<<<< HEAD
-		/* Mask conditions we're ignorning. */
-=======
 		/* Mask conditions we're ignoring. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c &= ~port->read_status_mask;
 
 		if (c & FER) {
@@ -241,13 +181,6 @@ static void handle_rx(struct uart_port *port)
 		port->icount.rx++;
 
 		if (!uart_handle_sysrq_char(port, c))
-<<<<<<< HEAD
-			tty_insert_flip_char(tty, c, flag);
-	}
-
-	tty_flip_buffer_push(tty);
-	tty_kref_put(tty);
-=======
 			tty_insert_flip_char(tport, c, flag);
 	}
 
@@ -259,46 +192,15 @@ static unsigned int vt8500_tx_empty(struct uart_port *port)
 	unsigned int idx = vt8500_read(port, VT8500_URFIDX) & 0x1f;
 
 	return idx < 16 ? TIOCSER_TEMT : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void handle_tx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct circ_buf *xmit = &port->state->xmit;
-
-	if (port->x_char) {
-		writeb(port->x_char, port->membase + VT8500_TXFIFO);
-		port->icount.tx++;
-		port->x_char = 0;
-	}
-	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
-		vt8500_stop_tx(port);
-		return;
-	}
-
-	while ((vt8500_read(port, VT8500_URFIDX) & 0x1f) < 16) {
-		if (uart_circ_empty(xmit))
-			break;
-
-		writeb(xmit->buf[xmit->tail], port->membase + VT8500_TXFIFO);
-
-		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-		port->icount.tx++;
-	}
-
-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-		uart_write_wakeup(port);
-
-	if (uart_circ_empty(xmit))
-		vt8500_stop_tx(port);
-=======
 	u8 ch;
 
 	uart_port_tx(port, ch,
 		vt8500_tx_empty(port),
 		writeb(ch, port->membase + VT8500_TXFIFO));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vt8500_start_tx(struct uart_port *port)
@@ -325,11 +227,7 @@ static irqreturn_t vt8500_irq(int irq, void *dev_id)
 	struct uart_port *port = dev_id;
 	unsigned long isr;
 
-<<<<<<< HEAD
-	spin_lock(&port->lock);
-=======
 	uart_port_lock(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	isr = vt8500_read(port, VT8500_URISR);
 
 	/* Acknowledge active status bits */
@@ -342,24 +240,11 @@ static irqreturn_t vt8500_irq(int irq, void *dev_id)
 	if (isr & TCTS)
 		handle_delta_cts(port);
 
-<<<<<<< HEAD
-	spin_unlock(&port->lock);
-=======
 	uart_port_unlock(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static unsigned int vt8500_tx_empty(struct uart_port *port)
-{
-	return (vt8500_read(port, VT8500_URFIDX) & 0x1f) < 16 ?
-						TIOCSER_TEMT : 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int vt8500_get_mctrl(struct uart_port *port)
 {
 	unsigned int usr;
@@ -373,8 +258,6 @@ static unsigned int vt8500_get_mctrl(struct uart_port *port)
 
 static void vt8500_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
-<<<<<<< HEAD
-=======
 	unsigned int lcr = vt8500_read(port, VT8500_URLCR);
 
 	if (mctrl & TIOCM_RTS)
@@ -383,39 +266,18 @@ static void vt8500_set_mctrl(struct uart_port *port, unsigned int mctrl)
 		lcr &= ~VT8500_RTS;
 
 	vt8500_write(port, lcr, VT8500_URLCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vt8500_break_ctl(struct uart_port *port, int break_ctl)
 {
 	if (break_ctl)
-<<<<<<< HEAD
-		vt8500_write(port, vt8500_read(port, VT8500_URLCR) | (1 << 9),
-=======
 		vt8500_write(port,
 			     vt8500_read(port, VT8500_URLCR) | VT8500_BREAK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     VT8500_URLCR);
 }
 
 static int vt8500_set_baud_rate(struct uart_port *port, unsigned int baud)
 {
-<<<<<<< HEAD
-	unsigned long div;
-	unsigned int loops = 1000;
-
-	div = vt8500_read(port, VT8500_URDIV) & ~(0x3ff);
-
-	if (unlikely((baud < 900) || (baud > 921600)))
-		div |= 7;
-	else
-		div |= (921600 / baud) - 1;
-
-	while ((vt8500_read(port, VT8500_URUSR) & (1 << 5)) && --loops)
-		cpu_relax();
-	vt8500_write(port, div, VT8500_URDIV);
-
-=======
 	struct vt8500_port *vt8500_port =
 			container_of(port, struct vt8500_port, uart);
 	unsigned long div;
@@ -435,7 +297,6 @@ static int vt8500_set_baud_rate(struct uart_port *port, unsigned int baud)
 	/* Break signal timing depends on baud rate, update accordingly */
 	vt8500_write(port, mult_frac(baud, 4096, 1000000), VT8500_URBKR);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return baud;
 }
 
@@ -473,11 +334,7 @@ static void vt8500_shutdown(struct uart_port *port)
 
 static void vt8500_set_termios(struct uart_port *port,
 			       struct ktermios *termios,
-<<<<<<< HEAD
-			       struct ktermios *old)
-=======
 			       const struct ktermios *old)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vt8500_port *vt8500_port =
 			container_of(port, struct vt8500_port, uart);
@@ -485,11 +342,7 @@ static void vt8500_set_termios(struct uart_port *port,
 	unsigned int baud, lcr;
 	unsigned int loops = 1000;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&port->lock, flags);
-=======
 	uart_port_lock_irqsave(port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* calculate and set baud rate */
 	baud = uart_get_baud_rate(port, termios, old, 900, 921600);
@@ -499,18 +352,6 @@ static void vt8500_set_termios(struct uart_port *port,
 
 	/* calculate parity */
 	lcr = vt8500_read(&vt8500_port->uart, VT8500_URLCR);
-<<<<<<< HEAD
-	lcr &= ~((1 << 5) | (1 << 4));
-	if (termios->c_cflag & PARENB) {
-		lcr |= (1 << 4);
-		termios->c_cflag &= ~CMSPAR;
-		if (termios->c_cflag & PARODD)
-			lcr |= (1 << 5);
-	}
-
-	/* calculate bits per char */
-	lcr &= ~(1 << 2);
-=======
 	lcr &= ~(VT8500_PARENB | VT8500_PARODD);
 	if (termios->c_cflag & PARENB) {
 		lcr |= VT8500_PARENB;
@@ -521,28 +362,18 @@ static void vt8500_set_termios(struct uart_port *port,
 
 	/* calculate bits per char */
 	lcr &= ~VT8500_CS8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (termios->c_cflag & CSIZE) {
 	case CS7:
 		break;
 	case CS8:
 	default:
-<<<<<<< HEAD
-		lcr |= (1 << 2);
-=======
 		lcr |= VT8500_CS8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		termios->c_cflag &= ~CSIZE;
 		termios->c_cflag |= CS8;
 		break;
 	}
 
 	/* calculate stop bits */
-<<<<<<< HEAD
-	lcr &= ~(1 << 3);
-	if (termios->c_cflag & CSTOPB)
-		lcr |= (1 << 3);
-=======
 	lcr &= ~VT8500_CSTOPB;
 	if (termios->c_cflag & CSTOPB)
 		lcr |= VT8500_CSTOPB;
@@ -550,7 +381,6 @@ static void vt8500_set_termios(struct uart_port *port,
 	lcr &= ~VT8500_SWRTSCTS;
 	if (vt8500_port->vt8500_uart_flags & VT8500_HAS_SWRTSCTS_SWITCH)
 		lcr |= VT8500_SWRTSCTS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set parity, bits per char, and stop bit */
 	vt8500_write(&vt8500_port->uart, lcr, VT8500_URLCR);
@@ -580,11 +410,7 @@ static void vt8500_set_termios(struct uart_port *port,
 	vt8500_write(&vt8500_port->uart, 0x881, VT8500_URFCR);
 	vt8500_write(&vt8500_port->uart, vt8500_port->ier, VT8500_URIER);
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *vt8500_type(struct uart_port *port)
@@ -618,20 +444,12 @@ static int vt8500_verify_port(struct uart_port *port,
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct vt8500_port *vt8500_uart_ports[4];
-=======
 static struct vt8500_port *vt8500_uart_ports[VT8500_MAX_PORTS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct uart_driver vt8500_uart_driver;
 
 #ifdef CONFIG_SERIAL_VT8500_CONSOLE
 
-<<<<<<< HEAD
-static inline void wait_for_xmitr(struct uart_port *port)
-=======
 static void wait_for_xmitr(struct uart_port *port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int status, tmout = 10000;
 
@@ -645,11 +463,7 @@ static void wait_for_xmitr(struct uart_port *port)
 	} while (status & 0x10);
 }
 
-<<<<<<< HEAD
-static void vt8500_console_putchar(struct uart_port *port, int c)
-=======
 static void vt8500_console_putchar(struct uart_port *port, unsigned char c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	wait_for_xmitr(port);
 	writeb(c, port->membase + VT8500_TXFIFO);
@@ -716,9 +530,6 @@ static struct console vt8500_console = {
 #define VT8500_CONSOLE	NULL
 #endif
 
-<<<<<<< HEAD
-static struct uart_ops vt8500_uart_pops = {
-=======
 #ifdef CONFIG_CONSOLE_POLL
 static int vt8500_get_poll_char(struct uart_port *port)
 {
@@ -747,7 +558,6 @@ static void vt8500_put_poll_char(struct uart_port *port, unsigned char c)
 #endif
 
 static const struct uart_ops vt8500_uart_pops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	= vt8500_tx_empty,
 	.set_mctrl	= vt8500_set_mctrl,
 	.get_mctrl	= vt8500_get_mctrl,
@@ -764,13 +574,10 @@ static const struct uart_ops vt8500_uart_pops = {
 	.request_port	= vt8500_request_port,
 	.config_port	= vt8500_config_port,
 	.verify_port	= vt8500_verify_port,
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_CONSOLE_POLL
 	.poll_get_char	= vt8500_get_poll_char,
 	.poll_put_char	= vt8500_put_poll_char,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct uart_driver vt8500_uart_driver = {
@@ -781,33 +588,6 @@ static struct uart_driver vt8500_uart_driver = {
 	.cons		= VT8500_CONSOLE,
 };
 
-<<<<<<< HEAD
-static int __devinit vt8500_serial_probe(struct platform_device *pdev)
-{
-	struct vt8500_port *vt8500_port;
-	struct resource *mmres, *irqres;
-	int ret;
-
-	mmres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	irqres = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-	if (!mmres || !irqres)
-		return -ENODEV;
-
-	vt8500_port = kzalloc(sizeof(struct vt8500_port), GFP_KERNEL);
-	if (!vt8500_port)
-		return -ENOMEM;
-
-	vt8500_port->uart.type = PORT_VT8500;
-	vt8500_port->uart.iotype = UPIO_MEM;
-	vt8500_port->uart.mapbase = mmres->start;
-	vt8500_port->uart.irq = irqres->start;
-	vt8500_port->uart.fifosize = 16;
-	vt8500_port->uart.ops = &vt8500_uart_pops;
-	vt8500_port->uart.line = pdev->id;
-	vt8500_port->uart.dev = &pdev->dev;
-	vt8500_port->uart.flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
-	vt8500_port->uart.uartclk = 24000000;
-=======
 static unsigned int vt8500_flags; /* none required so far */
 static unsigned int wm8880_flags = VT8500_HAS_SWRTSCTS_SWITCH;
 
@@ -899,61 +679,25 @@ static int vt8500_serial_probe(struct platform_device *pdev)
 	vt8500_port->uart.uartclk = 16 * clk_get_rate(vt8500_port->clk) /
 					vt8500_port->clk_predivisor /
 					VT8500_OVERSAMPLING_DIVISOR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snprintf(vt8500_port->name, sizeof(vt8500_port->name),
 		 "VT8500 UART%d", pdev->id);
 
-<<<<<<< HEAD
-	vt8500_port->uart.membase = ioremap(mmres->start, resource_size(mmres));
-	if (!vt8500_port->uart.membase) {
-		ret = -ENOMEM;
-		goto err;
-	}
-
-	vt8500_uart_ports[pdev->id] = vt8500_port;
-=======
 	vt8500_uart_ports[port] = vt8500_port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uart_add_one_port(&vt8500_uart_driver, &vt8500_port->uart);
 
 	platform_set_drvdata(pdev, vt8500_port);
 
 	return 0;
-<<<<<<< HEAD
-
-err:
-	kfree(vt8500_port);
-	return ret;
-}
-
-static int __devexit vt8500_serial_remove(struct platform_device *pdev)
-{
-	struct vt8500_port *vt8500_port = platform_get_drvdata(pdev);
-
-	platform_set_drvdata(pdev, NULL);
-	uart_remove_one_port(&vt8500_uart_driver, &vt8500_port->uart);
-	kfree(vt8500_port);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver vt8500_platform_driver = {
 	.probe  = vt8500_serial_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(vt8500_serial_remove),
-	.driver = {
-		.name = "vt8500_serial",
-		.owner = THIS_MODULE,
-=======
 	.driver = {
 		.name = "vt8500_serial",
 		.of_match_table = wmt_dt_ids,
 		.suppress_bind_attrs = true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -972,23 +716,4 @@ static int __init vt8500_serial_init(void)
 
 	return ret;
 }
-<<<<<<< HEAD
-
-static void __exit vt8500_serial_exit(void)
-{
-#ifdef CONFIG_SERIAL_VT8500_CONSOLE
-	unregister_console(&vt8500_console);
-#endif
-	platform_driver_unregister(&vt8500_platform_driver);
-	uart_unregister_driver(&vt8500_uart_driver);
-}
-
-module_init(vt8500_serial_init);
-module_exit(vt8500_serial_exit);
-
-MODULE_AUTHOR("Alexey Charkov <alchark@gmail.com>");
-MODULE_DESCRIPTION("Driver for vt8500 serial device");
-MODULE_LICENSE("GPL");
-=======
 device_initcall(vt8500_serial_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

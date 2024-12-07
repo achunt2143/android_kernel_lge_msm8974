@@ -1,34 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* audit_watch.c -- watching inodes
  *
  * Copyright 2003-2009 Red Hat, Inc.
  * Copyright 2005 Hewlett-Packard Development Company, L.P.
  * Copyright 2005 IBM Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-=======
  */
 
 #include <linux/file.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/audit.h>
 #include <linux/kthread.h>
@@ -37,10 +15,7 @@
 #include <linux/fsnotify_backend.h>
 #include <linux/namei.h>
 #include <linux/netlink.h>
-<<<<<<< HEAD
-=======
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/security.h>
@@ -59,11 +34,7 @@
  */
 
 struct audit_watch {
-<<<<<<< HEAD
-	atomic_t		count;	/* reference count */
-=======
 	refcount_t		count;	/* reference count */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_t			dev;	/* associated superblock device */
 	char			*path;	/* insertion path */
 	unsigned long		ino;	/* associated inode number */
@@ -82,11 +53,7 @@ static struct fsnotify_group *audit_watch_group;
 
 /* fsnotify events we care about. */
 #define AUDIT_FS_WATCH (FS_MOVE | FS_CREATE | FS_DELETE | FS_DELETE_SELF |\
-<<<<<<< HEAD
-			FS_MOVE_SELF | FS_EVENT_ON_CHILD)
-=======
 			FS_MOVE_SELF | FS_UNMOUNT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void audit_free_parent(struct audit_parent *parent)
 {
@@ -123,11 +90,7 @@ static inline struct audit_parent *audit_find_parent(struct inode *inode)
 	struct audit_parent *parent = NULL;
 	struct fsnotify_mark *entry;
 
-<<<<<<< HEAD
-	entry = fsnotify_find_inode_mark(audit_watch_group, inode);
-=======
 	entry = fsnotify_find_mark(&inode->i_fsnotify_marks, audit_watch_group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (entry)
 		parent = container_of(entry, struct audit_parent, mark);
 
@@ -136,20 +99,12 @@ static inline struct audit_parent *audit_find_parent(struct inode *inode)
 
 void audit_get_watch(struct audit_watch *watch)
 {
-<<<<<<< HEAD
-	atomic_inc(&watch->count);
-=======
 	refcount_inc(&watch->count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void audit_put_watch(struct audit_watch *watch)
 {
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&watch->count)) {
-=======
 	if (refcount_dec_and_test(&watch->count)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		WARN_ON(watch->parent);
 		WARN_ON(!list_empty(&watch->rules));
 		kfree(watch->path);
@@ -172,25 +127,15 @@ char *audit_watch_path(struct audit_watch *watch)
 
 int audit_watch_compare(struct audit_watch *watch, unsigned long ino, dev_t dev)
 {
-<<<<<<< HEAD
-	return (watch->ino != (unsigned long)-1) &&
-=======
 	return (watch->ino != AUDIT_INO_UNSET) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(watch->ino == ino) &&
 		(watch->dev == dev);
 }
 
 /* Initialize a parent watch entry. */
-<<<<<<< HEAD
-static struct audit_parent *audit_init_parent(struct path *path)
-{
-	struct inode *inode = path->dentry->d_inode;
-=======
 static struct audit_parent *audit_init_parent(const struct path *path)
 {
 	struct inode *inode = d_backing_inode(path->dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct audit_parent *parent;
 	int ret;
 
@@ -200,15 +145,9 @@ static struct audit_parent *audit_init_parent(const struct path *path)
 
 	INIT_LIST_HEAD(&parent->watches);
 
-<<<<<<< HEAD
-	fsnotify_init_mark(&parent->mark, audit_watch_free_mark);
-	parent->mark.mask = AUDIT_FS_WATCH;
-	ret = fsnotify_add_mark(&parent->mark, audit_watch_group, inode, NULL, 0);
-=======
 	fsnotify_init_mark(&parent->mark, audit_watch_group);
 	parent->mark.mask = AUDIT_FS_WATCH;
 	ret = fsnotify_add_inode_mark(&parent->mark, inode, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		audit_free_parent(parent);
 		return ERR_PTR(ret);
@@ -227,26 +166,15 @@ static struct audit_watch *audit_init_watch(char *path)
 		return ERR_PTR(-ENOMEM);
 
 	INIT_LIST_HEAD(&watch->rules);
-<<<<<<< HEAD
-	atomic_set(&watch->count, 1);
-	watch->path = path;
-	watch->dev = (dev_t)-1;
-	watch->ino = (unsigned long)-1;
-=======
 	refcount_set(&watch->count, 1);
 	watch->path = path;
 	watch->dev = AUDIT_DEV_UNSET;
 	watch->ino = AUDIT_INO_UNSET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return watch;
 }
 
-<<<<<<< HEAD
-/* Translate a watch string to kernel respresentation. */
-=======
 /* Translate a watch string to kernel representation. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int audit_to_watch(struct audit_krule *krule, char *path, int len, u32 op)
 {
 	struct audit_watch *watch;
@@ -255,12 +183,8 @@ int audit_to_watch(struct audit_krule *krule, char *path, int len, u32 op)
 		return -EOPNOTSUPP;
 
 	if (path[0] != '/' || path[len-1] == '/' ||
-<<<<<<< HEAD
-	    krule->listnr != AUDIT_FILTER_EXIT ||
-=======
 	    (krule->listnr != AUDIT_FILTER_EXIT &&
 	     krule->listnr != AUDIT_FILTER_URING_EXIT) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    op != Audit_equal ||
 	    krule->inode_f || krule->watch || krule->tree)
 		return -EINVAL;
@@ -269,10 +193,6 @@ int audit_to_watch(struct audit_krule *krule, char *path, int len, u32 op)
 	if (IS_ERR(watch))
 		return PTR_ERR(watch);
 
-<<<<<<< HEAD
-	audit_get_watch(watch);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	krule->watch = watch;
 
 	return 0;
@@ -306,21 +226,6 @@ out:
 
 static void audit_watch_log_rule_change(struct audit_krule *r, struct audit_watch *w, char *op)
 {
-<<<<<<< HEAD
-	if (audit_enabled) {
-		struct audit_buffer *ab;
-		ab = audit_log_start(NULL, GFP_NOFS, AUDIT_CONFIG_CHANGE);
-		audit_log_format(ab, "auid=%u ses=%u op=",
-				 audit_get_loginuid(current),
-				 audit_get_sessionid(current));
-		audit_log_string(ab, op);
-		audit_log_format(ab, " path=");
-		audit_log_untrustedstring(ab, w->path);
-		audit_log_key(ab, r->filterkey);
-		audit_log_format(ab, " list=%d res=1", r->listnr);
-		audit_log_end(ab);
-	}
-=======
 	struct audit_buffer *ab;
 
 	if (!audit_enabled)
@@ -334,16 +239,11 @@ static void audit_watch_log_rule_change(struct audit_krule *r, struct audit_watc
 	audit_log_key(ab, r->filterkey);
 	audit_log_format(ab, " list=%d res=1", r->listnr);
 	audit_log_end(ab);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Update inode info in audit rules based on filesystem event. */
 static void audit_update_watch(struct audit_parent *parent,
-<<<<<<< HEAD
-			       const char *dname, dev_t dev,
-=======
 			       const struct qstr *dname, dev_t dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       unsigned long ino, unsigned invalidating)
 {
 	struct audit_watch *owatch, *nwatch, *nextw;
@@ -354,22 +254,14 @@ static void audit_update_watch(struct audit_parent *parent,
 	/* Run all of the watches on this parent looking for the one that
 	 * matches the given dname */
 	list_for_each_entry_safe(owatch, nextw, &parent->watches, wlist) {
-<<<<<<< HEAD
-		if (audit_compare_dname_path(dname, owatch->path, NULL))
-=======
 		if (audit_compare_dname_path(dname, owatch->path,
 					     AUDIT_NAME_FULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		/* If the update involves invalidating rules, do the inode-based
 		 * filtering now, so we don't omit records. */
 		if (invalidating && !audit_dummy_context())
-<<<<<<< HEAD
-			audit_filter_inodes(current, current->audit_context);
-=======
 			audit_filter_inodes(current, audit_context());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* updating ino will likely change which audit_hash_list we
 		 * are on so we need a new watch for the new list */
@@ -408,13 +300,8 @@ static void audit_update_watch(struct audit_parent *parent,
 				list_replace(&oentry->rule.list,
 					     &nentry->rule.list);
 			}
-<<<<<<< HEAD
-
-			audit_watch_log_rule_change(r, owatch, "updated rules");
-=======
 			if (oentry->rule.exe)
 				audit_remove_mark(oentry->rule.exe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			call_rcu(&oentry->rcu, audit_free_rule_rcu);
 		}
@@ -442,13 +329,9 @@ static void audit_remove_parent_watches(struct audit_parent *parent)
 	list_for_each_entry_safe(w, nextw, &parent->watches, wlist) {
 		list_for_each_entry_safe(r, nextr, &w->rules, rlist) {
 			e = container_of(r, struct audit_entry, rule);
-<<<<<<< HEAD
-			audit_watch_log_rule_change(r, w, "remove rule");
-=======
 			audit_watch_log_rule_change(r, w, "remove_rule");
 			if (e->rule.exe)
 				audit_remove_mark(e->rule.exe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_del(&r->rlist);
 			list_del(&r->list);
 			list_del_rcu(&e->list);
@@ -458,11 +341,7 @@ static void audit_remove_parent_watches(struct audit_parent *parent)
 	}
 	mutex_unlock(&audit_filter_mutex);
 
-<<<<<<< HEAD
-	fsnotify_destroy_mark(&parent->mark);
-=======
 	fsnotify_destroy_mark(&parent->mark, audit_watch_group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Get path information necessary for adding watches. */
@@ -471,21 +350,12 @@ static int audit_get_nd(struct audit_watch *watch, struct path *parent)
 	struct dentry *d = kern_path_locked(watch->path, parent);
 	if (IS_ERR(d))
 		return PTR_ERR(d);
-<<<<<<< HEAD
-	mutex_unlock(&parent->dentry->d_inode->i_mutex);
-	if (d->d_inode) {
-		/* update watch filter fields */
-		watch->dev = d->d_inode->i_sb->s_dev;
-		watch->ino = d->d_inode->i_ino;
-	}
-=======
 	if (d_is_positive(d)) {
 		/* update watch filter fields */
 		watch->dev = d->d_sb->s_dev;
 		watch->ino = d_backing_inode(d)->i_ino;
 	}
 	inode_unlock(d_backing_inode(parent->dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dput(d);
 	return 0;
 }
@@ -506,34 +376,20 @@ static void audit_add_to_parent(struct audit_krule *krule,
 
 		watch_found = 1;
 
-<<<<<<< HEAD
-		/* put krule's and initial refs to temporary watch */
-		audit_put_watch(watch);
-=======
 		/* put krule's ref to temporary watch */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		audit_put_watch(watch);
 
 		audit_get_watch(w);
 		krule->watch = watch = w;
-<<<<<<< HEAD
-=======
 
 		audit_put_parent(parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	if (!watch_found) {
-<<<<<<< HEAD
-		audit_get_parent(parent);
-		watch->parent = parent;
-
-=======
 		watch->parent = parent;
 
 		audit_get_watch(watch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add(&watch->wlist, &parent->watches);
 	}
 	list_add(&krule->rlist, &watch->rules);
@@ -548,8 +404,6 @@ int audit_add_watch(struct audit_krule *krule, struct list_head **list)
 	struct path parent_path;
 	int h, ret = 0;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * When we will be calling audit_add_to_parent, krule->watch might have
 	 * been updated and watch might have been freed.
@@ -557,7 +411,6 @@ int audit_add_watch(struct audit_krule *krule, struct list_head **list)
 	 */
 	audit_get_watch(watch);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&audit_filter_mutex);
 
 	/* Avoid calling path_lookup under audit_filter_mutex. */
@@ -566,13 +419,6 @@ int audit_add_watch(struct audit_krule *krule, struct list_head **list)
 	/* caller expects mutex locked */
 	mutex_lock(&audit_filter_mutex);
 
-<<<<<<< HEAD
-	if (ret)
-		return ret;
-
-	/* either find an old parent or attach a new one */
-	parent = audit_find_parent(parent_path.dentry->d_inode);
-=======
 	if (ret) {
 		audit_put_watch(watch);
 		return ret;
@@ -580,7 +426,6 @@ int audit_add_watch(struct audit_krule *krule, struct list_head **list)
 
 	/* either find an old parent or attach a new one */
 	parent = audit_find_parent(d_backing_inode(parent_path.dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!parent) {
 		parent = audit_init_parent(&parent_path);
 		if (IS_ERR(parent)) {
@@ -591,20 +436,11 @@ int audit_add_watch(struct audit_krule *krule, struct list_head **list)
 
 	audit_add_to_parent(krule, parent);
 
-<<<<<<< HEAD
-	/* match get in audit_find_parent or audit_init_parent */
-	audit_put_parent(parent);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h = audit_hash_ino((u32)watch->ino);
 	*list = &audit_inode_hash[h];
 error:
 	path_put(&parent_path);
-<<<<<<< HEAD
-=======
 	audit_put_watch(watch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -616,35 +452,6 @@ void audit_remove_watch_rule(struct audit_krule *krule)
 	list_del(&krule->rlist);
 
 	if (list_empty(&watch->rules)) {
-<<<<<<< HEAD
-		audit_remove_watch(watch);
-
-		if (list_empty(&parent->watches)) {
-			audit_get_parent(parent);
-			fsnotify_destroy_mark(&parent->mark);
-			audit_put_parent(parent);
-		}
-	}
-}
-
-static bool audit_watch_should_send_event(struct fsnotify_group *group, struct inode *inode,
-					  struct fsnotify_mark *inode_mark,
-					  struct fsnotify_mark *vfsmount_mark,
-					  __u32 mask, void *data, int data_type)
-{
-       return true;
-}
-
-/* Update watch data in audit rules based on fsnotify events. */
-static int audit_watch_handle_event(struct fsnotify_group *group,
-				    struct fsnotify_mark *inode_mark,
-				    struct fsnotify_mark *vfsmount_mark,
-				    struct fsnotify_event *event)
-{
-	struct inode *inode;
-	__u32 mask = event->mask;
-	const char *dname = event->file_name;
-=======
 		/*
 		 * audit_remove_watch() drops our reference to 'parent' which
 		 * can get freed. Grab our own reference to be safe.
@@ -662,39 +469,17 @@ static int audit_watch_handle_event(struct fsnotify_mark *inode_mark, u32 mask,
 				    struct inode *inode, struct inode *dir,
 				    const struct qstr *dname, u32 cookie)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct audit_parent *parent;
 
 	parent = container_of(inode_mark, struct audit_parent, mark);
 
-<<<<<<< HEAD
-	BUG_ON(group != audit_watch_group);
-
-	switch (event->data_type) {
-	case (FSNOTIFY_EVENT_PATH):
-		inode = event->path.dentry->d_inode;
-		break;
-	case (FSNOTIFY_EVENT_INODE):
-		inode = event->inode;
-		break;
-	default:
-		BUG();
-		inode = NULL;
-		break;
-	};
-=======
 	if (WARN_ON_ONCE(inode_mark->group != audit_watch_group))
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mask & (FS_CREATE|FS_MOVED_TO) && inode)
 		audit_update_watch(parent, dname, inode->i_sb->s_dev, inode->i_ino, 0);
 	else if (mask & (FS_DELETE|FS_MOVED_FROM))
-<<<<<<< HEAD
-		audit_update_watch(parent, dname, (dev_t)-1, (unsigned long)-1, 1);
-=======
 		audit_update_watch(parent, dname, AUDIT_DEV_UNSET, AUDIT_INO_UNSET, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (mask & (FS_DELETE_SELF|FS_UNMOUNT|FS_MOVE_SELF))
 		audit_remove_parent_watches(parent);
 
@@ -702,25 +487,13 @@ static int audit_watch_handle_event(struct fsnotify_mark *inode_mark, u32 mask,
 }
 
 static const struct fsnotify_ops audit_watch_fsnotify_ops = {
-<<<<<<< HEAD
-	.should_send_event = 	audit_watch_should_send_event,
-	.handle_event = 	audit_watch_handle_event,
-	.free_group_priv = 	NULL,
-	.freeing_mark = 	NULL,
-	.free_event_priv = 	NULL,
-=======
 	.handle_inode_event =	audit_watch_handle_event,
 	.free_mark =		audit_watch_free_mark,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init audit_watch_init(void)
 {
-<<<<<<< HEAD
-	audit_watch_group = fsnotify_alloc_group(&audit_watch_fsnotify_ops);
-=======
 	audit_watch_group = fsnotify_alloc_group(&audit_watch_fsnotify_ops, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(audit_watch_group)) {
 		audit_watch_group = NULL;
 		audit_panic("cannot create audit fsnotify group");
@@ -728,8 +501,6 @@ static int __init audit_watch_init(void)
 	return 0;
 }
 device_initcall(audit_watch_init);
-<<<<<<< HEAD
-=======
 
 int audit_dupe_exe(struct audit_krule *new, struct audit_krule *old)
 {
@@ -771,4 +542,3 @@ int audit_exe_compare(struct task_struct *tsk, struct audit_fsnotify_mark *mark)
 
 	return audit_mark_compare(mark, ino, dev);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

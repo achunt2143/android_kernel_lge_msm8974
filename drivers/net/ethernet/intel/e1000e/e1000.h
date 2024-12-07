@@ -1,35 +1,5 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel PRO/1000 Linux driver
-  Copyright(c) 1999 - 2012 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  Linux NICS <linux.nics@intel.com>
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /* Copyright(c) 1999 - 2018 Intel Corporation. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Linux PRO/1000 Ethernet Driver main header file */
 
@@ -43,12 +13,6 @@
 #include <linux/io.h>
 #include <linux/netdevice.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/pci-aspm.h>
-#include <linux/crc32.h>
-#include <linux/if_vlan.h>
-
-=======
 #include <linux/crc32.h>
 #include <linux/if_vlan.h>
 #include <linux/timecounter.h>
@@ -59,7 +23,6 @@
 #include <linux/mdio.h>
 #include <linux/mutex.h>
 #include <linux/pm_qos.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "hw.h"
 
 struct e1000_info;
@@ -75,10 +38,6 @@ struct e1000_info;
 #define e_notice(format, arg...) \
 	netdev_notice(adapter->netdev, format, ## arg)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Interrupt modes, as used by the IntMode parameter */
 #define E1000E_INT_MODE_LEGACY		0
 #define E1000E_INT_MODE_MSI		1
@@ -96,12 +55,6 @@ struct e1000_info;
 #define E1000_MIN_ITR_USECS		10 /* 100000 irq/sec */
 #define E1000_MAX_ITR_USECS		10000 /* 100    irq/sec */
 
-<<<<<<< HEAD
-/* Early Receive defines */
-#define E1000_ERT_2048			0x100
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define E1000_FC_PAUSE_TIME		0x0680 /* 858 usec */
 
 /* How many Tx Descriptors do we need to call netif_wake_queue ? */
@@ -113,107 +66,20 @@ struct e1000_info;
 
 #define E1000_MNG_VLAN_NONE		(-1)
 
-<<<<<<< HEAD
-/* Number of packet split data buffers (not including the header buffer) */
-#define PS_PAGE_BUFFERS			(MAX_PS_BUFFERS - 1)
-
-#define DEFAULT_JUMBO			9234
-
-/* BM/HV Specific Registers */
-#define BM_PORT_CTRL_PAGE                 769
-
-#define PHY_UPPER_SHIFT                   21
-#define BM_PHY_REG(page, reg) \
-	(((reg) & MAX_PHY_REG_ADDRESS) |\
-	 (((page) & 0xFFFF) << PHY_PAGE_SHIFT) |\
-	 (((reg) & ~MAX_PHY_REG_ADDRESS) << (PHY_UPPER_SHIFT - PHY_PAGE_SHIFT)))
-
-/* PHY Wakeup Registers and defines */
-#define BM_PORT_GEN_CFG PHY_REG(BM_PORT_CTRL_PAGE, 17)
-#define BM_RCTL         PHY_REG(BM_WUC_PAGE, 0)
-#define BM_WUC          PHY_REG(BM_WUC_PAGE, 1)
-#define BM_WUFC         PHY_REG(BM_WUC_PAGE, 2)
-#define BM_WUS          PHY_REG(BM_WUC_PAGE, 3)
-#define BM_RAR_L(_i)    (BM_PHY_REG(BM_WUC_PAGE, 16 + ((_i) << 2)))
-#define BM_RAR_M(_i)    (BM_PHY_REG(BM_WUC_PAGE, 17 + ((_i) << 2)))
-#define BM_RAR_H(_i)    (BM_PHY_REG(BM_WUC_PAGE, 18 + ((_i) << 2)))
-#define BM_RAR_CTRL(_i) (BM_PHY_REG(BM_WUC_PAGE, 19 + ((_i) << 2)))
-#define BM_MTA(_i)      (BM_PHY_REG(BM_WUC_PAGE, 128 + ((_i) << 1)))
-
-#define BM_RCTL_UPE           0x0001          /* Unicast Promiscuous Mode */
-#define BM_RCTL_MPE           0x0002          /* Multicast Promiscuous Mode */
-#define BM_RCTL_MO_SHIFT      3               /* Multicast Offset Shift */
-#define BM_RCTL_MO_MASK       (3 << 3)        /* Multicast Offset Mask */
-#define BM_RCTL_BAM           0x0020          /* Broadcast Accept Mode */
-#define BM_RCTL_PMCF          0x0040          /* Pass MAC Control Frames */
-#define BM_RCTL_RFCE          0x0080          /* Rx Flow Control Enable */
-
-#define HV_STATS_PAGE	778
-#define HV_SCC_UPPER	PHY_REG(HV_STATS_PAGE, 16) /* Single Collision Count */
-#define HV_SCC_LOWER	PHY_REG(HV_STATS_PAGE, 17)
-#define HV_ECOL_UPPER	PHY_REG(HV_STATS_PAGE, 18) /* Excessive Coll. Count */
-#define HV_ECOL_LOWER	PHY_REG(HV_STATS_PAGE, 19)
-#define HV_MCC_UPPER	PHY_REG(HV_STATS_PAGE, 20) /* Multiple Coll. Count */
-#define HV_MCC_LOWER	PHY_REG(HV_STATS_PAGE, 21)
-#define HV_LATECOL_UPPER PHY_REG(HV_STATS_PAGE, 23) /* Late Collision Count */
-#define HV_LATECOL_LOWER PHY_REG(HV_STATS_PAGE, 24)
-#define HV_COLC_UPPER	PHY_REG(HV_STATS_PAGE, 25) /* Collision Count */
-#define HV_COLC_LOWER	PHY_REG(HV_STATS_PAGE, 26)
-#define HV_DC_UPPER	PHY_REG(HV_STATS_PAGE, 27) /* Defer Count */
-#define HV_DC_LOWER	PHY_REG(HV_STATS_PAGE, 28)
-#define HV_TNCRS_UPPER	PHY_REG(HV_STATS_PAGE, 29) /* Transmit with no CRS */
-#define HV_TNCRS_LOWER	PHY_REG(HV_STATS_PAGE, 30)
-
-#define E1000_FCRTV_PCH     0x05F40 /* PCH Flow Control Refresh Timer Value */
-
-/* BM PHY Copper Specific Status */
-#define BM_CS_STATUS                      17
-#define BM_CS_STATUS_LINK_UP              0x0400
-#define BM_CS_STATUS_RESOLVED             0x0800
-#define BM_CS_STATUS_SPEED_MASK           0xC000
-#define BM_CS_STATUS_SPEED_1000           0x8000
-
-/* 82577 Mobile Phy Status Register */
-#define HV_M_STATUS                       26
-#define HV_M_STATUS_AUTONEG_COMPLETE      0x1000
-#define HV_M_STATUS_SPEED_MASK            0x0300
-#define HV_M_STATUS_SPEED_1000            0x0200
-#define HV_M_STATUS_LINK_UP               0x0040
-
-#define E1000_ICH_FWSM_PCIM2PCI		0x01000000 /* ME PCIm-to-PCI active */
-#define E1000_ICH_FWSM_PCIM2PCI_COUNT	2000
-
-/* Time to wait before putting the device into D3 if there's no link (in ms). */
-#define LINK_TIMEOUT		100
-
-/*
- * Count for polling __E1000_RESET condition every 10-20msec.
-=======
 #define DEFAULT_JUMBO			9234
 
 /* Time to wait before putting the device into D3 if there's no link (in ms). */
 #define LINK_TIMEOUT		100
 
 /* Count for polling __E1000_RESET condition every 10-20msec.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Experimentation has shown the reset can take approximately 210msec.
  */
 #define E1000_CHECK_RESET_COUNT		25
 
-<<<<<<< HEAD
-#define DEFAULT_RDTR			0
-#define DEFAULT_RADV			8
-#define BURST_RDTR			0x20
-#define BURST_RADV			0x20
-
-/*
- * in the case of WTHRESH, it appears at least the 82571/2 hardware
-=======
 #define PCICFG_DESC_RING_STATUS		0xe4
 #define FLUSH_DESC_REQUIRED		0x100
 
 /* in the case of WTHRESH, it appears at least the 82571/2 hardware
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * writes back 4 descriptors when WTHRESH=5, and 3 descriptors when
  * WTHRESH=4, so a setting of 5 gives the most efficient bus
  * utilization but to avoid possible Tx stalls, set it to 1
@@ -221,20 +87,6 @@ struct e1000_info;
 #define E1000_TXDCTL_DMA_BURST_ENABLE                          \
 	(E1000_TXDCTL_GRAN | /* set descriptor granularity */  \
 	 E1000_TXDCTL_COUNT_DESC |                             \
-<<<<<<< HEAD
-	 (1 << 16) | /* wthresh must be +1 more than desired */\
-	 (1 << 8)  | /* hthresh */                             \
-	 0x1f)       /* pthresh */
-
-#define E1000_RXDCTL_DMA_BURST_ENABLE                          \
-	(0x01000000 | /* set descriptor granularity */         \
-	 (4 << 16)  | /* set writeback threshold    */         \
-	 (4 << 8)   | /* set prefetch threshold     */         \
-	 0x20)        /* set hthresh                */
-
-#define E1000_TIDV_FPD (1 << 31)
-#define E1000_RDTR_FPD (1 << 31)
-=======
 	 (1u << 16) | /* wthresh must be +1 more than desired */\
 	 (1u << 8)  | /* hthresh */                             \
 	 0x1f)        /* pthresh */
@@ -247,7 +99,6 @@ struct e1000_info;
 
 #define E1000_TIDV_FPD BIT(31)
 #define E1000_RDTR_FPD BIT(31)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum e1000_boards {
 	board_82571,
@@ -261,15 +112,12 @@ enum e1000_boards {
 	board_ich10lan,
 	board_pchlan,
 	board_pch2lan,
-<<<<<<< HEAD
-=======
 	board_pch_lpt,
 	board_pch_spt,
 	board_pch_cnp,
 	board_pch_tgp,
 	board_pch_adp,
 	board_pch_mtp
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct e1000_ps_page {
@@ -277,12 +125,7 @@ struct e1000_ps_page {
 	u64 dma; /* must be u64 - written to hw */
 };
 
-<<<<<<< HEAD
-/*
- * wrappers around a pointer to a socket buffer,
-=======
 /* wrappers around a pointer to a socket buffer,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * so a DMA handle can be stored along with the buffer
  */
 struct e1000_buffer {
@@ -372,25 +215,14 @@ struct e1000_adapter {
 	u16 tx_itr;
 	u16 rx_itr;
 
-<<<<<<< HEAD
-	/*
-	 * Tx
-	 */
-	struct e1000_ring *tx_ring /* One per active queue */
-						____cacheline_aligned_in_smp;
-=======
 	/* Tx - one ring per active queue */
 	struct e1000_ring *tx_ring ____cacheline_aligned_in_smp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tx_fifo_limit;
 
 	struct napi_struct napi;
 
-<<<<<<< HEAD
-=======
 	unsigned int uncorr_errors;	/* uncorrectable ECC errors */
 	unsigned int corr_errors;	/* correctable ECC errors */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int restart_queue;
 	u32 txd_cmd;
 
@@ -416,16 +248,6 @@ struct e1000_adapter {
 	u32 tx_head_addr;
 	u32 tx_fifo_size;
 	u32 tx_dma_failed;
-<<<<<<< HEAD
-
-	/*
-	 * Rx
-	 */
-	bool (*clean_rx) (struct e1000_ring *ring, int *work_done,
-			  int work_to_do) ____cacheline_aligned_in_smp;
-	void (*alloc_rx_buf) (struct e1000_ring *ring, int cleaned_count,
-			      gfp_t gfp);
-=======
 	u32 tx_hwtstamp_timeouts;
 	u32 tx_hwtstamp_skipped;
 
@@ -434,7 +256,6 @@ struct e1000_adapter {
 			 int work_to_do) ____cacheline_aligned_in_smp;
 	void (*alloc_rx_buf)(struct e1000_ring *ring, int cleaned_count,
 			     gfp_t gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct e1000_ring *rx_ring;
 
 	u32 rx_int_delay;
@@ -448,10 +269,7 @@ struct e1000_adapter {
 	u64 gorc_old;
 	u32 alloc_rx_buff_failed;
 	u32 rx_dma_failed;
-<<<<<<< HEAD
-=======
 	u32 rx_hwtstamp_cleared;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int rx_ps_pages;
 	u16 rx_ps_bsize0;
@@ -465,11 +283,7 @@ struct e1000_adapter {
 	/* structs defined in e1000_hw.h */
 	struct e1000_hw hw;
 
-<<<<<<< HEAD
-	spinlock_t stats64_lock;
-=======
 	spinlock_t stats64_lock;	/* protects statistics counters */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct e1000_hw_stats stats;
 	struct e1000_phy_info phy_info;
 	struct e1000_phy_stats phy_stats;
@@ -500,16 +314,10 @@ struct e1000_adapter {
 	struct work_struct update_phy_task;
 	struct work_struct print_hang_task;
 
-<<<<<<< HEAD
-	bool idle_check;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int phy_hang_count;
 
 	u16 tx_ring_count;
 	u16 rx_ring_count;
-<<<<<<< HEAD
-=======
 
 	struct hwtstamp_config hwtstamp_config;
 	struct delayed_work systim_overflow_work;
@@ -525,7 +333,6 @@ struct e1000_adapter {
 	long ptp_delta;
 
 	u16 eee_advert;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct e1000_info {
@@ -540,55 +347,6 @@ struct e1000_info {
 	const struct e1000_nvm_operations *nvm_ops;
 };
 
-<<<<<<< HEAD
-/* hardware capability, feature, and workaround flags */
-#define FLAG_HAS_AMT                      (1 << 0)
-#define FLAG_HAS_FLASH                    (1 << 1)
-#define FLAG_HAS_HW_VLAN_FILTER           (1 << 2)
-#define FLAG_HAS_WOL                      (1 << 3)
-/* reserved bit4 */
-#define FLAG_HAS_CTRLEXT_ON_LOAD          (1 << 5)
-#define FLAG_HAS_SWSM_ON_LOAD             (1 << 6)
-#define FLAG_HAS_JUMBO_FRAMES             (1 << 7)
-#define FLAG_READ_ONLY_NVM                (1 << 8)
-#define FLAG_IS_ICH                       (1 << 9)
-#define FLAG_HAS_MSIX                     (1 << 10)
-#define FLAG_HAS_SMART_POWER_DOWN         (1 << 11)
-#define FLAG_IS_QUAD_PORT_A               (1 << 12)
-#define FLAG_IS_QUAD_PORT                 (1 << 13)
-/* reserved bit14 */
-#define FLAG_APME_IN_WUC                  (1 << 15)
-#define FLAG_APME_IN_CTRL3                (1 << 16)
-#define FLAG_APME_CHECK_PORT_B            (1 << 17)
-#define FLAG_DISABLE_FC_PAUSE_TIME        (1 << 18)
-#define FLAG_NO_WAKE_UCAST                (1 << 19)
-#define FLAG_MNG_PT_ENABLED               (1 << 20)
-#define FLAG_RESET_OVERWRITES_LAA         (1 << 21)
-#define FLAG_TARC_SPEED_MODE_BIT          (1 << 22)
-#define FLAG_TARC_SET_BIT_ZERO            (1 << 23)
-#define FLAG_RX_NEEDS_RESTART             (1 << 24)
-#define FLAG_LSC_GIG_SPEED_DROP           (1 << 25)
-#define FLAG_SMART_POWER_DOWN             (1 << 26)
-#define FLAG_MSI_ENABLED                  (1 << 27)
-/* reserved (1 << 28) */
-#define FLAG_TSO_FORCE                    (1 << 29)
-#define FLAG_RX_RESTART_NOW               (1 << 30)
-#define FLAG_MSI_TEST_FAILED              (1 << 31)
-
-#define FLAG2_CRC_STRIPPING               (1 << 0)
-#define FLAG2_HAS_PHY_WAKEUP              (1 << 1)
-#define FLAG2_IS_DISCARDING               (1 << 2)
-#define FLAG2_DISABLE_ASPM_L1             (1 << 3)
-#define FLAG2_HAS_PHY_STATS               (1 << 4)
-#define FLAG2_HAS_EEE                     (1 << 5)
-#define FLAG2_DMA_BURST                   (1 << 6)
-#define FLAG2_DISABLE_ASPM_L0S            (1 << 7)
-#define FLAG2_DISABLE_AIM                 (1 << 8)
-#define FLAG2_CHECK_PHY_HANG              (1 << 9)
-#define FLAG2_NO_DISABLE_RX               (1 << 10)
-#define FLAG2_PCIM2PCI_ARBITER_WA         (1 << 11)
-#define FLAG2_DFLT_CRC_STRIPPING          (1 << 12)
-=======
 s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca);
 
 /* The system time is maintained by a 64-bit counter comprised of the 32-bit
@@ -703,7 +461,6 @@ s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca);
 #define FLAG2_CHECK_RX_HWTSTAMP           BIT(13)
 #define FLAG2_CHECK_SYSTIM_OVERFLOW       BIT(14)
 #define FLAG2_ENABLE_S0IX_FLOWS           BIT(15)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define E1000_RX_DESC_PS(R, i)	    \
 	(&(((union e1000_rx_desc_packet_split *)((R).desc))[i]))
@@ -728,34 +485,6 @@ enum latency_range {
 };
 
 extern char e1000e_driver_name[];
-<<<<<<< HEAD
-extern const char e1000e_driver_version[];
-
-extern void e1000e_check_options(struct e1000_adapter *adapter);
-extern void e1000e_set_ethtool_ops(struct net_device *netdev);
-
-extern int e1000e_up(struct e1000_adapter *adapter);
-extern void e1000e_down(struct e1000_adapter *adapter);
-extern void e1000e_reinit_locked(struct e1000_adapter *adapter);
-extern void e1000e_reset(struct e1000_adapter *adapter);
-extern void e1000e_power_up_phy(struct e1000_adapter *adapter);
-extern int e1000e_setup_rx_resources(struct e1000_ring *ring);
-extern int e1000e_setup_tx_resources(struct e1000_ring *ring);
-extern void e1000e_free_rx_resources(struct e1000_ring *ring);
-extern void e1000e_free_tx_resources(struct e1000_ring *ring);
-extern struct rtnl_link_stats64 *e1000e_get_stats64(struct net_device *netdev,
-                                                    struct rtnl_link_stats64
-                                                    *stats);
-extern void e1000e_set_interrupt_capability(struct e1000_adapter *adapter);
-extern void e1000e_reset_interrupt_capability(struct e1000_adapter *adapter);
-extern void e1000e_get_hw_control(struct e1000_adapter *adapter);
-extern void e1000e_release_hw_control(struct e1000_adapter *adapter);
-
-extern unsigned int copybreak;
-
-extern char *e1000e_get_hw_dev_name(struct e1000_hw *hw);
-
-=======
 
 void e1000e_check_options(struct e1000_adapter *adapter);
 void e1000e_set_ethtool_ops(struct net_device *netdev);
@@ -781,7 +510,6 @@ void e1000e_write_itr(struct e1000_adapter *adapter, u32 itr);
 
 extern unsigned int copybreak;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct e1000_info e1000_82571_info;
 extern const struct e1000_info e1000_82572_info;
 extern const struct e1000_info e1000_82573_info;
@@ -792,142 +520,6 @@ extern const struct e1000_info e1000_ich9_info;
 extern const struct e1000_info e1000_ich10_info;
 extern const struct e1000_info e1000_pch_info;
 extern const struct e1000_info e1000_pch2_info;
-<<<<<<< HEAD
-extern const struct e1000_info e1000_es2_info;
-
-extern s32 e1000_read_pba_string_generic(struct e1000_hw *hw, u8 *pba_num,
-					 u32 pba_num_size);
-
-extern s32  e1000e_commit_phy(struct e1000_hw *hw);
-
-extern bool e1000e_enable_mng_pass_thru(struct e1000_hw *hw);
-
-extern bool e1000e_get_laa_state_82571(struct e1000_hw *hw);
-extern void e1000e_set_laa_state_82571(struct e1000_hw *hw, bool state);
-
-extern void e1000e_write_protect_nvm_ich8lan(struct e1000_hw *hw);
-extern void e1000e_set_kmrn_lock_loss_workaround_ich8lan(struct e1000_hw *hw,
-						 bool state);
-extern void e1000e_igp3_phy_powerdown_workaround_ich8lan(struct e1000_hw *hw);
-extern void e1000e_gig_downshift_workaround_ich8lan(struct e1000_hw *hw);
-extern void e1000_suspend_workarounds_ich8lan(struct e1000_hw *hw);
-extern void e1000_resume_workarounds_pchlan(struct e1000_hw *hw);
-extern s32 e1000_configure_k1_ich8lan(struct e1000_hw *hw, bool k1_enable);
-extern s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable);
-extern void e1000_copy_rx_addrs_to_phy_ich8lan(struct e1000_hw *hw);
-
-extern s32 e1000e_check_for_copper_link(struct e1000_hw *hw);
-extern s32 e1000e_check_for_fiber_link(struct e1000_hw *hw);
-extern s32 e1000e_check_for_serdes_link(struct e1000_hw *hw);
-extern s32 e1000e_setup_led_generic(struct e1000_hw *hw);
-extern s32 e1000e_cleanup_led_generic(struct e1000_hw *hw);
-extern s32 e1000e_led_on_generic(struct e1000_hw *hw);
-extern s32 e1000e_led_off_generic(struct e1000_hw *hw);
-extern s32 e1000e_get_bus_info_pcie(struct e1000_hw *hw);
-extern void e1000_set_lan_id_multi_port_pcie(struct e1000_hw *hw);
-extern void e1000_set_lan_id_single_port(struct e1000_hw *hw);
-extern s32 e1000e_get_speed_and_duplex_copper(struct e1000_hw *hw, u16 *speed, u16 *duplex);
-extern s32 e1000e_get_speed_and_duplex_fiber_serdes(struct e1000_hw *hw, u16 *speed, u16 *duplex);
-extern s32 e1000e_disable_pcie_master(struct e1000_hw *hw);
-extern s32 e1000e_get_auto_rd_done(struct e1000_hw *hw);
-extern s32 e1000e_id_led_init_generic(struct e1000_hw *hw);
-extern void e1000e_clear_hw_cntrs_base(struct e1000_hw *hw);
-extern s32 e1000e_setup_fiber_serdes_link(struct e1000_hw *hw);
-extern s32 e1000e_copper_link_setup_m88(struct e1000_hw *hw);
-extern s32 e1000e_copper_link_setup_igp(struct e1000_hw *hw);
-extern s32 e1000e_setup_link_generic(struct e1000_hw *hw);
-extern void e1000_clear_vfta_generic(struct e1000_hw *hw);
-extern void e1000e_init_rx_addrs(struct e1000_hw *hw, u16 rar_count);
-extern void e1000e_update_mc_addr_list_generic(struct e1000_hw *hw,
-					       u8 *mc_addr_list,
-					       u32 mc_addr_count);
-extern void e1000e_rar_set(struct e1000_hw *hw, u8 *addr, u32 index);
-extern s32 e1000e_set_fc_watermarks(struct e1000_hw *hw);
-extern void e1000e_set_pcie_no_snoop(struct e1000_hw *hw, u32 no_snoop);
-extern s32 e1000e_get_hw_semaphore(struct e1000_hw *hw);
-extern s32 e1000e_valid_led_default(struct e1000_hw *hw, u16 *data);
-extern void e1000e_config_collision_dist_generic(struct e1000_hw *hw);
-extern s32 e1000e_config_fc_after_link_up(struct e1000_hw *hw);
-extern s32 e1000e_force_mac_fc(struct e1000_hw *hw);
-extern s32 e1000e_blink_led_generic(struct e1000_hw *hw);
-extern void e1000_write_vfta_generic(struct e1000_hw *hw, u32 offset, u32 value);
-extern s32 e1000_check_alt_mac_addr_generic(struct e1000_hw *hw);
-extern void e1000e_reset_adaptive(struct e1000_hw *hw);
-extern void e1000e_update_adaptive(struct e1000_hw *hw);
-
-extern s32 e1000e_setup_copper_link(struct e1000_hw *hw);
-extern s32 e1000e_get_phy_id(struct e1000_hw *hw);
-extern void e1000e_put_hw_semaphore(struct e1000_hw *hw);
-extern s32 e1000e_check_reset_block_generic(struct e1000_hw *hw);
-extern s32 e1000e_phy_force_speed_duplex_igp(struct e1000_hw *hw);
-extern s32 e1000e_get_cable_length_igp_2(struct e1000_hw *hw);
-extern s32 e1000e_get_phy_info_igp(struct e1000_hw *hw);
-extern s32 e1000_set_page_igp(struct e1000_hw *hw, u16 page);
-extern s32 e1000e_read_phy_reg_igp(struct e1000_hw *hw, u32 offset, u16 *data);
-extern s32 e1000e_read_phy_reg_igp_locked(struct e1000_hw *hw, u32 offset,
-                                          u16 *data);
-extern s32 e1000e_phy_hw_reset_generic(struct e1000_hw *hw);
-extern s32 e1000e_set_d3_lplu_state(struct e1000_hw *hw, bool active);
-extern s32 e1000e_write_phy_reg_igp(struct e1000_hw *hw, u32 offset, u16 data);
-extern s32 e1000e_write_phy_reg_igp_locked(struct e1000_hw *hw, u32 offset,
-                                           u16 data);
-extern s32 e1000e_phy_sw_reset(struct e1000_hw *hw);
-extern s32 e1000e_phy_force_speed_duplex_m88(struct e1000_hw *hw);
-extern s32 e1000e_get_cfg_done(struct e1000_hw *hw);
-extern s32 e1000e_get_cable_length_m88(struct e1000_hw *hw);
-extern s32 e1000e_get_phy_info_m88(struct e1000_hw *hw);
-extern s32 e1000e_read_phy_reg_m88(struct e1000_hw *hw, u32 offset, u16 *data);
-extern s32 e1000e_write_phy_reg_m88(struct e1000_hw *hw, u32 offset, u16 data);
-extern s32 e1000e_phy_init_script_igp3(struct e1000_hw *hw);
-extern enum e1000_phy_type e1000e_get_phy_type_from_id(u32 phy_id);
-extern s32 e1000e_determine_phy_address(struct e1000_hw *hw);
-extern s32 e1000e_write_phy_reg_bm(struct e1000_hw *hw, u32 offset, u16 data);
-extern s32 e1000e_read_phy_reg_bm(struct e1000_hw *hw, u32 offset, u16 *data);
-extern s32 e1000_enable_phy_wakeup_reg_access_bm(struct e1000_hw *hw,
-						 u16 *phy_reg);
-extern s32 e1000_disable_phy_wakeup_reg_access_bm(struct e1000_hw *hw,
-						  u16 *phy_reg);
-extern s32 e1000e_read_phy_reg_bm2(struct e1000_hw *hw, u32 offset, u16 *data);
-extern s32 e1000e_write_phy_reg_bm2(struct e1000_hw *hw, u32 offset, u16 data);
-extern void e1000e_phy_force_speed_duplex_setup(struct e1000_hw *hw, u16 *phy_ctrl);
-extern s32 e1000e_write_kmrn_reg(struct e1000_hw *hw, u32 offset, u16 data);
-extern s32 e1000e_write_kmrn_reg_locked(struct e1000_hw *hw, u32 offset,
-                                        u16 data);
-extern s32 e1000e_read_kmrn_reg(struct e1000_hw *hw, u32 offset, u16 *data);
-extern s32 e1000e_read_kmrn_reg_locked(struct e1000_hw *hw, u32 offset,
-                                       u16 *data);
-extern s32 e1000e_phy_has_link_generic(struct e1000_hw *hw, u32 iterations,
-			       u32 usec_interval, bool *success);
-extern s32 e1000e_phy_reset_dsp(struct e1000_hw *hw);
-extern void e1000_power_up_phy_copper(struct e1000_hw *hw);
-extern void e1000_power_down_phy_copper(struct e1000_hw *hw);
-extern s32 e1000e_read_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 *data);
-extern s32 e1000e_write_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 data);
-extern s32 e1000e_check_downshift(struct e1000_hw *hw);
-extern s32 e1000_read_phy_reg_hv(struct e1000_hw *hw, u32 offset, u16 *data);
-extern s32 e1000_read_phy_reg_hv_locked(struct e1000_hw *hw, u32 offset,
-                                        u16 *data);
-extern s32 e1000_read_phy_reg_page_hv(struct e1000_hw *hw, u32 offset,
-				      u16 *data);
-extern s32 e1000_write_phy_reg_hv(struct e1000_hw *hw, u32 offset, u16 data);
-extern s32 e1000_write_phy_reg_hv_locked(struct e1000_hw *hw, u32 offset,
-                                         u16 data);
-extern s32 e1000_write_phy_reg_page_hv(struct e1000_hw *hw, u32 offset,
-				       u16 data);
-extern s32 e1000_link_stall_workaround_hv(struct e1000_hw *hw);
-extern s32 e1000_copper_link_setup_82577(struct e1000_hw *hw);
-extern s32 e1000_check_polarity_82577(struct e1000_hw *hw);
-extern s32 e1000_get_phy_info_82577(struct e1000_hw *hw);
-extern s32 e1000_phy_force_speed_duplex_82577(struct e1000_hw *hw);
-extern s32 e1000_get_cable_length_82577(struct e1000_hw *hw);
-
-extern s32 e1000_check_polarity_m88(struct e1000_hw *hw);
-extern s32 e1000_get_phy_info_ife(struct e1000_hw *hw);
-extern s32 e1000_check_polarity_ife(struct e1000_hw *hw);
-extern s32 e1000_phy_force_speed_duplex_ife(struct e1000_hw *hw);
-extern s32 e1000_check_polarity_igp(struct e1000_hw *hw);
-extern bool e1000_check_phy_82574(struct e1000_hw *hw);
-=======
 extern const struct e1000_info e1000_pch_lpt_info;
 extern const struct e1000_info e1000_pch_spt_info;
 extern const struct e1000_info e1000_pch_cnp_info;
@@ -941,7 +533,6 @@ void e1000e_ptp_remove(struct e1000_adapter *adapter);
 
 u64 e1000e_read_systim(struct e1000_adapter *adapter,
 		       struct ptp_system_timestamp *sts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline s32 e1000_phy_hw_reset(struct e1000_hw *hw)
 {
@@ -953,42 +544,22 @@ static inline s32 e1e_rphy(struct e1000_hw *hw, u32 offset, u16 *data)
 	return hw->phy.ops.read_reg(hw, offset, data);
 }
 
-<<<<<<< HEAD
-=======
 static inline s32 e1e_rphy_locked(struct e1000_hw *hw, u32 offset, u16 *data)
 {
 	return hw->phy.ops.read_reg_locked(hw, offset, data);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline s32 e1e_wphy(struct e1000_hw *hw, u32 offset, u16 data)
 {
 	return hw->phy.ops.write_reg(hw, offset, data);
 }
 
-<<<<<<< HEAD
-static inline s32 e1000_get_cable_length(struct e1000_hw *hw)
-{
-	return hw->phy.ops.get_cable_length(hw);
-}
-
-extern s32 e1000e_acquire_nvm(struct e1000_hw *hw);
-extern s32 e1000e_write_nvm_spi(struct e1000_hw *hw, u16 offset, u16 words, u16 *data);
-extern s32 e1000e_update_nvm_checksum_generic(struct e1000_hw *hw);
-extern s32 e1000e_poll_eerd_eewr_done(struct e1000_hw *hw, int ee_reg);
-extern s32 e1000e_read_nvm_eerd(struct e1000_hw *hw, u16 offset, u16 words, u16 *data);
-extern s32 e1000e_validate_nvm_checksum_generic(struct e1000_hw *hw);
-extern void e1000e_release_nvm(struct e1000_hw *hw);
-extern void e1000e_reload_nvm_generic(struct e1000_hw *hw);
-extern s32 e1000_read_mac_addr_generic(struct e1000_hw *hw);
-=======
 static inline s32 e1e_wphy_locked(struct e1000_hw *hw, u32 offset, u16 data)
 {
 	return hw->phy.ops.write_reg_locked(hw, offset, data);
 }
 
 void e1000e_reload_nvm_generic(struct e1000_hw *hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline s32 e1000e_read_mac_addr(struct e1000_hw *hw)
 {
@@ -1008,22 +579,14 @@ static inline s32 e1000e_update_nvm_checksum(struct e1000_hw *hw)
 	return hw->nvm.ops.update(hw);
 }
 
-<<<<<<< HEAD
-static inline s32 e1000_read_nvm(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
-=======
 static inline s32 e1000_read_nvm(struct e1000_hw *hw, u16 offset, u16 words,
 				 u16 *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return hw->nvm.ops.read(hw, offset, words, data);
 }
 
-<<<<<<< HEAD
-static inline s32 e1000_write_nvm(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
-=======
 static inline s32 e1000_write_nvm(struct e1000_hw *hw, u16 offset, u16 words,
 				  u16 *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return hw->nvm.ops.write(hw, offset, words, data);
 }
@@ -1033,24 +596,11 @@ static inline s32 e1000_get_phy_info(struct e1000_hw *hw)
 	return hw->phy.ops.get_info(hw);
 }
 
-<<<<<<< HEAD
-extern bool e1000e_check_mng_mode_generic(struct e1000_hw *hw);
-extern bool e1000e_enable_tx_pkt_filtering(struct e1000_hw *hw);
-extern s32 e1000e_mng_write_dhcp_info(struct e1000_hw *hw, u8 *buffer, u16 length);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 __er32(struct e1000_hw *hw, unsigned long reg)
 {
 	return readl(hw->hw_addr + reg);
 }
 
-<<<<<<< HEAD
-static inline void __ew32(struct e1000_hw *hw, unsigned long reg, u32 val)
-{
-	writel(val, hw->hw_addr + reg);
-}
-=======
 #define er32(reg)	__er32(hw, E1000_##reg)
 
 void __ew32(struct e1000_hw *hw, unsigned long reg, u32 val);
@@ -1064,6 +614,5 @@ void __ew32(struct e1000_hw *hw, unsigned long reg, u32 val);
 
 #define E1000_READ_REG_ARRAY(a, reg, offset) \
 	(readl((a)->hw_addr + reg + ((offset) << 2)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _E1000_H_ */

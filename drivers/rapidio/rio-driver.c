@@ -1,30 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RapidIO driver support
  *
  * Copyright 2005 MontaVista Software, Inc.
  * Matt Porter <mporter@kernel.crashing.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/rio.h>
 #include <linux/rio_ids.h>
-<<<<<<< HEAD
-=======
 #include <linux/rio_drv.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "rio.h"
 
@@ -126,11 +112,7 @@ static int rio_device_probe(struct device *dev)
  * driver, then run the driver remove() method.  Then update
  * the reference count.
  */
-<<<<<<< HEAD
-static int rio_device_remove(struct device *dev)
-=======
 static void rio_device_remove(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rio_dev *rdev = to_rio_dev(dev);
 	struct rio_driver *rdrv = rdev->driver;
@@ -142,10 +124,6 @@ static void rio_device_remove(struct device *dev)
 	}
 
 	rio_dev_put(rdev);
-<<<<<<< HEAD
-
-	return 0;
-=======
 }
 
 static void rio_device_shutdown(struct device *dev)
@@ -157,7 +135,6 @@ static void rio_device_shutdown(struct device *dev)
 
 	if (rdrv && rdrv->shutdown)
 		rdrv->shutdown(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -193,15 +170,12 @@ void rio_unregister_driver(struct rio_driver *rdrv)
 	driver_unregister(&rdrv->driver);
 }
 
-<<<<<<< HEAD
-=======
 void rio_attach_device(struct rio_dev *rdev)
 {
 	rdev->dev.bus = &rio_bus_type;
 }
 EXPORT_SYMBOL_GPL(rio_attach_device);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *  rio_match_bus - Tell if a RIO device structure has a matching RIO driver device id structure
  *  @dev: the standard device structure to match against
@@ -230,11 +204,6 @@ static int rio_match_bus(struct device *dev, struct device_driver *drv)
       out:return 0;
 }
 
-<<<<<<< HEAD
-struct device rio_bus = {
-	.init_name = "rapidio",
-};
-=======
 static int rio_uevent(const struct device *dev, struct kobj_uevent_env *env)
 {
 	const struct rio_dev *rdev;
@@ -257,42 +226,26 @@ struct class rio_mport_class = {
 	.dev_groups	= rio_mport_groups,
 };
 EXPORT_SYMBOL_GPL(rio_mport_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bus_type rio_bus_type = {
 	.name = "rapidio",
 	.match = rio_match_bus,
-<<<<<<< HEAD
-	.dev_attrs = rio_dev_attrs,
-	.probe = rio_device_probe,
-	.remove = rio_device_remove,
-=======
 	.dev_groups = rio_dev_groups,
 	.bus_groups = rio_bus_groups,
 	.probe = rio_device_probe,
 	.remove = rio_device_remove,
 	.shutdown = rio_device_shutdown,
 	.uevent	= rio_uevent,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  *  rio_bus_init - Register the RapidIO bus with the device model
  *
-<<<<<<< HEAD
- *  Registers the RIO bus device and RIO bus type with the Linux
-=======
  *  Registers the RIO mport device class and RIO bus type with the Linux
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  device model.
  */
 static int __init rio_bus_init(void)
 {
-<<<<<<< HEAD
-	if (device_register(&rio_bus) < 0)
-		printk("RIO: failed to register RIO bus device\n");
-	return bus_register(&rio_bus_type);
-=======
 	int ret;
 
 	ret = class_register(&rio_mport_class);
@@ -302,7 +255,6 @@ static int __init rio_bus_init(void)
 			class_unregister(&rio_mport_class);
 	}
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 postcore_initcall(rio_bus_init);

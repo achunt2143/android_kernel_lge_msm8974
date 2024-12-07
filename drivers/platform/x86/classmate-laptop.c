@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- *  Copyright (C) 2009  Thadeu Lima de Souza Cascardo <cascardo@holoscopio.com>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Copyright (C) 2009  Thadeu Lima de Souza Cascardo <cascardo@holoscopio.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -27,31 +8,13 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/workqueue.h>
-<<<<<<< HEAD
-#include <acpi/acpi_drivers.h>
-=======
 #include <linux/acpi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/backlight.h>
 #include <linux/input.h>
 #include <linux/rfkill.h>
 
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-
-struct cmpc_accel {
-	int sensitivity;
-};
-
-#define CMPC_ACCEL_SENSITIVITY_DEFAULT		5
-
-
-#define CMPC_ACCEL_HID		"ACCE0000"
-#define CMPC_TABLET_HID		"TBLT0000"
-#define CMPC_IPML_HID	"IPML200"
-#define CMPC_KEYS_HID		"FnBT0000"
-=======
 struct cmpc_accel {
 	int sensitivity;
 	int g_select;
@@ -69,7 +32,6 @@ struct cmpc_accel {
 #define CMPC_TABLET_HID		"TBLT0000"
 #define CMPC_IPML_HID	"IPML200"
 #define CMPC_KEYS_HID		"FNBT0000"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Generic input device code.
@@ -106,9 +68,6 @@ static int cmpc_remove_acpi_notify_device(struct acpi_device *acpi)
 }
 
 /*
-<<<<<<< HEAD
- * Accelerometer code.
-=======
  * Accelerometer code for Classmate V4
  */
 static acpi_status cmpc_start_accel_v4(acpi_handle handle)
@@ -490,7 +449,6 @@ static struct acpi_driver cmpc_accel_acpi_driver_v4 = {
 
 /*
  * Accelerometer code for Classmate versions prior to V4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static acpi_status cmpc_start_accel(acpi_handle handle)
 {
@@ -543,11 +501,7 @@ static acpi_status cmpc_get_accel(acpi_handle handle,
 {
 	union acpi_object param[2];
 	struct acpi_object_list input;
-<<<<<<< HEAD
-	struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, 0 };
-=======
 	struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, NULL };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *locs;
 	acpi_status status;
 
@@ -616,11 +570,7 @@ static ssize_t cmpc_accel_sensitivity_store(struct device *dev,
 	inputdev = dev_get_drvdata(&acpi->dev);
 	accel = dev_get_drvdata(&inputdev->dev);
 
-<<<<<<< HEAD
-	r = strict_strtoul(buf, 0, &sensitivity);
-=======
 	r = kstrtoul(buf, 0, &sensitivity);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r)
 		return r;
 
@@ -698,23 +648,10 @@ failed_file:
 	return error;
 }
 
-<<<<<<< HEAD
-static int cmpc_accel_remove(struct acpi_device *acpi, int type)
-{
-	struct input_dev *inputdev;
-	struct cmpc_accel *accel;
-
-	inputdev = dev_get_drvdata(&acpi->dev);
-	accel = dev_get_drvdata(&inputdev->dev);
-
-	device_remove_file(&acpi->dev, &cmpc_accel_sensitivity_attr);
-	return cmpc_remove_acpi_notify_device(acpi);
-=======
 static void cmpc_accel_remove(struct acpi_device *acpi)
 {
 	device_remove_file(&acpi->dev, &cmpc_accel_sensitivity_attr);
 	cmpc_remove_acpi_notify_device(acpi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct acpi_device_id cmpc_accel_device_ids[] = {
@@ -762,15 +699,10 @@ static void cmpc_tablet_handler(struct acpi_device *dev, u32 event)
 	struct input_dev *inputdev = dev_get_drvdata(&dev->dev);
 
 	if (event == 0x81) {
-<<<<<<< HEAD
-		if (ACPI_SUCCESS(cmpc_get_tablet(dev->handle, &val)))
-			input_report_switch(inputdev, SW_TABLET_MODE, !val);
-=======
 		if (ACPI_SUCCESS(cmpc_get_tablet(dev->handle, &val))) {
 			input_report_switch(inputdev, SW_TABLET_MODE, !val);
 			input_sync(inputdev);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -783,15 +715,10 @@ static void cmpc_tablet_idev_init(struct input_dev *inputdev)
 	set_bit(SW_TABLET_MODE, inputdev->swbit);
 
 	acpi = to_acpi_device(inputdev->dev.parent);
-<<<<<<< HEAD
-	if (ACPI_SUCCESS(cmpc_get_tablet(acpi->handle, &val)))
-		input_report_switch(inputdev, SW_TABLET_MODE, !val);
-=======
 	if (ACPI_SUCCESS(cmpc_get_tablet(acpi->handle, &val))) {
 		input_report_switch(inputdev, SW_TABLET_MODE, !val);
 		input_sync(inputdev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cmpc_tablet_add(struct acpi_device *acpi)
@@ -800,21 +727,6 @@ static int cmpc_tablet_add(struct acpi_device *acpi)
 					   cmpc_tablet_idev_init);
 }
 
-<<<<<<< HEAD
-static int cmpc_tablet_remove(struct acpi_device *acpi, int type)
-{
-	return cmpc_remove_acpi_notify_device(acpi);
-}
-
-static int cmpc_tablet_resume(struct acpi_device *acpi)
-{
-	struct input_dev *inputdev = dev_get_drvdata(&acpi->dev);
-	unsigned long long val = 0;
-	if (ACPI_SUCCESS(cmpc_get_tablet(acpi->handle, &val)))
-		input_report_switch(inputdev, SW_TABLET_MODE, !val);
-	return 0;
-}
-=======
 static void cmpc_tablet_remove(struct acpi_device *acpi)
 {
 	cmpc_remove_acpi_notify_device(acpi);
@@ -835,7 +747,6 @@ static int cmpc_tablet_resume(struct device *dev)
 #endif
 
 static SIMPLE_DEV_PM_OPS(cmpc_tablet_pm, NULL, cmpc_tablet_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct acpi_device_id cmpc_tablet_device_ids[] = {
 	{CMPC_TABLET_HID, 0},
@@ -850,15 +761,9 @@ static struct acpi_driver cmpc_tablet_acpi_driver = {
 	.ops = {
 		.add = cmpc_tablet_add,
 		.remove = cmpc_tablet_remove,
-<<<<<<< HEAD
-		.resume = cmpc_tablet_resume,
-		.notify = cmpc_tablet_handler,
-	}
-=======
 		.notify = cmpc_tablet_handler,
 	},
 	.drv.pm = &cmpc_tablet_pm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -1051,11 +956,7 @@ static int cmpc_ipml_add(struct acpi_device *acpi)
 	/*
 	 * If RFKILL is disabled, rfkill_alloc will return ERR_PTR(-ENODEV).
 	 * This is OK, however, since all other uses of the device will not
-<<<<<<< HEAD
-	 * derefence it.
-=======
 	 * dereference it.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (ipml->rf) {
 		retval = rfkill_register(ipml->rf);
@@ -1073,11 +974,7 @@ out_bd:
 	return retval;
 }
 
-<<<<<<< HEAD
-static int cmpc_ipml_remove(struct acpi_device *acpi, int type)
-=======
 static void cmpc_ipml_remove(struct acpi_device *acpi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipml200_dev *ipml;
 
@@ -1091,11 +988,6 @@ static void cmpc_ipml_remove(struct acpi_device *acpi)
 	}
 
 	kfree(ipml);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct acpi_device_id cmpc_ipml_device_ids[] = {
@@ -1129,11 +1021,8 @@ static int cmpc_keys_codes[] = {
 	KEY_CAMERA,
 	KEY_BACK,
 	KEY_FORWARD,
-<<<<<<< HEAD
-=======
 	KEY_UNKNOWN,
 	KEY_WLAN, /* NL3: 0x8b (press), 0x9b (release) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	KEY_MAX
 };
 
@@ -1164,15 +1053,9 @@ static int cmpc_keys_add(struct acpi_device *acpi)
 					   cmpc_keys_idev_init);
 }
 
-<<<<<<< HEAD
-static int cmpc_keys_remove(struct acpi_device *acpi, int type)
-{
-	return cmpc_remove_acpi_notify_device(acpi);
-=======
 static void cmpc_keys_remove(struct acpi_device *acpi)
 {
 	cmpc_remove_acpi_notify_device(acpi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct acpi_device_id cmpc_keys_device_ids[] = {
@@ -1217,10 +1100,6 @@ static int cmpc_init(void)
 	if (r)
 		goto failed_accel;
 
-<<<<<<< HEAD
-	return r;
-
-=======
 	r = acpi_bus_register_driver(&cmpc_accel_acpi_driver_v4);
 	if (r)
 		goto failed_accel_v4;
@@ -1230,7 +1109,6 @@ static int cmpc_init(void)
 failed_accel_v4:
 	acpi_bus_unregister_driver(&cmpc_accel_acpi_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 failed_accel:
 	acpi_bus_unregister_driver(&cmpc_tablet_acpi_driver);
 
@@ -1246,10 +1124,7 @@ failed_keys:
 
 static void cmpc_exit(void)
 {
-<<<<<<< HEAD
-=======
 	acpi_bus_unregister_driver(&cmpc_accel_acpi_driver_v4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_bus_unregister_driver(&cmpc_accel_acpi_driver);
 	acpi_bus_unregister_driver(&cmpc_tablet_acpi_driver);
 	acpi_bus_unregister_driver(&cmpc_ipml_acpi_driver);
@@ -1259,14 +1134,9 @@ static void cmpc_exit(void)
 module_init(cmpc_init);
 module_exit(cmpc_exit);
 
-<<<<<<< HEAD
-static const struct acpi_device_id cmpc_device_ids[] = {
-	{CMPC_ACCEL_HID, 0},
-=======
 static const struct acpi_device_id cmpc_device_ids[] __maybe_unused = {
 	{CMPC_ACCEL_HID, 0},
 	{CMPC_ACCEL_HID_V4, 0},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{CMPC_TABLET_HID, 0},
 	{CMPC_IPML_HID, 0},
 	{CMPC_KEYS_HID, 0},

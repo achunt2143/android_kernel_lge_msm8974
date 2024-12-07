@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * include/linux/f2fs_fs.h
  *
  * Copyright (c) 2012 Samsung Electronics Co., Ltd.
  *             http://www.samsung.com/
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_F2FS_FS_H
 #define _LINUX_F2FS_FS_H
@@ -23,48 +13,25 @@
 
 #define F2FS_SUPER_OFFSET		1024	/* byte-size offset */
 #define F2FS_MIN_LOG_SECTOR_SIZE	9	/* 9 bits for 512 bytes */
-<<<<<<< HEAD
-#define F2FS_MAX_LOG_SECTOR_SIZE	12	/* 12 bits for 4096 bytes */
-#define F2FS_LOG_SECTORS_PER_BLOCK	3	/* log number for sector/blk */
-#define F2FS_BLKSIZE			4096	/* support only 4KB block */
-#define F2FS_BLKSIZE_BITS		12	/* bits for F2FS_BLKSIZE */
-#define F2FS_MAX_EXTENSION		64	/* # of extension entries */
-=======
 #define F2FS_MAX_LOG_SECTOR_SIZE	PAGE_SHIFT	/* Max is Block Size */
 #define F2FS_LOG_SECTORS_PER_BLOCK	(PAGE_SHIFT - 9) /* log number for sector/blk */
 #define F2FS_BLKSIZE			PAGE_SIZE /* support only block == page */
 #define F2FS_BLKSIZE_BITS		PAGE_SHIFT /* bits for F2FS_BLKSIZE */
 #define F2FS_MAX_EXTENSION		64	/* # of extension entries */
 #define F2FS_EXTENSION_LEN		8	/* max size of extension */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define F2FS_BLK_ALIGN(x)	(((x) + F2FS_BLKSIZE - 1) >> F2FS_BLKSIZE_BITS)
 
 #define NULL_ADDR		((block_t)0)	/* used as block_t addresses */
 #define NEW_ADDR		((block_t)-1)	/* used as block_t addresses */
-<<<<<<< HEAD
-
-#define F2FS_BYTES_TO_BLK(bytes)	((bytes) >> F2FS_BLKSIZE_BITS)
-#define F2FS_BLK_TO_BYTES(blk)		((blk) << F2FS_BLKSIZE_BITS)
-=======
 #define COMPRESS_ADDR		((block_t)-2)	/* used as compressed data flag */
 
 #define F2FS_BYTES_TO_BLK(bytes)	((bytes) >> F2FS_BLKSIZE_BITS)
 #define F2FS_BLK_TO_BYTES(blk)		((blk) << F2FS_BLKSIZE_BITS)
 #define F2FS_BLK_END_BYTES(blk)		(F2FS_BLK_TO_BYTES(blk + 1) - 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 0, 1(node nid), 2(meta nid) are reserved node id */
 #define F2FS_RESERVED_NODE_NUM		3
 
-<<<<<<< HEAD
-#define F2FS_ROOT_INO(sbi)	(sbi->root_ino_num)
-#define F2FS_NODE_INO(sbi)	(sbi->node_ino_num)
-#define F2FS_META_INO(sbi)	(sbi->meta_ino_num)
-
-/* This flag is used by node and meta inodes, and by recovery */
-#define GFP_F2FS_ZERO		(GFP_NOFS | __GFP_ZERO)
-#define GFP_F2FS_HIGH_ZERO	(GFP_NOFS | __GFP_ZERO | __GFP_HIGHMEM)
-=======
 #define F2FS_ROOT_INO(sbi)	((sbi)->root_ino_num)
 #define F2FS_NODE_INO(sbi)	((sbi)->node_ino_num)
 #define F2FS_META_INO(sbi)	((sbi)->meta_ino_num)
@@ -76,7 +43,6 @@
 
 /* This flag is used by node and meta inodes, and by recovery */
 #define GFP_F2FS_ZERO		(GFP_NOFS | __GFP_ZERO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * For further optimization on multi-head logs, on-disk layout supports maximum
@@ -90,17 +56,12 @@
 
 #define VERSION_LEN	256
 #define MAX_VOLUME_NAME		512
-<<<<<<< HEAD
-=======
 #define MAX_PATH_LEN		64
 #define MAX_DEVICES		8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * For superblock
  */
-<<<<<<< HEAD
-=======
 struct f2fs_device {
 	__u8 path[MAX_PATH_LEN];
 	__le32 total_segments;
@@ -145,7 +106,6 @@ enum f2fs_error {
 
 #define MAX_F2FS_ERRORS			16
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct f2fs_super_block {
 	__le32 magic;			/* Magic Number */
 	__le16 major_ver;		/* Major Version */
@@ -177,20 +137,13 @@ struct f2fs_super_block {
 	__u8 uuid[16];			/* 128-bit uuid for volume */
 	__le16 volume_name[MAX_VOLUME_NAME];	/* volume name */
 	__le32 extension_count;		/* # of extensions below */
-<<<<<<< HEAD
-	__u8 extension_list[F2FS_MAX_EXTENSION][8];	/* extension array */
-=======
 	__u8 extension_list[F2FS_MAX_EXTENSION][F2FS_EXTENSION_LEN];/* extension array */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le32 cp_payload;
 	__u8 version[VERSION_LEN];	/* the kernel version */
 	__u8 init_version[VERSION_LEN];	/* the initial kernel version */
 	__le32 feature;			/* defined features */
 	__u8 encryption_level;		/* versioning level for encryption */
 	__u8 encrypt_pw_salt[16];	/* Salt used for string2key algorithm */
-<<<<<<< HEAD
-	__u8 reserved[871];		/* valid reserved region */
-=======
 	struct f2fs_device devs[MAX_DEVICES];	/* device list */
 	__le32 qf_ino[F2FS_MAX_QUOTAS];	/* quota inode numbers */
 	__u8 hot_ext_count;		/* # of hot file extension */
@@ -200,14 +153,11 @@ struct f2fs_super_block {
 	__u8 s_errors[MAX_F2FS_ERRORS];		/* reason of image corrupts */
 	__u8 reserved[258];		/* valid reserved region */
 	__le32 crc;			/* checksum of superblock */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /*
  * For checkpoint
  */
-<<<<<<< HEAD
-=======
 #define CP_RESIZEFS_FLAG		0x00004000
 #define CP_DISABLED_QUICK_FLAG		0x00002000
 #define CP_DISABLED_FLAG		0x00001000
@@ -217,7 +167,6 @@ struct f2fs_super_block {
 #define CP_TRIMMED_FLAG		0x00000100
 #define CP_NAT_BITS_FLAG	0x00000080
 #define CP_CRC_RECOVERY_FLAG	0x00000040
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CP_FASTBOOT_FLAG	0x00000020
 #define CP_FSCK_FLAG		0x00000010
 #define CP_ERROR_FLAG		0x00000008
@@ -255,17 +204,6 @@ struct f2fs_checkpoint {
 	unsigned char alloc_type[MAX_ACTIVE_LOGS];
 
 	/* SIT and NAT version bitmap */
-<<<<<<< HEAD
-	unsigned char sit_nat_version_bitmap[1];
-} __packed;
-
-/*
- * For orphan inode management
- */
-#define F2FS_ORPHANS_PER_BLOCK	1020
-
-#define GET_ORPHAN_BLOCKS(n)	((n + F2FS_ORPHANS_PER_BLOCK - 1) / \
-=======
 	unsigned char sit_nat_version_bitmap[];
 } __packed;
 
@@ -279,7 +217,6 @@ struct f2fs_checkpoint {
 #define F2FS_ORPHANS_PER_BLOCK	((F2FS_BLKSIZE - 4 * sizeof(__le32)) / sizeof(__le32))
 
 #define GET_ORPHAN_BLOCKS(n)	(((n) + F2FS_ORPHANS_PER_BLOCK - 1) / \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					F2FS_ORPHANS_PER_BLOCK)
 
 struct f2fs_orphan_block {
@@ -297,21 +234,6 @@ struct f2fs_orphan_block {
 struct f2fs_extent {
 	__le32 fofs;		/* start file offset of the extent */
 	__le32 blk;		/* start block address of the extent */
-<<<<<<< HEAD
-	__le32 len;		/* lengh of the extent */
-} __packed;
-
-#define F2FS_NAME_LEN		255
-#define F2FS_INLINE_XATTR_ADDRS	50	/* 200 bytes for inline xattrs */
-#define DEF_ADDRS_PER_INODE	923	/* Address Pointers in an Inode */
-#define DEF_NIDS_PER_INODE	5	/* Node IDs in an Inode */
-#define ADDRS_PER_INODE(inode)	addrs_per_inode(inode)
-#define ADDRS_PER_BLOCK		1018	/* Address Pointers in a Direct Block */
-#define NIDS_PER_BLOCK		1018	/* Node IDs in an Indirect Block */
-
-#define ADDRS_PER_PAGE(page, inode)	\
-	(IS_INODE(page) ? ADDRS_PER_INODE(inode) : ADDRS_PER_BLOCK)
-=======
 	__le32 len;		/* length of the extent */
 } __packed;
 
@@ -346,7 +268,6 @@ struct node_footer {
 
 #define ADDRS_PER_PAGE(page, inode)	\
 	(IS_INODE(page) ? ADDRS_PER_INODE(inode) : ADDRS_PER_BLOCK(inode))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	NODE_DIR1_BLOCK		(DEF_ADDRS_PER_INODE + 1)
 #define	NODE_DIR2_BLOCK		(DEF_ADDRS_PER_INODE + 2)
@@ -359,15 +280,9 @@ struct node_footer {
 #define F2FS_INLINE_DENTRY	0x04	/* file inline dentry flag */
 #define F2FS_DATA_EXIST		0x08	/* file inline data exist flag */
 #define F2FS_INLINE_DOTS	0x10	/* file having implicit dot dentries */
-<<<<<<< HEAD
-
-#define MAX_INLINE_DATA		(sizeof(__le32) * (DEF_ADDRS_PER_INODE - \
-						F2FS_INLINE_XATTR_ADDRS - 1))
-=======
 #define F2FS_EXTRA_ATTR		0x20	/* file having extra attribute */
 #define F2FS_PIN_FILE		0x40	/* file should not be gced */
 #define F2FS_COMPRESS_RELEASED	0x80	/* file released compressed blocks */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct f2fs_inode {
 	__le16 i_mode;			/* file mode */
@@ -385,9 +300,6 @@ struct f2fs_inode {
 	__le32 i_ctime_nsec;		/* change time in nano scale */
 	__le32 i_mtime_nsec;		/* modification time in nano scale */
 	__le32 i_generation;		/* file version (for NFS) */
-<<<<<<< HEAD
-	__le32 i_current_depth;		/* only for directory depth */
-=======
 	union {
 		__le32 i_current_depth;	/* only for directory depth */
 		__le16 i_gc_failures;	/*
@@ -395,7 +307,6 @@ struct f2fs_inode {
 					 * only for regular files.
 					 */
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le32 i_xattr_nid;		/* nid to save xattr */
 	__le32 i_flags;			/* file attributes */
 	__le32 i_pino;			/* parent inode number */
@@ -405,10 +316,6 @@ struct f2fs_inode {
 
 	struct f2fs_extent i_ext;	/* caching a largest extent */
 
-<<<<<<< HEAD
-	__le32 i_addr[DEF_ADDRS_PER_INODE];	/* Pointers to data blocks */
-
-=======
 	union {
 		struct {
 			__le16 i_extra_isize;	/* extra inode attribute size */
@@ -428,17 +335,12 @@ struct f2fs_inode {
 		} __packed;
 		__le32 i_addr[DEF_ADDRS_PER_INODE];	/* Pointers to data blocks */
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le32 i_nid[DEF_NIDS_PER_INODE];	/* direct(2), indirect(2),
 						double_indirect(1) node id */
 } __packed;
 
 struct direct_node {
-<<<<<<< HEAD
-	__le32 addr[ADDRS_PER_BLOCK];	/* array of data block address */
-=======
 	__le32 addr[DEF_ADDRS_PER_BLOCK];	/* array of data block address */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct indirect_node {
@@ -452,19 +354,7 @@ enum {
 	OFFSET_BIT_SHIFT
 };
 
-<<<<<<< HEAD
-#define OFFSET_BIT_MASK		(0x07)	/* (0x01 << OFFSET_BIT_SHIFT) - 1 */
-
-struct node_footer {
-	__le32 nid;		/* node id */
-	__le32 ino;		/* inode nunmber */
-	__le32 flag;		/* include cold/fsync/dentry marks and offset */
-	__le64 cp_ver;		/* checkpoint version */
-	__le32 next_blkaddr;	/* next node page block address */
-} __packed;
-=======
 #define OFFSET_BIT_MASK		GENMASK(OFFSET_BIT_SHIFT - 1, 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct f2fs_node {
 	/* can be one of three types: inode, direct, and indirect types */
@@ -479,11 +369,7 @@ struct f2fs_node {
 /*
  * For NAT entries
  */
-<<<<<<< HEAD
-#define NAT_ENTRY_PER_BLOCK (PAGE_CACHE_SIZE / sizeof(struct f2fs_nat_entry))
-=======
 #define NAT_ENTRY_PER_BLOCK (F2FS_BLKSIZE / sizeof(struct f2fs_nat_entry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct f2fs_nat_entry {
 	__u8 version;		/* latest version of cached nat entry */
@@ -498,14 +384,6 @@ struct f2fs_nat_block {
 /*
  * For SIT entries
  *
-<<<<<<< HEAD
- * Each segment is 2MB in size by default so that a bitmap for validity of
- * there-in blocks should occupy 64 bytes, 512 bits.
- * Not allow to change this.
- */
-#define SIT_VBLOCK_MAP_SIZE 64
-#define SIT_ENTRY_PER_BLOCK (PAGE_CACHE_SIZE / sizeof(struct f2fs_sit_entry))
-=======
  * A validity bitmap of 64 bytes covers 512 blocks of area. For a 4K page size,
  * this results in a segment size of 2MB. For 16k pages, the default segment size
  * is 8MB.
@@ -513,7 +391,6 @@ struct f2fs_nat_block {
  */
 #define SIT_VBLOCK_MAP_SIZE 64
 #define SIT_ENTRY_PER_BLOCK (F2FS_BLKSIZE / sizeof(struct f2fs_sit_entry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * F2FS uses 4 bytes to represent block address. As a result, supported size of
@@ -548,11 +425,7 @@ struct f2fs_sit_block {
  * For segment summary
  *
  * One summary block contains exactly 512 summary entries, which represents
-<<<<<<< HEAD
- * exactly 2MB segment by default. Not allow to change the basic units.
-=======
  * exactly one segment by default. Not allow to change the basic units.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * NOTE: For initializing fields, you must use set_summary
  *
@@ -563,21 +436,12 @@ struct f2fs_sit_block {
  * from node's page's beginning to get a data block address.
  * ex) data_blkaddr = (block_t)(nodepage_start_address + ofs_in_node)
  */
-<<<<<<< HEAD
-#define ENTRIES_IN_SUM		512
-#define	SUMMARY_SIZE		(7)	/* sizeof(struct summary) */
-#define	SUM_FOOTER_SIZE		(5)	/* sizeof(struct summary_footer) */
-#define SUM_ENTRY_SIZE		(SUMMARY_SIZE * ENTRIES_IN_SUM)
-
-/* a summary entry for a 4KB-sized block in a segment */
-=======
 #define ENTRIES_IN_SUM		(F2FS_BLKSIZE / 8)
 #define	SUMMARY_SIZE		(7)	/* sizeof(struct f2fs_summary) */
 #define	SUM_FOOTER_SIZE		(5)	/* sizeof(struct summary_footer) */
 #define SUM_ENTRY_SIZE		(SUMMARY_SIZE * ENTRIES_IN_SUM)
 
 /* a summary entry for a block in a segment */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct f2fs_summary {
 	__le32 nid;		/* parent node id */
 	union {
@@ -661,11 +525,7 @@ struct f2fs_journal {
 	};
 } __packed;
 
-<<<<<<< HEAD
-/* 4KB-sized summary block structure */
-=======
 /* Block-sized summary block structure */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct f2fs_summary_block {
 	struct f2fs_summary entries[ENTRIES_IN_SUM];
 	struct f2fs_journal journal;
@@ -686,28 +546,12 @@ typedef __le32	f2fs_hash_t;
 #define F2FS_SLOT_LEN		8
 #define F2FS_SLOT_LEN_BITS	3
 
-<<<<<<< HEAD
-#define GET_DENTRY_SLOTS(x)	((x + F2FS_SLOT_LEN - 1) >> F2FS_SLOT_LEN_BITS)
-=======
 #define GET_DENTRY_SLOTS(x) (((x) + F2FS_SLOT_LEN - 1) >> F2FS_SLOT_LEN_BITS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* MAX level for dir lookup */
 #define MAX_DIR_HASH_DEPTH	63
 
 /* MAX buckets in one level of dir */
-<<<<<<< HEAD
-#define MAX_DIR_BUCKETS		(1 << ((MAX_DIR_HASH_DEPTH / 2) - 1))
-
-/*
- * space utilization of regular dentry and inline dentry
- *		regular dentry			inline dentry
- * bitmap	1 * 27 = 27			1 * 23 = 23
- * reserved	1 * 3 = 3			1 * 7 = 7
- * dentry	11 * 214 = 2354			11 * 182 = 2002
- * filename	8 * 214 = 1712			8 * 182 = 1456
- * total	4096				3488
-=======
 #define MAX_DIR_BUCKETS		BIT((MAX_DIR_HASH_DEPTH / 2) - 1)
 
 /*
@@ -718,20 +562,10 @@ typedef __le32	f2fs_hash_t;
  * dentry	11 * 214 = 2354		11 * 182 = 2002		11 * 2 = 22
  * filename	8 * 214 = 1712		8 * 182 = 1456		8 * 2 = 16
  * total	4096			3488			40
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note: there are more reserved space in inline dentry than in regular
  * dentry, when converting inline dentry we should handle this carefully.
  */
-<<<<<<< HEAD
-#define NR_DENTRY_IN_BLOCK	214	/* the number of dentry in a block */
-#define SIZE_OF_DIR_ENTRY	11	/* by byte */
-#define SIZE_OF_DENTRY_BITMAP	((NR_DENTRY_IN_BLOCK + BITS_PER_BYTE - 1) / \
-					BITS_PER_BYTE)
-#define SIZE_OF_RESERVED	(PAGE_SIZE - ((SIZE_OF_DIR_ENTRY + \
-				F2FS_SLOT_LEN) * \
-				NR_DENTRY_IN_BLOCK + SIZE_OF_DENTRY_BITMAP))
-=======
 
 /* the number of dentry in a block */
 #define NR_DENTRY_IN_BLOCK	((BITS_PER_BYTE * F2FS_BLKSIZE) / \
@@ -743,25 +577,16 @@ typedef __le32	f2fs_hash_t;
 				F2FS_SLOT_LEN) * \
 				NR_DENTRY_IN_BLOCK + SIZE_OF_DENTRY_BITMAP))
 #define MIN_INLINE_DENTRY_SIZE		40	/* just include '.' and '..' entries */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* One directory entry slot representing F2FS_SLOT_LEN-sized file name */
 struct f2fs_dir_entry {
 	__le32 hash_code;	/* hash code of file name */
 	__le32 ino;		/* inode number */
-<<<<<<< HEAD
-	__le16 name_len;	/* lengh of file name */
-	__u8 file_type;		/* file type */
-} __packed;
-
-/* 4KB-sized directory entry block */
-=======
 	__le16 name_len;	/* length of file name */
 	__u8 file_type;		/* file type */
 } __packed;
 
 /* Block-sized directory entry block */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct f2fs_dentry_block {
 	/* validity bitmap for directory entries in each block */
 	__u8 dentry_bitmap[SIZE_OF_DENTRY_BITMAP];
@@ -770,39 +595,6 @@ struct f2fs_dentry_block {
 	__u8 filename[NR_DENTRY_IN_BLOCK][F2FS_SLOT_LEN];
 } __packed;
 
-<<<<<<< HEAD
-/* for inline dir */
-#define NR_INLINE_DENTRY	(MAX_INLINE_DATA * BITS_PER_BYTE / \
-				((SIZE_OF_DIR_ENTRY + F2FS_SLOT_LEN) * \
-				BITS_PER_BYTE + 1))
-#define INLINE_DENTRY_BITMAP_SIZE	((NR_INLINE_DENTRY + \
-					BITS_PER_BYTE - 1) / BITS_PER_BYTE)
-#define INLINE_RESERVED_SIZE	(MAX_INLINE_DATA - \
-				((SIZE_OF_DIR_ENTRY + F2FS_SLOT_LEN) * \
-				NR_INLINE_DENTRY + INLINE_DENTRY_BITMAP_SIZE))
-
-/* inline directory entry structure */
-struct f2fs_inline_dentry {
-	__u8 dentry_bitmap[INLINE_DENTRY_BITMAP_SIZE];
-	__u8 reserved[INLINE_RESERVED_SIZE];
-	struct f2fs_dir_entry dentry[NR_INLINE_DENTRY];
-	__u8 filename[NR_INLINE_DENTRY][F2FS_SLOT_LEN];
-} __packed;
-
-/* file types used in inode_info->flags */
-enum {
-	F2FS_FT_UNKNOWN,
-	F2FS_FT_REG_FILE,
-	F2FS_FT_DIR,
-	F2FS_FT_CHRDEV,
-	F2FS_FT_BLKDEV,
-	F2FS_FT_FIFO,
-	F2FS_FT_SOCK,
-	F2FS_FT_SYMLINK,
-	F2FS_FT_MAX
-};
-=======
 #define	F2FS_DEF_PROJID		0	/* default project ID */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif  /* _LINUX_F2FS_FS_H */

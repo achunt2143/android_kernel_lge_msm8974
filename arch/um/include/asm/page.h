@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2003 Jeff Dike (jdike@addtoit.com)
- * Copyright 2003 PathScale, Inc.
- * Licensed under the GPL
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (C) 2000 - 2003 Jeff Dike (jdike@addtoit.com)
  * Copyright 2003 PathScale, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __UM_PAGE_H
@@ -17,11 +10,7 @@
 #include <linux/const.h>
 
 /* PAGE_SHIFT determines the page size */
-<<<<<<< HEAD
-#define PAGE_SHIFT	12
-=======
 #define PAGE_SHIFT	CONFIG_PAGE_SHIFT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PAGE_SIZE	(_AC(1, UL) << PAGE_SHIFT)
 #define PAGE_MASK	(~(PAGE_SIZE-1))
 
@@ -29,10 +18,7 @@
 
 struct page;
 
-<<<<<<< HEAD
-=======
 #include <linux/pfn.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <asm/vm-flags.h>
 
@@ -48,23 +34,6 @@ struct page;
 
 #if defined(CONFIG_3_LEVEL_PGTABLES) && !defined(CONFIG_64BIT)
 
-<<<<<<< HEAD
-typedef struct { unsigned long pte_low, pte_high; } pte_t;
-typedef struct { unsigned long pmd; } pmd_t;
-typedef struct { unsigned long pgd; } pgd_t;
-#define pte_val(x) ((x).pte_low | ((unsigned long long) (x).pte_high << 32))
-
-#define pte_get_bits(pte, bits) ((pte).pte_low & (bits))
-#define pte_set_bits(pte, bits) ((pte).pte_low |= (bits))
-#define pte_clear_bits(pte, bits) ((pte).pte_low &= ~(bits))
-#define pte_copy(to, from) ({ (to).pte_high = (from).pte_high; \
-			      smp_wmb(); \
-			      (to).pte_low = (from).pte_low; })
-#define pte_is_zero(pte) (!((pte).pte_low & ~_PAGE_NEWPAGE) && !(pte).pte_high)
-#define pte_set_val(pte, phys, prot) \
-	({ (pte).pte_high = (phys) >> 32; \
-	   (pte).pte_low = (phys) | pgprot_val(prot); })
-=======
 typedef struct { unsigned long pte; } pte_t;
 typedef struct { unsigned long pmd; } pmd_t;
 typedef struct { unsigned long pgd; } pgd_t;
@@ -77,15 +46,10 @@ typedef struct { unsigned long pgd; } pgd_t;
 #define pte_is_zero(p) (!((p).pte & ~_PAGE_NEWPAGE))
 #define pte_set_val(p, phys, prot) \
 	({ (p).pte = (phys) | pgprot_val(prot); })
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pmd_val(x)	((x).pmd)
 #define __pmd(x) ((pmd_t) { (x) } )
 
-<<<<<<< HEAD
-typedef unsigned long long pfn_t;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef unsigned long long phys_t;
 
 #else
@@ -109,10 +73,6 @@ typedef struct { unsigned long pmd; } pmd_t;
 #define pte_is_zero(p) (!((p).pte & ~_PAGE_NEWPAGE))
 #define pte_set_val(p, phys, prot) (p).pte = (phys | pgprot_val(prot))
 
-<<<<<<< HEAD
-typedef unsigned long pfn_t;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef unsigned long phys_t;
 
 #endif
@@ -135,45 +95,28 @@ extern unsigned long uml_physmem;
 
 #define __va_space (8*1024*1024)
 
-<<<<<<< HEAD
-#include "mem.h"
-=======
 #include <mem.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Cast to unsigned long before casting to void * to avoid a warning from
  * mmap_kmem about cutting a long long down to a void *.  Not sure that
  * casting is the right thing, but 32-bit UML can't have 64-bit virtual
  * addresses
  */
-<<<<<<< HEAD
-#define __pa(virt) to_phys((void *) (unsigned long) (virt))
-#define __va(phys) to_virt((unsigned long) (phys))
-
-#define phys_to_pfn(p) ((pfn_t) ((p) >> PAGE_SHIFT))
-#define pfn_to_phys(pfn) ((phys_t) ((pfn) << PAGE_SHIFT))
-
-#define pfn_valid(pfn) ((pfn) < max_mapnr)
-=======
 #define __pa(virt) uml_to_phys((void *) (unsigned long) (virt))
 #define __va(phys) uml_to_virt((unsigned long) (phys))
 
 #define phys_to_pfn(p) ((p) >> PAGE_SHIFT)
 #define pfn_to_phys(pfn) PFN_PHYS(pfn)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define virt_addr_valid(v) pfn_valid(phys_to_pfn(__pa(v)))
 
 #include <asm-generic/memory_model.h>
 #include <asm-generic/getorder.h>
 
 #endif	/* __ASSEMBLY__ */
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_X86_32
 #define __HAVE_ARCH_GATE_AREA 1
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* __UM_PAGE_H */

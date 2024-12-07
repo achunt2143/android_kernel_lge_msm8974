@@ -11,13 +11,10 @@
  *
  * See the GNU General Public License for more details.
  */
-<<<<<<< HEAD
-=======
 
 #include <net/llc_c_ac.h>
 #include <net/llc_c_ev.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Connection component state management */
 /* connection states */
 #define LLC_CONN_OUT_OF_SVC		 0	/* prior to allocation */
@@ -42,13 +39,8 @@
 struct llc_conn_state_trans {
 	llc_conn_ev_t	   ev;
 	u8		   next_state;
-<<<<<<< HEAD
-	llc_conn_ev_qfyr_t *ev_qualifiers;
-	llc_conn_action_t  *ev_actions;
-=======
 	const llc_conn_ev_qfyr_t *ev_qualifiers;
 	const llc_conn_action_t  *ev_actions;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct llc_conn_state {

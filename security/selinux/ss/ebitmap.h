@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * An extensible bitmap is a bitmap that supports an
  * arbitrary number of bits.  Extensible bitmaps are
@@ -13,27 +10,14 @@
  * an explicitly specified starting bit position within
  * the total bitmap.
  *
-<<<<<<< HEAD
- * Author : Stephen Smalley, <sds@epoch.ncsc.mil>
- */
-=======
  * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SS_EBITMAP_H_
 #define _SS_EBITMAP_H_
 
 #include <net/netlabel.h>
 
-<<<<<<< HEAD
-#define EBITMAP_UNIT_NUMS	((32 - sizeof(void *) - sizeof(u32))	\
-					/ sizeof(unsigned long))
-#define EBITMAP_UNIT_SIZE	BITS_PER_LONG
-#define EBITMAP_SIZE		(EBITMAP_UNIT_NUMS * EBITMAP_UNIT_SIZE)
-#define EBITMAP_BIT		1ULL
-#define EBITMAP_SHIFT_UNIT_SIZE(x)					\
-=======
 #ifdef CONFIG_64BIT
 #define EBITMAP_NODE_SIZE 64
 #else
@@ -47,7 +31,6 @@
 #define EBITMAP_SIZE	  (EBITMAP_UNIT_NUMS * EBITMAP_UNIT_SIZE)
 #define EBITMAP_BIT	  1ULL
 #define EBITMAP_SHIFT_UNIT_SIZE(x) \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(((x) >> EBITMAP_UNIT_SIZE / 2) >> EBITMAP_UNIT_SIZE / 2)
 
 struct ebitmap_node {
@@ -57,22 +40,13 @@ struct ebitmap_node {
 };
 
 struct ebitmap {
-<<<<<<< HEAD
-	struct ebitmap_node *node;	/* first node in the bitmap */
-	u32 highbit;	/* highest position in the total bitmap */
-=======
 	struct ebitmap_node *node; /* first node in the bitmap */
 	u32 highbit; /* highest position in the total bitmap */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define ebitmap_length(e) ((e)->highbit)
 
-<<<<<<< HEAD
-static inline unsigned int ebitmap_start_positive(struct ebitmap *e,
-=======
 static inline unsigned int ebitmap_start_positive(const struct ebitmap *e,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  struct ebitmap_node **n)
 {
 	unsigned int ofs;
@@ -90,11 +64,7 @@ static inline void ebitmap_init(struct ebitmap *e)
 	memset(e, 0, sizeof(*e));
 }
 
-<<<<<<< HEAD
-static inline unsigned int ebitmap_next_positive(struct ebitmap *e,
-=======
 static inline unsigned int ebitmap_next_positive(const struct ebitmap *e,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 struct ebitmap_node **n,
 						 unsigned int bit)
 {
@@ -112,21 +82,12 @@ static inline unsigned int ebitmap_next_positive(const struct ebitmap *e,
 	return ebitmap_length(e);
 }
 
-<<<<<<< HEAD
-#define EBITMAP_NODE_INDEX(node, bit)	\
-	(((bit) - (node)->startbit) / EBITMAP_UNIT_SIZE)
-#define EBITMAP_NODE_OFFSET(node, bit)	\
-	(((bit) - (node)->startbit) % EBITMAP_UNIT_SIZE)
-
-static inline int ebitmap_node_get_bit(struct ebitmap_node *n,
-=======
 #define EBITMAP_NODE_INDEX(node, bit) \
 	(((bit) - (node)->startbit) / EBITMAP_UNIT_SIZE)
 #define EBITMAP_NODE_OFFSET(node, bit) \
 	(((bit) - (node)->startbit) % EBITMAP_UNIT_SIZE)
 
 static inline int ebitmap_node_get_bit(const struct ebitmap_node *n,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       unsigned int bit)
 {
 	unsigned int index = EBITMAP_NODE_INDEX(n, bit);
@@ -158,30 +119,6 @@ static inline void ebitmap_node_clr_bit(struct ebitmap_node *n,
 	n->maps[index] &= ~(EBITMAP_BIT << ofs);
 }
 
-<<<<<<< HEAD
-#define ebitmap_for_each_positive_bit(e, n, bit)	\
-	for (bit = ebitmap_start_positive(e, &n);	\
-	     bit < ebitmap_length(e);			\
-	     bit = ebitmap_next_positive(e, &n, bit))	\
-
-int ebitmap_cmp(struct ebitmap *e1, struct ebitmap *e2);
-int ebitmap_cpy(struct ebitmap *dst, struct ebitmap *src);
-int ebitmap_contains(struct ebitmap *e1, struct ebitmap *e2);
-int ebitmap_get_bit(struct ebitmap *e, unsigned long bit);
-int ebitmap_set_bit(struct ebitmap *e, unsigned long bit, int value);
-void ebitmap_destroy(struct ebitmap *e);
-int ebitmap_read(struct ebitmap *e, void *fp);
-int ebitmap_write(struct ebitmap *e, void *fp);
-
-#ifdef CONFIG_NETLABEL
-int ebitmap_netlbl_export(struct ebitmap *ebmap,
-			  struct netlbl_lsm_secattr_catmap **catmap);
-int ebitmap_netlbl_import(struct ebitmap *ebmap,
-			  struct netlbl_lsm_secattr_catmap *catmap);
-#else
-static inline int ebitmap_netlbl_export(struct ebitmap *ebmap,
-				struct netlbl_lsm_secattr_catmap **catmap)
-=======
 #define ebitmap_for_each_positive_bit(e, n, bit)      \
 	for ((bit) = ebitmap_start_positive(e, &(n)); \
 	     (bit) < ebitmap_length(e);               \
@@ -208,23 +145,14 @@ int ebitmap_netlbl_import(struct ebitmap *ebmap,
 #else
 static inline int ebitmap_netlbl_export(struct ebitmap *ebmap,
 					struct netlbl_lsm_catmap **catmap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOMEM;
 }
 static inline int ebitmap_netlbl_import(struct ebitmap *ebmap,
-<<<<<<< HEAD
-				struct netlbl_lsm_secattr_catmap *catmap)
-=======
 					struct netlbl_lsm_catmap *catmap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOMEM;
 }
 #endif
 
-<<<<<<< HEAD
-#endif	/* _SS_EBITMAP_H_ */
-=======
 #endif /* _SS_EBITMAP_H_ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

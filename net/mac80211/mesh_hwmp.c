@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2008, 2009 open80211s Ltd.
- * Author:     Luis Carlos Cobo <luisca@cozybit.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2008, 2009 open80211s Ltd.
  * Copyright (C) 2019, 2021-2023 Intel Corporation
  * Author:     Luis Carlos Cobo <luisca@cozybit.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -21,35 +11,6 @@
 #include "wme.h"
 #include "mesh.h"
 
-<<<<<<< HEAD
-#ifdef CONFIG_MAC80211_VERBOSE_MHWMP_DEBUG
-#define mhwmp_dbg(fmt, args...) \
-	printk(KERN_DEBUG "Mesh HWMP (%s): " fmt "\n", sdata->name, ##args)
-#else
-#define mhwmp_dbg(fmt, args...)   do { (void)(0); } while (0)
-#endif
-
-#define TEST_FRAME_LEN	8192
-#define MAX_METRIC	0xffffffff
-#define ARITH_SHIFT	8
-
-/* Number of frames buffered per destination for unresolved destinations */
-#define MESH_FRAME_QUEUE_LEN	10
-#define MAX_PREQ_QUEUE_LEN	64
-
-/* Destination only */
-#define MP_F_DO	0x1
-/* Reply and forward */
-#define MP_F_RF	0x2
-/* Unknown Sequence Number */
-#define MP_F_USN    0x01
-/* Reason code Present */
-#define MP_F_RCODE  0x02
-
-static void mesh_queue_preq(struct mesh_path *, u8);
-
-static inline u32 u32_field_get(u8 *preq_elem, int offset, bool ae)
-=======
 #define TEST_FRAME_LEN	8192
 #define MAX_METRIC	0xffffffff
 #define ARITH_SHIFT	8
@@ -60,18 +21,13 @@ static inline u32 u32_field_get(u8 *preq_elem, int offset, bool ae)
 static void mesh_queue_preq(struct mesh_path *, u8);
 
 static inline u32 u32_field_get(const u8 *preq_elem, int offset, bool ae)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ae)
 		offset += 6;
 	return get_unaligned_le32(preq_elem + offset);
 }
 
-<<<<<<< HEAD
-static inline u32 u16_field_get(u8 *preq_elem, int offset, bool ae)
-=======
 static inline u16 u16_field_get(const u8 *preq_elem, int offset, bool ae)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ae)
 		offset += 6;
@@ -111,10 +67,6 @@ static inline u16 u16_field_get(const u8 *preq_elem, int offset, bool ae)
 #define PERR_IE_TARGET_RCODE(x)	u16_field_get(x, 13, 0)
 
 #define MSEC_TO_TU(x) (x*1000/1024)
-<<<<<<< HEAD
-#define SN_GT(x, y) ((long) (y) - (long) (x) < 0)
-#define SN_LT(x, y) ((long) (x) - (long) (y) < 0)
-=======
 #define SN_GT(x, y) ((s32)(y - x) < 0)
 #define SN_LT(x, y) ((s32)(x - y) < 0)
 #define MAX_SANE_SN_DELTA 32
@@ -123,7 +75,6 @@ static inline u32 SN_DELTA(u32 x, u32 y)
 {
 	return x >= y ? x - y : y - x;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define net_traversal_jiffies(s) \
 	msecs_to_jiffies(s->u.mesh.mshcfg.dot11MeshHWMPnetDiameterTraversalTime)
@@ -134,11 +85,8 @@ static inline u32 SN_DELTA(u32 x, u32 y)
 #define max_preq_retries(s) (s->u.mesh.mshcfg.dot11MeshHWMPmaxPREQretries)
 #define disc_timeout_jiff(s) \
 	msecs_to_jiffies(sdata->u.mesh.mshcfg.min_discovery_timeout)
-<<<<<<< HEAD
-=======
 #define root_path_confirmation_jiffies(s) \
 	msecs_to_jiffies(sdata->u.mesh.mshcfg.dot11MeshHWMPconfirmationInterval)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum mpath_frame_type {
 	MPATH_PREQ = 0,
@@ -150,31 +98,19 @@ enum mpath_frame_type {
 static const u8 broadcast_addr[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 static int mesh_path_sel_frame_tx(enum mpath_frame_type action, u8 flags,
-<<<<<<< HEAD
-		u8 *orig_addr, __le32 orig_sn, u8 target_flags, u8 *target,
-		__le32 target_sn, const u8 *da, u8 hop_count, u8 ttl,
-		__le32 lifetime, __le32 metric, __le32 preq_id,
-		struct ieee80211_sub_if_data *sdata)
-=======
 				  const u8 *orig_addr, u32 orig_sn,
 				  u8 target_flags, const u8 *target,
 				  u32 target_sn, const u8 *da,
 				  u8 hop_count, u8 ttl,
 				  u32 lifetime, u32 metric, u32 preq_id,
 				  struct ieee80211_sub_if_data *sdata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_local *local = sdata->local;
 	struct sk_buff *skb;
 	struct ieee80211_mgmt *mgmt;
 	u8 *pos, ie_len;
-<<<<<<< HEAD
-	int hdr_len = offsetof(struct ieee80211_mgmt, u.action.u.mesh_action) +
-		      sizeof(mgmt->u.action.u.mesh_action);
-=======
 	int hdr_len = offsetofend(struct ieee80211_mgmt,
 				  u.action.u.mesh_action);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = dev_alloc_skb(local->tx_headroom +
 			    hdr_len +
@@ -182,12 +118,7 @@ static int mesh_path_sel_frame_tx(enum mpath_frame_type action, u8 flags,
 	if (!skb)
 		return -1;
 	skb_reserve(skb, local->tx_headroom);
-<<<<<<< HEAD
-	mgmt = (struct ieee80211_mgmt *) skb_put(skb, hdr_len);
-	memset(mgmt, 0, hdr_len);
-=======
 	mgmt = skb_put_zero(skb, hdr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mgmt->frame_control = cpu_to_le16(IEEE80211_FTYPE_MGMT |
 					  IEEE80211_STYPE_ACTION);
 
@@ -201,43 +132,26 @@ static int mesh_path_sel_frame_tx(enum mpath_frame_type action, u8 flags,
 
 	switch (action) {
 	case MPATH_PREQ:
-<<<<<<< HEAD
-		mhwmp_dbg("sending PREQ to %pM", target);
-=======
 		mhwmp_dbg(sdata, "sending PREQ to %pM\n", target);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ie_len = 37;
 		pos = skb_put(skb, 2 + ie_len);
 		*pos++ = WLAN_EID_PREQ;
 		break;
 	case MPATH_PREP:
-<<<<<<< HEAD
-		mhwmp_dbg("sending PREP to %pM", target);
-=======
 		mhwmp_dbg(sdata, "sending PREP to %pM\n", orig_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ie_len = 31;
 		pos = skb_put(skb, 2 + ie_len);
 		*pos++ = WLAN_EID_PREP;
 		break;
 	case MPATH_RANN:
-<<<<<<< HEAD
-		mhwmp_dbg("sending RANN from %pM", orig_addr);
-=======
 		mhwmp_dbg(sdata, "sending RANN from %pM\n", orig_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ie_len = sizeof(struct ieee80211_rann_ie);
 		pos = skb_put(skb, 2 + ie_len);
 		*pos++ = WLAN_EID_RANN;
 		break;
 	default:
 		kfree_skb(skb);
-<<<<<<< HEAD
-		return -ENOTSUPP;
-		break;
-=======
 		return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	*pos++ = ie_len;
 	*pos++ = flags;
@@ -246,58 +160,33 @@ static int mesh_path_sel_frame_tx(enum mpath_frame_type action, u8 flags,
 	if (action == MPATH_PREP) {
 		memcpy(pos, target, ETH_ALEN);
 		pos += ETH_ALEN;
-<<<<<<< HEAD
-		memcpy(pos, &target_sn, 4);
-		pos += 4;
-	} else {
-		if (action == MPATH_PREQ) {
-			memcpy(pos, &preq_id, 4);
-=======
 		put_unaligned_le32(target_sn, pos);
 		pos += 4;
 	} else {
 		if (action == MPATH_PREQ) {
 			put_unaligned_le32(preq_id, pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pos += 4;
 		}
 		memcpy(pos, orig_addr, ETH_ALEN);
 		pos += ETH_ALEN;
-<<<<<<< HEAD
-		memcpy(pos, &orig_sn, 4);
-		pos += 4;
-	}
-	memcpy(pos, &lifetime, 4);	/* interval for RANN */
-	pos += 4;
-	memcpy(pos, &metric, 4);
-=======
 		put_unaligned_le32(orig_sn, pos);
 		pos += 4;
 	}
 	put_unaligned_le32(lifetime, pos); /* interval for RANN */
 	pos += 4;
 	put_unaligned_le32(metric, pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pos += 4;
 	if (action == MPATH_PREQ) {
 		*pos++ = 1; /* destination count */
 		*pos++ = target_flags;
 		memcpy(pos, target, ETH_ALEN);
 		pos += ETH_ALEN;
-<<<<<<< HEAD
-		memcpy(pos, &target_sn, 4);
-=======
 		put_unaligned_le32(target_sn, pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pos += 4;
 	} else if (action == MPATH_PREP) {
 		memcpy(pos, orig_addr, ETH_ALEN);
 		pos += ETH_ALEN;
-<<<<<<< HEAD
-		memcpy(pos, &orig_sn, 4);
-=======
 		put_unaligned_le32(orig_sn, pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pos += 4;
 	}
 
@@ -312,32 +201,17 @@ static void prepare_frame_for_deferred_tx(struct ieee80211_sub_if_data *sdata,
 		struct sk_buff *skb)
 {
 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
-<<<<<<< HEAD
-
-	skb_set_mac_header(skb, 0);
-	skb_set_network_header(skb, 0);
-	skb_set_transport_header(skb, 0);
-=======
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 
 	skb_reset_mac_header(skb);
 	skb_reset_network_header(skb);
 	skb_reset_transport_header(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Send all internal mgmt frames on VO. Accordingly set TID to 7. */
 	skb_set_queue_mapping(skb, IEEE80211_AC_VO);
 	skb->priority = 7;
 
 	info->control.vif = &sdata->vif;
-<<<<<<< HEAD
-	ieee80211_set_qos_hdr(sdata, skb);
-}
-
-/**
- * mesh_send_path error - Sends a PERR mesh management frame
- *
-=======
 	info->control.flags |= IEEE80211_TX_INTCFL_NEED_TXPROCESSING;
 	ieee80211_set_qos_hdr(sdata, skb);
 	ieee80211_mps_set_frame_flags(sdata, NULL, hdr);
@@ -347,67 +221,42 @@ static void prepare_frame_for_deferred_tx(struct ieee80211_sub_if_data *sdata,
  * mesh_path_error_tx - Sends a PERR mesh management frame
  *
  * @ttl: allowed remaining hops
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @target: broken destination
  * @target_sn: SN of the broken destination
  * @target_rcode: reason code for this PERR
  * @ra: node this frame is addressed to
-<<<<<<< HEAD
-=======
  * @sdata: local mesh subif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note: This function may be called with driver locks taken that the driver
  * also acquires in the TX path.  To avoid a deadlock we don't transmit the
  * frame directly but add it to the pending queue instead.
-<<<<<<< HEAD
- */
-int mesh_path_error_tx(u8 ttl, u8 *target, __le32 target_sn,
-		       __le16 target_rcode, const u8 *ra,
-		       struct ieee80211_sub_if_data *sdata)
-=======
  *
  * Returns: 0 on success
  */
 int mesh_path_error_tx(struct ieee80211_sub_if_data *sdata,
 		       u8 ttl, const u8 *target, u32 target_sn,
 		       u16 target_rcode, const u8 *ra)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_local *local = sdata->local;
 	struct sk_buff *skb;
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 	struct ieee80211_mgmt *mgmt;
 	u8 *pos, ie_len;
-<<<<<<< HEAD
-	int hdr_len = offsetof(struct ieee80211_mgmt, u.action.u.mesh_action) +
-		      sizeof(mgmt->u.action.u.mesh_action);
-=======
 	int hdr_len = offsetofend(struct ieee80211_mgmt,
 				  u.action.u.mesh_action);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (time_before(jiffies, ifmsh->next_perr))
 		return -EAGAIN;
 
 	skb = dev_alloc_skb(local->tx_headroom +
-<<<<<<< HEAD
-=======
 			    IEEE80211_ENCRYPT_HEADROOM +
 			    IEEE80211_ENCRYPT_TAILROOM +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    hdr_len +
 			    2 + 15 /* PERR IE */);
 	if (!skb)
 		return -1;
-<<<<<<< HEAD
-	skb_reserve(skb, local->tx_headroom);
-	mgmt = (struct ieee80211_mgmt *) skb_put(skb, hdr_len);
-	memset(mgmt, 0, hdr_len);
-=======
 	skb_reserve(skb, local->tx_headroom + IEEE80211_ENCRYPT_HEADROOM);
 	mgmt = skb_put_zero(skb, hdr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mgmt->frame_control = cpu_to_le16(IEEE80211_FTYPE_MGMT |
 					  IEEE80211_STYPE_ACTION);
 
@@ -426,23 +275,6 @@ int mesh_path_error_tx(struct ieee80211_sub_if_data *sdata,
 	*pos++ = ttl;
 	/* number of destinations */
 	*pos++ = 1;
-<<<<<<< HEAD
-	/*
-	 * flags bit, bit 1 is unset if we know the sequence number and
-	 * bit 2 is set if we have a reason code
-	 */
-	*pos = 0;
-	if (!target_sn)
-		*pos |= MP_F_USN;
-	if (target_rcode)
-		*pos |= MP_F_RCODE;
-	pos++;
-	memcpy(pos, target, ETH_ALEN);
-	pos += ETH_ALEN;
-	memcpy(pos, &target_sn, 4);
-	pos += 4;
-	memcpy(pos, &target_rcode, 2);
-=======
 	/* Flags field has AE bit only as defined in
 	 * sec 8.4.2.117 IEEE802.11-2012
 	 */
@@ -453,7 +285,6 @@ int mesh_path_error_tx(struct ieee80211_sub_if_data *sdata,
 	put_unaligned_le32(target_sn, pos);
 	pos += 4;
 	put_unaligned_le16(target_rcode, pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* see note in function header */
 	prepare_frame_for_deferred_tx(sdata, skb);
@@ -464,30 +295,6 @@ int mesh_path_error_tx(struct ieee80211_sub_if_data *sdata,
 }
 
 void ieee80211s_update_metric(struct ieee80211_local *local,
-<<<<<<< HEAD
-		struct sta_info *stainfo, struct sk_buff *skb)
-{
-	struct ieee80211_tx_info *txinfo = IEEE80211_SKB_CB(skb);
-	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
-	int failed;
-
-	if (!ieee80211_is_data(hdr->frame_control))
-		return;
-
-	failed = !(txinfo->flags & IEEE80211_TX_STAT_ACK);
-
-	/* moving average, scaled to 100 */
-	stainfo->fail_avg = ((80 * stainfo->fail_avg + 5) / 100 + 20 * failed);
-	if (stainfo->fail_avg > 95)
-		mesh_plink_broken(stainfo);
-}
-
-static u32 airtime_link_metric_get(struct ieee80211_local *local,
-				   struct sta_info *sta)
-{
-	struct ieee80211_supported_band *sband;
-	struct rate_info rinfo;
-=======
 			      struct sta_info *sta,
 			      struct ieee80211_tx_status *st)
 {
@@ -518,7 +325,6 @@ static u32 airtime_link_metric_get(struct ieee80211_local *local,
 u32 airtime_link_metric_get(struct ieee80211_local *local,
 			    struct sta_info *sta)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* This should be adjusted for each device */
 	int device_constant = 1 << ARITH_SHIFT;
 	int test_frame_len = TEST_FRAME_LEN << ARITH_SHIFT;
@@ -526,20 +332,6 @@ u32 airtime_link_metric_get(struct ieee80211_local *local,
 	int rate, err;
 	u32 tx_time, estimated_retx;
 	u64 result;
-<<<<<<< HEAD
-
-	sband = local->hw.wiphy->bands[local->hw.conf.channel->band];
-
-	if (sta->fail_avg >= 100)
-		return MAX_METRIC;
-
-	sta_set_rate_info_tx(sta, &sta->last_tx_rate, &rinfo);
-	rate = cfg80211_calculate_bitrate(&rinfo);
-	if (WARN_ON(!rate))
-		return MAX_METRIC;
-
-	err = (sta->fail_avg << ARITH_SHIFT) / 100;
-=======
 	unsigned long fail_avg =
 		ewma_mesh_fail_avg_read(&sta->mesh->fail_avg);
 
@@ -565,18 +357,13 @@ u32 airtime_link_metric_get(struct ieee80211_local *local,
 
 		err = (fail_avg << ARITH_SHIFT) / 100;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* bitrate is in units of 100 Kbps, while we need rate in units of
 	 * 1Mbps. This will be corrected on tx_time computation.
 	 */
 	tx_time = (device_constant + 10 * test_frame_len / rate);
 	estimated_retx = ((1 << (2 * ARITH_SHIFT)) / (s_unit - err));
-<<<<<<< HEAD
-	result = (tx_time * estimated_retx) >> (2 * ARITH_SHIFT) ;
-=======
 	result = ((u64)tx_time * estimated_retx) >> (2 * ARITH_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (u32)result;
 }
 
@@ -586,10 +373,7 @@ u32 airtime_link_metric_get(struct ieee80211_local *local,
  * @sdata: local mesh subif
  * @mgmt: mesh management frame
  * @hwmp_ie: hwmp information element (PREP or PREQ)
-<<<<<<< HEAD
-=======
  * @action: type of hwmp ie
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function updates the path routing information to the originator and the
  * transmitter of a HWMP PREQ or PREP frame.
@@ -601,25 +385,13 @@ u32 airtime_link_metric_get(struct ieee80211_local *local,
  * path routing information is updated.
  */
 static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
-<<<<<<< HEAD
-			    struct ieee80211_mgmt *mgmt,
-			    u8 *hwmp_ie, enum mpath_frame_type action)
-=======
 			       struct ieee80211_mgmt *mgmt,
 			       const u8 *hwmp_ie, enum mpath_frame_type action)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_local *local = sdata->local;
 	struct mesh_path *mpath;
 	struct sta_info *sta;
 	bool fresh_info;
-<<<<<<< HEAD
-	u8 *orig_addr, *ta;
-	u32 orig_sn, orig_metric;
-	unsigned long orig_lifetime, exp_time;
-	u32 last_hop_metric, new_metric;
-	bool process = true;
-=======
 	const u8 *orig_addr, *ta;
 	u32 orig_sn, orig_metric;
 	unsigned long orig_lifetime, exp_time;
@@ -627,7 +399,6 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 	bool flush_mpath = false;
 	bool process = true;
 	u8 hopcount;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 	sta = sta_info_get(sdata, mgmt->sa);
@@ -646,10 +417,7 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 		orig_sn = PREQ_IE_ORIG_SN(hwmp_ie);
 		orig_lifetime = PREQ_IE_LIFETIME(hwmp_ie);
 		orig_metric = PREQ_IE_METRIC(hwmp_ie);
-<<<<<<< HEAD
-=======
 		hopcount = PREQ_IE_HOPCOUNT(hwmp_ie) + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MPATH_PREP:
 		/* Originator here refers to the MP that was the target in the
@@ -661,10 +429,7 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 		orig_sn = PREP_IE_TARGET_SN(hwmp_ie);
 		orig_lifetime = PREP_IE_LIFETIME(hwmp_ie);
 		orig_metric = PREP_IE_METRIC(hwmp_ie);
-<<<<<<< HEAD
-=======
 		hopcount = PREP_IE_HOPCOUNT(hwmp_ie) + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		rcu_read_unlock();
@@ -675,22 +440,14 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 		new_metric = MAX_METRIC;
 	exp_time = TU_TO_EXP_TIME(orig_lifetime);
 
-<<<<<<< HEAD
-	if (compare_ether_addr(orig_addr, sdata->vif.addr) == 0) {
-=======
 	if (ether_addr_equal(orig_addr, sdata->vif.addr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* This MP is the originator, we are not interested in this
 		 * frame, except for updating transmitter's path info.
 		 */
 		process = false;
 		fresh_info = false;
 	} else {
-<<<<<<< HEAD
-		mpath = mesh_path_lookup(orig_addr, sdata);
-=======
 		mpath = mesh_path_lookup(sdata, orig_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mpath) {
 			spin_lock_bh(&mpath->state_lock);
 			if (mpath->flags & MESH_PATH_FIXED)
@@ -699,9 +456,6 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 			    (mpath->flags & MESH_PATH_SN_VALID)) {
 				if (SN_GT(mpath->sn, orig_sn) ||
 				    (mpath->sn == orig_sn &&
-<<<<<<< HEAD
-				     new_metric >= mpath->metric)) {
-=======
 				     (rcu_access_pointer(mpath->next_hop) !=
 						      sta ?
 					      mult_frac(new_metric, 10, 9) :
@@ -726,20 +480,13 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 					 * we had then assume the other side
 					 * rebooted or restarted */;
 				} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					process = false;
 					fresh_info = false;
 				}
 			}
 		} else {
-<<<<<<< HEAD
-			mesh_path_add(orig_addr, sdata);
-			mpath = mesh_path_lookup(orig_addr, sdata);
-			if (!mpath) {
-=======
 			mpath = mesh_path_add(sdata, orig_addr);
 			if (IS_ERR(mpath)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rcu_read_unlock();
 				return 0;
 			}
@@ -747,23 +494,16 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 		}
 
 		if (fresh_info) {
-<<<<<<< HEAD
-=======
 			if (rcu_access_pointer(mpath->next_hop) != sta) {
 				mpath->path_change_count++;
 				flush_mpath = true;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mesh_path_assign_nexthop(mpath, sta);
 			mpath->flags |= MESH_PATH_SN_VALID;
 			mpath->metric = new_metric;
 			mpath->sn = orig_sn;
 			mpath->exp_time = time_after(mpath->exp_time, exp_time)
 					  ?  mpath->exp_time : exp_time;
-<<<<<<< HEAD
-			mesh_path_activate(mpath);
-			spin_unlock_bh(&mpath->state_lock);
-=======
 			mpath->hop_count = hopcount;
 			mesh_path_activate(mpath);
 			spin_unlock_bh(&mpath->state_lock);
@@ -772,7 +512,6 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 			ewma_mesh_fail_avg_init(&sta->mesh->fail_avg);
 			/* init it at a low value - 0 start is tricky */
 			ewma_mesh_fail_avg_add(&sta->mesh->fail_avg, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mesh_path_tx_pending(mpath);
 			/* draft says preq_id should be saved to, but there does
 			 * not seem to be any use for it, skipping by now
@@ -783,28 +522,11 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 
 	/* Update and check transmitter routing info */
 	ta = mgmt->sa;
-<<<<<<< HEAD
-	if (compare_ether_addr(orig_addr, ta) == 0)
-=======
 	if (ether_addr_equal(orig_addr, ta))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fresh_info = false;
 	else {
 		fresh_info = true;
 
-<<<<<<< HEAD
-		mpath = mesh_path_lookup(ta, sdata);
-		if (mpath) {
-			spin_lock_bh(&mpath->state_lock);
-			if ((mpath->flags & MESH_PATH_FIXED) ||
-				((mpath->flags & MESH_PATH_ACTIVE) &&
-					(last_hop_metric > mpath->metric)))
-				fresh_info = false;
-		} else {
-			mesh_path_add(ta, sdata);
-			mpath = mesh_path_lookup(ta, sdata);
-			if (!mpath) {
-=======
 		mpath = mesh_path_lookup(sdata, ta);
 		if (mpath) {
 			spin_lock_bh(&mpath->state_lock);
@@ -817,7 +539,6 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 		} else {
 			mpath = mesh_path_add(sdata, ta);
 			if (IS_ERR(mpath)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rcu_read_unlock();
 				return 0;
 			}
@@ -825,21 +546,14 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 		}
 
 		if (fresh_info) {
-<<<<<<< HEAD
-=======
 			if (rcu_access_pointer(mpath->next_hop) != sta) {
 				mpath->path_change_count++;
 				flush_mpath = true;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mesh_path_assign_nexthop(mpath, sta);
 			mpath->metric = last_hop_metric;
 			mpath->exp_time = time_after(mpath->exp_time, exp_time)
 					  ?  mpath->exp_time : exp_time;
-<<<<<<< HEAD
-			mesh_path_activate(mpath);
-			spin_unlock_bh(&mpath->state_lock);
-=======
 			mpath->hop_count = 1;
 			mesh_path_activate(mpath);
 			spin_unlock_bh(&mpath->state_lock);
@@ -848,7 +562,6 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 			ewma_mesh_fail_avg_init(&sta->mesh->fail_avg);
 			/* init it at a low value - 0 start is tricky */
 			ewma_mesh_fail_avg_add(&sta->mesh->fail_avg, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mesh_path_tx_pending(mpath);
 		} else
 			spin_unlock_bh(&mpath->state_lock);
@@ -861,18 +574,6 @@ static u32 hwmp_route_info_get(struct ieee80211_sub_if_data *sdata,
 
 static void hwmp_preq_frame_process(struct ieee80211_sub_if_data *sdata,
 				    struct ieee80211_mgmt *mgmt,
-<<<<<<< HEAD
-				    u8 *preq_elem, u32 metric)
-{
-	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-	struct mesh_path *mpath = NULL;
-	u8 *target_addr, *orig_addr;
-	const u8 *da;
-	u8 target_flags, ttl;
-	u32 orig_sn, target_sn, lifetime;
-	bool reply = false;
-	bool forward = true;
-=======
 				    const u8 *preq_elem, u32 orig_metric)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
@@ -884,7 +585,6 @@ static void hwmp_preq_frame_process(struct ieee80211_sub_if_data *sdata,
 	bool reply = false;
 	bool forward = true;
 	bool root_is_gate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update target SN, if present */
 	target_addr = PREQ_IE_TARGET_ADDR(preq_elem);
@@ -892,25 +592,6 @@ static void hwmp_preq_frame_process(struct ieee80211_sub_if_data *sdata,
 	target_sn = PREQ_IE_TARGET_SN(preq_elem);
 	orig_sn = PREQ_IE_ORIG_SN(preq_elem);
 	target_flags = PREQ_IE_TARGET_F(preq_elem);
-<<<<<<< HEAD
-
-	mhwmp_dbg("received PREQ from %pM", orig_addr);
-
-	if (compare_ether_addr(target_addr, sdata->vif.addr) == 0) {
-		mhwmp_dbg("PREQ is for us");
-		forward = false;
-		reply = true;
-		metric = 0;
-		if (time_after(jiffies, ifmsh->last_sn_update +
-					net_traversal_jiffies(sdata)) ||
-		    time_before(jiffies, ifmsh->last_sn_update)) {
-			target_sn = ++ifmsh->sn;
-			ifmsh->last_sn_update = jiffies;
-		}
-	} else {
-		rcu_read_lock();
-		mpath = mesh_path_lookup(target_addr, sdata);
-=======
 	/* Proactive PREQ gate announcements */
 	flags = PREQ_IE_FLAGS(preq_elem);
 	root_is_gate = !!(flags & RANN_FLAG_IS_GATE);
@@ -952,23 +633,11 @@ static void hwmp_preq_frame_process(struct ieee80211_sub_if_data *sdata,
 	} else {
 		rcu_read_lock();
 		mpath = mesh_path_lookup(sdata, target_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mpath) {
 			if ((!(mpath->flags & MESH_PATH_SN_VALID)) ||
 					SN_LT(mpath->sn, target_sn)) {
 				mpath->sn = target_sn;
 				mpath->flags |= MESH_PATH_SN_VALID;
-<<<<<<< HEAD
-			} else if ((!(target_flags & MP_F_DO)) &&
-					(mpath->flags & MESH_PATH_ACTIVE)) {
-				reply = true;
-				metric = mpath->metric;
-				target_sn = mpath->sn;
-				if (target_flags & MP_F_RF)
-					target_flags |= MP_F_DO;
-				else
-					forward = false;
-=======
 			} else if ((!(target_flags & IEEE80211_PREQ_TO_FLAG)) &&
 					(mpath->flags & MESH_PATH_ACTIVE)) {
 				reply = true;
@@ -976,7 +645,6 @@ static void hwmp_preq_frame_process(struct ieee80211_sub_if_data *sdata,
 				target_sn = mpath->sn;
 				/* Case E2 of sec 13.10.9.3 IEEE 802.11-2012*/
 				target_flags |= IEEE80211_PREQ_TO_FLAG;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		rcu_read_unlock();
@@ -986,16 +654,6 @@ static void hwmp_preq_frame_process(struct ieee80211_sub_if_data *sdata,
 		lifetime = PREQ_IE_LIFETIME(preq_elem);
 		ttl = ifmsh->mshcfg.element_ttl;
 		if (ttl != 0) {
-<<<<<<< HEAD
-			mhwmp_dbg("replying to the PREQ");
-			mesh_path_sel_frame_tx(MPATH_PREP, 0, orig_addr,
-				cpu_to_le32(orig_sn), 0, target_addr,
-				cpu_to_le32(target_sn), mgmt->sa, 0, ttl,
-				cpu_to_le32(lifetime), cpu_to_le32(metric),
-				0, sdata);
-		} else
-			ifmsh->mshstats.dropped_frames_ttl++;
-=======
 			mhwmp_dbg(sdata, "replying to the PREQ\n");
 			mesh_path_sel_frame_tx(MPATH_PREP, 0, orig_addr,
 					       orig_sn, 0, target_addr,
@@ -1005,16 +663,11 @@ static void hwmp_preq_frame_process(struct ieee80211_sub_if_data *sdata,
 		} else {
 			ifmsh->mshstats.dropped_frames_ttl++;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (forward && ifmsh->mshcfg.dot11MeshForwarding) {
 		u32 preq_id;
-<<<<<<< HEAD
-		u8 hopcount, flags;
-=======
 		u8 hopcount;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ttl = PREQ_IE_TTL(preq_elem);
 		lifetime = PREQ_IE_LIFETIME(preq_elem);
@@ -1022,27 +675,12 @@ static void hwmp_preq_frame_process(struct ieee80211_sub_if_data *sdata,
 			ifmsh->mshstats.dropped_frames_ttl++;
 			return;
 		}
-<<<<<<< HEAD
-		mhwmp_dbg("forwarding the PREQ from %pM", orig_addr);
-		--ttl;
-		flags = PREQ_IE_FLAGS(preq_elem);
-=======
 		mhwmp_dbg(sdata, "forwarding the PREQ from %pM\n", orig_addr);
 		--ttl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		preq_id = PREQ_IE_PREQ_ID(preq_elem);
 		hopcount = PREQ_IE_HOPCOUNT(preq_elem) + 1;
 		da = (mpath && mpath->is_root) ?
 			mpath->rann_snd_addr : broadcast_addr;
-<<<<<<< HEAD
-		mesh_path_sel_frame_tx(MPATH_PREQ, flags, orig_addr,
-				cpu_to_le32(orig_sn), target_flags, target_addr,
-				cpu_to_le32(target_sn), da,
-				hopcount, ttl, cpu_to_le32(lifetime),
-				cpu_to_le32(metric), cpu_to_le32(preq_id),
-				sdata);
-		ifmsh->mshstats.fwded_mcast++;
-=======
 
 		if (flags & IEEE80211_PREQ_PROACTIVE_PREP_FLAG) {
 			target_addr = PREQ_IE_TARGET_ADDR(preq_elem);
@@ -1057,7 +695,6 @@ static void hwmp_preq_frame_process(struct ieee80211_sub_if_data *sdata,
 			ifmsh->mshstats.fwded_unicast++;
 		else
 			ifmsh->mshstats.fwded_mcast++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ifmsh->mshstats.fwded_frames++;
 	}
 }
@@ -1073,35 +710,20 @@ next_hop_deref_protected(struct mesh_path *mpath)
 
 static void hwmp_prep_frame_process(struct ieee80211_sub_if_data *sdata,
 				    struct ieee80211_mgmt *mgmt,
-<<<<<<< HEAD
-				    u8 *prep_elem, u32 metric)
-{
-	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-	struct mesh_path *mpath;
-	u8 *target_addr, *orig_addr;
-=======
 				    const u8 *prep_elem, u32 metric)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 	struct mesh_path *mpath;
 	const u8 *target_addr, *orig_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 ttl, hopcount, flags;
 	u8 next_hop[ETH_ALEN];
 	u32 target_sn, orig_sn, lifetime;
 
-<<<<<<< HEAD
-	mhwmp_dbg("received PREP from %pM", PREP_IE_ORIG_ADDR(prep_elem));
-
-	orig_addr = PREP_IE_ORIG_ADDR(prep_elem);
-	if (compare_ether_addr(orig_addr, sdata->vif.addr) == 0)
-=======
 	mhwmp_dbg(sdata, "received PREP from %pM\n",
 		  PREP_IE_TARGET_ADDR(prep_elem));
 
 	orig_addr = PREP_IE_ORIG_ADDR(prep_elem);
 	if (ether_addr_equal(orig_addr, sdata->vif.addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* destination, no forwarding required */
 		return;
 
@@ -1115,11 +737,7 @@ static void hwmp_prep_frame_process(struct ieee80211_sub_if_data *sdata,
 	}
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	mpath = mesh_path_lookup(orig_addr, sdata);
-=======
 	mpath = mesh_path_lookup(sdata, orig_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mpath)
 		spin_lock_bh(&mpath->state_lock);
 	else
@@ -1138,17 +756,9 @@ static void hwmp_prep_frame_process(struct ieee80211_sub_if_data *sdata,
 	target_sn = PREP_IE_TARGET_SN(prep_elem);
 	orig_sn = PREP_IE_ORIG_SN(prep_elem);
 
-<<<<<<< HEAD
-	mesh_path_sel_frame_tx(MPATH_PREP, flags, orig_addr,
-		cpu_to_le32(orig_sn), 0, target_addr,
-		cpu_to_le32(target_sn), next_hop, hopcount,
-		ttl, cpu_to_le32(lifetime), cpu_to_le32(metric),
-		0, sdata);
-=======
 	mesh_path_sel_frame_tx(MPATH_PREP, flags, orig_addr, orig_sn, 0,
 			       target_addr, target_sn, next_hop, hopcount,
 			       ttl, lifetime, metric, 0, sdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 
 	sdata->u.mesh.mshstats.fwded_unicast++;
@@ -1161,21 +771,13 @@ fail:
 }
 
 static void hwmp_perr_frame_process(struct ieee80211_sub_if_data *sdata,
-<<<<<<< HEAD
-			     struct ieee80211_mgmt *mgmt, u8 *perr_elem)
-=======
 				    struct ieee80211_mgmt *mgmt,
 				    const u8 *perr_elem)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 	struct mesh_path *mpath;
 	u8 ttl;
-<<<<<<< HEAD
-	u8 *ta, *target_addr;
-=======
 	const u8 *ta, *target_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 target_sn;
 	u16 target_rcode;
 
@@ -1191,30 +793,13 @@ static void hwmp_perr_frame_process(struct ieee80211_sub_if_data *sdata,
 	target_rcode = PERR_IE_TARGET_RCODE(perr_elem);
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	mpath = mesh_path_lookup(target_addr, sdata);
-=======
 	mpath = mesh_path_lookup(sdata, target_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mpath) {
 		struct sta_info *sta;
 
 		spin_lock_bh(&mpath->state_lock);
 		sta = next_hop_deref_protected(mpath);
 		if (mpath->flags & MESH_PATH_ACTIVE &&
-<<<<<<< HEAD
-		    compare_ether_addr(ta, sta->sta.addr) == 0 &&
-		    (!(mpath->flags & MESH_PATH_SN_VALID) ||
-		    SN_GT(target_sn, mpath->sn))) {
-			mpath->flags &= ~MESH_PATH_ACTIVE;
-			mpath->sn = target_sn;
-			spin_unlock_bh(&mpath->state_lock);
-			if (!ifmsh->mshcfg.dot11MeshForwarding)
-				goto endperr;
-			mesh_path_error_tx(ttl, target_addr, cpu_to_le32(target_sn),
-					   cpu_to_le16(target_rcode),
-					   broadcast_addr, sdata);
-=======
 		    ether_addr_equal(ta, sta->sta.addr) &&
 		    !(mpath->flags & MESH_PATH_FIXED) &&
 		    (!(mpath->flags & MESH_PATH_SN_VALID) ||
@@ -1230,7 +815,6 @@ static void hwmp_perr_frame_process(struct ieee80211_sub_if_data *sdata,
 			mesh_path_error_tx(sdata, ttl, target_addr,
 					   target_sn, target_rcode,
 					   broadcast_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			spin_unlock_bh(&mpath->state_lock);
 	}
@@ -1239,46 +823,6 @@ endperr:
 }
 
 static void hwmp_rann_frame_process(struct ieee80211_sub_if_data *sdata,
-<<<<<<< HEAD
-				struct ieee80211_mgmt *mgmt,
-				struct ieee80211_rann_ie *rann)
-{
-	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-	struct mesh_path *mpath;
-	u8 ttl, flags, hopcount;
-	u8 *orig_addr;
-	u32 orig_sn, metric;
-	u32 interval = ifmsh->mshcfg.dot11MeshHWMPRannInterval;
-	bool root_is_gate;
-
-	ttl = rann->rann_ttl;
-	if (ttl <= 1) {
-		ifmsh->mshstats.dropped_frames_ttl++;
-		return;
-	}
-	ttl--;
-	flags = rann->rann_flags;
-	root_is_gate = !!(flags & RANN_FLAG_IS_GATE);
-	orig_addr = rann->rann_addr;
-	orig_sn = rann->rann_seq;
-	hopcount = rann->rann_hopcount;
-	hopcount++;
-	metric = rann->rann_metric;
-
-	/*  Ignore our own RANNs */
-	if (compare_ether_addr(orig_addr, sdata->vif.addr) == 0)
-		return;
-
-	mhwmp_dbg("received RANN from %pM via neighbour %pM (is_gate=%d)",
-			orig_addr, mgmt->sa, root_is_gate);
-
-	rcu_read_lock();
-	mpath = mesh_path_lookup(orig_addr, sdata);
-	if (!mpath) {
-		mesh_path_add(orig_addr, sdata);
-		mpath = mesh_path_lookup(orig_addr, sdata);
-		if (!mpath) {
-=======
 				    struct ieee80211_mgmt *mgmt,
 				    const struct ieee80211_rann_ie *rann)
 {
@@ -1325,36 +869,12 @@ static void hwmp_rann_frame_process(struct ieee80211_sub_if_data *sdata,
 	if (!mpath) {
 		mpath = mesh_path_add(sdata, orig_addr);
 		if (IS_ERR(mpath)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rcu_read_unlock();
 			sdata->u.mesh.mshstats.dropped_frames_no_route++;
 			return;
 		}
 	}
 
-<<<<<<< HEAD
-	if ((!(mpath->flags & (MESH_PATH_ACTIVE | MESH_PATH_RESOLVING)) ||
-	     time_after(jiffies, mpath->exp_time - 1*HZ)) &&
-	     !(mpath->flags & MESH_PATH_FIXED)) {
-		mhwmp_dbg("%s time to refresh root mpath %pM", sdata->name,
-							       orig_addr);
-		mesh_queue_preq(mpath, PREQ_Q_F_START | PREQ_Q_F_REFRESH);
-	}
-
-	if (mpath->sn < orig_sn && ifmsh->mshcfg.dot11MeshForwarding) {
-		mesh_path_sel_frame_tx(MPATH_RANN, flags, orig_addr,
-				       cpu_to_le32(orig_sn),
-				       0, NULL, 0, broadcast_addr,
-				       hopcount, ttl, cpu_to_le32(interval),
-				       cpu_to_le32(metric + mpath->metric),
-				       0, sdata);
-		mpath->sn = orig_sn;
-	}
-
-	/* Using individually addressed PREQ for root node */
-	memcpy(mpath->rann_snd_addr, mgmt->sa, ETH_ALEN);
-	mpath->is_root = true;
-=======
 	if (!(SN_LT(mpath->sn, orig_sn)) &&
 	    !(mpath->sn == orig_sn && new_metric < mpath->rann_metric)) {
 		rcu_read_unlock();
@@ -1379,13 +899,10 @@ static void hwmp_rann_frame_process(struct ieee80211_sub_if_data *sdata,
 	/* Recording RANNs sender address to send individually
 	 * addressed PREQs destined for root mesh STA */
 	memcpy(mpath->rann_snd_addr, mgmt->sa, ETH_ALEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (root_is_gate)
 		mesh_path_add_gate(mpath);
 
-<<<<<<< HEAD
-=======
 	if (ttl <= 1) {
 		ifmsh->mshstats.dropped_frames_ttl++;
 		rcu_read_unlock();
@@ -1400,26 +917,16 @@ static void hwmp_rann_frame_process(struct ieee80211_sub_if_data *sdata,
 				       new_metric, 0, sdata);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 }
 
 
 void mesh_rx_path_sel_frame(struct ieee80211_sub_if_data *sdata,
-<<<<<<< HEAD
-			    struct ieee80211_mgmt *mgmt,
-			    size_t len)
-{
-	struct ieee802_11_elems elems;
-	size_t baselen;
-	u32 last_hop_metric;
-=======
 			    struct ieee80211_mgmt *mgmt, size_t len)
 {
 	struct ieee802_11_elems *elems;
 	size_t baselen;
 	u32 path_metric;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sta_info *sta;
 
 	/* need action_code */
@@ -1428,50 +935,13 @@ void mesh_rx_path_sel_frame(struct ieee80211_sub_if_data *sdata,
 
 	rcu_read_lock();
 	sta = sta_info_get(sdata, mgmt->sa);
-<<<<<<< HEAD
-	if (!sta || sta->plink_state != NL80211_PLINK_ESTAB) {
-=======
 	if (!sta || sta->mesh->plink_state != NL80211_PLINK_ESTAB) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcu_read_unlock();
 		return;
 	}
 	rcu_read_unlock();
 
 	baselen = (u8 *) mgmt->u.action.u.mesh_action.variable - (u8 *) mgmt;
-<<<<<<< HEAD
-	ieee802_11_parse_elems(mgmt->u.action.u.mesh_action.variable,
-			len - baselen, &elems);
-
-	if (elems.preq) {
-		if (elems.preq_len != 37)
-			/* Right now we support just 1 destination and no AE */
-			return;
-		last_hop_metric = hwmp_route_info_get(sdata, mgmt, elems.preq,
-						      MPATH_PREQ);
-		if (last_hop_metric)
-			hwmp_preq_frame_process(sdata, mgmt, elems.preq,
-						last_hop_metric);
-	}
-	if (elems.prep) {
-		if (elems.prep_len != 31)
-			/* Right now we support no AE */
-			return;
-		last_hop_metric = hwmp_route_info_get(sdata, mgmt, elems.prep,
-						      MPATH_PREP);
-		if (last_hop_metric)
-			hwmp_prep_frame_process(sdata, mgmt, elems.prep,
-						last_hop_metric);
-	}
-	if (elems.perr) {
-		if (elems.perr_len != 15)
-			/* Right now we support only one destination per PERR */
-			return;
-		hwmp_perr_frame_process(sdata, mgmt, elems.perr);
-	}
-	if (elems.rann)
-		hwmp_rann_frame_process(sdata, mgmt, elems.rann);
-=======
 	elems = ieee802_11_parse_elems(mgmt->u.action.u.mesh_action.variable,
 				       len - baselen, false, NULL);
 	if (!elems)
@@ -1507,7 +977,6 @@ void mesh_rx_path_sel_frame(struct ieee80211_sub_if_data *sdata,
 		hwmp_rann_frame_process(sdata, mgmt, elems->rann);
 free:
 	kfree(elems);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1527,11 +996,7 @@ static void mesh_queue_preq(struct mesh_path *mpath, u8 flags)
 
 	preq_node = kmalloc(sizeof(struct mesh_preq_queue), GFP_ATOMIC);
 	if (!preq_node) {
-<<<<<<< HEAD
-		mhwmp_dbg("could not allocate PREQ node");
-=======
 		mhwmp_dbg(sdata, "could not allocate PREQ node\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1540,11 +1005,7 @@ static void mesh_queue_preq(struct mesh_path *mpath, u8 flags)
 		spin_unlock_bh(&ifmsh->mesh_preq_queue_lock);
 		kfree(preq_node);
 		if (printk_ratelimit())
-<<<<<<< HEAD
-			mhwmp_dbg("PREQ node queue full");
-=======
 			mhwmp_dbg(sdata, "PREQ node queue full\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1567,22 +1028,14 @@ static void mesh_queue_preq(struct mesh_path *mpath, u8 flags)
 	spin_unlock_bh(&ifmsh->mesh_preq_queue_lock);
 
 	if (time_after(jiffies, ifmsh->last_preq + min_preq_int_jiff(sdata)))
-<<<<<<< HEAD
-		ieee80211_queue_work(&sdata->local->hw, &sdata->work);
-=======
 		wiphy_work_queue(sdata->local->hw.wiphy, &sdata->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	else if (time_before(jiffies, ifmsh->last_preq)) {
 		/* avoid long wait if did not send preqs for a long time
 		 * and jiffies wrapped around
 		 */
 		ifmsh->last_preq = jiffies - min_preq_int_jiff(sdata) - 1;
-<<<<<<< HEAD
-		ieee80211_queue_work(&sdata->local->hw, &sdata->work);
-=======
 		wiphy_work_queue(sdata->local->hw.wiphy, &sdata->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		mod_timer(&ifmsh->mesh_path_timer, ifmsh->last_preq +
 						min_preq_int_jiff(sdata));
@@ -1598,11 +1051,7 @@ void mesh_path_start_discovery(struct ieee80211_sub_if_data *sdata)
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
 	struct mesh_preq_queue *preq_node;
 	struct mesh_path *mpath;
-<<<<<<< HEAD
-	u8 ttl, target_flags;
-=======
 	u8 ttl, target_flags = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const u8 *da;
 	u32 lifetime;
 
@@ -1621,22 +1070,15 @@ void mesh_path_start_discovery(struct ieee80211_sub_if_data *sdata)
 	spin_unlock_bh(&ifmsh->mesh_preq_queue_lock);
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	mpath = mesh_path_lookup(preq_node->dst, sdata);
-=======
 	mpath = mesh_path_lookup(sdata, preq_node->dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mpath)
 		goto enddiscovery;
 
 	spin_lock_bh(&mpath->state_lock);
-<<<<<<< HEAD
-=======
 	if (mpath->flags & (MESH_PATH_DELETED | MESH_PATH_FIXED)) {
 		spin_unlock_bh(&mpath->state_lock);
 		goto enddiscovery;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mpath->flags &= ~MESH_PATH_REQ_QUEUED;
 	if (preq_node->flags & PREQ_Q_F_START) {
 		if (mpath->flags & MESH_PATH_RESOLVING) {
@@ -1672,20 +1114,6 @@ void mesh_path_start_discovery(struct ieee80211_sub_if_data *sdata)
 	}
 
 	if (preq_node->flags & PREQ_Q_F_REFRESH)
-<<<<<<< HEAD
-		target_flags = MP_F_DO;
-	else
-		target_flags = MP_F_RF;
-
-	spin_unlock_bh(&mpath->state_lock);
-	da = (mpath->is_root) ? mpath->rann_snd_addr : broadcast_addr;
-	mesh_path_sel_frame_tx(MPATH_PREQ, 0, sdata->vif.addr,
-			cpu_to_le32(ifmsh->sn), target_flags, mpath->dst,
-			cpu_to_le32(mpath->sn), da, 0,
-			ttl, cpu_to_le32(lifetime), 0,
-			cpu_to_le32(ifmsh->preq_id++), sdata);
-	mod_timer(&mpath->timer, jiffies + mpath->discovery_timeout);
-=======
 		target_flags |= IEEE80211_PREQ_TO_FLAG;
 	else
 		target_flags &= ~IEEE80211_PREQ_TO_FLAG;
@@ -1700,31 +1128,18 @@ void mesh_path_start_discovery(struct ieee80211_sub_if_data *sdata)
 	if (!(mpath->flags & MESH_PATH_DELETED))
 		mod_timer(&mpath->timer, jiffies + mpath->discovery_timeout);
 	spin_unlock_bh(&mpath->state_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enddiscovery:
 	rcu_read_unlock();
 	kfree(preq_node);
 }
 
-<<<<<<< HEAD
-/* mesh_nexthop_resolve - lookup next hop for given skb and start path
- * discovery if no forwarding information is found.
-=======
 /**
  * mesh_nexthop_resolve - lookup next hop; conditionally start path discovery
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @skb: 802.11 frame to be sent
  * @sdata: network subif the frame will be sent through
  *
-<<<<<<< HEAD
- * Returns: 0 if the next hop was found and -ENOENT if the frame was queued.
- * skb is freeed here if no mpath could be allocated.
- */
-int mesh_nexthop_resolve(struct sk_buff *skb,
-			 struct ieee80211_sub_if_data *sdata)
-=======
  * Lookup next hop for given skb and start path discovery if no
  * forwarding information is found.
  *
@@ -1733,35 +1148,12 @@ int mesh_nexthop_resolve(struct sk_buff *skb,
  */
 int mesh_nexthop_resolve(struct ieee80211_sub_if_data *sdata,
 			 struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
 	struct mesh_path *mpath;
 	struct sk_buff *skb_to_free = NULL;
 	u8 *target_addr = hdr->addr3;
-<<<<<<< HEAD
-	int err = 0;
-
-	rcu_read_lock();
-	err = mesh_nexthop_lookup(skb, sdata);
-	if (!err)
-		goto endlookup;
-
-	/* no nexthop found, start resolving */
-	mpath = mesh_path_lookup(target_addr, sdata);
-	if (!mpath) {
-		mesh_path_add(target_addr, sdata);
-		mpath = mesh_path_lookup(target_addr, sdata);
-		if (!mpath) {
-			mesh_path_discard_frame(skb, sdata);
-			err = -ENOSPC;
-			goto endlookup;
-		}
-	}
-
-	if (!(mpath->flags & MESH_PATH_RESOLVING))
-=======
 
 	/* Nulls are only sent to peers for PS and should be pre-addressed */
 	if (ieee80211_is_qos_nullfunc(hdr->frame_control))
@@ -1786,25 +1178,11 @@ int mesh_nexthop_resolve(struct ieee80211_sub_if_data *sdata,
 
 	if (!(mpath->flags & MESH_PATH_RESOLVING) &&
 	    mesh_path_sel_is_hwmp(sdata))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mesh_queue_preq(mpath, PREQ_Q_F_START);
 
 	if (skb_queue_len(&mpath->frame_queue) >= MESH_FRAME_QUEUE_LEN)
 		skb_to_free = skb_dequeue(&mpath->frame_queue);
 
-<<<<<<< HEAD
-	info->flags |= IEEE80211_TX_INTFL_NEED_TXPROCESSING;
-	ieee80211_set_qos_hdr(sdata, skb);
-	skb_queue_tail(&mpath->frame_queue, skb);
-	err = -ENOENT;
-	if (skb_to_free)
-		mesh_path_discard_frame(skb_to_free, sdata);
-
-endlookup:
-	rcu_read_unlock();
-	return err;
-}
-=======
 	info->control.flags |= IEEE80211_TX_INTCFL_NEED_TXPROCESSING;
 	ieee80211_set_qos_hdr(sdata, skb);
 	skb_queue_tail(&mpath->frame_queue, skb);
@@ -1862,7 +1240,6 @@ void mesh_path_refresh(struct ieee80211_sub_if_data *sdata,
 		mesh_queue_preq(mpath, PREQ_Q_F_START | PREQ_Q_F_REFRESH);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * mesh_nexthop_lookup - put the appropriate next hop on a mesh frame. Calling
  * this function is considered "using" the associated mpath, so preempt a path
@@ -1873,37 +1250,14 @@ void mesh_path_refresh(struct ieee80211_sub_if_data *sdata,
  *
  * Returns: 0 if the next hop was found. Nonzero otherwise.
  */
-<<<<<<< HEAD
-int mesh_nexthop_lookup(struct sk_buff *skb,
-			struct ieee80211_sub_if_data *sdata)
-{
-=======
 int mesh_nexthop_lookup(struct ieee80211_sub_if_data *sdata,
 			struct sk_buff *skb)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mesh_path *mpath;
 	struct sta_info *next_hop;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	u8 *target_addr = hdr->addr3;
-<<<<<<< HEAD
-	int err = -ENOENT;
-
-	rcu_read_lock();
-	mpath = mesh_path_lookup(target_addr, sdata);
-
-	if (!mpath || !(mpath->flags & MESH_PATH_ACTIVE))
-		goto endlookup;
-
-	if (time_after(jiffies,
-		       mpath->exp_time -
-		       msecs_to_jiffies(sdata->u.mesh.mshcfg.path_refresh_time)) &&
-	    !compare_ether_addr(sdata->vif.addr, hdr->addr4) &&
-	    !(mpath->flags & MESH_PATH_RESOLVING) &&
-	    !(mpath->flags & MESH_PATH_FIXED))
-		mesh_queue_preq(mpath, PREQ_Q_F_START | PREQ_Q_F_REFRESH);
-=======
 
 	if (ifmsh->mshcfg.dot11MeshNolearn &&
 	    !mesh_nexthop_lookup_nolearn(sdata, skb))
@@ -1914,25 +1268,11 @@ int mesh_nexthop_lookup(struct ieee80211_sub_if_data *sdata,
 		return -ENOENT;
 
 	mesh_path_refresh(sdata, mpath, hdr->addr4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	next_hop = rcu_dereference(mpath->next_hop);
 	if (next_hop) {
 		memcpy(hdr->addr1, next_hop->sta.addr, ETH_ALEN);
 		memcpy(hdr->addr2, sdata->vif.addr, ETH_ALEN);
-<<<<<<< HEAD
-		err = 0;
-	}
-
-endlookup:
-	rcu_read_unlock();
-	return err;
-}
-
-void mesh_path_timer(unsigned long data)
-{
-	struct mesh_path *mpath = (void *) data;
-=======
 		ieee80211_mps_set_frame_flags(sdata, next_hop, hdr);
 		if (ieee80211_hw_check(&sdata->local->hw, SUPPORT_FAST_XMIT))
 			mesh_fast_tx_cache(sdata, skb, mpath);
@@ -1945,7 +1285,6 @@ void mesh_path_timer(unsigned long data)
 void mesh_path_timer(struct timer_list *t)
 {
 	struct mesh_path *mpath = from_timer(mpath, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ieee80211_sub_if_data *sdata = mpath->sdata;
 	int ret;
 
@@ -1964,44 +1303,20 @@ void mesh_path_timer(struct timer_list *t)
 		spin_unlock_bh(&mpath->state_lock);
 		mesh_queue_preq(mpath, 0);
 	} else {
-<<<<<<< HEAD
-		mpath->flags = 0;
-=======
 		mpath->flags &= ~(MESH_PATH_RESOLVING |
 				  MESH_PATH_RESOLVED |
 				  MESH_PATH_REQ_QUEUED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mpath->exp_time = jiffies;
 		spin_unlock_bh(&mpath->state_lock);
 		if (!mpath->is_gate && mesh_gate_num(sdata) > 0) {
 			ret = mesh_path_send_to_gates(mpath);
 			if (ret)
-<<<<<<< HEAD
-				mhwmp_dbg("no gate was reachable");
-=======
 				mhwmp_dbg(sdata, "no gate was reachable\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			mesh_path_flush_pending(mpath);
 	}
 }
 
-<<<<<<< HEAD
-void
-mesh_path_tx_root_frame(struct ieee80211_sub_if_data *sdata)
-{
-	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
-	u32 interval = ifmsh->mshcfg.dot11MeshHWMPRannInterval;
-	u8 flags;
-
-	flags = (ifmsh->mshcfg.dot11MeshGateAnnouncementProtocol)
-			? RANN_FLAG_IS_GATE : 0;
-	mesh_path_sel_frame_tx(MPATH_RANN, flags, sdata->vif.addr,
-			       cpu_to_le32(++ifmsh->sn),
-			       0, NULL, 0, broadcast_addr,
-			       0, sdata->u.mesh.mshcfg.element_ttl,
-			       cpu_to_le32(interval), 0, 0, sdata);
-=======
 void mesh_path_tx_root_frame(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
@@ -2035,5 +1350,4 @@ void mesh_path_tx_root_frame(struct ieee80211_sub_if_data *sdata)
 		mhwmp_dbg(sdata, "Proactive mechanism not supported\n");
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Support for Digigram Lola PCI-e boards
  *
  *  Copyright (c) 2011 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the Free
- *  Software Foundation; either version 2 of the License, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- *  more details.
- *
- *  You should have received a copy of the GNU General Public License along with
- *  this program; if not, write to the Free Software Foundation, Inc., 59
- *  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -127,11 +107,7 @@ int lola_set_granularity(struct lola *chip, unsigned int val, bool force)
  * Clock widget handling
  */
 
-<<<<<<< HEAD
-int __devinit lola_init_clock_widget(struct lola *chip, int nid)
-=======
 int lola_init_clock_widget(struct lola *chip, int nid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int val;
 	int i, j, nitems, nb_verbs, idx, idx_list;
@@ -139,46 +115,27 @@ int lola_init_clock_widget(struct lola *chip, int nid)
 
 	err = lola_read_param(chip, nid, LOLA_PAR_AUDIO_WIDGET_CAP, &val);
 	if (err < 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR SFX "Can't read wcaps for 0x%x\n", nid);
-=======
 		dev_err(chip->card->dev, "Can't read wcaps for 0x%x\n", nid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	if ((val & 0xfff00000) != 0x01f00000) { /* test SubType and Type */
-<<<<<<< HEAD
-		snd_printdd("No valid clock widget\n");
-=======
 		dev_dbg(chip->card->dev, "No valid clock widget\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	chip->clock.nid = nid;
 	chip->clock.items = val & 0xff;
-<<<<<<< HEAD
-	snd_printdd("clock_list nid=%x, entries=%d\n", nid,
-		    chip->clock.items);
-	if (chip->clock.items > MAX_SAMPLE_CLOCK_COUNT) {
-		printk(KERN_ERR SFX "CLOCK_LIST too big: %d\n",
-=======
 	dev_dbg(chip->card->dev, "clock_list nid=%x, entries=%d\n", nid,
 		    chip->clock.items);
 	if (chip->clock.items > MAX_SAMPLE_CLOCK_COUNT) {
 		dev_err(chip->card->dev, "CLOCK_LIST too big: %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       chip->clock.items);
 		return -EINVAL;
 	}
 
 	nitems = chip->clock.items;
-<<<<<<< HEAD
-	nb_verbs = (nitems + 3) / 4;
-=======
 	nb_verbs = DIV_ROUND_UP(nitems, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	idx = 0;
 	idx_list = 0;
 	for (i = 0; i < nb_verbs; i++) {
@@ -188,11 +145,7 @@ int lola_init_clock_widget(struct lola *chip, int nid)
 		err = lola_codec_read(chip, nid, LOLA_VERB_GET_CLOCK_LIST,
 				      idx, 0, &val, &res_ex);
 		if (err < 0) {
-<<<<<<< HEAD
-			printk(KERN_ERR SFX "Can't read CLOCK_LIST\n");
-=======
 			dev_err(chip->card->dev, "Can't read CLOCK_LIST\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -257,11 +210,7 @@ int lola_enable_clock_events(struct lola *chip)
 	if (err < 0)
 		return err;
 	if (res) {
-<<<<<<< HEAD
-		printk(KERN_WARNING SFX "error in enable_clock_events %d\n",
-=======
 		dev_warn(chip->card->dev, "error in enable_clock_events %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       res);
 		return -EINVAL;
 	}
@@ -280,11 +229,7 @@ int lola_set_clock_index(struct lola *chip, unsigned int idx)
 	if (err < 0)
 		return err;
 	if (res) {
-<<<<<<< HEAD
-		printk(KERN_WARNING SFX "error in set_clock %d\n", res);
-=======
 		dev_warn(chip->card->dev, "error in set_clock %d\n", res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	return 0;

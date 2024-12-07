@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8727.c
  *
@@ -9,14 +6,6 @@
  *      Author: neil.jones@imgtec.com
  *
  * Copyright (C) 2009 Imagination Technologies Ltd.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -26,12 +15,6 @@
 #include <linux/device.h>
 #include <sound/core.h>
 #include <sound/pcm.h>
-<<<<<<< HEAD
-#include <sound/ac97_codec.h>
-#include <sound/initval.h>
-#include <sound/soc.h>
-
-=======
 #include <sound/initval.h>
 #include <sound/soc.h>
 
@@ -45,7 +28,6 @@ static const struct snd_soc_dapm_route wm8727_dapm_routes[] = {
 	{ "VOUTR", NULL, "Playback" },
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Note this is a simple chip with no configuration interface, sample rate is
  * determined automatically by examining the Master clock and Bit clock ratios
@@ -54,10 +36,6 @@ static const struct snd_soc_dapm_route wm8727_dapm_routes[] = {
 			SNDRV_PCM_RATE_48000 | SNDRV_PCM_RATE_96000 |\
 			SNDRV_PCM_RATE_192000)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct snd_soc_dai_driver wm8727_dai = {
 	.name = "wm8727-hifi",
 	.playback = {
@@ -69,20 +47,6 @@ static struct snd_soc_dai_driver wm8727_dai = {
 		},
 };
 
-<<<<<<< HEAD
-static struct snd_soc_codec_driver soc_codec_dev_wm8727;
-
-static __devinit int wm8727_probe(struct platform_device *pdev)
-{
-	return snd_soc_register_codec(&pdev->dev,
-			&soc_codec_dev_wm8727, &wm8727_dai, 1);
-}
-
-static int __devexit wm8727_remove(struct platform_device *pdev)
-{
-	snd_soc_unregister_codec(&pdev->dev);
-	return 0;
-=======
 static const struct snd_soc_component_driver soc_component_dev_wm8727 = {
 	.dapm_widgets		= wm8727_dapm_widgets,
 	.num_dapm_widgets	= ARRAY_SIZE(wm8727_dapm_widgets),
@@ -97,23 +61,14 @@ static int wm8727_probe(struct platform_device *pdev)
 {
 	return devm_snd_soc_register_component(&pdev->dev,
 			&soc_component_dev_wm8727, &wm8727_dai, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver wm8727_codec_driver = {
 	.driver = {
 			.name = "wm8727",
-<<<<<<< HEAD
-			.owner = THIS_MODULE,
 	},
 
 	.probe = wm8727_probe,
-	.remove = __devexit_p(wm8727_remove),
-=======
-	},
-
-	.probe = wm8727_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(wm8727_codec_driver);

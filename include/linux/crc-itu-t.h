@@ -1,22 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	crc-itu-t.h - CRC ITU-T V.41 routine
  *
  * Implements the standard CRC ITU-T V.41:
  *   Width 16
-<<<<<<< HEAD
- *   Poly  0x0x1021 (x^16 + x^12 + x^15 + 1)
- *   Init  0
- *
- * This source code is licensed under the GNU General Public License,
- * Version 2. See the file COPYING for more details.
-=======
  *   Poly  0x1021 (x^16 + x^12 + x^5 + 1)
  *   Init  0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef CRC_ITU_T_H

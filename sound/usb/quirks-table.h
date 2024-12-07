@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ALSA USB Audio Driver
  *
  * Copyright (c) 2002 by Takashi Iwai <tiwai@suse.de>,
  *                       Clemens Ladisch <clemens@ladisch.de>
-<<<<<<< HEAD
- *
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -46,8 +25,6 @@
 	.idProduct = prod, \
 	.bInterfaceClass = USB_CLASS_VENDOR_SPEC
 
-<<<<<<< HEAD
-=======
 /* A standard entry matching with vid/pid and the audio class/subclass */
 #define USB_AUDIO_DEVICE(vend, prod) \
 	.match_flags = USB_DEVICE_ID_MATCH_DEVICE | \
@@ -58,7 +35,6 @@
 	.bInterfaceClass = USB_CLASS_AUDIO, \
 	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* FTDI devices */
 {
 	USB_DEVICE(0x0403, 0xb8d8),
@@ -70,55 +46,6 @@
 	}
 },
 
-<<<<<<< HEAD
-/* Creative/Toshiba Multimedia Center SB-0500 */
-{
-	USB_DEVICE(0x041e, 0x3048),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "Toshiba",
-		.product_name = "SB-0500",
-		.ifnum = QUIRK_NO_INTERFACE
-	}
-},
-
-/* Creative/E-Mu devices */
-{
-	USB_DEVICE(0x041e, 0x3010),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "Creative Labs",
-		.product_name = "Sound Blaster MP3+",
-		.ifnum = QUIRK_NO_INTERFACE
-	}
-},
-{
-	/* E-Mu 0202 USB */
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE,
-	.idVendor = 0x041e,
-	.idProduct = 0x3f02,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-},
-{
-	/* E-Mu 0404 USB */
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE,
-	.idVendor = 0x041e,
-	.idProduct = 0x3f04,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-},
-{
-	/* E-Mu Tracker Pre */
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE,
-	.idVendor = 0x041e,
-	.idProduct = 0x3f0a,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-},
-{
-	/* E-Mu 0204 USB */
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE,
-	.idVendor = 0x041e,
-	.idProduct = 0x3f19,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-},
-=======
 {
 	/* Creative BT-D1 */
 	USB_DEVICE(0x041e, 0x0005),
@@ -229,82 +156,11 @@
 		}
 	}
 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Logitech QuickCam: bDeviceClass is vendor-specific, so generic interface
  * class matches do not take effect without an explicit ID match.
  */
-<<<<<<< HEAD
-{
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.idVendor = 0x046d,
-	.idProduct = 0x0850,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL
-},
-{
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.idVendor = 0x046d,
-	.idProduct = 0x08ae,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL
-},
-{
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.idVendor = 0x046d,
-	.idProduct = 0x08c6,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL
-},
-{
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.idVendor = 0x046d,
-	.idProduct = 0x08f0,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL
-},
-{
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.idVendor = 0x046d,
-	.idProduct = 0x08f5,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL
-},
-{
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.idVendor = 0x046d,
-	.idProduct = 0x08f6,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL
-},
-{
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.idVendor = 0x046d,
-	.idProduct = 0x0990,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL,
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "Logitech, Inc.",
-		.product_name = "QuickCam Pro 9000",
-		.ifnum = QUIRK_NO_INTERFACE
-	}
-},
-=======
 { USB_AUDIO_DEVICE(0x046d, 0x0850) },
 { USB_AUDIO_DEVICE(0x046d, 0x08ae) },
 { USB_AUDIO_DEVICE(0x046d, 0x08c6) },
@@ -312,7 +168,6 @@
 { USB_AUDIO_DEVICE(0x046d, 0x08f5) },
 { USB_AUDIO_DEVICE(0x046d, 0x08f6) },
 { USB_AUDIO_DEVICE(0x046d, 0x0990) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Yamaha devices
@@ -445,8 +300,6 @@ YAMAHA_DEVICE(0x105d, NULL),
 	}
 },
 {
-<<<<<<< HEAD
-=======
 	USB_DEVICE(0x0499, 0x1507),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		/* .vendor_name = "Yamaha", */
@@ -473,7 +326,6 @@ YAMAHA_DEVICE(0x105d, NULL),
 	}
 },
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	USB_DEVICE(0x0499, 0x1509),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		/* .vendor_name = "Yamaha", */
@@ -503,8 +355,6 @@ YAMAHA_DEVICE(0x105d, NULL),
 		}
 	}
 },
-<<<<<<< HEAD
-=======
 {
 	USB_DEVICE(0x0499, 0x150a),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
@@ -557,7 +407,6 @@ YAMAHA_DEVICE(0x105d, NULL),
 		}
 	}
 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 YAMAHA_DEVICE(0x2000, "DGP-7"),
 YAMAHA_DEVICE(0x2001, "DGP-5"),
 YAMAHA_DEVICE(0x2002, NULL),
@@ -582,8 +431,6 @@ YAMAHA_DEVICE(0x7000, "DTX"),
 YAMAHA_DEVICE(0x7010, "UB99"),
 #undef YAMAHA_DEVICE
 #undef YAMAHA_INTERFACE
-<<<<<<< HEAD
-=======
 /* this catches most recent vendor-specific Yamaha devices */
 {
 	.match_flags = USB_DEVICE_ID_MATCH_VENDOR |
@@ -595,7 +442,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		.type = QUIRK_AUTODETECT
 	}
 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Roland/RolandED/Edirol/BOSS devices
@@ -911,45 +757,11 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		.data = (const struct snd_usb_audio_quirk[]) {
 			{
 				.ifnum = 0,
-<<<<<<< HEAD
-				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
-				.data = & (const struct audioformat) {
-					.formats = SNDRV_PCM_FMTBIT_S24_3LE,
-					.channels = 2,
-					.iface = 0,
-					.altsetting = 1,
-					.altset_idx = 1,
-					.attributes = 0,
-					.endpoint = 0x01,
-					.ep_attr = 0x01,
-					.rates = SNDRV_PCM_RATE_CONTINUOUS,
-					.rate_min = 44100,
-					.rate_max = 44100,
-				}
-			},
-			{
-				.ifnum = 1,
-				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
-				.data = & (const struct audioformat) {
-					.formats = SNDRV_PCM_FMTBIT_S24_3LE,
-					.channels = 2,
-					.iface = 1,
-					.altsetting = 1,
-					.altset_idx = 1,
-					.attributes = 0,
-					.endpoint = 0x81,
-					.ep_attr = 0x01,
-					.rates = SNDRV_PCM_RATE_CONTINUOUS,
-					.rate_min = 44100,
-					.rate_max = 44100,
-				}
-=======
 				.type = QUIRK_AUDIO_STANDARD_INTERFACE
 			},
 			{
 				.ifnum = 1,
 				.type = QUIRK_AUDIO_STANDARD_INTERFACE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			},
 			{
 				.ifnum = 2,
@@ -1279,10 +1091,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		}
 	}
 },
-<<<<<<< HEAD
-	/* TODO: add Roland M-1000 support */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Has ID 0x0038 when not in "Advanced Driver" mode;
@@ -1397,10 +1205,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		}
 	}
 },
-<<<<<<< HEAD
-	/* TODO: add Edirol M-100FX support */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* has ID 0x004e when not in "Advanced Driver" mode */
 	USB_DEVICE(0x0582, 0x004c),
@@ -1520,23 +1324,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
-<<<<<<< HEAD
-	/* has ID 0x006b when not in "Advanced Driver" mode */
-	USB_DEVICE_VENDOR_SPEC(0x0582, 0x006a),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "Roland",
-		.product_name = "SP-606",
-		.ifnum = 3,
-		.type = QUIRK_MIDI_FIXED_ENDPOINT,
-		.data = & (const struct snd_usb_midi_endpoint_info) {
-			.out_cables = 0x0001,
-			.in_cables  = 0x0001
-		}
-	}
-},
-{
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* has ID 0x006e when not in "Advanced Driver" mode */
 	USB_DEVICE(0x0582, 0x006d),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
@@ -1623,11 +1410,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		}
 	}
 },
-<<<<<<< HEAD
-	/* TODO: add Roland V-SYNTH XT support */
-	/* TODO: add BOSS GT-PRO support */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* has ID 0x008c when not in "Advanced Driver" mode */
 	USB_DEVICE(0x0582, 0x008b),
@@ -1642,45 +1424,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		}
 	}
 },
-<<<<<<< HEAD
-	/* TODO: add Edirol PC-80 support */
-{
-	USB_DEVICE(0x0582, 0x0096),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "EDIROL",
-		.product_name = "UA-1EX",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_COMPOSITE,
-		.data = (const struct snd_usb_audio_quirk[]) {
-			{
-				.ifnum = 0,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 1,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = -1
-			}
-		}
-	}
-},
-{
-	USB_DEVICE(0x0582, 0x009a),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "EDIROL",
-		.product_name = "UM-3EX",
-		.ifnum = 0,
-		.type = QUIRK_MIDI_FIXED_ENDPOINT,
-		.data = & (const struct snd_usb_midi_endpoint_info) {
-			.out_cables = 0x000f,
-			.in_cables  = 0x000f
-		}
-	}
-},
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * This quirk is for the "Advanced Driver" mode. If off, the UA-4FX
@@ -1711,95 +1454,8 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		}
 	}
 },
-<<<<<<< HEAD
-	/* TODO: add Edirol MD-P1 support */
-{
-	USB_DEVICE(0x582, 0x00a6),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "Roland",
-		.product_name = "Juno-G",
-		.ifnum = 0,
-		.type = QUIRK_MIDI_FIXED_ENDPOINT,
-		.data = & (const struct snd_usb_midi_endpoint_info) {
-			.out_cables = 0x0001,
-			.in_cables  = 0x0001
-		}
-	}
-},
-{
-	/* Roland SH-201 */
-	USB_DEVICE(0x0582, 0x00ad),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "Roland",
-		.product_name = "SH-201",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_COMPOSITE,
-		.data = (const struct snd_usb_audio_quirk[]) {
-			{
-				.ifnum = 0,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 1,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 2,
-				.type = QUIRK_MIDI_FIXED_ENDPOINT,
-				.data = & (const struct snd_usb_midi_endpoint_info) {
-					.out_cables = 0x0001,
-					.in_cables  = 0x0001
-				}
-			},
-			{
-				.ifnum = -1
-			}
-		}
-	}
-},
-{
-	/* Roland SonicCell */
-	USB_DEVICE(0x0582, 0x00c2),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "Roland",
-		.product_name = "SonicCell",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_COMPOSITE,
-		.data = (const struct snd_usb_audio_quirk[]) {
-			{
-				.ifnum = 0,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 1,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 2,
-				.type = QUIRK_MIDI_FIXED_ENDPOINT,
-				.data = & (const struct snd_usb_midi_endpoint_info) {
-					.out_cables = 0x0001,
-					.in_cables  = 0x0001
-				}
-			},
-			{
-				.ifnum = -1
-			}
-		}
-	}
-},
 {
 	/* Edirol M-16DX */
-	/* FIXME: This quirk gives a good-working capture stream but the
-	 *        playback seems problematic because of lacking of sync
-	 *        with capture stream.  It needs to sync with the capture
-	 *        clock.  As now, you'll get frequent sound distortions
-	 *        via the playback.
-	 */
-=======
-{
-	/* Edirol M-16DX */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	USB_DEVICE(0x0582, 0x00c4),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		.ifnum = QUIRK_ANY_INTERFACE,
@@ -1828,38 +1484,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
-<<<<<<< HEAD
-	/* BOSS GT-10 */
-	USB_DEVICE(0x0582, 0x00da),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_COMPOSITE,
-		.data = (const struct snd_usb_audio_quirk[]) {
-			{
-				.ifnum = 0,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 1,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 2,
-				.type = QUIRK_MIDI_FIXED_ENDPOINT,
-				.data = & (const struct snd_usb_midi_endpoint_info) {
-					.out_cables = 0x0001,
-					.in_cables  = 0x0001
-				}
-			},
-			{
-				.ifnum = -1
-			}
-		}
-	}
-},
-{
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Advanced modes of the Edirol UA-25EX.
 	 * For the standard mode, UA-25EX has ID 0582:00e7, which
 	 * offers only 16-bit PCM at 44.1 kHz and no MIDI.
@@ -1890,45 +1514,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
-<<<<<<< HEAD
-	/* has ID 0x00ea when not in Advanced Driver mode */
-	USB_DEVICE_VENDOR_SPEC(0x0582, 0x00e9),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		/* .vendor_name = "Roland", */
-		/* .product_name = "UA-1G", */
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_COMPOSITE,
-		.data = (const struct snd_usb_audio_quirk[]) {
-			{
-				.ifnum = 0,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 1,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = -1
-			}
-		}
-	}
-},
-{
-	USB_DEVICE_VENDOR_SPEC(0x0582, 0x0104),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		/* .vendor_name = "Roland", */
-		/* .product_name = "UM-1G", */
-		.ifnum = 0,
-		.type = QUIRK_MIDI_FIXED_ENDPOINT,
-		.data = & (const struct snd_usb_midi_endpoint_info) {
-			.out_cables = 0x0001,
-			.in_cables  = 0x0001
-		}
-	}
-},
-{
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Edirol UM-3G */
 	USB_DEVICE_VENDOR_SPEC(0x0582, 0x0108),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
@@ -1941,88 +1526,9 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
-<<<<<<< HEAD
-	/* Boss JS-8 Jam Station  */
-	USB_DEVICE(0x0582, 0x0109),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		/* .vendor_name = "BOSS", */
-		/* .product_name = "JS-8", */
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_COMPOSITE,
-		.data = (const struct snd_usb_audio_quirk[]) {
-			{
-				.ifnum = 0,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 1,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 2,
-				.type = QUIRK_MIDI_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = -1
-			}
-		}
-	}
-},
-{
-	/* has ID 0x0110 when not in Advanced Driver mode */
-	USB_DEVICE_VENDOR_SPEC(0x0582, 0x010f),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		/* .vendor_name = "Roland", */
-		/* .product_name = "A-PRO", */
-		.ifnum = 0,
-		.type = QUIRK_MIDI_FIXED_ENDPOINT,
-		.data = & (const struct snd_usb_midi_endpoint_info) {
-			.out_cables = 0x0003,
-			.in_cables  = 0x0007
-		}
-	}
-},
-{
-	/* Roland GAIA SH-01 */
-	USB_DEVICE(0x0582, 0x0111),
-	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-		.vendor_name = "Roland",
-		.product_name = "GAIA",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_COMPOSITE,
-		.data = (const struct snd_usb_audio_quirk[]) {
-			{
-				.ifnum = 0,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 1,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 2,
-				.type = QUIRK_MIDI_FIXED_ENDPOINT,
-				.data = &(const struct snd_usb_midi_endpoint_info) {
-				.out_cables = 0x0003,
-				.in_cables  = 0x0003
-				}
-			},
-			{
-				.ifnum = -1
-			}
-		}
-	}
-},
-{
-	USB_DEVICE(0x0582, 0x0113),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		/* .vendor_name = "BOSS", */
-		/* .product_name = "ME-25", */
-=======
 	/* BOSS ME-25 */
 	USB_DEVICE(0x0582, 0x0113),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.ifnum = QUIRK_ANY_INTERFACE,
 		.type = QUIRK_COMPOSITE,
 		.data = (const struct snd_usb_audio_quirk[]) {
@@ -2049,70 +1555,16 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
-<<<<<<< HEAD
-	USB_DEVICE(0x0582, 0x0127),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		/* .vendor_name = "Roland", */
-		/* .product_name = "GR-55", */
-=======
 	/* only 44.1 kHz works at the moment */
 	USB_DEVICE(0x0582, 0x0120),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		/* .vendor_name = "Roland", */
 		/* .product_name = "OCTO-CAPTURE", */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.ifnum = QUIRK_ANY_INTERFACE,
 		.type = QUIRK_COMPOSITE,
 		.data = (const struct snd_usb_audio_quirk[]) {
 			{
 				.ifnum = 0,
-<<<<<<< HEAD
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 1,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 2,
-				.type = QUIRK_MIDI_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = -1
-			}
-		}
-	}
-},
-{
-	/* Added support for Roland UM-ONE which differs from UM-1 */
-	USB_DEVICE(0x0582, 0x012a),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		/* .vendor_name = "ROLAND", */
-		/* .product_name = "UM-ONE", */
-		.ifnum = 0,
-		.type = QUIRK_MIDI_FIXED_ENDPOINT,
-		.data = & (const struct snd_usb_midi_endpoint_info) {
-			.out_cables = 0x0001,
-			.in_cables  = 0x0003
-		}
-	}
-},
-{
-	USB_DEVICE(0x0582, 0x011e),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		/* .vendor_name = "BOSS", */
-		/* .product_name = "BR-800", */
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_COMPOSITE,
-		.data = (const struct snd_usb_audio_quirk[]) {
-			{
-				.ifnum = 0,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 1,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-=======
 				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
 				.data = & (const struct audioformat) {
 					.formats = SNDRV_PCM_FMTBIT_S32_LE,
@@ -2146,7 +1598,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 					.nr_rates = 1,
 					.rate_table = (unsigned int[]) { 44100 }
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			},
 			{
 				.ifnum = 2,
@@ -2157,35 +1608,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 				}
 			},
 			{
-<<<<<<< HEAD
-				.ifnum = -1
-			}
-		}
-	}
-},
-{
-	USB_DEVICE(0x0582, 0x0130),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		/* .vendor_name = "BOSS", */
-		/* .product_name = "MICRO BR-80", */
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_COMPOSITE,
-		.data = (const struct snd_usb_audio_quirk[]) {
-			{
-				.ifnum = 0,
-				.type = QUIRK_IGNORE_INTERFACE
-			},
-			{
-				.ifnum = 1,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 2,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 3,
-=======
 				.ifnum = 3,
 				.type = QUIRK_IGNORE_INTERFACE
 			},
@@ -2246,7 +1668,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 			},
 			{
 				.ifnum = 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				.type = QUIRK_MIDI_FIXED_ENDPOINT,
 				.data = & (const struct snd_usb_midi_endpoint_info) {
 					.out_cables = 0x0001,
@@ -2254,8 +1675,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 				}
 			},
 			{
-<<<<<<< HEAD
-=======
 				.ifnum = 3,
 				.type = QUIRK_IGNORE_INTERFACE
 			},
@@ -2264,7 +1683,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 				.type = QUIRK_IGNORE_INTERFACE
 			},
 			{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				.ifnum = -1
 			}
 		}
@@ -2301,8 +1719,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
-<<<<<<< HEAD
-=======
 /* UA101 and co are supported by another driver */
 {
 	USB_DEVICE(0x0582, 0x0044), /* UA-1000 high speed */
@@ -2335,7 +1751,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Guillemot devices */
 {
 	/*
@@ -2637,8 +2052,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
-<<<<<<< HEAD
-=======
 	/* M-Audio Micro */
 	USB_DEVICE_VENDOR_SPEC(0x0763, 0x201a),
 },
@@ -2785,7 +2198,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	USB_DEVICE_VENDOR_SPEC(0x0763, 0x2080),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		/* .vendor_name = "M-Audio", */
@@ -2976,11 +2388,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	USB_DEVICE(0x086a, 0x0001),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		.vendor_name = "Emagic",
-<<<<<<< HEAD
-		/* .product_name = "Unitor8", */
-=======
 		.product_name = "Unitor8",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.ifnum = 2,
 		.type = QUIRK_MIDI_EMAGIC,
 		.data = & (const struct snd_usb_midi_endpoint_info) {
@@ -3037,8 +2445,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
-<<<<<<< HEAD
-=======
 {
 	USB_DEVICE_VENDOR_SPEC(0x0944, 0x0204),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
@@ -3049,7 +2455,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* AKAI devices */
 {
 	USB_DEVICE(0x09e8, 0x0062),
@@ -3061,8 +2466,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
-<<<<<<< HEAD
-=======
 {
 	/* Akai MPC Element */
 	USB_DEVICE(0x09e8, 0x0021),
@@ -3085,7 +2488,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Steinberg devices */
 {
 	/* Steinberg MI2 */
@@ -3183,17 +2585,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
-<<<<<<< HEAD
-	USB_DEVICE(0x0ccd, 0x0028),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "TerraTec",
-		.product_name = "Aureon5.1MkII",
-		.ifnum = QUIRK_NO_INTERFACE
-	}
-},
-{
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	USB_DEVICE(0x0ccd, 0x0035),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		.vendor_name = "Miditech",
@@ -3203,27 +2594,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
-<<<<<<< HEAD
-/* Stanton/N2IT Final Scratch v1 device ('Scratchamp') */
-{
-	USB_DEVICE(0x103d, 0x0100),
-		.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "Stanton",
-		.product_name = "ScratchAmp",
-		.ifnum = QUIRK_NO_INTERFACE
-	}
-},
-{
-	USB_DEVICE(0x103d, 0x0101),
-		.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "Stanton",
-		.product_name = "ScratchAmp",
-		.ifnum = QUIRK_NO_INTERFACE
-	}
-},
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Novation EMS devices */
 {
 	USB_DEVICE_VENDOR_SPEC(0x1235, 0x0001),
@@ -3244,8 +2614,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
-<<<<<<< HEAD
-=======
 	USB_DEVICE(0x1235, 0x000a),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		/* .vendor_name = "Novation", */
@@ -3255,7 +2623,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	USB_DEVICE(0x1235, 0x000e),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		/* .vendor_name = "Novation", */
@@ -3265,8 +2632,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
-<<<<<<< HEAD
-=======
 	USB_DEVICE(0x1235, 0x0010),
 	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
 		.vendor_name = "Focusrite",
@@ -3383,7 +2748,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	USB_DEVICE_VENDOR_SPEC(0x1235, 0x4661),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		.vendor_name = "Novation",
@@ -3420,20 +2784,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
-<<<<<<< HEAD
-/* */
-{
-	/* aka. Serato Scratch Live DJ Box */
-	USB_DEVICE(0x13e5, 0x0001),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		.vendor_name = "Rane",
-		.product_name = "SL-1",
-		.ifnum = QUIRK_NO_INTERFACE
-	}
-},
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Native Instruments MK2 series */
 {
 	/* Komplete Audio 6 */
@@ -3466,14 +2816,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 },
 
 /* KeithMcMillen Stringport */
-<<<<<<< HEAD
-{
-	USB_DEVICE(0x1f38, 0x0001),
-	.bInterfaceClass = USB_CLASS_AUDIO,
-},
-=======
 { USB_DEVICE(0x1f38, 0x0001) }, /* FIXME: should be more restrictive matching */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Miditech devices */
 {
@@ -3496,137 +2839,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
-<<<<<<< HEAD
-/* Hauppauge HVR-950Q and HVR-850 */
-{
-	USB_DEVICE_VENDOR_SPEC(0x2040, 0x7200),
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL,
-	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-		.vendor_name = "Hauppauge",
-		.product_name = "HVR-950Q",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_AUDIO_ALIGN_TRANSFER,
-	}
-},
-{
-	USB_DEVICE_VENDOR_SPEC(0x2040, 0x7240),
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL,
-	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-		.vendor_name = "Hauppauge",
-		.product_name = "HVR-850",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_AUDIO_ALIGN_TRANSFER,
-	}
-},
-{
-	USB_DEVICE_VENDOR_SPEC(0x2040, 0x7210),
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL,
-	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-		.vendor_name = "Hauppauge",
-		.product_name = "HVR-950Q",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_AUDIO_ALIGN_TRANSFER,
-	}
-},
-{
-	USB_DEVICE_VENDOR_SPEC(0x2040, 0x7217),
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL,
-	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-		.vendor_name = "Hauppauge",
-		.product_name = "HVR-950Q",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_AUDIO_ALIGN_TRANSFER,
-	}
-},
-{
-	USB_DEVICE_VENDOR_SPEC(0x2040, 0x721b),
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL,
-	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-		.vendor_name = "Hauppauge",
-		.product_name = "HVR-950Q",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_AUDIO_ALIGN_TRANSFER,
-	}
-},
-{
-	USB_DEVICE_VENDOR_SPEC(0x2040, 0x721e),
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL,
-	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-		.vendor_name = "Hauppauge",
-		.product_name = "HVR-950Q",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_AUDIO_ALIGN_TRANSFER,
-	}
-},
-{
-	USB_DEVICE_VENDOR_SPEC(0x2040, 0x721f),
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL,
-	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-		.vendor_name = "Hauppauge",
-		.product_name = "HVR-950Q",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_AUDIO_ALIGN_TRANSFER,
-	}
-},
-{
-	USB_DEVICE_VENDOR_SPEC(0x2040, 0x7280),
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL,
-	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-		.vendor_name = "Hauppauge",
-		.product_name = "HVR-950Q",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_AUDIO_ALIGN_TRANSFER,
-	}
-},
-{
-	USB_DEVICE_VENDOR_SPEC(0x0fd9, 0x0008),
-	.match_flags = USB_DEVICE_ID_MATCH_DEVICE |
-		       USB_DEVICE_ID_MATCH_INT_CLASS |
-		       USB_DEVICE_ID_MATCH_INT_SUBCLASS,
-	.bInterfaceClass = USB_CLASS_AUDIO,
-	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL,
-	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-		.vendor_name = "Hauppauge",
-		.product_name = "HVR-950Q",
-		.ifnum = QUIRK_ANY_INTERFACE,
-		.type = QUIRK_AUDIO_ALIGN_TRANSFER,
-	}
-},
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Digidesign Mbox */
 {
 	/* Thanks to Clemens Ladisch <clemens@ladisch.de> */
@@ -3639,11 +2851,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		.data = (const struct snd_usb_audio_quirk[]){
 			{
 				.ifnum = 0,
-<<<<<<< HEAD
-				.type = QUIRK_IGNORE_INTERFACE,
-=======
 				.type = QUIRK_AUDIO_STANDARD_MIXER,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			},
 			{
 				.ifnum = 1,
@@ -3654,19 +2862,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 					.iface = 1,
 					.altsetting = 1,
 					.altset_idx = 1,
-<<<<<<< HEAD
-					.attributes = UAC_EP_CS_ATTR_SAMPLE_RATE,
-					.endpoint = 0x02,
-					.ep_attr = 0x01,
-					.maxpacksize = 0x130,
-					.rates = SNDRV_PCM_RATE_44100 |
-						 SNDRV_PCM_RATE_48000,
-					.rate_min = 44100,
-					.rate_max = 48000,
-					.nr_rates = 2,
-					.rate_table = (unsigned int[]) {
-						44100, 48000
-=======
 					.attributes = 0x4,
 					.endpoint = 0x02,
 					.ep_attr = USB_ENDPOINT_XFER_ISOC |
@@ -3702,7 +2897,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 					.nr_rates = 1,
 					.rate_table = (unsigned int[]) {
 						48000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 				}
 			},
@@ -3710,9 +2904,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 				.ifnum = -1
 			}
 		}
-<<<<<<< HEAD
-
-=======
 	}
 },
 
@@ -3987,7 +3178,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 				.ifnum = -1
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 },
 
@@ -4044,8 +3234,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
-<<<<<<< HEAD
-=======
 /* Reloop Play */
 {
 	USB_DEVICE(0x200c, 0x100b),
@@ -4121,7 +3309,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Some USB MIDI devices don't have an audio control interface,
@@ -4137,9 +3324,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 
-<<<<<<< HEAD
-#undef USB_DEVICE_VENDOR_SPEC
-=======
 /* Rane SL-1 */
 {
 	USB_DEVICE(0x13e5, 0x0001),
@@ -5355,4 +4539,3 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 
 #undef USB_DEVICE_VENDOR_SPEC
 #undef USB_AUDIO_DEVICE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

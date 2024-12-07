@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * APEI Generic Hardware Error Source support
  *
@@ -18,28 +15,6 @@
  *
  * Copyright 2010,2011 Intel Corp.
  *   Author: Huang Ying <ying.huang@intel.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation;
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/acpi.h>
-#include <linux/acpi_io.h>
-=======
  */
 
 #include <linux/arm_sdei.h>
@@ -47,15 +22,10 @@
 #include <linux/moduleparam.h>
 #include <linux/init.h>
 #include <linux/acpi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/interrupt.h>
 #include <linux/timer.h>
 #include <linux/cper.h>
-<<<<<<< HEAD
-#include <linux/kdebug.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/mutex.h>
 #include <linux/ratelimit.h>
@@ -64,14 +34,6 @@
 #include <linux/llist.h>
 #include <linux/genalloc.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/aer.h>
-#include <acpi/apei.h>
-#include <acpi/hed.h>
-#include <asm/mce.h>
-#include <asm/tlbflush.h>
-#include <asm/nmi.h>
-=======
 #include <linux/pfn.h>
 #include <linux/aer.h>
 #include <linux/nmi.h>
@@ -86,7 +48,6 @@
 #include <asm/fixmap.h>
 #include <asm/tlbflush.h>
 #include <ras/ras_event.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "apei-internal.h"
 
@@ -109,66 +70,11 @@
 #define GHES_ESTATUS_CACHE_LEN(estatus_len)			\
 	(sizeof(struct ghes_estatus_cache) + (estatus_len))
 #define GHES_ESTATUS_FROM_CACHE(estatus_cache)			\
-<<<<<<< HEAD
-	((struct acpi_hest_generic_status *)			\
-=======
 	((struct acpi_hest_generic_status *)				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 ((struct ghes_estatus_cache *)(estatus_cache) + 1))
 
 #define GHES_ESTATUS_NODE_LEN(estatus_len)			\
 	(sizeof(struct ghes_estatus_node) + (estatus_len))
-<<<<<<< HEAD
-#define GHES_ESTATUS_FROM_NODE(estatus_node)				\
-	((struct acpi_hest_generic_status *)				\
-	 ((struct ghes_estatus_node *)(estatus_node) + 1))
-
-/*
- * One struct ghes is created for each generic hardware error source.
- * It provides the context for APEI hardware error timer/IRQ/SCI/NMI
- * handler.
- *
- * estatus: memory buffer for error status block, allocated during
- * HEST parsing.
- */
-#define GHES_TO_CLEAR		0x0001
-#define GHES_EXITING		0x0002
-
-struct ghes {
-	struct acpi_hest_generic *generic;
-	struct acpi_hest_generic_status *estatus;
-	u64 buffer_paddr;
-	unsigned long flags;
-	union {
-		struct list_head list;
-		struct timer_list timer;
-		unsigned int irq;
-	};
-};
-
-struct ghes_estatus_node {
-	struct llist_node llnode;
-	struct acpi_hest_generic *generic;
-};
-
-struct ghes_estatus_cache {
-	u32 estatus_len;
-	atomic_t count;
-	struct acpi_hest_generic *generic;
-	unsigned long long time_in;
-	struct rcu_head rcu;
-};
-
-bool ghes_disable;
-module_param_named(disable, ghes_disable, bool, 0);
-
-static int ghes_panic_timeout	__read_mostly = 30;
-
-/*
- * All error sources notified with SCI shares one notifier function,
- * so they need to be linked and checked one by one.  This is applied
- * to NMI too.
-=======
 #define GHES_ESTATUS_FROM_NODE(estatus_node)			\
 	((struct acpi_hest_generic_status *)				\
 	 ((struct ghes_estatus_node *)(estatus_node) + 1))
@@ -228,22 +134,10 @@ module_param_named(edac_force_enable, ghes_edac_force_enable, bool, 0);
  * All error sources notified with HED (Hardware Error Device) share a
  * single notifier callback, so they need to be linked and checked one
  * by one. This holds true for NMI too.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RCU is used for these lists, so ghes_list_mutex is only used for
  * list changing, not for traversing.
  */
-<<<<<<< HEAD
-static LIST_HEAD(ghes_sci);
-static LIST_HEAD(ghes_nmi);
-static DEFINE_MUTEX(ghes_list_mutex);
-
-/*
- * NMI may be triggered on any CPU, so ghes_nmi_lock is used for
- * mutual exclusion.
- */
-static DEFINE_RAW_SPINLOCK(ghes_nmi_lock);
-=======
 static LIST_HEAD(ghes_hed);
 static DEFINE_MUTEX(ghes_list_mutex);
 
@@ -253,156 +147,11 @@ static DEFINE_MUTEX(ghes_list_mutex);
  */
 static LIST_HEAD(ghes_devs);
 static DEFINE_MUTEX(ghes_devs_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Because the memory area used to transfer hardware error information
  * from BIOS to Linux can be determined only in NMI, IRQ or timer
  * handler, but general ioremap can not be used in atomic context, so
-<<<<<<< HEAD
- * a special version of atomic ioremap is implemented for that.
- */
-
-/*
- * Two virtual pages are used, one for NMI context, the other for
- * IRQ/PROCESS context
- */
-#define GHES_IOREMAP_PAGES		2
-#define GHES_IOREMAP_NMI_PAGE(base)	(base)
-#define GHES_IOREMAP_IRQ_PAGE(base)	((base) + PAGE_SIZE)
-
-/* virtual memory area for atomic ioremap */
-static struct vm_struct *ghes_ioremap_area;
-/*
- * These 2 spinlock is used to prevent atomic ioremap virtual memory
- * area from being mapped simultaneously.
- */
-static DEFINE_RAW_SPINLOCK(ghes_ioremap_lock_nmi);
-static DEFINE_SPINLOCK(ghes_ioremap_lock_irq);
-
-/*
- * printk is not safe in NMI context.  So in NMI handler, we allocate
- * required memory from lock-less memory allocator
- * (ghes_estatus_pool), save estatus into it, put them into lock-less
- * list (ghes_estatus_llist), then delay printk into IRQ context via
- * irq_work (ghes_proc_irq_work).  ghes_estatus_size_request record
- * required pool size by all NMI error source.
- */
-static struct gen_pool *ghes_estatus_pool;
-static unsigned long ghes_estatus_pool_size_request;
-static struct llist_head ghes_estatus_llist;
-static struct irq_work ghes_proc_irq_work;
-
-struct ghes_estatus_cache *ghes_estatus_caches[GHES_ESTATUS_CACHES_SIZE];
-static atomic_t ghes_estatus_cache_alloced;
-
-static int ghes_ioremap_init(void)
-{
-	ghes_ioremap_area = __get_vm_area(PAGE_SIZE * GHES_IOREMAP_PAGES,
-		VM_IOREMAP, VMALLOC_START, VMALLOC_END);
-	if (!ghes_ioremap_area) {
-		pr_err(GHES_PFX "Failed to allocate virtual memory area for atomic ioremap.\n");
-		return -ENOMEM;
-	}
-
-	return 0;
-}
-
-static void ghes_ioremap_exit(void)
-{
-	free_vm_area(ghes_ioremap_area);
-}
-
-static void __iomem *ghes_ioremap_pfn_nmi(u64 pfn)
-{
-	unsigned long vaddr;
-
-	vaddr = (unsigned long)GHES_IOREMAP_NMI_PAGE(ghes_ioremap_area->addr);
-	ioremap_page_range(vaddr, vaddr + PAGE_SIZE,
-			   pfn << PAGE_SHIFT, PAGE_KERNEL);
-
-	return (void __iomem *)vaddr;
-}
-
-static void __iomem *ghes_ioremap_pfn_irq(u64 pfn)
-{
-	unsigned long vaddr;
-
-	vaddr = (unsigned long)GHES_IOREMAP_IRQ_PAGE(ghes_ioremap_area->addr);
-	ioremap_page_range(vaddr, vaddr + PAGE_SIZE,
-			   pfn << PAGE_SHIFT, PAGE_KERNEL);
-
-	return (void __iomem *)vaddr;
-}
-
-static void ghes_iounmap_nmi(void __iomem *vaddr_ptr)
-{
-	unsigned long vaddr = (unsigned long __force)vaddr_ptr;
-	void *base = ghes_ioremap_area->addr;
-
-	BUG_ON(vaddr != (unsigned long)GHES_IOREMAP_NMI_PAGE(base));
-	unmap_kernel_range_noflush(vaddr, PAGE_SIZE);
-	__flush_tlb_one(vaddr);
-}
-
-static void ghes_iounmap_irq(void __iomem *vaddr_ptr)
-{
-	unsigned long vaddr = (unsigned long __force)vaddr_ptr;
-	void *base = ghes_ioremap_area->addr;
-
-	BUG_ON(vaddr != (unsigned long)GHES_IOREMAP_IRQ_PAGE(base));
-	unmap_kernel_range_noflush(vaddr, PAGE_SIZE);
-	__flush_tlb_one(vaddr);
-}
-
-static int ghes_estatus_pool_init(void)
-{
-	ghes_estatus_pool = gen_pool_create(GHES_ESTATUS_POOL_MIN_ALLOC_ORDER, -1);
-	if (!ghes_estatus_pool)
-		return -ENOMEM;
-	return 0;
-}
-
-static void ghes_estatus_pool_free_chunk_page(struct gen_pool *pool,
-					      struct gen_pool_chunk *chunk,
-					      void *data)
-{
-	free_page(chunk->start_addr);
-}
-
-static void ghes_estatus_pool_exit(void)
-{
-	gen_pool_for_each_chunk(ghes_estatus_pool,
-				ghes_estatus_pool_free_chunk_page, NULL);
-	gen_pool_destroy(ghes_estatus_pool);
-}
-
-static int ghes_estatus_pool_expand(unsigned long len)
-{
-	unsigned long i, pages, size, addr;
-	int ret;
-
-	ghes_estatus_pool_size_request += PAGE_ALIGN(len);
-	size = gen_pool_size(ghes_estatus_pool);
-	if (size >= ghes_estatus_pool_size_request)
-		return 0;
-	pages = (ghes_estatus_pool_size_request - size) / PAGE_SIZE;
-	for (i = 0; i < pages; i++) {
-		addr = __get_free_page(GFP_KERNEL);
-		if (!addr)
-			return -ENOMEM;
-		ret = gen_pool_add(ghes_estatus_pool, addr, PAGE_SIZE, -1);
-		if (ret)
-			return ret;
-	}
-
-	return 0;
-}
-
-static void ghes_estatus_pool_shrink(unsigned long len)
-{
-	ghes_estatus_pool_size_request -= PAGE_ALIGN(len);
-=======
  * the fixmap is used instead.
  *
  * This spinlock is used to prevent the fixmap entry from being used
@@ -511,7 +260,6 @@ static void ghes_ack_error(struct acpi_hest_generic_v2 *gv2)
 	val |= gv2->read_ack_write    << gv2->read_ack_register.bit_offset;
 
 	apei_write(val, &gv2->read_ack_register);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct ghes *ghes_new(struct acpi_hest_generic *generic)
@@ -523,18 +271,6 @@ static struct ghes *ghes_new(struct acpi_hest_generic *generic)
 	ghes = kzalloc(sizeof(*ghes), GFP_KERNEL);
 	if (!ghes)
 		return ERR_PTR(-ENOMEM);
-<<<<<<< HEAD
-	ghes->generic = generic;
-	rc = apei_map_generic_address(&generic->error_status_address);
-	if (rc)
-		goto err_free;
-	error_block_length = generic->error_block_length;
-	if (error_block_length > GHES_ESTATUS_MAX_SIZE) {
-		pr_warning(FW_WARN GHES_PFX
-			   "Error status block length is too long: %u for "
-			   "generic hardware error source: %d.\n",
-			   error_block_length, generic->header.source_id);
-=======
 
 	ghes->generic = generic;
 	if (is_hest_type_generic_v2(ghes)) {
@@ -552,31 +288,21 @@ static struct ghes *ghes_new(struct acpi_hest_generic *generic)
 			"Error status block length is too long: %u for "
 			"generic hardware error source: %d.\n",
 			error_block_length, generic->header.source_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error_block_length = GHES_ESTATUS_MAX_SIZE;
 	}
 	ghes->estatus = kmalloc(error_block_length, GFP_KERNEL);
 	if (!ghes->estatus) {
 		rc = -ENOMEM;
-<<<<<<< HEAD
-		goto err_unmap;
-=======
 		goto err_unmap_status_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ghes;
 
-<<<<<<< HEAD
-err_unmap:
-	apei_unmap_generic_address(&generic->error_status_address);
-=======
 err_unmap_status_addr:
 	apei_unmap_generic_address(&generic->error_status_address);
 err_unmap_read_ack_addr:
 	if (is_hest_type_generic_v2(ghes))
 		unmap_gen_v2(ghes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free:
 	kfree(ghes);
 	return ERR_PTR(rc);
@@ -586,22 +312,10 @@ static void ghes_fini(struct ghes *ghes)
 {
 	kfree(ghes->estatus);
 	apei_unmap_generic_address(&ghes->generic->error_status_address);
-<<<<<<< HEAD
-}
-
-enum {
-	GHES_SEV_NO = 0x0,
-	GHES_SEV_CORRECTED = 0x1,
-	GHES_SEV_RECOVERABLE = 0x2,
-	GHES_SEV_PANIC = 0x3,
-};
-
-=======
 	if (is_hest_type_generic_v2(ghes))
 		unmap_gen_v2(ghes);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int ghes_severity(int severity)
 {
 	switch (severity) {
@@ -620,34 +334,16 @@ static inline int ghes_severity(int severity)
 }
 
 static void ghes_copy_tofrom_phys(void *buffer, u64 paddr, u32 len,
-<<<<<<< HEAD
-				  int from_phys)
-{
-	void __iomem *vaddr;
-	unsigned long flags = 0;
-	int in_nmi = in_nmi();
-=======
 				  int from_phys,
 				  enum fixed_addresses fixmap_idx)
 {
 	void __iomem *vaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 offset;
 	u32 trunk;
 
 	while (len > 0) {
 		offset = paddr - (paddr & PAGE_MASK);
-<<<<<<< HEAD
-		if (in_nmi) {
-			raw_spin_lock(&ghes_ioremap_lock_nmi);
-			vaddr = ghes_ioremap_pfn_nmi(paddr >> PAGE_SHIFT);
-		} else {
-			spin_lock_irqsave(&ghes_ioremap_lock_irq, flags);
-			vaddr = ghes_ioremap_pfn_irq(paddr >> PAGE_SHIFT);
-		}
-=======
 		vaddr = ghes_map(PHYS_PFN(paddr), fixmap_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		trunk = PAGE_SIZE - offset;
 		trunk = min(trunk, len);
 		if (from_phys)
@@ -657,29 +353,6 @@ static void ghes_copy_tofrom_phys(void *buffer, u64 paddr, u32 len,
 		len -= trunk;
 		paddr += trunk;
 		buffer += trunk;
-<<<<<<< HEAD
-		if (in_nmi) {
-			ghes_iounmap_nmi(vaddr);
-			raw_spin_unlock(&ghes_ioremap_lock_nmi);
-		} else {
-			ghes_iounmap_irq(vaddr);
-			spin_unlock_irqrestore(&ghes_ioremap_lock_irq, flags);
-		}
-	}
-}
-
-static int ghes_read_estatus(struct ghes *ghes, int silent)
-{
-	struct acpi_hest_generic *g = ghes->generic;
-	u64 buf_paddr;
-	u32 len;
-	int rc;
-
-	rc = apei_read(&buf_paddr, &g->error_status_address);
-	if (rc) {
-		if (!silent && printk_ratelimit())
-			pr_warning(FW_WARN GHES_PFX
-=======
 		ghes_unmap(vaddr, fixmap_idx);
 	}
 }
@@ -720,104 +393,10 @@ static int __ghes_peek_estatus(struct ghes *ghes,
 	if (rc) {
 		*buf_paddr = 0;
 		pr_warn_ratelimited(FW_WARN GHES_PFX
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "Failed to read error status block address for hardware error source: %d.\n",
 				   g->header.source_id);
 		return -EIO;
 	}
-<<<<<<< HEAD
-	if (!buf_paddr)
-		return -ENOENT;
-
-	ghes_copy_tofrom_phys(ghes->estatus, buf_paddr,
-			      sizeof(*ghes->estatus), 1);
-	if (!ghes->estatus->block_status)
-		return -ENOENT;
-
-	ghes->buffer_paddr = buf_paddr;
-	ghes->flags |= GHES_TO_CLEAR;
-
-	rc = -EIO;
-	len = apei_estatus_len(ghes->estatus);
-	if (len < sizeof(*ghes->estatus))
-		goto err_read_block;
-	if (len > ghes->generic->error_block_length)
-		goto err_read_block;
-	if (apei_estatus_check_header(ghes->estatus))
-		goto err_read_block;
-	ghes_copy_tofrom_phys(ghes->estatus + 1,
-			      buf_paddr + sizeof(*ghes->estatus),
-			      len - sizeof(*ghes->estatus), 1);
-	if (apei_estatus_check(ghes->estatus))
-		goto err_read_block;
-	rc = 0;
-
-err_read_block:
-	if (rc && !silent && printk_ratelimit())
-		pr_warning(FW_WARN GHES_PFX
-			   "Failed to read error status block!\n");
-	return rc;
-}
-
-static void ghes_clear_estatus(struct ghes *ghes)
-{
-	ghes->estatus->block_status = 0;
-	if (!(ghes->flags & GHES_TO_CLEAR))
-		return;
-	ghes_copy_tofrom_phys(ghes->estatus, ghes->buffer_paddr,
-			      sizeof(ghes->estatus->block_status), 0);
-	ghes->flags &= ~GHES_TO_CLEAR;
-}
-
-static void ghes_do_proc(const struct acpi_hest_generic_status *estatus)
-{
-	int sev, sec_sev;
-	struct acpi_hest_generic_data *gdata;
-
-	sev = ghes_severity(estatus->error_severity);
-	apei_estatus_for_each_section(estatus, gdata) {
-		sec_sev = ghes_severity(gdata->error_severity);
-		if (!uuid_le_cmp(*(uuid_le *)gdata->section_type,
-				 CPER_SEC_PLATFORM_MEM)) {
-			struct cper_sec_mem_err *mem_err;
-			mem_err = (struct cper_sec_mem_err *)(gdata+1);
-#ifdef CONFIG_X86_MCE
-			apei_mce_report_mem_error(sev == GHES_SEV_CORRECTED,
-						  mem_err);
-#endif
-#ifdef CONFIG_ACPI_APEI_MEMORY_FAILURE
-			if (sev == GHES_SEV_RECOVERABLE &&
-			    sec_sev == GHES_SEV_RECOVERABLE &&
-			    mem_err->validation_bits & CPER_MEM_VALID_PHYSICAL_ADDRESS) {
-				unsigned long pfn;
-				pfn = mem_err->physical_addr >> PAGE_SHIFT;
-				memory_failure_queue(pfn, 0, 0);
-			}
-#endif
-		}
-#ifdef CONFIG_ACPI_APEI_PCIEAER
-		else if (!uuid_le_cmp(*(uuid_le *)gdata->section_type,
-				      CPER_SEC_PCIE)) {
-			struct cper_sec_pcie *pcie_err;
-			pcie_err = (struct cper_sec_pcie *)(gdata+1);
-			if (sev == GHES_SEV_RECOVERABLE &&
-			    sec_sev == GHES_SEV_RECOVERABLE &&
-			    pcie_err->validation_bits & CPER_PCIE_VALID_DEVICE_ID &&
-			    pcie_err->validation_bits & CPER_PCIE_VALID_AER_INFO) {
-				unsigned int devfn;
-				int aer_severity;
-				devfn = PCI_DEVFN(pcie_err->device_id.device,
-						  pcie_err->device_id.function);
-				aer_severity = cper_severity_to_aer(sev);
-				aer_recover_queue(pcie_err->device_id.segment,
-						  pcie_err->device_id.bus,
-						  devfn, aer_severity);
-			}
-
-		}
-#endif
-	}
-=======
 	if (!*buf_paddr)
 		return -ENOENT;
 
@@ -1139,7 +718,6 @@ static bool ghes_do_proc(struct ghes *ghes,
 	}
 
 	return queued;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __ghes_print_estatus(const char *pfx,
@@ -1161,11 +739,7 @@ static void __ghes_print_estatus(const char *pfx,
 	snprintf(pfx_seq, sizeof(pfx_seq), "%s{%u}" HW_ERR, pfx, curr_seqno);
 	printk("%s""Hardware error from APEI Generic Hardware Error Source: %d\n",
 	       pfx_seq, generic->header.source_id);
-<<<<<<< HEAD
-	apei_estatus_print(pfx_seq, estatus);
-=======
 	cper_estatus_print(pfx_seq, estatus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ghes_print_estatus(const char *pfx,
@@ -1200,11 +774,7 @@ static int ghes_estatus_cached(struct acpi_hest_generic_status *estatus)
 	struct ghes_estatus_cache *cache;
 	struct acpi_hest_generic_status *cache_estatus;
 
-<<<<<<< HEAD
-	len = apei_estatus_len(estatus);
-=======
 	len = cper_estatus_len(estatus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_lock();
 	for (i = 0; i < GHES_ESTATUS_CACHES_SIZE; i++) {
 		cache = rcu_dereference(ghes_estatus_caches[i]);
@@ -1239,11 +809,7 @@ static struct ghes_estatus_cache *ghes_estatus_cache_alloc(
 		atomic_dec(&ghes_estatus_cache_alloced);
 		return NULL;
 	}
-<<<<<<< HEAD
-	len = apei_estatus_len(estatus);
-=======
 	len = cper_estatus_len(estatus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cache_len = GHES_ESTATUS_CACHE_LEN(len);
 	cache = (void *)gen_pool_alloc(ghes_estatus_pool, cache_len);
 	if (!cache) {
@@ -1259,13 +825,6 @@ static struct ghes_estatus_cache *ghes_estatus_cache_alloc(
 	return cache;
 }
 
-<<<<<<< HEAD
-static void ghes_estatus_cache_free(struct ghes_estatus_cache *cache)
-{
-	u32 len;
-
-	len = apei_estatus_len(GHES_ESTATUS_FROM_CACHE(cache));
-=======
 static void ghes_estatus_cache_rcu_free(struct rcu_head *head)
 {
 	struct ghes_estatus_cache *cache;
@@ -1273,33 +832,11 @@ static void ghes_estatus_cache_rcu_free(struct rcu_head *head)
 
 	cache = container_of(head, struct ghes_estatus_cache, rcu);
 	len = cper_estatus_len(GHES_ESTATUS_FROM_CACHE(cache));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len = GHES_ESTATUS_CACHE_LEN(len);
 	gen_pool_free(ghes_estatus_pool, (unsigned long)cache, len);
 	atomic_dec(&ghes_estatus_cache_alloced);
 }
 
-<<<<<<< HEAD
-static void ghes_estatus_cache_rcu_free(struct rcu_head *head)
-{
-	struct ghes_estatus_cache *cache;
-
-	cache = container_of(head, struct ghes_estatus_cache, rcu);
-	ghes_estatus_cache_free(cache);
-}
-
-static void ghes_estatus_cache_add(
-	struct acpi_hest_generic *generic,
-	struct acpi_hest_generic_status *estatus)
-{
-	int i, slot = -1, count;
-	unsigned long long now, duration, period, max_period = 0;
-	struct ghes_estatus_cache *cache, *slot_cache = NULL, *new_cache;
-
-	new_cache = ghes_estatus_cache_alloc(generic, estatus);
-	if (new_cache == NULL)
-		return;
-=======
 static void
 ghes_estatus_cache_add(struct acpi_hest_generic *generic,
 		       struct acpi_hest_generic_status *estatus)
@@ -1313,26 +850,17 @@ ghes_estatus_cache_add(struct acpi_hest_generic *generic,
 	if (!new_cache)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_lock();
 	now = sched_clock();
 	for (i = 0; i < GHES_ESTATUS_CACHES_SIZE; i++) {
 		cache = rcu_dereference(ghes_estatus_caches[i]);
 		if (cache == NULL) {
 			slot = i;
-<<<<<<< HEAD
-			slot_cache = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		duration = now - cache->time_in;
 		if (duration >= GHES_ESTATUS_IN_CACHE_MAX_NSEC) {
 			slot = i;
-<<<<<<< HEAD
-			slot_cache = cache;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		count = atomic_read(&cache->count);
@@ -1341,20 +869,6 @@ ghes_estatus_cache_add(struct acpi_hest_generic *generic,
 		if (period > max_period) {
 			max_period = period;
 			slot = i;
-<<<<<<< HEAD
-			slot_cache = cache;
-		}
-	}
-	/* new_cache must be put into array after its contents are written */
-	smp_wmb();
-	if (slot != -1 && cmpxchg(ghes_estatus_caches + slot,
-				  slot_cache, new_cache) == slot_cache) {
-		if (slot_cache)
-			call_rcu(&slot_cache->rcu, ghes_estatus_cache_rcu_free);
-	} else
-		ghes_estatus_cache_free(new_cache);
-	rcu_read_unlock();
-=======
 		}
 	}
 	rcu_read_unlock();
@@ -1393,26 +907,10 @@ static void __ghes_panic(struct ghes *ghes,
 	if (!panic_timeout)
 		panic_timeout = ghes_panic_timeout;
 	panic("Fatal hardware error!");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ghes_proc(struct ghes *ghes)
 {
-<<<<<<< HEAD
-	int rc;
-
-	rc = ghes_read_estatus(ghes, 0);
-	if (rc)
-		goto out;
-	if (!ghes_estatus_cached(ghes->estatus)) {
-		if (ghes_print_estatus(NULL, ghes->generic, ghes->estatus))
-			ghes_estatus_cache_add(ghes->generic, ghes->estatus);
-	}
-	ghes_do_proc(ghes->estatus);
-out:
-	ghes_clear_estatus(ghes);
-	return 0;
-=======
 	struct acpi_hest_generic_status *estatus = ghes->estatus;
 	u64 buf_paddr;
 	int rc;
@@ -1434,7 +932,6 @@ out:
 	ghes_clear_estatus(ghes, estatus, buf_paddr, FIX_APEI_GHES_IRQ);
 
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ghes_add_timer(struct ghes *ghes)
@@ -1443,13 +940,8 @@ static void ghes_add_timer(struct ghes *ghes)
 	unsigned long expire;
 
 	if (!g->notify.poll_interval) {
-<<<<<<< HEAD
-		pr_warning(FW_WARN GHES_PFX "Poll interval is 0 for generic hardware error source: %d, disabled.\n",
-			   g->header.source_id);
-=======
 		pr_warn(FW_WARN GHES_PFX "Poll interval is 0 for generic hardware error source: %d, disabled.\n",
 			g->header.source_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	expire = jiffies + msecs_to_jiffies(g->notify.poll_interval);
@@ -1457,13 +949,6 @@ static void ghes_add_timer(struct ghes *ghes)
 	add_timer(&ghes->timer);
 }
 
-<<<<<<< HEAD
-static void ghes_poll_func(unsigned long data)
-{
-	struct ghes *ghes = (void *)data;
-
-	ghes_proc(ghes);
-=======
 static void ghes_poll_func(struct timer_list *t)
 {
 	struct ghes *ghes = from_timer(ghes, t, timer);
@@ -1472,7 +957,6 @@ static void ghes_poll_func(struct timer_list *t)
 	spin_lock_irqsave(&ghes_notify_lock_irq, flags);
 	ghes_proc(ghes);
 	spin_unlock_irqrestore(&ghes_notify_lock_irq, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(ghes->flags & GHES_EXITING))
 		ghes_add_timer(ghes);
 }
@@ -1480,34 +964,18 @@ static void ghes_poll_func(struct timer_list *t)
 static irqreturn_t ghes_irq_func(int irq, void *data)
 {
 	struct ghes *ghes = data;
-<<<<<<< HEAD
-	int rc;
-
-	rc = ghes_proc(ghes);
-=======
 	unsigned long flags;
 	int rc;
 
 	spin_lock_irqsave(&ghes_notify_lock_irq, flags);
 	rc = ghes_proc(ghes);
 	spin_unlock_irqrestore(&ghes_notify_lock_irq, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return IRQ_NONE;
 
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int ghes_notify_sci(struct notifier_block *this,
-				  unsigned long event, void *data)
-{
-	struct ghes *ghes;
-	int ret = NOTIFY_DONE;
-
-	rcu_read_lock();
-	list_for_each_entry_rcu(ghes, &ghes_sci, list) {
-=======
 static int ghes_notify_hed(struct notifier_block *this, unsigned long event,
 			   void *data)
 {
@@ -1518,34 +986,15 @@ static int ghes_notify_hed(struct notifier_block *this, unsigned long event,
 	spin_lock_irqsave(&ghes_notify_lock_irq, flags);
 	rcu_read_lock();
 	list_for_each_entry_rcu(ghes, &ghes_hed, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ghes_proc(ghes))
 			ret = NOTIFY_OK;
 	}
 	rcu_read_unlock();
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&ghes_notify_lock_irq, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct llist_node *llist_nodes_reverse(struct llist_node *llnode)
-{
-	struct llist_node *next, *tail = NULL;
-
-	while (llnode) {
-		next = llnode->next;
-		llnode->next = tail;
-		tail = llnode;
-		llnode = next;
-	}
-
-	return tail;
-}
-=======
 static struct notifier_block ghes_notifier_hed = {
 	.notifier_call = ghes_notify_hed,
 };
@@ -1563,7 +1012,6 @@ static struct notifier_block ghes_notifier_hed = {
  */
 static struct llist_head ghes_estatus_llist;
 static struct irq_work ghes_proc_irq_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ghes_proc_in_irq(struct irq_work *irq_work)
 {
@@ -1571,47 +1019,29 @@ static void ghes_proc_in_irq(struct irq_work *irq_work)
 	struct ghes_estatus_node *estatus_node;
 	struct acpi_hest_generic *generic;
 	struct acpi_hest_generic_status *estatus;
-<<<<<<< HEAD
-	u32 len, node_len;
-=======
 	bool task_work_pending;
 	u32 len, node_len;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	llnode = llist_del_all(&ghes_estatus_llist);
 	/*
 	 * Because the time order of estatus in list is reversed,
 	 * revert it back to proper order.
 	 */
-<<<<<<< HEAD
-	llnode = llist_nodes_reverse(llnode);
-=======
 	llnode = llist_reverse_order(llnode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (llnode) {
 		next = llnode->next;
 		estatus_node = llist_entry(llnode, struct ghes_estatus_node,
 					   llnode);
 		estatus = GHES_ESTATUS_FROM_NODE(estatus_node);
-<<<<<<< HEAD
-		len = apei_estatus_len(estatus);
-		node_len = GHES_ESTATUS_NODE_LEN(len);
-		ghes_do_proc(estatus);
-=======
 		len = cper_estatus_len(estatus);
 		node_len = GHES_ESTATUS_NODE_LEN(len);
 		task_work_pending = ghes_do_proc(estatus_node->ghes, estatus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ghes_estatus_cached(estatus)) {
 			generic = estatus_node->generic;
 			if (ghes_print_estatus(NULL, generic, estatus))
 				ghes_estatus_cache_add(generic, estatus);
 		}
-<<<<<<< HEAD
-		gen_pool_free(ghes_estatus_pool, (unsigned long)estatus_node,
-			      node_len);
-=======
 
 		if (task_work_pending && current->mm) {
 			estatus_node->task_work.func = ghes_kick_task_work;
@@ -1626,7 +1056,6 @@ static void ghes_proc_in_irq(struct irq_work *irq_work)
 			gen_pool_free(ghes_estatus_pool,
 				      (unsigned long)estatus_node, node_len);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		llnode = next;
 	}
 }
@@ -1637,131 +1066,23 @@ static void ghes_print_queued_estatus(void)
 	struct ghes_estatus_node *estatus_node;
 	struct acpi_hest_generic *generic;
 	struct acpi_hest_generic_status *estatus;
-<<<<<<< HEAD
-	u32 len, node_len;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	llnode = llist_del_all(&ghes_estatus_llist);
 	/*
 	 * Because the time order of estatus in list is reversed,
 	 * revert it back to proper order.
 	 */
-<<<<<<< HEAD
-	llnode = llist_nodes_reverse(llnode);
-=======
 	llnode = llist_reverse_order(llnode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (llnode) {
 		estatus_node = llist_entry(llnode, struct ghes_estatus_node,
 					   llnode);
 		estatus = GHES_ESTATUS_FROM_NODE(estatus_node);
-<<<<<<< HEAD
-		len = apei_estatus_len(estatus);
-		node_len = GHES_ESTATUS_NODE_LEN(len);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		generic = estatus_node->generic;
 		ghes_print_estatus(NULL, generic, estatus);
 		llnode = llnode->next;
 	}
 }
 
-<<<<<<< HEAD
-static int ghes_notify_nmi(unsigned int cmd, struct pt_regs *regs)
-{
-	struct ghes *ghes, *ghes_global = NULL;
-	int sev, sev_global = -1;
-	int ret = NMI_DONE;
-
-	raw_spin_lock(&ghes_nmi_lock);
-	list_for_each_entry_rcu(ghes, &ghes_nmi, list) {
-		if (ghes_read_estatus(ghes, 1)) {
-			ghes_clear_estatus(ghes);
-			continue;
-		}
-		sev = ghes_severity(ghes->estatus->error_severity);
-		if (sev > sev_global) {
-			sev_global = sev;
-			ghes_global = ghes;
-		}
-		ret = NMI_HANDLED;
-	}
-
-	if (ret == NMI_DONE)
-		goto out;
-
-	if (sev_global >= GHES_SEV_PANIC) {
-		oops_begin();
-		ghes_print_queued_estatus();
-		__ghes_print_estatus(KERN_EMERG, ghes_global->generic,
-				     ghes_global->estatus);
-		/* reboot to log the error! */
-		if (panic_timeout == 0)
-			panic_timeout = ghes_panic_timeout;
-		panic("Fatal hardware error!");
-	}
-
-	list_for_each_entry_rcu(ghes, &ghes_nmi, list) {
-#ifdef CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG
-		u32 len, node_len;
-		struct ghes_estatus_node *estatus_node;
-		struct acpi_hest_generic_status *estatus;
-#endif
-		if (!(ghes->flags & GHES_TO_CLEAR))
-			continue;
-#ifdef CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG
-		if (ghes_estatus_cached(ghes->estatus))
-			goto next;
-		/* Save estatus for further processing in IRQ context */
-		len = apei_estatus_len(ghes->estatus);
-		node_len = GHES_ESTATUS_NODE_LEN(len);
-		estatus_node = (void *)gen_pool_alloc(ghes_estatus_pool,
-						      node_len);
-		if (estatus_node) {
-			estatus_node->generic = ghes->generic;
-			estatus = GHES_ESTATUS_FROM_NODE(estatus_node);
-			memcpy(estatus, ghes->estatus, len);
-			llist_add(&estatus_node->llnode, &ghes_estatus_llist);
-		}
-next:
-#endif
-		ghes_clear_estatus(ghes);
-	}
-#ifdef CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG
-	irq_work_queue(&ghes_proc_irq_work);
-#endif
-
-out:
-	raw_spin_unlock(&ghes_nmi_lock);
-	return ret;
-}
-
-static struct notifier_block ghes_notifier_sci = {
-	.notifier_call = ghes_notify_sci,
-};
-
-static unsigned long ghes_esource_prealloc_size(
-	const struct acpi_hest_generic *generic)
-{
-	unsigned long block_length, prealloc_records, prealloc_size;
-
-	block_length = min_t(unsigned long, generic->error_block_length,
-			     GHES_ESTATUS_MAX_SIZE);
-	prealloc_records = max_t(unsigned long,
-				 generic->records_to_preallocate, 1);
-	prealloc_size = min_t(unsigned long, block_length * prealloc_records,
-			      GHES_ESOURCE_PREALLOC_MAX_SIZE);
-
-	return prealloc_size;
-}
-
-static int __devinit ghes_probe(struct platform_device *ghes_dev)
-{
-	struct acpi_hest_generic *generic;
-	struct ghes *ghes = NULL;
-	unsigned long len;
-=======
 static int ghes_in_nmi_queue_one_entry(struct ghes *ghes,
 				       enum fixed_addresses fixmap_idx)
 {
@@ -2004,7 +1325,6 @@ static int ghes_probe(struct platform_device *ghes_dev)
 	struct ghes *ghes = NULL;
 	unsigned long flags;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = -EINVAL;
 
 	generic = *(struct acpi_hest_generic **)ghes_dev->dev.platform_data;
@@ -2015,17 +1335,6 @@ static int ghes_probe(struct platform_device *ghes_dev)
 	case ACPI_HEST_NOTIFY_POLLED:
 	case ACPI_HEST_NOTIFY_EXTERNAL:
 	case ACPI_HEST_NOTIFY_SCI:
-<<<<<<< HEAD
-	case ACPI_HEST_NOTIFY_NMI:
-		break;
-	case ACPI_HEST_NOTIFY_LOCAL:
-		pr_warning(GHES_PFX "Generic hardware error source: %d notified via local interrupt is not supported!\n",
-			   generic->header.source_id);
-		goto err;
-	default:
-		pr_warning(FW_WARN GHES_PFX "Unknown notification type: %u for generic hardware error source: %d\n",
-			   generic->notify.type, generic->header.source_id);
-=======
 	case ACPI_HEST_NOTIFY_GSIV:
 	case ACPI_HEST_NOTIFY_GPIO:
 		break;
@@ -2059,21 +1368,14 @@ static int ghes_probe(struct platform_device *ghes_dev)
 	default:
 		pr_warn(FW_WARN GHES_PFX "Unknown notification type: %u for generic hardware error source: %d\n",
 			generic->notify.type, generic->header.source_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
 	rc = -EIO;
 	if (generic->error_block_length <
 	    sizeof(struct acpi_hest_generic_status)) {
-<<<<<<< HEAD
-		pr_warning(FW_BUG GHES_PFX "Invalid error block length: %u for generic hardware error source: %d\n",
-			   generic->error_block_length,
-			   generic->header.source_id);
-=======
 		pr_warn(FW_BUG GHES_PFX "Invalid error block length: %u for generic hardware error source: %d\n",
 			generic->error_block_length, generic->header.source_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 	ghes = ghes_new(generic);
@@ -2082,63 +1384,28 @@ static int ghes_probe(struct platform_device *ghes_dev)
 		ghes = NULL;
 		goto err;
 	}
-<<<<<<< HEAD
-	switch (generic->notify.type) {
-	case ACPI_HEST_NOTIFY_POLLED:
-		ghes->timer.function = ghes_poll_func;
-		ghes->timer.data = (unsigned long)ghes;
-		init_timer_deferrable(&ghes->timer);
-=======
 
 	switch (generic->notify.type) {
 	case ACPI_HEST_NOTIFY_POLLED:
 		timer_setup(&ghes->timer, ghes_poll_func, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ghes_add_timer(ghes);
 		break;
 	case ACPI_HEST_NOTIFY_EXTERNAL:
 		/* External interrupt vector is GSI */
-<<<<<<< HEAD
-		if (acpi_gsi_to_irq(generic->notify.vector, &ghes->irq)) {
-=======
 		rc = acpi_gsi_to_irq(generic->notify.vector, &ghes->irq);
 		if (rc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_err(GHES_PFX "Failed to map GSI to IRQ for generic hardware error source: %d\n",
 			       generic->header.source_id);
 			goto err;
 		}
-<<<<<<< HEAD
-		if (request_irq(ghes->irq, ghes_irq_func,
-				0, "GHES IRQ", ghes)) {
-=======
 		rc = request_irq(ghes->irq, ghes_irq_func, IRQF_SHARED,
 				 "GHES IRQ", ghes);
 		if (rc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_err(GHES_PFX "Failed to register IRQ for generic hardware error source: %d\n",
 			       generic->header.source_id);
 			goto err;
 		}
 		break;
-<<<<<<< HEAD
-	case ACPI_HEST_NOTIFY_SCI:
-		mutex_lock(&ghes_list_mutex);
-		if (list_empty(&ghes_sci))
-			register_acpi_hed_notifier(&ghes_notifier_sci);
-		list_add_rcu(&ghes->list, &ghes_sci);
-		mutex_unlock(&ghes_list_mutex);
-		break;
-	case ACPI_HEST_NOTIFY_NMI:
-		len = ghes_esource_prealloc_size(generic);
-		ghes_estatus_pool_expand(len);
-		mutex_lock(&ghes_list_mutex);
-		if (list_empty(&ghes_nmi))
-			register_nmi_handler(NMI_LOCAL, ghes_notify_nmi, 0,
-						"ghes");
-		list_add_rcu(&ghes->list, &ghes_nmi);
-		mutex_unlock(&ghes_list_mutex);
-=======
 
 	case ACPI_HEST_NOTIFY_SCI:
 	case ACPI_HEST_NOTIFY_GSIV:
@@ -2160,16 +1427,10 @@ static int ghes_probe(struct platform_device *ghes_dev)
 		rc = apei_sdei_register_ghes(ghes);
 		if (rc)
 			goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		BUG();
 	}
-<<<<<<< HEAD
-	platform_set_drvdata(ghes_dev, ghes);
-
-	return 0;
-=======
 
 	platform_set_drvdata(ghes_dev, ghes);
 
@@ -2186,7 +1447,6 @@ static int ghes_probe(struct platform_device *ghes_dev)
 
 	return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	if (ghes) {
 		ghes_fini(ghes);
@@ -2195,19 +1455,11 @@ err:
 	return rc;
 }
 
-<<<<<<< HEAD
-static int __devexit ghes_remove(struct platform_device *ghes_dev)
-{
-	struct ghes *ghes;
-	struct acpi_hest_generic *generic;
-	unsigned long len;
-=======
 static void ghes_remove(struct platform_device *ghes_dev)
 {
 	int rc;
 	struct ghes *ghes;
 	struct acpi_hest_generic *generic;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ghes = platform_get_drvdata(ghes_dev);
 	generic = ghes->generic;
@@ -2215,37 +1467,11 @@ static void ghes_remove(struct platform_device *ghes_dev)
 	ghes->flags |= GHES_EXITING;
 	switch (generic->notify.type) {
 	case ACPI_HEST_NOTIFY_POLLED:
-<<<<<<< HEAD
-		del_timer_sync(&ghes->timer);
-=======
 		timer_shutdown_sync(&ghes->timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ACPI_HEST_NOTIFY_EXTERNAL:
 		free_irq(ghes->irq, ghes);
 		break;
-<<<<<<< HEAD
-	case ACPI_HEST_NOTIFY_SCI:
-		mutex_lock(&ghes_list_mutex);
-		list_del_rcu(&ghes->list);
-		if (list_empty(&ghes_sci))
-			unregister_acpi_hed_notifier(&ghes_notifier_sci);
-		mutex_unlock(&ghes_list_mutex);
-		break;
-	case ACPI_HEST_NOTIFY_NMI:
-		mutex_lock(&ghes_list_mutex);
-		list_del_rcu(&ghes->list);
-		if (list_empty(&ghes_nmi))
-			unregister_nmi_handler(NMI_LOCAL, "ghes");
-		mutex_unlock(&ghes_list_mutex);
-		/*
-		 * To synchronize with NMI handler, ghes can only be
-		 * freed after NMI handler finishes.
-		 */
-		synchronize_rcu();
-		len = ghes_esource_prealloc_size(generic);
-		ghes_estatus_pool_shrink(len);
-=======
 
 	case ACPI_HEST_NOTIFY_SCI:
 	case ACPI_HEST_NOTIFY_GSIV:
@@ -2275,7 +1501,6 @@ static void ghes_remove(struct platform_device *ghes_dev)
 				ERR_PTR(rc));
 			return;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		BUG();
@@ -2283,43 +1508,17 @@ static void ghes_remove(struct platform_device *ghes_dev)
 	}
 
 	ghes_fini(ghes);
-<<<<<<< HEAD
-	kfree(ghes);
-
-	platform_set_drvdata(ghes_dev, NULL);
-
-	return 0;
-=======
 
 	mutex_lock(&ghes_devs_mutex);
 	list_del(&ghes->elist);
 	mutex_unlock(&ghes_devs_mutex);
 
 	kfree(ghes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver ghes_platform_driver = {
 	.driver		= {
 		.name	= "GHES",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= ghes_probe,
-	.remove		= ghes_remove,
-};
-
-static int __init ghes_init(void)
-{
-	int rc;
-
-	if (acpi_disabled)
-		return -ENODEV;
-
-	if (hest_disable) {
-		pr_info(GHES_PFX "HEST is not enabled!\n");
-		return -EINVAL;
-=======
 	},
 	.probe		= ghes_probe,
 	.remove_new	= ghes_remove,
@@ -2342,34 +1541,10 @@ void __init acpi_ghes_init(void)
 		return;
 	default:
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ghes_disable) {
 		pr_info(GHES_PFX "GHES is not enabled!\n");
-<<<<<<< HEAD
-		return -EINVAL;
-	}
-
-	init_irq_work(&ghes_proc_irq_work, ghes_proc_in_irq);
-
-	rc = ghes_ioremap_init();
-	if (rc)
-		goto err;
-
-	rc = ghes_estatus_pool_init();
-	if (rc)
-		goto err_ioremap_exit;
-
-	rc = ghes_estatus_pool_expand(GHES_ESTATUS_CACHE_AVG_SIZE *
-				      GHES_ESTATUS_CACHE_ALLOCED_MAX);
-	if (rc)
-		goto err_pool_exit;
-
-	rc = platform_driver_register(&ghes_platform_driver);
-	if (rc)
-		goto err_pool_exit;
-=======
 		return;
 	}
 
@@ -2378,7 +1553,6 @@ void __init acpi_ghes_init(void)
 	rc = platform_driver_register(&ghes_platform_driver);
 	if (rc)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = apei_osc_setup();
 	if (rc == 0 && osc_sb_apei_support_acked)
@@ -2389,32 +1563,6 @@ void __init acpi_ghes_init(void)
 		pr_info(GHES_PFX "APEI firmware first mode is enabled by APEI bit.\n");
 	else
 		pr_info(GHES_PFX "Failed to enable APEI firmware first mode.\n");
-<<<<<<< HEAD
-
-	return 0;
-err_pool_exit:
-	ghes_estatus_pool_exit();
-err_ioremap_exit:
-	ghes_ioremap_exit();
-err:
-	return rc;
-}
-
-static void __exit ghes_exit(void)
-{
-	platform_driver_unregister(&ghes_platform_driver);
-	ghes_estatus_pool_exit();
-	ghes_ioremap_exit();
-}
-
-module_init(ghes_init);
-module_exit(ghes_exit);
-
-MODULE_AUTHOR("Huang Ying");
-MODULE_DESCRIPTION("APEI Generic Hardware Error Source support");
-MODULE_LICENSE("GPL");
-MODULE_ALIAS("platform:GHES");
-=======
 }
 
 /*
@@ -2456,4 +1604,3 @@ void ghes_unregister_report_chain(struct notifier_block *nb)
 	atomic_notifier_chain_unregister(&ghes_report_chain, nb);
 }
 EXPORT_SYMBOL_GPL(ghes_unregister_report_chain);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

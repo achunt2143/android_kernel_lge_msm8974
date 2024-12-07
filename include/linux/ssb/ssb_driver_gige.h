@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINUX_SSB_DRIVER_GIGE_H_
 #define LINUX_SSB_DRIVER_GIGE_H_
 
@@ -79,11 +76,7 @@ static inline bool ssb_gige_have_roboswitch(struct pci_dev *pdev)
 	if (dev)
 		return !!(dev->dev->bus->sprom.boardflags_lo &
 			  SSB_GIGE_BFL_ROBOSWITCH);
-<<<<<<< HEAD
-	return 0;
-=======
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Returns whether we can only do one DMA at once. */
@@ -93,11 +86,7 @@ static inline bool ssb_gige_one_dma_at_once(struct pci_dev *pdev)
 	if (dev)
 		return ((dev->dev->bus->chip_id == 0x4785) &&
 			(dev->dev->bus->chip_rev < 2));
-<<<<<<< HEAD
-	return 0;
-=======
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Returns whether we must flush posted writes. */
@@ -106,26 +95,6 @@ static inline bool ssb_gige_must_flush_posted_writes(struct pci_dev *pdev)
 	struct ssb_gige *dev = pdev_to_ssb_gige(pdev);
 	if (dev)
 		return (dev->dev->bus->chip_id == 0x4785);
-<<<<<<< HEAD
-	return 0;
-}
-
-#ifdef CONFIG_BCM47XX
-#include <asm/mach-bcm47xx/nvram.h>
-/* Get the device MAC address */
-static inline void ssb_gige_get_macaddr(struct pci_dev *pdev, u8 *macaddr)
-{
-	char buf[20];
-	if (nvram_getenv("et0macaddr", buf, sizeof(buf)) < 0)
-		return;
-	nvram_parse_macaddr(buf, macaddr);
-}
-#else
-static inline void ssb_gige_get_macaddr(struct pci_dev *pdev, u8 *macaddr)
-{
-}
-#endif
-=======
 	return false;
 }
 
@@ -149,7 +118,6 @@ static inline int ssb_gige_get_phyaddr(struct pci_dev *pdev)
 
 	return dev->dev->bus->sprom.et0phyaddr;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int ssb_gige_pcibios_plat_dev_init(struct ssb_device *sdev,
 					  struct pci_dev *pdev);
@@ -191,11 +159,7 @@ static inline void ssb_gige_exit(void)
 
 static inline bool pdev_is_ssb_gige_core(struct pci_dev *pdev)
 {
-<<<<<<< HEAD
-	return 0;
-=======
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline struct ssb_gige * pdev_to_ssb_gige(struct pci_dev *pdev)
 {
@@ -203,21 +167,6 @@ static inline struct ssb_gige * pdev_to_ssb_gige(struct pci_dev *pdev)
 }
 static inline bool ssb_gige_is_rgmii(struct pci_dev *pdev)
 {
-<<<<<<< HEAD
-	return 0;
-}
-static inline bool ssb_gige_have_roboswitch(struct pci_dev *pdev)
-{
-	return 0;
-}
-static inline bool ssb_gige_one_dma_at_once(struct pci_dev *pdev)
-{
-	return 0;
-}
-static inline bool ssb_gige_must_flush_posted_writes(struct pci_dev *pdev)
-{
-	return 0;
-=======
 	return false;
 }
 static inline bool ssb_gige_have_roboswitch(struct pci_dev *pdev)
@@ -239,7 +188,6 @@ static inline int ssb_gige_get_macaddr(struct pci_dev *pdev, u8 *macaddr)
 static inline int ssb_gige_get_phyaddr(struct pci_dev *pdev)
 {
 	return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* CONFIG_SSB_DRIVER_GIGE */

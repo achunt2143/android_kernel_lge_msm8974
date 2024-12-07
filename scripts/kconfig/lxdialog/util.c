@@ -1,41 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  util.c
  *
  *  ORIGINAL AUTHOR: Savio Lam (lam836@cs.cuhk.hk)
  *  MODIFIED FOR LINUX KERNEL CONFIG BY: William Roadcap (roadcap@cfw.com)
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdarg.h>
 
 #include "dialog.h"
 
-<<<<<<< HEAD
-=======
 /* Needed in signal handler in mconf.c */
 int saved_x, saved_y;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dialog_info dlg;
 
 static void set_mono_theme(void)
@@ -52,13 +29,6 @@ static void set_mono_theme(void)
 	dlg.button_label_active.atr = A_REVERSE;
 	dlg.button_label_inactive.atr = A_NORMAL;
 	dlg.inputbox.atr = A_NORMAL;
-<<<<<<< HEAD
-	dlg.inputbox_border.atr = A_NORMAL;
-	dlg.searchbox.atr = A_NORMAL;
-	dlg.searchbox_title.atr = A_BOLD;
-	dlg.searchbox_border.atr = A_NORMAL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlg.position_indicator.atr = A_BOLD;
 	dlg.menubox.atr = A_NORMAL;
 	dlg.menubox_border.atr = A_NORMAL;
@@ -95,13 +65,6 @@ static void set_classic_theme(void)
 	DLG_COLOR(button_label_active,   COLOR_YELLOW, COLOR_BLUE,   true);
 	DLG_COLOR(button_label_inactive, COLOR_BLACK,  COLOR_WHITE,  true);
 	DLG_COLOR(inputbox,              COLOR_BLACK,  COLOR_WHITE,  false);
-<<<<<<< HEAD
-	DLG_COLOR(inputbox_border,       COLOR_BLACK,  COLOR_WHITE,  false);
-	DLG_COLOR(searchbox,             COLOR_BLACK,  COLOR_WHITE,  false);
-	DLG_COLOR(searchbox_title,       COLOR_YELLOW, COLOR_WHITE,  true);
-	DLG_COLOR(searchbox_border,      COLOR_WHITE,  COLOR_WHITE,  true);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DLG_COLOR(position_indicator,    COLOR_YELLOW, COLOR_WHITE,  true);
 	DLG_COLOR(menubox,               COLOR_BLACK,  COLOR_WHITE,  false);
 	DLG_COLOR(menubox_border,        COLOR_WHITE,  COLOR_WHITE,  true);
@@ -130,20 +93,9 @@ static void set_blackbg_theme(void)
 	DLG_COLOR(button_key_active,     COLOR_YELLOW, COLOR_RED,   true);
 	DLG_COLOR(button_key_inactive,   COLOR_RED,    COLOR_BLACK, false);
 	DLG_COLOR(button_label_active,   COLOR_WHITE,  COLOR_RED,   false);
-<<<<<<< HEAD
-	DLG_COLOR(button_label_inactive, COLOR_BLACK,  COLOR_BLACK, true);
-
-	DLG_COLOR(inputbox,         COLOR_YELLOW, COLOR_BLACK, false);
-	DLG_COLOR(inputbox_border,  COLOR_YELLOW, COLOR_BLACK, false);
-
-	DLG_COLOR(searchbox,        COLOR_YELLOW, COLOR_BLACK, false);
-	DLG_COLOR(searchbox_title,  COLOR_YELLOW, COLOR_BLACK, true);
-	DLG_COLOR(searchbox_border, COLOR_BLACK,  COLOR_BLACK, true);
-=======
 	DLG_COLOR(button_label_inactive, COLOR_WHITE,  COLOR_BLACK, false);
 
 	DLG_COLOR(inputbox,         COLOR_YELLOW, COLOR_BLACK, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DLG_COLOR(position_indicator, COLOR_RED, COLOR_BLACK,  false);
 
@@ -171,10 +123,6 @@ static void set_bluetitle_theme(void)
 	DLG_COLOR(title,               COLOR_BLUE,   COLOR_WHITE, true);
 	DLG_COLOR(button_key_active,   COLOR_YELLOW, COLOR_BLUE,  true);
 	DLG_COLOR(button_label_active, COLOR_WHITE,  COLOR_BLUE,  true);
-<<<<<<< HEAD
-	DLG_COLOR(searchbox_title,     COLOR_BLUE,   COLOR_WHITE, true);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DLG_COLOR(position_indicator,  COLOR_BLUE,   COLOR_WHITE, true);
 	DLG_COLOR(tag,                 COLOR_BLUE,   COLOR_WHITE, true);
 	DLG_COLOR(tag_key,             COLOR_BLUE,   COLOR_WHITE, true);
@@ -227,13 +175,6 @@ static void init_dialog_colors(void)
 	init_one_color(&dlg.button_label_active);
 	init_one_color(&dlg.button_label_inactive);
 	init_one_color(&dlg.inputbox);
-<<<<<<< HEAD
-	init_one_color(&dlg.inputbox_border);
-	init_one_color(&dlg.searchbox);
-	init_one_color(&dlg.searchbox_title);
-	init_one_color(&dlg.searchbox_border);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_one_color(&dlg.position_indicator);
 	init_one_color(&dlg.menubox);
 	init_one_color(&dlg.menubox_border);
@@ -282,17 +223,6 @@ void attr_clear(WINDOW * win, int height, int width, chtype attr)
 
 void dialog_clear(void)
 {
-<<<<<<< HEAD
-	attr_clear(stdscr, LINES, COLS, dlg.screen.atr);
-	/* Display background title if it exists ... - SLH */
-	if (dlg.backtitle != NULL) {
-		int i;
-
-		wattrset(stdscr, dlg.screen.atr);
-		mvwaddstr(stdscr, 0, 1, (char *)dlg.backtitle);
-		wmove(stdscr, 1, 1);
-		for (i = 1; i < COLS - 1; i++)
-=======
 	int lines, columns;
 
 	lines = getmaxy(stdscr);
@@ -343,7 +273,6 @@ void dialog_clear(void)
 		}
 
 		for (i = len + 1; i < columns - 1; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			waddch(stdscr, ACS_HLINE);
 	}
 	wnoutrefresh(stdscr);
@@ -357,17 +286,12 @@ int init_dialog(const char *backtitle)
 	int height, width;
 
 	initscr();		/* Init curses */
-<<<<<<< HEAD
-	getmaxyx(stdscr, height, width);
-	if (height < 19 || width < 80) {
-=======
 
 	/* Get current cursor position for signal handler in mconf.c */
 	getyx(stdscr, saved_y, saved_x);
 
 	getmaxyx(stdscr, height, width);
 	if (height < WINDOW_HEIGHT_MIN || width < WINDOW_WIDTH_MIN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		endwin();
 		return -ERRDISPLAYTOOSMALL;
 	}
@@ -388,14 +312,11 @@ void set_dialog_backtitle(const char *backtitle)
 	dlg.backtitle = backtitle;
 }
 
-<<<<<<< HEAD
-=======
 void set_dialog_subtitles(struct subtitle_list *subtitles)
 {
 	dlg.subtitles = subtitles;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * End using dialog functions.
  */
@@ -424,39 +345,19 @@ void print_title(WINDOW *dialog, const char *title, int width)
 /*
  * Print a string of text in a window, automatically wrap around to the
  * next line if the string is too long to fit on one line. Newline
-<<<<<<< HEAD
- * characters '\n' are replaced by spaces.  We start on a new line
-=======
  * characters '\n' are properly processed.  We start on a new line
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * if there is no room for at least 4 nonblanks following a double-space.
  */
 void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 {
 	int newl, cur_x, cur_y;
-<<<<<<< HEAD
-	int i, prompt_len, room, wlen;
-	char tempstr[MAX_LEN + 1], *word, *sp, *sp2;
-=======
 	int prompt_len, room, wlen;
 	char tempstr[MAX_LEN + 1], *word, *sp, *sp2, *newline_separator = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(tempstr, prompt);
 
 	prompt_len = strlen(tempstr);
 
-<<<<<<< HEAD
-	/*
-	 * Remove newlines
-	 */
-	for (i = 0; i < prompt_len; i++) {
-		if (tempstr[i] == '\n')
-			tempstr[i] = ' ';
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (prompt_len <= width - x * 2) {	/* If prompt is short */
 		wmove(win, y, (width - prompt_len) / 2);
 		waddstr(win, tempstr);
@@ -466,14 +367,10 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 		newl = 1;
 		word = tempstr;
 		while (word && *word) {
-<<<<<<< HEAD
-			sp = strchr(word, ' ');
-=======
 			sp = strpbrk(word, "\n ");
 			if (sp && *sp == '\n')
 				newline_separator = sp;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (sp)
 				*sp++ = 0;
 
@@ -485,11 +382,7 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 			if (wlen > room ||
 			    (newl && wlen < 4 && sp
 			     && wlen + 1 + strlen(sp) > room
-<<<<<<< HEAD
-			     && (!(sp2 = strchr(sp, ' '))
-=======
 			     && (!(sp2 = strpbrk(sp, "\n "))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 || wlen + 1 + (sp2 - sp) > room))) {
 				cur_y++;
 				cur_x = x;
@@ -497,9 +390,6 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 			wmove(win, cur_y, cur_x);
 			waddstr(win, word);
 			getyx(win, cur_y, cur_x);
-<<<<<<< HEAD
-			cur_x++;
-=======
 
 			/* Move to the next line if the word separator was a newline */
 			if (newline_separator) {
@@ -509,7 +399,6 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 			} else
 				cur_x++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (sp && *sp == ' ') {
 				cur_x++;	/* double space */
 				while (*++sp == ' ') ;
@@ -634,11 +523,7 @@ int first_alpha(const char *string, const char *exempt)
  * lxdialog suggest <ESC> <ESC> which is correctly translated to two
  * times esc. But then we need to ignore the second esc to avoid stepping
  * out one menu too much. Filter away all escaped key sequences since
-<<<<<<< HEAD
- * keypad(FALSE) turn off ncurses support for escape sequences - and thats
-=======
  * keypad(FALSE) turn off ncurses support for escape sequences - and that's
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * needed to make notimeout() do as expected.
  */
 int on_key_esc(WINDOW *win)
@@ -707,11 +592,7 @@ void item_make(const char *fmt, ...)
 void item_add_str(const char *fmt, ...)
 {
 	va_list ap;
-<<<<<<< HEAD
-        size_t avail;
-=======
 	size_t avail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	avail = sizeof(item_cur->node.str) - strlen(item_cur->node.str);
 

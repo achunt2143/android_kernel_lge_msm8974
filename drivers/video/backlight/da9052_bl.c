@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Backlight Driver for Dialog DA9052 PMICs
  *
  * Copyright(c) 2012 Dialog Semiconductor Ltd.
  *
  * Author: David Dajun Chen <dchen@diasemi.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/backlight.h>
@@ -41,11 +29,7 @@ enum {
 	DA9052_TYPE_WLED3,
 };
 
-<<<<<<< HEAD
-static unsigned char wled_bank[] = {
-=======
 static const unsigned char wled_bank[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DA9052_LED1_CONF_REG,
 	DA9052_LED2_CONF_REG,
 	DA9052_LED3_CONF_REG,
@@ -83,11 +67,7 @@ static int da9052_adjust_wled_brightness(struct da9052_bl *wleds)
 	if (ret < 0)
 		return ret;
 
-<<<<<<< HEAD
-	msleep(10);
-=======
 	usleep_range(10000, 11000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (wleds->brightness) {
 		ret = da9052_reg_write(wleds->da9052, wled_bank[wleds->led_reg],
@@ -137,16 +117,6 @@ static int da9052_backlight_probe(struct platform_device *pdev)
 	wleds->led_reg = platform_get_device_id(pdev)->driver_data;
 	wleds->state = DA9052_WLEDS_OFF;
 
-<<<<<<< HEAD
-	props.type = BACKLIGHT_RAW;
-	props.max_brightness = DA9052_MAX_BRIGHTNESS;
-
-	bl = backlight_device_register(pdev->name, wleds->da9052->dev, wleds,
-				       &da9052_backlight_ops, &props);
-	if (IS_ERR(bl)) {
-		dev_err(&pdev->dev, "Failed to register backlight\n");
-		devm_kfree(&pdev->dev, wleds);
-=======
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = DA9052_MAX_BRIGHTNESS;
@@ -156,7 +126,6 @@ static int da9052_backlight_probe(struct platform_device *pdev)
 					&da9052_backlight_ops, &props);
 	if (IS_ERR(bl)) {
 		dev_err(&pdev->dev, "Failed to register backlight\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return PTR_ERR(bl);
 	}
 
@@ -167,11 +136,7 @@ static int da9052_backlight_probe(struct platform_device *pdev)
 	return da9052_adjust_wled_brightness(wleds);
 }
 
-<<<<<<< HEAD
-static int da9052_backlight_remove(struct platform_device *pdev)
-=======
 static void da9052_backlight_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct backlight_device *bl = platform_get_drvdata(pdev);
 	struct da9052_bl *wleds = bl_get_data(bl);
@@ -179,19 +144,9 @@ static void da9052_backlight_remove(struct platform_device *pdev)
 	wleds->brightness = 0;
 	wleds->state = DA9052_WLEDS_OFF;
 	da9052_adjust_wled_brightness(wleds);
-<<<<<<< HEAD
-	backlight_device_unregister(bl);
-	devm_kfree(&pdev->dev, wleds);
-
-	return 0;
-}
-
-static struct platform_device_id da9052_wled_ids[] = {
-=======
 }
 
 static const struct platform_device_id da9052_wled_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name		= "da9052-wled1",
 		.driver_data	= DA9052_TYPE_WLED1,
@@ -204,17 +159,6 @@ static const struct platform_device_id da9052_wled_ids[] = {
 		.name		= "da9052-wled3",
 		.driver_data	= DA9052_TYPE_WLED3,
 	},
-<<<<<<< HEAD
-};
-
-static struct platform_driver da9052_wled_driver = {
-	.probe		= da9052_backlight_probe,
-	.remove		= da9052_backlight_remove,
-	.id_table	= da9052_wled_ids,
-	.driver	= {
-		.name	= "da9052-wled",
-		.owner	= THIS_MODULE,
-=======
 	{ },
 };
 MODULE_DEVICE_TABLE(platform, da9052_wled_ids);
@@ -225,7 +169,6 @@ static struct platform_driver da9052_wled_driver = {
 	.id_table	= da9052_wled_ids,
 	.driver	= {
 		.name	= "da9052-wled",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -234,7 +177,3 @@ module_platform_driver(da9052_wled_driver);
 MODULE_AUTHOR("David Dajun Chen <dchen@diasemi.com>");
 MODULE_DESCRIPTION("Backlight driver for DA9052 PMIC");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS("platform:da9052-backlight");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

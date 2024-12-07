@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-#ifndef _PARISC_BUG_H
-#define _PARISC_BUG_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _PARISC_BUG_H
 #define _PARISC_BUG_H
 
 #include <linux/kernel.h>	/* for BUGFLAG_TAINT */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Tell the user there is some problem.
  * The offending file and line are encoded in the __bug_table section.
@@ -23,14 +17,6 @@
 #define	PARISC_BUG_BREAK_ASM	"break 0x1f, 0x1fff"
 #define	PARISC_BUG_BREAK_INSN	0x03ffe01f  /* PARISC_BUG_BREAK_ASM */
 
-<<<<<<< HEAD
-#if defined(CONFIG_64BIT)
-#define ASM_WORD_INSN		".dword\t"
-#else
-#define ASM_WORD_INSN		".word\t"
-#endif
-
-=======
 #ifdef CONFIG_GENERIC_BUG_RELATIVE_POINTERS
 # define __BUG_REL(val) ".word " __stringify(val) " - ."
 #else
@@ -38,21 +24,12 @@
 #endif
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DEBUG_BUGVERBOSE
 #define BUG()								\
 	do {								\
 		asm volatile("\n"					\
 			     "1:\t" PARISC_BUG_BREAK_ASM "\n"		\
 			     "\t.pushsection __bug_table,\"a\"\n"	\
-<<<<<<< HEAD
-			     "2:\t" ASM_WORD_INSN "1b, %c0\n"		\
-			     "\t.short %c1, %c2\n"			\
-			     "\t.org 2b+%c3\n"				\
-			     "\t.popsection"				\
-			     : : "i" (__FILE__), "i" (__LINE__),	\
-			     "i" (0), "i" (sizeof(struct bug_entry)) ); \
-=======
 			     "\t.align 4\n"				\
 			     "2:\t" __BUG_REL(1b) "\n"			\
 			     "\t" __BUG_REL(%c0)  "\n"			\
@@ -61,7 +38,6 @@
 			     "\t.popsection"				\
 			     : : "i" (__FILE__), "i" (__LINE__),	\
 			     "i" (0), "i" (sizeof(struct bug_entry)) );	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unreachable();						\
 	} while(0)
 
@@ -74,27 +50,11 @@
 #endif
 
 #ifdef CONFIG_DEBUG_BUGVERBOSE
-<<<<<<< HEAD
-#define __WARN_TAINT(taint)						\
-=======
 #define __WARN_FLAGS(flags)						\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {								\
 		asm volatile("\n"					\
 			     "1:\t" PARISC_BUG_BREAK_ASM "\n"		\
 			     "\t.pushsection __bug_table,\"a\"\n"	\
-<<<<<<< HEAD
-			     "2:\t" ASM_WORD_INSN "1b, %c0\n"		\
-			     "\t.short %c1, %c2\n"			\
-			     "\t.org 2b+%c3\n"				\
-			     "\t.popsection"				\
-			     : : "i" (__FILE__), "i" (__LINE__),	\
-			     "i" (BUGFLAG_TAINT(taint)), 		\
-			     "i" (sizeof(struct bug_entry)) );		\
-	} while(0)
-#else
-#define __WARN_TAINT(taint)						\
-=======
 			     "\t.align 4\n"				\
 			     "2:\t" __BUG_REL(1b) "\n"			\
 			     "\t" __BUG_REL(%c0)  "\n"			\
@@ -107,25 +67,16 @@
 	} while(0)
 #else
 #define __WARN_FLAGS(flags)						\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {								\
 		asm volatile("\n"					\
 			     "1:\t" PARISC_BUG_BREAK_ASM "\n"		\
 			     "\t.pushsection __bug_table,\"a\"\n"	\
-<<<<<<< HEAD
-			     "2:\t" ASM_WORD_INSN "1b\n"		\
-			     "\t.short %c0\n"				\
-			     "\t.org 2b+%c1\n"				\
-			     "\t.popsection"				\
-			     : : "i" (BUGFLAG_TAINT(taint)),		\
-=======
 			     "\t.align 4\n"				\
 			     "2:\t" __BUG_REL(1b) "\n"			\
 			     "\t.short %0\n"				\
 			     "\t.blockz %1-4-2\n"			\
 			     "\t.popsection"				\
 			     : : "i" (BUGFLAG_WARNING|(flags)),		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     "i" (sizeof(struct bug_entry)) );		\
 	} while(0)
 #endif

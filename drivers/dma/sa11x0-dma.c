@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SA11x0 DMAengine support
  *
  * Copyright (C) 2012 Russell King
  *   Derived in part from arch/arm/mach-sa1100/dma.c,
  *   Copyright (C) 2000, 2001 by Nicolas Pitre
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/sched.h>
 #include <linux/device.h>
@@ -24,18 +14,11 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/sa11x0-dma.h>
-#include <linux/slab.h>
-#include <linux/spinlock.h>
-
-=======
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 
 #include "virt-dma.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NR_PHY_CHAN	6
 #define DMA_ALIGN	3
 #define DMA_MAX_SIZE	0x1fff
@@ -87,16 +70,6 @@ struct sa11x0_dma_sg {
 };
 
 struct sa11x0_dma_desc {
-<<<<<<< HEAD
-	struct dma_async_tx_descriptor tx;
-	u32			ddar;
-	size_t			size;
-
-	/* maybe protected by c->lock */
-	struct list_head	node;
-	unsigned		sglen;
-	struct sa11x0_dma_sg	sg[0];
-=======
 	struct virt_dma_desc	vd;
 
 	u32			ddar;
@@ -106,29 +79,16 @@ struct sa11x0_dma_desc {
 
 	unsigned		sglen;
 	struct sa11x0_dma_sg	sg[] __counted_by(sglen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sa11x0_dma_phy;
 
 struct sa11x0_dma_chan {
-<<<<<<< HEAD
-	struct dma_chan		chan;
-	spinlock_t		lock;
-	dma_cookie_t		lc;
-
-	/* protected by c->lock */
-	struct sa11x0_dma_phy	*phy;
-	enum dma_status		status;
-	struct list_head	desc_submitted;
-	struct list_head	desc_issued;
-=======
 	struct virt_dma_chan	vc;
 
 	/* protected by c->vc.lock */
 	struct sa11x0_dma_phy	*phy;
 	enum dma_status		status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* protected by d->lock */
 	struct list_head	node;
@@ -144,26 +104,14 @@ struct sa11x0_dma_phy {
 
 	struct sa11x0_dma_chan	*vchan;
 
-<<<<<<< HEAD
-	/* Protected by c->lock */
-=======
 	/* Protected by c->vc.lock */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned		sg_load;
 	struct sa11x0_dma_desc	*txd_load;
 	unsigned		sg_done;
 	struct sa11x0_dma_desc	*txd_done;
-<<<<<<< HEAD
-#ifdef CONFIG_PM_SLEEP
 	u32			dbs[2];
 	u32			dbt[2];
 	u32			dcsr;
-#endif
-=======
-	u32			dbs[2];
-	u32			dbt[2];
-	u32			dcsr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sa11x0_dma_dev {
@@ -172,20 +120,12 @@ struct sa11x0_dma_dev {
 	spinlock_t		lock;
 	struct tasklet_struct	task;
 	struct list_head	chan_pending;
-<<<<<<< HEAD
-	struct list_head	desc_complete;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sa11x0_dma_phy	phy[NR_PHY_CHAN];
 };
 
 static struct sa11x0_dma_chan *to_sa11x0_dma_chan(struct dma_chan *chan)
 {
-<<<<<<< HEAD
-	return container_of(chan, struct sa11x0_dma_chan, chan);
-=======
 	return container_of(chan, struct sa11x0_dma_chan, vc.chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct sa11x0_dma_dev *to_sa11x0_dma(struct dma_device *dmadev)
@@ -193,19 +133,6 @@ static struct sa11x0_dma_dev *to_sa11x0_dma(struct dma_device *dmadev)
 	return container_of(dmadev, struct sa11x0_dma_dev, slave);
 }
 
-<<<<<<< HEAD
-static struct sa11x0_dma_desc *to_sa11x0_dma_tx(struct dma_async_tx_descriptor *tx)
-{
-	return container_of(tx, struct sa11x0_dma_desc, tx);
-}
-
-static struct sa11x0_dma_desc *sa11x0_dma_next_desc(struct sa11x0_dma_chan *c)
-{
-	if (list_empty(&c->desc_issued))
-		return NULL;
-
-	return list_first_entry(&c->desc_issued, struct sa11x0_dma_desc, node);
-=======
 static struct sa11x0_dma_desc *sa11x0_dma_next_desc(struct sa11x0_dma_chan *c)
 {
 	struct virt_dma_desc *vd = vchan_next_desc(&c->vc);
@@ -216,25 +143,16 @@ static struct sa11x0_dma_desc *sa11x0_dma_next_desc(struct sa11x0_dma_chan *c)
 static void sa11x0_dma_free_desc(struct virt_dma_desc *vd)
 {
 	kfree(container_of(vd, struct sa11x0_dma_desc, vd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sa11x0_dma_start_desc(struct sa11x0_dma_phy *p, struct sa11x0_dma_desc *txd)
 {
-<<<<<<< HEAD
-	list_del(&txd->node);
-=======
 	list_del(&txd->vd.node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p->txd_load = txd;
 	p->sg_load = 0;
 
 	dev_vdbg(p->dev->slave.dev, "pchan %u: txd %p[%x]: starting: DDAR:%x\n",
-<<<<<<< HEAD
-		p->num, txd, txd->tx.cookie, txd->ddar);
-=======
 		p->num, &txd->vd, txd->vd.tx.cookie, txd->ddar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void noinline sa11x0_dma_start_sg(struct sa11x0_dma_phy *p,
@@ -256,21 +174,6 @@ static void noinline sa11x0_dma_start_sg(struct sa11x0_dma_phy *p,
 		return;
 
 	if (p->sg_load == txd->sglen) {
-<<<<<<< HEAD
-		struct sa11x0_dma_desc *txn = sa11x0_dma_next_desc(c);
-
-		/*
-		 * We have reached the end of the current descriptor.
-		 * Peek at the next descriptor, and if compatible with
-		 * the current, start processing it.
-		 */
-		if (txn && txn->ddar == txd->ddar) {
-			txd = txn;
-			sa11x0_dma_start_desc(p, txn);
-		} else {
-			p->txd_load = NULL;
-			return;
-=======
 		if (!txd->cyclic) {
 			struct sa11x0_dma_desc *txn = sa11x0_dma_next_desc(c);
 
@@ -289,7 +192,6 @@ static void noinline sa11x0_dma_start_sg(struct sa11x0_dma_phy *p,
 		} else {
 			/* Cyclic: reset back to beginning */
 			p->sg_load = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -323,23 +225,6 @@ static void noinline sa11x0_dma_complete(struct sa11x0_dma_phy *p,
 	struct sa11x0_dma_desc *txd = p->txd_done;
 
 	if (++p->sg_done == txd->sglen) {
-<<<<<<< HEAD
-		struct sa11x0_dma_dev *d = p->dev;
-
-		dev_vdbg(d->slave.dev, "pchan %u: txd %p[%x]: completed\n",
-			p->num, p->txd_done, p->txd_done->tx.cookie);
-
-		c->lc = txd->tx.cookie;
-
-		spin_lock(&d->lock);
-		list_add_tail(&txd->node, &d->desc_complete);
-		spin_unlock(&d->lock);
-
-		p->sg_done = 0;
-		p->txd_done = p->txd_load;
-
-		tasklet_schedule(&d->task);
-=======
 		if (!txd->cyclic) {
 			vchan_cookie_complete(&txd->vd);
 
@@ -355,7 +240,6 @@ static void noinline sa11x0_dma_complete(struct sa11x0_dma_phy *p,
 			/* Cyclic: reset back to beginning */
 			p->sg_done = 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sa11x0_dma_start_sg(p, c);
@@ -392,11 +276,7 @@ static irqreturn_t sa11x0_dma_irq(int irq, void *dev_id)
 	if (c) {
 		unsigned long flags;
 
-<<<<<<< HEAD
-		spin_lock_irqsave(&c->lock, flags);
-=======
 		spin_lock_irqsave(&c->vc.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Now that we're holding the lock, check that the vchan
 		 * really is associated with this pchan before touching the
@@ -410,11 +290,7 @@ static irqreturn_t sa11x0_dma_irq(int irq, void *dev_id)
 			if (dcsr & DCSR_DONEB)
 				sa11x0_dma_complete(p, c);
 		}
-<<<<<<< HEAD
-		spin_unlock_irqrestore(&c->lock, flags);
-=======
 		spin_unlock_irqrestore(&c->vc.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return IRQ_HANDLED;
@@ -447,49 +323,20 @@ static void sa11x0_dma_start_txd(struct sa11x0_dma_chan *c)
 	}
 }
 
-<<<<<<< HEAD
-static void sa11x0_dma_tasklet(unsigned long arg)
-{
-	struct sa11x0_dma_dev *d = (struct sa11x0_dma_dev *)arg;
-	struct sa11x0_dma_phy *p;
-	struct sa11x0_dma_chan *c;
-	struct sa11x0_dma_desc *txd, *txn;
-	LIST_HEAD(head);
-=======
 static void sa11x0_dma_tasklet(struct tasklet_struct *t)
 {
 	struct sa11x0_dma_dev *d = from_tasklet(d, t, task);
 	struct sa11x0_dma_phy *p;
 	struct sa11x0_dma_chan *c;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned pch, pch_alloc = 0;
 
 	dev_dbg(d->slave.dev, "tasklet enter\n");
 
-<<<<<<< HEAD
-	/* Get the completed tx descriptors */
-	spin_lock_irq(&d->lock);
-	list_splice_init(&d->desc_complete, &head);
-	spin_unlock_irq(&d->lock);
-
-	list_for_each_entry(txd, &head, node) {
-		c = to_sa11x0_dma_chan(txd->tx.chan);
-
-		dev_dbg(d->slave.dev, "vchan %p: txd %p[%x] completed\n",
-			c, txd, txd->tx.cookie);
-
-		spin_lock_irq(&c->lock);
-		p = c->phy;
-		if (p) {
-			if (!p->txd_done)
-				sa11x0_dma_start_txd(c);
-=======
 	list_for_each_entry(c, &d->slave.channels, vc.chan.device_node) {
 		spin_lock_irq(&c->vc.lock);
 		p = c->phy;
 		if (p && !p->txd_done) {
 			sa11x0_dma_start_txd(c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!p->txd_done) {
 				/* No current txd associated with this channel */
 				dev_dbg(d->slave.dev, "pchan %u: free\n", p->num);
@@ -499,11 +346,7 @@ static void sa11x0_dma_tasklet(struct tasklet_struct *t)
 				p->vchan = NULL;
 			}
 		}
-<<<<<<< HEAD
-		spin_unlock_irq(&c->lock);
-=======
 		spin_unlock_irq(&c->vc.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_lock_irq(&d->lock);
@@ -520,11 +363,7 @@ static void sa11x0_dma_tasklet(struct tasklet_struct *t)
 			/* Mark this channel allocated */
 			p->vchan = c;
 
-<<<<<<< HEAD
-			dev_dbg(d->slave.dev, "pchan %u: alloc vchan %p\n", pch, c);
-=======
 			dev_dbg(d->slave.dev, "pchan %u: alloc vchan %p\n", pch, &c->vc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	spin_unlock_irq(&d->lock);
@@ -534,30 +373,6 @@ static void sa11x0_dma_tasklet(struct tasklet_struct *t)
 			p = &d->phy[pch];
 			c = p->vchan;
 
-<<<<<<< HEAD
-			spin_lock_irq(&c->lock);
-			c->phy = p;
-
-			sa11x0_dma_start_txd(c);
-			spin_unlock_irq(&c->lock);
-		}
-	}
-
-	/* Now free the completed tx descriptor, and call their callbacks */
-	list_for_each_entry_safe(txd, txn, &head, node) {
-		dma_async_tx_callback callback = txd->tx.callback;
-		void *callback_param = txd->tx.callback_param;
-
-		dev_dbg(d->slave.dev, "txd %p[%x]: callback and free\n",
-			txd, txd->tx.cookie);
-
-		kfree(txd);
-
-		if (callback)
-			callback(callback_param);
-	}
-
-=======
 			spin_lock_irq(&c->vc.lock);
 			c->phy = p;
 
@@ -566,55 +381,21 @@ static void sa11x0_dma_tasklet(struct tasklet_struct *t)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(d->slave.dev, "tasklet exit\n");
 }
 
 
-<<<<<<< HEAD
-static void sa11x0_dma_desc_free(struct sa11x0_dma_dev *d, struct list_head *head)
-{
-	struct sa11x0_dma_desc *txd, *txn;
-
-	list_for_each_entry_safe(txd, txn, head, node) {
-		dev_dbg(d->slave.dev, "txd %p: freeing\n", txd);
-		kfree(txd);
-	}
-}
-
-static int sa11x0_dma_alloc_chan_resources(struct dma_chan *chan)
-{
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sa11x0_dma_free_chan_resources(struct dma_chan *chan)
 {
 	struct sa11x0_dma_chan *c = to_sa11x0_dma_chan(chan);
 	struct sa11x0_dma_dev *d = to_sa11x0_dma(chan->device);
 	unsigned long flags;
-<<<<<<< HEAD
-	LIST_HEAD(head);
-
-	spin_lock_irqsave(&c->lock, flags);
-	spin_lock(&d->lock);
-	list_del_init(&c->node);
-	spin_unlock(&d->lock);
-
-	list_splice_tail_init(&c->desc_submitted, &head);
-	list_splice_tail_init(&c->desc_issued, &head);
-	spin_unlock_irqrestore(&c->lock, flags);
-
-	sa11x0_dma_desc_free(d, &head);
-=======
 
 	spin_lock_irqsave(&d->lock, flags);
 	list_del_init(&c->node);
 	spin_unlock_irqrestore(&d->lock, flags);
 
 	vchan_free_chan_resources(&c->vc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static dma_addr_t sa11x0_dma_pos(struct sa11x0_dma_phy *p)
@@ -639,35 +420,6 @@ static enum dma_status sa11x0_dma_tx_status(struct dma_chan *chan,
 	struct sa11x0_dma_chan *c = to_sa11x0_dma_chan(chan);
 	struct sa11x0_dma_dev *d = to_sa11x0_dma(chan->device);
 	struct sa11x0_dma_phy *p;
-<<<<<<< HEAD
-	struct sa11x0_dma_desc *txd;
-	dma_cookie_t last_used, last_complete;
-	unsigned long flags;
-	enum dma_status ret;
-	size_t bytes = 0;
-
-	last_used = c->chan.cookie;
-	last_complete = c->lc;
-
-	ret = dma_async_is_complete(cookie, last_complete, last_used);
-	if (ret == DMA_SUCCESS) {
-		dma_set_tx_state(state, last_complete, last_used, 0);
-		return ret;
-	}
-
-	spin_lock_irqsave(&c->lock, flags);
-	p = c->phy;
-	ret = c->status;
-	if (p) {
-		dma_addr_t addr = sa11x0_dma_pos(p);
-
-		dev_vdbg(d->slave.dev, "tx_status: addr:%x\n", addr);
-
-		txd = p->txd_done;
-		if (txd) {
-			unsigned i;
-
-=======
 	struct virt_dma_desc *vd;
 	unsigned long flags;
 	enum dma_status ret;
@@ -709,7 +461,6 @@ static enum dma_status sa11x0_dma_tx_status(struct dma_chan *chan,
 
 			dev_vdbg(d->slave.dev, "tx_status: addr:%pad\n", &addr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (i = 0; i < txd->sglen; i++) {
 				dev_vdbg(d->slave.dev, "tx_status: [%u] %x+%x\n",
 					i, txd->sg[i].addr, txd->sg[i].len);
@@ -732,25 +483,11 @@ static enum dma_status sa11x0_dma_tx_status(struct dma_chan *chan,
 				bytes += txd->sg[i].len;
 			}
 		}
-<<<<<<< HEAD
-		if (txd != p->txd_load && p->txd_load)
-			bytes += p->txd_load->size;
-	}
-	list_for_each_entry(txd, &c->desc_issued, node) {
-		bytes += txd->size;
-	}
-	spin_unlock_irqrestore(&c->lock, flags);
-
-	dma_set_tx_state(state, last_complete, last_used, bytes);
-
-	dev_vdbg(d->slave.dev, "tx_status: bytes 0x%zx\n", bytes);
-=======
 		state->residue = bytes;
 	}
 	spin_unlock_irqrestore(&c->vc.lock, flags);
 
 	dev_vdbg(d->slave.dev, "tx_status: bytes 0x%x\n", state->residue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -766,42 +503,6 @@ static void sa11x0_dma_issue_pending(struct dma_chan *chan)
 	struct sa11x0_dma_dev *d = to_sa11x0_dma(chan->device);
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&c->lock, flags);
-	list_splice_tail_init(&c->desc_submitted, &c->desc_issued);
-	if (!list_empty(&c->desc_issued)) {
-		spin_lock(&d->lock);
-		if (!c->phy && list_empty(&c->node)) {
-			list_add_tail(&c->node, &d->chan_pending);
-			tasklet_schedule(&d->task);
-			dev_dbg(d->slave.dev, "vchan %p: issued\n", c);
-		}
-		spin_unlock(&d->lock);
-	} else
-		dev_dbg(d->slave.dev, "vchan %p: nothing to issue\n", c);
-	spin_unlock_irqrestore(&c->lock, flags);
-}
-
-static dma_cookie_t sa11x0_dma_tx_submit(struct dma_async_tx_descriptor *tx)
-{
-	struct sa11x0_dma_chan *c = to_sa11x0_dma_chan(tx->chan);
-	struct sa11x0_dma_desc *txd = to_sa11x0_dma_tx(tx);
-	unsigned long flags;
-
-	spin_lock_irqsave(&c->lock, flags);
-	c->chan.cookie += 1;
-	if (c->chan.cookie < 0)
-		c->chan.cookie = 1;
-	txd->tx.cookie = c->chan.cookie;
-
-	list_add_tail(&txd->node, &c->desc_submitted);
-	spin_unlock_irqrestore(&c->lock, flags);
-
-	dev_dbg(tx->chan->device->dev, "vchan %p: txd %p[%x]: submitted\n",
-		c, txd, txd->tx.cookie);
-
-	return txd->tx.cookie;
-=======
 	spin_lock_irqsave(&c->vc.lock, flags);
 	if (vchan_issue_pending(&c->vc)) {
 		if (!c->phy) {
@@ -816,7 +517,6 @@ static dma_cookie_t sa11x0_dma_tx_submit(struct dma_async_tx_descriptor *tx)
 	} else
 		dev_dbg(d->slave.dev, "vchan %p: nothing to issue\n", &c->vc);
 	spin_unlock_irqrestore(&c->vc.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dma_async_tx_descriptor *sa11x0_dma_prep_slave_sg(
@@ -832,11 +532,7 @@ static struct dma_async_tx_descriptor *sa11x0_dma_prep_slave_sg(
 	/* SA11x0 channels can only operate in their native direction */
 	if (dir != (c->ddar & DDAR_RW ? DMA_DEV_TO_MEM : DMA_MEM_TO_DEV)) {
 		dev_err(chan->device->dev, "vchan %p: bad DMA direction: DDAR:%08x dir:%u\n",
-<<<<<<< HEAD
-			c, c->ddar, dir);
-=======
 			&c->vc, c->ddar, dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -851,31 +547,18 @@ static struct dma_async_tx_descriptor *sa11x0_dma_prep_slave_sg(
 		if (len > DMA_MAX_SIZE)
 			j += DIV_ROUND_UP(len, DMA_MAX_SIZE & ~DMA_ALIGN) - 1;
 		if (addr & DMA_ALIGN) {
-<<<<<<< HEAD
-			dev_dbg(chan->device->dev, "vchan %p: bad buffer alignment: %08x\n",
-				c, addr);
-=======
 			dev_dbg(chan->device->dev, "vchan %p: bad buffer alignment: %pad\n",
 				&c->vc, &addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NULL;
 		}
 	}
 
-<<<<<<< HEAD
-	txd = kzalloc(sizeof(*txd) + j * sizeof(txd->sg[0]), GFP_ATOMIC);
-	if (!txd) {
-		dev_dbg(chan->device->dev, "vchan %p: kzalloc failed\n", c);
-		return NULL;
-	}
-=======
 	txd = kzalloc(struct_size(txd, sg, j), GFP_ATOMIC);
 	if (!txd) {
 		dev_dbg(chan->device->dev, "vchan %p: kzalloc failed\n", &c->vc);
 		return NULL;
 	}
 	txd->sglen = j;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	j = 0;
 	for_each_sg(sg, sgent, sglen, i) {
@@ -909,23 +592,6 @@ static struct dma_async_tx_descriptor *sa11x0_dma_prep_slave_sg(
 		} while (len);
 	}
 
-<<<<<<< HEAD
-	dma_async_tx_descriptor_init(&txd->tx, &c->chan);
-	txd->tx.flags = flags;
-	txd->tx.tx_submit = sa11x0_dma_tx_submit;
-	txd->ddar = c->ddar;
-	txd->size = size;
-	txd->sglen = j;
-
-	dev_dbg(chan->device->dev, "vchan %p: txd %p: size %u nr %u\n",
-		c, txd, txd->size, txd->sglen);
-
-	return &txd->tx;
-}
-
-static int sa11x0_dma_slave_config(struct sa11x0_dma_chan *c, struct dma_slave_config *cfg)
-{
-=======
 	txd->ddar = c->ddar;
 	txd->size = size;
 
@@ -998,7 +664,6 @@ static int sa11x0_dma_device_config(struct dma_chan *chan,
 				    struct dma_slave_config *cfg)
 {
 	struct sa11x0_dma_chan *c = to_sa11x0_dma_chan(chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ddar = c->ddar & ((0xf << 4) | DDAR_RW);
 	dma_addr_t addr;
 	enum dma_slave_buswidth width;
@@ -1024,23 +689,14 @@ static int sa11x0_dma_device_config(struct dma_chan *chan,
 	if (maxburst == 8)
 		ddar |= DDAR_BS;
 
-<<<<<<< HEAD
-	dev_dbg(c->chan.device->dev, "vchan %p: dma_slave_config addr %x width %u burst %u\n",
-		c, addr, width, maxburst);
-=======
 	dev_dbg(c->vc.chan.device->dev, "vchan %p: dma_slave_config addr %pad width %u burst %u\n",
 		&c->vc, &addr, width, maxburst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	c->ddar = ddar | (addr & 0xf0000000) | (addr & 0x003ffffc) << 6;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sa11x0_dma_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
-	unsigned long arg)
-=======
 static int sa11x0_dma_device_pause(struct dma_chan *chan)
 {
 	struct sa11x0_dma_chan *c = to_sa11x0_dma_chan(chan);
@@ -1094,107 +750,12 @@ static int sa11x0_dma_device_resume(struct dma_chan *chan)
 }
 
 static int sa11x0_dma_device_terminate_all(struct dma_chan *chan)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sa11x0_dma_chan *c = to_sa11x0_dma_chan(chan);
 	struct sa11x0_dma_dev *d = to_sa11x0_dma(chan->device);
 	struct sa11x0_dma_phy *p;
 	LIST_HEAD(head);
 	unsigned long flags;
-<<<<<<< HEAD
-	int ret;
-
-	switch (cmd) {
-	case DMA_SLAVE_CONFIG:
-		return sa11x0_dma_slave_config(c, (struct dma_slave_config *)arg);
-
-	case DMA_TERMINATE_ALL:
-		dev_dbg(d->slave.dev, "vchan %p: terminate all\n", c);
-		/* Clear the tx descriptor lists */
-		spin_lock_irqsave(&c->lock, flags);
-		list_splice_tail_init(&c->desc_submitted, &head);
-		list_splice_tail_init(&c->desc_issued, &head);
-
-		p = c->phy;
-		if (p) {
-			struct sa11x0_dma_desc *txd, *txn;
-
-			dev_dbg(d->slave.dev, "pchan %u: terminating\n", p->num);
-			/* vchan is assigned to a pchan - stop the channel */
-			writel(DCSR_RUN | DCSR_IE |
-				DCSR_STRTA | DCSR_DONEA |
-				DCSR_STRTB | DCSR_DONEB,
-				p->base + DMA_DCSR_C);
-
-			list_for_each_entry_safe(txd, txn, &d->desc_complete, node)
-				if (txd->tx.chan == &c->chan)
-					list_move(&txd->node, &head);
-
-			if (p->txd_load) {
-				if (p->txd_load != p->txd_done)
-					list_add_tail(&p->txd_load->node, &head);
-				p->txd_load = NULL;
-			}
-			if (p->txd_done) {
-				list_add_tail(&p->txd_done->node, &head);
-				p->txd_done = NULL;
-			}
-			c->phy = NULL;
-			spin_lock(&d->lock);
-			p->vchan = NULL;
-			spin_unlock(&d->lock);
-			tasklet_schedule(&d->task);
-		}
-		spin_unlock_irqrestore(&c->lock, flags);
-		sa11x0_dma_desc_free(d, &head);
-		ret = 0;
-		break;
-
-	case DMA_PAUSE:
-		dev_dbg(d->slave.dev, "vchan %p: pause\n", c);
-		spin_lock_irqsave(&c->lock, flags);
-		if (c->status == DMA_IN_PROGRESS) {
-			c->status = DMA_PAUSED;
-
-			p = c->phy;
-			if (p) {
-				writel(DCSR_RUN | DCSR_IE, p->base + DMA_DCSR_C);
-			} else {
-				spin_lock(&d->lock);
-				list_del_init(&c->node);
-				spin_unlock(&d->lock);
-			}
-		}
-		spin_unlock_irqrestore(&c->lock, flags);
-		ret = 0;
-		break;
-
-	case DMA_RESUME:
-		dev_dbg(d->slave.dev, "vchan %p: resume\n", c);
-		spin_lock_irqsave(&c->lock, flags);
-		if (c->status == DMA_PAUSED) {
-			c->status = DMA_IN_PROGRESS;
-
-			p = c->phy;
-			if (p) {
-				writel(DCSR_RUN | DCSR_IE, p->base + DMA_DCSR_S);
-			} else if (!list_empty(&c->desc_issued)) {
-				spin_lock(&d->lock);
-				list_add_tail(&c->node, &d->chan_pending);
-				spin_unlock(&d->lock);
-			}
-		}
-		spin_unlock_irqrestore(&c->lock, flags);
-		ret = 0;
-		break;
-
-	default:
-		ret = -ENXIO;
-		break;
-	}
-
-	return ret;
-=======
 
 	dev_dbg(d->slave.dev, "vchan %p: terminate all\n", &c->vc);
 	/* Clear the tx descriptor lists */
@@ -1229,7 +790,6 @@ static int sa11x0_dma_device_terminate_all(struct dma_chan *chan)
 	vchan_dma_desc_free_list(&c->vc, &head);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct sa11x0_dma_channel_desc {
@@ -1257,9 +817,6 @@ static const struct sa11x0_dma_channel_desc chan_desc[] = {
 	CD(Ser4SSPRc, DDAR_RW),
 };
 
-<<<<<<< HEAD
-static int __devinit sa11x0_dma_init_dmadev(struct dma_device *dmadev,
-=======
 static const struct dma_slave_map sa11x0_dma_map[] = {
 	{ "sa11x0-ir", "tx", "Ser2ICPTr" },
 	{ "sa11x0-ir", "rx", "Ser2ICPRc" },
@@ -1276,23 +833,10 @@ static bool sa11x0_dma_filter_fn(struct dma_chan *chan, void *param)
 }
 
 static int sa11x0_dma_init_dmadev(struct dma_device *dmadev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *dev)
 {
 	unsigned i;
 
-<<<<<<< HEAD
-	dmadev->chancnt = ARRAY_SIZE(chan_desc);
-	INIT_LIST_HEAD(&dmadev->channels);
-	dmadev->dev = dev;
-	dmadev->device_alloc_chan_resources = sa11x0_dma_alloc_chan_resources;
-	dmadev->device_free_chan_resources = sa11x0_dma_free_chan_resources;
-	dmadev->device_control = sa11x0_dma_control;
-	dmadev->device_tx_status = sa11x0_dma_tx_status;
-	dmadev->device_issue_pending = sa11x0_dma_issue_pending;
-
-	for (i = 0; i < dmadev->chancnt; i++) {
-=======
 	INIT_LIST_HEAD(&dmadev->channels);
 	dmadev->dev = dev;
 	dmadev->device_free_chan_resources = sa11x0_dma_free_chan_resources;
@@ -1304,7 +848,6 @@ static int sa11x0_dma_init_dmadev(struct dma_device *dmadev,
 	dmadev->device_issue_pending = sa11x0_dma_issue_pending;
 
 	for (i = 0; i < ARRAY_SIZE(chan_desc); i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct sa11x0_dma_chan *c;
 
 		c = kzalloc(sizeof(*c), GFP_KERNEL);
@@ -1313,17 +856,6 @@ static int sa11x0_dma_init_dmadev(struct dma_device *dmadev,
 			return -ENOMEM;
 		}
 
-<<<<<<< HEAD
-		c->chan.device = dmadev;
-		c->status = DMA_IN_PROGRESS;
-		c->ddar = chan_desc[i].ddar;
-		c->name = chan_desc[i].name;
-		spin_lock_init(&c->lock);
-		INIT_LIST_HEAD(&c->desc_submitted);
-		INIT_LIST_HEAD(&c->desc_issued);
-		INIT_LIST_HEAD(&c->node);
-		list_add_tail(&c->chan.device_node, &dmadev->channels);
-=======
 		c->status = DMA_IN_PROGRESS;
 		c->ddar = chan_desc[i].ddar;
 		c->name = chan_desc[i].name;
@@ -1331,7 +863,6 @@ static int sa11x0_dma_init_dmadev(struct dma_device *dmadev,
 
 		c->vc.desc_free = sa11x0_dma_free_desc;
 		vchan_init(&c->vc, dmadev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return dma_async_device_register(dmadev);
@@ -1360,23 +891,14 @@ static void sa11x0_dma_free_channels(struct dma_device *dmadev)
 {
 	struct sa11x0_dma_chan *c, *cn;
 
-<<<<<<< HEAD
-	list_for_each_entry_safe(c, cn, &dmadev->channels, chan.device_node) {
-		list_del(&c->chan.device_node);
-=======
 	list_for_each_entry_safe(c, cn, &dmadev->channels, vc.chan.device_node) {
 		list_del(&c->vc.chan.device_node);
 		tasklet_kill(&c->vc.task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(c);
 	}
 }
 
-<<<<<<< HEAD
-static int __devinit sa11x0_dma_probe(struct platform_device *pdev)
-=======
 static int sa11x0_dma_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sa11x0_dma_dev *d;
 	struct resource *res;
@@ -1395,14 +917,10 @@ static int sa11x0_dma_probe(struct platform_device *pdev)
 
 	spin_lock_init(&d->lock);
 	INIT_LIST_HEAD(&d->chan_pending);
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&d->desc_complete);
-=======
 
 	d->slave.filter.fn = sa11x0_dma_filter_fn;
 	d->slave.filter.mapcnt = ARRAY_SIZE(sa11x0_dma_map);
 	d->slave.filter.map = sa11x0_dma_map;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	d->base = ioremap(res->start, resource_size(res));
 	if (!d->base) {
@@ -1410,11 +928,7 @@ static int sa11x0_dma_probe(struct platform_device *pdev)
 		goto err_ioremap;
 	}
 
-<<<<<<< HEAD
-	tasklet_init(&d->task, sa11x0_dma_tasklet, (unsigned long)d);
-=======
 	tasklet_setup(&d->task, sa11x0_dma_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < NR_PHY_CHAN; i++) {
 		struct sa11x0_dma_phy *p = &d->phy[i];
@@ -1438,9 +952,6 @@ static int sa11x0_dma_probe(struct platform_device *pdev)
 	}
 
 	dma_cap_set(DMA_SLAVE, d->slave.cap_mask);
-<<<<<<< HEAD
-	d->slave.device_prep_slave_sg = sa11x0_dma_prep_slave_sg;
-=======
 	dma_cap_set(DMA_CYCLIC, d->slave.cap_mask);
 	d->slave.device_prep_slave_sg = sa11x0_dma_prep_slave_sg;
 	d->slave.device_prep_dma_cyclic = sa11x0_dma_prep_dma_cyclic;
@@ -1450,7 +961,6 @@ static int sa11x0_dma_probe(struct platform_device *pdev)
 				   BIT(DMA_SLAVE_BUSWIDTH_2_BYTES);
 	d->slave.dst_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE) |
 				   BIT(DMA_SLAVE_BUSWIDTH_2_BYTES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = sa11x0_dma_init_dmadev(&d->slave, &pdev->dev);
 	if (ret) {
 		dev_warn(d->slave.dev, "failed to register slave async device: %d\n",
@@ -1474,11 +984,7 @@ static int sa11x0_dma_probe(struct platform_device *pdev)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit sa11x0_dma_remove(struct platform_device *pdev)
-=======
 static void sa11x0_dma_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sa11x0_dma_dev *d = platform_get_drvdata(pdev);
 	unsigned pch;
@@ -1491,18 +997,9 @@ static void sa11x0_dma_remove(struct platform_device *pdev)
 	tasklet_kill(&d->task);
 	iounmap(d->base);
 	kfree(d);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-#ifdef CONFIG_PM_SLEEP
-static int sa11x0_dma_suspend(struct device *dev)
-=======
 }
 
 static __maybe_unused int sa11x0_dma_suspend(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sa11x0_dma_dev *d = dev_get_drvdata(dev);
 	unsigned pch;
@@ -1540,11 +1037,7 @@ static __maybe_unused int sa11x0_dma_suspend(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sa11x0_dma_resume(struct device *dev)
-=======
 static __maybe_unused int sa11x0_dma_resume(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sa11x0_dma_dev *d = dev_get_drvdata(dev);
 	unsigned pch;
@@ -1575,54 +1068,20 @@ static __maybe_unused int sa11x0_dma_resume(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-#endif
-
-static const struct dev_pm_ops sa11x0_dma_pm_ops = {
-	.suspend_noirq = sa11x0_dma_suspend,
-	.resume_noirq = sa11x0_dma_resume,
-	.freeze_noirq = sa11x0_dma_suspend,
-	.thaw_noirq = sa11x0_dma_resume,
-	.poweroff_noirq = sa11x0_dma_suspend,
-	.restore_noirq = sa11x0_dma_resume,
-=======
 
 static const struct dev_pm_ops sa11x0_dma_pm_ops = {
 	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(sa11x0_dma_suspend, sa11x0_dma_resume)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_driver sa11x0_dma_driver = {
 	.driver = {
 		.name	= "sa11x0-dma",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-		.pm	= &sa11x0_dma_pm_ops,
-	},
-	.probe		= sa11x0_dma_probe,
-	.remove		= __devexit_p(sa11x0_dma_remove),
-};
-
-bool sa11x0_dma_filter_fn(struct dma_chan *chan, void *param)
-{
-	if (chan->device->dev->driver == &sa11x0_dma_driver.driver) {
-		struct sa11x0_dma_chan *c = to_sa11x0_dma_chan(chan);
-		const char *p = param;
-
-		return !strcmp(c->name, p);
-	}
-	return false;
-}
-EXPORT_SYMBOL(sa11x0_dma_filter_fn);
-
-=======
 		.pm	= &sa11x0_dma_pm_ops,
 	},
 	.probe		= sa11x0_dma_probe,
 	.remove_new	= sa11x0_dma_remove,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init sa11x0_dma_init(void)
 {
 	return platform_driver_register(&sa11x0_dma_driver);

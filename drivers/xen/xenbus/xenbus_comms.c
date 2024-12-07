@@ -30,39 +30,17 @@
  * IN THE SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include <linux/wait.h>
-#include <linux/interrupt.h>
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/wait.h>
 #include <linux/interrupt.h>
 #include <linux/kthread.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/err.h>
 #include <xen/xenbus.h>
 #include <asm/xen/hypervisor.h>
 #include <xen/events.h>
 #include <xen/page.h>
-<<<<<<< HEAD
-#include "xenbus_comms.h"
-
-static int xenbus_irq;
-
-static DECLARE_WORK(probe_work, xenbus_probe);
-
-static DECLARE_WAIT_QUEUE_HEAD(xb_waitq);
-
-static irqreturn_t wake_waiting(int irq, void *unused)
-{
-	if (unlikely(xenstored_ready == 0)) {
-		xenstored_ready = 1;
-		schedule_work(&probe_work);
-	}
-
-=======
 #include "xenbus.h"
 
 /* A list of replies. Currently only one will ever be outstanding. */
@@ -81,7 +59,6 @@ static struct task_struct *xenbus_task;
 
 static irqreturn_t wake_waiting(int irq, void *unused)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up(&xb_waitq);
 	return IRQ_HANDLED;
 }
@@ -111,8 +88,6 @@ static const void *get_input_chunk(XENSTORE_RING_IDX cons,
 	return buf + MASK_XENSTORE_IDX(cons);
 }
 
-<<<<<<< HEAD
-=======
 static int xb_data_to_write(void)
 {
 	struct xenstore_domain_interface *intf = xen_store_interface;
@@ -121,21 +96,11 @@ static int xb_data_to_write(void)
 		!list_empty(&xb_write_list);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * xb_write - low level write
  * @data: buffer to send
  * @len: length of buffer
  *
-<<<<<<< HEAD
- * Returns 0 on success, error otherwise.
- */
-int xb_write(const void *data, unsigned len)
-{
-	struct xenstore_domain_interface *intf = xen_store_interface;
-	XENSTORE_RING_IDX cons, prod;
-	int rc;
-=======
  * Returns number of bytes written or -err.
  */
 static int xb_write(const void *data, unsigned int len)
@@ -143,22 +108,11 @@ static int xb_write(const void *data, unsigned int len)
 	struct xenstore_domain_interface *intf = xen_store_interface;
 	XENSTORE_RING_IDX cons, prod;
 	unsigned int bytes = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (len != 0) {
 		void *dst;
 		unsigned int avail;
 
-<<<<<<< HEAD
-		rc = wait_event_interruptible(
-			xb_waitq,
-			(intf->req_prod - intf->req_cons) !=
-			XENSTORE_RING_SIZE);
-		if (rc < 0)
-			return rc;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Read indexes, then verify. */
 		cons = intf->req_cons;
 		prod = intf->req_prod;
@@ -166,14 +120,11 @@ static int xb_write(const void *data, unsigned int len)
 			intf->req_cons = intf->req_prod = 0;
 			return -EIO;
 		}
-<<<<<<< HEAD
-=======
 		if (!xb_data_to_write())
 			return bytes;
 
 		/* Must write data /after/ reading the consumer index. */
 		virt_mb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dst = get_output_chunk(cons, prod, intf->req, &avail);
 		if (avail == 0)
@@ -181,27 +132,6 @@ static int xb_write(const void *data, unsigned int len)
 		if (avail > len)
 			avail = len;
 
-<<<<<<< HEAD
-		/* Must write data /after/ reading the consumer index. */
-		mb();
-
-		memcpy(dst, data, avail);
-		data += avail;
-		len -= avail;
-
-		/* Other side must not see new producer until data is there. */
-		wmb();
-		intf->req_prod += avail;
-
-		/* Implies mb(): other side will see the updated producer. */
-		notify_remote_via_evtchn(xen_store_evtchn);
-	}
-
-	return 0;
-}
-
-int xb_data_to_read(void)
-=======
 		memcpy(dst, data, avail);
 		data += avail;
 		len -= avail;
@@ -220,51 +150,27 @@ int xb_data_to_read(void)
 }
 
 static int xb_data_to_read(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xenstore_domain_interface *intf = xen_store_interface;
 	return (intf->rsp_cons != intf->rsp_prod);
 }
 
-<<<<<<< HEAD
-int xb_wait_for_data_to_read(void)
-{
-	return wait_event_interruptible(xb_waitq, xb_data_to_read());
-}
-
-int xb_read(void *data, unsigned len)
-{
-	struct xenstore_domain_interface *intf = xen_store_interface;
-	XENSTORE_RING_IDX cons, prod;
-	int rc;
-=======
 static int xb_read(void *data, unsigned int len)
 {
 	struct xenstore_domain_interface *intf = xen_store_interface;
 	XENSTORE_RING_IDX cons, prod;
 	unsigned int bytes = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (len != 0) {
 		unsigned int avail;
 		const char *src;
 
-<<<<<<< HEAD
-		rc = xb_wait_for_data_to_read();
-		if (rc < 0)
-			return rc;
-
-		/* Read indexes, then verify. */
-		cons = intf->rsp_cons;
-		prod = intf->rsp_prod;
-=======
 		/* Read indexes, then verify. */
 		cons = intf->rsp_cons;
 		prod = intf->rsp_prod;
 		if (cons == prod)
 			return bytes;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!check_indexes(cons, prod)) {
 			intf->rsp_cons = intf->rsp_prod = 0;
 			return -EIO;
@@ -277,28 +183,11 @@ static int xb_read(void *data, unsigned int len)
 			avail = len;
 
 		/* Must read data /after/ reading the producer index. */
-<<<<<<< HEAD
-		rmb();
-=======
 		virt_rmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		memcpy(data, src, avail);
 		data += avail;
 		len -= avail;
-<<<<<<< HEAD
-
-		/* Other side must not see free space until we've copied out */
-		mb();
-		intf->rsp_cons += avail;
-
-		pr_debug("Finished read of %i bytes (%i to go)\n", avail, len);
-
-		/* Implies mb(): other side will see the updated consumer. */
-		notify_remote_via_evtchn(xen_store_evtchn);
-	}
-
-=======
 		bytes += avail;
 
 		/* Other side must not see free space until we've copied out */
@@ -540,7 +429,6 @@ static int xenbus_thread(void *unused)
 	}
 
 	xenbus_task = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -552,22 +440,12 @@ int xb_init_comms(void)
 	struct xenstore_domain_interface *intf = xen_store_interface;
 
 	if (intf->req_prod != intf->req_cons)
-<<<<<<< HEAD
-		printk(KERN_ERR "XENBUS request ring is not quiescent "
-		       "(%08x:%08x)!\n", intf->req_cons, intf->req_prod);
-
-	if (intf->rsp_prod != intf->rsp_cons) {
-		printk(KERN_WARNING "XENBUS response ring is not quiescent "
-		       "(%08x:%08x): fixing up\n",
-		       intf->rsp_cons, intf->rsp_prod);
-=======
 		pr_err("request ring is not quiescent (%08x:%08x)!\n",
 		       intf->req_cons, intf->req_prod);
 
 	if (intf->rsp_prod != intf->rsp_cons) {
 		pr_warn("response ring is not quiescent (%08x:%08x): fixing up\n",
 			intf->rsp_cons, intf->rsp_prod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* breaks kdump */
 		if (!reset_devices)
 			intf->rsp_cons = intf->rsp_prod;
@@ -578,24 +456,15 @@ int xb_init_comms(void)
 		rebind_evtchn_irq(xen_store_evtchn, xenbus_irq);
 	} else {
 		int err;
-<<<<<<< HEAD
-		err = bind_evtchn_to_irqhandler(xen_store_evtchn, wake_waiting,
-						0, "xenbus", &xb_waitq);
-		if (err <= 0) {
-			printk(KERN_ERR "XENBUS request irq failed %i\n", err);
-=======
 
 		err = bind_evtchn_to_irqhandler(xen_store_evtchn, wake_waiting,
 						0, "xenbus", &xb_waitq);
 		if (err < 0) {
 			pr_err("request irq failed %i\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 
 		xenbus_irq = err;
-<<<<<<< HEAD
-=======
 
 		if (!xenbus_task) {
 			xenbus_task = kthread_run(xenbus_thread, NULL,
@@ -603,17 +472,13 @@ int xb_init_comms(void)
 			if (IS_ERR(xenbus_task))
 				return PTR_ERR(xenbus_task);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 void xb_deinit_comms(void)
 {
 	unbind_from_irqhandler(xenbus_irq, &xb_waitq);
 	xenbus_irq = 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

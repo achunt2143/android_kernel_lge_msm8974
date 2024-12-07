@@ -15,22 +15,15 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
-<<<<<<< HEAD
-#include <linux/parser.h>
-=======
 #include <linux/fs_context.h>
 #include <linux/fs_parser.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/statfs.h>
 #include <linux/random.h>
 #include <linux/sched.h>
 #include <linux/exportfs.h>
-<<<<<<< HEAD
-=======
 #include <linux/posix_acl.h>
 #include <linux/pid_namespace.h>
 #include <uapi/linux/magic.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Miklos Szeredi <miklos@szeredi.hu>");
 MODULE_DESCRIPTION("Filesystem in Userspace");
@@ -40,11 +33,7 @@ static struct kmem_cache *fuse_inode_cachep;
 struct list_head fuse_conn_list;
 DEFINE_MUTEX(fuse_mutex);
 
-<<<<<<< HEAD
-static int set_global_limit(const char *val, struct kernel_param *kp);
-=======
 static int set_global_limit(const char *val, const struct kernel_param *kp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned max_user_bgreq;
 module_param_call(max_user_bgreq, set_global_limit, param_get_uint,
@@ -62,11 +51,6 @@ MODULE_PARM_DESC(max_user_congthresh,
  "Global limit for the maximum congestion threshold an "
  "unprivileged user can set");
 
-<<<<<<< HEAD
-#define FUSE_SUPER_MAGIC 0x65735546
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FUSE_DEFAULT_BLKSIZE 512
 
 /** Maximum number of outstanding background requests */
@@ -75,25 +59,6 @@ MODULE_PARM_DESC(max_user_congthresh,
 /** Congestion starts at 75% of maximum */
 #define FUSE_DEFAULT_CONGESTION_THRESHOLD (FUSE_DEFAULT_MAX_BACKGROUND * 3 / 4)
 
-<<<<<<< HEAD
-struct fuse_mount_data {
-	int fd;
-	unsigned rootmode;
-	unsigned user_id;
-	unsigned group_id;
-	unsigned fd_present:1;
-	unsigned rootmode_present:1;
-	unsigned user_id_present:1;
-	unsigned group_id_present:1;
-	unsigned flags;
-	unsigned max_read;
-	unsigned blksize;
-};
-
-struct fuse_forget_link *fuse_alloc_forget(void)
-{
-	return kzalloc(sizeof(struct fuse_forget_link), GFP_KERNEL);
-=======
 #ifdef CONFIG_BLOCK
 static struct file_system_type fuseblk_fs_type;
 #endif
@@ -119,54 +84,10 @@ static struct fuse_submount_lookup *fuse_alloc_submount_lookup(void)
 out_free:
 	kfree(sl);
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct inode *fuse_alloc_inode(struct super_block *sb)
 {
-<<<<<<< HEAD
-	struct inode *inode;
-	struct fuse_inode *fi;
-
-	inode = kmem_cache_alloc(fuse_inode_cachep, GFP_KERNEL);
-	if (!inode)
-		return NULL;
-
-	fi = get_fuse_inode(inode);
-	fi->i_time = 0;
-	fi->nodeid = 0;
-	fi->nlookup = 0;
-	fi->attr_version = 0;
-	fi->writectr = 0;
-	fi->orig_ino = 0;
-	fi->state = 0;
-	INIT_LIST_HEAD(&fi->write_files);
-	INIT_LIST_HEAD(&fi->queued_writes);
-	INIT_LIST_HEAD(&fi->writepages);
-	init_waitqueue_head(&fi->page_waitq);
-	fi->forget = fuse_alloc_forget();
-	if (!fi->forget) {
-		kmem_cache_free(fuse_inode_cachep, inode);
-		return NULL;
-	}
-
-	return inode;
-}
-
-static void fuse_i_callback(struct rcu_head *head)
-{
-	struct inode *inode = container_of(head, struct inode, i_rcu);
-	kmem_cache_free(fuse_inode_cachep, inode);
-}
-
-static void fuse_destroy_inode(struct inode *inode)
-{
-	struct fuse_inode *fi = get_fuse_inode(inode);
-	BUG_ON(!list_empty(&fi->write_files));
-	BUG_ON(!list_empty(&fi->queued_writes));
-	kfree(fi->forget);
-	call_rcu(&inode->i_rcu, fuse_i_callback);
-=======
 	struct fuse_inode *fi;
 
 	fi = alloc_inode_sb(sb, fuse_inode_cachep, GFP_KERNEL);
@@ -226,26 +147,10 @@ static void fuse_cleanup_submount_lookup(struct fuse_conn *fc,
 	fuse_queue_forget(fc, sl->forget, sl->nodeid, 1);
 	sl->forget = NULL;
 	kfree(sl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fuse_evict_inode(struct inode *inode)
 {
-<<<<<<< HEAD
-	truncate_inode_pages(&inode->i_data, 0);
-	end_writeback(inode);
-	if (inode->i_sb->s_flags & MS_ACTIVE) {
-		struct fuse_conn *fc = get_fuse_conn(inode);
-		struct fuse_inode *fi = get_fuse_inode(inode);
-		fuse_queue_forget(fc, fi->forget, fi->nodeid, fi->nlookup);
-		fi->forget = NULL;
-	}
-}
-
-static int fuse_remount_fs(struct super_block *sb, int *flags, char *data)
-{
-	if (*flags & MS_MANDLOCK)
-=======
 	struct fuse_inode *fi = get_fuse_inode(inode);
 
 	/* Will write inode on close/munmap and in all other dirtiers */
@@ -282,7 +187,6 @@ static int fuse_reconfigure(struct fs_context *fsc)
 
 	sync_filesystem(sb);
 	if (fsc->sb_flags & SB_MANDLOCK)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	return 0;
@@ -301,42 +205,22 @@ static ino_t fuse_squash_ino(u64 ino64)
 }
 
 void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
-<<<<<<< HEAD
-				   u64 attr_valid)
-=======
 				   struct fuse_statx *sx,
 				   u64 attr_valid, u32 cache_mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fuse_conn *fc = get_fuse_conn(inode);
 	struct fuse_inode *fi = get_fuse_inode(inode);
 
-<<<<<<< HEAD
-	fi->attr_version = ++fc->attr_version;
-	fi->i_time = attr_valid;
-=======
 	lockdep_assert_held(&fi->lock);
 
 	fi->attr_version = atomic64_inc_return(&fc->attr_version);
 	fi->i_time = attr_valid;
 	/* Clear basic stats from invalid mask */
 	set_mask_bits(&fi->inval_mask, STATX_BASIC_STATS, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inode->i_ino     = fuse_squash_ino(attr->ino);
 	inode->i_mode    = (inode->i_mode & S_IFMT) | (attr->mode & 07777);
 	set_nlink(inode, attr->nlink);
-<<<<<<< HEAD
-	inode->i_uid     = attr->uid;
-	inode->i_gid     = attr->gid;
-	inode->i_blocks  = attr->blocks;
-	inode->i_atime.tv_sec   = attr->atime;
-	inode->i_atime.tv_nsec  = attr->atimensec;
-	inode->i_mtime.tv_sec   = attr->mtime;
-	inode->i_mtime.tv_nsec  = attr->mtimensec;
-	inode->i_ctime.tv_sec   = attr->ctime;
-	inode->i_ctime.tv_nsec  = attr->ctimensec;
-=======
 	inode->i_uid     = make_kuid(fc->user_ns, attr->uid);
 	inode->i_gid     = make_kgid(fc->user_ns, attr->gid);
 	inode->i_blocks  = attr->blocks;
@@ -373,7 +257,6 @@ void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
 			fi->i_btime.tv_nsec = sx->btime.tv_nsec;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (attr->blksize != 0)
 		inode->i_blkbits = ilog2(attr->blksize);
@@ -386,15 +269,6 @@ void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
 	 * check in may_delete().
 	 */
 	fi->orig_i_mode = inode->i_mode;
-<<<<<<< HEAD
-	if (!(fc->flags & FUSE_DEFAULT_PERMISSIONS))
-		inode->i_mode &= ~S_ISVTX;
-
-	fi->orig_ino = attr->ino;
-}
-
-void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
-=======
 	if (!fc->default_permissions)
 		inode->i_mode &= ~S_ISVTX;
 
@@ -423,41 +297,10 @@ u32 fuse_get_cache_mask(struct inode *inode)
 
 void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
 			    struct fuse_statx *sx,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    u64 attr_valid, u64 attr_version)
 {
 	struct fuse_conn *fc = get_fuse_conn(inode);
 	struct fuse_inode *fi = get_fuse_inode(inode);
-<<<<<<< HEAD
-	loff_t oldsize;
-
-	spin_lock(&fc->lock);
-	if ((attr_version != 0 && fi->attr_version > attr_version) ||
-	    test_bit(FUSE_I_SIZE_UNSTABLE, &fi->state)) {
-		spin_unlock(&fc->lock);
-		return;
-	}
-
-	fuse_change_attributes_common(inode, attr, attr_valid);
-
-	oldsize = inode->i_size;
-	i_size_write(inode, attr->size);
-	spin_unlock(&fc->lock);
-
-	if (S_ISREG(inode->i_mode) && oldsize != attr->size) {
-		truncate_pagecache(inode, oldsize, attr->size);
-		invalidate_inode_pages2(inode->i_mapping);
-	}
-}
-
-static void fuse_init_inode(struct inode *inode, struct fuse_attr *attr)
-{
-	inode->i_mode = attr->mode & S_IFMT;
-	inode->i_size = attr->size;
-	if (S_ISREG(inode->i_mode)) {
-		fuse_init_common(inode);
-		fuse_init_file_inode(inode);
-=======
 	u32 cache_mask;
 	loff_t oldsize;
 	struct timespec64 old_mtime;
@@ -546,7 +389,6 @@ static void fuse_init_inode(struct inode *inode, struct fuse_attr *attr,
 	if (S_ISREG(inode->i_mode)) {
 		fuse_init_common(inode);
 		fuse_init_file_inode(inode, attr->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (S_ISDIR(inode->i_mode))
 		fuse_init_dir(inode);
 	else if (S_ISLNK(inode->i_mode))
@@ -558,11 +400,6 @@ static void fuse_init_inode(struct inode *inode, struct fuse_attr *attr,
 				   new_decode_dev(attr->rdev));
 	} else
 		BUG();
-<<<<<<< HEAD
-}
-
-int fuse_inode_eq(struct inode *inode, void *_nodeidp)
-=======
 	/*
 	 * Ensure that we don't cache acls for daemons without FUSE_POSIX_ACL
 	 * so they see the exact same behavior as before.
@@ -572,7 +409,6 @@ int fuse_inode_eq(struct inode *inode, void *_nodeidp)
 }
 
 static int fuse_inode_eq(struct inode *inode, void *_nodeidp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 nodeid = *(u64 *) _nodeidp;
 	if (get_node_id(inode) == nodeid)
@@ -596,9 +432,6 @@ struct inode *fuse_iget(struct super_block *sb, u64 nodeid,
 	struct fuse_inode *fi;
 	struct fuse_conn *fc = get_fuse_conn_super(sb);
 
-<<<<<<< HEAD
- retry:
-=======
 	/*
 	 * Auto mount points get their node id from the submount root, which is
 	 * not a unique identifier within this filesystem.
@@ -629,31 +462,11 @@ struct inode *fuse_iget(struct super_block *sb, u64 nodeid,
 	}
 
 retry:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode = iget5_locked(sb, nodeid, fuse_inode_eq, fuse_inode_set, &nodeid);
 	if (!inode)
 		return NULL;
 
 	if ((inode->i_state & I_NEW)) {
-<<<<<<< HEAD
-		inode->i_flags |= S_NOATIME|S_NOCMTIME;
-		inode->i_generation = generation;
-		inode->i_data.backing_dev_info = &fc->bdi;
-		fuse_init_inode(inode, attr);
-		unlock_new_inode(inode);
-	} else if ((inode->i_mode ^ attr->mode) & S_IFMT) {
-		/* Inode has changed type, any I/O on the old should fail */
-		make_bad_inode(inode);
-		iput(inode);
-		goto retry;
-	}
-
-	fi = get_fuse_inode(inode);
-	spin_lock(&fc->lock);
-	fi->nlookup++;
-	spin_unlock(&fc->lock);
-	fuse_change_attributes(inode, attr, attr_valid, attr_version);
-=======
 		inode->i_flags |= S_NOATIME;
 		if (!fc->writeback_cache || !S_ISREG(attr->mode))
 			inode->i_flags |= S_NOCMTIME;
@@ -675,16 +488,10 @@ retry:
 	spin_unlock(&fi->lock);
 done:
 	fuse_change_attributes(inode, attr, NULL, attr_valid, attr_version);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return inode;
 }
 
-<<<<<<< HEAD
-int fuse_reverse_inval_inode(struct super_block *sb, u64 nodeid,
-			     loff_t offset, loff_t len)
-{
-=======
 struct inode *fuse_ilookup(struct fuse_conn *fc, u64 nodeid,
 			   struct fuse_mount **fm)
 {
@@ -711,24 +518,10 @@ int fuse_reverse_inval_inode(struct fuse_conn *fc, u64 nodeid,
 			     loff_t offset, loff_t len)
 {
 	struct fuse_inode *fi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *inode;
 	pgoff_t pg_start;
 	pgoff_t pg_end;
 
-<<<<<<< HEAD
-	inode = ilookup5(sb, nodeid, fuse_inode_eq, &nodeid);
-	if (!inode)
-		return -ENOENT;
-
-	fuse_invalidate_attr(inode);
-	if (offset >= 0) {
-		pg_start = offset >> PAGE_CACHE_SHIFT;
-		if (len <= 0)
-			pg_end = -1;
-		else
-			pg_end = (offset + len - 1) >> PAGE_CACHE_SHIFT;
-=======
 	inode = fuse_ilookup(fc, nodeid, NULL);
 	if (!inode)
 		return -ENOENT;
@@ -746,7 +539,6 @@ int fuse_reverse_inval_inode(struct fuse_conn *fc, u64 nodeid,
 			pg_end = -1;
 		else
 			pg_end = (offset + len - 1) >> PAGE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		invalidate_inode_pages2_range(inode->i_mapping,
 					      pg_start, pg_end);
 	}
@@ -754,57 +546,6 @@ int fuse_reverse_inval_inode(struct fuse_conn *fc, u64 nodeid,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void fuse_umount_begin(struct super_block *sb)
-{
-	fuse_abort_conn(get_fuse_conn_super(sb));
-}
-
-static void fuse_send_destroy(struct fuse_conn *fc)
-{
-	struct fuse_req *req = fc->destroy_req;
-	if (req && fc->conn_init) {
-		fc->destroy_req = NULL;
-		req->in.h.opcode = FUSE_DESTROY;
-		req->force = 1;
-		fuse_request_send(fc, req);
-		fuse_put_request(fc, req);
-	}
-}
-
-static void fuse_bdi_destroy(struct fuse_conn *fc)
-{
-	if (fc->bdi_initialized)
-		bdi_destroy(&fc->bdi);
-}
-
-void fuse_conn_kill(struct fuse_conn *fc)
-{
-	spin_lock(&fc->lock);
-	fc->connected = 0;
-	fc->blocked = 0;
-	spin_unlock(&fc->lock);
-	/* Flush all readers on this fs */
-	kill_fasync(&fc->fasync, SIGIO, POLL_IN);
-	wake_up_all(&fc->waitq);
-	wake_up_all(&fc->blocked_waitq);
-	wake_up_all(&fc->reserved_req_waitq);
-	mutex_lock(&fuse_mutex);
-	list_del(&fc->entry);
-	fuse_ctl_remove_conn(fc);
-	mutex_unlock(&fuse_mutex);
-	fuse_bdi_destroy(fc);
-}
-EXPORT_SYMBOL_GPL(fuse_conn_kill);
-
-static void fuse_put_super(struct super_block *sb)
-{
-	struct fuse_conn *fc = get_fuse_conn_super(sb);
-
-	fuse_send_destroy(fc);
-	fuse_conn_kill(fc);
-	fuse_conn_put(fc);
-=======
 bool fuse_lock_inode(struct inode *inode)
 {
 	bool locked = false;
@@ -847,7 +588,6 @@ static void fuse_send_destroy(struct fuse_mount *fm)
 		args.nocreds = true;
 		fuse_simple_request(fm, &args);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void convert_fuse_statfs(struct kstatfs *stbuf, struct fuse_kstatfs *attr)
@@ -867,44 +607,16 @@ static void convert_fuse_statfs(struct kstatfs *stbuf, struct fuse_kstatfs *attr
 static int fuse_statfs(struct dentry *dentry, struct kstatfs *buf)
 {
 	struct super_block *sb = dentry->d_sb;
-<<<<<<< HEAD
-	struct fuse_conn *fc = get_fuse_conn_super(sb);
-	struct fuse_req *req;
-	struct fuse_statfs_out outarg;
-	int err;
-
-	if (!fuse_allow_task(fc, current)) {
-=======
 	struct fuse_mount *fm = get_fuse_mount_super(sb);
 	FUSE_ARGS(args);
 	struct fuse_statfs_out outarg;
 	int err;
 
 	if (!fuse_allow_current_process(fm->fc)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		buf->f_type = FUSE_SUPER_MAGIC;
 		return 0;
 	}
 
-<<<<<<< HEAD
-	req = fuse_get_req(fc);
-	if (IS_ERR(req))
-		return PTR_ERR(req);
-
-	memset(&outarg, 0, sizeof(outarg));
-	req->in.numargs = 0;
-	req->in.h.opcode = FUSE_STATFS;
-	req->in.h.nodeid = get_node_id(dentry->d_inode);
-	req->out.numargs = 1;
-	req->out.args[0].size =
-		fc->minor < 4 ? FUSE_COMPAT_STATFS_SIZE : sizeof(outarg);
-	req->out.args[0].value = &outarg;
-	fuse_request_send(fc, req);
-	err = req->out.h.error;
-	if (!err)
-		convert_fuse_statfs(buf, &outarg.st);
-	fuse_put_request(fc, req);
-=======
 	memset(&outarg, 0, sizeof(outarg));
 	args.in_numargs = 0;
 	args.opcode = FUSE_STATFS;
@@ -1007,16 +719,12 @@ static int fuse_sync_fs(struct super_block *sb, int wait)
 		err = 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 enum {
-<<<<<<< HEAD
-=======
 	OPT_SOURCE,
 	OPT_SUBTYPE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OPT_FD,
 	OPT_ROOTMODE,
 	OPT_USER_ID,
@@ -1028,96 +736,6 @@ enum {
 	OPT_ERR
 };
 
-<<<<<<< HEAD
-static const match_table_t tokens = {
-	{OPT_FD,			"fd=%u"},
-	{OPT_ROOTMODE,			"rootmode=%o"},
-	{OPT_USER_ID,			"user_id=%u"},
-	{OPT_GROUP_ID,			"group_id=%u"},
-	{OPT_DEFAULT_PERMISSIONS,	"default_permissions"},
-	{OPT_ALLOW_OTHER,		"allow_other"},
-	{OPT_MAX_READ,			"max_read=%u"},
-	{OPT_BLKSIZE,			"blksize=%u"},
-	{OPT_ERR,			NULL}
-};
-
-static int parse_fuse_opt(char *opt, struct fuse_mount_data *d, int is_bdev)
-{
-	char *p;
-	memset(d, 0, sizeof(struct fuse_mount_data));
-	d->max_read = ~0;
-	d->blksize = FUSE_DEFAULT_BLKSIZE;
-
-	while ((p = strsep(&opt, ",")) != NULL) {
-		int token;
-		int value;
-		substring_t args[MAX_OPT_ARGS];
-		if (!*p)
-			continue;
-
-		token = match_token(p, tokens, args);
-		switch (token) {
-		case OPT_FD:
-			if (match_int(&args[0], &value))
-				return 0;
-			d->fd = value;
-			d->fd_present = 1;
-			break;
-
-		case OPT_ROOTMODE:
-			if (match_octal(&args[0], &value))
-				return 0;
-			if (!fuse_valid_type(value))
-				return 0;
-			d->rootmode = value;
-			d->rootmode_present = 1;
-			break;
-
-		case OPT_USER_ID:
-			if (match_int(&args[0], &value))
-				return 0;
-			d->user_id = value;
-			d->user_id_present = 1;
-			break;
-
-		case OPT_GROUP_ID:
-			if (match_int(&args[0], &value))
-				return 0;
-			d->group_id = value;
-			d->group_id_present = 1;
-			break;
-
-		case OPT_DEFAULT_PERMISSIONS:
-			d->flags |= FUSE_DEFAULT_PERMISSIONS;
-			break;
-
-		case OPT_ALLOW_OTHER:
-			d->flags |= FUSE_ALLOW_OTHER;
-			break;
-
-		case OPT_MAX_READ:
-			if (match_int(&args[0], &value))
-				return 0;
-			d->max_read = value;
-			break;
-
-		case OPT_BLKSIZE:
-			if (!is_bdev || match_int(&args[0], &value))
-				return 0;
-			d->blksize = value;
-			break;
-
-		default:
-			return 0;
-		}
-	}
-
-	if (!d->fd_present || !d->rootmode_present ||
-	    !d->user_id_present || !d->group_id_present)
-		return 0;
-
-	return 1;
-=======
 static const struct fs_parameter_spec fuse_fs_parameters[] = {
 	fsparam_string	("source",		OPT_SOURCE),
 	fsparam_u32	("fd",			OPT_FD),
@@ -1227,7 +845,6 @@ static void fuse_free_fsc(struct fs_context *fsc)
 		kfree(ctx->subtype);
 		kfree(ctx);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fuse_show_options(struct seq_file *m, struct dentry *root)
@@ -1235,57 +852,6 @@ static int fuse_show_options(struct seq_file *m, struct dentry *root)
 	struct super_block *sb = root->d_sb;
 	struct fuse_conn *fc = get_fuse_conn_super(sb);
 
-<<<<<<< HEAD
-	seq_printf(m, ",user_id=%u", fc->user_id);
-	seq_printf(m, ",group_id=%u", fc->group_id);
-	if (fc->flags & FUSE_DEFAULT_PERMISSIONS)
-		seq_puts(m, ",default_permissions");
-	if (fc->flags & FUSE_ALLOW_OTHER)
-		seq_puts(m, ",allow_other");
-	if (fc->max_read != ~0)
-		seq_printf(m, ",max_read=%u", fc->max_read);
-	if (sb->s_bdev && sb->s_blocksize != FUSE_DEFAULT_BLKSIZE)
-		seq_printf(m, ",blksize=%lu", sb->s_blocksize);
-	return 0;
-}
-
-void fuse_conn_init(struct fuse_conn *fc)
-{
-	memset(fc, 0, sizeof(*fc));
-	spin_lock_init(&fc->lock);
-	mutex_init(&fc->inst_mutex);
-	init_rwsem(&fc->killsb);
-	atomic_set(&fc->count, 1);
-	init_waitqueue_head(&fc->waitq);
-	init_waitqueue_head(&fc->blocked_waitq);
-	init_waitqueue_head(&fc->reserved_req_waitq);
-	INIT_LIST_HEAD(&fc->pending);
-	INIT_LIST_HEAD(&fc->processing);
-	INIT_LIST_HEAD(&fc->io);
-	INIT_LIST_HEAD(&fc->interrupts);
-	INIT_LIST_HEAD(&fc->bg_queue);
-	INIT_LIST_HEAD(&fc->entry);
-	fc->forget_list_tail = &fc->forget_list_head;
-	atomic_set(&fc->num_waiting, 0);
-	fc->max_background = FUSE_DEFAULT_MAX_BACKGROUND;
-	fc->congestion_threshold = FUSE_DEFAULT_CONGESTION_THRESHOLD;
-	fc->khctr = 0;
-	fc->polled_files = RB_ROOT;
-	fc->reqctr = 0;
-	fc->blocked = 1;
-	fc->attr_version = 1;
-	get_random_bytes(&fc->scramble_key, sizeof(fc->scramble_key));
-}
-EXPORT_SYMBOL_GPL(fuse_conn_init);
-
-void fuse_conn_put(struct fuse_conn *fc)
-{
-	if (atomic_dec_and_test(&fc->count)) {
-		if (fc->destroy_req)
-			fuse_request_free(fc->destroy_req);
-		mutex_destroy(&fc->inst_mutex);
-		fc->release(fc);
-=======
 	if (fc->legacy_opts_show) {
 		seq_printf(m, ",user_id=%u",
 			   from_kuid_munged(fc->user_ns, fc->user_id));
@@ -1404,18 +970,13 @@ void fuse_conn_put(struct fuse_conn *fc)
 		if (IS_ENABLED(CONFIG_FUSE_PASSTHROUGH))
 			fuse_backing_files_free(fc);
 		call_rcu(&fc->rcu, delayed_release);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL_GPL(fuse_conn_put);
 
 struct fuse_conn *fuse_conn_get(struct fuse_conn *fc)
 {
-<<<<<<< HEAD
-	atomic_inc(&fc->count);
-=======
 	refcount_inc(&fc->count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return fc;
 }
 EXPORT_SYMBOL_GPL(fuse_conn_get);
@@ -1428,11 +989,7 @@ static struct inode *fuse_get_root_inode(struct super_block *sb, unsigned mode)
 	attr.mode = mode;
 	attr.ino = FUSE_ROOT_ID;
 	attr.nlink = 1;
-<<<<<<< HEAD
-	return fuse_iget(sb, 1, 0, &attr, 0, 0);
-=======
 	return fuse_iget(sb, FUSE_ROOT_ID, 0, &attr, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct fuse_inode_handle {
@@ -1454,20 +1011,11 @@ static struct dentry *fuse_get_dentry(struct super_block *sb,
 	inode = ilookup5(sb, handle->nodeid, fuse_inode_eq, &handle->nodeid);
 	if (!inode) {
 		struct fuse_entry_out outarg;
-<<<<<<< HEAD
-		struct qstr name;
-=======
 		const struct qstr name = QSTR_INIT(".", 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!fc->export_support)
 			goto out_err;
 
-<<<<<<< HEAD
-		name.len = 1;
-		name.name = ".";
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = fuse_lookup_name(sb, handle->nodeid, &name, &outarg,
 				       &inode);
 		if (err && err != -ENOENT)
@@ -1496,29 +1044,16 @@ static struct dentry *fuse_get_dentry(struct super_block *sb,
 	return ERR_PTR(err);
 }
 
-<<<<<<< HEAD
-static int fuse_encode_fh(struct dentry *dentry, u32 *fh, int *max_len,
-			   int connectable)
-{
-	struct inode *inode = dentry->d_inode;
-	bool encode_parent = connectable && !S_ISDIR(inode->i_mode);
-	int len = encode_parent ? 6 : 3;
-=======
 static int fuse_encode_fh(struct inode *inode, u32 *fh, int *max_len,
 			   struct inode *parent)
 {
 	int len = parent ? 6 : 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 nodeid;
 	u32 generation;
 
 	if (*max_len < len) {
 		*max_len = len;
-<<<<<<< HEAD
-		return  255;
-=======
 		return  FILEID_INVALID;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	nodeid = get_fuse_inode(inode)->nodeid;
@@ -1528,20 +1063,9 @@ static int fuse_encode_fh(struct inode *inode, u32 *fh, int *max_len,
 	fh[1] = (u32)(nodeid & 0xffffffff);
 	fh[2] = generation;
 
-<<<<<<< HEAD
-	if (encode_parent) {
-		struct inode *parent;
-
-		spin_lock(&dentry->d_lock);
-		parent = dentry->d_parent->d_inode;
-		nodeid = get_fuse_inode(parent)->nodeid;
-		generation = parent->i_generation;
-		spin_unlock(&dentry->d_lock);
-=======
 	if (parent) {
 		nodeid = get_fuse_inode(parent)->nodeid;
 		generation = parent->i_generation;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		fh[3] = (u32)(nodeid >> 32);
 		fh[4] = (u32)(nodeid & 0xffffffff);
@@ -1549,11 +1073,7 @@ static int fuse_encode_fh(struct inode *inode, u32 *fh, int *max_len,
 	}
 
 	*max_len = len;
-<<<<<<< HEAD
-	return encode_parent ? 0x82 : 0x81;
-=======
 	return parent ? FILEID_INO64_GEN_PARENT : FILEID_INO64_GEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dentry *fuse_fh_to_dentry(struct super_block *sb,
@@ -1561,12 +1081,8 @@ static struct dentry *fuse_fh_to_dentry(struct super_block *sb,
 {
 	struct fuse_inode_handle handle;
 
-<<<<<<< HEAD
-	if ((fh_type != 0x81 && fh_type != 0x82) || fh_len < 3)
-=======
 	if ((fh_type != FILEID_INO64_GEN &&
 	     fh_type != FILEID_INO64_GEN_PARENT) || fh_len < 3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	handle.nodeid = (u64) fid->raw[0] << 32;
@@ -1580,11 +1096,7 @@ static struct dentry *fuse_fh_to_parent(struct super_block *sb,
 {
 	struct fuse_inode_handle parent;
 
-<<<<<<< HEAD
-	if (fh_type != 0x82 || fh_len < 6)
-=======
 	if (fh_type != FILEID_INO64_GEN_PARENT || fh_len < 6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	parent.nodeid = (u64) fid->raw[3] << 32;
@@ -1595,33 +1107,18 @@ static struct dentry *fuse_fh_to_parent(struct super_block *sb,
 
 static struct dentry *fuse_get_parent(struct dentry *child)
 {
-<<<<<<< HEAD
-	struct inode *child_inode = child->d_inode;
-=======
 	struct inode *child_inode = d_inode(child);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fuse_conn *fc = get_fuse_conn(child_inode);
 	struct inode *inode;
 	struct dentry *parent;
 	struct fuse_entry_out outarg;
-<<<<<<< HEAD
-	struct qstr name;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (!fc->export_support)
 		return ERR_PTR(-ESTALE);
 
-<<<<<<< HEAD
-	name.len = 2;
-	name.name = "..";
-	err = fuse_lookup_name(child_inode->i_sb, get_node_id(child_inode),
-			       &name, &outarg, &inode);
-=======
 	err = fuse_lookup_name(child_inode->i_sb, get_node_id(child_inode),
 			       &dotdot_name, &outarg, &inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		if (err == -ENOENT)
 			return ERR_PTR(-ESTALE);
@@ -1635,14 +1132,11 @@ static struct dentry *fuse_get_parent(struct dentry *child)
 	return parent;
 }
 
-<<<<<<< HEAD
-=======
 /* only for fid encoding; no support for file handle */
 static const struct export_operations fuse_export_fid_operations = {
 	.encode_fh	= fuse_encode_fh,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct export_operations fuse_export_operations = {
 	.fh_to_dentry	= fuse_fh_to_dentry,
 	.fh_to_parent	= fuse_fh_to_parent,
@@ -1652,15 +1146,6 @@ static const struct export_operations fuse_export_operations = {
 
 static const struct super_operations fuse_super_operations = {
 	.alloc_inode    = fuse_alloc_inode,
-<<<<<<< HEAD
-	.destroy_inode  = fuse_destroy_inode,
-	.evict_inode	= fuse_evict_inode,
-	.drop_inode	= generic_delete_inode,
-	.remount_fs	= fuse_remount_fs,
-	.put_super	= fuse_put_super,
-	.umount_begin	= fuse_umount_begin,
-	.statfs		= fuse_statfs,
-=======
 	.free_inode     = fuse_free_inode,
 	.evict_inode	= fuse_evict_inode,
 	.write_inode	= fuse_write_inode,
@@ -1668,34 +1153,23 @@ static const struct super_operations fuse_super_operations = {
 	.umount_begin	= fuse_umount_begin,
 	.statfs		= fuse_statfs,
 	.sync_fs	= fuse_sync_fs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.show_options	= fuse_show_options,
 };
 
 static void sanitize_global_limit(unsigned *limit)
 {
-<<<<<<< HEAD
-	if (*limit == 0)
-		*limit = ((num_physpages << PAGE_SHIFT) >> 13) /
-			 sizeof(struct fuse_req);
-=======
 	/*
 	 * The default maximum number of async requests is calculated to consume
 	 * 1/2^13 of the total memory, assuming 392 bytes per request.
 	 */
 	if (*limit == 0)
 		*limit = ((totalram_pages() << PAGE_SHIFT) >> 13) / 392;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (*limit >= 1 << 16)
 		*limit = (1 << 16) - 1;
 }
 
-<<<<<<< HEAD
-static int set_global_limit(const char *val, struct kernel_param *kp)
-=======
 static int set_global_limit(const char *val, const struct kernel_param *kp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rv;
 
@@ -1718,10 +1192,7 @@ static void process_init_limits(struct fuse_conn *fc, struct fuse_init_out *arg)
 	sanitize_global_limit(&max_user_bgreq);
 	sanitize_global_limit(&max_user_congthresh);
 
-<<<<<<< HEAD
-=======
 	spin_lock(&fc->bg_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (arg->max_background) {
 		fc->max_background = arg->max_background;
 
@@ -1735,16 +1206,6 @@ static void process_init_limits(struct fuse_conn *fc, struct fuse_init_out *arg)
 		    fc->congestion_threshold > max_user_congthresh)
 			fc->congestion_threshold = max_user_congthresh;
 	}
-<<<<<<< HEAD
-}
-
-static void process_init_reply(struct fuse_conn *fc, struct fuse_req *req)
-{
-	struct fuse_init_out *arg = &req->misc.init_out;
-
-	if (req->out.h.error || arg->major != FUSE_KERNEL_VERSION)
-		fc->conn_error = 1;
-=======
 	spin_unlock(&fc->bg_lock);
 }
 
@@ -1764,40 +1225,12 @@ static void process_init_reply(struct fuse_mount *fm, struct fuse_args *args,
 
 	if (error || arg->major != FUSE_KERNEL_VERSION)
 		ok = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		unsigned long ra_pages;
 
 		process_init_limits(fc, arg);
 
 		if (arg->minor >= 6) {
-<<<<<<< HEAD
-			ra_pages = arg->max_readahead / PAGE_CACHE_SIZE;
-			if (arg->flags & FUSE_ASYNC_READ)
-				fc->async_read = 1;
-			if (!(arg->flags & FUSE_POSIX_LOCKS))
-				fc->no_lock = 1;
-			if (arg->minor >= 17) {
-				if (!(arg->flags & FUSE_FLOCK_LOCKS))
-					fc->no_flock = 1;
-			} else {
-				if (!(arg->flags & FUSE_POSIX_LOCKS))
-					fc->no_flock = 1;
-			}
-			if (arg->flags & FUSE_ATOMIC_O_TRUNC)
-				fc->atomic_o_trunc = 1;
-			if (arg->minor >= 9) {
-				/* LOOKUP has dependency on proto version */
-				if (arg->flags & FUSE_EXPORT_SUPPORT)
-					fc->export_support = 1;
-			}
-			if (arg->flags & FUSE_BIG_WRITES)
-				fc->big_writes = 1;
-			if (arg->flags & FUSE_DONT_MASK)
-				fc->dont_mask = 1;
-		} else {
-			ra_pages = fc->max_read / PAGE_CACHE_SIZE;
-=======
 			u64 flags = arg->flags;
 
 			if (flags & FUSE_INIT_EXT)
@@ -1900,57 +1333,17 @@ static void process_init_reply(struct fuse_mount *fm, struct fuse_args *args,
 				fm->sb->s_export_op = &fuse_export_fid_operations;
 		} else {
 			ra_pages = fc->max_read / PAGE_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fc->no_lock = 1;
 			fc->no_flock = 1;
 		}
 
-<<<<<<< HEAD
-		fc->bdi.ra_pages = min(fc->bdi.ra_pages, ra_pages);
-=======
 		fm->sb->s_bdi->ra_pages =
 				min(fm->sb->s_bdi->ra_pages, ra_pages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc->minor = arg->minor;
 		fc->max_write = arg->minor < 5 ? 4096 : arg->max_write;
 		fc->max_write = max_t(unsigned, 4096, fc->max_write);
 		fc->conn_init = 1;
 	}
-<<<<<<< HEAD
-	fc->blocked = 0;
-	wake_up_all(&fc->blocked_waitq);
-}
-
-static void fuse_send_init(struct fuse_conn *fc, struct fuse_req *req)
-{
-	struct fuse_init_in *arg = &req->misc.init_in;
-
-	arg->major = FUSE_KERNEL_VERSION;
-	arg->minor = FUSE_KERNEL_MINOR_VERSION;
-	arg->max_readahead = fc->bdi.ra_pages * PAGE_CACHE_SIZE;
-	arg->flags |= FUSE_ASYNC_READ | FUSE_POSIX_LOCKS | FUSE_ATOMIC_O_TRUNC |
-		FUSE_EXPORT_SUPPORT | FUSE_BIG_WRITES | FUSE_DONT_MASK |
-		FUSE_FLOCK_LOCKS;
-	req->in.h.opcode = FUSE_INIT;
-	req->in.numargs = 1;
-	req->in.args[0].size = sizeof(*arg);
-	req->in.args[0].value = arg;
-	req->out.numargs = 1;
-	/* Variable length argument used for backward compatibility
-	   with interface version < 7.5.  Rest of init_out is zeroed
-	   by do_get_request(), so a short reply is not a problem */
-	req->out.argvar = 1;
-	req->out.args[0].size = sizeof(struct fuse_init_out);
-	req->out.args[0].value = &req->misc.init_out;
-	req->end = process_init_reply;
-	fuse_request_send_background(fc, req);
-}
-
-static void fuse_free_conn(struct fuse_conn *fc)
-{
-	kfree(fc);
-}
-=======
 	kfree(ia);
 
 	if (!ok) {
@@ -2026,35 +1419,10 @@ void fuse_free_conn(struct fuse_conn *fc)
 	kfree(fc);
 }
 EXPORT_SYMBOL_GPL(fuse_free_conn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int fuse_bdi_init(struct fuse_conn *fc, struct super_block *sb)
 {
 	int err;
-<<<<<<< HEAD
-
-	fc->bdi.name = "fuse";
-	fc->bdi.ra_pages = (VM_MAX_READAHEAD * 1024) / PAGE_CACHE_SIZE;
-	/* fuse does it's own writeback accounting */
-	fc->bdi.capabilities = BDI_CAP_NO_ACCT_WB;
-
-	err = bdi_init(&fc->bdi);
-	if (err)
-		return err;
-
-	fc->bdi_initialized = 1;
-
-	if (sb->s_bdev) {
-		err =  bdi_register(&fc->bdi, NULL, "%u:%u-fuseblk",
-				    MAJOR(fc->dev), MINOR(fc->dev));
-	} else {
-		err = bdi_register_dev(&fc->bdi, fc->dev);
-	}
-
-	if (err)
-		return err;
-
-=======
 	char *suffix = "";
 
 	if (sb->s_bdev) {
@@ -2075,7 +1443,6 @@ static int fuse_bdi_init(struct fuse_conn *fc, struct super_block *sb)
 	sb->s_bdi->capabilities &= ~BDI_CAP_WRITEBACK_ACCT;
 	sb->s_bdi->capabilities |= BDI_CAP_STRICTLIMIT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * For a single fuse filesystem use max 1% of dirty +
 	 * writeback threshold.
@@ -2088,111 +1455,11 @@ static int fuse_bdi_init(struct fuse_conn *fc, struct super_block *sb)
 	 *
 	 *    /sys/class/bdi/<bdi>/max_ratio
 	 */
-<<<<<<< HEAD
-	bdi_set_max_ratio(&fc->bdi, 1);
-=======
 	bdi_set_max_ratio(sb->s_bdi, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int fuse_fill_super(struct super_block *sb, void *data, int silent)
-{
-	struct fuse_conn *fc;
-	struct inode *root;
-	struct fuse_mount_data d;
-	struct file *file;
-	struct dentry *root_dentry;
-	struct fuse_req *init_req;
-	int err;
-	int is_bdev = sb->s_bdev != NULL;
-
-	err = -EINVAL;
-	if (sb->s_flags & MS_MANDLOCK)
-		goto err;
-
-	sb->s_flags &= ~MS_NOSEC;
-
-	if (!parse_fuse_opt((char *) data, &d, is_bdev))
-		goto err;
-
-	if (is_bdev) {
-#ifdef CONFIG_BLOCK
-		err = -EINVAL;
-		if (!sb_set_blocksize(sb, d.blksize))
-			goto err;
-#endif
-	} else {
-		sb->s_blocksize = PAGE_CACHE_SIZE;
-		sb->s_blocksize_bits = PAGE_CACHE_SHIFT;
-	}
-	sb->s_magic = FUSE_SUPER_MAGIC;
-	sb->s_op = &fuse_super_operations;
-	sb->s_maxbytes = MAX_LFS_FILESIZE;
-	sb->s_time_gran = 1;
-	sb->s_export_op = &fuse_export_operations;
-
-	file = fget(d.fd);
-	err = -EINVAL;
-	if (!file)
-		goto err;
-
-	if (file->f_op != &fuse_dev_operations)
-		goto err_fput;
-
-	fc = kmalloc(sizeof(*fc), GFP_KERNEL);
-	err = -ENOMEM;
-	if (!fc)
-		goto err_fput;
-
-	fuse_conn_init(fc);
-	fc->release = fuse_free_conn;
-
-	fc->dev = sb->s_dev;
-	fc->sb = sb;
-	err = fuse_bdi_init(fc, sb);
-	if (err)
-		goto err_put_conn;
-
-	sb->s_bdi = &fc->bdi;
-
-	/* Handle umasking inside the fuse code */
-	if (sb->s_flags & MS_POSIXACL)
-		fc->dont_mask = 1;
-	sb->s_flags |= MS_POSIXACL;
-
-	fc->flags = d.flags;
-	fc->user_id = d.user_id;
-	fc->group_id = d.group_id;
-	fc->max_read = max_t(unsigned, 4096, d.max_read);
-
-	/* Used by get_root_inode() */
-	sb->s_fs_info = fc;
-
-	err = -ENOMEM;
-	root = fuse_get_root_inode(sb, d.rootmode);
-	root_dentry = d_make_root(root);
-	if (!root_dentry)
-		goto err_put_conn;
-	/* only now - we want root dentry with NULL ->d_op */
-	sb->s_d_op = &fuse_dentry_operations;
-
-	init_req = fuse_request_alloc();
-	if (!init_req)
-		goto err_put_root;
-
-	if (is_bdev) {
-		fc->destroy_req = fuse_request_alloc();
-		if (!fc->destroy_req)
-			goto err_free_init_req;
-	}
-
-	mutex_lock(&fuse_mutex);
-	err = -EINVAL;
-	if (file->private_data)
-=======
 struct fuse_dev *fuse_dev_alloc(void)
 {
 	struct fuse_dev *fud;
@@ -2473,7 +1740,6 @@ int fuse_fill_super_common(struct super_block *sb, struct fuse_fs_context *ctx)
 	mutex_lock(&fuse_mutex);
 	err = -EINVAL;
 	if (ctx->fudptr && *ctx->fudptr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unlock;
 
 	err = fuse_ctl_add_conn(fc);
@@ -2482,61 +1748,13 @@ int fuse_fill_super_common(struct super_block *sb, struct fuse_fs_context *ctx)
 
 	list_add_tail(&fc->entry, &fuse_conn_list);
 	sb->s_root = root_dentry;
-<<<<<<< HEAD
-	fc->connected = 1;
-	file->private_data = fuse_conn_get(fc);
-	mutex_unlock(&fuse_mutex);
-	/*
-	 * atomic_dec_and_test() in fput() provides the necessary
-	 * memory barrier for file->private_data to be visible on all
-	 * CPUs after this
-	 */
-	fput(file);
-
-	fuse_send_init(fc, init_req);
-
-=======
 	if (ctx->fudptr)
 		*ctx->fudptr = fud;
 	mutex_unlock(&fuse_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  err_unlock:
 	mutex_unlock(&fuse_mutex);
-<<<<<<< HEAD
- err_free_init_req:
-	fuse_request_free(init_req);
- err_put_root:
-	dput(root_dentry);
- err_put_conn:
-	fuse_bdi_destroy(fc);
-	fuse_conn_put(fc);
- err_fput:
-	fput(file);
- err:
-	return err;
-}
-
-static struct dentry *fuse_mount(struct file_system_type *fs_type,
-		       int flags, const char *dev_name,
-		       void *raw_data)
-{
-	return mount_nodev(fs_type, flags, raw_data, fuse_fill_super);
-}
-
-static void fuse_kill_sb_anon(struct super_block *sb)
-{
-	struct fuse_conn *fc = get_fuse_conn_super(sb);
-
-	if (fc) {
-		down_write(&fc->killsb);
-		fc->sb = NULL;
-		up_write(&fc->killsb);
-	}
-
-	kill_anon_super(sb);
-=======
 	dput(root_dentry);
  err_dev_free:
 	if (fud)
@@ -2744,62 +1962,31 @@ static void fuse_kill_sb_anon(struct super_block *sb)
 	fuse_sb_destroy(sb);
 	kill_anon_super(sb);
 	fuse_mount_destroy(get_fuse_mount_super(sb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct file_system_type fuse_fs_type = {
 	.owner		= THIS_MODULE,
 	.name		= "fuse",
-<<<<<<< HEAD
-	.fs_flags	= FS_HAS_SUBTYPE,
-	.mount		= fuse_mount,
-=======
 	.fs_flags	= FS_HAS_SUBTYPE | FS_USERNS_MOUNT,
 	.init_fs_context = fuse_init_fs_context,
 	.parameters	= fuse_fs_parameters,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.kill_sb	= fuse_kill_sb_anon,
 };
 MODULE_ALIAS_FS("fuse");
 
 #ifdef CONFIG_BLOCK
-<<<<<<< HEAD
-static struct dentry *fuse_mount_blk(struct file_system_type *fs_type,
-			   int flags, const char *dev_name,
-			   void *raw_data)
-{
-	return mount_bdev(fs_type, flags, dev_name, raw_data, fuse_fill_super);
-}
-
-static void fuse_kill_sb_blk(struct super_block *sb)
-{
-	struct fuse_conn *fc = get_fuse_conn_super(sb);
-
-	if (fc) {
-		down_write(&fc->killsb);
-		fc->sb = NULL;
-		up_write(&fc->killsb);
-	}
-
-	kill_block_super(sb);
-=======
 static void fuse_kill_sb_blk(struct super_block *sb)
 {
 	fuse_sb_destroy(sb);
 	kill_block_super(sb);
 	fuse_mount_destroy(get_fuse_mount_super(sb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct file_system_type fuseblk_fs_type = {
 	.owner		= THIS_MODULE,
 	.name		= "fuseblk",
-<<<<<<< HEAD
-	.mount		= fuse_mount_blk,
-=======
 	.init_fs_context = fuse_init_fs_context,
 	.parameters	= fuse_fs_parameters,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.kill_sb	= fuse_kill_sb_blk,
 	.fs_flags	= FS_REQUIRES_DEV | FS_HAS_SUBTYPE,
 };
@@ -2837,15 +2024,9 @@ static int __init fuse_fs_init(void)
 	int err;
 
 	fuse_inode_cachep = kmem_cache_create("fuse_inode",
-<<<<<<< HEAD
-					      sizeof(struct fuse_inode),
-					      0, SLAB_HWCACHE_ALIGN,
-					      fuse_inode_init_once);
-=======
 			sizeof(struct fuse_inode), 0,
 			SLAB_HWCACHE_ALIGN|SLAB_ACCOUNT|SLAB_RECLAIM_ACCOUNT,
 			fuse_inode_init_once);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -ENOMEM;
 	if (!fuse_inode_cachep)
 		goto out;
@@ -2882,10 +2063,6 @@ static void fuse_fs_cleanup(void)
 }
 
 static struct kobject *fuse_kobj;
-<<<<<<< HEAD
-static struct kobject *connections_kobj;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int fuse_sysfs_init(void)
 {
@@ -2897,17 +2074,9 @@ static int fuse_sysfs_init(void)
 		goto out_err;
 	}
 
-<<<<<<< HEAD
-	connections_kobj = kobject_create_and_add("connections", fuse_kobj);
-	if (!connections_kobj) {
-		err = -ENOMEM;
-		goto out_fuse_unregister;
-	}
-=======
 	err = sysfs_create_mount_point(fuse_kobj, "connections");
 	if (err)
 		goto out_fuse_unregister;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -2919,11 +2088,7 @@ static int fuse_sysfs_init(void)
 
 static void fuse_sysfs_cleanup(void)
 {
-<<<<<<< HEAD
-	kobject_put(connections_kobj);
-=======
 	sysfs_remove_mount_point(fuse_kobj, "connections");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kobject_put(fuse_kobj);
 }
 
@@ -2931,13 +2096,8 @@ static int __init fuse_init(void)
 {
 	int res;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "fuse init (API version %i.%i)\n",
-	       FUSE_KERNEL_VERSION, FUSE_KERNEL_MINOR_VERSION);
-=======
 	pr_info("init (API version %i.%i)\n",
 		FUSE_KERNEL_VERSION, FUSE_KERNEL_MINOR_VERSION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&fuse_conn_list);
 	res = fuse_fs_init();
@@ -2973,11 +2133,7 @@ static int __init fuse_init(void)
 
 static void __exit fuse_exit(void)
 {
-<<<<<<< HEAD
-	printk(KERN_DEBUG "fuse exit\n");
-=======
 	pr_debug("exit\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fuse_ctl_cleanup();
 	fuse_sysfs_cleanup();

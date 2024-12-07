@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/spinlock.h>
-#include <asm/uaccess.h>
-
-
-int fixup_exception(struct pt_regs *regs)
-{
-	const struct exception_table_entry *fixup;
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 #include <linux/extable.h>
 #include <linux/uaccess.h>
@@ -319,7 +309,6 @@ int fixup_exception(struct pt_regs *regs, int trapnr, unsigned long error_code,
 {
 	const struct exception_table_entry *e;
 	int type, reg, imm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PNPBIOS
 	if (unlikely(SEGMENT_IS_PNP_CODE(regs->cs))) {
@@ -335,21 +324,6 @@ int fixup_exception(struct pt_regs *regs, int trapnr, unsigned long error_code,
 	}
 #endif
 
-<<<<<<< HEAD
-	fixup = search_exception_tables(regs->ip);
-	if (fixup) {
-		/* If fixup is less than 16, it means uaccess error */
-		if (fixup->fixup < 16) {
-			current_thread_info()->uaccess_err = 1;
-			regs->ip += fixup->fixup;
-			return 1;
-		}
-		regs->ip = fixup->fixup;
-		return 1;
-	}
-
-	return 0;
-=======
 	e = search_exception_tables(regs->ip);
 	if (!e)
 		return 0;
@@ -470,5 +444,4 @@ fail:
 halt_loop:
 	while (true)
 		halt();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

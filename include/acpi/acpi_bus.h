@@ -1,55 +1,20 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  acpi_bus.h - ACPI Bus Driver ($Revision: 22 $)
  *
  *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
  *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
-<<<<<<< HEAD
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or (at
- *  your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ACPI_BUS_H__
 #define __ACPI_BUS_H__
 
 #include <linux/device.h>
-<<<<<<< HEAD
-
-#include <acpi/acpi.h>
-
-/* TBD: Make dynamic */
-#define ACPI_MAX_HANDLES	10
-struct acpi_handle_list {
-	u32 count;
-	acpi_handle handles[ACPI_MAX_HANDLES];
-=======
 #include <linux/property.h>
 
 struct acpi_handle_list {
 	u32 count;
 	acpi_handle *handles;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* acpi_utils.h */
@@ -60,17 +25,6 @@ acpi_status
 acpi_evaluate_integer(acpi_handle handle,
 		      acpi_string pathname,
 		      struct acpi_object_list *arguments, unsigned long long *data);
-<<<<<<< HEAD
-acpi_status
-acpi_evaluate_reference(acpi_handle handle,
-			acpi_string pathname,
-			struct acpi_object_list *arguments,
-			struct acpi_handle_list *list);
-
-#ifdef CONFIG_ACPI
-
-#include <linux/proc_fs.h>
-=======
 bool acpi_evaluate_reference(acpi_handle handle, acpi_string pathname,
 			     struct acpi_object_list *arguments,
 			     struct acpi_handle_list *list);
@@ -132,21 +86,10 @@ bool acpi_reduced_hardware(void);
 #ifdef CONFIG_ACPI
 
 struct proc_dir_entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_BUS_FILE_ROOT	"acpi"
 extern struct proc_dir_entry *acpi_root_dir;
 
-<<<<<<< HEAD
-enum acpi_bus_removal_type {
-	ACPI_BUS_REMOVAL_NORMAL = 0,
-	ACPI_BUS_REMOVAL_EJECT,
-	ACPI_BUS_REMOVAL_SUPRISE,
-	ACPI_BUS_REMOVAL_TYPE_COUNT
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum acpi_bus_device_type {
 	ACPI_BUS_TYPE_DEVICE = 0,
 	ACPI_BUS_TYPE_POWER,
@@ -154,10 +97,7 @@ enum acpi_bus_device_type {
 	ACPI_BUS_TYPE_THERMAL,
 	ACPI_BUS_TYPE_POWER_BUTTON,
 	ACPI_BUS_TYPE_SLEEP_BUTTON,
-<<<<<<< HEAD
-=======
 	ACPI_BUS_TYPE_ECDT_EC,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_BUS_DEVICE_TYPE_COUNT
 };
 
@@ -165,8 +105,6 @@ struct acpi_driver;
 struct acpi_device;
 
 /*
-<<<<<<< HEAD
-=======
  * ACPI Scan Handler
  * -----------------
  */
@@ -209,43 +147,17 @@ struct acpi_hotplug_context {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ACPI Driver
  * -----------
  */
 
 typedef int (*acpi_op_add) (struct acpi_device * device);
-<<<<<<< HEAD
-typedef int (*acpi_op_remove) (struct acpi_device * device, int type);
-typedef int (*acpi_op_start) (struct acpi_device * device);
-typedef int (*acpi_op_suspend) (struct acpi_device * device,
-				pm_message_t state);
-typedef int (*acpi_op_resume) (struct acpi_device * device);
-typedef int (*acpi_op_bind) (struct acpi_device * device);
-typedef int (*acpi_op_unbind) (struct acpi_device * device);
-typedef void (*acpi_op_notify) (struct acpi_device * device, u32 event);
-
-struct acpi_bus_ops {
-	u32 acpi_op_add:1;
-	u32 acpi_op_start:1;
-};
-
-struct acpi_device_ops {
-	acpi_op_add add;
-	acpi_op_remove remove;
-	acpi_op_start start;
-	acpi_op_suspend suspend;
-	acpi_op_resume resume;
-	acpi_op_bind bind;
-	acpi_op_unbind unbind;
-=======
 typedef void (*acpi_op_remove) (struct acpi_device *device);
 typedef void (*acpi_op_notify) (struct acpi_device * device, u32 event);
 
 struct acpi_device_ops {
 	acpi_op_add add;
 	acpi_op_remove remove;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_op_notify notify;
 };
 
@@ -281,16 +193,6 @@ struct acpi_device_status {
 
 struct acpi_device_flags {
 	u32 dynamic_status:1;
-<<<<<<< HEAD
-	u32 bus_address:1;
-	u32 removable:1;
-	u32 ejectable:1;
-	u32 lockable:1;
-	u32 suprise_removal_ok:1;
-	u32 power_manageable:1;
-	u32 performance_manageable:1;
-	u32 reserved:24;
-=======
 	u32 removable:1;
 	u32 ejectable:1;
 	u32 power_manageable:1;
@@ -305,7 +207,6 @@ struct acpi_device_flags {
 	u32 enumeration_by_parent:1;
 	u32 honor_deps:1;
 	u32 reserved:18;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* File System */
@@ -319,28 +220,12 @@ struct acpi_device_dir {
 /* Plug and Play */
 
 typedef char acpi_bus_id[8];
-<<<<<<< HEAD
-typedef unsigned long acpi_bus_address;
-=======
 typedef u64 acpi_bus_address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef char acpi_device_name[40];
 typedef char acpi_device_class[20];
 
 struct acpi_hardware_id {
 	struct list_head list;
-<<<<<<< HEAD
-	char *id;
-};
-
-struct acpi_device_pnp {
-	acpi_bus_id bus_id;	/* Object name */
-	acpi_bus_address bus_address;	/* _ADR */
-	char *unique_id;	/* _UID */
-	struct list_head ids;		/* _HID and _CIDs */
-	acpi_device_name device_name;	/* Driver-determined */
-	acpi_device_class device_class;	/*        "          */
-=======
 	const char *id;
 };
 
@@ -362,16 +247,12 @@ struct acpi_device_pnp {
 	acpi_device_name device_name;	/* Driver-determined */
 	acpi_device_class device_class;	/*        "          */
 	union acpi_object *str_obj;	/* unicode string for _STR method */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define acpi_device_bid(d)	((d)->pnp.bus_id)
 #define acpi_device_adr(d)	((d)->pnp.bus_address)
 const char *acpi_device_hid(struct acpi_device *device);
-<<<<<<< HEAD
-=======
 #define acpi_device_uid(d)	((d)->pnp.unique_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define acpi_device_name(d)	((d)->pnp.device_name)
 #define acpi_device_class(d)	((d)->pnp.device_class)
 
@@ -382,13 +263,9 @@ struct acpi_device_power_flags {
 	u32 power_resources:1;	/* Power resources */
 	u32 inrush_current:1;	/* Serialize Dx->D0 */
 	u32 power_removed:1;	/* Optimize Dx->D0 */
-<<<<<<< HEAD
-	u32 reserved:28;
-=======
 	u32 ignore_parent:1;	/* Power is independent of parent power state */
 	u32 dsw_present:1;	/* _DSW present? */
 	u32 reserved:26;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct acpi_device_power_state {
@@ -399,19 +276,13 @@ struct acpi_device_power_state {
 	} flags;
 	int power;		/* % Power (compared to D0) */
 	int latency;		/* Dx->D0 time (microseconds) */
-<<<<<<< HEAD
-	struct acpi_handle_list resources;	/* Power resources referenced */
-=======
 	struct list_head resources;	/* Power resources referenced */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct acpi_device_power {
 	int state;		/* Current state */
 	struct acpi_device_power_flags flags;
 	struct acpi_device_power_state states[ACPI_D_STATE_COUNT];	/* Power states (D0-D3Cold) */
-<<<<<<< HEAD
-=======
 	u8 state_for_enumeration; /* Deepest power state for enumeration */
 };
 
@@ -422,7 +293,6 @@ struct acpi_dep_data {
 	bool honor_dep;
 	bool met;
 	bool free_when_met;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Performance Management */
@@ -451,12 +321,6 @@ struct acpi_device_perf {
 /* Wakeup Management */
 struct acpi_device_wakeup_flags {
 	u8 valid:1;		/* Can successfully enable wakeup? */
-<<<<<<< HEAD
-	u8 run_wake:1;		/* Run-Wake GPE devices */
-	u8 notifier_present:1;  /* Wake-up notify handler has been installed */
-};
-
-=======
 	u8 notifier_present:1;  /* Wake-up notify handler has been installed */
 };
 
@@ -465,27 +329,10 @@ struct acpi_device_wakeup_context {
 	struct device *dev;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct acpi_device_wakeup {
 	acpi_handle gpe_device;
 	u64 gpe_number;
 	u64 sleep_state;
-<<<<<<< HEAD
-	struct acpi_handle_list resources;
-	struct acpi_device_wakeup_flags flags;
-	int prepare_count;
-};
-
-/* Device */
-
-struct acpi_device {
-	int device_type;
-	acpi_handle handle;		/* no handle for fixed hardware */
-	struct acpi_device *parent;
-	struct list_head children;
-	struct list_head node;
-	struct list_head wakeup_list;
-=======
 	struct list_head resources;
 	struct acpi_device_wakeup_flags flags;
 	struct acpi_device_wakeup_context context;
@@ -618,7 +465,6 @@ struct acpi_device {
 	struct fwnode_handle fwnode;
 	struct list_head wakeup_list;
 	struct list_head del_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct acpi_device_status status;
 	struct acpi_device_flags flags;
 	struct acpi_device_pnp pnp;
@@ -626,16 +472,6 @@ struct acpi_device {
 	struct acpi_device_wakeup wakeup;
 	struct acpi_device_perf performance;
 	struct acpi_device_dir dir;
-<<<<<<< HEAD
-	struct acpi_device_ops ops;
-	struct acpi_driver *driver;
-	void *driver_data;
-	struct device dev;
-	struct acpi_bus_ops bus_ops;	/* workaround for different code path for hotplug */
-	enum acpi_bus_removal_type removal_type;	/* indicate for different removal type */
-};
-
-=======
 	struct acpi_device_data data;
 	struct acpi_scan_handler *handler;
 	struct acpi_hotplug_context *hp;
@@ -712,7 +548,6 @@ static inline struct fwnode_handle *acpi_fwnode_handle(struct acpi_device *adev)
 	return &adev->fwnode;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void *acpi_driver_data(struct acpi_device *d)
 {
 	return d->driver_data;
@@ -721,10 +556,6 @@ static inline void *acpi_driver_data(struct acpi_device *d)
 #define to_acpi_device(d)	container_of(d, struct acpi_device, dev)
 #define to_acpi_driver(d)	container_of(d, struct acpi_driver, drv)
 
-<<<<<<< HEAD
-/* acpi_device.dev.bus == &acpi_bus_type */
-extern struct bus_type acpi_bus_type;
-=======
 static inline struct acpi_device *acpi_dev_parent(struct acpi_device *adev)
 {
 	if (adev->dev.parent)
@@ -759,7 +590,6 @@ int acpi_dev_for_each_child(struct acpi_device *adev,
 int acpi_dev_for_each_child_reverse(struct acpi_device *adev,
 				    int (*fn)(struct acpi_device *, void *),
 				    void *data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Events
@@ -778,8 +608,6 @@ extern struct kobject *acpi_kobj;
 extern int acpi_bus_generate_netlink_event(const char*, const char*, u8, int);
 void acpi_bus_private_data_handler(acpi_handle, void *);
 int acpi_bus_get_private_data(acpi_handle, void **);
-<<<<<<< HEAD
-=======
 int acpi_bus_attach_private_data(acpi_handle, void *);
 void acpi_bus_detach_private_data(acpi_handle);
 int acpi_dev_install_notify_handler(struct acpi_device *adev,
@@ -788,52 +616,14 @@ int acpi_dev_install_notify_handler(struct acpi_device *adev,
 void acpi_dev_remove_notify_handler(struct acpi_device *adev,
 				    u32 handler_type,
 				    acpi_notify_handler handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int acpi_notifier_call_chain(struct acpi_device *, u32, u32);
 extern int register_acpi_notifier(struct notifier_block *);
 extern int unregister_acpi_notifier(struct notifier_block *);
 
-<<<<<<< HEAD
-extern int register_acpi_bus_notifier(struct notifier_block *nb);
-extern void unregister_acpi_bus_notifier(struct notifier_block *nb);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * External Functions
  */
 
-<<<<<<< HEAD
-int acpi_bus_get_device(acpi_handle handle, struct acpi_device **device);
-void acpi_bus_data_handler(acpi_handle handle, void *context);
-acpi_status acpi_bus_get_status_handle(acpi_handle handle,
-				       unsigned long long *sta);
-int acpi_bus_get_status(struct acpi_device *device);
-int acpi_bus_set_power(acpi_handle handle, int state);
-int acpi_bus_update_power(acpi_handle handle, int *state_p);
-bool acpi_bus_power_manageable(acpi_handle handle);
-bool acpi_bus_can_wakeup(acpi_handle handle);
-int acpi_power_resource_register_device(struct device *dev, acpi_handle handle);
-void acpi_power_resource_unregister_device(struct device *dev, acpi_handle handle);
-#ifdef CONFIG_ACPI_PROC_EVENT
-int acpi_bus_generate_proc_event(struct acpi_device *device, u8 type, int data);
-int acpi_bus_generate_proc_event4(const char *class, const char *bid, u8 type, int data);
-int acpi_bus_receive_event(struct acpi_bus_event *event);
-#else
-static inline int acpi_bus_generate_proc_event(struct acpi_device *device, u8 type, int data)
-	{ return 0; }
-#endif
-int acpi_bus_register_driver(struct acpi_driver *driver);
-void acpi_bus_unregister_driver(struct acpi_driver *driver);
-int acpi_bus_add(struct acpi_device **child, struct acpi_device *parent,
-		 acpi_handle handle, int type);
-int acpi_bus_trim(struct acpi_device *start, int rmdevice);
-int acpi_bus_start(struct acpi_device *device);
-acpi_status acpi_bus_get_ejd(acpi_handle handle, acpi_handle * ejd);
-int acpi_match_device_ids(struct acpi_device *device,
-			  const struct acpi_device_id *ids);
-int acpi_create_dir(struct acpi_device *);
-void acpi_remove_dir(struct acpi_device *);
-=======
 acpi_status acpi_bus_get_status_handle(acpi_handle handle,
 				       unsigned long long *sta);
 int acpi_bus_get_status(struct acpi_device *device);
@@ -892,43 +682,12 @@ static inline bool acpi_device_enumerated(struct acpi_device *adev)
 #define module_acpi_driver(__acpi_driver) \
 	module_driver(__acpi_driver, acpi_bus_register_driver, \
 		      acpi_bus_unregister_driver)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Bind physical devices with ACPI devices
  */
 struct acpi_bus_type {
 	struct list_head list;
-<<<<<<< HEAD
-	struct bus_type *bus;
-	/* For general devices under the bus */
-	int (*find_device) (struct device *, acpi_handle *);
-	/* For bridges, such as PCI root bridge, IDE controller */
-	int (*find_bridge) (struct device *, acpi_handle *);
-};
-int register_acpi_bus_type(struct acpi_bus_type *);
-int unregister_acpi_bus_type(struct acpi_bus_type *);
-struct device *acpi_get_physical_device(acpi_handle);
-
-struct acpi_pci_root {
-	struct list_head node;
-	struct acpi_device * device;
-	struct acpi_pci_id id;
-	struct pci_bus *bus;
-	u16 segment;
-	struct resource secondary;	/* downstream bus range */
-
-	u32 osc_support_set;	/* _OSC state of support bits */
-	u32 osc_control_set;	/* _OSC state of control bits */
-};
-
-/* helper */
-acpi_handle acpi_get_child(acpi_handle, u64);
-int acpi_is_root_bridge(acpi_handle);
-acpi_handle acpi_get_pci_rootbridge_handle(unsigned int, unsigned int);
-struct acpi_pci_root *acpi_pci_find_root(acpi_handle handle);
-#define DEVICE_ACPI_HANDLE(dev) ((acpi_handle)((dev)->archdata.acpi_handle))
-=======
 	const char *name;
 	bool (*match)(struct device *dev);
 	struct acpi_device * (*find_companion)(struct device *);
@@ -981,33 +740,10 @@ struct acpi_device *acpi_find_child_by_adr(struct acpi_device *adev,
 					   acpi_bus_address adr);
 int acpi_is_root_bridge(acpi_handle);
 struct acpi_pci_root *acpi_pci_find_root(acpi_handle handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int acpi_enable_wakeup_device_power(struct acpi_device *dev, int state);
 int acpi_disable_wakeup_device_power(struct acpi_device *dev);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-int acpi_pm_device_sleep_state(struct device *, int *);
-#else
-static inline int acpi_pm_device_sleep_state(struct device *d, int *p)
-{
-	if (p)
-		*p = ACPI_STATE_D0;
-	return ACPI_STATE_D3;
-}
-#endif
-
-#ifdef CONFIG_PM_SLEEP
-int acpi_pm_device_run_wake(struct device *, bool);
-int acpi_pm_device_sleep_wake(struct device *, bool);
-#else
-static inline int acpi_pm_device_run_wake(struct device *dev, bool enable)
-{
-	return -ENODEV;
-}
-static inline int acpi_pm_device_sleep_wake(struct device *dev, bool enable)
-=======
 #ifdef CONFIG_X86
 bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *status);
 bool acpi_quirk_skip_acpi_ac_and_battery(void);
@@ -1088,14 +824,11 @@ static inline int acpi_pm_device_sleep_state(struct device *d, int *p, int m)
 		m : ACPI_STATE_D0;
 }
 static inline int acpi_pm_set_device_wakeup(struct device *dev, bool enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENODEV;
 }
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_ACPI_SYSTEM_POWER_STATES_SUPPORT
 bool acpi_sleep_state_supported(u8 sleep_state);
 #else
@@ -1250,7 +983,6 @@ static inline void acpi_put_acpi_dev(struct acpi_device *adev)
 static inline int register_acpi_bus_type(void *bus) { return 0; }
 static inline int unregister_acpi_bus_type(void *bus) { return 0; }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* CONFIG_ACPI */
 
 #endif /*__ACPI_BUS_H__*/

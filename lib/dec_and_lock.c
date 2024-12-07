@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/spinlock.h>
 #include <linux/atomic.h>
@@ -36,8 +33,6 @@ int _atomic_dec_and_lock(atomic_t *atomic, spinlock_t *lock)
 }
 
 EXPORT_SYMBOL(_atomic_dec_and_lock);
-<<<<<<< HEAD
-=======
 
 int _atomic_dec_and_lock_irqsave(atomic_t *atomic, spinlock_t *lock,
 				 unsigned long *flags)
@@ -85,4 +80,3 @@ int _atomic_dec_and_raw_lock_irqsave(atomic_t *atomic, raw_spinlock_t *lock,
 	return 0;
 }
 EXPORT_SYMBOL(_atomic_dec_and_raw_lock_irqsave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

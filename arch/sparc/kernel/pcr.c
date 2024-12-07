@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pcr.c: Generic sparc64 performance counter infrastructure.
  *
  * Copyright (C) 2009 David S. Miller (davem@davemloft.net)
@@ -17,31 +14,14 @@
 #include <asm/pil.h>
 #include <asm/pcr.h>
 #include <asm/nmi.h>
-<<<<<<< HEAD
-#include <asm/spitfire.h>
-#include <asm/perfctr.h>
-=======
 #include <asm/asi.h>
 #include <asm/spitfire.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This code is shared between various users of the performance
  * counters.  Users will be oprofile, pseudo-NMI watchdog, and the
  * perf_event support layer.
  */
 
-<<<<<<< HEAD
-#define PCR_SUN4U_ENABLE	(PCR_PIC_PRIV | PCR_STRACE | PCR_UTRACE)
-#define PCR_N2_ENABLE		(PCR_PIC_PRIV | PCR_STRACE | PCR_UTRACE | \
-				 PCR_N2_TOE_OV1 | \
-				 (2 << PCR_N2_SL1_SHIFT) | \
-				 (0xff << PCR_N2_MASK1_SHIFT))
-
-u64 pcr_enable;
-unsigned int picl_shift;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Performance counter interrupts run unmasked at PIL level 15.
  * Therefore we can't do things like wakeups and other work
  * that expects IRQ disabling to be adhered to in locking etc.
@@ -72,41 +52,6 @@ void arch_irq_work_raise(void)
 const struct pcr_ops *pcr_ops;
 EXPORT_SYMBOL_GPL(pcr_ops);
 
-<<<<<<< HEAD
-static u64 direct_pcr_read(void)
-{
-	u64 val;
-
-	read_pcr(val);
-	return val;
-}
-
-static void direct_pcr_write(u64 val)
-{
-	write_pcr(val);
-}
-
-static const struct pcr_ops direct_pcr_ops = {
-	.read	= direct_pcr_read,
-	.write	= direct_pcr_write,
-};
-
-static void n2_pcr_write(u64 val)
-{
-	unsigned long ret;
-
-	if (val & PCR_N2_HTRACE) {
-		ret = sun4v_niagara2_setperf(HV_N2_PERF_SPARC_CTL, val);
-		if (ret != HV_EOK)
-			write_pcr(val);
-	} else
-		write_pcr(val);
-}
-
-static const struct pcr_ops n2_pcr_ops = {
-	.read	= direct_pcr_read,
-	.write	= n2_pcr_write,
-=======
 static u64 direct_pcr_read(unsigned long reg_num)
 {
 	u64 val;
@@ -297,7 +242,6 @@ static const struct pcr_ops m7_pcr_ops = {
 				   PCR_N4_UTRACE | PCR_N4_TOE |
 				   (26 << PCR_N4_SL_SHIFT)),
 	.pcr_nmi_disable	= PCR_N4_PICNPT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static unsigned long perf_hsvc_group;
@@ -306,11 +250,8 @@ static unsigned long perf_hsvc_minor;
 
 static int __init register_perf_hsvc(void)
 {
-<<<<<<< HEAD
-=======
 	unsigned long hverror;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tlb_type == hypervisor) {
 		switch (sun4v_chip_type) {
 		case SUN4V_CHIP_NIAGARA1:
@@ -325,8 +266,6 @@ static int __init register_perf_hsvc(void)
 			perf_hsvc_group = HV_GRP_KT_CPU;
 			break;
 
-<<<<<<< HEAD
-=======
 		case SUN4V_CHIP_NIAGARA4:
 			perf_hsvc_group = HV_GRP_VT_CPU;
 			break;
@@ -339,7 +278,6 @@ static int __init register_perf_hsvc(void)
 			perf_hsvc_group = HV_GRP_M7_PERF;
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			return -ENODEV;
 		}
@@ -347,19 +285,12 @@ static int __init register_perf_hsvc(void)
 
 		perf_hsvc_major = 1;
 		perf_hsvc_minor = 0;
-<<<<<<< HEAD
-		if (sun4v_hvapi_register(perf_hsvc_group,
-					 perf_hsvc_major,
-					 &perf_hsvc_minor)) {
-			printk("perfmon: Could not register hvapi.\n");
-=======
 		hverror = sun4v_hvapi_register(perf_hsvc_group,
 					       perf_hsvc_major,
 					       &perf_hsvc_minor);
 		if (hverror) {
 			pr_err("perfmon: Could not register hvapi(0x%lx).\n",
 			       hverror);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 		}
 	}
@@ -373,8 +304,6 @@ static void __init unregister_perf_hsvc(void)
 	sun4v_hvapi_unregister(perf_hsvc_group);
 }
 
-<<<<<<< HEAD
-=======
 static int __init setup_sun4v_pcr_ops(void)
 {
 	int ret = 0;
@@ -406,7 +335,6 @@ static int __init setup_sun4v_pcr_ops(void)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init pcr_arch_init(void)
 {
 	int err = register_perf_hsvc();
@@ -416,24 +344,14 @@ int __init pcr_arch_init(void)
 
 	switch (tlb_type) {
 	case hypervisor:
-<<<<<<< HEAD
-		pcr_ops = &n2_pcr_ops;
-		pcr_enable = PCR_N2_ENABLE;
-		picl_shift = 2;
-=======
 		err = setup_sun4v_pcr_ops();
 		if (err)
 			goto out_unregister;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case cheetah:
 	case cheetah_plus:
 		pcr_ops = &direct_pcr_ops;
-<<<<<<< HEAD
-		pcr_enable = PCR_SUN4U_ENABLE;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case spitfire:
@@ -441,11 +359,7 @@ int __init pcr_arch_init(void)
 		 * counter overflow interrupt so we can't make use of
 		 * their hardware currently.
 		 */
-<<<<<<< HEAD
-		/* fallthrough */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		err = -ENODEV;
 		goto out_unregister;

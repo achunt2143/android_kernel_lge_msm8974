@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ARM specific SMP header, this contains our implementation
  * details.
@@ -9,13 +6,10 @@
 #ifndef __ASMARM_SMP_PLAT_H
 #define __ASMARM_SMP_PLAT_H
 
-<<<<<<< HEAD
-=======
 #include <linux/cpumask.h>
 #include <linux/err.h>
 
 #include <asm/cpu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cputype.h>
 
 /*
@@ -33,9 +27,6 @@ static inline bool is_smp(void)
 #endif
 }
 
-<<<<<<< HEAD
-/* all SMP configurations have the extended CPUID registers */
-=======
 /**
  * smp_cpuid_part() - return part id for a given cpu
  * @cpu:	logical cpu id.
@@ -54,7 +45,6 @@ static inline unsigned int smp_cpuid_part(int cpu)
 #ifndef CONFIG_MMU
 #define tlb_ops_need_broadcast()	0
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int tlb_ops_need_broadcast(void)
 {
 	if (!is_smp())
@@ -62,10 +52,7 @@ static inline int tlb_ops_need_broadcast(void)
 
 	return ((read_cpuid_ext(CPUID_EXT_MMFR3) >> 12) & 0xf) < 2;
 }
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if !defined(CONFIG_SMP) || __LINUX_ARM_ARCH__ >= 7
 #define cache_ops_need_broadcast()	0
@@ -82,10 +69,6 @@ static inline int cache_ops_need_broadcast(void)
 /*
  * Logical CPU mapping.
  */
-<<<<<<< HEAD
-extern int __cpu_logical_map[];
-#define cpu_logical_map(cpu)	__cpu_logical_map[cpu]
-=======
 extern u32 __cpu_logical_map[];
 #define cpu_logical_map(cpu)	__cpu_logical_map[cpu]
 /*
@@ -133,6 +116,5 @@ static inline int platform_can_hotplug_cpu(unsigned int cpu)
 	return 0;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) International Business Machines Corp., 2006
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines Corp., 2006
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Artem Bityutskiy (Битюцкий Артём), Joern Engel
  */
 
@@ -48,11 +28,7 @@
 #include "ubi-media.h"
 
 #define err_msg(fmt, ...)                                   \
-<<<<<<< HEAD
-	printk(KERN_DEBUG "gluebi (pid %d): %s: " fmt "\n", \
-=======
 	pr_err("gluebi (pid %d): %s: " fmt "\n",            \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       current->pid, __func__, ##__VA_ARGS__)
 
 /**
@@ -110,12 +86,6 @@ static int gluebi_get_device(struct mtd_info *mtd)
 	struct gluebi_device *gluebi;
 	int ubi_mode = UBI_READONLY;
 
-<<<<<<< HEAD
-	if (!try_module_get(THIS_MODULE))
-		return -ENODEV;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mtd->flags & MTD_WRITEABLE)
 		ubi_mode = UBI_READWRITE;
 
@@ -126,13 +96,8 @@ static int gluebi_get_device(struct mtd_info *mtd)
 		 * The MTD device is already referenced and this is just one
 		 * more reference. MTD allows many users to open the same
 		 * volume simultaneously and do not distinguish between
-<<<<<<< HEAD
-		 * readers/writers/exclusive openers as UBI does. So we do not
-		 * open the UBI volume again - just increase the reference
-=======
 		 * readers/writers/exclusive/meta openers as UBI does. So we do
 		 * not open the UBI volume again - just increase the reference
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * counter and return.
 		 */
 		gluebi->refcnt += 1;
@@ -148,10 +113,6 @@ static int gluebi_get_device(struct mtd_info *mtd)
 				       ubi_mode);
 	if (IS_ERR(gluebi->desc)) {
 		mutex_unlock(&devices_mutex);
-<<<<<<< HEAD
-		module_put(THIS_MODULE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return PTR_ERR(gluebi->desc);
 	}
 	gluebi->refcnt += 1;
@@ -175,10 +136,6 @@ static void gluebi_put_device(struct mtd_info *mtd)
 	gluebi->refcnt -= 1;
 	if (gluebi->refcnt == 0)
 		ubi_close_volume(gluebi->desc);
-<<<<<<< HEAD
-	module_put(THIS_MODULE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&devices_mutex);
 }
 
@@ -196,30 +153,17 @@ static void gluebi_put_device(struct mtd_info *mtd)
 static int gluebi_read(struct mtd_info *mtd, loff_t from, size_t len,
 		       size_t *retlen, unsigned char *buf)
 {
-<<<<<<< HEAD
-	int err = 0, lnum, offs, total_read;
-=======
 	int err = 0, lnum, offs, bytes_left;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gluebi_device *gluebi;
 
 	gluebi = container_of(mtd, struct gluebi_device, mtd);
 	lnum = div_u64_rem(from, mtd->erasesize, &offs);
-<<<<<<< HEAD
-	total_read = len;
-	while (total_read) {
-		size_t to_read = mtd->erasesize - offs;
-
-		if (to_read > total_read)
-			to_read = total_read;
-=======
 	bytes_left = len;
 	while (bytes_left) {
 		size_t to_read = mtd->erasesize - offs;
 
 		if (to_read > bytes_left)
 			to_read = bytes_left;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = ubi_read(gluebi->desc, lnum, buf, offs, to_read);
 		if (err)
@@ -227,19 +171,11 @@ static int gluebi_read(struct mtd_info *mtd, loff_t from, size_t len,
 
 		lnum += 1;
 		offs = 0;
-<<<<<<< HEAD
-		total_read -= to_read;
-		buf += to_read;
-	}
-
-	*retlen = len - total_read;
-=======
 		bytes_left -= to_read;
 		buf += to_read;
 	}
 
 	*retlen = len - bytes_left;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -257,11 +193,7 @@ static int gluebi_read(struct mtd_info *mtd, loff_t from, size_t len,
 static int gluebi_write(struct mtd_info *mtd, loff_t to, size_t len,
 			size_t *retlen, const u_char *buf)
 {
-<<<<<<< HEAD
-	int err = 0, lnum, offs, total_written;
-=======
 	int err = 0, lnum, offs, bytes_left;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gluebi_device *gluebi;
 
 	gluebi = container_of(mtd, struct gluebi_device, mtd);
@@ -270,16 +202,6 @@ static int gluebi_write(struct mtd_info *mtd, loff_t to, size_t len,
 	if (len % mtd->writesize || offs % mtd->writesize)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	total_written = len;
-	while (total_written) {
-		size_t to_write = mtd->erasesize - offs;
-
-		if (to_write > total_written)
-			to_write = total_written;
-
-		err = ubi_write(gluebi->desc, lnum, buf, offs, to_write);
-=======
 	bytes_left = len;
 	while (bytes_left) {
 		size_t to_write = mtd->erasesize - offs;
@@ -288,25 +210,16 @@ static int gluebi_write(struct mtd_info *mtd, loff_t to, size_t len,
 			to_write = bytes_left;
 
 		err = ubi_leb_write(gluebi->desc, lnum, buf, offs, to_write);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			break;
 
 		lnum += 1;
 		offs = 0;
-<<<<<<< HEAD
-		total_written -= to_write;
-		buf += to_write;
-	}
-
-	*retlen = len - total_written;
-=======
 		bytes_left -= to_write;
 		buf += to_write;
 	}
 
 	*retlen = len - bytes_left;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -346,18 +259,9 @@ static int gluebi_erase(struct mtd_info *mtd, struct erase_info *instr)
 	if (err)
 		goto out_err;
 
-<<<<<<< HEAD
-	instr->state = MTD_ERASE_DONE;
-	mtd_erase_callback(instr);
 	return 0;
 
 out_err:
-	instr->state = MTD_ERASE_FAILED;
-=======
-	return 0;
-
-out_err:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	instr->fail_addr = (long long)lnum * mtd->erasesize;
 	return err;
 }
@@ -416,14 +320,8 @@ static int gluebi_create(struct ubi_device_info *di,
 	mutex_lock(&devices_mutex);
 	g = find_gluebi_nolock(vi->ubi_num, vi->vol_id);
 	if (g)
-<<<<<<< HEAD
-		err_msg("gluebi MTD device %d form UBI device %d volume %d "
-			"already exists", g->mtd.index, vi->ubi_num,
-			vi->vol_id);
-=======
 		err_msg("gluebi MTD device %d form UBI device %d volume %d already exists",
 			g->mtd.index, vi->ubi_num, vi->vol_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&devices_mutex);
 
 	if (mtd_device_register(mtd, NULL, 0)) {
@@ -456,13 +354,8 @@ static int gluebi_remove(struct ubi_volume_info *vi)
 	mutex_lock(&devices_mutex);
 	gluebi = find_gluebi_nolock(vi->ubi_num, vi->vol_id);
 	if (!gluebi) {
-<<<<<<< HEAD
-		err_msg("got remove notification for unknown UBI device %d "
-			"volume %d", vi->ubi_num, vi->vol_id);
-=======
 		err_msg("got remove notification for unknown UBI device %d volume %d",
 			vi->ubi_num, vi->vol_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOENT;
 	} else if (gluebi->refcnt)
 		err = -EBUSY;
@@ -475,14 +368,8 @@ static int gluebi_remove(struct ubi_volume_info *vi)
 	mtd = &gluebi->mtd;
 	err = mtd_device_unregister(mtd);
 	if (err) {
-<<<<<<< HEAD
-		err_msg("cannot remove fake MTD device %d, UBI device %d, "
-			"volume %d, error %d", mtd->index, gluebi->ubi_num,
-			gluebi->vol_id, err);
-=======
 		err_msg("cannot remove fake MTD device %d, UBI device %d, volume %d, error %d",
 			mtd->index, gluebi->ubi_num, gluebi->vol_id, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_lock(&devices_mutex);
 		list_add_tail(&gluebi->list, &gluebi_devices);
 		mutex_unlock(&devices_mutex);
@@ -512,13 +399,8 @@ static int gluebi_updated(struct ubi_volume_info *vi)
 	gluebi = find_gluebi_nolock(vi->ubi_num, vi->vol_id);
 	if (!gluebi) {
 		mutex_unlock(&devices_mutex);
-<<<<<<< HEAD
-		err_msg("got update notification for unknown UBI device %d "
-			"volume %d", vi->ubi_num, vi->vol_id);
-=======
 		err_msg("got update notification for unknown UBI device %d volume %d",
 			vi->ubi_num, vi->vol_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOENT;
 	}
 
@@ -544,13 +426,8 @@ static int gluebi_resized(struct ubi_volume_info *vi)
 	gluebi = find_gluebi_nolock(vi->ubi_num, vi->vol_id);
 	if (!gluebi) {
 		mutex_unlock(&devices_mutex);
-<<<<<<< HEAD
-		err_msg("got update notification for unknown UBI device %d "
-			"volume %d", vi->ubi_num, vi->vol_id);
-=======
 		err_msg("got update notification for unknown UBI device %d volume %d",
 			vi->ubi_num, vi->vol_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOENT;
 	}
 	gluebi->mtd.size = vi->used_bytes;
@@ -562,11 +439,7 @@ static int gluebi_resized(struct ubi_volume_info *vi)
  * gluebi_notify - UBI notification handler.
  * @nb: registered notifier block
  * @l: notification type
-<<<<<<< HEAD
- * @ptr: pointer to the &struct ubi_notification object
-=======
  * @ns_ptr: pointer to the &struct ubi_notification object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int gluebi_notify(struct notifier_block *nb, unsigned long l,
 			 void *ns_ptr)
@@ -611,15 +484,9 @@ static void __exit ubi_gluebi_exit(void)
 
 		err = mtd_device_unregister(mtd);
 		if (err)
-<<<<<<< HEAD
-			err_msg("error %d while removing gluebi MTD device %d, "
-				"UBI device %d, volume %d - ignoring", err,
-				mtd->index, gluebi->ubi_num, gluebi->vol_id);
-=======
 			err_msg("error %d while removing gluebi MTD device %d, UBI device %d, volume %d - ignoring",
 				err, mtd->index, gluebi->ubi_num,
 				gluebi->vol_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(mtd->name);
 		kfree(gluebi);
 	}

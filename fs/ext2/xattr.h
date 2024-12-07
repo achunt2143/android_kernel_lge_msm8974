@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
   File: linux/ext2_xattr.h
 
@@ -42,11 +39,7 @@ struct ext2_xattr_entry {
 	__le32	e_value_block;	/* disk block attribute is stored on (n/i) */
 	__le32	e_value_size;	/* size of attribute value */
 	__le32	e_hash;		/* hash value of name and value */
-<<<<<<< HEAD
-	char	e_name[0];	/* attribute name */
-=======
 	char	e_name[];	/* attribute name */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define EXT2_XATTR_PAD_BITS		2
@@ -61,20 +54,12 @@ struct ext2_xattr_entry {
 #define EXT2_XATTR_SIZE(size) \
 	(((size) + EXT2_XATTR_ROUND) & ~EXT2_XATTR_ROUND)
 
-<<<<<<< HEAD
-=======
 struct mb_cache;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # ifdef CONFIG_EXT2_FS_XATTR
 
 extern const struct xattr_handler ext2_xattr_user_handler;
 extern const struct xattr_handler ext2_xattr_trusted_handler;
-<<<<<<< HEAD
-extern const struct xattr_handler ext2_xattr_acl_access_handler;
-extern const struct xattr_handler ext2_xattr_acl_default_handler;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct xattr_handler ext2_xattr_security_handler;
 
 extern ssize_t ext2_listxattr(struct dentry *, char *, size_t);
@@ -83,20 +68,11 @@ extern int ext2_xattr_get(struct inode *, int, const char *, void *, size_t);
 extern int ext2_xattr_set(struct inode *, int, const char *, const void *, size_t, int);
 
 extern void ext2_xattr_delete_inode(struct inode *);
-<<<<<<< HEAD
-extern void ext2_xattr_put_super(struct super_block *);
-
-extern int init_ext2_xattr(void);
-extern void exit_ext2_xattr(void);
-
-extern const struct xattr_handler *ext2_xattr_handlers[];
-=======
 
 extern struct mb_cache *ext2_xattr_create_cache(void);
 extern void ext2_xattr_destroy_cache(struct mb_cache *cache);
 
 extern const struct xattr_handler * const ext2_xattr_handlers[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # else  /* CONFIG_EXT2_FS_XATTR */
 
@@ -119,31 +95,12 @@ ext2_xattr_delete_inode(struct inode *inode)
 {
 }
 
-<<<<<<< HEAD
-static inline void
-ext2_xattr_put_super(struct super_block *sb)
-{
-}
-
-static inline int
-init_ext2_xattr(void)
-{
-	return 0;
-}
-
-static inline void
-exit_ext2_xattr(void)
-=======
 static inline void ext2_xattr_destroy_cache(struct mb_cache *cache)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
 #define ext2_xattr_handlers NULL
-<<<<<<< HEAD
-=======
 #define ext2_listxattr NULL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # endif  /* CONFIG_EXT2_FS_XATTR */
 

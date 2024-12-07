@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-#include <linux/err.h>
-#include <linux/slab.h>
-#include <linux/module.h>
-#include <linux/spinlock.h>
-#include <linux/hardirq.h>
-#include "ctree.h"
-#include "extent_map.h"
-=======
 // SPDX-License-Identifier: GPL-2.0
 
 #include <linux/err.h>
@@ -17,53 +8,19 @@
 #include "extent_map.h"
 #include "compression.h"
 #include "btrfs_inode.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static struct kmem_cache *extent_map_cache;
 
 int __init extent_map_init(void)
 {
-<<<<<<< HEAD
-	extent_map_cache = kmem_cache_create("extent_map",
-			sizeof(struct extent_map), 0,
-			SLAB_RECLAIM_ACCOUNT | SLAB_MEM_SPREAD, NULL);
-=======
 	extent_map_cache = kmem_cache_create("btrfs_extent_map",
 					     sizeof(struct extent_map), 0, 0, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!extent_map_cache)
 		return -ENOMEM;
 	return 0;
 }
 
-<<<<<<< HEAD
-void extent_map_exit(void)
-{
-	if (extent_map_cache)
-		kmem_cache_destroy(extent_map_cache);
-}
-
-/**
- * extent_map_tree_init - initialize extent map tree
- * @tree:		tree to initialize
- *
- * Initialize the extent tree @tree.  Should be called for each new inode
- * or other user of the extent_map interface.
- */
-void extent_map_tree_init(struct extent_map_tree *tree)
-{
-	tree->map = RB_ROOT;
-	rwlock_init(&tree->lock);
-}
-
-/**
- * alloc_extent_map - allocate new extent map structure
- *
- * Allocate a new extent_map structure.  The new structure is
- * returned with a reference count of one and needs to be
- * freed using free_extent_map()
-=======
 void __cold extent_map_exit(void)
 {
 	kmem_cache_destroy(extent_map_cache);
@@ -83,29 +40,10 @@ void extent_map_tree_init(struct extent_map_tree *tree)
 /*
  * Allocate a new extent_map structure.  The new structure is returned with a
  * reference count of one and needs to be freed using free_extent_map()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct extent_map *alloc_extent_map(void)
 {
 	struct extent_map *em;
-<<<<<<< HEAD
-	em = kmem_cache_alloc(extent_map_cache, GFP_NOFS);
-	if (!em)
-		return NULL;
-	em->in_tree = 0;
-	em->flags = 0;
-	em->compress_type = BTRFS_COMPRESS_NONE;
-	atomic_set(&em->refs, 1);
-	return em;
-}
-
-/**
- * free_extent_map - drop reference count of an extent_map
- * @em:		extent map beeing releasead
- *
- * Drops the reference out on @em by one and free the structure
- * if the reference count hits zero.
-=======
 	em = kmem_cache_zalloc(extent_map_cache, GFP_NOFS);
 	if (!em)
 		return NULL;
@@ -118,33 +56,18 @@ struct extent_map *alloc_extent_map(void)
 /*
  * Drop the reference out on @em by one and free the structure if the reference
  * count hits zero.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void free_extent_map(struct extent_map *em)
 {
 	if (!em)
 		return;
-<<<<<<< HEAD
-	WARN_ON(atomic_read(&em->refs) == 0);
-	if (atomic_dec_and_test(&em->refs)) {
-		WARN_ON(em->in_tree);
-=======
 	if (refcount_dec_and_test(&em->refs)) {
 		WARN_ON(extent_map_in_tree(em));
 		WARN_ON(!list_empty(&em->list));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kmem_cache_free(extent_map_cache, em);
 	}
 }
 
-<<<<<<< HEAD
-static struct rb_node *tree_insert(struct rb_root *root, u64 offset,
-				   struct rb_node *node)
-{
-	struct rb_node **p = &root->rb_node;
-	struct rb_node *parent = NULL;
-	struct extent_map *entry;
-=======
 /* Do the math around the end of an extent, handling wrapping. */
 static u64 range_end(u64 start, u64 len)
 {
@@ -161,38 +84,11 @@ static int tree_insert(struct rb_root_cached *root, struct extent_map *em)
 	struct rb_node *orig_parent = NULL;
 	u64 end = range_end(em->start, em->len);
 	bool leftmost = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (*p) {
 		parent = *p;
 		entry = rb_entry(parent, struct extent_map, rb_node);
 
-<<<<<<< HEAD
-		WARN_ON(!entry->in_tree);
-
-		if (offset < entry->start)
-			p = &(*p)->rb_left;
-		else if (offset >= extent_map_end(entry))
-			p = &(*p)->rb_right;
-		else
-			return parent;
-	}
-
-	entry = rb_entry(node, struct extent_map, rb_node);
-	entry->in_tree = 1;
-	rb_link_node(node, parent, p);
-	rb_insert_color(node, root);
-	return NULL;
-}
-
-/*
- * search through the tree for an extent_map with a given offset.  If
- * it can't be found, try to find some neighboring extents
- */
-static struct rb_node *__tree_search(struct rb_root *root, u64 offset,
-				     struct rb_node **prev_ret,
-				     struct rb_node **next_ret)
-=======
 		if (em->start < entry->start) {
 			p = &(*p)->rb_left;
 		} else if (em->start >= extent_map_end(entry)) {
@@ -233,7 +129,6 @@ static struct rb_node *__tree_search(struct rb_root *root, u64 offset,
  */
 static struct rb_node *__tree_search(struct rb_root *root, u64 offset,
 				     struct rb_node **prev_or_next_ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rb_node *n = root->rb_node;
 	struct rb_node *prev = NULL;
@@ -241,21 +136,13 @@ static struct rb_node *__tree_search(struct rb_root *root, u64 offset,
 	struct extent_map *entry;
 	struct extent_map *prev_entry = NULL;
 
-<<<<<<< HEAD
-=======
 	ASSERT(prev_or_next_ret);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (n) {
 		entry = rb_entry(n, struct extent_map, rb_node);
 		prev = n;
 		prev_entry = entry;
 
-<<<<<<< HEAD
-		WARN_ON(!entry->in_tree);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (offset < entry->start)
 			n = n->rb_left;
 		else if (offset >= extent_map_end(entry))
@@ -264,56 +151,6 @@ static struct rb_node *__tree_search(struct rb_root *root, u64 offset,
 			return n;
 	}
 
-<<<<<<< HEAD
-	if (prev_ret) {
-		orig_prev = prev;
-		while (prev && offset >= extent_map_end(prev_entry)) {
-			prev = rb_next(prev);
-			prev_entry = rb_entry(prev, struct extent_map, rb_node);
-		}
-		*prev_ret = prev;
-		prev = orig_prev;
-	}
-
-	if (next_ret) {
-		prev_entry = rb_entry(prev, struct extent_map, rb_node);
-		while (prev && offset < prev_entry->start) {
-			prev = rb_prev(prev);
-			prev_entry = rb_entry(prev, struct extent_map, rb_node);
-		}
-		*next_ret = prev;
-	}
-	return NULL;
-}
-
-/* check to see if two extent_map structs are adjacent and safe to merge */
-static int mergable_maps(struct extent_map *prev, struct extent_map *next)
-{
-	if (test_bit(EXTENT_FLAG_PINNED, &prev->flags))
-		return 0;
-
-	/*
-	 * don't merge compressed extents, we need to know their
-	 * actual size
-	 */
-	if (test_bit(EXTENT_FLAG_COMPRESSED, &prev->flags))
-		return 0;
-
-	if (extent_map_end(prev) == next->start &&
-	    prev->flags == next->flags &&
-	    prev->bdev == next->bdev &&
-	    ((next->block_start == EXTENT_MAP_HOLE &&
-	      prev->block_start == EXTENT_MAP_HOLE) ||
-	     (next->block_start == EXTENT_MAP_INLINE &&
-	      prev->block_start == EXTENT_MAP_INLINE) ||
-	     (next->block_start == EXTENT_MAP_DELALLOC &&
-	      prev->block_start == EXTENT_MAP_DELALLOC) ||
-	     (next->block_start < EXTENT_MAP_LAST_BYTE - 1 &&
-	      next->block_start == extent_map_block_end(prev)))) {
-		return 1;
-	}
-	return 0;
-=======
 	orig_prev = prev;
 	while (prev && offset >= extent_map_end(prev_entry)) {
 		prev = rb_next(prev);
@@ -384,7 +221,6 @@ static bool mergeable_maps(const struct extent_map *prev, const struct extent_ma
 
 	/* HOLES and INLINE extents. */
 	return next->block_start == prev->block_start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void try_merge_map(struct extent_map_tree *tree, struct extent_map *em)
@@ -392,8 +228,6 @@ static void try_merge_map(struct extent_map_tree *tree, struct extent_map *em)
 	struct extent_map *merge = NULL;
 	struct rb_node *rb;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * We can't modify an extent map that is in the tree and that is being
 	 * used by another task, as it can cause that other task to see it in
@@ -408,20 +242,10 @@ static void try_merge_map(struct extent_map_tree *tree, struct extent_map *em)
 	if (!can_merge_extent_map(em))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (em->start != 0) {
 		rb = rb_prev(&em->rb_node);
 		if (rb)
 			merge = rb_entry(rb, struct extent_map, rb_node);
-<<<<<<< HEAD
-		if (rb && mergable_maps(merge, em)) {
-			em->start = merge->start;
-			em->len += merge->len;
-			em->block_len += merge->block_len;
-			em->block_start = merge->block_start;
-			merge->in_tree = 0;
-			rb_erase(&merge->rb_node, &tree->map);
-=======
 		if (rb && can_merge_extent_map(merge) && mergeable_maps(merge, em)) {
 			em->start = merge->start;
 			em->orig_start = merge->orig_start;
@@ -435,7 +259,6 @@ static void try_merge_map(struct extent_map_tree *tree, struct extent_map *em)
 
 			rb_erase_cached(&merge->rb_node, &tree->map);
 			RB_CLEAR_NODE(&merge->rb_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			free_extent_map(merge);
 		}
 	}
@@ -443,13 +266,6 @@ static void try_merge_map(struct extent_map_tree *tree, struct extent_map *em)
 	rb = rb_next(&em->rb_node);
 	if (rb)
 		merge = rb_entry(rb, struct extent_map, rb_node);
-<<<<<<< HEAD
-	if (rb && mergable_maps(em, merge)) {
-		em->len += merge->len;
-		em->block_len += merge->len;
-		rb_erase(&merge->rb_node, &tree->map);
-		merge->in_tree = 0;
-=======
 	if (rb && can_merge_extent_map(merge) && mergeable_maps(em, merge)) {
 		em->len += merge->len;
 		em->block_len += merge->block_len;
@@ -458,17 +274,10 @@ static void try_merge_map(struct extent_map_tree *tree, struct extent_map *em)
 		em->mod_len = (merge->mod_start + merge->mod_len) - em->mod_start;
 		em->generation = max(em->generation, merge->generation);
 		em->flags |= EXTENT_FLAG_MERGED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_extent_map(merge);
 	}
 }
 
-<<<<<<< HEAD
-int unpin_extent_cache(struct extent_map_tree *tree, u64 start, u64 len)
-{
-	int ret = 0;
-	struct extent_map *em;
-=======
 /*
  * Unpin an extent from the cache.
  *
@@ -492,25 +301,10 @@ int unpin_extent_cache(struct btrfs_inode *inode, u64 start, u64 len, u64 gen)
 	int ret = 0;
 	struct extent_map *em;
 	bool prealloc = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_lock(&tree->lock);
 	em = lookup_extent_mapping(tree, start, len);
 
-<<<<<<< HEAD
-	WARN_ON(!em || em->start != start);
-
-	if (!em)
-		goto out;
-
-	clear_bit(EXTENT_FLAG_PINNED, &em->flags);
-
-	try_merge_map(tree, em);
-
-	free_extent_map(em);
-out:
-	write_unlock(&tree->lock);
-=======
 	if (WARN_ON(!em)) {
 		btrfs_warn(fs_info,
 "no extent map found for inode %llu (root %lld) when unpinning extent range [%llu, %llu), generation %llu",
@@ -549,17 +343,10 @@ out:
 out:
 	write_unlock(&tree->lock);
 	free_extent_map(em);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 
 }
 
-<<<<<<< HEAD
-/**
- * add_extent_mapping - add new extent map to the extent tree
- * @tree:	tree to insert new map in
- * @em:		map to insert
-=======
 void clear_em_logging(struct extent_map_tree *tree, struct extent_map *em)
 {
 	lockdep_assert_held_write(&tree->lock);
@@ -592,36 +379,12 @@ static inline void setup_extent_mapping(struct extent_map_tree *tree,
  * @em:		map to insert
  * @modified:	indicate whether the given @em should be added to the
  *	        modified list, which indicates the extent needs to be logged
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Insert @em into @tree or perform a simple forward/backward merge with
  * existing mappings.  The extent_map struct passed in will be inserted
  * into the tree directly, with an additional reference taken, or a
  * reference dropped if the merge attempt was successful.
  */
-<<<<<<< HEAD
-int add_extent_mapping(struct extent_map_tree *tree,
-		       struct extent_map *em)
-{
-	int ret = 0;
-	struct rb_node *rb;
-	struct extent_map *exist;
-
-	exist = lookup_extent_mapping(tree, em->start, em->len);
-	if (exist) {
-		free_extent_map(exist);
-		ret = -EEXIST;
-		goto out;
-	}
-	rb = tree_insert(&tree->map, em->start, &em->rb_node);
-	if (rb) {
-		ret = -EEXIST;
-		goto out;
-	}
-	atomic_inc(&em->refs);
-
-	try_merge_map(tree, em);
-=======
 static int add_extent_mapping(struct extent_map_tree *tree,
 			      struct extent_map *em, int modified)
 {
@@ -634,36 +397,10 @@ static int add_extent_mapping(struct extent_map_tree *tree,
 		goto out;
 
 	setup_extent_mapping(tree, em, modified);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
 
-<<<<<<< HEAD
-/* simple helper to do math around the end of an extent, handling wrap */
-static u64 range_end(u64 start, u64 len)
-{
-	if (start + len < start)
-		return (u64)-1;
-	return start + len;
-}
-
-struct extent_map *__lookup_extent_mapping(struct extent_map_tree *tree,
-					   u64 start, u64 len, int strict)
-{
-	struct extent_map *em;
-	struct rb_node *rb_node;
-	struct rb_node *prev = NULL;
-	struct rb_node *next = NULL;
-	u64 end = range_end(start, len);
-
-	rb_node = __tree_search(&tree->map, start, &prev, &next);
-	if (!rb_node) {
-		if (prev)
-			rb_node = prev;
-		else if (next)
-			rb_node = next;
-=======
 static struct extent_map *
 __lookup_extent_mapping(struct extent_map_tree *tree,
 			u64 start, u64 len, int strict)
@@ -677,7 +414,6 @@ __lookup_extent_mapping(struct extent_map_tree *tree,
 	if (!rb_node) {
 		if (prev_or_next)
 			rb_node = prev_or_next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			return NULL;
 	}
@@ -687,14 +423,6 @@ __lookup_extent_mapping(struct extent_map_tree *tree,
 	if (strict && !(end > em->start && start < extent_map_end(em)))
 		return NULL;
 
-<<<<<<< HEAD
-	atomic_inc(&em->refs);
-	return em;
-}
-
-/**
- * lookup_extent_mapping - lookup extent_map
-=======
 	refcount_inc(&em->refs);
 	return em;
 }
@@ -702,7 +430,6 @@ __lookup_extent_mapping(struct extent_map_tree *tree,
 /*
  * Lookup extent_map that intersects @start + @len range.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @tree:	tree to lookup in
  * @start:	byte offset to start the search
  * @len:	length of the lookup range
@@ -718,14 +445,9 @@ struct extent_map *lookup_extent_mapping(struct extent_map_tree *tree,
 	return __lookup_extent_mapping(tree, start, len, 1);
 }
 
-<<<<<<< HEAD
-/**
- * search_extent_mapping - find a nearby extent map
-=======
 /*
  * Find a nearby extent map intersecting @start + @len (not an exact search).
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @tree:	tree to lookup in
  * @start:	byte offset to start the search
  * @len:	length of the lookup range
@@ -741,23 +463,6 @@ struct extent_map *search_extent_mapping(struct extent_map_tree *tree,
 	return __lookup_extent_mapping(tree, start, len, 0);
 }
 
-<<<<<<< HEAD
-/**
- * remove_extent_mapping - removes an extent_map from the extent tree
- * @tree:	extent tree to remove from
- * @em:		extent map beeing removed
- *
- * Removes @em from @tree.  No reference counts are dropped, and no checks
- * are done to see if the range is in use
- */
-int remove_extent_mapping(struct extent_map_tree *tree, struct extent_map *em)
-{
-	int ret = 0;
-
-	WARN_ON(test_bit(EXTENT_FLAG_PINNED, &em->flags));
-	rb_erase(&em->rb_node, &tree->map);
-	em->in_tree = 0;
-=======
 /*
  * Remove an extent_map from the extent tree.
  *
@@ -1316,6 +1021,5 @@ out_unlock:
 	free_extent_map(split_mid);
 out_free_pre:
 	free_extent_map(split_pre);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }

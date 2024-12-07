@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IUCV base infrastructure.
  *
@@ -21,23 +18,6 @@
  * Documentation used:
  *    The original source
  *    CP Programming Service, IBM document # SC24-5760
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT "iucv"
@@ -87,38 +67,9 @@ static int iucv_bus_match(struct device *dev, struct device_driver *drv)
 	return 0;
 }
 
-<<<<<<< HEAD
-enum iucv_pm_states {
-	IUCV_PM_INITIAL = 0,
-	IUCV_PM_FREEZING = 1,
-	IUCV_PM_THAWING = 2,
-	IUCV_PM_RESTORING = 3,
-};
-static enum iucv_pm_states iucv_pm_state;
-
-static int iucv_pm_prepare(struct device *);
-static void iucv_pm_complete(struct device *);
-static int iucv_pm_freeze(struct device *);
-static int iucv_pm_thaw(struct device *);
-static int iucv_pm_restore(struct device *);
-
-static const struct dev_pm_ops iucv_pm_ops = {
-	.prepare = iucv_pm_prepare,
-	.complete = iucv_pm_complete,
-	.freeze = iucv_pm_freeze,
-	.thaw = iucv_pm_thaw,
-	.restore = iucv_pm_restore,
-};
-
-struct bus_type iucv_bus = {
-	.name = "iucv",
-	.match = iucv_bus_match,
-	.pm = &iucv_pm_ops,
-=======
 const struct bus_type iucv_bus = {
 	.name = "iucv",
 	.match = iucv_bus_match,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 EXPORT_SYMBOL(iucv_bus);
 
@@ -132,11 +83,7 @@ struct iucv_irq_data {
 	u16 ippathid;
 	u8  ipflags1;
 	u8  iptype;
-<<<<<<< HEAD
-	u32 res2[8];
-=======
 	u32 res2[9];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct iucv_irq_list {
@@ -158,11 +105,7 @@ static LIST_HEAD(iucv_task_queue);
  * The tasklet for fast delivery of iucv interrupts.
  */
 static void iucv_tasklet_fn(unsigned long);
-<<<<<<< HEAD
-static DECLARE_TASKLET(iucv_tasklet, iucv_tasklet_fn,0);
-=======
 static DECLARE_TASKLET_OLD(iucv_tasklet, iucv_tasklet_fn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Queue of interrupt buffers for delivery via a work queue
@@ -213,11 +156,7 @@ static char iucv_error_pathid[16] = "INVALID PATHID";
 static LIST_HEAD(iucv_handler_list);
 
 /*
-<<<<<<< HEAD
- * iucv_path_table: an array of iucv_path structures.
-=======
  * iucv_path_table: array of pointers to iucv_path structures.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct iucv_path **iucv_path_table;
 static unsigned long iucv_max_pathid;
@@ -271,11 +210,7 @@ struct iucv_cmd_dpl {
 	u8  iprmmsg[8];
 	u32 ipsrccls;
 	u32 ipmsgtag;
-<<<<<<< HEAD
-	u32 ipbfadr2;
-=======
 	dma32_t ipbfadr2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ipbfln2f;
 	u32 res;
 } __attribute__ ((packed,aligned(8)));
@@ -291,19 +226,11 @@ struct iucv_cmd_db {
 	u8  iprcode;
 	u32 ipmsgid;
 	u32 iptrgcls;
-<<<<<<< HEAD
-	u32 ipbfadr1;
-	u32 ipbfln1f;
-	u32 ipsrccls;
-	u32 ipmsgtag;
-	u32 ipbfadr2;
-=======
 	dma32_t ipbfadr1;
 	u32 ipbfln1f;
 	u32 ipsrccls;
 	u32 ipmsgtag;
 	dma32_t ipbfadr2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ipbfln2f;
 	u32 res;
 } __attribute__ ((packed,aligned(8)));
@@ -349,39 +276,14 @@ static union iucv_param *iucv_param[NR_CPUS];
 static union iucv_param *iucv_param_irq[NR_CPUS];
 
 /**
-<<<<<<< HEAD
- * iucv_call_b2f0
- * @code: identifier of IUCV call to CP.
-=======
  * __iucv_call_b2f0
  * @command: identifier of IUCV call to CP.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @parm: pointer to a struct iucv_parm block
  *
  * Calls CP to execute IUCV commands.
  *
  * Returns the result of the CP IUCV call.
  */
-<<<<<<< HEAD
-static inline int iucv_call_b2f0(int command, union iucv_param *parm)
-{
-	register unsigned long reg0 asm ("0");
-	register unsigned long reg1 asm ("1");
-	int ccode;
-
-	reg0 = command;
-	reg1 = virt_to_phys(parm);
-	asm volatile(
-		"	.long 0xb2f01000\n"
-		"	ipm	%0\n"
-		"	srl	%0,28\n"
-		: "=d" (ccode), "=m" (*parm), "+d" (reg0), "+a" (reg1)
-		:  "m" (*parm) : "cc");
-	return (ccode == 1) ? parm->ctrl.iprcode : ccode;
-}
-
-/**
-=======
 static inline int __iucv_call_b2f0(int command, union iucv_param *parm)
 {
 	unsigned long reg1 = virt_to_phys(parm);
@@ -409,7 +311,6 @@ static inline int iucv_call_b2f0(int command, union iucv_param *parm)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * iucv_query_maxconn
  *
  * Determines the maximum number of connections that may be established.
@@ -417,27 +318,6 @@ static inline int iucv_call_b2f0(int command, union iucv_param *parm)
  * Returns the maximum number of connections or -EPERM is IUCV is not
  * available.
  */
-<<<<<<< HEAD
-static int iucv_query_maxconn(void)
-{
-	register unsigned long reg0 asm ("0");
-	register unsigned long reg1 asm ("1");
-	void *param;
-	int ccode;
-
-	param = kzalloc(sizeof(union iucv_param), GFP_KERNEL|GFP_DMA);
-	if (!param)
-		return -ENOMEM;
-	reg0 = IUCV_QUERY;
-	reg1 = (unsigned long) param;
-	asm volatile (
-		"	.long	0xb2f01000\n"
-		"	ipm	%0\n"
-		"	srl	%0,28\n"
-		: "=d" (ccode), "+d" (reg0), "+d" (reg1) : : "cc");
-	if (ccode == 0)
-		iucv_max_pathid = reg1;
-=======
 static int __iucv_query_maxconn(void *param, unsigned long *max_pathid)
 {
 	unsigned long reg1 = virt_to_phys(param);
@@ -469,7 +349,6 @@ static int iucv_query_maxconn(void)
 	ccode = __iucv_query_maxconn(param, &max_pathid);
 	if (ccode == 0)
 		iucv_max_pathid = max_pathid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(param);
 	return ccode ? -EPERM : 0;
 }
@@ -536,34 +415,6 @@ static void iucv_block_cpu(void *data)
 }
 
 /**
-<<<<<<< HEAD
- * iucv_block_cpu_almost
- * @data: unused
- *
- * Allow connection-severed interrupts only on this cpu.
- */
-static void iucv_block_cpu_almost(void *data)
-{
-	int cpu = smp_processor_id();
-	union iucv_param *parm;
-
-	/* Allow iucv control interrupts only */
-	parm = iucv_param_irq[cpu];
-	memset(parm, 0, sizeof(union iucv_param));
-	parm->set_mask.ipmask = 0x08;
-	iucv_call_b2f0(IUCV_SETMASK, parm);
-	/* Allow iucv-severed interrupt only */
-	memset(parm, 0, sizeof(union iucv_param));
-	parm->set_mask.ipmask = 0x20;
-	iucv_call_b2f0(IUCV_SETCONTROLMASK, parm);
-
-	/* Clear indication that iucv interrupts are allowed for this cpu. */
-	cpumask_clear_cpu(cpu, &iucv_irq_cpumask);
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * iucv_declare_cpu
  * @data: unused
  *
@@ -581,11 +432,7 @@ static void iucv_declare_cpu(void *data)
 	/* Declare interrupt buffer. */
 	parm = iucv_param_irq[cpu];
 	memset(parm, 0, sizeof(union iucv_param));
-<<<<<<< HEAD
-	parm->db.ipbfadr1 = virt_to_phys(iucv_irq_data[cpu]);
-=======
 	parm->db.ipbfadr1 = virt_to_dma32(iucv_irq_data[cpu]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = iucv_call_b2f0(IUCV_DECLARE_BUFFER, parm);
 	if (rc) {
 		char *err = "Unknown";
@@ -606,13 +453,8 @@ static void iucv_declare_cpu(void *data)
 			err = "Paging or storage error";
 			break;
 		}
-<<<<<<< HEAD
-		pr_warning("Defining an interrupt buffer on CPU %i"
-			   " failed with 0x%02x (%s)\n", cpu, rc, err);
-=======
 		pr_warn("Defining an interrupt buffer on CPU %i failed with 0x%02x (%s)\n",
 			cpu, rc, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -652,13 +494,8 @@ static void iucv_retrieve_cpu(void *data)
 	cpumask_clear_cpu(cpu, &iucv_buffer_cpumask);
 }
 
-<<<<<<< HEAD
-/**
- * iucv_setmask_smp
-=======
 /*
  * iucv_setmask_mp
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Allow iucv interrupts on all cpus.
  */
@@ -666,28 +503,17 @@ static void iucv_setmask_mp(void)
 {
 	int cpu;
 
-<<<<<<< HEAD
-	get_online_cpus();
-=======
 	cpus_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for_each_online_cpu(cpu)
 		/* Enable all cpus with a declared buffer. */
 		if (cpumask_test_cpu(cpu, &iucv_buffer_cpumask) &&
 		    !cpumask_test_cpu(cpu, &iucv_irq_cpumask))
 			smp_call_function_single(cpu, iucv_allow_cpu,
 						 NULL, 1);
-<<<<<<< HEAD
-	put_online_cpus();
-}
-
-/**
-=======
 	cpus_read_unlock();
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * iucv_setmask_up
  *
  * Allow iucv interrupts on a single cpu.
@@ -704,11 +530,7 @@ static void iucv_setmask_up(void)
 		smp_call_function_single(cpu, iucv_block_cpu, NULL, 1);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * iucv_enable
  *
  * This function makes iucv ready for use. It allocates the pathid
@@ -721,15 +543,9 @@ static int iucv_enable(void)
 	size_t alloc_size;
 	int cpu, rc;
 
-<<<<<<< HEAD
-	get_online_cpus();
-	rc = -ENOMEM;
-	alloc_size = iucv_max_pathid * sizeof(struct iucv_path);
-=======
 	cpus_read_lock();
 	rc = -ENOMEM;
 	alloc_size = iucv_max_pathid * sizeof(*iucv_path_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iucv_path_table = kzalloc(alloc_size, GFP_KERNEL);
 	if (!iucv_path_table)
 		goto out;
@@ -740,28 +556,16 @@ static int iucv_enable(void)
 	if (cpumask_empty(&iucv_buffer_cpumask))
 		/* No cpu could declare an iucv buffer. */
 		goto out;
-<<<<<<< HEAD
-	put_online_cpus();
-=======
 	cpus_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out:
 	kfree(iucv_path_table);
 	iucv_path_table = NULL;
-<<<<<<< HEAD
-	put_online_cpus();
-	return rc;
-}
-
-/**
-=======
 	cpus_read_unlock();
 	return rc;
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * iucv_disable
  *
  * This function shuts down iucv. It disables iucv interrupts, retrieves
@@ -770,88 +574,6 @@ out:
  */
 static void iucv_disable(void)
 {
-<<<<<<< HEAD
-	get_online_cpus();
-	on_each_cpu(iucv_retrieve_cpu, NULL, 1);
-	kfree(iucv_path_table);
-	iucv_path_table = NULL;
-	put_online_cpus();
-}
-
-static int __cpuinit iucv_cpu_notify(struct notifier_block *self,
-				     unsigned long action, void *hcpu)
-{
-	cpumask_t cpumask;
-	long cpu = (long) hcpu;
-
-	switch (action) {
-	case CPU_UP_PREPARE:
-	case CPU_UP_PREPARE_FROZEN:
-		iucv_irq_data[cpu] = kmalloc_node(sizeof(struct iucv_irq_data),
-					GFP_KERNEL|GFP_DMA, cpu_to_node(cpu));
-		if (!iucv_irq_data[cpu])
-			return notifier_from_errno(-ENOMEM);
-
-		iucv_param[cpu] = kmalloc_node(sizeof(union iucv_param),
-				     GFP_KERNEL|GFP_DMA, cpu_to_node(cpu));
-		if (!iucv_param[cpu]) {
-			kfree(iucv_irq_data[cpu]);
-			iucv_irq_data[cpu] = NULL;
-			return notifier_from_errno(-ENOMEM);
-		}
-		iucv_param_irq[cpu] = kmalloc_node(sizeof(union iucv_param),
-					GFP_KERNEL|GFP_DMA, cpu_to_node(cpu));
-		if (!iucv_param_irq[cpu]) {
-			kfree(iucv_param[cpu]);
-			iucv_param[cpu] = NULL;
-			kfree(iucv_irq_data[cpu]);
-			iucv_irq_data[cpu] = NULL;
-			return notifier_from_errno(-ENOMEM);
-		}
-		break;
-	case CPU_UP_CANCELED:
-	case CPU_UP_CANCELED_FROZEN:
-	case CPU_DEAD:
-	case CPU_DEAD_FROZEN:
-		kfree(iucv_param_irq[cpu]);
-		iucv_param_irq[cpu] = NULL;
-		kfree(iucv_param[cpu]);
-		iucv_param[cpu] = NULL;
-		kfree(iucv_irq_data[cpu]);
-		iucv_irq_data[cpu] = NULL;
-		break;
-	case CPU_ONLINE:
-	case CPU_ONLINE_FROZEN:
-	case CPU_DOWN_FAILED:
-	case CPU_DOWN_FAILED_FROZEN:
-		if (!iucv_path_table)
-			break;
-		smp_call_function_single(cpu, iucv_declare_cpu, NULL, 1);
-		break;
-	case CPU_DOWN_PREPARE:
-	case CPU_DOWN_PREPARE_FROZEN:
-		if (!iucv_path_table)
-			break;
-		cpumask_copy(&cpumask, &iucv_buffer_cpumask);
-		cpumask_clear_cpu(cpu, &cpumask);
-		if (cpumask_empty(&cpumask))
-			/* Can't offline last IUCV enabled cpu. */
-			return notifier_from_errno(-EINVAL);
-		smp_call_function_single(cpu, iucv_retrieve_cpu, NULL, 1);
-		if (cpumask_empty(&iucv_irq_cpumask))
-			smp_call_function_single(
-				cpumask_first(&iucv_buffer_cpumask),
-				iucv_allow_cpu, NULL, 1);
-		break;
-	}
-	return NOTIFY_OK;
-}
-
-static struct notifier_block __refdata iucv_cpu_notifier = {
-	.notifier_call = iucv_cpu_notify,
-};
-
-=======
 	cpus_read_lock();
 	on_each_cpu(iucv_retrieve_cpu, NULL, 1);
 	kfree(iucv_path_table);
@@ -925,7 +647,6 @@ static int iucv_cpu_down_prep(unsigned int cpu)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * iucv_sever_pathid
  * @pathid: path identification number.
@@ -933,11 +654,7 @@ static int iucv_cpu_down_prep(unsigned int cpu)
  *
  * Sever an iucv path to free up the pathid. Used internally.
  */
-<<<<<<< HEAD
-static int iucv_sever_pathid(u16 pathid, u8 userdata[16])
-=======
 static int iucv_sever_pathid(u16 pathid, u8 *userdata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union iucv_param *parm;
 
@@ -1067,27 +784,18 @@ static int iucv_reboot_event(struct notifier_block *this,
 {
 	int i;
 
-<<<<<<< HEAD
-	get_online_cpus();
-	on_each_cpu(iucv_block_cpu, NULL, 1);
-=======
 	if (cpumask_empty(&iucv_irq_cpumask))
 		return NOTIFY_DONE;
 
 	cpus_read_lock();
 	on_each_cpu_mask(&iucv_irq_cpumask, iucv_block_cpu, NULL, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	preempt_disable();
 	for (i = 0; i < iucv_max_pathid; i++) {
 		if (iucv_path_table[i])
 			iucv_sever_pathid(i, NULL);
 	}
 	preempt_enable();
-<<<<<<< HEAD
-	put_online_cpus();
-=======
 	cpus_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iucv_disable();
 	return NOTIFY_DONE;
 }
@@ -1109,11 +817,7 @@ static struct notifier_block iucv_reboot_notifier = {
  * Returns the result of the CP IUCV call.
  */
 int iucv_path_accept(struct iucv_path *path, struct iucv_handler *handler,
-<<<<<<< HEAD
-		     u8 userdata[16], void *private)
-=======
 		     u8 *userdata, void *private)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union iucv_param *parm;
 	int rc;
@@ -1160,11 +864,7 @@ EXPORT_SYMBOL(iucv_path_accept);
  * Returns the result of the CP IUCV call.
  */
 int iucv_path_connect(struct iucv_path *path, struct iucv_handler *handler,
-<<<<<<< HEAD
-		      u8 userid[8], u8 system[8], u8 userdata[16],
-=======
 		      u8 *userid, u8 *system, u8 *userdata,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      void *private)
 {
 	union iucv_param *parm;
@@ -1226,11 +926,7 @@ EXPORT_SYMBOL(iucv_path_connect);
  *
  * Returns the result from the CP IUCV call.
  */
-<<<<<<< HEAD
-int iucv_path_quiesce(struct iucv_path *path, u8 userdata[16])
-=======
 int iucv_path_quiesce(struct iucv_path *path, u8 *userdata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union iucv_param *parm;
 	int rc;
@@ -1262,11 +958,7 @@ EXPORT_SYMBOL(iucv_path_quiesce);
  *
  * Returns the result from the CP IUCV call.
  */
-<<<<<<< HEAD
-int iucv_path_resume(struct iucv_path *path, u8 userdata[16])
-=======
 int iucv_path_resume(struct iucv_path *path, u8 *userdata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union iucv_param *parm;
 	int rc;
@@ -1296,11 +988,7 @@ out:
  *
  * Returns the result from the CP IUCV call.
  */
-<<<<<<< HEAD
-int iucv_path_sever(struct iucv_path *path, u8 userdata[16])
-=======
 int iucv_path_sever(struct iucv_path *path, u8 *userdata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 
@@ -1393,12 +1081,7 @@ static int iucv_message_receive_iprmdata(struct iucv_path *path,
 		size = (size < 8) ? size : 8;
 		for (array = buffer; size > 0; array++) {
 			copy = min_t(size_t, size, array->length);
-<<<<<<< HEAD
-			memcpy((u8 *)(addr_t) array->address,
-				rmmsg, copy);
-=======
 			memcpy(dma32_to_virt(array->address), rmmsg, copy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rmmsg += copy;
 			size -= copy;
 		}
@@ -1435,22 +1118,12 @@ int __iucv_message_receive(struct iucv_path *path, struct iucv_message *msg,
 	if (msg->flags & IUCV_IPRMDATA)
 		return iucv_message_receive_iprmdata(path, msg, flags,
 						     buffer, size, residual);
-<<<<<<< HEAD
-	 if (cpumask_empty(&iucv_buffer_cpumask)) {
-		rc = -EIO;
-		goto out;
-	}
-	parm = iucv_param[smp_processor_id()];
-	memset(parm, 0, sizeof(union iucv_param));
-	parm->db.ipbfadr1 = (u32)(addr_t) buffer;
-=======
 	if (cpumask_empty(&iucv_buffer_cpumask))
 		return -EIO;
 
 	parm = iucv_param[smp_processor_id()];
 	memset(parm, 0, sizeof(union iucv_param));
 	parm->db.ipbfadr1 = virt_to_dma32(buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parm->db.ipbfln1f = (u32) size;
 	parm->db.ipmsgid = msg->id;
 	parm->db.ippathid = path->pathid;
@@ -1463,10 +1136,6 @@ int __iucv_message_receive(struct iucv_path *path, struct iucv_message *msg,
 		if (residual)
 			*residual = parm->db.ipbfln1f;
 	}
-<<<<<<< HEAD
-out:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 EXPORT_SYMBOL(__iucv_message_receive);
@@ -1572,11 +1241,7 @@ int iucv_message_reply(struct iucv_path *path, struct iucv_message *msg,
 		parm->dpl.iptrgcls = msg->class;
 		memcpy(parm->dpl.iprmmsg, reply, min_t(size_t, size, 8));
 	} else {
-<<<<<<< HEAD
-		parm->db.ipbfadr1 = (u32)(addr_t) reply;
-=======
 		parm->db.ipbfadr1 = virt_to_dma32(reply);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		parm->db.ipbfln1f = (u32) size;
 		parm->db.ippathid = path->pathid;
 		parm->db.ipflags1 = flags;
@@ -1628,11 +1293,7 @@ int __iucv_message_send(struct iucv_path *path, struct iucv_message *msg,
 		parm->dpl.ipmsgtag = msg->tag;
 		memcpy(parm->dpl.iprmmsg, buffer, 8);
 	} else {
-<<<<<<< HEAD
-		parm->db.ipbfadr1 = (u32)(addr_t) buffer;
-=======
 		parm->db.ipbfadr1 = virt_to_dma32(buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		parm->db.ipbfln1f = (u32) size;
 		parm->db.ippathid = path->pathid;
 		parm->db.ipflags1 = flags | IUCV_IPNORPY;
@@ -1686,14 +1347,9 @@ EXPORT_SYMBOL(iucv_message_send);
  * @srccls: source class of message
  * @buffer: address of send buffer or address of struct iucv_array
  * @size: length of send buffer
-<<<<<<< HEAD
- * @ansbuf: address of answer buffer or address of struct iucv_array
- * @asize: size of reply buffer
-=======
  * @answer: address of answer buffer or address of struct iucv_array
  * @asize: size of reply buffer
  * @residual: ignored
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function transmits data to another application. Data to be
  * transmitted is in a buffer. The receiver of the send is expected to
@@ -1722,11 +1378,7 @@ int iucv_message_send2way(struct iucv_path *path, struct iucv_message *msg,
 		parm->dpl.iptrgcls = msg->class;
 		parm->dpl.ipsrccls = srccls;
 		parm->dpl.ipmsgtag = msg->tag;
-<<<<<<< HEAD
-		parm->dpl.ipbfadr2 = (u32)(addr_t) answer;
-=======
 		parm->dpl.ipbfadr2 = virt_to_dma32(answer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		parm->dpl.ipbfln2f = (u32) asize;
 		memcpy(parm->dpl.iprmmsg, buffer, 8);
 	} else {
@@ -1735,15 +1387,9 @@ int iucv_message_send2way(struct iucv_path *path, struct iucv_message *msg,
 		parm->db.iptrgcls = msg->class;
 		parm->db.ipsrccls = srccls;
 		parm->db.ipmsgtag = msg->tag;
-<<<<<<< HEAD
-		parm->db.ipbfadr1 = (u32)(addr_t) buffer;
-		parm->db.ipbfln1f = (u32) size;
-		parm->db.ipbfadr2 = (u32)(addr_t) answer;
-=======
 		parm->db.ipbfadr1 = virt_to_dma32(buffer);
 		parm->db.ipbfln1f = (u32) size;
 		parm->db.ipbfadr2 = virt_to_dma32(answer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		parm->db.ipbfln2f = (u32) asize;
 	}
 	rc = iucv_call_b2f0(IUCV_SEND, parm);
@@ -1755,16 +1401,6 @@ out:
 }
 EXPORT_SYMBOL(iucv_message_send2way);
 
-<<<<<<< HEAD
-/**
- * iucv_path_pending
- * @data: Pointer to external interrupt buffer
- *
- * Process connection pending work item. Called from tasklet while holding
- * iucv_table_lock.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iucv_path_pending {
 	u16 ippathid;
 	u8  ipflags1;
@@ -1778,8 +1414,6 @@ struct iucv_path_pending {
 	u8  res4[3];
 } __packed;
 
-<<<<<<< HEAD
-=======
 /**
  * iucv_path_pending
  * @data: Pointer to external interrupt buffer
@@ -1787,7 +1421,6 @@ struct iucv_path_pending {
  * Process connection pending work item. Called from tasklet while holding
  * iucv_table_lock.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void iucv_path_pending(struct iucv_irq_data *data)
 {
 	struct iucv_path_pending *ipp = (void *) data;
@@ -1829,16 +1462,6 @@ out_sever:
 	iucv_sever_pathid(ipp->ippathid, error);
 }
 
-<<<<<<< HEAD
-/**
- * iucv_path_complete
- * @data: Pointer to external interrupt buffer
- *
- * Process connection complete work item. Called from tasklet while holding
- * iucv_table_lock.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iucv_path_complete {
 	u16 ippathid;
 	u8  ipflags1;
@@ -1852,8 +1475,6 @@ struct iucv_path_complete {
 	u8  res4[3];
 } __packed;
 
-<<<<<<< HEAD
-=======
 /**
  * iucv_path_complete
  * @data: Pointer to external interrupt buffer
@@ -1861,7 +1482,6 @@ struct iucv_path_complete {
  * Process connection complete work item. Called from tasklet while holding
  * iucv_table_lock.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void iucv_path_complete(struct iucv_irq_data *data)
 {
 	struct iucv_path_complete *ipc = (void *) data;
@@ -1873,16 +1493,6 @@ static void iucv_path_complete(struct iucv_irq_data *data)
 		path->handler->path_complete(path, ipc->ipuser);
 }
 
-<<<<<<< HEAD
-/**
- * iucv_path_severed
- * @data: Pointer to external interrupt buffer
- *
- * Process connection severed work item. Called from tasklet while holding
- * iucv_table_lock.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iucv_path_severed {
 	u16 ippathid;
 	u8  res1;
@@ -1895,8 +1505,6 @@ struct iucv_path_severed {
 	u8  res5[3];
 } __packed;
 
-<<<<<<< HEAD
-=======
 /**
  * iucv_path_severed
  * @data: Pointer to external interrupt buffer
@@ -1904,7 +1512,6 @@ struct iucv_path_severed {
  * Process connection severed work item. Called from tasklet while holding
  * iucv_table_lock.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void iucv_path_severed(struct iucv_irq_data *data)
 {
 	struct iucv_path_severed *ips = (void *) data;
@@ -1922,16 +1529,6 @@ static void iucv_path_severed(struct iucv_irq_data *data)
 	}
 }
 
-<<<<<<< HEAD
-/**
- * iucv_path_quiesced
- * @data: Pointer to external interrupt buffer
- *
- * Process connection quiesced work item. Called from tasklet while holding
- * iucv_table_lock.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iucv_path_quiesced {
 	u16 ippathid;
 	u8  res1;
@@ -1944,8 +1541,6 @@ struct iucv_path_quiesced {
 	u8  res5[3];
 } __packed;
 
-<<<<<<< HEAD
-=======
 /**
  * iucv_path_quiesced
  * @data: Pointer to external interrupt buffer
@@ -1953,7 +1548,6 @@ struct iucv_path_quiesced {
  * Process connection quiesced work item. Called from tasklet while holding
  * iucv_table_lock.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void iucv_path_quiesced(struct iucv_irq_data *data)
 {
 	struct iucv_path_quiesced *ipq = (void *) data;
@@ -1963,16 +1557,6 @@ static void iucv_path_quiesced(struct iucv_irq_data *data)
 		path->handler->path_quiesced(path, ipq->ipuser);
 }
 
-<<<<<<< HEAD
-/**
- * iucv_path_resumed
- * @data: Pointer to external interrupt buffer
- *
- * Process connection resumed work item. Called from tasklet while holding
- * iucv_table_lock.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iucv_path_resumed {
 	u16 ippathid;
 	u8  res1;
@@ -1985,8 +1569,6 @@ struct iucv_path_resumed {
 	u8  res5[3];
 } __packed;
 
-<<<<<<< HEAD
-=======
 /**
  * iucv_path_resumed
  * @data: Pointer to external interrupt buffer
@@ -1994,7 +1576,6 @@ struct iucv_path_resumed {
  * Process connection resumed work item. Called from tasklet while holding
  * iucv_table_lock.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void iucv_path_resumed(struct iucv_irq_data *data)
 {
 	struct iucv_path_resumed *ipr = (void *) data;
@@ -2004,16 +1585,6 @@ static void iucv_path_resumed(struct iucv_irq_data *data)
 		path->handler->path_resumed(path, ipr->ipuser);
 }
 
-<<<<<<< HEAD
-/**
- * iucv_message_complete
- * @data: Pointer to external interrupt buffer
- *
- * Process message complete work item. Called from tasklet while holding
- * iucv_table_lock.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iucv_message_complete {
 	u16 ippathid;
 	u8  ipflags1;
@@ -2029,8 +1600,6 @@ struct iucv_message_complete {
 	u8  res2[3];
 } __packed;
 
-<<<<<<< HEAD
-=======
 /**
  * iucv_message_complete
  * @data: Pointer to external interrupt buffer
@@ -2038,7 +1607,6 @@ struct iucv_message_complete {
  * Process message complete work item. Called from tasklet while holding
  * iucv_table_lock.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void iucv_message_complete(struct iucv_irq_data *data)
 {
 	struct iucv_message_complete *imc = (void *) data;
@@ -2057,8 +1625,6 @@ static void iucv_message_complete(struct iucv_irq_data *data)
 	}
 }
 
-<<<<<<< HEAD
-=======
 struct iucv_message_pending {
 	u16 ippathid;
 	u8  ipflags1;
@@ -2081,7 +1647,6 @@ struct iucv_message_pending {
 	u8  res2[3];
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * iucv_message_pending
  * @data: Pointer to external interrupt buffer
@@ -2089,29 +1654,6 @@ struct iucv_message_pending {
  * Process message pending work item. Called from tasklet while holding
  * iucv_table_lock.
  */
-<<<<<<< HEAD
-struct iucv_message_pending {
-	u16 ippathid;
-	u8  ipflags1;
-	u8  iptype;
-	u32 ipmsgid;
-	u32 iptrgcls;
-	union {
-		u32 iprmmsg1_u32;
-		u8  iprmmsg1[4];
-	} ln1msg1;
-	union {
-		u32 ipbfln1f;
-		u8  iprmmsg2[4];
-	} ln1msg2;
-	u32 res1[3];
-	u32 ipbfln2f;
-	u8  ippollfg;
-	u8  res2[3];
-} __packed;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void iucv_message_pending(struct iucv_irq_data *data)
 {
 	struct iucv_message_pending *imp = (void *) data;
@@ -2123,27 +1665,16 @@ static void iucv_message_pending(struct iucv_irq_data *data)
 		msg.id = imp->ipmsgid;
 		msg.class = imp->iptrgcls;
 		if (imp->ipflags1 & IUCV_IPRMDATA) {
-<<<<<<< HEAD
-			memcpy(msg.rmmsg, imp->ln1msg1.iprmmsg1, 8);
-			msg.length = 8;
-		} else
-			msg.length = imp->ln1msg2.ipbfln1f;
-=======
 			memcpy(msg.rmmsg, &imp->rmmsg, 8);
 			msg.length = 8;
 		} else
 			msg.length = imp->rmmsg.ln1msg2.ipbfln1f;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg.reply_size = imp->ipbfln2f;
 		path->handler->message_pending(path, &msg);
 	}
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * iucv_tasklet_fn:
  *
  * This tasklet loops over the queue of irq buffers created by
@@ -2187,11 +1718,7 @@ static void iucv_tasklet_fn(unsigned long ignored)
 	spin_unlock(&iucv_table_lock);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * iucv_work_fn:
  *
  * This work function loops over the queue of path pending irq blocks
@@ -2222,14 +1749,8 @@ static void iucv_work_fn(struct work_struct *work)
 	spin_unlock_bh(&iucv_table_lock);
 }
 
-<<<<<<< HEAD
-/**
- * iucv_external_interrupt
- * @code: irq code
-=======
 /*
  * iucv_external_interrupt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Handles external interrupts coming in from CP.
  * Places the interrupt buffer on a queue and schedules iucv_tasklet_fn().
@@ -2240,11 +1761,7 @@ static void iucv_external_interrupt(struct ext_code ext_code,
 	struct iucv_irq_data *p;
 	struct iucv_irq_list *work;
 
-<<<<<<< HEAD
-	kstat_cpu(smp_processor_id()).irqs[EXTINT_IUC]++;
-=======
 	inc_irq_stat(IRQEXT_IUC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = iucv_irq_data[smp_processor_id()];
 	if (p->ippathid >= iucv_max_pathid) {
 		WARN_ON(p->ippathid >= iucv_max_pathid);
@@ -2254,11 +1771,7 @@ static void iucv_external_interrupt(struct ext_code ext_code,
 	BUG_ON(p->iptype  < 0x01 || p->iptype > 0x09);
 	work = kmalloc(sizeof(struct iucv_irq_list), GFP_ATOMIC);
 	if (!work) {
-<<<<<<< HEAD
-		pr_warning("iucv_external_interrupt: out of memory\n");
-=======
 		pr_warn("iucv_external_interrupt: out of memory\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	memcpy(&work->data, p, sizeof(work->data));
@@ -2275,150 +1788,6 @@ static void iucv_external_interrupt(struct ext_code ext_code,
 	spin_unlock(&iucv_queue_lock);
 }
 
-<<<<<<< HEAD
-static int iucv_pm_prepare(struct device *dev)
-{
-	int rc = 0;
-
-#ifdef CONFIG_PM_DEBUG
-	printk(KERN_INFO "iucv_pm_prepare\n");
-#endif
-	if (dev->driver && dev->driver->pm && dev->driver->pm->prepare)
-		rc = dev->driver->pm->prepare(dev);
-	return rc;
-}
-
-static void iucv_pm_complete(struct device *dev)
-{
-#ifdef CONFIG_PM_DEBUG
-	printk(KERN_INFO "iucv_pm_complete\n");
-#endif
-	if (dev->driver && dev->driver->pm && dev->driver->pm->complete)
-		dev->driver->pm->complete(dev);
-}
-
-/**
- * iucv_path_table_empty() - determine if iucv path table is empty
- *
- * Returns 0 if there are still iucv pathes defined
- *	   1 if there are no iucv pathes defined
- */
-int iucv_path_table_empty(void)
-{
-	int i;
-
-	for (i = 0; i < iucv_max_pathid; i++) {
-		if (iucv_path_table[i])
-			return 0;
-	}
-	return 1;
-}
-
-/**
- * iucv_pm_freeze() - Freeze PM callback
- * @dev:	iucv-based device
- *
- * disable iucv interrupts
- * invoke callback function of the iucv-based driver
- * shut down iucv, if no iucv-pathes are established anymore
- */
-static int iucv_pm_freeze(struct device *dev)
-{
-	int cpu;
-	struct iucv_irq_list *p, *n;
-	int rc = 0;
-
-#ifdef CONFIG_PM_DEBUG
-	printk(KERN_WARNING "iucv_pm_freeze\n");
-#endif
-	if (iucv_pm_state != IUCV_PM_FREEZING) {
-		for_each_cpu(cpu, &iucv_irq_cpumask)
-			smp_call_function_single(cpu, iucv_block_cpu_almost,
-						 NULL, 1);
-		cancel_work_sync(&iucv_work);
-		list_for_each_entry_safe(p, n, &iucv_work_queue, list) {
-			list_del_init(&p->list);
-			iucv_sever_pathid(p->data.ippathid,
-					  iucv_error_no_listener);
-			kfree(p);
-		}
-	}
-	iucv_pm_state = IUCV_PM_FREEZING;
-	if (dev->driver && dev->driver->pm && dev->driver->pm->freeze)
-		rc = dev->driver->pm->freeze(dev);
-	if (iucv_path_table_empty())
-		iucv_disable();
-	return rc;
-}
-
-/**
- * iucv_pm_thaw() - Thaw PM callback
- * @dev:	iucv-based device
- *
- * make iucv ready for use again: allocate path table, declare interrupt buffers
- *				  and enable iucv interrupts
- * invoke callback function of the iucv-based driver
- */
-static int iucv_pm_thaw(struct device *dev)
-{
-	int rc = 0;
-
-#ifdef CONFIG_PM_DEBUG
-	printk(KERN_WARNING "iucv_pm_thaw\n");
-#endif
-	iucv_pm_state = IUCV_PM_THAWING;
-	if (!iucv_path_table) {
-		rc = iucv_enable();
-		if (rc)
-			goto out;
-	}
-	if (cpumask_empty(&iucv_irq_cpumask)) {
-		if (iucv_nonsmp_handler)
-			/* enable interrupts on one cpu */
-			iucv_allow_cpu(NULL);
-		else
-			/* enable interrupts on all cpus */
-			iucv_setmask_mp();
-	}
-	if (dev->driver && dev->driver->pm && dev->driver->pm->thaw)
-		rc = dev->driver->pm->thaw(dev);
-out:
-	return rc;
-}
-
-/**
- * iucv_pm_restore() - Restore PM callback
- * @dev:	iucv-based device
- *
- * make iucv ready for use again: allocate path table, declare interrupt buffers
- *				  and enable iucv interrupts
- * invoke callback function of the iucv-based driver
- */
-static int iucv_pm_restore(struct device *dev)
-{
-	int rc = 0;
-
-#ifdef CONFIG_PM_DEBUG
-	printk(KERN_WARNING "iucv_pm_restore %p\n", iucv_path_table);
-#endif
-	if ((iucv_pm_state != IUCV_PM_RESTORING) && iucv_path_table)
-		pr_warning("Suspending Linux did not completely close all IUCV "
-			"connections\n");
-	iucv_pm_state = IUCV_PM_RESTORING;
-	if (cpumask_empty(&iucv_irq_cpumask)) {
-		rc = iucv_query_maxconn();
-		rc = iucv_enable();
-		if (rc)
-			goto out;
-	}
-	if (dev->driver && dev->driver->pm && dev->driver->pm->restore)
-		rc = dev->driver->pm->restore(dev);
-out:
-	return rc;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iucv_interface iucv_if = {
 	.message_receive = iucv_message_receive,
 	.__message_receive = __iucv_message_receive,
@@ -2440,10 +1809,7 @@ struct iucv_interface iucv_if = {
 };
 EXPORT_SYMBOL(iucv_if);
 
-<<<<<<< HEAD
-=======
 static enum cpuhp_state iucv_online;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * iucv_init
  *
@@ -2452,28 +1818,16 @@ static enum cpuhp_state iucv_online;
 static int __init iucv_init(void)
 {
 	int rc;
-<<<<<<< HEAD
-	int cpu;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!MACHINE_IS_VM) {
 		rc = -EPROTONOSUPPORT;
 		goto out;
 	}
-<<<<<<< HEAD
-	ctl_set_bit(0, 1);
-	rc = iucv_query_maxconn();
-	if (rc)
-		goto out_ctl;
-	rc = register_external_interrupt(0x4000, iucv_external_interrupt);
-=======
 	system_ctl_set_bit(0, CR0_IUCV_BIT);
 	rc = iucv_query_maxconn();
 	if (rc)
 		goto out_ctl;
 	rc = register_external_irq(EXT_IRQ_IUCV, iucv_external_interrupt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto out_ctl;
 	iucv_root = root_device_register("iucv");
@@ -2482,38 +1836,6 @@ static int __init iucv_init(void)
 		goto out_int;
 	}
 
-<<<<<<< HEAD
-	for_each_online_cpu(cpu) {
-		/* Note: GFP_DMA used to get memory below 2G */
-		iucv_irq_data[cpu] = kmalloc_node(sizeof(struct iucv_irq_data),
-				     GFP_KERNEL|GFP_DMA, cpu_to_node(cpu));
-		if (!iucv_irq_data[cpu]) {
-			rc = -ENOMEM;
-			goto out_free;
-		}
-
-		/* Allocate parameter blocks. */
-		iucv_param[cpu] = kmalloc_node(sizeof(union iucv_param),
-				  GFP_KERNEL|GFP_DMA, cpu_to_node(cpu));
-		if (!iucv_param[cpu]) {
-			rc = -ENOMEM;
-			goto out_free;
-		}
-		iucv_param_irq[cpu] = kmalloc_node(sizeof(union iucv_param),
-				  GFP_KERNEL|GFP_DMA, cpu_to_node(cpu));
-		if (!iucv_param_irq[cpu]) {
-			rc = -ENOMEM;
-			goto out_free;
-		}
-
-	}
-	rc = register_hotcpu_notifier(&iucv_cpu_notifier);
-	if (rc)
-		goto out_free;
-	rc = register_reboot_notifier(&iucv_reboot_notifier);
-	if (rc)
-		goto out_cpu;
-=======
 	rc = cpuhp_setup_state(CPUHP_NET_IUCV_PREPARE, "net/iucv:prepare",
 			       iucv_cpu_prepare, iucv_cpu_dead);
 	if (rc)
@@ -2527,7 +1849,6 @@ static int __init iucv_init(void)
 	rc = register_reboot_notifier(&iucv_reboot_notifier);
 	if (rc)
 		goto out_remove_hp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ASCEBC(iucv_error_no_listener, 16);
 	ASCEBC(iucv_error_no_memory, 16);
 	ASCEBC(iucv_error_pathid, 16);
@@ -2541,24 +1862,6 @@ static int __init iucv_init(void)
 
 out_reboot:
 	unregister_reboot_notifier(&iucv_reboot_notifier);
-<<<<<<< HEAD
-out_cpu:
-	unregister_hotcpu_notifier(&iucv_cpu_notifier);
-out_free:
-	for_each_possible_cpu(cpu) {
-		kfree(iucv_param_irq[cpu]);
-		iucv_param_irq[cpu] = NULL;
-		kfree(iucv_param[cpu]);
-		iucv_param[cpu] = NULL;
-		kfree(iucv_irq_data[cpu]);
-		iucv_irq_data[cpu] = NULL;
-	}
-	root_device_unregister(iucv_root);
-out_int:
-	unregister_external_interrupt(0x4000, iucv_external_interrupt);
-out_ctl:
-	ctl_clear_bit(0, 1);
-=======
 out_remove_hp:
 	cpuhp_remove_state(iucv_online);
 out_prep:
@@ -2569,7 +1872,6 @@ out_int:
 	unregister_external_irq(EXT_IRQ_IUCV, iucv_external_interrupt);
 out_ctl:
 	system_ctl_clear_bit(0, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return rc;
 }
@@ -2582,10 +1884,6 @@ out:
 static void __exit iucv_exit(void)
 {
 	struct iucv_irq_list *p, *n;
-<<<<<<< HEAD
-	int cpu;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&iucv_queue_lock);
 	list_for_each_entry_safe(p, n, &iucv_task_queue, list)
@@ -2594,36 +1892,17 @@ static void __exit iucv_exit(void)
 		kfree(p);
 	spin_unlock_irq(&iucv_queue_lock);
 	unregister_reboot_notifier(&iucv_reboot_notifier);
-<<<<<<< HEAD
-	unregister_hotcpu_notifier(&iucv_cpu_notifier);
-	for_each_possible_cpu(cpu) {
-		kfree(iucv_param_irq[cpu]);
-		iucv_param_irq[cpu] = NULL;
-		kfree(iucv_param[cpu]);
-		iucv_param[cpu] = NULL;
-		kfree(iucv_irq_data[cpu]);
-		iucv_irq_data[cpu] = NULL;
-	}
-	root_device_unregister(iucv_root);
-	bus_unregister(&iucv_bus);
-	unregister_external_interrupt(0x4000, iucv_external_interrupt);
-=======
 
 	cpuhp_remove_state_nocalls(iucv_online);
 	cpuhp_remove_state(CPUHP_NET_IUCV_PREPARE);
 	root_device_unregister(iucv_root);
 	bus_unregister(&iucv_bus);
 	unregister_external_irq(EXT_IRQ_IUCV, iucv_external_interrupt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 subsys_initcall(iucv_init);
 module_exit(iucv_exit);
 
-<<<<<<< HEAD
-MODULE_AUTHOR("(C) 2001 IBM Corp. by Fritz Elfert (felfert@millenux.com)");
-=======
 MODULE_AUTHOR("(C) 2001 IBM Corp. by Fritz Elfert <felfert@millenux.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Linux for S/390 IUCV lowlevel driver");
 MODULE_LICENSE("GPL");

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-1.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Open Host Controller Interface (OHCI) driver for USB.
  *
@@ -19,11 +16,7 @@
  * OHCI is the main "non-Intel/VIA" standard for USB 1.1 host controller
  * interfaces (though some non-x86 Intel chips use it).  It supports
  * smarter hardware than UHCI.  A download link for the spec available
-<<<<<<< HEAD
- * through the http://www.usb.org website.
-=======
  * through the https://www.usb.org website.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is licenced under the GPL.
  */
@@ -47,10 +40,7 @@
 #include <linux/dmapool.h>
 #include <linux/workqueue.h>
 #include <linux/debugfs.h>
-<<<<<<< HEAD
-=======
 #include <linux/genalloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <asm/irq.h>
@@ -63,11 +53,6 @@
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-#undef OHCI_VERBOSE_DEBUG	/* not always helpful */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* For initializing controller (mask in an HCFS mode too) */
 #define	OHCI_CONTROL_INIT	OHCI_CTRL_CBSR
 #define	OHCI_INTR_INIT \
@@ -89,38 +74,15 @@
 static const char	hcd_name [] = "ohci_hcd";
 
 #define	STATECHANGE_DELAY	msecs_to_jiffies(300)
-<<<<<<< HEAD
-=======
 #define	IO_WATCHDOG_DELAY	msecs_to_jiffies(275)
 #define	IO_WATCHDOG_OFF		0xffffff00
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ohci.h"
 #include "pci-quirks.h"
 
-<<<<<<< HEAD
-static void ohci_dump (struct ohci_hcd *ohci, int verbose);
-static int ohci_init (struct ohci_hcd *ohci);
-static void ohci_stop (struct usb_hcd *hcd);
-
-#if defined(CONFIG_PM) || defined(CONFIG_PCI)
-static int ohci_restart (struct ohci_hcd *ohci);
-#endif
-
-#ifdef CONFIG_PCI
-static void sb800_prefetch(struct ohci_hcd *ohci, int on);
-#else
-static inline void sb800_prefetch(struct ohci_hcd *ohci, int on)
-{
-	return;
-}
-#endif
-
-=======
 static void ohci_dump(struct ohci_hcd *ohci);
 static void ohci_stop(struct usb_hcd *hcd);
 static void io_watchdog_func(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ohci-hub.c"
 #include "ohci-dbg.c"
@@ -140,28 +102,18 @@ static void io_watchdog_func(struct timer_list *t);
 
 
 /* Some boards misreport power switching/overcurrent */
-<<<<<<< HEAD
-static bool distrust_firmware = 1;
-=======
 static bool distrust_firmware;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param (distrust_firmware, bool, 0);
 MODULE_PARM_DESC (distrust_firmware,
 	"true to distrust firmware power/overcurrent setup");
 
 /* Some boards leave IR set wrongly, since they fail BIOS/SMM handshakes */
-<<<<<<< HEAD
-static bool no_handshake = 0;
-=======
 static bool no_handshake;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param (no_handshake, bool, 0);
 MODULE_PARM_DESC (no_handshake, "true (not default) disables BIOS handshake");
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-=======
 static int number_of_tds(struct urb *urb)
 {
 	int			len, i, num, this_sg_len;
@@ -189,7 +141,6 @@ static int number_of_tds(struct urb *urb)
 	return num;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * queue up an urb for anything except the root hub
  */
@@ -206,18 +157,9 @@ static int ohci_urb_enqueue (
 	unsigned long	flags;
 	int		retval = 0;
 
-<<<<<<< HEAD
-#ifdef OHCI_VERBOSE_DEBUG
-	urb_print(urb, "SUB", usb_pipein(pipe), -EINPROGRESS);
-#endif
-
-	/* every endpoint has a ed, locate and maybe (re)initialize it */
-	if (! (ed = ed_get (ohci, urb->ep, urb->dev, pipe, urb->interval)))
-=======
 	/* every endpoint has a ed, locate and maybe (re)initialize it */
 	ed = ed_get(ohci, urb->ep, urb->dev, pipe, urb->interval);
 	if (! ed)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	/* for the private part of the URB we need the number of TDs (size) */
@@ -229,35 +171,17 @@ static int ohci_urb_enqueue (
 
 			/* 1 TD for setup, 1 for ACK, plus ... */
 			size = 2;
-<<<<<<< HEAD
-			/* FALLTHROUGH */
-		// case PIPE_INTERRUPT:
-		// case PIPE_BULK:
-		default:
-			/* one TD for every 4096 Bytes (can be up to 8K) */
-			size += urb->transfer_buffer_length / 4096;
-			/* ... and for any remaining bytes ... */
-			if ((urb->transfer_buffer_length % 4096) != 0)
-				size++;
-			/* ... and maybe a zero length packet to wrap it up */
-=======
 			fallthrough;
 		// case PIPE_INTERRUPT:
 		// case PIPE_BULK:
 		default:
 			size += number_of_tds(urb);
 			/* maybe a zero-length packet to wrap it up */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (size == 0)
 				size++;
 			else if ((urb->transfer_flags & URB_ZERO_PACKET) != 0
 				&& (urb->transfer_buffer_length
-<<<<<<< HEAD
-					% usb_maxpacket (urb->dev, pipe,
-						usb_pipeout (pipe))) == 0)
-=======
 					% usb_maxpacket(urb->dev, pipe)) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				size++;
 			break;
 		case PIPE_ISOCHRONOUS: /* number of packets from URB */
@@ -266,12 +190,7 @@ static int ohci_urb_enqueue (
 	}
 
 	/* allocate the private part of the URB */
-<<<<<<< HEAD
-	urb_priv = kzalloc (sizeof (urb_priv_t) + size * sizeof (struct td *),
-			mem_flags);
-=======
 	urb_priv = kzalloc(struct_size(urb_priv, td, size), mem_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!urb_priv)
 		return -ENOMEM;
 	INIT_LIST_HEAD (&urb_priv->pending);
@@ -310,8 +229,6 @@ static int ohci_urb_enqueue (
 			usb_hcd_unlink_urb_from_ep(hcd, urb);
 			goto fail;
 		}
-<<<<<<< HEAD
-=======
 
 		/* Start up the I/O watchdog timer, if it's not running */
 		if (ohci->prev_frame_no == IO_WATCHDOG_OFF &&
@@ -323,7 +240,6 @@ static int ohci_urb_enqueue (
 		}
 		list_add(&ed->in_use_list, &ohci->eds_in_use);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ed->type == PIPE_ISOCHRONOUS) {
 			u16	frame = ohci_frame_no(ohci);
 
@@ -332,15 +248,6 @@ static int ohci_urb_enqueue (
 			frame &= ~(ed->interval - 1);
 			frame |= ed->branch;
 			urb->start_frame = frame;
-<<<<<<< HEAD
-
-			/* yes, only URB_ISO_ASAP is supported, and
-			 * urb->start_frame is never used as input.
-			 */
-		}
-	} else if (ed->type == PIPE_ISOCHRONOUS)
-		urb->start_frame = ed->last_iso + ed->interval;
-=======
 			ed->last_iso = frame + ed->interval * (size - 1);
 		}
 	} else if (ed->type == PIPE_ISOCHRONOUS) {
@@ -382,7 +289,6 @@ static int ohci_urb_enqueue (
 		urb->start_frame = frame;
 		ed->last_iso = frame + length;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* fill the TDs and link them to the ed; and
 	 * enable that part of the schedule, if needed
@@ -409,44 +315,17 @@ static int ohci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 	struct ohci_hcd		*ohci = hcd_to_ohci (hcd);
 	unsigned long		flags;
 	int			rc;
-<<<<<<< HEAD
-
-#ifdef OHCI_VERBOSE_DEBUG
-	urb_print(urb, "UNLINK", 1, status);
-#endif
-
-	spin_lock_irqsave (&ohci->lock, flags);
-	rc = usb_hcd_check_unlink_urb(hcd, urb, status);
-	if (rc) {
-		;	/* Do nothing */
-	} else if (ohci->rh_state == OHCI_RH_RUNNING) {
-		urb_priv_t  *urb_priv;
-=======
 	urb_priv_t		*urb_priv;
 
 	spin_lock_irqsave (&ohci->lock, flags);
 	rc = usb_hcd_check_unlink_urb(hcd, urb, status);
 	if (rc == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Unless an IRQ completed the unlink while it was being
 		 * handed to us, flag it for unlink and giveback, and force
 		 * some upcoming INTR_SF to call finish_unlinks()
 		 */
 		urb_priv = urb->hcpriv;
-<<<<<<< HEAD
-		if (urb_priv) {
-			if (urb_priv->ed->state == ED_OPER)
-				start_ed_unlink (ohci, urb_priv->ed);
-		}
-	} else {
-		/*
-		 * with HC dead, we won't respect hc queue pointers
-		 * any more ... just clean up every urb's memory.
-		 */
-		if (urb->hcpriv)
-			finish_urb(ohci, urb, status);
-=======
 		if (urb_priv->ed->state == ED_OPER)
 			start_ed_unlink(ohci, urb_priv->ed);
 
@@ -454,7 +333,6 @@ static int ohci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 			/* With HC dead, we can clean up right away */
 			ohci_work(ohci);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore (&ohci->lock, flags);
 	return rc;
@@ -486,13 +364,7 @@ rescan:
 	if (ohci->rh_state != OHCI_RH_RUNNING) {
 sanitize:
 		ed->state = ED_IDLE;
-<<<<<<< HEAD
-		if (quirk_zfmicro(ohci) && ed->type == PIPE_INTERRUPT)
-			ohci->eds_scheduled--;
-		finish_unlinks (ohci, 0);
-=======
 		ohci_work(ohci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (ed->state) {
@@ -500,14 +372,6 @@ sanitize:
 		/* major IRQ delivery trouble loses INTR_SF too... */
 		if (limit-- == 0) {
 			ohci_warn(ohci, "ED unlink timeout\n");
-<<<<<<< HEAD
-			if (quirk_zfmicro(ohci)) {
-				ohci_warn(ohci, "Attempting ZF TD recovery\n");
-				ohci->ed_to_check = ed;
-				ohci->zf_delay = 2;
-			}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto sanitize;
 		}
 		spin_unlock_irqrestore (&ohci->lock, flags);
@@ -519,11 +383,7 @@ sanitize:
 			ed_free (ohci, ed);
 			break;
 		}
-<<<<<<< HEAD
-		/* else FALL THROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		/* caller was supposed to have unlinked any requests;
 		 * that's not our job.  can't recover; must leak ed.
@@ -557,12 +417,7 @@ static void ohci_usb_reset (struct ohci_hcd *ohci)
  * other cases where the next software may expect clean state from the
  * "firmware".  this is bus-neutral, unlike shutdown() methods.
  */
-<<<<<<< HEAD
-static void
-ohci_shutdown (struct usb_hcd *hcd)
-=======
 static void _ohci_shutdown(struct usb_hcd *hcd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ohci_hcd *ohci;
 
@@ -575,94 +430,6 @@ static void _ohci_shutdown(struct usb_hcd *hcd)
 	udelay(10);
 
 	ohci_writel(ohci, ohci->fminterval, &ohci->regs->fminterval);
-<<<<<<< HEAD
-}
-
-static int check_ed(struct ohci_hcd *ohci, struct ed *ed)
-{
-	return (hc32_to_cpu(ohci, ed->hwINFO) & ED_IN) != 0
-		&& (hc32_to_cpu(ohci, ed->hwHeadP) & TD_MASK)
-			== (hc32_to_cpu(ohci, ed->hwTailP) & TD_MASK)
-		&& !list_empty(&ed->td_list);
-}
-
-/* ZF Micro watchdog timer callback. The ZF Micro chipset sometimes completes
- * an interrupt TD but neglects to add it to the donelist.  On systems with
- * this chipset, we need to periodically check the state of the queues to look
- * for such "lost" TDs.
- */
-static void unlink_watchdog_func(unsigned long _ohci)
-{
-	unsigned long	flags;
-	unsigned	max;
-	unsigned	seen_count = 0;
-	unsigned	i;
-	struct ed	**seen = NULL;
-	struct ohci_hcd	*ohci = (struct ohci_hcd *) _ohci;
-
-	spin_lock_irqsave(&ohci->lock, flags);
-	max = ohci->eds_scheduled;
-	if (!max)
-		goto done;
-
-	if (ohci->ed_to_check)
-		goto out;
-
-	seen = kcalloc(max, sizeof *seen, GFP_ATOMIC);
-	if (!seen)
-		goto out;
-
-	for (i = 0; i < NUM_INTS; i++) {
-		struct ed	*ed = ohci->periodic[i];
-
-		while (ed) {
-			unsigned	temp;
-
-			/* scan this branch of the periodic schedule tree */
-			for (temp = 0; temp < seen_count; temp++) {
-				if (seen[temp] == ed) {
-					/* we've checked it and what's after */
-					ed = NULL;
-					break;
-				}
-			}
-			if (!ed)
-				break;
-			seen[seen_count++] = ed;
-			if (!check_ed(ohci, ed)) {
-				ed = ed->ed_next;
-				continue;
-			}
-
-			/* HC's TD list is empty, but HCD sees at least one
-			 * TD that's not been sent through the donelist.
-			 */
-			ohci->ed_to_check = ed;
-			ohci->zf_delay = 2;
-
-			/* The HC may wait until the next frame to report the
-			 * TD as done through the donelist and INTR_WDH.  (We
-			 * just *assume* it's not a multi-TD interrupt URB;
-			 * those could defer the IRQ more than one frame, using
-			 * DI...)  Check again after the next INTR_SF.
-			 */
-			ohci_writel(ohci, OHCI_INTR_SF,
-					&ohci->regs->intrstatus);
-			ohci_writel(ohci, OHCI_INTR_SF,
-					&ohci->regs->intrenable);
-
-			/* flush those writes */
-			(void) ohci_readl(ohci, &ohci->regs->control);
-
-			goto out;
-		}
-	}
-out:
-	kfree(seen);
-	if (ohci->eds_scheduled)
-		mod_timer(&ohci->unlink_watchdog, round_jiffies(jiffies + HZ));
-done:
-=======
 	ohci->rh_state = OHCI_RH_HALTED;
 }
 
@@ -673,7 +440,6 @@ static void ohci_shutdown(struct usb_hcd *hcd)
 
 	spin_lock_irqsave(&ohci->lock, flags);
 	_ohci_shutdown(hcd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&ohci->lock, flags);
 }
 
@@ -688,13 +454,10 @@ static int ohci_init (struct ohci_hcd *ohci)
 	int ret;
 	struct usb_hcd *hcd = ohci_to_hcd(ohci);
 
-<<<<<<< HEAD
-=======
 	/* Accept arbitrarily long scatter-gather lists */
 	if (!hcd->localmem_pool)
 		hcd->self.sg_tablesize = ~0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (distrust_firmware)
 		ohci->flags |= OHCI_QUIRK_HUB_POWER;
 
@@ -747,10 +510,6 @@ static int ohci_init (struct ohci_hcd *ohci)
 	if (ohci->hcca)
 		return 0;
 
-<<<<<<< HEAD
-	ohci->hcca = dma_alloc_coherent (hcd->self.controller,
-			sizeof *ohci->hcca, &ohci->hcca_dma, 0);
-=======
 	timer_setup(&ohci->io_watchdog, io_watchdog_func, 0);
 	ohci->prev_frame_no = IO_WATCHDOG_OFF;
 
@@ -763,7 +522,6 @@ static int ohci_init (struct ohci_hcd *ohci)
 						sizeof(*ohci->hcca),
 						&ohci->hcca_dma,
 						GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ohci->hcca)
 		return -ENOMEM;
 
@@ -893,11 +651,7 @@ retry:
 		return -EOVERFLOW;
 	}
 
-<<<<<<< HEAD
-	/* use rhsc irqs after khubd is fully initialized */
-=======
 	/* use rhsc irqs after hub_wq is allocated */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(HCD_FLAG_POLL_RH, &hcd->flags);
 	hcd->uses_new_polling = 1;
 
@@ -917,22 +671,6 @@ retry:
 
 	/* handle root hub init quirks ... */
 	val = roothub_a (ohci);
-<<<<<<< HEAD
-	val &= ~(RH_A_PSM | RH_A_OCPM);
-	if (ohci->flags & OHCI_QUIRK_SUPERIO) {
-		/* NSC 87560 and maybe others */
-		val |= RH_A_NOCP;
-		val &= ~(RH_A_POTPGT | RH_A_NPS);
-		ohci_writel (ohci, val, &ohci->regs->roothub.a);
-	} else if ((ohci->flags & OHCI_QUIRK_AMD756) ||
-			(ohci->flags & OHCI_QUIRK_HUB_POWER)) {
-		/* hub power always on; required for AMD-756 and some
-		 * Mac platforms.  ganged overcurrent reporting, if any.
-		 */
-		val |= RH_A_NPS;
-		ohci_writel (ohci, val, &ohci->regs->roothub.a);
-	}
-=======
 	/* Configure for per-port over-current protection by default */
 	val &= ~RH_A_NOCP;
 	val |= RH_A_OCPM;
@@ -951,7 +689,6 @@ retry:
 	}
 	ohci_writel(ohci, val, &ohci->regs->roothub.a);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ohci_writel (ohci, RH_HS_LPSC, &ohci->regs->roothub.status);
 	ohci_writel (ohci, (val & RH_A_NPS) ? 0 : RH_B_PPCM,
 						&ohci->regs->roothub.b);
@@ -964,28 +701,11 @@ retry:
 	// POTPGT delay is bits 24-31, in 2 ms units.
 	mdelay ((val >> 23) & 0x1fe);
 
-<<<<<<< HEAD
-	if (quirk_zfmicro(ohci)) {
-		/* Create timer to watch for bad queue state on ZF Micro */
-		setup_timer(&ohci->unlink_watchdog, unlink_watchdog_func,
-				(unsigned long) ohci);
-
-		ohci->eds_scheduled = 0;
-		ohci->ed_to_check = NULL;
-	}
-
-	ohci_dump (ohci, 1);
-=======
 	ohci_dump(ohci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/*-------------------------------------------------------------------------*/
-
-=======
 /* ohci_setup routine for generic controller initialization */
 
 int ohci_setup(struct usb_hcd *hcd)
@@ -1151,7 +871,6 @@ static void io_watchdog_func(struct timer_list *t)
 	spin_unlock_irqrestore(&ohci->lock, flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* an interrupt happens */
 
 static irqreturn_t ohci_irq (struct usb_hcd *hcd)
@@ -1169,10 +888,7 @@ static irqreturn_t ohci_irq (struct usb_hcd *hcd)
 	/* Check for an all 1's result which is a typical consequence
 	 * of dead, unclocked, or unplugged (CardBus...) devices
 	 */
-<<<<<<< HEAD
-=======
 again:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ints == ~(u32)0) {
 		ohci->rh_state = OHCI_RH_HALTED;
 		ohci_dbg (ohci, "device removed!\n");
@@ -1204,20 +920,12 @@ again:
 			usb_hc_died(hcd);
 		}
 
-<<<<<<< HEAD
-		ohci_dump (ohci, 1);
-=======
 		ohci_dump(ohci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ohci_usb_reset (ohci);
 	}
 
 	if (ints & OHCI_INTR_RHSC) {
-<<<<<<< HEAD
-		ohci_vdbg(ohci, "rhsc\n");
-=======
 		ohci_dbg(ohci, "rhsc\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ohci->next_statechange = jiffies + STATECHANGE_DELAY;
 		ohci_writel(ohci, OHCI_INTR_RD | OHCI_INTR_RHSC,
 				&regs->intrstatus);
@@ -1226,13 +934,8 @@ again:
 		 * choices for RHSC.  Many followed the spec; RHSC triggers
 		 * on an edge, like setting and maybe clearing a port status
 		 * change bit.  With others it's level-triggered, active
-<<<<<<< HEAD
-		 * until khubd clears all the port status change bits.  We'll
-		 * always disable it here and rely on polling until khubd
-=======
 		 * until hub_wq clears all the port status change bits.  We'll
 		 * always disable it here and rely on polling until hub_wq
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * re-enables it.
 		 */
 		ohci_writel(ohci, OHCI_INTR_RHSC, &regs->intrdisable);
@@ -1244,11 +947,7 @@ again:
 	 * this might not happen.
 	 */
 	else if (ints & OHCI_INTR_RD) {
-<<<<<<< HEAD
-		ohci_vdbg(ohci, "resume detect\n");
-=======
 		ohci_dbg(ohci, "resume detect\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ohci_writel(ohci, OHCI_INTR_RD, &regs->intrstatus);
 		set_bit(HCD_FLAG_POLL_RH, &hcd->flags);
 		if (ohci->autostop) {
@@ -1259,62 +958,15 @@ again:
 			usb_hcd_resume_root_hub(hcd);
 	}
 
-<<<<<<< HEAD
-	if (ints & OHCI_INTR_WDH) {
-		spin_lock (&ohci->lock);
-		dl_done_list (ohci);
-		spin_unlock (&ohci->lock);
-	}
-
-	if (quirk_zfmicro(ohci) && (ints & OHCI_INTR_SF)) {
-		spin_lock(&ohci->lock);
-		if (ohci->ed_to_check) {
-			struct ed *ed = ohci->ed_to_check;
-
-			if (check_ed(ohci, ed)) {
-				/* HC thinks the TD list is empty; HCD knows
-				 * at least one TD is outstanding
-				 */
-				if (--ohci->zf_delay == 0) {
-					struct td *td = list_entry(
-						ed->td_list.next,
-						struct td, td_list);
-					ohci_warn(ohci,
-						  "Reclaiming orphan TD %p\n",
-						  td);
-					takeback_td(ohci, td);
-					ohci->ed_to_check = NULL;
-				}
-			} else
-				ohci->ed_to_check = NULL;
-		}
-		spin_unlock(&ohci->lock);
-	}
-=======
 	spin_lock(&ohci->lock);
 	if (ints & OHCI_INTR_WDH)
 		update_done_list(ohci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* could track INTR_SO to reduce available PCI/... bandwidth */
 
 	/* handle any pending URB/ED unlinks, leaving INTR_SF enabled
 	 * when there's still unlinking to be done (next frame).
 	 */
-<<<<<<< HEAD
-	spin_lock (&ohci->lock);
-	if (ohci->ed_rm_list)
-		finish_unlinks (ohci, ohci_frame_no(ohci));
-	if ((ints & OHCI_INTR_SF) != 0
-			&& !ohci->ed_rm_list
-			&& !ohci->ed_to_check
-			&& ohci->rh_state == OHCI_RH_RUNNING)
-		ohci_writel (ohci, OHCI_INTR_SF, &regs->intrdisable);
-	spin_unlock (&ohci->lock);
-
-	if (ohci->rh_state == OHCI_RH_RUNNING) {
-		ohci_writel (ohci, ints, &regs->intrstatus);
-=======
 	ohci_work(ohci);
 	if ((ints & OHCI_INTR_SF) != 0 && !ohci->ed_rm_list
 			&& ohci->rh_state == OHCI_RH_RUNNING)
@@ -1325,13 +977,10 @@ again:
 		if (ints & OHCI_INTR_WDH)
 			++ohci->wdh_cnt;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ohci_writel (ohci, OHCI_INTR_MIE, &regs->intrenable);
 		// flush those writes
 		(void) ohci_readl (ohci, &ohci->regs->control);
 	}
-<<<<<<< HEAD
-=======
 	spin_unlock(&ohci->lock);
 
 	/* repeat until all enabled interrupts are handled */
@@ -1340,7 +989,6 @@ again:
 		if (ints && (ints & ohci_readl(ohci, &regs->intrenable)))
 			goto again;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -1351,20 +999,6 @@ static void ohci_stop (struct usb_hcd *hcd)
 {
 	struct ohci_hcd		*ohci = hcd_to_ohci (hcd);
 
-<<<<<<< HEAD
-	ohci_dump (ohci, 1);
-
-	if (quirk_nec(ohci))
-		flush_work_sync(&ohci->nec_work);
-
-	ohci_usb_reset (ohci);
-	ohci_writel (ohci, OHCI_INTR_MIE, &ohci->regs->intrdisable);
-	free_irq(hcd->irq, hcd);
-	hcd->irq = 0;
-
-	if (quirk_zfmicro(ohci))
-		del_timer(&ohci->unlink_watchdog);
-=======
 	ohci_dump(ohci);
 
 	if (quirk_nec(ohci))
@@ -1377,18 +1011,12 @@ static void ohci_stop (struct usb_hcd *hcd)
 	free_irq(hcd->irq, hcd);
 	hcd->irq = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (quirk_amdiso(ohci))
 		usb_amd_dev_put();
 
 	remove_debug_files (ohci);
 	ohci_mem_cleanup (ohci);
 	if (ohci->hcca) {
-<<<<<<< HEAD
-		dma_free_coherent (hcd->self.controller,
-				sizeof *ohci->hcca,
-				ohci->hcca, ohci->hcca_dma);
-=======
 		if (hcd->localmem_pool)
 			gen_pool_free(hcd->localmem_pool,
 				      (unsigned long)ohci->hcca,
@@ -1397,7 +1025,6 @@ static void ohci_stop (struct usb_hcd *hcd)
 			dma_free_coherent(hcd->self.controller,
 					  sizeof(*ohci->hcca),
 					  ohci->hcca, ohci->hcca_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ohci->hcca = NULL;
 		ohci->hcca_dma = 0;
 	}
@@ -1405,26 +1032,16 @@ static void ohci_stop (struct usb_hcd *hcd)
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-#if defined(CONFIG_PM) || defined(CONFIG_PCI)
-
-/* must not be called from interrupt context */
-static int ohci_restart (struct ohci_hcd *ohci)
-=======
 #if defined(CONFIG_PM) || defined(CONFIG_USB_PCI)
 
 /* must not be called from interrupt context */
 int ohci_restart(struct ohci_hcd *ohci)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int temp;
 	int i;
 	struct urb_priv *priv;
 
-<<<<<<< HEAD
-=======
 	ohci_init(ohci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&ohci->lock);
 	ohci->rh_state = OHCI_RH_HALTED;
 
@@ -1444,11 +1061,7 @@ int ohci_restart(struct ohci_hcd *ohci)
 			ed->ed_next = ohci->ed_rm_list;
 			ed->ed_prev = NULL;
 			ohci->ed_rm_list = ed;
-<<<<<<< HEAD
-			/* FALLTHROUGH */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ED_UNLINK:
 			break;
 		default:
@@ -1459,11 +1072,7 @@ int ohci_restart(struct ohci_hcd *ohci)
 		if (!urb->unlinked)
 			urb->unlinked = -ESHUTDOWN;
 	}
-<<<<<<< HEAD
-	finish_unlinks (ohci, 0);
-=======
 	ohci_work(ohci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&ohci->lock);
 
 	/* paranoia, in case that didn't work: */
@@ -1486,11 +1095,6 @@ int ohci_restart(struct ohci_hcd *ohci)
 	ohci_dbg(ohci, "restart complete\n");
 	return 0;
 }
-<<<<<<< HEAD
-
-#endif
-
-=======
 EXPORT_SYMBOL_GPL(ohci_restart);
 
 #endif
@@ -1642,172 +1246,32 @@ void ohci_init_driver(struct hc_driver *drv,
 }
 EXPORT_SYMBOL_GPL(ohci_init_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------*/
 
 MODULE_AUTHOR (DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE ("GPL");
 
-<<<<<<< HEAD
-#ifdef CONFIG_PCI
-#include "ohci-pci.c"
-#define PCI_DRIVER		ohci_pci_driver
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_ARCH_SA1100) && defined(CONFIG_SA1111)
 #include "ohci-sa1111.c"
 #define SA1111_DRIVER		ohci_hcd_sa1111_driver
 #endif
 
-<<<<<<< HEAD
-#if defined(CONFIG_ARCH_S3C24XX) || defined(CONFIG_ARCH_S3C64XX)
-#include "ohci-s3c2410.c"
-#define PLATFORM_DRIVER		ohci_hcd_s3c2410_driver
-#endif
-
-#ifdef CONFIG_USB_OHCI_EXYNOS
-#include "ohci-exynos.c"
-#define PLATFORM_DRIVER		exynos_ohci_driver
-#endif
-
-#ifdef CONFIG_USB_OHCI_HCD_OMAP1
-#include "ohci-omap.c"
-#define OMAP1_PLATFORM_DRIVER	ohci_hcd_omap_driver
-#endif
-
-#ifdef CONFIG_USB_OHCI_HCD_OMAP3
-#include "ohci-omap3.c"
-#define OMAP3_PLATFORM_DRIVER	ohci_hcd_omap3_driver
-#endif
-
-#if defined(CONFIG_PXA27x) || defined(CONFIG_PXA3xx)
-#include "ohci-pxa27x.c"
-#define PLATFORM_DRIVER		ohci_hcd_pxa27x_driver
-#endif
-
-#ifdef CONFIG_ARCH_EP93XX
-#include "ohci-ep93xx.c"
-#define PLATFORM_DRIVER		ohci_hcd_ep93xx_driver
-#endif
-
-#ifdef CONFIG_MIPS_ALCHEMY
-#include "ohci-au1xxx.c"
-#define PLATFORM_DRIVER		ohci_hcd_au1xxx_driver
-#endif
-
-#ifdef CONFIG_PNX8550
-#include "ohci-pnx8550.c"
-#define PLATFORM_DRIVER		ohci_hcd_pnx8550_driver
-#endif
-
-#ifdef CONFIG_USB_OHCI_HCD_PPC_SOC
-#include "ohci-ppc-soc.c"
-#define PLATFORM_DRIVER		ohci_hcd_ppc_soc_driver
-#endif
-
-#ifdef CONFIG_ARCH_AT91
-#include "ohci-at91.c"
-#define PLATFORM_DRIVER		ohci_hcd_at91_driver
-#endif
-
-#if defined(CONFIG_ARCH_PNX4008) || defined(CONFIG_ARCH_LPC32XX)
-#include "ohci-nxp.c"
-#define PLATFORM_DRIVER		usb_hcd_nxp_driver
-#endif
-
-#ifdef CONFIG_ARCH_DAVINCI_DA8XX
-#include "ohci-da8xx.c"
-#define PLATFORM_DRIVER		ohci_hcd_da8xx_driver
-#endif
-
-#ifdef CONFIG_USB_OHCI_SH
-#include "ohci-sh.c"
-#define PLATFORM_DRIVER		ohci_hcd_sh_driver
-#endif
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_USB_OHCI_HCD_PPC_OF
 #include "ohci-ppc-of.c"
 #define OF_PLATFORM_DRIVER	ohci_hcd_ppc_of_driver
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_PLAT_SPEAR
-#include "ohci-spear.c"
-#define PLATFORM_DRIVER		spear_ohci_hcd_driver
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PPC_PS3
 #include "ohci-ps3.c"
 #define PS3_SYSTEM_BUS_DRIVER	ps3_ohci_driver
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_USB_OHCI_HCD_SSB
-#include "ohci-ssb.c"
-#define SSB_OHCI_DRIVER		ssb_ohci_driver
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_MFD_SM501
 #include "ohci-sm501.c"
 #define SM501_OHCI_DRIVER	ohci_hcd_sm501_driver
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_MFD_TC6393XB
-#include "ohci-tmio.c"
-#define TMIO_OHCI_DRIVER	ohci_hcd_tmio_driver
-#endif
-
-#ifdef CONFIG_MACH_JZ4740
-#include "ohci-jz4740.c"
-#define PLATFORM_DRIVER	ohci_hcd_jz4740_driver
-#endif
-
-#ifdef CONFIG_USB_OCTEON_OHCI
-#include "ohci-octeon.c"
-#define PLATFORM_DRIVER		ohci_octeon_driver
-#endif
-
-#ifdef CONFIG_USB_CNS3XXX_OHCI
-#include "ohci-cns3xxx.c"
-#define PLATFORM_DRIVER		ohci_hcd_cns3xxx_driver
-#endif
-
-#ifdef CONFIG_CPU_XLR
-#include "ohci-xls.c"
-#define PLATFORM_DRIVER		ohci_xls_driver
-#endif
-
-#ifdef CONFIG_USB_OHCI_HCD_PLATFORM
-#include "ohci-platform.c"
-#define PLATFORM_DRIVER		ohci_platform_driver
-#endif
-
-#if	!defined(PCI_DRIVER) &&		\
-	!defined(PLATFORM_DRIVER) &&	\
-	!defined(OMAP1_PLATFORM_DRIVER) &&	\
-	!defined(OMAP3_PLATFORM_DRIVER) &&	\
-	!defined(OF_PLATFORM_DRIVER) &&	\
-	!defined(SA1111_DRIVER) &&	\
-	!defined(PS3_SYSTEM_BUS_DRIVER) && \
-	!defined(SM501_OHCI_DRIVER) && \
-	!defined(TMIO_OHCI_DRIVER) && \
-	!defined(SSB_OHCI_DRIVER)
-#error "missing bus glue for ohci-hcd"
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init ohci_hcd_mod_init(void)
 {
 	int retval = 0;
@@ -1815,26 +1279,11 @@ static int __init ohci_hcd_mod_init(void)
 	if (usb_disabled())
 		return -ENODEV;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "%s: " DRIVER_DESC "\n", hcd_name);
-	pr_debug ("%s: block sizes: ed %Zd td %Zd\n", hcd_name,
-		sizeof (struct ed), sizeof (struct td));
-	set_bit(USB_OHCI_LOADED, &usb_hcds_loaded);
-
-#ifdef DEBUG
-	ohci_debug_root = debugfs_create_dir("ohci", usb_debug_root);
-	if (!ohci_debug_root) {
-		retval = -ENOENT;
-		goto error_debug;
-	}
-#endif
-=======
 	pr_debug ("%s: block sizes: ed %zd td %zd\n", hcd_name,
 		sizeof (struct ed), sizeof (struct td));
 	set_bit(USB_OHCI_LOADED, &usb_hcds_loaded);
 
 	ohci_debug_root = debugfs_create_dir("ohci", usb_debug_root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef PS3_SYSTEM_BUS_DRIVER
 	retval = ps3_ohci_driver_register(&PS3_SYSTEM_BUS_DRIVER);
@@ -1842,27 +1291,6 @@ static int __init ohci_hcd_mod_init(void)
 		goto error_ps3;
 #endif
 
-<<<<<<< HEAD
-#ifdef PLATFORM_DRIVER
-	retval = platform_driver_register(&PLATFORM_DRIVER);
-	if (retval < 0)
-		goto error_platform;
-#endif
-
-#ifdef OMAP1_PLATFORM_DRIVER
-	retval = platform_driver_register(&OMAP1_PLATFORM_DRIVER);
-	if (retval < 0)
-		goto error_omap1_platform;
-#endif
-
-#ifdef OMAP3_PLATFORM_DRIVER
-	retval = platform_driver_register(&OMAP3_PLATFORM_DRIVER);
-	if (retval < 0)
-		goto error_omap3_platform;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef OF_PLATFORM_DRIVER
 	retval = platform_driver_register(&OF_PLATFORM_DRIVER);
 	if (retval < 0)
@@ -1875,61 +1303,19 @@ static int __init ohci_hcd_mod_init(void)
 		goto error_sa1111;
 #endif
 
-<<<<<<< HEAD
-#ifdef PCI_DRIVER
-	retval = pci_register_driver(&PCI_DRIVER);
-	if (retval < 0)
-		goto error_pci;
-#endif
-
-#ifdef SSB_OHCI_DRIVER
-	retval = ssb_driver_register(&SSB_OHCI_DRIVER);
-	if (retval)
-		goto error_ssb;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef SM501_OHCI_DRIVER
 	retval = platform_driver_register(&SM501_OHCI_DRIVER);
 	if (retval < 0)
 		goto error_sm501;
 #endif
 
-<<<<<<< HEAD
-#ifdef TMIO_OHCI_DRIVER
-	retval = platform_driver_register(&TMIO_OHCI_DRIVER);
-	if (retval < 0)
-		goto error_tmio;
-#endif
-
 	return retval;
 
 	/* Error path */
-#ifdef TMIO_OHCI_DRIVER
-	platform_driver_unregister(&TMIO_OHCI_DRIVER);
- error_tmio:
-#endif
-=======
-	return retval;
-
-	/* Error path */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef SM501_OHCI_DRIVER
 	platform_driver_unregister(&SM501_OHCI_DRIVER);
  error_sm501:
 #endif
-<<<<<<< HEAD
-#ifdef SSB_OHCI_DRIVER
-	ssb_driver_unregister(&SSB_OHCI_DRIVER);
- error_ssb:
-#endif
-#ifdef PCI_DRIVER
-	pci_unregister_driver(&PCI_DRIVER);
- error_pci:
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef SA1111_DRIVER
 	sa1111_driver_unregister(&SA1111_DRIVER);
  error_sa1111:
@@ -1938,35 +1324,12 @@ static int __init ohci_hcd_mod_init(void)
 	platform_driver_unregister(&OF_PLATFORM_DRIVER);
  error_of_platform:
 #endif
-<<<<<<< HEAD
-#ifdef PLATFORM_DRIVER
-	platform_driver_unregister(&PLATFORM_DRIVER);
- error_platform:
-#endif
-#ifdef OMAP1_PLATFORM_DRIVER
-	platform_driver_unregister(&OMAP1_PLATFORM_DRIVER);
- error_omap1_platform:
-#endif
-#ifdef OMAP3_PLATFORM_DRIVER
-	platform_driver_unregister(&OMAP3_PLATFORM_DRIVER);
- error_omap3_platform:
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef PS3_SYSTEM_BUS_DRIVER
 	ps3_ohci_driver_unregister(&PS3_SYSTEM_BUS_DRIVER);
  error_ps3:
 #endif
-<<<<<<< HEAD
-#ifdef DEBUG
 	debugfs_remove(ohci_debug_root);
 	ohci_debug_root = NULL;
- error_debug:
-#endif
-=======
-	debugfs_remove(ohci_debug_root);
-	ohci_debug_root = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clear_bit(USB_OHCI_LOADED, &usb_hcds_loaded);
 	return retval;
@@ -1975,49 +1338,19 @@ module_init(ohci_hcd_mod_init);
 
 static void __exit ohci_hcd_mod_exit(void)
 {
-<<<<<<< HEAD
-#ifdef TMIO_OHCI_DRIVER
-	platform_driver_unregister(&TMIO_OHCI_DRIVER);
-#endif
 #ifdef SM501_OHCI_DRIVER
 	platform_driver_unregister(&SM501_OHCI_DRIVER);
 #endif
-#ifdef SSB_OHCI_DRIVER
-	ssb_driver_unregister(&SSB_OHCI_DRIVER);
-#endif
-#ifdef PCI_DRIVER
-	pci_unregister_driver(&PCI_DRIVER);
-#endif
-=======
-#ifdef SM501_OHCI_DRIVER
-	platform_driver_unregister(&SM501_OHCI_DRIVER);
-#endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef SA1111_DRIVER
 	sa1111_driver_unregister(&SA1111_DRIVER);
 #endif
 #ifdef OF_PLATFORM_DRIVER
 	platform_driver_unregister(&OF_PLATFORM_DRIVER);
 #endif
-<<<<<<< HEAD
-#ifdef PLATFORM_DRIVER
-	platform_driver_unregister(&PLATFORM_DRIVER);
-#endif
-#ifdef OMAP3_PLATFORM_DRIVER
-	platform_driver_unregister(&OMAP3_PLATFORM_DRIVER);
-#endif
-#ifdef PS3_SYSTEM_BUS_DRIVER
-	ps3_ohci_driver_unregister(&PS3_SYSTEM_BUS_DRIVER);
-#endif
-#ifdef DEBUG
-	debugfs_remove(ohci_debug_root);
-#endif
-=======
 #ifdef PS3_SYSTEM_BUS_DRIVER
 	ps3_ohci_driver_unregister(&PS3_SYSTEM_BUS_DRIVER);
 #endif
 	debugfs_remove(ohci_debug_root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(USB_OHCI_LOADED, &usb_hcds_loaded);
 }
 module_exit(ohci_hcd_mod_exit);

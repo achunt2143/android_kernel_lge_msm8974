@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # ALSA Sparc drivers
 
 menuconfig SND_SPARC
@@ -26,10 +23,7 @@ config SND_SUN_AMD7930
 config SND_SUN_CS4231
 	tristate "Sun CS4231"
 	select SND_PCM
-<<<<<<< HEAD
-=======
 	select SND_TIMER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for CS4231 sound device on Sun.
 

@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-/*
- * 	PCI searching functions.
- *
- *	Copyright (C) 1993 -- 1997 Drew Eckhardt, Frederic Potter,
- *					David Mosberger-Tang
- *	Copyright (C) 1997 -- 2000 Martin Mares <mj@ucw.cz>
- *	Copyright (C) 2003 -- 2004 Greg Kroah-Hartman <greg@kroah.com>
- */
-
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * PCI searching functions
@@ -20,7 +8,6 @@
  * Copyright (C) 2003 -- 2004 Greg Kroah-Hartman <greg@kroah.com>
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -28,41 +15,6 @@
 #include "pci.h"
 
 DECLARE_RWSEM(pci_bus_sem);
-<<<<<<< HEAD
-/*
- * find the upstream PCIe-to-PCI bridge of a PCI device
- * if the device is PCIE, return NULL
- * if the device isn't connected to a PCIe bridge (that is its parent is a
- * legacy PCI bridge and the bridge is directly connected to bus 0), return its
- * parent
- */
-struct pci_dev *
-pci_find_upstream_pcie_bridge(struct pci_dev *pdev)
-{
-	struct pci_dev *tmp = NULL;
-
-	if (pci_is_pcie(pdev))
-		return NULL;
-	while (1) {
-		if (pci_is_root_bus(pdev->bus))
-			break;
-		pdev = pdev->bus->self;
-		/* a p2p bridge */
-		if (!pci_is_pcie(pdev)) {
-			tmp = pdev;
-			continue;
-		}
-		/* PCI device should connect to a PCIe bridge */
-		if (pdev->pcie_type != PCI_EXP_TYPE_PCI_BRIDGE) {
-			/* Busted hardware? */
-			WARN_ON_ONCE(1);
-			return NULL;
-		}
-		return pdev;
-	}
-
-	return tmp;
-=======
 
 /*
  * pci_for_each_dma_alias - Iterate over DMA aliases for a device
@@ -159,22 +111,10 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pci_bus *pci_do_find_bus(struct pci_bus *bus, unsigned char busnr)
 {
-<<<<<<< HEAD
-	struct pci_bus* child;
-	struct list_head *tmp;
-
-	if(bus->number == busnr)
-		return bus;
-
-	list_for_each(tmp, &bus->children) {
-		child = pci_do_find_bus(pci_bus_b(tmp), busnr);
-		if(child)
-=======
 	struct pci_bus *child;
 	struct pci_bus *tmp;
 
@@ -184,7 +124,6 @@ static struct pci_bus *pci_do_find_bus(struct pci_bus *bus, unsigned char busnr)
 	list_for_each_entry(tmp, &bus->children, node) {
 		child = pci_do_find_bus(tmp, busnr);
 		if (child)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return child;
 	}
 	return NULL;
@@ -199,11 +138,7 @@ static struct pci_bus *pci_do_find_bus(struct pci_bus *bus, unsigned char busnr)
  * in the global list of PCI buses.  If the bus is found, a pointer to its
  * data structure is returned.  If no bus is found, %NULL is returned.
  */
-<<<<<<< HEAD
-struct pci_bus * pci_find_bus(int domain, int busnr)
-=======
 struct pci_bus *pci_find_bus(int domain, int busnr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_bus *bus = NULL;
 	struct pci_bus *tmp_bus;
@@ -217,44 +152,22 @@ struct pci_bus *pci_find_bus(int domain, int busnr)
 	}
 	return NULL;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(pci_find_bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_find_next_bus - begin or continue searching for a PCI bus
  * @from: Previous PCI bus found, or %NULL for new search.
  *
-<<<<<<< HEAD
- * Iterates through the list of known PCI busses.  A new search is
-=======
  * Iterates through the list of known PCI buses.  A new search is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * initiated by passing %NULL as the @from argument.  Otherwise if
  * @from is not %NULL, searches continue from next device on the
  * global list.
  */
-<<<<<<< HEAD
-struct pci_bus * 
-pci_find_next_bus(const struct pci_bus *from)
-=======
 struct pci_bus *pci_find_next_bus(const struct pci_bus *from)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct list_head *n;
 	struct pci_bus *b = NULL;
 
-<<<<<<< HEAD
-	WARN_ON(in_interrupt());
-	down_read(&pci_bus_sem);
-	n = from ? from->node.next : pci_root_buses.next;
-	if (n != &pci_root_buses)
-		b = pci_bus_b(n);
-	up_read(&pci_bus_sem);
-	return b;
-}
-=======
 	down_read(&pci_bus_sem);
 	n = from ? from->node.next : pci_root_buses.next;
 	if (n != &pci_root_buses)
@@ -263,42 +176,21 @@ struct pci_bus *pci_find_next_bus(const struct pci_bus *from)
 	return b;
 }
 EXPORT_SYMBOL(pci_find_next_bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_get_slot - locate PCI device for a given PCI slot
  * @bus: PCI bus on which desired PCI device resides
-<<<<<<< HEAD
- * @devfn: encodes number of PCI slot in which the desired PCI 
- * device resides and the logical device number within that slot 
- * in case of multi-function devices.
- *
- * Given a PCI bus and slot/function number, the desired PCI device 
-=======
  * @devfn: encodes number of PCI slot in which the desired PCI
  * device resides and the logical device number within that slot
  * in case of multi-function devices.
  *
  * Given a PCI bus and slot/function number, the desired PCI device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * is located in the list of PCI devices.
  * If the device is found, its reference count is increased and this
  * function returns a pointer to its data structure.  The caller must
  * decrement the reference count by calling pci_dev_put().
  * If no device is found, %NULL is returned.
  */
-<<<<<<< HEAD
-struct pci_dev * pci_get_slot(struct pci_bus *bus, unsigned int devfn)
-{
-	struct list_head *tmp;
-	struct pci_dev *dev;
-
-	WARN_ON(in_interrupt());
-	down_read(&pci_bus_sem);
-
-	list_for_each(tmp, &bus->devices) {
-		dev = pci_dev_b(tmp);
-=======
 struct pci_dev *pci_get_slot(struct pci_bus *bus, unsigned int devfn)
 {
 	struct pci_dev *dev;
@@ -306,7 +198,6 @@ struct pci_dev *pci_get_slot(struct pci_bus *bus, unsigned int devfn)
 	down_read(&pci_bus_sem);
 
 	list_for_each_entry(dev, &bus->devices, bus_list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dev->devfn == devfn)
 			goto out;
 	}
@@ -317,10 +208,7 @@ struct pci_dev *pci_get_slot(struct pci_bus *bus, unsigned int devfn)
 	up_read(&pci_bus_sem);
 	return dev;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(pci_get_slot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_get_domain_bus_and_slot - locate PCI device for a given PCI domain (segment), bus, and slot
@@ -351,17 +239,10 @@ struct pci_dev *pci_get_domain_bus_and_slot(int domain, unsigned int bus,
 }
 EXPORT_SYMBOL(pci_get_domain_bus_and_slot);
 
-<<<<<<< HEAD
-static int match_pci_dev_by_id(struct device *dev, void *data)
-{
-	struct pci_dev *pdev = to_pci_dev(dev);
-	struct pci_device_id *id = data;
-=======
 static int match_pci_dev_by_id(struct device *dev, const void *data)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
 	const struct pci_device_id *id = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_match_one_device(id, pdev))
 		return 1;
@@ -391,22 +272,13 @@ static struct pci_dev *pci_get_dev_by_id(const struct pci_device_id *id,
 	struct device *dev_start = NULL;
 	struct pci_dev *pdev = NULL;
 
-<<<<<<< HEAD
-	WARN_ON(in_interrupt());
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (from)
 		dev_start = &from->dev;
 	dev = bus_find_device(&pci_bus_type, dev_start, (void *)id,
 			      match_pci_dev_by_id);
 	if (dev)
 		pdev = to_pci_dev(dev);
-<<<<<<< HEAD
-	if (from)
-		pci_dev_put(from);
-=======
 	pci_dev_put(from);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pdev;
 }
 
@@ -430,33 +302,6 @@ struct pci_dev *pci_get_subsys(unsigned int vendor, unsigned int device,
 			       unsigned int ss_vendor, unsigned int ss_device,
 			       struct pci_dev *from)
 {
-<<<<<<< HEAD
-	struct pci_dev *pdev;
-	struct pci_device_id *id;
-
-	/*
-	 * pci_find_subsys() can be called on the ide_setup() path,
-	 * super-early in boot.  But the down_read() will enable local
-	 * interrupts, which can cause some machines to crash.  So here we
-	 * detect and flag that situation and bail out early.
-	 */
-	if (unlikely(no_pci_devices()))
-		return NULL;
-
-	id = kzalloc(sizeof(*id), GFP_KERNEL);
-	if (!id)
-		return NULL;
-	id->vendor = vendor;
-	id->device = device;
-	id->subvendor = ss_vendor;
-	id->subdevice = ss_device;
-
-	pdev = pci_get_dev_by_id(id, from);
-	kfree(id);
-
-	return pdev;
-}
-=======
 	struct pci_device_id id = {
 		.vendor = vendor,
 		.device = device,
@@ -467,7 +312,6 @@ struct pci_dev *pci_get_subsys(unsigned int vendor, unsigned int device,
 	return pci_get_dev_by_id(&id, from);
 }
 EXPORT_SYMBOL(pci_get_subsys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_get_device - begin or continue searching for a PCI device by vendor/device id
@@ -483,20 +327,12 @@ EXPORT_SYMBOL(pci_get_subsys);
  * from next device on the global list.  The reference count for @from is
  * always decremented if it is not %NULL.
  */
-<<<<<<< HEAD
-struct pci_dev *
-pci_get_device(unsigned int vendor, unsigned int device, struct pci_dev *from)
-{
-	return pci_get_subsys(vendor, device, PCI_ANY_ID, PCI_ANY_ID, from);
-}
-=======
 struct pci_dev *pci_get_device(unsigned int vendor, unsigned int device,
 			       struct pci_dev *from)
 {
 	return pci_get_subsys(vendor, device, PCI_ANY_ID, PCI_ANY_ID, from);
 }
 EXPORT_SYMBOL(pci_get_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_get_class - begin or continue searching for a PCI device by class
@@ -514,22 +350,6 @@ EXPORT_SYMBOL(pci_get_device);
  */
 struct pci_dev *pci_get_class(unsigned int class, struct pci_dev *from)
 {
-<<<<<<< HEAD
-	struct pci_dev *dev;
-	struct pci_device_id *id;
-
-	id = kzalloc(sizeof(*id), GFP_KERNEL);
-	if (!id)
-		return NULL;
-	id->vendor = id->device = id->subvendor = id->subdevice = PCI_ANY_ID;
-	id->class_mask = PCI_ANY_ID;
-	id->class = class;
-
-	dev = pci_get_dev_by_id(id, from);
-	kfree(id);
-	return dev;
-}
-=======
 	struct pci_device_id id = {
 		.vendor = PCI_ANY_ID,
 		.device = PCI_ANY_ID,
@@ -573,7 +393,6 @@ struct pci_dev *pci_get_base_class(unsigned int class, struct pci_dev *from)
 	return pci_get_dev_by_id(&id, from);
 }
 EXPORT_SYMBOL(pci_get_base_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_dev_present - Returns 1 if device matching the device list is present, 0 if not.
@@ -590,30 +409,6 @@ int pci_dev_present(const struct pci_device_id *ids)
 {
 	struct pci_dev *found = NULL;
 
-<<<<<<< HEAD
-	WARN_ON(in_interrupt());
-	while (ids->vendor || ids->subvendor || ids->class_mask) {
-		found = pci_get_dev_by_id(ids, NULL);
-		if (found)
-			goto exit;
-		ids++;
-	}
-exit:
-	if (found)
-		return 1;
-	return 0;
-}
-EXPORT_SYMBOL(pci_dev_present);
-
-/* For boot time work */
-EXPORT_SYMBOL(pci_find_bus);
-EXPORT_SYMBOL(pci_find_next_bus);
-/* For everyone */
-EXPORT_SYMBOL(pci_get_device);
-EXPORT_SYMBOL(pci_get_subsys);
-EXPORT_SYMBOL(pci_get_slot);
-EXPORT_SYMBOL(pci_get_class);
-=======
 	while (ids->vendor || ids->subvendor || ids->class_mask) {
 		found = pci_get_dev_by_id(ids, NULL);
 		if (found) {
@@ -626,4 +421,3 @@ EXPORT_SYMBOL(pci_get_class);
 	return 0;
 }
 EXPORT_SYMBOL(pci_dev_present);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

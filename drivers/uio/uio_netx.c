@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * UIO driver for Hilscher NetX based fieldbus cards (cifX, comX).
  * See http://www.hilscher.com for details.
@@ -9,11 +6,6 @@
  * (C) 2007 Hans J. Koch <hjk@hansjkoch.de>
  * (C) 2008 Manuel Traut <manut@linutronix.de>
  *
-<<<<<<< HEAD
- * Licensed under GPL version 2 only.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -55,30 +47,18 @@ static irqreturn_t netx_handler(int irq, struct uio_info *dev_info)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit netx_pci_probe(struct pci_dev *dev,
-=======
 static int netx_pci_probe(struct pci_dev *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					const struct pci_device_id *id)
 {
 	struct uio_info *info;
 	int bar;
 
-<<<<<<< HEAD
-	info = kzalloc(sizeof(struct uio_info), GFP_KERNEL);
-=======
 	info = devm_kzalloc(&dev->dev, sizeof(struct uio_info), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info)
 		return -ENOMEM;
 
 	if (pci_enable_device(dev))
-<<<<<<< HEAD
-		goto out_free;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_request_regions(dev, "netx"))
 		goto out_disable;
@@ -132,11 +112,6 @@ out_release:
 	pci_release_regions(dev);
 out_disable:
 	pci_disable_device(dev);
-<<<<<<< HEAD
-out_free:
-	kfree(info);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
 }
 
@@ -149,14 +124,7 @@ static void netx_pci_remove(struct pci_dev *dev)
 	uio_unregister_device(info);
 	pci_release_regions(dev);
 	pci_disable_device(dev);
-<<<<<<< HEAD
-	pci_set_drvdata(dev, NULL);
 	iounmap(info->mem[0].internal_addr);
-
-	kfree(info);
-=======
-	iounmap(info->mem[0].internal_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pci_device_id netx_pci_ids[] = {
@@ -200,23 +168,7 @@ static struct pci_driver netx_pci_driver = {
 	.remove = netx_pci_remove,
 };
 
-<<<<<<< HEAD
-static int __init netx_init_module(void)
-{
-	return pci_register_driver(&netx_pci_driver);
-}
-
-static void __exit netx_exit_module(void)
-{
-	pci_unregister_driver(&netx_pci_driver);
-}
-
-module_init(netx_init_module);
-module_exit(netx_exit_module);
-
-=======
 module_pci_driver(netx_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DEVICE_TABLE(pci, netx_pci_ids);
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Hans J. Koch, Manuel Traut");

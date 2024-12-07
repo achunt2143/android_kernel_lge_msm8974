@@ -35,34 +35,6 @@
  * close to the one of the R600 family (R600 likely being an evolution
  * of the RS600 GART block).
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "radeon.h"
-#include "radeon_asic.h"
-#include "atom.h"
-#include "rs600d.h"
-
-#include "rs600_reg_safe.h"
-
-void rs600_gpu_init(struct radeon_device *rdev);
-int rs600_mc_wait_for_idle(struct radeon_device *rdev);
-
-void avivo_wait_for_vblank(struct radeon_device *rdev, int crtc)
-{
-	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc];
-	int i;
-
-	if (RREG32(AVIVO_D1CRTC_CONTROL + radeon_crtc->crtc_offset) & AVIVO_CRTC_EN) {
-		for (i = 0; i < rdev->usec_timeout; i++) {
-			if (!(RREG32(AVIVO_D1CRTC_STATUS + radeon_crtc->crtc_offset) & AVIVO_D1CRTC_V_BLANK))
-				break;
-			udelay(1);
-		}
-		for (i = 0; i < rdev->usec_timeout; i++) {
-			if (RREG32(AVIVO_D1CRTC_STATUS + radeon_crtc->crtc_offset) & AVIVO_D1CRTC_V_BLANK)
-				break;
-			udelay(1);
-=======
 
 #include <linux/io-64-nonatomic-lo-hi.h>
 #include <linux/pci.h>
@@ -140,33 +112,14 @@ void avivo_wait_for_vblank(struct radeon_device *rdev, int crtc)
 		if (i++ % 100 == 0) {
 			if (!avivo_is_counter_moving(rdev, crtc))
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-void rs600_pre_page_flip(struct radeon_device *rdev, int crtc)
-{
-	/* enable the pflip int */
-	radeon_irq_kms_pflip_irq_get(rdev, crtc);
-}
-
-void rs600_post_page_flip(struct radeon_device *rdev, int crtc)
-{
-	/* disable the pflip int */
-	radeon_irq_kms_pflip_irq_put(rdev, crtc);
-}
-
-u32 rs600_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base)
-{
-	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc_id];
-=======
 void rs600_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base, bool async)
 {
 	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc_id];
 	struct drm_framebuffer *fb = radeon_crtc->base.primary->fb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tmp = RREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset);
 	int i;
 
@@ -174,15 +127,12 @@ void rs600_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base, boo
 	tmp |= AVIVO_D1GRPH_UPDATE_LOCK;
 	WREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset, tmp);
 
-<<<<<<< HEAD
-=======
 	/* flip at hsync for async, default is vsync */
 	WREG32(AVIVO_D1GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset,
 	       async ? AVIVO_D1GRPH_SURFACE_UPDATE_H_RETRACE_EN : 0);
 	/* update pitch */
 	WREG32(AVIVO_D1GRPH_PITCH + radeon_crtc->crtc_offset,
 	       fb->pitches[0] / fb->format->cpp[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* update the scanout addresses */
 	WREG32(AVIVO_D1GRPH_SECONDARY_SURFACE_ADDRESS + radeon_crtc->crtc_offset,
 	       (u32)crtc_base);
@@ -200,11 +150,6 @@ void rs600_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base, boo
 	/* Unlock the lock, so double-buffering can take place inside vblank */
 	tmp &= ~AVIVO_D1GRPH_UPDATE_LOCK;
 	WREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset, tmp);
-<<<<<<< HEAD
-
-	/* Return current update_pending status: */
-	return RREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset) & AVIVO_D1GRPH_SURFACE_UPDATE_PENDING;
-=======
 }
 
 bool rs600_page_flip_pending(struct radeon_device *rdev, int crtc_id)
@@ -278,7 +223,6 @@ void avivo_program_fmt(struct drm_encoder *encoder)
 	default:
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rs600_pm_misc(struct radeon_device *rdev)
@@ -466,10 +410,7 @@ void rs600_hpd_init(struct radeon_device *rdev)
 {
 	struct drm_device *dev = rdev->ddev;
 	struct drm_connector *connector;
-<<<<<<< HEAD
-=======
 	unsigned enable = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
 		struct radeon_connector *radeon_connector = to_radeon_connector(connector);
@@ -477,44 +418,26 @@ void rs600_hpd_init(struct radeon_device *rdev)
 		case RADEON_HPD_1:
 			WREG32(R_007D00_DC_HOT_PLUG_DETECT1_CONTROL,
 			       S_007D00_DC_HOT_PLUG_DETECT1_EN(1));
-<<<<<<< HEAD
-			rdev->irq.hpd[0] = true;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case RADEON_HPD_2:
 			WREG32(R_007D10_DC_HOT_PLUG_DETECT2_CONTROL,
 			       S_007D10_DC_HOT_PLUG_DETECT2_EN(1));
-<<<<<<< HEAD
-			rdev->irq.hpd[1] = true;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			break;
 		}
-<<<<<<< HEAD
-		radeon_hpd_set_polarity(rdev, radeon_connector->hpd.hpd);
-	}
-	if (rdev->irq.installed)
-		rs600_irq_set(rdev);
-=======
 		if (radeon_connector->hpd.hpd != RADEON_HPD_NONE)
 			enable |= 1 << radeon_connector->hpd.hpd;
 		radeon_hpd_set_polarity(rdev, radeon_connector->hpd.hpd);
 	}
 	radeon_irq_kms_enable_hpd(rdev, enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rs600_hpd_fini(struct radeon_device *rdev)
 {
 	struct drm_device *dev = rdev->ddev;
 	struct drm_connector *connector;
-<<<<<<< HEAD
-=======
 	unsigned disable = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
 		struct radeon_connector *radeon_connector = to_radeon_connector(connector);
@@ -522,28 +445,14 @@ void rs600_hpd_fini(struct radeon_device *rdev)
 		case RADEON_HPD_1:
 			WREG32(R_007D00_DC_HOT_PLUG_DETECT1_CONTROL,
 			       S_007D00_DC_HOT_PLUG_DETECT1_EN(0));
-<<<<<<< HEAD
-			rdev->irq.hpd[0] = false;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case RADEON_HPD_2:
 			WREG32(R_007D10_DC_HOT_PLUG_DETECT2_CONTROL,
 			       S_007D10_DC_HOT_PLUG_DETECT2_EN(0));
-<<<<<<< HEAD
-			rdev->irq.hpd[1] = false;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			break;
 		}
-<<<<<<< HEAD
-	}
-}
-
-int rs600_asic_reset(struct radeon_device *rdev)
-=======
 		if (radeon_connector->hpd.hpd != RADEON_HPD_NONE)
 			disable |= 1 << radeon_connector->hpd.hpd;
 	}
@@ -551,7 +460,6 @@ int rs600_asic_reset(struct radeon_device *rdev)
 }
 
 int rs600_asic_reset(struct radeon_device *rdev, bool hard)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rv515_mc_save save;
 	u32 status, tmp;
@@ -606,10 +514,6 @@ int rs600_asic_reset(struct radeon_device *rdev, bool hard)
 	/* Check if GPU is idle */
 	if (G_000E40_GA_BUSY(status) || G_000E40_VAP_BUSY(status)) {
 		dev_err(rdev->dev, "failed to reset GPU\n");
-<<<<<<< HEAD
-		rdev->gpu_lockup = true;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -1;
 	} else
 		dev_info(rdev->dev, "GPU reset succeed\n");
@@ -638,11 +542,7 @@ void rs600_gart_tlb_flush(struct radeon_device *rdev)
 	tmp = RREG32_MC(R_000100_MC_PT0_CNTL);
 }
 
-<<<<<<< HEAD
-int rs600_gart_init(struct radeon_device *rdev)
-=======
 static int rs600_gart_init(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 
@@ -671,10 +571,6 @@ static int rs600_gart_enable(struct radeon_device *rdev)
 	r = radeon_gart_table_vram_pin(rdev);
 	if (r)
 		return r;
-<<<<<<< HEAD
-	radeon_gart_restore(rdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable bus master */
 	tmp = RREG32(RADEON_BUS_CNTL) & ~RS600_BUS_MASTER_DIS;
 	WREG32(RADEON_BUS_CNTL, tmp);
@@ -727,11 +623,7 @@ static int rs600_gart_enable(struct radeon_device *rdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-void rs600_gart_disable(struct radeon_device *rdev)
-=======
 static void rs600_gart_disable(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp;
 
@@ -742,39 +634,13 @@ static void rs600_gart_disable(struct radeon_device *rdev)
 	radeon_gart_table_vram_unpin(rdev);
 }
 
-<<<<<<< HEAD
-void rs600_gart_fini(struct radeon_device *rdev)
-=======
 static void rs600_gart_fini(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	radeon_gart_fini(rdev);
 	rs600_gart_disable(rdev);
 	radeon_gart_table_vram_free(rdev);
 }
 
-<<<<<<< HEAD
-#define R600_PTE_VALID     (1 << 0)
-#define R600_PTE_SYSTEM    (1 << 1)
-#define R600_PTE_SNOOPED   (1 << 2)
-#define R600_PTE_READABLE  (1 << 5)
-#define R600_PTE_WRITEABLE (1 << 6)
-
-int rs600_gart_set_page(struct radeon_device *rdev, int i, uint64_t addr)
-{
-	void __iomem *ptr = (void *)rdev->gart.ptr;
-
-	if (i < 0 || i > rdev->gart.num_gpu_pages) {
-		return -EINVAL;
-	}
-	addr = addr & 0xFFFFFFFFFFFFF000ULL;
-	if (addr != rdev->dummy_page.addr)
-		addr |= R600_PTE_VALID | R600_PTE_READABLE |
-			R600_PTE_WRITEABLE;
-	addr |= R600_PTE_SYSTEM | R600_PTE_SNOOPED;
-	writeq(addr, ptr + (i * 8));
-	return 0;
-=======
 uint64_t rs600_gart_get_page_entry(uint64_t addr, uint32_t flags)
 {
 	addr = addr & 0xFFFFFFFFFFFFF000ULL;
@@ -795,7 +661,6 @@ void rs600_gart_set_page(struct radeon_device *rdev, unsigned i,
 {
 	void __iomem *ptr = (void *)rdev->gart.ptr;
 	writeq(entry, ptr + (i * 8));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int rs600_irq_set(struct radeon_device *rdev)
@@ -806,35 +671,18 @@ int rs600_irq_set(struct radeon_device *rdev)
 		~S_007D08_DC_HOT_PLUG_DETECT1_INT_EN(1);
 	u32 hpd2 = RREG32(R_007D18_DC_HOT_PLUG_DETECT2_INT_CONTROL) &
 		~S_007D18_DC_HOT_PLUG_DETECT2_INT_EN(1);
-<<<<<<< HEAD
-=======
 	u32 hdmi0;
 	if (ASIC_IS_DCE2(rdev))
 		hdmi0 = RREG32(R_007408_HDMI0_AUDIO_PACKET_CONTROL) &
 			~S_007408_HDMI0_AZ_FORMAT_WTRIG_MASK(1);
 	else
 		hdmi0 = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!rdev->irq.installed) {
 		WARN(1, "Can't enable IRQ/MSI because no handler is installed\n");
 		WREG32(R_000040_GEN_INT_CNTL, 0);
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	if (rdev->irq.sw_int[RADEON_RING_TYPE_GFX_INDEX]) {
-		tmp |= S_000040_SW_INT_EN(1);
-	}
-	if (rdev->irq.gui_idle) {
-		tmp |= S_000040_GUI_IDLE(1);
-	}
-	if (rdev->irq.crtc_vblank_int[0] ||
-	    rdev->irq.pflip[0]) {
-		mode_int |= S_006540_D1MODE_VBLANK_INT_MASK(1);
-	}
-	if (rdev->irq.crtc_vblank_int[1] ||
-	    rdev->irq.pflip[1]) {
-=======
 	if (atomic_read(&rdev->irq.ring_int[RADEON_RING_TYPE_GFX_INDEX])) {
 		tmp |= S_000040_SW_INT_EN(1);
 	}
@@ -844,7 +692,6 @@ int rs600_irq_set(struct radeon_device *rdev)
 	}
 	if (rdev->irq.crtc_vblank_int[1] ||
 	    atomic_read(&rdev->irq.pflip[1])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mode_int |= S_006540_D2MODE_VBLANK_INT_MASK(1);
 	}
 	if (rdev->irq.hpd[0]) {
@@ -853,21 +700,15 @@ int rs600_irq_set(struct radeon_device *rdev)
 	if (rdev->irq.hpd[1]) {
 		hpd2 |= S_007D18_DC_HOT_PLUG_DETECT2_INT_EN(1);
 	}
-<<<<<<< HEAD
-=======
 	if (rdev->irq.afmt[0]) {
 		hdmi0 |= S_007408_HDMI0_AZ_FORMAT_WTRIG_MASK(1);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WREG32(R_000040_GEN_INT_CNTL, tmp);
 	WREG32(R_006540_DxMODE_INT_MASK, mode_int);
 	WREG32(R_007D08_DC_HOT_PLUG_DETECT1_INT_CONTROL, hpd1);
 	WREG32(R_007D18_DC_HOT_PLUG_DETECT2_INT_CONTROL, hpd2);
-<<<<<<< HEAD
-=======
 	if (ASIC_IS_DCE2(rdev))
 		WREG32(R_007408_HDMI0_AUDIO_PACKET_CONTROL, hdmi0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* posting read */
 	RREG32(R_000040_GEN_INT_CNTL);
@@ -881,15 +722,6 @@ static inline u32 rs600_irq_ack(struct radeon_device *rdev)
 	uint32_t irq_mask = S_000044_SW_INT(1);
 	u32 tmp;
 
-<<<<<<< HEAD
-	/* the interrupt works, but the status bit is permanently asserted */
-	if (rdev->irq.gui_idle && radeon_gui_idle(rdev)) {
-		if (!rdev->irq.gui_idle_acked)
-			irq_mask |= S_000044_GUI_IDLE_STAT(1);
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (G_000044_DISPLAY_INT_STAT(irqs)) {
 		rdev->irq.stat_regs.r500.disp_int = RREG32(R_007EDC_DISP_INTERRUPT_STATUS);
 		if (G_007EDC_LB_D1_VBLANK_INTERRUPT(rdev->irq.stat_regs.r500.disp_int)) {
@@ -914,8 +746,6 @@ static inline u32 rs600_irq_ack(struct radeon_device *rdev)
 		rdev->irq.stat_regs.r500.disp_int = 0;
 	}
 
-<<<<<<< HEAD
-=======
 	if (ASIC_IS_DCE2(rdev)) {
 		rdev->irq.stat_regs.r500.hdmi0_status = RREG32(R_007404_HDMI0_STATUS) &
 			S_007404_HDMI0_AZ_FORMAT_WTRIG(1);
@@ -927,7 +757,6 @@ static inline u32 rs600_irq_ack(struct radeon_device *rdev)
 	} else
 		rdev->irq.stat_regs.r500.hdmi0_status = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (irqs) {
 		WREG32(R_000044_GEN_INT_STATUS, irqs);
 	}
@@ -936,12 +765,9 @@ static inline u32 rs600_irq_ack(struct radeon_device *rdev)
 
 void rs600_irq_disable(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-=======
 	u32 hdmi0 = RREG32(R_007408_HDMI0_AUDIO_PACKET_CONTROL) &
 		~S_007408_HDMI0_AZ_FORMAT_WTRIG_MASK(1);
 	WREG32(R_007408_HDMI0_AUDIO_PACKET_CONTROL, hdmi0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WREG32(R_000040_GEN_INT_CNTL, 0);
 	WREG32(R_006540_DxMODE_INT_MASK, 0);
 	/* Wait and acknowledge irq */
@@ -953,17 +779,6 @@ int rs600_irq_process(struct radeon_device *rdev)
 {
 	u32 status, msi_rearm;
 	bool queue_hotplug = false;
-<<<<<<< HEAD
-
-	/* reset gui idle ack.  the status bit is broken */
-	rdev->irq.gui_idle_acked = false;
-
-	status = rs600_irq_ack(rdev);
-	if (!status && !rdev->irq.stat_regs.r500.disp_int) {
-		return IRQ_NONE;
-	}
-	while (status || rdev->irq.stat_regs.r500.disp_int) {
-=======
 	bool queue_hdmi = false;
 
 	status = rs600_irq_ack(rdev);
@@ -975,20 +790,10 @@ int rs600_irq_process(struct radeon_device *rdev)
 	while (status ||
 	       rdev->irq.stat_regs.r500.disp_int ||
 	       rdev->irq.stat_regs.r500.hdmi0_status) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* SW interrupt */
 		if (G_000044_SW_INT(status)) {
 			radeon_fence_process(rdev, RADEON_RING_TYPE_GFX_INDEX);
 		}
-<<<<<<< HEAD
-		/* GUI idle */
-		if (G_000040_GUI_IDLE(status)) {
-			rdev->irq.gui_idle_acked = true;
-			rdev->pm.gui_idle = true;
-			wake_up(&rdev->irq.idle_queue);
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Vertical blank interrupts */
 		if (G_007EDC_LB_D1_VBLANK_INTERRUPT(rdev->irq.stat_regs.r500.disp_int)) {
 			if (rdev->irq.crtc_vblank_int[0]) {
@@ -996,13 +801,8 @@ int rs600_irq_process(struct radeon_device *rdev)
 				rdev->pm.vblank_sync = true;
 				wake_up(&rdev->irq.vblank_queue);
 			}
-<<<<<<< HEAD
-			if (rdev->irq.pflip[0])
-				radeon_crtc_handle_flip(rdev, 0);
-=======
 			if (atomic_read(&rdev->irq.pflip[0]))
 				radeon_crtc_handle_vblank(rdev, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (G_007EDC_LB_D2_VBLANK_INTERRUPT(rdev->irq.stat_regs.r500.disp_int)) {
 			if (rdev->irq.crtc_vblank_int[1]) {
@@ -1010,13 +810,8 @@ int rs600_irq_process(struct radeon_device *rdev)
 				rdev->pm.vblank_sync = true;
 				wake_up(&rdev->irq.vblank_queue);
 			}
-<<<<<<< HEAD
-			if (rdev->irq.pflip[1])
-				radeon_crtc_handle_flip(rdev, 1);
-=======
 			if (atomic_read(&rdev->irq.pflip[1]))
 				radeon_crtc_handle_vblank(rdev, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (G_007EDC_DC_HOT_PLUG_DETECT1_INTERRUPT(rdev->irq.stat_regs.r500.disp_int)) {
 			queue_hotplug = true;
@@ -1026,14 +821,6 @@ int rs600_irq_process(struct radeon_device *rdev)
 			queue_hotplug = true;
 			DRM_DEBUG("HPD2\n");
 		}
-<<<<<<< HEAD
-		status = rs600_irq_ack(rdev);
-	}
-	/* reset gui idle ack.  the status bit is broken */
-	rdev->irq.gui_idle_acked = false;
-	if (queue_hotplug)
-		schedule_work(&rdev->hotplug_work);
-=======
 		if (G_007404_HDMI0_AZ_FORMAT_WTRIG(rdev->irq.stat_regs.r500.hdmi0_status)) {
 			queue_hdmi = true;
 			DRM_DEBUG("HDMI0\n");
@@ -1044,7 +831,6 @@ int rs600_irq_process(struct radeon_device *rdev)
 		schedule_delayed_work(&rdev->hotplug_work, 0);
 	if (queue_hdmi)
 		schedule_work(&rdev->audio_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdev->msi_enabled) {
 		switch (rdev->family) {
 		case CHIP_RS600:
@@ -1082,11 +868,7 @@ int rs600_mc_wait_for_idle(struct radeon_device *rdev)
 	return -1;
 }
 
-<<<<<<< HEAD
-void rs600_gpu_init(struct radeon_device *rdev)
-=======
 static void rs600_gpu_init(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	r420_pipes_init(rdev);
 	/* Wait for mc idle */
@@ -1094,11 +876,7 @@ static void rs600_gpu_init(struct radeon_device *rdev)
 		dev_warn(rdev->dev, "Wait MC idle timeout before updating MC.\n");
 }
 
-<<<<<<< HEAD
-void rs600_mc_init(struct radeon_device *rdev)
-=======
 static void rs600_mc_init(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 base;
 
@@ -1125,12 +903,9 @@ void rs600_bandwidth_update(struct radeon_device *rdev)
 	u32 d1mode_priority_a_cnt, d2mode_priority_a_cnt;
 	/* FIXME: implement full support */
 
-<<<<<<< HEAD
-=======
 	if (!rdev->mode_info.mode_config_initialized)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_update_display_priority(rdev);
 
 	if (rdev->mode_info.crtcs[0]->base.enabled)
@@ -1154,11 +929,6 @@ void rs600_bandwidth_update(struct radeon_device *rdev)
 
 uint32_t rs600_mc_rreg(struct radeon_device *rdev, uint32_t reg)
 {
-<<<<<<< HEAD
-	WREG32(R_000070_MC_IND_INDEX, S_000070_MC_IND_ADDR(reg) |
-		S_000070_MC_IND_CITF_ARB0(1));
-	return RREG32(R_000074_MC_IND_DATA);
-=======
 	unsigned long flags;
 	u32 r;
 
@@ -1168,22 +938,10 @@ uint32_t rs600_mc_rreg(struct radeon_device *rdev, uint32_t reg)
 	r = RREG32(R_000074_MC_IND_DATA);
 	spin_unlock_irqrestore(&rdev->mc_idx_lock, flags);
 	return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rs600_mc_wreg(struct radeon_device *rdev, uint32_t reg, uint32_t v)
 {
-<<<<<<< HEAD
-	WREG32(R_000070_MC_IND_INDEX, S_000070_MC_IND_ADDR(reg) |
-		S_000070_MC_IND_CITF_ARB0(1) | S_000070_MC_IND_WR_EN(1));
-	WREG32(R_000074_MC_IND_DATA, v);
-}
-
-void rs600_debugfs(struct radeon_device *rdev)
-{
-	if (r100_debugfs_rbbm_init(rdev))
-		DRM_ERROR("Failed to register debugfs file for RBBM !\n");
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&rdev->mc_idx_lock, flags);
@@ -1191,7 +949,6 @@ void rs600_debugfs(struct radeon_device *rdev)
 		S_000070_MC_IND_CITF_ARB0(1) | S_000070_MC_IND_WR_EN(1));
 	WREG32(R_000074_MC_IND_DATA, v);
 	spin_unlock_irqrestore(&rdev->mc_idx_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rs600_set_safe_registers(struct radeon_device *rdev)
@@ -1267,22 +1024,6 @@ static int rs600_startup(struct radeon_device *rdev)
 		return r;
 	}
 
-<<<<<<< HEAD
-	r = r600_audio_init(rdev);
-	if (r) {
-		dev_err(rdev->dev, "failed initializing audio\n");
-		return r;
-	}
-
-	r = radeon_ib_pool_start(rdev);
-	if (r)
-		return r;
-
-	r = radeon_ib_test(rdev, RADEON_RING_TYPE_GFX_INDEX, &rdev->ring[RADEON_RING_TYPE_GFX_INDEX]);
-	if (r) {
-		dev_err(rdev->dev, "failed testing IB (%d).\n", r);
-		rdev->accel_working = false;
-=======
 	r = radeon_ib_pool_init(rdev);
 	if (r) {
 		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
@@ -1292,7 +1033,6 @@ static int rs600_startup(struct radeon_device *rdev)
 	r = radeon_audio_init(rdev);
 	if (r) {
 		dev_err(rdev->dev, "failed initializing audio\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 
@@ -1330,13 +1070,8 @@ int rs600_resume(struct radeon_device *rdev)
 
 int rs600_suspend(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	radeon_ib_pool_suspend(rdev);
-	r600_audio_fini(rdev);
-=======
 	radeon_pm_suspend(rdev);
 	radeon_audio_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r100_cp_disable(rdev);
 	radeon_wb_disable(rdev);
 	rs600_irq_disable(rdev);
@@ -1346,18 +1081,11 @@ int rs600_suspend(struct radeon_device *rdev)
 
 void rs600_fini(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	r600_audio_fini(rdev);
-	r100_cp_fini(rdev);
-	radeon_wb_fini(rdev);
-	r100_ib_fini(rdev);
-=======
 	radeon_pm_fini(rdev);
 	radeon_audio_fini(rdev);
 	r100_cp_fini(rdev);
 	radeon_wb_fini(rdev);
 	radeon_ib_pool_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_gem_fini(rdev);
 	rs600_gart_fini(rdev);
 	radeon_irq_kms_fini(rdev);
@@ -1408,17 +1136,9 @@ int rs600_init(struct radeon_device *rdev)
 	radeon_get_clock_info(rdev->ddev);
 	/* initialize memory controller */
 	rs600_mc_init(rdev);
-<<<<<<< HEAD
-	rs600_debugfs(rdev);
-	/* Fence driver */
-	r = radeon_fence_driver_init(rdev);
-	if (r)
-		return r;
-=======
 	r100_debugfs_rbbm_init(rdev);
 	/* Fence driver */
 	radeon_fence_driver_init(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Memory manager */
 	r = radeon_bo_init(rdev);
 	if (r)
@@ -1428,31 +1148,17 @@ int rs600_init(struct radeon_device *rdev)
 		return r;
 	rs600_set_safe_registers(rdev);
 
-<<<<<<< HEAD
-	r = radeon_ib_pool_init(rdev);
-	rdev->accel_working = true;
-	if (r) {
-		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
-		rdev->accel_working = false;
-	}
-
-=======
 	/* Initialize power management */
 	radeon_pm_init(rdev);
 
 	rdev->accel_working = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = rs600_startup(rdev);
 	if (r) {
 		/* Somethings want wront with the accel init stop accel */
 		dev_err(rdev->dev, "Disabling GPU acceleration\n");
 		r100_cp_fini(rdev);
 		radeon_wb_fini(rdev);
-<<<<<<< HEAD
-		r100_ib_fini(rdev);
-=======
 		radeon_ib_pool_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rs600_gart_fini(rdev);
 		radeon_irq_kms_fini(rdev);
 		rdev->accel_working = false;

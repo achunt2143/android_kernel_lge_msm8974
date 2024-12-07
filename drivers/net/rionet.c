@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * rionet - Ethernet driver over RapidIO messaging services
  *
  * Copyright 2005 MontaVista Software, Inc.
  * Matt Porter <mporter@kernel.crashing.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -31,16 +20,10 @@
 #include <linux/skbuff.h>
 #include <linux/crc32.h>
 #include <linux/ethtool.h>
-<<<<<<< HEAD
-
-#define DRV_NAME        "rionet"
-#define DRV_VERSION     "0.2"
-=======
 #include <linux/reboot.h>
 
 #define DRV_NAME        "rionet"
 #define DRV_VERSION     "0.3"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRV_AUTHOR      "Matt Porter <mporter@kernel.crashing.org>"
 #define DRV_DESC        "Ethernet over RapidIO"
 
@@ -61,14 +44,9 @@ MODULE_LICENSE("GPL");
 
 #define RIONET_TX_RING_SIZE	CONFIG_RIONET_TX_SIZE
 #define RIONET_RX_RING_SIZE	CONFIG_RIONET_RX_SIZE
-<<<<<<< HEAD
-
-static LIST_HEAD(rionet_peers);
-=======
 #define RIONET_MAX_NETS		8
 #define RIONET_MSG_SIZE         RIO_MAX_MSG_SIZE
 #define RIONET_MAX_MTU          (RIONET_MSG_SIZE - ETH_HLEN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct rionet_private {
 	struct rio_mport *mport;
@@ -81,10 +59,7 @@ struct rionet_private {
 	spinlock_t lock;
 	spinlock_t tx_lock;
 	u32 msg_enable;
-<<<<<<< HEAD
-=======
 	bool open;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct rionet_peer {
@@ -93,19 +68,6 @@ struct rionet_peer {
 	struct resource *res;
 };
 
-<<<<<<< HEAD
-static int rionet_check = 0;
-static int rionet_capable = 1;
-
-/*
- * This is a fast lookup table for translating TX
- * Ethernet packets into a destination RIO device. It
- * could be made into a hash table to save memory depending
- * on system trade-offs.
- */
-static struct rio_dev **rionet_active;
-static int nact;	/* total number of active rionet peers */
-=======
 struct rionet_net {
 	struct net_device *ndev;
 	struct list_head peers;
@@ -115,7 +77,6 @@ struct rionet_net {
 };
 
 static struct rionet_net nets[RIONET_MAX_NETS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define is_rionet_capable(src_ops, dst_ops)			\
 			((src_ops & RIO_SRC_OPS_DATA_MSG) &&	\
@@ -148,11 +109,7 @@ static int rionet_rx_clean(struct net_device *ndev)
 		skb_put(rnet->rx_skb[i], RIO_MAX_MSG_SIZE);
 		rnet->rx_skb[i]->protocol =
 		    eth_type_trans(rnet->rx_skb[i], ndev);
-<<<<<<< HEAD
-		error = netif_rx(rnet->rx_skb[i]);
-=======
 		error = __netif_rx(rnet->rx_skb[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (error == NET_RX_DROP) {
 			ndev->stats.rx_dropped++;
@@ -209,12 +166,8 @@ static int rionet_queue_tx_msg(struct sk_buff *skb, struct net_device *ndev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int rionet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-=======
 static netdev_tx_t rionet_start_xmit(struct sk_buff *skb,
 				     struct net_device *ndev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct rionet_private *rnet = netdev_priv(ndev);
@@ -223,21 +176,10 @@ static netdev_tx_t rionet_start_xmit(struct sk_buff *skb,
 	unsigned long flags;
 	int add_num = 1;
 
-<<<<<<< HEAD
-	local_irq_save(flags);
-	if (!spin_trylock(&rnet->tx_lock)) {
-		local_irq_restore(flags);
-		return NETDEV_TX_LOCKED;
-	}
-
-	if (is_multicast_ether_addr(eth->h_dest))
-		add_num = nact;
-=======
 	spin_lock_irqsave(&rnet->tx_lock, flags);
 
 	if (is_multicast_ether_addr(eth->h_dest))
 		add_num = nets[rnet->mport->id].nact;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((rnet->tx_cnt + add_num) > RIONET_TX_RING_SIZE) {
 		netif_stop_queue(ndev);
@@ -249,15 +191,6 @@ static netdev_tx_t rionet_start_xmit(struct sk_buff *skb,
 
 	if (is_multicast_ether_addr(eth->h_dest)) {
 		int count = 0;
-<<<<<<< HEAD
-		for (i = 0; i < RIO_MAX_ROUTE_ENTRIES(rnet->mport->sys_size);
-				i++)
-			if (rionet_active[i]) {
-				rionet_queue_tx_msg(skb, ndev,
-						    rionet_active[i]);
-				if (count)
-					atomic_inc(&skb->users);
-=======
 
 		for (i = 0; i < RIO_MAX_ROUTE_ENTRIES(rnet->mport->sys_size);
 				i++)
@@ -266,15 +199,10 @@ static netdev_tx_t rionet_start_xmit(struct sk_buff *skb,
 					nets[rnet->mport->id].active[i]);
 				if (count)
 					refcount_inc(&skb->users);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				count++;
 			}
 	} else if (RIONET_MAC_MATCH(eth->h_dest)) {
 		destid = RIONET_GET_DESTID(eth->h_dest);
-<<<<<<< HEAD
-		if (rionet_active[destid])
-			rionet_queue_tx_msg(skb, ndev, rionet_active[destid]);
-=======
 		if (nets[rnet->mport->id].active[destid])
 			rionet_queue_tx_msg(skb, ndev,
 					nets[rnet->mport->id].active[destid]);
@@ -289,7 +217,6 @@ static netdev_tx_t rionet_start_xmit(struct sk_buff *skb,
 			ndev->stats.tx_bytes += skb->len;
 			dev_kfree_skb_any(skb);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(&rnet->tx_lock, flags);
@@ -303,24 +230,12 @@ static void rionet_dbell_event(struct rio_mport *mport, void *dev_id, u16 sid, u
 	struct net_device *ndev = dev_id;
 	struct rionet_private *rnet = netdev_priv(ndev);
 	struct rionet_peer *peer;
-<<<<<<< HEAD
-=======
 	unsigned char netid = rnet->mport->id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_msg_intr(rnet))
 		printk(KERN_INFO "%s: doorbell sid %4.4x tid %4.4x info %4.4x",
 		       DRV_NAME, sid, tid, info);
 	if (info == RIONET_DOORBELL_JOIN) {
-<<<<<<< HEAD
-		if (!rionet_active[sid]) {
-			list_for_each_entry(peer, &rionet_peers, node) {
-				if (peer->rdev->destid == sid) {
-					rionet_active[sid] = peer->rdev;
-					nact++;
-				}
-			}
-=======
 		if (!nets[netid].active[sid]) {
 			spin_lock(&nets[netid].lock);
 			list_for_each_entry(peer, &nets[netid].peers, node) {
@@ -331,22 +246,16 @@ static void rionet_dbell_event(struct rio_mport *mport, void *dev_id, u16 sid, u
 			}
 			spin_unlock(&nets[netid].lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rio_mport_send_doorbell(mport, sid,
 						RIONET_DOORBELL_JOIN);
 		}
 	} else if (info == RIONET_DOORBELL_LEAVE) {
-<<<<<<< HEAD
-		rionet_active[sid] = NULL;
-		nact--;
-=======
 		spin_lock(&nets[netid].lock);
 		if (nets[netid].active[sid]) {
 			nets[netid].active[sid] = NULL;
 			nets[netid].nact--;
 		}
 		spin_unlock(&nets[netid].lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (netif_msg_intr(rnet))
 			printk(KERN_WARNING "%s: unhandled doorbell\n",
@@ -375,11 +284,7 @@ static void rionet_outb_msg_event(struct rio_mport *mport, void *dev_id, int mbo
 	struct net_device *ndev = dev_id;
 	struct rionet_private *rnet = netdev_priv(ndev);
 
-<<<<<<< HEAD
-	spin_lock(&rnet->lock);
-=======
 	spin_lock(&rnet->tx_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_msg_intr(rnet))
 		printk(KERN_INFO
@@ -398,25 +303,16 @@ static void rionet_outb_msg_event(struct rio_mport *mport, void *dev_id, int mbo
 	if (rnet->tx_cnt < RIONET_TX_RING_SIZE)
 		netif_wake_queue(ndev);
 
-<<<<<<< HEAD
-	spin_unlock(&rnet->lock);
-=======
 	spin_unlock(&rnet->tx_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rionet_open(struct net_device *ndev)
 {
 	int i, rc = 0;
-<<<<<<< HEAD
-	struct rionet_peer *peer, *tmp;
-	struct rionet_private *rnet = netdev_priv(ndev);
-=======
 	struct rionet_peer *peer;
 	struct rionet_private *rnet = netdev_priv(ndev);
 	unsigned char netid = rnet->mport->id;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_msg_ifup(rnet))
 		printk(KERN_INFO "%s: open\n", DRV_NAME);
@@ -455,21 +351,6 @@ static int rionet_open(struct net_device *ndev)
 	netif_carrier_on(ndev);
 	netif_start_queue(ndev);
 
-<<<<<<< HEAD
-	list_for_each_entry_safe(peer, tmp, &rionet_peers, node) {
-		if (!(peer->res = rio_request_outb_dbell(peer->rdev,
-							 RIONET_DOORBELL_JOIN,
-							 RIONET_DOORBELL_LEAVE)))
-		{
-			printk(KERN_ERR "%s: error requesting doorbells\n",
-			       DRV_NAME);
-			continue;
-		}
-
-		/* Send a join message */
-		rio_send_doorbell(peer->rdev, RIONET_DOORBELL_JOIN);
-	}
-=======
 	spin_lock_irqsave(&nets[netid].lock, flags);
 	list_for_each_entry(peer, &nets[netid].peers, node) {
 		/* Send a join message */
@@ -477,7 +358,6 @@ static int rionet_open(struct net_device *ndev)
 	}
 	spin_unlock_irqrestore(&nets[netid].lock, flags);
 	rnet->open = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
       out:
 	return rc;
@@ -486,16 +366,6 @@ static int rionet_open(struct net_device *ndev)
 static int rionet_close(struct net_device *ndev)
 {
 	struct rionet_private *rnet = netdev_priv(ndev);
-<<<<<<< HEAD
-	struct rionet_peer *peer, *tmp;
-	int i;
-
-	if (netif_msg_ifup(rnet))
-		printk(KERN_INFO "%s: close\n", DRV_NAME);
-
-	netif_stop_queue(ndev);
-	netif_carrier_off(ndev);
-=======
 	struct rionet_peer *peer;
 	unsigned char netid = rnet->mport->id;
 	unsigned long flags;
@@ -507,20 +377,10 @@ static int rionet_close(struct net_device *ndev)
 	netif_stop_queue(ndev);
 	netif_carrier_off(ndev);
 	rnet->open = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < RIONET_RX_RING_SIZE; i++)
 		kfree_skb(rnet->rx_skb[i]);
 
-<<<<<<< HEAD
-	list_for_each_entry_safe(peer, tmp, &rionet_peers, node) {
-		if (rionet_active[peer->rdev->destid]) {
-			rio_send_doorbell(peer->rdev, RIONET_DOORBELL_LEAVE);
-			rionet_active[peer->rdev->destid] = NULL;
-		}
-		rio_release_outb_dbell(peer->rdev, peer->res);
-	}
-=======
 	spin_lock_irqsave(&nets[netid].lock, flags);
 	list_for_each_entry(peer, &nets[netid].peers, node) {
 		if (nets[netid].active[peer->rdev->destid]) {
@@ -531,7 +391,6 @@ static int rionet_close(struct net_device *ndev)
 			rio_release_outb_dbell(peer->rdev, peer->res);
 	}
 	spin_unlock_irqrestore(&nets[netid].lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rio_release_inb_dbell(rnet->mport, RIONET_DOORBELL_JOIN,
 			      RIONET_DOORBELL_LEAVE);
@@ -541,20 +400,6 @@ static int rionet_close(struct net_device *ndev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void rionet_remove(struct rio_dev *rdev)
-{
-	struct net_device *ndev = rio_get_drvdata(rdev);
-	struct rionet_peer *peer, *tmp;
-
-	free_pages((unsigned long)rionet_active, get_order(sizeof(void *) *
-			RIO_MAX_ROUTE_ENTRIES(rdev->net->hport->sys_size)));
-	unregister_netdev(ndev);
-	free_netdev(ndev);
-
-	list_for_each_entry_safe(peer, tmp, &rionet_peers, node) {
-		list_del(&peer->node);
-=======
 static void rionet_remove_dev(struct device *dev, struct subsys_interface *sif)
 {
 	struct rio_dev *rdev = to_rio_dev(dev);
@@ -589,7 +434,6 @@ static void rionet_remove_dev(struct device *dev, struct subsys_interface *sif)
 	if (found) {
 		if (peer->res)
 			rio_release_outb_dbell(rdev, peer->res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(peer);
 	}
 }
@@ -599,17 +443,10 @@ static void rionet_get_drvinfo(struct net_device *ndev,
 {
 	struct rionet_private *rnet = netdev_priv(ndev);
 
-<<<<<<< HEAD
-	strcpy(info->driver, DRV_NAME);
-	strcpy(info->version, DRV_VERSION);
-	strcpy(info->fw_version, "n/a");
-	strcpy(info->bus_info, rnet->mport->name);
-=======
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strscpy(info->version, DRV_VERSION, sizeof(info->version));
 	strscpy(info->fw_version, "n/a", sizeof(info->fw_version));
 	strscpy(info->bus_info, rnet->mport->name, sizeof(info->bus_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 rionet_get_msglevel(struct net_device *ndev)
@@ -637,10 +474,6 @@ static const struct net_device_ops rionet_netdev_ops = {
 	.ndo_open		= rionet_open,
 	.ndo_stop		= rionet_close,
 	.ndo_start_xmit		= rionet_start_xmit,
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
 };
@@ -649,23 +482,11 @@ static int rionet_setup_netdev(struct rio_mport *mport, struct net_device *ndev)
 {
 	int rc = 0;
 	struct rionet_private *rnet;
-<<<<<<< HEAD
-=======
 	u8 addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 device_id;
 	const size_t rionet_active_bytes = sizeof(void *) *
 				RIO_MAX_ROUTE_ENTRIES(mport->sys_size);
 
-<<<<<<< HEAD
-	rionet_active = (struct rio_dev **)__get_free_pages(GFP_KERNEL,
-			get_order(rionet_active_bytes));
-	if (!rionet_active) {
-		rc = -ENOMEM;
-		goto out;
-	}
-	memset((void *)rionet_active, 0, rionet_active_bytes);
-=======
 	nets[mport->id].active = (struct rio_dev **)__get_free_pages(GFP_KERNEL,
 						get_order(rionet_active_bytes));
 	if (!nets[mport->id].active) {
@@ -673,27 +494,10 @@ static int rionet_setup_netdev(struct rio_mport *mport, struct net_device *ndev)
 		goto out;
 	}
 	memset((void *)nets[mport->id].active, 0, rionet_active_bytes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set up private area */
 	rnet = netdev_priv(ndev);
 	rnet->mport = mport;
-<<<<<<< HEAD
-
-	/* Set the default MAC address */
-	device_id = rio_local_get_device_id(mport);
-	ndev->dev_addr[0] = 0x00;
-	ndev->dev_addr[1] = 0x01;
-	ndev->dev_addr[2] = 0x00;
-	ndev->dev_addr[3] = 0x01;
-	ndev->dev_addr[4] = device_id >> 8;
-	ndev->dev_addr[5] = device_id & 0xff;
-
-	ndev->netdev_ops = &rionet_netdev_ops;
-	ndev->mtu = RIO_MAX_MSG_SIZE - 14;
-	ndev->features = NETIF_F_LLTX;
-	SET_ETHTOOL_OPS(ndev, &rionet_ethtool_ops);
-=======
 	rnet->open = false;
 
 	/* Set the default MAC address */
@@ -714,7 +518,6 @@ static int rionet_setup_netdev(struct rio_mport *mport, struct net_device *ndev)
 	ndev->features = NETIF_F_LLTX;
 	SET_NETDEV_DEV(ndev, &mport->dev);
 	ndev->ethtool_ops = &rionet_ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&rnet->lock);
 	spin_lock_init(&rnet->tx_lock);
@@ -722,12 +525,6 @@ static int rionet_setup_netdev(struct rio_mport *mport, struct net_device *ndev)
 	rnet->msg_enable = RIONET_DEFAULT_MSGLEVEL;
 
 	rc = register_netdev(ndev);
-<<<<<<< HEAD
-	if (rc != 0)
-		goto out;
-
-	printk("%s: %s %s Version %s, MAC %pM\n",
-=======
 	if (rc != 0) {
 		free_pages((unsigned long)nets[mport->id].active,
 			   get_order(rionet_active_bytes));
@@ -735,55 +532,23 @@ static int rionet_setup_netdev(struct rio_mport *mport, struct net_device *ndev)
 	}
 
 	printk(KERN_INFO "%s: %s %s Version %s, MAC %pM, %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       ndev->name,
 	       DRV_NAME,
 	       DRV_DESC,
 	       DRV_VERSION,
-<<<<<<< HEAD
-	       ndev->dev_addr);
-=======
 	       ndev->dev_addr,
 	       mport->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
       out:
 	return rc;
 }
 
-<<<<<<< HEAD
-/*
- * XXX Make multi-net safe
- */
-static int rionet_probe(struct rio_dev *rdev, const struct rio_device_id *id)
-=======
 static int rionet_add_dev(struct device *dev, struct subsys_interface *sif)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = -ENODEV;
 	u32 lsrc_ops, ldst_ops;
 	struct rionet_peer *peer;
 	struct net_device *ndev = NULL;
-<<<<<<< HEAD
-
-	/* If local device is not rionet capable, give up quickly */
-	if (!rionet_capable)
-		goto out;
-
-	/* Allocate our net_device structure */
-	ndev = alloc_etherdev(sizeof(struct rionet_private));
-	if (ndev == NULL) {
-		rc = -ENOMEM;
-		goto out;
-	}
-
-	/*
-	 * First time through, make sure local device is rionet
-	 * capable, setup netdev,  and set flags so this is skipped
-	 * on later probes
-	 */
-	if (!rionet_check) {
-=======
 	struct rio_dev *rdev = to_rio_dev(dev);
 	unsigned char netid = rdev->net->hport->id;
 
@@ -796,19 +561,12 @@ static int rionet_add_dev(struct device *dev, struct subsys_interface *sif)
 	 * on the same net).
 	 */
 	if (!nets[netid].ndev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rio_local_read_config_32(rdev->net->hport, RIO_SRC_OPS_CAR,
 					 &lsrc_ops);
 		rio_local_read_config_32(rdev->net->hport, RIO_DST_OPS_CAR,
 					 &ldst_ops);
 		if (!is_rionet_capable(lsrc_ops, ldst_ops)) {
 			printk(KERN_ERR
-<<<<<<< HEAD
-			       "%s: local device is not network capable\n",
-			       DRV_NAME);
-			rionet_check = 1;
-			rionet_capable = 0;
-=======
 			       "%s: local device %s is not network capable\n",
 			       DRV_NAME, rdev->net->hport->name);
 			goto out;
@@ -818,15 +576,10 @@ static int rionet_add_dev(struct device *dev, struct subsys_interface *sif)
 		ndev = alloc_etherdev(sizeof(struct rionet_private));
 		if (ndev == NULL) {
 			rc = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
 		rc = rionet_setup_netdev(rdev->net->hport, ndev);
-<<<<<<< HEAD
-		rionet_check = 1;
-		nact = 0;
-=======
 		if (rc) {
 			printk(KERN_ERR "%s: failed to setup netdev (rc=%d)\n",
 			       DRV_NAME, rc);
@@ -838,7 +591,6 @@ static int rionet_add_dev(struct device *dev, struct subsys_interface *sif)
 		spin_lock_init(&nets[netid].lock);
 		nets[netid].nact = 0;
 		nets[netid].ndev = ndev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -846,9 +598,6 @@ static int rionet_add_dev(struct device *dev, struct subsys_interface *sif)
 	 * add it to the peer list.
 	 */
 	if (dev_rionet_capable(rdev)) {
-<<<<<<< HEAD
-		if (!(peer = kmalloc(sizeof(struct rionet_peer), GFP_KERNEL))) {
-=======
 		struct rionet_private *rnet;
 		unsigned long flags;
 
@@ -856,31 +605,10 @@ static int rionet_add_dev(struct device *dev, struct subsys_interface *sif)
 
 		peer = kzalloc(sizeof(*peer), GFP_KERNEL);
 		if (!peer) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -ENOMEM;
 			goto out;
 		}
 		peer->rdev = rdev;
-<<<<<<< HEAD
-		list_add_tail(&peer->node, &rionet_peers);
-	}
-
-	rio_set_drvdata(rdev, ndev);
-
-      out:
-	return rc;
-}
-
-static struct rio_device_id rionet_id_table[] = {
-	{RIO_DEVICE(RIO_ANY_ID, RIO_ANY_ID)}
-};
-
-static struct rio_driver rionet_driver = {
-	.name = "rionet",
-	.id_table = rionet_id_table,
-	.probe = rionet_probe,
-	.remove = rionet_remove,
-=======
 		peer->res = rio_request_outb_dbell(peer->rdev,
 						RIONET_DOORBELL_JOIN,
 						RIONET_DOORBELL_LEAVE);
@@ -986,14 +714,10 @@ static struct class_interface rio_mport_interface __refdata = {
 	.class = &rio_mport_class,
 	.add_dev = NULL,
 	.remove_dev = rionet_remove_mport,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init rionet_init(void)
 {
-<<<<<<< HEAD
-	return rio_register_driver(&rionet_driver);
-=======
 	int ret;
 
 	ret = register_reboot_notifier(&rionet_notifier);
@@ -1011,18 +735,13 @@ static int __init rionet_init(void)
 	}
 
 	return subsys_interface_register(&rionet_interface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit rionet_exit(void)
 {
-<<<<<<< HEAD
-	rio_unregister_driver(&rionet_driver);
-=======
 	unregister_reboot_notifier(&rionet_notifier);
 	subsys_interface_unregister(&rionet_interface);
 	class_interface_unregister(&rio_mport_interface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 late_initcall(rionet_init);

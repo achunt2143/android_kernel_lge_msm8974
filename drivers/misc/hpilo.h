@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/char/hpilo.h
  *
  * Copyright (C) 2008 Hewlett-Packard Development Company, L.P.
  *	David Altobelli <david.altobelli@hp.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __HPILO_H
 #define __HPILO_H
 
 #define ILO_NAME "hpilo"
 
-<<<<<<< HEAD
-/* max number of open channel control blocks per device, hw limited to 32 */
-#define MAX_CCB		8
-=======
 /* iLO ASIC PCI revision id */
 #define PCI_REV_ID_NECHES	7
 
@@ -31,7 +17,6 @@
 #define MAX_CCB	       24
 /* min number of open channel control blocks per device, hw limited to 32 */
 #define MIN_CCB		8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* max number of supported devices */
 #define MAX_ILO_DEV	1
 /* max number of files */
@@ -178,25 +163,6 @@ struct ccb_data {
 #define ILO_START_ALIGN	4096
 #define ILO_CACHE_SZ 	 128
 struct fifo {
-<<<<<<< HEAD
-    u64 nrents;	/* user requested number of fifo entries */
-    u64 imask;  /* mask to extract valid fifo index */
-    u64 merge;	/*  O/C bits to merge in during enqueue operation */
-    u64 reset;	/* set to non-zero when the target device resets */
-    u8  pad_0[ILO_CACHE_SZ - (sizeof(u64) * 4)];
-
-    u64 head;
-    u8  pad_1[ILO_CACHE_SZ - (sizeof(u64))];
-
-    u64 tail;
-    u8  pad_2[ILO_CACHE_SZ - (sizeof(u64))];
-
-    u64 fifobar[1];
-};
-
-/* convert between struct fifo, and the fifobar, which is saved in the ccb */
-#define FIFOHANDLESIZE (sizeof(struct fifo) - sizeof(u64))
-=======
 	u64 nrents;	/* user requested number of fifo entries */
 	u64 imask;  /* mask to extract valid fifo index */
 	u64 merge;	/*  O/C bits to merge in during enqueue operation */
@@ -214,7 +180,6 @@ struct fifo {
 
 /* convert between struct fifo, and the fifobar, which is saved in the ccb */
 #define FIFOHANDLESIZE (sizeof(struct fifo))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FIFOBARTOHANDLE(_fifo) \
 	((struct fifo *)(((char *)(_fifo)) - FIFOHANDLESIZE))
 

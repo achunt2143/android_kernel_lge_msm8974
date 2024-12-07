@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-/*
- *  Atheros AR71XX/AR724X/AR913X common routines
- *
- *  Copyright (C) 2008-2010 Gabor Juhos <juhosg@openwrt.org>
- *  Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
- *
- *  This program is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License version 2 as published
- *  by the Free Software Foundation.
- */
-
-#include <linux/kernel.h>
-#include <linux/module.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *  Atheros AR71XX/AR724X/AR913X common routines
@@ -26,7 +11,6 @@
 
 #include <linux/kernel.h>
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/spinlock.h>
 
@@ -51,13 +35,6 @@ unsigned int ath79_soc_rev;
 void __iomem *ath79_pll_base;
 void __iomem *ath79_reset_base;
 EXPORT_SYMBOL_GPL(ath79_reset_base);
-<<<<<<< HEAD
-void __iomem *ath79_ddr_base;
-
-void ath79_ddr_wb_flush(u32 reg)
-{
-	void __iomem *flush_reg = ath79_ddr_base + reg;
-=======
 static void __iomem *ath79_ddr_base;
 static void __iomem *ath79_ddr_wb_flush_base;
 static void __iomem *ath79_ddr_pci_win_base;
@@ -79,7 +56,6 @@ EXPORT_SYMBOL_GPL(ath79_ddr_ctrl_init);
 void ath79_ddr_wb_flush(u32 reg)
 {
 	void __iomem *flush_reg = ath79_ddr_wb_flush_base + (reg * 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Flush the DDR write buffer. */
 	__raw_writel(0x1, flush_reg);
@@ -93,8 +69,6 @@ void ath79_ddr_wb_flush(u32 reg)
 }
 EXPORT_SYMBOL_GPL(ath79_ddr_wb_flush);
 
-<<<<<<< HEAD
-=======
 void ath79_ddr_set_pci_windows(void)
 {
 	BUG_ON(!ath79_ddr_pci_win_base);
@@ -110,7 +84,6 @@ void ath79_ddr_set_pci_windows(void)
 }
 EXPORT_SYMBOL_GPL(ath79_ddr_set_pci_windows);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ath79_device_reset_set(u32 mask)
 {
 	unsigned long flags;
@@ -125,8 +98,6 @@ void ath79_device_reset_set(u32 mask)
 		reg = AR913X_RESET_REG_RESET_MODULE;
 	else if (soc_is_ar933x())
 		reg = AR933X_RESET_REG_RESET_MODULE;
-<<<<<<< HEAD
-=======
 	else if (soc_is_ar934x())
 		reg = AR934X_RESET_REG_RESET_MODULE;
 	else if (soc_is_qca953x())
@@ -135,7 +106,6 @@ void ath79_device_reset_set(u32 mask)
 		reg = QCA955X_RESET_REG_RESET_MODULE;
 	else if (soc_is_qca956x() || soc_is_tp9343())
 		reg = QCA956X_RESET_REG_RESET_MODULE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		BUG();
 
@@ -160,8 +130,6 @@ void ath79_device_reset_clear(u32 mask)
 		reg = AR913X_RESET_REG_RESET_MODULE;
 	else if (soc_is_ar933x())
 		reg = AR933X_RESET_REG_RESET_MODULE;
-<<<<<<< HEAD
-=======
 	else if (soc_is_ar934x())
 		reg = AR934X_RESET_REG_RESET_MODULE;
 	else if (soc_is_qca953x())
@@ -170,7 +138,6 @@ void ath79_device_reset_clear(u32 mask)
 		reg = QCA955X_RESET_REG_RESET_MODULE;
 	else if (soc_is_qca956x() || soc_is_tp9343())
 		reg = QCA956X_RESET_REG_RESET_MODULE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		BUG();
 

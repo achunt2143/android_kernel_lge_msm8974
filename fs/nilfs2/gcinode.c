@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-/*
- * gcinode.c - dummy inodes to buffer blocks for garbage collection
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Written by Seiji Kihara <kihara@osrg.net>, Amagai Yoshiji <amagai@osrg.net>,
- *            and Ryusuke Konishi <ryusuke@osrg.net>.
- * Revised by Ryusuke Konishi <ryusuke@osrg.net>.
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Dummy inodes to buffer blocks for garbage collection
@@ -30,7 +6,6 @@
  *
  * Written by Seiji Kihara, Amagai Yoshiji, and Ryusuke Konishi.
  * Revised by Ryusuke Konishi.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 /*
@@ -98,15 +73,8 @@ int nilfs_gccache_submit_read_data(struct inode *inode, sector_t blkoff,
 		struct the_nilfs *nilfs = inode->i_sb->s_fs_info;
 
 		err = nilfs_dat_translate(nilfs->ns_dat, vbn, &pbn);
-<<<<<<< HEAD
-		if (unlikely(err)) { /* -EIO, -ENOMEM, -ENOENT */
-			brelse(bh);
-			goto failed;
-		}
-=======
 		if (unlikely(err)) /* -EIO, -ENOMEM, -ENOENT */
 			goto failed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	lock_buffer(bh);
@@ -122,11 +90,7 @@ int nilfs_gccache_submit_read_data(struct inode *inode, sector_t blkoff,
 	bh->b_blocknr = pbn;
 	bh->b_end_io = end_buffer_read_sync;
 	get_bh(bh);
-<<<<<<< HEAD
-	submit_bh(READ, bh);
-=======
 	submit_bh(REQ_OP_READ, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vbn)
 		bh->b_blocknr = vbn;
  out:
@@ -134,15 +98,10 @@ int nilfs_gccache_submit_read_data(struct inode *inode, sector_t blkoff,
 	*out_bh = bh;
 
  failed:
-<<<<<<< HEAD
-	unlock_page(bh->b_page);
-	page_cache_release(bh->b_page);
-=======
 	folio_unlock(bh->b_folio);
 	folio_put(bh->b_folio);
 	if (unlikely(err))
 		brelse(bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -167,18 +126,11 @@ int nilfs_gccache_submit_read_data(struct inode *inode, sector_t blkoff,
 int nilfs_gccache_submit_read_node(struct inode *inode, sector_t pbn,
 				   __u64 vbn, struct buffer_head **out_bh)
 {
-<<<<<<< HEAD
-	int ret;
-
-	ret = nilfs_btnode_submit_block(&NILFS_I(inode)->i_btnode_cache,
-					vbn ? : pbn, pbn, READ, out_bh, &pbn);
-=======
 	struct inode *btnc_inode = NILFS_I(inode)->i_assoc_inode;
 	int ret;
 
 	ret = nilfs_btnode_submit_block(btnc_inode->i_mapping, vbn ? : pbn, pbn,
 					REQ_OP_READ, out_bh, &pbn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret == -EEXIST) /* internal code (cache hit) */
 		ret = 0;
 	return ret;
@@ -187,10 +139,6 @@ int nilfs_gccache_submit_read_node(struct inode *inode, sector_t pbn,
 int nilfs_gccache_wait_and_mark_dirty(struct buffer_head *bh)
 {
 	wait_on_buffer(bh);
-<<<<<<< HEAD
-	if (!buffer_uptodate(bh))
-		return -EIO;
-=======
 	if (!buffer_uptodate(bh)) {
 		struct inode *inode = bh->b_folio->mapping->host;
 
@@ -200,7 +148,6 @@ int nilfs_gccache_wait_and_mark_dirty(struct buffer_head *bh)
 			  inode->i_ino, (unsigned long long)bh->b_blocknr);
 		return -EIO;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (buffer_dirty(bh))
 		return -EEXIST;
 
@@ -219,19 +166,11 @@ int nilfs_init_gcinode(struct inode *inode)
 	inode->i_mode = S_IFREG;
 	mapping_set_gfp_mask(inode->i_mapping, GFP_NOFS);
 	inode->i_mapping->a_ops = &empty_aops;
-<<<<<<< HEAD
-	inode->i_mapping->backing_dev_info = inode->i_sb->s_bdi;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ii->i_flags = 0;
 	nilfs_bmap_init_gc(ii->i_bmap);
 
-<<<<<<< HEAD
-	return 0;
-=======
 	return nilfs_attach_btree_node_cache(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -246,11 +185,7 @@ void nilfs_remove_all_gcinodes(struct the_nilfs *nilfs)
 		ii = list_first_entry(head, struct nilfs_inode_info, i_dirty);
 		list_del_init(&ii->i_dirty);
 		truncate_inode_pages(&ii->vfs_inode.i_data, 0);
-<<<<<<< HEAD
-		nilfs_btnode_cache_clear(&ii->i_btnode_cache);
-=======
 		nilfs_btnode_cache_clear(ii->i_assoc_inode->i_mapping);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iput(&ii->vfs_inode);
 	}
 }

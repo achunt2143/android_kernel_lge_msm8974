@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	STP SAP demux
  *
  *	Copyright (c) 2008 Patrick McHardy <kaber@trash.net>
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	version 2 as published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/mutex.h>
 #include <linux/skbuff.h>
@@ -53,11 +43,7 @@ static int stp_pdu_rcv(struct sk_buff *skb, struct net_device *dev,
 		proto = rcu_dereference(garp_protos[eh->h_dest[5] -
 						    GARP_ADDR_MIN]);
 		if (proto &&
-<<<<<<< HEAD
-		    compare_ether_addr(eh->h_dest, proto->group_address))
-=======
 		    !ether_addr_equal(eh->h_dest, proto->group_address))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err;
 	} else
 		proto = rcu_dereference(stp_proto);
@@ -112,8 +98,5 @@ void stp_proto_unregister(const struct stp_proto *proto)
 }
 EXPORT_SYMBOL_GPL(stp_proto_unregister);
 
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("SAP demux for IEEE 802.1D Spanning Tree Protocol (STP)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

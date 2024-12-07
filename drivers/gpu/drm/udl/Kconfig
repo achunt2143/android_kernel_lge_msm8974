@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-config DRM_UDL
-	tristate "DisplayLink"
-	depends on DRM && EXPERIMENTAL
-	select DRM_USB
-	select FB_SYS_FILLRECT
-	select FB_SYS_COPYAREA
-	select FB_SYS_IMAGEBLIT
-	select FB_DEFERRED_IO
-	select DRM_KMS_HELPER
-	help
-	  This is a KMS driver for the USB displaylink video adapters.
-          Say M/Y to add support for these devices via drm/kms interfaces.
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config DRM_UDL
 	tristate "DisplayLink"
@@ -24,4 +10,3 @@ config DRM_UDL
 	help
 	  This is a KMS driver for the USB displaylink video adapters.
 	  Say M/Y to add support for these devices via drm/kms interfaces.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,25 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-sa1100/generic.c
  *
  * Author: Nicolas Pitre
  *
  * Code common to all SA11x0 machines.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#include <linux/gpio.h>
-=======
  */
 #include <linux/gpio.h>
 #include <linux/gpio/machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -29,11 +17,6 @@
 #include <linux/cpufreq.h>
 #include <linux/ioport.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-
-#include <video/sa1100fb.h>
-
-=======
 #include <linux/reboot.h>
 #include <linux/regulator/fixed.h>
 #include <linux/regulator/machine.h>
@@ -43,7 +26,6 @@
 
 #include <soc/sa1100/pwer.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/div64.h>
 #include <asm/mach/map.h>
 #include <asm/mach/flash.h>
@@ -52,89 +34,16 @@
 
 #include <mach/hardware.h>
 #include <mach/irqs.h>
-<<<<<<< HEAD
-
-#include "generic.h"
-
-unsigned int reset_status;
-EXPORT_SYMBOL(reset_status);
-=======
 #include <mach/reset.h>
 
 #include "generic.h"
 #include <clocksource/pxa.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NR_FREQS	16
 
 /*
  * This table is setup for a 3.6864MHz Crystal.
  */
-<<<<<<< HEAD
-static const unsigned short cclk_frequency_100khz[NR_FREQS] = {
-	 590,	/*  59.0 MHz */
-	 737,	/*  73.7 MHz */
-	 885,	/*  88.5 MHz */
-	1032,	/* 103.2 MHz */
-	1180,	/* 118.0 MHz */
-	1327,	/* 132.7 MHz */
-	1475,	/* 147.5 MHz */
-	1622,	/* 162.2 MHz */
-	1769,	/* 176.9 MHz */
-	1917,	/* 191.7 MHz */
-	2064,	/* 206.4 MHz */
-	2212,	/* 221.2 MHz */
-	2359,	/* 235.9 MHz */
-	2507,	/* 250.7 MHz */
-	2654,	/* 265.4 MHz */
-	2802	/* 280.2 MHz */
-};
-
-/* rounds up(!)  */
-unsigned int sa11x0_freq_to_ppcr(unsigned int khz)
-{
-	int i;
-
-	khz /= 100;
-
-	for (i = 0; i < NR_FREQS; i++)
-		if (cclk_frequency_100khz[i] >= khz)
-			break;
-
-	return i;
-}
-
-unsigned int sa11x0_ppcr_to_freq(unsigned int idx)
-{
-	unsigned int freq = 0;
-	if (idx < NR_FREQS)
-		freq = cclk_frequency_100khz[idx] * 100;
-	return freq;
-}
-
-
-/* make sure that only the "userspace" governor is run -- anything else wouldn't make sense on
- * this platform, anyway.
- */
-int sa11x0_verify_speed(struct cpufreq_policy *policy)
-{
-	unsigned int tmp;
-	if (policy->cpu)
-		return -EINVAL;
-
-	cpufreq_verify_within_limits(policy, policy->cpuinfo.min_freq, policy->cpuinfo.max_freq);
-
-	/* make sure that at least one frequency is within the policy */
-	tmp = cclk_frequency_100khz[sa11x0_freq_to_ppcr(policy->min)] * 100;
-	if (tmp > policy->max)
-		policy->max = tmp;
-
-	cpufreq_verify_within_limits(policy, policy->cpuinfo.min_freq, policy->cpuinfo.max_freq);
-
-	return 0;
-}
-
-=======
 struct cpufreq_frequency_table sa11x0_freq_table[NR_FREQS+1] = {
 	{ .frequency = 59000,	/*  59.0 MHz */},
 	{ .frequency = 73700,	/*  73.7 MHz */},
@@ -155,16 +64,11 @@ struct cpufreq_frequency_table sa11x0_freq_table[NR_FREQS+1] = {
 	{ .frequency = CPUFREQ_TABLE_END, },
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int sa11x0_getspeed(unsigned int cpu)
 {
 	if (cpu)
 		return 0;
-<<<<<<< HEAD
-	return cclk_frequency_100khz[PPCR & 0xf] * 100;
-=======
 	return sa11x0_freq_table[PPCR & 0xf].frequency;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -187,17 +91,11 @@ static void sa1100_power_off(void)
 	PMCR = PMCR_SF;
 }
 
-<<<<<<< HEAD
-void sa11x0_restart(char mode, const char *cmd)
-{
-	if (mode == 's') {
-=======
 void sa11x0_restart(enum reboot_mode mode, const char *cmd)
 {
 	clear_reset_status(RESET_STATUS_ALL);
 
 	if (mode == REBOOT_SOFT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Jump into ROM at address 0 */
 		soft_restart(0);
 	} else {
@@ -331,19 +229,12 @@ void sa11x0_register_lcd(struct sa1100fb_mach_info *inf)
 	sa11x0_register_device(&sa11x0fb_device, inf);
 }
 
-<<<<<<< HEAD
-static struct platform_device sa11x0pcmcia_device = {
-	.name		= "sa11x0-pcmcia",
-	.id		= -1,
-};
-=======
 void sa11x0_register_pcmcia(int socket, struct gpiod_lookup_table *table)
 {
 	if (table)
 		gpiod_add_lookup_table(table);
 	platform_device_register_simple("sa11x0-pcmcia", socket, NULL, 0);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_device sa11x0mtd_device = {
 	.name		= "sa1100-mtd",
@@ -359,28 +250,6 @@ void sa11x0_register_mtd(struct flash_platform_data *flash,
 	sa11x0_register_device(&sa11x0mtd_device, flash);
 }
 
-<<<<<<< HEAD
-static struct resource sa11x0ir_resources[] = {
-	DEFINE_RES_MEM(__PREG(Ser2UTCR0), 0x24),
-	DEFINE_RES_MEM(__PREG(Ser2HSCR0), 0x1c),
-	DEFINE_RES_MEM(__PREG(Ser2HSCR2), 0x04),
-	DEFINE_RES_IRQ(IRQ_Ser2ICP),
-};
-
-static struct platform_device sa11x0ir_device = {
-	.name		= "sa11x0-ir",
-	.id		= -1,
-	.num_resources	= ARRAY_SIZE(sa11x0ir_resources),
-	.resource	= sa11x0ir_resources,
-};
-
-void sa11x0_register_irda(struct irda_platform_data *irda)
-{
-	sa11x0_register_device(&sa11x0ir_device, irda);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource sa1100_rtc_resources[] = {
 	DEFINE_RES_MEM(0x90010000, 0x40),
 	DEFINE_RES_IRQ_NAMED(IRQ_RTC1Hz, "rtc 1Hz"),
@@ -422,19 +291,12 @@ static struct platform_device *sa11x0_devices[] __initdata = {
 	&sa11x0uart1_device,
 	&sa11x0uart3_device,
 	&sa11x0ssp_device,
-<<<<<<< HEAD
-	&sa11x0pcmcia_device,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sa11x0rtc_device,
 	&sa11x0dma_device,
 };
 
 static int __init sa1100_init(void)
 {
-<<<<<<< HEAD
-	pm_power_off = sa1100_power_off;
-=======
 	struct resource wdt_res = DEFINE_RES_MEM(0x90000000, 0x20);
 	pm_power_off = sa1100_power_off;
 
@@ -442,14 +304,11 @@ static int __init sa1100_init(void)
 
 	platform_device_register_simple("sa1100_wdt", -1, &wdt_res, 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return platform_add_devices(sa11x0_devices, ARRAY_SIZE(sa11x0_devices));
 }
 
 arch_initcall(sa1100_init);
 
-<<<<<<< HEAD
-=======
 void __init sa11x0_init_late(void)
 {
 	sa11x0_pm_init();
@@ -480,7 +339,6 @@ int __init sa11x0_register_fixed_regulator(int n,
 					  NULL, 0, cfg, sizeof(*cfg));
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Common I/O mapping:
@@ -529,8 +387,6 @@ void __init sa1100_map_io(void)
 	iotable_init(standard_io_desc, ARRAY_SIZE(standard_io_desc));
 }
 
-<<<<<<< HEAD
-=======
 void __init sa1100_timer_init(void)
 {
 	pxa_timer_nodt_init(IRQ_OST0, io_p2v(0x90000000));
@@ -549,7 +405,6 @@ void __init sa1100_init_irq(void)
 	sa11xx_clk_init();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Disable the memory bus request/grant signals on the SA1110 to
  * ensure that we don't receive spurious memory requests.  We set
@@ -591,8 +446,6 @@ void sa1110_mb_enable(void)
 	local_irq_restore(flags);
 }
 
-<<<<<<< HEAD
-=======
 int sa11x0_gpio_set_wake(unsigned int gpio, unsigned int on)
 {
 	if (on)
@@ -615,4 +468,3 @@ int sa11x0_sc_set_wake(unsigned int irq, unsigned int on)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

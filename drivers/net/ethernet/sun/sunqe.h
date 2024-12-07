@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Id: sunqe.h,v 1.13 2000/02/09 11:15:42 davem Exp $
  * sunqe.h: Definitions for the Sun QuadEthernet driver.
  *
@@ -338,20 +335,12 @@ struct sunqe {
 	void __iomem			*qcregs;		/* QEC per-channel Registers   */
 	void __iomem			*mregs;		/* Per-channel MACE Registers  */
 	struct qe_init_block      	*qe_block;	/* RX and TX descriptors       */
-<<<<<<< HEAD
-	__u32                      	qblock_dvma;	/* RX and TX descriptors       */
-=======
 	dma_addr_t			qblock_dvma;	/* RX and TX descriptors       */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t			lock;		/* Protects txfull state       */
 	int                        	rx_new, rx_old;	/* RX ring extents	       */
 	int			   	tx_new, tx_old;	/* TX ring extents	       */
 	struct sunqe_buffers		*buffers;	/* CPU visible address.        */
-<<<<<<< HEAD
-	__u32				buffers_dvma;	/* DVMA visible address.       */
-=======
 	dma_addr_t			buffers_dvma;	/* DVMA visible address.       */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sunqec			*parent;
 	u8				mconfig;	/* Base MACE mconfig value     */
 	struct platform_device		*op;		/* QE's OF device struct       */

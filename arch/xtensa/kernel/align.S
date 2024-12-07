@@ -1,21 +1,14 @@
 /*
  * arch/xtensa/kernel/align.S
  *
-<<<<<<< HEAD
- * Handle unalignment exceptions in kernel space.
-=======
  * Handle unalignment and load/store exceptions.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is subject to the terms and conditions of the GNU General
  * Public License.  See the file "COPYING" in the main directory of
  * this archive for more details.
  *
  * Copyright (C) 2001 - 2005 Tensilica, Inc.
-<<<<<<< HEAD
-=======
  * Copyright (C) 2014 Cadence Design Systems Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Rewritten by Chris Zankel <chris@zankel.net>
  *
@@ -26,17 +19,6 @@
 #include <linux/linkage.h>
 #include <asm/current.h>
 #include <asm/asm-offsets.h>
-<<<<<<< HEAD
-#include <asm/processor.h>
-
-#if XCHAL_UNALIGNED_LOAD_EXCEPTION || XCHAL_UNALIGNED_STORE_EXCEPTION
-
-/*  First-level exception handler for unaligned exceptions.
- *
- *  Note: This handler works only for kernel exceptions.  Unaligned user
- *        access should get a seg fault.
- */
-=======
 #include <asm/asmmacro.h>
 #include <asm/processor.h>
 
@@ -55,7 +37,6 @@
 #if XCHAL_HAVE_WINDOWED && defined CONFIG_MMU
 #define UNALIGNED_USER_EXCEPTION
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Big and little endian 16-bit values are located in
  * different halves of a register.  HWORD_START helps to
@@ -85,11 +66,6 @@
  *  BE  shift left / mask 0 0 X X
  */
 
-<<<<<<< HEAD
-#define UNALIGNED_USER_EXCEPTION
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if XCHAL_HAVE_BE
 
 #define HWORD_START	16
@@ -97,11 +73,6 @@
 #define	INSN_T		24
 #define	INSN_OP1	16
 
-<<<<<<< HEAD
-.macro __src_b	r, w0, w1;	src	\r, \w0, \w1;	.endm
-.macro __ssa8	r;		ssa8b	\r;		.endm
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .macro __ssa8r	r;		ssa8l	\r;		.endm
 .macro __sh	r, s;		srl	\r, \s;		.endm
 .macro __sl	r, s;		sll	\r, \s;		.endm
@@ -115,11 +86,6 @@
 #define	INSN_T		4
 #define	INSN_OP1	12
 
-<<<<<<< HEAD
-.macro __src_b	r, w0, w1;	src	\r, \w1, \w0;	.endm
-.macro __ssa8	r;		ssa8l	\r;		.endm
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .macro __ssa8r	r;		ssa8b	\r;		.endm
 .macro __sh	r, s;		sll	\r, \s;		.endm
 .macro __sl	r, s;		srl	\r, \s;		.endm
@@ -141,11 +107,7 @@
  *
  *	       23			    0
  *		-----------------------------
-<<<<<<< HEAD
- *	res	          0000           0010
-=======
  *	L8UI	xxxx xxxx 0000 ssss tttt 0010
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	L16UI	xxxx xxxx 0001 ssss tttt 0010
  *	L32I	xxxx xxxx 0010 ssss tttt 0010
  *	XXX	          0011 ssss tttt 0010
@@ -170,17 +132,11 @@
 
 #define OP0_L32I_N	0x8		/* load immediate narrow */
 #define OP0_S32I_N	0x9		/* store immediate narrow */
-<<<<<<< HEAD
-#define OP1_SI_MASK	0x4		/* OP1 bit set for stores */
-#define OP1_SI_BIT	2		/* OP1 bit number for stores */
-
-=======
 #define OP0_LSAI	0x2		/* load/store */
 #define OP1_SI_MASK	0x4		/* OP1 bit set for stores */
 #define OP1_SI_BIT	2		/* OP1 bit number for stores */
 
 #define OP1_L8UI	0x0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OP1_L32I	0x2
 #define OP1_L16UI	0x1
 #define OP1_L16SI	0x9
@@ -196,74 +152,14 @@
  *   a0:	trashed, original value saved on stack (PT_AREG0)
  *   a1:	a1
  *   a2:	new stack pointer, original in DEPC
-<<<<<<< HEAD
- *   a3:	dispatch table
- *   depc:	a2, original value saved on stack (PT_DEPC)
- *   excsave_1:	a3
-=======
  *   a3:	a3
  *   depc:	a2, original value saved on stack (PT_DEPC)
  *   excsave_1:	dispatch table
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   PT_DEPC >= VALID_DOUBLE_EXCEPTION_ADDRESS: double exception, DEPC
  *	     <  VALID_DOUBLE_EXCEPTION_ADDRESS: regular exception
  */
 
-<<<<<<< HEAD
-
-ENTRY(fast_unaligned)
-
-	/* Note: We don't expect the address to be aligned on a word
-	 *       boundary. After all, the processor generated that exception
-	 *       and it would be a hardware fault.
-	 */
-
-	/* Save some working register */
-
-	s32i	a4, a2, PT_AREG4
-	s32i	a5, a2, PT_AREG5
-	s32i	a6, a2, PT_AREG6
-	s32i	a7, a2, PT_AREG7
-	s32i	a8, a2, PT_AREG8
-
-	rsr	a0, DEPC
-	xsr	a3, EXCSAVE_1
-	s32i	a0, a2, PT_AREG2
-	s32i	a3, a2, PT_AREG3
-
-	/* Keep value of SAR in a0 */
-
-	rsr	a0, SAR
-	rsr	a8, EXCVADDR		# load unaligned memory address
-
-	/* Now, identify one of the following load/store instructions.
-	 *
-	 * The only possible danger of a double exception on the
-	 * following l32i instructions is kernel code in vmalloc
-	 * memory. The processor was just executing at the EPC_1
-	 * address, and indeed, already fetched the instruction.  That
-	 * guarantees a TLB mapping, which hasn't been replaced by
-	 * this unaligned exception handler that uses only static TLB
-	 * mappings. However, high-level interrupt handlers might
-	 * modify TLB entries, so for the generic case, we register a
-	 * TABLE_FIXUP handler here, too.
-	 */
-
-	/* a3...a6 saved on stack, a2 = SP */
-
-	/* Extract the instruction that caused the unaligned access. */
-
-	rsr	a7, EPC_1	# load exception address
-	movi	a3, ~3
-	and	a3, a3, a7	# mask lower bits
-
-	l32i	a4, a3, 0	# load 2 words
-	l32i	a5, a3, 4
-
-	__ssa8	a7
-	__src_b	a4, a4, a5	# a4 has the instruction
-=======
 	.literal_position
 #ifdef CONFIG_XTENSA_LOAD_STORE
 ENTRY(fast_load_store)
@@ -331,7 +227,6 @@ ENDPROC(fast_load_store)
 ENTRY(fast_unaligned)
 
 	call0	.Lsave_and_load_instruction
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Analyze the instruction (load or store?). */
 
@@ -345,26 +240,16 @@ ENTRY(fast_unaligned)
 	/* 'store indicator bit' not set, jump */
 	_bbci.l	a4, OP1_SI_BIT + INSN_OP1, .Lload
 
-<<<<<<< HEAD
-=======
 #ifdef STORE_EXCEPTION_HANDLER
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Store: Jump to table entry to get the value in the source register.*/
 
 .Lstore:movi	a5, .Lstore_table	# table
 	extui	a6, a4, INSN_T, 4	# get source register
 	addx8	a5, a6, a5
 	jx	a5			# jump into table
-<<<<<<< HEAD
-
-	/* Invalid instruction, CRITICAL! */
-.Linvalid_instruction_load:
-	j	.Linvalid_instruction
-=======
 #endif
 #ifdef LOAD_EXCEPTION_HANDLER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Load: Load memory address. */
 
@@ -386,11 +271,7 @@ ENTRY(fast_unaligned)
 	addi	a7, a7, 2		# increment PC (assume 16-bit insn)
 
 	extui	a5, a4, INSN_OP0, 4
-<<<<<<< HEAD
-	_beqi	a5, OP0_L32I_N, 1f	# l32i.n: jump
-=======
 	_beqi	a5, OP0_L32I_N, .Lload_w# l32i.n: jump
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	addi	a7, a7, 1
 #else
@@ -398,35 +279,6 @@ ENTRY(fast_unaligned)
 #endif
 
 	extui	a5, a4, INSN_OP1, 4
-<<<<<<< HEAD
-	_beqi	a5, OP1_L32I, 1f	# l32i: jump
-
-	extui	a3, a3, 0, 16		# extract lower 16 bits
-	_beqi	a5, OP1_L16UI, 1f
-	addi	a5, a5, -OP1_L16SI
-	_bnez	a5, .Linvalid_instruction_load
-
-	/* sign extend value */
-
-	slli	a3, a3, 16
-	srai	a3, a3, 16
-
-	/* Set target register. */
-
-1:
-
-#if XCHAL_HAVE_LOOPS
-	rsr	a5, LEND		# check if we reached LEND
-	bne	a7, a5, 1f
-	rsr	a5, LCOUNT		# and LCOUNT != 0
-	beqz	a5, 1f
-	addi	a5, a5, -1		# decrement LCOUNT and set
-	rsr	a7, LBEG		# set PC to LBEGIN
-	wsr	a5, LCOUNT
-#endif
-
-1:	wsr	a7, EPC_1		# skip load instruction
-=======
 	_beqi	a5, OP1_L32I, .Lload_w	# l32i: jump
 #endif
 #ifdef LOAD_EXCEPTION_HANDLER
@@ -447,7 +299,6 @@ ENTRY(fast_unaligned)
 	/* Set target register. */
 
 .Lload_w:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	extui	a4, a4, INSN_T, 4	# extract target register
 	movi	a5, .Lload_table
 	addx8	a4, a4, a5
@@ -471,29 +322,6 @@ ENTRY(fast_unaligned)
 	mov	a13, a3		;	_j .Lexit;	.align 8
 	mov	a14, a3		;	_j .Lexit;	.align 8
 	mov	a15, a3		;	_j .Lexit;	.align 8
-<<<<<<< HEAD
-
-.Lstore_table:
-	l32i	a3, a2, PT_AREG0;	_j 1f;	.align 8
-	mov	a3, a1;			_j 1f;	.align 8	# fishy??
-	l32i	a3, a2, PT_AREG2;	_j 1f;	.align 8
-	l32i	a3, a2, PT_AREG3;	_j 1f;	.align 8
-	l32i	a3, a2, PT_AREG4;	_j 1f;	.align 8
-	l32i	a3, a2, PT_AREG5;	_j 1f;	.align 8
-	l32i	a3, a2, PT_AREG6;	_j 1f;	.align 8
-	l32i	a3, a2, PT_AREG7;	_j 1f;	.align 8
-	l32i	a3, a2, PT_AREG8;	_j 1f;	.align 8
-	mov	a3, a9		;	_j 1f;	.align 8
-	mov	a3, a10		;	_j 1f;	.align 8
-	mov	a3, a11		;	_j 1f;	.align 8
-	mov	a3, a12		;	_j 1f;	.align 8
-	mov	a3, a13		;	_j 1f;	.align 8
-	mov	a3, a14		;	_j 1f;	.align 8
-	mov	a3, a15		;	_j 1f;	.align 8
-
-1: 	# a7: instruction pointer, a4: instruction, a3: value
-
-=======
 #endif
 #ifdef STORE_EXCEPTION_HANDLER
 .Lstore_table:
@@ -548,7 +376,6 @@ ENTRY(fast_unaligned)
 
 	# a7: instruction pointer, a4: instruction, a3: value
 .Lstore_w:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movi	a6, 0			# mask: ffffffff:00000000
 
 #if XCHAL_HAVE_DENSITY
@@ -565,11 +392,7 @@ ENTRY(fast_unaligned)
 
 	extui	a5, a4, INSN_OP1, 4	# extract OP1
 	_beqi	a5, OP1_S32I, 1f	# jump if 32 bit store
-<<<<<<< HEAD
-	_bnei	a5, OP1_S16I, .Linvalid_instruction_store
-=======
 	_bnei	a5, OP1_S16I, .Linvalid_instruction
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	movi	a5, -1
 	__extl	a3, a3			# get 16-bit value
@@ -578,20 +401,6 @@ ENTRY(fast_unaligned)
 	/* Get memory address */
 
 1:
-<<<<<<< HEAD
-#if XCHAL_HAVE_LOOPS
-	rsr	a4, LEND		# check if we reached LEND
-	bne	a7, a4, 1f
-	rsr	a4, LCOUNT		# and LCOUNT != 0
-	beqz	a4, 1f
-	addi	a4, a4, -1		# decrement LCOUNT and set
-	rsr	a7, LBEG		# set PC to LBEGIN
-	wsr	a4, LCOUNT
-#endif
-
-1:	wsr	a7, EPC_1		# skip store instruction
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movi	a4, ~3
 	and	a4, a4, a8		# align memory address
 
@@ -603,31 +412,13 @@ ENTRY(fast_unaligned)
 #endif
 
 	__ssa8r a8
-<<<<<<< HEAD
-	__src_b	a7, a5, a6		# lo-mask  F..F0..0 (BE) 0..0F..F (LE)
-=======
 	__src_b	a8, a5, a6		# lo-mask  F..F0..0 (BE) 0..0F..F (LE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__src_b	a6, a6, a5		# hi-mask  0..0F..F (BE) F..F0..0 (LE)
 #ifdef UNALIGNED_USER_EXCEPTION
 	l32e	a5, a4, -8
 #else
 	l32i	a5, a4, 0		# load lower address word
 #endif
-<<<<<<< HEAD
-	and	a5, a5, a7		# mask
-	__sh	a7, a3 			# shift value
-	or	a5, a5, a7		# or with original value
-#ifdef UNALIGNED_USER_EXCEPTION
-	s32e	a5, a4, -8
-	l32e	a7, a4, -4
-#else
-	s32i	a5, a4, 0		# store
-	l32i	a7, a4, 4		# same for upper address word
-#endif
-	__sl	a5, a3
-	and	a6, a7, a6
-=======
 	and	a5, a5, a8		# mask
 	__sh	a8, a3 			# shift value
 	or	a5, a5, a8		# or with original value
@@ -640,21 +431,12 @@ ENTRY(fast_unaligned)
 #endif
 	__sl	a5, a3
 	and	a6, a8, a6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	or	a6, a6, a5
 #ifdef UNALIGNED_USER_EXCEPTION
 	s32e	a6, a4, -4
 #else
 	s32i	a6, a4, 4
 #endif
-<<<<<<< HEAD
-
-	/* Done. restore stack and return */
-
-.Lexit:
-	movi	a4, 0
-	rsr	a3, EXCSAVE_1
-=======
 #endif
 
 .Lexit:
@@ -680,15 +462,11 @@ ENTRY(fast_unaligned)
 1:
 	movi	a4, 0
 	rsr	a3, excsave1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a4, a3, EXC_TABLE_FIXUP
 
 	/* Restore working register */
 
-<<<<<<< HEAD
-=======
 	l32i	a0, a2, PT_SAR
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l32i	a8, a2, PT_AREG8
 	l32i	a7, a2, PT_AREG7
 	l32i	a6, a2, PT_AREG6
@@ -698,24 +476,11 @@ ENTRY(fast_unaligned)
 
 	/* restore SAR and return */
 
-<<<<<<< HEAD
-	wsr	a0, SAR
-=======
 	wsr	a0, sar
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l32i	a0, a2, PT_AREG0
 	l32i	a2, a2, PT_AREG2
 	rfe
 
-<<<<<<< HEAD
-	/* We cannot handle this exception. */
-
-	.extern _kernel_exception
-.Linvalid_instruction_store:
-.Linvalid_instruction:
-
-	/* Restore a4...a8 and SAR, set SP, and jump to default exception. */
-=======
 	.align	4
 .Lsave_and_load_instruction:
 
@@ -775,30 +540,11 @@ ENTRY(fast_unaligned_fixup)
 
 	l32i	a2, a3, EXC_TABLE_DOUBLE_SAVE
 	wsr	a3, excsave1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	l32i	a8, a2, PT_AREG8
 	l32i	a7, a2, PT_AREG7
 	l32i	a6, a2, PT_AREG6
 	l32i	a5, a2, PT_AREG5
-<<<<<<< HEAD
-	l32i	a4, a2, PT_AREG4
-	wsr	a0, SAR
-	mov	a1, a2
-
-	rsr	a0, PS
-        bbsi.l  a2, PS_UM_BIT, 1f     # jump if user mode
-
-	movi	a0, _kernel_exception
-	jx	a0
-
-1:	movi	a0, _user_exception
-	jx	a0
-
-
-#endif /* XCHAL_UNALIGNED_LOAD_EXCEPTION || XCHAL_UNALIGNED_STORE_EXCEPTION */
-
-=======
 	l32i	a4, a2, PT_SAR
 	l32i	a0, a2, PT_AREG2
 	wsr	a4, sar
@@ -825,4 +571,3 @@ ENTRY(fast_unaligned_fixup)
 
 ENDPROC(fast_unaligned_fixup)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

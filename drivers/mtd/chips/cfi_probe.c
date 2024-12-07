@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-/*
-   Common Flash Interface probe code.
-   (C) 2000 Red Hat. GPL'd.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
    Common Flash Interface probe code.
    (C) 2000 Red Hat.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/module.h>
@@ -70,8 +64,6 @@ do { \
 
 #endif
 
-<<<<<<< HEAD
-=======
 /*
  * This fixup occurs immediately after reading the CFI structure and can affect
  * the number of chips detected, unlike cfi_fixup, which occurs after an
@@ -96,7 +88,6 @@ static void cfi_early_fixup(struct cfi_private *cfi,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* check for QRY.
    in: interleave,type,mode
    ret: table index, <0 for error
@@ -185,8 +176,6 @@ static int __xipram cfi_probe_chip(struct map_info *map, __u32 base,
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 static void fixup_s70gl02gs_chips(struct cfi_private *cfi)
 {
 	/*
@@ -203,7 +192,6 @@ static const struct cfi_early_fixup cfi_early_fixup_table[] = {
 	{ },
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __xipram cfi_chip_setup(struct map_info *map,
 				   struct cfi_private *cfi)
 {
@@ -221,15 +209,8 @@ static int __xipram cfi_chip_setup(struct map_info *map,
 		return 0;
 
 	cfi->cfiq = kmalloc(sizeof(struct cfi_ident) + num_erase_regions * 4, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!cfi->cfiq) {
-		printk(KERN_WARNING "%s: kmalloc failed for CFI ident structure\n", map->name);
-		return 0;
-	}
-=======
 	if (!cfi->cfiq)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(cfi->cfiq,0,sizeof(struct cfi_ident));
 
@@ -295,11 +276,8 @@ static int __xipram cfi_chip_setup(struct map_info *map,
 	cfi_qry_mode_off(base, map, cfi);
 	xip_allowed(base, map);
 
-<<<<<<< HEAD
-=======
 	cfi_early_fixup(cfi, cfi_early_fixup_table);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO "%s: Found %d x%d devices at 0x%x in %d-bit bank. Manufacturer ID %#08x Chip ID %#08x\n",
 	       map->name, cfi->interleave, cfi->device_type*8, base,
 	       map->bankwidth*8, cfi->mfr, cfi->id);

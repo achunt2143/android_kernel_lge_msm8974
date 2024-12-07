@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/net/sunrpc/xdr.c
  *
@@ -19,14 +16,11 @@
 #include <linux/errno.h>
 #include <linux/sunrpc/xdr.h>
 #include <linux/sunrpc/msg_prot.h>
-<<<<<<< HEAD
-=======
 #include <linux/bvec.h>
 #include <trace/events/sunrpc.h>
 
 static void _copy_to_pages(struct page **, size_t, const char *, size_t);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * XDR functions for basic NFS types
@@ -129,12 +123,7 @@ EXPORT_SYMBOL_GPL(xdr_decode_string_inplace);
  * @len: length of string, in bytes
  *
  */
-<<<<<<< HEAD
-void
-xdr_terminate_string(struct xdr_buf *buf, const u32 len)
-=======
 void xdr_terminate_string(const struct xdr_buf *buf, const u32 len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *kaddr;
 
@@ -144,36 +133,6 @@ void xdr_terminate_string(const struct xdr_buf *buf, const u32 len)
 }
 EXPORT_SYMBOL_GPL(xdr_terminate_string);
 
-<<<<<<< HEAD
-void
-xdr_encode_pages(struct xdr_buf *xdr, struct page **pages, unsigned int base,
-		 unsigned int len)
-{
-	struct kvec *tail = xdr->tail;
-	u32 *p;
-
-	xdr->pages = pages;
-	xdr->page_base = base;
-	xdr->page_len = len;
-
-	p = (u32 *)xdr->head[0].iov_base + XDR_QUADLEN(xdr->head[0].iov_len);
-	tail->iov_base = p;
-	tail->iov_len = 0;
-
-	if (len & 3) {
-		unsigned int pad = 4 - (len & 3);
-
-		*p = 0;
-		tail->iov_base = (char *)p + (len & 3);
-		tail->iov_len  = pad;
-		len += pad;
-	}
-	xdr->buflen += len;
-	xdr->len += len;
-}
-EXPORT_SYMBOL_GPL(xdr_encode_pages);
-
-=======
 size_t xdr_buf_pagecount(const struct xdr_buf *buf)
 {
 	if (!buf->page_len)
@@ -264,7 +223,6 @@ bvec_overflow:
  * @len: expected size of the upper layer data payload, in bytes
  *
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 xdr_inline_pages(struct xdr_buf *xdr, unsigned int offset,
 		 struct page **pages, unsigned int base, unsigned int len)
@@ -282,25 +240,16 @@ xdr_inline_pages(struct xdr_buf *xdr, unsigned int offset,
 
 	tail->iov_base = buf + offset;
 	tail->iov_len = buflen - offset;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xdr->buflen += len;
 }
 EXPORT_SYMBOL_GPL(xdr_inline_pages);
 
 /*
  * Helper routines for doing 'memmove' like operations on a struct xdr_buf
-<<<<<<< HEAD
- *
- * _shift_data_right_pages
-=======
  */
 
 /**
  * _shift_data_left_pages
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pages: vector of pages containing both the source and dest memory area.
  * @pgto_base: page vector address of destination
  * @pgfrom_base: page vector address of source
@@ -310,8 +259,6 @@ EXPORT_SYMBOL_GPL(xdr_inline_pages);
  *       the same way:
  *            if a memory area starts at byte 'base' in page 'pages[i]',
  *            then its address is given as (i << PAGE_CACHE_SHIFT) + base
-<<<<<<< HEAD
-=======
  * Alse note: pgto_base must be < pgfrom_base, but the memory areas
  * 	they point to may overlap.
  */
@@ -377,7 +324,6 @@ _shift_data_left_pages(struct page **pages, size_t pgto_base,
  *       the same way:
  *            if a memory area starts at byte 'base' in page 'pages[i]',
  *            then its address is given as (i << PAGE_SHIFT) + base
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Also note: pgfrom_base must be < pgto_base, but the memory areas
  * 	they point to may overlap.
  */
@@ -391,16 +337,6 @@ _shift_data_right_pages(struct page **pages, size_t pgto_base,
 
 	BUG_ON(pgto_base <= pgfrom_base);
 
-<<<<<<< HEAD
-	pgto_base += len;
-	pgfrom_base += len;
-
-	pgto = pages + (pgto_base >> PAGE_CACHE_SHIFT);
-	pgfrom = pages + (pgfrom_base >> PAGE_CACHE_SHIFT);
-
-	pgto_base &= ~PAGE_CACHE_MASK;
-	pgfrom_base &= ~PAGE_CACHE_MASK;
-=======
 	if (!len)
 		return;
 
@@ -412,24 +348,15 @@ _shift_data_right_pages(struct page **pages, size_t pgto_base,
 
 	pgto_base &= ~PAGE_MASK;
 	pgfrom_base &= ~PAGE_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		/* Are any pointers crossing a page boundary? */
 		if (pgto_base == 0) {
-<<<<<<< HEAD
-			pgto_base = PAGE_CACHE_SIZE;
-			pgto--;
-		}
-		if (pgfrom_base == 0) {
-			pgfrom_base = PAGE_CACHE_SIZE;
-=======
 			pgto_base = PAGE_SIZE;
 			pgto--;
 		}
 		if (pgfrom_base == 0) {
 			pgfrom_base = PAGE_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pgfrom--;
 		}
 
@@ -454,11 +381,7 @@ _shift_data_right_pages(struct page **pages, size_t pgto_base,
 	} while ((len -= copy) != 0);
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * _copy_to_pages
  * @pages: array of pages
  * @pgbase: page vector address of destination
@@ -475,13 +398,6 @@ _copy_to_pages(struct page **pages, size_t pgbase, const char *p, size_t len)
 	char *vto;
 	size_t copy;
 
-<<<<<<< HEAD
-	pgto = pages + (pgbase >> PAGE_CACHE_SHIFT);
-	pgbase &= ~PAGE_CACHE_MASK;
-
-	for (;;) {
-		copy = PAGE_CACHE_SIZE - pgbase;
-=======
 	if (!len)
 		return;
 
@@ -490,7 +406,6 @@ _copy_to_pages(struct page **pages, size_t pgbase, const char *p, size_t len)
 
 	for (;;) {
 		copy = PAGE_SIZE - pgbase;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy > len)
 			copy = len;
 
@@ -503,11 +418,7 @@ _copy_to_pages(struct page **pages, size_t pgbase, const char *p, size_t len)
 			break;
 
 		pgbase += copy;
-<<<<<<< HEAD
-		if (pgbase == PAGE_CACHE_SIZE) {
-=======
 		if (pgbase == PAGE_SIZE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			flush_dcache_page(*pgto);
 			pgbase = 0;
 			pgto++;
@@ -517,11 +428,7 @@ _copy_to_pages(struct page **pages, size_t pgbase, const char *p, size_t len)
 	flush_dcache_page(*pgto);
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * _copy_from_pages
  * @p: pointer to destination
  * @pages: array of pages
@@ -538,13 +445,6 @@ _copy_from_pages(char *p, struct page **pages, size_t pgbase, size_t len)
 	char *vfrom;
 	size_t copy;
 
-<<<<<<< HEAD
-	pgfrom = pages + (pgbase >> PAGE_CACHE_SHIFT);
-	pgbase &= ~PAGE_CACHE_MASK;
-
-	do {
-		copy = PAGE_CACHE_SIZE - pgbase;
-=======
 	if (!len)
 		return;
 
@@ -553,7 +453,6 @@ _copy_from_pages(char *p, struct page **pages, size_t pgbase, size_t len)
 
 	do {
 		copy = PAGE_SIZE - pgbase;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy > len)
 			copy = len;
 
@@ -562,11 +461,7 @@ _copy_from_pages(char *p, struct page **pages, size_t pgbase, size_t len)
 		kunmap_atomic(vfrom);
 
 		pgbase += copy;
-<<<<<<< HEAD
-		if (pgbase == PAGE_CACHE_SIZE) {
-=======
 		if (pgbase == PAGE_SIZE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pgbase = 0;
 			pgfrom++;
 		}
@@ -576,135 +471,6 @@ _copy_from_pages(char *p, struct page **pages, size_t pgbase, size_t len)
 }
 EXPORT_SYMBOL_GPL(_copy_from_pages);
 
-<<<<<<< HEAD
-/*
- * xdr_shrink_bufhead
- * @buf: xdr_buf
- * @len: bytes to remove from buf->head[0]
- *
- * Shrinks XDR buffer's header kvec buf->head[0] by
- * 'len' bytes. The extra data is not lost, but is instead
- * moved into the inlined pages and/or the tail.
- */
-static void
-xdr_shrink_bufhead(struct xdr_buf *buf, size_t len)
-{
-	struct kvec *head, *tail;
-	size_t copy, offs;
-	unsigned int pglen = buf->page_len;
-
-	tail = buf->tail;
-	head = buf->head;
-	BUG_ON (len > head->iov_len);
-
-	/* Shift the tail first */
-	if (tail->iov_len != 0) {
-		if (tail->iov_len > len) {
-			copy = tail->iov_len - len;
-			memmove((char *)tail->iov_base + len,
-					tail->iov_base, copy);
-		}
-		/* Copy from the inlined pages into the tail */
-		copy = len;
-		if (copy > pglen)
-			copy = pglen;
-		offs = len - copy;
-		if (offs >= tail->iov_len)
-			copy = 0;
-		else if (copy > tail->iov_len - offs)
-			copy = tail->iov_len - offs;
-		if (copy != 0)
-			_copy_from_pages((char *)tail->iov_base + offs,
-					buf->pages,
-					buf->page_base + pglen + offs - len,
-					copy);
-		/* Do we also need to copy data from the head into the tail ? */
-		if (len > pglen) {
-			offs = copy = len - pglen;
-			if (copy > tail->iov_len)
-				copy = tail->iov_len;
-			memcpy(tail->iov_base,
-					(char *)head->iov_base +
-					head->iov_len - offs,
-					copy);
-		}
-	}
-	/* Now handle pages */
-	if (pglen != 0) {
-		if (pglen > len)
-			_shift_data_right_pages(buf->pages,
-					buf->page_base + len,
-					buf->page_base,
-					pglen - len);
-		copy = len;
-		if (len > pglen)
-			copy = pglen;
-		_copy_to_pages(buf->pages, buf->page_base,
-				(char *)head->iov_base + head->iov_len - len,
-				copy);
-	}
-	head->iov_len -= len;
-	buf->buflen -= len;
-	/* Have we truncated the message? */
-	if (buf->len > buf->buflen)
-		buf->len = buf->buflen;
-}
-
-/*
- * xdr_shrink_pagelen
- * @buf: xdr_buf
- * @len: bytes to remove from buf->pages
- *
- * Shrinks XDR buffer's page array buf->pages by
- * 'len' bytes. The extra data is not lost, but is instead
- * moved into the tail.
- */
-static void
-xdr_shrink_pagelen(struct xdr_buf *buf, size_t len)
-{
-	struct kvec *tail;
-	size_t copy;
-	unsigned int pglen = buf->page_len;
-	unsigned int tailbuf_len;
-
-	tail = buf->tail;
-	BUG_ON (len > pglen);
-
-	tailbuf_len = buf->buflen - buf->head->iov_len - buf->page_len;
-
-	/* Shift the tail first */
-	if (tailbuf_len != 0) {
-		unsigned int free_space = tailbuf_len - tail->iov_len;
-
-		if (len < free_space)
-			free_space = len;
-		tail->iov_len += free_space;
-
-		copy = len;
-		if (tail->iov_len > len) {
-			char *p = (char *)tail->iov_base + len;
-			memmove(p, tail->iov_base, tail->iov_len - len);
-		} else
-			copy = tail->iov_len;
-		/* Copy from the inlined pages into the tail */
-		_copy_from_pages((char *)tail->iov_base,
-				buf->pages, buf->page_base + pglen - len,
-				copy);
-	}
-	buf->page_len -= len;
-	buf->buflen -= len;
-	/* Have we truncated the message? */
-	if (buf->len > buf->buflen)
-		buf->len = buf->buflen;
-}
-
-void
-xdr_shift_buf(struct xdr_buf *buf, size_t len)
-{
-	xdr_shrink_bufhead(buf, len);
-}
-EXPORT_SYMBOL_GPL(xdr_shift_buf);
-=======
 static void xdr_buf_iov_zero(const struct kvec *iov, unsigned int base,
 			     unsigned int len)
 {
@@ -1180,17 +946,13 @@ unsigned int xdr_page_pos(const struct xdr_stream *xdr)
 	return pos - xdr->buf->head[0].iov_len;
 }
 EXPORT_SYMBOL_GPL(xdr_page_pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * xdr_init_encode - Initialize a struct xdr_stream for sending data.
  * @xdr: pointer to xdr_stream struct
  * @buf: pointer to XDR buffer in which to encode data
  * @p: current pointer inside XDR buffer
-<<<<<<< HEAD
-=======
  * @rqst: pointer to controlling rpc_rqst, for debugging
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note: at the moment the RPC client only passes the length of our
  *	 scratch buffer in the xdr_buf's header kvec. Previously this
@@ -1199,20 +961,13 @@ EXPORT_SYMBOL_GPL(xdr_page_pos);
  *	 of the buffer length, and takes care of adjusting the kvec
  *	 length for us.
  */
-<<<<<<< HEAD
-void xdr_init_encode(struct xdr_stream *xdr, struct xdr_buf *buf, __be32 *p)
-=======
 void xdr_init_encode(struct xdr_stream *xdr, struct xdr_buf *buf, __be32 *p,
 		     struct rpc_rqst *rqst)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kvec *iov = buf->head;
 	int scratch_len = buf->buflen - buf->page_len - buf->tail[0].iov_len;
 
-<<<<<<< HEAD
-=======
 	xdr_reset_scratch_buffer(xdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(scratch_len < 0);
 	xdr->buf = buf;
 	xdr->iov = iov;
@@ -1229,16 +984,11 @@ void xdr_init_encode(struct xdr_stream *xdr, struct xdr_buf *buf, __be32 *p,
 		buf->len += len;
 		iov->iov_len += len;
 	}
-<<<<<<< HEAD
-=======
 	xdr->rqst = rqst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(xdr_init_encode);
 
 /**
-<<<<<<< HEAD
-=======
  * xdr_init_encode_pages - Initialize an xdr_stream for encoding into pages
  * @xdr: pointer to xdr_stream struct
  * @buf: pointer to XDR buffer into which to encode data
@@ -1340,7 +1090,6 @@ out_overflow:
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * xdr_reserve_space - Reserve buffer space for sending
  * @xdr: pointer to xdr_stream
  * @nbytes: number of bytes to reserve
@@ -1354,41 +1103,24 @@ __be32 * xdr_reserve_space(struct xdr_stream *xdr, size_t nbytes)
 	__be32 *p = xdr->p;
 	__be32 *q;
 
-<<<<<<< HEAD
-=======
 	xdr_commit_encode(xdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* align nbytes on the next 32-bit boundary */
 	nbytes += 3;
 	nbytes &= ~3;
 	q = p + (nbytes >> 2);
 	if (unlikely(q > xdr->end || q < p))
-<<<<<<< HEAD
-		return NULL;
-	xdr->p = q;
-	xdr->iov->iov_len += nbytes;
-=======
 		return xdr_get_next_encode_buffer(xdr, nbytes);
 	xdr->p = q;
 	if (xdr->iov)
 		xdr->iov->iov_len += nbytes;
 	else
 		xdr->buf->page_len += nbytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xdr->buf->len += nbytes;
 	return p;
 }
 EXPORT_SYMBOL_GPL(xdr_reserve_space);
 
 /**
-<<<<<<< HEAD
- * xdr_write_pages - Insert a list of pages into an XDR buffer for sending
- * @xdr: pointer to xdr_stream
- * @pages: list of pages
- * @base: offset of first byte
- * @len: length of data in bytes
- *
-=======
  * xdr_reserve_space_vec - Reserves a large amount of buffer space for sending
  * @xdr: pointer to xdr_stream
  * @nbytes: number of bytes to reserve
@@ -1554,43 +1286,27 @@ EXPORT_SYMBOL(xdr_restrict_buflen);
  * After the @pages are added, the tail iovec is instantiated pointing to
  * end of the head buffer, and the stream is set up to encode subsequent
  * items into the tail.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void xdr_write_pages(struct xdr_stream *xdr, struct page **pages, unsigned int base,
 		 unsigned int len)
 {
 	struct xdr_buf *buf = xdr->buf;
-<<<<<<< HEAD
-	struct kvec *iov = buf->tail;
-=======
 	struct kvec *tail = buf->tail;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf->pages = pages;
 	buf->page_base = base;
 	buf->page_len = len;
 
-<<<<<<< HEAD
-	iov->iov_base = (char *)xdr->p;
-	iov->iov_len  = 0;
-	xdr->iov = iov;
-=======
 	tail->iov_base = xdr->p;
 	tail->iov_len = 0;
 	xdr->iov = tail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len & 3) {
 		unsigned int pad = 4 - (len & 3);
 
 		BUG_ON(xdr->p >= xdr->end);
-<<<<<<< HEAD
-		iov->iov_base = (char *)xdr->p + (len & 3);
-		iov->iov_len  += pad;
-=======
 		tail->iov_base = (char *)xdr->p + (len & 3);
 		tail->iov_len += pad;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len += pad;
 		*xdr->p++ = 0;
 	}
@@ -1599,23 +1315,6 @@ void xdr_write_pages(struct xdr_stream *xdr, struct page **pages, unsigned int b
 }
 EXPORT_SYMBOL_GPL(xdr_write_pages);
 
-<<<<<<< HEAD
-static void xdr_set_iov(struct xdr_stream *xdr, struct kvec *iov,
-		__be32 *p, unsigned int len)
-{
-	if (len > iov->iov_len)
-		len = iov->iov_len;
-	if (p == NULL)
-		p = (__be32*)iov->iov_base;
-	xdr->p = p;
-	xdr->end = (__be32*)(iov->iov_base + len);
-	xdr->iov = iov;
-	xdr->page_ptr = NULL;
-}
-
-static int xdr_set_page_base(struct xdr_stream *xdr,
-		unsigned int base, unsigned int len)
-=======
 static unsigned int xdr_set_iov(struct xdr_stream *xdr, struct kvec *iov,
 				unsigned int base, unsigned int len)
 {
@@ -1649,7 +1348,6 @@ static void xdr_stream_unmap_current_page(struct xdr_stream *xdr)
 
 static unsigned int xdr_set_page_base(struct xdr_stream *xdr,
 				      unsigned int base, unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int pgnr;
 	unsigned int maxlen;
@@ -1659,13 +1357,6 @@ static unsigned int xdr_set_page_base(struct xdr_stream *xdr,
 
 	maxlen = xdr->buf->page_len;
 	if (base >= maxlen)
-<<<<<<< HEAD
-		return -EINVAL;
-	maxlen -= base;
-	if (len > maxlen)
-		len = maxlen;
-
-=======
 		return 0;
 	else
 		maxlen -= base;
@@ -1674,21 +1365,16 @@ static unsigned int xdr_set_page_base(struct xdr_stream *xdr,
 
 	xdr_stream_unmap_current_page(xdr);
 	xdr_stream_page_set_pos(xdr, base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	base += xdr->buf->page_base;
 
 	pgnr = base >> PAGE_SHIFT;
 	xdr->page_ptr = &xdr->buf->pages[pgnr];
-<<<<<<< HEAD
-	kaddr = page_address(*xdr->page_ptr);
-=======
 
 	if (PageHighMem(*xdr->page_ptr)) {
 		xdr->page_kaddr = kmap_local_page(*xdr->page_ptr);
 		kaddr = xdr->page_kaddr;
 	} else
 		kaddr = page_address(*xdr->page_ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pgoff = base & ~PAGE_MASK;
 	xdr->p = (__be32*)(kaddr + pgoff);
@@ -1698,9 +1384,6 @@ static unsigned int xdr_set_page_base(struct xdr_stream *xdr,
 		pgend = PAGE_SIZE;
 	xdr->end = (__be32*)(kaddr + pgend);
 	xdr->iov = NULL;
-<<<<<<< HEAD
-	return 0;
-=======
 	return len;
 }
 
@@ -1711,7 +1394,6 @@ static void xdr_set_page(struct xdr_stream *xdr, unsigned int base,
 		base -= xdr->buf->page_len;
 		xdr_set_tail_base(xdr, base, len);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void xdr_set_next_page(struct xdr_stream *xdr)
@@ -1720,31 +1402,18 @@ static void xdr_set_next_page(struct xdr_stream *xdr)
 
 	newbase = (1 + xdr->page_ptr - xdr->buf->pages) << PAGE_SHIFT;
 	newbase -= xdr->buf->page_base;
-<<<<<<< HEAD
-
-	if (xdr_set_page_base(xdr, newbase, PAGE_SIZE) < 0)
-		xdr_set_iov(xdr, xdr->buf->tail, NULL, xdr->buf->len);
-=======
 	if (newbase < xdr->buf->page_len)
 		xdr_set_page_base(xdr, newbase, xdr_stream_remaining(xdr));
 	else
 		xdr_set_tail_base(xdr, 0, xdr_stream_remaining(xdr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool xdr_set_next_buffer(struct xdr_stream *xdr)
 {
 	if (xdr->page_ptr != NULL)
 		xdr_set_next_page(xdr);
-<<<<<<< HEAD
-	else if (xdr->iov == xdr->buf->head) {
-		if (xdr_set_page_base(xdr, 0, PAGE_SIZE) < 0)
-			xdr_set_iov(xdr, xdr->buf->tail, NULL, xdr->buf->len);
-	}
-=======
 	else if (xdr->iov == xdr->buf->head)
 		xdr_set_page(xdr, 0, xdr_stream_remaining(xdr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return xdr->p != xdr->end;
 }
 
@@ -1753,18 +1422,6 @@ static bool xdr_set_next_buffer(struct xdr_stream *xdr)
  * @xdr: pointer to xdr_stream struct
  * @buf: pointer to XDR buffer from which to decode data
  * @p: current pointer inside XDR buffer
-<<<<<<< HEAD
- */
-void xdr_init_decode(struct xdr_stream *xdr, struct xdr_buf *buf, __be32 *p)
-{
-	xdr->buf = buf;
-	xdr->scratch.iov_base = NULL;
-	xdr->scratch.iov_len = 0;
-	if (buf->head[0].iov_len != 0)
-		xdr_set_iov(xdr, buf->head, p, buf->len);
-	else if (buf->page_len != 0)
-		xdr_set_page_base(xdr, 0, buf->len);
-=======
  * @rqst: pointer to controlling rpc_rqst, for debugging
  */
 void xdr_init_decode(struct xdr_stream *xdr, struct xdr_buf *buf, __be32 *p,
@@ -1782,16 +1439,11 @@ void xdr_init_decode(struct xdr_stream *xdr, struct xdr_buf *buf, __be32 *p,
 		xdr->p = p;
 	}
 	xdr->rqst = rqst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(xdr_init_decode);
 
 /**
-<<<<<<< HEAD
- * xdr_init_decode - Initialize an xdr_stream for decoding data.
-=======
  * xdr_init_decode_pages - Initialize an xdr_stream for decoding into pages
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @xdr: pointer to xdr_stream struct
  * @buf: pointer to XDR buffer from which to decode data
  * @pages: list of pages to decode into
@@ -1805,54 +1457,6 @@ void xdr_init_decode_pages(struct xdr_stream *xdr, struct xdr_buf *buf,
 	buf->page_len =  len;
 	buf->buflen =  len;
 	buf->len = len;
-<<<<<<< HEAD
-	xdr_init_decode(xdr, buf, NULL);
-}
-EXPORT_SYMBOL_GPL(xdr_init_decode_pages);
-
-static __be32 * __xdr_inline_decode(struct xdr_stream *xdr, size_t nbytes)
-{
-	__be32 *p = xdr->p;
-	__be32 *q = p + XDR_QUADLEN(nbytes);
-
-	if (unlikely(q > xdr->end || q < p))
-		return NULL;
-	xdr->p = q;
-	return p;
-}
-
-/**
- * xdr_set_scratch_buffer - Attach a scratch buffer for decoding data.
- * @xdr: pointer to xdr_stream struct
- * @buf: pointer to an empty buffer
- * @buflen: size of 'buf'
- *
- * The scratch buffer is used when decoding from an array of pages.
- * If an xdr_inline_decode() call spans across page boundaries, then
- * we copy the data into the scratch buffer in order to allow linear
- * access.
- */
-void xdr_set_scratch_buffer(struct xdr_stream *xdr, void *buf, size_t buflen)
-{
-	xdr->scratch.iov_base = buf;
-	xdr->scratch.iov_len = buflen;
-}
-EXPORT_SYMBOL_GPL(xdr_set_scratch_buffer);
-
-static __be32 *xdr_copy_to_scratch(struct xdr_stream *xdr, size_t nbytes)
-{
-	__be32 *p;
-	void *cpdest = xdr->scratch.iov_base;
-	size_t cplen = (char *)xdr->end - (char *)xdr->p;
-
-	if (nbytes > xdr->scratch.iov_len)
-		return NULL;
-	memcpy(cpdest, xdr->p, cplen);
-	cpdest += cplen;
-	nbytes -= cplen;
-	if (!xdr_set_next_buffer(xdr))
-		return NULL;
-=======
 	xdr_init_decode(xdr, buf, NULL, NULL);
 }
 EXPORT_SYMBOL_GPL(xdr_init_decode_pages);
@@ -1896,18 +1500,14 @@ static __be32 *xdr_copy_to_scratch(struct xdr_stream *xdr, size_t nbytes)
 		goto out_overflow;
 	cpdest += cplen;
 	nbytes -= cplen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = __xdr_inline_decode(xdr, nbytes);
 	if (p == NULL)
 		return NULL;
 	memcpy(cpdest, p, nbytes);
 	return xdr->scratch.iov_base;
-<<<<<<< HEAD
-=======
 out_overflow:
 	trace_rpc_xdr_overflow(xdr, nbytes);
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1924,28 +1524,14 @@ __be32 * xdr_inline_decode(struct xdr_stream *xdr, size_t nbytes)
 {
 	__be32 *p;
 
-<<<<<<< HEAD
-	if (nbytes == 0)
-		return xdr->p;
-	if (xdr->p == xdr->end && !xdr_set_next_buffer(xdr))
-		return NULL;
-=======
 	if (unlikely(nbytes == 0))
 		return xdr->p;
 	if (xdr->p == xdr->end && !xdr_set_next_buffer(xdr))
 		goto out_overflow;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = __xdr_inline_decode(xdr, nbytes);
 	if (p != NULL)
 		return p;
 	return xdr_copy_to_scratch(xdr, nbytes);
-<<<<<<< HEAD
-}
-EXPORT_SYMBOL_GPL(xdr_inline_decode);
-
-/**
- * xdr_read_pages - Ensure page-based XDR data to decode is aligned at current pointer position
-=======
 out_overflow:
 	trace_rpc_xdr_overflow(xdr, nbytes);
 	return NULL;
@@ -1993,48 +1579,10 @@ static unsigned int xdr_align_pages(struct xdr_stream *xdr, unsigned int len)
 
 /**
  * xdr_read_pages - align page-based XDR data to current pointer position
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @xdr: pointer to xdr_stream struct
  * @len: number of bytes of page data
  *
  * Moves data beyond the current pointer position from the XDR head[] buffer
-<<<<<<< HEAD
- * into the page list. Any data that lies beyond current position + "len"
- * bytes is moved into the XDR tail[].
- */
-void xdr_read_pages(struct xdr_stream *xdr, unsigned int len)
-{
-	struct xdr_buf *buf = xdr->buf;
-	struct kvec *iov;
-	ssize_t shift;
-	unsigned int end;
-	int padding;
-
-	/* Realign pages to current pointer position */
-	iov  = buf->head;
-	shift = iov->iov_len + (char *)iov->iov_base - (char *)xdr->p;
-	if (shift > 0)
-		xdr_shrink_bufhead(buf, shift);
-
-	/* Truncate page data and move it into the tail */
-	if (buf->page_len > len)
-		xdr_shrink_pagelen(buf, buf->page_len - len);
-	padding = (XDR_QUADLEN(len) << 2) - len;
-	xdr->iov = iov = buf->tail;
-	/* Compute remaining message length.  */
-	end = iov->iov_len;
-	shift = buf->buflen - buf->len;
-	if (shift < end)
-		end -= shift;
-	else if (shift > 0)
-		end = 0;
-	/*
-	 * Position current pointer at beginning of tail, and
-	 * set remaining message length.
-	 */
-	xdr->p = (__be32 *)((char *)iov->iov_base + padding);
-	xdr->end = (__be32 *)((char *)iov->iov_base + end);
-=======
  * into the page list. Any data that lies beyond current position + @len
  * bytes is moved into the XDR tail[]. The xdr_stream current position is
  * then advanced past that data to align to the next XDR object in the tail.
@@ -2055,13 +1603,10 @@ unsigned int xdr_read_pages(struct xdr_stream *xdr, unsigned int len)
 
 	xdr_set_tail_base(xdr, base, end);
 	return len <= pglen ? len : pglen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(xdr_read_pages);
 
 /**
-<<<<<<< HEAD
-=======
  * xdr_set_pagelen - Sets the length of the XDR pages
  * @xdr: pointer to xdr_stream struct
  * @len: new length of the XDR page data
@@ -2092,7 +1637,6 @@ void xdr_set_pagelen(struct xdr_stream *xdr, unsigned int len)
 EXPORT_SYMBOL_GPL(xdr_set_pagelen);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * xdr_enter_page - decode data from the XDR page
  * @xdr: pointer to xdr_stream struct
  * @len: number of bytes of page data
@@ -2104,25 +1648,11 @@ EXPORT_SYMBOL_GPL(xdr_set_pagelen);
  */
 void xdr_enter_page(struct xdr_stream *xdr, unsigned int len)
 {
-<<<<<<< HEAD
-	xdr_read_pages(xdr, len);
-=======
 	len = xdr_align_pages(xdr, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Position current pointer at beginning of tail, and
 	 * set remaining message length.
 	 */
-<<<<<<< HEAD
-	xdr_set_page_base(xdr, 0, len);
-}
-EXPORT_SYMBOL_GPL(xdr_enter_page);
-
-static struct kvec empty_iov = {.iov_base = NULL, .iov_len = 0};
-
-void
-xdr_buf_from_iov(struct kvec *iov, struct xdr_buf *buf)
-=======
 	if (len != 0)
 		xdr_set_page_base(xdr, 0, len);
 }
@@ -2131,7 +1661,6 @@ EXPORT_SYMBOL_GPL(xdr_enter_page);
 static const struct kvec empty_iov = {.iov_base = NULL, .iov_len = 0};
 
 void xdr_buf_from_iov(const struct kvec *iov, struct xdr_buf *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	buf->head[0] = *iov;
 	buf->tail[0] = empty_iov;
@@ -2140,13 +1669,6 @@ void xdr_buf_from_iov(const struct kvec *iov, struct xdr_buf *buf)
 }
 EXPORT_SYMBOL_GPL(xdr_buf_from_iov);
 
-<<<<<<< HEAD
-/* Sets subbuf to the portion of buf of length len beginning base bytes
- * from the start of buf. Returns -1 if base of length are out of bounds. */
-int
-xdr_buf_subsegment(struct xdr_buf *buf, struct xdr_buf *subbuf,
-			unsigned int base, unsigned int len)
-=======
 /**
  * xdr_buf_subsegment - set subbuf to a portion of buf
  * @buf: an xdr buffer
@@ -2163,7 +1685,6 @@ xdr_buf_subsegment(struct xdr_buf *buf, struct xdr_buf *subbuf,
  */
 int xdr_buf_subsegment(const struct xdr_buf *buf, struct xdr_buf *subbuf,
 		       unsigned int base, unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	subbuf->buflen = subbuf->len = len;
 	if (base < buf->head[0].iov_len) {
@@ -2173,36 +1694,22 @@ int xdr_buf_subsegment(const struct xdr_buf *buf, struct xdr_buf *subbuf,
 		len -= subbuf->head[0].iov_len;
 		base = 0;
 	} else {
-<<<<<<< HEAD
-		subbuf->head[0].iov_base = NULL;
-		subbuf->head[0].iov_len = 0;
-		base -= buf->head[0].iov_len;
-=======
 		base -= buf->head[0].iov_len;
 		subbuf->head[0].iov_base = buf->head[0].iov_base;
 		subbuf->head[0].iov_len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (base < buf->page_len) {
 		subbuf->page_len = min(buf->page_len - base, len);
 		base += buf->page_base;
-<<<<<<< HEAD
-		subbuf->page_base = base & ~PAGE_CACHE_MASK;
-		subbuf->pages = &buf->pages[base >> PAGE_CACHE_SHIFT];
-=======
 		subbuf->page_base = base & ~PAGE_MASK;
 		subbuf->pages = &buf->pages[base >> PAGE_SHIFT];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len -= subbuf->page_len;
 		base = 0;
 	} else {
 		base -= buf->page_len;
-<<<<<<< HEAD
-=======
 		subbuf->pages = buf->pages;
 		subbuf->page_base = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		subbuf->page_len = 0;
 	}
 
@@ -2213,15 +1720,9 @@ int xdr_buf_subsegment(const struct xdr_buf *buf, struct xdr_buf *subbuf,
 		len -= subbuf->tail[0].iov_len;
 		base = 0;
 	} else {
-<<<<<<< HEAD
-		subbuf->tail[0].iov_base = NULL;
-		subbuf->tail[0].iov_len = 0;
-		base -= buf->tail[0].iov_len;
-=======
 		base -= buf->tail[0].iov_len;
 		subbuf->tail[0].iov_base = buf->tail[0].iov_base;
 		subbuf->tail[0].iov_len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (base || len)
@@ -2230,9 +1731,6 @@ int xdr_buf_subsegment(const struct xdr_buf *buf, struct xdr_buf *subbuf,
 }
 EXPORT_SYMBOL_GPL(xdr_buf_subsegment);
 
-<<<<<<< HEAD
-static void __read_bytes_from_xdr_buf(struct xdr_buf *subbuf, void *obj, unsigned int len)
-=======
 /**
  * xdr_stream_subsegment - set @subbuf to a portion of @xdr
  * @xdr: an xdr_stream set up for decoding
@@ -2377,7 +1875,6 @@ EXPORT_SYMBOL_GPL(xdr_buf_trim);
 
 static void __read_bytes_from_xdr_buf(const struct xdr_buf *subbuf,
 				      void *obj, unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int this_len;
 
@@ -2386,12 +1883,7 @@ static void __read_bytes_from_xdr_buf(const struct xdr_buf *subbuf,
 	len -= this_len;
 	obj += this_len;
 	this_len = min_t(unsigned int, len, subbuf->page_len);
-<<<<<<< HEAD
-	if (this_len)
-		_copy_from_pages(obj, subbuf->pages, subbuf->page_base, this_len);
-=======
 	_copy_from_pages(obj, subbuf->pages, subbuf->page_base, this_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len -= this_len;
 	obj += this_len;
 	this_len = min_t(unsigned int, len, subbuf->tail[0].iov_len);
@@ -2399,12 +1891,8 @@ static void __read_bytes_from_xdr_buf(const struct xdr_buf *subbuf,
 }
 
 /* obj is assumed to point to allocated memory of size at least len: */
-<<<<<<< HEAD
-int read_bytes_from_xdr_buf(struct xdr_buf *buf, unsigned int base, void *obj, unsigned int len)
-=======
 int read_bytes_from_xdr_buf(const struct xdr_buf *buf, unsigned int base,
 			    void *obj, unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xdr_buf subbuf;
 	int status;
@@ -2417,12 +1905,8 @@ int read_bytes_from_xdr_buf(const struct xdr_buf *buf, unsigned int base,
 }
 EXPORT_SYMBOL_GPL(read_bytes_from_xdr_buf);
 
-<<<<<<< HEAD
-static void __write_bytes_to_xdr_buf(struct xdr_buf *subbuf, void *obj, unsigned int len)
-=======
 static void __write_bytes_to_xdr_buf(const struct xdr_buf *subbuf,
 				     void *obj, unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int this_len;
 
@@ -2431,12 +1915,7 @@ static void __write_bytes_to_xdr_buf(const struct xdr_buf *subbuf,
 	len -= this_len;
 	obj += this_len;
 	this_len = min_t(unsigned int, len, subbuf->page_len);
-<<<<<<< HEAD
-	if (this_len)
-		_copy_to_pages(subbuf->pages, subbuf->page_base, obj, this_len);
-=======
 	_copy_to_pages(subbuf->pages, subbuf->page_base, obj, this_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len -= this_len;
 	obj += this_len;
 	this_len = min_t(unsigned int, len, subbuf->tail[0].iov_len);
@@ -2444,12 +1923,8 @@ static void __write_bytes_to_xdr_buf(const struct xdr_buf *subbuf,
 }
 
 /* obj is assumed to point to allocated memory of size at least len: */
-<<<<<<< HEAD
-int write_bytes_to_xdr_buf(struct xdr_buf *buf, unsigned int base, void *obj, unsigned int len)
-=======
 int write_bytes_to_xdr_buf(const struct xdr_buf *buf, unsigned int base,
 			   void *obj, unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xdr_buf subbuf;
 	int status;
@@ -2462,12 +1937,7 @@ int write_bytes_to_xdr_buf(const struct xdr_buf *buf, unsigned int base,
 }
 EXPORT_SYMBOL_GPL(write_bytes_to_xdr_buf);
 
-<<<<<<< HEAD
-int
-xdr_decode_word(struct xdr_buf *buf, unsigned int base, u32 *obj)
-=======
 int xdr_decode_word(const struct xdr_buf *buf, unsigned int base, u32 *obj)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32	raw;
 	int	status;
@@ -2480,12 +1950,7 @@ int xdr_decode_word(const struct xdr_buf *buf, unsigned int base, u32 *obj)
 }
 EXPORT_SYMBOL_GPL(xdr_decode_word);
 
-<<<<<<< HEAD
-int
-xdr_encode_word(struct xdr_buf *buf, unsigned int base, u32 obj)
-=======
 int xdr_encode_word(const struct xdr_buf *buf, unsigned int base, u32 obj)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32	raw = cpu_to_be32(obj);
 
@@ -2493,54 +1958,9 @@ int xdr_encode_word(const struct xdr_buf *buf, unsigned int base, u32 obj)
 }
 EXPORT_SYMBOL_GPL(xdr_encode_word);
 
-<<<<<<< HEAD
-/* If the netobj starting offset bytes from the start of xdr_buf is contained
- * entirely in the head or the tail, set object to point to it; otherwise
- * try to find space for it at the end of the tail, copy it there, and
- * set obj to point to it. */
-int xdr_buf_read_netobj(struct xdr_buf *buf, struct xdr_netobj *obj, unsigned int offset)
-{
-	struct xdr_buf subbuf;
-
-	if (xdr_decode_word(buf, offset, &obj->len))
-		return -EFAULT;
-	if (xdr_buf_subsegment(buf, &subbuf, offset + 4, obj->len))
-		return -EFAULT;
-
-	/* Is the obj contained entirely in the head? */
-	obj->data = subbuf.head[0].iov_base;
-	if (subbuf.head[0].iov_len == obj->len)
-		return 0;
-	/* ..or is the obj contained entirely in the tail? */
-	obj->data = subbuf.tail[0].iov_base;
-	if (subbuf.tail[0].iov_len == obj->len)
-		return 0;
-
-	/* use end of tail as storage for obj:
-	 * (We don't copy to the beginning because then we'd have
-	 * to worry about doing a potentially overlapping copy.
-	 * This assumes the object is at most half the length of the
-	 * tail.) */
-	if (obj->len > buf->buflen - buf->len)
-		return -ENOMEM;
-	if (buf->tail[0].iov_len != 0)
-		obj->data = buf->tail[0].iov_base + buf->tail[0].iov_len;
-	else
-		obj->data = buf->head[0].iov_base + buf->head[0].iov_len;
-	__read_bytes_from_xdr_buf(&subbuf, obj->data, obj->len);
-	return 0;
-}
-EXPORT_SYMBOL_GPL(xdr_buf_read_netobj);
-
-/* Returns 0 on success, or else a negative error code. */
-static int
-xdr_xcode_array2(struct xdr_buf *buf, unsigned int base,
-		 struct xdr_array2_desc *desc, int encode)
-=======
 /* Returns 0 on success, or else a negative error code. */
 static int xdr_xcode_array2(const struct xdr_buf *buf, unsigned int base,
 			    struct xdr_array2_desc *desc, int encode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *elem = NULL, *c;
 	unsigned int copied = 0, todo, avail_here;
@@ -2606,15 +2026,9 @@ static int xdr_xcode_array2(const struct xdr_buf *buf, unsigned int base,
 		todo -= avail_here;
 
 		base += buf->page_base;
-<<<<<<< HEAD
-		ppages = buf->pages + (base >> PAGE_CACHE_SHIFT);
-		base &= ~PAGE_CACHE_MASK;
-		avail_page = min_t(unsigned int, PAGE_CACHE_SIZE - base,
-=======
 		ppages = buf->pages + (base >> PAGE_SHIFT);
 		base &= ~PAGE_MASK;
 		avail_page = min_t(unsigned int, PAGE_SIZE - base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					avail_here);
 		c = kmap(*ppages) + base;
 
@@ -2698,11 +2112,7 @@ static int xdr_xcode_array2(const struct xdr_buf *buf, unsigned int base,
 			}
 
 			avail_page = min(avail_here,
-<<<<<<< HEAD
-				 (unsigned int) PAGE_CACHE_SIZE);
-=======
 				 (unsigned int) PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		base = buf->page_len;  /* align to start of tail */
 	}
@@ -2742,14 +2152,8 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-int
-xdr_decode_array2(struct xdr_buf *buf, unsigned int base,
-		  struct xdr_array2_desc *desc)
-=======
 int xdr_decode_array2(const struct xdr_buf *buf, unsigned int base,
 		      struct xdr_array2_desc *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (base >= buf->len)
 		return -EINVAL;
@@ -2758,14 +2162,8 @@ int xdr_decode_array2(const struct xdr_buf *buf, unsigned int base,
 }
 EXPORT_SYMBOL_GPL(xdr_decode_array2);
 
-<<<<<<< HEAD
-int
-xdr_encode_array2(struct xdr_buf *buf, unsigned int base,
-		  struct xdr_array2_desc *desc)
-=======
 int xdr_encode_array2(const struct xdr_buf *buf, unsigned int base,
 		      struct xdr_array2_desc *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if ((unsigned long) base + 4 + desc->array_len * desc->elem_size >
 	    buf->head->iov_len + buf->page_len + buf->tail->iov_len)
@@ -2775,21 +2173,12 @@ int xdr_encode_array2(const struct xdr_buf *buf, unsigned int base,
 }
 EXPORT_SYMBOL_GPL(xdr_encode_array2);
 
-<<<<<<< HEAD
-int
-xdr_process_buf(struct xdr_buf *buf, unsigned int offset, unsigned int len,
-		int (*actor)(struct scatterlist *, void *), void *data)
-{
-	int i, ret = 0;
-	unsigned page_len, thislen, page_offset;
-=======
 int xdr_process_buf(const struct xdr_buf *buf, unsigned int offset,
 		    unsigned int len,
 		    int (*actor)(struct scatterlist *, void *), void *data)
 {
 	int i, ret = 0;
 	unsigned int page_len, thislen, page_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scatterlist      sg[1];
 
 	sg_init_table(sg, 1);
@@ -2817,15 +2206,9 @@ int xdr_process_buf(const struct xdr_buf *buf, unsigned int offset,
 		if (page_len > len)
 			page_len = len;
 		len -= page_len;
-<<<<<<< HEAD
-		page_offset = (offset + buf->page_base) & (PAGE_CACHE_SIZE - 1);
-		i = (offset + buf->page_base) >> PAGE_CACHE_SHIFT;
-		thislen = PAGE_CACHE_SIZE - page_offset;
-=======
 		page_offset = (offset + buf->page_base) & (PAGE_SIZE - 1);
 		i = (offset + buf->page_base) >> PAGE_SHIFT;
 		thislen = PAGE_SIZE - page_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		do {
 			if (thislen > page_len)
 				thislen = page_len;
@@ -2836,11 +2219,7 @@ int xdr_process_buf(const struct xdr_buf *buf, unsigned int offset,
 			page_len -= thislen;
 			i++;
 			page_offset = 0;
-<<<<<<< HEAD
-			thislen = PAGE_CACHE_SIZE;
-=======
 			thislen = PAGE_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} while (page_len != 0);
 		offset = 0;
 	}
@@ -2861,8 +2240,6 @@ out:
 }
 EXPORT_SYMBOL_GPL(xdr_process_buf);
 
-<<<<<<< HEAD
-=======
 /**
  * xdr_stream_decode_opaque - Decode variable length opaque
  * @xdr: pointer to xdr_stream
@@ -3034,4 +2411,3 @@ ssize_t xdr_stream_encode_opaque_auth(struct xdr_stream *xdr, u32 flavor,
 	return len + ret;
 }
 EXPORT_SYMBOL_GPL(xdr_stream_encode_opaque_auth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

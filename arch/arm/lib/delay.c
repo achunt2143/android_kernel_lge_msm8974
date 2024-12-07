@@ -1,35 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Delay loops based on the OpenRISC implementation.
  *
  * Copyright (C) 2012 ARM Limited
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * Author: Will Deacon <will.deacon@arm.com>
- */
-
-=======
  * Author: Will Deacon <will.deacon@arm.com>
  */
 
 #include <linux/clocksource.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -39,11 +17,7 @@
 /*
  * Default to the loop-based delay implementation.
  */
-<<<<<<< HEAD
-struct arm_delay_ops arm_delay_ops = {
-=======
 struct arm_delay_ops arm_delay_ops __ro_after_init = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.delay		= __loop_delay,
 	.const_udelay	= __loop_const_udelay,
 	.udelay		= __loop_udelay,
@@ -51,10 +25,7 @@ struct arm_delay_ops arm_delay_ops __ro_after_init = {
 
 static const struct delay_timer *delay_timer;
 static bool delay_calibrated;
-<<<<<<< HEAD
-=======
 static u64 delay_res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int read_current_timer(unsigned long *timer_val)
 {
@@ -66,14 +37,11 @@ int read_current_timer(unsigned long *timer_val)
 }
 EXPORT_SYMBOL_GPL(read_current_timer);
 
-<<<<<<< HEAD
-=======
 static inline u64 cyc_to_ns(u64 cyc, u32 mult, u32 shift)
 {
 	return (cyc * mult) >> shift;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __timer_delay(unsigned long cycles)
 {
 	cycles_t start = get_cycles();
@@ -85,11 +53,7 @@ static void __timer_delay(unsigned long cycles)
 static void __timer_const_udelay(unsigned long xloops)
 {
 	unsigned long long loops = xloops;
-<<<<<<< HEAD
-	loops *= loops_per_jiffy;
-=======
 	loops *= arm_delay_ops.ticks_per_jiffy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__timer_delay(loops >> UDELAY_SHIFT);
 }
 
@@ -100,17 +64,6 @@ static void __timer_udelay(unsigned long usecs)
 
 void __init register_current_timer_delay(const struct delay_timer *timer)
 {
-<<<<<<< HEAD
-	if (!delay_calibrated) {
-		pr_info("Switching to timer-based delay loop\n");
-		delay_timer			= timer;
-		lpj_fine			= timer->freq / HZ;
-		loops_per_jiffy			= lpj_fine;
-		arm_delay_ops.delay		= __timer_delay;
-		arm_delay_ops.const_udelay	= __timer_const_udelay;
-		arm_delay_ops.udelay		= __timer_udelay;
-		delay_calibrated		= true;
-=======
 	u32 new_mult, new_shift;
 	u64 res;
 
@@ -135,26 +88,18 @@ void __init register_current_timer_delay(const struct delay_timer *timer)
 		arm_delay_ops.delay		= __timer_delay;
 		arm_delay_ops.const_udelay	= __timer_const_udelay;
 		arm_delay_ops.udelay		= __timer_udelay;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		pr_info("Ignoring duplicate/late registration of read_current_timer delay\n");
 	}
 }
 
-<<<<<<< HEAD
-unsigned long __cpuinit calibrate_delay_is_known(void)
-=======
 unsigned long calibrate_delay_is_known(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	delay_calibrated = true;
 	return lpj_fine;
 }
-<<<<<<< HEAD
-=======
 
 void calibration_delay_done(void)
 {
 	delay_calibrated = true;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

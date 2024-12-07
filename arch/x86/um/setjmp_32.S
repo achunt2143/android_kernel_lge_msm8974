@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # arch/i386/setjmp.S
 #
@@ -20,15 +17,9 @@
 
 	.text
 	.align 4
-<<<<<<< HEAD
-	.globl setjmp
-	.type setjmp, @function
-setjmp:
-=======
 	.globl kernel_setjmp
 	.type kernel_setjmp, @function
 kernel_setjmp:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef _REGPARM
 	movl %eax,%edx
 #else
@@ -43,17 +34,6 @@ kernel_setjmp:
 	movl %esi,12(%edx)
 	movl %edi,16(%edx)
 	movl %ecx,20(%edx)		# Return address
-<<<<<<< HEAD
-	ret
-
-	.size setjmp,.-setjmp
-
-	.text
-	.align 4
-	.globl longjmp
-	.type longjmp, @function
-longjmp:
-=======
 	RET
 
 	.size kernel_setjmp,.-kernel_setjmp
@@ -63,7 +43,6 @@ longjmp:
 	.globl kernel_longjmp
 	.type kernel_longjmp, @function
 kernel_longjmp:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef _REGPARM
 	xchgl %eax,%edx
 #else
@@ -77,8 +56,4 @@ kernel_longjmp:
 	movl 16(%edx),%edi
 	jmp *20(%edx)
 
-<<<<<<< HEAD
-	.size longjmp,.-longjmp
-=======
 	.size kernel_longjmp,.-kernel_longjmp
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

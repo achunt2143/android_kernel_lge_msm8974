@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_FTRACE_H
 #define __ASM_SH_FTRACE_H
 
@@ -13,11 +10,7 @@
 #ifndef __ASSEMBLY__
 extern void mcount(void);
 
-<<<<<<< HEAD
-#define MCOUNT_ADDR		((long)(mcount))
-=======
 #define MCOUNT_ADDR		((unsigned long)(mcount))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_DYNAMIC_FTRACE
 #define CALL_ADDR		((long)(ftrace_call))
@@ -48,19 +41,7 @@ static inline unsigned long ftrace_call_adjust(unsigned long addr)
 /* arch/sh/kernel/return_address.c */
 extern void *return_address(unsigned int);
 
-<<<<<<< HEAD
-#define HAVE_ARCH_CALLER_ADDR
-
-#define CALLER_ADDR0 ((unsigned long)__builtin_return_address(0))
-#define CALLER_ADDR1 ((unsigned long)return_address(1))
-#define CALLER_ADDR2 ((unsigned long)return_address(2))
-#define CALLER_ADDR3 ((unsigned long)return_address(3))
-#define CALLER_ADDR4 ((unsigned long)return_address(4))
-#define CALLER_ADDR5 ((unsigned long)return_address(5))
-#define CALLER_ADDR6 ((unsigned long)return_address(6))
-=======
 #define ftrace_return_address(n) return_address(n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASSEMBLY__ */
 

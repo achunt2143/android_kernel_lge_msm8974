@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2001-2003 SuSE Labs.
  * Distributed under the GNU public license, v2.
@@ -18,11 +15,7 @@
 #include <linux/agp_backend.h>
 #include <linux/mmzone.h>
 #include <asm/page.h>		/* PAGE_SIZE */
-<<<<<<< HEAD
-#include <asm/e820.h>
-=======
 #include <asm/e820/api.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/amd_nb.h>
 #include <asm/gart.h>
 #include "agp.h"
@@ -164,11 +157,7 @@ static u64 amd64_configure(struct pci_dev *hammer, u64 gatt_table)
 
 	/* Address to map to */
 	pci_read_config_dword(hammer, AMD64_GARTAPERTUREBASE, &tmp);
-<<<<<<< HEAD
-	aperturebase = tmp << 25;
-=======
 	aperturebase = (u64)tmp << 25;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aper_base = (aperturebase & PCI_BASE_ADDRESS_MEM_MASK);
 
 	enable_gart_translation(hammer, gatt_table);
@@ -252,11 +241,7 @@ static const struct agp_bridge_driver amd_8151_driver = {
 };
 
 /* Some basic sanity checks for the aperture. */
-<<<<<<< HEAD
-static int __devinit agp_aperture_valid(u64 aper, u32 size)
-=======
 static int agp_aperture_valid(u64 aper, u32 size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!aperture_valid(aper, size, 32*1024*1024))
 		return 0;
@@ -283,15 +268,8 @@ static int agp_aperture_valid(u64 aper, u32 size)
  * to allocate that much memory. But at least error out cleanly instead of
  * crashing.
  */
-<<<<<<< HEAD
-static __devinit int fix_northbridge(struct pci_dev *nb, struct pci_dev *agp,
-								 u16 cap)
-{
-	u32 aper_low, aper_hi;
-=======
 static int fix_northbridge(struct pci_dev *nb, struct pci_dev *agp, u16 cap)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 aper, nb_aper;
 	int order = 0;
 	u32 nb_order, nb_base;
@@ -300,11 +278,7 @@ static int fix_northbridge(struct pci_dev *nb, struct pci_dev *agp, u16 cap)
 	pci_read_config_dword(nb, AMD64_GARTAPERTURECTL, &nb_order);
 	nb_order = (nb_order >> 1) & 7;
 	pci_read_config_dword(nb, AMD64_GARTAPERTUREBASE, &nb_base);
-<<<<<<< HEAD
-	nb_aper = nb_base << 25;
-=======
 	nb_aper = (u64)nb_base << 25;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Northbridge seems to contain crap. Try the AGP bridge. */
 
@@ -321,13 +295,7 @@ static int fix_northbridge(struct pci_dev *nb, struct pci_dev *agp, u16 cap)
 		apsize |= 0xf00;
 	order = 7 - hweight16(apsize);
 
-<<<<<<< HEAD
-	pci_read_config_dword(agp, 0x10, &aper_low);
-	pci_read_config_dword(agp, 0x14, &aper_hi);
-	aper = (aper_low & ~((1<<22)-1)) | ((u64)aper_hi << 32);
-=======
 	aper = pci_bus_address(agp, AGP_APERTURE_BAR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * On some sick chips APSIZE is 0. This means it wants 4G
@@ -355,19 +323,11 @@ static int fix_northbridge(struct pci_dev *nb, struct pci_dev *agp, u16 cap)
 	return 0;
 }
 
-<<<<<<< HEAD
-static __devinit int cache_nbs(struct pci_dev *pdev, u32 cap_ptr)
-{
-	int i;
-
-	if (amd_cache_northbridges() < 0)
-=======
 static int cache_nbs(struct pci_dev *pdev, u32 cap_ptr)
 {
 	int i;
 
 	if (!amd_nb_num())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	if (!amd_nb_has_feature(AMD_NB_GART))
@@ -389,11 +349,7 @@ static int cache_nbs(struct pci_dev *pdev, u32 cap_ptr)
 }
 
 /* Handle AMD 8151 quirks */
-<<<<<<< HEAD
-static void __devinit amd8151_init(struct pci_dev *pdev, struct agp_bridge_data *bridge)
-=======
 static void amd8151_init(struct pci_dev *pdev, struct agp_bridge_data *bridge)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *revstring;
 
@@ -431,11 +387,7 @@ static const struct aper_size_info_32 uli_sizes[7] =
 	{8, 2048, 1, 4},
 	{4, 1024, 0, 3}
 };
-<<<<<<< HEAD
-static int __devinit uli_agp_init(struct pci_dev *pdev)
-=======
 static int uli_agp_init(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 httfea,baseaddr,enuscr;
 	struct pci_dev *dev1;
@@ -558,13 +510,8 @@ put:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devinit agp_amd64_probe(struct pci_dev *pdev,
-				     const struct pci_device_id *ent)
-=======
 static int agp_amd64_probe(struct pci_dev *pdev,
 			   const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct agp_bridge_data *bridge;
 	u8 cap_ptr;
@@ -629,11 +576,7 @@ static int agp_amd64_probe(struct pci_dev *pdev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit agp_amd64_remove(struct pci_dev *pdev)
-=======
 static void agp_amd64_remove(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct agp_bridge_data *bridge = pci_get_drvdata(pdev);
 
@@ -645,26 +588,9 @@ static void agp_amd64_remove(struct pci_dev *pdev)
 	agp_bridges_found--;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-
-static int agp_amd64_suspend(struct pci_dev *pdev, pm_message_t state)
-{
-	pci_save_state(pdev);
-	pci_set_power_state(pdev, pci_choose_state(pdev, state));
-
-	return 0;
-}
-
-static int agp_amd64_resume(struct pci_dev *pdev)
-{
-	pci_set_power_state(pdev, PCI_D0);
-	pci_restore_state(pdev);
-=======
 static int agp_amd64_resume(struct device *dev)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdev->vendor == PCI_VENDOR_ID_NVIDIA)
 		nforce3_agp_init(pdev);
@@ -672,13 +598,7 @@ static int agp_amd64_resume(struct device *dev)
 	return amd_8151_configure();
 }
 
-<<<<<<< HEAD
-#endif /* CONFIG_PM */
-
-static struct pci_device_id agp_amd64_pci_table[] = {
-=======
 static const struct pci_device_id agp_amd64_pci_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	.class		= (PCI_CLASS_BRIDGE_HOST << 8),
 	.class_mask	= ~0,
@@ -800,33 +720,19 @@ static const struct pci_device_id agp_amd64_pci_table[] = {
 
 MODULE_DEVICE_TABLE(pci, agp_amd64_pci_table);
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(agp_amd64_pci_promisc_table) = {
-=======
 static const struct pci_device_id agp_amd64_pci_promisc_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE_CLASS(0, 0) },
 	{ }
 };
 
-<<<<<<< HEAD
-=======
 static DEFINE_SIMPLE_DEV_PM_OPS(agp_amd64_pm_ops, NULL, agp_amd64_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver agp_amd64_pci_driver = {
 	.name		= "agpgart-amd64",
 	.id_table	= agp_amd64_pci_table,
 	.probe		= agp_amd64_probe,
 	.remove		= agp_amd64_remove,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-	.suspend	= agp_amd64_suspend,
-	.resume		= agp_amd64_resume,
-#endif
-=======
 	.driver.pm  = &agp_amd64_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -855,11 +761,7 @@ int __init agp_amd64_init(void)
 		}
 
 		/* First check that we have at least one AMD64 NB */
-<<<<<<< HEAD
-		if (!pci_dev_present(amd_nb_misc_ids)) {
-=======
 		if (!amd_nb_num()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_unregister_driver(&agp_amd64_pci_driver);
 			return -ENODEV;
 		}
@@ -898,10 +800,6 @@ static void __exit agp_amd64_cleanup(void)
 module_init(agp_amd64_mod_init);
 module_exit(agp_amd64_cleanup);
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Dave Jones <davej@redhat.com>, Andi Kleen");
-=======
 MODULE_AUTHOR("Dave Jones, Andi Kleen");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(agp_try_unsupported, bool, 0);
 MODULE_LICENSE("GPL");

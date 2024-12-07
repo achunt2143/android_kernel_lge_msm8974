@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2006 Oracle.  All rights reserved.
-=======
  * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -39,41 +35,6 @@
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
 #include <linux/ratelimit.h>
-<<<<<<< HEAD
-
-#include "rds.h"
-#include "ib.h"
-
-static char *rds_ib_event_type_strings[] = {
-#define RDS_IB_EVENT_STRING(foo) \
-		[IB_EVENT_##foo] = __stringify(IB_EVENT_##foo)
-	RDS_IB_EVENT_STRING(CQ_ERR),
-	RDS_IB_EVENT_STRING(QP_FATAL),
-	RDS_IB_EVENT_STRING(QP_REQ_ERR),
-	RDS_IB_EVENT_STRING(QP_ACCESS_ERR),
-	RDS_IB_EVENT_STRING(COMM_EST),
-	RDS_IB_EVENT_STRING(SQ_DRAINED),
-	RDS_IB_EVENT_STRING(PATH_MIG),
-	RDS_IB_EVENT_STRING(PATH_MIG_ERR),
-	RDS_IB_EVENT_STRING(DEVICE_FATAL),
-	RDS_IB_EVENT_STRING(PORT_ACTIVE),
-	RDS_IB_EVENT_STRING(PORT_ERR),
-	RDS_IB_EVENT_STRING(LID_CHANGE),
-	RDS_IB_EVENT_STRING(PKEY_CHANGE),
-	RDS_IB_EVENT_STRING(SM_CHANGE),
-	RDS_IB_EVENT_STRING(SRQ_ERR),
-	RDS_IB_EVENT_STRING(SRQ_LIMIT_REACHED),
-	RDS_IB_EVENT_STRING(QP_LAST_WQE_REACHED),
-	RDS_IB_EVENT_STRING(CLIENT_REREGISTER),
-#undef RDS_IB_EVENT_STRING
-};
-
-static char *rds_ib_event_str(enum ib_event_type type)
-{
-	return rds_str_array(rds_ib_event_type_strings,
-			     ARRAY_SIZE(rds_ib_event_type_strings), type);
-};
-=======
 #include <net/addrconf.h>
 #include <rdma/ib_cm.h>
 
@@ -81,7 +42,6 @@ static char *rds_ib_event_str(enum ib_event_type type)
 #include "rds.h"
 #include "ib.h"
 #include "ib_mr.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set the selected protocol version
@@ -108,77 +68,11 @@ static void rds_ib_set_flow_control(struct rds_connection *conn, u32 credits)
 }
 
 /*
-<<<<<<< HEAD
- * Tune RNR behavior. Without flow control, we use a rather
- * low timeout, but not the absolute minimum - this should
- * be tunable.
- *
- * We already set the RNR retry count to 7 (which is the
- * smallest infinite number :-) above.
- * If flow control is off, we want to change this back to 0
- * so that we learn quickly when our credit accounting is
- * buggy.
- *
- * Caller passes in a qp_attr pointer - don't waste stack spacv
- * by allocation this twice.
- */
-static void
-rds_ib_tune_rnr(struct rds_ib_connection *ic, struct ib_qp_attr *attr)
-{
-	int ret;
-
-	attr->min_rnr_timer = IB_RNR_TIMER_000_32;
-	ret = ib_modify_qp(ic->i_cm_id->qp, attr, IB_QP_MIN_RNR_TIMER);
-	if (ret)
-		printk(KERN_NOTICE "ib_modify_qp(IB_QP_MIN_RNR_TIMER): err=%d\n", -ret);
-}
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Connection established.
  * We get here for both outgoing and incoming connection.
  */
 void rds_ib_cm_connect_complete(struct rds_connection *conn, struct rdma_cm_event *event)
 {
-<<<<<<< HEAD
-	const struct rds_ib_connect_private *dp = NULL;
-	struct rds_ib_connection *ic = conn->c_transport_data;
-	struct ib_qp_attr qp_attr;
-	int err;
-
-	if (event->param.conn.private_data_len >= sizeof(*dp)) {
-		dp = event->param.conn.private_data;
-
-		/* make sure it isn't empty data */
-		if (dp->dp_protocol_major) {
-			rds_ib_set_protocol(conn,
-				RDS_PROTOCOL(dp->dp_protocol_major,
-				dp->dp_protocol_minor));
-			rds_ib_set_flow_control(conn, be32_to_cpu(dp->dp_credit));
-		}
-	}
-
-	if (conn->c_version < RDS_PROTOCOL(3,1)) {
-		printk(KERN_NOTICE "RDS/IB: Connection to %pI4 version %u.%u failed,"
-		       " no longer supported\n",
-		       &conn->c_faddr,
-		       RDS_PROTOCOL_MAJOR(conn->c_version),
-		       RDS_PROTOCOL_MINOR(conn->c_version));
-		rds_conn_destroy(conn);
-		return;
-	} else {
-		printk(KERN_NOTICE "RDS/IB: connected to %pI4 version %u.%u%s\n",
-		       &conn->c_faddr,
-		       RDS_PROTOCOL_MAJOR(conn->c_version),
-		       RDS_PROTOCOL_MINOR(conn->c_version),
-		       ic->i_flowctl ? ", flow control" : "");
-	}
-
-	/*
-	 * Init rings and fill recv. this needs to wait until protocol negotiation
-	 * is complete, since ring layout is different from 3.0 to 3.1.
-=======
 	struct rds_ib_connection *ic = conn->c_transport_data;
 	const union rds_ib_conn_priv *dp = NULL;
 	__be64 ack_seq = 0;
@@ -241,42 +135,21 @@ void rds_ib_cm_connect_complete(struct rds_connection *conn, struct rdma_cm_even
 	/* Init rings and fill recv. this needs to wait until protocol
 	 * negotiation is complete, since ring layout is different
 	 * from 3.1 to 4.1.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	rds_ib_send_init_ring(ic);
 	rds_ib_recv_init_ring(ic);
 	/* Post receive buffers - as a side effect, this will update
 	 * the posted credit count. */
-<<<<<<< HEAD
-	rds_ib_recv_refill(conn, 1);
-
-	/* Tune RNR behavior */
-	rds_ib_tune_rnr(ic, &qp_attr);
-
-	qp_attr.qp_state = IB_QPS_RTS;
-	err = ib_modify_qp(ic->i_cm_id->qp, &qp_attr, IB_QP_STATE);
-	if (err)
-		printk(KERN_NOTICE "ib_modify_qp(IB_QP_STATE, RTS): err=%d\n", err);
-
-	/* update ib_device with this local ipaddr */
-	err = rds_ib_update_ipaddr(ic->rds_ibdev, conn->c_laddr);
-=======
 	rds_ib_recv_refill(conn, 1, GFP_KERNEL);
 
 	/* update ib_device with this local ipaddr */
 	err = rds_ib_update_ipaddr(ic->rds_ibdev, &conn->c_laddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		printk(KERN_ERR "rds_ib_update_ipaddr failed (%d)\n",
 			err);
 
 	/* If the peer gave us the last packet it saw, process this as if
 	 * we had received a regular ACK. */
-<<<<<<< HEAD
-	if (dp && dp->dp_ack_seq)
-		rds_send_drop_acked(conn, be64_to_cpu(dp->dp_ack_seq), NULL);
-
-=======
 	if (dp) {
 		if (ack_seq)
 			rds_send_drop_acked(conn, be64_to_cpu(ack_seq),
@@ -284,25 +157,16 @@ void rds_ib_cm_connect_complete(struct rds_connection *conn, struct rdma_cm_even
 	}
 
 	conn->c_proposed_version = conn->c_version;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rds_connect_complete(conn);
 }
 
 static void rds_ib_cm_fill_conn_param(struct rds_connection *conn,
-<<<<<<< HEAD
-			struct rdma_conn_param *conn_param,
-			struct rds_ib_connect_private *dp,
-			u32 protocol_version,
-			u32 max_responder_resources,
-			u32 max_initiator_depth)
-=======
 				      struct rdma_conn_param *conn_param,
 				      union rds_ib_conn_priv *dp,
 				      u32 protocol_version,
 				      u32 max_responder_resources,
 				      u32 max_initiator_depth,
 				      bool isv6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rds_ib_connection *ic = conn->c_transport_data;
 	struct rds_ib_device *rds_ibdev = ic->rds_ibdev;
@@ -318,14 +182,6 @@ static void rds_ib_cm_fill_conn_param(struct rds_connection *conn,
 
 	if (dp) {
 		memset(dp, 0, sizeof(*dp));
-<<<<<<< HEAD
-		dp->dp_saddr = conn->c_laddr;
-		dp->dp_daddr = conn->c_faddr;
-		dp->dp_protocol_major = RDS_PROTOCOL_MAJOR(protocol_version);
-		dp->dp_protocol_minor = RDS_PROTOCOL_MINOR(protocol_version);
-		dp->dp_protocol_minor_mask = cpu_to_be16(RDS_IB_SUPPORTED_PROTOCOLS);
-		dp->dp_ack_seq = rds_ib_piggyb_ack(ic);
-=======
 		if (isv6) {
 			dp->ricp_v6.dp_saddr = conn->c_laddr;
 			dp->ricp_v6.dp_daddr = conn->c_faddr;
@@ -357,21 +213,11 @@ static void rds_ib_cm_fill_conn_param(struct rds_connection *conn,
 			conn_param->private_data = &dp->ricp_v4;
 			conn_param->private_data_len = sizeof(dp->ricp_v4);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Advertise flow control */
 		if (ic->i_flowctl) {
 			unsigned int credits;
 
-<<<<<<< HEAD
-			credits = IB_GET_POST_CREDITS(atomic_read(&ic->i_credits));
-			dp->dp_credit = cpu_to_be32(credits);
-			atomic_sub(IB_SET_POST_CREDITS(credits), &ic->i_credits);
-		}
-
-		conn_param->private_data = dp;
-		conn_param->private_data_len = sizeof(*dp);
-=======
 			credits = IB_GET_POST_CREDITS
 				(atomic_read(&ic->i_credits));
 			if (isv6)
@@ -381,16 +227,12 @@ static void rds_ib_cm_fill_conn_param(struct rds_connection *conn,
 			atomic_sub(IB_SET_POST_CREDITS(credits),
 				   &ic->i_credits);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void rds_ib_cq_event_handler(struct ib_event *event, void *data)
 {
 	rdsdebug("event %u (%s) data %p\n",
-<<<<<<< HEAD
-		 event->event, rds_ib_event_str(event->event), data);
-=======
 		 event->event, ib_event_msg(event->event), data);
 }
 
@@ -507,7 +349,6 @@ static void rds_ib_tasklet_fn_recv(unsigned long data)
 
 	if (rds_conn_up(conn))
 		rds_ib_attempt_ack(ic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rds_ib_qp_event_handler(struct ib_event *event, void *data)
@@ -516,34 +357,21 @@ static void rds_ib_qp_event_handler(struct ib_event *event, void *data)
 	struct rds_ib_connection *ic = conn->c_transport_data;
 
 	rdsdebug("conn %p ic %p event %u (%s)\n", conn, ic, event->event,
-<<<<<<< HEAD
-		 rds_ib_event_str(event->event));
-=======
 		 ib_event_msg(event->event));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event->event) {
 	case IB_EVENT_COMM_EST:
 		rdma_notify(ic->i_cm_id, IB_EVENT_COMM_EST);
 		break;
 	default:
-<<<<<<< HEAD
-		rdsdebug("Fatal QP Event %u (%s) "
-			"- connection %pI4->%pI4, reconnecting\n",
-			event->event, rds_ib_event_str(event->event),
-			&conn->c_laddr, &conn->c_faddr);
-=======
 		rdsdebug("Fatal QP Event %u (%s) - connection %pI6c->%pI6c, reconnecting\n",
 			 event->event, ib_event_msg(event->event),
 			 &conn->c_laddr, &conn->c_faddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rds_conn_drop(conn);
 		break;
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void rds_ib_cq_comp_handler_send(struct ib_cq *cq, void *context)
 {
 	struct rds_connection *conn = context;
@@ -667,7 +495,6 @@ static struct rds_header **rds_dma_hdrs_alloc(struct rds_ib_device *dev,
 	return hdrs;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This needs to be very careful to not leave IS_ERR pointers around for
  * cleanup to trip over.
@@ -677,15 +504,10 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 	struct rds_ib_connection *ic = conn->c_transport_data;
 	struct ib_device *dev = ic->i_cm_id->device;
 	struct ib_qp_init_attr attr;
-<<<<<<< HEAD
-	struct rds_ib_device *rds_ibdev;
-	int ret;
-=======
 	struct ib_cq_init_attr cq_attr = {};
 	struct rds_ib_device *rds_ibdev;
 	unsigned long max_wrs;
 	int ret, fr_queue_space;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * It's normal to see a null device if an incoming connection races
@@ -695,38 +517,6 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 	if (!rds_ibdev)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	/* add the conn now so that connection establishment has the dev */
-	rds_ib_add_conn(rds_ibdev, conn);
-
-	if (rds_ibdev->max_wrs < ic->i_send_ring.w_nr + 1)
-		rds_ib_ring_resize(&ic->i_send_ring, rds_ibdev->max_wrs - 1);
-	if (rds_ibdev->max_wrs < ic->i_recv_ring.w_nr + 1)
-		rds_ib_ring_resize(&ic->i_recv_ring, rds_ibdev->max_wrs - 1);
-
-	/* Protection domain and memory range */
-	ic->i_pd = rds_ibdev->pd;
-	ic->i_mr = rds_ibdev->mr;
-
-	ic->i_send_cq = ib_create_cq(dev, rds_ib_send_cq_comp_handler,
-				     rds_ib_cq_event_handler, conn,
-				     ic->i_send_ring.w_nr + 1, 0);
-	if (IS_ERR(ic->i_send_cq)) {
-		ret = PTR_ERR(ic->i_send_cq);
-		ic->i_send_cq = NULL;
-		rdsdebug("ib_create_cq send failed: %d\n", ret);
-		goto out;
-	}
-
-	ic->i_recv_cq = ib_create_cq(dev, rds_ib_recv_cq_comp_handler,
-				     rds_ib_cq_event_handler, conn,
-				     ic->i_recv_ring.w_nr, 0);
-	if (IS_ERR(ic->i_recv_cq)) {
-		ret = PTR_ERR(ic->i_recv_cq);
-		ic->i_recv_cq = NULL;
-		rdsdebug("ib_create_cq recv failed: %d\n", ret);
-		goto out;
-=======
 	/* The fr_queue_space is currently set to 512, to add extra space on
 	 * completion queue and send queue. This extra space is used for FRWR
 	 * registration and invalidation work requests
@@ -775,27 +565,18 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 		ibdev_put_vector(rds_ibdev, ic->i_rcq_vector);
 		rdsdebug("ib_create_cq recv failed: %d\n", ret);
 		goto send_cq_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = ib_req_notify_cq(ic->i_send_cq, IB_CQ_NEXT_COMP);
 	if (ret) {
 		rdsdebug("ib_req_notify_cq send failed: %d\n", ret);
-<<<<<<< HEAD
-		goto out;
-=======
 		goto recv_cq_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = ib_req_notify_cq(ic->i_recv_cq, IB_CQ_SOLICITED);
 	if (ret) {
 		rdsdebug("ib_req_notify_cq recv failed: %d\n", ret);
-<<<<<<< HEAD
-		goto out;
-=======
 		goto recv_cq_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* XXX negotiate max send/recv with remote? */
@@ -803,11 +584,7 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 	attr.event_handler = rds_ib_qp_event_handler;
 	attr.qp_context = conn;
 	/* + 1 to allow for the single ack message */
-<<<<<<< HEAD
-	attr.cap.max_send_wr = ic->i_send_ring.w_nr + 1;
-=======
 	attr.cap.max_send_wr = ic->i_send_ring.w_nr + fr_queue_space + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	attr.cap.max_recv_wr = ic->i_recv_ring.w_nr + 1;
 	attr.cap.max_send_sge = rds_ibdev->max_sge;
 	attr.cap.max_recv_sge = RDS_IB_RECV_SGE;
@@ -823,40 +600,6 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 	ret = rdma_create_qp(ic->i_cm_id, ic->i_pd, &attr);
 	if (ret) {
 		rdsdebug("rdma_create_qp failed: %d\n", ret);
-<<<<<<< HEAD
-		goto out;
-	}
-
-	ic->i_send_hdrs = ib_dma_alloc_coherent(dev,
-					   ic->i_send_ring.w_nr *
-						sizeof(struct rds_header),
-					   &ic->i_send_hdrs_dma, GFP_KERNEL);
-	if (!ic->i_send_hdrs) {
-		ret = -ENOMEM;
-		rdsdebug("ib_dma_alloc_coherent send failed\n");
-		goto out;
-	}
-
-	ic->i_recv_hdrs = ib_dma_alloc_coherent(dev,
-					   ic->i_recv_ring.w_nr *
-						sizeof(struct rds_header),
-					   &ic->i_recv_hdrs_dma, GFP_KERNEL);
-	if (!ic->i_recv_hdrs) {
-		ret = -ENOMEM;
-		rdsdebug("ib_dma_alloc_coherent recv failed\n");
-		goto out;
-	}
-
-	ic->i_ack = ib_dma_alloc_coherent(dev, sizeof(struct rds_header),
-				       &ic->i_ack_dma, GFP_KERNEL);
-	if (!ic->i_ack) {
-		ret = -ENOMEM;
-		rdsdebug("ib_dma_alloc_coherent ack failed\n");
-		goto out;
-	}
-
-	ic->i_sends = vzalloc_node(ic->i_send_ring.w_nr * sizeof(struct rds_ib_send_work),
-=======
 		goto recv_cq_out;
 	}
 
@@ -888,51 +631,24 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 
 	ic->i_sends = vzalloc_node(array_size(sizeof(struct rds_ib_send_work),
 					      ic->i_send_ring.w_nr),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   ibdev_to_node(dev));
 	if (!ic->i_sends) {
 		ret = -ENOMEM;
 		rdsdebug("send allocation failed\n");
-<<<<<<< HEAD
-		goto out;
-	}
-
-	ic->i_recvs = vzalloc_node(ic->i_recv_ring.w_nr * sizeof(struct rds_ib_recv_work),
-=======
 		goto ack_dma_out;
 	}
 
 	ic->i_recvs = vzalloc_node(array_size(sizeof(struct rds_ib_recv_work),
 					      ic->i_recv_ring.w_nr),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   ibdev_to_node(dev));
 	if (!ic->i_recvs) {
 		ret = -ENOMEM;
 		rdsdebug("recv allocation failed\n");
-<<<<<<< HEAD
-		goto out;
-=======
 		goto sends_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rds_ib_recv_init_ack(ic);
 
-<<<<<<< HEAD
-	rdsdebug("conn %p pd %p mr %p cq %p %p\n", conn, ic->i_pd, ic->i_mr,
-		 ic->i_send_cq, ic->i_recv_cq);
-
-out:
-	rds_ib_dev_put(rds_ibdev);
-	return ret;
-}
-
-static u32 rds_ib_protocol_compatible(struct rdma_cm_event *event)
-{
-	const struct rds_ib_connect_private *dp = event->param.conn.private_data;
-	u16 common;
-	u32 version = 0;
-=======
 	rdsdebug("conn %p pd %p cq %p %p\n", conn, ic->i_pd,
 		 ic->i_send_cq, ic->i_recv_cq);
 
@@ -981,7 +697,6 @@ static u32 rds_ib_protocol_compatible(struct rdma_cm_event *event, bool isv6)
 	u32 version = 0;
 	__be16 mask;
 	u16 common;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * rdma_cm private data is odd - when there is any private data in the
@@ -989,11 +704,7 @@ static u32 rds_ib_protocol_compatible(struct rdma_cm_event *event, bool isv6)
 	 * original size. The only way to tell the difference is by looking at
 	 * the contents, which are initialized to zero.
 	 * If the protocol version fields aren't set, this is a connection attempt
-<<<<<<< HEAD
-	 * from an older version. This could could be 3.0 or 2.0 - we can't tell.
-=======
 	 * from an older version. This could be 3.0 or 2.0 - we can't tell.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * We really should have changed this for OFED 1.3 :-(
 	 */
 
@@ -1004,53 +715,6 @@ static u32 rds_ib_protocol_compatible(struct rdma_cm_event *event, bool isv6)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	/* Even if len is crap *now* I still want to check it. -ASG */
-	if (event->param.conn.private_data_len < sizeof (*dp) ||
-	    dp->dp_protocol_major == 0)
-		return RDS_PROTOCOL_3_0;
-
-	common = be16_to_cpu(dp->dp_protocol_minor_mask) & RDS_IB_SUPPORTED_PROTOCOLS;
-	if (dp->dp_protocol_major == 3 && common) {
-		version = RDS_PROTOCOL_3_0;
-		while ((common >>= 1) != 0)
-			version++;
-	}
-	printk_ratelimited(KERN_NOTICE "RDS: Connection from %pI4 using "
-			"incompatible protocol version %u.%u\n",
-			&dp->dp_saddr,
-			dp->dp_protocol_major,
-			dp->dp_protocol_minor);
-	return version;
-}
-
-int rds_ib_cm_handle_connect(struct rdma_cm_id *cm_id,
-				    struct rdma_cm_event *event)
-{
-	__be64 lguid = cm_id->route.path_rec->sgid.global.interface_id;
-	__be64 fguid = cm_id->route.path_rec->dgid.global.interface_id;
-	const struct rds_ib_connect_private *dp = event->param.conn.private_data;
-	struct rds_ib_connect_private dp_rep;
-	struct rds_connection *conn = NULL;
-	struct rds_ib_connection *ic = NULL;
-	struct rdma_conn_param conn_param;
-	u32 version;
-	int err = 1, destroy = 1;
-
-	/* Check whether the remote protocol version matches ours. */
-	version = rds_ib_protocol_compatible(event);
-	if (!version)
-		goto out;
-
-	rdsdebug("saddr %pI4 daddr %pI4 RDSv%u.%u lguid 0x%llx fguid "
-		 "0x%llx\n", &dp->dp_saddr, &dp->dp_daddr,
-		 RDS_PROTOCOL_MAJOR(version), RDS_PROTOCOL_MINOR(version),
-		 (unsigned long long)be64_to_cpu(lguid),
-		 (unsigned long long)be64_to_cpu(fguid));
-
-	conn = rds_conn_create(dp->dp_daddr, dp->dp_saddr, &rds_ib_transport,
-			       GFP_KERNEL);
-=======
 	if (isv6) {
 		data_len = sizeof(struct rds6_ib_connect_private);
 		major = dp->ricp_v6.dp_protocol_major;
@@ -1191,7 +855,6 @@ int rds_ib_cm_handle_connect(struct rdma_cm_id *cm_id,
 	conn = rds_conn_create(&init_net, daddr6, saddr6,
 			       &rds_ib_transport, dp_cmn->ricpc_dp_toss,
 			       GFP_KERNEL, ifindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(conn)) {
 		rdsdebug("rds_conn_create failed (%ld)\n", PTR_ERR(conn));
 		conn = NULL;
@@ -1222,14 +885,6 @@ int rds_ib_cm_handle_connect(struct rdma_cm_id *cm_id,
 	ic = conn->c_transport_data;
 
 	rds_ib_set_protocol(conn, version);
-<<<<<<< HEAD
-	rds_ib_set_flow_control(conn, be32_to_cpu(dp->dp_credit));
-
-	/* If the peer gave us the last packet it saw, process this as if
-	 * we had received a regular ACK. */
-	if (dp->dp_ack_seq)
-		rds_send_drop_acked(conn, be64_to_cpu(dp->dp_ack_seq), NULL);
-=======
 	rds_ib_set_flow_control(conn, be32_to_cpu(dp_cmn->ricpc_credit));
 
 	/* If the peer gave us the last packet it saw, process this as if
@@ -1237,7 +892,6 @@ int rds_ib_cm_handle_connect(struct rdma_cm_id *cm_id,
 	if (dp_cmn->ricpc_ack_seq)
 		rds_send_drop_acked(conn, be64_to_cpu(dp_cmn->ricpc_ack_seq),
 				    NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(cm_id->context);
 	BUG_ON(ic->i_cm_id);
@@ -1256,15 +910,6 @@ int rds_ib_cm_handle_connect(struct rdma_cm_id *cm_id,
 	}
 
 	rds_ib_cm_fill_conn_param(conn, &conn_param, &dp_rep, version,
-<<<<<<< HEAD
-		event->param.conn.responder_resources,
-		event->param.conn.initiator_depth);
-
-	/* rdma_accept() calls rdma_reject() internally if it fails */
-	err = rdma_accept(cm_id, &conn_param);
-	if (err)
-		rds_ib_conn_error(conn, "rdma_accept failed (%d)\n", err);
-=======
 				  event->param.conn.responder_resources,
 				  event->param.conn.initiator_depth, isv6);
 
@@ -1272,45 +917,28 @@ int rds_ib_cm_handle_connect(struct rdma_cm_id *cm_id,
 	/* rdma_accept() calls rdma_reject() internally if it fails */
 	if (rdma_accept(cm_id, &conn_param))
 		rds_ib_conn_error(conn, "rdma_accept failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	if (conn)
 		mutex_unlock(&conn->c_cm_lock);
 	if (err)
-<<<<<<< HEAD
-		rdma_reject(cm_id, NULL, 0);
-=======
 		rdma_reject(cm_id, &err, sizeof(int),
 			    IB_CM_REJ_CONSUMER_DEFINED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return destroy;
 }
 
 
-<<<<<<< HEAD
-int rds_ib_cm_initiate_connect(struct rdma_cm_id *cm_id)
-=======
 int rds_ib_cm_initiate_connect(struct rdma_cm_id *cm_id, bool isv6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rds_connection *conn = cm_id->context;
 	struct rds_ib_connection *ic = conn->c_transport_data;
 	struct rdma_conn_param conn_param;
-<<<<<<< HEAD
-	struct rds_ib_connect_private dp;
-=======
 	union rds_ib_conn_priv dp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/* If the peer doesn't do protocol negotiation, we must
 	 * default to RDSv3.0 */
-<<<<<<< HEAD
-	rds_ib_set_protocol(conn, RDS_PROTOCOL_3_0);
-=======
 	rds_ib_set_protocol(conn, RDS_PROTOCOL_4_1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ic->i_flowctl = rds_ib_sysctl_flow_control;	/* advertise flow control */
 
 	ret = rds_ib_setup_qp(conn);
@@ -1319,13 +947,6 @@ int rds_ib_cm_initiate_connect(struct rdma_cm_id *cm_id, bool isv6)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	rds_ib_cm_fill_conn_param(conn, &conn_param, &dp, RDS_PROTOCOL_VERSION,
-		UINT_MAX, UINT_MAX);
-	ret = rdma_connect(cm_id, &conn_param);
-	if (ret)
-		rds_ib_conn_error(conn, "rdma_connect failed (%d)\n", ret);
-=======
 	rds_ib_cm_fill_conn_param(conn, &conn_param, &dp,
 				  conn->c_proposed_version,
 				  UINT_MAX, UINT_MAX, isv6);
@@ -1333,7 +954,6 @@ int rds_ib_cm_initiate_connect(struct rdma_cm_id *cm_id, bool isv6)
 	if (ret)
 		rds_ib_conn_error(conn, "rdma_connect_locked failed (%d)\n",
 				  ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	/* Beware - returning non-zero tells the rdma_cm to destroy
@@ -1343,20 +963,6 @@ out:
 		if (ic->i_cm_id == cm_id)
 			ret = 0;
 	}
-<<<<<<< HEAD
-	return ret;
-}
-
-int rds_ib_conn_connect(struct rds_connection *conn)
-{
-	struct rds_ib_connection *ic = conn->c_transport_data;
-	struct sockaddr_in src, dest;
-	int ret;
-
-	/* XXX I wonder what affect the port space has */
-	/* delegate cm event handler to rdma_transport */
-	ic->i_cm_id = rdma_create_id(rds_rdma_cm_event_handler, conn,
-=======
 	ic->i_active_side = true;
 	return ret;
 }
@@ -1380,7 +986,6 @@ int rds_ib_conn_path_connect(struct rds_conn_path *cp)
 #endif
 		handler = rds_rdma_cm_event_handler;
 	ic->i_cm_id = rdma_create_id(&init_net, handler, conn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     RDMA_PS_TCP, IB_QPT_RC);
 	if (IS_ERR(ic->i_cm_id)) {
 		ret = PTR_ERR(ic->i_cm_id);
@@ -1391,15 +996,6 @@ int rds_ib_conn_path_connect(struct rds_conn_path *cp)
 
 	rdsdebug("created cm id %p for conn %p\n", ic->i_cm_id, conn);
 
-<<<<<<< HEAD
-	src.sin_family = AF_INET;
-	src.sin_addr.s_addr = (__force u32)conn->c_laddr;
-	src.sin_port = (__force u16)htons(0);
-
-	dest.sin_family = AF_INET;
-	dest.sin_addr.s_addr = (__force u32)conn->c_faddr;
-	dest.sin_port = (__force u16)htons(RDS_PORT);
-=======
 	if (ipv6_addr_v4mapped(&conn->c_faddr)) {
 		struct sockaddr_in *sin;
 
@@ -1427,7 +1023,6 @@ int rds_ib_conn_path_connect(struct rds_conn_path *cp)
 		sin6->sin6_port = htons(RDS_CM_PORT);
 		sin6->sin6_scope_id = conn->c_dev_if;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = rdma_resolve_addr(ic->i_cm_id, (struct sockaddr *)&src,
 				(struct sockaddr *)&dest,
@@ -1448,14 +1043,9 @@ out:
  * so that it can be called at any point during startup.  In fact it
  * can be called multiple times for a given connection.
  */
-<<<<<<< HEAD
-void rds_ib_conn_shutdown(struct rds_connection *conn)
-{
-=======
 void rds_ib_conn_path_shutdown(struct rds_conn_path *cp)
 {
 	struct rds_connection *conn = cp->cp_conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rds_ib_connection *ic = conn->c_transport_data;
 	int err = 0;
 
@@ -1464,11 +1054,6 @@ void rds_ib_conn_path_shutdown(struct rds_conn_path *cp)
 		 ic->i_cm_id ? ic->i_cm_id->qp : NULL);
 
 	if (ic->i_cm_id) {
-<<<<<<< HEAD
-		struct ib_device *dev = ic->i_cm_id->device;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rdsdebug("disconnecting cm %p\n", ic->i_cm_id);
 		err = rdma_disconnect(ic->i_cm_id);
 		if (err) {
@@ -1479,14 +1064,11 @@ void rds_ib_conn_path_shutdown(struct rds_conn_path *cp)
 				ic->i_cm_id, err);
 		}
 
-<<<<<<< HEAD
-=======
 		/* kick off "flush_worker" for all pools in order to reap
 		 * all FRMR registrations that are still marked "FRMR_IS_INUSE"
 		 */
 		rds_ib_flush_mrs();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * We want to wait for tx and rx completion to finish
 		 * before we tear down the connection, but we have to be
@@ -1498,28 +1080,6 @@ void rds_ib_conn_path_shutdown(struct rds_conn_path *cp)
 		 */
 		wait_event(rds_ib_ring_empty_wait,
 			   rds_ib_ring_empty(&ic->i_recv_ring) &&
-<<<<<<< HEAD
-			   (atomic_read(&ic->i_signaled_sends) == 0));
-		tasklet_kill(&ic->i_recv_tasklet);
-
-		if (ic->i_send_hdrs)
-			ib_dma_free_coherent(dev,
-					   ic->i_send_ring.w_nr *
-						sizeof(struct rds_header),
-					   ic->i_send_hdrs,
-					   ic->i_send_hdrs_dma);
-
-		if (ic->i_recv_hdrs)
-			ib_dma_free_coherent(dev,
-					   ic->i_recv_ring.w_nr *
-						sizeof(struct rds_header),
-					   ic->i_recv_hdrs,
-					   ic->i_recv_hdrs_dma);
-
-		if (ic->i_ack)
-			ib_dma_free_coherent(dev, sizeof(struct rds_header),
-					     ic->i_ack, ic->i_ack_dma);
-=======
 			   (atomic_read(&ic->i_signaled_sends) == 0) &&
 			   (atomic_read(&ic->i_fastreg_inuse_count) == 0) &&
 			   (atomic_read(&ic->i_fastreg_wrs) == RDS_IB_DEFAULT_FR_WR));
@@ -1577,22 +1137,12 @@ void rds_ib_conn_path_shutdown(struct rds_conn_path *cp)
 			WARN_ON(ic->i_recv_hdrs_dma);
 			WARN_ON(ic->i_ack);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ic->i_sends)
 			rds_ib_send_clear_ring(ic);
 		if (ic->i_recvs)
 			rds_ib_recv_clear_ring(ic);
 
-<<<<<<< HEAD
-		if (ic->i_cm_id->qp)
-			rdma_destroy_qp(ic->i_cm_id);
-		if (ic->i_send_cq)
-			ib_destroy_cq(ic->i_send_cq);
-		if (ic->i_recv_cq)
-			ib_destroy_cq(ic->i_recv_cq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rdma_destroy_id(ic->i_cm_id);
 
 		/*
@@ -1603,17 +1153,8 @@ void rds_ib_conn_path_shutdown(struct rds_conn_path *cp)
 
 		ic->i_cm_id = NULL;
 		ic->i_pd = NULL;
-<<<<<<< HEAD
-		ic->i_mr = NULL;
 		ic->i_send_cq = NULL;
 		ic->i_recv_cq = NULL;
-		ic->i_send_hdrs = NULL;
-		ic->i_recv_hdrs = NULL;
-		ic->i_ack = NULL;
-=======
-		ic->i_send_cq = NULL;
-		ic->i_recv_cq = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	BUG_ON(ic->rds_ibdev);
 
@@ -1639,14 +1180,9 @@ void rds_ib_conn_path_shutdown(struct rds_conn_path *cp)
 	ic->i_flowctl = 0;
 	atomic_set(&ic->i_credits, 0);
 
-<<<<<<< HEAD
-	rds_ib_ring_init(&ic->i_send_ring, rds_ib_sysctl_max_send_wr);
-	rds_ib_ring_init(&ic->i_recv_ring, rds_ib_sysctl_max_recv_wr);
-=======
 	/* Re-init rings, but retain sizes. */
 	rds_ib_ring_init(&ic->i_send_ring, ic->i_send_ring.w_nr);
 	rds_ib_ring_init(&ic->i_recv_ring, ic->i_recv_ring.w_nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ic->i_ibinc) {
 		rds_inc_put(&ic->i_ibinc->ii_inc);
@@ -1657,10 +1193,7 @@ void rds_ib_conn_path_shutdown(struct rds_conn_path *cp)
 	ic->i_sends = NULL;
 	vfree(ic->i_recvs);
 	ic->i_recvs = NULL;
-<<<<<<< HEAD
-=======
 	ic->i_active_side = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int rds_ib_conn_alloc(struct rds_connection *conn, gfp_t gfp)
@@ -1674,47 +1207,30 @@ int rds_ib_conn_alloc(struct rds_connection *conn, gfp_t gfp)
 	if (!ic)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	ret = rds_ib_recv_alloc_caches(ic);
-=======
 	ret = rds_ib_recv_alloc_caches(ic, gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		kfree(ic);
 		return ret;
 	}
 
 	INIT_LIST_HEAD(&ic->ib_node);
-<<<<<<< HEAD
-	tasklet_init(&ic->i_recv_tasklet, rds_ib_recv_tasklet_fn,
-		     (unsigned long) ic);
-=======
 	tasklet_init(&ic->i_send_tasklet, rds_ib_tasklet_fn_send,
 		     (unsigned long)ic);
 	tasklet_init(&ic->i_recv_tasklet, rds_ib_tasklet_fn_recv,
 		     (unsigned long)ic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&ic->i_recv_mutex);
 #ifndef KERNEL_HAS_ATOMIC64
 	spin_lock_init(&ic->i_ack_lock);
 #endif
 	atomic_set(&ic->i_signaled_sends, 0);
-<<<<<<< HEAD
-=======
 	atomic_set(&ic->i_fastreg_wrs, RDS_IB_DEFAULT_FR_WR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * rds_ib_conn_shutdown() waits for these to be emptied so they
 	 * must be initialized before it can be called.
 	 */
-<<<<<<< HEAD
-	rds_ib_ring_init(&ic->i_send_ring, rds_ib_sysctl_max_send_wr);
-	rds_ib_ring_init(&ic->i_recv_ring, rds_ib_sysctl_max_recv_wr);
-=======
 	rds_ib_ring_init(&ic->i_send_ring, 0);
 	rds_ib_ring_init(&ic->i_recv_ring, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ic->conn = conn;
 	conn->c_transport_data = ic;

@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#ifndef __UM_CHECKSUM_H
-#define __UM_CHECKSUM_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __UM_CHECKSUM_H
 #define __UM_CHECKSUM_H
@@ -115,7 +110,6 @@ static inline __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
 	return (__force __sum16)sum;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_X86_32
 # include "checksum_32.h"
 #else

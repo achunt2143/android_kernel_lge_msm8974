@@ -1,23 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ///
 /// Use resource_size function on resource object
 /// instead of explicit computation.
 ///
 //  Confidence: High
-<<<<<<< HEAD
-//  Copyright: (C) 2009, 2010 Nicolas Palix, DIKU.  GPLv2.
-//  Copyright: (C) 2009, 2010 Julia Lawall, DIKU.  GPLv2.
-//  Copyright: (C) 2009, 2010 Gilles Muller, INRIA/LiP6.  GPLv2.
-//  URL: http://coccinelle.lip6.fr/
-=======
 //  Copyright: (C) 2009, 2010 Nicolas Palix, DIKU.
 //  Copyright: (C) 2009, 2010 Julia Lawall, DIKU.
 //  Copyright: (C) 2009, 2010 Gilles Muller, INRIA/LiP6.
 //  URL: https://coccinelle.gitlabpages.inria.fr/website
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 //  Options:
 //
 //  Keywords: resource_size

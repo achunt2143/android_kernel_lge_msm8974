@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef BCM63XX_ENET_H_
 #define BCM63XX_ENET_H_
 
@@ -12,13 +9,8 @@
 #include <linux/platform_device.h>
 
 #include <bcm63xx_regs.h>
-<<<<<<< HEAD
-#include <bcm63xx_irq.h>
-#include <bcm63xx_io.h>
-=======
 #include <bcm63xx_io.h>
 #include <bcm63xx_iudma.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* default number of descriptor */
 #define BCMENET_DEF_RX_DESC	64
@@ -26,10 +18,7 @@
 
 /* maximum burst len for dma (4 bytes unit) */
 #define BCMENET_DMA_MAXBURST	16
-<<<<<<< HEAD
-=======
 #define BCMENETSW_DMA_MAXBURST	8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* tx transmit threshold (4 bytes unit), fifo is 256 bytes, the value
  * must be low enough so that a DMA transfer of above burst length can
@@ -44,38 +33,6 @@
 #define BCMENET_MAX_MTU		2046
 
 /*
-<<<<<<< HEAD
- * rx/tx dma descriptor
- */
-struct bcm_enet_desc {
-	u32 len_stat;
-	u32 address;
-};
-
-#define DMADESC_LENGTH_SHIFT	16
-#define DMADESC_LENGTH_MASK	(0xfff << DMADESC_LENGTH_SHIFT)
-#define DMADESC_OWNER_MASK	(1 << 15)
-#define DMADESC_EOP_MASK	(1 << 14)
-#define DMADESC_SOP_MASK	(1 << 13)
-#define DMADESC_ESOP_MASK	(DMADESC_EOP_MASK | DMADESC_SOP_MASK)
-#define DMADESC_WRAP_MASK	(1 << 12)
-
-#define DMADESC_UNDER_MASK	(1 << 9)
-#define DMADESC_APPEND_CRC	(1 << 8)
-#define DMADESC_OVSIZE_MASK	(1 << 4)
-#define DMADESC_RXER_MASK	(1 << 2)
-#define DMADESC_CRC_MASK	(1 << 1)
-#define DMADESC_OV_MASK		(1 << 0)
-#define DMADESC_ERR_MASK	(DMADESC_UNDER_MASK | \
-				DMADESC_OVSIZE_MASK | \
-				DMADESC_RXER_MASK | \
-				DMADESC_CRC_MASK | \
-				DMADESC_OV_MASK)
-
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * MIB Counters register definitions
 */
 #define ETH_MIB_TX_GD_OCTETS			0
@@ -128,8 +85,6 @@ struct bcm_enet_desc {
 #define ETH_MIB_RX_CNTRL			54
 
 
-<<<<<<< HEAD
-=======
 /*
  * SW MIB Counters register definitions
 */
@@ -178,16 +133,12 @@ struct bcm_enet_desc {
 #define ETHSW_MIB_RX_8192_9728			47
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bcm_enet_mib_counters {
 	u64 tx_gd_octets;
 	u32 tx_gd_pkts;
 	u32 tx_all_octets;
 	u32 tx_all_pkts;
-<<<<<<< HEAD
-=======
 	u32 tx_unicast;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tx_brdcast;
 	u32 tx_mult;
 	u32 tx_64;
@@ -196,16 +147,12 @@ struct bcm_enet_mib_counters {
 	u32 tx_256_511;
 	u32 tx_512_1023;
 	u32 tx_1024_max;
-<<<<<<< HEAD
-	u32 tx_jab;
-=======
 	u32 tx_1523_2047;
 	u32 tx_2048_4095;
 	u32 tx_4096_8191;
 	u32 tx_8192_9728;
 	u32 tx_jab;
 	u32 tx_drop;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tx_ovr;
 	u32 tx_frag;
 	u32 tx_underrun;
@@ -222,10 +169,7 @@ struct bcm_enet_mib_counters {
 	u32 rx_all_octets;
 	u32 rx_all_pkts;
 	u32 rx_brdcast;
-<<<<<<< HEAD
-=======
 	u32 rx_unicast;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 rx_mult;
 	u32 rx_64;
 	u32 rx_65_127;
@@ -249,12 +193,6 @@ struct bcm_enet_mib_counters {
 
 struct bcm_enet_priv {
 
-<<<<<<< HEAD
-	/* mac id (from platform device id) */
-	int mac_id;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* base remapped address of device */
 	void __iomem *base;
 
@@ -292,13 +230,6 @@ struct bcm_enet_priv {
 	/* next dirty rx descriptor to refill */
 	int rx_dirty_desc;
 
-<<<<<<< HEAD
-	/* size of allocated rx skbs */
-	unsigned int rx_skb_size;
-
-	/* list of skb given to hw for rx */
-	struct sk_buff **rx_skb;
-=======
 	/* size of allocated rx buffers */
 	unsigned int rx_buf_size;
 
@@ -310,7 +241,6 @@ struct bcm_enet_priv {
 
 	/* list of buffer given to hw for rx */
 	void **rx_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* used when rx skb allocation failed, so we defer rx queue
 	 * refill */
@@ -326,12 +256,9 @@ struct bcm_enet_priv {
 	/* number of dma desc in tx ring */
 	int tx_ring_size;
 
-<<<<<<< HEAD
-=======
 	/* maximum dma burst size */
 	int dma_maxburst;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* cpu view of rx dma ring */
 	struct bcm_enet_desc *tx_desc_cpu;
 
@@ -366,10 +293,6 @@ struct bcm_enet_priv {
 
 	/* used when a phy is connected (phylib used) */
 	struct mii_bus *mii_bus;
-<<<<<<< HEAD
-	struct phy_device *phydev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int old_link;
 	int old_duplex;
 	int old_pause;
@@ -407,10 +330,6 @@ struct bcm_enet_priv {
 
 	/* maximum hardware transmit/receive size */
 	unsigned int hw_mtu;
-<<<<<<< HEAD
-};
-
-=======
 
 	bool enet_is_sw;
 
@@ -440,5 +359,4 @@ struct bcm_enet_priv {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* ! BCM63XX_ENET_H_ */

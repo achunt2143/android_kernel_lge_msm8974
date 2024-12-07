@@ -11,11 +11,8 @@
 #ifndef _XTENSA_CURRENT_H
 #define _XTENSA_CURRENT_H
 
-<<<<<<< HEAD
-=======
 #include <asm/thread_info.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASSEMBLY__
 
 #include <linux/thread_info.h>
@@ -29,15 +26,6 @@ static inline struct task_struct *get_current(void)
 
 #define current get_current()
 
-<<<<<<< HEAD
-#else
-
-#define CURRENT_SHIFT 13
-
-#define GET_CURRENT(reg,sp)		\
-	GET_THREAD_INFO(reg,sp);	\
-  	l32i reg, reg, TI_TASK		\
-=======
 register unsigned long current_stack_pointer __asm__("a1");
 
 #else
@@ -45,7 +33,6 @@ register unsigned long current_stack_pointer __asm__("a1");
 #define GET_CURRENT(reg,sp)		\
 	GET_THREAD_INFO(reg,sp);	\
 	l32i reg, reg, TI_TASK		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 

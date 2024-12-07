@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Artem Bityutskiy (Битюцкий Артём)
  *          Adrian Hunter
  */
@@ -101,14 +82,9 @@ static int valuable(struct ubifs_info *c, const struct ubifs_lprops *lprops)
  */
 static int scan_for_dirty_cb(struct ubifs_info *c,
 			     const struct ubifs_lprops *lprops, int in_tree,
-<<<<<<< HEAD
-			     struct scan_data *data)
-{
-=======
 			     void *arg)
 {
 	struct scan_data *data = arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = LPT_SCAN_CONTINUE;
 
 	/* Exclude LEBs that are currently in use */
@@ -191,33 +167,15 @@ static const struct ubifs_lprops *scan_for_dirty(struct ubifs_info *c,
 	data.pick_free = pick_free;
 	data.lnum = -1;
 	data.exclude_index = exclude_index;
-<<<<<<< HEAD
-	err = ubifs_lpt_scan_nolock(c, -1, c->lscan_lnum,
-				    (ubifs_lpt_scan_callback)scan_for_dirty_cb,
-				    &data);
-	if (err)
-		return ERR_PTR(err);
-	ubifs_assert(data.lnum >= c->main_first && data.lnum < c->leb_cnt);
-=======
 	err = ubifs_lpt_scan_nolock(c, -1, c->lscan_lnum, scan_for_dirty_cb,
 				    &data);
 	if (err)
 		return ERR_PTR(err);
 	ubifs_assert(c, data.lnum >= c->main_first && data.lnum < c->leb_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->lscan_lnum = data.lnum;
 	lprops = ubifs_lpt_lookup_dirty(c, data.lnum);
 	if (IS_ERR(lprops))
 		return lprops;
-<<<<<<< HEAD
-	ubifs_assert(lprops->lnum == data.lnum);
-	ubifs_assert(lprops->free + lprops->dirty >= min_space);
-	ubifs_assert(lprops->dirty >= c->dead_wm ||
-		     (pick_free &&
-		      lprops->free + lprops->dirty == c->leb_size));
-	ubifs_assert(!(lprops->flags & LPROPS_TAKEN));
-	ubifs_assert(!exclude_index || !(lprops->flags & LPROPS_INDEX));
-=======
 	ubifs_assert(c, lprops->lnum == data.lnum);
 	ubifs_assert(c, lprops->free + lprops->dirty >= min_space);
 	ubifs_assert(c, lprops->dirty >= c->dead_wm ||
@@ -225,7 +183,6 @@ static const struct ubifs_lprops *scan_for_dirty(struct ubifs_info *c,
 		      lprops->free + lprops->dirty == c->leb_size));
 	ubifs_assert(c, !(lprops->flags & LPROPS_TAKEN));
 	ubifs_assert(c, !exclude_index || !(lprops->flags & LPROPS_INDEX));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return lprops;
 }
 
@@ -346,11 +303,7 @@ int ubifs_find_dirty_leb(struct ubifs_info *c, struct ubifs_lprops *ret_lp,
 		lp = idx_lp;
 
 	if (lp) {
-<<<<<<< HEAD
-		ubifs_assert(lp->free + lp->dirty >= c->dead_wm);
-=======
 		ubifs_assert(c, lp->free + lp->dirty >= c->dead_wm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto found;
 	}
 
@@ -361,11 +314,7 @@ int ubifs_find_dirty_leb(struct ubifs_info *c, struct ubifs_lprops *ret_lp,
 		err = PTR_ERR(lp);
 		goto out;
 	}
-<<<<<<< HEAD
-	ubifs_assert(lp->dirty >= c->dead_wm ||
-=======
 	ubifs_assert(c, lp->dirty >= c->dead_wm ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     (pick_free && lp->free + lp->dirty == c->leb_size));
 
 found:
@@ -400,14 +349,9 @@ out:
  */
 static int scan_for_free_cb(struct ubifs_info *c,
 			    const struct ubifs_lprops *lprops, int in_tree,
-<<<<<<< HEAD
-			    struct scan_data *data)
-{
-=======
 			    void *arg)
 {
 	struct scan_data *data = arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = LPT_SCAN_CONTINUE;
 
 	/* Exclude LEBs that are currently in use */
@@ -503,34 +447,19 @@ const struct ubifs_lprops *do_find_free_space(struct ubifs_info *c,
 	data.pick_free = pick_free;
 	data.lnum = -1;
 	err = ubifs_lpt_scan_nolock(c, -1, c->lscan_lnum,
-<<<<<<< HEAD
-				    (ubifs_lpt_scan_callback)scan_for_free_cb,
-				    &data);
-	if (err)
-		return ERR_PTR(err);
-	ubifs_assert(data.lnum >= c->main_first && data.lnum < c->leb_cnt);
-=======
 				    scan_for_free_cb,
 				    &data);
 	if (err)
 		return ERR_PTR(err);
 	ubifs_assert(c, data.lnum >= c->main_first && data.lnum < c->leb_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->lscan_lnum = data.lnum;
 	lprops = ubifs_lpt_lookup_dirty(c, data.lnum);
 	if (IS_ERR(lprops))
 		return lprops;
-<<<<<<< HEAD
-	ubifs_assert(lprops->lnum == data.lnum);
-	ubifs_assert(lprops->free >= min_space);
-	ubifs_assert(!(lprops->flags & LPROPS_TAKEN));
-	ubifs_assert(!(lprops->flags & LPROPS_INDEX));
-=======
 	ubifs_assert(c, lprops->lnum == data.lnum);
 	ubifs_assert(c, lprops->free >= min_space);
 	ubifs_assert(c, !(lprops->flags & LPROPS_TAKEN));
 	ubifs_assert(c, !(lprops->flags & LPROPS_INDEX));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return lprops;
 }
 
@@ -634,11 +563,7 @@ int ubifs_find_free_space(struct ubifs_info *c, int min_space, int *offs,
 	}
 
 	dbg_find("found LEB %d, free %d", lnum, c->leb_size - *offs);
-<<<<<<< HEAD
-	ubifs_assert(*offs <= c->leb_size - min_space);
-=======
 	ubifs_assert(c, *offs <= c->leb_size - min_space);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return lnum;
 
 out:
@@ -665,14 +590,9 @@ out:
  */
 static int scan_for_idx_cb(struct ubifs_info *c,
 			   const struct ubifs_lprops *lprops, int in_tree,
-<<<<<<< HEAD
-			   struct scan_data *data)
-{
-=======
 			   void *arg)
 {
 	struct scan_data *data = arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = LPT_SCAN_CONTINUE;
 
 	/* Exclude LEBs that are currently in use */
@@ -702,44 +622,24 @@ static int scan_for_idx_cb(struct ubifs_info *c,
  */
 static const struct ubifs_lprops *scan_for_leb_for_idx(struct ubifs_info *c)
 {
-<<<<<<< HEAD
-	struct ubifs_lprops *lprops;
-=======
 	const struct ubifs_lprops *lprops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scan_data data;
 	int err;
 
 	data.lnum = -1;
-<<<<<<< HEAD
-	err = ubifs_lpt_scan_nolock(c, -1, c->lscan_lnum,
-				    (ubifs_lpt_scan_callback)scan_for_idx_cb,
-				    &data);
-	if (err)
-		return ERR_PTR(err);
-	ubifs_assert(data.lnum >= c->main_first && data.lnum < c->leb_cnt);
-=======
 	err = ubifs_lpt_scan_nolock(c, -1, c->lscan_lnum, scan_for_idx_cb,
 				    &data);
 	if (err)
 		return ERR_PTR(err);
 	ubifs_assert(c, data.lnum >= c->main_first && data.lnum < c->leb_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->lscan_lnum = data.lnum;
 	lprops = ubifs_lpt_lookup_dirty(c, data.lnum);
 	if (IS_ERR(lprops))
 		return lprops;
-<<<<<<< HEAD
-	ubifs_assert(lprops->lnum == data.lnum);
-	ubifs_assert(lprops->free + lprops->dirty == c->leb_size);
-	ubifs_assert(!(lprops->flags & LPROPS_TAKEN));
-	ubifs_assert(!(lprops->flags & LPROPS_INDEX));
-=======
 	ubifs_assert(c, lprops->lnum == data.lnum);
 	ubifs_assert(c, lprops->free + lprops->dirty == c->leb_size);
 	ubifs_assert(c, !(lprops->flags & LPROPS_TAKEN));
 	ubifs_assert(c, !(lprops->flags & LPROPS_INDEX));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return lprops;
 }
 
@@ -779,11 +679,7 @@ int ubifs_find_free_leb_for_idx(struct ubifs_info *c)
 			 */
 			if (c->in_a_category_cnt != c->main_lebs ||
 			    c->lst.empty_lebs - c->lst.taken_empty_lebs > 0) {
-<<<<<<< HEAD
-				ubifs_assert(c->freeable_cnt == 0);
-=======
 				ubifs_assert(c, c->freeable_cnt == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lprops = scan_for_leb_for_idx(c);
 				if (IS_ERR(lprops)) {
 					err = PTR_ERR(lprops);
@@ -831,34 +727,14 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int cmp_dirty_idx(const struct ubifs_lprops **a,
-			 const struct ubifs_lprops **b)
-{
-	const struct ubifs_lprops *lpa = *a;
-	const struct ubifs_lprops *lpb = *b;
-=======
 static int cmp_dirty_idx(const void *a, const void *b)
 {
 	const struct ubifs_lprops *lpa = *(const struct ubifs_lprops **)a;
 	const struct ubifs_lprops *lpb = *(const struct ubifs_lprops **)b;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return lpa->dirty + lpa->free - lpb->dirty - lpb->free;
 }
 
-<<<<<<< HEAD
-static void swap_dirty_idx(struct ubifs_lprops **a, struct ubifs_lprops **b,
-			   int size)
-{
-	struct ubifs_lprops *t = *a;
-
-	*a = *b;
-	*b = t;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ubifs_save_dirty_idx_lnums - save an array of the most dirty index LEB nos.
  * @c: the UBIFS file-system description object
@@ -878,12 +754,7 @@ int ubifs_save_dirty_idx_lnums(struct ubifs_info *c)
 	       sizeof(void *) * c->dirty_idx.cnt);
 	/* Sort it so that the dirtiest is now at the end */
 	sort(c->dirty_idx.arr, c->dirty_idx.cnt, sizeof(void *),
-<<<<<<< HEAD
-	     (int (*)(const void *, const void *))cmp_dirty_idx,
-	     (void (*)(void *, void *, int))swap_dirty_idx);
-=======
 	     cmp_dirty_idx, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dbg_find("found %d dirty index LEBs", c->dirty_idx.cnt);
 	if (c->dirty_idx.cnt)
 		dbg_find("dirtiest index LEB is %d with dirty %d and free %d",
@@ -911,14 +782,9 @@ int ubifs_save_dirty_idx_lnums(struct ubifs_info *c)
  */
 static int scan_dirty_idx_cb(struct ubifs_info *c,
 			   const struct ubifs_lprops *lprops, int in_tree,
-<<<<<<< HEAD
-			   struct scan_data *data)
-{
-=======
 			   void *arg)
 {
 	struct scan_data *data = arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = LPT_SCAN_CONTINUE;
 
 	/* Exclude LEBs that are currently in use */
@@ -977,36 +843,20 @@ static int find_dirty_idx_leb(struct ubifs_info *c)
 	if (c->pnodes_have >= c->pnode_cnt)
 		/* All pnodes are in memory, so skip scan */
 		return -ENOSPC;
-<<<<<<< HEAD
-	err = ubifs_lpt_scan_nolock(c, -1, c->lscan_lnum,
-				    (ubifs_lpt_scan_callback)scan_dirty_idx_cb,
-=======
 	err = ubifs_lpt_scan_nolock(c, -1, c->lscan_lnum, scan_dirty_idx_cb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    &data);
 	if (err)
 		return err;
 found:
-<<<<<<< HEAD
-	ubifs_assert(data.lnum >= c->main_first && data.lnum < c->leb_cnt);
-=======
 	ubifs_assert(c, data.lnum >= c->main_first && data.lnum < c->leb_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->lscan_lnum = data.lnum;
 	lprops = ubifs_lpt_lookup_dirty(c, data.lnum);
 	if (IS_ERR(lprops))
 		return PTR_ERR(lprops);
-<<<<<<< HEAD
-	ubifs_assert(lprops->lnum == data.lnum);
-	ubifs_assert(lprops->free + lprops->dirty >= c->min_idx_node_sz);
-	ubifs_assert(!(lprops->flags & LPROPS_TAKEN));
-	ubifs_assert((lprops->flags & LPROPS_INDEX));
-=======
 	ubifs_assert(c, lprops->lnum == data.lnum);
 	ubifs_assert(c, lprops->free + lprops->dirty >= c->min_idx_node_sz);
 	ubifs_assert(c, !(lprops->flags & LPROPS_TAKEN));
 	ubifs_assert(c, (lprops->flags & LPROPS_INDEX));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg_find("found dirty LEB %d, free %d, dirty %d, flags %#x",
 		 lprops->lnum, lprops->free, lprops->dirty, lprops->flags);
@@ -1075,13 +925,8 @@ static int find_dirtiest_idx_leb(struct ubifs_info *c)
 	}
 	dbg_find("LEB %d, dirty %d and free %d flags %#x", lp->lnum, lp->dirty,
 		 lp->free, lp->flags);
-<<<<<<< HEAD
-	ubifs_assert(lp->flags | LPROPS_TAKEN);
-	ubifs_assert(lp->flags | LPROPS_INDEX);
-=======
 	ubifs_assert(c, lp->flags & LPROPS_TAKEN);
 	ubifs_assert(c, lp->flags & LPROPS_INDEX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return lnum;
 }
 

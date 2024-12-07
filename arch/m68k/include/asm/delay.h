@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _M68K_DELAY_H
 #define _M68K_DELAY_H
 
@@ -47,20 +44,11 @@ static inline void __delay(unsigned long loops)
 extern void __bad_udelay(void);
 
 
-<<<<<<< HEAD
-#if defined(CONFIG_M68000) || defined(CONFIG_COLDFIRE)
-=======
 #ifdef CONFIG_CPU_HAS_NO_MULDIV64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The simpler m68k and ColdFire processors do not have a 32*32->64
  * multiply instruction. So we need to handle them a little differently.
  * We use a bit of shifting and a single 32*32->32 multiply to get close.
-<<<<<<< HEAD
- * This is a macro so that the const version can factor out the first
- * multiply and shift.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define	HZSCALE		(268435456 / (1000000 / HZ))
 
@@ -103,8 +91,6 @@ static inline void __udelay(unsigned long usecs)
 #define udelay(n) (__builtin_constant_p(n) ? \
 	((n) > 20000 ? __bad_udelay() : __const_udelay(n)) : __udelay(n))
 
-<<<<<<< HEAD
-=======
 /*
  * nanosecond delay:
  *
@@ -135,6 +121,5 @@ static inline void ndelay(unsigned long nsec)
 			     1000));
 }
 #define ndelay(n) ndelay(n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* defined(_M68K_DELAY_H) */

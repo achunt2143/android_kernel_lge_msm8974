@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
 **  Copyright (C) 2004-2005 Red Hat, Inc.  All rights reserved.
 **
-<<<<<<< HEAD
-**  This copyrighted material is made available to anyone wishing to use,
-**  modify, copy, or redistribute it subject to the terms and conditions
-**  of the GNU General Public License v.2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 *******************************************************************************
 ******************************************************************************/
@@ -21,10 +12,6 @@
 #ifndef __MIDCOMMS_DOT_H__
 #define __MIDCOMMS_DOT_H__
 
-<<<<<<< HEAD
-int dlm_process_incoming_buffer(int nodeid, const void *base, unsigned offset,
-				unsigned len, unsigned limit);
-=======
 struct midcomms_node;
 
 int dlm_validate_incoming_buffer(int nodeid, unsigned char *buf, int len);
@@ -51,7 +38,6 @@ uint32_t dlm_midcomms_version(struct midcomms_node *node);
 int dlm_midcomms_rawmsg_send(struct midcomms_node *node, void *buf,
 			     int buflen);
 struct kmem_cache *dlm_midcomms_cache_create(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif				/* __MIDCOMMS_DOT_H__ */
 

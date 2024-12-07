@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Standard Hot Plug Controller Driver
  *
@@ -12,24 +9,6 @@
  *
  * All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- * NON INFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <greg@kroah.com>, <kristen.c.accardi@intel.com>
  *
  */
@@ -53,10 +32,6 @@ int shpchp_poll_time;
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
-<<<<<<< HEAD
-MODULE_LICENSE("GPL");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(shpchp_debug, bool, 0644);
 module_param(shpchp_poll_mode, bool, 0644);
@@ -67,17 +42,6 @@ MODULE_PARM_DESC(shpchp_poll_time, "Polling mechanism frequency, in seconds");
 
 #define SHPC_MODULE_NAME "shpchp"
 
-<<<<<<< HEAD
-static int set_attention_status (struct hotplug_slot *slot, u8 value);
-static int enable_slot		(struct hotplug_slot *slot);
-static int disable_slot		(struct hotplug_slot *slot);
-static int get_power_status	(struct hotplug_slot *slot, u8 *value);
-static int get_attention_status	(struct hotplug_slot *slot, u8 *value);
-static int get_latch_status	(struct hotplug_slot *slot, u8 *value);
-static int get_adapter_status	(struct hotplug_slot *slot, u8 *value);
-
-static struct hotplug_slot_ops shpchp_hotplug_slot_ops = {
-=======
 static int set_attention_status(struct hotplug_slot *slot, u8 value);
 static int enable_slot(struct hotplug_slot *slot);
 static int disable_slot(struct hotplug_slot *slot);
@@ -87,7 +51,6 @@ static int get_latch_status(struct hotplug_slot *slot, u8 *value);
 static int get_adapter_status(struct hotplug_slot *slot, u8 *value);
 
 static const struct hotplug_slot_ops shpchp_hotplug_slot_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_attention_status =	set_attention_status,
 	.enable_slot =		enable_slot,
 	.disable_slot =		disable_slot,
@@ -97,62 +60,22 @@ static const struct hotplug_slot_ops shpchp_hotplug_slot_ops = {
 	.get_adapter_status =	get_adapter_status,
 };
 
-<<<<<<< HEAD
-/**
- * release_slot - free up the memory used by a slot
- * @hotplug_slot: slot to free
- */
-static void release_slot(struct hotplug_slot *hotplug_slot)
-{
-	struct slot *slot = hotplug_slot->private;
-
-	ctrl_dbg(slot->ctrl, "%s: physical_slot = %s\n",
-		 __func__, slot_name(slot));
-
-	kfree(slot->hotplug_slot->info);
-	kfree(slot->hotplug_slot);
-	kfree(slot);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int init_slots(struct controller *ctrl)
 {
 	struct slot *slot;
 	struct hotplug_slot *hotplug_slot;
-<<<<<<< HEAD
-	struct hotplug_slot_info *info;
-	char name[SLOT_NAME_SIZE];
-	int retval = -ENOMEM;
-=======
 	char name[SLOT_NAME_SIZE];
 	int retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < ctrl->num_slots; i++) {
 		slot = kzalloc(sizeof(*slot), GFP_KERNEL);
-<<<<<<< HEAD
-		if (!slot)
-			goto error;
-
-		hotplug_slot = kzalloc(sizeof(*hotplug_slot), GFP_KERNEL);
-		if (!hotplug_slot)
-			goto error_slot;
-		slot->hotplug_slot = hotplug_slot;
-
-		info = kzalloc(sizeof(*info), GFP_KERNEL);
-		if (!info)
-			goto error_hpslot;
-		hotplug_slot->info = info;
-=======
 		if (!slot) {
 			retval = -ENOMEM;
 			goto error;
 		}
 
 		hotplug_slot = &slot->hotplug_slot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		slot->hp_slot = i;
 		slot->ctrl = ctrl;
@@ -161,37 +84,16 @@ static int init_slots(struct controller *ctrl)
 		slot->hpc_ops = ctrl->hpc_ops;
 		slot->number = ctrl->first_slot + (ctrl->slot_num_inc * i);
 
-<<<<<<< HEAD
-		snprintf(name, sizeof(name), "shpchp-%d", slot->number);
-		slot->wq = alloc_workqueue(name, 0, 0);
-		if (!slot->wq) {
-			retval = -ENOMEM;
-			goto error_info;
-=======
 		slot->wq = alloc_workqueue("shpchp-%d", 0, 0, slot->number);
 		if (!slot->wq) {
 			retval = -ENOMEM;
 			goto error_slot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		mutex_init(&slot->lock);
 		INIT_DELAYED_WORK(&slot->work, shpchp_queue_pushbutton_work);
 
 		/* register this slot with the hotplug pci core */
-<<<<<<< HEAD
-		hotplug_slot->private = slot;
-		hotplug_slot->release = &release_slot;
-		snprintf(name, SLOT_NAME_SIZE, "%d", slot->number);
-		hotplug_slot->ops = &shpchp_hotplug_slot_ops;
-
- 		ctrl_dbg(ctrl, "Registering domain:bus:dev=%04x:%02x:%02x "
- 			 "hp_slot=%x sun=%x slot_device_offset=%x\n",
- 			 pci_domain_nr(ctrl->pci_dev->subordinate),
- 			 slot->bus, slot->device, slot->hp_slot, slot->number,
- 			 ctrl->slot_device_offset);
-		retval = pci_hp_register(slot->hotplug_slot,
-=======
 		snprintf(name, SLOT_NAME_SIZE, "%d", slot->number);
 		hotplug_slot->ops = &shpchp_hotplug_slot_ops;
 
@@ -200,7 +102,6 @@ static int init_slots(struct controller *ctrl)
 			 slot->bus, slot->device, slot->hp_slot, slot->number,
 			 ctrl->slot_device_offset);
 		retval = pci_hp_register(hotplug_slot,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ctrl->pci_dev->subordinate, slot->device, name);
 		if (retval) {
 			ctrl_err(ctrl, "pci_hp_register failed with error %d\n",
@@ -208,17 +109,10 @@ static int init_slots(struct controller *ctrl)
 			goto error_slotwq;
 		}
 
-<<<<<<< HEAD
-		get_power_status(hotplug_slot, &info->power_status);
-		get_attention_status(hotplug_slot, &info->attention_status);
-		get_latch_status(hotplug_slot, &info->latch_status);
-		get_adapter_status(hotplug_slot, &info->adapter_status);
-=======
 		get_power_status(hotplug_slot, &slot->pwr_save);
 		get_attention_status(hotplug_slot, &slot->attention_save);
 		get_latch_status(hotplug_slot, &slot->latch_save);
 		get_adapter_status(hotplug_slot, &slot->presence_save);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		list_add(&slot->slot_list, &ctrl->slot_list);
 	}
@@ -226,13 +120,6 @@ static int init_slots(struct controller *ctrl)
 	return 0;
 error_slotwq:
 	destroy_workqueue(slot->wq);
-<<<<<<< HEAD
-error_info:
-	kfree(info);
-error_hpslot:
-	kfree(hotplug_slot);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error_slot:
 	kfree(slot);
 error:
@@ -241,18 +128,6 @@ error:
 
 void cleanup_slots(struct controller *ctrl)
 {
-<<<<<<< HEAD
-	struct list_head *tmp;
-	struct list_head *next;
-	struct slot *slot;
-
-	list_for_each_safe(tmp, next, &ctrl->slot_list) {
-		slot = list_entry(tmp, struct slot, slot_list);
-		list_del(&slot->slot_list);
-		cancel_delayed_work(&slot->work);
-		destroy_workqueue(slot->wq);
-		pci_hp_deregister(slot->hotplug_slot);
-=======
 	struct slot *slot, *next;
 
 	list_for_each_entry_safe(slot, next, &ctrl->slot_list, slot_list) {
@@ -261,39 +136,26 @@ void cleanup_slots(struct controller *ctrl)
 		destroy_workqueue(slot->wq);
 		pci_hp_deregister(&slot->hotplug_slot);
 		kfree(slot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /*
  * set_attention_status - Turns the Amber LED for a slot on, off or blink
  */
-<<<<<<< HEAD
-static int set_attention_status (struct hotplug_slot *hotplug_slot, u8 status)
-=======
 static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 status)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slot *slot = get_slot(hotplug_slot);
 
 	ctrl_dbg(slot->ctrl, "%s: physical_slot = %s\n",
 		 __func__, slot_name(slot));
 
-<<<<<<< HEAD
-	hotplug_slot->info->attention_status = status;
-=======
 	slot->attention_save = status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	slot->hpc_ops->set_attention_status(slot, status);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int enable_slot (struct hotplug_slot *hotplug_slot)
-=======
 static int enable_slot(struct hotplug_slot *hotplug_slot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slot *slot = get_slot(hotplug_slot);
 
@@ -303,11 +165,7 @@ static int enable_slot(struct hotplug_slot *hotplug_slot)
 	return shpchp_sysfs_enable_slot(slot);
 }
 
-<<<<<<< HEAD
-static int disable_slot (struct hotplug_slot *hotplug_slot)
-=======
 static int disable_slot(struct hotplug_slot *hotplug_slot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slot *slot = get_slot(hotplug_slot);
 
@@ -317,11 +175,7 @@ static int disable_slot(struct hotplug_slot *hotplug_slot)
 	return shpchp_sysfs_disable_slot(slot);
 }
 
-<<<<<<< HEAD
-static int get_power_status (struct hotplug_slot *hotplug_slot, u8 *value)
-=======
 static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slot *slot = get_slot(hotplug_slot);
 	int retval;
@@ -331,20 +185,12 @@ static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
 
 	retval = slot->hpc_ops->get_power_status(slot, value);
 	if (retval < 0)
-<<<<<<< HEAD
-		*value = hotplug_slot->info->power_status;
-=======
 		*value = slot->pwr_save;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int get_attention_status (struct hotplug_slot *hotplug_slot, u8 *value)
-=======
 static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slot *slot = get_slot(hotplug_slot);
 	int retval;
@@ -354,20 +200,12 @@ static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
 
 	retval = slot->hpc_ops->get_attention_status(slot, value);
 	if (retval < 0)
-<<<<<<< HEAD
-		*value = hotplug_slot->info->attention_status;
-=======
 		*value = slot->attention_save;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int get_latch_status (struct hotplug_slot *hotplug_slot, u8 *value)
-=======
 static int get_latch_status(struct hotplug_slot *hotplug_slot, u8 *value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slot *slot = get_slot(hotplug_slot);
 	int retval;
@@ -377,20 +215,12 @@ static int get_latch_status(struct hotplug_slot *hotplug_slot, u8 *value)
 
 	retval = slot->hpc_ops->get_latch_status(slot, value);
 	if (retval < 0)
-<<<<<<< HEAD
-		*value = hotplug_slot->info->latch_status;
-=======
 		*value = slot->latch_save;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int get_adapter_status (struct hotplug_slot *hotplug_slot, u8 *value)
-=======
 static int get_adapter_status(struct hotplug_slot *hotplug_slot, u8 *value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slot *slot = get_slot(hotplug_slot);
 	int retval;
@@ -400,27 +230,11 @@ static int get_adapter_status(struct hotplug_slot *hotplug_slot, u8 *value)
 
 	retval = slot->hpc_ops->get_adapter_status(slot, value);
 	if (retval < 0)
-<<<<<<< HEAD
-		*value = hotplug_slot->info->adapter_status;
-=======
 		*value = slot->presence_save;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int is_shpc_capable(struct pci_dev *dev)
-{
-	if (dev->vendor == PCI_VENDOR_ID_AMD &&
-	    dev->device == PCI_DEVICE_ID_AMD_GOLAM_7450)
-		return 1;
-	if (!pci_find_capability(dev, PCI_CAP_ID_SHPC))
-		return 0;
-	if (get_hp_hw_control_from_firmware(dev))
-		return 0;
-	return 1;
-=======
 static bool shpc_capable(struct pci_dev *bridge)
 {
 	/*
@@ -435,7 +249,6 @@ static bool shpc_capable(struct pci_dev *bridge)
 		return true;
 
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int shpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
@@ -443,16 +256,6 @@ static int shpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	int rc;
 	struct controller *ctrl;
 
-<<<<<<< HEAD
-	if (!is_shpc_capable(pdev))
-		return -ENODEV;
-
-	ctrl = kzalloc(sizeof(*ctrl), GFP_KERNEL);
-	if (!ctrl) {
-		dev_err(&pdev->dev, "%s: Out of memory\n", __func__);
-		goto err_out_none;
-	}
-=======
 	if (!shpc_capable(pdev))
 		return -ENODEV;
 
@@ -463,7 +266,6 @@ static int shpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (!ctrl)
 		goto err_out_none;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&ctrl->slot_list);
 
 	rc = shpc_init(ctrl, pdev);
@@ -485,10 +287,7 @@ static int shpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (rc)
 		goto err_cleanup_slots;
 
-<<<<<<< HEAD
-=======
 	pdev->shpc_managed = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_cleanup_slots:
@@ -505,22 +304,14 @@ static void shpc_remove(struct pci_dev *dev)
 {
 	struct controller *ctrl = pci_get_drvdata(dev);
 
-<<<<<<< HEAD
-=======
 	dev->shpc_managed = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	shpchp_remove_ctrl_files(ctrl);
 	ctrl->hpc_ops->release_ctlr(ctrl);
 	kfree(ctrl);
 }
 
-<<<<<<< HEAD
-static struct pci_device_id shpcd_pci_tbl[] = {
-	{PCI_DEVICE_CLASS(((PCI_CLASS_BRIDGE_PCI << 8) | 0x00), ~0)},
-=======
 static const struct pci_device_id shpcd_pci_tbl[] = {
 	{PCI_DEVICE_CLASS(PCI_CLASS_BRIDGE_PCI_NORMAL, ~0)},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ /* end: all zeroes */ }
 };
 MODULE_DEVICE_TABLE(pci, shpcd_pci_tbl);

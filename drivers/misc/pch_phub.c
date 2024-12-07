@@ -1,24 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -34,10 +16,7 @@
 #include <linux/if_ether.h>
 #include <linux/ctype.h>
 #include <linux/dmi.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PHUB_STATUS 0x00		/* Status Register offset */
 #define PHUB_CONTROL 0x04		/* Control Register offset */
@@ -67,23 +46,12 @@
 
 /* CM-iTC */
 #define CLKCFG_UART_48MHZ			(1 << 16)
-<<<<<<< HEAD
-=======
 #define CLKCFG_UART_25MHZ			(2 << 16)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CLKCFG_BAUDDIV				(2 << 20)
 #define CLKCFG_PLL2VCO				(8 << 9)
 #define CLKCFG_UARTCLKSEL			(1 << 18)
 
 /* Macros for ML7213 */
-<<<<<<< HEAD
-#define PCI_VENDOR_ID_ROHM			0x10db
-#define PCI_DEVICE_ID_ROHM_ML7213_PHUB		0x801A
-
-/* Macros for ML7213 */
-#define PCI_VENDOR_ID_ROHM			0x10db
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_ROHM_ML7213_PHUB		0x801A
 
 /* Macros for ML7223 */
@@ -167,10 +135,7 @@ static DEFINE_MUTEX(pch_phub_mutex);
 
 /**
  * pch_phub_read_modify_write_reg() - Reading modifying and writing register
-<<<<<<< HEAD
-=======
  * @chip:		Pointer to the PHUB register structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg_addr_offset:	Register offset address value.
  * @data:		Writing value.
  * @mask:		Mask value.
@@ -184,11 +149,7 @@ static void pch_phub_read_modify_write_reg(struct pch_phub_reg *chip,
 }
 
 /* pch_phub_save_reg_conf - saves register configuration */
-<<<<<<< HEAD
-static void pch_phub_save_reg_conf(struct pci_dev *pdev)
-=======
 static void __maybe_unused pch_phub_save_reg_conf(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 	struct pch_phub_reg *chip = pci_get_drvdata(pdev);
@@ -249,11 +210,7 @@ static void __maybe_unused pch_phub_save_reg_conf(struct pci_dev *pdev)
 }
 
 /* pch_phub_restore_reg_conf - restore register configuration */
-<<<<<<< HEAD
-static void pch_phub_restore_reg_conf(struct pci_dev *pdev)
-=======
 static void __maybe_unused pch_phub_restore_reg_conf(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 	struct pch_phub_reg *chip = pci_get_drvdata(pdev);
@@ -316,10 +273,7 @@ static void __maybe_unused pch_phub_restore_reg_conf(struct pci_dev *pdev)
 
 /**
  * pch_phub_read_serial_rom() - Reading Serial ROM
-<<<<<<< HEAD
-=======
  * @chip:		Pointer to the PHUB register structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @offset_address:	Serial ROM offset address to read.
  * @data:		Read buffer for specified Serial ROM value.
  */
@@ -334,10 +288,7 @@ static void pch_phub_read_serial_rom(struct pch_phub_reg *chip,
 
 /**
  * pch_phub_write_serial_rom() - Writing Serial ROM
-<<<<<<< HEAD
-=======
  * @chip:		Pointer to the PHUB register structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @offset_address:	Serial ROM offset address.
  * @data:		Serial ROM value to write.
  */
@@ -376,10 +327,7 @@ static int pch_phub_write_serial_rom(struct pch_phub_reg *chip,
 
 /**
  * pch_phub_read_serial_rom_val() - Read Serial ROM value
-<<<<<<< HEAD
-=======
  * @chip:		Pointer to the PHUB register structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @offset_address:	Serial ROM address offset value.
  * @data:		Serial ROM value to read.
  */
@@ -396,10 +344,7 @@ static void pch_phub_read_serial_rom_val(struct pch_phub_reg *chip,
 
 /**
  * pch_phub_write_serial_rom_val() - writing Serial ROM value
-<<<<<<< HEAD
-=======
  * @chip:		Pointer to the PHUB register structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @offset_address:	Serial ROM address offset value.
  * @data:		Serial ROM value.
  */
@@ -501,11 +446,7 @@ static int pch_phub_gbe_serial_rom_conf_mp(struct pch_phub_reg *chip)
 
 /**
  * pch_phub_read_gbe_mac_addr() - Read Gigabit Ethernet MAC address
-<<<<<<< HEAD
- * @offset_address:	Gigabit Ethernet MAC address offset value.
-=======
  * @chip:		Pointer to the PHUB register structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @data:		Buffer of the Gigabit Ethernet MAC address value.
  */
 static void pch_phub_read_gbe_mac_addr(struct pch_phub_reg *chip, u8 *data)
@@ -517,11 +458,7 @@ static void pch_phub_read_gbe_mac_addr(struct pch_phub_reg *chip, u8 *data)
 
 /**
  * pch_phub_write_gbe_mac_addr() - Write MAC address
-<<<<<<< HEAD
- * @offset_address:	Gigabit Ethernet MAC address offset value.
-=======
  * @chip:		Pointer to the PHUB register structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @data:		Gigabit Ethernet MAC address value.
  */
 static int pch_phub_write_gbe_mac_addr(struct pch_phub_reg *chip, u8 *data)
@@ -558,12 +495,7 @@ static ssize_t pch_phub_bin_read(struct file *filp, struct kobject *kobj,
 	int err;
 	ssize_t rom_size;
 
-<<<<<<< HEAD
-	struct pch_phub_reg *chip =
-		dev_get_drvdata(container_of(kobj, struct device, kobj));
-=======
 	struct pch_phub_reg *chip = dev_get_drvdata(kobj_to_dev(kobj));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = mutex_lock_interruptible(&pch_phub_mutex);
 	if (ret) {
@@ -573,15 +505,10 @@ static ssize_t pch_phub_bin_read(struct file *filp, struct kobject *kobj,
 
 	/* Get Rom signature */
 	chip->pch_phub_extrom_base_address = pci_map_rom(chip->pdev, &rom_size);
-<<<<<<< HEAD
-	if (!chip->pch_phub_extrom_base_address)
-		goto exrom_map_err;
-=======
 	if (!chip->pch_phub_extrom_base_address) {
 		err = -ENODATA;
 		goto exrom_map_err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pch_phub_read_serial_rom(chip, chip->pch_opt_rom_start_address,
 				(unsigned char *)&rom_signature);
@@ -633,12 +560,7 @@ static ssize_t pch_phub_bin_write(struct file *filp, struct kobject *kobj,
 	unsigned int addr_offset;
 	int ret;
 	ssize_t rom_size;
-<<<<<<< HEAD
-	struct pch_phub_reg *chip =
-		dev_get_drvdata(container_of(kobj, struct device, kobj));
-=======
 	struct pch_phub_reg *chip = dev_get_drvdata(kobj_to_dev(kobj));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = mutex_lock_interruptible(&pch_phub_mutex);
 	if (ret)
@@ -705,19 +627,6 @@ static ssize_t show_pch_mac(struct device *dev, struct device_attribute *attr,
 static ssize_t store_pch_mac(struct device *dev, struct device_attribute *attr,
 			     const char *buf, size_t count)
 {
-<<<<<<< HEAD
-	u8 mac[6];
-	ssize_t rom_size;
-	struct pch_phub_reg *chip = dev_get_drvdata(dev);
-
-	if (count != 18)
-		return -EINVAL;
-
-	sscanf(buf, "%02x:%02x:%02x:%02x:%02x:%02x",
-		(u32 *)&mac[0], (u32 *)&mac[1], (u32 *)&mac[2], (u32 *)&mac[3],
-		(u32 *)&mac[4], (u32 *)&mac[5]);
-
-=======
 	u8 mac[ETH_ALEN];
 	ssize_t rom_size;
 	struct pch_phub_reg *chip = dev_get_drvdata(dev);
@@ -726,31 +635,21 @@ static ssize_t store_pch_mac(struct device *dev, struct device_attribute *attr,
 	if (!mac_pton(buf, mac))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->pch_phub_extrom_base_address = pci_map_rom(chip->pdev, &rom_size);
 	if (!chip->pch_phub_extrom_base_address)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	pch_phub_write_gbe_mac_addr(chip, mac);
-	pci_unmap_rom(chip->pdev, chip->pch_phub_extrom_base_address);
-=======
 	ret = pch_phub_write_gbe_mac_addr(chip, mac);
 	pci_unmap_rom(chip->pdev, chip->pch_phub_extrom_base_address);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return count;
 }
 
 static DEVICE_ATTR(pch_mac, S_IRUGO | S_IWUSR, show_pch_mac, store_pch_mac);
 
-<<<<<<< HEAD
-static struct bin_attribute pch_bin_attr = {
-=======
 static const struct bin_attribute pch_bin_attr = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attr = {
 		.name = "pch_firmware",
 		.mode = S_IRUGO | S_IWUSR,
@@ -760,17 +659,9 @@ static const struct bin_attribute pch_bin_attr = {
 	.write = pch_phub_bin_write,
 };
 
-<<<<<<< HEAD
-static int __devinit pch_phub_probe(struct pci_dev *pdev,
-				    const struct pci_device_id *id)
-{
-	int retval;
-
-=======
 static int pch_phub_probe(struct pci_dev *pdev,
 				    const struct pci_device_id *id)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	struct pch_phub_reg *chip;
 
@@ -799,11 +690,7 @@ static int pch_phub_probe(struct pci_dev *pdev,
 	chip->pch_phub_base_address = pci_iomap(pdev, 1, 0);
 
 
-<<<<<<< HEAD
-	if (chip->pch_phub_base_address == 0) {
-=======
 	if (chip->pch_phub_base_address == NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "%s : pci_iomap FAILED", __func__);
 		ret = -ENOMEM;
 		goto err_pci_iomap;
@@ -816,16 +703,6 @@ static int pch_phub_probe(struct pci_dev *pdev,
 
 	if (id->driver_data == 1) { /* EG20T PCH */
 		const char *board_name;
-<<<<<<< HEAD
-
-		retval = sysfs_create_file(&pdev->dev.kobj,
-					   &dev_attr_pch_mac.attr);
-		if (retval)
-			goto err_sysfs_create;
-
-		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
-		if (retval)
-=======
 		unsigned int prefetch = 0x000affaa;
 
 		if (pdev->dev.of_node)
@@ -840,7 +717,6 @@ static int pch_phub_probe(struct pci_dev *pdev,
 
 		ret = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
 		if (ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto exit_bin_attr;
 
 		pch_phub_read_modify_write_reg(chip,
@@ -858,20 +734,11 @@ static int pch_phub_probe(struct pci_dev *pdev,
 						CLKCFG_UART_MASK);
 
 		/* set the prefech value */
-<<<<<<< HEAD
-		iowrite32(0x000affaa, chip->pch_phub_base_address + 0x14);
-=======
 		iowrite32(prefetch, chip->pch_phub_base_address + 0x14);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* set the interrupt delay value */
 		iowrite32(0x25, chip->pch_phub_base_address + 0x44);
 		chip->pch_opt_rom_start_address = PCH_PHUB_ROM_START_ADDR_EG20T;
 		chip->pch_mac_start_address = PCH_PHUB_MAC_START_ADDR_EG20T;
-<<<<<<< HEAD
-	} else if (id->driver_data == 2) { /* ML7213 IOH */
-		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
-		if (retval)
-=======
 
 		/* quirk for MIPS Boston platform */
 		if (pdev->dev.of_node) {
@@ -885,7 +752,6 @@ static int pch_phub_probe(struct pci_dev *pdev,
 	} else if (id->driver_data == 2) { /* ML7213 IOH */
 		ret = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
 		if (ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_sysfs_create;
 		/* set the prefech value
 		 * Device2(USB OHCI #1/ USB EHCI #1/ USB Device):a
@@ -907,21 +773,12 @@ static int pch_phub_probe(struct pci_dev *pdev,
 						 PCH_PHUB_ROM_START_ADDR_ML7223;
 		chip->pch_mac_start_address = PCH_PHUB_MAC_START_ADDR_ML7223;
 	} else if (id->driver_data == 4) { /* ML7223 IOH Bus-n*/
-<<<<<<< HEAD
-		retval = sysfs_create_file(&pdev->dev.kobj,
-					   &dev_attr_pch_mac.attr);
-		if (retval)
-			goto err_sysfs_create;
-		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
-		if (retval)
-=======
 		ret = sysfs_create_file(&pdev->dev.kobj,
 					&dev_attr_pch_mac.attr);
 		if (ret)
 			goto err_sysfs_create;
 		ret = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
 		if (ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto exit_bin_attr;
 		/* set the prefech value
 		 * Device2(USB OHCI #0,1,2,3/ USB EHCI #0):a
@@ -933,15 +790,6 @@ static int pch_phub_probe(struct pci_dev *pdev,
 						 PCH_PHUB_ROM_START_ADDR_ML7223;
 		chip->pch_mac_start_address = PCH_PHUB_MAC_START_ADDR_ML7223;
 	} else if (id->driver_data == 5) { /* ML7831 */
-<<<<<<< HEAD
-		retval = sysfs_create_file(&pdev->dev.kobj,
-					   &dev_attr_pch_mac.attr);
-		if (retval)
-			goto err_sysfs_create;
-
-		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
-		if (retval)
-=======
 		ret = sysfs_create_file(&pdev->dev.kobj,
 					&dev_attr_pch_mac.attr);
 		if (ret)
@@ -949,7 +797,6 @@ static int pch_phub_probe(struct pci_dev *pdev,
 
 		ret = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
 		if (ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto exit_bin_attr;
 
 		/* set the prefech value */
@@ -979,11 +826,7 @@ err_pci_enable_dev:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __devexit pch_phub_remove(struct pci_dev *pdev)
-=======
 static void pch_phub_remove(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pch_phub_reg *chip = pci_get_drvdata(pdev);
 
@@ -995,58 +838,13 @@ static void pch_phub_remove(struct pci_dev *pdev)
 	kfree(chip);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-
-static int pch_phub_suspend(struct pci_dev *pdev, pm_message_t state)
-{
-	int ret;
-
-	pch_phub_save_reg_conf(pdev);
-	ret = pci_save_state(pdev);
-	if (ret) {
-		dev_err(&pdev->dev,
-			" %s -pci_save_state returns %d\n", __func__, ret);
-		return ret;
-	}
-	pci_enable_wake(pdev, PCI_D3hot, 0);
-	pci_disable_device(pdev);
-	pci_set_power_state(pdev, pci_choose_state(pdev, state));
-=======
 static int __maybe_unused pch_phub_suspend(struct device *dev_d)
 {
 	device_wakeup_disable(dev_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int pch_phub_resume(struct pci_dev *pdev)
-{
-	int ret;
-
-	pci_set_power_state(pdev, PCI_D0);
-	pci_restore_state(pdev);
-	ret = pci_enable_device(pdev);
-	if (ret) {
-		dev_err(&pdev->dev,
-		"%s-pci_enable_device failed(ret=%d) ", __func__, ret);
-		return ret;
-	}
-
-	pci_enable_wake(pdev, PCI_D3hot, 0);
-	pch_phub_restore_reg_conf(pdev);
-
-	return 0;
-}
-#else
-#define pch_phub_suspend NULL
-#define pch_phub_resume NULL
-#endif /* CONFIG_PM */
-
-static struct pci_device_id pch_phub_pcidev_id[] = {
-=======
 static int __maybe_unused pch_phub_resume(struct device *dev_d)
 {
 	device_wakeup_disable(dev_d);
@@ -1055,7 +853,6 @@ static int __maybe_unused pch_phub_resume(struct device *dev_d)
 }
 
 static const struct pci_device_id pch_phub_pcidev_id[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_PCH1_PHUB),       1,  },
 	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ROHM_ML7213_PHUB), 2,  },
 	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ROHM_ML7223_mPHUB), 3,  },
@@ -1065,40 +862,17 @@ static const struct pci_device_id pch_phub_pcidev_id[] = {
 };
 MODULE_DEVICE_TABLE(pci, pch_phub_pcidev_id);
 
-<<<<<<< HEAD
-=======
 static SIMPLE_DEV_PM_OPS(pch_phub_pm_ops, pch_phub_suspend, pch_phub_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver pch_phub_driver = {
 	.name = "pch_phub",
 	.id_table = pch_phub_pcidev_id,
 	.probe = pch_phub_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(pch_phub_remove),
-	.suspend = pch_phub_suspend,
-	.resume = pch_phub_resume
-};
-
-static int __init pch_phub_pci_init(void)
-{
-	return pci_register_driver(&pch_phub_driver);
-}
-
-static void __exit pch_phub_pci_exit(void)
-{
-	pci_unregister_driver(&pch_phub_driver);
-}
-
-module_init(pch_phub_pci_init);
-module_exit(pch_phub_pci_exit);
-=======
 	.remove = pch_phub_remove,
 	.driver.pm = &pch_phub_pm_ops,
 };
 
 module_pci_driver(pch_phub_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Intel EG20T PCH/LAPIS Semiconductor IOH(ML7213/ML7223) PHUB");
 MODULE_LICENSE("GPL");

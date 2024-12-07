@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm5100.h  --  WM5100 ALSA SoC Audio driver
  *
  * Copyright 2011 Wolfson Microelectronics plc
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef WM5100_ASOC_H
@@ -24,11 +13,7 @@
 #include <sound/soc.h>
 #include <linux/regmap.h>
 
-<<<<<<< HEAD
-int wm5100_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack);
-=======
 int wm5100_detect(struct snd_soc_component *component, struct snd_soc_jack *jack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WM5100_CLK_AIF1     1
 #define WM5100_CLK_AIF2     2
@@ -720,8 +705,6 @@ int wm5100_detect(struct snd_soc_component *component, struct snd_soc_jack *jack
 #define WM5100_HPLPF3_2                         0xEC9
 #define WM5100_HPLPF4_1                         0xECC
 #define WM5100_HPLPF4_2                         0xECD
-<<<<<<< HEAD
-=======
 #define WM5100_DSP1_CONTROL_1                   0xF00
 #define WM5100_DSP1_CONTROL_2                   0xF02
 #define WM5100_DSP1_CONTROL_3                   0xF03
@@ -812,7 +795,6 @@ int wm5100_detect(struct snd_soc_component *component, struct snd_soc_jack *jack
 #define WM5100_DSP3_CONTROL_28                  0x1122
 #define WM5100_DSP3_CONTROL_29                  0x1123
 #define WM5100_DSP3_CONTROL_30                  0x1124
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WM5100_DSP1_DM_0                        0x4000
 #define WM5100_DSP1_DM_1                        0x4001
 #define WM5100_DSP1_DM_2                        0x4002
@@ -4665,8 +4647,6 @@ int wm5100_detect(struct snd_soc_component *component, struct snd_soc_jack *jack
 #define WM5100_LHPF4_COEFF_WIDTH                    16  /* LHPF4_COEFF - [15:0] */
 
 /*
-<<<<<<< HEAD
-=======
  * R4132 (0x1024) - DSP2 Control 30
  */
 #define WM5100_DSP2_RATE_MASK                   0xC000  /* DSP2_RATE - [15:14] */
@@ -4736,7 +4716,6 @@ int wm5100_detect(struct snd_soc_component *component, struct snd_soc_jack *jack
 #define WM5100_DSP3_START_WIDTH                      1  /* DSP3_START */
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * R16384 (0x4000) - DSP1 DM 0
  */
 #define WM5100_DSP1_DM_START_1_MASK             0x00FF  /* DSP1_DM_START - [7:0] */

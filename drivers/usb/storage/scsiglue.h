@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-/* Driver for USB Mass Storage compliant devices
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Driver for USB Mass Storage compliant devices
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SCSI Connecting Glue Header File
  *
  * Current development and maintenance by:
@@ -23,26 +19,6 @@
  *
  * Also, for certain devices, the interrupt endpoint is used to convey
  * status of a command.
-<<<<<<< HEAD
- *
- * Please see http://www.one-eyed-alien.net/~mdharm/linux-usb for more
- * information about this driver.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _SCSIGLUE_H_
@@ -50,15 +26,9 @@
 
 extern void usb_stor_report_device_reset(struct us_data *us);
 extern void usb_stor_report_bus_reset(struct us_data *us);
-<<<<<<< HEAD
-
-extern unsigned char usb_stor_sense_invalidCDB[18];
-extern struct scsi_host_template usb_stor_host_template;
-=======
 extern void usb_stor_host_template_init(struct scsi_host_template *sht,
 					const char *name, struct module *owner);
 
 extern unsigned char usb_stor_sense_invalidCDB[18];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

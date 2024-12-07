@@ -10,17 +10,12 @@
 #include <linux/pci.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <asm/bootinfo.h>
-
-=======
 #include <linux/delay.h>
 #include <linux/clk.h>
 #include <asm/bootinfo.h>
 
 #include <bcm63xx_reset.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "pci-bcm63xx.h"
 
 /*
@@ -30,23 +25,6 @@
 int bcm63xx_pci_enabled;
 
 static struct resource bcm_pci_mem_resource = {
-<<<<<<< HEAD
-	.name   = "bcm63xx PCI memory space",
-	.start  = BCM_PCI_MEM_BASE_PA,
-	.end    = BCM_PCI_MEM_END_PA,
-	.flags  = IORESOURCE_MEM
-};
-
-static struct resource bcm_pci_io_resource = {
-	.name   = "bcm63xx PCI IO space",
-	.start  = BCM_PCI_IO_BASE_PA,
-#ifdef CONFIG_CARDBUS
-	.end    = BCM_PCI_IO_HALF_PA,
-#else
-	.end    = BCM_PCI_IO_END_PA,
-#endif
-	.flags  = IORESOURCE_IO
-=======
 	.name	= "bcm63xx PCI memory space",
 	.start	= BCM_PCI_MEM_BASE_PA,
 	.end	= BCM_PCI_MEM_END_PA,
@@ -62,7 +40,6 @@ static struct resource bcm_pci_io_resource = {
 	.end	= BCM_PCI_IO_END_PA,
 #endif
 	.flags	= IORESOURCE_IO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct pci_controller bcm63xx_controller = {
@@ -78,19 +55,6 @@ struct pci_controller bcm63xx_controller = {
  */
 #ifdef CONFIG_CARDBUS
 static struct resource bcm_cb_mem_resource = {
-<<<<<<< HEAD
-	.name   = "bcm63xx Cardbus memory space",
-	.start  = BCM_CB_MEM_BASE_PA,
-	.end    = BCM_CB_MEM_END_PA,
-	.flags  = IORESOURCE_MEM
-};
-
-static struct resource bcm_cb_io_resource = {
-	.name   = "bcm63xx Cardbus IO space",
-	.start  = BCM_PCI_IO_HALF_PA + 1,
-	.end    = BCM_PCI_IO_END_PA,
-	.flags  = IORESOURCE_IO
-=======
 	.name	= "bcm63xx Cardbus memory space",
 	.start	= BCM_CB_MEM_BASE_PA,
 	.end	= BCM_CB_MEM_END_PA,
@@ -102,7 +66,6 @@ static struct resource bcm_cb_io_resource = {
 	.start	= BCM_PCI_IO_HALF_PA + 1,
 	.end	= BCM_PCI_IO_END_PA,
 	.flags	= IORESOURCE_IO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct pci_controller bcm63xx_cb_controller = {
@@ -112,8 +75,6 @@ struct pci_controller bcm63xx_cb_controller = {
 };
 #endif
 
-<<<<<<< HEAD
-=======
 static struct resource bcm_pcie_mem_resource = {
 	.name	= "bcm63xx PCIe memory space",
 	.start	= BCM_PCIE_MEM_BASE_PA,
@@ -134,7 +95,6 @@ struct pci_controller bcm63xx_pcie_controller = {
 	.mem_resource	= &bcm_pcie_mem_resource,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 bcm63xx_int_cfg_readl(u32 reg)
 {
 	u32 tmp;
@@ -151,30 +111,13 @@ static void bcm63xx_int_cfg_writel(u32 val, u32 reg)
 	u32 tmp;
 
 	tmp = reg & MPI_PCICFGCTL_CFGADDR_MASK;
-<<<<<<< HEAD
-	tmp |=  MPI_PCICFGCTL_WRITEEN_MASK;
-=======
 	tmp |=	MPI_PCICFGCTL_WRITEEN_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bcm_mpi_writel(tmp, MPI_PCICFGCTL_REG);
 	bcm_mpi_writel(val, MPI_PCICFGDATA_REG);
 }
 
 void __iomem *pci_iospace_start;
 
-<<<<<<< HEAD
-static int __init bcm63xx_pci_init(void)
-{
-	unsigned int mem_size;
-	u32 val;
-
-	if (!BCMCPU_IS_6348() && !BCMCPU_IS_6358() && !BCMCPU_IS_6368())
-		return -ENODEV;
-
-	if (!bcm63xx_pci_enabled)
-		return -ENODEV;
-
-=======
 static void __init bcm63xx_reset_pcie(void)
 {
 	u32 val;
@@ -269,25 +212,16 @@ static int __init bcm63xx_register_pci(void)
 {
 	unsigned int mem_size;
 	u32 val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * configuration  access are  done through  IO space,  remap 4
 	 * first bytes to access it from CPU.
 	 *
 	 * this means that  no io access from CPU  should happen while
-<<<<<<< HEAD
-	 * we do a configuration cycle,  but there's no way we can add
-	 * a spinlock for each io access, so this is currently kind of
-	 * broken on SMP.
-	 */
-	pci_iospace_start = ioremap_nocache(BCM_PCI_IO_BASE_PA, 4);
-=======
 	 * we do a configuration cycle,	 but there's no way we can add
 	 * a spinlock for each io access, so this is currently kind of
 	 * broken on SMP.
 	 */
 	pci_iospace_start = ioremap(BCM_PCI_IO_BASE_PA, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pci_iospace_start)
 		return -ENOMEM;
 
@@ -316,15 +250,9 @@ static int __init bcm63xx_register_pci(void)
 	bcm_mpi_writel(0, MPI_L2PMEMREMAP2_REG);
 #endif
 
-<<<<<<< HEAD
-	/* setup local bus  to PCI access (IO memory),  we have only 1
-	 * IO window  for both PCI  and cardbus, but it  cannot handle
-	 * both  at the  same time,  assume standard  PCI for  now, if
-=======
 	/* setup local bus  to PCI access (IO memory),	we have only 1
 	 * IO window  for both PCI  and cardbus, but it	 cannot handle
 	 * both	 at the	 same time,  assume standard  PCI for  now, if
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * cardbus card has  IO zone, PCI fixup will  change window to
 	 * cardbus */
 	val = BCM_PCI_IO_BASE_PA & MPI_L2P_BASE_MASK;
@@ -338,11 +266,7 @@ static int __init bcm63xx_register_pci(void)
 	/* setup PCI to local bus access, used by PCI device to target
 	 * local RAM while bus mastering */
 	bcm63xx_int_cfg_writel(0, PCI_BASE_ADDRESS_3);
-<<<<<<< HEAD
-	if (BCMCPU_IS_6358() || BCMCPU_IS_6368())
-=======
 	if (BCMCPU_IS_3368() || BCMCPU_IS_6358() || BCMCPU_IS_6368())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = MPI_SP0_REMAP_ENABLE_MASK;
 	else
 		val = 0;
@@ -366,11 +290,7 @@ static int __init bcm63xx_register_pci(void)
 		bcm_mpi_writel(0, MPI_SP1_RANGE_REG);
 	}
 
-<<<<<<< HEAD
-	/* change  host bridge  retry  counter to  infinite number  of
-=======
 	/* change  host bridge	retry  counter to  infinite number  of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * retry,  needed for  some broadcom  wifi cards  with Silicon
 	 * Backplane bus where access to srom seems very slow  */
 	val = bcm63xx_int_cfg_readl(BCMPCI_REG_TIMERS);
@@ -408,8 +328,6 @@ static int __init bcm63xx_register_pci(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 
 static int __init bcm63xx_pci_init(void)
 {
@@ -430,5 +348,4 @@ static int __init bcm63xx_pci_init(void)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 arch_initcall(bcm63xx_pci_init);

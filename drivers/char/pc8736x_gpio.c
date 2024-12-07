@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* linux/drivers/char/pc8736x_gpio.c
 
    National Semiconductor PC8736x GPIO driver.  Allows a user space
@@ -24,11 +21,7 @@
 #include <linux/mutex.h>
 #include <linux/nsc_gpio.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DEVNAME "pc8736x_gpio"
 
@@ -353,12 +346,7 @@ static void __exit pc8736x_gpio_cleanup(void)
 	unregister_chrdev_region(MKDEV(major,0), PC8736X_GPIO_CT);
 	release_region(pc8736x_gpio_base, PC8736X_GPIO_RANGE);
 
-<<<<<<< HEAD
-	platform_device_del(pdev);
-	platform_device_put(pdev);
-=======
 	platform_device_unregister(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(pc8736x_gpio_init);

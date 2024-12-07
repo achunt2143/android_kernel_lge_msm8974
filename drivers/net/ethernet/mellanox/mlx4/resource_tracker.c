@@ -41,15 +41,6 @@
 #include <linux/slab.h>
 #include <linux/mlx4/cmd.h>
 #include <linux/mlx4/qp.h>
-<<<<<<< HEAD
-
-#include "mlx4.h"
-#include "fw.h"
-
-#define MLX4_MAC_VALID		(1ull << 63)
-#define MLX4_MAC_MASK		0x7fffffffffffffffULL
-#define ETH_ALEN		6
-=======
 #include <linux/if_ether.h>
 #include <linux/etherdevice.h>
 
@@ -60,13 +51,10 @@
 #define MLX4_MAC_VALID		(1ull << 63)
 #define MLX4_PF_COUNTERS_PER_PORT	2
 #define MLX4_VF_COUNTERS_PER_PORT	1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mac_res {
 	struct list_head list;
 	u64 mac;
-<<<<<<< HEAD
-=======
 	int ref_count;
 	u8 smac_index;
 	u8 port;
@@ -77,27 +65,19 @@ struct vlan_res {
 	u16 vlan;
 	int ref_count;
 	int vlan_index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 port;
 };
 
 struct res_common {
 	struct list_head	list;
-<<<<<<< HEAD
-	u32		        res_id;
-=======
 	struct rb_node		node;
 	u64		        res_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			owner;
 	int			state;
 	int			from_state;
 	int			to_state;
 	int			removing;
-<<<<<<< HEAD
-=======
 	const char		*func_name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -109,10 +89,7 @@ struct res_gid {
 	u8			gid[16];
 	enum mlx4_protocol	prot;
 	enum mlx4_steer_type	steer;
-<<<<<<< HEAD
-=======
 	u64			reg_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum res_qp_states {
@@ -128,20 +105,6 @@ enum res_qp_states {
 	RES_QP_HW
 };
 
-<<<<<<< HEAD
-static inline const char *qp_states_str(enum res_qp_states state)
-{
-	switch (state) {
-	case RES_QP_BUSY: return "RES_QP_BUSY";
-	case RES_QP_RESERVED: return "RES_QP_RESERVED";
-	case RES_QP_MAPPED: return "RES_QP_MAPPED";
-	case RES_QP_HW: return "RES_QP_HW";
-	default: return "Unknown";
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct res_qp {
 	struct res_common	com;
 	struct res_mtt	       *mtt;
@@ -151,8 +114,6 @@ struct res_qp {
 	struct list_head	mcg_list;
 	spinlock_t		mcg_spl;
 	int			local_qpn;
-<<<<<<< HEAD
-=======
 	atomic_t		ref_count;
 	u32			qpc_flags;
 	/* saved qp params before VST enforcement in order to restore on VGT */
@@ -163,7 +124,6 @@ struct res_qp {
 	u8			pri_path_fl;
 	u8			vlan_index;
 	u8			feup;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum res_mtt_states {
@@ -228,19 +188,6 @@ enum res_srq_states {
 	RES_SRQ_HW,
 };
 
-<<<<<<< HEAD
-static inline const char *srq_states_str(enum res_srq_states state)
-{
-	switch (state) {
-	case RES_SRQ_BUSY: return "RES_SRQ_BUSY";
-	case RES_SRQ_ALLOCATED: return "RES_SRQ_ALLOCATED";
-	case RES_SRQ_HW: return "RES_SRQ_HW";
-	default: return "Unknown";
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct res_srq {
 	struct res_common	com;
 	struct res_mtt	       *mtt;
@@ -253,27 +200,11 @@ enum res_counter_states {
 	RES_COUNTER_ALLOCATED,
 };
 
-<<<<<<< HEAD
-static inline const char *counter_states_str(enum res_counter_states state)
-{
-	switch (state) {
-	case RES_COUNTER_BUSY: return "RES_COUNTER_BUSY";
-	case RES_COUNTER_ALLOCATED: return "RES_COUNTER_ALLOCATED";
-	default: return "Unknown";
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct res_counter {
 	struct res_common	com;
 	int			port;
 };
 
-<<<<<<< HEAD
-/* For Debug uses */
-static const char *ResourceType(enum mlx4_resource rt)
-=======
 enum res_xrcdn_states {
 	RES_XRCD_BUSY = RES_ANY_BUSY,
 	RES_XRCD_ALLOCATED,
@@ -355,7 +286,6 @@ enum qp_transition {
 
 /* For Debug uses */
 static const char *resource_str(enum mlx4_resource rt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (rt) {
 	case RES_QP: return "RES_QP";
@@ -364,12 +294,6 @@ static const char *resource_str(enum mlx4_resource rt)
 	case RES_MPT: return "RES_MPT";
 	case RES_MTT: return "RES_MTT";
 	case RES_MAC: return  "RES_MAC";
-<<<<<<< HEAD
-	case RES_EQ: return "RES_EQ";
-	case RES_COUNTER: return "RES_COUNTER";
-	default: return "Unknown resource type !!!";
-	};
-=======
 	case RES_VLAN: return  "RES_VLAN";
 	case RES_EQ: return "RES_EQ";
 	case RES_COUNTER: return "RES_COUNTER";
@@ -572,25 +496,16 @@ mlx4_calc_res_counter_guaranteed(struct mlx4_dev *dev,
 		return 0;
 
 	return counters_guaranteed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mlx4_init_resource_tracker(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
-<<<<<<< HEAD
-	int i;
-	int t;
-
-	priv->mfunc.master.res_tracker.slave_list =
-		kzalloc(dev->num_slaves * sizeof(struct slave_list),
-=======
 	int i, j;
 	int t;
 
 	priv->mfunc.master.res_tracker.slave_list =
 		kcalloc(dev->num_slaves, sizeof(struct slave_list),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			GFP_KERNEL);
 	if (!priv->mfunc.master.res_tracker.slave_list)
 		return -ENOMEM;
@@ -605,16 +520,6 @@ int mlx4_init_resource_tracker(struct mlx4_dev *dev)
 	mlx4_dbg(dev, "Started init_resource_tracker: %ld slaves\n",
 		 dev->num_slaves);
 	for (i = 0 ; i < MLX4_NUM_OF_RESOURCE_TYPE; i++)
-<<<<<<< HEAD
-		INIT_RADIX_TREE(&priv->mfunc.master.res_tracker.res_tree[i],
-				GFP_ATOMIC|__GFP_NOWARN);
-
-	spin_lock_init(&priv->mfunc.master.res_tracker.lock);
-	return 0 ;
-}
-
-void mlx4_free_resource_tracker(struct mlx4_dev *dev)
-=======
 		priv->mfunc.master.res_tracker.res_tree[i] = RB_ROOT;
 
 	for (i = 0; i < MLX4_NUM_OF_RESOURCE_TYPE; i++) {
@@ -749,31 +654,11 @@ no_mem_err:
 
 void mlx4_free_resource_tracker(struct mlx4_dev *dev,
 				enum mlx4_res_tracker_free_type type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	int i;
 
 	if (priv->mfunc.master.res_tracker.slave_list) {
-<<<<<<< HEAD
-		for (i = 0 ; i < dev->num_slaves; i++)
-			mlx4_delete_all_resources_for_slave(dev, i);
-
-		kfree(priv->mfunc.master.res_tracker.slave_list);
-	}
-}
-
-static void update_ud_gid(struct mlx4_dev *dev,
-			  struct mlx4_qp_context *qp_ctx, u8 slave)
-{
-	u32 ts = (be32_to_cpu(qp_ctx->flags) >> 16) & 0xff;
-
-	if (MLX4_QP_ST_UD == ts)
-		qp_ctx->pri_path.mgid_index = 0x80 | slave;
-
-	mlx4_dbg(dev, "slave %d, new gid index: 0x%x ",
-		slave, qp_ctx->pri_path.mgid_index);
-=======
 		if (type != RES_TR_FREE_STRUCTS_ONLY) {
 			for (i = 0; i < dev->num_slaves; i++) {
 				if (type == RES_TR_FREE_ALL ||
@@ -957,7 +842,6 @@ static int update_vport_qp_param(struct mlx4_dev *dev,
 	}
 out:
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mpt_mask(struct mlx4_dev *dev)
@@ -965,9 +849,6 @@ static int mpt_mask(struct mlx4_dev *dev)
 	return dev->caps.num_mpts - 1;
 }
 
-<<<<<<< HEAD
-static void *find_res(struct mlx4_dev *dev, int res_id,
-=======
 static const char *mlx4_resource_type_to_str(enum mlx4_resource t)
 {
 	switch (t) {
@@ -999,20 +880,10 @@ static const char *mlx4_resource_type_to_str(enum mlx4_resource t)
 }
 
 static void *find_res(struct mlx4_dev *dev, u64 res_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      enum mlx4_resource type)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 
-<<<<<<< HEAD
-	return radix_tree_lookup(&priv->mfunc.master.res_tracker.res_tree[type],
-				 res_id);
-}
-
-static int get_res(struct mlx4_dev *dev, int slave, int res_id,
-		   enum mlx4_resource type,
-		   void *res)
-=======
 	return res_tracker_lookup(&priv->mfunc.master.res_tracker.res_tree[type],
 				  res_id);
 }
@@ -1020,7 +891,6 @@ static int get_res(struct mlx4_dev *dev, int slave, int res_id,
 static int _get_res(struct mlx4_dev *dev, int slave, u64 res_id,
 		    enum mlx4_resource type,
 		    void *res, const char *func_name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct res_common *r;
 	int err = 0;
@@ -1033,13 +903,10 @@ static int _get_res(struct mlx4_dev *dev, int slave, u64 res_id,
 	}
 
 	if (r->state == RES_ANY_BUSY) {
-<<<<<<< HEAD
-=======
 		mlx4_warn(dev,
 			  "%s(%d) trying to get resource %llx of type %s, but it's already taken by %s\n",
 			  func_name, slave, res_id, mlx4_resource_type_to_str(type),
 			  r->func_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EBUSY;
 		goto exit;
 	}
@@ -1051,12 +918,7 @@ static int _get_res(struct mlx4_dev *dev, int slave, u64 res_id,
 
 	r->from_state = r->state;
 	r->state = RES_ANY_BUSY;
-<<<<<<< HEAD
-	mlx4_dbg(dev, "res %s id 0x%x to busy\n",
-		 ResourceType(type), r->res_id);
-=======
 	r->func_name = func_name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (res)
 		*((struct res_common **)res) = r;
@@ -1066,18 +928,12 @@ exit:
 	return err;
 }
 
-<<<<<<< HEAD
-int mlx4_get_slave_from_resource_id(struct mlx4_dev *dev,
-				    enum mlx4_resource type,
-				    int res_id, int *slave)
-=======
 #define get_res(dev, slave, res_id, type, res) \
 	_get_res((dev), (slave), (res_id), (type), (res), __func__)
 
 int mlx4_get_slave_from_resource_id(struct mlx4_dev *dev,
 				    enum mlx4_resource type,
 				    u64 res_id, int *slave)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	struct res_common *r;
@@ -1098,24 +954,13 @@ int mlx4_get_slave_from_resource_id(struct mlx4_dev *dev,
 	return err;
 }
 
-<<<<<<< HEAD
-static void put_res(struct mlx4_dev *dev, int slave, int res_id,
-=======
 static void put_res(struct mlx4_dev *dev, int slave, u64 res_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    enum mlx4_resource type)
 {
 	struct res_common *r;
 
 	spin_lock_irq(mlx4_tlock(dev));
 	r = find_res(dev, res_id, type);
-<<<<<<< HEAD
-	if (r)
-		r->state = r->from_state;
-	spin_unlock_irq(mlx4_tlock(dev));
-}
-
-=======
 	if (r) {
 		r->state = r->from_state;
 		r->func_name = "";
@@ -1202,16 +1047,11 @@ static int handle_counter(struct mlx4_dev *dev, struct mlx4_qp_context *qpc,
 	return handle_unexisting_counter(dev, qpc, slave, port);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct res_common *alloc_qp_tr(int id)
 {
 	struct res_qp *ret;
 
-<<<<<<< HEAD
-	ret = kzalloc(sizeof *ret, GFP_KERNEL);
-=======
 	ret = kzalloc(sizeof(*ret), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret)
 		return NULL;
 
@@ -1220,10 +1060,7 @@ static struct res_common *alloc_qp_tr(int id)
 	ret->local_qpn = id;
 	INIT_LIST_HEAD(&ret->mcg_list);
 	spin_lock_init(&ret->mcg_spl);
-<<<<<<< HEAD
-=======
 	atomic_set(&ret->ref_count, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return &ret->com;
 }
@@ -1232,11 +1069,7 @@ static struct res_common *alloc_mtt_tr(int id, int order)
 {
 	struct res_mtt *ret;
 
-<<<<<<< HEAD
-	ret = kzalloc(sizeof *ret, GFP_KERNEL);
-=======
 	ret = kzalloc(sizeof(*ret), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret)
 		return NULL;
 
@@ -1252,11 +1085,7 @@ static struct res_common *alloc_mpt_tr(int id, int key)
 {
 	struct res_mpt *ret;
 
-<<<<<<< HEAD
-	ret = kzalloc(sizeof *ret, GFP_KERNEL);
-=======
 	ret = kzalloc(sizeof(*ret), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret)
 		return NULL;
 
@@ -1271,11 +1100,7 @@ static struct res_common *alloc_eq_tr(int id)
 {
 	struct res_eq *ret;
 
-<<<<<<< HEAD
-	ret = kzalloc(sizeof *ret, GFP_KERNEL);
-=======
 	ret = kzalloc(sizeof(*ret), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret)
 		return NULL;
 
@@ -1289,11 +1114,7 @@ static struct res_common *alloc_cq_tr(int id)
 {
 	struct res_cq *ret;
 
-<<<<<<< HEAD
-	ret = kzalloc(sizeof *ret, GFP_KERNEL);
-=======
 	ret = kzalloc(sizeof(*ret), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret)
 		return NULL;
 
@@ -1308,11 +1129,7 @@ static struct res_common *alloc_srq_tr(int id)
 {
 	struct res_srq *ret;
 
-<<<<<<< HEAD
-	ret = kzalloc(sizeof *ret, GFP_KERNEL);
-=======
 	ret = kzalloc(sizeof(*ret), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret)
 		return NULL;
 
@@ -1323,35 +1140,21 @@ static struct res_common *alloc_srq_tr(int id)
 	return &ret->com;
 }
 
-<<<<<<< HEAD
-static struct res_common *alloc_counter_tr(int id)
-{
-	struct res_counter *ret;
-
-	ret = kzalloc(sizeof *ret, GFP_KERNEL);
-=======
 static struct res_common *alloc_counter_tr(int id, int port)
 {
 	struct res_counter *ret;
 
 	ret = kzalloc(sizeof(*ret), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret)
 		return NULL;
 
 	ret->com.res_id = id;
 	ret->com.state = RES_COUNTER_ALLOCATED;
-<<<<<<< HEAD
-=======
 	ret->port = port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return &ret->com;
 }
 
-<<<<<<< HEAD
-static struct res_common *alloc_tr(int id, enum mlx4_resource type, int slave,
-=======
 static struct res_common *alloc_xrcdn_tr(int id)
 {
 	struct res_xrcdn *ret;
@@ -1381,7 +1184,6 @@ static struct res_common *alloc_fs_rule_tr(u64 id, int qpn)
 }
 
 static struct res_common *alloc_tr(u64 id, enum mlx4_resource type, int slave,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   int extra)
 {
 	struct res_common *ret;
@@ -1406,14 +1208,6 @@ static struct res_common *alloc_tr(u64 id, enum mlx4_resource type, int slave,
 		ret = alloc_srq_tr(id);
 		break;
 	case RES_MAC:
-<<<<<<< HEAD
-		printk(KERN_ERR "implementation missing\n");
-		return NULL;
-	case RES_COUNTER:
-		ret = alloc_counter_tr(id);
-		break;
-
-=======
 		pr_err("implementation missing\n");
 		return NULL;
 	case RES_COUNTER:
@@ -1425,7 +1219,6 @@ static struct res_common *alloc_tr(u64 id, enum mlx4_resource type, int slave,
 	case RES_FS_RULE:
 		ret = alloc_fs_rule_tr(id, extra);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return NULL;
 	}
@@ -1435,9 +1228,6 @@ static struct res_common *alloc_tr(u64 id, enum mlx4_resource type, int slave,
 	return ret;
 }
 
-<<<<<<< HEAD
-static int add_res_range(struct mlx4_dev *dev, int slave, int base, int count,
-=======
 int mlx4_calc_vf_counters(struct mlx4_dev *dev, int slave, int port,
 			  struct mlx4_counter *data)
 {
@@ -1486,7 +1276,6 @@ table_changed:
 }
 
 static int add_res_range(struct mlx4_dev *dev, int slave, u64 base, int count,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 enum mlx4_resource type, int extra)
 {
 	int i;
@@ -1494,15 +1283,9 @@ static int add_res_range(struct mlx4_dev *dev, int slave, u64 base, int count,
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	struct res_common **res_arr;
 	struct mlx4_resource_tracker *tracker = &priv->mfunc.master.res_tracker;
-<<<<<<< HEAD
-	struct radix_tree_root *root = &tracker->res_tree[type];
-
-	res_arr = kzalloc(count * sizeof *res_arr, GFP_KERNEL);
-=======
 	struct rb_root *root = &tracker->res_tree[type];
 
 	res_arr = kcalloc(count, sizeof(*res_arr), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!res_arr)
 		return -ENOMEM;
 
@@ -1523,11 +1306,7 @@ static int add_res_range(struct mlx4_dev *dev, int slave, u64 base, int count,
 			err = -EEXIST;
 			goto undo;
 		}
-<<<<<<< HEAD
-		err = radix_tree_insert(root, base + i, res_arr[i]);
-=======
 		err = res_tracker_insert(root, res_arr[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto undo;
 		list_add_tail(&res_arr[i]->list,
@@ -1539,15 +1318,10 @@ static int add_res_range(struct mlx4_dev *dev, int slave, u64 base, int count,
 	return 0;
 
 undo:
-<<<<<<< HEAD
-	for (--i; i >= base; --i)
-		radix_tree_delete(&tracker->res_tree[type], i);
-=======
 	for (--i; i >= 0; --i) {
 		rb_erase(&res_arr[i]->node, root);
 		list_del_init(&res_arr[i]->list);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irq(mlx4_tlock(dev));
 
@@ -1561,12 +1335,6 @@ undo:
 
 static int remove_qp_ok(struct res_qp *res)
 {
-<<<<<<< HEAD
-	if (res->com.state == RES_QP_BUSY)
-		return -EBUSY;
-	else if (res->com.state != RES_QP_RESERVED)
-		return -EPERM;
-=======
 	if (res->com.state == RES_QP_BUSY || atomic_read(&res->ref_count) ||
 	    !list_empty(&res->mcg_list)) {
 		pr_err("resource tracker: fail to remove qp, state %d, ref_count %d\n",
@@ -1575,7 +1343,6 @@ static int remove_qp_ok(struct res_qp *res)
 	} else if (res->com.state != RES_QP_RESERVED) {
 		return -EPERM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1584,17 +1351,10 @@ static int remove_mtt_ok(struct res_mtt *res, int order)
 {
 	if (res->com.state == RES_MTT_BUSY ||
 	    atomic_read(&res->ref_count)) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "%s-%d: state %s, ref_count %d\n",
-		       __func__, __LINE__,
-		       mtt_states_str(res->com.state),
-		       atomic_read(&res->ref_count));
-=======
 		pr_devel("%s-%d: state %s, ref_count %d\n",
 			 __func__, __LINE__,
 			 mtt_states_str(res->com.state),
 			 atomic_read(&res->ref_count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	} else if (res->com.state != RES_MTT_ALLOCATED)
 		return -EPERM;
@@ -1634,8 +1394,6 @@ static int remove_counter_ok(struct res_counter *res)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int remove_xrcdn_ok(struct res_xrcdn *res)
 {
 	if (res->com.state == RES_XRCD_BUSY)
@@ -1656,7 +1414,6 @@ static int remove_fs_rule_ok(struct res_fs_rule *res)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int remove_cq_ok(struct res_cq *res)
 {
 	if (res->com.state == RES_CQ_BUSY)
@@ -1691,38 +1448,24 @@ static int remove_ok(struct res_common *res, enum mlx4_resource type, int extra)
 	case RES_MTT:
 		return remove_mtt_ok((struct res_mtt *)res, extra);
 	case RES_MAC:
-<<<<<<< HEAD
-		return -ENOSYS;
-=======
 		return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case RES_EQ:
 		return remove_eq_ok((struct res_eq *)res);
 	case RES_COUNTER:
 		return remove_counter_ok((struct res_counter *)res);
-<<<<<<< HEAD
-=======
 	case RES_XRCD:
 		return remove_xrcdn_ok((struct res_xrcdn *)res);
 	case RES_FS_RULE:
 		return remove_fs_rule_ok((struct res_fs_rule *)res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EINVAL;
 	}
 }
 
-<<<<<<< HEAD
-static int rem_res_range(struct mlx4_dev *dev, int slave, int base, int count,
-			 enum mlx4_resource type, int extra)
-{
-	int i;
-=======
 static int rem_res_range(struct mlx4_dev *dev, int slave, u64 base, int count,
 			 enum mlx4_resource type, int extra)
 {
 	u64 i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	struct mlx4_resource_tracker *tracker = &priv->mfunc.master.res_tracker;
@@ -1730,11 +1473,7 @@ static int rem_res_range(struct mlx4_dev *dev, int slave, u64 base, int count,
 
 	spin_lock_irq(mlx4_tlock(dev));
 	for (i = base; i < base + count; ++i) {
-<<<<<<< HEAD
-		r = radix_tree_lookup(&tracker->res_tree[type], i);
-=======
 		r = res_tracker_lookup(&tracker->res_tree[type], i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!r) {
 			err = -ENOENT;
 			goto out;
@@ -1749,13 +1488,8 @@ static int rem_res_range(struct mlx4_dev *dev, int slave, u64 base, int count,
 	}
 
 	for (i = base; i < base + count; ++i) {
-<<<<<<< HEAD
-		r = radix_tree_lookup(&tracker->res_tree[type], i);
-		radix_tree_delete(&tracker->res_tree[type], i);
-=======
 		r = res_tracker_lookup(&tracker->res_tree[type], i);
 		rb_erase(&r->node, &tracker->res_tree[type]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del(&r->list);
 		kfree(r);
 	}
@@ -1777,11 +1511,7 @@ static int qp_res_start_move_to(struct mlx4_dev *dev, int slave, int qpn,
 	int err = 0;
 
 	spin_lock_irq(mlx4_tlock(dev));
-<<<<<<< HEAD
-	r = radix_tree_lookup(&tracker->res_tree[RES_QP], qpn);
-=======
 	r = res_tracker_lookup(&tracker->res_tree[RES_QP], qpn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!r)
 		err = -ENOENT;
 	else if (r->com.owner != slave)
@@ -1789,11 +1519,7 @@ static int qp_res_start_move_to(struct mlx4_dev *dev, int slave, int qpn,
 	else {
 		switch (state) {
 		case RES_QP_BUSY:
-<<<<<<< HEAD
-			mlx4_dbg(dev, "%s: failed RES_QP, 0x%x\n",
-=======
 			mlx4_dbg(dev, "%s: failed RES_QP, 0x%llx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 __func__, r->com.res_id);
 			err = -EBUSY;
 			break;
@@ -1802,11 +1528,7 @@ static int qp_res_start_move_to(struct mlx4_dev *dev, int slave, int qpn,
 			if (r->com.state == RES_QP_MAPPED && !alloc)
 				break;
 
-<<<<<<< HEAD
-			mlx4_dbg(dev, "failed RES_QP, 0x%x\n", r->com.res_id);
-=======
 			mlx4_dbg(dev, "failed RES_QP, 0x%llx\n", r->com.res_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 
@@ -1815,11 +1537,7 @@ static int qp_res_start_move_to(struct mlx4_dev *dev, int slave, int qpn,
 			    r->com.state == RES_QP_HW)
 				break;
 			else {
-<<<<<<< HEAD
-				mlx4_dbg(dev, "failed RES_QP, 0x%x\n",
-=======
 				mlx4_dbg(dev, "failed RES_QP, 0x%llx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  r->com.res_id);
 				err = -EINVAL;
 			}
@@ -1839,11 +1557,7 @@ static int qp_res_start_move_to(struct mlx4_dev *dev, int slave, int qpn,
 			r->com.to_state = state;
 			r->com.state = RES_QP_BUSY;
 			if (qp)
-<<<<<<< HEAD
-				*qp = (struct res_qp *)r;
-=======
 				*qp = r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1861,11 +1575,7 @@ static int mr_res_start_move_to(struct mlx4_dev *dev, int slave, int index,
 	int err = 0;
 
 	spin_lock_irq(mlx4_tlock(dev));
-<<<<<<< HEAD
-	r = radix_tree_lookup(&tracker->res_tree[RES_MPT], index);
-=======
 	r = res_tracker_lookup(&tracker->res_tree[RES_MPT], index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!r)
 		err = -ENOENT;
 	else if (r->com.owner != slave)
@@ -1900,11 +1610,7 @@ static int mr_res_start_move_to(struct mlx4_dev *dev, int slave, int index,
 			r->com.to_state = state;
 			r->com.state = RES_MPT_BUSY;
 			if (mpt)
-<<<<<<< HEAD
-				*mpt = (struct res_mpt *)r;
-=======
 				*mpt = r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1922,11 +1628,7 @@ static int eq_res_start_move_to(struct mlx4_dev *dev, int slave, int index,
 	int err = 0;
 
 	spin_lock_irq(mlx4_tlock(dev));
-<<<<<<< HEAD
-	r = radix_tree_lookup(&tracker->res_tree[RES_EQ], index);
-=======
 	r = res_tracker_lookup(&tracker->res_tree[RES_EQ], index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!r)
 		err = -ENOENT;
 	else if (r->com.owner != slave)
@@ -1955,22 +1657,14 @@ static int eq_res_start_move_to(struct mlx4_dev *dev, int slave, int index,
 			r->com.from_state = r->com.state;
 			r->com.to_state = state;
 			r->com.state = RES_EQ_BUSY;
-<<<<<<< HEAD
-			if (eq)
-				*eq = r;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	spin_unlock_irq(mlx4_tlock(dev));
 
-<<<<<<< HEAD
-=======
 	if (!err && eq)
 		*eq = r;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1983,46 +1677,6 @@ static int cq_res_start_move_to(struct mlx4_dev *dev, int slave, int cqn,
 	int err;
 
 	spin_lock_irq(mlx4_tlock(dev));
-<<<<<<< HEAD
-	r = radix_tree_lookup(&tracker->res_tree[RES_CQ], cqn);
-	if (!r)
-		err = -ENOENT;
-	else if (r->com.owner != slave)
-		err = -EPERM;
-	else {
-		switch (state) {
-		case RES_CQ_BUSY:
-			err = -EBUSY;
-			break;
-
-		case RES_CQ_ALLOCATED:
-			if (r->com.state != RES_CQ_HW)
-				err = -EINVAL;
-			else if (atomic_read(&r->ref_count))
-				err = -EBUSY;
-			else
-				err = 0;
-			break;
-
-		case RES_CQ_HW:
-			if (r->com.state != RES_CQ_ALLOCATED)
-				err = -EINVAL;
-			else
-				err = 0;
-			break;
-
-		default:
-			err = -EINVAL;
-		}
-
-		if (!err) {
-			r->com.from_state = r->com.state;
-			r->com.to_state = state;
-			r->com.state = RES_CQ_BUSY;
-			if (cq)
-				*cq = r;
-		}
-=======
 	r = res_tracker_lookup(&tracker->res_tree[RES_CQ], cqn);
 	if (!r) {
 		err = -ENOENT;
@@ -2047,7 +1701,6 @@ static int cq_res_start_move_to(struct mlx4_dev *dev, int slave, int cqn,
 		r->com.state = RES_CQ_BUSY;
 		if (cq)
 			*cq = r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irq(mlx4_tlock(dev));
@@ -2056,11 +1709,7 @@ static int cq_res_start_move_to(struct mlx4_dev *dev, int slave, int cqn,
 }
 
 static int srq_res_start_move_to(struct mlx4_dev *dev, int slave, int index,
-<<<<<<< HEAD
-				 enum res_cq_states state, struct res_srq **srq)
-=======
 				 enum res_srq_states state, struct res_srq **srq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	struct mlx4_resource_tracker *tracker = &priv->mfunc.master.res_tracker;
@@ -2068,42 +1717,6 @@ static int srq_res_start_move_to(struct mlx4_dev *dev, int slave, int index,
 	int err = 0;
 
 	spin_lock_irq(mlx4_tlock(dev));
-<<<<<<< HEAD
-	r = radix_tree_lookup(&tracker->res_tree[RES_SRQ], index);
-	if (!r)
-		err = -ENOENT;
-	else if (r->com.owner != slave)
-		err = -EPERM;
-	else {
-		switch (state) {
-		case RES_SRQ_BUSY:
-			err = -EINVAL;
-			break;
-
-		case RES_SRQ_ALLOCATED:
-			if (r->com.state != RES_SRQ_HW)
-				err = -EINVAL;
-			else if (atomic_read(&r->ref_count))
-				err = -EBUSY;
-			break;
-
-		case RES_SRQ_HW:
-			if (r->com.state != RES_SRQ_ALLOCATED)
-				err = -EINVAL;
-			break;
-
-		default:
-			err = -EINVAL;
-		}
-
-		if (!err) {
-			r->com.from_state = r->com.state;
-			r->com.to_state = state;
-			r->com.state = RES_SRQ_BUSY;
-			if (srq)
-				*srq = r;
-		}
-=======
 	r = res_tracker_lookup(&tracker->res_tree[RES_SRQ], index);
 	if (!r) {
 		err = -ENOENT;
@@ -2124,7 +1737,6 @@ static int srq_res_start_move_to(struct mlx4_dev *dev, int slave, int index,
 		r->com.state = RES_SRQ_BUSY;
 		if (srq)
 			*srq = r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irq(mlx4_tlock(dev));
@@ -2140,11 +1752,7 @@ static void res_abort_move(struct mlx4_dev *dev, int slave,
 	struct res_common *r;
 
 	spin_lock_irq(mlx4_tlock(dev));
-<<<<<<< HEAD
-	r = radix_tree_lookup(&tracker->res_tree[type], id);
-=======
 	r = res_tracker_lookup(&tracker->res_tree[type], id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r && (r->owner == slave))
 		r->state = r->from_state;
 	spin_unlock_irq(mlx4_tlock(dev));
@@ -2158,11 +1766,7 @@ static void res_end_move(struct mlx4_dev *dev, int slave,
 	struct res_common *r;
 
 	spin_lock_irq(mlx4_tlock(dev));
-<<<<<<< HEAD
-	r = radix_tree_lookup(&tracker->res_tree[type], id);
-=======
 	r = res_tracker_lookup(&tracker->res_tree[type], id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r && (r->owner == slave))
 		r->state = r->to_state;
 	spin_unlock_irq(mlx4_tlock(dev));
@@ -2170,9 +1774,6 @@ static void res_end_move(struct mlx4_dev *dev, int slave,
 
 static int valid_reserved(struct mlx4_dev *dev, int slave, int qpn)
 {
-<<<<<<< HEAD
-	return mlx4_is_qp_reserved(dev, qpn);
-=======
 	return mlx4_is_qp_reserved(dev, qpn) &&
 		(mlx4_is_master(dev) || mlx4_is_guest_proxy(dev, slave, qpn));
 }
@@ -2180,7 +1781,6 @@ static int valid_reserved(struct mlx4_dev *dev, int slave, int qpn)
 static int fw_reserved(struct mlx4_dev *dev, int qpn)
 {
 	return qpn < dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int qp_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
@@ -2191,19 +1791,6 @@ static int qp_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 	int align;
 	int base;
 	int qpn;
-<<<<<<< HEAD
-
-	switch (op) {
-	case RES_OP_RESERVE:
-		count = get_param_l(&in_param);
-		align = get_param_h(&in_param);
-		err = __mlx4_qp_reserve_range(dev, count, align, &base);
-		if (err)
-			return err;
-
-		err = add_res_range(dev, slave, base, count, RES_QP, 0);
-		if (err) {
-=======
 	u8 flags;
 
 	switch (op) {
@@ -2227,7 +1814,6 @@ static int qp_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 		err = add_res_range(dev, slave, base, count, RES_QP, 0);
 		if (err) {
 			mlx4_release_resource(dev, slave, RES_QP, count, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__mlx4_qp_release_range(dev, base, count);
 			return err;
 		}
@@ -2246,11 +1832,7 @@ static int qp_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 		if (err)
 			return err;
 
-<<<<<<< HEAD
-		if (!valid_reserved(dev, slave, qpn)) {
-=======
 		if (!fw_reserved(dev, qpn)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = __mlx4_qp_alloc_icm(dev, qpn);
 			if (err) {
 				res_abort_move(dev, slave, RES_QP, qpn);
@@ -2279,17 +1861,6 @@ static int mtt_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 		return err;
 
 	order = get_param_l(&in_param);
-<<<<<<< HEAD
-	base = __mlx4_alloc_mtt_range(dev, order);
-	if (base == -1)
-		return -ENOMEM;
-
-	err = add_res_range(dev, slave, base, 1, RES_MTT, order);
-	if (err)
-		__mlx4_free_mtt_range(dev, base, order);
-	else
-		set_param_l(out_param, base);
-=======
 
 	err = mlx4_grant_resource(dev, slave, RES_MTT, 1 << order, 0);
 	if (err)
@@ -2308,7 +1879,6 @@ static int mtt_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 	} else {
 		set_param_l(out_param, base);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -2323,11 +1893,6 @@ static int mpt_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 
 	switch (op) {
 	case RES_OP_RESERVE:
-<<<<<<< HEAD
-		index = __mlx4_mr_reserve(dev);
-		if (index == -1)
-			break;
-=======
 		err = mlx4_grant_resource(dev, slave, RES_MPT, 1, 0);
 		if (err)
 			break;
@@ -2337,17 +1902,12 @@ static int mpt_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 			mlx4_release_resource(dev, slave, RES_MPT, 1, 0);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		id = index & mpt_mask(dev);
 
 		err = add_res_range(dev, slave, id, 1, RES_MPT, index);
 		if (err) {
-<<<<<<< HEAD
-			__mlx4_mr_release(dev, index);
-=======
 			mlx4_release_resource(dev, slave, RES_MPT, 1, 0);
 			__mlx4_mpt_release(dev, index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		set_param_l(out_param, index);
@@ -2360,11 +1920,7 @@ static int mpt_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 		if (err)
 			return err;
 
-<<<<<<< HEAD
-		err = __mlx4_mr_alloc_icm(dev, mpt->key);
-=======
 		err = __mlx4_mpt_alloc_icm(dev, mpt->key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			res_abort_move(dev, slave, RES_MPT, id);
 			return err;
@@ -2384,14 +1940,6 @@ static int cq_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 
 	switch (op) {
 	case RES_OP_RESERVE_AND_MAP:
-<<<<<<< HEAD
-		err = __mlx4_cq_alloc_icm(dev, &cqn);
-		if (err)
-			break;
-
-		err = add_res_range(dev, slave, cqn, 1, RES_CQ, 0);
-		if (err) {
-=======
 		err = mlx4_grant_resource(dev, slave, RES_CQ, 1, 0);
 		if (err)
 			break;
@@ -2405,7 +1953,6 @@ static int cq_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 		err = add_res_range(dev, slave, cqn, 1, RES_CQ, 0);
 		if (err) {
 			mlx4_release_resource(dev, slave, RES_CQ, 1, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__mlx4_cq_free_icm(dev, cqn);
 			break;
 		}
@@ -2428,14 +1975,6 @@ static int srq_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 
 	switch (op) {
 	case RES_OP_RESERVE_AND_MAP:
-<<<<<<< HEAD
-		err = __mlx4_srq_alloc_icm(dev, &srqn);
-		if (err)
-			break;
-
-		err = add_res_range(dev, slave, srqn, 1, RES_SRQ, 0);
-		if (err) {
-=======
 		err = mlx4_grant_resource(dev, slave, RES_SRQ, 1, 0);
 		if (err)
 			break;
@@ -2449,7 +1988,6 @@ static int srq_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 		err = add_res_range(dev, slave, srqn, 1, RES_SRQ, 0);
 		if (err) {
 			mlx4_release_resource(dev, slave, RES_SRQ, 1, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__mlx4_srq_free_icm(dev, srqn);
 			break;
 		}
@@ -2464,19 +2002,6 @@ static int srq_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 	return err;
 }
 
-<<<<<<< HEAD
-static int mac_add_to_slave(struct mlx4_dev *dev, int slave, u64 mac, int port)
-{
-	struct mlx4_priv *priv = mlx4_priv(dev);
-	struct mlx4_resource_tracker *tracker = &priv->mfunc.master.res_tracker;
-	struct mac_res *res;
-
-	res = kzalloc(sizeof *res, GFP_KERNEL);
-	if (!res)
-		return -ENOMEM;
-	res->mac = mac;
-	res->port = (u8) port;
-=======
 static int mac_find_smac_ix_in_slave(struct mlx4_dev *dev, int slave, int port,
 				     u8 smac_index, u64 *mac)
 {
@@ -2522,7 +2047,6 @@ static int mac_add_to_slave(struct mlx4_dev *dev, int slave, u64 mac, int port, 
 	res->port = (u8) port;
 	res->smac_index = smac_index;
 	res->ref_count = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_tail(&res->list,
 		      &tracker->slave_list[slave].res_list[RES_MAC]);
 	return 0;
@@ -2539,16 +2063,11 @@ static void mac_del_from_slave(struct mlx4_dev *dev, int slave, u64 mac,
 
 	list_for_each_entry_safe(res, tmp, mac_list, list) {
 		if (res->mac == mac && res->port == (u8) port) {
-<<<<<<< HEAD
-			list_del(&res->list);
-			kfree(res);
-=======
 			if (!--res->ref_count) {
 				list_del(&res->list);
 				mlx4_release_resource(dev, slave, RES_MAC, 1, port);
 				kfree(res);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -2561,12 +2080,6 @@ static void rem_slave_macs(struct mlx4_dev *dev, int slave)
 	struct list_head *mac_list =
 		&tracker->slave_list[slave].res_list[RES_MAC];
 	struct mac_res *res, *tmp;
-<<<<<<< HEAD
-
-	list_for_each_entry_safe(res, tmp, mac_list, list) {
-		list_del(&res->list);
-		__mlx4_unregister_mac(dev, res->port, res->mac);
-=======
 	int i;
 
 	list_for_each_entry_safe(res, tmp, mac_list, list) {
@@ -2575,71 +2088,44 @@ static void rem_slave_macs(struct mlx4_dev *dev, int slave)
 		for (i = 0; i < res->ref_count; i++)
 			__mlx4_unregister_mac(dev, res->port, res->mac);
 		mlx4_release_resource(dev, slave, RES_MAC, 1, res->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(res);
 	}
 }
 
 static int mac_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
-<<<<<<< HEAD
-			 u64 in_param, u64 *out_param)
-=======
 			 u64 in_param, u64 *out_param, int in_port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = -EINVAL;
 	int port;
 	u64 mac;
-<<<<<<< HEAD
-=======
 	u8 smac_index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (op != RES_OP_RESERVE_AND_MAP)
 		return err;
 
-<<<<<<< HEAD
-	port = get_param_l(out_param);
-=======
 	port = !in_port ? get_param_l(out_param) : in_port;
 	port = mlx4_slave_convert_port(
 			dev, slave, port);
 
 	if (port < 0)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mac = in_param;
 
 	err = __mlx4_register_mac(dev, port, mac);
 	if (err >= 0) {
-<<<<<<< HEAD
-=======
 		smac_index = err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_param_l(out_param, err);
 		err = 0;
 	}
 
 	if (!err) {
-<<<<<<< HEAD
-		err = mac_add_to_slave(dev, slave, mac, port);
-=======
 		err = mac_add_to_slave(dev, slave, mac, port, smac_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			__mlx4_unregister_mac(dev, port, mac);
 	}
 	return err;
 }
 
-<<<<<<< HEAD
-static int vlan_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
-			 u64 in_param, u64 *out_param)
-{
-	return 0;
-}
-
-=======
 static int vlan_add_to_slave(struct mlx4_dev *dev, int slave, u16 vlan,
 			     int port, int vlan_index)
 {
@@ -2805,7 +2291,6 @@ static int xrcdn_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_ALLOC_RES_wrapper(struct mlx4_dev *dev, int slave,
 			   struct mlx4_vhcr *vhcr,
 			   struct mlx4_cmd_mailbox *inbox,
@@ -2815,11 +2300,7 @@ int mlx4_ALLOC_RES_wrapper(struct mlx4_dev *dev, int slave,
 	int err;
 	int alop = vhcr->op_modifier;
 
-<<<<<<< HEAD
-	switch (vhcr->in_modifier) {
-=======
 	switch (vhcr->in_modifier & 0xFF) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case RES_QP:
 		err = qp_alloc_res(dev, slave, vhcr->op_modifier, alop,
 				   vhcr->in_param, &vhcr->out_param);
@@ -2847,19 +2328,12 @@ int mlx4_ALLOC_RES_wrapper(struct mlx4_dev *dev, int slave,
 
 	case RES_MAC:
 		err = mac_alloc_res(dev, slave, vhcr->op_modifier, alop,
-<<<<<<< HEAD
-				    vhcr->in_param, &vhcr->out_param);
-=======
 				    vhcr->in_param, &vhcr->out_param,
 				    (vhcr->in_modifier >> 8) & 0xFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case RES_VLAN:
 		err = vlan_alloc_res(dev, slave, vhcr->op_modifier, alop,
-<<<<<<< HEAD
-				    vhcr->in_param, &vhcr->out_param);
-=======
 				     vhcr->in_param, &vhcr->out_param,
 				     (vhcr->in_modifier >> 8) & 0xFF);
 		break;
@@ -2872,7 +2346,6 @@ int mlx4_ALLOC_RES_wrapper(struct mlx4_dev *dev, int slave,
 	case RES_XRCD:
 		err = xrcdn_alloc_res(dev, slave, vhcr->op_modifier, alop,
 				      vhcr->in_param, &vhcr->out_param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -2898,10 +2371,7 @@ static int qp_free_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 		err = rem_res_range(dev, slave, base, count, RES_QP, 0);
 		if (err)
 			break;
-<<<<<<< HEAD
-=======
 		mlx4_release_resource(dev, slave, RES_QP, count, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__mlx4_qp_release_range(dev, base, count);
 		break;
 	case RES_OP_MAP_ICM:
@@ -2911,11 +2381,7 @@ static int qp_free_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 		if (err)
 			return err;
 
-<<<<<<< HEAD
-		if (!valid_reserved(dev, slave, qpn))
-=======
 		if (!fw_reserved(dev, qpn))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__mlx4_qp_free_icm(dev, qpn);
 
 		res_end_move(dev, slave, RES_QP, qpn);
@@ -2943,15 +2409,10 @@ static int mtt_free_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 	base = get_param_l(&in_param);
 	order = get_param_h(&in_param);
 	err = rem_res_range(dev, slave, base, 1, RES_MTT, order);
-<<<<<<< HEAD
-	if (!err)
-		__mlx4_free_mtt_range(dev, base, order);
-=======
 	if (!err) {
 		mlx4_release_resource(dev, slave, RES_MTT, 1 << order, 0);
 		__mlx4_free_mtt_range(dev, base, order);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -2976,21 +2437,6 @@ static int mpt_free_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 		err = rem_res_range(dev, slave, id, 1, RES_MPT, 0);
 		if (err)
 			break;
-<<<<<<< HEAD
-		__mlx4_mr_release(dev, index);
-		break;
-	case RES_OP_MAP_ICM:
-			index = get_param_l(&in_param);
-			id = index & mpt_mask(dev);
-			err = mr_res_start_move_to(dev, slave, id,
-						   RES_MPT_RESERVED, &mpt);
-			if (err)
-				return err;
-
-			__mlx4_mr_free_icm(dev, mpt->key);
-			res_end_move(dev, slave, RES_MPT, id);
-			return err;
-=======
 		mlx4_release_resource(dev, slave, RES_MPT, 1, 0);
 		__mlx4_mpt_release(dev, index);
 		break;
@@ -3004,7 +2450,6 @@ static int mpt_free_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 
 		__mlx4_mpt_free_icm(dev, mpt->key);
 		res_end_move(dev, slave, RES_MPT, id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		err = -EINVAL;
@@ -3026,10 +2471,7 @@ static int cq_free_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 		if (err)
 			break;
 
-<<<<<<< HEAD
-=======
 		mlx4_release_resource(dev, slave, RES_CQ, 1, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__mlx4_cq_free_icm(dev, cqn);
 		break;
 
@@ -3054,10 +2496,7 @@ static int srq_free_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 		if (err)
 			break;
 
-<<<<<<< HEAD
-=======
 		mlx4_release_resource(dev, slave, RES_SRQ, 1, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__mlx4_srq_free_icm(dev, srqn);
 		break;
 
@@ -3070,27 +2509,19 @@ static int srq_free_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 }
 
 static int mac_free_res(struct mlx4_dev *dev, int slave, int op, int cmd,
-<<<<<<< HEAD
-			    u64 in_param, u64 *out_param)
-=======
 			    u64 in_param, u64 *out_param, int in_port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int port;
 	int err = 0;
 
 	switch (op) {
 	case RES_OP_RESERVE_AND_MAP:
-<<<<<<< HEAD
-		port = get_param_l(out_param);
-=======
 		port = !in_port ? get_param_l(out_param) : in_port;
 		port = mlx4_slave_convert_port(
 				dev, slave, port);
 
 		if (port < 0)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mac_del_from_slave(dev, slave, in_param, port);
 		__mlx4_unregister_mac(dev, port, in_param);
 		break;
@@ -3104,11 +2535,6 @@ static int mac_free_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 }
 
 static int vlan_free_res(struct mlx4_dev *dev, int slave, int op, int cmd,
-<<<<<<< HEAD
-			    u64 in_param, u64 *out_param)
-{
-	return 0;
-=======
 			    u64 in_param, u64 *out_param, int port)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
@@ -3177,7 +2603,6 @@ static int xrcdn_free_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 	__mlx4_xrcd_free(dev, xrcdn);
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mlx4_FREE_RES_wrapper(struct mlx4_dev *dev, int slave,
@@ -3189,11 +2614,7 @@ int mlx4_FREE_RES_wrapper(struct mlx4_dev *dev, int slave,
 	int err = -EINVAL;
 	int alop = vhcr->op_modifier;
 
-<<<<<<< HEAD
-	switch (vhcr->in_modifier) {
-=======
 	switch (vhcr->in_modifier & 0xFF) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case RES_QP:
 		err = qp_free_res(dev, slave, vhcr->op_modifier, alop,
 				  vhcr->in_param);
@@ -3221,19 +2642,12 @@ int mlx4_FREE_RES_wrapper(struct mlx4_dev *dev, int slave,
 
 	case RES_MAC:
 		err = mac_free_res(dev, slave, vhcr->op_modifier, alop,
-<<<<<<< HEAD
-				   vhcr->in_param, &vhcr->out_param);
-=======
 				   vhcr->in_param, &vhcr->out_param,
 				   (vhcr->in_modifier >> 8) & 0xFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case RES_VLAN:
 		err = vlan_free_res(dev, slave, vhcr->op_modifier, alop,
-<<<<<<< HEAD
-				   vhcr->in_param, &vhcr->out_param);
-=======
 				    vhcr->in_param, &vhcr->out_param,
 				    (vhcr->in_modifier >> 8) & 0xFF);
 		break;
@@ -3246,7 +2660,6 @@ int mlx4_FREE_RES_wrapper(struct mlx4_dev *dev, int slave,
 	case RES_XRCD:
 		err = xrcdn_free_res(dev, slave, vhcr->op_modifier, alop,
 				     vhcr->in_param, &vhcr->out_param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -3271,8 +2684,6 @@ static int mr_get_mtt_size(struct mlx4_mpt_entry *mpt)
 	return be32_to_cpu(mpt->mtt_sz);
 }
 
-<<<<<<< HEAD
-=======
 static u32 mr_get_pd(struct mlx4_mpt_entry *mpt)
 {
 	return be32_to_cpu(mpt->pd_flags) & 0x00ffffff;
@@ -3293,7 +2704,6 @@ static int mr_is_region(struct mlx4_mpt_entry *mpt)
 	return be32_to_cpu(mpt->flags) & MLX4_MPT_FLAG_REGION;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int qp_get_mtt_addr(struct mlx4_qp_context *qpc)
 {
 	return be32_to_cpu(qpc->mtt_base_addr_l) & 0xfffffff8;
@@ -3313,33 +2723,20 @@ static int qp_get_mtt_size(struct mlx4_qp_context *qpc)
 	int log_rq_stride = qpc->rq_size_stride & 7;
 	int srq = (be32_to_cpu(qpc->srqn) >> 24) & 1;
 	int rss = (be32_to_cpu(qpc->flags) >> 13) & 1;
-<<<<<<< HEAD
-	int xrc = (be32_to_cpu(qpc->local_qpn) >> 23) & 1;
-=======
 	u32 ts = (be32_to_cpu(qpc->flags) >> 16) & 0xff;
 	int xrc = (ts == MLX4_QP_ST_XRC) ? 1 : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sq_size;
 	int rq_size;
 	int total_pages;
 	int total_mem;
 	int page_offset = (be32_to_cpu(qpc->params2) >> 6) & 0x3f;
-<<<<<<< HEAD
-=======
 	int tot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sq_size = 1 << (log_sq_size + log_sq_sride + 4);
 	rq_size = (srq|rss|xrc) ? 0 : (1 << (log_rq_size + log_rq_stride + 4));
 	total_mem = sq_size + rq_size;
-<<<<<<< HEAD
-	total_pages =
-		roundup_pow_of_two((total_mem + (page_offset << 6)) >>
-				   page_shift);
-=======
 	tot = (total_mem + (page_offset << 6)) >> page_shift;
 	total_pages = !tot ? 1 : roundup_pow_of_two(tot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return total_pages;
 }
@@ -3364,27 +2761,18 @@ int mlx4_SW2HW_MPT_wrapper(struct mlx4_dev *dev, int slave,
 	int err;
 	int index = vhcr->in_modifier;
 	struct res_mtt *mtt;
-<<<<<<< HEAD
-	struct res_mpt *mpt;
-	int mtt_base = mr_get_mtt_addr(inbox->buf) / dev->caps.mtt_entry_sz;
-	int phys;
-	int id;
-=======
 	struct res_mpt *mpt = NULL;
 	int mtt_base = mr_get_mtt_addr(inbox->buf) / dev->caps.mtt_entry_sz;
 	int phys;
 	int id;
 	u32 pd;
 	int pd_slave;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	id = index & mpt_mask(dev);
 	err = mr_res_start_move_to(dev, slave, id, RES_MPT_HW, &mpt);
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-=======
 	/* Disable memory windows for VFs. */
 	if (!mr_is_region(inbox->buf)) {
 		err = -EPERM;
@@ -3412,7 +2800,6 @@ int mlx4_SW2HW_MPT_wrapper(struct mlx4_dev *dev, int slave,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phys = mr_phys_mpt(inbox->buf);
 	if (!phys) {
 		err = get_res(dev, slave, mtt_base, RES_MTT, &mtt);
@@ -3496,9 +2883,6 @@ int mlx4_QUERY_MPT_wrapper(struct mlx4_dev *dev, int slave,
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	if (mpt->com.from_state != RES_MPT_HW) {
-=======
 	if (mpt->com.from_state == RES_MPT_MAPPED) {
 		/* In order to allow rereg in SRIOV, we need to alter the MPT entry. To do
 		 * that, the VF must read the MPT. But since the MPT entry memory is not
@@ -3523,15 +2907,10 @@ int mlx4_QUERY_MPT_wrapper(struct mlx4_dev *dev, int slave,
 	} else if (mpt->com.from_state == RES_MPT_HW) {
 		err = mlx4_DMA_wrapper(dev, slave, vhcr, inbox, outbox, cmd);
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EBUSY;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	err = mlx4_DMA_wrapper(dev, slave, vhcr, inbox, outbox, cmd);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	put_res(dev, slave, id, RES_MPT);
@@ -3553,8 +2932,6 @@ static u32 qp_get_srqn(struct mlx4_qp_context *qpc)
 	return be32_to_cpu(qpc->srqn) & 0x1ffffff;
 }
 
-<<<<<<< HEAD
-=======
 static void adjust_proxy_tun_qkey(struct mlx4_dev *dev, struct mlx4_vhcr *vhcr,
 				  struct mlx4_qp_context *context)
 {
@@ -3572,7 +2949,6 @@ static int adjust_qp_sched_queue(struct mlx4_dev *dev, int slave,
 				 struct mlx4_qp_context *qpc,
 				 struct mlx4_cmd_mailbox *inbox);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_RST2INIT_QP_wrapper(struct mlx4_dev *dev, int slave,
 			     struct mlx4_vhcr *vhcr,
 			     struct mlx4_cmd_mailbox *inbox,
@@ -3593,22 +2969,16 @@ int mlx4_RST2INIT_QP_wrapper(struct mlx4_dev *dev, int slave,
 	u32 srqn = qp_get_srqn(qpc) & 0xffffff;
 	int use_srq = (qp_get_srqn(qpc) >> 24) & 1;
 	struct res_srq *srq;
-<<<<<<< HEAD
-	int local_qpn = be32_to_cpu(qpc->local_qpn) & 0xffffff;
-=======
 	int local_qpn = vhcr->in_modifier & 0xffffff;
 
 	err = adjust_qp_sched_queue(dev, slave, qpc, inbox);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = qp_res_start_move_to(dev, slave, qpn, RES_QP_HW, &qp, 0);
 	if (err)
 		return err;
 	qp->local_qpn = local_qpn;
-<<<<<<< HEAD
-=======
 	qp->sched_queue = 0;
 	qp->param3 = 0;
 	qp->vlan_control = 0;
@@ -3617,7 +2987,6 @@ int mlx4_RST2INIT_QP_wrapper(struct mlx4_dev *dev, int slave,
 	qp->vlan_index = 0;
 	qp->feup = 0;
 	qp->qpc_flags = be32_to_cpu(qpc->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = get_res(dev, slave, mtt_base, RES_MTT, &mtt);
 	if (err)
@@ -3644,11 +3013,8 @@ int mlx4_RST2INIT_QP_wrapper(struct mlx4_dev *dev, int slave,
 			goto ex_put_scq;
 	}
 
-<<<<<<< HEAD
-=======
 	adjust_proxy_tun_qkey(dev, vhcr, qpc);
 	update_pkey_index(dev, slave, inbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = mlx4_DMA_wrapper(dev, slave, vhcr, inbox, outbox, cmd);
 	if (err)
 		goto ex_put_srq;
@@ -3667,12 +3033,9 @@ int mlx4_RST2INIT_QP_wrapper(struct mlx4_dev *dev, int slave,
 		put_res(dev, slave, srqn, RES_SRQ);
 		qp->srq = srq;
 	}
-<<<<<<< HEAD
-=======
 
 	/* Save param3 for dynamic changes from VST back to VGT */
 	qp->param3 = qpc->param3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_res(dev, slave, rcqn, RES_CQ);
 	put_res(dev, slave, mtt_base, RES_MTT);
 	res_end_move(dev, slave, RES_QP, qpn);
@@ -3735,11 +3098,7 @@ int mlx4_SW2HW_EQ_wrapper(struct mlx4_dev *dev, int slave,
 {
 	int err;
 	int eqn = vhcr->in_modifier;
-<<<<<<< HEAD
-	int res_id = (slave << 8) | eqn;
-=======
 	int res_id = (slave << 10) | eqn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlx4_eq_context *eqc = inbox->buf;
 	int mtt_base = eq_get_mtt_addr(eqc) / dev->caps.mtt_entry_sz;
 	int mtt_size = eq_get_mtt_size(eqc);
@@ -3780,8 +3139,6 @@ out_add:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 int mlx4_CONFIG_DEV_wrapper(struct mlx4_dev *dev, int slave,
 			    struct mlx4_vhcr *vhcr,
 			    struct mlx4_cmd_mailbox *inbox,
@@ -3799,7 +3156,6 @@ int mlx4_CONFIG_DEV_wrapper(struct mlx4_dev *dev, int slave,
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int get_containing_mtt(struct mlx4_dev *dev, int slave, int start,
 			      int len, struct res_mtt **res)
 {
@@ -3824,8 +3180,6 @@ static int get_containing_mtt(struct mlx4_dev *dev, int slave, int start,
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int verify_qp_parameters(struct mlx4_dev *dev,
 				struct mlx4_vhcr *vhcr,
 				struct mlx4_cmd_mailbox *inbox,
@@ -3906,7 +3260,6 @@ static int verify_qp_parameters(struct mlx4_dev *dev,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_WRITE_MTT_wrapper(struct mlx4_dev *dev, int slave,
 			   struct mlx4_vhcr *vhcr,
 			   struct mlx4_cmd_mailbox *inbox,
@@ -3928,11 +3281,7 @@ int mlx4_WRITE_MTT_wrapper(struct mlx4_dev *dev, int slave,
 
 	/* Call the SW implementation of write_mtt:
 	 * - Prepare a dummy mtt struct
-<<<<<<< HEAD
-	 * - Translate inbox contents to simple addresses in host endianess */
-=======
 	 * - Translate inbox contents to simple addresses in host endianness */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtt.offset = 0;  /* TBD this is broken but I don't handle it since
 			    we don't really use it */
 	mtt.order = 0;
@@ -3956,11 +3305,7 @@ int mlx4_HW2SW_EQ_wrapper(struct mlx4_dev *dev, int slave,
 			  struct mlx4_cmd_info *cmd)
 {
 	int eqn = vhcr->in_modifier;
-<<<<<<< HEAD
-	int res_id = eqn | (slave << 8);
-=======
 	int res_id = eqn | (slave << 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct res_eq *eq;
 	int err;
 
@@ -4004,15 +3349,12 @@ int mlx4_GEN_EQE(struct mlx4_dev *dev, int slave, struct mlx4_eqe *eqe)
 	if (!priv->mfunc.master.slave_state)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	/* check for slave valid, slave not PF, and slave active */
 	if (slave < 0 || slave > dev->persist->num_vfs ||
 	    slave == dev->caps.function ||
 	    !priv->mfunc.master.slave_state[slave].active)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	event_eq = &priv->mfunc.master.slave_state[slave].event_eq[eqe->type];
 
 	/* Create the event only if the slave is registered */
@@ -4020,11 +3362,7 @@ int mlx4_GEN_EQE(struct mlx4_dev *dev, int slave, struct mlx4_eqe *eqe)
 		return 0;
 
 	mutex_lock(&priv->mfunc.master.gen_eqe_mutex[slave]);
-<<<<<<< HEAD
-	res_id = (slave << 8) | event_eq->eqn;
-=======
 	res_id = (slave << 10) | event_eq->eqn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = get_res(dev, slave, res_id, RES_EQ, &req);
 	if (err)
 		goto unlock;
@@ -4047,11 +3385,7 @@ int mlx4_GEN_EQE(struct mlx4_dev *dev, int slave, struct mlx4_eqe *eqe)
 
 	memcpy(mailbox->buf, (u8 *) eqe, 28);
 
-<<<<<<< HEAD
-	in_modifier = (slave & 0xff) | ((event_eq->eqn & 0xff) << 16);
-=======
 	in_modifier = (slave & 0xff) | ((event_eq->eqn & 0x3ff) << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = mlx4_cmd(dev, mailbox->dma, in_modifier, 0,
 		       MLX4_CMD_GEN_EQE, MLX4_CMD_TIME_CLASS_B,
@@ -4077,11 +3411,7 @@ int mlx4_QUERY_EQ_wrapper(struct mlx4_dev *dev, int slave,
 			  struct mlx4_cmd_info *cmd)
 {
 	int eqn = vhcr->in_modifier;
-<<<<<<< HEAD
-	int res_id = eqn | (slave << 8);
-=======
 	int res_id = eqn | (slave << 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct res_eq *eq;
 	int err;
 
@@ -4111,11 +3441,7 @@ int mlx4_SW2HW_CQ_wrapper(struct mlx4_dev *dev, int slave,
 	int cqn = vhcr->in_modifier;
 	struct mlx4_cq_context *cqc = inbox->buf;
 	int mtt_base = cq_get_mtt_addr(cqc) / dev->caps.mtt_entry_sz;
-<<<<<<< HEAD
-	struct res_cq *cq;
-=======
 	struct res_cq *cq = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct res_mtt *mtt;
 
 	err = cq_res_start_move_to(dev, slave, cqn, RES_CQ_HW, &cq);
@@ -4151,11 +3477,7 @@ int mlx4_HW2SW_CQ_wrapper(struct mlx4_dev *dev, int slave,
 {
 	int err;
 	int cqn = vhcr->in_modifier;
-<<<<<<< HEAD
-	struct res_cq *cq;
-=======
 	struct res_cq *cq = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = cq_res_start_move_to(dev, slave, cqn, RES_CQ_ALLOCATED, &cq);
 	if (err)
@@ -4294,11 +3616,7 @@ int mlx4_SW2HW_SRQ_wrapper(struct mlx4_dev *dev, int slave,
 	int err;
 	int srqn = vhcr->in_modifier;
 	struct res_mtt *mtt;
-<<<<<<< HEAD
-	struct res_srq *srq;
-=======
 	struct res_srq *srq = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlx4_srq_context *srqc = inbox->buf;
 	int mtt_base = srq_get_mtt_addr(srqc) / dev->caps.mtt_entry_sz;
 
@@ -4342,11 +3660,7 @@ int mlx4_HW2SW_SRQ_wrapper(struct mlx4_dev *dev, int slave,
 {
 	int err;
 	int srqn = vhcr->in_modifier;
-<<<<<<< HEAD
-	struct res_srq *srq;
-=======
 	struct res_srq *srq = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = srq_res_start_move_to(dev, slave, srqn, RES_SRQ_ALLOCATED, &srq);
 	if (err)
@@ -4439,8 +3753,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 int mlx4_INIT2INIT_QP_wrapper(struct mlx4_dev *dev, int slave,
 			      struct mlx4_vhcr *vhcr,
 			      struct mlx4_cmd_mailbox *inbox,
@@ -4505,19 +3817,12 @@ static int roce_verify_mac(struct mlx4_dev *dev, int slave,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_INIT2RTR_QP_wrapper(struct mlx4_dev *dev, int slave,
 			     struct mlx4_vhcr *vhcr,
 			     struct mlx4_cmd_mailbox *inbox,
 			     struct mlx4_cmd_mailbox *outbox,
 			     struct mlx4_cmd_info *cmd)
 {
-<<<<<<< HEAD
-	struct mlx4_qp_context *qpc = inbox->buf + 8;
-
-	update_ud_gid(dev, qpc, (u8)slave);
-
-=======
 	int err;
 	struct mlx4_qp_context *qpc = inbox->buf + 8;
 	int qpn = vhcr->in_modifier & 0x7fffff;
@@ -4674,7 +3979,6 @@ int mlx4_SQD2RTS_QP_wrapper(struct mlx4_dev *dev, int slave,
 	adjust_proxy_tun_qkey(dev, vhcr, context);
 	update_gid(dev, inbox, (u8)slave);
 	update_pkey_index(dev, slave, inbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mlx4_GEN_QP_wrapper(dev, slave, vhcr, inbox, outbox, cmd);
 }
 
@@ -4723,20 +4027,12 @@ static struct res_gid *find_gid(struct mlx4_dev *dev, int slave,
 
 static int add_mcg_res(struct mlx4_dev *dev, int slave, struct res_qp *rqp,
 		       u8 *gid, enum mlx4_protocol prot,
-<<<<<<< HEAD
-		       enum mlx4_steer_type steer)
-=======
 		       enum mlx4_steer_type steer, u64 reg_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct res_gid *res;
 	int err;
 
-<<<<<<< HEAD
-	res = kzalloc(sizeof *res, GFP_KERNEL);
-=======
 	res = kzalloc(sizeof(*res), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!res)
 		return -ENOMEM;
 
@@ -4748,10 +4044,7 @@ static int add_mcg_res(struct mlx4_dev *dev, int slave, struct res_qp *rqp,
 		memcpy(res->gid, gid, 16);
 		res->prot = prot;
 		res->steer = steer;
-<<<<<<< HEAD
-=======
 		res->reg_id = reg_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&res->list, &rqp->mcg_list);
 		err = 0;
 	}
@@ -4762,11 +4055,7 @@ static int add_mcg_res(struct mlx4_dev *dev, int slave, struct res_qp *rqp,
 
 static int rem_mcg_res(struct mlx4_dev *dev, int slave, struct res_qp *rqp,
 		       u8 *gid, enum mlx4_protocol prot,
-<<<<<<< HEAD
-		       enum mlx4_steer_type steer)
-=======
 		       enum mlx4_steer_type steer, u64 *reg_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct res_gid *res;
 	int err;
@@ -4776,10 +4065,7 @@ static int rem_mcg_res(struct mlx4_dev *dev, int slave, struct res_qp *rqp,
 	if (!res || res->prot != prot || res->steer != steer)
 		err = -EINVAL;
 	else {
-<<<<<<< HEAD
-=======
 		*reg_id = res->reg_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del(&res->list);
 		kfree(res);
 		err = 0;
@@ -4789,8 +4075,6 @@ static int rem_mcg_res(struct mlx4_dev *dev, int slave, struct res_qp *rqp,
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int qp_attach(struct mlx4_dev *dev, int slave, struct mlx4_qp *qp,
 		     u8 gid[16], int block_loopback, enum mlx4_protocol prot,
 		     enum mlx4_steer_type type, u64 *reg_id)
@@ -4851,7 +4135,6 @@ static int mlx4_adjust_port(struct mlx4_dev *dev, int slave,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_QP_ATTACH_wrapper(struct mlx4_dev *dev, int slave,
 			       struct mlx4_vhcr *vhcr,
 			       struct mlx4_cmd_mailbox *inbox,
@@ -4861,16 +4144,10 @@ int mlx4_QP_ATTACH_wrapper(struct mlx4_dev *dev, int slave,
 	struct mlx4_qp qp; /* dummy for calling attach/detach */
 	u8 *gid = inbox->buf;
 	enum mlx4_protocol prot = (vhcr->in_modifier >> 28) & 0x7;
-<<<<<<< HEAD
-	int err, err1;
-	int qpn;
-	struct res_qp *rqp;
-=======
 	int err;
 	int qpn;
 	struct res_qp *rqp;
 	u64 reg_id = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int attach = vhcr->op_modifier;
 	int block_loopback = vhcr->in_modifier >> 31;
 	u8 steer_type_mask = 2;
@@ -4883,32 +4160,6 @@ int mlx4_QP_ATTACH_wrapper(struct mlx4_dev *dev, int slave,
 
 	qp.qpn = qpn;
 	if (attach) {
-<<<<<<< HEAD
-		err = add_mcg_res(dev, slave, rqp, gid, prot, type);
-		if (err)
-			goto ex_put;
-
-		err = mlx4_qp_attach_common(dev, &qp, gid,
-					    block_loopback, prot, type);
-		if (err)
-			goto ex_rem;
-	} else {
-		err = rem_mcg_res(dev, slave, rqp, gid, prot, type);
-		if (err)
-			goto ex_put;
-		err = mlx4_qp_detach_common(dev, &qp, gid, prot, type);
-	}
-
-	put_res(dev, slave, qpn, RES_QP);
-	return 0;
-
-ex_rem:
-	/* ignore error return below, already in error */
-	err1 = rem_mcg_res(dev, slave, rqp, gid, prot, type);
-ex_put:
-	put_res(dev, slave, qpn, RES_QP);
-
-=======
 		err = qp_attach(dev, slave, &qp, gid, block_loopback, prot,
 				type, &reg_id);
 		if (err) {
@@ -5303,7 +4554,6 @@ int mlx4_QP_FLOW_STEERING_DETACH_wrapper(struct mlx4_dev *dev, int slave,
 		atomic_dec(&rqp->ref_count);
 out:
 	put_res(dev, slave, qpn, RES_QP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -5333,15 +4583,6 @@ static void detach_qp(struct mlx4_dev *dev, int slave, struct res_qp *rqp)
 {
 	struct res_gid *rgid;
 	struct res_gid *tmp;
-<<<<<<< HEAD
-	int err;
-	struct mlx4_qp qp; /* dummy for calling attach/detach */
-
-	list_for_each_entry_safe(rgid, tmp, &rqp->mcg_list, list) {
-		qp.qpn = rqp->local_qpn;
-		err = mlx4_qp_detach_common(dev, &qp, rgid->gid, rgid->prot,
-					    rgid->steer);
-=======
 	struct mlx4_qp qp; /* dummy for calling attach/detach */
 
 	list_for_each_entry_safe(rgid, tmp, &rqp->mcg_list, list) {
@@ -5355,7 +4596,6 @@ static void detach_qp(struct mlx4_dev *dev, int slave, struct res_qp *rqp)
 						     rgid->prot, rgid->steer);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del(&rgid->list);
 		kfree(rgid);
 	}
@@ -5380,13 +4620,8 @@ static int _move_all_busy(struct mlx4_dev *dev, int slave,
 				if (r->state == RES_ANY_BUSY) {
 					if (print)
 						mlx4_dbg(dev,
-<<<<<<< HEAD
-							 "%s id 0x%x is busy\n",
-							  ResourceType(type),
-=======
 							 "%s id 0x%llx is busy\n",
 							  resource_str(type),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							  r->res_id);
 					++busy;
 				} else {
@@ -5437,13 +4672,8 @@ static void rem_slave_qps(struct mlx4_dev *dev, int slave)
 
 	err = move_all_busy(dev, slave, RES_QP);
 	if (err)
-<<<<<<< HEAD
-		mlx4_warn(dev, "rem_slave_qps: Could not move all qps to busy"
-			  "for slave %d\n", slave);
-=======
 		mlx4_warn(dev, "rem_slave_qps: Could not move all qps to busy for slave %d\n",
 			  slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(mlx4_tlock(dev));
 	list_for_each_entry_safe(qp, tmp, qp_list, com.list) {
@@ -5456,12 +4686,6 @@ static void rem_slave_qps(struct mlx4_dev *dev, int slave)
 				switch (state) {
 				case RES_QP_RESERVED:
 					spin_lock_irq(mlx4_tlock(dev));
-<<<<<<< HEAD
-					radix_tree_delete(&tracker->res_tree[RES_QP],
-							  qp->com.res_id);
-					list_del(&qp->com.list);
-					spin_unlock_irq(mlx4_tlock(dev));
-=======
 					rb_erase(&qp->com.node,
 						 &tracker->res_tree[RES_QP]);
 					list_del(&qp->com.list);
@@ -5471,7 +4695,6 @@ static void rem_slave_qps(struct mlx4_dev *dev, int slave)
 						mlx4_release_resource(dev, slave,
 								      RES_QP, 1, 0);
 					}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					kfree(qp);
 					state = 0;
 					break;
@@ -5488,15 +4711,8 @@ static void rem_slave_qps(struct mlx4_dev *dev, int slave)
 						       MLX4_CMD_TIME_CLASS_A,
 						       MLX4_CMD_NATIVE);
 					if (err)
-<<<<<<< HEAD
-						mlx4_dbg(dev, "rem_slave_qps: failed"
-							 " to move slave %d qpn %d to"
-							 " reset\n", slave,
-							 qp->local_qpn);
-=======
 						mlx4_dbg(dev, "rem_slave_qps: failed to move slave %d qpn %d to reset\n",
 							 slave, qp->local_qpn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					atomic_dec(&qp->rcq->ref_count);
 					atomic_dec(&qp->scq->ref_count);
 					atomic_dec(&qp->mtt->ref_count);
@@ -5524,22 +4740,13 @@ static void rem_slave_srqs(struct mlx4_dev *dev, int slave)
 	struct res_srq *tmp;
 	int state;
 	u64 in_param;
-<<<<<<< HEAD
-	LIST_HEAD(tlist);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int srqn;
 	int err;
 
 	err = move_all_busy(dev, slave, RES_SRQ);
 	if (err)
-<<<<<<< HEAD
-		mlx4_warn(dev, "rem_slave_srqs: Could not move all srqs to "
-			  "busy for slave %d\n", slave);
-=======
 		mlx4_warn(dev, "rem_slave_srqs: Could not move all srqs - too busy for slave %d\n",
 			  slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(mlx4_tlock(dev));
 	list_for_each_entry_safe(srq, tmp, srq_list, com.list) {
@@ -5552,19 +4759,12 @@ static void rem_slave_srqs(struct mlx4_dev *dev, int slave)
 				case RES_SRQ_ALLOCATED:
 					__mlx4_srq_free_icm(dev, srqn);
 					spin_lock_irq(mlx4_tlock(dev));
-<<<<<<< HEAD
-					radix_tree_delete(&tracker->res_tree[RES_SRQ],
-							  srqn);
-					list_del(&srq->com.list);
-					spin_unlock_irq(mlx4_tlock(dev));
-=======
 					rb_erase(&srq->com.node,
 						 &tracker->res_tree[RES_SRQ]);
 					list_del(&srq->com.list);
 					spin_unlock_irq(mlx4_tlock(dev));
 					mlx4_release_resource(dev, slave,
 							      RES_SRQ, 1, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					kfree(srq);
 					state = 0;
 					break;
@@ -5576,13 +4776,7 @@ static void rem_slave_srqs(struct mlx4_dev *dev, int slave)
 						       MLX4_CMD_TIME_CLASS_A,
 						       MLX4_CMD_NATIVE);
 					if (err)
-<<<<<<< HEAD
-						mlx4_dbg(dev, "rem_slave_srqs: failed"
-							 " to move slave %d srq %d to"
-							 " SW ownership\n",
-=======
 						mlx4_dbg(dev, "rem_slave_srqs: failed to move slave %d srq %d to SW ownership\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							 slave, srqn);
 
 					atomic_dec(&srq->mtt->ref_count);
@@ -5611,22 +4805,13 @@ static void rem_slave_cqs(struct mlx4_dev *dev, int slave)
 	struct res_cq *tmp;
 	int state;
 	u64 in_param;
-<<<<<<< HEAD
-	LIST_HEAD(tlist);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cqn;
 	int err;
 
 	err = move_all_busy(dev, slave, RES_CQ);
 	if (err)
-<<<<<<< HEAD
-		mlx4_warn(dev, "rem_slave_cqs: Could not move all cqs to "
-			  "busy for slave %d\n", slave);
-=======
 		mlx4_warn(dev, "rem_slave_cqs: Could not move all cqs - too busy for slave %d\n",
 			  slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(mlx4_tlock(dev));
 	list_for_each_entry_safe(cq, tmp, cq_list, com.list) {
@@ -5639,19 +4824,12 @@ static void rem_slave_cqs(struct mlx4_dev *dev, int slave)
 				case RES_CQ_ALLOCATED:
 					__mlx4_cq_free_icm(dev, cqn);
 					spin_lock_irq(mlx4_tlock(dev));
-<<<<<<< HEAD
-					radix_tree_delete(&tracker->res_tree[RES_CQ],
-							  cqn);
-					list_del(&cq->com.list);
-					spin_unlock_irq(mlx4_tlock(dev));
-=======
 					rb_erase(&cq->com.node,
 						 &tracker->res_tree[RES_CQ]);
 					list_del(&cq->com.list);
 					spin_unlock_irq(mlx4_tlock(dev));
 					mlx4_release_resource(dev, slave,
 							      RES_CQ, 1, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					kfree(cq);
 					state = 0;
 					break;
@@ -5663,13 +4841,7 @@ static void rem_slave_cqs(struct mlx4_dev *dev, int slave)
 						       MLX4_CMD_TIME_CLASS_A,
 						       MLX4_CMD_NATIVE);
 					if (err)
-<<<<<<< HEAD
-						mlx4_dbg(dev, "rem_slave_cqs: failed"
-							 " to move slave %d cq %d to"
-							 " SW ownership\n",
-=======
 						mlx4_dbg(dev, "rem_slave_cqs: failed to move slave %d cq %d to SW ownership\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							 slave, cqn);
 					atomic_dec(&cq->mtt->ref_count);
 					state = RES_CQ_ALLOCATED;
@@ -5695,22 +4867,13 @@ static void rem_slave_mrs(struct mlx4_dev *dev, int slave)
 	struct res_mpt *tmp;
 	int state;
 	u64 in_param;
-<<<<<<< HEAD
-	LIST_HEAD(tlist);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mptn;
 	int err;
 
 	err = move_all_busy(dev, slave, RES_MPT);
 	if (err)
-<<<<<<< HEAD
-		mlx4_warn(dev, "rem_slave_mrs: Could not move all mpts to "
-			  "busy for slave %d\n", slave);
-=======
 		mlx4_warn(dev, "rem_slave_mrs: Could not move all mpts - too busy for slave %d\n",
 			  slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(mlx4_tlock(dev));
 	list_for_each_entry_safe(mpt, tmp, mpt_list, com.list) {
@@ -5721,14 +4884,6 @@ static void rem_slave_mrs(struct mlx4_dev *dev, int slave)
 			while (state != 0) {
 				switch (state) {
 				case RES_MPT_RESERVED:
-<<<<<<< HEAD
-					__mlx4_mr_release(dev, mpt->key);
-					spin_lock_irq(mlx4_tlock(dev));
-					radix_tree_delete(&tracker->res_tree[RES_MPT],
-							  mptn);
-					list_del(&mpt->com.list);
-					spin_unlock_irq(mlx4_tlock(dev));
-=======
 					__mlx4_mpt_release(dev, mpt->key);
 					spin_lock_irq(mlx4_tlock(dev));
 					rb_erase(&mpt->com.node,
@@ -5737,17 +4892,12 @@ static void rem_slave_mrs(struct mlx4_dev *dev, int slave)
 					spin_unlock_irq(mlx4_tlock(dev));
 					mlx4_release_resource(dev, slave,
 							      RES_MPT, 1, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					kfree(mpt);
 					state = 0;
 					break;
 
 				case RES_MPT_MAPPED:
-<<<<<<< HEAD
-					__mlx4_mr_free_icm(dev, mpt->key);
-=======
 					__mlx4_mpt_free_icm(dev, mpt->key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					state = RES_MPT_RESERVED;
 					break;
 
@@ -5758,13 +4908,7 @@ static void rem_slave_mrs(struct mlx4_dev *dev, int slave)
 						     MLX4_CMD_TIME_CLASS_A,
 						     MLX4_CMD_NATIVE);
 					if (err)
-<<<<<<< HEAD
-						mlx4_dbg(dev, "rem_slave_mrs: failed"
-							 " to move slave %d mpt %d to"
-							 " SW ownership\n",
-=======
 						mlx4_dbg(dev, "rem_slave_mrs: failed to move slave %d mpt %d to SW ownership\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							 slave, mptn);
 					if (mpt->mtt)
 						atomic_dec(&mpt->mtt->ref_count);
@@ -5790,22 +4934,13 @@ static void rem_slave_mtts(struct mlx4_dev *dev, int slave)
 	struct res_mtt *mtt;
 	struct res_mtt *tmp;
 	int state;
-<<<<<<< HEAD
-	LIST_HEAD(tlist);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int base;
 	int err;
 
 	err = move_all_busy(dev, slave, RES_MTT);
 	if (err)
-<<<<<<< HEAD
-		mlx4_warn(dev, "rem_slave_mtts: Could not move all mtts to "
-			  "busy for slave %d\n", slave);
-=======
 		mlx4_warn(dev, "rem_slave_mtts: Could not move all mtts  - too busy for slave %d\n",
 			  slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(mlx4_tlock(dev));
 	list_for_each_entry_safe(mtt, tmp, mtt_list, com.list) {
@@ -5819,19 +4954,12 @@ static void rem_slave_mtts(struct mlx4_dev *dev, int slave)
 					__mlx4_free_mtt_range(dev, base,
 							      mtt->order);
 					spin_lock_irq(mlx4_tlock(dev));
-<<<<<<< HEAD
-					radix_tree_delete(&tracker->res_tree[RES_MTT],
-							  base);
-					list_del(&mtt->com.list);
-					spin_unlock_irq(mlx4_tlock(dev));
-=======
 					rb_erase(&mtt->com.node,
 						 &tracker->res_tree[RES_MTT]);
 					list_del(&mtt->com.list);
 					spin_unlock_irq(mlx4_tlock(dev));
 					mlx4_release_resource(dev, slave, RES_MTT,
 							      1 << mtt->order, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					kfree(mtt);
 					state = 0;
 					break;
@@ -5846,8 +4974,6 @@ static void rem_slave_mtts(struct mlx4_dev *dev, int slave)
 	spin_unlock_irq(mlx4_tlock(dev));
 }
 
-<<<<<<< HEAD
-=======
 static int mlx4_do_mirror_rule(struct mlx4_dev *dev, struct res_fs_rule *fs_rule)
 {
 	struct mlx4_cmd_mailbox *mailbox;
@@ -5987,7 +5113,6 @@ static void rem_slave_fs_rule(struct mlx4_dev *dev, int slave)
 	spin_unlock_irq(mlx4_tlock(dev));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rem_slave_eqs(struct mlx4_dev *dev, int slave)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
@@ -5998,23 +5123,12 @@ static void rem_slave_eqs(struct mlx4_dev *dev, int slave)
 	struct res_eq *tmp;
 	int err;
 	int state;
-<<<<<<< HEAD
-	LIST_HEAD(tlist);
-	int eqn;
-	struct mlx4_cmd_mailbox *mailbox;
-
-	err = move_all_busy(dev, slave, RES_EQ);
-	if (err)
-		mlx4_warn(dev, "rem_slave_eqs: Could not move all eqs to "
-			  "busy for slave %d\n", slave);
-=======
 	int eqn;
 
 	err = move_all_busy(dev, slave, RES_EQ);
 	if (err)
 		mlx4_warn(dev, "rem_slave_eqs: Could not move all eqs - too busy for slave %d\n",
 			  slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(mlx4_tlock(dev));
 	list_for_each_entry_safe(eq, tmp, eq_list, com.list) {
@@ -6026,13 +5140,8 @@ static void rem_slave_eqs(struct mlx4_dev *dev, int slave)
 				switch (state) {
 				case RES_EQ_RESERVED:
 					spin_lock_irq(mlx4_tlock(dev));
-<<<<<<< HEAD
-					radix_tree_delete(&tracker->res_tree[RES_EQ],
-							  eqn);
-=======
 					rb_erase(&eq->com.node,
 						 &tracker->res_tree[RES_EQ]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					list_del(&eq->com.list);
 					spin_unlock_irq(mlx4_tlock(dev));
 					kfree(eq);
@@ -6040,26 +5149,6 @@ static void rem_slave_eqs(struct mlx4_dev *dev, int slave)
 					break;
 
 				case RES_EQ_HW:
-<<<<<<< HEAD
-					mailbox = mlx4_alloc_cmd_mailbox(dev);
-					if (IS_ERR(mailbox)) {
-						cond_resched();
-						continue;
-					}
-					err = mlx4_cmd_box(dev, slave, 0,
-							   eqn & 0xff, 0,
-							   MLX4_CMD_HW2SW_EQ,
-							   MLX4_CMD_TIME_CLASS_A,
-							   MLX4_CMD_NATIVE);
-					mlx4_dbg(dev, "rem_slave_eqs: failed"
-						 " to move slave %d eqs %d to"
-						 " SW ownership\n", slave, eqn);
-					mlx4_free_cmd_mailbox(dev, mailbox);
-					if (!err) {
-						atomic_dec(&eq->mtt->ref_count);
-						state = RES_EQ_RESERVED;
-					}
-=======
 					err = mlx4_cmd(dev, slave, eqn & 0x3ff,
 						       1, MLX4_CMD_HW2SW_EQ,
 						       MLX4_CMD_TIME_CLASS_A,
@@ -6069,7 +5158,6 @@ static void rem_slave_eqs(struct mlx4_dev *dev, int slave)
 							 slave, eqn & 0x3ff);
 					atomic_dec(&eq->mtt->ref_count);
 					state = RES_EQ_RESERVED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 
 				default:
@@ -6082,15 +5170,6 @@ static void rem_slave_eqs(struct mlx4_dev *dev, int slave)
 	spin_unlock_irq(mlx4_tlock(dev));
 }
 
-<<<<<<< HEAD
-void mlx4_delete_all_resources_for_slave(struct mlx4_dev *dev, int slave)
-{
-	struct mlx4_priv *priv = mlx4_priv(dev);
-
-	mutex_lock(&priv->mfunc.master.res_tracker.slave_list[slave].mutex);
-	/*VLAN*/
-	rem_slave_macs(dev, slave);
-=======
 static void rem_slave_counters(struct mlx4_dev *dev, int slave)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
@@ -6174,17 +5253,12 @@ void mlx4_delete_all_resources_for_slave(struct mlx4_dev *dev, int slave)
 	rem_slave_vlans(dev, slave);
 	rem_slave_macs(dev, slave);
 	rem_slave_fs_rule(dev, slave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rem_slave_qps(dev, slave);
 	rem_slave_srqs(dev, slave);
 	rem_slave_cqs(dev, slave);
 	rem_slave_mrs(dev, slave);
 	rem_slave_eqs(dev, slave);
 	rem_slave_mtts(dev, slave);
-<<<<<<< HEAD
-	mutex_unlock(&priv->mfunc.master.res_tracker.slave_list[slave].mutex);
-}
-=======
 	rem_slave_counters(dev, slave);
 	rem_slave_xrcdns(dev, slave);
 	mutex_unlock(&priv->mfunc.master.res_tracker.slave_list[slave].mutex);
@@ -6347,4 +5421,3 @@ out:
 	kfree(work);
 	return;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

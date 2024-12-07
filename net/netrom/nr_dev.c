@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
  */
@@ -25,13 +17,8 @@
 #include <linux/in.h>
 #include <linux/if_ether.h>	/* For the statistics structure. */
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 #include <linux/inet.h>
@@ -75,45 +62,9 @@ int nr_rx_ip(struct sk_buff *skb, struct net_device *dev)
 	return 1;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_INET
-
-static int nr_rebuild_header(struct sk_buff *skb)
-{
-	unsigned char *bp = skb->data;
-
-	if (arp_find(bp + 7, skb))
-		return 1;
-
-	bp[6] &= ~AX25_CBIT;
-	bp[6] &= ~AX25_EBIT;
-	bp[6] |= AX25_SSSID_SPARE;
-	bp    += AX25_ADDR_LEN;
-
-	bp[6] &= ~AX25_CBIT;
-	bp[6] |= AX25_EBIT;
-	bp[6] |= AX25_SSSID_SPARE;
-
-	return 0;
-}
-
-#else
-
-static int nr_rebuild_header(struct sk_buff *skb)
-{
-	return 1;
-}
-
-#endif
-
-static int nr_header(struct sk_buff *skb, struct net_device *dev,
-		     unsigned short type,
-		     const void *daddr, const void *saddr, unsigned len)
-=======
 static int nr_header(struct sk_buff *skb, struct net_device *dev,
 		     unsigned short type,
 		     const void *daddr, const void *saddr, unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char *buff = skb_push(skb, NR_NETWORK_LEN + NR_TRANSPORT_LEN);
 
@@ -130,11 +81,7 @@ static int nr_header(struct sk_buff *skb, struct net_device *dev,
 	buff[6] |= AX25_SSSID_SPARE;
 	buff    += AX25_ADDR_LEN;
 
-<<<<<<< HEAD
-	*buff++ = sysctl_netrom_network_ttl_initialiser;
-=======
 	*buff++ = READ_ONCE(sysctl_netrom_network_ttl_initialiser);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*buff++ = NR_PROTO_IP;
 	*buff++ = NR_PROTO_IP;
@@ -161,17 +108,10 @@ static int __must_check nr_set_mac_address(struct net_device *dev, void *addr)
 		if (err)
 			return err;
 
-<<<<<<< HEAD
-		ax25_listen_release((ax25_address *)dev->dev_addr, NULL);
-	}
-
-	memcpy(dev->dev_addr, sa->sa_data, dev->addr_len);
-=======
 		ax25_listen_release((const ax25_address *)dev->dev_addr, NULL);
 	}
 
 	dev_addr_set(dev, sa->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -180,11 +120,7 @@ static int nr_open(struct net_device *dev)
 {
 	int err;
 
-<<<<<<< HEAD
-	err = ax25_listen_register((ax25_address *)dev->dev_addr, NULL);
-=======
 	err = ax25_listen_register((const ax25_address *)dev->dev_addr, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -195,11 +131,7 @@ static int nr_open(struct net_device *dev)
 
 static int nr_close(struct net_device *dev)
 {
-<<<<<<< HEAD
-	ax25_listen_release((ax25_address *)dev->dev_addr, NULL);
-=======
 	ax25_listen_release((const ax25_address *)dev->dev_addr, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_stop_queue(dev);
 	return 0;
 }
@@ -223,10 +155,6 @@ static netdev_tx_t nr_xmit(struct sk_buff *skb, struct net_device *dev)
 
 static const struct header_ops nr_header_ops = {
 	.create	= nr_header,
-<<<<<<< HEAD
-	.rebuild= nr_rebuild_header,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct net_device_ops nr_netdev_ops = {

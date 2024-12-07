@@ -1,28 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2007 Jens Axboe <jens.axboe@oracle.com>
  *
  * Scatterlist handling helpers.
-<<<<<<< HEAD
- *
- * This source code is licensed under the GNU General Public License,
- * Version 2. See the file COPYING for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/export.h>
 #include <linux/slab.h>
 #include <linux/scatterlist.h>
 #include <linux/highmem.h>
 #include <linux/kmemleak.h>
-<<<<<<< HEAD
-=======
 #include <linux/bvec.h>
 #include <linux/uio.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * sg_next - return the next scatterlist entry in a list
@@ -36,12 +24,6 @@
  **/
 struct scatterlist *sg_next(struct scatterlist *sg)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_DEBUG_SG
-	BUG_ON(sg->sg_magic != SG_MAGIC);
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sg_is_last(sg))
 		return NULL;
 
@@ -54,8 +36,6 @@ struct scatterlist *sg_next(struct scatterlist *sg)
 EXPORT_SYMBOL(sg_next);
 
 /**
-<<<<<<< HEAD
-=======
  * sg_nents - return total count of entries in scatterlist
  * @sg:		The scatterlist
  *
@@ -107,7 +87,6 @@ int sg_nents_for_len(struct scatterlist *sg, u64 len)
 EXPORT_SYMBOL(sg_nents_for_len);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * sg_last - return the last scatterlist entry in a list
  * @sgl:	First entry in the scatterlist
  * @nents:	Number of entries in the scatterlist
@@ -123,27 +102,13 @@ EXPORT_SYMBOL(sg_nents_for_len);
  **/
 struct scatterlist *sg_last(struct scatterlist *sgl, unsigned int nents)
 {
-<<<<<<< HEAD
-#ifndef ARCH_HAS_SG_CHAIN
-	struct scatterlist *ret = &sgl[nents - 1];
-#else
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scatterlist *sg, *ret = NULL;
 	unsigned int i;
 
 	for_each_sg(sgl, sg, nents, i)
 		ret = sg;
 
-<<<<<<< HEAD
-#endif
-#ifdef CONFIG_DEBUG_SG
-	BUG_ON(sgl[0].sg_magic != SG_MAGIC);
 	BUG_ON(!sg_is_last(ret));
-#endif
-=======
-	BUG_ON(!sg_is_last(ret));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(sg_last);
@@ -161,18 +126,7 @@ EXPORT_SYMBOL(sg_last);
 void sg_init_table(struct scatterlist *sgl, unsigned int nents)
 {
 	memset(sgl, 0, sizeof(*sgl) * nents);
-<<<<<<< HEAD
-#ifdef CONFIG_DEBUG_SG
-	{
-		unsigned int i;
-		for (i = 0; i < nents; i++)
-			sgl[i].sg_magic = SG_MAGIC;
-	}
-#endif
-	sg_mark_end(&sgl[nents - 1]);
-=======
 	sg_init_marker(sgl, nents);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(sg_init_table);
 
@@ -210,12 +164,8 @@ static struct scatterlist *sg_kmalloc(unsigned int nents, gfp_t gfp_mask)
 		kmemleak_alloc(ptr, PAGE_SIZE, 1, gfp_mask);
 		return ptr;
 	} else
-<<<<<<< HEAD
-		return kmalloc(nents * sizeof(struct scatterlist), gfp_mask);
-=======
 		return kmalloc_array(nents, sizeof(struct scatterlist),
 				     gfp_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sg_kfree(struct scatterlist *sg, unsigned int nents)
@@ -231,14 +181,10 @@ static void sg_kfree(struct scatterlist *sg, unsigned int nents)
  * __sg_free_table - Free a previously mapped sg table
  * @table:	The sg table header to use
  * @max_ents:	The maximum number of entries per single scatterlist
-<<<<<<< HEAD
- * @free_fn:	Free function
-=======
  * @nents_first_chunk: Number of entries int the (preallocated) first
  * 	scatterlist chunk, 0 means no such preallocated first chunk
  * @free_fn:	Free function
  * @num_ents:	Number of entries in the table
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Description:
  *    Free an sg table previously allocated and setup with
@@ -247,29 +193,18 @@ static void sg_kfree(struct scatterlist *sg, unsigned int nents)
  *
  **/
 void __sg_free_table(struct sg_table *table, unsigned int max_ents,
-<<<<<<< HEAD
-		     sg_free_fn *free_fn)
-{
-	struct scatterlist *sgl, *next;
-=======
 		     unsigned int nents_first_chunk, sg_free_fn *free_fn,
 		     unsigned int num_ents)
 {
 	struct scatterlist *sgl, *next;
 	unsigned curr_max_ents = nents_first_chunk ?: max_ents;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(!table->sgl))
 		return;
 
 	sgl = table->sgl;
-<<<<<<< HEAD
-	while (table->orig_nents) {
-		unsigned int alloc_size = table->orig_nents;
-=======
 	while (num_ents) {
 		unsigned int alloc_size = num_ents;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int sg_size;
 
 		/*
@@ -278,26 +213,15 @@ void __sg_free_table(struct sg_table *table, unsigned int max_ents,
 		 * sg_size is then one less than alloc size, since the last
 		 * element is the chain pointer.
 		 */
-<<<<<<< HEAD
-		if (alloc_size > max_ents) {
-			next = sg_chain_ptr(&sgl[max_ents - 1]);
-			alloc_size = max_ents;
-=======
 		if (alloc_size > curr_max_ents) {
 			next = sg_chain_ptr(&sgl[curr_max_ents - 1]);
 			alloc_size = curr_max_ents;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sg_size = alloc_size - 1;
 		} else {
 			sg_size = alloc_size;
 			next = NULL;
 		}
 
-<<<<<<< HEAD
-		table->orig_nents -= sg_size;
-		free_fn(sgl, alloc_size);
-		sgl = next;
-=======
 		num_ents -= sg_size;
 		if (nents_first_chunk)
 			nents_first_chunk = 0;
@@ -305,7 +229,6 @@ void __sg_free_table(struct sg_table *table, unsigned int max_ents,
 			free_fn(sgl, alloc_size);
 		sgl = next;
 		curr_max_ents = max_ents;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	table->sgl = NULL;
@@ -313,8 +236,6 @@ void __sg_free_table(struct sg_table *table, unsigned int max_ents,
 EXPORT_SYMBOL(__sg_free_table);
 
 /**
-<<<<<<< HEAD
-=======
  * sg_free_append_table - Free a previously allocated append sg table.
  * @table:	 The mapped sg append table header
  *
@@ -328,19 +249,14 @@ EXPORT_SYMBOL(sg_free_append_table);
 
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * sg_free_table - Free a previously allocated sg table
  * @table:	The mapped sg table header
  *
  **/
 void sg_free_table(struct sg_table *table)
 {
-<<<<<<< HEAD
-	__sg_free_table(table, SG_MAX_SINGLE_ALLOC, sg_kfree);
-=======
 	__sg_free_table(table, SG_MAX_SINGLE_ALLOC, 0, sg_kfree,
 			table->orig_nents);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(sg_free_table);
 
@@ -349,12 +265,9 @@ EXPORT_SYMBOL(sg_free_table);
  * @table:	The sg table header to use
  * @nents:	Number of entries in sg list
  * @max_ents:	The maximum number of entries the allocator returns per call
-<<<<<<< HEAD
-=======
  * @first_chunk: first SGL if preallocated (may be %NULL)
  * @nents_first_chunk: Number of entries in the (preallocated) first
  * 	scatterlist chunk, 0 means no such preallocated chunk provided by user
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @gfp_mask:	GFP allocation mask
  * @alloc_fn:	Allocator to use
  *
@@ -370,34 +283,22 @@ EXPORT_SYMBOL(sg_free_table);
  *
  **/
 int __sg_alloc_table(struct sg_table *table, unsigned int nents,
-<<<<<<< HEAD
-		     unsigned int max_ents, gfp_t gfp_mask,
-=======
 		     unsigned int max_ents, struct scatterlist *first_chunk,
 		     unsigned int nents_first_chunk, gfp_t gfp_mask,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     sg_alloc_fn *alloc_fn)
 {
 	struct scatterlist *sg, *prv;
 	unsigned int left;
-<<<<<<< HEAD
-=======
 	unsigned curr_max_ents = nents_first_chunk ?: max_ents;
 	unsigned prv_max_ents;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(table, 0, sizeof(*table));
 
 	if (nents == 0)
 		return -EINVAL;
-<<<<<<< HEAD
-#ifndef ARCH_HAS_SG_CHAIN
-	BUG_ON(nents > max_ents);
-=======
 #ifdef CONFIG_ARCH_NO_SG_CHAIN
 	if (WARN_ON_ONCE(nents > max_ents))
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	left = nents;
@@ -405,29 +306,20 @@ int __sg_alloc_table(struct sg_table *table, unsigned int nents,
 	do {
 		unsigned int sg_size, alloc_size = left;
 
-<<<<<<< HEAD
-		if (alloc_size > max_ents) {
-			alloc_size = max_ents;
-=======
 		if (alloc_size > curr_max_ents) {
 			alloc_size = curr_max_ents;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sg_size = alloc_size - 1;
 		} else
 			sg_size = alloc_size;
 
 		left -= sg_size;
 
-<<<<<<< HEAD
-		sg = alloc_fn(alloc_size, gfp_mask);
-=======
 		if (first_chunk) {
 			sg = first_chunk;
 			first_chunk = NULL;
 		} else {
 			sg = alloc_fn(alloc_size, gfp_mask);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(!sg)) {
 			/*
 			 * Adjust entry count to reflect that the last
@@ -438,11 +330,7 @@ int __sg_alloc_table(struct sg_table *table, unsigned int nents,
 			if (prv)
 				table->nents = ++table->orig_nents;
 
-<<<<<<< HEAD
- 			return -ENOMEM;
-=======
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		sg_init_table(sg, alloc_size);
@@ -453,11 +341,7 @@ int __sg_alloc_table(struct sg_table *table, unsigned int nents,
 		 * If this is not the first mapping, chain previous part.
 		 */
 		if (prv)
-<<<<<<< HEAD
-			sg_chain(prv, max_ents, sg);
-=======
 			sg_chain(prv, prv_max_ents, sg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			table->sgl = sg;
 
@@ -467,21 +351,9 @@ int __sg_alloc_table(struct sg_table *table, unsigned int nents,
 		if (!left)
 			sg_mark_end(&sg[sg_size - 1]);
 
-<<<<<<< HEAD
-		/*
-		 * only really needed for mempool backed sg allocations (like
-		 * SCSI), a possible improvement here would be to pass the
-		 * table pointer into the allocator and let that clear these
-		 * flags
-		 */
-		gfp_mask &= ~__GFP_WAIT;
-		gfp_mask |= __GFP_HIGH;
-		prv = sg;
-=======
 		prv = sg;
 		prv_max_ents = curr_max_ents;
 		curr_max_ents = max_ents;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (left);
 
 	return 0;
@@ -504,22 +376,13 @@ int sg_alloc_table(struct sg_table *table, unsigned int nents, gfp_t gfp_mask)
 	int ret;
 
 	ret = __sg_alloc_table(table, nents, SG_MAX_SINGLE_ALLOC,
-<<<<<<< HEAD
-			       gfp_mask, sg_kmalloc);
-	if (unlikely(ret))
-		__sg_free_table(table, SG_MAX_SINGLE_ALLOC, sg_kfree);
-
-=======
 			       NULL, 0, gfp_mask, sg_kmalloc);
 	if (unlikely(ret))
 		sg_free_table(table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(sg_alloc_table);
 
-<<<<<<< HEAD
-=======
 static struct scatterlist *get_next_sg(struct sg_append_table *table,
 				       struct scatterlist *cur,
 				       unsigned long needed_sges,
@@ -921,16 +784,12 @@ bool __sg_page_iter_dma_next(struct sg_dma_page_iter *dma_iter)
 }
 EXPORT_SYMBOL(__sg_page_iter_dma_next);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * sg_miter_start - start mapping iteration over a sg list
  * @miter: sg mapping iter to be started
  * @sgl: sg list to iterate over
  * @nents: number of sg entries
-<<<<<<< HEAD
-=======
  * @flags: sg iterator flags
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  *   Starts mapping iterator @miter.
@@ -943,20 +802,12 @@ void sg_miter_start(struct sg_mapping_iter *miter, struct scatterlist *sgl,
 {
 	memset(miter, 0, sizeof(struct sg_mapping_iter));
 
-<<<<<<< HEAD
-	miter->__sg = sgl;
-	miter->__nents = nents;
-	miter->__offset = 0;
-=======
 	__sg_page_iter_start(&miter->piter, sgl, nents, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON(!(flags & (SG_MITER_TO_SG | SG_MITER_FROM_SG)));
 	miter->__flags = flags;
 }
 EXPORT_SYMBOL(sg_miter_start);
 
-<<<<<<< HEAD
-=======
 static bool sg_miter_get_next_page(struct sg_mapping_iter *miter)
 {
 	if (!miter->__remaining) {
@@ -1017,29 +868,17 @@ bool sg_miter_skip(struct sg_mapping_iter *miter, off_t offset)
 }
 EXPORT_SYMBOL(sg_miter_skip);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * sg_miter_next - proceed mapping iterator to the next mapping
  * @miter: sg mapping iter to proceed
  *
  * Description:
-<<<<<<< HEAD
- *   Proceeds @miter@ to the next mapping.  @miter@ should have been
- *   started using sg_miter_start().  On successful return,
- *   @miter@->page, @miter@->addr and @miter@->length point to the
- *   current mapping.
- *
- * Context:
- *   IRQ disabled if SG_MITER_ATOMIC.  IRQ must stay disabled till
- *   @miter@ is stopped.  May sleep if !SG_MITER_ATOMIC.
-=======
  *   Proceeds @miter to the next mapping.  @miter should have been started
  *   using sg_miter_start().  On successful return, @miter->page,
  *   @miter->addr and @miter->length point to the current mapping.
  *
  * Context:
  *   May sleep if !SG_MITER_ATOMIC.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns:
  *   true if @miter contains the next mapping.  false if end of sg
@@ -1047,38 +886,6 @@ EXPORT_SYMBOL(sg_miter_skip);
  */
 bool sg_miter_next(struct sg_mapping_iter *miter)
 {
-<<<<<<< HEAD
-	unsigned int off, len;
-
-	/* check for end and drop resources from the last iteration */
-	if (!miter->__nents)
-		return false;
-
-	sg_miter_stop(miter);
-
-	/* get to the next sg if necessary.  __offset is adjusted by stop */
-	while (miter->__offset == miter->__sg->length) {
-		if (--miter->__nents) {
-			miter->__sg = sg_next(miter->__sg);
-			miter->__offset = 0;
-		} else
-			return false;
-	}
-
-	/* map the next page */
-	off = miter->__sg->offset + miter->__offset;
-	len = miter->__sg->length - miter->__offset;
-
-	miter->page = nth_page(sg_page(miter->__sg), off >> PAGE_SHIFT);
-	off &= ~PAGE_MASK;
-	miter->length = min_t(unsigned int, len, PAGE_SIZE - off);
-	miter->consumed = miter->length;
-
-	if (miter->__flags & SG_MITER_ATOMIC)
-		miter->addr = kmap_atomic(miter->page) + off;
-	else
-		miter->addr = kmap(miter->page) + off;
-=======
 	sg_miter_stop(miter);
 
 	/*
@@ -1095,7 +902,6 @@ bool sg_miter_next(struct sg_mapping_iter *miter)
 		miter->addr = kmap_atomic(miter->page) + miter->__offset;
 	else
 		miter->addr = kmap(miter->page) + miter->__offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return true;
 }
@@ -1107,21 +913,12 @@ EXPORT_SYMBOL(sg_miter_next);
  *
  * Description:
  *   Stops mapping iterator @miter.  @miter should have been started
-<<<<<<< HEAD
- *   started using sg_miter_start().  A stopped iteration can be
- *   resumed by calling sg_miter_next() on it.  This is useful when
- *   resources (kmap) need to be released during iteration.
- *
- * Context:
- *   IRQ disabled if the SG_MITER_ATOMIC is set.  Don't care otherwise.
-=======
  *   using sg_miter_start().  A stopped iteration can be resumed by
  *   calling sg_miter_next() on it.  This is useful when resources (kmap)
  *   need to be released during iteration.
  *
  * Context:
  *   Don't care otherwise.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void sg_miter_stop(struct sg_mapping_iter *miter)
 {
@@ -1130,15 +927,6 @@ void sg_miter_stop(struct sg_mapping_iter *miter)
 	/* drop resources from the last iteration */
 	if (miter->addr) {
 		miter->__offset += miter->consumed;
-<<<<<<< HEAD
-
-		if ((miter->__flags & SG_MITER_TO_SG) &&
-		    !PageSlab(miter->page))
-			flush_kernel_dcache_page(miter->page);
-
-		if (miter->__flags & SG_MITER_ATOMIC) {
-			WARN_ON(!irqs_disabled());
-=======
 		miter->__remaining -= miter->consumed;
 
 		if (miter->__flags & SG_MITER_TO_SG)
@@ -1146,7 +934,6 @@ void sg_miter_stop(struct sg_mapping_iter *miter)
 
 		if (miter->__flags & SG_MITER_ATOMIC) {
 			WARN_ON_ONCE(!pagefault_disabled());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kunmap_atomic(miter->addr);
 		} else
 			kunmap(miter->page);
@@ -1165,32 +952,18 @@ EXPORT_SYMBOL(sg_miter_stop);
  * @nents:		 Number of SG entries
  * @buf:		 Where to copy from
  * @buflen:		 The number of bytes to copy
-<<<<<<< HEAD
- * @to_buffer: 		 transfer direction (non zero == from an sg list to a
- * 			 buffer, 0 == from a buffer to an sg list
-=======
  * @skip:		 Number of bytes to skip before copying
  * @to_buffer:		 transfer direction (true == from an sg list to a
  *			 buffer, false == from a buffer to an sg list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns the number of copied bytes.
  *
  **/
-<<<<<<< HEAD
-static size_t sg_copy_buffer(struct scatterlist *sgl, unsigned int nents,
-			     void *buf, size_t buflen, int to_buffer)
-{
-	unsigned int offset = 0;
-	struct sg_mapping_iter miter;
-	unsigned long flags;
-=======
 size_t sg_copy_buffer(struct scatterlist *sgl, unsigned int nents, void *buf,
 		      size_t buflen, off_t skip, bool to_buffer)
 {
 	unsigned int offset = 0;
 	struct sg_mapping_iter miter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int sg_flags = SG_MITER_ATOMIC;
 
 	if (to_buffer)
@@ -1200,16 +973,10 @@ size_t sg_copy_buffer(struct scatterlist *sgl, unsigned int nents, void *buf,
 
 	sg_miter_start(&miter, sgl, nents, sg_flags);
 
-<<<<<<< HEAD
-	local_irq_save(flags);
-
-	while (sg_miter_next(&miter) && offset < buflen) {
-=======
 	if (!sg_miter_skip(&miter, skip))
 		return 0;
 
 	while ((offset < buflen) && sg_miter_next(&miter)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int len;
 
 		len = min(miter.length, buflen - offset);
@@ -1224,15 +991,9 @@ size_t sg_copy_buffer(struct scatterlist *sgl, unsigned int nents, void *buf,
 
 	sg_miter_stop(&miter);
 
-<<<<<<< HEAD
-	local_irq_restore(flags);
-	return offset;
-}
-=======
 	return offset;
 }
 EXPORT_SYMBOL(sg_copy_buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * sg_copy_from_buffer - Copy from a linear buffer to an SG list
@@ -1245,15 +1006,9 @@ EXPORT_SYMBOL(sg_copy_buffer);
  *
  **/
 size_t sg_copy_from_buffer(struct scatterlist *sgl, unsigned int nents,
-<<<<<<< HEAD
-			   void *buf, size_t buflen)
-{
-	return sg_copy_buffer(sgl, nents, buf, buflen, 0);
-=======
 			   const void *buf, size_t buflen)
 {
 	return sg_copy_buffer(sgl, nents, (void *)buf, buflen, 0, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(sg_copy_from_buffer);
 
@@ -1270,11 +1025,6 @@ EXPORT_SYMBOL(sg_copy_from_buffer);
 size_t sg_copy_to_buffer(struct scatterlist *sgl, unsigned int nents,
 			 void *buf, size_t buflen)
 {
-<<<<<<< HEAD
-	return sg_copy_buffer(sgl, nents, buf, buflen, 1);
-}
-EXPORT_SYMBOL(sg_copy_to_buffer);
-=======
 	return sg_copy_buffer(sgl, nents, buf, buflen, 0, true);
 }
 EXPORT_SYMBOL(sg_copy_to_buffer);
@@ -1616,4 +1366,3 @@ ssize_t extract_iter_to_sg(struct iov_iter *iter, size_t maxsize,
 	}
 }
 EXPORT_SYMBOL_GPL(extract_iter_to_sg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

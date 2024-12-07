@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2005 Intel Corporation
  * 	Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>
@@ -9,21 +6,13 @@
  */
 
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/acpi.h>
 #include <linux/cpu.h>
 #include <linux/sched.h>
 
 #include <acpi/processor.h>
-<<<<<<< HEAD
-#include <asm/acpi.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mwait.h>
 #include <asm/special_insns.h>
 
@@ -63,8 +52,6 @@ void acpi_processor_power_init_bm_check(struct acpi_processor_flags *flags,
 	if (c->x86_vendor == X86_VENDOR_INTEL &&
 	    (c->x86 > 0xf || (c->x86 == 6 && c->x86_model >= 0x0f)))
 			flags->bm_control = 0;
-<<<<<<< HEAD
-=======
 
 	if (c->x86_vendor == X86_VENDOR_CENTAUR) {
 		if (c->x86 > 6 || (c->x86 == 6 && c->x86_model == 0x0f &&
@@ -115,7 +102,6 @@ void acpi_processor_power_init_bm_check(struct acpi_processor_flags *flags,
 		 */
 		flags->bm_control = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(acpi_processor_power_init_bm_check);
 
@@ -145,25 +131,16 @@ static long acpi_processor_ffh_cstate_probe_cpu(void *_cx)
 	cpuid(CPUID_MWAIT_LEAF, &eax, &ebx, &ecx, &edx);
 
 	/* Check whether this particular cx_type (in CST) is supported or not */
-<<<<<<< HEAD
-	cstate_type = ((cx->address >> MWAIT_SUBSTATE_SIZE) &
-			MWAIT_CSTATE_MASK) + 1;
-=======
 	cstate_type = (((cx->address >> MWAIT_SUBSTATE_SIZE) &
 			MWAIT_CSTATE_MASK) + 1) & MWAIT_CSTATE_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	edx_part = edx >> (cstate_type * MWAIT_SUBSTATE_SIZE);
 	num_cstate_subtype = edx_part & MWAIT_SUBSTATE_MASK;
 
 	retval = 0;
-<<<<<<< HEAD
-	if (num_cstate_subtype < (cx->address & MWAIT_SUBSTATE_MASK)) {
-=======
 	/* If the HW does not support any sub-states in this C-state */
 	if (num_cstate_subtype == 0) {
 		pr_warn(FW_BUG "ACPI MWAIT C-state 0x%x not supported by HW (0x%x)\n",
 				cx->address, edx_part);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -1;
 		goto out;
 	}
@@ -178,19 +155,11 @@ static long acpi_processor_ffh_cstate_probe_cpu(void *_cx)
 	if (!mwait_supported[cstate_type]) {
 		mwait_supported[cstate_type] = 1;
 		printk(KERN_DEBUG
-<<<<<<< HEAD
-			"Monitor-Mwait will be used to enter C-%d "
-			"state\n", cx->type);
-	}
-	snprintf(cx->desc,
-			ACPI_CX_DESC_LEN, "ACPI FFH INTEL MWAIT 0x%x",
-=======
 			"Monitor-Mwait will be used to enter C-%d state\n",
 			cx->type);
 	}
 	snprintf(cx->desc,
 			ACPI_CX_DESC_LEN, "ACPI FFH MWAIT 0x%x",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cx->address);
 out:
 	return retval;
@@ -215,12 +184,8 @@ int acpi_processor_ffh_cstate_probe(unsigned int cpu,
 
 	/* Make sure we are running on right CPU */
 
-<<<<<<< HEAD
-	retval = work_on_cpu(cpu, acpi_processor_ffh_cstate_probe_cpu, cx);
-=======
 	retval = call_on_cpu(cpu, acpi_processor_ffh_cstate_probe_cpu, cx,
 			     false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval == 0) {
 		/* Use the hint in CST */
 		percpu_entry->states[cx->index].eax = cx->address;
@@ -239,34 +204,7 @@ int acpi_processor_ffh_cstate_probe(unsigned int cpu,
 }
 EXPORT_SYMBOL_GPL(acpi_processor_ffh_cstate_probe);
 
-<<<<<<< HEAD
-/*
- * This uses new MONITOR/MWAIT instructions on P4 processors with PNI,
- * which can obviate IPI to trigger checking of need_resched.
- * We execute MONITOR against need_resched and enter optimized wait state
- * through MWAIT. Whenever someone changes need_resched, we would be woken
- * up from MWAIT (without an IPI).
- *
- * New with Core Duo processors, MWAIT can take some hints based on CPU
- * capability.
- */
-void mwait_idle_with_hints(unsigned long ax, unsigned long cx)
-{
-	if (!need_resched()) {
-		if (this_cpu_has(X86_FEATURE_CLFLUSH_MONITOR))
-			clflush((void *)&current_thread_info()->flags);
-
-		__monitor((void *)&current_thread_info()->flags, 0, 0);
-		smp_mb();
-		if (!need_resched())
-			__mwait(ax, cx);
-	}
-}
-
-void acpi_processor_ffh_cstate_enter(struct acpi_processor_cx *cx)
-=======
 void __cpuidle acpi_processor_ffh_cstate_enter(struct acpi_processor_cx *cx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cpu = smp_processor_id();
 	struct cstate_entry *percpu_entry;
@@ -280,14 +218,10 @@ EXPORT_SYMBOL_GPL(acpi_processor_ffh_cstate_enter);
 static int __init ffh_cstate_init(void)
 {
 	struct cpuinfo_x86 *c = &boot_cpu_data;
-<<<<<<< HEAD
-	if (c->x86_vendor != X86_VENDOR_INTEL)
-=======
 
 	if (c->x86_vendor != X86_VENDOR_INTEL &&
 	    c->x86_vendor != X86_VENDOR_AMD &&
 	    c->x86_vendor != X86_VENDOR_HYGON)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 
 	cpu_cstate_entry = alloc_percpu(struct cstate_entry);

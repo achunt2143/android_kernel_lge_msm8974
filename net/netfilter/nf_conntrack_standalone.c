@@ -1,15 +1,4 @@
-<<<<<<< HEAD
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/netfilter.h>
 #include <linux/slab.h>
@@ -27,29 +16,12 @@
 
 #include <net/netfilter/nf_conntrack.h>
 #include <net/netfilter/nf_conntrack_core.h>
-<<<<<<< HEAD
-#include <net/netfilter/nf_conntrack_l3proto.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netfilter/nf_conntrack_l4proto.h>
 #include <net/netfilter/nf_conntrack_expect.h>
 #include <net/netfilter/nf_conntrack_helper.h>
 #include <net/netfilter/nf_conntrack_acct.h>
 #include <net/netfilter/nf_conntrack_zones.h>
 #include <net/netfilter/nf_conntrack_timestamp.h>
-<<<<<<< HEAD
-#include <linux/rculist_nulls.h>
-
-MODULE_LICENSE("GPL");
-
-#ifdef CONFIG_NF_CONNTRACK_PROCFS
-int
-print_tuple(struct seq_file *s, const struct nf_conntrack_tuple *tuple,
-            const struct nf_conntrack_l3proto *l3proto,
-            const struct nf_conntrack_l4proto *l4proto)
-{
-	return l3proto->print_tuple(s, tuple) || l4proto->print_tuple(s, tuple);
-=======
 #ifdef CONFIG_LWTUNNEL
 #include <net/netfilter/nf_hooks_lwtunnel.h>
 #endif
@@ -122,41 +94,27 @@ print_tuple(struct seq_file *s, const struct nf_conntrack_tuple *tuple,
 	default:
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(print_tuple);
 
 struct ct_iter_state {
 	struct seq_net_private p;
-<<<<<<< HEAD
-=======
 	struct hlist_nulls_head *hash;
 	unsigned int htable_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int bucket;
 	u_int64_t time_now;
 };
 
 static struct hlist_nulls_node *ct_get_first(struct seq_file *seq)
 {
-<<<<<<< HEAD
-	struct net *net = seq_file_net(seq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ct_iter_state *st = seq->private;
 	struct hlist_nulls_node *n;
 
 	for (st->bucket = 0;
-<<<<<<< HEAD
-	     st->bucket < net->ct.htable_size;
-	     st->bucket++) {
-		n = rcu_dereference(hlist_nulls_first_rcu(&net->ct.hash[st->bucket]));
-=======
 	     st->bucket < st->htable_size;
 	     st->bucket++) {
 		n = rcu_dereference(
 			hlist_nulls_first_rcu(&st->hash[st->bucket]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!is_a_nulls(n))
 			return n;
 	}
@@ -166,29 +124,16 @@ static struct hlist_nulls_node *ct_get_first(struct seq_file *seq)
 static struct hlist_nulls_node *ct_get_next(struct seq_file *seq,
 				      struct hlist_nulls_node *head)
 {
-<<<<<<< HEAD
-	struct net *net = seq_file_net(seq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ct_iter_state *st = seq->private;
 
 	head = rcu_dereference(hlist_nulls_next_rcu(head));
 	while (is_a_nulls(head)) {
 		if (likely(get_nulls_value(head) == st->bucket)) {
-<<<<<<< HEAD
-			if (++st->bucket >= net->ct.htable_size)
-				return NULL;
-		}
-		head = rcu_dereference(
-				hlist_nulls_first_rcu(
-					&net->ct.hash[st->bucket]));
-=======
 			if (++st->bucket >= st->htable_size)
 				return NULL;
 		}
 		head = rcu_dereference(
 			hlist_nulls_first_rcu(&st->hash[st->bucket]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return head;
 }
@@ -208,15 +153,10 @@ static void *ct_seq_start(struct seq_file *seq, loff_t *pos)
 {
 	struct ct_iter_state *st = seq->private;
 
-<<<<<<< HEAD
-	st->time_now = ktime_to_ns(ktime_get_real());
-	rcu_read_lock();
-=======
 	st->time_now = ktime_get_real_ns();
 	rcu_read_lock();
 
 	nf_conntrack_get_ht(&st->hash, &st->htable_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ct_get_idx(seq, *pos);
 }
 
@@ -233,11 +173,7 @@ static void ct_seq_stop(struct seq_file *s, void *v)
 }
 
 #ifdef CONFIG_NF_CONNTRACK_SECMARK
-<<<<<<< HEAD
-static int ct_show_secctx(struct seq_file *s, const struct nf_conn *ct)
-=======
 static void ct_show_secctx(struct seq_file *s, const struct nf_conn *ct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	u32 len;
@@ -245,19 +181,6 @@ static void ct_show_secctx(struct seq_file *s, const struct nf_conn *ct)
 
 	ret = security_secid_to_secctx(ct->secmark, &secctx, &len);
 	if (ret)
-<<<<<<< HEAD
-		return 0;
-
-	ret = seq_printf(s, "secctx=%s ", secctx);
-
-	security_release_secctx(secctx, len);
-	return ret;
-}
-#else
-static inline int ct_show_secctx(struct seq_file *s, const struct nf_conn *ct)
-{
-	return 0;
-=======
 		return;
 
 	seq_printf(s, "secctx=%s ", secctx);
@@ -296,16 +219,11 @@ static void ct_show_zone(struct seq_file *s, const struct nf_conn *ct,
 static inline void ct_show_zone(struct seq_file *s, const struct nf_conn *ct,
 				int dir)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
 #ifdef CONFIG_NF_CONNTRACK_TIMESTAMP
-<<<<<<< HEAD
-static int ct_show_delta_time(struct seq_file *s, const struct nf_conn *ct)
-=======
 static void ct_show_delta_time(struct seq_file *s, const struct nf_conn *ct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ct_iter_state *st = s->private;
 	struct nf_conn_tstamp *tstamp;
@@ -319,21 +237,6 @@ static void ct_show_delta_time(struct seq_file *s, const struct nf_conn *ct)
 		else
 			delta_time = 0;
 
-<<<<<<< HEAD
-		return seq_printf(s, "delta-time=%llu ",
-				  (unsigned long long)delta_time);
-	}
-	return 0;
-}
-#else
-static inline int
-ct_show_delta_time(struct seq_file *s, const struct nf_conn *ct)
-{
-	return 0;
-}
-#endif
-
-=======
 		seq_printf(s, "delta-time=%llu ",
 			   (unsigned long long)delta_time);
 	}
@@ -388,22 +291,11 @@ seq_print_acct(struct seq_file *s, const struct nf_conn *ct, int dir)
 		   (unsigned long long)atomic64_read(&counter[dir].bytes));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* return 0 on success, 1 in case of error */
 static int ct_seq_show(struct seq_file *s, void *v)
 {
 	struct nf_conntrack_tuple_hash *hash = v;
 	struct nf_conn *ct = nf_ct_tuplehash_to_ctrack(hash);
-<<<<<<< HEAD
-	const struct nf_conntrack_l3proto *l3proto;
-	const struct nf_conntrack_l4proto *l4proto;
-	int ret = 0;
-
-	NF_CT_ASSERT(ct);
-	if (unlikely(!atomic_inc_not_zero(&ct->ct_general.use)))
-		return 0;
-
-=======
 	const struct nf_conntrack_l4proto *l4proto;
 	struct net *net = seq_file_net(s);
 	int ret = 0;
@@ -420,68 +312,10 @@ static int ct_seq_show(struct seq_file *s, void *v)
 		goto release;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* we only want to print DIR_ORIGINAL */
 	if (NF_CT_DIRECTION(hash))
 		goto release;
 
-<<<<<<< HEAD
-	l3proto = __nf_ct_l3proto_find(nf_ct_l3num(ct));
-	NF_CT_ASSERT(l3proto);
-	l4proto = __nf_ct_l4proto_find(nf_ct_l3num(ct), nf_ct_protonum(ct));
-	NF_CT_ASSERT(l4proto);
-
-	ret = -ENOSPC;
-	if (seq_printf(s, "%-8s %u %-8s %u %ld ",
-		       l3proto->name, nf_ct_l3num(ct),
-		       l4proto->name, nf_ct_protonum(ct),
-		       timer_pending(&ct->timeout)
-		       ? (long)(ct->timeout.expires - jiffies)/HZ : 0) != 0)
-		goto release;
-
-	if (l4proto->print_conntrack && l4proto->print_conntrack(s, ct))
-		goto release;
-
-	if (print_tuple(s, &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple,
-			l3proto, l4proto))
-		goto release;
-
-	if (seq_print_acct(s, ct, IP_CT_DIR_ORIGINAL))
-		goto release;
-
-	if (!(test_bit(IPS_SEEN_REPLY_BIT, &ct->status)))
-		if (seq_printf(s, "[UNREPLIED] "))
-			goto release;
-
-	if (print_tuple(s, &ct->tuplehash[IP_CT_DIR_REPLY].tuple,
-			l3proto, l4proto))
-		goto release;
-
-	if (seq_print_acct(s, ct, IP_CT_DIR_REPLY))
-		goto release;
-
-	if (test_bit(IPS_ASSURED_BIT, &ct->status))
-		if (seq_printf(s, "[ASSURED] "))
-			goto release;
-
-#if defined(CONFIG_NF_CONNTRACK_MARK)
-	if (seq_printf(s, "mark=%u ", ct->mark))
-		goto release;
-#endif
-
-	if (ct_show_secctx(s, ct))
-		goto release;
-
-#ifdef CONFIG_NF_CONNTRACK_ZONES
-	if (seq_printf(s, "zone=%u ", nf_ct_zone(ct)))
-		goto release;
-#endif
-
-	if (ct_show_delta_time(s, ct))
-		goto release;
-
-	if (seq_printf(s, "use=%u\n", atomic_read(&ct->ct_general.use)))
-=======
 	if (!net_eq(nf_ct_net(ct), net))
 		goto release;
 
@@ -538,7 +372,6 @@ static int ct_seq_show(struct seq_file *s, void *v)
 	seq_printf(s, "use=%u\n", refcount_read(&ct->ct_general.use));
 
 	if (seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto release;
 
 	ret = 0;
@@ -554,23 +387,6 @@ static const struct seq_operations ct_seq_ops = {
 	.show  = ct_seq_show
 };
 
-<<<<<<< HEAD
-static int ct_open(struct inode *inode, struct file *file)
-{
-	return seq_open_net(inode, file, &ct_seq_ops,
-			sizeof(struct ct_iter_state));
-}
-
-static const struct file_operations ct_file_ops = {
-	.owner   = THIS_MODULE,
-	.open    = ct_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = seq_release_net,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *ct_cpu_seq_start(struct seq_file *seq, loff_t *pos)
 {
 	struct net *net = seq_file_net(seq);
@@ -600,11 +416,7 @@ static void *ct_cpu_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 		*pos = cpu + 1;
 		return per_cpu_ptr(net->ct.stat, cpu);
 	}
-<<<<<<< HEAD
-
-=======
 	(*pos)++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -615,26 +427,6 @@ static void ct_cpu_seq_stop(struct seq_file *seq, void *v)
 static int ct_cpu_seq_show(struct seq_file *seq, void *v)
 {
 	struct net *net = seq_file_net(seq);
-<<<<<<< HEAD
-	unsigned int nr_conntracks = atomic_read(&net->ct.count);
-	const struct ip_conntrack_stat *st = v;
-
-	if (v == SEQ_START_TOKEN) {
-		seq_printf(seq, "entries  searched found new invalid ignore delete delete_list insert insert_failed drop early_drop icmp_error  expect_new expect_create expect_delete search_restart\n");
-		return 0;
-	}
-
-	seq_printf(seq, "%08x  %08x %08x %08x %08x %08x %08x %08x "
-			"%08x %08x %08x %08x %08x  %08x %08x %08x %08x\n",
-		   nr_conntracks,
-		   st->searched,
-		   st->found,
-		   st->new,
-		   st->invalid,
-		   st->ignore,
-		   st->delete,
-		   st->delete_list,
-=======
 	const struct ip_conntrack_stat *st = v;
 	unsigned int nr_conntracks;
 
@@ -655,7 +447,6 @@ static int ct_cpu_seq_show(struct seq_file *seq, void *v)
 		   0,
 		   0,
 		   st->chaintoolong,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   st->insert,
 		   st->insert_failed,
 		   st->drop,
@@ -677,32 +468,6 @@ static const struct seq_operations ct_cpu_seq_ops = {
 	.show	= ct_cpu_seq_show,
 };
 
-<<<<<<< HEAD
-static int ct_cpu_seq_open(struct inode *inode, struct file *file)
-{
-	return seq_open_net(inode, file, &ct_cpu_seq_ops,
-			    sizeof(struct seq_net_private));
-}
-
-static const struct file_operations ct_cpu_seq_fops = {
-	.owner	 = THIS_MODULE,
-	.open	 = ct_cpu_seq_open,
-	.read	 = seq_read,
-	.llseek	 = seq_lseek,
-	.release = seq_release_net,
-};
-
-static int nf_conntrack_standalone_init_proc(struct net *net)
-{
-	struct proc_dir_entry *pde;
-
-	pde = proc_net_fops_create(net, "nf_conntrack", 0440, &ct_file_ops);
-	if (!pde)
-		goto out_nf_conntrack;
-
-	pde = proc_create("nf_conntrack", S_IRUGO, net->proc_net_stat,
-			  &ct_cpu_seq_fops);
-=======
 static int nf_conntrack_standalone_init_proc(struct net *net)
 {
 	struct proc_dir_entry *pde;
@@ -721,17 +486,12 @@ static int nf_conntrack_standalone_init_proc(struct net *net)
 
 	pde = proc_create_net("nf_conntrack", 0444, net->proc_net_stat,
 			&ct_cpu_seq_ops, sizeof(struct seq_net_private));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pde)
 		goto out_stat_nf_conntrack;
 	return 0;
 
 out_stat_nf_conntrack:
-<<<<<<< HEAD
-	proc_net_remove(net, "nf_conntrack");
-=======
 	remove_proc_entry("nf_conntrack", net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_nf_conntrack:
 	return -ENOMEM;
 }
@@ -739,11 +499,7 @@ out_nf_conntrack:
 static void nf_conntrack_standalone_fini_proc(struct net *net)
 {
 	remove_proc_entry("nf_conntrack", net->proc_net_stat);
-<<<<<<< HEAD
-	proc_net_remove(net, "nf_conntrack");
-=======
 	remove_proc_entry("nf_conntrack", net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 static int nf_conntrack_standalone_init_proc(struct net *net)
@@ -756,19 +512,6 @@ static void nf_conntrack_standalone_fini_proc(struct net *net)
 }
 #endif /* CONFIG_NF_CONNTRACK_PROCFS */
 
-<<<<<<< HEAD
-/* Sysctl support */
-
-#ifdef CONFIG_SYSCTL
-/* Log invalid packets of a given protocol */
-static int log_invalid_proto_min = 0;
-static int log_invalid_proto_max = 255;
-
-static struct ctl_table_header *nf_ct_netfilter_header;
-
-static ctl_table nf_ct_sysctl_table[] = {
-	{
-=======
 u32 nf_conntrack_count(const struct net *net)
 {
 	const struct nf_conntrack_net *cnet = nf_ct_pernet(net);
@@ -880,51 +623,18 @@ enum nf_ct_sysctl_index {
 
 static struct ctl_table nf_ct_sysctl_table[] = {
 	[NF_SYSCTL_CT_MAX] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.procname	= "nf_conntrack_max",
 		.data		= &nf_conntrack_max,
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec,
 	},
-<<<<<<< HEAD
-	{
-		.procname	= "nf_conntrack_count",
-		.data		= &init_net.ct.count,
-=======
 	[NF_SYSCTL_CT_COUNT] = {
 		.procname	= "nf_conntrack_count",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.maxlen		= sizeof(int),
 		.mode		= 0444,
 		.proc_handler	= proc_dointvec,
 	},
-<<<<<<< HEAD
-	{
-		.procname       = "nf_conntrack_buckets",
-		.data           = &init_net.ct.htable_size,
-		.maxlen         = sizeof(unsigned int),
-		.mode           = 0444,
-		.proc_handler   = proc_dointvec,
-	},
-	{
-		.procname	= "nf_conntrack_checksum",
-		.data		= &init_net.ct.sysctl_checksum,
-		.maxlen		= sizeof(unsigned int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec,
-	},
-	{
-		.procname	= "nf_conntrack_log_invalid",
-		.data		= &init_net.ct.sysctl_log_invalid,
-		.maxlen		= sizeof(unsigned int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec_minmax,
-		.extra1		= &log_invalid_proto_min,
-		.extra2		= &log_invalid_proto_max,
-	},
-	{
-=======
 	[NF_SYSCTL_CT_BUCKETS] = {
 		.procname       = "nf_conntrack_buckets",
 		.data           = &nf_conntrack_htable_size_user,
@@ -949,21 +659,12 @@ static struct ctl_table nf_ct_sysctl_table[] = {
 		.proc_handler	= proc_dou8vec_minmax,
 	},
 	[NF_SYSCTL_CT_EXPECT_MAX] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.procname	= "nf_conntrack_expect_max",
 		.data		= &nf_ct_expect_max,
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec,
 	},
-<<<<<<< HEAD
-	{ }
-};
-
-#define NET_NF_CONNTRACK_MAX 2089
-
-static ctl_table nf_ct_netfilter_table[] = {
-=======
 	[NF_SYSCTL_CT_ACCT] = {
 		.procname	= "nf_conntrack_acct",
 		.data		= &init_net.ct.sysctl_acct,
@@ -1260,7 +961,6 @@ static ctl_table nf_ct_netfilter_table[] = {
 };
 
 static struct ctl_table nf_ct_netfilter_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "nf_conntrack_max",
 		.data		= &nf_conntrack_max,
@@ -1271,23 +971,6 @@ static struct ctl_table nf_ct_netfilter_table[] = {
 	{ }
 };
 
-<<<<<<< HEAD
-static struct ctl_path nf_ct_path[] = {
-	{ .procname = "net", },
-	{ }
-};
-
-static int nf_conntrack_standalone_init_sysctl(struct net *net)
-{
-	struct ctl_table *table;
-
-	if (net_eq(net, &init_net)) {
-		nf_ct_netfilter_header =
-		       register_sysctl_paths(nf_ct_path, nf_ct_netfilter_table);
-		if (!nf_ct_netfilter_header)
-			goto out;
-	}
-=======
 static void nf_conntrack_standalone_init_tcp_sysctl(struct net *net,
 						    struct ctl_table *table)
 {
@@ -1386,23 +1069,10 @@ static int nf_conntrack_standalone_init_sysctl(struct net *net)
 	struct ctl_table *table;
 
 	BUILD_BUG_ON(ARRAY_SIZE(nf_ct_sysctl_table) != NF_SYSCTL_CT_LAST_SYSCTL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	table = kmemdup(nf_ct_sysctl_table, sizeof(nf_ct_sysctl_table),
 			GFP_KERNEL);
 	if (!table)
-<<<<<<< HEAD
-		goto out_kmemdup;
-
-	table[1].data = &net->ct.count;
-	table[2].data = &net->ct.htable_size;
-	table[3].data = &net->ct.sysctl_checksum;
-	table[4].data = &net->ct.sysctl_log_invalid;
-
-	net->ct.sysctl_header = register_net_sysctl_table(net,
-					nf_net_netfilter_sysctl_path, table);
-	if (!net->ct.sysctl_header)
-=======
 		return -ENOMEM;
 
 	table[NF_SYSCTL_CT_COUNT].data = &cnet->count;
@@ -1440,40 +1110,22 @@ static int nf_conntrack_standalone_init_sysctl(struct net *net)
 						     table,
 						     ARRAY_SIZE(nf_ct_sysctl_table));
 	if (!cnet->sysctl_header)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unregister_netfilter;
 
 	return 0;
 
 out_unregister_netfilter:
 	kfree(table);
-<<<<<<< HEAD
-out_kmemdup:
-	if (net_eq(net, &init_net))
-		unregister_sysctl_table(nf_ct_netfilter_header);
-out:
-	printk(KERN_ERR "nf_conntrack: can't register to sysctl.\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
 static void nf_conntrack_standalone_fini_sysctl(struct net *net)
 {
-<<<<<<< HEAD
-	struct ctl_table *table;
-
-	if (net_eq(net, &init_net))
-		unregister_sysctl_table(nf_ct_netfilter_header);
-	table = net->ct.sysctl_header->ctl_table_arg;
-	unregister_net_sysctl_table(net->ct.sysctl_header);
-=======
 	struct nf_conntrack_net *cnet = nf_ct_pernet(net);
 	struct ctl_table *table;
 
 	table = cnet->sysctl_header->ctl_table_arg;
 	unregister_net_sysctl_table(cnet->sysctl_header);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(table);
 }
 #else
@@ -1487,43 +1139,6 @@ static void nf_conntrack_standalone_fini_sysctl(struct net *net)
 }
 #endif /* CONFIG_SYSCTL */
 
-<<<<<<< HEAD
-static int nf_conntrack_net_init(struct net *net)
-{
-	int ret;
-
-	ret = nf_conntrack_init(net);
-	if (ret < 0)
-		goto out_init;
-	ret = nf_conntrack_standalone_init_proc(net);
-	if (ret < 0)
-		goto out_proc;
-	net->ct.sysctl_checksum = 1;
-	net->ct.sysctl_log_invalid = 0;
-	ret = nf_conntrack_standalone_init_sysctl(net);
-	if (ret < 0)
-		goto out_sysctl;
-	return 0;
-
-out_sysctl:
-	nf_conntrack_standalone_fini_proc(net);
-out_proc:
-	nf_conntrack_cleanup(net);
-out_init:
-	return ret;
-}
-
-static void nf_conntrack_net_exit(struct net *net)
-{
-	nf_conntrack_standalone_fini_sysctl(net);
-	nf_conntrack_standalone_fini_proc(net);
-	nf_conntrack_cleanup(net);
-}
-
-static struct pernet_operations nf_conntrack_net_ops = {
-	.init = nf_conntrack_net_init,
-	.exit = nf_conntrack_net_exit,
-=======
 static void nf_conntrack_fini_net(struct net *net)
 {
 	if (enable_hooks)
@@ -1583,14 +1198,10 @@ static struct pernet_operations nf_conntrack_net_ops = {
 	.exit_batch	= nf_conntrack_pernet_exit,
 	.id		= &nf_conntrack_net_id,
 	.size = sizeof(struct nf_conntrack_net),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init nf_conntrack_standalone_init(void)
 {
-<<<<<<< HEAD
-	return register_pernet_subsys(&nf_conntrack_net_ops);
-=======
 	int ret = nf_conntrack_init_start();
 	if (ret < 0)
 		goto out_start;
@@ -1625,32 +1236,17 @@ out_sysctl:
 	nf_conntrack_cleanup_end();
 out_start:
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit nf_conntrack_standalone_fini(void)
 {
-<<<<<<< HEAD
-	unregister_pernet_subsys(&nf_conntrack_net_ops);
-=======
 	nf_conntrack_cleanup_start();
 	unregister_pernet_subsys(&nf_conntrack_net_ops);
 #ifdef CONFIG_SYSCTL
 	unregister_net_sysctl_table(nf_ct_netfilter_header);
 #endif
 	nf_conntrack_cleanup_end();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(nf_conntrack_standalone_init);
 module_exit(nf_conntrack_standalone_fini);
-<<<<<<< HEAD
-
-/* Some modules need us, but don't depend directly on any symbol.
-   They should call this. */
-void need_conntrack(void)
-{
-}
-EXPORT_SYMBOL_GPL(need_conntrack);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

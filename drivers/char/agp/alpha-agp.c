@@ -11,24 +11,14 @@
 
 #include "agp.h"
 
-<<<<<<< HEAD
-static int alpha_core_agp_vm_fault(struct vm_area_struct *vma,
-					struct vm_fault *vmf)
-=======
 static vm_fault_t alpha_core_agp_vm_fault(struct vm_fault *vmf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	alpha_agp_info *agp = agp_bridge->dev_private_data;
 	dma_addr_t dma_addr;
 	unsigned long pa;
 	struct page *page;
 
-<<<<<<< HEAD
-	dma_addr = (unsigned long)vmf->virtual_address - vma->vm_start
-						+ agp->aperture.bus_base;
-=======
 	dma_addr = vmf->address - vmf->vma->vm_start + agp->aperture.bus_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pa = agp->ops->translate(agp, dma_addr);
 
 	if (pa == (unsigned long)-EINVAL)
@@ -182,11 +172,7 @@ alpha_core_agp_setup(void)
 	/*
 	 * Build a fake pci_dev struct
 	 */
-<<<<<<< HEAD
-	pdev = alloc_pci_dev();
-=======
 	pdev = pci_alloc_dev(NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pdev)
 		return -ENOMEM;
 	pdev->vendor = 0xffff;

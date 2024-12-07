@@ -10,13 +10,9 @@
  * Miscellaneous linux stuff
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/errno.h>
 #include <linux/module.h>
 #include <linux/reboot.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/mm.h>
 #include <linux/tty.h>
@@ -29,19 +25,6 @@
 #include <linux/init.h>
 #include <linux/vt_kern.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/adb.h>
-#include <linux/cuda.h>
-
-#define BOOTINFO_COMPAT_1_0
-#include <asm/setup.h>
-#include <asm/bootinfo.h>
-
-#include <asm/io.h>
-#include <asm/irq.h>
-#include <asm/pgtable.h>
-#include <asm/rtc.h>
-=======
 #include <linux/ata_platform.h>
 #include <linux/adb.h>
 #include <linux/cuda.h>
@@ -55,7 +38,6 @@
 
 #include <asm/io.h>
 #include <asm/irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 
 #include <asm/macintosh.h>
@@ -66,12 +48,9 @@
 #include <asm/mac_via.h>
 #include <asm/mac_oss.h>
 #include <asm/mac_psc.h>
-<<<<<<< HEAD
-=======
 #include <asm/config.h>
 
 #include "mac.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Mac bootinfo struct */
 struct mac_booter_data mac_bi_data;
@@ -79,62 +58,13 @@ struct mac_booter_data mac_bi_data;
 /* The phys. video addr. - might be bogus on some machines */
 static unsigned long mac_orig_videoaddr;
 
-<<<<<<< HEAD
-/* Mac specific timer functions */
-extern unsigned long mac_gettimeoffset(void);
-extern int mac_hwclk(int, struct rtc_time *);
-extern int mac_set_clock_mmss(unsigned long);
-extern void iop_preinit(void);
-extern void iop_init(void);
-extern void via_init(void);
-extern void via_init_clock(irq_handler_t func);
-extern void via_flush_cache(void);
-extern void oss_init(void);
-extern void psc_init(void);
-extern void baboon_init(void);
-
-extern void mac_mksound(unsigned int, unsigned int);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mac_get_model(char *str);
 static void mac_identify(void);
 static void mac_report_hardware(void);
 
-<<<<<<< HEAD
-#ifdef CONFIG_EARLY_PRINTK
-asmlinkage void __init mac_early_print(const char *s, unsigned n);
-
-static void __init mac_early_cons_write(struct console *con,
-                                 const char *s, unsigned n)
-{
-	mac_early_print(s, n);
-}
-
-static struct console __initdata mac_early_cons = {
-	.name  = "early",
-	.write = mac_early_cons_write,
-	.flags = CON_PRINTBUFFER | CON_BOOT,
-	.index = -1
-};
-
-int __init mac_unregister_early_cons(void)
-{
-	/* mac_early_print can't be used after init sections are discarded */
-	return unregister_console(&mac_early_cons);
-}
-
-late_initcall(mac_unregister_early_cons);
-#endif
-
-static void __init mac_sched_init(irq_handler_t vector)
-{
-	via_init_clock(vector);
-=======
 static void __init mac_sched_init(void)
 {
 	via_init_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -144,47 +74,6 @@ static void __init mac_sched_init(void)
 int __init mac_parse_bootinfo(const struct bi_record *record)
 {
 	int unknown = 0;
-<<<<<<< HEAD
-	const u_long *data = record->data;
-
-	switch (record->tag) {
-	case BI_MAC_MODEL:
-		mac_bi_data.id = *data;
-		break;
-	case BI_MAC_VADDR:
-		mac_bi_data.videoaddr = *data;
-		break;
-	case BI_MAC_VDEPTH:
-		mac_bi_data.videodepth = *data;
-		break;
-	case BI_MAC_VROW:
-		mac_bi_data.videorow = *data;
-		break;
-	case BI_MAC_VDIM:
-		mac_bi_data.dimensions = *data;
-		break;
-	case BI_MAC_VLOGICAL:
-		mac_bi_data.videological = VIDEOMEMBASE + (*data & ~VIDEOMEMMASK);
-		mac_orig_videoaddr = *data;
-		break;
-	case BI_MAC_SCCBASE:
-		mac_bi_data.sccbase = *data;
-		break;
-	case BI_MAC_BTIME:
-		mac_bi_data.boottime = *data;
-		break;
-	case BI_MAC_GMTBIAS:
-		mac_bi_data.gmtbias = *data;
-		break;
-	case BI_MAC_MEMSIZE:
-		mac_bi_data.memsize = *data;
-		break;
-	case BI_MAC_CPUID:
-		mac_bi_data.cpuid = *data;
-		break;
-	case BI_MAC_ROMBASE:
-		mac_bi_data.rombase = *data;
-=======
 	const void *data = record->data;
 
 	switch (be16_to_cpu(record->tag)) {
@@ -225,7 +114,6 @@ int __init mac_parse_bootinfo(const struct bi_record *record)
 		break;
 	case BI_MAC_ROMBASE:
 		mac_bi_data.rombase = be32_to_cpup(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		unknown = 1;
@@ -234,53 +122,14 @@ int __init mac_parse_bootinfo(const struct bi_record *record)
 	return unknown;
 }
 
-<<<<<<< HEAD
-/*
- * Flip into 24bit mode for an instant - flushes the L2 cache card. We
- * have to disable interrupts for this. Our IRQ handlers will crap
- * themselves if they take an IRQ in 24bit mode!
- */
-
-static void mac_cache_card_flush(int writeback)
-{
-	unsigned long flags;
-
-	local_irq_save(flags);
-	via_flush_cache();
-	local_irq_restore(flags);
-}
-
-void __init config_mac(void)
-{
-	if (!MACH_IS_MAC)
-		printk(KERN_ERR "ERROR: no Mac, but config_mac() called!!\n");
-=======
 void __init config_mac(void)
 {
 	if (!MACH_IS_MAC)
 		pr_err("ERROR: no Mac, but config_mac() called!!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mach_sched_init = mac_sched_init;
 	mach_init_IRQ = mac_init_IRQ;
 	mach_get_model = mac_get_model;
-<<<<<<< HEAD
-	mach_gettimeoffset = mac_gettimeoffset;
-	mach_hwclk = mac_hwclk;
-	mach_set_clock_mmss = mac_set_clock_mmss;
-	mach_reset = mac_reset;
-	mach_halt = mac_poweroff;
-	mach_power_off = mac_poweroff;
-	mach_max_dma_address = 0xffffffff;
-#if defined(CONFIG_INPUT_M68K_BEEP) || defined(CONFIG_INPUT_M68K_BEEP_MODULE)
-	mach_beep = mac_mksound;
-#endif
-
-#ifdef CONFIG_EARLY_PRINTK
-	register_console(&mac_early_cons);
-#endif
-
-=======
 	mach_hwclk = mac_hwclk;
 	mach_reset = mac_reset;
 	mach_halt = mac_poweroff;
@@ -288,7 +137,6 @@ void __init config_mac(void)
 	mach_beep = mac_mksound;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Determine hardware present
 	 */
@@ -302,16 +150,10 @@ void __init config_mac(void)
 	 * not.
 	 */
 
-<<<<<<< HEAD
-	if (macintosh_config->ident == MAC_MODEL_IICI
-	    || macintosh_config->ident == MAC_MODEL_IIFX)
-		mach_l2_flush = mac_cache_card_flush;
-=======
 	if (macintosh_config->ident == MAC_MODEL_IICI)
 		mach_l2_flush = via_l2_flush;
 
 	register_platform_power_off(mac_poweroff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -342,13 +184,8 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_II,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_II,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_IWM,
-=======
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_UNSUPPORTED, /* IWM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	/*
@@ -362,13 +199,8 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_II,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_II,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_IWM,
-=======
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_UNSUPPORTED, /* IWM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_IIX,
 		.name		= "IIx",
@@ -376,13 +208,8 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_II,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_II,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_IICX,
 		.name		= "IIcx",
@@ -390,13 +217,8 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_II,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_II,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_SE30,
 		.name		= "SE/30",
@@ -404,13 +226,8 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_II,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_II,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.expansion_type	= MAC_EXP_PDS,
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	/*
@@ -427,51 +244,13 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_IICI,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_II,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_IIFX,
 		.name		= "IIfx",
 		.adb_type	= MAC_ADB_IOP,
 		.via_type	= MAC_VIA_IICI,
-<<<<<<< HEAD
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_IOP,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_IOP,
-	}, {
-		.ident		= MAC_MODEL_IISI,
-		.name		= "IIsi",
-		.adb_type	= MAC_ADB_IISI,
-		.via_type	= MAC_VIA_IICI,
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-	}, {
-		.ident		= MAC_MODEL_IIVI,
-		.name		= "IIvi",
-		.adb_type	= MAC_ADB_IISI,
-		.via_type	= MAC_VIA_IICI,
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-	}, {
-		.ident		= MAC_MODEL_IIVX,
-		.name		= "IIvx",
-		.adb_type	= MAC_ADB_IISI,
-		.via_type	= MAC_VIA_IICI,
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.scsi_type	= MAC_SCSI_IIFX,
 		.scc_type	= MAC_SCC_IOP,
 		.expansion_type	= MAC_EXP_PDS_NUBUS,
@@ -503,7 +282,6 @@ static struct mac_model mac_data_table[] = {
 		.scc_type	= MAC_SCC_II,
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_LC, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	/*
@@ -513,52 +291,29 @@ static struct mac_model mac_data_table[] = {
 	{
 		.ident		= MAC_MODEL_CLII,
 		.name		= "Classic II",
-<<<<<<< HEAD
-		.adb_type	= MAC_ADB_IISI,
-		.via_type	= MAC_VIA_IICI,
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.adb_type	= MAC_ADB_EGRET,
 		.via_type	= MAC_VIA_IICI,
 		.scsi_type	= MAC_SCSI_LC,
 		.scc_type	= MAC_SCC_II,
 		.floppy_type	= MAC_FLOPPY_LC, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_CCL,
 		.name		= "Color Classic",
 		.adb_type	= MAC_ADB_CUDA,
 		.via_type	= MAC_VIA_IICI,
-<<<<<<< HEAD
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.scsi_type	= MAC_SCSI_LC,
 		.scc_type	= MAC_SCC_II,
 		.expansion_type	= MAC_EXP_PDS,
 		.floppy_type	= MAC_FLOPPY_LC, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_CCLII,
 		.name		= "Color Classic II",
 		.adb_type	= MAC_ADB_CUDA,
 		.via_type	= MAC_VIA_IICI,
-<<<<<<< HEAD
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.scsi_type	= MAC_SCSI_LC,
 		.scc_type	= MAC_SCC_II,
 		.expansion_type	= MAC_EXP_PDS,
 		.floppy_type	= MAC_FLOPPY_LC, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	/*
@@ -568,32 +323,6 @@ static struct mac_model mac_data_table[] = {
 	{
 		.ident		= MAC_MODEL_LC,
 		.name		= "LC",
-<<<<<<< HEAD
-		.adb_type	= MAC_ADB_IISI,
-		.via_type	= MAC_VIA_IICI,
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-	}, {
-		.ident		= MAC_MODEL_LCII,
-		.name		= "LC II",
-		.adb_type	= MAC_ADB_IISI,
-		.via_type	= MAC_VIA_IICI,
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-	}, {
-		.ident		= MAC_MODEL_LCIII,
-		.name		= "LC III",
-		.adb_type	= MAC_ADB_IISI,
-		.via_type	= MAC_VIA_IICI,
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.adb_type	= MAC_ADB_EGRET,
 		.via_type	= MAC_VIA_IICI,
 		.scsi_type	= MAC_SCSI_LC,
@@ -618,7 +347,6 @@ static struct mac_model mac_data_table[] = {
 		.scc_type	= MAC_SCC_II,
 		.expansion_type	= MAC_EXP_PDS,
 		.floppy_type	= MAC_FLOPPY_LC, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	/*
@@ -638,13 +366,8 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_QUADRA,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_Q605_ACC,
 		.name		= "Quadra 605",
@@ -652,13 +375,8 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_QUADRA,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_Q610,
 		.name		= "Quadra 610",
@@ -667,13 +385,8 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_QUADRA,
 		.scc_type	= MAC_SCC_QUADRA,
 		.ether_type	= MAC_ETHER_SONIC,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS_NUBUS,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_Q630,
 		.name		= "Quadra 630",
@@ -682,14 +395,8 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_QUADRA,
 		.ide_type	= MAC_IDE_QUADRA,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.ether_type	= MAC_ETHER_SONIC,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS_COMM,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_Q650,
 		.name		= "Quadra 650",
@@ -698,13 +405,8 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_QUADRA,
 		.scc_type	= MAC_SCC_QUADRA,
 		.ether_type	= MAC_ETHER_SONIC,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS_NUBUS,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* The Q700 does have a NS Sonic */
 	{
@@ -715,13 +417,8 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_QUADRA2,
 		.scc_type	= MAC_SCC_QUADRA,
 		.ether_type	= MAC_ETHER_SONIC,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS_NUBUS,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_Q800,
 		.name		= "Quadra 800",
@@ -730,13 +427,8 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_QUADRA,
 		.scc_type	= MAC_SCC_QUADRA,
 		.ether_type	= MAC_ETHER_SONIC,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS_NUBUS,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_Q840,
 		.name		= "Quadra 840AV",
@@ -745,13 +437,8 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_QUADRA3,
 		.scc_type	= MAC_SCC_PSC,
 		.ether_type	= MAC_ETHER_MACE,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_AV,
-=======
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_UNSUPPORTED, /* New Age */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_Q900,
 		.name		= "Quadra 900",
@@ -760,13 +447,8 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_QUADRA2,
 		.scc_type	= MAC_SCC_IOP,
 		.ether_type	= MAC_ETHER_SONIC,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_IOP,
-=======
 		.expansion_type	= MAC_EXP_PDS_NUBUS,
 		.floppy_type	= MAC_FLOPPY_SWIM_IOP, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_Q950,
 		.name		= "Quadra 950",
@@ -775,13 +457,8 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_QUADRA2,
 		.scc_type	= MAC_SCC_IOP,
 		.ether_type	= MAC_ETHER_SONIC,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_IOP,
-=======
 		.expansion_type	= MAC_EXP_PDS_NUBUS,
 		.floppy_type	= MAC_FLOPPY_SWIM_IOP, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	/*
@@ -791,21 +468,12 @@ static struct mac_model mac_data_table[] = {
 	{
 		.ident		= MAC_MODEL_P460,
 		.name		= "Performa 460",
-<<<<<<< HEAD
-		.adb_type	= MAC_ADB_IISI,
-		.via_type	= MAC_VIA_IICI,
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.adb_type	= MAC_ADB_EGRET,
 		.via_type	= MAC_VIA_IICI,
 		.scsi_type	= MAC_SCSI_LC,
 		.scc_type	= MAC_SCC_II,
 		.expansion_type	= MAC_EXP_PDS,
 		.floppy_type	= MAC_FLOPPY_LC, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_P475,
 		.name		= "Performa 475",
@@ -813,13 +481,8 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_QUADRA,
 		.scc_type	= MAC_SCC_II,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_P475F,
 		.name		= "Performa 475",
@@ -827,45 +490,26 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_QUADRA,
 		.scc_type	= MAC_SCC_II,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_P520,
 		.name		= "Performa 520",
 		.adb_type	= MAC_ADB_CUDA,
 		.via_type	= MAC_VIA_IICI,
-<<<<<<< HEAD
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.scsi_type	= MAC_SCSI_LC,
 		.scc_type	= MAC_SCC_II,
 		.expansion_type	= MAC_EXP_PDS,
 		.floppy_type	= MAC_FLOPPY_LC, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_P550,
 		.name		= "Performa 550",
 		.adb_type	= MAC_ADB_CUDA,
 		.via_type	= MAC_VIA_IICI,
-<<<<<<< HEAD
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.scsi_type	= MAC_SCSI_LC,
 		.scc_type	= MAC_SCC_II,
 		.expansion_type	= MAC_EXP_PDS,
 		.floppy_type	= MAC_FLOPPY_LC, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* These have the comm slot, and therefore possibly SONIC ethernet */
 	{
@@ -875,14 +519,8 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_QUADRA,
 		.scc_type	= MAC_SCC_II,
-<<<<<<< HEAD
-		.ether_type	= MAC_ETHER_SONIC,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS_COMM,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_P588,
 		.name		= "Performa 588",
@@ -891,34 +529,13 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_QUADRA,
 		.ide_type	= MAC_IDE_QUADRA,
 		.scc_type	= MAC_SCC_II,
-<<<<<<< HEAD
-		.ether_type	= MAC_ETHER_SONIC,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS_COMM,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_TV,
 		.name		= "TV",
 		.adb_type	= MAC_ADB_CUDA,
 		.via_type	= MAC_VIA_IICI,
-<<<<<<< HEAD
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-	}, {
-		.ident		= MAC_MODEL_P600,
-		.name		= "Performa 600",
-		.adb_type	= MAC_ADB_IISI,
-		.via_type	= MAC_VIA_IICI,
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_II,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.scsi_type	= MAC_SCSI_LC,
 		.scc_type	= MAC_SCC_II,
 		.floppy_type	= MAC_FLOPPY_LC, /* SWIM 2 */
@@ -931,7 +548,6 @@ static struct mac_model mac_data_table[] = {
 		.scc_type	= MAC_SCC_II,
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_LC, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	/*
@@ -947,13 +563,8 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_QUADRA,
 		.scc_type	= MAC_SCC_QUADRA,
 		.ether_type	= MAC_ETHER_SONIC,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS_NUBUS,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_C650,
 		.name		= "Centris 650",
@@ -962,13 +573,8 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_QUADRA,
 		.scc_type	= MAC_SCC_QUADRA,
 		.ether_type	= MAC_ETHER_SONIC,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR1,
-=======
 		.expansion_type	= MAC_EXP_PDS_NUBUS,
 		.floppy_type	= MAC_FLOPPY_QUADRA, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_C660,
 		.name		= "Centris 660AV",
@@ -977,13 +583,8 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_QUADRA3,
 		.scc_type	= MAC_SCC_PSC,
 		.ether_type	= MAC_ETHER_MACE,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_AV,
-=======
 		.expansion_type	= MAC_EXP_PDS_NUBUS,
 		.floppy_type	= MAC_FLOPPY_UNSUPPORTED, /* New Age */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	/*
@@ -999,12 +600,7 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB145,
 		.name		= "PowerBook 145",
@@ -1012,12 +608,7 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB150,
 		.name		= "PowerBook 150",
@@ -1026,12 +617,7 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_OLD,
 		.ide_type	= MAC_IDE_PB,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB160,
 		.name		= "PowerBook 160",
@@ -1039,12 +625,7 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB165,
 		.name		= "PowerBook 165",
@@ -1052,12 +633,7 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB165C,
 		.name		= "PowerBook 165c",
@@ -1065,12 +641,7 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB170,
 		.name		= "PowerBook 170",
@@ -1078,12 +649,7 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB180,
 		.name		= "PowerBook 180",
@@ -1091,12 +657,7 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB180C,
 		.name		= "PowerBook 180c",
@@ -1104,12 +665,7 @@ static struct mac_model mac_data_table[] = {
 		.via_type	= MAC_VIA_QUADRA,
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB190,
 		.name		= "PowerBook 190",
@@ -1118,12 +674,7 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_OLD,
 		.ide_type	= MAC_IDE_BABOON,
 		.scc_type	= MAC_SCC_QUADRA,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB520,
 		.name		= "PowerBook 520",
@@ -1132,12 +683,7 @@ static struct mac_model mac_data_table[] = {
 		.scsi_type	= MAC_SCSI_OLD,
 		.scc_type	= MAC_SCC_QUADRA,
 		.ether_type	= MAC_ETHER_SONIC,
-<<<<<<< HEAD
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	/*
@@ -1151,97 +697,55 @@ static struct mac_model mac_data_table[] = {
 		.name		= "PowerBook Duo 210",
 		.adb_type	= MAC_ADB_PB2,
 		.via_type	= MAC_VIA_IICI,
-<<<<<<< HEAD
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_QUADRA,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.scsi_type	= MAC_SCSI_DUO,
 		.scc_type	= MAC_SCC_QUADRA,
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB230,
 		.name		= "PowerBook Duo 230",
 		.adb_type	= MAC_ADB_PB2,
 		.via_type	= MAC_VIA_IICI,
-<<<<<<< HEAD
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_QUADRA,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.scsi_type	= MAC_SCSI_DUO,
 		.scc_type	= MAC_SCC_QUADRA,
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB250,
 		.name		= "PowerBook Duo 250",
 		.adb_type	= MAC_ADB_PB2,
 		.via_type	= MAC_VIA_IICI,
-<<<<<<< HEAD
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_QUADRA,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.scsi_type	= MAC_SCSI_DUO,
 		.scc_type	= MAC_SCC_QUADRA,
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB270C,
 		.name		= "PowerBook Duo 270c",
 		.adb_type	= MAC_ADB_PB2,
 		.via_type	= MAC_VIA_IICI,
-<<<<<<< HEAD
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_QUADRA,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.scsi_type	= MAC_SCSI_DUO,
 		.scc_type	= MAC_SCC_QUADRA,
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB280,
 		.name		= "PowerBook Duo 280",
 		.adb_type	= MAC_ADB_PB2,
 		.via_type	= MAC_VIA_IICI,
-<<<<<<< HEAD
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_QUADRA,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.scsi_type	= MAC_SCSI_DUO,
 		.scc_type	= MAC_SCC_QUADRA,
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.ident		= MAC_MODEL_PB280C,
 		.name		= "PowerBook Duo 280c",
 		.adb_type	= MAC_ADB_PB2,
 		.via_type	= MAC_VIA_IICI,
-<<<<<<< HEAD
-		.scsi_type	= MAC_SCSI_OLD,
-		.scc_type	= MAC_SCC_QUADRA,
-		.nubus_type	= MAC_NUBUS,
-		.floppy_type	= MAC_FLOPPY_SWIM_ADDR2,
-=======
 		.scsi_type	= MAC_SCSI_DUO,
 		.scc_type	= MAC_SCC_QUADRA,
 		.expansion_type	= MAC_EXP_NUBUS,
 		.floppy_type	= MAC_FLOPPY_OLD, /* SWIM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	/*
@@ -1266,22 +770,12 @@ static struct resource scc_b_rsrcs[] = {
 struct platform_device scc_a_pdev = {
 	.name           = "scc",
 	.id             = 0,
-<<<<<<< HEAD
-	.num_resources  = ARRAY_SIZE(scc_a_rsrcs),
-	.resource       = scc_a_rsrcs,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 EXPORT_SYMBOL(scc_a_pdev);
 
 struct platform_device scc_b_pdev = {
 	.name           = "scc",
 	.id             = 1,
-<<<<<<< HEAD
-	.num_resources  = ARRAY_SIZE(scc_b_rsrcs),
-	.resource       = scc_b_rsrcs,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 EXPORT_SYMBOL(scc_b_pdev);
 
@@ -1295,12 +789,7 @@ static void __init mac_identify(void)
 		/* no bootinfo model id -> NetBSD booter was used! */
 		/* XXX FIXME: breaks for model > 31 */
 		model = (mac_bi_data.cpuid >> 2) & 63;
-<<<<<<< HEAD
-		printk(KERN_WARNING "No bootinfo model ID, using cpuid instead "
-		       "(obsolete bootloader?)\n");
-=======
 		pr_warn("No bootinfo model ID, using cpuid instead (obsolete bootloader?)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	macintosh_config = mac_data_table;
@@ -1313,12 +802,6 @@ static void __init mac_identify(void)
 
 	/* Set up serial port resources for the console initcall. */
 
-<<<<<<< HEAD
-	scc_a_rsrcs[0].start = (resource_size_t) mac_bi_data.sccbase + 2;
-	scc_a_rsrcs[0].end   = scc_a_rsrcs[0].start;
-	scc_b_rsrcs[0].start = (resource_size_t) mac_bi_data.sccbase;
-	scc_b_rsrcs[0].end   = scc_b_rsrcs[0].start;
-=======
 	scc_a_rsrcs[0].start     = (resource_size_t)mac_bi_data.sccbase + 2;
 	scc_a_rsrcs[0].end       = scc_a_rsrcs[0].start;
 	scc_a_pdev.num_resources = ARRAY_SIZE(scc_a_rsrcs);
@@ -1328,7 +811,6 @@ static void __init mac_identify(void)
 	scc_b_rsrcs[0].end       = scc_b_rsrcs[0].start;
 	scc_b_pdev.num_resources = ARRAY_SIZE(scc_b_rsrcs);
 	scc_b_pdev.resource      = scc_b_rsrcs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (macintosh_config->scc_type) {
 	case MAC_SCC_PSC:
@@ -1347,29 +829,13 @@ static void __init mac_identify(void)
 		break;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * We need to pre-init the IOPs, if any. Otherwise
-	 * the serial console won't work if the user had
-	 * the serial ports set to "Faster" mode in MacOS.
-	 */
-	iop_preinit();
-
-	printk(KERN_INFO "Detected Macintosh model: %d\n", model);
-=======
 	pr_info("Detected Macintosh model: %d\n", model);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Report booter data:
 	 */
 	printk(KERN_DEBUG " Penguin bootinfo data:\n");
-<<<<<<< HEAD
-	printk(KERN_DEBUG " Video: addr 0x%lx "
-		"row 0x%lx depth %lx dimensions %ld x %ld\n",
-=======
 	printk(KERN_DEBUG " Video: addr 0x%lx row 0x%lx depth %lx dimensions %ld x %ld\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mac_bi_data.videoaddr, mac_bi_data.videorow,
 		mac_bi_data.videodepth, mac_bi_data.dimensions & 0xFFFF,
 		mac_bi_data.dimensions >> 16);
@@ -1382,34 +848,22 @@ static void __init mac_identify(void)
 		mac_bi_data.id, mac_bi_data.cpuid, mac_bi_data.memsize);
 
 	iop_init();
-<<<<<<< HEAD
-	via_init();
-	oss_init();
-=======
 	oss_init();
 	via_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	psc_init();
 	baboon_init();
 
 #ifdef CONFIG_ADB_CUDA
 	find_via_cuda();
 #endif
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_ADB_PMU
 	find_via_pmu();
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init mac_report_hardware(void)
 {
-<<<<<<< HEAD
-	printk(KERN_INFO "Apple Macintosh %s\n", macintosh_config->name);
-=======
 	pr_info("Apple Macintosh %s\n", macintosh_config->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mac_get_model(char *str)
@@ -1418,40 +872,6 @@ static void mac_get_model(char *str)
 	strcat(str, macintosh_config->name);
 }
 
-<<<<<<< HEAD
-static struct resource swim_rsrc = { .flags = IORESOURCE_MEM };
-
-static struct platform_device swim_pdev = {
-	.name		= "swim",
-	.id		= -1,
-	.num_resources	= 1,
-	.resource	= &swim_rsrc,
-};
-
-static struct platform_device esp_0_pdev = {
-	.name		= "mac_esp",
-	.id		= 0,
-};
-
-static struct platform_device esp_1_pdev = {
-	.name		= "mac_esp",
-	.id		= 1,
-};
-
-static struct platform_device sonic_pdev = {
-	.name		= "macsonic",
-	.id		= -1,
-};
-
-static struct platform_device mace_pdev = {
-	.name		= "macmace",
-	.id		= -1,
-};
-
-int __init mac_platform_init(void)
-{
-	u8 *swim_base;
-=======
 static const struct resource mac_scsi_iifx_rsrc[] __initconst = {
 	{
 		.flags = IORESOURCE_IRQ,
@@ -1533,7 +953,6 @@ static const struct pata_platform_info mac_pata_data __initconst = {
 static int __init mac_platform_init(void)
 {
 	phys_addr_t swim_base = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!MACH_IS_MAC)
 		return -ENODEV;
@@ -1550,16 +969,6 @@ static int __init mac_platform_init(void)
 	 */
 
 	switch (macintosh_config->floppy_type) {
-<<<<<<< HEAD
-	case MAC_FLOPPY_SWIM_ADDR1:
-		swim_base = (u8 *)(VIA1_BASE + 0x1E000);
-		break;
-	case MAC_FLOPPY_SWIM_ADDR2:
-		swim_base = (u8 *)(VIA1_BASE + 0x16000);
-		break;
-	default:
-		swim_base = NULL;
-=======
 	case MAC_FLOPPY_QUADRA:
 		swim_base = 0x5001E000;
 		break;
@@ -1568,16 +977,10 @@ static int __init mac_platform_init(void)
 		break;
 	case MAC_FLOPPY_LC:
 		swim_base = 0x50F16000;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	if (swim_base) {
-<<<<<<< HEAD
-		swim_rsrc.start = (resource_size_t) swim_base,
-		swim_rsrc.end   = (resource_size_t) swim_base + 0x2000,
-		platform_device_register(&swim_pdev);
-=======
 		struct resource swim_rsrc = {
 			.flags = IORESOURCE_MEM,
 			.start = swim_base,
@@ -1585,7 +988,6 @@ static int __init mac_platform_init(void)
 		};
 
 		platform_device_register_simple("swim", -1, &swim_rsrc, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1595,15 +997,6 @@ static int __init mac_platform_init(void)
 	switch (macintosh_config->scsi_type) {
 	case MAC_SCSI_QUADRA:
 	case MAC_SCSI_QUADRA3:
-<<<<<<< HEAD
-		platform_device_register(&esp_0_pdev);
-		break;
-	case MAC_SCSI_QUADRA2:
-		platform_device_register(&esp_0_pdev);
-		if ((macintosh_config->ident == MAC_MODEL_Q900) ||
-		    (macintosh_config->ident == MAC_MODEL_Q950))
-			platform_device_register(&esp_1_pdev);
-=======
 		platform_device_register_simple("mac_esp", 0, NULL, 0);
 		break;
 	case MAC_SCSI_QUADRA2:
@@ -1684,7 +1077,6 @@ static int __init mac_platform_init(void)
 		platform_device_register_resndata(NULL, "pata_platform", -1,
 			mac_pata_baboon_rsrc, ARRAY_SIZE(mac_pata_baboon_rsrc),
 			&mac_pata_data, sizeof(mac_pata_data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -1692,16 +1084,6 @@ static int __init mac_platform_init(void)
 	 * Ethernet device
 	 */
 
-<<<<<<< HEAD
-	switch (macintosh_config->ether_type) {
-	case MAC_ETHER_SONIC:
-		platform_device_register(&sonic_pdev);
-		break;
-	case MAC_ETHER_MACE:
-		platform_device_register(&mace_pdev);
-		break;
-	}
-=======
 	if (macintosh_config->ether_type == MAC_ETHER_SONIC ||
 	    macintosh_config->expansion_type == MAC_EXP_PDS_COMM)
 		platform_device_register_simple("macsonic", -1, NULL, 0);
@@ -1712,7 +1094,6 @@ static int __init mac_platform_init(void)
 
 	if (macintosh_config->ether_type == MAC_ETHER_MACE)
 		platform_device_register_simple("macmace", -1, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

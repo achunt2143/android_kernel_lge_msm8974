@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menuconfig SAMPLES
 	bool "Sample kernel code"
 	help
@@ -9,29 +6,14 @@ menuconfig SAMPLES
 
 if SAMPLES
 
-<<<<<<< HEAD
-config SAMPLE_TRACEPOINTS
-	tristate "Build tracepoints examples -- loadable modules only"
-	depends on TRACEPOINTS && m
-	help
-	  This build tracepoints example modules.
-=======
 config SAMPLE_AUXDISPLAY
 	bool "auxdisplay sample"
 	depends on CC_CAN_LINK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SAMPLE_TRACE_EVENTS
 	tristate "Build trace_events examples -- loadable modules only"
 	depends on EVENT_TRACING && m
 	help
-<<<<<<< HEAD
-	  This build trace event example modules.
-
-config SAMPLE_KOBJECT
-	tristate "Build kobject examples -- loadable modules only"
-	depends on m
-=======
 	  This builds the trace event example module.
 
 config SAMPLE_TRACE_CUSTOM_EVENTS
@@ -80,7 +62,6 @@ config SAMPLE_TRACE_ARRAY
 
 config SAMPLE_KOBJECT
 	tristate "Build kobject examples"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This config option will allow you to build a number of
 	  different kobject sample modules showing how to use kobjects,
@@ -105,8 +86,6 @@ config SAMPLE_HW_BREAKPOINT
 	help
 	  This builds kernel hardware breakpoint example modules.
 
-<<<<<<< HEAD
-=======
 config SAMPLE_FPROBE
 	tristate "Build fprobe examples -- loadable modules only"
 	depends on FPROBE && m
@@ -114,7 +93,6 @@ config SAMPLE_FPROBE
 	  This builds a fprobe example module. This module has an option 'symbol'.
 	  You can specify a probed symbol or symbols separated with ','.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SAMPLE_KFIFO
 	tristate "Build kfifo examples -- loadable modules only"
 	depends on m
@@ -132,8 +110,6 @@ config SAMPLE_KDB
 	  Build an example of how to dynamically add the hello
 	  command to the kdb shell.
 
-<<<<<<< HEAD
-=======
 config SAMPLE_QMI_CLIENT
 	tristate "Build qmi client sample -- loadable modules only"
 	depends on m
@@ -144,7 +120,6 @@ config SAMPLE_QMI_CLIENT
 	  Build an QMI client sample driver, which demonstrates how to
 	  communicate with a remote QRTR service, using QMI encoded messages.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SAMPLE_RPMSG_CLIENT
 	tristate "Build rpmsg client sample -- loadable modules only"
 	depends on RPMSG && m
@@ -153,9 +128,6 @@ config SAMPLE_RPMSG_CLIENT
 	  to communicate with an AMP-configured remote processor over
 	  the rpmsg bus.
 
-<<<<<<< HEAD
-endif # SAMPLES
-=======
 config SAMPLE_LIVEPATCH
 	tristate "Build live patching samples -- loadable modules only"
 	depends on LIVEPATCH && m
@@ -328,4 +300,3 @@ config HAVE_SAMPLE_FTRACE_DIRECT
 
 config HAVE_SAMPLE_FTRACE_DIRECT_MULTI
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

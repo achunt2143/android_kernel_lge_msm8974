@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sisusb - usb kernel driver for Net2280/SiS315 based USB2VGA dongles
  *
@@ -41,22 +38,8 @@
 #ifndef _SISUSB_H_
 #define _SISUSB_H_
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-#define SISUSB_NEW_CONFIG_COMPAT
-#endif
-
 #include <linux/mutex.h>
 
-/* For older kernels, support for text consoles is by default
- * off. To enable text console support, change the following:
- */
-/* #define CONFIG_USB_SISUSBVGA_CON */
-
-=======
-#include <linux/mutex.h>
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Version Information */
 
 #define SISUSB_VERSION		0
@@ -65,14 +48,6 @@
 
 /* Include console and mode switching code? */
 
-<<<<<<< HEAD
-#ifdef CONFIG_USB_SISUSBVGA_CON
-#define INCL_SISUSB_CON		1
-#endif
-
-#include <linux/console.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vt_kern.h>
 #include "sisusb_struct.h"
 
@@ -150,29 +125,6 @@ struct sisusb_usb_data {
 	unsigned char gfxinit;	/* graphics core initialized? */
 	unsigned short chipid, chipvendor;
 	unsigned short chiprevision;
-<<<<<<< HEAD
-#ifdef INCL_SISUSB_CON
-	struct SiS_Private *SiS_Pr;
-	unsigned long scrbuf;
-	unsigned int scrbuf_size;
-	int haveconsole, con_first, con_last;
-	int havethisconsole[MAX_NR_CONSOLES];
-	int textmodedestroyed;
-	unsigned int sisusb_num_columns;	/* real number, not vt's idea */
-	int cur_start_addr, con_rolled_over;
-	int sisusb_cursor_loc, bad_cursor_pos;
-	int sisusb_cursor_size_from;
-	int sisusb_cursor_size_to;
-	int current_font_height, current_font_512;
-	int font_backup_size, font_backup_height, font_backup_512;
-	char *font_backup;
-	int font_slot;
-	struct vc_data *sisusb_display_fg;
-	int is_gfx;
-	int con_blanked;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define to_sisusb_dev(d) container_of(d, struct sisusb_usb_data, kref)

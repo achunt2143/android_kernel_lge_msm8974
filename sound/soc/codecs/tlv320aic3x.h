@@ -1,28 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ALSA SoC TLV320AIC3X codec driver
  *
  * Author:      Vladimir Barinov, <vbarinov@embeddedalley.com>
  * Copyright:   (C) 2007 MontaVista Software, Inc., <source@mvista.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _AIC3X_H
 #define _AIC3X_H
 
-<<<<<<< HEAD
-/* AIC3X register space */
-#define AIC3X_CACHEREGNUM		103
-=======
 struct device;
 struct regmap_config;
 
@@ -38,7 +24,6 @@ void aic3x_remove(struct device *dev);
 
 /* AIC3X register space */
 #define AIC3X_CACHEREGNUM		110
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Page select register */
 #define AIC3X_PAGE_SELECT		0
@@ -99,11 +84,8 @@ void aic3x_remove(struct device *dev);
 #define HPLCOM_CFG			37
 /* Right High Power Output control registers */
 #define HPRCOM_CFG			38
-<<<<<<< HEAD
-=======
 /* High Power Output Stage Control Register */
 #define HPOUT_SC			40
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* DAC Output Switching control registers */
 #define DAC_LINE_MUX			41
 /* High Power Output Driver Pop Reduction registers */
@@ -178,8 +160,6 @@ void aic3x_remove(struct device *dev);
 #define AIC3X_GPIOB_REG			101
 /* Clock generation control register */
 #define AIC3X_CLKGEN_CTRL_REG		102
-<<<<<<< HEAD
-=======
 /* New AGC registers */
 #define LAGCN_ATTACK			103
 #define LAGCN_DECAY			104
@@ -191,7 +171,6 @@ void aic3x_remove(struct device *dev);
 #define PASSIVE_BYPASS			108
 /* DAC Quiescent Current Adjustment Register */
 #define DAC_ICC_ADJ			109
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Page select register bits */
 #define PAGE0_SELECT		0
@@ -200,10 +179,7 @@ void aic3x_remove(struct device *dev);
 /* Audio serial data interface control register A bits */
 #define BIT_CLK_MASTER          0x80
 #define WORD_CLK_MASTER         0x40
-<<<<<<< HEAD
-=======
 #define DOUT_TRISTATE		0x20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Codec Datapath setup register 7 */
 #define FSREF_44100		(1 << 7)
@@ -211,13 +187,10 @@ void aic3x_remove(struct device *dev);
 #define DUAL_RATE_MODE		((1 << 5) | (1 << 6))
 #define LDAC2LCH		(0x1 << 3)
 #define RDAC2RCH		(0x1 << 1)
-<<<<<<< HEAD
-=======
 #define LDAC2RCH		(0x2 << 3)
 #define RDAC2LCH		(0x2 << 1)
 #define LDAC2MONOMIX		(0x3 << 3)
 #define RDAC2MONOMIX		(0x3 << 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PLL registers bitfields */
 #define PLLP_SHIFT		0
@@ -234,8 +207,6 @@ void aic3x_remove(struct device *dev);
 #define PLL_CLKIN_SHIFT		4
 #define MCLK_SOURCE		0x0
 #define PLL_CLKDIV_SHIFT	0
-<<<<<<< HEAD
-=======
 #define PLLCLK_IN_MASK		0x30
 #define PLLCLK_IN_SHIFT		4
 #define CLKDIV_IN_MASK		0xc0
@@ -244,7 +215,6 @@ void aic3x_remove(struct device *dev);
 #define CLKIN_MCLK		0
 #define CLKIN_GPIO2		1
 #define CLKIN_BCLK		2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Software reset register bits */
 #define SOFT_RESET		0x80
@@ -279,8 +249,6 @@ void aic3x_remove(struct device *dev);
 /* Default input volume */
 #define DEFAULT_GAIN    0x20
 
-<<<<<<< HEAD
-=======
 /* MICBIAS Control Register */
 #define MICBIAS_LEVEL_SHIFT	(6)
 #define MICBIAS_LEVEL_MASK	(3 << 6)
@@ -293,7 +261,6 @@ void aic3x_remove(struct device *dev);
 #define HPOUT_SC_OCMV_1_65V	2
 #define HPOUT_SC_OCMV_1_8V	3
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* headset detection / button API */
 
 /* The AIC3x supports detection of stereo headsets (GND + left + right signal)
@@ -331,8 +298,6 @@ enum {
 #define AIC3X_BUTTON_DEBOUNCE_SHIFT 	0
 #define AIC3X_BUTTON_DEBOUNCE_MASK	3
 
-<<<<<<< HEAD
-=======
 /* GPIO API */
 enum {
 	AIC3X_GPIO1_FUNC_DISABLED		= 0,
@@ -376,5 +341,4 @@ enum aic3x_micbias_voltage {
 	AIC3X_MICBIAS_AVDDV = 3,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _AIC3X_H */

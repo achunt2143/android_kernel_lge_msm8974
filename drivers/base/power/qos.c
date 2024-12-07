@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Devices PM QoS constraints management
  *
  * Copyright (C) 2011 Texas Instruments, Inc.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This module exposes the interface to kernel space for specifying
  * per-device PM QoS dependencies. It provides infrastructure for registration
  * of:
@@ -24,24 +13,12 @@
  *
  * This QoS design is best effort based. Dependents register their QoS needs.
  * Watchers register to keep track of the current QoS needs of the system.
-<<<<<<< HEAD
- * Watchers can register different types of notification callbacks:
- *  . a per-device notification callback using the dev_pm_qos_*_notifier API.
- *    The notification chain data is stored in the per-device constraint
- *    data struct.
- *  . a system-wide notification callback using the dev_pm_qos_*_global_notifier
- *    API. The notification chain data is stored in a static variable.
- *
- * Note about the per-device constraint data struct allocation:
- * . The per-device constraints data struct ptr is tored into the device
-=======
  * Watchers can register a per-device notification callback using the
  * dev_pm_qos_*_notifier API. The notification chain data is stored in the
  * per-device constraint data struct.
  *
  * Note about the per-device constraint data struct allocation:
  * . The per-device constraints data struct ptr is stored into the device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    dev_pm_info.
  * . To minimize the data usage by the per-device constraints, the data struct
  *   is only allocated at the first call to dev_pm_qos_add_request.
@@ -56,23 +33,13 @@
 #include <linux/device.h>
 #include <linux/mutex.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-=======
 #include <linux/pm_runtime.h>
 #include <linux/err.h>
 #include <trace/events/power.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "power.h"
 
 static DEFINE_MUTEX(dev_pm_qos_mtx);
-<<<<<<< HEAD
-
-static BLOCKING_NOTIFIER_HEAD(dev_pm_notifiers);
-
-/**
- * __dev_pm_qos_read_value - Get PM QoS constraint for a given device.
-=======
 static DEFINE_MUTEX(dev_pm_qos_sysfs_mtx);
 
 /**
@@ -124,47 +91,29 @@ EXPORT_SYMBOL_GPL(dev_pm_qos_flags);
 
 /**
  * __dev_pm_qos_resume_latency - Get resume latency constraint for a given device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: Device to get the PM QoS constraint value for.
  *
  * This routine must be called with dev->power.lock held.
  */
-<<<<<<< HEAD
-s32 __dev_pm_qos_read_value(struct device *dev)
-{
-	struct pm_qos_constraints *c = dev->power.constraints;
-
-	return c ? pm_qos_read_value(c) : 0;
-=======
 s32 __dev_pm_qos_resume_latency(struct device *dev)
 {
 	lockdep_assert_held(&dev->power.lock);
 
 	return dev_pm_qos_raw_resume_latency(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * dev_pm_qos_read_value - Get PM QoS constraint for a given device (locked).
  * @dev: Device to get the PM QoS constraint value for.
-<<<<<<< HEAD
- */
-s32 dev_pm_qos_read_value(struct device *dev)
-{
-=======
  * @type: QoS request type.
  */
 s32 dev_pm_qos_read_value(struct device *dev, enum dev_pm_qos_req_type type)
 {
 	struct dev_pm_qos *qos = dev->power.qos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	s32 ret;
 
 	spin_lock_irqsave(&dev->power.lock, flags);
-<<<<<<< HEAD
-	ret = __dev_pm_qos_read_value(dev);
-=======
 
 	switch (type) {
 	case DEV_PM_QOS_RESUME_LATENCY:
@@ -184,38 +133,11 @@ s32 dev_pm_qos_read_value(struct device *dev, enum dev_pm_qos_req_type type)
 		ret = 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&dev->power.lock, flags);
 
 	return ret;
 }
 
-<<<<<<< HEAD
-/*
- * apply_constraint
- * @req: constraint request to apply
- * @action: action to perform add/update/remove, of type enum pm_qos_req_action
- * @value: defines the qos request
- *
- * Internal function to update the constraints list using the PM QoS core
- * code and if needed call the per-device and the global notification
- * callbacks
- */
-static int apply_constraint(struct dev_pm_qos_request *req,
-			    enum pm_qos_req_action action, int value)
-{
-	int ret, curr_value;
-
-	ret = pm_qos_update_target(req->dev->power.constraints,
-				   &req->node, action, value);
-
-	if (ret) {
-		/* Call the global callbacks if needed */
-		curr_value = pm_qos_read_value(req->dev->power.constraints);
-		blocking_notifier_call_chain(&dev_pm_notifiers,
-					     (unsigned long)curr_value,
-					     req);
-=======
 /**
  * apply_constraint - Add/modify/remove device PM QoS request.
  * @req: Constraint request to apply
@@ -257,7 +179,6 @@ static int apply_constraint(struct dev_pm_qos_request *req,
 		break;
 	default:
 		ret = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -272,30 +193,6 @@ static int apply_constraint(struct dev_pm_qos_request *req,
  */
 static int dev_pm_qos_constraints_allocate(struct device *dev)
 {
-<<<<<<< HEAD
-	struct pm_qos_constraints *c;
-	struct blocking_notifier_head *n;
-
-	c = kzalloc(sizeof(*c), GFP_KERNEL);
-	if (!c)
-		return -ENOMEM;
-
-	n = kzalloc(sizeof(*n), GFP_KERNEL);
-	if (!n) {
-		kfree(c);
-		return -ENOMEM;
-	}
-	BLOCKING_INIT_NOTIFIER_HEAD(n);
-
-	plist_head_init(&c->list);
-	c->target_value = PM_QOS_DEV_LAT_DEFAULT_VALUE;
-	c->default_value = PM_QOS_DEV_LAT_DEFAULT_VALUE;
-	c->type = PM_QOS_MIN;
-	c->notifiers = n;
-
-	spin_lock_irq(&dev->power.lock);
-	dev->power.constraints = c;
-=======
 	struct dev_pm_qos *qos;
 	struct pm_qos_constraints *c;
 	struct blocking_notifier_head *n;
@@ -332,31 +229,13 @@ static int dev_pm_qos_constraints_allocate(struct device *dev)
 
 	spin_lock_irq(&dev->power.lock);
 	dev->power.qos = qos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&dev->power.lock);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * dev_pm_qos_constraints_init - Initalize device's PM QoS constraints pointer.
- * @dev: target device
- *
- * Called from the device PM subsystem during device insertion under
- * device_pm_lock().
- */
-void dev_pm_qos_constraints_init(struct device *dev)
-{
-	mutex_lock(&dev_pm_qos_mtx);
-	dev->power.constraints = NULL;
-	dev->power.power_state = PMSG_ON;
-	mutex_unlock(&dev_pm_qos_mtx);
-}
-=======
 static void __dev_pm_qos_hide_latency_limit(struct device *dev);
 static void __dev_pm_qos_hide_flags(struct device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * dev_pm_qos_constraints_destroy
@@ -366,26 +245,6 @@ static void __dev_pm_qos_hide_flags(struct device *dev);
  */
 void dev_pm_qos_constraints_destroy(struct device *dev)
 {
-<<<<<<< HEAD
-	struct dev_pm_qos_request *req, *tmp;
-	struct pm_qos_constraints *c;
-
-	/*
-	 * If the device's PM QoS resume latency limit has been exposed to user
-	 * space, it has to be hidden at this point.
-	 */
-	dev_pm_qos_hide_latency_limit(dev);
-
-	mutex_lock(&dev_pm_qos_mtx);
-
-	dev->power.power_state = PMSG_INVALID;
-	c = dev->power.constraints;
-	if (!c)
-		goto out;
-
-	/* Flush the constraints list for the device */
-	plist_for_each_entry_safe(req, tmp, &c->list, node) {
-=======
 	struct dev_pm_qos *qos;
 	struct dev_pm_qos_request *req, *tmp;
 	struct pm_qos_constraints *c;
@@ -412,7 +271,6 @@ void dev_pm_qos_constraints_destroy(struct device *dev)
 	/* Flush the constraints lists for the device. */
 	c = &qos->resume_latency;
 	plist_for_each_entry_safe(req, tmp, &c->list, data.pnode) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Update constraints list and call the notification
 		 * callbacks if needed
@@ -421,17 +279,6 @@ void dev_pm_qos_constraints_destroy(struct device *dev)
 		memset(req, 0, sizeof(*req));
 	}
 
-<<<<<<< HEAD
-	spin_lock_irq(&dev->power.lock);
-	dev->power.constraints = NULL;
-	spin_unlock_irq(&dev->power.lock);
-
-	kfree(c->notifiers);
-	kfree(c);
-
- out:
-	mutex_unlock(&dev_pm_qos_mtx);
-=======
 	c = &qos->latency_tolerance;
 	plist_for_each_entry_safe(req, tmp, &c->list, data.pnode) {
 		apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_DEFAULT_VALUE);
@@ -514,17 +361,13 @@ static int __dev_pm_qos_add_request(struct device *dev,
 		ret = apply_constraint(req, PM_QOS_ADD_REQ, value);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * dev_pm_qos_add_request - inserts new qos request into the list
  * @dev: target device for the constraint
  * @req: pointer to a preallocated handle
-<<<<<<< HEAD
-=======
  * @type: type of the request
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @value: defines the qos request
  *
  * This function inserts a new entry in the device constraints list of
@@ -538,47 +381,6 @@ static int __dev_pm_qos_add_request(struct device *dev,
  * -EINVAL in case of wrong parameters, -ENOMEM if there's not enough memory
  * to allocate for data structures, -ENODEV if the device has just been removed
  * from the system.
-<<<<<<< HEAD
- */
-int dev_pm_qos_add_request(struct device *dev, struct dev_pm_qos_request *req,
-			   s32 value)
-{
-	int ret = 0;
-
-	if (!dev || !req) /*guard against callers passing in null */
-		return -EINVAL;
-
-	if (WARN(dev_pm_qos_request_active(req),
-		 "%s() called for already added request\n", __func__))
-		return -EINVAL;
-
-	req->dev = dev;
-
-	mutex_lock(&dev_pm_qos_mtx);
-
-	if (!dev->power.constraints) {
-		if (dev->power.power_state.event == PM_EVENT_INVALID) {
-			/* The device has been removed from the system. */
-			req->dev = NULL;
-			ret = -ENODEV;
-			goto out;
-		} else {
-			/*
-			 * Allocate the constraints data on the first call to
-			 * add_request, i.e. only if the data is not already
-			 * allocated and if the device has not been removed.
-			 */
-			ret = dev_pm_qos_constraints_allocate(dev);
-		}
-	}
-
-	if (!ret)
-		ret = apply_constraint(req, PM_QOS_ADD_REQ, value);
-
- out:
-	mutex_unlock(&dev_pm_qos_mtx);
-
-=======
  *
  * Callers should ensure that the target device is not RPM_SUSPENDED before
  * using this function for requests of type DEV_PM_QOS_FLAGS.
@@ -591,14 +393,11 @@ int dev_pm_qos_add_request(struct device *dev, struct dev_pm_qos_request *req,
 	mutex_lock(&dev_pm_qos_mtx);
 	ret = __dev_pm_qos_add_request(dev, req, type, value);
 	mutex_unlock(&dev_pm_qos_mtx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(dev_pm_qos_add_request);
 
 /**
-<<<<<<< HEAD
-=======
  * __dev_pm_qos_update_request - Modify an existing device PM QoS request.
  * @req : PM QoS request to modify.
  * @new_value: New value to request.
@@ -644,7 +443,6 @@ static int __dev_pm_qos_update_request(struct dev_pm_qos_request *req,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dev_pm_qos_update_request - modifies an existing qos request
  * @req : handle to list element holding a dev_pm_qos request to use
  * @new_value: defines the qos request
@@ -658,13 +456,6 @@ static int __dev_pm_qos_update_request(struct dev_pm_qos_request *req,
  * 0 if the aggregated constraint value has not changed,
  * -EINVAL in case of wrong parameters, -ENODEV if the device has been
  * removed from the system
-<<<<<<< HEAD
- */
-int dev_pm_qos_update_request(struct dev_pm_qos_request *req,
-			      s32 new_value)
-{
-	int ret = 0;
-=======
  *
  * Callers should ensure that the target device is not RPM_SUSPENDED before
  * using this function for requests of type DEV_PM_QOS_FLAGS.
@@ -683,7 +474,6 @@ EXPORT_SYMBOL_GPL(dev_pm_qos_update_request);
 static int __dev_pm_qos_remove_request(struct dev_pm_qos_request *req)
 {
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!req) /*guard against callers passing in null */
 		return -EINVAL;
@@ -692,23 +482,6 @@ static int __dev_pm_qos_remove_request(struct dev_pm_qos_request *req)
 		 "%s() called for unknown object\n", __func__))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	mutex_lock(&dev_pm_qos_mtx);
-
-	if (req->dev->power.constraints) {
-		if (new_value != req->node.prio)
-			ret = apply_constraint(req, PM_QOS_UPDATE_REQ,
-					       new_value);
-	} else {
-		/* Return if the device has been removed */
-		ret = -ENODEV;
-	}
-
-	mutex_unlock(&dev_pm_qos_mtx);
-	return ret;
-}
-EXPORT_SYMBOL_GPL(dev_pm_qos_update_request);
-=======
 	if (IS_ERR_OR_NULL(req->dev->power.qos))
 		return -ENODEV;
 
@@ -718,7 +491,6 @@ EXPORT_SYMBOL_GPL(dev_pm_qos_update_request);
 	memset(req, 0, sizeof(*req));
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * dev_pm_qos_remove_request - modifies an existing qos request
@@ -731,31 +503,6 @@ EXPORT_SYMBOL_GPL(dev_pm_qos_update_request);
  * 0 if the aggregated constraint value has not changed,
  * -EINVAL in case of wrong parameters, -ENODEV if the device has been
  * removed from the system
-<<<<<<< HEAD
- */
-int dev_pm_qos_remove_request(struct dev_pm_qos_request *req)
-{
-	int ret = 0;
-
-	if (!req) /*guard against callers passing in null */
-		return -EINVAL;
-
-	if (WARN(!dev_pm_qos_request_active(req),
-		 "%s() called for unknown object\n", __func__))
-		return -EINVAL;
-
-	mutex_lock(&dev_pm_qos_mtx);
-
-	if (req->dev->power.constraints) {
-		ret = apply_constraint(req, PM_QOS_REMOVE_REQ,
-				       PM_QOS_DEFAULT_VALUE);
-		memset(req, 0, sizeof(*req));
-	} else {
-		/* Return if the device has been removed */
-		ret = -ENODEV;
-	}
-
-=======
  *
  * Callers should ensure that the target device is not RPM_SUSPENDED before
  * using this function for requests of type DEV_PM_QOS_FLAGS.
@@ -766,7 +513,6 @@ int dev_pm_qos_remove_request(struct dev_pm_qos_request *req)
 
 	mutex_lock(&dev_pm_qos_mtx);
 	ret = __dev_pm_qos_remove_request(req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&dev_pm_qos_mtx);
 	return ret;
 }
@@ -778,26 +524,6 @@ EXPORT_SYMBOL_GPL(dev_pm_qos_remove_request);
  *
  * @dev: target device for the constraint
  * @notifier: notifier block managed by caller.
-<<<<<<< HEAD
- *
- * Will register the notifier into a notification chain that gets called
- * upon changes to the target value for the device.
- */
-int dev_pm_qos_add_notifier(struct device *dev, struct notifier_block *notifier)
-{
-	int retval = 0;
-
-	mutex_lock(&dev_pm_qos_mtx);
-
-	/* Silently return if the constraints object is not present. */
-	if (dev->power.constraints)
-		retval = blocking_notifier_chain_register(
-				dev->power.constraints->notifiers,
-				notifier);
-
-	mutex_unlock(&dev_pm_qos_mtx);
-	return retval;
-=======
  * @type: request type.
  *
  * Will register the notifier into a notification chain that gets called
@@ -842,7 +568,6 @@ int dev_pm_qos_add_notifier(struct device *dev, struct notifier_block *notifier,
 unlock:
 	mutex_unlock(&dev_pm_qos_mtx);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(dev_pm_qos_add_notifier);
 
@@ -852,38 +577,20 @@ EXPORT_SYMBOL_GPL(dev_pm_qos_add_notifier);
  *
  * @dev: target device for the constraint
  * @notifier: notifier block to be removed.
-<<<<<<< HEAD
-=======
  * @type: request type.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Will remove the notifier from the notification chain that gets called
  * upon changes to the target value.
  */
 int dev_pm_qos_remove_notifier(struct device *dev,
-<<<<<<< HEAD
-			       struct notifier_block *notifier)
-{
-	int retval = 0;
-=======
 			       struct notifier_block *notifier,
 			       enum dev_pm_qos_req_type type)
 {
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&dev_pm_qos_mtx);
 
 	/* Silently return if the constraints object is not present. */
-<<<<<<< HEAD
-	if (dev->power.constraints)
-		retval = blocking_notifier_chain_unregister(
-				dev->power.constraints->notifiers,
-				notifier);
-
-	mutex_unlock(&dev_pm_qos_mtx);
-	return retval;
-=======
 	if (IS_ERR_OR_NULL(dev->power.qos))
 		goto unlock;
 
@@ -908,72 +615,10 @@ int dev_pm_qos_remove_notifier(struct device *dev,
 unlock:
 	mutex_unlock(&dev_pm_qos_mtx);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(dev_pm_qos_remove_notifier);
 
 /**
-<<<<<<< HEAD
- * dev_pm_qos_add_global_notifier - sets notification entry for changes to
- * target value of the PM QoS constraints for any device
- *
- * @notifier: notifier block managed by caller.
- *
- * Will register the notifier into a notification chain that gets called
- * upon changes to the target value for any device.
- */
-int dev_pm_qos_add_global_notifier(struct notifier_block *notifier)
-{
-	return blocking_notifier_chain_register(&dev_pm_notifiers, notifier);
-}
-EXPORT_SYMBOL_GPL(dev_pm_qos_add_global_notifier);
-
-/**
- * dev_pm_qos_remove_global_notifier - deletes notification for changes to
- * target value of PM QoS constraints for any device
- *
- * @notifier: notifier block to be removed.
- *
- * Will remove the notifier from the notification chain that gets called
- * upon changes to the target value for any device.
- */
-int dev_pm_qos_remove_global_notifier(struct notifier_block *notifier)
-{
-	return blocking_notifier_chain_unregister(&dev_pm_notifiers, notifier);
-}
-EXPORT_SYMBOL_GPL(dev_pm_qos_remove_global_notifier);
-
-/**
- * dev_pm_qos_add_ancestor_request - Add PM QoS request for device's ancestor.
- * @dev: Device whose ancestor to add the request for.
- * @req: Pointer to the preallocated handle.
- * @value: Constraint latency value.
- */
-int dev_pm_qos_add_ancestor_request(struct device *dev,
-				    struct dev_pm_qos_request *req, s32 value)
-{
-	struct device *ancestor = dev->parent;
-	int error = -ENODEV;
-
-	while (ancestor && !ancestor->power.ignore_children)
-		ancestor = ancestor->parent;
-
-	if (ancestor)
-		error = dev_pm_qos_add_request(ancestor, req, value);
-
-	if (error < 0)
-		req->dev = NULL;
-
-	return error;
-}
-EXPORT_SYMBOL_GPL(dev_pm_qos_add_ancestor_request);
-
-#ifdef CONFIG_PM_RUNTIME
-static void __dev_pm_qos_drop_user_request(struct device *dev)
-{
-	dev_pm_qos_remove_request(dev->power.pq_req);
-	dev->power.pq_req = 0;
-=======
  * dev_pm_qos_add_ancestor_request - Add PM QoS request for device's ancestor.
  * @dev: Device whose ancestor to add the request for.
  * @req: Pointer to the preallocated handle.
@@ -1043,7 +688,6 @@ static void dev_pm_qos_drop_user_request(struct device *dev,
 	mutex_lock(&dev_pm_qos_mtx);
 	__dev_pm_qos_drop_user_request(dev, type);
 	mutex_unlock(&dev_pm_qos_mtx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1059,27 +703,10 @@ int dev_pm_qos_expose_latency_limit(struct device *dev, s32 value)
 	if (!device_is_registered(dev) || value < 0)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (dev->power.pq_req)
-		return -EEXIST;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req = kzalloc(sizeof(*req), GFP_KERNEL);
 	if (!req)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	ret = dev_pm_qos_add_request(dev, req, value);
-	if (ret < 0)
-		return ret;
-
-	dev->power.pq_req = req;
-	ret = pm_qos_sysfs_add(dev);
-	if (ret)
-		__dev_pm_qos_drop_user_request(dev);
-
-=======
 	ret = dev_pm_qos_add_request(dev, req, DEV_PM_QOS_RESUME_LATENCY, value);
 	if (ret < 0) {
 		kfree(req);
@@ -1111,35 +738,22 @@ int dev_pm_qos_expose_latency_limit(struct device *dev, s32 value)
 
  out:
 	mutex_unlock(&dev_pm_qos_sysfs_mtx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(dev_pm_qos_expose_latency_limit);
 
-<<<<<<< HEAD
-=======
 static void __dev_pm_qos_hide_latency_limit(struct device *dev)
 {
 	if (!IS_ERR_OR_NULL(dev->power.qos) && dev->power.qos->resume_latency_req)
 		__dev_pm_qos_drop_user_request(dev, DEV_PM_QOS_RESUME_LATENCY);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * dev_pm_qos_hide_latency_limit - Hide PM QoS latency limit from user space.
  * @dev: Device whose PM QoS latency limit is to be hidden from user space.
  */
 void dev_pm_qos_hide_latency_limit(struct device *dev)
 {
-<<<<<<< HEAD
-	if (dev->power.pq_req) {
-		pm_qos_sysfs_remove(dev);
-		__dev_pm_qos_drop_user_request(dev);
-	}
-}
-EXPORT_SYMBOL_GPL(dev_pm_qos_hide_latency_limit);
-#endif /* CONFIG_PM_RUNTIME */
-=======
 	mutex_lock(&dev_pm_qos_sysfs_mtx);
 
 	pm_qos_sysfs_remove_resume_latency(dev);
@@ -1366,4 +980,3 @@ void dev_pm_qos_hide_latency_tolerance(struct device *dev)
 	pm_runtime_put(dev);
 }
 EXPORT_SYMBOL_GPL(dev_pm_qos_hide_latency_tolerance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

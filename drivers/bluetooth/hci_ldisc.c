@@ -1,36 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *  Bluetooth HCI UART driver
  *
-<<<<<<< HEAD
- *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
- *  Copyright (C) 2004-2005  Marcel Holtmann <marcel@holtmann.org>
- *  Copyright (c) 2000-2001, 2010-2012, The Linux Foundation. All rights reserved.
- *
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
  *  Copyright (C) 2000-2001  Qualcomm Incorporated
  *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
  *  Copyright (C) 2004-2005  Marcel Holtmann <marcel@holtmann.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -50,27 +25,12 @@
 #include <linux/signal.h>
 #include <linux/ioctl.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-=======
 #include <linux/firmware.h>
 #include <linux/serdev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 
-<<<<<<< HEAD
-#include "hci_uart.h"
-
-#define VERSION "2.2"
-
-static bool reset = 0;
-
-static struct hci_uart_proto *hup[HCI_UART_MAX_PROTO];
-static void hci_uart_tty_wakeup_action(unsigned long data);
-
-int hci_uart_register_proto(struct hci_uart_proto *p)
-=======
 #include "btintel.h"
 #include "btbcm.h"
 #include "hci_uart.h"
@@ -80,7 +40,6 @@ int hci_uart_register_proto(struct hci_uart_proto *p)
 static const struct hci_uart_proto *hup[HCI_UART_MAX_PROTO];
 
 int hci_uart_register_proto(const struct hci_uart_proto *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (p->id >= HCI_UART_MAX_PROTO)
 		return -EINVAL;
@@ -90,19 +49,12 @@ int hci_uart_register_proto(const struct hci_uart_proto *p)
 
 	hup[p->id] = p;
 
-<<<<<<< HEAD
-	return 0;
-}
-
-int hci_uart_unregister_proto(struct hci_uart_proto *p)
-=======
 	BT_INFO("HCI UART protocol %s registered", p->name);
 
 	return 0;
 }
 
 int hci_uart_unregister_proto(const struct hci_uart_proto *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (p->id >= HCI_UART_MAX_PROTO)
 		return -EINVAL;
@@ -115,11 +67,7 @@ int hci_uart_unregister_proto(const struct hci_uart_proto *p)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct hci_uart_proto *hci_uart_get_proto(unsigned int id)
-=======
 static const struct hci_uart_proto *hci_uart_get_proto(unsigned int id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (id >= HCI_UART_MAX_PROTO)
 		return NULL;
@@ -151,12 +99,6 @@ static inline struct sk_buff *hci_uart_dequeue(struct hci_uart *hu)
 {
 	struct sk_buff *skb = hu->tx_skb;
 
-<<<<<<< HEAD
-	if (!skb)
-		skb = hu->proto->dequeue(hu);
-	else
-		hu->tx_skb = NULL;
-=======
 	if (!skb) {
 		percpu_down_read(&hu->proto_lock);
 
@@ -167,15 +109,12 @@ static inline struct sk_buff *hci_uart_dequeue(struct hci_uart *hu)
 	} else {
 		hu->tx_skb = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return skb;
 }
 
 int hci_uart_tx_wakeup(struct hci_uart *hu)
 {
-<<<<<<< HEAD
-=======
 	/* This may be called in an IRQ context, so we can't sleep. Therefore
 	 * we try to acquire the lock only, and if that fails we assume the
 	 * tty is being closed because that is the only time the write lock is
@@ -206,23 +145,13 @@ EXPORT_SYMBOL_GPL(hci_uart_tx_wakeup);
 static void hci_uart_write_work(struct work_struct *work)
 {
 	struct hci_uart *hu = container_of(work, struct hci_uart, write_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tty_struct *tty = hu->tty;
 	struct hci_dev *hdev = hu->hdev;
 	struct sk_buff *skb;
 
-<<<<<<< HEAD
-	if (test_and_set_bit(HCI_UART_SENDING, &hu->tx_state)) {
-		set_bit(HCI_UART_TX_WAKEUP, &hu->tx_state);
-		return 0;
-	}
-
-	BT_DBG("");
-=======
 	/* REVISIT: should we cope with bad skbs or ->write() returning
 	 * and error value ?
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 restart:
 	clear_bit(HCI_UART_TX_WAKEUP, &hu->tx_state);
@@ -240,36 +169,6 @@ restart:
 			break;
 		}
 
-<<<<<<< HEAD
-		hci_uart_tx_complete(hu, bt_cb(skb)->pkt_type);
-		kfree_skb(skb);
-	}
-
-	if (test_bit(HCI_UART_TX_WAKEUP, &hu->tx_state))
-		goto restart;
-
-	clear_bit(HCI_UART_SENDING, &hu->tx_state);
-	return 0;
-}
-
-/* ------- Interface to HCI layer ------ */
-/* Initialize device */
-static int hci_uart_open(struct hci_dev *hdev)
-{
-	BT_DBG("%s %p", hdev->name, hdev);
-
-	/* Nothing to do for UART driver */
-
-	set_bit(HCI_RUNNING, &hdev->flags);
-
-	return 0;
-}
-
-/* Reset device */
-static int hci_uart_flush(struct hci_dev *hdev)
-{
-	struct hci_uart *hu  = (struct hci_uart *) hdev->driver_data;
-=======
 		hci_uart_tx_complete(hu, hci_skb_pkt_type(skb));
 		kfree_skb(skb);
 	}
@@ -326,7 +225,6 @@ int hci_uart_wait_until_sent(struct hci_uart *hu)
 static int hci_uart_flush(struct hci_dev *hdev)
 {
 	struct hci_uart *hu  = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tty_struct *tty = hu->tty;
 
 	BT_DBG("hdev %p tty %p", hdev, tty);
@@ -339,11 +237,6 @@ static int hci_uart_flush(struct hci_dev *hdev)
 	tty_ldisc_flush(tty);
 	tty_driver_flush_buffer(tty);
 
-<<<<<<< HEAD
-	if (test_bit(HCI_UART_PROTO_SET, &hu->flags))
-		hu->proto->flush(hu);
-
-=======
 	percpu_down_read(&hu->proto_lock);
 
 	if (test_bit(HCI_UART_PROTO_READY, &hu->flags))
@@ -362,7 +255,6 @@ static int hci_uart_open(struct hci_dev *hdev)
 	/* Undo clearing this from hci_uart_close() */
 	hdev->flush = hci_uart_flush;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -371,38 +263,12 @@ static int hci_uart_close(struct hci_dev *hdev)
 {
 	BT_DBG("hdev %p", hdev);
 
-<<<<<<< HEAD
-	if (!test_and_clear_bit(HCI_RUNNING, &hdev->flags))
-		return 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hci_uart_flush(hdev);
 	hdev->flush = NULL;
 	return 0;
 }
 
 /* Send frames from HCI layer */
-<<<<<<< HEAD
-static int hci_uart_send_frame(struct sk_buff *skb)
-{
-	struct hci_dev* hdev = (struct hci_dev *) skb->dev;
-	struct hci_uart *hu;
-
-	if (!hdev) {
-		BT_ERR("Frame for unknown device (hdev=NULL)");
-		return -ENODEV;
-	}
-
-	if (!test_bit(HCI_RUNNING, &hdev->flags))
-		return -EBUSY;
-
-	hu = (struct hci_uart *) hdev->driver_data;
-
-	BT_DBG("%s: type %d len %d", hdev->name, bt_cb(skb)->pkt_type, skb->len);
-
-	hu->proto->enqueue(hu, skb);
-=======
 static int hci_uart_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct hci_uart *hu = hci_get_drvdata(hdev);
@@ -419,22 +285,12 @@ static int hci_uart_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 
 	hu->proto->enqueue(hu, skb);
 	percpu_up_read(&hu->proto_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hci_uart_tx_wakeup(hu);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void hci_uart_destruct(struct hci_dev *hdev)
-{
-	if (!hdev)
-		return;
-
-	BT_DBG("%s", hdev->name);
-	kfree(hdev->driver_data);
-=======
 /* Check the underlying device or tty has flow control support */
 bool hci_uart_has_flow_control(struct hci_uart *hu)
 {
@@ -605,49 +461,20 @@ static int hci_uart_setup(struct hci_dev *hdev)
 done:
 	kfree_skb(skb);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ------ LDISC part ------ */
 /* hci_uart_tty_open
-<<<<<<< HEAD
- * 
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *     Called when line discipline changed to HCI_UART.
  *
  * Arguments:
  *     tty    pointer to tty info structure
-<<<<<<< HEAD
- * Return Value:    
-=======
  * Return Value:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *     0 if success, otherwise error code
  */
 static int hci_uart_tty_open(struct tty_struct *tty)
 {
-<<<<<<< HEAD
-	struct hci_uart *hu = (void *) tty->disc_data;
-
-	BT_DBG("tty %p", tty);
-
-	/* FIXME: This btw is bogus, nothing requires the old ldisc to clear
-	   the pointer */
-	if (hu)
-		return -EEXIST;
-
-	/* Error if the tty has no write op instead of leaving an exploitable
-	   hole */
-	if (tty->ops->write == NULL)
-		return -EOPNOTSUPP;
-
-	if (!(hu = kzalloc(sizeof(struct hci_uart), GFP_KERNEL))) {
-		BT_ERR("Can't allocate control structure");
-		return -ENFILE;
-	}
-=======
 	struct hci_uart *hu;
 
 	BT_DBG("tty %p", tty);
@@ -671,25 +498,11 @@ static int hci_uart_tty_open(struct tty_struct *tty)
 		kfree(hu);
 		return -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tty->disc_data = hu;
 	hu->tty = tty;
 	tty->receive_room = 65536;
 
-<<<<<<< HEAD
-	spin_lock_init(&hu->rx_lock);
-	tasklet_init(&hu->tty_wakeup_task, hci_uart_tty_wakeup_action,
-			 (unsigned long)hu);
-
-	/* Flush any pending characters in the driver and line discipline. */
-
-	/* FIXME: why is this needed. Note don't use ldisc_ref here as the
-	   open path is before the ldisc is referencable */
-
-	if (tty->ldisc->ops->flush_buffer)
-		tty->ldisc->ops->flush_buffer(tty);
-=======
 	/* disable alignment support by default */
 	hu->alignment = 1;
 	hu->padding = 0;
@@ -698,7 +511,6 @@ static int hci_uart_tty_open(struct tty_struct *tty)
 	INIT_WORK(&hu->write_work, hci_uart_write_work);
 
 	/* Flush any pending characters in the driver */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tty_driver_flush_buffer(tty);
 
 	return 0;
@@ -711,36 +523,14 @@ static int hci_uart_tty_open(struct tty_struct *tty)
  */
 static void hci_uart_tty_close(struct tty_struct *tty)
 {
-<<<<<<< HEAD
-	struct hci_uart *hu = (void *)tty->disc_data;
-=======
 	struct hci_uart *hu = tty->disc_data;
 	struct hci_dev *hdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("tty %p", tty);
 
 	/* Detach from the tty */
 	tty->disc_data = NULL;
 
-<<<<<<< HEAD
-	if (hu) {
-		struct hci_dev *hdev = hu->hdev;
-
-		if (hdev)
-			hci_uart_close(hdev);
-
-		tasklet_kill(&hu->tty_wakeup_task);
-
-		if (test_and_clear_bit(HCI_UART_PROTO_SET, &hu->flags)) {
-			hu->proto->close(hu);
-			if (hdev) {
-				hci_unregister_dev(hdev);
-				hci_free_dev(hdev);
-			}
-		}
-	}
-=======
 	if (!hu)
 		return;
 
@@ -768,90 +558,43 @@ static void hci_uart_tty_close(struct tty_struct *tty)
 	percpu_free_rwsem(&hu->proto_lock);
 
 	kfree(hu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* hci_uart_tty_wakeup()
  *
  *    Callback for transmit wakeup. Called when low level
  *    device driver can accept more send data.
-<<<<<<< HEAD
- *    This callback gets called from the isr context so
- *    schedule the send data operation to tasklet.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Arguments:        tty    pointer to associated tty instance data
  * Return Value:    None
  */
 static void hci_uart_tty_wakeup(struct tty_struct *tty)
 {
-<<<<<<< HEAD
-	struct hci_uart *hu = (void *)tty->disc_data;
-	tasklet_schedule(&hu->tty_wakeup_task);
-}
-
-/* hci_uart_tty_wakeup_action()
- *
- * Scheduled action to transmit data when low level device
- * driver can accept more data.
- */
-static void hci_uart_tty_wakeup_action(unsigned long data)
-{
-	struct hci_uart *hu = (struct hci_uart *)data;
-	struct tty_struct *tty;
-=======
 	struct hci_uart *hu = tty->disc_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("");
 
 	if (!hu)
 		return;
 
-<<<<<<< HEAD
-	tty = hu->tty;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
 
 	if (tty != hu->tty)
 		return;
 
-<<<<<<< HEAD
-	if (test_bit(HCI_UART_PROTO_SET, &hu->flags))
-=======
 	if (test_bit(HCI_UART_PROTO_READY, &hu->flags))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hci_uart_tx_wakeup(hu);
 }
 
 /* hci_uart_tty_receive()
-<<<<<<< HEAD
- * 
- *     Called by tty low level driver when receive data is
- *     available.
- *     
-=======
  *
  *     Called by tty low level driver when receive data is
  *     available.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Arguments:  tty          pointer to tty isntance data
  *             data         pointer to received data
  *             flags        pointer to flags for data
  *             count        count of received data in bytes
-<<<<<<< HEAD
- *     
- * Return Value:    None
- */
-static void hci_uart_tty_receive(struct tty_struct *tty, const u8 *data, char *flags, int count)
-{
-	int ret;
-	struct hci_uart *hu = (void *)tty->disc_data;
-=======
  *
  * Return Value:    None
  */
@@ -859,21 +602,10 @@ static void hci_uart_tty_receive(struct tty_struct *tty, const u8 *data,
 				 const u8 *flags, size_t count)
 {
 	struct hci_uart *hu = tty->disc_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!hu || tty != hu->tty)
 		return;
 
-<<<<<<< HEAD
-	if (!test_bit(HCI_UART_PROTO_SET, &hu->flags))
-		return;
-
-	spin_lock(&hu->rx_lock);
-	ret = hu->proto->recv(hu, (void *) data, count);
-	if (ret > 0)
-		hu->hdev->stat.byte_rx += count;
-	spin_unlock(&hu->rx_lock);
-=======
 	percpu_down_read(&hu->proto_lock);
 
 	if (!test_bit(HCI_UART_PROTO_READY, &hu->flags)) {
@@ -889,7 +621,6 @@ static void hci_uart_tty_receive(struct tty_struct *tty, const u8 *data,
 
 	if (hu->hdev)
 		hu->hdev->stat.byte_rx += count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tty_unthrottle(tty);
 }
@@ -897,10 +628,7 @@ static void hci_uart_tty_receive(struct tty_struct *tty, const u8 *data,
 static int hci_uart_register_dev(struct hci_uart *hu)
 {
 	struct hci_dev *hdev;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("");
 
@@ -914,9 +642,6 @@ static int hci_uart_register_dev(struct hci_uart *hu)
 	hu->hdev = hdev;
 
 	hdev->bus = HCI_UART;
-<<<<<<< HEAD
-	hdev->driver_data = hu;
-=======
 	hci_set_drvdata(hdev, hu);
 
 	/* Only when vendor specific setup callback is provided, consider
@@ -925,32 +650,17 @@ static int hci_uart_register_dev(struct hci_uart *hu)
 	 */
 	if (hu->proto->setup)
 		hdev->manufacturer = hu->proto->manufacturer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdev->open  = hci_uart_open;
 	hdev->close = hci_uart_close;
 	hdev->flush = hci_uart_flush;
 	hdev->send  = hci_uart_send_frame;
-<<<<<<< HEAD
-	hdev->destruct = hci_uart_destruct;
-	hdev->parent = hu->tty->dev;
-
-	hdev->owner = THIS_MODULE;
-
-	if (!reset)
-		set_bit(HCI_QUIRK_NO_RESET, &hdev->quirks);
-=======
 	hdev->setup = hci_uart_setup;
 	SET_HCIDEV_DEV(hdev, hu->tty->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_bit(HCI_UART_RAW_DEVICE, &hu->hdev_flags))
 		set_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks);
 
-<<<<<<< HEAD
-	if (hci_register_dev(hdev) < 0) {
-		BT_ERR("Can't register HCI device");
-=======
 	if (test_bit(HCI_UART_EXT_CONFIG, &hu->hdev_flags))
 		set_bit(HCI_QUIRK_EXTERNAL_CONFIG, &hdev->quirks);
 
@@ -979,49 +689,28 @@ static int hci_uart_register_dev(struct hci_uart *hu)
 		BT_ERR("Can't register HCI device");
 		hu->proto->close(hu);
 		hu->hdev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hci_free_dev(hdev);
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-=======
 	set_bit(HCI_UART_REGISTERED, &hu->flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int hci_uart_set_proto(struct hci_uart *hu, int id)
 {
-<<<<<<< HEAD
-	struct hci_uart_proto *p;
-=======
 	const struct hci_uart_proto *p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	p = hci_uart_get_proto(id);
 	if (!p)
 		return -EPROTONOSUPPORT;
 
-<<<<<<< HEAD
-	err = p->open(hu);
-	if (err)
-		return err;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hu->proto = p;
 
 	err = hci_uart_register_dev(hu);
 	if (err) {
-<<<<<<< HEAD
-		p->close(hu);
-		return err;
-	}
-
-=======
 		return err;
 	}
 
@@ -1043,7 +732,6 @@ static int hci_uart_set_flags(struct hci_uart *hu, unsigned long flags)
 
 	hu->hdev_flags = flags;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1054,26 +742,15 @@ static int hci_uart_set_flags(struct hci_uart *hu, unsigned long flags)
  * Arguments:
  *
  *    tty        pointer to tty instance data
-<<<<<<< HEAD
- *    file       pointer to open file object for device
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    cmd        IOCTL command code
  *    arg        argument for IOCTL call (cmd dependent)
  *
  * Return Value:    Command dependent
  */
-<<<<<<< HEAD
-static int hci_uart_tty_ioctl(struct tty_struct *tty, struct file * file,
-					unsigned int cmd, unsigned long arg)
-{
-	struct hci_uart *hu = (void *)tty->disc_data;
-=======
 static int hci_uart_tty_ioctl(struct tty_struct *tty, unsigned int cmd,
 			      unsigned long arg)
 {
 	struct hci_uart *hu = tty->disc_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	BT_DBG("");
@@ -1084,48 +761,6 @@ static int hci_uart_tty_ioctl(struct tty_struct *tty, unsigned int cmd,
 
 	switch (cmd) {
 	case HCIUARTSETPROTO:
-<<<<<<< HEAD
-		if (!test_and_set_bit(HCI_UART_PROTO_SET_IN_PROGRESS,
-			&hu->flags) && !test_bit(HCI_UART_PROTO_SET,
-				&hu->flags)) {
-			err = hci_uart_set_proto(hu, arg);
-			if (err) {
-				clear_bit(HCI_UART_PROTO_SET_IN_PROGRESS,
-						&hu->flags);
-				return err;
-			} else {
-				set_bit(HCI_UART_PROTO_SET, &hu->flags);
-				clear_bit(HCI_UART_PROTO_SET_IN_PROGRESS,
-						&hu->flags);
-			}
-		} else
-			return -EBUSY;
-		break;
-
-	case HCIUARTGETPROTO:
-		if (test_bit(HCI_UART_PROTO_SET, &hu->flags))
-			return hu->proto->id;
-		return -EUNATCH;
-
-	case HCIUARTGETDEVICE:
-		if (test_bit(HCI_UART_PROTO_SET, &hu->flags))
-			return hu->hdev->id;
-		return -EUNATCH;
-
-	case HCIUARTSETFLAGS:
-		if (test_bit(HCI_UART_PROTO_SET, &hu->flags))
-			return -EBUSY;
-		hu->hdev_flags = arg;
-		break;
-
-	case HCIUARTGETFLAGS:
-		return hu->hdev_flags;
-
-	default:
-		err = n_tty_ioctl_helper(tty, file, cmd, arg);
-		break;
-	};
-=======
 		if (!test_and_set_bit(HCI_UART_PROTO_SET, &hu->flags)) {
 			err = hci_uart_set_proto(hu, arg);
 			if (err)
@@ -1164,7 +799,6 @@ static int hci_uart_tty_ioctl(struct tty_struct *tty, unsigned int cmd,
 		err = n_tty_ioctl_helper(tty, cmd, arg);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -1173,37 +807,18 @@ static int hci_uart_tty_ioctl(struct tty_struct *tty, unsigned int cmd,
  * We don't provide read/write/poll interface for user space.
  */
 static ssize_t hci_uart_tty_read(struct tty_struct *tty, struct file *file,
-<<<<<<< HEAD
-					unsigned char __user *buf, size_t nr)
-=======
 				 u8 *buf, size_t nr, void **cookie,
 				 unsigned long offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
 static ssize_t hci_uart_tty_write(struct tty_struct *tty, struct file *file,
-<<<<<<< HEAD
-					const unsigned char *data, size_t count)
-=======
 				  const u8 *data, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-static unsigned int hci_uart_tty_poll(struct tty_struct *tty,
-					struct file *filp, poll_table *wait)
-{
-	return 0;
-}
-
-static int __init hci_uart_init(void)
-{
-	static struct tty_ldisc_ops hci_uart_ldisc;
-=======
 static struct tty_ldisc_ops hci_uart_ldisc = {
 	.owner		= THIS_MODULE,
 	.num		= N_HCI,
@@ -1220,32 +835,13 @@ static struct tty_ldisc_ops hci_uart_ldisc = {
 
 static int __init hci_uart_init(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	BT_INFO("HCI UART driver ver %s", VERSION);
 
 	/* Register the tty discipline */
-<<<<<<< HEAD
-
-	memset(&hci_uart_ldisc, 0, sizeof (hci_uart_ldisc));
-	hci_uart_ldisc.magic		= TTY_LDISC_MAGIC;
-	hci_uart_ldisc.name		= "n_hci";
-	hci_uart_ldisc.open		= hci_uart_tty_open;
-	hci_uart_ldisc.close		= hci_uart_tty_close;
-	hci_uart_ldisc.read		= hci_uart_tty_read;
-	hci_uart_ldisc.write		= hci_uart_tty_write;
-	hci_uart_ldisc.ioctl		= hci_uart_tty_ioctl;
-	hci_uart_ldisc.poll		= hci_uart_tty_poll;
-	hci_uart_ldisc.receive_buf	= hci_uart_tty_receive;
-	hci_uart_ldisc.write_wakeup	= hci_uart_tty_wakeup;
-	hci_uart_ldisc.owner		= THIS_MODULE;
-
-	if ((err = tty_register_ldisc(N_HCI, &hci_uart_ldisc))) {
-=======
 	err = tty_register_ldisc(&hci_uart_ldisc);
 	if (err) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BT_ERR("HCI line discipline registration failed. (%d)", err);
 		return err;
 	}
@@ -1262,10 +858,6 @@ static int __init hci_uart_init(void)
 #ifdef CONFIG_BT_HCIUART_ATH3K
 	ath_init();
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_BT_HCIUART_IBS
-	ibs_init();
-=======
 #ifdef CONFIG_BT_HCIUART_3WIRE
 	h5_init();
 #endif
@@ -1283,7 +875,6 @@ static int __init hci_uart_init(void)
 #endif
 #ifdef CONFIG_BT_HCIUART_MRVL
 	mrvl_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	return 0;
@@ -1291,11 +882,6 @@ static int __init hci_uart_init(void)
 
 static void __exit hci_uart_exit(void)
 {
-<<<<<<< HEAD
-	int err;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_BT_HCIUART_H4
 	h4_deinit();
 #endif
@@ -1308,15 +894,6 @@ static void __exit hci_uart_exit(void)
 #ifdef CONFIG_BT_HCIUART_ATH3K
 	ath_deinit();
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_BT_HCIUART_IBS
-	ibs_deinit();
-#endif
-
-	/* Release tty registration of line discipline */
-	if ((err = tty_unregister_ldisc(N_HCI)))
-		BT_ERR("Can't unregister HCI line discipline (%d)", err);
-=======
 #ifdef CONFIG_BT_HCIUART_3WIRE
 	h5_deinit();
 #endif
@@ -1337,18 +914,11 @@ static void __exit hci_uart_exit(void)
 #endif
 
 	tty_unregister_ldisc(&hci_uart_ldisc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(hci_uart_init);
 module_exit(hci_uart_exit);
 
-<<<<<<< HEAD
-module_param(reset, bool, 0644);
-MODULE_PARM_DESC(reset, "Send HCI reset command on initialization");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
 MODULE_DESCRIPTION("Bluetooth HCI UART driver ver " VERSION);
 MODULE_VERSION(VERSION);

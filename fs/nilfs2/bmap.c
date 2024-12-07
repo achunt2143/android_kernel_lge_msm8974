@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-/*
- * bmap.c - NILFS block mapping.
- *
- * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Written by Koji Sato <koji@osrg.net>.
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * NILFS block mapping.
@@ -27,7 +5,6 @@
  * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
  *
  * Written by Koji Sato.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -55,13 +32,8 @@ static int nilfs_bmap_convert_error(struct nilfs_bmap *bmap,
 	struct inode *inode = bmap->b_inode;
 
 	if (err == -EINVAL) {
-<<<<<<< HEAD
-		nilfs_error(inode->i_sb, fname,
-			    "broken bmap (inode number=%lu)\n", inode->i_ino);
-=======
 		__nilfs_error(inode->i_sb, fname,
 			      "broken bmap (inode number=%lu)", inode->i_ino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EIO;
 	}
 	return err;
@@ -95,23 +67,14 @@ int nilfs_bmap_lookup_at_level(struct nilfs_bmap *bmap, __u64 key, int level,
 
 	down_read(&bmap->b_sem);
 	ret = bmap->b_ops->bop_lookup(bmap, key, level, ptrp);
-<<<<<<< HEAD
-	if (ret < 0) {
-		ret = nilfs_bmap_convert_error(bmap, __func__, ret);
-		goto out;
-	}
-=======
 	if (ret < 0)
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (NILFS_BMAP_USE_VBN(bmap)) {
 		ret = nilfs_dat_translate(nilfs_bmap_get_dat(bmap), *ptrp,
 					  &blocknr);
 		if (!ret)
 			*ptrp = blocknr;
-<<<<<<< HEAD
-=======
 		else if (ret == -ENOENT) {
 			/*
 			 * If there was no valid entry in DAT for the block
@@ -121,24 +84,15 @@ int nilfs_bmap_lookup_at_level(struct nilfs_bmap *bmap, __u64 key, int level,
 			 */
 			ret = -EINVAL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
  out:
 	up_read(&bmap->b_sem);
-<<<<<<< HEAD
-	return ret;
-}
-
-int nilfs_bmap_lookup_contig(struct nilfs_bmap *bmap, __u64 key, __u64 *ptrp,
-			     unsigned maxblocks)
-=======
 	return nilfs_bmap_convert_error(bmap, __func__, ret);
 }
 
 int nilfs_bmap_lookup_contig(struct nilfs_bmap *bmap, __u64 key, __u64 *ptrp,
 			     unsigned int maxblocks)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -193,13 +147,7 @@ static int nilfs_bmap_do_insert(struct nilfs_bmap *bmap, __u64 key, __u64 ptr)
  *
  * %-EEXIST - A record associated with @key already exist.
  */
-<<<<<<< HEAD
-int nilfs_bmap_insert(struct nilfs_bmap *bmap,
-		      unsigned long key,
-		      unsigned long rec)
-=======
 int nilfs_bmap_insert(struct nilfs_bmap *bmap, __u64 key, unsigned long rec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -236,15 +184,6 @@ static int nilfs_bmap_do_delete(struct nilfs_bmap *bmap, __u64 key)
 	return bmap->b_ops->bop_delete(bmap, key);
 }
 
-<<<<<<< HEAD
-int nilfs_bmap_last_key(struct nilfs_bmap *bmap, unsigned long *key)
-{
-	__u64 lastkey;
-	int ret;
-
-	down_read(&bmap->b_sem);
-	ret = bmap->b_ops->bop_last_key(bmap, &lastkey);
-=======
 /**
  * nilfs_bmap_seek_key - seek a valid entry and return its key
  * @bmap: bmap struct
@@ -282,16 +221,10 @@ int nilfs_bmap_last_key(struct nilfs_bmap *bmap, __u64 *keyp)
 
 	down_read(&bmap->b_sem);
 	ret = bmap->b_ops->bop_last_key(bmap, keyp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_read(&bmap->b_sem);
 
 	if (ret < 0)
 		ret = nilfs_bmap_convert_error(bmap, __func__, ret);
-<<<<<<< HEAD
-	else
-		*key = lastkey;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -312,11 +245,7 @@ int nilfs_bmap_last_key(struct nilfs_bmap *bmap, __u64 *keyp)
  *
  * %-ENOENT - A record associated with @key does not exist.
  */
-<<<<<<< HEAD
-int nilfs_bmap_delete(struct nilfs_bmap *bmap, unsigned long key)
-=======
 int nilfs_bmap_delete(struct nilfs_bmap *bmap, __u64 key)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -327,11 +256,7 @@ int nilfs_bmap_delete(struct nilfs_bmap *bmap, __u64 key)
 	return nilfs_bmap_convert_error(bmap, __func__, ret);
 }
 
-<<<<<<< HEAD
-static int nilfs_bmap_do_truncate(struct nilfs_bmap *bmap, unsigned long key)
-=======
 static int nilfs_bmap_do_truncate(struct nilfs_bmap *bmap, __u64 key)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u64 lastkey;
 	int ret;
@@ -372,11 +297,7 @@ static int nilfs_bmap_do_truncate(struct nilfs_bmap *bmap, __u64 key)
  *
  * %-ENOMEM - Insufficient amount of memory available.
  */
-<<<<<<< HEAD
-int nilfs_bmap_truncate(struct nilfs_bmap *bmap, unsigned long key)
-=======
 int nilfs_bmap_truncate(struct nilfs_bmap *bmap, __u64 key)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -442,11 +363,7 @@ void nilfs_bmap_lookup_dirty_buffers(struct nilfs_bmap *bmap,
 /**
  * nilfs_bmap_assign - assign a new block number to a block
  * @bmap: bmap
-<<<<<<< HEAD
- * @bhp: pointer to buffer head
-=======
  * @bh: pointer to buffer head
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @blocknr: block number
  * @binfo: block information
  *
@@ -536,11 +453,7 @@ __u64 nilfs_bmap_data_get_key(const struct nilfs_bmap *bmap,
 	struct buffer_head *pbh;
 	__u64 key;
 
-<<<<<<< HEAD
-	key = page_index(bh->b_page) << (PAGE_CACHE_SHIFT -
-=======
 	key = page_index(bh->b_page) << (PAGE_SHIFT -
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 bmap->b_inode->i_blkbits);
 	for (pbh = page_buffers(bh->b_page); pbh != bh; pbh = pbh->b_this_page)
 		key++;
@@ -614,11 +527,7 @@ int nilfs_bmap_read(struct nilfs_bmap *bmap, struct nilfs_inode *raw_inode)
 		break;
 	case NILFS_IFILE_INO:
 		lockdep_set_class(&bmap->b_sem, &nilfs_bmap_mdt_lock_key);
-<<<<<<< HEAD
-		/* Fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bmap->b_ptr_type = NILFS_BMAP_PTR_VM;
 		bmap->b_last_allocated_key = 0;
@@ -639,19 +548,10 @@ int nilfs_bmap_read(struct nilfs_bmap *bmap, struct nilfs_inode *raw_inode)
  */
 void nilfs_bmap_write(struct nilfs_bmap *bmap, struct nilfs_inode *raw_inode)
 {
-<<<<<<< HEAD
-	down_write(&bmap->b_sem);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(raw_inode->i_bmap, bmap->b_u.u_data,
 	       NILFS_INODE_BMAP_SIZE * sizeof(__le64));
 	if (bmap->b_inode->i_ino == NILFS_DAT_INO)
 		bmap->b_last_allocated_ptr = NILFS_BMAP_NEW_PTR_INIT;
-<<<<<<< HEAD
-
-	up_write(&bmap->b_sem);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nilfs_bmap_init_gc(struct nilfs_bmap *bmap)

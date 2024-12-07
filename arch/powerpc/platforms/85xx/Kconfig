@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-menuconfig FSL_SOC_BOOKE
-	bool "Freescale Book-E Machine Type"
-	depends on PPC_85xx || PPC_BOOK3E
-	select FSL_SOC
-	select PPC_UDBG_16550
-	select MPIC
-	select PPC_PCI_CHOICE
-	select FSL_PCI if PCI
-	select SERIAL_8250_EXTENDED if SERIAL_8250
-	select SERIAL_8250_SHARE_IRQ if SERIAL_8250
-=======
 # SPDX-License-Identifier: GPL-2.0
 menuconfig FSL_SOC_BOOKE
 	bool "Freescale Book-E Machine Type"
@@ -22,23 +10,12 @@ menuconfig FSL_SOC_BOOKE
 	select SERIAL_8250_EXTENDED if SERIAL_8250
 	select SERIAL_8250_SHARE_IRQ if SERIAL_8250
 	select FSL_CORENET_RCPM if PPC_E500MC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 
 if FSL_SOC_BOOKE
 
 if PPC32
 
-<<<<<<< HEAD
-config FSL_85XX_CACHE_SRAM
-	bool
-	select PPC_LIB_RHEAP
-	help
-	  When selected, this option enables cache-sram support
-	  for memory allocation on P1/P2 QorIQ platforms.
-	  cache-sram-size and cache-sram-offset kernel boot
-	  parameters should be passed when this option is enabled.
-=======
 config BSC9131_RDB
 	bool "Freescale BSC9131RDB"
 	select DEFAULT_UIMAGE
@@ -62,7 +39,6 @@ config BSC9132_QDS
 	  BSC9132 is a heterogeneous SoC containing dual e500v2 powerpc cores
 	  and dual StarCore SC3850 DSP cores.
 	  Manufacturer : Freescale Semiconductor, Inc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MPC8540_ADS
 	bool "Freescale MPC8540 ADS"
@@ -81,24 +57,11 @@ config MPC85xx_CDS
 	bool "Freescale MPC85xx CDS"
 	select DEFAULT_UIMAGE
 	select PPC_I8259
-<<<<<<< HEAD
-	select HAS_RAPIDIO
-=======
 	select HAVE_RAPIDIO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option enables support for the MPC85xx CDS board
 
 config MPC85xx_MDS
-<<<<<<< HEAD
-	bool "Freescale MPC85xx MDS"
-	select DEFAULT_UIMAGE
-	select PHYLIB
-	select HAS_RAPIDIO
-	select SWIOTLB
-	help
-	  This option enables support for the MPC85xx MDS board
-=======
 	bool "Freescale MPC8568 MDS / MPC8569 MDS / P1021 MDS"
 	select DEFAULT_UIMAGE
 	select PHYLIB if NETDEVICES
@@ -106,7 +69,6 @@ config MPC85xx_MDS
 	select SWIOTLB
 	help
 	  This option enables support for the MPC8568 MDS, MPC8569 MDS and P1021 MDS boards
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MPC8536_DS
 	bool "Freescale MPC8536 DS"
@@ -116,34 +78,12 @@ config MPC8536_DS
 	  This option enables support for the MPC8536 DS board
 
 config MPC85xx_DS
-<<<<<<< HEAD
-	bool "Freescale MPC85xx DS"
-=======
 	bool "Freescale MPC8544 DS / MPC8572 DS"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select PPC_I8259
 	select DEFAULT_UIMAGE
 	select FSL_ULI1575 if PCI
 	select SWIOTLB
 	help
-<<<<<<< HEAD
-	  This option enables support for the MPC85xx DS (MPC8544 DS) board
-
-config MPC85xx_RDB
-	bool "Freescale MPC85xx RDB"
-	select PPC_I8259
-	select DEFAULT_UIMAGE
-	select FSL_ULI1575 if PCI
-	select SWIOTLB
-	help
-	  This option enables support for the MPC85xx RDB (P2020 RDB) board
-
-config P1010_RDB
-	bool "Freescale P1010RDB"
-	select DEFAULT_UIMAGE
-	help
-	  This option enables support for the MPC85xx RDB (P1010 RDB) board
-=======
 	  This option enables support for the MPC8544 DS and MPC8572 DS boards
 
 config MPC85xx_RDB
@@ -175,7 +115,6 @@ config P1010_RDB
 	select DEFAULT_UIMAGE
 	help
 	  This option enables support for the P1010 RDB board
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  P1010RDB contains P1010Si, which provides CPU performance up to 800
 	  MHz and 1600 DMIPS, additional functionality and faster interfaces
@@ -188,13 +127,6 @@ config P1022_DS
 	help
 	  This option enables support for the Freescale P1022DS reference board.
 
-<<<<<<< HEAD
-config P1023_RDS
-	bool "Freescale P1023 RDS"
-	select DEFAULT_UIMAGE
-	help
-	  This option enables support for the P1023 RDS board
-=======
 config P1022_RDK
 	bool "Freescale / iVeia P1022 RDK"
 	select DEFAULT_UIMAGE
@@ -213,7 +145,6 @@ config TWR_P102x
 	select DEFAULT_UIMAGE
 	help
 	  This option enables support for the TWR-P1025 board.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SOCRATES
 	bool "Socrates"
@@ -222,17 +153,10 @@ config SOCRATES
 	  This option enables support for the Socrates board.
 
 config KSI8560
-<<<<<<< HEAD
-        bool "Emerson KSI8560"
-        select DEFAULT_UIMAGE
-        help
-          This option enables support for the Emerson KSI8560 board
-=======
 	bool "Emerson KSI8560"
 	select DEFAULT_UIMAGE
 	help
 	  This option enables support for the Emerson KSI8560 board
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config XES_MPC85xx
 	bool "X-ES single-board computer"
@@ -242,11 +166,7 @@ config XES_MPC85xx
 	  computers from Extreme Engineering Solutions (X-ES) based on
 	  Freescale MPC85xx processors.
 	  Manufacturer: Extreme Engineering Solutions, Inc.
-<<<<<<< HEAD
-	  URL: <http://www.xes-inc.com/>
-=======
 	  URL: <https://www.xes-inc.com/>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config STX_GP3
 	bool "Silicon Turnkey Express GP3"
@@ -294,38 +214,19 @@ config TQM8560
 	select TQM85xx
 	select CPM2
 
-<<<<<<< HEAD
-config SBC8548
-	bool "Wind River SBC8548"
-	select DEFAULT_UIMAGE
-	help
-	  This option enables support for the Wind River SBC8548 board
-
-config SBC8560
-	bool "Wind River SBC8560"
-	select DEFAULT_UIMAGE
-	help
-	  This option enables support for the Wind River SBC8560 board
-=======
 config PPA8548
 	bool "Prodrive PPA8548"
 	help
 	  This option enables support for the Prodrive PPA8548 board.
 	select DEFAULT_UIMAGE
 	select HAVE_RAPIDIO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config GE_IMP3A
 	bool "GE Intelligent Platforms IMP3A"
 	select DEFAULT_UIMAGE
 	select SWIOTLB
 	select MMIO_NVRAM
-<<<<<<< HEAD
-	select GENERIC_GPIO
-	select ARCH_REQUIRE_GPIOLIB
-=======
 	select GPIOLIB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select GE_FPGA
 	help
 	  This option enables support for the GE Intelligent Platforms IMP3A
@@ -334,74 +235,6 @@ config GE_IMP3A
 	  This board is a 3U CompactPCI Single Board Computer with a Freescale
 	  P2020 processor.
 
-<<<<<<< HEAD
-config P2041_RDB
-	bool "Freescale P2041 RDB"
-	select DEFAULT_UIMAGE
-	select PPC_E500MC
-	select PHYS_64BIT
-	select SWIOTLB
-	select ARCH_REQUIRE_GPIOLIB
-	select GPIO_MPC8XXX
-	select HAS_RAPIDIO
-	select PPC_EPAPR_HV_PIC
-	help
-	  This option enables support for the P2041 RDB board
-
-config P3041_DS
-	bool "Freescale P3041 DS"
-	select DEFAULT_UIMAGE
-	select PPC_E500MC
-	select PHYS_64BIT
-	select SWIOTLB
-	select ARCH_REQUIRE_GPIOLIB
-	select GPIO_MPC8XXX
-	select HAS_RAPIDIO
-	select PPC_EPAPR_HV_PIC
-	help
-	  This option enables support for the P3041 DS board
-
-config P3060_QDS
-	bool "Freescale P3060 QDS"
-	select DEFAULT_UIMAGE
-	select PPC_E500MC
-	select PHYS_64BIT
-	select SWIOTLB
-	select GPIO_MPC8XXX
-	select HAS_RAPIDIO
-	select PPC_EPAPR_HV_PIC
-	help
-	  This option enables support for the P3060 QDS board
-
-config P4080_DS
-	bool "Freescale P4080 DS"
-	select DEFAULT_UIMAGE
-	select PPC_E500MC
-	select PHYS_64BIT
-	select SWIOTLB
-	select ARCH_REQUIRE_GPIOLIB
-	select GPIO_MPC8XXX
-	select HAS_RAPIDIO
-	select PPC_EPAPR_HV_PIC
-	help
-	  This option enables support for the P4080 DS board
-
-endif # PPC32
-
-config P5020_DS
-	bool "Freescale P5020 DS"
-	select DEFAULT_UIMAGE
-	select E500
-	select PPC_E500MC
-	select PHYS_64BIT
-	select SWIOTLB
-	select ARCH_REQUIRE_GPIOLIB
-	select GPIO_MPC8XXX
-	select HAS_RAPIDIO
-	select PPC_EPAPR_HV_PIC
-	help
-	  This option enables support for the P5020 DS board
-=======
 config SGY_CTS1000
 	tristate "Servergy CTS-1000 support"
 	select GPIOLIB
@@ -451,7 +284,6 @@ config CORENET_GENERIC
 	    T208x QDS/RDB, T4240 QDS/RDB and B4 QDS
 	  The following boards are supported for both 32bit and 64bit kernel:
 	    P5020 DS, P5040 DS, T102x QDS/RDB, T104x QDS/RDB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif # FSL_SOC_BOOKE
 

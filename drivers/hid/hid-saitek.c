@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-/*
- *  HID driver for Saitek devices, currently only the PS1000 (USB gamepad).
- *  Fixes the HID report descriptor by removing a non-existent axis and
- *  clearing the constant bit on the input reports for buttons and d-pad.
- *  (This module is based on "hid-ortek".)
- *
- *  Copyright (c) 2012 Andreas Hübner
- */
-
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  HID driver for Saitek devices.
@@ -31,7 +15,6 @@
  */
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -41,14 +24,6 @@
 
 #include "hid-ids.h"
 
-<<<<<<< HEAD
-static __u8 *saitek_report_fixup(struct hid_device *hdev, __u8 *rdesc,
-		unsigned int *rsize)
-{
-	if (*rsize == 137 && rdesc[20] == 0x09 && rdesc[21] == 0x33
-			&& rdesc[94] == 0x81 && rdesc[95] == 0x03
-			&& rdesc[110] == 0x81 && rdesc[111] == 0x03) {
-=======
 #define SAITEK_FIX_PS1000	0x0001
 #define SAITEK_RELEASE_MODE_RAT7	0x0002
 #define SAITEK_RELEASE_MODE_MMO7	0x0004
@@ -100,7 +75,6 @@ static __u8 *saitek_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 			rdesc[20] == 0x09 && rdesc[21] == 0x33 &&
 			rdesc[94] == 0x81 && rdesc[95] == 0x03 &&
 			rdesc[110] == 0x81 && rdesc[111] == 0x03) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hid_info(hdev, "Fixing up Saitek PS1000 report descriptor\n");
 
@@ -116,10 +90,6 @@ static __u8 *saitek_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 	return rdesc;
 }
 
-<<<<<<< HEAD
-static const struct hid_device_id saitek_devices[] = {
-	{ HID_USB_DEVICE(USB_VENDOR_ID_SAITEK, USB_DEVICE_ID_SAITEK_PS1000)},
-=======
 static int saitek_raw_event(struct hid_device *hdev,
 		struct hid_report *report, u8 *raw_data, int size)
 {
@@ -219,7 +189,6 @@ static const struct hid_device_id saitek_devices[] = {
 		.driver_data = SAITEK_RELEASE_MODE_MMO7 },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_MADCATZ, USB_DEVICE_ID_MADCATZ_MMO7),
 		.driver_data = SAITEK_RELEASE_MODE_MMO7 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 
@@ -228,23 +197,6 @@ MODULE_DEVICE_TABLE(hid, saitek_devices);
 static struct hid_driver saitek_driver = {
 	.name = "saitek",
 	.id_table = saitek_devices,
-<<<<<<< HEAD
-	.report_fixup = saitek_report_fixup
-};
-
-static int __init saitek_init(void)
-{
-	return hid_register_driver(&saitek_driver);
-}
-
-static void __exit saitek_exit(void)
-{
-	hid_unregister_driver(&saitek_driver);
-}
-
-module_init(saitek_init);
-module_exit(saitek_exit);
-=======
 	.probe = saitek_probe,
 	.report_fixup = saitek_report_fixup,
 	.raw_event = saitek_raw_event,
@@ -252,5 +204,4 @@ module_exit(saitek_exit);
 };
 module_hid_driver(saitek_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

@@ -1,21 +1,9 @@
-<<<<<<< HEAD
-/****************************************************************************
- * ip_conntrack_h323_asn1.h - BER and PER decoding library for H.323
- * 			      conntrack/NAT module.
- *
- * Copyright (c) 2006 by Jing Min Zhao <zhaojingmin@users.sourceforge.net>
- *
- * This source code is licensed under General Public License version 2.
- *
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /****************************************************************************
  * BER and PER decoding library for H.323 conntrack/NAT module.
  *
  * Copyright (c) 2006 by Jing Min Zhao <zhaojingmin@users.sourceforge.net>
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This library is based on H.225 version 4, H.235 version 2 and H.245
  * version 7. It is extremely optimized to decode only the absolutely
  * necessary objects in a signal for Linux kernel NAT module use, so don't
@@ -49,13 +37,9 @@
 /*****************************************************************************
  * H.323 Types
  ****************************************************************************/
-<<<<<<< HEAD
-#include "nf_conntrack_h323_types.h"
-=======
 
 #include <linux/types.h>
 #include <linux/netfilter/nf_conntrack_h323_types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct {
 	enum {

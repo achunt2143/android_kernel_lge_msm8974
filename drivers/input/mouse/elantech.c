@@ -1,37 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Elantech Touchpad driver (v6)
  *
  * Copyright (C) 2007-2009 Arjan Opmeer <arjan@opmeer.net>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Trademarks are the property of their respective owners.
  */
 
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/slab.h>
-#include <linux/module.h>
-#include <linux/input.h>
-#include <linux/input/mt.h>
-#include <linux/serio.h>
-#include <linux/libps2.h>
-#include "psmouse.h"
-#include "elantech.h"
-
-#define elantech_debug(fmt, ...)					\
-	do {								\
-		if (etd->debug)						\
-=======
 #include <linux/dmi.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -49,7 +25,6 @@
 #define elantech_debug(fmt, ...)					\
 	do {								\
 		if (etd->info.debug)					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			psmouse_printk(KERN_DEBUG, psmouse,		\
 					fmt, ##__VA_ARGS__);		\
 	} while (0)
@@ -60,11 +35,7 @@
 static int synaptics_send_cmd(struct psmouse *psmouse, unsigned char c,
 				unsigned char *param)
 {
-<<<<<<< HEAD
-	if (psmouse_sliced_command(psmouse, c) ||
-=======
 	if (ps2_sliced_command(&psmouse->ps2dev, c) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    ps2_command(&psmouse->ps2dev, param, PSMOUSE_CMD_GETINFO)) {
 		psmouse_err(psmouse, "%s query 0x%02x failed.\n", __func__, c);
 		return -1;
@@ -119,8 +90,6 @@ static int elantech_ps2_command(struct psmouse *psmouse,
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Send an Elantech style special command to read 3 bytes from a register
  */
 static int elantech_read_reg_params(struct psmouse *psmouse, u8 reg, u8 *param)
@@ -162,7 +131,6 @@ static int elantech_write_reg_params(struct psmouse *psmouse, u8 reg, u8 *param)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send an Elantech style special command to read a value from a register
  */
 static int elantech_read_reg(struct psmouse *psmouse, unsigned char reg,
@@ -178,17 +146,10 @@ static int elantech_read_reg(struct psmouse *psmouse, unsigned char reg,
 	if (reg > 0x11 && reg < 0x20)
 		return -1;
 
-<<<<<<< HEAD
-	switch (etd->hw_version) {
-	case 1:
-		if (psmouse_sliced_command(psmouse, ETP_REGISTER_READ) ||
-		    psmouse_sliced_command(psmouse, reg) ||
-=======
 	switch (etd->info.hw_version) {
 	case 1:
 		if (ps2_sliced_command(&psmouse->ps2dev, ETP_REGISTER_READ) ||
 		    ps2_sliced_command(&psmouse->ps2dev, reg) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    ps2_command(&psmouse->ps2dev, param, PSMOUSE_CMD_GETINFO)) {
 			rc = -1;
 		}
@@ -217,11 +178,7 @@ static int elantech_read_reg(struct psmouse *psmouse, unsigned char reg,
 
 	if (rc)
 		psmouse_err(psmouse, "failed to read register 0x%02x.\n", reg);
-<<<<<<< HEAD
-	else if (etd->hw_version != 4)
-=======
 	else if (etd->info.hw_version != 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*val = param[0];
 	else
 		*val = param[1];
@@ -244,19 +201,11 @@ static int elantech_write_reg(struct psmouse *psmouse, unsigned char reg,
 	if (reg > 0x11 && reg < 0x20)
 		return -1;
 
-<<<<<<< HEAD
-	switch (etd->hw_version) {
-	case 1:
-		if (psmouse_sliced_command(psmouse, ETP_REGISTER_WRITE) ||
-		    psmouse_sliced_command(psmouse, reg) ||
-		    psmouse_sliced_command(psmouse, val) ||
-=======
 	switch (etd->info.hw_version) {
 	case 1:
 		if (ps2_sliced_command(&psmouse->ps2dev, ETP_REGISTER_WRITE) ||
 		    ps2_sliced_command(&psmouse->ps2dev, reg) ||
 		    ps2_sliced_command(&psmouse->ps2dev, val) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    ps2_command(&psmouse->ps2dev, NULL, PSMOUSE_CMD_SETSCALE11)) {
 			rc = -1;
 		}
@@ -314,14 +263,6 @@ static int elantech_write_reg(struct psmouse *psmouse, unsigned char reg,
  */
 static void elantech_packet_dump(struct psmouse *psmouse)
 {
-<<<<<<< HEAD
-	int	i;
-
-	psmouse_printk(KERN_DEBUG, psmouse, "PS/2 packet [");
-	for (i = 0; i < psmouse->pktsize; i++)
-		printk("%s0x%02x ", i ? ", " : " ", psmouse->packet[i]);
-	printk("]\n");
-=======
 	psmouse_printk(KERN_DEBUG, psmouse, "PS/2 packet [%*ph]\n",
 		       psmouse->pktsize, psmouse->packet);
 }
@@ -370,7 +311,6 @@ static void elantech_packet_dump(struct psmouse *psmouse)
 static inline int elantech_is_buttonpad(struct elantech_device_info *info)
 {
 	return info->fw_version & 0x001000;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -384,11 +324,7 @@ static void elantech_report_absolute_v1(struct psmouse *psmouse)
 	unsigned char *packet = psmouse->packet;
 	int fingers;
 
-<<<<<<< HEAD
-	if (etd->fw_version < 0x020000) {
-=======
 	if (etd->info.fw_version < 0x020000) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * byte 0:  D   U  p1  p2   1  p3   R   L
 		 * byte 1:  f   0  th  tw  x9  x8  y9  y8
@@ -403,11 +339,7 @@ static void elantech_report_absolute_v1(struct psmouse *psmouse)
 		fingers = (packet[0] & 0xc0) >> 6;
 	}
 
-<<<<<<< HEAD
-	if (etd->jumpy_cursor) {
-=======
 	if (etd->info.jumpy_cursor) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fingers != 1) {
 			etd->single_finger_reports = 0;
 		} else if (etd->single_finger_reports < 2) {
@@ -434,19 +366,11 @@ static void elantech_report_absolute_v1(struct psmouse *psmouse)
 	input_report_key(dev, BTN_TOOL_FINGER, fingers == 1);
 	input_report_key(dev, BTN_TOOL_DOUBLETAP, fingers == 2);
 	input_report_key(dev, BTN_TOOL_TRIPLETAP, fingers == 3);
-<<<<<<< HEAD
-	input_report_key(dev, BTN_LEFT, packet[0] & 0x01);
-	input_report_key(dev, BTN_RIGHT, packet[0] & 0x02);
-
-	if (etd->fw_version < 0x020000 &&
-	    (etd->capabilities[0] & ETP_CAP_HAS_ROCKER)) {
-=======
 
 	psmouse_report_standard_buttons(dev, packet[0]);
 
 	if (etd->info.fw_version < 0x020000 &&
 	    (etd->info.capabilities[0] & ETP_CAP_HAS_ROCKER)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* rocker up */
 		input_report_key(dev, BTN_FORWARD, packet[0] & 0x40);
 		/* rocker down */
@@ -500,11 +424,7 @@ static void elantech_report_absolute_v2(struct psmouse *psmouse)
 		 */
 		if (packet[3] & 0x80)
 			fingers = 4;
-<<<<<<< HEAD
-		/* pass through... */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:
 		/*
 		 * byte 1:  .   .   .   .  x11 x10 x9  x8
@@ -557,14 +477,8 @@ static void elantech_report_absolute_v2(struct psmouse *psmouse)
 	input_report_key(dev, BTN_TOOL_DOUBLETAP, fingers == 2);
 	input_report_key(dev, BTN_TOOL_TRIPLETAP, fingers == 3);
 	input_report_key(dev, BTN_TOOL_QUADTAP, fingers == 4);
-<<<<<<< HEAD
-	input_report_key(dev, BTN_LEFT, packet[0] & 0x01);
-	input_report_key(dev, BTN_RIGHT, packet[0] & 0x02);
-	if (etd->reports_pressure) {
-=======
 	psmouse_report_standard_buttons(dev, packet[0]);
 	if (etd->info.reports_pressure) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_report_abs(dev, ABS_PRESSURE, pres);
 		input_report_abs(dev, ABS_TOOL_WIDTH, width);
 	}
@@ -572,8 +486,6 @@ static void elantech_report_absolute_v2(struct psmouse *psmouse)
 	input_sync(dev);
 }
 
-<<<<<<< HEAD
-=======
 static void elantech_report_trackpoint(struct psmouse *psmouse,
 				       int packet_type)
 {
@@ -639,7 +551,6 @@ static void elantech_report_trackpoint(struct psmouse *psmouse,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Interpret complete data packets and report absolute mode input events for
  * hardware version 3. (12 byte packets for two fingers)
@@ -712,19 +623,10 @@ static void elantech_report_absolute_v3(struct psmouse *psmouse,
 	input_report_key(dev, BTN_TOOL_TRIPLETAP, fingers == 3);
 
 	/* For clickpads map both buttons to BTN_LEFT */
-<<<<<<< HEAD
-	if (etd->fw_version & 0x001000) {
-		input_report_key(dev, BTN_LEFT, packet[0] & 0x03);
-	} else {
-		input_report_key(dev, BTN_LEFT, packet[0] & 0x01);
-		input_report_key(dev, BTN_RIGHT, packet[0] & 0x02);
-	}
-=======
 	if (elantech_is_buttonpad(&etd->info))
 		input_report_key(dev, BTN_LEFT, packet[0] & 0x03);
 	else
 		psmouse_report_standard_buttons(dev, packet[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_report_abs(dev, ABS_PRESSURE, pres);
 	input_report_abs(dev, ABS_TOOL_WIDTH, width);
@@ -739,19 +641,10 @@ static void elantech_input_sync_v4(struct psmouse *psmouse)
 	unsigned char *packet = psmouse->packet;
 
 	/* For clickpads map both buttons to BTN_LEFT */
-<<<<<<< HEAD
-	if (etd->fw_version & 0x001000) {
-		input_report_key(dev, BTN_LEFT, packet[0] & 0x03);
-	} else {
-		input_report_key(dev, BTN_LEFT, packet[0] & 0x01);
-		input_report_key(dev, BTN_RIGHT, packet[0] & 0x02);
-	}
-=======
 	if (elantech_is_buttonpad(&etd->info))
 		input_report_key(dev, BTN_LEFT, packet[0] & 0x03);
 	else
 		psmouse_report_standard_buttons(dev, packet[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_mt_report_pointer_emulation(dev, true);
 	input_sync(dev);
@@ -781,18 +674,11 @@ static void process_packet_head_v4(struct psmouse *psmouse)
 	struct input_dev *dev = psmouse->dev;
 	struct elantech_data *etd = psmouse->private;
 	unsigned char *packet = psmouse->packet;
-<<<<<<< HEAD
-	int id = ((packet[3] & 0xe0) >> 5) - 1;
-	int pres, traces;
-
-	if (id < 0)
-=======
 	int id;
 	int pres, traces;
 
 	id = ((packet[3] & 0xe0) >> 5) - 1;
 	if (id < 0 || id >= ETP_MAX_FINGERS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	etd->mt[id].x = ((packet[1] & 0x0f) << 8) | packet[2];
@@ -822,11 +708,7 @@ static void process_packet_motion_v4(struct psmouse *psmouse)
 	int id, sid;
 
 	id = ((packet[0] & 0xe0) >> 5) - 1;
-<<<<<<< HEAD
-	if (id < 0)
-=======
 	if (id < 0 || id >= ETP_MAX_FINGERS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	sid = ((packet[3] & 0xe0) >> 5) - 1;
@@ -847,11 +729,7 @@ static void process_packet_motion_v4(struct psmouse *psmouse)
 	input_report_abs(dev, ABS_MT_POSITION_X, etd->mt[id].x);
 	input_report_abs(dev, ABS_MT_POSITION_Y, etd->mt[id].y);
 
-<<<<<<< HEAD
-	if (sid >= 0) {
-=======
 	if (sid >= 0 && sid < ETP_MAX_FINGERS) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		etd->mt[sid].x += delta_x2 * weight;
 		etd->mt[sid].y -= delta_y2 * weight;
 		input_mt_slot(dev, sid);
@@ -892,11 +770,7 @@ static int elantech_packet_check_v1(struct psmouse *psmouse)
 	unsigned char p1, p2, p3;
 
 	/* Parity bits are placed differently */
-<<<<<<< HEAD
-	if (etd->fw_version < 0x020000) {
-=======
 	if (etd->info.fw_version < 0x020000) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* byte 0:  D   U  p1  p2   1  p3   R   L */
 		p1 = (packet[0] & 0x20) >> 5;
 		p2 = (packet[0] & 0x10) >> 4;
@@ -919,13 +793,9 @@ static int elantech_debounce_check_v2(struct psmouse *psmouse)
          * When we encounter packet that matches this exactly, it means the
          * hardware is in debounce status. Just ignore the whole packet.
          */
-<<<<<<< HEAD
-        const u8 debounce_packet[] = { 0x84, 0xff, 0xff, 0x02, 0xff, 0xff };
-=======
 	static const u8 debounce_packet[] = {
 		0x84, 0xff, 0xff, 0x02, 0xff, 0xff
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         unsigned char *packet = psmouse->packet;
 
         return !memcmp(packet, debounce_packet, sizeof(debounce_packet));
@@ -945,11 +815,7 @@ static int elantech_packet_check_v2(struct psmouse *psmouse)
 	 * With all three cases, if the constant bits are not exactly what I
 	 * expected, I consider them invalid.
 	 */
-<<<<<<< HEAD
-	if (etd->reports_pressure)
-=======
 	if (etd->info.reports_pressure)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (packet[0] & 0x0c) == 0x04 &&
 		       (packet[3] & 0x0f) == 0x02;
 
@@ -969,14 +835,10 @@ static int elantech_packet_check_v2(struct psmouse *psmouse)
  */
 static int elantech_packet_check_v3(struct psmouse *psmouse)
 {
-<<<<<<< HEAD
-	const u8 debounce_packet[] = { 0xc4, 0xff, 0xff, 0x02, 0xff, 0xff };
-=======
 	struct elantech_data *etd = psmouse->private;
 	static const u8 debounce_packet[] = {
 		0xc4, 0xff, 0xff, 0x02, 0xff, 0xff
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *packet = psmouse->packet;
 
 	/*
@@ -986,13 +848,6 @@ static int elantech_packet_check_v3(struct psmouse *psmouse)
 	if (!memcmp(packet, debounce_packet, sizeof(debounce_packet)))
 		return PACKET_DEBOUNCE;
 
-<<<<<<< HEAD
-	if ((packet[0] & 0x0c) == 0x04 && (packet[3] & 0xcf) == 0x02)
-		return PACKET_V3_HEAD;
-
-	if ((packet[0] & 0x0c) == 0x0c && (packet[3] & 0xce) == 0x0c)
-		return PACKET_V3_TAIL;
-=======
 	/*
 	 * If the hardware flag 'crc_enabled' is set the packets have
 	 * different signatures.
@@ -1012,28 +867,12 @@ static int elantech_packet_check_v3(struct psmouse *psmouse)
 		if ((packet[3] & 0x0f) == 0x06)
 			return PACKET_TRACKPOINT;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return PACKET_UNKNOWN;
 }
 
 static int elantech_packet_check_v4(struct psmouse *psmouse)
 {
-<<<<<<< HEAD
-	unsigned char *packet = psmouse->packet;
-
-	if ((packet[0] & 0x0c) == 0x04 &&
-	    (packet[3] & 0x1f) == 0x11)
-		return PACKET_V4_HEAD;
-
-	if ((packet[0] & 0x0c) == 0x04 &&
-	    (packet[3] & 0x1f) == 0x12)
-		return PACKET_V4_MOTION;
-
-	if ((packet[0] & 0x0c) == 0x04 &&
-	    (packet[3] & 0x1f) == 0x10)
-		return PACKET_V4_STATUS;
-=======
 	struct elantech_data *etd = psmouse->private;
 	unsigned char *packet = psmouse->packet;
 	unsigned char packet_type = packet[3] & 0x03;
@@ -1074,7 +913,6 @@ static int elantech_packet_check_v4(struct psmouse *psmouse)
 	case 2:
 		return PACKET_V4_MOTION;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return PACKET_UNKNOWN;
 }
@@ -1090,21 +928,12 @@ static psmouse_ret_t elantech_process_byte(struct psmouse *psmouse)
 	if (psmouse->pktcnt < psmouse->pktsize)
 		return PSMOUSE_GOOD_DATA;
 
-<<<<<<< HEAD
-	if (etd->debug > 1)
-		elantech_packet_dump(psmouse);
-
-	switch (etd->hw_version) {
-	case 1:
-		if (etd->paritycheck && !elantech_packet_check_v1(psmouse))
-=======
 	if (etd->info.debug > 1)
 		elantech_packet_dump(psmouse);
 
 	switch (etd->info.hw_version) {
 	case 1:
 		if (etd->info.paritycheck && !elantech_packet_check_v1(psmouse))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return PSMOUSE_BAD_DATA;
 
 		elantech_report_absolute_v1(psmouse);
@@ -1115,11 +944,7 @@ static psmouse_ret_t elantech_process_byte(struct psmouse *psmouse)
 		if (elantech_debounce_check_v2(psmouse))
 			return PSMOUSE_FULL_PACKET;
 
-<<<<<<< HEAD
-		if (etd->paritycheck && !elantech_packet_check_v2(psmouse))
-=======
 		if (etd->info.paritycheck && !elantech_packet_check_v2(psmouse))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return PSMOUSE_BAD_DATA;
 
 		elantech_report_absolute_v2(psmouse);
@@ -1127,16 +952,6 @@ static psmouse_ret_t elantech_process_byte(struct psmouse *psmouse)
 
 	case 3:
 		packet_type = elantech_packet_check_v3(psmouse);
-<<<<<<< HEAD
-		/* ignore debounce */
-		if (packet_type == PACKET_DEBOUNCE)
-			return PSMOUSE_FULL_PACKET;
-
-		if (packet_type == PACKET_UNKNOWN)
-			return PSMOUSE_BAD_DATA;
-
-		elantech_report_absolute_v3(psmouse, packet_type);
-=======
 		switch (packet_type) {
 		case PACKET_UNKNOWN:
 			return PSMOUSE_BAD_DATA;
@@ -1154,17 +969,10 @@ static psmouse_ret_t elantech_process_byte(struct psmouse *psmouse)
 			break;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case 4:
 		packet_type = elantech_packet_check_v4(psmouse);
-<<<<<<< HEAD
-		if (packet_type == PACKET_UNKNOWN)
-			return PSMOUSE_BAD_DATA;
-
-		elantech_report_absolute_v4(psmouse, packet_type);
-=======
 		switch (packet_type) {
 		case PACKET_UNKNOWN:
 			return PSMOUSE_BAD_DATA;
@@ -1178,7 +986,6 @@ static psmouse_ret_t elantech_process_byte(struct psmouse *psmouse)
 			break;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -1210,11 +1017,7 @@ static int elantech_set_absolute_mode(struct psmouse *psmouse)
 	int tries = ETP_READ_BACK_TRIES;
 	int rc = 0;
 
-<<<<<<< HEAD
-	switch (etd->hw_version) {
-=======
 	switch (etd->info.hw_version) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:
 		etd->reg_10 = 0x16;
 		etd->reg_11 = 0x8f;
@@ -1237,15 +1040,11 @@ static int elantech_set_absolute_mode(struct psmouse *psmouse)
 		break;
 
 	case 3:
-<<<<<<< HEAD
-		etd->reg_10 = 0x0b;
-=======
 		if (etd->info.set_hw_resolution)
 			etd->reg_10 = 0x0b;
 		else
 			etd->reg_10 = 0x01;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (elantech_write_reg(psmouse, 0x10, etd->reg_10))
 			rc = -1;
 
@@ -1278,11 +1077,7 @@ static int elantech_set_absolute_mode(struct psmouse *psmouse)
 		if (rc) {
 			psmouse_err(psmouse,
 				    "failed to read back register 0x10.\n");
-<<<<<<< HEAD
-		} else if (etd->hw_version == 1 &&
-=======
 		} else if (etd->info.hw_version == 1 &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   !(val & ETP_R10_ABSOLUTE_MODE)) {
 			psmouse_err(psmouse,
 				    "touchpad refuses to switch to absolute mode.\n");
@@ -1297,90 +1092,6 @@ static int elantech_set_absolute_mode(struct psmouse *psmouse)
 	return rc;
 }
 
-<<<<<<< HEAD
-static int elantech_set_range(struct psmouse *psmouse,
-			      unsigned int *x_min, unsigned int *y_min,
-			      unsigned int *x_max, unsigned int *y_max,
-			      unsigned int *width)
-{
-	struct elantech_data *etd = psmouse->private;
-	unsigned char param[3];
-	unsigned char traces;
-
-	switch (etd->hw_version) {
-	case 1:
-		*x_min = ETP_XMIN_V1;
-		*y_min = ETP_YMIN_V1;
-		*x_max = ETP_XMAX_V1;
-		*y_max = ETP_YMAX_V1;
-		break;
-
-	case 2:
-		if (etd->fw_version == 0x020800 ||
-		    etd->fw_version == 0x020b00 ||
-		    etd->fw_version == 0x020030) {
-			*x_min = ETP_XMIN_V2;
-			*y_min = ETP_YMIN_V2;
-			*x_max = ETP_XMAX_V2;
-			*y_max = ETP_YMAX_V2;
-		} else {
-			int i;
-			int fixed_dpi;
-
-			i = (etd->fw_version > 0x020800 &&
-			     etd->fw_version < 0x020900) ? 1 : 2;
-
-			if (etd->send_cmd(psmouse, ETP_FW_ID_QUERY, param))
-				return -1;
-
-			fixed_dpi = param[1] & 0x10;
-
-			if (((etd->fw_version >> 16) == 0x14) && fixed_dpi) {
-				if (etd->send_cmd(psmouse, ETP_SAMPLE_QUERY, param))
-					return -1;
-
-				*x_max = (etd->capabilities[1] - i) * param[1] / 2;
-				*y_max = (etd->capabilities[2] - i) * param[2] / 2;
-			} else if (etd->fw_version == 0x040216) {
-				*x_max = 819;
-				*y_max = 405;
-			} else if (etd->fw_version == 0x040219 || etd->fw_version == 0x040215) {
-				*x_max = 900;
-				*y_max = 500;
-			} else {
-				*x_max = (etd->capabilities[1] - i) * 64;
-				*y_max = (etd->capabilities[2] - i) * 64;
-			}
-		}
-		break;
-
-	case 3:
-		if (etd->send_cmd(psmouse, ETP_FW_ID_QUERY, param))
-			return -1;
-
-		*x_max = (0x0f & param[0]) << 8 | param[1];
-		*y_max = (0xf0 & param[0]) << 4 | param[2];
-		break;
-
-	case 4:
-		if (etd->send_cmd(psmouse, ETP_FW_ID_QUERY, param))
-			return -1;
-
-		*x_max = (0x0f & param[0]) << 8 | param[1];
-		*y_max = (0xf0 & param[0]) << 4 | param[2];
-		traces = etd->capabilities[1];
-		if ((traces < 2) || (traces > *x_max))
-			return -1;
-
-		*width = *x_max / (traces - 1);
-		break;
-	}
-
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * (value from firmware) * 10 + 790 = dpi
  * we also have to convert dpi to dots/mm (*10/254 to avoid floating point)
@@ -1392,12 +1103,8 @@ static unsigned int elantech_convert_res(unsigned int val)
 
 static int elantech_get_resolution_v4(struct psmouse *psmouse,
 				      unsigned int *x_res,
-<<<<<<< HEAD
-				      unsigned int *y_res)
-=======
 				      unsigned int *y_res,
 				      unsigned int *bus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char param[3];
 
@@ -1406,64 +1113,23 @@ static int elantech_get_resolution_v4(struct psmouse *psmouse,
 
 	*x_res = elantech_convert_res(param[1] & 0x0f);
 	*y_res = elantech_convert_res((param[1] & 0xf0) >> 4);
-<<<<<<< HEAD
-=======
 	*bus = param[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * Advertise INPUT_PROP_BUTTONPAD for clickpads. The testing of bit 12 in
- * fw_version for this is based on the following fw_version & caps table:
- *
- * Laptop-model:           fw_version:     caps:           buttons:
- * Acer S3                 0x461f00        10, 13, 0e      clickpad
- * Acer S7-392             0x581f01        50, 17, 0d      clickpad
- * Acer V5-131             0x461f02        01, 16, 0c      clickpad
- * Acer V5-551             0x461f00        ?               clickpad
- * Asus K53SV              0x450f01        78, 15, 0c      2 hw buttons
- * Asus G46VW              0x460f02        00, 18, 0c      2 hw buttons
- * Asus G750JX             0x360f00        00, 16, 0c      2 hw buttons
- * Asus TP500LN            0x381f17        10, 14, 0e      clickpad
- * Asus X750JN             0x381f17        10, 14, 0e      clickpad
- * Asus UX31               0x361f00        20, 15, 0e      clickpad
- * Asus UX32VD             0x361f02        00, 15, 0e      clickpad
- * Avatar AVIU-145A2       0x361f00        ?               clickpad
- * Gigabyte U2442          0x450f01        58, 17, 0c      2 hw buttons
- * Lenovo L430             0x350f02        b9, 15, 0c      2 hw buttons (*)
- * Samsung NF210           0x150b00        78, 14, 0a      2 hw buttons
- * Samsung NP770Z5E        0x575f01        10, 15, 0f      clickpad
- * Samsung NP700Z5B        0x361f06        21, 15, 0f      clickpad
- * Samsung NP900X3E-A02    0x575f03        ?               clickpad
- * Samsung NP-QX410        0x851b00        19, 14, 0c      clickpad
- * Samsung RC512           0x450f00        08, 15, 0c      2 hw buttons
- * Samsung RF710           0x450f00        ?               2 hw buttons
- * System76 Pangolin       0x250f01        ?               2 hw buttons
- * (*) + 3 trackpoint buttons
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void elantech_set_buttonpad_prop(struct psmouse *psmouse)
 {
 	struct input_dev *dev = psmouse->dev;
 	struct elantech_data *etd = psmouse->private;
 
-<<<<<<< HEAD
-	if (etd->fw_version & 0x001000) {
-=======
 	if (elantech_is_buttonpad(&etd->info)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__set_bit(INPUT_PROP_BUTTONPAD, dev->propbit);
 		__clear_bit(BTN_RIGHT, dev->keybit);
 	}
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Some hw_version 4 models do have a middle button
  */
 static const struct dmi_system_id elantech_dmi_has_middle_button[] = {
@@ -1494,25 +1160,16 @@ static const struct dmi_system_id elantech_dmi_has_middle_button[] = {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Set the appropriate event bits for the input subsystem
  */
 static int elantech_set_input_params(struct psmouse *psmouse)
 {
 	struct input_dev *dev = psmouse->dev;
 	struct elantech_data *etd = psmouse->private;
-<<<<<<< HEAD
-	unsigned int x_min = 0, y_min = 0, x_max = 0, y_max = 0, width = 0;
-	unsigned int x_res = 0, y_res = 0;
-
-	if (elantech_set_range(psmouse, &x_min, &y_min, &x_max, &y_max, &width))
-		return -1;
-=======
 	struct elantech_device_info *info = &etd->info;
 	unsigned int x_min = info->x_min, y_min = info->y_min,
 		     x_max = info->x_max, y_max = info->y_max,
 		     width = info->width;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__set_bit(INPUT_PROP_POINTER, dev->propbit);
 	__set_bit(EV_KEY, dev->evbit);
@@ -1520,11 +1177,8 @@ static int elantech_set_input_params(struct psmouse *psmouse)
 	__clear_bit(EV_REL, dev->evbit);
 
 	__set_bit(BTN_LEFT, dev->keybit);
-<<<<<<< HEAD
-=======
 	if (info->has_middle_button)
 		__set_bit(BTN_MIDDLE, dev->keybit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__set_bit(BTN_RIGHT, dev->keybit);
 
 	__set_bit(BTN_TOUCH, dev->keybit);
@@ -1532,19 +1186,11 @@ static int elantech_set_input_params(struct psmouse *psmouse)
 	__set_bit(BTN_TOOL_DOUBLETAP, dev->keybit);
 	__set_bit(BTN_TOOL_TRIPLETAP, dev->keybit);
 
-<<<<<<< HEAD
-	switch (etd->hw_version) {
-	case 1:
-		/* Rocker button */
-		if (etd->fw_version < 0x020000 &&
-		    (etd->capabilities[0] & ETP_CAP_HAS_ROCKER)) {
-=======
 	switch (info->hw_version) {
 	case 1:
 		/* Rocker button */
 		if (info->fw_version < 0x020000 &&
 		    (info->capabilities[0] & ETP_CAP_HAS_ROCKER)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__set_bit(BTN_FORWARD, dev->keybit);
 			__set_bit(BTN_BACK, dev->keybit);
 		}
@@ -1555,15 +1201,6 @@ static int elantech_set_input_params(struct psmouse *psmouse)
 	case 2:
 		__set_bit(BTN_TOOL_QUADTAP, dev->keybit);
 		__set_bit(INPUT_PROP_SEMI_MT, dev->propbit);
-<<<<<<< HEAD
-		/* fall through */
-	case 3:
-		if (etd->hw_version == 3)
-			elantech_set_buttonpad_prop(psmouse);
-		input_set_abs_params(dev, ABS_X, x_min, x_max, 0, 0);
-		input_set_abs_params(dev, ABS_Y, y_min, y_max, 0, 0);
-		if (etd->reports_pressure) {
-=======
 		fallthrough;
 	case 3:
 		if (info->hw_version == 3)
@@ -1571,42 +1208,22 @@ static int elantech_set_input_params(struct psmouse *psmouse)
 		input_set_abs_params(dev, ABS_X, x_min, x_max, 0, 0);
 		input_set_abs_params(dev, ABS_Y, y_min, y_max, 0, 0);
 		if (info->reports_pressure) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			input_set_abs_params(dev, ABS_PRESSURE, ETP_PMIN_V2,
 					     ETP_PMAX_V2, 0, 0);
 			input_set_abs_params(dev, ABS_TOOL_WIDTH, ETP_WMIN_V2,
 					     ETP_WMAX_V2, 0, 0);
 		}
-<<<<<<< HEAD
-		input_mt_init_slots(dev, 2);
-=======
 		input_mt_init_slots(dev, 2, INPUT_MT_SEMI_MT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_set_abs_params(dev, ABS_MT_POSITION_X, x_min, x_max, 0, 0);
 		input_set_abs_params(dev, ABS_MT_POSITION_Y, y_min, y_max, 0, 0);
 		break;
 
 	case 4:
-<<<<<<< HEAD
-		if (elantech_get_resolution_v4(psmouse, &x_res, &y_res)) {
-			/*
-			 * if query failed, print a warning and leave the values
-			 * zero to resemble synaptics.c behavior.
-			 */
-			psmouse_warn(psmouse, "couldn't query resolution data.\n");
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		elantech_set_buttonpad_prop(psmouse);
 		__set_bit(BTN_TOOL_QUADTAP, dev->keybit);
 		/* For X to recognize me as touchpad. */
 		input_set_abs_params(dev, ABS_X, x_min, x_max, 0, 0);
 		input_set_abs_params(dev, ABS_Y, y_min, y_max, 0, 0);
-<<<<<<< HEAD
-		input_abs_set_res(dev, ABS_X, x_res);
-		input_abs_set_res(dev, ABS_Y, y_res);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * range of pressure and width is the same as v2,
 		 * report ABS_PRESSURE, ABS_TOOL_WIDTH for compatibility.
@@ -1616,17 +1233,9 @@ static int elantech_set_input_params(struct psmouse *psmouse)
 		input_set_abs_params(dev, ABS_TOOL_WIDTH, ETP_WMIN_V2,
 				     ETP_WMAX_V2, 0, 0);
 		/* Multitouch capable pad, up to 5 fingers. */
-<<<<<<< HEAD
-		input_mt_init_slots(dev, ETP_MAX_FINGERS);
-		input_set_abs_params(dev, ABS_MT_POSITION_X, x_min, x_max, 0, 0);
-		input_set_abs_params(dev, ABS_MT_POSITION_Y, y_min, y_max, 0, 0);
-		input_abs_set_res(dev, ABS_MT_POSITION_X, x_res);
-		input_abs_set_res(dev, ABS_MT_POSITION_Y, y_res);
-=======
 		input_mt_init_slots(dev, ETP_MAX_FINGERS, 0);
 		input_set_abs_params(dev, ABS_MT_POSITION_X, x_min, x_max, 0, 0);
 		input_set_abs_params(dev, ABS_MT_POSITION_Y, y_min, y_max, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_set_abs_params(dev, ABS_MT_PRESSURE, ETP_PMIN_V2,
 				     ETP_PMAX_V2, 0, 0);
 		/*
@@ -1638,8 +1247,6 @@ static int elantech_set_input_params(struct psmouse *psmouse)
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 	input_abs_set_res(dev, ABS_X, info->x_res);
 	input_abs_set_res(dev, ABS_Y, info->y_res);
 	if (info->hw_version > 1) {
@@ -1647,7 +1254,6 @@ static int elantech_set_input_params(struct psmouse *psmouse)
 		input_abs_set_res(dev, ABS_MT_POSITION_Y, info->y_res);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	etd->y_max = y_max;
 	etd->width = width;
 
@@ -1693,11 +1299,7 @@ static ssize_t elantech_set_int_attr(struct psmouse *psmouse,
 		return err;
 
 	/* Do we need to preserve some bits for version 2 hardware too? */
-<<<<<<< HEAD
-	if (etd->hw_version == 1) {
-=======
 	if (etd->info.hw_version == 1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (attr->reg == 0x10)
 			/* Force absolute mode always on */
 			value |= ETP_R10_ABSOLUTE_MODE;
@@ -1717,17 +1319,11 @@ static ssize_t elantech_set_int_attr(struct psmouse *psmouse,
 		.field_offset = offsetof(struct elantech_data, _name),	\
 		.reg = _register,					\
 	};								\
-<<<<<<< HEAD
-	PSMOUSE_DEFINE_ATTR(_name, S_IWUSR | S_IRUGO,			\
-=======
 	PSMOUSE_DEFINE_ATTR(_name, 0644,				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    &elantech_attr_##_name,			\
 			    elantech_show_int_attr,			\
 			    elantech_set_int_attr)
 
-<<<<<<< HEAD
-=======
 #define ELANTECH_INFO_ATTR(_name)					       \
 	static struct elantech_attr_data elantech_attr_##_name = {	       \
 		.field_offset = offsetof(struct elantech_data, info) +	       \
@@ -1739,7 +1335,6 @@ static ssize_t elantech_set_int_attr(struct psmouse *psmouse,
 			    elantech_show_int_attr,			       \
 			    elantech_set_int_attr)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ELANTECH_INT_ATTR(reg_07, 0x07);
 ELANTECH_INT_ATTR(reg_10, 0x10);
 ELANTECH_INT_ATTR(reg_11, 0x11);
@@ -1750,14 +1345,9 @@ ELANTECH_INT_ATTR(reg_23, 0x23);
 ELANTECH_INT_ATTR(reg_24, 0x24);
 ELANTECH_INT_ATTR(reg_25, 0x25);
 ELANTECH_INT_ATTR(reg_26, 0x26);
-<<<<<<< HEAD
-ELANTECH_INT_ATTR(debug, 0);
-ELANTECH_INT_ATTR(paritycheck, 0);
-=======
 ELANTECH_INFO_ATTR(debug);
 ELANTECH_INFO_ATTR(paritycheck);
 ELANTECH_INFO_ATTR(crc_enabled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *elantech_attrs[] = {
 	&psmouse_attr_reg_07.dattr.attr,
@@ -1772,18 +1362,11 @@ static struct attribute *elantech_attrs[] = {
 	&psmouse_attr_reg_26.dattr.attr,
 	&psmouse_attr_debug.dattr.attr,
 	&psmouse_attr_paritycheck.dattr.attr,
-<<<<<<< HEAD
-	NULL
-};
-
-static struct attribute_group elantech_attr_group = {
-=======
 	&psmouse_attr_crc_enabled.dattr.attr,
 	NULL
 };
 
 static const struct attribute_group elantech_attr_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = elantech_attrs,
 };
 
@@ -1821,11 +1404,7 @@ int elantech_detect(struct psmouse *psmouse, bool set_properties)
 	struct ps2dev *ps2dev = &psmouse->ps2dev;
 	unsigned char param[3];
 
-<<<<<<< HEAD
-	ps2_command(&psmouse->ps2dev, NULL, PSMOUSE_CMD_RESET_DIS);
-=======
 	ps2_command(ps2dev, NULL, PSMOUSE_CMD_RESET_DIS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ps2_command(ps2dev,  NULL, PSMOUSE_CMD_DISABLE) ||
 	    ps2_command(ps2dev,  NULL, PSMOUSE_CMD_SETSCALE11) ||
@@ -1881,8 +1460,6 @@ int elantech_detect(struct psmouse *psmouse, bool set_properties)
  */
 static void elantech_disconnect(struct psmouse *psmouse)
 {
-<<<<<<< HEAD
-=======
 	struct elantech_data *etd = psmouse->private;
 
 	/*
@@ -1893,7 +1470,6 @@ static void elantech_disconnect(struct psmouse *psmouse)
 
 	if (etd->tp_dev)
 		input_unregister_device(etd->tp_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sysfs_remove_group(&psmouse->ps2dev.serio->dev.kobj,
 			   &elantech_attr_group);
 	kfree(psmouse->private);
@@ -1920,29 +1496,6 @@ static int elantech_reconnect(struct psmouse *psmouse)
 }
 
 /*
-<<<<<<< HEAD
- * determine hardware version and set some properties according to it.
- */
-static int elantech_set_properties(struct elantech_data *etd)
-{
-	/* This represents the version of IC body. */
-	int ver = (etd->fw_version & 0x0f0000) >> 16;
-
-	/* Early version of Elan touchpads doesn't obey the rule. */
-	if (etd->fw_version < 0x020030 || etd->fw_version == 0x020600)
-		etd->hw_version = 1;
-	else {
-		switch (ver) {
-		case 2:
-		case 4:
-			etd->hw_version = 2;
-			break;
-		case 5:
-			etd->hw_version = 3;
-			break;
-		case 6:
-			etd->hw_version = 4;
-=======
  * Some hw_version 4 models do not work with crc_disabled
  */
 static const struct dmi_system_id elantech_dmi_force_crc_enabled[] = {
@@ -2075,21 +1628,12 @@ static int elantech_set_properties(struct elantech_device_info *info)
 			break;
 		case 6 ... 15:
 			info->hw_version = 4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			return -1;
 		}
 	}
 
-<<<<<<< HEAD
-	/* decide which send_cmd we're gonna use early */
-	etd->send_cmd = etd->hw_version >= 3 ? elantech_send_cmd :
-					       synaptics_send_cmd;
-
-	/* Turn on packet checking by default */
-	etd->paritycheck = 1;
-=======
 	/* Get information pattern for hw_version 4 */
 	info->pattern = 0x00;
 	if (info->ic_version == 0x0f && (info->fw_version & 0xff) <= 0x02)
@@ -2101,47 +1645,12 @@ static int elantech_set_properties(struct elantech_device_info *info)
 
 	/* Turn on packet checking by default */
 	info->paritycheck = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This firmware suffers from misreporting coordinates when
 	 * a touch action starts causing the mouse cursor or scrolled page
 	 * to jump. Enable a workaround.
 	 */
-<<<<<<< HEAD
-	etd->jumpy_cursor =
-		(etd->fw_version == 0x020022 || etd->fw_version == 0x020600);
-
-	if (etd->hw_version > 1) {
-		/* For now show extra debug information */
-		etd->debug = 1;
-
-		if (etd->fw_version >= 0x020800)
-			etd->reports_pressure = true;
-	}
-
-	return 0;
-}
-
-/*
- * Initialize the touchpad and create sysfs entries
- */
-int elantech_init(struct psmouse *psmouse)
-{
-	struct elantech_data *etd;
-	int i, error;
-	unsigned char param[3];
-
-	psmouse->private = etd = kzalloc(sizeof(struct elantech_data), GFP_KERNEL);
-	if (!etd)
-		return -ENOMEM;
-
-	psmouse_reset(psmouse);
-
-	etd->parity[0] = 1;
-	for (i = 1; i < 256; i++)
-		etd->parity[i] = etd->parity[i & (i - 1)] ^ 1;
-=======
 	info->jumpy_cursor =
 		(info->fw_version == 0x020022 || info->fw_version == 0x020600);
 
@@ -2174,36 +1683,12 @@ static int elantech_query_info(struct psmouse *psmouse,
 	unsigned char ic_body[3];
 
 	memset(info, 0, sizeof(*info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Do the version query again so we can store the result
 	 */
 	if (synaptics_send_cmd(psmouse, ETP_FW_VERSION_QUERY, param)) {
 		psmouse_err(psmouse, "failed to query firmware version.\n");
-<<<<<<< HEAD
-		goto init_fail;
-	}
-	etd->fw_version = (param[0] << 16) | (param[1] << 8) | param[2];
-
-	if (elantech_set_properties(etd)) {
-		psmouse_err(psmouse, "unknown hardware version, aborting...\n");
-		goto init_fail;
-	}
-	psmouse_info(psmouse,
-		     "assuming hardware version %d (with firmware version 0x%02x%02x%02x)\n",
-		     etd->hw_version, param[0], param[1], param[2]);
-
-	if (etd->send_cmd(psmouse, ETP_CAPABILITIES_QUERY,
-	    etd->capabilities)) {
-		psmouse_err(psmouse, "failed to query capabilities.\n");
-		goto init_fail;
-	}
-	psmouse_info(psmouse,
-		     "Synaptics capabilities query result 0x%02x, 0x%02x, 0x%02x.\n",
-		     etd->capabilities[0], etd->capabilities[1],
-		     etd->capabilities[2]);
-=======
 		return -EINVAL;
 	}
 	info->fw_version = (param[0] << 16) | (param[1] << 8) | param[2];
@@ -2567,7 +2052,6 @@ static int elantech_setup_ps2(struct psmouse *psmouse,
 	etd->parity[0] = 1;
 	for (i = 1; i < 256; i++)
 		etd->parity[i] = etd->parity[i & (i - 1)] ^ 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (elantech_set_absolute_mode(psmouse)) {
 		psmouse_err(psmouse,
@@ -2575,11 +2059,7 @@ static int elantech_setup_ps2(struct psmouse *psmouse,
 		goto init_fail;
 	}
 
-<<<<<<< HEAD
-	if (etd->fw_version == 0x381f17) {
-=======
 	if (info->fw_version == 0x381f17) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		etd->original_set_rate = psmouse->set_rate;
 		psmouse->set_rate = elantech_set_rate_restore_reg_07;
 	}
@@ -2598,18 +2078,6 @@ static int elantech_setup_ps2(struct psmouse *psmouse,
 		goto init_fail;
 	}
 
-<<<<<<< HEAD
-	psmouse->protocol_handler = elantech_process_byte;
-	psmouse->disconnect = elantech_disconnect;
-	psmouse->reconnect = elantech_reconnect;
-	psmouse->pktsize = etd->hw_version > 1 ? 6 : 4;
-
-	return 0;
-
- init_fail:
-	kfree(etd);
-	return -1;
-=======
 	if (info->has_trackpoint) {
 		tp_dev = input_allocate_device();
 
@@ -2722,5 +2190,4 @@ int elantech_init(struct psmouse *psmouse)
  init_fail:
 	psmouse_reset(psmouse);
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

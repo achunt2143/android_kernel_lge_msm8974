@@ -1,15 +1,9 @@
 /*
    BlueZ - Bluetooth protocol stack for Linux
-<<<<<<< HEAD
-   Copyright (c) 2000-2001, 2011-2012 The Linux Foundation.  All rights reserved.
-   Copyright (C) 2009-2010 Gustavo F. Padovan <gustavo@padovan.org>
-   Copyright (C) 2010 Google Inc.
-=======
    Copyright (C) 2000-2001 Qualcomm Incorporated
    Copyright (C) 2009-2010 Gustavo F. Padovan <gustavo@padovan.org>
    Copyright (C) 2010 Google Inc.
    Copyright (C) 2011 ProFUSION Embedded Systems
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
 
@@ -33,112 +27,14 @@
 
 /* Bluetooth L2CAP sockets. */
 
-<<<<<<< HEAD
-#include <linux/interrupt.h>
-#include <linux/module.h>
-=======
 #include <linux/module.h>
 #include <linux/export.h>
 #include <linux/filter.h>
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 #include <net/bluetooth/l2cap.h>
-<<<<<<< HEAD
-#include <net/bluetooth/smp.h>
-#include <net/bluetooth/amp.h>
-
-/* ---- L2CAP timers ---- */
-static void l2cap_sock_timeout(unsigned long arg)
-{
-	struct sock *sk = (struct sock *) arg;
-	int reason;
-
-	BT_DBG("sock %p state %d", sk, sk->sk_state);
-
-	bh_lock_sock(sk);
-
-	if (sock_owned_by_user(sk)) {
-		/* sk is owned by user. Try again later */
-		l2cap_sock_set_timer(sk, HZ / 5);
-		bh_unlock_sock(sk);
-		sock_put(sk);
-		return;
-	}
-
-	if (sk->sk_state == BT_CONNECTED || sk->sk_state == BT_CONFIG)
-		reason = ECONNREFUSED;
-	else if (sk->sk_state == BT_CONNECT &&
-				l2cap_pi(sk)->sec_level != BT_SECURITY_SDP)
-		reason = ECONNREFUSED;
-	else
-		reason = ETIMEDOUT;
-
-	__l2cap_sock_close(sk, reason);
-
-	bh_unlock_sock(sk);
-
-	l2cap_sock_kill(sk);
-	sock_put(sk);
-}
-
-void l2cap_sock_set_timer(struct sock *sk, long timeout)
-{
-	BT_DBG("sk %p state %d timeout %ld", sk, sk->sk_state, timeout);
-	sk_reset_timer(sk, &sk->sk_timer, jiffies + timeout);
-}
-
-void l2cap_sock_clear_timer(struct sock *sk)
-{
-	BT_DBG("sock %p state %d", sk, sk->sk_state);
-	sk_stop_timer(sk, &sk->sk_timer);
-}
-
-int l2cap_sock_le_params_valid(struct bt_le_params *le_params)
-{
-	if (!le_params || le_params->latency > BT_LE_LATENCY_MAX ||
-			le_params->scan_window > BT_LE_SCAN_WINDOW_MAX ||
-			le_params->scan_interval < BT_LE_SCAN_INTERVAL_MIN ||
-			le_params->scan_window > le_params->scan_interval ||
-			le_params->interval_min < BT_LE_CONN_INTERVAL_MIN ||
-			le_params->interval_max > BT_LE_CONN_INTERVAL_MAX ||
-			le_params->interval_min > le_params->interval_max ||
-			le_params->supervision_timeout < BT_LE_SUP_TO_MIN ||
-			le_params->supervision_timeout > BT_LE_SUP_TO_MAX) {
-		return 0;
-	}
-
-	return 1;
-}
-
-int l2cap_sock_le_conn_update_params_valid(struct bt_le_params *le_params)
-{
-	if (!le_params || le_params->latency > BT_LE_LATENCY_MAX ||
-			le_params->interval_min < BT_LE_CONN_INTERVAL_MIN ||
-			le_params->interval_max > BT_LE_CONN_INTERVAL_MAX ||
-			le_params->interval_min > le_params->interval_max ||
-			le_params->supervision_timeout < BT_LE_SUP_TO_MIN ||
-			le_params->supervision_timeout > BT_LE_SUP_TO_MAX) {
-		return 0;
-	}
-
-	return 1;
-}
-
-static struct sock *__l2cap_get_sock_by_addr(__le16 psm, bdaddr_t *src)
-{
-	struct sock *sk;
-	struct hlist_node *node;
-	sk_for_each(sk, node, &l2cap_sk_list.head)
-		if (l2cap_pi(sk)->sport == psm && !bacmp(&bt_sk(sk)->src, src))
-			goto found;
-	sk = NULL;
-found:
-	return sk;
-}
-=======
 
 #include "smp.h"
 
@@ -151,7 +47,6 @@ static void l2cap_sock_init(struct sock *sk, struct sock *parent);
 static struct sock *l2cap_sock_alloc(struct net *net, struct socket *sock,
 				     int proto, gfp_t prio, int kern);
 static void l2cap_sock_cleanup_listen(struct sock *parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 bool l2cap_is_socket(struct socket *sock)
 {
@@ -159,11 +54,6 @@ bool l2cap_is_socket(struct socket *sock)
 }
 EXPORT_SYMBOL(l2cap_is_socket);
 
-<<<<<<< HEAD
-static int l2cap_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
-{
-	struct sock *sk = sock->sk;
-=======
 static int l2cap_validate_bredr_psm(u16 psm)
 {
 	/* PSM must be odd and lsb of upper byte must be 0 */
@@ -194,18 +84,13 @@ static int l2cap_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
 {
 	struct sock *sk = sock->sk;
 	struct l2cap_chan *chan = l2cap_pi(sk)->chan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sockaddr_l2 la;
 	int len, err = 0;
 
 	BT_DBG("sk %p", sk);
 
-<<<<<<< HEAD
-	if (!addr || addr->sa_family != AF_BLUETOOTH)
-=======
 	if (!addr || alen < offsetofend(struct sockaddr, sa_family) ||
 	    addr->sa_family != AF_BLUETOOTH)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	memset(&la, 0, sizeof(la));
@@ -215,8 +100,6 @@ static int l2cap_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
 	if (la.l2_cid && la.l2_psm)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	if (!bdaddr_type_is_valid(la.l2_bdaddr_type))
 		return -EINVAL;
 
@@ -227,7 +110,6 @@ static int l2cap_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
 			return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock_sock(sk);
 
 	if (sk->sk_state != BT_OPEN) {
@@ -238,41 +120,6 @@ static int l2cap_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
 	if (la.l2_psm) {
 		__u16 psm = __le16_to_cpu(la.l2_psm);
 
-<<<<<<< HEAD
-		/* PSM must be odd and lsb of upper byte must be 0 */
-		if ((psm & 0x0101) != 0x0001) {
-			err = -EINVAL;
-			goto done;
-		}
-
-		/* Restrict usage of well-known PSMs */
-		if (psm < 0x1001 && !capable(CAP_NET_BIND_SERVICE)) {
-			err = -EACCES;
-			goto done;
-		}
-	}
-
-	write_lock_bh(&l2cap_sk_list.lock);
-
-	if (la.l2_psm && __l2cap_get_sock_by_addr(la.l2_psm, &la.l2_bdaddr)) {
-		err = -EADDRINUSE;
-	} else {
-		/* Save source address */
-		bacpy(&bt_sk(sk)->src, &la.l2_bdaddr);
-		l2cap_pi(sk)->psm   = la.l2_psm;
-		l2cap_pi(sk)->sport = la.l2_psm;
-		sk->sk_state = BT_BOUND;
-
-		if (__le16_to_cpu(la.l2_psm) == 0x0001 ||
-					__le16_to_cpu(la.l2_psm) == 0x0003)
-			l2cap_pi(sk)->sec_level = BT_SECURITY_SDP;
-	}
-
-	if (la.l2_cid)
-		l2cap_pi(sk)->scid = la.l2_cid;
-
-	write_unlock_bh(&l2cap_sk_list.lock);
-=======
 		if (la.l2_bdaddr_type == BDADDR_BREDR)
 			err = l2cap_validate_bredr_psm(psm);
 		else
@@ -325,26 +172,12 @@ static int l2cap_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
 
 	chan->state = BT_BOUND;
 	sk->sk_state = BT_BOUND;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 done:
 	release_sock(sk);
 	return err;
 }
 
-<<<<<<< HEAD
-static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr, int alen, int flags)
-{
-	struct sock *sk = sock->sk;
-	struct sockaddr_l2 la;
-	int len, err = 0;
-
-	BT_DBG("sk %p type %d mode %d state %d", sk, sk->sk_type,
-		l2cap_pi(sk)->mode, sk->sk_state);
-
-	if (!addr || alen < sizeof(addr->sa_family) ||
-		addr->sa_family != AF_BLUETOOTH)
-=======
 static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr,
 			      int alen, int flags)
 {
@@ -365,7 +198,6 @@ static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr,
 
 	if (!addr || alen < offsetofend(struct sockaddr, sa_family) ||
 	    addr->sa_family != AF_BLUETOOTH)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	memset(&la, 0, sizeof(la));
@@ -375,76 +207,6 @@ static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr,
 	if (la.l2_cid && la.l2_psm)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	lock_sock(sk);
-
-	if ((sk->sk_type == SOCK_SEQPACKET || sk->sk_type == SOCK_STREAM)
-		&& !(la.l2_psm || la.l2_cid || l2cap_pi(sk)->fixed_channel)) {
-		err = -EINVAL;
-		goto done;
-	}
-
-	switch (l2cap_pi(sk)->mode) {
-	case L2CAP_MODE_BASIC:
-		break;
-	case L2CAP_MODE_ERTM:
-	case L2CAP_MODE_STREAMING:
-		if (!disable_ertm)
-			break;
-		/* fall through */
-	default:
-		err = -ENOTSUPP;
-		goto done;
-	}
-
-	switch (sk->sk_state) {
-	case BT_CONNECT:
-	case BT_CONNECT2:
-	case BT_CONFIG:
-		/* Already connecting */
-		goto wait;
-
-	case BT_CONNECTED:
-		/* Already connected */
-		err = -EISCONN;
-		goto done;
-
-	case BT_OPEN:
-	case BT_BOUND:
-		/* Can connect */
-		break;
-
-	default:
-		err = -EBADFD;
-		goto done;
-	}
-
-	/* PSM must be odd and lsb of upper byte must be 0 */
-	if ((__le16_to_cpu(la.l2_psm) & 0x0101) != 0x0001 &&
-		!l2cap_pi(sk)->fixed_channel &&
-				sk->sk_type != SOCK_RAW && !la.l2_cid) {
-		BT_DBG("Bad PSM 0x%x", (int)__le16_to_cpu(la.l2_psm));
-		err = -EINVAL;
-		goto done;
-	}
-
-	/* Set destination address and psm */
-	bacpy(&bt_sk(sk)->dst, &la.l2_bdaddr);
-	l2cap_pi(sk)->psm = la.l2_psm;
-	l2cap_pi(sk)->dcid = la.l2_cid;
-
-	err = l2cap_do_connect(sk);
-	if (err)
-		goto done;
-
-wait:
-	err = bt_sock_wait_state(sk, BT_CONNECTED,
-			sock_sndtimeo(sk, flags & O_NONBLOCK));
-done:
-	if (err)
-		BT_ERR("failed %d", err);
-	release_sock(sk);
-=======
 	if (!bdaddr_type_is_valid(la.l2_bdaddr_type))
 		return -EINVAL;
 
@@ -504,37 +266,24 @@ done:
 
 	release_sock(sk);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int l2cap_sock_listen(struct socket *sock, int backlog)
 {
 	struct sock *sk = sock->sk;
-<<<<<<< HEAD
-=======
 	struct l2cap_chan *chan = l2cap_pi(sk)->chan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	BT_DBG("sk %p backlog %d", sk, backlog);
 
 	lock_sock(sk);
 
-<<<<<<< HEAD
-	if ((sock->type != SOCK_SEQPACKET && sock->type != SOCK_STREAM)
-			|| sk->sk_state != BT_BOUND) {
-=======
 	if (sk->sk_state != BT_BOUND) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EBADFD;
 		goto done;
 	}
 
-<<<<<<< HEAD
-	switch (l2cap_pi(sk)->mode) {
-	case L2CAP_MODE_BASIC:
-=======
 	if (sk->sk_type != SOCK_SEQPACKET && sk->sk_type != SOCK_STREAM) {
 		err = -EINVAL;
 		goto done;
@@ -549,44 +298,11 @@ static int l2cap_sock_listen(struct socket *sock, int backlog)
 			err = -EOPNOTSUPP;
 			goto done;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case L2CAP_MODE_ERTM:
 	case L2CAP_MODE_STREAMING:
 		if (!disable_ertm)
 			break;
-<<<<<<< HEAD
-		/* fall through */
-	default:
-		err = -ENOTSUPP;
-		goto done;
-	}
-
-	if (!l2cap_pi(sk)->psm && !l2cap_pi(sk)->scid) {
-		bdaddr_t *src = &bt_sk(sk)->src;
-		u16 psm;
-
-		err = -EINVAL;
-
-		write_lock_bh(&l2cap_sk_list.lock);
-
-		for (psm = 0x1001; psm < 0x1100; psm += 2)
-			if (!__l2cap_get_sock_by_addr(cpu_to_le16(psm), src)) {
-				l2cap_pi(sk)->psm   = cpu_to_le16(psm);
-				l2cap_pi(sk)->sport = cpu_to_le16(psm);
-				err = 0;
-				break;
-			}
-
-		write_unlock_bh(&l2cap_sk_list.lock);
-
-		if (err < 0)
-			goto done;
-	}
-
-	sk->sk_max_ack_backlog = backlog;
-	sk->sk_ack_backlog = 0;
-=======
 		fallthrough;
 	default:
 		err = -EOPNOTSUPP;
@@ -603,7 +319,6 @@ static int l2cap_sock_listen(struct socket *sock, int backlog)
 	atomic_set(&chan->nesting, L2CAP_NESTING_PARENT);
 
 	chan->state = BT_LISTEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk->sk_state = BT_LISTEN;
 
 done:
@@ -611,30 +326,15 @@ done:
 	return err;
 }
 
-<<<<<<< HEAD
-static int l2cap_sock_accept(struct socket *sock, struct socket *newsock, int flags)
-{
-	DECLARE_WAITQUEUE(wait, current);
-=======
 static int l2cap_sock_accept(struct socket *sock, struct socket *newsock,
 			     int flags, bool kern)
 {
 	DEFINE_WAIT_FUNC(wait, woken_wake_function);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock *sk = sock->sk, *nsk;
 	long timeo;
 	int err = 0;
 
-<<<<<<< HEAD
-	lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
-
-	if (sk->sk_state != BT_LISTEN) {
-		err = -EBADFD;
-		goto done;
-	}
-=======
 	lock_sock_nested(sk, L2CAP_NESTING_PARENT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	timeo = sock_rcvtimeo(sk, flags & O_NONBLOCK);
 
@@ -642,21 +342,6 @@ static int l2cap_sock_accept(struct socket *sock, struct socket *newsock,
 
 	/* Wait for an incoming connection. (wake-one). */
 	add_wait_queue_exclusive(sk_sleep(sk), &wait);
-<<<<<<< HEAD
-	while (!(nsk = bt_accept_dequeue(sk, newsock))) {
-		set_current_state(TASK_INTERRUPTIBLE);
-		if (!timeo) {
-			err = -EAGAIN;
-			break;
-		}
-
-		release_sock(sk);
-		timeo = schedule_timeout(timeo);
-		lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
-
-		if (sk->sk_state != BT_LISTEN) {
-			err = -EBADFD;
-=======
 	while (1) {
 		if (sk->sk_state != BT_LISTEN) {
 			err = -EBADFD;
@@ -669,7 +354,6 @@ static int l2cap_sock_accept(struct socket *sock, struct socket *newsock,
 
 		if (!timeo) {
 			err = -EAGAIN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -677,10 +361,6 @@ static int l2cap_sock_accept(struct socket *sock, struct socket *newsock,
 			err = sock_intr_errno(timeo);
 			break;
 		}
-<<<<<<< HEAD
-	}
-	set_current_state(TASK_RUNNING);
-=======
 
 		release_sock(sk);
 
@@ -688,7 +368,6 @@ static int l2cap_sock_accept(struct socket *sock, struct socket *newsock,
 
 		lock_sock_nested(sk, L2CAP_NESTING_PARENT);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	remove_wait_queue(sk_sleep(sk), &wait);
 
 	if (err)
@@ -703,37 +382,6 @@ done:
 	return err;
 }
 
-<<<<<<< HEAD
-static int l2cap_sock_getname(struct socket *sock, struct sockaddr *addr, int *len, int peer)
-{
-	struct sockaddr_l2 *la = (struct sockaddr_l2 *) addr;
-	struct sock *sk = sock->sk;
-
-	BT_DBG("sock %p, sk %p", sock, sk);
-
-	addr->sa_family = AF_BLUETOOTH;
-	*len = sizeof(struct sockaddr_l2);
-
-	if (peer) {
-		la->l2_psm = l2cap_pi(sk)->psm;
-		bacpy(&la->l2_bdaddr, &bt_sk(sk)->dst);
-		la->l2_cid = cpu_to_le16(l2cap_pi(sk)->dcid);
-	} else {
-		la->l2_psm = l2cap_pi(sk)->sport;
-		bacpy(&la->l2_bdaddr, &bt_sk(sk)->src);
-		la->l2_cid = cpu_to_le16(l2cap_pi(sk)->scid);
-	}
-
-	return 0;
-}
-
-static int l2cap_sock_getsockopt_old(struct socket *sock, int optname, char __user *optval, int __user *optlen)
-{
-	struct sock *sk = sock->sk;
-	struct l2cap_options opts;
-	struct l2cap_conninfo cinfo;
-	int len, err = 0;
-=======
 static int l2cap_sock_getname(struct socket *sock, struct sockaddr *addr,
 			      int peer)
 {
@@ -793,7 +441,6 @@ static int l2cap_sock_getsockopt_old(struct socket *sock, int optname,
 	struct l2cap_conninfo cinfo;
 	int err = 0;
 	size_t len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 opt;
 
 	BT_DBG("sk %p", sk);
@@ -805,18 +452,6 @@ static int l2cap_sock_getsockopt_old(struct socket *sock, int optname,
 
 	switch (optname) {
 	case L2CAP_OPTIONS:
-<<<<<<< HEAD
-		memset(&opts, 0, sizeof(opts));
-		opts.imtu     = l2cap_pi(sk)->imtu;
-		opts.omtu     = l2cap_pi(sk)->omtu;
-		opts.flush_to = l2cap_pi(sk)->flush_to;
-		opts.mode     = l2cap_pi(sk)->mode;
-		opts.fcs      = l2cap_pi(sk)->fcs;
-		opts.max_tx   = l2cap_pi(sk)->max_tx;
-		opts.txwin_size = l2cap_pi(sk)->tx_win;
-
-		len = min_t(unsigned int, len, sizeof(opts));
-=======
 		/* LE sockets should use BT_SNDMTU/BT_RCVMTU, but since
 		 * legacy ATT code depends on getsockopt for
 		 * L2CAP_OPTIONS we need to let this pass.
@@ -853,18 +488,13 @@ static int l2cap_sock_getsockopt_old(struct socket *sock, int optname,
 		BT_DBG("mode 0x%2.2x", chan->mode);
 
 		len = min(len, sizeof(opts));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy_to_user(optval, (char *) &opts, len))
 			err = -EFAULT;
 
 		break;
 
 	case L2CAP_LM:
-<<<<<<< HEAD
-		switch (l2cap_pi(sk)->sec_level) {
-=======
 		switch (chan->sec_level) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case BT_SECURITY_LOW:
 			opt = L2CAP_LM_AUTH;
 			break;
@@ -873,34 +503,17 @@ static int l2cap_sock_getsockopt_old(struct socket *sock, int optname,
 			break;
 		case BT_SECURITY_HIGH:
 			opt = L2CAP_LM_AUTH | L2CAP_LM_ENCRYPT |
-<<<<<<< HEAD
-							L2CAP_LM_SECURE;
-=======
 			      L2CAP_LM_SECURE;
 			break;
 		case BT_SECURITY_FIPS:
 			opt = L2CAP_LM_AUTH | L2CAP_LM_ENCRYPT |
 			      L2CAP_LM_SECURE | L2CAP_LM_FIPS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			opt = 0;
 			break;
 		}
 
-<<<<<<< HEAD
-		if (l2cap_pi(sk)->role_switch)
-			opt |= L2CAP_LM_MASTER;
-
-		if (l2cap_pi(sk)->force_reliable)
-			opt |= L2CAP_LM_RELIABLE;
-
-		if (l2cap_pi(sk)->flushable)
-			opt |= L2CAP_LM_FLUSHABLE;
-
-		if (put_user(opt, (u32 __user *) optval))
-			err = -EFAULT;
-=======
 		if (test_bit(FLAG_ROLE_SWITCH, &chan->flags))
 			opt |= L2CAP_LM_MASTER;
 
@@ -910,34 +523,21 @@ static int l2cap_sock_getsockopt_old(struct socket *sock, int optname,
 		if (put_user(opt, (u32 __user *) optval))
 			err = -EFAULT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case L2CAP_CONNINFO:
 		if (sk->sk_state != BT_CONNECTED &&
-<<<<<<< HEAD
-					!(sk->sk_state == BT_CONNECT2 &&
-						bt_sk(sk)->defer_setup)) {
-=======
 		    !(sk->sk_state == BT_CONNECT2 &&
 		      test_bit(BT_SK_DEFER_SETUP, &bt_sk(sk)->flags))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -ENOTCONN;
 			break;
 		}
 
-<<<<<<< HEAD
-		cinfo.hci_handle = l2cap_pi(sk)->conn->hcon->handle;
-		memcpy(cinfo.dev_class, l2cap_pi(sk)->conn->hcon->dev_class, 3);
-
-		len = min_t(unsigned int, len, sizeof(cinfo));
-=======
 		memset(&cinfo, 0, sizeof(cinfo));
 		cinfo.hci_handle = chan->conn->hcon->handle;
 		memcpy(cinfo.dev_class, chan->conn->hcon->dev_class, 3);
 
 		len = min(len, sizeof(cinfo));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy_to_user(optval, (char *) &cinfo, len))
 			err = -EFAULT;
 
@@ -952,14 +552,6 @@ static int l2cap_sock_getsockopt_old(struct socket *sock, int optname,
 	return err;
 }
 
-<<<<<<< HEAD
-static int l2cap_sock_getsockopt(struct socket *sock, int level, int optname, char __user *optval, int __user *optlen)
-{
-	struct sock *sk = sock->sk;
-	struct bt_security sec;
-	struct bt_power pwr;
-	int len, err = 0;
-=======
 static int l2cap_sock_getsockopt(struct socket *sock, int level, int optname,
 				 char __user *optval, int __user *optlen)
 {
@@ -969,7 +561,6 @@ static int l2cap_sock_getsockopt(struct socket *sock, int level, int optname,
 	struct bt_power pwr;
 	u32 phys;
 	int len, mode, err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("sk %p", sk);
 
@@ -986,26 +577,14 @@ static int l2cap_sock_getsockopt(struct socket *sock, int level, int optname,
 
 	switch (optname) {
 	case BT_SECURITY:
-<<<<<<< HEAD
-		if (sk->sk_type != SOCK_SEQPACKET && sk->sk_type != SOCK_STREAM
-				&& sk->sk_type != SOCK_RAW) {
-=======
 		if (chan->chan_type != L2CAP_CHAN_CONN_ORIENTED &&
 		    chan->chan_type != L2CAP_CHAN_FIXED &&
 		    chan->chan_type != L2CAP_CHAN_RAW) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 		}
 
 		memset(&sec, 0, sizeof(sec));
-<<<<<<< HEAD
-		sec.level = l2cap_pi(sk)->sec_level;
-
-		if (sk->sk_state == BT_CONNECTED) {
-			sec.key_size = l2cap_pi(sk)->conn->hcon->enc_key_size;
-			sec.level = l2cap_pi(sk)->conn->hcon->sec_level;
-=======
 		if (chan->conn) {
 			sec.level = chan->conn->hcon->sec_level;
 
@@ -1013,7 +592,6 @@ static int l2cap_sock_getsockopt(struct socket *sock, int level, int optname,
 				sec.key_size = chan->conn->hcon->enc_key_size;
 		} else {
 			sec.level = chan->sec_level;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		len = min_t(unsigned int, len, sizeof(sec));
@@ -1028,9 +606,6 @@ static int l2cap_sock_getsockopt(struct socket *sock, int level, int optname,
 			break;
 		}
 
-<<<<<<< HEAD
-		if (put_user(bt_sk(sk)->defer_setup, (u32 __user *) optval))
-=======
 		if (put_user(test_bit(BT_SK_DEFER_SETUP, &bt_sk(sk)->flags),
 			     (u32 __user *) optval))
 			err = -EFAULT;
@@ -1040,27 +615,18 @@ static int l2cap_sock_getsockopt(struct socket *sock, int level, int optname,
 	case BT_FLUSHABLE:
 		if (put_user(test_bit(FLAG_FLUSHABLE, &chan->flags),
 			     (u32 __user *) optval))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EFAULT;
 
 		break;
 
 	case BT_POWER:
 		if (sk->sk_type != SOCK_SEQPACKET && sk->sk_type != SOCK_STREAM
-<<<<<<< HEAD
-				&& sk->sk_type != SOCK_RAW) {
-=======
 		    && sk->sk_type != SOCK_RAW) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 		}
 
-<<<<<<< HEAD
-		pwr.force_active = l2cap_pi(sk)->force_active;
-=======
 		pwr.force_active = test_bit(FLAG_FORCE_ACTIVE, &chan->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		len = min_t(unsigned int, len, sizeof(pwr));
 		if (copy_to_user(optval, (char *) &pwr, len))
@@ -1068,15 +634,6 @@ static int l2cap_sock_getsockopt(struct socket *sock, int level, int optname,
 
 		break;
 
-<<<<<<< HEAD
-	case BT_AMP_POLICY:
-		if (put_user(l2cap_pi(sk)->amp_pref, (u32 __user *) optval))
-			err = -EFAULT;
-		break;
-
-	case BT_LE_PARAMS:
-		if (l2cap_pi(sk)->scid != L2CAP_CID_LE_DATA) {
-=======
 	case BT_CHANNEL_POLICY:
 		if (put_user(chan->chan_policy, (u32 __user *) optval))
 			err = -EFAULT;
@@ -1084,15 +641,10 @@ static int l2cap_sock_getsockopt(struct socket *sock, int level, int optname,
 
 	case BT_SNDMTU:
 		if (!bdaddr_type_is_le(chan->src_type)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 		}
 
-<<<<<<< HEAD
-		if (copy_to_user(optval, (char *) &bt_sk(sk)->le_params,
-						sizeof(bt_sk(sk)->le_params)))
-=======
 		if (sk->sk_state != BT_CONNECTED) {
 			err = -ENOTCONN;
 			break;
@@ -1142,7 +694,6 @@ static int l2cap_sock_getsockopt(struct socket *sock, int level, int optname,
 		}
 
 		if (put_user(mode, (u8 __user *) optval))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EFAULT;
 		break;
 
@@ -1155,13 +706,6 @@ static int l2cap_sock_getsockopt(struct socket *sock, int level, int optname,
 	return err;
 }
 
-<<<<<<< HEAD
-static int l2cap_sock_setsockopt_old(struct socket *sock, int optname, char __user *optval, unsigned int optlen)
-{
-	struct sock *sk = sock->sk;
-	struct l2cap_options opts;
-	int len, le_sock, err = 0;
-=======
 static bool l2cap_valid_mtu(struct l2cap_chan *chan, u16 mtu)
 {
 	switch (chan->scid) {
@@ -1185,84 +729,24 @@ static int l2cap_sock_setsockopt_old(struct socket *sock, int optname,
 	struct l2cap_chan *chan = l2cap_pi(sk)->chan;
 	struct l2cap_options opts;
 	int err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 opt;
 
 	BT_DBG("sk %p", sk);
 
 	lock_sock(sk);
 
-<<<<<<< HEAD
-	le_sock = l2cap_pi(sk)->scid == L2CAP_CID_LE_DATA;
-
-	switch (optname) {
-	case L2CAP_OPTIONS:
-		if (sk->sk_state == BT_CONNECTED && !le_sock) {
-=======
 	switch (optname) {
 	case L2CAP_OPTIONS:
 		if (bdaddr_type_is_le(chan->src_type)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 		}
 
-<<<<<<< HEAD
-		opts.imtu     = l2cap_pi(sk)->imtu;
-		opts.omtu     = l2cap_pi(sk)->omtu;
-		opts.flush_to = l2cap_pi(sk)->flush_to;
-		opts.mode     = l2cap_pi(sk)->mode;
-		opts.fcs      = l2cap_pi(sk)->fcs;
-		opts.max_tx   = l2cap_pi(sk)->max_tx;
-		opts.txwin_size = l2cap_pi(sk)->tx_win;
-
-		len = min_t(unsigned int, sizeof(opts), optlen);
-		if (copy_from_user((char *) &opts, optval, len)) {
-			err = -EFAULT;
-			break;
-		}
-
-		if ((opts.imtu || opts.omtu) && le_sock &&
-				(sk->sk_state == BT_CONNECTED)) {
-			if (opts.imtu >= L2CAP_LE_DEFAULT_MTU)
-				l2cap_pi(sk)->imtu = opts.imtu;
-			if (opts.omtu >= L2CAP_LE_DEFAULT_MTU)
-				l2cap_pi(sk)->omtu = opts.omtu;
-			if (opts.imtu < L2CAP_LE_DEFAULT_MTU ||
-					opts.omtu < L2CAP_LE_DEFAULT_MTU)
-				err = -EINVAL;
-			break;
-		}
-
-		if (opts.txwin_size < 1 ||
-			opts.txwin_size > L2CAP_TX_WIN_MAX_EXTENDED) {
-=======
 		if (sk->sk_state == BT_CONNECTED) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 		}
 
-<<<<<<< HEAD
-		l2cap_pi(sk)->mode = opts.mode;
-		switch (l2cap_pi(sk)->mode) {
-		case L2CAP_MODE_BASIC:
-			l2cap_pi(sk)->conf_state &= ~L2CAP_CONF_STATE2_DEVICE;
-			break;
-		case L2CAP_MODE_STREAMING:
-			if (!disable_ertm) {
-				/* No fallback to ERTM or Basic mode */
-				l2cap_pi(sk)->conf_state |=
-						L2CAP_CONF_STATE2_DEVICE;
-				break;
-			}
-			err = -EINVAL;
-			break;
-		case L2CAP_MODE_ERTM:
-			if (!disable_ertm)
-				break;
-			/* fall through */
-=======
 		opts.imtu     = chan->imtu;
 		opts.omtu     = chan->omtu;
 		opts.flush_to = chan->flush_to;
@@ -1295,25 +779,11 @@ static int l2cap_sock_setsockopt_old(struct socket *sock, int optname,
 			if (!disable_ertm)
 				break;
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			err = -EINVAL;
 			break;
 		}
 
-<<<<<<< HEAD
-		l2cap_pi(sk)->imtu = opts.imtu;
-		l2cap_pi(sk)->omtu = opts.omtu;
-		l2cap_pi(sk)->fcs  = opts.fcs;
-		l2cap_pi(sk)->max_tx = opts.max_tx;
-		l2cap_pi(sk)->tx_win = opts.txwin_size;
-		l2cap_pi(sk)->flush_to = opts.flush_to;
-		break;
-
-	case L2CAP_LM:
-		if (get_user(opt, (u32 __user *) optval)) {
-			err = -EFAULT;
-=======
 		if (err < 0)
 			break;
 
@@ -1336,22 +806,10 @@ static int l2cap_sock_setsockopt_old(struct socket *sock, int optname,
 
 		if (opt & L2CAP_LM_FIPS) {
 			err = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
 		if (opt & L2CAP_LM_AUTH)
-<<<<<<< HEAD
-			l2cap_pi(sk)->sec_level = BT_SECURITY_LOW;
-		if (opt & L2CAP_LM_ENCRYPT)
-			l2cap_pi(sk)->sec_level = BT_SECURITY_MEDIUM;
-		if (opt & L2CAP_LM_SECURE)
-			l2cap_pi(sk)->sec_level = BT_SECURITY_HIGH;
-
-		l2cap_pi(sk)->role_switch    = (opt & L2CAP_LM_MASTER);
-		l2cap_pi(sk)->force_reliable = (opt & L2CAP_LM_RELIABLE);
-		l2cap_pi(sk)->flushable = (opt & L2CAP_LM_FLUSHABLE);
-=======
 			chan->sec_level = BT_SECURITY_LOW;
 		if (opt & L2CAP_LM_ENCRYPT)
 			chan->sec_level = BT_SECURITY_MEDIUM;
@@ -1367,7 +825,6 @@ static int l2cap_sock_setsockopt_old(struct socket *sock, int optname,
 			set_bit(FLAG_FORCE_RELIABLE, &chan->flags);
 		else
 			clear_bit(FLAG_FORCE_RELIABLE, &chan->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -1379,17 +836,6 @@ static int l2cap_sock_setsockopt_old(struct socket *sock, int optname,
 	return err;
 }
 
-<<<<<<< HEAD
-static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname, char __user *optval, unsigned int optlen)
-{
-	struct sock *sk = sock->sk;
-	struct bt_security sec;
-	struct bt_power pwr;
-	struct bt_le_params le_params;
-	struct l2cap_conn *conn;
-	int len, err = 0;
-	u32 opt;
-=======
 static int l2cap_set_mode(struct l2cap_chan *chan, u8 mode)
 {
 	switch (mode) {
@@ -1441,7 +887,6 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
 	u32 opt;
 	u16 mtu;
 	u8 mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("sk %p", sk);
 
@@ -1455,48 +900,25 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
 
 	switch (optname) {
 	case BT_SECURITY:
-<<<<<<< HEAD
-		if (sk->sk_type != SOCK_SEQPACKET && sk->sk_type != SOCK_STREAM
-				&& sk->sk_type != SOCK_RAW) {
-=======
 		if (chan->chan_type != L2CAP_CHAN_CONN_ORIENTED &&
 		    chan->chan_type != L2CAP_CHAN_FIXED &&
 		    chan->chan_type != L2CAP_CHAN_RAW) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 		}
 
 		sec.level = BT_SECURITY_LOW;
 
-<<<<<<< HEAD
-		len = min_t(unsigned int, sizeof(sec), optlen);
-		if (copy_from_user((char *) &sec, optval, len)) {
-			err = -EFAULT;
-			break;
-		}
-
-		if (sec.level < BT_SECURITY_LOW ||
-					sec.level > BT_SECURITY_HIGH) {
-=======
 		err = bt_copy_from_sockptr(&sec, sizeof(sec), optval, optlen);
 		if (err)
 			break;
 
 		if (sec.level < BT_SECURITY_LOW ||
 		    sec.level > BT_SECURITY_FIPS) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 		}
 
-<<<<<<< HEAD
-		l2cap_pi(sk)->sec_level = sec.level;
-
-		conn = l2cap_pi(sk)->conn;
-		if (conn && l2cap_pi(sk)->scid == L2CAP_CID_LE_DATA) {
-			if (!conn->hcon->out) {
-=======
 		chan->sec_level = sec.level;
 
 		if (!chan->conn)
@@ -1507,18 +929,10 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
 		/* change security for LE channels */
 		if (chan->scid == L2CAP_CID_ATT) {
 			if (smp_conn_security(conn->hcon, sec.level)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = -EINVAL;
 				break;
 			}
 
-<<<<<<< HEAD
-			if (smp_conn_security(conn, sec.level))
-				break;
-
-			err = 0;
-			sk->sk_state = BT_CONFIG;
-=======
 			set_bit(FLAG_PENDING_SECURITY, &chan->flags);
 			sk->sk_state = BT_CONFIG;
 			chan->state = BT_CONFIG;
@@ -1533,7 +947,6 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
 				sk->sk_state_change(sk);
 		} else {
 			err = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -1543,66 +956,6 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
 			break;
 		}
 
-<<<<<<< HEAD
-		if (get_user(opt, (u32 __user *) optval)) {
-			err = -EFAULT;
-			break;
-		}
-
-		bt_sk(sk)->defer_setup = opt;
-		break;
-
-	case BT_POWER:
-		if (sk->sk_type != SOCK_SEQPACKET && sk->sk_type != SOCK_STREAM
-				&& sk->sk_type != SOCK_RAW) {
-			err = -EINVAL;
-			break;
-		}
-
-		pwr.force_active = 1;
-
-		len = min_t(unsigned int, sizeof(pwr), optlen);
-		if (copy_from_user((char *) &pwr, optval, len)) {
-			err = -EFAULT;
-			break;
-		}
-		l2cap_pi(sk)->force_active = pwr.force_active;
-		break;
-
-	case BT_AMP_POLICY:
-		if (get_user(opt, (u32 __user *) optval)) {
-			err = -EFAULT;
-			break;
-		}
-
-		if ((opt > BT_AMP_POLICY_PREFER_AMP) ||
-			((l2cap_pi(sk)->mode != L2CAP_MODE_ERTM) &&
-			 (l2cap_pi(sk)->mode != L2CAP_MODE_STREAMING))) {
-			err = -EINVAL;
-			break;
-		}
-
-		l2cap_pi(sk)->amp_pref = (u8) opt;
-		BT_DBG("BT_AMP_POLICY now %d", opt);
-
-		if ((sk->sk_state == BT_CONNECTED) &&
-			(l2cap_pi(sk)->amp_move_role == L2CAP_AMP_MOVE_NONE))
-			l2cap_amp_move_init(sk);
-
-		break;
-
-	case BT_FLUSHABLE:
-		if (get_user(opt, (u32 __user *) optval)) {
-			err = -EFAULT;
-			break;
-		}
-		l2cap_pi(sk)->flushable = opt;
-
-		break;
-
-	case BT_LE_PARAMS:
-		if (l2cap_pi(sk)->scid != L2CAP_CID_LE_DATA) {
-=======
 		err = bt_copy_from_sockptr(&opt, sizeof(opt), optval, optlen);
 		if (err)
 			break;
@@ -1714,45 +1067,15 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
 		BT_DBG("sk->sk_state %u", sk->sk_state);
 
 		if (sk->sk_state != BT_BOUND) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 		}
 
-<<<<<<< HEAD
-		if (copy_from_user((char *) &le_params, optval,
-					sizeof(struct bt_le_params))) {
-			err = -EFAULT;
-			break;
-		}
-
-		conn = l2cap_pi(sk)->conn;
-		if (!conn || !conn->hcon ||
-				l2cap_pi(sk)->scid != L2CAP_CID_LE_DATA) {
-			memcpy(&bt_sk(sk)->le_params, &le_params,
-							sizeof(le_params));
-			break;
-		}
-
-		if (!conn->hcon->out ||
-				!l2cap_sock_le_conn_update_params_valid(
-					&le_params)) {
-=======
 		if (chan->chan_type != L2CAP_CHAN_CONN_ORIENTED) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 		}
 
-<<<<<<< HEAD
-		memcpy(&bt_sk(sk)->le_params, &le_params, sizeof(le_params));
-
-		hci_le_conn_update(conn->hcon,
-				le_params.interval_min,
-				le_params.interval_max,
-				le_params.latency,
-				le_params.supervision_timeout);
-=======
 		err = bt_copy_from_sockptr(&mode, sizeof(mode), optval, optlen);
 		if (err)
 			break;
@@ -1765,7 +1088,6 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
 
 		BT_DBG("mode 0x%2.2x", chan->mode);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -1777,23 +1099,12 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
 	return err;
 }
 
-<<<<<<< HEAD
-static int l2cap_sock_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, size_t len)
-{
-	struct sock *sk = sock->sk;
-	struct l2cap_pinfo *pi = l2cap_pi(sk);
-	struct sk_buff *skb;
-	struct sk_buff_head seg_queue;
-	int err;
-	u8 amp_id;
-=======
 static int l2cap_sock_sendmsg(struct socket *sock, struct msghdr *msg,
 			      size_t len)
 {
 	struct sock *sk = sock->sk;
 	struct l2cap_chan *chan = l2cap_pi(sk)->chan;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("sock %p, sk %p", sock, sk);
 
@@ -1804,106 +1115,6 @@ static int l2cap_sock_sendmsg(struct socket *sock, struct msghdr *msg,
 	if (msg->msg_flags & MSG_OOB)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	lock_sock(sk);
-
-	if (sk->sk_state != BT_CONNECTED) {
-		err = -ENOTCONN;
-		goto done;
-	}
-
-	/* Connectionless channel */
-	if (sk->sk_type == SOCK_DGRAM) {
-		skb = l2cap_create_connless_pdu(sk, msg, len);
-		if (IS_ERR(skb)) {
-			err = PTR_ERR(skb);
-		} else {
-			l2cap_do_send(sk, skb);
-			err = len;
-		}
-		goto done;
-	}
-
-	switch (pi->mode) {
-	case L2CAP_MODE_BASIC:
-		/* Check outgoing MTU */
-		if (len > pi->omtu) {
-			err = -EMSGSIZE;
-			goto done;
-		}
-
-		/* Create a basic PDU */
-		skb = l2cap_create_basic_pdu(sk, msg, len);
-		if (IS_ERR(skb)) {
-			err = PTR_ERR(skb);
-			goto done;
-		}
-
-		l2cap_do_send(sk, skb);
-		err = len;
-		break;
-
-	case L2CAP_MODE_ERTM:
-	case L2CAP_MODE_STREAMING:
-
-		/* Check outgoing MTU */
-		if (len > pi->omtu) {
-			err = -EMSGSIZE;
-			goto done;
-		}
-
-		__skb_queue_head_init(&seg_queue);
-
-		/* Do segmentation before calling in to the state machine,
-		 * since it's possible to block while waiting for memory
-		 * allocation.
-		 */
-		amp_id = pi->amp_id;
-		err = l2cap_segment_sdu(sk, &seg_queue, msg, len, 0);
-
-		/* The socket lock is released while segmenting, so check
-		 * that the socket is still connected
-		 */
-		if (sk->sk_state != BT_CONNECTED) {
-			__skb_queue_purge(&seg_queue);
-			err = -ENOTCONN;
-		}
-
-		if (err) {
-			BT_DBG("Error %d, sk_sndbuf %d, sk_wmem_alloc %d",
-				err, sk->sk_sndbuf,
-				atomic_read(&sk->sk_wmem_alloc));
-			break;
-		}
-
-		if (pi->amp_id != amp_id) {
-			/* Channel moved while unlocked. Resegment. */
-			err = l2cap_resegment_queue(sk, &seg_queue);
-
-			if (err)
-				break;
-		}
-
-		if (pi->mode != L2CAP_MODE_STREAMING)
-			err = l2cap_ertm_tx(sk, 0, &seg_queue,
-				L2CAP_ERTM_EVENT_DATA_REQUEST);
-		else
-			err = l2cap_strm_tx(sk, &seg_queue);
-		if (!err)
-			err = len;
-
-		/* If the skbs were not queued for sending, they'll still be in
-		 * seg_queue and need to be purged.
-		 */
-		__skb_queue_purge(&seg_queue);
-		break;
-
-	default:
-		BT_DBG("bad state %1.1x", pi->mode);
-		err = -EBADFD;
-	}
-
-=======
 	if (sk->sk_state != BT_CONNECTED)
 		return -ENOTCONN;
 
@@ -1980,181 +1191,28 @@ static int l2cap_sock_recvmsg(struct socket *sock, struct msghdr *msg,
 	if (atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf >> 1)
 		l2cap_chan_busy(pi->chan, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done:
 	release_sock(sk);
 	return err;
 }
 
-<<<<<<< HEAD
-static int l2cap_sock_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, size_t len, int flags)
-{
-	struct sock *sk = sock->sk;
-	int err;
-
-	lock_sock(sk);
-
-	if (sk->sk_state == BT_CONNECT2 && bt_sk(sk)->defer_setup) {
-		struct l2cap_conn_rsp rsp;
-		struct l2cap_conn *conn = l2cap_pi(sk)->conn;
-		u8 buf[128];
-
-		if (l2cap_pi(sk)->amp_id) {
-			/* Physical link must be brought up before connection
-			 * completes.
-			 */
-			amp_accept_physical(conn, l2cap_pi(sk)->amp_id, sk);
-			release_sock(sk);
-			return 0;
-		}
-
-		sk->sk_state = BT_CONFIG;
-
-		rsp.scid   = cpu_to_le16(l2cap_pi(sk)->dcid);
-		rsp.dcid   = cpu_to_le16(l2cap_pi(sk)->scid);
-		rsp.result = cpu_to_le16(L2CAP_CR_SUCCESS);
-		rsp.status = cpu_to_le16(L2CAP_CS_NO_INFO);
-		l2cap_send_cmd(l2cap_pi(sk)->conn, l2cap_pi(sk)->ident,
-					L2CAP_CONN_RSP, sizeof(rsp), &rsp);
-
-		if (l2cap_pi(sk)->conf_state & L2CAP_CONF_REQ_SENT) {
-			release_sock(sk);
-			return 0;
-		}
-
-		l2cap_pi(sk)->conf_state |= L2CAP_CONF_REQ_SENT;
-		l2cap_send_cmd(conn, l2cap_get_ident(conn), L2CAP_CONF_REQ,
-				l2cap_build_conf_req(sk, buf, sizeof(buf)), buf);
-		l2cap_pi(sk)->num_conf_req++;
-
-		release_sock(sk);
-		return 0;
-	}
-
-	release_sock(sk);
-
-	if (sock->type == SOCK_STREAM)
-		err = bt_sock_stream_recvmsg(iocb, sock, msg, len, flags);
-	else
-		err = bt_sock_recvmsg(iocb, sock, msg, len, flags);
-
-	if (err >= 0)
-		l2cap_ertm_recv_done(sk);
-
-	return err;
-}
-
-/* Kill socket (only if zapped and orphan)
- * Must be called on unlocked socket.
- */
-void l2cap_sock_kill(struct sock *sk)
-=======
 /* Kill socket (only if zapped and orphan)
  * Must be called on unlocked socket, with l2cap channel lock.
  */
 static void l2cap_sock_kill(struct sock *sk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!sock_flag(sk, SOCK_ZAPPED) || sk->sk_socket)
 		return;
 
-<<<<<<< HEAD
-	BT_DBG("sk %p state %d", sk, sk->sk_state);
-
-	/* Kill poor orphan */
-	bt_sock_unlink(&l2cap_sk_list, sk);
-=======
 	BT_DBG("sk %p state %s", sk, state_to_string(sk->sk_state));
 
 	/* Kill poor orphan */
 
 	l2cap_chan_put(l2cap_pi(sk)->chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sock_set_flag(sk, SOCK_DEAD);
 	sock_put(sk);
 }
 
-<<<<<<< HEAD
-/* Must be called on unlocked socket. */
-static void l2cap_sock_close(struct sock *sk)
-{
-	l2cap_sock_clear_timer(sk);
-	lock_sock(sk);
-	__l2cap_sock_close(sk, ECONNRESET);
-	release_sock(sk);
-	l2cap_sock_kill(sk);
-}
-
-static void l2cap_sock_cleanup_listen(struct sock *parent)
-{
-	struct sock *sk;
-
-	BT_DBG("parent %p", parent);
-
-	/* Close not yet accepted channels */
-	while ((sk = bt_accept_dequeue(parent, NULL)))
-		l2cap_sock_close(sk);
-
-	parent->sk_state = BT_CLOSED;
-	sock_set_flag(parent, SOCK_ZAPPED);
-}
-
-void __l2cap_sock_close(struct sock *sk, int reason)
-{
-	struct l2cap_conn *conn = l2cap_pi(sk)->conn;
-
-	BT_DBG("sk %p state %d socket %p", sk, sk->sk_state, sk->sk_socket);
-
-	switch (sk->sk_state) {
-	case BT_LISTEN:
-		l2cap_sock_cleanup_listen(sk);
-		break;
-
-	case BT_CONNECTED:
-	case BT_CONFIG:
-		if ((sk->sk_type == SOCK_SEQPACKET ||
-					sk->sk_type == SOCK_STREAM) &&
-					conn->hcon->type == ACL_LINK) {
-			l2cap_sock_set_timer(sk, sk->sk_sndtimeo);
-			l2cap_send_disconn_req(conn, sk, reason);
-		} else
-			l2cap_chan_del(sk, reason);
-		break;
-
-	case BT_CONNECT2:
-		if ((sk->sk_type == SOCK_SEQPACKET ||
-					sk->sk_type == SOCK_STREAM) &&
-					conn->hcon->type == ACL_LINK) {
-			struct l2cap_conn_rsp rsp;
-			__u16 result;
-
-			if (bt_sk(sk)->defer_setup)
-				result = L2CAP_CR_SEC_BLOCK;
-			else
-				result = L2CAP_CR_BAD_PSM;
-			sk->sk_state = BT_DISCONN;
-
-			rsp.scid   = cpu_to_le16(l2cap_pi(sk)->dcid);
-			rsp.dcid   = cpu_to_le16(l2cap_pi(sk)->scid);
-			rsp.result = cpu_to_le16(result);
-			rsp.status = cpu_to_le16(L2CAP_CS_NO_INFO);
-			l2cap_send_cmd(conn, l2cap_pi(sk)->ident,
-					L2CAP_CONN_RSP, sizeof(rsp), &rsp);
-		}
-
-		l2cap_chan_del(sk, reason);
-		break;
-
-	case BT_CONNECT:
-	case BT_DISCONN:
-		l2cap_chan_del(sk, reason);
-		break;
-
-	default:
-		sock_set_flag(sk, SOCK_ZAPPED);
-		break;
-	}
-=======
 static int __l2cap_wait_ack(struct sock *sk, struct l2cap_chan *chan)
 {
 	DECLARE_WAITQUEUE(wait, current);
@@ -2198,17 +1256,11 @@ static int __l2cap_wait_ack(struct sock *sk, struct l2cap_chan *chan)
 	set_current_state(TASK_RUNNING);
 	remove_wait_queue(sk_sleep(sk), &wait);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int l2cap_sock_shutdown(struct socket *sock, int how)
 {
 	struct sock *sk = sock->sk;
-<<<<<<< HEAD
-	int err = 0;
-
-	BT_DBG("sock %p, sk %p", sock, sk);
-=======
 	struct l2cap_chan *chan;
 	struct l2cap_conn *conn;
 	int err = 0;
@@ -2221,30 +1273,11 @@ static int l2cap_sock_shutdown(struct socket *sock, int how)
 	 * SHUT_RDWR (2) --> SHUTDOWN_MASK (3)
 	 */
 	how++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!sk)
 		return 0;
 
 	lock_sock(sk);
-<<<<<<< HEAD
-	if (!sk->sk_shutdown) {
-
-		if (l2cap_pi(sk)->mode == L2CAP_MODE_ERTM) {
-			err = __l2cap_wait_ack(sk);
-			l2cap_ertm_shutdown(sk);
-		}
-
-		sk->sk_shutdown = SHUTDOWN_MASK;
-		l2cap_sock_clear_timer(sk);
-		__l2cap_sock_close(sk, 0);
-
-		if (sock_flag(sk, SOCK_LINGER) && sk->sk_lingertime)
-			err = bt_sock_wait_state(sk, BT_CLOSED,
-							sk->sk_lingertime);
-	}
-
-=======
 
 	if ((sk->sk_shutdown & how) == how)
 		goto shutdown_already;
@@ -2317,56 +1350,27 @@ shutdown_matched:
 	sock_put(sk);
 
 shutdown_already:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err && sk->sk_err)
 		err = -sk->sk_err;
 
 	release_sock(sk);
-<<<<<<< HEAD
-=======
 
 	BT_DBG("Sock shutdown complete err: %d", err);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int l2cap_sock_release(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
-<<<<<<< HEAD
-	struct sock *sk2 = NULL;
-	int err;
-=======
 	int err;
 	struct l2cap_chan *chan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("sock %p, sk %p", sock, sk);
 
 	if (!sk)
 		return 0;
 
-<<<<<<< HEAD
-	/* If this is an ATT socket, find it's matching server/client */
-	if (l2cap_pi(sk)->scid == L2CAP_CID_LE_DATA)
-		sk2 = l2cap_find_sock_by_fixed_cid_and_dir(L2CAP_CID_LE_DATA,
-					&bt_sk(sk)->src, &bt_sk(sk)->dst,
-					l2cap_pi(sk)->incoming ? 0 : 1);
-
-	/* If matching socket found, request tear down */
-	BT_DBG("sock:%p companion:%p", sk, sk2);
-	if (sk2)
-		l2cap_sock_set_timer(sk2, 1);
-
-	err = l2cap_sock_shutdown(sock, 2);
-
-	sock_orphan(sk);
-	l2cap_sock_kill(sk);
-	return err;
-}
-
-=======
 	l2cap_sock_cleanup_listen(sk);
 	bt_sock_unlink(&l2cap_sk_list, sk);
 
@@ -2700,90 +1704,10 @@ static const struct l2cap_ops l2cap_chan_ops = {
 	.filter			= l2cap_sock_filter,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void l2cap_sock_destruct(struct sock *sk)
 {
 	BT_DBG("sk %p", sk);
 
-<<<<<<< HEAD
-	skb_queue_purge(&sk->sk_receive_queue);
-	skb_queue_purge(&sk->sk_write_queue);
-
-	l2cap_ertm_destruct(sk);
-}
-
-static void set_default_config(struct l2cap_conf_prm *conf_prm)
-{
-	conf_prm->fcs = L2CAP_FCS_CRC16;
-	conf_prm->flush_to = L2CAP_DEFAULT_FLUSH_TO;
-}
-
-void l2cap_sock_init(struct sock *sk, struct sock *parent)
-{
-	struct l2cap_pinfo *pi = l2cap_pi(sk);
-
-	BT_DBG("sk %p parent %p", sk, parent);
-
-	if (parent) {
-		sk->sk_type = parent->sk_type;
-		sk->sk_rcvbuf = parent->sk_rcvbuf;
-		sk->sk_sndbuf = parent->sk_sndbuf;
-		bt_sk(sk)->defer_setup = bt_sk(parent)->defer_setup;
-
-		pi->imtu = l2cap_pi(parent)->imtu;
-		pi->omtu = l2cap_pi(parent)->omtu;
-		pi->conf_state = l2cap_pi(parent)->conf_state;
-		pi->mode = l2cap_pi(parent)->mode;
-		pi->fcs  = l2cap_pi(parent)->fcs;
-		pi->max_tx = l2cap_pi(parent)->max_tx;
-		pi->tx_win = l2cap_pi(parent)->tx_win;
-		pi->sec_level = l2cap_pi(parent)->sec_level;
-		pi->role_switch = l2cap_pi(parent)->role_switch;
-		pi->force_reliable = l2cap_pi(parent)->force_reliable;
-		pi->flushable = l2cap_pi(parent)->flushable;
-		pi->force_active = l2cap_pi(parent)->force_active;
-		pi->amp_pref = l2cap_pi(parent)->amp_pref;
-	} else {
-		pi->imtu = L2CAP_DEFAULT_MTU;
-		pi->omtu = 0;
-		if (!disable_ertm && sk->sk_type == SOCK_STREAM) {
-			pi->mode = L2CAP_MODE_ERTM;
-			pi->conf_state |= L2CAP_CONF_STATE2_DEVICE;
-		} else {
-			pi->mode = L2CAP_MODE_BASIC;
-		}
-		pi->reconf_state = L2CAP_RECONF_NONE;
-		pi->max_tx = L2CAP_DEFAULT_MAX_TX;
-		pi->fcs = L2CAP_FCS_CRC16;
-		pi->tx_win = L2CAP_DEFAULT_TX_WINDOW;
-		pi->sec_level = BT_SECURITY_LOW;
-		pi->role_switch = 0;
-		pi->force_reliable = 0;
-		pi->flushable = 0;
-		pi->force_active = 1;
-		pi->amp_pref = BT_AMP_POLICY_REQUIRE_BR_EDR;
-	}
-
-	/* Default config options */
-	sk->sk_backlog_rcv = l2cap_data_channel;
-	pi->ampcon = NULL;
-	pi->ampchan = NULL;
-	pi->conf_len = 0;
-	pi->flush_to = L2CAP_DEFAULT_FLUSH_TO;
-	pi->scid = 0;
-	pi->dcid = 0;
-	pi->tx_win_max = L2CAP_TX_WIN_MAX_ENHANCED;
-	pi->ack_win = pi->tx_win;
-	pi->extended_control = 0;
-
-	pi->local_conf.fcs = pi->fcs;
-	pi->local_conf.flush_to = pi->flush_to;
-
-	set_default_config(&pi->remote_conf);
-
-	skb_queue_head_init(TX_QUEUE(sk));
-	skb_queue_head_init(SREJ_QUEUE(sk));
-=======
 	if (l2cap_pi(sk)->chan) {
 		l2cap_pi(sk)->chan->data = NULL;
 		l2cap_chan_put(l2cap_pi(sk)->chan);
@@ -2875,7 +1799,6 @@ static void l2cap_sock_init(struct sock *sk, struct sock *parent)
 
 	chan->data = sk;
 	chan->ops = &l2cap_chan_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct proto l2cap_proto = {
@@ -2884,30 +1807,6 @@ static struct proto l2cap_proto = {
 	.obj_size	= sizeof(struct l2cap_pinfo)
 };
 
-<<<<<<< HEAD
-struct sock *l2cap_sock_alloc(struct net *net, struct socket *sock, int proto, gfp_t prio)
-{
-	struct sock *sk;
-
-	sk = sk_alloc(net, PF_BLUETOOTH, prio, &l2cap_proto);
-	if (!sk)
-		return NULL;
-
-	sock_init_data(sock, sk);
-	INIT_LIST_HEAD(&bt_sk(sk)->accept_q);
-
-	sk->sk_destruct = l2cap_sock_destruct;
-	sk->sk_sndtimeo = msecs_to_jiffies(L2CAP_CONN_TIMEOUT);
-
-	sock_reset_flag(sk, SOCK_ZAPPED);
-
-	sk->sk_protocol = proto;
-	sk->sk_state = BT_OPEN;
-
-	setup_timer(&sk->sk_timer, l2cap_sock_timeout, (unsigned long) sk);
-
-	bt_sock_link(&l2cap_sk_list, sk);
-=======
 static struct sock *l2cap_sock_alloc(struct net *net, struct socket *sock,
 				     int proto, gfp_t prio, int kern)
 {
@@ -2931,7 +1830,6 @@ static struct sock *l2cap_sock_alloc(struct net *net, struct socket *sock,
 
 	l2cap_pi(sk)->chan = chan;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sk;
 }
 
@@ -2945,11 +1843,7 @@ static int l2cap_sock_create(struct net *net, struct socket *sock, int protocol,
 	sock->state = SS_UNCONNECTED;
 
 	if (sock->type != SOCK_SEQPACKET && sock->type != SOCK_STREAM &&
-<<<<<<< HEAD
-			sock->type != SOCK_DGRAM && sock->type != SOCK_RAW)
-=======
 	    sock->type != SOCK_DGRAM && sock->type != SOCK_RAW)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ESOCKTNOSUPPORT;
 
 	if (sock->type == SOCK_RAW && !kern && !capable(CAP_NET_RAW))
@@ -2957,27 +1851,16 @@ static int l2cap_sock_create(struct net *net, struct socket *sock, int protocol,
 
 	sock->ops = &l2cap_sock_ops;
 
-<<<<<<< HEAD
-	sk = l2cap_sock_alloc(net, sock, protocol, GFP_ATOMIC);
-=======
 	sk = l2cap_sock_alloc(net, sock, protocol, GFP_ATOMIC, kern);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sk)
 		return -ENOMEM;
 
 	l2cap_sock_init(sk, NULL);
-<<<<<<< HEAD
-	return 0;
-}
-
-const struct proto_ops l2cap_sock_ops = {
-=======
 	bt_sock_link(&l2cap_sk_list, sk);
 	return 0;
 }
 
 static const struct proto_ops l2cap_sock_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.family		= PF_BLUETOOTH,
 	.owner		= THIS_MODULE,
 	.release	= l2cap_sock_release,
@@ -2990,10 +1873,7 @@ static const struct proto_ops l2cap_sock_ops = {
 	.recvmsg	= l2cap_sock_recvmsg,
 	.poll		= bt_sock_poll,
 	.ioctl		= bt_sock_ioctl,
-<<<<<<< HEAD
-=======
 	.gettstamp	= sock_gettstamp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mmap		= sock_no_mmap,
 	.socketpair	= sock_no_socketpair,
 	.shutdown	= l2cap_sock_shutdown,
@@ -3011,20 +1891,13 @@ int __init l2cap_init_sockets(void)
 {
 	int err;
 
-<<<<<<< HEAD
-=======
 	BUILD_BUG_ON(sizeof(struct sockaddr_l2) > sizeof(struct sockaddr));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = proto_register(&l2cap_proto, 0);
 	if (err < 0)
 		return err;
 
 	err = bt_sock_register(BTPROTO_L2CAP, &l2cap_sock_family_ops);
-<<<<<<< HEAD
-	if (err < 0)
-		goto error;
-=======
 	if (err < 0) {
 		BT_ERR("L2CAP socket registration failed");
 		goto error;
@@ -3037,30 +1910,19 @@ int __init l2cap_init_sockets(void)
 		bt_sock_unregister(BTPROTO_L2CAP);
 		goto error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_INFO("L2CAP socket layer initialized");
 
 	return 0;
 
 error:
-<<<<<<< HEAD
-	BT_ERR("L2CAP socket registration failed");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	proto_unregister(&l2cap_proto);
 	return err;
 }
 
 void l2cap_cleanup_sockets(void)
 {
-<<<<<<< HEAD
-	if (bt_sock_unregister(BTPROTO_L2CAP) < 0)
-		BT_ERR("L2CAP socket unregistration failed");
-
-=======
 	bt_procfs_cleanup(&init_net, "l2cap");
 	bt_sock_unregister(BTPROTO_L2CAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	proto_unregister(&l2cap_proto);
 }

@@ -1,23 +1,11 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # PPS support configuration
 #
 
-<<<<<<< HEAD
-menu "PPS support"
-
-config PPS
-	tristate "PPS support"
-	depends on EXPERIMENTAL
-	---help---
-=======
 menuconfig PPS
 	tristate "PPS support"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  PPS (Pulse Per Second) is a special pulse provided by some GPS
 	  antennae. Userland can use it to get a high-precision time
 	  reference.
@@ -32,16 +20,10 @@ menuconfig PPS
 	  To compile this driver as a module, choose M here: the module
 	  will be called pps_core.ko.
 
-<<<<<<< HEAD
-config PPS_DEBUG
-	bool "PPS debugging messages"
-	depends on PPS
-=======
 if PPS
 
 config PPS_DEBUG
 	bool "PPS debugging messages"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want the PPS support to produce a bunch of debug
 	  messages to the system log.  Select this if you are having a
@@ -49,27 +31,15 @@ config PPS_DEBUG
 
 config NTP_PPS
 	bool "PPS kernel consumer support"
-<<<<<<< HEAD
-	depends on PPS && !NO_HZ
-=======
 	depends on !NO_HZ_COMMON
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option adds support for direct in-kernel time
 	  synchronization using an external PPS signal.
 
 	  It doesn't work on tickless systems at the moment.
 
-<<<<<<< HEAD
-source drivers/pps/clients/Kconfig
-
-source drivers/pps/generators/Kconfig
-
-endmenu
-=======
 source "drivers/pps/clients/Kconfig"
 
 source "drivers/pps/generators/Kconfig"
 
 endif # PPS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

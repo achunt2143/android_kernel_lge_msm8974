@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menu "CPU Frequency scaling"
 
 config CPU_FREQ
@@ -15,41 +12,13 @@ config CPU_FREQ
 	  clock speed, you need to either enable a dynamic cpufreq governor
 	  (see below) after boot, or use a userspace tool.
 
-<<<<<<< HEAD
-	  For details, take a look at <file:Documentation/cpu-freq>.
-=======
 	  For details, take a look at
 	  <file:Documentation/admin-guide/pm/cpufreq.rst>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If in doubt, say N.
 
 if CPU_FREQ
 
-<<<<<<< HEAD
-config CPU_FREQ_TABLE
-	tristate
-
-config CPU_FREQ_STAT
-	tristate "CPU frequency translation statistics"
-	select CPU_FREQ_TABLE
-	default y
-	help
-	  This driver exports CPU frequency statistics information through sysfs
-	  file system.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called cpufreq_stats.
-
-	  If in doubt, say N.
-
-config CPU_FREQ_STAT_DETAILS
-	bool "CPU frequency translation statistics details"
-	depends on CPU_FREQ_STAT
-	help
-	  This will show detail CPU frequency translation table in sysfs file
-	  system.
-=======
 config CPU_FREQ_GOV_ATTR_SET
 	bool
 
@@ -62,19 +31,11 @@ config CPU_FREQ_STAT
 	bool "CPU frequency transition statistics"
 	help
 	  Export CPU frequency statistics information through sysfs.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If in doubt, say N.
 
 choice
 	prompt "Default CPUFreq governor"
-<<<<<<< HEAD
-	default CPU_FREQ_DEFAULT_GOV_USERSPACE if CPU_FREQ_SA1100 || CPU_FREQ_SA1110
-	default CPU_FREQ_DEFAULT_GOV_PERFORMANCE
-	help
-	  This option sets which CPUFreq governor shall be loaded at
-	  startup. If in doubt, select 'performance'.
-=======
 	default CPU_FREQ_DEFAULT_GOV_USERSPACE if ARM_SA1110_CPUFREQ
 	default CPU_FREQ_DEFAULT_GOV_SCHEDUTIL if ARM64 || ARM
 	default CPU_FREQ_DEFAULT_GOV_SCHEDUTIL if (X86_INTEL_PSTATE || X86_AMD_PSTATE) && SMP
@@ -82,7 +43,6 @@ choice
 	help
 	  This option sets which CPUFreq governor shall be loaded at
 	  startup. If in doubt, use the default setting.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config CPU_FREQ_DEFAULT_GOV_PERFORMANCE
 	bool "performance"
@@ -94,10 +54,6 @@ config CPU_FREQ_DEFAULT_GOV_PERFORMANCE
 
 config CPU_FREQ_DEFAULT_GOV_POWERSAVE
 	bool "powersave"
-<<<<<<< HEAD
-	depends on EXPERT
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_FREQ_GOV_POWERSAVE
 	help
 	  Use the CPUFreq governor 'powersave' as default. This sets
@@ -115,10 +71,7 @@ config CPU_FREQ_DEFAULT_GOV_USERSPACE
 
 config CPU_FREQ_DEFAULT_GOV_ONDEMAND
 	bool "ondemand"
-<<<<<<< HEAD
-=======
 	depends on !(X86_INTEL_PSTATE && SMP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_FREQ_GOV_ONDEMAND
 	select CPU_FREQ_GOV_PERFORMANCE
 	help
@@ -131,10 +84,7 @@ config CPU_FREQ_DEFAULT_GOV_ONDEMAND
 
 config CPU_FREQ_DEFAULT_GOV_CONSERVATIVE
 	bool "conservative"
-<<<<<<< HEAD
-=======
 	depends on !(X86_INTEL_PSTATE && SMP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_FREQ_GOV_CONSERVATIVE
 	select CPU_FREQ_GOV_PERFORMANCE
 	help
@@ -145,16 +95,6 @@ config CPU_FREQ_DEFAULT_GOV_CONSERVATIVE
 	  governor. If unsure have a look at the help section of the
 	  driver. Fallback governor will be the performance governor.
 
-<<<<<<< HEAD
-config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
-	bool "interactive"
-	select CPU_FREQ_GOV_INTERACTIVE
-	help
-	  Use the CPUFreq governor 'interactive' as default. This allows
-	  you to get a full dynamic cpu frequency capable system by simply
-	  loading your cpufreq low-level hardware driver, using the
-	  'interactive' governor for latency-sensitive workloads.
-=======
 config CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
 	bool "schedutil"
 	depends on SMP
@@ -164,7 +104,6 @@ config CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
 	  Use the 'schedutil' CPUFreq governor by default. If unsure,
 	  have a look at the help section of that governor. The fallback
 	  governor will be 'performance'.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endchoice
 
@@ -201,20 +140,11 @@ config CPU_FREQ_GOV_USERSPACE
 	  To compile this driver as a module, choose M here: the
 	  module will be called cpufreq_userspace.
 
-<<<<<<< HEAD
-	  For details, take a look at <file:Documentation/cpu-freq/>.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If in doubt, say Y.
 
 config CPU_FREQ_GOV_ONDEMAND
 	tristate "'ondemand' cpufreq policy governor"
-<<<<<<< HEAD
-	select CPU_FREQ_TABLE
-=======
 	select CPU_FREQ_GOV_COMMON
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  'ondemand' - This driver adds a dynamic cpufreq policy governor.
 	  The governor does a periodic polling and 
@@ -226,35 +156,6 @@ config CPU_FREQ_GOV_ONDEMAND
 	  To compile this driver as a module, choose M here: the
 	  module will be called cpufreq_ondemand.
 
-<<<<<<< HEAD
-	  For details, take a look at linux/Documentation/cpu-freq.
-
-	  If in doubt, say N.
-
-config CPU_FREQ_GOV_INTERACTIVE
-	tristate "'interactive' cpufreq policy governor"
-	help
-	  'interactive' - This driver adds a dynamic cpufreq policy governor
-	  designed for latency-sensitive workloads.
-
-	  This governor attempts to reduce the latency of clock
-	  increases so that the system is more responsive to
-	  interactive workloads.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called cpufreq_interactive.
-
-	  For details, take a look at linux/Documentation/cpu-freq.
-
-	  If in doubt, say N.
-config LGE_LOW_BATT_LIMIT
-	tristate "to prevent UVLO at low voltage"
-	depends on CPU_FREQ
-	default n
-config CPU_FREQ_GOV_CONSERVATIVE
-	tristate "'conservative' cpufreq governor"
-	depends on CPU_FREQ
-=======
 	  For details, take a look at
 	  <file:Documentation/admin-guide/pm/cpufreq.rst>.
 
@@ -264,7 +165,6 @@ config CPU_FREQ_GOV_CONSERVATIVE
 	tristate "'conservative' cpufreq governor"
 	depends on CPU_FREQ
 	select CPU_FREQ_GOV_COMMON
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  'conservative' - this driver is rather similar to the 'ondemand'
 	  governor both in its source code and its purpose, the difference is
@@ -281,28 +181,6 @@ config CPU_FREQ_GOV_CONSERVATIVE
 	  To compile this driver as a module, choose M here: the
 	  module will be called cpufreq_conservative.
 
-<<<<<<< HEAD
-	  For details, take a look at linux/Documentation/cpu-freq.
-
-	  If in doubt, say N.
-
-menu "x86 CPU frequency scaling drivers"
-depends on X86
-source "drivers/cpufreq/Kconfig.x86"
-endmenu
-
-menu "ARM CPU frequency scaling drivers"
-depends on ARM
-source "drivers/cpufreq/Kconfig.arm"
-endmenu
-
-menu "PowerPC CPU frequency scaling drivers"
-depends on PPC32 || PPC64
-source "drivers/cpufreq/Kconfig.powerpc"
-endmenu
-
-endif
-=======
 	  For details, take a look at
 	  <file:Documentation/admin-guide/pm/cpufreq.rst>.
 
@@ -453,5 +331,4 @@ config ACPI_CPPC_CPUFREQ_FIE
 
 	  If in doubt, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endmenu

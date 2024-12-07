@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-/*
- * include/asm-s390/kexec.h
- *
- * (C) Copyright IBM Corp. 2005
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright IBM Corp. 2005
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Author(s): Rolf Adelsberger <adelsberger@de.ibm.com>
  *
@@ -16,18 +9,11 @@
 #ifndef _S390_KEXEC_H
 #define _S390_KEXEC_H
 
-<<<<<<< HEAD
-#ifdef __KERNEL__
-#include <asm/page.h>
-#endif
-#include <asm/processor.h>
-=======
 #include <linux/module.h>
 
 #include <asm/processor.h>
 #include <asm/page.h>
 #include <asm/setup.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * KEXEC_SOURCE_MEMORY_LIMIT maximum page get_free_page can return.
  * I.e. Maximum page that is mapped directly into kernel memory,
@@ -44,12 +30,9 @@
 /* Not more than 2GB */
 #define KEXEC_CONTROL_MEMORY_LIMIT (1UL<<31)
 
-<<<<<<< HEAD
-=======
 /* Allocate control page with GFP_DMA */
 #define KEXEC_CONTROL_MEMORY_GFP (GFP_DMA | __GFP_NORETRY)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Maximum address we can use for the crash control pages */
 #define KEXEC_CRASH_CONTROL_MEMORY_LIMIT (-1UL)
 
@@ -62,35 +45,13 @@
 /* The native architecture */
 #define KEXEC_ARCH KEXEC_ARCH_S390
 
-<<<<<<< HEAD
-/*
- * Size for s390x ELF notes per CPU
- *
- * Seven notes plus zero note at the end: prstatus, fpregset, timer,
- * tod_cmp, tod_reg, control regs, and prefix
- */
-#define KEXEC_NOTE_BYTES \
-	(ALIGN(sizeof(struct elf_note), 4) * 8 + \
-	 ALIGN(sizeof("CORE"), 4) * 7 + \
-	 ALIGN(sizeof(struct elf_prstatus), 4) + \
-	 ALIGN(sizeof(elf_fpregset_t), 4) + \
-	 ALIGN(sizeof(u64), 4) + \
-	 ALIGN(sizeof(u64), 4) + \
-	 ALIGN(sizeof(u32), 4) + \
-	 ALIGN(sizeof(u64) * 16, 4) + \
-	 ALIGN(sizeof(u32), 4) \
-	)
-=======
 /* Allow kexec_file to load a segment to 0 */
 #define KEXEC_BUF_MEM_UNKNOWN -1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Provide a dummy definition to avoid build failures. */
 static inline void crash_setup_regs(struct pt_regs *newregs,
 					struct pt_regs *oldregs) { }
 
-<<<<<<< HEAD
-=======
 struct kimage;
 struct s390_load_data {
 	/* Pointer to the kernel buffer. Used to register cmdline etc.. */
@@ -146,5 +107,4 @@ int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
 int arch_kimage_file_post_load_cleanup(struct kimage *image);
 #define arch_kimage_file_post_load_cleanup arch_kimage_file_post_load_cleanup
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /*_S390_KEXEC_H */

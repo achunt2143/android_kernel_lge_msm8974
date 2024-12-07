@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file contains code to reset and initialize USB host controllers.
  * Some of it includes work-arounds for PCI hardware and BIOS quirks.
@@ -13,25 +10,15 @@
  */
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/kconfig.h>
 #include <linux/kernel.h>
 #include <linux/pci.h>
-#include <linux/init.h>
-=======
-#include <linux/kernel.h>
-#include <linux/pci.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/export.h>
 #include <linux/acpi.h>
 #include <linux/dmi.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
 #include <linux/iopoll.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "pci-quirks.h"
 #include "xhci-ext-caps.h"
 
@@ -73,8 +60,6 @@
 #define EHCI_USBLEGCTLSTS	4		/* legacy control/status */
 #define EHCI_USBLEGCTLSTS_SOOE	(1 << 13)	/* SMI on ownership change */
 
-<<<<<<< HEAD
-=======
 /* ASMEDIA quirk use */
 #define ASMT_DATA_WRITE0_REG	0xF8
 #define ASMT_DATA_WRITE1_REG	0xFC
@@ -92,7 +77,6 @@
 #define USB_INTEL_USB3PRM      0xDC
 
 #ifdef CONFIG_USB_PCI_AMD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* AMD quirk use */
 #define	AB_REG_BAR_LOW		0xe0
 #define	AB_REG_BAR_HIGH		0xe1
@@ -102,8 +86,6 @@
 #define	AX_INDXC		0x30
 #define	AX_DATAC		0x34
 
-<<<<<<< HEAD
-=======
 #define PT_ADDR_INDX		0xE8
 #define PT_READ_INDX		0xE4
 #define PT_SIG_1_ADDR		0xA520
@@ -121,7 +103,6 @@
 #define PT1_P1_REG		0xD522
 #define PT1_P2_REG		0xD523
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	NB_PCIE_INDX_ADDR	0xe0
 #define	NB_PCIE_INDX_DATA	0xe4
 #define	PCIE_P_CNTL		0x10040
@@ -129,12 +110,6 @@
 #define	NB_PIF0_PWRDOWN_0	0x01100012
 #define	NB_PIF0_PWRDOWN_1	0x01100013
 
-<<<<<<< HEAD
-#define USB_INTEL_XUSB2PR      0xD0
-#define USB_INTEL_USB2PRM      0xD4
-#define USB_INTEL_USB3_PSSEN   0xD8
-#define USB_INTEL_USB3PRM      0xDC
-=======
 /*
  * amd_chipset_gen values represent AMD different chipset generations
  */
@@ -154,35 +129,19 @@ struct amd_chipset_type {
 	enum amd_chipset_gen gen;
 	u8 rev;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct amd_chipset_info {
 	struct pci_dev	*nb_dev;
 	struct pci_dev	*smbus_dev;
 	int nb_type;
-<<<<<<< HEAD
-	int sb_type;
-	int isoc_reqs;
-	int probe_count;
-	int probe_result;
-=======
 	struct amd_chipset_type sb_type;
 	int isoc_reqs;
 	int probe_count;
 	bool need_pll_quirk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } amd_chipset;
 
 static DEFINE_SPINLOCK(amd_lock);
 
-<<<<<<< HEAD
-int usb_amd_find_chipset_info(void)
-{
-	u8 rev = 0;
-	unsigned long flags;
-	struct amd_chipset_info info;
-	int ret;
-=======
 /*
  * amd_chipset_sb_type_init - initialize amd chipset southbridge type
  *
@@ -251,7 +210,6 @@ static void usb_amd_find_chipset_info(void)
 {
 	unsigned long flags;
 	struct amd_chipset_info info = { };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&amd_lock, flags);
 
@@ -259,34 +217,6 @@ static void usb_amd_find_chipset_info(void)
 	if (amd_chipset.probe_count > 0) {
 		amd_chipset.probe_count++;
 		spin_unlock_irqrestore(&amd_lock, flags);
-<<<<<<< HEAD
-		return amd_chipset.probe_result;
-	}
-	memset(&info, 0, sizeof(info));
-	spin_unlock_irqrestore(&amd_lock, flags);
-
-	info.smbus_dev = pci_get_device(PCI_VENDOR_ID_ATI, 0x4385, NULL);
-	if (info.smbus_dev) {
-		rev = info.smbus_dev->revision;
-		if (rev >= 0x40)
-			info.sb_type = 1;
-		else if (rev >= 0x30 && rev <= 0x3b)
-			info.sb_type = 3;
-	} else {
-		info.smbus_dev = pci_get_device(PCI_VENDOR_ID_AMD,
-						0x780b, NULL);
-		if (!info.smbus_dev) {
-			ret = 0;
-			goto commit;
-		}
-
-		rev = info.smbus_dev->revision;
-		if (rev >= 0x11 && rev <= 0x18)
-			info.sb_type = 2;
-	}
-
-	if (info.sb_type == 0) {
-=======
 		return;
 	}
 	spin_unlock_irqrestore(&amd_lock, flags);
@@ -310,15 +240,10 @@ static void usb_amd_find_chipset_info(void)
 	}
 
 	if (!info.need_pll_quirk) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (info.smbus_dev) {
 			pci_dev_put(info.smbus_dev);
 			info.smbus_dev = NULL;
 		}
-<<<<<<< HEAD
-		ret = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto commit;
 	}
 
@@ -337,10 +262,6 @@ static void usb_amd_find_chipset_info(void)
 		}
 	}
 
-<<<<<<< HEAD
-	ret = info.probe_result = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_DEBUG "QUIRK: Enable AMD PLL fix\n");
 
 commit:
@@ -351,22 +272,11 @@ commit:
 
 		/* Mark that we where here */
 		amd_chipset.probe_count++;
-<<<<<<< HEAD
-		ret = amd_chipset.probe_result;
-
-		spin_unlock_irqrestore(&amd_lock, flags);
-
-		if (info.nb_dev)
-			pci_dev_put(info.nb_dev);
-		if (info.smbus_dev)
-			pci_dev_put(info.smbus_dev);
-=======
 
 		spin_unlock_irqrestore(&amd_lock, flags);
 
 		pci_dev_put(info.nb_dev);
 		pci_dev_put(info.smbus_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else {
 		/* no race - commit the result */
@@ -374,12 +284,6 @@ commit:
 		amd_chipset = info;
 		spin_unlock_irqrestore(&amd_lock, flags);
 	}
-<<<<<<< HEAD
-
-	return ret;
-}
-EXPORT_SYMBOL_GPL(usb_amd_find_chipset_info);
-=======
 }
 
 int usb_hcd_amd_remote_wakeup_quirk(struct pci_dev *pdev)
@@ -422,7 +326,6 @@ bool usb_amd_quirk_pll_check(void)
 	return amd_chipset.need_pll_quirk;
 }
 EXPORT_SYMBOL_GPL(usb_amd_quirk_pll_check);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The hardware normally enables the A-link power management feature, which
@@ -456,13 +359,9 @@ static void usb_amd_quirk_pll(int disable)
 		}
 	}
 
-<<<<<<< HEAD
-	if (amd_chipset.sb_type == 1 || amd_chipset.sb_type == 2) {
-=======
 	if (amd_chipset.sb_type.gen == AMD_CHIPSET_SB800 ||
 			amd_chipset.sb_type.gen == AMD_CHIPSET_HUDSON2 ||
 			amd_chipset.sb_type.gen == AMD_CHIPSET_BOLTON) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		outb_p(AB_REG_BAR_LOW, 0xcd6);
 		addr_low = inb_p(0xcd7);
 		outb_p(AB_REG_BAR_HIGH, 0xcd6);
@@ -473,12 +372,8 @@ static void usb_amd_quirk_pll(int disable)
 		outl_p(0x40, AB_DATA(addr));
 		outl_p(0x34, AB_INDX(addr));
 		val = inl_p(AB_DATA(addr));
-<<<<<<< HEAD
-	} else if (amd_chipset.sb_type == 3) {
-=======
 	} else if (amd_chipset.sb_type.gen == AMD_CHIPSET_SB700 &&
 			amd_chipset.sb_type.rev <= 0x3b) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_read_config_dword(amd_chipset.smbus_dev,
 					AB_REG_BAR_SB700, &addr);
 		outl(AX_INDXC, AB_INDX(addr));
@@ -591,18 +486,6 @@ void usb_amd_dev_put(void)
 	amd_chipset.nb_dev = NULL;
 	amd_chipset.smbus_dev = NULL;
 	amd_chipset.nb_type = 0;
-<<<<<<< HEAD
-	amd_chipset.sb_type = 0;
-	amd_chipset.isoc_reqs = 0;
-	amd_chipset.probe_result = 0;
-
-	spin_unlock_irqrestore(&amd_lock, flags);
-
-	if (nb)
-		pci_dev_put(nb);
-	if (smbus)
-		pci_dev_put(smbus);
-=======
 	memset(&amd_chipset.sb_type, 0, sizeof(amd_chipset.sb_type));
 	amd_chipset.isoc_reqs = 0;
 	amd_chipset.need_pll_quirk = false;
@@ -611,13 +494,10 @@ void usb_amd_dev_put(void)
 
 	pci_dev_put(nb);
 	pci_dev_put(smbus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(usb_amd_dev_put);
 
 /*
-<<<<<<< HEAD
-=======
  * Check if port is disabled in BIOS on AMD Promontory host.
  * BIOS Disabled ports may wake on connect/disconnect and need
  * driver workaround to keep them disabled.
@@ -765,7 +645,6 @@ static inline int io_type_enabled(struct pci_dev *pdev, unsigned int mask)
 
 #if defined(CONFIG_HAS_IOPORT) && IS_ENABLED(CONFIG_USB_UHCI_HCD)
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Make sure the controller is completely inactive, unable to
  * generate interrupts or do DMA.
  */
@@ -846,22 +725,9 @@ reset_needed:
 }
 EXPORT_SYMBOL_GPL(uhci_check_and_reset_hc);
 
-<<<<<<< HEAD
-static inline int io_type_enabled(struct pci_dev *pdev, unsigned int mask)
-{
-	u16 cmd;
-	return !pci_read_config_word(pdev, PCI_COMMAND, &cmd) && (cmd & mask);
-}
-
-#define pio_enabled(dev) io_type_enabled(dev, PCI_COMMAND_IO)
-#define mmio_enabled(dev) io_type_enabled(dev, PCI_COMMAND_MEMORY)
-
-static void __devinit quirk_usb_handoff_uhci(struct pci_dev *pdev)
-=======
 #define pio_enabled(dev) io_type_enabled(dev, PCI_COMMAND_IO)
 
 static void quirk_usb_handoff_uhci(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long base = 0;
 	int i;
@@ -869,11 +735,7 @@ static void quirk_usb_handoff_uhci(struct pci_dev *pdev)
 	if (!pio_enabled(pdev))
 		return;
 
-<<<<<<< HEAD
-	for (i = 0; i < PCI_ROM_RESOURCE; i++)
-=======
 	for (i = 0; i < PCI_STD_NUM_BARS; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((pci_resource_flags(pdev, i) & IORESOURCE_IO)) {
 			base = pci_resource_start(pdev, i);
 			break;
@@ -883,9 +745,6 @@ static void quirk_usb_handoff_uhci(struct pci_dev *pdev)
 		uhci_check_and_reset_hc(pdev, base);
 }
 
-<<<<<<< HEAD
-static int __devinit mmio_resource_enabled(struct pci_dev *pdev, int idx)
-=======
 #else /* defined(CONFIG_HAS_IOPORT && IS_ENABLED(CONFIG_USB_UHCI_HCD) */
 
 static void quirk_usb_handoff_uhci(struct pci_dev *pdev) {}
@@ -893,16 +752,11 @@ static void quirk_usb_handoff_uhci(struct pci_dev *pdev) {}
 #endif /* defined(CONFIG_HAS_IOPORT && IS_ENABLED(CONFIG_USB_UHCI_HCD) */
 
 static int mmio_resource_enabled(struct pci_dev *pdev, int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return pci_resource_start(pdev, idx) && mmio_enabled(pdev);
 }
 
-<<<<<<< HEAD
-static void __devinit quirk_usb_handoff_ohci(struct pci_dev *pdev)
-=======
 static void quirk_usb_handoff_ohci(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *base;
 	u32 control;
@@ -942,36 +796,18 @@ static void quirk_usb_handoff_ohci(struct pci_dev *pdev)
 			msleep(10);
 		}
 		if (wait_time <= 0)
-<<<<<<< HEAD
-			dev_warn(&pdev->dev, "OHCI: BIOS handoff failed"
-					" (BIOS bug?) %08x\n",
-					readl(base + OHCI_CONTROL));
-=======
 			dev_warn(&pdev->dev,
 				 "OHCI: BIOS handoff failed (BIOS bug?) %08x\n",
 				 readl(base + OHCI_CONTROL));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 
 	/* disable interrupts */
 	writel((u32) ~0, base + OHCI_INTRDISABLE);
 
-<<<<<<< HEAD
-	/* Reset the USB bus, if the controller isn't already in RESET */
-	if (control & OHCI_HCFS) {
-		/* Go into RESET, preserving RWC (and possibly IR) */
-		writel(control & OHCI_CTRL_MASK, base + OHCI_CONTROL);
-		readl(base + OHCI_CONTROL);
-
-		/* drive bus reset for at least 50 ms (7.1.7.5) */
-		msleep(50);
-	}
-=======
 	/* Go into the USB_RESET state, preserving RWC (and possibly IR) */
 	writel(control & OHCI_CTRL_MASK, base + OHCI_CONTROL);
 	readl(base + OHCI_CONTROL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* software reset of the controller, preserving HcFmInterval */
 	if (!no_fminterval)
@@ -993,11 +829,7 @@ static void quirk_usb_handoff_ohci(struct pci_dev *pdev)
 	iounmap(base);
 }
 
-<<<<<<< HEAD
-static const struct dmi_system_id __devinitconst ehci_dmi_nohandoff_table[] = {
-=======
 static const struct dmi_system_id ehci_dmi_nohandoff_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		/*  Pegatron Lucid (ExoPC) */
 		.matches = {
@@ -1030,11 +862,7 @@ static const struct dmi_system_id ehci_dmi_nohandoff_table[] = {
 	{ }
 };
 
-<<<<<<< HEAD
-static void __devinit ehci_bios_handoff(struct pci_dev *pdev,
-=======
 static void ehci_bios_handoff(struct pci_dev *pdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					void __iomem *op_reg_base,
 					u32 cap, u8 offset)
 {
@@ -1092,14 +920,9 @@ static void ehci_bios_handoff(struct pci_dev *pdev,
 		 * and hope nothing goes too wrong
 		 */
 		if (try_handoff)
-<<<<<<< HEAD
-			dev_warn(&pdev->dev, "EHCI: BIOS handoff failed"
-				 " (BIOS bug?) %08x\n", cap);
-=======
 			dev_warn(&pdev->dev,
 				 "EHCI: BIOS handoff failed (BIOS bug?) %08x\n",
 				 cap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_write_config_byte(pdev, offset + 2, 0);
 	}
 
@@ -1113,11 +936,7 @@ static void ehci_bios_handoff(struct pci_dev *pdev,
 		writel(0, op_reg_base + EHCI_CONFIGFLAG);
 }
 
-<<<<<<< HEAD
-static void __devinit quirk_usb_disable_ehci(struct pci_dev *pdev)
-=======
 static void quirk_usb_disable_ehci(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *base, *op_reg_base;
 	u32	hcc_params, cap, val;
@@ -1148,19 +967,12 @@ static void quirk_usb_disable_ehci(struct pci_dev *pdev)
 			ehci_bios_handoff(pdev, op_reg_base, cap, offset);
 			break;
 		case 0: /* Illegal reserved cap, set cap=0 so we exit */
-<<<<<<< HEAD
-			cap = 0; /* then fallthrough... */
-		default:
-			dev_warn(&pdev->dev, "EHCI: unrecognized capability "
-				 "%02x\n", cap & 0xff);
-=======
 			cap = 0;
 			fallthrough;
 		default:
 			dev_warn(&pdev->dev,
 				 "EHCI: unrecognized capability %02x\n",
 				 cap & 0xff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		offset = (cap >> 8) & 0xff;
 	}
@@ -1211,51 +1023,11 @@ static int handshake(void __iomem *ptr, u32 mask, u32 done,
 {
 	u32	result;
 
-<<<<<<< HEAD
-	do {
-		result = readl(ptr);
-		result &= mask;
-		if (result == done)
-			return 0;
-		udelay(delay_usec);
-		wait_usec -= delay_usec;
-	} while (wait_usec > 0);
-	return -ETIMEDOUT;
-}
-
-#define PCI_DEVICE_ID_INTEL_LYNX_POINT_XHCI	0x8C31
-#define PCI_DEVICE_ID_INTEL_LYNX_POINT_LP_XHCI	0x9C31
-
-bool usb_is_intel_ppt_switchable_xhci(struct pci_dev *pdev)
-{
-	return pdev->class == PCI_CLASS_SERIAL_USB_XHCI &&
-		pdev->vendor == PCI_VENDOR_ID_INTEL &&
-		pdev->device == PCI_DEVICE_ID_INTEL_PANTHERPOINT_XHCI;
-}
-
-/* The Intel Lynx Point chipset also has switchable ports. */
-bool usb_is_intel_lpt_switchable_xhci(struct pci_dev *pdev)
-{
-	return pdev->class == PCI_CLASS_SERIAL_USB_XHCI &&
-		pdev->vendor == PCI_VENDOR_ID_INTEL &&
-		(pdev->device == PCI_DEVICE_ID_INTEL_LYNX_POINT_XHCI ||
-		 pdev->device == PCI_DEVICE_ID_INTEL_LYNX_POINT_LP_XHCI);
-}
-
-bool usb_is_intel_switchable_xhci(struct pci_dev *pdev)
-{
-	return usb_is_intel_ppt_switchable_xhci(pdev) ||
-		usb_is_intel_lpt_switchable_xhci(pdev);
-}
-EXPORT_SYMBOL_GPL(usb_is_intel_switchable_xhci);
-
-=======
 	return readl_poll_timeout_atomic(ptr, result,
 					 ((result & mask) == done),
 					 delay_usec, wait_usec);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Intel's Panther Point chipset has two host controllers (EHCI and xHCI) that
  * share some number of ports.  These ports can be switched between either
@@ -1274,11 +1046,6 @@ EXPORT_SYMBOL_GPL(usb_is_intel_switchable_xhci);
  * terminations before switching the USB 2.0 wires over, so that USB 3.0
  * devices connect at SuperSpeed, rather than at USB 2.0 speeds.
  */
-<<<<<<< HEAD
-void usb_enable_xhci_ports(struct pci_dev *xhci_pdev)
-{
-	u32		ports_available;
-=======
 void usb_enable_intel_xhci_ports(struct pci_dev *xhci_pdev)
 {
 	u32		ports_available;
@@ -1303,7 +1070,6 @@ void usb_enable_intel_xhci_ports(struct pci_dev *xhci_pdev)
 
 	if (!ehci_found)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Don't switchover the ports if the user hasn't compiled the xHCI
 	 * driver.  Otherwise they will see "dead" USB ports that don't power
@@ -1311,12 +1077,7 @@ void usb_enable_intel_xhci_ports(struct pci_dev *xhci_pdev)
 	 */
 	if (!IS_ENABLED(CONFIG_USB_XHCI_HCD)) {
 		dev_warn(&xhci_pdev->dev,
-<<<<<<< HEAD
-				"CONFIG_USB_XHCI_HCD is turned off, "
-				"defaulting to EHCI.\n");
-=======
 			 "CONFIG_USB_XHCI_HCD is turned off, defaulting to EHCI.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_warn(&xhci_pdev->dev,
 				"USB 3.0 devices will work at USB 2.0 speeds.\n");
 		usb_disable_xhci_ports(xhci_pdev);
@@ -1337,14 +1098,6 @@ void usb_enable_intel_xhci_ports(struct pci_dev *xhci_pdev)
 	 * switchable ports.
 	 */
 	pci_write_config_dword(xhci_pdev, USB_INTEL_USB3_PSSEN,
-<<<<<<< HEAD
-			cpu_to_le32(ports_available));
-
-	pci_read_config_dword(xhci_pdev, USB_INTEL_USB3_PSSEN,
-			&ports_available);
-	dev_dbg(&xhci_pdev->dev, "USB 3.0 ports that are now enabled "
-			"under xHCI: 0x%x\n", ports_available);
-=======
 			ports_available);
 
 	pci_read_config_dword(xhci_pdev, USB_INTEL_USB3_PSSEN,
@@ -1352,7 +1105,6 @@ void usb_enable_intel_xhci_ports(struct pci_dev *xhci_pdev)
 	dev_dbg(&xhci_pdev->dev,
 		"USB 3.0 ports that are now enabled under xHCI: 0x%x\n",
 		ports_available);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read XUSB2PRM, xHCI USB 2.0 Port Routing Mask Register
 	 * Indicate the USB 2.0 ports to be controlled by the xHCI host.
@@ -1369,16 +1121,6 @@ void usb_enable_intel_xhci_ports(struct pci_dev *xhci_pdev)
 	 * host.
 	 */
 	pci_write_config_dword(xhci_pdev, USB_INTEL_XUSB2PR,
-<<<<<<< HEAD
-			cpu_to_le32(ports_available));
-
-	pci_read_config_dword(xhci_pdev, USB_INTEL_XUSB2PR,
-			&ports_available);
-	dev_dbg(&xhci_pdev->dev, "USB 2.0 ports that are now switched over "
-			"to xHCI: 0x%x\n", ports_available);
-}
-EXPORT_SYMBOL_GPL(usb_enable_xhci_ports);
-=======
 			ports_available);
 
 	pci_read_config_dword(xhci_pdev, USB_INTEL_XUSB2PR,
@@ -1388,7 +1130,6 @@ EXPORT_SYMBOL_GPL(usb_enable_xhci_ports);
 		ports_available);
 }
 EXPORT_SYMBOL_GPL(usb_enable_intel_xhci_ports);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void usb_disable_xhci_ports(struct pci_dev *xhci_pdev)
 {
@@ -1397,26 +1138,15 @@ void usb_disable_xhci_ports(struct pci_dev *xhci_pdev)
 }
 EXPORT_SYMBOL_GPL(usb_disable_xhci_ports);
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * PCI Quirks for xHCI.
  *
  * Takes care of the handoff between the Pre-OS (i.e. BIOS) and the OS.
  * It signals to the BIOS that the OS wants control of the host controller,
-<<<<<<< HEAD
- * and then waits 5 seconds for the BIOS to hand over control.
- * If we timeout, assume the BIOS is broken and take control anyway.
- */
-static void __devinit quirk_usb_handoff_xhci(struct pci_dev *pdev)
-=======
  * and then waits 1 second for the BIOS to hand over control.
  * If we timeout, assume the BIOS is broken and take control anyway.
  */
 static void quirk_usb_handoff_xhci(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *base;
 	int ext_cap_offset;
@@ -1428,11 +1158,7 @@ static void quirk_usb_handoff_xhci(struct pci_dev *pdev)
 	if (!mmio_resource_enabled(pdev, 0))
 		return;
 
-<<<<<<< HEAD
-	base = ioremap_nocache(pci_resource_start(pdev, 0), len);
-=======
 	base = ioremap(pci_resource_start(pdev, 0), len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (base == NULL)
 		return;
 
@@ -1440,26 +1166,6 @@ static void quirk_usb_handoff_xhci(struct pci_dev *pdev)
 	 * Find the Legacy Support Capability register -
 	 * this is optional for xHCI host controllers.
 	 */
-<<<<<<< HEAD
-	ext_cap_offset = xhci_find_next_cap_offset(base, XHCI_HCC_PARAMS_OFFSET);
-	do {
-		if ((ext_cap_offset + sizeof(val)) > len) {
-			/* We're reading garbage from the controller */
-			dev_warn(&pdev->dev,
-				 "xHCI controller failing to respond");
-			return;
-		}
-
-		if (!ext_cap_offset)
-			/* We've reached the end of the extended capabilities */
-			goto hc_init;
-
-		val = readl(base + ext_cap_offset);
-		if (XHCI_EXT_CAPS_ID(val) == XHCI_EXT_CAPS_LEGACY)
-			break;
-		ext_cap_offset = xhci_find_next_cap_offset(base, ext_cap_offset);
-	} while (1);
-=======
 	ext_cap_offset = xhci_find_next_ext_cap(base, 0, XHCI_EXT_CAPS_LEGACY);
 
 	if (!ext_cap_offset)
@@ -1479,22 +1185,11 @@ static void quirk_usb_handoff_xhci(struct pci_dev *pdev)
 		val = (val | XHCI_HC_OS_OWNED) & ~XHCI_HC_BIOS_OWNED;
 		writel(val, base + ext_cap_offset);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the BIOS owns the HC, signal that the OS wants it, and wait */
 	if (val & XHCI_HC_BIOS_OWNED) {
 		writel(val | XHCI_HC_OS_OWNED, base + ext_cap_offset);
 
-<<<<<<< HEAD
-		/* Wait for 5 seconds with 10 microsecond polling interval */
-		timeout = handshake(base + ext_cap_offset, XHCI_HC_BIOS_OWNED,
-				0, 5000, 10);
-
-		/* Assume a buggy BIOS and take HC ownership anyway */
-		if (timeout) {
-			dev_warn(&pdev->dev, "xHCI BIOS handoff failed"
-					" (BIOS bug ?) %08x\n", val);
-=======
 		/* Wait for 1 second with 10 microsecond polling interval */
 		timeout = handshake(base + ext_cap_offset, XHCI_HC_BIOS_OWNED,
 				0, 1000000, 10);
@@ -1504,7 +1199,6 @@ static void quirk_usb_handoff_xhci(struct pci_dev *pdev)
 			dev_warn(&pdev->dev,
 				 "xHCI BIOS handoff failed (BIOS bug ?) %08x\n",
 				 val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			writel(val & ~XHCI_HC_BIOS_OWNED, base + ext_cap_offset);
 		}
 	}
@@ -1518,13 +1212,8 @@ static void quirk_usb_handoff_xhci(struct pci_dev *pdev)
 	writel(val, base + ext_cap_offset + XHCI_LEGACY_CONTROL_OFFSET);
 
 hc_init:
-<<<<<<< HEAD
-	if (usb_is_intel_switchable_xhci(pdev))
-		usb_enable_xhci_ports(pdev);
-=======
 	if (pdev->vendor == PCI_VENDOR_ID_INTEL)
 		usb_enable_intel_xhci_ports(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	op_reg_base = base + XHCI_HC_LENGTH(readl(base));
 
@@ -1532,22 +1221,13 @@ hc_init:
 	 * operational or runtime registers.  Wait 5 seconds and no more.
 	 */
 	timeout = handshake(op_reg_base + XHCI_STS_OFFSET, XHCI_STS_CNR, 0,
-<<<<<<< HEAD
-			5000, 10);
-=======
 			5000000, 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Assume a buggy HC and start HC initialization anyway */
 	if (timeout) {
 		val = readl(op_reg_base + XHCI_STS_OFFSET);
 		dev_warn(&pdev->dev,
-<<<<<<< HEAD
-				"xHCI HW not ready after 5 sec (HC bug?) "
-				"status = 0x%x\n", val);
-=======
 			 "xHCI HW not ready after 5 sec (HC bug?) status = 0x%x\n",
 			 val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Send the halt and disable interrupts command */
@@ -1561,17 +1241,6 @@ hc_init:
 	if (timeout) {
 		val = readl(op_reg_base + XHCI_STS_OFFSET);
 		dev_warn(&pdev->dev,
-<<<<<<< HEAD
-				"xHCI HW did not halt within %d usec "
-				"status = 0x%x\n", XHCI_MAX_HALT_USEC, val);
-	}
-
-	iounmap(base);
-}
-
-static void __devinit quirk_usb_early_handoff(struct pci_dev *pdev)
-{
-=======
 			 "xHCI HW did not halt within %d usec status = 0x%x\n",
 			 XHCI_MAX_HALT_USEC, val);
 	}
@@ -1585,14 +1254,11 @@ static void quirk_usb_early_handoff(struct pci_dev *pdev)
 	struct device_node *parent;
 	bool is_rpi;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Skip Netlogic mips SoC's internal PCI USB controller.
 	 * This device does not need/support EHCI/OHCI handoff
 	 */
 	if (pdev->vendor == 0x184e)	/* vendor Netlogic */
 		return;
-<<<<<<< HEAD
-=======
 
 	/*
 	 * Bypass the Raspberry Pi 4 controller xHCI controller, things are
@@ -1606,7 +1272,6 @@ static void quirk_usb_early_handoff(struct pci_dev *pdev)
 			return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdev->class != PCI_CLASS_SERIAL_USB_UHCI &&
 			pdev->class != PCI_CLASS_SERIAL_USB_OHCI &&
 			pdev->class != PCI_CLASS_SERIAL_USB_EHCI &&
@@ -1614,13 +1279,8 @@ static void quirk_usb_early_handoff(struct pci_dev *pdev)
 		return;
 
 	if (pci_enable_device(pdev) < 0) {
-<<<<<<< HEAD
-		dev_warn(&pdev->dev, "Can't enable PCI device, "
-				"BIOS handoff failed.\n");
-=======
 		dev_warn(&pdev->dev,
 			 "Can't enable PCI device, BIOS handoff failed.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	if (pdev->class == PCI_CLASS_SERIAL_USB_UHCI)

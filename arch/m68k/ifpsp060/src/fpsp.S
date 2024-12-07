@@ -10191,11 +10191,7 @@ xdnrm_con:
 xdnrm_sd:
 	mov.l		%a1,-(%sp)
 	tst.b		LOCAL_EX(%a0)		# is denorm pos or neg?
-<<<<<<< HEAD
-	smi.b		%d1			# set d0 accodingly
-=======
 	smi.b		%d1			# set d0 accordingly
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bsr.l		unf_sub
 	mov.l		(%sp)+,%a1
 xdnrm_exit:
@@ -10994,11 +10990,7 @@ src_qnan_m:
 # routines where an instruction is selected by an index into
 # a large jump table corresponding to a given instruction which
 # has been decoded. Flow continues here where we now decode
-<<<<<<< HEAD
-# further accoding to the source operand type.
-=======
 # further according to the source operand type.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 
 	global		fsinh
@@ -23204,22 +23196,14 @@ m_sign:
 #
 #  1. Branch on the sign of the adjusted exponent.
 #  2p.(positive exp)
-<<<<<<< HEAD
-#   2. Check M16 and the digits in lwords 2 and 3 in decending order.
-=======
 #   2. Check M16 and the digits in lwords 2 and 3 in descending order.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #   3. Add one for each zero encountered until a non-zero digit.
 #   4. Subtract the count from the exp.
 #   5. Check if the exp has crossed zero in #3 above; make the exp abs
 #	   and set SE.
 #	6. Multiply the mantissa by 10**count.
 #  2n.(negative exp)
-<<<<<<< HEAD
-#   2. Check the digits in lwords 3 and 2 in decending order.
-=======
 #   2. Check the digits in lwords 3 and 2 in descending order.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #   3. Add one for each zero encountered until a non-zero digit.
 #   4. Add the count to the exp.
 #   5. Check if the exp has crossed zero in #3 above; clear SE.

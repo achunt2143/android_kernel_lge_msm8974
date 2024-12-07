@@ -9,11 +9,7 @@
  */
 
 #include <linux/cdrom.h>
-<<<<<<< HEAD
-#include <linux/genhd.h>
-=======
 #include <linux/blkdev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/nls.h>
 #include <linux/slab.h>
 
@@ -36,31 +32,6 @@
 static int hfs_get_last_session(struct super_block *sb,
 				sector_t *start, sector_t *size)
 {
-<<<<<<< HEAD
-	struct cdrom_multisession ms_info;
-	struct cdrom_tocentry te;
-	int res;
-
-	/* default values */
-	*start = 0;
-	*size = sb->s_bdev->bd_inode->i_size >> 9;
-
-	if (HFS_SB(sb)->session >= 0) {
-		te.cdte_track = HFS_SB(sb)->session;
-		te.cdte_format = CDROM_LBA;
-		res = ioctl_by_bdev(sb->s_bdev, CDROMREADTOCENTRY, (unsigned long)&te);
-		if (!res && (te.cdte_ctrl & CDROM_DATA_TRACK) == 4) {
-			*start = (sector_t)te.cdte_addr.lba << 2;
-			return 0;
-		}
-		printk(KERN_ERR "hfs: invalid session number or type of track\n");
-		return -EINVAL;
-	}
-	ms_info.addr_format = CDROM_LBA;
-	res = ioctl_by_bdev(sb->s_bdev, CDROMMULTISESSION, (unsigned long)&ms_info);
-	if (!res && ms_info.xa_flag)
-		*start = (sector_t)ms_info.addr.lba << 2;
-=======
 	struct cdrom_device_info *cdi = disk_to_cdi(sb->s_bdev->bd_disk);
 
 	/* default values */
@@ -90,7 +61,6 @@ static int hfs_get_last_session(struct super_block *sb,
 			*start = (sector_t)ms_info.addr.lba << 2;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -137,11 +107,7 @@ int hfs_mdb_get(struct super_block *sb)
 
 	HFS_SB(sb)->alloc_blksz = size = be32_to_cpu(mdb->drAlBlkSiz);
 	if (!size || (size & (HFS_SECTOR_SIZE - 1))) {
-<<<<<<< HEAD
-		printk(KERN_ERR "hfs: bad allocation block size %d\n", size);
-=======
 		pr_err("bad allocation block size %d\n", size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_bh;
 	}
 
@@ -158,11 +124,7 @@ int hfs_mdb_get(struct super_block *sb)
 		size >>= 1;
 	brelse(bh);
 	if (!sb_set_blocksize(sb, size)) {
-<<<<<<< HEAD
-		printk(KERN_ERR "hfs: unable to set blocksize to %u\n", size);
-=======
 		pr_err("unable to set blocksize to %u\n", size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -206,19 +168,11 @@ int hfs_mdb_get(struct super_block *sb)
 	}
 
 	if (!HFS_SB(sb)->alt_mdb) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "hfs: unable to locate alternate MDB\n");
-		printk(KERN_WARNING "hfs: continuing without an alternate MDB\n");
-	}
-
-	HFS_SB(sb)->bitmap = (__be32 *)__get_free_pages(GFP_KERNEL, PAGE_SIZE < 8192 ? 1 : 0);
-=======
 		pr_warn("unable to locate alternate MDB\n");
 		pr_warn("continuing without an alternate MDB\n");
 	}
 
 	HFS_SB(sb)->bitmap = kmalloc(8192, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!HFS_SB(sb)->bitmap)
 		goto out;
 
@@ -230,11 +184,7 @@ int hfs_mdb_get(struct super_block *sb)
 	while (size) {
 		bh = sb_bread(sb, off >> sb->s_blocksize_bits);
 		if (!bh) {
-<<<<<<< HEAD
-			printk(KERN_ERR "hfs: unable to read volume bitmap\n");
-=======
 			pr_err("unable to read volume bitmap\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 		off2 = off & (sb->s_blocksize - 1);
@@ -248,36 +198,17 @@ int hfs_mdb_get(struct super_block *sb)
 
 	HFS_SB(sb)->ext_tree = hfs_btree_open(sb, HFS_EXT_CNID, hfs_ext_keycmp);
 	if (!HFS_SB(sb)->ext_tree) {
-<<<<<<< HEAD
-		printk(KERN_ERR "hfs: unable to open extent tree\n");
-=======
 		pr_err("unable to open extent tree\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	HFS_SB(sb)->cat_tree = hfs_btree_open(sb, HFS_CAT_CNID, hfs_cat_keycmp);
 	if (!HFS_SB(sb)->cat_tree) {
-<<<<<<< HEAD
-		printk(KERN_ERR "hfs: unable to open catalog tree\n");
-=======
 		pr_err("unable to open catalog tree\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	attrib = mdb->drAtrb;
 	if (!(attrib & cpu_to_be16(HFS_SB_ATTRIB_UNMNT))) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "hfs: filesystem was not cleanly unmounted, "
-			 "running fsck.hfs is recommended.  mounting read-only.\n");
-		sb->s_flags |= MS_RDONLY;
-	}
-	if ((attrib & cpu_to_be16(HFS_SB_ATTRIB_SLOCK))) {
-		printk(KERN_WARNING "hfs: filesystem is marked locked, mounting read-only.\n");
-		sb->s_flags |= MS_RDONLY;
-	}
-	if (!(sb->s_flags & MS_RDONLY)) {
-=======
 		pr_warn("filesystem was not cleanly unmounted, running fsck.hfs is recommended.  mounting read-only.\n");
 		sb->s_flags |= SB_RDONLY;
 	}
@@ -286,7 +217,6 @@ int hfs_mdb_get(struct super_block *sb)
 		sb->s_flags |= SB_RDONLY;
 	}
 	if (!sb_rdonly(sb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Mark the volume uncleanly unmounted in case we crash */
 		attrib &= cpu_to_be16(~HFS_SB_ATTRIB_UNMNT);
 		attrib |= cpu_to_be16(HFS_SB_ATTRIB_INCNSTNT);
@@ -311,17 +241,10 @@ out:
  * hfs_mdb_commit()
  *
  * Description:
-<<<<<<< HEAD
- *   This updates the MDB on disk (look also at hfs_write_super()).
- *   It does not check, if the superblock has been modified, or
- *   if the filesystem has been mounted read-only. It is mainly
- *   called by hfs_write_super() and hfs_btree_extend().
-=======
  *   This updates the MDB on disk.
  *   It does not check, if the superblock has been modified, or
  *   if the filesystem has been mounted read-only. It is mainly
  *   called by hfs_sync_fs() and flush_mdb().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Input Variable(s):
  *   struct hfs_mdb *mdb: Pointer to the hfs MDB
  *   int backup;
@@ -342,13 +265,10 @@ void hfs_mdb_commit(struct super_block *sb)
 {
 	struct hfs_mdb *mdb = HFS_SB(sb)->mdb;
 
-<<<<<<< HEAD
-=======
 	if (sb_rdonly(sb))
 		return;
 
 	lock_buffer(HFS_SB(sb)->mdb_bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_and_clear_bit(HFS_FLG_MDB_DIRTY, &HFS_SB(sb)->flags)) {
 		/* These parameters may have been modified, so write them back */
 		mdb->drLsMod = hfs_mtime();
@@ -372,11 +292,6 @@ void hfs_mdb_commit(struct super_block *sb)
 				     &mdb->drXTFlSize, NULL);
 		hfs_inode_write_fork(HFS_SB(sb)->cat_tree->inode, mdb->drCTExtRec,
 				     &mdb->drCTFlSize, NULL);
-<<<<<<< HEAD
-		memcpy(HFS_SB(sb)->alt_mdb, HFS_SB(sb)->mdb, HFS_SECTOR_SIZE);
-		HFS_SB(sb)->alt_mdb->drAtrb |= cpu_to_be16(HFS_SB_ATTRIB_UNMNT);
-		HFS_SB(sb)->alt_mdb->drAtrb &= cpu_to_be16(~HFS_SB_ATTRIB_INCNSTNT);
-=======
 
 		lock_buffer(HFS_SB(sb)->alt_mdb_bh);
 		memcpy(HFS_SB(sb)->alt_mdb, HFS_SB(sb)->mdb, HFS_SECTOR_SIZE);
@@ -384,7 +299,6 @@ void hfs_mdb_commit(struct super_block *sb)
 		HFS_SB(sb)->alt_mdb->drAtrb &= cpu_to_be16(~HFS_SB_ATTRIB_INCNSTNT);
 		unlock_buffer(HFS_SB(sb)->alt_mdb_bh);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mark_buffer_dirty(HFS_SB(sb)->alt_mdb_bh);
 		sync_dirty_buffer(HFS_SB(sb)->alt_mdb_bh);
 	}
@@ -403,13 +317,6 @@ void hfs_mdb_commit(struct super_block *sb)
 		while (size) {
 			bh = sb_bread(sb, block);
 			if (!bh) {
-<<<<<<< HEAD
-				printk(KERN_ERR "hfs: unable to read volume bitmap\n");
-				break;
-			}
-			len = min((int)sb->s_blocksize - off, size);
-			memcpy(bh->b_data + off, ptr, len);
-=======
 				pr_err("unable to read volume bitmap\n");
 				break;
 			}
@@ -419,7 +326,6 @@ void hfs_mdb_commit(struct super_block *sb)
 			memcpy(bh->b_data + off, ptr, len);
 			unlock_buffer(bh);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mark_buffer_dirty(bh);
 			brelse(bh);
 			block++;
@@ -428,20 +334,13 @@ void hfs_mdb_commit(struct super_block *sb)
 			size -= len;
 		}
 	}
-<<<<<<< HEAD
-=======
 	unlock_buffer(HFS_SB(sb)->mdb_bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void hfs_mdb_close(struct super_block *sb)
 {
 	/* update volume attributes */
-<<<<<<< HEAD
-	if (sb->s_flags & MS_RDONLY)
-=======
 	if (sb_rdonly(sb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	HFS_SB(sb)->mdb->drAtrb |= cpu_to_be16(HFS_SB_ATTRIB_UNMNT);
 	HFS_SB(sb)->mdb->drAtrb &= cpu_to_be16(~HFS_SB_ATTRIB_INCNSTNT);
@@ -467,11 +366,7 @@ void hfs_mdb_put(struct super_block *sb)
 	unload_nls(HFS_SB(sb)->nls_io);
 	unload_nls(HFS_SB(sb)->nls_disk);
 
-<<<<<<< HEAD
-	free_pages((unsigned long)HFS_SB(sb)->bitmap, PAGE_SIZE < 8192 ? 1 : 0);
-=======
 	kfree(HFS_SB(sb)->bitmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(HFS_SB(sb));
 	sb->s_fs_info = NULL;
 }

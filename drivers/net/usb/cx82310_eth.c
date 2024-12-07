@@ -1,35 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for USB ethernet port of Conexant CX82310-based ADSL routers
  * Copyright (C) 2010 by Ondrej Zary
  * some parts inspired by the cxacru driver
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include <linux/module.h>
-#include <linux/init.h>
-=======
- */
-
-#include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -58,25 +34,17 @@ enum cx82310_status {
 };
 
 #define CMD_PACKET_SIZE	64
-<<<<<<< HEAD
-/* first command after power on can take around 8 seconds */
-#define CMD_TIMEOUT	15000
-=======
 #define CMD_TIMEOUT	100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CMD_REPLY_RETRY 5
 
 #define CX82310_MTU	1514
 #define CMD_EP		0x01
 
-<<<<<<< HEAD
-=======
 struct cx82310_priv {
 	struct work_struct reenable_work;
 	struct usbnet *dev;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * execute control command
  *  - optionally send some data (command parameters)
@@ -102,14 +70,9 @@ static int cx82310_cmd(struct usbnet *dev, enum cx82310_cmd cmd, bool reply,
 	ret = usb_bulk_msg(udev, usb_sndbulkpipe(udev, CMD_EP), buf,
 			   CMD_PACKET_SIZE, &actual_len, CMD_TIMEOUT);
 	if (ret < 0) {
-<<<<<<< HEAD
-		dev_err(&dev->udev->dev, "send command %#x: error %d\n",
-			cmd, ret);
-=======
 		if (cmd != CMD_GET_LINK_STATUS)
 			netdev_err(dev->net, "send command %#x: error %d\n",
 				   cmd, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto end;
 	}
 
@@ -120,49 +83,28 @@ static int cx82310_cmd(struct usbnet *dev, enum cx82310_cmd cmd, bool reply,
 					   buf, CMD_PACKET_SIZE, &actual_len,
 					   CMD_TIMEOUT);
 			if (ret < 0) {
-<<<<<<< HEAD
-				dev_err(&dev->udev->dev,
-					"reply receive error %d\n", ret);
-=======
 				if (cmd != CMD_GET_LINK_STATUS)
 					netdev_err(dev->net, "reply receive error %d\n",
 						   ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto end;
 			}
 			if (actual_len > 0)
 				break;
 		}
 		if (actual_len == 0) {
-<<<<<<< HEAD
-			dev_err(&dev->udev->dev, "no reply to command %#x\n",
-				cmd);
-=======
 			netdev_err(dev->net, "no reply to command %#x\n", cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EIO;
 			goto end;
 		}
 		if (buf[0] != cmd) {
-<<<<<<< HEAD
-			dev_err(&dev->udev->dev,
-				"got reply to command %#x, expected: %#x\n",
-				buf[0], cmd);
-=======
 			netdev_err(dev->net, "got reply to command %#x, expected: %#x\n",
 				   buf[0], cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EIO;
 			goto end;
 		}
 		if (buf[1] != STATUS_SUCCESS) {
-<<<<<<< HEAD
-			dev_err(&dev->udev->dev, "command %#x failed: %#x\n",
-				cmd, buf[1]);
-=======
 			netdev_err(dev->net, "command %#x failed: %#x\n", cmd,
 				   buf[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EIO;
 			goto end;
 		}
@@ -175,8 +117,6 @@ end:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int cx82310_enable_ethernet(struct usbnet *dev)
 {
 	int ret = cx82310_cmd(dev, CMD_ETHERNET_MODE, true, "\x01", 1, NULL, 0);
@@ -194,7 +134,6 @@ static void cx82310_reenable_work(struct work_struct *work)
 	cx82310_enable_ethernet(priv->dev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define partial_len	data[0]		/* length of partial packet data */
 #define partial_rem	data[1]		/* remaining (missing) data length */
 #define partial_data	data[2]		/* partial packet data */
@@ -204,13 +143,10 @@ static int cx82310_bind(struct usbnet *dev, struct usb_interface *intf)
 	int ret;
 	char buf[15];
 	struct usb_device *udev = dev->udev;
-<<<<<<< HEAD
-=======
 	u8 link[3];
 	int timeout = 50;
 	struct cx82310_priv *priv;
 	u8 addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* avoid ADSL modems - continue only if iProduct is "USB NET CARD" */
 	if (usb_string(udev, udev->descriptor.iProduct, buf, sizeof(buf)) > 0
@@ -237,23 +173,6 @@ static int cx82310_bind(struct usbnet *dev, struct usb_interface *intf)
 	if (!dev->partial_data)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	/* enable ethernet mode (?) */
-	ret = cx82310_cmd(dev, CMD_ETHERNET_MODE, true, "\x01", 1, NULL, 0);
-	if (ret) {
-		dev_err(&udev->dev, "unable to enable ethernet mode: %d\n",
-			ret);
-		goto err;
-	}
-
-	/* get the MAC address */
-	ret = cx82310_cmd(dev, CMD_GET_MAC_ADDR, true, NULL, 0,
-			  dev->net->dev_addr, ETH_ALEN);
-	if (ret) {
-		dev_err(&udev->dev, "unable to read MAC address: %d\n", ret);
-		goto err;
-	}
-=======
 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
 	if (!priv) {
 		ret = -ENOMEM;
@@ -290,7 +209,6 @@ static int cx82310_bind(struct usbnet *dev, struct usb_interface *intf)
 		goto err;
 	}
 	eth_hw_addr_set(dev->net, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* start (does not seem to have any effect?) */
 	ret = cx82310_cmd(dev, CMD_START, false, NULL, 0, NULL, 0);
@@ -299,26 +217,19 @@ static int cx82310_bind(struct usbnet *dev, struct usb_interface *intf)
 
 	return 0;
 err:
-<<<<<<< HEAD
-=======
 	kfree(dev->driver_priv);
 err_partial:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree((void *)dev->partial_data);
 	return ret;
 }
 
 static void cx82310_unbind(struct usbnet *dev, struct usb_interface *intf)
 {
-<<<<<<< HEAD
-	kfree((void *)dev->partial_data);
-=======
 	struct cx82310_priv *priv = dev->driver_priv;
 
 	kfree((void *)dev->partial_data);
 	cancel_work_sync(&priv->reenable_work);
 	kfree(dev->driver_priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -333,10 +244,7 @@ static int cx82310_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 {
 	int len;
 	struct sk_buff *skb2;
-<<<<<<< HEAD
-=======
 	struct cx82310_priv *priv = dev->driver_priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the last skb ended with an incomplete packet, this skb contains
@@ -371,17 +279,11 @@ static int cx82310_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			break;
 		}
 
-<<<<<<< HEAD
-		if (len > CX82310_MTU) {
-			dev_err(&dev->udev->dev, "RX packet too long: %d B\n",
-				len);
-=======
 		if (len == 0xffff) {
 			netdev_info(dev->net, "router was rebooted, re-enabling ethernet mode");
 			schedule_work(&priv->reenable_work);
 		} else if (len > CX82310_MTU) {
 			netdev_err(dev->net, "RX packet too long: %d B\n", len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 
@@ -416,18 +318,9 @@ static struct sk_buff *cx82310_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 {
 	int len = skb->len;
 
-<<<<<<< HEAD
-	if (skb_headroom(skb) < 2) {
-		struct sk_buff *skb2 = skb_copy_expand(skb, 2, 0, flags);
-		dev_kfree_skb_any(skb);
-		skb = skb2;
-		if (!skb)
-			return NULL;
-=======
 	if (skb_cow_head(skb, 2)) {
 		dev_kfree_skb_any(skb);
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	skb_push(skb, 2);
 
@@ -472,10 +365,7 @@ static struct usb_driver cx82310_driver = {
 	.disconnect	= usbnet_disconnect,
 	.suspend	= usbnet_suspend,
 	.resume		= usbnet_resume,
-<<<<<<< HEAD
-=======
 	.disable_hub_initiated_lpm = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(cx82310_driver);

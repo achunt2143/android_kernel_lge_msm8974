@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # HSI clients configuration
 #
 
 comment "HSI clients"
 
-<<<<<<< HEAD
-config HSI_CHAR
-	tristate "HSI/SSI character driver"
-	depends on HSI
-	---help---
-=======
 config NOKIA_MODEM
 	tristate "Nokia Modem"
 	depends on HSI && SSI_PROTOCOL && CMT_SPEECH
@@ -45,7 +36,6 @@ config HSI_CHAR
 	tristate "HSI/SSI character driver"
 	depends on HSI
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you say Y here, you will enable the HSI/SSI character driver.
 	  This driver provides a simple character device interface for
 	  serial communication with the cellular modem over HSI/SSI bus.

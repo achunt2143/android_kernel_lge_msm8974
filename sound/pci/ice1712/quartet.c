@@ -1,45 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for ICEnsemble VT1724 (Envy24HT)
  *
  *   Lowlevel functions for Infrasonic Quartet
  *
  *	Copyright (c) 2009 Pavel Hofman <pavel.hofman@ivitera.com>
-<<<<<<< HEAD
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
  */
 
-#include <asm/io.h>
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/string.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/tlv.h>
 #include <sound/info.h>
@@ -60,11 +32,7 @@ struct qtet_kcontrol_private {
 	unsigned int bit;
 	void (*set_register)(struct snd_ice1712 *ice, unsigned int val);
 	unsigned int (*get_register)(struct snd_ice1712 *ice);
-<<<<<<< HEAD
-	unsigned char *texts[2];
-=======
 	const char * const texts[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -80,11 +48,7 @@ enum {
 	OUT34_MON12,
 };
 
-<<<<<<< HEAD
-static char *ext_clock_names[3] = {"IEC958 In", "Word Clock 1xFS",
-=======
 static const char * const ext_clock_names[3] = {"IEC958 In", "Word Clock 1xFS",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Word Clock 256xFS"};
 
 /* chip address on I2C bus */
@@ -253,29 +217,17 @@ static char *get_binary(char *buffer, int value)
 /*
  * Initial setup of the conversion array GPIO <-> rate
  */
-<<<<<<< HEAD
-static unsigned int qtet_rates[] = {
-=======
 static const unsigned int qtet_rates[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	44100, 48000, 88200,
 	96000, 176400, 192000,
 };
 
-<<<<<<< HEAD
-static unsigned int cks_vals[] = {
-=======
 static const unsigned int cks_vals[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CPLD_CKS_44100HZ, CPLD_CKS_48000HZ, CPLD_CKS_88200HZ,
 	CPLD_CKS_96000HZ, CPLD_CKS_176400HZ, CPLD_CKS_192000HZ,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hw_constraint_list qtet_rates_info = {
-=======
 static const struct snd_pcm_hw_constraint_list qtet_rates_info = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(qtet_rates),
 	.list = qtet_rates,
 	.mask = 0,
@@ -312,11 +264,7 @@ static void qtet_akm_write(struct snd_akm4xxx *ak, int chip,
 
 	if (snd_BUG_ON(chip < 0 || chip >= 4))
 		return;
-<<<<<<< HEAD
-	/*printk(KERN_DEBUG "Writing to AK4620: chip=%d, addr=0x%x,
-=======
 	/*dev_dbg(ice->card->dev, "Writing to AK4620: chip=%d, addr=0x%x,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  data=0x%x\n", chip, addr, data);*/
 	orig_dir = ice->gpio.get_dir(ice);
 	ice->gpio.set_dir(ice, orig_dir | GPIO_SPI_ALL);
@@ -424,11 +372,7 @@ static const struct snd_akm4xxx_adc_channel qtet_adc[] = {
 	AK_CONTROL(PCM_34_CAPTURE_VOLUME, 2),
 };
 
-<<<<<<< HEAD
-static struct snd_akm4xxx akm_qtet_dac __devinitdata = {
-=======
 static const struct snd_akm4xxx akm_qtet_dac = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type = SND_AK4620,
 	.num_dacs = 4,	/* DAC1 - Output 12
 	*/
@@ -526,11 +470,7 @@ static void set_cpld(struct snd_ice1712 *ice, unsigned int val)
 	reg_write(ice, GPIO_CPLD_CSN, val);
 	spec->cpld = val;
 }
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void proc_regs_read(struct snd_info_entry *entry,
 		struct snd_info_buffer *buffer)
 {
@@ -547,18 +487,8 @@ static void proc_regs_read(struct snd_info_entry *entry,
 
 static void proc_init(struct snd_ice1712 *ice)
 {
-<<<<<<< HEAD
-	struct snd_info_entry *entry;
-	if (!snd_card_proc_new(ice->card, "quartet", &entry))
-		snd_info_set_text_ops(entry, ice, proc_regs_read);
-}
-#else /* !CONFIG_PROC_FS */
-static void proc_init(struct snd_ice1712 *ice) {}
-#endif
-=======
 	snd_card_ro_proc_new(ice->card, "quartet", ice, proc_regs_read);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int qtet_mute_get(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol)
@@ -601,24 +531,9 @@ static int qtet_mute_put(struct snd_kcontrol *kcontrol,
 static int qtet_ain12_enum_info(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[3] = {"Line In 1/2", "Mic", "Mic + Low-cut"};
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = ARRAY_SIZE(texts);
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-			uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name,
-			texts[uinfo->value.enumerated.item]);
-
-	return 0;
-=======
 	static const char * const texts[3] =
 		{"Line In 1/2", "Mic", "Mic + Low-cut"};
 	return snd_ctl_enum_info(uinfo, 1, ARRAY_SIZE(texts), texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int qtet_ain12_sw_get(struct snd_kcontrol *kcontrol,
@@ -651,11 +566,7 @@ static int qtet_ain12_sw_put(struct snd_kcontrol *kcontrol,
 {
 	struct snd_ice1712 *ice = snd_kcontrol_chip(kcontrol);
 	unsigned int old, new, tmp, masked_old;
-<<<<<<< HEAD
-	old = new = get_scr(ice);
-=======
 	old = get_scr(ice);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	masked_old = old & (SCR_AIN12_SEL1 | SCR_AIN12_SEL0);
 	tmp = ucontrol->value.integer.value[0];
 	if (tmp == 2)
@@ -746,11 +657,7 @@ static int qtet_php_put(struct snd_kcontrol *kcontrol,
 	.get_register = get_##xreg,\
 	.texts = {xtext1, xtext2} }
 
-<<<<<<< HEAD
-static struct qtet_kcontrol_private qtet_privates[] = {
-=======
 static const struct qtet_kcontrol_private qtet_privates[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PRIV_ENUM2(IN12_SEL, CPLD_IN12_SEL, cpld, "An In 1/2", "An In 3/4"),
 	PRIV_ENUM2(IN34_SEL, CPLD_IN34_SEL, cpld, "An In 3/4", "IEC958 In"),
 	PRIV_ENUM2(AIN34_SEL, SCR_AIN34_SEL, scr, "Line In 3/4", "Hi-Z"),
@@ -768,22 +675,8 @@ static int qtet_enum_info(struct snd_kcontrol *kcontrol,
 {
 	struct qtet_kcontrol_private private =
 		qtet_privates[kcontrol->private_value];
-<<<<<<< HEAD
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = ARRAY_SIZE(private.texts);
-
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item =
-			uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name,
-			private.texts[uinfo->value.enumerated.item]);
-
-	return 0;
-=======
 	return snd_ctl_enum_info(uinfo, 1, ARRAY_SIZE(private.texts),
 				 private.texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int qtet_sw_get(struct snd_kcontrol *kcontrol,
@@ -827,11 +720,7 @@ static int qtet_sw_put(struct snd_kcontrol *kcontrol,
 	.put = qtet_sw_put,\
 	.private_value = xpriv }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new qtet_controls[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new qtet_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = "Master Playback Switch",
@@ -868,48 +757,16 @@ static const struct snd_kcontrol_new qtet_controls[] = {
 	QTET_CONTROL("Output 3/4 to Monitor 1/2", sw, OUT34_MON12),
 };
 
-<<<<<<< HEAD
-static char *slave_vols[] __devinitdata = {
-=======
 static const char * const follower_vols[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PCM_12_PLAYBACK_VOLUME,
 	PCM_34_PLAYBACK_VOLUME,
 	NULL
 };
 
-<<<<<<< HEAD
-static __devinitdata
-DECLARE_TLV_DB_SCALE(qtet_master_db_scale, -6350, 50, 1);
-
-static struct snd_kcontrol __devinit *ctl_find(struct snd_card *card,
-		const char *name)
-{
-	struct snd_ctl_elem_id sid;
-	memset(&sid, 0, sizeof(sid));
-	/* FIXME: strcpy is bad. */
-	strcpy(sid.name, name);
-	sid.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
-	return snd_ctl_find_id(card, &sid);
-}
-
-static void __devinit add_slaves(struct snd_card *card,
-		struct snd_kcontrol *master, char **list)
-{
-	for (; *list; list++) {
-		struct snd_kcontrol *slave = ctl_find(card, *list);
-		if (slave)
-			snd_ctl_add_slave(master, slave);
-	}
-}
-
-static int __devinit qtet_add_controls(struct snd_ice1712 *ice)
-=======
 static
 DECLARE_TLV_DB_SCALE(qtet_master_db_scale, -6350, 50, 1);
 
 static int qtet_add_controls(struct snd_ice1712 *ice)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qtet_spec *spec = ice->spec;
 	int err, i;
@@ -929,18 +786,6 @@ static int qtet_add_controls(struct snd_ice1712 *ice)
 			qtet_master_db_scale);
 	if (!vmaster)
 		return -ENOMEM;
-<<<<<<< HEAD
-	add_slaves(ice->card, vmaster, slave_vols);
-	err = snd_ctl_add(ice->card, vmaster);
-	if (err < 0)
-		return err;
-	/* only capture SPDIF over AK4113 */
-	err = snd_ak4113_build(spec->ak4113,
-			ice->pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream);
-	if (err < 0)
-		return err;
-	return 0;
-=======
 	err = snd_ctl_add(ice->card, vmaster);
 	if (err < 0)
 		return err;
@@ -950,7 +795,6 @@ static int qtet_add_controls(struct snd_ice1712 *ice)
 	/* only capture SPDIF over AK4113 */
 	return snd_ak4113_build(spec->ak4113,
 			ice->pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int qtet_is_spdif_master(struct snd_ice1712 *ice)
@@ -992,11 +836,7 @@ static void qtet_set_rate(struct snd_ice1712 *ice, unsigned int rate)
 	new =  (get_cpld(ice) & ~CPLD_CKS_MASK) | get_cks_val(rate);
 	/* switch to internal clock, drop CPLD_SYNC_SEL */
 	new &= ~CPLD_SYNC_SEL;
-<<<<<<< HEAD
-	/* printk(KERN_DEBUG "QT - set_rate: old %x, new %x\n",
-=======
 	/* dev_dbg(ice->card->dev, "QT - set_rate: old %x, new %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   get_cpld(ice), new); */
 	set_cpld(ice, new);
 }
@@ -1076,11 +916,7 @@ static void qtet_ak4113_change(struct ak4113 *ak4113, unsigned char c0,
 			c1) {
 		/* only for SPDIF master mode, rate was changed */
 		rate = snd_ak4113_external_rate(ak4113);
-<<<<<<< HEAD
-		/* printk(KERN_DEBUG "ak4113 - input rate changed to %d\n",
-=======
 		/* dev_dbg(ice->card->dev, "ak4113 - input rate changed to %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   rate); */
 		qtet_akm_set_rate_val(ice->akm, rate);
 	}
@@ -1111,11 +947,7 @@ static void qtet_spdif_in_open(struct snd_ice1712 *ice,
 /*
  * initialize the chip
  */
-<<<<<<< HEAD
-static int __devinit qtet_init(struct snd_ice1712 *ice)
-=======
 static int qtet_init(struct snd_ice1712 *ice)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const unsigned char ak4113_init_vals[] = {
 		/* AK4113_REG_PWRDN */	AK4113_RST | AK4113_PWN |
@@ -1203,11 +1035,7 @@ static int qtet_init(struct snd_ice1712 *ice)
 	return 0;
 }
 
-<<<<<<< HEAD
-static unsigned char qtet_eeprom[] __devinitdata = {
-=======
 static const unsigned char qtet_eeprom[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[ICE_EEP2_SYSCONF]     = 0x28,	/* clock 256(24MHz), mpu401, 1xADC,
 					   1xDACs, SPDIF in */
 	[ICE_EEP2_ACLINK]      = 0x80,	/* I2S */
@@ -1228,11 +1056,7 @@ static const unsigned char qtet_eeprom[] = {
 };
 
 /* entry point */
-<<<<<<< HEAD
-struct snd_ice1712_card_info snd_vt1724_qtet_cards[] __devinitdata = {
-=======
 struct snd_ice1712_card_info snd_vt1724_qtet_cards[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.subvendor = VT1724_SUBDEVICE_QTET,
 		.name = "Infrasonic Quartet",

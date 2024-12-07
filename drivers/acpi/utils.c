@@ -1,82 +1,31 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  acpi_utils.c - ACPI Utility Functions ($Revision: 10 $)
  *
  *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
  *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
-<<<<<<< HEAD
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or (at
- *  your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
-
-=======
  */
 
 #define pr_fmt(fmt) "ACPI: utils: " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <acpi/acpi_bus.h>
-#include <acpi/acpi_drivers.h>
-
-#include "internal.h"
-
-#define _COMPONENT		ACPI_BUS_COMPONENT
-ACPI_MODULE_NAME("utils");
-=======
 #include <linux/hardirq.h>
 #include <linux/acpi.h>
 #include <linux/dynamic_debug.h>
 
 #include "internal.h"
 #include "sleep.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* --------------------------------------------------------------------------
                             Object Evaluation Helpers
    -------------------------------------------------------------------------- */
-<<<<<<< HEAD
-static void
-acpi_util_eval_error(acpi_handle h, acpi_string p, acpi_status s)
-{
-#ifdef ACPI_DEBUG_OUTPUT
-	char prefix[80] = {'\0'};
-	struct acpi_buffer buffer = {sizeof(prefix), prefix};
-	acpi_get_name(h, ACPI_FULL_PATHNAME, &buffer);
-	ACPI_DEBUG_PRINT((ACPI_DB_INFO, "Evaluate [%s.%s]: %s\n",
-		(char *) prefix, p, acpi_format_exception(s)));
-#else
-	return;
-#endif
-=======
 static void acpi_util_eval_error(acpi_handle h, acpi_string p, acpi_status s)
 {
 	acpi_handle_debug(h, "Evaluate [%s]: %s\n", p, acpi_format_exception(s));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 acpi_status
@@ -94,42 +43,24 @@ acpi_extract_package(union acpi_object *package,
 
 	if (!package || (package->type != ACPI_TYPE_PACKAGE)
 	    || (package->package.count < 1)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING PREFIX "Invalid package argument\n");
-=======
 		pr_debug("Invalid package argument\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return AE_BAD_PARAMETER;
 	}
 
 	if (!format || !format->pointer || (format->length < 1)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING PREFIX "Invalid format argument\n");
-=======
 		pr_debug("Invalid format argument\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return AE_BAD_PARAMETER;
 	}
 
 	if (!buffer) {
-<<<<<<< HEAD
-		printk(KERN_WARNING PREFIX "Invalid buffer argument\n");
-=======
 		pr_debug("Invalid buffer argument\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return AE_BAD_PARAMETER;
 	}
 
 	format_count = (format->length / sizeof(char)) - 1;
 	if (format_count > package->package.count) {
-<<<<<<< HEAD
-		printk(KERN_WARNING PREFIX "Format specifies more objects [%d]"
-			      " than exist in package [%d].\n",
-			      format_count, package->package.count);
-=======
 		pr_debug("Format specifies more objects [%d] than present [%d]\n",
 			 format_count, package->package.count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return AE_BAD_DATA;
 	}
 
@@ -142,13 +73,6 @@ acpi_extract_package(union acpi_object *package,
 
 		union acpi_object *element = &(package->package.elements[i]);
 
-<<<<<<< HEAD
-		if (!element) {
-			return AE_BAD_DATA;
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (element->type) {
 
 		case ACPI_TYPE_INTEGER:
@@ -164,18 +88,9 @@ acpi_extract_package(union acpi_object *package,
 				tail_offset += sizeof(char *);
 				break;
 			default:
-<<<<<<< HEAD
-				printk(KERN_WARNING PREFIX "Invalid package element"
-					      " [%d]: got number, expecing"
-					      " [%c]\n",
-					      i, format_string[i]);
-				return AE_BAD_DATA;
-				break;
-=======
 				pr_debug("Invalid package element [%d]: got number, expected [%c]\n",
 					 i, format_string[i]);
 				return AE_BAD_DATA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 
@@ -191,19 +106,6 @@ acpi_extract_package(union acpi_object *package,
 				break;
 			case 'B':
 				size_required +=
-<<<<<<< HEAD
-				    sizeof(u8 *) +
-				    (element->buffer.length * sizeof(u8));
-				tail_offset += sizeof(u8 *);
-				break;
-			default:
-				printk(KERN_WARNING PREFIX "Invalid package element"
-					      " [%d] got string/buffer,"
-					      " expecing [%c]\n",
-					      i, format_string[i]);
-				return AE_BAD_DATA;
-				break;
-=======
 				    sizeof(u8 *) + element->buffer.length;
 				tail_offset += sizeof(u8 *);
 				break;
@@ -223,37 +125,20 @@ acpi_extract_package(union acpi_object *package,
 				pr_debug("Invalid package element [%d] got reference, expected [%c]\n",
 					 i, format_string[i]);
 				return AE_BAD_DATA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 
 		case ACPI_TYPE_PACKAGE:
 		default:
-<<<<<<< HEAD
-			ACPI_DEBUG_PRINT((ACPI_DB_INFO,
-					  "Found unsupported element at index=%d\n",
-					  i));
-			/* TBD: handle nested packages... */
-			return AE_SUPPORT;
-			break;
-=======
 			pr_debug("Unsupported element at index=%d\n", i);
 			/* TBD: handle nested packages... */
 			return AE_SUPPORT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/*
 	 * Validate output buffer.
 	 */
-<<<<<<< HEAD
-	if (buffer->length < size_required) {
-		buffer->length = size_required;
-		return AE_BUFFER_OVERFLOW;
-	} else if (buffer->length != size_required || !buffer->pointer) {
-		return AE_BAD_PARAMETER;
-=======
 	if (buffer->length == ACPI_ALLOCATE_BUFFER) {
 		buffer->pointer = ACPI_ALLOCATE_ZEROED(size_required);
 		if (!buffer->pointer)
@@ -267,7 +152,6 @@ acpi_extract_package(union acpi_object *package,
 			   !buffer->pointer) {
 			return AE_BAD_PARAMETER;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	head = buffer->pointer;
@@ -281,13 +165,6 @@ acpi_extract_package(union acpi_object *package,
 		u8 **pointer = NULL;
 		union acpi_object *element = &(package->package.elements[i]);
 
-<<<<<<< HEAD
-		if (!element) {
-			return AE_BAD_DATA;
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (element->type) {
 
 		case ACPI_TYPE_INTEGER:
@@ -334,9 +211,6 @@ acpi_extract_package(union acpi_object *package,
 				memcpy(tail, element->buffer.pointer,
 				       element->buffer.length);
 				head += sizeof(u8 *);
-<<<<<<< HEAD
-				tail += element->buffer.length * sizeof(u8);
-=======
 				tail += element->buffer.length;
 				break;
 			default:
@@ -350,17 +224,12 @@ acpi_extract_package(union acpi_object *package,
 				*(void **)head =
 				    (void *)element->reference.handle;
 				head += sizeof(void *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			default:
 				/* Should never get here */
 				break;
 			}
 			break;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ACPI_TYPE_PACKAGE:
 			/* TBD: handle nested packages... */
 		default:
@@ -401,36 +270,13 @@ acpi_evaluate_integer(acpi_handle handle,
 
 	*data = element.integer.value;
 
-<<<<<<< HEAD
-	ACPI_DEBUG_PRINT((ACPI_DB_INFO, "Return value [%llu]\n", *data));
-=======
 	acpi_handle_debug(handle, "Return value [%llu]\n", *data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return AE_OK;
 }
 
 EXPORT_SYMBOL(acpi_evaluate_integer);
 
-<<<<<<< HEAD
-acpi_status
-acpi_evaluate_reference(acpi_handle handle,
-			acpi_string pathname,
-			struct acpi_object_list *arguments,
-			struct acpi_handle_list *list)
-{
-	acpi_status status = AE_OK;
-	union acpi_object *package = NULL;
-	union acpi_object *element = NULL;
-	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-	u32 i = 0;
-
-
-	if (!list) {
-		return AE_BAD_PARAMETER;
-	}
-
-=======
 int acpi_get_local_address(acpi_handle handle, u32 *addr)
 {
 	unsigned long long adr;
@@ -496,7 +342,6 @@ bool acpi_evaluate_reference(acpi_handle handle, acpi_string pathname,
 	if (!list)
 		return false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Evaluate object. */
 
 	status = acpi_evaluate_object(handle, pathname, arguments, &buffer);
@@ -505,34 +350,6 @@ bool acpi_evaluate_reference(acpi_handle handle, acpi_string pathname,
 
 	package = buffer.pointer;
 
-<<<<<<< HEAD
-	if ((buffer.length == 0) || !package) {
-		printk(KERN_ERR PREFIX "No return object (len %X ptr %p)\n",
-			    (unsigned)buffer.length, package);
-		status = AE_BAD_DATA;
-		acpi_util_eval_error(handle, pathname, status);
-		goto end;
-	}
-	if (package->type != ACPI_TYPE_PACKAGE) {
-		printk(KERN_ERR PREFIX "Expecting a [Package], found type %X\n",
-			    package->type);
-		status = AE_BAD_DATA;
-		acpi_util_eval_error(handle, pathname, status);
-		goto end;
-	}
-	if (!package->package.count) {
-		printk(KERN_ERR PREFIX "[Package] has zero elements (%p)\n",
-			    package);
-		status = AE_BAD_DATA;
-		acpi_util_eval_error(handle, pathname, status);
-		goto end;
-	}
-
-	if (package->package.count > ACPI_MAX_HANDLES) {
-		return AE_NO_MEMORY;
-	}
-	list->count = package->package.count;
-=======
 	if (buffer.length == 0 || !package ||
 	    package->type != ACPI_TYPE_PACKAGE || !package->package.count)
 		goto err;
@@ -541,50 +358,10 @@ bool acpi_evaluate_reference(acpi_handle handle, acpi_string pathname,
 	list->handles = kcalloc(list->count, sizeof(*list->handles), GFP_KERNEL);
 	if (!list->handles)
 		goto err_clear;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Extract package data. */
 
 	for (i = 0; i < list->count; i++) {
-<<<<<<< HEAD
-
-		element = &(package->package.elements[i]);
-
-		if (element->type != ACPI_TYPE_LOCAL_REFERENCE) {
-			status = AE_BAD_DATA;
-			printk(KERN_ERR PREFIX
-				    "Expecting a [Reference] package element, found type %X\n",
-				    element->type);
-			acpi_util_eval_error(handle, pathname, status);
-			break;
-		}
-
-		if (!element->reference.handle) {
-			printk(KERN_WARNING PREFIX "Invalid reference in"
-			       " package %s\n", pathname);
-			status = AE_NULL_ENTRY;
-			break;
-		}
-		/* Get the  acpi_handle. */
-
-		list->handles[i] = element->reference.handle;
-		ACPI_DEBUG_PRINT((ACPI_DB_INFO, "Found reference [%p]\n",
-				  list->handles[i]));
-	}
-
-      end:
-	if (ACPI_FAILURE(status)) {
-		list->count = 0;
-		//kfree(list->handles);
-	}
-
-	kfree(buffer.pointer);
-
-	return status;
-}
-
-EXPORT_SYMBOL(acpi_evaluate_reference);
-=======
 		union acpi_object *element = &(package->package.elements[i]);
 
 		if (element->type != ACPI_TYPE_LOCAL_REFERENCE ||
@@ -1295,4 +1072,3 @@ int acpi_match_platform_list(const struct acpi_platform_list *plat)
 	return -ENODEV;
 }
 EXPORT_SYMBOL(acpi_match_platform_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,38 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2000-2001 Christoph Hellwig.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL").
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2000-2001 Christoph Hellwig.
  * Copyright (c) 2016 Krzysztof Blaszkowski
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _VXFS_SUPER_H_
 #define _VXFS_SUPER_H_
@@ -45,16 +14,6 @@
  */
 #include <linux/types.h>
 
-<<<<<<< HEAD
-
-/*
- * Data types for use with the VxFS ondisk format.
- */
-typedef	int32_t		vx_daddr_t;
-typedef int32_t		vx_ino_t;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Superblock magic number (vxfs_super->vs_magic).
  */
@@ -70,8 +29,6 @@ typedef int32_t		vx_ino_t;
  */
 #define VXFS_NEFREE		32
 
-<<<<<<< HEAD
-=======
 enum vxfs_byte_order {
 	VXFS_BO_LE,
 	VXFS_BO_BE,
@@ -80,7 +37,6 @@ enum vxfs_byte_order {
 typedef __u16 __bitwise __fs16;
 typedef __u32 __bitwise __fs32;
 typedef __u64 __bitwise __fs64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * VxFS superblock (disk).
@@ -92,56 +48,6 @@ struct vxfs_sb {
 	 * Lots of this fields are no more used by version 2
 	 * and never filesystems.
 	 */
-<<<<<<< HEAD
-	u_int32_t	vs_magic;		/* Magic number */
-	int32_t		vs_version;		/* VxFS version */
-	u_int32_t	vs_ctime;		/* create time - secs */
-	u_int32_t	vs_cutime;		/* create time - usecs */
-	int32_t		__unused1;		/* unused */
-	int32_t		__unused2;		/* unused */
-	vx_daddr_t	vs_old_logstart;	/* obsolete */
-	vx_daddr_t	vs_old_logend;		/* obsolete */
-	int32_t		vs_bsize;		/* block size */
-	int32_t		vs_size;		/* number of blocks */
-	int32_t		vs_dsize;		/* number of data blocks */
-	u_int32_t	vs_old_ninode;		/* obsolete */
-	int32_t		vs_old_nau;		/* obsolete */
-	int32_t		__unused3;		/* unused */
-	int32_t		vs_old_defiextsize;	/* obsolete */
-	int32_t		vs_old_ilbsize;		/* obsolete */
-	int32_t		vs_immedlen;		/* size of immediate data area */
-	int32_t		vs_ndaddr;		/* number of direct extentes */
-	vx_daddr_t	vs_firstau;		/* address of first AU */
-	vx_daddr_t	vs_emap;		/* offset of extent map in AU */
-	vx_daddr_t	vs_imap;		/* offset of inode map in AU */
-	vx_daddr_t	vs_iextop;		/* offset of ExtOp. map in AU */
-	vx_daddr_t	vs_istart;		/* offset of inode list in AU */
-	vx_daddr_t	vs_bstart;		/* offset of fdblock in AU */
-	vx_daddr_t	vs_femap;		/* aufirst + emap */
-	vx_daddr_t	vs_fimap;		/* aufirst + imap */
-	vx_daddr_t	vs_fiextop;		/* aufirst + iextop */
-	vx_daddr_t	vs_fistart;		/* aufirst + istart */
-	vx_daddr_t	vs_fbstart;		/* aufirst + bstart */
-	int32_t		vs_nindir;		/* number of entries in indir */
-	int32_t		vs_aulen;		/* length of AU in blocks */
-	int32_t		vs_auimlen;		/* length of imap in blocks */
-	int32_t		vs_auemlen;		/* length of emap in blocks */
-	int32_t		vs_auilen;		/* length of ilist in blocks */
-	int32_t		vs_aupad;		/* length of pad in blocks */
-	int32_t		vs_aublocks;		/* data blocks in AU */
-	int32_t		vs_maxtier;		/* log base 2 of aublocks */
-	int32_t		vs_inopb;		/* number of inodes per blk */
-	int32_t		vs_old_inopau;		/* obsolete */
-	int32_t		vs_old_inopilb;		/* obsolete */
-	int32_t		vs_old_ndiripau;	/* obsolete */
-	int32_t		vs_iaddrlen;		/* size of indirect addr ext. */
-	int32_t		vs_bshift;		/* log base 2 of bsize */
-	int32_t		vs_inoshift;		/* log base 2 of inobp */
-	int32_t		vs_bmask;		/* ~( bsize - 1 ) */
-	int32_t		vs_boffmask;		/* bsize - 1 */
-	int32_t		vs_old_inomask;		/* old_inopilb - 1 */
-	int32_t		vs_checksum;		/* checksum of V1 data */
-=======
 	__fs32		vs_magic;		/* Magic number */
 	__fs32		vs_version;		/* VxFS version */
 	__fs32		vs_ctime;		/* create time - secs */
@@ -190,27 +96,10 @@ struct vxfs_sb {
 	__fs32		vs_boffmask;		/* bsize - 1 */
 	__fs32		vs_old_inomask;		/* old_inopilb - 1 */
 	__fs32		vs_checksum;		/* checksum of V1 data */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	/*
 	 * Version 1, writable
 	 */
-<<<<<<< HEAD
-	int32_t		vs_free;		/* number of free blocks */
-	int32_t		vs_ifree;		/* number of free inodes */
-	int32_t		vs_efree[VXFS_NEFREE];	/* number of free extents by size */
-	int32_t		vs_flags;		/* flags ?!? */
-	u_int8_t	vs_mod;			/* filesystem has been changed */
-	u_int8_t	vs_clean;		/* clean FS */
-	u_int16_t	__unused4;		/* unused */
-	u_int32_t	vs_firstlogid;		/* mount time log ID */
-	u_int32_t	vs_wtime;		/* last time written - sec */
-	u_int32_t	vs_wutime;		/* last time written - usec */
-	u_int8_t	vs_fname[6];		/* FS name */
-	u_int8_t	vs_fpack[6];		/* FS pack name */
-	int32_t		vs_logversion;		/* log format version */
-	int32_t		__unused5;		/* unused */
-=======
 	__fs32		vs_free;		/* number of free blocks */
 	__fs32		vs_ifree;		/* number of free inodes */
 	__fs32		vs_efree[VXFS_NEFREE];	/* number of free extents by size */
@@ -225,20 +114,10 @@ struct vxfs_sb {
 	__u8		vs_fpack[6];		/* FS pack name */
 	__fs32		vs_logversion;		/* log format version */
 	__u32		__unused5;		/* unused */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	/*
 	 * Version 2, Read-only
 	 */
-<<<<<<< HEAD
-	vx_daddr_t	vs_oltext[2];		/* OLT extent and replica */
-	int32_t		vs_oltsize;		/* OLT extent size */
-	int32_t		vs_iauimlen;		/* size of inode map */
-	int32_t		vs_iausize;		/* size of IAU in blocks */
-	int32_t		vs_dinosize;		/* size of inode in bytes */
-	int32_t		vs_old_dniaddr;		/* indir levels per inode */
-	int32_t		vs_checksum2;		/* checksum of V2 RO */
-=======
 	__fs32		vs_oltext[2];		/* OLT extent and replica */
 	__fs32		vs_oltsize;		/* OLT extent size */
 	__fs32		vs_iauimlen;		/* size of inode map */
@@ -246,7 +125,6 @@ struct vxfs_sb {
 	__fs32		vs_dinosize;		/* size of inode in bytes */
 	__fs32		vs_old_dniaddr;		/* indir levels per inode */
 	__fs32		vs_checksum2;		/* checksum of V2 RO */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Actually much more...
@@ -267,10 +145,6 @@ struct vxfs_sb_info {
 	ino_t			vsi_fshino;	/* fileset header inode */
 	daddr_t			vsi_oltext;	/* OLT extent */
 	daddr_t			vsi_oltsize;	/* OLT size */
-<<<<<<< HEAD
-};
-
-=======
 	enum vxfs_byte_order	byte_order;
 };
 
@@ -297,7 +171,6 @@ static inline u64 fs64_to_cpu(struct vxfs_sb_info *sbi, __fs64 a)
 	else
 		return le64_to_cpu((__force __le64)a);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * File modes.  File types above 0xf000 are vxfs internal only, they should
@@ -375,16 +248,6 @@ enum {
 #define VXFS_ISIMMED(ip)	VXFS_IS_ORG((ip), VXFS_ORG_IMMED)
 #define VXFS_ISTYPED(ip)	VXFS_IS_ORG((ip), VXFS_ORG_TYPED)
 
-<<<<<<< HEAD
-
-/*
- * Get filesystem private data from VFS inode.
- */
-#define VXFS_INO(ip) \
-	((struct vxfs_inode_info *)(ip)->i_private)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Get filesystem private data from VFS superblock.
  */

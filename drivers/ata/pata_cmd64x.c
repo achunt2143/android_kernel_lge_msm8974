@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_cmd64x.c 	- CMD64x PATA for new ATA layer
  *			  (C) 2005 Red Hat Inc
@@ -30,10 +27,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -123,11 +116,7 @@ static void cmd64x_set_timing(struct ata_port *ap, struct ata_device *adev, u8 m
 	/* ata_timing_compute is smart and will produce timings for MWDMA
 	   that don't violate the drives PIO capabilities. */
 	if (ata_timing_compute(adev, mode, &t, T, 0) < 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR DRV_NAME ": mode computation failed.\n");
-=======
 		ata_dev_err(adev, DRV_NAME ": mode computation failed.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	if (ap->port_no) {
@@ -141,11 +130,7 @@ static void cmd64x_set_timing(struct ata_port *ap, struct ata_device *adev, u8 m
 		}
 	}
 
-<<<<<<< HEAD
-	printk(KERN_DEBUG DRV_NAME ": active %d recovery %d setup %d.\n",
-=======
 	ata_dev_dbg(adev, DRV_NAME ": active %d recovery %d setup %d.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		t.active, t.recover, t.setup);
 	if (t.recover > 16) {
 		t.active += t.recover - 16;
@@ -334,11 +319,7 @@ static void cmd646r1_bmdma_stop(struct ata_queued_cmd *qc)
 	ata_bmdma_stop(qc);
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template cmd64x_sht = {
-=======
 static const struct scsi_host_template cmd64x_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -442,11 +423,7 @@ static int cmd64x_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 			.port_ops = &cmd648_port_ops
 		}
 	};
-<<<<<<< HEAD
-	const struct ata_port_info *ppi[] = { 
-=======
 	const struct ata_port_info *ppi[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		&cmd_info[id->driver_data],
 		&cmd_info[id->driver_data],
 		NULL
@@ -484,11 +461,7 @@ static int cmd64x_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 		case 1:
 			ppi[0] = &cmd_info[4];
 			ppi[1] = &cmd_info[4];
-<<<<<<< HEAD
-			/* FALL THRU */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Early revs have no CNTRL_CH0 */
 		case 2:
 		case 0:
@@ -501,16 +474,6 @@ static int cmd64x_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	/* check for enabled ports */
 	pci_read_config_byte(pdev, CNTRL, &reg);
 	if (!port_ok)
-<<<<<<< HEAD
-		dev_printk(KERN_NOTICE, &pdev->dev, "Mobility Bridge detected, ignoring CNTRL port enable/disable\n");
-	if (port_ok && cntrl_ch0_ok && !(reg & CNTRL_CH0)) {
-		dev_printk(KERN_NOTICE, &pdev->dev, "Primary port is disabled\n");
-		ppi[0] = &ata_dummy_port_info;
-		
-	}
-	if (port_ok && !(reg & CNTRL_CH1)) {
-		dev_printk(KERN_NOTICE, &pdev->dev, "Secondary port is disabled\n");
-=======
 		dev_notice(&pdev->dev, "Mobility Bridge detected, ignoring CNTRL port enable/disable\n");
 	if (port_ok && cntrl_ch0_ok && !(reg & CNTRL_CH0)) {
 		dev_notice(&pdev->dev, "Primary port is disabled\n");
@@ -519,24 +482,16 @@ static int cmd64x_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	}
 	if (port_ok && !(reg & CNTRL_CH1)) {
 		dev_notice(&pdev->dev, "Secondary port is disabled\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ppi[1] = &ata_dummy_port_info;
 	}
 
 	return ata_pci_bmdma_init_one(pdev, ppi, &cmd64x_sht, NULL, 0);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int cmd64x_reinit_one(struct pci_dev *pdev)
-{
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-=======
 #ifdef CONFIG_PM_SLEEP
 static int cmd64x_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -564,38 +519,16 @@ static struct pci_driver cmd64x_pci_driver = {
 	.id_table	= cmd64x,
 	.probe 		= cmd64x_init_one,
 	.remove		= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= cmd64x_reinit_one,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init cmd64x_init(void)
-{
-	return pci_register_driver(&cmd64x_pci_driver);
-}
-
-static void __exit cmd64x_exit(void)
-{
-	pci_unregister_driver(&cmd64x_pci_driver);
-}
-=======
 module_pci_driver(cmd64x_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for CMD64x series PATA controllers");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, cmd64x);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(cmd64x_init);
-module_exit(cmd64x_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

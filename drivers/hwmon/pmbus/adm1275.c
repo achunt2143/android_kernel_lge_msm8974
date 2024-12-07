@@ -1,26 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Hardware monitoring driver for Analog Devices ADM1275 Hot-Swap Controller
  * and Digital Power Monitor
  *
  * Copyright (c) 2011 Ericsson AB.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
-=======
  * Copyright (c) 2018 Guenter Roeck
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -29,11 +13,6 @@
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include "pmbus.h"
-
-enum chips { adm1075, adm1275, adm1276 };
-=======
 #include <linux/bitops.h>
 #include <linux/bitfield.h>
 #include <linux/log2.h>
@@ -44,37 +23,10 @@ enum chips { adm1075, adm1272, adm1275, adm1276, adm1278, adm1293, adm1294 };
 #define ADM1275_MFR_STATUS_IOUT_WARN2	BIT(0)
 #define ADM1293_MFR_STATUS_VAUX_UV_WARN	BIT(5)
 #define ADM1293_MFR_STATUS_VAUX_OV_WARN	BIT(6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ADM1275_PEAK_IOUT		0xd0
 #define ADM1275_PEAK_VIN		0xd1
 #define ADM1275_PEAK_VOUT		0xd2
-<<<<<<< HEAD
-#define ADM1275_PMON_CONFIG		0xd4
-
-#define ADM1275_VIN_VOUT_SELECT		(1 << 6)
-#define ADM1275_VRANGE			(1 << 5)
-#define ADM1075_IRANGE_50		(1 << 4)
-#define ADM1075_IRANGE_25		(1 << 3)
-#define ADM1075_IRANGE_MASK		((1 << 3) | (1 << 4))
-
-#define ADM1275_IOUT_WARN2_LIMIT	0xd7
-#define ADM1275_DEVICE_CONFIG		0xd8
-
-#define ADM1275_IOUT_WARN2_SELECT	(1 << 4)
-
-#define ADM1276_PEAK_PIN		0xda
-
-#define ADM1275_MFR_STATUS_IOUT_WARN2	(1 << 0)
-
-#define ADM1075_READ_VAUX		0xdd
-#define ADM1075_VAUX_OV_WARN_LIMIT	0xde
-#define ADM1075_VAUX_UV_WARN_LIMIT	0xdf
-#define ADM1075_VAUX_STATUS		0xf6
-
-#define ADM1075_VAUX_OV_WARN		(1<<7)
-#define ADM1075_VAUX_UV_WARN		(1<<6)
-=======
 #define ADM1275_PMON_CONTROL		0xd3
 #define ADM1275_PMON_CONFIG		0xd4
 
@@ -136,13 +88,10 @@ enum chips { adm1075, adm1272, adm1275, adm1276, adm1278, adm1293, adm1294 };
 #define ADM1278_VI_AVG_SHIFT		8
 #define ADM1278_VI_AVG_MASK		GENMASK(ADM1278_VI_AVG_SHIFT + 2, \
 						ADM1278_VI_AVG_SHIFT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct adm1275_data {
 	int id;
 	bool have_oc_fault;
-<<<<<<< HEAD
-=======
 	bool have_uc_fault;
 	bool have_vout;
 	bool have_vaux_status;
@@ -152,15 +101,11 @@ struct adm1275_data {
 	bool have_pin_max;
 	bool have_temp_max;
 	bool have_power_sampling;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pmbus_driver_info info;
 };
 
 #define to_adm1275_data(x)  container_of(x, struct adm1275_data, info)
 
-<<<<<<< HEAD
-static int adm1275_read_word_data(struct i2c_client *client, int page, int reg)
-=======
 struct coefficients {
 	s16 m;
 	s16 b;
@@ -311,74 +256,16 @@ static int adm1275_write_samples(const struct adm1275_data *data,
 
 static int adm1275_read_word_data(struct i2c_client *client, int page,
 				  int phase, int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct pmbus_driver_info *info = pmbus_get_driver_info(client);
 	const struct adm1275_data *data = to_adm1275_data(info);
 	int ret = 0;
 
-<<<<<<< HEAD
-	if (page)
-=======
 	if (page > 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 
 	switch (reg) {
 	case PMBUS_IOUT_UC_FAULT_LIMIT:
-<<<<<<< HEAD
-		if (data->have_oc_fault) {
-			ret = -ENXIO;
-			break;
-		}
-		ret = pmbus_read_word_data(client, 0, ADM1275_IOUT_WARN2_LIMIT);
-		break;
-	case PMBUS_IOUT_OC_FAULT_LIMIT:
-		if (!data->have_oc_fault) {
-			ret = -ENXIO;
-			break;
-		}
-		ret = pmbus_read_word_data(client, 0, ADM1275_IOUT_WARN2_LIMIT);
-		break;
-	case PMBUS_VOUT_OV_WARN_LIMIT:
-		if (data->id != adm1075) {
-			ret = -ENODATA;
-			break;
-		}
-		ret = pmbus_read_word_data(client, 0,
-					   ADM1075_VAUX_OV_WARN_LIMIT);
-		break;
-	case PMBUS_VOUT_UV_WARN_LIMIT:
-		if (data->id != adm1075) {
-			ret = -ENODATA;
-			break;
-		}
-		ret = pmbus_read_word_data(client, 0,
-					   ADM1075_VAUX_UV_WARN_LIMIT);
-		break;
-	case PMBUS_READ_VOUT:
-		if (data->id != adm1075) {
-			ret = -ENODATA;
-			break;
-		}
-		ret = pmbus_read_word_data(client, 0, ADM1075_READ_VAUX);
-		break;
-	case PMBUS_VIRT_READ_IOUT_MAX:
-		ret = pmbus_read_word_data(client, 0, ADM1275_PEAK_IOUT);
-		break;
-	case PMBUS_VIRT_READ_VOUT_MAX:
-		ret = pmbus_read_word_data(client, 0, ADM1275_PEAK_VOUT);
-		break;
-	case PMBUS_VIRT_READ_VIN_MAX:
-		ret = pmbus_read_word_data(client, 0, ADM1275_PEAK_VIN);
-		break;
-	case PMBUS_VIRT_READ_PIN_MAX:
-		if (data->id == adm1275) {
-			ret = -ENXIO;
-			break;
-		}
-		ret = pmbus_read_word_data(client, 0, ADM1276_PEAK_PIN);
-=======
 		if (!data->have_uc_fault)
 			return -ENXIO;
 		ret = pmbus_read_word_data(client, 0, 0xff,
@@ -443,17 +330,12 @@ static int adm1275_read_word_data(struct i2c_client *client, int page,
 			return -ENXIO;
 		ret = pmbus_read_word_data(client, 0, 0xff,
 					   ADM1278_PEAK_TEMP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case PMBUS_VIRT_RESET_IOUT_HISTORY:
 	case PMBUS_VIRT_RESET_VOUT_HISTORY:
 	case PMBUS_VIRT_RESET_VIN_HISTORY:
 		break;
 	case PMBUS_VIRT_RESET_PIN_HISTORY:
-<<<<<<< HEAD
-		if (data->id == adm1275)
-			ret = -ENXIO;
-=======
 		if (!data->have_pin_max)
 			return -ENXIO;
 		break;
@@ -475,7 +357,6 @@ static int adm1275_read_word_data(struct i2c_client *client, int page,
 		if (ret < 0)
 			break;
 		ret = BIT(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		ret = -ENODATA;
@@ -487,17 +368,11 @@ static int adm1275_read_word_data(struct i2c_client *client, int page,
 static int adm1275_write_word_data(struct i2c_client *client, int page, int reg,
 				   u16 word)
 {
-<<<<<<< HEAD
-	int ret;
-
-	if (page)
-=======
 	const struct pmbus_driver_info *info = pmbus_get_driver_info(client);
 	const struct adm1275_data *data = to_adm1275_data(info);
 	int ret;
 
 	if (page > 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 
 	switch (reg) {
@@ -508,12 +383,9 @@ static int adm1275_write_word_data(struct i2c_client *client, int page, int reg,
 		break;
 	case PMBUS_VIRT_RESET_IOUT_HISTORY:
 		ret = pmbus_write_word_data(client, 0, ADM1275_PEAK_IOUT, 0);
-<<<<<<< HEAD
-=======
 		if (!ret && data->have_iout_min)
 			ret = pmbus_write_word_data(client, 0,
 						    ADM1293_IOUT_MIN, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case PMBUS_VIRT_RESET_VOUT_HISTORY:
 		ret = pmbus_write_word_data(client, 0, ADM1275_PEAK_VOUT, 0);
@@ -523,8 +395,6 @@ static int adm1275_write_word_data(struct i2c_client *client, int page, int reg,
 		break;
 	case PMBUS_VIRT_RESET_PIN_HISTORY:
 		ret = pmbus_write_word_data(client, 0, ADM1276_PEAK_PIN, 0);
-<<<<<<< HEAD
-=======
 		if (!ret && data->have_pin_min)
 			ret = pmbus_write_word_data(client, 0,
 						    ADM1293_PIN_MIN, 0);
@@ -542,7 +412,6 @@ static int adm1275_write_word_data(struct i2c_client *client, int page, int reg,
 	case PMBUS_VIRT_CURR_SAMPLES:
 		word = clamp_val(word, 1, ADM1275_SAMPLES_AVG_MAX);
 		ret = adm1275_write_samples(data, client, false, ilog2(word));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		ret = -ENODATA;
@@ -565,40 +434,18 @@ static int adm1275_read_byte_data(struct i2c_client *client, int page, int reg)
 		ret = pmbus_read_byte_data(client, page, PMBUS_STATUS_IOUT);
 		if (ret < 0)
 			break;
-<<<<<<< HEAD
-		mfr_status = pmbus_read_byte_data(client, page,
-						  PMBUS_STATUS_MFR_SPECIFIC);
-		if (mfr_status < 0) {
-			ret = mfr_status;
-			break;
-		}
-=======
 		if (!data->have_oc_fault && !data->have_uc_fault)
 			break;
 		mfr_status = pmbus_read_byte_data(client, page,
 						  PMBUS_STATUS_MFR_SPECIFIC);
 		if (mfr_status < 0)
 			return mfr_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mfr_status & ADM1275_MFR_STATUS_IOUT_WARN2) {
 			ret |= data->have_oc_fault ?
 			  PB_IOUT_OC_FAULT : PB_IOUT_UC_FAULT;
 		}
 		break;
 	case PMBUS_STATUS_VOUT:
-<<<<<<< HEAD
-		if (data->id != adm1075) {
-			ret = -ENODATA;
-			break;
-		}
-		ret = 0;
-		mfr_status = pmbus_read_byte_data(client, 0,
-						  ADM1075_VAUX_STATUS);
-		if (mfr_status & ADM1075_VAUX_OV_WARN)
-			ret |= PB_VOLTAGE_OV_WARNING;
-		if (mfr_status & ADM1075_VAUX_UV_WARN)
-			ret |= PB_VOLTAGE_UV_WARNING;
-=======
 		if (data->have_vout)
 			return -ENODATA;
 		ret = 0;
@@ -621,7 +468,6 @@ static int adm1275_read_byte_data(struct i2c_client *client, int page, int reg)
 			if (mfr_status & ADM1293_MFR_STATUS_VAUX_UV_WARN)
 				ret |= PB_VOLTAGE_UV_WARNING;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		ret = -ENODATA;
@@ -632,26 +478,16 @@ static int adm1275_read_byte_data(struct i2c_client *client, int page, int reg)
 
 static const struct i2c_device_id adm1275_id[] = {
 	{ "adm1075", adm1075 },
-<<<<<<< HEAD
-	{ "adm1275", adm1275 },
-	{ "adm1276", adm1276 },
-=======
 	{ "adm1272", adm1272 },
 	{ "adm1275", adm1275 },
 	{ "adm1276", adm1276 },
 	{ "adm1278", adm1278 },
 	{ "adm1293", adm1293 },
 	{ "adm1294", adm1294 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, adm1275_id);
 
-<<<<<<< HEAD
-static int adm1275_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id)
-{
-=======
 /* Enable VOUT & TEMP1 if not enabled (disabled by default) */
 static int adm1275_enable_vout_temp(struct adm1275_data *data,
 				    struct i2c_client *client, int config)
@@ -672,21 +508,17 @@ static int adm1275_enable_vout_temp(struct adm1275_data *data,
 static int adm1275_probe(struct i2c_client *client)
 {
 	s32 (*config_read_fn)(const struct i2c_client *client, u8 reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 block_buffer[I2C_SMBUS_BLOCK_MAX + 1];
 	int config, device_config;
 	int ret;
 	struct pmbus_driver_info *info;
 	struct adm1275_data *data;
 	const struct i2c_device_id *mid;
-<<<<<<< HEAD
-=======
 	const struct coefficients *coefficients;
 	int vindex = -1, voindex = -1, cindex = -1, pindex = -1;
 	int tindex = -1;
 	u32 shunt;
 	u32 avg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!i2c_check_functionality(client->adapter,
 				     I2C_FUNC_SMBUS_READ_BYTE_DATA
@@ -717,18 +549,6 @@ static int adm1275_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	if (id->driver_data != mid->driver_data)
-		dev_notice(&client->dev,
-			   "Device mismatch: Configured %s, detected %s\n",
-			   id->name, mid->name);
-
-	config = i2c_smbus_read_byte_data(client, ADM1275_PMON_CONFIG);
-	if (config < 0)
-		return config;
-
-	device_config = i2c_smbus_read_byte_data(client, ADM1275_DEVICE_CONFIG);
-=======
 	if (strcmp(client->name, mid->name) != 0)
 		dev_notice(&client->dev,
 			   "Device mismatch: Configured %s, detected %s\n",
@@ -744,7 +564,6 @@ static int adm1275_probe(struct i2c_client *client)
 		return config;
 
 	device_config = config_read_fn(client, ADM1275_DEVICE_CONFIG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (device_config < 0)
 		return device_config;
 
@@ -753,8 +572,6 @@ static int adm1275_probe(struct i2c_client *client)
 	if (!data)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	if (of_property_read_u32(client->dev.of_node,
 				 "shunt-resistor-micro-ohms", &shunt))
 		shunt = 1000; /* 1 mOhm if not set via DT */
@@ -762,7 +579,6 @@ static int adm1275_probe(struct i2c_client *client)
 	if (shunt == 0)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->id = mid->driver_data;
 
 	info = &data->info;
@@ -771,70 +587,15 @@ static int adm1275_probe(struct i2c_client *client)
 	info->format[PSC_VOLTAGE_IN] = direct;
 	info->format[PSC_VOLTAGE_OUT] = direct;
 	info->format[PSC_CURRENT_OUT] = direct;
-<<<<<<< HEAD
-	info->m[PSC_CURRENT_OUT] = 807;
-	info->b[PSC_CURRENT_OUT] = 20475;
-	info->R[PSC_CURRENT_OUT] = -1;
-	info->func[0] = PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT;
-=======
 	info->format[PSC_POWER] = direct;
 	info->format[PSC_TEMPERATURE] = direct;
 	info->func[0] = PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT |
 			PMBUS_HAVE_SAMPLES;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info->read_word_data = adm1275_read_word_data;
 	info->read_byte_data = adm1275_read_byte_data;
 	info->write_word_data = adm1275_write_word_data;
 
-<<<<<<< HEAD
-	if (data->id == adm1075) {
-		info->m[PSC_VOLTAGE_IN] = 27169;
-		info->b[PSC_VOLTAGE_IN] = 0;
-		info->R[PSC_VOLTAGE_IN] = -1;
-		info->m[PSC_VOLTAGE_OUT] = 27169;
-		info->b[PSC_VOLTAGE_OUT] = 0;
-		info->R[PSC_VOLTAGE_OUT] = -1;
-	} else if (config & ADM1275_VRANGE) {
-		info->m[PSC_VOLTAGE_IN] = 19199;
-		info->b[PSC_VOLTAGE_IN] = 0;
-		info->R[PSC_VOLTAGE_IN] = -2;
-		info->m[PSC_VOLTAGE_OUT] = 19199;
-		info->b[PSC_VOLTAGE_OUT] = 0;
-		info->R[PSC_VOLTAGE_OUT] = -2;
-	} else {
-		info->m[PSC_VOLTAGE_IN] = 6720;
-		info->b[PSC_VOLTAGE_IN] = 0;
-		info->R[PSC_VOLTAGE_IN] = -1;
-		info->m[PSC_VOLTAGE_OUT] = 6720;
-		info->b[PSC_VOLTAGE_OUT] = 0;
-		info->R[PSC_VOLTAGE_OUT] = -1;
-	}
-
-	if (device_config & ADM1275_IOUT_WARN2_SELECT)
-		data->have_oc_fault = true;
-
-	switch (data->id) {
-	case adm1075:
-		info->format[PSC_POWER] = direct;
-		info->b[PSC_POWER] = 0;
-		info->R[PSC_POWER] = -1;
-		switch (config & ADM1075_IRANGE_MASK) {
-		case ADM1075_IRANGE_25:
-			info->m[PSC_POWER] = 8549;
-			info->m[PSC_CURRENT_OUT] = 806;
-			break;
-		case ADM1075_IRANGE_50:
-			info->m[PSC_POWER] = 4279;
-			info->m[PSC_CURRENT_OUT] = 404;
-			break;
-		default:
-			dev_err(&client->dev, "Invalid input current range");
-			info->m[PSC_POWER] = 0;
-			info->m[PSC_CURRENT_OUT] = 0;
-			break;
-		}
-=======
 	switch (data->id) {
 	case adm1075:
 		if (device_config & ADM1275_IOUT_WARN2_SELECT)
@@ -860,16 +621,12 @@ static int adm1275_probe(struct i2c_client *client)
 			break;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->func[0] |= PMBUS_HAVE_VIN | PMBUS_HAVE_PIN
 		  | PMBUS_HAVE_STATUS_INPUT;
 		if (config & ADM1275_VIN_VOUT_SELECT)
 			info->func[0] |=
 			  PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT;
 		break;
-<<<<<<< HEAD
-	case adm1275:
-=======
 	case adm1272:
 		data->have_vout = true;
 		data->have_pin_max = true;
@@ -919,7 +676,6 @@ static int adm1275_probe(struct i2c_client *client)
 		vindex = (config & ADM1275_VRANGE) ? 0 : 1;
 		cindex = 2;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (config & ADM1275_VIN_VOUT_SELECT)
 			info->func[0] |=
 			  PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT;
@@ -928,9 +684,6 @@ static int adm1275_probe(struct i2c_client *client)
 			  PMBUS_HAVE_VIN | PMBUS_HAVE_STATUS_INPUT;
 		break;
 	case adm1276:
-<<<<<<< HEAD
-		info->format[PSC_POWER] = direct;
-=======
 		if (device_config & ADM1275_IOUT_WARN2_SELECT)
 			data->have_oc_fault = true;
 		else
@@ -943,27 +696,11 @@ static int adm1275_probe(struct i2c_client *client)
 		cindex = 2;
 		pindex = (config & ADM1275_VRANGE) ? 3 : 4;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->func[0] |= PMBUS_HAVE_VIN | PMBUS_HAVE_PIN
 		  | PMBUS_HAVE_STATUS_INPUT;
 		if (config & ADM1275_VIN_VOUT_SELECT)
 			info->func[0] |=
 			  PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT;
-<<<<<<< HEAD
-		if (config & ADM1275_VRANGE) {
-			info->m[PSC_POWER] = 6043;
-			info->b[PSC_POWER] = 0;
-			info->R[PSC_POWER] = -2;
-		} else {
-			info->m[PSC_POWER] = 2115;
-			info->b[PSC_POWER] = 0;
-			info->R[PSC_POWER] = -1;
-		}
-		break;
-	}
-
-	return pmbus_do_probe(client, id, info);
-=======
 		break;
 	case adm1278:
 		data->have_vout = true;
@@ -1111,7 +848,6 @@ static int adm1275_probe(struct i2c_client *client)
 	}
 
 	return pmbus_do_probe(client, info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct i2c_driver adm1275_driver = {
@@ -1119,10 +855,6 @@ static struct i2c_driver adm1275_driver = {
 		   .name = "adm1275",
 		   },
 	.probe = adm1275_probe,
-<<<<<<< HEAD
-	.remove = pmbus_do_remove,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = adm1275_id,
 };
 
@@ -1131,7 +863,4 @@ module_i2c_driver(adm1275_driver);
 MODULE_AUTHOR("Guenter Roeck");
 MODULE_DESCRIPTION("PMBus driver for Analog Devices ADM1275 and compatibles");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_IMPORT_NS(PMBUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

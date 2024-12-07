@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -20,12 +10,8 @@
 #include <linux/buffer_head.h>
 #include <linux/xattr.h>
 #include <linux/gfs2_ondisk.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/posix_acl_xattr.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "gfs2.h"
 #include "incore.h"
@@ -36,17 +22,6 @@
 #include "meta_io.h"
 #include "quota.h"
 #include "rgrp.h"
-<<<<<<< HEAD
-#include "trans.h"
-#include "util.h"
-
-/**
- * ea_calc_size - returns the acutal number of bytes the request will take up
- *                (not counting any unstuffed data blocks)
- * @sdp:
- * @er:
- * @size:
-=======
 #include "super.h"
 #include "trans.h"
 #include "util.h"
@@ -54,7 +29,6 @@
 /*
  * ea_calc_size - returns the actual number of bytes the request will take up
  *                (not counting any unstuffed data blocks)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 1 if the EA should be stuffed
  */
@@ -93,8 +67,6 @@ static int ea_check_size(struct gfs2_sbd *sdp, unsigned int nsize, size_t dsize)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static bool gfs2_eatype_valid(struct gfs2_sbd *sdp, u8 type)
 {
 	switch(sdp->sd_sb.sb_fs_format) {
@@ -109,7 +81,6 @@ static bool gfs2_eatype_valid(struct gfs2_sbd *sdp, u8 type)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef int (*ea_call_t) (struct gfs2_inode *ip, struct buffer_head *bh,
 			  struct gfs2_ea_header *ea,
 			  struct gfs2_ea_header *prev, void *private);
@@ -117,10 +88,7 @@ typedef int (*ea_call_t) (struct gfs2_inode *ip, struct buffer_head *bh,
 static int ea_foreach_i(struct gfs2_inode *ip, struct buffer_head *bh,
 			ea_call_t ea_call, void *data)
 {
-<<<<<<< HEAD
-=======
 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gfs2_ea_header *ea, *prev = NULL;
 	int error = 0;
 
@@ -133,14 +101,8 @@ static int ea_foreach_i(struct gfs2_inode *ip, struct buffer_head *bh,
 		if (!(bh->b_data <= (char *)ea && (char *)GFS2_EA2NEXT(ea) <=
 						  bh->b_data + bh->b_size))
 			goto fail;
-<<<<<<< HEAD
-		if (!GFS2_EATYPE_VALID(ea->ea_type))
-			goto fail;
-
-=======
 		if (!gfs2_eatype_valid(sdp, ea->ea_type))
 			goto fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = ea_call(ip, bh, ea, prev, data);
 		if (error)
 			return error;
@@ -166,11 +128,7 @@ static int ea_foreach(struct gfs2_inode *ip, ea_call_t ea_call, void *data)
 	__be64 *eablk, *end;
 	int error;
 
-<<<<<<< HEAD
-	error = gfs2_meta_read(ip->i_gl, ip->i_eattr, DIO_WAIT, &bh);
-=======
 	error = gfs2_meta_read(ip->i_gl, ip->i_eattr, DIO_WAIT, 0, &bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
@@ -194,11 +152,7 @@ static int ea_foreach(struct gfs2_inode *ip, ea_call_t ea_call, void *data)
 			break;
 		bn = be64_to_cpu(*eablk);
 
-<<<<<<< HEAD
-		error = gfs2_meta_read(ip->i_gl, bn, DIO_WAIT, &eabh);
-=======
 		error = gfs2_meta_read(ip->i_gl, bn, DIO_WAIT, 0, &eabh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			break;
 		error = ea_foreach_i(ip, eabh, ea_call, data);
@@ -262,18 +216,8 @@ static int gfs2_ea_find(struct gfs2_inode *ip, int type, const char *name,
 	return error;
 }
 
-<<<<<<< HEAD
-/**
- * ea_dealloc_unstuffed -
- * @ip:
- * @bh:
- * @ea:
- * @prev:
- * @private:
-=======
 /*
  * ea_dealloc_unstuffed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Take advantage of the fact that all unstuffed blocks are
  * allocated from the same RG.  But watch, this may not always
@@ -290,10 +234,6 @@ static int ea_dealloc_unstuffed(struct gfs2_inode *ip, struct buffer_head *bh,
 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
 	struct gfs2_rgrpd *rgd;
 	struct gfs2_holder rg_gh;
-<<<<<<< HEAD
-	struct buffer_head *dibh;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be64 *dataptrs;
 	u64 bn = 0;
 	u64 bstart = 0;
@@ -325,12 +265,8 @@ static int ea_dealloc_unstuffed(struct gfs2_inode *ip, struct buffer_head *bh,
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-	error = gfs2_glock_nq_init(rgd->rd_gl, LM_ST_EXCLUSIVE, 0, &rg_gh);
-=======
 	error = gfs2_glock_nq_init(rgd->rd_gl, LM_ST_EXCLUSIVE,
 				   LM_FLAG_NODE_SCOPE, &rg_gh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
@@ -339,11 +275,7 @@ static int ea_dealloc_unstuffed(struct gfs2_inode *ip, struct buffer_head *bh,
 	if (error)
 		goto out_gunlock;
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, bh, 1);
-=======
 	gfs2_trans_add_meta(ip->i_gl, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dataptrs = GFS2_EA2DATAPTRS(ea);
 	for (x = 0; x < ea->ea_num_ptrs; x++, dataptrs++) {
@@ -355,11 +287,7 @@ static int ea_dealloc_unstuffed(struct gfs2_inode *ip, struct buffer_head *bh,
 			blen++;
 		else {
 			if (bstart)
-<<<<<<< HEAD
-				gfs2_free_meta(ip, bstart, blen);
-=======
 				gfs2_free_meta(ip, rgd, bstart, blen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bstart = bn;
 			blen = 1;
 		}
@@ -368,11 +296,7 @@ static int ea_dealloc_unstuffed(struct gfs2_inode *ip, struct buffer_head *bh,
 		gfs2_add_inode_blocks(&ip->i_inode, -1);
 	}
 	if (bstart)
-<<<<<<< HEAD
-		gfs2_free_meta(ip, bstart, blen);
-=======
 		gfs2_free_meta(ip, rgd, bstart, blen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (prev && !leave) {
 		u32 len;
@@ -387,18 +311,8 @@ static int ea_dealloc_unstuffed(struct gfs2_inode *ip, struct buffer_head *bh,
 		ea->ea_num_ptrs = 0;
 	}
 
-<<<<<<< HEAD
-	error = gfs2_meta_inode_buffer(ip, &dibh);
-	if (!error) {
-		ip->i_inode.i_ctime = CURRENT_TIME;
-		gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-		gfs2_dinode_out(ip, dibh->b_data);
-		brelse(dibh);
-	}
-=======
 	inode_set_ctime_current(&ip->i_inode);
 	__mark_inode_dirty(&ip->i_inode, I_DIRTY_DATASYNC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gfs2_trans_end(sdp);
 
@@ -411,16 +325,6 @@ static int ea_remove_unstuffed(struct gfs2_inode *ip, struct buffer_head *bh,
 			       struct gfs2_ea_header *ea,
 			       struct gfs2_ea_header *prev, int leave)
 {
-<<<<<<< HEAD
-	struct gfs2_qadata *qa;
-	int error;
-
-	qa = gfs2_qadata_get(ip);
-	if (!qa)
-		return -ENOMEM;
-
-	error = gfs2_quota_hold(ip, NO_QUOTA_CHANGE, NO_QUOTA_CHANGE);
-=======
 	int error;
 
 	error = gfs2_rindex_update(GFS2_SB(&ip->i_inode));
@@ -428,7 +332,6 @@ static int ea_remove_unstuffed(struct gfs2_inode *ip, struct buffer_head *bh,
 		return error;
 
 	error = gfs2_quota_hold(ip, NO_UID_QUOTA_CHANGE, NO_GID_QUOTA_CHANGE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out_alloc;
 
@@ -436,10 +339,6 @@ static int ea_remove_unstuffed(struct gfs2_inode *ip, struct buffer_head *bh,
 
 	gfs2_quota_unhold(ip);
 out_alloc:
-<<<<<<< HEAD
-	gfs2_qadata_put(ip);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -448,74 +347,20 @@ struct ea_list {
 	unsigned int ei_size;
 };
 
-<<<<<<< HEAD
-static inline unsigned int gfs2_ea_strlen(struct gfs2_ea_header *ea)
-{
-	switch (ea->ea_type) {
-	case GFS2_EATYPE_USR:
-		return 5 + ea->ea_name_len + 1;
-	case GFS2_EATYPE_SYS:
-		return 7 + ea->ea_name_len + 1;
-	case GFS2_EATYPE_SECURITY:
-		return 9 + ea->ea_name_len + 1;
-	default:
-		return 0;
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ea_list_i(struct gfs2_inode *ip, struct buffer_head *bh,
 		     struct gfs2_ea_header *ea, struct gfs2_ea_header *prev,
 		     void *private)
 {
-<<<<<<< HEAD
-	struct ea_list *ei = private;
-	struct gfs2_ea_request *er = ei->ei_er;
-	unsigned int ea_size = gfs2_ea_strlen(ea);
-=======
 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
 	struct ea_list *ei = private;
 	struct gfs2_ea_request *er = ei->ei_er;
 	unsigned int ea_size;
 	char *prefix;
 	unsigned int l;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ea->ea_type == GFS2_EATYPE_UNUSED)
 		return 0;
 
-<<<<<<< HEAD
-	if (er->er_data_len) {
-		char *prefix = NULL;
-		unsigned int l = 0;
-		char c = 0;
-
-		if (ei->ei_size + ea_size > er->er_data_len)
-			return -ERANGE;
-
-		switch (ea->ea_type) {
-		case GFS2_EATYPE_USR:
-			prefix = "user.";
-			l = 5;
-			break;
-		case GFS2_EATYPE_SYS:
-			prefix = "system.";
-			l = 7;
-			break;
-		case GFS2_EATYPE_SECURITY:
-			prefix = "security.";
-			l = 9;
-			break;
-		}
-
-		BUG_ON(l == 0);
-
-		memcpy(er->er_data + ei->ei_size, prefix, l);
-		memcpy(er->er_data + ei->ei_size + l, GFS2_EA2NAME(ea),
-		       ea->ea_name_len);
-		memcpy(er->er_data + ei->ei_size + ea_size - 1, &c, 1);
-=======
 	BUG_ON(ea->ea_type > GFS2_EATYPE_SECURITY &&
 	       sdp->sd_sb.sb_fs_format == GFS2_FS_FORMAT_MIN);
 	switch (ea->ea_type) {
@@ -548,7 +393,6 @@ static int ea_list_i(struct gfs2_inode *ip, struct buffer_head *bh,
 		memcpy(er->er_data + ei->ei_size + l, GFS2_EA2NAME(ea),
 		       ea->ea_name_len);
 		er->er_data[ei->ei_size + ea_size - 1] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ei->ei_size += ea_size;
@@ -567,11 +411,7 @@ static int ea_list_i(struct gfs2_inode *ip, struct buffer_head *bh,
 
 ssize_t gfs2_listxattr(struct dentry *dentry, char *buffer, size_t size)
 {
-<<<<<<< HEAD
-	struct gfs2_inode *ip = GFS2_I(dentry->d_inode);
-=======
 	struct gfs2_inode *ip = GFS2_I(d_inode(dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gfs2_ea_request er;
 	struct gfs2_holder i_gh;
 	int error;
@@ -600,31 +440,18 @@ ssize_t gfs2_listxattr(struct dentry *dentry, char *buffer, size_t size)
 }
 
 /**
-<<<<<<< HEAD
- * ea_get_unstuffed - actually copies the unstuffed data into the
- *                    request buffer
- * @ip: The GFS2 inode
- * @ea: The extended attribute header structure
- * @data: The data to be copied
-=======
  * gfs2_iter_unstuffed - copies the unstuffed xattr data to/from the
  *                       request buffer
  * @ip: The GFS2 inode
  * @ea: The extended attribute header structure
  * @din: The data to be copied in
  * @dout: The data to be copied out (one of din,dout will be NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: errno
  */
 
-<<<<<<< HEAD
-static int ea_get_unstuffed(struct gfs2_inode *ip, struct gfs2_ea_header *ea,
-			    char *data)
-=======
 static int gfs2_iter_unstuffed(struct gfs2_inode *ip, struct gfs2_ea_header *ea,
 			       const char *din, char *dout)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
 	struct buffer_head **bh;
@@ -633,22 +460,15 @@ static int gfs2_iter_unstuffed(struct gfs2_inode *ip, struct gfs2_ea_header *ea,
 	__be64 *dataptrs = GFS2_EA2DATAPTRS(ea);
 	unsigned int x;
 	int error = 0;
-<<<<<<< HEAD
-=======
 	unsigned char *pos;
 	unsigned cp_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bh = kcalloc(nptrs, sizeof(struct buffer_head *), GFP_NOFS);
 	if (!bh)
 		return -ENOMEM;
 
 	for (x = 0; x < nptrs; x++) {
-<<<<<<< HEAD
-		error = gfs2_meta_read(ip->i_gl, be64_to_cpu(*dataptrs), 0,
-=======
 		error = gfs2_meta_read(ip->i_gl, be64_to_cpu(*dataptrs), 0, 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       bh + x);
 		if (error) {
 			while (x--)
@@ -672,14 +492,6 @@ static int gfs2_iter_unstuffed(struct gfs2_inode *ip, struct gfs2_ea_header *ea,
 			goto out;
 		}
 
-<<<<<<< HEAD
-		memcpy(data, bh[x]->b_data + sizeof(struct gfs2_meta_header),
-		       (sdp->sd_jbsize > amount) ? amount : sdp->sd_jbsize);
-
-		amount -= sdp->sd_jbsize;
-		data += sdp->sd_jbsize;
-
-=======
 		pos = bh[x]->b_data + sizeof(struct gfs2_meta_header);
 		cp_size = (sdp->sd_jbsize > amount) ? amount : sdp->sd_jbsize;
 
@@ -695,7 +507,6 @@ static int gfs2_iter_unstuffed(struct gfs2_inode *ip, struct gfs2_ea_header *ea,
 		}
 
 		amount -= sdp->sd_jbsize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brelse(bh[x]);
 	}
 
@@ -716,11 +527,7 @@ static int gfs2_ea_get_copy(struct gfs2_inode *ip, struct gfs2_ea_location *el,
 		memcpy(data, GFS2_EA2DATA(el->el_ea), len);
 		return len;
 	}
-<<<<<<< HEAD
-	ret = ea_get_unstuffed(ip, el->el_ea, data);
-=======
 	ret = gfs2_iter_unstuffed(ip, el->el_ea, NULL, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 	return len;
@@ -758,11 +565,7 @@ out:
 }
 
 /**
-<<<<<<< HEAD
- * gfs2_xattr_get - Get a GFS2 extended attribute
-=======
  * __gfs2_xattr_get - Get a GFS2 extended attribute
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @inode: The inode
  * @name: The name of the extended attribute
  * @buffer: The buffer to write the result into
@@ -771,17 +574,10 @@ out:
  *
  * Returns: actual size of data on success, -errno on error
  */
-<<<<<<< HEAD
-static int gfs2_xattr_get(struct dentry *dentry, const char *name,
-		void *buffer, size_t size, int type)
-{
-	struct gfs2_inode *ip = GFS2_I(dentry->d_inode);
-=======
 static int __gfs2_xattr_get(struct inode *inode, const char *name,
 			    void *buffer, size_t size, int type)
 {
 	struct gfs2_inode *ip = GFS2_I(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gfs2_ea_location el;
 	int error;
 
@@ -804,8 +600,6 @@ static int __gfs2_xattr_get(struct inode *inode, const char *name,
 	return error;
 }
 
-<<<<<<< HEAD
-=======
 static int gfs2_xattr_get(const struct xattr_handler *handler,
 			  struct dentry *unused, struct inode *inode,
 			  const char *name, void *buffer, size_t size)
@@ -829,7 +623,6 @@ static int gfs2_xattr_get(const struct xattr_handler *handler,
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ea_alloc_blk - allocates a new block for extended attributes.
  * @ip: A pointer to the inode that's getting extended attributes
@@ -846,21 +639,12 @@ static int ea_alloc_blk(struct gfs2_inode *ip, struct buffer_head **bhp)
 	u64 block;
 	int error;
 
-<<<<<<< HEAD
-	error = gfs2_alloc_blocks(ip, &block, &n, 0, NULL);
-	if (error)
-		return error;
-	gfs2_trans_add_unrevoke(sdp, block, 1);
-	*bhp = gfs2_meta_new(ip->i_gl, block);
-	gfs2_trans_add_bh(ip->i_gl, *bhp, 1);
-=======
 	error = gfs2_alloc_blocks(ip, &block, &n, 0);
 	if (error)
 		return error;
 	gfs2_trans_remove_revoke(sdp, block, 1);
 	*bhp = gfs2_meta_new(ip->i_gl, block);
 	gfs2_trans_add_meta(ip->i_gl, *bhp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_metatype_set(*bhp, GFS2_METATYPE_EA, GFS2_FORMAT_EA);
 	gfs2_buffer_clear_tail(*bhp, sizeof(struct gfs2_meta_header));
 
@@ -917,21 +701,12 @@ static int ea_write(struct gfs2_inode *ip, struct gfs2_ea_header *ea,
 			int mh_size = sizeof(struct gfs2_meta_header);
 			unsigned int n = 1;
 
-<<<<<<< HEAD
-			error = gfs2_alloc_blocks(ip, &block, &n, 0, NULL);
-			if (error)
-				return error;
-			gfs2_trans_add_unrevoke(sdp, block, 1);
-			bh = gfs2_meta_new(ip->i_gl, block);
-			gfs2_trans_add_bh(ip->i_gl, bh, 1);
-=======
 			error = gfs2_alloc_blocks(ip, &block, &n, 0);
 			if (error)
 				return error;
 			gfs2_trans_remove_revoke(sdp, block, 1);
 			bh = gfs2_meta_new(ip->i_gl, block);
 			gfs2_trans_add_meta(ip->i_gl, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			gfs2_metatype_set(bh, GFS2_METATYPE_ED, GFS2_FORMAT_ED);
 
 			gfs2_add_inode_blocks(&ip->i_inode, 1);
@@ -963,21 +738,6 @@ static int ea_alloc_skeleton(struct gfs2_inode *ip, struct gfs2_ea_request *er,
 			     unsigned int blks,
 			     ea_skeleton_call_t skeleton_call, void *private)
 {
-<<<<<<< HEAD
-	struct gfs2_qadata *qa;
-	struct buffer_head *dibh;
-	int error;
-
-	qa = gfs2_qadata_get(ip);
-	if (!qa)
-		return -ENOMEM;
-
-	error = gfs2_quota_lock_check(ip);
-	if (error)
-		goto out;
-
-	error = gfs2_inplace_reserve(ip, blks);
-=======
 	struct gfs2_alloc_parms ap = { .target = blks };
 	int error;
 
@@ -990,16 +750,11 @@ static int ea_alloc_skeleton(struct gfs2_inode *ip, struct gfs2_ea_request *er,
 		return error;
 
 	error = gfs2_inplace_reserve(ip, &ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out_gunlock_q;
 
 	error = gfs2_trans_begin(GFS2_SB(&ip->i_inode),
-<<<<<<< HEAD
-				 blks + gfs2_rg_blocks(ip) +
-=======
 				 blks + gfs2_rg_blocks(ip, blks) +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 RES_DINODE + RES_STATFS + RES_QUOTA, 0);
 	if (error)
 		goto out_ipres;
@@ -1008,18 +763,8 @@ static int ea_alloc_skeleton(struct gfs2_inode *ip, struct gfs2_ea_request *er,
 	if (error)
 		goto out_end_trans;
 
-<<<<<<< HEAD
-	error = gfs2_meta_inode_buffer(ip, &dibh);
-	if (!error) {
-		ip->i_inode.i_ctime = CURRENT_TIME;
-		gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-		gfs2_dinode_out(ip, dibh->b_data);
-		brelse(dibh);
-	}
-=======
 	inode_set_ctime_current(&ip->i_inode);
 	__mark_inode_dirty(&ip->i_inode, I_DIRTY_DATASYNC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_end_trans:
 	gfs2_trans_end(GFS2_SB(&ip->i_inode));
@@ -1027,11 +772,6 @@ out_ipres:
 	gfs2_inplace_release(ip);
 out_gunlock_q:
 	gfs2_quota_unlock(ip);
-<<<<<<< HEAD
-out:
-	gfs2_qadata_put(ip);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1053,22 +793,11 @@ static int ea_init_i(struct gfs2_inode *ip, struct gfs2_ea_request *er,
 	return error;
 }
 
-<<<<<<< HEAD
-/**
- * ea_init - initializes a new eattr block
- * @ip:
- * @er:
- *
- * Returns: errno
- */
-
-=======
 /*
  * ea_init - initializes a new eattr block
  *
  * Returns: errno
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ea_init(struct gfs2_inode *ip, int type, const char *name,
 		   const void *data, size_t size)
 {
@@ -1112,11 +841,7 @@ static void ea_set_remove_stuffed(struct gfs2_inode *ip,
 	struct gfs2_ea_header *prev = el->el_prev;
 	u32 len;
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, el->el_bh, 1);
-=======
 	gfs2_trans_add_meta(ip->i_gl, el->el_bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!prev || !GFS2_EA_IS_STUFFED(ea)) {
 		ea->ea_type = GFS2_EATYPE_UNUSED;
@@ -1147,21 +872,13 @@ static int ea_set_simple_noalloc(struct gfs2_inode *ip, struct buffer_head *bh,
 				 struct gfs2_ea_header *ea, struct ea_set *es)
 {
 	struct gfs2_ea_request *er = es->es_er;
-<<<<<<< HEAD
-	struct buffer_head *dibh;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	error = gfs2_trans_begin(GFS2_SB(&ip->i_inode), RES_DINODE + 2 * RES_EATTR, 0);
 	if (error)
 		return error;
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, bh, 1);
-=======
 	gfs2_trans_add_meta(ip->i_gl, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (es->ea_split)
 		ea = ea_split_ea(ea);
@@ -1171,20 +888,9 @@ static int ea_set_simple_noalloc(struct gfs2_inode *ip, struct buffer_head *bh,
 	if (es->es_el)
 		ea_set_remove_stuffed(ip, es->es_el);
 
-<<<<<<< HEAD
-	error = gfs2_meta_inode_buffer(ip, &dibh);
-	if (error)
-		goto out;
-	ip->i_inode.i_ctime = CURRENT_TIME;
-	gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-	gfs2_dinode_out(ip, dibh->b_data);
-	brelse(dibh);
-out:
-=======
 	inode_set_ctime_current(&ip->i_inode);
 	__mark_inode_dirty(&ip->i_inode, I_DIRTY_DATASYNC);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_trans_end(GFS2_SB(&ip->i_inode));
 	return error;
 }
@@ -1196,11 +902,7 @@ static int ea_set_simple_alloc(struct gfs2_inode *ip,
 	struct gfs2_ea_header *ea = es->es_ea;
 	int error;
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, es->es_bh, 1);
-=======
 	gfs2_trans_add_meta(ip->i_gl, es->es_bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (es->ea_split)
 		ea = ea_split_ea(ea);
@@ -1274,11 +976,7 @@ static int ea_set_block(struct gfs2_inode *ip, struct gfs2_ea_request *er,
 	if (ip->i_diskflags & GFS2_DIF_EA_INDIRECT) {
 		__be64 *end;
 
-<<<<<<< HEAD
-		error = gfs2_meta_read(ip->i_gl, ip->i_eattr, DIO_WAIT,
-=======
 		error = gfs2_meta_read(ip->i_gl, ip->i_eattr, DIO_WAIT, 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       &indbh);
 		if (error)
 			return error;
@@ -1300,18 +998,6 @@ static int ea_set_block(struct gfs2_inode *ip, struct gfs2_ea_request *er,
 			goto out;
 		}
 
-<<<<<<< HEAD
-		gfs2_trans_add_bh(ip->i_gl, indbh, 1);
-	} else {
-		u64 blk;
-		unsigned int n = 1;
-		error = gfs2_alloc_blocks(ip, &blk, &n, 0, NULL);
-		if (error)
-			return error;
-		gfs2_trans_add_unrevoke(sdp, blk, 1);
-		indbh = gfs2_meta_new(ip->i_gl, blk);
-		gfs2_trans_add_bh(ip->i_gl, indbh, 1);
-=======
 		gfs2_trans_add_meta(ip->i_gl, indbh);
 	} else {
 		u64 blk;
@@ -1322,7 +1008,6 @@ static int ea_set_block(struct gfs2_inode *ip, struct gfs2_ea_request *er,
 		gfs2_trans_remove_revoke(sdp, blk, 1);
 		indbh = gfs2_meta_new(ip->i_gl, blk);
 		gfs2_trans_add_meta(ip->i_gl, indbh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfs2_metatype_set(indbh, GFS2_METATYPE_IN, GFS2_FORMAT_IN);
 		gfs2_buffer_clear_tail(indbh, mh_size);
 
@@ -1401,21 +1086,13 @@ static int ea_remove_stuffed(struct gfs2_inode *ip, struct gfs2_ea_location *el)
 {
 	struct gfs2_ea_header *ea = el->el_ea;
 	struct gfs2_ea_header *prev = el->el_prev;
-<<<<<<< HEAD
-	struct buffer_head *dibh;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	error = gfs2_trans_begin(GFS2_SB(&ip->i_inode), RES_DINODE + RES_EATTR, 0);
 	if (error)
 		return error;
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, el->el_bh, 1);
-=======
 	gfs2_trans_add_meta(ip->i_gl, el->el_bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (prev) {
 		u32 len;
@@ -1429,18 +1106,8 @@ static int ea_remove_stuffed(struct gfs2_inode *ip, struct gfs2_ea_location *el)
 		ea->ea_type = GFS2_EATYPE_UNUSED;
 	}
 
-<<<<<<< HEAD
-	error = gfs2_meta_inode_buffer(ip, &dibh);
-	if (!error) {
-		ip->i_inode.i_ctime = CURRENT_TIME;
-		gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-		gfs2_dinode_out(ip, dibh->b_data);
-		brelse(dibh);
-	}
-=======
 	inode_set_ctime_current(&ip->i_inode);
 	__mark_inode_dirty(&ip->i_inode, I_DIRTY_DATASYNC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gfs2_trans_end(GFS2_SB(&ip->i_inode));
 
@@ -1486,11 +1153,7 @@ static int gfs2_xattr_remove(struct gfs2_inode *ip, int type, const char *name)
 
 /**
  * __gfs2_xattr_set - Set (or remove) a GFS2 extended attribute
-<<<<<<< HEAD
- * @ip: The inode
-=======
  * @inode: The inode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @name: The name of the extended attribute
  * @value: The value of the extended attribute (NULL for remove)
  * @size: The size of the @value argument
@@ -1516,17 +1179,12 @@ int __gfs2_xattr_set(struct inode *inode, const char *name,
 	if (namel > GFS2_EA_MAX_NAME_LEN)
 		return -ERANGE;
 
-<<<<<<< HEAD
-	if (value == NULL)
-		return gfs2_xattr_remove(ip, type, name);
-=======
 	if (value == NULL) {
 		error = gfs2_xattr_remove(ip, type, name);
 		if (error == -ENODATA && !(flags & XATTR_REPLACE))
 			error = 0;
 		return error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ea_check_size(sdp, namel, size))
 		return -ERANGE;
@@ -1566,109 +1224,6 @@ int __gfs2_xattr_set(struct inode *inode, const char *name,
 	return error;
 }
 
-<<<<<<< HEAD
-static int gfs2_xattr_set(struct dentry *dentry, const char *name,
-		const void *value, size_t size, int flags, int type)
-{
-	return __gfs2_xattr_set(dentry->d_inode, name, value,
-				size, flags, type);
-}
-
-static int ea_acl_chmod_unstuffed(struct gfs2_inode *ip,
-				  struct gfs2_ea_header *ea, char *data)
-{
-	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-	struct buffer_head **bh;
-	unsigned int amount = GFS2_EA_DATA_LEN(ea);
-	unsigned int nptrs = DIV_ROUND_UP(amount, sdp->sd_jbsize);
-	__be64 *dataptrs = GFS2_EA2DATAPTRS(ea);
-	unsigned int x;
-	int error;
-
-	bh = kcalloc(nptrs, sizeof(struct buffer_head *), GFP_NOFS);
-	if (!bh)
-		return -ENOMEM;
-
-	error = gfs2_trans_begin(sdp, nptrs + RES_DINODE, 0);
-	if (error)
-		goto out;
-
-	for (x = 0; x < nptrs; x++) {
-		error = gfs2_meta_read(ip->i_gl, be64_to_cpu(*dataptrs), 0,
-				       bh + x);
-		if (error) {
-			while (x--)
-				brelse(bh[x]);
-			goto fail;
-		}
-		dataptrs++;
-	}
-
-	for (x = 0; x < nptrs; x++) {
-		error = gfs2_meta_wait(sdp, bh[x]);
-		if (error) {
-			for (; x < nptrs; x++)
-				brelse(bh[x]);
-			goto fail;
-		}
-		if (gfs2_metatype_check(sdp, bh[x], GFS2_METATYPE_ED)) {
-			for (; x < nptrs; x++)
-				brelse(bh[x]);
-			error = -EIO;
-			goto fail;
-		}
-
-		gfs2_trans_add_bh(ip->i_gl, bh[x], 1);
-
-		memcpy(bh[x]->b_data + sizeof(struct gfs2_meta_header), data,
-		       (sdp->sd_jbsize > amount) ? amount : sdp->sd_jbsize);
-
-		amount -= sdp->sd_jbsize;
-		data += sdp->sd_jbsize;
-
-		brelse(bh[x]);
-	}
-
-out:
-	kfree(bh);
-	return error;
-
-fail:
-	gfs2_trans_end(sdp);
-	kfree(bh);
-	return error;
-}
-
-int gfs2_xattr_acl_chmod(struct gfs2_inode *ip, struct iattr *attr, char *data)
-{
-	struct inode *inode = &ip->i_inode;
-	struct gfs2_sbd *sdp = GFS2_SB(inode);
-	struct gfs2_ea_location el;
-	int error;
-
-	error = gfs2_ea_find(ip, GFS2_EATYPE_SYS, GFS2_POSIX_ACL_ACCESS, &el);
-	if (error)
-		return error;
-
-	if (GFS2_EA_IS_STUFFED(el.el_ea)) {
-		error = gfs2_trans_begin(sdp, RES_DINODE + RES_EATTR, 0);
-		if (error == 0) {
-			gfs2_trans_add_bh(ip->i_gl, el.el_bh, 1);
-			memcpy(GFS2_EA2DATA(el.el_ea), data,
-			       GFS2_EA_DATA_LEN(el.el_ea));
-		}
-	} else {
-		error = ea_acl_chmod_unstuffed(ip, el.el_ea, data);
-	}
-
-	brelse(el.el_bh);
-	if (error)
-		return error;
-
-	error = gfs2_setattr_simple(inode, attr);
-	gfs2_trans_end(sdp);
-	return error;
-=======
 static int gfs2_xattr_set(const struct xattr_handler *handler,
 			  struct mnt_idmap *idmap,
 			  struct dentry *unused, struct inode *inode,
@@ -1702,17 +1257,13 @@ static int gfs2_xattr_set(const struct xattr_handler *handler,
 out:
 	gfs2_qa_put(ip);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ea_dealloc_indirect(struct gfs2_inode *ip)
 {
 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
 	struct gfs2_rgrp_list rlist;
-<<<<<<< HEAD
-=======
 	struct gfs2_rgrpd *rgd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *indbh, *dibh;
 	__be64 *eablk, *end;
 	unsigned int rg_blocks = 0;
@@ -1728,11 +1279,7 @@ static int ea_dealloc_indirect(struct gfs2_inode *ip)
 
 	memset(&rlist, 0, sizeof(struct gfs2_rgrp_list));
 
-<<<<<<< HEAD
-	error = gfs2_meta_read(ip->i_gl, ip->i_eattr, DIO_WAIT, &indbh);
-=======
 	error = gfs2_meta_read(ip->i_gl, ip->i_eattr, DIO_WAIT, 0, &indbh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
@@ -1766,18 +1313,10 @@ static int ea_dealloc_indirect(struct gfs2_inode *ip)
 	else
 		goto out;
 
-<<<<<<< HEAD
-	gfs2_rlist_alloc(&rlist, LM_ST_EXCLUSIVE);
-
-	for (x = 0; x < rlist.rl_rgrps; x++) {
-		struct gfs2_rgrpd *rgd;
-		rgd = rlist.rl_ghs[x].gh_gl->gl_object;
-=======
 	gfs2_rlist_alloc(&rlist, LM_ST_EXCLUSIVE, LM_FLAG_NODE_SCOPE);
 
 	for (x = 0; x < rlist.rl_rgrps; x++) {
 		rgd = gfs2_glock2rgrp(rlist.rl_ghs[x].gh_gl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rg_blocks += rgd->rd_length;
 	}
 
@@ -1790,18 +1329,11 @@ static int ea_dealloc_indirect(struct gfs2_inode *ip)
 	if (error)
 		goto out_gunlock;
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(ip->i_gl, indbh, 1);
-
-	eablk = (__be64 *)(indbh->b_data + sizeof(struct gfs2_meta_header));
-	bstart = 0;
-=======
 	gfs2_trans_add_meta(ip->i_gl, indbh);
 
 	eablk = (__be64 *)(indbh->b_data + sizeof(struct gfs2_meta_header));
 	bstart = 0;
 	rgd = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blen = 0;
 
 	for (; eablk < end; eablk++) {
@@ -1815,14 +1347,9 @@ static int ea_dealloc_indirect(struct gfs2_inode *ip)
 			blen++;
 		else {
 			if (bstart)
-<<<<<<< HEAD
-				gfs2_free_meta(ip, bstart, blen);
-			bstart = bn;
-=======
 				gfs2_free_meta(ip, rgd, bstart, blen);
 			bstart = bn;
 			rgd = gfs2_blk2rgrpd(sdp, bstart, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			blen = 1;
 		}
 
@@ -1830,21 +1357,13 @@ static int ea_dealloc_indirect(struct gfs2_inode *ip)
 		gfs2_add_inode_blocks(&ip->i_inode, -1);
 	}
 	if (bstart)
-<<<<<<< HEAD
-		gfs2_free_meta(ip, bstart, blen);
-=======
 		gfs2_free_meta(ip, rgd, bstart, blen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ip->i_diskflags &= ~GFS2_DIF_EA_INDIRECT;
 
 	error = gfs2_meta_inode_buffer(ip, &dibh);
 	if (!error) {
-<<<<<<< HEAD
-		gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-=======
 		gfs2_trans_add_meta(ip->i_gl, dibh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfs2_dinode_out(ip, dibh->b_data);
 		brelse(dibh);
 	}
@@ -1878,12 +1397,8 @@ static int ea_dealloc_block(struct gfs2_inode *ip)
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-	error = gfs2_glock_nq_init(rgd->rd_gl, LM_ST_EXCLUSIVE, 0, &gh);
-=======
 	error = gfs2_glock_nq_init(rgd->rd_gl, LM_ST_EXCLUSIVE,
 				   LM_FLAG_NODE_SCOPE, &gh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
@@ -1892,22 +1407,11 @@ static int ea_dealloc_block(struct gfs2_inode *ip)
 	if (error)
 		goto out_gunlock;
 
-<<<<<<< HEAD
-	gfs2_free_meta(ip, ip->i_eattr, 1);
-=======
 	gfs2_free_meta(ip, rgd, ip->i_eattr, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ip->i_eattr = 0;
 	gfs2_add_inode_blocks(&ip->i_inode, -1);
 
-<<<<<<< HEAD
-	error = gfs2_meta_inode_buffer(ip, &dibh);
-	if (!error) {
-		gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-		gfs2_dinode_out(ip, dibh->b_data);
-		brelse(dibh);
-=======
 	if (likely(!test_bit(GIF_ALLOC_FAILED, &ip->i_flags))) {
 		error = gfs2_meta_inode_buffer(ip, &dibh);
 		if (!error) {
@@ -1915,7 +1419,6 @@ static int ea_dealloc_block(struct gfs2_inode *ip)
 			gfs2_dinode_out(ip, dibh->b_data);
 			brelse(dibh);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	gfs2_trans_end(sdp);
@@ -1934,27 +1437,6 @@ out_gunlock:
 
 int gfs2_ea_dealloc(struct gfs2_inode *ip)
 {
-<<<<<<< HEAD
-	struct gfs2_qadata *qa;
-	int error;
-
-	qa = gfs2_qadata_get(ip);
-	if (!qa)
-		return -ENOMEM;
-
-	error = gfs2_quota_hold(ip, NO_QUOTA_CHANGE, NO_QUOTA_CHANGE);
-	if (error)
-		goto out_alloc;
-
-	error = ea_foreach(ip, ea_dealloc_unstuffed, NULL);
-	if (error)
-		goto out_quota;
-
-	if (ip->i_diskflags & GFS2_DIF_EA_INDIRECT) {
-		error = ea_dealloc_indirect(ip);
-		if (error)
-			goto out_quota;
-=======
 	int error;
 
 	error = gfs2_rindex_update(GFS2_SB(&ip->i_inode));
@@ -1975,18 +1457,12 @@ int gfs2_ea_dealloc(struct gfs2_inode *ip)
 			if (error)
 				goto out_quota;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = ea_dealloc_block(ip);
 
 out_quota:
 	gfs2_quota_unhold(ip);
-<<<<<<< HEAD
-out_alloc:
-	gfs2_qadata_put(ip);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -2004,15 +1480,6 @@ static const struct xattr_handler gfs2_xattr_security_handler = {
 	.set    = gfs2_xattr_set,
 };
 
-<<<<<<< HEAD
-const struct xattr_handler *gfs2_xattr_handlers[] = {
-	&gfs2_xattr_user_handler,
-	&gfs2_xattr_security_handler,
-	&gfs2_xattr_system_handler,
-	NULL,
-};
-
-=======
 static bool
 gfs2_xattr_trusted_list(struct dentry *dentry)
 {
@@ -2038,4 +1505,3 @@ const struct xattr_handler * const gfs2_xattr_handlers_max[] = {
 };
 
 const struct xattr_handler * const *gfs2_xattr_handlers_min = gfs2_xattr_handlers_max + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

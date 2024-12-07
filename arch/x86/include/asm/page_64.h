@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_PAGE_64_H
 #define _ASM_X86_PAGE_64_H
 
 #include <asm/page_64_types.h>
 
-<<<<<<< HEAD
-=======
 #ifndef __ASSEMBLY__
 #include <asm/cpufeatures.h>
 #include <asm/alternative.h>
@@ -104,5 +99,4 @@ static __always_inline unsigned long task_size_max(void)
 # define __HAVE_ARCH_GATE_AREA 1
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_PAGE_64_H */

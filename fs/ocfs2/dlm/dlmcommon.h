@@ -1,33 +1,8 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
- * dlmcommon.h
- *
- * Copyright (C) 2004 Oracle.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * dlmcommon.h
  *
  * Copyright (C) 2004 Oracle.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef DLMCOMMON_H
@@ -40,14 +15,7 @@
 
 #define DLM_LOCKID_NAME_MAX    32
 
-<<<<<<< HEAD
-#define DLM_DOMAIN_NAME_MAX_LEN    255
 #define DLM_LOCK_RES_OWNER_UNKNOWN     O2NM_MAX_NODES
-#define DLM_THREAD_SHUFFLE_INTERVAL    5     // flush everything every 5 passes
-#define DLM_THREAD_MS                  200   // flush at least every 200 ms
-=======
-#define DLM_LOCK_RES_OWNER_UNKNOWN     O2NM_MAX_NODES
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DLM_HASH_SIZE_DEFAULT	(1 << 17)
 #if DLM_HASH_SIZE_DEFAULT < PAGE_SIZE
@@ -59,11 +27,7 @@
 #define DLM_HASH_BUCKETS	(DLM_HASH_PAGES * DLM_BUCKETS_PER_PAGE)
 
 /* Intended to make it easier for us to switch out hash functions */
-<<<<<<< HEAD
-#define dlm_lockid_hash(_n, _l) full_name_hash(_n, _l)
-=======
 #define dlm_lockid_hash(_n, _l) full_name_hash(NULL, _n, _l)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum dlm_mle_type {
 	DLM_MLE_BLOCK = 0,
@@ -124,10 +88,6 @@ static inline int dlm_is_recovery_lock(const char *lock_name, int name_len)
 struct dlm_recovery_ctxt
 {
 	struct list_head resources;
-<<<<<<< HEAD
-	struct list_head received;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head node_data;
 	u8  new_master;
 	u8  dead_node;
@@ -160,10 +120,7 @@ struct dlm_ctxt
 	u8 node_num;
 	u32 key;
 	u8  joining_node;
-<<<<<<< HEAD
-=======
 	u8 migrate_done; /* set to 1 means node has migrated all lock resources */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_queue_head_t dlm_join_events;
 	unsigned long live_nodes_map[BITS_TO_LONGS(O2NM_MAX_NODES)];
 	unsigned long domain_map[BITS_TO_LONGS(O2NM_MAX_NODES)];
@@ -180,10 +137,6 @@ struct dlm_ctxt
 	atomic_t res_tot_count;
 	atomic_t res_cur_count;
 
-<<<<<<< HEAD
-	struct dlm_debug_ctxt *dlm_debug_ctxt;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dentry *dlm_debugfs_subroot;
 
 	/* NOTE: Next three are protected by dlm_domain_lock */
@@ -309,10 +262,7 @@ static inline void __dlm_set_joining_node(struct dlm_ctxt *dlm,
 #define DLM_LOCK_RES_DROPPING_REF         0x00000040
 #define DLM_LOCK_RES_BLOCK_DIRTY          0x00001000
 #define DLM_LOCK_RES_SETREF_INPROG        0x00002000
-<<<<<<< HEAD
-=======
 #define DLM_LOCK_RES_RECOVERY_WAITING     0x00004000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* max milliseconds to wait to sync up a network failure with a node death */
 #define DLM_NODE_DEATH_WAIT_MAX (5 * 1000)
@@ -362,10 +312,7 @@ struct dlm_lock_resource
 	u16 state;
 	char lvb[DLM_LVB_LEN];
 	unsigned int inflight_locks;
-<<<<<<< HEAD
-=======
 	unsigned int inflight_assert_workers;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long refmap[BITS_TO_LONGS(O2NM_MAX_NODES)];
 };
 
@@ -410,20 +357,6 @@ struct dlm_lock
 		 lksb_kernel_allocated:1;
 };
 
-<<<<<<< HEAD
-
-#define DLM_LKSB_UNUSED1           0x01
-#define DLM_LKSB_PUT_LVB           0x02
-#define DLM_LKSB_GET_LVB           0x04
-#define DLM_LKSB_UNUSED2           0x08
-#define DLM_LKSB_UNUSED3           0x10
-#define DLM_LKSB_UNUSED4           0x20
-#define DLM_LKSB_UNUSED5           0x40
-#define DLM_LKSB_UNUSED6           0x80
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum dlm_lockres_list {
 	DLM_GRANTED_LIST = 0,
 	DLM_CONVERTING_LIST = 1,
@@ -499,10 +432,7 @@ enum {
 	DLM_QUERY_REGION		= 519,
 	DLM_QUERY_NODEINFO		= 520,
 	DLM_BEGIN_EXIT_DOMAIN_MSG	= 521,
-<<<<<<< HEAD
-=======
 	DLM_DEREF_LOCKRES_DONE		= 522,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dlm_reco_node_data
@@ -597,11 +527,7 @@ struct dlm_master_requery
  * };
  *
  * from ../cluster/tcp.h
-<<<<<<< HEAD
- *    NET_MAX_PAYLOAD_BYTES  (4096 - sizeof(net_msg))
-=======
  *    O2NET_MAX_PAYLOAD_BYTES  (4096 - sizeof(net_msg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    (roughly 4080 bytes)
  * and sizeof(dlm_migratable_lockres) = 112 bytes
  * and sizeof(dlm_migratable_lock) = 16 bytes
@@ -633,11 +559,7 @@ struct dlm_migratable_lockres
 	// 48 bytes
 	u8 lvb[DLM_LVB_LEN];
 	// 112 bytes
-<<<<<<< HEAD
-	struct dlm_migratable_lock ml[0];  // 16 bytes each, begins at byte 112
-=======
 	struct dlm_migratable_lock ml[];  // 16 bytes each, begins at byte 112
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define DLM_MIG_LOCKRES_MAX_LEN  \
 	(sizeof(struct dlm_migratable_lockres) + \
@@ -646,11 +568,7 @@ struct dlm_migratable_lockres
 
 /* from above, 128 bytes
  * for some undetermined future use */
-<<<<<<< HEAD
-#define DLM_MIG_LOCKRES_RESERVED   (NET_MAX_PAYLOAD_BYTES - \
-=======
 #define DLM_MIG_LOCKRES_RESERVED   (O2NET_MAX_PAYLOAD_BYTES - \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    DLM_MIG_LOCKRES_MAX_LEN)
 
 struct dlm_create_lock
@@ -678,11 +596,7 @@ struct dlm_convert_lock
 
 	u8 name[O2NM_MAX_NAME_LEN];
 
-<<<<<<< HEAD
-	s8 lvb[0];
-=======
 	s8 lvb[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define DLM_CONVERT_LOCK_MAX_LEN  (sizeof(struct dlm_convert_lock)+DLM_LVB_LEN)
 
@@ -697,11 +611,7 @@ struct dlm_unlock_lock
 
 	u8 name[O2NM_MAX_NAME_LEN];
 
-<<<<<<< HEAD
-	s8 lvb[0];
-=======
 	s8 lvb[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define DLM_UNLOCK_LOCK_MAX_LEN  (sizeof(struct dlm_unlock_lock)+DLM_LVB_LEN)
 
@@ -717,11 +627,7 @@ struct dlm_proxy_ast
 
 	u8 name[O2NM_MAX_NAME_LEN];
 
-<<<<<<< HEAD
-	s8 lvb[0];
-=======
 	s8 lvb[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define DLM_PROXY_AST_MAX_LEN  (sizeof(struct dlm_proxy_ast)+DLM_LVB_LEN)
 
@@ -744,11 +650,7 @@ struct dlm_query_join_packet {
 };
 
 union dlm_query_join_response {
-<<<<<<< HEAD
-	u32 intval;
-=======
 	__be32 intval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dlm_query_join_packet packet;
 };
 
@@ -781,13 +683,6 @@ struct dlm_begin_reco
 	__be32 pad2;
 };
 
-<<<<<<< HEAD
-
-#define BITS_PER_BYTE 8
-#define BITS_TO_BYTES(bits) (((bits)+BITS_PER_BYTE-1)/BITS_PER_BYTE)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dlm_query_join_request
 {
 	u8 node_idx;
@@ -827,13 +722,8 @@ struct dlm_query_region {
 struct dlm_node_info {
 	u8 ni_nodenum;
 	u8 pad1;
-<<<<<<< HEAD
-	u16 ni_ipv4_port;
-	u32 ni_ipv4_address;
-=======
 	__be16 ni_ipv4_port;
 	__be32 ni_ipv4_address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dlm_query_nodeinfo {
@@ -870,8 +760,6 @@ struct dlm_deref_lockres
 	u8 name[O2NM_MAX_NAME_LEN];
 };
 
-<<<<<<< HEAD
-=======
 enum {
 	DLM_DEREF_RESPONSE_DONE = 0,
 	DLM_DEREF_RESPONSE_INPROG = 1,
@@ -886,7 +774,6 @@ struct dlm_deref_lockres_done {
 	u8 name[O2NM_MAX_NAME_LEN];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline enum dlm_status
 __dlm_lockres_state_to_status(struct dlm_lock_resource *res)
 {
@@ -894,12 +781,8 @@ __dlm_lockres_state_to_status(struct dlm_lock_resource *res)
 
 	assert_spin_locked(&res->spinlock);
 
-<<<<<<< HEAD
-	if (res->state & DLM_LOCK_RES_RECOVERING)
-=======
 	if (res->state & (DLM_LOCK_RES_RECOVERING|
 			DLM_LOCK_RES_RECOVERY_WAITING))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = DLM_RECOVERING;
 	else if (res->state & DLM_LOCK_RES_MIGRATING)
 		status = DLM_MIGRATING;
@@ -1010,15 +893,10 @@ void dlm_lockres_drop_inflight_ref(struct dlm_ctxt *dlm,
 void dlm_lockres_grab_inflight_ref(struct dlm_ctxt *dlm,
 				   struct dlm_lock_resource *res);
 
-<<<<<<< HEAD
-void dlm_queue_ast(struct dlm_ctxt *dlm, struct dlm_lock *lock);
-void dlm_queue_bast(struct dlm_ctxt *dlm, struct dlm_lock *lock);
-=======
 void __dlm_lockres_grab_inflight_worker(struct dlm_ctxt *dlm,
 		struct dlm_lock_resource *res);
 
 void dlm_queue_ast(struct dlm_ctxt *dlm, struct dlm_lock *lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __dlm_queue_ast(struct dlm_ctxt *dlm, struct dlm_lock *lock);
 void __dlm_queue_bast(struct dlm_ctxt *dlm, struct dlm_lock *lock);
 void dlm_do_local_ast(struct dlm_ctxt *dlm,
@@ -1057,19 +935,10 @@ static inline int dlm_send_proxy_ast(struct dlm_ctxt *dlm,
 void dlm_print_one_lock_resource(struct dlm_lock_resource *res);
 void __dlm_print_one_lock_resource(struct dlm_lock_resource *res);
 
-<<<<<<< HEAD
-u8 dlm_nm_this_node(struct dlm_ctxt *dlm);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void dlm_kick_thread(struct dlm_ctxt *dlm, struct dlm_lock_resource *res);
 void __dlm_dirty_lockres(struct dlm_ctxt *dlm, struct dlm_lock_resource *res);
 
 
-<<<<<<< HEAD
-int dlm_nm_init(struct dlm_ctxt *dlm);
-int dlm_heartbeat_init(struct dlm_ctxt *dlm);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void dlm_hb_node_down_cb(struct o2nm_node *node, int idx, void *data);
 void dlm_hb_node_up_cb(struct o2nm_node *node, int idx, void *data);
 
@@ -1088,11 +957,8 @@ int dlm_assert_master_handler(struct o2net_msg *msg, u32 len, void *data,
 void dlm_assert_master_post_handler(int status, void *data, void *ret_data);
 int dlm_deref_lockres_handler(struct o2net_msg *msg, u32 len, void *data,
 			      void **ret_data);
-<<<<<<< HEAD
-=======
 int dlm_deref_lockres_done_handler(struct o2net_msg *msg, u32 len, void *data,
 			      void **ret_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int dlm_migrate_request_handler(struct o2net_msg *msg, u32 len, void *data,
 				void **ret_data);
 int dlm_mig_lockres_handler(struct o2net_msg *msg, u32 len, void *data,
@@ -1110,11 +976,8 @@ int dlm_finalize_reco_handler(struct o2net_msg *msg, u32 len, void *data,
 int dlm_do_master_requery(struct dlm_ctxt *dlm, struct dlm_lock_resource *res,
 			  u8 nodenum, u8 *real_master);
 
-<<<<<<< HEAD
-=======
 void __dlm_do_purge_lockres(struct dlm_ctxt *dlm,
 		struct dlm_lock_resource *res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int dlm_dispatch_assert_master(struct dlm_ctxt *dlm,
 			       struct dlm_lock_resource *res,
@@ -1133,20 +996,13 @@ void dlm_move_lockres_to_recovery_list(struct dlm_ctxt *dlm,
 
 /* will exit holding res->spinlock, but may drop in function */
 void __dlm_wait_on_lockres_flags(struct dlm_lock_resource *res, int flags);
-<<<<<<< HEAD
-void __dlm_wait_on_lockres_flags_set(struct dlm_lock_resource *res, int flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* will exit holding res->spinlock, but may drop in function */
 static inline void __dlm_wait_on_lockres(struct dlm_lock_resource *res)
 {
 	__dlm_wait_on_lockres_flags(res, (DLM_LOCK_RES_IN_PROGRESS|
 				    	  DLM_LOCK_RES_RECOVERING|
-<<<<<<< HEAD
-=======
 					  DLM_LOCK_RES_RECOVERY_WAITING|
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  DLM_LOCK_RES_MIGRATING));
 }
 
@@ -1208,17 +1064,9 @@ static inline int dlm_lock_compatible(int existing, int request)
 static inline int dlm_lock_on_list(struct list_head *head,
 				   struct dlm_lock *lock)
 {
-<<<<<<< HEAD
-	struct list_head *iter;
-	struct dlm_lock *tmplock;
-
-	list_for_each(iter, head) {
-		tmplock = list_entry(iter, struct dlm_lock, list);
-=======
 	struct dlm_lock *tmplock;
 
 	list_for_each_entry(tmplock, head, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tmplock == lock)
 			return 1;
 	}
@@ -1246,11 +1094,7 @@ static inline enum dlm_status dlm_err_to_dlm_status(int err)
 static inline void dlm_node_iter_init(unsigned long *map,
 				      struct dlm_node_iter *iter)
 {
-<<<<<<< HEAD
-	memcpy(iter->node_map, map, sizeof(iter->node_map));
-=======
 	bitmap_copy(iter->node_map, map, O2NM_MAX_NODES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iter->curnode = -1;
 }
 

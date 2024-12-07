@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for ALSA
 #
@@ -9,12 +6,6 @@
 obj-$(CONFIG_SND_ARMAACI)	+= snd-aaci.o
 snd-aaci-objs			:= aaci.o
 
-<<<<<<< HEAD
-obj-$(CONFIG_SND_PXA2XX_PCM)	+= snd-pxa2xx-pcm.o
-snd-pxa2xx-pcm-objs		:= pxa2xx-pcm.o
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_SND_PXA2XX_LIB)	+= snd-pxa2xx-lib.o
 snd-pxa2xx-lib-y		:= pxa2xx-pcm-lib.o
 snd-pxa2xx-lib-$(CONFIG_SND_PXA2XX_LIB_AC97)	+= pxa2xx-ac97-lib.o

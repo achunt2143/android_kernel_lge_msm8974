@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-config SECURITY_SMACK
-	bool "Simplified Mandatory Access Control Kernel Support"
-	depends on NETLABEL && SECURITY_NETWORK
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config SECURITY_SMACK
 	bool "Simplified Mandatory Access Control Kernel Support"
@@ -11,7 +6,6 @@ config SECURITY_SMACK
 	depends on SECURITY
 	select NETLABEL
 	select SECURITY_NETWORK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	help
 	  This selects the Simplified Mandatory Access Control Kernel.
@@ -19,8 +13,6 @@ config SECURITY_SMACK
 	  of other mandatory security schemes.
 	  If you are unsure how to answer this question, answer N.
 
-<<<<<<< HEAD
-=======
 config SECURITY_SMACK_BRINGUP
 	bool "Reporting on access granted by Smack rules"
 	depends on SECURITY_SMACK
@@ -61,4 +53,3 @@ config SECURITY_SMACK_APPEND_SIGNALS
 	  to differentiate between delivering a network packet and
 	  delivering a signal in the Smack rules.
 	  If you are unsure how to answer this question, answer N.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

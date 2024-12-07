@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-#include <linux/types.h>
-#include <linux/fs.h>
-#include <linux/buffer_head.h>
-#include <linux/amigaffs.h>
-#include <linux/mutex.h>
-
-/* AmigaOS allows file names with up to 30 characters length.
- * Names longer than that will be silently truncated. If you
- * want to disallow this, comment out the following #define.
- * Creating filesystem objects with longer names will then
- * result in an error (ENAMETOOLONG).
- */
-/*#define AFFS_NO_TRUNCATE */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifdef pr_fmt
 #undef pr_fmt
@@ -26,7 +11,6 @@
 #include "amigaffs.h"
 #include <linux/mutex.h>
 #include <linux/workqueue.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Ugly macros make the code more pretty. */
 
@@ -34,17 +18,6 @@
 #define AFFS_GET_HASHENTRY(data,hashkey) be32_to_cpu(((struct dir_front *)data)->hashtable[hashkey])
 #define AFFS_BLOCK(sb, bh, blk)		(AFFS_HEAD(bh)->table[AFFS_SB(sb)->s_hashsize-1-(blk)])
 
-<<<<<<< HEAD
-#ifdef __LITTLE_ENDIAN
-#define BO_EXBITS	0x18UL
-#elif defined(__BIG_ENDIAN)
-#define BO_EXBITS	0x00UL
-#else
-#error Endianness must be known for affs to work.
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AFFS_HEAD(bh)		((struct affs_head *)(bh)->b_data)
 #define AFFS_TAIL(sb, bh)	((struct affs_tail *)((bh)->b_data+(sb)->s_blocksize-sizeof(struct affs_tail)))
 #define AFFS_ROOT_HEAD(bh)	((struct affs_root_head *)(bh)->b_data)
@@ -54,19 +27,12 @@
 
 #define AFFS_CACHE_SIZE		PAGE_SIZE
 
-<<<<<<< HEAD
-#define AFFS_MAX_PREALLOC	32
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AFFS_LC_SIZE		(AFFS_CACHE_SIZE/sizeof(u32)/2)
 #define AFFS_AC_SIZE		(AFFS_CACHE_SIZE/sizeof(struct affs_ext_key)/2)
 #define AFFS_AC_MASK		(AFFS_AC_SIZE-1)
 
-<<<<<<< HEAD
-=======
 #define AFFSNAMEMAX 30U
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct affs_ext_key {
 	u32	ext;				/* idx of the extended block */
 	u32	key;				/* block number */
@@ -77,13 +43,8 @@ struct affs_ext_key {
  */
 struct affs_inode_info {
 	atomic_t i_opencnt;
-<<<<<<< HEAD
-	struct semaphore i_link_lock;		/* Protects internal inode access. */
-	struct semaphore i_ext_lock;		/* Protects internal inode access. */
-=======
 	struct mutex i_link_lock;		/* Protects internal inode access. */
 	struct mutex i_ext_lock;		/* Protects internal inode access. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define i_hash_lock i_ext_lock
 	u32	 i_blkcnt;			/* block count */
 	u32	 i_extcnt;			/* extended block count */
@@ -104,11 +65,7 @@ struct affs_inode_info {
 /* short cut to get to the affs specific inode data */
 static inline struct affs_inode_info *AFFS_I(struct inode *inode)
 {
-<<<<<<< HEAD
-	return list_entry(inode, struct affs_inode_info, vfs_inode);
-=======
 	return container_of(inode, struct affs_inode_info, vfs_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -131,13 +88,8 @@ struct affs_sb_info {
 	u32 s_root_block;		/* FFS root block number. */
 	int s_hashsize;			/* Size of hash table. */
 	unsigned long s_flags;		/* See below. */
-<<<<<<< HEAD
-	uid_t s_uid;			/* uid to override */
-	gid_t s_gid;			/* gid to override */
-=======
 	kuid_t s_uid;			/* uid to override */
 	kgid_t s_gid;			/* gid to override */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	umode_t s_mode;			/* mode to override */
 	struct buffer_head *s_root_bh;	/* Cached root block. */
 	struct mutex s_bmlock;		/* Protects bitmap access. */
@@ -149,21 +101,6 @@ struct affs_sb_info {
 	char *s_prefix;			/* Prefix for volumes and assigns. */
 	char s_volume[32];		/* Volume prefix for absolute symlinks. */
 	spinlock_t symlink_lock;	/* protects the previous two */
-<<<<<<< HEAD
-};
-
-#define SF_INTL		0x0001		/* International filesystem. */
-#define SF_BM_VALID	0x0002		/* Bitmap is valid. */
-#define SF_IMMUTABLE	0x0004		/* Protection bits cannot be changed */
-#define SF_QUIET	0x0008		/* chmod errors will be not reported */
-#define SF_SETUID	0x0010		/* Ignore Amiga uid */
-#define SF_SETGID	0x0020		/* Ignore Amiga gid */
-#define SF_SETMODE	0x0040		/* Ignore Amiga protection bits */
-#define SF_MUFS		0x0100		/* Use MUFS uid/gid mapping */
-#define SF_OFS		0x0200		/* Old filesystem */
-#define SF_PREFIX	0x0400		/* Buffer for prefix is allocated */
-#define SF_VERBOSE	0x0800		/* Talk about fs when mounting */
-=======
 	struct super_block *sb;		/* the VFS superblock object */
 	int work_queued;		/* non-zero delayed work is queued */
 	struct delayed_work sb_work;	/* superblock flush delayed work */
@@ -187,7 +124,6 @@ struct affs_sb_info {
 #define affs_clear_opt(o, opt)    (o &= ~AFFS_MOUNT_##opt)
 #define affs_set_opt(o, opt)      (o |= AFFS_MOUNT_##opt)
 #define affs_test_opt(o, opt)     ((o) & AFFS_MOUNT_##opt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* short cut to get to the affs specific sb data */
 static inline struct affs_sb_info *AFFS_SB(struct super_block *sb)
@@ -195,11 +131,8 @@ static inline struct affs_sb_info *AFFS_SB(struct super_block *sb)
 	return sb->s_fs_info;
 }
 
-<<<<<<< HEAD
-=======
 void affs_mark_sb_dirty(struct super_block *sb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* amigaffs.c */
 
 extern int	affs_insert_hash(struct inode *inode, struct buffer_head *bh);
@@ -207,14 +140,6 @@ extern int	affs_remove_hash(struct inode *dir, struct buffer_head *rem_bh);
 extern int	affs_remove_header(struct dentry *dentry);
 extern u32	affs_checksum_block(struct super_block *sb, struct buffer_head *bh);
 extern void	affs_fix_checksum(struct super_block *sb, struct buffer_head *bh);
-<<<<<<< HEAD
-extern void	secs_to_datestamp(time_t secs, struct affs_date *ds);
-extern umode_t	prot_to_mode(u32 prot);
-extern void	mode_to_prot(struct inode *inode);
-extern void	affs_error(struct super_block *sb, const char *function, const char *fmt, ...);
-extern void	affs_warning(struct super_block *sb, const char *function, const char *fmt, ...);
-extern int	affs_check_name(const unsigned char *name, int len);
-=======
 extern void	affs_secs_to_datestamp(time64_t secs, struct affs_date *ds);
 extern umode_t	affs_prot_to_mode(u32 prot);
 extern void	affs_mode_to_prot(struct inode *inode);
@@ -227,7 +152,6 @@ extern void	affs_warning(struct super_block *sb, const char *function,
 extern bool	affs_nofilenametruncate(const struct dentry *dentry);
 extern int	affs_check_name(const unsigned char *name, int len,
 				bool notruncate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int	affs_copy_name(unsigned char *bstr, struct dentry *dentry);
 
 /* bitmap. c */
@@ -240,26 +164,6 @@ extern void	affs_free_bitmap(struct super_block *sb);
 
 /* namei.c */
 
-<<<<<<< HEAD
-extern int	affs_hash_name(struct super_block *sb, const u8 *name, unsigned int len);
-extern struct dentry *affs_lookup(struct inode *dir, struct dentry *dentry, unsigned int);
-extern int	affs_unlink(struct inode *dir, struct dentry *dentry);
-extern int	affs_create(struct inode *dir, struct dentry *dentry, umode_t mode, bool);
-extern int	affs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode);
-extern int	affs_rmdir(struct inode *dir, struct dentry *dentry);
-extern int	affs_link(struct dentry *olddentry, struct inode *dir,
-			  struct dentry *dentry);
-extern int	affs_symlink(struct inode *dir, struct dentry *dentry,
-			     const char *symname);
-extern int	affs_rename(struct inode *old_dir, struct dentry *old_dentry,
-			    struct inode *new_dir, struct dentry *new_dentry);
-
-/* inode.c */
-
-extern unsigned long		 affs_parent_ino(struct inode *dir);
-extern struct inode		*affs_new_inode(struct inode *dir);
-extern int			 affs_notify_change(struct dentry *dentry, struct iattr *attr);
-=======
 extern const struct export_operations affs_export_ops;
 extern int	affs_hash_name(struct super_block *sb, const u8 *name, unsigned int len);
 extern struct dentry *affs_lookup(struct inode *dir, struct dentry *dentry, unsigned int);
@@ -284,18 +188,13 @@ extern int	affs_rename2(struct mnt_idmap *idmap,
 extern struct inode		*affs_new_inode(struct inode *dir);
 extern int			 affs_notify_change(struct mnt_idmap *idmap,
 					struct dentry *dentry, struct iattr *attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void			 affs_evict_inode(struct inode *inode);
 extern struct inode		*affs_iget(struct super_block *sb,
 					unsigned long ino);
 extern int			 affs_write_inode(struct inode *inode,
 					struct writeback_control *wbc);
-<<<<<<< HEAD
-extern int			 affs_add_entry(struct inode *dir, struct inode *inode, struct dentry *dentry, s32 type);
-=======
 extern int			 affs_add_entry(struct inode *dir, struct inode *inode,
 					struct dentry *dentry, s32 type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* file.c */
 
@@ -322,15 +221,12 @@ extern const struct address_space_operations	 affs_aops_ofs;
 extern const struct dentry_operations	 affs_dentry_operations;
 extern const struct dentry_operations	 affs_intl_dentry_operations;
 
-<<<<<<< HEAD
-=======
 static inline bool affs_validblock(struct super_block *sb, int block)
 {
 	return(block >= AFFS_SB(sb)->s_reserved &&
 	       block < AFFS_SB(sb)->s_partition_size);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void
 affs_set_blocksize(struct super_block *sb, int size)
 {
@@ -339,26 +235,16 @@ affs_set_blocksize(struct super_block *sb, int size)
 static inline struct buffer_head *
 affs_bread(struct super_block *sb, int block)
 {
-<<<<<<< HEAD
-	pr_debug("affs_bread: %d\n", block);
-	if (block >= AFFS_SB(sb)->s_reserved && block < AFFS_SB(sb)->s_partition_size)
-=======
 	pr_debug("%s: %d\n", __func__, block);
 	if (affs_validblock(sb, block))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return sb_bread(sb, block);
 	return NULL;
 }
 static inline struct buffer_head *
 affs_getblk(struct super_block *sb, int block)
 {
-<<<<<<< HEAD
-	pr_debug("affs_getblk: %d\n", block);
-	if (block >= AFFS_SB(sb)->s_reserved && block < AFFS_SB(sb)->s_partition_size)
-=======
 	pr_debug("%s: %d\n", __func__, block);
 	if (affs_validblock(sb, block))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return sb_getblk(sb, block);
 	return NULL;
 }
@@ -366,13 +252,8 @@ static inline struct buffer_head *
 affs_getzeroblk(struct super_block *sb, int block)
 {
 	struct buffer_head *bh;
-<<<<<<< HEAD
-	pr_debug("affs_getzeroblk: %d\n", block);
-	if (block >= AFFS_SB(sb)->s_reserved && block < AFFS_SB(sb)->s_partition_size) {
-=======
 	pr_debug("%s: %d\n", __func__, block);
 	if (affs_validblock(sb, block)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bh = sb_getblk(sb, block);
 		lock_buffer(bh);
 		memset(bh->b_data, 0 , sb->s_blocksize);
@@ -386,13 +267,8 @@ static inline struct buffer_head *
 affs_getemptyblk(struct super_block *sb, int block)
 {
 	struct buffer_head *bh;
-<<<<<<< HEAD
-	pr_debug("affs_getemptyblk: %d\n", block);
-	if (block >= AFFS_SB(sb)->s_reserved && block < AFFS_SB(sb)->s_partition_size) {
-=======
 	pr_debug("%s: %d\n", __func__, block);
 	if (affs_validblock(sb, block)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bh = sb_getblk(sb, block);
 		wait_on_buffer(bh);
 		set_buffer_uptodate(bh);
@@ -404,11 +280,7 @@ static inline void
 affs_brelse(struct buffer_head *bh)
 {
 	if (bh)
-<<<<<<< HEAD
-		pr_debug("affs_brelse: %lld\n", (long long) bh->b_blocknr);
-=======
 		pr_debug("%s: %lld\n", __func__, (long long) bh->b_blocknr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(bh);
 }
 
@@ -428,54 +300,30 @@ affs_adjust_bitmapchecksum(struct buffer_head *bh, u32 val)
 static inline void
 affs_lock_link(struct inode *inode)
 {
-<<<<<<< HEAD
-	down(&AFFS_I(inode)->i_link_lock);
-=======
 	mutex_lock(&AFFS_I(inode)->i_link_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline void
 affs_unlock_link(struct inode *inode)
 {
-<<<<<<< HEAD
-	up(&AFFS_I(inode)->i_link_lock);
-=======
 	mutex_unlock(&AFFS_I(inode)->i_link_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline void
 affs_lock_dir(struct inode *inode)
 {
-<<<<<<< HEAD
-	down(&AFFS_I(inode)->i_hash_lock);
-=======
 	mutex_lock_nested(&AFFS_I(inode)->i_hash_lock, SINGLE_DEPTH_NESTING);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline void
 affs_unlock_dir(struct inode *inode)
 {
-<<<<<<< HEAD
-	up(&AFFS_I(inode)->i_hash_lock);
-=======
 	mutex_unlock(&AFFS_I(inode)->i_hash_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline void
 affs_lock_ext(struct inode *inode)
 {
-<<<<<<< HEAD
-	down(&AFFS_I(inode)->i_ext_lock);
-=======
 	mutex_lock(&AFFS_I(inode)->i_ext_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline void
 affs_unlock_ext(struct inode *inode)
 {
-<<<<<<< HEAD
-	up(&AFFS_I(inode)->i_ext_lock);
-=======
 	mutex_unlock(&AFFS_I(inode)->i_ext_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

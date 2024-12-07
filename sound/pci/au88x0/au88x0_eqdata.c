@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-/* Data structs */
-
-static u16 asEqCoefsZeros[50] = {
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* Data structs */
 
 static const u16 asEqCoefsZeros[50] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
@@ -20,11 +14,7 @@ static const u16 asEqCoefsZeros[50] = {
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 };
 
-<<<<<<< HEAD
-static u16 asEqCoefsPipes[64] = {
-=======
 static const u16 asEqCoefsPipes[64] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x0000, 0x0000,
 	0x0000, 0x0666, 0x0000, 0x0000, 0x0666,
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
@@ -43,11 +33,7 @@ static const u16 asEqCoefsPipes[64] = {
 };
 
 /* More coef sets can be found in the win2k "inf" file. */
-<<<<<<< HEAD
-static auxxEqCoeffSet_t asEqCoefsNormal = {
-=======
 static const auxxEqCoeffSet_t asEqCoefsNormal = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.LeftCoefs = {
 		      0x7e60, 0xc19e, 0x0001, 0x0002, 0x0001,
 		      0x7fa0, 0xc05f, 0x004f, 0x0000, 0xffb1,
@@ -80,11 +66,7 @@ static const auxxEqCoeffSet_t asEqCoefsNormal = {
 		       0x3e96, 0x3e96, 0x3e96, 0x3e96, 0x3e96}
 };
 
-<<<<<<< HEAD
-static u16 eq_gains_normal[20] = {
-=======
 static const u16 eq_gains_normal[20] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x3e96, 0x3e96, 0x3e96, 0x3e96, 0x3e96,
 	0x3e96, 0x3e96, 0x3e96, 0x3e96, 0x3e96,
 	0x3e96, 0x3e96, 0x3e96, 0x3e96, 0x3e96,
@@ -92,36 +74,22 @@ static const u16 eq_gains_normal[20] = {
 };
 
 /* _rodatab60 */
-<<<<<<< HEAD
-static u16 eq_gains_zero[10] = {
-=======
 static const u16 eq_gains_zero[10] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000
 };
 
 /* _rodatab7c:  ProgramPipe */
-<<<<<<< HEAD
-static u16 eq_gains_current[12] = {
-=======
 static const u16 eq_gains_current[12] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x7fff, 0x7fff, 0x7fff, 0x7fff, 0x7fff, 0x7fff, 0x7fff, 0x7fff,
 	0x7fff,
 	0x7fff, 0x7fff, 0x7fff
 };
 
 /* _rodatab78 */
-<<<<<<< HEAD
-static u16 eq_states_zero[2] = { 0x0000, 0x0000 };
-
-static u16 asEqOutStateZeros[48] = {
-=======
 static const u16 eq_states_zero[2] = { 0x0000, 0x0000 };
 
 static const u16 asEqOutStateZeros[48] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x0000, 0x0000, 0x0000, 0x0000,
 	0x0000, 0x0000, 0x0000, 0x0000,
 	0x0000, 0x0000, 0x0000, 0x0000,
@@ -137,11 +105,7 @@ static const u16 asEqOutStateZeros[48] = {
 };
 
 /*_rodataba0:*/
-<<<<<<< HEAD
-static u16 eq_levels[64] = {
-=======
 static const u16 eq_levels[64] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,

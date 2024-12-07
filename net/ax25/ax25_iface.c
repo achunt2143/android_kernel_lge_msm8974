@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
  */
@@ -28,11 +20,7 @@
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
 #include <net/sock.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fcntl.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
@@ -110,11 +98,7 @@ void ax25_linkfail_release(struct ax25_linkfail *lf)
 
 EXPORT_SYMBOL(ax25_linkfail_release);
 
-<<<<<<< HEAD
-int ax25_listen_register(ax25_address *callsign, struct net_device *dev)
-=======
 int ax25_listen_register(const ax25_address *callsign, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct listen_struct *listen;
 
@@ -137,11 +121,7 @@ int ax25_listen_register(const ax25_address *callsign, struct net_device *dev)
 
 EXPORT_SYMBOL(ax25_listen_register);
 
-<<<<<<< HEAD
-void ax25_listen_release(ax25_address *callsign, struct net_device *dev)
-=======
 void ax25_listen_release(const ax25_address *callsign, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct listen_struct *s, *listen;
 
@@ -191,11 +171,7 @@ int (*ax25_protocol_function(unsigned int pid))(struct sk_buff *, ax25_cb *)
 	return res;
 }
 
-<<<<<<< HEAD
-int ax25_listen_mine(ax25_address *callsign, struct net_device *dev)
-=======
 int ax25_listen_mine(const ax25_address *callsign, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct listen_struct *listen;
 
@@ -214,16 +190,9 @@ int ax25_listen_mine(const ax25_address *callsign, struct net_device *dev)
 void ax25_link_failed(ax25_cb *ax25, int reason)
 {
 	struct ax25_linkfail *lf;
-<<<<<<< HEAD
-	struct hlist_node *node;
-
-	spin_lock_bh(&linkfail_lock);
-	hlist_for_each_entry(lf, node, &ax25_linkfail_list, lf_node)
-=======
 
 	spin_lock_bh(&linkfail_lock);
 	hlist_for_each_entry(lf, &ax25_linkfail_list, lf_node)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lf->func(ax25, reason);
 	spin_unlock_bh(&linkfail_lock);
 }

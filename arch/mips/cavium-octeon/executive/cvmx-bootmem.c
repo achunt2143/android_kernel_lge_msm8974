@@ -30,13 +30,8 @@
  * application start time.
  */
 
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/module.h>
-=======
 #include <linux/export.h>
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/octeon/cvmx.h>
 #include <asm/octeon/cvmx-spinlock.h>
@@ -50,8 +45,6 @@ static struct cvmx_bootmem_desc *cvmx_bootmem_desc;
 /* See header file for descriptions of functions */
 
 /*
-<<<<<<< HEAD
-=======
  * This macro returns a member of the
  * cvmx_bootmem_named_block_desc_t structure. These members can't
  * be directly addressed as they might be in memory not directly
@@ -94,7 +87,6 @@ static inline uint64_t __cvmx_bootmem_desc_get(uint64_t base, int offset,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Wrapper functions are provided for reading/writing the size and
  * next block values as these may not be directly addressible (in 32
  * bit applications, for instance.)  Offsets of data elements in
@@ -123,10 +115,6 @@ static uint64_t cvmx_bootmem_phy_get_next(uint64_t addr)
 	return cvmx_read64_uint64((addr + NEXT_OFFSET) | (1ull << 63));
 }
 
-<<<<<<< HEAD
-void *cvmx_bootmem_alloc_range(uint64_t size, uint64_t alignment,
-			       uint64_t min_addr, uint64_t max_addr)
-=======
 /*
  * Allocate a block of memory from the free list that was
  * passed to the application by the bootloader within a specified
@@ -142,7 +130,6 @@ void *cvmx_bootmem_alloc_range(uint64_t size, uint64_t alignment,
  */
 static void *cvmx_bootmem_alloc_range(uint64_t size, uint64_t alignment,
 				      uint64_t min_addr, uint64_t max_addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int64_t address;
 	address =
@@ -161,14 +148,6 @@ void *cvmx_bootmem_alloc_address(uint64_t size, uint64_t address,
 					address + size);
 }
 
-<<<<<<< HEAD
-void *cvmx_bootmem_alloc(uint64_t size, uint64_t alignment)
-{
-	return cvmx_bootmem_alloc_range(size, alignment, 0, 0);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void *cvmx_bootmem_alloc_named_range(uint64_t size, uint64_t min_addr,
 				     uint64_t max_addr, uint64_t align,
 				     char *name)
@@ -183,36 +162,12 @@ void *cvmx_bootmem_alloc_named_range(uint64_t size, uint64_t min_addr,
 		return NULL;
 }
 
-<<<<<<< HEAD
-void *cvmx_bootmem_alloc_named_address(uint64_t size, uint64_t address,
-				       char *name)
-{
-    return cvmx_bootmem_alloc_named_range(size, address, address + size,
-					  0, name);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void *cvmx_bootmem_alloc_named(uint64_t size, uint64_t alignment, char *name)
 {
     return cvmx_bootmem_alloc_named_range(size, 0, 0, alignment, name);
 }
 EXPORT_SYMBOL(cvmx_bootmem_alloc_named);
 
-<<<<<<< HEAD
-int cvmx_bootmem_free_named(char *name)
-{
-	return cvmx_bootmem_phy_named_block_free(name, 0);
-}
-
-struct cvmx_bootmem_named_block_desc *cvmx_bootmem_find_named_block(char *name)
-{
-	return cvmx_bootmem_phy_named_block_find(name, 0);
-}
-EXPORT_SYMBOL(cvmx_bootmem_find_named_block);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void cvmx_bootmem_lock(void)
 {
 	cvmx_spinlock_lock((cvmx_spinlock_t *) &(cvmx_bootmem_desc->lock));
@@ -232,13 +187,8 @@ int cvmx_bootmem_init(void *mem_desc_ptr)
 	 *
 	 * Linux 64 bit: Set XKPHYS bit
 	 * Linux 32 bit: use mmap to create mapping, use virtual address
-<<<<<<< HEAD
-	 * CVMX 64 bit:  use physical address directly
-	 * CVMX 32 bit:  use physical address directly
-=======
 	 * CVMX 64 bit:	 use physical address directly
 	 * CVMX 32 bit:	 use physical address directly
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * Note that the CVMX environment assumes the use of 1-1 TLB
 	 * mappings so that the physical addresses can be used
@@ -314,11 +264,7 @@ int64_t cvmx_bootmem_phy_alloc(uint64_t req_size, uint64_t address_min,
 	 * Convert !0 address_min and 0 address_max to special case of
 	 * range that specifies an exact memory block to allocate.  Do
 	 * this before other checks and adjustments so that this
-<<<<<<< HEAD
-	 * tranformation will be validated.
-=======
 	 * transformation will be validated.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (address_min && !address_max)
 		address_max = address_min + req_size;
@@ -372,11 +318,7 @@ int64_t cvmx_bootmem_phy_alloc(uint64_t req_size, uint64_t address_min,
 		}
 
 		/*
-<<<<<<< HEAD
-		 * Determine if this is an entry that can satisify the
-=======
 		 * Determine if this is an entry that can satisfy the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * request Check to make sure entry is large enough to
 		 * satisfy request.
 		 */
@@ -488,11 +430,7 @@ error_out:
 int __cvmx_bootmem_phy_free(uint64_t phy_addr, uint64_t size, uint32_t flags)
 {
 	uint64_t cur_addr;
-<<<<<<< HEAD
-	uint64_t prev_addr = 0;	/* zero is invalid */
-=======
 	uint64_t prev_addr = 0; /* zero is invalid */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval = 0;
 
 #ifdef DEBUG
@@ -518,11 +456,7 @@ int __cvmx_bootmem_phy_free(uint64_t phy_addr, uint64_t size, uint32_t flags)
 	if (cur_addr == 0 || phy_addr < cur_addr) {
 		/* add at front of list - special case with changing head ptr */
 		if (cur_addr && phy_addr + size > cur_addr)
-<<<<<<< HEAD
-			goto bootmem_free_done;	/* error, overlapping section */
-=======
 			goto bootmem_free_done; /* error, overlapping section */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else if (phy_addr + size == cur_addr) {
 			/* Add to front of existing first block */
 			cvmx_bootmem_phy_set_next(phy_addr,
@@ -616,9 +550,6 @@ bootmem_free_done:
 
 }
 
-<<<<<<< HEAD
-struct cvmx_bootmem_named_block_desc *
-=======
 /*
  * Finds a named memory block by name.
  * Also used for finding an unused entry in the named block table.
@@ -633,7 +564,6 @@ struct cvmx_bootmem_named_block_desc *
  *	   block descriptors are available.
  */
 static struct cvmx_bootmem_named_block_desc *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cvmx_bootmem_phy_named_block_find(char *name, uint32_t flags)
 {
 	unsigned int i;
@@ -685,9 +615,6 @@ static struct cvmx_bootmem_named_block_desc *
 	return NULL;
 }
 
-<<<<<<< HEAD
-int cvmx_bootmem_phy_named_block_free(char *name, uint32_t flags)
-=======
 void *cvmx_bootmem_alloc_named_range_once(uint64_t size, uint64_t min_addr,
 					  uint64_t max_addr, uint64_t align,
 					  char *name,
@@ -740,7 +667,6 @@ EXPORT_SYMBOL(cvmx_bootmem_find_named_block);
  *	   1 on success
  */
 static int cvmx_bootmem_phy_named_block_free(char *name, uint32_t flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cvmx_bootmem_named_block_desc *named_block_ptr;
 
@@ -781,16 +707,12 @@ static int cvmx_bootmem_phy_named_block_free(char *name, uint32_t flags)
 	}
 
 	cvmx_bootmem_unlock();
-<<<<<<< HEAD
-	return named_block_ptr != NULL;	/* 0 on failure, 1 on success */
-=======
 	return named_block_ptr != NULL; /* 0 on failure, 1 on success */
 }
 
 int cvmx_bootmem_free_named(char *name)
 {
 	return cvmx_bootmem_phy_named_block_free(name, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int64_t cvmx_bootmem_phy_named_block_alloc(uint64_t size, uint64_t min_addr,
@@ -847,11 +769,7 @@ int64_t cvmx_bootmem_phy_named_block_alloc(uint64_t size, uint64_t min_addr,
 	/*
 	 * Round size up to mult of minimum alignment bytes We need
 	 * the actual size allocated to allow for blocks to be
-<<<<<<< HEAD
-	 * coallesced when they are freed.  The alloc routine does the
-=======
 	 * coalesced when they are freed. The alloc routine does the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * same rounding up on all allocations.
 	 */
 	size = ALIGN(size, CVMX_BOOTMEM_ALIGNMENT_SIZE);
@@ -862,25 +780,16 @@ int64_t cvmx_bootmem_phy_named_block_alloc(uint64_t size, uint64_t min_addr,
 	if (addr_allocated >= 0) {
 		named_block_desc_ptr->base_addr = addr_allocated;
 		named_block_desc_ptr->size = size;
-<<<<<<< HEAD
-		strncpy(named_block_desc_ptr->name, name,
-			cvmx_bootmem_desc->named_block_name_len);
-		named_block_desc_ptr->name[cvmx_bootmem_desc->named_block_name_len - 1] = 0;
-=======
 		strscpy(named_block_desc_ptr->name, name,
 			cvmx_bootmem_desc->named_block_name_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!(flags & CVMX_BOOTMEM_FLAG_NO_LOCKING))
 		cvmx_spinlock_unlock((cvmx_spinlock_t *)&(cvmx_bootmem_desc->lock));
 	return addr_allocated;
 }
-<<<<<<< HEAD
-=======
 
 struct cvmx_bootmem_desc *cvmx_bootmem_get_desc(void)
 {
 	return cvmx_bootmem_desc;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

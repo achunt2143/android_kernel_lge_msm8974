@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *			Linux MegaRAID device driver
  *
  * Copyright (c) 2003-2004  LSI Logic Corporation.
  *
-<<<<<<< HEAD
- *	   This program is free software; you can redistribute it and/or
- *	   modify it under the terms of the GNU General Public License
- *	   as published by the Free Software Foundation; either version
- *	   2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FILE		: megaraid_mbox.h
  */
 
@@ -124,11 +113,7 @@
  * @raw_mbox		: raw mailbox pointer
  * @mbox		: mailbox
  * @mbox64		: extended mailbox
-<<<<<<< HEAD
- * @mbox_dma_h		: maibox dma address
-=======
  * @mbox_dma_h		: mailbox dma address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @sgl64		: 64-bit scatter-gather list
  * @sgl32		: 32-bit scatter-gather list
  * @sgl_dma_h		: dma handle for the scatter-gather list
@@ -245,8 +230,3 @@ typedef struct {
 #define WROUTDOOR(rdev, value)	writel(value, (rdev)->baseaddr + 0x2C)
 
 #endif // _MEGARAID_H_
-<<<<<<< HEAD
-
-// vim: set ts=8 sw=8 tw=78:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

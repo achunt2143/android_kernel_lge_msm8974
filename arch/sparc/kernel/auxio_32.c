@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* auxio.c: Probing for the Sparc AUXIO register at boot time.
  *
  * Copyright (C) 1996 David S. Miller (davem@caip.rutgers.edu)
@@ -11,24 +8,16 @@
 #include <linux/init.h>
 #include <linux/spinlock.h>
 #include <linux/of.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-#include <linux/export.h>
-=======
 #include <linux/export.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/oplib.h>
 #include <asm/io.h>
 #include <asm/auxio.h>
 #include <asm/string.h>		/* memset(), Linux has no bzero() */
 #include <asm/cpu_type.h>
 
-<<<<<<< HEAD
-=======
 #include "kernel.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Probe and map in the Auxiliary I/O register */
 
 /* auxio_register is not static because it is referenced 
@@ -46,10 +35,6 @@ void __init auxio_probe(void)
 	switch (sparc_cpu_model) {
 	case sparc_leon:
 	case sun4d:
-<<<<<<< HEAD
-	case sun4:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	default:
 		break;
@@ -82,14 +67,8 @@ void __init auxio_probe(void)
 	r.start = auxregs[0].phys_addr;
 	r.end = auxregs[0].phys_addr + auxregs[0].reg_size - 1;
 	auxio_register = of_ioremap(&r, 0, auxregs[0].reg_size, "auxio");
-<<<<<<< HEAD
-	/* Fix the address on sun4m and sun4c. */
-	if((((unsigned long) auxregs[0].phys_addr) & 3) == 3 ||
-	   sparc_cpu_model == sun4c)
-=======
 	/* Fix the address on sun4m. */
 	if ((((unsigned long) auxregs[0].phys_addr) & 3) == 3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		auxio_register += (3 - ((unsigned long)auxio_register & 3));
 
 	set_auxio(AUXIO_LED, 0);
@@ -108,16 +87,7 @@ void set_auxio(unsigned char bits_on, unsigned char bits_off)
 	unsigned char regval;
 	unsigned long flags;
 	spin_lock_irqsave(&auxio_lock, flags);
-<<<<<<< HEAD
-	switch(sparc_cpu_model) {
-	case sun4c:
-		regval = sbus_readb(auxio_register);
-		sbus_writeb(((regval | bits_on) & ~bits_off) | AUXIO_ORMEIN,
-			auxio_register);
-		break;
-=======
 	switch (sparc_cpu_model) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case sun4m:
 		if(!auxio_register)
 			break;     /* VME chassis sun4m, no auxio. */
@@ -136,11 +106,7 @@ EXPORT_SYMBOL(set_auxio);
 
 /* sun4m power control register (AUXIO2) */
 
-<<<<<<< HEAD
-volatile unsigned char * auxio_power_register = NULL;
-=======
 volatile u8 __iomem *auxio_power_register = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init auxio_power_probe(void)
 {
@@ -164,13 +130,8 @@ void __init auxio_power_probe(void)
 	r.flags = regs.which_io & 0xF;
 	r.start = regs.phys_addr;
 	r.end = regs.phys_addr + regs.reg_size - 1;
-<<<<<<< HEAD
-	auxio_power_register = (unsigned char *) of_ioremap(&r, 0,
-	    regs.reg_size, "auxpower");
-=======
 	auxio_power_register =
 		(u8 __iomem *)of_ioremap(&r, 0, regs.reg_size, "auxpower");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Display a quick message on the console. */
 	if (auxio_power_register)

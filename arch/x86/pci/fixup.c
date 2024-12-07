@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Exceptions for specific devices. Usually work-arounds for fatal design flaws.
  */
 
-<<<<<<< HEAD
-#include <linux/delay.h>
-#include <linux/dmi.h>
-#include <linux/pci.h>
-#include <linux/init.h>
-#include <asm/pci_x86.h>
-
-static void __devinit pci_fixup_i450nx(struct pci_dev *d)
-=======
 #include <linux/bitfield.h>
 #include <linux/delay.h>
 #include <linux/dmi.h>
@@ -26,7 +14,6 @@ static void __devinit pci_fixup_i450nx(struct pci_dev *d)
 #include <asm/pci_x86.h>
 
 static void pci_fixup_i450nx(struct pci_dev *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * i450NX -- Find and scan all secondary buses on all PXB's.
@@ -43,25 +30,15 @@ static void pci_fixup_i450nx(struct pci_dev *d)
 		dev_dbg(&d->dev, "i450NX PXB %d: %02x/%02x/%02x\n", pxb, busno,
 			suba, subb);
 		if (busno)
-<<<<<<< HEAD
-			pci_scan_bus_with_sysdata(busno);	/* Bus A */
-		if (suba < subb)
-			pci_scan_bus_with_sysdata(suba+1);	/* Bus B */
-=======
 			pcibios_scan_root(busno);	/* Bus A */
 		if (suba < subb)
 			pcibios_scan_root(suba+1);	/* Bus B */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pcibios_last_bus = -1;
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82451NX, pci_fixup_i450nx);
 
-<<<<<<< HEAD
-static void __devinit pci_fixup_i450gx(struct pci_dev *d)
-=======
 static void pci_fixup_i450gx(struct pci_dev *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * i450GX and i450KX -- Find and scan all secondary buses.
@@ -70,20 +47,12 @@ static void pci_fixup_i450gx(struct pci_dev *d)
 	u8 busno;
 	pci_read_config_byte(d, 0x4a, &busno);
 	dev_info(&d->dev, "i440KX/GX host bridge; secondary bus %02x\n", busno);
-<<<<<<< HEAD
-	pci_scan_bus_with_sysdata(busno);
-=======
 	pcibios_scan_root(busno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcibios_last_bus = -1;
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82454GX, pci_fixup_i450gx);
 
-<<<<<<< HEAD
-static void __devinit  pci_fixup_umc_ide(struct pci_dev *d)
-=======
 static void pci_fixup_umc_ide(struct pci_dev *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * UM8886BF IDE controller sets region type bits incorrectly,
@@ -97,24 +66,7 @@ static void pci_fixup_umc_ide(struct pci_dev *d)
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_UMC, PCI_DEVICE_ID_UMC_UM8886BF, pci_fixup_umc_ide);
 
-<<<<<<< HEAD
-static void __devinit  pci_fixup_ncr53c810(struct pci_dev *d)
-{
-	/*
-	 * NCR 53C810 returns class code 0 (at least on some systems).
-	 * Fix class to be PCI_CLASS_STORAGE_SCSI
-	 */
-	if (!d->class) {
-		dev_warn(&d->dev, "Fixing NCR 53C810 class code\n");
-		d->class = PCI_CLASS_STORAGE_SCSI << 8;
-	}
-}
-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_NCR, PCI_DEVICE_ID_NCR_53C810, pci_fixup_ncr53c810);
-
-static void __devinit  pci_fixup_latency(struct pci_dev *d)
-=======
 static void pci_fixup_latency(struct pci_dev *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 *  SiS 5597 and 5598 chipsets require latency timer set to
@@ -126,11 +78,7 @@ static void pci_fixup_latency(struct pci_dev *d)
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_5597, pci_fixup_latency);
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_5598, pci_fixup_latency);
 
-<<<<<<< HEAD
-static void __devinit pci_fixup_piix4_acpi(struct pci_dev *d)
-=======
 static void pci_fixup_piix4_acpi(struct pci_dev *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * PIIX4 ACPI device: hardwired IRQ9
@@ -206,11 +154,7 @@ DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8367_0, pci_fixup_
  * system to PCI bus no matter what are their window settings, so they are
  * "transparent" (or subtractive decoding) from programmers point of view.
  */
-<<<<<<< HEAD
-static void __devinit pci_fixup_transparent_bridge(struct pci_dev *dev)
-=======
 static void pci_fixup_transparent_bridge(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if ((dev->device & 0xff00) == 0x2400)
 		dev->transparent = 1;
@@ -278,11 +222,7 @@ static int quirk_pcie_aspm_write(struct pci_bus *bus, unsigned int devfn, int wh
 	offset = quirk_aspm_offset[GET_INDEX(bus->self->device, devfn)];
 
 	if ((offset) && (where == offset))
-<<<<<<< HEAD
-		value = value & 0xfffffffc;
-=======
 		value = value & ~PCI_EXP_LNKCTL_ASPMC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return raw_pci_write(pci_domain_nr(bus), bus->number,
 						devfn, where, size, value);
@@ -303,11 +243,7 @@ static struct pci_ops quirk_pcie_aspm_ops = {
  */
 static void pcie_rootport_aspm_quirk(struct pci_dev *pdev)
 {
-<<<<<<< HEAD
-	int cap_base, i;
-=======
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_bus  *pbus;
 	struct pci_dev *dev;
 
@@ -333,11 +269,7 @@ static void pcie_rootport_aspm_quirk(struct pci_dev *pdev)
 		for (i = GET_INDEX(pdev->device, 0); i <= GET_INDEX(pdev->device, 7); ++i)
 			quirk_aspm_offset[i] = 0;
 
-<<<<<<< HEAD
-		pbus->ops = pbus->parent->ops;
-=======
 		pci_bus_set_ops(pbus, pbus->parent->ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/*
 		 * If devices are attached to the root port at power-up or
@@ -345,15 +277,6 @@ static void pcie_rootport_aspm_quirk(struct pci_dev *pdev)
 		 * each root port to save the register offsets and replace the
 		 * bus ops.
 		 */
-<<<<<<< HEAD
-		list_for_each_entry(dev, &pbus->devices, bus_list) {
-			/* There are 0 to 8 devices attached to this bus */
-			cap_base = pci_find_capability(dev, PCI_CAP_ID_EXP);
-			quirk_aspm_offset[GET_INDEX(pdev->device, dev->devfn)] = cap_base + 0x10;
-		}
-		pbus->ops = &quirk_pcie_aspm_ops;
-	}
-=======
 		list_for_each_entry(dev, &pbus->devices, bus_list)
 			/* There are 0 to 8 devices attached to this bus */
 			quirk_aspm_offset[GET_INDEX(pdev->device, dev->devfn)] =
@@ -363,7 +286,6 @@ static void pcie_rootport_aspm_quirk(struct pci_dev *pdev)
 		dev_info(&pbus->dev, "writes to ASPM control bits will be ignored\n");
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_MCH_PA,	pcie_rootport_aspm_quirk);
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_MCH_PA1,	pcie_rootport_aspm_quirk);
@@ -379,18 +301,6 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_MCH_PC1,	pcie_r
  *
  * The standard boot ROM sequence for an x86 machine uses the BIOS
  * to select an initial video card for boot display. This boot video
-<<<<<<< HEAD
- * card will have it's BIOS copied to C0000 in system RAM.
- * IORESOURCE_ROM_SHADOW is used to associate the boot video
- * card with this copy. On laptops this copy has to be used since
- * the main ROM may be compressed or combined with another image.
- * See pci_map_rom() for use of this flag. IORESOURCE_ROM_SHADOW
- * is marked here since the boot video device will be the only enabled
- * video device at this point.
- */
-
-static void __devinit pci_fixup_video(struct pci_dev *pdev)
-=======
  * card will have its BIOS copied to 0xC0000 in system RAM.
  * IORESOURCE_ROM_SHADOW is used to associate the boot video
  * card with this copy. On laptops this copy has to be used since
@@ -402,15 +312,11 @@ static void __devinit pci_fixup_video(struct pci_dev *pdev)
  */
 
 static void pci_fixup_video(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *bridge;
 	struct pci_bus *bus;
 	u16 config;
-<<<<<<< HEAD
-=======
 	struct resource *res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Is VGA routed to us? */
 	bus = pdev->bus;
@@ -424,13 +330,7 @@ static void pci_fixup_video(struct pci_dev *pdev)
 		 * type BRIDGE, or CARDBUS. Host to PCI controllers use
 		 * PCI header type NORMAL.
 		 */
-<<<<<<< HEAD
-		if (bridge
-		    && ((bridge->hdr_type == PCI_HEADER_TYPE_BRIDGE)
-		       || (bridge->hdr_type == PCI_HEADER_TYPE_CARDBUS))) {
-=======
 		if (bridge && (pci_is_bridge(bridge))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_read_config_word(bridge, PCI_BRIDGE_CONTROL,
 						&config);
 			if (!(config & PCI_BRIDGE_CTL_VGA))
@@ -438,19 +338,6 @@ static void pci_fixup_video(struct pci_dev *pdev)
 		}
 		bus = bus->parent;
 	}
-<<<<<<< HEAD
-	pci_read_config_word(pdev, PCI_COMMAND, &config);
-	if (config & (PCI_COMMAND_IO | PCI_COMMAND_MEMORY)) {
-		pdev->resource[PCI_ROM_RESOURCE].flags |= IORESOURCE_ROM_SHADOW;
-		dev_printk(KERN_DEBUG, &pdev->dev, "Boot video device\n");
-	}
-}
-DECLARE_PCI_FIXUP_CLASS_FINAL(PCI_ANY_ID, PCI_ANY_ID,
-				PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
-
-
-static const struct dmi_system_id __devinitconst msi_k8t_dmi_table[] = {
-=======
 	if (!vga_default_device() || pdev == vga_default_device()) {
 		pci_read_config_word(pdev, PCI_COMMAND, &config);
 		if (config & (PCI_COMMAND_IO | PCI_COMMAND_MEMORY)) {
@@ -474,7 +361,6 @@ DECLARE_PCI_FIXUP_CLASS_HEADER(PCI_ANY_ID, PCI_ANY_ID,
 
 
 static const struct dmi_system_id msi_k8t_dmi_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "MSI-K8T-Neo2Fir",
 		.matches = {
@@ -492,17 +378,10 @@ static const struct dmi_system_id msi_k8t_dmi_table[] = {
  * The BIOS only gives options "DISABLED" and "AUTO". This code sets
  * the corresponding register-value to enable the soundcard.
  *
-<<<<<<< HEAD
- * The soundcard is only enabled, if the mainborad is identified
- * via DMI-tables and the soundcard is detected to be off.
- */
-static void __devinit pci_fixup_msi_k8t_onboard_sound(struct pci_dev *dev)
-=======
  * The soundcard is only enabled, if the mainboard is identified
  * via DMI-tables and the soundcard is detected to be off.
  */
 static void pci_fixup_msi_k8t_onboard_sound(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char val;
 	if (!dmi_check_system(msi_k8t_dmi_table))
@@ -538,11 +417,7 @@ DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8237,
  */
 static u16 toshiba_line_size;
 
-<<<<<<< HEAD
-static const struct dmi_system_id __devinitconst toshiba_ohci1394_dmi_table[] = {
-=======
 static const struct dmi_system_id toshiba_ohci1394_dmi_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "Toshiba PS5 based laptop",
 		.matches = {
@@ -567,11 +442,7 @@ static const struct dmi_system_id toshiba_ohci1394_dmi_table[] = {
 	{ }
 };
 
-<<<<<<< HEAD
-static void __devinit pci_pre_fixup_toshiba_ohci1394(struct pci_dev *dev)
-=======
 static void pci_pre_fixup_toshiba_ohci1394(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!dmi_check_system(toshiba_ohci1394_dmi_table))
 		return; /* only applies to certain Toshibas (so far) */
@@ -582,11 +453,7 @@ static void pci_pre_fixup_toshiba_ohci1394(struct pci_dev *dev)
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_TI, 0x8032,
 			 pci_pre_fixup_toshiba_ohci1394);
 
-<<<<<<< HEAD
-static void __devinit pci_post_fixup_toshiba_ohci1394(struct pci_dev *dev)
-=======
 static void pci_post_fixup_toshiba_ohci1394(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!dmi_check_system(toshiba_ohci1394_dmi_table))
 		return; /* only applies to certain Toshibas (so far) */
@@ -624,11 +491,7 @@ DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_CYRIX, PCI_DEVICE_ID_CYRIX_5530_LEGACY,
  * Siemens Nixdorf AG FSC Multiprocessor Interrupt Controller:
  * prevent update of the BAR0, which doesn't look like a normal BAR.
  */
-<<<<<<< HEAD
-static void __devinit pci_siemens_interrupt_controller(struct pci_dev *dev)
-=======
 static void pci_siemens_interrupt_controller(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dev->resource[0].flags |= IORESOURCE_PCI_FIXED;
 }
@@ -663,8 +526,6 @@ static void sb600_disable_hpet_bar(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_ATI, 0x4385, sb600_disable_hpet_bar);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_HPET_TIMER
 static void sb600_hpet_quirk(struct pci_dev *dev)
 {
@@ -678,7 +539,6 @@ static void sb600_hpet_quirk(struct pci_dev *dev)
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_ATI, 0x4385, sb600_hpet_quirk);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Twinhead H12Y needs us to block out a region otherwise we map devices
  * there and any access kills the box.
@@ -687,11 +547,7 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_ATI, 0x4385, sb600_hpet_quirk);
  *
  * Match off the LPC and svid/sdid (older kernels lose the bridge subvendor)
  */
-<<<<<<< HEAD
-static void __devinit twinhead_reserve_killing_zone(struct pci_dev *dev)
-=======
 static void twinhead_reserve_killing_zone(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         if (dev->subsystem_vendor == 0x14FF && dev->subsystem_device == 0xA003) {
                 pr_info("Reserving memory on Twinhead H12Y\n");
@@ -699,8 +555,6 @@ static void twinhead_reserve_killing_zone(struct pci_dev *dev)
         }
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x27B9, twinhead_reserve_killing_zone);
-<<<<<<< HEAD
-=======
 
 /*
  * Device [8086:2fc0]
@@ -1157,4 +1011,3 @@ DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_AMD, 0x1668, amd_rp_pme_resume);
 DECLARE_PCI_FIXUP_SUSPEND(PCI_VENDOR_ID_AMD, 0x1669, amd_rp_pme_suspend);
 DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_AMD, 0x1669, amd_rp_pme_resume);
 #endif /* CONFIG_SUSPEND */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

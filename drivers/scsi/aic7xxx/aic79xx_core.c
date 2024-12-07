@@ -40,22 +40,9 @@
  * $Id: //depot/aic7xxx/aic7xxx/aic79xx.c#250 $
  */
 
-<<<<<<< HEAD
-#ifdef __linux__
 #include "aic79xx_osm.h"
 #include "aic79xx_inline.h"
 #include "aicasm/aicasm_insformat.h"
-#else
-#include <dev/aic7xxx/aic79xx_osm.h>
-#include <dev/aic7xxx/aic79xx_inline.h>
-#include <dev/aic7xxx/aicasm/aicasm_insformat.h>
-#endif
-
-=======
-#include "aic79xx_osm.h"
-#include "aic79xx_inline.h"
-#include "aicasm/aicasm_insformat.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /***************************** Lookup Tables **********************************/
 static const char *const ahd_chip_names[] =
@@ -65,20 +52,12 @@ static const char *const ahd_chip_names[] =
 	"aic7902",
 	"aic7901A"
 };
-<<<<<<< HEAD
-static const u_int num_chip_names = ARRAY_SIZE(ahd_chip_names);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Hardware error codes.
  */
 struct ahd_hard_error_entry {
-<<<<<<< HEAD
-        uint8_t errno;
-=======
 	uint8_t errno;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *errmesg;
 };
 
@@ -94,18 +73,6 @@ static const u_int num_errors = ARRAY_SIZE(ahd_hard_errors);
 
 static const struct ahd_phase_table_entry ahd_phase_table[] =
 {
-<<<<<<< HEAD
-	{ P_DATAOUT,	MSG_NOOP,		"in Data-out phase"	},
-	{ P_DATAIN,	MSG_INITIATOR_DET_ERR,	"in Data-in phase"	},
-	{ P_DATAOUT_DT,	MSG_NOOP,		"in DT Data-out phase"	},
-	{ P_DATAIN_DT,	MSG_INITIATOR_DET_ERR,	"in DT Data-in phase"	},
-	{ P_COMMAND,	MSG_NOOP,		"in Command phase"	},
-	{ P_MESGOUT,	MSG_NOOP,		"in Message-out phase"	},
-	{ P_STATUS,	MSG_INITIATOR_DET_ERR,	"in Status phase"	},
-	{ P_MESGIN,	MSG_PARITY_ERROR,	"in Message-in phase"	},
-	{ P_BUSFREE,	MSG_NOOP,		"while idle"		},
-	{ 0,		MSG_NOOP,		"in unknown phase"	}
-=======
 	{ P_DATAOUT,	NOP,			"in Data-out phase"	},
 	{ P_DATAIN,	INITIATOR_ERROR,	"in Data-in phase"	},
 	{ P_DATAOUT_DT,	NOP,			"in DT Data-out phase"	},
@@ -116,7 +83,6 @@ static const struct ahd_phase_table_entry ahd_phase_table[] =
 	{ P_MESGIN,	MSG_PARITY_ERROR,	"in Message-in phase"	},
 	{ P_BUSFREE,	NOP,			"while idle"		},
 	{ 0,		NOP,			"in unknown phase"	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -147,11 +113,7 @@ static void		ahd_free_tstate(struct ahd_softc *ahd,
 					u_int scsi_id, char channel, int force);
 #endif
 static void		ahd_devlimited_syncrate(struct ahd_softc *ahd,
-<<<<<<< HEAD
-					        struct ahd_initiator_tinfo *,
-=======
 						struct ahd_initiator_tinfo *,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						u_int *period,
 						u_int *ppr_options,
 						role_t role);
@@ -208,11 +170,7 @@ static void		ahd_setup_target_msgin(struct ahd_softc *ahd,
 static u_int		ahd_sglist_size(struct ahd_softc *ahd);
 static u_int		ahd_sglist_allocsize(struct ahd_softc *ahd);
 static bus_dmamap_callback_t
-<<<<<<< HEAD
-			ahd_dmamap_cb; 
-=======
 			ahd_dmamap_cb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void		ahd_initialize_hscbs(struct ahd_softc *ahd);
 static int		ahd_init_scbdata(struct ahd_softc *ahd);
 static void		ahd_fini_scbdata(struct ahd_softc *ahd);
@@ -241,11 +199,7 @@ static void		ahd_add_scb_to_free_list(struct ahd_softc *ahd,
 static u_int		ahd_rem_wscb(struct ahd_softc *ahd, u_int scbid,
 				     u_int prev, u_int next, u_int tid);
 static void		ahd_reset_current_bus(struct ahd_softc *ahd);
-<<<<<<< HEAD
-static ahd_callback_t	ahd_stat_timer;
-=======
 static void		ahd_stat_timer(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef AHD_DUMP_SEQ
 static void		ahd_dumpseq(struct ahd_softc *ahd);
 #endif
@@ -314,11 +268,7 @@ static void		ahd_run_tqinfifo(struct ahd_softc *ahd, int paused);
 static void		ahd_handle_hwerrint(struct ahd_softc *ahd);
 static void		ahd_handle_seqint(struct ahd_softc *ahd, u_int intstat);
 static void		ahd_handle_scsiint(struct ahd_softc *ahd,
-<<<<<<< HEAD
-				           u_int intstat);
-=======
 					   u_int intstat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /************************ Sequencer Execution Control *************************/
 void
@@ -1176,11 +1126,7 @@ ahd_restart(struct ahd_softc *ahd)
 	/* No more pending messages */
 	ahd_clear_msg_state(ahd);
 	ahd_outb(ahd, SCSISIGO, 0);		/* De-assert BSY */
-<<<<<<< HEAD
-	ahd_outb(ahd, MSG_OUT, MSG_NOOP);	/* No message to send */
-=======
 	ahd_outb(ahd, MSG_OUT, NOP);	/* No message to send */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd_outb(ahd, SXFRCTL1, ahd_inb(ahd, SXFRCTL1) & ~BITBUCKET);
 	ahd_outb(ahd, SEQINTCTL, 0);
 	ahd_outb(ahd, LASTPHASE, P_BUSFREE);
@@ -1257,11 +1203,7 @@ ahd_flush_qoutfifo(struct ahd_softc *ahd)
 	while ((ahd_inb(ahd, LQISTAT2) & LQIGSAVAIL) != 0) {
 		u_int fifo_mode;
 		u_int i;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scbid = ahd_inw(ahd, GSFIFO);
 		scb = ahd_lookup_scb(ahd, scbid);
 		if (scb == NULL) {
@@ -1348,11 +1290,7 @@ rescan_fifos:
 
 	/*
 	 * Wait for any inprogress DMA to complete and clear DMA state
-<<<<<<< HEAD
-	 * if this if for an SCB in the qinfifo.
-=======
 	 * if this is for an SCB in the qinfifo.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	while (((ccscbctl = ahd_inb(ahd, CCSCBCTL)) & (CCARREN|CCSCBEN)) != 0) {
 
@@ -1388,11 +1326,7 @@ rescan_fifos:
 	while (!SCBID_IS_NULL(scbid)) {
 		uint8_t *hscb_ptr;
 		u_int	 i;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ahd_set_scbptr(ahd, scbid);
 		next_scbid = ahd_inw_scbram(ahd, SCB_NEXT_COMPLETE);
 		scb = ahd_lookup_scb(ahd, scbid);
@@ -1801,15 +1735,8 @@ ahd_dump_sglist(struct scb *scb)
 			sg_list = (struct ahd_dma64_seg*)scb->sg_list;
 			for (i = 0; i < scb->sg_count; i++) {
 				uint64_t addr;
-<<<<<<< HEAD
-				uint32_t len;
 
 				addr = ahd_le64toh(sg_list[i].addr);
-				len = ahd_le32toh(sg_list[i].len);
-=======
-
-				addr = ahd_le64toh(sg_list[i].addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				printk("sg[%d] - Addr 0x%x%x : Length %d%s\n",
 				       i,
 				       (uint32_t)((addr >> 32) & 0xFFFFFFFF),
@@ -1977,12 +1904,6 @@ ahd_handle_seqint(struct ahd_softc *ahd, u_int intstat)
 		{
 			struct	ahd_devinfo devinfo;
 			struct	scb *scb;
-<<<<<<< HEAD
-			struct	ahd_initiator_tinfo *targ_info;
-			struct	ahd_tmode_tstate *tstate;
-			struct	ahd_transinfo *tinfo;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u_int	scbid;
 
 			/*
@@ -2010,15 +1931,6 @@ ahd_handle_seqint(struct ahd_softc *ahd, u_int intstat)
 					    SCB_GET_LUN(scb),
 					    SCB_GET_CHANNEL(ahd, scb),
 					    ROLE_INITIATOR);
-<<<<<<< HEAD
-			targ_info = ahd_fetch_transinfo(ahd,
-							devinfo.channel,
-							devinfo.our_scsiid,
-							devinfo.target,
-							&tstate);
-			tinfo = &targ_info->curr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ahd_set_width(ahd, &devinfo, MSG_EXT_WDTR_BUS_8_BIT,
 				      AHD_TRANS_ACTIVE, /*paused*/TRUE);
 			ahd_set_syncrate(ahd, &devinfo, /*period*/0,
@@ -2079,11 +1991,7 @@ ahd_handle_seqint(struct ahd_softc *ahd, u_int intstat)
 	{
 		struct	scb *scb;
 		u_int	scb_index;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef AHD_DEBUG
 		if ((ahd_debug & AHD_SHOW_RECOVERY) != 0) {
 			printk("%s: CFG4OVERRUN mode = %x\n", ahd_name(ahd),
@@ -2099,11 +2007,7 @@ ahd_handle_seqint(struct ahd_softc *ahd, u_int intstat)
 			 */
 			ahd_assert_atn(ahd);
 			ahd_outb(ahd, MSG_OUT, HOST_MSG);
-<<<<<<< HEAD
-			ahd->msgout_buf[0] = MSG_ABORT_TASK;
-=======
 			ahd->msgout_buf[0] = ABORT_TASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ahd->msgout_len = 1;
 			ahd->msgout_index = 0;
 			ahd->msg_type = MSG_TYPE_INITIATOR_MSGOUT;
@@ -2190,12 +2094,7 @@ ahd_handle_seqint(struct ahd_softc *ahd, u_int intstat)
 					ahd->msg_type =
 					    MSG_TYPE_TARGET_MSGOUT;
 					ahd->msgin_index = 0;
-<<<<<<< HEAD
-				}
-				else 
-=======
 				} else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ahd_setup_target_msgin(ahd,
 							       &devinfo,
 							       scb);
@@ -2236,11 +2135,7 @@ ahd_handle_seqint(struct ahd_softc *ahd, u_int intstat)
 		printk("SXFRCTL0 == 0x%x\n", ahd_inb(ahd, SXFRCTL0));
 		printk("SEQCTL0 == 0x%x\n", ahd_inb(ahd, SEQCTL0));
 		ahd_dump_card_state(ahd);
-<<<<<<< HEAD
-		ahd->msgout_buf[0] = MSG_BUS_DEV_RESET;
-=======
 		ahd->msgout_buf[0] = TARGET_RESET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ahd->msgout_len = 1;
 		ahd->msgout_index = 0;
 		ahd->msg_type = MSG_TYPE_INITIATOR_MSGOUT;
@@ -2378,10 +2273,7 @@ ahd_handle_seqint(struct ahd_softc *ahd, u_int intstat)
 			switch (scb->hscb->task_management) {
 			case SIU_TASKMGMT_ABORT_TASK:
 				tag = SCB_GET_TAG(scb);
-<<<<<<< HEAD
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case SIU_TASKMGMT_ABORT_TASK_SET:
 			case SIU_TASKMGMT_CLEAR_TASK_SET:
 				lun = scb->hscb->lun;
@@ -2392,10 +2284,7 @@ ahd_handle_seqint(struct ahd_softc *ahd, u_int intstat)
 				break;
 			case SIU_TASKMGMT_LUN_RESET:
 				lun = scb->hscb->lun;
-<<<<<<< HEAD
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case SIU_TASKMGMT_TARGET_RESET:
 			{
 				struct ahd_devinfo devinfo;
@@ -2448,15 +2337,9 @@ ahd_handle_seqint(struct ahd_softc *ahd, u_int intstat)
 				;
 			ahd_outb(ahd, SCB_TASK_MANAGEMENT, 0);
 			ahd_search_qinfifo(ahd, SCB_GET_TARGET(ahd, scb),
-<<<<<<< HEAD
-					   SCB_GET_CHANNEL(ahd, scb),  
-					   SCB_GET_LUN(scb), SCB_GET_TAG(scb), 
-					   ROLE_INITIATOR, /*status*/0,   
-=======
 					   SCB_GET_CHANNEL(ahd, scb),
 					   SCB_GET_LUN(scb), SCB_GET_TAG(scb),
 					   ROLE_INITIATOR, /*status*/0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   SEARCH_REMOVE);
 		}
 		break;
@@ -2774,10 +2657,6 @@ ahd_handle_transmission_error(struct ahd_softc *ahd)
 	struct	scb *scb;
 	u_int	scbid;
 	u_int	lqistat1;
-<<<<<<< HEAD
-	u_int	lqistat2;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u_int	msg_out;
 	u_int	curphase;
 	u_int	lastphase;
@@ -2788,11 +2667,7 @@ ahd_handle_transmission_error(struct ahd_softc *ahd)
 	scb = NULL;
 	ahd_set_modes(ahd, AHD_MODE_SCSI, AHD_MODE_SCSI);
 	lqistat1 = ahd_inb(ahd, LQISTAT1) & ~(LQIPHASE_LQ|LQIPHASE_NLQ);
-<<<<<<< HEAD
-	lqistat2 = ahd_inb(ahd, LQISTAT2);
-=======
 	ahd_inb(ahd, LQISTAT2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((lqistat1 & (LQICRCI_NLQ|LQICRCI_LQ)) == 0
 	 && (ahd->bugs & AHD_NLQICRC_DELAYED_BUG) != 0) {
 		u_int lqistate;
@@ -2816,26 +2691,16 @@ ahd_handle_transmission_error(struct ahd_softc *ahd)
 	lastphase = ahd_inb(ahd, LASTPHASE);
 	curphase = ahd_inb(ahd, SCSISIGI) & PHASE_MASK;
 	perrdiag = ahd_inb(ahd, PERRDIAG);
-<<<<<<< HEAD
-	msg_out = MSG_INITIATOR_DET_ERR;
-	ahd_outb(ahd, CLRSINT1, CLRSCSIPERR);
-	
-=======
 	msg_out = INITIATOR_ERROR;
 	ahd_outb(ahd, CLRSINT1, CLRSCSIPERR);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Try to find the SCB associated with this error.
 	 */
 	silent = FALSE;
 	if (lqistat1 == 0
 	 || (lqistat1 & LQICRCI_NLQ) != 0) {
-<<<<<<< HEAD
-	 	if ((lqistat1 & (LQICRCI_NLQ|LQIOVERI_NLQ)) != 0)
-=======
 		if ((lqistat1 & (LQICRCI_NLQ|LQIOVERI_NLQ)) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ahd_set_active_fifo(ahd);
 		scbid = ahd_get_scbptr(ahd);
 		scb = ahd_lookup_scb(ahd, scbid);
@@ -2952,26 +2817,12 @@ ahd_handle_transmission_error(struct ahd_softc *ahd)
 				    ahd_lookup_phase_entry(curphase)->phasemsg);
 			ahd_inb(ahd, SCSIDAT);
 		}
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (curphase == P_MESGIN)
 			msg_out = MSG_PARITY_ERROR;
 	}
 
 	/*
-<<<<<<< HEAD
-	 * We've set the hardware to assert ATN if we 
-	 * get a parity error on "in" phases, so all we
-	 * need to do is stuff the message buffer with
-	 * the appropriate message.  "In" phases have set
-	 * mesg_out to something other than MSG_NOP.
-	 */
-	ahd->send_msg_perror = msg_out;
-	if (scb != NULL && msg_out == MSG_INITIATOR_DET_ERR)
-=======
 	 * We've set the hardware to assert ATN if we
 	 * get a parity error on "in" phases, so all we
 	 * need to do is stuff the message buffer with
@@ -2980,7 +2831,6 @@ ahd_handle_transmission_error(struct ahd_softc *ahd)
 	 */
 	ahd->send_msg_perror = msg_out;
 	if (scb != NULL && msg_out == INITIATOR_ERROR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scb->flags |= SCB_TRANSMISSION_ERROR;
 	ahd_outb(ahd, MSG_OUT, HOST_MSG);
 	ahd_outb(ahd, CLRINT, CLRSCSIINT);
@@ -3019,11 +2869,7 @@ ahd_handle_lqiphase_error(struct ahd_softc *ahd, u_int lqistat1)
 		ahd_outb(ahd, CLRINT, CLRSCSIINT);
 		ahd_unpause(ahd);
 	} else {
-<<<<<<< HEAD
-		printk("Reseting Channel for LQI Phase error\n");
-=======
 		printk("Resetting Channel for LQI Phase error\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ahd_dump_card_state(ahd);
 		ahd_reset_channel(ahd, 'A', /*Initiate Reset*/TRUE);
 	}
@@ -3204,13 +3050,8 @@ ahd_handle_nonpkt_busfree(struct ahd_softc *ahd)
 		u_int tag;
 
 		tag = SCB_LIST_NULL;
-<<<<<<< HEAD
-		if (ahd_sent_msg(ahd, AHDMSG_1B, MSG_ABORT_TAG, TRUE)
-		 || ahd_sent_msg(ahd, AHDMSG_1B, MSG_ABORT, TRUE)) {
-=======
 		if (ahd_sent_msg(ahd, AHDMSG_1B, ABORT_TASK, TRUE)
 		 || ahd_sent_msg(ahd, AHDMSG_1B, ABORT_TASK_SET, TRUE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int found;
 			int sent_msg;
 
@@ -3225,15 +3066,9 @@ ahd_handle_nonpkt_busfree(struct ahd_softc *ahd)
 			ahd_print_path(ahd, scb);
 			printk("SCB %d - Abort%s Completed.\n",
 			       SCB_GET_TAG(scb),
-<<<<<<< HEAD
-			       sent_msg == MSG_ABORT_TAG ? "" : " Tag");
-
-			if (sent_msg == MSG_ABORT_TAG)
-=======
 			       sent_msg == ABORT_TASK ? "" : " Tag");
 
 			if (sent_msg == ABORT_TASK)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				tag = SCB_GET_TAG(scb);
 
 			if ((scb->flags & SCB_EXTERNAL_RESET) != 0) {
@@ -3258,33 +3093,12 @@ ahd_handle_nonpkt_busfree(struct ahd_softc *ahd)
 			printk("found == 0x%x\n", found);
 			printerror = 0;
 		} else if (ahd_sent_msg(ahd, AHDMSG_1B,
-<<<<<<< HEAD
-					MSG_BUS_DEV_RESET, TRUE)) {
-#ifdef __FreeBSD__
-			/*
-			 * Don't mark the user's request for this BDR
-			 * as completing with CAM_BDR_SENT.  CAM3
-			 * specifies CAM_REQ_CMP.
-			 */
-			if (scb != NULL
-			 && scb->io_ctx->ccb_h.func_code== XPT_RESET_DEV
-			 && ahd_match_scb(ahd, scb, target, 'A',
-					  CAM_LUN_WILDCARD, SCB_LIST_NULL,
-					  ROLE_INITIATOR))
-				ahd_set_transaction_status(scb, CAM_REQ_CMP);
-#endif
-=======
 					TARGET_RESET, TRUE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ahd_handle_devreset(ahd, &devinfo, CAM_LUN_WILDCARD,
 					    CAM_BDR_SENT, "Bus Device Reset",
 					    /*verbose_level*/0);
 			printerror = 0;
-<<<<<<< HEAD
-		} else if (ahd_sent_msg(ahd, AHDMSG_EXT, MSG_EXT_PPR, FALSE)
-=======
 		} else if (ahd_sent_msg(ahd, AHDMSG_EXT, EXTENDED_PPR, FALSE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&& ppr_busfree == 0) {
 			struct ahd_initiator_tinfo *tinfo;
 			struct ahd_tmode_tstate *tstate;
@@ -3337,11 +3151,7 @@ ahd_handle_nonpkt_busfree(struct ahd_softc *ahd)
 				}
 				printerror = 0;
 			}
-<<<<<<< HEAD
-		} else if (ahd_sent_msg(ahd, AHDMSG_EXT, MSG_EXT_WDTR, FALSE)
-=======
 		} else if (ahd_sent_msg(ahd, AHDMSG_EXT, EXTENDED_WDTR, FALSE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&& ppr_busfree == 0) {
 			/*
 			 * Negotiation Rejected.  Go-narrow and
@@ -3366,11 +3176,7 @@ ahd_handle_nonpkt_busfree(struct ahd_softc *ahd)
 				ahd_qinfifo_requeue_tail(ahd, scb);
 			}
 			printerror = 0;
-<<<<<<< HEAD
-		} else if (ahd_sent_msg(ahd, AHDMSG_EXT, MSG_EXT_SDTR, FALSE)
-=======
 		} else if (ahd_sent_msg(ahd, AHDMSG_EXT, EXTENDED_SDTR, FALSE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&& ppr_busfree == 0) {
 			/*
 			 * Negotiation Rejected.  Go-async and
@@ -3398,11 +3204,7 @@ ahd_handle_nonpkt_busfree(struct ahd_softc *ahd)
 			printerror = 0;
 		} else if ((ahd->msg_flags & MSG_FLAG_EXPECT_IDE_BUSFREE) != 0
 			&& ahd_sent_msg(ahd, AHDMSG_1B,
-<<<<<<< HEAD
-					 MSG_INITIATOR_DET_ERR, TRUE)) {
-=======
 					 INITIATOR_ERROR, TRUE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef AHD_DEBUG
 			if ((ahd_debug & AHD_SHOW_MESSAGES) != 0)
@@ -3411,11 +3213,7 @@ ahd_handle_nonpkt_busfree(struct ahd_softc *ahd)
 			printerror = 0;
 		} else if ((ahd->msg_flags & MSG_FLAG_EXPECT_QASREJ_BUSFREE)
 			&& ahd_sent_msg(ahd, AHDMSG_1B,
-<<<<<<< HEAD
-					MSG_MESSAGE_REJECT, TRUE)) {
-=======
 					MESSAGE_REJECT, TRUE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef AHD_DEBUG
 			if ((ahd_debug & AHD_SHOW_MESSAGES) != 0)
@@ -3569,11 +3367,7 @@ proto_violation_reset:
 		ahd_outb(ahd, MSG_OUT, HOST_MSG);
 		if (scb == NULL) {
 			ahd_print_devinfo(ahd, &devinfo);
-<<<<<<< HEAD
-			ahd->msgout_buf[0] = MSG_ABORT_TASK;
-=======
 			ahd->msgout_buf[0] = ABORT_TASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ahd->msgout_len = 1;
 			ahd->msgout_index = 0;
 			ahd->msg_type = MSG_TYPE_INITIATOR_MSGOUT;
@@ -3651,10 +3445,6 @@ ahd_clear_critical_section(struct ahd_softc *ahd)
 
 		cs = ahd->critical_sections;
 		for (i = 0; i < ahd->num_critical_sections; i++, cs++) {
-<<<<<<< HEAD
-			
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cs->begin < seqaddr && cs->end >= seqaddr)
 				break;
 		}
@@ -3680,13 +3470,8 @@ ahd_clear_critical_section(struct ahd_softc *ahd)
 		if (stepping == FALSE) {
 
 			first_instr = seqaddr;
-<<<<<<< HEAD
-  			ahd_set_modes(ahd, AHD_MODE_CFG, AHD_MODE_CFG);
-  			simode0 = ahd_inb(ahd, SIMODE0);
-=======
 			ahd_set_modes(ahd, AHD_MODE_CFG, AHD_MODE_CFG);
 			simode0 = ahd_inb(ahd, SIMODE0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			simode3 = ahd_inb(ahd, SIMODE3);
 			lqimode0 = ahd_inb(ahd, LQIMODE0);
 			lqimode1 = ahd_inb(ahd, LQIMODE1);
@@ -3728,11 +3513,7 @@ ahd_clear_critical_section(struct ahd_softc *ahd)
 		ahd_outb(ahd, LQOMODE1, lqomode1);
 		ahd_set_modes(ahd, AHD_MODE_SCSI, AHD_MODE_SCSI);
 		ahd_outb(ahd, SEQCTL0, ahd_inb(ahd, SEQCTL0) & ~STEP);
-<<<<<<< HEAD
-  		ahd_outb(ahd, SIMODE1, simode1);
-=======
 		ahd_outb(ahd, SIMODE1, simode1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * SCSIINT seems to glitch occasionally when
 		 * the interrupt masks are restored.  Clear SCSIINT
@@ -3770,11 +3551,7 @@ ahd_clear_intstat(struct ahd_softc *ahd)
 	ahd_outb(ahd, CLRSINT1, CLRSELTIMEO|CLRATNO|CLRSCSIRSTI
 				|CLRBUSFREE|CLRSCSIPERR|CLRREQINIT);
 	ahd_outb(ahd, CLRSINT0, CLRSELDO|CLRSELDI|CLRSELINGO
-<<<<<<< HEAD
-			        |CLRIOERR|CLROVERRUN);
-=======
 				|CLRIOERR|CLROVERRUN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd_outb(ahd, CLRINT, CLRSCSIINT);
 }
 
@@ -3871,12 +3648,7 @@ ahd_free_tstate(struct ahd_softc *ahd, u_int scsi_id, char channel, int force)
 		return;
 
 	tstate = ahd->enabled_targets[scsi_id];
-<<<<<<< HEAD
-	if (tstate != NULL)
-		kfree(tstate);
-=======
 	kfree(tstate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd->enabled_targets[scsi_id] = NULL;
 }
 #endif
@@ -3915,11 +3687,7 @@ ahd_devlimited_syncrate(struct ahd_softc *ahd,
 	 */
 	if (role == ROLE_TARGET)
 		transinfo = &tinfo->user;
-<<<<<<< HEAD
-	else 
-=======
 	else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		transinfo = &tinfo->goal;
 	*ppr_options &= (transinfo->ppr_options|MSG_EXT_PPR_PCOMP_EN);
 	if (transinfo->width == MSG_EXT_WDTR_BUS_8_BIT) {
@@ -3950,11 +3718,7 @@ ahd_find_syncrate(struct ahd_softc *ahd, u_int *period,
 	if ((*ppr_options & MSG_EXT_PPR_DT_REQ) != 0
 	 && *period > AHD_SYNCRATE_MIN_DT)
 		*ppr_options &= ~MSG_EXT_PPR_DT_REQ;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*period > AHD_SYNCRATE_MIN)
 		*period = 0;
 
@@ -4025,11 +3789,7 @@ ahd_validate_width(struct ahd_softc *ahd, struct ahd_initiator_tinfo *tinfo,
 			*bus_width = MSG_EXT_WDTR_BUS_16_BIT;
 			break;
 		}
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MSG_EXT_WDTR_BUS_8_BIT:
 		*bus_width = MSG_EXT_WDTR_BUS_8_BIT;
 		break;
@@ -4321,11 +4081,7 @@ ahd_update_neg_table(struct ahd_softc *ahd, struct ahd_devinfo *devinfo,
 	ahd_outb(ahd, NEGOADDR, devinfo->target);
 	period = tinfo->period;
 	offset = tinfo->offset;
-<<<<<<< HEAD
-	memcpy(iocell_opts, ahd->iocell_opts, sizeof(ahd->iocell_opts)); 
-=======
 	memcpy(iocell_opts, ahd->iocell_opts, sizeof(ahd->iocell_opts));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ppr_opts = tinfo->ppr_options & (MSG_EXT_PPR_QAS_REQ|MSG_EXT_PPR_DT_REQ
 					|MSG_EXT_PPR_IU_REQ|MSG_EXT_PPR_RTI);
 	con_opts = 0;
@@ -4448,21 +4204,11 @@ ahd_update_pending_scbs(struct ahd_softc *ahd)
 	pending_scb_count = 0;
 	LIST_FOREACH(pending_scb, &ahd->pending_scbs, pending_links) {
 		struct ahd_devinfo devinfo;
-<<<<<<< HEAD
-		struct ahd_initiator_tinfo *tinfo;
-		struct ahd_tmode_tstate *tstate;
-
-		ahd_scb_devinfo(ahd, &devinfo, pending_scb);
-		tinfo = ahd_fetch_transinfo(ahd, devinfo.channel,
-					    devinfo.our_scsiid,
-					    devinfo.target, &tstate);
-=======
 		struct ahd_tmode_tstate *tstate;
 
 		ahd_scb_devinfo(ahd, &devinfo, pending_scb);
 		ahd_fetch_transinfo(ahd, devinfo.channel, devinfo.our_scsiid,
 				    devinfo.target, &tstate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((tstate->auto_negotiate & devinfo.target_mask) == 0
 		 && (pending_scb->flags & SCB_AUTO_NEGOTIATE) != 0) {
 			pending_scb->flags &= ~SCB_AUTO_NEGOTIATE;
@@ -4643,11 +4389,7 @@ ahd_setup_initiator_msgout(struct ahd_softc *ahd, struct ahd_devinfo *devinfo,
 	} else if (scb == NULL) {
 		printk("%s: WARNING. No pending message for "
 		       "I_T msgin.  Issuing NO-OP\n", ahd_name(ahd));
-<<<<<<< HEAD
-		ahd->msgout_buf[ahd->msgout_index++] = MSG_NOOP;
-=======
 		ahd->msgout_buf[ahd->msgout_index++] = NOP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ahd->msgout_len++;
 		ahd->msg_type = MSG_TYPE_INITIATOR_MSGOUT;
 		return;
@@ -4673,11 +4415,7 @@ ahd_setup_initiator_msgout(struct ahd_softc *ahd, struct ahd_devinfo *devinfo,
 	}
 
 	if (scb->flags & SCB_DEVICE_RESET) {
-<<<<<<< HEAD
-		ahd->msgout_buf[ahd->msgout_index++] = MSG_BUS_DEV_RESET;
-=======
 		ahd->msgout_buf[ahd->msgout_index++] = TARGET_RESET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ahd->msgout_len++;
 		ahd_print_path(ahd, scb);
 		printk("Bus Device Reset Message Sent\n");
@@ -4692,15 +4430,9 @@ ahd_setup_initiator_msgout(struct ahd_softc *ahd, struct ahd_devinfo *devinfo,
 	} else if ((scb->flags & SCB_ABORT) != 0) {
 
 		if ((scb->hscb->control & TAG_ENB) != 0) {
-<<<<<<< HEAD
-			ahd->msgout_buf[ahd->msgout_index++] = MSG_ABORT_TAG;
-		} else {
-			ahd->msgout_buf[ahd->msgout_index++] = MSG_ABORT;
-=======
 			ahd->msgout_buf[ahd->msgout_index++] = ABORT_TASK;
 		} else {
 			ahd->msgout_buf[ahd->msgout_index++] = ABORT_TASK_SET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		ahd->msgout_len++;
 		ahd_print_path(ahd, scb);
@@ -4932,11 +4664,7 @@ ahd_clear_msg_state(struct ahd_softc *ahd)
 		 */
 		ahd_outb(ahd, CLRSINT1, CLRATNO);
 	}
-<<<<<<< HEAD
-	ahd_outb(ahd, MSG_OUT, MSG_NOOP);
-=======
 	ahd_outb(ahd, MSG_OUT, NOP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd_outb(ahd, SEQ_FLAGS2,
 		 ahd_inb(ahd, SEQ_FLAGS2) & ~TARGET_MSG_PENDING);
 	ahd_restore_modes(ahd, saved_modes);
@@ -5017,11 +4745,7 @@ reswitch:
 			 * with a busfree.
 			 */
 			if ((ahd->msg_flags & MSG_FLAG_PACKETIZED) != 0
-<<<<<<< HEAD
-			 && ahd->send_msg_perror == MSG_INITIATOR_DET_ERR)
-=======
 			 && ahd->send_msg_perror == INITIATOR_ERROR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ahd->msg_flags |= MSG_FLAG_EXPECT_IDE_BUSFREE;
 
 			ahd_outb(ahd, RETURN_2, ahd->send_msg_perror);
@@ -5123,11 +4847,7 @@ reswitch:
 #endif
 				ahd_assert_atn(ahd);
 			}
-<<<<<<< HEAD
-		} else 
-=======
 		} else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ahd->msgin_index++;
 
 		if (message_done == MSGLOOP_TERMINATED) {
@@ -5230,11 +4950,7 @@ reswitch:
 			 */
 			return;
 		}
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ahd->msgin_index++;
 
 		/*
@@ -5307,11 +5023,7 @@ ahd_sent_msg(struct ahd_softc *ahd, ahd_msgtype type, u_int msgval, int full)
 	index = 0;
 
 	while (index < ahd->msgout_len) {
-<<<<<<< HEAD
-		if (ahd->msgout_buf[index] == MSG_EXTENDED) {
-=======
 		if (ahd->msgout_buf[index] == EXTENDED_MESSAGE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u_int end_index;
 
 			end_index = index + 1 + ahd->msgout_buf[index + 1];
@@ -5325,13 +5037,8 @@ ahd_sent_msg(struct ahd_softc *ahd, ahd_msgtype type, u_int msgval, int full)
 					found = TRUE;
 			}
 			index = end_index;
-<<<<<<< HEAD
-		} else if (ahd->msgout_buf[index] >= MSG_SIMPLE_TASK
-			&& ahd->msgout_buf[index] <= MSG_IGN_WIDE_RESIDUE) {
-=======
 		} else if (ahd->msgout_buf[index] >= SIMPLE_QUEUE_TAG
 			&& ahd->msgout_buf[index] <= IGNORE_WIDE_RESIDUE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Skip tag type and tag id or residue param*/
 			index += 2;
@@ -5382,34 +5089,17 @@ ahd_parse_msg(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 	 * extended message type.
 	 */
 	switch (ahd->msgin_buf[0]) {
-<<<<<<< HEAD
-	case MSG_DISCONNECT:
-	case MSG_SAVEDATAPOINTER:
-	case MSG_CMDCOMPLETE:
-	case MSG_RESTOREPOINTERS:
-	case MSG_IGN_WIDE_RESIDUE:
-=======
 	case DISCONNECT:
 	case SAVE_POINTERS:
 	case COMMAND_COMPLETE:
 	case RESTORE_POINTERS:
 	case IGNORE_WIDE_RESIDUE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * End our message loop as these are messages
 		 * the sequencer handles on its own.
 		 */
 		done = MSGLOOP_TERMINATED;
 		break;
-<<<<<<< HEAD
-	case MSG_MESSAGE_REJECT:
-		response = ahd_handle_msg_reject(ahd, devinfo);
-		/* FALLTHROUGH */
-	case MSG_NOOP:
-		done = MSGLOOP_MSGCOMPLETE;
-		break;
-	case MSG_EXTENDED:
-=======
 	case MESSAGE_REJECT:
 		response = ahd_handle_msg_reject(ahd, devinfo);
 		fallthrough;
@@ -5417,27 +5107,18 @@ ahd_parse_msg(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 		done = MSGLOOP_MSGCOMPLETE;
 		break;
 	case EXTENDED_MESSAGE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		/* Wait for enough of the message to begin validation */
 		if (ahd->msgin_index < 2)
 			break;
 		switch (ahd->msgin_buf[2]) {
-<<<<<<< HEAD
-		case MSG_EXT_SDTR:
-=======
 		case EXTENDED_SDTR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{
 			u_int	 period;
 			u_int	 ppr_options;
 			u_int	 offset;
 			u_int	 saved_offset;
-<<<<<<< HEAD
-			
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ahd->msgin_buf[1] != MSG_EXT_SDTR_LEN) {
 				reject = TRUE;
 				break;
@@ -5479,11 +5160,7 @@ ahd_parse_msg(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 			 * and didn't have to fall down to async
 			 * transfers.
 			 */
-<<<<<<< HEAD
-			if (ahd_sent_msg(ahd, AHDMSG_EXT, MSG_EXT_SDTR, TRUE)) {
-=======
 			if (ahd_sent_msg(ahd, AHDMSG_EXT, EXTENDED_SDTR, TRUE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* We started it */
 				if (saved_offset != offset) {
 					/* Went too low - force async */
@@ -5510,11 +5187,7 @@ ahd_parse_msg(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 			done = MSGLOOP_MSGCOMPLETE;
 			break;
 		}
-<<<<<<< HEAD
-		case MSG_EXT_WDTR:
-=======
 		case EXTENDED_WDTR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{
 			u_int bus_width;
 			u_int saved_width;
@@ -5548,11 +5221,7 @@ ahd_parse_msg(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 				       saved_width, bus_width);
 			}
 
-<<<<<<< HEAD
-			if (ahd_sent_msg(ahd, AHDMSG_EXT, MSG_EXT_WDTR, TRUE)) {
-=======
 			if (ahd_sent_msg(ahd, AHDMSG_EXT, EXTENDED_WDTR, TRUE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * Don't send a WDTR back to the
 				 * target, since we asked first.
@@ -5614,11 +5283,7 @@ ahd_parse_msg(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 			done = MSGLOOP_MSGCOMPLETE;
 			break;
 		}
-<<<<<<< HEAD
-		case MSG_EXT_PPR:
-=======
 		case EXTENDED_PPR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{
 			u_int	period;
 			u_int	offset;
@@ -5673,11 +5338,7 @@ ahd_parse_msg(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 			ahd_validate_offset(ahd, tinfo, period, &offset,
 					    bus_width, devinfo->role);
 
-<<<<<<< HEAD
-			if (ahd_sent_msg(ahd, AHDMSG_EXT, MSG_EXT_PPR, TRUE)) {
-=======
 			if (ahd_sent_msg(ahd, AHDMSG_EXT, EXTENDED_PPR, TRUE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * If we are unable to do any of the
 				 * requested options (we went too low),
@@ -5740,11 +5401,7 @@ ahd_parse_msg(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 		break;
 	}
 #ifdef AHD_TARGET_MODE
-<<<<<<< HEAD
-	case MSG_BUS_DEV_RESET:
-=======
 	case TARGET_RESET:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ahd_handle_devreset(ahd, devinfo, CAM_LUN_WILDCARD,
 				    CAM_BDR_SENT,
 				    "Bus Device Reset Received",
@@ -5752,15 +5409,9 @@ ahd_parse_msg(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 		ahd_restart(ahd);
 		done = MSGLOOP_TERMINATED;
 		break;
-<<<<<<< HEAD
-	case MSG_ABORT_TAG:
-	case MSG_ABORT:
-	case MSG_CLEAR_QUEUE:
-=======
 	case ABORT_TASK:
 	case ABORT_TASK_SET:
 	case CLEAR_TASK_SET:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		int tag;
 
@@ -5770,11 +5421,7 @@ ahd_parse_msg(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 			break;
 		}
 		tag = SCB_LIST_NULL;
-<<<<<<< HEAD
-		if (ahd->msgin_buf[0] == MSG_ABORT_TAG)
-=======
 		if (ahd->msgin_buf[0] == ABORT_TASK)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tag = ahd_inb(ahd, INITIATOR_TAG);
 		ahd_abort_scbs(ahd, devinfo->target, devinfo->channel,
 			       devinfo->lun, tag, ROLE_TARGET,
@@ -5798,24 +5445,15 @@ ahd_parse_msg(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 		break;
 	}
 #endif
-<<<<<<< HEAD
-	case MSG_QAS_REQUEST:
-=======
 	case QAS_REQUEST:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef AHD_DEBUG
 		if ((ahd_debug & AHD_SHOW_MESSAGES) != 0)
 			printk("%s: QAS request.  SCSISIGI == 0x%x\n",
 			       ahd_name(ahd), ahd_inb(ahd, SCSISIGI));
 #endif
 		ahd->msg_flags |= MSG_FLAG_EXPECT_QASREJ_BUSFREE;
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-	case MSG_TERM_IO_PROC:
-=======
 		fallthrough;
 	case TERMINATE_IO_PROC:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		reject = TRUE;
 		break;
@@ -5827,11 +5465,7 @@ ahd_parse_msg(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 		 */
 		ahd->msgout_index = 0;
 		ahd->msgout_len = 1;
-<<<<<<< HEAD
-		ahd->msgout_buf[0] = MSG_MESSAGE_REJECT;
-=======
 		ahd->msgout_buf[0] = MESSAGE_REJECT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		done = MSGLOOP_MSGCOMPLETE;
 		response = TRUE;
 	}
@@ -5870,13 +5504,8 @@ ahd_handle_msg_reject(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 	/* Might be necessary */
 	last_msg = ahd_inb(ahd, LAST_MSG);
 
-<<<<<<< HEAD
-	if (ahd_sent_msg(ahd, AHDMSG_EXT, MSG_EXT_PPR, /*full*/FALSE)) {
-		if (ahd_sent_msg(ahd, AHDMSG_EXT, MSG_EXT_PPR, /*full*/TRUE)
-=======
 	if (ahd_sent_msg(ahd, AHDMSG_EXT, EXTENDED_PPR, /*full*/FALSE)) {
 		if (ahd_sent_msg(ahd, AHDMSG_EXT, EXTENDED_PPR, /*full*/TRUE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 && tinfo->goal.period <= AHD_SYNCRATE_PACED) {
 			/*
 			 * Target may not like our SPI-4 PPR Options.
@@ -5913,11 +5542,7 @@ ahd_handle_msg_reject(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 		ahd_build_transfer_msg(ahd, devinfo);
 		ahd->msgout_index = 0;
 		response = 1;
-<<<<<<< HEAD
-	} else if (ahd_sent_msg(ahd, AHDMSG_EXT, MSG_EXT_WDTR, /*full*/FALSE)) {
-=======
 	} else if (ahd_sent_msg(ahd, AHDMSG_EXT, EXTENDED_WDTR, /*full*/FALSE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* note 8bit xfers */
 		printk("(%s:%c:%d:%d): refuses WIDE negotiation.  Using "
@@ -5942,11 +5567,7 @@ ahd_handle_msg_reject(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 			ahd->msgout_index = 0;
 			response = 1;
 		}
-<<<<<<< HEAD
-	} else if (ahd_sent_msg(ahd, AHDMSG_EXT, MSG_EXT_SDTR, /*full*/FALSE)) {
-=======
 	} else if (ahd_sent_msg(ahd, AHDMSG_EXT, EXTENDED_SDTR, /*full*/FALSE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* note asynch xfers and clear flag */
 		ahd_set_syncrate(ahd, devinfo, /*period*/0,
 				 /*offset*/0, /*ppr_options*/0,
@@ -5956,15 +5577,6 @@ ahd_handle_msg_reject(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 		       "Using asynchronous transfers\n",
 		       ahd_name(ahd), devinfo->channel,
 		       devinfo->target, devinfo->lun);
-<<<<<<< HEAD
-	} else if ((scb->hscb->control & MSG_SIMPLE_TASK) != 0) {
-		int tag_type;
-		int mask;
-
-		tag_type = (scb->hscb->control & MSG_SIMPLE_TASK);
-
-		if (tag_type == MSG_SIMPLE_TASK) {
-=======
 	} else if ((scb->hscb->control & SIMPLE_QUEUE_TAG) != 0) {
 		int tag_type;
 		int mask;
@@ -5972,7 +5584,6 @@ ahd_handle_msg_reject(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 		tag_type = (scb->hscb->control & SIMPLE_QUEUE_TAG);
 
 		if (tag_type == SIMPLE_QUEUE_TAG) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk("(%s:%c:%d:%d): refuses tagged commands.  "
 			       "Performing non-tagged I/O\n", ahd_name(ahd),
 			       devinfo->channel, devinfo->target, devinfo->lun);
@@ -5982,11 +5593,7 @@ ahd_handle_msg_reject(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 			printk("(%s:%c:%d:%d): refuses %s tagged commands.  "
 			       "Performing simple queue tagged I/O only\n",
 			       ahd_name(ahd), devinfo->channel, devinfo->target,
-<<<<<<< HEAD
-			       devinfo->lun, tag_type == MSG_ORDERED_TASK
-=======
 			       devinfo->lun, tag_type == ORDERED_QUEUE_TAG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       ? "ordered" : "head of queue");
 			ahd_set_tags(ahd, scb->io_ctx, devinfo, AHD_QUEUE_BASIC);
 			mask = ~0x03;
@@ -5998,15 +5605,9 @@ ahd_handle_msg_reject(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 		 */
 		ahd_outb(ahd, SCB_CONTROL,
 			 ahd_inb_scbram(ahd, SCB_CONTROL) & mask);
-<<<<<<< HEAD
-	 	scb->hscb->control &= mask;
-		ahd_set_transaction_tag(scb, /*enabled*/FALSE,
-					/*type*/MSG_SIMPLE_TASK);
-=======
 		scb->hscb->control &= mask;
 		ahd_set_transaction_tag(scb, /*enabled*/FALSE,
 					/*type*/SIMPLE_QUEUE_TAG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ahd_outb(ahd, MSG_OUT, MSG_IDENTIFYFLAG);
 		ahd_assert_atn(ahd);
 		ahd_busy_tcl(ahd, BUILD_TCL(scb->hscb->scsiid, devinfo->lun),
@@ -6213,11 +5814,7 @@ ahd_reinitialize_dataptrs(struct ahd_softc *ahd)
 
 	AHD_ASSERT_MODES(ahd, AHD_MODE_DFF0_MSK|AHD_MODE_DFF1_MSK,
 			 AHD_MODE_DFF0_MSK|AHD_MODE_DFF1_MSK);
-<<<<<<< HEAD
-			 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scb_index = ahd_get_scbptr(ahd);
 	scb = ahd_lookup_scb(ahd, scb_index);
 
@@ -6325,11 +5922,7 @@ ahd_handle_devreset(struct ahd_softc *ahd, struct ahd_devinfo *devinfo,
 				continue;
 
 			ahd_queue_lstate_event(ahd, lstate, devinfo->our_scsiid,
-<<<<<<< HEAD
-					       MSG_BUS_DEV_RESET, /*arg*/0);
-=======
 					       TARGET_RESET, /*arg*/0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ahd_send_lstate_events(ahd, lstate);
 		}
 	}
@@ -6343,11 +5936,7 @@ ahd_handle_devreset(struct ahd_softc *ahd, struct ahd_devinfo *devinfo,
 	ahd_set_syncrate(ahd, devinfo, /*period*/0, /*offset*/0,
 			 /*ppr_options*/0, AHD_TRANS_CUR,
 			 /*paused*/TRUE);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status != CAM_SEL_TIMEOUT)
 		ahd_send_async(ahd, devinfo->channel, devinfo->target,
 			       CAM_LUN_WILDCARD, AC_SENT_BDR);
@@ -6363,19 +5952,11 @@ ahd_setup_target_msgin(struct ahd_softc *ahd, struct ahd_devinfo *devinfo,
 		       struct scb *scb)
 {
 
-<<<<<<< HEAD
-	/*              
-	 * To facilitate adding multiple messages together,
-	 * each routine should increment the index and len
-	 * variables instead of setting them explicitly.
-	 */             
-=======
 	/*
 	 * To facilitate adding multiple messages together,
 	 * each routine should increment the index and len
 	 * variables instead of setting them explicitly.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd->msgout_index = 0;
 	ahd->msgout_len = 0;
 
@@ -6456,33 +6037,16 @@ ahd_alloc(void *platform_arg, char *name)
 {
 	struct  ahd_softc *ahd;
 
-<<<<<<< HEAD
-#ifndef	__FreeBSD__
-	ahd = kmalloc(sizeof(*ahd), GFP_ATOMIC);
-=======
 	ahd = kzalloc(sizeof(*ahd), GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ahd) {
 		printk("aic7xxx: cannot malloc softc!\n");
 		kfree(name);
 		return NULL;
 	}
-<<<<<<< HEAD
-#else
-	ahd = device_get_softc((device_t)platform_arg);
-#endif
-	memset(ahd, 0, sizeof(*ahd));
-	ahd->seep_config = kmalloc(sizeof(*ahd->seep_config), GFP_ATOMIC);
-	if (ahd->seep_config == NULL) {
-#ifndef	__FreeBSD__
-		kfree(ahd);
-#endif
-=======
 
 	ahd->seep_config = kmalloc(sizeof(*ahd->seep_config), GFP_ATOMIC);
 	if (ahd->seep_config == NULL) {
 		kfree(ahd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(name);
 		return (NULL);
 	}
@@ -6498,12 +6062,7 @@ ahd_alloc(void *platform_arg, char *name)
 	ahd->bugs = AHD_BUGNONE;
 	ahd->flags = AHD_SPCHK_ENB_A|AHD_RESET_BUS_A|AHD_TERM_ENB_A
 		   | AHD_EXTENDED_TRANS_A|AHD_STPWLEVEL_A;
-<<<<<<< HEAD
-	ahd_timer_init(&ahd->reset_timer);
-	ahd_timer_init(&ahd->stat_timer);
-=======
 	timer_setup(&ahd->stat_timer, ahd_stat_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd->int_coalescing_timer = AHD_INT_COALESCING_TIMER_DEFAULT;
 	ahd->int_coalescing_maxcmds = AHD_INT_COALESCING_MAXCMDS_DEFAULT;
 	ahd->int_coalescing_mincmds = AHD_INT_COALESCING_MINCMDS_DEFAULT;
@@ -6511,13 +6070,6 @@ ahd_alloc(void *platform_arg, char *name)
 	ahd->int_coalescing_stop_threshold =
 	    AHD_INT_COALESCING_STOP_THRESHOLD_DEFAULT;
 
-<<<<<<< HEAD
-	if (ahd_platform_alloc(ahd, platform_arg) != 0) {
-		ahd_free(ahd);
-		ahd = NULL;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef AHD_DEBUG
 	if ((ahd_debug & AHD_SHOW_MEMORY) != 0) {
 		printk("%s: scb size = 0x%x, hscb size = 0x%x\n",
@@ -6525,13 +6077,10 @@ ahd_alloc(void *platform_arg, char *name)
 		       (u_int)sizeof(struct hardware_scb));
 	}
 #endif
-<<<<<<< HEAD
-=======
 	if (ahd_platform_alloc(ahd, platform_arg) != 0) {
 		ahd_free(ahd);
 		ahd = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (ahd);
 }
 
@@ -6540,11 +6089,7 @@ ahd_softc_init(struct ahd_softc *ahd)
 {
 
 	ahd->unpause = 0;
-<<<<<<< HEAD
-	ahd->pause = PAUSE; 
-=======
 	ahd->pause = PAUSE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (0);
 }
 
@@ -6557,12 +6102,7 @@ ahd_set_unit(struct ahd_softc *ahd, int unit)
 void
 ahd_set_name(struct ahd_softc *ahd, char *name)
 {
-<<<<<<< HEAD
-	if (ahd->name != NULL)
-		kfree(ahd->name);
-=======
 	kfree(ahd->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd->name = name;
 }
 
@@ -6575,50 +6115,26 @@ ahd_free(struct ahd_softc *ahd)
 	default:
 	case 5:
 		ahd_shutdown(ahd);
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-	case 4:
-		ahd_dmamap_unload(ahd, ahd->shared_data_dmat,
-				  ahd->shared_data_map.dmamap);
-		/* FALLTHROUGH */
-=======
 		fallthrough;
 	case 4:
 		ahd_dmamap_unload(ahd, ahd->shared_data_dmat,
 				  ahd->shared_data_map.dmamap);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 3:
 		ahd_dmamem_free(ahd, ahd->shared_data_dmat, ahd->qoutfifo,
 				ahd->shared_data_map.dmamap);
 		ahd_dmamap_destroy(ahd, ahd->shared_data_dmat,
 				   ahd->shared_data_map.dmamap);
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-	case 2:
-		ahd_dma_tag_destroy(ahd, ahd->shared_data_dmat);
-	case 1:
-#ifndef __linux__
-		ahd_dma_tag_destroy(ahd, ahd->buffer_dmat);
-#endif
-=======
 		fallthrough;
 	case 2:
 		ahd_dma_tag_destroy(ahd, ahd->shared_data_dmat);
 		break;
 	case 1:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 0:
 		break;
 	}
 
-<<<<<<< HEAD
-#ifndef __linux__
-	ahd_dma_tag_destroy(ahd, ahd->parent_dmat);
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd_platform_free(ahd);
 	ahd_fini_scbdata(ahd);
 	for (i = 0; i < AHD_NUM_TARGETS; i++) {
@@ -6648,22 +6164,10 @@ ahd_free(struct ahd_softc *ahd)
 		kfree(ahd->black_hole);
 	}
 #endif
-<<<<<<< HEAD
-	if (ahd->name != NULL)
-		kfree(ahd->name);
-	if (ahd->seep_config != NULL)
-		kfree(ahd->seep_config);
-	if (ahd->saved_stack != NULL)
-		kfree(ahd->saved_stack);
-#ifndef __FreeBSD__
-	kfree(ahd);
-#endif
-=======
 	kfree(ahd->name);
 	kfree(ahd->seep_config);
 	kfree(ahd->saved_stack);
 	kfree(ahd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -6677,12 +6181,7 @@ ahd_shutdown(void *arg)
 	/*
 	 * Stop periodic timer callbacks.
 	 */
-<<<<<<< HEAD
-	ahd_timer_stop(&ahd->reset_timer);
-	ahd_timer_stop(&ahd->stat_timer);
-=======
 	del_timer_sync(&ahd->stat_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This will reset most registers to 0, but not all */
 	ahd_reset(ahd, /*reinit*/FALSE);
@@ -6703,11 +6202,7 @@ ahd_reset(struct ahd_softc *ahd, int reinit)
 	u_int	 sxfrctl1;
 	int	 wait;
 	uint32_t cmd;
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Preserve the value of the SXFRCTL1 register for all channels.
 	 * It contains settings that affect termination and we don't want
@@ -6728,11 +6223,7 @@ ahd_reset(struct ahd_softc *ahd, int reinit)
 		 * does not disable its parity logic prior to
 		 * the start of the reset.  This may cause a
 		 * parity error to be detected and thus a
-<<<<<<< HEAD
-		 * spurious SERR or PERR assertion.  Disble
-=======
 		 * spurious SERR or PERR assertion.  Disable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * PERR and SERR responses during the CHIPRST.
 		 */
 		mod_cmd = cmd & ~(PCIM_CMD_PERRESPEN|PCIM_CMD_SERRESPEN);
@@ -6951,11 +6442,7 @@ ahd_init_scbdata(struct ahd_softc *ahd)
 	/*
 	 * Note that we were successful
 	 */
-<<<<<<< HEAD
-	return (0); 
-=======
 	return (0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error_exit:
 
@@ -7024,13 +6511,8 @@ ahd_fini_scbdata(struct ahd_softc *ahd)
 			kfree(sns_map);
 		}
 		ahd_dma_tag_destroy(ahd, scb_data->sense_dmat);
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-	}
-=======
 	}
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 6:
 	{
 		struct map_node *sg_map;
@@ -7044,13 +6526,8 @@ ahd_fini_scbdata(struct ahd_softc *ahd)
 			kfree(sg_map);
 		}
 		ahd_dma_tag_destroy(ahd, scb_data->sg_dmat);
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-	}
-=======
 	}
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 5:
 	{
 		struct map_node *hscb_map;
@@ -7064,13 +6541,8 @@ ahd_fini_scbdata(struct ahd_softc *ahd)
 			kfree(hscb_map);
 		}
 		ahd_dma_tag_destroy(ahd, scb_data->hscb_dmat);
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-	}
-=======
 	}
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 4:
 	case 3:
 	case 2:
@@ -7409,12 +6881,6 @@ ahd_alloc_scbs(struct ahd_softc *ahd)
 	for (i = 0; i < newcount; i++) {
 		struct scb_platform_data *pdata;
 		u_int col_tag;
-<<<<<<< HEAD
-#ifndef __linux__
-		int error;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		next_scb = kmalloc(sizeof(*next_scb), GFP_ATOMIC);
 		if (next_scb == NULL)
@@ -7448,18 +6914,6 @@ ahd_alloc_scbs(struct ahd_softc *ahd)
 			next_scb->sg_list_busaddr += sizeof(struct ahd_dma_seg);
 		next_scb->ahd_softc = ahd;
 		next_scb->flags = SCB_FLAG_NONE;
-<<<<<<< HEAD
-#ifndef __linux__
-		error = ahd_dmamap_create(ahd, ahd->buffer_dmat, /*flags*/0,
-					  &next_scb->dmamap);
-		if (error != 0) {
-			kfree(next_scb);
-			kfree(pdata);
-			break;
-		}
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		next_scb->hscb->tag = ahd_htole16(scb_data->numscbs);
 		col_tag = scb_data->numscbs ^ 0x100;
 		next_scb->col_scb = ahd_find_scb_by_tag(ahd, col_tag);
@@ -7506,11 +6960,7 @@ ahd_controller_info(struct ahd_softc *ahd, char *buf)
 static const char *channel_strings[] = {
 	"Primary Low",
 	"Primary High",
-<<<<<<< HEAD
-	"Secondary Low", 
-=======
 	"Secondary Low",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Secondary High"
 };
 
@@ -7522,28 +6972,11 @@ static const char *termstat_strings[] = {
 };
 
 /***************************** Timer Facilities *******************************/
-<<<<<<< HEAD
-#define ahd_timer_init init_timer
-#define ahd_timer_stop del_timer_sync
-typedef void ahd_linux_callback_t (u_long);
-
-static void
-ahd_timer_reset(ahd_timer_t *timer, int usec, ahd_callback_t *func, void *arg)
-{
-	struct ahd_softc *ahd;
-
-	ahd = (struct ahd_softc *)arg;
-	del_timer(timer);
-	timer->data = (u_long)arg;
-	timer->expires = jiffies + (usec * HZ)/1000000;
-	timer->function = (ahd_linux_callback_t*)func;
-=======
 static void
 ahd_timer_reset(struct timer_list *timer, int usec)
 {
 	del_timer(timer);
 	timer->expires = jiffies + (usec * HZ)/1000000;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_timer(timer);
 }
 
@@ -7565,12 +6998,8 @@ ahd_init(struct ahd_softc *ahd)
 	AHD_ASSERT_MODES(ahd, AHD_MODE_SCSI_MSK, AHD_MODE_SCSI_MSK);
 
 	ahd->stack_size = ahd_probe_stack_size(ahd);
-<<<<<<< HEAD
-	ahd->saved_stack = kmalloc(ahd->stack_size * sizeof(uint16_t), GFP_ATOMIC);
-=======
 	ahd->saved_stack = kmalloc_array(ahd->stack_size, sizeof(uint16_t),
 					 GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ahd->saved_stack == NULL)
 		return (ENOMEM);
 
@@ -7597,27 +7026,6 @@ ahd_init(struct ahd_softc *ahd)
 	if ((AHD_TMODE_ENABLE & (0x1 << ahd->unit)) == 0)
 		ahd->features &= ~AHD_TARGETMODE;
 
-<<<<<<< HEAD
-#ifndef __linux__
-	/* DMA tag for mapping buffers into device visible space. */
-	if (ahd_dma_tag_create(ahd, ahd->parent_dmat, /*alignment*/1,
-			       /*boundary*/BUS_SPACE_MAXADDR_32BIT + 1,
-			       /*lowaddr*/ahd->flags & AHD_39BIT_ADDRESSING
-					? (dma_addr_t)0x7FFFFFFFFFULL
-					: BUS_SPACE_MAXADDR_32BIT,
-			       /*highaddr*/BUS_SPACE_MAXADDR,
-			       /*filter*/NULL, /*filterarg*/NULL,
-			       /*maxsize*/(AHD_NSEG - 1) * PAGE_SIZE,
-			       /*nsegments*/AHD_NSEG,
-			       /*maxsegsz*/AHD_MAXTRANSFER_SIZE,
-			       /*flags*/BUS_DMA_ALLOCNOW,
-			       &ahd->buffer_dmat) != 0) {
-		return (ENOMEM);
-	}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd->init_level++;
 
 	/*
@@ -7762,10 +7170,7 @@ ahd_init(struct ahd_softc *ahd)
 		case FLX_CSTAT_OVER:
 		case FLX_CSTAT_UNDER:
 			warn_user++;
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case FLX_CSTAT_INVALID:
 		case FLX_CSTAT_OKAY:
 			if (warn_user == 0 && bootverbose == 0)
@@ -7782,12 +7187,7 @@ ahd_init(struct ahd_softc *ahd)
 	}
 init_done:
 	ahd_restart(ahd);
-<<<<<<< HEAD
-	ahd_timer_reset(&ahd->stat_timer, AHD_STAT_UPDATE_US,
-			ahd_stat_timer, ahd);
-=======
 	ahd_timer_reset(&ahd->stat_timer, AHD_STAT_UPDATE_US);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (0);
 }
 
@@ -7832,11 +7232,7 @@ ahd_chip_init(struct ahd_softc *ahd)
 	} else {
 		sxfrctl1 |= ahd->seltime;
 	}
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd_outb(ahd, SXFRCTL0, DFON);
 	ahd_outb(ahd, SXFRCTL1, sxfrctl1|ahd->seltime|ENSTIMER|ACTNEGEN);
 	ahd_outb(ahd, SIMODE1, ENSELTIMO|ENSCSIRST|ENSCSIPERR);
@@ -8092,11 +7488,7 @@ ahd_chip_init(struct ahd_softc *ahd)
 	ahd_outb(ahd, CMDSIZE_TABLE + 5, 11);
 	ahd_outb(ahd, CMDSIZE_TABLE + 6, 0);
 	ahd_outb(ahd, CMDSIZE_TABLE + 7, 0);
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Tell the sequencer of our initial queue positions */
 	ahd_set_modes(ahd, AHD_MODE_CCHAN, AHD_MODE_CCHAN);
 	ahd_outb(ahd, QOFF_CTLSTA, SCB_QSIZE_512);
@@ -8473,17 +7865,9 @@ ahd_pause_and_flushwork(struct ahd_softc *ahd)
 	ahd->flags &= ~AHD_ALL_INTERRUPTS;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-int
-ahd_suspend(struct ahd_softc *ahd)
-{
-
-=======
 int __maybe_unused
 ahd_suspend(struct ahd_softc *ahd)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd_pause_and_flushwork(ahd);
 
 	if (LIST_FIRST(&ahd->pending_scbs) != NULL) {
@@ -8494,17 +7878,6 @@ ahd_suspend(struct ahd_softc *ahd)
 	return (0);
 }
 
-<<<<<<< HEAD
-void
-ahd_resume(struct ahd_softc *ahd)
-{
-
-	ahd_reset(ahd, /*reinit*/TRUE);
-	ahd_intr_enable(ahd, TRUE); 
-	ahd_restart(ahd);
-}
-#endif
-=======
 void __maybe_unused
 ahd_resume(struct ahd_softc *ahd)
 {
@@ -8512,7 +7885,6 @@ ahd_resume(struct ahd_softc *ahd)
 	ahd_intr_enable(ahd, TRUE);
 	ahd_restart(ahd);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /************************** Busy Target Table *********************************/
 /*
@@ -8551,11 +7923,7 @@ ahd_find_busy_tcl(struct ahd_softc *ahd, u_int tcl)
 	u_int scbid;
 	u_int scb_offset;
 	u_int saved_scbptr;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scb_offset = ahd_index_busy_tcl(ahd, &saved_scbptr, tcl);
 	scbid = ahd_inw_scbram(ahd, scb_offset);
 	ahd_set_scbptr(ahd, saved_scbptr);
@@ -8567,11 +7935,7 @@ ahd_busy_tcl(struct ahd_softc *ahd, u_int tcl, u_int scbid)
 {
 	u_int scb_offset;
 	u_int saved_scbptr;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scb_offset = ahd_index_busy_tcl(ahd, &saved_scbptr, tcl);
 	ahd_outw(ahd, scb_offset, scbid);
 	ahd_set_scbptr(ahd, saved_scbptr);
@@ -8624,11 +7988,7 @@ ahd_freeze_devq(struct ahd_softc *ahd, struct scb *scb)
 	target = SCB_GET_TARGET(ahd, scb);
 	lun = SCB_GET_LUN(scb);
 	channel = SCB_GET_CHANNEL(ahd, scb);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd_search_qinfifo(ahd, target, channel, lun,
 			   /*tag*/SCB_LIST_NULL, ROLE_UNKNOWN,
 			   CAM_REQUEUE_REQ, SEARCH_COMPLETE);
@@ -8669,11 +8029,7 @@ ahd_qinfifo_requeue(struct ahd_softc *ahd, struct scb *prev_scb,
 		ahd_outl(ahd, NEXT_QUEUED_SCB_ADDR, busaddr);
 	} else {
 		prev_scb->hscb->next_hscb_busaddr = scb->hscb->hscb_busaddr;
-<<<<<<< HEAD
-		ahd_sync_scb(ahd, prev_scb, 
-=======
 		ahd_sync_scb(ahd, prev_scb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     BUS_DMASYNC_PREREAD|BUS_DMASYNC_PREWRITE);
 	}
 	ahd->qinfifo[AHD_QIN_WRAP(ahd->qinfifonext)] = SCB_GET_TAG(scb);
@@ -8814,20 +8170,12 @@ ahd_search_qinfifo(struct ahd_softc *ahd, int target, char channel,
 				if ((scb->flags & SCB_ACTIVE) == 0)
 					printk("Inactive SCB in qinfifo\n");
 				ahd_done_with_status(ahd, scb, status);
-<<<<<<< HEAD
-				/* FALLTHROUGH */
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case SEARCH_REMOVE:
 				break;
 			case SEARCH_PRINT:
 				printk(" 0x%x", ahd->qinfifo[qinpos]);
-<<<<<<< HEAD
-				/* FALLTHROUGH */
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case SEARCH_COUNT:
 				ahd_qinfifo_requeue(ahd, prev_scb, scb);
 				prev_scb = scb;
@@ -8918,11 +8266,7 @@ ahd_search_qinfifo(struct ahd_softc *ahd, int target, char channel,
 				if ((mk_msg_scb->flags & SCB_ACTIVE) == 0)
 					printk("Inactive SCB pending MK_MSG\n");
 				ahd_done_with_status(ahd, mk_msg_scb, status);
-<<<<<<< HEAD
-				/* FALLTHROUGH */
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case SEARCH_REMOVE:
 			{
 				u_int tail_offset;
@@ -8946,11 +8290,7 @@ ahd_search_qinfifo(struct ahd_softc *ahd, int target, char channel,
 			}
 			case SEARCH_PRINT:
 				printk(" 0x%x", SCB_GET_TAG(scb));
-<<<<<<< HEAD
-				/* FALLTHROUGH */
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case SEARCH_COUNT:
 				break;
 			}
@@ -8989,11 +8329,7 @@ ahd_search_qinfifo(struct ahd_softc *ahd, int target, char channel,
 static int
 ahd_search_scb_list(struct ahd_softc *ahd, int target, char channel,
 		    int lun, u_int tag, role_t role, uint32_t status,
-<<<<<<< HEAD
-		    ahd_search_action action, u_int *list_head, 
-=======
 		    ahd_search_action action, u_int *list_head,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    u_int *list_tail, u_int tid)
 {
 	struct	scb *scb;
@@ -9035,11 +8371,7 @@ ahd_search_scb_list(struct ahd_softc *ahd, int target, char channel,
 			if ((scb->flags & SCB_ACTIVE) == 0)
 				printk("Inactive SCB in Waiting List\n");
 			ahd_done_with_status(ahd, scb, status);
-<<<<<<< HEAD
-			/* FALLTHROUGH */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SEARCH_REMOVE:
 			ahd_rem_wscb(ahd, scbid, prev, next, tid);
 			*list_tail = prev;
@@ -9048,10 +8380,7 @@ ahd_search_scb_list(struct ahd_softc *ahd, int target, char channel,
 			break;
 		case SEARCH_PRINT:
 			printk("0x%x ", scbid);
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SEARCH_COUNT:
 			prev = scbid;
 			break;
@@ -9453,21 +8782,12 @@ ahd_reset_channel(struct ahd_softc *ahd, char channel, int initiate_reset)
 
 /**************************** Statistics Processing ***************************/
 static void
-<<<<<<< HEAD
-ahd_stat_timer(void *arg)
-{
-	struct	ahd_softc *ahd = arg;
-	u_long	s;
-	int	enint_coal;
-	
-=======
 ahd_stat_timer(struct timer_list *t)
 {
 	struct	ahd_softc *ahd = from_timer(ahd, t, stat_timer);
 	u_long	s;
 	int	enint_coal;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd_lock(ahd, &s);
 
 	enint_coal = ahd->hs_mailbox & ENINT_COALESCE;
@@ -9491,12 +8811,7 @@ ahd_stat_timer(struct timer_list *t)
 	ahd->cmdcmplt_bucket = (ahd->cmdcmplt_bucket+1) & (AHD_STAT_BUCKETS-1);
 	ahd->cmdcmplt_total -= ahd->cmdcmplt_counts[ahd->cmdcmplt_bucket];
 	ahd->cmdcmplt_counts[ahd->cmdcmplt_bucket] = 0;
-<<<<<<< HEAD
-	ahd_timer_reset(&ahd->stat_timer, AHD_STAT_UPDATE_US,
-			ahd_stat_timer, ahd);
-=======
 	ahd_timer_reset(&ahd->stat_timer, AHD_STAT_UPDATE_US);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd_unlock(ahd, &s);
 }
 
@@ -9517,11 +8832,7 @@ ahd_handle_scsi_status(struct ahd_softc *ahd, struct scb *scb)
 	 * operations are on data structures that the sequencer
 	 * is not touching once the queue is frozen.
 	 */
-<<<<<<< HEAD
-	hscb = scb->hscb; 
-=======
 	hscb = scb->hscb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ahd_is_paused(ahd)) {
 		paused = 1;
@@ -9595,19 +8906,12 @@ ahd_handle_scsi_status(struct ahd_softc *ahd, struct scb *scb)
 					break;
 				case SIU_PFC_ILLEGAL_REQUEST:
 					printk("Illegal request\n");
-<<<<<<< HEAD
-=======
 					break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				default:
 					break;
 				}
 			}
-<<<<<<< HEAD
-			if (siu->status == SCSI_STATUS_OK)
-=======
 			if (siu->status == SAM_STAT_GOOD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ahd_set_transaction_status(scb,
 							   CAM_REQ_CMP_ERR);
 		}
@@ -9621,13 +8925,8 @@ ahd_handle_scsi_status(struct ahd_softc *ahd, struct scb *scb)
 		ahd_done(ahd, scb);
 		break;
 	}
-<<<<<<< HEAD
-	case SCSI_STATUS_CMD_TERMINATED:
-	case SCSI_STATUS_CHECK_COND:
-=======
 	case SAM_STAT_COMMAND_TERMINATED:
 	case SAM_STAT_CHECK_CONDITION:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		struct ahd_devinfo devinfo;
 		struct ahd_dma_seg *sg;
@@ -9717,17 +9016,10 @@ ahd_handle_scsi_status(struct ahd_softc *ahd, struct scb *scb)
 		ahd_queue_scb(ahd, scb);
 		break;
 	}
-<<<<<<< HEAD
-	case SCSI_STATUS_OK:
-		printk("%s: Interrupted for status of 0???\n",
-		       ahd_name(ahd));
-		/* FALLTHROUGH */
-=======
 	case SAM_STAT_GOOD:
 		printk("%s: Interrupted for status of 0???\n",
 		       ahd_name(ahd));
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		ahd_done(ahd, scb);
 		break;
@@ -9814,11 +9106,7 @@ ahd_calc_residual(struct ahd_softc *ahd, struct scb *scb)
 
 		/*
 		 * Remainder of the SG where the transfer
-<<<<<<< HEAD
-		 * stopped.  
-=======
 		 * stopped.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		resid = ahd_le32toh(spkt->residual_datacnt) & AHD_SG_LEN_MASK;
 		sg = ahd_sg_bus_to_virt(ahd, scb, resid_sgptr & SG_PTR_MASK);
@@ -9870,11 +9158,7 @@ ahd_queue_lstate_event(struct ahd_softc *ahd, struct ahd_tmode_lstate *lstate,
 			- (lstate->event_r_idx - lstate->event_w_idx);
 
 	if (event_type == EVENT_TYPE_BUS_RESET
-<<<<<<< HEAD
-	 || event_type == MSG_BUS_DEV_RESET) {
-=======
 	 || event_type == TARGET_RESET) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Any earlier events are irrelevant, so reset our buffer.
 		 * This has the effect of allowing us to deal with reset
@@ -9971,15 +9255,9 @@ ahd_dumpseq(struct ahd_softc* ahd)
 static void
 ahd_loadseq(struct ahd_softc *ahd)
 {
-<<<<<<< HEAD
-	struct	cs cs_table[num_critical_sections];
-	u_int	begin_set[num_critical_sections];
-	u_int	end_set[num_critical_sections];
-=======
 	struct	cs cs_table[NUM_CRITICAL_SECTIONS];
 	u_int	begin_set[NUM_CRITICAL_SECTIONS];
 	u_int	end_set[NUM_CRITICAL_SECTIONS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct patch *cur_patch;
 	u_int	cs_count;
 	u_int	cur_cs;
@@ -10011,11 +9289,7 @@ ahd_loadseq(struct ahd_softc *ahd)
 
 	/*
 	 * Setup downloadable constant table.
-<<<<<<< HEAD
-	 * 
-=======
 	 *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * The computation for the S/G prefetch variables is
 	 * a bit complicated.  We would like to always fetch
 	 * in terms of cachelined sized increments.  However,
@@ -10099,20 +9373,12 @@ ahd_loadseq(struct ahd_softc *ahd)
 		 * Move through the CS table until we find a CS
 		 * that might apply to this instruction.
 		 */
-<<<<<<< HEAD
-		for (; cur_cs < num_critical_sections; cur_cs++) {
-=======
 		for (; cur_cs < NUM_CRITICAL_SECTIONS; cur_cs++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (critical_sections[cur_cs].end <= i) {
 				if (begin_set[cs_count] == TRUE
 				 && end_set[cs_count] == FALSE) {
 					cs_table[cs_count].end = downloaded;
-<<<<<<< HEAD
-				 	end_set[cs_count] = TRUE;
-=======
 					end_set[cs_count] = TRUE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					cs_count++;
 				}
 				continue;
@@ -10132,16 +9398,9 @@ ahd_loadseq(struct ahd_softc *ahd)
 	if (cs_count != 0) {
 
 		cs_count *= sizeof(struct cs);
-<<<<<<< HEAD
-		ahd->critical_sections = kmalloc(cs_count, GFP_ATOMIC);
-		if (ahd->critical_sections == NULL)
-			panic("ahd_loadseq: Could not malloc");
-		memcpy(ahd->critical_sections, cs_table, cs_count);
-=======
 		ahd->critical_sections = kmemdup(cs_table, cs_count, GFP_ATOMIC);
 		if (ahd->critical_sections == NULL)
 			panic("ahd_loadseq: Could not malloc");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ahd_outb(ahd, SEQCTL0, PERRORDIS|FAILDIS|FASTMODE);
 
@@ -10247,13 +9506,8 @@ ahd_download_instr(struct ahd_softc *ahd, u_int instrptr, uint8_t *dconsts)
 	{
 		fmt3_ins = &instr.format3;
 		fmt3_ins->address = ahd_resolve_seqaddr(ahd, fmt3_ins->address);
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-	}
-=======
 	}
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case AIC_OP_OR:
 	case AIC_OP_AND:
 	case AIC_OP_XOR:
@@ -10264,11 +9518,7 @@ ahd_download_instr(struct ahd_softc *ahd, u_int instrptr, uint8_t *dconsts)
 			fmt1_ins->immediate = dconsts[fmt1_ins->immediate];
 		}
 		fmt1_ins->parity = 0;
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case AIC_OP_ROL:
 	{
 		int i, count;
@@ -10363,11 +9613,7 @@ ahd_print_register(const ahd_reg_parse_entry_t *table, u_int num_entries,
 					  printed_mask == 0 ? ":(" : "|",
 					  table[entry].name);
 			printed_mask |= table[entry].mask;
-<<<<<<< HEAD
-			
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		if (entry >= num_entries)
@@ -10404,11 +9650,7 @@ ahd_dump_card_state(struct ahd_softc *ahd)
 	ahd_set_modes(ahd, AHD_MODE_SCSI, AHD_MODE_SCSI);
 	printk(">>>>>>>>>>>>>>>>>> Dump Card State Begins <<<<<<<<<<<<<<<<<\n"
 	       "%s: Dumping Card State at program address 0x%x Mode 0x%x\n",
-<<<<<<< HEAD
-	       ahd_name(ahd), 
-=======
 	       ahd_name(ahd),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       ahd_inw(ahd, CURADDR),
 	       ahd_build_mode_state(ahd, ahd->saved_src_mode,
 				    ahd->saved_dst_mode));
@@ -10524,10 +9766,6 @@ ahd_dump_card_state(struct ahd_softc *ahd)
 	}
 	printk("\n");
 
-<<<<<<< HEAD
-	
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("Sequencer DMA-Up and Complete list: ");
 	scb_index = ahd_inw(ahd, COMPLETE_DMA_SCB_HEAD);
 	i = 0;
@@ -10705,11 +9943,7 @@ ahd_read_seeprom(struct ahd_softc *ahd, uint16_t *buf,
 
 		ahd_outb(ahd, SEEADR, cur_addr);
 		ahd_outb(ahd, SEECTL, SEEOP_READ | SEESTART);
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = ahd_wait_seeprom(ahd);
 		if (error)
 			break;
@@ -10764,11 +9998,7 @@ ahd_write_seeprom(struct ahd_softc *ahd, uint16_t *buf,
 		ahd_outw(ahd, SEEDAT, *buf++);
 		ahd_outb(ahd, SEEADR, cur_addr);
 		ahd_outb(ahd, SEECTL, SEEOP_WRITE | SEESTART);
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = ahd_wait_seeprom(ahd);
 		if (retval)
 			break;
@@ -10873,11 +10103,7 @@ ahd_acquire_seeprom(struct ahd_softc *ahd)
 
 	error = ahd_read_flexport(ahd, FLXADDR_ROMSTAT_CURSENSECTL, &seetype);
 	if (error != 0
-<<<<<<< HEAD
-         || ((seetype & FLX_ROMSTAT_SEECFG) == FLX_ROMSTAT_SEE_NONE))
-=======
 	    || ((seetype & FLX_ROMSTAT_SEECFG) == FLX_ROMSTAT_SEE_NONE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (0);
 	return (1);
 #endif
@@ -11019,11 +10245,7 @@ ahd_handle_en_lun(struct ahd_softc *ahd, struct cam_sim *sim, union ccb *ccb)
 		our_id = ahd->our_id;
 		if (ccb->ccb_h.target_id != our_id) {
 			if ((ahd->features & AHD_MULTI_TID) != 0
-<<<<<<< HEAD
-		   	 && (ahd->flags & AHD_INITIATORROLE) != 0) {
-=======
 			 && (ahd->flags & AHD_INITIATORROLE) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * Only allow additional targets if
 				 * the initiator role is disabled.
@@ -11117,21 +10339,13 @@ ahd_handle_en_lun(struct ahd_softc *ahd, struct cam_sim *sim, union ccb *ccb)
 				return;
 			}
 		}
-<<<<<<< HEAD
-		lstate = kmalloc(sizeof(*lstate), GFP_ATOMIC);
-=======
 		lstate = kzalloc(sizeof(*lstate), GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lstate == NULL) {
 			xpt_print_path(ccb->ccb_h.path);
 			printk("Couldn't allocate lstate\n");
 			ccb->ccb_h.status = CAM_RESRC_UNAVAIL;
 			return;
 		}
-<<<<<<< HEAD
-		memset(lstate, 0, sizeof(*lstate));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = xpt_create_path(&lstate->path, /*periph*/NULL,
 					 xpt_path_path_id(ccb->ccb_h.path),
 					 xpt_path_target_id(ccb->ccb_h.path),
@@ -11218,11 +10432,7 @@ ahd_handle_en_lun(struct ahd_softc *ahd, struct cam_sim *sim, union ccb *ccb)
 		}
 
 		ahd_lock(ahd, &s);
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ccb->ccb_h.status = CAM_REQ_CMP;
 		LIST_FOREACH(scb, &ahd->pending_scbs, pending_links) {
 			struct ccb_hdr *ccbh;
@@ -11486,11 +10696,7 @@ ahd_handle_target_cmd(struct ahd_softc *ahd, struct target_cmd *cmd)
 		printk("Reserved or VU command code type encountered\n");
 		break;
 	}
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(atio->cdb_io.cdb_bytes, byte, atio->cdb_len);
 
 	atio->ccb_h.status |= CAM_CDB_RECVD;

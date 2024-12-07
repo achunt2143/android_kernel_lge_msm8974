@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Detection routine for the NCR53c710 based BVME6000 SCSI Controllers for Linux.
  *
@@ -38,11 +35,7 @@ static struct scsi_host_template bvme6000_scsi_driver_template = {
 
 static struct platform_device *bvme6000_scsi_device;
 
-<<<<<<< HEAD
-static __devinit int
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bvme6000_probe(struct platform_device *dev)
 {
 	struct Scsi_Host *host;
@@ -96,11 +89,7 @@ bvme6000_probe(struct platform_device *dev)
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static __devexit int
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bvme6000_device_remove(struct platform_device *dev)
 {
 	struct Scsi_Host *host = platform_get_drvdata(dev);
@@ -110,26 +99,14 @@ bvme6000_device_remove(struct platform_device *dev)
 	NCR_700_release(host);
 	kfree(hostdata);
 	free_irq(host->irq, host);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver bvme6000_scsi_driver = {
 	.driver = {
 		.name		= "bvme6000-scsi",
-<<<<<<< HEAD
-		.owner		= THIS_MODULE,
-	},
-	.probe		= bvme6000_probe,
-	.remove		= __devexit_p(bvme6000_device_remove),
-=======
 	},
 	.probe		= bvme6000_probe,
 	.remove_new	= bvme6000_device_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init bvme6000_scsi_init(void)

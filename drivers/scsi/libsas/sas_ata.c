@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for SATA devices on Serial Attached SCSI (SAS) controllers
  *
  * Copyright (C) 2006 IBM Corporation
  *
  * Written by: Darrick J. Wong <djwong@us.ibm.com>, IBM Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/scatterlist.h>
@@ -41,13 +20,8 @@
 #include <scsi/scsi.h>
 #include <scsi/scsi_transport.h>
 #include <scsi/scsi_transport_sas.h>
-<<<<<<< HEAD
-#include "../scsi_sas_internal.h"
-#include "../scsi_transport_api.h"
-=======
 #include "scsi_sas_internal.h"
 #include "scsi_transport_api.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi_eh.h>
 
 static enum ata_completion_errors sas_to_ata_err(struct task_status_struct *ts)
@@ -61,48 +35,6 @@ static enum ata_completion_errors sas_to_ata_err(struct task_status_struct *ts)
 	/* ts->resp == SAS_TASK_COMPLETE */
 	/* task delivered, what happened afterwards? */
 	switch (ts->stat) {
-<<<<<<< HEAD
-		case SAS_DEV_NO_RESPONSE:
-			return AC_ERR_TIMEOUT;
-
-		case SAS_INTERRUPTED:
-		case SAS_PHY_DOWN:
-		case SAS_NAK_R_ERR:
-			return AC_ERR_ATA_BUS;
-
-
-		case SAS_DATA_UNDERRUN:
-			/*
-			 * Some programs that use the taskfile interface
-			 * (smartctl in particular) can cause underrun
-			 * problems.  Ignore these errors, perhaps at our
-			 * peril.
-			 */
-			return 0;
-
-		case SAS_DATA_OVERRUN:
-		case SAS_QUEUE_FULL:
-		case SAS_DEVICE_UNKNOWN:
-		case SAS_SG_ERR:
-			return AC_ERR_INVALID;
-
-		case SAS_OPEN_TO:
-		case SAS_OPEN_REJECT:
-			SAS_DPRINTK("%s: Saw error %d.  What to do?\n",
-				    __func__, ts->stat);
-			return AC_ERR_OTHER;
-
-		case SAM_STAT_CHECK_CONDITION:
-		case SAS_ABORTED_TASK:
-			return AC_ERR_DEV;
-
-		case SAS_PROTO_RESPONSE:
-			/* This means the ending_fis has the error
-			 * value; return 0 here to collect it */
-			return 0;
-		default:
-			return 0;
-=======
 	case SAS_DEV_NO_RESPONSE:
 		return AC_ERR_TIMEOUT;
 	case SAS_INTERRUPTED:
@@ -135,7 +67,6 @@ static enum ata_completion_errors sas_to_ata_err(struct task_status_struct *ts)
 		return 0;
 	default:
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -170,11 +101,7 @@ static void sas_ata_task_done(struct sas_task *task)
 
 	spin_lock_irqsave(ap->lock, flags);
 	/* check if we lost the race with libata/sas_ata_post_internal() */
-<<<<<<< HEAD
-	if (unlikely(ap->pflags & ATA_PFLAG_FROZEN)) {
-=======
 	if (unlikely(ata_port_is_frozen(ap))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(ap->lock, flags);
 		if (qc->scsicmd)
 			goto qc_already_gone;
@@ -187,16 +114,10 @@ static void sas_ata_task_done(struct sas_task *task)
 		}
 	}
 
-<<<<<<< HEAD
-	if (stat->stat == SAS_PROTO_RESPONSE || stat->stat == SAM_STAT_GOOD ||
-	    ((stat->stat == SAM_STAT_CHECK_CONDITION &&
-	      dev->sata_dev.command_set == ATAPI_COMMAND_SET))) {
-=======
 	if (stat->stat == SAS_PROTO_RESPONSE ||
 	    stat->stat == SAS_SAM_STAT_GOOD ||
 	    (stat->stat == SAS_SAM_STAT_CHECK_CONDITION &&
 	      dev->sata_dev.class == ATA_DEV_ATAPI)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(dev->sata_dev.fis, resp->ending_fis, ATA_RESP_FIS_SIZE);
 
 		if (!link->sactive) {
@@ -204,39 +125,22 @@ static void sas_ata_task_done(struct sas_task *task)
 		} else {
 			link->eh_info.err_mask |= ac_err_mask(dev->sata_dev.fis[2]);
 			if (unlikely(link->eh_info.err_mask))
-<<<<<<< HEAD
-				qc->flags |= ATA_QCFLAG_FAILED;
-=======
 				qc->flags |= ATA_QCFLAG_EH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		ac = sas_to_ata_err(stat);
 		if (ac) {
-<<<<<<< HEAD
-			SAS_DPRINTK("%s: SAS error %x\n", __func__,
-				    stat->stat);
-=======
 			pr_warn("%s: SAS error 0x%x\n", __func__, stat->stat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* We saw a SAS error. Send a vague error. */
 			if (!link->sactive) {
 				qc->err_mask = ac;
 			} else {
 				link->eh_info.err_mask |= AC_ERR_DEV;
-<<<<<<< HEAD
-				qc->flags |= ATA_QCFLAG_FAILED;
-			}
-
-			dev->sata_dev.fis[3] = 0x04; /* status err */
-			dev->sata_dev.fis[2] = ATA_ERR;
-=======
 				qc->flags |= ATA_QCFLAG_EH;
 			}
 
 			dev->sata_dev.fis[2] = ATA_ERR | ATA_DRDY; /* tf status */
 			dev->sata_dev.fis[3] = ATA_ABORTED; /* tf error */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -245,21 +149,12 @@ static void sas_ata_task_done(struct sas_task *task)
 	spin_unlock_irqrestore(ap->lock, flags);
 
 qc_already_gone:
-<<<<<<< HEAD
-	list_del_init(&task->list);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sas_free_task(task);
 }
 
 static unsigned int sas_ata_qc_issue(struct ata_queued_cmd *qc)
-<<<<<<< HEAD
-{
-	unsigned long flags;
-=======
 	__must_hold(ap->lock)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sas_task *task;
 	struct scatterlist *sg;
 	int ret = AC_ERR_SYSTEM;
@@ -267,20 +162,10 @@ static unsigned int sas_ata_qc_issue(struct ata_queued_cmd *qc)
 	struct ata_port *ap = qc->ap;
 	struct domain_device *dev = ap->private_data;
 	struct sas_ha_struct *sas_ha = dev->port->ha;
-<<<<<<< HEAD
-	struct Scsi_Host *host = sas_ha->core.shost;
-	struct sas_internal *i = to_sas_internal(host->transportt);
-
-	/* TODO: audit callers to ensure they are ready for qc_issue to
-	 * unconditionally re-enable interrupts
-	 */
-	local_irq_save(flags);
-=======
 	struct Scsi_Host *host = sas_ha->shost;
 	struct sas_internal *i = to_sas_internal(host->transportt);
 
 	/* TODO: we should try to remove that unlock */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(ap->lock);
 
 	/* If the device fell off, no sense in issuing commands */
@@ -294,17 +179,9 @@ static unsigned int sas_ata_qc_issue(struct ata_queued_cmd *qc)
 	task->task_proto = SAS_PROTOCOL_STP;
 	task->task_done = sas_ata_task_done;
 
-<<<<<<< HEAD
-	if (qc->tf.command == ATA_CMD_FPDMA_WRITE ||
-	    qc->tf.command == ATA_CMD_FPDMA_READ) {
-		/* Need to zero out the tag libata assigned us */
-		qc->tf.nsect = 0;
-	}
-=======
 	/* For NCQ commands, zero out the tag libata assigned us */
 	if (ata_is_ncq(qc->tf.protocol))
 		qc->tf.nsect = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ata_tf_to_fis(&qc->tf, qc->dev->link->pmp, 1, (u8 *)&task->ata_task.fis);
 	task->uldd_task = qc;
@@ -312,31 +189,6 @@ static unsigned int sas_ata_qc_issue(struct ata_queued_cmd *qc)
 		memcpy(task->ata_task.atapi_packet, qc->cdb, qc->dev->cdb_len);
 		task->total_xfer_len = qc->nbytes;
 		task->num_scatter = qc->n_elem;
-<<<<<<< HEAD
-	} else {
-		for_each_sg(qc->sg, sg, qc->n_elem, si)
-			xfer += sg->length;
-
-		task->total_xfer_len = xfer;
-		task->num_scatter = si;
-	}
-
-	task->data_dir = qc->dma_dir;
-	task->scatter = qc->sg;
-	task->ata_task.retry_count = 1;
-	task->task_state_flags = SAS_TASK_STATE_PENDING;
-	qc->lldd_task = task;
-
-	switch (qc->tf.protocol) {
-	case ATA_PROT_NCQ:
-		task->ata_task.use_ncq = 1;
-		/* fall through */
-	case ATAPI_PROT_DMA:
-	case ATA_PROT_DMA:
-		task->ata_task.dma_xfer = 1;
-		break;
-	}
-=======
 		task->data_dir = qc->dma_dir;
 	} else if (!ata_is_data(qc->tf.protocol)) {
 		task->data_dir = DMA_NONE;
@@ -356,68 +208,35 @@ static unsigned int sas_ata_qc_issue(struct ata_queued_cmd *qc)
 
 	if (qc->flags & ATA_QCFLAG_RESULT_TF)
 		task->ata_task.return_fis_on_success = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (qc->scsicmd)
 		ASSIGN_SAS_TASK(qc->scsicmd, task);
 
-<<<<<<< HEAD
-	if (sas_ha->lldd_max_execute_num < 2)
-		ret = i->dft->lldd_execute_task(task, 1, GFP_ATOMIC);
-	else
-		ret = sas_queue_up(task);
-
-	/* Examine */
-	if (ret) {
-		SAS_DPRINTK("lldd_execute_task returned: %d\n", ret);
-=======
 	ret = i->dft->lldd_execute_task(task, GFP_ATOMIC);
 	if (ret) {
 		pr_debug("lldd_execute_task returned: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (qc->scsicmd)
 			ASSIGN_SAS_TASK(qc->scsicmd, NULL);
 		sas_free_task(task);
-<<<<<<< HEAD
-=======
 		qc->lldd_task = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = AC_ERR_SYSTEM;
 	}
 
  out:
 	spin_lock(ap->lock);
-<<<<<<< HEAD
-	local_irq_restore(flags);
-	return ret;
-}
-
-static bool sas_ata_qc_fill_rtf(struct ata_queued_cmd *qc)
-=======
 	return ret;
 }
 
 static void sas_ata_qc_fill_rtf(struct ata_queued_cmd *qc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct domain_device *dev = qc->ap->private_data;
 
 	ata_tf_from_fis(dev->sata_dev.fis, &qc->result_tf);
-<<<<<<< HEAD
-	return true;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct sas_internal *dev_to_sas_internal(struct domain_device *dev)
 {
-<<<<<<< HEAD
-	return to_sas_internal(dev->port->ha->core.shost->transportt);
-}
-
-static void sas_get_ata_command_set(struct domain_device *dev);
-=======
 	return to_sas_internal(dev->port->ha->shost->transportt);
 }
 
@@ -432,29 +251,12 @@ static int sas_get_ata_command_set(struct domain_device *dev)
 
 	return ata_dev_classify(&tf);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int sas_get_ata_info(struct domain_device *dev, struct ex_phy *phy)
 {
 	if (phy->attached_tproto & SAS_PROTOCOL_STP)
 		dev->tproto = phy->attached_tproto;
 	if (phy->attached_sata_dev)
-<<<<<<< HEAD
-		dev->tproto |= SATA_DEV;
-
-	if (phy->attached_dev_type == SATA_PENDING)
-		dev->dev_type = SATA_PENDING;
-	else {
-		int res;
-
-		dev->dev_type = SATA_DEV;
-		res = sas_get_report_phy_sata(dev->parent, phy->phy_id,
-					      &dev->sata_dev.rps_resp);
-		if (res) {
-			SAS_DPRINTK("report phy sata to %016llx:0x%x returned "
-				    "0x%x\n", SAS_ADDR(dev->parent->sas_addr),
-				    phy->phy_id, res);
-=======
 		dev->tproto |= SAS_SATA_DEV;
 
 	if (phy->attached_dev_type == SAS_SATA_PENDING)
@@ -469,17 +271,11 @@ int sas_get_ata_info(struct domain_device *dev, struct ex_phy *phy)
 			pr_debug("report phy sata to %016llx:%02d returned 0x%x\n",
 				 SAS_ADDR(dev->parent->sas_addr),
 				 phy->phy_id, res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return res;
 		}
 		memcpy(dev->frame_rcvd, &dev->sata_dev.rps_resp.rps.fis,
 		       sizeof(struct dev_to_host_fis));
-<<<<<<< HEAD
-		/* TODO switch to ata_dev_classify() */
-		sas_get_ata_command_set(dev);
-=======
 		dev->sata_dev.class = sas_get_ata_command_set(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -489,11 +285,7 @@ static int sas_ata_clear_pending(struct domain_device *dev, struct ex_phy *phy)
 	int res;
 
 	/* we weren't pending, so successfully end the reset sequence now */
-<<<<<<< HEAD
-	if (dev->dev_type != SATA_PENDING)
-=======
 	if (dev->dev_type != SAS_SATA_PENDING)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	/* hmmm, if this succeeds do we need to repost the domain_device to the
@@ -506,8 +298,6 @@ static int sas_ata_clear_pending(struct domain_device *dev, struct ex_phy *phy)
 		return 1;
 }
 
-<<<<<<< HEAD
-=======
 int smp_ata_check_ready_type(struct ata_link *link)
 {
 	struct domain_device *dev = link->ap->private_data;
@@ -533,7 +323,6 @@ int smp_ata_check_ready_type(struct ata_link *link)
 }
 EXPORT_SYMBOL_GPL(smp_ata_check_ready_type);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int smp_ata_check_ready(struct ata_link *link)
 {
 	int res;
@@ -555,20 +344,12 @@ static int smp_ata_check_ready(struct ata_link *link)
 		return 0;
 
 	switch (ex_phy->attached_dev_type) {
-<<<<<<< HEAD
-	case SATA_PENDING:
-		return 0;
-	case SAS_END_DEV:
-		if (ex_phy->attached_sata_dev)
-			return sas_ata_clear_pending(dev, ex_phy);
-=======
 	case SAS_SATA_PENDING:
 		return 0;
 	case SAS_END_DEVICE:
 		if (ex_phy->attached_sata_dev)
 			return sas_ata_clear_pending(dev, ex_phy);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -ENODEV;
 	}
@@ -605,11 +386,7 @@ static int sas_ata_printk(const char *level, const struct domain_device *ddev,
 	vaf.fmt = fmt;
 	vaf.va = &args;
 
-<<<<<<< HEAD
-	r = printk("%ssas: ata%u: %s: %pV",
-=======
 	r = printk("%s" SAS_FMT "ata%u: %s: %pV",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   level, ap->print_id, dev_name(dev), &vaf);
 
 	va_end(args);
@@ -617,24 +394,6 @@ static int sas_ata_printk(const char *level, const struct domain_device *ddev,
 	return r;
 }
 
-<<<<<<< HEAD
-static int sas_ata_hard_reset(struct ata_link *link, unsigned int *class,
-			      unsigned long deadline)
-{
-	int ret = 0, res;
-	struct sas_phy *phy;
-	struct ata_port *ap = link->ap;
-	int (*check_ready)(struct ata_link *link);
-	struct domain_device *dev = ap->private_data;
-	struct sas_internal *i = dev_to_sas_internal(dev);
-
-	res = i->dft->lldd_I_T_nexus_reset(dev);
-	if (res == -ENODEV)
-		return res;
-
-	if (res != TMF_RESP_FUNC_COMPLETE)
-		sas_ata_printk(KERN_DEBUG, dev, "Unable to reset ata device?\n");
-=======
 static int sas_ata_wait_after_reset(struct domain_device *dev, unsigned long deadline)
 {
 	struct sata_device *sata_dev = &dev->sata_dev;
@@ -643,7 +402,6 @@ static int sas_ata_wait_after_reset(struct domain_device *dev, unsigned long dea
 	struct ata_link *link = &ap->link;
 	struct sas_phy *phy;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	phy = sas_get_local_phy(dev);
 	if (scsi_is_sas_phy_local(phy))
@@ -656,20 +414,6 @@ static int sas_ata_wait_after_reset(struct domain_device *dev, unsigned long dea
 	if (ret && ret != -EAGAIN)
 		sas_ata_printk(KERN_ERR, dev, "reset failed (errno=%d)\n", ret);
 
-<<<<<<< HEAD
-	/* XXX: if the class changes during the reset the upper layer
-	 * should be informed, if the device has gone away we assume
-	 * libsas will eventually delete it
-	 */
-	switch (dev->sata_dev.command_set) {
-	case ATA_COMMAND_SET:
-		*class = ATA_DEV_ATA;
-		break;
-	case ATAPI_COMMAND_SET:
-		*class = ATA_DEV_ATAPI;
-		break;
-	}
-=======
 	return ret;
 }
 
@@ -691,7 +435,6 @@ static int sas_ata_hard_reset(struct ata_link *link, unsigned int *class,
 	ret = sas_ata_wait_after_reset(dev, deadline);
 
 	*class = dev->sata_dev.class;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ap->cbl = ATA_CBL_SATA;
 	return ret;
@@ -711,12 +454,7 @@ static void sas_ata_internal_abort(struct sas_task *task)
 	if (task->task_state_flags & SAS_TASK_STATE_ABORTED ||
 	    task->task_state_flags & SAS_TASK_STATE_DONE) {
 		spin_unlock_irqrestore(&task->task_state_lock, flags);
-<<<<<<< HEAD
-		SAS_DPRINTK("%s: Task %p already finished.\n", __func__,
-			    task);
-=======
 		pr_debug("%s: Task %p already finished.\n", __func__, task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	task->task_state_flags |= SAS_TASK_STATE_ABORTED;
@@ -736,11 +474,7 @@ static void sas_ata_internal_abort(struct sas_task *task)
 	 * aborted ata tasks, otherwise we (likely) leak the sas task
 	 * here
 	 */
-<<<<<<< HEAD
-	SAS_DPRINTK("%s: Task %p leaked.\n", __func__, task);
-=======
 	pr_warn("%s: Task %p leaked.\n", __func__, task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(task->task_state_flags & SAS_TASK_STATE_DONE))
 		task->task_state_flags &= ~SAS_TASK_STATE_ABORTED;
@@ -748,20 +482,12 @@ static void sas_ata_internal_abort(struct sas_task *task)
 
 	return;
  out:
-<<<<<<< HEAD
-	list_del_init(&task->list);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sas_free_task(task);
 }
 
 static void sas_ata_post_internal(struct ata_queued_cmd *qc)
 {
-<<<<<<< HEAD
-	if (qc->flags & ATA_QCFLAG_FAILED)
-=======
 	if (qc->flags & ATA_QCFLAG_EH)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qc->err_mask |= AC_ERR_OTHER;
 
 	if (qc->err_mask) {
@@ -793,12 +519,6 @@ static void sas_ata_set_dmamode(struct ata_port *ap, struct ata_device *ata_dev)
 		i->dft->lldd_ata_set_dmamode(dev);
 }
 
-<<<<<<< HEAD
-static struct ata_port_operations sas_sata_ops = {
-	.prereset		= ata_std_prereset,
-	.hardreset		= sas_ata_hard_reset,
-	.postreset		= ata_std_postreset,
-=======
 static void sas_ata_sched_eh(struct ata_port *ap)
 {
 	struct domain_device *dev = ap->private_data;
@@ -841,22 +561,12 @@ static int sas_ata_prereset(struct ata_link *link, unsigned long deadline)
 static struct ata_port_operations sas_sata_ops = {
 	.prereset		= sas_ata_prereset,
 	.hardreset		= sas_ata_hard_reset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.error_handler		= ata_std_error_handler,
 	.post_internal_cmd	= sas_ata_post_internal,
 	.qc_defer               = ata_std_qc_defer,
 	.qc_prep		= ata_noop_qc_prep,
 	.qc_issue		= sas_ata_qc_issue,
 	.qc_fill_rtf		= sas_ata_qc_fill_rtf,
-<<<<<<< HEAD
-	.port_start		= ata_sas_port_start,
-	.port_stop		= ata_sas_port_stop,
-	.set_dmamode		= sas_ata_set_dmamode,
-};
-
-static struct ata_port_info sata_port_info = {
-	.flags = ATA_FLAG_SATA | ATA_FLAG_PIO_DMA | ATA_FLAG_NCQ,
-=======
 	.set_dmamode		= sas_ata_set_dmamode,
 	.sched_eh		= sas_ata_sched_eh,
 	.end_eh			= sas_ata_end_eh,
@@ -865,7 +575,6 @@ static struct ata_port_info sata_port_info = {
 static struct ata_port_info sata_port_info = {
 	.flags = ATA_FLAG_SATA | ATA_FLAG_PIO_DMA | ATA_FLAG_NCQ |
 		 ATA_FLAG_SAS_HOST | ATA_FLAG_FPDMA_AUX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pio_mask = ATA_PIO4,
 	.mwdma_mask = ATA_MWDMA2,
 	.udma_mask = ATA_UDMA6,
@@ -875,22 +584,6 @@ static struct ata_port_info sata_port_info = {
 int sas_ata_init(struct domain_device *found_dev)
 {
 	struct sas_ha_struct *ha = found_dev->port->ha;
-<<<<<<< HEAD
-	struct Scsi_Host *shost = ha->core.shost;
-	struct ata_port *ap;
-	int rc;
-
-	ata_host_init(&found_dev->sata_dev.ata_host,
-		      ha->dev,
-		      sata_port_info.flags,
-		      &sas_sata_ops);
-	ap = ata_sas_port_alloc(&found_dev->sata_dev.ata_host,
-				&sata_port_info,
-				shost);
-	if (!ap) {
-		SAS_DPRINTK("ata_sas_port_alloc failed.\n");
-		return -ENODEV;
-=======
 	struct Scsi_Host *shost = ha->shost;
 	struct ata_host *ata_host;
 	struct ata_port *ap;
@@ -909,22 +602,11 @@ int sas_ata_init(struct domain_device *found_dev)
 		pr_err("ata_sas_port_alloc failed.\n");
 		rc = -ENODEV;
 		goto free_host;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ap->private_data = found_dev;
 	ap->cbl = ATA_CBL_SATA;
 	ap->scsi_host = shost;
-<<<<<<< HEAD
-	rc = ata_sas_port_init(ap);
-	if (rc) {
-		ata_sas_port_destroy(ap);
-		return rc;
-	}
-	found_dev->sata_dev.ap = ap;
-
-	return 0;
-=======
 
 	rc = ata_sas_tport_add(ata_host->dev, ap);
 	if (rc)
@@ -940,7 +622,6 @@ destroy_port:
 free_host:
 	ata_host_put(ata_host);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void sas_ata_task_abort(struct sas_task *task)
@@ -950,81 +631,18 @@ void sas_ata_task_abort(struct sas_task *task)
 
 	/* Bounce SCSI-initiated commands to the SCSI EH */
 	if (qc->scsicmd) {
-<<<<<<< HEAD
-		struct request_queue *q = qc->scsicmd->device->request_queue;
-		unsigned long flags;
-
-		spin_lock_irqsave(q->queue_lock, flags);
-		blk_abort_request(qc->scsicmd->request);
-		spin_unlock_irqrestore(q->queue_lock, flags);
-		scsi_schedule_eh(qc->scsicmd->device->host);
-=======
 		blk_abort_request(scsi_cmd_to_rq(qc->scsicmd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	/* Internal command, fake a timeout and complete. */
 	qc->flags &= ~ATA_QCFLAG_ACTIVE;
-<<<<<<< HEAD
-	qc->flags |= ATA_QCFLAG_FAILED;
-=======
 	qc->flags |= ATA_QCFLAG_EH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qc->err_mask |= AC_ERR_TIMEOUT;
 	waiting = qc->private_data;
 	complete(waiting);
 }
 
-<<<<<<< HEAD
-static void sas_get_ata_command_set(struct domain_device *dev)
-{
-	struct dev_to_host_fis *fis =
-		(struct dev_to_host_fis *) dev->frame_rcvd;
-
-	if (dev->dev_type == SATA_PENDING)
-		return;
-
-	if ((fis->sector_count == 1 && /* ATA */
-	     fis->lbal         == 1 &&
-	     fis->lbam         == 0 &&
-	     fis->lbah         == 0 &&
-	     fis->device       == 0)
-	    ||
-	    (fis->sector_count == 0 && /* CE-ATA (mATA) */
-	     fis->lbal         == 0 &&
-	     fis->lbam         == 0xCE &&
-	     fis->lbah         == 0xAA &&
-	     (fis->device & ~0x10) == 0))
-
-		dev->sata_dev.command_set = ATA_COMMAND_SET;
-
-	else if ((fis->interrupt_reason == 1 &&	/* ATAPI */
-		  fis->lbal             == 1 &&
-		  fis->byte_count_low   == 0x14 &&
-		  fis->byte_count_high  == 0xEB &&
-		  (fis->device & ~0x10) == 0))
-
-		dev->sata_dev.command_set = ATAPI_COMMAND_SET;
-
-	else if ((fis->sector_count == 1 && /* SEMB */
-		  fis->lbal         == 1 &&
-		  fis->lbam         == 0x3C &&
-		  fis->lbah         == 0xC3 &&
-		  fis->device       == 0)
-		||
-		 (fis->interrupt_reason == 1 &&	/* SATA PM */
-		  fis->lbal             == 1 &&
-		  fis->byte_count_low   == 0x69 &&
-		  fis->byte_count_high  == 0x96 &&
-		  (fis->device & ~0x10) == 0))
-
-		/* Treat it as a superset? */
-		dev->sata_dev.command_set = ATAPI_COMMAND_SET;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sas_probe_sata(struct asd_sas_port *port)
 {
 	struct domain_device *dev, *n;
@@ -1034,11 +652,7 @@ void sas_probe_sata(struct asd_sas_port *port)
 		if (!dev_is_sata(dev))
 			continue;
 
-<<<<<<< HEAD
-		ata_sas_async_probe(dev->sata_dev.ap);
-=======
 		ata_port_probe(dev->sata_dev.ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&port->ha->disco_mutex);
 
@@ -1051,15 +665,6 @@ void sas_probe_sata(struct asd_sas_port *port)
 		/* if libata could not bring the link up, don't surface
 		 * the device
 		 */
-<<<<<<< HEAD
-		if (ata_dev_disabled(sas_to_ata_dev(dev)))
-			sas_fail_probe(dev, __func__, -ENODEV);
-	}
-}
-
-/**
- * sas_discover_sata -- discover an STP/SATA domain device
-=======
 		if (!ata_dev_enabled(sas_to_ata_dev(dev)))
 			sas_fail_probe(dev, __func__, -ENODEV);
 	}
@@ -1190,7 +795,6 @@ void sas_resume_sata(struct asd_sas_port *port)
 
 /**
  * sas_discover_sata - discover an STP/SATA domain device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: pointer to struct domain_device of interest
  *
  * Devices directly attached to a HA port, have no parents.  All other
@@ -1199,22 +803,6 @@ void sas_resume_sata(struct asd_sas_port *port)
  */
 int sas_discover_sata(struct domain_device *dev)
 {
-<<<<<<< HEAD
-	int res;
-
-	if (dev->dev_type == SATA_PM)
-		return -ENODEV;
-
-	sas_get_ata_command_set(dev);
-	sas_fill_in_rphy(dev, dev->rphy);
-
-	res = sas_notify_lldd_dev_found(dev);
-	if (res)
-		return res;
-
-	sas_discover_event(dev->port, DISCE_PROBE);
-	return 0;
-=======
 	if (dev->dev_type == SAS_SATA_PM)
 		return -ENODEV;
 
@@ -1222,7 +810,6 @@ int sas_discover_sata(struct domain_device *dev)
 	sas_fill_in_rphy(dev, dev->rphy);
 
 	return sas_notify_lldd_dev_found(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void async_sas_ata_eh(void *data, async_cookie_t cookie)
@@ -1231,28 +818,15 @@ static void async_sas_ata_eh(void *data, async_cookie_t cookie)
 	struct ata_port *ap = dev->sata_dev.ap;
 	struct sas_ha_struct *ha = dev->port->ha;
 
-<<<<<<< HEAD
-	/* hold a reference over eh since we may be racing with final
-	 * remove once all commands are completed
-	 */
-	kref_get(&dev->kref);
-	sas_ata_printk(KERN_DEBUG, dev, "dev error handler\n");
-	ata_scsi_port_error_handler(ha->core.shost, ap);
-=======
 	sas_ata_printk(KERN_DEBUG, dev, "dev error handler\n");
 	ata_scsi_port_error_handler(ha->shost, ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sas_put_device(dev);
 }
 
 void sas_ata_strategy_handler(struct Scsi_Host *shost)
 {
 	struct sas_ha_struct *sas_ha = SHOST_TO_SAS_HA(shost);
-<<<<<<< HEAD
-	LIST_HEAD(async);
-=======
 	ASYNC_DOMAIN_EXCLUSIVE(async);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/* it's ok to defer revalidation events during ata eh, these
@@ -1274,8 +848,6 @@ void sas_ata_strategy_handler(struct Scsi_Host *shost)
 		list_for_each_entry(dev, &port->dev_list, dev_list_node) {
 			if (!dev_is_sata(dev))
 				continue;
-<<<<<<< HEAD
-=======
 
 			/* hold a reference over eh since we may be
 			 * racing with final remove once all commands
@@ -1283,7 +855,6 @@ void sas_ata_strategy_handler(struct Scsi_Host *shost)
 			 */
 			kref_get(&dev->kref);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			async_schedule_domain(async_sas_ata_eh, dev, &async);
 		}
 		spin_unlock(&port->dev_list_lock);
@@ -1295,12 +866,7 @@ void sas_ata_strategy_handler(struct Scsi_Host *shost)
 	sas_enable_revalidation(sas_ha);
 }
 
-<<<<<<< HEAD
-void sas_ata_eh(struct Scsi_Host *shost, struct list_head *work_q,
-		struct list_head *done_q)
-=======
 void sas_ata_eh(struct Scsi_Host *shost, struct list_head *work_q)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scsi_cmnd *cmd, *n;
 	struct domain_device *eh_dev;
@@ -1372,8 +938,6 @@ void sas_ata_wait_eh(struct domain_device *dev)
 	ap = dev->sata_dev.ap;
 	ata_port_wait_eh(ap);
 }
-<<<<<<< HEAD
-=======
 
 void sas_ata_device_link_abort(struct domain_device *device, bool force_reset)
 {
@@ -1400,4 +964,3 @@ int sas_execute_ata_cmd(struct domain_device *device, u8 *fis, int force_phy_id)
 			       force_phy_id, &tmf_task);
 }
 EXPORT_SYMBOL_GPL(sas_execute_ata_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

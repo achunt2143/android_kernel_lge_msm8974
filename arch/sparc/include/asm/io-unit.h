@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* io-unit.h: Definitions for the sun4d IO-UNIT.
  *
  * Copyright (C) 1997,1998 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
@@ -10,13 +7,8 @@
 #define _SPARC_IO_UNIT_H
 
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-#include <asm/page.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/pgtable.h>
 #include <asm/page.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The io-unit handles all virtual to physical address translations
  * that occur between the SBUS and physical memory.  Access by
@@ -52,11 +44,7 @@
 struct iounit_struct {
 	unsigned long		bmap[(IOUNIT_DMA_SIZE >> (PAGE_SHIFT + 3)) / sizeof(unsigned long)];
 	spinlock_t		lock;
-<<<<<<< HEAD
-	iopte_t			*page_table;
-=======
 	iopte_t __iomem		*page_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		rotor[3];
 	unsigned long		limit[4];
 };

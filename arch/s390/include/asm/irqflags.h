@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-/*
- *    Copyright IBM Corp. 2006,2010
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *    Copyright IBM Corp. 2006, 2010
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Martin Schwidefsky <schwidefsky@de.ibm.com>
  */
 
@@ -14,11 +9,8 @@
 
 #include <linux/types.h>
 
-<<<<<<< HEAD
-=======
 #define ARCH_IRQ_ENABLED	(3UL << (BITS_PER_LONG - 8))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* store then OR system mask. */
 #define __arch_local_irq_stosm(__or)					\
 ({									\
@@ -40,65 +32,31 @@
 })
 
 /* set system mask. */
-<<<<<<< HEAD
-static inline notrace void __arch_local_irq_ssm(unsigned long flags)
-=======
 static __always_inline void __arch_local_irq_ssm(unsigned long flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	asm volatile("ssm   %0" : : "Q" (flags) : "memory");
 }
 
-<<<<<<< HEAD
-static inline notrace unsigned long arch_local_save_flags(void)
-{
-	return __arch_local_irq_stosm(0x00);
-}
-
-static inline notrace unsigned long arch_local_irq_save(void)
-=======
 static __always_inline unsigned long arch_local_save_flags(void)
 {
 	return __arch_local_irq_stnsm(0xff);
 }
 
 static __always_inline unsigned long arch_local_irq_save(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __arch_local_irq_stnsm(0xfc);
 }
 
-<<<<<<< HEAD
-static inline notrace void arch_local_irq_disable(void)
-=======
 static __always_inline void arch_local_irq_disable(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	arch_local_irq_save();
 }
 
-<<<<<<< HEAD
-static inline notrace void arch_local_irq_enable(void)
-=======
 static __always_inline void arch_local_irq_enable(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__arch_local_irq_stosm(0x03);
 }
 
-<<<<<<< HEAD
-static inline notrace void arch_local_irq_restore(unsigned long flags)
-{
-	__arch_local_irq_ssm(flags);
-}
-
-static inline notrace bool arch_irqs_disabled_flags(unsigned long flags)
-{
-	return !(flags & (3UL << (BITS_PER_LONG - 8)));
-}
-
-static inline notrace bool arch_irqs_disabled(void)
-=======
 /* This only restores external and I/O interrupt state */
 static __always_inline void arch_local_irq_restore(unsigned long flags)
 {
@@ -113,7 +71,6 @@ static __always_inline bool arch_irqs_disabled_flags(unsigned long flags)
 }
 
 static __always_inline bool arch_irqs_disabled(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return arch_irqs_disabled_flags(arch_local_save_flags());
 }

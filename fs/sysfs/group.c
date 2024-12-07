@@ -1,20 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fs/sysfs/group.c - Operations for adding/removing multiple files at once.
  *
  * Copyright (c) 2003 Patrick Mochel
  * Copyright (c) 2003 Open Source Development Lab
-<<<<<<< HEAD
- *
- * This file is released undert the GPL v2. 
- *
-=======
  * Copyright (c) 2013 Greg Kroah-Hartman
  * Copyright (c) 2013 The Linux Foundation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kobject.h>
@@ -22,47 +13,6 @@
 #include <linux/dcache.h>
 #include <linux/namei.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-#include "sysfs.h"
-
-
-static void remove_files(struct sysfs_dirent *dir_sd, struct kobject *kobj,
-			 const struct attribute_group *grp)
-{
-	struct attribute *const* attr;
-	int i;
-
-	for (i = 0, attr = grp->attrs; *attr; i++, attr++)
-		sysfs_hash_and_remove(dir_sd, NULL, (*attr)->name);
-}
-
-static int create_files(struct sysfs_dirent *dir_sd, struct kobject *kobj,
-			const struct attribute_group *grp, int update)
-{
-	struct attribute *const* attr;
-	int error = 0, i;
-
-	for (i = 0, attr = grp->attrs; *attr && !error; i++, attr++) {
-		umode_t mode = 0;
-
-		/* in update mode, we're changing the permissions or
-		 * visibility.  Do this by first removing then
-		 * re-adding (if required) the file */
-		if (update)
-			sysfs_hash_and_remove(dir_sd, NULL, (*attr)->name);
-		if (grp->is_visible) {
-			mode = grp->is_visible(kobj, *attr, i);
-			if (!mode)
-				continue;
-		}
-		error = sysfs_add_file_mode(dir_sd, *attr, SYSFS_KOBJ_ATTR,
-					    (*attr)->mode | mode);
-		if (unlikely(error))
-			break;
-	}
-	if (error)
-		remove_files(dir_sd, kobj, grp);
-=======
 #include <linux/fs.h>
 #include "sysfs.h"
 
@@ -163,7 +113,6 @@ static int create_files(struct kernfs_node *parent, struct kobject *kobj,
 			remove_files(parent, grp);
 	}
 exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -171,12 +120,6 @@ exit:
 static int internal_create_group(struct kobject *kobj, int update,
 				 const struct attribute_group *grp)
 {
-<<<<<<< HEAD
-	struct sysfs_dirent *sd;
-	int error;
-
-	BUG_ON(!kobj || (!update && !kobj->sd));
-=======
 	struct kernfs_node *kn;
 	kuid_t uid;
 	kgid_t gid;
@@ -184,31 +127,10 @@ static int internal_create_group(struct kobject *kobj, int update,
 
 	if (WARN_ON(!kobj || (!update && !kobj->sd)))
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Updates may happen before the object has been instantiated */
 	if (unlikely(update && !kobj->sd))
 		return -EINVAL;
-<<<<<<< HEAD
-	if (!grp->attrs) {
-		WARN(1, "sysfs: attrs not set by subsystem for group: %s/%s\n",
-			kobj->name, grp->name ? "" : grp->name);
-		return -EINVAL;
-	}
-	if (grp->name) {
-		error = sysfs_create_subdir(kobj, grp->name, &sd);
-		if (error)
-			return error;
-	} else
-		sd = kobj->sd;
-	sysfs_get(sd);
-	error = create_files(sd, kobj, grp, update);
-	if (error) {
-		if (grp->name)
-			sysfs_remove_subdir(sd);
-	}
-	sysfs_put(sd);
-=======
 
 	if (!grp->attrs && !grp->bin_attrs) {
 		pr_debug("sysfs: (bin_)attrs not set by subsystem for group: %s/%s, skipping\n",
@@ -265,7 +187,6 @@ static int internal_create_group(struct kobject *kobj, int update,
 	if (grp->name && update)
 		kernfs_put(kn);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -277,19 +198,13 @@ static int internal_create_group(struct kobject *kobj, int update,
  * This function creates a group for the first time.  It will explicitly
  * warn and error if any of the attribute files being created already exist.
  *
-<<<<<<< HEAD
- * Returns 0 on success or error.
-=======
  * Returns 0 on success or error code on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int sysfs_create_group(struct kobject *kobj,
 		       const struct attribute_group *grp)
 {
 	return internal_create_group(kobj, 0, grp);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(sysfs_create_group);
 
 static int internal_create_groups(struct kobject *kobj, int update,
@@ -349,7 +264,6 @@ int sysfs_update_groups(struct kobject *kobj,
 	return internal_create_groups(kobj, 1, groups);
 }
 EXPORT_SYMBOL_GPL(sysfs_update_groups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * sysfs_update_group - given a directory kobject, update an attribute group
@@ -361,63 +275,19 @@ EXPORT_SYMBOL_GPL(sysfs_update_groups);
  * of the attribute files being created already exist.  Furthermore,
  * if the visibility of the files has changed through the is_visible()
  * callback, it will update the permissions and add or remove the
-<<<<<<< HEAD
- * relevant files.
-=======
  * relevant files. Changing a group's name (subdirectory name under
  * kobj's directory in sysfs) is not allowed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The primary use for this function is to call it after making a change
  * that affects group visibility.
  *
-<<<<<<< HEAD
- * Returns 0 on success or error.
-=======
  * Returns 0 on success or error code on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int sysfs_update_group(struct kobject *kobj,
 		       const struct attribute_group *grp)
 {
 	return internal_create_group(kobj, 1, grp);
 }
-<<<<<<< HEAD
-
-
-
-void sysfs_remove_group(struct kobject * kobj, 
-			const struct attribute_group * grp)
-{
-	struct sysfs_dirent *dir_sd = kobj->sd;
-	struct sysfs_dirent *sd;
-
-	if (grp->name) {
-		sd = sysfs_get_dirent(dir_sd, NULL, grp->name);
-		if (!sd) {
-			WARN(!sd, KERN_WARNING "sysfs group %p not found for "
-				"kobject '%s'\n", grp, kobject_name(kobj));
-			return;
-		}
-	} else
-		sd = sysfs_get(dir_sd);
-
-	remove_files(sd, kobj, grp);
-	if (grp->name)
-		sysfs_remove_subdir(sd);
-
-	sysfs_put(sd);
-}
-
-/**
- * sysfs_merge_group - merge files into a pre-existing attribute group.
- * @kobj:	The kobject containing the group.
- * @grp:	The files to create and the attribute group they belong to.
- *
- * This function returns an error if the group doesn't exist or any of the
- * files already exist in that group, in which case none of the new files
- * are created.
-=======
 EXPORT_SYMBOL_GPL(sysfs_update_group);
 
 /**
@@ -482,35 +352,17 @@ EXPORT_SYMBOL_GPL(sysfs_remove_groups);
  * This function returns an error if the group doesn't exist, the .name field is
  * NULL or any of the files already exist in that group, in which case none of
  * the new files are created.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int sysfs_merge_group(struct kobject *kobj,
 		       const struct attribute_group *grp)
 {
-<<<<<<< HEAD
-	struct sysfs_dirent *dir_sd;
-=======
 	struct kernfs_node *parent;
 	kuid_t uid;
 	kgid_t gid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = 0;
 	struct attribute *const *attr;
 	int i;
 
-<<<<<<< HEAD
-	dir_sd = sysfs_get_dirent(kobj->sd, NULL, grp->name);
-	if (!dir_sd)
-		return -ENOENT;
-
-	for ((i = 0, attr = grp->attrs); *attr && !error; (++i, ++attr))
-		error = sysfs_add_file(dir_sd, *attr, SYSFS_KOBJ_ATTR);
-	if (error) {
-		while (--i >= 0)
-			sysfs_hash_and_remove(dir_sd, NULL, (*--attr)->name);
-	}
-	sysfs_put(dir_sd);
-=======
 	parent = kernfs_find_and_get(kobj->sd, grp->name);
 	if (!parent)
 		return -ENOENT;
@@ -525,34 +377,19 @@ int sysfs_merge_group(struct kobject *kobj,
 			kernfs_remove_by_name(parent, (*--attr)->name);
 	}
 	kernfs_put(parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 EXPORT_SYMBOL_GPL(sysfs_merge_group);
 
 /**
-<<<<<<< HEAD
- * sysfs_unmerge_group - remove files from a pre-existing attribute group.
-=======
  * sysfs_unmerge_group - remove files from a pre-existing named attribute group.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @kobj:	The kobject containing the group.
  * @grp:	The files to remove and the attribute group they belong to.
  */
 void sysfs_unmerge_group(struct kobject *kobj,
 		       const struct attribute_group *grp)
 {
-<<<<<<< HEAD
-	struct sysfs_dirent *dir_sd;
-	struct attribute *const *attr;
-
-	dir_sd = sysfs_get_dirent(kobj->sd, NULL, grp->name);
-	if (dir_sd) {
-		for (attr = grp->attrs; *attr; ++attr)
-			sysfs_hash_and_remove(dir_sd, NULL, (*attr)->name);
-		sysfs_put(dir_sd);
-=======
 	struct kernfs_node *parent;
 	struct attribute *const *attr;
 
@@ -561,17 +398,10 @@ void sysfs_unmerge_group(struct kobject *kobj,
 		for (attr = grp->attrs; *attr; ++attr)
 			kernfs_remove_by_name(parent, (*attr)->name);
 		kernfs_put(parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL_GPL(sysfs_unmerge_group);
 
-<<<<<<< HEAD
-
-EXPORT_SYMBOL_GPL(sysfs_create_group);
-EXPORT_SYMBOL_GPL(sysfs_update_group);
-EXPORT_SYMBOL_GPL(sysfs_remove_group);
-=======
 /**
  * sysfs_add_link_to_group - add a symlink to an attribute group.
  * @kobj:	The kobject containing the group.
@@ -778,4 +608,3 @@ int sysfs_groups_change_owner(struct kobject *kobj,
 	return error;
 }
 EXPORT_SYMBOL_GPL(sysfs_groups_change_owner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

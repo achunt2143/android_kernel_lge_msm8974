@@ -1,9 +1,6 @@
 perf-sched(1)
-<<<<<<< HEAD
-==============
 =======
 =============
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 NAME
 ----
@@ -12,19 +9,11 @@ perf-sched - Tool to trace/measure scheduler properties (latencies)
 SYNOPSIS
 --------
 [verse]
-<<<<<<< HEAD
-'perf sched' {record|latency|map|replay|script}
-
-DESCRIPTION
------------
-There are five variants of perf sched:
-=======
 'perf sched' {record|latency|map|replay|script|timehist}
 
 DESCRIPTION
 -----------
 There are several variants of 'perf sched':
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   'perf sched record <command>' to record the scheduling events
   of an arbitrary workload.
@@ -48,8 +37,6 @@ There are several variants of 'perf sched':
   are running on a CPU. A '*' denotes the CPU that had the event, and
   a dot signals an idle CPU.
 
-<<<<<<< HEAD
-=======
   'perf sched timehist' provides an analysis of scheduling events.
     
     Example usage:
@@ -74,7 +61,6 @@ There are several variants of 'perf sched':
     
    Times are in msec.usec.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 OPTIONS
 -------
 -i::
@@ -89,8 +75,6 @@ OPTIONS
 --dump-raw-trace=::
         Display verbose dump of the sched data.
 
-<<<<<<< HEAD
-=======
 -f::
 --force::
 	Don't complain, do it.
@@ -183,7 +167,6 @@ OPTIONS for 'perf sched timehist'
 --state::
 	Show task state when it switched out.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SEE ALSO
 --------
 linkperf:perf-record[1]

@@ -1,31 +1,18 @@
-<<<<<<< HEAD
-/*
- * This file contains work-arounds for x86 and x86_64 platform bugs.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * This file contains work-arounds for x86 and x86_64 platform bugs.
  */
 #include <linux/dmi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/irq.h>
 
 #include <asm/hpet.h>
-<<<<<<< HEAD
-
-#if defined(CONFIG_X86_IO_APIC) && defined(CONFIG_SMP) && defined(CONFIG_PCI)
-
-static void __devinit quirk_intel_irqbalance(struct pci_dev *dev)
-=======
 #include <asm/setup.h>
 #include <asm/mce.h>
 
 #if defined(CONFIG_X86_IO_APIC) && defined(CONFIG_SMP) && defined(CONFIG_PCI)
 
 static void quirk_intel_irqbalance(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 config;
 	u16 word;
@@ -104,21 +91,12 @@ static void ich_force_hpet_resume(void)
 		BUG();
 	else
 		printk(KERN_DEBUG "Force enabled HPET at resume\n");
-<<<<<<< HEAD
-
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ich_force_enable_hpet(struct pci_dev *dev)
 {
 	u32 val;
-<<<<<<< HEAD
-	u32 uninitialized_var(rcba);
-=======
 	u32 rcba;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	if (hpet_address || force_hpet_address)
@@ -133,11 +111,7 @@ static void ich_force_enable_hpet(struct pci_dev *dev)
 	}
 
 	/* use bits 31:14, 16 kB aligned */
-<<<<<<< HEAD
-	rcba_base = ioremap_nocache(rcba, 0x4000);
-=======
 	rcba_base = ioremap(rcba, 0x4000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rcba_base == NULL) {
 		dev_printk(KERN_DEBUG, &dev->dev, "ioremap failed; "
 			"cannot force enable HPET\n");
@@ -212,11 +186,7 @@ static void hpet_print_force_info(void)
 static void old_ich_force_hpet_resume(void)
 {
 	u32 val;
-<<<<<<< HEAD
-	u32 uninitialized_var(gen_cntl);
-=======
 	u32 gen_cntl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!force_hpet_address || !cached_dev)
 		return;
@@ -238,11 +208,7 @@ static void old_ich_force_hpet_resume(void)
 static void old_ich_force_enable_hpet(struct pci_dev *dev)
 {
 	u32 val;
-<<<<<<< HEAD
-	u32 uninitialized_var(gen_cntl);
-=======
 	u32 gen_cntl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hpet_address || force_hpet_address)
 		return;
@@ -333,11 +299,7 @@ static void vt8237_force_hpet_resume(void)
 
 static void vt8237_force_enable_hpet(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	u32 uninitialized_var(val);
-=======
 	u32 val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hpet_address || force_hpet_address)
 		return;
@@ -394,20 +356,6 @@ static void ati_force_hpet_resume(void)
 
 static u32 ati_ixp4x0_rev(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	u32 d;
-	u8  b;
-
-	pci_read_config_byte(dev, 0xac, &b);
-	b &= ~(1<<5);
-	pci_write_config_byte(dev, 0xac, b);
-	pci_read_config_dword(dev, 0x70, &d);
-	d |= 1<<8;
-	pci_write_config_dword(dev, 0x70, d);
-	pci_read_config_dword(dev, 0x8, &d);
-	d &= 0xff;
-	dev_printk(KERN_DEBUG, &dev->dev, "SB4X0 revision 0x%x\n", d);
-=======
 	int err = 0;
 	u32 d = 0;
 	u8  b = 0;
@@ -424,7 +372,6 @@ static u32 ati_ixp4x0_rev(struct pci_dev *dev)
 
 	WARN_ON_ONCE(err);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return d;
 }
 
@@ -483,11 +430,7 @@ static void nvidia_force_hpet_resume(void)
 
 static void nvidia_force_enable_hpet(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	u32 uninitialized_var(val);
-=======
 	u32 val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hpet_address || force_hpet_address)
 		return;
@@ -504,10 +447,6 @@ static void nvidia_force_enable_hpet(struct pci_dev *dev)
 	dev_printk(KERN_DEBUG, &dev->dev, "Force enabled HPET at 0x%lx\n",
 		force_hpet_address);
 	cached_dev = dev;
-<<<<<<< HEAD
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ISA Bridges */
@@ -560,8 +499,6 @@ void force_hpet_resume(void)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * According to the datasheet e6xx systems have the HPET hardwired to
  * 0xfed00000
  */
@@ -579,7 +516,6 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_E6XX_CU,
 			 e6xx_force_enable_hpet);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * HPET MSI on some boards (ATI SB700/SB800) has side effect on
  * floppy DMA. Disable HPET MSI on such platforms.
  * See erratum #27 (Misinterpreted MSI Requests May Result in
@@ -588,11 +524,7 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_E6XX_CU,
  */
 static void force_disable_hpet_msi(struct pci_dev *unused)
 {
-<<<<<<< HEAD
-	hpet_msi_disable = 1;
-=======
 	hpet_msi_disable = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SBX00_SMBUS,
@@ -602,11 +534,7 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SBX00_SMBUS,
 
 #if defined(CONFIG_PCI) && defined(CONFIG_NUMA)
 /* Set correct numa_node information for AMD NB functions */
-<<<<<<< HEAD
-static void __init quirk_amd_nb_node(struct pci_dev *dev)
-=======
 static void quirk_amd_nb_node(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *nb_ht;
 	unsigned int devfn;
@@ -661,8 +589,6 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_NB_F5,
 			quirk_amd_nb_node);
 
 #endif
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_PCI
 /*
@@ -741,4 +667,3 @@ void __init early_platform_quirks(void)
 	x86_apple_machine = dmi_match(DMI_SYS_VENDOR, "Apple Inc.") ||
 			    dmi_match(DMI_SYS_VENDOR, "Apple Computer, Inc.");
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

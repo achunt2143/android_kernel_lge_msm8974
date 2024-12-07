@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2004 Hollis Blanchard <hollisb@us.ibm.com>, IBM
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2004 Hollis Blanchard <hollisb@us.ibm.com>, IBM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Host Virtual Serial Interface (HVSI) is a protocol between the hosted OS
@@ -45,22 +26,14 @@
 #include <linux/module.h>
 #include <linux/major.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-=======
 #include <linux/of_irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/sysrq.h>
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 #include <asm/hvcall.h>
 #include <asm/hvconsole.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/vio.h>
 #include <asm/param.h>
 #include <asm/hvsi.h>
@@ -83,21 +56,13 @@
 #define __ALIGNED__	__attribute__((__aligned__(sizeof(long))))
 
 struct hvsi_struct {
-<<<<<<< HEAD
-=======
 	struct tty_port port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct delayed_work writer;
 	struct work_struct handshaker;
 	wait_queue_head_t emptyq; /* woken when outbuf is emptied */
 	wait_queue_head_t stateq; /* woken when HVSI state changes */
 	spinlock_t lock;
 	int index;
-<<<<<<< HEAD
-	struct tty_struct *tty;
-	int count;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t throttle_buf[128];
 	uint8_t outbuf[N_OUTBUF]; /* to implement write_room and chars_in_buffer */
 	/* inbuf is for packet reassembly. leave a little room for leftovers. */
@@ -258,21 +223,6 @@ static int hvsi_read(struct hvsi_struct *hp, char *buf, int count)
 }
 
 static void hvsi_recv_control(struct hvsi_struct *hp, uint8_t *packet,
-<<<<<<< HEAD
-	struct tty_struct **to_hangup, struct hvsi_struct **to_handshake)
-{
-	struct hvsi_control *header = (struct hvsi_control *)packet;
-
-	switch (header->verb) {
-		case VSV_MODEM_CTL_UPDATE:
-			if ((header->word & HVSI_TSCD) == 0) {
-				/* CD went away; no more connection */
-				pr_debug("hvsi%i: CD dropped\n", hp->index);
-				hp->mctrl &= TIOCM_CD;
-				/* If userland hasn't done an open(2) yet, hp->tty is NULL. */
-				if (hp->tty && !(hp->tty->flags & CLOCAL))
-					*to_hangup = hp->tty;
-=======
 	struct tty_struct *tty, struct hvsi_struct **to_handshake)
 {
 	struct hvsi_control *header = (struct hvsi_control *)packet;
@@ -285,7 +235,6 @@ static void hvsi_recv_control(struct hvsi_struct *hp, uint8_t *packet,
 				hp->mctrl &= TIOCM_CD;
 				if (tty && !C_CLOCAL(tty))
 					tty_hangup(tty);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		case VSV_CLOSE_PROTOCOL:
@@ -305,10 +254,7 @@ static void hvsi_recv_control(struct hvsi_struct *hp, uint8_t *packet,
 static void hvsi_recv_response(struct hvsi_struct *hp, uint8_t *packet)
 {
 	struct hvsi_query_response *resp = (struct hvsi_query_response *)packet;
-<<<<<<< HEAD
-=======
 	uint32_t mctrl_word;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hp->state) {
 		case HVSI_WAIT_FOR_VER_RESPONSE:
@@ -316,16 +262,10 @@ static void hvsi_recv_response(struct hvsi_struct *hp, uint8_t *packet)
 			break;
 		case HVSI_WAIT_FOR_MCTRL_RESPONSE:
 			hp->mctrl = 0;
-<<<<<<< HEAD
-			if (resp->u.mctrl_word & HVSI_TSDTR)
-				hp->mctrl |= TIOCM_DTR;
-			if (resp->u.mctrl_word & HVSI_TSCD)
-=======
 			mctrl_word = be32_to_cpu(resp->u.mctrl_word);
 			if (mctrl_word & HVSI_TSDTR)
 				hp->mctrl |= TIOCM_DTR;
 			if (mctrl_word & HVSI_TSCD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hp->mctrl |= TIOCM_CD;
 			__set_state(hp, HVSI_OPEN);
 			break;
@@ -344,17 +284,10 @@ static int hvsi_version_respond(struct hvsi_struct *hp, uint16_t query_seqno)
 
 	packet.hdr.type = VS_QUERY_RESPONSE_PACKET_HEADER;
 	packet.hdr.len = sizeof(struct hvsi_query_response);
-<<<<<<< HEAD
-	packet.hdr.seqno = atomic_inc_return(&hp->seqno);
-	packet.verb = VSV_SEND_VERSION_NUMBER;
-	packet.u.version = HVSI_VERSION;
-	packet.query_seqno = query_seqno+1;
-=======
 	packet.hdr.seqno = cpu_to_be16(atomic_inc_return(&hp->seqno));
 	packet.verb = cpu_to_be16(VSV_SEND_VERSION_NUMBER);
 	packet.u.version = HVSI_VERSION;
 	packet.query_seqno = cpu_to_be16(query_seqno+1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("%s: sending %i bytes\n", __func__, packet.hdr.len);
 	dbg_dump_hex((uint8_t*)&packet, packet.hdr.len);
@@ -375,11 +308,7 @@ static void hvsi_recv_query(struct hvsi_struct *hp, uint8_t *packet)
 
 	switch (hp->state) {
 		case HVSI_WAIT_FOR_VER_QUERY:
-<<<<<<< HEAD
-			hvsi_version_respond(hp, query->hdr.seqno);
-=======
 			hvsi_version_respond(hp, be16_to_cpu(query->hdr.seqno));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__set_state(hp, HVSI_OPEN);
 			break;
 		default:
@@ -405,11 +334,7 @@ static void hvsi_insert_chars(struct hvsi_struct *hp, const char *buf, int len)
 			continue;
 		}
 #endif /* CONFIG_MAGIC_SYSRQ */
-<<<<<<< HEAD
-		tty_insert_flip_char(hp->tty, c, 0);
-=======
 		tty_insert_flip_char(&hp->port, c, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -422,12 +347,7 @@ static void hvsi_insert_chars(struct hvsi_struct *hp, const char *buf, int len)
  * revisited.
  */
 #define TTY_THRESHOLD_THROTTLE 128
-<<<<<<< HEAD
-static struct tty_struct *hvsi_recv_data(struct hvsi_struct *hp,
-		const uint8_t *packet)
-=======
 static bool hvsi_recv_data(struct hvsi_struct *hp, const uint8_t *packet)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct hvsi_header *header = (const struct hvsi_header *)packet;
 	const uint8_t *data = packet + sizeof(struct hvsi_header);
@@ -437,11 +357,7 @@ static bool hvsi_recv_data(struct hvsi_struct *hp, const uint8_t *packet)
 	pr_debug("queueing %i chars '%.*s'\n", datalen, datalen, data);
 
 	if (datalen == 0)
-<<<<<<< HEAD
-		return NULL;
-=======
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (overflow > 0) {
 		pr_debug("%s: got >TTY_THRESHOLD_THROTTLE bytes\n", __func__);
@@ -460,11 +376,7 @@ static bool hvsi_recv_data(struct hvsi_struct *hp, const uint8_t *packet)
 		hp->n_throttle = overflow;
 	}
 
-<<<<<<< HEAD
-	return hp->tty;
-=======
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -473,16 +385,6 @@ static bool hvsi_recv_data(struct hvsi_struct *hp, const uint8_t *packet)
  * machine during console handshaking (in which case tty = NULL and we ignore
  * incoming data).
  */
-<<<<<<< HEAD
-static int hvsi_load_chunk(struct hvsi_struct *hp, struct tty_struct **flip,
-		struct tty_struct **hangup, struct hvsi_struct **handshake)
-{
-	uint8_t *packet = hp->inbuf;
-	int chunklen;
-
-	*flip = NULL;
-	*hangup = NULL;
-=======
 static int hvsi_load_chunk(struct hvsi_struct *hp, struct tty_struct *tty,
 		struct hvsi_struct **handshake)
 {
@@ -490,7 +392,6 @@ static int hvsi_load_chunk(struct hvsi_struct *hp, struct tty_struct *tty,
 	int chunklen;
 	bool flip = false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*handshake = NULL;
 
 	chunklen = hvsi_read(hp, hp->inbuf_end, HVSI_MAX_READ);
@@ -524,19 +425,10 @@ static int hvsi_load_chunk(struct hvsi_struct *hp, struct tty_struct *tty,
 			case VS_DATA_PACKET_HEADER:
 				if (!is_open(hp))
 					break;
-<<<<<<< HEAD
-				if (hp->tty == NULL)
-					break; /* no tty buffer to put data in */
-				*flip = hvsi_recv_data(hp, packet);
-				break;
-			case VS_CONTROL_PACKET_HEADER:
-				hvsi_recv_control(hp, packet, hangup, handshake);
-=======
 				flip = hvsi_recv_data(hp, packet);
 				break;
 			case VS_CONTROL_PACKET_HEADER:
 				hvsi_recv_control(hp, packet, tty, handshake);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			case VS_QUERY_RESPONSE_PACKET_HEADER:
 				hvsi_recv_response(hp, packet);
@@ -553,30 +445,17 @@ static int hvsi_load_chunk(struct hvsi_struct *hp, struct tty_struct *tty,
 
 		packet += len_packet(packet);
 
-<<<<<<< HEAD
-		if (*hangup || *handshake) {
-			pr_debug("%s: hangup or handshake\n", __func__);
-			/*
-			 * we need to send the hangup now before receiving any more data.
-			 * If we get "data, hangup, data", we can't deliver the second
-			 * data before the hangup.
-			 */
-=======
 		if (*handshake) {
 			pr_debug("%s: handshake\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
 	compact_inbuf(hp, packet);
 
-<<<<<<< HEAD
-=======
 	if (flip)
 		tty_flip_buffer_push(&hp->port);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -596,42 +475,13 @@ static void hvsi_send_overflow(struct hvsi_struct *hp)
 static irqreturn_t hvsi_interrupt(int irq, void *arg)
 {
 	struct hvsi_struct *hp = (struct hvsi_struct *)arg;
-<<<<<<< HEAD
-	struct tty_struct *flip;
-	struct tty_struct *hangup;
-	struct hvsi_struct *handshake;
-=======
 	struct hvsi_struct *handshake;
 	struct tty_struct *tty;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int again = 1;
 
 	pr_debug("%s\n", __func__);
 
-<<<<<<< HEAD
-	while (again) {
-		spin_lock_irqsave(&hp->lock, flags);
-		again = hvsi_load_chunk(hp, &flip, &hangup, &handshake);
-		spin_unlock_irqrestore(&hp->lock, flags);
-
-		/*
-		 * we have to call tty_flip_buffer_push() and tty_hangup() outside our
-		 * spinlock. But we also have to keep going until we've read all the
-		 * available data.
-		 */
-
-		if (flip) {
-			/* there was data put in the tty flip buffer */
-			tty_flip_buffer_push(flip);
-			flip = NULL;
-		}
-
-		if (hangup) {
-			tty_hangup(hangup);
-		}
-
-=======
 	tty = tty_port_tty_get(&hp->port);
 
 	while (again) {
@@ -639,7 +489,6 @@ static irqreturn_t hvsi_interrupt(int irq, void *arg)
 		again = hvsi_load_chunk(hp, tty, &handshake);
 		spin_unlock_irqrestore(&hp->lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (handshake) {
 			pr_debug("hvsi%i: attempting re-handshake\n", handshake->index);
 			schedule_work(&handshake->handshaker);
@@ -647,20 +496,6 @@ static irqreturn_t hvsi_interrupt(int irq, void *arg)
 	}
 
 	spin_lock_irqsave(&hp->lock, flags);
-<<<<<<< HEAD
-	if (hp->tty && hp->n_throttle
-			&& (!test_bit(TTY_THROTTLED, &hp->tty->flags))) {
-		/* we weren't hung up and we weren't throttled, so we can deliver the
-		 * rest now */
-		flip = hp->tty;
-		hvsi_send_overflow(hp);
-	}
-	spin_unlock_irqrestore(&hp->lock, flags);
-
-	if (flip) {
-		tty_flip_buffer_push(flip);
-	}
-=======
 	if (tty && hp->n_throttle && !tty_throttled(tty)) {
 		/* we weren't hung up and we weren't throttled, so we can
 		 * deliver the rest now */
@@ -670,7 +505,6 @@ static irqreturn_t hvsi_interrupt(int irq, void *arg)
 	spin_unlock_irqrestore(&hp->lock, flags);
 
 	tty_kref_put(tty);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -710,13 +544,8 @@ static int hvsi_query(struct hvsi_struct *hp, uint16_t verb)
 
 	packet.hdr.type = VS_QUERY_PACKET_HEADER;
 	packet.hdr.len = sizeof(struct hvsi_query);
-<<<<<<< HEAD
-	packet.hdr.seqno = atomic_inc_return(&hp->seqno);
-	packet.verb = verb;
-=======
 	packet.hdr.seqno = cpu_to_be16(atomic_inc_return(&hp->seqno));
 	packet.verb = cpu_to_be16(verb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("%s: sending %i bytes\n", __func__, packet.hdr.len);
 	dbg_dump_hex((uint8_t*)&packet, packet.hdr.len);
@@ -756,16 +585,6 @@ static int hvsi_set_mctrl(struct hvsi_struct *hp, uint16_t mctrl)
 	struct hvsi_control packet __ALIGNED__;
 	int wrote;
 
-<<<<<<< HEAD
-	packet.hdr.type = VS_CONTROL_PACKET_HEADER,
-	packet.hdr.seqno = atomic_inc_return(&hp->seqno);
-	packet.hdr.len = sizeof(struct hvsi_control);
-	packet.verb = VSV_SET_MODEM_CTL;
-	packet.mask = HVSI_TSDTR;
-
-	if (mctrl & TIOCM_DTR)
-		packet.word = HVSI_TSDTR;
-=======
 	packet.hdr.type = VS_CONTROL_PACKET_HEADER;
 	packet.hdr.seqno = cpu_to_be16(atomic_inc_return(&hp->seqno));
 	packet.hdr.len = sizeof(struct hvsi_control);
@@ -774,7 +593,6 @@ static int hvsi_set_mctrl(struct hvsi_struct *hp, uint16_t mctrl)
 
 	if (mctrl & TIOCM_DTR)
 		packet.word = cpu_to_be32(HVSI_TSDTR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("%s: sending %i bytes\n", __func__, packet.hdr.len);
 	dbg_dump_hex((uint8_t*)&packet, packet.hdr.len);
@@ -851,11 +669,7 @@ static int hvsi_put_chars(struct hvsi_struct *hp, const char *buf, int count)
 	BUG_ON(count > HVSI_MAX_OUTGOING_DATA);
 
 	packet.hdr.type = VS_DATA_PACKET_HEADER;
-<<<<<<< HEAD
-	packet.hdr.seqno = atomic_inc_return(&hp->seqno);
-=======
 	packet.hdr.seqno = cpu_to_be16(atomic_inc_return(&hp->seqno));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	packet.hdr.len = count + sizeof(struct hvsi_header);
 	memcpy(&packet.data, buf, count);
 
@@ -872,15 +686,9 @@ static void hvsi_close_protocol(struct hvsi_struct *hp)
 	struct hvsi_control packet __ALIGNED__;
 
 	packet.hdr.type = VS_CONTROL_PACKET_HEADER;
-<<<<<<< HEAD
-	packet.hdr.seqno = atomic_inc_return(&hp->seqno);
-	packet.hdr.len = 6;
-	packet.verb = VSV_CLOSE_PROTOCOL;
-=======
 	packet.hdr.seqno = cpu_to_be16(atomic_inc_return(&hp->seqno));
 	packet.hdr.len = 6;
 	packet.verb = cpu_to_be16(VSV_CLOSE_PROTOCOL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("%s: sending %i bytes\n", __func__, packet.hdr.len);
 	dbg_dump_hex((uint8_t*)&packet, packet.hdr.len);
@@ -904,15 +712,9 @@ static int hvsi_open(struct tty_struct *tty, struct file *filp)
 	if (hp->state == HVSI_FSP_DIED)
 		return -EIO;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&hp->lock, flags);
-	hp->tty = tty;
-	hp->count++;
-=======
 	tty_port_tty_set(&hp->port, tty);
 	spin_lock_irqsave(&hp->lock, flags);
 	hp->port.count++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_set(&hp->seqno, 0);
 	h_vio_signal(hp->vtermno, VIO_IRQ_ENABLE);
 	spin_unlock_irqrestore(&hp->lock, flags);
@@ -948,11 +750,7 @@ static void hvsi_flush_output(struct hvsi_struct *hp)
 
 	/* 'writer' could still be pending if it didn't see n_outbuf = 0 yet */
 	cancel_delayed_work_sync(&hp->writer);
-<<<<<<< HEAD
-	flush_work_sync(&hp->handshaker);
-=======
 	flush_work(&hp->handshaker);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * it's also possible that our timeout expired and hvsi_write_worker
@@ -973,13 +771,8 @@ static void hvsi_close(struct tty_struct *tty, struct file *filp)
 
 	spin_lock_irqsave(&hp->lock, flags);
 
-<<<<<<< HEAD
-	if (--hp->count == 0) {
-		hp->tty = NULL;
-=======
 	if (--hp->port.count == 0) {
 		tty_port_tty_set(&hp->port, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hp->inbuf_end = hp->inbuf; /* discard remaining partial packets */
 
 		/* only close down connection if it is not the console */
@@ -1011,15 +804,9 @@ static void hvsi_close(struct tty_struct *tty, struct file *filp)
 
 			spin_lock_irqsave(&hp->lock, flags);
 		}
-<<<<<<< HEAD
-	} else if (hp->count < 0)
-		printk(KERN_ERR "hvsi_close %lu: oops, count is %d\n",
-		       hp - hvsi_ports, hp->count);
-=======
 	} else if (hp->port.count < 0)
 		printk(KERN_ERR "hvsi_close %lu: oops, count is %d\n",
 		       hp - hvsi_ports, hp->port.count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&hp->lock, flags);
 }
@@ -1031,20 +818,11 @@ static void hvsi_hangup(struct tty_struct *tty)
 
 	pr_debug("%s\n", __func__);
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&hp->lock, flags);
-
-	hp->count = 0;
-	hp->n_outbuf = 0;
-	hp->tty = NULL;
-
-=======
 	tty_port_tty_set(&hp->port, NULL);
 
 	spin_lock_irqsave(&hp->lock, flags);
 	hp->port.count = 0;
 	hp->n_outbuf = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&hp->lock, flags);
 }
 
@@ -1105,49 +883,27 @@ static void hvsi_write_worker(struct work_struct *work)
 		start_j = 0;
 #endif /* DEBUG */
 		wake_up_all(&hp->emptyq);
-<<<<<<< HEAD
-		tty_wakeup(hp->tty);
-=======
 		tty_port_tty_wakeup(&hp->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
 	spin_unlock_irqrestore(&hp->lock, flags);
 }
 
-<<<<<<< HEAD
-static int hvsi_write_room(struct tty_struct *tty)
-=======
 static unsigned int hvsi_write_room(struct tty_struct *tty)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hvsi_struct *hp = tty->driver_data;
 
 	return N_OUTBUF - hp->n_outbuf;
 }
 
-<<<<<<< HEAD
-static int hvsi_chars_in_buffer(struct tty_struct *tty)
-=======
 static unsigned int hvsi_chars_in_buffer(struct tty_struct *tty)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hvsi_struct *hp = tty->driver_data;
 
 	return hp->n_outbuf;
 }
 
-<<<<<<< HEAD
-static int hvsi_write(struct tty_struct *tty,
-		     const unsigned char *buf, int count)
-{
-	struct hvsi_struct *hp = tty->driver_data;
-	const char *source = buf;
-	unsigned long flags;
-	int total = 0;
-	int origcount = count;
-=======
 static ssize_t hvsi_write(struct tty_struct *tty, const u8 *source,
 			  size_t count)
 {
@@ -1155,7 +911,6 @@ static ssize_t hvsi_write(struct tty_struct *tty, const u8 *source,
 	unsigned long flags;
 	size_t total = 0;
 	size_t origcount = count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&hp->lock, flags);
 
@@ -1172,13 +927,8 @@ static ssize_t hvsi_write(struct tty_struct *tty, const u8 *source,
 	 * and hvsi_write_worker will be scheduled. subsequent hvsi_write() calls
 	 * will see there is no room in outbuf and return.
 	 */
-<<<<<<< HEAD
-	while ((count > 0) && (hvsi_write_room(hp->tty) > 0)) {
-		int chunksize = min(count, hvsi_write_room(hp->tty));
-=======
 	while ((count > 0) && (hvsi_write_room(tty) > 0)) {
 		size_t chunksize = min_t(size_t, count, hvsi_write_room(tty));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		BUG_ON(hp->n_outbuf < 0);
 		memcpy(hp->outbuf + hp->n_outbuf, source, chunksize);
@@ -1202,13 +952,8 @@ out:
 	spin_unlock_irqrestore(&hp->lock, flags);
 
 	if (total != origcount)
-<<<<<<< HEAD
-		pr_debug("%s: wanted %i, only wrote %i\n", __func__, origcount,
-			total);
-=======
 		pr_debug("%s: wanted %zu, only wrote %zu\n", __func__,
 			 origcount, total);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return total;
 }
@@ -1230,29 +975,16 @@ static void hvsi_unthrottle(struct tty_struct *tty)
 {
 	struct hvsi_struct *hp = tty->driver_data;
 	unsigned long flags;
-<<<<<<< HEAD
-	int shouldflip = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("%s\n", __func__);
 
 	spin_lock_irqsave(&hp->lock, flags);
 	if (hp->n_throttle) {
 		hvsi_send_overflow(hp);
-<<<<<<< HEAD
-		shouldflip = 1;
-	}
-	spin_unlock_irqrestore(&hp->lock, flags);
-
-	if (shouldflip)
-		tty_flip_buffer_push(hp->tty);
-=======
 		tty_flip_buffer_push(&hp->port);
 	}
 	spin_unlock_irqrestore(&hp->lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	h_vio_signal(hp->vtermno, VIO_IRQ_ENABLE);
 }
@@ -1305,25 +1037,6 @@ static const struct tty_operations hvsi_ops = {
 
 static int __init hvsi_init(void)
 {
-<<<<<<< HEAD
-	int i;
-
-	hvsi_driver = alloc_tty_driver(hvsi_count);
-	if (!hvsi_driver)
-		return -ENOMEM;
-
-	hvsi_driver->driver_name = "hvsi";
-	hvsi_driver->name = "hvsi";
-	hvsi_driver->major = HVSI_MAJOR;
-	hvsi_driver->minor_start = HVSI_MINOR;
-	hvsi_driver->type = TTY_DRIVER_TYPE_SYSTEM;
-	hvsi_driver->init_termios = tty_std_termios;
-	hvsi_driver->init_termios.c_cflag = B9600 | CS8 | CREAD | HUPCL;
-	hvsi_driver->init_termios.c_ispeed = 9600;
-	hvsi_driver->init_termios.c_ospeed = 9600;
-	hvsi_driver->flags = TTY_DRIVER_REAL_RAW;
-	tty_set_operations(hvsi_driver, &hvsi_ops);
-=======
 	struct tty_driver *driver;
 	int i, ret;
 
@@ -1341,17 +1054,13 @@ static int __init hvsi_init(void)
 	driver->init_termios.c_ispeed = 9600;
 	driver->init_termios.c_ospeed = 9600;
 	tty_set_operations(driver, &hvsi_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i=0; i < hvsi_count; i++) {
 		struct hvsi_struct *hp = &hvsi_ports[i];
 		int ret = 1;
 
-<<<<<<< HEAD
-=======
 		tty_port_link_device(&hp->port, driver, i);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = request_irq(hp->virq, hvsi_interrupt, 0, "hvsi", hp);
 		if (ret)
 			printk(KERN_ERR "HVSI: couldn't reserve irq 0x%x (error %i)\n",
@@ -1359,10 +1068,6 @@ static int __init hvsi_init(void)
 	}
 	hvsi_wait = wait_for_state; /* irqs active now */
 
-<<<<<<< HEAD
-	if (tty_register_driver(hvsi_driver))
-		panic("Couldn't register hvsi console driver\n");
-=======
 	ret = tty_register_driver(driver);
 	if (ret) {
 		pr_err("Couldn't register hvsi console driver\n");
@@ -1370,13 +1075,10 @@ static int __init hvsi_init(void)
 	}
 
 	hvsi_driver = driver;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_DEBUG "HVSI: registered %i devices\n", hvsi_count);
 
 	return 0;
-<<<<<<< HEAD
-=======
 err_free_irq:
 	hvsi_wait = poll_for_state;
 	for (i = 0; i < hvsi_count; i++) {
@@ -1387,7 +1089,6 @@ err_free_irq:
 	tty_driver_kref_put(driver);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 device_initcall(hvsi_init);
 
@@ -1441,11 +1142,7 @@ static int __init hvsi_console_setup(struct console *console, char *options)
 	int ret;
 
 	if (console->index < 0 || console->index >= hvsi_count)
-<<<<<<< HEAD
-		return -1;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hp = &hvsi_ports[console->index];
 
 	/* give the FSP a chance to change the baud rate when we re-open */
@@ -1484,17 +1181,9 @@ static int __init hvsi_console_init(void)
 	hvsi_wait = poll_for_state; /* no irqs yet; must poll */
 
 	/* search device tree for vty nodes */
-<<<<<<< HEAD
-	for (vty = of_find_compatible_node(NULL, "serial", "hvterm-protocol");
-			vty != NULL;
-			vty = of_find_compatible_node(vty, "serial", "hvterm-protocol")) {
-		struct hvsi_struct *hp;
-		const uint32_t *vtermno, *irq;
-=======
 	for_each_compatible_node(vty, "serial", "hvterm-protocol") {
 		struct hvsi_struct *hp;
 		const __be32 *vtermno, *irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		vtermno = of_get_property(vty, "reg", NULL);
 		irq = of_get_property(vty, "interrupts", NULL);
@@ -1512,16 +1201,6 @@ static int __init hvsi_console_init(void)
 		init_waitqueue_head(&hp->emptyq);
 		init_waitqueue_head(&hp->stateq);
 		spin_lock_init(&hp->lock);
-<<<<<<< HEAD
-		hp->index = hvsi_count;
-		hp->inbuf_end = hp->inbuf;
-		hp->state = HVSI_CLOSED;
-		hp->vtermno = *vtermno;
-		hp->virq = irq_create_mapping(NULL, irq[0]);
-		if (hp->virq == 0) {
-			printk(KERN_ERR "%s: couldn't create irq mapping for 0x%x\n",
-				__func__, irq[0]);
-=======
 		tty_port_init(&hp->port);
 		hp->index = hvsi_count;
 		hp->inbuf_end = hp->inbuf;
@@ -1532,7 +1211,6 @@ static int __init hvsi_console_init(void)
 			printk(KERN_ERR "%s: couldn't create irq mapping for 0x%x\n",
 			       __func__, be32_to_cpup(irq));
 			tty_port_destroy(&hp->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 

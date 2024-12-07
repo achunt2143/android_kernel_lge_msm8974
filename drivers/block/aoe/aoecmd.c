@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/* Copyright (c) 2007 Coraid, Inc.  See COPYING for GPL terms. */
-=======
 /* Copyright (c) 2013 Coraid, Inc.  See COPYING for GPL terms. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * aoecmd.c
  * Filesystem request handling methods
@@ -11,17 +7,6 @@
 #include <linux/ata.h>
 #include <linux/slab.h>
 #include <linux/hdreg.h>
-<<<<<<< HEAD
-#include <linux/blkdev.h>
-#include <linux/skbuff.h>
-#include <linux/netdevice.h>
-#include <linux/genhd.h>
-#include <linux/moduleparam.h>
-#include <net/net_namespace.h>
-#include <asm/unaligned.h>
-#include "aoe.h"
-
-=======
 #include <linux/blk-mq.h>
 #include <linux/skbuff.h>
 #include <linux/netdevice.h>
@@ -40,22 +25,15 @@ static int count_targets(struct aoedev *d, int *untainted);
 
 static struct buf *nextbuf(struct aoedev *);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int aoe_deadsecs = 60 * 3;
 module_param(aoe_deadsecs, int, 0644);
 MODULE_PARM_DESC(aoe_deadsecs, "After aoe_deadsecs seconds, give up and fail dev.");
 
-<<<<<<< HEAD
-static int aoe_maxout = 16;
-=======
 static int aoe_maxout = 64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(aoe_maxout, int, 0644);
 MODULE_PARM_DESC(aoe_maxout,
 	"Only aoe_maxout outstanding packets for every MAC on eX.Y.");
 
-<<<<<<< HEAD
-=======
 /* The number of online cpus during module initialization gives us a
  * convenient heuristic cap on the parallelism used for ktio threads
  * doing I/O completion.  It is not important that the cap equal the
@@ -80,7 +58,6 @@ static struct iocq_ktio *iocq;
 
 static struct page *empty_page;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct sk_buff *
 new_skb(ulong len)
 {
@@ -98,17 +75,6 @@ new_skb(ulong len)
 }
 
 static struct frame *
-<<<<<<< HEAD
-getframe(struct aoetgt *t, int tag)
-{
-	struct frame *f, *e;
-
-	f = t->frames;
-	e = f + t->nframes;
-	for (; f<e; f++)
-		if (f->tag == tag)
-			return f;
-=======
 getframe_deferred(struct aoedev *d, u32 tag)
 {
 	struct list_head *head, *pos, *nx;
@@ -141,7 +107,6 @@ getframe(struct aoedev *d, u32 tag)
 			return f;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -151,24 +116,11 @@ getframe(struct aoedev *d, u32 tag)
  * This driver reserves tag -1 to mean "unused frame."
  */
 static int
-<<<<<<< HEAD
-newtag(struct aoetgt *t)
-=======
 newtag(struct aoedev *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	register ulong n;
 
 	n = jiffies & 0xffff;
-<<<<<<< HEAD
-	return n |= (++t->lasttag & 0x7fff) << 16;
-}
-
-static int
-aoehdr_atainit(struct aoedev *d, struct aoetgt *t, struct aoe_hdr *h)
-{
-	u32 host_tag = newtag(t);
-=======
 	return n | (++d->lasttag & 0x7fff) << 16;
 }
 
@@ -176,7 +128,6 @@ static u32
 aoehdr_atainit(struct aoedev *d, struct aoetgt *t, struct aoe_hdr *h)
 {
 	u32 host_tag = newtag(d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(h->src, t->ifp->nd->dev_addr, sizeof h->src);
 	memcpy(h->dst, t->addr, sizeof h->dst);
@@ -201,18 +152,6 @@ put_lba(struct aoe_atahdr *ah, sector_t lba)
 	ah->lba5 = lba >>= 8;
 }
 
-<<<<<<< HEAD
-static void
-ifrotate(struct aoetgt *t)
-{
-	t->ifp++;
-	if (t->ifp >= &t->ifs[NAOEIFS] || t->ifp->nd == NULL)
-		t->ifp = t->ifs;
-	if (t->ifp->nd == NULL) {
-		printk(KERN_INFO "aoe: no interface to rotate to\n");
-		BUG();
-	}
-=======
 static struct aoeif *
 ifrotate(struct aoetgt *t)
 {
@@ -225,7 +164,6 @@ ifrotate(struct aoetgt *t)
 	if (ifp->nd == NULL)
 		return NULL;
 	return t->ifp = ifp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -250,76 +188,6 @@ skb_pool_get(struct aoedev *d)
 	return NULL;
 }
 
-<<<<<<< HEAD
-/* freeframe is where we do our load balancing so it's a little hairy. */
-static struct frame *
-freeframe(struct aoedev *d)
-{
-	struct frame *f, *e, *rf;
-	struct aoetgt **t;
-	struct sk_buff *skb;
-
-	if (d->targets[0] == NULL) {	/* shouldn't happen, but I'm paranoid */
-		printk(KERN_ERR "aoe: NULL TARGETS!\n");
-		return NULL;
-	}
-	t = d->tgt;
-	t++;
-	if (t >= &d->targets[NTARGETS] || !*t)
-		t = d->targets;
-	for (;;) {
-		if ((*t)->nout < (*t)->maxout
-		&& t != d->htgt
-		&& (*t)->ifp->nd) {
-			rf = NULL;
-			f = (*t)->frames;
-			e = f + (*t)->nframes;
-			for (; f < e; f++) {
-				if (f->tag != FREETAG)
-					continue;
-				skb = f->skb;
-				if (!skb
-				&& !(f->skb = skb = new_skb(ETH_ZLEN)))
-					continue;
-				if (atomic_read(&skb_shinfo(skb)->dataref)
-					!= 1) {
-					if (!rf)
-						rf = f;
-					continue;
-				}
-gotone:				skb_shinfo(skb)->nr_frags = skb->data_len = 0;
-				skb_trim(skb, 0);
-				d->tgt = t;
-				ifrotate(*t);
-				return f;
-			}
-			/* Work can be done, but the network layer is
-			   holding our precious packets.  Try to grab
-			   one from the pool. */
-			f = rf;
-			if (f == NULL) {	/* more paranoia */
-				printk(KERN_ERR
-					"aoe: freeframe: %s.\n",
-					"unexpected null rf");
-				d->flags |= DEVFL_KICKME;
-				return NULL;
-			}
-			skb = skb_pool_get(d);
-			if (skb) {
-				skb_pool_put(d, f->skb);
-				f->skb = skb;
-				goto gotone;
-			}
-			(*t)->dataref++;
-			if ((*t)->nout == 0)
-				d->flags |= DEVFL_KICKME;
-		}
-		if (t == d->tgt)	/* we've looped and found nada */
-			break;
-		t++;
-		if (t >= &d->targets[NTARGETS] || !*t)
-			t = d->targets;
-=======
 void
 aoe_freetframe(struct frame *f)
 {
@@ -420,58 +288,10 @@ newframe(struct aoedev *d)
 	if (totout == 0) {
 		d->kicked++;
 		d->flags |= DEVFL_KICKME;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NULL;
 }
 
-<<<<<<< HEAD
-static int
-aoecmd_ata_rw(struct aoedev *d)
-{
-	struct frame *f;
-	struct aoe_hdr *h;
-	struct aoe_atahdr *ah;
-	struct buf *buf;
-	struct bio_vec *bv;
-	struct aoetgt *t;
-	struct sk_buff *skb;
-	ulong bcnt;
-	char writebit, extbit;
-
-	writebit = 0x10;
-	extbit = 0x4;
-
-	f = freeframe(d);
-	if (f == NULL)
-		return 0;
-	t = *d->tgt;
-	buf = d->inprocess;
-	bv = buf->bv;
-	bcnt = t->ifp->maxbcnt;
-	if (bcnt == 0)
-		bcnt = DEFAULTBCNT;
-	if (bcnt > buf->bv_resid)
-		bcnt = buf->bv_resid;
-	/* initialize the headers & frame */
-	skb = f->skb;
-	h = (struct aoe_hdr *) skb_mac_header(skb);
-	ah = (struct aoe_atahdr *) (h+1);
-	skb_put(skb, sizeof *h + sizeof *ah);
-	memset(h, 0, skb->len);
-	f->tag = aoehdr_atainit(d, t, h);
-	t->nout++;
-	f->waited = 0;
-	f->buf = buf;
-	f->bufaddr = page_address(bv->bv_page) + buf->bv_off;
-	f->bcnt = bcnt;
-	f->lba = buf->sector;
-
-	/* set up ata header */
-	ah->scnt = bcnt >> 9;
-	put_lba(ah, buf->sector);
-	if (d->flags & DEVFL_EXT) {
-=======
 static void
 skb_fillup(struct sk_buff *skb, struct bio *bio, struct bvec_iter iter)
 {
@@ -522,27 +342,18 @@ ata_rw_frameinit(struct frame *f)
 	ah->scnt = f->iter.bi_size >> 9;
 	put_lba(ah, f->iter.bi_sector);
 	if (t->d->flags & DEVFL_EXT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ah->aflags |= AOEAFL_EXT;
 	} else {
 		extbit = 0;
 		ah->lba3 &= 0x0f;
 		ah->lba3 |= 0xe0;	/* LBA bit + obsolete 0xa0 */
 	}
-<<<<<<< HEAD
-	if (bio_data_dir(buf->bio) == WRITE) {
-		skb_fill_page_desc(skb, 0, bv->bv_page, buf->bv_off, bcnt);
-		ah->aflags |= AOEAFL_WRITE;
-		skb->len += bcnt;
-		skb->data_len = bcnt;
-=======
 	if (f->buf && bio_data_dir(f->buf->bio) == WRITE) {
 		skb_fillup(skb, f->buf->bio, f->iter);
 		ah->aflags |= AOEAFL_WRITE;
 		skb->len += f->iter.bi_size;
 		skb->data_len = f->iter.bi_size;
 		skb->truesize += f->iter.bi_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		t->wpkts++;
 	} else {
 		t->rpkts++;
@@ -550,28 +361,6 @@ ata_rw_frameinit(struct frame *f)
 	}
 
 	ah->cmdstat = ATA_CMD_PIO_READ | writebit | extbit;
-<<<<<<< HEAD
-
-	/* mark all tracking fields and load out */
-	buf->nframesout += 1;
-	buf->bv_off += bcnt;
-	buf->bv_resid -= bcnt;
-	buf->resid -= bcnt;
-	buf->sector += bcnt >> 9;
-	if (buf->resid == 0) {
-		d->inprocess = NULL;
-	} else if (buf->bv_resid == 0) {
-		buf->bv = ++bv;
-		buf->bv_resid = bv->bv_len;
-		WARN_ON(buf->bv_resid == 0);
-		buf->bv_off = bv->bv_offset;
-	}
-
-	skb->dev = t->ifp->nd;
-	skb = skb_clone(skb, GFP_ATOMIC);
-	if (skb)
-		__skb_queue_tail(&d->sendq, skb);
-=======
 	skb->dev = t->ifp->nd;
 }
 
@@ -613,7 +402,6 @@ aoecmd_ata_rw(struct aoedev *d)
 		__skb_queue_tail(&queue, skb);
 		aoenet_xmit(&queue);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -631,25 +419,16 @@ aoecmd_cfg_pkts(ushort aoemajor, unsigned char aoeminor, struct sk_buff_head *qu
 	rcu_read_lock();
 	for_each_netdev_rcu(&init_net, ifp) {
 		dev_hold(ifp);
-<<<<<<< HEAD
-		if (!is_aoe_netif(ifp))
-			goto cont;
-=======
 		if (!is_aoe_netif(ifp)) {
 			dev_put(ifp);
 			continue;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		skb = new_skb(sizeof *h + sizeof *ch);
 		if (skb == NULL) {
 			printk(KERN_INFO "aoe: skb alloc failure\n");
-<<<<<<< HEAD
-			goto cont;
-=======
 			dev_put(ifp);
 			continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		skb_put(skb, sizeof *h + sizeof *ch);
 		skb->dev = ifp;
@@ -664,40 +443,11 @@ aoecmd_cfg_pkts(ushort aoemajor, unsigned char aoeminor, struct sk_buff_head *qu
 		h->major = cpu_to_be16(aoemajor);
 		h->minor = aoeminor;
 		h->cmd = AOECMD_CFG;
-<<<<<<< HEAD
-
-cont:
-		dev_put(ifp);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rcu_read_unlock();
 }
 
 static void
-<<<<<<< HEAD
-resend(struct aoedev *d, struct aoetgt *t, struct frame *f)
-{
-	struct sk_buff *skb;
-	struct aoe_hdr *h;
-	struct aoe_atahdr *ah;
-	char buf[128];
-	u32 n;
-
-	ifrotate(t);
-	n = newtag(t);
-	skb = f->skb;
-	h = (struct aoe_hdr *) skb_mac_header(skb);
-	ah = (struct aoe_atahdr *) (h+1);
-
-	snprintf(buf, sizeof buf,
-		"%15s e%ld.%d oldtag=%08x@%08lx newtag=%08x s=%pm d=%pm nout=%d\n",
-		"retransmit", d->aoemajor, d->aoeminor, f->tag, jiffies, n,
-		h->src, h->dst, t->nout);
-	aoechr_error(buf);
-
-	f->tag = n;
-=======
 resend(struct aoedev *d, struct frame *f)
 {
 	struct sk_buff *skb;
@@ -729,45 +479,14 @@ resend(struct aoedev *d, struct frame *f)
 
 	f->tag = n;
 	fhash(f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h->tag = cpu_to_be32(n);
 	memcpy(h->dst, t->addr, sizeof h->dst);
 	memcpy(h->src, t->ifp->nd->dev_addr, sizeof h->src);
 
-<<<<<<< HEAD
-	switch (ah->cmdstat) {
-	default:
-		break;
-	case ATA_CMD_PIO_READ:
-	case ATA_CMD_PIO_READ_EXT:
-	case ATA_CMD_PIO_WRITE:
-	case ATA_CMD_PIO_WRITE_EXT:
-		put_lba(ah, f->lba);
-
-		n = f->bcnt;
-		if (n > DEFAULTBCNT)
-			n = DEFAULTBCNT;
-		ah->scnt = n >> 9;
-		if (ah->aflags & AOEAFL_WRITE) {
-			skb_fill_page_desc(skb, 0, virt_to_page(f->bufaddr),
-				offset_in_page(f->bufaddr), n);
-			skb->len = sizeof *h + sizeof *ah + n;
-			skb->data_len = n;
-		}
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->dev = t->ifp->nd;
 	skb = skb_clone(skb, GFP_ATOMIC);
 	if (skb == NULL)
 		return;
-<<<<<<< HEAD
-	__skb_queue_tail(&d->sendq, skb);
-}
-
-static int
-tsince(int tag)
-=======
 	f->sent = ktime_get();
 	__skb_queue_head_init(&queue);
 	__skb_queue_tail(&queue, skb);
@@ -792,7 +511,6 @@ tsince_hr(struct frame *f)
 
 static int
 tsince(u32 tag)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int n;
 
@@ -800,11 +518,7 @@ tsince(u32 tag)
 	n -= tag & 0xffff;
 	if (n < 0)
 		n += 1<<16;
-<<<<<<< HEAD
-	return n;
-=======
 	return jiffies_to_usecs(n + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct aoeif *
@@ -820,104 +534,18 @@ getif(struct aoetgt *t, struct net_device *nd)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static struct aoeif *
-addif(struct aoetgt *t, struct net_device *nd)
-{
-	struct aoeif *p;
-
-	p = getif(t, NULL);
-	if (!p)
-		return NULL;
-	p->nd = nd;
-	p->maxbcnt = DEFAULTBCNT;
-	p->lost = 0;
-	p->lostjumbo = 0;
-	return p;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 ejectif(struct aoetgt *t, struct aoeif *ifp)
 {
 	struct aoeif *e;
-<<<<<<< HEAD
-	ulong n;
-
-=======
 	struct net_device *nd;
 	ulong n;
 
 	nd = ifp->nd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e = t->ifs + NAOEIFS - 1;
 	n = (e - ifp) * sizeof *ifp;
 	memmove(ifp, ifp+1, n);
 	e->nd = NULL;
-<<<<<<< HEAD
-}
-
-static int
-sthtith(struct aoedev *d)
-{
-	struct frame *f, *e, *nf;
-	struct sk_buff *skb;
-	struct aoetgt *ht = *d->htgt;
-
-	f = ht->frames;
-	e = f + ht->nframes;
-	for (; f < e; f++) {
-		if (f->tag == FREETAG)
-			continue;
-		nf = freeframe(d);
-		if (!nf)
-			return 0;
-		skb = nf->skb;
-		*nf = *f;
-		f->skb = skb;
-		f->tag = FREETAG;
-		nf->waited = 0;
-		ht->nout--;
-		(*d->tgt)->nout++;
-		resend(d, *d->tgt, nf);
-	}
-	/* he's clean, he's useless.  take away his interfaces */
-	memset(ht->ifs, 0, sizeof ht->ifs);
-	d->htgt = NULL;
-	return 1;
-}
-
-static inline unsigned char
-ata_scnt(unsigned char *packet) {
-	struct aoe_hdr *h;
-	struct aoe_atahdr *ah;
-
-	h = (struct aoe_hdr *) packet;
-	ah = (struct aoe_atahdr *) (h+1);
-	return ah->scnt;
-}
-
-static void
-rexmit_timer(ulong vp)
-{
-	struct sk_buff_head queue;
-	struct aoedev *d;
-	struct aoetgt *t, **tt, **te;
-	struct aoeif *ifp;
-	struct frame *f, *e;
-	register long timeout;
-	ulong flags, n;
-
-	d = (struct aoedev *) vp;
-
-	/* timeout is always ~150% of the moving average */
-	timeout = d->rttavg;
-	timeout += timeout >> 1;
-
-	spin_lock_irqsave(&d->lock, flags);
-
-=======
 	dev_put(nd);
 }
 
@@ -1118,41 +746,10 @@ rexmit_timer(struct timer_list *timer)
 
 	utgts = count_targets(d, NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (d->flags & DEVFL_TKILL) {
 		spin_unlock_irqrestore(&d->lock, flags);
 		return;
 	}
-<<<<<<< HEAD
-	tt = d->targets;
-	te = tt + NTARGETS;
-	for (; tt < te && *tt; tt++) {
-		t = *tt;
-		f = t->frames;
-		e = f + t->nframes;
-		for (; f < e; f++) {
-			if (f->tag == FREETAG
-			|| tsince(f->tag) < timeout)
-				continue;
-			n = f->waited += timeout;
-			n /= HZ;
-			if (n > aoe_deadsecs) {
-				/* waited too long.  device failure. */
-				aoedev_downdev(d);
-				break;
-			}
-
-			if (n > HELPWAIT /* see if another target can help */
-			&& (tt != d->targets || d->targets[1]))
-				d->htgt = tt;
-
-			if (t->nout == t->maxout) {
-				if (t->maxout > 1)
-					t->maxout--;
-				t->lastwadj = jiffies;
-			}
-
-=======
 
 	/* collect all frames to rexmit into flist */
 	for (i = 0; i < NFACTIVE; i++) {
@@ -1200,55 +797,12 @@ rexmit_timer(struct timer_list *timer)
 		if (f->flags & FFL_PROBE) {
 			t->nout_probes--;
 		} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ifp = getif(t, f->skb->dev);
 			if (ifp && ++ifp->lost > (t->nframes << 1)
 			&& (ifp != t->ifs || t->ifs[1].nd)) {
 				ejectif(t, ifp);
 				ifp = NULL;
 			}
-<<<<<<< HEAD
-
-			if (ata_scnt(skb_mac_header(f->skb)) > DEFAULTBCNT / 512
-			&& ifp && ++ifp->lostjumbo > (t->nframes << 1)
-			&& ifp->maxbcnt != DEFAULTBCNT) {
-				printk(KERN_INFO
-					"aoe: e%ld.%d: "
-					"too many lost jumbo on "
-					"%s:%pm - "
-					"falling back to %d frames.\n",
-					d->aoemajor, d->aoeminor,
-					ifp->nd->name, t->addr,
-					DEFAULTBCNT);
-				ifp->maxbcnt = 0;
-			}
-			resend(d, t, f);
-		}
-
-		/* window check */
-		if (t->nout == t->maxout
-		&& t->maxout < t->nframes
-		&& (jiffies - t->lastwadj)/HZ > 10) {
-			t->maxout++;
-			t->lastwadj = jiffies;
-		}
-	}
-
-	if (!skb_queue_empty(&d->sendq)) {
-		n = d->rttavg <<= 1;
-		if (n > MAXTIMER)
-			d->rttavg = MAXTIMER;
-	}
-
-	if (d->flags & DEVFL_KICKME || d->htgt) {
-		d->flags &= ~DEVFL_KICKME;
-		aoecmd_work(d);
-	}
-
-	__skb_queue_head_init(&queue);
-	skb_queue_splice_init(&d->sendq, &queue);
-
-=======
 		}
 		list_move_tail(pos, &d->rexmitq);
 		t->nout--;
@@ -1261,15 +815,10 @@ out:
 		blk_mq_run_hw_queues(d->blkq, true);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	d->timer.expires = jiffies + TIMERTICK;
 	add_timer(&d->timer);
 
 	spin_unlock_irqrestore(&d->lock, flags);
-<<<<<<< HEAD
-
-	aoenet_xmit(&queue);
-=======
 }
 
 static void
@@ -1323,32 +872,15 @@ nextbuf(struct aoedev *d)
 	if (bio == NULL)
 		d->ip.rq = NULL;
 	return d->ip.buf = buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* enters with d->lock held */
 void
 aoecmd_work(struct aoedev *d)
 {
-<<<<<<< HEAD
-	struct buf *buf;
-loop:
-	if (d->htgt && !sthtith(d))
-		return;
-	if (d->inprocess == NULL) {
-		if (list_empty(&d->bufq))
-			return;
-		buf = container_of(d->bufq.next, struct buf, bufs);
-		list_del(d->bufq.next);
-		d->inprocess = buf;
-	}
-	if (aoecmd_ata_rw(d))
-		goto loop;
-=======
 	rexmit_deferred(d);
 	while (aoecmd_ata_rw(d))
 		;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* this function performs work that has been deferred until sleeping is OK
@@ -1362,25 +894,6 @@ aoecmd_sleepwork(struct work_struct *work)
 		aoeblk_gdalloc(d);
 
 	if (d->flags & DEVFL_NEWSIZE) {
-<<<<<<< HEAD
-		struct block_device *bd;
-		unsigned long flags;
-		u64 ssize;
-
-		ssize = get_capacity(d->gd);
-		bd = bdget_disk(d->gd, 0);
-
-		if (bd) {
-			mutex_lock(&bd->bd_inode->i_mutex);
-			i_size_write(bd->bd_inode, (loff_t)ssize<<9);
-			mutex_unlock(&bd->bd_inode->i_mutex);
-			bdput(bd);
-		}
-		spin_lock_irqsave(&d->lock, flags);
-		d->flags |= DEVFL_UP;
-		d->flags &= ~DEVFL_NEWSIZE;
-		spin_unlock_irqrestore(&d->lock, flags);
-=======
 		set_capacity_and_notify(d->gd, d->ssize);
 
 		spin_lock_irq(&d->lock);
@@ -1398,7 +911,6 @@ ata_ident_fixstring(u16 *id, int ns)
 	while (ns-- > 0) {
 		s = *id;
 		*id++ = s >> 8 | s << 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1437,14 +949,11 @@ ataid_complete(struct aoedev *d, struct aoetgt *t, unsigned char *id)
 		d->geo.sectors = get_unaligned_le16(&id[56 << 1]);
 	}
 
-<<<<<<< HEAD
-=======
 	ata_ident_fixstring((u16 *) &id[10<<1], 10);	/* serial */
 	ata_ident_fixstring((u16 *) &id[23<<1], 4);	/* firmware */
 	ata_ident_fixstring((u16 *) &id[27<<1], 20);	/* model */
 	memcpy(d->ident, id, sizeof(d->ident));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (d->ssize != ssize)
 		printk(KERN_INFO
 			"aoe: %pm e%ld.%d v%04x has %llu sectors\n",
@@ -1455,18 +964,6 @@ ataid_complete(struct aoedev *d, struct aoetgt *t, unsigned char *id)
 	d->geo.start = 0;
 	if (d->flags & (DEVFL_GDALLOC|DEVFL_NEWSIZE))
 		return;
-<<<<<<< HEAD
-	if (d->gd != NULL) {
-		set_capacity(d->gd, ssize);
-		d->flags |= DEVFL_NEWSIZE;
-	} else
-		d->flags |= DEVFL_GDALLOC;
-	schedule_work(&d->work);
-}
-
-static void
-calc_rttavg(struct aoedev *d, int rtt)
-=======
 	if (d->gd != NULL)
 		d->flags |= DEVFL_NEWSIZE;
 	else
@@ -1476,28 +973,10 @@ calc_rttavg(struct aoedev *d, int rtt)
 
 static void
 calc_rttavg(struct aoedev *d, struct aoetgt *t, int rtt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	register long n;
 
 	n = rtt;
-<<<<<<< HEAD
-	if (n < 0) {
-		n = -rtt;
-		if (n < MINTIMER)
-			n = MINTIMER;
-		else if (n > MAXTIMER)
-			n = MAXTIMER;
-		d->mintimer += (n - d->mintimer) >> 1;
-	} else if (n < d->mintimer)
-		n = d->mintimer;
-	else if (n > MAXTIMER)
-		n = MAXTIMER;
-
-	/* g == .25; cf. Congestion Avoidance and Control, Jacobson & Karels; 1988 */
-	n -= d->rttavg;
-	d->rttavg += n >> 2;
-=======
 
 	/* cf. Congestion Avoidance and Control, Jacobson & Karels, 1988 */
 	n -= d->rttavg >> RTTSCALE;
@@ -1515,7 +994,6 @@ calc_rttavg(struct aoedev *d, struct aoetgt *t, int rtt)
 		t->maxout += 1;
 		t->next_cwnd = t->maxout;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct aoetgt *
@@ -1524,50 +1002,13 @@ gettgt(struct aoedev *d, char *addr)
 	struct aoetgt **t, **e;
 
 	t = d->targets;
-<<<<<<< HEAD
-	e = t + NTARGETS;
-=======
 	e = t + d->ntargets;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (; t < e && *t; t++)
 		if (memcmp((*t)->addr, addr, sizeof((*t)->addr)) == 0)
 			return *t;
 	return NULL;
 }
 
-<<<<<<< HEAD
-static inline void
-diskstats(struct gendisk *disk, struct bio *bio, ulong duration, sector_t sector)
-{
-	unsigned long n_sect = bio->bi_size >> 9;
-	const int rw = bio_data_dir(bio);
-	struct hd_struct *part;
-	int cpu;
-
-	cpu = part_stat_lock();
-	part = disk_map_sector_rcu(disk, sector);
-
-	part_stat_inc(cpu, part, ios[rw]);
-	part_stat_add(cpu, part, ticks[rw], duration);
-	part_stat_add(cpu, part, sectors[rw], n_sect);
-	part_stat_add(cpu, part, io_ticks, duration);
-
-	part_stat_unlock();
-}
-
-void
-aoecmd_ata_rsp(struct sk_buff *skb)
-{
-	struct sk_buff_head queue;
-	struct aoedev *d;
-	struct aoe_hdr *hin, *hout;
-	struct aoe_atahdr *ahin, *ahout;
-	struct frame *f;
-	struct buf *buf;
-	struct aoetgt *t;
-	struct aoeif *ifp;
-	register long n;
-=======
 static void
 bvcpy(struct sk_buff *skb, struct bio *bio, struct bvec_iter iter, long cnt)
 {
@@ -1854,22 +1295,10 @@ aoecmd_ata_rsp(struct sk_buff *skb)
 	struct aoe_hdr *h;
 	struct frame *f;
 	u32 n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ulong flags;
 	char ebuf[128];
 	u16 aoemajor;
 
-<<<<<<< HEAD
-	hin = (struct aoe_hdr *) skb_mac_header(skb);
-	aoemajor = get_unaligned_be16(&hin->major);
-	d = aoedev_by_aoeaddr(aoemajor, hin->minor);
-	if (d == NULL) {
-		snprintf(ebuf, sizeof ebuf, "aoecmd_ata_rsp: ata response "
-			"for unknown device %d.%d\n",
-			 aoemajor, hin->minor);
-		aoechr_error(ebuf);
-		return;
-=======
 	h = (struct aoe_hdr *) skb->data;
 	aoemajor = be16_to_cpu(get_unaligned(&h->major));
 	d = aoedev_by_aoeaddr(aoemajor, h->minor, 0);
@@ -1879,122 +1308,10 @@ aoecmd_ata_rsp(struct sk_buff *skb)
 			aoemajor, h->minor);
 		aoechr_error(ebuf);
 		return skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_lock_irqsave(&d->lock, flags);
 
-<<<<<<< HEAD
-	n = get_unaligned_be32(&hin->tag);
-	t = gettgt(d, hin->src);
-	if (t == NULL) {
-		printk(KERN_INFO "aoe: can't find target e%ld.%d:%pm\n",
-			d->aoemajor, d->aoeminor, hin->src);
-		spin_unlock_irqrestore(&d->lock, flags);
-		return;
-	}
-	f = getframe(t, n);
-	if (f == NULL) {
-		calc_rttavg(d, -tsince(n));
-		spin_unlock_irqrestore(&d->lock, flags);
-		snprintf(ebuf, sizeof ebuf,
-			"%15s e%d.%d    tag=%08x@%08lx\n",
-			"unexpected rsp",
-			get_unaligned_be16(&hin->major),
-			hin->minor,
-			get_unaligned_be32(&hin->tag),
-			jiffies);
-		aoechr_error(ebuf);
-		return;
-	}
-
-	calc_rttavg(d, tsince(f->tag));
-
-	ahin = (struct aoe_atahdr *) (hin+1);
-	hout = (struct aoe_hdr *) skb_mac_header(f->skb);
-	ahout = (struct aoe_atahdr *) (hout+1);
-	buf = f->buf;
-
-	if (ahin->cmdstat & 0xa9) {	/* these bits cleared on success */
-		printk(KERN_ERR
-			"aoe: ata error cmd=%2.2Xh stat=%2.2Xh from e%ld.%d\n",
-			ahout->cmdstat, ahin->cmdstat,
-			d->aoemajor, d->aoeminor);
-		if (buf)
-			buf->flags |= BUFFL_FAIL;
-	} else {
-		if (d->htgt && t == *d->htgt) /* I'll help myself, thank you. */
-			d->htgt = NULL;
-		n = ahout->scnt << 9;
-		switch (ahout->cmdstat) {
-		case ATA_CMD_PIO_READ:
-		case ATA_CMD_PIO_READ_EXT:
-			if (skb->len - sizeof *hin - sizeof *ahin < n) {
-				printk(KERN_ERR
-					"aoe: %s.  skb->len=%d need=%ld\n",
-					"runt data size in read", skb->len, n);
-				/* fail frame f?  just returning will rexmit. */
-				spin_unlock_irqrestore(&d->lock, flags);
-				return;
-			}
-			memcpy(f->bufaddr, ahin+1, n);
-		case ATA_CMD_PIO_WRITE:
-		case ATA_CMD_PIO_WRITE_EXT:
-			ifp = getif(t, skb->dev);
-			if (ifp) {
-				ifp->lost = 0;
-				if (n > DEFAULTBCNT)
-					ifp->lostjumbo = 0;
-			}
-			if (f->bcnt -= n) {
-				f->lba += n >> 9;
-				f->bufaddr += n;
-				resend(d, t, f);
-				goto xmit;
-			}
-			break;
-		case ATA_CMD_ID_ATA:
-			if (skb->len - sizeof *hin - sizeof *ahin < 512) {
-				printk(KERN_INFO
-					"aoe: runt data size in ataid.  skb->len=%d\n",
-					skb->len);
-				spin_unlock_irqrestore(&d->lock, flags);
-				return;
-			}
-			ataid_complete(d, t, (char *) (ahin+1));
-			break;
-		default:
-			printk(KERN_INFO
-				"aoe: unrecognized ata command %2.2Xh for %d.%d\n",
-				ahout->cmdstat,
-				get_unaligned_be16(&hin->major),
-				hin->minor);
-		}
-	}
-
-	if (buf && --buf->nframesout == 0 && buf->resid == 0) {
-		diskstats(d->gd, buf->bio, jiffies - buf->stime, buf->sector);
-		if (buf->flags & BUFFL_FAIL)
-			bio_endio(buf->bio, -EIO);
-		else {
-			bio_flush_dcache_pages(buf->bio);
-			bio_endio(buf->bio, 0);
-		}
-		mempool_free(buf, d->bufpool);
-	}
-
-	f->buf = NULL;
-	f->tag = FREETAG;
-	t->nout--;
-
-	aoecmd_work(d);
-xmit:
-	__skb_queue_head_init(&queue);
-	skb_queue_splice_init(&d->sendq, &queue);
-
-	spin_unlock_irqrestore(&d->lock, flags);
-	aoenet_xmit(&queue);
-=======
 	n = be32_to_cpu(get_unaligned(&h->tag));
 	f = getframe(d, n);
 	if (f) {
@@ -2034,7 +1351,6 @@ xmit:
 	 * leaving this reference for the ktio to release.
 	 */
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -2046,11 +1362,7 @@ aoecmd_cfg(ushort aoemajor, unsigned char aoeminor)
 	aoecmd_cfg_pkts(aoemajor, aoeminor, &queue);
 	aoenet_xmit(&queue);
 }
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sk_buff *
 aoecmd_ata_id(struct aoedev *d)
 {
@@ -2060,11 +1372,7 @@ aoecmd_ata_id(struct aoedev *d)
 	struct sk_buff *skb;
 	struct aoetgt *t;
 
-<<<<<<< HEAD
-	f = freeframe(d);
-=======
 	f = newframe(d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (f == NULL)
 		return NULL;
 
@@ -2077,15 +1385,10 @@ aoecmd_ata_id(struct aoedev *d)
 	skb_put(skb, sizeof *h + sizeof *ah);
 	memset(h, 0, skb->len);
 	f->tag = aoehdr_atainit(d, t, h);
-<<<<<<< HEAD
-	t->nout++;
-	f->waited = 0;
-=======
 	fhash(f);
 	t->nout++;
 	f->waited = 0;
 	f->waited_total = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set up ata header */
 	ah->scnt = 1;
@@ -2094,14 +1397,6 @@ aoecmd_ata_id(struct aoedev *d)
 
 	skb->dev = t->ifp->nd;
 
-<<<<<<< HEAD
-	d->rttavg = MAXTIMER;
-	d->timer.function = rexmit_timer;
-
-	return skb_clone(skb, GFP_ATOMIC);
-}
- 
-=======
 	d->rttavg = RTTAVG_INIT;
 	d->rttdev = RTTDEV_INIT;
 	d->timer.function = rexmit_timer;
@@ -2133,49 +1428,17 @@ grow_targets(struct aoedev *d)
 	return &d->targets[oldn];
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct aoetgt *
 addtgt(struct aoedev *d, char *addr, ulong nframes)
 {
 	struct aoetgt *t, **tt, **te;
-<<<<<<< HEAD
-	struct frame *f, *e;
-
-	tt = d->targets;
-	te = tt + NTARGETS;
-=======
 
 	tt = d->targets;
 	te = tt + d->ntargets;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (; tt < te && *tt; tt++)
 		;
 
 	if (tt == te) {
-<<<<<<< HEAD
-		printk(KERN_INFO
-			"aoe: device addtgt failure; too many targets\n");
-		return NULL;
-	}
-	t = kcalloc(1, sizeof *t, GFP_ATOMIC);
-	f = kcalloc(nframes, sizeof *f, GFP_ATOMIC);
-	if (!t || !f) {
-		kfree(f);
-		kfree(t);
-		printk(KERN_INFO "aoe: cannot allocate memory to add target\n");
-		return NULL;
-	}
-
-	t->nframes = nframes;
-	t->frames = f;
-	e = f + nframes;
-	for (; f < e; f++)
-		f->tag = FREETAG;
-	memcpy(t->addr, addr, sizeof t->addr);
-	t->ifp = t->ifs;
-	t->maxout = t->nframes;
-	return *tt = t;
-=======
 		tt = grow_targets(d);
 		if (!tt)
 			goto nomem;
@@ -2246,7 +1509,6 @@ setifbcnt(struct aoetgt *t, struct net_device *nd, int bcnt)
 	}
 	t->minbcnt = minbcnt;
 	setdbcnt(d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -2256,20 +1518,12 @@ aoecmd_cfg_rsp(struct sk_buff *skb)
 	struct aoe_hdr *h;
 	struct aoe_cfghdr *ch;
 	struct aoetgt *t;
-<<<<<<< HEAD
-	struct aoeif *ifp;
-	ulong flags, sysminor, aoemajor;
-	struct sk_buff *sl;
-	u16 n;
-
-=======
 	ulong flags, aoemajor;
 	struct sk_buff *sl;
 	struct sk_buff_head queue;
 	u16 n;
 
 	sl = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h = (struct aoe_hdr *) skb_mac_header(skb);
 	ch = (struct aoe_cfghdr *) (h+1);
 
@@ -2283,12 +1537,6 @@ aoecmd_cfg_rsp(struct sk_buff *skb)
 			"Check shelf dip switches.\n");
 		return;
 	}
-<<<<<<< HEAD
-
-	sysminor = SYSMINOR(aoemajor, h->minor);
-	if (sysminor * AOE_PARTITIONS + AOE_PARTITIONS > MINORMASK) {
-		printk(KERN_INFO "aoe: e%ld.%d: minor number too large\n",
-=======
 	if (aoemajor == 0xffff) {
 		pr_info("aoe: e%ld.%d: broadcast shelf number invalid\n",
 			aoemajor, (int) h->minor);
@@ -2296,7 +1544,6 @@ aoecmd_cfg_rsp(struct sk_buff *skb)
 	}
 	if (h->minor == 0xff) {
 		pr_info("aoe: e%ld.%d: broadcast slot number invalid\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			aoemajor, (int) h->minor);
 		return;
 	}
@@ -2305,71 +1552,15 @@ aoecmd_cfg_rsp(struct sk_buff *skb)
 	if (n > aoe_maxout)	/* keep it reasonable */
 		n = aoe_maxout;
 
-<<<<<<< HEAD
-	d = aoedev_by_sysminor_m(sysminor);
-	if (d == NULL) {
-		printk(KERN_INFO "aoe: device sysminor_m failure\n");
-=======
 	d = aoedev_by_aoeaddr(aoemajor, h->minor, 1);
 	if (d == NULL) {
 		pr_info("aoe: device allocation failure\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	spin_lock_irqsave(&d->lock, flags);
 
 	t = gettgt(d, h->src);
-<<<<<<< HEAD
-	if (!t) {
-		t = addtgt(d, h->src, n);
-		if (!t) {
-			spin_unlock_irqrestore(&d->lock, flags);
-			return;
-		}
-	}
-	ifp = getif(t, skb->dev);
-	if (!ifp) {
-		ifp = addif(t, skb->dev);
-		if (!ifp) {
-			printk(KERN_INFO
-				"aoe: device addif failure; "
-				"too many interfaces?\n");
-			spin_unlock_irqrestore(&d->lock, flags);
-			return;
-		}
-	}
-	if (ifp->maxbcnt) {
-		n = ifp->nd->mtu;
-		n -= sizeof (struct aoe_hdr) + sizeof (struct aoe_atahdr);
-		n /= 512;
-		if (n > ch->scnt)
-			n = ch->scnt;
-		n = n ? n * 512 : DEFAULTBCNT;
-		if (n != ifp->maxbcnt) {
-			printk(KERN_INFO
-				"aoe: e%ld.%d: setting %d%s%s:%pm\n",
-				d->aoemajor, d->aoeminor, n,
-				" byte data frames on ", ifp->nd->name,
-				t->addr);
-			ifp->maxbcnt = n;
-		}
-	}
-
-	/* don't change users' perspective */
-	if (d->nopen) {
-		spin_unlock_irqrestore(&d->lock, flags);
-		return;
-	}
-	d->fw_ver = be16_to_cpu(ch->fwver);
-
-	sl = aoecmd_ata_id(d);
-
-	spin_unlock_irqrestore(&d->lock, flags);
-
-	if (sl) {
-		struct sk_buff_head queue;
-=======
 	if (t) {
 		t->nframes = n;
 		if (n < t->maxout)
@@ -2396,7 +1587,6 @@ bail:
 	spin_unlock_irqrestore(&d->lock, flags);
 	aoedev_put(d);
 	if (sl) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__skb_queue_head_init(&queue);
 		__skb_queue_tail(&queue, sl);
 		aoenet_xmit(&queue);
@@ -2404,28 +1594,6 @@ bail:
 }
 
 void
-<<<<<<< HEAD
-aoecmd_cleanslate(struct aoedev *d)
-{
-	struct aoetgt **t, **te;
-	struct aoeif *p, *e;
-
-	d->mintimer = MINTIMER;
-
-	t = d->targets;
-	te = t + NTARGETS;
-	for (; t < te && *t; t++) {
-		(*t)->maxout = (*t)->nframes;
-		p = (*t)->ifs;
-		e = p + NAOEIFS;
-		for (; p < e; p++) {
-			p->lostjumbo = 0;
-			p->lost = 0;
-			p->maxbcnt = DEFAULTBCNT;
-		}
-	}
-}
-=======
 aoecmd_wreset(struct aoetgt *t)
 {
 	t->maxout = 1;
@@ -2581,4 +1749,3 @@ aoecmd_exit(void)
 	free_page((unsigned long) page_address(empty_page));
 	empty_page = NULL;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

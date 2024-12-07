@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_MODULE_PARAMS_H
 #define _LINUX_MODULE_PARAMS_H
 /* (C) Copyright 2001, 2002 Rusty Russell IBM Corporation */
@@ -13,37 +10,16 @@
    module name. */
 #ifdef MODULE
 #define MODULE_PARAM_PREFIX /* empty */
-<<<<<<< HEAD
-#else
-#define MODULE_PARAM_PREFIX KBUILD_MODNAME "."
-=======
 #define __MODULE_INFO_PREFIX /* empty */
 #else
 #define MODULE_PARAM_PREFIX KBUILD_MODNAME "."
 /* We cannot use MODULE_PARAM_PREFIX because some modules override it. */
 #define __MODULE_INFO_PREFIX KBUILD_MODNAME "."
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Chosen so that structs with an unsigned long line up. */
 #define MAX_PARAM_PREFIX_LEN (64 - sizeof(unsigned long))
 
-<<<<<<< HEAD
-#define ___module_cat(a,b) __mod_ ## a ## b
-#define __module_cat(a,b) ___module_cat(a,b)
-#ifdef MODULE
-#define __MODULE_INFO(tag, name, info)					  \
-static const char __module_cat(name,__LINE__)[]				  \
-  __used __attribute__((section(".modinfo"), unused, aligned(1)))	  \
-  = __stringify(tag) "=" info
-#else  /* !MODULE */
-/* This struct is here for syntactic coherency, it is not used */
-#define __MODULE_INFO(tag, name, info)					  \
-  struct __module_cat(name,__LINE__) {}
-#endif
-#define __MODULE_PARM_TYPE(name, _type)					  \
-  __MODULE_INFO(parmtype, name##type, #name ":" _type)
-=======
 #define __MODULE_INFO(tag, name, info)					  \
 	static const char __UNIQUE_ID(name)[]				  \
 		__used __section(".modinfo") __aligned(1)		  \
@@ -51,7 +27,6 @@ static const char __module_cat(name,__LINE__)[]				  \
 
 #define __MODULE_PARM_TYPE(name, _type)					  \
 	__MODULE_INFO(parmtype, name##type, #name ":" _type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* One for each parameter, describing how to use it.  Some files do
    multiple of these per line, so can't just use MODULE_INFO. */
@@ -60,9 +35,6 @@ static const char __module_cat(name,__LINE__)[]				  \
 
 struct kernel_param;
 
-<<<<<<< HEAD
-struct kernel_param_ops {
-=======
 /*
  * Flags available for kernel_param_ops
  *
@@ -75,7 +47,6 @@ enum {
 struct kernel_param_ops {
 	/* How the ops should behave */
 	unsigned int flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Returns 0, or -errno.  arg is in kp->arg. */
 	int (*set)(const char *val, const struct kernel_param *kp);
 	/* Returns length written or -errno.  Buffer is 4k (ie. be short!) */
@@ -84,13 +55,6 @@ struct kernel_param_ops {
 	void (*free)(void *arg);
 };
 
-<<<<<<< HEAD
-struct kernel_param {
-	const char *name;
-	const struct kernel_param_ops *ops;
-	u16 perm;
-	s16 level;
-=======
 /*
  * Flags available for kernel_param
  *
@@ -109,7 +73,6 @@ struct kernel_param {
 	const u16 perm;
 	s8 level;
 	u8 flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union {
 		void *arg;
 		const struct kparam_string *str;
@@ -117,11 +80,8 @@ struct kernel_param {
 	};
 };
 
-<<<<<<< HEAD
-=======
 extern const struct kernel_param __start___param[], __stop___param[];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Special one for strings we want to copy into */
 struct kparam_string {
 	unsigned int maxlen;
@@ -140,19 +100,6 @@ struct kparam_array
 
 /**
  * module_param - typesafe helper for a module/cmdline parameter
-<<<<<<< HEAD
- * @value: the variable to alter, and exposed parameter name.
- * @type: the type of the parameter
- * @perm: visibility in sysfs.
- *
- * @value becomes the module parameter, or (prefixed by KBUILD_MODNAME and a
- * ".") the kernel commandline parameter.  Note that - is changed to _, so
- * the user can use "foo-bar=1" even for variable "foo_bar".
- *
- * @perm is 0 if the the variable is not to appear in sysfs, or 0444
- * for world-readable, 0644 for root-writable, etc.  Note that if it
- * is writable, you may need to use kparam_block_sysfs_write() around
-=======
  * @name: the variable to alter, and exposed parameter name.
  * @type: the type of the parameter
  * @perm: visibility in sysfs.
@@ -164,7 +111,6 @@ struct kparam_array
  * @perm is 0 if the variable is not to appear in sysfs, or 0444
  * for world-readable, 0644 for root-writable, etc.  Note that if it
  * is writable, you may need to use kernel_param_lock() around
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * accesses (esp. charp, which can be kfreed when it changes).
  *
  * The @type is simply pasted to refer to a param_ops_##type and a
@@ -172,11 +118,7 @@ struct kparam_array
  * you can create your own by defining those variables.
  *
  * Standard types are:
-<<<<<<< HEAD
- *	byte, short, ushort, int, uint, long, ulong
-=======
  *	byte, hexint, short, ushort, int, uint, long, ulong
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	charp: a character pointer
  *	bool: a bool, values 0/1, y/n, Y/N.
  *	invbool: the above, only sense-reversed (N = true).
@@ -185,8 +127,6 @@ struct kparam_array
 	module_param_named(name, name, type, perm)
 
 /**
-<<<<<<< HEAD
-=======
  * module_param_unsafe - same as module_param but taints kernel
  * @name: the variable to alter, and exposed parameter name.
  * @type: the type of the parameter
@@ -196,7 +136,6 @@ struct kparam_array
 	module_param_named_unsafe(name, name, type, perm)
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * module_param_named - typesafe helper for a renamed module/cmdline parameter
  * @name: a valid C identifier which is the parameter name.
  * @value: the actual lvalue to alter.
@@ -213,11 +152,6 @@ struct kparam_array
 	__MODULE_PARM_TYPE(name, #type)
 
 /**
-<<<<<<< HEAD
- * module_param_cb - general callback for a module/cmdline parameter
- * @name: a valid C identifier which is the parameter name.
- * @ops: the set & get operations for this parameter.
-=======
  * module_param_named_unsafe - same as module_param_named but taints kernel
  * @name: a valid C identifier which is the parameter name.
  * @value: the actual lvalue to alter.
@@ -234,21 +168,11 @@ struct kparam_array
  * @name: a valid C identifier which is the parameter name.
  * @ops: the set & get operations for this parameter.
  * @arg: args for @ops
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @perm: visibility in sysfs.
  *
  * The ops can have NULL set or get functions.
  */
 #define module_param_cb(name, ops, arg, perm)				      \
-<<<<<<< HEAD
-	__module_param_call(MODULE_PARAM_PREFIX, name, ops, arg, perm, -1)
-
-/**
- * <level>_param_cb - general callback for a module/cmdline parameter
- *                    to be evaluated before certain initcall level
- * @name: a valid C identifier which is the parameter name.
- * @ops: the set & get operations for this parameter.
-=======
 	__module_param_call(MODULE_PARAM_PREFIX, name, ops, arg, perm, -1, 0)
 
 #define module_param_cb_unsafe(name, ops, arg, perm)			      \
@@ -263,34 +187,10 @@ struct kparam_array
  * @name: a valid C identifier which is the parameter name.
  * @ops: the set & get operations for this parameter.
  * @arg: args for @ops
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @perm: visibility in sysfs.
  *
  * The ops can have NULL set or get functions.
  */
-<<<<<<< HEAD
-#define __level_param_cb(name, ops, arg, perm, level)			\
-	__module_param_call(MODULE_PARAM_PREFIX, name, ops, arg, perm, level)
-
-#define core_param_cb(name, ops, arg, perm)		\
-	__level_param_cb(name, ops, arg, perm, 1)
-
-#define postcore_param_cb(name, ops, arg, perm)		\
-	__level_param_cb(name, ops, arg, perm, 2)
-
-#define arch_param_cb(name, ops, arg, perm)		\
-	__level_param_cb(name, ops, arg, perm, 3)
-
-#define subsys_param_cb(name, ops, arg, perm)		\
-	__level_param_cb(name, ops, arg, perm, 4)
-
-#define fs_param_cb(name, ops, arg, perm)		\
-	__level_param_cb(name, ops, arg, perm, 5)
-
-#define device_param_cb(name, ops, arg, perm)		\
-	__level_param_cb(name, ops, arg, perm, 6)
-
-=======
 #define core_param_cb(name, ops, arg, perm)		\
 	__level_param_cb(name, ops, arg, perm, 1)
 
@@ -369,7 +269,6 @@ struct kparam_array
  *
  * The ops can have NULL set or get functions.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define late_param_cb(name, ops, arg, perm)		\
 	__level_param_cb(name, ops, arg, perm, 7)
 
@@ -377,11 +276,7 @@ struct kparam_array
    read-only sections (which is part of respective UNIX ABI on these
    platforms). So 'const' makes no sense and even causes compile failures
    with some compilers. */
-<<<<<<< HEAD
-#if defined(CONFIG_ALPHA) || defined(CONFIG_IA64) || defined(CONFIG_PPC64)
-=======
 #if defined(CONFIG_ALPHA) || defined(CONFIG_PPC64)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __moduleparam_const
 #else
 #define __moduleparam_const const
@@ -389,86 +284,6 @@ struct kparam_array
 
 /* This is the fundamental function for registering boot/module
    parameters. */
-<<<<<<< HEAD
-#define __module_param_call(prefix, name, ops, arg, perm, level)	\
-	/* Default value instead of permissions? */			\
-	static int __param_perm_check_##name __attribute__((unused)) =	\
-	BUILD_BUG_ON_ZERO((perm) < 0 || (perm) > 0777 || ((perm) & 2))	\
-	+ BUILD_BUG_ON_ZERO(sizeof(""prefix) > MAX_PARAM_PREFIX_LEN);	\
-	static const char __param_str_##name[] = prefix #name;		\
-	static struct kernel_param __moduleparam_const __param_##name	\
-	__used								\
-    __attribute__ ((unused,__section__ ("__param"),aligned(sizeof(void *)))) \
-	= { __param_str_##name, ops, perm, level, { arg } }
-
-/* Obsolete - use module_param_cb() */
-#define module_param_call(name, set, get, arg, perm)			\
-	static struct kernel_param_ops __param_ops_##name =		\
-		 { (void *)set, (void *)get };				\
-	__module_param_call(MODULE_PARAM_PREFIX,			\
-			    name, &__param_ops_##name, arg,		\
-			    (perm) + sizeof(__check_old_set_param(set))*0, -1)
-
-/* We don't get oldget: it's often a new-style param_get_uint, etc. */
-static inline int
-__check_old_set_param(int (*oldset)(const char *, struct kernel_param *))
-{
-	return 0;
-}
-
-/**
- * kparam_block_sysfs_write - make sure a parameter isn't written via sysfs.
- * @name: the name of the parameter
- *
- * There's no point blocking write on a paramter that isn't writable via sysfs!
- */
-#define kparam_block_sysfs_write(name)			\
-	do {						\
-		BUG_ON(!(__param_##name.perm & 0222));	\
-		__kernel_param_lock();			\
-	} while (0)
-
-/**
- * kparam_unblock_sysfs_write - allows sysfs to write to a parameter again.
- * @name: the name of the parameter
- */
-#define kparam_unblock_sysfs_write(name)		\
-	do {						\
-		BUG_ON(!(__param_##name.perm & 0222));	\
-		__kernel_param_unlock();		\
-	} while (0)
-
-/**
- * kparam_block_sysfs_read - make sure a parameter isn't read via sysfs.
- * @name: the name of the parameter
- *
- * This also blocks sysfs writes.
- */
-#define kparam_block_sysfs_read(name)			\
-	do {						\
-		BUG_ON(!(__param_##name.perm & 0444));	\
-		__kernel_param_lock();			\
-	} while (0)
-
-/**
- * kparam_unblock_sysfs_read - allows sysfs to read a parameter again.
- * @name: the name of the parameter
- */
-#define kparam_unblock_sysfs_read(name)			\
-	do {						\
-		BUG_ON(!(__param_##name.perm & 0444));	\
-		__kernel_param_unlock();		\
-	} while (0)
-
-#ifdef CONFIG_SYSFS
-extern void __kernel_param_lock(void);
-extern void __kernel_param_unlock(void);
-#else
-static inline void __kernel_param_lock(void)
-{
-}
-static inline void __kernel_param_unlock(void)
-=======
 #define __module_param_call(prefix, name, ops, arg, perm, level, flags)	\
 	/* Default value instead of permissions? */			\
 	static const char __param_str_##name[] = prefix #name;		\
@@ -497,7 +312,6 @@ static inline void kernel_param_lock(struct module *mod)
 {
 }
 static inline void kernel_param_unlock(struct module *mod)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif
@@ -517,9 +331,6 @@ static inline void kernel_param_unlock(struct module *mod)
  */
 #define core_param(name, var, type, perm)				\
 	param_check_##type(name, &(var));				\
-<<<<<<< HEAD
-	__module_param_call("", name, &param_ops_##type, &var, perm, -1)
-=======
 	__module_param_call("", name, &param_ops_##type, &var, perm, -1, 0)
 
 /**
@@ -534,7 +345,6 @@ static inline void kernel_param_unlock(struct module *mod)
 	__module_param_call("", name, &param_ops_##type, &var, perm,	\
 			    -1, KERNEL_PARAM_FL_UNSAFE)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !MODULE */
 
 /**
@@ -552,11 +362,7 @@ static inline void kernel_param_unlock(struct module *mod)
 		= { len, string };					\
 	__module_param_call(MODULE_PARAM_PREFIX, name,			\
 			    &param_ops_string,				\
-<<<<<<< HEAD
-			    .str = &__param_string_##name, perm, -1);	\
-=======
 			    .str = &__param_string_##name, perm, -1, 0);\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__MODULE_PARM_TYPE(name, "string")
 
 /**
@@ -579,25 +385,16 @@ extern bool parameq(const char *name1, const char *name2);
  */
 extern bool parameqn(const char *name1, const char *name2, size_t n);
 
-<<<<<<< HEAD
-/* Called on module insert or kernel boot */
-extern int parse_args(const char *name,
-=======
 typedef int (*parse_unknown_fn)(char *param, char *val, const char *doing, void *arg);
 
 /* Called on module insert or kernel boot */
 extern char *parse_args(const char *name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      char *args,
 		      const struct kernel_param *params,
 		      unsigned num,
 		      s16 level_min,
 		      s16 level_max,
-<<<<<<< HEAD
-		      int (*unknown)(char *param, char *val));
-=======
 		      void *arg, parse_unknown_fn unknown);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Called by module remove. */
 #ifdef CONFIG_SYSFS
@@ -613,54 +410,28 @@ static inline void destroy_params(const struct kernel_param *params,
 /* The macros to do compile-time type checking stolen from Jakub
    Jelinek, who IIRC came up with this idea for the 2.4 module init code. */
 #define __param_check(name, p, type) \
-<<<<<<< HEAD
-	static inline type *__check_##name(void) { return(p); }
-
-extern struct kernel_param_ops param_ops_byte;
-=======
 	static inline type __always_unused *__check_##name(void) { return(p); }
 
 extern const struct kernel_param_ops param_ops_byte;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int param_set_byte(const char *val, const struct kernel_param *kp);
 extern int param_get_byte(char *buffer, const struct kernel_param *kp);
 #define param_check_byte(name, p) __param_check(name, p, unsigned char)
 
-<<<<<<< HEAD
-extern struct kernel_param_ops param_ops_short;
-=======
 extern const struct kernel_param_ops param_ops_short;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int param_set_short(const char *val, const struct kernel_param *kp);
 extern int param_get_short(char *buffer, const struct kernel_param *kp);
 #define param_check_short(name, p) __param_check(name, p, short)
 
-<<<<<<< HEAD
-extern struct kernel_param_ops param_ops_ushort;
-=======
 extern const struct kernel_param_ops param_ops_ushort;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int param_set_ushort(const char *val, const struct kernel_param *kp);
 extern int param_get_ushort(char *buffer, const struct kernel_param *kp);
 #define param_check_ushort(name, p) __param_check(name, p, unsigned short)
 
-<<<<<<< HEAD
-extern struct kernel_param_ops param_ops_int;
-=======
 extern const struct kernel_param_ops param_ops_int;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int param_set_int(const char *val, const struct kernel_param *kp);
 extern int param_get_int(char *buffer, const struct kernel_param *kp);
 #define param_check_int(name, p) __param_check(name, p, int)
 
-<<<<<<< HEAD
-extern struct kernel_param_ops param_ops_uint;
-extern int param_set_uint(const char *val, const struct kernel_param *kp);
-extern int param_get_uint(char *buffer, const struct kernel_param *kp);
-#define param_check_uint(name, p) __param_check(name, p, unsigned int)
-
-extern struct kernel_param_ops param_ops_long;
-=======
 extern const struct kernel_param_ops param_ops_uint;
 extern int param_set_uint(const char *val, const struct kernel_param *kp);
 extern int param_get_uint(char *buffer, const struct kernel_param *kp);
@@ -669,29 +440,15 @@ int param_set_uint_minmax(const char *val, const struct kernel_param *kp,
 #define param_check_uint(name, p) __param_check(name, p, unsigned int)
 
 extern const struct kernel_param_ops param_ops_long;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int param_set_long(const char *val, const struct kernel_param *kp);
 extern int param_get_long(char *buffer, const struct kernel_param *kp);
 #define param_check_long(name, p) __param_check(name, p, long)
 
-<<<<<<< HEAD
-extern struct kernel_param_ops param_ops_ulong;
-=======
 extern const struct kernel_param_ops param_ops_ulong;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int param_set_ulong(const char *val, const struct kernel_param *kp);
 extern int param_get_ulong(char *buffer, const struct kernel_param *kp);
 #define param_check_ulong(name, p) __param_check(name, p, unsigned long)
 
-<<<<<<< HEAD
-extern struct kernel_param_ops param_ops_charp;
-extern int param_set_charp(const char *val, const struct kernel_param *kp);
-extern int param_get_charp(char *buffer, const struct kernel_param *kp);
-#define param_check_charp(name, p) __param_check(name, p, char *)
-
-/* We used to allow int as well as bool.  We're taking that away! */
-extern struct kernel_param_ops param_ops_bool;
-=======
 extern const struct kernel_param_ops param_ops_ullong;
 extern int param_set_ullong(const char *val, const struct kernel_param *kp);
 extern int param_get_ullong(char *buffer, const struct kernel_param *kp);
@@ -710,14 +467,10 @@ extern void param_free_charp(void *arg);
 
 /* We used to allow int as well as bool.  We're taking that away! */
 extern const struct kernel_param_ops param_ops_bool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int param_set_bool(const char *val, const struct kernel_param *kp);
 extern int param_get_bool(char *buffer, const struct kernel_param *kp);
 #define param_check_bool(name, p) __param_check(name, p, bool)
 
-<<<<<<< HEAD
-extern struct kernel_param_ops param_ops_invbool;
-=======
 extern const struct kernel_param_ops param_ops_bool_enable_only;
 extern int param_set_bool_enable_only(const char *val,
 				      const struct kernel_param *kp);
@@ -725,17 +478,12 @@ extern int param_set_bool_enable_only(const char *val,
 #define param_check_bool_enable_only param_check_bool
 
 extern const struct kernel_param_ops param_ops_invbool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int param_set_invbool(const char *val, const struct kernel_param *kp);
 extern int param_get_invbool(char *buffer, const struct kernel_param *kp);
 #define param_check_invbool(name, p) __param_check(name, p, bool)
 
 /* An int, which can only be set like a bool (though it shows as an int). */
-<<<<<<< HEAD
-extern struct kernel_param_ops param_ops_bint;
-=======
 extern const struct kernel_param_ops param_ops_bint;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int param_set_bint(const char *val, const struct kernel_param *kp);
 #define param_get_bint param_get_int
 #define param_check_bint param_check_int
@@ -776,18 +524,6 @@ extern int param_set_bint(const char *val, const struct kernel_param *kp);
 	__module_param_call(MODULE_PARAM_PREFIX, name,			\
 			    &param_array_ops,				\
 			    .arr = &__param_arr_##name,			\
-<<<<<<< HEAD
-			    perm, -1);					\
-	__MODULE_PARM_TYPE(name, "array of " #type)
-
-extern struct kernel_param_ops param_array_ops;
-
-extern struct kernel_param_ops param_ops_string;
-extern int param_set_copystring(const char *val, const struct kernel_param *);
-extern int param_get_string(char *buffer, const struct kernel_param *kp);
-
-/* for exporting parameters in /sys/parameters */
-=======
 			    perm, -1, 0);				\
 	__MODULE_PARM_TYPE(name, "array of " #type)
 
@@ -859,7 +595,6 @@ extern int param_set_copystring(const char *val, const struct kernel_param *);
 extern int param_get_string(char *buffer, const struct kernel_param *kp);
 
 /* for exporting parameters in /sys/module/.../parameters */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct module;
 

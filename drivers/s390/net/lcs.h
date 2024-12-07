@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*lcs.h*/
 
 #include <linux/interrupt.h>
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
 #include <linux/workqueue.h>
-<<<<<<< HEAD
-=======
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ccwdev.h>
 
 #define LCS_DBF_TEXT(level, name, text) \
@@ -24,23 +18,10 @@ do { \
 	debug_event(lcs_dbf_##name,level,(void*)(addr),len); \
 } while (0)
 
-<<<<<<< HEAD
-/* Allow to sort out low debug levels early to avoid wasted sprints */
-static inline int lcs_dbf_passes(debug_info_t *dbf_grp, int level)
-{
-	return (level <= dbf_grp->level);
-}
-
-#define LCS_DBF_TEXT_(level,name,text...) \
-	do { \
-		if (lcs_dbf_passes(lcs_dbf_##name, level)) { \
-			sprintf(debug_buffer, text); \
-=======
 #define LCS_DBF_TEXT_(level,name,text...) \
 	do { \
 		if (debug_level_enabled(lcs_dbf_##name, level)) { \
 			scnprintf(debug_buffer, sizeof(debug_buffer), text); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			debug_text_event(lcs_dbf_##name, level, debug_buffer); \
 		} \
 	} while (0)
@@ -291,19 +272,12 @@ struct lcs_buffer {
 struct lcs_reply {
 	struct list_head list;
 	__u16 sequence_no;
-<<<<<<< HEAD
-	atomic_t refcnt;
-=======
 	refcount_t refcnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Callback for completion notification. */
 	void (*callback)(struct lcs_card *, struct lcs_cmd *);
 	wait_queue_head_t wait_q;
 	struct lcs_card *card;
-<<<<<<< HEAD
-=======
 	struct timer_list timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int received;
 	int rc;
 };

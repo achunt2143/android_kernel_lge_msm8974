@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-#include <asm-generic/vmlinux.lds.h>
-=======
 #include <asm/vmlinux.lds.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 
 OUTPUT_FORMAT(ELF_FORMAT)
@@ -10,15 +6,12 @@ OUTPUT_ARCH(ELF_ARCH)
 ENTRY(_start)
 jiffies = jiffies_64;
 
-<<<<<<< HEAD
-=======
 VERSION {
   {
     local: *;
   };
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SECTIONS
 {
   PROVIDE (__executable_start = START);
@@ -27,11 +20,6 @@ SECTIONS
   __binary_start = .;
   . = ALIGN(4096);		/* Init code and data */
   _text = .;
-<<<<<<< HEAD
-  _stext = .;
-  __init_begin = .;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   INIT_TEXT_SECTION(PAGE_SIZE)
 
   . = ALIGN(PAGE_SIZE);
@@ -83,18 +71,12 @@ SECTIONS
   } =0x90909090
   .plt            : { *(.plt) }
   .text           : {
-<<<<<<< HEAD
-    TEXT_TEXT
-    SCHED_TEXT
-    LOCK_TEXT
-=======
     _stext = .;
     TEXT_TEXT
     SCHED_TEXT
     LOCK_TEXT
     IRQENTRY_TEXT
     SOFTIRQENTRY_TEXT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     *(.fixup)
     *(.stub .text.* .gnu.linkonce.t.*)
     /* .gnu.warning sections are handled specially by elf32.em.  */
@@ -114,17 +96,11 @@ SECTIONS
 
   .kstrtab : { *(.kstrtab) }
 
-<<<<<<< HEAD
-  #include "asm/common.lds.S"
-
-  init.data : { INIT_DATA }
-=======
   #include <asm/common.lds.S>
 
   __init_begin = .;
   init.data : { INIT_DATA }
   __init_end = .;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   /* Ensure the __preinit_array_start label is properly aligned.  We
      could instead move the label definition inside the section, but
@@ -132,15 +108,11 @@ SECTIONS
      be empty, which isn't pretty.  */
   . = ALIGN(32 / 8);
   .preinit_array     : { *(.preinit_array) }
-<<<<<<< HEAD
-  .init_array     : { *(.init_array) }
-=======
   .init_array     : {
     *(.kasan_init)
     *(.init_array.*)
     *(.init_array)
   }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   .fini_array     : { *(.fini_array) }
   .data           : {
     INIT_TASK_DATA(KERNEL_STACK_SIZE)
@@ -196,21 +168,13 @@ SECTIONS
    . = ALIGN(32 / 8);
   . = ALIGN(32 / 8);
   }
-<<<<<<< HEAD
-=======
    __bss_stop = .;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   _end = .;
   PROVIDE (end = .);
 
   STABS_DEBUG
-<<<<<<< HEAD
-
-  DWARF_DEBUG
-=======
   DWARF_DEBUG
   ELF_DETAILS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   DISCARDS
 }

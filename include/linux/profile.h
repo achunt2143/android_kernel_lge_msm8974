@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_PROFILE_H
 #define _LINUX_PROFILE_H
 
@@ -18,39 +15,17 @@
 #define KVM_PROFILING	4
 
 struct proc_dir_entry;
-<<<<<<< HEAD
-struct pt_regs;
-struct notifier_block;
-
-#if defined(CONFIG_PROFILING) && defined(CONFIG_PROC_FS)
-void create_prof_cpu_mask(struct proc_dir_entry *de);
-int create_proc_profile(void);
-#else
-static inline void create_prof_cpu_mask(struct proc_dir_entry *de)
-{
-}
-
-=======
 struct notifier_block;
 
 #if defined(CONFIG_PROFILING) && defined(CONFIG_PROC_FS)
 int create_proc_profile(void);
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int create_proc_profile(void)
 {
 	return 0;
 }
 #endif
 
-<<<<<<< HEAD
-enum profile_type {
-	PROFILE_TASK_EXIT,
-	PROFILE_MUNMAP
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PROFILING
 
 extern int prof_on __read_mostly;
@@ -59,10 +34,7 @@ extern int prof_on __read_mostly;
 int profile_init(void);
 int profile_setup(char *str);
 void profile_tick(int type);
-<<<<<<< HEAD
-=======
 int setup_profiling_timer(unsigned int multiplier);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Add multiple profiler hits to a given address:
@@ -84,31 +56,6 @@ static inline void profile_hit(int type, void *ip)
 struct task_struct;
 struct mm_struct;
 
-<<<<<<< HEAD
-/* task is in do_exit() */
-void profile_task_exit(struct task_struct * task);
-
-/* task is dead, free task struct ? Returns 1 if
- * the task was taken, 0 if the task should be freed.
- */
-int profile_handoff_task(struct task_struct * task);
-
-/* sys_munmap */
-void profile_munmap(unsigned long addr);
-
-int task_handoff_register(struct notifier_block * n);
-int task_handoff_unregister(struct notifier_block * n);
-
-int profile_event_register(enum profile_type, struct notifier_block * n);
-int profile_event_unregister(enum profile_type, struct notifier_block * n);
-
-int register_timer_hook(int (*hook)(struct pt_regs *));
-void unregister_timer_hook(int (*hook)(struct pt_regs *));
-
-struct pt_regs;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 
 #define prof_on 0
@@ -133,42 +80,6 @@ static inline void profile_hit(int type, void *ip)
 	return;
 }
 
-<<<<<<< HEAD
-static inline int task_handoff_register(struct notifier_block * n)
-{
-	return -ENOSYS;
-}
-
-static inline int task_handoff_unregister(struct notifier_block * n)
-{
-	return -ENOSYS;
-}
-
-static inline int profile_event_register(enum profile_type t, struct notifier_block * n)
-{
-	return -ENOSYS;
-}
-
-static inline int profile_event_unregister(enum profile_type t, struct notifier_block * n)
-{
-	return -ENOSYS;
-}
-
-#define profile_task_exit(a) do { } while (0)
-#define profile_handoff_task(a) (0)
-#define profile_munmap(a) do { } while (0)
-
-static inline int register_timer_hook(int (*hook)(struct pt_regs *))
-{
-	return -ENOSYS;
-}
-
-static inline void unregister_timer_hook(int (*hook)(struct pt_regs *))
-{
-	return;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_PROFILING */
 

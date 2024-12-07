@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/asm-m68k/io.h
  *
@@ -19,26 +16,14 @@
  *    isa_readX(),isa_writeX()  are for ISA memory
  */
 
-<<<<<<< HEAD
-#ifndef _IO_H
-#define _IO_H
-=======
 #ifndef _M68K_IO_MM_H
 #define _M68K_IO_MM_H
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __KERNEL__
 
 #include <linux/compiler.h>
 #include <asm/raw_io.h>
 #include <asm/virtconvert.h>
-<<<<<<< HEAD
-
-#include <asm-generic/iomap.h>
-
-#ifdef CONFIG_ATARI
-#include <asm/atarihw.h>
-=======
 #include <asm/kmap.h>
 
 #ifdef CONFIG_ATARI
@@ -47,7 +32,6 @@
 
 #define atari_inb_p   raw_inb
 #define atari_outb_p  raw_outb
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 
@@ -83,11 +67,6 @@
 #endif
 #endif /* AMIGA_PCMCIA */
 
-<<<<<<< HEAD
-
-
-#ifdef CONFIG_ISA
-=======
 #ifdef CONFIG_ATARI_ROM_ISA
 
 #define enec_isa_read_base  0xfffa0000
@@ -108,20 +87,14 @@
 
 
 #if defined(CONFIG_ISA) || defined(CONFIG_ATARI_ROM_ISA)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if MULTI_ISA == 0
 #undef MULTI_ISA
 #endif
 
-<<<<<<< HEAD
-#define ISA_TYPE_Q40 (1)
-#define ISA_TYPE_AG  (2)
-=======
 #define ISA_TYPE_Q40  (1)
 #define ISA_TYPE_AG   (2)
 #define ISA_TYPE_ENEC (3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_Q40) && !defined(MULTI_ISA)
 #define ISA_TYPE ISA_TYPE_Q40
@@ -131,13 +104,10 @@
 #define ISA_TYPE ISA_TYPE_AG
 #define ISA_SEX  1
 #endif
-<<<<<<< HEAD
-=======
 #if defined(CONFIG_ATARI_ROM_ISA) && !defined(MULTI_ISA)
 #define ISA_TYPE ISA_TYPE_ENEC
 #define ISA_SEX  0
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef MULTI_ISA
 extern int isa_type;
@@ -162,12 +132,9 @@ static inline u8 __iomem *isa_itb(unsigned long addr)
 #ifdef CONFIG_AMIGA_PCMCIA
     case ISA_TYPE_AG: return (u8 __iomem *)AG_ISA_IO_B(addr);
 #endif
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_ATARI_ROM_ISA
     case ISA_TYPE_ENEC: return (u8 __iomem *)ENEC_ISA_IO_B(addr);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     default: return NULL; /* avoid warnings, just in case */
     }
 }
@@ -181,12 +148,9 @@ static inline u16 __iomem *isa_itw(unsigned long addr)
 #ifdef CONFIG_AMIGA_PCMCIA
     case ISA_TYPE_AG: return (u16 __iomem *)AG_ISA_IO_W(addr);
 #endif
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_ATARI_ROM_ISA
     case ISA_TYPE_ENEC: return (u16 __iomem *)ENEC_ISA_IO_W(addr);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     default: return NULL; /* avoid warnings, just in case */
     }
 }
@@ -210,12 +174,9 @@ static inline u8 __iomem *isa_mtb(unsigned long addr)
 #ifdef CONFIG_AMIGA_PCMCIA
     case ISA_TYPE_AG: return (u8 __iomem *)addr;
 #endif
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_ATARI_ROM_ISA
     case ISA_TYPE_ENEC: return (u8 __iomem *)ENEC_ISA_MEM_B(addr);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     default: return NULL; /* avoid warnings, just in case */
     }
 }
@@ -229,12 +190,9 @@ static inline u16 __iomem *isa_mtw(unsigned long addr)
 #ifdef CONFIG_AMIGA_PCMCIA
     case ISA_TYPE_AG: return (u16 __iomem *)addr;
 #endif
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_ATARI_ROM_ISA
     case ISA_TYPE_ENEC: return (u16 __iomem *)ENEC_ISA_MEM_W(addr);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     default: return NULL; /* avoid warnings, just in case */
     }
 }
@@ -256,8 +214,6 @@ static inline u16 __iomem *isa_mtw(unsigned long addr)
 	(ISA_SEX ? out_be16(isa_mtw((unsigned long)(p)),(val))	\
 		 : out_le16(isa_mtw((unsigned long)(p)),(val)))
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_ATARI_ROM_ISA
 #define isa_rom_inb(port)      rom_in_8(isa_itb(port))
 #define isa_rom_inw(port)	\
@@ -288,7 +244,6 @@ static inline u16 __iomem *isa_mtw(unsigned long addr)
 #define isa_rom_writew_raw(val, p)  rom_out_be16(isa_mtw((unsigned long)(p)), (val))
 #endif /* CONFIG_ATARI_ROM_ISA */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void isa_delay(void)
 {
   switch(ISA_TYPE)
@@ -299,12 +254,9 @@ static inline void isa_delay(void)
 #ifdef CONFIG_AMIGA_PCMCIA
     case ISA_TYPE_AG: break;
 #endif
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_ATARI_ROM_ISA
     case ISA_TYPE_ENEC: break;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     default: break; /* avoid warnings */
     }
 }
@@ -320,24 +272,6 @@ static inline void isa_delay(void)
 #define isa_outsb(port, buf, nr) raw_outsb(isa_itb(port), (u8 *)(buf), (nr))
 
 #define isa_insw(port, buf, nr)     \
-<<<<<<< HEAD
-       (ISA_SEX ? raw_insw(isa_itw(port), (u16 *)(buf), (nr)) :    \
-                  raw_insw_swapw(isa_itw(port), (u16 *)(buf), (nr)))
-
-#define isa_outsw(port, buf, nr)    \
-       (ISA_SEX ? raw_outsw(isa_itw(port), (u16 *)(buf), (nr)) :  \
-                  raw_outsw_swapw(isa_itw(port), (u16 *)(buf), (nr)))
-
-#define isa_insl(port, buf, nr)     \
-       (ISA_SEX ? raw_insl(isa_itl(port), (u32 *)(buf), (nr)) :    \
-                  raw_insw_swapw(isa_itw(port), (u16 *)(buf), (nr)<<1))
-
-#define isa_outsl(port, buf, nr)    \
-       (ISA_SEX ? raw_outsl(isa_itl(port), (u32 *)(buf), (nr)) :  \
-                  raw_outsw_swapw(isa_itw(port), (u16 *)(buf), (nr)<<1))
-
-
-=======
 	(ISA_SEX ? raw_insw(isa_itw(port), (u16 *)(buf), (nr)) :    \
 		   raw_insw_swapw(isa_itw(port), (u16 *)(buf), (nr)))
 
@@ -377,7 +311,6 @@ static inline void isa_delay(void)
 
 
 #if defined(CONFIG_ISA) && !defined(CONFIG_ATARI_ROM_ISA)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define inb     isa_inb
 #define inb_p   isa_inb_p
 #define outb    isa_outb
@@ -400,43 +333,6 @@ static inline void isa_delay(void)
 #define readw   isa_readw
 #define writeb  isa_writeb
 #define writew  isa_writew
-<<<<<<< HEAD
-
-#else  /* CONFIG_ISA */
-
-/*
- * We need to define dummy functions for GENERIC_IOMAP support.
- */
-#define inb(port)          0xff
-#define inb_p(port)        0xff
-#define outb(val,port)     ((void)0)
-#define outb_p(val,port)   ((void)0)
-#define inw(port)          0xffff
-#define inw_p(port)        0xffff
-#define outw(val,port)     ((void)0)
-#define outw_p(val,port)   ((void)0)
-#define inl(port)          0xffffffffUL
-#define inl_p(port)        0xffffffffUL
-#define outl(val,port)     ((void)0)
-#define outl_p(val,port)   ((void)0)
-
-#define insb(port,buf,nr)  ((void)0)
-#define outsb(port,buf,nr) ((void)0)
-#define insw(port,buf,nr)  ((void)0)
-#define outsw(port,buf,nr) ((void)0)
-#define insl(port,buf,nr)  ((void)0)
-#define outsl(port,buf,nr) ((void)0)
-
-/*
- * These should be valid on any ioremap()ed region
- */
-#define readb(addr)      in_8(addr)
-#define writeb(val,addr) out_8((addr),(val))
-#define readw(addr)      in_le16(addr)
-#define writew(val,addr) out_le16((addr),(val))
-
-#endif /* CONFIG_ISA */
-=======
 #endif  /* CONFIG_ISA && !CONFIG_ATARI_ROM_ISA */
 
 #ifdef CONFIG_ATARI_ROM_ISA
@@ -472,53 +368,16 @@ static inline void isa_delay(void)
 #define readw(addr)		in_le16(addr)
 #define writew(val, addr)	out_le16((addr), (val))
 #endif /* CONFIG_ATARI_ROM_ISA */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define readl(addr)      in_le32(addr)
 #define writel(val,addr) out_le32((addr),(val))
 
-<<<<<<< HEAD
-#define mmiowb()
-
-static inline void __iomem *ioremap(unsigned long physaddr, unsigned long size)
-{
-	return __ioremap(physaddr, size, IOMAP_NOCACHE_SER);
-}
-static inline void __iomem *ioremap_nocache(unsigned long physaddr, unsigned long size)
-{
-	return __ioremap(physaddr, size, IOMAP_NOCACHE_SER);
-}
-static inline void __iomem *ioremap_writethrough(unsigned long physaddr,
-					 unsigned long size)
-{
-	return __ioremap(physaddr, size, IOMAP_WRITETHROUGH);
-}
-static inline void __iomem *ioremap_fullcache(unsigned long physaddr,
-				      unsigned long size)
-{
-	return __ioremap(physaddr, size, IOMAP_FULL_CACHING);
-}
-
-static inline void memset_io(volatile void __iomem *addr, unsigned char val, int count)
-{
-	__builtin_memset((void __force *) addr, val, count);
-}
-static inline void memcpy_fromio(void *dst, const volatile void __iomem *src, int count)
-{
-	__builtin_memcpy(dst, (void __force *) src, count);
-}
-static inline void memcpy_toio(volatile void __iomem *dst, const void *src, int count)
-{
-	__builtin_memcpy((void __force *) dst, src, count);
-}
-=======
 #define readsb(port, buf, nr)     raw_insb((port), (u8 *)(buf), (nr))
 #define readsw(port, buf, nr)     raw_insw((port), (u16 *)(buf), (nr))
 #define readsl(port, buf, nr)     raw_insl((port), (u32 *)(buf), (nr))
 #define writesb(port, buf, nr)    raw_outsb((port), (u8 *)(buf), (nr))
 #define writesw(port, buf, nr)    raw_outsw((port), (u16 *)(buf), (nr))
 #define writesl(port, buf, nr)    raw_outsl((port), (u32 *)(buf), (nr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CONFIG_SUN3
 #define IO_SPACE_LIMIT 0xffff
@@ -530,20 +389,6 @@ static inline void memcpy_toio(volatile void __iomem *dst, const void *src, int 
 
 #define __ARCH_HAS_NO_PAGE_ZERO_MAPPED		1
 
-<<<<<<< HEAD
-/*
- * Convert a physical pointer to a virtual kernel pointer for /dev/mem
- * access
- */
-#define xlate_dev_mem_ptr(p)	__va(p)
-
-/*
- * Convert a virtual cached pointer to an uncached pointer
- */
-#define xlate_dev_kmem_ptr(p)	p
-
-#endif /* _IO_H */
-=======
 #define readb_relaxed(addr)	readb(addr)
 #define readw_relaxed(addr)	readw(addr)
 #define readl_relaxed(addr)	readl(addr)
@@ -553,4 +398,3 @@ static inline void memcpy_toio(volatile void __iomem *dst, const void *src, int 
 #define writel_relaxed(b, addr)	writel(b, addr)
 
 #endif /* _M68K_IO_MM_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

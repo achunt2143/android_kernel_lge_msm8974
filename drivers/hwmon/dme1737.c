@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * dme1737.c - Driver for the SMSC DME1737, Asus A8000, SMSC SCH311x, SCH5027,
  *             and SCH5127 Super-I/O chips integrated hardware monitoring
@@ -13,23 +10,6 @@
  * if a SCH311x or SCH5127 chip is found. Both types of chips have very
  * similar hardware monitoring capabilities but differ in the way they can be
  * accessed.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -62,24 +42,16 @@ MODULE_PARM_DESC(force_id, "Override the detected device ID");
 
 static bool probe_all_addr;
 module_param(probe_all_addr, bool, 0);
-<<<<<<< HEAD
-MODULE_PARM_DESC(probe_all_addr, "Include probing of non-standard LPC "
-		 "addresses");
-=======
 MODULE_PARM_DESC(probe_all_addr,
 		 "Include probing of non-standard LPC addresses");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Addresses to scan */
 static const unsigned short normal_i2c[] = {0x2c, 0x2d, 0x2e, I2C_CLIENT_END};
 
 enum chips { dme1737, sch5027, sch311x, sch5127 };
 
-<<<<<<< HEAD
-=======
 #define	DO_REPORT "Please report to the driver maintainer."
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ---------------------------------------------------------------------
  * Registers
  *
@@ -231,11 +203,7 @@ struct dme1737_data {
 	unsigned int addr;		/* for ISA devices only */
 
 	struct mutex update_lock;
-<<<<<<< HEAD
-	int valid;			/* !=0 if following fields are valid */
-=======
 	bool valid;			/* true if following fields are valid */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_update;	/* in jiffies */
 	unsigned long last_vbat;	/* in jiffies */
 	enum chips type;
@@ -266,13 +234,8 @@ struct dme1737_data {
 	u8  pwm_acz[3];
 	u8  pwm_freq[6];
 	u8  pwm_rr[2];
-<<<<<<< HEAD
-	u8  zone_low[3];
-	u8  zone_abs[3];
-=======
 	s8  zone_low[3];
 	s8  zone_abs[3];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8  zone_hyst[2];
 	u32 alarms;
 };
@@ -301,16 +264,10 @@ static inline int IN_FROM_REG(int reg, int nominal, int res)
 	return (reg * nominal + (3 << (res - 3))) / (3 << (res - 2));
 }
 
-<<<<<<< HEAD
-static inline int IN_TO_REG(int val, int nominal)
-{
-	return SENSORS_LIMIT((val * 192 + nominal / 2) / nominal, 0, 255);
-=======
 static inline int IN_TO_REG(long val, int nominal)
 {
 	val = clamp_val(val, 0, 255 * nominal / 192);
 	return DIV_ROUND_CLOSEST(val * 192, nominal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -324,17 +281,10 @@ static inline int TEMP_FROM_REG(int reg, int res)
 	return (reg * 1000) >> (res - 8);
 }
 
-<<<<<<< HEAD
-static inline int TEMP_TO_REG(int val)
-{
-	return SENSORS_LIMIT((val < 0 ? val - 500 : val + 500) / 1000,
-			     -128, 127);
-=======
 static inline int TEMP_TO_REG(long val)
 {
 	val = clamp_val(val, -128000, 127000);
 	return DIV_ROUND_CLOSEST(val, 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Temperature range */
@@ -347,11 +297,7 @@ static inline int TEMP_RANGE_FROM_REG(int reg)
 	return TEMP_RANGE[(reg >> 4) & 0x0f];
 }
 
-<<<<<<< HEAD
-static int TEMP_RANGE_TO_REG(int val, int reg)
-=======
 static int TEMP_RANGE_TO_REG(long val, int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -374,16 +320,10 @@ static inline int TEMP_HYST_FROM_REG(int reg, int ix)
 	return (((ix == 1) ? reg : reg >> 4) & 0x0f) * 1000;
 }
 
-<<<<<<< HEAD
-static inline int TEMP_HYST_TO_REG(int val, int ix, int reg)
-{
-	int hyst = SENSORS_LIMIT((val + 500) / 1000, 0, 15);
-=======
 static inline int TEMP_HYST_TO_REG(int temp, long hyst, int ix, int reg)
 {
 	hyst = clamp_val(hyst, temp - 15000, temp);
 	hyst = DIV_ROUND_CLOSEST(temp - hyst, 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (ix == 1) ? (reg & 0xf0) | hyst : (reg & 0x0f) | (hyst << 4);
 }
@@ -397,15 +337,6 @@ static inline int FAN_FROM_REG(int reg, int tpc)
 		return (reg == 0 || reg == 0xffff) ? 0 : 90000 * 60 / reg;
 }
 
-<<<<<<< HEAD
-static inline int FAN_TO_REG(int val, int tpc)
-{
-	if (tpc) {
-		return SENSORS_LIMIT(val / tpc, 0, 0xffff);
-	} else {
-		return (val <= 0) ? 0xffff :
-			SENSORS_LIMIT(90000 * 60 / val, 0, 0xfffe);
-=======
 static inline int FAN_TO_REG(long val, int tpc)
 {
 	if (tpc) {
@@ -413,7 +344,6 @@ static inline int FAN_TO_REG(long val, int tpc)
 	} else {
 		return (val <= 0) ? 0xffff :
 			clamp_val(90000 * 60 / val, 0, 0xfffe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -439,11 +369,7 @@ static inline int FAN_TYPE_FROM_REG(int reg)
 	return (edge > 0) ? 1 << (edge - 1) : 0;
 }
 
-<<<<<<< HEAD
-static inline int FAN_TYPE_TO_REG(int val, int reg)
-=======
 static inline int FAN_TYPE_TO_REG(long val, int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int edge = (val == 4) ? 3 : val;
 
@@ -466,11 +392,7 @@ static int FAN_MAX_FROM_REG(int reg)
 	return 1000 + i * 500;
 }
 
-<<<<<<< HEAD
-static int FAN_MAX_TO_REG(int val)
-=======
 static int FAN_MAX_TO_REG(long val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -528,11 +450,7 @@ static inline int PWM_ACZ_FROM_REG(int reg)
 	return acz[(reg >> 5) & 0x07];
 }
 
-<<<<<<< HEAD
-static inline int PWM_ACZ_TO_REG(int val, int reg)
-=======
 static inline int PWM_ACZ_TO_REG(long val, int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int acz = (val == 4) ? 2 : val - 1;
 
@@ -548,11 +466,7 @@ static inline int PWM_FREQ_FROM_REG(int reg)
 	return PWM_FREQ[reg & 0x0f];
 }
 
-<<<<<<< HEAD
-static int PWM_FREQ_TO_REG(int val, int reg)
-=======
 static int PWM_FREQ_TO_REG(long val, int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -586,11 +500,7 @@ static inline int PWM_RR_FROM_REG(int reg, int ix)
 	return (rr & 0x08) ? PWM_RR[rr & 0x07] : 0;
 }
 
-<<<<<<< HEAD
-static int PWM_RR_TO_REG(int val, int ix, int reg)
-=======
 static int PWM_RR_TO_REG(long val, int ix, int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -608,11 +518,7 @@ static inline int PWM_RR_EN_FROM_REG(int reg, int ix)
 	return PWM_RR_FROM_REG(reg, ix) ? 1 : 0;
 }
 
-<<<<<<< HEAD
-static inline int PWM_RR_EN_TO_REG(int val, int ix, int reg)
-=======
 static inline int PWM_RR_EN_TO_REG(long val, int ix, int reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int en = (ix == 1) ? 0x80 : 0x08;
 
@@ -652,15 +558,9 @@ static u8 dme1737_read(const struct dme1737_data *data, u8 reg)
 		val = i2c_smbus_read_byte_data(client, reg);
 
 		if (val < 0) {
-<<<<<<< HEAD
-			dev_warn(&client->dev, "Read from register "
-				 "0x%02x failed! Please report to the driver "
-				 "maintainer.\n", reg);
-=======
 			dev_warn(&client->dev,
 				 "Read from register 0x%02x failed! %s\n",
 				 reg, DO_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else { /* ISA device */
 		outb(reg, data->addr);
@@ -679,15 +579,9 @@ static s32 dme1737_write(const struct dme1737_data *data, u8 reg, u8 val)
 		res = i2c_smbus_write_byte_data(client, reg, val);
 
 		if (res < 0) {
-<<<<<<< HEAD
-			dev_warn(&client->dev, "Write to register "
-				 "0x%02x failed! Please report to the driver "
-				 "maintainer.\n", reg);
-=======
 			dev_warn(&client->dev,
 				 "Write to register 0x%02x failed! %s\n",
 				 reg, DO_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else { /* ISA device */
 		outb(reg, data->addr);
@@ -884,11 +778,7 @@ static struct dme1737_data *dme1737_update_device(struct device *dev)
 		}
 
 		data->last_update = jiffies;
-<<<<<<< HEAD
-		data->valid = 1;
-=======
 		data->valid = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -1122,13 +1012,9 @@ static ssize_t set_zone(struct device *dev, struct device_attribute *attr,
 	int ix = sensor_attr_2->index;
 	int fn = sensor_attr_2->nr;
 	long val;
-<<<<<<< HEAD
-	int err;
-=======
 	int temp;
 	int err;
 	u8 reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = kstrtol(buf, 10, &val);
 	if (err)
@@ -1141,16 +1027,9 @@ static ssize_t set_zone(struct device *dev, struct device_attribute *attr,
 		data->zone_low[ix] = dme1737_read(data,
 						  DME1737_REG_ZONE_LOW(ix));
 		/* Modify the temp hyst value */
-<<<<<<< HEAD
-		data->zone_hyst[ix == 2] = TEMP_HYST_TO_REG(
-					TEMP_FROM_REG(data->zone_low[ix], 8) -
-					val, ix, dme1737_read(data,
-					DME1737_REG_ZONE_HYST(ix == 2)));
-=======
 		temp = TEMP_FROM_REG(data->zone_low[ix], 8);
 		reg = dme1737_read(data, DME1737_REG_ZONE_HYST(ix == 2));
 		data->zone_hyst[ix == 2] = TEMP_HYST_TO_REG(temp, val, ix, reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dme1737_write(data, DME1737_REG_ZONE_HYST(ix == 2),
 			      data->zone_hyst[ix == 2]);
 		break;
@@ -1167,17 +1046,10 @@ static ssize_t set_zone(struct device *dev, struct device_attribute *attr,
 		 * Modify the temp range value (which is stored in the upper
 		 * nibble of the pwm_freq register)
 		 */
-<<<<<<< HEAD
-		data->pwm_freq[ix] = TEMP_RANGE_TO_REG(val -
-					TEMP_FROM_REG(data->zone_low[ix], 8),
-					dme1737_read(data,
-					DME1737_REG_PWM_FREQ(ix)));
-=======
 		temp = TEMP_FROM_REG(data->zone_low[ix], 8);
 		val = clamp_val(val, temp, temp + 80000);
 		reg = dme1737_read(data, DME1737_REG_PWM_FREQ(ix));
 		data->pwm_freq[ix] = TEMP_RANGE_TO_REG(val - temp, reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dme1737_write(data, DME1737_REG_PWM_FREQ(ix),
 			      data->pwm_freq[ix]);
 		break;
@@ -1288,13 +1160,8 @@ static ssize_t set_fan(struct device *dev, struct device_attribute *attr,
 		/* Only valid for fan[1-4] */
 		if (!(val == 1 || val == 2 || val == 4)) {
 			count = -EINVAL;
-<<<<<<< HEAD
-			dev_warn(dev, "Fan type value %ld not "
-				 "supported. Choose one of 1, 2, or 4.\n",
-=======
 			dev_warn(dev,
 				 "Fan type value %ld not supported. Choose one of 1, 2, or 4.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 val);
 			goto exit;
 		}
@@ -1407,11 +1274,7 @@ static ssize_t set_pwm(struct device *dev, struct device_attribute *attr,
 	mutex_lock(&data->update_lock);
 	switch (fn) {
 	case SYS_PWM:
-<<<<<<< HEAD
-		data->pwm[ix] = SENSORS_LIMIT(val, 0, 255);
-=======
 		data->pwm[ix] = clamp_val(val, 0, 255);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dme1737_write(data, DME1737_REG_PWM(ix), data->pwm[ix]);
 		break;
 	case SYS_PWM_FREQ:
@@ -1424,13 +1287,8 @@ static ssize_t set_pwm(struct device *dev, struct device_attribute *attr,
 		/* Only valid for pwm[1-3] */
 		if (val < 0 || val > 2) {
 			count = -EINVAL;
-<<<<<<< HEAD
-			dev_warn(dev, "PWM enable %ld not "
-				 "supported. Choose one of 0, 1, or 2.\n",
-=======
 			dev_warn(dev,
 				 "PWM enable %ld not supported. Choose one of 0, 1, or 2.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 val);
 			goto exit;
 		}
@@ -1534,13 +1392,8 @@ static ssize_t set_pwm(struct device *dev, struct device_attribute *attr,
 		if (!(val == 1 || val == 2 || val == 4 ||
 		      val == 6 || val == 7)) {
 			count = -EINVAL;
-<<<<<<< HEAD
-			dev_warn(dev, "PWM auto channels zone %ld "
-				 "not supported. Choose one of 1, 2, 4, 6, "
-=======
 			dev_warn(dev,
 				 "PWM auto channels zone %ld not supported. Choose one of 1, 2, 4, 6, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "or 7.\n", val);
 			goto exit;
 		}
@@ -1589,11 +1442,7 @@ static ssize_t set_pwm(struct device *dev, struct device_attribute *attr,
 		break;
 	case SYS_PWM_AUTO_POINT1_PWM:
 		/* Only valid for pwm[1-3] */
-<<<<<<< HEAD
-		data->pwm_min[ix] = SENSORS_LIMIT(val, 0, 255);
-=======
 		data->pwm_min[ix] = clamp_val(val, 0, 255);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dme1737_write(data, DME1737_REG_PWM_MIN(ix),
 			      data->pwm_min[ix]);
 		break;
@@ -1610,11 +1459,7 @@ exit:
  * Miscellaneous sysfs attributes
  * --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static ssize_t show_vrm(struct device *dev, struct device_attribute *attr,
-=======
 static ssize_t vrm_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			char *buf)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -1623,19 +1468,6 @@ static ssize_t vrm_show(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", data->vrm);
 }
 
-<<<<<<< HEAD
-static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
-		       const char *buf, size_t count)
-{
-	struct dme1737_data *data = dev_get_drvdata(dev);
-	long val;
-	int err;
-
-	err = kstrtol(buf, 10, &val);
-	if (err)
-		return err;
-
-=======
 static ssize_t vrm_store(struct device *dev, struct device_attribute *attr,
 			 const char *buf, size_t count)
 {
@@ -1650,29 +1482,19 @@ static ssize_t vrm_store(struct device *dev, struct device_attribute *attr,
 	if (val > 255)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->vrm = val;
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_vid(struct device *dev, struct device_attribute *attr,
-			char *buf)
-=======
 static ssize_t cpu0_vid_show(struct device *dev,
 			     struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dme1737_data *data = dme1737_update_device(dev);
 
 	return sprintf(buf, "%d\n", vid_from_reg(data->vid, data->vrm));
 }
 
-<<<<<<< HEAD
-static ssize_t show_name(struct device *dev, struct device_attribute *attr,
-=======
 static ssize_t name_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	struct dme1737_data *data = dev_get_drvdata(dev);
@@ -1814,15 +1636,9 @@ SENSOR_DEVICE_ATTR_PWM_5TO6(6);
 
 /* Misc */
 
-<<<<<<< HEAD
-static DEVICE_ATTR(vrm, S_IRUGO | S_IWUSR, show_vrm, set_vrm);
-static DEVICE_ATTR(cpu0_vid, S_IRUGO, show_vid, NULL);
-static DEVICE_ATTR(name, S_IRUGO, show_name, NULL);   /* for ISA devices */
-=======
 static DEVICE_ATTR_RW(vrm);
 static DEVICE_ATTR_RO(cpu0_vid);
 static DEVICE_ATTR_RO(name);   /* for ISA devices */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This struct holds all the attributes that are always present and need to be
@@ -2358,13 +2174,8 @@ static int dme1737_create_files(struct device *dev)
 	 * selected attributes from read-only to read-writeable.
 	 */
 	if (data->config & 0x02) {
-<<<<<<< HEAD
-		dev_info(dev, "Device is locked. Some attributes "
-			 "will be read-only.\n");
-=======
 		dev_info(dev,
 			 "Device is locked. Some attributes will be read-only.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Change permissions of zone sysfs attributes */
 		dme1737_chmod_group(dev, &dme1737_zone_chmod_group,
@@ -2432,14 +2243,8 @@ static int dme1737_init_device(struct device *dev)
 	/* Inform if part is not monitoring/started */
 	if (!(data->config & 0x01)) {
 		if (!force_start) {
-<<<<<<< HEAD
-			dev_err(dev, "Device is not monitoring. "
-				"Use the force_start load parameter to "
-				"override.\n");
-=======
 			dev_err(dev,
 				"Device is not monitoring. Use the force_start load parameter to override.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		}
 
@@ -2479,13 +2284,8 @@ static int dme1737_init_device(struct device *dev)
 		 */
 		if (dme1737_i2c_get_features(0x2e, data) &&
 		    dme1737_i2c_get_features(0x4e, data)) {
-<<<<<<< HEAD
-			dev_warn(dev, "Failed to query Super-IO for optional "
-				 "features.\n");
-=======
 			dev_warn(dev,
 				 "Failed to query Super-IO for optional features.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -2512,13 +2312,8 @@ static int dme1737_init_device(struct device *dev)
 		break;
 	}
 
-<<<<<<< HEAD
-	dev_info(dev, "Optional features: pwm3=%s, pwm5=%s, pwm6=%s, "
-		 "fan3=%s, fan4=%s, fan5=%s, fan6=%s.\n",
-=======
 	dev_info(dev,
 		 "Optional features: pwm3=%s, pwm5=%s, pwm6=%s, fan3=%s, fan4=%s, fan5=%s, fan6=%s.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 (data->has_features & HAS_PWM(2)) ? "yes" : "no",
 		 (data->has_features & HAS_PWM(4)) ? "yes" : "no",
 		 (data->has_features & HAS_PWM(5)) ? "yes" : "no",
@@ -2530,20 +2325,6 @@ static int dme1737_init_device(struct device *dev)
 	reg = dme1737_read(data, DME1737_REG_TACH_PWM);
 	/* Inform if fan-to-pwm mapping differs from the default */
 	if (client && reg != 0xa4) {   /* I2C chip */
-<<<<<<< HEAD
-		dev_warn(dev, "Non-standard fan to pwm mapping: "
-			 "fan1->pwm%d, fan2->pwm%d, fan3->pwm%d, "
-			 "fan4->pwm%d. Please report to the driver "
-			 "maintainer.\n",
-			 (reg & 0x03) + 1, ((reg >> 2) & 0x03) + 1,
-			 ((reg >> 4) & 0x03) + 1, ((reg >> 6) & 0x03) + 1);
-	} else if (!client && reg != 0x24) {   /* ISA chip */
-		dev_warn(dev, "Non-standard fan to pwm mapping: "
-			 "fan1->pwm%d, fan2->pwm%d, fan3->pwm%d. "
-			 "Please report to the driver maintainer.\n",
-			 (reg & 0x03) + 1, ((reg >> 2) & 0x03) + 1,
-			 ((reg >> 4) & 0x03) + 1);
-=======
 		dev_warn(dev,
 			 "Non-standard fan to pwm mapping: fan1->pwm%d, fan2->pwm%d, fan3->pwm%d, fan4->pwm%d. %s\n",
 			 (reg & 0x03) + 1, ((reg >> 2) & 0x03) + 1,
@@ -2554,7 +2335,6 @@ static int dme1737_init_device(struct device *dev)
 			 "Non-standard fan to pwm mapping: fan1->pwm%d, fan2->pwm%d, fan3->pwm%d. %s\n",
 			 (reg & 0x03) + 1, ((reg >> 2) & 0x03) + 1,
 			 ((reg >> 4) & 0x03) + 1, DO_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2568,14 +2348,9 @@ static int dme1737_init_device(struct device *dev)
 						DME1737_REG_PWM_CONFIG(ix));
 			if ((data->has_features & HAS_PWM(ix)) &&
 			    (PWM_EN_FROM_REG(data->pwm_config[ix]) == -1)) {
-<<<<<<< HEAD
-				dev_info(dev, "Switching pwm%d to "
-					 "manual mode.\n", ix + 1);
-=======
 				dev_info(dev,
 					 "Switching pwm%d to manual mode.\n",
 					 ix + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				data->pwm_config[ix] = PWM_EN_TO_REG(1,
 							data->pwm_config[ix]);
 				dme1737_write(data, DME1737_REG_PWM(ix), 0);
@@ -2681,45 +2456,25 @@ static int dme1737_i2c_detect(struct i2c_client *client,
 	dev_info(dev, "Found a %s chip at 0x%02x (rev 0x%02x).\n",
 		 verstep == SCH5027_VERSTEP ? "SCH5027" : "DME1737",
 		 client->addr, verstep);
-<<<<<<< HEAD
-	strlcpy(info->type, name, I2C_NAME_SIZE);
-=======
 	strscpy(info->type, name, I2C_NAME_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int dme1737_i2c_probe(struct i2c_client *client,
-			     const struct i2c_device_id *id)
-=======
 static const struct i2c_device_id dme1737_id[];
 
 static int dme1737_i2c_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dme1737_data *data;
 	struct device *dev = &client->dev;
 	int err;
 
-<<<<<<< HEAD
-	data = kzalloc(sizeof(struct dme1737_data), GFP_KERNEL);
-	if (!data) {
-		err = -ENOMEM;
-		goto exit;
-	}
-
-	i2c_set_clientdata(client, data);
-	data->type = id->driver_data;
-=======
 	data = devm_kzalloc(dev, sizeof(struct dme1737_data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 
 	i2c_set_clientdata(client, data);
 	data->type = i2c_match_id(dme1737_id, client)->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->client = client;
 	data->name = client->name;
 	mutex_init(&data->update_lock);
@@ -2728,22 +2483,14 @@ static int dme1737_i2c_probe(struct i2c_client *client)
 	err = dme1737_init_device(dev);
 	if (err) {
 		dev_err(dev, "Failed to initialize device.\n");
-<<<<<<< HEAD
-		goto exit_kfree;
-=======
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Create sysfs files */
 	err = dme1737_create_files(dev);
 	if (err) {
 		dev_err(dev, "Failed to create sysfs files.\n");
-<<<<<<< HEAD
-		goto exit_kfree;
-=======
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Register device */
@@ -2758,31 +2505,15 @@ static int dme1737_i2c_probe(struct i2c_client *client)
 
 exit_remove:
 	dme1737_remove_files(dev);
-<<<<<<< HEAD
-exit_kfree:
-	kfree(data);
-exit:
-	return err;
-}
-
-static int dme1737_i2c_remove(struct i2c_client *client)
-=======
 	return err;
 }
 
 static void dme1737_i2c_remove(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dme1737_data *data = i2c_get_clientdata(client);
 
 	hwmon_device_unregister(data->hwmon_dev);
 	dme1737_remove_files(&client->dev);
-<<<<<<< HEAD
-
-	kfree(data);
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id dme1737_id[] = {
@@ -2891,11 +2622,7 @@ exit:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit dme1737_isa_probe(struct platform_device *pdev)
-=======
 static int dme1737_isa_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 company, device;
 	struct resource *res;
@@ -2904,21 +2631,6 @@ static int dme1737_isa_probe(struct platform_device *pdev)
 	int err;
 
 	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
-<<<<<<< HEAD
-	if (!request_region(res->start, DME1737_EXTENT, "dme1737")) {
-		dev_err(dev, "Failed to request region 0x%04x-0x%04x.\n",
-			(unsigned short)res->start,
-			(unsigned short)res->start + DME1737_EXTENT - 1);
-		err = -EBUSY;
-		goto exit;
-	}
-
-	data = kzalloc(sizeof(struct dme1737_data), GFP_KERNEL);
-	if (!data) {
-		err = -ENOMEM;
-		goto exit_release_region;
-	}
-=======
 	if (!devm_request_region(dev, res->start, DME1737_EXTENT, "dme1737")) {
 		dev_err(dev, "Failed to request region 0x%04x-0x%04x.\n",
 			(unsigned short)res->start,
@@ -2929,7 +2641,6 @@ static int dme1737_isa_probe(struct platform_device *pdev)
 	data = devm_kzalloc(dev, sizeof(struct dme1737_data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->addr = res->start;
 	platform_set_drvdata(pdev, data);
@@ -2955,12 +2666,7 @@ static int dme1737_isa_probe(struct platform_device *pdev)
 			   (device == SCH5127_DEVICE)) {
 			data->type = sch5127;
 		} else {
-<<<<<<< HEAD
-			err = -ENODEV;
-			goto exit_kfree;
-=======
 			return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -2979,22 +2685,14 @@ static int dme1737_isa_probe(struct platform_device *pdev)
 	err = dme1737_init_device(dev);
 	if (err) {
 		dev_err(dev, "Failed to initialize device.\n");
-<<<<<<< HEAD
-		goto exit_kfree;
-=======
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Create sysfs files */
 	err = dme1737_create_files(dev);
 	if (err) {
 		dev_err(dev, "Failed to create sysfs files.\n");
-<<<<<<< HEAD
-		goto exit_kfree;
-=======
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Register device */
@@ -3009,52 +2707,23 @@ static int dme1737_isa_probe(struct platform_device *pdev)
 
 exit_remove_files:
 	dme1737_remove_files(dev);
-<<<<<<< HEAD
-exit_kfree:
-	platform_set_drvdata(pdev, NULL);
-	kfree(data);
-exit_release_region:
-	release_region(res->start, DME1737_EXTENT);
-exit:
-	return err;
-}
-
-static int __devexit dme1737_isa_remove(struct platform_device *pdev)
-=======
 	return err;
 }
 
 static void dme1737_isa_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dme1737_data *data = platform_get_drvdata(pdev);
 
 	hwmon_device_unregister(data->hwmon_dev);
 	dme1737_remove_files(&pdev->dev);
-<<<<<<< HEAD
-	release_region(data->addr, DME1737_EXTENT);
-	platform_set_drvdata(pdev, NULL);
-	kfree(data);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver dme1737_isa_driver = {
 	.driver = {
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.name = "dme1737",
-	},
-	.probe = dme1737_isa_probe,
-	.remove = __devexit_p(dme1737_isa_remove),
-=======
 		.name = "dme1737",
 	},
 	.probe = dme1737_isa_probe,
 	.remove_new = dme1737_isa_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* ---------------------------------------------------------------------

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
@@ -16,47 +13,15 @@
  *
  * This file is part of the SCTP kernel implementation
  *
-<<<<<<< HEAD
- * This SCTP implementation is free software;
- * you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This SCTP implementation is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; without even the implied
- *                 ************************
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GNU CC; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <lksctp-developers@lists.sourceforge.net>
- *
- * Or submit a bug report through the following website:
- *    http://www.sf.net/projects/lksctp
-=======
  * Please send any bug reports or fixes you make to the
  * email address(es):
  *    lksctp developers <linux-sctp@vger.kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *   Jon Grimm             <jgrimm@us.ibm.com>
  *   La Monte H.P. Yarroll <piggy@acm.org>
  *   Karl Knutson          <karl@athena.chicago.il.us>
  *   Sridhar Samudrala     <sri@us.ibm.com>
-<<<<<<< HEAD
- *
- * Any bugs reported given to us we will try to fix... any fixes shared will
- * be incorporated into the next SCTP release.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __sctp_ulpevent_h__
@@ -65,21 +30,6 @@
 /* A structure to carry information to the ULP (e.g. Sockets API) */
 /* Warning: This sits inside an skb.cb[] area.  Be very careful of
  * growing this structure as it is at the maximum limit now.
-<<<<<<< HEAD
- */
-struct sctp_ulpevent {
-	struct sctp_association *asoc;
-	__u16 stream;
-	__u16 ssn;
-	__u16 flags;
-	__u32 ppid;
-	__u32 tsn;
-	__u32 cumtsn;
-	int msg_flags;
-	int iif;
-	unsigned int rmem_len;
-};
-=======
  *
  * sctp_ulpevent is saved in sk->cb(48 bytes), whose last 4 bytes
  * have been taken by sock_skb_cb, So here it has to use 'packed'
@@ -103,7 +53,6 @@ struct sctp_ulpevent {
 	__u16 flags;
 	__u16 msg_flags;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Retrieve the skb this event sits inside of. */
 static inline struct sk_buff *sctp_event2skb(const struct sctp_ulpevent *ev)
@@ -131,18 +80,8 @@ struct sctp_ulpevent *sctp_ulpevent_make_assoc_change(
 	struct sctp_chunk *chunk,
 	gfp_t gfp);
 
-<<<<<<< HEAD
-struct sctp_ulpevent *sctp_ulpevent_make_peer_addr_change(
-	const struct sctp_association *asoc,
-	const struct sockaddr_storage *aaddr,
-	int flags,
-	int state,
-	int error,
-	gfp_t gfp);
-=======
 void sctp_ulpevent_notify_peer_addr_change(struct sctp_transport *transport,
 					   int state, int error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sctp_ulpevent *sctp_ulpevent_make_remote_error(
 	const struct sctp_association *asoc,
@@ -156,8 +95,6 @@ struct sctp_ulpevent *sctp_ulpevent_make_send_failed(
 	__u32 error,
 	gfp_t gfp);
 
-<<<<<<< HEAD
-=======
 struct sctp_ulpevent *sctp_ulpevent_make_send_failed_event(
 	const struct sctp_association *asoc,
 	struct sctp_chunk *chunk,
@@ -165,7 +102,6 @@ struct sctp_ulpevent *sctp_ulpevent_make_send_failed_event(
 	__u32 error,
 	gfp_t gfp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sctp_ulpevent *sctp_ulpevent_make_shutdown_event(
 	const struct sctp_association *asoc,
 	__u16 flags,
@@ -173,12 +109,8 @@ struct sctp_ulpevent *sctp_ulpevent_make_shutdown_event(
 
 struct sctp_ulpevent *sctp_ulpevent_make_pdapi(
 	const struct sctp_association *asoc,
-<<<<<<< HEAD
-	__u32 indication, gfp_t gfp);
-=======
 	__u32 indication, __u32 sid, __u32 seq,
 	__u32 flags, gfp_t gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sctp_ulpevent *sctp_ulpevent_make_adaptation_indication(
 	const struct sctp_association *asoc, gfp_t gfp);
@@ -194,42 +126,6 @@ struct sctp_ulpevent *sctp_ulpevent_make_authkey(
 struct sctp_ulpevent *sctp_ulpevent_make_sender_dry_event(
 	const struct sctp_association *asoc, gfp_t gfp);
 
-<<<<<<< HEAD
-void sctp_ulpevent_read_sndrcvinfo(const struct sctp_ulpevent *event,
-	struct msghdr *);
-__u16 sctp_ulpevent_get_notification_type(const struct sctp_ulpevent *event);
-
-/* Is this event type enabled? */
-static inline int sctp_ulpevent_type_enabled(__u16 sn_type,
-					     struct sctp_event_subscribe *mask)
-{
-	char *amask = (char *) mask;
-	return amask[sn_type - SCTP_SN_TYPE_BASE];
-}
-
-/* Given an event subscription, is this event enabled? */
-static inline int sctp_ulpevent_is_enabled(const struct sctp_ulpevent *event,
-					   struct sctp_event_subscribe *mask)
-{
-	__u16 sn_type;
-	int enabled = 1;
-
-	if (sctp_ulpevent_is_notification(event)) {
-		sn_type = sctp_ulpevent_get_notification_type(event);
-		enabled = sctp_ulpevent_type_enabled(sn_type, mask);
-	}
-	return enabled;
-}
-
-#endif /* __sctp_ulpevent_h__ */
-
-
-
-
-
-
-
-=======
 struct sctp_ulpevent *sctp_ulpevent_make_stream_reset_event(
 	const struct sctp_association *asoc, __u16 flags,
 	__u16 stream_num, __be16 *stream_list, gfp_t gfp);
@@ -291,4 +187,3 @@ static inline bool sctp_ulpevent_is_enabled(const struct sctp_ulpevent *event,
 }
 
 #endif /* __sctp_ulpevent_h__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

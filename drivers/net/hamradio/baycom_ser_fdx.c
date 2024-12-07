@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************/
 
 /*
@@ -9,31 +6,10 @@
  *
  *	Copyright (C) 1996-2000  Thomas Sailer (sailer@ife.ee.ethz.ch)
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Please note that the GPL allows you to use the driver, NOT the radio.
  *  In order to use the radio, you need a license from the communications
  *  authority of your country.
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Supported modems
  *
  *  ser12:  This is a very simple 1200 baud AFSK modem. The modem consists only
@@ -63,10 +39,6 @@
  *  baud     baud rate (between 300 and 4800)
  *  irq      interrupt line of the port; common values are 4,3
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  History:
  *   0.1  26.06.1996  Adapted from baycom.c and made network driver interface
  *        18.10.1996  Changed to new user space access routines (copy_{to,from}_user)
@@ -93,14 +65,9 @@
 #include <linux/hdlcdrv.h>
 #include <linux/baycom.h>
 #include <linux/jiffies.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-=======
 #include <linux/time64.h>
 
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/irq.h>
 
@@ -221,49 +188,15 @@ static inline void ser12_set_divisor(struct net_device *dev,
          */
 }
 
-<<<<<<< HEAD
-/* --------------------------------------------------------------------- */
-
-#if 0
-static inline unsigned int hweight16(unsigned int w)
-        __attribute__ ((unused));
-static inline unsigned int hweight8(unsigned int w)
-        __attribute__ ((unused));
-
-static inline unsigned int hweight16(unsigned int w)
-{
-        unsigned short res = (w & 0x5555) + ((w >> 1) & 0x5555);
-        res = (res & 0x3333) + ((res >> 2) & 0x3333);
-        res = (res & 0x0F0F) + ((res >> 4) & 0x0F0F);
-        return (res & 0x00FF) + ((res >> 8) & 0x00FF);
-}
-
-static inline unsigned int hweight8(unsigned int w)
-{
-        unsigned short res = (w & 0x55) + ((w >> 1) & 0x55);
-        res = (res & 0x33) + ((res >> 2) & 0x33);
-        return (res & 0x0F) + ((res >> 4) & 0x0F);
-}
-#endif
-
-/* --------------------------------------------------------------------- */
-
-static __inline__ void ser12_rx(struct net_device *dev, struct baycom_state *bc, struct timeval *tv, unsigned char curs)
-=======
 static __inline__ void ser12_rx(struct net_device *dev, struct baycom_state *bc, struct timespec64 *ts, unsigned char curs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int timediff;
 	int bdus8 = bc->baud_us >> 3;
 	int bdus4 = bc->baud_us >> 2;
 	int bdus2 = bc->baud_us >> 1;
 
-<<<<<<< HEAD
-	timediff = 1000000 + tv->tv_usec - bc->modem.ser12.pll_time;
-=======
 	timediff = 1000000 + ts->tv_nsec / NSEC_PER_USEC -
 					bc->modem.ser12.pll_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (timediff >= 500000)
 		timediff -= 1000000;
 	while (timediff >= bdus2) {
@@ -315,11 +248,7 @@ static irqreturn_t ser12_interrupt(int irq, void *dev_id)
 {
 	struct net_device *dev = (struct net_device *)dev_id;
 	struct baycom_state *bc = netdev_priv(dev);
-<<<<<<< HEAD
-	struct timeval tv;
-=======
 	struct timespec64 ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char iir, msr;
 	unsigned int txcount = 0;
 
@@ -329,11 +258,7 @@ static irqreturn_t ser12_interrupt(int irq, void *dev_id)
 	if ((iir = inb(IIR(dev->base_addr))) & 1) 	
 		return IRQ_NONE;
 	/* get current time */
-<<<<<<< HEAD
-	do_gettimeofday(&tv);
-=======
 	ktime_get_ts64(&ts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msr = inb(MSR(dev->base_addr));
 	/* delta DCD */
 	if ((msr & 8) && bc->opt_dcd)
@@ -376,11 +301,7 @@ static irqreturn_t ser12_interrupt(int irq, void *dev_id)
 		}
 		iir = inb(IIR(dev->base_addr));
 	} while (!(iir & 1));
-<<<<<<< HEAD
-	ser12_rx(dev, bc, &tv, msr & 0x10); /* CTS */
-=======
 	ser12_rx(dev, bc, &ts, msr & 0x10); /* CTS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bc->modem.ptt && txcount) {
 		if (bc->modem.ser12.txshreg <= 1) {
 			bc->modem.ser12.txshreg = 0x10000 | hdlcdrv_getbits(&bc->hdrv);
@@ -485,11 +406,7 @@ static int ser12_open(struct net_device *dev)
 	outb(0, FCR(dev->base_addr));  /* disable FIFOs */
 	outb(0x0d, MCR(dev->base_addr));
 	outb(0, IER(dev->base_addr));
-<<<<<<< HEAD
-	if (request_irq(dev->irq, ser12_interrupt, IRQF_DISABLED | IRQF_SHARED,
-=======
 	if (request_irq(dev->irq, ser12_interrupt, IRQF_SHARED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"baycom_ser_fdx", dev)) {
 		release_region(dev->base_addr, SER12_EXTENT);
 		return -EBUSY;
@@ -545,20 +462,12 @@ static int ser12_close(struct net_device *dev)
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
-=======
 static int baycom_ioctl(struct net_device *dev, void __user *data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct hdlcdrv_ioctl *hi, int cmd);
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static struct hdlcdrv_ops ser12_ops = {
-=======
 static const struct hdlcdrv_ops ser12_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.drvname = bc_drvname,
 	.drvinfo = bc_drvinfo,
 	.open    = ser12_open,
@@ -588,11 +497,7 @@ static int baycom_setmode(struct baycom_state *bc, const char *modestr)
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
-=======
 static int baycom_ioctl(struct net_device *dev, void __user *data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct hdlcdrv_ioctl *hi, int cmd)
 {
 	struct baycom_state *bc;
@@ -614,11 +519,7 @@ static int baycom_ioctl(struct net_device *dev, void __user *data,
 		sprintf(hi->data.modename, "ser%u", bc->baud / 100);
 		if (bc->opt_dcd <= 0)
 			strcat(hi->data.modename, (!bc->opt_dcd) ? "*" : "+");
-<<<<<<< HEAD
-		if (copy_to_user(ifr->ifr_data, hi, sizeof(struct hdlcdrv_ioctl)))
-=======
 		if (copy_to_user(data, hi, sizeof(struct hdlcdrv_ioctl)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		return 0;
 
@@ -630,11 +531,7 @@ static int baycom_ioctl(struct net_device *dev, void __user *data,
 
 	case HDLCDRVCTL_MODELIST:
 		strcpy(hi->data.modename, "ser12,ser3,ser24");
-<<<<<<< HEAD
-		if (copy_to_user(ifr->ifr_data, hi, sizeof(struct hdlcdrv_ioctl)))
-=======
 		if (copy_to_user(data, hi, sizeof(struct hdlcdrv_ioctl)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		return 0;
 
@@ -643,11 +540,7 @@ static int baycom_ioctl(struct net_device *dev, void __user *data,
 
 	}
 
-<<<<<<< HEAD
-	if (copy_from_user(&bi, ifr->ifr_data, sizeof(bi)))
-=======
 	if (copy_from_user(&bi, data, sizeof(bi)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	switch (bi.cmd) {
 	default:
@@ -662,11 +555,7 @@ static int baycom_ioctl(struct net_device *dev, void __user *data,
 #endif /* BAYCOM_DEBUG */
 
 	}
-<<<<<<< HEAD
-	if (copy_to_user(ifr->ifr_data, &bi, sizeof(bi)))
-=======
 	if (copy_to_user(data, &bi, sizeof(bi)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	return 0;
 
@@ -684,15 +573,9 @@ static int baud[NR_PORTS] = { [0 ... NR_PORTS-1] = 1200 };
 
 module_param_array(mode, charp, NULL, 0);
 MODULE_PARM_DESC(mode, "baycom operating mode; * for software DCD");
-<<<<<<< HEAD
-module_param_array(iobase, int, NULL, 0);
-MODULE_PARM_DESC(iobase, "baycom io base address");
-module_param_array(irq, int, NULL, 0);
-=======
 module_param_hw_array(iobase, int, ioport, NULL, 0);
 MODULE_PARM_DESC(iobase, "baycom io base address");
 module_param_hw_array(irq, int, irq, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(irq, "baycom irq number");
 module_param_array(baud, int, NULL, 0);
 MODULE_PARM_DESC(baud, "baycom baud rate (300 to 4800)");

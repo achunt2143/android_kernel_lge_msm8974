@@ -21,13 +21,9 @@ Required properties:
 Optional properties:
 - ti,no_idle_on_suspend: When present, it prevents the PM to idle the module
   during suspend.
-<<<<<<< HEAD
-
-=======
 - ti,no-reset-on-init: When present, the module should not be reset at init
 - ti,no-idle-on-init: When present, the module should not be idled at init
 - ti,no-idle: When present, the module is never allowed to idle.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Example:
 
@@ -36,25 +32,6 @@ spinlock@1 {
     ti,hwmods = "spinlock";
 };
 
-<<<<<<< HEAD
-
-Boards:
-
-- OMAP3 BeagleBoard : Low cost community board
-  compatible = "ti,omap3-beagle", "ti,omap3"
-
-- OMAP4 SDP : Software Developement Board
-  compatible = "ti,omap4-sdp", "ti,omap4430"
-
-- OMAP4 PandaBoard : Low cost community board
-  compatible = "ti,omap4-panda", "ti,omap4430"
-
-- OMAP3 EVM : Software Developement Board for OMAP35x, AM/DM37x
-  compatible = "ti,omap3-evm", "ti,omap3"
-
-- AM335X EVM : Software Developement Board for AM335x
-  compatible = "ti,am335x-evm", "ti,am33xx", "ti,omap3"
-=======
 SoC Type (optional):
 
 - General Purpose devices
@@ -147,4 +124,3 @@ Boards (incomplete list of examples):
 
 - DRA718 EVM: Software Development Board for DRA718
   compatible = "ti,dra718-evm", "ti,dra718", "ti,dra722", "ti,dra72", "ti,dra7"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

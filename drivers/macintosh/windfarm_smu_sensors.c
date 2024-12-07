@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Windfarm PowerMac thermal control. SMU based sensors
  *
  * (c) Copyright 2005 Benjamin Herrenschmidt, IBM Corp.
  *                    <benh@kernel.crashing.org>
-<<<<<<< HEAD
- *
- * Released under the term of the GNU GPL v2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -22,12 +14,8 @@
 #include <linux/init.h>
 #include <linux/wait.h>
 #include <linux/completion.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
 #include <linux/of.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/io.h>
 #include <asm/sections.h>
@@ -184,38 +172,22 @@ static int smu_slotspow_get(struct wf_sensor *sr, s32 *value)
 }
 
 
-<<<<<<< HEAD
-static struct wf_sensor_ops smu_cputemp_ops = {
-=======
 static const struct wf_sensor_ops smu_cputemp_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_value	= smu_cputemp_get,
 	.release	= smu_ads_release,
 	.owner		= THIS_MODULE,
 };
-<<<<<<< HEAD
-static struct wf_sensor_ops smu_cpuamp_ops = {
-=======
 static const struct wf_sensor_ops smu_cpuamp_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_value	= smu_cpuamp_get,
 	.release	= smu_ads_release,
 	.owner		= THIS_MODULE,
 };
-<<<<<<< HEAD
-static struct wf_sensor_ops smu_cpuvolt_ops = {
-=======
 static const struct wf_sensor_ops smu_cpuvolt_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_value	= smu_cpuvolt_get,
 	.release	= smu_ads_release,
 	.owner		= THIS_MODULE,
 };
-<<<<<<< HEAD
-static struct wf_sensor_ops smu_slotspow_ops = {
-=======
 static const struct wf_sensor_ops smu_slotspow_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_value	= smu_slotspow_get,
 	.release	= smu_ads_release,
 	.owner		= THIS_MODULE,
@@ -225,24 +197,14 @@ static const struct wf_sensor_ops smu_slotspow_ops = {
 static struct smu_ad_sensor *smu_ads_create(struct device_node *node)
 {
 	struct smu_ad_sensor *ads;
-<<<<<<< HEAD
-	const char *c, *l;
-=======
 	const char *l;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const u32 *v;
 
 	ads = kmalloc(sizeof(struct smu_ad_sensor), GFP_KERNEL);
 	if (ads == NULL)
 		return NULL;
-<<<<<<< HEAD
-	c = of_get_property(node, "device_type", NULL);
-	l = of_get_property(node, "location", NULL);
-	if (c == NULL || l == NULL)
-=======
 	l = of_get_property(node, "location", NULL);
 	if (l == NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 
 	/* We currently pick the sensors based on the OF name and location
@@ -252,11 +214,7 @@ static struct smu_ad_sensor *smu_ads_create(struct device_node *node)
 	 * the names and locations consistents so I'll stick with the names
 	 * and locations for now.
 	 */
-<<<<<<< HEAD
-	if (!strcmp(c, "temp-sensor") &&
-=======
 	if (of_node_is_type(node, "temp-sensor") &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !strcmp(l, "CPU T-Diode")) {
 		ads->sens.ops = &smu_cputemp_ops;
 		ads->sens.name = "cpu-temp";
@@ -265,11 +223,7 @@ static struct smu_ad_sensor *smu_ads_create(struct device_node *node)
 			    SMU_SDB_CPUDIODE_ID);
 			goto fail;
 		}
-<<<<<<< HEAD
-	} else if (!strcmp(c, "current-sensor") &&
-=======
 	} else if (of_node_is_type(node, "current-sensor") &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   !strcmp(l, "CPU Current")) {
 		ads->sens.ops = &smu_cpuamp_ops;
 		ads->sens.name = "cpu-current";
@@ -278,11 +232,7 @@ static struct smu_ad_sensor *smu_ads_create(struct device_node *node)
 			    SMU_SDB_CPUVCP_ID);
 			goto fail;
 		}
-<<<<<<< HEAD
-	} else if (!strcmp(c, "voltage-sensor") &&
-=======
 	} else if (of_node_is_type(node, "voltage-sensor") &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   !strcmp(l, "CPU Voltage")) {
 		ads->sens.ops = &smu_cpuvolt_ops;
 		ads->sens.name = "cpu-voltage";
@@ -291,11 +241,7 @@ static struct smu_ad_sensor *smu_ads_create(struct device_node *node)
 			    SMU_SDB_CPUVCP_ID);
 			goto fail;
 		}
-<<<<<<< HEAD
-	} else if (!strcmp(c, "power-sensor") &&
-=======
 	} else if (of_node_is_type(node, "power-sensor") &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   !strcmp(l, "Slots Power")) {
 		ads->sens.ops = &smu_slotspow_ops;
 		ads->sens.name = "slots-power";
@@ -328,13 +274,8 @@ struct smu_cpu_power_sensor {
 	struct list_head	link;
 	struct wf_sensor	*volts;
 	struct wf_sensor	*amps;
-<<<<<<< HEAD
-	int			fake_volts : 1;
-	int			quadratic : 1;
-=======
 	unsigned int		fake_volts : 1;
 	unsigned int		quadratic : 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wf_sensor	sens;
 };
 #define to_smu_cpu_power(c) container_of(c, struct smu_cpu_power_sensor, sens)
@@ -385,11 +326,7 @@ static int smu_cpu_power_get(struct wf_sensor *sr, s32 *value)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct wf_sensor_ops smu_cpu_power_ops = {
-=======
 static const struct wf_sensor_ops smu_cpu_power_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_value	= smu_cpu_power_get,
 	.release	= smu_cpu_power_release,
 	.owner		= THIS_MODULE,
@@ -485,14 +422,8 @@ static int __init smu_sensors_init(void)
 		return -ENODEV;
 
 	/* Look for sensors subdir */
-<<<<<<< HEAD
-	for (sensors = NULL;
-	     (sensors = of_get_next_child(smu, sensors)) != NULL;)
-		if (!strcmp(sensors->name, "sensors"))
-=======
 	for_each_child_of_node(smu, sensors)
 		if (of_node_name_eq(sensors, "sensors"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 	of_node_put(smu);

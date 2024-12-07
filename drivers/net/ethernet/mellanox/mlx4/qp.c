@@ -35,10 +35,6 @@
 
 #include <linux/gfp.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mlx4/cmd.h>
 #include <linux/mlx4/qp.h>
@@ -46,8 +42,6 @@
 #include "mlx4.h"
 #include "icm.h"
 
-<<<<<<< HEAD
-=======
 /* QP to support BF should have bits 6,7 cleared */
 #define MLX4_BF_QP_SKIP_MASK	0xc0
 #define MLX4_MAX_BF_QP_RANGE	0x40
@@ -59,7 +53,6 @@ void mlx4_put_qp(struct mlx4_qp *qp)
 }
 EXPORT_SYMBOL_GPL(mlx4_put_qp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mlx4_qp_event(struct mlx4_dev *dev, u32 qpn, int event_type)
 {
 	struct mlx4_qp_table *qp_table = &mlx4_priv(dev)->qp_table;
@@ -69,11 +62,7 @@ void mlx4_qp_event(struct mlx4_dev *dev, u32 qpn, int event_type)
 
 	qp = __mlx4_qp_lookup(dev, qpn);
 	if (qp)
-<<<<<<< HEAD
-		atomic_inc(&qp->refcount);
-=======
 		refcount_inc(&qp->refcount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock(&qp_table->lock);
 
@@ -82,18 +71,6 @@ void mlx4_qp_event(struct mlx4_dev *dev, u32 qpn, int event_type)
 		return;
 	}
 
-<<<<<<< HEAD
-	qp->event(qp, event_type);
-
-	if (atomic_dec_and_test(&qp->refcount))
-		complete(&qp->free);
-}
-
-static int is_qp0(struct mlx4_dev *dev, struct mlx4_qp *qp)
-{
-	return qp->qpn >= dev->caps.sqp_start &&
-		qp->qpn <= dev->caps.sqp_start + 1;
-=======
 	/* Need to call mlx4_put_qp() in event handler */
 	qp->event(qp, event_type);
 }
@@ -110,7 +87,6 @@ static int is_master_qp0(struct mlx4_dev *dev, struct mlx4_qp *qp, int *real_qp0
 		qp->qpn <= dev->phys_caps.base_sqpn + 1;
 
 	return *real_qp0 || *proxy_qp0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __mlx4_qp_modify(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
@@ -162,11 +138,8 @@ static int __mlx4_qp_modify(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	struct mlx4_cmd_mailbox *mailbox;
 	int ret = 0;
-<<<<<<< HEAD
-=======
 	int real_qp0 = 0;
 	int proxy_qp0 = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 port;
 
 	if (cur_state >= MLX4_QP_NUM_STATE || new_state >= MLX4_QP_NUM_STATE ||
@@ -178,18 +151,12 @@ static int __mlx4_qp_modify(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 			MLX4_CMD_2RST_QP, MLX4_CMD_TIME_CLASS_A, native);
 		if (mlx4_is_master(dev) && cur_state != MLX4_QP_STATE_ERR &&
 		    cur_state != MLX4_QP_STATE_RST &&
-<<<<<<< HEAD
-		    is_qp0(dev, qp)) {
-			port = (qp->qpn & 1) + 1;
-			priv->mfunc.master.qp0_state[port].qp0_active = 0;
-=======
 		    is_master_qp0(dev, qp, &real_qp0, &proxy_qp0)) {
 			port = (qp->qpn & 1) + 1;
 			if (proxy_qp0)
 				priv->mfunc.master.qp0_state[port].proxy_qp0_active = 0;
 			else
 				priv->mfunc.master.qp0_state[port].qp0_active = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return ret;
 	}
@@ -205,10 +172,6 @@ static int __mlx4_qp_modify(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 		context->log_page_size   = mtt->page_shift - MLX4_ICM_PAGE_SHIFT;
 	}
 
-<<<<<<< HEAD
-	*(__be32 *) mailbox->buf = cpu_to_be32(optpar);
-	memcpy(mailbox->buf + 8, context, sizeof *context);
-=======
 	if ((cur_state == MLX4_QP_STATE_RTR) &&
 	    (new_state == MLX4_QP_STATE_RTS) &&
 	    dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_ROCE_V1_V2)
@@ -217,7 +180,6 @@ static int __mlx4_qp_modify(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 
 	*(__be32 *) mailbox->buf = cpu_to_be32(optpar);
 	memcpy(mailbox->buf + 8, context, sizeof(*context));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	((struct mlx4_qp_context *) (mailbox->buf + 8))->local_qpn =
 		cpu_to_be32(qp->qpn);
@@ -227,8 +189,6 @@ static int __mlx4_qp_modify(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 		       new_state == MLX4_QP_STATE_RST ? 2 : 0,
 		       op[cur_state][new_state], MLX4_CMD_TIME_CLASS_C, native);
 
-<<<<<<< HEAD
-=======
 	if (mlx4_is_master(dev) && is_master_qp0(dev, qp, &real_qp0, &proxy_qp0)) {
 		port = (qp->qpn & 1) + 1;
 		if (cur_state != MLX4_QP_STATE_ERR &&
@@ -246,7 +206,6 @@ static int __mlx4_qp_modify(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlx4_free_cmd_mailbox(dev, mailbox);
 	return ret;
 }
@@ -263,14 +222,6 @@ int mlx4_qp_modify(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 EXPORT_SYMBOL_GPL(mlx4_qp_modify);
 
 int __mlx4_qp_reserve_range(struct mlx4_dev *dev, int cnt, int align,
-<<<<<<< HEAD
-				   int *base)
-{
-	struct mlx4_priv *priv = mlx4_priv(dev);
-	struct mlx4_qp_table *qp_table = &priv->qp_table;
-
-	*base = mlx4_bitmap_alloc_range(&qp_table->bitmap, cnt, align);
-=======
 			    int *base, u8 flags)
 {
 	u32 uid;
@@ -292,26 +243,12 @@ int __mlx4_qp_reserve_range(struct mlx4_dev *dev, int cnt, int align,
 
 	*base = mlx4_zone_alloc_entries(qp_table->zones, uid, cnt, align,
 					bf_qp ? MLX4_BF_QP_SKIP_MASK : 0, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*base == -1)
 		return -ENOMEM;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int mlx4_qp_reserve_range(struct mlx4_dev *dev, int cnt, int align, int *base)
-{
-	u64 in_param;
-	u64 out_param;
-	int err;
-
-	if (mlx4_is_mfunc(dev)) {
-		set_param_l(&in_param, cnt);
-		set_param_h(&in_param, align);
-		err = mlx4_cmd_imm(dev, in_param, &out_param,
-				   RES_QP, RES_OP_RESERVE,
-=======
 int mlx4_qp_reserve_range(struct mlx4_dev *dev, int cnt, int align,
 			  int *base, u8 flags, u8 usage)
 {
@@ -328,7 +265,6 @@ int mlx4_qp_reserve_range(struct mlx4_dev *dev, int cnt, int align,
 		set_param_h(&in_param, align);
 		err = mlx4_cmd_imm(dev, in_param, &out_param,
 				   in_modifier, RES_OP_RESERVE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   MLX4_CMD_ALLOC_RES,
 				   MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
 		if (err)
@@ -337,11 +273,7 @@ int mlx4_qp_reserve_range(struct mlx4_dev *dev, int cnt, int align,
 		*base = get_param_l(&out_param);
 		return 0;
 	}
-<<<<<<< HEAD
-	return __mlx4_qp_reserve_range(dev, cnt, align, base);
-=======
 	return __mlx4_qp_reserve_range(dev, cnt, align, base, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(mlx4_qp_reserve_range);
 
@@ -352,27 +284,17 @@ void __mlx4_qp_release_range(struct mlx4_dev *dev, int base_qpn, int cnt)
 
 	if (mlx4_is_qp_reserved(dev, (u32) base_qpn))
 		return;
-<<<<<<< HEAD
-	mlx4_bitmap_free_range(&qp_table->bitmap, base_qpn, cnt);
-=======
 	mlx4_zone_free_entries_unique(qp_table->zones, base_qpn, cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void mlx4_qp_release_range(struct mlx4_dev *dev, int base_qpn, int cnt)
 {
-<<<<<<< HEAD
-	u64 in_param;
-	int err;
-
-=======
 	u64 in_param = 0;
 	int err;
 
 	if (!cnt)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mlx4_is_mfunc(dev)) {
 		set_param_l(&in_param, base_qpn);
 		set_param_h(&in_param, cnt);
@@ -380,13 +302,8 @@ void mlx4_qp_release_range(struct mlx4_dev *dev, int base_qpn, int cnt)
 			       MLX4_CMD_FREE_RES,
 			       MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
 		if (err) {
-<<<<<<< HEAD
-			mlx4_warn(dev, "Failed to release qp range"
-				  " base:%d cnt:%d\n", base_qpn, cnt);
-=======
 			mlx4_warn(dev, "Failed to release qp range base:%d cnt:%d\n",
 				  base_qpn, cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else
 		 __mlx4_qp_release_range(dev, base_qpn, cnt);
@@ -439,11 +356,7 @@ err_out:
 
 static int mlx4_qp_alloc_icm(struct mlx4_dev *dev, int qpn)
 {
-<<<<<<< HEAD
-	u64 param;
-=======
 	u64 param = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mlx4_is_mfunc(dev)) {
 		set_param_l(&param, qpn);
@@ -468,11 +381,7 @@ void __mlx4_qp_free_icm(struct mlx4_dev *dev, int qpn)
 
 static void mlx4_qp_free_icm(struct mlx4_dev *dev, int qpn)
 {
-<<<<<<< HEAD
-	u64 in_param;
-=======
 	u64 in_param = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mlx4_is_mfunc(dev)) {
 		set_param_l(&in_param, qpn);
@@ -484,8 +393,6 @@ static void mlx4_qp_free_icm(struct mlx4_dev *dev, int qpn)
 		__mlx4_qp_free_icm(dev, qpn);
 }
 
-<<<<<<< HEAD
-=======
 struct mlx4_qp *mlx4_qp_lookup(struct mlx4_dev *dev, u32 qpn)
 {
 	struct mlx4_qp_table *qp_table = &mlx4_priv(dev)->qp_table;
@@ -499,7 +406,6 @@ struct mlx4_qp *mlx4_qp_lookup(struct mlx4_dev *dev, u32 qpn)
 	return qp;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_qp_alloc(struct mlx4_dev *dev, int qpn, struct mlx4_qp *qp)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
@@ -522,11 +428,7 @@ int mlx4_qp_alloc(struct mlx4_dev *dev, int qpn, struct mlx4_qp *qp)
 	if (err)
 		goto err_icm;
 
-<<<<<<< HEAD
-	atomic_set(&qp->refcount, 1);
-=======
 	refcount_set(&qp->refcount, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_completion(&qp->free);
 
 	return 0;
@@ -538,8 +440,6 @@ err_icm:
 
 EXPORT_SYMBOL_GPL(mlx4_qp_alloc);
 
-<<<<<<< HEAD
-=======
 int mlx4_update_qp(struct mlx4_dev *dev, u32 qpn,
 		   enum mlx4_update_qp_attr attr,
 		   struct mlx4_update_qp_params *params)
@@ -615,7 +515,6 @@ out:
 }
 EXPORT_SYMBOL_GPL(mlx4_update_qp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mlx4_qp_remove(struct mlx4_dev *dev, struct mlx4_qp *qp)
 {
 	struct mlx4_qp_table *qp_table = &mlx4_priv(dev)->qp_table;
@@ -629,12 +528,7 @@ EXPORT_SYMBOL_GPL(mlx4_qp_remove);
 
 void mlx4_qp_free(struct mlx4_dev *dev, struct mlx4_qp *qp)
 {
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&qp->refcount))
-		complete(&qp->free);
-=======
 	mlx4_put_qp(qp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_for_completion(&qp->free);
 
 	mlx4_qp_free_icm(dev, qp->qpn);
@@ -647,8 +541,6 @@ static int mlx4_CONF_SPECIAL_QP(struct mlx4_dev *dev, u32 base_qpn)
 			MLX4_CMD_TIME_CLASS_B, MLX4_CMD_NATIVE);
 }
 
-<<<<<<< HEAD
-=======
 #define MLX4_QP_TABLE_RSS_ETH_PRIORITY 2
 #define MLX4_QP_TABLE_RAW_ETH_PRIORITY 1
 #define MLX4_QP_TABLE_RAW_ETH_SIZE     256
@@ -871,47 +763,30 @@ static void mlx4_cleanup_qp_zones(struct mlx4_dev *dev)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_init_qp_table(struct mlx4_dev *dev)
 {
 	struct mlx4_qp_table *qp_table = &mlx4_priv(dev)->qp_table;
 	int err;
 	int reserved_from_top = 0;
-<<<<<<< HEAD
-=======
 	int reserved_from_bot;
 	int k;
 	int fixed_reserved_from_bot_rv = 0;
 	int bottom_reserved_for_rss_bitmap;
 	u32 max_table_offset = dev->caps.dmfs_high_rate_qpn_base +
 			dev->caps.dmfs_high_rate_qpn_range;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&qp_table->lock);
 	INIT_RADIX_TREE(&dev->qp_table_tree, GFP_ATOMIC);
 	if (mlx4_is_slave(dev))
 		return 0;
 
-<<<<<<< HEAD
-	/*
-	 * We reserve 2 extra QPs per port for the special QPs.  The
-=======
 	/* We reserve 2 extra QPs per port for the special QPs.  The
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * block of special QPs must be aligned to a multiple of 8, so
 	 * round up.
 	 *
 	 * We also reserve the MSB of the 24-bit QP number to indicate
 	 * that a QP is an XRC QP.
 	 */
-<<<<<<< HEAD
-	dev->caps.sqp_start =
-		ALIGN(dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW], 8);
-
-	{
-		int sort[MLX4_NUM_QP_REGION];
-		int i, j, tmp;
-=======
 	for (k = 0; k <= MLX4_QP_REGION_BOTTOM; k++)
 		fixed_reserved_from_bot_rv += dev->caps.reserved_qps_cnt[k];
 
@@ -926,26 +801,11 @@ int mlx4_init_qp_table(struct mlx4_dev *dev)
 	{
 		int sort[MLX4_NUM_QP_REGION];
 		int i, j;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int last_base = dev->caps.num_qps;
 
 		for (i = 1; i < MLX4_NUM_QP_REGION; ++i)
 			sort[i] = i;
 
-<<<<<<< HEAD
-		for (i = MLX4_NUM_QP_REGION; i > 0; --i) {
-			for (j = 2; j < i; ++j) {
-				if (dev->caps.reserved_qps_cnt[sort[j]] >
-				    dev->caps.reserved_qps_cnt[sort[j - 1]]) {
-					tmp             = sort[j];
-					sort[j]         = sort[j - 1];
-					sort[j - 1]     = tmp;
-				}
-			}
-		}
-
-		for (i = 1; i < MLX4_NUM_QP_REGION; ++i) {
-=======
 		for (i = MLX4_NUM_QP_REGION; i > MLX4_QP_REGION_BOTTOM; --i) {
 			for (j = MLX4_QP_REGION_BOTTOM + 2; j < i; ++j) {
 				if (dev->caps.reserved_qps_cnt[sort[j]] >
@@ -955,24 +815,11 @@ int mlx4_init_qp_table(struct mlx4_dev *dev)
 		}
 
 		for (i = MLX4_QP_REGION_BOTTOM + 1; i < MLX4_NUM_QP_REGION; ++i) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			last_base -= dev->caps.reserved_qps_cnt[sort[i]];
 			dev->caps.reserved_qps_base[sort[i]] = last_base;
 			reserved_from_top +=
 				dev->caps.reserved_qps_cnt[sort[i]];
 		}
-<<<<<<< HEAD
-
-	}
-
-	err = mlx4_bitmap_init(&qp_table->bitmap, dev->caps.num_qps,
-			       (1 << 23) - 1, dev->caps.sqp_start + 8,
-			       reserved_from_top);
-	if (err)
-		return err;
-
-	return mlx4_CONF_SPECIAL_QP(dev, dev->caps.sqp_start);
-=======
 	}
 
        /* Reserve 8 real SQPs in both native and SRIOV modes.
@@ -1036,7 +883,6 @@ err_mem:
 	dev->caps.spec_qps = NULL;
 	mlx4_cleanup_qp_zones(dev);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void mlx4_cleanup_qp_table(struct mlx4_dev *dev)
@@ -1045,12 +891,8 @@ void mlx4_cleanup_qp_table(struct mlx4_dev *dev)
 		return;
 
 	mlx4_CONF_SPECIAL_QP(dev, 0);
-<<<<<<< HEAD
-	mlx4_bitmap_cleanup(&mlx4_priv(dev)->qp_table.bitmap);
-=======
 
 	mlx4_cleanup_qp_zones(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mlx4_qp_query(struct mlx4_dev *dev, struct mlx4_qp *qp,
@@ -1067,11 +909,7 @@ int mlx4_qp_query(struct mlx4_dev *dev, struct mlx4_qp *qp,
 			   MLX4_CMD_QUERY_QP, MLX4_CMD_TIME_CLASS_A,
 			   MLX4_CMD_WRAPPED);
 	if (!err)
-<<<<<<< HEAD
-		memcpy(context, mailbox->buf + 8, sizeof *context);
-=======
 		memcpy(context, mailbox->buf + 8, sizeof(*context));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlx4_free_cmd_mailbox(dev, mailbox);
 	return err;
@@ -1084,11 +922,7 @@ int mlx4_qp_to_ready(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 {
 	int err;
 	int i;
-<<<<<<< HEAD
-	enum mlx4_qp_state states[] = {
-=======
 	static const enum mlx4_qp_state states[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		MLX4_QP_STATE_RST,
 		MLX4_QP_STATE_INIT,
 		MLX4_QP_STATE_RTR,
@@ -1098,20 +932,12 @@ int mlx4_qp_to_ready(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 	for (i = 0; i < ARRAY_SIZE(states) - 1; i++) {
 		context->flags &= cpu_to_be32(~(0xf << 28));
 		context->flags |= cpu_to_be32(states[i + 1] << 28);
-<<<<<<< HEAD
-		err = mlx4_qp_modify(dev, mtt, states[i], states[i + 1],
-				     context, 0, 0, qp);
-		if (err) {
-			mlx4_err(dev, "Failed to bring QP to state: "
-				 "%d with error: %d\n",
-=======
 		if (states[i + 1] != MLX4_QP_STATE_RTR)
 			context->params2 &= ~cpu_to_be32(MLX4_QP_BIT_FPP);
 		err = mlx4_qp_modify(dev, mtt, states[i], states[i + 1],
 				     context, 0, 0, qp);
 		if (err) {
 			mlx4_err(dev, "Failed to bring QP to state: %d with error: %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 states[i + 1], err);
 			return err;
 		}
@@ -1122,8 +948,6 @@ int mlx4_qp_to_ready(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(mlx4_qp_to_ready);
-<<<<<<< HEAD
-=======
 
 u16 mlx4_qp_roce_entropy(struct mlx4_dev *dev, u32 qpn)
 {
@@ -1144,4 +968,3 @@ u16 mlx4_qp_roce_entropy(struct mlx4_dev *dev, u32 qpn)
 	}
 	return 0xdead;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

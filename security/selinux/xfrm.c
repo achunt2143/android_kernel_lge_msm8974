@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-/*
- *  NSA Security-Enhanced Linux (SELinux) security module
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *  Security-Enhanced Linux (SELinux) security module
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  This file contains the SELinux XFRM hook function implementations.
  *
@@ -18,13 +13,6 @@
  *
  *  Copyright (C) 2005 International Business Machines Corporation
  *  Copyright (C) 2006 Trusted Computer Solutions, Inc.
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License version 2,
- *	as published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -44,12 +32,6 @@
 #include <linux/init.h>
 #include <linux/security.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/netfilter.h>
-#include <linux/netfilter_ipv4.h>
-#include <linux/netfilter_ipv6.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/ip.h>
 #include <linux/tcp.h>
@@ -65,17 +47,10 @@
 #include "xfrm.h"
 
 /* Labeled XFRM instance counter */
-<<<<<<< HEAD
-atomic_t selinux_xfrm_refcount = ATOMIC_INIT(0);
-
-/*
- * Returns true if an LSM/SELinux context
-=======
 atomic_t selinux_xfrm_refcount __read_mostly = ATOMIC_INIT(0);
 
 /*
  * Returns true if the context is an LSM/SELinux context.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int selinux_authorizable_ctx(struct xfrm_sec_ctx *ctx)
 {
@@ -85,11 +60,7 @@ static inline int selinux_authorizable_ctx(struct xfrm_sec_ctx *ctx)
 }
 
 /*
-<<<<<<< HEAD
- * Returns true if the xfrm contains a security blob for SELinux
-=======
  * Returns true if the xfrm contains a security blob for SELinux.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int selinux_authorizable_xfrm(struct xfrm_state *x)
 {
@@ -97,38 +68,6 @@ static inline int selinux_authorizable_xfrm(struct xfrm_state *x)
 }
 
 /*
-<<<<<<< HEAD
- * LSM hook implementation that authorizes that a flow can use
- * a xfrm policy rule.
- */
-int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
-{
-	int rc;
-	u32 sel_sid;
-
-	/* Context sid is either set to label or ANY_ASSOC */
-	if (ctx) {
-		if (!selinux_authorizable_ctx(ctx))
-			return -EINVAL;
-
-		sel_sid = ctx->ctx_sid;
-	} else
-		/*
-		 * All flows should be treated as polmatch'ing an
-		 * otherwise applicable "non-labeled" policy. This
-		 * would prevent inadvertent "leaks".
-		 */
-		return 0;
-
-	rc = avc_has_perm(fl_secid, sel_sid, SECCLASS_ASSOCIATION,
-			  ASSOCIATION__POLMATCH,
-			  NULL);
-
-	if (rc == -EACCES)
-		return -ESRCH;
-
-	return rc;
-=======
  * Allocates a xfrm_sec_state and populates it using the supplied security
  * xfrm_user_sec_ctx context.
  */
@@ -225,28 +164,18 @@ int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid)
 	rc = avc_has_perm(fl_secid, ctx->ctx_sid,
 			  SECCLASS_ASSOCIATION, ASSOCIATION__POLMATCH, NULL);
 	return (rc == -EACCES ? -ESRCH : rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * LSM hook implementation that authorizes that a state matches
  * the given policy, flow combo.
  */
-<<<<<<< HEAD
-
-int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x, struct xfrm_policy *xp,
-			const struct flowi *fl)
-{
-	u32 state_sid;
-	int rc;
-=======
 int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
 				      struct xfrm_policy *xp,
 				      const struct flowi_common *flic)
 {
 	u32 state_sid;
 	u32 flic_sid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!xp->security)
 		if (x->security)
@@ -265,54 +194,6 @@ int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
 				return 0;
 
 	state_sid = x->security->ctx_sid;
-<<<<<<< HEAD
-
-	if (fl->flowi_secid != state_sid)
-		return 0;
-
-	rc = avc_has_perm(fl->flowi_secid, state_sid, SECCLASS_ASSOCIATION,
-			  ASSOCIATION__SENDTO,
-			  NULL)? 0:1;
-
-	/*
-	 * We don't need a separate SA Vs. policy polmatch check
-	 * since the SA is now of the same label as the flow and
-	 * a flow Vs. policy polmatch check had already happened
-	 * in selinux_xfrm_policy_lookup() above.
-	 */
-
-	return rc;
-}
-
-static int selinux_xfrm_skb_sid_ingress(struct sk_buff *skb,
-					u32 *sid, int ckall)
-{
-	struct sec_path *sp = skb->sp;
-
-	*sid = SECSID_NULL;
-
-	if (sp) {
-		int i, sid_set = 0;
-
-		for (i = sp->len-1; i >= 0; i--) {
-			struct xfrm_state *x = sp->xvec[i];
-			if (selinux_authorizable_xfrm(x)) {
-				struct xfrm_sec_ctx *ctx = x->security;
-
-				if (!sid_set) {
-					*sid = ctx->ctx_sid;
-					sid_set = 1;
-
-					if (!ckall)
-						break;
-				} else if (*sid != ctx->ctx_sid)
-					return -EINVAL;
-			}
-		}
-	}
-
-	return 0;
-=======
 	flic_sid = flic->flowic_secid;
 
 	if (flic_sid != state_sid)
@@ -324,7 +205,6 @@ static int selinux_xfrm_skb_sid_ingress(struct sk_buff *skb,
 	return (avc_has_perm(flic_sid, state_sid,
 			     SECCLASS_ASSOCIATION, ASSOCIATION__SENDTO,
 			     NULL) ? 0 : 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 selinux_xfrm_skb_sid_egress(struct sk_buff *skb)
@@ -341,8 +221,6 @@ static u32 selinux_xfrm_skb_sid_egress(struct sk_buff *skb)
 	return x->security->ctx_sid;
 }
 
-<<<<<<< HEAD
-=======
 static int selinux_xfrm_skb_sid_ingress(struct sk_buff *skb,
 					u32 *sid, int ckall)
 {
@@ -374,15 +252,10 @@ out:
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LSM hook implementation that checks and/or returns the xfrm sid for the
  * incoming packet.
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int selinux_xfrm_decode_session(struct sk_buff *skb, u32 *sid, int ckall)
 {
 	if (skb == NULL) {
@@ -404,119 +277,6 @@ int selinux_xfrm_skb_sid(struct sk_buff *skb, u32 *sid)
 }
 
 /*
-<<<<<<< HEAD
- * Security blob allocation for xfrm_policy and xfrm_state
- * CTX does not have a meaningful value on input
- */
-static int selinux_xfrm_sec_ctx_alloc(struct xfrm_sec_ctx **ctxp,
-	struct xfrm_user_sec_ctx *uctx, u32 sid)
-{
-	int rc = 0;
-	const struct task_security_struct *tsec = current_security();
-	struct xfrm_sec_ctx *ctx = NULL;
-	char *ctx_str = NULL;
-	u32 str_len;
-
-	BUG_ON(uctx && sid);
-
-	if (!uctx)
-		goto not_from_user;
-
-	if (uctx->ctx_alg != XFRM_SC_ALG_SELINUX)
-		return -EINVAL;
-
-	str_len = uctx->ctx_len;
-	if (str_len >= PAGE_SIZE)
-		return -ENOMEM;
-
-	*ctxp = ctx = kmalloc(sizeof(*ctx) +
-			      str_len + 1,
-			      GFP_KERNEL);
-
-	if (!ctx)
-		return -ENOMEM;
-
-	ctx->ctx_doi = uctx->ctx_doi;
-	ctx->ctx_len = str_len;
-	ctx->ctx_alg = uctx->ctx_alg;
-
-	memcpy(ctx->ctx_str,
-	       uctx+1,
-	       str_len);
-	ctx->ctx_str[str_len] = 0;
-	rc = security_context_to_sid(ctx->ctx_str,
-				     str_len,
-				     &ctx->ctx_sid);
-
-	if (rc)
-		goto out;
-
-	/*
-	 * Does the subject have permission to set security context?
-	 */
-	rc = avc_has_perm(tsec->sid, ctx->ctx_sid,
-			  SECCLASS_ASSOCIATION,
-			  ASSOCIATION__SETCONTEXT, NULL);
-	if (rc)
-		goto out;
-
-	return rc;
-
-not_from_user:
-	rc = security_sid_to_context(sid, &ctx_str, &str_len);
-	if (rc)
-		goto out;
-
-	*ctxp = ctx = kmalloc(sizeof(*ctx) +
-			      str_len,
-			      GFP_ATOMIC);
-
-	if (!ctx) {
-		rc = -ENOMEM;
-		goto out;
-	}
-
-	ctx->ctx_doi = XFRM_SC_DOI_LSM;
-	ctx->ctx_alg = XFRM_SC_ALG_SELINUX;
-	ctx->ctx_sid = sid;
-	ctx->ctx_len = str_len;
-	memcpy(ctx->ctx_str,
-	       ctx_str,
-	       str_len);
-
-	goto out2;
-
-out:
-	*ctxp = NULL;
-	kfree(ctx);
-out2:
-	kfree(ctx_str);
-	return rc;
-}
-
-/*
- * LSM hook implementation that allocs and transfers uctx spec to
- * xfrm_policy.
- */
-int selinux_xfrm_policy_alloc(struct xfrm_sec_ctx **ctxp,
-			      struct xfrm_user_sec_ctx *uctx)
-{
-	int err;
-
-	BUG_ON(!uctx);
-
-	err = selinux_xfrm_sec_ctx_alloc(ctxp, uctx, 0);
-	if (err == 0)
-		atomic_inc(&selinux_xfrm_refcount);
-
-	return err;
-}
-
-
-/*
- * LSM hook implementation that copies security data structure from old to
- * new for policy cloning.
-=======
  * LSM hook implementation that allocs and transfers uctx spec to xfrm_policy.
  */
 int selinux_xfrm_policy_alloc(struct xfrm_sec_ctx **ctxp,
@@ -529,25 +289,12 @@ int selinux_xfrm_policy_alloc(struct xfrm_sec_ctx **ctxp,
 /*
  * LSM hook implementation that copies security data structure from old to new
  * for policy cloning.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int selinux_xfrm_policy_clone(struct xfrm_sec_ctx *old_ctx,
 			      struct xfrm_sec_ctx **new_ctxp)
 {
 	struct xfrm_sec_ctx *new_ctx;
 
-<<<<<<< HEAD
-	if (old_ctx) {
-		new_ctx = kmalloc(sizeof(*old_ctx) + old_ctx->ctx_len,
-				  GFP_ATOMIC);
-		if (!new_ctx)
-			return -ENOMEM;
-
-		memcpy(new_ctx, old_ctx, sizeof(*new_ctx));
-		memcpy(new_ctx->ctx_str, old_ctx->ctx_str, new_ctx->ctx_len);
-		*new_ctxp = new_ctx;
-	}
-=======
 	if (!old_ctx)
 		return 0;
 
@@ -558,7 +305,6 @@ int selinux_xfrm_policy_clone(struct xfrm_sec_ctx *old_ctx,
 	atomic_inc(&selinux_xfrm_refcount);
 	*new_ctxp = new_ctx;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -567,11 +313,7 @@ int selinux_xfrm_policy_clone(struct xfrm_sec_ctx *old_ctx,
  */
 void selinux_xfrm_policy_free(struct xfrm_sec_ctx *ctx)
 {
-<<<<<<< HEAD
-	kfree(ctx);
-=======
 	selinux_xfrm_free(ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -579,37 +321,6 @@ void selinux_xfrm_policy_free(struct xfrm_sec_ctx *ctx)
  */
 int selinux_xfrm_policy_delete(struct xfrm_sec_ctx *ctx)
 {
-<<<<<<< HEAD
-	const struct task_security_struct *tsec = current_security();
-	int rc = 0;
-
-	if (ctx) {
-		rc = avc_has_perm(tsec->sid, ctx->ctx_sid,
-				  SECCLASS_ASSOCIATION,
-				  ASSOCIATION__SETCONTEXT, NULL);
-		if (rc == 0)
-			atomic_dec(&selinux_xfrm_refcount);
-	}
-
-	return rc;
-}
-
-/*
- * LSM hook implementation that allocs and transfers sec_ctx spec to
- * xfrm_state.
- */
-int selinux_xfrm_state_alloc(struct xfrm_state *x, struct xfrm_user_sec_ctx *uctx,
-		u32 secid)
-{
-	int err;
-
-	BUG_ON(!x);
-
-	err = selinux_xfrm_sec_ctx_alloc(&x->security, uctx, secid);
-	if (err == 0)
-		atomic_inc(&selinux_xfrm_refcount);
-	return err;
-=======
 	return selinux_xfrm_delete(ctx);
 }
 
@@ -663,7 +374,6 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
 out:
 	kfree(ctx_str);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -671,30 +381,6 @@ out:
  */
 void selinux_xfrm_state_free(struct xfrm_state *x)
 {
-<<<<<<< HEAD
-	struct xfrm_sec_ctx *ctx = x->security;
-	kfree(ctx);
-}
-
- /*
-  * LSM hook implementation that authorizes deletion of labeled SAs.
-  */
-int selinux_xfrm_state_delete(struct xfrm_state *x)
-{
-	const struct task_security_struct *tsec = current_security();
-	struct xfrm_sec_ctx *ctx = x->security;
-	int rc = 0;
-
-	if (ctx) {
-		rc = avc_has_perm(tsec->sid, ctx->ctx_sid,
-				  SECCLASS_ASSOCIATION,
-				  ASSOCIATION__SETCONTEXT, NULL);
-		if (rc == 0)
-			atomic_dec(&selinux_xfrm_refcount);
-	}
-
-	return rc;
-=======
 	selinux_xfrm_free(x->security);
 }
 
@@ -704,7 +390,6 @@ int selinux_xfrm_state_delete(struct xfrm_state *x)
 int selinux_xfrm_state_delete(struct xfrm_state *x)
 {
 	return selinux_xfrm_delete(x->security);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -714,23 +399,12 @@ int selinux_xfrm_state_delete(struct xfrm_state *x)
  * we need to check for unlabelled access since this may not have
  * gone thru the IPSec process.
  */
-<<<<<<< HEAD
-int selinux_xfrm_sock_rcv_skb(u32 isec_sid, struct sk_buff *skb,
-				struct common_audit_data *ad)
-{
-	int i, rc = 0;
-	struct sec_path *sp;
-	u32 sel_sid = SECINITSID_UNLABELED;
-
-	sp = skb->sp;
-=======
 int selinux_xfrm_sock_rcv_skb(u32 sk_sid, struct sk_buff *skb,
 			      struct common_audit_data *ad)
 {
 	int i;
 	struct sec_path *sp = skb_sec_path(skb);
 	u32 peer_sid = SECINITSID_UNLABELED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sp) {
 		for (i = 0; i < sp->len; i++) {
@@ -738,35 +412,17 @@ int selinux_xfrm_sock_rcv_skb(u32 sk_sid, struct sk_buff *skb,
 
 			if (x && selinux_authorizable_xfrm(x)) {
 				struct xfrm_sec_ctx *ctx = x->security;
-<<<<<<< HEAD
-				sel_sid = ctx->ctx_sid;
-=======
 				peer_sid = ctx->ctx_sid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
 	}
 
-<<<<<<< HEAD
-	/*
-	 * This check even when there's no association involved is
-	 * intended, according to Trent Jaeger, to make sure a
-	 * process can't engage in non-ipsec communication unless
-	 * explicitly allowed by policy.
-	 */
-
-	rc = avc_has_perm(isec_sid, sel_sid, SECCLASS_ASSOCIATION,
-			  ASSOCIATION__RECVFROM, ad);
-
-	return rc;
-=======
 	/* This check even when there's no association involved is intended,
 	 * according to Trent Jaeger, to make sure a process can't engage in
 	 * non-IPsec communication unless explicitly allowed by policy. */
 	return avc_has_perm(sk_sid, peer_sid,
 			    SECCLASS_ASSOCIATION, ASSOCIATION__RECVFROM, ad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -776,67 +432,23 @@ int selinux_xfrm_sock_rcv_skb(u32 sk_sid, struct sk_buff *skb,
  * If we do have a authorizable security association, then it has already been
  * checked in the selinux_xfrm_state_pol_flow_match hook above.
  */
-<<<<<<< HEAD
-int selinux_xfrm_postroute_last(u32 isec_sid, struct sk_buff *skb,
-					struct common_audit_data *ad, u8 proto)
-{
-	struct dst_entry *dst;
-	int rc = 0;
-
-	dst = skb_dst(skb);
-
-	if (dst) {
-		struct dst_entry *dst_test;
-
-		for (dst_test = dst; dst_test != NULL;
-		     dst_test = dst_test->child) {
-			struct xfrm_state *x = dst_test->xfrm;
-
-			if (x && selinux_authorizable_xfrm(x))
-				goto out;
-		}
-	}
-=======
 int selinux_xfrm_postroute_last(u32 sk_sid, struct sk_buff *skb,
 				struct common_audit_data *ad, u8 proto)
 {
 	struct dst_entry *dst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (proto) {
 	case IPPROTO_AH:
 	case IPPROTO_ESP:
 	case IPPROTO_COMP:
-<<<<<<< HEAD
-		/*
-		 * We should have already seen this packet once before
-		 * it underwent xfrm(s). No need to subject it to the
-		 * unlabeled check.
-		 */
-		goto out;
-=======
 		/* We should have already seen this packet once before it
 		 * underwent xfrm(s). No need to subject it to the unlabeled
 		 * check. */
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * This check even when there's no association involved is
-	 * intended, according to Trent Jaeger, to make sure a
-	 * process can't engage in non-ipsec communication unless
-	 * explicitly allowed by policy.
-	 */
-
-	rc = avc_has_perm(isec_sid, SECINITSID_UNLABELED, SECCLASS_ASSOCIATION,
-			  ASSOCIATION__SENDTO, ad);
-out:
-	return rc;
-=======
 	dst = skb_dst(skb);
 	if (dst) {
 		struct dst_entry *iter;
@@ -854,5 +466,4 @@ out:
 	 * non-IPsec communication unless explicitly allowed by policy. */
 	return avc_has_perm(sk_sid, SECINITSID_UNLABELED,
 			    SECCLASS_ASSOCIATION, ASSOCIATION__SENDTO, ad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

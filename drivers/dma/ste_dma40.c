@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) Ericsson AB 2007-2008
  * Copyright (C) ST-Ericsson SA 2008-2010
  * Author: Per Forlin <per.forlin@stericsson.com> for ST-Ericsson
  * Author: Jonas Aaberg <jonas.aberg@stericsson.com> for ST-Ericsson
-<<<<<<< HEAD
- * License terms: GNU General Public License (GPL) version 2
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/dma-mapping.h>
@@ -21,19 +14,6 @@
 #include <linux/platform_device.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/pm.h>
-#include <linux/pm_runtime.h>
-#include <linux/err.h>
-#include <linux/amba/bus.h>
-#include <linux/regulator/consumer.h>
-
-#include <plat/ste_dma40.h>
-
-#include "dmaengine.h"
-#include "ste_dma40_ll.h"
-
-=======
 #include <linux/log2.h>
 #include <linux/pm.h>
 #include <linux/pm_runtime.h>
@@ -74,7 +54,6 @@ struct stedma40_platform_data {
 	int				 num_of_phy_chans;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define D40_NAME "dma40"
 
 #define D40_PHY_CHAN -1
@@ -96,24 +75,13 @@ struct stedma40_platform_data {
 #define D40_LCLA_LINK_PER_EVENT_GRP 128
 #define D40_LCLA_END D40_LCLA_LINK_PER_EVENT_GRP
 
-<<<<<<< HEAD
-=======
 /* Max number of logical channels per physical channel */
 #define D40_MAX_LOG_CHAN_PER_PHY 32
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Attempts before giving up to trying to get pages that are aligned */
 #define MAX_LCLA_ALLOC_ATTEMPTS 256
 
 /* Bit markings for allocation map */
-<<<<<<< HEAD
-#define D40_ALLOC_FREE		(1 << 31)
-#define D40_ALLOC_PHY		(1 << 30)
-#define D40_ALLOC_LOG_FREE	0
-
-/**
- * enum 40_command - The different commands and/or statuses.
-=======
 #define D40_ALLOC_FREE		BIT(31)
 #define D40_ALLOC_PHY		BIT(30)
 #define D40_ALLOC_LOG_FREE	0
@@ -167,7 +135,6 @@ static const struct stedma40_chan_cfg dma40_memcpy_conf_log = {
 
 /**
  * enum d40_command - The different commands and/or statuses.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @D40_DMA_STOP: DMA channel command STOP or status STOPPED,
  * @D40_DMA_RUN: The DMA channel is RUNNING of the command RUN.
@@ -202,11 +169,7 @@ enum d40_events {
  * when the DMA hw is powered off.
  * TODO: Add save/restore of D40_DREG_GCC on dma40 v3 or later, if that works.
  */
-<<<<<<< HEAD
-static u32 d40_backup_regs[] = {
-=======
 static __maybe_unused u32 d40_backup_regs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	D40_DREG_LCPA,
 	D40_DREG_LCLA,
 	D40_DREG_PRMSE,
@@ -217,10 +180,6 @@ static __maybe_unused u32 d40_backup_regs[] = {
 
 #define BACKUP_REGS_SZ ARRAY_SIZE(d40_backup_regs)
 
-<<<<<<< HEAD
-/* TODO: Check if all these registers have to be saved/restored on dma40 v3 */
-static u32 d40_backup_regs_v3[] = {
-=======
 /*
  * since 9540 and 8540 has the same HW revision
  * use v4a for 9540 or earlier
@@ -234,7 +193,6 @@ static u32 d40_backup_regs_v3[] = {
  * TODO: Check if all these registers have to be saved/restored on dma40 v4a
  */
 static u32 d40_backup_regs_v4a[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	D40_DREG_PSEG1,
 	D40_DREG_PSEG2,
 	D40_DREG_PSEG3,
@@ -253,11 +211,6 @@ static u32 d40_backup_regs_v4a[] = {
 	D40_DREG_RCEG4,
 };
 
-<<<<<<< HEAD
-#define BACKUP_REGS_SZ_V3 ARRAY_SIZE(d40_backup_regs_v3)
-
-static u32 d40_backup_regs_chan[] = {
-=======
 #define BACKUP_REGS_SZ_V4A ARRAY_SIZE(d40_backup_regs_v4a)
 
 static u32 d40_backup_regs_v4b[] = {
@@ -286,7 +239,6 @@ static u32 d40_backup_regs_v4b[] = {
 #define BACKUP_REGS_SZ_V4B ARRAY_SIZE(d40_backup_regs_v4b)
 
 static __maybe_unused u32 d40_backup_regs_chan[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	D40_CHAN_REG_SSCFG,
 	D40_CHAN_REG_SSELT,
 	D40_CHAN_REG_SSPTR,
@@ -297,8 +249,6 @@ static __maybe_unused u32 d40_backup_regs_chan[] = {
 	D40_CHAN_REG_SDLNK,
 };
 
-<<<<<<< HEAD
-=======
 #define BACKUP_REGS_SZ_MAX ((BACKUP_REGS_SZ_V4A > BACKUP_REGS_SZ_V4B) ? \
 			     BACKUP_REGS_SZ_V4A : BACKUP_REGS_SZ_V4B)
 
@@ -398,7 +348,6 @@ static __initdata struct d40_reg_val dma_init_reg_v4b[] = {
 	{ .reg = D40_DREG_CLCTIS5, .val = 0xFFFFFFFF}
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct d40_lli_pool - Structure for keeping LLIs in memory
  *
@@ -459,12 +408,8 @@ struct d40_desc {
  * struct d40_lcla_pool - LCLA pool settings and data.
  *
  * @base: The virtual address of LCLA. 18 bit aligned.
-<<<<<<< HEAD
- * @base_unaligned: The orignal kmalloc pointer, if kmalloc is used.
-=======
  * @dma_addr: DMA address, if mapped
  * @base_unaligned: The original kmalloc pointer, if kmalloc is used.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This pointer is only there for clean-up on error.
  * @pages: The number of pages needed for all physical channels.
  * Only used later for clean-up on error
@@ -492,10 +437,7 @@ struct d40_lcla_pool {
  * @allocated_dst: Same as for src but is dst.
  * allocated_dst and allocated_src uses the D40_ALLOC* defines as well as
  * event line number.
-<<<<<<< HEAD
-=======
  * @use_soft_lli: To mark if the linked lists of channel are managed by SW.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct d40_phy_res {
 	spinlock_t lock;
@@ -503,10 +445,7 @@ struct d40_phy_res {
 	int	   num;
 	u32	   allocated_src;
 	u32	   allocated_dst;
-<<<<<<< HEAD
-=======
 	bool	   use_soft_lli;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct d40_base;
@@ -527,17 +466,11 @@ struct d40_base;
  * @client: Cliented owned descriptor list.
  * @pending_queue: Submitted jobs, to be issued by issue_pending()
  * @active: Active descriptor.
-<<<<<<< HEAD
- * @queue: Queued jobs.
- * @prepare_queue: Prepared jobs.
- * @dma_cfg: The client configuration of this dma channel.
-=======
  * @done: Completed jobs
  * @queue: Queued jobs.
  * @prepare_queue: Prepared jobs.
  * @dma_cfg: The client configuration of this dma channel.
  * @slave_config: DMA slave configuration.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @configured: whether the dma_cfg configuration is valid
  * @base: Pointer to the device instance struct.
  * @src_def_cfg: Default cfg register setting for src.
@@ -560,17 +493,11 @@ struct d40_chan {
 	struct list_head		 client;
 	struct list_head		 pending_queue;
 	struct list_head		 active;
-<<<<<<< HEAD
-	struct list_head		 queue;
-	struct list_head		 prepare_queue;
-	struct stedma40_chan_cfg	 dma_cfg;
-=======
 	struct list_head		 done;
 	struct list_head		 queue;
 	struct list_head		 prepare_queue;
 	struct stedma40_chan_cfg	 dma_cfg;
 	struct dma_slave_config		 slave_config;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool				 configured;
 	struct d40_base			*base;
 	/* Default register configurations */
@@ -584,8 +511,6 @@ struct d40_chan {
 };
 
 /**
-<<<<<<< HEAD
-=======
  * struct d40_gen_dmac - generic values to represent u8500/u8540 DMA
  * controller
  *
@@ -618,7 +543,6 @@ struct d40_gen_dmac {
 };
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * struct d40_base - The big global struct, one for each probe'd instance.
  *
  * @interrupt_lock: Lock used to make sure one interrupt is handle a time.
@@ -628,15 +552,9 @@ struct d40_gen_dmac {
  * @virtbase: The virtual base address of the DMA's register.
  * @rev: silicon revision detected.
  * @clk: Pointer to the DMA clock structure.
-<<<<<<< HEAD
- * @phy_start: Physical memory start of the DMA registers.
- * @phy_size: Size of the DMA register map.
- * @irq: The IRQ number.
-=======
  * @irq: The IRQ number.
  * @num_memcpy_chans: The number of channels used for memcpy (mem-to-mem
  * transfers).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @num_phy_chans: The number of physical channels. Read from HW. This
  * is the number of available channels for this driver, not counting "Secure
  * mode" allocated physical channels.
@@ -662,13 +580,6 @@ struct d40_gen_dmac {
  * @desc_slab: cache for descriptors.
  * @reg_val_backup: Here the values of some hardware registers are stored
  * before the DMA is powered off. They are restored when the power is back on.
-<<<<<<< HEAD
- * @reg_val_backup_v3: Backup of registers that only exits on dma40 v3 and
- * later.
- * @reg_val_backup_chan: Backup data for standard channel parameter registers.
- * @gcc_pwr_off_mask: Mask to maintain the channels that can be turned off.
- * @initialized: true if the dma has been initialized
-=======
  * @reg_val_backup_v4: Backup of registers that only exits on dma40 v3 and
  * later
  * @reg_val_backup_chan: Backup data for standard channel parameter registers.
@@ -676,7 +587,6 @@ struct d40_gen_dmac {
  * @gcc_pwr_off_mask: Mask to maintain the channels that can be turned off.
  * @gen_dmac: the struct for generic registers values to represent u8500/8540
  * DMA controller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct d40_base {
 	spinlock_t			 interrupt_lock;
@@ -685,14 +595,8 @@ struct d40_base {
 	void __iomem			 *virtbase;
 	u8				  rev:4;
 	struct clk			 *clk;
-<<<<<<< HEAD
-	phys_addr_t			  phy_start;
-	resource_size_t			  phy_size;
-	int				  irq;
-=======
 	int				  irq;
 	int				  num_memcpy_chans;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int				  num_phy_chans;
 	int				  num_log_chans;
 	struct dma_device		  dma_both;
@@ -712,45 +616,11 @@ struct d40_base {
 	resource_size_t			  lcpa_size;
 	struct kmem_cache		 *desc_slab;
 	u32				  reg_val_backup[BACKUP_REGS_SZ];
-<<<<<<< HEAD
-	u32				  reg_val_backup_v3[BACKUP_REGS_SZ_V3];
-	u32				 *reg_val_backup_chan;
-	u16				  gcc_pwr_off_mask;
-	bool				  initialized;
-};
-
-/**
- * struct d40_interrupt_lookup - lookup table for interrupt handler
- *
- * @src: Interrupt mask register.
- * @clr: Interrupt clear register.
- * @is_error: true if this is an error interrupt.
- * @offset: start delta in the lookup_log_chans in d40_base. If equals to
- * D40_PHY_CHAN, the lookup_phy_chans shall be used instead.
- */
-struct d40_interrupt_lookup {
-	u32 src;
-	u32 clr;
-	bool is_error;
-	int offset;
-};
-
-/**
- * struct d40_reg_val - simple lookup struct
- *
- * @reg: The register.
- * @val: The value that belongs to the register in reg.
- */
-struct d40_reg_val {
-	unsigned int reg;
-	unsigned int val;
-=======
 	u32				  reg_val_backup_v4[BACKUP_REGS_SZ_MAX];
 	u32				 *reg_val_backup_chan;
 	u32				 *regs_interrupt;
 	u16				  gcc_pwr_off_mask;
 	struct d40_gen_dmac		  gen_dmac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct device *chan2dev(struct d40_chan *d40c)
@@ -780,13 +650,10 @@ static void __iomem *chan_base(struct d40_chan *chan)
 #define chan_err(d40c, format, arg...)		\
 	d40_err(chan2dev(d40c), format, ## arg)
 
-<<<<<<< HEAD
-=======
 static int d40_set_runtime_config_write(struct dma_chan *chan,
 				  struct dma_slave_config *config,
 				  enum dma_transfer_direction direction);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int d40_pool_lli_alloc(struct d40_chan *d40c, struct d40_desc *d40d,
 			      int lli_len)
 {
@@ -860,32 +727,18 @@ static int d40_lcla_alloc_one(struct d40_chan *d40c,
 	unsigned long flags;
 	int i;
 	int ret = -EINVAL;
-<<<<<<< HEAD
-	int p;
 
 	spin_lock_irqsave(&d40c->base->lcla_pool.lock, flags);
 
-	p = d40c->phy_chan->num * D40_LCLA_LINK_PER_EVENT_GRP;
-
-=======
-
-	spin_lock_irqsave(&d40c->base->lcla_pool.lock, flags);
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Allocate both src and dst at the same time, therefore the half
 	 * start on 1 since 0 can't be used since zero is used as end marker.
 	 */
 	for (i = 1 ; i < D40_LCLA_LINK_PER_EVENT_GRP / 2; i++) {
-<<<<<<< HEAD
-		if (!d40c->base->lcla_pool.alloc_map[p + i]) {
-			d40c->base->lcla_pool.alloc_map[p + i] = d40d;
-=======
 		int idx = d40c->phy_chan->num * D40_LCLA_LINK_PER_EVENT_GRP + i;
 
 		if (!d40c->base->lcla_pool.alloc_map[idx]) {
 			d40c->base->lcla_pool.alloc_map[idx] = d40d;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			d40d->lcla_alloc++;
 			ret = i;
 			break;
@@ -910,17 +763,10 @@ static int d40_lcla_free_all(struct d40_chan *d40c,
 	spin_lock_irqsave(&d40c->base->lcla_pool.lock, flags);
 
 	for (i = 1 ; i < D40_LCLA_LINK_PER_EVENT_GRP / 2; i++) {
-<<<<<<< HEAD
-		if (d40c->base->lcla_pool.alloc_map[d40c->phy_chan->num *
-						    D40_LCLA_LINK_PER_EVENT_GRP + i] == d40d) {
-			d40c->base->lcla_pool.alloc_map[d40c->phy_chan->num *
-							D40_LCLA_LINK_PER_EVENT_GRP + i] = NULL;
-=======
 		int idx = d40c->phy_chan->num * D40_LCLA_LINK_PER_EVENT_GRP + i;
 
 		if (d40c->base->lcla_pool.alloc_map[idx] == d40d) {
 			d40c->base->lcla_pool.alloc_map[idx] = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			d40d->lcla_alloc--;
 			if (d40d->lcla_alloc == 0) {
 				ret = 0;
@@ -997,14 +843,11 @@ static void d40_phy_lli_load(struct d40_chan *chan, struct d40_desc *desc)
 	writel(lli_dst->reg_lnk, base + D40_CHAN_REG_SDLNK);
 }
 
-<<<<<<< HEAD
-=======
 static void d40_desc_done(struct d40_chan *d40c, struct d40_desc *desc)
 {
 	list_add_tail(&desc->node, &d40c->done);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void d40_log_lli_to_lcxa(struct d40_chan *chan, struct d40_desc *desc)
 {
 	struct d40_lcla_pool *pool = &chan->base->lcla_pool;
@@ -1028,9 +871,6 @@ static void d40_log_lli_to_lcxa(struct d40_chan *chan, struct d40_desc *desc)
 	 * can't link back to the one in LCPA space
 	 */
 	if (linkback || (lli_len - lli_current > 1)) {
-<<<<<<< HEAD
-		curr_lcla = d40_lcla_alloc_one(chan, desc);
-=======
 		/*
 		 * If the channel is expected to use only soft_lli don't
 		 * allocate a lcla. This is to avoid a HW issue that exists
@@ -1041,7 +881,6 @@ static void d40_log_lli_to_lcxa(struct d40_chan *chan, struct d40_desc *desc)
 			chan->dma_cfg.dir == DMA_DEV_TO_MEM))
 			curr_lcla = d40_lcla_alloc_one(chan, desc);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		first_lcla = curr_lcla;
 	}
 
@@ -1066,11 +905,7 @@ static void d40_log_lli_to_lcxa(struct d40_chan *chan, struct d40_desc *desc)
 	}
 
 	if (curr_lcla < 0)
-<<<<<<< HEAD
-		goto out;
-=======
 		goto set_current;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (; lli_current < lli_len; lli_current++) {
 		unsigned int lcla_offset = chan->phy_chan->num * 1024 +
@@ -1121,12 +956,7 @@ static void d40_log_lli_to_lcxa(struct d40_chan *chan, struct d40_desc *desc)
 			break;
 		}
 	}
-<<<<<<< HEAD
-
-out:
-=======
  set_current:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->lli_current = lli_current;
 }
 
@@ -1141,19 +971,7 @@ static void d40_desc_load(struct d40_chan *d40c, struct d40_desc *d40d)
 
 static struct d40_desc *d40_first_active_get(struct d40_chan *d40c)
 {
-<<<<<<< HEAD
-	struct d40_desc *d;
-
-	if (list_empty(&d40c->active))
-		return NULL;
-
-	d = list_first_entry(&d40c->active,
-			     struct d40_desc,
-			     node);
-	return d;
-=======
 	return list_first_entry_or_null(&d40c->active, struct d40_desc, node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* remove desc from current queue and add it to the pending_queue */
@@ -1166,42 +984,18 @@ static void d40_desc_queue(struct d40_chan *d40c, struct d40_desc *desc)
 
 static struct d40_desc *d40_first_pending(struct d40_chan *d40c)
 {
-<<<<<<< HEAD
-	struct d40_desc *d;
-
-	if (list_empty(&d40c->pending_queue))
-		return NULL;
-
-	d = list_first_entry(&d40c->pending_queue,
-			     struct d40_desc,
-			     node);
-	return d;
-=======
 	return list_first_entry_or_null(&d40c->pending_queue, struct d40_desc,
 					node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct d40_desc *d40_first_queued(struct d40_chan *d40c)
 {
-<<<<<<< HEAD
-	struct d40_desc *d;
-
-	if (list_empty(&d40c->queue))
-		return NULL;
-
-	d = list_first_entry(&d40c->queue,
-			     struct d40_desc,
-			     node);
-	return d;
-=======
 	return list_first_entry_or_null(&d40c->queue, struct d40_desc, node);
 }
 
 static struct d40_desc *d40_first_done(struct d40_chan *d40c)
 {
 	return list_first_entry_or_null(&d40c->done, struct d40_desc, node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int d40_psize_2_burst_size(bool is_log, int psize)
@@ -1219,35 +1013,21 @@ static int d40_psize_2_burst_size(bool is_log, int psize)
 
 /*
  * The dma only supports transmitting packages up to
-<<<<<<< HEAD
- * STEDMA40_MAX_SEG_SIZE << data_width. Calculate the total number of
- * dma elements required to send the entire sg list
-=======
  * STEDMA40_MAX_SEG_SIZE * data_width, where data_width is stored in Bytes.
  *
  * Calculate the total number of dma elements required to send the entire sg list.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int d40_size_2_dmalen(int size, u32 data_width1, u32 data_width2)
 {
 	int dmalen;
 	u32 max_w = max(data_width1, data_width2);
 	u32 min_w = min(data_width1, data_width2);
-<<<<<<< HEAD
-	u32 seg_max = ALIGN(STEDMA40_MAX_SEG_SIZE << min_w, 1 << max_w);
-
-	if (seg_max > STEDMA40_MAX_SEG_SIZE)
-		seg_max -= (1 << max_w);
-
-	if (!IS_ALIGNED(size, 1 << max_w))
-=======
 	u32 seg_max = ALIGN(STEDMA40_MAX_SEG_SIZE * min_w, max_w);
 
 	if (seg_max > STEDMA40_MAX_SEG_SIZE)
 		seg_max -= max_w;
 
 	if (!IS_ALIGNED(size, max_w))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (size <= seg_max)
@@ -1278,65 +1058,6 @@ static int d40_sg_2_dmalen(struct scatterlist *sgl, int sg_len,
 	return len;
 }
 
-<<<<<<< HEAD
-
-#ifdef CONFIG_PM
-static void dma40_backup(void __iomem *baseaddr, u32 *backup,
-			 u32 *regaddr, int num, bool save)
-{
-	int i;
-
-	for (i = 0; i < num; i++) {
-		void __iomem *addr = baseaddr + regaddr[i];
-
-		if (save)
-			backup[i] = readl_relaxed(addr);
-		else
-			writel_relaxed(backup[i], addr);
-	}
-}
-
-static void d40_save_restore_registers(struct d40_base *base, bool save)
-{
-	int i;
-
-	/* Save/Restore channel specific registers */
-	for (i = 0; i < base->num_phy_chans; i++) {
-		void __iomem *addr;
-		int idx;
-
-		if (base->phy_res[i].reserved)
-			continue;
-
-		addr = base->virtbase + D40_DREG_PCBASE + i * D40_DREG_PCDELTA;
-		idx = i * ARRAY_SIZE(d40_backup_regs_chan);
-
-		dma40_backup(addr, &base->reg_val_backup_chan[idx],
-			     d40_backup_regs_chan,
-			     ARRAY_SIZE(d40_backup_regs_chan),
-			     save);
-	}
-
-	/* Save/Restore global registers */
-	dma40_backup(base->virtbase, base->reg_val_backup,
-		     d40_backup_regs, ARRAY_SIZE(d40_backup_regs),
-		     save);
-
-	/* Save/Restore registers only existing on dma40 v3 and later */
-	if (base->rev >= 3)
-		dma40_backup(base->virtbase, base->reg_val_backup_v3,
-			     d40_backup_regs_v3,
-			     ARRAY_SIZE(d40_backup_regs_v3),
-			     save);
-}
-#else
-static void d40_save_restore_registers(struct d40_base *base, bool save)
-{
-}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __d40_execute_command_phy(struct d40_chan *d40c,
 				     enum d40_command command)
 {
@@ -1366,11 +1087,7 @@ static int __d40_execute_command_phy(struct d40_chan *d40c,
 			D40_CHAN_POS(d40c->phy_chan->num);
 
 		if (status == D40_DMA_SUSPENDED || status == D40_DMA_STOP)
-<<<<<<< HEAD
-			goto done;
-=======
 			goto unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	wmask = 0xffffffff & ~(D40_CHAN_POS_MASK(d40c->phy_chan->num));
@@ -1406,11 +1123,7 @@ static int __d40_execute_command_phy(struct d40_chan *d40c,
 		}
 
 	}
-<<<<<<< HEAD
-done:
-=======
  unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&d40c->base->execmd_lock, flags);
 	return ret;
 }
@@ -1420,15 +1133,12 @@ static void d40_term_all(struct d40_chan *d40c)
 	struct d40_desc *d40d;
 	struct d40_desc *_d;
 
-<<<<<<< HEAD
-=======
 	/* Release completed descriptors */
 	while ((d40d = d40_first_done(d40c))) {
 		d40_desc_remove(d40d);
 		d40_desc_free(d40c, d40d);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Release active descriptors */
 	while ((d40d = d40_first_active_get(d40c))) {
 		d40_desc_remove(d40d);
@@ -1551,23 +1261,6 @@ static void __d40_config_set_event(struct d40_chan *d40c,
 static void d40_config_set_event(struct d40_chan *d40c,
 				 enum d40_events event_type)
 {
-<<<<<<< HEAD
-	/* Enable event line connected to device (or memcpy) */
-	if ((d40c->dma_cfg.dir ==  STEDMA40_PERIPH_TO_MEM) ||
-	    (d40c->dma_cfg.dir == STEDMA40_PERIPH_TO_PERIPH)) {
-		u32 event = D40_TYPE_TO_EVENT(d40c->dma_cfg.src_dev_type);
-
-		__d40_config_set_event(d40c, event_type, event,
-				       D40_CHAN_REG_SSLNK);
-	}
-
-	if (d40c->dma_cfg.dir !=  STEDMA40_PERIPH_TO_MEM) {
-		u32 event = D40_TYPE_TO_EVENT(d40c->dma_cfg.dst_dev_type);
-
-		__d40_config_set_event(d40c, event_type, event,
-				       D40_CHAN_REG_SDLNK);
-	}
-=======
 	u32 event = D40_TYPE_TO_EVENT(d40c->dma_cfg.dev_type);
 
 	/* Enable event line connected to device (or memcpy) */
@@ -1579,7 +1272,6 @@ static void d40_config_set_event(struct d40_chan *d40c,
 	if (d40c->dma_cfg.dir !=  DMA_DEV_TO_MEM)
 		__d40_config_set_event(d40c, event_type, event,
 				       D40_CHAN_REG_SDLNK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 d40_chan_has_events(struct d40_chan *d40c)
@@ -1725,11 +1417,7 @@ static u32 d40_residue(struct d40_chan *d40c)
 			  >> D40_SREG_ELEM_PHY_ECNT_POS;
 	}
 
-<<<<<<< HEAD
-	return num_elt * (1 << d40c->dma_cfg.dst_info.data_width);
-=======
 	return num_elt * d40c->dma_cfg.dst_info.data_width;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool d40_tx_is_linked(struct d40_chan *d40c)
@@ -1745,18 +1433,6 @@ static bool d40_tx_is_linked(struct d40_chan *d40c)
 	return is_link;
 }
 
-<<<<<<< HEAD
-static int d40_pause(struct d40_chan *d40c)
-{
-	int res = 0;
-	unsigned long flags;
-
-	if (!d40c->busy)
-		return 0;
-
-	pm_runtime_get_sync(d40c->base->dev);
-	spin_lock_irqsave(&d40c->lock, flags);
-=======
 static int d40_pause(struct dma_chan *chan)
 {
 	struct d40_chan *d40c = container_of(chan, struct d40_chan, chan);
@@ -1773,7 +1449,6 @@ static int d40_pause(struct dma_chan *chan)
 
 	spin_lock_irqsave(&d40c->lock, flags);
 	pm_runtime_get_sync(d40c->base->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = d40_channel_execute_command(d40c, D40_DMA_SUSPEND_REQ);
 
@@ -1783,13 +1458,6 @@ static int d40_pause(struct dma_chan *chan)
 	return res;
 }
 
-<<<<<<< HEAD
-static int d40_resume(struct d40_chan *d40c)
-{
-	int res = 0;
-	unsigned long flags;
-
-=======
 static int d40_resume(struct dma_chan *chan)
 {
 	struct d40_chan *d40c = container_of(chan, struct d40_chan, chan);
@@ -1801,7 +1469,6 @@ static int d40_resume(struct dma_chan *chan)
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!d40c->busy)
 		return 0;
 
@@ -1911,12 +1578,6 @@ static void dma_tc_handle(struct d40_chan *d40c)
 			return;
 		}
 
-<<<<<<< HEAD
-		if (d40_queue_start(d40c) == NULL)
-			d40c->busy = false;
-		pm_runtime_mark_last_busy(d40c->base->dev);
-		pm_runtime_put_autosuspend(d40c->base->dev);
-=======
 		if (d40_queue_start(d40c) == NULL) {
 			d40c->busy = false;
 
@@ -1926,7 +1587,6 @@ static void dma_tc_handle(struct d40_chan *d40c)
 
 		d40_desc_remove(d40d);
 		d40_desc_done(d40c, d40d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	d40c->pending_tx++;
@@ -1934,23 +1594,6 @@ static void dma_tc_handle(struct d40_chan *d40c)
 
 }
 
-<<<<<<< HEAD
-static void dma_tasklet(unsigned long data)
-{
-	struct d40_chan *d40c = (struct d40_chan *) data;
-	struct d40_desc *d40d;
-	unsigned long flags;
-	bool callback_active;
-	dma_async_tx_callback callback;
-	void *callback_param;
-
-	spin_lock_irqsave(&d40c->lock, flags);
-
-	/* Get first active entry from list */
-	d40d = d40_first_active_get(d40c);
-	if (d40d == NULL)
-		goto err;
-=======
 static void dma_tasklet(struct tasklet_struct *t)
 {
 	struct d40_chan *d40c = from_tasklet(d40c, t, tasklet);
@@ -1969,7 +1612,6 @@ static void dma_tasklet(struct tasklet_struct *t)
 		if (d40d == NULL || !d40d->cyclic)
 			goto check_pending_tx;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!d40d->cyclic)
 		dma_cookie_complete(&d40d->txd);
@@ -1985,32 +1627,17 @@ static void dma_tasklet(struct tasklet_struct *t)
 
 	/* Callback to client */
 	callback_active = !!(d40d->txd.flags & DMA_PREP_INTERRUPT);
-<<<<<<< HEAD
-	callback = d40d->txd.callback;
-	callback_param = d40d->txd.callback_param;
-=======
 	dmaengine_desc_get_callback(&d40d->txd, &cb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!d40d->cyclic) {
 		if (async_tx_test_ack(&d40d->txd)) {
 			d40_desc_remove(d40d);
 			d40_desc_free(d40c, d40d);
-<<<<<<< HEAD
-		} else {
-			if (!d40d->is_in_client_list) {
-				d40_desc_remove(d40d);
-				d40_lcla_free_all(d40c, d40d);
-				list_add_tail(&d40d->node, &d40c->client);
-				d40d->is_in_client_list = true;
-			}
-=======
 		} else if (!d40d->is_in_client_list) {
 			d40_desc_remove(d40d);
 			d40_lcla_free_all(d40c, d40d);
 			list_add_tail(&d40d->node, &d40c->client);
 			d40d->is_in_client_list = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -2021,22 +1648,12 @@ static void dma_tasklet(struct tasklet_struct *t)
 
 	spin_unlock_irqrestore(&d40c->lock, flags);
 
-<<<<<<< HEAD
-	if (callback_active && callback)
-		callback(callback_param);
-
-	return;
-
-err:
-	/* Rescue manouver if receiving double interrupts */
-=======
 	if (callback_active)
 		dmaengine_desc_callback_invoke(&cb, NULL);
 
 	return;
  check_pending_tx:
 	/* Rescue maneuver if receiving double interrupts */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (d40c->pending_tx > 0)
 		d40c->pending_tx--;
 	spin_unlock_irqrestore(&d40c->lock, flags);
@@ -2044,38 +1661,11 @@ err:
 
 static irqreturn_t d40_handle_interrupt(int irq, void *data)
 {
-<<<<<<< HEAD
-	static const struct d40_interrupt_lookup il[] = {
-		{D40_DREG_LCTIS0, D40_DREG_LCICR0, false,  0},
-		{D40_DREG_LCTIS1, D40_DREG_LCICR1, false, 32},
-		{D40_DREG_LCTIS2, D40_DREG_LCICR2, false, 64},
-		{D40_DREG_LCTIS3, D40_DREG_LCICR3, false, 96},
-		{D40_DREG_LCEIS0, D40_DREG_LCICR0, true,   0},
-		{D40_DREG_LCEIS1, D40_DREG_LCICR1, true,  32},
-		{D40_DREG_LCEIS2, D40_DREG_LCICR2, true,  64},
-		{D40_DREG_LCEIS3, D40_DREG_LCICR3, true,  96},
-		{D40_DREG_PCTIS,  D40_DREG_PCICR,  false, D40_PHY_CHAN},
-		{D40_DREG_PCEIS,  D40_DREG_PCICR,  true,  D40_PHY_CHAN},
-	};
-
 	int i;
-	u32 regs[ARRAY_SIZE(il)];
-=======
-	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 idx;
 	u32 row;
 	long chan = -1;
 	struct d40_chan *d40c;
-<<<<<<< HEAD
-	unsigned long flags;
-	struct d40_base *base = data;
-
-	spin_lock_irqsave(&base->interrupt_lock, flags);
-
-	/* Read interrupt status of both logical and physical channels */
-	for (i = 0; i < ARRAY_SIZE(il); i++)
-=======
 	struct d40_base *base = data;
 	u32 *regs = base->regs_interrupt;
 	struct d40_interrupt_lookup *il = base->gen_dmac.il;
@@ -2085,40 +1675,24 @@ static irqreturn_t d40_handle_interrupt(int irq, void *data)
 
 	/* Read interrupt status of both logical and physical channels */
 	for (i = 0; i < il_size; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regs[i] = readl(base->virtbase + il[i].src);
 
 	for (;;) {
 
 		chan = find_next_bit((unsigned long *)regs,
-<<<<<<< HEAD
-				     BITS_PER_LONG * ARRAY_SIZE(il), chan + 1);
-
-		/* No more set bits found? */
-		if (chan == BITS_PER_LONG * ARRAY_SIZE(il))
-=======
 				     BITS_PER_LONG * il_size, chan + 1);
 
 		/* No more set bits found? */
 		if (chan == BITS_PER_LONG * il_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		row = chan / BITS_PER_LONG;
 		idx = chan & (BITS_PER_LONG - 1);
 
-<<<<<<< HEAD
-		/* ACK interrupt */
-		writel(1 << idx, base->virtbase + il[row].clr);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (il[row].offset == D40_PHY_CHAN)
 			d40c = base->lookup_phy_chans[idx];
 		else
 			d40c = base->lookup_log_chans[il[row].offset + idx];
-<<<<<<< HEAD
-=======
 
 		if (!d40c) {
 			/*
@@ -2131,7 +1705,6 @@ static irqreturn_t d40_handle_interrupt(int irq, void *data)
 		/* ACK interrupt */
 		writel(BIT(idx), base->virtbase + il[row].clr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock(&d40c->lock);
 
 		if (!il[row].is_error)
@@ -2143,11 +1716,7 @@ static irqreturn_t d40_handle_interrupt(int irq, void *data)
 		spin_unlock(&d40c->lock);
 	}
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&base->interrupt_lock, flags);
-=======
 	spin_unlock(&base->interrupt_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -2156,11 +1725,6 @@ static int d40_validate_conf(struct d40_chan *d40c,
 			     struct stedma40_chan_cfg *conf)
 {
 	int res = 0;
-<<<<<<< HEAD
-	u32 dst_event_group = D40_TYPE_TO_GROUP(conf->dst_dev_type);
-	u32 src_event_group = D40_TYPE_TO_GROUP(conf->src_dev_type);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool is_log = conf->mode == STEDMA40_MODE_LOGICAL;
 
 	if (!conf->dir) {
@@ -2168,50 +1732,6 @@ static int d40_validate_conf(struct d40_chan *d40c,
 		res = -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (conf->dst_dev_type != STEDMA40_DEV_DST_MEMORY &&
-	    d40c->base->plat_data->dev_tx[conf->dst_dev_type] == 0 &&
-	    d40c->runtime_addr == 0) {
-
-		chan_err(d40c, "Invalid TX channel address (%d)\n",
-			 conf->dst_dev_type);
-		res = -EINVAL;
-	}
-
-	if (conf->src_dev_type != STEDMA40_DEV_SRC_MEMORY &&
-	    d40c->base->plat_data->dev_rx[conf->src_dev_type] == 0 &&
-	    d40c->runtime_addr == 0) {
-		chan_err(d40c, "Invalid RX channel address (%d)\n",
-			conf->src_dev_type);
-		res = -EINVAL;
-	}
-
-	if (conf->dir == STEDMA40_MEM_TO_PERIPH &&
-	    dst_event_group == STEDMA40_DEV_DST_MEMORY) {
-		chan_err(d40c, "Invalid dst\n");
-		res = -EINVAL;
-	}
-
-	if (conf->dir == STEDMA40_PERIPH_TO_MEM &&
-	    src_event_group == STEDMA40_DEV_SRC_MEMORY) {
-		chan_err(d40c, "Invalid src\n");
-		res = -EINVAL;
-	}
-
-	if (src_event_group == STEDMA40_DEV_SRC_MEMORY &&
-	    dst_event_group == STEDMA40_DEV_DST_MEMORY && is_log) {
-		chan_err(d40c, "No event line\n");
-		res = -EINVAL;
-	}
-
-	if (conf->dir == STEDMA40_PERIPH_TO_PERIPH &&
-	    (src_event_group != dst_event_group)) {
-		chan_err(d40c, "Invalid event group\n");
-		res = -EINVAL;
-	}
-
-	if (conf->dir == STEDMA40_PERIPH_TO_PERIPH) {
-=======
 	if ((is_log && conf->dev_type > d40c->base->num_log_chans)  ||
 	    (!is_log && conf->dev_type > d40c->base->num_phy_chans) ||
 	    (conf->dev_type < 0)) {
@@ -2220,7 +1740,6 @@ static int d40_validate_conf(struct d40_chan *d40c,
 	}
 
 	if (conf->dir == DMA_DEV_TO_DEV) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * DMAC HW supports it. Will be added to this driver,
 		 * in case any dma client requires it.
@@ -2230,15 +1749,9 @@ static int d40_validate_conf(struct d40_chan *d40c,
 	}
 
 	if (d40_psize_2_burst_size(is_log, conf->src_info.psize) *
-<<<<<<< HEAD
-	    (1 << conf->src_info.data_width) !=
-	    d40_psize_2_burst_size(is_log, conf->dst_info.psize) *
-	    (1 << conf->dst_info.data_width)) {
-=======
 	    conf->src_info.data_width !=
 	    d40_psize_2_burst_size(is_log, conf->dst_info.psize) *
 	    conf->dst_info.data_width) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * The DMAC hardware only supports
 		 * src (burst x width) == dst (burst x width)
@@ -2267,39 +1780,19 @@ static bool d40_alloc_mask_set(struct d40_phy_res *phy,
 		    phy->allocated_dst == D40_ALLOC_FREE) {
 			phy->allocated_dst = D40_ALLOC_PHY;
 			phy->allocated_src = D40_ALLOC_PHY;
-<<<<<<< HEAD
-			goto found;
-		} else
-			goto not_found;
-=======
 			goto found_unlock;
 		} else
 			goto not_found_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Logical channel */
 	if (is_src) {
 		if (phy->allocated_src == D40_ALLOC_PHY)
-<<<<<<< HEAD
-			goto not_found;
-=======
 			goto not_found_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (phy->allocated_src == D40_ALLOC_FREE)
 			phy->allocated_src = D40_ALLOC_LOG_FREE;
 
-<<<<<<< HEAD
-		if (!(phy->allocated_src & (1 << log_event_line))) {
-			phy->allocated_src |= 1 << log_event_line;
-			goto found;
-		} else
-			goto not_found;
-	} else {
-		if (phy->allocated_dst == D40_ALLOC_PHY)
-			goto not_found;
-=======
 		if (!(phy->allocated_src & BIT(log_event_line))) {
 			phy->allocated_src |= BIT(log_event_line);
 			goto found_unlock;
@@ -2308,24 +1801,10 @@ static bool d40_alloc_mask_set(struct d40_phy_res *phy,
 	} else {
 		if (phy->allocated_dst == D40_ALLOC_PHY)
 			goto not_found_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (phy->allocated_dst == D40_ALLOC_FREE)
 			phy->allocated_dst = D40_ALLOC_LOG_FREE;
 
-<<<<<<< HEAD
-		if (!(phy->allocated_dst & (1 << log_event_line))) {
-			phy->allocated_dst |= 1 << log_event_line;
-			goto found;
-		} else
-			goto not_found;
-	}
-
-not_found:
-	spin_unlock_irqrestore(&phy->lock, flags);
-	return false;
-found:
-=======
 		if (!(phy->allocated_dst & BIT(log_event_line))) {
 			phy->allocated_dst |= BIT(log_event_line);
 			goto found_unlock;
@@ -2335,7 +1814,6 @@ found:
 	spin_unlock_irqrestore(&phy->lock, flags);
 	return false;
  found_unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&phy->lock, flags);
 	return true;
 }
@@ -2351,40 +1829,23 @@ static bool d40_alloc_mask_free(struct d40_phy_res *phy, bool is_src,
 		phy->allocated_dst = D40_ALLOC_FREE;
 		phy->allocated_src = D40_ALLOC_FREE;
 		is_free = true;
-<<<<<<< HEAD
-		goto out;
-=======
 		goto unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Logical channel */
 	if (is_src) {
-<<<<<<< HEAD
-		phy->allocated_src &= ~(1 << log_event_line);
-		if (phy->allocated_src == D40_ALLOC_LOG_FREE)
-			phy->allocated_src = D40_ALLOC_FREE;
-	} else {
-		phy->allocated_dst &= ~(1 << log_event_line);
-=======
 		phy->allocated_src &= ~BIT(log_event_line);
 		if (phy->allocated_src == D40_ALLOC_LOG_FREE)
 			phy->allocated_src = D40_ALLOC_FREE;
 	} else {
 		phy->allocated_dst &= ~BIT(log_event_line);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (phy->allocated_dst == D40_ALLOC_LOG_FREE)
 			phy->allocated_dst = D40_ALLOC_FREE;
 	}
 
 	is_free = ((phy->allocated_src | phy->allocated_dst) ==
 		   D40_ALLOC_FREE);
-<<<<<<< HEAD
-
-out:
-=======
  unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&phy->lock, flags);
 
 	return is_free;
@@ -2392,36 +1853,18 @@ out:
 
 static int d40_allocate_channel(struct d40_chan *d40c, bool *first_phy_user)
 {
-<<<<<<< HEAD
-	int dev_type;
-=======
 	int dev_type = d40c->dma_cfg.dev_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int event_group;
 	int event_line;
 	struct d40_phy_res *phys;
 	int i;
 	int j;
 	int log_num;
-<<<<<<< HEAD
-=======
 	int num_phy_chans;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool is_src;
 	bool is_log = d40c->dma_cfg.mode == STEDMA40_MODE_LOGICAL;
 
 	phys = d40c->base->phy_res;
-<<<<<<< HEAD
-
-	if (d40c->dma_cfg.dir == STEDMA40_PERIPH_TO_MEM) {
-		dev_type = d40c->dma_cfg.src_dev_type;
-		log_num = 2 * dev_type;
-		is_src = true;
-	} else if (d40c->dma_cfg.dir == STEDMA40_MEM_TO_PERIPH ||
-		   d40c->dma_cfg.dir == STEDMA40_MEM_TO_MEM) {
-		/* dst event lines are used for logical memcpy */
-		dev_type = d40c->dma_cfg.dst_dev_type;
-=======
 	num_phy_chans = d40c->base->num_phy_chans;
 
 	if (d40c->dma_cfg.dir == DMA_DEV_TO_MEM) {
@@ -2430,7 +1873,6 @@ static int d40_allocate_channel(struct d40_chan *d40c, bool *first_phy_user)
 	} else if (d40c->dma_cfg.dir == DMA_MEM_TO_DEV ||
 		   d40c->dma_cfg.dir == DMA_MEM_TO_MEM) {
 		/* dst event lines are used for logical memcpy */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		log_num = 2 * dev_type + 1;
 		is_src = false;
 	} else
@@ -2440,23 +1882,14 @@ static int d40_allocate_channel(struct d40_chan *d40c, bool *first_phy_user)
 	event_line = D40_TYPE_TO_EVENT(dev_type);
 
 	if (!is_log) {
-<<<<<<< HEAD
-		if (d40c->dma_cfg.dir == STEDMA40_MEM_TO_MEM) {
-			/* Find physical half channel */
-			for (i = 0; i < d40c->base->num_phy_chans; i++) {
-
-=======
 		if (d40c->dma_cfg.dir == DMA_MEM_TO_MEM) {
 			/* Find physical half channel */
 			if (d40c->dma_cfg.use_fixed_channel) {
 				i = d40c->dma_cfg.phy_channel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (d40_alloc_mask_set(&phys[i], is_src,
 						       0, is_log,
 						       first_phy_user))
 					goto found_phy;
-<<<<<<< HEAD
-=======
 			} else {
 				for (i = 0; i < num_phy_chans; i++) {
 					if (d40_alloc_mask_set(&phys[i], is_src,
@@ -2464,7 +1897,6 @@ static int d40_allocate_channel(struct d40_chan *d40c, bool *first_phy_user)
 						       first_phy_user))
 						goto found_phy;
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else
 			for (j = 0; j < d40c->base->num_phy_chans; j += 8) {
@@ -2551,16 +1983,6 @@ static int d40_config_memcpy(struct d40_chan *d40c)
 	dma_cap_mask_t cap = d40c->chan.device->cap_mask;
 
 	if (dma_has_cap(DMA_MEMCPY, cap) && !dma_has_cap(DMA_SLAVE, cap)) {
-<<<<<<< HEAD
-		d40c->dma_cfg = *d40c->base->plat_data->memcpy_conf_log;
-		d40c->dma_cfg.src_dev_type = STEDMA40_DEV_SRC_MEMORY;
-		d40c->dma_cfg.dst_dev_type = d40c->base->plat_data->
-			memcpy[d40c->chan.chan_id];
-
-	} else if (dma_has_cap(DMA_MEMCPY, cap) &&
-		   dma_has_cap(DMA_SLAVE, cap)) {
-		d40c->dma_cfg = *d40c->base->plat_data->memcpy_conf_phy;
-=======
 		d40c->dma_cfg = dma40_memcpy_conf_log;
 		d40c->dma_cfg.dev_type = dma40_memcpy_channels[d40c->chan.chan_id];
 
@@ -2578,7 +2000,6 @@ static int d40_config_memcpy(struct d40_chan *d40c)
 		d40c->src_def_cfg |= BIT(D40_SREG_CFG_EIM_POS);
 		d40c->dst_def_cfg |= BIT(D40_SREG_CFG_EIM_POS);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		chan_err(d40c, "No memcpy\n");
 		return -EINVAL;
@@ -2591,11 +2012,7 @@ static int d40_free_dma(struct d40_chan *d40c)
 {
 
 	int res = 0;
-<<<<<<< HEAD
-	u32 event;
-=======
 	u32 event = D40_TYPE_TO_EVENT(d40c->dma_cfg.dev_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct d40_phy_res *phy = d40c->phy_chan;
 	bool is_src;
 
@@ -2613,23 +2030,12 @@ static int d40_free_dma(struct d40_chan *d40c)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (d40c->dma_cfg.dir == STEDMA40_MEM_TO_PERIPH ||
-	    d40c->dma_cfg.dir == STEDMA40_MEM_TO_MEM) {
-		event = D40_TYPE_TO_EVENT(d40c->dma_cfg.dst_dev_type);
-		is_src = false;
-	} else if (d40c->dma_cfg.dir == STEDMA40_PERIPH_TO_MEM) {
-		event = D40_TYPE_TO_EVENT(d40c->dma_cfg.src_dev_type);
-		is_src = true;
-	} else {
-=======
 	if (d40c->dma_cfg.dir == DMA_MEM_TO_DEV ||
 	    d40c->dma_cfg.dir == DMA_MEM_TO_MEM)
 		is_src = false;
 	else if (d40c->dma_cfg.dir == DMA_DEV_TO_MEM)
 		is_src = true;
 	else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chan_err(d40c, "Unknown direction\n");
 		return -EINVAL;
 	}
@@ -2638,11 +2044,7 @@ static int d40_free_dma(struct d40_chan *d40c)
 	res = d40_channel_execute_command(d40c, D40_DMA_STOP);
 	if (res) {
 		chan_err(d40c, "stop failed\n");
-<<<<<<< HEAD
-		goto out;
-=======
 		goto mark_last_busy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	d40_alloc_mask_free(phy, is_src, chan_is_logical(d40c) ? event : 0);
@@ -2660,12 +2062,7 @@ static int d40_free_dma(struct d40_chan *d40c)
 	d40c->busy = false;
 	d40c->phy_chan = NULL;
 	d40c->configured = false;
-<<<<<<< HEAD
-out:
-
-=======
  mark_last_busy:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm_runtime_mark_last_busy(d40c->base->dev);
 	pm_runtime_put_autosuspend(d40c->base->dev);
 	return res;
@@ -2678,11 +2075,7 @@ static bool d40_is_paused(struct d40_chan *d40c)
 	unsigned long flags;
 	void __iomem *active_reg;
 	u32 status;
-<<<<<<< HEAD
-	u32 event;
-=======
 	u32 event = D40_TYPE_TO_EVENT(d40c->dma_cfg.dev_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&d40c->lock, flags);
 
@@ -2697,22 +2090,6 @@ static bool d40_is_paused(struct d40_chan *d40c)
 			D40_CHAN_POS(d40c->phy_chan->num);
 		if (status == D40_DMA_SUSPENDED || status == D40_DMA_STOP)
 			is_paused = true;
-<<<<<<< HEAD
-
-		goto _exit;
-	}
-
-	if (d40c->dma_cfg.dir == STEDMA40_MEM_TO_PERIPH ||
-	    d40c->dma_cfg.dir == STEDMA40_MEM_TO_MEM) {
-		event = D40_TYPE_TO_EVENT(d40c->dma_cfg.dst_dev_type);
-		status = readl(chanbase + D40_CHAN_REG_SDLNK);
-	} else if (d40c->dma_cfg.dir == STEDMA40_PERIPH_TO_MEM) {
-		event = D40_TYPE_TO_EVENT(d40c->dma_cfg.src_dev_type);
-		status = readl(chanbase + D40_CHAN_REG_SSLNK);
-	} else {
-		chan_err(d40c, "Unknown direction\n");
-		goto _exit;
-=======
 		goto unlock;
 	}
 
@@ -2724,7 +2101,6 @@ static bool d40_is_paused(struct d40_chan *d40c)
 	} else {
 		chan_err(d40c, "Unknown direction\n");
 		goto unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	status = (status & D40_EVENTLINE_MASK(event)) >>
@@ -2732,20 +2108,12 @@ static bool d40_is_paused(struct d40_chan *d40c)
 
 	if (status != D40_DMA_RUN)
 		is_paused = true;
-<<<<<<< HEAD
-_exit:
-=======
  unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&d40c->lock, flags);
 	return is_paused;
 
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 stedma40_residue(struct dma_chan *chan)
 {
 	struct d40_chan *d40c =
@@ -2821,19 +2189,11 @@ d40_prep_sg_phy(struct d40_chan *chan, struct d40_desc *desc,
 	return ret < 0 ? ret : 0;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct d40_desc *
 d40_prep_desc(struct d40_chan *chan, struct scatterlist *sg,
 	      unsigned int sg_len, unsigned long dma_flags)
 {
-<<<<<<< HEAD
-	struct stedma40_chan_cfg *cfg = &chan->dma_cfg;
-=======
 	struct stedma40_chan_cfg *cfg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct d40_desc *desc;
 	int ret;
 
@@ -2841,34 +2201,20 @@ d40_prep_desc(struct d40_chan *chan, struct scatterlist *sg,
 	if (!desc)
 		return NULL;
 
-<<<<<<< HEAD
-=======
 	cfg = &chan->dma_cfg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->lli_len = d40_sg_2_dmalen(sg, sg_len, cfg->src_info.data_width,
 					cfg->dst_info.data_width);
 	if (desc->lli_len < 0) {
 		chan_err(chan, "Unaligned size\n");
-<<<<<<< HEAD
-		goto err;
-=======
 		goto free_desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = d40_pool_lli_alloc(chan, desc, desc->lli_len);
 	if (ret < 0) {
 		chan_err(chan, "Could not allocate lli\n");
-<<<<<<< HEAD
-		goto err;
-	}
-
-
-=======
 		goto free_desc;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->lli_current = 0;
 	desc->txd.flags = dma_flags;
 	desc->txd.tx_submit = d40_tx_submit;
@@ -2876,50 +2222,19 @@ d40_prep_desc(struct d40_chan *chan, struct scatterlist *sg,
 	dma_async_tx_descriptor_init(&desc->txd, &chan->chan);
 
 	return desc;
-<<<<<<< HEAD
-
-err:
-=======
  free_desc:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	d40_desc_free(chan, desc);
 	return NULL;
 }
 
-<<<<<<< HEAD
-static dma_addr_t
-d40_get_dev_addr(struct d40_chan *chan, enum dma_transfer_direction direction)
-{
-	struct stedma40_platform_data *plat = chan->base->plat_data;
-	struct stedma40_chan_cfg *cfg = &chan->dma_cfg;
-	dma_addr_t addr = 0;
-
-	if (chan->runtime_addr)
-		return chan->runtime_addr;
-
-	if (direction == DMA_DEV_TO_MEM)
-		addr = plat->dev_rx[cfg->src_dev_type];
-	else if (direction == DMA_MEM_TO_DEV)
-		addr = plat->dev_tx[cfg->dst_dev_type];
-
-	return addr;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct dma_async_tx_descriptor *
 d40_prep_sg(struct dma_chan *dchan, struct scatterlist *sg_src,
 	    struct scatterlist *sg_dst, unsigned int sg_len,
 	    enum dma_transfer_direction direction, unsigned long dma_flags)
 {
 	struct d40_chan *chan = container_of(dchan, struct d40_chan, chan);
-<<<<<<< HEAD
-	dma_addr_t src_dev_addr = 0;
-	dma_addr_t dst_dev_addr = 0;
-=======
 	dma_addr_t src_dev_addr;
 	dma_addr_t dst_dev_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct d40_desc *desc;
 	unsigned long flags;
 	int ret;
@@ -2929,41 +2244,23 @@ d40_prep_sg(struct dma_chan *dchan, struct scatterlist *sg_src,
 		return NULL;
 	}
 
-<<<<<<< HEAD
-=======
 	d40_set_runtime_config_write(dchan, &chan->slave_config, direction);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&chan->lock, flags);
 
 	desc = d40_prep_desc(chan, sg_src, sg_len, dma_flags);
 	if (desc == NULL)
-<<<<<<< HEAD
-		goto err;
-=======
 		goto unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sg_next(&sg_src[sg_len - 1]) == sg_src)
 		desc->cyclic = true;
 
-<<<<<<< HEAD
-	if (direction != DMA_TRANS_NONE) {
-		dma_addr_t dev_addr = d40_get_dev_addr(chan, direction);
-
-		if (direction == DMA_DEV_TO_MEM)
-			src_dev_addr = dev_addr;
-		else if (direction == DMA_MEM_TO_DEV)
-			dst_dev_addr = dev_addr;
-	}
-=======
 	src_dev_addr = 0;
 	dst_dev_addr = 0;
 	if (direction == DMA_DEV_TO_MEM)
 		src_dev_addr = chan->runtime_addr;
 	else if (direction == DMA_MEM_TO_DEV)
 		dst_dev_addr = chan->runtime_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chan_is_logical(chan))
 		ret = d40_prep_sg_log(chan, desc, sg_src, sg_dst,
@@ -2975,11 +2272,7 @@ d40_prep_sg(struct dma_chan *dchan, struct scatterlist *sg_src,
 	if (ret) {
 		chan_err(chan, "Failed to prepare %s sg job: %d\n",
 			 chan_is_logical(chan) ? "log" : "phy", ret);
-<<<<<<< HEAD
-		goto err;
-=======
 		goto free_desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2991,25 +2284,14 @@ d40_prep_sg(struct dma_chan *dchan, struct scatterlist *sg_src,
 	spin_unlock_irqrestore(&chan->lock, flags);
 
 	return &desc->txd;
-<<<<<<< HEAD
-
-err:
-	if (desc)
-		d40_desc_free(chan, desc);
-=======
  free_desc:
 	d40_desc_free(chan, desc);
  unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&chan->lock, flags);
 	return NULL;
 }
 
-<<<<<<< HEAD
-bool stedma40_filter(struct dma_chan *chan, void *data)
-=======
 static bool stedma40_filter(struct dma_chan *chan, void *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct stedma40_chan_cfg *info = data;
 	struct d40_chan *d40c =
@@ -3028,22 +2310,11 @@ static bool stedma40_filter(struct dma_chan *chan, void *data)
 
 	return err == 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(stedma40_filter);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __d40_set_prio_rt(struct d40_chan *d40c, int dev_type, bool src)
 {
 	bool realtime = d40c->dma_cfg.realtime;
 	bool highprio = d40c->dma_cfg.high_priority;
-<<<<<<< HEAD
-	u32 prioreg = highprio ? D40_DREG_PSEG1 : D40_DREG_PCEG1;
-	u32 rtreg = realtime ? D40_DREG_RSEG1 : D40_DREG_RCEG1;
-	u32 event = D40_TYPE_TO_EVENT(dev_type);
-	u32 group = D40_TYPE_TO_GROUP(dev_type);
-	u32 bit = 1 << event;
-=======
 	u32 rtreg;
 	u32 event = D40_TYPE_TO_EVENT(dev_type);
 	u32 group = D40_TYPE_TO_GROUP(dev_type);
@@ -3064,7 +2335,6 @@ static void __d40_set_prio_rt(struct d40_chan *d40c, int dev_type, bool src)
 		highprio = false;
 
 	prioreg = highprio ? dmac->high_prio_en : dmac->high_prio_clear;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Destination event lines are stored in the upper halfword */
 	if (!src)
@@ -3079,15 +2349,6 @@ static void d40_set_prio_realtime(struct d40_chan *d40c)
 	if (d40c->base->rev < 3)
 		return;
 
-<<<<<<< HEAD
-	if ((d40c->dma_cfg.dir ==  STEDMA40_PERIPH_TO_MEM) ||
-	    (d40c->dma_cfg.dir == STEDMA40_PERIPH_TO_PERIPH))
-		__d40_set_prio_rt(d40c, d40c->dma_cfg.src_dev_type, true);
-
-	if ((d40c->dma_cfg.dir ==  STEDMA40_MEM_TO_PERIPH) ||
-	    (d40c->dma_cfg.dir == STEDMA40_PERIPH_TO_PERIPH))
-		__d40_set_prio_rt(d40c, d40c->dma_cfg.dst_dev_type, false);
-=======
 	if ((d40c->dma_cfg.dir ==  DMA_DEV_TO_MEM) ||
 	    (d40c->dma_cfg.dir == DMA_DEV_TO_DEV))
 		__d40_set_prio_rt(d40c, d40c->dma_cfg.dev_type, true);
@@ -3143,7 +2404,6 @@ static struct dma_chan *d40_xlate(struct of_phandle_args *dma_spec,
 		cfg.high_priority = true;
 
 	return dma_request_channel(cap, stedma40_filter, &cfg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* DMA ENGINE functions */
@@ -3163,11 +2423,7 @@ static int d40_alloc_chan_resources(struct dma_chan *chan)
 		err = d40_config_memcpy(d40c);
 		if (err) {
 			chan_err(d40c, "Failed to configure memcpy channel\n");
-<<<<<<< HEAD
-			goto fail;
-=======
 			goto mark_last_busy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -3175,36 +2431,14 @@ static int d40_alloc_chan_resources(struct dma_chan *chan)
 	if (err) {
 		chan_err(d40c, "Failed to allocate channel\n");
 		d40c->configured = false;
-<<<<<<< HEAD
-		goto fail;
-	}
-
-	pm_runtime_get_sync(d40c->base->dev);
-	/* Fill in basic CFG register values */
-	d40_phy_cfg(&d40c->dma_cfg, &d40c->src_def_cfg,
-		    &d40c->dst_def_cfg, chan_is_logical(d40c));
-=======
 		goto mark_last_busy;
 	}
 
 	pm_runtime_get_sync(d40c->base->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	d40_set_prio_realtime(d40c);
 
 	if (chan_is_logical(d40c)) {
-<<<<<<< HEAD
-		d40_log_cfg(&d40c->dma_cfg,
-			    &d40c->log_def.lcsp1, &d40c->log_def.lcsp3);
-
-		if (d40c->dma_cfg.dir == STEDMA40_PERIPH_TO_MEM)
-			d40c->lcpa = d40c->base->lcpa_base +
-			  d40c->dma_cfg.src_dev_type * D40_LCPA_CHAN_SIZE;
-		else
-			d40c->lcpa = d40c->base->lcpa_base +
-			  d40c->dma_cfg.dst_dev_type *
-			  D40_LCPA_CHAN_SIZE + D40_LCPA_CHAN_DST_DELTA;
-=======
 		if (d40c->dma_cfg.dir == DMA_DEV_TO_MEM)
 			d40c->lcpa = d40c->base->lcpa_base +
 				d40c->dma_cfg.dev_type * D40_LCPA_CHAN_SIZE;
@@ -3216,7 +2450,6 @@ static int d40_alloc_chan_resources(struct dma_chan *chan)
 		/* Unmask the Global Interrupt Mask. */
 		d40c->src_def_cfg |= BIT(D40_SREG_CFG_LOG_GIM_POS);
 		d40c->dst_def_cfg |= BIT(D40_SREG_CFG_LOG_GIM_POS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev_dbg(chan2dev(d40c), "allocated %s channel (phy %d%s)\n",
@@ -3232,11 +2465,7 @@ static int d40_alloc_chan_resources(struct dma_chan *chan)
 	 */
 	if (is_free_phy)
 		d40_config_write(d40c);
-<<<<<<< HEAD
-fail:
-=======
  mark_last_busy:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm_runtime_mark_last_busy(d40c->base->dev);
 	pm_runtime_put_autosuspend(d40c->base->dev);
 	spin_unlock_irqrestore(&d40c->lock, flags);
@@ -3255,10 +2484,6 @@ static void d40_free_chan_resources(struct dma_chan *chan)
 		return;
 	}
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&d40c->lock, flags);
 
 	err = d40_free_dma(d40c);
@@ -3286,31 +2511,6 @@ static struct dma_async_tx_descriptor *d40_prep_memcpy(struct dma_chan *chan,
 	sg_dma_len(&dst_sg) = size;
 	sg_dma_len(&src_sg) = size;
 
-<<<<<<< HEAD
-	return d40_prep_sg(chan, &src_sg, &dst_sg, 1, DMA_NONE, dma_flags);
-}
-
-static struct dma_async_tx_descriptor *
-d40_prep_memcpy_sg(struct dma_chan *chan,
-		   struct scatterlist *dst_sg, unsigned int dst_nents,
-		   struct scatterlist *src_sg, unsigned int src_nents,
-		   unsigned long dma_flags)
-{
-	if (dst_nents != src_nents)
-		return NULL;
-
-	return d40_prep_sg(chan, src_sg, dst_sg, src_nents, DMA_NONE, dma_flags);
-}
-
-static struct dma_async_tx_descriptor *d40_prep_slave_sg(struct dma_chan *chan,
-							 struct scatterlist *sgl,
-							 unsigned int sg_len,
-							 enum dma_transfer_direction direction,
-							 unsigned long dma_flags,
-							 void *context)
-{
-	if (direction != DMA_DEV_TO_MEM && direction != DMA_MEM_TO_DEV)
-=======
 	return d40_prep_sg(chan, &src_sg, &dst_sg, 1,
 			   DMA_MEM_TO_MEM, dma_flags);
 }
@@ -3321,7 +2521,6 @@ d40_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 		  unsigned long dma_flags, void *context)
 {
 	if (!is_slave_direction(direction))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	return d40_prep_sg(chan, sgl, sgl, sg_len, direction, dma_flags);
@@ -3330,11 +2529,7 @@ d40_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 static struct dma_async_tx_descriptor *
 dma40_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t dma_addr,
 		     size_t buf_len, size_t period_len,
-<<<<<<< HEAD
-		     enum dma_transfer_direction direction, void *context)
-=======
 		     enum dma_transfer_direction direction, unsigned long flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int periods = buf_len / period_len;
 	struct dma_async_tx_descriptor *txd;
@@ -3342,26 +2537,16 @@ dma40_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t dma_addr,
 	int i;
 
 	sg = kcalloc(periods + 1, sizeof(struct scatterlist), GFP_NOWAIT);
-<<<<<<< HEAD
-=======
 	if (!sg)
 		return NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < periods; i++) {
 		sg_dma_address(&sg[i]) = dma_addr;
 		sg_dma_len(&sg[i]) = period_len;
 		dma_addr += period_len;
 	}
 
-<<<<<<< HEAD
-	sg[periods].offset = 0;
-	sg[periods].length = 0;
-	sg[periods].page_link =
-		((unsigned long)sg | 0x01) & ~0x02;
-=======
 	sg_chain(sg, periods + 1, sg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	txd = d40_prep_sg(chan, sg, sg, periods, direction,
 			  DMA_PREP_INTERRUPT);
@@ -3384,11 +2569,7 @@ static enum dma_status d40_tx_status(struct dma_chan *chan,
 	}
 
 	ret = dma_cookie_status(chan, cookie, txstate);
-<<<<<<< HEAD
-	if (ret != DMA_SUCCESS)
-=======
 	if (ret != DMA_COMPLETE && txstate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dma_set_residue(txstate, stedma40_residue(chan));
 
 	if (d40_is_paused(d40c))
@@ -3418,24 +2599,17 @@ static void d40_issue_pending(struct dma_chan *chan)
 	spin_unlock_irqrestore(&d40c->lock, flags);
 }
 
-<<<<<<< HEAD
-static void d40_terminate_all(struct dma_chan *chan)
-=======
 static int d40_terminate_all(struct dma_chan *chan)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	struct d40_chan *d40c = container_of(chan, struct d40_chan, chan);
 	int ret;
 
-<<<<<<< HEAD
-=======
 	if (d40c->phy_chan == NULL) {
 		chan_err(d40c, "Channel is not allocated!\n");
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&d40c->lock, flags);
 
 	pm_runtime_get_sync(d40c->base->dev);
@@ -3453,49 +2627,16 @@ static int d40_terminate_all(struct dma_chan *chan)
 	d40c->busy = false;
 
 	spin_unlock_irqrestore(&d40c->lock, flags);
-<<<<<<< HEAD
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 dma40_config_to_halfchannel(struct d40_chan *d40c,
 			    struct stedma40_half_channel_info *info,
-<<<<<<< HEAD
-			    enum dma_slave_buswidth width,
-			    u32 maxburst)
-{
-	enum stedma40_periph_data_width addr_width;
-	int psize;
-
-	switch (width) {
-	case DMA_SLAVE_BUSWIDTH_1_BYTE:
-		addr_width = STEDMA40_BYTE_WIDTH;
-		break;
-	case DMA_SLAVE_BUSWIDTH_2_BYTES:
-		addr_width = STEDMA40_HALFWORD_WIDTH;
-		break;
-	case DMA_SLAVE_BUSWIDTH_4_BYTES:
-		addr_width = STEDMA40_WORD_WIDTH;
-		break;
-	case DMA_SLAVE_BUSWIDTH_8_BYTES:
-		addr_width = STEDMA40_DOUBLEWORD_WIDTH;
-		break;
-	default:
-		dev_err(d40c->base->dev,
-			"illegal peripheral address width "
-			"requested (%d)\n",
-			width);
-		return -EINVAL;
-	}
-
-=======
 			    u32 maxburst)
 {
 	int psize;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chan_is_logical(d40c)) {
 		if (maxburst >= 16)
 			psize = STEDMA40_PSIZE_LOG_16;
@@ -3516,26 +2657,16 @@ dma40_config_to_halfchannel(struct d40_chan *d40c,
 			psize = STEDMA40_PSIZE_PHY_1;
 	}
 
-<<<<<<< HEAD
-	info->data_width = addr_width;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->psize = psize;
 	info->flow_ctrl = STEDMA40_NO_FLOW_CTRL;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* Runtime reconfiguration extension */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int d40_set_runtime_config(struct dma_chan *chan,
 				  struct dma_slave_config *config)
 {
 	struct d40_chan *d40c = container_of(chan, struct d40_chan, chan);
-<<<<<<< HEAD
-=======
 
 	memcpy(&d40c->slave_config, config, sizeof(*config));
 
@@ -3548,53 +2679,31 @@ static int d40_set_runtime_config_write(struct dma_chan *chan,
 				  enum dma_transfer_direction direction)
 {
 	struct d40_chan *d40c = container_of(chan, struct d40_chan, chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct stedma40_chan_cfg *cfg = &d40c->dma_cfg;
 	enum dma_slave_buswidth src_addr_width, dst_addr_width;
 	dma_addr_t config_addr;
 	u32 src_maxburst, dst_maxburst;
 	int ret;
 
-<<<<<<< HEAD
-=======
 	if (d40c->phy_chan == NULL) {
 		chan_err(d40c, "Channel is not allocated!\n");
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	src_addr_width = config->src_addr_width;
 	src_maxburst = config->src_maxburst;
 	dst_addr_width = config->dst_addr_width;
 	dst_maxburst = config->dst_maxburst;
 
-<<<<<<< HEAD
-	if (config->direction == DMA_DEV_TO_MEM) {
-		dma_addr_t dev_addr_rx =
-			d40c->base->plat_data->dev_rx[cfg->src_dev_type];
-
-		config_addr = config->src_addr;
-		if (dev_addr_rx)
-			dev_dbg(d40c->base->dev,
-				"channel has a pre-wired RX address %08x "
-				"overriding with %08x\n",
-				dev_addr_rx, config_addr);
-		if (cfg->dir != STEDMA40_PERIPH_TO_MEM)
-=======
 	if (direction == DMA_DEV_TO_MEM) {
 		config_addr = config->src_addr;
 
 		if (cfg->dir != DMA_DEV_TO_MEM)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_dbg(d40c->base->dev,
 				"channel was not configured for peripheral "
 				"to memory transfer (%d) overriding\n",
 				cfg->dir);
-<<<<<<< HEAD
-		cfg->dir = STEDMA40_PERIPH_TO_MEM;
-=======
 		cfg->dir = DMA_DEV_TO_MEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Configure the memory side */
 		if (dst_addr_width == DMA_SLAVE_BUSWIDTH_UNDEFINED)
@@ -3602,33 +2711,15 @@ static int d40_set_runtime_config_write(struct dma_chan *chan,
 		if (dst_maxburst == 0)
 			dst_maxburst = src_maxburst;
 
-<<<<<<< HEAD
-	} else if (config->direction == DMA_MEM_TO_DEV) {
-		dma_addr_t dev_addr_tx =
-			d40c->base->plat_data->dev_tx[cfg->dst_dev_type];
-
-		config_addr = config->dst_addr;
-		if (dev_addr_tx)
-			dev_dbg(d40c->base->dev,
-				"channel has a pre-wired TX address %08x "
-				"overriding with %08x\n",
-				dev_addr_tx, config_addr);
-		if (cfg->dir != STEDMA40_MEM_TO_PERIPH)
-=======
 	} else if (direction == DMA_MEM_TO_DEV) {
 		config_addr = config->dst_addr;
 
 		if (cfg->dir != DMA_MEM_TO_DEV)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_dbg(d40c->base->dev,
 				"channel was not configured for memory "
 				"to peripheral transfer (%d) overriding\n",
 				cfg->dir);
-<<<<<<< HEAD
-		cfg->dir = STEDMA40_MEM_TO_PERIPH;
-=======
 		cfg->dir = DMA_MEM_TO_DEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Configure the memory side */
 		if (src_addr_width == DMA_SLAVE_BUSWIDTH_UNDEFINED)
@@ -3638,16 +2729,12 @@ static int d40_set_runtime_config_write(struct dma_chan *chan,
 	} else {
 		dev_err(d40c->base->dev,
 			"unrecognized channel direction %d\n",
-<<<<<<< HEAD
-			config->direction);
-=======
 			direction);
 		return -EINVAL;
 	}
 
 	if (config_addr <= 0) {
 		dev_err(d40c->base->dev, "no address supplied\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -3661,10 +2748,6 @@ static int d40_set_runtime_config_write(struct dma_chan *chan,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	ret = dma40_config_to_halfchannel(d40c, &cfg->src_info,
-					  src_addr_width,
-=======
 	if (src_maxburst > 16) {
 		src_maxburst = 16;
 		dst_maxburst = src_maxburst * src_addr_width / dst_addr_width;
@@ -3686,16 +2769,11 @@ static int d40_set_runtime_config_write(struct dma_chan *chan,
 	cfg->dst_info.data_width = dst_addr_width;
 
 	ret = dma40_config_to_halfchannel(d40c, &cfg->src_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  src_maxburst);
 	if (ret)
 		return ret;
 
 	ret = dma40_config_to_halfchannel(d40c, &cfg->dst_info,
-<<<<<<< HEAD
-					  dst_addr_width,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  dst_maxburst);
 	if (ret)
 		return ret;
@@ -3704,67 +2782,22 @@ static int d40_set_runtime_config_write(struct dma_chan *chan,
 	if (chan_is_logical(d40c))
 		d40_log_cfg(cfg, &d40c->log_def.lcsp1, &d40c->log_def.lcsp3);
 	else
-<<<<<<< HEAD
-		d40_phy_cfg(cfg, &d40c->src_def_cfg,
-			    &d40c->dst_def_cfg, false);
-
-	/* These settings will take precedence later */
-	d40c->runtime_addr = config_addr;
-	d40c->runtime_direction = config->direction;
-=======
 		d40_phy_cfg(cfg, &d40c->src_def_cfg, &d40c->dst_def_cfg);
 
 	/* These settings will take precedence later */
 	d40c->runtime_addr = config_addr;
 	d40c->runtime_direction = direction;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(d40c->base->dev,
 		"configured channel %s for %s, data width %d/%d, "
 		"maxburst %d/%d elements, LE, no flow control\n",
 		dma_chan_name(chan),
-<<<<<<< HEAD
-		(config->direction == DMA_DEV_TO_MEM) ? "RX" : "TX",
-=======
 		(direction == DMA_DEV_TO_MEM) ? "RX" : "TX",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		src_addr_width, dst_addr_width,
 		src_maxburst, dst_maxburst);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int d40_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
-		       unsigned long arg)
-{
-	struct d40_chan *d40c = container_of(chan, struct d40_chan, chan);
-
-	if (d40c->phy_chan == NULL) {
-		chan_err(d40c, "Channel is not allocated!\n");
-		return -EINVAL;
-	}
-
-	switch (cmd) {
-	case DMA_TERMINATE_ALL:
-		d40_terminate_all(chan);
-		return 0;
-	case DMA_PAUSE:
-		return d40_pause(d40c);
-	case DMA_RESUME:
-		return d40_resume(d40c);
-	case DMA_SLAVE_CONFIG:
-		return d40_set_runtime_config(chan,
-			(struct dma_slave_config *) arg);
-	default:
-		break;
-	}
-
-	/* Other commands are unimplemented */
-	return -ENXIO;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Initialization functions */
 
 static void __init d40_chan_init(struct d40_base *base, struct dma_device *dma,
@@ -3785,22 +2818,14 @@ static void __init d40_chan_init(struct d40_base *base, struct dma_device *dma,
 
 		d40c->log_num = D40_PHY_CHAN;
 
-<<<<<<< HEAD
-=======
 		INIT_LIST_HEAD(&d40c->done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		INIT_LIST_HEAD(&d40c->active);
 		INIT_LIST_HEAD(&d40c->queue);
 		INIT_LIST_HEAD(&d40c->pending_queue);
 		INIT_LIST_HEAD(&d40c->client);
 		INIT_LIST_HEAD(&d40c->prepare_queue);
 
-<<<<<<< HEAD
-		tasklet_init(&d40c->tasklet, dma_tasklet,
-			     (unsigned long) d40c);
-=======
 		tasklet_setup(&d40c->tasklet, dma_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		list_add_tail(&d40c->chan.device_node,
 			      &dma->channels);
@@ -3809,14 +2834,6 @@ static void __init d40_chan_init(struct d40_base *base, struct dma_device *dma,
 
 static void d40_ops_init(struct d40_base *base, struct dma_device *dev)
 {
-<<<<<<< HEAD
-	if (dma_has_cap(DMA_SLAVE, dev->cap_mask))
-		dev->device_prep_slave_sg = d40_prep_slave_sg;
-
-	if (dma_has_cap(DMA_MEMCPY, dev->cap_mask)) {
-		dev->device_prep_dma_memcpy = d40_prep_memcpy;
-
-=======
 	if (dma_has_cap(DMA_SLAVE, dev->cap_mask)) {
 		dev->device_prep_slave_sg = d40_prep_slave_sg;
 		dev->directions = BIT(DMA_DEV_TO_MEM) | BIT(DMA_MEM_TO_DEV);
@@ -3825,23 +2842,13 @@ static void d40_ops_init(struct d40_base *base, struct dma_device *dev)
 	if (dma_has_cap(DMA_MEMCPY, dev->cap_mask)) {
 		dev->device_prep_dma_memcpy = d40_prep_memcpy;
 		dev->directions = BIT(DMA_MEM_TO_MEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * This controller can only access address at even
 		 * 32bit boundaries, i.e. 2^2
 		 */
-<<<<<<< HEAD
-		dev->copy_align = 2;
-	}
-
-	if (dma_has_cap(DMA_SG, dev->cap_mask))
-		dev->device_prep_dma_sg = d40_prep_memcpy_sg;
-
-=======
 		dev->copy_align = DMAENGINE_ALIGN_4_BYTES;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dma_has_cap(DMA_CYCLIC, dev->cap_mask))
 		dev->device_prep_dma_cyclic = dma40_prep_dma_cyclic;
 
@@ -3849,15 +2856,11 @@ static void d40_ops_init(struct d40_base *base, struct dma_device *dev)
 	dev->device_free_chan_resources = d40_free_chan_resources;
 	dev->device_issue_pending = d40_issue_pending;
 	dev->device_tx_status = d40_tx_status;
-<<<<<<< HEAD
-	dev->device_control = d40_control;
-=======
 	dev->device_config = d40_set_runtime_config;
 	dev->device_pause = d40_pause;
 	dev->device_resume = d40_resume;
 	dev->device_terminate_all = d40_terminate_all;
 	dev->residue_granularity = DMA_RESIDUE_GRANULARITY_BURST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->dev = base->dev;
 }
 
@@ -3875,30 +2878,6 @@ static int __init d40_dmaengine_init(struct d40_base *base,
 
 	d40_ops_init(base, &base->dma_slave);
 
-<<<<<<< HEAD
-	err = dma_async_device_register(&base->dma_slave);
-
-	if (err) {
-		d40_err(base->dev, "Failed to register slave channels\n");
-		goto failure1;
-	}
-
-	d40_chan_init(base, &base->dma_memcpy, base->log_chans,
-		      base->num_log_chans, base->plat_data->memcpy_len);
-
-	dma_cap_zero(base->dma_memcpy.cap_mask);
-	dma_cap_set(DMA_MEMCPY, base->dma_memcpy.cap_mask);
-	dma_cap_set(DMA_SG, base->dma_memcpy.cap_mask);
-
-	d40_ops_init(base, &base->dma_memcpy);
-
-	err = dma_async_device_register(&base->dma_memcpy);
-
-	if (err) {
-		d40_err(base->dev,
-			"Failed to regsiter memcpy only channels\n");
-		goto failure2;
-=======
 	err = dmaenginem_async_device_register(&base->dma_slave);
 
 	if (err) {
@@ -3920,7 +2899,6 @@ static int __init d40_dmaengine_init(struct d40_base *base,
 		d40_err(base->dev,
 			"Failed to register memcpy only channels\n");
 		goto exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	d40_chan_init(base, &base->dma_both, base->phy_chans,
@@ -3929,51 +2907,22 @@ static int __init d40_dmaengine_init(struct d40_base *base,
 	dma_cap_zero(base->dma_both.cap_mask);
 	dma_cap_set(DMA_SLAVE, base->dma_both.cap_mask);
 	dma_cap_set(DMA_MEMCPY, base->dma_both.cap_mask);
-<<<<<<< HEAD
-	dma_cap_set(DMA_SG, base->dma_both.cap_mask);
-	dma_cap_set(DMA_CYCLIC, base->dma_slave.cap_mask);
-
-	d40_ops_init(base, &base->dma_both);
-	err = dma_async_device_register(&base->dma_both);
-=======
 	dma_cap_set(DMA_CYCLIC, base->dma_slave.cap_mask);
 
 	d40_ops_init(base, &base->dma_both);
 	err = dmaenginem_async_device_register(&base->dma_both);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (err) {
 		d40_err(base->dev,
 			"Failed to register logical and physical capable channels\n");
-<<<<<<< HEAD
-		goto failure3;
-	}
-	return 0;
-failure3:
-	dma_async_device_unregister(&base->dma_memcpy);
-failure2:
-	dma_async_device_unregister(&base->dma_slave);
-failure1:
-=======
 		goto exit;
 	}
 	return 0;
  exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 /* Suspend resume functionality */
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int dma40_pm_suspend(struct device *dev)
-{
-	struct platform_device *pdev = to_platform_device(dev);
-	struct d40_base *base = platform_get_drvdata(pdev);
-	int ret = 0;
-	if (!pm_runtime_suspended(dev))
-		return -EBUSY;
-=======
 #ifdef CONFIG_PM_SLEEP
 static int dma40_suspend(struct device *dev)
 {
@@ -3983,19 +2932,12 @@ static int dma40_suspend(struct device *dev)
 	ret = pm_runtime_force_suspend(dev);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (base->lcpa_regulator)
 		ret = regulator_disable(base->lcpa_regulator);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int dma40_runtime_suspend(struct device *dev)
-{
-	struct platform_device *pdev = to_platform_device(dev);
-	struct d40_base *base = platform_get_drvdata(pdev);
-=======
 static int dma40_resume(struct device *dev)
 {
 	struct d40_base *base = dev_get_drvdata(dev);
@@ -4064,7 +3006,6 @@ static void d40_save_restore_registers(struct d40_base *base, bool save)
 static int dma40_runtime_suspend(struct device *dev)
 {
 	struct d40_base *base = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	d40_save_restore_registers(base, true);
 
@@ -4078,47 +3019,14 @@ static int dma40_runtime_suspend(struct device *dev)
 
 static int dma40_runtime_resume(struct device *dev)
 {
-<<<<<<< HEAD
-	struct platform_device *pdev = to_platform_device(dev);
-	struct d40_base *base = platform_get_drvdata(pdev);
-
-	if (base->initialized)
-		d40_save_restore_registers(base, false);
-=======
 	struct d40_base *base = dev_get_drvdata(dev);
 
 	d40_save_restore_registers(base, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writel_relaxed(D40_DREG_GCC_ENABLE_ALL,
 		       base->virtbase + D40_DREG_GCC);
 	return 0;
 }
-<<<<<<< HEAD
-
-static int dma40_resume(struct device *dev)
-{
-	struct platform_device *pdev = to_platform_device(dev);
-	struct d40_base *base = platform_get_drvdata(pdev);
-	int ret = 0;
-
-	if (base->lcpa_regulator)
-		ret = regulator_enable(base->lcpa_regulator);
-
-	return ret;
-}
-
-static const struct dev_pm_ops dma40_pm_ops = {
-	.suspend		= dma40_pm_suspend,
-	.runtime_suspend	= dma40_runtime_suspend,
-	.runtime_resume		= dma40_runtime_resume,
-	.resume			= dma40_resume,
-};
-#define DMA40_PM_OPS	(&dma40_pm_ops)
-#else
-#define DMA40_PM_OPS	NULL
-#endif
-=======
 #endif
 
 static const struct dev_pm_ops dma40_pm_ops = {
@@ -4127,7 +3035,6 @@ static const struct dev_pm_ops dma40_pm_ops = {
 				dma40_runtime_resume,
 				NULL)
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Initialization functions. */
 
@@ -4179,8 +3086,6 @@ static int __init d40_phy_res_init(struct d40_base *base)
 		num_phy_chans_avail--;
 	}
 
-<<<<<<< HEAD
-=======
 	/* Mark soft_lli channels */
 	for (i = 0; i < base->plat_data->num_of_soft_lli_chans; i++) {
 		int chan = base->plat_data->soft_lli_chans[i];
@@ -4188,7 +3093,6 @@ static int __init d40_phy_res_init(struct d40_base *base)
 		base->phy_res[chan].use_soft_lli = true;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(base->dev, "%d of %d physical DMA channels available\n",
 		 num_phy_chans_avail, base->num_phy_chans);
 
@@ -4218,17 +3122,6 @@ static int __init d40_phy_res_init(struct d40_base *base)
 	return num_phy_chans_avail;
 }
 
-<<<<<<< HEAD
-static struct d40_base * __init d40_hw_detect_init(struct platform_device *pdev)
-{
-	struct stedma40_platform_data *plat_data;
-	struct clk *clk = NULL;
-	void __iomem *virtbase = NULL;
-	struct resource *res = NULL;
-	struct d40_base *base = NULL;
-	int num_log_chans = 0;
-	int num_phy_chans;
-=======
 /* Called from the registered devm action */
 static void d40_drop_kmem_cache_action(void *d)
 {
@@ -4248,53 +3141,10 @@ static int __init d40_hw_detect_init(struct platform_device *pdev,
 	int num_log_chans;
 	int num_phy_chans;
 	int num_memcpy_chans;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	u32 pid;
 	u32 cid;
 	u8 rev;
-<<<<<<< HEAD
-
-	clk = clk_get(&pdev->dev, NULL);
-
-	if (IS_ERR(clk)) {
-		d40_err(&pdev->dev, "No matching clock found\n");
-		goto failure;
-	}
-
-	clk_enable(clk);
-
-	/* Get IO for DMAC base address */
-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "base");
-	if (!res)
-		goto failure;
-
-	if (request_mem_region(res->start, resource_size(res),
-			       D40_NAME " I/O base") == NULL)
-		goto failure;
-
-	virtbase = ioremap(res->start, resource_size(res));
-	if (!virtbase)
-		goto failure;
-
-	/* This is just a regular AMBA PrimeCell ID actually */
-	for (pid = 0, i = 0; i < 4; i++)
-		pid |= (readl(virtbase + resource_size(res) - 0x20 + 4 * i)
-			& 255) << (i * 8);
-	for (cid = 0, i = 0; i < 4; i++)
-		cid |= (readl(virtbase + resource_size(res) - 0x10 + 4 * i)
-			& 255) << (i * 8);
-
-	if (cid != AMBA_CID) {
-		d40_err(&pdev->dev, "Unknown hardware! No PrimeCell ID\n");
-		goto failure;
-	}
-	if (AMBA_MANF_BITS(pid) != AMBA_VENDOR_ST) {
-		d40_err(&pdev->dev, "Unknown designer! Got %x wanted %x\n",
-			AMBA_MANF_BITS(pid),
-			AMBA_VENDOR_ST);
-		goto failure;
-=======
 	int ret;
 
 	clk = devm_clk_get_enabled(dev, NULL);
@@ -4323,7 +3173,6 @@ static int __init d40_hw_detect_init(struct platform_device *pdev,
 			AMBA_MANF_BITS(pid),
 			AMBA_VENDOR_ST);
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/*
 	 * HW revision:
@@ -4331,89 +3180,6 @@ static int __init d40_hw_detect_init(struct platform_device *pdev,
 	 * ? has revision 1
 	 * DB8500v1 has revision 2
 	 * DB8500v2 has revision 3
-<<<<<<< HEAD
-	 */
-	rev = AMBA_REV_BITS(pid);
-
-	/* The number of physical channels on this HW */
-	num_phy_chans = 4 * (readl(virtbase + D40_DREG_ICFG) & 0x7) + 4;
-
-	dev_info(&pdev->dev, "hardware revision: %d @ 0x%x\n",
-		 rev, res->start);
-
-	if (rev < 2) {
-		d40_err(&pdev->dev, "hardware revision: %d is not supported",
-			rev);
-		goto failure;
-	}
-
-	plat_data = pdev->dev.platform_data;
-
-	/* Count the number of logical channels in use */
-	for (i = 0; i < plat_data->dev_len; i++)
-		if (plat_data->dev_rx[i] != 0)
-			num_log_chans++;
-
-	for (i = 0; i < plat_data->dev_len; i++)
-		if (plat_data->dev_tx[i] != 0)
-			num_log_chans++;
-
-	base = kzalloc(ALIGN(sizeof(struct d40_base), 4) +
-		       (num_phy_chans + num_log_chans + plat_data->memcpy_len) *
-		       sizeof(struct d40_chan), GFP_KERNEL);
-
-	if (base == NULL) {
-		d40_err(&pdev->dev, "Out of memory\n");
-		goto failure;
-	}
-
-	base->rev = rev;
-	base->clk = clk;
-	base->num_phy_chans = num_phy_chans;
-	base->num_log_chans = num_log_chans;
-	base->phy_start = res->start;
-	base->phy_size = resource_size(res);
-	base->virtbase = virtbase;
-	base->plat_data = plat_data;
-	base->dev = &pdev->dev;
-	base->phy_chans = ((void *)base) + ALIGN(sizeof(struct d40_base), 4);
-	base->log_chans = &base->phy_chans[num_phy_chans];
-
-	base->phy_res = kzalloc(num_phy_chans * sizeof(struct d40_phy_res),
-				GFP_KERNEL);
-	if (!base->phy_res)
-		goto failure;
-
-	base->lookup_phy_chans = kzalloc(num_phy_chans *
-					 sizeof(struct d40_chan *),
-					 GFP_KERNEL);
-	if (!base->lookup_phy_chans)
-		goto failure;
-
-	if (num_log_chans + plat_data->memcpy_len) {
-		/*
-		 * The max number of logical channels are event lines for all
-		 * src devices and dst devices
-		 */
-		base->lookup_log_chans = kzalloc(plat_data->dev_len * 2 *
-						 sizeof(struct d40_chan *),
-						 GFP_KERNEL);
-		if (!base->lookup_log_chans)
-			goto failure;
-	}
-
-	base->reg_val_backup_chan = kmalloc(base->num_phy_chans *
-					    sizeof(d40_backup_regs_chan),
-					    GFP_KERNEL);
-	if (!base->reg_val_backup_chan)
-		goto failure;
-
-	base->lcla_pool.alloc_map =
-		kzalloc(num_phy_chans * sizeof(struct d40_desc *)
-			* D40_LCLA_LINK_PER_EVENT_GRP, GFP_KERNEL);
-	if (!base->lcla_pool.alloc_map)
-		goto failure;
-=======
 	 * AP9540v1 has revision 4
 	 * DB8540v1 has revision 4
 	 */
@@ -4526,41 +3292,10 @@ static int __init d40_hw_detect_init(struct platform_device *pdev,
 					     GFP_KERNEL);
 	if (!base->regs_interrupt)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	base->desc_slab = kmem_cache_create(D40_NAME, sizeof(struct d40_desc),
 					    0, SLAB_HWCACHE_ALIGN,
 					    NULL);
-<<<<<<< HEAD
-	if (base->desc_slab == NULL)
-		goto failure;
-
-	return base;
-
-failure:
-	if (!IS_ERR(clk)) {
-		clk_disable(clk);
-		clk_put(clk);
-	}
-	if (virtbase)
-		iounmap(virtbase);
-	if (res)
-		release_mem_region(res->start,
-				   resource_size(res));
-	if (virtbase)
-		iounmap(virtbase);
-
-	if (base) {
-		kfree(base->lcla_pool.alloc_map);
-		kfree(base->reg_val_backup_chan);
-		kfree(base->lookup_log_chans);
-		kfree(base->lookup_phy_chans);
-		kfree(base->phy_res);
-		kfree(base);
-	}
-
-	return NULL;
-=======
 	if (!base->desc_slab)
 		return -ENOMEM;
 
@@ -4572,47 +3307,20 @@ failure:
 	*retbase = base;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init d40_hw_init(struct d40_base *base)
 {
 
-<<<<<<< HEAD
-	static struct d40_reg_val dma_init_reg[] = {
-		/* Clock every part of the DMA block from start */
-		{ .reg = D40_DREG_GCC,    .val = D40_DREG_GCC_ENABLE_ALL},
-
-		/* Interrupts on all logical channels */
-		{ .reg = D40_DREG_LCMIS0, .val = 0xFFFFFFFF},
-		{ .reg = D40_DREG_LCMIS1, .val = 0xFFFFFFFF},
-		{ .reg = D40_DREG_LCMIS2, .val = 0xFFFFFFFF},
-		{ .reg = D40_DREG_LCMIS3, .val = 0xFFFFFFFF},
-		{ .reg = D40_DREG_LCICR0, .val = 0xFFFFFFFF},
-		{ .reg = D40_DREG_LCICR1, .val = 0xFFFFFFFF},
-		{ .reg = D40_DREG_LCICR2, .val = 0xFFFFFFFF},
-		{ .reg = D40_DREG_LCICR3, .val = 0xFFFFFFFF},
-		{ .reg = D40_DREG_LCTIS0, .val = 0xFFFFFFFF},
-		{ .reg = D40_DREG_LCTIS1, .val = 0xFFFFFFFF},
-		{ .reg = D40_DREG_LCTIS2, .val = 0xFFFFFFFF},
-		{ .reg = D40_DREG_LCTIS3, .val = 0xFFFFFFFF}
-	};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	u32 prmseo[2] = {0, 0};
 	u32 activeo[2] = {0xFFFFFFFF, 0xFFFFFFFF};
 	u32 pcmis = 0;
 	u32 pcicr = 0;
-<<<<<<< HEAD
-
-	for (i = 0; i < ARRAY_SIZE(dma_init_reg); i++)
-=======
 	struct d40_reg_val *dma_init_reg = base->gen_dmac.init_reg;
 	u32 reg_size = base->gen_dmac.init_reg_size;
 
 	for (i = 0; i < reg_size; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(dma_init_reg[i].val,
 		       base->virtbase + dma_init_reg[i].reg);
 
@@ -4645,13 +3353,6 @@ static void __init d40_hw_init(struct d40_base *base)
 	writel(activeo[0], base->virtbase + D40_DREG_ACTIVO);
 
 	/* Write which interrupt to enable */
-<<<<<<< HEAD
-	writel(pcmis, base->virtbase + D40_DREG_PCMIS);
-
-	/* Write which interrupt to clear */
-	writel(pcicr, base->virtbase + D40_DREG_PCICR);
-
-=======
 	writel(pcmis, base->virtbase + base->gen_dmac.interrupt_en);
 
 	/* Write which interrupt to clear */
@@ -4660,7 +3361,6 @@ static void __init d40_hw_init(struct d40_base *base)
 	/* These are __initdata and cannot be accessed after init */
 	base->gen_dmac.init_reg = NULL;
 	base->gen_dmac.init_reg_size = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init d40_lcla_allocate(struct d40_base *base)
@@ -4668,32 +3368,18 @@ static int __init d40_lcla_allocate(struct d40_base *base)
 	struct d40_lcla_pool *pool = &base->lcla_pool;
 	unsigned long *page_list;
 	int i, j;
-<<<<<<< HEAD
-	int ret = 0;
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This is somewhat ugly. We need 8192 bytes that are 18 bit aligned,
 	 * To full fill this hardware requirement without wasting 256 kb
 	 * we allocate pages until we get an aligned one.
 	 */
-<<<<<<< HEAD
-	page_list = kmalloc(sizeof(unsigned long) * MAX_LCLA_ALLOC_ATTEMPTS,
-			    GFP_KERNEL);
-
-	if (!page_list) {
-		ret = -ENOMEM;
-		goto failure;
-	}
-=======
 	page_list = kmalloc_array(MAX_LCLA_ALLOC_ATTEMPTS,
 				  sizeof(*page_list),
 				  GFP_KERNEL);
 	if (!page_list)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Calculating how many pages that are required */
 	base->lcla_pool.pages = SZ_1K * base->num_phy_chans / PAGE_SIZE;
@@ -4705,18 +3391,11 @@ static int __init d40_lcla_allocate(struct d40_base *base)
 
 			d40_err(base->dev, "Failed to allocate %d pages.\n",
 				base->lcla_pool.pages);
-<<<<<<< HEAD
-
-			for (j = 0; j < i; j++)
-				free_pages(page_list[j], base->lcla_pool.pages);
-			goto failure;
-=======
 			ret = -ENOMEM;
 
 			for (j = 0; j < i; j++)
 				free_pages(page_list[j], base->lcla_pool.pages);
 			goto free_page_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if ((virt_to_phys((void *)page_list[i]) &
@@ -4731,11 +3410,7 @@ static int __init d40_lcla_allocate(struct d40_base *base)
 		base->lcla_pool.base = (void *)page_list[i];
 	} else {
 		/*
-<<<<<<< HEAD
-		 * After many attempts and no succees with finding the correct
-=======
 		 * After many attempts and no success with finding the correct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * alignment, try with allocating a big buffer.
 		 */
 		dev_warn(base->dev,
@@ -4747,11 +3422,7 @@ static int __init d40_lcla_allocate(struct d40_base *base)
 							 GFP_KERNEL);
 		if (!base->lcla_pool.base_unaligned) {
 			ret = -ENOMEM;
-<<<<<<< HEAD
-			goto failure;
-=======
 			goto free_page_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		base->lcla_pool.base = PTR_ALIGN(base->lcla_pool.base_unaligned,
@@ -4764,40 +3435,17 @@ static int __init d40_lcla_allocate(struct d40_base *base)
 	if (dma_mapping_error(base->dev, pool->dma_addr)) {
 		pool->dma_addr = 0;
 		ret = -ENOMEM;
-<<<<<<< HEAD
-		goto failure;
-=======
 		goto free_page_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	writel(virt_to_phys(base->lcla_pool.base),
 	       base->virtbase + D40_DREG_LCLA);
-<<<<<<< HEAD
-failure:
-=======
 	ret = 0;
  free_page_list:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(page_list);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __init d40_probe(struct platform_device *pdev)
-{
-	int err;
-	int ret = -ENOENT;
-	struct d40_base *base;
-	struct resource *res = NULL;
-	int num_reserved_chans;
-	u32 val;
-
-	base = d40_hw_detect_init(pdev);
-
-	if (!base)
-		goto failure;
-=======
 static int __init d40_of_probe(struct device *dev,
 			       struct device_node *np)
 {
@@ -4869,7 +3517,6 @@ static int __init d40_probe(struct platform_device *pdev)
 	ret = d40_hw_detect_init(pdev, &base);
 	if (ret)
 		goto report_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	num_reserved_chans = d40_phy_res_init(base);
 
@@ -4878,41 +3525,6 @@ static int __init d40_probe(struct platform_device *pdev)
 	spin_lock_init(&base->interrupt_lock);
 	spin_lock_init(&base->execmd_lock);
 
-<<<<<<< HEAD
-	/* Get IO for logical channel parameter address */
-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "lcpa");
-	if (!res) {
-		ret = -ENOENT;
-		d40_err(&pdev->dev, "No \"lcpa\" memory resource\n");
-		goto failure;
-	}
-	base->lcpa_size = resource_size(res);
-	base->phy_lcpa = res->start;
-
-	if (request_mem_region(res->start, resource_size(res),
-			       D40_NAME " I/O lcpa") == NULL) {
-		ret = -EBUSY;
-		d40_err(&pdev->dev,
-			"Failed to request LCPA region 0x%x-0x%x\n",
-			res->start, res->end);
-		goto failure;
-	}
-
-	/* We make use of ESRAM memory for this. */
-	val = readl(base->virtbase + D40_DREG_LCPA);
-	if (res->start != val && val != 0) {
-		dev_warn(&pdev->dev,
-			 "[%s] Mismatch LCPA dma 0x%x, def 0x%x\n",
-			 __func__, val, res->start);
-	} else
-		writel(res->start, base->virtbase + D40_DREG_LCPA);
-
-	base->lcpa_base = ioremap(res->start, resource_size(res));
-	if (!base->lcpa_base) {
-		ret = -ENOMEM;
-		d40_err(&pdev->dev, "Failed to ioremap LCPA region\n");
-		goto failure;
-=======
 	/* Get IO for logical channel parameter address (LCPA) */
 	np_lcpa = of_parse_phandle(np, "sram", 0);
 	if (!np_lcpa) {
@@ -4945,7 +3557,6 @@ static int __init d40_probe(struct platform_device *pdev)
 		ret = -ENOMEM;
 		d40_err(dev, "Failed to ioremap LCPA region\n");
 		goto report_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* If lcla has to be located in ESRAM we don't need to allocate */
 	if (base->plat_data->use_esram_lcla) {
@@ -4953,18 +3564,6 @@ static int __init d40_probe(struct platform_device *pdev)
 							"lcla_esram");
 		if (!res) {
 			ret = -ENOENT;
-<<<<<<< HEAD
-			d40_err(&pdev->dev,
-				"No \"lcla_esram\" memory resource\n");
-			goto failure;
-		}
-		base->lcla_pool.base = ioremap(res->start,
-						resource_size(res));
-		if (!base->lcla_pool.base) {
-			ret = -ENOMEM;
-			d40_err(&pdev->dev, "Failed to ioremap LCLA region\n");
-			goto failure;
-=======
 			d40_err(dev,
 				"No \"lcla_esram\" memory resource\n");
 			goto report_failure;
@@ -4975,41 +3574,20 @@ static int __init d40_probe(struct platform_device *pdev)
 			ret = -ENOMEM;
 			d40_err(dev, "Failed to ioremap LCLA region\n");
 			goto report_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		writel(res->start, base->virtbase + D40_DREG_LCLA);
 
 	} else {
 		ret = d40_lcla_allocate(base);
 		if (ret) {
-<<<<<<< HEAD
-			d40_err(&pdev->dev, "Failed to allocate LCLA area\n");
-			goto failure;
-=======
 			d40_err(dev, "Failed to allocate LCLA area\n");
 			goto destroy_cache;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	spin_lock_init(&base->lcla_pool.lock);
 
 	base->irq = platform_get_irq(pdev, 0);
-<<<<<<< HEAD
-
-	ret = request_irq(base->irq, d40_handle_interrupt, 0, D40_NAME, base);
-	if (ret) {
-		d40_err(&pdev->dev, "No IRQ defined\n");
-		goto failure;
-	}
-
-	pm_runtime_irq_safe(base->dev);
-	pm_runtime_set_autosuspend_delay(base->dev, DMA40_AUTOSUSPEND_DELAY);
-	pm_runtime_use_autosuspend(base->dev);
-	pm_runtime_enable(base->dev);
-	pm_runtime_resume(base->dev);
-
-=======
 	if (base->irq < 0) {
 		ret = base->irq;
 		goto destroy_cache;
@@ -5021,100 +3599,18 @@ static int __init d40_probe(struct platform_device *pdev)
 		goto destroy_cache;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (base->plat_data->use_esram_lcla) {
 
 		base->lcpa_regulator = regulator_get(base->dev, "lcla_esram");
 		if (IS_ERR(base->lcpa_regulator)) {
-<<<<<<< HEAD
-			d40_err(&pdev->dev, "Failed to get lcpa_regulator\n");
-			base->lcpa_regulator = NULL;
-			goto failure;
-=======
 			d40_err(dev, "Failed to get lcpa_regulator\n");
 			ret = PTR_ERR(base->lcpa_regulator);
 			base->lcpa_regulator = NULL;
 			goto destroy_cache;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		ret = regulator_enable(base->lcpa_regulator);
 		if (ret) {
-<<<<<<< HEAD
-			d40_err(&pdev->dev,
-				"Failed to enable lcpa_regulator\n");
-			regulator_put(base->lcpa_regulator);
-			base->lcpa_regulator = NULL;
-			goto failure;
-		}
-	}
-
-	base->initialized = true;
-	err = d40_dmaengine_init(base, num_reserved_chans);
-	if (err)
-		goto failure;
-
-	d40_hw_init(base);
-
-	dev_info(base->dev, "initialized\n");
-	return 0;
-
-failure:
-	if (base) {
-		if (base->desc_slab)
-			kmem_cache_destroy(base->desc_slab);
-		if (base->virtbase)
-			iounmap(base->virtbase);
-
-		if (base->lcla_pool.base && base->plat_data->use_esram_lcla) {
-			iounmap(base->lcla_pool.base);
-			base->lcla_pool.base = NULL;
-		}
-
-		if (base->lcla_pool.dma_addr)
-			dma_unmap_single(base->dev, base->lcla_pool.dma_addr,
-					 SZ_1K * base->num_phy_chans,
-					 DMA_TO_DEVICE);
-
-		if (!base->lcla_pool.base_unaligned && base->lcla_pool.base)
-			free_pages((unsigned long)base->lcla_pool.base,
-				   base->lcla_pool.pages);
-
-		kfree(base->lcla_pool.base_unaligned);
-
-		if (base->phy_lcpa)
-			release_mem_region(base->phy_lcpa,
-					   base->lcpa_size);
-		if (base->phy_start)
-			release_mem_region(base->phy_start,
-					   base->phy_size);
-		if (base->clk) {
-			clk_disable(base->clk);
-			clk_put(base->clk);
-		}
-
-		if (base->lcpa_regulator) {
-			regulator_disable(base->lcpa_regulator);
-			regulator_put(base->lcpa_regulator);
-		}
-
-		kfree(base->lcla_pool.alloc_map);
-		kfree(base->lookup_log_chans);
-		kfree(base->lookup_phy_chans);
-		kfree(base->phy_res);
-		kfree(base);
-	}
-
-	d40_err(&pdev->dev, "probe failed\n");
-	return ret;
-}
-
-static struct platform_driver d40_driver = {
-	.driver = {
-		.owner = THIS_MODULE,
-		.name  = D40_NAME,
-		.pm = DMA40_PM_OPS,
-=======
 			d40_err(dev,
 				"Failed to enable lcpa_regulator\n");
 			regulator_put(base->lcpa_regulator);
@@ -5187,7 +3683,6 @@ static struct platform_driver d40_driver = {
 		.name  = D40_NAME,
 		.pm = &dma40_pm_ops,
 		.of_match_table = d40_match,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

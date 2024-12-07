@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/acorn/scsi/powertec.c
  *
  *  Copyright (C) 1997-2005 Russell King
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/blkdev.h>
@@ -24,22 +14,11 @@
 #include <linux/interrupt.h>
 #include <linux/init.h>
 #include <linux/dma-mapping.h>
-<<<<<<< HEAD
-=======
 #include <linux/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/dma.h>
 #include <asm/ecard.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-
-#include "../scsi.h"
-#include <scsi/scsi_host.h>
-#include "fas216.h"
-#include "scsi.h"
-=======
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
@@ -49,7 +28,6 @@
 #include <scsi/scsi_tcq.h>
 #include "fas216.h"
 #include "arm_scsi.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsicam.h>
 
@@ -164,14 +142,6 @@ powertecscsi_dma_setup(struct Scsi_Host *host, struct scsi_pointer *SCp,
 
 		bufs = copy_SCp_to_sg(&info->sg[0], SCp, NR_SG);
 
-<<<<<<< HEAD
-		if (direction == DMA_OUT)
-			map_dir = DMA_TO_DEVICE,
-			dma_dir = DMA_MODE_WRITE;
-		else
-			map_dir = DMA_FROM_DEVICE,
-			dma_dir = DMA_MODE_READ;
-=======
 		if (direction == DMA_OUT) {
 			map_dir = DMA_TO_DEVICE;
 			dma_dir = DMA_MODE_WRITE;
@@ -179,7 +149,6 @@ powertecscsi_dma_setup(struct Scsi_Host *host, struct scsi_pointer *SCp,
 			map_dir = DMA_FROM_DEVICE;
 			dma_dir = DMA_MODE_READ;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dma_map_sg(dev, info->sg, bufs, map_dir);
 
@@ -270,34 +239,6 @@ powertecscsi_set_proc_info(struct Scsi_Host *host, char *buffer, int length)
  *	      inout   - 0 for reading, 1 for writing.
  * Returns  : length of data written to buffer.
  */
-<<<<<<< HEAD
-int powertecscsi_proc_info(struct Scsi_Host *host, char *buffer, char **start, off_t offset,
-			    int length, int inout)
-{
-	struct powertec_info *info;
-	char *p = buffer;
-	int pos;
-
-	if (inout == 1)
-		return powertecscsi_set_proc_info(host, buffer, length);
-
-	info = (struct powertec_info *)host->hostdata;
-
-	p += sprintf(p, "PowerTec SCSI driver v%s\n", VERSION);
-	p += fas216_print_host(&info->info, p);
-	p += sprintf(p, "Term    : o%s\n",
-			info->term_ctl ? "n" : "ff");
-
-	p += fas216_print_stats(&info->info, p);
-	p += fas216_print_devices(&info->info, p);
-
-	*start = buffer + offset;
-	pos = p - buffer - offset;
-	if (pos > length)
-		pos = length;
-
-	return pos;
-=======
 static int powertecscsi_show_info(struct seq_file *m, struct Scsi_Host *host)
 {
 	struct powertec_info *info;
@@ -312,7 +253,6 @@ static int powertecscsi_show_info(struct seq_file *m, struct Scsi_Host *host)
 	fas216_print_stats(&info->info, m);
 	fas216_print_devices(&info->info, m);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t powertecscsi_show_term(struct device *dev, struct device_attribute *attr, char *buf)
@@ -339,16 +279,10 @@ powertecscsi_store_term(struct device *dev, struct device_attribute *attr, const
 static DEVICE_ATTR(bus_term, S_IRUGO | S_IWUSR,
 		   powertecscsi_show_term, powertecscsi_store_term);
 
-<<<<<<< HEAD
-static struct scsi_host_template powertecscsi_template = {
-	.module				= THIS_MODULE,
-	.proc_info			= powertecscsi_proc_info,
-=======
 static const struct scsi_host_template powertecscsi_template = {
 	.module				= THIS_MODULE,
 	.show_info			= powertecscsi_show_info,
 	.write_info			= powertecscsi_set_proc_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name				= "PowerTec SCSI",
 	.info				= powertecscsi_info,
 	.queuecommand			= fas216_queue_command,
@@ -356,20 +290,6 @@ static const struct scsi_host_template powertecscsi_template = {
 	.eh_bus_reset_handler		= fas216_eh_bus_reset,
 	.eh_device_reset_handler	= fas216_eh_device_reset,
 	.eh_abort_handler		= fas216_eh_abort,
-<<<<<<< HEAD
-
-	.can_queue			= 8,
-	.this_id			= 7,
-	.sg_tablesize			= SCSI_MAX_SG_CHAIN_SEGMENTS,
-	.dma_boundary			= IOMD_DMA_BOUNDARY,
-	.cmd_per_lun			= 2,
-	.use_clustering			= ENABLE_CLUSTERING,
-	.proc_name			= "powertec",
-};
-
-static int __devinit
-powertecscsi_probe(struct expansion_card *ec, const struct ecard_id *id)
-=======
 	.cmd_size			= sizeof(struct fas216_cmd_priv),
 	.can_queue			= 8,
 	.this_id			= 7,
@@ -381,7 +301,6 @@ powertecscsi_probe(struct expansion_card *ec, const struct ecard_id *id)
 
 static int powertecscsi_probe(struct expansion_card *ec,
 			      const struct ecard_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host;
 	struct powertec_info *info;
@@ -440,11 +359,7 @@ static int powertecscsi_probe(struct expansion_card *ec,
 		goto out_free;
 
 	ret = request_irq(ec->irq, powertecscsi_intr,
-<<<<<<< HEAD
-			  IRQF_DISABLED, "powertec", info);
-=======
 			  0, "powertec", info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		printk("scsi%d: IRQ%d not free: %d\n",
 		       host->host_no, ec->irq, ret);
@@ -468,11 +383,7 @@ static int powertecscsi_probe(struct expansion_card *ec,
 
 	if (info->info.scsi.dma != NO_DMA)
 		free_dma(info->info.scsi.dma);
-<<<<<<< HEAD
-	free_irq(ec->irq, host);
-=======
 	free_irq(ec->irq, info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  out_release:
 	fas216_release(host);
@@ -488,11 +399,7 @@ static int powertecscsi_probe(struct expansion_card *ec,
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __devexit powertecscsi_remove(struct expansion_card *ec)
-=======
 static void powertecscsi_remove(struct expansion_card *ec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host = ecard_get_drvdata(ec);
 	struct powertec_info *info = (struct powertec_info *)host->hostdata;
@@ -518,11 +425,7 @@ static const struct ecard_id powertecscsi_cids[] = {
 
 static struct ecard_driver powertecscsi_driver = {
 	.probe		= powertecscsi_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(powertecscsi_remove),
-=======
 	.remove		= powertecscsi_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= powertecscsi_cids,
 	.drv = {
 		.name		= "powertecscsi",

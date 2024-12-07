@@ -11,12 +11,7 @@
  * published by the Free Software Foundation.                                *
  *                                                                           *
  * You should have received a copy of the GNU General Public License along   *
-<<<<<<< HEAD
- * with this program; if not, write to the Free Software Foundation, Inc.,   *
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                 *
-=======
  * with this program; if not, see <http://www.gnu.org/licenses/>.            *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                           *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED    *
  * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF      *
@@ -42,10 +37,6 @@
 
 #include "common.h"
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -53,11 +44,7 @@
 #include <linux/mii.h>
 #include <linux/sockios.h>
 #include <linux/dma-mapping.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "cpl5_cmd.h"
 #include "regs.h"
@@ -122,13 +109,6 @@ static int disable_msi = 0;
 module_param(disable_msi, int, 0);
 MODULE_PARM_DESC(disable_msi, "Disable Message Signaled Interrupt (MSI)");
 
-<<<<<<< HEAD
-static const char pci_speed[][4] = {
-	"33", "66", "100", "133"
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Setup MAC to receive the types of packets we want.
  */
@@ -145,11 +125,7 @@ static void t1_set_rxmode(struct net_device *dev)
 static void link_report(struct port_info *p)
 {
 	if (!netif_carrier_ok(p->dev))
-<<<<<<< HEAD
-		printk(KERN_INFO "%s: link down\n", p->dev->name);
-=======
 		netdev_info(p->dev, "link down\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		const char *s = "10Mbps";
 
@@ -159,15 +135,9 @@ static void link_report(struct port_info *p)
 			case SPEED_100:   s = "100Mbps"; break;
 		}
 
-<<<<<<< HEAD
-		printk(KERN_INFO "%s: link up, %s, %s-duplex\n",
-		       p->dev->name, s,
-		       p->link_config.duplex == DUPLEX_FULL ? "full" : "half");
-=======
 		netdev_info(p->dev, "link up, %s, %s-duplex\n",
 			    s, p->link_config.duplex == DUPLEX_FULL
 			    ? "full" : "half");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -241,16 +211,10 @@ static int cxgb_up(struct adapter *adapter)
 	t1_interrupts_clear(adapter);
 
 	adapter->params.has_msi = !disable_msi && !pci_enable_msi(adapter->pdev);
-<<<<<<< HEAD
-	err = request_irq(adapter->pdev->irq, t1_interrupt,
-			  adapter->params.has_msi ? 0 : IRQF_SHARED,
-			  adapter->name, adapter);
-=======
 	err = request_threaded_irq(adapter->pdev->irq, t1_interrupt,
 				   t1_interrupt_thread,
 				   adapter->params.has_msi ? 0 : IRQF_SHARED,
 				   adapter->name, adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		if (adapter->params.has_msi)
 			pci_disable_msi(adapter->pdev);
@@ -314,11 +278,7 @@ static int cxgb_close(struct net_device *dev)
 	if (adapter->params.stats_update_period &&
 	    !(adapter->open_device_map & PORT_MASK)) {
 		/* Stop statistics accumulation. */
-<<<<<<< HEAD
-		smp_mb__after_clear_bit();
-=======
 		smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock(&adapter->work_lock);   /* sync with update task */
 		spin_unlock(&adapter->work_lock);
 		cancel_mac_stats_update(adapter);
@@ -333,11 +293,7 @@ static struct net_device_stats *t1_get_stats(struct net_device *dev)
 {
 	struct adapter *adapter = dev->ml_priv;
 	struct port_info *p = &adapter->port[dev->if_port];
-<<<<<<< HEAD
-	struct net_device_stats *ns = &p->netstats;
-=======
 	struct net_device_stats *ns = &dev->stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct cmac_statistics *pstats;
 
 	/* Do a full update of the MAC stats */
@@ -395,11 +351,7 @@ static void set_msglevel(struct net_device *dev, u32 val)
 	adapter->msg_enable = val;
 }
 
-<<<<<<< HEAD
-static char stats_strings[][ETH_GSTRING_LEN] = {
-=======
 static const char stats_strings[][ETH_GSTRING_LEN] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"TxOctetsOK",
 	"TxOctetsBad",
 	"TxUnicastFramesOK",
@@ -477,14 +429,8 @@ static void get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
 	struct adapter *adapter = dev->ml_priv;
 
-<<<<<<< HEAD
-	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
-	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
-	strlcpy(info->bus_info, pci_name(adapter->pdev),
-=======
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strscpy(info->bus_info, pci_name(adapter->pdev),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(info->bus_info));
 }
 
@@ -618,30 +564,6 @@ static void get_regs(struct net_device *dev, struct ethtool_regs *regs,
 	reg_block_dump(ap, buf, A_MC5_CONFIG, A_MC5_MASK_WRITE_CMD);
 }
 
-<<<<<<< HEAD
-static int get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct adapter *adapter = dev->ml_priv;
-	struct port_info *p = &adapter->port[dev->if_port];
-
-	cmd->supported = p->link_config.supported;
-	cmd->advertising = p->link_config.advertising;
-
-	if (netif_carrier_ok(dev)) {
-		ethtool_cmd_speed_set(cmd, p->link_config.speed);
-		cmd->duplex = p->link_config.duplex;
-	} else {
-		ethtool_cmd_speed_set(cmd, -1);
-		cmd->duplex = -1;
-	}
-
-	cmd->port = (cmd->supported & SUPPORTED_TP) ? PORT_TP : PORT_FIBRE;
-	cmd->phy_address = p->phy->mdio.prtad;
-	cmd->transceiver = XCVR_EXTERNAL;
-	cmd->autoneg = p->link_config.autoneg;
-	cmd->maxtxpkt = 0;
-	cmd->maxrxpkt = 0;
-=======
 static int get_link_ksettings(struct net_device *dev,
 			      struct ethtool_link_ksettings *cmd)
 {
@@ -669,7 +591,6 @@ static int get_link_ksettings(struct net_device *dev,
 	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
 						advertising);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -708,56 +629,27 @@ static int speed_duplex_to_caps(int speed, int duplex)
 		      ADVERTISED_1000baseT_Half | ADVERTISED_1000baseT_Full | \
 		      ADVERTISED_10000baseT_Full)
 
-<<<<<<< HEAD
-static int set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-=======
 static int set_link_ksettings(struct net_device *dev,
 			      const struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adapter *adapter = dev->ml_priv;
 	struct port_info *p = &adapter->port[dev->if_port];
 	struct link_config *lc = &p->link_config;
-<<<<<<< HEAD
-=======
 	u32 advertising;
 
 	ethtool_convert_link_mode_to_legacy_u32(&advertising,
 						cmd->link_modes.advertising);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(lc->supported & SUPPORTED_Autoneg))
 		return -EOPNOTSUPP;             /* can't change speed/duplex */
 
-<<<<<<< HEAD
-	if (cmd->autoneg == AUTONEG_DISABLE) {
-		u32 speed = ethtool_cmd_speed(cmd);
-		int cap = speed_duplex_to_caps(speed, cmd->duplex);
-=======
 	if (cmd->base.autoneg == AUTONEG_DISABLE) {
 		u32 speed = cmd->base.speed;
 		int cap = speed_duplex_to_caps(speed, cmd->base.duplex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(lc->supported & cap) || (speed == SPEED_1000))
 			return -EINVAL;
 		lc->requested_speed = speed;
-<<<<<<< HEAD
-		lc->requested_duplex = cmd->duplex;
-		lc->advertising = 0;
-	} else {
-		cmd->advertising &= ADVERTISED_MASK;
-		if (cmd->advertising & (cmd->advertising - 1))
-			cmd->advertising = lc->supported;
-		cmd->advertising &= lc->supported;
-		if (!cmd->advertising)
-			return -EINVAL;
-		lc->requested_speed = SPEED_INVALID;
-		lc->requested_duplex = DUPLEX_INVALID;
-		lc->advertising = cmd->advertising | ADVERTISED_Autoneg;
-	}
-	lc->autoneg = cmd->autoneg;
-=======
 		lc->requested_duplex = cmd->base.duplex;
 		lc->advertising = 0;
 	} else {
@@ -772,7 +664,6 @@ static int set_link_ksettings(struct net_device *dev,
 		lc->advertising = advertising | ADVERTISED_Autoneg;
 	}
 	lc->autoneg = cmd->base.autoneg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (netif_running(dev))
 		t1_link_start(p->phy, p->mac, lc);
 	return 0;
@@ -819,13 +710,9 @@ static int set_pauseparam(struct net_device *dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void get_sge_param(struct net_device *dev, struct ethtool_ringparam *e)
-=======
 static void get_sge_param(struct net_device *dev, struct ethtool_ringparam *e,
 			  struct kernel_ethtool_ringparam *kernel_e,
 			  struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adapter *adapter = dev->ml_priv;
 	int jumbo_fl = t1_is_T1B(adapter) ? 1 : 0;
@@ -839,13 +726,9 @@ static void get_sge_param(struct net_device *dev, struct ethtool_ringparam *e,
 	e->tx_pending = adapter->params.sge.cmdQ_size[0];
 }
 
-<<<<<<< HEAD
-static int set_sge_param(struct net_device *dev, struct ethtool_ringparam *e)
-=======
 static int set_sge_param(struct net_device *dev, struct ethtool_ringparam *e,
 			 struct kernel_ethtool_ringparam *kernel_e,
 			 struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adapter *adapter = dev->ml_priv;
 	int jumbo_fl = t1_is_T1B(adapter) ? 1 : 0;
@@ -869,13 +752,9 @@ static int set_sge_param(struct net_device *dev, struct ethtool_ringparam *e,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int set_coalesce(struct net_device *dev, struct ethtool_coalesce *c)
-=======
 static int set_coalesce(struct net_device *dev, struct ethtool_coalesce *c,
 			struct kernel_ethtool_coalesce *kernel_coal,
 			struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adapter *adapter = dev->ml_priv;
 
@@ -886,13 +765,9 @@ static int set_coalesce(struct net_device *dev, struct ethtool_coalesce *c,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int get_coalesce(struct net_device *dev, struct ethtool_coalesce *c)
-=======
 static int get_coalesce(struct net_device *dev, struct ethtool_coalesce *c,
 			struct kernel_ethtool_coalesce *kernel_coal,
 			struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adapter *adapter = dev->ml_priv;
 
@@ -927,14 +802,9 @@ static int get_eeprom(struct net_device *dev, struct ethtool_eeprom *e,
 }
 
 static const struct ethtool_ops t1_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings      = get_settings,
-	.set_settings      = set_settings,
-=======
 	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS |
 				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX |
 				     ETHTOOL_COALESCE_RATE_SAMPLE_INTERVAL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo       = get_drvinfo,
 	.get_msglevel      = get_msglevel,
 	.set_msglevel      = set_msglevel,
@@ -952,11 +822,8 @@ static const struct ethtool_ops t1_ethtool_ops = {
 	.get_ethtool_stats = get_stats,
 	.get_regs_len      = get_regs_len,
 	.get_regs          = get_regs,
-<<<<<<< HEAD
-=======
 	.get_link_ksettings = get_link_ksettings,
 	.set_link_ksettings = set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int t1_ioctl(struct net_device *dev, struct ifreq *req, int cmd)
@@ -975,11 +842,6 @@ static int t1_change_mtu(struct net_device *dev, int new_mtu)
 
 	if (!mac->ops->set_mtu)
 		return -EOPNOTSUPP;
-<<<<<<< HEAD
-	if (new_mtu < 68)
-		return -EINVAL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((ret = mac->ops->set_mtu(mac, new_mtu)))
 		return ret;
 	dev->mtu = new_mtu;
@@ -995,11 +857,7 @@ static int t1_set_mac_addr(struct net_device *dev, void *p)
 	if (!mac->ops->macaddress_set)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, addr->sa_data, dev->addr_len);
-=======
 	eth_hw_addr_set(dev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mac->ops->macaddress_set(mac, dev->dev_addr);
 	return 0;
 }
@@ -1011,17 +869,10 @@ static netdev_features_t t1_fix_features(struct net_device *dev,
 	 * Since there is no support for separate rx/tx vlan accel
 	 * enable/disable make sure tx flag is always in same state as rx.
 	 */
-<<<<<<< HEAD
-	if (features & NETIF_F_HW_VLAN_RX)
-		features |= NETIF_F_HW_VLAN_TX;
-	else
-		features &= ~NETIF_F_HW_VLAN_TX;
-=======
 	if (features & NETIF_F_HW_VLAN_CTAG_RX)
 		features |= NETIF_F_HW_VLAN_CTAG_TX;
 	else
 		features &= ~NETIF_F_HW_VLAN_CTAG_TX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return features;
 }
@@ -1031,11 +882,7 @@ static int t1_set_features(struct net_device *dev, netdev_features_t features)
 	netdev_features_t changed = dev->features ^ features;
 	struct adapter *adapter = dev->ml_priv;
 
-<<<<<<< HEAD
-	if (changed & NETIF_F_HW_VLAN_RX)
-=======
 	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		t1_vlan_mode(adapter, features);
 
 	return 0;
@@ -1078,54 +925,6 @@ static void mac_stats_task(struct work_struct *work)
 	spin_unlock(&adapter->work_lock);
 }
 
-<<<<<<< HEAD
-/*
- * Processes elmer0 external interrupts in process context.
- */
-static void ext_intr_task(struct work_struct *work)
-{
-	struct adapter *adapter =
-		container_of(work, struct adapter, ext_intr_handler_task);
-
-	t1_elmer0_ext_intr_handler(adapter);
-
-	/* Now reenable external interrupts */
-	spin_lock_irq(&adapter->async_lock);
-	adapter->slow_intr_mask |= F_PL_INTR_EXT;
-	writel(F_PL_INTR_EXT, adapter->regs + A_PL_CAUSE);
-	writel(adapter->slow_intr_mask | F_PL_INTR_SGE_DATA,
-		   adapter->regs + A_PL_ENABLE);
-	spin_unlock_irq(&adapter->async_lock);
-}
-
-/*
- * Interrupt-context handler for elmer0 external interrupts.
- */
-void t1_elmer0_ext_intr(struct adapter *adapter)
-{
-	/*
-	 * Schedule a task to handle external interrupts as we require
-	 * a process context.  We disable EXT interrupts in the interim
-	 * and let the task reenable them when it's done.
-	 */
-	adapter->slow_intr_mask &= ~F_PL_INTR_EXT;
-	writel(adapter->slow_intr_mask | F_PL_INTR_SGE_DATA,
-		   adapter->regs + A_PL_ENABLE);
-	schedule_work(&adapter->ext_intr_handler_task);
-}
-
-void t1_fatal_err(struct adapter *adapter)
-{
-	if (adapter->flags & FULL_INIT_DONE) {
-		t1_sge_stop(adapter->sge);
-		t1_interrupts_disable(adapter);
-	}
-	pr_alert("%s: encountered fatal error, operation suspended\n",
-		 adapter->name);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops cxgb_netdev_ops = {
 	.ndo_open		= cxgb_open,
 	.ndo_stop		= cxgb_close,
@@ -1133,11 +932,7 @@ static const struct net_device_ops cxgb_netdev_ops = {
 	.ndo_get_stats		= t1_get_stats,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_rx_mode	= t1_set_rxmode,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= t1_ioctl,
-=======
 	.ndo_eth_ioctl		= t1_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_change_mtu		= t1_change_mtu,
 	.ndo_set_mac_address	= t1_set_mac_addr,
 	.ndo_fix_features	= t1_fix_features,
@@ -1147,31 +942,13 @@ static const struct net_device_ops cxgb_netdev_ops = {
 #endif
 };
 
-<<<<<<< HEAD
-static int __devinit init_one(struct pci_dev *pdev,
-			      const struct pci_device_id *ent)
-{
-	static int version_printed;
-
-	int i, err, pci_using_dac = 0;
-=======
 static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long mmio_start, mmio_len;
 	const struct board_info *bi;
 	struct adapter *adapter = NULL;
 	struct port_info *pi;
-<<<<<<< HEAD
-
-	if (!version_printed) {
-		printk(KERN_INFO "%s - version %s\n", DRV_DESCRIPTION,
-		       DRV_VERSION);
-		++version_printed;
-	}
-=======
 	int i, err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = pci_enable_device(pdev);
 	if (err)
@@ -1184,22 +961,8 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto out_disable_pdev;
 	}
 
-<<<<<<< HEAD
-	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
-		pci_using_dac = 1;
-
-		if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64))) {
-			pr_err("%s: unable to obtain 64-bit DMA for "
-			       "consistent allocations\n", pci_name(pdev));
-			err = -ENODEV;
-			goto out_disable_pdev;
-		}
-
-	} else if ((err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) != 0) {
-=======
 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (err) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("%s: no usable DMA configuration\n", pci_name(pdev));
 		goto out_disable_pdev;
 	}
@@ -1254,11 +1017,6 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 			spin_lock_init(&adapter->async_lock);
 			spin_lock_init(&adapter->mac_lock);
 
-<<<<<<< HEAD
-			INIT_WORK(&adapter->ext_intr_handler_task,
-				  ext_intr_task);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			INIT_DELAYED_WORK(&adapter->stats_update_task,
 					  mac_stats_task);
 
@@ -1276,16 +1034,6 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		netdev->hw_features |= NETIF_F_SG | NETIF_F_IP_CSUM |
 			NETIF_F_RXCSUM;
 		netdev->features |= NETIF_F_SG | NETIF_F_IP_CSUM |
-<<<<<<< HEAD
-			NETIF_F_RXCSUM | NETIF_F_LLTX;
-
-		if (pci_using_dac)
-			netdev->features |= NETIF_F_HIGHDMA;
-		if (vlan_tso_capable(adapter)) {
-			netdev->features |=
-				NETIF_F_HW_VLAN_TX | NETIF_F_HW_VLAN_RX;
-			netdev->hw_features |= NETIF_F_HW_VLAN_RX;
-=======
 			NETIF_F_RXCSUM | NETIF_F_LLTX | NETIF_F_HIGHDMA;
 
 		if (vlan_tso_capable(adapter)) {
@@ -1293,7 +1041,6 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 				NETIF_F_HW_VLAN_CTAG_TX |
 				NETIF_F_HW_VLAN_CTAG_RX;
 			netdev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* T204: disable TSO */
 			if (!(is_T2(adapter)) || bi->port_number != 4) {
@@ -1306,11 +1053,6 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		netdev->hard_header_len += (netdev->hw_features & NETIF_F_TSO) ?
 			sizeof(struct cpl_tx_pkt_lso) : sizeof(struct cpl_tx_pkt);
 
-<<<<<<< HEAD
-		netif_napi_add(netdev, &adapter->napi, t1_poll, 64);
-
-		SET_ETHTOOL_OPS(netdev, &t1_ethtool_ops);
-=======
 		netif_napi_add(netdev, &adapter->napi, t1_poll);
 
 		netdev->ethtool_ops = &t1_ethtool_ops;
@@ -1330,7 +1072,6 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 			netdev->max_mtu = ETH_DATA_LEN;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (t1_init_sw_modules(adapter, bi) < 0) {
@@ -1347,13 +1088,8 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	for (i = 0; i < bi->port_number; ++i) {
 		err = register_netdev(adapter->port[i].dev);
 		if (err)
-<<<<<<< HEAD
-			pr_warning("%s: cannot register net device %s, skipping\n",
-				   pci_name(pdev), adapter->port[i].dev->name);
-=======
 			pr_warn("%s: cannot register net device %s, skipping\n",
 				pci_name(pdev), adapter->port[i].dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			/*
 			 * Change the name we use for messages to the name of
@@ -1368,15 +1104,6 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (!adapter->registered_device_map) {
 		pr_err("%s: could not register any net devices\n",
 		       pci_name(pdev));
-<<<<<<< HEAD
-		goto out_release_adapter_res;
-	}
-
-	printk(KERN_INFO "%s: %s (rev %d), %s %dMHz/%d-bit\n", adapter->name,
-	       bi->desc, adapter->params.chip_revision,
-	       adapter->params.pci.is_pcix ? "PCIX" : "PCI",
-	       adapter->params.pci.speed, adapter->params.pci.width);
-=======
 		err = -EINVAL;
 		goto out_release_adapter_res;
 	}
@@ -1385,7 +1112,6 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		adapter->name, bi->desc, adapter->params.chip_revision,
 		adapter->params.pci.is_pcix ? "PCIX" : "PCI",
 		adapter->params.pci.speed, adapter->params.pci.width);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Set the T1B ASIC and memory clocks.
@@ -1412,10 +1138,6 @@ out_free_dev:
 	pci_release_regions(pdev);
 out_disable_pdev:
 	pci_disable_device(pdev);
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1573,11 +1295,7 @@ static inline void t1_sw_reset(struct pci_dev *pdev)
 	pci_write_config_dword(pdev, A_PCICFG_PM_CSR, 0);
 }
 
-<<<<<<< HEAD
-static void __devexit remove_one(struct pci_dev *pdev)
-=======
 static void remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct adapter *adapter = dev->ml_priv;
@@ -1598,31 +1316,6 @@ static void remove_one(struct pci_dev *pdev)
 
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-	t1_sw_reset(pdev);
-}
-
-static struct pci_driver driver = {
-	.name     = DRV_NAME,
-	.id_table = t1_pci_tbl,
-	.probe    = init_one,
-	.remove   = __devexit_p(remove_one),
-};
-
-static int __init t1_init_module(void)
-{
-	return pci_register_driver(&driver);
-}
-
-static void __exit t1_cleanup_module(void)
-{
-	pci_unregister_driver(&driver);
-}
-
-module_init(t1_init_module);
-module_exit(t1_cleanup_module);
-=======
 	t1_sw_reset(pdev);
 }
 
@@ -1634,4 +1327,3 @@ static struct pci_driver cxgb_pci_driver = {
 };
 
 module_pci_driver(cxgb_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

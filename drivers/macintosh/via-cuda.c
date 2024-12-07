@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-/*
- * Device driver for the via-cuda on Apple Powermacs.
- *
- * The VIA (versatile interface adapter) interfaces to the CUDA,
- * a 6805 microprocessor core which controls the ADB (Apple Desktop
- * Bus) which connects to the keyboard and mouse.  The CUDA also
- * controls system power and the RTC (real time clock) chip.
- *
- * Copyright (C) 1996 Paul Mackerras.
- */
-#include <stdarg.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Device driver for the Cuda and Egret system controllers found on PowerMacs
@@ -23,7 +10,6 @@
  * Copyright (C) 1996 Paul Mackerras.
  */
 #include <linux/stdarg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -32,18 +18,12 @@
 #include <linux/cuda.h>
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#ifdef CONFIG_PPC
-#include <asm/prom.h>
-#include <asm/machdep.h>
-=======
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 
 #ifdef CONFIG_PPC
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #include <asm/macintosh.h>
 #include <asm/macints.h>
@@ -74,12 +54,6 @@ static DEFINE_SPINLOCK(cuda_lock);
 #define IER		(14*RS)		/* Interrupt enable register */
 #define ANH		(15*RS)		/* A-side data, no handshake */
 
-<<<<<<< HEAD
-/* Bits in B data register: all active low */
-#define TREQ		0x08		/* Transfer request (input) */
-#define TACK		0x10		/* Transfer acknowledge (output) */
-#define TIP		0x20		/* Transfer in progress (output) */
-=======
 /*
  * When the Cuda design replaced the Egret, some signal names and
  * logic sense changed. They all serve the same purposes, however.
@@ -101,7 +75,6 @@ static DEFINE_SPINLOCK(cuda_lock);
 #define TREQ		0x08		/* Transfer request */
 #define TACK		0x10		/* Transfer acknowledge */
 #define TIP		0x20		/* Transfer in progress */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Bits in ACR */
 #define SR_CTRL		0x1c		/* Shift register control bits */
@@ -113,8 +86,6 @@ static DEFINE_SPINLOCK(cuda_lock);
 #define IER_CLR		0		/* clear bits in IER */
 #define SR_INT		0x04		/* Shift register full/empty */
 
-<<<<<<< HEAD
-=======
 /* Duration of byte acknowledgement pulse (us) */
 #define EGRET_TACK_ASSERTED_DELAY	300
 #define EGRET_TACK_NEGATED_DELAY	400
@@ -183,7 +154,6 @@ static inline void negate_TIP_and_TACK(void)
 		out_8(&via[B], in_8(&via[B]) | TIP | TACK);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum cuda_state {
     idle,
     sent_first_byte,
@@ -239,20 +209,13 @@ int __init find_via_cuda(void)
     struct adb_request req;
     int err;
 
-<<<<<<< HEAD
-    if (macintosh_config->adb_type != MAC_ADB_CUDA)
-=======
     if (macintosh_config->adb_type != MAC_ADB_CUDA &&
         macintosh_config->adb_type != MAC_ADB_EGRET)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
     via = via1;
     cuda_state = idle;
-<<<<<<< HEAD
-=======
     mcu_is_egret = macintosh_config->adb_type == MAC_ADB_EGRET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     err = cuda_init_via();
     if (err) {
@@ -272,29 +235,6 @@ int __init find_via_cuda(void)
 int __init find_via_cuda(void)
 {
     struct adb_request req;
-<<<<<<< HEAD
-    phys_addr_t taddr;
-    const u32 *reg;
-    int err;
-
-    if (vias != 0)
-	return 1;
-    vias = of_find_node_by_name(NULL, "via-cuda");
-    if (vias == 0)
-	return 0;
-
-    reg = of_get_property(vias, "reg", NULL);
-    if (reg == NULL) {
-	    printk(KERN_ERR "via-cuda: No \"reg\" property !\n");
-	    goto fail;
-    }
-    taddr = of_translate_address(vias, reg);
-    if (taddr == 0) {
-	    printk(KERN_ERR "via-cuda: Can't translate address !\n");
-	    goto fail;
-    }
-    via = ioremap(taddr, 0x2000);
-=======
     struct resource res;
     int err;
 
@@ -310,7 +250,6 @@ int __init find_via_cuda(void)
 	    goto fail;
     }
     via = ioremap(res.start, 0x2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (via == NULL) {
 	    printk(KERN_ERR "via-cuda: Can't map address !\n");
 	    goto fail;
@@ -355,15 +294,9 @@ static int __init via_cuda_start(void)
     cuda_irq = IRQ_MAC_ADB;
 #else
     cuda_irq = irq_of_parse_and_map(vias, 0);
-<<<<<<< HEAD
-    if (cuda_irq == NO_IRQ) {
-	printk(KERN_ERR "via-cuda: can't map interrupts for %s\n",
-	       vias->full_name);
-=======
     if (!cuda_irq) {
 	printk(KERN_ERR "via-cuda: can't map interrupts for %pOF\n",
 	       vias);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
     }
 #endif
@@ -373,11 +306,7 @@ static int __init via_cuda_start(void)
 	return -EAGAIN;
     }
 
-<<<<<<< HEAD
-    printk("Macintosh CUDA driver v0.5 for Unified ADB.\n");
-=======
     pr_info("Macintosh Cuda and Egret driver.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     cuda_fully_inited = 1;
     return 0;
@@ -393,12 +322,8 @@ cuda_probe(void)
     if (sys_ctrler != SYS_CTRLER_CUDA)
 	return -ENODEV;
 #else
-<<<<<<< HEAD
-    if (macintosh_config->adb_type != MAC_ADB_CUDA)
-=======
     if (macintosh_config->adb_type != MAC_ADB_CUDA &&
         macintosh_config->adb_type != MAC_ADB_EGRET)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
 #endif
     if (via == NULL)
@@ -407,8 +332,6 @@ cuda_probe(void)
 }
 #endif /* CONFIG_ADB */
 
-<<<<<<< HEAD
-=======
 static int __init sync_egret(void)
 {
 	if (TREQ_asserted(in_8(&via[B]))) {
@@ -436,17 +359,12 @@ static int __init sync_egret(void)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WAIT_FOR(cond, what)					\
     do {                                                        \
     	int x;							\
 	for (x = 1000; !(cond); --x) {				\
 	    if (x == 0) {					\
-<<<<<<< HEAD
-		printk("Timeout waiting for " what "\n");	\
-=======
 		pr_err("Timeout waiting for " what "\n");	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;					\
 	    }							\
 	    udelay(100);					\
@@ -454,17 +372,8 @@ static int __init sync_egret(void)
     } while (0)
 
 static int
-<<<<<<< HEAD
-cuda_init_via(void)
-{
-    out_8(&via[DIRB], (in_8(&via[DIRB]) | TACK | TIP) & ~TREQ);	/* TACK & TIP out */
-    out_8(&via[B], in_8(&via[B]) | TACK | TIP);			/* negate them */
-    out_8(&via[ACR] ,(in_8(&via[ACR]) & ~SR_CTRL) | SR_EXT);	/* SR data in */
-    (void)in_8(&via[SR]);						/* clear any left-over data */
-=======
 __init cuda_init_via(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PPC
     out_8(&via[IER], 0x7f);					/* disable interrupts from VIA */
     (void)in_8(&via[IER]);
@@ -472,8 +381,6 @@ __init cuda_init_via(void)
     out_8(&via[IER], SR_INT);					/* disable SR interrupt from VIA */
 #endif
 
-<<<<<<< HEAD
-=======
     out_8(&via[DIRB], (in_8(&via[DIRB]) | TACK | TIP) & ~TREQ);	/* TACK & TIP out */
     out_8(&via[ACR], (in_8(&via[ACR]) & ~SR_CTRL) | SR_EXT);	/* SR data in */
     (void)in_8(&via[SR]);					/* clear any left-over data */
@@ -483,24 +390,16 @@ __init cuda_init_via(void)
 
     negate_TIP_and_TACK();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     /* delay 4ms and then clear any pending interrupt */
     mdelay(4);
     (void)in_8(&via[SR]);
     out_8(&via[IFR], SR_INT);
 
     /* sync with the CUDA - assert TACK without TIP */
-<<<<<<< HEAD
-    out_8(&via[B], in_8(&via[B]) & ~TACK);
-
-    /* wait for the CUDA to assert TREQ in response */
-    WAIT_FOR((in_8(&via[B]) & TREQ) == 0, "CUDA response to sync");
-=======
     assert_TACK();
 
     /* wait for the CUDA to assert TREQ in response */
     WAIT_FOR(TREQ_asserted(in_8(&via[B])), "CUDA response to sync");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /* wait for the interrupt and then clear it */
     WAIT_FOR(in_8(&via[IFR]) & SR_INT, "CUDA response to sync (2)");
@@ -508,16 +407,6 @@ __init cuda_init_via(void)
     out_8(&via[IFR], SR_INT);
 
     /* finish the sync by negating TACK */
-<<<<<<< HEAD
-    out_8(&via[B], in_8(&via[B]) | TACK);
-
-    /* wait for the CUDA to negate TREQ and the corresponding interrupt */
-    WAIT_FOR(in_8(&via[B]) & TREQ, "CUDA response to sync (3)");
-    WAIT_FOR(in_8(&via[IFR]) & SR_INT, "CUDA response to sync (4)");
-    (void)in_8(&via[SR]);
-    out_8(&via[IFR], SR_INT);
-    out_8(&via[B], in_8(&via[B]) | TIP);	/* should be unnecessary */
-=======
     negate_TACK();
 
     /* wait for the CUDA to negate TREQ and the corresponding interrupt */
@@ -525,7 +414,6 @@ __init cuda_init_via(void)
     WAIT_FOR(in_8(&via[IFR]) & SR_INT, "CUDA response to sync (4)");
     (void)in_8(&via[SR]);
     out_8(&via[IFR], SR_INT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     return 0;
 }
@@ -586,10 +474,7 @@ cuda_reset_adb_bus(void)
     return 0;
 }
 #endif /* CONFIG_ADB */
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Construct and send a cuda request */
 int
 cuda_request(struct adb_request *req, void (*done)(struct adb_request *),
@@ -612,10 +497,7 @@ cuda_request(struct adb_request *req, void (*done)(struct adb_request *),
     req->reply_expected = 1;
     return cuda_write(req);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(cuda_request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 cuda_write(struct adb_request *req)
@@ -632,11 +514,7 @@ cuda_write(struct adb_request *req)
     req->reply_len = 0;
 
     spin_lock_irqsave(&cuda_lock, flags);
-<<<<<<< HEAD
-    if (current_req != 0) {
-=======
     if (current_req) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	last_req->next = req;
 	last_req = req;
     } else {
@@ -653,81 +531,44 @@ cuda_write(struct adb_request *req)
 static void
 cuda_start(void)
 {
-<<<<<<< HEAD
-    struct adb_request *req;
-
-    /* assert cuda_state == idle */
-    /* get the packet to send */
-    req = current_req;
-    if (req == 0)
-	return;
-    if ((in_8(&via[B]) & TREQ) == 0)
-=======
     /* assert cuda_state == idle */
     if (current_req == NULL)
 	return;
     data_index = 0;
     if (TREQ_asserted(in_8(&via[B])))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;			/* a byte is coming in from the CUDA */
 
     /* set the shift register to shift out and send a byte */
     out_8(&via[ACR], in_8(&via[ACR]) | SR_OUT);
-<<<<<<< HEAD
-    out_8(&via[SR], req->data[0]);
-    out_8(&via[B], in_8(&via[B]) & ~TIP);
-=======
     out_8(&via[SR], current_req->data[data_index++]);
     if (mcu_is_egret)
 	assert_TIP_and_TACK();
     else
 	assert_TIP();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     cuda_state = sent_first_byte;
 }
 
 void
 cuda_poll(void)
 {
-<<<<<<< HEAD
-    /* cuda_interrupt only takes a normal lock, we disable
-     * interrupts here to avoid re-entering and thus deadlocking.
-     */
-    if (cuda_irq)
-	disable_irq(cuda_irq);
-    cuda_interrupt(0, NULL);
-    if (cuda_irq)
-	enable_irq(cuda_irq);
-}
-=======
 	cuda_interrupt(0, NULL);
 }
 EXPORT_SYMBOL(cuda_poll);
 
 #define ARRAY_FULL(a, p)	((p) - (a) == ARRAY_SIZE(a))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static irqreturn_t
 cuda_interrupt(int irq, void *arg)
 {
-<<<<<<< HEAD
-    int status;
-=======
     unsigned long flags;
     u8 status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct adb_request *req = NULL;
     unsigned char ibuf[16];
     int ibuf_len = 0;
     int complete = 0;
-<<<<<<< HEAD
-    
-    spin_lock(&cuda_lock);
-=======
     bool full;
     
     spin_lock_irqsave(&cuda_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /* On powermacs, this handler is registered for the VIA IRQ. But they use
      * just the shift register IRQ -- other VIA interrupt sources are disabled.
@@ -740,28 +581,12 @@ cuda_interrupt(int irq, void *arg)
 #endif
     {
         if ((in_8(&via[IFR]) & SR_INT) == 0) {
-<<<<<<< HEAD
-            spin_unlock(&cuda_lock);
-=======
             spin_unlock_irqrestore(&cuda_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
             return IRQ_NONE;
         } else {
             out_8(&via[IFR], SR_INT);
         }
     }
-<<<<<<< HEAD
-    
-    status = (~in_8(&via[B]) & (TIP|TREQ)) | (in_8(&via[ACR]) & SR_OUT);
-    /* printk("cuda_interrupt: state=%d status=%x\n", cuda_state, status); */
-    switch (cuda_state) {
-    case idle:
-	/* CUDA has sent us the first byte of data - unsolicited */
-	if (status != TREQ)
-	    printk("cuda: state=idle, status=%x\n", status);
-	(void)in_8(&via[SR]);
-	out_8(&via[B], in_8(&via[B]) & ~TIP);
-=======
 
     status = in_8(&via[B]) & (TIP | TACK | TREQ);
 
@@ -771,45 +596,21 @@ cuda_interrupt(int irq, void *arg)
 	(void)in_8(&via[SR]);
 idle_state:
 	assert_TIP();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cuda_state = reading;
 	reply_ptr = cuda_rbuf;
 	reading_reply = 0;
 	break;
 
     case awaiting_reply:
-<<<<<<< HEAD
-	/* CUDA has sent us the first byte of data of a reply */
-	if (status != TREQ)
-	    printk("cuda: state=awaiting_reply, status=%x\n", status);
-	(void)in_8(&via[SR]);
-	out_8(&via[B], in_8(&via[B]) & ~TIP);
-=======
 	/* System controller has reply data for us */
 	(void)in_8(&via[SR]);
 	assert_TIP();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cuda_state = reading;
 	reply_ptr = current_req->reply;
 	reading_reply = 1;
 	break;
 
     case sent_first_byte:
-<<<<<<< HEAD
-	if (status == TREQ + TIP + SR_OUT) {
-	    /* collision */
-	    out_8(&via[ACR], in_8(&via[ACR]) & ~SR_OUT);
-	    (void)in_8(&via[SR]);
-	    out_8(&via[B], in_8(&via[B]) | TIP | TACK);
-	    cuda_state = idle;
-	} else {
-	    /* assert status == TIP + SR_OUT */
-	    if (status != TIP + SR_OUT)
-		printk("cuda: state=sent_first_byte status=%x\n", status);
-	    out_8(&via[SR], current_req->data[1]);
-	    out_8(&via[B], in_8(&via[B]) ^ TACK);
-	    data_index = 2;
-=======
 	if (TREQ_asserted(status)) {
 	    /* collision */
 	    out_8(&via[ACR], in_8(&via[ACR]) & ~SR_OUT);
@@ -824,7 +625,6 @@ idle_state:
 	    toggle_TACK();
 	    if (mcu_is_egret)
 		assert_TACK();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    cuda_state = sending;
 	}
 	break;
@@ -834,11 +634,7 @@ idle_state:
 	if (data_index >= req->nbytes) {
 	    out_8(&via[ACR], in_8(&via[ACR]) & ~SR_OUT);
 	    (void)in_8(&via[SR]);
-<<<<<<< HEAD
-	    out_8(&via[B], in_8(&via[B]) | TACK | TIP);
-=======
 	    negate_TIP_and_TACK();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    req->sent = 1;
 	    if (req->reply_expected) {
 		cuda_state = awaiting_reply;
@@ -851,29 +647,13 @@ idle_state:
 	    }
 	} else {
 	    out_8(&via[SR], req->data[data_index++]);
-<<<<<<< HEAD
-	    out_8(&via[B], in_8(&via[B]) ^ TACK);
-=======
 	    toggle_TACK();
 	    if (mcu_is_egret)
 		assert_TACK();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	break;
 
     case reading:
-<<<<<<< HEAD
-	*reply_ptr++ = in_8(&via[SR]);
-	if (status == TIP) {
-	    /* that's all folks */
-	    out_8(&via[B], in_8(&via[B]) | TACK | TIP);
-	    cuda_state = read_done;
-	} else {
-	    /* assert status == TIP | TREQ */
-	    if (status != TIP + TREQ)
-		printk("cuda: state=reading status=%x\n", status);
-	    out_8(&via[B], in_8(&via[B]) ^ TACK);
-=======
 	full = reading_reply ? ARRAY_FULL(current_req->reply, reply_ptr)
 	                     : ARRAY_FULL(cuda_rbuf, reply_ptr);
 	if (full)
@@ -893,16 +673,12 @@ idle_state:
 	    toggle_TACK();
 	    if (mcu_is_egret)
 		negate_TACK();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	break;
 
     case read_done:
 	(void)in_8(&via[SR]);
-<<<<<<< HEAD
-=======
 read_done_state:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (reading_reply) {
 	    req = current_req;
 	    req->reply_len = reply_ptr - req->reply;
@@ -919,10 +695,7 @@ read_done_state:
 	    }
 	    current_req = req->next;
 	    complete = 1;
-<<<<<<< HEAD
-=======
 	    reading_reply = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 	    /* This is tricky. We must break the spinlock to call
 	     * cuda_input. However, doing so means we might get
@@ -934,36 +707,19 @@ read_done_state:
 	    ibuf_len = reply_ptr - cuda_rbuf;
 	    memcpy(ibuf, cuda_rbuf, ibuf_len);
 	}
-<<<<<<< HEAD
-	if (status == TREQ) {
-	    out_8(&via[B], in_8(&via[B]) & ~TIP);
-	    cuda_state = reading;
-	    reply_ptr = cuda_rbuf;
-	    reading_reply = 0;
-	} else {
-	    cuda_state = idle;
-	    cuda_start();
-=======
 	reply_ptr = cuda_rbuf;
 	cuda_state = idle;
 	cuda_start();
 	if (cuda_state == idle && TREQ_asserted(in_8(&via[B]))) {
 	    assert_TIP();
 	    cuda_state = reading;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	break;
 
     default:
-<<<<<<< HEAD
-	printk("cuda_interrupt: unknown cuda_state %d?\n", cuda_state);
-    }
-    spin_unlock(&cuda_lock);
-=======
 	pr_err("cuda_interrupt: unknown cuda_state %d?\n", cuda_state);
     }
     spin_unlock_irqrestore(&cuda_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (complete && req) {
     	void (*done)(struct adb_request *) = req->done;
     	mb();
@@ -982,11 +738,6 @@ read_done_state:
 static void
 cuda_input(unsigned char *buf, int nb)
 {
-<<<<<<< HEAD
-    int i;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     switch (buf[0]) {
     case ADB_PACKET:
 #ifdef CONFIG_XMON
@@ -1003,15 +754,6 @@ cuda_input(unsigned char *buf, int nb)
 #endif /* CONFIG_ADB */
 	break;
 
-<<<<<<< HEAD
-    default:
-	printk("data from cuda (%d bytes):", nb);
-	for (i = 0; i < nb; ++i)
-	    printk(" %.2x", buf[i]);
-	printk("\n");
-    }
-}
-=======
     case TIMER_PACKET:
 	/* Egret sends these periodically. Might be useful as a 'heartbeat'
 	 * to trigger a recovery for the VIA shift register errata.
@@ -1058,4 +800,3 @@ int cuda_set_rtc_time(struct rtc_time *tm)
 		pr_err("%s: got %d byte reply\n", __func__, req.reply_len);
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

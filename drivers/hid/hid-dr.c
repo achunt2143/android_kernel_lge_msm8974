@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Force feedback support for DragonRise Inc. game controllers
  *
@@ -16,40 +13,16 @@
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/input.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/usb.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hid.h>
 #include <linux/module.h>
 
 #include "hid-ids.h"
 
 #ifdef CONFIG_DRAGONRISE_FF
-<<<<<<< HEAD
-#include "usbhid/usbhid.h"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct drff_device {
 	struct hid_report *report;
@@ -81,11 +54,7 @@ static int drff_play(struct input_dev *dev, void *data,
 		drff->report->field[0]->value[1] = 0x00;
 		drff->report->field[0]->value[2] = weak;
 		drff->report->field[0]->value[4] = strong;
-<<<<<<< HEAD
-		usbhid_submit_report(hid, drff->report, USB_DIR_OUT);
-=======
 		hid_hw_request(hid, drff->report, HID_REQ_SET_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		drff->report->field[0]->value[0] = 0xfa;
 		drff->report->field[0]->value[1] = 0xfe;
@@ -97,11 +66,7 @@ static int drff_play(struct input_dev *dev, void *data,
 	drff->report->field[0]->value[2] = 0x00;
 	drff->report->field[0]->value[4] = 0x00;
 	dbg_hid("running with 0x%02x 0x%02x", strong, weak);
-<<<<<<< HEAD
-	usbhid_submit_report(hid, drff->report, USB_DIR_OUT);
-=======
 	hid_hw_request(hid, drff->report, HID_REQ_SET_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -110,15 +75,6 @@ static int drff_init(struct hid_device *hid)
 {
 	struct drff_device *drff;
 	struct hid_report *report;
-<<<<<<< HEAD
-	struct hid_input *hidinput = list_first_entry(&hid->inputs,
-						struct hid_input, list);
-	struct list_head *report_list =
-			&hid->report_enum[HID_OUTPUT_REPORT].report_list;
-	struct input_dev *dev = hidinput->input;
-	int error;
-
-=======
 	struct hid_input *hidinput;
 	struct list_head *report_list =
 			&hid->report_enum[HID_OUTPUT_REPORT].report_list;
@@ -132,7 +88,6 @@ static int drff_init(struct hid_device *hid)
 	hidinput = list_first_entry(&hid->inputs, struct hid_input, list);
 	dev = hidinput->input;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (list_empty(report_list)) {
 		hid_err(hid, "no output reports found\n");
 		return -ENODEV;
@@ -169,11 +124,7 @@ static int drff_init(struct hid_device *hid)
 	drff->report->field[0]->value[4] = 0x00;
 	drff->report->field[0]->value[5] = 0x00;
 	drff->report->field[0]->value[6] = 0x00;
-<<<<<<< HEAD
-	usbhid_submit_report(hid, drff->report, USB_DIR_OUT);
-=======
 	hid_hw_request(hid, drff->report, HID_REQ_SET_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hid_info(hid, "Force Feedback for DragonRise Inc. "
 		 "game controllers by Richard Walmsley <richwalm@gmail.com>\n");
@@ -194,11 +145,7 @@ static inline int drff_init(struct hid_device *hid)
  * descriptor. In any case, it's a wonder it works on Windows.
  *
  *  Usage Page (Desktop),             ; Generic desktop controls (01h)
-<<<<<<< HEAD
- *  Usage (Joystik),                  ; Joystik (04h, application collection)
-=======
  *  Usage (Joystick),                 ; Joystick (04h, application collection)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Collection (Application),
  *    Collection (Logical),
  *      Report Size (8),
@@ -254,11 +201,7 @@ static inline int drff_init(struct hid_device *hid)
 /* Fixed report descriptor for PID 0x011 joystick */
 static __u8 pid0011_rdesc_fixed[] = {
 	0x05, 0x01,         /*  Usage Page (Desktop),           */
-<<<<<<< HEAD
-	0x09, 0x04,         /*  Usage (Joystik),                */
-=======
 	0x09, 0x04,         /*  Usage (Joystick),               */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0xA1, 0x01,         /*  Collection (Application),       */
 	0xA1, 0x02,         /*      Collection (Logical),       */
 	0x14,               /*          Logical Minimum (0),    */
@@ -299,8 +242,6 @@ static __u8 *dr_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 	return rdesc;
 }
 
-<<<<<<< HEAD
-=======
 #define map_abs(c)      hid_map_usage(hi, usage, bit, max, EV_ABS, (c))
 #define map_rel(c)      hid_map_usage(hi, usage, bit, max, EV_REL, (c))
 
@@ -325,7 +266,6 @@ static int dr_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int dr_probe(struct hid_device *hdev, const struct hid_device_id *id)
 {
 	int ret;
@@ -372,25 +312,8 @@ static struct hid_driver dr_driver = {
 	.id_table = dr_devices,
 	.report_fixup = dr_report_fixup,
 	.probe = dr_probe,
-<<<<<<< HEAD
-};
-
-static int __init dr_init(void)
-{
-	return hid_register_driver(&dr_driver);
-}
-
-static void __exit dr_exit(void)
-{
-	hid_unregister_driver(&dr_driver);
-}
-
-module_init(dr_init);
-module_exit(dr_exit);
-=======
 	.input_mapping = dr_input_mapping,
 };
 module_hid_driver(dr_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  HW NMI watchdog support
  *
@@ -12,102 +9,27 @@
  *  Bits copied from original nmi.c file
  *
  */
-<<<<<<< HEAD
-#include <asm/apic.h>
-=======
 #include <linux/thread_info.h>
 #include <asm/apic.h>
 #include <asm/nmi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/cpumask.h>
 #include <linux/kdebug.h>
 #include <linux/notifier.h>
 #include <linux/kprobes.h>
 #include <linux/nmi.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/delay.h>
-
-#ifdef CONFIG_HARDLOCKUP_DETECTOR
-=======
 #include <linux/init.h>
 #include <linux/delay.h>
 
 #include "local.h"
 
 #ifdef CONFIG_HARDLOCKUP_DETECTOR_PERF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u64 hw_nmi_get_sample_period(int watchdog_thresh)
 {
 	return (u64)(cpu_khz) * 1000 * watchdog_thresh;
 }
 #endif
 
-<<<<<<< HEAD
-#ifdef arch_trigger_all_cpu_backtrace
-/* For reliability, we're prepared to waste bits here. */
-static DECLARE_BITMAP(backtrace_mask, NR_CPUS) __read_mostly;
-
-/* "in progress" flag of arch_trigger_all_cpu_backtrace */
-static unsigned long backtrace_flag;
-
-void arch_trigger_all_cpu_backtrace(void)
-{
-	int i;
-
-	if (test_and_set_bit(0, &backtrace_flag))
-		/*
-		 * If there is already a trigger_all_cpu_backtrace() in progress
-		 * (backtrace_flag == 1), don't output double cpu dump infos.
-		 */
-		return;
-
-	cpumask_copy(to_cpumask(backtrace_mask), cpu_online_mask);
-
-	printk(KERN_INFO "sending NMI to all CPUs:\n");
-	apic->send_IPI_all(NMI_VECTOR);
-
-	/* Wait for up to 10 seconds for all CPUs to do the backtrace */
-	for (i = 0; i < 10 * 1000; i++) {
-		if (cpumask_empty(to_cpumask(backtrace_mask)))
-			break;
-		mdelay(1);
-	}
-
-	clear_bit(0, &backtrace_flag);
-	smp_mb__after_clear_bit();
-}
-
-static int __kprobes
-arch_trigger_all_cpu_backtrace_handler(unsigned int cmd, struct pt_regs *regs)
-{
-	int cpu;
-
-	cpu = smp_processor_id();
-
-	if (cpumask_test_cpu(cpu, to_cpumask(backtrace_mask))) {
-		static arch_spinlock_t lock = __ARCH_SPIN_LOCK_UNLOCKED;
-
-		arch_spin_lock(&lock);
-		printk(KERN_WARNING "NMI backtrace for cpu %d\n", cpu);
-		show_regs(regs);
-		arch_spin_unlock(&lock);
-		cpumask_clear_cpu(cpu, to_cpumask(backtrace_mask));
-		return NMI_HANDLED;
-	}
-
-	return NMI_DONE;
-}
-
-static int __init register_trigger_all_cpu_backtrace(void)
-{
-	register_nmi_handler(NMI_LOCAL, arch_trigger_all_cpu_backtrace_handler,
-				0, "arch_bt");
-	return 0;
-}
-early_initcall(register_trigger_all_cpu_backtrace);
-=======
 #ifdef arch_trigger_cpumask_backtrace
 static void nmi_raise_cpu_backtrace(cpumask_t *mask)
 {
@@ -136,5 +58,4 @@ static int __init register_nmi_cpu_backtrace_handler(void)
 	return 0;
 }
 early_initcall(register_nmi_cpu_backtrace_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

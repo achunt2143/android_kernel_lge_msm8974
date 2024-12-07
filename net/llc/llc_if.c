@@ -15,11 +15,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
-<<<<<<< HEAD
-#include <asm/errno.h>
-=======
 #include <linux/errno.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/llc_if.h>
 #include <net/llc_sap.h>
 #include <net/llc_s_ev.h>
@@ -42,11 +38,8 @@
  *	closed and -EBUSY when sending data is not permitted in this state or
  *	LLC has send an I pdu with p bit set to 1 and is waiting for it's
  *	response.
-<<<<<<< HEAD
-=======
  *
  *	This function always consumes a reference to the skb.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb)
 {
@@ -55,35 +48,22 @@ int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb)
 	struct llc_sock *llc = llc_sk(sk);
 
 	if (unlikely(llc->state == LLC_CONN_STATE_ADM))
-<<<<<<< HEAD
-		goto out;
-=======
 		goto out_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = -EBUSY;
 	if (unlikely(llc_data_accept_state(llc->state) || /* data_conn_refuse */
 		     llc->p_flag)) {
 		llc->failed_data_req = 1;
-<<<<<<< HEAD
-		goto out;
-=======
 		goto out_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ev = llc_conn_ev(skb);
 	ev->type      = LLC_CONN_EV_TYPE_PRIM;
 	ev->prim      = LLC_DATA_PRIM;
 	ev->prim_type = LLC_PRIM_TYPE_REQ;
 	skb->dev      = llc->dev;
-<<<<<<< HEAD
-	rc = llc_conn_state_process(sk, skb);
-out:
-=======
 	return llc_conn_state_process(sk, skb);
 
 out_free:
 	kfree_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -100,11 +80,7 @@ out_free:
  *	establishment will inform to upper layer via calling it's confirm
  *	function and passing proper information.
  */
-<<<<<<< HEAD
-int llc_establish_connection(struct sock *sk, u8 *lmac, u8 *dmac, u8 dsap)
-=======
 int llc_establish_connection(struct sock *sk, const u8 *lmac, u8 *dmac, u8 dsap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = -EISCONN;
 	struct llc_addr laddr, daddr;
@@ -116,11 +92,7 @@ int llc_establish_connection(struct sock *sk, const u8 *lmac, u8 *dmac, u8 dsap)
 	daddr.lsap = dsap;
 	memcpy(daddr.mac, dmac, sizeof(daddr.mac));
 	memcpy(laddr.mac, lmac, sizeof(laddr.mac));
-<<<<<<< HEAD
-	existing = llc_lookup_established(llc->sap, &daddr, &laddr);
-=======
 	existing = llc_lookup_established(llc->sap, &daddr, &laddr, sock_net(sk));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (existing) {
 		if (existing->sk_state == TCP_ESTABLISHED) {
 			sk = existing;
@@ -183,7 +155,3 @@ out:
 	sock_put(sk);
 	return rc;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

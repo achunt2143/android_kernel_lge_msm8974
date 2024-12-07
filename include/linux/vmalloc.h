@@ -1,26 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_VMALLOC_H
 #define _LINUX_VMALLOC_H
 
 #include <linux/spinlock.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <asm/page.h>		/* pgprot_t */
-
-struct vm_area_struct;		/* vma defining user mapping in mm_types.h */
-
-/* bits in flags of vmalloc's vm_struct below */
-#define VM_IOREMAP	0x00000001	/* ioremap() and friends */
-#define VM_ALLOC	0x00000002	/* vmalloc() */
-#define VM_MAP		0x00000004	/* vmap()ed pages */
-#define VM_USERMAP	0x00000008	/* suitable for remap_vmalloc_range */
-#define VM_VPAGES	0x00000010	/* buffer for pages was vmalloc'ed */
-#define VM_UNLIST	0x00000020	/* vm_struct is not listed in vmlist */
-#define VM_LOWMEM	0x00000040	/* Tracking of direct mapped lowmem */
-=======
 #include <linux/list.h>
 #include <linux/llist.h>
 #include <asm/page.h>		/* pgprot_t */
@@ -54,16 +37,11 @@ struct iov_iter;		/* in uio.h */
 #endif
 #define VM_SPARSE		0x00001000	/* sparse vm_area. not all pages are present. */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* bits [20..32] reserved for arch specific ioremap internals */
 
 /*
  * Maximum alignment for ioremap() regions.
-<<<<<<< HEAD
- * Can be overriden by arch-specific value.
-=======
  * Can be overridden by arch-specific value.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef IOREMAP_MAX_ORDER
 #define IOREMAP_MAX_ORDER	(7 + PAGE_SHIFT)	/* 128 pages */
@@ -75,19 +53,14 @@ struct vm_struct {
 	unsigned long		size;
 	unsigned long		flags;
 	struct page		**pages;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_HAVE_ARCH_HUGE_VMALLOC
 	unsigned int		page_order;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		nr_pages;
 	phys_addr_t		phys_addr;
 	const void		*caller;
 };
 
-<<<<<<< HEAD
-=======
 struct vmap_area {
 	unsigned long va_start;
 	unsigned long va_end;
@@ -152,47 +125,10 @@ static inline pgprot_t arch_vmap_pgprot_tagged(pgprot_t prot)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Highlevel APIs for driver use
  */
 extern void vm_unmap_ram(const void *mem, unsigned int count);
-<<<<<<< HEAD
-extern void *vm_map_ram(struct page **pages, unsigned int count,
-				int node, pgprot_t prot);
-extern void vm_unmap_aliases(void);
-
-#ifdef CONFIG_MMU
-extern void __init vmalloc_init(void);
-#else
-static inline void vmalloc_init(void)
-{
-}
-#endif
-
-extern void *vmalloc(unsigned long size);
-extern void *vzalloc(unsigned long size);
-extern void *vmalloc_user(unsigned long size);
-extern void *vmalloc_node(unsigned long size, int node);
-extern void *vzalloc_node(unsigned long size, int node);
-extern void *vmalloc_exec(unsigned long size);
-extern void *vmalloc_32(unsigned long size);
-extern void *vmalloc_32_user(unsigned long size);
-extern void *__vmalloc(unsigned long size, gfp_t gfp_mask, pgprot_t prot);
-extern void *__vmalloc_node_range(unsigned long size, unsigned long align,
-			unsigned long start, unsigned long end, gfp_t gfp_mask,
-			pgprot_t prot, int node, const void *caller);
-extern void vfree(const void *addr);
-
-extern void *vmap(struct page **pages, unsigned int count,
-			unsigned long flags, pgprot_t prot);
-extern void vunmap(const void *addr);
-
-extern int remap_vmalloc_range(struct vm_area_struct *vma, void *addr,
-							unsigned long pgoff);
-void vmalloc_sync_all(void);
- 
-=======
 extern void *vm_map_ram(struct page **pages, unsigned int count, int node);
 extern void vm_unmap_aliases(void);
 
@@ -254,63 +190,27 @@ extern int remap_vmalloc_range(struct vm_area_struct *vma, void *addr,
  */
 void arch_sync_kernel_mappings(unsigned long start, unsigned long end);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Lowlevel-APIs (not for driver use!)
  */
 
 static inline size_t get_vm_area_size(const struct vm_struct *area)
 {
-<<<<<<< HEAD
-	/* return actual size without guard page */
-	return area->size - PAGE_SIZE;
-=======
 	if (!(area->flags & VM_NO_GUARD))
 		/* return actual size without guard page */
 		return area->size - PAGE_SIZE;
 	else
 		return area->size;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 extern struct vm_struct *get_vm_area(unsigned long size, unsigned long flags);
 extern struct vm_struct *get_vm_area_caller(unsigned long size,
 					unsigned long flags, const void *caller);
-<<<<<<< HEAD
-extern struct vm_struct *__get_vm_area(unsigned long size, unsigned long flags,
-					unsigned long start, unsigned long end);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct vm_struct *__get_vm_area_caller(unsigned long size,
 					unsigned long flags,
 					unsigned long start, unsigned long end,
 					const void *caller);
-<<<<<<< HEAD
-extern struct vm_struct *remove_vm_area(const void *addr);
-extern struct vm_struct *find_vm_area(const void *addr);
-
-extern int map_vm_area(struct vm_struct *area, pgprot_t prot,
-			struct page ***pages);
-#ifdef CONFIG_MMU
-extern int map_kernel_range_noflush(unsigned long start, unsigned long size,
-				    pgprot_t prot, struct page **pages);
-extern void unmap_kernel_range_noflush(unsigned long addr, unsigned long size);
-extern void unmap_kernel_range(unsigned long addr, unsigned long size);
-#else
-static inline int
-map_kernel_range_noflush(unsigned long start, unsigned long size,
-			pgprot_t prot, struct page **pages)
-{
-	return size >> PAGE_SHIFT;
-}
-static inline void
-unmap_kernel_range_noflush(unsigned long addr, unsigned long size)
-{
-}
-static inline void
-unmap_kernel_range(unsigned long addr, unsigned long size)
-=======
 void free_vm_area(struct vm_struct *area);
 extern struct vm_struct *remove_vm_area(const void *addr);
 extern struct vm_struct *find_vm_area(const void *addr);
@@ -348,35 +248,10 @@ static inline void set_vm_flush_reset_perms(void *addr)
 
 #else
 static inline void set_vm_flush_reset_perms(void *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif
 
-<<<<<<< HEAD
-/* Allocate/destroy a 'vmalloc' VM area. */
-extern struct vm_struct *alloc_vm_area(size_t size, pte_t **ptes);
-extern void free_vm_area(struct vm_struct *area);
-
-/* for /dev/kmem */
-extern long vread(char *buf, char *addr, unsigned long count);
-extern long vwrite(char *buf, char *addr, unsigned long count);
-
-/*
- *	Internals.  Dont't use..
- */
-extern rwlock_t vmlist_lock;
-extern struct vm_struct *vmlist;
-extern __init void vm_area_add_early(struct vm_struct *vm);
-extern __init void vm_area_register_early(struct vm_struct *vm, size_t align);
-extern __init int vm_area_check_early(struct vm_struct *vm);
-#ifdef CONFIG_ENABLE_VMALLOC_SAVING
-extern void mark_vmalloc_reserved_area(void *addr, unsigned long size);
-#else
-static inline void mark_vmalloc_reserved_area(void *addr, unsigned long size)
-{ };
-#endif
-=======
 /* for /proc/kcore */
 extern long vread_iter(struct iov_iter *iter, const char *addr, size_t count);
 
@@ -385,7 +260,6 @@ extern long vread_iter(struct iov_iter *iter, const char *addr, size_t count);
  */
 extern __init void vm_area_add_early(struct vm_struct *vm);
 extern __init void vm_area_register_early(struct vm_struct *vm, size_t align);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 # ifdef CONFIG_MMU
@@ -410,8 +284,6 @@ pcpu_free_vm_areas(struct vm_struct **vms, int nr_vms)
 # endif
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MMU
 #define VMALLOC_TOTAL (VMALLOC_END - VMALLOC_START)
 #else
@@ -427,5 +299,4 @@ bool vmalloc_dump_obj(void *object);
 static inline bool vmalloc_dump_obj(void *object) { return false; }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_VMALLOC_H */

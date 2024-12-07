@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux kernel.
 #
 
-<<<<<<< HEAD
-obj-y					:= core.o
-obj-$(CONFIG_ARCH_VERSATILE_PB)		+= versatile_pb.o
-obj-$(CONFIG_MACH_VERSATILE_AB)		+= versatile_ab.o
-obj-$(CONFIG_MACH_VERSATILE_DT)		+= versatile_dt.o
-obj-$(CONFIG_PCI)			+= pci.o
-=======
 # versatile
 obj-$(CONFIG_ARCH_VERSATILE)		+= versatile.o
 
@@ -44,4 +34,3 @@ obj-$(CONFIG_ARCH_REALVIEW)		+= platsmp-realview.o
 obj-$(CONFIG_ARCH_VEXPRESS)		+= platsmp-vexpress.o
 obj-$(CONFIG_HOTPLUG_CPU)		+= hotplug.o
 endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

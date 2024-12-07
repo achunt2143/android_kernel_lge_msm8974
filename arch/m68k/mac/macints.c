@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Macintosh interrupts
  *
@@ -114,10 +111,7 @@
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/debug.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/delay.h>
@@ -132,21 +126,7 @@
 #include <asm/mac_baboon.h>
 #include <asm/hwtest.h>
 #include <asm/irq_regs.h>
-<<<<<<< HEAD
-
-#define SHUTUP_SONIC
-
-/*
- * console_loglevel determines NMI handler function
- */
-
-irqreturn_t mac_nmi_handler(int, void *);
-irqreturn_t mac_debug_handler(int, void *);
-
-/* #define DEBUG_MACINTS */
-=======
 #include <asm/processor.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int mac_irq_startup(struct irq_data *);
 static void mac_irq_shutdown(struct irq_data *);
@@ -159,25 +139,6 @@ static struct irq_chip mac_irq_chip = {
 	.irq_shutdown	= mac_irq_shutdown,
 };
 
-<<<<<<< HEAD
-void __init mac_init_IRQ(void)
-{
-#ifdef DEBUG_MACINTS
-	printk("mac_init_IRQ(): Setting things up...\n");
-#endif
-	m68k_setup_irq_controller(&mac_irq_chip, handle_simple_irq, IRQ_USER,
-				  NUM_MAC_SOURCES - IRQ_USER);
-	/* Make sure the SONIC interrupt is cleared or things get ugly */
-#ifdef SHUTUP_SONIC
-	printk("Killing onboard sonic... ");
-	/* This address should hopefully be mapped already */
-	if (hwreg_present((void*)(0x50f0a000))) {
-		*(long *)(0x50f0a014) = 0x7fffL;
-		*(long *)(0x50f0a010) = 0L;
-	}
-	printk("Done.\n");
-#endif /* SHUTUP_SONIC */
-=======
 static irqreturn_t mac_nmi_handler(int irq, void *dev_id)
 {
 	static volatile int in_nmi;
@@ -197,7 +158,6 @@ void __init mac_init_IRQ(void)
 {
 	m68k_setup_irq_controller(&mac_irq_chip, handle_simple_irq, IRQ_USER,
 				  NUM_MAC_SOURCES - IRQ_USER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Now register the handlers for the master IRQ handlers
@@ -208,11 +168,7 @@ void __init mac_init_IRQ(void)
 		oss_register_interrupts();
 	else
 		via_register_interrupts();
-<<<<<<< HEAD
-	if (psc_present)
-=======
 	if (psc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psc_register_interrupts();
 	if (baboon_present)
 		baboon_register_interrupts();
@@ -220,12 +176,6 @@ void __init mac_init_IRQ(void)
 	if (request_irq(IRQ_AUTO_7, mac_nmi_handler, 0, "NMI",
 			mac_nmi_handler))
 		pr_err("Couldn't register NMI\n");
-<<<<<<< HEAD
-#ifdef DEBUG_MACINTS
-	printk("mac_init_IRQ(): Done!\n");
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -253,11 +203,7 @@ void mac_irq_enable(struct irq_data *data)
 	case 4:
 	case 5:
 	case 6:
-<<<<<<< HEAD
-		if (psc_present)
-=======
 		if (psc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			psc_irq_enable(irq);
 		else if (oss_present)
 			oss_irq_enable(irq);
@@ -287,11 +233,7 @@ void mac_irq_disable(struct irq_data *data)
 	case 4:
 	case 5:
 	case 6:
-<<<<<<< HEAD
-		if (psc_present)
-=======
 		if (psc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			psc_irq_disable(irq);
 		else if (oss_present)
 			oss_irq_disable(irq);
@@ -324,69 +266,3 @@ static void mac_irq_shutdown(struct irq_data *data)
 	else
 		mac_irq_disable(data);
 }
-<<<<<<< HEAD
-
-static int num_debug[8];
-
-irqreturn_t mac_debug_handler(int irq, void *dev_id)
-{
-	if (num_debug[irq] < 10) {
-		printk("DEBUG: Unexpected IRQ %d\n", irq);
-		num_debug[irq]++;
-	}
-	return IRQ_HANDLED;
-}
-
-static int in_nmi;
-static volatile int nmi_hold;
-
-irqreturn_t mac_nmi_handler(int irq, void *dev_id)
-{
-	int i;
-	/*
-	 * generate debug output on NMI switch if 'debug' kernel option given
-	 * (only works with Penguin!)
-	 */
-
-	in_nmi++;
-	for (i=0; i<100; i++)
-		udelay(1000);
-
-	if (in_nmi == 1) {
-		nmi_hold = 1;
-		printk("... pausing, press NMI to resume ...");
-	} else {
-		printk(" ok!\n");
-		nmi_hold = 0;
-	}
-
-	barrier();
-
-	while (nmi_hold == 1)
-		udelay(1000);
-
-	if (console_loglevel >= 8) {
-#if 0
-		struct pt_regs *fp = get_irq_regs();
-		show_state();
-		printk("PC: %08lx\nSR: %04x  SP: %p\n", fp->pc, fp->sr, fp);
-		printk("d0: %08lx    d1: %08lx    d2: %08lx    d3: %08lx\n",
-		       fp->d0, fp->d1, fp->d2, fp->d3);
-		printk("d4: %08lx    d5: %08lx    a0: %08lx    a1: %08lx\n",
-		       fp->d4, fp->d5, fp->a0, fp->a1);
-
-		if (STACK_MAGIC != *(unsigned long *)current->kernel_stack_page)
-			printk("Corrupted stack page\n");
-		printk("Process %s (pid: %d, stackpage=%08lx)\n",
-			current->comm, current->pid, current->kernel_stack_page);
-		if (intr_count == 1)
-			dump_stack((struct frame *)fp);
-#else
-		/* printk("NMI "); */
-#endif
-	}
-	in_nmi--;
-	return IRQ_HANDLED;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

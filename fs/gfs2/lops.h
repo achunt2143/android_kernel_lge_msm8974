@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2008 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2008 Red Hat, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LOPS_DOT_H__
@@ -20,29 +10,6 @@
 #include <linux/list.h>
 #include "incore.h"
 
-<<<<<<< HEAD
-#define BUF_OFFSET \
-	((sizeof(struct gfs2_log_descriptor) + sizeof(__be64) - 1) & \
-	 ~(sizeof(__be64) - 1))
-#define DATABUF_OFFSET \
-	((sizeof(struct gfs2_log_descriptor) + (2 * sizeof(__be64) - 1)) & \
-	 ~(2 * sizeof(__be64) - 1))
-
-extern const struct gfs2_log_operations gfs2_glock_lops;
-extern const struct gfs2_log_operations gfs2_buf_lops;
-extern const struct gfs2_log_operations gfs2_revoke_lops;
-extern const struct gfs2_log_operations gfs2_rg_lops;
-extern const struct gfs2_log_operations gfs2_databuf_lops;
-
-extern const struct gfs2_log_operations *gfs2_log_ops[];
-
-static inline unsigned int buf_limit(struct gfs2_sbd *sdp)
-{
-	unsigned int limit;
-
-	limit = (sdp->sd_sb.sb_bsize - BUF_OFFSET) / sizeof(__be64);
-	return limit;
-=======
 extern const struct gfs2_log_operations *gfs2_log_ops[];
 
 void gfs2_log_incr_head(struct gfs2_sbd *sdp);
@@ -59,64 +26,29 @@ void gfs2_drain_revokes(struct gfs2_sbd *sdp);
 static inline unsigned int buf_limit(struct gfs2_sbd *sdp)
 {
 	return sdp->sd_ldptrs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned int databuf_limit(struct gfs2_sbd *sdp)
 {
-<<<<<<< HEAD
-	unsigned int limit;
-
-	limit = (sdp->sd_sb.sb_bsize - DATABUF_OFFSET) / (2 * sizeof(__be64));
-	return limit;
-}
-
-static inline void lops_init_le(struct gfs2_log_element *le,
-				const struct gfs2_log_operations *lops)
-{
-	INIT_LIST_HEAD(&le->le_list);
-	le->le_ops = lops;
-}
-
-static inline void lops_add(struct gfs2_sbd *sdp, struct gfs2_log_element *le)
-{
-	if (le->le_ops->lo_add)
-		le->le_ops->lo_add(sdp, le);
-}
-
-static inline void lops_before_commit(struct gfs2_sbd *sdp)
-=======
 	return sdp->sd_ldptrs / 2;
 }
 
 static inline void lops_before_commit(struct gfs2_sbd *sdp,
 				      struct gfs2_trans *tr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int x;
 	for (x = 0; gfs2_log_ops[x]; x++)
 		if (gfs2_log_ops[x]->lo_before_commit)
-<<<<<<< HEAD
-			gfs2_log_ops[x]->lo_before_commit(sdp);
-}
-
-static inline void lops_after_commit(struct gfs2_sbd *sdp, struct gfs2_ail *ai)
-=======
 			gfs2_log_ops[x]->lo_before_commit(sdp, tr);
 }
 
 static inline void lops_after_commit(struct gfs2_sbd *sdp,
 				     struct gfs2_trans *tr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int x;
 	for (x = 0; gfs2_log_ops[x]; x++)
 		if (gfs2_log_ops[x]->lo_after_commit)
-<<<<<<< HEAD
-			gfs2_log_ops[x]->lo_after_commit(sdp, ai);
-=======
 			gfs2_log_ops[x]->lo_after_commit(sdp, tr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void lops_before_scan(struct gfs2_jdesc *jd,
@@ -129,11 +61,7 @@ static inline void lops_before_scan(struct gfs2_jdesc *jd,
 			gfs2_log_ops[x]->lo_before_scan(jd, head, pass);
 }
 
-<<<<<<< HEAD
-static inline int lops_scan_elements(struct gfs2_jdesc *jd, unsigned int start,
-=======
 static inline int lops_scan_elements(struct gfs2_jdesc *jd, u32 start,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     struct gfs2_log_descriptor *ld,
 				     __be64 *ptr,
 				     unsigned int pass)

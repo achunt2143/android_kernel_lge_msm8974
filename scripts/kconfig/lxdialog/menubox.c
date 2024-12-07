@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  menubox.c -- implements the menu box
  *
  *  ORIGINAL AUTHOR: Savio Lam (lam836@cs.cuhk.hk)
  *  MODIFIED FOR LINUX KERNEL CONFIG BY: William Roadcap (roadcapw@cfw.com)
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -33,11 +13,7 @@
  *
  *    *)  A bugfix for the Page-Down problem
  *
-<<<<<<< HEAD
- *    *)  Formerly when I used Page Down and Page Up, the cursor would be set 
-=======
  *    *)  Formerly when I used Page Down and Page Up, the cursor would be set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *        to the first position in the menu box.  Now lxdialog is a bit
  *        smarter and works more like other menu systems (just have a look at
  *        it).
@@ -75,11 +51,7 @@ static int menu_width, item_x;
  * Print menu item
  */
 static void do_print_item(WINDOW * win, const char *item, int line_y,
-<<<<<<< HEAD
-                          int selected, int hotkey)
-=======
 			  int selected, int hotkey)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int j;
 	char *menu_item = malloc(menu_width + 1);
@@ -91,19 +63,7 @@ static void do_print_item(WINDOW * win, const char *item, int line_y,
 	/* Clear 'residue' of last item */
 	wattrset(win, dlg.menubox.atr);
 	wmove(win, line_y, 0);
-<<<<<<< HEAD
-#if OLD_NCURSES
-	{
-		int i;
-		for (i = 0; i < menu_width; i++)
-			waddch(win, ' ');
-	}
-#else
 	wclrtoeol(win);
-#endif
-=======
-	wclrtoeol(win);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wattrset(win, selected ? dlg.item_selected.atr : dlg.item.atr);
 	mvwaddstr(win, line_y, item_x, menu_item);
 	if (hotkey) {
@@ -173,14 +133,6 @@ static void print_arrows(WINDOW * win, int item_no, int scroll, int y, int x,
  */
 static void print_buttons(WINDOW * win, int height, int width, int selected)
 {
-<<<<<<< HEAD
-	int x = width / 2 - 16;
-	int y = height - 2;
-
-	print_button(win, gettext("Select"), y, x, selected == 0);
-	print_button(win, gettext(" Exit "), y, x + 12, selected == 1);
-	print_button(win, gettext(" Help "), y, x + 24, selected == 2);
-=======
 	int x = width / 2 - 28;
 	int y = height - 2;
 
@@ -189,7 +141,6 @@ static void print_buttons(WINDOW * win, int height, int width, int selected)
 	print_button(win, " Help ", y, x + 24, selected == 2);
 	print_button(win, " Save ", y, x + 36, selected == 3);
 	print_button(win, " Load ", y, x + 48, selected == 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wmove(win, y, x + 1 + 12 * selected);
 	wrefresh(win);
@@ -210,11 +161,7 @@ static void do_scroll(WINDOW *win, int *scroll, int n)
  * Display a menu for choosing among a number of options
  */
 int dialog_menu(const char *title, const char *prompt,
-<<<<<<< HEAD
-                const void *selected, int *s_scroll)
-=======
 		const void *selected, int *s_scroll)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, j, x, y, box_x, box_y;
 	int height, width, menu_height;
@@ -225,11 +172,7 @@ int dialog_menu(const char *title, const char *prompt,
 do_resize:
 	height = getmaxy(stdscr);
 	width = getmaxx(stdscr);
-<<<<<<< HEAD
-	if (height < 15 || width < 65)
-=======
 	if (height < MENUBOX_HEIGHT_MIN || width < MENUBOX_WIDTH_MIN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERRDISPLAYTOOSMALL;
 
 	height -= 4;
@@ -239,13 +182,8 @@ do_resize:
 	max_choice = MIN(menu_height, item_count());
 
 	/* center dialog box on screen */
-<<<<<<< HEAD
-	x = (COLS - width) / 2;
-	y = (LINES - height) / 2;
-=======
 	x = (getmaxx(stdscr) - width) / 2;
 	y = (getmaxy(stdscr) - height) / 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	draw_shadow(stdscr, y, x, height, width);
 
@@ -344,18 +282,11 @@ do_resize:
 				}
 		}
 
-<<<<<<< HEAD
-		if (i < max_choice ||
-		    key == KEY_UP || key == KEY_DOWN ||
-		    key == '-' || key == '+' ||
-		    key == KEY_PPAGE || key == KEY_NPAGE) {
-=======
 		if (item_count() != 0 &&
 		    (i < max_choice ||
 		     key == KEY_UP || key == KEY_DOWN ||
 		     key == '-' || key == '+' ||
 		     key == KEY_PPAGE || key == KEY_NPAGE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Remove highligt of current item */
 			print_item(scroll + choice, choice, FALSE);
 
@@ -423,11 +354,7 @@ do_resize:
 		case TAB:
 		case KEY_RIGHT:
 			button = ((key == KEY_LEFT ? --button : ++button) < 0)
-<<<<<<< HEAD
-			    ? 2 : (button > 2 ? 0 : button);
-=======
 			    ? 4 : (button > 4 ? 0 : button);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			print_buttons(dialog, height, width, button);
 			wrefresh(menu);
@@ -454,19 +381,6 @@ do_resize:
 				return 2;
 			case 's':
 			case 'y':
-<<<<<<< HEAD
-				return 3;
-			case 'n':
-				return 4;
-			case 'm':
-				return 5;
-			case ' ':
-				return 6;
-			case '/':
-				return 7;
-			case 'z':
-				return 8;
-=======
 				return 5;
 			case 'n':
 				return 6;
@@ -478,7 +392,6 @@ do_resize:
 				return 9;
 			case 'z':
 				return 10;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case '\n':
 				return button;
 			}

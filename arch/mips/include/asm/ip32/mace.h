@@ -250,21 +250,12 @@ struct mace_ps2 {
  * -> drivers/i2c/algos/i2c-algo-sgi.c */
 struct mace_i2c {
 	volatile unsigned long config;
-<<<<<<< HEAD
-#define MACEI2C_RESET           BIT(0)
-#define MACEI2C_FAST            BIT(1)
-#define MACEI2C_DATA_OVERRIDE   BIT(2)
-#define MACEI2C_CLOCK_OVERRIDE  BIT(3)
-#define MACEI2C_DATA_STATUS     BIT(4)
-#define MACEI2C_CLOCK_STATUS    BIT(5)
-=======
 #define MACEI2C_RESET		BIT(0)
 #define MACEI2C_FAST		BIT(1)
 #define MACEI2C_DATA_OVERRIDE	BIT(2)
 #define MACEI2C_CLOCK_OVERRIDE	BIT(3)
 #define MACEI2C_DATA_STATUS	BIT(4)
 #define MACEI2C_CLOCK_STATUS	BIT(5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	volatile unsigned long control;
 	volatile unsigned long data;
 };

@@ -1,52 +1,3 @@
-<<<<<<< HEAD
-/******************************************************************************
-
-  Copyright(c) 2004 Intel Corporation. All rights reserved.
-
-  Portions of this file are based on the WEP enablement code provided by the
-  Host AP project hostap-drivers v0.1.3
-  Copyright (c) 2001-2002, SSH Communications Security Corp and Jouni Malinen
-  <jkmaline@cc.hut.fi>
-  Copyright (c) 2002-2003, Jouni Malinen <jkmaline@cc.hut.fi>
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms of version 2 of the GNU General Public License as
-  published by the Free Software Foundation.
-
-  This program is distributed in the hope that it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc., 59
-  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-  The full GNU General Public License is included in this distribution in the
-  file called LICENSE.
-
-  Contact Information:
-  James P. Ketrenos <ipw2100-admin@linux.intel.com>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-******************************************************************************/
-#include <linux/wireless.h>
-#include <linux/kmod.h>
-#include <linux/module.h>
-
-#include "rtllib.h"
-struct modes_unit {
-	char *mode_string;
-	int mode_size;
-};
-static struct modes_unit rtllib_modes[] = {
-	{"a", 1},
-	{"b", 1},
-	{"g", 1},
-	{"?", 1},
-	{"N-24G", 5},
-	{"N-5G", 4},
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright(c) 2004 Intel Corporation. All rights reserved.
@@ -69,7 +20,6 @@ static struct modes_unit rtllib_modes[] = {
 
 static const char * const rtllib_modes[] = {
 	"a", "b", "g", "?", "N-24G"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define MAX_CUSTOM_LEN 64
@@ -79,11 +29,7 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 					   struct iw_request_info *info)
 {
 	char custom[MAX_CUSTOM_LEN];
-<<<<<<< HEAD
-	char proto_name[IFNAMSIZ];
-=======
 	char proto_name[6];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *pname = proto_name;
 	char *p;
 	struct iw_event iwe;
@@ -94,41 +40,14 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 	/* First entry *MUST* be the AP MAC address */
 	iwe.cmd = SIOCGIWAP;
 	iwe.u.ap_addr.sa_family = ARPHRD_ETHER;
-<<<<<<< HEAD
-	memcpy(iwe.u.ap_addr.sa_data, network->bssid, ETH_ALEN);
-	start = iwe_stream_add_event_rsl(info, start, stop,
-					 &iwe, IW_EV_ADDR_LEN);
-=======
 	ether_addr_copy(iwe.u.ap_addr.sa_data, network->bssid);
 	start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_ADDR_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Remaining entries will be displayed in the order we provide them */
 
 	/* Add the ESSID */
 	iwe.cmd = SIOCGIWESSID;
 	iwe.u.data.flags = 1;
 	if (network->ssid_len > 0) {
-<<<<<<< HEAD
-		iwe.u.data.length = min(network->ssid_len, (u8)32);
-		start = iwe_stream_add_point_rsl(info, start, stop, &iwe,
-						 network->ssid);
-	} else if (network->hidden_ssid_len == 0) {
-		iwe.u.data.length = sizeof("<hidden>");
-		start = iwe_stream_add_point_rsl(info, start, stop,
-						 &iwe, "<hidden>");
-	} else {
-		iwe.u.data.length = min(network->hidden_ssid_len, (u8)32);
-		start = iwe_stream_add_point_rsl(info, start, stop, &iwe,
-						 network->hidden_ssid);
-	}
-	/* Add the protocol name */
-	iwe.cmd = SIOCGIWNAME;
-	for (i = 0; i < (sizeof(rtllib_modes)/sizeof(rtllib_modes[0])); i++) {
-		if (network->mode&(1<<i)) {
-			sprintf(pname, rtllib_modes[i].mode_string,
-				rtllib_modes[i].mode_size);
-			pname += rtllib_modes[i].mode_size;
-=======
 		iwe.u.data.length = min_t(u8, network->ssid_len, 32);
 		start = iwe_stream_add_point(info, start, stop, &iwe, network->ssid);
 	} else if (network->hidden_ssid_len == 0) {
@@ -144,17 +63,11 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 		if (network->mode & BIT(i)) {
 			strcpy(pname, rtllib_modes[i]);
 			pname += strlen(rtllib_modes[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	*pname = '\0';
 	snprintf(iwe.u.name, IFNAMSIZ, "IEEE802.11%s", proto_name);
-<<<<<<< HEAD
-	start = iwe_stream_add_event_rsl(info, start, stop,
-					 &iwe, IW_EV_CHAR_LEN);
-=======
 	start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_CHAR_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Add mode */
 	iwe.cmd = SIOCGIWMODE;
 	if (network->capability &
@@ -163,30 +76,15 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 			iwe.u.mode = IW_MODE_MASTER;
 		else
 			iwe.u.mode = IW_MODE_ADHOC;
-<<<<<<< HEAD
-		start = iwe_stream_add_event_rsl(info, start, stop,
-						 &iwe, IW_EV_UINT_LEN);
-=======
 		start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_UINT_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Add frequency/channel */
 	iwe.cmd = SIOCGIWFREQ;
-<<<<<<< HEAD
-/*	iwe.u.freq.m = rtllib_frequency(network->channel, network->mode);
-	iwe.u.freq.e = 3; */
-	iwe.u.freq.m = network->channel;
-	iwe.u.freq.e = 0;
-	iwe.u.freq.i = 0;
-	start = iwe_stream_add_event_rsl(info, start, stop, &iwe,
-					 IW_EV_FREQ_LEN);
-=======
 	iwe.u.freq.m = network->channel;
 	iwe.u.freq.e = 0;
 	iwe.u.freq.i = 0;
 	start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_FREQ_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Add encryption capability */
 	iwe.cmd = SIOCGIWENCODE;
@@ -195,20 +93,11 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 	else
 		iwe.u.data.flags = IW_ENCODE_DISABLED;
 	iwe.u.data.length = 0;
-<<<<<<< HEAD
-	start = iwe_stream_add_point_rsl(info, start, stop,
-					 &iwe, network->ssid);
-	/* Add basic and extended rates */
-	max_rate = 0;
-	p = custom;
-	p += snprintf(p, MAX_CUSTOM_LEN - (p - custom), " Rates (Mb/s): ");
-=======
 	start = iwe_stream_add_point(info, start, stop, &iwe, network->ssid);
 	/* Add basic and extended rates */
 	max_rate = 0;
 	p = custom;
 	p += scnprintf(p, MAX_CUSTOM_LEN - (p - custom), " Rates (Mb/s): ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0, j = 0; i < network->rates_len;) {
 		if (j < network->rates_ex_len &&
 		    ((network->rates_ex[j] & 0x7F) <
@@ -218,37 +107,17 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 			rate = network->rates[i++] & 0x7F;
 		if (rate > max_rate)
 			max_rate = rate;
-<<<<<<< HEAD
-		p += snprintf(p, MAX_CUSTOM_LEN - (p - custom),
-=======
 		p += scnprintf(p, MAX_CUSTOM_LEN - (p - custom),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      "%d%s ", rate >> 1, (rate & 1) ? ".5" : "");
 	}
 	for (; j < network->rates_ex_len; j++) {
 		rate = network->rates_ex[j] & 0x7F;
-<<<<<<< HEAD
-		p += snprintf(p, MAX_CUSTOM_LEN - (p - custom),
-=======
 		p += scnprintf(p, MAX_CUSTOM_LEN - (p - custom),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      "%d%s ", rate >> 1, (rate & 1) ? ".5" : "");
 		if (rate > max_rate)
 			max_rate = rate;
 	}
 
-<<<<<<< HEAD
-	if (network->mode >= IEEE_N_24G) {
-		struct ht_capab_ele *ht_cap = NULL;
-		bool is40M = false, isShortGI = false;
-		u8 max_mcs = 0;
-		if (!memcmp(network->bssht.bdHTCapBuf, EWC11NHTCap, 4))
-			ht_cap = (struct ht_capab_ele *)
-				 &network->bssht.bdHTCapBuf[4];
-		else
-			ht_cap = (struct ht_capab_ele *)
-				 &network->bssht.bdHTCapBuf[0];
-=======
 	if (network->mode >= WIRELESS_MODE_N_24G) {
 		struct ht_capab_ele *ht_cap = NULL;
 		bool is40M = false, isShortGI = false;
@@ -260,34 +129,18 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 		else
 			ht_cap = (struct ht_capab_ele *)
 				 &network->bssht.bd_ht_cap_buf[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		is40M = (ht_cap->ChlWidth) ? 1 : 0;
 		isShortGI = (ht_cap->ChlWidth) ?
 				((ht_cap->ShortGI40Mhz) ? 1 : 0) :
 				((ht_cap->ShortGI20Mhz) ? 1 : 0);
 
-<<<<<<< HEAD
-		max_mcs = HTGetHighestMCSRate(ieee, ht_cap->MCS,
-=======
 		max_mcs = ht_get_highest_mcs_rate(ieee, ht_cap->MCS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      MCS_FILTER_ALL);
 		rate = MCS_DATA_RATE[is40M][isShortGI][max_mcs & 0x7f];
 		if (rate > max_rate)
 			max_rate = rate;
 	}
 	iwe.cmd = SIOCGIWRATE;
-<<<<<<< HEAD
-	iwe.u.bitrate.fixed = iwe.u.bitrate.disabled = 0;
-	iwe.u.bitrate.value = max_rate * 500000;
-	start = iwe_stream_add_event_rsl(info, start, stop, &iwe,
-				     IW_EV_PARAM_LEN);
-	iwe.cmd = IWEVCUSTOM;
-	iwe.u.data.length = p - custom;
-	if (iwe.u.data.length)
-		start = iwe_stream_add_point_rsl(info, start, stop,
-						 &iwe, custom);
-=======
 	iwe.u.bitrate.disabled = 0;
 	iwe.u.bitrate.fixed = 0;
 	iwe.u.bitrate.value = max_rate * 500000;
@@ -296,7 +149,6 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 	iwe.u.data.length = p - custom;
 	if (iwe.u.data.length)
 		start = iwe_stream_add_point(info, start, stop, &iwe, custom);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Add quality statistics */
 	/* TODO: Fix these values... */
 	iwe.cmd = IWEVQUAL;
@@ -311,80 +163,37 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 	if (!(network->stats.mask & RTLLIB_STATMASK_SIGNAL))
 		iwe.u.qual.updated |= IW_QUAL_QUAL_INVALID;
 	iwe.u.qual.updated = 7;
-<<<<<<< HEAD
-	start = iwe_stream_add_event_rsl(info, start, stop, &iwe,
-					 IW_EV_QUAL_LEN);
-=======
 	start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_QUAL_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iwe.cmd = IWEVCUSTOM;
 	p = custom;
 	iwe.u.data.length = p - custom;
 	if (iwe.u.data.length)
-<<<<<<< HEAD
-		start = iwe_stream_add_point_rsl(info, start, stop,
-						 &iwe, custom);
-=======
 		start = iwe_stream_add_point(info, start, stop, &iwe, custom);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&iwe, 0, sizeof(iwe));
 	if (network->wpa_ie_len) {
 		char buf[MAX_WPA_IE_LEN];
-<<<<<<< HEAD
-		memcpy(buf, network->wpa_ie, network->wpa_ie_len);
-		iwe.cmd = IWEVGENIE;
-		iwe.u.data.length = network->wpa_ie_len;
-		start = iwe_stream_add_point_rsl(info, start, stop, &iwe, buf);
-=======
 
 		memcpy(buf, network->wpa_ie, network->wpa_ie_len);
 		iwe.cmd = IWEVGENIE;
 		iwe.u.data.length = network->wpa_ie_len;
 		start = iwe_stream_add_point(info, start, stop, &iwe, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	memset(&iwe, 0, sizeof(iwe));
 	if (network->rsn_ie_len) {
 		char buf[MAX_WPA_IE_LEN];
-<<<<<<< HEAD
-		memcpy(buf, network->rsn_ie, network->rsn_ie_len);
-		iwe.cmd = IWEVGENIE;
-		iwe.u.data.length = network->rsn_ie_len;
-		start = iwe_stream_add_point_rsl(info, start, stop, &iwe, buf);
-=======
 
 		memcpy(buf, network->rsn_ie, network->rsn_ie_len);
 		iwe.cmd = IWEVGENIE;
 		iwe.u.data.length = network->rsn_ie_len;
 		start = iwe_stream_add_point(info, start, stop, &iwe, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* add info for WZC */
 	memset(&iwe, 0, sizeof(iwe));
 	if (network->wzc_ie_len) {
 		char buf[MAX_WZC_IE_LEN];
-<<<<<<< HEAD
-		memcpy(buf, network->wzc_ie, network->wzc_ie_len);
-		iwe.cmd = IWEVGENIE;
-		iwe.u.data.length = network->wzc_ie_len;
-		start = iwe_stream_add_point_rsl(info, start, stop, &iwe, buf);
-	}
-
-	/* Add EXTRA: Age to display seconds since last beacon/probe response
-	 * for given network. */
-	iwe.cmd = IWEVCUSTOM;
-	p = custom;
-	p += snprintf(p, MAX_CUSTOM_LEN - (p - custom),
-		      " Last beacon: %lums ago",
-		      (jiffies - network->last_scanned) / (HZ / 100));
-	iwe.u.data.length = p - custom;
-	if (iwe.u.data.length)
-		start = iwe_stream_add_point_rsl(info, start, stop,
-						 &iwe, custom);
-=======
 
 		memcpy(buf, network->wzc_ie, network->wzc_ie_len);
 		iwe.cmd = IWEVGENIE;
@@ -403,19 +212,13 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 	iwe.u.data.length = p - custom;
 	if (iwe.u.data.length)
 		start = iwe_stream_add_point(info, start, stop, &iwe, custom);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return start;
 }
 
 int rtllib_wx_get_scan(struct rtllib_device *ieee,
-<<<<<<< HEAD
-			  struct iw_request_info *info,
-			  union iwreq_data *wrqu, char *extra)
-=======
 		       struct iw_request_info *info,
 		       union iwreq_data *wrqu, char *extra)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtllib_network *network;
 	unsigned long flags;
@@ -424,14 +227,9 @@ int rtllib_wx_get_scan(struct rtllib_device *ieee,
 	char *stop = ev + wrqu->data.length;
 	int i = 0;
 	int err = 0;
-<<<<<<< HEAD
-	RTLLIB_DEBUG_WX("Getting scan\n");
-	down(&ieee->wx_sem);
-=======
 
 	netdev_dbg(ieee->dev, "Getting scan\n");
 	mutex_lock(&ieee->wx_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	list_for_each_entry(network, &ieee->network_list, list) {
@@ -445,22 +243,6 @@ int rtllib_wx_get_scan(struct rtllib_device *ieee,
 			ev = rtl819x_translate_scan(ieee, ev, stop, network,
 						    info);
 		else
-<<<<<<< HEAD
-			RTLLIB_DEBUG_SCAN("Not showing network '%s ("
-				" %pM)' due to age (%lums).\n",
-				escape_essid(network->ssid,
-					     network->ssid_len),
-				network->bssid,
-				(jiffies - network->last_scanned) / (HZ / 100));
-	}
-
-	spin_unlock_irqrestore(&ieee->lock, flags);
-	up(&ieee->wx_sem);
-	wrqu->data.length = ev -  extra;
-	wrqu->data.flags = 0;
-
-	RTLLIB_DEBUG_WX("exit: %d networks returned.\n", i);
-=======
 			netdev_dbg(ieee->dev,
 				   "Network '%s ( %pM)' hidden due to age (%lums).\n",
 				   escape_essid(network->ssid,
@@ -476,24 +258,16 @@ int rtllib_wx_get_scan(struct rtllib_device *ieee,
 	wrqu->data.flags = 0;
 
 	netdev_dbg(ieee->dev, "%s(): %d networks returned.\n", __func__, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 EXPORT_SYMBOL(rtllib_wx_get_scan);
 
 int rtllib_wx_set_encode(struct rtllib_device *ieee,
-<<<<<<< HEAD
-			    struct iw_request_info *info,
-			    union iwreq_data *wrqu, char *keybuf)
-{
-	struct iw_point *erq = &(wrqu->encoding);
-=======
 			 struct iw_request_info *info,
 			 union iwreq_data *wrqu, char *keybuf)
 {
 	struct iw_point *erq = &wrqu->encoding;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *dev = ieee->dev;
 	struct rtllib_security sec = {
 		.flags = 0
@@ -501,11 +275,6 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 	int i, key, key_provided, len;
 	struct lib80211_crypt_data **crypt;
 
-<<<<<<< HEAD
-	RTLLIB_DEBUG_WX("SET_ENCODE\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key = erq->flags & IW_ENCODE_INDEX;
 	if (key) {
 		if (key > NUM_WEP_KEYS)
@@ -517,31 +286,11 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 		key = ieee->crypt_info.tx_keyidx;
 	}
 
-<<<<<<< HEAD
-	RTLLIB_DEBUG_WX("Key: %d [%s]\n", key, key_provided ?
-=======
 	netdev_dbg(ieee->dev, "Key: %d [%s]\n", key, key_provided ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   "provided" : "default");
 	crypt = &ieee->crypt_info.crypt[key];
 	if (erq->flags & IW_ENCODE_DISABLED) {
 		if (key_provided && *crypt) {
-<<<<<<< HEAD
-			RTLLIB_DEBUG_WX("Disabling encryption on key %d.\n",
-					   key);
-			lib80211_crypt_delayed_deinit(&ieee->crypt_info, crypt);
-		} else
-			RTLLIB_DEBUG_WX("Disabling encryption.\n");
-
-		/* Check all the keys to see if any are still configured,
-		 * and if no key index was provided, de-init them all */
-		for (i = 0; i < NUM_WEP_KEYS; i++) {
-			if (ieee->crypt_info.crypt[i] != NULL) {
-				if (key_provided)
-					break;
-				lib80211_crypt_delayed_deinit(&ieee->crypt_info,
-							    &ieee->crypt_info.crypt[i]);
-=======
 			netdev_dbg(ieee->dev,
 				   "Disabling encryption on key %d.\n", key);
 			lib80211_crypt_delayed_deinit(&ieee->crypt_info, crypt);
@@ -558,7 +307,6 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 					break;
 				lib80211_crypt_delayed_deinit(&ieee->crypt_info,
 							      &ieee->crypt_info.crypt[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -571,27 +319,6 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 		goto done;
 	}
 
-<<<<<<< HEAD
-
-
-	sec.enabled = 1;
-	sec.flags |= SEC_ENABLED;
-
-	if (*crypt != NULL && (*crypt)->ops != NULL &&
-	    strcmp((*crypt)->ops->name, "R-WEP") != 0) {
-		/* changing to use WEP; deinit previously used algorithm
-		 * on this key */
-		lib80211_crypt_delayed_deinit(&ieee->crypt_info, crypt);
-	}
-
-	if (*crypt == NULL) {
-		struct lib80211_crypt_data *new_crypt;
-
-		/* take WEP into use */
-		new_crypt = kzalloc(sizeof(struct lib80211_crypt_data),
-				    GFP_KERNEL);
-		if (new_crypt == NULL)
-=======
 	sec.enabled = 1;
 	sec.flags |= SEC_ENABLED;
 
@@ -609,7 +336,6 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 		/* take WEP into use */
 		new_crypt = kzalloc(sizeof(*new_crypt), GFP_KERNEL);
 		if (!new_crypt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		new_crypt->ops = lib80211_get_crypto_ops("R-WEP");
 		if (!new_crypt->ops) {
@@ -624,15 +350,9 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 			kfree(new_crypt);
 			new_crypt = NULL;
 
-<<<<<<< HEAD
-			printk(KERN_WARNING "%s: could not initialize WEP: "
-			       "load module rtllib_crypt_wep\n",
-			       dev->name);
-=======
 			netdev_warn(dev,
 				    "%s: could not initialize WEP: load module rtllib_crypt_wep\n",
 				    dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EOPNOTSUPP;
 		}
 		*crypt = new_crypt;
@@ -645,26 +365,16 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 		if (len > erq->length)
 			memset(sec.keys[key] + erq->length, 0,
 			       len - erq->length);
-<<<<<<< HEAD
-		RTLLIB_DEBUG_WX("Setting key %d to '%s' (%d:%d bytes)\n",
-				   key, escape_essid(sec.keys[key], len),
-				   erq->length, len);
-=======
 		netdev_dbg(ieee->dev, "Setting key %d to '%s' (%d:%d bytes)\n",
 			   key, escape_essid(sec.keys[key], len), erq->length,
 			   len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sec.key_sizes[key] = len;
 		(*crypt)->ops->set_key(sec.keys[key], len, NULL,
 				       (*crypt)->priv);
 		sec.flags |= (1 << key);
 		/* This ensures a key will be activated if no key is
-<<<<<<< HEAD
-		 * explicitely set */
-=======
 		 * explicitly set
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (key == sec.active_key)
 			sec.flags |= SEC_ACTIVE_KEY;
 		ieee->crypt_info.tx_keyidx = key;
@@ -674,16 +384,8 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 					     NULL, (*crypt)->priv);
 		if (len == 0) {
 			/* Set a default key of all 0 */
-<<<<<<< HEAD
-			printk(KERN_INFO "Setting key %d to all zero.\n",
-					   key);
-
-			RTLLIB_DEBUG_WX("Setting key %d to all zero.\n",
-					   key);
-=======
 			netdev_info(ieee->dev, "Setting key %d to all zero.\n", key);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memset(sec.keys[key], 0, 13);
 			(*crypt)->ops->set_key(sec.keys[key], 13, NULL,
 					       (*crypt)->priv);
@@ -693,13 +395,8 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 
 		/* No key data - just set the default TX key index */
 		if (key_provided) {
-<<<<<<< HEAD
-			RTLLIB_DEBUG_WX(
-				"Setting key %d to default Tx key.\n", key);
-=======
 			netdev_dbg(ieee->dev,
 				   "Setting key %d as default Tx key.\n", key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ieee->crypt_info.tx_keyidx = key;
 			sec.active_key = key;
 			sec.flags |= SEC_ACTIVE_KEY;
@@ -711,30 +408,6 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 			  WLAN_AUTH_SHARED_KEY;
 	sec.auth_mode = ieee->open_wep ? WLAN_AUTH_OPEN : WLAN_AUTH_SHARED_KEY;
 	sec.flags |= SEC_AUTH_MODE;
-<<<<<<< HEAD
-	RTLLIB_DEBUG_WX("Auth: %s\n", sec.auth_mode == WLAN_AUTH_OPEN ?
-			   "OPEN" : "SHARED KEY");
-
-	/* For now we just support WEP, so only set that security level...
-	 * TODO: When WPA is added this is one place that needs to change */
-	sec.flags |= SEC_LEVEL;
-	sec.level = SEC_LEVEL_1; /* 40 and 104 bit WEP */
-
-	if (ieee->set_security)
-		ieee->set_security(dev, &sec);
-
-	/* Do not reset port if card is in Managed mode since resetting will
-	 * generate new IEEE 802.11 authentication which may end up in looping
-	 * with IEEE 802.1X.  If your hardware requires a reset after WEP
-	 * configuration (for example... Prism2), implement the reset_port in
-	 * the callbacks structures used to initialize the 802.11 stack. */
-	if (ieee->reset_on_keychange &&
-	    ieee->iw_mode != IW_MODE_INFRA &&
-	    ieee->reset_port && ieee->reset_port(dev)) {
-		printk(KERN_DEBUG "%s: reset_port failed\n", dev->name);
-		return -EINVAL;
-	}
-=======
 	netdev_dbg(ieee->dev, "Auth: %s\n", sec.auth_mode == WLAN_AUTH_OPEN ?
 			   "OPEN" : "SHARED KEY");
 
@@ -743,23 +416,11 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 	 */
 	sec.flags |= SEC_LEVEL;
 	sec.level = SEC_LEVEL_1; /* 40 and 104 bit WEP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(rtllib_wx_set_encode);
 
 int rtllib_wx_get_encode(struct rtllib_device *ieee,
-<<<<<<< HEAD
-			    struct iw_request_info *info,
-			    union iwreq_data *wrqu, char *keybuf)
-{
-	struct iw_point *erq = &(wrqu->encoding);
-	int len, key;
-	struct lib80211_crypt_data *crypt;
-
-	RTLLIB_DEBUG_WX("GET_ENCODE\n");
-
-=======
 			 struct iw_request_info *info,
 			 union iwreq_data *wrqu, char *keybuf)
 {
@@ -767,7 +428,6 @@ int rtllib_wx_get_encode(struct rtllib_device *ieee,
 	int len, key;
 	struct lib80211_crypt_data *crypt;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ieee->iw_mode == IW_MODE_MONITOR)
 		return -1;
 
@@ -783,22 +443,14 @@ int rtllib_wx_get_encode(struct rtllib_device *ieee,
 
 	erq->flags = key + 1;
 
-<<<<<<< HEAD
-	if (crypt == NULL || crypt->ops == NULL) {
-=======
 	if (!crypt || !crypt->ops) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		erq->length = 0;
 		erq->flags |= IW_ENCODE_DISABLED;
 		return 0;
 	}
 	len = crypt->ops->get_key(keybuf, SCM_KEY_LEN, NULL, crypt->priv);
-<<<<<<< HEAD
-	erq->length = (len >= 0 ? len : 0);
-=======
 
 	erq->length = max(len, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	erq->flags |= IW_ENCODE_ENABLED;
 
@@ -812,13 +464,8 @@ int rtllib_wx_get_encode(struct rtllib_device *ieee,
 EXPORT_SYMBOL(rtllib_wx_get_encode);
 
 int rtllib_wx_set_encode_ext(struct rtllib_device *ieee,
-<<<<<<< HEAD
-			       struct iw_request_info *info,
-			       union iwreq_data *wrqu, char *extra)
-=======
 			     struct iw_request_info *info,
 			     union iwreq_data *wrqu, char *extra)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	struct net_device *dev = ieee->dev;
@@ -838,13 +485,8 @@ int rtllib_wx_set_encode_ext(struct rtllib_device *ieee,
 		if (idx < 1 || idx > NUM_WEP_KEYS)
 			return -EINVAL;
 		idx--;
-<<<<<<< HEAD
-	} else{
-			idx = ieee->crypt_info.tx_keyidx;
-=======
 	} else {
 		idx = ieee->crypt_info.tx_keyidx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (ext->ext_flags & IW_ENCODE_EXT_GROUP_KEY) {
 		crypt = &ieee->crypt_info.crypt[idx];
@@ -866,11 +508,7 @@ int rtllib_wx_set_encode_ext(struct rtllib_device *ieee,
 			lib80211_crypt_delayed_deinit(&ieee->crypt_info, crypt);
 
 		for (i = 0; i < NUM_WEP_KEYS; i++) {
-<<<<<<< HEAD
-			if (ieee->crypt_info.crypt[i] != NULL)
-=======
 			if (ieee->crypt_info.crypt[i])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 		}
 		if (i == NUM_WEP_KEYS) {
@@ -896,17 +534,6 @@ int rtllib_wx_set_encode_ext(struct rtllib_device *ieee,
 		module = "rtllib_crypt_ccmp";
 		break;
 	default:
-<<<<<<< HEAD
-		RTLLIB_DEBUG_WX("%s: unknown crypto alg %d\n",
-				   dev->name, ext->alg);
-		ret = -EINVAL;
-		goto done;
-	}
-	printk(KERN_INFO "alg name:%s\n", alg);
-
-	ops = lib80211_get_crypto_ops(alg);
-	if (ops == NULL) {
-=======
 		netdev_dbg(ieee->dev, "Unknown crypto alg %d\n", ext->alg);
 		ret = -EINVAL;
 		goto done;
@@ -915,7 +542,6 @@ int rtllib_wx_set_encode_ext(struct rtllib_device *ieee,
 
 	ops = lib80211_get_crypto_ops(alg);
 	if (!ops) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char tempbuf[100];
 
 		memset(tempbuf, 0x00, 100);
@@ -923,69 +549,38 @@ int rtllib_wx_set_encode_ext(struct rtllib_device *ieee,
 		request_module("%s", tempbuf);
 		ops = lib80211_get_crypto_ops(alg);
 	}
-<<<<<<< HEAD
-	if (ops == NULL) {
-		RTLLIB_DEBUG_WX("%s: unknown crypto alg %d\n",
-				   dev->name, ext->alg);
-		printk(KERN_INFO "========>unknown crypto alg %d\n", ext->alg);
-=======
 	if (!ops) {
 		netdev_info(dev, "========>unknown crypto alg %d\n", ext->alg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto done;
 	}
 
-<<<<<<< HEAD
-	if (*crypt == NULL || (*crypt)->ops != ops) {
-=======
 	if (!*crypt || (*crypt)->ops != ops) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct lib80211_crypt_data *new_crypt;
 
 		lib80211_crypt_delayed_deinit(&ieee->crypt_info, crypt);
 
 		new_crypt = kzalloc(sizeof(*new_crypt), GFP_KERNEL);
-<<<<<<< HEAD
-		if (new_crypt == NULL) {
-=======
 		if (!new_crypt) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ENOMEM;
 			goto done;
 		}
 		new_crypt->ops = ops;
-<<<<<<< HEAD
-		if (new_crypt->ops)
-			new_crypt->priv = new_crypt->ops->init(idx);
-
-		if (new_crypt->priv == NULL) {
-=======
 		if (new_crypt->ops && try_module_get(new_crypt->ops->owner))
 			new_crypt->priv = new_crypt->ops->init(idx);
 
 		if (!new_crypt->priv) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(new_crypt);
 			ret = -EINVAL;
 			goto done;
 		}
 		*crypt = new_crypt;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ext->key_len > 0 && (*crypt)->ops->set_key &&
 	    (*crypt)->ops->set_key(ext->key, ext->key_len, ext->rx_seq,
 				   (*crypt)->priv) < 0) {
-<<<<<<< HEAD
-		RTLLIB_DEBUG_WX("%s: key setting failed\n", dev->name);
-		printk(KERN_INFO "key setting failed\n");
-=======
 		netdev_info(dev, "key setting failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto done;
 	}
@@ -1012,93 +607,10 @@ int rtllib_wx_set_encode_ext(struct rtllib_device *ieee,
 			sec.flags &= ~SEC_LEVEL;
 	}
 done:
-<<<<<<< HEAD
-	if (ieee->set_security)
-		ieee->set_security(ieee->dev, &sec);
-
-	 if (ieee->reset_on_keychange &&
-	    ieee->iw_mode != IW_MODE_INFRA &&
-	    ieee->reset_port && ieee->reset_port(dev)) {
-		RTLLIB_DEBUG_WX("%s: reset_port failed\n", dev->name);
-		return -EINVAL;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(rtllib_wx_set_encode_ext);
 
-<<<<<<< HEAD
-int rtllib_wx_get_encode_ext(struct rtllib_device *ieee,
-			       struct iw_request_info *info,
-			       union iwreq_data *wrqu, char *extra)
-{
-	struct iw_point *encoding = &wrqu->encoding;
-	struct iw_encode_ext *ext = (struct iw_encode_ext *)extra;
-	struct lib80211_crypt_data *crypt;
-	int idx, max_key_len;
-
-	max_key_len = encoding->length - sizeof(*ext);
-	if (max_key_len < 0)
-		return -EINVAL;
-
-	idx = encoding->flags & IW_ENCODE_INDEX;
-	if (idx) {
-		if (idx < 1 || idx > NUM_WEP_KEYS)
-			return -EINVAL;
-		idx--;
-	} else {
-		idx = ieee->crypt_info.tx_keyidx;
-	}
-	if (!(ext->ext_flags & IW_ENCODE_EXT_GROUP_KEY) &&
-	    (ext->alg != IW_ENCODE_ALG_WEP))
-		if (idx != 0 || (ieee->iw_mode != IW_MODE_INFRA))
-			return -EINVAL;
-
-	crypt = ieee->crypt_info.crypt[idx];
-
-	encoding->flags = idx + 1;
-	memset(ext, 0, sizeof(*ext));
-
-	if (crypt == NULL || crypt->ops == NULL) {
-		ext->alg = IW_ENCODE_ALG_NONE;
-		ext->key_len = 0;
-		encoding->flags |= IW_ENCODE_DISABLED;
-	} else {
-		if (strcmp(crypt->ops->name, "R-WEP") == 0)
-			ext->alg = IW_ENCODE_ALG_WEP;
-		else if (strcmp(crypt->ops->name, "R-TKIP"))
-			ext->alg = IW_ENCODE_ALG_TKIP;
-		else if (strcmp(crypt->ops->name, "R-CCMP"))
-			ext->alg = IW_ENCODE_ALG_CCMP;
-		else
-			return -EINVAL;
-		ext->key_len = crypt->ops->get_key(ext->key, SCM_KEY_LEN,
-						   NULL, crypt->priv);
-		encoding->flags |= IW_ENCODE_ENABLED;
-		if (ext->key_len &&
-		    (ext->alg == IW_ENCODE_ALG_TKIP ||
-		     ext->alg == IW_ENCODE_ALG_CCMP))
-			ext->ext_flags |= IW_ENCODE_EXT_TX_SEQ_VALID;
-
-	}
-
-	return 0;
-}
-
-int rtllib_wx_set_mlme(struct rtllib_device *ieee,
-			       struct iw_request_info *info,
-			       union iwreq_data *wrqu, char *extra)
-{
-	u8 i = 0;
-	bool deauth = false;
-	struct iw_mlme *mlme = (struct iw_mlme *) extra;
-
-	if (ieee->state != RTLLIB_LINKED)
-		return -ENOLINK;
-
-	down(&ieee->wx_sem);
-=======
 int rtllib_wx_set_mlme(struct rtllib_device *ieee,
 		       struct iw_request_info *info,
 		       union iwreq_data *wrqu, char *extra)
@@ -1111,24 +623,10 @@ int rtllib_wx_set_mlme(struct rtllib_device *ieee,
 		return -ENOLINK;
 
 	mutex_lock(&ieee->wx_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (mlme->cmd) {
 	case IW_MLME_DEAUTH:
 		deauth = true;
-<<<<<<< HEAD
-		/* leave break out intentionly */
-
-	case IW_MLME_DISASSOC:
-		if (deauth == true)
-			printk(KERN_INFO "disauth packet !\n");
-		else
-			printk(KERN_INFO "dis associate packet!\n");
-
-		ieee->cannot_notify = true;
-
-		SendDisassociation(ieee, deauth, mlme->reason_code);
-=======
 		fallthrough;
 	case IW_MLME_DISASSOC:
 		if (deauth)
@@ -1139,7 +637,6 @@ int rtllib_wx_set_mlme(struct rtllib_device *ieee,
 		ieee->cannot_notify = true;
 
 		send_disassociation(ieee, deauth, mlme->reason_code);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rtllib_disassociate(ieee);
 
 		ieee->wap_set = 0;
@@ -1151,32 +648,19 @@ int rtllib_wx_set_mlme(struct rtllib_device *ieee,
 		ieee->current_network.ssid_len = 0;
 		break;
 	default:
-<<<<<<< HEAD
-		up(&ieee->wx_sem);
-		return -EOPNOTSUPP;
-	}
-
-	up(&ieee->wx_sem);
-=======
 		mutex_unlock(&ieee->wx_mutex);
 		return -EOPNOTSUPP;
 	}
 
 	mutex_unlock(&ieee->wx_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 EXPORT_SYMBOL(rtllib_wx_set_mlme);
 
 int rtllib_wx_set_auth(struct rtllib_device *ieee,
-<<<<<<< HEAD
-			       struct iw_request_info *info,
-			       struct iw_param *data, char *extra)
-=======
 		       struct iw_request_info *info,
 		       struct iw_param *data, char *extra)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (data->flags & IW_AUTH_INDEX) {
 	case IW_AUTH_WPA_VERSION:
@@ -1184,12 +668,7 @@ int rtllib_wx_set_auth(struct rtllib_device *ieee,
 	case IW_AUTH_CIPHER_PAIRWISE:
 	case IW_AUTH_CIPHER_GROUP:
 	case IW_AUTH_KEY_MGMT:
-<<<<<<< HEAD
-		/*
-		 * Host AP driver does not use these parameters and allows
-=======
 		/* Host AP driver does not use these parameters and allows
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * wpa_supplicant to control them internally.
 		 */
 		break;
@@ -1210,14 +689,9 @@ int rtllib_wx_set_auth(struct rtllib_device *ieee,
 		} else if (data->value & IW_AUTH_ALG_LEAP) {
 			ieee->open_wep = 1;
 			ieee->auth_mode = 2;
-<<<<<<< HEAD
-		} else
-			return -EINVAL;
-=======
 		} else {
 			return -EINVAL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case IW_AUTH_WPA_ENABLED:
@@ -1242,29 +716,15 @@ int rtllib_wx_set_gen_ie(struct rtllib_device *ieee, u8 *ie, size_t len)
 	u8 *buf;
 	u8 eid, wps_oui[4] = {0x0, 0x50, 0xf2, 0x04};
 
-<<<<<<< HEAD
-	if (len > MAX_WPA_IE_LEN || (len && ie == NULL))
-=======
 	if (len > MAX_WPA_IE_LEN || (len && !ie))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (len) {
 		eid = ie[0];
-<<<<<<< HEAD
-		if ((eid == MFIE_TYPE_GENERIC) && (!memcmp(&ie[2],
-		     wps_oui, 4))) {
-
-			ieee->wps_ie_len = (len < MAX_WZC_IE_LEN) ? (len) :
-					   (MAX_WZC_IE_LEN);
-			buf = kmemdup(ie, ieee->wps_ie_len, GFP_KERNEL);
-			if (buf == NULL)
-=======
 		if ((eid == MFIE_TYPE_GENERIC) && (!memcmp(&ie[2], wps_oui, 4))) {
 			ieee->wps_ie_len = min_t(size_t, len, MAX_WZC_IE_LEN);
 			buf = kmemdup(ie, ieee->wps_ie_len, GFP_KERNEL);
 			if (!buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENOMEM;
 			ieee->wps_ie = buf;
 			return 0;
@@ -1274,17 +734,10 @@ int rtllib_wx_set_gen_ie(struct rtllib_device *ieee, u8 *ie, size_t len)
 	kfree(ieee->wps_ie);
 	ieee->wps_ie = NULL;
 	if (len) {
-<<<<<<< HEAD
-		if (len != ie[1]+2)
-			return -EINVAL;
-		buf = kmemdup(ie, len, GFP_KERNEL);
-		if (buf == NULL)
-=======
 		if (len != ie[1] + 2)
 			return -EINVAL;
 		buf = kmemdup(ie, len, GFP_KERNEL);
 		if (!buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		kfree(ieee->wpa_ie);
 		ieee->wpa_ie = buf;

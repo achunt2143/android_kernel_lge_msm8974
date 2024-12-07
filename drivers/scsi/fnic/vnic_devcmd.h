@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _VNIC_DEVCMD_H_
 #define _VNIC_DEVCMD_H_
@@ -177,12 +158,8 @@ enum vnic_devcmd_cmd {
 
 	/* variant of CMD_INIT, with provisioning info
 	 *     (u64)a0=paddr of vnic_devcmd_provinfo
-<<<<<<< HEAD
-	 *     (u32)a1=sizeof provision info */
-=======
 	 *     (u32)a1=sizeof provision info
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CMD_INIT_PROV_INFO	= _CMDC(_CMD_DIR_WRITE, _CMD_VTYPE_ENET, 27),
 
 	/* enable virtual link */
@@ -208,8 +185,6 @@ enum vnic_devcmd_cmd {
 
 	/* undo initialize of virtual link */
 	CMD_DEINIT		= _CMDCNW(_CMD_DIR_NONE, _CMD_VTYPE_ALL, 34),
-<<<<<<< HEAD
-=======
 
 	/* check fw capability of a cmd:
 	 * in:  (u32)a0=cmd
@@ -395,17 +370,13 @@ enum vnic_devcmd_cmd {
 	 * in: (u16) a1=number of entries in result buffer
 	 */
 	CMD_INITIALIZE_DEVCMD2 = _CMDC(_CMD_DIR_WRITE, _CMD_VTYPE_ALL, 57)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* flags for CMD_OPEN */
 #define CMD_OPENF_OPROM		0x1	/* open coming from option rom */
 
-<<<<<<< HEAD
-=======
 #define CMD_OPENF_RQ_ENABLE_THEN_POST   0x2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* flags for CMD_INIT */
 #define CMD_INITF_DEFAULT_MAC	0x1	/* init with default mac addr */
 
@@ -459,11 +430,7 @@ struct vnic_devcmd_notify {
 struct vnic_devcmd_provinfo {
 	u8 oui[3];
 	u8 type;
-<<<<<<< HEAD
-	u8 data[0];
-=======
 	u8 data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -487,8 +454,6 @@ struct vnic_devcmd {
 	u64 args[VNIC_DEVCMD_NARGS];	/* RW cmd args (little-endian) */
 };
 
-<<<<<<< HEAD
-=======
 /*
  * Version 2 of the interface.
  *
@@ -524,5 +489,4 @@ struct devcmd2_result {
 
 #define DEVCMD2_RESULTS_SIZE_MAX		((1 << 16) - 1)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _VNIC_DEVCMD_H_ */

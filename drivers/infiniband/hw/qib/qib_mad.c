@@ -1,11 +1,6 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 QLogic Corporation.
- * All rights reserved.
-=======
  * Copyright (c) 2012 Intel Corporation.  All rights reserved.
  * Copyright (c) 2006 - 2012 QLogic Corporation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2005, 2006 PathScale, Inc. All rights reserved.
  *
  * This software is available to you under a choice of one of two
@@ -54,8 +49,6 @@ static int reply(struct ib_smp *smp)
 	return IB_MAD_RESULT_SUCCESS | IB_MAD_RESULT_REPLY;
 }
 
-<<<<<<< HEAD
-=======
 static int reply_failure(struct ib_smp *smp)
 {
 	/*
@@ -68,7 +61,6 @@ static int reply_failure(struct ib_smp *smp)
 	return IB_MAD_RESULT_FAILURE | IB_MAD_RESULT_REPLY;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void qib_send_trap(struct qib_ibport *ibp, void *data, unsigned len)
 {
 	struct ib_mad_send_buf *send_buf;
@@ -78,11 +70,7 @@ static void qib_send_trap(struct qib_ibport *ibp, void *data, unsigned len)
 	unsigned long flags;
 	unsigned long timeout;
 
-<<<<<<< HEAD
-	agent = ibp->send_agent;
-=======
 	agent = ibp->rvp.send_agent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!agent)
 		return;
 
@@ -91,13 +79,6 @@ static void qib_send_trap(struct qib_ibport *ibp, void *data, unsigned len)
 		return;
 
 	/* o14-2 */
-<<<<<<< HEAD
-	if (ibp->trap_timeout && time_before(jiffies, ibp->trap_timeout))
-		return;
-
-	send_buf = ib_create_send_mad(agent, 0, 0, 0, IB_MGMT_MAD_HDR,
-				      IB_MGMT_MAD_DATA, GFP_ATOMIC);
-=======
 	if (ibp->rvp.trap_timeout &&
 	    time_before(jiffies, ibp->rvp.trap_timeout))
 		return;
@@ -105,7 +86,6 @@ static void qib_send_trap(struct qib_ibport *ibp, void *data, unsigned len)
 	send_buf = ib_create_send_mad(agent, 0, 0, 0, IB_MGMT_MAD_HDR,
 				      IB_MGMT_MAD_DATA, GFP_ATOMIC,
 				      IB_MGMT_BASE_VERSION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(send_buf))
 		return;
 
@@ -114,34 +94,12 @@ static void qib_send_trap(struct qib_ibport *ibp, void *data, unsigned len)
 	smp->mgmt_class = IB_MGMT_CLASS_SUBN_LID_ROUTED;
 	smp->class_version = 1;
 	smp->method = IB_MGMT_METHOD_TRAP;
-<<<<<<< HEAD
-	ibp->tid++;
-	smp->tid = cpu_to_be64(ibp->tid);
-=======
 	ibp->rvp.tid++;
 	smp->tid = cpu_to_be64(ibp->rvp.tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smp->attr_id = IB_SMP_ATTR_NOTICE;
 	/* o14-1: smp->mkey = 0; */
 	memcpy(smp->data, data, len);
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&ibp->lock, flags);
-	if (!ibp->sm_ah) {
-		if (ibp->sm_lid != be16_to_cpu(IB_LID_PERMISSIVE)) {
-			struct ib_ah *ah;
-			struct ib_ah_attr attr;
-
-			memset(&attr, 0, sizeof attr);
-			attr.dlid = ibp->sm_lid;
-			attr.port_num = ppd_from_ibp(ibp)->port;
-			ah = ib_create_ah(ibp->qp0->ibqp.pd, &attr);
-			if (IS_ERR(ah))
-				ret = -EINVAL;
-			else {
-				send_buf->ah = ah;
-				ibp->sm_ah = to_iah(ah);
-=======
 	spin_lock_irqsave(&ibp->rvp.lock, flags);
 	if (!ibp->rvp.sm_ah) {
 		if (ibp->rvp.sm_lid != be16_to_cpu(IB_LID_PERMISSIVE)) {
@@ -153,59 +111,29 @@ static void qib_send_trap(struct qib_ibport *ibp, void *data, unsigned len)
 			else {
 				send_buf->ah = ah;
 				ibp->rvp.sm_ah = ibah_to_rvtah(ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = 0;
 			}
 		} else
 			ret = -EINVAL;
 	} else {
-<<<<<<< HEAD
-		send_buf->ah = &ibp->sm_ah->ibah;
-		ret = 0;
-	}
-	spin_unlock_irqrestore(&ibp->lock, flags);
-=======
 		send_buf->ah = &ibp->rvp.sm_ah->ibah;
 		ret = 0;
 	}
 	spin_unlock_irqrestore(&ibp->rvp.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ret)
 		ret = ib_post_send_mad(send_buf, NULL);
 	if (!ret) {
 		/* 4.096 usec. */
-<<<<<<< HEAD
-		timeout = (4096 * (1UL << ibp->subnet_timeout)) / 1000;
-		ibp->trap_timeout = jiffies + usecs_to_jiffies(timeout);
-	} else {
-		ib_free_send_mad(send_buf);
-		ibp->trap_timeout = 0;
-=======
 		timeout = (4096 * (1UL << ibp->rvp.subnet_timeout)) / 1000;
 		ibp->rvp.trap_timeout = jiffies + usecs_to_jiffies(timeout);
 	} else {
 		ib_free_send_mad(send_buf);
 		ibp->rvp.trap_timeout = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /*
-<<<<<<< HEAD
- * Send a bad [PQ]_Key trap (ch. 14.3.8).
- */
-void qib_bad_pqkey(struct qib_ibport *ibp, __be16 trap_num, u32 key, u32 sl,
-		   u32 qp1, u32 qp2, __be16 lid1, __be16 lid2)
-{
-	struct ib_mad_notice_attr data;
-
-	if (trap_num == IB_NOTICE_TRAP_BAD_PKEY)
-		ibp->pkey_violations++;
-	else
-		ibp->qkey_violations++;
-	ibp->n_pkt_drops++;
-=======
  * Send a bad P_Key trap (ch. 14.3.8).
  */
 void qib_bad_pkey(struct qib_ibport *ibp, u32 key, u32 sl,
@@ -215,34 +143,22 @@ void qib_bad_pkey(struct qib_ibport *ibp, u32 key, u32 sl,
 
 	ibp->rvp.n_pkt_drops++;
 	ibp->rvp.pkey_violations++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Send violation trap */
 	data.generic_type = IB_NOTICE_TYPE_SECURITY;
 	data.prod_type_msb = 0;
 	data.prod_type_lsb = IB_NOTICE_PROD_CA;
-<<<<<<< HEAD
-	data.trap_num = trap_num;
-	data.issuer_lid = cpu_to_be16(ppd_from_ibp(ibp)->lid);
-	data.toggle_count = 0;
-	memset(&data.details, 0, sizeof data.details);
-=======
 	data.trap_num = IB_NOTICE_TRAP_BAD_PKEY;
 	data.issuer_lid = cpu_to_be16(ppd_from_ibp(ibp)->lid);
 	data.toggle_count = 0;
 	memset(&data.details, 0, sizeof(data.details));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data.details.ntc_257_258.lid1 = lid1;
 	data.details.ntc_257_258.lid2 = lid2;
 	data.details.ntc_257_258.key = cpu_to_be32(key);
 	data.details.ntc_257_258.sl_qp1 = cpu_to_be32((sl << 28) | qp1);
 	data.details.ntc_257_258.qp2 = cpu_to_be32(qp2);
 
-<<<<<<< HEAD
-	qib_send_trap(ibp, &data, sizeof data);
-=======
 	qib_send_trap(ibp, &data, sizeof(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -259,11 +175,7 @@ static void qib_bad_mkey(struct qib_ibport *ibp, struct ib_smp *smp)
 	data.trap_num = IB_NOTICE_TRAP_BAD_MKEY;
 	data.issuer_lid = cpu_to_be16(ppd_from_ibp(ibp)->lid);
 	data.toggle_count = 0;
-<<<<<<< HEAD
-	memset(&data.details, 0, sizeof data.details);
-=======
 	memset(&data.details, 0, sizeof(data.details));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data.details.ntc_256.lid = data.issuer_lid;
 	data.details.ntc_256.method = smp->method;
 	data.details.ntc_256.attr_id = smp->attr_id;
@@ -285,26 +197,17 @@ static void qib_bad_mkey(struct qib_ibport *ibp, struct ib_smp *smp)
 		       hop_cnt);
 	}
 
-<<<<<<< HEAD
-	qib_send_trap(ibp, &data, sizeof data);
-=======
 	qib_send_trap(ibp, &data, sizeof(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Send a Port Capability Mask Changed trap (ch. 14.3.11).
  */
-<<<<<<< HEAD
-void qib_cap_mask_chg(struct qib_ibport *ibp)
-{
-=======
 void qib_cap_mask_chg(struct rvt_dev_info *rdi, u32 port_num)
 {
 	struct qib_ibdev *ibdev = container_of(rdi, struct qib_ibdev, rdi);
 	struct qib_devdata *dd = dd_from_dev(ibdev);
 	struct qib_ibport *ibp = &dd->pport[port_num - 1].ibport_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ib_mad_notice_attr data;
 
 	data.generic_type = IB_NOTICE_TYPE_INFO;
@@ -313,19 +216,11 @@ void qib_cap_mask_chg(struct rvt_dev_info *rdi, u32 port_num)
 	data.trap_num = IB_NOTICE_TRAP_CAP_MASK_CHG;
 	data.issuer_lid = cpu_to_be16(ppd_from_ibp(ibp)->lid);
 	data.toggle_count = 0;
-<<<<<<< HEAD
-	memset(&data.details, 0, sizeof data.details);
-	data.details.ntc_144.lid = data.issuer_lid;
-	data.details.ntc_144.new_cap_mask = cpu_to_be32(ibp->port_cap_flags);
-
-	qib_send_trap(ibp, &data, sizeof data);
-=======
 	memset(&data.details, 0, sizeof(data.details));
 	data.details.ntc_144.lid = data.issuer_lid;
 	data.details.ntc_144.new_cap_mask =
 					cpu_to_be32(ibp->rvp.port_cap_flags);
 	qib_send_trap(ibp, &data, sizeof(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -341,19 +236,11 @@ void qib_sys_guid_chg(struct qib_ibport *ibp)
 	data.trap_num = IB_NOTICE_TRAP_SYS_GUID_CHG;
 	data.issuer_lid = cpu_to_be16(ppd_from_ibp(ibp)->lid);
 	data.toggle_count = 0;
-<<<<<<< HEAD
-	memset(&data.details, 0, sizeof data.details);
-	data.details.ntc_145.lid = data.issuer_lid;
-	data.details.ntc_145.new_sys_guid = ib_qib_sys_image_guid;
-
-	qib_send_trap(ibp, &data, sizeof data);
-=======
 	memset(&data.details, 0, sizeof(data.details));
 	data.details.ntc_145.lid = data.issuer_lid;
 	data.details.ntc_145.new_sys_guid = ib_qib_sys_image_guid;
 
 	qib_send_trap(ibp, &data, sizeof(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -369,20 +256,12 @@ void qib_node_desc_chg(struct qib_ibport *ibp)
 	data.trap_num = IB_NOTICE_TRAP_CAP_MASK_CHG;
 	data.issuer_lid = cpu_to_be16(ppd_from_ibp(ibp)->lid);
 	data.toggle_count = 0;
-<<<<<<< HEAD
-	memset(&data.details, 0, sizeof data.details);
-=======
 	memset(&data.details, 0, sizeof(data.details));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data.details.ntc_144.lid = data.issuer_lid;
 	data.details.ntc_144.local_changes = 1;
 	data.details.ntc_144.change_flags = IB_NOTICE_TRAP_NODE_DESC_CHG;
 
-<<<<<<< HEAD
-	qib_send_trap(ibp, &data, sizeof data);
-=======
 	qib_send_trap(ibp, &data, sizeof(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int subn_get_nodedescription(struct ib_smp *smp,
@@ -401,11 +280,7 @@ static int subn_get_nodeinfo(struct ib_smp *smp, struct ib_device *ibdev,
 {
 	struct ib_node_info *nip = (struct ib_node_info *)&smp->data;
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);
-<<<<<<< HEAD
-	u32 vendor, majrev, minrev;
-=======
 	u32 majrev, minrev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned pidx = port - 1; /* IB number port from 1, hdw from 0 */
 
 	/* GUID 0 is illegal */
@@ -428,10 +303,6 @@ static int subn_get_nodeinfo(struct ib_smp *smp, struct ib_device *ibdev,
 	minrev = dd->minrev;
 	nip->revision = cpu_to_be32((majrev << 16) | minrev);
 	nip->local_port_num = port;
-<<<<<<< HEAD
-	vendor = dd->vendorid;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nip->vendor_id[0] = QIB_SRC_OUI_1;
 	nip->vendor_id[1] = QIB_SRC_OUI_2;
 	nip->vendor_id[2] = QIB_SRC_OUI_3;
@@ -534,34 +405,6 @@ static int get_linkdowndefaultstate(struct qib_pportdata *ppd)
 
 static int check_mkey(struct qib_ibport *ibp, struct ib_smp *smp, int mad_flags)
 {
-<<<<<<< HEAD
-	int ret = 0;
-
-	/* Is the mkey in the process of expiring? */
-	if (ibp->mkey_lease_timeout &&
-	    time_after_eq(jiffies, ibp->mkey_lease_timeout)) {
-		/* Clear timeout and mkey protection field. */
-		ibp->mkey_lease_timeout = 0;
-		ibp->mkeyprot = 0;
-	}
-
-	/* M_Key checking depends on Portinfo:M_Key_protect_bits */
-	if ((mad_flags & IB_MAD_IGNORE_MKEY) == 0 && ibp->mkey != 0 &&
-	    ibp->mkey != smp->mkey &&
-	    (smp->method == IB_MGMT_METHOD_SET ||
-	     smp->method == IB_MGMT_METHOD_TRAP_REPRESS ||
-	     (smp->method == IB_MGMT_METHOD_GET && ibp->mkeyprot >= 2))) {
-		if (ibp->mkey_violations != 0xFFFF)
-			++ibp->mkey_violations;
-		if (!ibp->mkey_lease_timeout && ibp->mkey_lease_period)
-			ibp->mkey_lease_timeout = jiffies +
-				ibp->mkey_lease_period * HZ;
-		/* Generate a trap notice. */
-		qib_bad_mkey(ibp, smp);
-		ret = IB_MAD_RESULT_SUCCESS | IB_MAD_RESULT_CONSUMED;
-	} else if (ibp->mkey_lease_timeout)
-		ibp->mkey_lease_timeout = 0;
-=======
 	int valid_mkey = 0;
 	int ret = 0;
 
@@ -604,7 +447,6 @@ static int check_mkey(struct qib_ibport *ibp, struct ib_smp *smp, int mad_flags)
 			ret = 1;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -632,15 +474,10 @@ static int subn_get_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 		if (port_num != port) {
 			ibp = to_iport(ibdev, port_num);
 			ret = check_mkey(ibp, smp, 0);
-<<<<<<< HEAD
-			if (ret)
-				goto bail;
-=======
 			if (ret) {
 				ret = IB_MAD_RESULT_FAILURE;
 				goto bail;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -654,17 +491,6 @@ static int subn_get_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 
 	/* Only return the mkey if the protection field allows it. */
 	if (!(smp->method == IB_MGMT_METHOD_GET &&
-<<<<<<< HEAD
-	      ibp->mkey != smp->mkey &&
-	      ibp->mkeyprot == 1))
-		pip->mkey = ibp->mkey;
-	pip->gid_prefix = ibp->gid_prefix;
-	pip->lid = cpu_to_be16(ppd->lid);
-	pip->sm_lid = cpu_to_be16(ibp->sm_lid);
-	pip->cap_mask = cpu_to_be32(ibp->port_cap_flags);
-	/* pip->diag_code; */
-	pip->mkey_lease_period = cpu_to_be16(ibp->mkey_lease_period);
-=======
 	      ibp->rvp.mkey != smp->mkey &&
 	      ibp->rvp.mkeyprot == 1))
 		pip->mkey = ibp->rvp.mkey;
@@ -674,7 +500,6 @@ static int subn_get_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 	pip->cap_mask = cpu_to_be32(ibp->rvp.port_cap_flags);
 	/* pip->diag_code; */
 	pip->mkey_lease_period = cpu_to_be16(ibp->rvp.mkey_lease_period);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pip->local_port_num = port;
 	pip->link_width_enabled = ppd->link_width_enabled;
 	pip->link_width_supported = ppd->link_width_supported;
@@ -685,11 +510,7 @@ static int subn_get_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 	pip->portphysstate_linkdown =
 		(dd->f_ibphys_portstate(ppd->lastibcstat) << 4) |
 		(get_linkdowndefaultstate(ppd) ? 1 : 2);
-<<<<<<< HEAD
-	pip->mkeyprot_resv_lmc = (ibp->mkeyprot << 6) | ppd->lmc;
-=======
 	pip->mkeyprot_resv_lmc = (ibp->rvp.mkeyprot << 6) | ppd->lmc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pip->linkspeedactive_enabled = (ppd->link_speed_active << 4) |
 		ppd->link_speed_enabled;
 	switch (ppd->ibmtu) {
@@ -710,15 +531,9 @@ static int subn_get_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 		mtu = IB_MTU_256;
 		break;
 	}
-<<<<<<< HEAD
-	pip->neighbormtu_mastersmsl = (mtu << 4) | ibp->sm_sl;
-	pip->vlcap_inittype = ppd->vls_supported << 4;  /* InitType = 0 */
-	pip->vl_high_limit = ibp->vl_high_limit;
-=======
 	pip->neighbormtu_mastersmsl = (mtu << 4) | ibp->rvp.sm_sl;
 	pip->vlcap_inittype = ppd->vls_supported << 4;  /* InitType = 0 */
 	pip->vl_high_limit = ibp->rvp.vl_high_limit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pip->vl_arb_high_cap =
 		dd->f_get_ib_cfg(ppd, QIB_IB_CFG_VL_HIGH_CAP);
 	pip->vl_arb_low_cap =
@@ -729,15 +544,6 @@ static int subn_get_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 	/* pip->vlstallcnt_hoqlife; */
 	pip->operationalvl_pei_peo_fpi_fpo =
 		dd->f_get_ib_cfg(ppd, QIB_IB_CFG_OP_VLS) << 4;
-<<<<<<< HEAD
-	pip->mkey_violations = cpu_to_be16(ibp->mkey_violations);
-	/* P_KeyViolations are counted by hardware. */
-	pip->pkey_violations = cpu_to_be16(ibp->pkey_violations);
-	pip->qkey_violations = cpu_to_be16(ibp->qkey_violations);
-	/* Only the hardware GUID is supported for now */
-	pip->guid_cap = QIB_GUIDS_PER_PORT;
-	pip->clientrereg_resv_subnetto = ibp->subnet_timeout;
-=======
 	pip->mkey_violations = cpu_to_be16(ibp->rvp.mkey_violations);
 	/* P_KeyViolations are counted by hardware. */
 	pip->pkey_violations = cpu_to_be16(ibp->rvp.pkey_violations);
@@ -745,18 +551,13 @@ static int subn_get_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 	/* Only the hardware GUID is supported for now */
 	pip->guid_cap = QIB_GUIDS_PER_PORT;
 	pip->clientrereg_resv_subnetto = ibp->rvp.subnet_timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 32.768 usec. response time (guessing) */
 	pip->resv_resptimevalue = 3;
 	pip->localphyerrors_overrunerrors =
 		(get_phyerrthreshold(ppd) << 4) |
 		get_overrunthreshold(ppd);
 	/* pip->max_credit_hint; */
-<<<<<<< HEAD
-	if (ibp->port_cap_flags & IB_PORT_LINK_LATENCY_SUP) {
-=======
 	if (ibp->rvp.port_cap_flags & IB_PORT_LINK_LATENCY_SUP) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 v;
 
 		v = dd->f_get_ib_cfg(ppd, QIB_IB_CFG_LINKLATENCY);
@@ -857,11 +658,7 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 	struct qib_devdata *dd;
 	struct qib_pportdata *ppd;
 	struct qib_ibport *ibp;
-<<<<<<< HEAD
-	char clientrereg = 0;
-=======
 	u8 clientrereg = (pip->clientrereg_resv_subnetto & 0x80);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	u16 lid, smlid;
 	u8 lwe;
@@ -890,15 +687,6 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 	event.device = ibdev;
 	event.element.port_num = port;
 
-<<<<<<< HEAD
-	ibp->mkey = pip->mkey;
-	ibp->gid_prefix = pip->gid_prefix;
-	ibp->mkey_lease_period = be16_to_cpu(pip->mkey_lease_period);
-
-	lid = be16_to_cpu(pip->lid);
-	/* Must be a valid unicast LID address. */
-	if (lid == 0 || lid >= QIB_MULTICAST_LID_BASE)
-=======
 	ibp->rvp.mkey = pip->mkey;
 	ibp->rvp.gid_prefix = pip->gid_prefix;
 	ibp->rvp.mkey_lease_period = be16_to_cpu(pip->mkey_lease_period);
@@ -906,7 +694,6 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 	lid = be16_to_cpu(pip->lid);
 	/* Must be a valid unicast LID address. */
 	if (lid == 0 || lid >= be16_to_cpu(IB_MULTICAST_LID_BASE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smp->status |= IB_SMP_INVALID_FIELD;
 	else if (ppd->lid != lid || ppd->lmc != (pip->mkeyprot_resv_lmc & 7)) {
 		if (ppd->lid != lid)
@@ -921,23 +708,6 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 	smlid = be16_to_cpu(pip->sm_lid);
 	msl = pip->neighbormtu_mastersmsl & 0xF;
 	/* Must be a valid unicast LID address. */
-<<<<<<< HEAD
-	if (smlid == 0 || smlid >= QIB_MULTICAST_LID_BASE)
-		smp->status |= IB_SMP_INVALID_FIELD;
-	else if (smlid != ibp->sm_lid || msl != ibp->sm_sl) {
-		spin_lock_irqsave(&ibp->lock, flags);
-		if (ibp->sm_ah) {
-			if (smlid != ibp->sm_lid)
-				ibp->sm_ah->attr.dlid = smlid;
-			if (msl != ibp->sm_sl)
-				ibp->sm_ah->attr.sl = msl;
-		}
-		spin_unlock_irqrestore(&ibp->lock, flags);
-		if (smlid != ibp->sm_lid)
-			ibp->sm_lid = smlid;
-		if (msl != ibp->sm_sl)
-			ibp->sm_sl = msl;
-=======
 	if (smlid == 0 || smlid >= be16_to_cpu(IB_MULTICAST_LID_BASE))
 		smp->status |= IB_SMP_INVALID_FIELD;
 	else if (smlid != ibp->rvp.sm_lid || msl != ibp->rvp.sm_sl) {
@@ -954,7 +724,6 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 			ibp->rvp.sm_lid = smlid;
 		if (msl != ibp->rvp.sm_sl)
 			ibp->rvp.sm_sl = msl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		event.event = IB_EVENT_SM_CHANGE;
 		ib_dispatch_event(&event);
 	}
@@ -1002,17 +771,10 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 		smp->status |= IB_SMP_INVALID_FIELD;
 	}
 
-<<<<<<< HEAD
-	ibp->mkeyprot = pip->mkeyprot_resv_lmc >> 6;
-	ibp->vl_high_limit = pip->vl_high_limit;
-	(void) dd->f_set_ib_cfg(ppd, QIB_IB_CFG_VL_HIGH_LIMIT,
-				    ibp->vl_high_limit);
-=======
 	ibp->rvp.mkeyprot = pip->mkeyprot_resv_lmc >> 6;
 	ibp->rvp.vl_high_limit = pip->vl_high_limit;
 	(void) dd->f_set_ib_cfg(ppd, QIB_IB_CFG_VL_HIGH_LIMIT,
 				    ibp->rvp.vl_high_limit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mtu = ib_mtu_enum_to_int((pip->neighbormtu_mastersmsl >> 4) & 0xF);
 	if (mtu == -1)
@@ -1030,15 +792,6 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 	}
 
 	if (pip->mkey_violations == 0)
-<<<<<<< HEAD
-		ibp->mkey_violations = 0;
-
-	if (pip->pkey_violations == 0)
-		ibp->pkey_violations = 0;
-
-	if (pip->qkey_violations == 0)
-		ibp->qkey_violations = 0;
-=======
 		ibp->rvp.mkey_violations = 0;
 
 	if (pip->pkey_violations == 0)
@@ -1046,7 +799,6 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 
 	if (pip->qkey_violations == 0)
 		ibp->rvp.qkey_violations = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ore = pip->localphyerrors_overrunerrors;
 	if (set_phyerrthreshold(ppd, (ore >> 4) & 0xF))
@@ -1055,17 +807,7 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 	if (set_overrunthreshold(ppd, (ore & 0xF)))
 		smp->status |= IB_SMP_INVALID_FIELD;
 
-<<<<<<< HEAD
-	ibp->subnet_timeout = pip->clientrereg_resv_subnetto & 0x1F;
-
-	if (pip->clientrereg_resv_subnetto & 0x80) {
-		clientrereg = 1;
-		event.event = IB_EVENT_CLIENT_REREGISTER;
-		ib_dispatch_event(&event);
-	}
-=======
 	ibp->rvp.subnet_timeout = pip->clientrereg_resv_subnetto & 0x1F;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Do the port state change now that the other link parameters
@@ -1086,11 +828,7 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 	case IB_PORT_NOP:
 		if (lstate == 0)
 			break;
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IB_PORT_DOWN:
 		if (lstate == 0)
 			lstate = QIB_IB_LINKDOWN_ONLY;
@@ -1128,12 +866,6 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 		smp->status |= IB_SMP_INVALID_FIELD;
 	}
 
-<<<<<<< HEAD
-	ret = subn_get_portinfo(smp, ibdev, port);
-
-	if (clientrereg)
-		pip->clientrereg_resv_subnetto |= 0x80;
-=======
 	if (clientrereg) {
 		event.event = IB_EVENT_CLIENT_REREGISTER;
 		ib_dispatch_event(&event);
@@ -1141,7 +873,6 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 
 	/* restore re-reg bit per o14-12.2.1 */
 	pip->clientrereg_resv_subnetto |= clientrereg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	goto get_only;
 
@@ -1155,11 +886,7 @@ done:
 
 /**
  * rm_pkey - decrecment the reference count for the given PKEY
-<<<<<<< HEAD
- * @dd: the qlogic_ib device
-=======
  * @ppd: the qlogic_ib device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @key: the PKEY index
  *
  * Return true if this was the last reference and the hardware table entry
@@ -1189,11 +916,7 @@ bail:
 
 /**
  * add_pkey - add the given PKEY to the hardware table
-<<<<<<< HEAD
- * @dd: the qlogic_ib device
-=======
  * @ppd: the qlogic_ib device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @key: the PKEY
  *
  * Return an error code if unable to add the entry, zero if no change,
@@ -1306,11 +1029,7 @@ static int set_pkeys(struct qib_devdata *dd, u8 port, u16 *pkeys)
 		(void) dd->f_set_ib_cfg(ppd, QIB_IB_CFG_PKEYS, 0);
 
 		event.event = IB_EVENT_PKEY_CHANGE;
-<<<<<<< HEAD
-		event.device = &dd->verbs_dev.ibdev;
-=======
 		event.device = &dd->verbs_dev.rdi.ibdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		event.element.port_num = port;
 		ib_dispatch_event(&event);
 	}
@@ -1344,11 +1063,7 @@ static int subn_get_sl_to_vl(struct ib_smp *smp, struct ib_device *ibdev,
 
 	memset(smp->data, 0, sizeof(smp->data));
 
-<<<<<<< HEAD
-	if (!(ibp->port_cap_flags & IB_PORT_SL_MAP_SUP))
-=======
 	if (!(ibp->rvp.port_cap_flags & IB_PORT_SL_MAP_SUP))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smp->status |= IB_SMP_UNSUP_METHOD;
 	else
 		for (i = 0; i < ARRAY_SIZE(ibp->sl_to_vl); i += 2)
@@ -1364,11 +1079,7 @@ static int subn_set_sl_to_vl(struct ib_smp *smp, struct ib_device *ibdev,
 	u8 *p = (u8 *) smp->data;
 	unsigned i;
 
-<<<<<<< HEAD
-	if (!(ibp->port_cap_flags & IB_PORT_SL_MAP_SUP)) {
-=======
 	if (!(ibp->rvp.port_cap_flags & IB_PORT_SL_MAP_SUP)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smp->status |= IB_SMP_UNSUP_METHOD;
 		return reply(smp);
 	}
@@ -1457,13 +1168,6 @@ static int pma_get_classportinfo(struct ib_pma_mad *pmp,
 	 * Set the most significant bit of CM2 to indicate support for
 	 * congestion statistics
 	 */
-<<<<<<< HEAD
-	p->reserved[0] = dd->psxmitwait_supported << 7;
-	/*
-	 * Expected response time is 4.096 usec. * 2^18 == 1.073741824 sec.
-	 */
-	p->resp_time_value = 18;
-=======
 	ib_set_cpi_capmask2(p,
 			    dd->psxmitwait_supported <<
 			    (31 - IB_CLASS_PORT_INFO_RESP_TIME_FIELD_SIZE));
@@ -1471,7 +1175,6 @@ static int pma_get_classportinfo(struct ib_pma_mad *pmp,
 	 * Expected response time is 4.096 usec. * 2^18 == 1.073741824 sec.
 	 */
 	ib_set_cpi_resp_time(p, 18);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return reply((struct ib_smp *) pmp);
 }
@@ -1495,26 +1198,11 @@ static int pma_get_portsamplescontrol(struct ib_pma_mad *pmp,
 		pmp->mad_hdr.status |= IB_SMP_INVALID_FIELD;
 		goto bail;
 	}
-<<<<<<< HEAD
-	spin_lock_irqsave(&ibp->lock, flags);
-=======
 	spin_lock_irqsave(&ibp->rvp.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p->tick = dd->f_get_ib_cfg(ppd, QIB_IB_CFG_PMA_TICKS);
 	p->sample_status = dd->f_portcntr(ppd, QIBPORTCNTR_PSSTAT);
 	p->counter_width = 4;   /* 32 bit counters */
 	p->counter_mask0_9 = COUNTER_MASK0_9;
-<<<<<<< HEAD
-	p->sample_start = cpu_to_be32(ibp->pma_sample_start);
-	p->sample_interval = cpu_to_be32(ibp->pma_sample_interval);
-	p->tag = cpu_to_be16(ibp->pma_tag);
-	p->counter_select[0] = ibp->pma_counter_select[0];
-	p->counter_select[1] = ibp->pma_counter_select[1];
-	p->counter_select[2] = ibp->pma_counter_select[2];
-	p->counter_select[3] = ibp->pma_counter_select[3];
-	p->counter_select[4] = ibp->pma_counter_select[4];
-	spin_unlock_irqrestore(&ibp->lock, flags);
-=======
 	p->sample_start = cpu_to_be32(ibp->rvp.pma_sample_start);
 	p->sample_interval = cpu_to_be32(ibp->rvp.pma_sample_interval);
 	p->tag = cpu_to_be16(ibp->rvp.pma_tag);
@@ -1524,7 +1212,6 @@ static int pma_get_portsamplescontrol(struct ib_pma_mad *pmp,
 	p->counter_select[3] = ibp->rvp.pma_counter_select[3];
 	p->counter_select[4] = ibp->rvp.pma_counter_select[4];
 	spin_unlock_irqrestore(&ibp->rvp.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 bail:
 	return reply((struct ib_smp *) pmp);
@@ -1549,11 +1236,7 @@ static int pma_set_portsamplescontrol(struct ib_pma_mad *pmp,
 		goto bail;
 	}
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&ibp->lock, flags);
-=======
 	spin_lock_irqsave(&ibp->rvp.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Port Sampling code owns the PS* HW counters */
 	xmit_flags = ppd->cong_stats.flags;
@@ -1562,20 +1245,6 @@ static int pma_set_portsamplescontrol(struct ib_pma_mad *pmp,
 	if (status == IB_PMA_SAMPLE_STATUS_DONE ||
 	    (status == IB_PMA_SAMPLE_STATUS_RUNNING &&
 	     xmit_flags == IB_PMA_CONG_HW_CONTROL_TIMER)) {
-<<<<<<< HEAD
-		ibp->pma_sample_start = be32_to_cpu(p->sample_start);
-		ibp->pma_sample_interval = be32_to_cpu(p->sample_interval);
-		ibp->pma_tag = be16_to_cpu(p->tag);
-		ibp->pma_counter_select[0] = p->counter_select[0];
-		ibp->pma_counter_select[1] = p->counter_select[1];
-		ibp->pma_counter_select[2] = p->counter_select[2];
-		ibp->pma_counter_select[3] = p->counter_select[3];
-		ibp->pma_counter_select[4] = p->counter_select[4];
-		dd->f_set_cntr_sample(ppd, ibp->pma_sample_interval,
-				      ibp->pma_sample_start);
-	}
-	spin_unlock_irqrestore(&ibp->lock, flags);
-=======
 		ibp->rvp.pma_sample_start = be32_to_cpu(p->sample_start);
 		ibp->rvp.pma_sample_interval = be32_to_cpu(p->sample_interval);
 		ibp->rvp.pma_tag = be16_to_cpu(p->tag);
@@ -1588,7 +1257,6 @@ static int pma_set_portsamplescontrol(struct ib_pma_mad *pmp,
 				      ibp->rvp.pma_sample_start);
 	}
 	spin_unlock_irqrestore(&ibp->rvp.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = pma_get_portsamplescontrol(pmp, ibdev, port);
 
@@ -1692,13 +1360,8 @@ static int pma_get_portsamplesresult(struct ib_pma_mad *pmp,
 	int i;
 
 	memset(pmp->data, 0, sizeof(pmp->data));
-<<<<<<< HEAD
-	spin_lock_irqsave(&ibp->lock, flags);
-	p->tag = cpu_to_be16(ibp->pma_tag);
-=======
 	spin_lock_irqsave(&ibp->rvp.lock, flags);
 	p->tag = cpu_to_be16(ibp->rvp.pma_tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ppd->cong_stats.flags == IB_PMA_CONG_HW_CONTROL_TIMER)
 		p->sample_status = IB_PMA_SAMPLE_STATUS_DONE;
 	else {
@@ -1713,19 +1376,11 @@ static int pma_get_portsamplesresult(struct ib_pma_mad *pmp,
 			ppd->cong_stats.flags = IB_PMA_CONG_HW_CONTROL_TIMER;
 		}
 	}
-<<<<<<< HEAD
-	for (i = 0; i < ARRAY_SIZE(ibp->pma_counter_select); i++)
-		p->counter[i] = cpu_to_be32(
-			get_cache_hw_sample_counters(
-				ppd, ibp->pma_counter_select[i]));
-	spin_unlock_irqrestore(&ibp->lock, flags);
-=======
 	for (i = 0; i < ARRAY_SIZE(ibp->rvp.pma_counter_select); i++)
 		p->counter[i] = cpu_to_be32(
 			get_cache_hw_sample_counters(
 				ppd, ibp->rvp.pma_counter_select[i]));
 	spin_unlock_irqrestore(&ibp->rvp.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return reply((struct ib_smp *) pmp);
 }
@@ -1745,13 +1400,8 @@ static int pma_get_portsamplesresult_ext(struct ib_pma_mad *pmp,
 
 	/* Port Sampling code owns the PS* HW counters */
 	memset(pmp->data, 0, sizeof(pmp->data));
-<<<<<<< HEAD
-	spin_lock_irqsave(&ibp->lock, flags);
-	p->tag = cpu_to_be16(ibp->pma_tag);
-=======
 	spin_lock_irqsave(&ibp->rvp.lock, flags);
 	p->tag = cpu_to_be16(ibp->rvp.pma_tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ppd->cong_stats.flags == IB_PMA_CONG_HW_CONTROL_TIMER)
 		p->sample_status = IB_PMA_SAMPLE_STATUS_DONE;
 	else {
@@ -1768,19 +1418,11 @@ static int pma_get_portsamplesresult_ext(struct ib_pma_mad *pmp,
 			ppd->cong_stats.flags = IB_PMA_CONG_HW_CONTROL_TIMER;
 		}
 	}
-<<<<<<< HEAD
-	for (i = 0; i < ARRAY_SIZE(ibp->pma_counter_select); i++)
-		p->counter[i] = cpu_to_be64(
-			get_cache_hw_sample_counters(
-				ppd, ibp->pma_counter_select[i]));
-	spin_unlock_irqrestore(&ibp->lock, flags);
-=======
 	for (i = 0; i < ARRAY_SIZE(ibp->rvp.pma_counter_select); i++)
 		p->counter[i] = cpu_to_be64(
 			get_cache_hw_sample_counters(
 				ppd, ibp->rvp.pma_counter_select[i]));
 	spin_unlock_irqrestore(&ibp->rvp.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return reply((struct ib_smp *) pmp);
 }
@@ -1814,11 +1456,7 @@ static int pma_get_portcounters(struct ib_pma_mad *pmp,
 	cntrs.excessive_buffer_overrun_errors -=
 		ibp->z_excessive_buffer_overrun_errors;
 	cntrs.vl15_dropped -= ibp->z_vl15_dropped;
-<<<<<<< HEAD
-	cntrs.vl15_dropped += ibp->n_vl15_dropped;
-=======
 	cntrs.vl15_dropped += ibp->rvp.n_vl15_dropped;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(pmp->data, 0, sizeof(pmp->data));
 
@@ -1911,15 +1549,9 @@ static int pma_get_portcounters_cong(struct ib_pma_mad *pmp,
 		pmp->mad_hdr.status |= IB_SMP_INVALID_FIELD;
 
 	qib_get_counters(ppd, &cntrs);
-<<<<<<< HEAD
-	spin_lock_irqsave(&ppd->ibport_data.lock, flags);
-	xmit_wait_counter = xmit_wait_get_value_delta(ppd);
-	spin_unlock_irqrestore(&ppd->ibport_data.lock, flags);
-=======
 	spin_lock_irqsave(&ppd->ibport_data.rvp.lock, flags);
 	xmit_wait_counter = xmit_wait_get_value_delta(ppd);
 	spin_unlock_irqrestore(&ppd->ibport_data.rvp.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Adjust counters for any resets done. */
 	cntrs.symbol_error_counter -= ibp->z_symbol_error_counter;
@@ -1935,23 +1567,14 @@ static int pma_get_portcounters_cong(struct ib_pma_mad *pmp,
 	cntrs.excessive_buffer_overrun_errors -=
 		ibp->z_excessive_buffer_overrun_errors;
 	cntrs.vl15_dropped -= ibp->z_vl15_dropped;
-<<<<<<< HEAD
-	cntrs.vl15_dropped += ibp->n_vl15_dropped;
-=======
 	cntrs.vl15_dropped += ibp->rvp.n_vl15_dropped;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cntrs.port_xmit_data -= ibp->z_port_xmit_data;
 	cntrs.port_rcv_data -= ibp->z_port_rcv_data;
 	cntrs.port_xmit_packets -= ibp->z_port_xmit_packets;
 	cntrs.port_rcv_packets -= ibp->z_port_rcv_packets;
 
-<<<<<<< HEAD
-	memset(pmp->reserved, 0, sizeof(pmp->reserved) +
-	       sizeof(pmp->data));
-=======
 	memset(pmp->reserved, 0, sizeof(pmp->reserved));
 	memset(pmp->data, 0, sizeof(pmp->data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Set top 3 bits to indicate interval in picoseconds in
@@ -2015,8 +1638,6 @@ static int pma_get_portcounters_cong(struct ib_pma_mad *pmp,
 	return reply((struct ib_smp *)pmp);
 }
 
-<<<<<<< HEAD
-=======
 static void qib_snapshot_pmacounters(
 	struct qib_ibport *ibp,
 	struct qib_pma_counters *pmacounters)
@@ -2034,7 +1655,6 @@ static void qib_snapshot_pmacounters(
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pma_get_portcounters_ext(struct ib_pma_mad *pmp,
 				    struct ib_device *ibdev, u8 port)
 {
@@ -2043,10 +1663,7 @@ static int pma_get_portcounters_ext(struct ib_pma_mad *pmp,
 	struct qib_ibport *ibp = to_iport(ibdev, port);
 	struct qib_pportdata *ppd = ppd_from_ibp(ibp);
 	u64 swords, rwords, spkts, rpkts, xwait;
-<<<<<<< HEAD
-=======
 	struct qib_pma_counters pma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 port_select = p->port_select;
 
 	memset(pmp->data, 0, sizeof(pmp->data));
@@ -2069,12 +1686,6 @@ static int pma_get_portcounters_ext(struct ib_pma_mad *pmp,
 	p->port_rcv_data = cpu_to_be64(rwords);
 	p->port_xmit_packets = cpu_to_be64(spkts);
 	p->port_rcv_packets = cpu_to_be64(rpkts);
-<<<<<<< HEAD
-	p->port_unicast_xmit_packets = cpu_to_be64(ibp->n_unicast_xmit);
-	p->port_unicast_rcv_packets = cpu_to_be64(ibp->n_unicast_rcv);
-	p->port_multicast_xmit_packets = cpu_to_be64(ibp->n_multicast_xmit);
-	p->port_multicast_rcv_packets = cpu_to_be64(ibp->n_multicast_rcv);
-=======
 
 	qib_snapshot_pmacounters(ibp, &pma);
 
@@ -2086,7 +1697,6 @@ static int pma_get_portcounters_ext(struct ib_pma_mad *pmp,
 		- ibp->z_multicast_xmit);
 	p->port_multicast_rcv_packets = cpu_to_be64(pma.n_multicast_rcv
 		- ibp->z_multicast_rcv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 bail:
 	return reply((struct ib_smp *) pmp);
@@ -2136,11 +1746,7 @@ static int pma_set_portcounters(struct ib_pma_mad *pmp,
 			cntrs.excessive_buffer_overrun_errors;
 
 	if (p->counter_select & IB_PMA_SEL_PORT_VL15_DROPPED) {
-<<<<<<< HEAD
-		ibp->n_vl15_dropped = 0;
-=======
 		ibp->rvp.n_vl15_dropped = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ibp->z_vl15_dropped = cntrs.vl15_dropped;
 	}
 
@@ -2175,19 +1781,11 @@ static int pma_set_portcounters_cong(struct ib_pma_mad *pmp,
 	ret = pma_get_portcounters_cong(pmp, ibdev, port);
 
 	if (counter_select & IB_PMA_SEL_CONG_XMIT) {
-<<<<<<< HEAD
-		spin_lock_irqsave(&ppd->ibport_data.lock, flags);
-		ppd->cong_stats.counter = 0;
-		dd->f_set_cntr_sample(ppd, QIB_CONG_TIMER_PSINTERVAL,
-				      0x0);
-		spin_unlock_irqrestore(&ppd->ibport_data.lock, flags);
-=======
 		spin_lock_irqsave(&ppd->ibport_data.rvp.lock, flags);
 		ppd->cong_stats.counter = 0;
 		dd->f_set_cntr_sample(ppd, QIB_CONG_TIMER_PSINTERVAL,
 				      0x0);
 		spin_unlock_irqrestore(&ppd->ibport_data.rvp.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (counter_select & IB_PMA_SEL_CONG_PORT_DATA) {
 		ibp->z_port_xmit_data = cntrs.port_xmit_data;
@@ -2211,11 +1809,7 @@ static int pma_set_portcounters_cong(struct ib_pma_mad *pmp,
 			cntrs.local_link_integrity_errors;
 		ibp->z_excessive_buffer_overrun_errors =
 			cntrs.excessive_buffer_overrun_errors;
-<<<<<<< HEAD
-		ibp->n_vl15_dropped = 0;
-=======
 		ibp->rvp.n_vl15_dropped = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ibp->z_vl15_dropped = cntrs.vl15_dropped;
 	}
 
@@ -2230,10 +1824,7 @@ static int pma_set_portcounters_ext(struct ib_pma_mad *pmp,
 	struct qib_ibport *ibp = to_iport(ibdev, port);
 	struct qib_pportdata *ppd = ppd_from_ibp(ibp);
 	u64 swords, rwords, spkts, rpkts, xwait;
-<<<<<<< HEAD
-=======
 	struct qib_pma_counters pma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	qib_snapshot_counters(ppd, &swords, &rwords, &spkts, &rpkts, &xwait);
 
@@ -2249,19 +1840,6 @@ static int pma_set_portcounters_ext(struct ib_pma_mad *pmp,
 	if (p->counter_select & IB_PMA_SELX_PORT_RCV_PACKETS)
 		ibp->z_port_rcv_packets = rpkts;
 
-<<<<<<< HEAD
-	if (p->counter_select & IB_PMA_SELX_PORT_UNI_XMIT_PACKETS)
-		ibp->n_unicast_xmit = 0;
-
-	if (p->counter_select & IB_PMA_SELX_PORT_UNI_RCV_PACKETS)
-		ibp->n_unicast_rcv = 0;
-
-	if (p->counter_select & IB_PMA_SELX_PORT_MULTI_XMIT_PACKETS)
-		ibp->n_multicast_xmit = 0;
-
-	if (p->counter_select & IB_PMA_SELX_PORT_MULTI_RCV_PACKETS)
-		ibp->n_multicast_rcv = 0;
-=======
 	qib_snapshot_pmacounters(ibp, &pma);
 
 	if (p->counter_select & IB_PMA_SELX_PORT_UNI_XMIT_PACKETS)
@@ -2275,17 +1853,12 @@ static int pma_set_portcounters_ext(struct ib_pma_mad *pmp,
 
 	if (p->counter_select & IB_PMA_SELX_PORT_MULTI_RCV_PACKETS)
 		ibp->z_multicast_rcv = pma.n_multicast_rcv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pma_get_portcounters_ext(pmp, ibdev, port);
 }
 
 static int process_subn(struct ib_device *ibdev, int mad_flags,
-<<<<<<< HEAD
-			u8 port, struct ib_mad *in_mad,
-=======
 			u8 port, const struct ib_mad *in_mad,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct ib_mad *out_mad)
 {
 	struct ib_smp *smp = (struct ib_smp *)out_mad;
@@ -2317,10 +1890,7 @@ static int process_subn(struct ib_device *ibdev, int mad_flags,
 		    port_num && port_num <= ibdev->phys_port_cnt &&
 		    port != port_num)
 			(void) check_mkey(to_iport(ibdev, port_num), smp, 0);
-<<<<<<< HEAD
-=======
 		ret = IB_MAD_RESULT_FAILURE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 
@@ -2349,28 +1919,16 @@ static int process_subn(struct ib_device *ibdev, int mad_flags,
 			ret = subn_get_vl_arb(smp, ibdev, port);
 			goto bail;
 		case IB_SMP_ATTR_SM_INFO:
-<<<<<<< HEAD
-			if (ibp->port_cap_flags & IB_PORT_SM_DISABLED) {
-=======
 			if (ibp->rvp.port_cap_flags & IB_PORT_SM_DISABLED) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = IB_MAD_RESULT_SUCCESS |
 					IB_MAD_RESULT_CONSUMED;
 				goto bail;
 			}
-<<<<<<< HEAD
-			if (ibp->port_cap_flags & IB_PORT_SM) {
-				ret = IB_MAD_RESULT_SUCCESS;
-				goto bail;
-			}
-			/* FALLTHROUGH */
-=======
 			if (ibp->rvp.port_cap_flags & IB_PORT_SM) {
 				ret = IB_MAD_RESULT_SUCCESS;
 				goto bail;
 			}
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			smp->status |= IB_SMP_UNSUP_METH_ATTR;
 			ret = reply(smp);
@@ -2395,28 +1953,16 @@ static int process_subn(struct ib_device *ibdev, int mad_flags,
 			ret = subn_set_vl_arb(smp, ibdev, port);
 			goto bail;
 		case IB_SMP_ATTR_SM_INFO:
-<<<<<<< HEAD
-			if (ibp->port_cap_flags & IB_PORT_SM_DISABLED) {
-=======
 			if (ibp->rvp.port_cap_flags & IB_PORT_SM_DISABLED) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = IB_MAD_RESULT_SUCCESS |
 					IB_MAD_RESULT_CONSUMED;
 				goto bail;
 			}
-<<<<<<< HEAD
-			if (ibp->port_cap_flags & IB_PORT_SM) {
-				ret = IB_MAD_RESULT_SUCCESS;
-				goto bail;
-			}
-			/* FALLTHROUGH */
-=======
 			if (ibp->rvp.port_cap_flags & IB_PORT_SM) {
 				ret = IB_MAD_RESULT_SUCCESS;
 				goto bail;
 			}
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			smp->status |= IB_SMP_UNSUP_METH_ATTR;
 			ret = reply(smp);
@@ -2464,11 +2010,7 @@ bail:
 }
 
 static int process_perf(struct ib_device *ibdev, u8 port,
-<<<<<<< HEAD
-			struct ib_mad *in_mad,
-=======
 			const struct ib_mad *in_mad,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct ib_mad *out_mad)
 {
 	struct ib_pma_mad *pmp = (struct ib_pma_mad *)out_mad;
@@ -2550,8 +2092,6 @@ bail:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int cc_get_classportinfo(struct ib_cc_mad *ccp,
 				struct ib_device *ibdev)
 {
@@ -2799,7 +2339,6 @@ static int process_cc(struct ib_device *ibdev, int mad_flags,
 	return reply((struct ib_smp *) ccp);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * qib_process_mad - process an incoming MAD packet
  * @ibdev: the infiniband device this packet came in on
@@ -2807,15 +2346,10 @@ static int process_cc(struct ib_device *ibdev, int mad_flags,
  * @port: the port number this packet came in on
  * @in_wc: the work completion entry for this packet
  * @in_grh: the global route header for this packet
-<<<<<<< HEAD
- * @in_mad: the incoming MAD
- * @out_mad: any outgoing MAD reply
-=======
  * @in: the incoming MAD
  * @out: any outgoing MAD reply
  * @out_mad_size: size of the outgoing MAD reply
  * @out_mad_pkey_index: unused
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns IB_MAD_RESULT_SUCCESS if this is a MAD that we are not
  * interested in processing.
@@ -2826,22 +2360,6 @@ static int process_cc(struct ib_device *ibdev, int mad_flags,
  *
  * This is called by the ib_mad module.
  */
-<<<<<<< HEAD
-int qib_process_mad(struct ib_device *ibdev, int mad_flags, u8 port,
-		    struct ib_wc *in_wc, struct ib_grh *in_grh,
-		    struct ib_mad *in_mad, struct ib_mad *out_mad)
-{
-	int ret;
-
-	switch (in_mad->mad_hdr.mgmt_class) {
-	case IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE:
-	case IB_MGMT_CLASS_SUBN_LID_ROUTED:
-		ret = process_subn(ibdev, mad_flags, port, in_mad, out_mad);
-		goto bail;
-
-	case IB_MGMT_CLASS_PERF_MGMT:
-		ret = process_perf(ibdev, port, in_mad, out_mad);
-=======
 int qib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port,
 		    const struct ib_wc *in_wc, const struct ib_grh *in_grh,
 		    const struct ib_mad *in, struct ib_mad *out,
@@ -2868,7 +2386,6 @@ int qib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port,
 			goto bail;
 		}
 		ret = process_cc(ibdev, mad_flags, port, in, out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 
 	default:
@@ -2879,30 +2396,14 @@ bail:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void send_handler(struct ib_mad_agent *agent,
-			 struct ib_mad_send_wc *mad_send_wc)
-{
-	ib_free_send_mad(mad_send_wc->send_buf);
-}
-
-static void xmit_wait_timer_func(unsigned long opaque)
-{
-	struct qib_pportdata *ppd = (struct qib_pportdata *)opaque;
-=======
 static void xmit_wait_timer_func(struct timer_list *t)
 {
 	struct qib_pportdata *ppd = from_timer(ppd, t, cong_stats.timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qib_devdata *dd = dd_from_ppd(ppd);
 	unsigned long flags;
 	u8 status;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&ppd->ibport_data.lock, flags);
-=======
 	spin_lock_irqsave(&ppd->ibport_data.rvp.lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ppd->cong_stats.flags == IB_PMA_CONG_HW_CONTROL_SAMPLE) {
 		status = dd->f_portcntr(ppd, QIBPORTCNTR_PSSTAT);
 		if (status == IB_PMA_SAMPLE_STATUS_DONE) {
@@ -2915,78 +2416,6 @@ static void xmit_wait_timer_func(struct timer_list *t)
 	ppd->cong_stats.counter = xmit_wait_get_value_delta(ppd);
 	dd->f_set_cntr_sample(ppd, QIB_CONG_TIMER_PSINTERVAL, 0x0);
 done:
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&ppd->ibport_data.lock, flags);
-	mod_timer(&ppd->cong_stats.timer, jiffies + HZ);
-}
-
-int qib_create_agents(struct qib_ibdev *dev)
-{
-	struct qib_devdata *dd = dd_from_dev(dev);
-	struct ib_mad_agent *agent;
-	struct qib_ibport *ibp;
-	int p;
-	int ret;
-
-	for (p = 0; p < dd->num_pports; p++) {
-		ibp = &dd->pport[p].ibport_data;
-		agent = ib_register_mad_agent(&dev->ibdev, p + 1, IB_QPT_SMI,
-					      NULL, 0, send_handler,
-					      NULL, NULL);
-		if (IS_ERR(agent)) {
-			ret = PTR_ERR(agent);
-			goto err;
-		}
-
-		/* Initialize xmit_wait structure */
-		dd->pport[p].cong_stats.counter = 0;
-		init_timer(&dd->pport[p].cong_stats.timer);
-		dd->pport[p].cong_stats.timer.function = xmit_wait_timer_func;
-		dd->pport[p].cong_stats.timer.data =
-			(unsigned long)(&dd->pport[p]);
-		dd->pport[p].cong_stats.timer.expires = 0;
-		add_timer(&dd->pport[p].cong_stats.timer);
-
-		ibp->send_agent = agent;
-	}
-
-	return 0;
-
-err:
-	for (p = 0; p < dd->num_pports; p++) {
-		ibp = &dd->pport[p].ibport_data;
-		if (ibp->send_agent) {
-			agent = ibp->send_agent;
-			ibp->send_agent = NULL;
-			ib_unregister_mad_agent(agent);
-		}
-	}
-
-	return ret;
-}
-
-void qib_free_agents(struct qib_ibdev *dev)
-{
-	struct qib_devdata *dd = dd_from_dev(dev);
-	struct ib_mad_agent *agent;
-	struct qib_ibport *ibp;
-	int p;
-
-	for (p = 0; p < dd->num_pports; p++) {
-		ibp = &dd->pport[p].ibport_data;
-		if (ibp->send_agent) {
-			agent = ibp->send_agent;
-			ibp->send_agent = NULL;
-			ib_unregister_mad_agent(agent);
-		}
-		if (ibp->sm_ah) {
-			ib_destroy_ah(&ibp->sm_ah->ibah);
-			ibp->sm_ah = NULL;
-		}
-		if (dd->pport[p].cong_stats.timer.data)
-			del_timer_sync(&dd->pport[p].cong_stats.timer);
-	}
-=======
 	spin_unlock_irqrestore(&ppd->ibport_data.rvp.lock, flags);
 	mod_timer(&ppd->cong_stats.timer, jiffies + HZ);
 }
@@ -3017,5 +2446,4 @@ void qib_notify_free_mad_agent(struct rvt_dev_info *rdi, int port_idx)
 	if (dd->pport[port_idx].ibport_data.smi_ah)
 		rdma_destroy_ah(&dd->pport[port_idx].ibport_data.smi_ah->ibah,
 				RDMA_DESTROY_AH_SLEEPABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

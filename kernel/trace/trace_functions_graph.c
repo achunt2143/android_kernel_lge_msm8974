@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Function graph tracer.
@@ -10,15 +7,9 @@
  * is Copyright (c) Steven Rostedt <srostedt@redhat.com>
  *
  */
-<<<<<<< HEAD
-#include <linux/debugfs.h>
-#include <linux/uaccess.h>
-#include <linux/ftrace.h>
-=======
 #include <linux/uaccess.h>
 #include <linux/ftrace.h>
 #include <linux/interrupt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/fs.h>
 
@@ -48,18 +39,7 @@ struct fgraph_data {
 
 #define TRACE_GRAPH_INDENT	2
 
-<<<<<<< HEAD
-/* Flag options */
-#define TRACE_GRAPH_PRINT_OVERRUN	0x1
-#define TRACE_GRAPH_PRINT_CPU		0x2
-#define TRACE_GRAPH_PRINT_OVERHEAD	0x4
-#define TRACE_GRAPH_PRINT_PROC		0x8
-#define TRACE_GRAPH_PRINT_DURATION	0x10
-#define TRACE_GRAPH_PRINT_ABS_TIME	0x20
-#define TRACE_GRAPH_PRINT_IRQS		0x40
-=======
 unsigned int fgraph_max_depth;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct tracer_opt trace_opts[] = {
 	/* Display overruns? (for self-debug purpose) */
@@ -76,8 +56,6 @@ static struct tracer_opt trace_opts[] = {
 	{ TRACER_OPT(funcgraph-abstime, TRACE_GRAPH_PRINT_ABS_TIME) },
 	/* Display interrupts */
 	{ TRACER_OPT(funcgraph-irqs, TRACE_GRAPH_PRINT_IRQS) },
-<<<<<<< HEAD
-=======
 	/* Display function name after trailing } */
 	{ TRACER_OPT(funcgraph-tail, TRACE_GRAPH_PRINT_TAIL) },
 #ifdef CONFIG_FUNCTION_GRAPH_RETVAL
@@ -94,21 +72,14 @@ static struct tracer_opt trace_opts[] = {
 	{ TRACER_OPT(graph-time, TRACE_GRAPH_GRAPH_TIME) },
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ } /* Empty entry */
 };
 
 static struct tracer_flags tracer_flags = {
-<<<<<<< HEAD
-	/* Don't display overruns and proc by default */
-	.val = TRACE_GRAPH_PRINT_CPU | TRACE_GRAPH_PRINT_OVERHEAD |
-	       TRACE_GRAPH_PRINT_DURATION | TRACE_GRAPH_PRINT_IRQS,
-=======
 	/* Don't display overruns, proc, or tail by default */
 	.val = TRACE_GRAPH_PRINT_CPU | TRACE_GRAPH_PRINT_OVERHEAD |
 	       TRACE_GRAPH_PRINT_DURATION | TRACE_GRAPH_PRINT_IRQS |
 	       TRACE_GRAPH_SLEEP_TIME | TRACE_GRAPH_GRAPH_TIME,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.opts = trace_opts
 };
 
@@ -120,143 +91,6 @@ static struct trace_array *graph_array;
  * to fill in space into DURATION column.
  */
 enum {
-<<<<<<< HEAD
-	DURATION_FILL_FULL  = -1,
-	DURATION_FILL_START = -2,
-	DURATION_FILL_END   = -3,
-};
-
-static enum print_line_t
-print_graph_duration(unsigned long long duration, struct trace_seq *s,
-		     u32 flags);
-
-/* Add a function return address to the trace stack on thread info.*/
-int
-ftrace_push_return_trace(unsigned long ret, unsigned long func, int *depth,
-			 unsigned long frame_pointer)
-{
-	unsigned long long calltime;
-	int index;
-
-	if (!current->ret_stack)
-		return -EBUSY;
-
-	/*
-	 * We must make sure the ret_stack is tested before we read
-	 * anything else.
-	 */
-	smp_rmb();
-
-	/* The return trace stack is full */
-	if (current->curr_ret_stack == FTRACE_RETFUNC_DEPTH - 1) {
-		atomic_inc(&current->trace_overrun);
-		return -EBUSY;
-	}
-
-	calltime = trace_clock_local();
-
-	index = ++current->curr_ret_stack;
-	barrier();
-	current->ret_stack[index].ret = ret;
-	current->ret_stack[index].func = func;
-	current->ret_stack[index].calltime = calltime;
-	current->ret_stack[index].subtime = 0;
-	current->ret_stack[index].fp = frame_pointer;
-	*depth = index;
-
-	return 0;
-}
-
-/* Retrieve a function return address to the trace stack on thread info.*/
-static void
-ftrace_pop_return_trace(struct ftrace_graph_ret *trace, unsigned long *ret,
-			unsigned long frame_pointer)
-{
-	int index;
-
-	index = current->curr_ret_stack;
-
-	if (unlikely(index < 0)) {
-		ftrace_graph_stop();
-		WARN_ON(1);
-		/* Might as well panic, otherwise we have no where to go */
-		*ret = (unsigned long)panic;
-		return;
-	}
-
-#ifdef CONFIG_HAVE_FUNCTION_GRAPH_FP_TEST
-	/*
-	 * The arch may choose to record the frame pointer used
-	 * and check it here to make sure that it is what we expect it
-	 * to be. If gcc does not set the place holder of the return
-	 * address in the frame pointer, and does a copy instead, then
-	 * the function graph trace will fail. This test detects this
-	 * case.
-	 *
-	 * Currently, x86_32 with optimize for size (-Os) makes the latest
-	 * gcc do the above.
-	 */
-	if (unlikely(current->ret_stack[index].fp != frame_pointer)) {
-		ftrace_graph_stop();
-		WARN(1, "Bad frame pointer: expected %lx, received %lx\n"
-		     "  from func %ps return to %lx\n",
-		     current->ret_stack[index].fp,
-		     frame_pointer,
-		     (void *)current->ret_stack[index].func,
-		     current->ret_stack[index].ret);
-		*ret = (unsigned long)panic;
-		return;
-	}
-#endif
-
-	*ret = current->ret_stack[index].ret;
-	trace->func = current->ret_stack[index].func;
-	trace->calltime = current->ret_stack[index].calltime;
-	trace->overrun = atomic_read(&current->trace_overrun);
-	trace->depth = index;
-}
-
-/*
- * Send the trace to the ring-buffer.
- * @return the original return address.
- */
-unsigned long ftrace_return_to_handler(unsigned long frame_pointer)
-{
-	struct ftrace_graph_ret trace;
-	unsigned long ret;
-
-	ftrace_pop_return_trace(&trace, &ret, frame_pointer);
-	trace.rettime = trace_clock_local();
-	ftrace_graph_return(&trace);
-	barrier();
-	current->curr_ret_stack--;
-
-	if (unlikely(!ret)) {
-		ftrace_graph_stop();
-		WARN_ON(1);
-		/* Might as well panic. What else to do? */
-		ret = (unsigned long)panic;
-	}
-
-	return ret;
-}
-
-int __trace_graph_entry(struct trace_array *tr,
-				struct ftrace_graph_ent *trace,
-				unsigned long flags,
-				int pc)
-{
-	struct ftrace_event_call *call = &event_funcgraph_entry;
-	struct ring_buffer_event *event;
-	struct ring_buffer *buffer = tr->buffer;
-	struct ftrace_graph_ent_entry *entry;
-
-	if (unlikely(__this_cpu_read(ftrace_cpu_disabled)))
-		return 0;
-
-	event = trace_buffer_lock_reserve(buffer, TRACE_GRAPH_ENT,
-					  sizeof(*entry), flags, pc);
-=======
 	FLAGS_FILL_FULL  = 1 << TRACE_GRAPH_PRINT_FILL_SHIFT,
 	FLAGS_FILL_START = 2 << TRACE_GRAPH_PRINT_FILL_SHIFT,
 	FLAGS_FILL_END   = 3 << TRACE_GRAPH_PRINT_FILL_SHIFT,
@@ -277,18 +111,12 @@ int __trace_graph_entry(struct trace_array *tr,
 
 	event = trace_buffer_lock_reserve(buffer, TRACE_GRAPH_ENT,
 					  sizeof(*entry), trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!event)
 		return 0;
 	entry	= ring_buffer_event_data(event);
 	entry->graph_ent			= *trace;
-<<<<<<< HEAD
-	if (!filter_current_check_discard(buffer, call, entry, event))
-		ring_buffer_unlock_commit(buffer, event);
-=======
 	if (!call_filter_check_discard(call, entry, buffer, event))
 		trace_buffer_unlock_commit_nostack(buffer, event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -298,11 +126,7 @@ static inline int ftrace_graph_ignore_irqs(void)
 	if (!ftrace_graph_skip_irqs || trace_recursion_test(TRACE_IRQ_BIT))
 		return 0;
 
-<<<<<<< HEAD
-	return in_irq();
-=======
 	return in_hardirq();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int trace_graph_entry(struct ftrace_graph_ent *trace)
@@ -310,28 +134,6 @@ int trace_graph_entry(struct ftrace_graph_ent *trace)
 	struct trace_array *tr = graph_array;
 	struct trace_array_cpu *data;
 	unsigned long flags;
-<<<<<<< HEAD
-	long disabled;
-	int ret;
-	int cpu;
-	int pc;
-
-	if (!ftrace_trace_task(current))
-		return 0;
-
-	/* trace it when it is-nested-in or is a function enabled. */
-	if (!(trace->depth || ftrace_graph_addr(trace->func)) ||
-	      ftrace_graph_ignore_irqs())
-		return 0;
-
-	local_irq_save(flags);
-	cpu = raw_smp_processor_id();
-	data = tr->data[cpu];
-	disabled = atomic_inc_return(&data->disabled);
-	if (likely(disabled == 1)) {
-		pc = preempt_count();
-		ret = __trace_graph_entry(tr, trace, flags, pc);
-=======
 	unsigned int trace_ctx;
 	long disabled;
 	int ret;
@@ -379,7 +181,6 @@ int trace_graph_entry(struct ftrace_graph_ent *trace)
 	if (likely(disabled == 1)) {
 		trace_ctx = tracing_gen_ctx_flags(flags);
 		ret = __trace_graph_entry(tr, trace, trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		ret = 0;
 	}
@@ -390,23 +191,9 @@ int trace_graph_entry(struct ftrace_graph_ent *trace)
 	return ret;
 }
 
-<<<<<<< HEAD
-int trace_graph_thresh_entry(struct ftrace_graph_ent *trace)
-{
-	if (tracing_thresh)
-		return 1;
-	else
-		return trace_graph_entry(trace);
-}
-
-static void
-__trace_graph_function(struct trace_array *tr,
-		unsigned long ip, unsigned long flags, int pc)
-=======
 static void
 __trace_graph_function(struct trace_array *tr,
 		unsigned long ip, unsigned int trace_ctx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 time = trace_clock_local();
 	struct ftrace_graph_ent ent = {
@@ -420,46 +207,20 @@ __trace_graph_function(struct trace_array *tr,
 		.rettime  = time,
 	};
 
-<<<<<<< HEAD
-	__trace_graph_entry(tr, &ent, flags, pc);
-	__trace_graph_return(tr, &ret, flags, pc);
-=======
 	__trace_graph_entry(tr, &ent, trace_ctx);
 	__trace_graph_return(tr, &ret, trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
 trace_graph_function(struct trace_array *tr,
 		unsigned long ip, unsigned long parent_ip,
-<<<<<<< HEAD
-		unsigned long flags, int pc)
-{
-	__trace_graph_function(tr, ip, flags, pc);
-=======
 		unsigned int trace_ctx)
 {
 	__trace_graph_function(tr, ip, trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __trace_graph_return(struct trace_array *tr,
 				struct ftrace_graph_ret *trace,
-<<<<<<< HEAD
-				unsigned long flags,
-				int pc)
-{
-	struct ftrace_event_call *call = &event_funcgraph_exit;
-	struct ring_buffer_event *event;
-	struct ring_buffer *buffer = tr->buffer;
-	struct ftrace_graph_ret_entry *entry;
-
-	if (unlikely(__this_cpu_read(ftrace_cpu_disabled)))
-		return;
-
-	event = trace_buffer_lock_reserve(buffer, TRACE_GRAPH_RET,
-					  sizeof(*entry), flags, pc);
-=======
 				unsigned int trace_ctx)
 {
 	struct trace_event_call *call = &event_funcgraph_exit;
@@ -469,18 +230,12 @@ void __trace_graph_return(struct trace_array *tr,
 
 	event = trace_buffer_lock_reserve(buffer, TRACE_GRAPH_RET,
 					  sizeof(*entry), trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!event)
 		return;
 	entry	= ring_buffer_event_data(event);
 	entry->ret				= *trace;
-<<<<<<< HEAD
-	if (!filter_current_check_discard(buffer, call, entry, event))
-		ring_buffer_unlock_commit(buffer, event);
-=======
 	if (!call_filter_check_discard(call, entry, buffer, event))
 		trace_buffer_unlock_commit_nostack(buffer, event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void trace_graph_return(struct ftrace_graph_ret *trace)
@@ -488,19 +243,6 @@ void trace_graph_return(struct ftrace_graph_ret *trace)
 	struct trace_array *tr = graph_array;
 	struct trace_array_cpu *data;
 	unsigned long flags;
-<<<<<<< HEAD
-	long disabled;
-	int cpu;
-	int pc;
-
-	local_irq_save(flags);
-	cpu = raw_smp_processor_id();
-	data = tr->data[cpu];
-	disabled = atomic_inc_return(&data->disabled);
-	if (likely(disabled == 1)) {
-		pc = preempt_count();
-		__trace_graph_return(tr, trace, flags, pc);
-=======
 	unsigned int trace_ctx;
 	long disabled;
 	int cpu;
@@ -519,7 +261,6 @@ void trace_graph_return(struct ftrace_graph_ret *trace)
 	if (likely(disabled == 1)) {
 		trace_ctx = tracing_gen_ctx_flags(flags);
 		__trace_graph_return(tr, trace, trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	atomic_dec(&data->disabled);
 	local_irq_restore(flags);
@@ -534,10 +275,6 @@ void set_graph_array(struct trace_array *tr)
 	smp_mb();
 }
 
-<<<<<<< HEAD
-void trace_graph_thresh_return(struct ftrace_graph_ret *trace)
-{
-=======
 static void trace_graph_thresh_return(struct ftrace_graph_ret *trace)
 {
 	ftrace_graph_addr_finish(trace);
@@ -547,7 +284,6 @@ static void trace_graph_thresh_return(struct ftrace_graph_ret *trace)
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tracing_thresh &&
 	    (trace->rettime - trace->calltime < tracing_thresh))
 		return;
@@ -555,8 +291,6 @@ static void trace_graph_thresh_return(struct ftrace_graph_ret *trace)
 		trace_graph_return(trace);
 }
 
-<<<<<<< HEAD
-=======
 static struct fgraph_ops funcgraph_thresh_ops = {
 	.entryfunc = &trace_graph_entry,
 	.retfunc = &trace_graph_thresh_return,
@@ -567,24 +301,15 @@ static struct fgraph_ops funcgraph_ops = {
 	.retfunc = &trace_graph_return,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int graph_trace_init(struct trace_array *tr)
 {
 	int ret;
 
 	set_graph_array(tr);
 	if (tracing_thresh)
-<<<<<<< HEAD
-		ret = register_ftrace_graph(&trace_graph_thresh_return,
-					    &trace_graph_thresh_entry);
-	else
-		ret = register_ftrace_graph(&trace_graph_return,
-					    &trace_graph_entry);
-=======
 		ret = register_ftrace_graph(&funcgraph_thresh_ops);
 	else
 		ret = register_ftrace_graph(&funcgraph_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 	tracing_start_cmdline_record();
@@ -595,9 +320,6 @@ static int graph_trace_init(struct trace_array *tr)
 static void graph_trace_reset(struct trace_array *tr)
 {
 	tracing_stop_cmdline_record();
-<<<<<<< HEAD
-	unregister_ftrace_graph();
-=======
 	if (tracing_thresh)
 		unregister_ftrace_graph(&funcgraph_thresh_ops);
 	else
@@ -608,54 +330,28 @@ static int graph_trace_update_thresh(struct trace_array *tr)
 {
 	graph_trace_reset(tr);
 	return graph_trace_init(tr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int max_bytes_for_cpu;
 
-<<<<<<< HEAD
-static enum print_line_t
-print_graph_cpu(struct trace_seq *s, int cpu)
-{
-	int ret;
-
-=======
 static void print_graph_cpu(struct trace_seq *s, int cpu)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Start with a space character - to make it stand out
 	 * to the right a bit when trace output is pasted into
 	 * email:
 	 */
-<<<<<<< HEAD
-	ret = trace_seq_printf(s, " %*d) ", max_bytes_for_cpu, cpu);
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	return TRACE_TYPE_HANDLED;
-=======
 	trace_seq_printf(s, " %*d) ", max_bytes_for_cpu, cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define TRACE_GRAPH_PROCINFO_LENGTH	14
 
-<<<<<<< HEAD
-static enum print_line_t
-print_graph_proc(struct trace_seq *s, pid_t pid)
-=======
 static void print_graph_proc(struct trace_seq *s, pid_t pid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char comm[TASK_COMM_LEN];
 	/* sign + log10(MAX_INT) + '\0' */
 	char pid_str[11];
 	int spaces = 0;
-<<<<<<< HEAD
-	int ret;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int len;
 	int i;
 
@@ -670,39 +366,6 @@ static void print_graph_proc(struct trace_seq *s, pid_t pid)
 		spaces = TRACE_GRAPH_PROCINFO_LENGTH - len;
 
 	/* First spaces to align center */
-<<<<<<< HEAD
-	for (i = 0; i < spaces / 2; i++) {
-		ret = trace_seq_printf(s, " ");
-		if (!ret)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-
-	ret = trace_seq_printf(s, "%s-%s", comm, pid_str);
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	/* Last spaces to align center */
-	for (i = 0; i < spaces - (spaces / 2); i++) {
-		ret = trace_seq_printf(s, " ");
-		if (!ret)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-	return TRACE_TYPE_HANDLED;
-}
-
-
-static enum print_line_t
-print_graph_lat_fmt(struct trace_seq *s, struct trace_entry *entry)
-{
-	if (!trace_seq_putc(s, ' '))
-		return 0;
-
-	return trace_print_lat_fmt(s, entry);
-}
-
-/* If the pid changed since the last trace, output this event */
-static enum print_line_t
-=======
 	for (i = 0; i < spaces / 2; i++)
 		trace_seq_putc(s, ' ');
 
@@ -723,40 +386,24 @@ static void print_graph_lat_fmt(struct trace_seq *s, struct trace_entry *entry)
 
 /* If the pid changed since the last trace, output this event */
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 verif_pid(struct trace_seq *s, pid_t pid, int cpu, struct fgraph_data *data)
 {
 	pid_t prev_pid;
 	pid_t *last_pid;
-<<<<<<< HEAD
-	int ret;
-
-	if (!data)
-		return TRACE_TYPE_HANDLED;
-=======
 
 	if (!data)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	last_pid = &(per_cpu_ptr(data->cpu_data, cpu)->last_pid);
 
 	if (*last_pid == pid)
-<<<<<<< HEAD
-		return TRACE_TYPE_HANDLED;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	prev_pid = *last_pid;
 	*last_pid = pid;
 
 	if (prev_pid == -1)
-<<<<<<< HEAD
-		return TRACE_TYPE_HANDLED;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Context-switch trace line:
 
@@ -765,42 +412,12 @@ verif_pid(struct trace_seq *s, pid_t pid, int cpu, struct fgraph_data *data)
  ------------------------------------------
 
  */
-<<<<<<< HEAD
-	ret = trace_seq_printf(s,
-		" ------------------------------------------\n");
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	ret = print_graph_cpu(s, cpu);
-	if (ret == TRACE_TYPE_PARTIAL_LINE)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	ret = print_graph_proc(s, prev_pid);
-	if (ret == TRACE_TYPE_PARTIAL_LINE)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	ret = trace_seq_printf(s, " => ");
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	ret = print_graph_proc(s, pid);
-	if (ret == TRACE_TYPE_PARTIAL_LINE)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	ret = trace_seq_printf(s,
-		"\n ------------------------------------------\n\n");
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	return TRACE_TYPE_HANDLED;
-=======
 	trace_seq_puts(s, " ------------------------------------------\n");
 	print_graph_cpu(s, cpu);
 	print_graph_proc(s, prev_pid);
 	trace_seq_puts(s, " => ");
 	print_graph_proc(s, pid);
 	trace_seq_puts(s, "\n ------------------------------------------\n\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct ftrace_graph_ret_entry *
@@ -821,11 +438,7 @@ get_return_for_leaf(struct trace_iterator *iter,
 		next = &data->ret;
 	} else {
 
-<<<<<<< HEAD
-		ring_iter = iter->buffer_iter[iter->cpu];
-=======
 		ring_iter = trace_buffer_iter(iter, iter->cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* First peek to compare current entry and the next one */
 		if (ring_iter)
@@ -835,15 +448,9 @@ get_return_for_leaf(struct trace_iterator *iter,
 			 * We need to consume the current entry to see
 			 * the next one.
 			 */
-<<<<<<< HEAD
-			ring_buffer_consume(iter->tr->buffer, iter->cpu,
-					    NULL, NULL);
-			event = ring_buffer_peek(iter->tr->buffer, iter->cpu,
-=======
 			ring_buffer_consume(iter->array_buffer->buffer, iter->cpu,
 					    NULL, NULL);
 			event = ring_buffer_peek(iter->array_buffer->buffer, iter->cpu,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 NULL, NULL);
 		}
 
@@ -879,94 +486,18 @@ get_return_for_leaf(struct trace_iterator *iter,
 
 	/* this is a leaf, now advance the iterator */
 	if (ring_iter)
-<<<<<<< HEAD
-		ring_buffer_read(ring_iter, NULL);
-=======
 		ring_buffer_iter_advance(ring_iter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return next;
 }
 
-<<<<<<< HEAD
-static int print_graph_abs_time(u64 t, struct trace_seq *s)
-=======
 static void print_graph_abs_time(u64 t, struct trace_seq *s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long usecs_rem;
 
 	usecs_rem = do_div(t, NSEC_PER_SEC);
 	usecs_rem /= 1000;
 
-<<<<<<< HEAD
-	return trace_seq_printf(s, "%5lu.%06lu |  ",
-			(unsigned long)t, usecs_rem);
-}
-
-static enum print_line_t
-print_graph_irq(struct trace_iterator *iter, unsigned long addr,
-		enum trace_type type, int cpu, pid_t pid, u32 flags)
-{
-	int ret;
-	struct trace_seq *s = &iter->seq;
-
-	if (addr < (unsigned long)__irqentry_text_start ||
-		addr >= (unsigned long)__irqentry_text_end)
-		return TRACE_TYPE_UNHANDLED;
-
-	if (trace_flags & TRACE_ITER_CONTEXT_INFO) {
-		/* Absolute time */
-		if (flags & TRACE_GRAPH_PRINT_ABS_TIME) {
-			ret = print_graph_abs_time(iter->ts, s);
-			if (!ret)
-				return TRACE_TYPE_PARTIAL_LINE;
-		}
-
-		/* Cpu */
-		if (flags & TRACE_GRAPH_PRINT_CPU) {
-			ret = print_graph_cpu(s, cpu);
-			if (ret == TRACE_TYPE_PARTIAL_LINE)
-				return TRACE_TYPE_PARTIAL_LINE;
-		}
-
-		/* Proc */
-		if (flags & TRACE_GRAPH_PRINT_PROC) {
-			ret = print_graph_proc(s, pid);
-			if (ret == TRACE_TYPE_PARTIAL_LINE)
-				return TRACE_TYPE_PARTIAL_LINE;
-			ret = trace_seq_printf(s, " | ");
-			if (!ret)
-				return TRACE_TYPE_PARTIAL_LINE;
-		}
-	}
-
-	/* No overhead */
-	ret = print_graph_duration(DURATION_FILL_START, s, flags);
-	if (ret != TRACE_TYPE_HANDLED)
-		return ret;
-
-	if (type == TRACE_GRAPH_ENT)
-		ret = trace_seq_printf(s, "==========>");
-	else
-		ret = trace_seq_printf(s, "<==========");
-
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	ret = print_graph_duration(DURATION_FILL_END, s, flags);
-	if (ret != TRACE_TYPE_HANDLED)
-		return ret;
-
-	ret = trace_seq_printf(s, "\n");
-
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-	return TRACE_TYPE_HANDLED;
-}
-
-enum print_line_t
-=======
 	trace_seq_printf(s, "%5lu.%06lu |  ",
 			 (unsigned long)t, usecs_rem);
 }
@@ -1031,26 +562,10 @@ print_graph_irq(struct trace_iterator *iter, unsigned long addr,
 }
 
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 trace_print_graph_duration(unsigned long long duration, struct trace_seq *s)
 {
 	unsigned long nsecs_rem = do_div(duration, 1000);
 	/* log10(ULONG_MAX) + '\0' */
-<<<<<<< HEAD
-	char msecs_str[21];
-	char nsecs_str[5];
-	int ret, len;
-	int i;
-
-	sprintf(msecs_str, "%lu", (unsigned long) duration);
-
-	/* Print msecs */
-	ret = trace_seq_printf(s, "%s", msecs_str);
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	len = strlen(msecs_str);
-=======
 	char usecs_str[21];
 	char nsecs_str[5];
 	int len;
@@ -1062,90 +577,12 @@ trace_print_graph_duration(unsigned long long duration, struct trace_seq *s)
 	trace_seq_printf(s, "%s", usecs_str);
 
 	len = strlen(usecs_str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Print nsecs (we don't want to exceed 7 numbers) */
 	if (len < 7) {
 		size_t slen = min_t(size_t, sizeof(nsecs_str), 8UL - len);
 
 		snprintf(nsecs_str, slen, "%03lu", nsecs_rem);
-<<<<<<< HEAD
-		ret = trace_seq_printf(s, ".%s", nsecs_str);
-		if (!ret)
-			return TRACE_TYPE_PARTIAL_LINE;
-		len += strlen(nsecs_str);
-	}
-
-	ret = trace_seq_printf(s, " us ");
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	/* Print remaining spaces to fit the row's width */
-	for (i = len; i < 7; i++) {
-		ret = trace_seq_printf(s, " ");
-		if (!ret)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-	return TRACE_TYPE_HANDLED;
-}
-
-static enum print_line_t
-print_graph_duration(unsigned long long duration, struct trace_seq *s,
-		     u32 flags)
-{
-	int ret = -1;
-
-	if (!(flags & TRACE_GRAPH_PRINT_DURATION) ||
-	    !(trace_flags & TRACE_ITER_CONTEXT_INFO))
-			return TRACE_TYPE_HANDLED;
-
-	/* No real adata, just filling the column with spaces */
-	switch (duration) {
-	case DURATION_FILL_FULL:
-		ret = trace_seq_printf(s, "              |  ");
-		return ret ? TRACE_TYPE_HANDLED : TRACE_TYPE_PARTIAL_LINE;
-	case DURATION_FILL_START:
-		ret = trace_seq_printf(s, "  ");
-		return ret ? TRACE_TYPE_HANDLED : TRACE_TYPE_PARTIAL_LINE;
-	case DURATION_FILL_END:
-		ret = trace_seq_printf(s, " |");
-		return ret ? TRACE_TYPE_HANDLED : TRACE_TYPE_PARTIAL_LINE;
-	}
-
-	/* Signal a overhead of time execution to the output */
-	if (flags & TRACE_GRAPH_PRINT_OVERHEAD) {
-		/* Duration exceeded 100 msecs */
-		if (duration > 100000ULL)
-			ret = trace_seq_printf(s, "! ");
-		/* Duration exceeded 10 msecs */
-		else if (duration > 10000ULL)
-			ret = trace_seq_printf(s, "+ ");
-	}
-
-	/*
-	 * The -1 means we either did not exceed the duration tresholds
-	 * or we dont want to print out the overhead. Either way we need
-	 * to fill out the space.
-	 */
-	if (ret == -1)
-		ret = trace_seq_printf(s, "  ");
-
-	/* Catching here any failure happenned above */
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	ret = trace_print_graph_duration(duration, s);
-	if (ret != TRACE_TYPE_HANDLED)
-		return ret;
-
-	ret = trace_seq_printf(s, "|  ");
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	return TRACE_TYPE_HANDLED;
-}
-
-=======
 		trace_seq_printf(s, ".%s", nsecs_str);
 		len += strlen(nsecs_str) + 1;
 	}
@@ -1238,7 +675,6 @@ done:
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Case of a leaf function on its call entry */
 static enum print_line_t
 print_graph_entry_leaf(struct trace_iterator *iter,
@@ -1247,18 +683,11 @@ print_graph_entry_leaf(struct trace_iterator *iter,
 		struct trace_seq *s, u32 flags)
 {
 	struct fgraph_data *data = iter->private;
-<<<<<<< HEAD
-	struct ftrace_graph_ret *graph_ret;
-	struct ftrace_graph_ent *call;
-	unsigned long long duration;
-	int ret;
-=======
 	struct trace_array *tr = iter->tr;
 	struct ftrace_graph_ret *graph_ret;
 	struct ftrace_graph_ent *call;
 	unsigned long long duration;
 	int cpu = iter->cpu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	graph_ret = &ret_entry->ret;
@@ -1267,10 +696,6 @@ print_graph_entry_leaf(struct trace_iterator *iter,
 
 	if (data) {
 		struct fgraph_cpu_data *cpu_data;
-<<<<<<< HEAD
-		int cpu = iter->cpu;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cpu_data = per_cpu_ptr(data->cpu_data, cpu);
 
@@ -1282,34 +707,12 @@ print_graph_entry_leaf(struct trace_iterator *iter,
 		cpu_data->depth = call->depth - 1;
 
 		/* No need to keep this function around for this depth */
-<<<<<<< HEAD
-		if (call->depth < FTRACE_RETFUNC_DEPTH)
-=======
 		if (call->depth < FTRACE_RETFUNC_DEPTH &&
 		    !WARN_ON_ONCE(call->depth < 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cpu_data->enter_funcs[call->depth] = 0;
 	}
 
 	/* Overhead and duration */
-<<<<<<< HEAD
-	ret = print_graph_duration(duration, s, flags);
-	if (ret == TRACE_TYPE_PARTIAL_LINE)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	/* Function */
-	for (i = 0; i < call->depth * TRACE_GRAPH_INDENT; i++) {
-		ret = trace_seq_printf(s, " ");
-		if (!ret)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-
-	ret = trace_seq_printf(s, "%ps();\n", (void *)call->func);
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	return TRACE_TYPE_HANDLED;
-=======
 	print_graph_duration(tr, duration, s, flags);
 
 	/* Function */
@@ -1330,7 +733,6 @@ print_graph_entry_leaf(struct trace_iterator *iter,
 			cpu, iter->ent->pid, flags);
 
 	return trace_handle_return(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum print_line_t
@@ -1340,11 +742,7 @@ print_graph_entry_nested(struct trace_iterator *iter,
 {
 	struct ftrace_graph_ent *call = &entry->graph_ent;
 	struct fgraph_data *data = iter->private;
-<<<<<<< HEAD
-	int ret;
-=======
 	struct trace_array *tr = iter->tr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (data) {
@@ -1355,31 +753,12 @@ print_graph_entry_nested(struct trace_iterator *iter,
 		cpu_data->depth = call->depth;
 
 		/* Save this function pointer to see if the exit matches */
-<<<<<<< HEAD
-		if (call->depth < FTRACE_RETFUNC_DEPTH)
-=======
 		if (call->depth < FTRACE_RETFUNC_DEPTH &&
 		    !WARN_ON_ONCE(call->depth < 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cpu_data->enter_funcs[call->depth] = call->func;
 	}
 
 	/* No time */
-<<<<<<< HEAD
-	ret = print_graph_duration(DURATION_FILL_FULL, s, flags);
-	if (ret != TRACE_TYPE_HANDLED)
-		return ret;
-
-	/* Function */
-	for (i = 0; i < call->depth * TRACE_GRAPH_INDENT; i++) {
-		ret = trace_seq_printf(s, " ");
-		if (!ret)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-
-	ret = trace_seq_printf(s, "%ps() {\n", (void *)call->func);
-	if (!ret)
-=======
 	print_graph_duration(tr, 0, s, flags | FLAGS_FILL_FULL);
 
 	/* Function */
@@ -1389,7 +768,6 @@ print_graph_entry_nested(struct trace_iterator *iter,
 	trace_seq_printf(s, "%ps() {\n", (void *)call->func);
 
 	if (trace_seq_has_overflowed(s))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return TRACE_TYPE_PARTIAL_LINE;
 
 	/*
@@ -1399,68 +777,12 @@ print_graph_entry_nested(struct trace_iterator *iter,
 	return TRACE_TYPE_NO_CONSUME;
 }
 
-<<<<<<< HEAD
-static enum print_line_t
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 print_graph_prologue(struct trace_iterator *iter, struct trace_seq *s,
 		     int type, unsigned long addr, u32 flags)
 {
 	struct fgraph_data *data = iter->private;
 	struct trace_entry *ent = iter->ent;
-<<<<<<< HEAD
-	int cpu = iter->cpu;
-	int ret;
-
-	/* Pid */
-	if (verif_pid(s, ent->pid, cpu, data) == TRACE_TYPE_PARTIAL_LINE)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	if (type) {
-		/* Interrupt */
-		ret = print_graph_irq(iter, addr, type, cpu, ent->pid, flags);
-		if (ret == TRACE_TYPE_PARTIAL_LINE)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-
-	if (!(trace_flags & TRACE_ITER_CONTEXT_INFO))
-		return 0;
-
-	/* Absolute time */
-	if (flags & TRACE_GRAPH_PRINT_ABS_TIME) {
-		ret = print_graph_abs_time(iter->ts, s);
-		if (!ret)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-
-	/* Cpu */
-	if (flags & TRACE_GRAPH_PRINT_CPU) {
-		ret = print_graph_cpu(s, cpu);
-		if (ret == TRACE_TYPE_PARTIAL_LINE)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-
-	/* Proc */
-	if (flags & TRACE_GRAPH_PRINT_PROC) {
-		ret = print_graph_proc(s, ent->pid);
-		if (ret == TRACE_TYPE_PARTIAL_LINE)
-			return TRACE_TYPE_PARTIAL_LINE;
-
-		ret = trace_seq_printf(s, " | ");
-		if (!ret)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-
-	/* Latency format */
-	if (trace_flags & TRACE_ITER_LATENCY_FMT) {
-		ret = print_graph_lat_fmt(s, ent);
-		if (ret == TRACE_TYPE_PARTIAL_LINE)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-
-	return 0;
-=======
 	struct trace_array *tr = iter->tr;
 	int cpu = iter->cpu;
 
@@ -1497,7 +819,6 @@ print_graph_prologue(struct trace_iterator *iter, struct trace_seq *s,
 		print_graph_lat_fmt(s, ent);
 
 	return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1507,11 +828,7 @@ print_graph_prologue(struct trace_iterator *iter, struct trace_seq *s,
  *  - we are inside irq code
  *  - we just entered irq code
  *
-<<<<<<< HEAD
- * retunns 0 if
-=======
  * returns 0 if
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  - funcgraph-interrupts option is set
  *  - we are not inside irq code
  */
@@ -1619,12 +936,7 @@ print_graph_entry(struct ftrace_graph_ent_entry *field, struct trace_seq *s,
 	if (check_irq_entry(iter, flags, call->func, call->depth))
 		return TRACE_TYPE_HANDLED;
 
-<<<<<<< HEAD
-	if (print_graph_prologue(iter, s, TRACE_GRAPH_ENT, call->func, flags))
-		return TRACE_TYPE_PARTIAL_LINE;
-=======
 	print_graph_prologue(iter, s, TRACE_GRAPH_ENT, call->func, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	leaf_ret = get_return_for_leaf(iter, field);
 	if (leaf_ret)
@@ -1654,17 +966,10 @@ print_graph_return(struct ftrace_graph_ret *trace, struct trace_seq *s,
 {
 	unsigned long long duration = trace->rettime - trace->calltime;
 	struct fgraph_data *data = iter->private;
-<<<<<<< HEAD
-	pid_t pid = ent->pid;
-	int cpu = iter->cpu;
-	int func_match = 1;
-	int ret;
-=======
 	struct trace_array *tr = iter->tr;
 	pid_t pid = ent->pid;
 	int cpu = iter->cpu;
 	int func_match = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (check_irq_return(iter, flags, trace->depth))
@@ -1683,65 +988,14 @@ print_graph_return(struct ftrace_graph_ret *trace, struct trace_seq *s,
 		 */
 		cpu_data->depth = trace->depth - 1;
 
-<<<<<<< HEAD
-		if (trace->depth < FTRACE_RETFUNC_DEPTH) {
-=======
 		if (trace->depth < FTRACE_RETFUNC_DEPTH &&
 		    !WARN_ON_ONCE(trace->depth < 0)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cpu_data->enter_funcs[trace->depth] != trace->func)
 				func_match = 0;
 			cpu_data->enter_funcs[trace->depth] = 0;
 		}
 	}
 
-<<<<<<< HEAD
-	if (print_graph_prologue(iter, s, 0, 0, flags))
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	/* Overhead and duration */
-	ret = print_graph_duration(duration, s, flags);
-	if (ret == TRACE_TYPE_PARTIAL_LINE)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	/* Closing brace */
-	for (i = 0; i < trace->depth * TRACE_GRAPH_INDENT; i++) {
-		ret = trace_seq_printf(s, " ");
-		if (!ret)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-
-	/*
-	 * If the return function does not have a matching entry,
-	 * then the entry was lost. Instead of just printing
-	 * the '}' and letting the user guess what function this
-	 * belongs to, write out the function name.
-	 */
-	if (func_match) {
-		ret = trace_seq_printf(s, "}\n");
-		if (!ret)
-			return TRACE_TYPE_PARTIAL_LINE;
-	} else {
-		ret = trace_seq_printf(s, "} /* %ps */\n", (void *)trace->func);
-		if (!ret)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-
-	/* Overrun */
-	if (flags & TRACE_GRAPH_PRINT_OVERRUN) {
-		ret = trace_seq_printf(s, " (Overruns: %lu)\n",
-					trace->overrun);
-		if (!ret)
-			return TRACE_TYPE_PARTIAL_LINE;
-	}
-
-	ret = print_graph_irq(iter, trace->func, TRACE_GRAPH_RET,
-			      cpu, pid, flags);
-	if (ret == TRACE_TYPE_PARTIAL_LINE)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	return TRACE_TYPE_HANDLED;
-=======
 	print_graph_prologue(iter, s, 0, 0, flags);
 
 	/* Overhead and duration */
@@ -1781,19 +1035,14 @@ print_graph_return(struct ftrace_graph_ret *trace, struct trace_seq *s,
 			cpu, pid, flags);
 
 	return trace_handle_return(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum print_line_t
 print_graph_comment(struct trace_seq *s, struct trace_entry *ent,
 		    struct trace_iterator *iter, u32 flags)
 {
-<<<<<<< HEAD
-	unsigned long sym_flags = (trace_flags & TRACE_ITER_SYM_MASK);
-=======
 	struct trace_array *tr = iter->tr;
 	unsigned long sym_flags = (tr->trace_flags & TRACE_ITER_SYM_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fgraph_data *data = iter->private;
 	struct trace_event *event;
 	int depth = 0;
@@ -1803,30 +1052,6 @@ print_graph_comment(struct trace_seq *s, struct trace_entry *ent,
 	if (data)
 		depth = per_cpu_ptr(data->cpu_data, iter->cpu)->depth;
 
-<<<<<<< HEAD
-	if (print_graph_prologue(iter, s, 0, 0, flags))
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	/* No time */
-	ret = print_graph_duration(DURATION_FILL_FULL, s, flags);
-	if (ret != TRACE_TYPE_HANDLED)
-		return ret;
-
-	/* Indentation */
-	if (depth > 0)
-		for (i = 0; i < (depth + 1) * TRACE_GRAPH_INDENT; i++) {
-			ret = trace_seq_printf(s, " ");
-			if (!ret)
-				return TRACE_TYPE_PARTIAL_LINE;
-		}
-
-	/* The comment */
-	ret = trace_seq_printf(s, "/* ");
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	switch (iter->ent->type) {
-=======
 	print_graph_prologue(iter, s, 0, 0, flags);
 
 	/* No time */
@@ -1846,7 +1071,6 @@ print_graph_comment(struct trace_seq *s, struct trace_entry *ent,
 		if (ret != TRACE_TYPE_HANDLED)
 			return ret;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case TRACE_BPRINT:
 		ret = trace_print_bprintk_msg_only(iter);
 		if (ret != TRACE_TYPE_HANDLED)
@@ -1867,19 +1091,6 @@ print_graph_comment(struct trace_seq *s, struct trace_entry *ent,
 			return ret;
 	}
 
-<<<<<<< HEAD
-	/* Strip ending newline */
-	if (s->buffer[s->len - 1] == '\n') {
-		s->buffer[s->len - 1] = '\0';
-		s->len--;
-	}
-
-	ret = trace_seq_printf(s, " */\n");
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	return TRACE_TYPE_HANDLED;
-=======
 	if (trace_seq_has_overflowed(s))
 		goto out;
 
@@ -1892,7 +1103,6 @@ print_graph_comment(struct trace_seq *s, struct trace_entry *ent,
 	trace_seq_puts(s, " */\n");
  out:
 	return trace_handle_return(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1979,11 +1189,8 @@ static void print_lat_header(struct seq_file *s, u32 flags)
 
 	if (flags & TRACE_GRAPH_PRINT_ABS_TIME)
 		size += 16;
-<<<<<<< HEAD
-=======
 	if (flags & TRACE_GRAPH_PRINT_REL_TIME)
 		size += 16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (flags & TRACE_GRAPH_PRINT_CPU)
 		size += 4;
 	if (flags & TRACE_GRAPH_PRINT_PROC)
@@ -1996,52 +1203,15 @@ static void print_lat_header(struct seq_file *s, u32 flags)
 	seq_printf(s, "#%.*s||| /                      \n", size, spaces);
 }
 
-<<<<<<< HEAD
-static void __print_graph_headers_flags(struct seq_file *s, u32 flags)
-{
-	int lat = trace_flags & TRACE_ITER_LATENCY_FMT;
-=======
 static void __print_graph_headers_flags(struct trace_array *tr,
 					struct seq_file *s, u32 flags)
 {
 	int lat = tr->trace_flags & TRACE_ITER_LATENCY_FMT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lat)
 		print_lat_header(s, flags);
 
 	/* 1st line */
-<<<<<<< HEAD
-	seq_printf(s, "#");
-	if (flags & TRACE_GRAPH_PRINT_ABS_TIME)
-		seq_printf(s, "     TIME       ");
-	if (flags & TRACE_GRAPH_PRINT_CPU)
-		seq_printf(s, " CPU");
-	if (flags & TRACE_GRAPH_PRINT_PROC)
-		seq_printf(s, "  TASK/PID       ");
-	if (lat)
-		seq_printf(s, "||||");
-	if (flags & TRACE_GRAPH_PRINT_DURATION)
-		seq_printf(s, "  DURATION   ");
-	seq_printf(s, "               FUNCTION CALLS\n");
-
-	/* 2nd line */
-	seq_printf(s, "#");
-	if (flags & TRACE_GRAPH_PRINT_ABS_TIME)
-		seq_printf(s, "      |         ");
-	if (flags & TRACE_GRAPH_PRINT_CPU)
-		seq_printf(s, " |  ");
-	if (flags & TRACE_GRAPH_PRINT_PROC)
-		seq_printf(s, "   |    |        ");
-	if (lat)
-		seq_printf(s, "||||");
-	if (flags & TRACE_GRAPH_PRINT_DURATION)
-		seq_printf(s, "   |   |      ");
-	seq_printf(s, "               |   |   |   |\n");
-}
-
-void print_graph_headers(struct seq_file *s)
-=======
 	seq_putc(s, '#');
 	if (flags & TRACE_GRAPH_PRINT_ABS_TIME)
 		seq_puts(s, "     TIME       ");
@@ -2075,7 +1245,6 @@ void print_graph_headers(struct seq_file *s)
 }
 
 static void print_graph_headers(struct seq_file *s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	print_graph_headers_flags(s, tracer_flags.val);
 }
@@ -2083,20 +1252,12 @@ static void print_graph_headers(struct seq_file *s)
 void print_graph_headers_flags(struct seq_file *s, u32 flags)
 {
 	struct trace_iterator *iter = s->private;
-<<<<<<< HEAD
-
-	if (!(trace_flags & TRACE_ITER_CONTEXT_INFO))
-		return;
-
-	if (trace_flags & TRACE_ITER_LATENCY_FMT) {
-=======
 	struct trace_array *tr = iter->tr;
 
 	if (!(tr->trace_flags & TRACE_ITER_CONTEXT_INFO))
 		return;
 
 	if (tr->trace_flags & TRACE_ITER_LATENCY_FMT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* print nothing if the buffers are empty */
 		if (trace_empty(iter))
 			return;
@@ -2104,32 +1265,18 @@ void print_graph_headers_flags(struct seq_file *s, u32 flags)
 		print_trace_header(s, iter);
 	}
 
-<<<<<<< HEAD
-	__print_graph_headers_flags(s, flags);
-=======
 	__print_graph_headers_flags(tr, s, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void graph_trace_open(struct trace_iterator *iter)
 {
 	/* pid and depth on the last trace processed */
 	struct fgraph_data *data;
-<<<<<<< HEAD
-=======
 	gfp_t gfpflags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cpu;
 
 	iter->private = NULL;
 
-<<<<<<< HEAD
-	data = kzalloc(sizeof(*data), GFP_KERNEL);
-	if (!data)
-		goto out_err;
-
-	data->cpu_data = alloc_percpu(struct fgraph_cpu_data);
-=======
 	/* We can be called in atomic context via ftrace_dump() */
 	gfpflags = (in_atomic() || irqs_disabled()) ? GFP_ATOMIC : GFP_KERNEL;
 
@@ -2138,7 +1285,6 @@ void graph_trace_open(struct trace_iterator *iter)
 		goto out_err;
 
 	data->cpu_data = alloc_percpu_gfp(struct fgraph_cpu_data, gfpflags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data->cpu_data)
 		goto out_err_free;
 
@@ -2161,11 +1307,7 @@ void graph_trace_open(struct trace_iterator *iter)
  out_err_free:
 	kfree(data);
  out_err:
-<<<<<<< HEAD
-	pr_warning("function graph tracer: not enough memory\n");
-=======
 	pr_warn("function graph tracer: not enough memory\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void graph_trace_close(struct trace_iterator *iter)
@@ -2178,25 +1320,18 @@ void graph_trace_close(struct trace_iterator *iter)
 	}
 }
 
-<<<<<<< HEAD
-static int func_graph_set_flag(u32 old_flags, u32 bit, int set)
-=======
 static int
 func_graph_set_flag(struct trace_array *tr, u32 old_flags, u32 bit, int set)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (bit == TRACE_GRAPH_PRINT_IRQS)
 		ftrace_graph_skip_irqs = !set;
 
-<<<<<<< HEAD
-=======
 	if (bit == TRACE_GRAPH_SLEEP_TIME)
 		ftrace_graph_sleep_time_control(set);
 
 	if (bit == TRACE_GRAPH_GRAPH_TIME)
 		ftrace_graph_graph_time_control(set);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2214,22 +1349,13 @@ static struct trace_event graph_trace_ret_event = {
 	.funcs		= &graph_functions
 };
 
-<<<<<<< HEAD
-static struct tracer graph_trace __read_mostly = {
-	.name		= "function_graph",
-=======
 static struct tracer graph_trace __tracer_data = {
 	.name		= "function_graph",
 	.update_thresh	= graph_trace_update_thresh,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= graph_trace_open,
 	.pipe_open	= graph_trace_open,
 	.close		= graph_trace_close,
 	.pipe_close	= graph_trace_close,
-<<<<<<< HEAD
-	.wait_pipe	= poll_wait_pipe,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init		= graph_trace_init,
 	.reset		= graph_trace_reset,
 	.print_line	= print_graph_function,
@@ -2241,19 +1367,6 @@ static struct tracer graph_trace __tracer_data = {
 #endif
 };
 
-<<<<<<< HEAD
-static __init int init_graph_trace(void)
-{
-	max_bytes_for_cpu = snprintf(NULL, 0, "%d", nr_cpu_ids - 1);
-
-	if (!register_ftrace_event(&graph_trace_entry_event)) {
-		pr_warning("Warning: could not register graph trace events\n");
-		return 1;
-	}
-
-	if (!register_ftrace_event(&graph_trace_ret_event)) {
-		pr_warning("Warning: could not register graph trace events\n");
-=======
 
 static ssize_t
 graph_depth_write(struct file *filp, const char __user *ubuf, size_t cnt,
@@ -2318,15 +1431,10 @@ static __init int init_graph_trace(void)
 
 	if (!register_trace_event(&graph_trace_ret_event)) {
 		pr_warn("Warning: could not register graph trace events\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
 	return register_tracer(&graph_trace);
 }
 
-<<<<<<< HEAD
-device_initcall(init_graph_trace);
-=======
 core_initcall(init_graph_trace);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

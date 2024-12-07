@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * zfcp device driver
  *
  * Interface to Linux SCSI midlayer.
  *
-<<<<<<< HEAD
- * Copyright IBM Corp. 2002, 2013
-=======
  * Copyright IBM Corp. 2002, 2020
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT "zfcp"
@@ -34,33 +27,6 @@ MODULE_PARM_DESC(queue_depth, "Default queue depth for new SCSI devices");
 
 static bool enable_dif;
 module_param_named(dif, enable_dif, bool, 0400);
-<<<<<<< HEAD
-MODULE_PARM_DESC(dif, "Enable DIF/DIX data integrity support");
-
-static bool allow_lun_scan = 1;
-module_param(allow_lun_scan, bool, 0600);
-MODULE_PARM_DESC(allow_lun_scan, "For NPIV, scan and attach all storage LUNs");
-
-static int zfcp_scsi_change_queue_depth(struct scsi_device *sdev, int depth,
-					int reason)
-{
-	switch (reason) {
-	case SCSI_QDEPTH_DEFAULT:
-		scsi_adjust_queue_depth(sdev, scsi_get_tag_type(sdev), depth);
-		break;
-	case SCSI_QDEPTH_QFULL:
-		scsi_track_queue_full(sdev, depth);
-		break;
-	case SCSI_QDEPTH_RAMP_UP:
-		scsi_adjust_queue_depth(sdev, scsi_get_tag_type(sdev), depth);
-		break;
-	default:
-		return -EOPNOTSUPP;
-	}
-	return sdev->queue_depth;
-}
-
-=======
 MODULE_PARM_DESC(dif, "Enable DIF data integrity support (default off)");
 
 bool zfcp_experimental_dix;
@@ -71,7 +37,6 @@ static bool allow_lun_scan = true;
 module_param(allow_lun_scan, bool, 0600);
 MODULE_PARM_DESC(allow_lun_scan, "For NPIV, scan and attach all storage LUNs");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void zfcp_scsi_slave_destroy(struct scsi_device *sdev)
 {
 	struct zfcp_scsi_dev *zfcp_sdev = sdev_to_zfcp(sdev);
@@ -87,13 +52,7 @@ static void zfcp_scsi_slave_destroy(struct scsi_device *sdev)
 static int zfcp_scsi_slave_configure(struct scsi_device *sdp)
 {
 	if (sdp->tagged_supported)
-<<<<<<< HEAD
-		scsi_adjust_queue_depth(sdp, MSG_SIMPLE_TAG, default_depth);
-	else
-		scsi_adjust_queue_depth(sdp, 0, 1);
-=======
 		scsi_change_queue_depth(sdp, default_depth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -101,11 +60,7 @@ static void zfcp_scsi_command_fail(struct scsi_cmnd *scpnt, int result)
 {
 	set_host_byte(scpnt, result);
 	zfcp_dbf_scsi_fail_send(scpnt);
-<<<<<<< HEAD
-	scpnt->scsi_done(scpnt);
-=======
 	scsi_done(scpnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static
@@ -123,11 +78,7 @@ int zfcp_scsi_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *scpnt)
 	if (unlikely(scsi_result)) {
 		scpnt->result = scsi_result;
 		zfcp_dbf_scsi_fail_send(scpnt);
-<<<<<<< HEAD
-		scpnt->scsi_done(scpnt);
-=======
 		scsi_done(scpnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -142,13 +93,7 @@ int zfcp_scsi_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *scpnt)
 	}
 
 	if (unlikely(!(status & ZFCP_STATUS_COMMON_UNBLOCKED))) {
-<<<<<<< HEAD
-		/* This could be either
-		 * open LUN pending: this is temporary, will result in
-		 *	open LUN or ERP_FAILED, so retry command
-=======
 		/* This could be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * call to rport_delete pending: mimic retry from
 		 * 	fc_remote_port_chkready until rport is BLOCKED
 		 */
@@ -175,18 +120,13 @@ static int zfcp_scsi_slave_alloc(struct scsi_device *sdev)
 	struct zfcp_unit *unit;
 	int npiv = adapter->connection_features & FSF_FEATURE_NPIV_MODE;
 
-<<<<<<< HEAD
-=======
 	zfcp_sdev->erp_action.adapter = adapter;
 	zfcp_sdev->erp_action.sdev = sdev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	port = zfcp_get_port_by_wwpn(adapter, rport->port_name);
 	if (!port)
 		return -ENXIO;
 
-<<<<<<< HEAD
-=======
 	zfcp_sdev->erp_action.port = port;
 
 	mutex_lock(&zfcp_sysfs_port_units_mutex);
@@ -198,7 +138,6 @@ static int zfcp_scsi_slave_alloc(struct scsi_device *sdev)
 	}
 	mutex_unlock(&zfcp_sysfs_port_units_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unit = zfcp_unit_find(port, zfcp_scsi_dev_lun(sdev));
 	if (unit)
 		put_device(&unit->dev);
@@ -231,11 +170,7 @@ static int zfcp_scsi_eh_abort_handler(struct scsi_cmnd *scpnt)
 		(struct zfcp_adapter *) scsi_host->hostdata[0];
 	struct zfcp_fsf_req *old_req, *abrt_req;
 	unsigned long flags;
-<<<<<<< HEAD
-	unsigned long old_reqid = (unsigned long) scpnt->host_scribble;
-=======
 	u64 old_reqid = (u64) scpnt->host_scribble;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval = SUCCESS, ret;
 	int retry = 3;
 	char *dbf_tag;
@@ -259,10 +194,7 @@ static int zfcp_scsi_eh_abort_handler(struct scsi_cmnd *scpnt)
 		if (abrt_req)
 			break;
 
-<<<<<<< HEAD
-=======
 		zfcp_dbf_scsi_abort("abrt_wt", scpnt, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		zfcp_erp_wait(adapter);
 		ret = fc_block_scsi_eh(scpnt);
 		if (ret) {
@@ -295,12 +227,6 @@ static int zfcp_scsi_eh_abort_handler(struct scsi_cmnd *scpnt)
 	return retval;
 }
 
-<<<<<<< HEAD
-static int zfcp_task_mgmt_function(struct scsi_cmnd *scpnt, u8 tm_flags)
-{
-	struct zfcp_scsi_dev *zfcp_sdev = sdev_to_zfcp(scpnt->device);
-	struct zfcp_adapter *adapter = zfcp_sdev->port->adapter;
-=======
 struct zfcp_scsi_req_filter {
 	u8 tmf_scope;
 	u32 lun_handle;
@@ -365,31 +291,11 @@ static int zfcp_scsi_task_mgmt_function(struct scsi_device *sdev, u8 tm_flags)
 	struct zfcp_scsi_dev *zfcp_sdev = sdev_to_zfcp(sdev);
 	struct zfcp_adapter *adapter = zfcp_sdev->port->adapter;
 	struct fc_rport *rport = starget_to_rport(scsi_target(sdev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zfcp_fsf_req *fsf_req = NULL;
 	int retval = SUCCESS, ret;
 	int retry = 3;
 
 	while (retry--) {
-<<<<<<< HEAD
-		fsf_req = zfcp_fsf_fcp_task_mgmt(scpnt, tm_flags);
-		if (fsf_req)
-			break;
-
-		zfcp_erp_wait(adapter);
-		ret = fc_block_scsi_eh(scpnt);
-		if (ret)
-			return ret;
-
-		if (!(atomic_read(&adapter->status) &
-		      ZFCP_STATUS_COMMON_RUNNING)) {
-			zfcp_dbf_scsi_devreset("nres", scpnt, tm_flags);
-			return SUCCESS;
-		}
-	}
-	if (!fsf_req)
-		return FAILED;
-=======
 		fsf_req = zfcp_fsf_fcp_task_mgmt(sdev, tm_flags);
 		if (fsf_req)
 			break;
@@ -412,24 +318,16 @@ static int zfcp_scsi_task_mgmt_function(struct scsi_device *sdev, u8 tm_flags)
 		zfcp_dbf_scsi_devreset("reqf", sdev, tm_flags, NULL);
 		return FAILED;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wait_for_completion(&fsf_req->completion);
 
 	if (fsf_req->status & ZFCP_STATUS_FSFREQ_TMFUNCFAILED) {
-<<<<<<< HEAD
-		zfcp_dbf_scsi_devreset("fail", scpnt, tm_flags);
-		retval = FAILED;
-	} else
-		zfcp_dbf_scsi_devreset("okay", scpnt, tm_flags);
-=======
 		zfcp_dbf_scsi_devreset("fail", sdev, tm_flags, fsf_req);
 		retval = FAILED;
 	} else {
 		zfcp_dbf_scsi_devreset("okay", sdev, tm_flags, fsf_req);
 		zfcp_scsi_forget_cmnds(zfcp_sdev, tm_flags);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	zfcp_fsf_req_free(fsf_req);
 	return retval;
@@ -437,20 +335,13 @@ static int zfcp_scsi_task_mgmt_function(struct scsi_device *sdev, u8 tm_flags)
 
 static int zfcp_scsi_eh_device_reset_handler(struct scsi_cmnd *scpnt)
 {
-<<<<<<< HEAD
-	return zfcp_task_mgmt_function(scpnt, FCP_TMF_LUN_RESET);
-=======
 	struct scsi_device *sdev = scpnt->device;
 
 	return zfcp_scsi_task_mgmt_function(sdev, FCP_TMF_LUN_RESET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int zfcp_scsi_eh_target_reset_handler(struct scsi_cmnd *scpnt)
 {
-<<<<<<< HEAD
-	return zfcp_task_mgmt_function(scpnt, FCP_TMF_TGT_RESET);
-=======
 	struct scsi_target *starget = scsi_target(scpnt->device);
 	struct fc_rport *rport = starget_to_rport(starget);
 	struct Scsi_Host *shost = rport_to_shost(rport);
@@ -478,24 +369,12 @@ static int zfcp_scsi_eh_target_reset_handler(struct scsi_cmnd *scpnt)
 		scsi_device_put(tmp_sdev);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int zfcp_scsi_eh_host_reset_handler(struct scsi_cmnd *scpnt)
 {
 	struct zfcp_scsi_dev *zfcp_sdev = sdev_to_zfcp(scpnt->device);
 	struct zfcp_adapter *adapter = zfcp_sdev->port->adapter;
-<<<<<<< HEAD
-	int ret;
-
-	zfcp_erp_adapter_reopen(adapter, 0, "schrh_1");
-	zfcp_erp_wait(adapter);
-	ret = fc_block_scsi_eh(scpnt);
-	if (ret)
-		return ret;
-
-	return SUCCESS;
-=======
 	int ret = SUCCESS, fc_ret;
 
 	if (!(adapter->connection_features & FSF_FEATURE_NPIV_MODE)) {
@@ -535,23 +414,15 @@ static int zfcp_scsi_sysfs_host_reset(struct Scsi_Host *shost, int reset_type)
 
 	zfcp_erp_adapter_reset_sync(adapter, "scshr_y");
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct scsi_transport_template *zfcp_scsi_transport_template;
 
-<<<<<<< HEAD
-static struct scsi_host_template zfcp_scsi_host_template = {
-	.module			 = THIS_MODULE,
-	.name			 = "zfcp",
-	.queuecommand		 = zfcp_scsi_queuecommand,
-=======
 static const struct scsi_host_template zfcp_scsi_host_template = {
 	.module			 = THIS_MODULE,
 	.name			 = "zfcp",
 	.queuecommand		 = zfcp_scsi_queuecommand,
 	.eh_timed_out		 = fc_eh_timed_out,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eh_abort_handler	 = zfcp_scsi_eh_abort_handler,
 	.eh_device_reset_handler = zfcp_scsi_eh_device_reset_handler,
 	.eh_target_reset_handler = zfcp_scsi_eh_target_reset_handler,
@@ -559,12 +430,8 @@ static const struct scsi_host_template zfcp_scsi_host_template = {
 	.slave_alloc		 = zfcp_scsi_slave_alloc,
 	.slave_configure	 = zfcp_scsi_slave_configure,
 	.slave_destroy		 = zfcp_scsi_slave_destroy,
-<<<<<<< HEAD
-	.change_queue_depth	 = zfcp_scsi_change_queue_depth,
-=======
 	.change_queue_depth	 = scsi_change_queue_depth,
 	.host_reset		 = zfcp_scsi_sysfs_host_reset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.proc_name		 = "zfcp",
 	.can_queue		 = 4096,
 	.this_id		 = -1,
@@ -574,18 +441,6 @@ static const struct scsi_host_template zfcp_scsi_host_template = {
 	.max_sectors		 = (((QDIO_MAX_ELEMENTS_PER_BUFFER - 1)
 				     * ZFCP_QDIO_MAX_SBALS_PER_REQ) - 2) * 8,
 				   /* GCD, adjusted later */
-<<<<<<< HEAD
-	.dma_boundary		 = ZFCP_QDIO_SBALE_LEN - 1,
-	.cmd_per_lun		 = 1,
-	.use_clustering		 = 1,
-	.shost_attrs		 = zfcp_sysfs_shost_attrs,
-	.sdev_attrs		 = zfcp_sysfs_sdev_attrs,
-};
-
-/**
- * zfcp_scsi_adapter_register - Register SCSI and FC host with SCSI midlayer
- * @adapter: The zfcp adapter to register with the SCSI midlayer
-=======
 	/* report size limit per scatter-gather segment */
 	.max_segment_size	 = ZFCP_QDIO_SBALE_LEN,
 	.dma_boundary		 = ZFCP_QDIO_SBALE_LEN - 1,
@@ -615,34 +470,20 @@ static const struct scsi_host_template zfcp_scsi_host_template = {
  * * -EEXIST - SCSI and FC host did already exist, nothing was done, nothing
  *	       was changed
  * * -EIO    - Allocation or registration failed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int zfcp_scsi_adapter_register(struct zfcp_adapter *adapter)
 {
 	struct ccw_dev_id dev_id;
 
 	if (adapter->scsi_host)
-<<<<<<< HEAD
-		return 0;
-=======
 		return -EEXIST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ccw_device_get_id(adapter->ccw_device, &dev_id);
 	/* register adapter as SCSI host with mid layer of SCSI stack */
 	adapter->scsi_host = scsi_host_alloc(&zfcp_scsi_host_template,
 					     sizeof (struct zfcp_adapter *));
-<<<<<<< HEAD
-	if (!adapter->scsi_host) {
-		dev_err(&adapter->ccw_device->dev,
-			"Registering the FCP device with the "
-			"SCSI stack failed\n");
-		return -EIO;
-	}
-=======
 	if (!adapter->scsi_host)
 		goto err_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* tell the SCSI stack some characteristics of this adapter */
 	adapter->scsi_host->max_id = 511;
@@ -652,23 +493,14 @@ int zfcp_scsi_adapter_register(struct zfcp_adapter *adapter)
 	adapter->scsi_host->max_cmd_len = 16; /* in struct fcp_cmnd */
 	adapter->scsi_host->transportt = zfcp_scsi_transport_template;
 
-<<<<<<< HEAD
-=======
 	/* make all basic properties known at registration time */
 	zfcp_qdio_shost_update(adapter, adapter->qdio);
 	zfcp_scsi_set_prot(adapter);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter->scsi_host->hostdata[0] = (unsigned long) adapter;
 
 	if (scsi_add_host(adapter->scsi_host, &adapter->ccw_device->dev)) {
 		scsi_host_put(adapter->scsi_host);
-<<<<<<< HEAD
-		return -EIO;
-	}
-
-	return 0;
-=======
 		goto err_out;
 	}
 
@@ -678,7 +510,6 @@ err_out:
 	dev_err(&adapter->ccw_device->dev,
 		"Registering the FCP device with the SCSI stack failed\n");
 	return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -706,11 +537,7 @@ void zfcp_scsi_adapter_unregister(struct zfcp_adapter *adapter)
 }
 
 static struct fc_host_statistics*
-<<<<<<< HEAD
-zfcp_init_fc_host_stats(struct zfcp_adapter *adapter)
-=======
 zfcp_scsi_init_fc_host_stats(struct zfcp_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fc_host_statistics *fc_stats;
 
@@ -724,15 +551,9 @@ zfcp_scsi_init_fc_host_stats(struct zfcp_adapter *adapter)
 	return adapter->fc_stats;
 }
 
-<<<<<<< HEAD
-static void zfcp_adjust_fc_host_stats(struct fc_host_statistics *fc_stats,
-				      struct fsf_qtcb_bottom_port *data,
-				      struct fsf_qtcb_bottom_port *old)
-=======
 static void zfcp_scsi_adjust_fc_host_stats(struct fc_host_statistics *fc_stats,
 					   struct fsf_qtcb_bottom_port *data,
 					   struct fsf_qtcb_bottom_port *old)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	fc_stats->seconds_since_last_reset =
 		data->seconds_since_last_reset - old->seconds_since_last_reset;
@@ -763,13 +584,8 @@ static void zfcp_scsi_adjust_fc_host_stats(struct fc_host_statistics *fc_stats,
 	fc_stats->fcp_output_megabytes = data->output_mb - old->output_mb;
 }
 
-<<<<<<< HEAD
-static void zfcp_set_fc_host_stats(struct fc_host_statistics *fc_stats,
-				   struct fsf_qtcb_bottom_port *data)
-=======
 static void zfcp_scsi_set_fc_host_stats(struct fc_host_statistics *fc_stats,
 					struct fsf_qtcb_bottom_port *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	fc_stats->seconds_since_last_reset = data->seconds_since_last_reset;
 	fc_stats->tx_frames = data->tx_frames;
@@ -793,12 +609,8 @@ static void zfcp_scsi_set_fc_host_stats(struct fc_host_statistics *fc_stats,
 	fc_stats->fcp_output_megabytes = data->output_mb;
 }
 
-<<<<<<< HEAD
-static struct fc_host_statistics *zfcp_get_fc_host_stats(struct Scsi_Host *host)
-=======
 static struct fc_host_statistics *
 zfcp_scsi_get_fc_host_stats(struct Scsi_Host *host)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct zfcp_adapter *adapter;
 	struct fc_host_statistics *fc_stats;
@@ -806,11 +618,7 @@ zfcp_scsi_get_fc_host_stats(struct Scsi_Host *host)
 	int ret;
 
 	adapter = (struct zfcp_adapter *)host->hostdata[0];
-<<<<<<< HEAD
-	fc_stats = zfcp_init_fc_host_stats(adapter);
-=======
 	fc_stats = zfcp_scsi_init_fc_host_stats(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fc_stats)
 		return NULL;
 
@@ -819,11 +627,7 @@ zfcp_scsi_get_fc_host_stats(struct Scsi_Host *host)
 		return NULL;
 
 	ret = zfcp_fsf_exchange_port_data_sync(adapter->qdio, data);
-<<<<<<< HEAD
-	if (ret) {
-=======
 	if (ret != 0 && ret != -EAGAIN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(data);
 		return NULL;
 	}
@@ -831,27 +635,16 @@ zfcp_scsi_get_fc_host_stats(struct Scsi_Host *host)
 	if (adapter->stats_reset &&
 	    ((jiffies/HZ - adapter->stats_reset) <
 	     data->seconds_since_last_reset))
-<<<<<<< HEAD
-		zfcp_adjust_fc_host_stats(fc_stats, data,
-					  adapter->stats_reset_data);
-	else
-		zfcp_set_fc_host_stats(fc_stats, data);
-=======
 		zfcp_scsi_adjust_fc_host_stats(fc_stats, data,
 					       adapter->stats_reset_data);
 	else
 		zfcp_scsi_set_fc_host_stats(fc_stats, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(data);
 	return fc_stats;
 }
 
-<<<<<<< HEAD
-static void zfcp_reset_fc_host_stats(struct Scsi_Host *shost)
-=======
 static void zfcp_scsi_reset_fc_host_stats(struct Scsi_Host *shost)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct zfcp_adapter *adapter;
 	struct fsf_qtcb_bottom_port *data;
@@ -863,11 +656,7 @@ static void zfcp_scsi_reset_fc_host_stats(struct Scsi_Host *shost)
 		return;
 
 	ret = zfcp_fsf_exchange_port_data_sync(adapter->qdio, data);
-<<<<<<< HEAD
-	if (ret)
-=======
 	if (ret != 0 && ret != -EAGAIN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(data);
 	else {
 		adapter->stats_reset = jiffies/HZ;
@@ -877,11 +666,7 @@ static void zfcp_scsi_reset_fc_host_stats(struct Scsi_Host *shost)
 	}
 }
 
-<<<<<<< HEAD
-static void zfcp_get_host_port_state(struct Scsi_Host *shost)
-=======
 static void zfcp_scsi_get_host_port_state(struct Scsi_Host *shost)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct zfcp_adapter *adapter =
 		(struct zfcp_adapter *)shost->hostdata[0];
@@ -898,12 +683,8 @@ static void zfcp_scsi_get_host_port_state(struct Scsi_Host *shost)
 		fc_host_port_state(shost) = FC_PORTSTATE_UNKNOWN;
 }
 
-<<<<<<< HEAD
-static void zfcp_set_rport_dev_loss_tmo(struct fc_rport *rport, u32 timeout)
-=======
 static void zfcp_scsi_set_rport_dev_loss_tmo(struct fc_rport *rport,
 					     u32 timeout)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	rport->dev_loss_tmo = timeout;
 }
@@ -930,14 +711,11 @@ static void zfcp_scsi_terminate_rport_io(struct fc_rport *rport)
 	if (port) {
 		zfcp_erp_port_forced_reopen(port, 0, "sctrpi1");
 		put_device(&port->dev);
-<<<<<<< HEAD
-=======
 	} else {
 		zfcp_erp_port_forced_no_port_dbf(
 			"sctrpin", adapter,
 			rport->port_name /* zfcp_scsi_rport_register */,
 			rport->port_id /* zfcp_scsi_rport_register */);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -954,12 +732,9 @@ static void zfcp_scsi_rport_register(struct zfcp_port *port)
 	ids.port_id = port->d_id;
 	ids.roles = FC_RPORT_ROLE_FCP_TARGET;
 
-<<<<<<< HEAD
-=======
 	zfcp_dbf_rec_trig_lock("scpaddy", port->adapter, port, NULL,
 			       ZFCP_PSEUDO_ERP_ACTION_RPORT_ADD,
 			       ZFCP_PSEUDO_ERP_ACTION_RPORT_ADD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rport = fc_remote_port_add(port->adapter->scsi_host, 0, &ids);
 	if (!rport) {
 		dev_err(&port->adapter->ccw_device->dev,
@@ -981,12 +756,9 @@ static void zfcp_scsi_rport_block(struct zfcp_port *port)
 	struct fc_rport *rport = port->rport;
 
 	if (rport) {
-<<<<<<< HEAD
-=======
 		zfcp_dbf_rec_trig_lock("scpdely", port->adapter, port, NULL,
 				       ZFCP_PSEUDO_ERP_ACTION_RPORT_DEL,
 				       ZFCP_PSEUDO_ERP_ACTION_RPORT_DEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_remote_port_delete(rport);
 		port->rport = NULL;
 	}
@@ -1029,12 +801,9 @@ void zfcp_scsi_rport_work(struct work_struct *work)
 	struct zfcp_port *port = container_of(work, struct zfcp_port,
 					      rport_work);
 
-<<<<<<< HEAD
-=======
 	set_worker_desc("zrp%c-%16llx",
 			(port->rport_task == RPORT_ADD) ? 'a' : 'd',
 			port->wwpn); /* < WORKER_DESC_LEN=24 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (port->rport_task) {
 		if (port->rport_task == RPORT_ADD) {
 			port->rport_task = RPORT_NONE;
@@ -1061,19 +830,11 @@ void zfcp_scsi_set_prot(struct zfcp_adapter *adapter)
 	data_div = atomic_read(&adapter->status) &
 		   ZFCP_STATUS_ADAPTER_DATA_DIV_ENABLED;
 
-<<<<<<< HEAD
-	if (enable_dif &&
-	    adapter->adapter_features & FSF_FEATURE_DIF_PROT_TYPE1)
-		mask |= SHOST_DIF_TYPE1_PROTECTION;
-
-	if (enable_dif && data_div &&
-=======
 	if ((enable_dif || zfcp_experimental_dix) &&
 	    adapter->adapter_features & FSF_FEATURE_DIF_PROT_TYPE1)
 		mask |= SHOST_DIF_TYPE1_PROTECTION;
 
 	if (zfcp_experimental_dix && data_div &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    adapter->adapter_features & FSF_FEATURE_DIX_PROT_TCPIP) {
 		mask |= SHOST_DIX_TYPE1_PROTECTION;
 		scsi_host_set_guard(shost, SHOST_DIX_GUARD_IP);
@@ -1095,15 +856,6 @@ void zfcp_scsi_set_prot(struct zfcp_adapter *adapter)
  */
 void zfcp_scsi_dif_sense_error(struct scsi_cmnd *scmd, int ascq)
 {
-<<<<<<< HEAD
-	scsi_build_sense_buffer(1, scmd->sense_buffer,
-				ILLEGAL_REQUEST, 0x10, ascq);
-	set_driver_byte(scmd, DRIVER_SENSE);
-	scmd->result |= SAM_STAT_CHECK_CONDITION;
-	set_host_byte(scmd, DID_SOFT_ERROR);
-}
-
-=======
 	scsi_build_sense(scmd, 1, ILLEGAL_REQUEST, 0x10, ascq);
 	set_host_byte(scmd, DID_SOFT_ERROR);
 }
@@ -1197,7 +949,6 @@ void zfcp_scsi_shost_update_port_data(
 	       FC_FC4_LIST_SIZE);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fc_function_template zfcp_transport_functions = {
 	.show_starget_port_id = 1,
 	.show_starget_port_name = 1,
@@ -1213,12 +964,6 @@ struct fc_function_template zfcp_transport_functions = {
 	.show_host_supported_speeds = 1,
 	.show_host_maxframe_size = 1,
 	.show_host_serial_number = 1,
-<<<<<<< HEAD
-	.get_fc_host_stats = zfcp_get_fc_host_stats,
-	.reset_fc_host_stats = zfcp_reset_fc_host_stats,
-	.set_rport_dev_loss_tmo = zfcp_set_rport_dev_loss_tmo,
-	.get_host_port_state = zfcp_get_host_port_state,
-=======
 	.show_host_manufacturer = 1,
 	.show_host_model = 1,
 	.show_host_hardware_version = 1,
@@ -1227,7 +972,6 @@ struct fc_function_template zfcp_transport_functions = {
 	.reset_fc_host_stats = zfcp_scsi_reset_fc_host_stats,
 	.set_rport_dev_loss_tmo = zfcp_scsi_set_rport_dev_loss_tmo,
 	.get_host_port_state = zfcp_scsi_get_host_port_state,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.terminate_rport_io = zfcp_scsi_terminate_rport_io,
 	.show_host_port_state = 1,
 	.show_host_active_fc4s = 1,
@@ -1239,9 +983,6 @@ struct fc_function_template zfcp_transport_functions = {
 	.show_host_symbolic_name = 1,
 	.show_host_speed = 1,
 	.show_host_port_id = 1,
-<<<<<<< HEAD
-=======
 	.show_host_fabric_name = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dd_bsg_size = sizeof(struct zfcp_fsf_ct_els),
 };

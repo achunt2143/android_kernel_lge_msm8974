@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* n2rng.h: Niagara2 RNG defines.
  *
  * Copyright (C) 2008 David S. Miller <davem@davemloft.net>
@@ -10,15 +7,6 @@
 #ifndef _N2RNG_H
 #define _N2RNG_H
 
-<<<<<<< HEAD
-#define RNG_CTL_WAIT       0x0000000001fffe00ULL /* Minimum wait time       */
-#define RNG_CTL_WAIT_SHIFT 9
-#define RNG_CTL_BYPASS     0x0000000000000100ULL /* VCO voltage source      */
-#define RNG_CTL_VCO        0x00000000000000c0ULL /* VCO rate control        */
-#define RNG_CTL_VCO_SHIFT  6
-#define RNG_CTL_ASEL       0x0000000000000030ULL /* Analog MUX select       */
-#define RNG_CTL_ASEL_SHIFT 4
-=======
 /* ver1 devices - n2-rng, vf-rng, kt-rng */
 #define RNG_v1_CTL_WAIT       0x0000000001fffe00ULL /* Minimum wait time    */
 #define RNG_v1_CTL_WAIT_SHIFT 9
@@ -30,14 +18,11 @@
 #define RNG_v1_CTL_ASEL_NOOUT 2
 
 /* these are the same in v2 as in v1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RNG_CTL_LFSR       0x0000000000000008ULL /* Use LFSR or plain shift */
 #define RNG_CTL_ES3        0x0000000000000004ULL /* Enable entropy source 3 */
 #define RNG_CTL_ES2        0x0000000000000002ULL /* Enable entropy source 2 */
 #define RNG_CTL_ES1        0x0000000000000001ULL /* Enable entropy source 1 */
 
-<<<<<<< HEAD
-=======
 /* ver2 devices - m4-rng, m7-rng */
 #define RNG_v2_CTL_WAIT       0x0000000007fff800ULL /* Minimum wait time    */
 #define RNG_v2_CTL_WAIT_SHIFT 12
@@ -50,7 +35,6 @@
 #define RNG_v2_CTL_ASEL_NOOUT 7
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HV_FAST_RNG_GET_DIAG_CTL	0x130
 #define HV_FAST_RNG_CTL_READ		0x131
 #define HV_FAST_RNG_CTL_WRITE		0x132
@@ -93,8 +77,6 @@ extern unsigned long sun4v_rng_data_read_diag_v2(unsigned long data_ra,
 extern unsigned long sun4v_rng_data_read(unsigned long data_ra,
 					 unsigned long *tick_delta);
 
-<<<<<<< HEAD
-=======
 enum n2rng_compat_id {
 	N2_n2_rng,
 	N2_vf_rng,
@@ -109,7 +91,6 @@ struct n2rng_template {
 	int chip_version;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct n2rng_unit {
 	u64			control[HV_RNG_NUM_CONTROL];
 };
@@ -124,10 +105,7 @@ struct n2rng {
 #define N2RNG_FLAG_SHUTDOWN	0x00000010 /* Driver unregistering        */
 #define N2RNG_FLAG_BUFFER_VALID	0x00000020 /* u32 buffer holds valid data */
 
-<<<<<<< HEAD
-=======
 	struct n2rng_template	*data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			num_units;
 	struct n2rng_unit	*units;
 
@@ -151,15 +129,10 @@ struct n2rng {
 
 	u64			scratch_control[HV_RNG_NUM_CONTROL];
 
-<<<<<<< HEAD
-#define SELFTEST_TICKS		38859
-#define SELFTEST_VAL		((u64)0xB8820C7BD387E32C)
-=======
 #define RNG_v1_SELFTEST_TICKS	38859
 #define RNG_v1_SELFTEST_VAL	((u64)0xB8820C7BD387E32C)
 #define RNG_v2_SELFTEST_TICKS	64
 #define RNG_v2_SELFTEST_VAL	((u64)0xffffffffffffffff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SELFTEST_POLY		((u64)0x231DCEE91262B8A3)
 #define SELFTEST_MATCH_GOAL	6
 #define SELFTEST_LOOPS_MAX	40000

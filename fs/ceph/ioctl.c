@@ -1,22 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/ceph/ceph_debug.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/in.h>
 
 #include "super.h"
 #include "mds_client.h"
-<<<<<<< HEAD
-#include <linux/ceph/ceph_debug.h>
-
-#include "ioctl.h"
-
-=======
 #include "ioctl.h"
 #include <linux/ceph/striper.h>
 #include <linux/fscrypt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ioctls
@@ -27,20 +17,6 @@
  */
 static long ceph_ioctl_get_layout(struct file *file, void __user *arg)
 {
-<<<<<<< HEAD
-	struct ceph_inode_info *ci = ceph_inode(file->f_dentry->d_inode);
-	struct ceph_ioctl_layout l;
-	int err;
-
-	err = ceph_do_getattr(file->f_dentry->d_inode, CEPH_STAT_CAP_LAYOUT);
-	if (!err) {
-		l.stripe_unit = ceph_file_layout_su(ci->i_layout);
-		l.stripe_count = ceph_file_layout_stripe_count(ci->i_layout);
-		l.object_size = ceph_file_layout_object_size(ci->i_layout);
-		l.data_pool = le32_to_cpu(ci->i_layout.fl_pg_pool);
-		l.preferred_osd =
-			(s32)le32_to_cpu(ci->i_layout.fl_pg_preferred);
-=======
 	struct ceph_inode_info *ci = ceph_inode(file_inode(file));
 	struct ceph_ioctl_layout l;
 	int err;
@@ -52,7 +28,6 @@ static long ceph_ioctl_get_layout(struct file *file, void __user *arg)
 		l.object_size = ci->i_layout.object_size;
 		l.data_pool = ci->i_layout.pool_id;
 		l.preferred_osd = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy_to_user(arg, &l, sizeof(l)))
 			return -EFAULT;
 	}
@@ -60,18 +35,6 @@ static long ceph_ioctl_get_layout(struct file *file, void __user *arg)
 	return err;
 }
 
-<<<<<<< HEAD
-static long ceph_ioctl_set_layout(struct file *file, void __user *arg)
-{
-	struct inode *inode = file->f_dentry->d_inode;
-	struct inode *parent_inode;
-	struct ceph_mds_client *mdsc = ceph_sb_to_client(inode->i_sb)->mdsc;
-	struct ceph_mds_request *req;
-	struct ceph_ioctl_layout l;
-	struct ceph_inode_info *ci = ceph_inode(file->f_dentry->d_inode);
-	struct ceph_ioctl_layout nl;
-	int err, i;
-=======
 static long __validate_layout(struct ceph_mds_client *mdsc,
 			      struct ceph_ioctl_layout *l)
 {
@@ -108,54 +71,11 @@ static long ceph_ioctl_set_layout(struct file *file, void __user *arg)
 	struct ceph_inode_info *ci = ceph_inode(file_inode(file));
 	struct ceph_ioctl_layout nl;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(&l, arg, sizeof(l)))
 		return -EFAULT;
 
 	/* validate changed params against current layout */
-<<<<<<< HEAD
-	err = ceph_do_getattr(file->f_dentry->d_inode, CEPH_STAT_CAP_LAYOUT);
-	if (!err) {
-		nl.stripe_unit = ceph_file_layout_su(ci->i_layout);
-		nl.stripe_count = ceph_file_layout_stripe_count(ci->i_layout);
-		nl.object_size = ceph_file_layout_object_size(ci->i_layout);
-		nl.data_pool = le32_to_cpu(ci->i_layout.fl_pg_pool);
-		nl.preferred_osd =
-				(s32)le32_to_cpu(ci->i_layout.fl_pg_preferred);
-	} else
-		return err;
-
-	if (l.stripe_count)
-		nl.stripe_count = l.stripe_count;
-	if (l.stripe_unit)
-		nl.stripe_unit = l.stripe_unit;
-	if (l.object_size)
-		nl.object_size = l.object_size;
-	if (l.data_pool)
-		nl.data_pool = l.data_pool;
-	if (l.preferred_osd)
-		nl.preferred_osd = l.preferred_osd;
-
-	if ((nl.object_size & ~PAGE_MASK) ||
-	    (nl.stripe_unit & ~PAGE_MASK) ||
-	    ((unsigned)nl.object_size % (unsigned)nl.stripe_unit))
-		return -EINVAL;
-
-	/* make sure it's a valid data pool */
-	if (l.data_pool > 0) {
-		mutex_lock(&mdsc->mutex);
-		err = -EINVAL;
-		for (i = 0; i < mdsc->mdsmap->m_num_data_pg_pools; i++)
-			if (mdsc->mdsmap->m_data_pg_pools[i] == l.data_pool) {
-				err = 0;
-				break;
-			}
-		mutex_unlock(&mdsc->mutex);
-		if (err)
-			return err;
-	}
-=======
 	err = ceph_do_getattr(file_inode(file), CEPH_STAT_CAP_LAYOUT, false);
 	if (err)
 		return err;
@@ -184,7 +104,6 @@ static long ceph_ioctl_set_layout(struct file *file, void __user *arg)
 	err = __validate_layout(mdsc, &nl);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req = ceph_mdsc_create_request(mdsc, CEPH_MDS_OP_SETLAYOUT,
 				       USE_AUTH_MDS);
@@ -192,11 +111,8 @@ static long ceph_ioctl_set_layout(struct file *file, void __user *arg)
 		return PTR_ERR(req);
 	req->r_inode = inode;
 	ihold(inode);
-<<<<<<< HEAD
-=======
 	req->r_num_caps = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->r_inode_drop = CEPH_CAP_FILE_SHARED | CEPH_CAP_FILE_EXCL;
 
 	req->r_args.setlayout.layout.fl_stripe_unit =
@@ -206,17 +122,8 @@ static long ceph_ioctl_set_layout(struct file *file, void __user *arg)
 	req->r_args.setlayout.layout.fl_object_size =
 		cpu_to_le32(l.object_size);
 	req->r_args.setlayout.layout.fl_pg_pool = cpu_to_le32(l.data_pool);
-<<<<<<< HEAD
-	req->r_args.setlayout.layout.fl_pg_preferred =
-		cpu_to_le32(l.preferred_osd);
-
-	parent_inode = ceph_get_dentry_parent_inode(file->f_dentry);
-	err = ceph_mdsc_do_request(mdsc, parent_inode, req);
-	iput(parent_inode);
-=======
 
 	err = ceph_mdsc_do_request(mdsc, NULL, req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ceph_mdsc_put_request(req);
 	return err;
 }
@@ -229,50 +136,19 @@ static long ceph_ioctl_set_layout(struct file *file, void __user *arg)
  */
 static long ceph_ioctl_set_layout_policy (struct file *file, void __user *arg)
 {
-<<<<<<< HEAD
-	struct inode *inode = file->f_dentry->d_inode;
-	struct ceph_mds_request *req;
-	struct ceph_ioctl_layout l;
-	int err, i;
-	struct ceph_mds_client *mdsc = ceph_sb_to_client(inode->i_sb)->mdsc;
-=======
 	struct inode *inode = file_inode(file);
 	struct ceph_mds_request *req;
 	struct ceph_ioctl_layout l;
 	int err;
 	struct ceph_mds_client *mdsc = ceph_sb_to_fs_client(inode->i_sb)->mdsc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* copy and validate */
 	if (copy_from_user(&l, arg, sizeof(l)))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	if ((l.object_size & ~PAGE_MASK) ||
-	    (l.stripe_unit & ~PAGE_MASK) ||
-	    !l.stripe_unit ||
-	    (l.object_size &&
-	        (unsigned)l.object_size % (unsigned)l.stripe_unit))
-		return -EINVAL;
-
-	/* make sure it's a valid data pool */
-	if (l.data_pool > 0) {
-		mutex_lock(&mdsc->mutex);
-		err = -EINVAL;
-		for (i = 0; i < mdsc->mdsmap->m_num_data_pg_pools; i++)
-			if (mdsc->mdsmap->m_data_pg_pools[i] == l.data_pool) {
-				err = 0;
-				break;
-			}
-		mutex_unlock(&mdsc->mutex);
-		if (err)
-			return err;
-	}
-=======
 	err = __validate_layout(mdsc, &l);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req = ceph_mdsc_create_request(mdsc, CEPH_MDS_OP_SETDIRLAYOUT,
 				       USE_AUTH_MDS);
@@ -281,10 +157,7 @@ static long ceph_ioctl_set_layout_policy (struct file *file, void __user *arg)
 		return PTR_ERR(req);
 	req->r_inode = inode;
 	ihold(inode);
-<<<<<<< HEAD
-=======
 	req->r_num_caps = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->r_args.setlayout.layout.fl_stripe_unit =
 			cpu_to_le32(l.stripe_unit);
@@ -294,11 +167,6 @@ static long ceph_ioctl_set_layout_policy (struct file *file, void __user *arg)
 			cpu_to_le32(l.object_size);
 	req->r_args.setlayout.layout.fl_pg_pool =
 			cpu_to_le32(l.data_pool);
-<<<<<<< HEAD
-	req->r_args.setlayout.layout.fl_pg_preferred =
-			cpu_to_le32(l.preferred_osd);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = ceph_mdsc_do_request(mdsc, inode, req);
 	ceph_mdsc_put_request(req);
@@ -312,16 +180,6 @@ static long ceph_ioctl_set_layout_policy (struct file *file, void __user *arg)
 static long ceph_ioctl_get_dataloc(struct file *file, void __user *arg)
 {
 	struct ceph_ioctl_dataloc dl;
-<<<<<<< HEAD
-	struct inode *inode = file->f_dentry->d_inode;
-	struct ceph_inode_info *ci = ceph_inode(inode);
-	struct ceph_osd_client *osdc =
-		&ceph_sb_to_client(inode->i_sb)->client->osdc;
-	u64 len = 1, olen;
-	u64 tmp;
-	struct ceph_object_layout ol;
-	struct ceph_pg pgid;
-=======
 	struct inode *inode = file_inode(file);
 	struct ceph_inode_info *ci = ceph_inode(inode);
 	struct ceph_osd_client *osdc =
@@ -332,27 +190,17 @@ static long ceph_ioctl_get_dataloc(struct file *file, void __user *arg)
 	u64 tmp;
 	struct ceph_pg pgid;
 	int r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* copy and validate */
 	if (copy_from_user(&dl, arg, sizeof(dl)))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	down_read(&osdc->map_sem);
-	ceph_calc_file_object_mapping(&ci->i_layout, dl.file_offset, &len,
-				      &dl.object_no, &dl.object_offset, &olen);
-	dl.file_offset -= dl.object_offset;
-	dl.object_size = ceph_file_layout_object_size(ci->i_layout);
-	dl.block_size = ceph_file_layout_su(ci->i_layout);
-=======
 	down_read(&osdc->lock);
 	ceph_calc_file_object_mapping(&ci->i_layout, dl.file_offset, 1,
 				      &dl.object_no, &dl.object_offset, &xlen);
 	dl.file_offset -= dl.object_offset;
 	dl.object_size = ci->i_layout.object_size;
 	dl.block_size = ci->i_layout.stripe_unit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* block_offset = object_offset % block_size */
 	tmp = dl.object_offset;
@@ -360,13 +208,6 @@ static long ceph_ioctl_get_dataloc(struct file *file, void __user *arg)
 
 	snprintf(dl.object_name, sizeof(dl.object_name), "%llx.%08llx",
 		 ceph_ino(inode), dl.object_no);
-<<<<<<< HEAD
-	ceph_calc_object_layout(&ol, dl.object_name, &ci->i_layout,
-				osdc->osdmap);
-
-	pgid = ol.ol_pgid;
-	dl.osd = ceph_calc_pg_primary(osdc->osdmap, pgid);
-=======
 
 	oloc.pool = ci->i_layout.pool_id;
 	oloc.pool_ns = ceph_try_get_string(ci->i_layout.pool_ns);
@@ -381,7 +222,6 @@ static long ceph_ioctl_get_dataloc(struct file *file, void __user *arg)
 	}
 
 	dl.osd = ceph_pg_to_acting_primary(osdc->osdmap, &pgid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dl.osd >= 0) {
 		struct ceph_entity_addr *a =
 			ceph_osd_addr(osdc->osdmap, dl.osd);
@@ -390,11 +230,7 @@ static long ceph_ioctl_get_dataloc(struct file *file, void __user *arg)
 	} else {
 		memset(&dl.osd_addr, 0, sizeof(dl.osd_addr));
 	}
-<<<<<<< HEAD
-	up_read(&osdc->map_sem);
-=======
 	up_read(&osdc->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* send result back to user */
 	if (copy_to_user(arg, &dl, sizeof(dl)))
@@ -406,22 +242,6 @@ static long ceph_ioctl_get_dataloc(struct file *file, void __user *arg)
 static long ceph_ioctl_lazyio(struct file *file)
 {
 	struct ceph_file_info *fi = file->private_data;
-<<<<<<< HEAD
-	struct inode *inode = file->f_dentry->d_inode;
-	struct ceph_inode_info *ci = ceph_inode(inode);
-
-	if ((fi->fmode & CEPH_FILE_MODE_LAZY) == 0) {
-		spin_lock(&ci->i_ceph_lock);
-		ci->i_nr_by_mode[fi->fmode]--;
-		fi->fmode |= CEPH_FILE_MODE_LAZY;
-		ci->i_nr_by_mode[fi->fmode]++;
-		spin_unlock(&ci->i_ceph_lock);
-		dout("ioctl_layzio: file %p marked lazy\n", file);
-
-		ceph_check_caps(ci, 0, NULL);
-	} else {
-		dout("ioctl_layzio: file %p already lazy\n", file);
-=======
 	struct inode *inode = file_inode(file);
 	struct ceph_inode_info *ci = ceph_inode(inode);
 	struct ceph_mds_client *mdsc = ceph_inode_to_fs_client(inode)->mdsc;
@@ -440,7 +260,6 @@ static long ceph_ioctl_lazyio(struct file *file)
 	} else {
 		doutc(cl, "file %p %p %llx.%llx already lazy\n", file, inode,
 		      ceph_vinop(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -453,11 +272,6 @@ static long ceph_ioctl_syncio(struct file *file)
 	return 0;
 }
 
-<<<<<<< HEAD
-long ceph_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
-{
-	dout("ioctl file %p cmd %u arg %lu\n", file, cmd, arg);
-=======
 static int vet_mds_for_fscrypt(struct file *file)
 {
 	int i, ret = -EOPNOTSUPP;
@@ -550,7 +364,6 @@ long ceph_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 	doutc(fsc->client, "file %p %p %llx.%llx cmd %s arg %lu\n", file,
 	      inode, ceph_vinop(inode), ceph_ioctl_cmd_name(cmd), arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case CEPH_IOC_GET_LAYOUT:
 		return ceph_ioctl_get_layout(file, (void __user *)arg);
@@ -569,8 +382,6 @@ long ceph_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 	case CEPH_IOC_SYNCIO:
 		return ceph_ioctl_syncio(file);
-<<<<<<< HEAD
-=======
 
 	case FS_IOC_SET_ENCRYPTION_POLICY:
 		return ceph_set_encryption_policy(file, arg);
@@ -608,7 +419,6 @@ long ceph_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (ret)
 			return ret;
 		return fscrypt_ioctl_get_nonce(file, (void __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -ENOTTY;

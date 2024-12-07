@@ -1,66 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Procedures for interfacing to the RTAS on CHRP machines.
  *
  * Peter Bergner, IBM	March 2001.
  * Copyright (C) 2001 IBM.
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
- */
-
-#include <stdarg.h>
-#include <linux/kernel.h>
-#include <linux/types.h>
-#include <linux/spinlock.h>
-#include <linux/export.h>
-#include <linux/init.h>
-#include <linux/capability.h>
-#include <linux/delay.h>
-#include <linux/cpu.h>
-#include <linux/smp.h>
-#include <linux/completion.h>
-#include <linux/cpumask.h>
-#include <linux/memblock.h>
-#include <linux/slab.h>
-#include <linux/reboot.h>
-
-#include <asm/prom.h>
-#include <asm/rtas.h>
-#include <asm/hvcall.h>
-#include <asm/machdep.h>
-#include <asm/firmware.h>
-#include <asm/page.h>
-#include <asm/param.h>
-#include <asm/delay.h>
-#include <asm/uaccess.h>
-#include <asm/udbg.h>
-#include <asm/syscalls.h>
-#include <asm/smp.h>
-#include <linux/atomic.h>
-#include <asm/time.h>
-#include <asm/mmu.h>
-#include <asm/topology.h>
-#include <asm/pSeries_reconfig.h>
-
-struct rtas_t rtas = {
-	.lock = __ARCH_SPIN_LOCK_UNLOCKED
-};
-EXPORT_SYMBOL(rtas);
-
-DEFINE_SPINLOCK(rtas_data_buf_lock);
-EXPORT_SYMBOL(rtas_data_buf_lock);
-
-char rtas_data_buf[RTAS_DATA_BUF_SIZE] __cacheline_aligned;
-EXPORT_SYMBOL(rtas_data_buf);
-=======
  */
 
 #define pr_fmt(fmt)	"rtas: " fmt
@@ -797,7 +741,6 @@ EXPORT_SYMBOL_GPL(rtas_data_buf_lock);
 
 char rtas_data_buf[RTAS_DATA_BUF_SIZE] __aligned(SZ_4K);
 EXPORT_SYMBOL_GPL(rtas_data_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned long rtas_rmo_buf;
 
@@ -806,59 +749,13 @@ unsigned long rtas_rmo_buf;
  * This is done like this so rtas_flash can be a module.
  */
 void (*rtas_flash_term_hook)(int);
-<<<<<<< HEAD
-EXPORT_SYMBOL(rtas_flash_term_hook);
-
-/* RTAS use home made raw locking instead of spin_lock_irqsave
- * because those can be called from within really nasty contexts
- * such as having the timebase stopped which would lockup with
- * normal locks and spinlock debugging enabled
- */
-static unsigned long lock_rtas(void)
-{
-	unsigned long flags;
-
-	local_irq_save(flags);
-	preempt_disable();
-	arch_spin_lock_flags(&rtas.lock, flags);
-	return flags;
-}
-
-static void unlock_rtas(unsigned long flags)
-{
-	arch_spin_unlock(&rtas.lock);
-	local_irq_restore(flags);
-	preempt_enable();
-}
-=======
 EXPORT_SYMBOL_GPL(rtas_flash_term_hook);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * call_rtas_display_status and call_rtas_display_status_delay
  * are designed only for very early low-level debugging, which
  * is why the token is hard-coded to 10.
  */
-<<<<<<< HEAD
-static void call_rtas_display_status(char c)
-{
-	struct rtas_args *args = &rtas.args;
-	unsigned long s;
-
-	if (!rtas.base)
-		return;
-	s = lock_rtas();
-
-	args->token = 10;
-	args->nargs = 1;
-	args->nret  = 1;
-	args->rets  = (rtas_arg_t *)&(args->args[1]);
-	args->args[0] = (unsigned char)c;
-
-	enter_rtas(__pa(args));
-
-	unlock_rtas(s);
-=======
 static void call_rtas_display_status(unsigned char c)
 {
 	unsigned long flags;
@@ -869,7 +766,6 @@ static void call_rtas_display_status(unsigned char c)
 	raw_spin_lock_irqsave(&rtas_lock, flags);
 	rtas_call_unlocked(&rtas_args, 10, 1, 1, NULL, c);
 	raw_spin_unlock_irqrestore(&rtas_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void call_rtas_display_status_delay(char c)
@@ -877,11 +773,7 @@ static void call_rtas_display_status_delay(char c)
 	static int pending_newline = 0;  /* did last write end with unprinted newline? */
 	static int width = 16;
 
-<<<<<<< HEAD
-	if (c == '\n') {	
-=======
 	if (c == '\n') {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (width-- > 0)
 			call_rtas_display_status(' ');
 		width = 16;
@@ -891,11 +783,7 @@ static void call_rtas_display_status_delay(char c)
 		if (pending_newline) {
 			call_rtas_display_status('\r');
 			call_rtas_display_status('\n');
-<<<<<<< HEAD
-		} 
-=======
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pending_newline = 0;
 		if (width--) {
 			call_rtas_display_status(c);
@@ -973,11 +861,7 @@ void rtas_progress(char *s, unsigned short hex)
 {
 	struct device_node *root;
 	int width;
-<<<<<<< HEAD
-	const int *p;
-=======
 	const __be32 *p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *os;
 	static int display_character, set_indicator;
 	static int display_width, display_lines, form_feed;
@@ -994,15 +878,6 @@ void rtas_progress(char *s, unsigned short hex)
 		if ((root = of_find_node_by_path("/rtas"))) {
 			if ((p = of_get_property(root,
 					"ibm,display-line-length", NULL)))
-<<<<<<< HEAD
-				display_width = *p;
-			if ((p = of_get_property(root,
-					"ibm,form-feed", NULL)))
-				form_feed = *p;
-			if ((p = of_get_property(root,
-					"ibm,display-number-of-lines", NULL)))
-				display_lines = *p;
-=======
 				display_width = be32_to_cpu(*p);
 			if ((p = of_get_property(root,
 					"ibm,form-feed", NULL)))
@@ -1010,18 +885,12 @@ void rtas_progress(char *s, unsigned short hex)
 			if ((p = of_get_property(root,
 					"ibm,display-number-of-lines", NULL)))
 				display_lines = be32_to_cpu(*p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			row_width = of_get_property(root,
 					"ibm,display-truncation-length", NULL);
 			of_node_put(root);
 		}
-<<<<<<< HEAD
-		display_character = rtas_token("display-character");
-		set_indicator = rtas_token("set-indicator");
-=======
 		display_character = rtas_function_token(RTAS_FN_DISPLAY_CHARACTER);
 		set_indicator = rtas_function_token(RTAS_FN_SET_INDICATOR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (display_character == RTAS_UNKNOWN_SERVICE) {
@@ -1054,11 +923,7 @@ void rtas_progress(char *s, unsigned short hex)
 		else
 			rtas_call(display_character, 1, 1, NULL, '\r');
 	}
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (row_width)
 		width = row_width[current_line];
 	else
@@ -1078,15 +943,9 @@ void rtas_progress(char *s, unsigned short hex)
 				spin_unlock(&progress_lock);
 				return;
 			}
-<<<<<<< HEAD
- 
-			/* RTAS wants CR-LF, not just LF */
- 
-=======
 
 			/* RTAS wants CR-LF, not just LF */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (*os == '\n') {
 				rtas_call(display_character, 1, 1, NULL, '\r');
 				rtas_call(display_character, 1, 1, NULL, '\n');
@@ -1096,11 +955,7 @@ void rtas_progress(char *s, unsigned short hex)
 				 */
 				rtas_call(display_character, 1, 1, NULL, *os);
 			}
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (row_width)
 				width = row_width[current_line];
 			else
@@ -1109,44 +964,14 @@ void rtas_progress(char *s, unsigned short hex)
 			width--;
 			rtas_call(display_character, 1, 1, NULL, *os);
 		}
-<<<<<<< HEAD
- 
-		os++;
- 
-=======
 
 		os++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* if we overwrite the screen length */
 		if (width <= 0)
 			while ((*os != 0) && (*os != '\n') && (*os != '\r'))
 				os++;
 	}
-<<<<<<< HEAD
- 
-	spin_unlock(&progress_lock);
-}
-EXPORT_SYMBOL(rtas_progress);		/* needed by rtas_flash module */
-
-int rtas_token(const char *service)
-{
-	const int *tokp;
-	if (rtas.dev == NULL)
-		return RTAS_UNKNOWN_SERVICE;
-	tokp = of_get_property(rtas.dev, service, NULL);
-	return tokp ? *tokp : RTAS_UNKNOWN_SERVICE;
-}
-EXPORT_SYMBOL(rtas_token);
-
-int rtas_service_present(const char *service)
-{
-	return rtas_token(service) != RTAS_UNKNOWN_SERVICE;
-}
-EXPORT_SYMBOL(rtas_service_present);
-
-#ifdef CONFIG_RTAS_ERROR_LOGGING
-=======
 
 	spin_unlock(&progress_lock);
 }
@@ -1182,7 +1007,6 @@ EXPORT_SYMBOL_GPL(rtas_token);
 
 static u32 rtas_error_log_max __ro_after_init = RTAS_ERROR_LOG_MAX;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Return the firmware-specified size of the error log buffer
  *  for all rtas calls that require an error buffer argument.
@@ -1190,26 +1014,6 @@ static u32 rtas_error_log_max __ro_after_init = RTAS_ERROR_LOG_MAX;
  */
 int rtas_get_error_log_max(void)
 {
-<<<<<<< HEAD
-	static int rtas_error_log_max;
-	if (rtas_error_log_max)
-		return rtas_error_log_max;
-
-	rtas_error_log_max = rtas_token ("rtas-error-log-max");
-	if ((rtas_error_log_max == RTAS_UNKNOWN_SERVICE) ||
-	    (rtas_error_log_max > RTAS_ERROR_LOG_MAX)) {
-		printk (KERN_WARNING "RTAS: bad log buffer size %d\n",
-			rtas_error_log_max);
-		rtas_error_log_max = RTAS_ERROR_LOG_MAX;
-	}
-	return rtas_error_log_max;
-}
-EXPORT_SYMBOL(rtas_get_error_log_max);
-
-
-static char rtas_err_buf[RTAS_ERROR_LOG_MAX];
-static int rtas_last_error_token;
-=======
 	return rtas_error_log_max;
 }
 
@@ -1235,55 +1039,27 @@ static void __init init_error_log_max(void)
 
 
 static char rtas_err_buf[RTAS_ERROR_LOG_MAX];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /** Return a copy of the detailed error text associated with the
  *  most recent failed call to rtas.  Because the error text
  *  might go stale if there are any other intervening rtas calls,
  *  this routine must be called atomically with whatever produced
-<<<<<<< HEAD
- *  the error (i.e. with rtas.lock still held from the previous call).
- */
-static char *__fetch_rtas_last_error(char *altbuf)
-{
-=======
  *  the error (i.e. with rtas_lock still held from the previous call).
  */
 static char *__fetch_rtas_last_error(char *altbuf)
 {
 	const s32 token = rtas_function_token(RTAS_FN_RTAS_LAST_ERROR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rtas_args err_args, save_args;
 	u32 bufsz;
 	char *buf = NULL;
 
-<<<<<<< HEAD
-	if (rtas_last_error_token == -1)
-=======
 	lockdep_assert_held(&rtas_lock);
 
 	if (token == -1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	bufsz = rtas_get_error_log_max();
 
-<<<<<<< HEAD
-	err_args.token = rtas_last_error_token;
-	err_args.nargs = 2;
-	err_args.nret = 1;
-	err_args.args[0] = (rtas_arg_t)__pa(rtas_err_buf);
-	err_args.args[1] = bufsz;
-	err_args.args[2] = 0;
-
-	save_args = rtas.args;
-	rtas.args = err_args;
-
-	enter_rtas(__pa(&rtas.args));
-
-	err_args = rtas.args;
-	rtas.args = save_args;
-=======
 	err_args.token = cpu_to_be32(token);
 	err_args.nargs = cpu_to_be32(2);
 	err_args.nret = cpu_to_be32(1);
@@ -1298,7 +1074,6 @@ static char *__fetch_rtas_last_error(char *altbuf)
 
 	err_args = rtas_args;
 	rtas_args = save_args;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Log the error in the unlikely case that there was one. */
 	if (unlikely(err_args.args[2] == 0)) {
@@ -1306,19 +1081,11 @@ static char *__fetch_rtas_last_error(char *altbuf)
 			buf = altbuf;
 		} else {
 			buf = rtas_err_buf;
-<<<<<<< HEAD
-			if (mem_init_done)
-				buf = kmalloc(RTAS_ERROR_LOG_MAX, GFP_ATOMIC);
-		}
-		if (buf)
-			memcpy(buf, rtas_err_buf, RTAS_ERROR_LOG_MAX);
-=======
 			if (slab_is_available())
 				buf = kmalloc(RTAS_ERROR_LOG_MAX, GFP_ATOMIC);
 		}
 		if (buf)
 			memmove(buf, rtas_err_buf, RTAS_ERROR_LOG_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return buf;
@@ -1329,16 +1096,6 @@ static char *__fetch_rtas_last_error(char *altbuf)
 #else /* CONFIG_RTAS_ERROR_LOGGING */
 #define __fetch_rtas_last_error(x)	NULL
 #define get_errorlog_buffer()		NULL
-<<<<<<< HEAD
-#endif
-
-int rtas_call(int token, int nargs, int nret, int *outputs, ...)
-{
-	va_list list;
-	int i;
-	unsigned long s;
-	struct rtas_args *rtas_args;
-=======
 static void __init init_error_log_max(void) {}
 #endif
 
@@ -1460,35 +1217,12 @@ int rtas_call(int token, int nargs, int nret, int *outputs, ...)
 	int i;
 	unsigned long flags;
 	struct rtas_args *args;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *buff_copy = NULL;
 	int ret;
 
 	if (!rtas.entry || token == RTAS_UNKNOWN_SERVICE)
 		return -1;
 
-<<<<<<< HEAD
-	s = lock_rtas();
-	rtas_args = &rtas.args;
-
-	rtas_args->token = token;
-	rtas_args->nargs = nargs;
-	rtas_args->nret  = nret;
-	rtas_args->rets  = (rtas_arg_t *)&(rtas_args->args[nargs]);
-	va_start(list, outputs);
-	for (i = 0; i < nargs; ++i)
-		rtas_args->args[i] = va_arg(list, rtas_arg_t);
-	va_end(list);
-
-	for (i = 0; i < nret; ++i)
-		rtas_args->rets[i] = 0;
-
-	enter_rtas(__pa(rtas_args));
-
-	/* A -1 return code indicates that the last command couldn't
-	   be completed due to a hardware error. */
-	if (rtas_args->rets[0] == -1)
-=======
 	if (token_is_restricted_errinjct(token)) {
 		/*
 		 * It would be nicer to not discard the error value
@@ -1517,21 +1251,10 @@ int rtas_call(int token, int nargs, int nret, int *outputs, ...)
 	/* A -1 return code indicates that the last command couldn't
 	   be completed due to a hardware error. */
 	if (be32_to_cpu(args->rets[0]) == -1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		buff_copy = __fetch_rtas_last_error(NULL);
 
 	if (nret > 1 && outputs != NULL)
 		for (i = 0; i < nret-1; ++i)
-<<<<<<< HEAD
-			outputs[i] = rtas_args->rets[i+1];
-	ret = (nret > 0)? rtas_args->rets[0]: 0;
-
-	unlock_rtas(s);
-
-	if (buff_copy) {
-		log_error(buff_copy, ERR_TYPE_RTAS_LOG, 0);
-		if (mem_init_done)
-=======
 			outputs[i] = be32_to_cpu(args->rets[i + 1]);
 	ret = (nret > 0) ? be32_to_cpu(args->rets[0]) : 0;
 
@@ -1541,17 +1264,10 @@ int rtas_call(int token, int nargs, int nret, int *outputs, ...)
 	if (buff_copy) {
 		log_error(buff_copy, ERR_TYPE_RTAS_LOG, 0);
 		if (slab_is_available())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(buff_copy);
 	}
 	return ret;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(rtas_call);
-
-/* For RTAS_BUSY (-2), delay for 1 millisecond.  For an extended busy status
- * code of 990n, perform the hinted delay of 10^n (last digit) milliseconds.
-=======
 EXPORT_SYMBOL_GPL(rtas_call);
 
 /**
@@ -1573,7 +1289,6 @@ EXPORT_SYMBOL_GPL(rtas_call);
  *            some callers depend on this behavior, and the worst outcome
  *            is that they will delay for longer than necessary.
  * * 0      - If @status is not a busy or extended delay value.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 unsigned int rtas_busy_delay_time(int status)
 {
@@ -1582,39 +1297,15 @@ unsigned int rtas_busy_delay_time(int status)
 
 	if (status == RTAS_BUSY) {
 		ms = 1;
-<<<<<<< HEAD
-	} else if (status >= 9900 && status <= 9905) {
-		order = status - 9900;
-=======
 	} else if (status >= RTAS_EXTENDED_DELAY_MIN &&
 		   status <= RTAS_EXTENDED_DELAY_MAX) {
 		order = status - RTAS_EXTENDED_DELAY_MIN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (ms = 1; order > 0; order--)
 			ms *= 10;
 	}
 
 	return ms;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(rtas_busy_delay_time);
-
-/* For an RTAS busy status code, perform the hinted delay. */
-unsigned int rtas_busy_delay(int status)
-{
-	unsigned int ms;
-
-	might_sleep();
-	ms = rtas_busy_delay_time(status);
-	if (ms && need_resched())
-		msleep(ms);
-
-	return ms;
-}
-EXPORT_SYMBOL(rtas_busy_delay);
-
-static int rtas_error_rc(int rtas_rc)
-=======
 
 /*
  * Early boot fallback for rtas_busy_delay().
@@ -1738,40 +1429,10 @@ bool __ref rtas_busy_delay(int status)
 EXPORT_SYMBOL_GPL(rtas_busy_delay);
 
 int rtas_error_rc(int rtas_rc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 
 	switch (rtas_rc) {
-<<<<<<< HEAD
-		case -1: 		/* Hardware Error */
-			rc = -EIO;
-			break;
-		case -3:		/* Bad indicator/domain/etc */
-			rc = -EINVAL;
-			break;
-		case -9000:		/* Isolation error */
-			rc = -EFAULT;
-			break;
-		case -9001:		/* Outstanding TCE/PTE */
-			rc = -EEXIST;
-			break;
-		case -9002:		/* No usable slot */
-			rc = -ENODEV;
-			break;
-		default:
-			printk(KERN_ERR "%s: unexpected RTAS error %d\n",
-					__func__, rtas_rc);
-			rc = -ERANGE;
-			break;
-	}
-	return rc;
-}
-
-int rtas_get_power_level(int powerdomain, int *level)
-{
-	int token = rtas_token("get-power-level");
-=======
 	case RTAS_HARDWARE_ERROR:	/* Hardware Error */
 		rc = -EIO;
 		break;
@@ -1799,7 +1460,6 @@ EXPORT_SYMBOL_GPL(rtas_error_rc);
 int rtas_get_power_level(int powerdomain, int *level)
 {
 	int token = rtas_function_token(RTAS_FN_GET_POWER_LEVEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	if (token == RTAS_UNKNOWN_SERVICE)
@@ -1812,19 +1472,11 @@ int rtas_get_power_level(int powerdomain, int *level)
 		return rtas_error_rc(rc);
 	return rc;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(rtas_get_power_level);
-
-int rtas_set_power_level(int powerdomain, int level, int *setlevel)
-{
-	int token = rtas_token("set-power-level");
-=======
 EXPORT_SYMBOL_GPL(rtas_get_power_level);
 
 int rtas_set_power_level(int powerdomain, int level, int *setlevel)
 {
 	int token = rtas_function_token(RTAS_FN_SET_POWER_LEVEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	if (token == RTAS_UNKNOWN_SERVICE)
@@ -1838,19 +1490,11 @@ int rtas_set_power_level(int powerdomain, int level, int *setlevel)
 		return rtas_error_rc(rc);
 	return rc;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(rtas_set_power_level);
-
-int rtas_get_sensor(int sensor, int index, int *state)
-{
-	int token = rtas_token("get-sensor-state");
-=======
 EXPORT_SYMBOL_GPL(rtas_set_power_level);
 
 int rtas_get_sensor(int sensor, int index, int *state)
 {
 	int token = rtas_function_token(RTAS_FN_GET_SENSOR_STATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	if (token == RTAS_UNKNOWN_SERVICE)
@@ -1864,19 +1508,11 @@ int rtas_get_sensor(int sensor, int index, int *state)
 		return rtas_error_rc(rc);
 	return rc;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(rtas_get_sensor);
-
-int rtas_get_sensor_fast(int sensor, int index, int *state)
-{
-	int token = rtas_token("get-sensor-state");
-=======
 EXPORT_SYMBOL_GPL(rtas_get_sensor);
 
 int rtas_get_sensor_fast(int sensor, int index, int *state)
 {
 	int token = rtas_function_token(RTAS_FN_GET_SENSOR_STATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	if (token == RTAS_UNKNOWN_SERVICE)
@@ -1895,13 +1531,8 @@ bool rtas_indicator_present(int token, int *maxindex)
 {
 	int proplen, count, i;
 	const struct indicator_elem {
-<<<<<<< HEAD
-		u32 token;
-		u32 maxindex;
-=======
 		__be32 token;
 		__be32 maxindex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} *indicators;
 
 	indicators = of_get_property(rtas.dev, "rtas-indicators", &proplen);
@@ -1911,34 +1542,19 @@ bool rtas_indicator_present(int token, int *maxindex)
 	count = proplen / sizeof(struct indicator_elem);
 
 	for (i = 0; i < count; i++) {
-<<<<<<< HEAD
-		if (indicators[i].token != token)
-			continue;
-		if (maxindex)
-			*maxindex = indicators[i].maxindex;
-=======
 		if (__be32_to_cpu(indicators[i].token) != token)
 			continue;
 		if (maxindex)
 			*maxindex = __be32_to_cpu(indicators[i].maxindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return true;
 	}
 
 	return false;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(rtas_indicator_present);
-
-int rtas_set_indicator(int indicator, int index, int new_value)
-{
-	int token = rtas_token("set-indicator");
-=======
 
 int rtas_set_indicator(int indicator, int index, int new_value)
 {
 	int token = rtas_function_token(RTAS_FN_SET_INDICATOR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	if (token == RTAS_UNKNOWN_SERVICE)
@@ -1952,36 +1568,23 @@ int rtas_set_indicator(int indicator, int index, int new_value)
 		return rtas_error_rc(rc);
 	return rc;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(rtas_set_indicator);
-=======
 EXPORT_SYMBOL_GPL(rtas_set_indicator);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Ignoring RTAS extended delay
  */
 int rtas_set_indicator_fast(int indicator, int index, int new_value)
 {
-<<<<<<< HEAD
-	int rc;
-	int token = rtas_token("set-indicator");
-=======
 	int token = rtas_function_token(RTAS_FN_SET_INDICATOR);
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (token == RTAS_UNKNOWN_SERVICE)
 		return -ENOENT;
 
 	rc = rtas_call(token, 3, 1, NULL, indicator, index, new_value);
 
-<<<<<<< HEAD
-	WARN_ON(rc == -2 || (rc >= 9900 && rc <= 9905));
-=======
 	WARN_ON(rc == RTAS_BUSY || (rc >= RTAS_EXTENDED_DELAY_MIN &&
 				    rc <= RTAS_EXTENDED_DELAY_MAX));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rc < 0)
 		return rtas_error_rc(rc);
@@ -1989,14 +1592,6 @@ int rtas_set_indicator_fast(int indicator, int index, int new_value)
 	return rc;
 }
 
-<<<<<<< HEAD
-void rtas_restart(char *cmd)
-{
-	if (rtas_flash_term_hook)
-		rtas_flash_term_hook(SYS_RESTART);
-	printk("RTAS system-reboot returned %d\n",
-	       rtas_call(rtas_token("system-reboot"), 0, 1, NULL));
-=======
 /**
  * rtas_ibm_suspend_me() - Call ibm,suspend-me to suspend the LPAR.
  *
@@ -2061,7 +1656,6 @@ void __noreturn rtas_restart(char *cmd)
 		rtas_flash_term_hook(SYS_RESTART);
 	pr_emerg("system-reboot returned %d\n",
 		 rtas_call(rtas_function_token(RTAS_FN_SYSTEM_REBOOT), 0, 1, NULL));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (;;);
 }
 
@@ -2070,49 +1664,29 @@ void rtas_power_off(void)
 	if (rtas_flash_term_hook)
 		rtas_flash_term_hook(SYS_POWER_OFF);
 	/* allow power on only with power button press */
-<<<<<<< HEAD
-	printk("RTAS power-off returned %d\n",
-	       rtas_call(rtas_token("power-off"), 2, 1, NULL, -1, -1));
-	for (;;);
-}
-
-void rtas_halt(void)
-=======
 	pr_emerg("power-off returned %d\n",
 		 rtas_call(rtas_function_token(RTAS_FN_POWER_OFF), 2, 1, NULL, -1, -1));
 	for (;;);
 }
 
 void __noreturn rtas_halt(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (rtas_flash_term_hook)
 		rtas_flash_term_hook(SYS_HALT);
 	/* allow power on only with power button press */
-<<<<<<< HEAD
-	printk("RTAS power-off returned %d\n",
-	       rtas_call(rtas_token("power-off"), 2, 1, NULL, -1, -1));
-=======
 	pr_emerg("power-off returned %d\n",
 		 rtas_call(rtas_function_token(RTAS_FN_POWER_OFF), 2, 1, NULL, -1, -1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (;;);
 }
 
 /* Must be in the RMO region, so we place it here */
 static char rtas_os_term_buf[2048];
-<<<<<<< HEAD
-
-void rtas_os_term(char *str)
-{
-=======
 static bool ibm_extended_os_term;
 
 void rtas_os_term(char *str)
 {
 	s32 token = rtas_function_token(RTAS_FN_IBM_OS_TERM);
 	static struct rtas_args args;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 
 	/*
@@ -2121,310 +1695,12 @@ void rtas_os_term(char *str)
 	 * this property may terminate the partition which we want to avoid
 	 * since it interferes with panic_timeout.
 	 */
-<<<<<<< HEAD
-	if (RTAS_UNKNOWN_SERVICE == rtas_token("ibm,os-term") ||
-	    RTAS_UNKNOWN_SERVICE == rtas_token("ibm,extended-os-term"))
-=======
 
 	if (token == RTAS_UNKNOWN_SERVICE || !ibm_extended_os_term)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	snprintf(rtas_os_term_buf, 2048, "OS panic: %s", str);
 
-<<<<<<< HEAD
-	do {
-		status = rtas_call(rtas_token("ibm,os-term"), 1, 1, NULL,
-				   __pa(rtas_os_term_buf));
-	} while (rtas_busy_delay(status));
-
-	if (status != 0)
-		printk(KERN_EMERG "ibm,os-term call failed %d\n", status);
-}
-
-static int ibm_suspend_me_token = RTAS_UNKNOWN_SERVICE;
-#ifdef CONFIG_PPC_PSERIES
-static int __rtas_suspend_last_cpu(struct rtas_suspend_me_data *data, int wake_when_done)
-{
-	u16 slb_size = mmu_slb_size;
-	int rc = H_MULTI_THREADS_ACTIVE;
-	int cpu;
-
-	slb_set_size(SLB_MIN_SIZE);
-	printk(KERN_DEBUG "calling ibm,suspend-me on cpu %i\n", smp_processor_id());
-
-	while (rc == H_MULTI_THREADS_ACTIVE && !atomic_read(&data->done) &&
-	       !atomic_read(&data->error))
-		rc = rtas_call(data->token, 0, 1, NULL);
-
-	if (rc || atomic_read(&data->error)) {
-		printk(KERN_DEBUG "ibm,suspend-me returned %d\n", rc);
-		slb_set_size(slb_size);
-	}
-
-	if (atomic_read(&data->error))
-		rc = atomic_read(&data->error);
-
-	atomic_set(&data->error, rc);
-	pSeries_coalesce_init();
-
-	if (wake_when_done) {
-		atomic_set(&data->done, 1);
-
-		for_each_online_cpu(cpu)
-			plpar_hcall_norets(H_PROD, get_hard_smp_processor_id(cpu));
-	}
-
-	if (atomic_dec_return(&data->working) == 0)
-		complete(data->complete);
-
-	return rc;
-}
-
-int rtas_suspend_last_cpu(struct rtas_suspend_me_data *data)
-{
-	atomic_inc(&data->working);
-	return __rtas_suspend_last_cpu(data, 0);
-}
-
-static int __rtas_suspend_cpu(struct rtas_suspend_me_data *data, int wake_when_done)
-{
-	long rc = H_SUCCESS;
-	unsigned long msr_save;
-	int cpu;
-
-	atomic_inc(&data->working);
-
-	/* really need to ensure MSR.EE is off for H_JOIN */
-	msr_save = mfmsr();
-	mtmsr(msr_save & ~(MSR_EE));
-
-	while (rc == H_SUCCESS && !atomic_read(&data->done) && !atomic_read(&data->error))
-		rc = plpar_hcall_norets(H_JOIN);
-
-	mtmsr(msr_save);
-
-	if (rc == H_SUCCESS) {
-		/* This cpu was prodded and the suspend is complete. */
-		goto out;
-	} else if (rc == H_CONTINUE) {
-		/* All other cpus are in H_JOIN, this cpu does
-		 * the suspend.
-		 */
-		return __rtas_suspend_last_cpu(data, wake_when_done);
-	} else {
-		printk(KERN_ERR "H_JOIN on cpu %i failed with rc = %ld\n",
-		       smp_processor_id(), rc);
-		atomic_set(&data->error, rc);
-	}
-
-	if (wake_when_done) {
-		atomic_set(&data->done, 1);
-
-		/* This cpu did the suspend or got an error; in either case,
-		 * we need to prod all other other cpus out of join state.
-		 * Extra prods are harmless.
-		 */
-		for_each_online_cpu(cpu)
-			plpar_hcall_norets(H_PROD, get_hard_smp_processor_id(cpu));
-	}
-out:
-	if (atomic_dec_return(&data->working) == 0)
-		complete(data->complete);
-	return rc;
-}
-
-int rtas_suspend_cpu(struct rtas_suspend_me_data *data)
-{
-	return __rtas_suspend_cpu(data, 0);
-}
-
-static void rtas_percpu_suspend_me(void *info)
-{
-	__rtas_suspend_cpu((struct rtas_suspend_me_data *)info, 1);
-}
-
-enum rtas_cpu_state {
-	DOWN,
-	UP,
-};
-
-#ifndef CONFIG_SMP
-static int rtas_cpu_state_change_mask(enum rtas_cpu_state state,
-				cpumask_var_t cpus)
-{
-	if (!cpumask_empty(cpus)) {
-		cpumask_clear(cpus);
-		return -EINVAL;
-	} else
-		return 0;
-}
-#else
-/* On return cpumask will be altered to indicate CPUs changed.
- * CPUs with states changed will be set in the mask,
- * CPUs with status unchanged will be unset in the mask. */
-static int rtas_cpu_state_change_mask(enum rtas_cpu_state state,
-				cpumask_var_t cpus)
-{
-	int cpu;
-	int cpuret = 0;
-	int ret = 0;
-
-	if (cpumask_empty(cpus))
-		return 0;
-
-	for_each_cpu(cpu, cpus) {
-		switch (state) {
-		case DOWN:
-			cpuret = cpu_down(cpu);
-			break;
-		case UP:
-			cpuret = cpu_up(cpu);
-			break;
-		}
-		if (cpuret) {
-			pr_debug("%s: cpu_%s for cpu#%d returned %d.\n",
-					__func__,
-					((state == UP) ? "up" : "down"),
-					cpu, cpuret);
-			if (!ret)
-				ret = cpuret;
-			if (state == UP) {
-				/* clear bits for unchanged cpus, return */
-				cpumask_shift_right(cpus, cpus, cpu);
-				cpumask_shift_left(cpus, cpus, cpu);
-				break;
-			} else {
-				/* clear bit for unchanged cpu, continue */
-				cpumask_clear_cpu(cpu, cpus);
-			}
-		}
-	}
-
-	return ret;
-}
-#endif
-
-int rtas_online_cpus_mask(cpumask_var_t cpus)
-{
-	int ret;
-
-	ret = rtas_cpu_state_change_mask(UP, cpus);
-
-	if (ret) {
-		cpumask_var_t tmp_mask;
-
-		if (!alloc_cpumask_var(&tmp_mask, GFP_TEMPORARY))
-			return ret;
-
-		/* Use tmp_mask to preserve cpus mask from first failure */
-		cpumask_copy(tmp_mask, cpus);
-		rtas_offline_cpus_mask(tmp_mask);
-		free_cpumask_var(tmp_mask);
-	}
-
-	return ret;
-}
-EXPORT_SYMBOL(rtas_online_cpus_mask);
-
-int rtas_offline_cpus_mask(cpumask_var_t cpus)
-{
-	return rtas_cpu_state_change_mask(DOWN, cpus);
-}
-EXPORT_SYMBOL(rtas_offline_cpus_mask);
-
-int rtas_ibm_suspend_me(struct rtas_args *args)
-{
-	long state;
-	long rc;
-	unsigned long retbuf[PLPAR_HCALL_BUFSIZE];
-	struct rtas_suspend_me_data data;
-	DECLARE_COMPLETION_ONSTACK(done);
-	cpumask_var_t offline_mask;
-	int cpuret;
-
-	if (!rtas_service_present("ibm,suspend-me"))
-		return -ENOSYS;
-
-	/* Make sure the state is valid */
-	rc = plpar_hcall(H_VASI_STATE, retbuf,
-			 ((u64)args->args[0] << 32) | args->args[1]);
-
-	state = retbuf[0];
-
-	if (rc) {
-		printk(KERN_ERR "rtas_ibm_suspend_me: vasi_state returned %ld\n",rc);
-		return rc;
-	} else if (state == H_VASI_ENABLED) {
-		args->args[args->nargs] = RTAS_NOT_SUSPENDABLE;
-		return 0;
-	} else if (state != H_VASI_SUSPENDING) {
-		printk(KERN_ERR "rtas_ibm_suspend_me: vasi_state returned state %ld\n",
-		       state);
-		args->args[args->nargs] = -1;
-		return 0;
-	}
-
-	if (!alloc_cpumask_var(&offline_mask, GFP_TEMPORARY))
-		return -ENOMEM;
-
-	atomic_set(&data.working, 0);
-	atomic_set(&data.done, 0);
-	atomic_set(&data.error, 0);
-	data.token = rtas_token("ibm,suspend-me");
-	data.complete = &done;
-
-	/* All present CPUs must be online */
-	cpumask_andnot(offline_mask, cpu_present_mask, cpu_online_mask);
-	cpuret = rtas_online_cpus_mask(offline_mask);
-	if (cpuret) {
-		pr_err("%s: Could not bring present CPUs online.\n", __func__);
-		atomic_set(&data.error, cpuret);
-		goto out;
-	}
-
-	stop_topology_update();
-
-	/* Call function on all CPUs.  One of us will make the
-	 * rtas call
-	 */
-	if (on_each_cpu(rtas_percpu_suspend_me, &data, 0))
-		atomic_set(&data.error, -EINVAL);
-
-	wait_for_completion(&done);
-
-	if (atomic_read(&data.error) != 0)
-		printk(KERN_ERR "Error doing global join\n");
-
-	start_topology_update();
-
-	/* Take down CPUs not online prior to suspend */
-	cpuret = rtas_offline_cpus_mask(offline_mask);
-	if (cpuret)
-		pr_warn("%s: Could not restore CPUs to offline state.\n",
-				__func__);
-
-out:
-	free_cpumask_var(offline_mask);
-	return atomic_read(&data.error);
-}
-#else /* CONFIG_PPC_PSERIES */
-int rtas_ibm_suspend_me(struct rtas_args *args)
-{
-	return -ENOSYS;
-}
-#endif
-
-/**
- * Find a specific pseries error log in an RTAS extended event log.
- * @log: RTAS error/event log
- * @section_id: two character section identifier
- *
- * Returns a pointer to the specified errorlog or NULL if not found.
- */
-struct pseries_errorlog *get_pseries_errorlog(struct rtas_error_log *log,
-					      uint16_t section_id)
-=======
 	/*
 	 * Keep calling as long as RTAS returns a "try again" status,
 	 * but don't use rtas_busy_delay(), which potentially
@@ -2482,22 +1758,11 @@ void rtas_activate_firmware(void)
  */
 noinstr struct pseries_errorlog *get_pseries_errorlog(struct rtas_error_log *log,
 						      uint16_t section_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtas_ext_event_log_v6 *ext_log =
 		(struct rtas_ext_event_log_v6 *)log->buffer;
 	struct pseries_errorlog *sect;
 	unsigned char *p, *log_end;
-<<<<<<< HEAD
-
-	/* Check that we understand the format */
-	if (log->extended_log_length < sizeof(struct rtas_ext_event_log_v6) ||
-	    ext_log->log_format != RTAS_V6EXT_LOG_FORMAT_EVENT_LOG ||
-	    ext_log->company_id != RTAS_V6EXT_COMPANY_ID_IBM)
-		return NULL;
-
-	log_end = log->buffer + log->extended_log_length;
-=======
 	uint32_t ext_log_length = rtas_error_extended_log_length(log);
 	uint8_t log_format = rtas_ext_event_log_format(ext_log);
 	uint32_t company_id = rtas_ext_event_company_id(ext_log);
@@ -2509,34 +1774,18 @@ noinstr struct pseries_errorlog *get_pseries_errorlog(struct rtas_error_log *log
 		return NULL;
 
 	log_end = log->buffer + ext_log_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = ext_log->vendor_log;
 
 	while (p < log_end) {
 		sect = (struct pseries_errorlog *)p;
-<<<<<<< HEAD
-		if (sect->id == section_id)
-			return sect;
-		p += sect->length;
-=======
 		if (pseries_errorlog_id(sect) == section_id)
 			return sect;
 		p += pseries_errorlog_length(sect);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return NULL;
 }
 
-<<<<<<< HEAD
-asmlinkage int ppc_rtas(struct rtas_args __user *uargs)
-{
-	struct rtas_args args;
-	unsigned long flags;
-	char *buff_copy, *errbuf = NULL;
-	int nargs;
-	int rc;
-=======
 /*
  * The sys_rtas syscall, as originally designed, allows root to pass
  * arbitrary physical addresses to RTAS calls. A number of RTAS calls
@@ -2648,7 +1897,6 @@ SYSCALL_DEFINE1(rtas, struct rtas_args __user *, uargs)
 	unsigned long flags;
 	char *buff_copy, *errbuf = NULL;
 	int nargs, nret, token;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
@@ -2659,12 +1907,6 @@ SYSCALL_DEFINE1(rtas, struct rtas_args __user *, uargs)
 	if (copy_from_user(&args, uargs, 3 * sizeof(u32)) != 0)
 		return -EFAULT;
 
-<<<<<<< HEAD
-	nargs = args.nargs;
-	if (nargs > ARRAY_SIZE(args.args)
-	    || args.nret > ARRAY_SIZE(args.args)
-	    || nargs + args.nret > ARRAY_SIZE(args.args))
-=======
 	nargs = be32_to_cpu(args.nargs);
 	nret  = be32_to_cpu(args.nret);
 	token = be32_to_cpu(args.token);
@@ -2672,7 +1914,6 @@ SYSCALL_DEFINE1(rtas, struct rtas_args __user *, uargs)
 	if (nargs >= ARRAY_SIZE(args.args)
 	    || nret > ARRAY_SIZE(args.args)
 	    || nargs + nret > ARRAY_SIZE(args.args))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* Copy in args. */
@@ -2680,18 +1921,6 @@ SYSCALL_DEFINE1(rtas, struct rtas_args __user *, uargs)
 			   nargs * sizeof(rtas_arg_t)) != 0)
 		return -EFAULT;
 
-<<<<<<< HEAD
-	if (args.token == RTAS_UNKNOWN_SERVICE)
-		return -EINVAL;
-
-	args.rets = &args.args[nargs];
-	memset(args.rets, 0, args.nret * sizeof(rtas_arg_t));
-
-	/* Need to handle ibm,suspend_me call specially */
-	if (args.token == ibm_suspend_me_token) {
-		rc = rtas_ibm_suspend_me(&args);
-		if (rc)
-=======
 	/*
 	 * If this token doesn't correspond to a function the kernel
 	 * understands, you're not allowed to call it.
@@ -2730,27 +1959,12 @@ SYSCALL_DEFINE1(rtas, struct rtas_args __user *, uargs)
 		else if (rc == -EIO)
 			args.rets[0] = cpu_to_be32(-1);
 		else if (rc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rc;
 		goto copy_return;
 	}
 
 	buff_copy = get_errorlog_buffer();
 
-<<<<<<< HEAD
-	flags = lock_rtas();
-
-	rtas.args = args;
-	enter_rtas(__pa(&rtas.args));
-	args = rtas.args;
-
-	/* A -1 return code indicates that the last command couldn't
-	   be completed due to a hardware error. */
-	if (args.rets[0] == -1)
-		errbuf = __fetch_rtas_last_error(buff_copy);
-
-	unlock_rtas(flags);
-=======
 	/*
 	 * If this function has a mutex assigned to it, we must
 	 * acquire it to avoid interleaving with any kernel-based uses
@@ -2777,7 +1991,6 @@ SYSCALL_DEFINE1(rtas, struct rtas_args __user *, uargs)
 
 	if (func->lock)
 		mutex_unlock(func->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (buff_copy) {
 		if (errbuf)
@@ -2789,21 +2002,12 @@ SYSCALL_DEFINE1(rtas, struct rtas_args __user *, uargs)
 	/* Copy out args. */
 	if (copy_to_user(uargs->args + nargs,
 			 args.args + nargs,
-<<<<<<< HEAD
-			 args.nret * sizeof(rtas_arg_t)) != 0)
-=======
 			 nret * sizeof(rtas_arg_t)) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * Call early during boot, before mem init or bootmem, to retrieve the RTAS
- * informations from the device-tree and allocate the RMO buffer for userland
-=======
 static void __init rtas_function_table_init(void)
 {
 	struct property *prop;
@@ -2855,44 +2059,18 @@ static void __init rtas_function_table_init(void)
 /*
  * Call early during boot, before mem init, to retrieve the RTAS
  * information from the device-tree and allocate the RMO buffer for userland
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * accesses.
  */
 void __init rtas_initialize(void)
 {
 	unsigned long rtas_region = RTAS_INSTANTIATE_MAX;
-<<<<<<< HEAD
-=======
 	u32 base, size, entry;
 	int no_base, no_size, no_entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get RTAS dev node and fill up our "rtas" structure with infos
 	 * about it.
 	 */
 	rtas.dev = of_find_node_by_name(NULL, "rtas");
-<<<<<<< HEAD
-	if (rtas.dev) {
-		const u32 *basep, *entryp, *sizep;
-
-		basep = of_get_property(rtas.dev, "linux,rtas-base", NULL);
-		sizep = of_get_property(rtas.dev, "rtas-size", NULL);
-		if (basep != NULL && sizep != NULL) {
-			rtas.base = *basep;
-			rtas.size = *sizep;
-			entryp = of_get_property(rtas.dev,
-					"linux,rtas-entry", NULL);
-			if (entryp == NULL) /* Ugh */
-				rtas.entry = rtas.base;
-			else
-				rtas.entry = *entryp;
-		} else
-			rtas.dev = NULL;
-	}
-	if (!rtas.dev)
-		return;
-
-=======
 	if (!rtas.dev)
 		return;
 
@@ -2920,23 +2098,10 @@ void __init rtas_initialize(void)
 	 */
 	ibm_extended_os_term = of_property_read_bool(rtas.dev, "ibm,extended-os-term");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If RTAS was found, allocate the RMO buffer for it and look for
 	 * the stop-self token if any
 	 */
 #ifdef CONFIG_PPC64
-<<<<<<< HEAD
-	if (machine_is(pseries) && firmware_has_feature(FW_FEATURE_LPAR)) {
-		rtas_region = min(ppc64_rma_size, RTAS_INSTANTIATE_MAX);
-		ibm_suspend_me_token = rtas_token("ibm,suspend-me");
-	}
-#endif
-	rtas_rmo_buf = memblock_alloc_base(RTAS_RMOBUF_MAX, PAGE_SIZE, rtas_region);
-
-#ifdef CONFIG_RTAS_ERROR_LOGGING
-	rtas_last_error_token = rtas_token("rtas-last-error");
-#endif
-=======
 	if (firmware_has_feature(FW_FEATURE_LPAR))
 		rtas_region = min(ppc64_rma_size, RTAS_INSTANTIATE_MAX);
 #endif
@@ -2947,17 +2112,12 @@ void __init rtas_initialize(void)
 		      PAGE_SIZE, &rtas_region);
 
 	rtas_work_area_reserve_arena(rtas_region);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __init early_init_dt_scan_rtas(unsigned long node,
 		const char *uname, int depth, void *data)
 {
-<<<<<<< HEAD
-	u32 *basep, *entryp, *sizep;
-=======
 	const u32 *basep, *entryp, *sizep;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (depth != 1 || strcmp(uname, "rtas") != 0)
 		return 0;
@@ -2966,15 +2126,12 @@ int __init early_init_dt_scan_rtas(unsigned long node,
 	entryp = of_get_flat_dt_prop(node, "linux,rtas-entry", NULL);
 	sizep  = of_get_flat_dt_prop(node, "rtas-size", NULL);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC64
 	/* need this feature to decide the crashkernel offset */
 	if (of_get_flat_dt_prop(node, "ibm,hypertas-functions", NULL))
 		powerpc_firmware_features |= FW_FEATURE_LPAR;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (basep && entryp && sizep) {
 		rtas.base = *basep;
 		rtas.entry = *entryp;
@@ -3000,36 +2157,6 @@ int __init early_init_dt_scan_rtas(unsigned long node,
 	return 1;
 }
 
-<<<<<<< HEAD
-static arch_spinlock_t timebase_lock;
-static u64 timebase = 0;
-
-void __cpuinit rtas_give_timebase(void)
-{
-	unsigned long flags;
-
-	local_irq_save(flags);
-	hard_irq_disable();
-	arch_spin_lock(&timebase_lock);
-	rtas_call(rtas_token("freeze-time-base"), 0, 1, NULL);
-	timebase = get_tb();
-	arch_spin_unlock(&timebase_lock);
-
-	while (timebase)
-		barrier();
-	rtas_call(rtas_token("thaw-time-base"), 0, 1, NULL);
-	local_irq_restore(flags);
-}
-
-void __cpuinit rtas_take_timebase(void)
-{
-	while (!timebase)
-		barrier();
-	arch_spin_lock(&timebase_lock);
-	set_tb(timebase >> 32, timebase & 0xffffffff);
-	timebase = 0;
-	arch_spin_unlock(&timebase_lock);
-=======
 static DEFINE_RAW_SPINLOCK(timebase_lock);
 static u64 timebase = 0;
 
@@ -3057,5 +2184,4 @@ void rtas_take_timebase(void)
 	set_tb(timebase >> 32, timebase & 0xffffffff);
 	timebase = 0;
 	raw_spin_unlock(&timebase_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

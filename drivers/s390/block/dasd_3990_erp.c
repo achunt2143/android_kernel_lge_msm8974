@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-/*
- * File...........: linux/drivers/s390/block/dasd_3990_erp.c
- * Author(s)......: Horst  Hummel    <Horst.Hummel@de.ibm.com>
- *		    Holger Smolinski <Holger.Smolinski@de.ibm.com>
- * Bugreports.to..: <Linux390@de.ibm.com>
- * (C) IBM Corporation, IBM Deutschland Entwicklung GmbH, 2000, 2001
- *
- */
-
-#define KMSG_COMPONENT "dasd-eckd"
-
-#include <linux/timer.h>
-#include <asm/idals.h>
-
-#define PRINTK_HEADER "dasd_erp(3990): "
-
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Author(s)......: Horst  Hummel    <Horst.Hummel@de.ibm.com>
@@ -28,7 +10,6 @@
 #include <linux/timer.h>
 #include <asm/idals.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "dasd_int.h"
 #include "dasd_eckd.h"
 
@@ -168,11 +149,7 @@ dasd_3990_erp_alternate_path(struct dasd_ccw_req * erp)
 	opm = ccw_device_get_path_mask(device->cdev);
 	spin_unlock_irqrestore(get_ccwdev_lock(device->cdev), flags);
 	if (erp->lpm == 0)
-<<<<<<< HEAD
-		erp->lpm = device->path_data.opm &
-=======
 		erp->lpm = dasd_path_get_opm(device) &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			~(erp->irb.esw.esw0.sublog.lpum);
 	else
 		erp->lpm &= ~(erp->irb.esw.esw0.sublog.lpum);
@@ -220,11 +197,7 @@ dasd_3990_erp_DCTL(struct dasd_ccw_req * erp, char modifier)
 	struct ccw1 *ccw;
 	struct dasd_ccw_req *dctl_cqr;
 
-<<<<<<< HEAD
-	dctl_cqr = dasd_alloc_erp_request((char *) &erp->magic, 1,
-=======
 	dctl_cqr = dasd_alloc_erp_request(erp->magic, 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  sizeof(struct DCTL_data),
 					  device);
 	if (IS_ERR(dctl_cqr)) {
@@ -243,11 +216,7 @@ dasd_3990_erp_DCTL(struct dasd_ccw_req * erp, char modifier)
 	memset(ccw, 0, sizeof(struct ccw1));
 	ccw->cmd_code = CCW_CMD_DCTL;
 	ccw->count = 4;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) DCTL_data;
-=======
 	ccw->cda = virt_to_dma32(DCTL_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dctl_cqr->flags = erp->flags;
 	dctl_cqr->function = dasd_3990_erp_DCTL;
 	dctl_cqr->refers = erp;
@@ -257,11 +226,7 @@ dasd_3990_erp_DCTL(struct dasd_ccw_req * erp, char modifier)
 	dctl_cqr->expires = 5 * 60 * HZ;
 	dctl_cqr->retries = 2;
 
-<<<<<<< HEAD
-	dctl_cqr->buildclk = get_clock();
-=======
 	dctl_cqr->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dctl_cqr->status = DASD_CQR_FILLED;
 
@@ -305,11 +270,7 @@ static struct dasd_ccw_req *dasd_3990_erp_action_1(struct dasd_ccw_req *erp)
 	    !test_bit(DASD_CQR_VERIFY_PATH, &erp->flags)) {
 		erp->status = DASD_CQR_FILLED;
 		erp->retries = 10;
-<<<<<<< HEAD
-		erp->lpm = erp->startdev->path_data.opm;
-=======
 		erp->lpm = dasd_path_get_opm(erp->startdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		erp->function = dasd_3990_erp_action_1_sec;
 	}
 	return erp;
@@ -433,10 +394,6 @@ dasd_3990_handle_env_data(struct dasd_ccw_req * erp, char *sense)
 	struct dasd_device *device = erp->startdev;
 	char msg_format = (sense[7] & 0xF0);
 	char msg_no = (sense[7] & 0x0F);
-<<<<<<< HEAD
-	char errorstring[ERRORLENGTH];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (msg_format) {
 	case 0x00:		/* Format 0 - Program or System Checks */
@@ -713,11 +670,7 @@ dasd_3990_handle_env_data(struct dasd_ccw_req * erp, char *sense)
 			break;
 		case 0x0D:
 			dev_warn(&device->cdev->dev,
-<<<<<<< HEAD
-				    "FORMAT 4 - No syn byte in count "
-=======
 				    "FORMAT 4 - No sync byte in count "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    "address area; offset active\n");
 			break;
 		case 0x0E:
@@ -727,11 +680,7 @@ dasd_3990_handle_env_data(struct dasd_ccw_req * erp, char *sense)
 			break;
 		case 0x0F:
 			dev_warn(&device->cdev->dev,
-<<<<<<< HEAD
-				    "FORMAT 4 - No syn byte in data area; "
-=======
 				    "FORMAT 4 - No sync byte in data area; "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    "offset active\n");
 			break;
 		default:
@@ -1046,18 +995,6 @@ dasd_3990_handle_env_data(struct dasd_ccw_req * erp, char *sense)
 			break;
 		default:
 			dev_warn(&device->cdev->dev,
-<<<<<<< HEAD
-				    "FORMAT D - Reserved\n");
-		}
-		break;
-
-	default:	/* unknown message format - should not happen
-			   internal error 03 - unknown message format */
-		snprintf(errorstring, ERRORLENGTH, "03 %x02", msg_format);
-		dev_err(&device->cdev->dev,
-			 "An error occurred in the DASD device driver, "
-			 "reason=%s\n", errorstring);
-=======
 				    "FORMAT F - Reserved\n");
 		}
 		break;
@@ -1065,7 +1002,6 @@ dasd_3990_handle_env_data(struct dasd_ccw_req * erp, char *sense)
 	default:
 		dev_err(&device->cdev->dev,
 			"Unknown message format %02x", msg_format);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}			/* end switch message format */
 
@@ -1106,13 +1042,6 @@ dasd_3990_erp_com_rej(struct dasd_ccw_req * erp, char *sense)
 		dev_err(&device->cdev->dev, "An I/O request was rejected"
 			" because writing is inhibited\n");
 		erp = dasd_3990_erp_cleanup(erp, DASD_CQR_FAILED);
-<<<<<<< HEAD
-	} else {
-		/* fatal error -  set status to FAILED
-		   internal error 09 - Command Reject */
-		dev_err(&device->cdev->dev, "An error occurred in the DASD "
-			"device driver, reason=%s\n", "09");
-=======
 	} else if (sense[7] == SNS7_INVALID_ON_SEC) {
 		dev_err(&device->cdev->dev, "An I/O request was rejected on a copy pair secondary device\n");
 		/* suppress dump of sense data for this error */
@@ -1122,7 +1051,6 @@ dasd_3990_erp_com_rej(struct dasd_ccw_req * erp, char *sense)
 		if (!test_bit(DASD_CQR_SUPPRESS_CR, &erp->flags))
 			dev_err(&device->cdev->dev,
 				"An I/O command request was rejected\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		erp = dasd_3990_erp_cleanup(erp, DASD_CQR_FAILED);
 	}
@@ -1190,17 +1118,7 @@ dasd_3990_erp_equip_check(struct dasd_ccw_req * erp, char *sense)
 	erp->function = dasd_3990_erp_equip_check;
 
 	if (sense[1] & SNS1_WRITE_INHIBITED) {
-<<<<<<< HEAD
-		dev_info(&device->cdev->dev,
-			    "Write inhibited path encountered\n");
-
-		/* vary path offline
-		   internal error 04 - Path should be varied off-line.*/
-		dev_err(&device->cdev->dev, "An error occurred in the DASD "
-			"device driver, reason=%s\n", "04");
-=======
 		dev_err(&device->cdev->dev, "Write inhibited path encountered\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		erp = dasd_3990_erp_action_1(erp);
 
@@ -1351,15 +1269,7 @@ dasd_3990_erp_inv_format(struct dasd_ccw_req * erp, char *sense)
 		erp = dasd_3990_erp_action_4(erp, sense);
 
 	} else {
-<<<<<<< HEAD
-		/* internal error 06 - The track format is not valid*/
-		dev_err(&device->cdev->dev,
-			"An error occurred in the DASD device driver, "
-			"reason=%s\n", "06");
-
-=======
 		dev_err(&device->cdev->dev, "Track format is not valid\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		erp = dasd_3990_erp_cleanup(erp, DASD_CQR_FAILED);
 	}
 
@@ -1444,10 +1354,6 @@ dasd_3990_erp_no_rec(struct dasd_ccw_req * default_erp, char *sense)
 
 	struct dasd_device *device = default_erp->startdev;
 
-<<<<<<< HEAD
-	dev_err(&device->cdev->dev,
-		    "The specified record was not found\n");
-=======
 	/*
 	 * In some cases the 'No Record Found' error might be expected and
 	 * log messages shouldn't be written then.
@@ -1456,7 +1362,6 @@ dasd_3990_erp_no_rec(struct dasd_ccw_req * default_erp, char *sense)
 	if (!test_bit(DASD_CQR_SUPPRESS_NRF, &default_erp->flags))
 		dev_err(&device->cdev->dev,
 			"The specified record was not found\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dasd_3990_erp_cleanup(default_erp, DASD_CQR_FAILED);
 
@@ -1481,10 +1386,6 @@ dasd_3990_erp_file_prot(struct dasd_ccw_req * erp)
 
 	struct dasd_device *device = erp->startdev;
 
-<<<<<<< HEAD
-	dev_err(&device->cdev->dev, "Accessing the DASD failed because of "
-		"a hardware error\n");
-=======
 	/*
 	 * In some cases the 'File Protected' error might be expected and
 	 * log messages shouldn't be written then.
@@ -1493,7 +1394,6 @@ dasd_3990_erp_file_prot(struct dasd_ccw_req * erp)
 	if (!test_bit(DASD_CQR_SUPPRESS_FP, &erp->flags))
 		dev_err(&device->cdev->dev,
 			"Accessing the DASD failed because of a hardware error\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dasd_3990_erp_cleanup(erp, DASD_CQR_FAILED);
 
@@ -1689,11 +1589,7 @@ dasd_3990_erp_action_1B_32(struct dasd_ccw_req * default_erp, char *sense)
 {
 
 	struct dasd_device *device = default_erp->startdev;
-<<<<<<< HEAD
-	__u32 cpa = 0;
-=======
 	dma32_t cpa = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dasd_ccw_req *cqr;
 	struct dasd_ccw_req *erp;
 	struct DE_eckd_data *DE_data;
@@ -1741,24 +1637,14 @@ dasd_3990_erp_action_1B_32(struct dasd_ccw_req * default_erp, char *sense)
 	}
 
 	/* Build new ERP request including DE/LO */
-<<<<<<< HEAD
-	erp = dasd_alloc_erp_request((char *) &cqr->magic,
-=======
 	erp = dasd_alloc_erp_request(cqr->magic,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     2 + 1,/* DE/LO + TIC */
 				     sizeof(struct DE_eckd_data) +
 				     sizeof(struct LO_eckd_data), device);
 
 	if (IS_ERR(erp)) {
-<<<<<<< HEAD
-		/* internal error 01 - Unable to allocate ERP */
-		dev_err(&device->cdev->dev, "An error occurred in the DASD "
-			"device driver, reason=%s\n", "01");
-=======
 		DBF_DEV_EVENT(DBF_ERR, device, "%s",
 			      "Unable to allocate ERP request (1B 32)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return dasd_3990_erp_cleanup(default_erp, DASD_CQR_FAILED);
 	}
 
@@ -1807,11 +1693,7 @@ dasd_3990_erp_action_1B_32(struct dasd_ccw_req * default_erp, char *sense)
 	ccw->cmd_code = DASD_ECKD_CCW_DEFINE_EXTENT;
 	ccw->flags = CCW_FLAG_CC;
 	ccw->count = 16;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) DE_data;
-=======
 	ccw->cda = virt_to_dma32(DE_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* create LO ccw */
 	ccw++;
@@ -1819,11 +1701,7 @@ dasd_3990_erp_action_1B_32(struct dasd_ccw_req * default_erp, char *sense)
 	ccw->cmd_code = DASD_ECKD_CCW_LOCATE_RECORD;
 	ccw->flags = CCW_FLAG_CC;
 	ccw->count = 16;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) LO_data;
-=======
 	ccw->cda = virt_to_dma32(LO_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* TIC to the failed ccw */
 	ccw++;
@@ -1839,11 +1717,7 @@ dasd_3990_erp_action_1B_32(struct dasd_ccw_req * default_erp, char *sense)
 	erp->magic = default_erp->magic;
 	erp->expires = default_erp->expires;
 	erp->retries = 256;
-<<<<<<< HEAD
-	erp->buildclk = get_clock();
-=======
 	erp->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	erp->status = DASD_CQR_FILLED;
 
 	/* remove the default erp */
@@ -1873,11 +1747,7 @@ dasd_3990_update_1B(struct dasd_ccw_req * previous_erp, char *sense)
 {
 
 	struct dasd_device *device = previous_erp->startdev;
-<<<<<<< HEAD
-	__u32 cpa = 0;
-=======
 	dma32_t cpa = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dasd_ccw_req *cqr;
 	struct dasd_ccw_req *erp;
 	char *LO_data;		/* struct LO_eckd_data */
@@ -1916,15 +1786,8 @@ dasd_3990_update_1B(struct dasd_ccw_req * previous_erp, char *sense)
 	cpa = previous_erp->irb.scsw.cmd.cpa;
 
 	if (cpa == 0) {
-<<<<<<< HEAD
-		/* internal error 02 -
-		   Unable to determine address of the CCW to be restarted */
-		dev_err(&device->cdev->dev, "An error occurred in the DASD "
-			"device driver, reason=%s\n", "02");
-=======
 		dev_err(&device->cdev->dev,
 			"Unable to determine address of to be restarted CCW\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		previous_erp->status = DASD_CQR_FAILED;
 
@@ -2047,11 +1910,7 @@ dasd_3990_erp_compound_path(struct dasd_ccw_req * erp, char *sense)
 		    !test_bit(DASD_CQR_VERIFY_PATH, &erp->flags)) {
 			/* reset the lpm and the status to be able to
 			 * try further actions. */
-<<<<<<< HEAD
-			erp->lpm = erp->startdev->path_data.opm;
-=======
 			erp->lpm = dasd_path_get_opm(erp->startdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			erp->status = DASD_CQR_NEED_ERP;
 		}
 	}
@@ -2110,11 +1969,7 @@ dasd_3990_erp_compound_code(struct dasd_ccw_req * erp, char *sense)
  * DASD_3990_ERP_COMPOUND_CONFIG
  *
  * DESCRIPTION
-<<<<<<< HEAD
- *   Handles the compound ERP action for configruation
-=======
  *   Handles the compound ERP action for configuration
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   dependent error.
  *   Note: duplex handling is not implemented (yet).
  *
@@ -2131,21 +1986,9 @@ dasd_3990_erp_compound_config(struct dasd_ccw_req * erp, char *sense)
 {
 
 	if ((sense[25] & DASD_SENSE_BIT_1) && (sense[26] & DASD_SENSE_BIT_2)) {
-<<<<<<< HEAD
-
-		/* set to suspended duplex state then restart
-		   internal error 05 - Set device to suspended duplex state
-		   should be done */
-		struct dasd_device *device = erp->startdev;
-		dev_err(&device->cdev->dev,
-			"An error occurred in the DASD device driver, "
-			"reason=%s\n", "05");
-
-=======
 		struct dasd_device *device = erp->startdev;
 		dev_err(&device->cdev->dev,
 			"Compound configuration error occurred\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	erp->function = dasd_3990_erp_compound_config;
@@ -2281,16 +2124,9 @@ dasd_3990_erp_inspect_32(struct dasd_ccw_req * erp, char *sense)
 			erp = dasd_3990_erp_int_req(erp);
 			break;
 
-<<<<<<< HEAD
-		case 0x0F:  /* length mismatch during update write command
-			       internal error 08 - update write command error*/
-			dev_err(&device->cdev->dev, "An error occurred in the "
-				"DASD device driver, reason=%s\n", "08");
-=======
 		case 0x0F:
 			dev_err(&device->cdev->dev,
 				"Update write command error occurred\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			erp = dasd_3990_erp_cleanup(erp, DASD_CQR_FAILED);
 			break;
@@ -2299,18 +2135,9 @@ dasd_3990_erp_inspect_32(struct dasd_ccw_req * erp, char *sense)
 			erp = dasd_3990_erp_action_10_32(erp, sense);
 			break;
 
-<<<<<<< HEAD
-		case 0x15:	/* next track outside defined extend
-				   internal error 07 - The next track is not
-				   within the defined storage extent */
-			dev_err(&device->cdev->dev,
-				"An error occurred in the DASD device driver, "
-				"reason=%s\n", "07");
-=======
 		case 0x15:
 			dev_err(&device->cdev->dev,
 				"Track outside defined extent error occurred\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			erp = dasd_3990_erp_cleanup(erp, DASD_CQR_FAILED);
 			break;
@@ -2355,8 +2182,6 @@ dasd_3990_erp_inspect_32(struct dasd_ccw_req * erp, char *sense)
 
 }				/* end dasd_3990_erp_inspect_32 */
 
-<<<<<<< HEAD
-=======
 static void dasd_3990_erp_disable_path(struct dasd_device *device, __u8 lpum)
 {
 	int pos = pathmask_to_pos(lpum);
@@ -2415,7 +2240,6 @@ static void dasd_3990_erp_account_error(struct dasd_ccw_req *erp)
 		dasd_3990_erp_disable_path(device, lpum);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *****************************************************************************
  * main ERP control functions (24 and 32 byte sense)
@@ -2445,10 +2269,7 @@ dasd_3990_erp_control_check(struct dasd_ccw_req *erp)
 					   | SCHN_STAT_CHN_CTRL_CHK)) {
 		DBF_DEV_EVENT(DBF_WARNING, device, "%s",
 			    "channel or interface control check");
-<<<<<<< HEAD
-=======
 		dasd_3990_erp_account_error(erp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		erp = dasd_3990_erp_action_4(erp, NULL);
 	}
 	return erp;
@@ -2539,22 +2360,14 @@ static struct dasd_ccw_req *dasd_3990_erp_add_erp(struct dasd_ccw_req *cqr)
 	}
 
 	/* allocate additional request block */
-<<<<<<< HEAD
-	erp = dasd_alloc_erp_request((char *) &cqr->magic,
-=======
 	erp = dasd_alloc_erp_request(cqr->magic,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     cplength, datasize, device);
 	if (IS_ERR(erp)) {
                 if (cqr->retries <= 0) {
 			DBF_DEV_EVENT(DBF_ERR, device, "%s",
 				    "Unable to allocate ERP request");
 			cqr->status = DASD_CQR_FAILED;
-<<<<<<< HEAD
-                        cqr->stopclk = get_clock ();
-=======
 			cqr->stopclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			DBF_DEV_EVENT(DBF_ERR, device,
                                      "Unable to allocate ERP request "
@@ -2573,11 +2386,7 @@ static struct dasd_ccw_req *dasd_3990_erp_add_erp(struct dasd_ccw_req *cqr)
 		tcw = erp->cpaddr;
 		tsb = (struct tsb *) &tcw[1];
 		*tcw = *((struct tcw *)cqr->cpaddr);
-<<<<<<< HEAD
-		tcw->tsb = (long)tsb;
-=======
 		tcw->tsb = virt_to_dma64(tsb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (ccw->cmd_code == DASD_ECKD_CCW_PSF) {
 		/* PSF cannot be chained from NOOP/TIC */
 		erp->cpaddr = cqr->cpaddr;
@@ -2588,11 +2397,7 @@ static struct dasd_ccw_req *dasd_3990_erp_add_erp(struct dasd_ccw_req *cqr)
 		ccw->flags = CCW_FLAG_CC;
 		ccw++;
 		ccw->cmd_code = CCW_CMD_TIC;
-<<<<<<< HEAD
-		ccw->cda      = (long)(cqr->cpaddr);
-=======
 		ccw->cda      = virt_to_dma32(cqr->cpaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	erp->flags = cqr->flags;
@@ -2603,13 +2408,8 @@ static struct dasd_ccw_req *dasd_3990_erp_add_erp(struct dasd_ccw_req *cqr)
 	erp->block    = cqr->block;
 	erp->magic    = cqr->magic;
 	erp->expires  = cqr->expires;
-<<<<<<< HEAD
-	erp->retries  = 256;
-	erp->buildclk = get_clock();
-=======
 	erp->retries  = device->default_retries;
 	erp->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	erp->status = DASD_CQR_FILLED;
 
 	return erp;
@@ -2830,11 +2630,7 @@ dasd_3990_erp_further_erp(struct dasd_ccw_req *erp)
 		 * necessary
 		 */
 		dev_err(&device->cdev->dev,
-<<<<<<< HEAD
-			"ERP %p has run out of retries and failed\n", erp);
-=======
 			"ERP %px has run out of retries and failed\n", erp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		erp->status = DASD_CQR_FAILED;
 	}
@@ -2875,12 +2671,7 @@ dasd_3990_erp_handle_match_erp(struct dasd_ccw_req *erp_head,
 	while (erp_done != erp) {
 
 		if (erp_done == NULL)	/* end of chain reached */
-<<<<<<< HEAD
-			panic(PRINTK_HEADER "Programming error in ERP! The "
-			      "original request was lost\n");
-=======
 			panic("Programming error in ERP! The original request was lost\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* remove the request from the device queue */
 		list_del(&erp_done->blocklist);
@@ -2961,17 +2752,9 @@ dasd_3990_erp_action(struct dasd_ccw_req * cqr)
 			    "ERP chain at BEGINNING of ERP-ACTION\n");
 		for (temp_erp = cqr;
 		     temp_erp != NULL; temp_erp = temp_erp->refers) {
-<<<<<<< HEAD
-
-			dev_err(&device->cdev->dev,
-				    "ERP %p (%02x) refers to %p\n",
-				    temp_erp, temp_erp->status,
-				    temp_erp->refers);
-=======
 			dev_err(&device->cdev->dev,
 				"ERP %px (%02x) refers to %px\n",
 				temp_erp, temp_erp->status, temp_erp->refers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -3002,8 +2785,6 @@ dasd_3990_erp_action(struct dasd_ccw_req * cqr)
 		erp = dasd_3990_erp_handle_match_erp(cqr, erp);
 	}
 
-<<<<<<< HEAD
-=======
 
 	/*
 	 * For path verification work we need to stick with the path that was
@@ -3014,24 +2795,15 @@ dasd_3990_erp_action(struct dasd_ccw_req * cqr)
 		erp->lpm = cqr->lpm;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (device->features & DASD_FEATURE_ERPLOG) {
 		/* print current erp_chain */
 		dev_err(&device->cdev->dev,
 			    "ERP chain at END of ERP-ACTION\n");
 		for (temp_erp = erp;
 		     temp_erp != NULL; temp_erp = temp_erp->refers) {
-<<<<<<< HEAD
-
-			dev_err(&device->cdev->dev,
-				    "ERP %p (%02x) refers to %p\n",
-				    temp_erp, temp_erp->status,
-				    temp_erp->refers);
-=======
 			dev_err(&device->cdev->dev,
 				"ERP %px (%02x) refers to %px\n",
 				temp_erp, temp_erp->status, temp_erp->refers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 

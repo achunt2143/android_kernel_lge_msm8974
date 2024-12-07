@@ -18,10 +18,6 @@
 #ifndef mISDNIF_H
 #define mISDNIF_H
 
-<<<<<<< HEAD
-#include <stdarg.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/socket.h>
@@ -40,11 +36,7 @@
  */
 #define	MISDN_MAJOR_VERSION	1
 #define	MISDN_MINOR_VERSION	1
-<<<<<<< HEAD
-#define MISDN_RELEASE		21
-=======
 #define MISDN_RELEASE		29
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* primitives for information exchange
  * generell format
@@ -122,14 +114,11 @@
 #define MDL_ERROR_IND		0x1F04
 #define MDL_ERROR_RSP		0x5F04
 
-<<<<<<< HEAD
-=======
 /* intern layer 2 */
 #define DL_TIMER200_IND		0x7004
 #define DL_TIMER203_IND		0x7304
 #define DL_INTERN_MSG		0x7804
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* DL_INFORMATION_IND types */
 #define DL_INFO_L2_CONNECT	0x0001
 #define DL_INFO_L2_REMOVED	0x0002
@@ -375,10 +364,7 @@ clear_channelmap(u_int nr, u_char *map)
 #define MISDN_CTRL_LOOP			0x0001
 #define MISDN_CTRL_CONNECT		0x0002
 #define MISDN_CTRL_DISCONNECT		0x0004
-<<<<<<< HEAD
-=======
 #define MISDN_CTRL_RX_BUFFER		0x0008
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MISDN_CTRL_PCMCONNECT		0x0010
 #define MISDN_CTRL_PCMDISCONNECT	0x0020
 #define MISDN_CTRL_SETPEER		0x0040
@@ -386,10 +372,7 @@ clear_channelmap(u_int nr, u_char *map)
 #define MISDN_CTRL_RX_OFF		0x0100
 #define MISDN_CTRL_FILL_EMPTY		0x0200
 #define MISDN_CTRL_GETPEER		0x0400
-<<<<<<< HEAD
-=======
 #define MISDN_CTRL_L1_TIMER3		0x0800
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MISDN_CTRL_HW_FEATURES_OP	0x2000
 #define MISDN_CTRL_HW_FEATURES		0x2001
 #define MISDN_CTRL_HFC_OP		0x4000
@@ -404,15 +387,12 @@ clear_channelmap(u_int nr, u_char *map)
 #define MISDN_CTRL_HFC_WD_INIT		0x4009
 #define MISDN_CTRL_HFC_WD_RESET		0x400A
 
-<<<<<<< HEAD
-=======
 /* special RX buffer value for MISDN_CTRL_RX_BUFFER request.p1 is the minimum
  * buffer size request.p2 the maximum. Using  MISDN_CTRL_RX_SIZE_IGNORE will
  * not change the value, but still read back the actual stetting.
  */
 #define MISDN_CTRL_RX_SIZE_IGNORE	-1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* socket options */
 #define MISDN_TIME_STAMP		0x0001
 
@@ -573,11 +553,7 @@ _alloc_mISDN_skb(u_int prim, u_int id, u_int len, void *dp, gfp_t gfp_mask)
 	if (!skb)
 		return NULL;
 	if (len)
-<<<<<<< HEAD
-		memcpy(skb_put(skb, len), dp, len);
-=======
 		skb_put_data(skb, dp, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hh = mISDN_HEAD_P(skb);
 	hh->prim = prim;
 	hh->id = id;
@@ -610,11 +586,7 @@ extern struct mISDNclock *mISDN_register_clock(char *, int, clockctl_func_t *,
 						void *);
 extern void	mISDN_unregister_clock(struct mISDNclock *);
 
-<<<<<<< HEAD
-static inline struct mISDNdevice *dev_to_mISDN(struct device *dev)
-=======
 static inline struct mISDNdevice *dev_to_mISDN(const struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (dev)
 		return dev_get_drvdata(dev);
@@ -623,14 +595,9 @@ static inline struct mISDNdevice *dev_to_mISDN(const struct device *dev)
 }
 
 extern void	set_channel_address(struct mISDNchannel *, u_int, u_int);
-<<<<<<< HEAD
-extern void	mISDN_clock_update(struct mISDNclock *, int, struct timeval *);
-extern unsigned short mISDN_clock_get(void);
-=======
 extern void	mISDN_clock_update(struct mISDNclock *, int, ktime_t *);
 extern unsigned short mISDN_clock_get(void);
 extern const char *mISDNDevName4ch(struct mISDNchannel *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __KERNEL__ */
 #endif /* mISDNIF_H */

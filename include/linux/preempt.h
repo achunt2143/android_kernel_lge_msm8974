@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_PREEMPT_H
 #define __LINUX_PREEMPT_H
 
@@ -10,41 +7,6 @@
  * preempt_count (used for kernel preemption, interrupt count, etc.)
  */
 
-<<<<<<< HEAD
-#include <linux/thread_info.h>
-#include <linux/linkage.h>
-#include <linux/list.h>
-
-#if defined(CONFIG_DEBUG_PREEMPT) || defined(CONFIG_PREEMPT_TRACER)
-  extern void add_preempt_count(int val);
-  extern void sub_preempt_count(int val);
-#else
-# define add_preempt_count(val)	do { preempt_count() += (val); } while (0)
-# define sub_preempt_count(val)	do { preempt_count() -= (val); } while (0)
-#endif
-
-#define inc_preempt_count() add_preempt_count(1)
-#define dec_preempt_count() sub_preempt_count(1)
-
-#define preempt_count()	(current_thread_info()->preempt_count)
-
-#ifdef CONFIG_PREEMPT
-
-asmlinkage void preempt_schedule(void);
-
-#define preempt_check_resched() \
-do { \
-	if (unlikely(test_thread_flag(TIF_NEED_RESCHED))) \
-		preempt_schedule(); \
-} while (0)
-
-#else /* !CONFIG_PREEMPT */
-
-#define preempt_check_resched()		do { } while (0)
-
-#endif /* CONFIG_PREEMPT */
-
-=======
 #include <linux/linkage.h>
 #include <linux/cleanup.h>
 #include <linux/types.h>
@@ -245,48 +207,18 @@ extern void preempt_count_sub(int val);
 
 #define preempt_count_inc() preempt_count_add(1)
 #define preempt_count_dec() preempt_count_sub(1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PREEMPT_COUNT
 
 #define preempt_disable() \
 do { \
-<<<<<<< HEAD
-	inc_preempt_count(); \
-=======
 	preempt_count_inc(); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	barrier(); \
 } while (0)
 
 #define sched_preempt_enable_no_resched() \
 do { \
 	barrier(); \
-<<<<<<< HEAD
-	dec_preempt_count(); \
-} while (0)
-
-#define preempt_enable_no_resched()	sched_preempt_enable_no_resched()
-
-#define preempt_enable() \
-do { \
-	preempt_enable_no_resched(); \
-	barrier(); \
-	preempt_check_resched(); \
-} while (0)
-
-/* For debugging and tracer internals only! */
-#define add_preempt_count_notrace(val)			\
-	do { preempt_count() += (val); } while (0)
-#define sub_preempt_count_notrace(val)			\
-	do { preempt_count() -= (val); } while (0)
-#define inc_preempt_count_notrace() add_preempt_count_notrace(1)
-#define dec_preempt_count_notrace() sub_preempt_count_notrace(1)
-
-#define preempt_disable_notrace() \
-do { \
-	inc_preempt_count_notrace(); \
-=======
 	preempt_count_dec(); \
 } while (0)
 
@@ -334,26 +266,13 @@ do { \
 #define preempt_disable_notrace() \
 do { \
 	__preempt_count_inc(); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	barrier(); \
 } while (0)
 
 #define preempt_enable_no_resched_notrace() \
 do { \
 	barrier(); \
-<<<<<<< HEAD
-	dec_preempt_count_notrace(); \
-} while (0)
-
-/* preempt_check_resched is OK to trace */
-#define preempt_enable_notrace() \
-do { \
-	preempt_enable_no_resched_notrace(); \
-	barrier(); \
-	preempt_check_resched(); \
-=======
 	__preempt_count_dec(); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 
 #else /* !CONFIG_PREEMPT_COUNT */
@@ -364,27 +283,15 @@ do { \
  * that can cause faults and scheduling migrate into our preempt-protected
  * region.
  */
-<<<<<<< HEAD
-#define preempt_disable()		barrier()
-#define sched_preempt_enable_no_resched()	barrier()
-#define preempt_enable_no_resched()	barrier()
-#define preempt_enable()		barrier()
-=======
 #define preempt_disable()			barrier()
 #define sched_preempt_enable_no_resched()	barrier()
 #define preempt_enable_no_resched()		barrier()
 #define preempt_enable()			barrier()
 #define preempt_check_resched()			do { } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define preempt_disable_notrace()		barrier()
 #define preempt_enable_no_resched_notrace()	barrier()
 #define preempt_enable_notrace()		barrier()
-<<<<<<< HEAD
-
-#endif /* CONFIG_PREEMPT_COUNT */
-
-=======
 #define preemptible()				0
 
 #endif /* CONFIG_PREEMPT_COUNT */
@@ -409,7 +316,6 @@ do { \
 		set_preempt_need_resched(); \
 } while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PREEMPT_NOTIFIERS
 
 struct preempt_notifier;
@@ -446,31 +352,22 @@ struct preempt_notifier {
 	struct preempt_ops *ops;
 };
 
-<<<<<<< HEAD
-=======
 void preempt_notifier_inc(void);
 void preempt_notifier_dec(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void preempt_notifier_register(struct preempt_notifier *notifier);
 void preempt_notifier_unregister(struct preempt_notifier *notifier);
 
 static inline void preempt_notifier_init(struct preempt_notifier *notifier,
 				     struct preempt_ops *ops)
 {
-<<<<<<< HEAD
-	INIT_HLIST_NODE(&notifier->link);
-=======
 	/* INIT_HLIST_NODE() open coded, to avoid dependency on list.h */
 	notifier->link.next = NULL;
 	notifier->link.pprev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	notifier->ops = ops;
 }
 
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SMP
 
 /*
@@ -584,5 +481,4 @@ DEFINE_LOCK_GUARD_0(preempt, preempt_disable(), preempt_enable())
 DEFINE_LOCK_GUARD_0(preempt_notrace, preempt_disable_notrace(), preempt_enable_notrace())
 DEFINE_LOCK_GUARD_0(migrate, migrate_disable(), migrate_enable())
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_PREEMPT_H */

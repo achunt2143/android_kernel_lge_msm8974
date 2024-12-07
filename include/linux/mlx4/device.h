@@ -33,18 +33,6 @@
 #ifndef MLX4_DEVICE_H
 #define MLX4_DEVICE_H
 
-<<<<<<< HEAD
-#include <linux/pci.h>
-#include <linux/completion.h>
-#include <linux/radix-tree.h>
-
-#include <linux/atomic.h>
-
-#define MAX_MSIX_P_PORT		17
-#define MAX_MSIX		64
-#define MSIX_LEGACY_SZ		4
-#define MIN_MSIX_P_PORT		5
-=======
 #include <linux/auxiliary_bus.h>
 #include <linux/if_ether.h>
 #include <linux/pci.h>
@@ -75,7 +63,6 @@
 
 #define MLX4_ROCE_MAX_GIDS	128
 #define MLX4_ROCE_PF_GIDS	16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	MLX4_FLAG_MSI_X		= 1 << 0,
@@ -83,15 +70,6 @@ enum {
 	MLX4_FLAG_MASTER	= 1 << 2,
 	MLX4_FLAG_SLAVE		= 1 << 3,
 	MLX4_FLAG_SRIOV		= 1 << 4,
-<<<<<<< HEAD
-};
-
-enum {
-	MLX4_MAX_PORTS		= 2
-};
-
-enum {
-=======
 	MLX4_FLAG_OLD_REG_MAC	= 1 << 6,
 	MLX4_FLAG_BONDED	= 1 << 7,
 	MLX4_FLAG_SECURE_HOST	= 1 << 8,
@@ -116,28 +94,20 @@ enum {
 #define MLX4_RESERVED_QKEY_MASK  (0xFFFF0000)
 
 enum {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_BOARD_ID_LEN = 64
 };
 
 enum {
 	MLX4_MAX_NUM_PF		= 16,
-<<<<<<< HEAD
-	MLX4_MAX_NUM_VF		= 64,
-	MLX4_MFUNC_MAX		= 80,
-=======
 	MLX4_MAX_NUM_VF		= 126,
 	MLX4_MAX_NUM_VF_P_PORT  = 64,
 	MLX4_MFUNC_MAX		= 128,
 	MLX4_MAX_EQ_NUM		= 1024,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_MFUNC_EQ_NUM	= 4,
 	MLX4_MFUNC_MAX_EQES     = 8,
 	MLX4_MFUNC_EQE_MASK     = (MLX4_MFUNC_MAX_EQES - 1)
 };
 
-<<<<<<< HEAD
-=======
 /* Driver supports 3 different device methods to manage traffic steering:
  *	-device managed - High level API for ib and eth flow steering. FW is
  *			  managing flow steering tables.
@@ -181,7 +151,6 @@ enum {
 	MLX4_TUNNEL_OFFLOAD_MODE_VXLAN
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	MLX4_DEV_CAP_FLAG_RC		= 1LL <<  0,
 	MLX4_DEV_CAP_FLAG_UC		= 1LL <<  1,
@@ -208,14 +177,6 @@ enum {
 	MLX4_DEV_CAP_FLAG_VEP_UC_STEER	= 1LL << 41,
 	MLX4_DEV_CAP_FLAG_VEP_MC_STEER	= 1LL << 42,
 	MLX4_DEV_CAP_FLAG_COUNTERS	= 1LL << 48,
-<<<<<<< HEAD
-	MLX4_DEV_CAP_FLAG_SENSE_SUPPORT	= 1LL << 55
-};
-
-#define MLX4_ATTR_EXTENDED_PORT_INFO	cpu_to_be16(0xff90)
-
-enum {
-=======
 	MLX4_DEV_CAP_FLAG_RSS_IP_FRAG   = 1LL << 52,
 	MLX4_DEV_CAP_FLAG_SET_ETH_SCHED = 1LL << 53,
 	MLX4_DEV_CAP_FLAG_SENSE_SUPPORT	= 1LL << 55,
@@ -308,14 +269,11 @@ enum {
 
 enum {
 	MLX4_BMME_FLAG_WIN_TYPE_2B	= 1 <<  1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_BMME_FLAG_LOCAL_INV	= 1 <<  6,
 	MLX4_BMME_FLAG_REMOTE_INV	= 1 <<  7,
 	MLX4_BMME_FLAG_TYPE_2_WIN	= 1 <<  9,
 	MLX4_BMME_FLAG_RESERVED_LKEY	= 1 << 10,
 	MLX4_BMME_FLAG_FAST_REG_WR	= 1 << 11,
-<<<<<<< HEAD
-=======
 	MLX4_BMME_FLAG_ROCE_V1_V2	= 1 << 19,
 	MLX4_BMME_FLAG_PORT_REMAP	= 1 << 24,
 	MLX4_BMME_FLAG_VSD_INIT2RTR	= 1 << 28,
@@ -324,7 +282,6 @@ enum {
 enum {
 	MLX4_FLAG_PORT_REMAP		= MLX4_BMME_FLAG_PORT_REMAP,
 	MLX4_FLAG_ROCE_V1_V2		= MLX4_BMME_FLAG_ROCE_V1_V2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum mlx4_event {
@@ -348,16 +305,11 @@ enum mlx4_event {
 	MLX4_EVENT_TYPE_CMD		   = 0x0a,
 	MLX4_EVENT_TYPE_VEP_UPDATE	   = 0x19,
 	MLX4_EVENT_TYPE_COMM_CHANNEL	   = 0x18,
-<<<<<<< HEAD
-	MLX4_EVENT_TYPE_FATAL_WARNING	   = 0x1b,
-	MLX4_EVENT_TYPE_FLR_EVENT	   = 0x1c,
-=======
 	MLX4_EVENT_TYPE_OP_REQUIRED	   = 0x1a,
 	MLX4_EVENT_TYPE_FATAL_WARNING	   = 0x1b,
 	MLX4_EVENT_TYPE_FLR_EVENT	   = 0x1c,
 	MLX4_EVENT_TYPE_PORT_MNG_CHG_EVENT = 0x1d,
 	MLX4_EVENT_TYPE_RECOVERABLE_ERROR_EVENT  = 0x3e,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_EVENT_TYPE_NONE		   = 0xff,
 };
 
@@ -367,11 +319,6 @@ enum {
 };
 
 enum {
-<<<<<<< HEAD
-	MLX4_FATAL_WARNING_SUBTYPE_WARMING = 0,
-};
-
-=======
 	MLX4_RECOVERABLE_ERROR_EVENT_SUBTYPE_BAD_CABLE		= 1,
 	MLX4_RECOVERABLE_ERROR_EVENT_SUBTYPE_UNSUPPORTED_CABLE	= 2,
 };
@@ -399,19 +346,14 @@ enum slave_port_state_event {
 	MLX4_PORT_STATE_IB_EVENT_GID_INVALID,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	MLX4_PERM_LOCAL_READ	= 1 << 10,
 	MLX4_PERM_LOCAL_WRITE	= 1 << 11,
 	MLX4_PERM_REMOTE_READ	= 1 << 12,
 	MLX4_PERM_REMOTE_WRITE	= 1 << 13,
-<<<<<<< HEAD
-	MLX4_PERM_ATOMIC	= 1 << 14
-=======
 	MLX4_PERM_ATOMIC	= 1 << 14,
 	MLX4_PERM_BIND_MW	= 1 << 15,
 	MLX4_PERM_MASK		= 0xFC00
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -458,11 +400,8 @@ enum {
 
 enum mlx4_qp_region {
 	MLX4_QP_REGION_FW = 0,
-<<<<<<< HEAD
-=======
 	MLX4_QP_REGION_RSS_RAW_ETH,
 	MLX4_QP_REGION_BOTTOM = MLX4_QP_REGION_RSS_RAW_ETH,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_QP_REGION_ETH_ADDR,
 	MLX4_QP_REGION_FC_ADDR,
 	MLX4_QP_REGION_FC_EXCH,
@@ -488,15 +427,12 @@ enum mlx4_steer_type {
 	MLX4_NUM_STEERS
 };
 
-<<<<<<< HEAD
-=======
 enum mlx4_resource_usage {
 	MLX4_RES_USAGE_NONE,
 	MLX4_RES_USAGE_DRIVER,
 	MLX4_RES_USAGE_USER_VERBS,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	MLX4_NUM_FEXCH          = 64 * 1024,
 };
@@ -505,8 +441,6 @@ enum {
 	MLX4_MAX_FAST_REG_PAGES = 511,
 };
 
-<<<<<<< HEAD
-=======
 enum {
 	/*
 	 * Max wqe size for rdma read is 512 bytes, so this
@@ -575,14 +509,11 @@ struct mlx4_rate_limit_caps {
 	u16	max_val;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u64 mlx4_fw_ver(u64 major, u64 minor, u64 subminor)
 {
 	return (major << 32) | (minor << 16) | subminor;
 }
 
-<<<<<<< HEAD
-=======
 struct mlx4_phys_caps {
 	u32			gid_phys_table_len[MLX4_MAX_PORTS + 1];
 	u32			pkey_phys_table_len[MLX4_MAX_PORTS + 1];
@@ -600,7 +531,6 @@ struct mlx4_spec_qps {
 	u32 qp1_tunnel;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mlx4_caps {
 	u64			fw_ver;
 	u32			function;
@@ -629,12 +559,8 @@ struct mlx4_caps {
 	int			max_rq_desc_sz;
 	int			max_qp_init_rdma;
 	int			max_qp_dest_rdma;
-<<<<<<< HEAD
-	int			sqp_start;
-=======
 	int			max_tc_eth;
 	struct mlx4_spec_qps   *spec_qps;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			num_srqs;
 	int			max_srq_wqes;
 	int			max_srq_sge;
@@ -642,20 +568,11 @@ struct mlx4_caps {
 	int			num_cqs;
 	int			max_cqes;
 	int			reserved_cqs;
-<<<<<<< HEAD
-	int			num_eqs;
-	int			reserved_eqs;
-	int			num_comp_vectors;
-	int			comp_pool;
-	int			num_mpts;
-	int			max_fmr_maps;
-=======
 	int			num_sys_eqs;
 	int			num_eqs;
 	int			reserved_eqs;
 	int			num_comp_vectors;
 	int			num_mpts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			num_mtts;
 	int			fmr_reserved_mtts;
 	int			reserved_mtts;
@@ -665,12 +582,9 @@ struct mlx4_caps {
 	int			num_amgms;
 	int			reserved_mcgs;
 	int			num_qp_per_mgm;
-<<<<<<< HEAD
-=======
 	int			steering_mode;
 	int			dmfs_high_steer_mode;
 	int			fs_log_max_ucast_qp_range_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			num_pds;
 	int			reserved_pds;
 	int			max_xrcds;
@@ -679,28 +593,18 @@ struct mlx4_caps {
 	u32			max_msg_sz;
 	u32			page_size_cap;
 	u64			flags;
-<<<<<<< HEAD
-=======
 	u64			flags2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			bmme_flags;
 	u32			reserved_lkey;
 	u16			stat_rate_support;
 	u8			port_width_cap[MLX4_MAX_PORTS + 1];
 	int			max_gso_sz;
-<<<<<<< HEAD
-=======
 	int			max_rss_tbl_sz;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int                     reserved_qps_cnt[MLX4_NUM_QP_REGION];
 	int			reserved_qps;
 	int                     reserved_qps_base[MLX4_NUM_QP_REGION];
 	int                     log_num_macs;
 	int                     log_num_vlans;
-<<<<<<< HEAD
-	int                     log_num_prios;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum mlx4_port_type	port_type[MLX4_MAX_PORTS + 1];
 	u8			supported_type[MLX4_MAX_PORTS + 1];
 	u8                      suggested_type[MLX4_MAX_PORTS + 1];
@@ -709,8 +613,6 @@ struct mlx4_caps {
 	enum mlx4_port_type	possible_type[MLX4_MAX_PORTS + 1];
 	u32			max_counters;
 	u8			port_ib_mtu[MLX4_MAX_PORTS + 1];
-<<<<<<< HEAD
-=======
 	u16			sqp_demux;
 	u32			eqe_size;
 	u32			cqe_size;
@@ -730,7 +632,6 @@ struct mlx4_caps {
 	struct mlx4_rate_limit_caps rl_caps;
 	u32			health_buffer_addrs;
 	bool			map_clock_to_user;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_buf_list {
@@ -794,17 +695,6 @@ struct mlx4_mr {
 	int			enabled;
 };
 
-<<<<<<< HEAD
-struct mlx4_fmr {
-	struct mlx4_mr		mr;
-	struct mlx4_mpt_entry  *mpt;
-	__be64		       *mtts;
-	dma_addr_t		dma_handle;
-	int			max_pages;
-	int			max_maps;
-	int			maps;
-	u8			page_shift;
-=======
 enum mlx4_mw_type {
 	MLX4_MW_TYPE_1 = 1,
 	MLX4_MW_TYPE_2 = 2,
@@ -815,7 +705,6 @@ struct mlx4_mw {
 	u32			pd;
 	enum mlx4_mw_type	type;
 	int			enabled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_uar {
@@ -828,11 +717,7 @@ struct mlx4_uar {
 };
 
 struct mlx4_bf {
-<<<<<<< HEAD
-	unsigned long		offset;
-=======
 	unsigned int		offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			buf_size;
 	struct mlx4_uar	       *uar;
 	void __iomem	       *reg;
@@ -846,10 +731,7 @@ struct mlx4_cq {
 
 	u32			cons_index;
 
-<<<<<<< HEAD
-=======
 	u16                     irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32		       *set_ci_db;
 	__be32		       *arm_db;
 	int			arm_sn;
@@ -857,10 +739,6 @@ struct mlx4_cq {
 	int			cqn;
 	unsigned		vector;
 
-<<<<<<< HEAD
-	atomic_t		refcount;
-	struct completion	free;
-=======
 	refcount_t		refcount;
 	struct completion	free;
 	struct {
@@ -871,7 +749,6 @@ struct mlx4_cq {
 	int		reset_notify_added;
 	struct list_head	reset_notify;
 	u8			usage;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_qp {
@@ -879,14 +756,9 @@ struct mlx4_qp {
 
 	int			qpn;
 
-<<<<<<< HEAD
-	atomic_t		refcount;
-	struct completion	free;
-=======
 	refcount_t		refcount;
 	struct completion	free;
 	u8			usage;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_srq {
@@ -897,11 +769,7 @@ struct mlx4_srq {
 	int			max_gs;
 	int			wqe_shift;
 
-<<<<<<< HEAD
-	atomic_t		refcount;
-=======
 	refcount_t		refcount;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct completion	free;
 };
 
@@ -929,16 +797,10 @@ struct mlx4_eth_av {
 	u8		hop_limit;
 	__be32		sl_tclass_flowlabel;
 	u8		dgid[16];
-<<<<<<< HEAD
-	u32		reserved4[2];
-	__be16		vlan;
-	u8		mac[6];
-=======
 	u8		s_mac[6];
 	u8		reserved4[2];
 	__be16		vlan;
 	u8		mac[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union mlx4_ext_av {
@@ -946,8 +808,6 @@ union mlx4_ext_av {
 	struct mlx4_eth_av	eth;
 };
 
-<<<<<<< HEAD
-=======
 /* Counters should be saturate once they reach their maximum value */
 #define ASSIGN_32BIT_COUNTER(counter, value) do {	\
 	if ((value) > U32_MAX)				\
@@ -956,7 +816,6 @@ union mlx4_ext_av {
 		counter = cpu_to_be32(value);		\
 } while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mlx4_counter {
 	u8	reserved1[3];
 	u8	counter_mode;
@@ -968,19 +827,6 @@ struct mlx4_counter {
 	__be64	tx_bytes;
 };
 
-<<<<<<< HEAD
-struct mlx4_dev {
-	struct pci_dev	       *pdev;
-	unsigned long		flags;
-	unsigned long		num_slaves;
-	struct mlx4_caps	caps;
-	struct radix_tree_root	qp_table_tree;
-	u8			rev_id;
-	char			board_id[MLX4_BOARD_ID_LEN];
-	int			num_vfs;
-};
-
-=======
 struct mlx4_quotas {
 	int qp;
 	int cq;
@@ -1139,7 +985,6 @@ struct mlx4_eqe {
 	u8			owner;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mlx4_init_port_param {
 	int			set_guid0;
 	int			set_node_guid;
@@ -1154,8 +999,6 @@ struct mlx4_init_port_param {
 	u64			si_guid;
 };
 
-<<<<<<< HEAD
-=======
 #define MAD_IFC_DATA_SZ 192
 /* MAD IFC Mailbox */
 struct mlx4_mad_ifc {
@@ -1176,17 +1019,11 @@ struct mlx4_mad_ifc {
 	u8	data[MAD_IFC_DATA_SZ];
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define mlx4_foreach_port(port, dev, type)				\
 	for ((port) = 1; (port) <= (dev)->caps.num_ports; (port)++)	\
 		if ((type) == (dev)->caps.port_mask[(port)])
 
 #define mlx4_foreach_ib_transport_port(port, dev)                         \
-<<<<<<< HEAD
-	for ((port) = 1; (port) <= (dev)->caps.num_ports; (port)++)	  \
-		if (((dev)->caps.port_mask[port] == MLX4_PORT_TYPE_IB) || \
-			((dev)->caps.flags & MLX4_DEV_CAP_FLAG_IBOE))
-=======
 	for ((port) = 1; (port) <= (dev)->caps.num_ports; (port)++)       \
 		if (((dev)->caps.port_mask[port] == MLX4_PORT_TYPE_IB) || \
 		    ((dev)->caps.port_mask[port] == MLX4_PORT_TYPE_ETH))
@@ -1200,18 +1037,12 @@ static inline int mlx4_master_func_num(struct mlx4_dev *dev)
 {
 	return dev->caps.function;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int mlx4_is_master(struct mlx4_dev *dev)
 {
 	return dev->flags & MLX4_FLAG_MASTER;
 }
 
-<<<<<<< HEAD
-static inline int mlx4_is_qp_reserved(struct mlx4_dev *dev, u32 qpn)
-{
-	return (qpn < dev->caps.sqp_start + 8);
-=======
 static inline int mlx4_num_reserved_sqps(struct mlx4_dev *dev)
 {
 	return dev->phys_caps.base_sqpn + 8 +
@@ -1234,7 +1065,6 @@ static inline int mlx4_is_guest_proxy(struct mlx4_dev *dev, int slave, u32 qpn)
 		return 1;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int mlx4_is_mfunc(struct mlx4_dev *dev)
@@ -1247,32 +1077,23 @@ static inline int mlx4_is_slave(struct mlx4_dev *dev)
 	return dev->flags & MLX4_FLAG_SLAVE;
 }
 
-<<<<<<< HEAD
-=======
 static inline int mlx4_is_eth(struct mlx4_dev *dev, int port)
 {
 	return dev->caps.port_type[port] == MLX4_PORT_TYPE_IB ? 0 : 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_buf_alloc(struct mlx4_dev *dev, int size, int max_direct,
 		   struct mlx4_buf *buf);
 void mlx4_buf_free(struct mlx4_dev *dev, int size, struct mlx4_buf *buf);
 static inline void *mlx4_buf_offset(struct mlx4_buf *buf, int offset)
 {
-<<<<<<< HEAD
-	if (BITS_PER_LONG == 64 || buf->nbufs == 1)
-=======
 	if (buf->nbufs == 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return buf->direct.buf + offset;
 	else
 		return buf->page_list[offset >> PAGE_SHIFT].buf +
 			(offset & (PAGE_SIZE - 1));
 }
 
-<<<<<<< HEAD
-=======
 static inline int mlx4_is_bonded(struct mlx4_dev *dev)
 {
 	return !!(dev->flags & MLX4_FLAG_BONDED);
@@ -1286,7 +1107,6 @@ static inline int mlx4_is_mf_bonded(struct mlx4_dev *dev)
 int mlx4_queue_bond_work(struct mlx4_dev *dev, int is_bonded, u8 v2p_p1,
 			 u8 v2p_p2);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_pd_alloc(struct mlx4_dev *dev, u32 *pdn);
 void mlx4_pd_free(struct mlx4_dev *dev, u32 pdn);
 int mlx4_xrcd_alloc(struct mlx4_dev *dev, u32 *xrcdn);
@@ -1294,11 +1114,7 @@ void mlx4_xrcd_free(struct mlx4_dev *dev, u32 xrcdn);
 
 int mlx4_uar_alloc(struct mlx4_dev *dev, struct mlx4_uar *uar);
 void mlx4_uar_free(struct mlx4_dev *dev, struct mlx4_uar *uar);
-<<<<<<< HEAD
-int mlx4_bf_alloc(struct mlx4_dev *dev, struct mlx4_bf *bf);
-=======
 int mlx4_bf_alloc(struct mlx4_dev *dev, struct mlx4_bf *bf, int node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mlx4_bf_free(struct mlx4_dev *dev, struct mlx4_bf *bf);
 
 int mlx4_mtt_init(struct mlx4_dev *dev, int npages, int page_shift,
@@ -1308,17 +1124,12 @@ u64 mlx4_mtt_addr(struct mlx4_dev *dev, struct mlx4_mtt *mtt);
 
 int mlx4_mr_alloc(struct mlx4_dev *dev, u32 pd, u64 iova, u64 size, u32 access,
 		  int npages, int page_shift, struct mlx4_mr *mr);
-<<<<<<< HEAD
-void mlx4_mr_free(struct mlx4_dev *dev, struct mlx4_mr *mr);
-int mlx4_mr_enable(struct mlx4_dev *dev, struct mlx4_mr *mr);
-=======
 int mlx4_mr_free(struct mlx4_dev *dev, struct mlx4_mr *mr);
 int mlx4_mr_enable(struct mlx4_dev *dev, struct mlx4_mr *mr);
 int mlx4_mw_alloc(struct mlx4_dev *dev, u32 pd, enum mlx4_mw_type type,
 		  struct mlx4_mw *mw);
 void mlx4_mw_free(struct mlx4_dev *dev, struct mlx4_mw *mw);
 int mlx4_mw_enable(struct mlx4_dev *dev, struct mlx4_mw *mw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_write_mtt(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 		   int start_index, int npages, u64 *page_list);
 int mlx4_buf_write_mtt(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
@@ -1328,28 +1139,17 @@ int mlx4_db_alloc(struct mlx4_dev *dev, struct mlx4_db *db, int order);
 void mlx4_db_free(struct mlx4_dev *dev, struct mlx4_db *db);
 
 int mlx4_alloc_hwq_res(struct mlx4_dev *dev, struct mlx4_hwq_resources *wqres,
-<<<<<<< HEAD
-		       int size, int max_direct);
-=======
 		       int size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mlx4_free_hwq_res(struct mlx4_dev *mdev, struct mlx4_hwq_resources *wqres,
 		       int size);
 
 int mlx4_cq_alloc(struct mlx4_dev *dev, int nent, struct mlx4_mtt *mtt,
 		  struct mlx4_uar *uar, u64 db_rec, struct mlx4_cq *cq,
-<<<<<<< HEAD
-		  unsigned vector, int collapsed);
-void mlx4_cq_free(struct mlx4_dev *dev, struct mlx4_cq *cq);
-
-int mlx4_qp_reserve_range(struct mlx4_dev *dev, int cnt, int align, int *base);
-=======
 		  unsigned int vector, int collapsed, int timestamp_en,
 		  void *buf_addr, bool user_cq);
 void mlx4_cq_free(struct mlx4_dev *dev, struct mlx4_cq *cq);
 int mlx4_qp_reserve_range(struct mlx4_dev *dev, int cnt, int align,
 			  int *base, u8 flags, u8 usage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mlx4_qp_release_range(struct mlx4_dev *dev, int base_qpn, int cnt);
 
 int mlx4_qp_alloc(struct mlx4_dev *dev, int qpn, struct mlx4_qp *qp);
@@ -1369,11 +1169,6 @@ int mlx4_unicast_attach(struct mlx4_dev *dev, struct mlx4_qp *qp, u8 gid[16],
 int mlx4_unicast_detach(struct mlx4_dev *dev, struct mlx4_qp *qp, u8 gid[16],
 			enum mlx4_protocol prot);
 int mlx4_multicast_attach(struct mlx4_dev *dev, struct mlx4_qp *qp, u8 gid[16],
-<<<<<<< HEAD
-			  int block_mcast_loopback, enum mlx4_protocol protocol);
-int mlx4_multicast_detach(struct mlx4_dev *dev, struct mlx4_qp *qp, u8 gid[16],
-			  enum mlx4_protocol protocol);
-=======
 			  u8 port, int block_mcast_loopback,
 			  enum mlx4_protocol protocol, u64 *reg_id);
 int mlx4_multicast_detach(struct mlx4_dev *dev, struct mlx4_qp *qp, u8 gid[16],
@@ -1594,7 +1389,6 @@ int mlx4_flow_steer_promisc_add(struct mlx4_dev *dev, u8 port, u32 qpn,
 				enum mlx4_net_trans_promisc_mode mode);
 int mlx4_flow_steer_promisc_remove(struct mlx4_dev *dev, u8 port,
 				   enum mlx4_net_trans_promisc_mode mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_multicast_promisc_add(struct mlx4_dev *dev, u32 qpn, u8 port);
 int mlx4_multicast_promisc_remove(struct mlx4_dev *dev, u32 qpn, u8 port);
 int mlx4_unicast_promisc_add(struct mlx4_dev *dev, u32 qpn, u8 port);
@@ -1603,39 +1397,6 @@ int mlx4_SET_MCAST_FLTR(struct mlx4_dev *dev, u8 port, u64 mac, u64 clear, u8 mo
 
 int mlx4_register_mac(struct mlx4_dev *dev, u8 port, u64 mac);
 void mlx4_unregister_mac(struct mlx4_dev *dev, u8 port, u64 mac);
-<<<<<<< HEAD
-int mlx4_replace_mac(struct mlx4_dev *dev, u8 port, int qpn, u64 new_mac);
-int mlx4_get_eth_qp(struct mlx4_dev *dev, u8 port, u64 mac, int *qpn);
-void mlx4_put_eth_qp(struct mlx4_dev *dev, u8 port, u64 mac, int qpn);
-void mlx4_set_stats_bitmap(struct mlx4_dev *dev, u64 *stats_bitmap);
-int mlx4_SET_PORT_general(struct mlx4_dev *dev, u8 port, int mtu,
-			  u8 pptx, u8 pfctx, u8 pprx, u8 pfcrx);
-int mlx4_SET_PORT_qpn_calc(struct mlx4_dev *dev, u8 port, u32 base_qpn,
-			   u8 promisc);
-int mlx4_find_cached_vlan(struct mlx4_dev *dev, u8 port, u16 vid, int *idx);
-int mlx4_register_vlan(struct mlx4_dev *dev, u8 port, u16 vlan, int *index);
-void mlx4_unregister_vlan(struct mlx4_dev *dev, u8 port, int index);
-
-int mlx4_map_phys_fmr(struct mlx4_dev *dev, struct mlx4_fmr *fmr, u64 *page_list,
-		      int npages, u64 iova, u32 *lkey, u32 *rkey);
-int mlx4_fmr_alloc(struct mlx4_dev *dev, u32 pd, u32 access, int max_pages,
-		   int max_maps, u8 page_shift, struct mlx4_fmr *fmr);
-int mlx4_fmr_enable(struct mlx4_dev *dev, struct mlx4_fmr *fmr);
-void mlx4_fmr_unmap(struct mlx4_dev *dev, struct mlx4_fmr *fmr,
-		    u32 *lkey, u32 *rkey);
-int mlx4_fmr_free(struct mlx4_dev *dev, struct mlx4_fmr *fmr);
-int mlx4_SYNC_TPT(struct mlx4_dev *dev);
-int mlx4_test_interrupts(struct mlx4_dev *dev);
-int mlx4_assign_eq(struct mlx4_dev *dev, char* name , int* vector);
-void mlx4_release_eq(struct mlx4_dev *dev, int vec);
-
-int mlx4_wol_read(struct mlx4_dev *dev, u64 *config, int port);
-int mlx4_wol_write(struct mlx4_dev *dev, u64 config, int port);
-
-int mlx4_counter_alloc(struct mlx4_dev *dev, u32 *idx);
-void mlx4_counter_free(struct mlx4_dev *dev, u32 idx);
-
-=======
 int mlx4_get_base_qpn(struct mlx4_dev *dev, u8 port);
 int __mlx4_replace_mac(struct mlx4_dev *dev, u8 port, int qpn, u64 new_mac);
 int mlx4_SET_PORT_general(struct mlx4_dev *dev, u8 port, int mtu,
@@ -1844,5 +1605,4 @@ static inline int mlx4_get_num_reserved_uar(struct mlx4_dev *dev)
 	/* The first 128 UARs are used for EQ doorbells */
 	return (128 >> (PAGE_SHIFT - dev->uar_page_shift));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* MLX4_DEVICE_H */

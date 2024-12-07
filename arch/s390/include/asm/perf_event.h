@@ -1,38 +1,22 @@
-<<<<<<< HEAD
-/*
- * Performance event support - s390 specific definitions.
- *
- * Copyright IBM Corp. 2009, 2012
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Performance event support - s390 specific definitions.
  *
  * Copyright IBM Corp. 2009, 2017
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author(s): Martin Schwidefsky <schwidefsky@de.ibm.com>
  *	      Hendrik Brueckner <brueckner@linux.vnet.ibm.com>
  */
 
-<<<<<<< HEAD
-#include <asm/cpu_mf.h>
-
-/* CPU-measurement counter facility */
-#define PERF_CPUM_CF_MAX_CTR		160
-=======
 #ifndef _ASM_S390_PERF_EVENT_H
 #define _ASM_S390_PERF_EVENT_H
 
 #include <linux/perf_event.h>
 #include <linux/device.h>
 #include <asm/stacktrace.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Per-CPU flags for PMU states */
 #define PMU_F_RESERVED			0x1000
 #define PMU_F_ENABLED			0x2000
-<<<<<<< HEAD
-=======
 #define PMU_F_IN_USE			0x4000
 #define PMU_F_ERR_IBE			0x0100
 #define PMU_F_ERR_LSDA			0x0200
@@ -95,4 +79,3 @@ struct perf_sf_sde_regs {
 } while (0)
 
 #endif /* _ASM_S390_PERF_EVENT_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

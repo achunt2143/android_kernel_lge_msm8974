@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OS info memory interface
  *
@@ -14,18 +11,12 @@
 
 #include <linux/crash_dump.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <asm/checksum.h>
-#include <asm/lowcore.h>
-#include <asm/os_info.h>
-=======
 #include <linux/slab.h>
 #include <asm/checksum.h>
 #include <asm/abs_lowcore.h>
 #include <asm/os_info.h>
 #include <asm/maccess.h>
 #include <asm/asm-offsets.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * OS info structure has to be page aligned
@@ -38,11 +29,7 @@ static struct os_info os_info __page_aligned_data;
 u32 os_info_csum(struct os_info *os_info)
 {
 	int size = sizeof(*os_info) - offsetof(struct os_info, version_major);
-<<<<<<< HEAD
-	return csum_partial(&os_info->version_major, size, 0);
-=======
 	return (__force u32)cksm(&os_info->version_major, size, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -60,44 +47,26 @@ void os_info_crashkernel_add(unsigned long base, unsigned long size)
  */
 void os_info_entry_add(int nr, void *ptr, u64 size)
 {
-<<<<<<< HEAD
-	os_info.entry[nr].addr = (u64)(unsigned long)ptr;
-	os_info.entry[nr].size = size;
-	os_info.entry[nr].csum = csum_partial(ptr, size, 0);
-=======
 	os_info.entry[nr].addr = __pa(ptr);
 	os_info.entry[nr].size = size;
 	os_info.entry[nr].csum = (__force u32)cksm(ptr, size, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	os_info.csum = os_info_csum(&os_info);
 }
 
 /*
-<<<<<<< HEAD
- * Initialize OS info struture and set lowcore pointer
- */
-void __init os_info_init(void)
-{
-	void *ptr = &os_info;
-=======
  * Initialize OS info structure and set lowcore pointer
  */
 void __init os_info_init(void)
 {
 	struct lowcore *abs_lc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	os_info.version_major = OS_INFO_VERSION_MAJOR;
 	os_info.version_minor = OS_INFO_VERSION_MINOR;
 	os_info.magic = OS_INFO_MAGIC;
 	os_info.csum = os_info_csum(&os_info);
-<<<<<<< HEAD
-	copy_to_absolute_zero(&S390_lowcore.os_info, &ptr, sizeof(ptr));
-=======
 	abs_lc = get_abs_lowcore();
 	abs_lc->os_info = __pa(&os_info);
 	put_abs_lowcore(abs_lc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_CRASH_DUMP
@@ -125,19 +94,11 @@ static void os_info_old_alloc(int nr, int align)
 		goto fail;
 	}
 	buf_align = PTR_ALIGN(buf, align);
-<<<<<<< HEAD
-	if (copy_from_oldmem(buf_align, (void *) addr, size)) {
-		msg = "copy failed";
-		goto fail_free;
-	}
-	csum = csum_partial(buf_align, size, 0);
-=======
 	if (copy_oldmem_kernel(buf_align, addr, size)) {
 		msg = "copy failed";
 		goto fail_free;
 	}
 	csum = (__force u32)cksm(buf_align, size, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (csum != os_info_old->entry[nr].csum) {
 		msg = "checksum failed";
 		goto fail_free;
@@ -164,26 +125,16 @@ static void os_info_old_init(void)
 
 	if (os_info_init)
 		return;
-<<<<<<< HEAD
-	if (!OLDMEM_BASE)
-		goto fail;
-	if (copy_from_oldmem(&addr, &S390_lowcore.os_info, sizeof(addr)))
-=======
 	if (!oldmem_data.start)
 		goto fail;
 	if (copy_oldmem_kernel(&addr, __LC_OS_INFO, sizeof(addr)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	if (addr == 0 || addr % PAGE_SIZE)
 		goto fail;
 	os_info_old = kzalloc(sizeof(*os_info_old), GFP_KERNEL);
 	if (!os_info_old)
 		goto fail;
-<<<<<<< HEAD
-	if (copy_from_oldmem(os_info_old, (void *) addr, sizeof(*os_info_old)))
-=======
 	if (copy_oldmem_kernel(os_info_old, addr, sizeof(*os_info_old)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_free;
 	if (os_info_old->magic != OS_INFO_MAGIC)
 		goto fail_free;
@@ -193,10 +144,6 @@ static void os_info_old_init(void)
 		goto fail_free;
 	os_info_old_alloc(OS_INFO_VMCOREINFO, 1);
 	os_info_old_alloc(OS_INFO_REIPL_BLOCK, 1);
-<<<<<<< HEAD
-	os_info_old_alloc(OS_INFO_INIT_FN, PAGE_SIZE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_info("crashkernel: addr=0x%lx size=%lu\n",
 		(unsigned long) os_info_old->crashkernel_addr,
 		(unsigned long) os_info_old->crashkernel_size);

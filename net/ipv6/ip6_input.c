@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	IPv6 input
  *	Linux INET6 implementation
@@ -11,24 +8,11 @@
  *	Ian P. Morris		<I.P.Morris@soton.ac.uk>
  *
  *	Based in linux/net/ipv4/ip_input.c
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
- */
-/* Changes
- *
- * 	Mitsuru KANDA @USAGI and
- * 	YOSHIFUJI Hideaki @USAGI: Remove ipv6_parse_exthdrs().
-=======
  */
 /* Changes
  *
  *	Mitsuru KANDA @USAGI and
  *	YOSHIFUJI Hideaki @USAGI: Remove ipv6_parse_exthdrs().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -41,20 +25,14 @@
 #include <linux/icmpv6.h>
 #include <linux/mroute6.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/indirect_call_wrapper.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv6.h>
 
 #include <net/sock.h>
 #include <net/snmp.h>
-<<<<<<< HEAD
-=======
 #include <net/udp.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/ipv6.h>
 #include <net/protocol.h>
@@ -64,15 +42,6 @@
 #include <net/ip6_route.h>
 #include <net/addrconf.h>
 #include <net/xfrm.h>
-<<<<<<< HEAD
-
-
-
-inline int ip6_rcv_finish( struct sk_buff *skb)
-{
-	if (skb_dst(skb) == NULL)
-		ip6_route_input(skb);
-=======
 #include <net/inet_ecn.h>
 #include <net/dst_metadata.h>
 
@@ -106,23 +75,10 @@ int ip6_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 	if (!skb)
 		return NET_RX_SUCCESS;
 	ip6_rcv_finish_core(net, sk, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dst_input(skb);
 }
 
-<<<<<<< HEAD
-int ipv6_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, struct net_device *orig_dev)
-{
-	const struct ipv6hdr *hdr;
-	u32 		pkt_len;
-	struct inet6_dev *idev;
-	struct net *net = dev_net(skb->dev);
-
-	if (skb->pkt_type == PACKET_OTHERHOST) {
-		kfree_skb(skb);
-		return NET_RX_DROP;
-=======
 static void ip6_sublist_rcv_finish(struct list_head *head)
 {
 	struct sk_buff *skb, *next;
@@ -202,20 +158,12 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 		dev_core_stats_rx_otherhost_dropped_inc(skb->dev);
 		kfree_skb_reason(skb, SKB_DROP_REASON_OTHERHOST);
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rcu_read_lock();
 
 	idev = __in6_dev_get(skb->dev);
 
-<<<<<<< HEAD
-	IP6_UPD_PO_STATS_BH(net, idev, IPSTATS_MIB_IN, skb->len);
-
-	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL ||
-	    !idev || unlikely(idev->cnf.disable_ipv6)) {
-		IP6_INC_STATS_BH(net, idev, IPSTATS_MIB_INDISCARDS);
-=======
 	__IP6_UPD_PO_STATS(net, idev, IPSTATS_MIB_IN, skb->len);
 
 	SKB_DR_SET(reason, NOT_SPECIFIED);
@@ -224,7 +172,6 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
 		if (idev && unlikely(READ_ONCE(idev->cnf.disable_ipv6)))
 			SKB_DR_SET(reason, IPV6DISABLED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto drop;
 	}
 
@@ -241,29 +188,13 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 	 * arrived via the sending interface (ethX), because of the
 	 * nature of scoping architecture. --yoshfuji
 	 */
-<<<<<<< HEAD
-	IP6CB(skb)->iif = skb_dst(skb) ? ip6_dst_idev(skb_dst(skb))->dev->ifindex : dev->ifindex;
-=======
 	IP6CB(skb)->iif = skb_valid_dst(skb) ? ip6_dst_idev(skb_dst(skb))->dev->ifindex : dev->ifindex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(!pskb_may_pull(skb, sizeof(*hdr))))
 		goto err;
 
 	hdr = ipv6_hdr(skb);
 
-<<<<<<< HEAD
-	if (hdr->version != 6)
-		goto err;
-
-	/*
-	 * RFC4291 2.5.3
-	 * A packet received on an interface with a destination address
-	 * of loopback must be dropped.
-	 */
-	if (!(dev->flags & IFF_LOOPBACK) &&
-	    ipv6_addr_loopback(&hdr->daddr))
-=======
 	if (hdr->version != 6) {
 		SKB_DR_SET(reason, UNHANDLED_PROTO);
 		goto err;
@@ -284,7 +215,6 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 	     ipv6_addr_loopback(&hdr->daddr)) &&
 	    !(dev->flags & IFF_LOOPBACK) &&
 	    !netif_is_l3_master(dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 
 	/* RFC4291 Errata ID: 3480
@@ -299,8 +229,6 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 	    IPV6_ADDR_MC_SCOPE(&hdr->daddr) == 1)
 		goto err;
 
-<<<<<<< HEAD
-=======
 	/* If enabled, drop unicast packets that were encapsulated in link-layer
 	 * multicast or broadcast to protected against the so-called "hole-196"
 	 * attack in 802.11 wireless.
@@ -313,7 +241,6 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 		goto err;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* RFC4291 2.7
 	 * Nodes must not originate a packet to a multicast address whose scope
 	 * field contains the reserved value 0; if such a packet is received, it
@@ -339,16 +266,6 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 	/* pkt_len may be zero if Jumbo payload option is present */
 	if (pkt_len || hdr->nexthdr != NEXTHDR_HOP) {
 		if (pkt_len + sizeof(struct ipv6hdr) > skb->len) {
-<<<<<<< HEAD
-			IP6_INC_STATS_BH(net,
-					 idev, IPSTATS_MIB_INTRUNCATEDPKTS);
-			goto drop;
-		}
-		if (pskb_trim_rcsum(skb, pkt_len + sizeof(struct ipv6hdr))) {
-			IP6_INC_STATS_BH(net, idev, IPSTATS_MIB_INHDRERRORS);
-			goto drop;
-		}
-=======
 			__IP6_INC_STATS(net,
 					idev, IPSTATS_MIB_INTRUNCATEDPKTS);
 			SKB_DR_SET(reason, PKT_TOO_SMALL);
@@ -356,54 +273,20 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 		}
 		if (pskb_trim_rcsum(skb, pkt_len + sizeof(struct ipv6hdr)))
 			goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hdr = ipv6_hdr(skb);
 	}
 
 	if (hdr->nexthdr == NEXTHDR_HOP) {
 		if (ipv6_parse_hopopts(skb) < 0) {
-<<<<<<< HEAD
-			IP6_INC_STATS_BH(net, idev, IPSTATS_MIB_INHDRERRORS);
-			rcu_read_unlock();
-			return NET_RX_DROP;
-=======
 			__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
 			rcu_read_unlock();
 			return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	rcu_read_unlock();
 
 	/* Must drop socket now because of tproxy. */
-<<<<<<< HEAD
-	skb_orphan(skb);
-
-	return NF_HOOK(NFPROTO_IPV6, NF_INET_PRE_ROUTING, skb, dev, NULL,
-		       ip6_rcv_finish);
-err:
-	IP6_INC_STATS_BH(net, idev, IPSTATS_MIB_INHDRERRORS);
-drop:
-	rcu_read_unlock();
-	kfree_skb(skb);
-	return NET_RX_DROP;
-}
-
-/*
- *	Deliver the packet to the host
- */
-
-
-static int ip6_input_finish(struct sk_buff *skb)
-{
-	const struct inet6_protocol *ipprot;
-	unsigned int nhoff;
-	int nexthdr, raw;
-	u8 hash;
-	struct inet6_dev *idev;
-	struct net *net = dev_net(skb_dst(skb)->dev);
-=======
 	if (!skb_sk_is_prefetched(skb))
 		skb_orphan(skb);
 
@@ -485,35 +368,11 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
 	unsigned int nhoff;
 	SKB_DR(reason);
 	bool raw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Parse extension headers
 	 */
 
-<<<<<<< HEAD
-	rcu_read_lock();
-resubmit:
-	idev = ip6_dst_idev(skb_dst(skb));
-	if (!pskb_pull(skb, skb_transport_offset(skb)))
-		goto discard;
-	nhoff = IP6CB(skb)->nhoff;
-	nexthdr = skb_network_header(skb)[nhoff];
-
-	raw = raw6_local_deliver(skb, nexthdr);
-
-	hash = nexthdr & (MAX_INET_PROTOS - 1);
-	if ((ipprot = rcu_dereference(inet6_protos[hash])) != NULL) {
-		int ret;
-
-		if (ipprot->flags & INET6_PROTO_FINAL) {
-			const struct ipv6hdr *hdr;
-
-			/* Free reference early: we don't need it any more,
-			   and it may hold ip_conntrack module loaded
-			   indefinitely. */
-			nf_reset(skb);
-=======
 resubmit:
 	idev = ip6_dst_idev(skb_dst(skb));
 	nhoff = IP6CB(skb)->nhoff;
@@ -546,47 +405,10 @@ resubmit_final:
 			/* Only do this once for first final protocol */
 			have_final = true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			skb_postpull_rcsum(skb, skb_network_header(skb),
 					   skb_network_header_len(skb));
 			hdr = ipv6_hdr(skb);
-<<<<<<< HEAD
-			if (ipv6_addr_is_multicast(&hdr->daddr) &&
-			    !ipv6_chk_mcast_addr(skb->dev, &hdr->daddr,
-			    &hdr->saddr) &&
-			    !ipv6_is_mld(skb, nexthdr))
-				goto discard;
-		}
-		if (!(ipprot->flags & INET6_PROTO_NOPOLICY) &&
-		    !xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
-			goto discard;
-
-		ret = ipprot->handler(skb);
-		if (ret > 0)
-			goto resubmit;
-		else if (ret == 0)
-			IP6_INC_STATS_BH(net, idev, IPSTATS_MIB_INDELIVERS);
-	} else {
-		if (!raw) {
-			if (xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
-				IP6_INC_STATS_BH(net, idev,
-						 IPSTATS_MIB_INUNKNOWNPROTOS);
-				icmpv6_send(skb, ICMPV6_PARAMPROB,
-					    ICMPV6_UNK_NEXTHDR, nhoff);
-			}
-		} else
-			IP6_INC_STATS_BH(net, idev, IPSTATS_MIB_INDELIVERS);
-		kfree_skb(skb);
-	}
-	rcu_read_unlock();
-	return 0;
-
-discard:
-	IP6_INC_STATS_BH(net, idev, IPSTATS_MIB_INDISCARDS);
-	rcu_read_unlock();
-	kfree_skb(skb);
-=======
 
 			/* skb->dev passed may be master dev for vrfs. */
 			if (sdif) {
@@ -661,30 +483,12 @@ static int ip6_input_finish(struct net *net, struct sock *sk, struct sk_buff *sk
 	ip6_protocol_deliver_rcu(net, skb, 0, false);
 	rcu_read_unlock();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 int ip6_input(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	return NF_HOOK(NFPROTO_IPV6, NF_INET_LOCAL_IN, skb, skb->dev, NULL,
-		       ip6_input_finish);
-}
-
-int ip6_mc_input(struct sk_buff *skb)
-{
-	const struct ipv6hdr *hdr;
-	int deliver;
-
-	IP6_UPD_PO_STATS_BH(dev_net(skb_dst(skb)->dev),
-			 ip6_dst_idev(skb_dst(skb)), IPSTATS_MIB_INMCAST,
-			 skb->len);
-
-	hdr = ipv6_hdr(skb);
-	deliver = ipv6_chk_mcast_addr(skb->dev, &hdr->daddr, NULL);
-=======
 	return NF_HOOK(NFPROTO_IPV6, NF_INET_LOCAL_IN,
 		       dev_net(skb->dev), NULL, skb, skb->dev, NULL,
 		       ip6_input_finish);
@@ -719,17 +523,12 @@ int ip6_mc_input(struct sk_buff *skb)
 	deliver = ipv6_chk_mcast_addr(dev, &hdr->daddr, NULL);
 	if (sdif)
 		rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_IPV6_MROUTE
 	/*
 	 *      IPv6 multicast router mode is now supported ;)
 	 */
-<<<<<<< HEAD
-	if (dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding &&
-=======
 	if (atomic_read(&dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !(ipv6_addr_type(&hdr->daddr) &
 	      (IPV6_ADDR_LOOPBACK|IPV6_ADDR_LINKLOCAL)) &&
 	    likely(!(IP6CB(skb)->flags & IP6SKB_FORWARDED))) {
@@ -741,15 +540,8 @@ int ip6_mc_input(struct sk_buff *skb)
 		struct inet6_skb_parm *opt = IP6CB(skb);
 
 		/* Check for MLD */
-<<<<<<< HEAD
-		if (unlikely(opt->ra)) {
-			/* Check if this is a mld message */
-			u8 *ptr = skb_network_header(skb) + opt->ra;
-			struct icmp6hdr *icmp6;
-=======
 		if (unlikely(opt->flags & IP6SKB_ROUTERALERT)) {
 			/* Check if this is a mld message */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u8 nexthdr = hdr->nexthdr;
 			__be16 frag_off;
 			int offset;
@@ -757,13 +549,8 @@ int ip6_mc_input(struct sk_buff *skb)
 			/* Check if the value of Router Alert
 			 * is for MLD (0x0000).
 			 */
-<<<<<<< HEAD
-			if ((ptr[2] | ptr[3]) == 0) {
-				deliver = 0;
-=======
 			if (opt->ra == htons(IPV6_OPT_ROUTERALERT_MLD)) {
 				deliver = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				if (!ipv6_ext_hdr(nexthdr)) {
 					/* BUG */
@@ -774,29 +561,9 @@ int ip6_mc_input(struct sk_buff *skb)
 				if (offset < 0)
 					goto out;
 
-<<<<<<< HEAD
-				if (nexthdr != IPPROTO_ICMPV6)
-					goto out;
-
-				if (!pskb_may_pull(skb, (skb_network_header(skb) +
-						   offset + 1 - skb->data)))
-					goto out;
-
-				icmp6 = (struct icmp6hdr *)(skb_network_header(skb) + offset);
-
-				switch (icmp6->icmp6_type) {
-				case ICMPV6_MGM_QUERY:
-				case ICMPV6_MGM_REPORT:
-				case ICMPV6_MGM_REDUCTION:
-				case ICMPV6_MLD2_REPORT:
-					deliver = 1;
-					break;
-				}
-=======
 				if (ipv6_is_mld(skb, nexthdr, offset))
 					deliver = true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out;
 			}
 			/* unknown RA - process it normally */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel reference Implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
@@ -14,32 +11,9 @@
  *
  * Various protocol defined structures.
  *
-<<<<<<< HEAD
- * This SCTP implementation is free software;
- * you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This SCTP implementation is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; without even the implied
- *                 ************************
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GNU CC; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <lksctp-developerst@lists.sourceforge.net>
-=======
  * Please send any bug reports or fixes you make to the
  * email address(es):
  *    lksctp developers <linux-sctp@vger.kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
@@ -63,46 +37,22 @@
 
 #include <linux/in.h>		/* We need in_addr.  */
 #include <linux/in6.h>		/* We need in6_addr.  */
-<<<<<<< HEAD
-
-
-/* Section 3.1.  SCTP Common Header Format */
-typedef struct sctphdr {
-=======
 #include <linux/skbuff.h>
 
 #include <uapi/linux/sctp.h>
 
 /* Section 3.1.  SCTP Common Header Format */
 struct sctphdr {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be16 source;
 	__be16 dest;
 	__be32 vtag;
 	__le32 checksum;
-<<<<<<< HEAD
-} __packed sctp_sctphdr_t;
-
-#ifdef __KERNEL__
-#include <linux/skbuff.h>
-=======
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct sctphdr *sctp_hdr(const struct sk_buff *skb)
 {
 	return (struct sctphdr *)skb_transport_header(skb);
 }
-<<<<<<< HEAD
-#endif
-
-/* Section 3.2.  Chunk Field Descriptions. */
-typedef struct sctp_chunkhdr {
-	__u8 type;
-	__u8 flags;
-	__be16 length;
-} __packed sctp_chunkhdr_t;
-=======
 
 /* Section 3.2.  Chunk Field Descriptions. */
 struct sctp_chunkhdr {
@@ -110,7 +60,6 @@ struct sctp_chunkhdr {
 	__u8 flags;
 	__be16 length;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* Section 3.2.  Chunk Type Values.
@@ -118,11 +67,7 @@ struct sctp_chunkhdr {
  * Value field. It takes a value from 0 to 254. The value of 255 is
  * reserved for future use as an extension field.
  */
-<<<<<<< HEAD
-typedef enum {
-=======
 enum sctp_cid {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_CID_DATA			= 0,
         SCTP_CID_INIT			= 1,
         SCTP_CID_INIT_ACK		= 2,
@@ -142,27 +87,19 @@ enum sctp_cid {
 	/* AUTH Extension Section 4.1 */
 	SCTP_CID_AUTH			= 0x0F,
 
-<<<<<<< HEAD
-=======
 	/* sctp ndata 5.1. I-DATA */
 	SCTP_CID_I_DATA			= 0x40,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* PR-SCTP Sec 3.2 */
 	SCTP_CID_FWD_TSN		= 0xC0,
 
 	/* Use hex, as defined in ADDIP sec. 3.1 */
 	SCTP_CID_ASCONF			= 0xC1,
-<<<<<<< HEAD
-	SCTP_CID_ASCONF_ACK		= 0x80,
-} sctp_cid_t; /* enum */
-=======
 	SCTP_CID_I_FWD_TSN		= 0xC2,
 	SCTP_CID_ASCONF_ACK		= 0x80,
 	SCTP_CID_RECONF			= 0x82,
 	SCTP_CID_PAD			= 0x84,
 }; /* enum */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* Section 3.2
@@ -170,20 +107,12 @@ enum sctp_cid {
  *  the action that must be taken if the processing endpoint does not
  *  recognize the Chunk Type.
  */
-<<<<<<< HEAD
-typedef enum {
-=======
 enum {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_CID_ACTION_DISCARD     = 0x00,
 	SCTP_CID_ACTION_DISCARD_ERR = 0x40,
 	SCTP_CID_ACTION_SKIP        = 0x80,
 	SCTP_CID_ACTION_SKIP_ERR    = 0xc0,
-<<<<<<< HEAD
-} sctp_cid_action_t;
-=======
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum { SCTP_CID_ACTION_MASK = 0xc0, };
 
@@ -223,21 +152,12 @@ enum { SCTP_CHUNK_FLAG_T = 0x01 };
  * Section 3.2.1 Optional/Variable-length Parmaeter Format.
  */
 
-<<<<<<< HEAD
-typedef struct sctp_paramhdr {
-	__be16 type;
-	__be16 length;
-} __packed sctp_paramhdr_t;
-
-typedef enum {
-=======
 struct sctp_paramhdr {
 	__be16 type;
 	__be16 length;
 };
 
 enum sctp_param {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* RFC 2960 Section 3.3.5 */
 	SCTP_PARAM_HEARTBEAT_INFO		= cpu_to_be16(1),
@@ -270,9 +190,6 @@ enum sctp_param {
 	SCTP_PARAM_SUCCESS_REPORT	= cpu_to_be16(0xc005),
 	SCTP_PARAM_ADAPTATION_LAYER_IND = cpu_to_be16(0xc006),
 
-<<<<<<< HEAD
-} sctp_param_t; /* enum */
-=======
 	/* RE-CONFIG. Section 4 */
 	SCTP_PARAM_RESET_OUT_REQUEST		= cpu_to_be16(0x000d),
 	SCTP_PARAM_RESET_IN_REQUEST		= cpu_to_be16(0x000e),
@@ -281,7 +198,6 @@ enum sctp_param {
 	SCTP_PARAM_RESET_ADD_OUT_STREAMS	= cpu_to_be16(0x0011),
 	SCTP_PARAM_RESET_ADD_IN_STREAMS		= cpu_to_be16(0x0012),
 }; /* enum */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* RFC 2960 Section 3.2.1
@@ -290,39 +206,17 @@ enum sctp_param {
  *  not recognize the Parameter Type.
  *
  */
-<<<<<<< HEAD
-typedef enum {
-=======
 enum {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_PARAM_ACTION_DISCARD     = cpu_to_be16(0x0000),
 	SCTP_PARAM_ACTION_DISCARD_ERR = cpu_to_be16(0x4000),
 	SCTP_PARAM_ACTION_SKIP        = cpu_to_be16(0x8000),
 	SCTP_PARAM_ACTION_SKIP_ERR    = cpu_to_be16(0xc000),
-<<<<<<< HEAD
-} sctp_param_action_t;
-=======
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum { SCTP_PARAM_ACTION_MASK = cpu_to_be16(0xc000), };
 
 /* RFC 2960 Section 3.3.1 Payload Data (DATA) (0) */
 
-<<<<<<< HEAD
-typedef struct sctp_datahdr {
-	__be32 tsn;
-	__be16 stream;
-	__be16 ssn;
-	__be32 ppid;
-	__u8  payload[0];
-} __packed sctp_datahdr_t;
-
-typedef struct sctp_data_chunk {
-        sctp_chunkhdr_t chunk_hdr;
-        sctp_datahdr_t  data_hdr;
-} __packed sctp_data_chunk_t;
-=======
 struct sctp_datahdr {
 	__be32 tsn;
 	__be16 stream;
@@ -352,7 +246,6 @@ struct sctp_idata_chunk {
 	struct sctp_chunkhdr chunk_hdr;
 	struct sctp_idatahdr data_hdr;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* DATA Chuck Specific Flags */
 enum {
@@ -371,91 +264,12 @@ enum { SCTP_DATA_FRAG_MASK = 0x03, };
  *  This chunk is used to initiate a SCTP association between two
  *  endpoints.
  */
-<<<<<<< HEAD
-typedef struct sctp_inithdr {
-=======
 struct sctp_inithdr {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 init_tag;
 	__be32 a_rwnd;
 	__be16 num_outbound_streams;
 	__be16 num_inbound_streams;
 	__be32 initial_tsn;
-<<<<<<< HEAD
-	__u8  params[0];
-} __packed sctp_inithdr_t;
-
-typedef struct sctp_init_chunk {
-	sctp_chunkhdr_t chunk_hdr;
-	sctp_inithdr_t init_hdr;
-} __packed sctp_init_chunk_t;
-
-
-/* Section 3.3.2.1. IPv4 Address Parameter (5) */
-typedef struct sctp_ipv4addr_param {
-	sctp_paramhdr_t param_hdr;
-	struct in_addr  addr;
-} __packed sctp_ipv4addr_param_t;
-
-/* Section 3.3.2.1. IPv6 Address Parameter (6) */
-typedef struct sctp_ipv6addr_param {
-	sctp_paramhdr_t param_hdr;
-	struct in6_addr addr;
-} __packed sctp_ipv6addr_param_t;
-
-/* Section 3.3.2.1 Cookie Preservative (9) */
-typedef struct sctp_cookie_preserve_param {
-	sctp_paramhdr_t param_hdr;
-	__be32          lifespan_increment;
-} __packed sctp_cookie_preserve_param_t;
-
-/* Section 3.3.2.1 Host Name Address (11) */
-typedef struct sctp_hostname_param {
-	sctp_paramhdr_t param_hdr;
-	uint8_t hostname[0];
-} __packed sctp_hostname_param_t;
-
-/* Section 3.3.2.1 Supported Address Types (12) */
-typedef struct sctp_supported_addrs_param {
-	sctp_paramhdr_t param_hdr;
-	__be16 types[0];
-} __packed sctp_supported_addrs_param_t;
-
-/* Appendix A. ECN Capable (32768) */
-typedef struct sctp_ecn_capable_param {
-	sctp_paramhdr_t param_hdr;
-} __packed sctp_ecn_capable_param_t;
-
-/* ADDIP Section 3.2.6 Adaptation Layer Indication */
-typedef struct sctp_adaptation_ind_param {
-	struct sctp_paramhdr param_hdr;
-	__be32 adaptation_ind;
-} __packed sctp_adaptation_ind_param_t;
-
-/* ADDIP Section 4.2.7 Supported Extensions Parameter */
-typedef struct sctp_supported_ext_param {
-	struct sctp_paramhdr param_hdr;
-	__u8 chunks[0];
-} __packed sctp_supported_ext_param_t;
-
-/* AUTH Section 3.1 Random */
-typedef struct sctp_random_param {
-	sctp_paramhdr_t param_hdr;
-	__u8 random_val[0];
-} __packed sctp_random_param_t;
-
-/* AUTH Section 3.2 Chunk List */
-typedef struct sctp_chunks_param {
-	sctp_paramhdr_t param_hdr;
-	__u8 chunks[0];
-} __packed sctp_chunks_param_t;
-
-/* AUTH Section 3.3 HMAC Algorithm */
-typedef struct sctp_hmac_algo_param {
-	sctp_paramhdr_t param_hdr;
-	__be16 hmac_ids[0];
-} __packed sctp_hmac_algo_param_t;
-=======
 	/* __u8  params[]; */
 };
 
@@ -524,27 +338,11 @@ struct sctp_hmac_algo_param {
 	struct sctp_paramhdr param_hdr;
 	__be16 hmac_ids[];
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* RFC 2960.  Section 3.3.3 Initiation Acknowledgement (INIT ACK) (2):
  *   The INIT ACK chunk is used to acknowledge the initiation of an SCTP
  *   association.
  */
-<<<<<<< HEAD
-typedef sctp_init_chunk_t sctp_initack_chunk_t;
-
-/* Section 3.3.3.1 State Cookie (7) */
-typedef struct sctp_cookie_param {
-	sctp_paramhdr_t p;
-	__u8 body[0];
-} __packed sctp_cookie_param_t;
-
-/* Section 3.3.3.1 Unrecognized Parameters (8) */
-typedef struct sctp_unrecognized_param {
-	sctp_paramhdr_t param_hdr;
-	sctp_paramhdr_t unrecognized;
-} __packed sctp_unrecognized_param_t;
-=======
 struct sctp_initack_chunk {
 	struct sctp_chunkhdr chunk_hdr;
 	struct sctp_inithdr init_hdr;
@@ -561,7 +359,6 @@ struct sctp_unrecognized_param {
 	struct sctp_paramhdr param_hdr;
 	struct sctp_paramhdr unrecognized;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
@@ -573,21 +370,6 @@ struct sctp_unrecognized_param {
  *  subsequences of DATA chunks as represented by their TSNs.
  */
 
-<<<<<<< HEAD
-typedef struct sctp_gap_ack_block {
-	__be16 start;
-	__be16 end;
-} __packed sctp_gap_ack_block_t;
-
-typedef __be32 sctp_dup_tsn_t;
-
-typedef union {
-	sctp_gap_ack_block_t	gab;
-        sctp_dup_tsn_t		dup;
-} sctp_sack_variable_t;
-
-typedef struct sctp_sackhdr {
-=======
 struct sctp_gap_ack_block {
 	__be16 start;
 	__be16 end;
@@ -599,20 +381,10 @@ union sctp_sack_variable {
 };
 
 struct sctp_sackhdr {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 cum_tsn_ack;
 	__be32 a_rwnd;
 	__be16 num_gap_ack_blocks;
 	__be16 num_dup_tsns;
-<<<<<<< HEAD
-	sctp_sack_variable_t variable[0];
-} __packed sctp_sackhdr_t;
-
-typedef struct sctp_sack_chunk {
-	sctp_chunkhdr_t chunk_hdr;
-	sctp_sackhdr_t sack_hdr;
-} __packed sctp_sack_chunk_t;
-=======
 	/* union sctp_sack_variable variable[]; */
 };
 
@@ -620,7 +392,6 @@ struct sctp_sack_chunk {
 	struct sctp_chunkhdr chunk_hdr;
 	struct sctp_sackhdr sack_hdr;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* RFC 2960.  Section 3.3.5 Heartbeat Request (HEARTBEAT) (4):
@@ -630,16 +401,6 @@ struct sctp_sack_chunk {
  *  the present association.
  */
 
-<<<<<<< HEAD
-typedef struct sctp_heartbeathdr {
-	sctp_paramhdr_t info;
-} __packed sctp_heartbeathdr_t;
-
-typedef struct sctp_heartbeat_chunk {
-	sctp_chunkhdr_t chunk_hdr;
-	sctp_heartbeathdr_t hb_hdr;
-} __packed sctp_heartbeat_chunk_t;
-=======
 struct sctp_heartbeathdr {
 	struct sctp_paramhdr info;
 };
@@ -654,50 +415,20 @@ struct sctp_heartbeat_chunk {
 struct sctp_pad_chunk {
 	struct sctp_chunkhdr uh;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* For the abort and shutdown ACK we must carry the init tag in the
  * common header. Just the common header is all that is needed with a
  * chunk descriptor.
  */
-<<<<<<< HEAD
-typedef struct sctp_abort_chunk {
-        sctp_chunkhdr_t uh;
-} __packed sctp_abort_chunk_t;
-=======
 struct sctp_abort_chunk {
 	struct sctp_chunkhdr uh;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* For the graceful shutdown we must carry the tag (in common header)
  * and the highest consecutive acking value.
  */
-<<<<<<< HEAD
-typedef struct sctp_shutdownhdr {
-	__be32 cum_tsn_ack;
-} __packed sctp_shutdownhdr_t;
-
-struct sctp_shutdown_chunk_t {
-        sctp_chunkhdr_t    chunk_hdr;
-        sctp_shutdownhdr_t shutdown_hdr;
-} __packed;
-
-/* RFC 2960.  Section 3.3.10 Operation Error (ERROR) (9) */
-
-typedef struct sctp_errhdr {
-	__be16 cause;
-	__be16 length;
-	__u8  variable[0];
-} __packed sctp_errhdr_t;
-
-typedef struct sctp_operr_chunk {
-        sctp_chunkhdr_t chunk_hdr;
-	sctp_errhdr_t   err_hdr;
-} __packed sctp_operr_chunk_t;
-=======
 struct sctp_shutdownhdr {
 	__be32 cum_tsn_ack;
 };
@@ -719,7 +450,6 @@ struct sctp_operr_chunk {
 	struct sctp_chunkhdr chunk_hdr;
 	struct sctp_errhdr err_hdr;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* RFC 2960 3.3.10 - Operation Error
  *
@@ -740,11 +470,7 @@ struct sctp_operr_chunk {
  *      9              No User Data
  *     10              Cookie Received While Shutting Down
  */
-<<<<<<< HEAD
-typedef enum {
-=======
 enum sctp_error {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SCTP_ERROR_NO_ERROR	   = cpu_to_be16(0x00),
 	SCTP_ERROR_INV_STRM	   = cpu_to_be16(0x01),
@@ -763,19 +489,13 @@ enum sctp_error {
 	 *  11  Restart of an association with new addresses
 	 *  12  User Initiated Abort
 	 *  13  Protocol Violation
-<<<<<<< HEAD
-=======
 	 *  14  Restart of an Association with New Encapsulation Port
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	SCTP_ERROR_RESTART         = cpu_to_be16(0x0b),
 	SCTP_ERROR_USER_ABORT      = cpu_to_be16(0x0c),
 	SCTP_ERROR_PROTO_VIOLATION = cpu_to_be16(0x0d),
-<<<<<<< HEAD
-=======
 	SCTP_ERROR_NEW_ENCAP_PORT  = cpu_to_be16(0x0e),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ADDIP Section 3.3  New Error Causes
 	 *
@@ -807,27 +527,13 @@ enum sctp_error {
 	 * 0x0105          Unsupported HMAC Identifier
 	 */
 	 SCTP_ERROR_UNSUP_HMAC	= cpu_to_be16(0x0105)
-<<<<<<< HEAD
-} sctp_error_t;
-=======
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
 /* RFC 2960.  Appendix A.  Explicit Congestion Notification.
  *   Explicit Congestion Notification Echo (ECNE) (12)
  */
-<<<<<<< HEAD
-typedef struct sctp_ecnehdr {
-	__be32 lowest_tsn;
-} sctp_ecnehdr_t;
-
-typedef struct sctp_ecne_chunk {
-	sctp_chunkhdr_t chunk_hdr;
-	sctp_ecnehdr_t ence_hdr;
-} __packed sctp_ecne_chunk_t;
-=======
 struct sctp_ecnehdr {
 	__be32 lowest_tsn;
 };
@@ -836,25 +542,13 @@ struct sctp_ecne_chunk {
 	struct sctp_chunkhdr chunk_hdr;
 	struct sctp_ecnehdr ence_hdr;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* RFC 2960.  Appendix A.  Explicit Congestion Notification.
  *   Congestion Window Reduced (CWR) (13)
  */
-<<<<<<< HEAD
-typedef struct sctp_cwrhdr {
-	__be32 lowest_tsn;
-} sctp_cwrhdr_t;
-
-typedef struct sctp_cwr_chunk {
-	sctp_chunkhdr_t chunk_hdr;
-	sctp_cwrhdr_t cwr_hdr;
-} __packed sctp_cwr_chunk_t;
-=======
 struct sctp_cwrhdr {
 	__be32 lowest_tsn;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PR-SCTP
  * 3.2 Forward Cumulative TSN Chunk Definition (FORWARD TSN)
@@ -905,29 +599,16 @@ struct sctp_cwrhdr {
 struct sctp_fwdtsn_skip {
 	__be16 stream;
 	__be16 ssn;
-<<<<<<< HEAD
-} __packed;
-
-struct sctp_fwdtsn_hdr {
-	__be32 new_cum_tsn;
-	struct sctp_fwdtsn_skip skip[0];
-} __packed;
-=======
 };
 
 struct sctp_fwdtsn_hdr {
 	__be32 new_cum_tsn;
 	/* struct sctp_fwdtsn_skip skip[]; */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sctp_fwdtsn_chunk {
 	struct sctp_chunkhdr chunk_hdr;
 	struct sctp_fwdtsn_hdr fwdtsn_hdr;
-<<<<<<< HEAD
-} __packed;
-
-=======
 };
 
 struct sctp_ifwdtsn_skip {
@@ -946,7 +627,6 @@ struct sctp_ifwdtsn_chunk {
 	struct sctp_chunkhdr chunk_hdr;
 	struct sctp_ifwdtsn_hdr fwdtsn_hdr;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ADDIP
  * Section 3.1.1 Address Configuration Change Chunk (ASCONF)
@@ -980,22 +660,6 @@ struct sctp_ifwdtsn_chunk {
  *	The ASCONF Parameter Response is used in the ASCONF-ACK to
  *	report status of ASCONF processing.
  */
-<<<<<<< HEAD
-typedef struct sctp_addip_param {
-	sctp_paramhdr_t	param_hdr;
-	__be32		crr_id;
-} __packed sctp_addip_param_t;
-
-typedef struct sctp_addiphdr {
-	__be32	serial;
-	__u8	params[0];
-} __packed sctp_addiphdr_t;
-
-typedef struct sctp_addip_chunk {
-	sctp_chunkhdr_t chunk_hdr;
-	sctp_addiphdr_t addip_hdr;
-} __packed sctp_addip_chunk_t;
-=======
 struct sctp_addip_param {
 	struct sctp_paramhdr param_hdr;
 	__be32 crr_id;
@@ -1010,7 +674,6 @@ struct sctp_addip_chunk {
 	struct sctp_chunkhdr chunk_hdr;
 	struct sctp_addiphdr addip_hdr;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* AUTH
  * Section 4.1  Authentication Chunk (AUTH)
@@ -1061,18 +724,6 @@ struct sctp_addip_chunk {
  *   HMAC: n bytes (unsigned integer) This hold the result of the HMAC
  *      calculation.
  */
-<<<<<<< HEAD
-typedef struct sctp_authhdr {
-	__be16 shkey_id;
-	__be16 hmac_id;
-	__u8   hmac[0];
-} __packed sctp_authhdr_t;
-
-typedef struct sctp_auth_chunk {
-	sctp_chunkhdr_t chunk_hdr;
-	sctp_authhdr_t auth_hdr;
-} __packed sctp_auth_chunk_t;
-=======
 struct sctp_authhdr {
 	__be16 shkey_id;
 	__be16 hmac_id;
@@ -1173,6 +824,5 @@ struct sctp_new_encap_port_hdr {
 #define SCTP_PAD4(s) (((s)+3)&~3)
 /* Truncate to the previous multiple of 4.  */
 #define SCTP_TRUNC4(s) ((s)&~3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __LINUX_SCTP_H__ */

@@ -1,25 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Basic authentication token and access key management
  *
  * Copyright (C) 2004-2008 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-
-#include <linux/module.h>
-=======
  */
 
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/poison.h>
 #include <linux/sched.h>
@@ -28,10 +14,6 @@
 #include <linux/workqueue.h>
 #include <linux/random.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-#include <linux/user_namespace.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "internal.h"
 
 struct kmem_cache *key_jar;
@@ -41,13 +23,8 @@ DEFINE_SPINLOCK(key_serial_lock);
 struct rb_root	key_user_tree; /* tree of quota records indexed by UID */
 DEFINE_SPINLOCK(key_user_lock);
 
-<<<<<<< HEAD
-unsigned int key_quota_root_maxkeys = 200;	/* root's key count quota */
-unsigned int key_quota_root_maxbytes = 20000;	/* root's key space quota */
-=======
 unsigned int key_quota_root_maxkeys = 1000000;	/* root's key count quota */
 unsigned int key_quota_root_maxbytes = 25000000; /* root's key space quota */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int key_quota_maxkeys = 200;		/* general key count quota */
 unsigned int key_quota_maxbytes = 20000;	/* general key space quota */
 
@@ -70,15 +47,6 @@ void __key_check(const struct key *key)
  * Get the key quota record for a user, allocating a new record if one doesn't
  * already exist.
  */
-<<<<<<< HEAD
-struct key_user *key_user_lookup(uid_t uid, struct user_namespace *user_ns)
-{
-	struct key_user *candidate = NULL, *user;
-	struct rb_node *parent = NULL;
-	struct rb_node **p;
-
-try_again:
-=======
 struct key_user *key_user_lookup(kuid_t uid)
 {
 	struct key_user *candidate = NULL, *user;
@@ -86,7 +54,6 @@ struct key_user *key_user_lookup(kuid_t uid)
 
 try_again:
 	parent = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = &key_user_tree.rb_node;
 	spin_lock(&key_user_lock);
 
@@ -95,19 +62,9 @@ try_again:
 		parent = *p;
 		user = rb_entry(parent, struct key_user, node);
 
-<<<<<<< HEAD
-		if (uid < user->uid)
-			p = &(*p)->rb_left;
-		else if (uid > user->uid)
-			p = &(*p)->rb_right;
-		else if (user_ns < user->user_ns)
-			p = &(*p)->rb_left;
-		else if (user_ns > user->user_ns)
-=======
 		if (uid_lt(uid, user->uid))
 			p = &(*p)->rb_left;
 		else if (uid_gt(uid, user->uid))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			p = &(*p)->rb_right;
 		else
 			goto found;
@@ -132,18 +89,10 @@ try_again:
 
 	/* if we get here, then the user record still hadn't appeared on the
 	 * second pass - so we use the candidate record */
-<<<<<<< HEAD
-	atomic_set(&candidate->usage, 1);
-	atomic_set(&candidate->nkeys, 0);
-	atomic_set(&candidate->nikeys, 0);
-	candidate->uid = uid;
-	candidate->user_ns = get_user_ns(user_ns);
-=======
 	refcount_set(&candidate->usage, 1);
 	atomic_set(&candidate->nkeys, 0);
 	atomic_set(&candidate->nikeys, 0);
 	candidate->uid = uid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	candidate->qnkeys = 0;
 	candidate->qnbytes = 0;
 	spin_lock_init(&candidate->lock);
@@ -157,11 +106,7 @@ try_again:
 
 	/* okay - we found a user record for this UID */
 found:
-<<<<<<< HEAD
-	atomic_inc(&user->usage);
-=======
 	refcount_inc(&user->usage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&key_user_lock);
 	kfree(candidate);
 out:
@@ -173,16 +118,9 @@ out:
  */
 void key_user_put(struct key_user *user)
 {
-<<<<<<< HEAD
-	if (atomic_dec_and_lock(&user->usage, &key_user_lock)) {
-		rb_erase(&user->node, &key_user_tree);
-		spin_unlock(&key_user_lock);
-		put_user_ns(user->user_ns);
-=======
 	if (refcount_dec_and_lock(&user->usage, &key_user_lock)) {
 		rb_erase(&user->node, &key_user_tree);
 		spin_unlock(&key_user_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		kfree(user);
 	}
@@ -259,21 +197,15 @@ serial_exists:
  * @cred: The credentials specifying UID namespace.
  * @perm: The permissions mask of the new key.
  * @flags: Flags specifying quota properties.
-<<<<<<< HEAD
-=======
  * @restrict_link: Optional link restriction for new keyrings.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Allocate a key of the specified type with the attributes given.  The key is
  * returned in an uninstantiated state and the caller needs to instantiate the
  * key before returning.
  *
-<<<<<<< HEAD
-=======
  * The restrict_link structure (if not NULL) will be freed when the
  * keyring is destroyed, so it must be dynamically allocated.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The user's key count quota is updated to reflect the creation of the key and
  * the user's key data quota has the default for the key type reserved.  The
  * instantiation function should amend this as necessary.  If insufficient
@@ -290,14 +222,9 @@ serial_exists:
  * key_alloc() calls don't race with module unloading.
  */
 struct key *key_alloc(struct key_type *type, const char *desc,
-<<<<<<< HEAD
-		      uid_t uid, gid_t gid, const struct cred *cred,
-		      key_perm_t perm, unsigned long flags)
-=======
 		      kuid_t uid, kgid_t gid, const struct cred *cred,
 		      key_perm_t perm, unsigned long flags,
 		      struct key_restriction *restrict_link)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct key_user *user = NULL;
 	struct key *key;
@@ -316,45 +243,26 @@ struct key *key_alloc(struct key_type *type, const char *desc,
 		}
 	}
 
-<<<<<<< HEAD
-	desclen = strlen(desc) + 1;
-	quotalen = desclen + type->def_datalen;
-
-	/* get hold of the key tracking for this user */
-	user = key_user_lookup(uid, cred->user->user_ns);
-=======
 	desclen = strlen(desc);
 	quotalen = desclen + 1 + type->def_datalen;
 
 	/* get hold of the key tracking for this user */
 	user = key_user_lookup(uid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!user)
 		goto no_memory_1;
 
 	/* check that the user's quota permits allocation of another key and
 	 * its description */
 	if (!(flags & KEY_ALLOC_NOT_IN_QUOTA)) {
-<<<<<<< HEAD
-		unsigned maxkeys = (uid == 0) ?
-			key_quota_root_maxkeys : key_quota_maxkeys;
-		unsigned maxbytes = (uid == 0) ?
-=======
 		unsigned maxkeys = uid_eq(uid, GLOBAL_ROOT_UID) ?
 			key_quota_root_maxkeys : key_quota_maxkeys;
 		unsigned maxbytes = uid_eq(uid, GLOBAL_ROOT_UID) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			key_quota_root_maxbytes : key_quota_maxbytes;
 
 		spin_lock(&user->lock);
 		if (!(flags & KEY_ALLOC_QUOTA_OVERRUN)) {
-<<<<<<< HEAD
-			if (user->qnkeys + 1 >= maxkeys ||
-			    user->qnbytes + quotalen >= maxbytes ||
-=======
 			if (user->qnkeys + 1 > maxkeys ||
 			    user->qnbytes + quotalen > maxbytes ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    user->qnbytes + quotalen < user->qnbytes)
 				goto no_quota;
 		}
@@ -365,22 +273,6 @@ struct key *key_alloc(struct key_type *type, const char *desc,
 	}
 
 	/* allocate and initialise the key and its description */
-<<<<<<< HEAD
-	key = kmem_cache_alloc(key_jar, GFP_KERNEL);
-	if (!key)
-		goto no_memory_2;
-
-	if (desc) {
-		key->description = kmemdup(desc, desclen, GFP_KERNEL);
-		if (!key->description)
-			goto no_memory_3;
-	}
-
-	atomic_set(&key->usage, 1);
-	init_rwsem(&key->sem);
-	lockdep_set_class(&key->sem, &type->lock_class);
-	key->type = type;
-=======
 	key = kmem_cache_zalloc(key_jar, GFP_KERNEL);
 	if (!key)
 		goto no_memory_2;
@@ -395,24 +287,12 @@ struct key *key_alloc(struct key_type *type, const char *desc,
 	refcount_set(&key->usage, 1);
 	init_rwsem(&key->sem);
 	lockdep_set_class(&key->sem, &type->lock_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key->user = user;
 	key->quotalen = quotalen;
 	key->datalen = type->def_datalen;
 	key->uid = uid;
 	key->gid = gid;
 	key->perm = perm;
-<<<<<<< HEAD
-	key->flags = 0;
-	key->expiry = 0;
-	key->payload.data = NULL;
-	key->security = NULL;
-
-	if (!(flags & KEY_ALLOC_NOT_IN_QUOTA))
-		key->flags |= 1 << KEY_FLAG_IN_QUOTA;
-
-	memset(&key->type_data, 0, sizeof(key->type_data));
-=======
 	key->expiry = TIME64_MAX;
 	key->restrict_link = restrict_link;
 	key->last_used_at = ktime_get_real_seconds();
@@ -425,7 +305,6 @@ struct key *key_alloc(struct key_type *type, const char *desc,
 		key->flags |= 1 << KEY_FLAG_UID_KEYRING;
 	if (flags & KEY_ALLOC_SET_KEEP)
 		key->flags |= 1 << KEY_FLAG_KEEP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef KEY_DEBUGGING
 	key->magic = KEY_DEBUG_MAGIC;
@@ -437,10 +316,7 @@ struct key *key_alloc(struct key_type *type, const char *desc,
 		goto security_error;
 
 	/* publish the key by giving it a serial number */
-<<<<<<< HEAD
-=======
 	refcount_inc(&key->domain_tag->usage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_inc(&user->nkeys);
 	key_alloc_serial(key);
 
@@ -502,21 +378,13 @@ int key_payload_reserve(struct key *key, size_t datalen)
 
 	/* contemplate the quota adjustment */
 	if (delta != 0 && test_bit(KEY_FLAG_IN_QUOTA, &key->flags)) {
-<<<<<<< HEAD
-		unsigned maxbytes = (key->user->uid == 0) ?
-=======
 		unsigned maxbytes = uid_eq(key->user->uid, GLOBAL_ROOT_UID) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			key_quota_root_maxbytes : key_quota_maxbytes;
 
 		spin_lock(&key->user->lock);
 
 		if (delta > 0 &&
-<<<<<<< HEAD
-		    (key->user->qnbytes + delta >= maxbytes ||
-=======
 		    (key->user->qnbytes + delta > maxbytes ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     key->user->qnbytes + delta < key->user->qnbytes)) {
 			ret = -EDQUOT;
 		}
@@ -536,8 +404,6 @@ int key_payload_reserve(struct key *key, size_t datalen)
 EXPORT_SYMBOL(key_payload_reserve);
 
 /*
-<<<<<<< HEAD
-=======
  * Change the key state to being instantiated.
  */
 static void mark_key_instantiated(struct key *key, int reject_error)
@@ -550,25 +416,16 @@ static void mark_key_instantiated(struct key *key, int reject_error)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Instantiate a key and link it into the target keyring atomically.  Must be
  * called with the target keyring's semaphore writelocked.  The target key's
  * semaphore need not be locked as instantiation is serialised by
  * key_construction_mutex.
  */
 static int __key_instantiate_and_link(struct key *key,
-<<<<<<< HEAD
-				      const void *data,
-				      size_t datalen,
-				      struct key *keyring,
-				      struct key *authkey,
-				      unsigned long *_prealloc)
-=======
 				      struct key_preparsed_payload *prep,
 				      struct key *keyring,
 				      struct key *authkey,
 				      struct assoc_array_edit **_edit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret, awaken;
 
@@ -581,38 +438,20 @@ static int __key_instantiate_and_link(struct key *key,
 	mutex_lock(&key_construction_mutex);
 
 	/* can't instantiate twice */
-<<<<<<< HEAD
-	if (!test_bit(KEY_FLAG_INSTANTIATED, &key->flags)) {
-		/* instantiate the key */
-		ret = key->type->instantiate(key, data, datalen);
-=======
 	if (key->state == KEY_IS_UNINSTANTIATED) {
 		/* instantiate the key */
 		ret = key->type->instantiate(key, prep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ret == 0) {
 			/* mark the key as being instantiated */
 			atomic_inc(&key->user->nikeys);
-<<<<<<< HEAD
-			set_bit(KEY_FLAG_INSTANTIATED, &key->flags);
-=======
 			mark_key_instantiated(key, 0);
 			notify_key(key, NOTIFY_KEY_INSTANTIATED, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (test_and_clear_bit(KEY_FLAG_USER_CONSTRUCT, &key->flags))
 				awaken = 1;
 
 			/* and link it into the destination keyring */
-<<<<<<< HEAD
-			if (keyring)
-				__key_link(keyring, key, _prealloc);
-
-			/* disable the authorisation key */
-			if (authkey)
-				key_revoke(authkey);
-=======
 			if (keyring) {
 				if (test_bit(KEY_FLAG_KEEP, &keyring->flags))
 					set_bit(KEY_FLAG_KEEP, &key->flags);
@@ -626,7 +465,6 @@ static int __key_instantiate_and_link(struct key *key,
 
 			if (prep->expiry != TIME64_MAX)
 				key_set_expiry(key, prep->expiry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -661,24 +499,6 @@ int key_instantiate_and_link(struct key *key,
 			     struct key *keyring,
 			     struct key *authkey)
 {
-<<<<<<< HEAD
-	unsigned long prealloc;
-	int ret;
-
-	if (keyring) {
-		ret = __key_link_begin(keyring, key->type, key->description,
-				       &prealloc);
-		if (ret < 0)
-			return ret;
-	}
-
-	ret = __key_instantiate_and_link(key, data, datalen, keyring, authkey,
-					 &prealloc);
-
-	if (keyring)
-		__key_link_end(keyring, key->type, prealloc);
-
-=======
 	struct key_preparsed_payload prep;
 	struct assoc_array_edit *edit = NULL;
 	int ret;
@@ -723,7 +543,6 @@ error_link_end:
 error:
 	if (key->type->preparse)
 		key->type->free_preparse(&prep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -756,12 +575,7 @@ int key_reject_and_link(struct key *key,
 			struct key *keyring,
 			struct key *authkey)
 {
-<<<<<<< HEAD
-	unsigned long prealloc;
-	struct timespec now;
-=======
 	struct assoc_array_edit *edit = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret, awaken, link_ret = 0;
 
 	key_check(key);
@@ -770,11 +584,6 @@ int key_reject_and_link(struct key *key,
 	awaken = 0;
 	ret = -EBUSY;
 
-<<<<<<< HEAD
-	if (keyring)
-		link_ret = __key_link_begin(keyring, key->type,
-					    key->description, &prealloc);
-=======
 	if (keyring) {
 		if (keyring->restrict_link)
 			return -EPERM;
@@ -786,29 +595,16 @@ int key_reject_and_link(struct key *key,
 				__key_link_end(keyring, &key->index_key, edit);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&key_construction_mutex);
 
 	/* can't instantiate twice */
-<<<<<<< HEAD
-	if (!test_bit(KEY_FLAG_INSTANTIATED, &key->flags)) {
-		/* mark the key as being negatively instantiated */
-		atomic_inc(&key->user->nikeys);
-		set_bit(KEY_FLAG_NEGATIVE, &key->flags);
-		set_bit(KEY_FLAG_INSTANTIATED, &key->flags);
-		key->type_data.reject_error = -error;
-		now = current_kernel_time();
-		key->expiry = now.tv_sec + timeout;
-		key_schedule_gc(key->expiry + key_gc_delay);
-=======
 	if (key->state == KEY_IS_UNINSTANTIATED) {
 		/* mark the key as being negatively instantiated */
 		atomic_inc(&key->user->nikeys);
 		mark_key_instantiated(key, -error);
 		notify_key(key, NOTIFY_KEY_INSTANTIATED, -error);
 		key_set_expiry(key, ktime_get_real_seconds() + timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (test_and_clear_bit(KEY_FLAG_USER_CONSTRUCT, &key->flags))
 			awaken = 1;
@@ -817,29 +613,17 @@ int key_reject_and_link(struct key *key,
 
 		/* and link it into the destination keyring */
 		if (keyring && link_ret == 0)
-<<<<<<< HEAD
-			__key_link(keyring, key, &prealloc);
-
-		/* disable the authorisation key */
-		if (authkey)
-			key_revoke(authkey);
-=======
 			__key_link(keyring, key, &edit);
 
 		/* disable the authorisation key */
 		if (authkey)
 			key_invalidate(authkey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&key_construction_mutex);
 
 	if (keyring && link_ret == 0)
-<<<<<<< HEAD
-		__key_link_end(keyring, key->type, prealloc);
-=======
 		__key_link_end(keyring, &key->index_key, edit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* wake up anyone waiting for a key to be constructed */
 	if (awaken)
@@ -862,13 +646,8 @@ void key_put(struct key *key)
 	if (key) {
 		key_check(key);
 
-<<<<<<< HEAD
-		if (atomic_dec_and_test(&key->usage))
-			queue_work(system_nrt_wq, &key_gc_work);
-=======
 		if (refcount_dec_and_test(&key->usage))
 			schedule_work(&key_gc_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL(key_put);
@@ -901,31 +680,17 @@ not_found:
 	goto error;
 
 found:
-<<<<<<< HEAD
-	/* pretend it doesn't exist if it is awaiting deletion */
-	if (atomic_read(&key->usage) == 0)
-		goto not_found;
-
-	/* this races with key_put(), but that doesn't matter since key_put()
-	 * doesn't actually change the key
-	 */
-	atomic_inc(&key->usage);
-=======
 	/* A key is allowed to be looked up only if someone still owns a
 	 * reference to it - otherwise it's awaiting the gc.
 	 */
 	if (!refcount_inc_not_zero(&key->usage))
 		goto not_found;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error:
 	spin_unlock(&key_serial_lock);
 	return key;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(key_lookup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Find and lock the specified key type against removal.
@@ -955,29 +720,14 @@ found_kernel_type:
 
 void key_set_timeout(struct key *key, unsigned timeout)
 {
-<<<<<<< HEAD
-	struct timespec now;
-	time_t expiry = 0;
-=======
 	time64_t expiry = TIME64_MAX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* make the changes with the locks held to prevent races */
 	down_write(&key->sem);
 
-<<<<<<< HEAD
-	if (timeout > 0) {
-		now = current_kernel_time();
-		expiry = now.tv_sec + timeout;
-	}
-
-	key->expiry = expiry;
-	key_schedule_gc(key->expiry + key_gc_delay);
-=======
 	if (timeout > 0)
 		expiry = ktime_get_real_seconds() + timeout;
 	key_set_expiry(key, expiry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	up_write(&key->sem);
 }
@@ -998,21 +748,13 @@ void key_type_put(struct key_type *ktype)
  * if we get an error.
  */
 static inline key_ref_t __key_update(key_ref_t key_ref,
-<<<<<<< HEAD
-				     const void *payload, size_t plen)
-=======
 				     struct key_preparsed_payload *prep)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct key *key = key_ref_to_ptr(key_ref);
 	int ret;
 
 	/* need write permission on the key to update it */
-<<<<<<< HEAD
-	ret = key_permission(key_ref, KEY_WRITE);
-=======
 	ret = key_permission(key_ref, KEY_NEED_WRITE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto error;
 
@@ -1022,19 +764,12 @@ static inline key_ref_t __key_update(key_ref_t key_ref,
 
 	down_write(&key->sem);
 
-<<<<<<< HEAD
-	ret = key->type->update(key, payload, plen);
-	if (ret == 0)
-		/* updating a negative key instantiates it */
-		clear_bit(KEY_FLAG_NEGATIVE, &key->flags);
-=======
 	ret = key->type->update(key, prep);
 	if (ret == 0) {
 		/* Updating a negative key positively instantiates it */
 		mark_key_instantiated(key, 0);
 		notify_key(key, NOTIFY_KEY_UPDATED, 0);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	up_write(&key->sem);
 
@@ -1049,8 +784,6 @@ error:
 	goto out;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Create or potentially update a key. The combined logic behind
  * key_create_or_update() and key_create()
@@ -1237,7 +970,6 @@ error:
 	goto error_free_prep;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * key_create_or_update - Update or create and instantiate a key.
  * @keyring_ref: A pointer to the destination keyring with possession flag.
@@ -1271,114 +1003,12 @@ key_ref_t key_create_or_update(key_ref_t keyring_ref,
 			       key_perm_t perm,
 			       unsigned long flags)
 {
-<<<<<<< HEAD
-	unsigned long prealloc;
-	const struct cred *cred = current_cred();
-	struct key_type *ktype;
-	struct key *keyring, *key = NULL;
-	key_ref_t key_ref;
-	int ret;
-
-	/* look up the key type to see if it's one of the registered kernel
-	 * types */
-	ktype = key_type_lookup(type);
-	if (IS_ERR(ktype)) {
-		key_ref = ERR_PTR(-ENODEV);
-		goto error;
-	}
-
-	key_ref = ERR_PTR(-EINVAL);
-	if (!ktype->match || !ktype->instantiate)
-		goto error_2;
-
-	keyring = key_ref_to_ptr(keyring_ref);
-
-	key_check(keyring);
-
-	key_ref = ERR_PTR(-ENOTDIR);
-	if (keyring->type != &key_type_keyring)
-		goto error_2;
-
-	ret = __key_link_begin(keyring, ktype, description, &prealloc);
-	if (ret < 0)
-		goto error_2;
-
-	/* if we're going to allocate a new key, we're going to have
-	 * to modify the keyring */
-	ret = key_permission(keyring_ref, KEY_WRITE);
-	if (ret < 0) {
-		key_ref = ERR_PTR(ret);
-		goto error_3;
-	}
-
-	/* if it's possible to update this type of key, search for an existing
-	 * key of the same type and description in the destination keyring and
-	 * update that instead if possible
-	 */
-	if (ktype->update) {
-		key_ref = __keyring_search_one(keyring_ref, ktype, description,
-					       0);
-		if (!IS_ERR(key_ref))
-			goto found_matching_key;
-	}
-
-	/* if the client doesn't provide, decide on the permissions we want */
-	if (perm == KEY_PERM_UNDEF) {
-		perm = KEY_POS_VIEW | KEY_POS_SEARCH | KEY_POS_LINK | KEY_POS_SETATTR;
-		perm |= KEY_USR_VIEW | KEY_USR_SEARCH | KEY_USR_LINK | KEY_USR_SETATTR;
-
-		if (ktype->read)
-			perm |= KEY_POS_READ | KEY_USR_READ;
-
-		if (ktype == &key_type_keyring || ktype->update)
-			perm |= KEY_USR_WRITE;
-	}
-
-	/* allocate a new key */
-	key = key_alloc(ktype, description, cred->fsuid, cred->fsgid, cred,
-			perm, flags);
-	if (IS_ERR(key)) {
-		key_ref = ERR_CAST(key);
-		goto error_3;
-	}
-
-	/* instantiate it and link it into the target keyring */
-	ret = __key_instantiate_and_link(key, payload, plen, keyring, NULL,
-					 &prealloc);
-	if (ret < 0) {
-		key_put(key);
-		key_ref = ERR_PTR(ret);
-		goto error_3;
-	}
-
-	key_ref = make_key_ref(key, is_key_possessed(keyring_ref));
-
- error_3:
-	__key_link_end(keyring, ktype, prealloc);
- error_2:
-	key_type_put(ktype);
- error:
-	return key_ref;
-
- found_matching_key:
-	/* we found a matching key, so we're going to try to update it
-	 * - we can drop the locks first as we have the key pinned
-	 */
-	__key_link_end(keyring, ktype, prealloc);
-	key_type_put(ktype);
-
-	key_ref = __key_update(key_ref, payload, plen);
-	goto error;
-=======
 	return __key_create_or_update(keyring_ref, type, description, payload,
 				      plen, perm, flags, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(key_create_or_update);
 
 /**
-<<<<<<< HEAD
-=======
  * key_create - Create and instantiate a key.
  * @keyring_ref: A pointer to the destination keyring with possession flag.
  * @type: The type of key.
@@ -1416,7 +1046,6 @@ key_ref_t key_create(key_ref_t keyring_ref,
 EXPORT_SYMBOL(key_create);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * key_update - Update a key's contents.
  * @key_ref: The pointer (plus possession flag) to the key.
  * @payload: The data to be used to update the key.
@@ -1431,36 +1060,13 @@ EXPORT_SYMBOL(key_create);
  */
 int key_update(key_ref_t key_ref, const void *payload, size_t plen)
 {
-<<<<<<< HEAD
-=======
 	struct key_preparsed_payload prep;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct key *key = key_ref_to_ptr(key_ref);
 	int ret;
 
 	key_check(key);
 
 	/* the key must be writable */
-<<<<<<< HEAD
-	ret = key_permission(key_ref, KEY_WRITE);
-	if (ret < 0)
-		goto error;
-
-	/* attempt to update it if supported */
-	ret = -EOPNOTSUPP;
-	if (key->type->update) {
-		down_write(&key->sem);
-
-		ret = key->type->update(key, payload, plen);
-		if (ret == 0)
-			/* updating a negative key instantiates it */
-			clear_bit(KEY_FLAG_NEGATIVE, &key->flags);
-
-		up_write(&key->sem);
-	}
-
- error:
-=======
 	ret = key_permission(key_ref, KEY_NEED_WRITE);
 	if (ret < 0)
 		return ret;
@@ -1494,7 +1100,6 @@ int key_update(key_ref_t key_ref, const void *payload, size_t plen)
 error:
 	if (key->type->preparse)
 		key->type->free_preparse(&prep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(key_update);
@@ -1510,12 +1115,7 @@ EXPORT_SYMBOL(key_update);
  */
 void key_revoke(struct key *key)
 {
-<<<<<<< HEAD
-	struct timespec now;
-	time_t time;
-=======
 	time64_t time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	key_check(key);
 
@@ -1525,18 +1125,6 @@ void key_revoke(struct key *key)
 	 *   instantiated
 	 */
 	down_write_nested(&key->sem, 1);
-<<<<<<< HEAD
-	if (!test_and_set_bit(KEY_FLAG_REVOKED, &key->flags) &&
-	    key->type->revoke)
-		key->type->revoke(key);
-
-	/* set the death time to no more than the expiry time */
-	now = current_kernel_time();
-	time = now.tv_sec;
-	if (key->revoked_at == 0 || key->revoked_at > time) {
-		key->revoked_at = time;
-		key_schedule_gc(key->revoked_at + key_gc_delay);
-=======
 	if (!test_and_set_bit(KEY_FLAG_REVOKED, &key->flags)) {
 		notify_key(key, NOTIFY_KEY_REVOKED, 0);
 		if (key->type->revoke)
@@ -1548,7 +1136,6 @@ void key_revoke(struct key *key)
 			key->revoked_at = time;
 			key_schedule_gc(key->revoked_at + key_gc_delay);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	up_write(&key->sem);
@@ -1570,23 +1157,16 @@ void key_invalidate(struct key *key)
 
 	if (!test_bit(KEY_FLAG_INVALIDATED, &key->flags)) {
 		down_write_nested(&key->sem, 1);
-<<<<<<< HEAD
-		if (!test_and_set_bit(KEY_FLAG_INVALIDATED, &key->flags))
-			key_schedule_gc_links();
-=======
 		if (!test_and_set_bit(KEY_FLAG_INVALIDATED, &key->flags)) {
 			notify_key(key, NOTIFY_KEY_INVALIDATED, 0);
 			key_schedule_gc_links();
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		up_write(&key->sem);
 	}
 }
 EXPORT_SYMBOL(key_invalidate);
 
 /**
-<<<<<<< HEAD
-=======
  * generic_key_instantiate - Simple instantiation of a key from preparsed data
  * @key: The key to be instantiated
  * @prep: The preparsed data to load.
@@ -1619,7 +1199,6 @@ int generic_key_instantiate(struct key *key, struct key_preparsed_payload *prep)
 EXPORT_SYMBOL(generic_key_instantiate);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * register_key_type - Register a type of key.
  * @ktype: The new key type.
  *
@@ -1645,11 +1224,8 @@ int register_key_type(struct key_type *ktype)
 
 	/* store the type */
 	list_add(&ktype->link, &key_types_list);
-<<<<<<< HEAD
-=======
 
 	pr_notice("Key type %s registered\n", ktype->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = 0;
 
 out:
@@ -1672,10 +1248,7 @@ void unregister_key_type(struct key_type *ktype)
 	list_del_init(&ktype->link);
 	downgrade_write(&key_types_sem);
 	key_gc_keytype(ktype);
-<<<<<<< HEAD
-=======
 	pr_notice("Key type %s unregistered\n", ktype->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_read(&key_types_sem);
 }
 EXPORT_SYMBOL(unregister_key_type);

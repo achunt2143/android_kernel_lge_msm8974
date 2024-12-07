@@ -3,10 +3,7 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
-<<<<<<< HEAD
-=======
  * (C) Copyright 2020 Hewlett Packard Enterprise Development LP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2004-2009 Silicon Graphics, Inc.  All Rights Reserved.
  */
 
@@ -63,28 +60,16 @@
 
 /* define two XPC debug device structures to be used with dev_dbg() et al */
 
-<<<<<<< HEAD
-struct device_driver xpc_dbg_name = {
-	.name = "xpc"
-};
-
-struct device xpc_part_dbg_subname = {
-=======
 static struct device_driver xpc_dbg_name = {
 	.name = "xpc"
 };
 
 static struct device xpc_part_dbg_subname = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_name = "",	/* set to "part" at xpc_init() time */
 	.driver = &xpc_dbg_name
 };
 
-<<<<<<< HEAD
-struct device xpc_chan_dbg_subname = {
-=======
 static struct device xpc_chan_dbg_subname = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_name = "",	/* set to "chan" at xpc_init() time */
 	.driver = &xpc_dbg_name
 };
@@ -108,11 +93,7 @@ int xpc_disengage_timelimit = XPC_DISENGAGE_DEFAULT_TIMELIMIT;
 static int xpc_disengage_min_timelimit;	/* = 0 */
 static int xpc_disengage_max_timelimit = 120;
 
-<<<<<<< HEAD
-static ctl_table xpc_sys_xpc_hb_dir[] = {
-=======
 static struct ctl_table xpc_sys_xpc_hb[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	 .procname = "hb_interval",
 	 .data = &xpc_hb_interval,
@@ -129,18 +110,8 @@ static struct ctl_table xpc_sys_xpc_hb[] = {
 	 .proc_handler = proc_dointvec_minmax,
 	 .extra1 = &xpc_hb_check_min_interval,
 	 .extra2 = &xpc_hb_check_max_interval},
-<<<<<<< HEAD
-	{}
-};
-static ctl_table xpc_sys_xpc_dir[] = {
-	{
-	 .procname = "hb",
-	 .mode = 0555,
-	 .child = xpc_sys_xpc_hb_dir},
-=======
 };
 static struct ctl_table xpc_sys_xpc[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	 .procname = "disengage_timelimit",
 	 .data = &xpc_disengage_timelimit,
@@ -149,23 +120,10 @@ static struct ctl_table xpc_sys_xpc[] = {
 	 .proc_handler = proc_dointvec_minmax,
 	 .extra1 = &xpc_disengage_min_timelimit,
 	 .extra2 = &xpc_disengage_max_timelimit},
-<<<<<<< HEAD
-	{}
-};
-static ctl_table xpc_sys_dir[] = {
-	{
-	 .procname = "xpc",
-	 .mode = 0555,
-	 .child = xpc_sys_xpc_dir},
-	{}
-};
-static struct ctl_table_header *xpc_sysctl;
-=======
 };
 
 static struct ctl_table_header *xpc_sysctl;
 static struct ctl_table_header *xpc_sysctl_hb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* non-zero if any remote partition disengage was timed out */
 int xpc_disengage_timedout;
@@ -204,15 +162,6 @@ struct xpc_arch_operations xpc_arch_ops;
  * Timer function to enforce the timelimit on the partition disengage.
  */
 static void
-<<<<<<< HEAD
-xpc_timeout_partition_disengage(unsigned long data)
-{
-	struct xpc_partition *part = (struct xpc_partition *)data;
-
-	DBUG_ON(time_is_after_jiffies(part->disengage_timeout));
-
-	(void)xpc_partition_disengaged(part);
-=======
 xpc_timeout_partition_disengage(struct timer_list *t)
 {
 	struct xpc_partition *part = from_timer(part, t, disengage_timer);
@@ -220,7 +169,6 @@ xpc_timeout_partition_disengage(struct timer_list *t)
 	DBUG_ON(time_is_after_jiffies(part->disengage_timeout));
 
 	xpc_partition_disengaged_from_timer(part);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DBUG_ON(part->disengage_timeout != 0);
 	DBUG_ON(xpc_arch_ops.partition_engaged(XPC_PARTID(part)));
@@ -232,11 +180,7 @@ xpc_timeout_partition_disengage(struct timer_list *t)
  * specify when the next timeout should occur.
  */
 static void
-<<<<<<< HEAD
-xpc_hb_beater(unsigned long dummy)
-=======
 xpc_hb_beater(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	xpc_arch_ops.increment_heartbeat();
 
@@ -251,14 +195,8 @@ static void
 xpc_start_hb_beater(void)
 {
 	xpc_arch_ops.heartbeat_init();
-<<<<<<< HEAD
-	init_timer(&xpc_hb_timer);
-	xpc_hb_timer.function = xpc_hb_beater;
-	xpc_hb_beater(0);
-=======
 	timer_setup(&xpc_hb_timer, xpc_hb_beater, 0);
 	xpc_hb_beater(NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -331,16 +269,6 @@ xpc_hb_checker(void *ignore)
 
 			dev_dbg(xpc_part, "checking remote heartbeats\n");
 			xpc_check_remote_hb();
-<<<<<<< HEAD
-
-			/*
-			 * On sn2 we need to periodically recheck to ensure no
-			 * IRQ/amo pairs have been missed.
-			 */
-			if (is_shub())
-				force_IRQ = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* check for outstanding IRQs */
@@ -471,12 +399,8 @@ xpc_setup_ch_structures(struct xpc_partition *part)
 	 * memory.
 	 */
 	DBUG_ON(part->channels != NULL);
-<<<<<<< HEAD
-	part->channels = kzalloc(sizeof(struct xpc_channel) * XPC_MAX_NCHANNELS,
-=======
 	part->channels = kcalloc(XPC_MAX_NCHANNELS,
 				 sizeof(struct xpc_channel),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 GFP_KERNEL);
 	if (part->channels == NULL) {
 		dev_err(xpc_chan, "can't get memory for channels\n");
@@ -965,14 +889,9 @@ xpc_setup_partitions(void)
 	short partid;
 	struct xpc_partition *part;
 
-<<<<<<< HEAD
-	xpc_partitions = kzalloc(sizeof(struct xpc_partition) *
-				 xp_max_npartitions, GFP_KERNEL);
-=======
 	xpc_partitions = kcalloc(xp_max_npartitions,
 				 sizeof(struct xpc_partition),
 				 GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (xpc_partitions == NULL) {
 		dev_err(xpc_part, "can't get memory for partition structure\n");
 		return -ENOMEM;
@@ -996,15 +915,8 @@ xpc_setup_partitions(void)
 		part->act_state = XPC_P_AS_INACTIVE;
 		XPC_SET_REASON(part, 0, 0);
 
-<<<<<<< HEAD
-		init_timer(&part->disengage_timer);
-		part->disengage_timer.function =
-		    xpc_timeout_partition_disengage;
-		part->disengage_timer.data = (unsigned long)part;
-=======
 		timer_setup(&part->disengage_timer,
 			    xpc_timeout_partition_disengage, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		part->setup_state = XPC_P_SS_UNSET;
 		init_waitqueue_head(&part->teardown_wq);
@@ -1118,21 +1030,12 @@ xpc_do_exit(enum xp_retval reason)
 
 	if (xpc_sysctl)
 		unregister_sysctl_table(xpc_sysctl);
-<<<<<<< HEAD
-
-	xpc_teardown_partitions();
-
-	if (is_shub())
-		xpc_exit_sn2();
-	else if (is_uv())
-=======
 	if (xpc_sysctl_hb)
 		unregister_sysctl_table(xpc_sysctl_hb);
 
 	xpc_teardown_partitions();
 
 	if (is_uv_system())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xpc_exit_uv();
 }
 
@@ -1250,39 +1153,6 @@ xpc_die_deactivate(void)
 static int
 xpc_system_die(struct notifier_block *nb, unsigned long event, void *_die_args)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_IA64		/* !!! temporary kludge */
-	switch (event) {
-	case DIE_MACHINE_RESTART:
-	case DIE_MACHINE_HALT:
-		xpc_die_deactivate();
-		break;
-
-	case DIE_KDEBUG_ENTER:
-		/* Should lack of heartbeat be ignored by other partitions? */
-		if (!xpc_kdebug_ignore)
-			break;
-
-		/* fall through */
-	case DIE_MCA_MONARCH_ENTER:
-	case DIE_INIT_MONARCH_ENTER:
-		xpc_arch_ops.offline_heartbeat();
-		break;
-
-	case DIE_KDEBUG_LEAVE:
-		/* Is lack of heartbeat being ignored by other partitions? */
-		if (!xpc_kdebug_ignore)
-			break;
-
-		/* fall through */
-	case DIE_MCA_MONARCH_LEAVE:
-	case DIE_INIT_MONARCH_LEAVE:
-		xpc_arch_ops.online_heartbeat();
-		break;
-	}
-#else
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct die_args *die_args = _die_args;
 
 	switch (event) {
@@ -1292,11 +1162,7 @@ xpc_system_die(struct notifier_block *nb, unsigned long event, void *_die_args)
 
 		if (((die_args->trapnr == X86_TRAP_MF) ||
 		     (die_args->trapnr == X86_TRAP_XF)) &&
-<<<<<<< HEAD
-		    !user_mode_vm(die_args->regs))
-=======
 		    !user_mode(die_args->regs))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			xpc_die_deactivate();
 
 		break;
@@ -1308,19 +1174,11 @@ xpc_system_die(struct notifier_block *nb, unsigned long event, void *_die_args)
 	default:
 		xpc_die_deactivate();
 	}
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NOTIFY_DONE;
 }
 
-<<<<<<< HEAD
-int __init
-=======
 static int __init
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 xpc_init(void)
 {
 	int ret;
@@ -1329,25 +1187,7 @@ xpc_init(void)
 	dev_set_name(xpc_part, "part");
 	dev_set_name(xpc_chan, "chan");
 
-<<<<<<< HEAD
-	if (is_shub()) {
-		/*
-		 * The ia64-sn2 architecture supports at most 64 partitions.
-		 * And the inability to unregister remote amos restricts us
-		 * further to only support exactly 64 partitions on this
-		 * architecture, no less.
-		 */
-		if (xp_max_npartitions != 64) {
-			dev_err(xpc_part, "max #of partitions not set to 64\n");
-			ret = -EINVAL;
-		} else {
-			ret = xpc_init_sn2();
-		}
-
-	} else if (is_uv()) {
-=======
 	if (is_uv_system()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = xpc_init_uv();
 
 	} else {
@@ -1363,12 +1203,8 @@ xpc_init(void)
 		goto out_1;
 	}
 
-<<<<<<< HEAD
-	xpc_sysctl = register_sysctl_table(xpc_sys_dir);
-=======
 	xpc_sysctl = register_sysctl("xpc", xpc_sys_xpc);
 	xpc_sysctl_hb = register_sysctl("xpc/hb", xpc_sys_xpc_hb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Fill the partition reserved page with the information needed by
@@ -1433,34 +1269,21 @@ out_3:
 	(void)unregister_die_notifier(&xpc_die_notifier);
 	(void)unregister_reboot_notifier(&xpc_reboot_notifier);
 out_2:
-<<<<<<< HEAD
-=======
 	if (xpc_sysctl_hb)
 		unregister_sysctl_table(xpc_sysctl_hb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (xpc_sysctl)
 		unregister_sysctl_table(xpc_sysctl);
 
 	xpc_teardown_partitions();
 out_1:
-<<<<<<< HEAD
-	if (is_shub())
-		xpc_exit_sn2();
-	else if (is_uv())
-=======
 	if (is_uv_system())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xpc_exit_uv();
 	return ret;
 }
 
 module_init(xpc_init);
 
-<<<<<<< HEAD
-void __exit
-=======
 static void __exit
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 xpc_exit(void)
 {
 	xpc_do_exit(xpUnloading);

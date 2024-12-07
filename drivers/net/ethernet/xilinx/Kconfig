@@ -1,26 +1,13 @@
-<<<<<<< HEAD
-#
-# Xilink device configuration
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 #
 # Xilinx device configuration
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 
 config NET_VENDOR_XILINX
 	bool "Xilinx devices"
 	default y
-<<<<<<< HEAD
-	depends on PPC || PPC32 || MICROBLAZE
-	---help---
-	  If you have a network (Ethernet) card belonging to this class, say Y
-	  and read the Ethernet-HOWTO, available from
-	  <http://www.tldp.org/docs.html#howto>.
-=======
 	help
 	  If you have a network (Ethernet) card belonging to this class, say Y.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -31,32 +18,13 @@ if NET_VENDOR_XILINX
 
 config XILINX_EMACLITE
 	tristate "Xilinx 10/100 Ethernet Lite support"
-<<<<<<< HEAD
-	depends on (PPC32 || MICROBLAZE)
-	select PHYLIB
-	---help---
-=======
 	depends on HAS_IOMEM
 	select PHYLIB
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver supports the 10/100 Ethernet Lite from Xilinx.
 
 config XILINX_AXI_EMAC
 	tristate "Xilinx 10/100/1000 AXI Ethernet support"
-<<<<<<< HEAD
-	depends on (PPC32 || MICROBLAZE)
-	select PHYLIB
-	---help---
-	  This driver supports the 10/100/1000 Ethernet from Xilinx for the
-	  AXI bus interface used in Xilinx Virtex FPGAs.
-
-config XILINX_LL_TEMAC
-	tristate "Xilinx LL TEMAC (LocalLink Tri-mode Ethernet MAC) driver"
-	depends on (PPC || MICROBLAZE)
-	select PHYLIB
-	---help---
-=======
 	depends on HAS_IOMEM
 	depends on XILINX_DMA
 	select PHYLINK
@@ -69,7 +37,6 @@ config XILINX_LL_TEMAC
 	depends on HAS_IOMEM
 	select PHYLIB
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver supports the Xilinx 10/100/1000 LocalLink TEMAC
 	  core used in Xilinx Spartan and Virtex FPGAs
 

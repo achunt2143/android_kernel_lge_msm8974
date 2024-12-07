@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-core-y += arch/x86/crypto/
-
-ifeq ($(CONFIG_X86_32),y)
-START := 0x8048000
-
-LDFLAGS			+= -m elf_i386
-=======
 # SPDX-License-Identifier: GPL-2.0
 core-y += arch/x86/crypto/
 
@@ -24,7 +16,6 @@ ifeq ($(CONFIG_X86_32),y)
 START := 0x8048000
 
 KBUILD_LDFLAGS		+= -m elf_i386
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ELF_ARCH		:= i386
 ELF_FORMAT 		:= elf32-i386
 CHECKFLAGS	+= -D__i386__
@@ -33,11 +24,6 @@ KBUILD_CFLAGS		+= $(call cc-option,-m32)
 KBUILD_AFLAGS		+= $(call cc-option,-m32)
 LINK-y			+= $(call cc-option,-m32)
 
-<<<<<<< HEAD
-export LDFLAGS
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 LDS_EXTRA		:= -Ui386
 export LDS_EXTRA
 
@@ -51,16 +37,6 @@ cflags-y += $(call cc-option,-mpreferred-stack-boundary=2)
 # an unresolved reference.
 cflags-y += -ffreestanding
 
-<<<<<<< HEAD
-# Disable unit-at-a-time mode on pre-gcc-4.0 compilers, it makes gcc use
-# a lot more stack due to the lack of sharing of stacklots.  Also, gcc
-# 4.3.0 needs -funit-at-a-time for extern inline functions.
-KBUILD_CFLAGS += $(shell if [ $(call cc-version) -lt 0400 ] ; then \
-			echo $(call cc-option,-fno-unit-at-a-time); \
-			else echo $(call cc-option,-funit-at-a-time); fi ;)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 KBUILD_CFLAGS += $(cflags-y)
 
 else
@@ -71,11 +47,7 @@ KBUILD_CFLAGS += -fno-builtin -m64
 
 CHECKFLAGS  += -m64 -D__x86_64__
 KBUILD_AFLAGS += -m64
-<<<<<<< HEAD
-LDFLAGS += -m elf_x86_64
-=======
 KBUILD_LDFLAGS += -m elf_x86_64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 KBUILD_CPPFLAGS += -m64
 
 ELF_ARCH := i386:x86-64
@@ -83,15 +55,7 @@ ELF_FORMAT := elf64-x86-64
 
 # Not on all 64-bit distros /lib is a symlink to /lib64. PLD is an example.
 
-<<<<<<< HEAD
-LINK-$(CONFIG_LD_SCRIPT_DYN) += -Wl,-rpath,/lib64
-LINK-y += -m64
-
-# Do unit-at-a-time unconditionally on x86_64, following the host
-KBUILD_CFLAGS += $(call cc-option,-funit-at-a-time)
-=======
 LINK-$(CONFIG_LD_SCRIPT_DYN_RPATH) += -Wl,-rpath,/lib64
 LINK-y += -m64
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif

@@ -1,57 +1,28 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Ioctl handler
  *	Linux ethernet bridge
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- */
-
-#include <linux/capability.h>
-=======
  */
 
 #include <linux/capability.h>
 #include <linux/compat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/if_bridge.h>
 #include <linux/netdevice.h>
 #include <linux/slab.h>
 #include <linux/times.h>
 #include <net/net_namespace.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include "br_private.h"
-
-/* called with RTNL */
-=======
 #include <linux/uaccess.h>
 #include "br_private.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int get_bridge_ifindices(struct net *net, int *indices, int num)
 {
 	struct net_device *dev;
 	int i = 0;
 
-<<<<<<< HEAD
-	for_each_netdev(net, dev) {
-		if (i >= num)
-			break;
-		if (dev->priv_flags & IFF_EBRIDGE)
-			indices[i++] = dev->ifindex;
-	}
-=======
 	rcu_read_lock();
 	for_each_netdev_rcu(net, dev) {
 		if (i >= num)
@@ -60,7 +31,6 @@ static int get_bridge_ifindices(struct net *net, int *indices, int num)
 			indices[i++] = dev->ifindex;
 	}
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return i;
 }
@@ -102,12 +72,8 @@ static int get_fdb_entries(struct net_bridge *br, void __user *userbuf,
 
 	num = br_fdb_fillbuf(br, buf, maxnum, offset);
 	if (num > 0) {
-<<<<<<< HEAD
-		if (copy_to_user(userbuf, buf, num*sizeof(struct __fdb_entry)))
-=======
 		if (copy_to_user(userbuf, buf,
 				 array_size(num, sizeof(struct __fdb_entry))))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			num = -EFAULT;
 	}
 	kfree(buf);
@@ -118,15 +84,6 @@ static int get_fdb_entries(struct net_bridge *br, void __user *userbuf,
 /* called with RTNL */
 static int add_del_if(struct net_bridge *br, int ifindex, int isadd)
 {
-<<<<<<< HEAD
-	struct net_device *dev;
-	int ret;
-
-	if (!capable(CAP_NET_ADMIN))
-		return -EPERM;
-
-	dev = __dev_get_by_index(dev_net(br->dev), ifindex);
-=======
 	struct net *net = dev_net(br->dev);
 	struct net_device *dev;
 	int ret;
@@ -135,36 +92,17 @@ static int add_del_if(struct net_bridge *br, int ifindex, int isadd)
 		return -EPERM;
 
 	dev = __dev_get_by_index(net, ifindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev == NULL)
 		return -EINVAL;
 
 	if (isadd)
-<<<<<<< HEAD
-		ret = br_add_if(br, dev);
-=======
 		ret = br_add_if(br, dev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		ret = br_del_if(br, dev);
 
 	return ret;
 }
 
-<<<<<<< HEAD
-/*
- * Legacy ioctl's through SIOCDEVPRIVATE
- * This interface is deprecated because it was too difficult to
- * to do the translation for 32/64bit ioctl compatibility.
- */
-static int old_dev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
-{
-	struct net_bridge *br = netdev_priv(dev);
-	unsigned long args[4];
-
-	if (copy_from_user(args, rq->ifr_data, sizeof(args)))
-		return -EFAULT;
-=======
 #define BR_UARGS_MAX 4
 static int br_dev_read_uargs(unsigned long *args, size_t nr_args,
 			     void __user **argp, void __user *data)
@@ -215,7 +153,6 @@ int br_dev_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 	ret = br_dev_read_uargs(args, ARRAY_SIZE(args), &argp, data);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (args[0]) {
 	case BRCTL_ADD_IF:
@@ -246,11 +183,7 @@ int br_dev_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 		b.hello_timer_value = br_timer_value(&br->hello_timer);
 		b.tcn_timer_value = br_timer_value(&br->tcn_timer);
 		b.topology_change_timer_value = br_timer_value(&br->topology_change_timer);
-<<<<<<< HEAD
-		b.gc_timer_value = br_timer_value(&br->gc_timer);
-=======
 		b.gc_timer_value = br_timer_value(&br->gc_work.timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcu_read_unlock();
 
 		if (copy_to_user((void __user *)args[1], &b, sizeof(b)))
@@ -276,42 +209,13 @@ int br_dev_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 			return -ENOMEM;
 
 		get_port_ifindices(br, indices, num);
-<<<<<<< HEAD
-		if (copy_to_user((void __user *)args[1], indices, num*sizeof(int)))
-=======
 		if (copy_to_user(argp, indices, array_size(num, sizeof(int))))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			num =  -EFAULT;
 		kfree(indices);
 		return num;
 	}
 
 	case BRCTL_SET_BRIDGE_FORWARD_DELAY:
-<<<<<<< HEAD
-		if (!capable(CAP_NET_ADMIN))
-			return -EPERM;
-
-		return br_set_forward_delay(br, args[1]);
-
-	case BRCTL_SET_BRIDGE_HELLO_TIME:
-		if (!capable(CAP_NET_ADMIN))
-			return -EPERM;
-
-		return br_set_hello_time(br, args[1]);
-
-	case BRCTL_SET_BRIDGE_MAX_AGE:
-		if (!capable(CAP_NET_ADMIN))
-			return -EPERM;
-
-		return br_set_max_age(br, args[1]);
-
-	case BRCTL_SET_AGEING_TIME:
-		if (!capable(CAP_NET_ADMIN))
-			return -EPERM;
-
-		br->ageing_time = clock_t_to_jiffies(args[1]);
-		return 0;
-=======
 		if (!ns_capable(dev_net(dev)->user_ns, CAP_NET_ADMIN))
 			return -EPERM;
 
@@ -338,7 +242,6 @@ int br_dev_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 
 		ret = br_set_ageing_time(br, args[1]);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case BRCTL_GET_PORT_INFO:
 	{
@@ -367,38 +270,13 @@ int br_dev_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 
 		rcu_read_unlock();
 
-<<<<<<< HEAD
-		if (copy_to_user((void __user *)args[1], &p, sizeof(p)))
-=======
 		if (copy_to_user(argp, &p, sizeof(p)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 
 		return 0;
 	}
 
 	case BRCTL_SET_BRIDGE_STP_STATE:
-<<<<<<< HEAD
-		if (!capable(CAP_NET_ADMIN))
-			return -EPERM;
-
-		br_stp_set_enabled(br, args[1]);
-		return 0;
-
-	case BRCTL_SET_BRIDGE_PRIORITY:
-		if (!capable(CAP_NET_ADMIN))
-			return -EPERM;
-
-		br_stp_set_bridge_priority(br, args[1]);
-		return 0;
-
-	case BRCTL_SET_PORT_PRIORITY:
-	{
-		struct net_bridge_port *p;
-		int ret;
-
-		if (!capable(CAP_NET_ADMIN))
-=======
 		if (!ns_capable(dev_net(dev)->user_ns, CAP_NET_ADMIN))
 			return -EPERM;
 
@@ -416,7 +294,6 @@ int br_dev_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 	case BRCTL_SET_PORT_PRIORITY:
 	{
 		if (!ns_capable(dev_net(dev)->user_ns, CAP_NET_ADMIN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EPERM;
 
 		spin_lock_bh(&br->lock);
@@ -425,23 +302,12 @@ int br_dev_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 		else
 			ret = br_stp_set_port_priority(p, args[2]);
 		spin_unlock_bh(&br->lock);
-<<<<<<< HEAD
-		return ret;
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	case BRCTL_SET_PATH_COST:
 	{
-<<<<<<< HEAD
-		struct net_bridge_port *p;
-		int ret;
-
-		if (!capable(CAP_NET_ADMIN))
-=======
 		if (!ns_capable(dev_net(dev)->user_ns, CAP_NET_ADMIN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EPERM;
 
 		spin_lock_bh(&br->lock);
@@ -450,26 +316,6 @@ int br_dev_siocdevprivate(struct net_device *dev, struct ifreq *rq,
 		else
 			ret = br_stp_set_path_cost(p, args[2]);
 		spin_unlock_bh(&br->lock);
-<<<<<<< HEAD
-
-		return ret;
-	}
-
-	case BRCTL_GET_FDB_ENTRIES:
-		return get_fdb_entries(br, (void __user *)args[1],
-				       args[2], args[3]);
-	}
-
-	return -EOPNOTSUPP;
-}
-
-static int old_deviceless(struct net *net, void __user *uarg)
-{
-	unsigned long args[3];
-
-	if (copy_from_user(args, uarg, sizeof(args)))
-		return -EFAULT;
-=======
 		break;
 	}
 
@@ -499,7 +345,6 @@ static int old_deviceless(struct net *net, void __user *data)
 	ret = br_dev_read_uargs(args, ARRAY_SIZE(args), &argp, data);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (args[0]) {
 	case BRCTL_GET_VERSION:
@@ -518,12 +363,8 @@ static int old_deviceless(struct net *net, void __user *data)
 
 		args[2] = get_bridge_ifindices(net, indices, args[2]);
 
-<<<<<<< HEAD
-		ret = copy_to_user((void __user *)args[1], indices, args[2]*sizeof(int))
-=======
 		ret = copy_to_user(argp, indices,
 				   array_size(args[2], sizeof(int)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			? -EFAULT : args[2];
 
 		kfree(indices);
@@ -535,17 +376,10 @@ static int old_deviceless(struct net *net, void __user *data)
 	{
 		char buf[IFNAMSIZ];
 
-<<<<<<< HEAD
-		if (!capable(CAP_NET_ADMIN))
-			return -EPERM;
-
-		if (copy_from_user(buf, (void __user *)args[1], IFNAMSIZ))
-=======
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			return -EPERM;
 
 		if (copy_from_user(buf, argp, IFNAMSIZ))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 
 		buf[IFNAMSIZ-1] = 0;
@@ -560,15 +394,6 @@ static int old_deviceless(struct net *net, void __user *data)
 	return -EOPNOTSUPP;
 }
 
-<<<<<<< HEAD
-int br_ioctl_deviceless_stub(struct net *net, unsigned int cmd, void __user *uarg)
-{
-	switch (cmd) {
-	case SIOCGIFBR:
-	case SIOCSIFBR:
-		return old_deviceless(net, uarg);
-
-=======
 int br_ioctl_stub(struct net *net, struct net_bridge *br, unsigned int cmd,
 		  struct ifreq *ifr, void __user *uarg)
 {
@@ -581,46 +406,11 @@ int br_ioctl_stub(struct net *net, struct net_bridge *br, unsigned int cmd,
 	case SIOCSIFBR:
 		ret = old_deviceless(net, uarg);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SIOCBRADDBR:
 	case SIOCBRDELBR:
 	{
 		char buf[IFNAMSIZ];
 
-<<<<<<< HEAD
-		if (!capable(CAP_NET_ADMIN))
-			return -EPERM;
-
-		if (copy_from_user(buf, uarg, IFNAMSIZ))
-			return -EFAULT;
-
-		buf[IFNAMSIZ-1] = 0;
-		if (cmd == SIOCBRADDBR)
-			return br_add_bridge(net, buf);
-
-		return br_del_bridge(net, buf);
-	}
-	}
-	return -EOPNOTSUPP;
-}
-
-int br_dev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
-{
-	struct net_bridge *br = netdev_priv(dev);
-
-	switch(cmd) {
-	case SIOCDEVPRIVATE:
-		return old_dev_ioctl(dev, rq, cmd);
-
-	case SIOCBRADDIF:
-	case SIOCBRDELIF:
-		return add_del_if(br, rq->ifr_ifindex, cmd == SIOCBRADDIF);
-
-	}
-
-	br_debug(br, "Bridge does not support ioctl 0x%x\n", cmd);
-	return -EOPNOTSUPP;
-=======
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN)) {
 			ret = -EPERM;
 			break;
@@ -647,5 +437,4 @@ int br_dev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	rtnl_unlock();
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

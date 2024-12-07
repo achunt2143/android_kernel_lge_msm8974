@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-/**************************************************************************
- *
- * Copyright (c) 2007-2010 VMware, Inc., Palo Alto, CA., USA
- * All Rights Reserved.
-=======
 // SPDX-License-Identifier: GPL-2.0 OR MIT
 /**************************************************************************
  *
  * Copyright 2007-2010 VMware, Inc., Palo Alto, CA., USA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -36,42 +29,18 @@
  */
 
 #include "vmwgfx_drv.h"
-<<<<<<< HEAD
-#include "ttm/ttm_module.h"
-#include "ttm/ttm_bo_driver.h"
-#include "ttm/ttm_placement.h"
-=======
 #include <drm/ttm/ttm_placement.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/idr.h>
 #include <linux/spinlock.h>
 #include <linux/kernel.h>
 
 struct vmwgfx_gmrid_man {
-<<<<<<< HEAD
-=======
 	struct ttm_resource_manager manager;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t lock;
 	struct ida gmr_ida;
 	uint32_t max_gmr_ids;
 	uint32_t max_gmr_pages;
 	uint32_t used_gmr_pages;
-<<<<<<< HEAD
-};
-
-static int vmw_gmrid_man_get_node(struct ttm_mem_type_manager *man,
-				  struct ttm_buffer_object *bo,
-				  struct ttm_placement *placement,
-				  struct ttm_mem_reg *mem)
-{
-	struct vmwgfx_gmrid_man *gman =
-		(struct vmwgfx_gmrid_man *)man->priv;
-	int ret = 0;
-	int id;
-
-	mem->mm_node = NULL;
-=======
 	uint8_t type;
 };
 
@@ -100,40 +69,10 @@ static int vmw_gmrid_man_get_node(struct ttm_resource_manager *man,
 		kfree(*res);
 		return id;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&gman->lock);
 
 	if (gman->max_gmr_pages > 0) {
-<<<<<<< HEAD
-		gman->used_gmr_pages += bo->num_pages;
-		if (unlikely(gman->used_gmr_pages > gman->max_gmr_pages))
-			goto out_err_locked;
-	}
-
-	do {
-		spin_unlock(&gman->lock);
-		if (unlikely(ida_pre_get(&gman->gmr_ida, GFP_KERNEL) == 0)) {
-			ret = -ENOMEM;
-			goto out_err;
-		}
-		spin_lock(&gman->lock);
-
-		ret = ida_get_new(&gman->gmr_ida, &id);
-		if (unlikely(ret == 0 && id >= gman->max_gmr_ids)) {
-			ida_remove(&gman->gmr_ida, id);
-			ret = 0;
-			goto out_err_locked;
-		}
-	} while (ret == -EAGAIN);
-
-	if (likely(ret == 0)) {
-		mem->mm_node = gman;
-		mem->start = id;
-		mem->num_pages = bo->num_pages;
-	} else
-		goto out_err_locked;
-=======
 		gman->used_gmr_pages += PFN_UP((*res)->size);
 		/*
 		 * Because the graphics memory is a soft limit we can try to
@@ -172,81 +111,10 @@ static int vmw_gmrid_man_get_node(struct ttm_resource_manager *man,
 	}
 
 	(*res)->start = id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock(&gman->lock);
 	return 0;
 
-<<<<<<< HEAD
-out_err:
-	spin_lock(&gman->lock);
-out_err_locked:
-	gman->used_gmr_pages -= bo->num_pages;
-	spin_unlock(&gman->lock);
-	return ret;
-}
-
-static void vmw_gmrid_man_put_node(struct ttm_mem_type_manager *man,
-				   struct ttm_mem_reg *mem)
-{
-	struct vmwgfx_gmrid_man *gman =
-		(struct vmwgfx_gmrid_man *)man->priv;
-
-	if (mem->mm_node) {
-		spin_lock(&gman->lock);
-		ida_remove(&gman->gmr_ida, mem->start);
-		gman->used_gmr_pages -= mem->num_pages;
-		spin_unlock(&gman->lock);
-		mem->mm_node = NULL;
-	}
-}
-
-static int vmw_gmrid_man_init(struct ttm_mem_type_manager *man,
-			      unsigned long p_size)
-{
-	struct vmw_private *dev_priv =
-		container_of(man->bdev, struct vmw_private, bdev);
-	struct vmwgfx_gmrid_man *gman =
-		kzalloc(sizeof(*gman), GFP_KERNEL);
-
-	if (unlikely(gman == NULL))
-		return -ENOMEM;
-
-	spin_lock_init(&gman->lock);
-	gman->max_gmr_pages = dev_priv->max_gmr_pages;
-	gman->used_gmr_pages = 0;
-	ida_init(&gman->gmr_ida);
-	gman->max_gmr_ids = p_size;
-	man->priv = (void *) gman;
-	return 0;
-}
-
-static int vmw_gmrid_man_takedown(struct ttm_mem_type_manager *man)
-{
-	struct vmwgfx_gmrid_man *gman =
-		(struct vmwgfx_gmrid_man *)man->priv;
-
-	if (gman) {
-		ida_destroy(&gman->gmr_ida);
-		kfree(gman);
-	}
-	return 0;
-}
-
-static void vmw_gmrid_man_debug(struct ttm_mem_type_manager *man,
-				const char *prefix)
-{
-	printk(KERN_INFO "%s: No debug info available for the GMR "
-	       "id manager.\n", prefix);
-}
-
-const struct ttm_mem_type_manager_func vmw_gmrid_manager_func = {
-	vmw_gmrid_man_init,
-	vmw_gmrid_man_takedown,
-	vmw_gmrid_man_get_node,
-	vmw_gmrid_man_put_node,
-	vmw_gmrid_man_debug
-=======
 nospace:
 	gman->used_gmr_pages -= PFN_UP((*res)->size);
 	spin_unlock(&gman->lock);
@@ -340,5 +208,4 @@ static const struct ttm_resource_manager_func vmw_gmrid_manager_func = {
 	.alloc = vmw_gmrid_man_get_node,
 	.free = vmw_gmrid_man_put_node,
 	.debug = vmw_gmrid_man_debug
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

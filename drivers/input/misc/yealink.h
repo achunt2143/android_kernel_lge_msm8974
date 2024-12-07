@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/usb/input/yealink.h
  *
  * Copyright (c) 2005 Henk Vergonet <Henk.Vergonet@gmail.com>
-<<<<<<< HEAD
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef INPUT_YEALINK_H
 #define INPUT_YEALINK_H
@@ -35,11 +14,7 @@
 struct yld_ctl_packet {
 	u8	cmd;		/* command code, see below */
 	u8	size;		/* 1-11, size of used data bytes. */
-<<<<<<< HEAD
-	u16	offset;		/* internal packet offset */
-=======
 	__be16	offset;		/* internal packet offset */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	data[11];
 	s8	sum;		/* negative sum of 15 preceding bytes */
 } __attribute__ ((packed));

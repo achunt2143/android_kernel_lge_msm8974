@@ -1,23 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _INET_ECN_H_
 #define _INET_ECN_H_
 
 #include <linux/ip.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-
-#include <net/inet_sock.h>
-#include <net/dsfield.h>
-=======
 #include <linux/if_vlan.h>
 
 #include <net/inet_sock.h>
 #include <net/dsfield.h>
 #include <net/checksum.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	INET_ECN_NOT_ECT = 0,
@@ -27,11 +18,8 @@ enum {
 	INET_ECN_MASK = 3,
 };
 
-<<<<<<< HEAD
-=======
 extern int sysctl_tunnel_ecn_log;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int INET_ECN_is_ce(__u8 dsfield)
 {
 	return (dsfield & INET_ECN_MASK) == INET_ECN_CE;
@@ -88,13 +76,8 @@ static inline void INET_ECN_dontxmit(struct sock *sk)
 
 static inline int IP_ECN_set_ce(struct iphdr *iph)
 {
-<<<<<<< HEAD
-	u32 check = (__force u32)iph->check;
-	u32 ecn = (iph->tos + 1) & INET_ECN_MASK;
-=======
 	u32 ecn = (iph->tos + 1) & INET_ECN_MASK;
 	__be16 check_add;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * After the last operation we have (in binary):
@@ -111,22 +94,14 @@ static inline int IP_ECN_set_ce(struct iphdr *iph)
 	 * INET_ECN_ECT_1 => check += htons(0xFFFD)
 	 * INET_ECN_ECT_0 => check += htons(0xFFFE)
 	 */
-<<<<<<< HEAD
-	check += (__force u16)htons(0xFFFB) + (__force u16)htons(ecn);
-
-	iph->check = (__force __sum16)(check + (check>=0xFFFF));
-=======
 	check_add = (__force __be16)((__force u16)htons(0xFFFB) +
 				     (__force u16)htons(ecn));
 
 	iph->check = csum16_add(iph->check, check_add);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iph->tos |= INET_ECN_CE;
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 static inline int IP_ECN_set_ect1(struct iphdr *iph)
 {
 	if ((iph->tos & INET_ECN_MASK) != INET_ECN_ECT_0)
@@ -137,7 +112,6 @@ static inline int IP_ECN_set_ect1(struct iphdr *iph)
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void IP_ECN_clear(struct iphdr *iph)
 {
 	iph->tos &= ~INET_ECN_MASK;
@@ -151,19 +125,6 @@ static inline void ipv4_copy_dscp(unsigned int dscp, struct iphdr *inner)
 
 struct ipv6hdr;
 
-<<<<<<< HEAD
-static inline int IP6_ECN_set_ce(struct ipv6hdr *iph)
-{
-	if (INET_ECN_is_not_ect(ipv6_get_dsfield(iph)))
-		return 0;
-	*(__be32*)iph |= htonl(INET_ECN_CE << 20);
-	return 1;
-}
-
-static inline void IP6_ECN_clear(struct ipv6hdr *iph)
-{
-	*(__be32*)iph &= ~htonl(INET_ECN_MASK << 20);
-=======
 /* Note:
  * IP_ECN_set_ce() has to tweak IPV4 checksum when setting CE,
  * meaning both changes have no effect on skb->csum if/when CHECKSUM_COMPLETE
@@ -200,7 +161,6 @@ static inline int IP6_ECN_set_ect1(struct sk_buff *skb, struct ipv6hdr *iph)
 		skb->csum = csum_add(csum_sub(skb->csum, (__force __wsum)from),
 				     (__force __wsum)to);
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ipv6_copy_dscp(unsigned int dscp, struct ipv6hdr *inner)
@@ -211,36 +171,23 @@ static inline void ipv6_copy_dscp(unsigned int dscp, struct ipv6hdr *inner)
 
 static inline int INET_ECN_set_ce(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	switch (skb->protocol) {
-	case cpu_to_be16(ETH_P_IP):
-		if (skb->network_header + sizeof(struct iphdr) <= skb->tail)
-=======
 	switch (skb_protocol(skb, true)) {
 	case cpu_to_be16(ETH_P_IP):
 		if (skb_network_header(skb) + sizeof(struct iphdr) <=
 		    skb_tail_pointer(skb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return IP_ECN_set_ce(ip_hdr(skb));
 		break;
 
 	case cpu_to_be16(ETH_P_IPV6):
-<<<<<<< HEAD
-		if (skb->network_header + sizeof(struct ipv6hdr) <= skb->tail)
-			return IP6_ECN_set_ce(ipv6_hdr(skb));
-=======
 		if (skb_network_header(skb) + sizeof(struct ipv6hdr) <=
 		    skb_tail_pointer(skb))
 			return IP6_ECN_set_ce(skb, ipv6_hdr(skb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline int skb_get_dsfield(struct sk_buff *skb)
 {
 	switch (skb_protocol(skb, true)) {
@@ -373,5 +320,4 @@ static inline int IP6_ECN_decapsulate(const struct ipv6hdr *oipv6h,
 
 	return INET_ECN_decapsulate(skb, ipv6_get_dsfield(oipv6h), inner);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

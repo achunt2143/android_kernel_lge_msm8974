@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-/*
- * DA7210 ALSA Soc codec driver
- *
- * Copyright (c) 2009 Dialog Semiconductor
- * Written by David Chen <Dajun.chen@diasemi.com>
- *
- * Copyright (C) 2009 Renesas Solutions Corp.
- * Cleanups by Kuninori Morimoto <morimoto.kuninori@renesas.com>
- *
- * Tested on SuperH Ecovec24 board with S16/S24 LE in 48KHz using I2S
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- */
-
-#include <linux/delay.h>
-#include <linux/i2c.h>
-=======
 // SPDX-License-Identifier: GPL-2.0+
 //
 // DA7210 ALSA Soc codec driver
@@ -34,7 +13,6 @@
 #include <linux/delay.h>
 #include <linux/i2c.h>
 #include <linux/spi/spi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/regmap.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -45,10 +23,7 @@
 #include <sound/tlv.h>
 
 /* DA7210 register space */
-<<<<<<< HEAD
-=======
 #define DA7210_PAGE_CONTROL		0x00
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DA7210_CONTROL			0x01
 #define DA7210_STATUS			0x02
 #define DA7210_STARTUP1			0x03
@@ -168,10 +143,7 @@
 #define DA7210_DAI_EN			(1 << 7)
 
 /*PLL_DIV3 bit fields */
-<<<<<<< HEAD
-=======
 #define DA7210_PLL_DIV_L_MASK		(0xF << 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DA7210_MCLK_RANGE_10_20_MHZ	(1 << 4)
 #define DA7210_PLL_BYP			(1 << 6)
 
@@ -188,22 +160,16 @@
 #define DA7210_PLL_FS_48000		(0xB << 0)
 #define DA7210_PLL_FS_88200		(0xE << 0)
 #define DA7210_PLL_FS_96000		(0xF << 0)
-<<<<<<< HEAD
-=======
 #define DA7210_MCLK_DET_EN		(0x1 << 5)
 #define DA7210_MCLK_SRM_EN		(0x1 << 6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DA7210_PLL_EN			(0x1 << 7)
 
 /* SOFTMUTE bit fields */
 #define DA7210_RAMP_EN			(1 << 6)
 
 /* CONTROL bit fields */
-<<<<<<< HEAD
-=======
 #define DA7210_REG_EN			(1 << 0)
 #define DA7210_BIAS_EN			(1 << 2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DA7210_NOISE_SUP_EN		(1 << 3)
 
 /* IN_GAIN bit fields */
@@ -242,8 +208,6 @@
 #define DA7210_OUT2_OUTMIX_L		(1 << 6)
 #define DA7210_OUT2_EN			(1 << 7)
 
-<<<<<<< HEAD
-=======
 struct pll_div {
 	int fref;
 	int fout;
@@ -285,7 +249,6 @@ enum clk_src {
 	DA7210_CLKSRC_MCLK
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DA7210_VERSION "0.0.1"
 
 /*
@@ -299,35 +262,6 @@ enum clk_src {
  *
  * Reserved area are considered as "mute".
  */
-<<<<<<< HEAD
-static const unsigned int hp_out_tlv[] = {
-	TLV_DB_RANGE_HEAD(2),
-	0x0, 0x10, TLV_DB_SCALE_ITEM(TLV_DB_GAIN_MUTE, 0, 1),
-	/* -54 dB to +15 dB */
-	0x11, 0x3f, TLV_DB_SCALE_ITEM(-5400, 150, 0),
-};
-
-static const unsigned int lineout_vol_tlv[] = {
-	TLV_DB_RANGE_HEAD(2),
-	0x0, 0x10, TLV_DB_SCALE_ITEM(TLV_DB_GAIN_MUTE, 0, 1),
-	/* -54dB to 15dB */
-	0x11, 0x3f, TLV_DB_SCALE_ITEM(-5400, 150, 0)
-};
-
-static const unsigned int mono_vol_tlv[] = {
-	TLV_DB_RANGE_HEAD(2),
-	0x0, 0x2, TLV_DB_SCALE_ITEM(-1800, 0, 1),
-	/* -18dB to 6dB */
-	0x3, 0x7, TLV_DB_SCALE_ITEM(-1800, 600, 0)
-};
-
-static const unsigned int aux1_vol_tlv[] = {
-	TLV_DB_RANGE_HEAD(2),
-	0x0, 0x10, TLV_DB_SCALE_ITEM(TLV_DB_GAIN_MUTE, 0, 1),
-	/* -48dB to 21dB */
-	0x11, 0x3f, TLV_DB_SCALE_ITEM(-4800, 150, 0)
-};
-=======
 static const DECLARE_TLV_DB_RANGE(hp_out_tlv,
 	0x0, 0x10, TLV_DB_SCALE_ITEM(TLV_DB_GAIN_MUTE, 0, 1),
 	/* -54 dB to +15 dB */
@@ -351,7 +285,6 @@ static const DECLARE_TLV_DB_RANGE(aux1_vol_tlv,
 	/* -48dB to 21dB */
 	0x11, 0x3f, TLV_DB_SCALE_ITEM(-4800, 150, 0)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const DECLARE_TLV_DB_SCALE(eq_gain_tlv, -1050, 150, 0);
 static const DECLARE_TLV_DB_SCALE(adc_eq_master_gain_tlv, -1800, 600, 1);
@@ -365,70 +298,40 @@ static const char * const da7210_hpf_cutoff_txt[] = {
 	"Fs/8192*pi", "Fs/4096*pi", "Fs/2048*pi", "Fs/1024*pi"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum da7210_dac_hpf_cutoff =
-	SOC_ENUM_SINGLE(DA7210_DAC_HPF, 0, 4, da7210_hpf_cutoff_txt);
-
-static const struct soc_enum da7210_adc_hpf_cutoff =
-	SOC_ENUM_SINGLE(DA7210_ADC_HPF, 0, 4, da7210_hpf_cutoff_txt);
-=======
 static SOC_ENUM_SINGLE_DECL(da7210_dac_hpf_cutoff,
 			    DA7210_DAC_HPF, 0, da7210_hpf_cutoff_txt);
 
 static SOC_ENUM_SINGLE_DECL(da7210_adc_hpf_cutoff,
 			    DA7210_ADC_HPF, 0, da7210_hpf_cutoff_txt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ADC and DAC voice (8kHz) high pass cutoff value */
 static const char * const da7210_vf_cutoff_txt[] = {
 	"2.5Hz", "25Hz", "50Hz", "100Hz", "150Hz", "200Hz", "300Hz", "400Hz"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum da7210_dac_vf_cutoff =
-	SOC_ENUM_SINGLE(DA7210_DAC_HPF, 4, 8, da7210_vf_cutoff_txt);
-
-static const struct soc_enum da7210_adc_vf_cutoff =
-	SOC_ENUM_SINGLE(DA7210_ADC_HPF, 4, 8, da7210_vf_cutoff_txt);
-=======
 static SOC_ENUM_SINGLE_DECL(da7210_dac_vf_cutoff,
 			    DA7210_DAC_HPF, 4, da7210_vf_cutoff_txt);
 
 static SOC_ENUM_SINGLE_DECL(da7210_adc_vf_cutoff,
 			    DA7210_ADC_HPF, 4, da7210_vf_cutoff_txt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *da7210_hp_mode_txt[] = {
 	"Class H", "Class G"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum da7210_hp_mode_sel =
-	SOC_ENUM_SINGLE(DA7210_HP_CFG, 0, 2, da7210_hp_mode_txt);
-=======
 static SOC_ENUM_SINGLE_DECL(da7210_hp_mode_sel,
 			    DA7210_HP_CFG, 0, da7210_hp_mode_txt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ALC can be enabled only if noise suppression is disabled */
 static int da7210_put_alc_sw(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-
-	if (ucontrol->value.integer.value[0]) {
-		/* Check if noise suppression is enabled */
-		if (snd_soc_read(codec, DA7210_CONTROL) & DA7210_NOISE_SUP_EN) {
-			dev_dbg(codec->dev,
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 
 	if (ucontrol->value.integer.value[0]) {
 		/* Check if noise suppression is enabled */
 		if (snd_soc_component_read(component, DA7210_CONTROL) & DA7210_NOISE_SUP_EN) {
 			dev_dbg(component->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Disable noise suppression to enable ALC\n");
 			return -EINVAL;
 		}
@@ -446,54 +349,32 @@ static int da7210_put_alc_sw(struct snd_kcontrol *kcontrol,
 static int da7210_put_noise_sup_sw(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 val;
 
 	if (ucontrol->value.integer.value[0]) {
 		/* Check if ALC is enabled */
-<<<<<<< HEAD
-		if (snd_soc_read(codec, DA7210_ADC) & DA7210_ADC_ALC_EN)
-			goto err;
-
-		/* Check ZC for HP and AUX1 PGA */
-		if ((snd_soc_read(codec, DA7210_ZERO_CROSS) &
-=======
 		if (snd_soc_component_read(component, DA7210_ADC) & DA7210_ADC_ALC_EN)
 			goto err;
 
 		/* Check ZC for HP and AUX1 PGA */
 		if ((snd_soc_component_read(component, DA7210_ZERO_CROSS) &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(DA7210_AUX1_L_ZC | DA7210_AUX1_R_ZC | DA7210_HP_L_ZC |
 			DA7210_HP_R_ZC)) != (DA7210_AUX1_L_ZC |
 			DA7210_AUX1_R_ZC | DA7210_HP_L_ZC | DA7210_HP_R_ZC))
 			goto err;
 
 		/* Check INPGA_L_VOL and INPGA_R_VOL */
-<<<<<<< HEAD
-		val = snd_soc_read(codec, DA7210_IN_GAIN);
-=======
 		val = snd_soc_component_read(component, DA7210_IN_GAIN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (((val & DA7210_INPGA_L_VOL) < DA7210_INPGA_MIN_VOL_NS) ||
 			(((val & DA7210_INPGA_R_VOL) >> 4) <
 			DA7210_INPGA_MIN_VOL_NS))
 			goto err;
 
 		/* Check AUX1_L_VOL and AUX1_R_VOL */
-<<<<<<< HEAD
-		if (((snd_soc_read(codec, DA7210_AUX1_L) & DA7210_AUX1_L_VOL) <
-		    DA7210_AUX1_MIN_VOL_NS) ||
-		    ((snd_soc_read(codec, DA7210_AUX1_R) & DA7210_AUX1_R_VOL) <
-=======
 		if (((snd_soc_component_read(component, DA7210_AUX1_L) & DA7210_AUX1_L_VOL) <
 		    DA7210_AUX1_MIN_VOL_NS) ||
 		    ((snd_soc_component_read(component, DA7210_AUX1_R) & DA7210_AUX1_R_VOL) <
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    DA7210_AUX1_MIN_VOL_NS))
 			goto err;
 	}
@@ -786,18 +667,12 @@ static const struct snd_soc_dapm_route da7210_audio_map[] = {
 /* Codec private data */
 struct da7210_priv {
 	struct regmap *regmap;
-<<<<<<< HEAD
-};
-
-static struct reg_default da7210_reg_defaults[] = {
-=======
 	unsigned int mclk_rate;
 	int master;
 };
 
 static const struct reg_default da7210_reg_defaults[] = {
 	{ 0x00, 0x00 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x01, 0x11 },
 	{ 0x03, 0x00 },
 	{ 0x04, 0x00 },
@@ -880,33 +755,6 @@ static int da7210_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_codec *codec = rtd->codec;
-	u32 dai_cfg1;
-	u32 fs, bypass;
-
-	/* set DAI source to Left and Right ADC */
-	snd_soc_write(codec, DA7210_DAI_SRC_SEL,
-		     DA7210_DAI_OUT_R_SRC | DA7210_DAI_OUT_L_SRC);
-
-	/* Enable DAI */
-	snd_soc_write(codec, DA7210_DAI_CFG3, DA7210_DAI_OE | DA7210_DAI_EN);
-
-	dai_cfg1 = 0xFC & snd_soc_read(codec, DA7210_DAI_CFG1);
-
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-		dai_cfg1 |= DA7210_DAI_WORD_S16_LE;
-		break;
-	case SNDRV_PCM_FORMAT_S20_3LE:
-		dai_cfg1 |= DA7210_DAI_WORD_S20_3LE;
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-		dai_cfg1 |= DA7210_DAI_WORD_S24_LE;
-		break;
-	case SNDRV_PCM_FORMAT_S32_LE:
-=======
 	struct snd_soc_component *component = dai->component;
 	struct da7210_priv *da7210 = snd_soc_component_get_drvdata(component);
 	u32 dai_cfg1;
@@ -932,61 +780,17 @@ static int da7210_hw_params(struct snd_pcm_substream *substream,
 		dai_cfg1 |= DA7210_DAI_WORD_S24_LE;
 		break;
 	case 32:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dai_cfg1 |= DA7210_DAI_WORD_S32_LE;
 		break;
 	default:
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_write(codec, DA7210_DAI_CFG1, dai_cfg1);
-=======
 	snd_soc_component_write(component, DA7210_DAI_CFG1, dai_cfg1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (params_rate(params)) {
 	case 8000:
 		fs		= DA7210_PLL_FS_8000;
-<<<<<<< HEAD
-		bypass		= DA7210_PLL_BYP;
-		break;
-	case 11025:
-		fs		= DA7210_PLL_FS_11025;
-		bypass		= 0;
-		break;
-	case 12000:
-		fs		= DA7210_PLL_FS_12000;
-		bypass		= DA7210_PLL_BYP;
-		break;
-	case 16000:
-		fs		= DA7210_PLL_FS_16000;
-		bypass		= DA7210_PLL_BYP;
-		break;
-	case 22050:
-		fs		= DA7210_PLL_FS_22050;
-		bypass		= 0;
-		break;
-	case 32000:
-		fs		= DA7210_PLL_FS_32000;
-		bypass		= DA7210_PLL_BYP;
-		break;
-	case 44100:
-		fs		= DA7210_PLL_FS_44100;
-		bypass		= 0;
-		break;
-	case 48000:
-		fs		= DA7210_PLL_FS_48000;
-		bypass		= DA7210_PLL_BYP;
-		break;
-	case 88200:
-		fs		= DA7210_PLL_FS_88200;
-		bypass		= 0;
-		break;
-	case 96000:
-		fs		= DA7210_PLL_FS_96000;
-		bypass		= DA7210_PLL_BYP;
-=======
 		sysclk		= 3072000;
 		break;
 	case 11025:
@@ -1024,22 +828,12 @@ static int da7210_hw_params(struct snd_pcm_substream *substream,
 	case 96000:
 		fs		= DA7210_PLL_FS_96000;
 		sysclk		= 3072000;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
 	}
 
 	/* Disable active mode */
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, DA7210_STARTUP1, DA7210_SC_MST_EN, 0);
-
-	snd_soc_update_bits(codec, DA7210_PLL, DA7210_PLL_FS_MASK, fs);
-	snd_soc_update_bits(codec, DA7210_PLL_DIV3, DA7210_PLL_BYP, bypass);
-
-	/* Enable active mode */
-	snd_soc_update_bits(codec, DA7210_STARTUP1,
-=======
 	snd_soc_component_update_bits(component, DA7210_STARTUP1, DA7210_SC_MST_EN, 0);
 
 	snd_soc_component_update_bits(component, DA7210_PLL, DA7210_PLL_FS_MASK, fs);
@@ -1065,7 +859,6 @@ static int da7210_hw_params(struct snd_pcm_substream *substream,
 	}
 	/* Enable active mode */
 	snd_soc_component_update_bits(component, DA7210_STARTUP1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    DA7210_SC_MST_EN, DA7210_SC_MST_EN);
 
 	return 0;
@@ -1076,20 +869,6 @@ static int da7210_hw_params(struct snd_pcm_substream *substream,
  */
 static int da7210_set_dai_fmt(struct snd_soc_dai *codec_dai, u32 fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	u32 dai_cfg1;
-	u32 dai_cfg3;
-
-	dai_cfg1 = 0x7f & snd_soc_read(codec, DA7210_DAI_CFG1);
-	dai_cfg3 = 0xfc & snd_soc_read(codec, DA7210_DAI_CFG3);
-
-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-	case SND_SOC_DAIFMT_CBM_CFM:
-		dai_cfg1 |= DA7210_DAI_MODE_MASTER;
-		break;
-	case SND_SOC_DAIFMT_CBS_CFS:
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	struct da7210_priv *da7210 = snd_soc_component_get_drvdata(component);
 	u32 dai_cfg1;
@@ -1109,7 +888,6 @@ static int da7210_set_dai_fmt(struct snd_soc_dai *codec_dai, u32 fmt)
 		break;
 	case SND_SOC_DAIFMT_CBS_CFS:
 		da7210->master = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dai_cfg1 |= DA7210_DAI_MODE_SLAVE;
 		break;
 	default:
@@ -1140,28 +918,12 @@ static int da7210_set_dai_fmt(struct snd_soc_dai *codec_dai, u32 fmt)
 	 */
 	dai_cfg1 |= DA7210_DAI_FLEN_64BIT;
 
-<<<<<<< HEAD
-	snd_soc_write(codec, DA7210_DAI_CFG1, dai_cfg1);
-	snd_soc_write(codec, DA7210_DAI_CFG3, dai_cfg3);
-=======
 	snd_soc_component_write(component, DA7210_DAI_CFG1, dai_cfg1);
 	snd_soc_component_write(component, DA7210_DAI_CFG3, dai_cfg3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int da7210_mute(struct snd_soc_dai *dai, int mute)
-{
-	struct snd_soc_codec *codec = dai->codec;
-	u8 mute_reg = snd_soc_read(codec, DA7210_DAC_HPF) & 0xFB;
-
-	if (mute)
-		snd_soc_write(codec, DA7210_DAC_HPF, mute_reg | 0x4);
-	else
-		snd_soc_write(codec, DA7210_DAC_HPF, mute_reg);
-=======
 static int da7210_mute(struct snd_soc_dai *dai, int mute, int direction)
 {
 	struct snd_soc_component *component = dai->component;
@@ -1171,15 +933,12 @@ static int da7210_mute(struct snd_soc_dai *dai, int mute, int direction)
 		snd_soc_component_write(component, DA7210_DAC_HPF, mute_reg | 0x4);
 	else
 		snd_soc_component_write(component, DA7210_DAC_HPF, mute_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 #define DA7210_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |\
 			SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
 
-<<<<<<< HEAD
-=======
 static int da7210_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 				 int clk_id, unsigned int freq, int dir)
 {
@@ -1271,19 +1030,14 @@ err:
 	return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* DAI operations */
 static const struct snd_soc_dai_ops da7210_dai_ops = {
 	.hw_params	= da7210_hw_params,
 	.set_fmt	= da7210_set_dai_fmt,
-<<<<<<< HEAD
-	.digital_mute	= da7210_mute,
-=======
 	.set_sysclk	= da7210_set_dai_sysclk,
 	.set_pll	= da7210_set_dai_pll,
 	.mute_stream	= da7210_mute,
 	.no_capture_mute = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver da7210_dai = {
@@ -1305,43 +1059,6 @@ static struct snd_soc_dai_driver da7210_dai = {
 		.formats = DA7210_FORMATS,
 	},
 	.ops = &da7210_dai_ops,
-<<<<<<< HEAD
-	.symmetric_rates = 1,
-};
-
-static int da7210_probe(struct snd_soc_codec *codec)
-{
-	struct da7210_priv *da7210 = snd_soc_codec_get_drvdata(codec);
-	int ret;
-
-	dev_info(codec->dev, "DA7210 Audio Codec %s\n", DA7210_VERSION);
-
-	codec->control_data = da7210->regmap;
-	ret = snd_soc_codec_set_cache_io(codec, 8, 8, SND_SOC_REGMAP);
-	if (ret < 0) {
-		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
-		return ret;
-	}
-
-	/* FIXME
-	 *
-	 * This driver use fixed value here
-	 * And below settings expects MCLK = 12.288MHz
-	 *
-	 * When you select different MCLK, please check...
-	 *      DA7210_PLL_DIV1 val
-	 *      DA7210_PLL_DIV2 val
-	 *      DA7210_PLL_DIV3 val
-	 *      DA7210_PLL_DIV3 :: DA7210_MCLK_RANGExxx
-	 */
-
-	/*
-	 * make sure that DA7210 use bypass mode before start up
-	 */
-	snd_soc_write(codec, DA7210_STARTUP1, 0);
-	snd_soc_write(codec, DA7210_PLL_DIV3,
-		     DA7210_MCLK_RANGE_10_20_MHZ | DA7210_PLL_BYP);
-=======
 	.symmetric_rate = 1,
 };
 
@@ -1356,24 +1073,12 @@ static int da7210_probe(struct snd_soc_component *component)
 
 	/* Enable internal regulator & bias current */
 	snd_soc_component_write(component, DA7210_CONTROL, DA7210_REG_EN | DA7210_BIAS_EN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * ADC settings
 	 */
 
 	/* Enable Left & Right MIC PGA and Mic Bias */
-<<<<<<< HEAD
-	snd_soc_write(codec, DA7210_MIC_L, DA7210_MIC_L_EN | DA7210_MICBIAS_EN);
-	snd_soc_write(codec, DA7210_MIC_R, DA7210_MIC_R_EN);
-
-	/* Enable Left and Right input PGA */
-	snd_soc_write(codec, DA7210_INMIX_L, DA7210_IN_L_EN);
-	snd_soc_write(codec, DA7210_INMIX_R, DA7210_IN_R_EN);
-
-	/* Enable Left and Right ADC */
-	snd_soc_write(codec, DA7210_ADC, DA7210_ADC_L_EN | DA7210_ADC_R_EN);
-=======
 	snd_soc_component_write(component, DA7210_MIC_L, DA7210_MIC_L_EN | DA7210_MICBIAS_EN);
 	snd_soc_component_write(component, DA7210_MIC_R, DA7210_MIC_R_EN);
 
@@ -1383,44 +1088,27 @@ static int da7210_probe(struct snd_soc_component *component)
 
 	/* Enable Left and Right ADC */
 	snd_soc_component_write(component, DA7210_ADC, DA7210_ADC_L_EN | DA7210_ADC_R_EN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * DAC settings
 	 */
 
 	/* Enable Left and Right DAC */
-<<<<<<< HEAD
-	snd_soc_write(codec, DA7210_DAC_SEL,
-=======
 	snd_soc_component_write(component, DA7210_DAC_SEL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     DA7210_DAC_L_SRC_DAI_L | DA7210_DAC_L_EN |
 		     DA7210_DAC_R_SRC_DAI_R | DA7210_DAC_R_EN);
 
 	/* Enable Left and Right out PGA */
-<<<<<<< HEAD
-	snd_soc_write(codec, DA7210_OUTMIX_L, DA7210_OUT_L_EN);
-	snd_soc_write(codec, DA7210_OUTMIX_R, DA7210_OUT_R_EN);
-
-	/* Enable Left and Right HeadPhone PGA */
-	snd_soc_write(codec, DA7210_HP_CFG,
-=======
 	snd_soc_component_write(component, DA7210_OUTMIX_L, DA7210_OUT_L_EN);
 	snd_soc_component_write(component, DA7210_OUTMIX_R, DA7210_OUT_R_EN);
 
 	/* Enable Left and Right HeadPhone PGA */
 	snd_soc_component_write(component, DA7210_HP_CFG,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     DA7210_HP_2CAP_MODE | DA7210_HP_SENSE_EN |
 		     DA7210_HP_L_EN | DA7210_HP_MODE | DA7210_HP_R_EN);
 
 	/* Enable ramp mode for DAC gain update */
-<<<<<<< HEAD
-	snd_soc_write(codec, DA7210_SOFTMUTE, DA7210_RAMP_EN);
-=======
 	snd_soc_component_write(component, DA7210_SOFTMUTE, DA7210_RAMP_EN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * For DA7210 codec, there are two ways to enable/disable analog IOs
@@ -1448,51 +1136,6 @@ static int da7210_probe(struct snd_soc_component *component)
 	 */
 
 	/* Enable Line out amplifiers */
-<<<<<<< HEAD
-	snd_soc_write(codec, DA7210_OUT1_L, DA7210_OUT1_L_EN);
-	snd_soc_write(codec, DA7210_OUT1_R, DA7210_OUT1_R_EN);
-	snd_soc_write(codec, DA7210_OUT2, DA7210_OUT2_EN |
-		     DA7210_OUT2_OUTMIX_L | DA7210_OUT2_OUTMIX_R);
-
-	/* Enable Aux1 */
-	snd_soc_write(codec, DA7210_AUX1_L, DA7210_AUX1_L_EN);
-	snd_soc_write(codec, DA7210_AUX1_R, DA7210_AUX1_R_EN);
-	/* Enable Aux2 */
-	snd_soc_write(codec, DA7210_AUX2, DA7210_AUX2_EN);
-
-	/* Diable PLL and bypass it */
-	snd_soc_write(codec, DA7210_PLL, DA7210_PLL_FS_48000);
-
-	/*
-	 * If 48kHz sound came, it use bypass mode,
-	 * and when it is 44.1kHz, it use PLL.
-	 *
-	 * This time, this driver sets PLL always ON
-	 * and controls bypass/PLL mode by switching
-	 * DA7210_PLL_DIV3 :: DA7210_PLL_BYP bit.
-	 *   see da7210_hw_params
-	 */
-	snd_soc_write(codec, DA7210_PLL_DIV1, 0xE5); /* MCLK = 12.288MHz */
-	snd_soc_write(codec, DA7210_PLL_DIV2, 0x99);
-	snd_soc_write(codec, DA7210_PLL_DIV3, 0x0A |
-		     DA7210_MCLK_RANGE_10_20_MHZ | DA7210_PLL_BYP);
-	snd_soc_update_bits(codec, DA7210_PLL, DA7210_PLL_EN, DA7210_PLL_EN);
-
-	/* As suggested by Dialog */
-	/* unlock */
-	regmap_write(da7210->regmap, DA7210_A_HID_UNLOCK,	0x8B);
-	regmap_write(da7210->regmap, DA7210_A_TEST_UNLOCK,	0xB4);
-	regmap_write(da7210->regmap, DA7210_A_PLL1,		0x01);
-	regmap_write(da7210->regmap, DA7210_A_CP_MODE,		0x7C);
-	/* re-lock */
-	regmap_write(da7210->regmap, DA7210_A_HID_UNLOCK,	0x00);
-	regmap_write(da7210->regmap, DA7210_A_TEST_UNLOCK,	0x00);
-
-	/* Activate all enabled subsystem */
-	snd_soc_write(codec, DA7210_STARTUP1, DA7210_SC_MST_EN);
-
-	dev_info(codec->dev, "DA7210 Audio Codec %s\n", DA7210_VERSION);
-=======
 	snd_soc_component_write(component, DA7210_OUT1_L, DA7210_OUT1_L_EN);
 	snd_soc_component_write(component, DA7210_OUT1_R, DA7210_OUT1_R_EN);
 	snd_soc_component_write(component, DA7210_OUT2, DA7210_OUT2_EN |
@@ -1515,33 +1158,18 @@ static int da7210_probe(struct snd_soc_component *component)
 	snd_soc_component_write(component, DA7210_STARTUP1, DA7210_SC_MST_EN);
 
 	dev_info(component->dev, "DA7210 Audio Codec %s\n", DA7210_VERSION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_soc_codec_driver soc_codec_dev_da7210 = {
-	.probe			= da7210_probe,
-
-	.controls		= da7210_snd_controls,
-	.num_controls		= ARRAY_SIZE(da7210_snd_controls),
-
-=======
 static const struct snd_soc_component_driver soc_component_dev_da7210 = {
 	.probe			= da7210_probe,
 	.controls		= da7210_snd_controls,
 	.num_controls		= ARRAY_SIZE(da7210_snd_controls),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dapm_widgets		= da7210_dapm_widgets,
 	.num_dapm_widgets	= ARRAY_SIZE(da7210_dapm_widgets),
 	.dapm_routes		= da7210_audio_map,
 	.num_dapm_routes	= ARRAY_SIZE(da7210_audio_map),
-<<<<<<< HEAD
-};
-
-static struct regmap_config da7210_regmap = {
-=======
 	.idle_bias_on		= 1,
 	.use_pmdown_time	= 1,
 	.endianness		= 1,
@@ -1567,7 +1195,6 @@ static const struct reg_sequence da7210_regmap_i2c_patch[] = {
 };
 
 static const struct regmap_config da7210_regmap_config_i2c = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reg_bits = 8,
 	.val_bits = 8,
 
@@ -1578,13 +1205,7 @@ static const struct regmap_config da7210_regmap_config_i2c = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
-<<<<<<< HEAD
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-static int __devinit da7210_i2c_probe(struct i2c_client *i2c,
-			   	      const struct i2c_device_id *id)
-=======
 static int da7210_i2c_probe(struct i2c_client *i2c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct da7210_priv *da7210;
 	int ret;
@@ -1596,29 +1217,13 @@ static int da7210_i2c_probe(struct i2c_client *i2c)
 
 	i2c_set_clientdata(i2c, da7210);
 
-<<<<<<< HEAD
-	da7210->regmap = regmap_init_i2c(i2c, &da7210_regmap);
-=======
 	da7210->regmap = devm_regmap_init_i2c(i2c, &da7210_regmap_config_i2c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(da7210->regmap)) {
 		ret = PTR_ERR(da7210->regmap);
 		dev_err(&i2c->dev, "regmap_init() failed: %d\n", ret);
 		return ret;
 	}
 
-<<<<<<< HEAD
-	ret =  snd_soc_register_codec(&i2c->dev,
-			&soc_codec_dev_da7210, &da7210_dai, 1);
-	if (ret < 0) {
-		dev_err(&i2c->dev, "Failed to register codec: %d\n", ret);
-		goto err_regmap;
-	}
-	return ret;
-
-err_regmap:
-	regmap_exit(da7210->regmap);
-=======
 	ret = regmap_register_patch(da7210->regmap, da7210_regmap_i2c_patch,
 				    ARRAY_SIZE(da7210_regmap_i2c_patch));
 	if (ret != 0)
@@ -1628,23 +1233,10 @@ err_regmap:
 			&soc_component_dev_da7210, &da7210_dai, 1);
 	if (ret < 0)
 		dev_err(&i2c->dev, "Failed to register component: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit da7210_i2c_remove(struct i2c_client *client)
-{
-	struct da7210_priv *da7210 = i2c_get_clientdata(client);
-
-	snd_soc_unregister_codec(&client->dev);
-	regmap_exit(da7210->regmap);
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id da7210_i2c_id[] = {
 	{ "da7210", 0 },
 	{ }
@@ -1654,28 +1246,13 @@ MODULE_DEVICE_TABLE(i2c, da7210_i2c_id);
 /* I2C codec control layer */
 static struct i2c_driver da7210_i2c_driver = {
 	.driver = {
-<<<<<<< HEAD
-		.name = "da7210-codec",
-		.owner = THIS_MODULE,
-	},
-	.probe		= da7210_i2c_probe,
-	.remove		= __devexit_p(da7210_i2c_remove),
-=======
 		.name = "da7210",
 	},
 	.probe		= da7210_i2c_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= da7210_i2c_id,
 };
 #endif
 
-<<<<<<< HEAD
-static int __init da7210_modinit(void)
-{
-	int ret = 0;
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-	ret = i2c_add_driver(&da7210_i2c_driver);
-=======
 #if defined(CONFIG_SPI_MASTER)
 
 static const struct reg_sequence da7210_regmap_spi_patch[] = {
@@ -1766,7 +1343,6 @@ static int __init da7210_modinit(void)
 		printk(KERN_ERR "Failed to register da7210 SPI driver: %d\n",
 		       ret);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return ret;
 }
@@ -1774,18 +1350,12 @@ module_init(da7210_modinit);
 
 static void __exit da7210_exit(void)
 {
-<<<<<<< HEAD
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-	i2c_del_driver(&da7210_i2c_driver);
-#endif
-=======
 #if IS_ENABLED(CONFIG_I2C)
 	i2c_del_driver(&da7210_i2c_driver);
 #endif
 #if defined(CONFIG_SPI_MASTER)
 	spi_unregister_driver(&da7210_spi_driver);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 module_exit(da7210_exit);
 

@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-obj-$(CONFIG_STMMAC_ETH) += stmmac.o
-stmmac-$(CONFIG_STMMAC_TIMER) += stmmac_timer.o
-stmmac-$(CONFIG_STMMAC_RING) += ring_mode.o
-stmmac-$(CONFIG_STMMAC_CHAINED) += chain_mode.o
-stmmac-$(CONFIG_STMMAC_PLATFORM) += stmmac_platform.o
-stmmac-$(CONFIG_STMMAC_PCI) += stmmac_pci.o
-stmmac-objs:= stmmac_main.o stmmac_ethtool.o stmmac_mdio.o	\
-	      dwmac_lib.o dwmac1000_core.o  dwmac1000_dma.o	\
-	      dwmac100_core.o dwmac100_dma.o enh_desc.o  norm_desc.o \
-	      mmc_core.o $(stmmac-y)
-=======
 # SPDX-License-Identifier: GPL-2.0
 obj-$(CONFIG_STMMAC_ETH) += stmmac.o
 stmmac-objs:= stmmac_main.o stmmac_ethtool.o stmmac_mdio.o ring_mode.o	\
@@ -53,4 +41,3 @@ obj-$(CONFIG_STMMAC_PCI)	+= stmmac-pci.o
 obj-$(CONFIG_DWMAC_INTEL)	+= dwmac-intel.o
 obj-$(CONFIG_DWMAC_LOONGSON)	+= dwmac-loongson.o
 stmmac-pci-objs:= stmmac_pci.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

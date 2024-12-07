@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rpm
@@ -77,15 +74,12 @@ DEFINE_EVENT(rpm_internal, rpm_idle,
 
 	TP_ARGS(dev, flags)
 );
-<<<<<<< HEAD
-=======
 DEFINE_EVENT(rpm_internal, rpm_usage,
 
 	TP_PROTO(struct device *dev, int flags),
 
 	TP_ARGS(dev, flags)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 TRACE_EVENT(rpm_return_int,
 	TP_PROTO(struct device *dev, unsigned long ip, int ret),
@@ -107,8 +101,6 @@ TRACE_EVENT(rpm_return_int,
 		__entry->ret)
 );
 
-<<<<<<< HEAD
-=======
 #define RPM_STATUS_STRINGS \
 	EM(RPM_INVALID, "RPM_INVALID") \
 	EM(RPM_ACTIVE, "RPM_ACTIVE") \
@@ -151,7 +143,6 @@ TRACE_EVENT(rpm_status,
 		__print_symbolic(__entry->status, RPM_STATUS_STRINGS))
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _TRACE_RUNTIME_POWER_H */
 
 /* This part must be outside protection */

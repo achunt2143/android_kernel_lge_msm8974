@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-#include <linux/virtio.h>
-#include <linux/spinlock.h>
-#include <linux/virtio_config.h>
-#include <linux/module.h>
-
-/* Unique numbering for virtio devices. */
-static unsigned int dev_index;
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 #include <linux/virtio.h>
 #include <linux/spinlock.h>
@@ -19,62 +10,40 @@ static unsigned int dev_index;
 
 /* Unique numbering for virtio devices. */
 static DEFINE_IDA(virtio_index_ida);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t device_show(struct device *_d,
 			   struct device_attribute *attr, char *buf)
 {
 	struct virtio_device *dev = dev_to_virtio(_d);
-<<<<<<< HEAD
-	return sprintf(buf, "0x%04x\n", dev->id.device);
-}
-=======
 	return sysfs_emit(buf, "0x%04x\n", dev->id.device);
 }
 static DEVICE_ATTR_RO(device);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t vendor_show(struct device *_d,
 			   struct device_attribute *attr, char *buf)
 {
 	struct virtio_device *dev = dev_to_virtio(_d);
-<<<<<<< HEAD
-	return sprintf(buf, "0x%04x\n", dev->id.vendor);
-}
-=======
 	return sysfs_emit(buf, "0x%04x\n", dev->id.vendor);
 }
 static DEVICE_ATTR_RO(vendor);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t status_show(struct device *_d,
 			   struct device_attribute *attr, char *buf)
 {
 	struct virtio_device *dev = dev_to_virtio(_d);
-<<<<<<< HEAD
-	return sprintf(buf, "0x%08x\n", dev->config->get_status(dev));
-}
-=======
 	return sysfs_emit(buf, "0x%08x\n", dev->config->get_status(dev));
 }
 static DEVICE_ATTR_RO(status);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t modalias_show(struct device *_d,
 			     struct device_attribute *attr, char *buf)
 {
 	struct virtio_device *dev = dev_to_virtio(_d);
-<<<<<<< HEAD
-	return sprintf(buf, "virtio:d%08Xv%08X\n",
-		       dev->id.device, dev->id.vendor);
-}
-=======
 	return sysfs_emit(buf, "virtio:d%08Xv%08X\n",
 		       dev->id.device, dev->id.vendor);
 }
 static DEVICE_ATTR_RO(modalias);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t features_show(struct device *_d,
 			     struct device_attribute *attr, char *buf)
 {
@@ -84,22 +53,6 @@ static ssize_t features_show(struct device *_d,
 
 	/* We actually represent this as a bitstring, as it could be
 	 * arbitrary length in future. */
-<<<<<<< HEAD
-	for (i = 0; i < ARRAY_SIZE(dev->features)*BITS_PER_LONG; i++)
-		len += sprintf(buf+len, "%c",
-			       test_bit(i, dev->features) ? '1' : '0');
-	len += sprintf(buf+len, "\n");
-	return len;
-}
-static struct device_attribute virtio_dev_attrs[] = {
-	__ATTR_RO(device),
-	__ATTR_RO(vendor),
-	__ATTR_RO(status),
-	__ATTR_RO(modalias),
-	__ATTR_RO(features),
-	__ATTR_NULL
-};
-=======
 	for (i = 0; i < sizeof(dev->features)*8; i++)
 		len += sysfs_emit_at(buf, len, "%c",
 			       __virtio_test_bit(dev, i) ? '1' : '0');
@@ -117,7 +70,6 @@ static struct attribute *virtio_dev_attrs[] = {
 	NULL,
 };
 ATTRIBUTE_GROUPS(virtio_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int virtio_id_match(const struct virtio_device *dev,
 				  const struct virtio_device_id *id)
@@ -136,55 +88,30 @@ static int virtio_dev_match(struct device *_dv, struct device_driver *_dr)
 	struct virtio_device *dev = dev_to_virtio(_dv);
 	const struct virtio_device_id *ids;
 
-<<<<<<< HEAD
-	ids = container_of(_dr, struct virtio_driver, driver)->id_table;
-=======
 	ids = drv_to_virtio(_dr)->id_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; ids[i].device; i++)
 		if (virtio_id_match(dev, &ids[i]))
 			return 1;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int virtio_uevent(struct device *_dv, struct kobj_uevent_env *env)
-{
-	struct virtio_device *dev = dev_to_virtio(_dv);
-=======
 static int virtio_uevent(const struct device *_dv, struct kobj_uevent_env *env)
 {
 	const struct virtio_device *dev = dev_to_virtio(_dv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return add_uevent_var(env, "MODALIAS=virtio:d%08Xv%08X",
 			      dev->id.device, dev->id.vendor);
 }
 
-<<<<<<< HEAD
-static void add_status(struct virtio_device *dev, unsigned status)
-{
-	dev->config->set_status(dev, dev->config->get_status(dev) | status);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void virtio_check_driver_offered_feature(const struct virtio_device *vdev,
 					 unsigned int fbit)
 {
 	unsigned int i;
-<<<<<<< HEAD
-	struct virtio_driver *drv = container_of(vdev->dev.driver,
-						 struct virtio_driver, driver);
-=======
 	struct virtio_driver *drv = drv_to_virtio(vdev->dev.driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < drv->feature_table_size; i++)
 		if (drv->feature_table[i] == fbit)
 			return;
-<<<<<<< HEAD
-=======
 
 	if (drv->feature_table_legacy) {
 		for (i = 0; i < drv->feature_table_size_legacy; i++)
@@ -192,13 +119,10 @@ void virtio_check_driver_offered_feature(const struct virtio_device *vdev,
 				return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG();
 }
 EXPORT_SYMBOL_GPL(virtio_check_driver_offered_feature);
 
-<<<<<<< HEAD
-=======
 static void __virtio_config_changed(struct virtio_device *dev)
 {
 	struct virtio_driver *drv = drv_to_virtio(dev->dev.driver);
@@ -310,19 +234,10 @@ void virtio_reset_device(struct virtio_device *dev)
 }
 EXPORT_SYMBOL_GPL(virtio_reset_device);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int virtio_dev_probe(struct device *_d)
 {
 	int err, i;
 	struct virtio_device *dev = dev_to_virtio(_d);
-<<<<<<< HEAD
-	struct virtio_driver *drv = container_of(dev->dev.driver,
-						 struct virtio_driver, driver);
-	u32 device_features;
-
-	/* We have a driver! */
-	add_status(dev, VIRTIO_CONFIG_S_DRIVER);
-=======
 	struct virtio_driver *drv = drv_to_virtio(dev->dev.driver);
 	u64 device_features;
 	u64 driver_features;
@@ -330,58 +245,10 @@ static int virtio_dev_probe(struct device *_d)
 
 	/* We have a driver! */
 	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Figure out what features the device supports. */
 	device_features = dev->config->get_features(dev);
 
-<<<<<<< HEAD
-	/* Features supported by both device and driver into dev->features. */
-	memset(dev->features, 0, sizeof(dev->features));
-	for (i = 0; i < drv->feature_table_size; i++) {
-		unsigned int f = drv->feature_table[i];
-		BUG_ON(f >= 32);
-		if (device_features & (1 << f))
-			set_bit(f, dev->features);
-	}
-
-	/* Transport features always preserved to pass to finalize_features. */
-	for (i = VIRTIO_TRANSPORT_F_START; i < VIRTIO_TRANSPORT_F_END; i++)
-		if (device_features & (1 << i))
-			set_bit(i, dev->features);
-
-	dev->config->finalize_features(dev);
-
-	err = drv->probe(dev);
-	if (err)
-		add_status(dev, VIRTIO_CONFIG_S_FAILED);
-	else
-		add_status(dev, VIRTIO_CONFIG_S_DRIVER_OK);
-
-	return err;
-}
-
-static int virtio_dev_remove(struct device *_d)
-{
-	struct virtio_device *dev = dev_to_virtio(_d);
-	struct virtio_driver *drv = container_of(dev->dev.driver,
-						 struct virtio_driver, driver);
-
-	drv->remove(dev);
-
-	/* Driver should have reset device. */
-	BUG_ON(dev->config->get_status(dev));
-
-	/* Acknowledge the device's existence again. */
-	add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
-	return 0;
-}
-
-static struct bus_type virtio_bus = {
-	.name  = "virtio",
-	.match = virtio_dev_match,
-	.dev_attrs = virtio_dev_attrs,
-=======
 	/* Figure out what features the driver supports. */
 	driver_features = 0;
 	for (i = 0; i < drv->feature_table_size; i++) {
@@ -490,32 +357,21 @@ static const struct bus_type virtio_bus = {
 	.name  = "virtio",
 	.match = virtio_dev_match,
 	.dev_groups = virtio_dev_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.uevent = virtio_uevent,
 	.probe = virtio_dev_probe,
 	.remove = virtio_dev_remove,
 };
 
-<<<<<<< HEAD
-int register_virtio_driver(struct virtio_driver *driver)
-=======
 int __register_virtio_driver(struct virtio_driver *driver, struct module *owner)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Catch this early. */
 	BUG_ON(driver->feature_table_size && !driver->feature_table);
 	driver->driver.bus = &virtio_bus;
-<<<<<<< HEAD
-	return driver_register(&driver->driver);
-}
-EXPORT_SYMBOL_GPL(register_virtio_driver);
-=======
 	driver->driver.owner = owner;
 
 	return driver_register(&driver->driver);
 }
 EXPORT_SYMBOL_GPL(__register_virtio_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void unregister_virtio_driver(struct virtio_driver *driver)
 {
@@ -523,8 +379,6 @@ void unregister_virtio_driver(struct virtio_driver *driver)
 }
 EXPORT_SYMBOL_GPL(unregister_virtio_driver);
 
-<<<<<<< HEAD
-=======
 static int virtio_device_of_init(struct virtio_device *dev)
 {
 	struct device_node *np, *pnode = dev_of_node(dev->dev.parent);
@@ -576,33 +430,11 @@ out:
  *
  * Returns: 0 on suceess, -error on failure
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int register_virtio_device(struct virtio_device *dev)
 {
 	int err;
 
 	dev->dev.bus = &virtio_bus;
-<<<<<<< HEAD
-
-	/* Assign a unique device index and hence name. */
-	dev->index = dev_index++;
-	dev_set_name(&dev->dev, "virtio%u", dev->index);
-
-	/* We always start by resetting the device, in case a previous
-	 * driver messed it up.  This also tests that code path a little. */
-	dev->config->reset(dev);
-
-	/* Acknowledge that we've seen the device. */
-	add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
-
-	INIT_LIST_HEAD(&dev->vqs);
-
-	/* device_register() causes the bus infrastructure to look for a
-	 * matching driver. */
-	err = device_register(&dev->dev);
-	if (err)
-		add_status(dev, VIRTIO_CONFIG_S_FAILED);
-=======
 	device_initialize(&dev->dev);
 
 	/* Assign a unique device index and hence name. */
@@ -649,19 +481,10 @@ out_ida_remove:
 	ida_free(&virtio_index_ida, dev->index);
 out:
 	virtio_add_status(dev, VIRTIO_CONFIG_S_FAILED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL_GPL(register_virtio_device);
 
-<<<<<<< HEAD
-void unregister_virtio_device(struct virtio_device *dev)
-{
-	device_unregister(&dev->dev);
-}
-EXPORT_SYMBOL_GPL(unregister_virtio_device);
-
-=======
 bool is_virtio_device(struct device *dev)
 {
 	return dev->bus == &virtio_bus;
@@ -763,7 +586,6 @@ err:
 EXPORT_SYMBOL_GPL(virtio_device_restore);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int virtio_init(void)
 {
 	if (bus_register(&virtio_bus) != 0)
@@ -774,10 +596,7 @@ static int virtio_init(void)
 static void __exit virtio_exit(void)
 {
 	bus_unregister(&virtio_bus);
-<<<<<<< HEAD
-=======
 	ida_destroy(&virtio_index_ida);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 core_initcall(virtio_init);
 module_exit(virtio_exit);

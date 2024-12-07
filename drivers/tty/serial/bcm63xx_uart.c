@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Derived from many drivers using generic_serial interface.
  *
  * Copyright (C) 2008 Maxime Bizon <mbizon@freebox.fr>
@@ -18,13 +10,6 @@
  * my board.
  */
 
-<<<<<<< HEAD
-#if defined(CONFIG_SERIAL_BCM63XX_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-#define SUPPORT_SYSRQ
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 #include <linux/init.h>
@@ -37,17 +22,9 @@
 #include <linux/sysrq.h>
 #include <linux/serial.h>
 #include <linux/serial_core.h>
-<<<<<<< HEAD
-
-#include <bcm63xx_clk.h>
-#include <bcm63xx_irq.h>
-#include <bcm63xx_regs.h>
-#include <bcm63xx_io.h>
-=======
 #include <linux/serial_bcm63xx.h>
 #include <linux/io.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BCM63XX_NR_UARTS	2
 
@@ -96,21 +73,13 @@ static struct uart_port ports[BCM63XX_NR_UARTS];
 static inline unsigned int bcm_uart_readl(struct uart_port *port,
 					 unsigned int offset)
 {
-<<<<<<< HEAD
-	return bcm_readl(port->membase + offset);
-=======
 	return __raw_readl(port->membase + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void bcm_uart_writel(struct uart_port *port,
 				  unsigned int value, unsigned int offset)
 {
-<<<<<<< HEAD
-	bcm_writel(value, port->membase + offset);
-=======
 	__raw_writel(value, port->membase + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -232,11 +201,7 @@ static void bcm_uart_break_ctl(struct uart_port *port, int ctl)
 	unsigned long flags;
 	unsigned int val;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&port->lock, flags);
-=======
 	uart_port_lock_irqsave(port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = bcm_uart_readl(port, UART_CTL_REG);
 	if (ctl)
@@ -245,11 +210,7 @@ static void bcm_uart_break_ctl(struct uart_port *port, int ctl)
 		val &= ~UART_CTL_XMITBRK_MASK;
 	bcm_uart_writel(port, val, UART_CTL_REG);
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -265,21 +226,13 @@ static const char *bcm_uart_type(struct uart_port *port)
  */
 static void bcm_uart_do_rx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct tty_struct *tty;
-=======
 	struct tty_port *tty_port = &port->state->port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int max_count;
 
 	/* limit number of char read in interrupt, should not be
 	 * higher than fifo size anyway since we're much faster than
 	 * serial port */
 	max_count = 32;
-<<<<<<< HEAD
-	tty = port->state->port.tty;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		unsigned int iestat, c, cstat;
 		char flag;
@@ -298,11 +251,7 @@ static void bcm_uart_do_rx(struct uart_port *port)
 			bcm_uart_writel(port, val, UART_CTL_REG);
 
 			port->icount.overrun++;
-<<<<<<< HEAD
-			tty_insert_flip_char(tty, 0, TTY_OVERRUN);
-=======
 			tty_insert_flip_char(tty_port, 0, TTY_OVERRUN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (!(iestat & UART_IR_STAT(UART_IR_RXNOTEMPTY)))
@@ -336,18 +285,6 @@ static void bcm_uart_do_rx(struct uart_port *port)
 				flag = TTY_PARITY;
 		}
 
-<<<<<<< HEAD
-		if (uart_handle_sysrq_char(port, c))
-			continue;
-
-
-		if ((cstat & port->ignore_status_mask) == 0)
-			tty_insert_flip_char(tty, c, flag);
-
-	} while (--max_count);
-
-	tty_flip_buffer_push(tty);
-=======
 		if (uart_prepare_sysrq_char(port, c))
 			continue;
 
@@ -357,7 +294,6 @@ static void bcm_uart_do_rx(struct uart_port *port)
 	} while (--max_count);
 
 	tty_flip_buffer_push(tty_port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -366,50 +302,6 @@ static void bcm_uart_do_rx(struct uart_port *port)
  */
 static void bcm_uart_do_tx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct circ_buf *xmit;
-	unsigned int val, max_count;
-
-	if (port->x_char) {
-		bcm_uart_writel(port, port->x_char, UART_FIFO_REG);
-		port->icount.tx++;
-		port->x_char = 0;
-		return;
-	}
-
-	if (uart_tx_stopped(port)) {
-		bcm_uart_stop_tx(port);
-		return;
-	}
-
-	xmit = &port->state->xmit;
-	if (uart_circ_empty(xmit))
-		goto txq_empty;
-
-	val = bcm_uart_readl(port, UART_MCTL_REG);
-	val = (val & UART_MCTL_TXFIFOFILL_MASK) >> UART_MCTL_TXFIFOFILL_SHIFT;
-	max_count = port->fifosize - val;
-
-	while (max_count--) {
-		unsigned int c;
-
-		c = xmit->buf[xmit->tail];
-		bcm_uart_writel(port, c, UART_FIFO_REG);
-		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-		port->icount.tx++;
-		if (uart_circ_empty(xmit))
-			break;
-	}
-
-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-		uart_write_wakeup(port);
-
-	if (uart_circ_empty(xmit))
-		goto txq_empty;
-	return;
-
-txq_empty:
-=======
 	unsigned int val;
 	bool pending;
 	u8 ch;
@@ -424,15 +316,10 @@ txq_empty:
 	if (pending)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* nothing to send, disable transmit interrupt */
 	val = bcm_uart_readl(port, UART_IR_REG);
 	val &= ~UART_TX_INT_MASK;
 	bcm_uart_writel(port, val, UART_IR_REG);
-<<<<<<< HEAD
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -444,11 +331,7 @@ static irqreturn_t bcm_uart_interrupt(int irq, void *dev_id)
 	unsigned int irqstat;
 
 	port = dev_id;
-<<<<<<< HEAD
-	spin_lock(&port->lock);
-=======
 	uart_port_lock(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	irqstat = bcm_uart_readl(port, UART_IR_REG);
 	if (irqstat & UART_RX_INT_STAT)
@@ -469,11 +352,7 @@ static irqreturn_t bcm_uart_interrupt(int irq, void *dev_id)
 					       estat & UART_EXTINP_DCD_MASK);
 	}
 
-<<<<<<< HEAD
-	spin_unlock(&port->lock);
-=======
 	uart_unlock_and_check_sysrq(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -556,11 +435,7 @@ static int bcm_uart_startup(struct uart_port *port)
 
 	/* register irq and enable rx interrupts */
 	ret = request_irq(port->irq, bcm_uart_interrupt, 0,
-<<<<<<< HEAD
-			  bcm_uart_type(port), port);
-=======
 			  dev_name(port->dev), port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 	bcm_uart_writel(port, UART_RX_INT_MASK, UART_IR_REG);
@@ -575,15 +450,9 @@ static void bcm_uart_shutdown(struct uart_port *port)
 {
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&port->lock, flags);
-	bcm_uart_writel(port, 0, UART_IR_REG);
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	uart_port_lock_irqsave(port, &flags);
 	bcm_uart_writel(port, 0, UART_IR_REG);
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bcm_uart_disable(port);
 	bcm_uart_flush(port);
@@ -593,16 +462,6 @@ static void bcm_uart_shutdown(struct uart_port *port)
 /*
  * serial core request to change current uart setting
  */
-<<<<<<< HEAD
-static void bcm_uart_set_termios(struct uart_port *port,
-				 struct ktermios *new,
-				 struct ktermios *old)
-{
-	unsigned int ctl, baud, quot, ier;
-	unsigned long flags;
-
-	spin_lock_irqsave(&port->lock, flags);
-=======
 static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
 				 const struct ktermios *old)
 {
@@ -615,7 +474,6 @@ static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
 	/* Drain the hot tub fully before we power it off for the winter. */
 	for (tries = 3; !bcm_uart_tx_empty(port) && tries; tries--)
 		mdelay(10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable uart while changing speed */
 	bcm_uart_disable(port);
@@ -674,11 +532,7 @@ static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
 		port->read_status_mask |= UART_FIFO_FRAMEERR_MASK;
 		port->read_status_mask |= UART_FIFO_PARERR_MASK;
 	}
-<<<<<<< HEAD
-	if (new->c_iflag & (BRKINT))
-=======
 	if (new->c_iflag & (IGNBRK | BRKINT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		port->read_status_mask |= UART_FIFO_BRKDET_MASK;
 
 	port->ignore_status_mask = 0;
@@ -691,11 +545,7 @@ static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
 
 	uart_update_timeout(port, new->c_cflag, baud);
 	bcm_uart_enable(port);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&port->lock, flags);
-=======
 	uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -703,24 +553,7 @@ static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
  */
 static int bcm_uart_request_port(struct uart_port *port)
 {
-<<<<<<< HEAD
-	unsigned int size;
-
-	size = RSET_UART_SIZE;
-	if (!request_mem_region(port->mapbase, size, "bcm63xx")) {
-		dev_err(port->dev, "Memory region busy\n");
-		return -EBUSY;
-	}
-
-	port->membase = ioremap(port->mapbase, size);
-	if (!port->membase) {
-		dev_err(port->dev, "Unable to map registers\n");
-		release_mem_region(port->mapbase, size);
-		return -EBUSY;
-	}
-=======
 	/* UARTs always present */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -729,12 +562,7 @@ static int bcm_uart_request_port(struct uart_port *port)
  */
 static void bcm_uart_release_port(struct uart_port *port)
 {
-<<<<<<< HEAD
-	release_mem_region(port->mapbase, RSET_UART_SIZE);
-	iounmap(port->membase);
-=======
 	/* Nothing to release ... */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -767,10 +595,6 @@ static int bcm_uart_verify_port(struct uart_port *port,
 	return 0;
 }
 
-<<<<<<< HEAD
-/* serial core callbacks */
-static struct uart_ops bcm_uart_ops = {
-=======
 #ifdef CONFIG_CONSOLE_POLL
 /*
  * return true when outstanding tx equals fifo size
@@ -807,7 +631,6 @@ static void bcm_uart_poll_put_char(struct uart_port *port, unsigned char c)
 
 /* serial core callbacks */
 static const struct uart_ops bcm_uart_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	= bcm_uart_tx_empty,
 	.get_mctrl	= bcm_uart_get_mctrl,
 	.set_mctrl	= bcm_uart_set_mctrl,
@@ -824,23 +647,16 @@ static const struct uart_ops bcm_uart_ops = {
 	.request_port	= bcm_uart_request_port,
 	.config_port	= bcm_uart_config_port,
 	.verify_port	= bcm_uart_verify_port,
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_CONSOLE_POLL
 	.poll_get_char  = bcm_uart_poll_get_char,
 	.poll_put_char  = bcm_uart_poll_put_char,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
 
 #ifdef CONFIG_SERIAL_BCM63XX_CONSOLE
-<<<<<<< HEAD
-static inline void wait_for_xmitr(struct uart_port *port)
-=======
 static void wait_for_xmitr(struct uart_port *port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int tmout;
 
@@ -872,11 +688,7 @@ static void wait_for_xmitr(struct uart_port *port)
 /*
  * output given char
  */
-<<<<<<< HEAD
-static void bcm_console_putchar(struct uart_port *port, int ch)
-=======
 static void bcm_console_putchar(struct uart_port *port, unsigned char ch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	wait_for_xmitr(port);
 	bcm_uart_writel(port, ch, UART_FIFO_REG);
@@ -890,22 +702,6 @@ static void bcm_console_write(struct console *co, const char *s,
 {
 	struct uart_port *port;
 	unsigned long flags;
-<<<<<<< HEAD
-	int locked;
-
-	port = &ports[co->index];
-
-	local_irq_save(flags);
-	if (port->sysrq) {
-		/* bcm_uart_interrupt() already took the lock */
-		locked = 0;
-	} else if (oops_in_progress) {
-		locked = spin_trylock(&port->lock);
-	} else {
-		spin_lock(&port->lock);
-		locked = 1;
-	}
-=======
 	int locked = 1;
 
 	port = &ports[co->index];
@@ -914,7 +710,6 @@ static void bcm_console_write(struct console *co, const char *s,
 		locked = uart_port_trylock_irqsave(port, &flags);
 	else
 		uart_port_lock_irqsave(port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* call helper to deal with \r\n */
 	uart_console_write(port, s, count, bcm_console_putchar);
@@ -923,12 +718,7 @@ static void bcm_console_write(struct console *co, const char *s,
 	wait_for_xmitr(port);
 
 	if (locked)
-<<<<<<< HEAD
-		spin_unlock(&port->lock);
-	local_irq_restore(flags);
-=======
 		uart_port_unlock_irqrestore(port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -974,8 +764,6 @@ static int __init bcm63xx_console_init(void)
 
 console_initcall(bcm63xx_console_init);
 
-<<<<<<< HEAD
-=======
 static void bcm_early_write(struct console *con, const char *s, unsigned n)
 {
 	struct earlycon_device *dev = con->data;
@@ -996,7 +784,6 @@ static int __init bcm_early_console_setup(struct earlycon_device *device,
 
 OF_EARLYCON_DECLARE(bcm63xx_uart, "brcm,bcm6345-uart", bcm_early_console_setup);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM63XX_CONSOLE	(&bcm63xx_console)
 #else
 #define BCM63XX_CONSOLE	NULL
@@ -1015,44 +802,13 @@ static struct uart_driver bcm_uart_driver = {
 /*
  * platform driver probe/remove callback
  */
-<<<<<<< HEAD
-static int __devinit bcm_uart_probe(struct platform_device *pdev)
-{
-	struct resource *res_mem, *res_irq;
-=======
 static int bcm_uart_probe(struct platform_device *pdev)
 {
 	struct resource *res_mem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct uart_port *port;
 	struct clk *clk;
 	int ret;
 
-<<<<<<< HEAD
-	if (pdev->id < 0 || pdev->id >= BCM63XX_NR_UARTS)
-		return -EINVAL;
-
-	if (ports[pdev->id].membase)
-		return -EBUSY;
-
-	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res_mem)
-		return -ENODEV;
-
-	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-	if (!res_irq)
-		return -ENODEV;
-
-	clk = clk_get(&pdev->dev, "periph");
-	if (IS_ERR(clk))
-		return -ENODEV;
-
-	port = &ports[pdev->id];
-	memset(port, 0, sizeof(*port));
-	port->iotype = UPIO_MEM;
-	port->mapbase = res_mem->start;
-	port->irq = res_irq->start;
-=======
 	if (pdev->dev.of_node) {
 		pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
 
@@ -1086,50 +842,30 @@ static int bcm_uart_probe(struct platform_device *pdev)
 		return -ENODEV;
 
 	port->iotype = UPIO_MEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	port->ops = &bcm_uart_ops;
 	port->flags = UPF_BOOT_AUTOCONF;
 	port->dev = &pdev->dev;
 	port->fifosize = 16;
 	port->uartclk = clk_get_rate(clk) / 2;
 	port->line = pdev->id;
-<<<<<<< HEAD
-=======
 	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_BCM63XX_CONSOLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clk_put(clk);
 
 	ret = uart_add_one_port(&bcm_uart_driver, port);
 	if (ret) {
-<<<<<<< HEAD
-		ports[pdev->id].membase = 0;
-=======
 		ports[pdev->id].membase = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	platform_set_drvdata(pdev, port);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit bcm_uart_remove(struct platform_device *pdev)
-=======
 static void bcm_uart_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uart_port *port;
 
 	port = platform_get_drvdata(pdev);
 	uart_remove_one_port(&bcm_uart_driver, port);
-<<<<<<< HEAD
-	platform_set_drvdata(pdev, NULL);
-	/* mark port as free */
-	ports[pdev->id].membase = 0;
-	return 0;
-}
-
-=======
 	/* mark port as free */
 	ports[pdev->id].membase = NULL;
 }
@@ -1140,23 +876,15 @@ static const struct of_device_id bcm63xx_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, bcm63xx_of_match);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * platform driver stuff
  */
 static struct platform_driver bcm_uart_platform_driver = {
 	.probe	= bcm_uart_probe,
-<<<<<<< HEAD
-	.remove	= __devexit_p(bcm_uart_remove),
-	.driver	= {
-		.owner = THIS_MODULE,
-		.name  = "bcm63xx_uart",
-=======
 	.remove_new = bcm_uart_remove,
 	.driver	= {
 		.name  = "bcm63xx_uart",
 		.of_match_table = bcm63xx_of_match,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -1185,9 +913,5 @@ module_init(bcm_uart_init);
 module_exit(bcm_uart_exit);
 
 MODULE_AUTHOR("Maxime Bizon <mbizon@freebox.fr>");
-<<<<<<< HEAD
-MODULE_DESCRIPTION("Broadcom 63<xx integrated uart driver");
-=======
 MODULE_DESCRIPTION("Broadcom 63xx integrated uart driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

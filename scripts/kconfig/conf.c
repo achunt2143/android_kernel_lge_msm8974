@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- * Released under the terms of the GNU GPL v2.0.
- */
-
-#include <locale.h>
-#include <ctype.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
@@ -14,39 +5,24 @@
 
 #include <ctype.h>
 #include <limits.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
 #include <getopt.h>
-<<<<<<< HEAD
-#include <sys/stat.h>
-#include <sys/time.h>
-
-=======
 #include <sys/time.h>
 #include <errno.h>
 
 #include "internal.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "lkc.h"
 
 static void conf(struct menu *menu);
 static void check_conf(struct menu *menu);
-<<<<<<< HEAD
-static void xfgets(char *str, int size, FILE *in);
-
-enum input_mode {
-	oldaskconfig,
-	silentoldconfig,
-=======
 
 enum input_mode {
 	oldaskconfig,
 	syncconfig,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oldconfig,
 	allnoconfig,
 	allyesconfig,
@@ -56,16 +32,6 @@ enum input_mode {
 	defconfig,
 	savedefconfig,
 	listnewconfig,
-<<<<<<< HEAD
-	oldnoconfig,
-} input_mode = oldaskconfig;
-
-static int indent = 1;
-static int valid_stdin = 1;
-static int sync_kconfig;
-static int conf_cnt;
-static char line[128];
-=======
 	helpnewconfig,
 	olddefconfig,
 	yes2modconfig,
@@ -79,7 +45,6 @@ static int tty_stdio;
 static int sync_kconfig;
 static int conf_cnt;
 static char line[PATH_MAX];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct menu *rootEntry;
 
 static void print_help(struct menu *menu)
@@ -109,16 +74,6 @@ static void strip(char *str)
 		*p-- = 0;
 }
 
-<<<<<<< HEAD
-static void check_stdin(void)
-{
-	if (!valid_stdin) {
-		printf(_("aborted!\n\n"));
-		printf(_("Console input/output is redirected. "));
-		printf(_("Run 'make oldconfig' to update configuration.\n\n"));
-		exit(1);
-	}
-=======
 /* Helper function to facilitate fgets() by Jean Sacren. */
 static void xfgets(char *str, int size, FILE *in)
 {
@@ -357,29 +312,17 @@ static void conf_rewrite_tristates(tristate old_val, tristate new_val)
 			sym->def[S_DEF_USER].tri = new_val;
 	}
 	sym_clear_all_valid();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int conf_askvalue(struct symbol *sym, const char *def)
 {
-<<<<<<< HEAD
-	enum symbol_type type = sym_get_type(sym);
-
-	if (!sym_has_value(sym))
-		printf(_("(NEW) "));
-=======
 	if (!sym_has_value(sym))
 		printf("(NEW) ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	line[0] = '\n';
 	line[1] = 0;
 
-<<<<<<< HEAD
-	if (!sym_is_changable(sym)) {
-=======
 	if (!sym_is_changeable(sym)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printf("%s\n", def);
 		line[0] = '\n';
 		line[1] = 0;
@@ -388,37 +331,11 @@ static int conf_askvalue(struct symbol *sym, const char *def)
 
 	switch (input_mode) {
 	case oldconfig:
-<<<<<<< HEAD
-	case silentoldconfig:
-=======
 	case syncconfig:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sym_has_value(sym)) {
 			printf("%s\n", def);
 			return 0;
 		}
-<<<<<<< HEAD
-		check_stdin();
-		/* fall through */
-	case oldaskconfig:
-		fflush(stdout);
-		xfgets(line, 128, stdin);
-		return 1;
-	default:
-		break;
-	}
-
-	switch (type) {
-	case S_INT:
-	case S_HEX:
-	case S_STRING:
-		printf("%s\n", def);
-		return 1;
-	default:
-		;
-	}
-	printf("%s", line);
-=======
 		/* fall through */
 	default:
 		fflush(stdout);
@@ -426,7 +343,6 @@ static int conf_askvalue(struct symbol *sym, const char *def)
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -436,17 +352,10 @@ static int conf_string(struct menu *menu)
 	const char *def;
 
 	while (1) {
-<<<<<<< HEAD
-		printf("%*s%s ", indent - 1, "", _(menu->prompt->text));
-		printf("(%s) ", sym->name);
-		def = sym_get_string_value(sym);
-		if (sym_get_string_value(sym))
-=======
 		printf("%*s%s ", indent - 1, "", menu->prompt->text);
 		printf("(%s) ", sym->name);
 		def = sym_get_string_value(sym);
 		if (def)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printf("[%s] ", def);
 		if (!conf_askvalue(sym, def))
 			return 0;
@@ -476,11 +385,7 @@ static int conf_sym(struct menu *menu)
 	tristate oldval, newval;
 
 	while (1) {
-<<<<<<< HEAD
-		printf("%*s%s ", indent - 1, "", _(menu->prompt->text));
-=======
 		printf("%*s%s ", indent - 1, "", menu->prompt->text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sym->name)
 			printf("(%s) ", sym->name);
 		putchar('[');
@@ -502,13 +407,7 @@ static int conf_sym(struct menu *menu)
 			printf("/m");
 		if (oldval != yes && sym_tristate_within_range(sym, yes))
 			printf("/y");
-<<<<<<< HEAD
-		if (menu_has_help(menu))
-			printf("/?");
-		printf("] ");
-=======
 		printf("/?] ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!conf_askvalue(sym, sym_get_string_value(sym)))
 			return 0;
 		strip(line);
@@ -555,11 +454,7 @@ static int conf_choice(struct menu *menu)
 
 	sym = menu->sym;
 	is_new = !sym_has_value(sym);
-<<<<<<< HEAD
-	if (sym_is_changable(sym)) {
-=======
 	if (sym_is_changeable(sym)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		conf_sym(menu);
 		sym_calc_value(sym);
 		switch (sym_get_tristate_value(sym)) {
@@ -575,11 +470,7 @@ static int conf_choice(struct menu *menu)
 		case no:
 			return 1;
 		case mod:
-<<<<<<< HEAD
-			printf("%*s%s\n", indent - 1, "", _(menu_get_prompt(menu)));
-=======
 			printf("%*s%s\n", indent - 1, "", menu_get_prompt(menu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		case yes:
 			break;
@@ -589,11 +480,7 @@ static int conf_choice(struct menu *menu)
 	while (1) {
 		int cnt, def;
 
-<<<<<<< HEAD
-		printf("%*s%s\n", indent - 1, "", _(menu_get_prompt(menu)));
-=======
 		printf("%*s%s\n", indent - 1, "", menu_get_prompt(menu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		def_sym = sym_get_choice_value(sym);
 		cnt = def = 0;
 		line[0] = 0;
@@ -601,11 +488,7 @@ static int conf_choice(struct menu *menu)
 			if (!menu_is_visible(child))
 				continue;
 			if (!child->sym) {
-<<<<<<< HEAD
-				printf("%*c %s\n", indent, '*', _(menu_get_prompt(child)));
-=======
 				printf("%*c %s\n", indent, '*', menu_get_prompt(child));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 			cnt++;
@@ -614,16 +497,6 @@ static int conf_choice(struct menu *menu)
 				printf("%*c", indent, '>');
 			} else
 				printf("%*c", indent, ' ');
-<<<<<<< HEAD
-			printf(" %d. %s", cnt, _(menu_get_prompt(child)));
-			if (child->sym->name)
-				printf(" (%s)", child->sym->name);
-			if (!sym_has_value(child->sym))
-				printf(_(" (NEW)"));
-			printf("\n");
-		}
-		printf(_("%*schoice"), indent - 1, "");
-=======
 			printf(" %d. %s", cnt, menu_get_prompt(child));
 			if (child->sym->name)
 				printf(" (%s)", child->sym->name);
@@ -632,42 +505,23 @@ static int conf_choice(struct menu *menu)
 			printf("\n");
 		}
 		printf("%*schoice", indent - 1, "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cnt == 1) {
 			printf("[1]: 1\n");
 			goto conf_childs;
 		}
-<<<<<<< HEAD
-		printf("[1-%d", cnt);
-		if (menu_has_help(menu))
-			printf("?");
-		printf("]: ");
-		switch (input_mode) {
-		case oldconfig:
-		case silentoldconfig:
-=======
 		printf("[1-%d?]: ", cnt);
 		switch (input_mode) {
 		case oldconfig:
 		case syncconfig:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!is_new) {
 				cnt = def;
 				printf("%d\n", cnt);
 				break;
 			}
-<<<<<<< HEAD
-			check_stdin();
-			/* fall through */
-		case oldaskconfig:
-			fflush(stdout);
-			xfgets(line, 128, stdin);
-=======
 			/* fall through */
 		case oldaskconfig:
 			fflush(stdout);
 			xfgets(line, sizeof(line), stdin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			strip(line);
 			if (line[0] == '?') {
 				print_help(menu);
@@ -697,16 +551,7 @@ static int conf_choice(struct menu *menu)
 			print_help(child);
 			continue;
 		}
-<<<<<<< HEAD
-		sym_set_choice_value(sym, child->sym);
-		for (child = child->list; child; child = child->next) {
-			indent += 2;
-			conf(child);
-			indent -= 2;
-		}
-=======
 		sym_set_tristate_value(child->sym, yes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 }
@@ -727,18 +572,11 @@ static void conf(struct menu *menu)
 
 		switch (prop->type) {
 		case P_MENU:
-<<<<<<< HEAD
-			if ((input_mode == silentoldconfig ||
-			     input_mode == listnewconfig ||
-			     input_mode == oldnoconfig) &&
-			    rootEntry != menu) {
-=======
 			/*
 			 * Except in oldaskconfig mode, we show only menus that
 			 * contain new symbols.
 			 */
 			if (input_mode != oldaskconfig && rootEntry != menu) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				check_conf(menu);
 				return;
 			}
@@ -748,11 +586,7 @@ static void conf(struct menu *menu)
 			if (prompt)
 				printf("%*c\n%*c %s\n%*c\n",
 					indent, '*',
-<<<<<<< HEAD
-					indent, '*', _(prompt),
-=======
 					indent, '*', prompt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					indent, '*');
 		default:
 			;
@@ -798,21 +632,6 @@ static void check_conf(struct menu *menu)
 		return;
 
 	sym = menu->sym;
-<<<<<<< HEAD
-	if (sym && !sym_has_value(sym)) {
-		if (sym_is_changable(sym) ||
-		    (sym_is_choice(sym) && sym_get_tristate_value(sym) == yes)) {
-			if (input_mode == listnewconfig) {
-				if (sym->name && !sym_is_choice_value(sym)) {
-					printf("%s%s\n", CONFIG_, sym->name);
-				}
-			} else if (input_mode != oldnoconfig) {
-				if (!conf_cnt++)
-					printf(_("*\n* Restart config...\n*\n"));
-				rootEntry = menu_get_parent_menu(menu);
-				conf(rootEntry);
-			}
-=======
 	if (sym && !sym_has_value(sym) &&
 	    (sym_is_changeable(sym) ||
 	     (sym_is_choice(sym) && sym_get_tristate_value(sym) == yes))) {
@@ -833,7 +652,6 @@ static void check_conf(struct menu *menu)
 			rootEntry = menu_get_parent_menu(menu);
 			conf(rootEntry);
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -841,21 +659,6 @@ static void check_conf(struct menu *menu)
 		check_conf(child);
 }
 
-<<<<<<< HEAD
-static struct option long_opts[] = {
-	{"oldaskconfig",    no_argument,       NULL, oldaskconfig},
-	{"oldconfig",       no_argument,       NULL, oldconfig},
-	{"silentoldconfig", no_argument,       NULL, silentoldconfig},
-	{"defconfig",       optional_argument, NULL, defconfig},
-	{"savedefconfig",   required_argument, NULL, savedefconfig},
-	{"allnoconfig",     no_argument,       NULL, allnoconfig},
-	{"allyesconfig",    no_argument,       NULL, allyesconfig},
-	{"allmodconfig",    no_argument,       NULL, allmodconfig},
-	{"alldefconfig",    no_argument,       NULL, alldefconfig},
-	{"randconfig",      no_argument,       NULL, randconfig},
-	{"listnewconfig",   no_argument,       NULL, listnewconfig},
-	{"oldnoconfig",     no_argument,       NULL, oldnoconfig},
-=======
 static const struct option long_opts[] = {
 	{"help",          no_argument,       NULL,            'h'},
 	{"silent",        no_argument,       NULL,            's'},
@@ -875,22 +678,11 @@ static const struct option long_opts[] = {
 	{"yes2modconfig", no_argument,       &input_mode_opt, yes2modconfig},
 	{"mod2yesconfig", no_argument,       &input_mode_opt, mod2yesconfig},
 	{"mod2noconfig",  no_argument,       &input_mode_opt, mod2noconfig},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{NULL, 0, NULL, 0}
 };
 
 static void conf_usage(const char *progname)
 {
-<<<<<<< HEAD
-
-	printf("Usage: %s [option] <kconfig-file>\n", progname);
-	printf("[option] is _one_ of the following:\n");
-	printf("  --listnewconfig         List new options\n");
-	printf("  --oldaskconfig          Start a new configuration using a line-oriented program\n");
-	printf("  --oldconfig             Update a configuration using a provided .config as base\n");
-	printf("  --silentoldconfig       Same as oldconfig, but quietly, additionally update deps\n");
-	printf("  --oldnoconfig           Same as silentoldconfig but set new symbols to no\n");
-=======
 	printf("Usage: %s [options] <kconfig-file>\n", progname);
 	printf("\n");
 	printf("Generic options:\n");
@@ -905,7 +697,6 @@ static void conf_usage(const char *progname)
 	printf("  --syncconfig            Similar to oldconfig but generates configuration in\n"
 	       "                          include/{generated/,config/}\n");
 	printf("  --olddefconfig          Same as oldconfig but sets new symbols to their default value\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printf("  --defconfig <file>      New config with default defined in <file>\n");
 	printf("  --savedefconfig <file>  Save the minimal current configuration to <file>\n");
 	printf("  --allnoconfig           New config where all options are answered with no\n");
@@ -913,13 +704,10 @@ static void conf_usage(const char *progname)
 	printf("  --allmodconfig          New config where all options are answered with mod\n");
 	printf("  --alldefconfig          New config with all symbols set to default\n");
 	printf("  --randconfig            New config with random answer to all options\n");
-<<<<<<< HEAD
-=======
 	printf("  --yes2modconfig         Change answers from yes to mod if possible\n");
 	printf("  --mod2yesconfig         Change answers from mod to yes if possible\n");
 	printf("  --mod2noconfig          Change answers from mod to no if possible\n");
 	printf("  (If none of the above is given, --oldaskconfig is the default)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int main(int ac, char **av)
@@ -927,83 +715,6 @@ int main(int ac, char **av)
 	const char *progname = av[0];
 	int opt;
 	const char *name, *defconfig_file = NULL /* gcc uninit */;
-<<<<<<< HEAD
-	struct stat tmpstat;
-
-	setlocale(LC_ALL, "");
-	bindtextdomain(PACKAGE, LOCALEDIR);
-	textdomain(PACKAGE);
-
-	while ((opt = getopt_long(ac, av, "", long_opts, NULL)) != -1) {
-		input_mode = (enum input_mode)opt;
-		switch (opt) {
-		case silentoldconfig:
-			sync_kconfig = 1;
-			break;
-		case defconfig:
-		case savedefconfig:
-			defconfig_file = optarg;
-			break;
-		case randconfig:
-		{
-			struct timeval now;
-			unsigned int seed;
-
-			/*
-			 * Use microseconds derived seed,
-			 * compensate for systems where it may be zero
-			 */
-			gettimeofday(&now, NULL);
-
-			seed = (unsigned int)((now.tv_sec + 1) * (now.tv_usec + 1));
-			srand(seed);
-			break;
-		}
-		case oldaskconfig:
-		case oldconfig:
-		case allnoconfig:
-		case allyesconfig:
-		case allmodconfig:
-		case alldefconfig:
-		case listnewconfig:
-		case oldnoconfig:
-			break;
-		case '?':
-			conf_usage(progname);
-			exit(1);
-			break;
-		}
-	}
-	if (ac == optind) {
-		printf(_("%s: Kconfig file missing\n"), av[0]);
-		conf_usage(progname);
-		exit(1);
-	}
-	name = av[optind];
-	conf_parse(name);
-	//zconfdump(stdout);
-	if (sync_kconfig) {
-		name = conf_get_configname();
-		if (stat(name, &tmpstat)) {
-			fprintf(stderr, _("***\n"
-				"*** Configuration file \"%s\" not found!\n"
-				"***\n"
-				"*** Please run some configurator (e.g. \"make oldconfig\" or\n"
-				"*** \"make menuconfig\" or \"make xconfig\").\n"
-				"***\n"), name);
-			exit(1);
-		}
-	}
-
-	switch (input_mode) {
-	case defconfig:
-		if (!defconfig_file)
-			defconfig_file = conf_get_default_confname();
-		if (conf_read(defconfig_file)) {
-			printf(_("***\n"
-				"*** Can't find default configuration \"%s\"!\n"
-				"***\n"), defconfig_file);
-=======
 	int no_conf_write = 0;
 
 	tty_stdio = isatty(0) && isatty(1);
@@ -1059,18 +770,10 @@ int main(int ac, char **av)
 				  "*** Can't find default configuration \"%s\"!\n"
 				  "***\n",
 				defconfig_file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			exit(1);
 		}
 		break;
 	case savedefconfig:
-<<<<<<< HEAD
-	case silentoldconfig:
-	case oldaskconfig:
-	case oldconfig:
-	case listnewconfig:
-	case oldnoconfig:
-=======
 	case syncconfig:
 	case oldaskconfig:
 	case oldconfig:
@@ -1080,7 +783,6 @@ int main(int ac, char **av)
 	case yes2modconfig:
 	case mod2yesconfig:
 	case mod2noconfig:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		conf_read(NULL);
 		break;
 	case allnoconfig:
@@ -1089,10 +791,6 @@ int main(int ac, char **av)
 	case alldefconfig:
 	case randconfig:
 		name = getenv("KCONFIG_ALLCONFIG");
-<<<<<<< HEAD
-		if (name && !stat(name, &tmpstat)) {
-			conf_read_simple(name, S_DEF_USER);
-=======
 		if (!name)
 			break;
 		if ((strcmp(name, "") != 0) && (strcmp(name, "1") != 0)) {
@@ -1102,7 +800,6 @@ int main(int ac, char **av)
 					name);
 				exit(1);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		switch (input_mode) {
@@ -1113,12 +810,6 @@ int main(int ac, char **av)
 		case randconfig:	name = "allrandom.config"; break;
 		default: break;
 		}
-<<<<<<< HEAD
-		if (!stat(name, &tmpstat))
-			conf_read_simple(name, S_DEF_USER);
-		else if (!stat("all.config", &tmpstat))
-			conf_read_simple("all.config", S_DEF_USER);
-=======
 		if (conf_read_simple(name, S_DEF_USER) &&
 		    conf_read_simple("all.config", S_DEF_USER)) {
 			fprintf(stderr,
@@ -1126,24 +817,11 @@ int main(int ac, char **av)
 				name);
 			exit(1);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
 	}
 
-<<<<<<< HEAD
-	if (sync_kconfig) {
-		if (conf_get_changed()) {
-			name = getenv("KCONFIG_NOSILENTUPDATE");
-			if (name && *name) {
-				fprintf(stderr,
-					_("\n*** The configuration requires explicit update.\n\n"));
-				return 1;
-			}
-		}
-		valid_stdin = isatty(0) && isatty(1) && isatty(2);
-=======
 	if (conf_errors())
 		exit(1);
 
@@ -1157,7 +835,6 @@ int main(int ac, char **av)
 			}
 			no_conf_write = 1;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (input_mode) {
@@ -1174,29 +851,14 @@ int main(int ac, char **av)
 		conf_set_all_new_symbols(def_default);
 		break;
 	case randconfig:
-<<<<<<< HEAD
-		conf_set_all_new_symbols(def_random);
-=======
 		/* Really nothing to do in this loop */
 		while (conf_set_all_new_symbols(def_random)) ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case defconfig:
 		conf_set_all_new_symbols(def_default);
 		break;
 	case savedefconfig:
 		break;
-<<<<<<< HEAD
-	case oldaskconfig:
-		rootEntry = &rootmenu;
-		conf(&rootmenu);
-		input_mode = silentoldconfig;
-		/* fall through */
-	case oldconfig:
-	case listnewconfig:
-	case oldnoconfig:
-	case silentoldconfig:
-=======
 	case yes2modconfig:
 		conf_rewrite_tristates(yes, mod);
 		break;
@@ -1215,54 +877,10 @@ int main(int ac, char **av)
 	case listnewconfig:
 	case helpnewconfig:
 	case syncconfig:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Update until a loop caused no more changes */
 		do {
 			conf_cnt = 0;
 			check_conf(&rootmenu);
-<<<<<<< HEAD
-		} while (conf_cnt &&
-			 (input_mode != listnewconfig &&
-			  input_mode != oldnoconfig));
-		break;
-	}
-
-	if (sync_kconfig) {
-		/* silentoldconfig is used during the build so we shall update autoconf.
-		 * All other commands are only used to generate a config.
-		 */
-		if (conf_get_changed() && conf_write(NULL)) {
-			fprintf(stderr, _("\n*** Error during writing of the configuration.\n\n"));
-			exit(1);
-		}
-		if (conf_write_autoconf()) {
-			fprintf(stderr, _("\n*** Error during update of the configuration.\n\n"));
-			return 1;
-		}
-	} else if (input_mode == savedefconfig) {
-		if (conf_write_defconfig(defconfig_file)) {
-			fprintf(stderr, _("n*** Error while saving defconfig to: %s\n\n"),
-			        defconfig_file);
-			return 1;
-		}
-	} else if (input_mode != listnewconfig) {
-		if (conf_write(NULL)) {
-			fprintf(stderr, _("\n*** Error during writing of the configuration.\n\n"));
-			exit(1);
-		}
-	}
-	return 0;
-}
-
-/*
- * Helper function to facilitate fgets() by Jean Sacren.
- */
-void xfgets(char *str, int size, FILE *in)
-{
-	if (fgets(str, size, in) == NULL)
-		fprintf(stderr, "\nError in reading or end of file.\n");
-}
-=======
 		} while (conf_cnt);
 		break;
 	case olddefconfig:
@@ -1302,4 +920,3 @@ void xfgets(char *str, int size, FILE *in)
 	}
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

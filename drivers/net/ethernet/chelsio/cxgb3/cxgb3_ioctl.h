@@ -79,11 +79,7 @@ struct ch_mem_range {
 	uint32_t addr;
 	uint32_t len;
 	uint32_t version;
-<<<<<<< HEAD
-	uint8_t buf[0];
-=======
 	uint8_t buf[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ch_qset_params {

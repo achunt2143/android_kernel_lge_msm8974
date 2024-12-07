@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_REGMAP_H
 #define __LINUX_REGMAP_H
 
@@ -11,21 +8,6 @@
  * Copyright 2011 Wolfson Microelectronics plc
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-#include <linux/list.h>
-
-struct module;
-struct device;
-struct i2c_client;
-struct spi_device;
-struct regmap;
-=======
  */
 
 #include <linux/list.h>
@@ -71,24 +53,11 @@ struct sdw_slave;
  */
 #define REGMAP_UPSHIFT(s)	(-(s))
 #define REGMAP_DOWNSHIFT(s)	(s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* An enum of all the supported cache types */
 enum regcache_type {
 	REGCACHE_NONE,
 	REGCACHE_RBTREE,
-<<<<<<< HEAD
-	REGCACHE_COMPRESSED
-};
-
-/**
- * Default value for a register.  We use an array of structs rather
- * than a simple array as many modern devices have very sparse
- * register maps.
- *
- * @reg: Register address.
- * @def: Register default value.
-=======
 	REGCACHE_FLAT,
 	REGCACHE_MAPLE,
 };
@@ -101,21 +70,12 @@ enum regcache_type {
  *
  * We use an array of structs rather than a simple array as many modern devices
  * have very sparse register maps.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct reg_default {
 	unsigned int reg;
 	unsigned int def;
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_REGMAP
-
-/**
- * Configuration for the register map of a device.
- *
- * @reg_bits: Number of bits in a register address, mandatory.
-=======
 /**
  * struct reg_sequence - An individual write from a sequence of writes.
  *
@@ -299,23 +259,10 @@ typedef void (*regmap_unlock)(void *);
  *	       values will be upshifted
  * @reg_base: Value to be added to every register address before performing any
  *	      operation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pad_bits: Number of bits of padding between register and value.
  * @val_bits: Number of bits in a register value, mandatory.
  *
  * @writeable_reg: Optional callback returning true if the register
-<<<<<<< HEAD
- *                 can be written to.
- * @readable_reg: Optional callback returning true if the register
- *                can be read from.
- * @volatile_reg: Optional callback returning true if the register
- *                value can't be cached.
- * @precious_reg: Optional callback returning true if the rgister
- *                should not be read outside of a call from the driver
- *                (eg, a clear on read interrupt status register).
- *
- * @max_register: Optional, specifies the maximum valid register index.
-=======
  *		   can be written to. If this field is NULL but wr_table
  *		   (see below) is not, the check is performed on such table
  *                 (a register is writeable if it belongs to one of the ranges
@@ -396,18 +343,10 @@ typedef void (*regmap_unlock)(void *);
  * @precious_table: As above, for precious registers.
  * @wr_noinc_table: As above, for no increment writeable registers.
  * @rd_noinc_table: As above, for no increment readable registers.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg_defaults: Power on reset values for registers (for use with
  *                register cache support).
  * @num_reg_defaults: Number of elements in reg_defaults.
  *
-<<<<<<< HEAD
- * @read_flag_mask: Mask to be set in the top byte of the register when doing
- *                  a read.
- * @write_flag_mask: Mask to be set in the top byte of the register when doing
- *                   a write. If both read_flag_mask and write_flag_mask are
- *                   empty the regmap_bus default masks are used.
-=======
  * @read_flag_mask: Mask to be set in the top bytes of the register when doing
  *                  a read.
  * @write_flag_mask: Mask to be set in the top bytes of the register when doing
@@ -429,17 +368,11 @@ typedef void (*regmap_unlock)(void *);
  * @can_multi_write: If set, the device supports the multi write mode of bulk
  *                   write operations, if clear multi write requests will be
  *                   split into individual write operations
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @cache_type: The actual cache type.
  * @reg_defaults_raw: Power on reset values for registers (for use with
  *                    register cache support).
  * @num_reg_defaults_raw: Number of elements in reg_defaults_raw.
-<<<<<<< HEAD
- */
-struct regmap_config {
-	int reg_bits;
-=======
  * @reg_format_endian: Endianness for formatted register addresses. If this is
  *                     DEFAULT, the @reg_format_endian_default value from the
  *                     regmap bus is used.
@@ -463,7 +396,6 @@ struct regmap_config {
 	int reg_stride;
 	int reg_shift;
 	unsigned int reg_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pad_bits;
 	int val_bits;
 
@@ -471,10 +403,6 @@ struct regmap_config {
 	bool (*readable_reg)(struct device *dev, unsigned int reg);
 	bool (*volatile_reg)(struct device *dev, unsigned int reg);
 	bool (*precious_reg)(struct device *dev, unsigned int reg);
-<<<<<<< HEAD
-
-	unsigned int max_register;
-=======
 	bool (*writeable_noinc_reg)(struct device *dev, unsigned int reg);
 	bool (*readable_noinc_reg)(struct device *dev, unsigned int reg);
 
@@ -505,81 +433,12 @@ struct regmap_config {
 	const struct regmap_access_table *precious_table;
 	const struct regmap_access_table *wr_noinc_table;
 	const struct regmap_access_table *rd_noinc_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct reg_default *reg_defaults;
 	unsigned int num_reg_defaults;
 	enum regcache_type cache_type;
 	const void *reg_defaults_raw;
 	unsigned int num_reg_defaults_raw;
 
-<<<<<<< HEAD
-	u8 read_flag_mask;
-	u8 write_flag_mask;
-};
-
-typedef int (*regmap_hw_write)(struct device *dev, const void *data,
-			       size_t count);
-typedef int (*regmap_hw_gather_write)(struct device *dev,
-				      const void *reg, size_t reg_len,
-				      const void *val, size_t val_len);
-typedef int (*regmap_hw_read)(struct device *dev,
-			      const void *reg_buf, size_t reg_size,
-			      void *val_buf, size_t val_size);
-
-/**
- * Description of a hardware bus for the register map infrastructure.
- *
- * @write: Write operation.
- * @gather_write: Write operation with split register/value, return -ENOTSUPP
- *                if not implemented  on a given device.
- * @read: Read operation.  Data is returned in the buffer used to transmit
- *         data.
- * @read_flag_mask: Mask to be set in the top byte of the register when doing
- *                  a read.
- */
-struct regmap_bus {
-	regmap_hw_write write;
-	regmap_hw_gather_write gather_write;
-	regmap_hw_read read;
-	u8 read_flag_mask;
-};
-
-struct regmap *regmap_init(struct device *dev,
-			   const struct regmap_bus *bus,
-			   const struct regmap_config *config);
-struct regmap *regmap_init_i2c(struct i2c_client *i2c,
-			       const struct regmap_config *config);
-struct regmap *regmap_init_spi(struct spi_device *dev,
-			       const struct regmap_config *config);
-
-struct regmap *devm_regmap_init(struct device *dev,
-				const struct regmap_bus *bus,
-				const struct regmap_config *config);
-struct regmap *devm_regmap_init_i2c(struct i2c_client *i2c,
-				    const struct regmap_config *config);
-struct regmap *devm_regmap_init_spi(struct spi_device *dev,
-				    const struct regmap_config *config);
-
-void regmap_exit(struct regmap *map);
-int regmap_reinit_cache(struct regmap *map,
-			const struct regmap_config *config);
-int regmap_write(struct regmap *map, unsigned int reg, unsigned int val);
-int regmap_raw_write(struct regmap *map, unsigned int reg,
-		     const void *val, size_t val_len);
-int regmap_bulk_write(struct regmap *map, unsigned int reg, const void *val,
-			size_t val_count);
-int regmap_read(struct regmap *map, unsigned int reg, unsigned int *val);
-int regmap_raw_read(struct regmap *map, unsigned int reg,
-		    void *val, size_t val_len);
-int regmap_bulk_read(struct regmap *map, unsigned int reg, void *val,
-		     size_t val_count);
-int regmap_update_bits(struct regmap *map, unsigned int reg,
-		       unsigned int mask, unsigned int val);
-int regmap_update_bits_check(struct regmap *map, unsigned int reg,
-			     unsigned int mask, unsigned int val,
-			     bool *change);
-int regmap_get_val_bytes(struct regmap *map);
-=======
 	unsigned long read_flag_mask;
 	unsigned long write_flag_mask;
 	bool zero_flag_mask;
@@ -1425,25 +1284,10 @@ int regmap_async_complete(struct regmap *map);
 bool regmap_can_raw_write(struct regmap *map);
 size_t regmap_get_raw_read_max(struct regmap *map);
 size_t regmap_get_raw_write_max(struct regmap *map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int regcache_sync(struct regmap *map);
 int regcache_sync_region(struct regmap *map, unsigned int min,
 			 unsigned int max);
-<<<<<<< HEAD
-void regcache_cache_only(struct regmap *map, bool enable);
-void regcache_cache_bypass(struct regmap *map, bool enable);
-void regcache_mark_dirty(struct regmap *map);
-
-int regmap_register_patch(struct regmap *map, const struct reg_default *regs,
-			  int num_regs);
-
-/**
- * Description of an IRQ for the generic regmap irq_chip.
- *
- * @reg_offset: Offset of the status/mask register within the bank
- * @mask:       Mask used to flag/control the register.
-=======
 int regcache_drop_region(struct regmap *map, unsigned int min,
 			 unsigned int max);
 void regcache_cache_only(struct regmap *map, bool enable);
@@ -1645,30 +1489,10 @@ struct regmap_irq_type {
  * @reg_offset: Offset of the status/mask register within the bank
  * @mask:       Mask used to flag/control the register.
  * @type:	IRQ trigger type setting details if supported.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct regmap_irq {
 	unsigned int reg_offset;
 	unsigned int mask;
-<<<<<<< HEAD
-};
-
-/**
- * Description of a generic regmap irq_chip.  This is not intended to
- * handle every possible interrupt controller, but it should handle a
- * substantial proportion of those that are found in the wild.
- *
- * @name:        Descriptive name for IRQ controller.
- *
- * @status_base: Base status register address.
- * @mask_base:   Base mask register address.
- * @ack_base:    Base ack address.  If zero then the chip is clear on read.
- *
- * @num_regs:    Number of registers in each control bank.
- * @irqs:        Descriptors for individual IRQs.  Interrupt numbers are
- *               assigned based on the index in the array of the interrupt.
- * @num_irqs:    Number of descriptors.
-=======
 	struct regmap_irq_type type;
 };
 
@@ -1777,16 +1601,10 @@ struct regmap_irq_chip_data;
  * This is not intended to handle every possible interrupt controller, but
  * it should handle a substantial proportion of those that are found in the
  * wild.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct regmap_irq_chip {
 	const char *name;
 
-<<<<<<< HEAD
-	unsigned int status_base;
-	unsigned int mask_base;
-	unsigned int ack_base;
-=======
 	unsigned int main_status;
 	unsigned int num_main_status_bits;
 	struct regmap_irq_sub_irq_map *sub_reg_offsets;
@@ -1810,23 +1628,11 @@ struct regmap_irq_chip {
 	unsigned int clear_on_unmask:1;
 	unsigned int runtime_pm:1;
 	unsigned int no_status:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int num_regs;
 
 	const struct regmap_irq *irqs;
 	int num_irqs;
-<<<<<<< HEAD
-};
-
-struct regmap_irq_chip_data;
-
-int regmap_add_irq_chip(struct regmap *map, int irq, int irq_flags,
-			int irq_base, struct regmap_irq_chip *chip,
-			struct regmap_irq_chip_data **data);
-void regmap_del_irq_chip(int irq, struct regmap_irq_chip_data *data);
-int regmap_irq_chip_get_base(struct regmap_irq_chip_data *data);
-=======
 
 	int num_config_bases;
 	int num_config_regs;
@@ -1875,7 +1681,6 @@ void devm_regmap_del_irq_chip(struct device *dev, int irq,
 int regmap_irq_chip_get_base(struct regmap_irq_chip_data *data);
 int regmap_irq_get_virq(struct regmap_irq_chip_data *data, int irq);
 struct irq_domain *regmap_irq_get_domain(struct regmap_irq_chip_data *data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 
@@ -1893,8 +1698,6 @@ static inline int regmap_write(struct regmap *map, unsigned int reg,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 static inline int regmap_write_async(struct regmap *map, unsigned int reg,
 				     unsigned int val)
 {
@@ -1902,7 +1705,6 @@ static inline int regmap_write_async(struct regmap *map, unsigned int reg,
 	return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int regmap_raw_write(struct regmap *map, unsigned int reg,
 				   const void *val, size_t val_len)
 {
@@ -1910,8 +1712,6 @@ static inline int regmap_raw_write(struct regmap *map, unsigned int reg,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 static inline int regmap_raw_write_async(struct regmap *map, unsigned int reg,
 					 const void *val, size_t val_len)
 {
@@ -1926,7 +1726,6 @@ static inline int regmap_noinc_write(struct regmap *map, unsigned int reg,
 	return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int regmap_bulk_write(struct regmap *map, unsigned int reg,
 				    const void *val, size_t val_count)
 {
@@ -1941,8 +1740,6 @@ static inline int regmap_read(struct regmap *map, unsigned int reg,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 static inline int regmap_read_bypassed(struct regmap *map, unsigned int reg,
 				       unsigned int *val)
 {
@@ -1950,7 +1747,6 @@ static inline int regmap_read_bypassed(struct regmap *map, unsigned int reg,
 	return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int regmap_raw_read(struct regmap *map, unsigned int reg,
 				  void *val, size_t val_len)
 {
@@ -1958,8 +1754,6 @@ static inline int regmap_raw_read(struct regmap *map, unsigned int reg,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 static inline int regmap_noinc_read(struct regmap *map, unsigned int reg,
 				    void *val, size_t val_len)
 {
@@ -1967,7 +1761,6 @@ static inline int regmap_noinc_read(struct regmap *map, unsigned int reg,
 	return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int regmap_bulk_read(struct regmap *map, unsigned int reg,
 				   void *val, size_t val_count)
 {
@@ -1975,8 +1768,6 @@ static inline int regmap_bulk_read(struct regmap *map, unsigned int reg,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 static inline int regmap_update_bits_base(struct regmap *map, unsigned int reg,
 					  unsigned int mask, unsigned int val,
 					  bool *change, bool async, bool force)
@@ -2023,7 +1814,6 @@ static inline int regmap_fields_update_bits_base(struct regmap_field *field,
 	return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int regmap_update_bits(struct regmap *map, unsigned int reg,
 				     unsigned int mask, unsigned int val)
 {
@@ -2031,10 +1821,6 @@ static inline int regmap_update_bits(struct regmap *map, unsigned int reg,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static inline int regmap_update_bits_check(struct regmap *map,
-					   unsigned int reg,
-=======
 static inline int regmap_update_bits_async(struct regmap *map, unsigned int reg,
 					   unsigned int mask, unsigned int val)
 {
@@ -2043,7 +1829,6 @@ static inline int regmap_update_bits_async(struct regmap *map, unsigned int reg,
 }
 
 static inline int regmap_update_bits_check(struct regmap *map, unsigned int reg,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   unsigned int mask, unsigned int val,
 					   bool *change)
 {
@@ -2051,8 +1836,6 @@ static inline int regmap_update_bits_check(struct regmap *map, unsigned int reg,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 static inline int
 regmap_update_bits_check_async(struct regmap *map, unsigned int reg,
 			       unsigned int mask, unsigned int val,
@@ -2149,15 +1932,12 @@ regmap_fields_force_update_bits(struct regmap_field *field, unsigned int id,
 	return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int regmap_get_val_bytes(struct regmap *map)
 {
 	WARN_ONCE(1, "regmap API is disabled");
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 static inline int regmap_get_max_register(struct regmap *map)
 {
 	WARN_ONCE(1, "regmap API is disabled");
@@ -2176,7 +1956,6 @@ static inline bool regmap_might_sleep(struct regmap *map)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int regcache_sync(struct regmap *map)
 {
 	WARN_ONCE(1, "regmap API is disabled");
@@ -2190,8 +1969,6 @@ static inline int regcache_sync_region(struct regmap *map, unsigned int min,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 static inline int regcache_drop_region(struct regmap *map, unsigned int min,
 				       unsigned int max)
 {
@@ -2199,7 +1976,6 @@ static inline int regcache_drop_region(struct regmap *map, unsigned int min,
 	return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void regcache_cache_only(struct regmap *map, bool enable)
 {
 	WARN_ONCE(1, "regmap API is disabled");
@@ -2215,10 +1991,6 @@ static inline void regcache_mark_dirty(struct regmap *map)
 	WARN_ONCE(1, "regmap API is disabled");
 }
 
-<<<<<<< HEAD
-static inline int regmap_register_patch(struct regmap *map,
-					const struct reg_default *regs,
-=======
 static inline void regmap_async_complete(struct regmap *map)
 {
 	WARN_ONCE(1, "regmap API is disabled");
@@ -2226,15 +1998,12 @@ static inline void regmap_async_complete(struct regmap *map)
 
 static inline int regmap_register_patch(struct regmap *map,
 					const struct reg_sequence *regs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					int num_regs)
 {
 	WARN_ONCE(1, "regmap API is disabled");
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 static inline int regmap_parse_val(struct regmap *map, const void *buf,
 				unsigned int *val)
 {
@@ -2254,7 +2023,6 @@ static inline struct device *regmap_get_device(struct regmap *map)
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

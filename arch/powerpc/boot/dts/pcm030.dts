@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * phyCORE-MPC5200B-tiny (pcm030) board Device Tree Source
  *
@@ -9,20 +6,10 @@
  * Sascha Hauer <s.hauer@pengutronix.de>
  * Copyright 2007 Pengutronix
  * Juergen Beisert <j.beisert@pengutronix.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /include/ "mpc5200b.dtsi"
 
-<<<<<<< HEAD
-=======
 &gpt0 { fsl,has-wdt; };
 &gpt2 { gpio-controller; };
 &gpt3 { gpio-controller; };
@@ -31,57 +18,12 @@
 &gpt6 { gpio-controller; };
 &gpt7 { gpio-controller; };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 / {
 	model = "phytec,pcm030";
 	compatible = "phytec,pcm030";
 
 	soc5200@f0000000 {
-<<<<<<< HEAD
-		timer@600 {		// General Purpose Timer
-			fsl,has-wdt;
-		};
-
-		gpt2: timer@620 {	// General Purpose Timer in GPIO mode
-			compatible = "fsl,mpc5200b-gpt-gpio","fsl,mpc5200-gpt-gpio";
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		gpt3: timer@630 {	// General Purpose Timer in GPIO mode
-			compatible = "fsl,mpc5200b-gpt-gpio","fsl,mpc5200-gpt-gpio";
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		gpt4: timer@640 {	// General Purpose Timer in GPIO mode
-			compatible = "fsl,mpc5200b-gpt-gpio","fsl,mpc5200-gpt-gpio";
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		gpt5: timer@650 {	// General Purpose Timer in GPIO mode
-			compatible = "fsl,mpc5200b-gpt-gpio","fsl,mpc5200-gpt-gpio";
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		gpt6: timer@660 {	// General Purpose Timer in GPIO mode
-			compatible = "fsl,mpc5200b-gpt-gpio","fsl,mpc5200-gpt-gpio";
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		gpt7: timer@670 {	// General Purpose Timer in GPIO mode
-			compatible = "fsl,mpc5200b-gpt-gpio","fsl,mpc5200-gpt-gpio";
-			gpio-controller;
-			#gpio-cells = <2>;
-		};
-
-		psc@2000 { /* PSC1 in ac97 mode */
-=======
 		audioplatform: psc@2000 { /* PSC1 in ac97 mode */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			compatible = "mpc5200b-psc-ac97","fsl,mpc5200b-psc-ac97";
 			cell-index = <0>;
 		};
@@ -125,11 +67,7 @@
 				reg = <0x51>;
 			};
 			eeprom@52 {
-<<<<<<< HEAD
-				compatible = "catalyst,24c32";
-=======
 				compatible = "catalyst,24c32", "atmel,24c32";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				reg = <0x52>;
 				pagesize = <32>;
 			};
@@ -152,26 +90,17 @@
 				 0xc800 0 0 2 &mpc5200_pic 1 2 3
 				 0xc800 0 0 3 &mpc5200_pic 1 3 3
 				 0xc800 0 0 4 &mpc5200_pic 0 0 3>;
-<<<<<<< HEAD
-		ranges = <0x42000000 0 0x80000000 0x80000000 0 0x20000000
-			  0x02000000 0 0xa0000000 0xa0000000 0 0x10000000
-			  0x01000000 0 0x00000000 0xb0000000 0 0x01000000>;
-=======
 		ranges = <0x42000000 0 0x80000000 0x80000000 0 0x20000000>,
 			 <0x02000000 0 0xa0000000 0xa0000000 0 0x10000000>,
 			 <0x01000000 0 0x00000000 0xb0000000 0 0x01000000>;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	localbus {
 		status = "disabled";
 	};
-<<<<<<< HEAD
-=======
 
 	sound {
 		compatible = "phytec,pcm030-audio-fabric";
 		asoc-platform = <&audioplatform>;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

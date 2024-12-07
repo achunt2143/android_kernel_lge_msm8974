@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * security/tomoyo/util.c
  *
@@ -9,11 +6,8 @@
  */
 
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/rculist.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "common.h"
 
 /* Lock for protecting policy. */
@@ -89,44 +83,6 @@ const u8 tomoyo_index2category[TOMOYO_MAX_MAC_INDEX] = {
 /**
  * tomoyo_convert_time - Convert time_t to YYYY/MM/DD hh/mm/ss.
  *
-<<<<<<< HEAD
- * @time:  Seconds since 1970/01/01 00:00:00.
- * @stamp: Pointer to "struct tomoyo_time".
- *
- * Returns nothing.
- *
- * This function does not handle Y2038 problem.
- */
-void tomoyo_convert_time(time_t time, struct tomoyo_time *stamp)
-{
-	static const u16 tomoyo_eom[2][12] = {
-		{ 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 },
-		{ 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 }
-	};
-	u16 y;
-	u8 m;
-	bool r;
-	stamp->sec = time % 60;
-	time /= 60;
-	stamp->min = time % 60;
-	time /= 60;
-	stamp->hour = time % 24;
-	time /= 24;
-	for (y = 1970; ; y++) {
-		const unsigned short days = (y & 3) ? 365 : 366;
-		if (time < days)
-			break;
-		time -= days;
-	}
-	r = (y & 3) == 0;
-	for (m = 0; m < 11 && time >= tomoyo_eom[r][m]; m++)
-		;
-	if (m)
-		time -= tomoyo_eom[r][m - 1];
-	stamp->year = y;
-	stamp->month = ++m;
-	stamp->day = ++time;
-=======
  * @time64: Seconds since 1970/01/01 00:00:00.
  * @stamp:  Pointer to "struct tomoyo_time".
  *
@@ -143,7 +99,6 @@ void tomoyo_convert_time(time64_t time64, struct tomoyo_time *stamp)
 	stamp->day = tm.tm_mday;
 	stamp->month = tm.tm_mon + 1;
 	stamp->year = tm.tm_year + 1900;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -152,21 +107,14 @@ void tomoyo_convert_time(time64_t time64, struct tomoyo_time *stamp)
  * @string: String representation for permissions in foo/bar/buz format.
  * @keyword: Keyword to find from @string/
  *
-<<<<<<< HEAD
- * Returns ture if @keyword was found in @string, false otherwise.
-=======
  * Returns true if @keyword was found in @string, false otherwise.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function assumes that strncmp(w1, w2, strlen(w1)) != 0 if w1 != w2.
  */
 bool tomoyo_permstr(const char *string, const char *keyword)
 {
 	const char *cp = strstr(string, keyword);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cp)
 		return cp == string || *(cp - 1) == '/';
 	return false;
@@ -186,10 +134,7 @@ char *tomoyo_read_token(struct tomoyo_acl_param *param)
 {
 	char *pos = param->data;
 	char *del = strchr(pos, ' ');
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (del)
 		*del++ = '\0';
 	else
@@ -198,11 +143,8 @@ char *tomoyo_read_token(struct tomoyo_acl_param *param)
 	return pos;
 }
 
-<<<<<<< HEAD
-=======
 static bool tomoyo_correct_path2(const char *filename, const size_t len);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * tomoyo_get_domainname - Read a domainname from a line.
  *
@@ -215,20 +157,12 @@ const struct tomoyo_path_info *tomoyo_get_domainname
 {
 	char *start = param->data;
 	char *pos = start;
-<<<<<<< HEAD
-	while (*pos) {
-		if (*pos++ != ' ' || *pos++ == '/')
-			continue;
-		pos -= 2;
-		*pos++ = '\0';
-=======
 
 	while (*pos) {
 		if (*pos++ != ' ' ||
 		    tomoyo_correct_path2(pos, strchrnul(pos, ' ') - pos))
 			continue;
 		*(pos - 1) = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	param->data = pos;
@@ -253,15 +187,10 @@ u8 tomoyo_parse_ulong(unsigned long *result, char **str)
 	const char *cp = *str;
 	char *ep;
 	int base = 10;
-<<<<<<< HEAD
-	if (*cp == '0') {
-		char c = *(cp + 1);
-=======
 
 	if (*cp == '0') {
 		char c = *(cp + 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (c == 'x' || c == 'X') {
 			base = 16;
 			cp += 2;
@@ -319,10 +248,7 @@ bool tomoyo_parse_name_union(struct tomoyo_acl_param *param,
 			     struct tomoyo_name_union *ptr)
 {
 	char *filename;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (param->data[0] == '@') {
 		param->data++;
 		ptr->group = tomoyo_get_group(param, TOMOYO_PATH_GROUP);
@@ -349,10 +275,7 @@ bool tomoyo_parse_number_union(struct tomoyo_acl_param *param,
 	char *data;
 	u8 type;
 	unsigned long v;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(ptr, 0, sizeof(*ptr));
 	if (param->data[0] == '@') {
 		param->data++;
@@ -511,17 +434,6 @@ void tomoyo_normalize_line(unsigned char *buffer)
  */
 static bool tomoyo_correct_word2(const char *string, size_t len)
 {
-<<<<<<< HEAD
-	const char *const start = string;
-	bool in_repetition = false;
-	unsigned char c;
-	unsigned char d;
-	unsigned char e;
-	if (!len)
-		goto out;
-	while (len--) {
-		c = *string++;
-=======
 	u8 recursion = 20;
 	const char *const start = string;
 	bool in_repetition = false;
@@ -531,30 +443,10 @@ static bool tomoyo_correct_word2(const char *string, size_t len)
 	while (len--) {
 		unsigned char c = *string++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (c == '\\') {
 			if (!len--)
 				goto out;
 			c = *string++;
-<<<<<<< HEAD
-			switch (c) {
-			case '\\':  /* "\\" */
-				continue;
-			case '$':   /* "\$" */
-			case '+':   /* "\+" */
-			case '?':   /* "\?" */
-			case '*':   /* "\*" */
-			case '@':   /* "\@" */
-			case 'x':   /* "\x" */
-			case 'X':   /* "\X" */
-			case 'a':   /* "\a" */
-			case 'A':   /* "\A" */
-			case '-':   /* "\-" */
-				continue;
-			case '{':   /* "/\{" */
-				if (string - 3 < start || *(string - 3) != '/')
-					break;
-=======
 			if (c >= '0' && c <= '3') {
 				unsigned char d;
 				unsigned char e;
@@ -591,37 +483,15 @@ static bool tomoyo_correct_word2(const char *string, size_t len)
 			case '{':   /* "/\{" */
 				if (string - 3 < start || *(string - 3) != '/')
 					goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				in_repetition = true;
 				continue;
 			case '}':   /* "\}/" */
 				if (*string != '/')
-<<<<<<< HEAD
-					break;
-				if (!in_repetition)
-					break;
-				in_repetition = false;
-				continue;
-			case '0':   /* "\ooo" */
-			case '1':
-			case '2':
-			case '3':
-				if (!len-- || !len--)
-					break;
-				d = *string++;
-				e = *string++;
-				if (d < '0' || d > '7' || e < '0' || e > '7')
-					break;
-				c = tomoyo_make_byte(c, d, e);
-				if (c <= ' ' || c >= 127)
-					continue;
-=======
 					goto out;
 				if (!in_repetition)
 					goto out;
 				in_repetition = false;
 				continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			goto out;
 		} else if (in_repetition && c == '/') {
@@ -651,8 +521,6 @@ bool tomoyo_correct_word(const char *string)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * tomoyo_correct_path2 - Check whether the given pathname follows the naming rules.
  *
  * @filename: The pathname to check.
@@ -669,7 +537,6 @@ static bool tomoyo_correct_path2(const char *filename, const size_t len)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * tomoyo_correct_path - Validate a pathname.
  *
  * @filename: The pathname to check.
@@ -679,11 +546,7 @@ static bool tomoyo_correct_path2(const char *filename, const size_t len)
  */
 bool tomoyo_correct_path(const char *filename)
 {
-<<<<<<< HEAD
-	return *filename == '/' && tomoyo_correct_word(filename);
-=======
 	return tomoyo_correct_path2(filename, strlen(filename));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -702,17 +565,10 @@ bool tomoyo_correct_domain(const unsigned char *domainname)
 		return true;
 	while (1) {
 		const unsigned char *cp = strchr(domainname, ' ');
-<<<<<<< HEAD
-		if (!cp)
-			break;
-		if (*domainname != '/' ||
-		    !tomoyo_correct_word2(domainname, cp - domainname))
-=======
 
 		if (!cp)
 			break;
 		if (!tomoyo_correct_path2(domainname, cp - domainname))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return false;
 		domainname = cp + 1;
 	}
@@ -730,10 +586,7 @@ bool tomoyo_domain_def(const unsigned char *buffer)
 {
 	const unsigned char *cp;
 	int len;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*buffer != '<')
 		return false;
 	cp = strchr(buffer, ' ');
@@ -763,12 +616,8 @@ struct tomoyo_domain_info *tomoyo_find_domain(const char *domainname)
 
 	name.name = domainname;
 	tomoyo_fill_path_info(&name);
-<<<<<<< HEAD
-	list_for_each_entry_rcu(domain, &tomoyo_domain_list, list) {
-=======
 	list_for_each_entry_rcu(domain, &tomoyo_domain_list, list,
 				srcu_read_lock_held(&tomoyo_ss)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!domain->is_deleted &&
 		    !tomoyo_pathcmp(&name, domain->domainname))
 			return domain;
@@ -833,11 +682,7 @@ void tomoyo_fill_path_info(struct tomoyo_path_info *ptr)
 	ptr->const_len = tomoyo_const_part_length(name);
 	ptr->is_dir = len && (name[len - 1] == '/');
 	ptr->is_patterned = (ptr->const_len < len);
-<<<<<<< HEAD
-	ptr->hash = full_name_hash(name, len);
-=======
 	ptr->hash = full_name_hash(NULL, name, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -857,12 +702,9 @@ static bool tomoyo_file_matches_pattern2(const char *filename,
 {
 	while (filename < filename_end && pattern < pattern_end) {
 		char c;
-<<<<<<< HEAD
-=======
 		int i;
 		int j;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*pattern != '\\') {
 			if (*filename++ != *pattern++)
 				return false;
@@ -871,11 +713,6 @@ static bool tomoyo_file_matches_pattern2(const char *filename,
 		c = *filename;
 		pattern++;
 		switch (*pattern) {
-<<<<<<< HEAD
-			int i;
-			int j;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case '?':
 			if (c == '/') {
 				return false;
@@ -1128,22 +965,6 @@ bool tomoyo_path_matches_pattern(const struct tomoyo_path_info *filename,
  */
 const char *tomoyo_get_exe(void)
 {
-<<<<<<< HEAD
-	struct mm_struct *mm = current->mm;
-	struct vm_area_struct *vma;
-	const char *cp = NULL;
-
-	if (!mm)
-		return NULL;
-	down_read(&mm->mmap_sem);
-	for (vma = mm->mmap; vma; vma = vma->vm_next) {
-		if ((vma->vm_flags & VM_EXECUTABLE) && vma->vm_file) {
-			cp = tomoyo_realpath_from_path(&vma->vm_file->f_path);
-			break;
-		}
-	}
-	up_read(&mm->mmap_sem);
-=======
 	struct file *exe_file;
 	const char *cp;
 	struct mm_struct *mm = current->mm;
@@ -1156,7 +977,6 @@ const char *tomoyo_get_exe(void)
 
 	cp = tomoyo_realpath_from_path(&exe_file->f_path);
 	fput(exe_file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cp;
 }
 
@@ -1200,10 +1020,7 @@ int tomoyo_init_request_info(struct tomoyo_request_info *r,
 			     struct tomoyo_domain_info *domain, const u8 index)
 {
 	u8 profile;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(r, 0, sizeof(*r));
 	if (!domain)
 		domain = tomoyo_domain();
@@ -1234,37 +1051,6 @@ bool tomoyo_domain_quota_is_ok(struct tomoyo_request_info *r)
 		return false;
 	if (!domain)
 		return true;
-<<<<<<< HEAD
-	list_for_each_entry_rcu(ptr, &domain->acl_info_list, list) {
-		u16 perm;
-		u8 i;
-		if (ptr->is_deleted)
-			continue;
-		switch (ptr->type) {
-		case TOMOYO_TYPE_PATH_ACL:
-			perm = container_of(ptr, struct tomoyo_path_acl, head)
-				->perm;
-			break;
-		case TOMOYO_TYPE_PATH2_ACL:
-			perm = container_of(ptr, struct tomoyo_path2_acl, head)
-				->perm;
-			break;
-		case TOMOYO_TYPE_PATH_NUMBER_ACL:
-			perm = container_of(ptr, struct tomoyo_path_number_acl,
-					    head)->perm;
-			break;
-		case TOMOYO_TYPE_MKDEV_ACL:
-			perm = container_of(ptr, struct tomoyo_mkdev_acl,
-					    head)->perm;
-			break;
-		case TOMOYO_TYPE_INET_ACL:
-			perm = container_of(ptr, struct tomoyo_inet_acl,
-					    head)->perm;
-			break;
-		case TOMOYO_TYPE_UNIX_ACL:
-			perm = container_of(ptr, struct tomoyo_unix_acl,
-					    head)->perm;
-=======
 	if (READ_ONCE(domain->flags[TOMOYO_DIF_QUOTA_WARNED]))
 		return false;
 	list_for_each_entry_rcu(ptr, &domain->acl_info_list, list,
@@ -1297,7 +1083,6 @@ bool tomoyo_domain_quota_is_ok(struct tomoyo_request_info *r)
 			break;
 		case TOMOYO_TYPE_UNIX_ACL:
 			perm = data_race(container_of(ptr, struct tomoyo_unix_acl, head)->perm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case TOMOYO_TYPE_MANUAL_TASK_ACL:
 			perm = 0;
@@ -1305,27 +1090,11 @@ bool tomoyo_domain_quota_is_ok(struct tomoyo_request_info *r)
 		default:
 			perm = 1;
 		}
-<<<<<<< HEAD
-		for (i = 0; i < 16; i++)
-			if (perm & (1 << i))
-				count++;
-=======
 		count += hweight16(perm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (count < tomoyo_profile(domain->ns, domain->profile)->
 	    pref[TOMOYO_PREF_MAX_LEARNING_ENTRY])
 		return true;
-<<<<<<< HEAD
-	if (!domain->flags[TOMOYO_DIF_QUOTA_WARNED]) {
-		domain->flags[TOMOYO_DIF_QUOTA_WARNED] = true;
-		/* r->granted = false; */
-		tomoyo_write_log(r, "%s", tomoyo_dif[TOMOYO_DIF_QUOTA_WARNED]);
-		printk(KERN_WARNING "WARNING: "
-		       "Domain '%s' has too many ACLs to hold. "
-		       "Stopped learning mode.\n", domain->domainname->name);
-	}
-=======
 	WRITE_ONCE(domain->flags[TOMOYO_DIF_QUOTA_WARNED], true);
 	/* r->granted = false; */
 	tomoyo_write_log(r, "%s", tomoyo_dif[TOMOYO_DIF_QUOTA_WARNED]);
@@ -1333,6 +1102,5 @@ bool tomoyo_domain_quota_is_ok(struct tomoyo_request_info *r)
 	pr_warn("WARNING: Domain '%s' has too many ACLs to hold. Stopped learning mode.\n",
 		domain->domainname->name);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return false;
 }

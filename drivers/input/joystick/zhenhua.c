@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  derived from "twidjoy.c"
  *
@@ -9,10 +6,6 @@
  *  Copyright (c) 2001 Arndt Schoenewald
  *  Copyright (c) 2000-2001 Vojtech Pavlik
  *  Copyright (c) 2000 Mark Fletcher
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -35,37 +28,12 @@
  * coder :-(
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/slab.h>
-#include <linux/input.h>
-#include <linux/serio.h>
-#include <linux/init.h>
-=======
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/bitrev.h>
 #include <linux/input.h>
 #include <linux/serio.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"RC transmitter with 5-byte Zhen Hua protocol joystick driver"
 
@@ -89,19 +57,6 @@ struct zhenhua {
 	char phys[32];
 };
 
-<<<<<<< HEAD
-
-/* bits in all incoming bytes needs to be "reversed" */
-static int zhenhua_bitreverse(int x)
-{
-	x = ((x & 0xaa) >> 1) | ((x & 0x55) << 1);
-	x = ((x & 0xcc) >> 2) | ((x & 0x33) << 2);
-	x = ((x & 0xf0) >> 4) | ((x & 0x0f) << 4);
-	return x;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * zhenhua_process_packet() decodes packets the driver receives from the
  * RC transmitter. It updates the data accordingly.
@@ -140,11 +95,7 @@ static irqreturn_t zhenhua_interrupt(struct serio *serio, unsigned char data, un
 		return IRQ_HANDLED;	/* wrong MSB -- ignore this byte */
 
 	if (zhenhua->idx < ZHENHUA_MAX_LENGTH)
-<<<<<<< HEAD
-		zhenhua->data[zhenhua->idx++] = zhenhua_bitreverse(data);
-=======
 		zhenhua->data[zhenhua->idx++] = bitrev8(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (zhenhua->idx == ZHENHUA_MAX_LENGTH) {
 		zhenhua_process_packet(zhenhua);
@@ -225,11 +176,7 @@ static int zhenhua_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
-<<<<<<< HEAD
-static struct serio_device_id zhenhua_serio_ids[] = {
-=======
 static const struct serio_device_id zhenhua_serio_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_ZHENHUA,
@@ -252,23 +199,4 @@ static struct serio_driver zhenhua_drv = {
 	.disconnect	= zhenhua_disconnect,
 };
 
-<<<<<<< HEAD
-/*
- * The functions for inserting/removing us as a module.
- */
-
-static int __init zhenhua_init(void)
-{
-	return serio_register_driver(&zhenhua_drv);
-}
-
-static void __exit zhenhua_exit(void)
-{
-	serio_unregister_driver(&zhenhua_drv);
-}
-
-module_init(zhenhua_init);
-module_exit(zhenhua_exit);
-=======
 module_serio_driver(zhenhua_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

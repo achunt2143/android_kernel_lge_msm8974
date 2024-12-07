@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Marvell 88PM860x Interface
  *
  * Copyright (C) 2009 Marvell International Ltd.
  * 	Haojian Zhuang <haojian.zhuang@marvell.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MFD_88PM860X_H
@@ -41,32 +31,11 @@ enum {
 	PM8606_ID_MAX,
 };
 
-<<<<<<< HEAD
-enum {
-	PM8606_BACKLIGHT1 = 0,
-	PM8606_BACKLIGHT2,
-	PM8606_BACKLIGHT3,
-};
-
-enum {
-	PM8606_LED1_RED = 0,
-	PM8606_LED1_GREEN,
-	PM8606_LED1_BLUE,
-	PM8606_LED2_RED,
-	PM8606_LED2_GREEN,
-	PM8606_LED2_BLUE,
-	PM8607_LED_VIBRATOR,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 8606 Registers */
 #define PM8606_DCM_BOOST		(0x00)
 #define PM8606_PWM			(0x01)
 
-<<<<<<< HEAD
-=======
 #define PM8607_MISC2			(0x42)
 
 /* Power Up Log Register */
@@ -82,7 +51,6 @@ enum {
 #define PM8607_CHG_CTRL6		(0x4D)
 #define PM8607_CHG_CTRL7		(0x4E)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Backlight Registers */
 #define PM8606_WLED1A			(0x02)
 #define PM8606_WLED1B			(0x03)
@@ -164,10 +132,7 @@ enum {
 	PM8607_ID_LDO13,
 	PM8607_ID_LDO14,
 	PM8607_ID_LDO15,
-<<<<<<< HEAD
-=======
 	PM8606_ID_PREG,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PM8607_ID_RG_MAX,
 };
@@ -236,8 +201,6 @@ enum {
 #define PM8607_PD_PREBIAS		(0x56)	/* prebias time */
 #define PM8607_GPADC_MISC1		(0x57)
 
-<<<<<<< HEAD
-=======
 /* bit definitions of  MEAS_EN1*/
 #define PM8607_MEAS_EN1_VBAT		(1 << 0)
 #define PM8607_MEAS_EN1_VCHG		(1 << 1)
@@ -303,7 +266,6 @@ enum {
 #define PM8607_GPADC3_GP_BIAS_A3	(1 << 3)
 #define PM8607_GPADC2_GP_BIAS_OUT2	(1 << 6)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* RTC Control Registers */
 #define PM8607_RTC1			(0xA0)
 #define PM8607_RTC_COUNTER1		(0xA1)
@@ -421,11 +383,7 @@ struct pm860x_chip {
 	struct regmap           *regmap_companion;
 
 	int			buck3_double;	/* DVC ramp slope double */
-<<<<<<< HEAD
-	unsigned short		companion_addr;
-=======
 	int			companion_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short		osc_vote;
 	int			id;
 	int			irq_mode;
@@ -443,25 +401,12 @@ enum {
 };
 
 struct pm860x_backlight_pdata {
-<<<<<<< HEAD
-	int		id;
-	int		pwm;
-	int		iset;
-	unsigned long	flags;
-};
-
-struct pm860x_led_pdata {
-	int		id;
-	int		iset;
-	unsigned long	flags;
-=======
 	int		pwm;
 	int		iset;
 };
 
 struct pm860x_led_pdata {
 	int		iset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct pm860x_rtc_pdata {
@@ -482,12 +427,8 @@ struct pm860x_touch_pdata {
 };
 
 struct pm860x_power_pdata {
-<<<<<<< HEAD
-	unsigned	fast_charge;	/* charge current */
-=======
 	int		max_capacity;
 	int		resistor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct pm860x_platform_data {
@@ -496,11 +437,6 @@ struct pm860x_platform_data {
 	struct pm860x_rtc_pdata		*rtc;
 	struct pm860x_touch_pdata	*touch;
 	struct pm860x_power_pdata	*power;
-<<<<<<< HEAD
-	struct regulator_init_data	*regulator;
-
-	unsigned short	companion_addr;	/* I2C address of companion chip */
-=======
 	struct regulator_init_data	*buck1;
 	struct regulator_init_data	*buck2;
 	struct regulator_init_data	*buck3;
@@ -520,16 +456,11 @@ struct pm860x_platform_data {
 	struct charger_desc		*chg_desc;
 
 	int 		companion_addr;	/* I2C address of companion chip */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		i2c_port;	/* Controlled by GI2C or PI2C */
 	int		irq_mode;	/* Clear interrupt by read/write(0/1) */
 	int		irq_base;	/* IRQ base number of 88pm860x */
 	int		num_leds;
 	int		num_backlights;
-<<<<<<< HEAD
-	int		num_regulators;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern int pm8606_osc_enable(struct pm860x_chip *, unsigned short);
@@ -541,23 +472,7 @@ extern int pm860x_bulk_read(struct i2c_client *, int, int, unsigned char *);
 extern int pm860x_bulk_write(struct i2c_client *, int, int, unsigned char *);
 extern int pm860x_set_bits(struct i2c_client *, int, unsigned char,
 			   unsigned char);
-<<<<<<< HEAD
-extern int pm860x_page_reg_read(struct i2c_client *, int);
 extern int pm860x_page_reg_write(struct i2c_client *, int, unsigned char);
 extern int pm860x_page_bulk_read(struct i2c_client *, int, int,
 				 unsigned char *);
-extern int pm860x_page_bulk_write(struct i2c_client *, int, int,
-				  unsigned char *);
-extern int pm860x_page_set_bits(struct i2c_client *, int, unsigned char,
-				unsigned char);
-
-extern int pm860x_device_init(struct pm860x_chip *chip,
-			      struct pm860x_platform_data *pdata) __devinit ;
-extern void pm860x_device_exit(struct pm860x_chip *chip) __devexit ;
-
-=======
-extern int pm860x_page_reg_write(struct i2c_client *, int, unsigned char);
-extern int pm860x_page_bulk_read(struct i2c_client *, int, int,
-				 unsigned char *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_MFD_88PM860X_H */

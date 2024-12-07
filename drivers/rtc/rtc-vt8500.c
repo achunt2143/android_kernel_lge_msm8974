@@ -1,25 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/rtc/rtc-vt8500.c
  *
  *  Copyright (C) 2010 Alexey Charkov <alchark@gmail.com>
  *
  * Based on rtc-pxa.c
-<<<<<<< HEAD
- *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -30,10 +15,7 @@
 #include <linux/bcd.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Register definitions
@@ -89,10 +71,6 @@
 
 struct vt8500_rtc {
 	void __iomem		*regbase;
-<<<<<<< HEAD
-	struct resource		*res;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			irq_alarm;
 	struct rtc_device	*rtc;
 	spinlock_t		lock;		/* Protects this structure */
@@ -144,17 +122,7 @@ static int vt8500_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct vt8500_rtc *vt8500_rtc = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	if (tm->tm_year < 100) {
-		dev_warn(dev, "Only years 2000-2199 are supported by the "
-			      "hardware!\n");
-		return -EINVAL;
-	}
-
-	writel((bin2bcd(tm->tm_year - 100) << DATE_YEAR_S)
-=======
 	writel((bin2bcd(tm->tm_year % 100) << DATE_YEAR_S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		| (bin2bcd(tm->tm_mon + 1) << DATE_MONTH_S)
 		| (bin2bcd(tm->tm_mday))
 		| ((tm->tm_year >= 200) << DATE_CENTURY_S),
@@ -223,59 +191,19 @@ static const struct rtc_class_ops vt8500_rtc_ops = {
 	.alarm_irq_enable = vt8500_alarm_irq_enable,
 };
 
-<<<<<<< HEAD
-static int __devinit vt8500_rtc_probe(struct platform_device *pdev)
-=======
 static int vt8500_rtc_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vt8500_rtc *vt8500_rtc;
 	int ret;
 
-<<<<<<< HEAD
-	vt8500_rtc = kzalloc(sizeof(struct vt8500_rtc), GFP_KERNEL);
-=======
 	vt8500_rtc = devm_kzalloc(&pdev->dev,
 			   sizeof(struct vt8500_rtc), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!vt8500_rtc)
 		return -ENOMEM;
 
 	spin_lock_init(&vt8500_rtc->lock);
 	platform_set_drvdata(pdev, vt8500_rtc);
 
-<<<<<<< HEAD
-	vt8500_rtc->res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!vt8500_rtc->res) {
-		dev_err(&pdev->dev, "No I/O memory resource defined\n");
-		ret = -ENXIO;
-		goto err_free;
-	}
-
-	vt8500_rtc->irq_alarm = platform_get_irq(pdev, 0);
-	if (vt8500_rtc->irq_alarm < 0) {
-		dev_err(&pdev->dev, "No alarm IRQ resource defined\n");
-		ret = -ENXIO;
-		goto err_free;
-	}
-
-	vt8500_rtc->res = request_mem_region(vt8500_rtc->res->start,
-					     resource_size(vt8500_rtc->res),
-					     "vt8500-rtc");
-	if (vt8500_rtc->res == NULL) {
-		dev_err(&pdev->dev, "failed to request I/O memory\n");
-		ret = -EBUSY;
-		goto err_free;
-	}
-
-	vt8500_rtc->regbase = ioremap(vt8500_rtc->res->start,
-				      resource_size(vt8500_rtc->res));
-	if (!vt8500_rtc->regbase) {
-		dev_err(&pdev->dev, "Unable to map RTC I/O memory\n");
-		ret = -EBUSY;
-		goto err_release;
-	}
-=======
 	vt8500_rtc->irq_alarm = platform_get_irq(pdev, 0);
 	if (vt8500_rtc->irq_alarm < 0)
 		return vt8500_rtc->irq_alarm;
@@ -283,71 +211,11 @@ static int vt8500_rtc_probe(struct platform_device *pdev)
 	vt8500_rtc->regbase = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(vt8500_rtc->regbase))
 		return PTR_ERR(vt8500_rtc->regbase);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable RTC and set it to 24-hour mode */
 	writel(VT8500_RTC_CR_ENABLE,
 	       vt8500_rtc->regbase + VT8500_RTC_CR);
 
-<<<<<<< HEAD
-	vt8500_rtc->rtc = rtc_device_register("vt8500-rtc", &pdev->dev,
-					      &vt8500_rtc_ops, THIS_MODULE);
-	if (IS_ERR(vt8500_rtc->rtc)) {
-		ret = PTR_ERR(vt8500_rtc->rtc);
-		dev_err(&pdev->dev,
-			"Failed to register RTC device -> %d\n", ret);
-		goto err_unmap;
-	}
-
-	ret = request_irq(vt8500_rtc->irq_alarm, vt8500_rtc_irq, 0,
-			  "rtc alarm", vt8500_rtc);
-	if (ret < 0) {
-		dev_err(&pdev->dev, "can't get irq %i, err %d\n",
-			vt8500_rtc->irq_alarm, ret);
-		goto err_unreg;
-	}
-
-	return 0;
-
-err_unreg:
-	rtc_device_unregister(vt8500_rtc->rtc);
-err_unmap:
-	iounmap(vt8500_rtc->regbase);
-err_release:
-	release_mem_region(vt8500_rtc->res->start,
-			   resource_size(vt8500_rtc->res));
-err_free:
-	kfree(vt8500_rtc);
-	return ret;
-}
-
-static int __devexit vt8500_rtc_remove(struct platform_device *pdev)
-{
-	struct vt8500_rtc *vt8500_rtc = platform_get_drvdata(pdev);
-
-	free_irq(vt8500_rtc->irq_alarm, vt8500_rtc);
-
-	rtc_device_unregister(vt8500_rtc->rtc);
-
-	/* Disable alarm matching */
-	writel(0, vt8500_rtc->regbase + VT8500_RTC_IS);
-	iounmap(vt8500_rtc->regbase);
-	release_mem_region(vt8500_rtc->res->start,
-			   resource_size(vt8500_rtc->res));
-
-	kfree(vt8500_rtc);
-	platform_set_drvdata(pdev, NULL);
-
-	return 0;
-}
-
-static struct platform_driver vt8500_rtc_driver = {
-	.probe		= vt8500_rtc_probe,
-	.remove		= __devexit_p(vt8500_rtc_remove),
-	.driver		= {
-		.name	= "vt8500-rtc",
-		.owner	= THIS_MODULE,
-=======
 	vt8500_rtc->rtc = devm_rtc_allocate_device(&pdev->dev);
 	if (IS_ERR(vt8500_rtc->rtc))
 		return PTR_ERR(vt8500_rtc->rtc);
@@ -387,7 +255,6 @@ static struct platform_driver vt8500_rtc_driver = {
 	.driver		= {
 		.name	= "vt8500-rtc",
 		.of_match_table = wmt_dt_ids,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -395,9 +262,5 @@ module_platform_driver(vt8500_rtc_driver);
 
 MODULE_AUTHOR("Alexey Charkov <alchark@gmail.com>");
 MODULE_DESCRIPTION("VIA VT8500 SoC Realtime Clock Driver (RTC)");
-<<<<<<< HEAD
-MODULE_LICENSE("GPL");
-=======
 MODULE_LICENSE("GPL v2");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:vt8500-rtc");

@@ -1,34 +1,10 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ocfs2.h
  *
  * Defines macros and structures used in OCFS2
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef OCFS2_H
@@ -38,10 +14,7 @@
 #include <linux/sched.h>
 #include <linux/wait.h>
 #include <linux/list.h>
-<<<<<<< HEAD
-=======
 #include <linux/llist.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/rbtree.h>
 #include <linux/workqueue.h>
 #include <linux/kref.h>
@@ -61,11 +34,8 @@
 
 #include "reservations.h"
 
-<<<<<<< HEAD
-=======
 #include "filecheck.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Caching of metadata buffers */
 
 /* Most user visible OCFS2 inodes will have very few pieces of
@@ -160,15 +130,12 @@ enum ocfs2_unlock_action {
 						     * before the upconvert
 						     * has completed */
 
-<<<<<<< HEAD
-=======
 #define OCFS2_LOCK_NONBLOCK_FINISHED (0x00001000) /* NONBLOCK cluster
 						   * lock has already
 						   * returned, do not block
 						   * dc thread from
 						   * downconverting */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ocfs2_lock_res_ops;
 
 typedef void (*ocfs2_lock_callback)(int status, unsigned long data);
@@ -181,10 +148,7 @@ struct ocfs2_lock_stats {
 
 	/* Storing max wait in usecs saves 24 bytes per inode */
 	u32		ls_max;		/* Max wait in USEC */
-<<<<<<< HEAD
-=======
 	u64		ls_last;	/* Last unlock time in USEC */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif
 
@@ -195,10 +159,7 @@ struct ocfs2_lock_res {
 
 	struct list_head         l_blocked_list;
 	struct list_head         l_mask_waiters;
-<<<<<<< HEAD
-=======
 	struct list_head	 l_holders;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long		 l_flags;
 	char                     l_name[OCFS2_LOCK_ID_MAX_LEN];
@@ -229,10 +190,7 @@ struct ocfs2_lock_res {
 #ifdef CONFIG_OCFS2_FS_STATS
 	struct ocfs2_lock_stats  l_lock_prmode;		/* PR mode stats */
 	u32                      l_lock_refresh;	/* Disk refreshes */
-<<<<<<< HEAD
-=======
 	u64                      l_lock_wait;	/* First lock wait time */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_lock_stats  l_lock_exmode;		/* EX mode stats */
 #endif
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
@@ -240,14 +198,11 @@ struct ocfs2_lock_res {
 #endif
 };
 
-<<<<<<< HEAD
-=======
 enum ocfs2_orphan_reco_type {
 	ORPHAN_NO_NEED_TRUNCATE = 0,
 	ORPHAN_NEED_TRUNCATE,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum ocfs2_orphan_scan_state {
 	ORPHAN_SCAN_ACTIVE,
 	ORPHAN_SCAN_INACTIVE
@@ -258,11 +213,7 @@ struct ocfs2_orphan_scan {
 	struct ocfs2_super 	*os_osb;
 	struct ocfs2_lock_res 	os_lockres;     /* lock to synchronize scans */
 	struct delayed_work 	os_orphan_scan_work;
-<<<<<<< HEAD
-	struct timespec		os_scantime;  /* time this node ran the scan */
-=======
 	time64_t		os_scantime;  /* time this node ran the scan */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			os_count;      /* tracks node specific scans */
 	u32  			os_seqno;       /* tracks cluster wide scans */
 	atomic_t		os_state;              /* ACTIVE or INACTIVE */
@@ -270,11 +221,7 @@ struct ocfs2_orphan_scan {
 
 struct ocfs2_dlm_debug {
 	struct kref d_refcnt;
-<<<<<<< HEAD
-	struct dentry *d_locking_state;
-=======
 	u32 d_filter_secs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head d_lockres_tracking;
 };
 
@@ -326,16 +273,6 @@ enum ocfs2_mount_options
 						     writes */
 	OCFS2_MOUNT_HB_NONE = 1 << 13, /* No heartbeat */
 	OCFS2_MOUNT_HB_GLOBAL = 1 << 14, /* Global heartbeat */
-<<<<<<< HEAD
-};
-
-#define OCFS2_OSB_SOFT_RO			0x0001
-#define OCFS2_OSB_HARD_RO			0x0002
-#define OCFS2_OSB_ERROR_FS			0x0004
-#define OCFS2_OSB_DROP_DENTRY_LOCK_IMMED	0x0008
-
-#define OCFS2_DEFAULT_ATIME_QUANTUM		60
-=======
 
 	OCFS2_MOUNT_JOURNAL_ASYNC_COMMIT = 1 << 15,  /* Journal Async Commit */
 	OCFS2_MOUNT_ERRORS_CONT = 1 << 16, /* Return EIO to the calling process on error */
@@ -346,17 +283,12 @@ enum ocfs2_mount_options
 #define OCFS2_OSB_HARD_RO	0x0002
 #define OCFS2_OSB_ERROR_FS	0x0004
 #define OCFS2_DEFAULT_ATIME_QUANTUM	60
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ocfs2_journal;
 struct ocfs2_slot_info;
 struct ocfs2_recovery_map;
 struct ocfs2_replay_map;
 struct ocfs2_quota_recovery;
-<<<<<<< HEAD
-struct ocfs2_dentry_lock;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ocfs2_super
 {
 	struct task_struct *commit_task;
@@ -376,10 +308,6 @@ struct ocfs2_super
 	u64 system_dir_blkno;
 	u64 bitmap_blkno;
 	u32 bitmap_cpg;
-<<<<<<< HEAD
-	u8 *uuid;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *uuid_str;
 	u32 uuid_hash;
 	u8 *vol_label;
@@ -396,13 +324,8 @@ struct ocfs2_super
 	spinlock_t osb_lock;
 	u32 s_next_generation;
 	unsigned long osb_flags;
-<<<<<<< HEAD
-	s16 s_inode_steal_slot;
-	s16 s_meta_steal_slot;
-=======
 	u16 s_inode_steal_slot;
 	u16 s_meta_steal_slot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_t s_num_inodes_stolen;
 	atomic_t s_num_meta_stolen;
 
@@ -425,21 +348,13 @@ struct ocfs2_super
 	struct task_struct *recovery_thread_task;
 	int disable_recovery;
 	wait_queue_head_t checkpoint_event;
-<<<<<<< HEAD
-	atomic_t needs_checkpoint;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_journal *journal;
 	unsigned long osb_commit_interval;
 
 	struct delayed_work		la_enable_wq;
 
 	/*
-<<<<<<< HEAD
-	 * Must hold local alloc i_mutex and osb->osb_lock to change
-=======
 	 * Must hold local alloc i_rwsem and osb->osb_lock to change
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * local_alloc_bits. Reads can be done under either lock.
 	 */
 	unsigned int local_alloc_bits;
@@ -460,14 +375,8 @@ struct ocfs2_super
 	unsigned int	osb_resv_level;
 	unsigned int	osb_dir_resv_level;
 
-<<<<<<< HEAD
-	/* Next three fields are for local node slot recovery during
-	 * mount. */
-	int dirty;
-=======
 	/* Next two fields are for local node slot recovery during
 	 * mount. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_dinode *local_alloc_copy;
 	struct ocfs2_quota_recovery *quota_rec;
 
@@ -478,27 +387,17 @@ struct ocfs2_super
 	u8 osb_stackflags;
 
 	char osb_cluster_stack[OCFS2_STACK_LABEL_LEN + 1];
-<<<<<<< HEAD
-=======
 	char osb_cluster_name[OCFS2_CLUSTER_NAME_LEN + 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_cluster_connection *cconn;
 	struct ocfs2_lock_res osb_super_lockres;
 	struct ocfs2_lock_res osb_rename_lockres;
 	struct ocfs2_lock_res osb_nfs_sync_lockres;
-<<<<<<< HEAD
-	struct ocfs2_dlm_debug *osb_dlm_debug;
-
-	struct dentry *osb_debug_root;
-	struct dentry *osb_ctxt;
-=======
 	struct rw_semaphore nfs_sync_rwlock;
 	struct ocfs2_lock_res osb_trim_fs_lockres;
 	struct mutex obs_trim_fs_mutex;
 	struct ocfs2_dlm_debug *osb_dlm_debug;
 
 	struct dentry *osb_debug_root;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wait_queue_head_t recovery_event;
 
@@ -517,16 +416,9 @@ struct ocfs2_super
 	struct list_head blocked_lock_list;
 	unsigned long blocked_lock_count;
 
-<<<<<<< HEAD
-	/* List of dentry locks to release. Anyone can add locks to
-	 * the list, ocfs2_wq processes the list  */
-	struct ocfs2_dentry_lock *dentry_lock_list;
-	struct work_struct dentry_lock_work;
-=======
 	/* List of dquot structures to drop last reference to */
 	struct llist_head dquot_drop_list;
 	struct work_struct dquot_drop_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wait_queue_head_t		osb_mount_event;
 
@@ -534,16 +426,10 @@ struct ocfs2_super
 	struct inode			*osb_tl_inode;
 	struct buffer_head		*osb_tl_bh;
 	struct delayed_work		osb_truncate_log_wq;
-<<<<<<< HEAD
-	/*
-	 * How many clusters in our truncate log.
-	 * It must be protected by osb_tl_inode->i_mutex.
-=======
 	atomic_t			osb_tl_disable;
 	/*
 	 * How many clusters in our truncate log.
 	 * It must be protected by osb_tl_inode->i_rwsem.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	unsigned int truncated_clusters;
 
@@ -565,8 +451,6 @@ struct ocfs2_super
 	/* rb tree root for refcount lock. */
 	struct rb_root	osb_rf_lock_tree;
 	struct ocfs2_refcount_tree *osb_ref_tree_lru;
-<<<<<<< HEAD
-=======
 
 	struct mutex system_file_mutex;
 
@@ -583,7 +467,6 @@ struct ocfs2_super
 
 	/* file check related stuff */
 	struct ocfs2_filecheck_sysfs_entry osb_fc_ent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define OCFS2_SB(sb)	    ((struct ocfs2_super *)(sb)->s_fs_info)
@@ -622,8 +505,6 @@ static inline int ocfs2_writes_unwritten_extents(struct ocfs2_super *osb)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline int ocfs2_supports_append_dio(struct ocfs2_super *osb)
 {
 	if (osb->s_feature_incompat & OCFS2_FEATURE_INCOMPAT_APPEND_DIO)
@@ -632,7 +513,6 @@ static inline int ocfs2_supports_append_dio(struct ocfs2_super *osb)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int ocfs2_supports_inline_data(struct ocfs2_super *osb)
 {
 	if (osb->s_feature_incompat & OCFS2_FEATURE_INCOMPAT_INLINE_DATA)
@@ -680,12 +560,7 @@ static inline unsigned int ocfs2_read_links_count(struct ocfs2_dinode *di)
 	u32 nlink = le16_to_cpu(di->i_links_count);
 	u32 hi = le16_to_cpu(di->i_links_count_hi);
 
-<<<<<<< HEAD
-	if (di->i_dyn_features & cpu_to_le16(OCFS2_INDEXED_DIR_FL))
-		nlink |= (hi << OCFS2_LINKS_HI_SHIFT);
-=======
 	nlink |= (hi << OCFS2_LINKS_HI_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return nlink;
 }
@@ -729,21 +604,6 @@ static inline void ocfs2_set_osb_flag(struct ocfs2_super *osb,
 	spin_unlock(&osb->osb_lock);
 }
 
-<<<<<<< HEAD
-
-static inline unsigned long  ocfs2_test_osb_flag(struct ocfs2_super *osb,
-						 unsigned long flag)
-{
-	unsigned long ret;
-
-	spin_lock(&osb->osb_lock);
-	ret = osb->osb_flags & flag;
-	spin_unlock(&osb->osb_lock);
-	return ret;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ocfs2_set_ro_flag(struct ocfs2_super *osb,
 				     int hard)
 {
@@ -861,8 +721,6 @@ static inline u64 ocfs2_clusters_to_blocks(struct super_block *sb,
 	return (u64)clusters << c_to_b_bits;
 }
 
-<<<<<<< HEAD
-=======
 static inline u32 ocfs2_clusters_for_blocks(struct super_block *sb,
 		u64 blocks)
 {
@@ -873,7 +731,6 @@ static inline u32 ocfs2_clusters_for_blocks(struct super_block *sb,
 	return (u32)(blocks >> b_to_c_bits);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 ocfs2_blocks_to_clusters(struct super_block *sb,
 					   u64 blocks)
 {
@@ -896,8 +753,6 @@ static inline unsigned int ocfs2_clusters_for_bytes(struct super_block *sb,
 	return clusters;
 }
 
-<<<<<<< HEAD
-=======
 static inline unsigned int ocfs2_bytes_to_clusters(struct super_block *sb,
 		u64 bytes)
 {
@@ -908,7 +763,6 @@ static inline unsigned int ocfs2_bytes_to_clusters(struct super_block *sb,
 	return clusters;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u64 ocfs2_blocks_for_bytes(struct super_block *sb,
 					 u64 bytes)
 {
@@ -962,17 +816,10 @@ static inline unsigned int ocfs2_page_index_to_clusters(struct super_block *sb,
 	u32 clusters = pg_index;
 	unsigned int cbits = OCFS2_SB(sb)->s_clustersize_bits;
 
-<<<<<<< HEAD
-	if (unlikely(PAGE_CACHE_SHIFT > cbits))
-		clusters = pg_index << (PAGE_CACHE_SHIFT - cbits);
-	else if (PAGE_CACHE_SHIFT < cbits)
-		clusters = pg_index >> (cbits - PAGE_CACHE_SHIFT);
-=======
 	if (unlikely(PAGE_SHIFT > cbits))
 		clusters = pg_index << (PAGE_SHIFT - cbits);
 	else if (PAGE_SHIFT < cbits)
 		clusters = pg_index >> (cbits - PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return clusters;
 }
@@ -986,17 +833,10 @@ static inline pgoff_t ocfs2_align_clusters_to_page_index(struct super_block *sb,
 	unsigned int cbits = OCFS2_SB(sb)->s_clustersize_bits;
         pgoff_t index = clusters;
 
-<<<<<<< HEAD
-	if (PAGE_CACHE_SHIFT > cbits) {
-		index = (pgoff_t)clusters >> (PAGE_CACHE_SHIFT - cbits);
-	} else if (PAGE_CACHE_SHIFT < cbits) {
-		index = (pgoff_t)clusters << (cbits - PAGE_CACHE_SHIFT);
-=======
 	if (PAGE_SHIFT > cbits) {
 		index = (pgoff_t)clusters >> (PAGE_SHIFT - cbits);
 	} else if (PAGE_SHIFT < cbits) {
 		index = (pgoff_t)clusters << (cbits - PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return index;
@@ -1007,13 +847,8 @@ static inline unsigned int ocfs2_pages_per_cluster(struct super_block *sb)
 	unsigned int cbits = OCFS2_SB(sb)->s_clustersize_bits;
 	unsigned int pages_per_cluster = 1;
 
-<<<<<<< HEAD
-	if (PAGE_CACHE_SHIFT < cbits)
-		pages_per_cluster = 1 << (cbits - PAGE_CACHE_SHIFT);
-=======
 	if (PAGE_SHIFT < cbits)
 		pages_per_cluster = 1 << (cbits - PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pages_per_cluster;
 }

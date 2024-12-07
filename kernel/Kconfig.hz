@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Timer Interrupt Frequency Configuration
 #
@@ -59,8 +56,4 @@ config HZ
 	default 1000 if HZ_1000
 
 config SCHED_HRTICK
-<<<<<<< HEAD
-	def_bool HIGH_RES_TIMERS && (!SMP || USE_GENERIC_SMP_HELPERS)
-=======
 	def_bool HIGH_RES_TIMERS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __NR_rename
 __NR_rename,
 #endif
@@ -30,12 +27,6 @@ __NR_mknod,
 __NR_mkdirat,
 __NR_mknodat,
 __NR_unlinkat,
-<<<<<<< HEAD
-__NR_renameat,
-__NR_linkat,
-__NR_symlinkat,
-#endif
-=======
 #ifdef __NR_renameat
 __NR_renameat,
 #endif
@@ -45,4 +36,3 @@ __NR_symlinkat,
 #ifdef __NR_renameat2
 __NR_renameat2,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

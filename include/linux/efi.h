@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_EFI_H
 #define _LINUX_EFI_H
 
@@ -24,16 +21,6 @@
 #include <linux/ioport.h>
 #include <linux/pfn.h>
 #include <linux/pstore.h>
-<<<<<<< HEAD
-
-#include <asm/page.h>
-
-#define EFI_SUCCESS		0
-#define EFI_LOAD_ERROR          ( 1 | (1UL << (BITS_PER_LONG-1)))
-#define EFI_INVALID_PARAMETER	( 2 | (1UL << (BITS_PER_LONG-1)))
-#define EFI_UNSUPPORTED		( 3 | (1UL << (BITS_PER_LONG-1)))
-#define EFI_BAD_BUFFER_SIZE     ( 4 | (1UL << (BITS_PER_LONG-1)))
-=======
 #include <linux/range.h>
 #include <linux/reboot.h>
 #include <linux/uuid.h>
@@ -47,38 +34,20 @@ struct screen_info;
 #define EFI_INVALID_PARAMETER	( 2 | (1UL << (BITS_PER_LONG-1)))
 #define EFI_UNSUPPORTED		( 3 | (1UL << (BITS_PER_LONG-1)))
 #define EFI_BAD_BUFFER_SIZE	( 4 | (1UL << (BITS_PER_LONG-1)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EFI_BUFFER_TOO_SMALL	( 5 | (1UL << (BITS_PER_LONG-1)))
 #define EFI_NOT_READY		( 6 | (1UL << (BITS_PER_LONG-1)))
 #define EFI_DEVICE_ERROR	( 7 | (1UL << (BITS_PER_LONG-1)))
 #define EFI_WRITE_PROTECTED	( 8 | (1UL << (BITS_PER_LONG-1)))
 #define EFI_OUT_OF_RESOURCES	( 9 | (1UL << (BITS_PER_LONG-1)))
 #define EFI_NOT_FOUND		(14 | (1UL << (BITS_PER_LONG-1)))
-<<<<<<< HEAD
-=======
 #define EFI_ACCESS_DENIED	(15 | (1UL << (BITS_PER_LONG-1)))
 #define EFI_TIMEOUT		(18 | (1UL << (BITS_PER_LONG-1)))
 #define EFI_ABORTED		(21 | (1UL << (BITS_PER_LONG-1)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EFI_SECURITY_VIOLATION	(26 | (1UL << (BITS_PER_LONG-1)))
 
 typedef unsigned long efi_status_t;
 typedef u8 efi_bool_t;
 typedef u16 efi_char16_t;		/* UNICODE character */
-<<<<<<< HEAD
-
-
-typedef struct {
-	u8 b[16];
-} efi_guid_t;
-
-#define EFI_GUID(a,b,c,d0,d1,d2,d3,d4,d5,d6,d7) \
-((efi_guid_t) \
-{{ (a) & 0xff, ((a) >> 8) & 0xff, ((a) >> 16) & 0xff, ((a) >> 24) & 0xff, \
-  (b) & 0xff, ((b) >> 8) & 0xff, \
-  (c) & 0xff, ((c) >> 8) & 0xff, \
-  (d0), (d1), (d2), (d3), (d4), (d5), (d6), (d7) }})
-=======
 typedef u64 efi_physical_addr_t;
 typedef void *efi_handle_t;
 
@@ -109,7 +78,6 @@ typedef guid_t efi_guid_t __aligned(__alignof__(u32));
 	(a) & 0xff, ((a) >> 8) & 0xff, ((a) >> 16) & 0xff, ((a) >> 24) & 0xff,	\
 	(b) & 0xff, ((b) >> 8) & 0xff,						\
 	(c) & 0xff, ((c) >> 8) & 0xff, d } }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Generic EFI table header
@@ -141,24 +109,15 @@ typedef	struct {
 #define EFI_MEMORY_MAPPED_IO		11
 #define EFI_MEMORY_MAPPED_IO_PORT_SPACE	12
 #define EFI_PAL_CODE			13
-<<<<<<< HEAD
-#define EFI_MAX_MEMORY_TYPE		14
-=======
 #define EFI_PERSISTENT_MEMORY		14
 #define EFI_UNACCEPTED_MEMORY		15
 #define EFI_MAX_MEMORY_TYPE		16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Attribute values: */
 #define EFI_MEMORY_UC		((u64)0x0000000000000001ULL)	/* uncached */
 #define EFI_MEMORY_WC		((u64)0x0000000000000002ULL)	/* write-coalescing */
 #define EFI_MEMORY_WT		((u64)0x0000000000000004ULL)	/* write-through */
 #define EFI_MEMORY_WB		((u64)0x0000000000000008ULL)	/* write-back */
-<<<<<<< HEAD
-#define EFI_MEMORY_WP		((u64)0x0000000000001000ULL)	/* write-protect */
-#define EFI_MEMORY_RP		((u64)0x0000000000002000ULL)	/* read-protect */
-#define EFI_MEMORY_XP		((u64)0x0000000000004000ULL)	/* execute-protect */
-=======
 #define EFI_MEMORY_UCE		((u64)0x0000000000000010ULL)	/* uncached, exported */
 #define EFI_MEMORY_WP		((u64)0x0000000000001000ULL)	/* write-protect */
 #define EFI_MEMORY_RP		((u64)0x0000000000002000ULL)	/* read-protect */
@@ -169,16 +128,12 @@ typedef	struct {
 #define EFI_MEMORY_RO		((u64)0x0000000000020000ULL)	/* read-only */
 #define EFI_MEMORY_SP		((u64)0x0000000000040000ULL)	/* soft reserved */
 #define EFI_MEMORY_CPU_CRYPTO	((u64)0x0000000000080000ULL)	/* supports encryption */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EFI_MEMORY_RUNTIME	((u64)0x8000000000000000ULL)	/* range requires runtime mapping */
 #define EFI_MEMORY_DESCRIPTOR_VERSION	1
 
 #define EFI_PAGE_SHIFT		12
-<<<<<<< HEAD
-=======
 #define EFI_PAGE_SIZE		(1UL << EFI_PAGE_SHIFT)
 #define EFI_PAGES_MAX		(U64_MAX >> EFI_PAGE_SHIFT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct {
 	u32 type;
@@ -196,17 +151,6 @@ typedef struct {
 	u32 imagesize;
 } efi_capsule_header_t;
 
-<<<<<<< HEAD
-/*
- * Allocation types for calls to boottime->allocate_pages.
- */
-#define EFI_ALLOCATE_ANY_PAGES		0
-#define EFI_ALLOCATE_MAX_ADDRESS	1
-#define EFI_ALLOCATE_ADDRESS		2
-#define EFI_MAX_ALLOCATE_TYPE		3
-
-typedef int (*efi_freemem_callback_t) (u64 start, u64 end, void *arg);
-=======
 /* EFI_FIRMWARE_MANAGEMENT_CAPSULE_HEADER */
 struct efi_manage_capsule_header {
 	u32 ver;
@@ -275,7 +219,6 @@ struct capsule_info {
 int efi_capsule_setup_info(struct capsule_info *cap_info, void *kbuff,
                            size_t hdr_bytes);
 int __efi_capsule_setup_info(struct capsule_info *cap_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Types and defines for Time Services
@@ -304,60 +247,7 @@ typedef struct {
 	u8 sets_to_zero;
 } efi_time_cap_t;
 
-<<<<<<< HEAD
-/*
- * EFI Boot Services table
- */
-typedef struct {
-	efi_table_hdr_t hdr;
-	void *raise_tpl;
-	void *restore_tpl;
-	void *allocate_pages;
-	void *free_pages;
-	void *get_memory_map;
-	void *allocate_pool;
-	void *free_pool;
-	void *create_event;
-	void *set_timer;
-	void *wait_for_event;
-	void *signal_event;
-	void *close_event;
-	void *check_event;
-	void *install_protocol_interface;
-	void *reinstall_protocol_interface;
-	void *uninstall_protocol_interface;
-	void *handle_protocol;
-	void *__reserved;
-	void *register_protocol_notify;
-	void *locate_handle;
-	void *locate_device_path;
-	void *install_configuration_table;
-	void *load_image;
-	void *start_image;
-	void *exit;
-	void *unload_image;
-	void *exit_boot_services;
-	void *get_next_monotonic_count;
-	void *stall;
-	void *set_watchdog_timer;
-	void *connect_controller;
-	void *disconnect_controller;
-	void *open_protocol;
-	void *close_protocol;
-	void *open_protocol_information;
-	void *protocols_per_handle;
-	void *locate_handle_buffer;
-	void *locate_protocol;
-	void *install_multiple_protocol_interfaces;
-	void *uninstall_multiple_protocol_interfaces;
-	void *calculate_crc32;
-	void *copy_mem;
-	void *set_mem;
-	void *create_event_ex;
-} efi_boot_services_t;
-=======
 typedef union efi_boot_services efi_boot_services_t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Types and defines for EFI ResetSystem
@@ -374,23 +264,6 @@ typedef union efi_boot_services efi_boot_services_t;
 
 typedef struct {
 	efi_table_hdr_t hdr;
-<<<<<<< HEAD
-	unsigned long get_time;
-	unsigned long set_time;
-	unsigned long get_wakeup_time;
-	unsigned long set_wakeup_time;
-	unsigned long set_virtual_address_map;
-	unsigned long convert_pointer;
-	unsigned long get_variable;
-	unsigned long get_next_variable;
-	unsigned long set_variable;
-	unsigned long get_next_high_mono_count;
-	unsigned long reset_system;
-	unsigned long update_capsule;
-	unsigned long query_capsule_caps;
-	unsigned long query_variable_info;
-} efi_runtime_services_t;
-=======
 	u32 get_time;
 	u32 set_time;
 	u32 get_wakeup_time;
@@ -406,7 +279,6 @@ typedef struct {
 	u32 query_capsule_caps;
 	u32 query_variable_info;
 } efi_runtime_services_32_t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef efi_status_t efi_get_time_t (efi_time_t *tm, efi_time_cap_t *tc);
 typedef efi_status_t efi_set_time_t (efi_time_t *tm);
@@ -438,63 +310,6 @@ typedef efi_status_t efi_query_capsule_caps_t(efi_capsule_header_t **capsules,
 					      unsigned long count,
 					      u64 *max_size,
 					      int *reset_type);
-<<<<<<< HEAD
-typedef efi_status_t efi_query_variable_store_t(u32 attributes, unsigned long size);
-
-/*
- *  EFI Configuration Table and GUID definitions
- */
-#define NULL_GUID \
-    EFI_GUID(  0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 )
-
-#define MPS_TABLE_GUID    \
-    EFI_GUID(  0xeb9d2d2f, 0x2d88, 0x11d3, 0x9a, 0x16, 0x0, 0x90, 0x27, 0x3f, 0xc1, 0x4d )
-
-#define ACPI_TABLE_GUID    \
-    EFI_GUID(  0xeb9d2d30, 0x2d88, 0x11d3, 0x9a, 0x16, 0x0, 0x90, 0x27, 0x3f, 0xc1, 0x4d )
-
-#define ACPI_20_TABLE_GUID    \
-    EFI_GUID(  0x8868e871, 0xe4f1, 0x11d3, 0xbc, 0x22, 0x0, 0x80, 0xc7, 0x3c, 0x88, 0x81 )
-
-#define SMBIOS_TABLE_GUID    \
-    EFI_GUID(  0xeb9d2d31, 0x2d88, 0x11d3, 0x9a, 0x16, 0x0, 0x90, 0x27, 0x3f, 0xc1, 0x4d )
-
-#define SAL_SYSTEM_TABLE_GUID    \
-    EFI_GUID(  0xeb9d2d32, 0x2d88, 0x11d3, 0x9a, 0x16, 0x0, 0x90, 0x27, 0x3f, 0xc1, 0x4d )
-
-#define HCDP_TABLE_GUID	\
-    EFI_GUID(  0xf951938d, 0x620b, 0x42ef, 0x82, 0x79, 0xa8, 0x4b, 0x79, 0x61, 0x78, 0x98 )
-
-#define UGA_IO_PROTOCOL_GUID \
-    EFI_GUID(  0x61a4d49e, 0x6f68, 0x4f1b, 0xb9, 0x22, 0xa8, 0x6e, 0xed, 0xb, 0x7, 0xa2 )
-
-#define EFI_GLOBAL_VARIABLE_GUID \
-    EFI_GUID(  0x8be4df61, 0x93ca, 0x11d2, 0xaa, 0x0d, 0x00, 0xe0, 0x98, 0x03, 0x2b, 0x8c )
-
-#define UV_SYSTEM_TABLE_GUID \
-    EFI_GUID(  0x3b13a7d4, 0x633e, 0x11dd, 0x93, 0xec, 0xda, 0x25, 0x56, 0xd8, 0x95, 0x93 )
-
-#define LINUX_EFI_CRASH_GUID \
-    EFI_GUID(  0xcfc8fc79, 0xbe2e, 0x4ddc, 0x97, 0xf0, 0x9f, 0x98, 0xbf, 0xe2, 0x98, 0xa0 )
-
-#define LOADED_IMAGE_PROTOCOL_GUID \
-    EFI_GUID(  0x5b1b31a1, 0x9562, 0x11d2, 0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b )
-
-#define EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID \
-    EFI_GUID(  0x9042a9de, 0x23dc, 0x4a38, 0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a )
-
-#define EFI_UGA_PROTOCOL_GUID \
-    EFI_GUID(  0x982c298b, 0xf4fa, 0x41cb, 0xb8, 0x38, 0x77, 0xaa, 0x68, 0x8f, 0xb8, 0x39 )
-
-#define EFI_PCI_IO_PROTOCOL_GUID \
-    EFI_GUID(  0x4cf5b200, 0x68b8, 0x4ca5, 0x9e, 0xec, 0xb2, 0x3e, 0x3f, 0x50, 0x2, 0x9a )
-
-#define EFI_FILE_INFO_ID \
-    EFI_GUID(  0x9576e92, 0x6d3f, 0x11d2, 0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b )
-
-#define EFI_FILE_SYSTEM_GUID \
-    EFI_GUID(  0x964e5b22, 0x6459, 0x11d2, 0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b )
-=======
 typedef efi_status_t efi_query_variable_store_t(u32 attributes,
 						unsigned long size,
 						bool nonblocking);
@@ -625,7 +440,6 @@ void efi_native_runtime_setup(void);
 
 /* OVMF protocol GUIDs */
 #define OVMF_SEV_MEMORY_ACCEPTANCE_PROTOCOL_GUID	EFI_GUID(0xc5a010fe, 0x38a7, 0x4531,  0x8a, 0x4a, 0x05, 0x00, 0xd2, 0xfd, 0x16, 0x49)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct {
 	efi_guid_t guid;
@@ -637,14 +451,6 @@ typedef struct {
 	u32 table;
 } efi_config_table_32_t;
 
-<<<<<<< HEAD
-typedef struct {
-	efi_guid_t guid;
-	unsigned long table;
-} efi_config_table_t;
-
-#define EFI_SYSTEM_TABLE_SIGNATURE ((u64)0x5453595320494249ULL)
-=======
 typedef union {
 	struct {
 		efi_guid_t guid;
@@ -661,7 +467,6 @@ typedef struct {
 
 #define EFI_SYSTEM_TABLE_SIGNATURE ((u64)0x5453595320494249ULL)
 #define EFI_DXE_SERVICES_TABLE_SIGNATURE ((u64)0x565245535f455844ULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EFI_2_30_SYSTEM_TABLE_REVISION  ((2 << 16) | (30))
 #define EFI_2_20_SYSTEM_TABLE_REVISION  ((2 << 16) | (20))
@@ -704,26 +509,6 @@ typedef struct {
 	u32 tables;
 } efi_system_table_32_t;
 
-<<<<<<< HEAD
-typedef struct {
-	efi_table_hdr_t hdr;
-	unsigned long fw_vendor;	/* physical addr of CHAR16 vendor string */
-	u32 fw_revision;
-	unsigned long con_in_handle;
-	unsigned long con_in;
-	unsigned long con_out_handle;
-	unsigned long con_out;
-	unsigned long stderr_handle;
-	unsigned long stderr;
-	efi_runtime_services_t *runtime;
-	efi_boot_services_t *boottime;
-	unsigned long nr_tables;
-	unsigned long tables;
-} efi_system_table_t;
-
-struct efi_memory_map {
-	void *phys_map;
-=======
 typedef union efi_simple_text_input_protocol efi_simple_text_input_protocol_t;
 typedef union efi_simple_text_output_protocol efi_simple_text_output_protocol_t;
 
@@ -778,68 +563,11 @@ struct efi_memory_map_data {
 
 struct efi_memory_map {
 	phys_addr_t phys_map;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *map;
 	void *map_end;
 	int nr_map;
 	unsigned long desc_version;
 	unsigned long desc_size;
-<<<<<<< HEAD
-};
-
-typedef struct {
-	u32 revision;
-	void *parent_handle;
-	efi_system_table_t *system_table;
-	void *device_handle;
-	void *file_path;
-	void *reserved;
-	u32 load_options_size;
-	void *load_options;
-	void *image_base;
-	__aligned_u64 image_size;
-	unsigned int image_code_type;
-	unsigned int image_data_type;
-	unsigned long unload;
-} efi_loaded_image_t;
-
-typedef struct {
-	u64 revision;
-	void *open_volume;
-} efi_file_io_interface_t;
-
-typedef struct {
-	u64 size;
-	u64 file_size;
-	u64 phys_size;
-	efi_time_t create_time;
-	efi_time_t last_access_time;
-	efi_time_t modification_time;
-	__aligned_u64 attribute;
-	efi_char16_t filename[1];
-} efi_file_info_t;
-
-typedef struct {
-	u64 revision;
-	void *open;
-	void *close;
-	void *delete;
-	void *read;
-	void *write;
-	void *get_position;
-	void *set_position;
-	void *get_info;
-	void *set_info;
-	void *flush;
-} efi_file_handle_t;
-
-#define EFI_FILE_MODE_READ	0x0000000000000001
-#define EFI_FILE_MODE_WRITE	0x0000000000000002
-#define EFI_FILE_MODE_CREATE	0x8000000000000000
-
-#define EFI_INVALID_TABLE_ADDR		(~0UL)
-
-=======
 #define EFI_MEMMAP_LATE (1UL << 0)
 #define EFI_MEMMAP_MEMBLOCK (1UL << 1)
 #define EFI_MEMMAP_SLAB (1UL << 2)
@@ -905,39 +633,10 @@ typedef struct {
 
 extern unsigned long __ro_after_init efi_rng_seed;		/* RNG Seed table */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * All runtime access to EFI goes through this structure:
  */
 extern struct efi {
-<<<<<<< HEAD
-	efi_system_table_t *systab;	/* EFI system table */
-	unsigned int runtime_version;	/* Runtime services version */
-	unsigned long mps;		/* MPS table */
-	unsigned long acpi;		/* ACPI table  (IA64 ext 0.71) */
-	unsigned long acpi20;		/* ACPI table  (ACPI 2.0) */
-	unsigned long smbios;		/* SM BIOS table */
-	unsigned long sal_systab;	/* SAL system table */
-	unsigned long boot_info;	/* boot info table */
-	unsigned long hcdp;		/* HCDP table */
-	unsigned long uga;		/* UGA table */
-	unsigned long uv_systab;	/* UV system table */
-	efi_get_time_t *get_time;
-	efi_set_time_t *set_time;
-	efi_get_wakeup_time_t *get_wakeup_time;
-	efi_set_wakeup_time_t *set_wakeup_time;
-	efi_get_variable_t *get_variable;
-	efi_get_next_variable_t *get_next_variable;
-	efi_set_variable_t *set_variable;
-	efi_query_variable_info_t *query_variable_info;
-	efi_update_capsule_t *update_capsule;
-	efi_query_capsule_caps_t *query_capsule_caps;
-	efi_get_next_high_mono_count_t *get_next_high_mono_count;
-	efi_reset_system_t *reset_system;
-	efi_set_virtual_address_map_t *set_virtual_address_map;
-} efi;
-
-=======
 	const efi_runtime_services_t	*runtime;		/* EFI runtime services table */
 	unsigned int			runtime_version;	/* Runtime services version */
 	unsigned int			runtime_supported_mask;
@@ -1000,7 +699,6 @@ static inline bool mm_is_efi(struct mm_struct *mm)
 	return IS_ENABLED(CONFIG_EFI) && mm == &efi_mm;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int
 efi_guidcmp (efi_guid_t left, efi_guid_t right)
 {
@@ -1008,31 +706,13 @@ efi_guidcmp (efi_guid_t left, efi_guid_t right)
 }
 
 static inline char *
-<<<<<<< HEAD
-efi_guid_unparse(efi_guid_t *guid, char *out)
-=======
 efi_guid_to_str(efi_guid_t *guid, char *out)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sprintf(out, "%pUl", guid->b);
         return out;
 }
 
 extern void efi_init (void);
-<<<<<<< HEAD
-extern void *efi_get_pal_addr (void);
-extern void efi_map_pal_code (void);
-extern void efi_memmap_walk (efi_freemem_callback_t callback, void *arg);
-extern void efi_gettimeofday (struct timespec *ts);
-extern void efi_enter_virtual_mode (void);	/* switch EFI to virtual mode, if possible */
-#ifdef CONFIG_X86
-extern void efi_free_boot_services(void);
-extern efi_status_t efi_query_variable_store(u32 attributes, unsigned long size);
-#else
-static inline void efi_free_boot_services(void) {}
-
-static inline efi_status_t efi_query_variable_store(u32 attributes, unsigned long size)
-=======
 extern void efi_earlycon_reprobe(void);
 #ifdef CONFIG_EFI
 extern void efi_enter_virtual_mode (void);	/* switch EFI to virtual mode, if possible */
@@ -1048,24 +728,10 @@ extern efi_status_t efi_query_variable_store(u32 attributes,
 static inline efi_status_t efi_query_variable_store(u32 attributes,
 						    unsigned long size,
 						    bool nonblocking)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return EFI_SUCCESS;
 }
 #endif
-<<<<<<< HEAD
-extern u64 efi_get_iobase (void);
-extern u32 efi_mem_type (unsigned long phys_addr);
-extern u64 efi_mem_attributes (unsigned long phys_addr);
-extern u64 efi_mem_attribute (unsigned long phys_addr, unsigned long size);
-extern int __init efi_uart_console_only (void);
-extern void efi_initialize_iomem_resources(struct resource *code_resource,
-		struct resource *data_resource, struct resource *bss_resource);
-extern unsigned long efi_get_time(void);
-extern int efi_set_rtc_mmss(unsigned long nowtime);
-extern void efi_reserve_boot_services(void);
-extern struct efi_memory_map memmap;
-=======
 
 extern int __init __efi_memmap_init(struct efi_memory_map_data *data);
 extern int __init efi_memmap_init_early(struct efi_memory_map_data *data);
@@ -1168,7 +834,6 @@ extern int __init parse_efi_signature_list(
 	const char *source,
 	const void *data, size_t size,
 	efi_element_handler_t (*get_handler_for_guid)(const efi_guid_t *));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * efi_range_is_wc - check the WC bit on an address range
@@ -1191,45 +856,15 @@ static inline int efi_range_is_wc(unsigned long start, unsigned long len)
 	return 1;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_EFI_PCDP
-extern int __init efi_setup_pcdp_console(char *);
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We play games with efi_enabled so that the compiler will, if
  * possible, remove EFI-related code altogether.
  */
 #define EFI_BOOT		0	/* Were we booted from EFI? */
-<<<<<<< HEAD
-#define EFI_SYSTEM_TABLES	1	/* Can we use EFI system tables? */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EFI_CONFIG_TABLES	2	/* Can we use EFI config tables? */
 #define EFI_RUNTIME_SERVICES	3	/* Can we use runtime services? */
 #define EFI_MEMMAP		4	/* Can we use EFI memory map? */
 #define EFI_64BIT		5	/* Is the firmware 64-bit? */
-<<<<<<< HEAD
-
-#ifdef CONFIG_EFI
-# ifdef CONFIG_X86
-extern int efi_enabled(int facility);
-# else
-static inline int efi_enabled(int facility)
-{
-	return 1;
-}
-# endif
-#else
-static inline int efi_enabled(int facility)
-{
-	return 0;
-}
-#endif
-
-=======
 #define EFI_PARAVIRT		6	/* Access is via a paravirt interface */
 #define EFI_ARCH_1		7	/* First arch-specific bit */
 #define EFI_DBG			8	/* Print additional debug info at runtime */
@@ -1284,7 +919,6 @@ static inline void efi_find_mirror(void) {}
 
 extern int efi_status_to_err(efi_status_t status);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Variable Attributes
  */
@@ -1296,11 +930,7 @@ extern int efi_status_to_err(efi_status_t status);
 #define EFI_VARIABLE_TIME_BASED_AUTHENTICATED_WRITE_ACCESS 0x0000000000000020
 #define EFI_VARIABLE_APPEND_WRITE	0x0000000000000040
 
-<<<<<<< HEAD
-#define EFI_VARIABLE_MASK 	(EFI_VARIABLE_NON_VOLATILE | \
-=======
 #define EFI_VARIABLE_MASK	(EFI_VARIABLE_NON_VOLATILE | \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				EFI_VARIABLE_BOOTSERVICE_ACCESS | \
 				EFI_VARIABLE_RUNTIME_ACCESS | \
 				EFI_VARIABLE_HARDWARE_ERROR_RECORD | \
@@ -1308,18 +938,10 @@ extern int efi_status_to_err(efi_status_t status);
 				EFI_VARIABLE_TIME_BASED_AUTHENTICATED_WRITE_ACCESS | \
 				EFI_VARIABLE_APPEND_WRITE)
 /*
-<<<<<<< HEAD
- * The type of search to perform when calling boottime->locate_handle
- */
-#define EFI_LOCATE_ALL_HANDLES			0
-#define EFI_LOCATE_BY_REGISTER_NOTIFY		1
-#define EFI_LOCATE_BY_PROTOCOL			2
-=======
  * Length of a GUID string (strlen("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"))
  * not including trailing NUL
  */
 #define EFI_VARIABLE_GUID_LEN	UUID_STRING_LEN
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * EFI Device Path information
@@ -1353,10 +975,7 @@ extern int efi_status_to_err(efi_status_t status);
 #define   EFI_DEV_MEDIA_VENDOR			 3
 #define   EFI_DEV_MEDIA_FILE			 4
 #define   EFI_DEV_MEDIA_PROTOCOL		 5
-<<<<<<< HEAD
-=======
 #define   EFI_DEV_MEDIA_REL_OFFSET		 8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EFI_DEV_BIOS_BOOT		0x05
 #define EFI_DEV_END_PATH		0x7F
 #define EFI_DEV_END_PATH2		0xFF
@@ -1364,12 +983,6 @@ extern int efi_status_to_err(efi_status_t status);
 #define   EFI_DEV_END_ENTIRE			0xFF
 
 struct efi_generic_dev_path {
-<<<<<<< HEAD
-	u8 type;
-	u8 sub_type;
-	u16 length;
-} __attribute ((packed));
-=======
 	u8				type;
 	u8				sub_type;
 	u16				length;
@@ -1424,7 +1037,6 @@ struct efi_dev_path {
 
 struct device *efi_get_device_by_path(const struct efi_dev_path **node,
 				      size_t *len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void memrange_efi_to_native(u64 *addr, u64 *npages)
 {
@@ -1432,10 +1044,6 @@ static inline void memrange_efi_to_native(u64 *addr, u64 *npages)
 	*addr &= PAGE_MASK;
 }
 
-<<<<<<< HEAD
-#if defined(CONFIG_EFI_VARS) || defined(CONFIG_EFI_VARS_MODULE)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * EFI Variable support.
  *
@@ -1447,36 +1055,6 @@ struct efivar_operations {
 	efi_get_variable_t *get_variable;
 	efi_get_next_variable_t *get_next_variable;
 	efi_set_variable_t *set_variable;
-<<<<<<< HEAD
-	efi_query_variable_store_t *query_variable_store;
-};
-
-struct efivars {
-	/*
-	 * ->lock protects two things:
-	 * 1) ->list - adds, removals, reads, writes
-	 * 2) ops.[gs]et_variable() calls.
-	 * It must not be held when creating sysfs entries or calling kmalloc.
-	 * ops.get_next_variable() is only called from register_efivars()
-	 * or efivar_update_sysfs_entries(),
-	 * which is protected by the BKL, so that path is safe.
-	 */
-	spinlock_t lock;
-	struct list_head list;
-	struct kset *kset;
-	struct bin_attribute *new_var, *del_var;
-	const struct efivar_operations *ops;
-	struct efivar_entry *walk_entry;
-	struct pstore_info efi_pstore_info;
-};
-
-int register_efivars(struct efivars *efivars,
-		     const struct efivar_operations *ops,
-		     struct kobject *parent_kobj);
-void unregister_efivars(struct efivars *efivars);
-
-#endif /* CONFIG_EFI_VARS */
-=======
 	efi_set_variable_t *set_variable_nonblocking;
 	efi_query_variable_store_t *query_variable_store;
 	efi_query_variable_info_t *query_variable_info;
@@ -1788,6 +1366,5 @@ extern struct blocking_notifier_head efivar_ops_nh;
 
 void efivars_generic_ops_register(void);
 void efivars_generic_ops_unregister(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_EFI_H */

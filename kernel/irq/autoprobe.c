@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- * linux/kernel/irq/autoprobe.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 1992, 1998-2004 Linus Torvalds, Ingo Molnar
  *
  * This file contains the interrupt probing code and driver APIs.
@@ -58,11 +52,7 @@ unsigned long probe_irq_on(void)
 			if (desc->irq_data.chip->irq_set_type)
 				desc->irq_data.chip->irq_set_type(&desc->irq_data,
 							 IRQ_TYPE_PROBE);
-<<<<<<< HEAD
-			irq_startup(desc, false);
-=======
 			irq_activate_and_startup(desc, IRQ_NORESEND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		raw_spin_unlock_irq(&desc->lock);
 	}
@@ -79,11 +69,7 @@ unsigned long probe_irq_on(void)
 		raw_spin_lock_irq(&desc->lock);
 		if (!desc->action && irq_settings_can_probe(desc)) {
 			desc->istate |= IRQS_AUTODETECT | IRQS_WAITING;
-<<<<<<< HEAD
-			if (irq_startup(desc, false))
-=======
 			if (irq_activate_and_startup(desc, IRQ_NORESEND))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				desc->istate |= IRQS_PENDING;
 		}
 		raw_spin_unlock_irq(&desc->lock);
@@ -104,11 +90,7 @@ unsigned long probe_irq_on(void)
 			/* It triggered already - consider it spurious. */
 			if (!(desc->istate & IRQS_WAITING)) {
 				desc->istate &= ~IRQS_AUTODETECT;
-<<<<<<< HEAD
-				irq_shutdown(desc);
-=======
 				irq_shutdown_and_deactivate(desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else
 				if (i < 32)
 					mask |= 1 << i;
@@ -145,11 +127,7 @@ unsigned int probe_irq_mask(unsigned long val)
 				mask |= 1 << i;
 
 			desc->istate &= ~IRQS_AUTODETECT;
-<<<<<<< HEAD
-			irq_shutdown(desc);
-=======
 			irq_shutdown_and_deactivate(desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		raw_spin_unlock_irq(&desc->lock);
 	}
@@ -191,11 +169,7 @@ int probe_irq_off(unsigned long val)
 				nr_of_irqs++;
 			}
 			desc->istate &= ~IRQS_AUTODETECT;
-<<<<<<< HEAD
-			irq_shutdown(desc);
-=======
 			irq_shutdown_and_deactivate(desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		raw_spin_unlock_irq(&desc->lock);
 	}

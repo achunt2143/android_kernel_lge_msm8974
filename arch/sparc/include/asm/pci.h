@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-#ifndef ___ASM_SPARC_PCI_H
-#define ___ASM_SPARC_PCI_H
-#if defined(__sparc__) && defined(__arch64__)
-#include <asm/pci_64.h>
-#else
-#include <asm/pci_32.h>
-#endif
-
-#include <asm-generic/pci-dma-compat.h>
-
-#endif
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef ___ASM_SPARC_PCI_H
 #define ___ASM_SPARC_PCI_H
@@ -55,4 +42,3 @@ static inline int pci_proc_domain(struct pci_bus *bus)
 #endif /* CONFIG_SPARC64 */
 
 #endif /* ___ASM_SPARC_PCI_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

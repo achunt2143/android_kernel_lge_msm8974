@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001-2004 by David Brownell
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2001-2004 by David Brownell
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* this file is part of ehci-hcd.c */
@@ -33,25 +14,11 @@
  */
 
 /*-------------------------------------------------------------------------*/
-<<<<<<< HEAD
-#include <linux/usb/otg.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	PORT_WAKE_BITS	(PORT_WKOC_E|PORT_WKDISC_E|PORT_WKCONN_E)
 
 #ifdef	CONFIG_PM
 
-<<<<<<< HEAD
-static int ehci_hub_control(
-	struct usb_hcd	*hcd,
-	u16		typeReq,
-	u16		wValue,
-	u16		wIndex,
-	char		*buf,
-	u16		wLength
-);
-=======
 static void unlink_empty_async_suspended(struct ehci_hcd *ehci);
 
 static int persist_enabled_on_companion(struct usb_device *udev, void *unused)
@@ -59,7 +26,6 @@ static int persist_enabled_on_companion(struct usb_device *udev, void *unused)
 	return !udev->maxchild && udev->persist_enabled &&
 		udev->bus->root_hub->speed < USB_SPEED_HIGH;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* After a power loss, ports that were owned by the companion must be
  * reset so that the companion can still own them.
@@ -75,11 +41,6 @@ static void ehci_handover_companion_ports(struct ehci_hcd *ehci)
 	if (!ehci->owned_ports)
 		return;
 
-<<<<<<< HEAD
-	/* Give the connections some time to appear */
-	msleep(20);
-
-=======
 	/*
 	 * USB 1.1 devices are mostly HIDs, which don't need to persist across
 	 * suspends. If we ensure that none of our companion's devices have
@@ -105,7 +66,6 @@ static void ehci_handover_companion_ports(struct ehci_hcd *ehci)
 	msleep(20);
 
 	spin_lock_irq(&ehci->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	port = HCS_N_PORTS(ehci->hcs_params);
 	while (port--) {
 		if (test_bit(port, &ehci->owned_ports)) {
@@ -117,14 +77,6 @@ static void ehci_handover_companion_ports(struct ehci_hcd *ehci)
 				clear_bit(port, &ehci->owned_ports);
 			else if (test_bit(port, &ehci->companion_ports))
 				ehci_writel(ehci, status & ~PORT_PE, reg);
-<<<<<<< HEAD
-			else
-				ehci_hub_control(hcd, SetPortFeature,
-						USB_PORT_FEAT_RESET, port + 1,
-						NULL, 0);
-		}
-	}
-=======
 			else {
 				spin_unlock_irq(&ehci->lock);
 				ehci_hub_control(hcd, SetPortFeature,
@@ -135,20 +87,11 @@ static void ehci_handover_companion_ports(struct ehci_hcd *ehci)
 		}
 	}
 	spin_unlock_irq(&ehci->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ehci->owned_ports)
 		return;
 	msleep(90);		/* Wait for resets to complete */
 
-<<<<<<< HEAD
-	port = HCS_N_PORTS(ehci->hcs_params);
-	while (port--) {
-		if (test_bit(port, &ehci->owned_ports)) {
-			ehci_hub_control(hcd, GetPortStatus,
-					0, port + 1,
-					(char *) &buf, sizeof(buf));
-=======
 	spin_lock_irq(&ehci->lock);
 	port = HCS_N_PORTS(ehci->hcs_params);
 	while (port--) {
@@ -158,7 +101,6 @@ static void ehci_handover_companion_ports(struct ehci_hcd *ehci)
 					0, port + 1,
 					(char *) &buf, sizeof(buf));
 			spin_lock_irq(&ehci->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* The companion should now own the port,
 			 * but if something went wrong the port must not
@@ -177,16 +119,10 @@ static void ehci_handover_companion_ports(struct ehci_hcd *ehci)
 	}
 
 	ehci->owned_ports = 0;
-<<<<<<< HEAD
-}
-
-static int __maybe_unused ehci_port_change(struct ehci_hcd *ehci)
-=======
 	spin_unlock_irq(&ehci->lock);
 }
 
 static int ehci_port_change(struct ehci_hcd *ehci)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i = HCS_N_PORTS(ehci->hcs_params);
 
@@ -207,19 +143,11 @@ static int ehci_port_change(struct ehci_hcd *ehci)
 	return 0;
 }
 
-<<<<<<< HEAD
-static __maybe_unused void ehci_adjust_port_wakeup_flags(struct ehci_hcd *ehci,
-=======
 void ehci_adjust_port_wakeup_flags(struct ehci_hcd *ehci,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bool suspending, bool do_wakeup)
 {
 	int		port;
 	u32		temp;
-<<<<<<< HEAD
-	unsigned long	flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If remote wakeup is enabled for the root hub but disabled
 	 * for the controller, we must adjust all the port wakeup flags
@@ -229,24 +157,6 @@ void ehci_adjust_port_wakeup_flags(struct ehci_hcd *ehci,
 	if (!ehci_to_hcd(ehci)->self.root_hub->do_remote_wakeup || do_wakeup)
 		return;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&ehci->lock, flags);
-
-	/* clear phy low-power mode before changing wakeup flags */
-	if (ehci->has_hostpc) {
-		port = HCS_N_PORTS(ehci->hcs_params);
-		while (port--) {
-			u32 __iomem	*hostpc_reg;
-
-			hostpc_reg = (u32 __iomem *)((u8 *) ehci->regs
-					+ HOSTPC0 + 4 * port);
-			temp = ehci_readl(ehci, hostpc_reg);
-			ehci_writel(ehci, temp & ~HOSTPC_PHCD, hostpc_reg);
-		}
-		spin_unlock_irqrestore(&ehci->lock, flags);
-		msleep(5);
-		spin_lock_irqsave(&ehci->lock, flags);
-=======
 	spin_lock_irq(&ehci->lock);
 
 	/* clear phy low-power mode before changing wakeup flags */
@@ -261,7 +171,6 @@ void ehci_adjust_port_wakeup_flags(struct ehci_hcd *ehci,
 		spin_unlock_irq(&ehci->lock);
 		msleep(5);
 		spin_lock_irq(&ehci->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	port = HCS_N_PORTS(ehci->hcs_params);
@@ -279,30 +188,15 @@ void ehci_adjust_port_wakeup_flags(struct ehci_hcd *ehci,
 			else
 				t2 |= PORT_WKOC_E | PORT_WKCONN_E;
 		}
-<<<<<<< HEAD
-		ehci_vdbg(ehci, "port %d, %08x -> %08x\n",
-				port + 1, t1, t2);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ehci_writel(ehci, t2, reg);
 	}
 
 	/* enter phy low-power mode again */
-<<<<<<< HEAD
-	if (ehci->has_hostpc) {
-		port = HCS_N_PORTS(ehci->hcs_params);
-		while (port--) {
-			u32 __iomem	*hostpc_reg;
-
-			hostpc_reg = (u32 __iomem *)((u8 *) ehci->regs
-					+ HOSTPC0 + 4 * port);
-=======
 	if (ehci->has_tdi_phy_lpm) {
 		port = HCS_N_PORTS(ehci->hcs_params);
 		while (port--) {
 			u32 __iomem	*hostpc_reg = &ehci->regs->hostpc[port];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			temp = ehci_readl(ehci, hostpc_reg);
 			ehci_writel(ehci, temp | HOSTPC_PHCD, hostpc_reg);
 		}
@@ -312,14 +206,9 @@ void ehci_adjust_port_wakeup_flags(struct ehci_hcd *ehci,
 	if (!suspending && ehci_port_change(ehci))
 		usb_hcd_resume_root_hub(ehci_to_hcd(ehci));
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&ehci->lock, flags);
-}
-=======
 	spin_unlock_irq(&ehci->lock);
 }
 EXPORT_SYMBOL_GPL(ehci_adjust_port_wakeup_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ehci_bus_suspend (struct usb_hcd *hcd)
 {
@@ -327,21 +216,12 @@ static int ehci_bus_suspend (struct usb_hcd *hcd)
 	int			port;
 	int			mask;
 	int			changed;
-<<<<<<< HEAD
-=======
 	bool			fs_idle_delay;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ehci_dbg(ehci, "suspend root hub\n");
 
 	if (time_before (jiffies, ehci->next_statechange))
 		msleep(5);
-<<<<<<< HEAD
-	del_timer_sync(&ehci->watchdog);
-	del_timer_sync(&ehci->iaa_watchdog);
-
-	spin_lock_irq (&ehci->lock);
-=======
 
 	/* stop the schedules */
 	ehci_quiesce(ehci);
@@ -349,7 +229,6 @@ static int ehci_bus_suspend (struct usb_hcd *hcd)
 	spin_lock_irq (&ehci->lock);
 	if (ehci->rh_state < EHCI_RH_RUNNING)
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Once the controller is stopped, port resumes that are already
 	 * in progress won't complete.  Hence if remote wakeup is enabled
@@ -364,15 +243,6 @@ static int ehci_bus_suspend (struct usb_hcd *hcd)
 		}
 	}
 
-<<<<<<< HEAD
-	/* stop schedules, clean any completed work */
-	if (ehci->rh_state == EHCI_RH_RUNNING)
-		ehci_quiesce (ehci);
-	ehci->command = ehci_readl(ehci, &ehci->regs->command);
-	ehci_work(ehci);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Unlike other USB host controller types, EHCI doesn't have
 	 * any notion of "global" or bus-wide suspend.  The driver has
 	 * to manually suspend all the active unsuspended ports, and
@@ -381,10 +251,7 @@ static int ehci_bus_suspend (struct usb_hcd *hcd)
 	ehci->bus_suspended = 0;
 	ehci->owned_ports = 0;
 	changed = 0;
-<<<<<<< HEAD
-=======
 	fs_idle_delay = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	port = HCS_N_PORTS(ehci->hcs_params);
 	while (port--) {
 		u32 __iomem	*reg = &ehci->regs->port_status [port];
@@ -395,17 +262,6 @@ static int ehci_bus_suspend (struct usb_hcd *hcd)
 		if (t1 & PORT_OWNER)
 			set_bit(port, &ehci->owned_ports);
 		else if ((t1 & PORT_PE) && !(t1 & PORT_SUSPEND)) {
-<<<<<<< HEAD
-			/*clear RS bit before setting SUSP bit
-			* and wait for HCH to get set*/
-			if (ehci->susp_sof_bug) {
-				spin_unlock_irq(&ehci->lock);
-				ehci_halt(ehci);
-				spin_lock_irq(&ehci->lock);
-			}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			t2 |= PORT_SUSPEND;
 			set_bit(port, &ehci->bus_suspended);
 		}
@@ -424,10 +280,6 @@ static int ehci_bus_suspend (struct usb_hcd *hcd)
 		}
 
 		if (t1 != t2) {
-<<<<<<< HEAD
-			ehci_vdbg (ehci, "port %d, %08x -> %08x\n",
-				port + 1, t1, t2);
-=======
 			/*
 			 * On some controllers, Wake-On-Disconnect will
 			 * generate false wakeup signals until the bus
@@ -438,26 +290,10 @@ static int ehci_bus_suspend (struct usb_hcd *hcd)
 					ehci_port_speed(ehci, t2) ==
 						USB_PORT_STAT_HIGH_SPEED)
 				fs_idle_delay = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ehci_writel(ehci, t2, reg);
 			changed = 1;
 		}
 	}
-<<<<<<< HEAD
-
-	if (changed && ehci->has_hostpc) {
-		spin_unlock_irq(&ehci->lock);
-		msleep(5);	/* 5 ms for HCD to enter low-power mode */
-		spin_lock_irq(&ehci->lock);
-
-		port = HCS_N_PORTS(ehci->hcs_params);
-		while (port--) {
-			u32 __iomem	*hostpc_reg;
-			u32		t3;
-
-			hostpc_reg = (u32 __iomem *)((u8 *) ehci->regs
-					+ HOSTPC0 + 4 * port);
-=======
 	spin_unlock_irq(&ehci->lock);
 
 	if (changed && ehci_has_fsl_susp_errata(ehci))
@@ -483,7 +319,6 @@ static int ehci_bus_suspend (struct usb_hcd *hcd)
 			u32 __iomem	*hostpc_reg = &ehci->regs->hostpc[port];
 			u32		t3;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			t3 = ehci_readl(ehci, hostpc_reg);
 			ehci_writel(ehci, t3 | HOSTPC_PHCD, hostpc_reg);
 			t3 = ehci_readl(ehci, hostpc_reg);
@@ -491,26 +326,13 @@ static int ehci_bus_suspend (struct usb_hcd *hcd)
 					port, (t3 & HOSTPC_PHCD) ?
 					"succeeded" : "failed");
 		}
-<<<<<<< HEAD
-=======
 		spin_unlock_irq(&ehci->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Apparently some devices need a >= 1-uframe delay here */
 	if (ehci->bus_suspended)
 		udelay(150);
 
-<<<<<<< HEAD
-	/*if this bit is set, controller is already haled*/
-	if (!ehci->susp_sof_bug)
-		ehci_halt(ehci); /* turn off now-idle HC */
-
-	ehci->rh_state = EHCI_RH_SUSPENDED;
-
-	if (ehci->reclaim)
-		end_unlink_async(ehci);
-=======
 	/* turn off now-idle HC */
 	ehci_halt (ehci);
 
@@ -531,7 +353,6 @@ static int ehci_bus_suspend (struct usb_hcd *hcd)
 	ehci_handle_start_intr_unlinks(ehci);
 	ehci_handle_intr_unlinks(ehci);
 	end_free_itds(ehci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allow remote wakeup */
 	mask = INTR_MASK;
@@ -540,15 +361,6 @@ static int ehci_bus_suspend (struct usb_hcd *hcd)
 	ehci_writel(ehci, mask, &ehci->regs->intr_enable);
 	ehci_readl(ehci, &ehci->regs->intr_enable);
 
-<<<<<<< HEAD
-	ehci->next_statechange = jiffies + msecs_to_jiffies(10);
-	spin_unlock_irq (&ehci->lock);
-
-	/* ehci_work() may have re-enabled the watchdog timer, which we do not
-	 * want, and so we must delete any pending watchdog timer events.
-	 */
-	del_timer_sync(&ehci->watchdog);
-=======
  done:
 	ehci->next_statechange = jiffies + msecs_to_jiffies(10);
 	ehci->enabled_hrtimer_events = 0;
@@ -556,17 +368,12 @@ static int ehci_bus_suspend (struct usb_hcd *hcd)
 	spin_unlock_irq (&ehci->lock);
 
 	hrtimer_cancel(&ehci->hrtimer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 /* caller has locked the root hub, and should reset/reinit on error */
-<<<<<<< HEAD
-static int __maybe_unused ehci_bus_resume(struct usb_hcd *hcd)
-=======
 static int ehci_bus_resume (struct usb_hcd *hcd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci (hcd);
 	u32			temp;
@@ -577,18 +384,6 @@ static int ehci_bus_resume (struct usb_hcd *hcd)
 	if (time_before (jiffies, ehci->next_statechange))
 		msleep(5);
 	spin_lock_irq (&ehci->lock);
-<<<<<<< HEAD
-	if (!HCD_HW_ACCESSIBLE(hcd)) {
-		spin_unlock_irq(&ehci->lock);
-		return -ESHUTDOWN;
-	}
-
-	if (unlikely(ehci->debug)) {
-		if (!dbgp_reset_prep())
-			ehci->debug = NULL;
-		else
-			dbgp_external_startup();
-=======
 	if (!HCD_HW_ACCESSIBLE(hcd) || ehci->shutdown)
 		goto shutdown;
 
@@ -597,7 +392,6 @@ static int ehci_bus_resume (struct usb_hcd *hcd)
 			ehci->debug = NULL;
 		else
 			dbgp_external_startup(hcd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Ideally and we've got a real resume here, and no port's power
@@ -620,30 +414,6 @@ static int ehci_bus_resume (struct usb_hcd *hcd)
 	ehci_writel(ehci, ehci->periodic_dma, &ehci->regs->frame_list);
 	ehci_writel(ehci, (u32) ehci->async->qh_dma, &ehci->regs->async_next);
 
-<<<<<<< HEAD
-	/*CMD_RUN will be set after, PORT_RESUME gets cleared*/
-	if (ehci->resume_sof_bug)
-		ehci->command &= ~CMD_RUN;
-	/* restore CMD_RUN, framelist size, and irq threshold */
-	ehci_writel(ehci, ehci->command, &ehci->regs->command);
-	ehci->rh_state = EHCI_RH_RUNNING;
-
-	/* Some controller/firmware combinations need a delay during which
-	 * they set up the port statuses.  See Bugzilla #8190. */
-	spin_unlock_irq(&ehci->lock);
-	msleep(8);
-	spin_lock_irq(&ehci->lock);
-
-	/* clear phy low-power mode before resume */
-	if (ehci->bus_suspended && ehci->has_hostpc) {
-		i = HCS_N_PORTS(ehci->hcs_params);
-		while (i--) {
-			if (test_bit(i, &ehci->bus_suspended)) {
-				u32 __iomem	*hostpc_reg;
-
-				hostpc_reg = (u32 __iomem *)((u8 *) ehci->regs
-						+ HOSTPC0 + 4 * i);
-=======
 	/* restore CMD_RUN, framelist size, and irq threshold */
 	ehci->command |= CMD_RUN;
 	ehci_writel(ehci, ehci->command, &ehci->regs->command);
@@ -678,7 +448,6 @@ static int ehci_bus_resume (struct usb_hcd *hcd)
 				u32 __iomem	*hostpc_reg =
 							&ehci->regs->hostpc[i];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				temp = ehci_readl(ehci, hostpc_reg);
 				ehci_writel(ehci, temp & ~HOSTPC_PHCD,
 						hostpc_reg);
@@ -687,11 +456,8 @@ static int ehci_bus_resume (struct usb_hcd *hcd)
 		spin_unlock_irq(&ehci->lock);
 		msleep(5);
 		spin_lock_irq(&ehci->lock);
-<<<<<<< HEAD
-=======
 		if (ehci->shutdown)
 			goto shutdown;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* manually resume the ports we suspended during bus_suspend() */
@@ -707,24 +473,6 @@ static int ehci_bus_resume (struct usb_hcd *hcd)
 		ehci_writel(ehci, temp, &ehci->regs->port_status [i]);
 	}
 
-<<<<<<< HEAD
-	if (ehci->resume_sof_bug && resume_needed) {
-		/* root hub has only one port.
-		 * PORT_RESUME gets cleared automatically. */
-		handshake(ehci, &ehci->regs->port_status[0], PORT_RESUME, 0,
-				20000);
-		ehci_writel(ehci, ehci_readl(ehci,
-				&ehci->regs->command) | CMD_RUN,
-				&ehci->regs->command);
-		goto skip_clear_resume;
-	}
-
-	/* msleep for 20ms only if code is trying to resume port */
-	if (resume_needed) {
-		spin_unlock_irq(&ehci->lock);
-		msleep(20);
-		spin_lock_irq(&ehci->lock);
-=======
 	/*
 	 * msleep for USB_RESUME_TIMEOUT ms only if code is trying to resume
 	 * port
@@ -735,43 +483,12 @@ static int ehci_bus_resume (struct usb_hcd *hcd)
 		spin_lock_irq(&ehci->lock);
 		if (ehci->shutdown)
 			goto shutdown;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	i = HCS_N_PORTS (ehci->hcs_params);
 	while (i--) {
 		temp = ehci_readl(ehci, &ehci->regs->port_status [i]);
 		if (test_bit(i, &resume_needed)) {
-<<<<<<< HEAD
-			temp &= ~(PORT_RWC_BITS | PORT_RESUME);
-			ehci_writel(ehci, temp, &ehci->regs->port_status [i]);
-			ehci_vdbg (ehci, "resumed port %d\n", i + 1);
-		}
-	}
-
-skip_clear_resume:
-	(void) ehci_readl(ehci, &ehci->regs->command);
-
-	/* maybe re-activate the schedule(s) */
-	temp = 0;
-	if (ehci->async->qh_next.qh)
-		temp |= CMD_ASE;
-	if (ehci->periodic_sched)
-		temp |= CMD_PSE;
-	if (temp) {
-		ehci->command |= temp;
-		ehci_writel(ehci, ehci->command, &ehci->regs->command);
-	}
-
-	ehci->next_statechange = jiffies + msecs_to_jiffies(5);
-
-	/* Now we can safely re-enable irqs */
-	ehci_writel(ehci, INTR_MASK, &ehci->regs->intr_enable);
-
-	spin_unlock_irq (&ehci->lock);
-	ehci_handover_companion_ports(ehci);
-	return 0;
-=======
 			temp &= ~(PORT_RWC_BITS | PORT_SUSPEND | PORT_RESUME);
 			ehci_writel(ehci, temp, &ehci->regs->port_status [i]);
 		}
@@ -802,17 +519,13 @@ static unsigned long ehci_get_resuming_ports(struct usb_hcd *hcd)
 	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
 
 	return ehci->resuming_ports;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
 
 #define ehci_bus_suspend	NULL
 #define ehci_bus_resume		NULL
-<<<<<<< HEAD
-=======
 #define ehci_get_resuming_ports	NULL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* CONFIG_PM */
 
@@ -886,12 +599,8 @@ static int check_reset_complete (
 		if (ehci->has_amcc_usb23)
 			set_ohci_hcfs(ehci, 1);
 	} else {
-<<<<<<< HEAD
-		ehci_dbg (ehci, "port %d high speed\n", index + 1);
-=======
 		ehci_dbg(ehci, "port %d reset complete, port enabled\n",
 			index + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* ensure 440EPx ohci controller state is suspended */
 		if (ehci->has_amcc_usb23)
 			set_ohci_hcfs(ehci, 0);
@@ -913,15 +622,7 @@ ehci_hub_status_data (struct usb_hcd *hcd, char *buf)
 	u32		mask;
 	int		ports, i, retval = 1;
 	unsigned long	flags;
-<<<<<<< HEAD
-	u32		ppcd = 0;
-
-	/* if !USB_SUSPEND, root hub timers won't get shut down ... */
-	if (ehci->rh_state != EHCI_RH_RUNNING)
-		return 0;
-=======
 	u32		ppcd = ~0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* init status to no-changes */
 	buf [0] = 0;
@@ -942,11 +643,7 @@ ehci_hub_status_data (struct usb_hcd *hcd, char *buf)
 	 * always set, seem to clear PORT_OCC and PORT_CSC when writing to
 	 * PORT_POWER; that's surprising, but maybe within-spec.
 	 */
-<<<<<<< HEAD
-	if (!ignore_oc)
-=======
 	if (!ignore_oc && !ehci->spurious_oc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mask = PORT_CSC | PORT_PEC | PORT_OCC;
 	else
 		mask = PORT_CSC | PORT_PEC;
@@ -963,15 +660,6 @@ ehci_hub_status_data (struct usb_hcd *hcd, char *buf)
 
 	for (i = 0; i < ports; i++) {
 		/* leverage per-port change bits feature */
-<<<<<<< HEAD
-		if (ehci->has_ppcd && !(ppcd & (1 << i)))
-			continue;
-		temp = ehci_readl(ehci, &ehci->regs->port_status [i]);
-
-		/*
-		 * Return status information even for ports with OWNER set.
-		 * Otherwise khubd wouldn't see the disconnect event when a
-=======
 		if (ppcd & (1 << i))
 			temp = ehci_readl(ehci, &ehci->regs->port_status[i]);
 		else
@@ -980,19 +668,14 @@ ehci_hub_status_data (struct usb_hcd *hcd, char *buf)
 		/*
 		 * Return status information even for ports with OWNER set.
 		 * Otherwise hub_wq wouldn't see the disconnect event when a
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * high-speed device is switched over to the companion
 		 * controller by the user.
 		 */
 
 		if ((temp & mask) != 0 || test_bit(i, &ehci->port_c_suspend)
 				|| (ehci->reset_done[i] && time_after_eq(
-<<<<<<< HEAD
-					jiffies, ehci->reset_done[i]))) {
-=======
 					jiffies, ehci->reset_done[i]))
 				|| ehci_has_ci_pec_bug(ehci, temp)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i < 7)
 			    buf [0] |= 1 << (i + 1);
 			else
@@ -1019,11 +702,7 @@ ehci_hub_descriptor (
 	int		ports = HCS_N_PORTS (ehci->hcs_params);
 	u16		temp;
 
-<<<<<<< HEAD
-	desc->bDescriptorType = 0x29;
-=======
 	desc->bDescriptorType = USB_DT_HUB;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->bPwrOn2PwrGood = 10;	/* ehci 1.0, 2.3.9 says 20ms max */
 	desc->bHubContrCurrent = 0;
 
@@ -1035,17 +714,6 @@ ehci_hub_descriptor (
 	memset(&desc->u.hs.DeviceRemovable[0], 0, temp);
 	memset(&desc->u.hs.DeviceRemovable[temp], 0xff, temp);
 
-<<<<<<< HEAD
-	temp = 0x0008;			/* per-port overcurrent reporting */
-	if (HCS_PPC (ehci->hcs_params))
-		temp |= 0x0001;		/* per-port power control */
-	else
-		temp |= 0x0002;		/* no power switching */
-#if 0
-// re-enable when we support USB_PORT_FEAT_INDICATOR below.
-	if (HCS_INDICATOR (ehci->hcs_params))
-		temp |= 0x0080;		/* per-port indicators (LEDs) */
-=======
 	temp = HUB_CHAR_INDV_PORT_OCPM;	/* per-port overcurrent reporting */
 	if (HCS_PPC (ehci->hcs_params))
 		temp |= HUB_CHAR_INDV_PORT_LPSM; /* per-port power control */
@@ -1055,164 +723,13 @@ ehci_hub_descriptor (
 // re-enable when we support USB_PORT_FEAT_INDICATOR below.
 	if (HCS_INDICATOR (ehci->hcs_params))
 		temp |= HUB_CHAR_PORTIND; /* per-port indicators (LEDs) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	desc->wHubCharacteristics = cpu_to_le16(temp);
 }
 
 /*-------------------------------------------------------------------------*/
-<<<<<<< HEAD
-#ifdef CONFIG_USB_EHCI_EHSET
-
-#define EHSET_TEST_SINGLE_STEP_SET_FEATURE 0x06
-
-static void usb_ehset_completion(struct urb *urb)
-{
-	struct completion  *done = urb->context;
-
-	complete(done);
-}
-static int submit_single_step_set_feature(
-	struct usb_hcd  *hcd,
-	struct urb      *urb,
-	int 		is_setup
-);
-
-/* Allocate a URB and initialize the various fields of it.
- * This API is used by the single_step_set_feature test of
- * EHSET where IN packet of the GetDescriptor request is
- * sent after 15secs of the SETUP packet.
- * Return NULL if failed.
- */
-static struct urb *
-request_single_step_set_feature_urb(
-	struct usb_device 	*udev,
-	void 			*dr,
-	void 			*buf,
-	struct completion 	*done
-) {
-	struct urb *urb;
-	struct usb_hcd *hcd = bus_to_hcd(udev->bus);
-	struct usb_host_endpoint	*ep;
-
-	urb = usb_alloc_urb(0, GFP_KERNEL);
-	if (!urb)
-		return NULL;
-
-	urb->pipe = usb_rcvctrlpipe(udev, 0);
-	ep = (usb_pipein(urb->pipe) ? udev->ep_in : udev->ep_out)
-			[usb_pipeendpoint(urb->pipe)];
-	if (!ep) {
-		usb_free_urb(urb);
-		return NULL;
-	}
-
-	/* Initialize the various URB fields as these are used
-	 * by the HCD driver to queue it and as well as
-	 * when completion happens.
-	 */
-	urb->ep = ep;
-	urb->dev = udev;
-	urb->setup_packet = (void *)dr;
-	urb->transfer_buffer = buf;
-	urb->transfer_buffer_length = USB_DT_DEVICE_SIZE;
-	urb->complete = usb_ehset_completion;
-	urb->status = -EINPROGRESS;
-	urb->actual_length = 0;
-	urb->transfer_flags = (urb->transfer_flags & ~URB_DIR_MASK)
-				| URB_DIR_IN ;
-	usb_get_urb(urb);
-	atomic_inc(&urb->use_count);
-	atomic_inc(&urb->dev->urbnum);
-	urb->setup_dma = dma_map_single(
-			hcd->self.controller,
-			urb->setup_packet,
-			sizeof(struct usb_ctrlrequest),
-			DMA_TO_DEVICE);
-	urb->transfer_dma = dma_map_single(
-			hcd->self.controller,
-			urb->transfer_buffer,
-			urb->transfer_buffer_length,
-			DMA_FROM_DEVICE);
-	urb->context = done;
-	return urb;
-}
-
-static int ehset_single_step_set_feature(struct usb_hcd *hcd, int port)
-{
-	int retval = -ENOMEM;
-	struct usb_ctrlrequest *dr;
-	struct urb *urb;
-	struct usb_device *udev ;
-	struct ehci_hcd	*ehci = hcd_to_ehci(hcd);
-	struct usb_device_descriptor *buf;
-	DECLARE_COMPLETION_ONSTACK(done);
-
-	/*Obtain udev of the rhub's child port */
-	udev = hcd->self.root_hub->children[port];
-	if (!udev) {
-		ehci_err(ehci, "No device attached to the RootHub\n");
-		return -ENODEV;
-	}
-	buf = kmalloc(USB_DT_DEVICE_SIZE, GFP_KERNEL);
-	if (!buf)
-		return -ENOMEM;
-
-	dr = kmalloc(sizeof(struct usb_ctrlrequest), GFP_KERNEL);
-	if (!dr) {
-		kfree(buf);
-		return -ENOMEM;
-	}
-
-	/* Fill Setup packet for GetDescriptor */
-	dr->bRequestType = USB_DIR_IN;
-	dr->bRequest = USB_REQ_GET_DESCRIPTOR;
-	dr->wValue = cpu_to_le16(USB_DT_DEVICE << 8);
-	dr->wIndex = 0;
-	dr->wLength = cpu_to_le16(USB_DT_DEVICE_SIZE);
-	urb = request_single_step_set_feature_urb(udev, dr, buf, &done);
-	if (!urb)
-		goto cleanup;
-
-	/* Now complete just the SETUP stage */
-	retval = submit_single_step_set_feature(hcd, urb, 1);
-	if (retval)
-		goto out1;
-	if (!wait_for_completion_timeout(&done, msecs_to_jiffies(2000))) {
-		usb_kill_urb(urb);
-		retval = -ETIMEDOUT;
-		ehci_err(ehci, "%s SETUP stage timed out on ep0\n", __func__);
-		goto out1;
-	}
-	msleep(15 * 1000);
-	/* Complete remaining DATA and status stages */
-	/* No need to free the URB, we can reuse the same */
-	urb->status = -EINPROGRESS;
-	usb_get_urb(urb);
-	atomic_inc(&urb->use_count);
-	atomic_inc(&urb->dev->urbnum);
-	retval = submit_single_step_set_feature(hcd, urb, 0);
-	if (!retval && !wait_for_completion_timeout(&done,
-						msecs_to_jiffies(2000))) {
-		usb_kill_urb(urb);
-		retval = -ETIMEDOUT;
-		ehci_err(ehci, "%s IN stage timed out on ep0\n", __func__);
-	}
-out1:
-	usb_free_urb(urb);
-cleanup:
-	kfree(dr);
-	kfree(buf);
-	return retval;
-}
-#endif
-/*-------------------------------------------------------------------------*/
-
-static int ehci_hub_control (
-=======
 
 int ehci_hub_control(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_hcd	*hcd,
 	u16		typeReq,
 	u16		wValue,
@@ -1222,21 +739,13 @@ int ehci_hub_control(
 ) {
 	struct ehci_hcd	*ehci = hcd_to_ehci (hcd);
 	int		ports = HCS_N_PORTS (ehci->hcs_params);
-<<<<<<< HEAD
-	u32 __iomem	*status_reg = &ehci->regs->port_status[
-				(wIndex & 0xff) - 1];
-	u32 __iomem	*hostpc_reg = NULL;
-=======
 	u32 __iomem	*status_reg, *hostpc_reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		temp, temp1, status;
 	unsigned long	flags;
 	int		retval = 0;
 	unsigned	selector;
 
 	/*
-<<<<<<< HEAD
-=======
 	 * Avoid out-of-bounds values while calculating the port index
 	 * from wIndex.  The compiler doesn't like pointers to invalid
 	 * addresses, even if they are never used.
@@ -1248,19 +757,12 @@ int ehci_hub_control(
 	hostpc_reg = &ehci->regs->hostpc[temp];
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * FIXME:  support SetPortFeatures USB_PORT_FEAT_INDICATOR.
 	 * HCS_INDICATOR may say we can change LEDs to off/amber/green.
 	 * (track current state ourselves) ... blink for diagnostics,
 	 * power, "this is the one", etc.  EHCI spec supports this.
 	 */
 
-<<<<<<< HEAD
-	if (ehci->has_hostpc)
-		hostpc_reg = (u32 __iomem *)((u8 *)ehci->regs
-				+ HOSTPC0 + 4 * ((wIndex & 0xff) - 1));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave (&ehci->lock, flags);
 	switch (typeReq) {
 	case ClearHubFeature:
@@ -1278,18 +780,11 @@ int ehci_hub_control(
 			goto error;
 		wIndex--;
 		temp = ehci_readl(ehci, status_reg);
-<<<<<<< HEAD
-
-		/*
-		 * Even if OWNER is set, so the port is owned by the
-		 * companion controller, khubd needs to be able to clear
-=======
 		temp &= ~PORT_RWC_BITS;
 
 		/*
 		 * Even if OWNER is set, so the port is owned by the
 		 * companion controller, hub_wq needs to be able to clear
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * the port-change status bits (especially
 		 * USB_PORT_STAT_C_CONNECTION).
 		 */
@@ -1299,12 +794,7 @@ int ehci_hub_control(
 			ehci_writel(ehci, temp & ~PORT_PE, status_reg);
 			break;
 		case USB_PORT_FEAT_C_ENABLE:
-<<<<<<< HEAD
-			ehci_writel(ehci, (temp & ~PORT_RWC_BITS) | PORT_PEC,
-					status_reg);
-=======
 			ehci_writel(ehci, temp | PORT_PEC, status_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case USB_PORT_FEAT_SUSPEND:
 			if (temp & PORT_RESET)
@@ -1314,11 +804,7 @@ int ehci_hub_control(
 #ifdef CONFIG_USB_OTG
 			if ((hcd->self.otg_port == (wIndex + 1))
 			    && hcd->self.b_hnp_enable) {
-<<<<<<< HEAD
-				otg_start_hnp(ehci->transceiver->otg);
-=======
 				otg_start_hnp(hcd->usb_phy->otg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 #endif
@@ -1328,11 +814,7 @@ int ehci_hub_control(
 				goto error;
 
 			/* clear phy low-power mode before resume */
-<<<<<<< HEAD
-			if (hostpc_reg) {
-=======
 			if (ehci->has_tdi_phy_lpm) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				temp1 = ehci_readl(ehci, hostpc_reg);
 				ehci_writel(ehci, temp1 & ~HOSTPC_PHCD,
 						hostpc_reg);
@@ -1341,43 +823,17 @@ int ehci_hub_control(
 				spin_lock_irqsave(&ehci->lock, flags);
 			}
 			/* resume signaling for 20 msec */
-<<<<<<< HEAD
-			temp &= ~(PORT_RWC_BITS | PORT_WAKE_BITS);
-			ehci_writel(ehci, temp | PORT_RESUME, status_reg);
-			ehci->reset_done[wIndex] = jiffies
-					+ msecs_to_jiffies(20);
-=======
 			temp &= ~PORT_WAKE_BITS;
 			ehci_writel(ehci, temp | PORT_RESUME, status_reg);
 			ehci->reset_done[wIndex] = jiffies
 					+ msecs_to_jiffies(USB_RESUME_TIMEOUT);
 			set_bit(wIndex, &ehci->resuming_ports);
 			usb_hcd_start_port_resume(&hcd->self, wIndex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case USB_PORT_FEAT_C_SUSPEND:
 			clear_bit(wIndex, &ehci->port_c_suspend);
 			break;
 		case USB_PORT_FEAT_POWER:
-<<<<<<< HEAD
-			if (HCS_PPC (ehci->hcs_params))
-				ehci_writel(ehci,
-					  temp & ~(PORT_RWC_BITS | PORT_POWER),
-					  status_reg);
-			break;
-		case USB_PORT_FEAT_C_CONNECTION:
-			if (ehci->has_lpm) {
-				/* clear PORTSC bits on disconnect */
-				temp &= ~PORT_LPM;
-				temp &= ~PORT_DEV_ADDR;
-			}
-			ehci_writel(ehci, (temp & ~PORT_RWC_BITS) | PORT_CSC,
-					status_reg);
-			break;
-		case USB_PORT_FEAT_C_OVER_CURRENT:
-			ehci_writel(ehci, (temp & ~PORT_RWC_BITS) | PORT_OCC,
-					status_reg);
-=======
 			if (HCS_PPC(ehci->hcs_params)) {
 				spin_unlock_irqrestore(&ehci->lock, flags);
 				ehci_port_power(ehci, wIndex, false);
@@ -1389,7 +845,6 @@ int ehci_hub_control(
 			break;
 		case USB_PORT_FEAT_C_OVER_CURRENT:
 			ehci_writel(ehci, temp | PORT_OCC, status_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case USB_PORT_FEAT_C_RESET:
 			/* GetPortStatus clears reset */
@@ -1421,9 +876,6 @@ int ehci_hub_control(
 		if (temp & PORT_PEC)
 			status |= USB_PORT_STAT_C_ENABLE << 16;
 
-<<<<<<< HEAD
-		if ((temp & PORT_OCC) && !ignore_oc){
-=======
 		if (ehci_has_ci_pec_bug(ehci, temp)) {
 			status |= USB_PORT_STAT_C_ENABLE << 16;
 			ehci_info(ehci,
@@ -1432,7 +884,6 @@ int ehci_hub_control(
 		}
 
 		if ((temp & PORT_OCC) && (!ignore_oc && !ehci->spurious_oc)){
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status |= USB_PORT_STAT_C_OVERCURRENT << 16;
 
 			/*
@@ -1440,14 +891,6 @@ int ehci_hub_control(
 			 * However, not all EHCI implementations do this
 			 * automatically, even if they _do_ support per-port
 			 * power switching; they're allowed to just limit the
-<<<<<<< HEAD
-			 * current.  khubd will turn the power back on.
-			 */
-			if ((temp & PORT_OC) && HCS_PPC(ehci->hcs_params)) {
-				ehci_writel(ehci,
-					temp & ~(PORT_RWC_BITS | PORT_POWER),
-					status_reg);
-=======
 			 * current.  hub_wq will turn the power back on.
 			 */
 			if (((temp & PORT_OC) || (ehci->need_oc_pp_cycle))
@@ -1455,21 +898,10 @@ int ehci_hub_control(
 				spin_unlock_irqrestore(&ehci->lock, flags);
 				ehci_port_power(ehci, wIndex, false);
 				spin_lock_irqsave(&ehci->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				temp = ehci_readl(ehci, status_reg);
 			}
 		}
 
-<<<<<<< HEAD
-		/* whoever resumes must GetPortStatus to complete it!! */
-		if (temp & PORT_RESUME) {
-
-			/* Remote Wakeup received? */
-			if (!ehci->reset_done[wIndex]) {
-				/* resume signaling for 20 msec */
-				ehci->reset_done[wIndex] = jiffies
-						+ msecs_to_jiffies(20);
-=======
 		/* no reset or resume pending */
 		if (!ehci->reset_done[wIndex]) {
 
@@ -1480,46 +912,11 @@ int ehci_hub_control(
 						+ msecs_to_jiffies(20);
 				usb_hcd_start_port_resume(&hcd->self, wIndex);
 				set_bit(wIndex, &ehci->resuming_ports);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* check the port again */
 				mod_timer(&ehci_to_hcd(ehci)->rh_timer,
 						ehci->reset_done[wIndex]);
 			}
 
-<<<<<<< HEAD
-			/* resume completed? */
-			else if (time_after_eq(jiffies,
-					ehci->reset_done[wIndex])) {
-				clear_bit(wIndex, &ehci->suspended_ports);
-				set_bit(wIndex, &ehci->port_c_suspend);
-				ehci->reset_done[wIndex] = 0;
-
-				/* stop resume signaling */
-				temp = ehci_readl(ehci, status_reg);
-				ehci_writel(ehci,
-					temp & ~(PORT_RWC_BITS | PORT_RESUME),
-					status_reg);
-				clear_bit(wIndex, &ehci->resuming_ports);
-				retval = handshake(ehci, status_reg,
-					   PORT_RESUME, 0, 2000 /* 2msec */);
-				if (retval != 0) {
-					ehci_err(ehci,
-						"port %d resume error %d\n",
-						wIndex + 1, retval);
-					goto error;
-				}
-				temp &= ~(PORT_SUSPEND|PORT_RESUME|(3<<10));
-			}
-		}
-
-		/* whoever resets must GetPortStatus to complete it!! */
-		if ((temp & PORT_RESET)
-				&& time_after_eq(jiffies,
-					ehci->reset_done[wIndex])) {
-			status |= USB_PORT_STAT_C_RESET << 16;
-			ehci->reset_done [wIndex] = 0;
-			clear_bit(wIndex, &ehci->resuming_ports);
-=======
 		/* reset or resume not yet complete */
 		} else if (!time_after_eq(jiffies, ehci->reset_done[wIndex])) {
 			;	/* wait until it is complete */
@@ -1548,7 +945,6 @@ int ehci_hub_control(
 		} else {
 			status |= USB_PORT_STAT_C_RESET << 16;
 			ehci->reset_done [wIndex] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* force reset to complete */
 			ehci_writel(ehci, temp & ~(PORT_RWC_BITS | PORT_RESET),
@@ -1556,11 +952,7 @@ int ehci_hub_control(
 			/* REVISIT:  some hardware needs 550+ usec to clear
 			 * this bit; seems too long to spin routinely...
 			 */
-<<<<<<< HEAD
-			retval = handshake(ehci, status_reg,
-=======
 			retval = ehci_handshake(ehci, status_reg,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					PORT_RESET, 0, 1000);
 			if (retval != 0) {
 				ehci_err (ehci, "port %d reset error %d\n",
@@ -1573,14 +965,6 @@ int ehci_hub_control(
 					ehci_readl(ehci, status_reg));
 		}
 
-<<<<<<< HEAD
-		if (!(temp & (PORT_RESUME|PORT_RESET))) {
-			ehci->reset_done[wIndex] = 0;
-			clear_bit(wIndex, &ehci->resuming_ports);
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* transfer dedicated ports to the companion hc */
 		if ((temp & PORT_CONNECT) &&
 				test_bit(wIndex, &ehci->companion_ports)) {
@@ -1592,11 +976,7 @@ int ehci_hub_control(
 		}
 
 		/*
-<<<<<<< HEAD
-		 * Even if OWNER is set, there's no harm letting khubd
-=======
 		 * Even if OWNER is set, there's no harm letting hub_wq
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * see the wPortStatus values (they should all be 0 except
 		 * for PORT_POWER anyway).
 		 */
@@ -1622,10 +1002,7 @@ int ehci_hub_control(
 			ehci->reset_done[wIndex] = 0;
 			if (temp & PORT_PE)
 				set_bit(wIndex, &ehci->port_c_suspend);
-<<<<<<< HEAD
-=======
 			usb_hcd_end_port_resume(&hcd->self, wIndex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (temp & PORT_OC)
@@ -1637,15 +1014,8 @@ int ehci_hub_control(
 		if (test_bit(wIndex, &ehci->port_c_suspend))
 			status |= USB_PORT_STAT_C_SUSPEND << 16;
 
-<<<<<<< HEAD
-#ifndef	VERBOSE_DEBUG
-	if (status & ~0xffff)	/* only if wPortChange is interesting */
-#endif
-		dbg_port (ehci, "GetStatus", wIndex + 1, temp);
-=======
 		if (status & ~0xffff)	/* only if wPortChange is interesting */
 			dbg_port(ehci, "GetStatus", wIndex + 1, temp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_unaligned_le32(status, buf);
 		break;
 	case SetHubFeature:
@@ -1685,32 +1055,6 @@ int ehci_hub_control(
 			if ((temp & PORT_PE) == 0
 					|| (temp & PORT_RESET) != 0)
 				goto error;
-<<<<<<< HEAD
-			/*port gets suspended as part of bus suspend routine*/
-			if (!ehci->susp_sof_bug)
-				ehci_writel(ehci, temp | PORT_SUSPEND,
-						status_reg);
-#ifdef	CONFIG_USB_OTG
-			if (hcd->self.otg_port == (wIndex + 1) &&
-					hcd->self.b_hnp_enable) {
-				set_bit(wIndex, &ehci->suspended_ports);
-				otg_start_hnp(ehci->transceiver->otg);
-				break;
-			}
-#endif
-			/* After above check the port must be connected.
-			 * Set appropriate bit thus could put phy into low power
-			 * mode if we have hostpc feature
-			 */
-			temp &= ~PORT_WKCONN_E;
-			temp |= PORT_WKDISC_E | PORT_WKOC_E;
-			if (ehci->susp_sof_bug)
-				ehci_writel(ehci, temp, status_reg);
-			else
-				ehci_writel(ehci, temp | PORT_SUSPEND,
-						status_reg);
-			if (hostpc_reg) {
-=======
 
 			/* After above check the port must be connected.
 			 * Set appropriate bit thus could put phy into low power
@@ -1720,7 +1064,6 @@ int ehci_hub_control(
 			temp |= PORT_WKDISC_E | PORT_WKOC_E;
 			ehci_writel(ehci, temp | PORT_SUSPEND, status_reg);
 			if (ehci->has_tdi_phy_lpm) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				spin_unlock_irqrestore(&ehci->lock, flags);
 				msleep(5);/* 5ms for HCD enter low pwr mode */
 				spin_lock_irqsave(&ehci->lock, flags);
@@ -1732,17 +1075,6 @@ int ehci_hub_control(
 					wIndex, (temp1 & HOSTPC_PHCD) ?
 					"succeeded" : "failed");
 			}
-<<<<<<< HEAD
-			set_bit(wIndex, &ehci->suspended_ports);
-			break;
-		case USB_PORT_FEAT_POWER:
-			if (HCS_PPC (ehci->hcs_params))
-				ehci_writel(ehci, temp | PORT_POWER,
-						status_reg);
-			break;
-		case USB_PORT_FEAT_RESET:
-			if (temp & PORT_RESUME)
-=======
 			if (ehci_has_fsl_susp_errata(ehci)) {
 				/* 10ms for HCD enter suspend */
 				spin_unlock_irqrestore(&ehci->lock, flags);
@@ -1760,7 +1092,6 @@ int ehci_hub_control(
 			break;
 		case USB_PORT_FEAT_RESET:
 			if (temp & (PORT_SUSPEND|PORT_RESUME))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto error;
 			/* line status bits may report this as low speed,
 			 * which can be fine if this root hub has a
@@ -1774,10 +1105,6 @@ int ehci_hub_control(
 					wIndex + 1);
 				temp |= PORT_OWNER;
 			} else {
-<<<<<<< HEAD
-				ehci_vdbg (ehci, "port %d reset\n", wIndex + 1);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				temp |= PORT_RESET;
 				temp &= ~PORT_PE;
 
@@ -1787,23 +1114,6 @@ int ehci_hub_control(
 				 */
 				ehci->reset_done [wIndex] = jiffies
 						+ msecs_to_jiffies (50);
-<<<<<<< HEAD
-			}
-			if (ehci->reset_sof_bug && (temp & PORT_RESET) &&
-					hcd->driver->reset_sof_bug_handler) {
-				spin_unlock_irqrestore(&ehci->lock, flags);
-				hcd->driver->reset_sof_bug_handler(hcd, temp);
-				spin_lock_irqsave(&ehci->lock, flags);
-			} else {
-				ehci_writel(ehci, temp, status_reg);
-			}
-
-			if (ehci->reset_delay) {
-				spin_unlock_irqrestore(&ehci->lock, flags);
-				msleep(ehci->reset_delay);
-				spin_lock_irqsave(&ehci->lock, flags);
-			}
-=======
 
 				/*
 				 * Force full-speed connect for FSL high-speed
@@ -1813,7 +1123,6 @@ int ehci_hub_control(
 					temp |= (1 << PORTSC_FSL_PFSC);
 			}
 			ehci_writel(ehci, temp, status_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		/* For downstream facing ports (these):  one hub port is put
@@ -1823,42 +1132,6 @@ int ehci_hub_control(
 		 * about the EHCI-specific stuff.
 		 */
 		case USB_PORT_FEAT_TEST:
-<<<<<<< HEAD
-			if (selector && selector <= 5) {
-				ehci_quiesce(ehci);
-
-			/* Put all enabled ports into suspend */
-				while (ports--) {
-					u32 __iomem *sreg =
-						&ehci->regs->port_status[ports];
-
-					temp = ehci_readl(ehci, sreg)
-					       	& ~PORT_RWC_BITS;
-					if (temp & PORT_PE)
-						ehci_writel(ehci,
-							temp | PORT_SUSPEND,
-							sreg);
-				}
-				spin_unlock_irq(&ehci->lock);
-				ehci_halt(ehci);
-				spin_lock_irq(&ehci->lock);
-				temp = ehci_readl(ehci, status_reg);
-				temp |= selector << 16;
-				ehci_writel(ehci, temp, status_reg);
-			}
-#ifdef CONFIG_USB_EHCI_EHSET
-			else if (selector
-				  == EHSET_TEST_SINGLE_STEP_SET_FEATURE) {
-				spin_unlock_irqrestore(&ehci->lock, flags);
-				retval = ehset_single_step_set_feature(hcd,
-								   wIndex);
-				spin_lock_irqsave(&ehci->lock, flags);
-			}
-#endif
-			else
-				goto error;
-			break;
-=======
 #ifdef CONFIG_USB_HCD_TEST_MODE
 			if (selector == EHSET_TEST_SINGLE_STEP_SET_FEATURE) {
 				spin_unlock_irqrestore(&ehci->lock, flags);
@@ -1894,7 +1167,6 @@ int ehci_hub_control(
 			ehci_writel(ehci, temp, status_reg);
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			goto error;
 		}
@@ -1910,15 +1182,9 @@ error_exit:
 	spin_unlock_irqrestore (&ehci->lock, flags);
 	return retval;
 }
-<<<<<<< HEAD
-
-static void __maybe_unused ehci_relinquish_port(struct usb_hcd *hcd,
-		int portnum)
-=======
 EXPORT_SYMBOL_GPL(ehci_hub_control);
 
 static void ehci_relinquish_port(struct usb_hcd *hcd, int portnum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
 
@@ -1927,12 +1193,7 @@ static void ehci_relinquish_port(struct usb_hcd *hcd, int portnum)
 	set_owner(ehci, --portnum, PORT_OWNER);
 }
 
-<<<<<<< HEAD
-static int __maybe_unused ehci_port_handed_over(struct usb_hcd *hcd,
-		int portnum)
-=======
 static int ehci_port_handed_over(struct usb_hcd *hcd, int portnum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
 	u32 __iomem		*reg;
@@ -1942,8 +1203,6 @@ static int ehci_port_handed_over(struct usb_hcd *hcd, int portnum)
 	reg = &ehci->regs->port_status[portnum - 1];
 	return ehci_readl(ehci, reg) & PORT_OWNER;
 }
-<<<<<<< HEAD
-=======
 
 static int ehci_port_power(struct ehci_hcd *ehci, int portnum, bool enable)
 {
@@ -1961,4 +1220,3 @@ static int ehci_port_power(struct ehci_hcd *ehci, int portnum, bool enable)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

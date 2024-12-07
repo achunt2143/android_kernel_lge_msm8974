@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/kernel/power/snapshot.c
  *
@@ -9,18 +6,10 @@
  *
  * Copyright (C) 1998-2005 Pavel Machek <pavel@ucw.cz>
  * Copyright (C) 2006 Rafael J. Wysocki <rjw@sisk.pl>
-<<<<<<< HEAD
- *
- * This file is released under the GPLv2.
- *
- */
-
-=======
  */
 
 #define pr_fmt(fmt) "PM: hibernation: " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/version.h>
 #include <linux/module.h>
 #include <linux/mm.h>
@@ -32,37 +21,24 @@
 #include <linux/pm.h>
 #include <linux/device.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
 #include <linux/memblock.h>
 #include <linux/nmi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/syscalls.h>
 #include <linux/console.h>
 #include <linux/highmem.h>
 #include <linux/list.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-#include <asm/mmu_context.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/compiler.h>
 #include <linux/ktime.h>
 #include <linux/set_memory.h>
 
 #include <linux/uaccess.h>
 #include <asm/mmu_context.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tlbflush.h>
 #include <asm/io.h>
 
 #include "power.h"
 
-<<<<<<< HEAD
-=======
 #if defined(CONFIG_STRICT_KERNEL_RWX) && defined(CONFIG_ARCH_HAS_SET_MEMORY)
 static bool hibernate_restore_protection;
 static bool hibernate_restore_protection_active;
@@ -136,7 +112,6 @@ static inline void hibernate_unmap_page(struct page *page)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int swsusp_page_is_free(struct page *);
 static void swsusp_set_page_forbidden(struct page *);
 static void swsusp_unset_page_forbidden(struct page *);
@@ -163,39 +138,17 @@ unsigned long image_size;
 
 void __init hibernate_image_size_init(void)
 {
-<<<<<<< HEAD
-	image_size = ((totalram_pages * 2) / 5) * PAGE_SIZE;
-}
-
-/* List of PBEs needed for restoring the pages that were allocated before
-=======
 	image_size = ((totalram_pages() * 2) / 5) * PAGE_SIZE;
 }
 
 /*
  * List of PBEs needed for restoring the pages that were allocated before
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * the suspend and included in the suspend image, but have also been
  * allocated by the "resume" kernel, so their contents cannot be written
  * directly to their "original" page frames.
  */
 struct pbe *restore_pblist;
 
-<<<<<<< HEAD
-/* Pointer to an auxiliary buffer (1 page) */
-static void *buffer;
-
-/**
- *	@safe_needed - on resume, for storing the PBE list and the image,
- *	we can only use memory pages that do not conflict with the pages
- *	used before suspend.  The unsafe pages have PageNosaveFree set
- *	and we count them using unsafe_pages.
- *
- *	Each allocated image page is marked as PageNosave and PageNosaveFree
- *	so that swsusp_free() can release it.
- */
-
-=======
 /* struct linked_page is used to build chains of pages */
 
 #define LINKED_PAGE_DATA_SIZE	(PAGE_SIZE - sizeof(void *))
@@ -215,7 +168,6 @@ static struct linked_page *safe_pages_list;
 /* Pointer to an auxiliary buffer (1 page) */
 static void *buffer;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PG_ANY		0
 #define PG_SAFE		1
 #define PG_UNSAFE_CLEAR	1
@@ -223,8 +175,6 @@ static void *buffer;
 
 static unsigned int allocated_unsafe_pages;
 
-<<<<<<< HEAD
-=======
 /**
  * get_image_page - Allocate a page for a hibernation image.
  * @gfp_mask: GFP mask for the allocation.
@@ -238,7 +188,6 @@ static unsigned int allocated_unsafe_pages;
  * Each allocated image page is marked as PageNosave and PageNosaveFree so that
  * swsusp_free() can release it.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *get_image_page(gfp_t gfp_mask, int safe_needed)
 {
 	void *res;
@@ -258,11 +207,6 @@ static void *get_image_page(gfp_t gfp_mask, int safe_needed)
 	return res;
 }
 
-<<<<<<< HEAD
-unsigned long get_safe_page(gfp_t gfp_mask)
-{
-	return (unsigned long)get_image_page(gfp_mask, PG_SAFE);
-=======
 static void *__get_safe_page(gfp_t gfp_mask)
 {
 	if (safe_pages_list) {
@@ -278,7 +222,6 @@ static void *__get_safe_page(gfp_t gfp_mask)
 unsigned long get_safe_page(gfp_t gfp_mask)
 {
 	return (unsigned long)__get_safe_page(gfp_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct page *alloc_image_page(gfp_t gfp_mask)
@@ -293,13 +236,6 @@ static struct page *alloc_image_page(gfp_t gfp_mask)
 	return page;
 }
 
-<<<<<<< HEAD
-/**
- *	free_image_page - free page represented by @addr, allocated with
- *	get_image_page (page flags set by it must be cleared)
- */
-
-=======
 static void recycle_safe_page(void *page_address)
 {
 	struct linked_page *lp = page_address;
@@ -316,7 +252,6 @@ static void recycle_safe_page(void *page_address)
  * The page to free should have been allocated by get_image_page() (page flags
  * set by it are affected).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void free_image_page(void *addr, int clear_nosave_free)
 {
 	struct page *page;
@@ -332,22 +267,8 @@ static inline void free_image_page(void *addr, int clear_nosave_free)
 	__free_page(page);
 }
 
-<<<<<<< HEAD
-/* struct linked_page is used to build chains of pages */
-
-#define LINKED_PAGE_DATA_SIZE	(PAGE_SIZE - sizeof(void *))
-
-struct linked_page {
-	struct linked_page *next;
-	char data[LINKED_PAGE_DATA_SIZE];
-} __attribute__((packed));
-
-static inline void
-free_list_of_pages(struct linked_page *list, int clear_page_nosave)
-=======
 static inline void free_list_of_pages(struct linked_page *list,
 				      int clear_page_nosave)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (list) {
 		struct linked_page *lp = list->next;
@@ -357,26 +278,6 @@ static inline void free_list_of_pages(struct linked_page *list,
 	}
 }
 
-<<<<<<< HEAD
-/**
-  *	struct chain_allocator is used for allocating small objects out of
-  *	a linked list of pages called 'the chain'.
-  *
-  *	The chain grows each time when there is no room for a new object in
-  *	the current page.  The allocated objects cannot be freed individually.
-  *	It is only possible to free them all at once, by freeing the entire
-  *	chain.
-  *
-  *	NOTE: The chain allocator may be inefficient if the allocated objects
-  *	are not much smaller than PAGE_SIZE.
-  */
-
-struct chain_allocator {
-	struct linked_page *chain;	/* the chain */
-	unsigned int used_space;	/* total size of objects allocated out
-					 * of the current page
-					 */
-=======
 /*
  * struct chain_allocator is used for allocating small objects out of
  * a linked list of pages called 'the chain'.
@@ -393,18 +294,12 @@ struct chain_allocator {
 	struct linked_page *chain;	/* the chain */
 	unsigned int used_space;	/* total size of objects allocated out
 					   of the current page */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfp_t gfp_mask;		/* mask for allocating pages */
 	int safe_needed;	/* if set, only "safe" pages are allocated */
 };
 
-<<<<<<< HEAD
-static void
-chain_init(struct chain_allocator *ca, gfp_t gfp_mask, int safe_needed)
-=======
 static void chain_init(struct chain_allocator *ca, gfp_t gfp_mask,
 		       int safe_needed)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ca->chain = NULL;
 	ca->used_space = LINKED_PAGE_DATA_SIZE;
@@ -419,12 +314,8 @@ static void *chain_alloc(struct chain_allocator *ca, unsigned int size)
 	if (LINKED_PAGE_DATA_SIZE - ca->used_space < size) {
 		struct linked_page *lp;
 
-<<<<<<< HEAD
-		lp = get_image_page(ca->gfp_mask, ca->safe_needed);
-=======
 		lp = ca->safe_needed ? __get_safe_page(ca->gfp_mask) :
 					get_image_page(ca->gfp_mask, PG_ANY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!lp)
 			return NULL;
 
@@ -437,36 +328,6 @@ static void *chain_alloc(struct chain_allocator *ca, unsigned int size)
 	return ret;
 }
 
-<<<<<<< HEAD
-/**
- *	Data types related to memory bitmaps.
- *
- *	Memory bitmap is a structure consiting of many linked lists of
- *	objects.  The main list's elements are of type struct zone_bitmap
- *	and each of them corresonds to one zone.  For each zone bitmap
- *	object there is a list of objects of type struct bm_block that
- *	represent each blocks of bitmap in which information is stored.
- *
- *	struct memory_bitmap contains a pointer to the main list of zone
- *	bitmap objects, a struct bm_position used for browsing the bitmap,
- *	and a pointer to the list of pages used for allocating all of the
- *	zone bitmap objects and bitmap block objects.
- *
- *	NOTE: It has to be possible to lay out the bitmap in memory
- *	using only allocations of order 0.  Additionally, the bitmap is
- *	designed to work with arbitrary number of zones (this is over the
- *	top for now, but let's avoid making unnecessary assumptions ;-).
- *
- *	struct zone_bitmap contains a pointer to a list of bitmap block
- *	objects and a pointer to the bitmap block object that has been
- *	most recently used for setting bits.  Additionally, it contains the
- *	pfns that correspond to the start and end of the represented zone.
- *
- *	struct bm_block contains a pointer to the memory page in which
- *	information is stored (in the form of a block of bitmap)
- *	It also contains the pfns that correspond to the start and end of
- *	the represented memory area.
-=======
 /*
  * Data types related to memory bitmaps.
  *
@@ -506,40 +367,11 @@ static void *chain_alloc(struct chain_allocator *ca, unsigned int size)
  * access of the memory bitmap.
  *
  * The struct rtree_node represents one node of the radix tree.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define BM_END_OF_MAP	(~0UL)
 
 #define BM_BITS_PER_BLOCK	(PAGE_SIZE * BITS_PER_BYTE)
-<<<<<<< HEAD
-
-struct bm_block {
-	struct list_head hook;	/* hook into a list of bitmap blocks */
-	unsigned long start_pfn;	/* pfn represented by the first bit */
-	unsigned long end_pfn;	/* pfn represented by the last bit plus 1 */
-	unsigned long *data;	/* bitmap representing pages */
-};
-
-static inline unsigned long bm_block_bits(struct bm_block *bb)
-{
-	return bb->end_pfn - bb->start_pfn;
-}
-
-/* strcut bm_position is used for browsing memory bitmaps */
-
-struct bm_position {
-	struct bm_block *block;
-	int bit;
-};
-
-struct memory_bitmap {
-	struct list_head blocks;	/* list of bitmap blocks */
-	struct linked_page *p_list;	/* list of pages used to store zone
-					 * bitmap objects and bitmap block
-					 * objects
-					 */
-=======
 #define BM_BLOCK_SHIFT		(PAGE_SHIFT + 3)
 #define BM_BLOCK_MASK		((1UL << BM_BLOCK_SHIFT) - 1)
 
@@ -583,46 +415,11 @@ struct memory_bitmap {
 	struct linked_page *p_list;	/* list of pages used to store zone
 					   bitmap objects and bitmap block
 					   objects */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bm_position cur;	/* most recently used bit position */
 };
 
 /* Functions that operate on memory bitmaps */
 
-<<<<<<< HEAD
-static void memory_bm_position_reset(struct memory_bitmap *bm)
-{
-	bm->cur.block = list_entry(bm->blocks.next, struct bm_block, hook);
-	bm->cur.bit = 0;
-}
-
-static void memory_bm_free(struct memory_bitmap *bm, int clear_nosave_free);
-
-/**
- *	create_bm_block_list - create a list of block bitmap objects
- *	@pages - number of pages to track
- *	@list - list to put the allocated blocks into
- *	@ca - chain allocator to be used for allocating memory
- */
-static int create_bm_block_list(unsigned long pages,
-				struct list_head *list,
-				struct chain_allocator *ca)
-{
-	unsigned int nr_blocks = DIV_ROUND_UP(pages, BM_BITS_PER_BLOCK);
-
-	while (nr_blocks-- > 0) {
-		struct bm_block *bb;
-
-		bb = chain_alloc(ca, sizeof(struct bm_block));
-		if (!bb)
-			return -ENOMEM;
-		list_add(&bb->hook, list);
-	}
-
-	return 0;
-}
-
-=======
 #define BM_ENTRIES_PER_LEVEL	(PAGE_SIZE / sizeof(unsigned long))
 #if BITS_PER_LONG == 32
 #define BM_RTREE_LEVEL_SHIFT	(PAGE_SHIFT - 2)
@@ -801,7 +598,6 @@ static void memory_bm_position_reset(struct memory_bitmap *bm)
 
 static void memory_bm_free(struct memory_bitmap *bm, int clear_nosave_free);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mem_extent {
 	struct list_head hook;
 	unsigned long start;
@@ -809,13 +605,8 @@ struct mem_extent {
 };
 
 /**
-<<<<<<< HEAD
- *	free_mem_extents - free a list of memory extents
- *	@list - list of extents to empty
-=======
  * free_mem_extents - Free a list of memory extents.
  * @list: List of extents to free.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void free_mem_extents(struct list_head *list)
 {
@@ -828,18 +619,11 @@ static void free_mem_extents(struct list_head *list)
 }
 
 /**
-<<<<<<< HEAD
- *	create_mem_extents - create a list of memory extents representing
- *	                     contiguous ranges of PFNs
- *	@list - list to put the extents into
- *	@gfp_mask - mask to use for memory allocations
-=======
  * create_mem_extents - Create a list of memory extents.
  * @list: List to put the extents into.
  * @gfp_mask: Mask to use for memory allocations.
  *
  * The extents represent contiguous ranges of PFNs.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int create_mem_extents(struct list_head *list, gfp_t gfp_mask)
 {
@@ -852,11 +636,7 @@ static int create_mem_extents(struct list_head *list, gfp_t gfp_mask)
 		struct mem_extent *ext, *cur, *aux;
 
 		zone_start = zone->zone_start_pfn;
-<<<<<<< HEAD
-		zone_end = zone->zone_start_pfn + zone->spanned_pages;
-=======
 		zone_end = zone_end_pfn(zone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		list_for_each_entry(ext, list, hook)
 			if (zone_start <= ext->end)
@@ -899,17 +679,10 @@ static int create_mem_extents(struct list_head *list, gfp_t gfp_mask)
 }
 
 /**
-<<<<<<< HEAD
-  *	memory_bm_create - allocate memory for a memory bitmap
-  */
-static int
-memory_bm_create(struct memory_bitmap *bm, gfp_t gfp_mask, int safe_needed)
-=======
  * memory_bm_create - Allocate memory for a memory bitmap.
  */
 static int memory_bm_create(struct memory_bitmap *bm, gfp_t gfp_mask,
 			    int safe_needed)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct chain_allocator ca;
 	struct list_head mem_extents;
@@ -917,46 +690,13 @@ static int memory_bm_create(struct memory_bitmap *bm, gfp_t gfp_mask,
 	int error;
 
 	chain_init(&ca, gfp_mask, safe_needed);
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&bm->blocks);
-=======
 	INIT_LIST_HEAD(&bm->zones);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = create_mem_extents(&mem_extents, gfp_mask);
 	if (error)
 		return error;
 
 	list_for_each_entry(ext, &mem_extents, hook) {
-<<<<<<< HEAD
-		struct bm_block *bb;
-		unsigned long pfn = ext->start;
-		unsigned long pages = ext->end - ext->start;
-
-		bb = list_entry(bm->blocks.prev, struct bm_block, hook);
-
-		error = create_bm_block_list(pages, bm->blocks.prev, &ca);
-		if (error)
-			goto Error;
-
-		list_for_each_entry_continue(bb, &bm->blocks, hook) {
-			bb->data = get_image_page(gfp_mask, safe_needed);
-			if (!bb->data) {
-				error = -ENOMEM;
-				goto Error;
-			}
-
-			bb->start_pfn = pfn;
-			if (pages >= BM_BITS_PER_BLOCK) {
-				pfn += BM_BITS_PER_BLOCK;
-				pages -= BM_BITS_PER_BLOCK;
-			} else {
-				/* This is executed only once in the loop */
-				pfn += pages;
-			}
-			bb->end_pfn = pfn;
-		}
-=======
 		struct mem_zone_bm_rtree *zone;
 
 		zone = create_zone_bm_rtree(gfp_mask, safe_needed, &ca,
@@ -966,7 +706,6 @@ static int memory_bm_create(struct memory_bitmap *bm, gfp_t gfp_mask,
 			goto Error;
 		}
 		list_add_tail(&zone->list, &bm->zones);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	bm->p_list = ca.chain;
@@ -982,57 +721,6 @@ static int memory_bm_create(struct memory_bitmap *bm, gfp_t gfp_mask,
 }
 
 /**
-<<<<<<< HEAD
-  *	memory_bm_free - free memory occupied by the memory bitmap @bm
-  */
-static void memory_bm_free(struct memory_bitmap *bm, int clear_nosave_free)
-{
-	struct bm_block *bb;
-
-	list_for_each_entry(bb, &bm->blocks, hook)
-		if (bb->data)
-			free_image_page(bb->data, clear_nosave_free);
-
-	free_list_of_pages(bm->p_list, clear_nosave_free);
-
-	INIT_LIST_HEAD(&bm->blocks);
-}
-
-/**
- *	memory_bm_find_bit - find the bit in the bitmap @bm that corresponds
- *	to given pfn.  The cur_zone_bm member of @bm and the cur_block member
- *	of @bm->cur_zone_bm are updated.
- */
-static int memory_bm_find_bit(struct memory_bitmap *bm, unsigned long pfn,
-				void **addr, unsigned int *bit_nr)
-{
-	struct bm_block *bb;
-
-	/*
-	 * Check if the pfn corresponds to the current bitmap block and find
-	 * the block where it fits if this is not the case.
-	 */
-	bb = bm->cur.block;
-	if (pfn < bb->start_pfn)
-		list_for_each_entry_continue_reverse(bb, &bm->blocks, hook)
-			if (pfn >= bb->start_pfn)
-				break;
-
-	if (pfn >= bb->end_pfn)
-		list_for_each_entry_continue(bb, &bm->blocks, hook)
-			if (pfn >= bb->start_pfn && pfn < bb->end_pfn)
-				break;
-
-	if (&bb->hook == &bm->blocks)
-		return -EFAULT;
-
-	/* The block has been found */
-	bm->cur.block = bb;
-	pfn -= bb->start_pfn;
-	bm->cur.bit = pfn + 1;
-	*bit_nr = pfn;
-	*addr = bb->data;
-=======
  * memory_bm_free - Free memory occupied by the memory bitmap.
  * @bm: Memory bitmap.
  */
@@ -1121,7 +809,6 @@ node_found:
 	*addr = node->data;
 	*bit_nr = (pfn - zone->start_pfn) & BM_BLOCK_MASK;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1145,10 +832,7 @@ static int mem_bm_set_bit_check(struct memory_bitmap *bm, unsigned long pfn)
 	error = memory_bm_find_bit(bm, pfn, &addr, &bit);
 	if (!error)
 		set_bit(bit, addr);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1163,8 +847,6 @@ static void memory_bm_clear_bit(struct memory_bitmap *bm, unsigned long pfn)
 	clear_bit(bit, addr);
 }
 
-<<<<<<< HEAD
-=======
 static void memory_bm_clear_current(struct memory_bitmap *bm)
 {
 	int bit;
@@ -1178,7 +860,6 @@ static unsigned long memory_bm_get_current(struct memory_bitmap *bm)
 	return bm->cur.cur_pfn;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int memory_bm_test_bit(struct memory_bitmap *bm, unsigned long pfn)
 {
 	void *addr;
@@ -1198,47 +879,6 @@ static bool memory_bm_pfn_present(struct memory_bitmap *bm, unsigned long pfn)
 	return !memory_bm_find_bit(bm, pfn, &addr, &bit);
 }
 
-<<<<<<< HEAD
-/**
- *	memory_bm_next_pfn - find the pfn that corresponds to the next set bit
- *	in the bitmap @bm.  If the pfn cannot be found, BM_END_OF_MAP is
- *	returned.
- *
- *	It is required to run memory_bm_position_reset() before the first call to
- *	this function.
- */
-
-static unsigned long memory_bm_next_pfn(struct memory_bitmap *bm)
-{
-	struct bm_block *bb;
-	int bit;
-
-	bb = bm->cur.block;
-	do {
-		bit = bm->cur.bit;
-		bit = find_next_bit(bb->data, bm_block_bits(bb), bit);
-		if (bit < bm_block_bits(bb))
-			goto Return_pfn;
-
-		bb = list_entry(bb->hook.next, struct bm_block, hook);
-		bm->cur.block = bb;
-		bm->cur.bit = 0;
-	} while (&bb->hook != &bm->blocks);
-
-	memory_bm_position_reset(bm);
-	return BM_END_OF_MAP;
-
- Return_pfn:
-	bm->cur.bit = bit + 1;
-	return bb->start_pfn + bit;
-}
-
-/**
- *	This structure represents a range of page frames the contents of which
- *	should not be saved during the suspend.
- */
-
-=======
 /*
  * rtree_next_node - Jump to the next leaf node.
  *
@@ -1312,7 +952,6 @@ static unsigned long memory_bm_next_pfn(struct memory_bitmap *bm)
  * This structure represents a range of page frames the contents of which
  * should not be saved during hibernation.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nosave_region {
 	struct list_head list;
 	unsigned long start_pfn;
@@ -1321,17 +960,6 @@ struct nosave_region {
 
 static LIST_HEAD(nosave_regions);
 
-<<<<<<< HEAD
-/**
- *	register_nosave_region - register a range of page frames the contents
- *	of which should not be saved during the suspend (to be used in the early
- *	initialization code)
- */
-
-void __init
-__register_nosave_region(unsigned long start_pfn, unsigned long end_pfn,
-			 int use_kmalloc)
-=======
 static void recycle_zone_bm_rtree(struct mem_zone_bm_rtree *zone)
 {
 	struct rtree_node *node;
@@ -1367,7 +995,6 @@ static void memory_bm_recycle(struct memory_bitmap *bm)
  * during hibernation (to be used in the early initialization code).
  */
 void __init register_nosave_region(unsigned long start_pfn, unsigned long end_pfn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nosave_region *region;
 
@@ -1383,34 +1010,19 @@ void __init register_nosave_region(unsigned long start_pfn, unsigned long end_pf
 			goto Report;
 		}
 	}
-<<<<<<< HEAD
-	if (use_kmalloc) {
-		/* during init, this shouldn't fail */
-		region = kmalloc(sizeof(struct nosave_region), GFP_KERNEL);
-		BUG_ON(!region);
-	} else
-		/* This allocation cannot fail */
-		region = alloc_bootmem(sizeof(struct nosave_region));
-=======
 	/* This allocation cannot fail */
 	region = memblock_alloc(sizeof(struct nosave_region),
 				SMP_CACHE_BYTES);
 	if (!region)
 		panic("%s: Failed to allocate %zu bytes\n", __func__,
 		      sizeof(struct nosave_region));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	region->start_pfn = start_pfn;
 	region->end_pfn = end_pfn;
 	list_add_tail(&region->list, &nosave_regions);
  Report:
-<<<<<<< HEAD
-	printk(KERN_INFO "PM: Registered nosave memory: %016lx - %016lx\n",
-		start_pfn << PAGE_SHIFT, end_pfn << PAGE_SHIFT);
-=======
 	pr_info("Registered nosave memory: [mem %#010llx-%#010llx]\n",
 		(unsigned long long) start_pfn << PAGE_SHIFT,
 		((unsigned long long) end_pfn << PAGE_SHIFT) - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1464,19 +1076,12 @@ static void swsusp_unset_page_forbidden(struct page *page)
 }
 
 /**
-<<<<<<< HEAD
- *	mark_nosave_pages - set bits corresponding to the page frames the
- *	contents of which should not be saved in a given bitmap.
- */
-
-=======
  * mark_nosave_pages - Mark pages that should not be saved.
  * @bm: Memory bitmap.
  *
  * Set the bits in @bm that correspond to the page frames the contents of which
  * should not be saved.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mark_nosave_pages(struct memory_bitmap *bm)
 {
 	struct nosave_region *region;
@@ -1487,11 +1092,7 @@ static void mark_nosave_pages(struct memory_bitmap *bm)
 	list_for_each_entry(region, &nosave_regions, list) {
 		unsigned long pfn;
 
-<<<<<<< HEAD
-		pr_debug("PM: Marking nosave pages: [mem %#010llx-%#010llx]\n",
-=======
 		pr_debug("Marking nosave pages: [mem %#010llx-%#010llx]\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 (unsigned long long) region->start_pfn << PAGE_SHIFT,
 			 ((unsigned long long) region->end_pfn << PAGE_SHIFT)
 				- 1);
@@ -1510,21 +1111,6 @@ static void mark_nosave_pages(struct memory_bitmap *bm)
 }
 
 /**
-<<<<<<< HEAD
- *	create_basic_memory_bitmaps - create bitmaps needed for marking page
- *	frames that should not be saved and free page frames.  The pointers
- *	forbidden_pages_map and free_pages_map are only modified if everything
- *	goes well, because we don't want the bits to be used before both bitmaps
- *	are set up.
- */
-
-int create_basic_memory_bitmaps(void)
-{
-	struct memory_bitmap *bm1, *bm2;
-	int error = 0;
-
-	BUG_ON(forbidden_pages_map || free_pages_map);
-=======
  * create_basic_memory_bitmaps - Create bitmaps to hold basic page information.
  *
  * Create bitmaps needed for marking page frames that should not be saved and
@@ -1541,7 +1127,6 @@ int create_basic_memory_bitmaps(void)
 		return 0;
 	else
 		BUG_ON(forbidden_pages_map || free_pages_map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bm1 = kzalloc(sizeof(struct memory_bitmap), GFP_KERNEL);
 	if (!bm1)
@@ -1563,53 +1148,32 @@ int create_basic_memory_bitmaps(void)
 	free_pages_map = bm2;
 	mark_nosave_pages(forbidden_pages_map);
 
-<<<<<<< HEAD
-	pr_debug("PM: Basic memory bitmaps created\n");
-=======
 	pr_debug("Basic memory bitmaps created\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
  Free_second_object:
 	kfree(bm2);
  Free_first_bitmap:
-<<<<<<< HEAD
- 	memory_bm_free(bm1, PG_UNSAFE_CLEAR);
-=======
 	memory_bm_free(bm1, PG_UNSAFE_CLEAR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  Free_first_object:
 	kfree(bm1);
 	return -ENOMEM;
 }
 
 /**
-<<<<<<< HEAD
- *	free_basic_memory_bitmaps - free memory bitmaps allocated by
- *	create_basic_memory_bitmaps().  The auxiliary pointers are necessary
- *	so that the bitmaps themselves are not referred to while they are being
- *	freed.
- */
-
-=======
  * free_basic_memory_bitmaps - Free memory bitmaps holding basic information.
  *
  * Free memory bitmaps allocated by create_basic_memory_bitmaps().  The
  * auxiliary pointers are necessary so that the bitmaps themselves are not
  * referred to while they are being freed.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void free_basic_memory_bitmaps(void)
 {
 	struct memory_bitmap *bm1, *bm2;
 
-<<<<<<< HEAD
-	BUG_ON(!(forbidden_pages_map && free_pages_map));
-=======
 	if (WARN_ON(!(forbidden_pages_map && free_pages_map)))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bm1 = forbidden_pages_map;
 	bm2 = free_pages_map;
@@ -1620,25 +1184,6 @@ void free_basic_memory_bitmaps(void)
 	memory_bm_free(bm2, PG_UNSAFE_CLEAR);
 	kfree(bm2);
 
-<<<<<<< HEAD
-	pr_debug("PM: Basic memory bitmaps freed\n");
-}
-
-/**
- *	snapshot_additional_pages - estimate the number of additional pages
- *	be needed for setting up the suspend image data structures for given
- *	zone (usually the returned value is greater than the exact number)
- */
-
-unsigned int snapshot_additional_pages(struct zone *zone)
-{
-	unsigned int res;
-
-	res = DIV_ROUND_UP(zone->spanned_pages, BM_BITS_PER_BLOCK);
-	res += DIV_ROUND_UP(res * sizeof(struct bm_block),
-			    LINKED_PAGE_DATA_SIZE);
-	return 2 * res;
-=======
 	pr_debug("Basic memory bitmaps freed\n");
 }
 
@@ -1745,22 +1290,14 @@ static void mark_free_pages(struct zone *zone)
 		}
 	}
 	spin_unlock_irqrestore(&zone->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_HIGHMEM
 /**
-<<<<<<< HEAD
- *	count_free_highmem_pages - compute the total number of free highmem
- *	pages, system-wide.
- */
-
-=======
  * count_free_highmem_pages - Compute the total number of free highmem pages.
  *
  * The returned number is system-wide.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int count_free_highmem_pages(void)
 {
 	struct zone *zone;
@@ -1774,20 +1311,12 @@ static unsigned int count_free_highmem_pages(void)
 }
 
 /**
-<<<<<<< HEAD
- *	saveable_highmem_page - Determine whether a highmem page should be
- *	included in the suspend image.
- *
- *	We should save the page if it isn't Nosave or NosaveFree, or Reserved,
- *	and it isn't a part of a free chunk of pages.
-=======
  * saveable_highmem_page - Check if a highmem page is saveable.
  *
  * Determine whether a highmem page should be included in a hibernation image.
  *
  * We should save the page if it isn't Nosave or NosaveFree, or Reserved,
  * and it isn't part of a free chunk of pages.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct page *saveable_highmem_page(struct zone *zone, unsigned long pfn)
 {
@@ -1796,26 +1325,16 @@ static struct page *saveable_highmem_page(struct zone *zone, unsigned long pfn)
 	if (!pfn_valid(pfn))
 		return NULL;
 
-<<<<<<< HEAD
-	page = pfn_to_page(pfn);
-	if (page_zone(page) != zone)
-=======
 	page = pfn_to_online_page(pfn);
 	if (!page || page_zone(page) != zone)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	BUG_ON(!PageHighMem(page));
 
-<<<<<<< HEAD
-	if (swsusp_page_is_forbidden(page) ||  swsusp_page_is_free(page) ||
-	    PageReserved(page))
-=======
 	if (swsusp_page_is_forbidden(page) ||  swsusp_page_is_free(page))
 		return NULL;
 
 	if (PageReserved(page) || PageOffline(page))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	if (page_is_guard(page))
@@ -1825,15 +1344,8 @@ static struct page *saveable_highmem_page(struct zone *zone, unsigned long pfn)
 }
 
 /**
-<<<<<<< HEAD
- *	count_highmem_pages - compute the total number of saveable highmem
- *	pages.
- */
-
-=======
  * count_highmem_pages - Compute the total number of saveable highmem pages.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int count_highmem_pages(void)
 {
 	struct zone *zone;
@@ -1846,11 +1358,7 @@ static unsigned int count_highmem_pages(void)
 			continue;
 
 		mark_free_pages(zone);
-<<<<<<< HEAD
-		max_zone_pfn = zone->zone_start_pfn + zone->spanned_pages;
-=======
 		max_zone_pfn = zone_end_pfn(zone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (pfn = zone->zone_start_pfn; pfn < max_zone_pfn; pfn++)
 			if (saveable_highmem_page(zone, pfn))
 				n++;
@@ -1865,14 +1373,6 @@ static inline void *saveable_highmem_page(struct zone *z, unsigned long p)
 #endif /* CONFIG_HIGHMEM */
 
 /**
-<<<<<<< HEAD
- *	saveable_page - Determine whether a non-highmem page should be included
- *	in the suspend image.
- *
- *	We should save the page if it isn't Nosave, and is not in the range
- *	of pages statically defined as 'unsaveable', and it isn't a part of
- *	a free chunk of pages.
-=======
  * saveable_page - Check if the given page is saveable.
  *
  * Determine whether a non-highmem page should be included in a hibernation
@@ -1881,7 +1381,6 @@ static inline void *saveable_highmem_page(struct zone *z, unsigned long p)
  * We should save the page if it isn't Nosave, and is not in the range
  * of pages statically defined as 'unsaveable', and it isn't part of
  * a free chunk of pages.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct page *saveable_page(struct zone *zone, unsigned long pfn)
 {
@@ -1890,13 +1389,8 @@ static struct page *saveable_page(struct zone *zone, unsigned long pfn)
 	if (!pfn_valid(pfn))
 		return NULL;
 
-<<<<<<< HEAD
-	page = pfn_to_page(pfn);
-	if (page_zone(page) != zone)
-=======
 	page = pfn_to_online_page(pfn);
 	if (!page || page_zone(page) != zone)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	BUG_ON(PageHighMem(page));
@@ -1904,12 +1398,9 @@ static struct page *saveable_page(struct zone *zone, unsigned long pfn)
 	if (swsusp_page_is_forbidden(page) || swsusp_page_is_free(page))
 		return NULL;
 
-<<<<<<< HEAD
-=======
 	if (PageOffline(page))
 		return NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (PageReserved(page)
 	    && (!kernel_page_present(page) || pfn_is_nosave(pfn)))
 		return NULL;
@@ -1921,15 +1412,8 @@ static struct page *saveable_page(struct zone *zone, unsigned long pfn)
 }
 
 /**
-<<<<<<< HEAD
- *	count_data_pages - compute the total number of saveable non-highmem
- *	pages.
- */
-
-=======
  * count_data_pages - Compute the total number of saveable non-highmem pages.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int count_data_pages(void)
 {
 	struct zone *zone;
@@ -1941,11 +1425,7 @@ static unsigned int count_data_pages(void)
 			continue;
 
 		mark_free_pages(zone);
-<<<<<<< HEAD
-		max_zone_pfn = zone->zone_start_pfn + zone->spanned_pages;
-=======
 		max_zone_pfn = zone_end_pfn(zone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (pfn = zone->zone_start_pfn; pfn < max_zone_pfn; pfn++)
 			if (saveable_page(zone, pfn))
 				n++;
@@ -1953,41 +1433,6 @@ static unsigned int count_data_pages(void)
 	return n;
 }
 
-<<<<<<< HEAD
-/* This is needed, because copy_page and memcpy are not usable for copying
- * task structs.
- */
-static inline void do_copy_page(long *dst, long *src)
-{
-	int n;
-
-	for (n = PAGE_SIZE / sizeof(long); n; n--)
-		*dst++ = *src++;
-}
-
-
-/**
- *	safe_copy_page - check if the page we are going to copy is marked as
- *		present in the kernel page tables (this always is the case if
- *		CONFIG_DEBUG_PAGEALLOC is not set and in that case
- *		kernel_page_present() always returns 'true').
- */
-static void safe_copy_page(void *dst, struct page *s_page)
-{
-	if (kernel_page_present(s_page)) {
-		do_copy_page(dst, page_address(s_page));
-	} else {
-		kernel_map_pages(s_page, 1, 1);
-		do_copy_page(dst, page_address(s_page));
-		kernel_map_pages(s_page, 1, 0);
-	}
-}
-
-
-#ifdef CONFIG_HIGHMEM
-static inline struct page *
-page_is_saveable(struct zone *zone, unsigned long pfn)
-=======
 /*
  * This is needed, because copy_page and memcpy are not usable for copying
  * task structs. Returns true if the page was filled with only zeros,
@@ -2030,48 +1475,20 @@ static bool safe_copy_page(void *dst, struct page *s_page)
 
 #ifdef CONFIG_HIGHMEM
 static inline struct page *page_is_saveable(struct zone *zone, unsigned long pfn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return is_highmem(zone) ?
 		saveable_highmem_page(zone, pfn) : saveable_page(zone, pfn);
 }
 
-<<<<<<< HEAD
-static void copy_data_page(unsigned long dst_pfn, unsigned long src_pfn)
-{
-	struct page *s_page, *d_page;
-	void *src, *dst;
-=======
 static bool copy_data_page(unsigned long dst_pfn, unsigned long src_pfn)
 {
 	struct page *s_page, *d_page;
 	void *src, *dst;
 	bool zeros_only;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	s_page = pfn_to_page(src_pfn);
 	d_page = pfn_to_page(dst_pfn);
 	if (PageHighMem(s_page)) {
-<<<<<<< HEAD
-		src = kmap_atomic(s_page);
-		dst = kmap_atomic(d_page);
-		do_copy_page(dst, src);
-		kunmap_atomic(dst);
-		kunmap_atomic(src);
-	} else {
-		if (PageHighMem(d_page)) {
-			/* Page pointed to by src may contain some kernel
-			 * data modified by kmap_atomic()
-			 */
-			safe_copy_page(buffer, s_page);
-			dst = kmap_atomic(d_page);
-			copy_page(dst, buffer);
-			kunmap_atomic(dst);
-		} else {
-			safe_copy_page(page_address(d_page), s_page);
-		}
-	}
-=======
 		src = kmap_local_page(s_page);
 		dst = kmap_local_page(d_page);
 		zeros_only = do_copy_page(dst, src);
@@ -2092,31 +1509,17 @@ static bool copy_data_page(unsigned long dst_pfn, unsigned long src_pfn)
 		}
 	}
 	return zeros_only;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 #define page_is_saveable(zone, pfn)	saveable_page(zone, pfn)
 
-<<<<<<< HEAD
-static inline void copy_data_page(unsigned long dst_pfn, unsigned long src_pfn)
-{
-	safe_copy_page(page_address(pfn_to_page(dst_pfn)),
-=======
 static inline int copy_data_page(unsigned long dst_pfn, unsigned long src_pfn)
 {
 	return safe_copy_page(page_address(pfn_to_page(dst_pfn)),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pfn_to_page(src_pfn));
 }
 #endif /* CONFIG_HIGHMEM */
 
-<<<<<<< HEAD
-static void
-copy_data_pages(struct memory_bitmap *copy_bm, struct memory_bitmap *orig_bm)
-{
-	struct zone *zone;
-	unsigned long pfn;
-=======
 /*
  * Copy data pages will copy all pages into pages pulled from the copy_bm.
  * If a page was entirely filled with zeros it will be marked in the zero_bm.
@@ -2130,35 +1533,23 @@ static unsigned long copy_data_pages(struct memory_bitmap *copy_bm,
 	unsigned long copied_pages = 0;
 	struct zone *zone;
 	unsigned long pfn, copy_pfn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for_each_populated_zone(zone) {
 		unsigned long max_zone_pfn;
 
 		mark_free_pages(zone);
-<<<<<<< HEAD
-		max_zone_pfn = zone->zone_start_pfn + zone->spanned_pages;
-=======
 		max_zone_pfn = zone_end_pfn(zone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (pfn = zone->zone_start_pfn; pfn < max_zone_pfn; pfn++)
 			if (page_is_saveable(zone, pfn))
 				memory_bm_set_bit(orig_bm, pfn);
 	}
 	memory_bm_position_reset(orig_bm);
 	memory_bm_position_reset(copy_bm);
-<<<<<<< HEAD
-=======
 	copy_pfn = memory_bm_next_pfn(copy_bm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for(;;) {
 		pfn = memory_bm_next_pfn(orig_bm);
 		if (unlikely(pfn == BM_END_OF_MAP))
 			break;
-<<<<<<< HEAD
-		copy_data_page(memory_bm_next_pfn(copy_bm), pfn);
-	}
-=======
 		if (copy_data_page(copy_pfn, pfn)) {
 			memory_bm_set_bit(zero_bm, pfn);
 			/* Use this copy_pfn for a page that is not full of zeros */
@@ -2168,28 +1559,20 @@ static unsigned long copy_data_pages(struct memory_bitmap *copy_bm,
 		copy_pfn = memory_bm_next_pfn(copy_bm);
 	}
 	return copied_pages;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Total number of image pages */
 static unsigned int nr_copy_pages;
 /* Number of pages needed for saving the original pfns of the image pages */
 static unsigned int nr_meta_pages;
-<<<<<<< HEAD
-=======
 /* Number of zero pages */
 static unsigned int nr_zero_pages;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Numbers of normal and highmem page frames allocated for hibernation image
  * before suspending devices.
  */
-<<<<<<< HEAD
-unsigned int alloc_normal, alloc_highmem;
-=======
 static unsigned int alloc_normal, alloc_highmem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Memory bitmap used for marking saveable pages (during hibernation) or
  * hibernation image pages (during restore)
@@ -2205,36 +1588,6 @@ static struct memory_bitmap orig_bm;
  */
 static struct memory_bitmap copy_bm;
 
-<<<<<<< HEAD
-/**
- *	swsusp_free - free pages allocated for the suspend.
- *
- *	Suspend pages are alocated before the atomic copy is made, so we
- *	need to release them after the resume.
- */
-
-void swsusp_free(void)
-{
-	struct zone *zone;
-	unsigned long pfn, max_zone_pfn;
-
-	for_each_populated_zone(zone) {
-		max_zone_pfn = zone->zone_start_pfn + zone->spanned_pages;
-		for (pfn = zone->zone_start_pfn; pfn < max_zone_pfn; pfn++)
-			if (pfn_valid(pfn)) {
-				struct page *page = pfn_to_page(pfn);
-
-				if (swsusp_page_is_forbidden(page) &&
-				    swsusp_page_is_free(page)) {
-					swsusp_unset_page_forbidden(page);
-					swsusp_unset_page_free(page);
-					__free_page(page);
-				}
-			}
-	}
-	nr_copy_pages = 0;
-	nr_meta_pages = 0;
-=======
 /* Memory bitmap which tracks which saveable pages were zero filled. */
 static struct memory_bitmap zero_bm;
 
@@ -2283,15 +1636,11 @@ out:
 	nr_copy_pages = 0;
 	nr_meta_pages = 0;
 	nr_zero_pages = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	restore_pblist = NULL;
 	buffer = NULL;
 	alloc_normal = 0;
 	alloc_highmem = 0;
-<<<<<<< HEAD
-=======
 	hibernate_restore_protection_end();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Helper functions used for the shrinking of memory. */
@@ -2299,11 +1648,7 @@ out:
 #define GFP_IMAGE	(GFP_KERNEL | __GFP_NOWARN)
 
 /**
-<<<<<<< HEAD
- * preallocate_image_pages - Allocate a number of pages for hibernation image
-=======
  * preallocate_image_pages - Allocate a number of pages for hibernation image.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @nr_pages: Number of page frames to allocate.
  * @mask: GFP flags to use for the allocation.
  *
@@ -2353,20 +1698,6 @@ static unsigned long preallocate_image_highmem(unsigned long nr_pages)
 }
 
 /**
-<<<<<<< HEAD
- *  __fraction - Compute (an approximation of) x * (multiplier / base)
- */
-static unsigned long __fraction(u64 x, u64 multiplier, u64 base)
-{
-	x *= multiplier;
-	do_div(x, base);
-	return (unsigned long)x;
-}
-
-static unsigned long preallocate_highmem_fraction(unsigned long nr_pages,
-						unsigned long highmem,
-						unsigned long total)
-=======
  *  __fraction - Compute (an approximation of) x * (multiplier / base).
  */
 static unsigned long __fraction(u64 x, u64 multiplier, u64 base)
@@ -2377,7 +1708,6 @@ static unsigned long __fraction(u64 x, u64 multiplier, u64 base)
 static unsigned long preallocate_highmem_fraction(unsigned long nr_pages,
 						  unsigned long highmem,
 						  unsigned long total)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long alloc = __fraction(nr_pages, highmem, total);
 
@@ -2390,32 +1720,19 @@ static inline unsigned long preallocate_image_highmem(unsigned long nr_pages)
 }
 
 static inline unsigned long preallocate_highmem_fraction(unsigned long nr_pages,
-<<<<<<< HEAD
-						unsigned long highmem,
-						unsigned long total)
-=======
 							 unsigned long highmem,
 							 unsigned long total)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 #endif /* CONFIG_HIGHMEM */
 
 /**
-<<<<<<< HEAD
- * free_unnecessary_pages - Release preallocated pages not needed for the image
- */
-static void free_unnecessary_pages(void)
-{
-	unsigned long save, to_free_normal, to_free_highmem;
-=======
  * free_unnecessary_pages - Release preallocated pages not needed for the image.
  */
 static unsigned long free_unnecessary_pages(void)
 {
 	unsigned long save, to_free_normal, to_free_highmem, free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	save = count_data_pages();
 	if (alloc_normal >= save) {
@@ -2436,10 +1753,7 @@ static unsigned long free_unnecessary_pages(void)
 		else
 			to_free_normal = 0;
 	}
-<<<<<<< HEAD
-=======
 	free = to_free_normal + to_free_highmem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memory_bm_position_reset(&copy_bm);
 
@@ -2463,19 +1777,12 @@ static unsigned long free_unnecessary_pages(void)
 		swsusp_unset_page_free(page);
 		__free_page(page);
 	}
-<<<<<<< HEAD
-}
-
-/**
- * minimum_image_size - Estimate the minimum acceptable size of an image
-=======
 
 	return free;
 }
 
 /**
  * minimum_image_size - Estimate the minimum acceptable size of an image.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @saveable: Number of saveable pages in the system.
  *
  * We want to avoid attempting to free too much memory too hard, so estimate the
@@ -2487,62 +1794,35 @@ static unsigned long free_unnecessary_pages(void)
  * [number of saveable pages] - [number of pages that can be freed in theory]
  *
  * where the second term is the sum of (1) reclaimable slab pages, (2) active
-<<<<<<< HEAD
- * and (3) inactive anonymouns pages, (4) active and (5) inactive file pages,
- * minus mapped file pages.
-=======
  * and (3) inactive anonymous pages, (4) active and (5) inactive file pages.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static unsigned long minimum_image_size(unsigned long saveable)
 {
 	unsigned long size;
 
-<<<<<<< HEAD
-	size = global_page_state(NR_SLAB_RECLAIMABLE)
-		+ global_page_state(NR_ACTIVE_ANON)
-		+ global_page_state(NR_INACTIVE_ANON)
-		+ global_page_state(NR_ACTIVE_FILE)
-		+ global_page_state(NR_INACTIVE_FILE)
-		- global_page_state(NR_FILE_MAPPED);
-=======
 	size = global_node_page_state_pages(NR_SLAB_RECLAIMABLE_B)
 		+ global_node_page_state(NR_ACTIVE_ANON)
 		+ global_node_page_state(NR_INACTIVE_ANON)
 		+ global_node_page_state(NR_ACTIVE_FILE)
 		+ global_node_page_state(NR_INACTIVE_FILE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return saveable <= size ? 0 : saveable - size;
 }
 
 /**
-<<<<<<< HEAD
- * hibernate_preallocate_memory - Preallocate memory for hibernation image
-=======
  * hibernate_preallocate_memory - Preallocate memory for hibernation image.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * To create a hibernation image it is necessary to make a copy of every page
  * frame in use.  We also need a number of page frames to be free during
  * hibernation for allocations made while saving the image and for device
  * drivers, in case they need to allocate memory from their hibernation
  * callbacks (these two numbers are given by PAGES_FOR_IO (which is a rough
-<<<<<<< HEAD
- * estimate) and reserverd_size divided by PAGE_SIZE (which is tunable through
- * /sys/power/reserved_size, respectively).  To make this happen, we compute the
- * total number of available page frames and allocate at least
- *
- * ([page frames total] + PAGES_FOR_IO + [metadata pages]) / 2
- *  + 2 * DIV_ROUND_UP(reserved_size, PAGE_SIZE)
-=======
  * estimate) and reserved_size divided by PAGE_SIZE (which is tunable through
  * /sys/power/reserved_size, respectively).  To make this happen, we compute the
  * total number of available page frames and allocate at least
  *
  * ([page frames total] - PAGES_FOR_IO - [metadata pages]) / 2
  *  - 2 * DIV_ROUND_UP(reserved_size, PAGE_SIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * of them, which corresponds to the maximum size of a hibernation image.
  *
@@ -2556,24 +1836,6 @@ int hibernate_preallocate_memory(void)
 	struct zone *zone;
 	unsigned long saveable, size, max_size, count, highmem, pages = 0;
 	unsigned long alloc, save_highmem, pages_highmem, avail_normal;
-<<<<<<< HEAD
-	struct timeval start, stop;
-	int error;
-
-	printk(KERN_INFO "PM: Preallocating image memory... ");
-	do_gettimeofday(&start);
-
-	error = memory_bm_create(&orig_bm, GFP_IMAGE, PG_ANY);
-	if (error)
-		goto err_out;
-
-	error = memory_bm_create(&copy_bm, GFP_IMAGE, PG_ANY);
-	if (error)
-		goto err_out;
-
-	alloc_normal = 0;
-	alloc_highmem = 0;
-=======
 	ktime_t start, stop;
 	int error;
 
@@ -2601,7 +1863,6 @@ int hibernate_preallocate_memory(void)
 	alloc_normal = 0;
 	alloc_highmem = 0;
 	nr_zero_pages = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Count the number of saveable data pages. */
 	save_highmem = count_highmem_pages();
@@ -2626,12 +1887,6 @@ int hibernate_preallocate_memory(void)
 	count += highmem;
 	count -= totalreserve_pages;
 
-<<<<<<< HEAD
-	/* Add number of pages required for page keys (s390 only). */
-	size += page_key_additional_pages(saveable);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Compute the maximum number of saveable pages to leave in memory. */
 	max_size = (count - (size + PAGES_FOR_IO)) / 2
 			- 2 * DIV_ROUND_UP(reserved_size, PAGE_SIZE);
@@ -2691,16 +1946,11 @@ int hibernate_preallocate_memory(void)
 		alloc -= pages;
 		pages += pages_highmem;
 		pages_highmem = preallocate_image_highmem(alloc);
-<<<<<<< HEAD
-		if (pages_highmem < alloc)
-			goto err_out;
-=======
 		if (pages_highmem < alloc) {
 			pr_err("Image allocation is %lu pages short\n",
 				alloc - pages_highmem);
 			goto err_out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pages += pages_highmem;
 		/*
 		 * size is the desired number of saveable pages to leave in
@@ -2727,47 +1977,27 @@ int hibernate_preallocate_memory(void)
 	 * pages in memory, but we have allocated more.  Release the excessive
 	 * ones now.
 	 */
-<<<<<<< HEAD
-	free_unnecessary_pages();
-
- out:
-	do_gettimeofday(&stop);
-	printk(KERN_CONT "done (allocated %lu pages)\n", pages);
-	swsusp_show_speed(&start, &stop, pages, "Allocated");
-=======
 	pages -= free_unnecessary_pages();
 
  out:
 	stop = ktime_get();
 	pr_info("Allocated %lu pages for snapshot\n", pages);
 	swsusp_show_speed(start, stop, pages, "Allocated");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
  err_out:
-<<<<<<< HEAD
-	printk(KERN_CONT "\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	swsusp_free();
 	return -ENOMEM;
 }
 
 #ifdef CONFIG_HIGHMEM
 /**
-<<<<<<< HEAD
-  *	count_pages_for_highmem - compute the number of non-highmem pages
-  *	that will be necessary for creating copies of highmem pages.
-  */
-
-=======
  * count_pages_for_highmem - Count non-highmem pages needed for copying highmem.
  *
  * Compute the number of non-highmem pages that will be necessary for creating
  * copies of highmem pages.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int count_pages_for_highmem(unsigned int nr_highmem)
 {
 	unsigned int free_highmem = count_free_highmem_pages() + alloc_highmem;
@@ -2780,24 +2010,12 @@ static unsigned int count_pages_for_highmem(unsigned int nr_highmem)
 	return nr_highmem;
 }
 #else
-<<<<<<< HEAD
-static unsigned int
-count_pages_for_highmem(unsigned int nr_highmem) { return 0; }
-#endif /* CONFIG_HIGHMEM */
-
-/**
- *	enough_free_mem - Make sure we have enough free memory for the
- *	snapshot image.
- */
-
-=======
 static unsigned int count_pages_for_highmem(unsigned int nr_highmem) { return 0; }
 #endif /* CONFIG_HIGHMEM */
 
 /**
  * enough_free_mem - Check if there is enough free memory for the image.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int enough_free_mem(unsigned int nr_pages, unsigned int nr_highmem)
 {
 	struct zone *zone;
@@ -2808,28 +2026,14 @@ static int enough_free_mem(unsigned int nr_pages, unsigned int nr_highmem)
 			free += zone_page_state(zone, NR_FREE_PAGES);
 
 	nr_pages += count_pages_for_highmem(nr_highmem);
-<<<<<<< HEAD
-	pr_debug("PM: Normal pages needed: %u + %u, available pages: %u\n",
-		nr_pages, PAGES_FOR_IO, free);
-=======
 	pr_debug("Normal pages needed: %u + %u, available pages: %u\n",
 		 nr_pages, PAGES_FOR_IO, free);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return free > nr_pages + PAGES_FOR_IO;
 }
 
 #ifdef CONFIG_HIGHMEM
 /**
-<<<<<<< HEAD
- *	get_highmem_buffer - if there are some highmem pages in the suspend
- *	image, we may need the buffer to copy them and/or load their data.
- */
-
-static inline int get_highmem_buffer(int safe_needed)
-{
-	buffer = get_image_page(GFP_ATOMIC | __GFP_COLD, safe_needed);
-=======
  * get_highmem_buffer - Allocate a buffer for highmem pages.
  *
  * If there are some highmem pages in the hibernation image, we may need a
@@ -2838,20 +2042,10 @@ static inline int get_highmem_buffer(int safe_needed)
 static inline int get_highmem_buffer(int safe_needed)
 {
 	buffer = get_image_page(GFP_ATOMIC, safe_needed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return buffer ? 0 : -ENOMEM;
 }
 
 /**
-<<<<<<< HEAD
- *	alloc_highmem_image_pages - allocate some highmem pages for the image.
- *	Try to allocate as many pages as needed, but if the number of free
- *	highmem pages is lesser than that, allocate them all.
- */
-
-static inline unsigned int
-alloc_highmem_pages(struct memory_bitmap *bm, unsigned int nr_highmem)
-=======
  * alloc_highmem_pages - Allocate some highmem pages for the image.
  *
  * Try to allocate as many pages as needed, but if the number of free highmem
@@ -2859,7 +2053,6 @@ alloc_highmem_pages(struct memory_bitmap *bm, unsigned int nr_highmem)
  */
 static inline unsigned int alloc_highmem_pages(struct memory_bitmap *bm,
 					       unsigned int nr_highmem)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int to_alloc = count_free_highmem_pages();
 
@@ -2870,11 +2063,7 @@ static inline unsigned int alloc_highmem_pages(struct memory_bitmap *bm,
 	while (to_alloc-- > 0) {
 		struct page *page;
 
-<<<<<<< HEAD
-		page = alloc_image_page(__GFP_HIGHMEM);
-=======
 		page = alloc_image_page(__GFP_HIGHMEM|__GFP_KSWAPD_RECLAIM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memory_bm_set_bit(bm, page_to_pfn(page));
 	}
 	return nr_highmem;
@@ -2882,27 +2071,6 @@ static inline unsigned int alloc_highmem_pages(struct memory_bitmap *bm,
 #else
 static inline int get_highmem_buffer(int safe_needed) { return 0; }
 
-<<<<<<< HEAD
-static inline unsigned int
-alloc_highmem_pages(struct memory_bitmap *bm, unsigned int n) { return 0; }
-#endif /* CONFIG_HIGHMEM */
-
-/**
- *	swsusp_alloc - allocate memory for the suspend image
- *
- *	We first try to allocate as many highmem pages as there are
- *	saveable highmem pages in the system.  If that fails, we allocate
- *	non-highmem pages for the copies of the remaining highmem ones.
- *
- *	In this approach it is likely that the copies of highmem pages will
- *	also be located in the high memory, because of the way in which
- *	copy_data_pages() works.
- */
-
-static int
-swsusp_alloc(struct memory_bitmap *orig_bm, struct memory_bitmap *copy_bm,
-		unsigned int nr_pages, unsigned int nr_highmem)
-=======
 static inline unsigned int alloc_highmem_pages(struct memory_bitmap *bm,
 					       unsigned int n) { return 0; }
 #endif /* CONFIG_HIGHMEM */
@@ -2920,7 +2088,6 @@ static inline unsigned int alloc_highmem_pages(struct memory_bitmap *bm,
  */
 static int swsusp_alloc(struct memory_bitmap *copy_bm,
 			unsigned int nr_pages, unsigned int nr_highmem)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (nr_highmem > 0) {
 		if (get_highmem_buffer(PG_ANY))
@@ -2935,11 +2102,7 @@ static int swsusp_alloc(struct memory_bitmap *copy_bm,
 		while (nr_pages-- > 0) {
 			struct page *page;
 
-<<<<<<< HEAD
-			page = alloc_image_page(GFP_ATOMIC | __GFP_COLD);
-=======
 			page = alloc_image_page(GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!page)
 				goto err_out;
 			memory_bm_set_bit(copy_bm, page_to_pfn(page));
@@ -2953,42 +2116,15 @@ static int swsusp_alloc(struct memory_bitmap *copy_bm,
 	return -ENOMEM;
 }
 
-<<<<<<< HEAD
-asmlinkage int swsusp_save(void)
-{
-	unsigned int nr_pages, nr_highmem;
-
-	printk(KERN_INFO "PM: Creating hibernation image:\n");
-=======
 asmlinkage __visible int swsusp_save(void)
 {
 	unsigned int nr_pages, nr_highmem;
 
 	pr_info("Creating image:\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	drain_local_pages(NULL);
 	nr_pages = count_data_pages();
 	nr_highmem = count_highmem_pages();
-<<<<<<< HEAD
-	printk(KERN_INFO "PM: Need to copy %u pages\n", nr_pages + nr_highmem);
-
-	if (!enough_free_mem(nr_pages, nr_highmem)) {
-		printk(KERN_ERR "PM: Not enough free memory\n");
-		return -ENOMEM;
-	}
-
-	if (swsusp_alloc(&orig_bm, &copy_bm, nr_pages, nr_highmem)) {
-		printk(KERN_ERR "PM: Memory allocation failed\n");
-		return -ENOMEM;
-	}
-
-	/* During allocating of suspend pagedir, new cold pages may appear.
-	 * Kill them.
-	 */
-	drain_local_pages(NULL);
-	copy_data_pages(&copy_bm, &orig_bm);
-=======
 	pr_info("Need to copy %u pages\n", nr_pages + nr_highmem);
 
 	if (!enough_free_mem(nr_pages, nr_highmem)) {
@@ -3007,29 +2143,18 @@ asmlinkage __visible int swsusp_save(void)
 	 */
 	drain_local_pages(NULL);
 	nr_copy_pages = copy_data_pages(&copy_bm, &orig_bm, &zero_bm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * End of critical section. From now on, we can write to memory,
 	 * but we should not touch disk. This specially means we must _not_
 	 * touch swap space! Except we must write out our image of course.
 	 */
-<<<<<<< HEAD
-
-	nr_pages += nr_highmem;
-	nr_copy_pages = nr_pages;
-	nr_meta_pages = DIV_ROUND_UP(nr_pages * sizeof(long), PAGE_SIZE);
-
-	printk(KERN_INFO "PM: Hibernation image created (%d pages copied)\n",
-		nr_pages);
-=======
 	nr_pages += nr_highmem;
 	/* We don't actually copy the zero pages */
 	nr_zero_pages = nr_pages - nr_copy_pages;
 	nr_meta_pages = DIV_ROUND_UP(nr_pages * sizeof(long), PAGE_SIZE);
 
 	pr_info("Image created (%d pages copied, %d zero pages)\n", nr_copy_pages, nr_zero_pages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3042,11 +2167,7 @@ static int init_header_complete(struct swsusp_info *info)
 	return 0;
 }
 
-<<<<<<< HEAD
-static char *check_image_kernel(struct swsusp_info *info)
-=======
 static const char *check_image_kernel(struct swsusp_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (info->version_code != LINUX_VERSION_CODE)
 		return "kernel version";
@@ -3070,11 +2191,7 @@ unsigned long snapshot_get_image_size(void)
 static int init_header(struct swsusp_info *info)
 {
 	memset(info, 0, sizeof(struct swsusp_info));
-<<<<<<< HEAD
-	info->num_physpages = num_physpages;
-=======
 	info->num_physpages = get_num_physpages();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->image_pages = nr_copy_pages;
 	info->pages = snapshot_get_image_size();
 	info->size = info->pages;
@@ -3082,15 +2199,6 @@ static int init_header(struct swsusp_info *info)
 	return init_header_complete(info);
 }
 
-<<<<<<< HEAD
-/**
- *	pack_pfns - pfns corresponding to the set bits found in the bitmap @bm
- *	are stored in the array @buf[] (1 page at a time)
- */
-
-static inline void
-pack_pfns(unsigned long *buf, struct memory_bitmap *bm)
-=======
 #define ENCODED_PFN_ZERO_FLAG ((unsigned long)1 << (BITS_PER_LONG - 1))
 #define ENCODED_PFN_MASK (~ENCODED_PFN_ZERO_FLAG)
 
@@ -3107,7 +2215,6 @@ pack_pfns(unsigned long *buf, struct memory_bitmap *bm)
  */
 static inline void pack_pfns(unsigned long *buf, struct memory_bitmap *bm,
 		struct memory_bitmap *zero_bm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int j;
 
@@ -3115,35 +2222,12 @@ static inline void pack_pfns(unsigned long *buf, struct memory_bitmap *bm,
 		buf[j] = memory_bm_next_pfn(bm);
 		if (unlikely(buf[j] == BM_END_OF_MAP))
 			break;
-<<<<<<< HEAD
-		/* Save page key for data page (s390 only). */
-		page_key_read(buf + j);
-=======
 		if (memory_bm_test_bit(zero_bm, buf[j]))
 			buf[j] |= ENCODED_PFN_ZERO_FLAG;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /**
-<<<<<<< HEAD
- *	snapshot_read_next - used for reading the system memory snapshot.
- *
- *	On the first call to it @handle should point to a zeroed
- *	snapshot_handle structure.  The structure gets updated and a pointer
- *	to it should be passed to this function every next time.
- *
- *	On success the function returns a positive number.  Then, the caller
- *	is allowed to read up to the returned number of bytes from the memory
- *	location computed by the data_of() macro.
- *
- *	The function returns 0 to indicate the end of data stream condition,
- *	and a negative number is returned on error.  In such cases the
- *	structure pointed to by @handle is not updated and should not be used
- *	any more.
- */
-
-=======
  * snapshot_read_next - Get the address to read the next image page from.
  * @handle: Snapshot handle to be used for the reading.
  *
@@ -3159,7 +2243,6 @@ static inline void pack_pfns(unsigned long *buf, struct memory_bitmap *bm,
  * and negative numbers are returned on errors.  If that happens, the structure
  * pointed to by @handle is not updated and should not be used any more.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snapshot_read_next(struct snapshot_handle *handle)
 {
 	if (handle->cur > nr_meta_pages + nr_copy_pages)
@@ -3182,22 +2265,14 @@ int snapshot_read_next(struct snapshot_handle *handle)
 		memory_bm_position_reset(&copy_bm);
 	} else if (handle->cur <= nr_meta_pages) {
 		clear_page(buffer);
-<<<<<<< HEAD
-		pack_pfns(buffer, &orig_bm);
-=======
 		pack_pfns(buffer, &orig_bm, &zero_bm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		struct page *page;
 
 		page = pfn_to_page(memory_bm_next_pfn(&copy_bm));
 		if (PageHighMem(page)) {
-<<<<<<< HEAD
-			/* Highmem pages are copied to the buffer,
-=======
 			/*
 			 * Highmem pages are copied to the buffer,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * because we can't return with a kmapped
 			 * highmem page (we may not be called again).
 			 */
@@ -3215,49 +2290,8 @@ int snapshot_read_next(struct snapshot_handle *handle)
 	return PAGE_SIZE;
 }
 
-<<<<<<< HEAD
-/**
- *	mark_unsafe_pages - mark the pages that cannot be used for storing
- *	the image during resume, because they conflict with the pages that
- *	had been used before suspend
- */
-
-static int mark_unsafe_pages(struct memory_bitmap *bm)
-{
-	struct zone *zone;
-	unsigned long pfn, max_zone_pfn;
-
-	/* Clear page flags */
-	for_each_populated_zone(zone) {
-		max_zone_pfn = zone->zone_start_pfn + zone->spanned_pages;
-		for (pfn = zone->zone_start_pfn; pfn < max_zone_pfn; pfn++)
-			if (pfn_valid(pfn))
-				swsusp_unset_page_free(pfn_to_page(pfn));
-	}
-
-	/* Mark pages that correspond to the "original" pfns as "unsafe" */
-	memory_bm_position_reset(bm);
-	do {
-		pfn = memory_bm_next_pfn(bm);
-		if (likely(pfn != BM_END_OF_MAP)) {
-			if (likely(pfn_valid(pfn)))
-				swsusp_set_page_free(pfn_to_page(pfn));
-			else
-				return -EFAULT;
-		}
-	} while (pfn != BM_END_OF_MAP);
-
-	allocated_unsafe_pages = 0;
-
-	return 0;
-}
-
-static void
-duplicate_memory_bitmap(struct memory_bitmap *dst, struct memory_bitmap *src)
-=======
 static void duplicate_memory_bitmap(struct memory_bitmap *dst,
 				    struct memory_bitmap *src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long pfn;
 
@@ -3269,17 +2303,6 @@ static void duplicate_memory_bitmap(struct memory_bitmap *dst,
 	}
 }
 
-<<<<<<< HEAD
-static int check_header(struct swsusp_info *info)
-{
-	char *reason;
-
-	reason = check_image_kernel(info);
-	if (!reason && info->num_physpages != num_physpages)
-		reason = "memory size";
-	if (reason) {
-		printk(KERN_ERR "PM: Image mismatch: %s\n", reason);
-=======
 /**
  * mark_unsafe_pages - Mark pages that were used before hibernation.
  *
@@ -3313,24 +2336,15 @@ static int check_header(struct swsusp_info *info)
 		reason = "memory size";
 	if (reason) {
 		pr_err("Image mismatch: %s\n", reason);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 	}
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- *	load header - check the image header and copy data from it
- */
-
-static int
-load_header(struct swsusp_info *info)
-=======
  * load_header - Check the image header and copy the data from it.
  */
 static int load_header(struct swsusp_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 
@@ -3344,13 +2358,6 @@ static int load_header(struct swsusp_info *info)
 }
 
 /**
-<<<<<<< HEAD
- *	unpack_orig_pfns - for each element of @buf[] (1 page at a time) set
- *	the corresponding bit in the memory bitmap @bm
- */
-static int unpack_orig_pfns(unsigned long *buf, struct memory_bitmap *bm)
-{
-=======
  * unpack_orig_pfns - Set bits corresponding to given PFNs in a memory bitmap.
  * @bm: Memory bitmap.
  * @buf: Area of memory containing the PFNs.
@@ -3365,22 +2372,12 @@ static int unpack_orig_pfns(unsigned long *buf, struct memory_bitmap *bm,
 {
 	unsigned long decoded_pfn;
         bool zero;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int j;
 
 	for (j = 0; j < PAGE_SIZE / sizeof(long); j++) {
 		if (unlikely(buf[j] == BM_END_OF_MAP))
 			break;
 
-<<<<<<< HEAD
-		/* Extract and buffer page key for data page (s390 only). */
-		page_key_memorize(buf + j);
-
-		if (memory_bm_pfn_present(bm, buf[j]))
-			memory_bm_set_bit(bm, buf[j]);
-		else
-			return -EFAULT;
-=======
 		zero = !!(buf[j] & ENCODED_PFN_ZERO_FLAG);
 		decoded_pfn = buf[j] & ENCODED_PFN_MASK;
 		if (pfn_valid(decoded_pfn) && memory_bm_pfn_present(bm, decoded_pfn)) {
@@ -3395,25 +2392,14 @@ static int unpack_orig_pfns(unsigned long *buf, struct memory_bitmap *bm,
 				       (unsigned long long)PFN_PHYS(decoded_pfn));
 			return -EFAULT;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* List of "safe" pages that may be used to store data loaded from the suspend
- * image
- */
-static struct linked_page *safe_pages_list;
-
-#ifdef CONFIG_HIGHMEM
-/* struct highmem_pbe is used for creating the list of highmem pages that
-=======
 #ifdef CONFIG_HIGHMEM
 /*
  * struct highmem_pbe is used for creating the list of highmem pages that
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * should be restored atomically during the resume from disk, because the page
  * frames they have occupied before the suspend are in use.
  */
@@ -3423,12 +2409,8 @@ struct highmem_pbe {
 	struct highmem_pbe *next;
 };
 
-<<<<<<< HEAD
-/* List of highmem PBEs needed for restoring the highmem pages that were
-=======
 /*
  * List of highmem PBEs needed for restoring the highmem pages that were
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * allocated before the suspend and included in the suspend image, but have
  * also been allocated by the "resume" kernel, so their contents cannot be
  * written directly to their "original" page frames.
@@ -3436,19 +2418,11 @@ struct highmem_pbe {
 static struct highmem_pbe *highmem_pblist;
 
 /**
-<<<<<<< HEAD
- *	count_highmem_image_pages - compute the number of highmem pages in the
- *	suspend image.  The bits in the memory bitmap @bm that correspond to the
- *	image pages are assumed to be set.
- */
-
-=======
  * count_highmem_image_pages - Compute the number of highmem pages in the image.
  * @bm: Memory bitmap.
  *
  * The bits in @bm that correspond to image pages are assumed to be set.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int count_highmem_image_pages(struct memory_bitmap *bm)
 {
 	unsigned long pfn;
@@ -3465,29 +2439,10 @@ static unsigned int count_highmem_image_pages(struct memory_bitmap *bm)
 	return cnt;
 }
 
-<<<<<<< HEAD
-/**
- *	prepare_highmem_image - try to allocate as many highmem pages as
- *	there are highmem image pages (@nr_highmem_p points to the variable
- *	containing the number of highmem image pages).  The pages that are
- *	"safe" (ie. will not be overwritten when the suspend image is
- *	restored) have the corresponding bits set in @bm (it must be
- *	unitialized).
- *
- *	NOTE: This function should not be called if there are no highmem
- *	image pages.
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int safe_highmem_pages;
 
 static struct memory_bitmap *safe_highmem_bm;
 
-<<<<<<< HEAD
-static int
-prepare_highmem_image(struct memory_bitmap *bm, unsigned int *nr_highmem_p)
-=======
 /**
  * prepare_highmem_image - Allocate memory for loading highmem data from image.
  * @bm: Pointer to an uninitialized memory bitmap structure.
@@ -3503,7 +2458,6 @@ prepare_highmem_image(struct memory_bitmap *bm, unsigned int *nr_highmem_p)
  */
 static int prepare_highmem_image(struct memory_bitmap *bm,
 				 unsigned int *nr_highmem_p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int to_alloc;
 
@@ -3538,29 +2492,6 @@ static int prepare_highmem_image(struct memory_bitmap *bm,
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- *	get_highmem_page_buffer - for given highmem image page find the buffer
- *	that suspend_write_next() should set for its caller to write to.
- *
- *	If the page is to be saved to its "original" page frame or a copy of
- *	the page is to be made in the highmem, @buffer is returned.  Otherwise,
- *	the copy of the page is to be made in normal memory, so the address of
- *	the copy is returned.
- *
- *	If @buffer is returned, the caller of suspend_write_next() will write
- *	the page's contents to @buffer, so they will have to be copied to the
- *	right location on the next call to suspend_write_next() and it is done
- *	with the help of copy_last_highmem_page().  For this purpose, if
- *	@buffer is returned, @last_highmem page is set to the page to which
- *	the data will have to be copied from @buffer.
- */
-
-static struct page *last_highmem_page;
-
-static void *
-get_highmem_page_buffer(struct page *page, struct chain_allocator *ca)
-=======
 static struct page *last_highmem_page;
 
 /**
@@ -3583,29 +2514,20 @@ static struct page *last_highmem_page;
  */
 static void *get_highmem_page_buffer(struct page *page,
 				     struct chain_allocator *ca)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct highmem_pbe *pbe;
 	void *kaddr;
 
 	if (swsusp_page_is_forbidden(page) && swsusp_page_is_free(page)) {
-<<<<<<< HEAD
-		/* We have allocated the "original" page frame and we can
-=======
 		/*
 		 * We have allocated the "original" page frame and we can
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * use it directly to store the loaded page.
 		 */
 		last_highmem_page = page;
 		return buffer;
 	}
-<<<<<<< HEAD
-	/* The "original" page frame has not been allocated and we have to
-=======
 	/*
 	 * The "original" page frame has not been allocated and we have to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * use a "safe" page frame to store the loaded page.
 	 */
 	pbe = chain_alloc(ca, sizeof(struct highmem_pbe));
@@ -3625,14 +2547,9 @@ static void *get_highmem_page_buffer(struct page *page,
 		pbe->copy_page = tmp;
 	} else {
 		/* Copy of the page will be stored in normal memory */
-<<<<<<< HEAD
-		kaddr = safe_pages_list;
-		safe_pages_list = safe_pages_list->next;
-=======
 		kaddr = __get_safe_page(ca->gfp_mask);
 		if (!kaddr)
 			return ERR_PTR(-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pbe->copy_page = virt_to_page(kaddr);
 	}
 	pbe->next = highmem_pblist;
@@ -3641,20 +2558,12 @@ static void *get_highmem_page_buffer(struct page *page,
 }
 
 /**
-<<<<<<< HEAD
- *	copy_last_highmem_page - copy the contents of a highmem image from
- *	@buffer, where the caller of snapshot_write_next() has place them,
- *	to the right location represented by @last_highmem_page .
- */
-
-=======
  * copy_last_highmem_page - Copy most the most recent highmem image page.
  *
  * Copy the contents of a highmem image from @buffer, where the caller of
  * snapshot_write_next() has stored them, to the right location represented by
  * @last_highmem_page .
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void copy_last_highmem_page(void)
 {
 	if (last_highmem_page) {
@@ -3681,21 +2590,6 @@ static inline void free_highmem_data(void)
 		free_image_page(buffer, PG_UNSAFE_CLEAR);
 }
 #else
-<<<<<<< HEAD
-static inline int get_safe_write_buffer(void) { return 0; }
-
-static unsigned int
-count_highmem_image_pages(struct memory_bitmap *bm) { return 0; }
-
-static inline int
-prepare_highmem_image(struct memory_bitmap *bm, unsigned int *nr_highmem_p)
-{
-	return 0;
-}
-
-static inline void *
-get_highmem_page_buffer(struct page *page, struct chain_allocator *ca)
-=======
 static unsigned int count_highmem_image_pages(struct memory_bitmap *bm) { return 0; }
 
 static inline int prepare_highmem_image(struct memory_bitmap *bm,
@@ -3703,7 +2597,6 @@ static inline int prepare_highmem_image(struct memory_bitmap *bm,
 
 static inline void *get_highmem_page_buffer(struct page *page,
 					    struct chain_allocator *ca)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ERR_PTR(-EINVAL);
 }
@@ -3713,29 +2606,6 @@ static inline int last_highmem_page_copied(void) { return 1; }
 static inline void free_highmem_data(void) {}
 #endif /* CONFIG_HIGHMEM */
 
-<<<<<<< HEAD
-/**
- *	prepare_image - use the memory bitmap @bm to mark the pages that will
- *	be overwritten in the process of restoring the system memory state
- *	from the suspend image ("unsafe" pages) and allocate memory for the
- *	image.
- *
- *	The idea is to allocate a new memory bitmap first and then allocate
- *	as many pages as needed for the image data, but not to assign these
- *	pages to specific tasks initially.  Instead, we just mark them as
- *	allocated and create a lists of "safe" pages that will be used
- *	later.  On systems with high memory a list of "safe" highmem pages is
- *	also created.
- */
-
-#define PBES_PER_LINKED_PAGE	(LINKED_PAGE_DATA_SIZE / sizeof(struct pbe))
-
-static int
-prepare_image(struct memory_bitmap *new_bm, struct memory_bitmap *bm)
-{
-	unsigned int nr_pages, nr_highmem;
-	struct linked_page *sp_list, *lp;
-=======
 #define PBES_PER_LINKED_PAGE	(LINKED_PAGE_DATA_SIZE / sizeof(struct pbe))
 
 /**
@@ -3763,7 +2633,6 @@ static int prepare_image(struct memory_bitmap *new_bm, struct memory_bitmap *bm,
 	unsigned int nr_pages, nr_highmem;
 	struct memory_bitmap tmp;
 	struct linked_page *lp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	/* If there is no highmem, the buffer will not be necessary */
@@ -3771,13 +2640,7 @@ static int prepare_image(struct memory_bitmap *new_bm, struct memory_bitmap *bm,
 	buffer = NULL;
 
 	nr_highmem = count_highmem_image_pages(bm);
-<<<<<<< HEAD
-	error = mark_unsafe_pages(bm);
-	if (error)
-		goto Free;
-=======
 	mark_unsafe_pages(bm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = memory_bm_create(new_bm, GFP_ATOMIC, PG_SAFE);
 	if (error)
@@ -3785,8 +2648,6 @@ static int prepare_image(struct memory_bitmap *new_bm, struct memory_bitmap *bm,
 
 	duplicate_memory_bitmap(new_bm, bm);
 	memory_bm_free(bm, PG_UNSAFE_KEEP);
-<<<<<<< HEAD
-=======
 
 	/* Make a copy of zero_bm so it can be created in safe pages */
 	error = memory_bm_create(&tmp, GFP_ATOMIC, PG_SAFE);
@@ -3805,33 +2666,21 @@ static int prepare_image(struct memory_bitmap *new_bm, struct memory_bitmap *bm,
 	memory_bm_free(&tmp, PG_UNSAFE_CLEAR);
 	/* At this point zero_bm is in safe pages and it can be used for restoring. */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nr_highmem > 0) {
 		error = prepare_highmem_image(bm, &nr_highmem);
 		if (error)
 			goto Free;
 	}
-<<<<<<< HEAD
-	/* Reserve some safe pages for potential later use.
-=======
 	/*
 	 * Reserve some safe pages for potential later use.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * NOTE: This way we make sure there will be enough safe pages for the
 	 * chain_alloc() in get_buffer().  It is a bit wasteful, but
 	 * nr_copy_pages cannot be greater than 50% of the memory anyway.
-<<<<<<< HEAD
-	 */
-	sp_list = NULL;
-	/* nr_copy_pages cannot be lesser than allocated_unsafe_pages */
-	nr_pages = nr_copy_pages - nr_highmem - allocated_unsafe_pages;
-=======
 	 *
 	 * nr_copy_pages cannot be less than allocated_unsafe_pages too.
 	 */
 	nr_pages = (nr_zero_pages + nr_copy_pages) - nr_highmem - allocated_unsafe_pages;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nr_pages = DIV_ROUND_UP(nr_pages, PBES_PER_LINKED_PAGE);
 	while (nr_pages > 0) {
 		lp = get_image_page(GFP_ATOMIC, PG_SAFE);
@@ -3839,22 +2688,12 @@ static int prepare_image(struct memory_bitmap *new_bm, struct memory_bitmap *bm,
 			error = -ENOMEM;
 			goto Free;
 		}
-<<<<<<< HEAD
-		lp->next = sp_list;
-		sp_list = lp;
-		nr_pages--;
-	}
-	/* Preallocate memory for the image */
-	safe_pages_list = NULL;
-	nr_pages = nr_copy_pages - nr_highmem - allocated_unsafe_pages;
-=======
 		lp->next = safe_pages_list;
 		safe_pages_list = lp;
 		nr_pages--;
 	}
 	/* Preallocate memory for the image */
 	nr_pages = (nr_zero_pages + nr_copy_pages) - nr_highmem - allocated_unsafe_pages;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (nr_pages > 0) {
 		lp = (struct linked_page *)get_zeroed_page(GFP_ATOMIC);
 		if (!lp) {
@@ -3871,15 +2710,6 @@ static int prepare_image(struct memory_bitmap *new_bm, struct memory_bitmap *bm,
 		swsusp_set_page_free(virt_to_page(lp));
 		nr_pages--;
 	}
-<<<<<<< HEAD
-	/* Free the reserved safe pages so that chain_alloc() can use them */
-	while (sp_list) {
-		lp = sp_list->next;
-		free_image_page(sp_list, PG_UNSAFE_CLEAR);
-		sp_list = lp;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  Free:
@@ -3888,18 +2718,11 @@ static int prepare_image(struct memory_bitmap *new_bm, struct memory_bitmap *bm,
 }
 
 /**
-<<<<<<< HEAD
- *	get_buffer - compute the address that snapshot_write_next() should
- *	set for its caller to write to.
- */
-
-=======
  * get_buffer - Get the address to store the next image data page.
  *
  * Get the address that snapshot_write_next() should return to its caller to
  * write to.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *get_buffer(struct memory_bitmap *bm, struct chain_allocator *ca)
 {
 	struct pbe *pbe;
@@ -3914,22 +2737,14 @@ static void *get_buffer(struct memory_bitmap *bm, struct chain_allocator *ca)
 		return get_highmem_page_buffer(page, ca);
 
 	if (swsusp_page_is_forbidden(page) && swsusp_page_is_free(page))
-<<<<<<< HEAD
-		/* We have allocated the "original" page frame and we can
-=======
 		/*
 		 * We have allocated the "original" page frame and we can
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * use it directly to store the loaded page.
 		 */
 		return page_address(page);
 
-<<<<<<< HEAD
-	/* The "original" page frame has not been allocated and we have to
-=======
 	/*
 	 * The "original" page frame has not been allocated and we have to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * use a "safe" page frame to store the loaded page.
 	 */
 	pbe = chain_alloc(ca, sizeof(struct pbe));
@@ -3938,49 +2753,15 @@ static void *get_buffer(struct memory_bitmap *bm, struct chain_allocator *ca)
 		return ERR_PTR(-ENOMEM);
 	}
 	pbe->orig_address = page_address(page);
-<<<<<<< HEAD
-	pbe->address = safe_pages_list;
-	safe_pages_list = safe_pages_list->next;
-=======
 	pbe->address = __get_safe_page(ca->gfp_mask);
 	if (!pbe->address)
 		return ERR_PTR(-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pbe->next = restore_pblist;
 	restore_pblist = pbe;
 	return pbe->address;
 }
 
 /**
-<<<<<<< HEAD
- *	snapshot_write_next - used for writing the system memory snapshot.
- *
- *	On the first call to it @handle should point to a zeroed
- *	snapshot_handle structure.  The structure gets updated and a pointer
- *	to it should be passed to this function every next time.
- *
- *	On success the function returns a positive number.  Then, the caller
- *	is allowed to write up to the returned number of bytes to the memory
- *	location computed by the data_of() macro.
- *
- *	The function returns 0 to indicate the "end of file" condition,
- *	and a negative number is returned on error.  In such cases the
- *	structure pointed to by @handle is not updated and should not be used
- *	any more.
- */
-
-int snapshot_write_next(struct snapshot_handle *handle)
-{
-	static struct chain_allocator ca;
-	int error = 0;
-
-	/* Check if we have already loaded the entire image */
-	if (handle->cur > 1 && handle->cur > nr_meta_pages + nr_copy_pages)
-		return 0;
-
-	handle->sync_read = 1;
-
-=======
  * snapshot_write_next - Get the address to store the next image page.
  * @handle: Snapshot handle structure to guide the writing.
  *
@@ -4006,7 +2787,6 @@ next:
 	if (handle->cur > 1 && handle->cur > nr_meta_pages + nr_copy_pages + nr_zero_pages)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!handle->cur) {
 		if (!buffer)
 			/* This makes the buffer be freed by swsusp_free() */
@@ -4021,24 +2801,12 @@ next:
 		if (error)
 			return error;
 
-<<<<<<< HEAD
-=======
 		safe_pages_list = NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = memory_bm_create(&copy_bm, GFP_ATOMIC, PG_ANY);
 		if (error)
 			return error;
 
-<<<<<<< HEAD
-		/* Allocate buffer for page keys. */
-		error = page_key_alloc(nr_copy_pages);
-		if (error)
-			return error;
-
-	} else if (handle->cur <= nr_meta_pages + 1) {
-		error = unpack_orig_pfns(buffer, &copy_bm);
-=======
 		error = memory_bm_create(&zero_bm, GFP_ATOMIC, PG_ANY);
 		if (error)
 			return error;
@@ -4048,46 +2816,24 @@ next:
 		hibernate_restore_protection_begin();
 	} else if (handle->cur <= nr_meta_pages + 1) {
 		error = unpack_orig_pfns(buffer, &copy_bm, &zero_bm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			return error;
 
 		if (handle->cur == nr_meta_pages + 1) {
-<<<<<<< HEAD
-			error = prepare_image(&orig_bm, &copy_bm);
-=======
 			error = prepare_image(&orig_bm, &copy_bm, &zero_bm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (error)
 				return error;
 
 			chain_init(&ca, GFP_ATOMIC, PG_SAFE);
 			memory_bm_position_reset(&orig_bm);
-<<<<<<< HEAD
-			restore_pblist = NULL;
-			handle->buffer = get_buffer(&orig_bm, &ca);
-			handle->sync_read = 0;
-=======
 			memory_bm_position_reset(&zero_bm);
 			restore_pblist = NULL;
 			handle->buffer = get_buffer(&orig_bm, &ca);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (IS_ERR(handle->buffer))
 				return PTR_ERR(handle->buffer);
 		}
 	} else {
 		copy_last_highmem_page();
-<<<<<<< HEAD
-		/* Restore page key for data page (s390 only). */
-		page_key_write(handle->buffer);
-		handle->buffer = get_buffer(&orig_bm, &ca);
-		if (IS_ERR(handle->buffer))
-			return PTR_ERR(handle->buffer);
-		if (handle->buffer != buffer)
-			handle->sync_read = 0;
-	}
-	handle->cur++;
-=======
 		error = hibernate_restore_protect_page(handle->buffer);
 		if (error)
 			return error;
@@ -4105,31 +2851,10 @@ next:
 		goto next;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return PAGE_SIZE;
 }
 
 /**
-<<<<<<< HEAD
- *	snapshot_write_finalize - must be called after the last call to
- *	snapshot_write_next() in case the last page in the image happens
- *	to be a highmem page and its contents should be stored in the
- *	highmem.  Additionally, it releases the memory that will not be
- *	used any more.
- */
-
-void snapshot_write_finalize(struct snapshot_handle *handle)
-{
-	copy_last_highmem_page();
-	/* Restore page key for data page (s390 only). */
-	page_key_write(handle->buffer);
-	page_key_free();
-	/* Free only if we have loaded the image entirely */
-	if (handle->cur > 1 && handle->cur > nr_meta_pages + nr_copy_pages) {
-		memory_bm_free(&orig_bm, PG_UNSAFE_CLEAR);
-		free_highmem_data();
-	}
-=======
  * snapshot_write_finalize - Complete the loading of a hibernation image.
  *
  * Must be called after the last call to snapshot_write_next() in case the last
@@ -4149,28 +2874,18 @@ int snapshot_write_finalize(struct snapshot_handle *handle)
 		free_highmem_data();
 	}
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int snapshot_image_loaded(struct snapshot_handle *handle)
 {
 	return !(!nr_copy_pages || !last_highmem_page_copied() ||
-<<<<<<< HEAD
-			handle->cur <= nr_meta_pages + nr_copy_pages);
-=======
 			handle->cur <= nr_meta_pages + nr_copy_pages + nr_zero_pages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_HIGHMEM
 /* Assumes that @buf is ready and points to a "safe" page */
-<<<<<<< HEAD
-static inline void
-swap_two_pages_data(struct page *p1, struct page *p2, void *buf)
-=======
 static inline void swap_two_pages_data(struct page *p1, struct page *p2,
 				       void *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *kaddr1, *kaddr2;
 
@@ -4184,17 +2899,6 @@ static inline void swap_two_pages_data(struct page *p1, struct page *p2,
 }
 
 /**
-<<<<<<< HEAD
- *	restore_highmem - for each highmem page that was allocated before
- *	the suspend and included in the suspend image, and also has been
- *	allocated by the "resume" kernel swap its current (ie. "before
- *	resume") contents with the previous (ie. "before suspend") one.
- *
- *	If the resume eventually fails, we can call this function once
- *	again and restore the "before resume" highmem state.
- */
-
-=======
  * restore_highmem - Put highmem image pages into their original locations.
  *
  * For each highmem page that was in use before hibernation and is included in
@@ -4204,7 +2908,6 @@ static inline void swap_two_pages_data(struct page *p1, struct page *p2,
  * If the restore eventually fails, we can call this function once again and
  * restore the highmem state as seen by the restore kernel.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int restore_highmem(void)
 {
 	struct highmem_pbe *pbe = highmem_pblist;

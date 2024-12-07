@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/mmu_context.h
  *
  *  Copyright (C) 1996 Russell King.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Changelog:
  *   27-06-1996	RMK	Created
  */
@@ -22,54 +12,6 @@
 
 #include <linux/compiler.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <asm/cacheflush.h>
-#include <asm/cachetype.h>
-#include <asm/proc-fns.h>
-#include <asm-generic/mm_hooks.h>
-
-void __check_kvm_seq(struct mm_struct *mm);
-
-#ifdef CONFIG_CPU_HAS_ASID
-
-#ifdef CONFIG_SMP
-DECLARE_PER_CPU(struct mm_struct *, current_mm);
-#endif
-
-void check_and_switch_context(struct mm_struct *mm, struct task_struct *tsk);
-#define init_new_context(tsk,mm)	({ mm->context.id = 0; })
-
-#else
-
-static inline void check_context(struct mm_struct *mm)
-{
-#ifdef CONFIG_MMU
-	if (unlikely(mm->context.kvm_seq != init_mm.context.kvm_seq))
-		__check_kvm_seq(mm);
-#endif
-}
-
-#define init_new_context(tsk,mm)	0
-
-#endif
-
-#define destroy_context(mm)		do { } while(0)
-#define activate_mm(prev,next)		switch_mm(prev, next, NULL)
-/*
- * This is called when "tsk" is about to enter lazy TLB mode.
- *
- * mm:  describes the currently active mm context
- * tsk: task which is entering lazy tlb
- * cpu: cpu number which is entering lazy tlb
- *
- * tsk->mm will be NULL
- */
-static inline void
-enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
-{
-}
-
-=======
 #include <linux/mm_types.h>
 #include <linux/preempt.h>
 
@@ -165,7 +107,6 @@ static inline void finish_arch_post_lock_switch(void)
 
 #define activate_mm(prev,next)		switch_mm(prev, next, NULL)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is the actual mm switch as far as the scheduler
  * is concerned.  No registers are touched.  We avoid
@@ -179,19 +120,6 @@ switch_mm(struct mm_struct *prev, struct mm_struct *next,
 #ifdef CONFIG_MMU
 	unsigned int cpu = smp_processor_id();
 
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-	/* check for possible thread migration */
-	if (!cpumask_empty(mm_cpumask(next)) &&
-	    !cpumask_test_cpu(cpu, mm_cpumask(next)))
-		__flush_icache_all();
-#endif
-	if (!cpumask_test_and_set_cpu(cpu, mm_cpumask(next)) || prev != next) {
-#ifdef CONFIG_SMP
-		struct mm_struct **crt_mm = &per_cpu(current_mm, cpu);
-		*crt_mm = next;
-#endif
-=======
 	/*
 	 * __sync_icache_dcache doesn't broadcast the I-cache invalidation,
 	 * so check for possible thread migration and invalidate the I-cache
@@ -203,7 +131,6 @@ switch_mm(struct mm_struct *prev, struct mm_struct *next,
 		__flush_icache_all();
 
 	if (!cpumask_test_and_set_cpu(cpu, mm_cpumask(next)) || prev != next) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		check_and_switch_context(next, tsk);
 		if (cache_is_vivt())
 			cpumask_clear_cpu(cpu, mm_cpumask(prev));
@@ -211,9 +138,6 @@ switch_mm(struct mm_struct *prev, struct mm_struct *next,
 #endif
 }
 
-<<<<<<< HEAD
-#define deactivate_mm(tsk,mm)	do { } while (0)
-=======
 #ifdef CONFIG_VMAP_STACK
 static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
 {
@@ -224,6 +148,5 @@ static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
 #endif
 
 #include <asm-generic/mmu_context.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

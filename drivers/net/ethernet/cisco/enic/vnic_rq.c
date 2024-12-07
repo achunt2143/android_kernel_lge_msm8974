@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -33,30 +13,16 @@
 
 #include "vnic_dev.h"
 #include "vnic_rq.h"
-<<<<<<< HEAD
-=======
 #include "enic.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int vnic_rq_alloc_bufs(struct vnic_rq *rq)
 {
 	struct vnic_rq_buf *buf;
-<<<<<<< HEAD
-	struct vnic_dev *vdev;
-	unsigned int i, j, count = rq->ring.desc_count;
-	unsigned int blks = VNIC_RQ_BUF_BLKS_NEEDED(count);
-
-	vdev = rq->vdev;
-
-	for (i = 0; i < blks; i++) {
-		rq->bufs[i] = kzalloc(VNIC_RQ_BUF_BLK_SZ(count), GFP_ATOMIC);
-=======
 	unsigned int i, j, count = rq->ring.desc_count;
 	unsigned int blks = VNIC_RQ_BUF_BLKS_NEEDED(count);
 
 	for (i = 0; i < blks; i++) {
 		rq->bufs[i] = kzalloc(VNIC_RQ_BUF_BLK_SZ(count), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!rq->bufs[i])
 			return -ENOMEM;
 	}
@@ -113,11 +79,7 @@ int vnic_rq_alloc(struct vnic_dev *vdev, struct vnic_rq *rq, unsigned int index,
 
 	rq->ctrl = vnic_dev_get_res(vdev, RES_TYPE_RQ, index);
 	if (!rq->ctrl) {
-<<<<<<< HEAD
-		pr_err("Failed to hook RQ[%d] resource\n", index);
-=======
 		vdev_err(vdev, "Failed to hook RQ[%d] resource\n", index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -164,25 +126,8 @@ void vnic_rq_init(struct vnic_rq *rq, unsigned int cq_index,
 	unsigned int error_interrupt_enable,
 	unsigned int error_interrupt_offset)
 {
-<<<<<<< HEAD
-	u32 fetch_index;
-
-	/* Use current fetch_index as the ring starting point */
-	fetch_index = ioread32(&rq->ctrl->fetch_index);
-
-	if (fetch_index == 0xFFFFFFFF) { /* check for hardware gone  */
-		/* Hardware surprise removal: reset fetch_index */
-		fetch_index = 0;
-	}
-
-	vnic_rq_init_start(rq, cq_index,
-		fetch_index, fetch_index,
-		error_interrupt_enable,
-		error_interrupt_offset);
-=======
 	vnic_rq_init_start(rq, cq_index, 0, 0, error_interrupt_enable,
 			   error_interrupt_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 unsigned int vnic_rq_error_status(struct vnic_rq *rq)
@@ -198,21 +143,6 @@ void vnic_rq_enable(struct vnic_rq *rq)
 int vnic_rq_disable(struct vnic_rq *rq)
 {
 	unsigned int wait;
-<<<<<<< HEAD
-
-	iowrite32(0, &rq->ctrl->enable);
-
-	/* Wait for HW to ACK disable request */
-	for (wait = 0; wait < 1000; wait++) {
-		if (!(ioread32(&rq->ctrl->running)))
-			return 0;
-		udelay(10);
-	}
-
-	pr_err("Failed to disable RQ[%d]\n", rq->index);
-
-	return -ETIMEDOUT;
-=======
 	struct vnic_dev *vdev = rq->vdev;
 	int i;
 
@@ -236,7 +166,6 @@ int vnic_rq_disable(struct vnic_rq *rq)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void vnic_rq_clean(struct vnic_rq *rq,
@@ -245,18 +174,6 @@ void vnic_rq_clean(struct vnic_rq *rq,
 	struct vnic_rq_buf *buf;
 	u32 fetch_index;
 	unsigned int count = rq->ring.desc_count;
-<<<<<<< HEAD
-
-	buf = rq->to_clean;
-
-	while (vnic_rq_desc_used(rq) > 0) {
-
-		(*buf_clean)(rq, buf);
-
-		buf = rq->to_clean = buf->next;
-		rq->ring.desc_avail++;
-	}
-=======
 	int i;
 
 	buf = rq->to_clean;
@@ -266,7 +183,6 @@ void vnic_rq_clean(struct vnic_rq *rq,
 		buf = buf->next;
 	}
 	rq->ring.desc_avail = rq->ring.desc_count - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Use current fetch_index as the ring starting point */
 	fetch_index = ioread32(&rq->ctrl->fetch_index);
@@ -280,11 +196,6 @@ void vnic_rq_clean(struct vnic_rq *rq,
 			[fetch_index % VNIC_RQ_BUF_BLK_ENTRIES(count)];
 	iowrite32(fetch_index, &rq->ctrl->posted_index);
 
-<<<<<<< HEAD
-	vnic_dev_clear_desc_ring(&rq->ring);
-}
-
-=======
 	/* Anytime we write fetch_index, we need to re-write 0 to rq->enable
 	 * to re-sync internal VIC state.
 	 */
@@ -292,4 +203,3 @@ void vnic_rq_clean(struct vnic_rq *rq,
 
 	vnic_dev_clear_desc_ring(&rq->ring);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

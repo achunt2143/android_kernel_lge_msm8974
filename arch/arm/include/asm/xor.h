@@ -1,25 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/xor.h
  *
  *  Copyright (C) 2001 Russell King
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#include <asm-generic/xor.h>
-=======
  */
 #include <linux/hardirq.h>
 #include <asm-generic/xor.h>
 #include <asm/hwcap.h>
 #include <asm/neon.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __XOR(a1, a2) a1 ^= a2
 
@@ -56,22 +44,14 @@
 		: "0" (dst), "r" (a1), "r" (a2), "r" (a3), "r" (a4))
 
 static void
-<<<<<<< HEAD
-xor_arm4regs_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
-=======
 xor_arm4regs_2(unsigned long bytes, unsigned long * __restrict p1,
 	       const unsigned long * __restrict p2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int lines = bytes / sizeof(unsigned long) / 4;
 	register unsigned int a1 __asm__("r4");
 	register unsigned int a2 __asm__("r5");
 	register unsigned int a3 __asm__("r6");
-<<<<<<< HEAD
-	register unsigned int a4 __asm__("r7");
-=======
 	register unsigned int a4 __asm__("r10");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	register unsigned int b1 __asm__("r8");
 	register unsigned int b2 __asm__("r9");
 	register unsigned int b3 __asm__("ip");
@@ -85,24 +65,15 @@ xor_arm4regs_2(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_arm4regs_3(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-		unsigned long *p3)
-=======
 xor_arm4regs_3(unsigned long bytes, unsigned long * __restrict p1,
 	       const unsigned long * __restrict p2,
 	       const unsigned long * __restrict p3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int lines = bytes / sizeof(unsigned long) / 4;
 	register unsigned int a1 __asm__("r4");
 	register unsigned int a2 __asm__("r5");
 	register unsigned int a3 __asm__("r6");
-<<<<<<< HEAD
-	register unsigned int a4 __asm__("r7");
-=======
 	register unsigned int a4 __asm__("r10");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	register unsigned int b1 __asm__("r8");
 	register unsigned int b2 __asm__("r9");
 	register unsigned int b3 __asm__("ip");
@@ -117,15 +88,10 @@ xor_arm4regs_3(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_arm4regs_4(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-		unsigned long *p3, unsigned long *p4)
-=======
 xor_arm4regs_4(unsigned long bytes, unsigned long * __restrict p1,
 	       const unsigned long * __restrict p2,
 	       const unsigned long * __restrict p3,
 	       const unsigned long * __restrict p4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int lines = bytes / sizeof(unsigned long) / 2;
 	register unsigned int a1 __asm__("r8");
@@ -143,16 +109,11 @@ xor_arm4regs_4(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_arm4regs_5(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-		unsigned long *p3, unsigned long *p4, unsigned long *p5)
-=======
 xor_arm4regs_5(unsigned long bytes, unsigned long * __restrict p1,
 	       const unsigned long * __restrict p2,
 	       const unsigned long * __restrict p3,
 	       const unsigned long * __restrict p4,
 	       const unsigned long * __restrict p5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int lines = bytes / sizeof(unsigned long) / 2;
 	register unsigned int a1 __asm__("r8");
@@ -184,9 +145,6 @@ static struct xor_block_template xor_block_arm4regs = {
 		xor_speed(&xor_block_arm4regs);	\
 		xor_speed(&xor_block_8regs);	\
 		xor_speed(&xor_block_32regs);	\
-<<<<<<< HEAD
-	} while (0)
-=======
 		NEON_TEMPLATES;			\
 	} while (0)
 
@@ -265,4 +223,3 @@ static struct xor_block_template xor_block_neon = {
 #else
 #define NEON_TEMPLATES
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

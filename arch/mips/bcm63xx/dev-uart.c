@@ -10,10 +10,7 @@
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 #include <bcm63xx_cpu.h>
-<<<<<<< HEAD
-=======
 #include <bcm63xx_dev_uart.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct resource uart0_resources[] = {
 	{
@@ -58,12 +55,8 @@ int __init bcm63xx_uart_register(unsigned int id)
 	if (id >= ARRAY_SIZE(bcm63xx_uart_devices))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (id == 1 && (!BCMCPU_IS_6358() && !BCMCPU_IS_6368()))
-=======
 	if (id == 1 && (!BCMCPU_IS_3368() && !BCMCPU_IS_6358() &&
 		!BCMCPU_IS_6368()))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	if (id == 0) {

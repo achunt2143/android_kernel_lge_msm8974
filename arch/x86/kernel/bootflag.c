@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Implement 'Simple Boot Flag Specification 2.0'
  */
@@ -102,8 +99,4 @@ static int __init sbf_init(void)
 
 	return 0;
 }
-<<<<<<< HEAD
-module_init(sbf_init);
-=======
 arch_initcall(sbf_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

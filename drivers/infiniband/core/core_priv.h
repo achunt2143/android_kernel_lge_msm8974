@@ -35,22 +35,6 @@
 
 #include <linux/list.h>
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-
-#include <rdma/ib_verbs.h>
-
-int  ib_device_register_sysfs(struct ib_device *device,
-			      int (*port_callback)(struct ib_device *,
-						   u8, struct kobject *));
-void ib_device_unregister_sysfs(struct ib_device *device);
-
-int  ib_sysfs_setup(void);
-void ib_sysfs_cleanup(void);
-
-int  ib_cache_setup(void);
-void ib_cache_cleanup(void);
-
-=======
 #include <linux/cgroup_rdma.h>
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>
@@ -390,5 +374,4 @@ void rdma_umap_priv_init(struct rdma_umap_priv *priv,
 void ib_cq_pool_cleanup(struct ib_device *dev);
 
 bool rdma_nl_get_privileged_qkey(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _CORE_PRIV_H */

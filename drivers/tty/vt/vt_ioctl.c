@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1992 obz under the linux copyright
  *
@@ -14,11 +11,7 @@
 
 #include <linux/types.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/tty.h>
 #include <linux/timer.h>
 #include <linux/kernel.h>
@@ -33,12 +26,6 @@
 #include <linux/console.h>
 #include <linux/consolemap.h>
 #include <linux/signal.h>
-<<<<<<< HEAD
-#include <linux/timex.h>
-
-#include <asm/io.h>
-#include <asm/uaccess.h>
-=======
 #include <linux/suspend.h>
 #include <linux/timex.h>
 
@@ -46,20 +33,12 @@
 #include <linux/uaccess.h>
 
 #include <linux/nospec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kbd_kern.h>
 #include <linux/vt_kern.h>
 #include <linux/kbd_diacr.h>
 #include <linux/selection.h>
 
-<<<<<<< HEAD
-char vt_dont_switch;
-extern struct tty_driver *console_driver;
-
-#define VT_IS_IN_USE(i)	(console_driver->ttys[i] && console_driver->ttys[i]->count)
-#define VT_BUSY(i)	(VT_IS_IN_USE(i) || i == fg_console || vc_cons[i].d == sel_cons)
-=======
 bool vt_dont_switch;
 
 static inline bool vt_in_use(unsigned int i)
@@ -86,7 +65,6 @@ static inline bool vt_busy(int i)
 
 	return false;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Console (vt and kd) routines, as defined by USL SVR4 manual, and by
@@ -102,11 +80,7 @@ static inline bool vt_busy(int i)
  */
 
 #ifdef CONFIG_X86
-<<<<<<< HEAD
-#include <linux/syscalls.h>
-=======
 #include <asm/syscalls.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static void complete_change_console(struct vc_data *vc);
@@ -207,11 +181,7 @@ static void vt_event_wait(struct vt_event_wait *vw)
 
 /**
  *	vt_event_wait_ioctl	-	event ioctl handler
-<<<<<<< HEAD
- *	@arg: argument to ioctl
-=======
  *	@event: argument to ioctl (the event)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Implement the VT_WAITEVENT ioctl using the VT event interface
  */
@@ -238,10 +208,6 @@ static int vt_event_wait_ioctl(struct vt_event __user *event)
 
 /**
  *	vt_waitactive	-	active console wait
-<<<<<<< HEAD
- *	@event: event code
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@n: new console
  *
  *	Helper for event waits. Used to implement the legacy
@@ -274,113 +240,6 @@ int vt_waitactive(int n)
 #define GPLAST 0x3df
 #define GPNUM (GPLAST - GPFIRST + 1)
 
-<<<<<<< HEAD
-
-
-static inline int 
-do_fontx_ioctl(int cmd, struct consolefontdesc __user *user_cfd, int perm, struct console_font_op *op)
-{
-	struct consolefontdesc cfdarg;
-	int i;
-
-	if (copy_from_user(&cfdarg, user_cfd, sizeof(struct consolefontdesc))) 
-		return -EFAULT;
- 	
-	switch (cmd) {
-	case PIO_FONTX:
-		if (!perm)
-			return -EPERM;
-		op->op = KD_FONT_OP_SET;
-		op->flags = KD_FONT_FLAG_OLD;
-		op->width = 8;
-		op->height = cfdarg.charheight;
-		op->charcount = cfdarg.charcount;
-		op->data = cfdarg.chardata;
-		return con_font_op(vc_cons[fg_console].d, op);
-	case GIO_FONTX: {
-		op->op = KD_FONT_OP_GET;
-		op->flags = KD_FONT_FLAG_OLD;
-		op->width = 8;
-		op->height = cfdarg.charheight;
-		op->charcount = cfdarg.charcount;
-		op->data = cfdarg.chardata;
-		i = con_font_op(vc_cons[fg_console].d, op);
-		if (i)
-			return i;
-		cfdarg.charheight = op->height;
-		cfdarg.charcount = op->charcount;
-		if (copy_to_user(user_cfd, &cfdarg, sizeof(struct consolefontdesc)))
-			return -EFAULT;
-		return 0;
-		}
-	}
-	return -EINVAL;
-}
-
-static inline int 
-do_unimap_ioctl(int cmd, struct unimapdesc __user *user_ud, int perm, struct vc_data *vc)
-{
-	struct unimapdesc tmp;
-
-	if (copy_from_user(&tmp, user_ud, sizeof tmp))
-		return -EFAULT;
-	if (tmp.entries)
-		if (!access_ok(VERIFY_WRITE, tmp.entries,
-				tmp.entry_ct*sizeof(struct unipair)))
-			return -EFAULT;
-	switch (cmd) {
-	case PIO_UNIMAP:
-		if (!perm)
-			return -EPERM;
-		return con_set_unimap(vc, tmp.entry_ct, tmp.entries);
-	case GIO_UNIMAP:
-		if (!perm && fg_console != vc->vc_num)
-			return -EPERM;
-		return con_get_unimap(vc, tmp.entry_ct, &(user_ud->entry_ct), tmp.entries);
-	}
-	return 0;
-}
-
-
-
-/*
- * We handle the console-specific ioctl's here.  We allow the
- * capability to modify any console, not just the fg_console. 
- */
-int vt_ioctl(struct tty_struct *tty,
-	     unsigned int cmd, unsigned long arg)
-{
-	struct vc_data *vc = tty->driver_data;
-	struct console_font_op op;	/* used in multiple places here */
-	unsigned int console;
-	unsigned char ucval;
-	unsigned int uival;
-	void __user *up = (void __user *)arg;
-	int i, perm;
-	int ret = 0;
-
-	console = vc->vc_num;
-
-
-	if (!vc_cons_allocated(console)) { 	/* impossible? */
-		ret = -ENOIOCTLCMD;
-		goto out;
-	}
-
-
-	/*
-	 * To have permissions to do most of the vt ioctls, we either have
-	 * to be the owner of the tty, or have CAP_SYS_TTY_CONFIG.
-	 */
-	perm = 0;
-	if (current->signal->tty == tty || capable(CAP_SYS_TTY_CONFIG))
-		perm = 1;
- 
-	switch (cmd) {
-	case TIOCLINUX:
-		ret = tioclinux(tty, arg);
-		break;
-=======
 /*
  * currently, setting the mode from KD_TEXT to KD_GRAPHICS doesn't do a whole
  * lot. i'm not sure if it should do any restoration of modes or what...
@@ -430,7 +289,6 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
 	int ret;
 
 	switch (cmd) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KIOCSOUND:
 		if (!perm)
 			return -EPERM;
@@ -450,20 +308,12 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
 			return -EPERM;
 	{
 		unsigned int ticks, count;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Generate the tone for the appropriate number of ticks.
 		 * If the time is zero, turn off sound ourselves.
 		 */
-<<<<<<< HEAD
-		ticks = HZ * ((arg >> 16) & 0xffff) / 1000;
-=======
 		ticks = msecs_to_jiffies((arg >> 16) & 0xffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count = ticks ? (arg & 0xffff) : 0;
 		if (count)
 			count = PIT_TICK_RATE / count;
@@ -475,13 +325,7 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
 		/*
 		 * this is naïve.
 		 */
-<<<<<<< HEAD
-		ucval = KB_101;
-		ret = put_user(ucval, (char __user *)arg);
-		break;
-=======
 		return put_user(KB_101, (char __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * These cannot be implemented on any machine that implements
@@ -498,40 +342,6 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
 		 *
 		 * These are locked internally via sys_ioperm
 		 */
-<<<<<<< HEAD
-		if (arg < GPFIRST || arg > GPLAST) {
-			ret = -EINVAL;
-			break;
-		}
-		ret = sys_ioperm(arg, 1, (cmd == KDADDIO)) ? -ENXIO : 0;
-		break;
-
-	case KDENABIO:
-	case KDDISABIO:
-		ret = sys_ioperm(GPFIRST, GPNUM,
-				  (cmd == KDENABIO)) ? -ENXIO : 0;
-		break;
-#endif
-
-	/* Linux m68k/i386 interface for setting the keyboard delay/repeat rate */
-		
-	case KDKBDREP:
-	{
-		struct kbd_repeat kbrep;
-		
-		if (!capable(CAP_SYS_TTY_CONFIG))
-			return -EPERM;
-
-		if (copy_from_user(&kbrep, up, sizeof(struct kbd_repeat))) {
-			ret =  -EFAULT;
-			break;
-		}
-		ret = kbd_rate(&kbrep);
-		if (ret)
-			break;
-		if (copy_to_user(up, &kbrep, sizeof(struct kbd_repeat)))
-			ret = -EFAULT;
-=======
 		if (arg < GPFIRST || arg > GPLAST)
 			return -EINVAL;
 
@@ -560,55 +370,10 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
 			return ret;
 		if (copy_to_user(up, &kbrep, sizeof(struct kbd_repeat)))
 			return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	case KDSETMODE:
-<<<<<<< HEAD
-		/*
-		 * currently, setting the mode from KD_TEXT to KD_GRAPHICS
-		 * doesn't do a whole lot. i'm not sure if it should do any
-		 * restoration of modes or what...
-		 *
-		 * XXX It should at least call into the driver, fbdev's definitely
-		 * need to restore their engine state. --BenH
-		 */
-		if (!perm)
-			return -EPERM;
-		switch (arg) {
-		case KD_GRAPHICS:
-			break;
-		case KD_TEXT0:
-		case KD_TEXT1:
-			arg = KD_TEXT;
-		case KD_TEXT:
-			break;
-		default:
-			ret = -EINVAL;
-			goto out;
-		}
-		/* FIXME: this needs the console lock extending */
-		if (vc->vc_mode == (unsigned char) arg)
-			break;
-		vc->vc_mode = (unsigned char) arg;
-		if (console != fg_console)
-			break;
-		/*
-		 * explicitly blank/unblank the screen if switching modes
-		 */
-		console_lock();
-		if (arg == KD_TEXT)
-			do_unblank_screen(1);
-		else
-			do_blank_screen(1);
-		console_unlock();
-		break;
-
-	case KDGETMODE:
-		uival = vc->vc_mode;
-		goto setint;
-=======
 		if (!perm)
 			return -EPERM;
 
@@ -619,7 +384,6 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
 
 	case KDGETMODE:
 		return put_user(vc->vc_mode, (int __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case KDMAPDISP:
 	case KDUNMAPDISP:
@@ -627,27 +391,12 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
 		 * these work like a combination of mmap and KDENABIO.
 		 * this could be easily finished.
 		 */
-<<<<<<< HEAD
-		ret = -EINVAL;
-		break;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case KDSKBMODE:
 		if (!perm)
 			return -EPERM;
 		ret = vt_do_kdskbmode(console, arg);
-<<<<<<< HEAD
-		if (ret == 0)
-			tty_ldisc_flush(tty);
-		break;
-
-	case KDGKBMODE:
-		uival = vt_do_kdgkbmode(console);
-		ret = put_user(uival, (int __user *)arg);
-		break;
-=======
 		if (ret)
 			return ret;
 		tty_ldisc_flush(tty);
@@ -655,47 +404,20 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
 
 	case KDGKBMODE:
 		return put_user(vt_do_kdgkbmode(console), (int __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* this could be folded into KDSKBMODE, but for compatibility
 	   reasons it is not so easy to fold KDGKBMETA into KDGKBMODE */
 	case KDSKBMETA:
-<<<<<<< HEAD
-		ret = vt_do_kdskbmeta(console, arg);
-		break;
-
-	case KDGKBMETA:
-		/* FIXME: should review whether this is worth locking */
-		uival = vt_do_kdgkbmeta(console);
-	setint:
-		ret = put_user(uival, (int __user *)arg);
-		break;
-=======
 		return vt_do_kdskbmeta(console, arg);
 
 	case KDGKBMETA:
 		/* FIXME: should review whether this is worth locking */
 		return put_user(vt_do_kdgkbmeta(console), (int __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case KDGETKEYCODE:
 	case KDSETKEYCODE:
 		if(!capable(CAP_SYS_TTY_CONFIG))
 			perm = 0;
-<<<<<<< HEAD
-		ret = vt_do_kbkeycode_ioctl(cmd, up, perm);
-		break;
-
-	case KDGKBENT:
-	case KDSKBENT:
-		ret = vt_do_kdsk_ioctl(cmd, up, perm, console);
-		break;
-
-	case KDGKBSENT:
-	case KDSKBSENT:
-		ret = vt_do_kdgkb_ioctl(cmd, up, perm);
-		break;
-=======
 		return vt_do_kbkeycode_ioctl(cmd, up, perm);
 
 	case KDGKBENT:
@@ -705,7 +427,6 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
 	case KDGKBSENT:
 	case KDSKBSENT:
 		return vt_do_kdgkb_ioctl(cmd, up, perm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Diacritical processing. Handled in keyboard.c as it has
 	   to operate on the keyboard locks and structures */
@@ -713,12 +434,7 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
 	case KDGKBDIACRUC:
 	case KDSKBDIACR:
 	case KDSKBDIACRUC:
-<<<<<<< HEAD
-		ret = vt_do_diacrit(cmd, up, perm);
-		break;
-=======
 		return vt_do_diacrit(cmd, up, perm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* the ioctls below read/set the flags usually shown in the leds */
 	/* don't use them - they will go away without warning */
@@ -726,12 +442,7 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
 	case KDSKBLED:
 	case KDGETLED:
 	case KDSETLED:
-<<<<<<< HEAD
-		ret = vt_do_kdskled(console, cmd, arg, perm);
-		break;
-=======
 		return vt_do_kdskled(console, cmd, arg, perm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * A process can indicate its willingness to accept signals
@@ -741,23 +452,6 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
 	 * See also the kbrequest field of inittab(5).
 	 */
 	case KDSIGACCEPT:
-<<<<<<< HEAD
-	{
-		if (!perm || !capable(CAP_KILL))
-			return -EPERM;
-		if (!valid_signal(arg) || arg < 1 || arg == SIGKILL)
-			ret = -EINVAL;
-		else {
-			spin_lock_irq(&vt_spawn_con.lock);
-			put_pid(vt_spawn_con.pid);
-			vt_spawn_con.pid = get_pid(task_pid(current));
-			vt_spawn_con.sig = arg;
-			spin_unlock_irq(&vt_spawn_con.lock);
-		}
-		break;
-	}
-
-=======
 		if (!perm || !capable(CAP_KILL))
 			return -EPERM;
 		if (!valid_signal(arg) || arg < 1 || arg == SIGKILL)
@@ -1065,29 +759,17 @@ int vt_ioctl(struct tty_struct *tty,
 	switch (cmd) {
 	case TIOCLINUX:
 		return tioclinux(tty, arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case VT_SETMODE:
 	{
 		struct vt_mode tmp;
 
 		if (!perm)
 			return -EPERM;
-<<<<<<< HEAD
-		if (copy_from_user(&tmp, up, sizeof(struct vt_mode))) {
-			ret = -EFAULT;
-			goto out;
-		}
-		if (tmp.mode != VT_AUTO && tmp.mode != VT_PROCESS) {
-			ret = -EINVAL;
-			goto out;
-		}
-=======
 		if (copy_from_user(&tmp, up, sizeof(struct vt_mode)))
 			return -EFAULT;
 		if (tmp.mode != VT_AUTO && tmp.mode != VT_PROCESS)
 			return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		console_lock();
 		vc->vt_mode = tmp;
 		/* the frsig is ignored, so we set it to 0 */
@@ -1111,11 +793,7 @@ int vt_ioctl(struct tty_struct *tty,
 
 		rc = copy_to_user(up, &tmp, sizeof(struct vt_mode));
 		if (rc)
-<<<<<<< HEAD
-			ret = -EFAULT;
-=======
 			return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -1129,20 +807,6 @@ int vt_ioctl(struct tty_struct *tty,
 		struct vt_stat __user *vtstat = up;
 		unsigned short state, mask;
 
-<<<<<<< HEAD
-		/* Review: FIXME: Console lock ? */
-		if (put_user(fg_console + 1, &vtstat->v_active))
-			ret = -EFAULT;
-		else {
-			state = 1;	/* /dev/tty0 is always open */
-			for (i = 0, mask = 2; i < MAX_NR_CONSOLES && mask;
-							++i, mask <<= 1)
-				if (VT_IS_IN_USE(i))
-					state |= mask;
-			ret = put_user(state, &vtstat->v_state);
-		}
-		break;
-=======
 		if (put_user(fg_console + 1, &vtstat->v_active))
 			return -EFAULT;
 
@@ -1154,21 +818,12 @@ int vt_ioctl(struct tty_struct *tty,
 				state |= mask;
 		console_unlock();
 		return put_user(state, &vtstat->v_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Returns the first available (non-opened) console.
 	 */
 	case VT_OPENQRY:
-<<<<<<< HEAD
-		/* FIXME: locking ? - but then this is a stupid API */
-		for (i = 0; i < MAX_NR_CONSOLES; ++i)
-			if (! VT_IS_IN_USE(i))
-				break;
-		uival = i < MAX_NR_CONSOLES ? (i+1) : -1;
-		goto setint;		 
-=======
 		console_lock(); /* required by vt_in_use() */
 		for (i = 0; i < MAX_NR_CONSOLES; ++i)
 			if (!vt_in_use(i))
@@ -1176,7 +831,6 @@ int vt_ioctl(struct tty_struct *tty,
 		console_unlock();
 		i = i < MAX_NR_CONSOLES ? (i+1) : -1;
 		return put_user(i, (int __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * ioctl(fd, VT_ACTIVATE, num) will cause us to switch to vt # num,
@@ -1187,58 +841,6 @@ int vt_ioctl(struct tty_struct *tty,
 		if (!perm)
 			return -EPERM;
 		if (arg == 0 || arg > MAX_NR_CONSOLES)
-<<<<<<< HEAD
-			ret =  -ENXIO;
-		else {
-			arg--;
-			console_lock();
-			ret = vc_allocate(arg);
-			console_unlock();
-			if (ret)
-				break;
-			set_console(arg);
-		}
-		break;
-
-	case VT_SETACTIVATE:
-	{
-		struct vt_setactivate vsa;
-
-		if (!perm)
-			return -EPERM;
-
-		if (copy_from_user(&vsa, (struct vt_setactivate __user *)arg,
-					sizeof(struct vt_setactivate))) {
-			ret = -EFAULT;
-			goto out;
-		}
-		if (vsa.console == 0 || vsa.console > MAX_NR_CONSOLES)
-			ret = -ENXIO;
-		else {
-			vsa.console--;
-			console_lock();
-			ret = vc_allocate(vsa.console);
-			if (ret == 0) {
-				struct vc_data *nvc;
-				/* This is safe providing we don't drop the
-				   console sem between vc_allocate and
-				   finishing referencing nvc */
-				nvc = vc_cons[vsa.console].d;
-				nvc->vt_mode = vsa.mode;
-				nvc->vt_mode.frsig = 0;
-				put_pid(nvc->vt_pid);
-				nvc->vt_pid = get_pid(task_pid(current));
-			}
-			console_unlock();
-			if (ret)
-				break;
-			/* Commence switch and lock */
-			/* Review set_console locks */
-			set_console(vsa.console);
-		}
-		break;
-	}
-=======
 			return -ENXIO;
 
 		arg--;
@@ -1256,7 +858,6 @@ int vt_ioctl(struct tty_struct *tty,
 			return -EPERM;
 
 		return vt_setactivate(up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * wait until the specified VT has been activated
@@ -1265,15 +866,8 @@ int vt_ioctl(struct tty_struct *tty,
 		if (!perm)
 			return -EPERM;
 		if (arg == 0 || arg > MAX_NR_CONSOLES)
-<<<<<<< HEAD
-			ret = -ENXIO;
-		else
-			ret = vt_waitactive(arg);
-		break;
-=======
 			return -ENXIO;
 		return vt_waitactive(arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If a vt is under process control, the kernel will not switch to it
@@ -1290,92 +884,16 @@ int vt_ioctl(struct tty_struct *tty,
 			return -EPERM;
 
 		console_lock();
-<<<<<<< HEAD
-		if (vc->vt_mode.mode != VT_PROCESS) {
-			console_unlock();
-			ret = -EINVAL;
-			break;
-		}
-		/*
-		 * Switching-from response
-		 */
-		if (vc->vt_newvt >= 0) {
-			if (arg == 0)
-				/*
-				 * Switch disallowed, so forget we were trying
-				 * to do it.
-				 */
-				vc->vt_newvt = -1;
-
-			else {
-				/*
-				 * The current vt has been released, so
-				 * complete the switch.
-				 */
-				int newvt;
-				newvt = vc->vt_newvt;
-				vc->vt_newvt = -1;
-				ret = vc_allocate(newvt);
-				if (ret) {
-					console_unlock();
-					break;
-				}
-				/*
-				 * When we actually do the console switch,
-				 * make sure we are atomic with respect to
-				 * other console switches..
-				 */
-				complete_change_console(vc_cons[newvt].d);
-			}
-		} else {
-			/*
-			 * Switched-to response
-			 */
-			/*
-			 * If it's just an ACK, ignore it
-			 */
-			if (arg != VT_ACKACQ)
-				ret = -EINVAL;
-		}
-		console_unlock();
-		break;
-=======
 		ret = vt_reldisp(vc, arg);
 		console_unlock();
 
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	 /*
 	  * Disallocate memory associated to VT (but leave VT1)
 	  */
 	 case VT_DISALLOCATE:
-<<<<<<< HEAD
-		if (arg > MAX_NR_CONSOLES) {
-			ret = -ENXIO;
-			break;
-		}
-		if (arg == 0) {
-		    /* deallocate all unused consoles, but leave 0 */
-			console_lock();
-			for (i=1; i<MAX_NR_CONSOLES; i++)
-				if (! VT_BUSY(i))
-					vc_deallocate(i);
-			console_unlock();
-		} else {
-			/* deallocate a single console, if possible */
-			arg--;
-			if (VT_BUSY(arg))
-				ret = -EBUSY;
-			else if (arg) {			      /* leave 0 */
-				console_lock();
-				vc_deallocate(arg);
-				console_unlock();
-			}
-		}
-		break;
-=======
 		if (arg > MAX_NR_CONSOLES)
 			return -ENXIO;
 
@@ -1386,39 +904,17 @@ int vt_ioctl(struct tty_struct *tty,
 
 		arg = array_index_nospec(arg - 1, MAX_NR_CONSOLES);
 		return vt_disallocate(arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case VT_RESIZE:
 	{
 		struct vt_sizes __user *vtsizes = up;
 		struct vc_data *vc;
-<<<<<<< HEAD
-
-		ushort ll,cc;
-=======
 		ushort ll,cc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!perm)
 			return -EPERM;
 		if (get_user(ll, &vtsizes->v_rows) ||
 		    get_user(cc, &vtsizes->v_cols))
-<<<<<<< HEAD
-			ret = -EFAULT;
-		else {
-			console_lock();
-			for (i = 0; i < MAX_NR_CONSOLES; i++) {
-				vc = vc_cons[i].d;
-
-				if (vc) {
-					vc->vc_resize_user = 1;
-					/* FIXME: review v tty lock */
-					vc_resize(vc_cons[i].d, cc, ll);
-				}
-			}
-			console_unlock();
-		}
-=======
 			return -EFAULT;
 
 		console_lock();
@@ -1431,236 +927,23 @@ int vt_ioctl(struct tty_struct *tty,
 			}
 		}
 		console_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	case VT_RESIZEX:
-<<<<<<< HEAD
-	{
-		struct vt_consize __user *vtconsize = up;
-		ushort ll,cc,vlin,clin,vcol,ccol;
-		if (!perm)
-			return -EPERM;
-		if (!access_ok(VERIFY_READ, vtconsize,
-				sizeof(struct vt_consize))) {
-			ret = -EFAULT;
-			break;
-		}
-		/* FIXME: Should check the copies properly */
-		__get_user(ll, &vtconsize->v_rows);
-		__get_user(cc, &vtconsize->v_cols);
-		__get_user(vlin, &vtconsize->v_vlin);
-		__get_user(clin, &vtconsize->v_clin);
-		__get_user(vcol, &vtconsize->v_vcol);
-		__get_user(ccol, &vtconsize->v_ccol);
-		vlin = vlin ? vlin : vc->vc_scan_lines;
-		if (clin) {
-			if (ll) {
-				if (ll != vlin/clin) {
-					/* Parameters don't add up */
-					ret = -EINVAL;
-					break;
-				}
-			} else 
-				ll = vlin/clin;
-		}
-		if (vcol && ccol) {
-			if (cc) {
-				if (cc != vcol/ccol) {
-					ret = -EINVAL;
-					break;
-				}
-			} else
-				cc = vcol/ccol;
-		}
-
-		if (clin > 32) {
-			ret =  -EINVAL;
-			break;
-		}
-		    
-		for (i = 0; i < MAX_NR_CONSOLES; i++) {
-			if (!vc_cons[i].d)
-				continue;
-			console_lock();
-			if (vlin)
-				vc_cons[i].d->vc_scan_lines = vlin;
-			if (clin)
-				vc_cons[i].d->vc_font.height = clin;
-			vc_cons[i].d->vc_resize_user = 1;
-			vc_resize(vc_cons[i].d, cc, ll);
-			console_unlock();
-		}
-		break;
-	}
-
-	case PIO_FONT: {
-		if (!perm)
-			return -EPERM;
-		op.op = KD_FONT_OP_SET;
-		op.flags = KD_FONT_FLAG_OLD | KD_FONT_FLAG_DONT_RECALC;	/* Compatibility */
-		op.width = 8;
-		op.height = 0;
-		op.charcount = 256;
-		op.data = up;
-		ret = con_font_op(vc_cons[fg_console].d, &op);
-		break;
-	}
-
-	case GIO_FONT: {
-		op.op = KD_FONT_OP_GET;
-		op.flags = KD_FONT_FLAG_OLD;
-		op.width = 8;
-		op.height = 32;
-		op.charcount = 256;
-		op.data = up;
-		ret = con_font_op(vc_cons[fg_console].d, &op);
-		break;
-	}
-
-	case PIO_CMAP:
-                if (!perm)
-			ret = -EPERM;
-		else
-	                ret = con_set_cmap(up);
-		break;
-
-	case GIO_CMAP:
-                ret = con_get_cmap(up);
-		break;
-
-	case PIO_FONTX:
-	case GIO_FONTX:
-		ret = do_fontx_ioctl(cmd, up, perm, &op);
-		break;
-
-	case PIO_FONTRESET:
-	{
-		if (!perm)
-			return -EPERM;
-
-#ifdef BROKEN_GRAPHICS_PROGRAMS
-		/* With BROKEN_GRAPHICS_PROGRAMS defined, the default
-		   font is not saved. */
-		ret = -ENOSYS;
-		break;
-#else
-		{
-		op.op = KD_FONT_OP_SET_DEFAULT;
-		op.data = NULL;
-		ret = con_font_op(vc_cons[fg_console].d, &op);
-		if (ret)
-			break;
-		con_set_default_unimap(vc_cons[fg_console].d);
-		break;
-		}
-#endif
-	}
-
-	case KDFONTOP: {
-		if (copy_from_user(&op, up, sizeof(op))) {
-			ret = -EFAULT;
-			break;
-		}
-		if (!perm && op.op != KD_FONT_OP_GET)
-			return -EPERM;
-		ret = con_font_op(vc, &op);
-		if (ret)
-			break;
-		if (copy_to_user(up, &op, sizeof(op)))
-			ret = -EFAULT;
-		break;
-	}
-
-	case PIO_SCRNMAP:
-		if (!perm)
-			ret = -EPERM;
-		else {
-			tty_lock();
-			ret = con_set_trans_old(up);
-			tty_unlock();
-		}
-		break;
-
-	case GIO_SCRNMAP:
-		tty_lock();
-		ret = con_get_trans_old(up);
-		tty_unlock();
-		break;
-
-	case PIO_UNISCRNMAP:
-		if (!perm)
-			ret = -EPERM;
-		else {
-			tty_lock();
-			ret = con_set_trans_new(up);
-			tty_unlock();
-		}
-		break;
-
-	case GIO_UNISCRNMAP:
-		tty_lock();
-		ret = con_get_trans_new(up);
-		tty_unlock();
-		break;
-
-	case PIO_UNIMAPCLR:
-	      { struct unimapinit ui;
-		if (!perm)
-			return -EPERM;
-		ret = copy_from_user(&ui, up, sizeof(struct unimapinit));
-		if (ret)
-			ret = -EFAULT;
-		else {
-			tty_lock();
-			con_clear_unimap(vc, &ui);
-			tty_unlock();
-		}
-		break;
-	      }
-
-	case PIO_UNIMAP:
-	case GIO_UNIMAP:
-		tty_lock();
-		ret = do_unimap_ioctl(cmd, up, perm, vc);
-		tty_unlock();
-		break;
-=======
 		if (!perm)
 			return -EPERM;
 
 		return vt_resizex(vc, up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case VT_LOCKSWITCH:
 		if (!capable(CAP_SYS_TTY_CONFIG))
 			return -EPERM;
-<<<<<<< HEAD
-		vt_dont_switch = 1;
-=======
 		vt_dont_switch = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case VT_UNLOCKSWITCH:
 		if (!capable(CAP_SYS_TTY_CONFIG))
 			return -EPERM;
-<<<<<<< HEAD
-		vt_dont_switch = 0;
-		break;
-	case VT_GETHIFONTMASK:
-		ret = put_user(vc->vc_hi_font_mask,
-					(unsigned short __user *)arg);
-		break;
-	case VT_WAITEVENT:
-		ret = vt_event_wait_ioctl((struct vt_event __user *)arg);
-		break;
-	default:
-		ret = -ENOIOCTLCMD;
-	}
-out:
-	return ret;
-=======
 		vt_dont_switch = false;
 		break;
 	case VT_GETHIFONTMASK:
@@ -1673,7 +956,6 @@ out:
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void reset_vc(struct vc_data *vc)
@@ -1688,12 +970,7 @@ void reset_vc(struct vc_data *vc)
 	put_pid(vc->vt_pid);
 	vc->vt_pid = NULL;
 	vc->vt_newvt = -1;
-<<<<<<< HEAD
-	if (!in_interrupt())    /* Via keyboard.c:SAK() - akpm */
-		reset_palette(vc);
-=======
 	reset_palette(vc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void vc_SAK(struct work_struct *work)
@@ -1721,55 +998,6 @@ void vc_SAK(struct work_struct *work)
 
 #ifdef CONFIG_COMPAT
 
-<<<<<<< HEAD
-struct compat_consolefontdesc {
-	unsigned short charcount;       /* characters in font (256 or 512) */
-	unsigned short charheight;      /* scan lines per character (1-32) */
-	compat_caddr_t chardata;	/* font data in expanded form */
-};
-
-static inline int
-compat_fontx_ioctl(int cmd, struct compat_consolefontdesc __user *user_cfd,
-			 int perm, struct console_font_op *op)
-{
-	struct compat_consolefontdesc cfdarg;
-	int i;
-
-	if (copy_from_user(&cfdarg, user_cfd, sizeof(struct compat_consolefontdesc)))
-		return -EFAULT;
-
-	switch (cmd) {
-	case PIO_FONTX:
-		if (!perm)
-			return -EPERM;
-		op->op = KD_FONT_OP_SET;
-		op->flags = KD_FONT_FLAG_OLD;
-		op->width = 8;
-		op->height = cfdarg.charheight;
-		op->charcount = cfdarg.charcount;
-		op->data = compat_ptr(cfdarg.chardata);
-		return con_font_op(vc_cons[fg_console].d, op);
-	case GIO_FONTX:
-		op->op = KD_FONT_OP_GET;
-		op->flags = KD_FONT_FLAG_OLD;
-		op->width = 8;
-		op->height = cfdarg.charheight;
-		op->charcount = cfdarg.charcount;
-		op->data = compat_ptr(cfdarg.chardata);
-		i = con_font_op(vc_cons[fg_console].d, op);
-		if (i)
-			return i;
-		cfdarg.charheight = op->height;
-		cfdarg.charcount = op->charcount;
-		if (copy_to_user(user_cfd, &cfdarg, sizeof(struct compat_consolefontdesc)))
-			return -EFAULT;
-		return 0;
-	}
-	return -EINVAL;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct compat_console_font_op {
 	compat_uint_t op;        /* operation code KD_FONT_OP_* */
 	compat_uint_t flags;     /* KD_FONT_FLAG_* */
@@ -1813,13 +1041,6 @@ compat_unimap_ioctl(unsigned int cmd, struct compat_unimapdesc __user *user_ud,
 	if (copy_from_user(&tmp, user_ud, sizeof tmp))
 		return -EFAULT;
 	tmp_entries = compat_ptr(tmp.entries);
-<<<<<<< HEAD
-	if (tmp_entries)
-		if (!access_ok(VERIFY_WRITE, tmp_entries,
-				tmp.entry_ct*sizeof(struct unipair)))
-			return -EFAULT;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case PIO_UNIMAP:
 		if (!perm)
@@ -1838,22 +1059,8 @@ long vt_compat_ioctl(struct tty_struct *tty,
 {
 	struct vc_data *vc = tty->driver_data;
 	struct console_font_op op;	/* used in multiple places here */
-<<<<<<< HEAD
-	unsigned int console;
-	void __user *up = (void __user *)arg;
-	int perm;
-	int ret = 0;
-
-	console = vc->vc_num;
-
-	if (!vc_cons_allocated(console)) { 	/* impossible? */
-		ret = -ENOIOCTLCMD;
-		goto out;
-	}
-=======
 	void __user *up = compat_ptr(arg);
 	int perm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * To have permissions to do most of the vt ioctls, we either have
@@ -1867,23 +1074,6 @@ long vt_compat_ioctl(struct tty_struct *tty,
 	/*
 	 * these need special handlers for incompatible data structures
 	 */
-<<<<<<< HEAD
-	case PIO_FONTX:
-	case GIO_FONTX:
-		ret = compat_fontx_ioctl(cmd, up, perm, &op);
-		break;
-
-	case KDFONTOP:
-		ret = compat_kdfontop_ioctl(up, perm, &op, vc);
-		break;
-
-	case PIO_UNIMAP:
-	case GIO_UNIMAP:
-		tty_lock();
-		ret = compat_unimap_ioctl(cmd, up, perm, vc);
-		tty_unlock();
-		break;
-=======
 
 	case KDFONTOP:
 		return compat_kdfontop_ioctl(up, perm, &op, vc);
@@ -1891,7 +1081,6 @@ long vt_compat_ioctl(struct tty_struct *tty,
 	case PIO_UNIMAP:
 	case GIO_UNIMAP:
 		return compat_unimap_ioctl(cmd, up, perm, vc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * all these treat 'arg' as an integer
@@ -1916,30 +1105,15 @@ long vt_compat_ioctl(struct tty_struct *tty,
 	case VT_DISALLOCATE:
 	case VT_RESIZE:
 	case VT_RESIZEX:
-<<<<<<< HEAD
-		goto fallback;
-=======
 		return vt_ioctl(tty, cmd, arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * the rest has a compatible data structure behind arg,
 	 * but we have to convert it to a proper 64 bit pointer.
 	 */
 	default:
-<<<<<<< HEAD
-		arg = (unsigned long)compat_ptr(arg);
-		goto fallback;
-	}
-out:
-	return ret;
-
-fallback:
-	return vt_ioctl(tty, cmd, arg);
-=======
 		return vt_ioctl(tty, cmd, (unsigned long)up);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 

@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-#ifndef __SUNGEM_PHY_H__
-#define __SUNGEM_PHY_H__
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __SUNGEM_PHY_H__
 #define __SUNGEM_PHY_H__
 
 #include <linux/types.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mii_phy;
 
 /* Operations supported by any kind of PHY */

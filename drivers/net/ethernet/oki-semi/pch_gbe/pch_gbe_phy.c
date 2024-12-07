@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1999 - 2010 Intel Corporation.
  * Copyright (C) 2010 OKI SEMICONDUCTOR Co., LTD.
  *
  * This code was derived from the Intel e1000e Linux driver.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "pch_gbe.h"
@@ -81,8 +62,6 @@
 #define MII_SR_100X_FD_CAPS      0x4000	/* 100X  Full Duplex Capable */
 #define MII_SR_100T4_CAPS        0x8000	/* 100T4 Capable */
 
-<<<<<<< HEAD
-=======
 /* AR8031 PHY Debug Registers */
 #define PHY_AR803X_ID           0x00001374
 #define PHY_AR8031_DBG_OFF      0x1D
@@ -92,7 +71,6 @@
 #define PHY_AR8031_SERDES_TX_CLK_DLY   0x0100 /* TX clock delay of 2.0ns */
 #define PHY_AR8031_PS_HIB_EN           0x8000 /* Hibernate enable */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Phy Id Register (word 2) */
 #define PHY_REVISION_MASK        0x000F
 
@@ -116,10 +94,7 @@
  */
 s32 pch_gbe_phy_get_id(struct pch_gbe_hw *hw)
 {
-<<<<<<< HEAD
-=======
 	struct pch_gbe_adapter *adapter = pch_gbe_hw_to_adapter(hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pch_gbe_phy_info *phy = &hw->phy;
 	s32 ret;
 	u16 phy_id1;
@@ -138,14 +113,9 @@ s32 pch_gbe_phy_get_id(struct pch_gbe_hw *hw)
 	phy->id = (u32)phy_id1;
 	phy->id = ((phy->id << 6) | ((phy_id2 & 0xFC00) >> 10));
 	phy->revision = (u32) (phy_id2 & 0x000F);
-<<<<<<< HEAD
-	pr_debug("phy->id : 0x%08x  phy->revision : 0x%08x\n",
-		 phy->id, phy->revision);
-=======
 	netdev_dbg(adapter->netdev,
 		   "phy->id : 0x%08x  phy->revision : 0x%08x\n",
 		   phy->id, phy->revision);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -163,14 +133,10 @@ s32 pch_gbe_phy_read_reg_miic(struct pch_gbe_hw *hw, u32 offset, u16 *data)
 	struct pch_gbe_phy_info *phy = &hw->phy;
 
 	if (offset > PHY_MAX_REG_ADDRESS) {
-<<<<<<< HEAD
-		pr_err("PHY Address %d is out of range\n", offset);
-=======
 		struct pch_gbe_adapter *adapter = pch_gbe_hw_to_adapter(hw);
 
 		netdev_err(adapter->netdev, "PHY Address %d is out of range\n",
 			   offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	*data = pch_gbe_mac_ctrl_miim(hw, phy->addr, PCH_GBE_HAL_MIIM_READ,
@@ -192,14 +158,10 @@ s32 pch_gbe_phy_write_reg_miic(struct pch_gbe_hw *hw, u32 offset, u16 data)
 	struct pch_gbe_phy_info *phy = &hw->phy;
 
 	if (offset > PHY_MAX_REG_ADDRESS) {
-<<<<<<< HEAD
-		pr_err("PHY Address %d is out of range\n", offset);
-=======
 		struct pch_gbe_adapter *adapter = pch_gbe_hw_to_adapter(hw);
 
 		netdev_err(adapter->netdev, "PHY Address %d is out of range\n",
 			   offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	pch_gbe_mac_ctrl_miim(hw, phy->addr, PCH_GBE_HAL_MIIM_WRITE,
@@ -211,11 +173,7 @@ s32 pch_gbe_phy_write_reg_miic(struct pch_gbe_hw *hw, u32 offset, u16 data)
  * pch_gbe_phy_sw_reset - PHY software reset
  * @hw:	            Pointer to the HW structure
  */
-<<<<<<< HEAD
-void pch_gbe_phy_sw_reset(struct pch_gbe_hw *hw)
-=======
 static void pch_gbe_phy_sw_reset(struct pch_gbe_hw *hw)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 phy_ctrl;
 
@@ -282,18 +240,12 @@ void pch_gbe_phy_power_down(struct pch_gbe_hw *hw)
  * pch_gbe_phy_set_rgmii - RGMII interface setting
  * @hw:	            Pointer to the HW structure
  */
-<<<<<<< HEAD
-inline void pch_gbe_phy_set_rgmii(struct pch_gbe_hw *hw)
-=======
 void pch_gbe_phy_set_rgmii(struct pch_gbe_hw *hw)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pch_gbe_phy_sw_reset(hw);
 }
 
 /**
-<<<<<<< HEAD
-=======
  * pch_gbe_phy_tx_clk_delay - Setup TX clock delay via the PHY
  * @hw:	            Pointer to the HW structure
  * Returns
@@ -339,29 +291,17 @@ static int pch_gbe_phy_tx_clk_delay(struct pch_gbe_hw *hw)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pch_gbe_phy_init_setting - PHY initial setting
  * @hw:	            Pointer to the HW structure
  */
 void pch_gbe_phy_init_setting(struct pch_gbe_hw *hw)
 {
-<<<<<<< HEAD
-	struct pch_gbe_adapter *adapter;
-=======
 	struct pch_gbe_adapter *adapter = pch_gbe_hw_to_adapter(hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ethtool_cmd     cmd = { .cmd = ETHTOOL_GSET };
 	int ret;
 	u16 mii_reg;
 
-<<<<<<< HEAD
-	adapter = container_of(hw, struct pch_gbe_adapter, hw);
-	ret = mii_ethtool_gset(&adapter->mii, &cmd);
-	if (ret)
-		pr_err("Error: mii_ethtool_gset\n");
-=======
 	mii_ethtool_gset(&adapter->mii, &cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ethtool_cmd_speed_set(&cmd, hw->mac.link_speed);
 	cmd.duplex = hw->mac.link_duplex;
@@ -370,11 +310,7 @@ void pch_gbe_phy_init_setting(struct pch_gbe_hw *hw)
 	pch_gbe_phy_write_reg_miic(hw, MII_BMCR, BMCR_RESET);
 	ret = mii_ethtool_sset(&adapter->mii, &cmd);
 	if (ret)
-<<<<<<< HEAD
-		pr_err("Error: mii_ethtool_sset\n");
-=======
 		netdev_err(adapter->netdev, "Error: mii_ethtool_sset\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pch_gbe_phy_sw_reset(hw);
 
@@ -382,8 +318,6 @@ void pch_gbe_phy_init_setting(struct pch_gbe_hw *hw)
 	mii_reg |= PHYSP_CTRL_ASSERT_CRS_TX;
 	pch_gbe_phy_write_reg_miic(hw, PHY_PHYSP_CONTROL, mii_reg);
 
-<<<<<<< HEAD
-=======
 	/* Setup a TX clock delay on certain platforms */
 	if (adapter->pdata && adapter->pdata->phy_tx_clk_delay)
 		pch_gbe_phy_tx_clk_delay(hw);
@@ -427,5 +361,4 @@ int pch_gbe_phy_disable_hibernate(struct pch_gbe_hw *hw)
 		netdev_err(adapter->netdev,
 			   "Could not disable PHY hibernation\n");
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

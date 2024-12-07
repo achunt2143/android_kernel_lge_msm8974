@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/sysv/file.c
  *
@@ -25,23 +22,6 @@
  */
 const struct file_operations sysv_file_operations = {
 	.llseek		= generic_file_llseek,
-<<<<<<< HEAD
-	.read		= do_sync_read,
-	.aio_read	= generic_file_aio_read,
-	.write		= do_sync_write,
-	.aio_write	= generic_file_aio_write,
-	.mmap		= generic_file_mmap,
-	.fsync		= generic_file_fsync,
-	.splice_read	= generic_file_splice_read,
-};
-
-static int sysv_setattr(struct dentry *dentry, struct iattr *attr)
-{
-	struct inode *inode = dentry->d_inode;
-	int error;
-
-	error = inode_change_ok(inode, attr);
-=======
 	.read_iter	= generic_file_read_iter,
 	.write_iter	= generic_file_write_iter,
 	.mmap		= generic_file_mmap,
@@ -56,20 +36,11 @@ static int sysv_setattr(struct mnt_idmap *idmap,
 	int error;
 
 	error = setattr_prepare(&nop_mnt_idmap, dentry, attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
 	if ((attr->ia_valid & ATTR_SIZE) &&
 	    attr->ia_size != i_size_read(inode)) {
-<<<<<<< HEAD
-		error = vmtruncate(inode, attr->ia_size);
-		if (error)
-			return error;
-	}
-
-	setattr_copy(inode, attr);
-=======
 		error = inode_newsize_ok(inode, attr->ia_size);
 		if (error)
 			return error;
@@ -78,16 +49,11 @@ static int sysv_setattr(struct mnt_idmap *idmap,
 	}
 
 	setattr_copy(&nop_mnt_idmap, inode, attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 	return 0;
 }
 
 const struct inode_operations sysv_file_inode_operations = {
-<<<<<<< HEAD
-	.truncate	= sysv_truncate,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setattr	= sysv_setattr,
 	.getattr	= sysv_getattr,
 };

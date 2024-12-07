@@ -5,10 +5,7 @@ Contact:	"Corentin Chary" <corentincj@iksaif.net>
 Description:
 		Change CPU clock configuration (write-only).
 		There are three available clock configuration:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    * 0 -> Super Performance Mode
 		    * 1 -> High Performance Mode
 		    * 2 -> Power Saving Mode
@@ -33,8 +30,6 @@ KernelVersion:	2.6.39
 Contact:	"Corentin Chary" <corentincj@iksaif.net>
 Description:
 		Control the card touchpad. 1 means on, 0 means off.
-<<<<<<< HEAD
-=======
 
 What:		/sys/devices/platform/<platform>/lid_resume
 Date:		May 2012
@@ -191,4 +186,3 @@ Contact:	"Luke Jones" <luke@ljones.dev>
 Description:
 		Set the target temperature limit of the Nvidia dGPU:
 			* min=75, max=87
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

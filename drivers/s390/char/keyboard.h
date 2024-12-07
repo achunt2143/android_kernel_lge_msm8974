@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-/*
- *  drivers/s390/char/keyboard.h
- *    ebcdic keycode functions for s390 console drivers
- *
- *    Copyright (C) 2003 IBM Deutschland Entwicklung GmbH, IBM Corporation
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *    ebcdic keycode functions for s390 console drivers
  *
  *    Copyright IBM Corp. 2003
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Martin Schwidefsky (schwidefsky@de.ibm.com),
  */
 
@@ -22,8 +14,6 @@
 
 struct kbd_data;
 
-<<<<<<< HEAD
-=======
 extern int ebc_funcbufsize, ebc_funcbufleft;
 extern char *ebc_func_table[MAX_NR_FUNC];
 extern char ebc_func_buf[];
@@ -35,7 +25,6 @@ extern unsigned int ebc_accent_table_size;
 extern unsigned short *ebc_key_maps[MAX_NR_KEYMAPS];
 extern unsigned short ebc_plain_map[NR_KEYS];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef void (fn_handler_fn)(struct kbd_data *);
 
 /*
@@ -43,11 +32,7 @@ typedef void (fn_handler_fn)(struct kbd_data *);
  */
 
 struct kbd_data {
-<<<<<<< HEAD
-	struct tty_struct *tty;
-=======
 	struct tty_port *port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short **key_maps;
 	char **func_table;
 	fn_handler_fn **fn_handler;
@@ -68,20 +53,6 @@ int kbd_ioctl(struct kbd_data *, unsigned int, unsigned long);
  * Helper Functions.
  */
 static inline void
-<<<<<<< HEAD
-kbd_put_queue(struct tty_struct *tty, int ch)
-{
-	tty_insert_flip_char(tty, ch, 0);
-	tty_schedule_flip(tty);
-}
-
-static inline void
-kbd_puts_queue(struct tty_struct *tty, char *cp)
-{
-	while (*cp)
-		tty_insert_flip_char(tty, *cp++, 0);
-	tty_schedule_flip(tty);
-=======
 kbd_put_queue(struct tty_port *port, int ch)
 {
 	tty_insert_flip_char(port, ch, 0);
@@ -94,5 +65,4 @@ kbd_puts_queue(struct tty_port *port, char *cp)
 	while (*cp)
 		tty_insert_flip_char(port, *cp++, 0);
 	tty_flip_buffer_push(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -12,10 +9,7 @@
 #include <linux/jiffies.h>
 #include <linux/timer.h>
 #include <linux/uaccess.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/loadavg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/auxio.h>
 
@@ -38,41 +32,25 @@ static inline void led_toggle(void)
 }
 
 static struct timer_list led_blink_timer;
-<<<<<<< HEAD
-
-static void led_blink(unsigned long timeout)
-{
-=======
 static unsigned long led_blink_timer_timeout;
 
 static void led_blink(struct timer_list *unused)
 {
 	unsigned long timeout = led_blink_timer_timeout;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led_toggle();
 
 	/* reschedule */
 	if (!timeout) { /* blink according to load */
 		led_blink_timer.expires = jiffies +
 			((1 + (avenrun[0] >> FSHIFT)) * HZ);
-<<<<<<< HEAD
-		led_blink_timer.data = 0;
 	} else { /* blink at user specified interval */
 		led_blink_timer.expires = jiffies + (timeout * HZ);
-		led_blink_timer.data = timeout;
-=======
-	} else { /* blink at user specified interval */
-		led_blink_timer.expires = jiffies + (timeout * HZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	add_timer(&led_blink_timer);
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int led_proc_show(struct seq_file *m, void *v)
 {
 	if (get_auxio() & AUXIO_LED)
@@ -95,22 +73,9 @@ static ssize_t led_proc_write(struct file *file, const char __user *buffer,
 	if (count > LED_MAX_LENGTH)
 		count = LED_MAX_LENGTH;
 
-<<<<<<< HEAD
-	buf = kmalloc(sizeof(char) * (count + 1), GFP_KERNEL);
-	if (!buf)
-		return -ENOMEM;
-
-	if (copy_from_user(buf, buffer, count)) {
-		kfree(buf);
-		return -EFAULT;
-	}
-
-	buf[count] = '\0';
-=======
 	buf = memdup_user_nul(buffer, count);
 	if (IS_ERR(buf))
 		return PTR_ERR(buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* work around \n when echo'ing into proc */
 	if (buf[count - 1] == '\n')
@@ -126,17 +91,11 @@ static ssize_t led_proc_write(struct file *file, const char __user *buffer,
 	} else if (!strcmp(buf, "toggle")) {
 		led_toggle();
 	} else if ((*buf > '0') && (*buf <= '9')) {
-<<<<<<< HEAD
-		led_blink(simple_strtoul(buf, NULL, 10));
-	} else if (!strcmp(buf, "load")) {
-		led_blink(0);
-=======
 		led_blink_timer_timeout = simple_strtoul(buf, NULL, 10);
 		led_blink(&led_blink_timer);
 	} else if (!strcmp(buf, "load")) {
 		led_blink_timer_timeout = 0;
 		led_blink(&led_blink_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		auxio_set_led(AUXIO_LED_OFF);
 	}
@@ -146,18 +105,6 @@ static ssize_t led_proc_write(struct file *file, const char __user *buffer,
 	return count;
 }
 
-<<<<<<< HEAD
-static const struct file_operations led_proc_fops = {
-	.owner		= THIS_MODULE,
-	.open		= led_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-	.write		= led_proc_write,
-};
-
-static struct proc_dir_entry *led;
-=======
 static const struct proc_ops led_proc_ops = {
 	.proc_open	= led_proc_open,
 	.proc_read	= seq_read,
@@ -166,28 +113,17 @@ static const struct proc_ops led_proc_ops = {
 	.proc_write	= led_proc_write,
 };
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LED_VERSION	"0.1"
 
 static int __init led_init(void)
 {
-<<<<<<< HEAD
-	init_timer(&led_blink_timer);
-	led_blink_timer.function = led_blink;
-
-	led = proc_create("led", 0, NULL, &led_proc_fops);
-	if (!led)
-		return -ENOMEM;
-
-=======
 	timer_setup(&led_blink_timer, led_blink, 0);
 
 #ifdef CONFIG_PROC_FS
 	if (!proc_create("led", 0, NULL, &led_proc_ops))
 		return -ENOMEM;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO
 	       "led: version %s, Lars Kotthoff <metalhead@metalhead.ws>\n",
 	       LED_VERSION);

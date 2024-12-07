@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A module for stripping a specific TCP option from TCP packets.
  *
  * Copyright (C) 2007 Sven Schnelle <svens@bitebene.org>
  * Copyright © CC Computer Consultants GmbH, 2007
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -37,21 +27,6 @@ static inline unsigned int optlen(const u_int8_t *opt, unsigned int offset)
 
 static unsigned int
 tcpoptstrip_mangle_packet(struct sk_buff *skb,
-<<<<<<< HEAD
-			  const struct xt_tcpoptstrip_target_info *info,
-			  unsigned int tcphoff, unsigned int minlen)
-{
-	unsigned int optl, i, j;
-	struct tcphdr *tcph;
-	u_int16_t n, o;
-	u_int8_t *opt;
-
-	if (!skb_make_writable(skb, skb->len))
-		return NF_DROP;
-
-	tcph = (struct tcphdr *)(skb_network_header(skb) + tcphoff);
-	opt  = (u_int8_t *)tcph;
-=======
 			  const struct xt_action_param *par,
 			  unsigned int tcphoff)
 {
@@ -80,23 +55,15 @@ tcpoptstrip_mangle_packet(struct sk_buff *skb,
 	/* must reload tcph, might have been moved */
 	tcph = (struct tcphdr *)(skb_network_header(skb) + tcphoff);
 	opt  = (u8 *)tcph;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Walk through all TCP options - if we find some option to remove,
 	 * set all octets to %TCPOPT_NOP and adjust checksum.
 	 */
-<<<<<<< HEAD
-	for (i = sizeof(struct tcphdr); i < tcp_hdrlen(skb); i += optl) {
-		optl = optlen(opt, i);
-
-		if (i + optl > tcp_hdrlen(skb))
-=======
 	for (i = sizeof(struct tcphdr); i < tcp_hdrlen - 1; i += optl) {
 		optl = optlen(opt, i);
 
 		if (i + optl > tcp_hdrlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		if (!tcpoptstrip_test_bit(info->strip_bmap, opt[i]))
@@ -110,11 +77,7 @@ tcpoptstrip_mangle_packet(struct sk_buff *skb,
 				n <<= 8;
 			}
 			inet_proto_csum_replace2(&tcph->check, skb, htons(o),
-<<<<<<< HEAD
-						 htons(n), 0);
-=======
 						 htons(n), false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		memset(opt + i, TCPOPT_NOP, optl);
 	}
@@ -125,12 +88,7 @@ tcpoptstrip_mangle_packet(struct sk_buff *skb,
 static unsigned int
 tcpoptstrip_tg4(struct sk_buff *skb, const struct xt_action_param *par)
 {
-<<<<<<< HEAD
-	return tcpoptstrip_mangle_packet(skb, par->targinfo, ip_hdrlen(skb),
-	       sizeof(struct iphdr) + sizeof(struct tcphdr));
-=======
 	return tcpoptstrip_mangle_packet(skb, par, ip_hdrlen(skb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #if IS_ENABLED(CONFIG_IP6_NF_MANGLE)
@@ -147,12 +105,7 @@ tcpoptstrip_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 	if (tcphoff < 0)
 		return NF_DROP;
 
-<<<<<<< HEAD
-	return tcpoptstrip_mangle_packet(skb, par->targinfo, tcphoff,
-	       sizeof(*ipv6h) + sizeof(struct tcphdr));
-=======
 	return tcpoptstrip_mangle_packet(skb, par, tcphoff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 

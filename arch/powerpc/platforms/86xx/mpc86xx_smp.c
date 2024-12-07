@@ -1,35 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Author: Xianghua Xiao <x.xiao@freescale.com>
  *         Zhang Wei <wei.zhang@freescale.com>
  *
  * Copyright 2006 Freescale Semiconductor Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-
-#include <asm/code-patching.h>
-#include <asm/page.h>
-#include <asm/pgtable.h>
-#include <asm/pci-bridge.h>
-#include <asm/mpic.h>
-#include <asm/cacheflush.h>
-=======
 #include <linux/pgtable.h>
 
 #include <asm/code-patching.h>
@@ -38,7 +18,6 @@
 #include <asm/mpic.h>
 #include <asm/cacheflush.h>
 #include <asm/inst.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sysdev/fsl_soc.h>
 
@@ -104,12 +83,7 @@ smp_86xx_kick_cpu(int nr)
 		mdelay(1);
 
 	/* Restore the exception vector */
-<<<<<<< HEAD
-	*vector = save_vector;
-	flush_icache_range((unsigned long) vector, (unsigned long) vector + 4);
-=======
 	patch_instruction(vector, ppc_inst(save_vector));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local_irq_restore(flags);
 
@@ -127,10 +101,7 @@ smp_86xx_setup_cpu(int cpu_nr)
 
 
 struct smp_ops_t smp_86xx_ops = {
-<<<<<<< HEAD
-=======
 	.cause_nmi_ipi = NULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.message_pass = smp_mpic_message_pass,
 	.probe = smp_mpic_probe,
 	.kick_cpu = smp_86xx_kick_cpu,

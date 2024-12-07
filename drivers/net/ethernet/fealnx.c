@@ -25,11 +25,6 @@
 */
 
 #define DRV_NAME	"fealnx"
-<<<<<<< HEAD
-#define DRV_VERSION	"2.52"
-#define DRV_RELDATE	"Sep-11-2006"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int debug;		/* 1-> print debug message */
 static int max_interrupt_work = 20;
@@ -91,20 +86,9 @@ static int full_duplex[MAX_UNITS] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 
 #include <asm/processor.h>	/* Processor type for cache alignment. */
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/byteorder.h>
-
-/* These identify the driver base version and may not be removed. */
-static const char version[] __devinitconst =
-	KERN_INFO DRV_NAME ".c:v" DRV_VERSION " " DRV_RELDATE "\n";
-
-
-=======
 #include <linux/uaccess.h>
 #include <asm/byteorder.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This driver was written to use PCI memory space, however some x86 systems
    work only with I/O space accesses. */
 #ifndef __alpha__
@@ -159,13 +143,8 @@ struct chip_info {
 	int flags;
 };
 
-<<<<<<< HEAD
-static const struct chip_info skel_netdrv_tbl[] __devinitdata = {
- 	{ "100/10M Ethernet PCI Adapter",	HAS_MII_XCVR },
-=======
 static const struct chip_info skel_netdrv_tbl[] = {
 	{ "100/10M Ethernet PCI Adapter",	HAS_MII_XCVR },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "100/10M Ethernet PCI Adapter",	HAS_CHIP_XCVR },
 	{ "1000/100/10M Ethernet PCI Adapter",	HAS_MII_XCVR },
 };
@@ -271,13 +250,8 @@ enum rx_desc_status_bits {
 	RXFSD = 0x00000800,	/* first descriptor */
 	RXLSD = 0x00000400,	/* last descriptor */
 	ErrorSummary = 0x80,	/* error summary */
-<<<<<<< HEAD
-	RUNT = 0x40,		/* runt packet received */
-	LONG = 0x20,		/* long packet received */
-=======
 	RUNTPKT = 0x40,		/* runt packet received */
 	LONGPKT = 0x20,		/* long packet received */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FAE = 0x10,		/* frame align error */
 	CRC = 0x08,		/* crc error */
 	RXER = 0x04,		/* receive error */
@@ -445,15 +419,9 @@ static void mdio_write(struct net_device *dev, int phy_id, int location, int val
 static int netdev_open(struct net_device *dev);
 static void getlinktype(struct net_device *dev);
 static void getlinkstatus(struct net_device *dev);
-<<<<<<< HEAD
-static void netdev_timer(unsigned long data);
-static void reset_timer(unsigned long data);
-static void fealnx_tx_timeout(struct net_device *dev);
-=======
 static void netdev_timer(struct timer_list *t);
 static void reset_timer(struct timer_list *t);
 static void fealnx_tx_timeout(struct net_device *dev, unsigned int txqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void init_ring(struct net_device *dev);
 static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev);
 static irqreturn_t intr_handler(int irq, void *dev_instance);
@@ -495,25 +463,14 @@ static const struct net_device_ops netdev_ops = {
 	.ndo_start_xmit		= start_tx,
 	.ndo_get_stats 		= get_stats,
 	.ndo_set_rx_mode	= set_rx_mode,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= mii_ioctl,
-	.ndo_tx_timeout		= fealnx_tx_timeout,
-	.ndo_change_mtu		= eth_change_mtu,
-=======
 	.ndo_eth_ioctl		= mii_ioctl,
 	.ndo_tx_timeout		= fealnx_tx_timeout,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
-<<<<<<< HEAD
-static int __devinit fealnx_init_one(struct pci_dev *pdev,
-				     const struct pci_device_id *ent)
-=======
 static int fealnx_init_one(struct pci_dev *pdev,
 			   const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdev_private *np;
 	int i, option, err, irq;
@@ -525,26 +482,13 @@ static int fealnx_init_one(struct pci_dev *pdev,
 	struct net_device *dev;
 	void *ring_space;
 	dma_addr_t ring_dma;
-<<<<<<< HEAD
-=======
 	u8 addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef USE_IO_OPS
 	int bar = 0;
 #else
 	int bar = 1;
 #endif
 
-<<<<<<< HEAD
-/* when built into the kernel, we only print version if device is found */
-#ifndef MODULE
-	static int printed_version;
-	if (!printed_version++)
-		printk(version);
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	card_idx++;
 	sprintf(boardname, "fealnx%d", card_idx);
 
@@ -582,22 +526,12 @@ static int fealnx_init_one(struct pci_dev *pdev,
 
 	/* read ethernet id */
 	for (i = 0; i < 6; ++i)
-<<<<<<< HEAD
-		dev->dev_addr[i] = ioread8(ioaddr + PAR0 + i);
-=======
 		addr[i] = ioread8(ioaddr + PAR0 + i);
 	eth_hw_addr_set(dev, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reset the chip to erase previous misconfiguration. */
 	iowrite32(0x00000001, ioaddr + BCR);
 
-<<<<<<< HEAD
-	dev->base_addr = (unsigned long)ioaddr;
-	dev->irq = irq;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Make certain the descriptor lists are aligned. */
 	np = netdev_priv(dev);
 	np->mem = ioaddr;
@@ -611,12 +545,8 @@ static int fealnx_init_one(struct pci_dev *pdev,
 	np->mii.phy_id_mask = 0x1f;
 	np->mii.reg_num_mask = 0x1f;
 
-<<<<<<< HEAD
-	ring_space = pci_alloc_consistent(pdev, RX_TOTAL_SIZE, &ring_dma);
-=======
 	ring_space = dma_alloc_coherent(&pdev->dev, RX_TOTAL_SIZE, &ring_dma,
 					GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ring_space) {
 		err = -ENOMEM;
 		goto err_out_free_dev;
@@ -624,12 +554,8 @@ static int fealnx_init_one(struct pci_dev *pdev,
 	np->rx_ring = ring_space;
 	np->rx_ring_dma = ring_dma;
 
-<<<<<<< HEAD
-	ring_space = pci_alloc_consistent(pdev, TX_TOTAL_SIZE, &ring_dma);
-=======
 	ring_space = dma_alloc_coherent(&pdev->dev, TX_TOTAL_SIZE, &ring_dma,
 					GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ring_space) {
 		err = -ENOMEM;
 		goto err_out_free_rx;
@@ -734,17 +660,11 @@ static int fealnx_init_one(struct pci_dev *pdev,
 	return 0;
 
 err_out_free_tx:
-<<<<<<< HEAD
-	pci_free_consistent(pdev, TX_TOTAL_SIZE, np->tx_ring, np->tx_ring_dma);
-err_out_free_rx:
-	pci_free_consistent(pdev, RX_TOTAL_SIZE, np->rx_ring, np->rx_ring_dma);
-=======
 	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, np->tx_ring,
 			  np->tx_ring_dma);
 err_out_free_rx:
 	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, np->rx_ring,
 			  np->rx_ring_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_free_dev:
 	free_netdev(dev);
 err_out_unmap:
@@ -755,36 +675,21 @@ err_out_res:
 }
 
 
-<<<<<<< HEAD
-static void __devexit fealnx_remove_one(struct pci_dev *pdev)
-=======
 static void fealnx_remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 
 	if (dev) {
 		struct netdev_private *np = netdev_priv(dev);
 
-<<<<<<< HEAD
-		pci_free_consistent(pdev, TX_TOTAL_SIZE, np->tx_ring,
-			np->tx_ring_dma);
-		pci_free_consistent(pdev, RX_TOTAL_SIZE, np->rx_ring,
-			np->rx_ring_dma);
-=======
 		dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, np->tx_ring,
 				  np->tx_ring_dma);
 		dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, np->rx_ring,
 				  np->rx_ring_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unregister_netdev(dev);
 		pci_iounmap(pdev, np->mem);
 		free_netdev(dev);
 		pci_release_regions(pdev);
-<<<<<<< HEAD
-		pci_set_drvdata(pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		printk(KERN_ERR "fealnx: remove for unknown device\n");
 }
@@ -914,17 +819,6 @@ static int netdev_open(struct net_device *dev)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	void __iomem *ioaddr = np->mem;
-<<<<<<< HEAD
-	int i;
-
-	iowrite32(0x00000001, ioaddr + BCR);	/* Reset */
-
-	if (request_irq(dev->irq, intr_handler, IRQF_SHARED, dev->name, dev))
-		return -EAGAIN;
-
-	for (i = 0; i < 3; i++)
-		iowrite16(((unsigned short*)dev->dev_addr)[i],
-=======
 	const int irq = np->pci_dev->irq;
 	int rc, i;
 
@@ -936,7 +830,6 @@ static int netdev_open(struct net_device *dev)
 
 	for (i = 0; i < 3; i++)
 		iowrite16(((const unsigned short *)dev->dev_addr)[i],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ioaddr + PAR0 + i*2);
 
 	init_ring(dev);
@@ -966,11 +859,7 @@ static int netdev_open(struct net_device *dev)
 	np->bcrvalue |= 0x04;	/* big-endian */
 #endif
 
-<<<<<<< HEAD
-#if defined(__i386__) && !defined(MODULE)
-=======
 #if defined(__i386__) && !defined(MODULE) && !defined(CONFIG_UML)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (boot_cpu_data.x86 <= 4)
 		np->crvalue = 0xa00;
 	else
@@ -1012,31 +901,15 @@ static int netdev_open(struct net_device *dev)
 		printk(KERN_DEBUG "%s: Done netdev_open().\n", dev->name);
 
 	/* Set the timer to check for link beat. */
-<<<<<<< HEAD
-	init_timer(&np->timer);
-	np->timer.expires = RUN_AT(3 * HZ);
-	np->timer.data = (unsigned long) dev;
-	np->timer.function = netdev_timer;
-=======
 	timer_setup(&np->timer, netdev_timer, 0);
 	np->timer.expires = RUN_AT(3 * HZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* timer handler */
 	add_timer(&np->timer);
 
-<<<<<<< HEAD
-	init_timer(&np->reset_timer);
-	np->reset_timer.data = (unsigned long) dev;
-	np->reset_timer.function = reset_timer;
-	np->reset_timer_armed = 0;
-
-	return 0;
-=======
 	timer_setup(&np->reset_timer, reset_timer, 0);
 	np->reset_timer_armed = 0;
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1189,32 +1062,20 @@ static void allocate_rx_buffers(struct net_device *dev)
 			np->lack_rxbuf = np->lack_rxbuf->next_desc_logical;
 
 		np->lack_rxbuf->skbuff = skb;
-<<<<<<< HEAD
-		np->lack_rxbuf->buffer = pci_map_single(np->pci_dev, skb->data,
-			np->rx_buf_sz, PCI_DMA_FROMDEVICE);
-=======
 		np->lack_rxbuf->buffer = dma_map_single(&np->pci_dev->dev,
 							skb->data,
 							np->rx_buf_sz,
 							DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np->lack_rxbuf->status = RXOWN;
 		++np->really_rx_count;
 	}
 }
 
 
-<<<<<<< HEAD
-static void netdev_timer(unsigned long data)
-{
-	struct net_device *dev = (struct net_device *) data;
-	struct netdev_private *np = netdev_priv(dev);
-=======
 static void netdev_timer(struct timer_list *t)
 {
 	struct netdev_private *np = from_timer(np, t, timer);
 	struct net_device *dev = np->mii.dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *ioaddr = np->mem;
 	int old_crvalue = np->crvalue;
 	unsigned int old_linkok = np->linkok;
@@ -1300,17 +1161,10 @@ static void enable_rxtx(struct net_device *dev)
 }
 
 
-<<<<<<< HEAD
-static void reset_timer(unsigned long data)
-{
-	struct net_device *dev = (struct net_device *) data;
-	struct netdev_private *np = netdev_priv(dev);
-=======
 static void reset_timer(struct timer_list *t)
 {
 	struct netdev_private *np = from_timer(np, t, reset_timer);
 	struct net_device *dev = np->mii.dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	printk(KERN_WARNING "%s: resetting tx and rx machinery\n", dev->name);
@@ -1331,11 +1185,7 @@ static void reset_timer(struct timer_list *t)
 }
 
 
-<<<<<<< HEAD
-static void fealnx_tx_timeout(struct net_device *dev)
-=======
 static void fealnx_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	void __iomem *ioaddr = np->mem;
@@ -1366,11 +1216,7 @@ static void fealnx_tx_timeout(struct net_device *dev, unsigned int txqueue)
 
 	spin_unlock_irqrestore(&np->lock, flags);
 
-<<<<<<< HEAD
-	dev->trans_start = jiffies; /* prevent tx timeout */
-=======
 	netif_trans_update(dev); /* prevent tx timeout */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->stats.tx_errors++;
 	netif_wake_queue(dev); /* or .._start_.. ?? */
 }
@@ -1413,15 +1259,10 @@ static void init_ring(struct net_device *dev)
 
 		++np->really_rx_count;
 		np->rx_ring[i].skbuff = skb;
-<<<<<<< HEAD
-		np->rx_ring[i].buffer = pci_map_single(np->pci_dev, skb->data,
-			np->rx_buf_sz, PCI_DMA_FROMDEVICE);
-=======
 		np->rx_ring[i].buffer = dma_map_single(&np->pci_dev->dev,
 						       skb->data,
 						       np->rx_buf_sz,
 						       DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np->rx_ring[i].status = RXOWN;
 		np->rx_ring[i].control |= RXIC;
 	}
@@ -1459,13 +1300,8 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 #define one_buffer
 #define BPT 1022
 #if defined(one_buffer)
-<<<<<<< HEAD
-	np->cur_tx_copy->buffer = pci_map_single(np->pci_dev, skb->data,
-		skb->len, PCI_DMA_TODEVICE);
-=======
 	np->cur_tx_copy->buffer = dma_map_single(&np->pci_dev->dev, skb->data,
 						 skb->len, DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np->cur_tx_copy->control = TXIC | TXLD | TXFD | CRCEnable | PADEnable;
 	np->cur_tx_copy->control |= (skb->len << PKTSShift);	/* pkt size */
 	np->cur_tx_copy->control |= (skb->len << TBSShift);	/* buffer size */
@@ -1480,14 +1316,9 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 		struct fealnx_desc *next;
 
 		/* for the first descriptor */
-<<<<<<< HEAD
-		np->cur_tx_copy->buffer = pci_map_single(np->pci_dev, skb->data,
-			BPT, PCI_DMA_TODEVICE);
-=======
 		np->cur_tx_copy->buffer = dma_map_single(&np->pci_dev->dev,
 							 skb->data, BPT,
 							 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np->cur_tx_copy->control = TXIC | TXFD | CRCEnable | PADEnable;
 		np->cur_tx_copy->control |= (skb->len << PKTSShift);	/* pkt size */
 		np->cur_tx_copy->control |= (BPT << TBSShift);	/* buffer size */
@@ -1501,14 +1332,9 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 // 89/12/29 add,
 		if (np->pci_dev->device == 0x891)
 			np->cur_tx_copy->control |= ETIControl | RetryTxLC;
-<<<<<<< HEAD
-		next->buffer = pci_map_single(ep->pci_dev, skb->data + BPT,
-                                skb->len - BPT, PCI_DMA_TODEVICE);
-=======
 		next->buffer = dma_map_single(&ep->pci_dev->dev,
 					      skb->data + BPT, skb->len - BPT,
 					      DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		next->status = TXOWN;
 		np->cur_tx_copy->status = TXOWN;
@@ -1516,14 +1342,9 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 		np->cur_tx_copy = next->next_desc_logical;
 		np->free_tx_count -= 2;
 	} else {
-<<<<<<< HEAD
-		np->cur_tx_copy->buffer = pci_map_single(np->pci_dev, skb->data,
-			skb->len, PCI_DMA_TODEVICE);
-=======
 		np->cur_tx_copy->buffer = dma_map_single(&np->pci_dev->dev,
 							 skb->data, skb->len,
 							 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np->cur_tx_copy->control = TXIC | TXLD | TXFD | CRCEnable | PADEnable;
 		np->cur_tx_copy->control |= (skb->len << PKTSShift);	/* pkt size */
 		np->cur_tx_copy->control |= (skb->len << TBSShift);	/* buffer size */
@@ -1563,13 +1384,8 @@ static void reset_tx_descriptors(struct net_device *dev)
 	for (i = 0; i < TX_RING_SIZE; i++) {
 		cur = &np->tx_ring[i];
 		if (cur->skbuff) {
-<<<<<<< HEAD
-			pci_unmap_single(np->pci_dev, cur->buffer,
-				cur->skbuff->len, PCI_DMA_TODEVICE);
-=======
 			dma_unmap_single(&np->pci_dev->dev, cur->buffer,
 					 cur->skbuff->len, DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb_any(cur->skbuff);
 			cur->skbuff = NULL;
 		}
@@ -1712,17 +1528,11 @@ static irqreturn_t intr_handler(int irq, void *dev_instance)
 			}
 
 			/* Free the original skb. */
-<<<<<<< HEAD
-			pci_unmap_single(np->pci_dev, np->cur_tx->buffer,
-				np->cur_tx->skbuff->len, PCI_DMA_TODEVICE);
-			dev_kfree_skb_irq(np->cur_tx->skbuff);
-=======
 			dma_unmap_single(&np->pci_dev->dev,
 					 np->cur_tx->buffer,
 					 np->cur_tx->skbuff->len,
 					 DMA_TO_DEVICE);
 			dev_consume_skb_irq(np->cur_tx->skbuff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			np->cur_tx->skbuff = NULL;
 			--np->really_tx_count;
 			if (np->cur_tx->control & TXLD) {
@@ -1819,11 +1629,7 @@ static int netdev_rx(struct net_device *dev)
 					       dev->name, rx_status);
 
 				dev->stats.rx_errors++;	/* end of a packet. */
-<<<<<<< HEAD
-				if (rx_status & (LONG | RUNT))
-=======
 				if (rx_status & (LONGPKT | RUNTPKT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					dev->stats.rx_length_errors++;
 				if (rx_status & RXER)
 					dev->stats.rx_frame_errors++;
@@ -1891,17 +1697,10 @@ static int netdev_rx(struct net_device *dev)
 			if (pkt_len < rx_copybreak &&
 			    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
 				skb_reserve(skb, 2);	/* 16 byte align the IP header */
-<<<<<<< HEAD
-				pci_dma_sync_single_for_cpu(np->pci_dev,
-							    np->cur_rx->buffer,
-							    np->rx_buf_sz,
-							    PCI_DMA_FROMDEVICE);
-=======
 				dma_sync_single_for_cpu(&np->pci_dev->dev,
 							np->cur_rx->buffer,
 							np->rx_buf_sz,
 							DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* Call copy + cksum if available. */
 
 #if ! defined(__alpha__)
@@ -1909,20 +1708,6 @@ static int netdev_rx(struct net_device *dev)
 					np->cur_rx->skbuff->data, pkt_len);
 				skb_put(skb, pkt_len);
 #else
-<<<<<<< HEAD
-				memcpy(skb_put(skb, pkt_len),
-					np->cur_rx->skbuff->data, pkt_len);
-#endif
-				pci_dma_sync_single_for_device(np->pci_dev,
-							       np->cur_rx->buffer,
-							       np->rx_buf_sz,
-							       PCI_DMA_FROMDEVICE);
-			} else {
-				pci_unmap_single(np->pci_dev,
-						 np->cur_rx->buffer,
-						 np->rx_buf_sz,
-						 PCI_DMA_FROMDEVICE);
-=======
 				skb_put_data(skb, np->cur_rx->skbuff->data,
 					     pkt_len);
 #endif
@@ -1935,7 +1720,6 @@ static int netdev_rx(struct net_device *dev)
 						 np->cur_rx->buffer,
 						 np->rx_buf_sz,
 						 DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				skb_put(skb = np->cur_rx->skbuff, pkt_len);
 				np->cur_rx->skbuff = NULL;
 				--np->really_rx_count;
@@ -2025,26 +1809,6 @@ static void netdev_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *i
 {
 	struct netdev_private *np = netdev_priv(dev);
 
-<<<<<<< HEAD
-	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
-	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
-	strlcpy(info->bus_info, pci_name(np->pci_dev), sizeof(info->bus_info));
-}
-
-static int netdev_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct netdev_private *np = netdev_priv(dev);
-	int rc;
-
-	spin_lock_irq(&np->lock);
-	rc = mii_ethtool_gset(&np->mii, cmd);
-	spin_unlock_irq(&np->lock);
-
-	return rc;
-}
-
-static int netdev_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-=======
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strscpy(info->bus_info, pci_name(np->pci_dev), sizeof(info->bus_info));
 }
@@ -2063,17 +1827,12 @@ static int netdev_get_link_ksettings(struct net_device *dev,
 
 static int netdev_set_link_ksettings(struct net_device *dev,
 				     const struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	int rc;
 
 	spin_lock_irq(&np->lock);
-<<<<<<< HEAD
-	rc = mii_ethtool_sset(&np->mii, cmd);
-=======
 	rc = mii_ethtool_set_link_ksettings(&np->mii, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&np->lock);
 
 	return rc;
@@ -2103,20 +1862,12 @@ static void netdev_set_msglevel(struct net_device *dev, u32 value)
 
 static const struct ethtool_ops netdev_ethtool_ops = {
 	.get_drvinfo		= netdev_get_drvinfo,
-<<<<<<< HEAD
-	.get_settings		= netdev_get_settings,
-	.set_settings		= netdev_set_settings,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.nway_reset		= netdev_nway_reset,
 	.get_link		= netdev_get_link,
 	.get_msglevel		= netdev_get_msglevel,
 	.set_msglevel		= netdev_set_msglevel,
-<<<<<<< HEAD
-=======
 	.get_link_ksettings	= netdev_get_link_ksettings,
 	.set_link_ksettings	= netdev_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int mii_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
@@ -2152,11 +1903,7 @@ static int netdev_close(struct net_device *dev)
 	del_timer_sync(&np->timer);
 	del_timer_sync(&np->reset_timer);
 
-<<<<<<< HEAD
-	free_irq(dev->irq, dev);
-=======
 	free_irq(np->pci_dev->irq, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Free all the skbuffs in the Rx queue. */
 	for (i = 0; i < RX_RING_SIZE; i++) {
@@ -2164,14 +1911,9 @@ static int netdev_close(struct net_device *dev)
 
 		np->rx_ring[i].status = 0;
 		if (skb) {
-<<<<<<< HEAD
-			pci_unmap_single(np->pci_dev, np->rx_ring[i].buffer,
-				np->rx_buf_sz, PCI_DMA_FROMDEVICE);
-=======
 			dma_unmap_single(&np->pci_dev->dev,
 					 np->rx_ring[i].buffer, np->rx_buf_sz,
 					 DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(skb);
 			np->rx_ring[i].skbuff = NULL;
 		}
@@ -2181,14 +1923,9 @@ static int netdev_close(struct net_device *dev)
 		struct sk_buff *skb = np->tx_ring[i].skbuff;
 
 		if (skb) {
-<<<<<<< HEAD
-			pci_unmap_single(np->pci_dev, np->tx_ring[i].buffer,
-				skb->len, PCI_DMA_TODEVICE);
-=======
 			dma_unmap_single(&np->pci_dev->dev,
 					 np->tx_ring[i].buffer, skb->len,
 					 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(skb);
 			np->tx_ring[i].skbuff = NULL;
 		}
@@ -2197,11 +1934,7 @@ static int netdev_close(struct net_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(fealnx_pci_tbl) = {
-=======
 static const struct pci_device_id fealnx_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x1516, 0x0800, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
 	{0x1516, 0x0803, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 1},
 	{0x1516, 0x0891, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 2},
@@ -2214,30 +1947,7 @@ static struct pci_driver fealnx_driver = {
 	.name		= "fealnx",
 	.id_table	= fealnx_pci_tbl,
 	.probe		= fealnx_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(fealnx_remove_one),
-};
-
-static int __init fealnx_init(void)
-{
-/* when a module, this is printed whether or not devices are found in probe */
-#ifdef MODULE
-	printk(version);
-#endif
-
-	return pci_register_driver(&fealnx_driver);
-}
-
-static void __exit fealnx_exit(void)
-{
-	pci_unregister_driver(&fealnx_driver);
-}
-
-module_init(fealnx_init);
-module_exit(fealnx_exit);
-=======
 	.remove		= fealnx_remove_one,
 };
 
 module_pci_driver(fealnx_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

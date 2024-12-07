@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/mmc/sdio_ops.c
  *
  *  Copyright 2006-2007 Pierre Ossman
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/scatterlist.h>
@@ -28,17 +17,9 @@
 
 int mmc_send_io_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 {
-<<<<<<< HEAD
-	struct mmc_command cmd = {0};
-	int i, err = 0;
-
-	BUG_ON(!host);
-
-=======
 	struct mmc_command cmd = {};
 	int i, err = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd.opcode = SD_IO_SEND_OP_COND;
 	cmd.arg = ocr;
 	cmd.flags = MMC_RSP_SPI_R4 | MMC_RSP_R4 | MMC_CMD_BCR;
@@ -81,19 +62,11 @@ int mmc_send_io_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 static int mmc_io_rw_direct_host(struct mmc_host *host, int write, unsigned fn,
 	unsigned addr, u8 in, u8 *out)
 {
-<<<<<<< HEAD
-	struct mmc_command cmd = {0};
-	int err;
-
-	BUG_ON(!host);
-	BUG_ON(fn > 7);
-=======
 	struct mmc_command cmd = {};
 	int err;
 
 	if (fn > 7)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sanity check */
 	if (addr & ~0x1FFFF)
@@ -135,25 +108,12 @@ static int mmc_io_rw_direct_host(struct mmc_host *host, int write, unsigned fn,
 int mmc_io_rw_direct(struct mmc_card *card, int write, unsigned fn,
 	unsigned addr, u8 in, u8 *out)
 {
-<<<<<<< HEAD
-	BUG_ON(!card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mmc_io_rw_direct_host(card->host, write, fn, addr, in, out);
 }
 
 int mmc_io_rw_extended(struct mmc_card *card, int write, unsigned fn,
 	unsigned addr, int incr_addr, u8 *buf, unsigned blocks, unsigned blksz)
 {
-<<<<<<< HEAD
-	struct mmc_request mrq = {NULL};
-	struct mmc_command cmd = {0};
-	struct mmc_data data = {0};
-	struct scatterlist sg;
-
-	BUG_ON(!card);
-	BUG_ON(fn > 7);
-=======
 	struct mmc_request mrq = {};
 	struct mmc_command cmd = {};
 	struct mmc_data data = {};
@@ -163,7 +123,6 @@ int mmc_io_rw_extended(struct mmc_card *card, int write, unsigned fn,
 	unsigned int seg_size = card->host->max_seg_size;
 	int err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON(blksz == 0);
 
 	/* sanity check */
@@ -188,34 +147,6 @@ int mmc_io_rw_extended(struct mmc_card *card, int write, unsigned fn,
 	/* Code in host drivers/fwk assumes that "blocks" always is >=1 */
 	data.blocks = blocks ? blocks : 1;
 	data.flags = write ? MMC_DATA_WRITE : MMC_DATA_READ;
-<<<<<<< HEAD
-	data.sg = &sg;
-	data.sg_len = 1;
-
-	sg_init_one(&sg, buf, data.blksz * data.blocks);
-
-	mmc_set_data_timeout(&data, card);
-
-	mmc_wait_for_req(card->host, &mrq);
-
-	if (cmd.error)
-		return cmd.error;
-	if (data.error)
-		return data.error;
-
-	if (mmc_host_is_spi(card->host)) {
-		/* host driver already reported errors */
-	} else {
-		if (cmd.resp[0] & R5_ERROR)
-			return -EIO;
-		if (cmd.resp[0] & R5_FUNCTION_NUMBER)
-			return -EINVAL;
-		if (cmd.resp[0] & R5_OUT_OF_RANGE)
-			return -ERANGE;
-	}
-
-	return 0;
-=======
 
 	left_size = data.blksz * data.blocks;
 	nents = DIV_ROUND_UP(left_size, seg_size);
@@ -266,7 +197,6 @@ int mmc_io_rw_extended(struct mmc_card *card, int write, unsigned fn,
 		sg_free_table(&sgtable);
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int sdio_reset(struct mmc_host *host)
@@ -282,11 +212,6 @@ int sdio_reset(struct mmc_host *host)
 	else
 		abort |= 0x08;
 
-<<<<<<< HEAD
-	ret = mmc_io_rw_direct_host(host, 1, 0, SDIO_CCCR_ABORT, abort, NULL);
-	return ret;
-=======
 	return mmc_io_rw_direct_host(host, 1, 0, SDIO_CCCR_ABORT, abort, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

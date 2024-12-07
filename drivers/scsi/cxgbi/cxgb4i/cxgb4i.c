@@ -1,11 +1,7 @@
 /*
  * cxgb4i.c: Chelsio T4 iSCSI driver.
  *
-<<<<<<< HEAD
- * Copyright (c) 2010 Chelsio Communications, Inc.
-=======
  * Copyright (c) 2010-2015 Chelsio Communications, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,44 +13,28 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s: " fmt, __func__
 
-<<<<<<< HEAD
-=======
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <scsi/scsi_host.h>
 #include <net/tcp.h>
 #include <net/dst.h>
 #include <linux/netdevice.h>
-<<<<<<< HEAD
-
-=======
 #include <net/addrconf.h>
 
 #include "t4_regs.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "t4_msg.h"
 #include "cxgb4.h"
 #include "cxgb4_uld.h"
 #include "t4fw_api.h"
 #include "l2t.h"
 #include "cxgb4i.h"
-<<<<<<< HEAD
-=======
 #include "clip_tbl.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int dbg_level;
 
 #include "../libcxgbi.h"
 
-<<<<<<< HEAD
-#define	DRV_MODULE_NAME		"cxgb4i"
-#define DRV_MODULE_DESC		"Chelsio T4 iSCSI Driver"
-#define	DRV_MODULE_VERSION	"0.9.1"
-#define	DRV_MODULE_RELDATE	"Aug. 2010"
-=======
 #ifdef CONFIG_CHELSIO_T4_DCB
 #include <net/dcbevent.h>
 #include "cxgb4_dcb.h"
@@ -64,7 +44,6 @@ static unsigned int dbg_level;
 #define DRV_MODULE_DESC		"Chelsio T4-T6 iSCSI Driver"
 #define	DRV_MODULE_VERSION	"0.9.5-ko"
 #define DRV_MODULE_RELDATE	"Apr. 2015"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static char version[] =
 	DRV_MODULE_DESC " " DRV_MODULE_NAME
@@ -78,13 +57,6 @@ MODULE_LICENSE("GPL");
 module_param(dbg_level, uint, 0644);
 MODULE_PARM_DESC(dbg_level, "Debug flag (default=0)");
 
-<<<<<<< HEAD
-static int cxgb4i_rcv_win = 256 * 1024;
-module_param(cxgb4i_rcv_win, int, 0644);
-MODULE_PARM_DESC(cxgb4i_rcv_win, "TCP reveive window in bytes");
-
-static int cxgb4i_snd_win = 128 * 1024;
-=======
 #define CXGB4I_DEFAULT_10G_RCV_WIN (256 * 1024)
 static int cxgb4i_rcv_win = -1;
 module_param(cxgb4i_rcv_win, int, 0644);
@@ -92,7 +64,6 @@ MODULE_PARM_DESC(cxgb4i_rcv_win, "TCP receive window in bytes");
 
 #define CXGB4I_DEFAULT_10G_SND_WIN (128 * 1024)
 static int cxgb4i_snd_win = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(cxgb4i_snd_win, int, 0644);
 MODULE_PARM_DESC(cxgb4i_snd_win, "TCP send window in bytes");
 
@@ -114,11 +85,6 @@ typedef void (*cxgb4i_cplhandler_func)(struct cxgbi_device *, struct sk_buff *);
 static void *t4_uld_add(const struct cxgb4_lld_info *);
 static int t4_uld_rx_handler(void *, const __be64 *, const struct pkt_gl *);
 static int t4_uld_state_change(void *, enum cxgb4_state state);
-<<<<<<< HEAD
-
-static const struct cxgb4_uld_info cxgb4i_uld_info = {
-	.name = DRV_MODULE_NAME,
-=======
 static inline int send_tx_flowc_wr(struct cxgbi_sock *);
 
 static const struct cxgb4_uld_info cxgb4i_uld_info = {
@@ -127,7 +93,6 @@ static const struct cxgb4_uld_info cxgb4i_uld_info = {
 	.ntxq = MAX_ULD_QSETS,
 	.rxq_size = 1024,
 	.lro = false,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.add = t4_uld_add,
 	.rx_handler = t4_uld_rx_handler,
 	.state_change = t4_uld_state_change,
@@ -139,31 +104,19 @@ static struct scsi_host_template cxgb4i_host_template = {
 	.proc_name	= DRV_MODULE_NAME,
 	.can_queue	= CXGB4I_SCSI_HOST_QDEPTH,
 	.queuecommand	= iscsi_queuecommand,
-<<<<<<< HEAD
-	.change_queue_depth = iscsi_change_queue_depth,
-	.sg_tablesize	= SG_ALL,
-	.max_sectors	= 0xFFFF,
-	.cmd_per_lun	= ISCSI_DEF_CMD_PER_LUN,
-=======
 	.change_queue_depth = scsi_change_queue_depth,
 	.sg_tablesize	= SG_ALL,
 	.max_sectors	= 0xFFFF,
 	.cmd_per_lun	= ISCSI_DEF_CMD_PER_LUN,
 	.eh_timed_out	= iscsi_eh_cmd_timed_out,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eh_abort_handler = iscsi_eh_abort,
 	.eh_device_reset_handler = iscsi_eh_device_reset,
 	.eh_target_reset_handler = iscsi_eh_recover_target,
 	.target_alloc	= iscsi_target_alloc,
-<<<<<<< HEAD
-	.use_clustering	= DISABLE_CLUSTERING,
-	.this_id	= -1,
-=======
 	.dma_boundary	= PAGE_SIZE - 1,
 	.this_id	= -1,
 	.track_queue_depth = 1,
 	.cmd_size	= sizeof(struct iscsi_cmd),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct iscsi_transport cxgb4i_iscsi_transport = {
@@ -182,10 +135,7 @@ static struct iscsi_transport cxgb4i_iscsi_transport = {
 	/* connection management */
 	.create_conn	= cxgbi_create_conn,
 	.bind_conn		= cxgbi_bind_conn,
-<<<<<<< HEAD
-=======
 	.unbind_conn	= iscsi_conn_unbind,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.destroy_conn	= iscsi_tcp_conn_teardown,
 	.start_conn		= iscsi_conn_start,
 	.stop_conn		= iscsi_conn_stop,
@@ -212,8 +162,6 @@ static struct iscsi_transport cxgb4i_iscsi_transport = {
 	.session_recovery_timedout = iscsi_session_recovery_timedout,
 };
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_CHELSIO_T4_DCB
 static int
 cxgb4_dcb_change_notify(struct notifier_block *, unsigned long, void *);
@@ -223,7 +171,6 @@ static struct notifier_block cxgb4_dcb_change = {
 };
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct scsi_transport_template *cxgb4i_stt;
 
 /*
@@ -232,21 +179,9 @@ static struct scsi_transport_template *cxgb4i_stt;
  * The section below implments CPLs that related to iscsi tcp connection
  * open/close/abort and data send/receive.
  */
-<<<<<<< HEAD
-#define DIV_ROUND_UP(n, d)	(((n) + (d) - 1) / (d))
-#define RCV_BUFSIZ_MASK		0x3FFU
-#define MAX_IMM_TX_PKT_LEN	128
-
-static inline void set_queue(struct sk_buff *skb, unsigned int queue,
-				const struct cxgbi_sock *csk)
-{
-	skb->queue_mapping = queue;
-}
-=======
 
 #define RCV_BUFSIZ_MASK		0x3FFU
 #define MAX_IMM_TX_PKT_LEN	256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int push_tx_frames(struct cxgbi_sock *, int);
 
@@ -257,12 +192,6 @@ static int push_tx_frames(struct cxgbi_sock *, int);
  * Returns true if a packet can be sent as an offload WR with immediate
  * data.  We currently use the same limit as for Ethernet packets.
  */
-<<<<<<< HEAD
-static inline int is_ofld_imm(const struct sk_buff *skb)
-{
-	return skb->len <= (MAX_IMM_TX_PKT_LEN -
-			sizeof(struct fw_ofld_tx_data_wr));
-=======
 static inline bool is_ofld_imm(const struct sk_buff *skb)
 {
 	int len = skb->len;
@@ -274,57 +203,18 @@ static inline bool is_ofld_imm(const struct sk_buff *skb)
 		len += sizeof(struct cpl_tx_data_iso);
 
 	return (len <= MAX_IMM_OFLD_TX_DATA_WR_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void send_act_open_req(struct cxgbi_sock *csk, struct sk_buff *skb,
 				struct l2t_entry *e)
 {
-<<<<<<< HEAD
-	struct cpl_act_open_req *req;
-=======
 	struct cxgb4_lld_info *lldi = cxgbi_cdev_priv(csk->cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int wscale = cxgbi_sock_compute_wscale(csk->mss_idx);
 	unsigned long long opt0;
 	unsigned int opt2;
 	unsigned int qid_atid = ((unsigned int)csk->atid) |
 				 (((unsigned int)csk->rss_qid) << 14);
 
-<<<<<<< HEAD
-	opt0 = KEEP_ALIVE(1) |
-		WND_SCALE(wscale) |
-		MSS_IDX(csk->mss_idx) |
-		L2T_IDX(((struct l2t_entry *)csk->l2t)->idx) |
-		TX_CHAN(csk->tx_chan) |
-		SMAC_SEL(csk->smac_idx) |
-		ULP_MODE(ULP_MODE_ISCSI) |
-		RCV_BUFSIZ(cxgb4i_rcv_win >> 10);
-	opt2 = RX_CHANNEL(0) |
-		RSS_QUEUE_VALID |
-		(1 << 20) | (1 << 22) |
-		RSS_QUEUE(csk->rss_qid);
-
-	set_wr_txq(skb, CPL_PRIORITY_SETUP, csk->port_id);
-	req = (struct cpl_act_open_req *)skb->head;
-
-	INIT_TP_WR(req, 0);
-	OPCODE_TID(req) = cpu_to_be32(MK_OPCODE_TID(CPL_ACT_OPEN_REQ,
-					qid_atid));
-	req->local_port = csk->saddr.sin_port;
-	req->peer_port = csk->daddr.sin_port;
-	req->local_ip = csk->saddr.sin_addr.s_addr;
-	req->peer_ip = csk->daddr.sin_addr.s_addr;
-	req->opt0 = cpu_to_be64(opt0);
-	req->params = 0;
-	req->opt2 = cpu_to_be32(opt2);
-
-	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
-		"csk 0x%p, %pI4:%u-%pI4:%u, atid %d, qid %u.\n",
-		csk, &req->local_ip, ntohs(req->local_port),
-		&req->peer_ip, ntohs(req->peer_port),
-		csk->atid, csk->rss_qid);
-=======
 	opt0 = KEEP_ALIVE_F |
 		WND_SCALE_V(wscale) |
 		MSS_IDX_V(csk->mss_idx) |
@@ -429,13 +319,10 @@ static void send_act_open_req(struct cxgbi_sock *csk, struct sk_buff *skb,
 		       (&csk->saddr), (&csk->daddr),
 		       CHELSIO_CHIP_VERSION(lldi->adapter_type), csk,
 		       csk->state, csk->flags, csk->atid, csk->rss_qid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cxgb4_l2t_send(csk->cdev->ports[csk->port_id], skb, csk->l2t);
 }
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 static void send_act_open_req6(struct cxgbi_sock *csk, struct sk_buff *skb,
 			       struct l2t_entry *e)
@@ -551,7 +438,6 @@ static void send_act_open_req6(struct cxgbi_sock *csk, struct sk_buff *skb,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void send_close_req(struct cxgbi_sock *csk)
 {
 	struct sk_buff *skb = csk->cpl_close;
@@ -592,26 +478,19 @@ static void send_abort_req(struct cxgbi_sock *csk)
 
 	if (unlikely(csk->state == CTP_ABORTING) || !skb || !csk->cdev)
 		return;
-<<<<<<< HEAD
-=======
 
 	if (!cxgbi_sock_flag(csk, CTPF_TX_DATA_SENT)) {
 		send_tx_flowc_wr(csk);
 		cxgbi_sock_set_flag(csk, CTPF_TX_DATA_SENT);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cxgbi_sock_set_state(csk, CTP_ABORTING);
 	cxgbi_sock_set_flag(csk, CTPF_ABORT_RPL_PENDING);
 	cxgbi_sock_purge_write_queue(csk);
 
 	csk->cpl_abort_req = NULL;
 	req = (struct cpl_abort_req *)skb->head;
-<<<<<<< HEAD
-	set_queue(skb, CPL_PRIORITY_DATA, csk);
-=======
 	set_wr_txq(skb, CPL_PRIORITY_DATA, csk->port_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->cmd = CPL_ABORT_SEND_RST;
 	t4_set_arp_err_handler(skb, csk, abort_arp_failure);
 	INIT_TP_WR(req, csk->tid);
@@ -637,11 +516,7 @@ static void send_abort_rpl(struct cxgbi_sock *csk, int rst_status)
 		csk, csk->state, csk->flags, csk->tid, rst_status);
 
 	csk->cpl_abort_rpl = NULL;
-<<<<<<< HEAD
-	set_queue(skb, CPL_PRIORITY_DATA, csk);
-=======
 	set_wr_txq(skb, CPL_PRIORITY_DATA, csk->port_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_TP_WR(rpl, csk->tid);
 	OPCODE_TID(rpl) = cpu_to_be32(MK_OPCODE_TID(CPL_ABORT_RPL, csk->tid));
 	rpl->cmd = rst_status;
@@ -673,12 +548,8 @@ static u32 send_rx_credits(struct cxgbi_sock *csk, u32 credits)
 	INIT_TP_WR(req, csk->tid);
 	OPCODE_TID(req) = cpu_to_be32(MK_OPCODE_TID(CPL_RX_DATA_ACK,
 				      csk->tid));
-<<<<<<< HEAD
-	req->credit_dack = cpu_to_be32(RX_CREDITS(credits) | RX_FORCE_ACK(1));
-=======
 	req->credit_dack = cpu_to_be32(RX_CREDITS_V(credits)
 				       | RX_FORCE_ACK_F);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cxgb4_ofld_send(csk->cdev->ports[csk->port_id], skb);
 	return credits;
 }
@@ -711,31 +582,11 @@ static inline unsigned int calc_tx_flits_ofld(const struct sk_buff *skb)
 		return DIV_ROUND_UP(skb->len, 8);
 	flits = skb_transport_offset(skb) / 8;
 	cnt = skb_shinfo(skb)->nr_frags;
-<<<<<<< HEAD
-	if (skb->tail != skb->transport_header)
-=======
 	if (skb_tail_pointer(skb) != skb_transport_header(skb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cnt++;
 	return flits + sgl_len(cnt);
 }
 
-<<<<<<< HEAD
-static inline void send_tx_flowc_wr(struct cxgbi_sock *csk)
-{
-	struct sk_buff *skb;
-	struct fw_flowc_wr *flowc;
-	int flowclen, i;
-
-	flowclen = 80;
-	skb = alloc_wr(flowclen, 0, GFP_ATOMIC);
-	flowc = (struct fw_flowc_wr *)skb->head;
-	flowc->op_to_nparams =
-		htonl(FW_WR_OP(FW_FLOWC_WR) | FW_FLOWC_WR_NPARAMS(8));
-	flowc->flowid_len16 =
-		htonl(FW_WR_LEN16(DIV_ROUND_UP(72, 16)) |
-				FW_WR_FLOWID(csk->tid));
-=======
 #define FLOWC_WR_NPARAMS_MIN	9
 static inline int tx_flowc_wr_credits(int *nparamsp, int *flowclenp)
 {
@@ -776,7 +627,6 @@ static inline int send_tx_flowc_wr(struct cxgbi_sock *csk)
 		htonl(FW_WR_OP_V(FW_FLOWC_WR) | FW_FLOWC_WR_NPARAMS_V(nparams));
 	flowc->flowid_len16 =
 		htonl(FW_WR_LEN16_V(flowclen16) | FW_WR_FLOWID_V(csk->tid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flowc->mnemval[0].mnemonic = FW_FLOWC_MNEM_PFNVFN;
 	flowc->mnemval[0].val = htonl(csk->cdev->pfvf);
 	flowc->mnemval[1].mnemonic = FW_FLOWC_MNEM_CH;
@@ -790,23 +640,11 @@ static inline int send_tx_flowc_wr(struct cxgbi_sock *csk)
 	flowc->mnemval[5].mnemonic = FW_FLOWC_MNEM_RCVNXT;
 	flowc->mnemval[5].val = htonl(csk->rcv_nxt);
 	flowc->mnemval[6].mnemonic = FW_FLOWC_MNEM_SNDBUF;
-<<<<<<< HEAD
-	flowc->mnemval[6].val = htonl(cxgb4i_snd_win);
-=======
 	flowc->mnemval[6].val = htonl(csk->snd_win);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flowc->mnemval[7].mnemonic = FW_FLOWC_MNEM_MSS;
 	flowc->mnemval[7].val = htonl(csk->advmss);
 	flowc->mnemval[8].mnemonic = 0;
 	flowc->mnemval[8].val = 0;
-<<<<<<< HEAD
-	for (i = 0; i < 9; i++) {
-		flowc->mnemval[i].r4[0] = 0;
-		flowc->mnemval[i].r4[1] = 0;
-		flowc->mnemval[i].r4[2] = 0;
-	}
-	set_queue(skb, CPL_PRIORITY_DATA, csk);
-=======
 	flowc->mnemval[8].mnemonic = FW_FLOWC_MNEM_TXDATAPLEN_MAX;
 	if (csk->cdev->skb_iso_txhdr)
 		flowc->mnemval[8].val = cpu_to_be32(CXGBI_MAX_ISO_DATA_IN_SKB);
@@ -825,49 +663,10 @@ static inline int send_tx_flowc_wr(struct cxgbi_sock *csk)
 #endif
 
 	set_wr_txq(skb, CPL_PRIORITY_DATA, csk->port_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
 		"csk 0x%p, tid 0x%x, %u,%u,%u,%u,%u,%u,%u.\n",
 		csk, csk->tid, 0, csk->tx_chan, csk->rss_qid,
-<<<<<<< HEAD
-		csk->snd_nxt, csk->rcv_nxt, cxgb4i_snd_win,
-		csk->advmss);
-
-	cxgb4_ofld_send(csk->cdev->ports[csk->port_id], skb);
-}
-
-static inline void make_tx_data_wr(struct cxgbi_sock *csk, struct sk_buff *skb,
-				   int dlen, int len, u32 credits, int compl)
-{
-	struct fw_ofld_tx_data_wr *req;
-	unsigned int submode = cxgbi_skcb_ulp_mode(skb) & 3;
-	unsigned int wr_ulp_mode = 0;
-
-	req = (struct fw_ofld_tx_data_wr *)__skb_push(skb, sizeof(*req));
-
-	if (is_ofld_imm(skb)) {
-		req->op_to_immdlen = htonl(FW_WR_OP(FW_OFLD_TX_DATA_WR) |
-					FW_WR_COMPL(1) |
-					FW_WR_IMMDLEN(dlen));
-		req->flowid_len16 = htonl(FW_WR_FLOWID(csk->tid) |
-						FW_WR_LEN16(credits));
-	} else {
-		req->op_to_immdlen =
-			cpu_to_be32(FW_WR_OP(FW_OFLD_TX_DATA_WR) |
-					FW_WR_COMPL(1) |
-					FW_WR_IMMDLEN(0));
-		req->flowid_len16 =
-			cpu_to_be32(FW_WR_FLOWID(csk->tid) |
-					FW_WR_LEN16(credits));
-	}
-	if (submode)
-		wr_ulp_mode = FW_OFLD_TX_DATA_WR_ULPMODE(ULP2_MODE_ISCSI) |
-				FW_OFLD_TX_DATA_WR_ULPSUBMODE(submode);
-	req->tunnel_to_proxy = htonl(wr_ulp_mode) |
-		 FW_OFLD_TX_DATA_WR_SHOVE(skb_peek(&csk->write_queue) ? 0 : 1);
-	req->plen = htonl(len);
-=======
 		csk->snd_nxt, csk->rcv_nxt, csk->snd_win,
 		csk->advmss);
 
@@ -956,7 +755,6 @@ cxgb4i_make_tx_data_wr(struct cxgbi_sock *csk, struct sk_buff *skb, int dlen,
 	req->tunnel_to_proxy = cpu_to_be32(wr_ulp_mode | force |
 					   FW_OFLD_TX_DATA_WR_SHOVE_V(1U));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cxgbi_sock_flag(csk, CTPF_TX_DATA_SENT))
 		cxgbi_sock_set_flag(csk, CTPF_TX_DATA_SENT);
 }
@@ -974,38 +772,6 @@ static int push_tx_frames(struct cxgbi_sock *csk, int req_completion)
 	if (unlikely(csk->state < CTP_ESTABLISHED ||
 		csk->state == CTP_CLOSE_WAIT_1 || csk->state >= CTP_ABORTING)) {
 		log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK |
-<<<<<<< HEAD
-			 1 << CXGBI_DBG_PDU_TX,
-			"csk 0x%p,%u,0x%lx,%u, in closing state.\n",
-			csk, csk->state, csk->flags, csk->tid);
-		return 0;
-	}
-
-	while (csk->wr_cred && (skb = skb_peek(&csk->write_queue)) != NULL) {
-		int dlen = skb->len;
-		int len = skb->len;
-		unsigned int credits_needed;
-
-		skb_reset_transport_header(skb);
-		if (is_ofld_imm(skb))
-			credits_needed = DIV_ROUND_UP(dlen +
-					sizeof(struct fw_ofld_tx_data_wr), 16);
-		else
-			credits_needed = DIV_ROUND_UP(8*calc_tx_flits_ofld(skb)
-					+ sizeof(struct fw_ofld_tx_data_wr),
-					16);
-
-		if (csk->wr_cred < credits_needed) {
-			log_debug(1 << CXGBI_DBG_PDU_TX,
-				"csk 0x%p, skb %u/%u, wr %d < %u.\n",
-				csk, skb->len, skb->data_len,
-				credits_needed, csk->wr_cred);
-			break;
-		}
-		__skb_unlink(skb, &csk->write_queue);
-		set_queue(skb, CPL_PRIORITY_DATA, csk);
-		skb->csum = credits_needed;
-=======
 			  1 << CXGBI_DBG_PDU_TX,
 			  "csk 0x%p,%u,0x%lx,%u, in closing state.\n",
 			  csk, csk->state, csk->flags, csk->tid);
@@ -1061,7 +827,6 @@ static int push_tx_frames(struct cxgbi_sock *csk, int req_completion)
 		__skb_unlink(skb, &csk->write_queue);
 		set_wr_txq(skb, CPL_PRIORITY_DATA, csk->port_id);
 		skb->csum = (__force __wsum)(credits_needed + flowclen16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		csk->wr_cred -= credits_needed;
 		csk->wr_una_cred += credits_needed;
 		cxgbi_sock_enqueue_wr(csk, skb);
@@ -1071,21 +836,6 @@ static int push_tx_frames(struct cxgbi_sock *csk, int req_completion)
 			csk, skb->len, skb->data_len, credits_needed,
 			csk->wr_cred, csk->wr_una_cred);
 
-<<<<<<< HEAD
-		if (likely(cxgbi_skcb_test_flag(skb, SKCBF_TX_NEED_HDR))) {
-			if (!cxgbi_sock_flag(csk, CTPF_TX_DATA_SENT)) {
-				send_tx_flowc_wr(csk);
-				skb->csum += 5;
-				csk->wr_cred -= 5;
-				csk->wr_una_cred += 5;
-			}
-			len += cxgbi_ulp_extra_len(cxgbi_skcb_ulp_mode(skb));
-			make_tx_data_wr(csk, skb, dlen, len, credits_needed,
-					req_completion);
-			csk->snd_nxt += len;
-			cxgbi_skcb_clear_flag(skb, SKCBF_TX_NEED_HDR);
-		}
-=======
 		if (!req_completion &&
 		    ((csk->wr_una_cred >= (csk->wr_max_cred / 2)) ||
 		     after(csk->write_seq, (csk->snd_una + csk->snd_win / 2))))
@@ -1116,19 +866,12 @@ static int push_tx_frames(struct cxgbi_sock *csk, int req_completion)
 			req->wr.wr_hi |= cpu_to_be32(FW_WR_COMPL_F);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		total_size += skb->truesize;
 		t4_set_arp_err_handler(skb, csk, arp_failure_skb_discard);
 
 		log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_PDU_TX,
-<<<<<<< HEAD
-			"csk 0x%p,%u,0x%lx,%u, skb 0x%p, %u.\n",
-			csk, csk->state, csk->flags, csk->tid, skb, len);
-
-=======
 			  "csk 0x%p,%u,0x%lx,%u, skb 0x%p, %u.\n",
 			  csk, csk->state, csk->flags, csk->tid, skb, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cxgb4_l2t_send(csk->cdev->ports[csk->port_id], skb, csk->l2t);
 	}
 	return total_size;
@@ -1151,11 +894,7 @@ static void do_act_establish(struct cxgbi_device *cdev, struct sk_buff *skb)
 	struct cpl_act_establish *req = (struct cpl_act_establish *)skb->data;
 	unsigned short tcp_opt = ntohs(req->tcp_opt);
 	unsigned int tid = GET_TID(req);
-<<<<<<< HEAD
-	unsigned int atid = GET_TID_TID(ntohl(req->tos_atid));
-=======
 	unsigned int atid = TID_TID_G(ntohl(req->tos_atid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cxgb4_lld_info *lldi = cxgbi_cdev_priv(cdev);
 	struct tid_info *t = lldi->tids;
 	u32 rcv_isn = be32_to_cpu(req->rcv_isn);
@@ -1172,15 +911,6 @@ static void do_act_establish(struct cxgbi_device *cdev, struct sk_buff *skb)
 		goto rel_skb;
 	}
 
-<<<<<<< HEAD
-	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
-		"csk 0x%p,%u,0x%lx, tid %u, atid %u, rseq %u.\n",
-		csk, csk->state, csk->flags, tid, atid, rcv_isn);
-
-	cxgbi_sock_get(csk);
-	csk->tid = tid;
-	cxgb4_insert_tid(lldi->tids, csk, tid);
-=======
 	pr_info_ipaddr("atid 0x%x, tid 0x%x, csk 0x%p,%u,0x%lx, isn %u.\n",
 		       (&csk->saddr), (&csk->daddr),
 		       atid, tid, csk, csk->state, csk->flags, rcv_isn);
@@ -1190,7 +920,6 @@ static void do_act_establish(struct cxgbi_device *cdev, struct sk_buff *skb)
 	cxgbi_sock_get(csk);
 	csk->tid = tid;
 	cxgb4_insert_tid(lldi->tids, csk, tid, csk->csk_family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cxgbi_sock_set_flag(csk, CTPF_HAS_TID);
 
 	free_atid(csk);
@@ -1210,30 +939,18 @@ static void do_act_establish(struct cxgbi_device *cdev, struct sk_buff *skb)
 	 * Causes the first RX_DATA_ACK to supply any Rx credits we couldn't
 	 * pass through opt0.
 	 */
-<<<<<<< HEAD
-	if (cxgb4i_rcv_win > (RCV_BUFSIZ_MASK << 10))
-		csk->rcv_wup -= cxgb4i_rcv_win - (RCV_BUFSIZ_MASK << 10);
-
-	csk->advmss = lldi->mtus[GET_TCPOPT_MSS(tcp_opt)] - 40;
-	if (GET_TCPOPT_TSTAMP(tcp_opt))
-=======
 	if (csk->rcv_win > (RCV_BUFSIZ_MASK << 10))
 		csk->rcv_wup -= csk->rcv_win - (RCV_BUFSIZ_MASK << 10);
 
 	csk->advmss = lldi->mtus[TCPOPT_MSS_G(tcp_opt)] - 40;
 	if (TCPOPT_TSTAMP_G(tcp_opt))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		csk->advmss -= 12;
 	if (csk->advmss < 128)
 		csk->advmss = 128;
 
 	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
 		"csk 0x%p, mss_idx %u, advmss %u.\n",
-<<<<<<< HEAD
-			csk, GET_TCPOPT_MSS(tcp_opt), csk->advmss);
-=======
 			csk, TCPOPT_MSS_G(tcp_opt), csk->advmss);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cxgbi_sock_established(csk, ntohl(req->snd_isn), ntohs(req->tcp_opt));
 
@@ -1268,12 +985,6 @@ static int act_open_rpl_status_to_errno(int status)
 	}
 }
 
-<<<<<<< HEAD
-static void csk_act_open_retry_timer(unsigned long data)
-{
-	struct sk_buff *skb;
-	struct cxgbi_sock *csk = (struct cxgbi_sock *)data;
-=======
 static void csk_act_open_retry_timer(struct timer_list *t)
 {
 	struct sk_buff *skb = NULL;
@@ -1282,7 +993,6 @@ static void csk_act_open_retry_timer(struct timer_list *t)
 	void (*send_act_open_func)(struct cxgbi_sock *, struct sk_buff *,
 				   struct l2t_entry *);
 	int t4 = is_t4(lldi->adapter_type), size, size6;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
 		"csk 0x%p,%u,0x%lx,%u.\n",
@@ -1290,9 +1000,6 @@ static void csk_act_open_retry_timer(struct timer_list *t)
 
 	cxgbi_sock_get(csk);
 	spin_lock_bh(&csk->lock);
-<<<<<<< HEAD
-	skb = alloc_wr(sizeof(struct cpl_act_open_req), 0, GFP_ATOMIC);
-=======
 
 	if (t4) {
 		size = sizeof(struct cpl_act_open_req);
@@ -1312,19 +1019,11 @@ static void csk_act_open_retry_timer(struct timer_list *t)
 #endif
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb)
 		cxgbi_sock_fail_act_open(csk, -ENOMEM);
 	else {
 		skb->sk = (struct sock *)csk;
 		t4_set_arp_err_handler(skb, csk,
-<<<<<<< HEAD
-					cxgbi_sock_act_open_req_arp_failure);
-		send_act_open_req(csk, skb, csk->l2t);
-	}
-	spin_unlock_bh(&csk->lock);
-	cxgbi_sock_put(csk);
-=======
 				       cxgbi_sock_act_open_req_arp_failure);
 		send_act_open_func(csk, skb, csk->l2t);
 	}
@@ -1339,7 +1038,6 @@ static inline bool is_neg_adv(unsigned int status)
 	return status == CPL_ERR_RTX_NEG_ADVICE ||
 		status == CPL_ERR_KEEPALV_NEG_ADVICE ||
 		status == CPL_ERR_PERSIST_NEG_ADVICE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void do_act_open_rpl(struct cxgbi_device *cdev, struct sk_buff *skb)
@@ -1348,13 +1046,8 @@ static void do_act_open_rpl(struct cxgbi_device *cdev, struct sk_buff *skb)
 	struct cpl_act_open_rpl *rpl = (struct cpl_act_open_rpl *)skb->data;
 	unsigned int tid = GET_TID(rpl);
 	unsigned int atid =
-<<<<<<< HEAD
-		GET_TID_TID(GET_AOPEN_ATID(be32_to_cpu(rpl->atid_status)));
-	unsigned int status = GET_AOPEN_STATUS(be32_to_cpu(rpl->atid_status));
-=======
 		TID_TID_G(AOPEN_ATID_G(be32_to_cpu(rpl->atid_status)));
 	unsigned int status = AOPEN_STATUS_G(be32_to_cpu(rpl->atid_status));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cxgb4_lld_info *lldi = cxgbi_cdev_priv(cdev);
 	struct tid_info *t = lldi->tids;
 
@@ -1364,20 +1057,6 @@ static void do_act_open_rpl(struct cxgbi_device *cdev, struct sk_buff *skb)
 		goto rel_skb;
 	}
 
-<<<<<<< HEAD
-	pr_info("%pI4:%u-%pI4:%u, atid %u,%u, status %u, csk 0x%p,%u,0x%lx.\n",
-		&csk->saddr.sin_addr.s_addr, ntohs(csk->saddr.sin_port),
-		&csk->daddr.sin_addr.s_addr, ntohs(csk->daddr.sin_port),
-		atid, tid, status, csk, csk->state, csk->flags);
-
-	if (status == CPL_ERR_RTX_NEG_ADVICE)
-		goto rel_skb;
-
-	if (status && status != CPL_ERR_TCAM_FULL &&
-	    status != CPL_ERR_CONN_EXIST &&
-	    status != CPL_ERR_ARP_MISS)
-		cxgb4_remove_tid(lldi->tids, csk->port_id, GET_TID(rpl));
-=======
 	pr_info_ipaddr("tid %u/%u, status %u.\n"
 		       "csk 0x%p,%u,0x%lx. ", (&csk->saddr), (&csk->daddr),
 		       atid, tid, status, csk, csk->state, csk->flags);
@@ -1392,7 +1071,6 @@ static void do_act_open_rpl(struct cxgbi_device *cdev, struct sk_buff *skb)
 	    status != CPL_ERR_ARP_MISS)
 		cxgb4_remove_tid(lldi->tids, csk->port_id, GET_TID(rpl),
 				 csk->csk_family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cxgbi_sock_get(csk);
 	spin_lock_bh(&csk->lock);
@@ -1424,15 +1102,9 @@ static void do_peer_close(struct cxgbi_device *cdev, struct sk_buff *skb)
 		pr_err("can't find connection for tid %u.\n", tid);
 		goto rel_skb;
 	}
-<<<<<<< HEAD
-	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
-		"csk 0x%p,%u,0x%lx,%u.\n",
-		csk, csk->state, csk->flags, csk->tid);
-=======
 	pr_info_ipaddr("csk 0x%p,%u,0x%lx,%u.\n",
 		       (&csk->saddr), (&csk->daddr),
 		       csk, csk->state, csk->flags, csk->tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cxgbi_sock_rcv_peer_close(csk);
 rel_skb:
 	__kfree_skb(skb);
@@ -1451,15 +1123,9 @@ static void do_close_con_rpl(struct cxgbi_device *cdev, struct sk_buff *skb)
 		pr_err("can't find connection for tid %u.\n", tid);
 		goto rel_skb;
 	}
-<<<<<<< HEAD
-	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
-		"csk 0x%p,%u,0x%lx,%u.\n",
-		csk, csk->state, csk->flags, csk->tid);
-=======
 	pr_info_ipaddr("csk 0x%p,%u,0x%lx,%u.\n",
 		       (&csk->saddr), (&csk->daddr),
 		       csk, csk->state, csk->flags, csk->tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cxgbi_sock_rcv_close_conn_rpl(csk, ntohl(rpl->snd_nxt));
 rel_skb:
 	__kfree_skb(skb);
@@ -1469,11 +1135,7 @@ static int abort_status_to_errno(struct cxgbi_sock *csk, int abort_reason,
 								int *need_rst)
 {
 	switch (abort_reason) {
-<<<<<<< HEAD
-	case CPL_ERR_BAD_SYN: /* fall through */
-=======
 	case CPL_ERR_BAD_SYN:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPL_ERR_CONN_RESET:
 		return csk->state > CTP_ESTABLISHED ?
 			-EPIPE : -ECONNRESET;
@@ -1502,34 +1164,16 @@ static void do_abort_req_rss(struct cxgbi_device *cdev, struct sk_buff *skb)
 		goto rel_skb;
 	}
 
-<<<<<<< HEAD
-	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
-		"csk 0x%p,%u,0x%lx, tid %u, status 0x%x.\n",
-		csk, csk->state, csk->flags, csk->tid, req->status);
-
-	if (req->status == CPL_ERR_RTX_NEG_ADVICE ||
-	    req->status == CPL_ERR_PERSIST_NEG_ADVICE)
-=======
 	pr_info_ipaddr("csk 0x%p,%u,0x%lx,%u, status %u.\n",
 		       (&csk->saddr), (&csk->daddr),
 		       csk, csk->state, csk->flags, csk->tid, req->status);
 
 	if (is_neg_adv(req->status))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto rel_skb;
 
 	cxgbi_sock_get(csk);
 	spin_lock_bh(&csk->lock);
 
-<<<<<<< HEAD
-	if (!cxgbi_sock_flag(csk, CTPF_ABORT_REQ_RCVD)) {
-		cxgbi_sock_set_flag(csk, CTPF_ABORT_REQ_RCVD);
-		cxgbi_sock_set_state(csk, CTP_ABORTING);
-		goto done;
-	}
-
-	cxgbi_sock_clear_flag(csk, CTPF_ABORT_REQ_RCVD);
-=======
 	cxgbi_sock_clear_flag(csk, CTPF_ABORT_REQ_RCVD);
 
 	if (!cxgbi_sock_flag(csk, CTPF_TX_DATA_SENT)) {
@@ -1540,18 +1184,13 @@ static void do_abort_req_rss(struct cxgbi_device *cdev, struct sk_buff *skb)
 	cxgbi_sock_set_flag(csk, CTPF_ABORT_REQ_RCVD);
 	cxgbi_sock_set_state(csk, CTP_ABORTING);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	send_abort_rpl(csk, rst_status);
 
 	if (!cxgbi_sock_flag(csk, CTPF_ABORT_RPL_PENDING)) {
 		csk->err = abort_status_to_errno(csk, req->status, &rst_status);
 		cxgbi_sock_closed(csk);
 	}
-<<<<<<< HEAD
-done:
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_bh(&csk->lock);
 	cxgbi_sock_put(csk);
 rel_skb:
@@ -1570,16 +1209,9 @@ static void do_abort_rpl_rss(struct cxgbi_device *cdev, struct sk_buff *skb)
 	if (!csk)
 		goto rel_skb;
 
-<<<<<<< HEAD
-	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
-		"status 0x%x, csk 0x%p, s %u, 0x%lx.\n",
-		rpl->status, csk, csk ? csk->state : 0,
-		csk ? csk->flags : 0UL);
-=======
 	pr_info_ipaddr("csk 0x%p,%u,0x%lx,%u, status %u.\n",
 		       (&csk->saddr), (&csk->daddr), csk,
 		       csk->state, csk->flags, csk->tid, rpl->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rpl->status == CPL_ERR_ABORT_FAILED)
 		goto rel_skb;
@@ -1589,8 +1221,6 @@ rel_skb:
 	__kfree_skb(skb);
 }
 
-<<<<<<< HEAD
-=======
 static void do_rx_data(struct cxgbi_device *cdev, struct sk_buff *skb)
 {
 	struct cxgbi_sock *csk;
@@ -1612,7 +1242,6 @@ static void do_rx_data(struct cxgbi_device *cdev, struct sk_buff *skb)
 	__kfree_skb(skb);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void do_rx_iscsi_hdr(struct cxgbi_device *cdev, struct sk_buff *skb)
 {
 	struct cxgbi_sock *csk;
@@ -1654,11 +1283,7 @@ static void do_rx_iscsi_hdr(struct cxgbi_device *cdev, struct sk_buff *skb)
 
 	if (!csk->skb_ulp_lhdr) {
 		unsigned char *bhs;
-<<<<<<< HEAD
-		unsigned int hlen, dlen;
-=======
 		unsigned int hlen, dlen, plen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_PDU_RX,
 			"csk 0x%p,%u,0x%lx, tid %u, skb 0x%p header.\n",
@@ -1666,12 +1291,8 @@ static void do_rx_iscsi_hdr(struct cxgbi_device *cdev, struct sk_buff *skb)
 		csk->skb_ulp_lhdr = skb;
 		cxgbi_skcb_set_flag(skb, SKCBF_RX_HDR);
 
-<<<<<<< HEAD
-		if (cxgbi_skcb_tcp_seq(skb) != csk->rcv_nxt) {
-=======
 		if ((CHELSIO_CHIP_VERSION(lldi->adapter_type) <= CHELSIO_T5) &&
 		    (cxgbi_skcb_tcp_seq(skb) != csk->rcv_nxt)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_info("tid %u, CPL_ISCSI_HDR, bad seq, 0x%x/0x%x.\n",
 				csk->tid, cxgbi_skcb_tcp_seq(skb),
 				csk->rcv_nxt);
@@ -1682,13 +1303,6 @@ static void do_rx_iscsi_hdr(struct cxgbi_device *cdev, struct sk_buff *skb)
 		hlen = ntohs(cpl->len);
 		dlen = ntohl(*(unsigned int *)(bhs + 4)) & 0xFFFFFF;
 
-<<<<<<< HEAD
-		if ((hlen + dlen) != ISCSI_PDU_LEN(pdu_len_ddp) - 40) {
-			pr_info("tid 0x%x, CPL_ISCSI_HDR, pdu len "
-				"mismatch %u != %u + %u, seq 0x%x.\n",
-				csk->tid, ISCSI_PDU_LEN(pdu_len_ddp) - 40,
-				hlen, dlen, cxgbi_skcb_tcp_seq(skb));
-=======
 		plen = ISCSI_PDU_LEN_G(pdu_len_ddp);
 		if (is_t4(lldi->adapter_type))
 			plen -= 40;
@@ -1698,7 +1312,6 @@ static void do_rx_iscsi_hdr(struct cxgbi_device *cdev, struct sk_buff *skb)
 				"mismatch %u != %u + %u, seq 0x%x.\n",
 				csk->tid, plen, hlen, dlen,
 				cxgbi_skcb_tcp_seq(skb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto abort_conn;
 		}
 
@@ -1734,8 +1347,6 @@ rel_skb:
 	__kfree_skb(skb);
 }
 
-<<<<<<< HEAD
-=======
 static void do_rx_iscsi_data(struct cxgbi_device *cdev, struct sk_buff *skb)
 {
 	struct cxgbi_sock *csk;
@@ -1831,7 +1442,6 @@ cxgb4i_process_ddpvld(struct cxgbi_sock *csk,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void do_rx_data_ddp(struct cxgbi_device *cdev,
 				  struct sk_buff *skb)
 {
@@ -1841,11 +1451,7 @@ static void do_rx_data_ddp(struct cxgbi_device *cdev,
 	unsigned int tid = GET_TID(rpl);
 	struct cxgb4_lld_info *lldi = cxgbi_cdev_priv(cdev);
 	struct tid_info *t = lldi->tids;
-<<<<<<< HEAD
-	unsigned int status = ntohl(rpl->ddpvld);
-=======
 	u32 ddpvld = be32_to_cpu(rpl->ddpvld);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	csk = lookup_tid(t, tid);
 	if (unlikely(!csk)) {
@@ -1855,11 +1461,7 @@ static void do_rx_data_ddp(struct cxgbi_device *cdev,
 
 	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_PDU_RX,
 		"csk 0x%p,%u,0x%lx, skb 0x%p,0x%x, lhdr 0x%p.\n",
-<<<<<<< HEAD
-		csk, csk->state, csk->flags, skb, status, csk->skb_ulp_lhdr);
-=======
 		csk, csk->state, csk->flags, skb, ddpvld, csk->skb_ulp_lhdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&csk->lock);
 
@@ -1887,34 +1489,8 @@ static void do_rx_data_ddp(struct cxgbi_device *cdev,
 		pr_info("tid 0x%x, RX_DATA_DDP pdulen %u != %u.\n",
 			csk->tid, ntohs(rpl->len), cxgbi_skcb_rx_pdulen(lskb));
 
-<<<<<<< HEAD
-	if (status & (1 << CPL_RX_DDP_STATUS_HCRC_SHIFT)) {
-		pr_info("csk 0x%p, lhdr 0x%p, status 0x%x, hcrc bad 0x%lx.\n",
-			csk, lskb, status, cxgbi_skcb_flags(lskb));
-		cxgbi_skcb_set_flag(lskb, SKCBF_RX_HCRC_ERR);
-	}
-	if (status & (1 << CPL_RX_DDP_STATUS_DCRC_SHIFT)) {
-		pr_info("csk 0x%p, lhdr 0x%p, status 0x%x, dcrc bad 0x%lx.\n",
-			csk, lskb, status, cxgbi_skcb_flags(lskb));
-		cxgbi_skcb_set_flag(lskb, SKCBF_RX_DCRC_ERR);
-	}
-	if (status & (1 << CPL_RX_DDP_STATUS_PAD_SHIFT)) {
-		log_debug(1 << CXGBI_DBG_PDU_RX,
-			"csk 0x%p, lhdr 0x%p, status 0x%x, pad bad.\n",
-			csk, lskb, status);
-		cxgbi_skcb_set_flag(lskb, SKCBF_RX_PAD_ERR);
-	}
-	if ((status & (1 << CPL_RX_DDP_STATUS_DDP_SHIFT)) &&
-		!cxgbi_skcb_test_flag(lskb, SKCBF_RX_DATA)) {
-		log_debug(1 << CXGBI_DBG_PDU_RX,
-			"csk 0x%p, lhdr 0x%p, 0x%x, data ddp'ed.\n",
-			csk, lskb, status);
-		cxgbi_skcb_set_flag(lskb, SKCBF_RX_DATA_DDPD);
-	}
-=======
 	cxgb4i_process_ddpvld(csk, lskb, ddpvld);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	log_debug(1 << CXGBI_DBG_PDU_RX,
 		"csk 0x%p, lskb 0x%p, f 0x%lx.\n",
 		csk, lskb, cxgbi_skcb_flags(lskb));
@@ -1932,8 +1508,6 @@ rel_skb:
 	__kfree_skb(skb);
 }
 
-<<<<<<< HEAD
-=======
 static void
 do_rx_iscsi_cmp(struct cxgbi_device *cdev, struct sk_buff *skb)
 {
@@ -2026,7 +1600,6 @@ rel_skb:
 	__kfree_skb(skb);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void do_fw4_ack(struct cxgbi_device *cdev, struct sk_buff *skb)
 {
 	struct cxgbi_sock *csk;
@@ -2057,25 +1630,15 @@ static void do_set_tcb_rpl(struct cxgbi_device *cdev, struct sk_buff *skb)
 	struct cxgbi_sock *csk;
 
 	csk = lookup_tid(t, tid);
-<<<<<<< HEAD
-	if (!csk)
-		pr_err("can't find conn. for tid %u.\n", tid);
-=======
 	if (!csk) {
 		pr_err("can't find conn. for tid %u.\n", tid);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
 		"csk 0x%p,%u,%lx,%u, status 0x%x.\n",
 		csk, csk->state, csk->flags, csk->tid, rpl->status);
 
-<<<<<<< HEAD
-	if (rpl->status != CPL_ERR_NONE)
-		pr_err("csk 0x%p,%u, SET_TCB_RPL status %u.\n",
-			csk, tid, rpl->status);
-=======
 	if (rpl->status != CPL_ERR_NONE) {
 		pr_err("csk 0x%p,%u, SET_TCB_RPL status %u.\n",
 			csk, tid, rpl->status);
@@ -2083,7 +1646,6 @@ static void do_set_tcb_rpl(struct cxgbi_device *cdev, struct sk_buff *skb)
 	}
 
 	complete(&csk->cmpl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__kfree_skb(skb);
 }
@@ -2123,56 +1685,38 @@ static inline void l2t_put(struct cxgbi_sock *csk)
 static void release_offload_resources(struct cxgbi_sock *csk)
 {
 	struct cxgb4_lld_info *lldi;
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 	struct net_device *ndev = csk->cdev->ports[csk->port_id];
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
 		"csk 0x%p,%u,0x%lx,%u.\n",
 		csk, csk->state, csk->flags, csk->tid);
 
 	cxgbi_sock_free_cpl_skbs(csk);
-<<<<<<< HEAD
-=======
 	cxgbi_sock_purge_write_queue(csk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (csk->wr_cred != csk->wr_max_cred) {
 		cxgbi_sock_purge_wr_queue(csk);
 		cxgbi_sock_reset_wr_list(csk);
 	}
 
 	l2t_put(csk);
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 	if (csk->csk_family == AF_INET6)
 		cxgb4_clip_release(ndev,
 				   (const u32 *)&csk->saddr6.sin6_addr, 1);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cxgbi_sock_flag(csk, CTPF_HAS_ATID))
 		free_atid(csk);
 	else if (cxgbi_sock_flag(csk, CTPF_HAS_TID)) {
 		lldi = cxgbi_cdev_priv(csk->cdev);
-<<<<<<< HEAD
-		cxgb4_remove_tid(lldi->tids, 0, csk->tid);
-=======
 		cxgb4_remove_tid(lldi->tids, 0, csk->tid,
 				 csk->csk_family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cxgbi_sock_clear_flag(csk, CTPF_HAS_TID);
 		cxgbi_sock_put(csk);
 	}
 	csk->dst = NULL;
-<<<<<<< HEAD
-	csk->cdev = NULL;
-}
-
-=======
 }
 
 #ifdef CONFIG_CHELSIO_T4_DCB
@@ -2219,19 +1763,11 @@ static u8 get_iscsi_dcb_priority(struct net_device *ndev)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int init_act_open(struct cxgbi_sock *csk)
 {
 	struct cxgbi_device *cdev = csk->cdev;
 	struct cxgb4_lld_info *lldi = cxgbi_cdev_priv(cdev);
 	struct net_device *ndev = cdev->ports[csk->port_id];
-<<<<<<< HEAD
-	struct port_info *pi = netdev_priv(ndev);
-	struct sk_buff *skb = NULL;
-	struct neighbour *n;
-	unsigned int step;
-
-=======
 	struct sk_buff *skb = NULL;
 	struct neighbour *n = NULL;
 	void *daddr;
@@ -2243,22 +1779,10 @@ static int init_act_open(struct cxgbi_sock *csk)
 #ifdef CONFIG_CHELSIO_T4_DCB
 	u8 priority = 0;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
 		"csk 0x%p,%u,0x%lx,%u.\n",
 		csk, csk->state, csk->flags, csk->tid);
 
-<<<<<<< HEAD
-	csk->atid = cxgb4_alloc_atid(lldi->tids, csk);
-	if (csk->atid < 0) {
-		pr_err("%s, NO atid available.\n", ndev->name);
-		return -EINVAL;
-	}
-	cxgbi_sock_set_flag(csk, CTPF_HAS_ATID);
-	cxgbi_sock_get(csk);
-
-	n = dst_get_neighbour_noref(csk->dst);
-=======
 	if (csk->csk_family == AF_INET)
 		daddr = &csk->daddr.sin_addr.s_addr;
 #if IS_ENABLED(CONFIG_IPV6)
@@ -2272,21 +1796,10 @@ static int init_act_open(struct cxgbi_sock *csk)
 
 	n = dst_neigh_lookup(csk->dst, daddr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!n) {
 		pr_err("%s, can't get neighbour of csk->dst.\n", ndev->name);
 		goto rel_resource;
 	}
-<<<<<<< HEAD
-	csk->l2t = cxgb4_l2t_get(lldi->l2t, n, ndev, 0);
-	if (!csk->l2t) {
-		pr_err("%s, cannot alloc l2t.\n", ndev->name);
-		goto rel_resource;
-	}
-	cxgbi_sock_get(csk);
-
-	skb = alloc_wr(sizeof(struct cpl_act_open_req), 0, GFP_KERNEL);
-=======
 
 	if (!(n->nud_state & NUD_VALID))
 		neigh_event_send(n, NULL);
@@ -2337,7 +1850,6 @@ static int init_act_open(struct cxgbi_sock *csk)
 		skb = alloc_wr(size6, 0, GFP_NOIO);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb)
 		goto rel_resource;
 	skb->sk = (struct sock *)csk;
@@ -2347,29 +1859,6 @@ static int init_act_open(struct cxgbi_sock *csk)
 		csk->mtu = dst_mtu(csk->dst);
 	cxgb4_best_mtu(lldi->mtus, csk->mtu, &csk->mss_idx);
 	csk->tx_chan = cxgb4_port_chan(ndev);
-<<<<<<< HEAD
-	/* SMT two entries per row */
-	csk->smac_idx = ((cxgb4_port_viid(ndev) & 0x7F)) << 1;
-	step = lldi->ntxq / lldi->nchan;
-	csk->txq_idx = cxgb4_port_idx(ndev) * step;
-	step = lldi->nrxq / lldi->nchan;
-	csk->rss_qid = lldi->rxq_ids[cxgb4_port_idx(ndev) * step];
-	csk->wr_max_cred = csk->wr_cred = lldi->wr_cred;
-	csk->wr_una_cred = 0;
-	cxgbi_sock_reset_wr_list(csk);
-	csk->err = 0;
-	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
-		"csk 0x%p,p%d,%s, %u,%u,%u, mss %u,%u, smac %u.\n",
-		csk, pi->port_id, ndev->name, csk->tx_chan,
-		csk->txq_idx, csk->rss_qid, csk->mtu, csk->mss_idx,
-		csk->smac_idx);
-
-	cxgbi_sock_set_state(csk, CTP_ACTIVE_OPEN);
-	send_act_open_req(csk, skb, csk->l2t);
-	return 0;
-
-rel_resource:
-=======
 	csk->smac_idx = ((struct port_info *)netdev_priv(ndev))->smt_idx;
 	step = lldi->ntxq / lldi->nchan;
 	csk->txq_idx = cxgb4_port_idx(ndev) * step;
@@ -2430,17 +1919,12 @@ rel_resource:
 rel_resource_without_clip:
 	if (n)
 		neigh_release(n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (skb)
 		__kfree_skb(skb);
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-cxgb4i_cplhandler_func cxgb4i_cplhandlers[NUM_CPL_CMDS] = {
-=======
 static cxgb4i_cplhandler_func cxgb4i_cplhandlers[NUM_CPL_CMDS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[CPL_ACT_ESTABLISH] = do_act_establish,
 	[CPL_ACT_OPEN_RPL] = do_act_open_rpl,
 	[CPL_PEER_CLOSE] = do_peer_close,
@@ -2449,13 +1933,6 @@ static cxgb4i_cplhandler_func cxgb4i_cplhandlers[NUM_CPL_CMDS] = {
 	[CPL_CLOSE_CON_RPL] = do_close_con_rpl,
 	[CPL_FW4_ACK] = do_fw4_ack,
 	[CPL_ISCSI_HDR] = do_rx_iscsi_hdr,
-<<<<<<< HEAD
-	[CPL_SET_TCB_RPL] = do_set_tcb_rpl,
-	[CPL_RX_DATA_DDP] = do_rx_data_ddp,
-};
-
-int cxgb4i_ofld_init(struct cxgbi_device *cdev)
-=======
 	[CPL_ISCSI_DATA] = do_rx_iscsi_data,
 	[CPL_SET_TCB_RPL] = do_set_tcb_rpl,
 	[CPL_RX_DATA_DDP] = do_rx_data_ddp,
@@ -2465,7 +1942,6 @@ int cxgb4i_ofld_init(struct cxgbi_device *cdev)
 };
 
 static int cxgb4i_ofld_init(struct cxgbi_device *cdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 
@@ -2489,107 +1965,6 @@ static int cxgb4i_ofld_init(struct cxgbi_device *cdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * functions to program the pagepod in h/w
- */
-#define ULPMEM_IDATA_MAX_NPPODS	4 /* 256/PPOD_SIZE */
-static inline void ulp_mem_io_set_hdr(struct ulp_mem_io *req,
-				unsigned int wr_len, unsigned int dlen,
-				unsigned int pm_addr)
-{
-	struct ulptx_idata *idata = (struct ulptx_idata *)(req + 1);
-
-	INIT_ULPTX_WR(req, wr_len, 0, 0);
-	req->cmd = htonl(ULPTX_CMD(ULP_TX_MEM_WRITE) | (1 << 23));
-	req->dlen = htonl(ULP_MEMIO_DATA_LEN(dlen >> 5));
-	req->lock_addr = htonl(ULP_MEMIO_ADDR(pm_addr >> 5));
-	req->len16 = htonl(DIV_ROUND_UP(wr_len - sizeof(req->wr), 16));
-
-	idata->cmd_more = htonl(ULPTX_CMD(ULP_TX_SC_IMM));
-	idata->len = htonl(dlen);
-}
-
-static int ddp_ppod_write_idata(struct cxgbi_device *cdev, unsigned int port_id,
-				struct cxgbi_pagepod_hdr *hdr, unsigned int idx,
-				unsigned int npods,
-				struct cxgbi_gather_list *gl,
-				unsigned int gl_pidx)
-{
-	struct cxgbi_ddp_info *ddp = cdev->ddp;
-	struct sk_buff *skb;
-	struct ulp_mem_io *req;
-	struct ulptx_idata *idata;
-	struct cxgbi_pagepod *ppod;
-	unsigned int pm_addr = idx * PPOD_SIZE + ddp->llimit;
-	unsigned int dlen = PPOD_SIZE * npods;
-	unsigned int wr_len = roundup(sizeof(struct ulp_mem_io) +
-				sizeof(struct ulptx_idata) + dlen, 16);
-	unsigned int i;
-
-	skb = alloc_wr(wr_len, 0, GFP_ATOMIC);
-	if (!skb) {
-		pr_err("cdev 0x%p, idx %u, npods %u, OOM.\n",
-			cdev, idx, npods);
-		return -ENOMEM;
-	}
-	req = (struct ulp_mem_io *)skb->head;
-	set_queue(skb, CPL_PRIORITY_CONTROL, NULL);
-
-	ulp_mem_io_set_hdr(req, wr_len, dlen, pm_addr);
-	idata = (struct ulptx_idata *)(req + 1);
-	ppod = (struct cxgbi_pagepod *)(idata + 1);
-
-	for (i = 0; i < npods; i++, ppod++, gl_pidx += PPOD_PAGES_MAX) {
-		if (!hdr && !gl)
-			cxgbi_ddp_ppod_clear(ppod);
-		else
-			cxgbi_ddp_ppod_set(ppod, hdr, gl, gl_pidx);
-	}
-
-	cxgb4_ofld_send(cdev->ports[port_id], skb);
-	return 0;
-}
-
-static int ddp_set_map(struct cxgbi_sock *csk, struct cxgbi_pagepod_hdr *hdr,
-			unsigned int idx, unsigned int npods,
-			struct cxgbi_gather_list *gl)
-{
-	unsigned int i, cnt;
-	int err = 0;
-
-	for (i = 0; i < npods; i += cnt, idx += cnt) {
-		cnt = npods - i;
-		if (cnt > ULPMEM_IDATA_MAX_NPPODS)
-			cnt = ULPMEM_IDATA_MAX_NPPODS;
-		err = ddp_ppod_write_idata(csk->cdev, csk->port_id, hdr,
-					idx, cnt, gl, 4 * i);
-		if (err < 0)
-			break;
-	}
-	return err;
-}
-
-static void ddp_clear_map(struct cxgbi_hba *chba, unsigned int tag,
-			  unsigned int idx, unsigned int npods)
-{
-	unsigned int i, cnt;
-	int err;
-
-	for (i = 0; i < npods; i += cnt, idx += cnt) {
-		cnt = npods - i;
-		if (cnt > ULPMEM_IDATA_MAX_NPPODS)
-			cnt = ULPMEM_IDATA_MAX_NPPODS;
-		err = ddp_ppod_write_idata(chba->cdev, chba->port_id, NULL,
-					idx, cnt, NULL, 0);
-		if (err < 0)
-			break;
-	}
-}
-
-static int ddp_setup_conn_pgidx(struct cxgbi_sock *csk, unsigned int tid,
-				int pg_idx, bool reply)
-=======
 static inline void
 ulp_mem_io_set_hdr(struct cxgbi_device *cdev,
 		   struct ulp_mem_io *req,
@@ -2701,7 +2076,6 @@ static int ddp_set_map(struct cxgbi_ppm *ppm, struct cxgbi_sock *csk,
 
 static int ddp_setup_conn_pgidx(struct cxgbi_sock *csk, unsigned int tid,
 				int pg_idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb;
 	struct cpl_set_tcb_field *req;
@@ -2717,11 +2091,7 @@ static int ddp_setup_conn_pgidx(struct cxgbi_sock *csk, unsigned int tid,
 	req = (struct cpl_set_tcb_field *)skb->head;
 	INIT_TP_WR(req, csk->tid);
 	OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_SET_TCB_FIELD, csk->tid));
-<<<<<<< HEAD
-	req->reply_ctrl = htons(NO_REPLY(reply) | QUEUENO(csk->rss_qid));
-=======
 	req->reply_ctrl = htons(NO_REPLY_V(0) | QUEUENO_V(csk->rss_qid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->word_cookie = htons(0);
 	req->mask = cpu_to_be64(0x3 << 8);
 	req->val = cpu_to_be64(pg_idx << 8);
@@ -2730,14 +2100,6 @@ static int ddp_setup_conn_pgidx(struct cxgbi_sock *csk, unsigned int tid,
 	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
 		"csk 0x%p, tid 0x%x, pg_idx %u.\n", csk, csk->tid, pg_idx);
 
-<<<<<<< HEAD
-	cxgb4_ofld_send(csk->cdev->ports[csk->port_id], skb);
-	return 0;
-}
-
-static int ddp_setup_conn_digest(struct cxgbi_sock *csk, unsigned int tid,
-				 int hcrc, int dcrc, int reply)
-=======
 	reinit_completion(&csk->cmpl);
 	cxgb4_ofld_send(csk->cdev->ports[csk->port_id], skb);
 	wait_for_completion(&csk->cmpl);
@@ -2747,7 +2109,6 @@ static int ddp_setup_conn_digest(struct cxgbi_sock *csk, unsigned int tid,
 
 static int ddp_setup_conn_digest(struct cxgbi_sock *csk, unsigned int tid,
 				 int hcrc, int dcrc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb;
 	struct cpl_set_tcb_field *req;
@@ -2765,11 +2126,7 @@ static int ddp_setup_conn_digest(struct cxgbi_sock *csk, unsigned int tid,
 	req = (struct cpl_set_tcb_field *)skb->head;
 	INIT_TP_WR(req, tid);
 	OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_SET_TCB_FIELD, tid));
-<<<<<<< HEAD
-	req->reply_ctrl = htons(NO_REPLY(reply) | QUEUENO(csk->rss_qid));
-=======
 	req->reply_ctrl = htons(NO_REPLY_V(0) | QUEUENO_V(csk->rss_qid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->word_cookie = htons(0);
 	req->mask = cpu_to_be64(0x3 << 4);
 	req->val = cpu_to_be64(((hcrc ? ULP_CRC_HEADER : 0) |
@@ -2779,10 +2136,6 @@ static int ddp_setup_conn_digest(struct cxgbi_sock *csk, unsigned int tid,
 	log_debug(1 << CXGBI_DBG_TOE | 1 << CXGBI_DBG_SOCK,
 		"csk 0x%p, tid 0x%x, crc %d,%d.\n", csk, csk->tid, hcrc, dcrc);
 
-<<<<<<< HEAD
-	cxgb4_ofld_send(csk->cdev->ports[csk->port_id], skb);
-	return 0;
-=======
 	reinit_completion(&csk->cmpl);
 	cxgb4_ofld_send(csk->cdev->ports[csk->port_id], skb);
 	wait_for_completion(&csk->cmpl);
@@ -2794,56 +2147,11 @@ static struct cxgbi_ppm *cdev2ppm(struct cxgbi_device *cdev)
 {
 	return (struct cxgbi_ppm *)(*((struct cxgb4_lld_info *)
 				       (cxgbi_cdev_priv(cdev)))->iscsi_ppm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cxgb4i_ddp_init(struct cxgbi_device *cdev)
 {
 	struct cxgb4_lld_info *lldi = cxgbi_cdev_priv(cdev);
-<<<<<<< HEAD
-	struct cxgbi_ddp_info *ddp = cdev->ddp;
-	unsigned int tagmask, pgsz_factor[4];
-	int err;
-
-	if (ddp) {
-		kref_get(&ddp->refcnt);
-		pr_warn("cdev 0x%p, ddp 0x%p already set up.\n",
-			cdev, cdev->ddp);
-		return -EALREADY;
-	}
-
-	err = cxgbi_ddp_init(cdev, lldi->vr->iscsi.start,
-			lldi->vr->iscsi.start + lldi->vr->iscsi.size - 1,
-			lldi->iscsi_iolen, lldi->iscsi_iolen);
-	if (err < 0)
-		return err;
-
-	ddp = cdev->ddp;
-
-	tagmask = ddp->idx_mask << PPOD_IDX_SHIFT;
-	cxgbi_ddp_page_size_factor(pgsz_factor);
-	cxgb4_iscsi_init(lldi->ports[0], tagmask, pgsz_factor);
-
-	cdev->csk_ddp_setup_digest = ddp_setup_conn_digest;
-	cdev->csk_ddp_setup_pgidx = ddp_setup_conn_pgidx;
-	cdev->csk_ddp_set = ddp_set_map;
-	cdev->csk_ddp_clear = ddp_clear_map;
-
-	pr_info("cxgb4i 0x%p tag: sw %u, rsvd %u,%u, mask 0x%x.\n",
-		cdev, cdev->tag_format.sw_bits, cdev->tag_format.rsvd_bits,
-		cdev->tag_format.rsvd_shift, cdev->tag_format.rsvd_mask);
-	pr_info("cxgb4i 0x%p, nppods %u, bits %u, mask 0x%x,0x%x pkt %u/%u, "
-		" %u/%u.\n",
-		cdev, ddp->nppods, ddp->idx_bits, ddp->idx_mask,
-		ddp->rsvd_tag_mask, ddp->max_txsz, lldi->iscsi_iolen,
-		ddp->max_rxsz, lldi->iscsi_iolen);
-	pr_info("cxgb4i 0x%p max payload size: %u/%u, %u/%u.\n",
-		cdev, cdev->tx_max_size, ddp->max_txsz, cdev->rx_max_size,
-		ddp->max_rxsz);
-	return 0;
-}
-
-=======
 	struct net_device *ndev = cdev->ports[0];
 	struct cxgbi_tag_format tformat;
 	int i, err;
@@ -2900,19 +2208,15 @@ static bool is_memfree(struct adapter *adap)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *t4_uld_add(const struct cxgb4_lld_info *lldi)
 {
 	struct cxgbi_device *cdev;
 	struct port_info *pi;
-<<<<<<< HEAD
-=======
 	struct net_device *ndev;
 	struct adapter *adap;
 	struct tid_info *t;
 	u32 max_cmds = CXGB4I_SCSI_HOST_QDEPTH;
 	u32 max_conn = CXGBI_MAX_CONN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, rc;
 
 	cdev = cxgbi_device_register(sizeof(*lldi), lldi->nports);
@@ -2936,16 +2240,6 @@ static void *t4_uld_add(const struct cxgb4_lld_info *lldi)
 	cdev->nports = lldi->nports;
 	cdev->mtus = lldi->mtus;
 	cdev->nmtus = NMTUS;
-<<<<<<< HEAD
-	cdev->snd_win = cxgb4i_snd_win;
-	cdev->rcv_win = cxgb4i_rcv_win;
-	cdev->rx_credit_thres = cxgb4i_rx_credit_thres;
-	cdev->skb_tx_rsvd = CXGB4I_TX_HEADER_LEN;
-	cdev->skb_rx_extra = sizeof(struct cpl_iscsi_hdr);
-	cdev->itp = &cxgb4i_iscsi_transport;
-
-	cdev->pfvf = FW_VIID_PFN_GET(cxgb4_port_viid(lldi->ports[0])) << 8;
-=======
 	cdev->rx_credit_thres = (CHELSIO_CHIP_VERSION(lldi->adapter_type) <=
 				 CHELSIO_T5) ? cxgb4i_rx_credit_thres : 0;
 	cdev->skb_tx_rsvd = CXGB4I_TX_HEADER_LEN;
@@ -2954,17 +2248,11 @@ static void *t4_uld_add(const struct cxgb4_lld_info *lldi)
 	cdev->owner = THIS_MODULE;
 
 	cdev->pfvf = FW_PFVF_CMD_PFN_V(lldi->pf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_info("cdev 0x%p,%s, pfvf %u.\n",
 		cdev, lldi->ports[0]->name, cdev->pfvf);
 
 	rc = cxgb4i_ddp_init(cdev);
 	if (rc) {
-<<<<<<< HEAD
-		pr_info("t4 0x%p ddp init failed.\n", cdev);
-		goto err_out;
-	}
-=======
 		pr_info("t4 0x%p ddp init failed %d.\n", cdev, rc);
 		goto err_out;
 	}
@@ -2993,21 +2281,15 @@ static void *t4_uld_add(const struct cxgb4_lld_info *lldi)
 	    !(cdev->flags & CXGBI_FLAG_DEV_ISO_OFF))
 		cdev->skb_iso_txhdr = sizeof(struct cpl_tx_data_iso);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = cxgb4i_ofld_init(cdev);
 	if (rc) {
 		pr_info("t4 0x%p ofld init failed.\n", cdev);
 		goto err_out;
 	}
 
-<<<<<<< HEAD
-	rc = cxgbi_hbas_add(cdev, CXGB4I_MAX_LUN, CXGBI_MAX_CONN,
-				&cxgb4i_host_template, cxgb4i_stt);
-=======
 	cxgb4i_host_template.can_queue = max_cmds;
 	rc = cxgbi_hbas_add(cdev, CXGB4I_MAX_LUN, max_conn,
 			    &cxgb4i_host_template, cxgb4i_stt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto err_out;
 
@@ -3056,21 +2338,12 @@ static int t4_uld_rx_handler(void *handle, const __be64 *rsp,
 	log_debug(1 << CXGBI_DBG_TOE,
 		"cdev %p, opcode 0x%x(0x%x,0x%x), skb %p.\n",
 		 cdev, opc, rpl->ot.opcode_tid, ntohl(rpl->ot.opcode_tid), skb);
-<<<<<<< HEAD
-	if (cxgb4i_cplhandlers[opc])
-		cxgb4i_cplhandlers[opc](cdev, skb);
-	else {
-		pr_err("No handler for opcode 0x%x.\n", opc);
-		__kfree_skb(skb);
-	}
-=======
 	if (opc >= ARRAY_SIZE(cxgb4i_cplhandlers) || !cxgb4i_cplhandlers[opc]) {
 		pr_err("No handler for opcode 0x%x.\n", opc);
 		__kfree_skb(skb);
 	} else
 		cxgb4i_cplhandlers[opc](cdev, skb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 nomem:
 	log_debug(1 << CXGBI_DBG_TOE, "OOM bailing out.\n");
@@ -3084,10 +2357,6 @@ static int t4_uld_state_change(void *handle, enum cxgb4_state state)
 	switch (state) {
 	case CXGB4_STATE_UP:
 		pr_info("cdev 0x%p, UP.\n", cdev);
-<<<<<<< HEAD
-		/* re-initialize */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CXGB4_STATE_START_RECOVERY:
 		pr_info("cdev 0x%p, RECOVERY.\n", cdev);
@@ -3098,10 +2367,7 @@ static int t4_uld_state_change(void *handle, enum cxgb4_state state)
 		break;
 	case CXGB4_STATE_DETACH:
 		pr_info("cdev 0x%p, DETACH.\n", cdev);
-<<<<<<< HEAD
-=======
 		cxgbi_device_unregister(cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		pr_info("cdev 0x%p, unknown state %d.\n", cdev, state);
@@ -3110,8 +2376,6 @@ static int t4_uld_state_change(void *handle, enum cxgb4_state state)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_CHELSIO_T4_DCB
 static int
 cxgb4_dcb_change_notify(struct notifier_block *self, unsigned long val,
@@ -3177,7 +2441,6 @@ cxgb4_dcb_change_notify(struct notifier_block *self, unsigned long val,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init cxgb4i_init_module(void)
 {
 	int rc;
@@ -3188,25 +2451,19 @@ static int __init cxgb4i_init_module(void)
 	if (rc < 0)
 		return rc;
 	cxgb4_register_uld(CXGB4_ULD_ISCSI, &cxgb4i_uld_info);
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_CHELSIO_T4_DCB
 	pr_info("%s dcb enabled.\n", DRV_MODULE_NAME);
 	register_dcbevent_notifier(&cxgb4_dcb_change);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void __exit cxgb4i_exit_module(void)
 {
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_CHELSIO_T4_DCB
 	unregister_dcbevent_notifier(&cxgb4_dcb_change);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cxgb4_unregister_uld(CXGB4_ULD_ISCSI);
 	cxgbi_device_unregister_all(CXGBI_FLAG_DEV_T4);
 	cxgbi_iscsi_cleanup(&cxgb4i_iscsi_transport, &cxgb4i_stt);

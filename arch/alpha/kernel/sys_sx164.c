@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/sys_sx164.c
  *
@@ -25,10 +22,6 @@
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_cia.h>
 #include <asm/hwrpb.h>
 #include <asm/tlbflush.h>
@@ -60,12 +53,8 @@ sx164_init_irq(void)
 	else
 		init_pyxis_irqs(0xff00003f0000UL);
 
-<<<<<<< HEAD
-	setup_irq(16+6, &timer_cascade_irqaction);
-=======
 	if (request_irq(16 + 6, no_action, 0, "timer-cascade", NULL))
 		pr_err("Failed to register timer-cascade interrupt\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -106,17 +95,10 @@ sx164_init_irq(void)
  *   9  32 bit PCI option slot 3
  */
 
-<<<<<<< HEAD
-static int __init
-sx164_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	static char irq_tab[5][5] __initdata = {
-=======
 static int
 sx164_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[5][5] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		{ 16+ 9, 16+ 9, 16+13, 16+17, 16+21}, /* IdSel 5 slot 2 J17 */
 		{ 16+11, 16+11, 16+15, 16+19, 16+23}, /* IdSel 6 slot 0 J19 */

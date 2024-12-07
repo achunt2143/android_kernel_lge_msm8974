@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_XEN_INTERFACE_64_H
 #define _ASM_X86_XEN_INTERFACE_64_H
 
@@ -64,11 +61,7 @@
  *   RING1 -> RING3 kernel mode.
  *   RING2 -> RING3 kernel mode.
  *   RING3 -> RING3 user mode.
-<<<<<<< HEAD
- * However RING0 indicates that the guest kernel should return to iteself
-=======
  * However RING0 indicates that the guest kernel should return to itself
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * directly with
  *      orb   $3,1*8(%rsp)
  *      iretq

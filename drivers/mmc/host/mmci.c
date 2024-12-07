@@ -1,46 +1,23 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/mmc/host/mmci.c - ARM PrimeCell MMCI PL180/1 driver
  *
  *  Copyright (C) 2003 Deep Blue Solutions, Ltd, All Rights Reserved.
  *  Copyright (C) 2010 ST-Ericsson SA
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
 #include <linux/ioport.h>
 #include <linux/device.h>
-<<<<<<< HEAD
-#include <linux/interrupt.h>
-#include <linux/kernel.h>
-=======
 #include <linux/io.h>
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/err.h>
 #include <linux/highmem.h>
 #include <linux/log2.h>
-<<<<<<< HEAD
-#include <linux/mmc/host.h>
-#include <linux/mmc/card.h>
-#include <linux/amba/bus.h>
-#include <linux/clk.h>
-#include <linux/scatterlist.h>
-#include <linux/gpio.h>
-=======
 #include <linux/mmc/mmc.h>
 #include <linux/mmc/pm.h>
 #include <linux/mmc/host.h>
@@ -51,19 +28,12 @@
 #include <linux/clk.h>
 #include <linux/scatterlist.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/regulator/consumer.h>
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
 #include <linux/amba/mmci.h>
 #include <linux/pm_runtime.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-
-#include <asm/div64.h>
-#include <asm/io.h>
-#include <asm/sizes.h>
-=======
 #include <linux/pinctrl/consumer.h>
 #include <linux/reset.h>
 #include <linux/gpio/consumer.h>
@@ -71,57 +41,20 @@
 
 #include <asm/div64.h>
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "mmci.h"
 
 #define DRIVER_NAME "mmci-pl18x"
 
-<<<<<<< HEAD
-static unsigned int fmax = 515633;
-
-/**
- * struct variant_data - MMCI variant-specific quirks
- * @clkreg: default value for MCICLOCK register
- * @clkreg_enable: enable value for MMCICLOCK register
- * @datalength_bits: number of bits in the MMCIDATALENGTH register
- * @fifosize: number of bytes that can be written when MMCI_TXFIFOEMPTY
- *	      is asserted (likewise for RX)
- * @fifohalfsize: number of bytes that can be written when MCI_TXFIFOHALFEMPTY
- *		  is asserted (likewise for RX)
- * @sdio: variant supports SDIO
- * @st_clkdiv: true if using a ST-specific clock divider algorithm
- * @blksz_datactrl16: true if Block size is at b16..b30 position in datactrl register
- * @pwrreg_powerup: power up value for MMCIPOWER register
- * @signal_direction: input/out direction of bus signals can be indicated
- */
-struct variant_data {
-	unsigned int		clkreg;
-	unsigned int		clkreg_enable;
-	unsigned int		datalength_bits;
-	unsigned int		fifosize;
-	unsigned int		fifohalfsize;
-	bool			sdio;
-	bool			st_clkdiv;
-	bool			blksz_datactrl16;
-	u32			pwrreg_powerup;
-	bool			signal_direction;
-};
-=======
 static void mmci_variant_init(struct mmci_host *host);
 static void ux500_variant_init(struct mmci_host *host);
 static void ux500v2_variant_init(struct mmci_host *host);
 
 static unsigned int fmax = 515633;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct variant_data variant_arm = {
 	.fifosize		= 16 * 4,
 	.fifohalfsize		= 8 * 4,
-<<<<<<< HEAD
-	.datalength_bits	= 16,
-	.pwrreg_powerup		= MCI_PWR_UP,
-=======
 	.cmdreg_cpsm_enable	= MCI_CPSM_ENABLE,
 	.cmdreg_lrsp_crc	= MCI_CPSM_RESPONSE | MCI_CPSM_LONGRSP,
 	.cmdreg_srsp_crc	= MCI_CPSM_RESPONSE,
@@ -136,16 +69,11 @@ static struct variant_data variant_arm = {
 	.start_err		= MCI_STARTBITERR,
 	.opendrain		= MCI_ROD,
 	.init			= mmci_variant_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct variant_data variant_arm_extended_fifo = {
 	.fifosize		= 128 * 4,
 	.fifohalfsize		= 64 * 4,
-<<<<<<< HEAD
-	.datalength_bits	= 16,
-	.pwrreg_powerup		= MCI_PWR_UP,
-=======
 	.cmdreg_cpsm_enable	= MCI_CPSM_ENABLE,
 	.cmdreg_lrsp_crc	= MCI_CPSM_RESPONSE | MCI_CPSM_LONGRSP,
 	.cmdreg_srsp_crc	= MCI_CPSM_RESPONSE,
@@ -178,19 +106,12 @@ static struct variant_data variant_arm_extended_fifo_hwfc = {
 	.start_err		= MCI_STARTBITERR,
 	.opendrain		= MCI_ROD,
 	.init			= mmci_variant_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct variant_data variant_u300 = {
 	.fifosize		= 16 * 4,
 	.fifohalfsize		= 8 * 4,
 	.clkreg_enable		= MCI_ST_U300_HWFCEN,
-<<<<<<< HEAD
-	.datalength_bits	= 16,
-	.sdio			= true,
-	.pwrreg_powerup		= MCI_PWR_ON,
-	.signal_direction	= true,
-=======
 	.clkreg_8bit_bus_enable = MCI_ST_8BIT_BUS,
 	.cmdreg_cpsm_enable	= MCI_CPSM_ENABLE,
 	.cmdreg_lrsp_crc	= MCI_CPSM_RESPONSE | MCI_CPSM_LONGRSP,
@@ -236,7 +157,6 @@ static struct variant_data variant_nomadik = {
 	.start_err		= MCI_STARTBITERR,
 	.opendrain		= MCI_OD,
 	.init			= mmci_variant_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct variant_data variant_ux500 = {
@@ -244,13 +164,6 @@ static struct variant_data variant_ux500 = {
 	.fifohalfsize		= 8 * 4,
 	.clkreg			= MCI_CLK_ENABLE,
 	.clkreg_enable		= MCI_ST_UX500_HWFCEN,
-<<<<<<< HEAD
-	.datalength_bits	= 24,
-	.sdio			= true,
-	.st_clkdiv		= true,
-	.pwrreg_powerup		= MCI_PWR_ON,
-	.signal_direction	= true,
-=======
 	.clkreg_8bit_bus_enable = MCI_ST_8BIT_BUS,
 	.clkreg_neg_edge_enable	= MCI_ST_UX500_NEG_EDGE,
 	.cmdreg_cpsm_enable	= MCI_CPSM_ENABLE,
@@ -278,7 +191,6 @@ static struct variant_data variant_ux500 = {
 	.start_err		= MCI_STARTBITERR,
 	.opendrain		= MCI_OD,
 	.init			= ux500_variant_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct variant_data variant_ux500v2 = {
@@ -286,20 +198,6 @@ static struct variant_data variant_ux500v2 = {
 	.fifohalfsize		= 8 * 4,
 	.clkreg			= MCI_CLK_ENABLE,
 	.clkreg_enable		= MCI_ST_UX500_HWFCEN,
-<<<<<<< HEAD
-	.datalength_bits	= 24,
-	.sdio			= true,
-	.st_clkdiv		= true,
-	.blksz_datactrl16	= true,
-	.pwrreg_powerup		= MCI_PWR_ON,
-	.signal_direction	= true,
-};
-
-/*
- * This must be called with host->lock held
- */
-static void mmci_write_clkreg(struct mmci_host *host, u32 clk)
-=======
 	.clkreg_8bit_bus_enable = MCI_ST_8BIT_BUS,
 	.clkreg_neg_edge_enable	= MCI_ST_UX500_NEG_EDGE,
 	.cmdreg_cpsm_enable	= MCI_CPSM_ENABLE,
@@ -503,7 +401,6 @@ static void mmci_reg_delay(struct mmci_host *host)
  * This must be called with host->lock held
  */
 void mmci_write_clkreg(struct mmci_host *host, u32 clk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (host->clk_reg != clk) {
 		host->clk_reg = clk;
@@ -514,11 +411,7 @@ void mmci_write_clkreg(struct mmci_host *host, u32 clk)
 /*
  * This must be called with host->lock held
  */
-<<<<<<< HEAD
-static void mmci_write_pwrreg(struct mmci_host *host, u32 pwr)
-=======
 void mmci_write_pwrreg(struct mmci_host *host, u32 pwr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (host->pwr_reg != pwr) {
 		host->pwr_reg = pwr;
@@ -529,8 +422,6 @@ void mmci_write_pwrreg(struct mmci_host *host, u32 pwr)
 /*
  * This must be called with host->lock held
  */
-<<<<<<< HEAD
-=======
 static void mmci_write_datactrlreg(struct mmci_host *host, u32 datactrl)
 {
 	/* Keep busy mode in DPSM and SDIO mask if enabled */
@@ -546,16 +437,11 @@ static void mmci_write_datactrlreg(struct mmci_host *host, u32 datactrl)
 /*
  * This must be called with host->lock held
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mmci_set_clkreg(struct mmci_host *host, unsigned int desired)
 {
 	struct variant_data *variant = host->variant;
 	u32 clk = variant->clkreg;
 
-<<<<<<< HEAD
-	if (desired) {
-		if (desired >= host->mclk) {
-=======
 	/* Make sure cclk reflects the current calculated clock */
 	host->cclk = 0;
 
@@ -563,7 +449,6 @@ static void mmci_set_clkreg(struct mmci_host *host, unsigned int desired)
 		if (variant->explicit_mclk_control) {
 			host->cclk = host->mclk;
 		} else if (desired >= host->mclk) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			clk = MCI_CLK_BYPASS;
 			if (variant->st_clkdiv)
 				clk |= MCI_ST_UX500_NEG_EDGE;
@@ -596,12 +481,6 @@ static void mmci_set_clkreg(struct mmci_host *host, unsigned int desired)
 		/* clk |= MCI_CLK_PWRSAVE; */
 	}
 
-<<<<<<< HEAD
-	if (host->mmc->ios.bus_width == MMC_BUS_WIDTH_4)
-		clk |= MCI_4BIT_BUS;
-	if (host->mmc->ios.bus_width == MMC_BUS_WIDTH_8)
-		clk |= MCI_ST_8BIT_BUS;
-=======
 	/* Set actual clock for debug */
 	host->mmc->actual_clock = host->cclk;
 
@@ -613,13 +492,10 @@ static void mmci_set_clkreg(struct mmci_host *host, unsigned int desired)
 	if (host->mmc->ios.timing == MMC_TIMING_UHS_DDR50 ||
 	    host->mmc->ios.timing == MMC_TIMING_MMC_DDR52)
 		clk |= variant->clkreg_neg_edge_enable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmci_write_clkreg(host, clk);
 }
 
-<<<<<<< HEAD
-=======
 static void mmci_dma_release(struct mmci_host *host)
 {
 	if (host->ops && host->ops->dma_release)
@@ -752,7 +628,6 @@ static void mmci_dma_error(struct mmci_host *host)
 		host->ops->dma_error(host);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 mmci_request_end(struct mmci_host *host, struct mmc_request *mrq)
 {
@@ -764,52 +639,31 @@ mmci_request_end(struct mmci_host *host, struct mmc_request *mrq)
 	host->cmd = NULL;
 
 	mmc_request_done(host->mmc, mrq);
-<<<<<<< HEAD
-
-	pm_runtime_mark_last_busy(mmc_dev(host->mmc));
-	pm_runtime_put_autosuspend(mmc_dev(host->mmc));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mmci_set_mask1(struct mmci_host *host, unsigned int mask)
 {
 	void __iomem *base = host->base;
-<<<<<<< HEAD
-=======
 	struct variant_data *variant = host->variant;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (host->singleirq) {
 		unsigned int mask0 = readl(base + MMCIMASK0);
 
-<<<<<<< HEAD
-		mask0 &= ~MCI_IRQ1MASK;
-=======
 		mask0 &= ~variant->irq_pio_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mask0 |= mask;
 
 		writel(mask0, base + MMCIMASK0);
 	}
 
-<<<<<<< HEAD
-	writel(mask, base + MMCIMASK1);
-=======
 	if (variant->mmcimask1)
 		writel(mask, base + MMCIMASK1);
 
 	host->mask1_reg = mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mmci_stop_data(struct mmci_host *host)
 {
-<<<<<<< HEAD
-	writel(0, host->base + MMCIDATACTRL);
-=======
 	mmci_write_datactrlreg(host, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mmci_set_mask1(host, 0);
 	host->data = NULL;
 }
@@ -826,8 +680,6 @@ static void mmci_init_sg(struct mmci_host *host, struct mmc_data *data)
 	sg_miter_start(&host->sg_miter, data->sg, data->sg_len, flags);
 }
 
-<<<<<<< HEAD
-=======
 static u32 mmci_get_dctrl_cfg(struct mmci_host *host)
 {
 	return MCI_DPSM_ENABLE | mmci_dctrl_blksz(host);
@@ -970,64 +822,12 @@ out_ret_state:
 	return (host->busy_state == MMCI_BUSY_DONE);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * All the DMA operation mode stuff goes inside this ifdef.
  * This assumes that you have a generic DMA device interface,
  * no custom DMA interfaces are supported.
  */
 #ifdef CONFIG_DMA_ENGINE
-<<<<<<< HEAD
-static void __devinit mmci_dma_setup(struct mmci_host *host)
-{
-	struct mmci_platform_data *plat = host->plat;
-	const char *rxname, *txname;
-	dma_cap_mask_t mask;
-
-	if (!plat || !plat->dma_filter) {
-		dev_info(mmc_dev(host->mmc), "no DMA platform data\n");
-		return;
-	}
-
-	/* initialize pre request cookie */
-	host->next_data.cookie = 1;
-
-	/* Try to acquire a generic DMA engine slave channel */
-	dma_cap_zero(mask);
-	dma_cap_set(DMA_SLAVE, mask);
-
-	/*
-	 * If only an RX channel is specified, the driver will
-	 * attempt to use it bidirectionally, however if it is
-	 * is specified but cannot be located, DMA will be disabled.
-	 */
-	if (plat->dma_rx_param) {
-		host->dma_rx_channel = dma_request_channel(mask,
-							   plat->dma_filter,
-							   plat->dma_rx_param);
-		/* E.g if no DMA hardware is present */
-		if (!host->dma_rx_channel)
-			dev_err(mmc_dev(host->mmc), "no RX DMA channel\n");
-	}
-
-	if (plat->dma_tx_param) {
-		host->dma_tx_channel = dma_request_channel(mask,
-							   plat->dma_filter,
-							   plat->dma_tx_param);
-		if (!host->dma_tx_channel)
-			dev_warn(mmc_dev(host->mmc), "no TX DMA channel\n");
-	} else {
-		host->dma_tx_channel = host->dma_rx_channel;
-	}
-
-	if (host->dma_rx_channel)
-		rxname = dma_chan_name(host->dma_rx_channel);
-	else
-		rxname = "none";
-
-	if (host->dma_tx_channel)
-		txname = dma_chan_name(host->dma_tx_channel);
-=======
 struct mmci_dmae_next {
 	struct dma_async_tx_descriptor *desc;
 	struct dma_chan	*chan;
@@ -1082,7 +882,6 @@ int mmci_dmae_setup(struct mmci_host *host)
 
 	if (dmae->tx_channel)
 		txname = dma_chan_name(dmae->tx_channel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		txname = "none";
 
@@ -1093,47 +892,20 @@ int mmci_dmae_setup(struct mmci_host *host)
 	 * Limit the maximum segment size in any SG entry according to
 	 * the parameters of the DMA engine device.
 	 */
-<<<<<<< HEAD
-	if (host->dma_tx_channel) {
-		struct device *dev = host->dma_tx_channel->device->dev;
-=======
 	if (dmae->tx_channel) {
 		struct device *dev = dmae->tx_channel->device->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int max_seg_size = dma_get_max_seg_size(dev);
 
 		if (max_seg_size < host->mmc->max_seg_size)
 			host->mmc->max_seg_size = max_seg_size;
 	}
-<<<<<<< HEAD
-	if (host->dma_rx_channel) {
-		struct device *dev = host->dma_rx_channel->device->dev;
-=======
 	if (dmae->rx_channel) {
 		struct device *dev = dmae->rx_channel->device->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int max_seg_size = dma_get_max_seg_size(dev);
 
 		if (max_seg_size < host->mmc->max_seg_size)
 			host->mmc->max_seg_size = max_seg_size;
 	}
-<<<<<<< HEAD
-}
-
-/*
- * This is used in __devinit or __devexit so inline it
- * so it can be discarded.
- */
-static inline void mmci_dma_release(struct mmci_host *host)
-{
-	struct mmci_platform_data *plat = host->plat;
-
-	if (host->dma_rx_channel)
-		dma_release_channel(host->dma_rx_channel);
-	if (host->dma_tx_channel && plat->dma_tx_param)
-		dma_release_channel(host->dma_tx_channel);
-	host->dma_rx_channel = host->dma_tx_channel = NULL;
-=======
 
 	if (!dmae->tx_channel || !dmae->rx_channel) {
 		mmci_dmae_release(host);
@@ -1156,18 +928,10 @@ void mmci_dmae_release(struct mmci_host *host)
 	if (dmae->tx_channel)
 		dma_release_channel(dmae->tx_channel);
 	dmae->rx_channel = dmae->tx_channel = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mmci_dma_unmap(struct mmci_host *host, struct mmc_data *data)
 {
-<<<<<<< HEAD
-	struct dma_chan *chan = host->dma_current;
-	enum dma_data_direction dir;
-	u32 status;
-	int i;
-
-=======
 	struct mmci_dmae_priv *dmae = host->dma_priv;
 	struct dma_chan *chan;
 
@@ -1206,7 +970,6 @@ void mmci_dmae_finalize(struct mmci_host *host, struct mmc_data *data)
 	if (!dma_inprogress(host))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Wait up to 1ms for the DMA to complete */
 	for (i = 0; ; i++) {
 		status = readl(host->base + MMCISTATUS);
@@ -1222,22 +985,6 @@ void mmci_dmae_finalize(struct mmci_host *host, struct mmc_data *data)
 	 * contiguous buffers.  On TX, we'll get a FIFO underrun error.
 	 */
 	if (status & MCI_RXDATAAVLBLMASK) {
-<<<<<<< HEAD
-		dmaengine_terminate_all(chan);
-		if (!data->error)
-			data->error = -EIO;
-	}
-
-	if (data->flags & MMC_DATA_WRITE) {
-		dir = DMA_TO_DEVICE;
-	} else {
-		dir = DMA_FROM_DEVICE;
-	}
-
-	if (!data->host_cookie)
-		dma_unmap_sg(chan->device->dev, data->sg, data->sg_len, dir);
-
-=======
 		mmci_dma_error(host);
 		if (!data->error)
 			data->error = -EIO;
@@ -1245,7 +992,6 @@ void mmci_dmae_finalize(struct mmci_host *host, struct mmc_data *data)
 		mmci_dma_unmap(host, data);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Use of DMA with scatter-gather is impossible.
 	 * Give up with DMA and switch back to PIO mode.
@@ -1254,19 +1000,6 @@ void mmci_dmae_finalize(struct mmci_host *host, struct mmc_data *data)
 		dev_err(mmc_dev(host->mmc), "buggy DMA detected. Taking evasive action.\n");
 		mmci_dma_release(host);
 	}
-<<<<<<< HEAD
-}
-
-static void mmci_dma_data_error(struct mmci_host *host)
-{
-	dev_err(mmc_dev(host->mmc), "error during DMA transfer!\n");
-	dmaengine_terminate_all(host->dma_current);
-}
-
-static int mmci_dma_prep_data(struct mmci_host *host, struct mmc_data *data,
-			      struct mmci_host_next *next)
-{
-=======
 
 	host->dma_in_progress = false;
 	dmae->cur = NULL;
@@ -1279,7 +1012,6 @@ static int _mmci_dmae_prep_data(struct mmci_host *host, struct mmc_data *data,
 				struct dma_async_tx_descriptor **dma_desc)
 {
 	struct mmci_dmae_priv *dmae = host->dma_priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct variant_data *variant = host->variant;
 	struct dma_slave_config conf = {
 		.src_addr = host->phybase + MMCIFIFO,
@@ -1288,38 +1020,11 @@ static int _mmci_dmae_prep_data(struct mmci_host *host, struct mmc_data *data,
 		.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
 		.src_maxburst = variant->fifohalfsize >> 2, /* # of words */
 		.dst_maxburst = variant->fifohalfsize >> 2, /* # of words */
-<<<<<<< HEAD
-		.device_fc = false,
-=======
 		.device_fc = variant->dma_flow_controller,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	struct dma_chan *chan;
 	struct dma_device *device;
 	struct dma_async_tx_descriptor *desc;
-<<<<<<< HEAD
-	enum dma_data_direction buffer_dirn;
-	int nr_sg;
-
-	/* Check if next job is already prepared */
-	if (data->host_cookie && !next &&
-	    host->dma_current && host->dma_desc_current)
-		return 0;
-
-	if (!next) {
-		host->dma_current = NULL;
-		host->dma_desc_current = NULL;
-	}
-
-	if (data->flags & MMC_DATA_READ) {
-		conf.direction = DMA_DEV_TO_MEM;
-		buffer_dirn = DMA_FROM_DEVICE;
-		chan = host->dma_rx_channel;
-	} else {
-		conf.direction = DMA_MEM_TO_DEV;
-		buffer_dirn = DMA_TO_DEVICE;
-		chan = host->dma_tx_channel;
-=======
 	int nr_sg;
 	unsigned long flags = DMA_CTRL_ACK;
 
@@ -1329,7 +1034,6 @@ static int _mmci_dmae_prep_data(struct mmci_host *host, struct mmc_data *data,
 	} else {
 		conf.direction = DMA_MEM_TO_DEV;
 		chan = dmae->tx_channel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* If there's no DMA channel, fall back to PIO */
@@ -1340,26 +1044,6 @@ static int _mmci_dmae_prep_data(struct mmci_host *host, struct mmc_data *data,
 	if (data->blksz * data->blocks <= variant->fifosize)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	device = chan->device;
-	nr_sg = dma_map_sg(device->dev, data->sg, data->sg_len, buffer_dirn);
-	if (nr_sg == 0)
-		return -EINVAL;
-
-	dmaengine_slave_config(chan, &conf);
-	desc = dmaengine_prep_slave_sg(chan, data->sg, nr_sg,
-					    conf.direction, DMA_CTRL_ACK);
-	if (!desc)
-		goto unmap_exit;
-
-	if (next) {
-		next->dma_chan = chan;
-		next->dma_desc = desc;
-	} else {
-		host->dma_current = chan;
-		host->dma_desc_current = desc;
-	}
-=======
 	/*
 	 * This is necessary to get SDIO working on the Ux500. We do not yet
 	 * know if this is a bug in:
@@ -1389,77 +1073,10 @@ static int _mmci_dmae_prep_data(struct mmci_host *host, struct mmc_data *data,
 
 	*dma_chan = chan;
 	*dma_desc = desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
  unmap_exit:
-<<<<<<< HEAD
-	if (!next)
-		dmaengine_terminate_all(chan);
-	dma_unmap_sg(device->dev, data->sg, data->sg_len, buffer_dirn);
-	return -ENOMEM;
-}
-
-static int mmci_dma_start_data(struct mmci_host *host, unsigned int datactrl)
-{
-	int ret;
-	struct mmc_data *data = host->data;
-
-	ret = mmci_dma_prep_data(host, host->data, NULL);
-	if (ret)
-		return ret;
-
-	/* Okay, go for it. */
-	dev_vdbg(mmc_dev(host->mmc),
-		 "Submit MMCI DMA job, sglen %d blksz %04x blks %04x flags %08x\n",
-		 data->sg_len, data->blksz, data->blocks, data->flags);
-	dmaengine_submit(host->dma_desc_current);
-	dma_async_issue_pending(host->dma_current);
-
-	datactrl |= MCI_DPSM_DMAENABLE;
-
-	/* Trigger the DMA transfer */
-	writel(datactrl, host->base + MMCIDATACTRL);
-
-	/*
-	 * Let the MMCI say when the data is ended and it's time
-	 * to fire next DMA request. When that happens, MMCI will
-	 * call mmci_data_end()
-	 */
-	writel(readl(host->base + MMCIMASK0) | MCI_DATAENDMASK,
-	       host->base + MMCIMASK0);
-	return 0;
-}
-
-static void mmci_get_next_data(struct mmci_host *host, struct mmc_data *data)
-{
-	struct mmci_host_next *next = &host->next_data;
-
-	if (data->host_cookie && data->host_cookie != next->cookie) {
-		pr_warning("[%s] invalid cookie: data->host_cookie %d"
-		       " host->next_data.cookie %d\n",
-		       __func__, data->host_cookie, host->next_data.cookie);
-		data->host_cookie = 0;
-	}
-
-	if (!data->host_cookie)
-		return;
-
-	host->dma_desc_current = next->dma_desc;
-	host->dma_current = next->dma_chan;
-
-	next->dma_desc = NULL;
-	next->dma_chan = NULL;
-}
-
-static void mmci_pre_request(struct mmc_host *mmc, struct mmc_request *mrq,
-			     bool is_first_req)
-{
-	struct mmci_host *host = mmc_priv(mmc);
-	struct mmc_data *data = mrq->data;
-	struct mmci_host_next *nd = &host->next_data;
-=======
 	dma_unmap_sg(device->dev, data->sg, data->sg_len,
 		     mmc_get_dma_dir(data));
 	return -ENOMEM;
@@ -1592,33 +1209,16 @@ static void mmci_pre_request(struct mmc_host *mmc, struct mmc_request *mrq)
 {
 	struct mmci_host *host = mmc_priv(mmc);
 	struct mmc_data *data = mrq->data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!data)
 		return;
 
-<<<<<<< HEAD
-	if (data->host_cookie) {
-		data->host_cookie = 0;
-		return;
-	}
-
-	/* if config for dma */
-	if (((data->flags & MMC_DATA_WRITE) && host->dma_tx_channel) ||
-	    ((data->flags & MMC_DATA_READ) && host->dma_rx_channel)) {
-		if (mmci_dma_prep_data(host, data, nd))
-			data->host_cookie = 0;
-		else
-			data->host_cookie = ++nd->cookie < 0 ? 1 : nd->cookie;
-	}
-=======
 	WARN_ON(data->host_cookie);
 
 	if (mmci_validate_data(host, data))
 		return;
 
 	mmci_prep_data(host, data, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mmci_post_request(struct mmc_host *mmc, struct mmc_request *mrq,
@@ -1626,65 +1226,6 @@ static void mmci_post_request(struct mmc_host *mmc, struct mmc_request *mrq,
 {
 	struct mmci_host *host = mmc_priv(mmc);
 	struct mmc_data *data = mrq->data;
-<<<<<<< HEAD
-	struct dma_chan *chan;
-	enum dma_data_direction dir;
-
-	if (!data)
-		return;
-
-	if (data->flags & MMC_DATA_READ) {
-		dir = DMA_FROM_DEVICE;
-		chan = host->dma_rx_channel;
-	} else {
-		dir = DMA_TO_DEVICE;
-		chan = host->dma_tx_channel;
-	}
-
-
-	/* if config for dma */
-	if (chan) {
-		if (err)
-			dmaengine_terminate_all(chan);
-		if (data->host_cookie)
-			dma_unmap_sg(mmc_dev(host->mmc), data->sg,
-				     data->sg_len, dir);
-		mrq->data->host_cookie = 0;
-	}
-}
-
-#else
-/* Blank functions if the DMA engine is not available */
-static void mmci_get_next_data(struct mmci_host *host, struct mmc_data *data)
-{
-}
-static inline void mmci_dma_setup(struct mmci_host *host)
-{
-}
-
-static inline void mmci_dma_release(struct mmci_host *host)
-{
-}
-
-static inline void mmci_dma_unmap(struct mmci_host *host, struct mmc_data *data)
-{
-}
-
-static inline void mmci_dma_data_error(struct mmci_host *host)
-{
-}
-
-static inline int mmci_dma_start_data(struct mmci_host *host, unsigned int datactrl)
-{
-	return -ENOSYS;
-}
-
-#define mmci_pre_request NULL
-#define mmci_post_request NULL
-
-#endif
-
-=======
 
 	if (!data || !data->host_cookie)
 		return;
@@ -1692,17 +1233,12 @@ static inline int mmci_dma_start_data(struct mmci_host *host, unsigned int datac
 	mmci_unprep_data(host, data, err);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mmci_start_data(struct mmci_host *host, struct mmc_data *data)
 {
 	struct variant_data *variant = host->variant;
 	unsigned int datactrl, timeout, irqmask;
 	unsigned long long clks;
 	void __iomem *base;
-<<<<<<< HEAD
-	int blksz_bits;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(mmc_dev(host->mmc), "blksz %04x blks %04x flags %08x\n",
 		data->blksz, data->blocks, data->flags);
@@ -1712,11 +1248,7 @@ static void mmci_start_data(struct mmci_host *host, struct mmc_data *data)
 	data->bytes_xfered = 0;
 
 	clks = (unsigned long long)data->timeout_ns * host->cclk;
-<<<<<<< HEAD
-	do_div(clks, 1000000000UL);
-=======
 	do_div(clks, NSEC_PER_SEC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	timeout = data->timeout_clks + (unsigned int)clks;
 
@@ -1724,23 +1256,6 @@ static void mmci_start_data(struct mmci_host *host, struct mmc_data *data)
 	writel(timeout, base + MMCIDATATIMER);
 	writel(host->size, base + MMCIDATALENGTH);
 
-<<<<<<< HEAD
-	blksz_bits = ffs(data->blksz) - 1;
-	BUG_ON(1 << blksz_bits != data->blksz);
-
-	if (variant->blksz_datactrl16)
-		datactrl = MCI_DPSM_ENABLE | (data->blksz << 16);
-	else
-		datactrl = MCI_DPSM_ENABLE | blksz_bits << 4;
-
-	if (data->flags & MMC_DATA_READ)
-		datactrl |= MCI_DPSM_DIRECTION;
-
-	/* The ST Micro variants has a special bit to enable SDIO */
-	if (variant->sdio && host->mmc->card)
-		if (mmc_card_sdio(host->mmc->card))
-			datactrl |= MCI_ST_DPSM_SDIOEN;
-=======
 	datactrl = host->ops->get_datactrl_cfg(host);
 	datactrl |= host->data->flags & MMC_DATA_READ ? MCI_DPSM_DIRECTION : 0;
 
@@ -1768,17 +1283,12 @@ static void mmci_start_data(struct mmci_host *host, struct mmc_data *data)
 	if (host->mmc->ios.timing == MMC_TIMING_UHS_DDR50 ||
 	    host->mmc->ios.timing == MMC_TIMING_MMC_DDR52)
 		datactrl |= variant->datactrl_mask_ddrmode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Attempt to use DMA operation mode, if this
 	 * should fail, fall back to PIO mode
 	 */
-<<<<<<< HEAD
-	if (!mmci_dma_start_data(host, datactrl))
-=======
 	if (!mmci_dma_start(host, datactrl))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/* IRQ mode, map the SG list for CPU reading/writing */
@@ -1802,11 +1312,7 @@ static void mmci_start_data(struct mmci_host *host, struct mmc_data *data)
 		irqmask = MCI_TXFIFOHALFEMPTYMASK;
 	}
 
-<<<<<<< HEAD
-	writel(datactrl, base + MMCIDATACTRL);
-=======
 	mmci_write_datactrlreg(host, datactrl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(readl(base + MMCIMASK0) & ~MCI_DATAENDMASK, base + MMCIMASK0);
 	mmci_set_mask1(host, irqmask);
 }
@@ -1815,31 +1321,12 @@ static void
 mmci_start_command(struct mmci_host *host, struct mmc_command *cmd, u32 c)
 {
 	void __iomem *base = host->base;
-<<<<<<< HEAD
-=======
 	bool busy_resp = cmd->flags & MMC_RSP_BUSY;
 	unsigned long long clks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(mmc_dev(host->mmc), "op %02x arg %08x flags %08x\n",
 	    cmd->opcode, cmd->arg, cmd->flags);
 
-<<<<<<< HEAD
-	if (readl(base + MMCICOMMAND) & MCI_CPSM_ENABLE) {
-		writel(0, base + MMCICOMMAND);
-		udelay(1);
-	}
-
-	c |= cmd->opcode | MCI_CPSM_ENABLE;
-	if (cmd->flags & MMC_RSP_PRESENT) {
-		if (cmd->flags & MMC_RSP_136)
-			c |= MCI_CPSM_LONGRSP;
-		c |= MCI_CPSM_RESPONSE;
-	}
-	if (/*interrupt*/0)
-		c |= MCI_CPSM_INTERRUPT;
-
-=======
 	if (readl(base + MMCICOMMAND) & host->variant->cmdreg_cpsm_enable) {
 		writel(0, base + MMCICOMMAND);
 		mmci_reg_delay(host);
@@ -1885,36 +1372,22 @@ mmci_start_command(struct mmci_host *host, struct mmc_command *cmd, u32 c)
 	if (mmc_cmd_type(cmd) == MMC_CMD_ADTC)
 		c |= host->variant->data_cmd_enable;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host->cmd = cmd;
 
 	writel(cmd->arg, base + MMCIARGUMENT);
 	writel(c, base + MMCICOMMAND);
 }
 
-<<<<<<< HEAD
-=======
 static void mmci_stop_command(struct mmci_host *host)
 {
 	host->stop_abort.error = 0;
 	mmci_start_command(host, &host->stop_abort, 0);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 mmci_data_irq(struct mmci_host *host, struct mmc_data *data,
 	      unsigned int status)
 {
-<<<<<<< HEAD
-	/* First check for errors */
-	if (status & (MCI_DATACRCFAIL|MCI_DATATIMEOUT|MCI_STARTBITERR|
-		      MCI_TXUNDERRUN|MCI_RXOVERRUN)) {
-		u32 remain, success;
-
-		/* Terminate the DMA transfer */
-		if (dma_inprogress(host))
-			mmci_dma_data_error(host);
-=======
 	unsigned int status_err;
 
 	/* Make sure we have data to handle */
@@ -1931,7 +1404,6 @@ mmci_data_irq(struct mmci_host *host, struct mmc_data *data,
 
 		/* Terminate the DMA transfer */
 		mmci_dma_error(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Calculate how far we are into the transfer.  Note that
@@ -1940,24 +1412,6 @@ mmci_data_irq(struct mmci_host *host, struct mmc_data *data,
 		 * can be as much as a FIFO-worth of data ahead.  This
 		 * matters for FIFO overruns only.
 		 */
-<<<<<<< HEAD
-		remain = readl(host->base + MMCIDATACNT);
-		success = data->blksz * data->blocks - remain;
-
-		dev_dbg(mmc_dev(host->mmc), "MCI ERROR IRQ, status 0x%08x at 0x%08x\n",
-			status, success);
-		if (status & MCI_DATACRCFAIL) {
-			/* Last block was not successful */
-			success -= 1;
-			data->error = -EILSEQ;
-		} else if (status & MCI_DATATIMEOUT) {
-			data->error = -ETIMEDOUT;
-		} else if (status & MCI_STARTBITERR) {
-			data->error = -ECOMM;
-		} else if (status & MCI_TXUNDERRUN) {
-			data->error = -EIO;
-		} else if (status & MCI_RXOVERRUN) {
-=======
 		if (!host->variant->datacnt_useless) {
 			remain = readl(host->base + MMCIDATACNT);
 			success = data->blksz * data->blocks - remain;
@@ -1978,7 +1432,6 @@ mmci_data_irq(struct mmci_host *host, struct mmc_data *data,
 		} else if (status_err & MCI_TXUNDERRUN) {
 			data->error = -EIO;
 		} else if (status_err & MCI_RXOVERRUN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (success > host->variant->fifosize)
 				success -= host->variant->fifosize;
 			else
@@ -1992,13 +1445,8 @@ mmci_data_irq(struct mmci_host *host, struct mmc_data *data,
 		dev_err(mmc_dev(host->mmc), "stray MCI_DATABLOCKEND interrupt\n");
 
 	if (status & MCI_DATAEND || data->error) {
-<<<<<<< HEAD
-		if (dma_inprogress(host))
-			mmci_dma_unmap(host, data);
-=======
 		mmci_dma_finalize(host, data);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mmci_stop_data(host);
 
 		if (!data->error)
@@ -2006,14 +1454,11 @@ mmci_data_irq(struct mmci_host *host, struct mmc_data *data,
 			data->bytes_xfered = data->blksz * data->blocks;
 
 		if (!data->stop) {
-<<<<<<< HEAD
-=======
 			if (host->variant->cmdreg_stop && data->error)
 				mmci_stop_command(host);
 			else
 				mmci_request_end(host, data->mrq);
 		} else if (host->mrq->sbc && !data->error) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mmci_request_end(host, data->mrq);
 		} else {
 			mmci_start_command(host, data->stop, 0);
@@ -2025,9 +1470,6 @@ static void
 mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 	     unsigned int status)
 {
-<<<<<<< HEAD
-	void __iomem *base = host->base;
-=======
 	u32 err_msk = MCI_CMDCRCFAIL | MCI_CMDTIMEOUT;
 	void __iomem *base = host->base;
 	bool sbc, busy_resp;
@@ -2054,7 +1496,6 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 	if (busy_resp && host->variant->busy_detect)
 		if (!host->ops->busy_complete(host, cmd, status, err_msk))
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host->cmd = NULL;
 
@@ -2062,8 +1503,6 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 		cmd->error = -ETIMEDOUT;
 	} else if (status & MCI_CMDCRCFAIL && cmd->flags & MMC_RSP_CRC) {
 		cmd->error = -EILSEQ;
-<<<<<<< HEAD
-=======
 	} else if (host->variant->busy_timeout && busy_resp &&
 		   status & MCI_DATATIMEOUT) {
 		cmd->error = -ETIMEDOUT;
@@ -2072,7 +1511,6 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 		 * a hardware reset of the MMCI block.
 		 */
 		host->irq_action = IRQ_WAKE_THREAD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		cmd->resp[0] = readl(base + MMCIRESPONSE0);
 		cmd->resp[1] = readl(base + MMCIRESPONSE1);
@@ -2080,17 +1518,6 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 		cmd->resp[3] = readl(base + MMCIRESPONSE3);
 	}
 
-<<<<<<< HEAD
-	if (!cmd->data || cmd->error) {
-		if (host->data) {
-			/* Terminate the DMA transfer */
-			if (dma_inprogress(host))
-				mmci_dma_data_error(host);
-			mmci_stop_data(host);
-		}
-		mmci_request_end(host, cmd->mrq);
-	} else if (!(cmd->data->flags & MMC_DATA_READ)) {
-=======
 	if ((!sbc && !cmd->data) || cmd->error) {
 		if (host->data) {
 			/* Terminate the DMA transfer */
@@ -2110,13 +1537,10 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 		mmci_start_command(host, host->mrq->cmd, 0);
 	} else if (!host->variant->datactrl_first &&
 		   !(cmd->data->flags & MMC_DATA_READ)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mmci_start_data(host, cmd->data);
 	}
 }
 
-<<<<<<< HEAD
-=======
 static char *ux500_state_str(struct mmci_host *host)
 {
 	switch (host->busy_state) {
@@ -2184,24 +1608,15 @@ static int mmci_qcom_get_rx_fifocnt(struct mmci_host *host, u32 status, int r)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mmci_pio_read(struct mmci_host *host, char *buffer, unsigned int remain)
 {
 	void __iomem *base = host->base;
 	char *ptr = buffer;
-<<<<<<< HEAD
-	u32 status;
-	int host_remain = host->size;
-
-	do {
-		int count = host_remain - (readl(base + MMCIFIFOCNT) << 2);
-=======
 	u32 status = readl(host->base + MMCISTATUS);
 	int host_remain = host->size;
 
 	do {
 		int count = host->get_rx_fifocnt(host, status, host_remain);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (count > remain)
 			count = remain;
@@ -2218,16 +1633,6 @@ static int mmci_pio_read(struct mmci_host *host, char *buffer, unsigned int rema
 		if (unlikely(count & 0x3)) {
 			if (count < 4) {
 				unsigned char buf[4];
-<<<<<<< HEAD
-				readsl(base + MMCIFIFO, buf, 1);
-				memcpy(ptr, buf, count);
-			} else {
-				readsl(base + MMCIFIFO, ptr, count >> 2);
-				count &= ~0x3;
-			}
-		} else {
-			readsl(base + MMCIFIFO, ptr, count >> 2);
-=======
 				ioread32_rep(base + MMCIFIFO, buf, 1);
 				memcpy(ptr, buf, count);
 			} else {
@@ -2236,7 +1641,6 @@ static int mmci_pio_read(struct mmci_host *host, char *buffer, unsigned int rema
 			}
 		} else {
 			ioread32_rep(base + MMCIFIFO, ptr, count >> 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		ptr += count;
@@ -2266,25 +1670,6 @@ static int mmci_pio_write(struct mmci_host *host, char *buffer, unsigned int rem
 		count = min(remain, maxcnt);
 
 		/*
-<<<<<<< HEAD
-		 * The ST Micro variant for SDIO transfer sizes
-		 * less then 8 bytes should have clock H/W flow
-		 * control disabled.
-		 */
-		if (variant->sdio &&
-		    mmc_card_sdio(host->mmc->card)) {
-			u32 clk;
-			if (count < 8)
-				clk = host->clk_reg & ~variant->clkreg_enable;
-			else
-				clk = host->clk_reg | variant->clkreg_enable;
-
-			mmci_write_clkreg(host, clk);
-		}
-
-		/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * SDIO especially may want to send something that is
 		 * not divisible by 4 (as opposed to card sectors
 		 * etc), and the FIFO only accept full 32-bit writes.
@@ -2292,11 +1677,7 @@ static int mmci_pio_write(struct mmci_host *host, char *buffer, unsigned int rem
 		 * byte become a 32bit write, 7 bytes will be two
 		 * 32bit writes etc.
 		 */
-<<<<<<< HEAD
-		writesl(base + MMCIFIFO, ptr, (count + 3) >> 2);
-=======
 		iowrite32_rep(base + MMCIFIFO, ptr, (count + 3) >> 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ptr += count;
 		remain -= count;
@@ -2319,21 +1700,12 @@ static irqreturn_t mmci_pio_irq(int irq, void *dev_id)
 	struct sg_mapping_iter *sg_miter = &host->sg_miter;
 	struct variant_data *variant = host->variant;
 	void __iomem *base = host->base;
-<<<<<<< HEAD
-	unsigned long flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 status;
 
 	status = readl(base + MMCISTATUS);
 
 	dev_dbg(mmc_dev(host->mmc), "irq1 (pio) %08x\n", status);
 
-<<<<<<< HEAD
-	local_irq_save(flags);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		unsigned int remain, len;
 		char *buffer;
@@ -2373,11 +1745,6 @@ static irqreturn_t mmci_pio_irq(int irq, void *dev_id)
 
 	sg_miter_stop(sg_miter);
 
-<<<<<<< HEAD
-	local_irq_restore(flags);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If we have less than the fifo 'half-full' threshold to transfer,
 	 * trigger a PIO interrupt as soon as any data is available.
@@ -2399,8 +1766,6 @@ static irqreturn_t mmci_pio_irq(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-=======
 static void mmci_write_sdio_irq_bit(struct mmci_host *host, int enable)
 {
 	void __iomem *base = host->base;
@@ -2420,7 +1785,6 @@ static void mmci_signal_sdio_irq(struct mmci_host *host, u32 status)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Handle completion of command and data transfers.
  */
@@ -2428,41 +1792,6 @@ static irqreturn_t mmci_irq(int irq, void *dev_id)
 {
 	struct mmci_host *host = dev_id;
 	u32 status;
-<<<<<<< HEAD
-	int ret = 0;
-
-	spin_lock(&host->lock);
-
-	do {
-		struct mmc_command *cmd;
-		struct mmc_data *data;
-
-		status = readl(host->base + MMCISTATUS);
-
-		if (host->singleirq) {
-			if (status & readl(host->base + MMCIMASK1))
-				mmci_pio_irq(irq, dev_id);
-
-			status &= ~MCI_IRQ1MASK;
-		}
-
-		status &= readl(host->base + MMCIMASK0);
-		writel(status, host->base + MMCICLEAR);
-
-		dev_dbg(mmc_dev(host->mmc), "irq0 (data+cmd) %08x\n", status);
-
-		data = host->data;
-		if (status & (MCI_DATACRCFAIL|MCI_DATATIMEOUT|MCI_STARTBITERR|
-			      MCI_TXUNDERRUN|MCI_RXOVERRUN|MCI_DATAEND|
-			      MCI_DATABLOCKEND) && data)
-			mmci_data_irq(host, data, status);
-
-		cmd = host->cmd;
-		if (status & (MCI_CMDCRCFAIL|MCI_CMDTIMEOUT|MCI_CMDSENT|MCI_CMDRESPEND) && cmd)
-			mmci_cmd_irq(host, cmd, status);
-
-		ret = 1;
-=======
 
 	spin_lock(&host->lock);
 	host->irq_action = IRQ_HANDLED;
@@ -2510,14 +1839,10 @@ static irqreturn_t mmci_irq(int irq, void *dev_id)
 		if (host->variant->busy_detect_flag)
 			status &= ~host->variant->busy_detect_flag;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (status);
 
 	spin_unlock(&host->lock);
 
-<<<<<<< HEAD
-	return IRQ_RETVAL(ret);
-=======
 	return host->irq_action;
 }
 
@@ -2549,7 +1874,6 @@ static irqreturn_t mmci_irq_thread(int irq, void *dev_id)
 	spin_unlock_irqrestore(&host->lock, flags);
 
 	return host->irq_action;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mmci_request(struct mmc_host *mmc, struct mmc_request *mrq)
@@ -2559,24 +1883,12 @@ static void mmci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 
 	WARN_ON(host->mrq != NULL);
 
-<<<<<<< HEAD
-	if (mrq->data && !is_power_of_2(mrq->data->blksz)) {
-		dev_err(mmc_dev(mmc), "unsupported block size (%d bytes)\n",
-			mrq->data->blksz);
-		mrq->cmd->error = -EINVAL;
-=======
 	mrq->cmd->error = mmci_validate_data(host, mrq->data);
 	if (mrq->cmd->error) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mmc_request_done(mmc, mrq);
 		return;
 	}
 
-<<<<<<< HEAD
-	pm_runtime_get_sync(mmc_dev(mmc));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&host->lock, flags);
 
 	host->mrq = mrq;
@@ -2584,12 +1896,6 @@ static void mmci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	if (mrq->data)
 		mmci_get_next_data(host, mrq->data);
 
-<<<<<<< HEAD
-	if (mrq->data && mrq->data->flags & MMC_DATA_READ)
-		mmci_start_data(host, mrq->data);
-
-	mmci_start_command(host, mrq->cmd, 0);
-=======
 	if (mrq->data &&
 	    (host->variant->datactrl_first || mrq->data->flags & MMC_DATA_READ))
 		mmci_start_data(host, mrq->data);
@@ -2598,13 +1904,10 @@ static void mmci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		mmci_start_command(host, mrq->sbc, 0);
 	else
 		mmci_start_command(host, mrq->cmd, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&host->lock, flags);
 }
 
-<<<<<<< HEAD
-=======
 static void mmci_set_max_busy_timeout(struct mmc_host *mmc)
 {
 	struct mmci_host *host = mmc_priv(mmc);
@@ -2620,7 +1923,6 @@ static void mmci_set_max_busy_timeout(struct mmc_host *mmc)
 	mmc->max_busy_timeout = max_busy_timeout;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	struct mmci_host *host = mmc_priv(mmc);
@@ -2629,33 +1931,6 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	unsigned long flags;
 	int ret;
 
-<<<<<<< HEAD
-	pm_runtime_get_sync(mmc_dev(mmc));
-
-	if (host->plat->ios_handler &&
-		host->plat->ios_handler(mmc_dev(mmc), ios))
-			dev_err(mmc_dev(mmc), "platform ios_handler failed\n");
-
-	switch (ios->power_mode) {
-	case MMC_POWER_OFF:
-		if (host->vcc)
-			ret = mmc_regulator_set_ocr(mmc, host->vcc, 0);
-		break;
-	case MMC_POWER_UP:
-		if (host->vcc) {
-			ret = mmc_regulator_set_ocr(mmc, host->vcc, ios->vdd);
-			if (ret) {
-				dev_err(mmc_dev(mmc), "unable to set OCR\n");
-				/*
-				 * The .set_ios() function in the mmc_host_ops
-				 * struct return void, and failing to set the
-				 * power should be rare so we print an error
-				 * and return here.
-				 */
-				goto out;
-			}
-		}
-=======
 	switch (ios->power_mode) {
 	case MMC_POWER_OFF:
 		if (!IS_ERR(mmc->supply.vmmc))
@@ -2671,7 +1946,6 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		if (!IS_ERR(mmc->supply.vmmc))
 			mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, ios->vdd);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * The ST Micro variant doesn't have the PL180s MCI_PWR_UP
 		 * and instead uses MCI_PWR_ON so apply whatever value is
@@ -2681,8 +1955,6 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 		break;
 	case MMC_POWER_ON:
-<<<<<<< HEAD
-=======
 		if (!IS_ERR(mmc->supply.vqmmc) && !host->vqmmc_enabled) {
 			ret = regulator_enable(mmc->supply.vqmmc);
 			if (ret < 0)
@@ -2692,7 +1964,6 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 				host->vqmmc_enabled = true;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pwr |= MCI_PWR_ON;
 		break;
 	}
@@ -2703,11 +1974,7 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		 * indicating signal direction for the signals in
 		 * the SD/MMC bus and feedback-clock usage.
 		 */
-<<<<<<< HEAD
-		pwr |= host->plat->sigdir;
-=======
 		pwr |= host->pwr_reg_add;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ios->bus_width == MMC_BUS_WIDTH_4)
 			pwr &= ~MCI_ST_DATA74DIREN;
@@ -2717,40 +1984,6 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 				~MCI_ST_DATA2DIREN);
 	}
 
-<<<<<<< HEAD
-	if (ios->bus_mode == MMC_BUSMODE_OPENDRAIN) {
-		if (host->hw_designer != AMBA_VENDOR_ST)
-			pwr |= MCI_ROD;
-		else {
-			/*
-			 * The ST Micro variant use the ROD bit for something
-			 * else and only has OD (Open Drain).
-			 */
-			pwr |= MCI_OD;
-		}
-	}
-
-	spin_lock_irqsave(&host->lock, flags);
-
-	mmci_set_clkreg(host, ios->clock);
-	mmci_write_pwrreg(host, pwr);
-
-	spin_unlock_irqrestore(&host->lock, flags);
-
- out:
-	pm_runtime_mark_last_busy(mmc_dev(mmc));
-	pm_runtime_put_autosuspend(mmc_dev(mmc));
-}
-
-static int mmci_get_ro(struct mmc_host *mmc)
-{
-	struct mmci_host *host = mmc_priv(mmc);
-
-	if (host->gpio_wp == -ENOSYS)
-		return -ENOSYS;
-
-	return gpio_get_value_cansleep(host->gpio_wp);
-=======
 	if (variant->opendrain) {
 		if (ios->bus_mode == MMC_BUSMODE_OPENDRAIN)
 			pwr |= variant->opendrain;
@@ -2800,49 +2033,19 @@ static int mmci_get_ro(struct mmc_host *mmc)
 	mmci_reg_delay(host);
 
 	spin_unlock_irqrestore(&host->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mmci_get_cd(struct mmc_host *mmc)
 {
 	struct mmci_host *host = mmc_priv(mmc);
 	struct mmci_platform_data *plat = host->plat;
-<<<<<<< HEAD
-	unsigned int status;
-
-	if (host->gpio_cd == -ENOSYS) {
-=======
 	unsigned int status = mmc_gpio_get_cd(mmc);
 
 	if (status == -ENOSYS) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!plat->status)
 			return 1; /* Assume always present */
 
 		status = plat->status(mmc_dev(host->mmc));
-<<<<<<< HEAD
-	} else
-		status = !!gpio_get_value_cansleep(host->gpio_cd)
-			^ plat->cd_invert;
-
-	/*
-	 * Use positive logic throughout - status is zero for no card,
-	 * non-zero for card inserted.
-	 */
-	return status;
-}
-
-static irqreturn_t mmci_cd_irq(int irq, void *dev_id)
-{
-	struct mmci_host *host = dev_id;
-
-	mmc_detect_change(host->mmc, msecs_to_jiffies(500));
-
-	return IRQ_HANDLED;
-}
-
-static const struct mmc_host_ops mmci_ops = {
-=======
 	}
 	return status;
 }
@@ -2895,21 +2098,10 @@ static void mmci_ack_sdio_irq(struct mmc_host *mmc)
 }
 
 static struct mmc_host_ops mmci_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.request	= mmci_request,
 	.pre_req	= mmci_pre_request,
 	.post_req	= mmci_post_request,
 	.set_ios	= mmci_set_ios,
-<<<<<<< HEAD
-	.get_ro		= mmci_get_ro,
-	.get_cd		= mmci_get_cd,
-};
-
-static int __devinit mmci_probe(struct amba_device *dev,
-	const struct amba_id *id)
-{
-	struct mmci_platform_data *plat = dev->dev.platform_data;
-=======
 	.get_ro		= mmc_gpio_get_ro,
 	.get_cd		= mmci_get_cd,
 	.start_signal_voltage_switch = mmci_sig_volt_switch,
@@ -3014,36 +2206,11 @@ static int mmci_probe(struct amba_device *dev,
 {
 	struct mmci_platform_data *plat = dev->dev.platform_data;
 	struct device_node *np = dev->dev.of_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct variant_data *variant = id->data;
 	struct mmci_host *host;
 	struct mmc_host *mmc;
 	int ret;
 
-<<<<<<< HEAD
-	/* must have platform data */
-	if (!plat) {
-		ret = -EINVAL;
-		goto out;
-	}
-
-	ret = amba_request_regions(dev, DRIVER_NAME);
-	if (ret)
-		goto out;
-
-	mmc = mmc_alloc_host(sizeof(struct mmci_host), &dev->dev);
-	if (!mmc) {
-		ret = -ENOMEM;
-		goto rel_regions;
-	}
-
-	host = mmc_priv(mmc);
-	host->mmc = mmc;
-
-	host->gpio_wp = -ENOSYS;
-	host->gpio_cd = -ENOSYS;
-	host->gpio_cd_irq = -1;
-=======
 	/* Must have platform data or Device Tree. */
 	if (!plat && !np) {
 		dev_err(&dev->dev, "No plat data or DT found\n");
@@ -3089,29 +2256,12 @@ static int mmci_probe(struct amba_device *dev,
 			goto host_free;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host->hw_designer = amba_manf(dev);
 	host->hw_revision = amba_rev(dev);
 	dev_dbg(mmc_dev(mmc), "designer ID = 0x%02x\n", host->hw_designer);
 	dev_dbg(mmc_dev(mmc), "revision = 0x%01x\n", host->hw_revision);
 
-<<<<<<< HEAD
-	host->clk = clk_get(&dev->dev, NULL);
-	if (IS_ERR(host->clk)) {
-		ret = PTR_ERR(host->clk);
-		host->clk = NULL;
-		goto host_free;
-	}
-
-	ret = clk_prepare(host->clk);
-	if (ret)
-		goto clk_free;
-
-	ret = clk_enable(host->clk);
-	if (ret)
-		goto clk_unprep;
-=======
 	host->clk = devm_clk_get(&dev->dev, NULL);
 	if (IS_ERR(host->clk)) {
 		ret = PTR_ERR(host->clk);
@@ -3126,7 +2276,6 @@ static int mmci_probe(struct amba_device *dev,
 		host->get_rx_fifocnt = mmci_qcom_get_rx_fifocnt;
 	else
 		host->get_rx_fifocnt = mmci_get_rx_fifocnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host->plat = plat;
 	host->variant = variant;
@@ -3136,29 +2285,14 @@ static int mmci_probe(struct amba_device *dev,
 	 * so we try to adjust the clock down to this,
 	 * (if possible).
 	 */
-<<<<<<< HEAD
-	if (host->mclk > 100000000) {
-		ret = clk_set_rate(host->clk, 100000000);
-=======
 	if (host->mclk > variant->f_max) {
 		ret = clk_set_rate(host->clk, variant->f_max);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			goto clk_disable;
 		host->mclk = clk_get_rate(host->clk);
 		dev_dbg(mmc_dev(mmc), "eventual mclk rate: %u Hz\n",
 			host->mclk);
 	}
-<<<<<<< HEAD
-	host->phybase = dev->res.start;
-	host->base = ioremap(dev->res.start, resource_size(&dev->res));
-	if (!host->base) {
-		ret = -ENOMEM;
-		goto clk_disable;
-	}
-
-	mmc->ops = &mmci_ops;
-=======
 
 	host->phybase = dev->res.start;
 	host->base = devm_ioremap_resource(&dev->dev, &dev->res);
@@ -3170,57 +2304,10 @@ static int mmci_probe(struct amba_device *dev,
 	if (variant->init)
 		variant->init(host);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The ARM and ST versions of the block have slightly different
 	 * clock divider equations which means that the minimum divider
 	 * differs too.
-<<<<<<< HEAD
-	 */
-	if (variant->st_clkdiv)
-		mmc->f_min = DIV_ROUND_UP(host->mclk, 257);
-	else
-		mmc->f_min = DIV_ROUND_UP(host->mclk, 512);
-	/*
-	 * If the platform data supplies a maximum operating
-	 * frequency, this takes precedence. Else, we fall back
-	 * to using the module parameter, which has a (low)
-	 * default value in case it is not specified. Either
-	 * value must not exceed the clock rate into the block,
-	 * of course.
-	 */
-	if (plat->f_max)
-		mmc->f_max = min(host->mclk, plat->f_max);
-	else
-		mmc->f_max = min(host->mclk, fmax);
-	dev_dbg(mmc_dev(mmc), "clocking block at %u Hz\n", mmc->f_max);
-
-#ifdef CONFIG_REGULATOR
-	/* If we're using the regulator framework, try to fetch a regulator */
-	host->vcc = regulator_get(&dev->dev, "vmmc");
-	if (IS_ERR(host->vcc))
-		host->vcc = NULL;
-	else {
-		int mask = mmc_regulator_get_ocrmask(host->vcc);
-
-		if (mask < 0)
-			dev_err(&dev->dev, "error getting OCR mask (%d)\n",
-				mask);
-		else {
-			host->mmc->ocr_avail = (u32) mask;
-			if (plat->ocr_mask)
-				dev_warn(&dev->dev,
-				 "Provided ocr_mask/setpower will not be used "
-				 "(using regulator instead)\n");
-		}
-	}
-#endif
-	/* Fall back to platform data if no regulator is found */
-	if (host->vcc == NULL)
-		mmc->ocr_avail = plat->ocr_mask;
-	mmc->caps = plat->capabilities;
-	mmc->caps2 = plat->capabilities2;
-=======
 	 * on Qualcomm like controllers get the nearest minimum clock to 100Khz
 	 */
 	if (variant->st_clkdiv)
@@ -3306,7 +2393,6 @@ static int mmci_probe(struct amba_device *dev,
 
 	/* We support these PM capabilities. */
 	mmc->pm_caps |= MMC_PM_KEEP_POWER;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We can do SGIO
@@ -3329,81 +2415,17 @@ static int mmci_probe(struct amba_device *dev,
 	/*
 	 * Block size can be up to 2048 bytes, but must be a power of two.
 	 */
-<<<<<<< HEAD
-	mmc->max_blk_size = 1 << 11;
-=======
 	mmc->max_blk_size = 1 << variant->datactrl_blocksz;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Limit the number of blocks transferred so that we don't overflow
 	 * the maximum request size.
 	 */
-<<<<<<< HEAD
-	mmc->max_blk_count = mmc->max_req_size >> 11;
-=======
 	mmc->max_blk_count = mmc->max_req_size >> variant->datactrl_blocksz;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&host->lock);
 
 	writel(0, host->base + MMCIMASK0);
-<<<<<<< HEAD
-	writel(0, host->base + MMCIMASK1);
-	writel(0xfff, host->base + MMCICLEAR);
-
-	if (gpio_is_valid(plat->gpio_cd)) {
-		ret = gpio_request(plat->gpio_cd, DRIVER_NAME " (cd)");
-		if (ret == 0)
-			ret = gpio_direction_input(plat->gpio_cd);
-		if (ret == 0)
-			host->gpio_cd = plat->gpio_cd;
-		else if (ret != -ENOSYS)
-			goto err_gpio_cd;
-
-		/*
-		 * A gpio pin that will detect cards when inserted and removed
-		 * will most likely want to trigger on the edges if it is
-		 * 0 when ejected and 1 when inserted (or mutatis mutandis
-		 * for the inverted case) so we request triggers on both
-		 * edges.
-		 */
-		ret = request_any_context_irq(gpio_to_irq(plat->gpio_cd),
-				mmci_cd_irq,
-				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-				DRIVER_NAME " (cd)", host);
-		if (ret >= 0)
-			host->gpio_cd_irq = gpio_to_irq(plat->gpio_cd);
-	}
-	if (gpio_is_valid(plat->gpio_wp)) {
-		ret = gpio_request(plat->gpio_wp, DRIVER_NAME " (wp)");
-		if (ret == 0)
-			ret = gpio_direction_input(plat->gpio_wp);
-		if (ret == 0)
-			host->gpio_wp = plat->gpio_wp;
-		else if (ret != -ENOSYS)
-			goto err_gpio_wp;
-	}
-
-	if ((host->plat->status || host->gpio_cd != -ENOSYS)
-	    && host->gpio_cd_irq < 0)
-		mmc->caps |= MMC_CAP_NEEDS_POLL;
-
-	ret = request_irq(dev->irq[0], mmci_irq, IRQF_SHARED, DRIVER_NAME " (cmd)", host);
-	if (ret)
-		goto unmap;
-
-	if (dev->irq[1] == NO_IRQ || !dev->irq[1])
-		host->singleirq = true;
-	else {
-		ret = request_irq(dev->irq[1], mmci_pio_irq, IRQF_SHARED,
-				  DRIVER_NAME " (pio)", host);
-		if (ret)
-			goto irq0_free;
-	}
-
-	writel(MCI_IRQENABLE, host->base + MMCIMASK0);
-=======
 
 	if (variant->mmcimask1)
 		writel(0, host->base + MMCIMASK1);
@@ -3447,7 +2469,6 @@ static int mmci_probe(struct amba_device *dev,
 				  ux500_busy_timeout_work);
 
 	writel(MCI_IRQENABLE | variant->start_err, host->base + MMCIMASK0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	amba_set_drvdata(dev, mmc);
 
@@ -3460,48 +2481,6 @@ static int mmci_probe(struct amba_device *dev,
 
 	pm_runtime_set_autosuspend_delay(&dev->dev, 50);
 	pm_runtime_use_autosuspend(&dev->dev);
-<<<<<<< HEAD
-	pm_runtime_put(&dev->dev);
-
-	mmc_add_host(mmc);
-
-	return 0;
-
- irq0_free:
-	free_irq(dev->irq[0], host);
- unmap:
-	if (host->gpio_wp != -ENOSYS)
-		gpio_free(host->gpio_wp);
- err_gpio_wp:
-	if (host->gpio_cd_irq >= 0)
-		free_irq(host->gpio_cd_irq, host);
-	if (host->gpio_cd != -ENOSYS)
-		gpio_free(host->gpio_cd);
- err_gpio_cd:
-	iounmap(host->base);
- clk_disable:
-	clk_disable(host->clk);
- clk_unprep:
-	clk_unprepare(host->clk);
- clk_free:
-	clk_put(host->clk);
- host_free:
-	mmc_free_host(mmc);
- rel_regions:
-	amba_release_regions(dev);
- out:
-	return ret;
-}
-
-static int __devexit mmci_remove(struct amba_device *dev)
-{
-	struct mmc_host *mmc = amba_get_drvdata(dev);
-
-	amba_set_drvdata(dev, NULL);
-
-	if (mmc) {
-		struct mmci_host *host = mmc_priv(mmc);
-=======
 
 	ret = mmc_add_host(mmc);
 	if (ret)
@@ -3524,7 +2503,6 @@ static void mmci_remove(struct amba_device *dev)
 	if (mmc) {
 		struct mmci_host *host = mmc_priv(mmc);
 		struct variant_data *variant = host->variant;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Undo pm_runtime_put() in probe.  We use the _sync
@@ -3535,43 +2513,14 @@ static void mmci_remove(struct amba_device *dev)
 		mmc_remove_host(mmc);
 
 		writel(0, host->base + MMCIMASK0);
-<<<<<<< HEAD
-		writel(0, host->base + MMCIMASK1);
-=======
 
 		if (variant->mmcimask1)
 			writel(0, host->base + MMCIMASK1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		writel(0, host->base + MMCICOMMAND);
 		writel(0, host->base + MMCIDATACTRL);
 
 		mmci_dma_release(host);
-<<<<<<< HEAD
-		free_irq(dev->irq[0], host);
-		if (!host->singleirq)
-			free_irq(dev->irq[1], host);
-
-		if (host->gpio_wp != -ENOSYS)
-			gpio_free(host->gpio_wp);
-		if (host->gpio_cd_irq >= 0)
-			free_irq(host->gpio_cd_irq, host);
-		if (host->gpio_cd != -ENOSYS)
-			gpio_free(host->gpio_cd);
-
-		iounmap(host->base);
-		clk_disable(host->clk);
-		clk_unprepare(host->clk);
-		clk_put(host->clk);
-
-		if (host->vcc)
-			mmc_regulator_set_ocr(mmc, host->vcc, 0);
-		regulator_put(host->vcc);
-
-		mmc_free_host(mmc);
-
-		amba_release_regions(dev);
-=======
 		clk_disable_unprepare(host->clk);
 		mmc_free_host(mmc);
 	}
@@ -3623,50 +2572,11 @@ static int mmci_runtime_suspend(struct device *dev)
 		pinctrl_pm_select_sleep_state(dev);
 		mmci_save(host);
 		clk_disable_unprepare(host->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_SUSPEND
-static int mmci_suspend(struct device *dev)
-{
-	struct amba_device *adev = to_amba_device(dev);
-	struct mmc_host *mmc = amba_get_drvdata(adev);
-	int ret = 0;
-
-	if (mmc) {
-		struct mmci_host *host = mmc_priv(mmc);
-
-		ret = mmc_suspend_host(mmc);
-		if (ret == 0) {
-			pm_runtime_get_sync(dev);
-			writel(0, host->base + MMCIMASK0);
-		}
-	}
-
-	return ret;
-}
-
-static int mmci_resume(struct device *dev)
-{
-	struct amba_device *adev = to_amba_device(dev);
-	struct mmc_host *mmc = amba_get_drvdata(adev);
-	int ret = 0;
-
-	if (mmc) {
-		struct mmci_host *host = mmc_priv(mmc);
-
-		writel(MCI_IRQENABLE, host->base + MMCIMASK0);
-		pm_runtime_put(dev);
-
-		ret = mmc_resume_host(mmc);
-	}
-
-	return ret;
-=======
 static int mmci_runtime_resume(struct device *dev)
 {
 	struct amba_device *adev = to_amba_device(dev);
@@ -3680,24 +2590,16 @@ static int mmci_runtime_resume(struct device *dev)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
 static const struct dev_pm_ops mmci_dev_pm_ops = {
-<<<<<<< HEAD
-	SET_SYSTEM_SLEEP_PM_OPS(mmci_suspend, mmci_resume)
-};
-
-static struct amba_id mmci_ids[] = {
-=======
 	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
 				pm_runtime_force_resume)
 	SET_RUNTIME_PM_OPS(mmci_runtime_suspend, mmci_runtime_resume, NULL)
 };
 
 static const struct amba_id mmci_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.id	= 0x00041180,
 		.mask	= 0xff0fffff,
@@ -3709,14 +2611,11 @@ static const struct amba_id mmci_ids[] = {
 		.data	= &variant_arm_extended_fifo,
 	},
 	{
-<<<<<<< HEAD
-=======
 		.id	= 0x02041180,
 		.mask	= 0xff0fffff,
 		.data	= &variant_arm_extended_fifo_hwfc,
 	},
 	{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.id	= 0x00041181,
 		.mask	= 0x000fffff,
 		.data	= &variant_arm,
@@ -3728,11 +2627,6 @@ static const struct amba_id mmci_ids[] = {
 		.data	= &variant_u300,
 	},
 	{
-<<<<<<< HEAD
-		.id     = 0x00280180,
-		.mask   = 0x00ffffff,
-		.data	= &variant_u300,
-=======
 		.id     = 0x10180180,
 		.mask   = 0xf0ffffff,
 		.data	= &variant_nomadik,
@@ -3741,7 +2635,6 @@ static const struct amba_id mmci_ids[] = {
 		.id     = 0x00280180,
 		.mask   = 0x00ffffff,
 		.data	= &variant_nomadik,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.id     = 0x00480180,
@@ -3753,8 +2646,6 @@ static const struct amba_id mmci_ids[] = {
 		.mask   = 0xf0ffffff,
 		.data	= &variant_ux500v2,
 	},
-<<<<<<< HEAD
-=======
 	{
 		.id     = 0x00880180,
 		.mask   = 0x00ffffff,
@@ -3786,7 +2677,6 @@ static const struct amba_id mmci_ids[] = {
 		.mask	= 0x000fffff,
 		.data	= &variant_qcom,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, 0 },
 };
 
@@ -3796,16 +2686,10 @@ static struct amba_driver mmci_driver = {
 	.drv		= {
 		.name	= DRIVER_NAME,
 		.pm	= &mmci_dev_pm_ops,
-<<<<<<< HEAD
-	},
-	.probe		= mmci_probe,
-	.remove		= __devexit_p(mmci_remove),
-=======
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 	},
 	.probe		= mmci_probe,
 	.remove		= mmci_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= mmci_ids,
 };
 

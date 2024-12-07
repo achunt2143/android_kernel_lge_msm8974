@@ -44,46 +44,6 @@
 #include <xen/interface/grant_table.h>
 #include <xen/grant_table.h>
 #include <xen/xenbus.h>
-<<<<<<< HEAD
-
-struct xen_netbk;
-
-struct xenvif {
-	/* Unique identifier for this interface. */
-	domid_t          domid;
-	unsigned int     handle;
-
-	/* Reference to netback processing backend. */
-	struct xen_netbk *netbk;
-
-	u8               fe_dev_addr[6];
-
-	/* Physical parameters of the comms window. */
-	unsigned int     irq;
-
-	/* List of frontends to notify after a batch of frames sent. */
-	struct list_head notify_list;
-
-	/* The shared rings and indexes. */
-	struct xen_netif_tx_back_ring tx;
-	struct xen_netif_rx_back_ring rx;
-
-	/* Frontend feature information. */
-	u8 can_sg:1;
-	u8 gso:1;
-	u8 gso_prefix:1;
-	u8 csum:1;
-
-	/* Internal feature information. */
-	u8 can_queue:1;	    /* can queue packets for receiver? */
-
-	/*
-	 * Allow xenvif_start_xmit() to peek ahead in the rx request
-	 * ring.  This is a prediction of what rx_req_cons will be
-	 * once all queued skbs are put on the ring.
-	 */
-	RING_IDX rx_req_cons_peek;
-=======
 #include <xen/page.h>
 #include <linux/debugfs.h>
 
@@ -244,7 +204,6 @@ struct xenvif_queue { /* Per-queue data for xenvif */
 	bool stalled;
 
 	struct xenvif_copy_state rx_copy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Transmit shaping: allow 'credit_bytes' every 'credit_usec'. */
 	unsigned long   credit_bytes;
@@ -252,20 +211,6 @@ struct xenvif_queue { /* Per-queue data for xenvif */
 	unsigned long   remaining_credit;
 	struct timer_list credit_timeout;
 	u64 credit_window_start;
-<<<<<<< HEAD
-
-	/* Statistics */
-	unsigned long rx_gso_checksum_fixup;
-
-	/* Miscellaneous private stuff. */
-	struct list_head schedule_list;
-	atomic_t         refcnt;
-	struct net_device *dev;
-
-	wait_queue_head_t waiting_to_free;
-};
-
-=======
 	bool rate_limited;
 
 	/* Statistics */
@@ -391,63 +336,17 @@ struct xenvif_rx_cb {
 
 #define XENVIF_RX_CB(skb) ((struct xenvif_rx_cb *)(skb)->cb)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct xenbus_device *xenvif_to_xenbus_device(struct xenvif *vif)
 {
 	return to_xenbus_device(vif->dev->dev.parent);
 }
 
-<<<<<<< HEAD
-#define XEN_NETIF_TX_RING_SIZE __CONST_RING_SIZE(xen_netif_tx, PAGE_SIZE)
-#define XEN_NETIF_RX_RING_SIZE __CONST_RING_SIZE(xen_netif_rx, PAGE_SIZE)
-=======
 void xenvif_tx_credit_callback(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct xenvif *xenvif_alloc(struct device *parent,
 			    domid_t domid,
 			    unsigned int handle);
 
-<<<<<<< HEAD
-int xenvif_connect(struct xenvif *vif, unsigned long tx_ring_ref,
-		   unsigned long rx_ring_ref, unsigned int evtchn);
-void xenvif_disconnect(struct xenvif *vif);
-
-void xenvif_get(struct xenvif *vif);
-void xenvif_put(struct xenvif *vif);
-
-int xenvif_xenbus_init(void);
-
-int xenvif_schedulable(struct xenvif *vif);
-
-int xen_netbk_rx_ring_full(struct xenvif *vif);
-
-int xen_netbk_must_stop_queue(struct xenvif *vif);
-
-/* (Un)Map communication rings. */
-void xen_netbk_unmap_frontend_rings(struct xenvif *vif);
-int xen_netbk_map_frontend_rings(struct xenvif *vif,
-				 grant_ref_t tx_ring_ref,
-				 grant_ref_t rx_ring_ref);
-
-/* (De)Register a xenvif with the netback backend. */
-void xen_netbk_add_xenvif(struct xenvif *vif);
-void xen_netbk_remove_xenvif(struct xenvif *vif);
-
-/* (De)Schedule backend processing for a xenvif */
-void xen_netbk_schedule_xenvif(struct xenvif *vif);
-void xen_netbk_deschedule_xenvif(struct xenvif *vif);
-
-/* Check for SKBs from frontend and schedule backend processing */
-void xen_netbk_check_rx_xenvif(struct xenvif *vif);
-/* Receive an SKB from the frontend */
-void xenvif_receive_skb(struct xenvif *vif, struct sk_buff *skb);
-
-/* Queue an SKB for transmission to the frontend */
-void xen_netbk_queue_tx_skb(struct xenvif *vif, struct sk_buff *skb);
-/* Notify xenvif that ring now has space to send an skb to the frontend */
-void xenvif_notify_tx_completion(struct xenvif *vif);
-=======
 int xenvif_init_queue(struct xenvif_queue *queue);
 void xenvif_deinit_queue(struct xenvif_queue *queue);
 
@@ -473,15 +372,10 @@ int xenvif_map_frontend_data_rings(struct xenvif_queue *queue,
 
 /* Check for SKBs from frontend and schedule backend processing */
 void xenvif_napi_schedule_or_enable_events(struct xenvif_queue *queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Prevent the device from generating any further traffic. */
 void xenvif_carrier_off(struct xenvif *vif);
 
-<<<<<<< HEAD
-/* Returns number of ring slots required to send an skb to the frontend */
-unsigned int xen_netbk_count_skb_slots(struct xenvif *vif, struct sk_buff *skb);
-=======
 int xenvif_tx_action(struct xenvif_queue *queue, int budget);
 
 int xenvif_kthread_guest_rx(void *data);
@@ -545,6 +439,5 @@ void xenvif_set_skb_hash(struct xenvif *vif, struct sk_buff *skb);
 #ifdef CONFIG_DEBUG_FS
 void xenvif_dump_hash_info(struct xenvif *vif, struct seq_file *m);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __XEN_NETBACK__COMMON_H__ */

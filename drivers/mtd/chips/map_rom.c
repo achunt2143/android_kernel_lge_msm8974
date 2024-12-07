@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-/*
- * Common code to handle map devices which are simple ROM
- * (C) 2000 Red Hat. GPL'd.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Common code to handle map devices which are simple ROM
  * (C) 2000 Red Hat.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -18,10 +12,7 @@
 #include <linux/errno.h>
 #include <linux/slab.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/map.h>
 
@@ -30,15 +21,10 @@ static int maprom_write (struct mtd_info *, loff_t, size_t, size_t *, const u_ch
 static void maprom_nop (struct mtd_info *);
 static struct mtd_info *map_rom_probe(struct map_info *map);
 static int maprom_erase (struct mtd_info *mtd, struct erase_info *info);
-<<<<<<< HEAD
-static unsigned long maprom_unmapped_area(struct mtd_info *, unsigned long,
-					  unsigned long, unsigned long);
-=======
 static int maprom_point (struct mtd_info *mtd, loff_t from, size_t len,
 			 size_t *retlen, void **virt, resource_size_t *phys);
 static int maprom_unpoint(struct mtd_info *mtd, loff_t from, size_t len);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct mtd_chip_driver maprom_chipdrv = {
 	.probe	= map_rom_probe,
@@ -46,8 +32,6 @@ static struct mtd_chip_driver maprom_chipdrv = {
 	.module	= THIS_MODULE
 };
 
-<<<<<<< HEAD
-=======
 static unsigned int default_erasesize(struct map_info *map)
 {
 	const __be32 *erase_size = NULL;
@@ -57,7 +41,6 @@ static unsigned int default_erasesize(struct map_info *map)
 	return !erase_size ? map->size : be32_to_cpu(*erase_size);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct mtd_info *map_rom_probe(struct map_info *map)
 {
 	struct mtd_info *mtd;
@@ -71,45 +54,22 @@ static struct mtd_info *map_rom_probe(struct map_info *map)
 	mtd->name = map->name;
 	mtd->type = MTD_ROM;
 	mtd->size = map->size;
-<<<<<<< HEAD
-	mtd->_get_unmapped_area = maprom_unmapped_area;
-=======
 	mtd->_point = maprom_point;
 	mtd->_unpoint = maprom_unpoint;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtd->_read = maprom_read;
 	mtd->_write = maprom_write;
 	mtd->_sync = maprom_nop;
 	mtd->_erase = maprom_erase;
 	mtd->flags = MTD_CAP_ROM;
-<<<<<<< HEAD
-	mtd->erasesize = map->size;
-	mtd->writesize = 1;
-=======
 	mtd->erasesize = default_erasesize(map);
 	mtd->writesize = 1;
 	mtd->writebufsize = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__module_get(THIS_MODULE);
 	return mtd;
 }
 
 
-<<<<<<< HEAD
-/*
- * Allow NOMMU mmap() to directly map the device (if not NULL)
- * - return the address to which the offset maps
- * - return -ENOSYS to indicate refusal to do the mapping
- */
-static unsigned long maprom_unmapped_area(struct mtd_info *mtd,
-					  unsigned long len,
-					  unsigned long offset,
-					  unsigned long flags)
-{
-	struct map_info *map = mtd->priv;
-	return (unsigned long) map->virt + offset;
-=======
 static int maprom_point(struct mtd_info *mtd, loff_t from, size_t len,
 			size_t *retlen, void **virt, resource_size_t *phys)
 {
@@ -127,7 +87,6 @@ static int maprom_point(struct mtd_info *mtd, loff_t from, size_t len,
 static int maprom_unpoint(struct mtd_info *mtd, loff_t from, size_t len)
 {
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int maprom_read (struct mtd_info *mtd, loff_t from, size_t len, size_t *retlen, u_char *buf)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _PARISC_CHECKSUM_H
 #define _PARISC_CHECKSUM_H
 
@@ -22,24 +19,6 @@
 extern __wsum csum_partial(const void *, int, __wsum);
 
 /*
-<<<<<<< HEAD
- * The same as csum_partial, but copies from src while it checksums.
- *
- * Here even more important to align src and dst on a 32-bit (or even
- * better 64-bit) boundary
- */
-extern __wsum csum_partial_copy_nocheck(const void *, void *, int, __wsum);
-
-/*
- * this is a new version of the above that records errors it finds in *errp,
- * but continues and zeros the rest of the buffer.
- */
-extern __wsum csum_partial_copy_from_user(const void __user *src,
-		void *dst, int len, __wsum sum, int *errp);
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Optimized for IP headers, which always checksum on 4 octet boundaries.
  *
  *	Written by Randolph Chung <tausq@debian.org>, and then mucked with by
@@ -48,37 +27,12 @@ extern __wsum csum_partial_copy_from_user(const void __user *src,
 static inline __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
 {
 	unsigned int sum;
-<<<<<<< HEAD
-=======
 	unsigned long t0, t1, t2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__asm__ __volatile__ (
 "	ldws,ma		4(%1), %0\n"
 "	addib,<=	-4, %2, 2f\n"
 "\n"
-<<<<<<< HEAD
-"	ldws		4(%1), %%r20\n"
-"	ldws		8(%1), %%r21\n"
-"	add		%0, %%r20, %0\n"
-"	ldws,ma		12(%1), %%r19\n"
-"	addc		%0, %%r21, %0\n"
-"	addc		%0, %%r19, %0\n"
-"1:	ldws,ma		4(%1), %%r19\n"
-"	addib,<		0, %2, 1b\n"
-"	addc		%0, %%r19, %0\n"
-"\n"
-"	extru		%0, 31, 16, %%r20\n"
-"	extru		%0, 15, 16, %%r21\n"
-"	addc		%%r20, %%r21, %0\n"
-"	extru		%0, 15, 16, %%r21\n"
-"	add		%0, %%r21, %0\n"
-"	subi		-1, %0, %0\n"
-"2:\n"
-	: "=r" (sum), "=r" (iph), "=r" (ihl)
-	: "1" (iph), "2" (ihl)
-	: "r19", "r20", "r21", "memory");
-=======
 "	ldws		4(%1), %4\n"
 "	ldws		8(%1), %5\n"
 "	add		%0, %4, %0\n"
@@ -99,7 +53,6 @@ static inline __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
 	: "=r" (sum), "=r" (iph), "=r" (ihl), "=r" (t0), "=r" (t1), "=r" (t2)
 	: "1" (iph), "2" (ihl)
 	: "memory");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (__force __sum16)sum;
 }
@@ -119,14 +72,8 @@ static inline __sum16 csum_fold(__wsum csum)
 }
  
 static inline __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
-<<<<<<< HEAD
-					       unsigned short len,
-					       unsigned short proto,
-					       __wsum sum)
-=======
 					__u32 len, __u8 proto,
 					__wsum sum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__asm__(
 	"	add  %1, %0, %0\n"
@@ -143,14 +90,8 @@ static inline __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
  * returns a 16-bit checksum, already complemented
  */
 static inline __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
-<<<<<<< HEAD
-						   unsigned short len,
-						   unsigned short proto,
-						   __wsum sum)
-=======
 					__u32 len, __u8 proto,
 					__wsum sum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return csum_fold(csum_tcpudp_nofold(saddr,daddr,len,proto,sum));
 }
@@ -168,11 +109,6 @@ static inline __sum16 ip_compute_csum(const void *buf, int len)
 #define _HAVE_ARCH_IPV6_CSUM
 static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 					  const struct in6_addr *daddr,
-<<<<<<< HEAD
-					  __u32 len, unsigned short proto,
-					  __wsum sum)
-{
-=======
 					  __u32 len, __u8 proto,
 					  __wsum sum)
 {
@@ -180,7 +116,6 @@ static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 
 	len += proto;	/* add 16-bit proto + len */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__asm__ __volatile__ (
 
 #if BITS_PER_LONG > 32
@@ -191,22 +126,6 @@ static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 	** Try to keep 4 registers with "live" values ahead of the ALU.
 	*/
 
-<<<<<<< HEAD
-"	ldd,ma		8(%1), %%r19\n"	/* get 1st saddr word */
-"	ldd,ma		8(%2), %%r20\n"	/* get 1st daddr word */
-"	add		%8, %3, %3\n"/* add 16-bit proto + len */
-"	add		%%r19, %0, %0\n"
-"	ldd,ma		8(%1), %%r21\n"	/* 2cd saddr */
-"	ldd,ma		8(%2), %%r22\n"	/* 2cd daddr */
-"	add,dc		%%r20, %0, %0\n"
-"	add,dc		%%r21, %0, %0\n"
-"	add,dc		%%r22, %0, %0\n"
-"	add,dc		%3, %0, %0\n"  /* fold in proto+len | carry bit */
-"	extrd,u		%0, 31, 32, %%r19\n"	/* copy upper half down */
-"	depdi		0, 31, 32, %0\n"	/* clear upper half */
-"	add		%%r19, %0, %0\n"	/* fold into 32-bits */
-"	addc		0, %0, %0\n"		/* add carry */
-=======
 "	depdi		0, 31, 32, %0\n"/* clear upper half of incoming checksum */
 "	ldd,ma		8(%1), %4\n"	/* get 1st saddr word */
 "	ldd,ma		8(%2), %5\n"	/* get 1st daddr word */
@@ -221,7 +140,6 @@ static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 "	depdi		0, 31, 32, %0\n"/* clear upper half */
 "	add,dc		%4, %0, %0\n"	/* fold into 32-bits, plus carry */
 "	addc		0, %0, %0\n"	/* add final carry */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 
@@ -230,55 +148,6 @@ static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 	** Insn stream is serialized on the carry bit here too.
 	** result from the previous operation (eg r0 + x)
 	*/
-<<<<<<< HEAD
-
-"	ldw,ma		4(%1), %%r19\n"	/* get 1st saddr word */
-"	ldw,ma		4(%2), %%r20\n"	/* get 1st daddr word */
-"	add		%8, %3, %3\n"	/* add 16-bit proto + len */
-"	add		%%r19, %0, %0\n"
-"	ldw,ma		4(%1), %%r21\n"	/* 2cd saddr */
-"	addc		%%r20, %0, %0\n"
-"	ldw,ma		4(%2), %%r22\n"	/* 2cd daddr */
-"	addc		%%r21, %0, %0\n"
-"	ldw,ma		4(%1), %%r19\n"	/* 3rd saddr */
-"	addc		%%r22, %0, %0\n"
-"	ldw,ma		4(%2), %%r20\n"	/* 3rd daddr */
-"	addc		%%r19, %0, %0\n"
-"	ldw,ma		4(%1), %%r21\n"	/* 4th saddr */
-"	addc		%%r20, %0, %0\n"
-"	ldw,ma		4(%2), %%r22\n"	/* 4th daddr */
-"	addc		%%r21, %0, %0\n"
-"	addc		%%r22, %0, %0\n"
-"	addc		%3, %0, %0\n"	/* fold in proto+len, catch carry */
-
-#endif
-	: "=r" (sum), "=r" (saddr), "=r" (daddr), "=r" (len)
-	: "0" (sum), "1" (saddr), "2" (daddr), "3" (len), "r" (proto)
-	: "r19", "r20", "r21", "r22", "memory");
-	return csum_fold(sum);
-}
-
-/* 
- *	Copy and checksum to user
- */
-#define HAVE_CSUM_COPY_USER
-static __inline__ __wsum csum_and_copy_to_user(const void *src,
-						      void __user *dst,
-						      int len, __wsum sum,
-						      int *err_ptr)
-{
-	/* code stolen from include/asm-mips64 */
-	sum = csum_partial(src, len, sum);
-	 
-	if (copy_to_user(dst, src, len)) {
-		*err_ptr = -EFAULT;
-		return (__force __wsum)-1;
-	}
-
-	return sum;
-}
-
-=======
 "	ldw,ma		4(%1), %4\n"	/* get 1st saddr word */
 "	ldw,ma		4(%2), %5\n"	/* get 1st daddr word */
 "	add		%4, %0, %0\n"
@@ -306,6 +175,5 @@ static __inline__ __wsum csum_and_copy_to_user(const void *src,
 	return csum_fold(sum);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 

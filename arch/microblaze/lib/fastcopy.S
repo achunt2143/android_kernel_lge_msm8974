@@ -29,13 +29,6 @@
  *	between mem locations with size of xfer spec'd in bytes
  */
 
-<<<<<<< HEAD
-#ifdef __MICROBLAZEEL__
-#error Microblaze LE not support ASM optimized lib func. Disable OPT_LIB_ASM.
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/linkage.h>
 	.text
 	.globl	memcpy

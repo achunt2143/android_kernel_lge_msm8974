@@ -17,19 +17,11 @@
 #ifndef AR9003_RTT_H
 #define AR9003_RTT_H
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_ATH9K_PCOEM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ar9003_hw_rtt_enable(struct ath_hw *ah);
 void ar9003_hw_rtt_disable(struct ath_hw *ah);
 void ar9003_hw_rtt_set_mask(struct ath_hw *ah, u32 rtt_mask);
 bool ar9003_hw_rtt_force_restore(struct ath_hw *ah);
-<<<<<<< HEAD
-void ar9003_hw_rtt_load_hist(struct ath_hw *ah, u8 chain, u32 *table);
-void ar9003_hw_rtt_fill_hist(struct ath_hw *ah, u8 chain, u32 *table);
-void ar9003_hw_rtt_clear_hist(struct ath_hw *ah);
-=======
 void ar9003_hw_rtt_load_hist(struct ath_hw *ah);
 void ar9003_hw_rtt_fill_hist(struct ath_hw *ah);
 void ar9003_hw_rtt_clear_hist(struct ath_hw *ah);
@@ -69,6 +61,5 @@ static inline bool ar9003_hw_rtt_restore(struct ath_hw *ah, struct ath9k_channel
 	return false;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

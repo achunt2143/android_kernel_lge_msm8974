@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#include <linux/mm.h>
-#include <linux/kernel.h>
-#include <linux/slab.h>
-#include <linux/sched.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/mm.h>
 #include <linux/kernel.h>
@@ -14,15 +8,10 @@
 #include <linux/stackprotector.h>
 #include <asm/fpu.h>
 #include <asm/ptrace.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct kmem_cache *task_xstate_cachep = NULL;
 unsigned int xstate_size;
 
-<<<<<<< HEAD
-int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
-{
-=======
 #ifdef CONFIG_STACKPROTECTOR
 unsigned long __stack_chk_guard __read_mostly;
 EXPORT_SYMBOL(__stack_chk_guard);
@@ -35,7 +24,6 @@ EXPORT_SYMBOL(__stack_chk_guard);
 int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
 {
 	unlazy_fpu(src, task_pt_regs(src));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*dst = *src;
 
 	if (src->thread.xstate) {
@@ -57,61 +45,11 @@ void free_thread_xstate(struct task_struct *tsk)
 	}
 }
 
-<<<<<<< HEAD
-#if THREAD_SHIFT < PAGE_SHIFT
-static struct kmem_cache *thread_info_cache;
-
-struct thread_info *alloc_thread_info_node(struct task_struct *tsk, int node)
-{
-	struct thread_info *ti;
-#ifdef CONFIG_DEBUG_STACK_USAGE
-	gfp_t mask = GFP_KERNEL | __GFP_ZERO;
-#else
-	gfp_t mask = GFP_KERNEL;
-#endif
-
-	ti = kmem_cache_alloc_node(thread_info_cache, mask, node);
-	return ti;
-}
-
-void free_thread_info(struct thread_info *ti)
-{
-	free_thread_xstate(ti->task);
-	kmem_cache_free(thread_info_cache, ti);
-}
-
-void thread_info_cache_init(void)
-{
-	thread_info_cache = kmem_cache_create("thread_info", THREAD_SIZE,
-					      THREAD_SIZE, SLAB_PANIC, NULL);
-}
-#else
-struct thread_info *alloc_thread_info_node(struct task_struct *tsk, int node)
-{
-#ifdef CONFIG_DEBUG_STACK_USAGE
-	gfp_t mask = GFP_KERNEL | __GFP_ZERO;
-#else
-	gfp_t mask = GFP_KERNEL;
-#endif
-	struct page *page = alloc_pages_node(node, mask, THREAD_SIZE_ORDER);
-
-	return page ? page_address(page) : NULL;
-}
-
-void free_thread_info(struct thread_info *ti)
-{
-	free_thread_xstate(ti->task);
-	free_pages((unsigned long)ti, THREAD_SIZE_ORDER);
-}
-#endif /* THREAD_SHIFT < PAGE_SHIFT */
-
-=======
 void arch_release_task_struct(struct task_struct *tsk)
 {
 	free_thread_xstate(tsk);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void arch_task_cache_init(void)
 {
 	if (!xstate_size)
@@ -119,11 +57,7 @@ void arch_task_cache_init(void)
 
 	task_xstate_cachep = kmem_cache_create("task_xstate", xstate_size,
 					       __alignof__(union thread_xstate),
-<<<<<<< HEAD
-					       SLAB_PANIC | SLAB_NOTRACK, NULL);
-=======
 					       SLAB_PANIC, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_SH_FPU_EMU
@@ -132,11 +66,7 @@ void arch_task_cache_init(void)
 # define HAVE_SOFTFP	0
 #endif
 
-<<<<<<< HEAD
-void __cpuinit init_thread_xstate(void)
-=======
 void init_thread_xstate(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (boot_cpu_data.flags & CPU_HAS_FPU)
 		xstate_size = sizeof(struct sh_fpu_hard_struct);

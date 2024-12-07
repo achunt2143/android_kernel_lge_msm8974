@@ -21,12 +21,6 @@ endif
 drop-sections := .reginfo .mdebug .comment .note .pdr .options .MIPS.options
 strip-flags   := $(addprefix --remove-section=,$(drop-sections))
 
-<<<<<<< HEAD
-hostprogs-y := elf2ecoff
-
-targets := vmlinux.ecoff
-quiet_cmd_ecoff = ECOFF   $@
-=======
 hostprogs := elf2ecoff
 
 suffix-y			:= bin
@@ -37,7 +31,6 @@ suffix-$(CONFIG_KERNEL_LZO)	:= lzo
 
 targets := vmlinux.ecoff
 quiet_cmd_ecoff = ECOFF	  $@
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
       cmd_ecoff = $(obj)/elf2ecoff $(VMLINUX) $@ $(e2eflag)
 $(obj)/vmlinux.ecoff: $(obj)/elf2ecoff $(VMLINUX) FORCE
 	$(call if_changed,ecoff)
@@ -53,8 +46,6 @@ quiet_cmd_srec = OBJCOPY $@
       cmd_srec = $(OBJCOPY) -S -O srec $(strip-flags) $(VMLINUX) $@
 $(obj)/vmlinux.srec: $(VMLINUX) FORCE
 	$(call if_changed,srec)
-<<<<<<< HEAD
-=======
 
 UIMAGE_LOADADDR  = $(VMLINUX_LOAD_ADDRESS)
 UIMAGE_ENTRYADDR = $(VMLINUX_ENTRY_ADDRESS)
@@ -183,4 +174,3 @@ $(obj)/vmlinux.%.itb: $(obj)/vmlinux.%.its $(obj)/vmlinux.bin.% FORCE
 
 # for cleaning
 subdir- += compressed tools
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

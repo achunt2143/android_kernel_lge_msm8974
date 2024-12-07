@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Guillemot Maxi Radio FM 2000 PCI radio card driver for Linux
  * (C) 2001 Dimitromanolakis Apostolos <apdim@grecian.net>
@@ -17,11 +14,7 @@
  * anybody does please mail me.
  *
  * For the pdf file see:
-<<<<<<< HEAD
- * http://www.nxp.com/acrobat_download2/expired_datasheets/TEA5757_5759_3.pdf 
-=======
  * http://www.nxp.com/acrobat_download2/expired_datasheets/TEA5757_5759_3.pdf
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *
  * CHANGES:
@@ -35,11 +28,7 @@
  * BUGS:
  *   - card unmutes if you change frequency
  *
-<<<<<<< HEAD
- * (c) 2006, 2007 by Mauro Carvalho Chehab <mchehab@infradead.org>:
-=======
  * (c) 2006, 2007 by Mauro Carvalho Chehab <mchehab@kernel.org>:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	- Conversion to V4L2 API
  *      - Uses video_ioctl2 for parsing and to add debug support
  */
@@ -54,11 +43,7 @@
 #include <linux/videodev2.h>
 #include <linux/io.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <sound/tea575x-tuner.h>
-=======
 #include <media/drv-intf/tea575x.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-fh.h>
@@ -124,22 +109,14 @@ static void maxiradio_tea575x_set_direction(struct snd_tea575x *tea, bool output
 {
 }
 
-<<<<<<< HEAD
-static struct snd_tea575x_ops maxiradio_tea_ops = {
-=======
 static const struct snd_tea575x_ops maxiradio_tea_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_pins = maxiradio_tea575x_set_pins,
 	.get_pins = maxiradio_tea575x_get_pins,
 	.set_direction = maxiradio_tea575x_set_direction,
 };
 
-<<<<<<< HEAD
-static int __devinit maxiradio_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
-=======
 static int maxiradio_probe(struct pci_dev *pdev,
 			   const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct maxiradio *dev;
 	struct v4l2_device *v4l2_dev;
@@ -166,13 +143,7 @@ static int maxiradio_probe(struct pci_dev *pdev,
 	dev->tea.cannot_read_data = true;
 	dev->tea.v4l2_dev = v4l2_dev;
 	dev->tea.radio_nr = radio_nr;
-<<<<<<< HEAD
-	strlcpy(dev->tea.card, "Maxi Radio FM2000", sizeof(dev->tea.card));
-	snprintf(dev->tea.bus_info, sizeof(dev->tea.bus_info),
-			"PCI:%s", pci_name(pdev));
-=======
 	strscpy(dev->tea.card, "Maxi Radio FM2000", sizeof(dev->tea.card));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = -ENODEV;
 
@@ -186,11 +157,7 @@ static int maxiradio_probe(struct pci_dev *pdev,
 		goto err_out_free_region;
 
 	dev->io = pci_resource_start(pdev, 0);
-<<<<<<< HEAD
-	if (snd_tea575x_init(&dev->tea)) {
-=======
 	if (snd_tea575x_init(&dev->tea, THIS_MODULE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "radio-maxiradio: Unable to detect TEA575x tuner\n");
 		goto err_out_free_region;
 	}
@@ -205,15 +172,9 @@ errfr:
 	return retval;
 }
 
-<<<<<<< HEAD
-static void __devexit maxiradio_remove(struct pci_dev *pdev)
-{
-	struct v4l2_device *v4l2_dev = dev_get_drvdata(&pdev->dev);
-=======
 static void maxiradio_remove(struct pci_dev *pdev)
 {
 	struct v4l2_device *v4l2_dev = pci_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct maxiradio *dev = to_maxiradio(v4l2_dev);
 
 	snd_tea575x_exit(&dev->tea);
@@ -221,16 +182,10 @@ static void maxiradio_remove(struct pci_dev *pdev)
 	outb(0, dev->io);
 	v4l2_device_unregister(v4l2_dev);
 	release_region(pci_resource_start(pdev, 0), pci_resource_len(pdev, 0));
-<<<<<<< HEAD
-}
-
-static struct pci_device_id maxiradio_pci_tbl[] = {
-=======
 	kfree(dev);
 }
 
 static const struct pci_device_id maxiradio_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_GUILLEMOT, PCI_DEVICE_ID_GUILLEMOT_MAXIRADIO,
 		PCI_ANY_ID, PCI_ANY_ID, },
 	{ 0 }
@@ -242,25 +197,7 @@ static struct pci_driver maxiradio_driver = {
 	.name		= "radio-maxiradio",
 	.id_table	= maxiradio_pci_tbl,
 	.probe		= maxiradio_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(maxiradio_remove),
-};
-
-static int __init maxiradio_init(void)
-{
-	return pci_register_driver(&maxiradio_driver);
-}
-
-static void __exit maxiradio_exit(void)
-{
-	pci_unregister_driver(&maxiradio_driver);
-}
-
-module_init(maxiradio_init);
-module_exit(maxiradio_exit);
-=======
 	.remove		= maxiradio_remove,
 };
 
 module_pci_driver(maxiradio_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

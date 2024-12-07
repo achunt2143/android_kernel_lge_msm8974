@@ -1,13 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_GRE_H
 #define __LINUX_GRE_H
 
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-=======
 #include <net/ip_tunnels.h>
 
 struct gre_base_hdr {
@@ -23,15 +18,11 @@ struct gre_full_hdr {
 	__be32 seq;
 } __packed;
 #define GRE_HEADER_SECTION 4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define GREPROTO_CISCO		0
 #define GREPROTO_PPTP		1
 #define GREPROTO_MAX		2
-<<<<<<< HEAD
-=======
 #define GRE_IP_PROTO_MAX	2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct gre_protocol {
 	int  (*handler)(struct sk_buff *skb);
@@ -41,8 +32,6 @@ struct gre_protocol {
 int gre_add_protocol(const struct gre_protocol *proto, u8 version);
 int gre_del_protocol(const struct gre_protocol *proto, u8 version);
 
-<<<<<<< HEAD
-=======
 struct net_device *gretap_fb_dev_create(struct net *net, const char *name,
 				       u8 name_assign_type);
 int gre_parse_header(struct sk_buff *skb, struct tnl_ptk_info *tpi,
@@ -157,5 +146,4 @@ static inline void gre_build_header(struct sk_buff *skb, int hdr_len,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

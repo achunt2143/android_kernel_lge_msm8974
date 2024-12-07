@@ -1,32 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * USB Skeleton driver - 2.2
  *
  * Copyright (C) 2001-2004 Greg Kroah-Hartman (greg@kroah.com)
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License as
- *	published by the Free Software Foundation, version 2.
- *
  * This driver is based on the 2.6.3 version of drivers/usb/usb-skeleton.c
  * but has been rewritten to be easier to read and use.
- *
-=======
- * This driver is based on the 2.6.3 version of drivers/usb/usb-skeleton.c
- * but has been rewritten to be easier to read and use.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/kref.h>
@@ -52,17 +35,11 @@ MODULE_DEVICE_TABLE(usb, skel_table);
 
 /* our private defines. if this grows any larger, use your own .h file */
 #define MAX_TRANSFER		(PAGE_SIZE - 512)
-<<<<<<< HEAD
-/* MAX_TRANSFER is chosen so that the VM is not stressed by
-   allocations > PAGE_SIZE and the number of packets in a page
-   is an integer 512 is the largest possible packet on EHCI */
-=======
 /*
  * MAX_TRANSFER is chosen so that the VM is not stressed by
  * allocations > PAGE_SIZE and the number of packets in a page
  * is an integer 512 is the largest possible packet on EHCI
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WRITES_IN_FLIGHT	8
 /* arbitrarily chosen */
 
@@ -81,19 +58,11 @@ struct usb_skel {
 	__u8			bulk_out_endpointAddr;	/* the address of the bulk out endpoint */
 	int			errors;			/* the last request tanked */
 	bool			ongoing_read;		/* a read is going on */
-<<<<<<< HEAD
-	bool			processed_urb;		/* indicates we haven't processed the urb */
-	spinlock_t		err_lock;		/* lock for errors */
-	struct kref		kref;
-	struct mutex		io_mutex;		/* synchronize I/O with disconnect */
-	struct completion	bulk_in_completion;	/* to wait for an ongoing read */
-=======
 	spinlock_t		err_lock;		/* lock for errors */
 	struct kref		kref;
 	struct mutex		io_mutex;		/* synchronize I/O with disconnect */
 	unsigned long		disconnected:1;
 	wait_queue_head_t	bulk_in_wait;		/* to wait for an ongoing read */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define to_skel_dev(d) container_of(d, struct usb_skel, kref)
 
@@ -105,10 +74,7 @@ static void skel_delete(struct kref *kref)
 	struct usb_skel *dev = to_skel_dev(kref);
 
 	usb_free_urb(dev->bulk_in_urb);
-<<<<<<< HEAD
-=======
 	usb_put_intf(dev->interface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_put_dev(dev->udev);
 	kfree(dev->bulk_in_buffer);
 	kfree(dev);
@@ -125,13 +91,8 @@ static int skel_open(struct inode *inode, struct file *file)
 
 	interface = usb_find_interface(&skel_driver, subminor);
 	if (!interface) {
-<<<<<<< HEAD
-		err("%s - error, can't find device for minor %d",
-		     __func__, subminor);
-=======
 		pr_err("%s - error, can't find device for minor %d\n",
 			__func__, subminor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENODEV;
 		goto exit;
 	}
@@ -142,22 +103,6 @@ static int skel_open(struct inode *inode, struct file *file)
 		goto exit;
 	}
 
-<<<<<<< HEAD
-	/* increment our usage count for the device */
-	kref_get(&dev->kref);
-
-	/* lock the device to allow correctly handling errors
-	 * in resumption */
-	mutex_lock(&dev->io_mutex);
-
-	retval = usb_autopm_get_interface(interface);
-	if (retval)
-		goto out_err;
-
-	/* save our object in the file's private structure */
-	file->private_data = dev;
-	mutex_unlock(&dev->io_mutex);
-=======
 	retval = usb_autopm_get_interface(interface);
 	if (retval)
 		goto exit;
@@ -167,7 +112,6 @@ static int skel_open(struct inode *inode, struct file *file)
 
 	/* save our object in the file's private structure */
 	file->private_data = dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 exit:
 	return retval;
@@ -182,14 +126,7 @@ static int skel_release(struct inode *inode, struct file *file)
 		return -ENODEV;
 
 	/* allow the device to be autosuspended */
-<<<<<<< HEAD
-	mutex_lock(&dev->io_mutex);
-	if (dev->interface)
-		usb_autopm_put_interface(dev->interface);
-	mutex_unlock(&dev->io_mutex);
-=======
 	usb_autopm_put_interface(dev->interface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* decrement the count on our device */
 	kref_put(&dev->kref, skel_delete);
@@ -223,46 +160,28 @@ static int skel_flush(struct file *file, fl_owner_t id)
 static void skel_read_bulk_callback(struct urb *urb)
 {
 	struct usb_skel *dev;
-<<<<<<< HEAD
-
-	dev = urb->context;
-
-	spin_lock(&dev->err_lock);
-=======
 	unsigned long flags;
 
 	dev = urb->context;
 
 	spin_lock_irqsave(&dev->err_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* sync/async unlink faults aren't errors */
 	if (urb->status) {
 		if (!(urb->status == -ENOENT ||
 		    urb->status == -ECONNRESET ||
 		    urb->status == -ESHUTDOWN))
-<<<<<<< HEAD
-			err("%s - nonzero write bulk status received: %d",
-			    __func__, urb->status);
-=======
 			dev_err(&dev->interface->dev,
 				"%s - nonzero write bulk status received: %d\n",
 				__func__, urb->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dev->errors = urb->status;
 	} else {
 		dev->bulk_in_filled = urb->actual_length;
 	}
 	dev->ongoing_read = 0;
-<<<<<<< HEAD
-	spin_unlock(&dev->err_lock);
-
-	complete(&dev->bulk_in_completion);
-=======
 	spin_unlock_irqrestore(&dev->err_lock, flags);
 
 	wake_up_interruptible(&dev->bulk_in_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int skel_do_read_io(struct usb_skel *dev, size_t count)
@@ -283,14 +202,6 @@ static int skel_do_read_io(struct usb_skel *dev, size_t count)
 	dev->ongoing_read = 1;
 	spin_unlock_irq(&dev->err_lock);
 
-<<<<<<< HEAD
-	/* do it */
-	rv = usb_submit_urb(dev->bulk_in_urb, GFP_KERNEL);
-	if (rv < 0) {
-		err("%s - failed submitting read urb, error %d",
-			__func__, rv);
-		dev->bulk_in_filled = 0;
-=======
 	/* submit bulk in urb, which means no data to deliver */
 	dev->bulk_in_filled = 0;
 	dev->bulk_in_copied = 0;
@@ -301,7 +212,6 @@ static int skel_do_read_io(struct usb_skel *dev, size_t count)
 		dev_err(&dev->interface->dev,
 			"%s - failed submitting read urb, error %d\n",
 			__func__, rv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rv = (rv == -ENOMEM) ? rv : -EIO;
 		spin_lock_irq(&dev->err_lock);
 		dev->ongoing_read = 0;
@@ -320,12 +230,7 @@ static ssize_t skel_read(struct file *file, char *buffer, size_t count,
 
 	dev = file->private_data;
 
-<<<<<<< HEAD
-	/* if we cannot read at all, return EOF */
-	if (!dev->bulk_in_urb || !count)
-=======
 	if (!count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* no concurrent readers */
@@ -333,11 +238,7 @@ static ssize_t skel_read(struct file *file, char *buffer, size_t count,
 	if (rv < 0)
 		return rv;
 
-<<<<<<< HEAD
-	if (!dev->interface) {		/* disconnect() was called */
-=======
 	if (dev->disconnected) {		/* disconnect() was called */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rv = -ENODEV;
 		goto exit;
 	}
@@ -358,31 +259,9 @@ retry:
 		 * IO may take forever
 		 * hence wait in an interruptible state
 		 */
-<<<<<<< HEAD
-		rv = wait_for_completion_interruptible(&dev->bulk_in_completion);
-		if (rv < 0)
-			goto exit;
-		/*
-		 * by waiting we also semiprocessed the urb
-		 * we must finish now
-		 */
-		dev->bulk_in_copied = 0;
-		dev->processed_urb = 1;
-	}
-
-	if (!dev->processed_urb) {
-		/*
-		 * the URB hasn't been processed
-		 * do it now
-		 */
-		wait_for_completion(&dev->bulk_in_completion);
-		dev->bulk_in_copied = 0;
-		dev->processed_urb = 1;
-=======
 		rv = wait_event_interruptible(dev->bulk_in_wait, (!dev->ongoing_read));
 		if (rv < 0)
 			goto exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* errors must be reported */
@@ -392,11 +271,6 @@ retry:
 		dev->errors = 0;
 		/* to preserve notifications about reset */
 		rv = (rv == -EPIPE) ? rv : -EIO;
-<<<<<<< HEAD
-		/* no data to deliver */
-		dev->bulk_in_filled = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* report it */
 		goto exit;
 	}
@@ -447,14 +321,8 @@ retry:
 		rv = skel_do_read_io(dev, count);
 		if (rv < 0)
 			goto exit;
-<<<<<<< HEAD
-		else if (!(file->f_flags & O_NONBLOCK))
-			goto retry;
-		rv = -EAGAIN;
-=======
 		else
 			goto retry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 exit:
 	mutex_unlock(&dev->io_mutex);
@@ -464,10 +332,7 @@ exit:
 static void skel_write_bulk_callback(struct urb *urb)
 {
 	struct usb_skel *dev;
-<<<<<<< HEAD
-=======
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = urb->context;
 
@@ -476,14 +341,6 @@ static void skel_write_bulk_callback(struct urb *urb)
 		if (!(urb->status == -ENOENT ||
 		    urb->status == -ECONNRESET ||
 		    urb->status == -ESHUTDOWN))
-<<<<<<< HEAD
-			err("%s - nonzero write bulk status received: %d",
-			    __func__, urb->status);
-
-		spin_lock(&dev->err_lock);
-		dev->errors = urb->status;
-		spin_unlock(&dev->err_lock);
-=======
 			dev_err(&dev->interface->dev,
 				"%s - nonzero write bulk status received: %d\n",
 				__func__, urb->status);
@@ -491,7 +348,6 @@ static void skel_write_bulk_callback(struct urb *urb)
 		spin_lock_irqsave(&dev->err_lock, flags);
 		dev->errors = urb->status;
 		spin_unlock_irqrestore(&dev->err_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* free up our allocated buffer */
@@ -507,11 +363,7 @@ static ssize_t skel_write(struct file *file, const char *user_buffer,
 	int retval = 0;
 	struct urb *urb = NULL;
 	char *buf = NULL;
-<<<<<<< HEAD
-	size_t writesize = min(count, (size_t)MAX_TRANSFER);
-=======
 	size_t writesize = min_t(size_t, count, MAX_TRANSFER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = file->private_data;
 
@@ -568,11 +420,7 @@ static ssize_t skel_write(struct file *file, const char *user_buffer,
 
 	/* this lock makes sure we don't submit URBs to gone devices */
 	mutex_lock(&dev->io_mutex);
-<<<<<<< HEAD
-	if (!dev->interface) {		/* disconnect() was called */
-=======
 	if (dev->disconnected) {		/* disconnect() was called */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&dev->io_mutex);
 		retval = -ENODEV;
 		goto error;
@@ -589,14 +437,9 @@ static ssize_t skel_write(struct file *file, const char *user_buffer,
 	retval = usb_submit_urb(urb, GFP_KERNEL);
 	mutex_unlock(&dev->io_mutex);
 	if (retval) {
-<<<<<<< HEAD
-		err("%s - failed submitting write urb, error %d", __func__,
-		    retval);
-=======
 		dev_err(&dev->interface->dev,
 			"%s - failed submitting write urb, error %d\n",
 			__func__, retval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error_unanchor;
 	}
 
@@ -646,20 +489,6 @@ static int skel_probe(struct usb_interface *interface,
 		      const struct usb_device_id *id)
 {
 	struct usb_skel *dev;
-<<<<<<< HEAD
-	struct usb_host_interface *iface_desc;
-	struct usb_endpoint_descriptor *endpoint;
-	size_t buffer_size;
-	int i;
-	int retval = -ENOMEM;
-
-	/* allocate memory for our device state and initialize it */
-	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-	if (!dev) {
-		err("Out of memory");
-		goto error;
-	}
-=======
 	struct usb_endpoint_descriptor *bulk_in, *bulk_out;
 	int retval;
 
@@ -668,54 +497,11 @@ static int skel_probe(struct usb_interface *interface,
 	if (!dev)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kref_init(&dev->kref);
 	sema_init(&dev->limit_sem, WRITES_IN_FLIGHT);
 	mutex_init(&dev->io_mutex);
 	spin_lock_init(&dev->err_lock);
 	init_usb_anchor(&dev->submitted);
-<<<<<<< HEAD
-	init_completion(&dev->bulk_in_completion);
-
-	dev->udev = usb_get_dev(interface_to_usbdev(interface));
-	dev->interface = interface;
-
-	/* set up the endpoint information */
-	/* use only the first bulk-in and bulk-out endpoints */
-	iface_desc = interface->cur_altsetting;
-	for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
-		endpoint = &iface_desc->endpoint[i].desc;
-
-		if (!dev->bulk_in_endpointAddr &&
-		    usb_endpoint_is_bulk_in(endpoint)) {
-			/* we found a bulk in endpoint */
-			buffer_size = usb_endpoint_maxp(endpoint);
-			dev->bulk_in_size = buffer_size;
-			dev->bulk_in_endpointAddr = endpoint->bEndpointAddress;
-			dev->bulk_in_buffer = kmalloc(buffer_size, GFP_KERNEL);
-			if (!dev->bulk_in_buffer) {
-				err("Could not allocate bulk_in_buffer");
-				goto error;
-			}
-			dev->bulk_in_urb = usb_alloc_urb(0, GFP_KERNEL);
-			if (!dev->bulk_in_urb) {
-				err("Could not allocate bulk_in_urb");
-				goto error;
-			}
-		}
-
-		if (!dev->bulk_out_endpointAddr &&
-		    usb_endpoint_is_bulk_out(endpoint)) {
-			/* we found a bulk out endpoint */
-			dev->bulk_out_endpointAddr = endpoint->bEndpointAddress;
-		}
-	}
-	if (!(dev->bulk_in_endpointAddr && dev->bulk_out_endpointAddr)) {
-		err("Could not find both bulk-in and bulk-out endpoints");
-		goto error;
-	}
-
-=======
 	init_waitqueue_head(&dev->bulk_in_wait);
 
 	dev->udev = usb_get_dev(interface_to_usbdev(interface));
@@ -746,7 +532,6 @@ static int skel_probe(struct usb_interface *interface,
 
 	dev->bulk_out_endpointAddr = bulk_out->bEndpointAddress;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* save our data pointer in this interface device */
 	usb_set_intfdata(interface, dev);
 
@@ -754,12 +539,8 @@ static int skel_probe(struct usb_interface *interface,
 	retval = usb_register_dev(interface, &skel_class);
 	if (retval) {
 		/* something prevented us from registering this driver */
-<<<<<<< HEAD
-		err("Not able to get a minor for this device.");
-=======
 		dev_err(&interface->dev,
 			"Not able to get a minor for this device.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_set_intfdata(interface, NULL);
 		goto error;
 	}
@@ -771,15 +552,9 @@ static int skel_probe(struct usb_interface *interface,
 	return 0;
 
 error:
-<<<<<<< HEAD
-	if (dev)
-		/* this frees allocated memory */
-		kref_put(&dev->kref, skel_delete);
-=======
 	/* this frees allocated memory */
 	kref_put(&dev->kref, skel_delete);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -789,26 +564,16 @@ static void skel_disconnect(struct usb_interface *interface)
 	int minor = interface->minor;
 
 	dev = usb_get_intfdata(interface);
-<<<<<<< HEAD
-	usb_set_intfdata(interface, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* give back our minor */
 	usb_deregister_dev(interface, &skel_class);
 
 	/* prevent more I/O from starting */
 	mutex_lock(&dev->io_mutex);
-<<<<<<< HEAD
-	dev->interface = NULL;
-	mutex_unlock(&dev->io_mutex);
-
-=======
 	dev->disconnected = 1;
 	mutex_unlock(&dev->io_mutex);
 
 	usb_kill_urb(dev->bulk_in_urb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_kill_anchored_urbs(&dev->submitted);
 
 	/* decrement our usage count */
@@ -877,8 +642,4 @@ static struct usb_driver skel_driver = {
 
 module_usb_driver(skel_driver);
 
-<<<<<<< HEAD
-MODULE_LICENSE("GPL");
-=======
 MODULE_LICENSE("GPL v2");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

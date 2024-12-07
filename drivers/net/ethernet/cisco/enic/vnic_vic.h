@@ -1,25 +1,5 @@
-<<<<<<< HEAD
-/*
- * Copyright 2010 Cisco Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* Copyright 2010 Cisco Systems, Inc.  All rights reserved. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _VNIC_VIC_H_
 #define _VNIC_VIC_H_
@@ -64,11 +44,7 @@ struct vic_provinfo {
 		u16 type;
 		u16 length;
 		u8 value[0];
-<<<<<<< HEAD
-	} tlv[0];
-=======
 	} tlv[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define VIC_PROVINFO_ADD_TLV(vp, tlvtype, tlvlen, data) \

@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-/*
- * sound/soc/samsung/idma.c
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * I2S0's Internal DMA driver
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 //
 // idma.c - I2S0 internal DMA driver
@@ -20,7 +5,6 @@
 // Copyright (c) 2011 Samsung Electronics Co., Ltd.
 //		http://www.samsung.com
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
@@ -32,10 +16,6 @@
 
 #include "i2s.h"
 #include "idma.h"
-<<<<<<< HEAD
-#include "dma.h"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "i2s-regs.h"
 
 #define ST_RUNNING		(1<<0)
@@ -48,17 +28,6 @@ static const struct snd_pcm_hardware idma_hardware = {
 		    SNDRV_PCM_INFO_MMAP_VALID |
 		    SNDRV_PCM_INFO_PAUSE |
 		    SNDRV_PCM_INFO_RESUME,
-<<<<<<< HEAD
-	.formats = SNDRV_PCM_FMTBIT_S16_LE |
-		    SNDRV_PCM_FMTBIT_U16_LE |
-		    SNDRV_PCM_FMTBIT_S24_LE |
-		    SNDRV_PCM_FMTBIT_U24_LE |
-		    SNDRV_PCM_FMTBIT_U8 |
-		    SNDRV_PCM_FMTBIT_S8,
-	.channels_min = 2,
-	.channels_max = 2,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.buffer_bytes_max = MAX_IDMA_BUFFER,
 	.period_bytes_min = 128,
 	.period_bytes_max = MAX_IDMA_PERIOD,
@@ -84,11 +53,8 @@ static struct idma_info {
 	dma_addr_t	lp_tx_addr;
 } idma;
 
-<<<<<<< HEAD
-=======
 static int idma_irq;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void idma_getpos(dma_addr_t *src)
 {
 	*src = idma.lp_tx_addr +
@@ -171,14 +137,9 @@ static void idma_done(void *id, int bytes_xfer)
 		snd_pcm_period_elapsed(substream);
 }
 
-<<<<<<< HEAD
-static int idma_hw_params(struct snd_pcm_substream *substream,
-				struct snd_pcm_hw_params *params)
-=======
 static int idma_hw_params(struct snd_soc_component *component,
 			  struct snd_pcm_substream *substream,
 			  struct snd_pcm_hw_params *params)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct idma_ctrl *prtd = substream->runtime->private_data;
@@ -203,24 +164,16 @@ static int idma_hw_params(struct snd_soc_component *component,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int idma_hw_free(struct snd_pcm_substream *substream)
-=======
 static int idma_hw_free(struct snd_soc_component *component,
 			struct snd_pcm_substream *substream)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	snd_pcm_set_runtime_buffer(substream, NULL);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int idma_prepare(struct snd_pcm_substream *substream)
-=======
 static int idma_prepare(struct snd_soc_component *component,
 			struct snd_pcm_substream *substream)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct idma_ctrl *prtd = substream->runtime->private_data;
 
@@ -233,12 +186,8 @@ static int idma_prepare(struct snd_soc_component *component,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int idma_trigger(struct snd_pcm_substream *substream, int cmd)
-=======
 static int idma_trigger(struct snd_soc_component *component,
 			struct snd_pcm_substream *substream, int cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct idma_ctrl *prtd = substream->runtime->private_data;
 	int ret = 0;
@@ -271,12 +220,8 @@ static int idma_trigger(struct snd_soc_component *component,
 }
 
 static snd_pcm_uframes_t
-<<<<<<< HEAD
-	idma_pointer(struct snd_pcm_substream *substream)
-=======
 idma_pointer(struct snd_soc_component *component,
 	     struct snd_pcm_substream *substream)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct idma_ctrl *prtd = runtime->private_data;
@@ -293,30 +238,12 @@ idma_pointer(struct snd_soc_component *component,
 	return bytes_to_frames(substream->runtime, res);
 }
 
-<<<<<<< HEAD
-static int idma_mmap(struct snd_pcm_substream *substream,
-=======
 static int idma_mmap(struct snd_soc_component *component,
 		     struct snd_pcm_substream *substream,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vm_area_struct *vma)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	unsigned long size, offset;
-<<<<<<< HEAD
-	int ret;
-
-	/* From snd_pcm_lib_mmap_iomem */
-	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-	vma->vm_flags |= VM_IO;
-	size = vma->vm_end - vma->vm_start;
-	offset = vma->vm_pgoff << PAGE_SHIFT;
-	ret = io_remap_pfn_range(vma, vma->vm_start,
-			(runtime->dma_addr + offset) >> PAGE_SHIFT,
-			size, vma->vm_page_prot);
-
-	return ret;
-=======
 
 	/* From snd_pcm_lib_mmap_iomem */
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
@@ -325,22 +252,14 @@ static int idma_mmap(struct snd_soc_component *component,
 	return io_remap_pfn_range(vma, vma->vm_start,
 			(runtime->dma_addr + offset) >> PAGE_SHIFT,
 			size, vma->vm_page_prot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t iis_irq(int irqno, void *dev_id)
 {
 	struct idma_ctrl *prtd = (struct idma_ctrl *)dev_id;
-<<<<<<< HEAD
-	u32 iiscon, iisahb, val, addr;
-
-	iisahb  = readl(idma.regs + I2SAHB);
-	iiscon  = readl(idma.regs + I2SCON);
-=======
 	u32 iisahb, val, addr;
 
 	iisahb  = readl(idma.regs + I2SAHB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = (iisahb & AHB_LVL0INT) ? AHB_CLRLVL0INT : 0;
 
@@ -350,11 +269,7 @@ static irqreturn_t iis_irq(int irqno, void *dev_id)
 
 		addr = readl(idma.regs + I2SLVL0ADDR) - idma.lp_tx_addr;
 		addr += prtd->periodsz;
-<<<<<<< HEAD
-		addr %= (prtd->end - prtd->start);
-=======
 		addr %= (u32)(prtd->end - prtd->start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		addr += idma.lp_tx_addr;
 
 		writel(addr, idma.regs + I2SLVL0ADDR);
@@ -366,12 +281,8 @@ static irqreturn_t iis_irq(int irqno, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int idma_open(struct snd_pcm_substream *substream)
-=======
 static int idma_open(struct snd_soc_component *component,
 		     struct snd_pcm_substream *substream)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct idma_ctrl *prtd;
@@ -383,11 +294,7 @@ static int idma_open(struct snd_soc_component *component,
 	if (prtd == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	ret = request_irq(IRQ_I2S0, iis_irq, 0, "i2s", prtd);
-=======
 	ret = request_irq(idma_irq, iis_irq, 0, "i2s", prtd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		pr_err("fail to claim i2s irq , ret = %d\n", ret);
 		kfree(prtd);
@@ -401,21 +308,13 @@ static int idma_open(struct snd_soc_component *component,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int idma_close(struct snd_pcm_substream *substream)
-=======
 static int idma_close(struct snd_soc_component *component,
 		      struct snd_pcm_substream *substream)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct idma_ctrl *prtd = runtime->private_data;
 
-<<<<<<< HEAD
-	free_irq(IRQ_I2S0, prtd);
-=======
 	free_irq(idma_irq, prtd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!prtd)
 		pr_err("idma_close called with prtd == NULL\n");
@@ -425,24 +324,8 @@ static int idma_close(struct snd_soc_component *component,
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_ops idma_ops = {
-	.open		= idma_open,
-	.close		= idma_close,
-	.ioctl		= snd_pcm_lib_ioctl,
-	.trigger	= idma_trigger,
-	.pointer	= idma_pointer,
-	.mmap		= idma_mmap,
-	.hw_params	= idma_hw_params,
-	.hw_free	= idma_hw_free,
-	.prepare	= idma_prepare,
-};
-
-static void idma_free(struct snd_pcm *pcm)
-=======
 static void idma_free(struct snd_soc_component *component,
 		      struct snd_pcm *pcm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_substream *substream;
 	struct snd_dma_buffer *buf;
@@ -455,11 +338,7 @@ static void idma_free(struct snd_soc_component *component,
 	if (!buf->area)
 		return;
 
-<<<<<<< HEAD
-	iounmap(buf->area);
-=======
 	iounmap((void __iomem *)buf->area);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf->area = NULL;
 	buf->addr = 0;
@@ -477,31 +356,13 @@ static int preallocate_idma_buffer(struct snd_pcm *pcm, int stream)
 	buf->dev.type = SNDRV_DMA_TYPE_CONTINUOUS;
 	buf->addr = idma.lp_tx_addr;
 	buf->bytes = idma_hardware.buffer_bytes_max;
-<<<<<<< HEAD
-	buf->area = (unsigned char *)ioremap(buf->addr, buf->bytes);
-=======
 	buf->area = (unsigned char * __force)ioremap(buf->addr, buf->bytes);
 	if (!buf->area)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static u64 idma_mask = DMA_BIT_MASK(32);
-
-static int idma_new(struct snd_soc_pcm_runtime *rtd)
-{
-	struct snd_card *card = rtd->card->snd_card;
-	struct snd_pcm *pcm = rtd->pcm;
-	int ret = 0;
-
-	if (!card->dev->dma_mask)
-		card->dev->dma_mask = &idma_mask;
-	if (!card->dev->coherent_dma_mask)
-		card->dev->coherent_dma_mask = DMA_BIT_MASK(32);
-=======
 static int idma_new(struct snd_soc_component *component,
 		    struct snd_soc_pcm_runtime *rtd)
 {
@@ -512,7 +373,6 @@ static int idma_new(struct snd_soc_component *component,
 	ret = dma_coerce_mask_and_coherent(card->dev, DMA_BIT_MASK(32));
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].substream) {
 		ret = preallocate_idma_buffer(pcm,
@@ -528,24 +388,6 @@ void idma_reg_addr_init(void __iomem *regs, dma_addr_t addr)
 	idma.regs = regs;
 	idma.lp_tx_addr = addr;
 }
-<<<<<<< HEAD
-
-static struct snd_soc_platform_driver asoc_idma_platform = {
-	.ops = &idma_ops,
-	.pcm_new = idma_new,
-	.pcm_free = idma_free,
-};
-
-static int __devinit asoc_idma_platform_probe(struct platform_device *pdev)
-{
-	return snd_soc_register_platform(&pdev->dev, &asoc_idma_platform);
-}
-
-static int __devexit asoc_idma_platform_remove(struct platform_device *pdev)
-{
-	snd_soc_unregister_platform(&pdev->dev);
-	return 0;
-=======
 EXPORT_SYMBOL_GPL(idma_reg_addr_init);
 
 static const struct snd_soc_component_driver asoc_idma_platform = {
@@ -569,23 +411,14 @@ static int asoc_idma_platform_probe(struct platform_device *pdev)
 
 	return devm_snd_soc_register_component(&pdev->dev, &asoc_idma_platform,
 					       NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver asoc_idma_driver = {
 	.driver = {
 		.name = "samsung-idma",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
 	},
 
 	.probe = asoc_idma_platform_probe,
-	.remove = __devexit_p(asoc_idma_platform_remove),
-=======
-	},
-
-	.probe = asoc_idma_platform_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(asoc_idma_driver);

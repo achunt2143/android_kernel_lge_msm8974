@@ -149,11 +149,7 @@ repeat:
 	if (acia_stat & ACIA_OVRN) {
 		/* a very fast typist or a slow system, give a warning */
 		/* ...happens often if interrupts were disabled for too long */
-<<<<<<< HEAD
-		printk(KERN_DEBUG "Keyboard overrun\n");
-=======
 		pr_debug("Keyboard overrun\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scancode = acia.key_data;
 		if (ikbd_self_test)
 			/* During self test, don't do resyncing, just process the code */
@@ -174,10 +170,6 @@ repeat:
 	if (acia_stat & ACIA_RDRF) {
 		/* received a character */
 		scancode = acia.key_data;	/* get it or reset the ACIA, I'll get it! */
-<<<<<<< HEAD
-		tasklet_schedule(&keyboard_tasklet);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	interpret_scancode:
 		switch (kb_state.state) {
 		case KEYBOARD:
@@ -215,11 +207,7 @@ repeat:
 					self_test_last_rcv = jiffies;
 					break;
 				}
-<<<<<<< HEAD
-				/* FALL THROUGH */
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			default:
 				break_flag = scancode & BREAK_MASK;
@@ -240,16 +228,6 @@ repeat:
 					keytyp = KTYP(keyval) - 0xf0;
 					keyval = KVAL(keyval);
 
-<<<<<<< HEAD
-					printk(KERN_WARNING "Key with scancode %d ", scancode);
-					if (keytyp == KT_LATIN || keytyp == KT_LETTER) {
-						if (keyval < ' ')
-							printk("('^%c') ", keyval + '@');
-						else
-							printk("('%c') ", keyval);
-					}
-					printk("is broken -- will be ignored.\n");
-=======
 					pr_warn("Key with scancode %d ", scancode);
 					if (keytyp == KT_LATIN || keytyp == KT_LETTER) {
 						if (keyval < ' ')
@@ -258,7 +236,6 @@ repeat:
 							pr_cont("('%c') ", keyval);
 					}
 					pr_cont("is broken -- will be ignored.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				} else if (test_bit(scancode, broken_keys))
 					break;
@@ -322,11 +299,7 @@ repeat:
 #endif
 
 	if (acia_stat & (ACIA_FE | ACIA_PE)) {
-<<<<<<< HEAD
-		printk("Error in keyboard communication\n");
-=======
 		pr_err("Error in keyboard communication\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* handle_scancode() can take a lot of time, so check again if
@@ -359,11 +332,7 @@ void ikbd_write(const char *str, int len)
 }
 
 /* Reset (without touching the clock) */
-<<<<<<< HEAD
-void ikbd_reset(void)
-=======
 static void ikbd_reset(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const char cmd[2] = { 0x80, 0x01 };
 
@@ -460,17 +429,6 @@ void ikbd_mouse_y0_top(void)
 }
 EXPORT_SYMBOL(ikbd_mouse_y0_top);
 
-<<<<<<< HEAD
-/* Resume */
-void ikbd_resume(void)
-{
-	static const char cmd[1] = { 0x11 };
-
-	ikbd_write(cmd, 1);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Disable mouse */
 void ikbd_mouse_disable(void)
 {
@@ -480,17 +438,6 @@ void ikbd_mouse_disable(void)
 }
 EXPORT_SYMBOL(ikbd_mouse_disable);
 
-<<<<<<< HEAD
-/* Pause output */
-void ikbd_pause(void)
-{
-	static const char cmd[1] = { 0x13 };
-
-	ikbd_write(cmd, 1);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Set joystick event reporting */
 void ikbd_joystick_event_on(void)
 {
@@ -538,59 +485,6 @@ void ikbd_joystick_disable(void)
 	ikbd_write(cmd, 1);
 }
 
-<<<<<<< HEAD
-/* Time-of-day clock set */
-void ikbd_clock_set(int year, int month, int day, int hour, int minute, int second)
-{
-	char cmd[7] = { 0x1B, year, month, day, hour, minute, second };
-
-	ikbd_write(cmd, 7);
-}
-
-/* Interrogate time-of-day clock */
-void ikbd_clock_get(int *year, int *month, int *day, int *hour, int *minute, int second)
-{
-	static const char cmd[1] = { 0x1C };
-
-	ikbd_write(cmd, 1);
-}
-
-/* Memory load */
-void ikbd_mem_write(int address, int size, char *data)
-{
-	panic("Attempt to write data into keyboard memory");
-}
-
-/* Memory read */
-void ikbd_mem_read(int address, char data[6])
-{
-	char cmd[3] = { 0x21, address>>8, address&0xFF };
-
-	ikbd_write(cmd, 3);
-
-	/* receive data and put it in data */
-}
-
-/* Controller execute */
-void ikbd_exec(int address)
-{
-	char cmd[3] = { 0x22, address>>8, address&0xFF };
-
-	ikbd_write(cmd, 3);
-}
-
-/* Status inquiries (0x87-0x9A) not yet implemented */
-
-/* Set the state of the caps lock led. */
-void atari_kbd_leds(unsigned int leds)
-{
-	char cmd[6] = {32, 0, 4, 1, 254 + ((leds & 4) != 0), 0};
-
-	ikbd_write(cmd, 6);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The original code sometimes left the interrupt line of
  * the ACIAs low forever. I hope, it is fixed now.
@@ -610,14 +504,8 @@ int atari_keyb_init(void)
 	kb_state.state = KEYBOARD;
 	kb_state.len = 0;
 
-<<<<<<< HEAD
-	error = request_irq(IRQ_MFP_ACIA, atari_keyboard_interrupt,
-			    IRQ_TYPE_SLOW, "keyboard,mouse,MIDI",
-			    atari_keyboard_interrupt);
-=======
 	error = request_irq(IRQ_MFP_ACIA, atari_keyboard_interrupt, 0,
 			    "keyboard,mouse,MIDI", atari_keyboard_interrupt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
@@ -665,11 +553,7 @@ int atari_keyb_init(void)
 		barrier();
 	/* if not incremented: no 0xf1 received */
 	if (ikbd_self_test == 1)
-<<<<<<< HEAD
-		printk(KERN_ERR "WARNING: keyboard self test failed!\n");
-=======
 		pr_err("Keyboard self test failed!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ikbd_self_test = 0;
 
 	ikbd_mouse_disable();

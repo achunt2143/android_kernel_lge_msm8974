@@ -1,17 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
-<<<<<<< HEAD
- * Copyright (C) 2004-2009 Emulex.  All rights reserved.           *
- * EMULEX and SLI are trademarks of Emulex.                        *
- * www.emulex.com                                                  *
-=======
  * Copyright (C) 2017-2023 Broadcom. All Rights Reserved. The term *
  * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.     *
  * Copyright (C) 2004-2009 Emulex.  All rights reserved.           *
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.broadcom.com                                                *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                 *
  * This program is free software; you can redistribute it and/or   *
  * modify it under the terms of version 2 of the GNU General       *
@@ -31,11 +25,7 @@
 #define LOG_MBOX	0x00000004	/* Mailbox events */
 #define LOG_INIT	0x00000008	/* Initialization events */
 #define LOG_LINK_EVENT	0x00000010	/* Link events */
-<<<<<<< HEAD
-#define LOG_IP		0x00000020	/* IP traffic history */
-=======
 #define LOG_NODE_VERBOSE 0x00000020	/* Node verbose events */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LOG_FCP		0x00000040	/* FCP traffic history */
 #define LOG_NODE	0x00000080	/* Node table events */
 #define LOG_TEMP	0x00000100	/* Temperature sensor events */
@@ -45,19 +35,6 @@
 #define LOG_FCP_ERROR	0x00001000	/* log errors, not underruns */
 #define LOG_LIBDFC	0x00002000	/* Libdfc events */
 #define LOG_VPORT	0x00004000	/* NPIV events */
-<<<<<<< HEAD
-#define LOG_SECURITY	0x00008000	/* Security events */
-#define LOG_EVENT	0x00010000	/* CT,TEMP,DUMP, logging */
-#define LOG_FIP		0x00020000	/* FIP events */
-#define LOG_FCP_UNDER	0x00040000	/* FCP underruns errors */
-#define LOG_ALL_MSG	0xffffffff	/* LOG all messages */
-
-#define lpfc_printf_vlog(vport, level, mask, fmt, arg...) \
-do { \
-	{ if (((mask) & (vport)->cfg_log_verbose) || (level[1] <= '3')) \
-		dev_printk(level, &((vport)->phba->pcidev)->dev, "%d:(%d):" \
-			   fmt, (vport)->phba->brd_no, vport->vpi, ##arg); } \
-=======
 #define LOG_LDS_EVENT	0x00008000	/* Link Degrade Signaling events */
 #define LOG_EVENT	0x00010000	/* CT,TEMP,DUMP, logging */
 #define LOG_FIP		0x00020000	/* FIP events */
@@ -104,7 +81,6 @@ do { \
 			lpfc_dbg_print((vport)->phba, "%d:(%d):" fmt, \
 				(vport)->phba->brd_no, (vport)->vpi, ##arg); \
 	} \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 
 #define lpfc_printf_log(phba, level, mask, fmt, arg...) \
@@ -112,11 +88,6 @@ do { \
 	{ uint32_t log_verbose = (phba)->pport ? \
 				 (phba)->pport->cfg_log_verbose : \
 				 (phba)->cfg_log_verbose; \
-<<<<<<< HEAD
-	  if (((mask) & log_verbose) || (level[1] <= '3')) \
-		dev_printk(level, &((phba)->pcidev)->dev, "%d:" \
-			   fmt, phba->brd_no, ##arg); \
-=======
 	if (((mask) & log_verbose) || (level[1] <= '3')) { \
 		if ((mask) & LOG_TRACE_EVENT && !log_verbose) \
 			lpfc_dmp_dbg(phba); \
@@ -124,6 +95,5 @@ do { \
 			fmt, phba->brd_no, ##arg); \
 	} else if (!log_verbose)\
 		lpfc_dbg_print(phba, "%d:" fmt, phba->brd_no, ##arg); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} \
 } while (0)

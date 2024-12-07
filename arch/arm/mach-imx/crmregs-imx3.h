@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2004-2007 Freescale Semiconductor, Inc. All Rights Reserved.
- * Copyright (C) 2008 by Sascha Hauer <kernel@pengutronix.de>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright 2004-2007 Freescale Semiconductor, Inc. All Rights Reserved.
  * Copyright (C) 2008 by Sascha Hauer <kernel@pengutronix.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ARCH_ARM_MACH_MX3_CRM_REGS_H__
@@ -31,50 +11,6 @@
 #define CKIH_CLK_FREQ_27MHZ     27000000
 #define CKIL_CLK_FREQ           32768
 
-<<<<<<< HEAD
-#define MXC_CCM_BASE		(cpu_is_mx31() ? \
-MX31_IO_ADDRESS(MX31_CCM_BASE_ADDR) : MX35_IO_ADDRESS(MX35_CCM_BASE_ADDR))
-
-/* Register addresses */
-#define MXC_CCM_CCMR		(MXC_CCM_BASE + 0x00)
-#define MXC_CCM_PDR0		(MXC_CCM_BASE + 0x04)
-#define MXC_CCM_PDR1		(MXC_CCM_BASE + 0x08)
-#define MX35_CCM_PDR2		(MXC_CCM_BASE + 0x0C)
-#define MXC_CCM_RCSR		(MXC_CCM_BASE + 0x0C)
-#define MX35_CCM_PDR3		(MXC_CCM_BASE + 0x10)
-#define MXC_CCM_MPCTL		(MXC_CCM_BASE + 0x10)
-#define MX35_CCM_PDR4		(MXC_CCM_BASE + 0x14)
-#define MXC_CCM_UPCTL		(MXC_CCM_BASE + 0x14)
-#define MX35_CCM_RCSR		(MXC_CCM_BASE + 0x18)
-#define MXC_CCM_SRPCTL		(MXC_CCM_BASE + 0x18)
-#define MX35_CCM_MPCTL		(MXC_CCM_BASE + 0x1C)
-#define MXC_CCM_COSR		(MXC_CCM_BASE + 0x1C)
-#define MX35_CCM_PPCTL		(MXC_CCM_BASE + 0x20)
-#define MXC_CCM_CGR0		(MXC_CCM_BASE + 0x20)
-#define MX35_CCM_ACMR		(MXC_CCM_BASE + 0x24)
-#define MXC_CCM_CGR1		(MXC_CCM_BASE + 0x24)
-#define MX35_CCM_COSR		(MXC_CCM_BASE + 0x28)
-#define MXC_CCM_CGR2		(MXC_CCM_BASE + 0x28)
-#define MX35_CCM_CGR0		(MXC_CCM_BASE + 0x2C)
-#define MXC_CCM_WIMR		(MXC_CCM_BASE + 0x2C)
-#define MX35_CCM_CGR1		(MXC_CCM_BASE + 0x30)
-#define MXC_CCM_LDC		(MXC_CCM_BASE + 0x30)
-#define MX35_CCM_CGR2		(MXC_CCM_BASE + 0x34)
-#define MXC_CCM_DCVR0		(MXC_CCM_BASE + 0x34)
-#define MX35_CCM_CGR3		(MXC_CCM_BASE + 0x38)
-#define MXC_CCM_DCVR1		(MXC_CCM_BASE + 0x38)
-#define MXC_CCM_DCVR2		(MXC_CCM_BASE + 0x3C)
-#define MXC_CCM_DCVR3		(MXC_CCM_BASE + 0x40)
-#define MXC_CCM_LTR0		(MXC_CCM_BASE + 0x44)
-#define MXC_CCM_LTR1		(MXC_CCM_BASE + 0x48)
-#define MXC_CCM_LTR2		(MXC_CCM_BASE + 0x4C)
-#define MXC_CCM_LTR3		(MXC_CCM_BASE + 0x50)
-#define MXC_CCM_LTBR0		(MXC_CCM_BASE + 0x54)
-#define MXC_CCM_LTBR1		(MXC_CCM_BASE + 0x58)
-#define MXC_CCM_PMCR0		(MXC_CCM_BASE + 0x5C)
-#define MXC_CCM_PMCR1		(MXC_CCM_BASE + 0x60)
-#define MXC_CCM_PDR2		(MXC_CCM_BASE + 0x64)
-=======
 extern void __iomem *mx3_ccm_base;
 
 /* Register addresses */
@@ -116,7 +52,6 @@ extern void __iomem *mx3_ccm_base;
 #define MXC_CCM_PMCR0		0x5C
 #define MXC_CCM_PMCR1		0x60
 #define MXC_CCM_PDR2		0x64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Register bit definitions */
 #define MXC_CCM_CCMR_WBEN                       (1 << 27)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SCSI_DISK_H
 #define _SCSI_DISK_H
 
@@ -17,16 +14,12 @@
  */
 #define SD_TIMEOUT		(30 * HZ)
 #define SD_MOD_TIMEOUT		(75 * HZ)
-<<<<<<< HEAD
-#define SD_FLUSH_TIMEOUT	(60 * HZ)
-=======
 /*
  * Flush timeout is a multiplier over the standard device timeout which is
  * user modifiable via sysfs but initially set to SD_TIMEOUT
  */
 #define SD_FLUSH_TIMEOUT_MULTIPLIER	2
 #define SD_WRITE_SAME_TIMEOUT	(120 * HZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Number of allowed retries
@@ -52,8 +45,6 @@ enum {
 };
 
 enum {
-<<<<<<< HEAD
-=======
 	SD_DEF_XFER_BLOCKS = 0xffff,
 	SD_MAX_XFER_BLOCKS = 0xffffffff,
 	SD_MAX_WS10_BLOCKS = 0xffff,
@@ -61,7 +52,6 @@ enum {
 };
 
 enum {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SD_LBP_FULL = 0,	/* Full logical block provisioning */
 	SD_LBP_UNMAP,		/* Use UNMAP command */
 	SD_LBP_WS16,		/* Use WRITE SAME(16) with UNMAP bit */
@@ -70,15 +60,6 @@ enum {
 	SD_LBP_DISABLE,		/* Discard disabled due to failed cmd */
 };
 
-<<<<<<< HEAD
-struct scsi_disk {
-	struct scsi_driver *driver;	/* always &sd_template */
-	struct scsi_device *device;
-	struct device	dev;
-	struct gendisk	*disk;
-	atomic_t	openers;
-	sector_t	capacity;	/* size in 512-byte sectors */
-=======
 enum {
 	SD_ZERO_WRITE = 0,	/* Use WRITE(10/16) command */
 	SD_ZERO_WS,		/* Use WRITE SAME(10/16) command */
@@ -136,7 +117,6 @@ struct scsi_disk {
 	u32		min_xfer_blocks;
 	u32		max_xfer_blocks;
 	u32		opt_xfer_blocks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		max_ws_blocks;
 	u32		max_unmap_blocks;
 	u32		unmap_granularity;
@@ -145,21 +125,15 @@ struct scsi_disk {
 	unsigned int	physical_block_size;
 	unsigned int	max_medium_access_timeouts;
 	unsigned int	medium_access_timed_out;
-<<<<<<< HEAD
-=======
 			/* number of permanent streams */
 	u16		permanent_stream_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8		media_present;
 	u8		write_prot;
 	u8		protection_type;/* Data Integrity Field */
 	u8		provisioning_mode;
-<<<<<<< HEAD
-=======
 	u8		zeroing_mode;
 	u8		nr_actuators;		/* Number of actuators */
 	bool		suspended;	/* Disk is suspended (stopped) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned	ATO : 1;	/* state of disk ATO bit */
 	unsigned	cache_override : 1; /* temp override of WCE,RCD */
 	unsigned	WCE : 1;	/* state of disk WCE bit */
@@ -172,14 +146,6 @@ struct scsi_disk {
 	unsigned	lbpws : 1;
 	unsigned	lbpws10 : 1;
 	unsigned	lbpvpd : 1;
-<<<<<<< HEAD
-};
-#define to_scsi_disk(obj) container_of(obj,struct scsi_disk,dev)
-
-static inline struct scsi_disk *scsi_disk(struct gendisk *disk)
-{
-	return container_of(disk->private_data, struct scsi_disk, driver);
-=======
 	unsigned	ws10 : 1;
 	unsigned	ws16 : 1;
 	unsigned	rc_basis: 2;
@@ -194,16 +160,10 @@ static inline struct scsi_disk *scsi_disk(struct gendisk *disk)
 static inline struct scsi_disk *scsi_disk(struct gendisk *disk)
 {
 	return disk->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define sd_printk(prefix, sdsk, fmt, a...)				\
         (sdsk)->disk ?							\
-<<<<<<< HEAD
-	sdev_printk(prefix, (sdsk)->device, "[%s] " fmt,		\
-		    (sdsk)->disk->disk_name, ##a) :			\
-	sdev_printk(prefix, (sdsk)->device, fmt, ##a)
-=======
 	      sdev_prefix_printk(prefix, (sdsk)->device,		\
 				 (sdsk)->disk->disk_name, fmt, ##a) :	\
 	      sdev_printk(prefix, (sdsk)->device, fmt, ##a)
@@ -213,7 +173,6 @@ static inline struct scsi_disk *scsi_disk(struct gendisk *disk)
 		if ((sdsk)->first_scan)					\
 			sd_printk(prefix, sdsk, fmt, ##a);		\
 	} while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int scsi_medium_access_command(struct scsi_cmnd *scmd)
 {
@@ -247,37 +206,6 @@ static inline int scsi_medium_access_command(struct scsi_cmnd *scmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * A DIF-capable target device can be formatted with different
- * protection schemes.  Currently 0 through 3 are defined:
- *
- * Type 0 is regular (unprotected) I/O
- *
- * Type 1 defines the contents of the guard and reference tags
- *
- * Type 2 defines the contents of the guard and reference tags and
- * uses 32-byte commands to seed the latter
- *
- * Type 3 defines the contents of the guard tag only
- */
-
-enum sd_dif_target_protection_types {
-	SD_DIF_TYPE0_PROTECTION = 0x0,
-	SD_DIF_TYPE1_PROTECTION = 0x1,
-	SD_DIF_TYPE2_PROTECTION = 0x2,
-	SD_DIF_TYPE3_PROTECTION = 0x3,
-};
-
-/*
- * Data Integrity Field tuple.
- */
-struct sd_dif_tuple {
-       __be16 guard_tag;	/* Checksum */
-       __be16 app_tag;		/* Opaque storage */
-       __be32 ref_tag;		/* Target LBA or indirect LBA */
-};
-=======
 static inline sector_t logical_to_sectors(struct scsi_device *sdev, sector_t blocks)
 {
 	return blocks << (ilog2(sdev->sector_size) - 9);
@@ -297,34 +225,16 @@ static inline sector_t sectors_to_logical(struct scsi_device *sdev, sector_t sec
 {
 	return sector >> (ilog2(sdev->sector_size) - 9);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_BLK_DEV_INTEGRITY
 
 extern void sd_dif_config_host(struct scsi_disk *);
-<<<<<<< HEAD
-extern int sd_dif_prepare(struct request *rq, sector_t, unsigned int);
-extern void sd_dif_complete(struct scsi_cmnd *, unsigned int);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else /* CONFIG_BLK_DEV_INTEGRITY */
 
 static inline void sd_dif_config_host(struct scsi_disk *disk)
 {
 }
-<<<<<<< HEAD
-static inline int sd_dif_prepare(struct request *rq, sector_t s, unsigned int a)
-{
-	return 0;
-}
-static inline void sd_dif_complete(struct scsi_cmnd *cmd, unsigned int a)
-{
-}
-
-#endif /* CONFIG_BLK_DEV_INTEGRITY */
-
-=======
 
 #endif /* CONFIG_BLK_DEV_INTEGRITY */
 
@@ -389,5 +299,4 @@ static inline blk_status_t sd_zbc_prepare_zone_append(struct scsi_cmnd *cmd,
 void sd_print_sense_hdr(struct scsi_disk *sdkp, struct scsi_sense_hdr *sshdr);
 void sd_print_result(const struct scsi_disk *sdkp, const char *msg, int result);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _SCSI_DISK_H */

@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2011 QLogic Corporation
- *
- * See LICENSE.qla2xxx for copyright and licensing details.
- */
-#include "qla_def.h"
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic Fibre Channel HBA Driver
@@ -14,24 +5,16 @@
  */
 #include "qla_def.h"
 #include "qla_target.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 
 #include <scsi/scsi_tcq.h>
 
-<<<<<<< HEAD
-static void qla25xx_set_que(srb_t *, struct rsp_que **);
-/**
- * qla2x00_get_cmd_direction() - Determine control_flag data direction.
- * @cmd: SCSI command
-=======
 static int qla_start_scsi_type6(srb_t *sp);
 /**
  * qla2x00_get_cmd_direction() - Determine control_flag data direction.
  * @sp: SCSI command
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns the proper CF_* direction based on CDB.
  */
@@ -40,31 +23,19 @@ qla2x00_get_cmd_direction(srb_t *sp)
 {
 	uint16_t cflags;
 	struct scsi_cmnd *cmd = GET_CMD_SP(sp);
-<<<<<<< HEAD
-=======
 	struct scsi_qla_host *vha = sp->vha;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cflags = 0;
 
 	/* Set transfer direction */
 	if (cmd->sc_data_direction == DMA_TO_DEVICE) {
 		cflags = CF_WRITE;
-<<<<<<< HEAD
-		sp->fcport->vha->hw->qla_stats.output_bytes +=
-		    scsi_bufflen(cmd);
-	} else if (cmd->sc_data_direction == DMA_FROM_DEVICE) {
-		cflags = CF_READ;
-		sp->fcport->vha->hw->qla_stats.input_bytes +=
-		    scsi_bufflen(cmd);
-=======
 		vha->qla_stats.output_bytes += scsi_bufflen(cmd);
 		vha->qla_stats.output_requests++;
 	} else if (cmd->sc_data_direction == DMA_FROM_DEVICE) {
 		cflags = CF_READ;
 		vha->qla_stats.input_bytes += scsi_bufflen(cmd);
 		vha->qla_stats.input_requests++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return (cflags);
 }
@@ -73,11 +44,7 @@ qla2x00_get_cmd_direction(srb_t *sp)
  * qla2x00_calc_iocbs_32() - Determine number of Command Type 2 and
  * Continuation Type 0 IOCBs to allocate.
  *
-<<<<<<< HEAD
- * @dsds: number of data segment decriptors needed
-=======
  * @dsds: number of data segment descriptors needed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns the number of IOCB entries needed to store @dsds.
  */
@@ -99,11 +66,7 @@ qla2x00_calc_iocbs_32(uint16_t dsds)
  * qla2x00_calc_iocbs_64() - Determine number of Command Type 3 and
  * Continuation Type 1 IOCBs to allocate.
  *
-<<<<<<< HEAD
- * @dsds: number of data segment decriptors needed
-=======
  * @dsds: number of data segment descriptors needed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns the number of IOCB entries needed to store @dsds.
  */
@@ -123,11 +86,7 @@ qla2x00_calc_iocbs_64(uint16_t dsds)
 
 /**
  * qla2x00_prep_cont_type0_iocb() - Initialize a Continuation Type 0 IOCB.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns a pointer to the Continuation Type 0 IOCB packet.
  */
@@ -148,32 +107,19 @@ qla2x00_prep_cont_type0_iocb(struct scsi_qla_host *vha)
 	cont_pkt = (cont_entry_t *)req->ring_ptr;
 
 	/* Load packet defaults. */
-<<<<<<< HEAD
-	*((uint32_t *)(&cont_pkt->entry_type)) =
-	    __constant_cpu_to_le32(CONTINUE_TYPE);
-=======
 	put_unaligned_le32(CONTINUE_TYPE, &cont_pkt->entry_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (cont_pkt);
 }
 
 /**
  * qla2x00_prep_cont_type1_iocb() - Initialize a Continuation Type 1 IOCB.
-<<<<<<< HEAD
- * @ha: HA context
- *
- * Returns a pointer to the continuation type 1 IOCB packet.
- */
-static inline cont_a64_entry_t *
-=======
  * @vha: HA context
  * @req: request queue
  *
  * Returns a pointer to the continuation type 1 IOCB packet.
  */
 cont_a64_entry_t *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla2x00_prep_cont_type1_iocb(scsi_qla_host_t *vha, struct req_que *req)
 {
 	cont_a64_entry_t *cont_pkt;
@@ -190,36 +136,16 @@ qla2x00_prep_cont_type1_iocb(scsi_qla_host_t *vha, struct req_que *req)
 	cont_pkt = (cont_a64_entry_t *)req->ring_ptr;
 
 	/* Load packet defaults. */
-<<<<<<< HEAD
-	*((uint32_t *)(&cont_pkt->entry_type)) =
-	    __constant_cpu_to_le32(CONTINUE_A64_TYPE);
-=======
 	put_unaligned_le32(IS_QLAFX00(vha->hw) ? CONTINUE_A64_TYPE_FX00 :
 			   CONTINUE_A64_TYPE, &cont_pkt->entry_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (cont_pkt);
 }
 
-<<<<<<< HEAD
-static inline int
-qla24xx_configure_prot_mode(srb_t *sp, uint16_t *fw_prot_opts)
-{
-	struct scsi_cmnd *cmd = GET_CMD_SP(sp);
-	uint8_t	guard = scsi_host_get_guard(cmd->device->host);
-
-	/* We only support T10 DIF right now */
-	if (guard != SHOST_DIX_GUARD_CRC) {
-		ql_dbg(ql_dbg_io, sp->fcport->vha, 0x3007,
-		    "Unsupported guard: %d for cmd=%p.\n", guard, cmd);
-		return 0;
-	}
-=======
 inline int
 qla24xx_configure_prot_mode(srb_t *sp, uint16_t *fw_prot_opts)
 {
 	struct scsi_cmnd *cmd = GET_CMD_SP(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We always use DIFF Bundling for best performance */
 	*fw_prot_opts = 0;
@@ -239,30 +165,20 @@ qla24xx_configure_prot_mode(srb_t *sp, uint16_t *fw_prot_opts)
 		*fw_prot_opts |= PO_MODE_DIF_REMOVE;
 		break;
 	case SCSI_PROT_READ_PASS:
-<<<<<<< HEAD
-		*fw_prot_opts |= PO_MODE_DIF_PASS;
-		break;
-	case SCSI_PROT_WRITE_PASS:
-		*fw_prot_opts |= PO_MODE_DIF_PASS;
-=======
 	case SCSI_PROT_WRITE_PASS:
 		if (cmd->prot_flags & SCSI_PROT_IP_CHECKSUM)
 			*fw_prot_opts |= PO_MODE_DIF_TCP_CKSUM;
 		else
 			*fw_prot_opts |= PO_MODE_DIF_PASS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:	/* Normal Request */
 		*fw_prot_opts |= PO_MODE_DIF_PASS;
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 	if (!(cmd->prot_flags & SCSI_PROT_GUARD_CHECK))
 		*fw_prot_opts |= PO_DISABLE_GUARD_CHECK;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return scsi_prot_sg_count(cmd);
 }
 
@@ -278,11 +194,7 @@ void qla2x00_build_scsi_iocbs_32(srb_t *sp, cmd_entry_t *cmd_pkt,
     uint16_t tot_dsds)
 {
 	uint16_t	avail_dsds;
-<<<<<<< HEAD
-	uint32_t	*cur_dsd;
-=======
 	struct dsd32	*cur_dsd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t	*vha;
 	struct scsi_cmnd *cmd;
 	struct scatterlist *sg;
@@ -291,23 +203,6 @@ void qla2x00_build_scsi_iocbs_32(srb_t *sp, cmd_entry_t *cmd_pkt,
 	cmd = GET_CMD_SP(sp);
 
 	/* Update entry type to indicate Command Type 2 IOCB */
-<<<<<<< HEAD
-	*((uint32_t *)(&cmd_pkt->entry_type)) =
-	    __constant_cpu_to_le32(COMMAND_TYPE);
-
-	/* No data transfer */
-	if (!scsi_bufflen(cmd) || cmd->sc_data_direction == DMA_NONE) {
-		cmd_pkt->byte_count = __constant_cpu_to_le32(0);
-		return;
-	}
-
-	vha = sp->fcport->vha;
-	cmd_pkt->control_flags |= cpu_to_le16(qla2x00_get_cmd_direction(sp));
-
-	/* Three DSDs are available in the Command Type 2 IOCB */
-	avail_dsds = 3;
-	cur_dsd = (uint32_t *)&cmd_pkt->dseg_0_address;
-=======
 	put_unaligned_le32(COMMAND_TYPE, &cmd_pkt->entry_type);
 
 	/* No data transfer */
@@ -322,7 +217,6 @@ void qla2x00_build_scsi_iocbs_32(srb_t *sp, cmd_entry_t *cmd_pkt,
 	/* Three DSDs are available in the Command Type 2 IOCB */
 	avail_dsds = ARRAY_SIZE(cmd_pkt->dsd32);
 	cur_dsd = cmd_pkt->dsd32;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Load data segments */
 	scsi_for_each_sg(cmd, sg, tot_dsds, i) {
@@ -335,20 +229,11 @@ void qla2x00_build_scsi_iocbs_32(srb_t *sp, cmd_entry_t *cmd_pkt,
 			 * Type 0 IOCB.
 			 */
 			cont_pkt = qla2x00_prep_cont_type0_iocb(vha);
-<<<<<<< HEAD
-			cur_dsd = (uint32_t *)&cont_pkt->dseg_0_address;
-			avail_dsds = 7;
-		}
-
-		*cur_dsd++ = cpu_to_le32(sg_dma_address(sg));
-		*cur_dsd++ = cpu_to_le32(sg_dma_len(sg));
-=======
 			cur_dsd = cont_pkt->dsd;
 			avail_dsds = ARRAY_SIZE(cont_pkt->dsd);
 		}
 
 		append_dsd32(&cur_dsd, sg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		avail_dsds--;
 	}
 }
@@ -365,11 +250,7 @@ void qla2x00_build_scsi_iocbs_64(srb_t *sp, cmd_entry_t *cmd_pkt,
     uint16_t tot_dsds)
 {
 	uint16_t	avail_dsds;
-<<<<<<< HEAD
-	uint32_t	*cur_dsd;
-=======
 	struct dsd64	*cur_dsd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t	*vha;
 	struct scsi_cmnd *cmd;
 	struct scatterlist *sg;
@@ -378,27 +259,6 @@ void qla2x00_build_scsi_iocbs_64(srb_t *sp, cmd_entry_t *cmd_pkt,
 	cmd = GET_CMD_SP(sp);
 
 	/* Update entry type to indicate Command Type 3 IOCB */
-<<<<<<< HEAD
-	*((uint32_t *)(&cmd_pkt->entry_type)) =
-	    __constant_cpu_to_le32(COMMAND_A64_TYPE);
-
-	/* No data transfer */
-	if (!scsi_bufflen(cmd) || cmd->sc_data_direction == DMA_NONE) {
-		cmd_pkt->byte_count = __constant_cpu_to_le32(0);
-		return;
-	}
-
-	vha = sp->fcport->vha;
-	cmd_pkt->control_flags |= cpu_to_le16(qla2x00_get_cmd_direction(sp));
-
-	/* Two DSDs are available in the Command Type 3 IOCB */
-	avail_dsds = 2;
-	cur_dsd = (uint32_t *)&cmd_pkt->dseg_0_address;
-
-	/* Load data segments */
-	scsi_for_each_sg(cmd, sg, tot_dsds, i) {
-		dma_addr_t	sle_dma;
-=======
 	put_unaligned_le32(COMMAND_A64_TYPE, &cmd_pkt->entry_type);
 
 	/* No data transfer */
@@ -416,7 +276,6 @@ void qla2x00_build_scsi_iocbs_64(srb_t *sp, cmd_entry_t *cmd_pkt,
 
 	/* Load data segments */
 	scsi_for_each_sg(cmd, sg, tot_dsds, i) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cont_a64_entry_t *cont_pkt;
 
 		/* Allocate additional continuation packets? */
@@ -426,28 +285,15 @@ void qla2x00_build_scsi_iocbs_64(srb_t *sp, cmd_entry_t *cmd_pkt,
 			 * Type 1 IOCB.
 			 */
 			cont_pkt = qla2x00_prep_cont_type1_iocb(vha, vha->req);
-<<<<<<< HEAD
-			cur_dsd = (uint32_t *)cont_pkt->dseg_0_address;
-			avail_dsds = 5;
-		}
-
-		sle_dma = sg_dma_address(sg);
-		*cur_dsd++ = cpu_to_le32(LSD(sle_dma));
-		*cur_dsd++ = cpu_to_le32(MSD(sle_dma));
-		*cur_dsd++ = cpu_to_le32(sg_dma_len(sg));
-=======
 			cur_dsd = cont_pkt->dsd;
 			avail_dsds = ARRAY_SIZE(cont_pkt->dsd);
 		}
 
 		append_dsd64(&cur_dsd, sg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		avail_dsds--;
 	}
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Find the first handle that is not in use, starting from
  * req->current_outstanding_cmd + 1. The caller must hold the lock that is
@@ -468,7 +314,6 @@ uint32_t qla2xxx_get_next_handle(struct req_que *req)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * qla2x00_start_scsi() - Send a SCSI command to the ISP
  * @sp: command to send to the ISP
@@ -478,19 +323,11 @@ uint32_t qla2xxx_get_next_handle(struct req_que *req)
 int
 qla2x00_start_scsi(srb_t *sp)
 {
-<<<<<<< HEAD
-	int		ret, nseg;
-=======
 	int		nseg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long   flags;
 	scsi_qla_host_t	*vha;
 	struct scsi_cmnd *cmd;
 	uint32_t	*clr_ptr;
-<<<<<<< HEAD
-	uint32_t        index;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t	handle;
 	cmd_entry_t	*cmd_pkt;
 	uint16_t	cnt;
@@ -500,17 +337,9 @@ qla2x00_start_scsi(srb_t *sp)
 	struct qla_hw_data *ha;
 	struct req_que *req;
 	struct rsp_que *rsp;
-<<<<<<< HEAD
-	char		tag[2];
-
-	/* Setup device pointers. */
-	ret = 0;
-	vha = sp->fcport->vha;
-=======
 
 	/* Setup device pointers. */
 	vha = sp->vha;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ha = vha->hw;
 	reg = &ha->iobase->isp;
 	cmd = GET_CMD_SP(sp);
@@ -521,11 +350,7 @@ qla2x00_start_scsi(srb_t *sp)
 
 	/* Send marker if required */
 	if (vha->marker_needed != 0) {
-<<<<<<< HEAD
-		if (qla2x00_marker(vha, req, rsp, 0, 0, MK_SYNC_ALL) !=
-=======
 		if (qla2x00_marker(vha, ha->base_qpair, 0, 0, MK_SYNC_ALL) !=
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    QLA_SUCCESS) {
 			return (QLA_FUNCTION_FAILED);
 		}
@@ -535,21 +360,8 @@ qla2x00_start_scsi(srb_t *sp)
 	/* Acquire ring specific lock */
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
-<<<<<<< HEAD
-	/* Check for room in outstanding command list. */
-	handle = req->current_outstanding_cmd;
-	for (index = 1; index < MAX_OUTSTANDING_COMMANDS; index++) {
-		handle++;
-		if (handle == MAX_OUTSTANDING_COMMANDS)
-			handle = 1;
-		if (!req->outstanding_cmds[handle])
-			break;
-	}
-	if (index == MAX_OUTSTANDING_COMMANDS)
-=======
 	handle = qla2xxx_get_next_handle(req);
 	if (handle == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto queuing_error;
 
 	/* Map the sg table so we have an accurate count of sg entries needed */
@@ -566,26 +378,16 @@ qla2x00_start_scsi(srb_t *sp)
 	/* Calculate the number of request entries needed. */
 	req_cnt = ha->isp_ops->calc_req_entries(tot_dsds);
 	if (req->cnt < (req_cnt + 2)) {
-<<<<<<< HEAD
-		cnt = RD_REG_WORD_RELAXED(ISP_REQ_Q_OUT(ha, reg));
-=======
 		cnt = rd_reg_word_relaxed(ISP_REQ_Q_OUT(ha, reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (req->ring_index < cnt)
 			req->cnt = cnt - req->ring_index;
 		else
 			req->cnt = req->length -
 			    (req->ring_index - cnt);
-<<<<<<< HEAD
-	}
-	if (req->cnt < (req_cnt + 2))
-		goto queuing_error;
-=======
 		/* If still no head room then bail out */
 		if (req->cnt < (req_cnt + 2))
 			goto queuing_error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Build command packet */
 	req->current_outstanding_cmd = handle;
@@ -604,30 +406,7 @@ qla2x00_start_scsi(srb_t *sp)
 	/* Set target ID and LUN number*/
 	SET_TARGET_ID(ha, cmd_pkt->target, sp->fcport->loop_id);
 	cmd_pkt->lun = cpu_to_le16(cmd->device->lun);
-<<<<<<< HEAD
-
-	/* Update tagged queuing modifier */
-	if (scsi_populate_tag_msg(cmd, tag)) {
-		switch (tag[0]) {
-		case HEAD_OF_QUEUE_TAG:
-			cmd_pkt->control_flags =
-			    __constant_cpu_to_le16(CF_HEAD_TAG);
-			break;
-		case ORDERED_QUEUE_TAG:
-			cmd_pkt->control_flags =
-			    __constant_cpu_to_le16(CF_ORDERED_TAG);
-			break;
-		default:
-			cmd_pkt->control_flags =
-			    __constant_cpu_to_le16(CF_SIMPLE_TAG);
-			break;
-		}
-	} else {
-		cmd_pkt->control_flags = __constant_cpu_to_le16(CF_SIMPLE_TAG);
-	}
-=======
 	cmd_pkt->control_flags = cpu_to_le16(CF_SIMPLE_TAG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Load SCSI command packet. */
 	memcpy(cmd_pkt->scsi_cdb, cmd->cmnd, cmd->cmd_len);
@@ -651,13 +430,8 @@ qla2x00_start_scsi(srb_t *sp)
 	sp->flags |= SRB_DMA_VALID;
 
 	/* Set chip new ring index. */
-<<<<<<< HEAD
-	WRT_REG_WORD(ISP_REQ_Q_IN(ha, reg), req->ring_index);
-	RD_REG_WORD_RELAXED(ISP_REQ_Q_IN(ha, reg));	/* PCI Posting. */
-=======
 	wrt_reg_word(ISP_REQ_Q_IN(ha, reg), req->ring_index);
 	rd_reg_word_relaxed(ISP_REQ_Q_IN(ha, reg));	/* PCI Posting. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Manage unprocessed RIO/ZIO commands in response queue. */
 	if (vha->flags.process_response_queue &&
@@ -678,16 +452,6 @@ queuing_error:
 
 /**
  * qla2x00_start_iocbs() - Execute the IOCB command
-<<<<<<< HEAD
- */
-static void
-qla2x00_start_iocbs(struct scsi_qla_host *vha, struct req_que *req)
-{
-	struct qla_hw_data *ha = vha->hw;
-	device_reg_t __iomem *reg = ISP_QUE_REG(ha, req->id);
-
-	if (IS_QLA82XX(ha)) {
-=======
  * @vha: HA context
  * @req: request queue
  */
@@ -698,7 +462,6 @@ qla2x00_start_iocbs(struct scsi_qla_host *vha, struct req_que *req)
 	device_reg_t *reg = ISP_QUE_REG(ha, req->id);
 
 	if (IS_P3P_TYPE(ha)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qla82xx_start_iocbs(vha);
 	} else {
 		/* Adjust ring index. */
@@ -710,18 +473,6 @@ qla2x00_start_iocbs(struct scsi_qla_host *vha, struct req_que *req)
 			req->ring_ptr++;
 
 		/* Set chip new ring index. */
-<<<<<<< HEAD
-		if (ha->mqenable || IS_QLA83XX(ha)) {
-			WRT_REG_DWORD(req->req_q_in, req->ring_index);
-			RD_REG_DWORD_RELAXED(&ha->iobase->isp24.hccr);
-		} else if (IS_FWI2_CAPABLE(ha)) {
-			WRT_REG_DWORD(&reg->isp24.req_q_in, req->ring_index);
-			RD_REG_DWORD_RELAXED(&reg->isp24.req_q_in);
-		} else {
-			WRT_REG_WORD(ISP_REQ_Q_IN(ha, &reg->isp),
-				req->ring_index);
-			RD_REG_WORD_RELAXED(ISP_REQ_Q_IN(ha, &reg->isp));
-=======
 		if (ha->mqenable || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
 			wrt_reg_dword(req->req_q_in, req->ring_index);
 		} else if (IS_QLA83XX(ha)) {
@@ -738,20 +489,14 @@ qla2x00_start_iocbs(struct scsi_qla_host *vha, struct req_que *req)
 			wrt_reg_word(ISP_REQ_Q_IN(ha, &reg->isp),
 				req->ring_index);
 			rd_reg_word_relaxed(ISP_REQ_Q_IN(ha, &reg->isp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
 /**
-<<<<<<< HEAD
- * qla2x00_marker() - Send a marker IOCB to the firmware.
- * @ha: HA context
-=======
  * __qla2x00_marker() - Send a marker IOCB to the firmware.
  * @vha: HA context
  * @qpair: queue pair pointer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @loop_id: loop ID
  * @lun: LUN
  * @type: marker modifier
@@ -761,20 +506,6 @@ qla2x00_start_iocbs(struct scsi_qla_host *vha, struct req_que *req)
  * Returns non-zero if a failure occurred, else zero.
  */
 static int
-<<<<<<< HEAD
-__qla2x00_marker(struct scsi_qla_host *vha, struct req_que *req,
-			struct rsp_que *rsp, uint16_t loop_id,
-			uint16_t lun, uint8_t type)
-{
-	mrk_entry_t *mrk;
-	struct mrk_entry_24xx *mrk24;
-	struct qla_hw_data *ha = vha->hw;
-	scsi_qla_host_t *base_vha = pci_get_drvdata(ha->pdev);
-
-	mrk24 = NULL;
-	req = ha->req_q_map[0];
-	mrk = (mrk_entry_t *)qla2x00_alloc_iocbs(vha, 0);
-=======
 __qla2x00_marker(struct scsi_qla_host *vha, struct qla_qpair *qpair,
     uint16_t loop_id, uint64_t lun, uint8_t type)
 {
@@ -785,7 +516,6 @@ __qla2x00_marker(struct scsi_qla_host *vha, struct qla_qpair *qpair,
 	scsi_qla_host_t *base_vha = pci_get_drvdata(ha->pdev);
 
 	mrk = (mrk_entry_t *)__qla2x00_alloc_iocbs(qpair, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mrk == NULL) {
 		ql_log(ql_log_warn, base_vha, 0x3026,
 		    "Failed to allocate Marker IOCB.\n");
@@ -793,29 +523,12 @@ __qla2x00_marker(struct scsi_qla_host *vha, struct qla_qpair *qpair,
 		return (QLA_FUNCTION_FAILED);
 	}
 
-<<<<<<< HEAD
-=======
 	mrk24 = (struct mrk_entry_24xx *)mrk;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mrk->entry_type = MARKER_TYPE;
 	mrk->modifier = type;
 	if (type != MK_SYNC_ALL) {
 		if (IS_FWI2_CAPABLE(ha)) {
-<<<<<<< HEAD
-			mrk24 = (struct mrk_entry_24xx *) mrk;
-			mrk24->nport_handle = cpu_to_le16(loop_id);
-			mrk24->lun[1] = LSB(lun);
-			mrk24->lun[2] = MSB(lun);
-			host_to_fcp_swap(mrk24->lun, sizeof(mrk24->lun));
-			mrk24->vp_index = vha->vp_idx;
-			mrk24->handle = MAKE_HANDLE(req->id, mrk24->handle);
-		} else {
-			SET_TARGET_ID(ha, mrk->target, loop_id);
-			mrk->lun = cpu_to_le16(lun);
-		}
-	}
-=======
 			mrk24->nport_handle = cpu_to_le16(loop_id);
 			int_to_scsilun(lun, (struct scsi_lun *)&mrk24->lun);
 			host_to_fcp_swap(mrk24->lun, sizeof(mrk24->lun));
@@ -829,7 +542,6 @@ __qla2x00_marker(struct scsi_qla_host *vha, struct qla_qpair *qpair,
 	if (IS_FWI2_CAPABLE(ha))
 		mrk24->handle = QLA_SKIP_HANDLE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();
 
 	qla2x00_start_iocbs(vha, req);
@@ -838,53 +550,19 @@ __qla2x00_marker(struct scsi_qla_host *vha, struct qla_qpair *qpair,
 }
 
 int
-<<<<<<< HEAD
-qla2x00_marker(struct scsi_qla_host *vha, struct req_que *req,
-		struct rsp_que *rsp, uint16_t loop_id, uint16_t lun,
-		uint8_t type)
-=======
 qla2x00_marker(struct scsi_qla_host *vha, struct qla_qpair *qpair,
     uint16_t loop_id, uint64_t lun, uint8_t type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	unsigned long flags = 0;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&vha->hw->hardware_lock, flags);
-	ret = __qla2x00_marker(vha, req, rsp, loop_id, lun, type);
-	spin_unlock_irqrestore(&vha->hw->hardware_lock, flags);
-=======
 	spin_lock_irqsave(qpair->qp_lock_ptr, flags);
 	ret = __qla2x00_marker(vha, qpair, loop_id, lun, type);
 	spin_unlock_irqrestore(qpair->qp_lock_ptr, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (ret);
 }
 
-<<<<<<< HEAD
-/**
- * qla24xx_calc_iocbs() - Determine number of Command Type 3 and
- * Continuation Type 1 IOCBs to allocate.
- *
- * @dsds: number of data segment decriptors needed
- *
- * Returns the number of IOCB entries needed to store @dsds.
- */
-inline uint16_t
-qla24xx_calc_iocbs(scsi_qla_host_t *vha, uint16_t dsds)
-{
-	uint16_t iocbs;
-
-	iocbs = 1;
-	if (dsds > 1) {
-		iocbs += (dsds - 1) / 5;
-		if ((dsds - 1) % 5)
-			iocbs++;
-	}
-	return iocbs;
-=======
 /*
  * qla2x00_issue_marker
  *
@@ -906,66 +584,25 @@ int qla2x00_issue_marker(scsi_qla_host_t *vha, int ha_locked)
 	vha->marker_needed = 0;
 
 	return QLA_SUCCESS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int
 qla24xx_build_scsi_type_6_iocbs(srb_t *sp, struct cmd_type_6 *cmd_pkt,
 	uint16_t tot_dsds)
 {
-<<<<<<< HEAD
-	uint32_t *cur_dsd = NULL;
-	scsi_qla_host_t	*vha;
-	struct qla_hw_data *ha;
-	struct scsi_cmnd *cmd;
-	struct	scatterlist *cur_seg;
-	uint32_t *dsd_seg;
-	void *next_dsd;
-=======
 	struct dsd64 *cur_dsd = NULL, *next_dsd;
 	struct scsi_cmnd *cmd;
 	struct	scatterlist *cur_seg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t avail_dsds;
 	uint8_t first_iocb = 1;
 	uint32_t dsd_list_len;
 	struct dsd_dma *dsd_ptr;
 	struct ct6_dsd *ctx;
-<<<<<<< HEAD
-=======
 	struct qla_qpair *qpair = sp->qpair;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd = GET_CMD_SP(sp);
 
 	/* Update entry type to indicate Command Type 3 IOCB */
-<<<<<<< HEAD
-	*((uint32_t *)(&cmd_pkt->entry_type)) =
-		__constant_cpu_to_le32(COMMAND_TYPE_6);
-
-	/* No data transfer */
-	if (!scsi_bufflen(cmd) || cmd->sc_data_direction == DMA_NONE) {
-		cmd_pkt->byte_count = __constant_cpu_to_le32(0);
-		return 0;
-	}
-
-	vha = sp->fcport->vha;
-	ha = vha->hw;
-
-	/* Set transfer direction */
-	if (cmd->sc_data_direction == DMA_TO_DEVICE) {
-		cmd_pkt->control_flags =
-		    __constant_cpu_to_le16(CF_WRITE_DATA);
-		ha->qla_stats.output_bytes += scsi_bufflen(cmd);
-	} else if (cmd->sc_data_direction == DMA_FROM_DEVICE) {
-		cmd_pkt->control_flags =
-		    __constant_cpu_to_le16(CF_READ_DATA);
-		ha->qla_stats.input_bytes += scsi_bufflen(cmd);
-	}
-
-	cur_seg = scsi_sglist(cmd);
-	ctx = GET_CMD_CTX_SP(sp);
-=======
 	put_unaligned_le32(COMMAND_TYPE_6, &cmd_pkt->entry_type);
 
 	/* No data transfer */
@@ -988,7 +625,6 @@ qla24xx_build_scsi_type_6_iocbs(srb_t *sp, struct cmd_type_6 *cmd_pkt,
 
 	cur_seg = scsi_sglist(cmd);
 	ctx = &sp->u.scmd.ct6_ctx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (tot_dsds) {
 		avail_dsds = (tot_dsds > QLA_DSDS_PER_IOCB) ?
@@ -996,36 +632,6 @@ qla24xx_build_scsi_type_6_iocbs(srb_t *sp, struct cmd_type_6 *cmd_pkt,
 		tot_dsds -= avail_dsds;
 		dsd_list_len = (avail_dsds + 1) * QLA_DSD_SIZE;
 
-<<<<<<< HEAD
-		dsd_ptr = list_first_entry(&ha->gbl_dsd_list,
-		    struct dsd_dma, list);
-		next_dsd = dsd_ptr->dsd_addr;
-		list_del(&dsd_ptr->list);
-		ha->gbl_dsd_avail--;
-		list_add_tail(&dsd_ptr->list, &ctx->dsd_list);
-		ctx->dsd_use_cnt++;
-		ha->gbl_dsd_inuse++;
-
-		if (first_iocb) {
-			first_iocb = 0;
-			dsd_seg = (uint32_t *)&cmd_pkt->fcp_data_dseg_address;
-			*dsd_seg++ = cpu_to_le32(LSD(dsd_ptr->dsd_list_dma));
-			*dsd_seg++ = cpu_to_le32(MSD(dsd_ptr->dsd_list_dma));
-			cmd_pkt->fcp_data_dseg_len = cpu_to_le32(dsd_list_len);
-		} else {
-			*cur_dsd++ = cpu_to_le32(LSD(dsd_ptr->dsd_list_dma));
-			*cur_dsd++ = cpu_to_le32(MSD(dsd_ptr->dsd_list_dma));
-			*cur_dsd++ = cpu_to_le32(dsd_list_len);
-		}
-		cur_dsd = (uint32_t *)next_dsd;
-		while (avail_dsds) {
-			dma_addr_t	sle_dma;
-
-			sle_dma = sg_dma_address(cur_seg);
-			*cur_dsd++ = cpu_to_le32(LSD(sle_dma));
-			*cur_dsd++ = cpu_to_le32(MSD(sle_dma));
-			*cur_dsd++ = cpu_to_le32(sg_dma_len(cur_seg));
-=======
 		dsd_ptr = list_first_entry(&qpair->dsd_list, struct dsd_dma, list);
 		next_dsd = dsd_ptr->dsd_addr;
 		list_del(&dsd_ptr->list);
@@ -1048,24 +654,16 @@ qla24xx_build_scsi_type_6_iocbs(srb_t *sp, struct cmd_type_6 *cmd_pkt,
 		cur_dsd = next_dsd;
 		while (avail_dsds) {
 			append_dsd64(&cur_dsd, cur_seg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cur_seg = sg_next(cur_seg);
 			avail_dsds--;
 		}
 	}
 
 	/* Null termination */
-<<<<<<< HEAD
-	*cur_dsd++ =  0;
-	*cur_dsd++ = 0;
-	*cur_dsd++ = 0;
-	cmd_pkt->control_flags |= CF_DATA_SEG_DESCR_ENABLE;
-=======
 	cur_dsd->address = 0;
 	cur_dsd->length = 0;
 	cur_dsd++;
 	cmd_pkt->control_flags |= cpu_to_le16(CF_DATA_SEG_DESCR_ENABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1073,19 +671,11 @@ qla24xx_build_scsi_type_6_iocbs(srb_t *sp, struct cmd_type_6 *cmd_pkt,
  * qla24xx_calc_dsd_lists() - Determine number of DSD list required
  * for Command Type 6.
  *
-<<<<<<< HEAD
- * @dsds: number of data segment decriptors needed
- *
- * Returns the number of dsd list needed to store @dsds.
- */
-inline uint16_t
-=======
  * @dsds: number of data segment descriptors needed
  *
  * Returns the number of dsd list needed to store @dsds.
  */
 static inline uint16_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla24xx_calc_dsd_lists(uint16_t dsds)
 {
 	uint16_t dsd_lists = 0;
@@ -1104,15 +694,6 @@ qla24xx_calc_dsd_lists(uint16_t dsds)
  * @sp: SRB command to process
  * @cmd_pkt: Command type 3 IOCB
  * @tot_dsds: Total number of segments to transfer
-<<<<<<< HEAD
- */
-inline void
-qla24xx_build_scsi_iocbs(srb_t *sp, struct cmd_type_7 *cmd_pkt,
-    uint16_t tot_dsds)
-{
-	uint16_t	avail_dsds;
-	uint32_t	*cur_dsd;
-=======
  * @req: pointer to request queue
  */
 inline void
@@ -1121,45 +702,15 @@ qla24xx_build_scsi_iocbs(srb_t *sp, struct cmd_type_7 *cmd_pkt,
 {
 	uint16_t	avail_dsds;
 	struct dsd64	*cur_dsd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t	*vha;
 	struct scsi_cmnd *cmd;
 	struct scatterlist *sg;
 	int i;
-<<<<<<< HEAD
-	struct req_que *req;
-=======
 	struct qla_qpair *qpair = sp->qpair;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd = GET_CMD_SP(sp);
 
 	/* Update entry type to indicate Command Type 3 IOCB */
-<<<<<<< HEAD
-	*((uint32_t *)(&cmd_pkt->entry_type)) =
-	    __constant_cpu_to_le32(COMMAND_TYPE_7);
-
-	/* No data transfer */
-	if (!scsi_bufflen(cmd) || cmd->sc_data_direction == DMA_NONE) {
-		cmd_pkt->byte_count = __constant_cpu_to_le32(0);
-		return;
-	}
-
-	vha = sp->fcport->vha;
-	req = vha->req;
-
-	/* Set transfer direction */
-	if (cmd->sc_data_direction == DMA_TO_DEVICE) {
-		cmd_pkt->task_mgmt_flags =
-		    __constant_cpu_to_le16(TMF_WRITE_DATA);
-		sp->fcport->vha->hw->qla_stats.output_bytes +=
-		    scsi_bufflen(cmd);
-	} else if (cmd->sc_data_direction == DMA_FROM_DEVICE) {
-		cmd_pkt->task_mgmt_flags =
-		    __constant_cpu_to_le16(TMF_READ_DATA);
-		sp->fcport->vha->hw->qla_stats.input_bytes +=
-		    scsi_bufflen(cmd);
-=======
 	put_unaligned_le32(COMMAND_TYPE_7, &cmd_pkt->entry_type);
 
 	/* No data transfer */
@@ -1179,24 +730,15 @@ qla24xx_build_scsi_iocbs(srb_t *sp, struct cmd_type_7 *cmd_pkt,
 		cmd_pkt->task_mgmt_flags = cpu_to_le16(TMF_READ_DATA);
 		qpair->counters.input_bytes += scsi_bufflen(cmd);
 		qpair->counters.input_requests++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* One DSD is available in the Command Type 3 IOCB */
 	avail_dsds = 1;
-<<<<<<< HEAD
-	cur_dsd = (uint32_t *)&cmd_pkt->dseg_0_address;
-=======
 	cur_dsd = &cmd_pkt->dsd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Load data segments */
 
 	scsi_for_each_sg(cmd, sg, tot_dsds, i) {
-<<<<<<< HEAD
-		dma_addr_t	sle_dma;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cont_a64_entry_t *cont_pkt;
 
 		/* Allocate additional continuation packets? */
@@ -1205,36 +747,19 @@ qla24xx_build_scsi_iocbs(srb_t *sp, struct cmd_type_7 *cmd_pkt,
 			 * Five DSDs are available in the Continuation
 			 * Type 1 IOCB.
 			 */
-<<<<<<< HEAD
-			cont_pkt = qla2x00_prep_cont_type1_iocb(vha, vha->req);
-			cur_dsd = (uint32_t *)cont_pkt->dseg_0_address;
-			avail_dsds = 5;
-		}
-
-		sle_dma = sg_dma_address(sg);
-		*cur_dsd++ = cpu_to_le32(LSD(sle_dma));
-		*cur_dsd++ = cpu_to_le32(MSD(sle_dma));
-		*cur_dsd++ = cpu_to_le32(sg_dma_len(sg));
-=======
 			cont_pkt = qla2x00_prep_cont_type1_iocb(vha, req);
 			cur_dsd = cont_pkt->dsd;
 			avail_dsds = ARRAY_SIZE(cont_pkt->dsd);
 		}
 
 		append_dsd64(&cur_dsd, sg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		avail_dsds--;
 	}
 }
 
 struct fw_dif_context {
-<<<<<<< HEAD
-	uint32_t ref_tag;
-	uint16_t app_tag;
-=======
 	__le32	ref_tag;
 	__le16	app_tag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t ref_tag_mask[4];	/* Validation/Replacement Mask*/
 	uint8_t app_tag_mask[2];	/* Validation/Replacement Mask*/
 };
@@ -1248,112 +773,15 @@ qla24xx_set_t10dif_tags(srb_t *sp, struct fw_dif_context *pkt,
     unsigned int protcnt)
 {
 	struct scsi_cmnd *cmd = GET_CMD_SP(sp);
-<<<<<<< HEAD
-	scsi_qla_host_t *vha = shost_priv(cmd->device->host);
-
-	switch (scsi_get_prot_type(cmd)) {
-	case SCSI_PROT_DIF_TYPE0:
-		/*
-		 * No check for ql2xenablehba_err_chk, as it would be an
-		 * I/O error if hba tag generation is not done.
-		 */
-		pkt->ref_tag = cpu_to_le32((uint32_t)
-		    (0xffffffff & scsi_get_lba(cmd)));
-
-		if (!qla2x00_hba_err_chk_enabled(sp))
-			break;
-
-=======
 
 	pkt->ref_tag = cpu_to_le32(scsi_prot_ref_tag(cmd));
 
 	if (cmd->prot_flags & SCSI_PROT_REF_CHECK &&
 	    qla2x00_hba_err_chk_enabled(sp)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pkt->ref_tag_mask[0] = 0xff;
 		pkt->ref_tag_mask[1] = 0xff;
 		pkt->ref_tag_mask[2] = 0xff;
 		pkt->ref_tag_mask[3] = 0xff;
-<<<<<<< HEAD
-		break;
-
-	/*
-	 * For TYPE 2 protection: 16 bit GUARD + 32 bit REF tag has to
-	 * match LBA in CDB + N
-	 */
-	case SCSI_PROT_DIF_TYPE2:
-		pkt->app_tag = __constant_cpu_to_le16(0);
-		pkt->app_tag_mask[0] = 0x0;
-		pkt->app_tag_mask[1] = 0x0;
-
-		pkt->ref_tag = cpu_to_le32((uint32_t)
-		    (0xffffffff & scsi_get_lba(cmd)));
-
-		if (!qla2x00_hba_err_chk_enabled(sp))
-			break;
-
-		/* enable ALL bytes of the ref tag */
-		pkt->ref_tag_mask[0] = 0xff;
-		pkt->ref_tag_mask[1] = 0xff;
-		pkt->ref_tag_mask[2] = 0xff;
-		pkt->ref_tag_mask[3] = 0xff;
-		break;
-
-	/* For Type 3 protection: 16 bit GUARD only */
-	case SCSI_PROT_DIF_TYPE3:
-		pkt->ref_tag_mask[0] = pkt->ref_tag_mask[1] =
-			pkt->ref_tag_mask[2] = pkt->ref_tag_mask[3] =
-								0x00;
-		break;
-
-	/*
-	 * For TYpe 1 protection: 16 bit GUARD tag, 32 bit REF tag, and
-	 * 16 bit app tag.
-	 */
-	case SCSI_PROT_DIF_TYPE1:
-		pkt->ref_tag = cpu_to_le32((uint32_t)
-		    (0xffffffff & scsi_get_lba(cmd)));
-		pkt->app_tag = __constant_cpu_to_le16(0);
-		pkt->app_tag_mask[0] = 0x0;
-		pkt->app_tag_mask[1] = 0x0;
-
-		if (!qla2x00_hba_err_chk_enabled(sp))
-			break;
-
-		/* enable ALL bytes of the ref tag */
-		pkt->ref_tag_mask[0] = 0xff;
-		pkt->ref_tag_mask[1] = 0xff;
-		pkt->ref_tag_mask[2] = 0xff;
-		pkt->ref_tag_mask[3] = 0xff;
-		break;
-	}
-
-	ql_dbg(ql_dbg_io, vha, 0x3009,
-	    "Setting protection Tags: (BIG) ref tag = 0x%x, app tag = 0x%x, "
-	    "prot SG count %d, cmd lba 0x%x, prot_type=%u cmd=%p.\n",
-	    pkt->ref_tag, pkt->app_tag, protcnt, (int)scsi_get_lba(cmd),
-	    scsi_get_prot_type(cmd), cmd);
-}
-
-struct qla2_sgx {
-	dma_addr_t		dma_addr;	/* OUT */
-	uint32_t		dma_len;	/* OUT */
-
-	uint32_t		tot_bytes;	/* IN */
-	struct scatterlist	*cur_sg;	/* IN */
-
-	/* for book keeping, bzero on initial invocation */
-	uint32_t		bytes_consumed;
-	uint32_t		num_bytes;
-	uint32_t		tot_partial;
-
-	/* for debugging */
-	uint32_t		num_sg;
-	srb_t			*sp;
-};
-
-static int
-=======
 	}
 
 	pkt->app_tag = cpu_to_le16(0);
@@ -1362,7 +790,6 @@ static int
 }
 
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla24xx_get_one_block_sg(uint32_t blk_sz, struct qla2_sgx *sgx,
 	uint32_t *partial)
 {
@@ -1404,47 +831,22 @@ qla24xx_get_one_block_sg(uint32_t blk_sz, struct qla2_sgx *sgx,
 	return 1;
 }
 
-<<<<<<< HEAD
-static int
-qla24xx_walk_and_build_sglist_no_difb(struct qla_hw_data *ha, srb_t *sp,
-	uint32_t *dsd, uint16_t tot_dsds)
-=======
 int
 qla24xx_walk_and_build_sglist_no_difb(struct qla_hw_data *ha, srb_t *sp,
 	struct dsd64 *dsd, uint16_t tot_dsds, struct qla_tc_param *tc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *next_dsd;
 	uint8_t avail_dsds = 0;
 	uint32_t dsd_list_len;
 	struct dsd_dma *dsd_ptr;
 	struct scatterlist *sg_prot;
-<<<<<<< HEAD
-	uint32_t *cur_dsd = dsd;
-	uint16_t	used_dsds = tot_dsds;
-
-	uint32_t	prot_int;
-=======
 	struct dsd64 *cur_dsd = dsd;
 	uint16_t	used_dsds = tot_dsds;
 	uint32_t	prot_int; /* protection interval */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t	partial;
 	struct qla2_sgx sgx;
 	dma_addr_t	sle_dma;
 	uint32_t	sle_dma_len, tot_prot_dma_len = 0;
-<<<<<<< HEAD
-	struct scsi_cmnd *cmd = GET_CMD_SP(sp);
-
-	prot_int = cmd->device->sector_size;
-
-	memset(&sgx, 0, sizeof(struct qla2_sgx));
-	sgx.tot_bytes = scsi_bufflen(cmd);
-	sgx.cur_sg = scsi_sglist(cmd);
-	sgx.sp = sp;
-
-	sg_prot = scsi_prot_sglist(cmd);
-=======
 	struct scsi_cmnd *cmd;
 
 	memset(&sgx, 0, sizeof(struct qla2_sgx));
@@ -1466,7 +868,6 @@ qla24xx_walk_and_build_sglist_no_difb(struct qla_hw_data *ha, srb_t *sp,
 		BUG();
 		return 1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (qla24xx_get_one_block_sg(prot_int, &sgx, &partial)) {
 
@@ -1499,22 +900,6 @@ alloc_and_fill:
 				return 1;
 			}
 
-<<<<<<< HEAD
-			list_add_tail(&dsd_ptr->list,
-			    &((struct crc_context *)sp->u.scmd.ctx)->dsd_list);
-
-			sp->flags |= SRB_CRC_CTX_DSD_VALID;
-
-			/* add new list to cmd iocb or last list */
-			*cur_dsd++ = cpu_to_le32(LSD(dsd_ptr->dsd_list_dma));
-			*cur_dsd++ = cpu_to_le32(MSD(dsd_ptr->dsd_list_dma));
-			*cur_dsd++ = dsd_list_len;
-			cur_dsd = (uint32_t *)next_dsd;
-		}
-		*cur_dsd++ = cpu_to_le32(LSD(sle_dma));
-		*cur_dsd++ = cpu_to_le32(MSD(sle_dma));
-		*cur_dsd++ = cpu_to_le32(sle_dma_len);
-=======
 			if (sp) {
 				list_add_tail(&dsd_ptr->list,
 					      &sp->u.scmd.crc_ctx->dsd_list);
@@ -1536,7 +921,6 @@ alloc_and_fill:
 		put_unaligned_le64(sle_dma, &cur_dsd->address);
 		cur_dsd->length = cpu_to_le32(sle_dma_len);
 		cur_dsd++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		avail_dsds--;
 
 		if (partial == 0) {
@@ -1555,17 +939,6 @@ alloc_and_fill:
 		}
 	}
 	/* Null termination */
-<<<<<<< HEAD
-	*cur_dsd++ = 0;
-	*cur_dsd++ = 0;
-	*cur_dsd++ = 0;
-	return 0;
-}
-
-static int
-qla24xx_walk_and_build_sglist(struct qla_hw_data *ha, srb_t *sp, uint32_t *dsd,
-	uint16_t tot_dsds)
-=======
 	cur_dsd->address = 0;
 	cur_dsd->length = 0;
 	cur_dsd++;
@@ -1575,26 +948,11 @@ qla24xx_walk_and_build_sglist(struct qla_hw_data *ha, srb_t *sp, uint32_t *dsd,
 int
 qla24xx_walk_and_build_sglist(struct qla_hw_data *ha, srb_t *sp,
 	struct dsd64 *dsd, uint16_t tot_dsds, struct qla_tc_param *tc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *next_dsd;
 	uint8_t avail_dsds = 0;
 	uint32_t dsd_list_len;
 	struct dsd_dma *dsd_ptr;
-<<<<<<< HEAD
-	struct scatterlist *sg;
-	uint32_t *cur_dsd = dsd;
-	int	i;
-	uint16_t	used_dsds = tot_dsds;
-	struct scsi_cmnd *cmd = GET_CMD_SP(sp);
-	scsi_qla_host_t *vha = shost_priv(cmd->device->host);
-
-	uint8_t		*cp;
-
-	scsi_for_each_sg(cmd, sg, tot_dsds, i) {
-		dma_addr_t	sle_dma;
-
-=======
 	struct scatterlist *sg, *sgl;
 	struct dsd64 *cur_dsd = dsd;
 	int	i;
@@ -1613,7 +971,6 @@ qla24xx_walk_and_build_sglist(struct qla_hw_data *ha, srb_t *sp,
 
 
 	for_each_sg(sgl, sg, tot_dsds, i) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Allocate additional continuation packets? */
 		if (avail_dsds == 0) {
 			avail_dsds = (used_dsds > QLA_DSDS_PER_IOCB) ?
@@ -1640,123 +997,6 @@ qla24xx_walk_and_build_sglist(struct qla_hw_data *ha, srb_t *sp,
 				return 1;
 			}
 
-<<<<<<< HEAD
-			list_add_tail(&dsd_ptr->list,
-			    &((struct crc_context *)sp->u.scmd.ctx)->dsd_list);
-
-			sp->flags |= SRB_CRC_CTX_DSD_VALID;
-
-			/* add new list to cmd iocb or last list */
-			*cur_dsd++ = cpu_to_le32(LSD(dsd_ptr->dsd_list_dma));
-			*cur_dsd++ = cpu_to_le32(MSD(dsd_ptr->dsd_list_dma));
-			*cur_dsd++ = dsd_list_len;
-			cur_dsd = (uint32_t *)next_dsd;
-		}
-		sle_dma = sg_dma_address(sg);
-		ql_dbg(ql_dbg_io, vha, 0x300a,
-		    "sg entry %d - addr=0x%x 0x%x, " "len=%d for cmd=%p.\n",
-		    i, LSD(sle_dma), MSD(sle_dma), sg_dma_len(sg), cmd);
-		*cur_dsd++ = cpu_to_le32(LSD(sle_dma));
-		*cur_dsd++ = cpu_to_le32(MSD(sle_dma));
-		*cur_dsd++ = cpu_to_le32(sg_dma_len(sg));
-		avail_dsds--;
-
-		if (scsi_get_prot_op(cmd) == SCSI_PROT_WRITE_PASS) {
-			cp = page_address(sg_page(sg)) + sg->offset;
-			ql_dbg(ql_dbg_io, vha, 0x300b,
-			    "User data buffer=%p for cmd=%p.\n", cp, cmd);
-		}
-	}
-	/* Null termination */
-	*cur_dsd++ = 0;
-	*cur_dsd++ = 0;
-	*cur_dsd++ = 0;
-	return 0;
-}
-
-static int
-qla24xx_walk_and_build_prot_sglist(struct qla_hw_data *ha, srb_t *sp,
-							uint32_t *dsd,
-	uint16_t tot_dsds)
-{
-	void *next_dsd;
-	uint8_t avail_dsds = 0;
-	uint32_t dsd_list_len;
-	struct dsd_dma *dsd_ptr;
-	struct scatterlist *sg;
-	int	i;
-	struct scsi_cmnd *cmd;
-	uint32_t *cur_dsd = dsd;
-	uint16_t	used_dsds = tot_dsds;
-	scsi_qla_host_t *vha = pci_get_drvdata(ha->pdev);
-	uint8_t		*cp;
-
-	cmd = GET_CMD_SP(sp);
-	scsi_for_each_prot_sg(cmd, sg, tot_dsds, i) {
-		dma_addr_t	sle_dma;
-
-		/* Allocate additional continuation packets? */
-		if (avail_dsds == 0) {
-			avail_dsds = (used_dsds > QLA_DSDS_PER_IOCB) ?
-						QLA_DSDS_PER_IOCB : used_dsds;
-			dsd_list_len = (avail_dsds + 1) * 12;
-			used_dsds -= avail_dsds;
-
-			/* allocate tracking DS */
-			dsd_ptr = kzalloc(sizeof(struct dsd_dma), GFP_ATOMIC);
-			if (!dsd_ptr)
-				return 1;
-
-			/* allocate new list */
-			dsd_ptr->dsd_addr = next_dsd =
-			    dma_pool_alloc(ha->dl_dma_pool, GFP_ATOMIC,
-				&dsd_ptr->dsd_list_dma);
-
-			if (!next_dsd) {
-				/*
-				 * Need to cleanup only this dsd_ptr, rest
-				 * will be done by sp_free_dma()
-				 */
-				kfree(dsd_ptr);
-				return 1;
-			}
-
-			list_add_tail(&dsd_ptr->list,
-			    &((struct crc_context *)sp->u.scmd.ctx)->dsd_list);
-
-			sp->flags |= SRB_CRC_CTX_DSD_VALID;
-
-			/* add new list to cmd iocb or last list */
-			*cur_dsd++ = cpu_to_le32(LSD(dsd_ptr->dsd_list_dma));
-			*cur_dsd++ = cpu_to_le32(MSD(dsd_ptr->dsd_list_dma));
-			*cur_dsd++ = dsd_list_len;
-			cur_dsd = (uint32_t *)next_dsd;
-		}
-		sle_dma = sg_dma_address(sg);
-		if (scsi_get_prot_op(cmd) == SCSI_PROT_WRITE_PASS) {
-			ql_dbg(ql_dbg_io, vha, 0x3027,
-			    "%s(): %p, sg_entry %d - "
-			    "addr=0x%x0x%x, len=%d.\n",
-			    __func__, cur_dsd, i,
-			    LSD(sle_dma), MSD(sle_dma), sg_dma_len(sg));
-		}
-		*cur_dsd++ = cpu_to_le32(LSD(sle_dma));
-		*cur_dsd++ = cpu_to_le32(MSD(sle_dma));
-		*cur_dsd++ = cpu_to_le32(sg_dma_len(sg));
-
-		if (scsi_get_prot_op(cmd) == SCSI_PROT_WRITE_PASS) {
-			cp = page_address(sg_page(sg)) + sg->offset;
-			ql_dbg(ql_dbg_io, vha, 0x3028,
-			    "%s(): Protection Data buffer = %p.\n", __func__,
-			    cp);
-		}
-		avail_dsds--;
-	}
-	/* Null termination */
-	*cur_dsd++ = 0;
-	*cur_dsd++ = 0;
-	*cur_dsd++ = 0;
-=======
 			if (sp) {
 				list_add_tail(&dsd_ptr->list,
 					      &sp->u.scmd.crc_ctx->dsd_list);
@@ -2079,7 +1319,6 @@ qla24xx_walk_and_build_prot_sglist(struct qla_hw_data *ha, srb_t *sp,
 	cur_dsd->address = 0;
 	cur_dsd->length = 0;
 	cur_dsd++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2090,55 +1329,28 @@ qla24xx_walk_and_build_prot_sglist(struct qla_hw_data *ha, srb_t *sp,
  * @sp: SRB command to process
  * @cmd_pkt: Command type 3 IOCB
  * @tot_dsds: Total number of segments to transfer
-<<<<<<< HEAD
-=======
  * @tot_prot_dsds: Total number of segments with protection information
  * @fw_prot_opts: Protection options to be passed to firmware
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int
 qla24xx_build_scsi_crc_2_iocbs(srb_t *sp, struct cmd_type_crc_2 *cmd_pkt,
     uint16_t tot_dsds, uint16_t tot_prot_dsds, uint16_t fw_prot_opts)
 {
-<<<<<<< HEAD
-	uint32_t		*cur_dsd, *fcp_dl;
-	scsi_qla_host_t		*vha;
-	struct scsi_cmnd	*cmd;
-	struct scatterlist	*cur_seg;
-	int			sgc;
-=======
 	struct dsd64		*cur_dsd;
 	__be32			*fcp_dl;
 	scsi_qla_host_t		*vha;
 	struct scsi_cmnd	*cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t		total_bytes = 0;
 	uint32_t		data_bytes;
 	uint32_t		dif_bytes;
 	uint8_t			bundling = 1;
 	uint16_t		blk_size;
-<<<<<<< HEAD
-	uint8_t			*clr_ptr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct crc_context	*crc_ctx_pkt = NULL;
 	struct qla_hw_data	*ha;
 	uint8_t			additional_fcpcdb_len;
 	uint16_t		fcp_cmnd_len;
 	struct fcp_cmnd		*fcp_cmnd;
 	dma_addr_t		crc_ctx_dma;
-<<<<<<< HEAD
-	char			tag[2];
-
-	cmd = GET_CMD_SP(sp);
-
-	sgc = 0;
-	/* Update entry type to indicate Command Type CRC_2 IOCB */
-	*((uint32_t *)(&cmd_pkt->entry_type)) =
-	    __constant_cpu_to_le32(COMMAND_TYPE_CRC_2);
-
-	vha = sp->fcport->vha;
-=======
 
 	cmd = GET_CMD_SP(sp);
 
@@ -2146,40 +1358,24 @@ qla24xx_build_scsi_crc_2_iocbs(srb_t *sp, struct cmd_type_crc_2 *cmd_pkt,
 	put_unaligned_le32(COMMAND_TYPE_CRC_2, &cmd_pkt->entry_type);
 
 	vha = sp->vha;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ha = vha->hw;
 
 	/* No data transfer */
 	data_bytes = scsi_bufflen(cmd);
 	if (!data_bytes || cmd->sc_data_direction == DMA_NONE) {
-<<<<<<< HEAD
-		cmd_pkt->byte_count = __constant_cpu_to_le32(0);
-		return QLA_SUCCESS;
-	}
-
-	cmd_pkt->vp_index = sp->fcport->vp_idx;
-=======
 		cmd_pkt->byte_count = cpu_to_le32(0);
 		return QLA_SUCCESS;
 	}
 
 	cmd_pkt->vp_index = sp->vha->vp_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set transfer direction */
 	if (cmd->sc_data_direction == DMA_TO_DEVICE) {
 		cmd_pkt->control_flags =
-<<<<<<< HEAD
-		    __constant_cpu_to_le16(CF_WRITE_DATA);
-	} else if (cmd->sc_data_direction == DMA_FROM_DEVICE) {
-		cmd_pkt->control_flags =
-		    __constant_cpu_to_le16(CF_READ_DATA);
-=======
 		    cpu_to_le16(CF_WRITE_DATA);
 	} else if (cmd->sc_data_direction == DMA_FROM_DEVICE) {
 		cmd_pkt->control_flags =
 		    cpu_to_le16(CF_READ_DATA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if ((scsi_get_prot_op(cmd) == SCSI_PROT_READ_INSERT) ||
@@ -2189,24 +1385,12 @@ qla24xx_build_scsi_crc_2_iocbs(srb_t *sp, struct cmd_type_crc_2 *cmd_pkt,
 		bundling = 0;
 
 	/* Allocate CRC context from global pool */
-<<<<<<< HEAD
-	crc_ctx_pkt = sp->u.scmd.ctx =
-	    dma_pool_alloc(ha->dl_dma_pool, GFP_ATOMIC, &crc_ctx_dma);
-=======
 	crc_ctx_pkt = sp->u.scmd.crc_ctx =
 	    dma_pool_zalloc(ha->dl_dma_pool, GFP_ATOMIC, &crc_ctx_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!crc_ctx_pkt)
 		goto crc_queuing_error;
 
-<<<<<<< HEAD
-	/* Zero out CTX area. */
-	clr_ptr = (uint8_t *)crc_ctx_pkt;
-	memset(clr_ptr, 0, sizeof(*crc_ctx_pkt));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	crc_ctx_pkt->crc_ctx_dma = crc_ctx_dma;
 
 	sp->flags |= SRB_CRC_CTX_DMA_VALID;
@@ -2219,14 +1403,8 @@ qla24xx_build_scsi_crc_2_iocbs(srb_t *sp, struct cmd_type_crc_2 *cmd_pkt,
 	qla24xx_set_t10dif_tags(sp, (struct fw_dif_context *)
 	    &crc_ctx_pkt->ref_tag, tot_prot_dsds);
 
-<<<<<<< HEAD
-	cmd_pkt->crc_context_address[0] = cpu_to_le32(LSD(crc_ctx_dma));
-	cmd_pkt->crc_context_address[1] = cpu_to_le32(MSD(crc_ctx_dma));
-	cmd_pkt->crc_context_len = CRC_CONTEXT_LEN_FW;
-=======
 	put_unaligned_le64(crc_ctx_dma, &cmd_pkt->crc_context_address);
 	cmd_pkt->crc_context_len = cpu_to_le16(CRC_CONTEXT_LEN_FW);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Determine SCSI command length -- align to 4 byte boundary */
 	if (cmd->cmd_len > 16) {
@@ -2252,37 +1430,10 @@ qla24xx_build_scsi_crc_2_iocbs(srb_t *sp, struct cmd_type_crc_2 *cmd_pkt,
 	int_to_scsilun(cmd->device->lun, &fcp_cmnd->lun);
 	memcpy(fcp_cmnd->cdb, cmd->cmnd, cmd->cmd_len);
 	cmd_pkt->fcp_cmnd_dseg_len = cpu_to_le16(fcp_cmnd_len);
-<<<<<<< HEAD
-	cmd_pkt->fcp_cmnd_dseg_address[0] = cpu_to_le32(
-	    LSD(crc_ctx_dma + CRC_CONTEXT_FCPCMND_OFF));
-	cmd_pkt->fcp_cmnd_dseg_address[1] = cpu_to_le32(
-	    MSD(crc_ctx_dma + CRC_CONTEXT_FCPCMND_OFF));
-	fcp_cmnd->task_management = 0;
-
-	/*
-	 * Update tagged queuing modifier if using command tag queuing
-	 */
-	if (scsi_populate_tag_msg(cmd, tag)) {
-		switch (tag[0]) {
-		case HEAD_OF_QUEUE_TAG:
-		    fcp_cmnd->task_attribute = TSK_HEAD_OF_QUEUE;
-		    break;
-		case ORDERED_QUEUE_TAG:
-		    fcp_cmnd->task_attribute = TSK_ORDERED;
-		    break;
-		default:
-		    fcp_cmnd->task_attribute = TSK_SIMPLE;
-		    break;
-		}
-	} else {
-		fcp_cmnd->task_attribute = TSK_SIMPLE;
-	}
-=======
 	put_unaligned_le64(crc_ctx_dma + CRC_CONTEXT_FCPCMND_OFF,
 			   &cmd_pkt->fcp_cmnd_dseg_address);
 	fcp_cmnd->task_management = 0;
 	fcp_cmnd->task_attribute = TSK_SIMPLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd_pkt->fcp_rsp_dseg_len = 0; /* Let response come in status iocb */
 
@@ -2294,40 +1445,22 @@ qla24xx_build_scsi_crc_2_iocbs(srb_t *sp, struct cmd_type_crc_2 *cmd_pkt,
 	switch (scsi_get_prot_op(GET_CMD_SP(sp))) {
 	case SCSI_PROT_READ_INSERT:
 	case SCSI_PROT_WRITE_STRIP:
-<<<<<<< HEAD
-	    total_bytes = data_bytes;
-	    data_bytes += dif_bytes;
-	    break;
-=======
 		total_bytes = data_bytes;
 		data_bytes += dif_bytes;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case SCSI_PROT_READ_STRIP:
 	case SCSI_PROT_WRITE_INSERT:
 	case SCSI_PROT_READ_PASS:
 	case SCSI_PROT_WRITE_PASS:
-<<<<<<< HEAD
-	    total_bytes = data_bytes + dif_bytes;
-	    break;
-	default:
-	    BUG();
-=======
 		total_bytes = data_bytes + dif_bytes;
 		break;
 	default:
 		BUG();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!qla2x00_hba_err_chk_enabled(sp))
 		fw_prot_opts |= 0x10; /* Disable Guard tag checking */
-<<<<<<< HEAD
-
-	if (!bundling) {
-		cur_dsd = (uint32_t *) &crc_ctx_pkt->u.nobundling.data_address;
-=======
 	/* HBA error checking enabled */
 	else if (IS_PI_UNINIT_CAPABLE(ha)) {
 		if ((scsi_get_prot_type(GET_CMD_SP(sp)) == SCSI_PROT_DIF_TYPE1)
@@ -2341,7 +1474,6 @@ qla24xx_build_scsi_crc_2_iocbs(srb_t *sp, struct cmd_type_crc_2 *cmd_pkt,
 
 	if (!bundling) {
 		cur_dsd = &crc_ctx_pkt->u.nobundling.data_dsd[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/*
 		 * Configure Bundling if we need to fetch interlaving
@@ -2351,52 +1483,26 @@ qla24xx_build_scsi_crc_2_iocbs(srb_t *sp, struct cmd_type_crc_2 *cmd_pkt,
 		crc_ctx_pkt->u.bundling.dif_byte_count = cpu_to_le32(dif_bytes);
 		crc_ctx_pkt->u.bundling.dseg_count = cpu_to_le16(tot_dsds -
 							tot_prot_dsds);
-<<<<<<< HEAD
-		cur_dsd = (uint32_t *) &crc_ctx_pkt->u.bundling.data_address;
-=======
 		cur_dsd = &crc_ctx_pkt->u.bundling.data_dsd[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Finish the common fields of CRC pkt */
 	crc_ctx_pkt->blk_size = cpu_to_le16(blk_size);
 	crc_ctx_pkt->prot_opts = cpu_to_le16(fw_prot_opts);
 	crc_ctx_pkt->byte_count = cpu_to_le32(data_bytes);
-<<<<<<< HEAD
-	crc_ctx_pkt->guard_seed = __constant_cpu_to_le16(0);
-	/* Fibre channel byte count */
-	cmd_pkt->byte_count = cpu_to_le32(total_bytes);
-	fcp_dl = (uint32_t *)(crc_ctx_pkt->fcp_cmnd.cdb + 16 +
-=======
 	crc_ctx_pkt->guard_seed = cpu_to_le16(0);
 	/* Fibre channel byte count */
 	cmd_pkt->byte_count = cpu_to_le32(total_bytes);
 	fcp_dl = (__be32 *)(crc_ctx_pkt->fcp_cmnd.cdb + 16 +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    additional_fcpcdb_len);
 	*fcp_dl = htonl(total_bytes);
 
 	if (!data_bytes || cmd->sc_data_direction == DMA_NONE) {
-<<<<<<< HEAD
-		cmd_pkt->byte_count = __constant_cpu_to_le32(0);
-=======
 		cmd_pkt->byte_count = cpu_to_le32(0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return QLA_SUCCESS;
 	}
 	/* Walks data segments */
 
-<<<<<<< HEAD
-	cmd_pkt->control_flags |=
-	    __constant_cpu_to_le16(CF_DATA_SEG_DESCR_ENABLE);
-
-	if (!bundling && tot_prot_dsds) {
-		if (qla24xx_walk_and_build_sglist_no_difb(ha, sp,
-		    cur_dsd, tot_dsds))
-			goto crc_queuing_error;
-	} else if (qla24xx_walk_and_build_sglist(ha, sp, cur_dsd,
-	    (tot_dsds - tot_prot_dsds)))
-=======
 	cmd_pkt->control_flags |= cpu_to_le16(CF_DATA_SEG_DESCR_ENABLE);
 
 	if (!bundling && tot_prot_dsds) {
@@ -2405,24 +1511,14 @@ qla24xx_build_scsi_crc_2_iocbs(srb_t *sp, struct cmd_type_crc_2 *cmd_pkt,
 			goto crc_queuing_error;
 	} else if (qla24xx_walk_and_build_sglist(ha, sp, cur_dsd,
 			(tot_dsds - tot_prot_dsds), NULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto crc_queuing_error;
 
 	if (bundling && tot_prot_dsds) {
 		/* Walks dif segments */
-<<<<<<< HEAD
-		cur_seg = scsi_prot_sglist(cmd);
-		cmd_pkt->control_flags |=
-			__constant_cpu_to_le16(CF_DIF_SEG_DESCR_ENABLE);
-		cur_dsd = (uint32_t *) &crc_ctx_pkt->u.bundling.dif_address;
-		if (qla24xx_walk_and_build_prot_sglist(ha, sp, cur_dsd,
-		    tot_prot_dsds))
-=======
 		cmd_pkt->control_flags |= cpu_to_le16(CF_DIF_SEG_DESCR_ENABLE);
 		cur_dsd = &crc_ctx_pkt->u.bundling.dif_dsd;
 		if (qla24xx_walk_and_build_prot_sglist(ha, sp, cur_dsd,
 				tot_prot_dsds, NULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto crc_queuing_error;
 	}
 	return QLA_SUCCESS;
@@ -2442,35 +1538,15 @@ crc_queuing_error:
 int
 qla24xx_start_scsi(srb_t *sp)
 {
-<<<<<<< HEAD
-	int		ret, nseg;
-	unsigned long   flags;
-	uint32_t	*clr_ptr;
-	uint32_t        index;
-=======
 	int		nseg;
 	unsigned long   flags;
 	uint32_t	*clr_ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t	handle;
 	struct cmd_type_7 *cmd_pkt;
 	uint16_t	cnt;
 	uint16_t	req_cnt;
 	uint16_t	tot_dsds;
 	struct req_que *req = NULL;
-<<<<<<< HEAD
-	struct rsp_que *rsp = NULL;
-	struct scsi_cmnd *cmd = GET_CMD_SP(sp);
-	struct scsi_qla_host *vha = sp->fcport->vha;
-	struct qla_hw_data *ha = vha->hw;
-	char		tag[2];
-
-	/* Setup device pointers. */
-	ret = 0;
-
-	qla25xx_set_que(sp, &rsp);
-	req = vha->req;
-=======
 	struct rsp_que *rsp;
 	struct scsi_cmnd *cmd = GET_CMD_SP(sp);
 	struct scsi_qla_host *vha = sp->vha;
@@ -2482,18 +1558,13 @@ qla24xx_start_scsi(srb_t *sp)
 	/* Setup device pointers. */
 	req = vha->req;
 	rsp = req->rsp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* So we know we haven't pci_map'ed anything yet */
 	tot_dsds = 0;
 
 	/* Send marker if required */
 	if (vha->marker_needed != 0) {
-<<<<<<< HEAD
-		if (qla2x00_marker(vha, req, rsp, 0, 0, MK_SYNC_ALL) !=
-=======
 		if (qla2x00_marker(vha, ha->base_qpair, 0, 0, MK_SYNC_ALL) !=
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    QLA_SUCCESS)
 			return QLA_FUNCTION_FAILED;
 		vha->marker_needed = 0;
@@ -2502,24 +1573,9 @@ qla24xx_start_scsi(srb_t *sp)
 	/* Acquire ring specific lock */
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
-<<<<<<< HEAD
-	/* Check for room in outstanding command list. */
-	handle = req->current_outstanding_cmd;
-	for (index = 1; index < MAX_OUTSTANDING_COMMANDS; index++) {
-		handle++;
-		if (handle == MAX_OUTSTANDING_COMMANDS)
-			handle = 1;
-		if (!req->outstanding_cmds[handle])
-			break;
-	}
-	if (index == MAX_OUTSTANDING_COMMANDS) {
-		goto queuing_error;
-	}
-=======
 	handle = qla2xxx_get_next_handle(req);
 	if (handle == 0)
 		goto queuing_error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Map the sg table so we have an accurate count of sg entries needed */
 	if (scsi_sg_count(cmd)) {
@@ -2532,10 +1588,6 @@ qla24xx_start_scsi(srb_t *sp)
 
 	tot_dsds = nseg;
 	req_cnt = qla24xx_calc_iocbs(vha, tot_dsds);
-<<<<<<< HEAD
-	if (req->cnt < (req_cnt + 2)) {
-		cnt = RD_REG_DWORD_RELAXED(req->req_q_out);
-=======
 
 	sp->iores.res_type = RESOURCE_IOCB | RESOURCE_EXCH;
 	sp->iores.exch_cnt = 1;
@@ -2551,22 +1603,15 @@ qla24xx_start_scsi(srb_t *sp)
 			if (qla2x00_check_reg16_for_disconnect(vha, cnt))
 				goto queuing_error;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (req->ring_index < cnt)
 			req->cnt = cnt - req->ring_index;
 		else
 			req->cnt = req->length -
 				(req->ring_index - cnt);
-<<<<<<< HEAD
-	}
-	if (req->cnt < (req_cnt + 2))
-		goto queuing_error;
-=======
 		if (req->cnt < (req_cnt + 2))
 			goto queuing_error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Build command packet. */
 	req->current_outstanding_cmd = handle;
@@ -2576,11 +1621,7 @@ qla24xx_start_scsi(srb_t *sp)
 	req->cnt -= req_cnt;
 
 	cmd_pkt = (struct cmd_type_7 *)req->ring_ptr;
-<<<<<<< HEAD
-	cmd_pkt->handle = MAKE_HANDLE(req->id, handle);
-=======
 	cmd_pkt->handle = make_handle(req->id, handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Zero out remaining portion of packet. */
 	/*    tagged queuing modifier -- default is TSK_SIMPLE (0). */
@@ -2593,35 +1634,12 @@ qla24xx_start_scsi(srb_t *sp)
 	cmd_pkt->port_id[0] = sp->fcport->d_id.b.al_pa;
 	cmd_pkt->port_id[1] = sp->fcport->d_id.b.area;
 	cmd_pkt->port_id[2] = sp->fcport->d_id.b.domain;
-<<<<<<< HEAD
-	cmd_pkt->vp_index = sp->fcport->vp_idx;
-=======
 	cmd_pkt->vp_index = sp->vha->vp_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int_to_scsilun(cmd->device->lun, &cmd_pkt->lun);
 	host_to_fcp_swap((uint8_t *)&cmd_pkt->lun, sizeof(cmd_pkt->lun));
 
-<<<<<<< HEAD
-	/* Update tagged queuing modifier -- default is TSK_SIMPLE (0). */
-	if (scsi_populate_tag_msg(cmd, tag)) {
-		switch (tag[0]) {
-		case HEAD_OF_QUEUE_TAG:
-			cmd_pkt->task = TSK_HEAD_OF_QUEUE;
-			break;
-		case ORDERED_QUEUE_TAG:
-			cmd_pkt->task = TSK_ORDERED;
-			break;
-		default:
-		    cmd_pkt->task = TSK_SIMPLE;
-		    break;
-		}
-	} else {
-		cmd_pkt->task = TSK_SIMPLE;
-	}
-=======
 	cmd_pkt->task = TSK_SIMPLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Load SCSI command packet. */
 	memcpy(cmd_pkt->fcp_cdb, cmd->cmnd, cmd->cmd_len);
@@ -2630,19 +1648,10 @@ qla24xx_start_scsi(srb_t *sp)
 	cmd_pkt->byte_count = cpu_to_le32((uint32_t)scsi_bufflen(cmd));
 
 	/* Build IOCB segments */
-<<<<<<< HEAD
-	qla24xx_build_scsi_iocbs(sp, cmd_pkt, tot_dsds);
-
-	/* Set total data segment count. */
-	cmd_pkt->entry_count = (uint8_t)req_cnt;
-	/* Specify response queue number where completion should happen */
-	cmd_pkt->entry_status = (uint8_t) rsp->id;
-=======
 	qla24xx_build_scsi_iocbs(sp, cmd_pkt, tot_dsds, req);
 
 	/* Set total data segment count. */
 	cmd_pkt->entry_count = (uint8_t)req_cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();
 	/* Adjust ring index. */
 	req->ring_index++;
@@ -2652,17 +1661,6 @@ qla24xx_start_scsi(srb_t *sp)
 	} else
 		req->ring_ptr++;
 
-<<<<<<< HEAD
-	sp->flags |= SRB_DMA_VALID;
-
-	/* Set chip new ring index. */
-	WRT_REG_DWORD(req->req_q_in, req->ring_index);
-	RD_REG_DWORD_RELAXED(&ha->iobase->isp24.hccr);
-
-	/* Manage unprocessed RIO/ZIO commands in response queue. */
-	if (vha->flags.process_response_queue &&
-		rsp->ring_ptr->signature != RESPONSE_PROCESSED)
-=======
 	sp->qpair->cmd_cnt++;
 	sp->flags |= SRB_DMA_VALID;
 
@@ -2672,7 +1670,6 @@ qla24xx_start_scsi(srb_t *sp)
 	/* Manage unprocessed RIO/ZIO commands in response queue. */
 	if (vha->flags.process_response_queue &&
 	    rsp->ring_ptr->signature != RESPONSE_PROCESSED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qla24xx_process_response_queue(vha, rsp);
 
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
@@ -2682,19 +1679,12 @@ queuing_error:
 	if (tot_dsds)
 		scsi_dma_unmap(cmd);
 
-<<<<<<< HEAD
-=======
 	qla_put_fw_resources(sp->qpair, &sp->iores);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
 	return QLA_FUNCTION_FAILED;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * qla24xx_dif_start_scsi() - Send a SCSI command to the ISP
  * @sp: command to send to the ISP
@@ -2707,10 +1697,6 @@ qla24xx_dif_start_scsi(srb_t *sp)
 	int			nseg;
 	unsigned long		flags;
 	uint32_t		*clr_ptr;
-<<<<<<< HEAD
-	uint32_t		index;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t		handle;
 	uint16_t		cnt;
 	uint16_t		req_cnt = 0;
@@ -2720,11 +1706,7 @@ qla24xx_dif_start_scsi(srb_t *sp)
 	struct req_que		*req = NULL;
 	struct rsp_que		*rsp = NULL;
 	struct scsi_cmnd	*cmd = GET_CMD_SP(sp);
-<<<<<<< HEAD
-	struct scsi_qla_host	*vha = sp->fcport->vha;
-=======
 	struct scsi_qla_host	*vha = sp->vha;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qla_hw_data	*ha = vha->hw;
 	struct cmd_type_crc_2	*cmd_pkt;
 	uint32_t		status = 0;
@@ -2735,14 +1717,6 @@ qla24xx_dif_start_scsi(srb_t *sp)
 	if (scsi_get_prot_op(cmd) == SCSI_PROT_NORMAL) {
 		if (cmd->cmd_len <= 16)
 			return qla24xx_start_scsi(sp);
-<<<<<<< HEAD
-	}
-
-	/* Setup device pointers. */
-
-	qla25xx_set_que(sp, &rsp);
-	req = vha->req;
-=======
 		else
 			return qla_start_scsi_type6(sp);
 	}
@@ -2750,18 +1724,13 @@ qla24xx_dif_start_scsi(srb_t *sp)
 	/* Setup device pointers. */
 	req = vha->req;
 	rsp = req->rsp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* So we know we haven't pci_map'ed anything yet */
 	tot_dsds = 0;
 
 	/* Send marker if required */
 	if (vha->marker_needed != 0) {
-<<<<<<< HEAD
-		if (qla2x00_marker(vha, req, rsp, 0, 0, MK_SYNC_ALL) !=
-=======
 		if (qla2x00_marker(vha, ha->base_qpair, 0, 0, MK_SYNC_ALL) !=
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    QLA_SUCCESS)
 			return QLA_FUNCTION_FAILED;
 		vha->marker_needed = 0;
@@ -2770,22 +1739,8 @@ qla24xx_dif_start_scsi(srb_t *sp)
 	/* Acquire ring specific lock */
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
-<<<<<<< HEAD
-	/* Check for room in outstanding command list. */
-	handle = req->current_outstanding_cmd;
-	for (index = 1; index < MAX_OUTSTANDING_COMMANDS; index++) {
-		handle++;
-		if (handle == MAX_OUTSTANDING_COMMANDS)
-			handle = 1;
-		if (!req->outstanding_cmds[handle])
-			break;
-	}
-
-	if (index == MAX_OUTSTANDING_COMMANDS)
-=======
 	handle = qla2xxx_get_next_handle(req);
 	if (handle == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto queuing_error;
 
 	/* Compute number of required data segments */
@@ -2840,11 +1795,6 @@ qla24xx_dif_start_scsi(srb_t *sp)
 	/* Total Data and protection sg segment(s) */
 	tot_prot_dsds = nseg;
 	tot_dsds += nseg;
-<<<<<<< HEAD
-	if (req->cnt < (req_cnt + 2)) {
-		cnt = RD_REG_DWORD_RELAXED(req->req_q_out);
-
-=======
 
 	sp->iores.res_type = RESOURCE_IOCB | RESOURCE_EXCH;
 	sp->iores.exch_cnt = 1;
@@ -2860,24 +1810,15 @@ qla24xx_dif_start_scsi(srb_t *sp)
 			if (qla2x00_check_reg16_for_disconnect(vha, cnt))
 				goto queuing_error;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (req->ring_index < cnt)
 			req->cnt = cnt - req->ring_index;
 		else
 			req->cnt = req->length -
 				(req->ring_index - cnt);
-<<<<<<< HEAD
-	}
-
-	if (req->cnt < (req_cnt + 2))
-		goto queuing_error;
-
-=======
 		if (req->cnt < (req_cnt + 2))
 			goto queuing_error;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status |= QDSS_GOT_Q_SPACE;
 
 	/* Build header part of command packet (excluding the OPCODE). */
@@ -2889,11 +1830,7 @@ qla24xx_dif_start_scsi(srb_t *sp)
 
 	/* Fill-in common area */
 	cmd_pkt = (struct cmd_type_crc_2 *)req->ring_ptr;
-<<<<<<< HEAD
-	cmd_pkt->handle = MAKE_HANDLE(req->id, handle);
-=======
 	cmd_pkt->handle = make_handle(req->id, handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clr_ptr = (uint32_t *)cmd_pkt + 2;
 	memset(clr_ptr, 0, REQUEST_ENTRY_SIZE - 8);
@@ -2919,11 +1856,7 @@ qla24xx_dif_start_scsi(srb_t *sp)
 	cmd_pkt->entry_count = (uint8_t)req_cnt;
 	/* Specify response queue number where completion should happen */
 	cmd_pkt->entry_status = (uint8_t) rsp->id;
-<<<<<<< HEAD
-	cmd_pkt->timeout = __constant_cpu_to_le16(0);
-=======
 	cmd_pkt->timeout = cpu_to_le16(0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();
 
 	/* Adjust ring index. */
@@ -2934,15 +1867,9 @@ qla24xx_dif_start_scsi(srb_t *sp)
 	} else
 		req->ring_ptr++;
 
-<<<<<<< HEAD
-	/* Set chip new ring index. */
-	WRT_REG_DWORD(req->req_q_in, req->ring_index);
-	RD_REG_DWORD_RELAXED(&ha->iobase->isp24.hccr);
-=======
 	sp->qpair->cmd_cnt++;
 	/* Set chip new ring index. */
 	wrt_reg_dword(req->req_q_in, req->ring_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Manage unprocessed RIO/ZIO commands in response queue. */
 	if (vha->flags.process_response_queue &&
@@ -2960,9 +1887,6 @@ queuing_error:
 	}
 	/* Cleanup will be performed by the caller (queuecommand) */
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&ha->hardware_lock, flags);
-=======
 	qla_put_fw_resources(sp->qpair, &sp->iores);
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
@@ -3125,34 +2049,10 @@ queuing_error:
 	qla_put_fw_resources(sp->qpair, &sp->iores);
 	spin_unlock_irqrestore(&qpair->qp_lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return QLA_FUNCTION_FAILED;
 }
 
 
-<<<<<<< HEAD
-static void qla25xx_set_que(srb_t *sp, struct rsp_que **rsp)
-{
-	struct scsi_cmnd *cmd = GET_CMD_SP(sp);
-	struct qla_hw_data *ha = sp->fcport->vha->hw;
-	int affinity = cmd->request->cpu;
-
-	if (ha->flags.cpu_affinity_enabled && affinity >= 0 &&
-		affinity < ha->max_rsp_queues - 1)
-		*rsp = ha->rsp_q_map[affinity + 1];
-	 else
-		*rsp = ha->rsp_q_map[0];
-}
-
-/* Generic Control-SRB manipulation functions. */
-void *
-qla2x00_alloc_iocbs(scsi_qla_host_t *vha, srb_t *sp)
-{
-	struct qla_hw_data *ha = vha->hw;
-	struct req_que *req = ha->req_q_map[0];
-	device_reg_t __iomem *reg = ISP_QUE_REG(ha, req->id);
-	uint32_t index, handle;
-=======
 /**
  * qla2xxx_dif_start_scsi_mq() - Send a SCSI command to the ISP
  * @sp: command to send to the ISP
@@ -3386,7 +2286,6 @@ __qla2x00_alloc_iocbs(struct qla_qpair *qpair, srb_t *sp)
 	struct req_que *req = qpair->req;
 	device_reg_t *reg = ISP_QUE_REG(ha, req->id);
 	uint32_t handle;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	request_t *pkt;
 	uint16_t cnt, req_cnt;
 
@@ -3394,44 +2293,6 @@ __qla2x00_alloc_iocbs(struct qla_qpair *qpair, srb_t *sp)
 	req_cnt = 1;
 	handle = 0;
 
-<<<<<<< HEAD
-	if (!sp)
-		goto skip_cmd_array;
-
-	/* Check for room in outstanding command list. */
-	handle = req->current_outstanding_cmd;
-	for (index = 1; index < MAX_OUTSTANDING_COMMANDS; index++) {
-		handle++;
-		if (handle == MAX_OUTSTANDING_COMMANDS)
-			handle = 1;
-		if (!req->outstanding_cmds[handle])
-			break;
-	}
-	if (index == MAX_OUTSTANDING_COMMANDS) {
-		ql_log(ql_log_warn, vha, 0x700b,
-		    "No room on oustanding cmd array.\n");
-		goto queuing_error;
-	}
-
-	/* Prep command array. */
-	req->current_outstanding_cmd = handle;
-	req->outstanding_cmds[handle] = sp;
-	sp->handle = handle;
-
-	/* Adjust entry-counts as needed. */
-	if (sp->type != SRB_SCSI_CMD)
-		req_cnt = sp->iocbs;
-
-skip_cmd_array:
-	/* Check for room on request queue. */
-	if (req->cnt < req_cnt) {
-		if (ha->mqenable || IS_QLA83XX(ha))
-			cnt = RD_REG_DWORD(&reg->isp25mq.req_q_out);
-		else if (IS_QLA82XX(ha))
-			cnt = RD_REG_DWORD(&reg->isp82.req_q_out);
-		else if (IS_FWI2_CAPABLE(ha))
-			cnt = RD_REG_DWORD(&reg->isp24.req_q_out);
-=======
 	if (sp && (sp->type != SRB_SCSI_CMD)) {
 		/* Adjust entry-counts as needed. */
 		req_cnt = sp->iocbs;
@@ -3450,30 +2311,21 @@ skip_cmd_array:
 			cnt = rd_reg_dword(&reg->isp24.req_q_out);
 		else if (IS_QLAFX00(ha))
 			cnt = rd_reg_dword(&reg->ispfx00.req_q_out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			cnt = qla2x00_debounce_register(
 			    ISP_REQ_Q_OUT(ha, &reg->isp));
 
-<<<<<<< HEAD
-=======
 		if (!qpair->use_shadow_reg && cnt == ISP_REG16_DISCONNECT) {
 			qla_schedule_eeh_work(vha);
 			return NULL;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if  (req->ring_index < cnt)
 			req->cnt = cnt - req->ring_index;
 		else
 			req->cnt = req->length -
 			    (req->ring_index - cnt);
 	}
-<<<<<<< HEAD
-	if (req->cnt < req_cnt)
-		goto queuing_error;
-
-=======
 	if (req->cnt < req_cnt + 2)
 		goto queuing_error;
 
@@ -3491,20 +2343,10 @@ skip_cmd_array:
 		sp->handle = handle;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Prep packet */
 	req->cnt -= req_cnt;
 	pkt = req->ring_ptr;
 	memset(pkt, 0, REQUEST_ENTRY_SIZE);
-<<<<<<< HEAD
-	pkt->entry_count = req_cnt;
-	pkt->handle = handle;
-
-queuing_error:
-	return pkt;
-}
-
-=======
 	if (IS_QLAFX00(ha)) {
 		wrt_reg_byte((u8 __force __iomem *)&pkt->entry_count, req_cnt);
 		wrt_reg_dword((__le32 __force __iomem *)&pkt->handle, handle);
@@ -3569,7 +2411,6 @@ qla24xx_prli_iocb(srb_t *sp, struct logio_entry_24xx *logio)
 	logio->vp_index = sp->vha->vp_idx;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 qla24xx_login_iocb(srb_t *sp, struct logio_entry_24xx *logio)
 {
@@ -3577,12 +2418,6 @@ qla24xx_login_iocb(srb_t *sp, struct logio_entry_24xx *logio)
 
 	logio->entry_type = LOGINOUT_PORT_IOCB_TYPE;
 	logio->control_flags = cpu_to_le16(LCF_COMMAND_PLOGI);
-<<<<<<< HEAD
-	if (lio->u.logio.flags & SRB_LOGIN_COND_PLOGI)
-		logio->control_flags |= cpu_to_le16(LCF_COND_PLOGI);
-	if (lio->u.logio.flags & SRB_LOGIN_SKIP_PRLI)
-		logio->control_flags |= cpu_to_le16(LCF_SKIP_PRLI);
-=======
 
 	if (lio->u.logio.flags & SRB_LOGIN_PRLI_ONLY) {
 		logio->control_flags = cpu_to_le16(LCF_COMMAND_PRLI);
@@ -3599,26 +2434,17 @@ qla24xx_login_iocb(srb_t *sp, struct logio_entry_24xx *logio)
 			    cpu_to_le32(LIO_COMM_FEAT_FCSP | LIO_COMM_FEAT_CIO);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	logio->nport_handle = cpu_to_le16(sp->fcport->loop_id);
 	logio->port_id[0] = sp->fcport->d_id.b.al_pa;
 	logio->port_id[1] = sp->fcport->d_id.b.area;
 	logio->port_id[2] = sp->fcport->d_id.b.domain;
-<<<<<<< HEAD
-	logio->vp_index = sp->fcport->vp_idx;
-=======
 	logio->vp_index = sp->vha->vp_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 qla2x00_login_iocb(srb_t *sp, struct mbx_entry *mbx)
 {
-<<<<<<< HEAD
-	struct qla_hw_data *ha = sp->fcport->vha->hw;
-=======
 	struct qla_hw_data *ha = sp->vha->hw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct srb_iocb *lio = &sp->u.iocb_cmd;
 	uint16_t opts;
 
@@ -3636,21 +2462,12 @@ qla2x00_login_iocb(srb_t *sp, struct mbx_entry *mbx)
 	mbx->mb2 = cpu_to_le16(sp->fcport->d_id.b.domain);
 	mbx->mb3 = cpu_to_le16(sp->fcport->d_id.b.area << 8 |
 	    sp->fcport->d_id.b.al_pa);
-<<<<<<< HEAD
-	mbx->mb9 = cpu_to_le16(sp->fcport->vp_idx);
-=======
 	mbx->mb9 = cpu_to_le16(sp->vha->vp_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 qla24xx_logout_iocb(srb_t *sp, struct logio_entry_24xx *logio)
 {
-<<<<<<< HEAD
-	logio->entry_type = LOGINOUT_PORT_IOCB_TYPE;
-	logio->control_flags =
-	    cpu_to_le16(LCF_COMMAND_LOGO|LCF_IMPL_LOGO);
-=======
 	u16 control_flags = LCF_COMMAND_LOGO;
 	logio->entry_type = LOGINOUT_PORT_IOCB_TYPE;
 
@@ -3664,45 +2481,28 @@ qla24xx_logout_iocb(srb_t *sp, struct logio_entry_24xx *logio)
 	}
 
 	logio->control_flags = cpu_to_le16(control_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	logio->nport_handle = cpu_to_le16(sp->fcport->loop_id);
 	logio->port_id[0] = sp->fcport->d_id.b.al_pa;
 	logio->port_id[1] = sp->fcport->d_id.b.area;
 	logio->port_id[2] = sp->fcport->d_id.b.domain;
-<<<<<<< HEAD
-	logio->vp_index = sp->fcport->vp_idx;
-=======
 	logio->vp_index = sp->vha->vp_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 qla2x00_logout_iocb(srb_t *sp, struct mbx_entry *mbx)
 {
-<<<<<<< HEAD
-	struct qla_hw_data *ha = sp->fcport->vha->hw;
-=======
 	struct qla_hw_data *ha = sp->vha->hw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mbx->entry_type = MBX_IOCB_TYPE;
 	SET_TARGET_ID(ha, mbx->loop_id, sp->fcport->loop_id);
 	mbx->mb0 = cpu_to_le16(MBC_LOGOUT_FABRIC_PORT);
 	mbx->mb1 = HAS_EXTENDED_IDS(ha) ?
-<<<<<<< HEAD
-	    cpu_to_le16(sp->fcport->loop_id):
-=======
 	    cpu_to_le16(sp->fcport->loop_id) :
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    cpu_to_le16(sp->fcport->loop_id << 8);
 	mbx->mb2 = cpu_to_le16(sp->fcport->d_id.b.domain);
 	mbx->mb3 = cpu_to_le16(sp->fcport->d_id.b.area << 8 |
 	    sp->fcport->d_id.b.al_pa);
-<<<<<<< HEAD
-	mbx->mb9 = cpu_to_le16(sp->fcport->vp_idx);
-=======
 	mbx->mb9 = cpu_to_le16(sp->vha->vp_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Implicit: mbx->mbx10 = 0. */
 }
 
@@ -3712,21 +2512,13 @@ qla24xx_adisc_iocb(srb_t *sp, struct logio_entry_24xx *logio)
 	logio->entry_type = LOGINOUT_PORT_IOCB_TYPE;
 	logio->control_flags = cpu_to_le16(LCF_COMMAND_ADISC);
 	logio->nport_handle = cpu_to_le16(sp->fcport->loop_id);
-<<<<<<< HEAD
-	logio->vp_index = sp->fcport->vp_idx;
-=======
 	logio->vp_index = sp->vha->vp_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 qla2x00_adisc_iocb(srb_t *sp, struct mbx_entry *mbx)
 {
-<<<<<<< HEAD
-	struct qla_hw_data *ha = sp->fcport->vha->hw;
-=======
 	struct qla_hw_data *ha = sp->vha->hw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mbx->entry_type = MBX_IOCB_TYPE;
 	SET_TARGET_ID(ha, mbx->loop_id, sp->fcport->loop_id);
@@ -3741,58 +2533,36 @@ qla2x00_adisc_iocb(srb_t *sp, struct mbx_entry *mbx)
 	mbx->mb3 = cpu_to_le16(LSW(ha->async_pd_dma));
 	mbx->mb6 = cpu_to_le16(MSW(MSD(ha->async_pd_dma)));
 	mbx->mb7 = cpu_to_le16(LSW(MSD(ha->async_pd_dma)));
-<<<<<<< HEAD
-	mbx->mb9 = cpu_to_le16(sp->fcport->vp_idx);
-=======
 	mbx->mb9 = cpu_to_le16(sp->vha->vp_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 qla24xx_tm_iocb(srb_t *sp, struct tsk_mgmt_entry *tsk)
 {
 	uint32_t flags;
-<<<<<<< HEAD
-	unsigned int lun;
-=======
 	uint64_t lun;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_port *fcport = sp->fcport;
 	scsi_qla_host_t *vha = fcport->vha;
 	struct qla_hw_data *ha = vha->hw;
 	struct srb_iocb *iocb = &sp->u.iocb_cmd;
-<<<<<<< HEAD
-	struct req_que *req = vha->req;
-=======
 	struct req_que *req = sp->qpair->req;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	flags = iocb->u.tmf.flags;
 	lun = iocb->u.tmf.lun;
 
 	tsk->entry_type = TSK_MGMT_IOCB_TYPE;
 	tsk->entry_count = 1;
-<<<<<<< HEAD
-	tsk->handle = MAKE_HANDLE(req->id, tsk->handle);
-=======
 	tsk->handle = make_handle(req->id, tsk->handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tsk->nport_handle = cpu_to_le16(fcport->loop_id);
 	tsk->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
 	tsk->control_flags = cpu_to_le32(flags);
 	tsk->port_id[0] = fcport->d_id.b.al_pa;
 	tsk->port_id[1] = fcport->d_id.b.area;
 	tsk->port_id[2] = fcport->d_id.b.domain;
-<<<<<<< HEAD
-	tsk->vp_index = fcport->vp_idx;
-
-	if (flags == TCF_LUN_RESET) {
-=======
 	tsk->vp_index = fcport->vha->vp_idx;
 
 	if (flags & (TCF_LUN_RESET | TCF_ABORT_TASK_SET|
 	    TCF_CLEAR_TASK_SET|TCF_CLEAR_ACA)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int_to_scsilun(lun, &tsk->lun);
 		host_to_fcp_swap((uint8_t *)&tsk->lun,
 			sizeof(tsk->lun));
@@ -3800,11 +2570,6 @@ qla24xx_tm_iocb(srb_t *sp, struct tsk_mgmt_entry *tsk)
 }
 
 static void
-<<<<<<< HEAD
-qla24xx_els_iocb(srb_t *sp, struct els_entry_24xx *els_iocb)
-{
-	struct fc_bsg_job *bsg_job = sp->u.bsg_job;
-=======
 qla2x00_async_done(struct srb *sp, int res)
 {
 	if (del_timer(&sp->u.iocb_cmd.timer)) {
@@ -4415,28 +3180,12 @@ qla24xx_els_iocb(srb_t *sp, struct els_entry_24xx *els_iocb)
 {
 	struct bsg_job *bsg_job = sp->u.bsg_job;
 	struct fc_bsg_request *bsg_request = bsg_job->request;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         els_iocb->entry_type = ELS_IOCB_TYPE;
         els_iocb->entry_count = 1;
         els_iocb->sys_define = 0;
         els_iocb->entry_status = 0;
         els_iocb->handle = sp->handle;
-<<<<<<< HEAD
-        els_iocb->nport_handle = cpu_to_le16(sp->fcport->loop_id);
-        els_iocb->tx_dsd_count = __constant_cpu_to_le16(bsg_job->request_payload.sg_cnt);
-        els_iocb->vp_index = sp->fcport->vp_idx;
-        els_iocb->sof_type = EST_SOFI3;
-        els_iocb->rx_dsd_count = __constant_cpu_to_le16(bsg_job->reply_payload.sg_cnt);
-
-	els_iocb->opcode =
-	    sp->type == SRB_ELS_CMD_RPT ?
-	    bsg_job->request->rqst_data.r_els.els_code :
-	    bsg_job->request->rqst_data.h_els.command_code;
-        els_iocb->port_id[0] = sp->fcport->d_id.b.al_pa;
-        els_iocb->port_id[1] = sp->fcport->d_id.b.area;
-        els_iocb->port_id[2] = sp->fcport->d_id.b.domain;
-=======
 	els_iocb->nport_handle = cpu_to_le16(sp->fcport->loop_id);
 	els_iocb->tx_dsd_count = cpu_to_le16(bsg_job->request_payload.sg_cnt);
 	els_iocb->vp_index = sp->vha->vp_idx;
@@ -4450,28 +3199,12 @@ qla24xx_els_iocb(srb_t *sp, struct els_entry_24xx *els_iocb)
 	els_iocb->d_id[0] = sp->fcport->d_id.b.al_pa;
 	els_iocb->d_id[1] = sp->fcport->d_id.b.area;
 	els_iocb->d_id[2] = sp->fcport->d_id.b.domain;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         els_iocb->control_flags = 0;
         els_iocb->rx_byte_count =
             cpu_to_le32(bsg_job->reply_payload.payload_len);
         els_iocb->tx_byte_count =
             cpu_to_le32(bsg_job->request_payload.payload_len);
 
-<<<<<<< HEAD
-        els_iocb->tx_address[0] = cpu_to_le32(LSD(sg_dma_address
-            (bsg_job->request_payload.sg_list)));
-        els_iocb->tx_address[1] = cpu_to_le32(MSD(sg_dma_address
-            (bsg_job->request_payload.sg_list)));
-        els_iocb->tx_len = cpu_to_le32(sg_dma_len
-            (bsg_job->request_payload.sg_list));
-
-        els_iocb->rx_address[0] = cpu_to_le32(LSD(sg_dma_address
-            (bsg_job->reply_payload.sg_list)));
-        els_iocb->rx_address[1] = cpu_to_le32(MSD(sg_dma_address
-            (bsg_job->reply_payload.sg_list)));
-        els_iocb->rx_len = cpu_to_le32(sg_dma_len
-            (bsg_job->reply_payload.sg_list));
-=======
 	put_unaligned_le64(sg_dma_address(bsg_job->request_payload.sg_list),
 			   &els_iocb->tx_address);
         els_iocb->tx_len = cpu_to_le32(sg_dma_len
@@ -4483,24 +3216,12 @@ qla24xx_els_iocb(srb_t *sp, struct els_entry_24xx *els_iocb)
             (bsg_job->reply_payload.sg_list));
 
 	sp->vha->qla_stats.control_requests++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 qla2x00_ct_iocb(srb_t *sp, ms_iocb_entry_t *ct_iocb)
 {
 	uint16_t        avail_dsds;
-<<<<<<< HEAD
-	uint32_t        *cur_dsd;
-	struct scatterlist *sg;
-	int index;
-	uint16_t tot_dsds;
-	scsi_qla_host_t *vha = sp->fcport->vha;
-	struct qla_hw_data *ha = vha->hw;
-	struct fc_bsg_job *bsg_job = sp->u.bsg_job;
-	int loop_iterartion = 0;
-	int cont_iocb_prsnt = 0;
-=======
 	struct dsd64	*cur_dsd;
 	struct scatterlist *sg;
 	int index;
@@ -4508,7 +3229,6 @@ qla2x00_ct_iocb(srb_t *sp, ms_iocb_entry_t *ct_iocb)
 	scsi_qla_host_t *vha = sp->vha;
 	struct qla_hw_data *ha = vha->hw;
 	struct bsg_job *bsg_job = sp->u.bsg_job;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int entry_count = 1;
 
 	memset(ct_iocb, 0, sizeof(ms_iocb_entry_t));
@@ -4516,15 +3236,6 @@ qla2x00_ct_iocb(srb_t *sp, ms_iocb_entry_t *ct_iocb)
 	ct_iocb->entry_status = 0;
 	ct_iocb->handle1 = sp->handle;
 	SET_TARGET_ID(ha, ct_iocb->loop_id, sp->fcport->loop_id);
-<<<<<<< HEAD
-	ct_iocb->status = __constant_cpu_to_le16(0);
-	ct_iocb->control_flags = __constant_cpu_to_le16(0);
-	ct_iocb->timeout = 0;
-	ct_iocb->cmd_dsd_count =
-	    __constant_cpu_to_le16(bsg_job->request_payload.sg_cnt);
-	ct_iocb->total_dsd_count =
-	    __constant_cpu_to_le16(bsg_job->request_payload.sg_cnt + 1);
-=======
 	ct_iocb->status = cpu_to_le16(0);
 	ct_iocb->control_flags = cpu_to_le16(0);
 	ct_iocb->timeout = 0;
@@ -4532,28 +3243,11 @@ qla2x00_ct_iocb(srb_t *sp, ms_iocb_entry_t *ct_iocb)
 	    cpu_to_le16(bsg_job->request_payload.sg_cnt);
 	ct_iocb->total_dsd_count =
 	    cpu_to_le16(bsg_job->request_payload.sg_cnt + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ct_iocb->req_bytecount =
 	    cpu_to_le32(bsg_job->request_payload.payload_len);
 	ct_iocb->rsp_bytecount =
 	    cpu_to_le32(bsg_job->reply_payload.payload_len);
 
-<<<<<<< HEAD
-	ct_iocb->dseg_req_address[0] = cpu_to_le32(LSD(sg_dma_address
-	    (bsg_job->request_payload.sg_list)));
-	ct_iocb->dseg_req_address[1] = cpu_to_le32(MSD(sg_dma_address
-	    (bsg_job->request_payload.sg_list)));
-	ct_iocb->dseg_req_length = ct_iocb->req_bytecount;
-
-	ct_iocb->dseg_rsp_address[0] = cpu_to_le32(LSD(sg_dma_address
-	    (bsg_job->reply_payload.sg_list)));
-	ct_iocb->dseg_rsp_address[1] = cpu_to_le32(MSD(sg_dma_address
-	    (bsg_job->reply_payload.sg_list)));
-	ct_iocb->dseg_rsp_length = ct_iocb->rsp_bytecount;
-
-	avail_dsds = 1;
-	cur_dsd = (uint32_t *)ct_iocb->dseg_rsp_address;
-=======
 	put_unaligned_le64(sg_dma_address(bsg_job->request_payload.sg_list),
 			   &ct_iocb->req_dsd.address);
 	ct_iocb->req_dsd.length = ct_iocb->req_bytecount;
@@ -4564,15 +3258,10 @@ qla2x00_ct_iocb(srb_t *sp, ms_iocb_entry_t *ct_iocb)
 
 	avail_dsds = 1;
 	cur_dsd = &ct_iocb->rsp_dsd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	index = 0;
 	tot_dsds = bsg_job->reply_payload.sg_cnt;
 
 	for_each_sg(bsg_job->reply_payload.sg_list, sg, tot_dsds, index) {
-<<<<<<< HEAD
-		dma_addr_t       sle_dma;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cont_a64_entry_t *cont_pkt;
 
 		/* Allocate additional continuation packets? */
@@ -4583,22 +3272,6 @@ qla2x00_ct_iocb(srb_t *sp, ms_iocb_entry_t *ct_iocb)
 			       */
 			cont_pkt = qla2x00_prep_cont_type1_iocb(vha,
 			    vha->hw->req_q_map[0]);
-<<<<<<< HEAD
-			cur_dsd = (uint32_t *) cont_pkt->dseg_0_address;
-			avail_dsds = 5;
-			cont_iocb_prsnt = 1;
-			entry_count++;
-		}
-
-		sle_dma = sg_dma_address(sg);
-		*cur_dsd++   = cpu_to_le32(LSD(sle_dma));
-		*cur_dsd++   = cpu_to_le32(MSD(sle_dma));
-		*cur_dsd++   = cpu_to_le32(sg_dma_len(sg));
-		loop_iterartion++;
-		avail_dsds--;
-	}
-	ct_iocb->entry_count = entry_count;
-=======
 			cur_dsd = cont_pkt->dsd;
 			avail_dsds = 5;
 			entry_count++;
@@ -4610,25 +3283,12 @@ qla2x00_ct_iocb(srb_t *sp, ms_iocb_entry_t *ct_iocb)
 	ct_iocb->entry_count = entry_count;
 
 	sp->vha->qla_stats.control_requests++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 qla24xx_ct_iocb(srb_t *sp, struct ct_entry_24xx *ct_iocb)
 {
 	uint16_t        avail_dsds;
-<<<<<<< HEAD
-	uint32_t        *cur_dsd;
-	struct scatterlist *sg;
-	int index;
-	uint16_t tot_dsds;
-        scsi_qla_host_t *vha = sp->fcport->vha;
-	struct qla_hw_data *ha = vha->hw;
-	struct fc_bsg_job *bsg_job = sp->u.bsg_job;
-	int loop_iterartion = 0;
-	int cont_iocb_prsnt = 0;
-	int entry_count = 1;
-=======
 	struct dsd64	*cur_dsd;
 	struct scatterlist *sg;
 	int index;
@@ -4638,7 +3298,6 @@ qla24xx_ct_iocb(srb_t *sp, struct ct_entry_24xx *ct_iocb)
 	struct bsg_job *bsg_job = sp->u.bsg_job;
 	int entry_count = 1;
 	cont_a64_entry_t *cont_pkt = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ct_iocb->entry_type = CT_IOCB_TYPE;
         ct_iocb->entry_status = 0;
@@ -4646,36 +3305,6 @@ qla24xx_ct_iocb(srb_t *sp, struct ct_entry_24xx *ct_iocb)
         ct_iocb->handle = sp->handle;
 
 	ct_iocb->nport_handle = cpu_to_le16(sp->fcport->loop_id);
-<<<<<<< HEAD
-	ct_iocb->vp_index = sp->fcport->vp_idx;
-        ct_iocb->comp_status = __constant_cpu_to_le16(0);
-
-	ct_iocb->cmd_dsd_count =
-            __constant_cpu_to_le16(bsg_job->request_payload.sg_cnt);
-        ct_iocb->timeout = 0;
-        ct_iocb->rsp_dsd_count =
-            __constant_cpu_to_le16(bsg_job->reply_payload.sg_cnt);
-        ct_iocb->rsp_byte_count =
-            cpu_to_le32(bsg_job->reply_payload.payload_len);
-        ct_iocb->cmd_byte_count =
-            cpu_to_le32(bsg_job->request_payload.payload_len);
-        ct_iocb->dseg_0_address[0] = cpu_to_le32(LSD(sg_dma_address
-            (bsg_job->request_payload.sg_list)));
-        ct_iocb->dseg_0_address[1] = cpu_to_le32(MSD(sg_dma_address
-           (bsg_job->request_payload.sg_list)));
-        ct_iocb->dseg_0_len = cpu_to_le32(sg_dma_len
-            (bsg_job->request_payload.sg_list));
-
-	avail_dsds = 1;
-	cur_dsd = (uint32_t *)ct_iocb->dseg_1_address;
-	index = 0;
-	tot_dsds = bsg_job->reply_payload.sg_cnt;
-
-	for_each_sg(bsg_job->reply_payload.sg_list, sg, tot_dsds, index) {
-		dma_addr_t       sle_dma;
-		cont_a64_entry_t *cont_pkt;
-
-=======
 	ct_iocb->vp_index = sp->vha->vp_idx;
 	ct_iocb->comp_status = cpu_to_le16(0);
 
@@ -4713,7 +3342,6 @@ qla24xx_ct_iocb(srb_t *sp, struct ct_entry_24xx *ct_iocb)
 	index = 0;
 
 	for_each_sg(bsg_job->reply_payload.sg_list, sg, rsp_dsds, index) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Allocate additional continuation packets? */
 		if (avail_dsds == 0) {
 			/*
@@ -4722,26 +3350,12 @@ qla24xx_ct_iocb(srb_t *sp, struct ct_entry_24xx *ct_iocb)
 			       */
 			cont_pkt = qla2x00_prep_cont_type1_iocb(vha,
 			    ha->req_q_map[0]);
-<<<<<<< HEAD
-			cur_dsd = (uint32_t *) cont_pkt->dseg_0_address;
-			avail_dsds = 5;
-			cont_iocb_prsnt = 1;
-			entry_count++;
-		}
-
-		sle_dma = sg_dma_address(sg);
-		*cur_dsd++   = cpu_to_le32(LSD(sle_dma));
-		*cur_dsd++   = cpu_to_le32(MSD(sle_dma));
-		*cur_dsd++   = cpu_to_le32(sg_dma_len(sg));
-		loop_iterartion++;
-=======
 			cur_dsd = cont_pkt->dsd;
 			avail_dsds = 5;
 			entry_count++;
 		}
 
 		append_dsd64(&cur_dsd, sg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		avail_dsds--;
 	}
         ct_iocb->entry_count = entry_count;
@@ -4756,37 +3370,16 @@ qla24xx_ct_iocb(srb_t *sp, struct ct_entry_24xx *ct_iocb)
 int
 qla82xx_start_scsi(srb_t *sp)
 {
-<<<<<<< HEAD
-	int		ret, nseg;
-	unsigned long   flags;
-	struct scsi_cmnd *cmd;
-	uint32_t	*clr_ptr;
-	uint32_t        index;
-=======
 	int		nseg;
 	unsigned long   flags;
 	struct scsi_cmnd *cmd;
 	uint32_t	*clr_ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t	handle;
 	uint16_t	cnt;
 	uint16_t	req_cnt;
 	uint16_t	tot_dsds;
 	struct device_reg_82xx __iomem *reg;
 	uint32_t dbval;
-<<<<<<< HEAD
-	uint32_t *fcp_dl;
-	uint8_t additional_cdb_len;
-	struct ct6_dsd *ctx;
-	struct scsi_qla_host *vha = sp->fcport->vha;
-	struct qla_hw_data *ha = vha->hw;
-	struct req_que *req = NULL;
-	struct rsp_que *rsp = NULL;
-	char tag[2];
-
-	/* Setup device pointers. */
-	ret = 0;
-=======
 	__be32 *fcp_dl;
 	uint8_t additional_cdb_len;
 	struct ct6_dsd *ctx;
@@ -4797,7 +3390,6 @@ qla82xx_start_scsi(srb_t *sp)
 	struct qla_qpair *qpair = sp->qpair;
 
 	/* Setup device pointers. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg = &ha->iobase->isp82;
 	cmd = GET_CMD_SP(sp);
 	req = vha->req;
@@ -4810,13 +3402,8 @@ qla82xx_start_scsi(srb_t *sp)
 
 	/* Send marker if required */
 	if (vha->marker_needed != 0) {
-<<<<<<< HEAD
-		if (qla2x00_marker(vha, req,
-			rsp, 0, 0, MK_SYNC_ALL) != QLA_SUCCESS) {
-=======
 		if (qla2x00_marker(vha, ha->base_qpair,
 			0, 0, MK_SYNC_ALL) != QLA_SUCCESS) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ql_log(ql_log_warn, vha, 0x300c,
 			    "qla2x00_marker failed for cmd=%p.\n", cmd);
 			return QLA_FUNCTION_FAILED;
@@ -4827,21 +3414,8 @@ qla82xx_start_scsi(srb_t *sp)
 	/* Acquire ring specific lock */
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
-<<<<<<< HEAD
-	/* Check for room in outstanding command list. */
-	handle = req->current_outstanding_cmd;
-	for (index = 1; index < MAX_OUTSTANDING_COMMANDS; index++) {
-		handle++;
-		if (handle == MAX_OUTSTANDING_COMMANDS)
-			handle = 1;
-		if (!req->outstanding_cmds[handle])
-			break;
-	}
-	if (index == MAX_OUTSTANDING_COMMANDS)
-=======
 	handle = qla2xxx_get_next_handle(req);
 	if (handle == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto queuing_error;
 
 	/* Map the sg table so we have an accurate count of sg entries needed */
@@ -4862,32 +3436,18 @@ qla82xx_start_scsi(srb_t *sp)
 		uint16_t i;
 
 		more_dsd_lists = qla24xx_calc_dsd_lists(tot_dsds);
-<<<<<<< HEAD
-		if ((more_dsd_lists + ha->gbl_dsd_inuse) >= NUM_DSD_CHAIN) {
-			ql_dbg(ql_dbg_io, vha, 0x300d,
-			    "Num of DSD list %d is than %d for cmd=%p.\n",
-			    more_dsd_lists + ha->gbl_dsd_inuse, NUM_DSD_CHAIN,
-=======
 		if ((more_dsd_lists + qpair->dsd_inuse) >= NUM_DSD_CHAIN) {
 			ql_dbg(ql_dbg_io, vha, 0x300d,
 			    "Num of DSD list %d is than %d for cmd=%p.\n",
 			    more_dsd_lists + qpair->dsd_inuse, NUM_DSD_CHAIN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    cmd);
 			goto queuing_error;
 		}
 
-<<<<<<< HEAD
-		if (more_dsd_lists <= ha->gbl_dsd_avail)
-			goto sufficient_dsds;
-		else
-			more_dsd_lists -= ha->gbl_dsd_avail;
-=======
 		if (more_dsd_lists <= qpair->dsd_avail)
 			goto sufficient_dsds;
 		else
 			more_dsd_lists -= qpair->dsd_avail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (i = 0; i < more_dsd_lists; i++) {
 			dsd_ptr = kzalloc(sizeof(struct dsd_dma), GFP_ATOMIC);
@@ -4907,47 +3467,21 @@ qla82xx_start_scsi(srb_t *sp)
 				    "for cmd=%p.\n", cmd);
 				goto queuing_error;
 			}
-<<<<<<< HEAD
-			list_add_tail(&dsd_ptr->list, &ha->gbl_dsd_list);
-			ha->gbl_dsd_avail++;
-=======
 			list_add_tail(&dsd_ptr->list, &qpair->dsd_list);
 			qpair->dsd_avail++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 sufficient_dsds:
 		req_cnt = 1;
 
 		if (req->cnt < (req_cnt + 2)) {
-<<<<<<< HEAD
-			cnt = (uint16_t)RD_REG_DWORD_RELAXED(
-=======
 			cnt = (uint16_t)rd_reg_dword_relaxed(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				&reg->req_q_out[0]);
 			if (req->ring_index < cnt)
 				req->cnt = cnt - req->ring_index;
 			else
 				req->cnt = req->length -
 					(req->ring_index - cnt);
-<<<<<<< HEAD
-		}
-
-		if (req->cnt < (req_cnt + 2))
-			goto queuing_error;
-
-		ctx = sp->u.scmd.ctx =
-		    mempool_alloc(ha->ctx_mempool, GFP_ATOMIC);
-		if (!ctx) {
-			ql_log(ql_log_fatal, vha, 0x3010,
-			    "Failed to allocate ctx for cmd=%p.\n", cmd);
-			goto queuing_error;
-		}
-
-		memset(ctx, 0, sizeof(struct ct6_dsd));
-		ctx->fcp_cmnd = dma_pool_alloc(ha->fcp_cmnd_dma_pool,
-=======
 			if (req->cnt < (req_cnt + 2))
 				goto queuing_error;
 		}
@@ -4956,16 +3490,11 @@ sufficient_dsds:
 
 		memset(ctx, 0, sizeof(struct ct6_dsd));
 		ctx->fcp_cmnd = dma_pool_zalloc(ha->fcp_cmnd_dma_pool,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			GFP_ATOMIC, &ctx->fcp_cmnd_dma);
 		if (!ctx->fcp_cmnd) {
 			ql_log(ql_log_fatal, vha, 0x3011,
 			    "Failed to allocate fcp_cmnd for cmd=%p.\n", cmd);
-<<<<<<< HEAD
-			goto queuing_error_fcp_cmnd;
-=======
 			goto queuing_error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Initialize the DSD list and dma handle */
@@ -4990,11 +3519,7 @@ sufficient_dsds:
 		}
 
 		cmd_pkt = (struct cmd_type_6 *)req->ring_ptr;
-<<<<<<< HEAD
-		cmd_pkt->handle = MAKE_HANDLE(req->id, handle);
-=======
 		cmd_pkt->handle = make_handle(req->id, handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Zero out remaining portion of packet. */
 		/*    tagged queuing modifier -- default is TSK_SIMPLE (0). */
@@ -5007,11 +3532,7 @@ sufficient_dsds:
 		cmd_pkt->port_id[0] = sp->fcport->d_id.b.al_pa;
 		cmd_pkt->port_id[1] = sp->fcport->d_id.b.area;
 		cmd_pkt->port_id[2] = sp->fcport->d_id.b.domain;
-<<<<<<< HEAD
-		cmd_pkt->vp_index = sp->fcport->vp_idx;
-=======
 		cmd_pkt->vp_index = sp->vha->vp_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Build IOCB segments */
 		if (qla24xx_build_scsi_type_6_iocbs(sp, cmd_pkt, tot_dsds))
@@ -5021,10 +3542,6 @@ sufficient_dsds:
 		host_to_fcp_swap((uint8_t *)&cmd_pkt->lun, sizeof(cmd_pkt->lun));
 
 		/* build FCP_CMND IU */
-<<<<<<< HEAD
-		memset(ctx->fcp_cmnd, 0, sizeof(struct fcp_cmnd));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int_to_scsilun(cmd->device->lun, &ctx->fcp_cmnd->lun);
 		ctx->fcp_cmnd->additional_cdb_len = additional_cdb_len;
 
@@ -5033,25 +3550,6 @@ sufficient_dsds:
 		else if (cmd->sc_data_direction == DMA_FROM_DEVICE)
 			ctx->fcp_cmnd->additional_cdb_len |= 2;
 
-<<<<<<< HEAD
-		/*
-		 * Update tagged queuing modifier -- default is TSK_SIMPLE (0).
-		 */
-		if (scsi_populate_tag_msg(cmd, tag)) {
-			switch (tag[0]) {
-			case HEAD_OF_QUEUE_TAG:
-				ctx->fcp_cmnd->task_attribute =
-				    TSK_HEAD_OF_QUEUE;
-				break;
-			case ORDERED_QUEUE_TAG:
-				ctx->fcp_cmnd->task_attribute =
-				    TSK_ORDERED;
-				break;
-			}
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Populate the FCP_PRIO. */
 		if (ha->flags.fcp_prio_enabled)
 			ctx->fcp_cmnd->task_attribute |=
@@ -5059,24 +3557,13 @@ sufficient_dsds:
 
 		memcpy(ctx->fcp_cmnd->cdb, cmd->cmnd, cmd->cmd_len);
 
-<<<<<<< HEAD
-		fcp_dl = (uint32_t *)(ctx->fcp_cmnd->cdb + 16 +
-=======
 		fcp_dl = (__be32 *)(ctx->fcp_cmnd->cdb + 16 +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    additional_cdb_len);
 		*fcp_dl = htonl((uint32_t)scsi_bufflen(cmd));
 
 		cmd_pkt->fcp_cmnd_dseg_len = cpu_to_le16(ctx->fcp_cmnd_len);
-<<<<<<< HEAD
-		cmd_pkt->fcp_cmnd_dseg_address[0] =
-		    cpu_to_le32(LSD(ctx->fcp_cmnd_dma));
-		cmd_pkt->fcp_cmnd_dseg_address[1] =
-		    cpu_to_le32(MSD(ctx->fcp_cmnd_dma));
-=======
 		put_unaligned_le64(ctx->fcp_cmnd_dma,
 				   &cmd_pkt->fcp_cmnd_dseg_address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sp->flags |= SRB_FCP_CMND_DMA_VALID;
 		cmd_pkt->byte_count = cpu_to_le32((uint32_t)scsi_bufflen(cmd));
@@ -5088,16 +3575,10 @@ sufficient_dsds:
 		cmd_pkt->entry_status = (uint8_t) rsp->id;
 	} else {
 		struct cmd_type_7 *cmd_pkt;
-<<<<<<< HEAD
-		req_cnt = qla24xx_calc_iocbs(vha, tot_dsds);
-		if (req->cnt < (req_cnt + 2)) {
-			cnt = (uint16_t)RD_REG_DWORD_RELAXED(
-=======
 
 		req_cnt = qla24xx_calc_iocbs(vha, tot_dsds);
 		if (req->cnt < (req_cnt + 2)) {
 			cnt = (uint16_t)rd_reg_dword_relaxed(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    &reg->req_q_out[0]);
 			if (req->ring_index < cnt)
 				req->cnt = cnt - req->ring_index;
@@ -5109,11 +3590,7 @@ sufficient_dsds:
 			goto queuing_error;
 
 		cmd_pkt = (struct cmd_type_7 *)req->ring_ptr;
-<<<<<<< HEAD
-		cmd_pkt->handle = MAKE_HANDLE(req->id, handle);
-=======
 		cmd_pkt->handle = make_handle(req->id, handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Zero out remaining portion of packet. */
 		/* tagged queuing modifier -- default is TSK_SIMPLE (0).*/
@@ -5126,33 +3603,12 @@ sufficient_dsds:
 		cmd_pkt->port_id[0] = sp->fcport->d_id.b.al_pa;
 		cmd_pkt->port_id[1] = sp->fcport->d_id.b.area;
 		cmd_pkt->port_id[2] = sp->fcport->d_id.b.domain;
-<<<<<<< HEAD
-		cmd_pkt->vp_index = sp->fcport->vp_idx;
-=======
 		cmd_pkt->vp_index = sp->vha->vp_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		int_to_scsilun(cmd->device->lun, &cmd_pkt->lun);
 		host_to_fcp_swap((uint8_t *)&cmd_pkt->lun,
 		    sizeof(cmd_pkt->lun));
 
-<<<<<<< HEAD
-		/*
-		 * Update tagged queuing modifier -- default is TSK_SIMPLE (0).
-		 */
-		if (scsi_populate_tag_msg(cmd, tag)) {
-			switch (tag[0]) {
-			case HEAD_OF_QUEUE_TAG:
-				cmd_pkt->task = TSK_HEAD_OF_QUEUE;
-				break;
-			case ORDERED_QUEUE_TAG:
-				cmd_pkt->task = TSK_ORDERED;
-				break;
-			}
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Populate the FCP_PRIO. */
 		if (ha->flags.fcp_prio_enabled)
 			cmd_pkt->task |= sp->fcport->fcp_prio << 3;
@@ -5164,11 +3620,7 @@ sufficient_dsds:
 		cmd_pkt->byte_count = cpu_to_le32((uint32_t)scsi_bufflen(cmd));
 
 		/* Build IOCB segments */
-<<<<<<< HEAD
-		qla24xx_build_scsi_iocbs(sp, cmd_pkt, tot_dsds);
-=======
 		qla24xx_build_scsi_iocbs(sp, cmd_pkt, tot_dsds, req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Set total data segment count. */
 		cmd_pkt->entry_count = (uint8_t)req_cnt;
@@ -5200,25 +3652,12 @@ sufficient_dsds:
 	/* write, read and verify logic */
 	dbval = dbval | (req->id << 8) | (req->ring_index << 16);
 	if (ql2xdbwr)
-<<<<<<< HEAD
-		qla82xx_wr_32(ha, ha->nxdb_wr_ptr, dbval);
-	else {
-		WRT_REG_DWORD(
-			(unsigned long __iomem *)ha->nxdb_wr_ptr,
-			dbval);
-		wmb();
-		while (RD_REG_DWORD(ha->nxdb_rd_ptr) != dbval) {
-			WRT_REG_DWORD(
-				(unsigned long __iomem *)ha->nxdb_wr_ptr,
-				dbval);
-=======
 		qla82xx_wr_32(ha, (uintptr_t __force)ha->nxdb_wr_ptr, dbval);
 	else {
 		wrt_reg_dword(ha->nxdb_wr_ptr, dbval);
 		wmb();
 		while (rd_reg_dword(ha->nxdb_rd_ptr) != dbval) {
 			wrt_reg_dword(ha->nxdb_wr_ptr, dbval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wmb();
 		}
 	}
@@ -5237,36 +3676,15 @@ queuing_error:
 	if (tot_dsds)
 		scsi_dma_unmap(cmd);
 
-<<<<<<< HEAD
-	if (sp->u.scmd.ctx) {
-		mempool_free(sp->u.scmd.ctx, ha->ctx_mempool);
-		sp->u.scmd.ctx = NULL;
-=======
 	if (sp->u.scmd.crc_ctx) {
 		mempool_free(sp->u.scmd.crc_ctx, ha->ctx_mempool);
 		sp->u.scmd.crc_ctx = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
 	return QLA_FUNCTION_FAILED;
 }
 
-<<<<<<< HEAD
-int
-qla2x00_start_sp(srb_t *sp)
-{
-	int rval;
-	struct qla_hw_data *ha = sp->fcport->vha->hw;
-	void *pkt;
-	unsigned long flags;
-
-	rval = QLA_FUNCTION_FAILED;
-	spin_lock_irqsave(&ha->hardware_lock, flags);
-	pkt = qla2x00_alloc_iocbs(sp->fcport->vha, sp);
-	if (!pkt) {
-		ql_log(ql_log_warn, sp->fcport->vha, 0x700c,
-=======
 static void
 qla24xx_abort_iocb(srb_t *sp, struct abort_entry_24xx *abt_iocb)
 {
@@ -5524,27 +3942,19 @@ qla2x00_start_sp(srb_t *sp)
 	if (!pkt) {
 		rval = -EAGAIN;
 		ql_log(ql_log_warn, vha, 0x700c,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "qla2x00_alloc_iocbs failed.\n");
 		goto done;
 	}
 
-<<<<<<< HEAD
-	rval = QLA_SUCCESS;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (sp->type) {
 	case SRB_LOGIN_CMD:
 		IS_FWI2_CAPABLE(ha) ?
 		    qla24xx_login_iocb(sp, pkt) :
 		    qla2x00_login_iocb(sp, pkt);
 		break;
-<<<<<<< HEAD
-=======
 	case SRB_PRLI_CMD:
 		qla24xx_prli_iocb(sp, pkt);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SRB_LOGOUT_CMD:
 		IS_FWI2_CAPABLE(ha) ?
 		    qla24xx_logout_iocb(sp, pkt) :
@@ -5554,13 +3964,10 @@ qla2x00_start_sp(srb_t *sp)
 	case SRB_ELS_CMD_HST:
 		qla24xx_els_iocb(sp, pkt);
 		break;
-<<<<<<< HEAD
-=======
 	case SRB_ELS_CMD_HST_NOLOGIN:
 		qla_els_pt_iocb(sp->vha, pkt,  &sp->u.bsg_cmd.u.els_arg);
 		((struct els_entry_24xx *)pkt)->handle = sp->handle;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SRB_CT_CMD:
 		IS_FWI2_CAPABLE(ha) ?
 		    qla24xx_ct_iocb(sp, pkt) :
@@ -5572,9 +3979,6 @@ qla2x00_start_sp(srb_t *sp)
 		    qla2x00_adisc_iocb(sp, pkt);
 		break;
 	case SRB_TM_CMD:
-<<<<<<< HEAD
-		qla24xx_tm_iocb(sp, pkt);
-=======
 		IS_QLAFX00(ha) ?
 		    qlafx00_tm_iocb(sp, pkt) :
 		    qla24xx_tm_iocb(sp, pkt);
@@ -5619,20 +4023,11 @@ qla2x00_start_sp(srb_t *sp)
 		break;
 	case SRB_MARKER:
 		qla_marker_iocb(sp, pkt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
 	}
 
-<<<<<<< HEAD
-	wmb();
-	qla2x00_start_iocbs(sp->fcport->vha, ha->req_q_map[0]);
-done:
-	spin_unlock_irqrestore(&ha->hardware_lock, flags);
-	return rval;
-}
-=======
 	if (sp->start_timer) {
 		/* ref: TMR timer ref
 		 * this code should be just before start_iocbs function
@@ -6094,4 +4489,3 @@ queuing_error:
 
 	return QLA_FUNCTION_FAILED;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

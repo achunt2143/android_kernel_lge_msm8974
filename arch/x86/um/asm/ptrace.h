@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#ifdef CONFIG_X86_32
-# include "ptrace_32.h"
-#else
-# include "ptrace_64.h"
-#endif
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __UM_X86_PTRACE_H
 #define __UM_X86_PTRACE_H
@@ -92,4 +85,3 @@ extern long arch_prctl(struct task_struct *task, int option,
 #endif
 #define user_stack_pointer(regs) PT_REGS_SP(regs)
 #endif /* __UM_X86_PTRACE_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

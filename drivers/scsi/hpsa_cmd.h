@@ -1,13 +1,9 @@
 /*
  *    Disk Array driver for HP Smart Array SAS controllers
-<<<<<<< HEAD
- *    Copyright 2000, 2009 Hewlett-Packard Development Company, L.P.
-=======
  *    Copyright (c) 2019-2020 Microchip Technology Inc. and its subsidiaries
  *    Copyright 2016 Microsemi Corporation
  *    Copyright 2014-2015 PMC-Sierra, Inc.
  *    Copyright 2000,2009-2015 Hewlett-Packard Development Company, L.P.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -18,36 +14,22 @@
  *    MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
  *    NON INFRINGEMENT.  See the GNU General Public License for more details.
  *
-<<<<<<< HEAD
- *    You should have received a copy of the GNU General Public License
- *    along with this program; if not, write to the Free Software
- *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *    Questions/Comments/Bugfixes to iss_storagedev@hp.com
-=======
  *    Questions/Comments/Bugfixes to esc.storagedev@microsemi.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 #ifndef HPSA_CMD_H
 #define HPSA_CMD_H
 
-<<<<<<< HEAD
-=======
 #include <linux/compiler.h>
 
 #include <linux/build_bug.h> /* static_assert */
 #include <linux/stddef.h> /* offsetof */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* general boundary defintions */
 #define SENSEINFOBYTES          32 /* may vary between hbas */
 #define SG_ENTRIES_IN_CMD	32 /* Max SG entries excluding chain blocks */
 #define HPSA_SG_CHAIN		0x80000000
-<<<<<<< HEAD
-=======
 #define HPSA_SG_LAST		0x40000000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAXREPLYQS              256
 
 /* Command Status value */
@@ -64,8 +46,6 @@
 #define CMD_UNSOLICITED_ABORT   0x000A
 #define CMD_TIMEOUT             0x000B
 #define CMD_UNABORTABLE		0x000C
-<<<<<<< HEAD
-=======
 #define CMD_TMF_STATUS		0x000D
 #define CMD_IOACCEL_DISABLED	0x000E
 #define CMD_CTLR_LOCKUP		0xffff
@@ -82,7 +62,6 @@
 #define CISS_TMF_SUCCESS	0x08
 #define CISS_TMF_WRONG_LUN	0x09
 #define CISS_TMF_OVERLAPPED_TAG 0x0a
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Unit Attentions ASC's as defined for the MSA2012sa */
 #define POWER_OR_RESET			0x29
@@ -121,10 +100,6 @@
 #define ATTR_ACA                0x07
 
 /* cdb type */
-<<<<<<< HEAD
-#define TYPE_CMD				0x00
-#define TYPE_MSG				0x01
-=======
 #define TYPE_CMD		0x00
 #define TYPE_MSG		0x01
 #define TYPE_IOACCEL2_CMD	0x81 /* 0x81 is not used by hardware */
@@ -151,7 +126,6 @@
 #define HPSA_TMF_QUERY_ASYNCEVENT 0x06
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* config space register offsets */
 #define CFG_VENDORID            0x00
@@ -173,12 +147,6 @@
 #define CFGTBL_AccCmds          0x00000001l
 #define DOORBELL_CTLR_RESET	0x00000004l
 #define DOORBELL_CTLR_RESET2	0x00000020l
-<<<<<<< HEAD
-
-#define CFGTBL_Trans_Simple     0x00000002l
-#define CFGTBL_Trans_Performant 0x00000004l
-#define CFGTBL_Trans_use_short_tags 0x20000000l
-=======
 #define DOORBELL_CLEAR_EVENTS	0x00000040l
 #define DOORBELL_GENERATE_CHKPT	0x00000080l
 
@@ -188,14 +156,11 @@
 #define CFGTBL_Trans_io_accel2	0x00000100l
 #define CFGTBL_Trans_use_short_tags 0x20000000l
 #define CFGTBL_Trans_enable_directed_msix (1 << 30)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CFGTBL_BusType_Ultra2   0x00000001l
 #define CFGTBL_BusType_Ultra3   0x00000002l
 #define CFGTBL_BusType_Fibre1G  0x00000100l
 #define CFGTBL_BusType_Fibre2G  0x00000200l
-<<<<<<< HEAD
-=======
 
 /* VPD Inquiry types */
 #define HPSA_INQUIRY_FAILED		0x02
@@ -222,7 +187,6 @@
 #define HPSA_LV_PENDING_ENCRYPTION			0x19
 #define HPSA_LV_PENDING_ENCRYPTION_REKEYING		0x1A
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vals32 {
 	u32   lower;
 	u32   upper;
@@ -241,22 +205,6 @@ union u64bit {
 	MAX_EXT_TARGETS + 1) /* + 1 is for the controller itself */
 
 /* SCSI-3 Commands */
-<<<<<<< HEAD
-#pragma pack(1)
-
-#define HPSA_INQUIRY 0x12
-struct InquiryData {
-	u8 data_byte[36];
-};
-
-#define HPSA_REPORT_LOG 0xc2    /* Report Logical LUNs */
-#define HPSA_REPORT_PHYS 0xc3   /* Report Physical LUNs */
-struct ReportLUNdata {
-	u8 LUNListLength[4];
-	u32 reserved;
-	u8 LUN[HPSA_MAX_LUN][8];
-};
-=======
 #define HPSA_INQUIRY 0x12
 struct InquiryData {
 	u8 data_byte[36];
@@ -325,29 +273,19 @@ struct ext_report_lun_entry {
 	u8 redundant_paths;
 	u32 ioaccel_handle; /* ioaccel1 only uses lower 16 bits */
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ReportExtendedLUNdata {
 	u8 LUNListLength[4];
 	u8 extended_response_flag;
 	u8 reserved[3];
-<<<<<<< HEAD
-	u8 LUN[HPSA_MAX_LUN][24];
-};
-=======
 	struct ext_report_lun_entry LUN[HPSA_MAX_PHYS_LUN];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct SenseSubsystem_info {
 	u8 reserved[36];
 	u8 portname[8];
 	u8 reserved1[1108];
-<<<<<<< HEAD
-};
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* BMIC commands */
 #define BMIC_READ 0x26
@@ -355,8 +293,6 @@ struct SenseSubsystem_info {
 #define BMIC_CACHE_FLUSH 0xc2
 #define HPSA_CACHE_FLUSH 0x01	/* C2 was already being used by HPSA */
 #define BMIC_FLASH_FIRMWARE 0xF7
-<<<<<<< HEAD
-=======
 #define BMIC_SENSE_CONTROLLER_PARAMETERS 0x64
 #define BMIC_IDENTIFY_PHYSICAL_DEVICE 0x15
 #define BMIC_IDENTIFY_CONTROLLER 0x11
@@ -365,7 +301,6 @@ struct SenseSubsystem_info {
 #define HPSA_DIAG_OPTS_DISABLE_RLD_CACHING 0x80000000
 #define BMIC_SENSE_SUBSYSTEM_INFORMATION 0x66
 #define BMIC_SENSE_STORAGE_BOX_PARAMS 0x65
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Command List Structure */
 union SCSI3Addr {
@@ -385,11 +320,7 @@ union SCSI3Addr {
 		u8 Targ:6;
 		u8 Mode:2;        /* b10 */
 	} LogUnit;
-<<<<<<< HEAD
-};
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct PhysDevAddr {
 	u32             TargetId:24;
@@ -397,64 +328,24 @@ struct PhysDevAddr {
 	u32             Mode:2;
 	/* 2 level target device addr */
 	union SCSI3Addr  Target[2];
-<<<<<<< HEAD
-};
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct LogDevAddr {
 	u32            VolId:30;
 	u32            Mode:2;
 	u8             reserved[4];
-<<<<<<< HEAD
-};
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 union LUNAddr {
 	u8               LunAddrBytes[8];
 	union SCSI3Addr    SCSI3Lun[4];
 	struct PhysDevAddr PhysDev;
 	struct LogDevAddr  LogDev;
-<<<<<<< HEAD
-};
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct CommandListHeader {
 	u8              ReplyQueue;
 	u8              SGList;
-<<<<<<< HEAD
-	u16             SGTotal;
-	struct vals32     Tag;
-	union LUNAddr     LUN;
-};
-
-struct RequestBlock {
-	u8   CDBLen;
-	struct {
-		u8 Type:3;
-		u8 Attribute:3;
-		u8 Direction:2;
-	} Type;
-	u16  Timeout;
-	u8   CDB[16];
-};
-
-struct ErrDescriptor {
-	struct vals32 Addr;
-	u32  Len;
-};
-
-struct SGDescriptor {
-	struct vals32 Addr;
-	u32  Len;
-	u32  Ext;
-};
-=======
 	__le16          SGTotal;
 	__le64		tag;
 	union LUNAddr     LUN;
@@ -489,7 +380,6 @@ struct SGDescriptor {
 	__le32 Len;
 	__le32 Ext;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 union MoreErrInfo {
 	struct {
@@ -503,12 +393,8 @@ union MoreErrInfo {
 		u8  offense_num;  /* byte # of offense 0-base */
 		u32 offense_value;
 	} Invalid_Cmd;
-<<<<<<< HEAD
-};
-=======
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ErrorInfo {
 	u8               ScsiStatus;
 	u8               SenseLen;
@@ -516,15 +402,6 @@ struct ErrorInfo {
 	u32              ResidualCnt;
 	union MoreErrInfo  MoreErrInfo;
 	u8               SenseInfo[SENSEINFOBYTES];
-<<<<<<< HEAD
-};
-/* Command types */
-#define CMD_IOCTL_PEND  0x01
-#define CMD_SCSI	0x03
-
-#define DIRECT_LOOKUP_SHIFT 5
-#define DIRECT_LOOKUP_BIT 0x10
-=======
 } __packed;
 /* Command types */
 #define CMD_IOCTL_PEND  0x01
@@ -534,34 +411,21 @@ struct ErrorInfo {
 #define IOACCEL2_TMF	0x06
 
 #define DIRECT_LOOKUP_SHIFT 4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DIRECT_LOOKUP_MASK (~((1 << DIRECT_LOOKUP_SHIFT) - 1))
 
 #define HPSA_ERROR_BIT          0x02
 struct ctlr_info; /* defined in hpsa.h */
-<<<<<<< HEAD
-/* The size of this structure needs to be divisible by 32
- * on all architectures because low 5 bits of the addresses
-=======
 /* The size of this structure needs to be divisible by 128
  * on all architectures.  The low 4 bits of the addresses
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * are used as follows:
  *
  * bit 0: to device, used to indicate "performant mode" command
  *        from device, indidcates error status.
  * bit 1-3: to device, indicates block fetch table entry for
  *          reducing DMA in fetching commands from host memory.
-<<<<<<< HEAD
- * bit 4: used to indicate whether tag is "direct lookup" (index),
- *        or a bus address.
- */
-
-=======
  */
 
 #define COMMANDLIST_ALIGNMENT 128
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct CommandList {
 	struct CommandListHeader Header;
 	struct RequestBlock      Request;
@@ -573,35 +437,6 @@ struct CommandList {
 	struct ctlr_info	   *h;
 	int			   cmd_type;
 	long			   cmdindex;
-<<<<<<< HEAD
-	struct list_head list;
-	struct request *rq;
-	struct completion *waiting;
-	void   *scsi_cmd;
-
-/* on 64 bit architectures, to get this to be 32-byte-aligned
- * it so happens we need PAD_64 bytes of padding, on 32 bit systems,
- * we need PAD_32 bytes of padding (see below).   This does that.
- * If it happens that 64 bit and 32 bit systems need different
- * padding, PAD_32 and PAD_64 can be set independently, and.
- * the code below will do the right thing.
- */
-#define IS_32_BIT ((8 - sizeof(long))/4)
-#define IS_64_BIT (!IS_32_BIT)
-#define PAD_32 (4)
-#define PAD_64 (4)
-#define COMMANDLIST_PAD (IS_32_BIT * PAD_32 + IS_64_BIT * PAD_64)
-	u8 pad[COMMANDLIST_PAD];
-};
-
-/* Configuration Table Structure */
-struct HostWrite {
-	u32 TransportRequest;
-	u32 Reserved;
-	u32 CoalIntDelay;
-	u32 CoalIntCount;
-};
-=======
 	struct completion *waiting;
 	struct scsi_cmnd *scsi_cmd;
 	struct work_struct work;
@@ -805,48 +640,10 @@ struct HostWrite {
 	__le32		CoalIntDelay;
 	__le32		CoalIntCount;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SIMPLE_MODE     0x02
 #define PERFORMANT_MODE 0x04
 #define MEMQ_MODE       0x08
-<<<<<<< HEAD
-
-struct CfgTable {
-	u8            Signature[4];
-	u32		SpecValence;
-	u32           TransportSupport;
-	u32           TransportActive;
-	struct 		HostWrite HostWrite;
-	u32           CmdsOutMax;
-	u32           BusTypes;
-	u32           TransMethodOffset;
-	u8            ServerName[16];
-	u32           HeartBeat;
-	u32           SCSI_Prefetch;
-	u32	 	MaxScatterGatherElements;
-	u32		MaxLogicalUnits;
-	u32		MaxPhysicalDevices;
-	u32		MaxPhysicalDrivesPerLogicalUnit;
-	u32		MaxPerformantModeCommands;
-	u8		reserved[0x78 - 0x58];
-	u32		misc_fw_support; /* offset 0x78 */
-#define			MISC_FW_DOORBELL_RESET (0x02)
-#define			MISC_FW_DOORBELL_RESET2 (0x010)
-	u8		driver_version[32];
-};
-
-#define NUM_BLOCKFETCH_ENTRIES 8
-struct TransTable_struct {
-	u32            BlockFetch[NUM_BLOCKFETCH_ENTRIES];
-	u32            RepQSize;
-	u32            RepQCount;
-	u32            RepQCtrAddrLow32;
-	u32            RepQCtrAddrHigh32;
-	u32            RepQAddr0Low32;
-	u32            RepQAddr0High32;
-};
-=======
 #define IOACCEL_MODE_1  0x80
 
 #define DRIVER_SUPPORT_UA_ENABLE        0x00000001
@@ -903,18 +700,12 @@ struct TransTable_struct {
 #define MAX_REPLY_QUEUES 64
 	struct vals32  RepQAddr[MAX_REPLY_QUEUES];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hpsa_pci_info {
 	unsigned char	bus;
 	unsigned char	dev_fn;
 	unsigned short	domain;
 	u32		board_id;
-<<<<<<< HEAD
-};
-
-#pragma pack()
-=======
 } __packed;
 
 struct bmic_identify_controller {
@@ -1094,5 +885,4 @@ struct bmic_sense_storage_box_params {
 	u8	reserved_4[296];
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* HPSA_CMD_H */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_ARM_SYSTEM_MISC_H
 #define __ASM_ARM_SYSTEM_MISC_H
 
@@ -10,20 +7,12 @@
 #include <linux/compiler.h>
 #include <linux/linkage.h>
 #include <linux/irqflags.h>
-<<<<<<< HEAD
-=======
 #include <linux/reboot.h>
 #include <linux/percpu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void cpu_init(void);
 
 void soft_restart(unsigned long);
-<<<<<<< HEAD
-extern void (*arm_pm_restart)(char str, const char *cmd);
-extern void (*arm_pm_idle)(void);
-
-=======
 extern void (*arm_pm_idle)(void);
 
 #ifdef CONFIG_HARDEN_BRANCH_PREDICTOR
@@ -40,7 +29,6 @@ static inline void harden_branch_predictor(void)
 #define harden_branch_predictor() do { } while (0)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define UDBG_UNDEFINED	(1 << 0)
 #define UDBG_SYSCALL	(1 << 1)
 #define UDBG_BADABORT	(1 << 2)
@@ -49,14 +37,6 @@ static inline void harden_branch_predictor(void)
 
 extern unsigned int user_debug;
 
-<<<<<<< HEAD
-extern void disable_hlt(void);
-extern void enable_hlt(void);
-extern int get_hlt(void);
-extern char* (*arch_read_hardware_id)(void);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !__ASSEMBLY__ */
 
 #endif /* __ASM_ARM_SYSTEM_MISC_H */

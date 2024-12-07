@@ -21,22 +21,13 @@ static int hfs_revalidate_dentry(struct dentry *dentry, unsigned int flags)
 	if (flags & LOOKUP_RCU)
 		return -ECHILD;
 
-<<<<<<< HEAD
-	inode = dentry->d_inode;
-=======
 	inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if(!inode)
 		return 1;
 
 	/* fix up inode on a timezone change */
 	diff = sys_tz.tz_minuteswest * 60 - HFS_I(inode)->tz_secondswest;
 	if (diff) {
-<<<<<<< HEAD
-		inode->i_ctime.tv_sec += diff;
-		inode->i_atime.tv_sec += diff;
-		inode->i_mtime.tv_sec += diff;
-=======
 		struct timespec64 ts = inode_get_ctime(inode);
 
 		inode_set_ctime(inode, ts.tv_sec + diff, ts.tv_nsec);
@@ -44,7 +35,6 @@ static int hfs_revalidate_dentry(struct dentry *dentry, unsigned int flags)
 		inode_set_atime(inode, ts.tv_sec + diff, ts.tv_nsec);
 		ts = inode_get_mtime(inode);
 		inode_set_mtime(inode, ts.tv_sec + diff, ts.tv_nsec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		HFS_I(inode)->tz_secondswest += diff;
 	}
 	return 1;

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ebt_redirect
  *
@@ -24,17 +21,6 @@ ebt_redirect_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct ebt_redirect_info *info = par->targinfo;
 
-<<<<<<< HEAD
-	if (!skb_make_writable(skb, 0))
-		return EBT_DROP;
-
-	if (par->hooknum != NF_BR_BROUTING)
-		/* rcu_read_lock()ed by nf_hook_slow */
-		memcpy(eth_hdr(skb)->h_dest,
-		       br_port_get_rcu(par->in)->br->dev->dev_addr, ETH_ALEN);
-	else
-		memcpy(eth_hdr(skb)->h_dest, par->in->dev_addr, ETH_ALEN);
-=======
 	if (skb_ensure_writable(skb, 0))
 		return EBT_DROP;
 
@@ -44,7 +30,6 @@ ebt_redirect_tg(struct sk_buff *skb, const struct xt_action_param *par)
 				br_port_get_rcu(xt_in(par))->br->dev->dev_addr);
 	else
 		ether_addr_copy(eth_hdr(skb)->h_dest, xt_in(par)->dev_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->pkt_type = PACKET_HOST;
 	return info->target;
 }
@@ -63,11 +48,7 @@ static int ebt_redirect_tg_check(const struct xt_tgchk_param *par)
 	    (strcmp(par->table, "broute") != 0 ||
 	    hook_mask & ~(1 << NF_BR_BROUTING)))
 		return -EINVAL;
-<<<<<<< HEAD
-	if (INVALID_TARGET)
-=======
 	if (ebt_invalid_target(info->target))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	return 0;
 }

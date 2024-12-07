@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * devoard misc stuff.
  */
@@ -14,11 +11,6 @@
 #include <linux/platform_device.h>
 #include <linux/pm.h>
 
-<<<<<<< HEAD
-#include <asm/reboot.h>
-#include <asm/mach-db1x00/bcsr.h>
-
-=======
 #include <asm/bootinfo.h>
 #include <asm/idle.h>
 #include <asm/reboot.h>
@@ -36,7 +28,6 @@ void prom_putchar(char c)
 		alchemy_uart_putchar(AU1000_UART0_PHYS_ADDR, c);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_device db1x00_rtc_dev = {
 	.name	= "rtc-au1xxx",
@@ -48,11 +39,8 @@ static void db1x_power_off(void)
 {
 	bcsr_write(BCSR_RESETS, 0);
 	bcsr_write(BCSR_SYSTEM, BCSR_SYSTEM_PWROFF | BCSR_SYSTEM_RESET);
-<<<<<<< HEAD
-=======
 	while (1)		/* sit and spin */
 		cpu_wait();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void db1x_reset(char *c)
@@ -99,11 +87,7 @@ int __init db1x_register_pcmcia_socket(phys_addr_t pcmcia_attr_start,
 	if (stschg_irq)
 		cnt++;
 
-<<<<<<< HEAD
-	sr = kzalloc(sizeof(struct resource) * cnt, GFP_KERNEL);
-=======
 	sr = kcalloc(cnt, sizeof(struct resource), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sr)
 		return -ENOMEM;
 
@@ -178,11 +162,7 @@ int __init db1x_register_norflash(unsigned long size, int width,
 		return -EINVAL;
 
 	ret = -ENOMEM;
-<<<<<<< HEAD
-	parts = kzalloc(sizeof(struct mtd_partition) * 5, GFP_KERNEL);
-=======
 	parts = kcalloc(5, sizeof(struct mtd_partition), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!parts)
 		goto out;
 

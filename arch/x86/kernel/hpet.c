@@ -1,39 +1,8 @@
-<<<<<<< HEAD
-#include <linux/clocksource.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/clockchips.h>
 #include <linux/interrupt.h>
 #include <linux/export.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/errno.h>
-#include <linux/i8253.h>
-#include <linux/slab.h>
-#include <linux/hpet.h>
-#include <linux/init.h>
-#include <linux/cpu.h>
-#include <linux/pm.h>
-#include <linux/io.h>
-
-#include <asm/fixmap.h>
-#include <asm/hpet.h>
-#include <asm/time.h>
-
-#define HPET_MASK			CLOCKSOURCE_MASK(32)
-
-/* FSEC = 10^-15
-   NSEC = 10^-9 */
-#define FSEC_PER_NSEC			1000000L
-
-#define HPET_DEV_USED_BIT		2
-#define HPET_DEV_USED			(1 << HPET_DEV_USED_BIT)
-#define HPET_DEV_VALID			0x8
-#define HPET_DEV_FSB_CAP		0x1000
-#define HPET_DEV_PERI_CAP		0x2000
-
-=======
 #include <linux/hpet.h>
 #include <linux/cpu.h>
 #include <linux/irq.h>
@@ -73,7 +42,6 @@ struct hpet_base {
 
 #define HPET_MASK			CLOCKSOURCE_MASK(32)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HPET_MIN_CYCLES			128
 #define HPET_MIN_PROG_DELTA		(HPET_MIN_CYCLES + (HPET_MIN_CYCLES >> 1))
 
@@ -82,27 +50,6 @@ struct hpet_base {
  */
 unsigned long				hpet_address;
 u8					hpet_blockid; /* OS timer block num */
-<<<<<<< HEAD
-u8					hpet_msi_disable;
-
-#ifdef CONFIG_PCI_MSI
-static unsigned long			hpet_num_timers;
-#endif
-static void __iomem			*hpet_virt_address;
-
-struct hpet_dev {
-	struct clock_event_device	evt;
-	unsigned int			num;
-	int				cpu;
-	unsigned int			irq;
-	unsigned int			flags;
-	char				name[10];
-};
-
-inline struct hpet_dev *EVT_TO_HPET_DEV(struct clock_event_device *evtdev)
-{
-	return container_of(evtdev, struct hpet_dev, evt);
-=======
 bool					hpet_msi_disable;
 
 #if defined(CONFIG_X86_LOCAL_APIC) && defined(CONFIG_GENERIC_MSI_IRQ)
@@ -125,7 +72,6 @@ static inline
 struct hpet_channel *clockevent_to_channel(struct clock_event_device *evt)
 {
 	return container_of(evt, struct hpet_channel, evt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 inline unsigned int hpet_readl(unsigned int a)
@@ -138,22 +84,9 @@ static inline void hpet_writel(unsigned int d, unsigned int a)
 	writel(d, hpet_virt_address + a);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_X86_64
-#include <asm/pgtable.h>
-#endif
-
-static inline void hpet_set_mapping(void)
-{
-	hpet_virt_address = ioremap_nocache(hpet_address, HPET_MMAP_SIZE);
-#ifdef CONFIG_X86_64
-	__set_fixmap(VSYSCALL_HPET, hpet_address, PAGE_KERNEL_VVAR_NOCACHE);
-#endif
-=======
 static inline void hpet_set_mapping(void)
 {
 	hpet_virt_address = ioremap(hpet_address, HPET_MMAP_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void hpet_clear_mapping(void)
@@ -165,21 +98,6 @@ static inline void hpet_clear_mapping(void)
 /*
  * HPET command line enable / disable
  */
-<<<<<<< HEAD
-static int boot_hpet_disable;
-int hpet_force_user;
-static int hpet_verbose;
-
-static int __init hpet_setup(char *str)
-{
-	if (str) {
-		if (!strncmp("disable", str, 7))
-			boot_hpet_disable = 1;
-		if (!strncmp("force", str, 5))
-			hpet_force_user = 1;
-		if (!strncmp("verbose", str, 7))
-			hpet_verbose = 1;
-=======
 static int __init hpet_setup(char *str)
 {
 	while (str) {
@@ -194,7 +112,6 @@ static int __init hpet_setup(char *str)
 		if (!strncmp("verbose", str, 7))
 			hpet_verbose = true;
 		str = next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 1;
 }
@@ -202,11 +119,7 @@ __setup("hpet=", hpet_setup);
 
 static int __init disable_hpet(char *str)
 {
-<<<<<<< HEAD
-	boot_hpet_disable = 1;
-=======
 	boot_hpet_disable = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 __setup("nohpet", disable_hpet);
@@ -216,18 +129,8 @@ static inline int is_hpet_capable(void)
 	return !boot_hpet_disable && hpet_address;
 }
 
-<<<<<<< HEAD
-/*
- * HPET timer interrupt enable / disable
- */
-static int hpet_legacy_int_enabled;
-
-/**
- * is_hpet_enabled - check whether the hpet timer interrupt is enabled
-=======
 /**
  * is_hpet_enabled - Check whether the legacy HPET timer interrupt is enabled
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int is_hpet_enabled(void)
 {
@@ -237,34 +140,6 @@ EXPORT_SYMBOL_GPL(is_hpet_enabled);
 
 static void _hpet_print_config(const char *function, int line)
 {
-<<<<<<< HEAD
-	u32 i, timers, l, h;
-	printk(KERN_INFO "hpet: %s(%d):\n", function, line);
-	l = hpet_readl(HPET_ID);
-	h = hpet_readl(HPET_PERIOD);
-	timers = ((l & HPET_ID_NUMBER) >> HPET_ID_NUMBER_SHIFT) + 1;
-	printk(KERN_INFO "hpet: ID: 0x%x, PERIOD: 0x%x\n", l, h);
-	l = hpet_readl(HPET_CFG);
-	h = hpet_readl(HPET_STATUS);
-	printk(KERN_INFO "hpet: CFG: 0x%x, STATUS: 0x%x\n", l, h);
-	l = hpet_readl(HPET_COUNTER);
-	h = hpet_readl(HPET_COUNTER+4);
-	printk(KERN_INFO "hpet: COUNTER_l: 0x%x, COUNTER_h: 0x%x\n", l, h);
-
-	for (i = 0; i < timers; i++) {
-		l = hpet_readl(HPET_Tn_CFG(i));
-		h = hpet_readl(HPET_Tn_CFG(i)+4);
-		printk(KERN_INFO "hpet: T%d: CFG_l: 0x%x, CFG_h: 0x%x\n",
-		       i, l, h);
-		l = hpet_readl(HPET_Tn_CMP(i));
-		h = hpet_readl(HPET_Tn_CMP(i)+4);
-		printk(KERN_INFO "hpet: T%d: CMP_l: 0x%x, CMP_h: 0x%x\n",
-		       i, l, h);
-		l = hpet_readl(HPET_Tn_ROUTE(i));
-		h = hpet_readl(HPET_Tn_ROUTE(i)+4);
-		printk(KERN_INFO "hpet: T%d ROUTE_l: 0x%x, ROUTE_h: 0x%x\n",
-		       i, l, h);
-=======
 	u32 i, id, period, cfg, status, channels, l, h;
 
 	pr_info("%s(%d):\n", function, line);
@@ -295,52 +170,21 @@ static void _hpet_print_config(const char *function, int line)
 		l = hpet_readl(HPET_Tn_ROUTE(i));
 		h = hpet_readl(HPET_Tn_ROUTE(i)+4);
 		pr_info("T%d ROUTE_l: 0x%x, ROUTE_h: 0x%x\n", i, l, h);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 #define hpet_print_config()					\
 do {								\
 	if (hpet_verbose)					\
-<<<<<<< HEAD
-		_hpet_print_config(__FUNCTION__, __LINE__);	\
-} while (0)
-
-/*
- * When the hpet driver (/dev/hpet) is enabled, we need to reserve
-=======
 		_hpet_print_config(__func__, __LINE__);	\
 } while (0)
 
 /*
  * When the HPET driver (/dev/hpet) is enabled, we need to reserve
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * timer 0 and timer 1 in case of RTC emulation.
  */
 #ifdef CONFIG_HPET
 
-<<<<<<< HEAD
-static void hpet_reserve_msi_timers(struct hpet_data *hd);
-
-static void hpet_reserve_platform_timers(unsigned int id)
-{
-	struct hpet __iomem *hpet = hpet_virt_address;
-	struct hpet_timer __iomem *timer = &hpet->hpet_timers[2];
-	unsigned int nrtimers, i;
-	struct hpet_data hd;
-
-	nrtimers = ((id & HPET_ID_NUMBER) >> HPET_ID_NUMBER_SHIFT) + 1;
-
-	memset(&hd, 0, sizeof(hd));
-	hd.hd_phys_address	= hpet_address;
-	hd.hd_address		= hpet;
-	hd.hd_nirqs		= nrtimers;
-	hpet_reserve_timer(&hd, 0);
-
-#ifdef CONFIG_HPET_EMULATE_RTC
-	hpet_reserve_timer(&hd, 1);
-#endif
-=======
 static void __init hpet_reserve_platform_timers(void)
 {
 	struct hpet_data hd;
@@ -350,7 +194,6 @@ static void __init hpet_reserve_platform_timers(void)
 	hd.hd_phys_address	= hpet_address;
 	hd.hd_address		= hpet_virt_address;
 	hd.hd_nirqs		= hpet_base.nr_channels;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * NOTE that hd_irq[] reflects IOAPIC input pins (LEGACY_8254
@@ -360,47 +203,6 @@ static void __init hpet_reserve_platform_timers(void)
 	hd.hd_irq[0] = HPET_LEGACY_8254;
 	hd.hd_irq[1] = HPET_LEGACY_RTC;
 
-<<<<<<< HEAD
-	for (i = 2; i < nrtimers; timer++, i++) {
-		hd.hd_irq[i] = (readl(&timer->hpet_config) &
-			Tn_INT_ROUTE_CNF_MASK) >> Tn_INT_ROUTE_CNF_SHIFT;
-	}
-
-	hpet_reserve_msi_timers(&hd);
-
-	hpet_alloc(&hd);
-
-}
-#else
-static void hpet_reserve_platform_timers(unsigned int id) { }
-#endif
-
-/*
- * Common hpet info
- */
-static unsigned long hpet_freq;
-
-static void hpet_legacy_set_mode(enum clock_event_mode mode,
-			  struct clock_event_device *evt);
-static int hpet_legacy_next_event(unsigned long delta,
-			   struct clock_event_device *evt);
-
-/*
- * The hpet clock event device
- */
-static struct clock_event_device hpet_clockevent = {
-	.name		= "hpet",
-	.features	= CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
-	.set_mode	= hpet_legacy_set_mode,
-	.set_next_event = hpet_legacy_next_event,
-	.irq		= 0,
-	.rating		= 50,
-};
-
-static void hpet_stop_counter(void)
-{
-	unsigned long cfg = hpet_readl(HPET_CFG);
-=======
 	for (i = 0; i < hpet_base.nr_channels; i++) {
 		struct hpet_channel *hc = hpet_base.channels + i;
 
@@ -447,7 +249,6 @@ static void hpet_stop_counter(void)
 {
 	u32 cfg = hpet_readl(HPET_CFG);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cfg &= ~HPET_CFG_ENABLE;
 	hpet_writel(cfg, HPET_CFG);
 }
@@ -461,10 +262,7 @@ static void hpet_reset_counter(void)
 static void hpet_start_counter(void)
 {
 	unsigned int cfg = hpet_readl(HPET_CFG);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cfg |= HPET_CFG_ENABLE;
 	hpet_writel(cfg, HPET_CFG);
 }
@@ -493,94 +291,6 @@ static void hpet_enable_legacy_int(void)
 
 	cfg |= HPET_CFG_LEGACY;
 	hpet_writel(cfg, HPET_CFG);
-<<<<<<< HEAD
-	hpet_legacy_int_enabled = 1;
-}
-
-static void hpet_legacy_clockevent_register(void)
-{
-	/* Start HPET legacy interrupts */
-	hpet_enable_legacy_int();
-
-	/*
-	 * Start hpet with the boot cpu mask and make it
-	 * global after the IO_APIC has been initialized.
-	 */
-	hpet_clockevent.cpumask = cpumask_of(smp_processor_id());
-	clockevents_config_and_register(&hpet_clockevent, hpet_freq,
-					HPET_MIN_PROG_DELTA, 0x7FFFFFFF);
-	global_clock_event = &hpet_clockevent;
-	printk(KERN_DEBUG "hpet clockevent registered\n");
-}
-
-static int hpet_setup_msi_irq(unsigned int irq);
-
-static void hpet_set_mode(enum clock_event_mode mode,
-			  struct clock_event_device *evt, int timer)
-{
-	unsigned int cfg, cmp, now;
-	uint64_t delta;
-
-	switch (mode) {
-	case CLOCK_EVT_MODE_PERIODIC:
-		hpet_stop_counter();
-		delta = ((uint64_t)(NSEC_PER_SEC/HZ)) * evt->mult;
-		delta >>= evt->shift;
-		now = hpet_readl(HPET_COUNTER);
-		cmp = now + (unsigned int) delta;
-		cfg = hpet_readl(HPET_Tn_CFG(timer));
-		/* Make sure we use edge triggered interrupts */
-		cfg &= ~HPET_TN_LEVEL;
-		cfg |= HPET_TN_ENABLE | HPET_TN_PERIODIC |
-		       HPET_TN_SETVAL | HPET_TN_32BIT;
-		hpet_writel(cfg, HPET_Tn_CFG(timer));
-		hpet_writel(cmp, HPET_Tn_CMP(timer));
-		udelay(1);
-		/*
-		 * HPET on AMD 81xx needs a second write (with HPET_TN_SETVAL
-		 * cleared) to T0_CMP to set the period. The HPET_TN_SETVAL
-		 * bit is automatically cleared after the first write.
-		 * (See AMD-8111 HyperTransport I/O Hub Data Sheet,
-		 * Publication # 24674)
-		 */
-		hpet_writel((unsigned int) delta, HPET_Tn_CMP(timer));
-		hpet_start_counter();
-		hpet_print_config();
-		break;
-
-	case CLOCK_EVT_MODE_ONESHOT:
-		cfg = hpet_readl(HPET_Tn_CFG(timer));
-		cfg &= ~HPET_TN_PERIODIC;
-		cfg |= HPET_TN_ENABLE | HPET_TN_32BIT;
-		hpet_writel(cfg, HPET_Tn_CFG(timer));
-		break;
-
-	case CLOCK_EVT_MODE_UNUSED:
-	case CLOCK_EVT_MODE_SHUTDOWN:
-		cfg = hpet_readl(HPET_Tn_CFG(timer));
-		cfg &= ~HPET_TN_ENABLE;
-		hpet_writel(cfg, HPET_Tn_CFG(timer));
-		break;
-
-	case CLOCK_EVT_MODE_RESUME:
-		if (timer == 0) {
-			hpet_enable_legacy_int();
-		} else {
-			struct hpet_dev *hdev = EVT_TO_HPET_DEV(evt);
-			hpet_setup_msi_irq(hdev->irq);
-			disable_irq(hdev->irq);
-			irq_set_affinity(hdev->irq, cpumask_of(hdev->cpu));
-			enable_irq(hdev->irq);
-		}
-		hpet_print_config();
-		break;
-	}
-}
-
-static int hpet_next_event(unsigned long delta,
-			   struct clock_event_device *evt, int timer)
-{
-=======
 	hpet_legacy_int_enabled = true;
 }
 
@@ -651,17 +361,12 @@ static int
 hpet_clkevt_set_next_event(unsigned long delta, struct clock_event_device *evt)
 {
 	unsigned int channel = clockevent_to_channel(evt)->num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 cnt;
 	s32 res;
 
 	cnt = hpet_readl(HPET_COUNTER);
 	cnt += (u32) delta;
-<<<<<<< HEAD
-	hpet_writel(cnt, HPET_Tn_CMP(timer));
-=======
 	hpet_writel(cnt, HPET_Tn_CMP(channel));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * HPETs are a complete disaster. The compare register is
@@ -690,18 +395,6 @@ hpet_clkevt_set_next_event(unsigned long delta, struct clock_event_device *evt)
 	return res < HPET_MIN_CYCLES ? -ETIME : 0;
 }
 
-<<<<<<< HEAD
-static void hpet_legacy_set_mode(enum clock_event_mode mode,
-			struct clock_event_device *evt)
-{
-	hpet_set_mode(mode, evt, 0);
-}
-
-static int hpet_legacy_next_event(unsigned long delta,
-			struct clock_event_device *evt)
-{
-	return hpet_next_event(delta, evt, 0);
-=======
 static void hpet_init_clockevent(struct hpet_channel *hc, unsigned int rating)
 {
 	struct clock_event_device *evt = &hc->evt;
@@ -771,123 +464,11 @@ static void __init hpet_legacy_clockevent_register(struct hpet_channel *hc)
 					HPET_MIN_PROG_DELTA, 0x7FFFFFFF);
 	global_clock_event = &hc->evt;
 	pr_debug("Clockevent registered\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * HPET MSI Support
  */
-<<<<<<< HEAD
-#ifdef CONFIG_PCI_MSI
-
-static DEFINE_PER_CPU(struct hpet_dev *, cpu_hpet_dev);
-static struct hpet_dev	*hpet_devs;
-
-void hpet_msi_unmask(struct irq_data *data)
-{
-	struct hpet_dev *hdev = data->handler_data;
-	unsigned int cfg;
-
-	/* unmask it */
-	cfg = hpet_readl(HPET_Tn_CFG(hdev->num));
-	cfg |= HPET_TN_ENABLE | HPET_TN_FSB;
-	hpet_writel(cfg, HPET_Tn_CFG(hdev->num));
-}
-
-void hpet_msi_mask(struct irq_data *data)
-{
-	struct hpet_dev *hdev = data->handler_data;
-	unsigned int cfg;
-
-	/* mask it */
-	cfg = hpet_readl(HPET_Tn_CFG(hdev->num));
-	cfg &= ~(HPET_TN_ENABLE | HPET_TN_FSB);
-	hpet_writel(cfg, HPET_Tn_CFG(hdev->num));
-}
-
-void hpet_msi_write(struct hpet_dev *hdev, struct msi_msg *msg)
-{
-	hpet_writel(msg->data, HPET_Tn_ROUTE(hdev->num));
-	hpet_writel(msg->address_lo, HPET_Tn_ROUTE(hdev->num) + 4);
-}
-
-void hpet_msi_read(struct hpet_dev *hdev, struct msi_msg *msg)
-{
-	msg->data = hpet_readl(HPET_Tn_ROUTE(hdev->num));
-	msg->address_lo = hpet_readl(HPET_Tn_ROUTE(hdev->num) + 4);
-	msg->address_hi = 0;
-}
-
-static void hpet_msi_set_mode(enum clock_event_mode mode,
-				struct clock_event_device *evt)
-{
-	struct hpet_dev *hdev = EVT_TO_HPET_DEV(evt);
-	hpet_set_mode(mode, evt, hdev->num);
-}
-
-static int hpet_msi_next_event(unsigned long delta,
-				struct clock_event_device *evt)
-{
-	struct hpet_dev *hdev = EVT_TO_HPET_DEV(evt);
-	return hpet_next_event(delta, evt, hdev->num);
-}
-
-static int hpet_setup_msi_irq(unsigned int irq)
-{
-	if (arch_setup_hpet_msi(irq, hpet_blockid)) {
-		destroy_irq(irq);
-		return -EINVAL;
-	}
-	return 0;
-}
-
-static int hpet_assign_irq(struct hpet_dev *dev)
-{
-	unsigned int irq;
-
-	irq = create_irq_nr(0, -1);
-	if (!irq)
-		return -EINVAL;
-
-	irq_set_handler_data(irq, dev);
-
-	if (hpet_setup_msi_irq(irq))
-		return -EINVAL;
-
-	dev->irq = irq;
-	return 0;
-}
-
-static irqreturn_t hpet_interrupt_handler(int irq, void *data)
-{
-	struct hpet_dev *dev = (struct hpet_dev *)data;
-	struct clock_event_device *hevt = &dev->evt;
-
-	if (!hevt->event_handler) {
-		printk(KERN_INFO "Spurious HPET timer interrupt on HPET timer %d\n",
-				dev->num);
-		return IRQ_HANDLED;
-	}
-
-	hevt->event_handler(hevt);
-	return IRQ_HANDLED;
-}
-
-static int hpet_setup_irq(struct hpet_dev *dev)
-{
-
-	if (request_irq(dev->irq, hpet_interrupt_handler,
-			IRQF_TIMER | IRQF_DISABLED | IRQF_NOBALANCING,
-			dev->name, dev))
-		return -1;
-
-	disable_irq(dev->irq);
-	irq_set_affinity(dev->irq, cpumask_of(dev->cpu));
-	enable_irq(dev->irq);
-
-	printk(KERN_DEBUG "hpet: %s irq %d for MSI\n",
-			 dev->name, dev->irq);
-=======
 #if defined(CONFIG_X86_LOCAL_APIC) && defined(CONFIG_GENERIC_MSI_IRQ)
 static void hpet_msi_unmask(struct irq_data *data)
 {
@@ -1064,39 +645,10 @@ static int hpet_setup_msi_irq(struct hpet_channel *hc)
 	enable_irq(hc->irq);
 
 	pr_debug("%s irq %u for MSI\n", hc->name, hc->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* This should be called in specific @cpu */
-static void init_one_hpet_msi_clockevent(struct hpet_dev *hdev, int cpu)
-{
-	struct clock_event_device *evt = &hdev->evt;
-
-	WARN_ON(cpu != smp_processor_id());
-	if (!(hdev->flags & HPET_DEV_VALID))
-		return;
-
-	if (hpet_setup_msi_irq(hdev->irq))
-		return;
-
-	hdev->cpu = cpu;
-	per_cpu(cpu_hpet_dev, cpu) = hdev;
-	evt->name = hdev->name;
-	hpet_setup_irq(hdev);
-	evt->irq = hdev->irq;
-
-	evt->rating = 110;
-	evt->features = CLOCK_EVT_FEAT_ONESHOT;
-	if (hdev->flags & HPET_DEV_PERI_CAP)
-		evt->features |= CLOCK_EVT_FEAT_PERIODIC;
-
-	evt->set_mode = hpet_msi_set_mode;
-	evt->set_next_event = hpet_msi_next_event;
-	evt->cpumask = cpumask_of(hdev->cpu);
-=======
 /* Invoked from the hotplug callback on @cpu */
 static void init_one_hpet_msi_clockevent(struct hpet_channel *hc, int cpu)
 {
@@ -1108,109 +660,11 @@ static void init_one_hpet_msi_clockevent(struct hpet_channel *hc, int cpu)
 
 	hpet_init_clockevent(hc, 110);
 	evt->tick_resume = hpet_clkevt_msi_resume;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clockevents_config_and_register(evt, hpet_freq, HPET_MIN_PROG_DELTA,
 					0x7FFFFFFF);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_HPET
-/* Reserve at least one timer for userspace (/dev/hpet) */
-#define RESERVE_TIMERS 1
-#else
-#define RESERVE_TIMERS 0
-#endif
-
-static void hpet_msi_capability_lookup(unsigned int start_timer)
-{
-	unsigned int id;
-	unsigned int num_timers;
-	unsigned int num_timers_used = 0;
-	int i;
-
-	if (hpet_msi_disable)
-		return;
-
-	if (boot_cpu_has(X86_FEATURE_ARAT))
-		return;
-	id = hpet_readl(HPET_ID);
-
-	num_timers = ((id & HPET_ID_NUMBER) >> HPET_ID_NUMBER_SHIFT);
-	num_timers++; /* Value read out starts from 0 */
-	hpet_print_config();
-
-	hpet_devs = kzalloc(sizeof(struct hpet_dev) * num_timers, GFP_KERNEL);
-	if (!hpet_devs)
-		return;
-
-	hpet_num_timers = num_timers;
-
-	for (i = start_timer; i < num_timers - RESERVE_TIMERS; i++) {
-		struct hpet_dev *hdev = &hpet_devs[num_timers_used];
-		unsigned int cfg = hpet_readl(HPET_Tn_CFG(i));
-
-		/* Only consider HPET timer with MSI support */
-		if (!(cfg & HPET_TN_FSB_CAP))
-			continue;
-
-		hdev->flags = 0;
-		if (cfg & HPET_TN_PERIODIC_CAP)
-			hdev->flags |= HPET_DEV_PERI_CAP;
-		hdev->num = i;
-
-		sprintf(hdev->name, "hpet%d", i);
-		if (hpet_assign_irq(hdev))
-			continue;
-
-		hdev->flags |= HPET_DEV_FSB_CAP;
-		hdev->flags |= HPET_DEV_VALID;
-		num_timers_used++;
-		if (num_timers_used == num_possible_cpus())
-			break;
-	}
-
-	printk(KERN_INFO "HPET: %d timers in total, %d timers will be used for per-cpu timer\n",
-		num_timers, num_timers_used);
-}
-
-#ifdef CONFIG_HPET
-static void hpet_reserve_msi_timers(struct hpet_data *hd)
-{
-	int i;
-
-	if (!hpet_devs)
-		return;
-
-	for (i = 0; i < hpet_num_timers; i++) {
-		struct hpet_dev *hdev = &hpet_devs[i];
-
-		if (!(hdev->flags & HPET_DEV_VALID))
-			continue;
-
-		hd->hd_irq[hdev->num] = hdev->irq;
-		hpet_reserve_timer(hd, hdev->num);
-	}
-}
-#endif
-
-static struct hpet_dev *hpet_get_unused_timer(void)
-{
-	int i;
-
-	if (!hpet_devs)
-		return NULL;
-
-	for (i = 0; i < hpet_num_timers; i++) {
-		struct hpet_dev *hdev = &hpet_devs[i];
-
-		if (!(hdev->flags & HPET_DEV_VALID))
-			continue;
-		if (test_and_set_bit(HPET_DEV_USED_BIT,
-			(unsigned long *)&hdev->flags))
-			continue;
-		return hdev;
-=======
 static struct hpet_channel *hpet_get_unused_clockevent(void)
 {
 	int i;
@@ -1222,83 +676,10 @@ static struct hpet_channel *hpet_get_unused_clockevent(void)
 			continue;
 		hc->in_use = 1;
 		return hc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NULL;
 }
 
-<<<<<<< HEAD
-struct hpet_work_struct {
-	struct delayed_work work;
-	struct completion complete;
-};
-
-static void hpet_work(struct work_struct *w)
-{
-	struct hpet_dev *hdev;
-	int cpu = smp_processor_id();
-	struct hpet_work_struct *hpet_work;
-
-	hpet_work = container_of(w, struct hpet_work_struct, work.work);
-
-	hdev = hpet_get_unused_timer();
-	if (hdev)
-		init_one_hpet_msi_clockevent(hdev, cpu);
-
-	complete(&hpet_work->complete);
-}
-
-static int hpet_cpuhp_notify(struct notifier_block *n,
-		unsigned long action, void *hcpu)
-{
-	unsigned long cpu = (unsigned long)hcpu;
-	struct hpet_work_struct work;
-	struct hpet_dev *hdev = per_cpu(cpu_hpet_dev, cpu);
-
-	switch (action & 0xf) {
-	case CPU_ONLINE:
-		INIT_DELAYED_WORK_ONSTACK(&work.work, hpet_work);
-		init_completion(&work.complete);
-		/* FIXME: add schedule_work_on() */
-		schedule_delayed_work_on(cpu, &work.work, 0);
-		wait_for_completion(&work.complete);
-		destroy_timer_on_stack(&work.work.timer);
-		break;
-	case CPU_DEAD:
-		if (hdev) {
-			free_irq(hdev->irq, hdev);
-			hdev->flags &= ~HPET_DEV_USED;
-			per_cpu(cpu_hpet_dev, cpu) = NULL;
-		}
-		break;
-	}
-	return NOTIFY_OK;
-}
-#else
-
-static int hpet_setup_msi_irq(unsigned int irq)
-{
-	return 0;
-}
-static void hpet_msi_capability_lookup(unsigned int start_timer)
-{
-	return;
-}
-
-#ifdef CONFIG_HPET
-static void hpet_reserve_msi_timers(struct hpet_data *hd)
-{
-	return;
-}
-#endif
-
-static int hpet_cpuhp_notify(struct notifier_block *n,
-		unsigned long action, void *hcpu)
-{
-	return NOTIFY_OK;
-}
-
-=======
 static int hpet_cpuhp_online(unsigned int cpu)
 {
 	struct hpet_channel *hc = hpet_get_unused_clockevent();
@@ -1371,18 +752,11 @@ static inline void hpet_select_clockevents(void) { }
 #define hpet_cpuhp_online	NULL
 #define hpet_cpuhp_dead		NULL
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
  * Clock source related code
  */
-<<<<<<< HEAD
-static cycle_t read_hpet(struct clocksource *cs)
-{
-	return (cycle_t)hpet_readl(HPET_COUNTER);
-}
-=======
 #if defined(CONFIG_SMP) && defined(CONFIG_64BIT)
 /*
  * Reading the HPET counter is a very slow operation. If a large number of
@@ -1480,7 +854,6 @@ static u64 read_hpet(struct clocksource *cs)
 	return (u64)hpet_readl(HPET_COUNTER);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct clocksource clocksource_hpet = {
 	.name		= "hpet",
@@ -1489,24 +862,6 @@ static struct clocksource clocksource_hpet = {
 	.mask		= HPET_MASK,
 	.flags		= CLOCK_SOURCE_IS_CONTINUOUS,
 	.resume		= hpet_resume_counter,
-<<<<<<< HEAD
-#ifdef CONFIG_X86_64
-	.archdata	= { .vclock_mode = VCLOCK_HPET },
-#endif
-};
-
-static int hpet_clocksource_register(void)
-{
-	u64 start, now;
-	cycle_t t1;
-
-	/* Start the counter */
-	hpet_restart_counter();
-
-	/* Verify whether hpet counter works */
-	t1 = hpet_readl(HPET_COUNTER);
-	rdtscll(start);
-=======
 };
 
 /*
@@ -1545,7 +900,6 @@ static bool __init hpet_counting(void)
 
 	t1 = hpet_readl(HPET_COUNTER);
 	start = rdtsc();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We don't know the TSC frequency yet, but waiting for
@@ -1554,20 +908,6 @@ static bool __init hpet_counting(void)
 	 * 1 GHz == 200us
 	 */
 	do {
-<<<<<<< HEAD
-		rep_nop();
-		rdtscll(now);
-	} while ((now - start) < 200000UL);
-
-	if (t1 == hpet_readl(HPET_COUNTER)) {
-		printk(KERN_WARNING
-		       "HPET counter not counting. HPET disabled\n");
-		return -ENODEV;
-	}
-
-	clocksource_register_hz(&clocksource_hpet, (u32)hpet_freq);
-	return 0;
-=======
 		if (t1 != hpet_readl(HPET_COUNTER))
 			return true;
 		now = rdtsc();
@@ -1652,7 +992,6 @@ static bool __init hpet_is_pc10_damaged(void)
 	pr_info("HPET dysfunctional in PC10. Force disabled.\n");
 	boot_hpet_disable = true;
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1660,24 +999,14 @@ static bool __init hpet_is_pc10_damaged(void)
  */
 int __init hpet_enable(void)
 {
-<<<<<<< HEAD
-	unsigned long hpet_period;
-	unsigned int id;
-	u64 freq;
-	int i;
-=======
 	u32 hpet_period, cfg, id, irq;
 	unsigned int i, channels;
 	struct hpet_channel *hc;
 	u64 freq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!is_hpet_capable())
 		return 0;
 
-<<<<<<< HEAD
-	hpet_set_mapping();
-=======
 	if (hpet_is_pc10_damaged())
 		return 0;
 
@@ -1688,49 +1017,15 @@ int __init hpet_enable(void)
 	/* Validate that the config register is working */
 	if (!hpet_cfg_working())
 		goto out_nohpet;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Read the period and check for a sane value:
 	 */
 	hpet_period = hpet_readl(HPET_PERIOD);
-<<<<<<< HEAD
-
-	/*
-	 * AMD SB700 based systems with spread spectrum enabled use a
-	 * SMM based HPET emulation to provide proper frequency
-	 * setting. The SMM code is initialized with the first HPET
-	 * register access and takes some time to complete. During
-	 * this time the config register reads 0xffffffff. We check
-	 * for max. 1000 loops whether the config register reads a non
-	 * 0xffffffff value to make sure that HPET is up and running
-	 * before we go further. A counting loop is safe, as the HPET
-	 * access takes thousands of CPU cycles. On non SB700 based
-	 * machines this check is only done once and has no side
-	 * effects.
-	 */
-	for (i = 0; hpet_readl(HPET_CFG) == 0xFFFFFFFF; i++) {
-		if (i == 1000) {
-			printk(KERN_WARNING
-			       "HPET config register value = 0xFFFFFFFF. "
-			       "Disabling HPET\n");
-			goto out_nohpet;
-		}
-	}
-
-	if (hpet_period < HPET_MIN_PERIOD || hpet_period > HPET_MAX_PERIOD)
-		goto out_nohpet;
-
-	/*
-	 * The period is a femto seconds value. Convert it to a
-	 * frequency.
-	 */
-=======
 	if (hpet_period < HPET_MIN_PERIOD || hpet_period > HPET_MAX_PERIOD)
 		goto out_nohpet;
 
 	/* The period is a femtoseconds value. Convert it to a frequency. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	freq = FSEC_PER_SEC;
 	do_div(freq, hpet_period);
 	hpet_freq = freq;
@@ -1742,28 +1037,13 @@ int __init hpet_enable(void)
 	id = hpet_readl(HPET_ID);
 	hpet_print_config();
 
-<<<<<<< HEAD
-#ifdef CONFIG_HPET_EMULATE_RTC
-=======
 	/* This is the HPET channel number which is zero based */
 	channels = ((id & HPET_ID_NUMBER) >> HPET_ID_NUMBER_SHIFT) + 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The legacy routing mode needs at least two channels, tick timer
 	 * and the rtc emulation channel.
 	 */
-<<<<<<< HEAD
-	if (!(id & HPET_ID_NUMBER))
-		goto out_nohpet;
-#endif
-
-	if (hpet_clocksource_register())
-		goto out_nohpet;
-
-	if (id & HPET_ID_LEGSUP) {
-		hpet_legacy_clockevent_register();
-=======
 	if (IS_ENABLED(CONFIG_HPET_EMULATE_RTC) && channels < 2)
 		goto out_nohpet;
 
@@ -1820,37 +1100,20 @@ int __init hpet_enable(void)
 		hpet_base.channels[0].mode = HPET_MODE_LEGACY;
 		if (IS_ENABLED(CONFIG_HPET_EMULATE_RTC))
 			hpet_base.channels[1].mode = HPET_MODE_LEGACY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 	return 0;
 
 out_nohpet:
-<<<<<<< HEAD
-=======
 	kfree(hpet_base.channels);
 	hpet_base.channels = NULL;
 	hpet_base.nr_channels = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpet_clear_mapping();
 	hpet_address = 0;
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
- * Needs to be late, as the reserve_timer code calls kalloc !
- *
- * Not a problem on i386 as hpet_enable is called from late_time_init,
- * but on x86_64 it is necessary !
- */
-static __init int hpet_late_init(void)
-{
-	int cpu;
-
-	if (boot_hpet_disable)
-		return -ENODEV;
-=======
  * The late initialization runs after the PCI quirks have been invoked
  * which might have detected a system on which the HPET can be enforced.
  *
@@ -1867,7 +1130,6 @@ static __init int hpet_late_init(void)
 static __init int hpet_late_init(void)
 {
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!hpet_address) {
 		if (!force_hpet_address)
@@ -1880,30 +1142,6 @@ static __init int hpet_late_init(void)
 	if (!hpet_virt_address)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (hpet_readl(HPET_ID) & HPET_ID_LEGSUP)
-		hpet_msi_capability_lookup(2);
-	else
-		hpet_msi_capability_lookup(0);
-
-	hpet_reserve_platform_timers(hpet_readl(HPET_ID));
-	hpet_print_config();
-
-	if (hpet_msi_disable)
-		return 0;
-
-	if (boot_cpu_has(X86_FEATURE_ARAT))
-		return 0;
-
-	for_each_online_cpu(cpu) {
-		hpet_cpuhp_notify(NULL, CPU_ONLINE, (void *)(long)cpu);
-	}
-
-	/* This notifier should be called after workqueue is ready */
-	hotcpu_notifier(hpet_cpuhp_notify, -20);
-
-	return 0;
-=======
 	hpet_select_device_channel();
 	hpet_select_clockevents();
 	hpet_reserve_platform_timers();
@@ -1925,24 +1163,11 @@ static __init int hpet_late_init(void)
 err_cpuhp:
 	cpuhp_remove_state(CPUHP_AP_X86_HPET_ONLINE);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 fs_initcall(hpet_late_init);
 
 void hpet_disable(void)
 {
-<<<<<<< HEAD
-	if (is_hpet_capable() && hpet_virt_address) {
-		unsigned int cfg = hpet_readl(HPET_CFG);
-
-		if (hpet_legacy_int_enabled) {
-			cfg &= ~HPET_CFG_LEGACY;
-			hpet_legacy_int_enabled = 0;
-		}
-		cfg &= ~HPET_CFG_ENABLE;
-		hpet_writel(cfg, HPET_CFG);
-	}
-=======
 	unsigned int i;
 	u32 cfg;
 
@@ -1961,30 +1186,10 @@ void hpet_disable(void)
 	/* If the HPET was enabled at boot time, reenable it */
 	if (hpet_base.boot_cfg & HPET_CFG_ENABLE)
 		hpet_writel(hpet_base.boot_cfg, HPET_CFG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_HPET_EMULATE_RTC
 
-<<<<<<< HEAD
-/* HPET in LegacyReplacement Mode eats up RTC interrupt line. When, HPET
- * is enabled, we support RTC interrupt functionality in software.
- * RTC has 3 kinds of interrupts:
- * 1) Update Interrupt - generate an interrupt, every sec, when RTC clock
- *    is updated
- * 2) Alarm Interrupt - generate an interrupt at a specific time of day
- * 3) Periodic Interrupt - generate periodic interrupt, with frequencies
- *    2Hz-8192Hz (2Hz-64Hz for non-root user) (all freqs in powers of 2)
- * (1) and (2) above are implemented using polling at a frequency of
- * 64 Hz. The exact frequency is a tradeoff between accuracy and interrupt
- * overhead. (DEFAULT_RTC_INT_FREQ)
- * For (3), we use interrupts at 64Hz or user specified periodic
- * frequency, whichever is higher.
- */
-#include <linux/mc146818rtc.h>
-#include <linux/rtc.h>
-#include <asm/rtc.h>
-=======
 /*
  * HPET in LegacyReplacement mode eats up the RTC interrupt line. When HPET
  * is enabled, we support RTC interrupt functionality in software.
@@ -2007,7 +1212,6 @@ void hpet_disable(void)
  */
 #include <linux/mc146818rtc.h>
 #include <linux/rtc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DEFAULT_RTC_INT_FREQ	64
 #define DEFAULT_RTC_SHIFT	6
@@ -2025,11 +1229,7 @@ static unsigned long hpet_pie_limit;
 static rtc_irq_handler irq_handler;
 
 /*
-<<<<<<< HEAD
- * Check that the hpet counter c1 is ahead of the c2
-=======
  * Check that the HPET counter c1 is ahead of c2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int hpet_cnt_ahead(u32 c1, u32 c2)
 {
@@ -2067,13 +1267,8 @@ void hpet_unregister_irq_handler(rtc_irq_handler handler)
 EXPORT_SYMBOL_GPL(hpet_unregister_irq_handler);
 
 /*
-<<<<<<< HEAD
- * Timer 1 for RTC emulation. We use one shot mode, as periodic mode
- * is not supported by all HPET implementations for timer 1.
-=======
  * Channel 1 for RTC emulation. We use one shot mode, as periodic mode
  * is not supported by all HPET implementations for channel 1.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * hpet_rtc_timer_init() is called when the rtc is initialized.
  */
@@ -2086,18 +1281,11 @@ int hpet_rtc_timer_init(void)
 		return 0;
 
 	if (!hpet_default_delta) {
-<<<<<<< HEAD
-		uint64_t clc;
-
-		clc = (uint64_t) hpet_clockevent.mult * NSEC_PER_SEC;
-		clc >>= hpet_clockevent.shift + DEFAULT_RTC_SHIFT;
-=======
 		struct clock_event_device *evt = &hpet_base.channels[0].evt;
 		uint64_t clc;
 
 		clc = (uint64_t) evt->mult * NSEC_PER_SEC;
 		clc >>= evt->shift + DEFAULT_RTC_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hpet_default_delta = clc;
 	}
 
@@ -2125,13 +1313,8 @@ EXPORT_SYMBOL_GPL(hpet_rtc_timer_init);
 
 static void hpet_disable_rtc_channel(void)
 {
-<<<<<<< HEAD
-	unsigned long cfg;
-	cfg = hpet_readl(HPET_T1_CFG);
-=======
 	u32 cfg = hpet_readl(HPET_T1_CFG);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cfg &= ~HPET_TN_ENABLE;
 	hpet_writel(cfg, HPET_T1_CFG);
 }
@@ -2173,12 +1356,7 @@ int hpet_set_rtc_irq_bit(unsigned long bit_mask)
 }
 EXPORT_SYMBOL_GPL(hpet_set_rtc_irq_bit);
 
-<<<<<<< HEAD
-int hpet_set_alarm_time(unsigned char hrs, unsigned char min,
-			unsigned char sec)
-=======
 int hpet_set_alarm_time(unsigned char hrs, unsigned char min, unsigned char sec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!is_hpet_enabled())
 		return 0;
@@ -2198,17 +1376,6 @@ int hpet_set_periodic_freq(unsigned long freq)
 	if (!is_hpet_enabled())
 		return 0;
 
-<<<<<<< HEAD
-	if (freq <= DEFAULT_RTC_INT_FREQ)
-		hpet_pie_limit = DEFAULT_RTC_INT_FREQ / freq;
-	else {
-		clc = (uint64_t) hpet_clockevent.mult * NSEC_PER_SEC;
-		do_div(clc, freq);
-		clc >>= hpet_clockevent.shift;
-		hpet_pie_delta = clc;
-		hpet_pie_limit = 0;
-	}
-=======
 	if (freq <= DEFAULT_RTC_INT_FREQ) {
 		hpet_pie_limit = DEFAULT_RTC_INT_FREQ / freq;
 	} else {
@@ -2221,7 +1388,6 @@ int hpet_set_periodic_freq(unsigned long freq)
 		hpet_pie_limit = 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 EXPORT_SYMBOL_GPL(hpet_set_periodic_freq);
@@ -2259,12 +1425,7 @@ static void hpet_rtc_timer_reinit(void)
 		if (hpet_rtc_flags & RTC_PIE)
 			hpet_pie_count += lost_ints;
 		if (printk_ratelimit())
-<<<<<<< HEAD
-			printk(KERN_WARNING "hpet1: lost %d rtc interrupts\n",
-				lost_ints);
-=======
 			pr_warn("Lost %d RTC interrupts\n", lost_ints);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2276,17 +1437,12 @@ irqreturn_t hpet_rtc_interrupt(int irq, void *dev_id)
 	hpet_rtc_timer_reinit();
 	memset(&curr_time, 0, sizeof(struct rtc_time));
 
-<<<<<<< HEAD
-	if (hpet_rtc_flags & (RTC_UIE | RTC_AIE))
-		get_rtc_time(&curr_time);
-=======
 	if (hpet_rtc_flags & (RTC_UIE | RTC_AIE)) {
 		if (unlikely(mc146818_get_time(&curr_time, 10) < 0)) {
 			pr_err_ratelimited("unable to read current time from RTC\n");
 			return IRQ_HANDLED;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hpet_rtc_flags & RTC_UIE &&
 	    curr_time.tm_sec != hpet_prev_update_sec) {
@@ -2295,12 +1451,7 @@ irqreturn_t hpet_rtc_interrupt(int irq, void *dev_id)
 		hpet_prev_update_sec = curr_time.tm_sec;
 	}
 
-<<<<<<< HEAD
-	if (hpet_rtc_flags & RTC_PIE &&
-	    ++hpet_pie_count >= hpet_pie_limit) {
-=======
 	if (hpet_rtc_flags & RTC_PIE && ++hpet_pie_count >= hpet_pie_limit) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rtc_int_flag |= RTC_PF;
 		hpet_pie_count = 0;
 	}
@@ -2309,11 +1460,7 @@ irqreturn_t hpet_rtc_interrupt(int irq, void *dev_id)
 	    (curr_time.tm_sec == hpet_alarm_time.tm_sec) &&
 	    (curr_time.tm_min == hpet_alarm_time.tm_min) &&
 	    (curr_time.tm_hour == hpet_alarm_time.tm_hour))
-<<<<<<< HEAD
-			rtc_int_flag |= RTC_AF;
-=======
 		rtc_int_flag |= RTC_AF;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rtc_int_flag) {
 		rtc_int_flag |= (RTC_IRQF | (RTC_NUM_INTS << 8));

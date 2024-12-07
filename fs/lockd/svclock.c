@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/lockd/svclock.c
  *
@@ -30,17 +27,10 @@
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/sunrpc/clnt.h>
-<<<<<<< HEAD
-#include <linux/sunrpc/svc.h>
-#include <linux/lockd/nlm.h>
-#include <linux/lockd/lockd.h>
-#include <linux/kthread.h>
-=======
 #include <linux/sunrpc/svc_xprt.h>
 #include <linux/lockd/nlm.h>
 #include <linux/lockd/lockd.h>
 #include <linux/exportfs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NLMDBG_FACILITY		NLMDBG_SVCLOCK
 
@@ -64,21 +54,12 @@ static const struct rpc_call_ops nlmsvc_grant_ops;
 static LIST_HEAD(nlm_blocked);
 static DEFINE_SPINLOCK(nlm_blocked_lock);
 
-<<<<<<< HEAD
-#ifdef LOCKD_DEBUG
-static const char *nlmdbg_cookie2a(const struct nlm_cookie *cookie)
-{
-	/*
-	 * We can get away with a static buffer because we're only
-	 * called with BKL held.
-=======
 #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
 static const char *nlmdbg_cookie2a(const struct nlm_cookie *cookie)
 {
 	/*
 	 * We can get away with a static buffer because this is only called
 	 * from lockd, which is single-threaded.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	static char buf[2*NLM_MAXCOOKIELEN+1];
 	unsigned int i, len = sizeof(buf);
@@ -149,14 +130,6 @@ static void nlmsvc_insert_block(struct nlm_block *block, unsigned long when)
 static inline void
 nlmsvc_remove_block(struct nlm_block *block)
 {
-<<<<<<< HEAD
-	if (!list_empty(&block->b_list)) {
-		spin_lock(&nlm_blocked_lock);
-		list_del_init(&block->b_list);
-		spin_unlock(&nlm_blocked_lock);
-		nlmsvc_release_block(block);
-	}
-=======
 	spin_lock(&nlm_blocked_lock);
 	if (!list_empty(&block->b_list)) {
 		list_del_init(&block->b_list);
@@ -165,7 +138,6 @@ nlmsvc_remove_block(struct nlm_block *block)
 		return;
 	}
 	spin_unlock(&nlm_blocked_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -178,23 +150,6 @@ nlmsvc_lookup_block(struct nlm_file *file, struct nlm_lock *lock)
 	struct file_lock	*fl;
 
 	dprintk("lockd: nlmsvc_lookup_block f=%p pd=%d %Ld-%Ld ty=%d\n",
-<<<<<<< HEAD
-				file, lock->fl.fl_pid,
-				(long long)lock->fl.fl_start,
-				(long long)lock->fl.fl_end, lock->fl.fl_type);
-	list_for_each_entry(block, &nlm_blocked, b_list) {
-		fl = &block->b_call->a_args.lock.fl;
-		dprintk("lockd: check f=%p pd=%d %Ld-%Ld ty=%d cookie=%s\n",
-				block->b_file, fl->fl_pid,
-				(long long)fl->fl_start,
-				(long long)fl->fl_end, fl->fl_type,
-				nlmdbg_cookie2a(&block->b_call->a_args.cookie));
-		if (block->b_file == file && nlm_compare_locks(fl, &lock->fl)) {
-			kref_get(&block->b_count);
-			return block;
-		}
-	}
-=======
 				file, lock->fl.c.flc_pid,
 				(long long)lock->fl.fl_start,
 				(long long)lock->fl.fl_end,
@@ -214,7 +169,6 @@ nlmsvc_lookup_block(struct nlm_file *file, struct nlm_lock *lock)
 		}
 	}
 	spin_unlock(&nlm_blocked_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NULL;
 }
@@ -236,28 +190,19 @@ nlmsvc_find_block(struct nlm_cookie *cookie)
 {
 	struct nlm_block *block;
 
-<<<<<<< HEAD
-=======
 	spin_lock(&nlm_blocked_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(block, &nlm_blocked, b_list) {
 		if (nlm_cookie_match(&block->b_call->a_args.cookie,cookie))
 			goto found;
 	}
-<<<<<<< HEAD
-=======
 	spin_unlock(&nlm_blocked_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NULL;
 
 found:
 	dprintk("nlmsvc_find_block(%s): block=%p\n", nlmdbg_cookie2a(cookie), block);
 	kref_get(&block->b_count);
-<<<<<<< HEAD
-=======
 	spin_unlock(&nlm_blocked_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return block;
 }
 
@@ -284,10 +229,6 @@ nlmsvc_create_block(struct svc_rqst *rqstp, struct nlm_host *host,
 	struct nlm_block	*block;
 	struct nlm_rqst		*call = NULL;
 
-<<<<<<< HEAD
-	nlm_get_host(host);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	call = nlm_alloc_call(host);
 	if (call == NULL)
 		return NULL;
@@ -304,11 +245,7 @@ nlmsvc_create_block(struct svc_rqst *rqstp, struct nlm_host *host,
 		goto failed_free;
 
 	/* Set notifier function for VFS, and init args */
-<<<<<<< HEAD
-	call->a_args.lock.fl.fl_flags |= FL_SLEEP;
-=======
 	call->a_args.lock.fl.c.flc_flags |= FL_SLEEP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	call->a_args.lock.fl.fl_lmops = &nlmsvc_lock_operations;
 	nlmclnt_next_cookie(&call->a_args.cookie);
 
@@ -318,10 +255,6 @@ nlmsvc_create_block(struct svc_rqst *rqstp, struct nlm_host *host,
 	block->b_daemon = rqstp->rq_server;
 	block->b_host   = host;
 	block->b_file   = file;
-<<<<<<< HEAD
-	block->b_fl = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	file->f_count++;
 
 	/* Add to file's list of blocks */
@@ -352,11 +285,7 @@ static int nlmsvc_unlink_block(struct nlm_block *block)
 	dprintk("lockd: unlinking block %p...\n", block);
 
 	/* Remove block from list */
-<<<<<<< HEAD
-	status = posix_unblock_lock(block->b_file->f_file, &block->b_call->a_args.lock.fl);
-=======
 	status = locks_delete_block(&block->b_call->a_args.lock.fl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmsvc_remove_block(block);
 	return status;
 }
@@ -369,31 +298,19 @@ static void nlmsvc_free_block(struct kref *kref)
 	dprintk("lockd: freeing block %p...\n", block);
 
 	/* Remove block from file's list of blocks */
-<<<<<<< HEAD
-	mutex_lock(&file->f_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del_init(&block->b_flist);
 	mutex_unlock(&file->f_mutex);
 
 	nlmsvc_freegrantargs(block->b_call);
 	nlmsvc_release_call(block->b_call);
 	nlm_release_file(block->b_file);
-<<<<<<< HEAD
-	kfree(block->b_fl);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(block);
 }
 
 static void nlmsvc_release_block(struct nlm_block *block)
 {
 	if (block != NULL)
-<<<<<<< HEAD
-		kref_put(&block->b_count, nlmsvc_free_block);
-=======
 		kref_put_mutex(&block->b_count, nlmsvc_free_block, &block->b_file->f_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -408,10 +325,7 @@ void nlmsvc_traverse_blocks(struct nlm_host *host,
 
 restart:
 	mutex_lock(&file->f_mutex);
-<<<<<<< HEAD
-=======
 	spin_lock(&nlm_blocked_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry_safe(block, next, &file->f_blocks, b_flist) {
 		if (!match(block->b_host, host))
 			continue;
@@ -420,20 +334,12 @@ restart:
 		if (list_empty(&block->b_list))
 			continue;
 		kref_get(&block->b_count);
-<<<<<<< HEAD
-=======
 		spin_unlock(&nlm_blocked_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&file->f_mutex);
 		nlmsvc_unlink_block(block);
 		nlmsvc_release_block(block);
 		goto restart;
 	}
-<<<<<<< HEAD
-	mutex_unlock(&file->f_mutex);
-}
-
-=======
 	spin_unlock(&nlm_blocked_lock);
 	mutex_unlock(&file->f_mutex);
 }
@@ -507,7 +413,6 @@ void nlmsvc_locks_init_private(struct file_lock *fl, struct nlm_host *host,
 	fl->c.flc_owner = nlmsvc_find_lockowner(host, pid);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Initialize arguments for GRANTED call. The nlm_rqst structure
  * has been cleared already.
@@ -521,11 +426,7 @@ static int nlmsvc_setgrantargs(struct nlm_rqst *call, struct nlm_lock *lock)
 
 	/* set default data area */
 	call->a_args.lock.oh.data = call->a_owner;
-<<<<<<< HEAD
-	call->a_args.lock.svid = lock->fl.fl_pid;
-=======
 	call->a_args.lock.svid = ((struct nlm_lockowner *) lock->fl.c.flc_owner)->pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lock->oh.len > NLMCLNT_OHSIZE) {
 		void *data = kmalloc(lock->oh.len, GFP_KERNEL);
@@ -580,16 +481,6 @@ nlmsvc_lock(struct svc_rqst *rqstp, struct nlm_file *file,
 	    struct nlm_host *host, struct nlm_lock *lock, int wait,
 	    struct nlm_cookie *cookie, int reclaim)
 {
-<<<<<<< HEAD
-	struct nlm_block	*block = NULL;
-	int			error;
-	__be32			ret;
-
-	dprintk("lockd: nlmsvc_lock(%s/%ld, ty=%d, pi=%d, %Ld-%Ld, bl=%d)\n",
-				file->f_file->f_path.dentry->d_inode->i_sb->s_id,
-				file->f_file->f_path.dentry->d_inode->i_ino,
-				lock->fl.fl_type, lock->fl.fl_pid,
-=======
 	struct inode		*inode = nlmsvc_file_inode(file);
 	struct nlm_block	*block = NULL;
 	int			error;
@@ -601,19 +492,15 @@ nlmsvc_lock(struct svc_rqst *rqstp, struct nlm_file *file,
 				inode->i_sb->s_id, inode->i_ino,
 				lock->fl.c.flc_type,
 				lock->fl.c.flc_pid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(long long)lock->fl.fl_start,
 				(long long)lock->fl.fl_end,
 				wait);
 
-<<<<<<< HEAD
-=======
 	if (!exportfs_lock_op_is_async(inode->i_sb->s_export_op)) {
 		async_block = wait;
 		wait = 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Lock file against concurrent access */
 	mutex_lock(&file->f_mutex);
 	/* Get existing block (in case client is busy-waiting)
@@ -627,11 +514,7 @@ nlmsvc_lock(struct svc_rqst *rqstp, struct nlm_file *file,
 			goto out;
 		lock = &block->b_call->a_args.lock;
 	} else
-<<<<<<< HEAD
-		lock->fl.fl_flags &= ~FL_SLEEP;
-=======
 		lock->fl.c.flc_flags &= ~FL_SLEEP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (block->b_flags & B_QUEUED) {
 		dprintk("lockd: nlmsvc_lock deferred block %p flags %d\n",
@@ -650,29 +533,15 @@ nlmsvc_lock(struct svc_rqst *rqstp, struct nlm_file *file,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	if (locks_in_grace() && !reclaim) {
-		ret = nlm_lck_denied_grace_period;
-		goto out;
-	}
-	if (reclaim && !locks_in_grace()) {
-=======
 	if (locks_in_grace(SVC_NET(rqstp)) && !reclaim) {
 		ret = nlm_lck_denied_grace_period;
 		goto out;
 	}
 	if (reclaim && !locks_in_grace(SVC_NET(rqstp))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = nlm_lck_denied_grace_period;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	if (!wait)
-		lock->fl.fl_flags &= ~FL_SLEEP;
-	error = vfs_lock_file(file->f_file, F_SETLK, &lock->fl, NULL);
-	lock->fl.fl_flags &= ~FL_SLEEP;
-=======
 	spin_lock(&nlm_blocked_lock);
 	/*
 	 * If this is a lock request for an already pending
@@ -697,24 +566,10 @@ nlmsvc_lock(struct svc_rqst *rqstp, struct nlm_file *file,
 	mode = lock_to_openmode(&lock->fl);
 	error = vfs_lock_file(file->f_file[mode], F_SETLK, &lock->fl, NULL);
 	lock->fl.c.flc_flags &= ~FL_SLEEP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("lockd: vfs_lock_file returned %d\n", error);
 	switch (error) {
 		case 0:
-<<<<<<< HEAD
-			ret = nlm_granted;
-			goto out;
-		case -EAGAIN:
-			/*
-			 * If this is a blocking request for an
-			 * already pending lock request then we need
-			 * to put it back on lockd's block list
-			 */
-			if (wait)
-				break;
-			ret = nlm_lck_denied;
-=======
 			nlmsvc_remove_block(block);
 			ret = nlm_granted;
 			goto out;
@@ -722,7 +577,6 @@ nlmsvc_lock(struct svc_rqst *rqstp, struct nlm_file *file,
 			if (!wait)
 				nlmsvc_remove_block(block);
 			ret = async_block ? nlm_lck_blocked : nlm_lck_denied;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		case FILE_LOCK_DEFERRED:
 			if (wait)
@@ -732,28 +586,16 @@ nlmsvc_lock(struct svc_rqst *rqstp, struct nlm_file *file,
 			ret = nlmsvc_defer_lock_rqst(rqstp, block);
 			goto out;
 		case -EDEADLK:
-<<<<<<< HEAD
-			ret = nlm_deadlock;
-			goto out;
-		default:			/* includes ENOLCK */
-=======
 			nlmsvc_remove_block(block);
 			ret = nlm_deadlock;
 			goto out;
 		default:			/* includes ENOLCK */
 			nlmsvc_remove_block(block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = nlm_lck_denied_nolocks;
 			goto out;
 	}
 
 	ret = nlm_lck_blocked;
-<<<<<<< HEAD
-
-	/* Append to list of blocked */
-	nlmsvc_insert_block(block, NLM_NEVER);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	mutex_unlock(&file->f_mutex);
 	nlmsvc_release_block(block);
@@ -769,71 +611,6 @@ nlmsvc_testlock(struct svc_rqst *rqstp, struct nlm_file *file,
 		struct nlm_host *host, struct nlm_lock *lock,
 		struct nlm_lock *conflock, struct nlm_cookie *cookie)
 {
-<<<<<<< HEAD
-	struct nlm_block 	*block = NULL;
-	int			error;
-	__be32			ret;
-
-	dprintk("lockd: nlmsvc_testlock(%s/%ld, ty=%d, %Ld-%Ld)\n",
-				file->f_file->f_path.dentry->d_inode->i_sb->s_id,
-				file->f_file->f_path.dentry->d_inode->i_ino,
-				lock->fl.fl_type,
-				(long long)lock->fl.fl_start,
-				(long long)lock->fl.fl_end);
-
-	/* Get existing block (in case client is busy-waiting) */
-	block = nlmsvc_lookup_block(file, lock);
-
-	if (block == NULL) {
-		struct file_lock *conf = kzalloc(sizeof(*conf), GFP_KERNEL);
-
-		if (conf == NULL)
-			return nlm_granted;
-		block = nlmsvc_create_block(rqstp, host, file, lock, cookie);
-		if (block == NULL) {
-			kfree(conf);
-			return nlm_granted;
-		}
-		block->b_fl = conf;
-	}
-	if (block->b_flags & B_QUEUED) {
-		dprintk("lockd: nlmsvc_testlock deferred block %p flags %d fl %p\n",
-			block, block->b_flags, block->b_fl);
-		if (block->b_flags & B_TIMED_OUT) {
-			nlmsvc_unlink_block(block);
-			ret = nlm_lck_denied;
-			goto out;
-		}
-		if (block->b_flags & B_GOT_CALLBACK) {
-			nlmsvc_unlink_block(block);
-			if (block->b_fl != NULL
-					&& block->b_fl->fl_type != F_UNLCK) {
-				lock->fl = *block->b_fl;
-				goto conf_lock;
-			} else {
-				ret = nlm_granted;
-				goto out;
-			}
-		}
-		ret = nlm_drop_reply;
-		goto out;
-	}
-
-	if (locks_in_grace()) {
-		ret = nlm_lck_denied_grace_period;
-		goto out;
-	}
-	error = vfs_test_lock(file->f_file, &lock->fl);
-	if (error == FILE_LOCK_DEFERRED) {
-		ret = nlmsvc_defer_lock_rqst(rqstp, block);
-		goto out;
-	}
-	if (error) {
-		ret = nlm_lck_denied_nolocks;
-		goto out;
-	}
-	if (lock->fl.fl_type == F_UNLCK) {
-=======
 	int			error;
 	int			mode;
 	__be32			ret;
@@ -862,33 +639,16 @@ nlmsvc_testlock(struct svc_rqst *rqstp, struct nlm_file *file,
 	}
 
 	if (lock->fl.c.flc_type == F_UNLCK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = nlm_granted;
 		goto out;
 	}
 
-<<<<<<< HEAD
-conf_lock:
-	dprintk("lockd: conflicting lock(ty=%d, %Ld-%Ld)\n",
-		lock->fl.fl_type, (long long)lock->fl.fl_start,
-=======
 	dprintk("lockd: conflicting lock(ty=%d, %Ld-%Ld)\n",
 		lock->fl.c.flc_type, (long long)lock->fl.fl_start,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(long long)lock->fl.fl_end);
 	conflock->caller = "somehost";	/* FIXME */
 	conflock->len = strlen(conflock->caller);
 	conflock->oh.len = 0;		/* don't return OH info */
-<<<<<<< HEAD
-	conflock->svid = lock->fl.fl_pid;
-	conflock->fl.fl_type = lock->fl.fl_type;
-	conflock->fl.fl_start = lock->fl.fl_start;
-	conflock->fl.fl_end = lock->fl.fl_end;
-	ret = nlm_lck_denied;
-out:
-	if (block)
-		nlmsvc_release_block(block);
-=======
 	conflock->svid = lock->fl.c.flc_pid;
 	conflock->fl.c.flc_type = lock->fl.c.flc_type;
 	conflock->fl.fl_start = lock->fl.fl_start;
@@ -897,7 +657,6 @@ out:
 
 	ret = nlm_lck_denied;
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -909,16 +668,6 @@ out:
  * must be removed.
  */
 __be32
-<<<<<<< HEAD
-nlmsvc_unlock(struct nlm_file *file, struct nlm_lock *lock)
-{
-	int	error;
-
-	dprintk("lockd: nlmsvc_unlock(%s/%ld, pi=%d, %Ld-%Ld)\n",
-				file->f_file->f_path.dentry->d_inode->i_sb->s_id,
-				file->f_file->f_path.dentry->d_inode->i_ino,
-				lock->fl.fl_pid,
-=======
 nlmsvc_unlock(struct net *net, struct nlm_file *file, struct nlm_lock *lock)
 {
 	int	error = 0;
@@ -927,17 +676,10 @@ nlmsvc_unlock(struct net *net, struct nlm_file *file, struct nlm_lock *lock)
 				nlmsvc_file_inode(file)->i_sb->s_id,
 				nlmsvc_file_inode(file)->i_ino,
 				lock->fl.c.flc_pid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(long long)lock->fl.fl_start,
 				(long long)lock->fl.fl_end);
 
 	/* First, cancel any lock that might be there */
-<<<<<<< HEAD
-	nlmsvc_cancel_blocked(file, lock);
-
-	lock->fl.fl_type = F_UNLCK;
-	error = vfs_lock_file(file->f_file, F_SETLK, &lock->fl, NULL);
-=======
 	nlmsvc_cancel_blocked(net, file, lock);
 
 	lock->fl.c.flc_type = F_UNLCK;
@@ -949,7 +691,6 @@ nlmsvc_unlock(struct net *net, struct nlm_file *file, struct nlm_lock *lock)
 	if (lock->fl.c.flc_file)
 		error |= vfs_lock_file(lock->fl.c.flc_file, F_SETLK,
 					&lock->fl, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (error < 0)? nlm_lck_denied_nolocks : nlm_granted;
 }
@@ -962,21 +703,6 @@ nlmsvc_unlock(struct net *net, struct nlm_file *file, struct nlm_lock *lock)
  * The calling procedure must check whether the file can be closed.
  */
 __be32
-<<<<<<< HEAD
-nlmsvc_cancel_blocked(struct nlm_file *file, struct nlm_lock *lock)
-{
-	struct nlm_block	*block;
-	int status = 0;
-
-	dprintk("lockd: nlmsvc_cancel(%s/%ld, pi=%d, %Ld-%Ld)\n",
-				file->f_file->f_path.dentry->d_inode->i_sb->s_id,
-				file->f_file->f_path.dentry->d_inode->i_ino,
-				lock->fl.fl_pid,
-				(long long)lock->fl.fl_start,
-				(long long)lock->fl.fl_end);
-
-	if (locks_in_grace())
-=======
 nlmsvc_cancel_blocked(struct net *net, struct nlm_file *file, struct nlm_lock *lock)
 {
 	struct nlm_block	*block;
@@ -991,22 +717,16 @@ nlmsvc_cancel_blocked(struct net *net, struct nlm_file *file, struct nlm_lock *l
 				(long long)lock->fl.fl_end);
 
 	if (locks_in_grace(net))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return nlm_lck_denied_grace_period;
 
 	mutex_lock(&file->f_mutex);
 	block = nlmsvc_lookup_block(file, lock);
 	mutex_unlock(&file->f_mutex);
 	if (block != NULL) {
-<<<<<<< HEAD
-		vfs_cancel_lock(block->b_file->f_file,
-				&block->b_call->a_args.lock.fl);
-=======
 		struct file_lock *fl = &block->b_call->a_args.lock.fl;
 
 		mode = lock_to_openmode(fl);
 		vfs_cancel_lock(block->b_file->f_file[mode], fl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = nlmsvc_unlink_block(block);
 		nlmsvc_release_block(block);
 	}
@@ -1017,42 +737,22 @@ nlmsvc_cancel_blocked(struct net *net, struct nlm_file *file, struct nlm_lock *l
  * This is a callback from the filesystem for VFS file lock requests.
  * It will be used if lm_grant is defined and the filesystem can not
  * respond to the request immediately.
-<<<<<<< HEAD
- * For GETLK request it will copy the reply to the nlm_block.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * For SETLK or SETLKW request it will get the local posix lock.
  * In all cases it will move the block to the head of nlm_blocked q where
  * nlmsvc_retry_blocked() can send back a reply for SETLKW or revisit the
  * deferred rpc for GETLK and SETLK.
  */
 static void
-<<<<<<< HEAD
-nlmsvc_update_deferred_block(struct nlm_block *block, struct file_lock *conf,
-			     int result)
-=======
 nlmsvc_update_deferred_block(struct nlm_block *block, int result)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	block->b_flags |= B_GOT_CALLBACK;
 	if (result == 0)
 		block->b_granted = 1;
 	else
 		block->b_flags |= B_TIMED_OUT;
-<<<<<<< HEAD
-	if (conf) {
-		if (block->b_fl)
-			__locks_copy_lock(block->b_fl, conf);
-	}
-}
-
-static int nlmsvc_grant_deferred(struct file_lock *fl, struct file_lock *conf,
-					int result)
-=======
 }
 
 static int nlmsvc_grant_deferred(struct file_lock *fl, int result)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlm_block *block;
 	int rc = -ENOENT;
@@ -1067,11 +767,7 @@ static int nlmsvc_grant_deferred(struct file_lock *fl, int result)
 					rc = -ENOLCK;
 					break;
 				}
-<<<<<<< HEAD
-				nlmsvc_update_deferred_block(block, conf, result);
-=======
 				nlmsvc_update_deferred_block(block, result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else if (result == 0)
 				block->b_granted = 1;
 
@@ -1113,17 +809,6 @@ nlmsvc_notify_blocked(struct file_lock *fl)
 	printk(KERN_WARNING "lockd: notification for unknown block!\n");
 }
 
-<<<<<<< HEAD
-static int nlmsvc_same_owner(struct file_lock *fl1, struct file_lock *fl2)
-{
-	return fl1->fl_owner == fl2->fl_owner && fl1->fl_pid == fl2->fl_pid;
-}
-
-const struct lock_manager_operations nlmsvc_lock_operations = {
-	.lm_compare_owner = nlmsvc_same_owner,
-	.lm_notify = nlmsvc_notify_blocked,
-	.lm_grant = nlmsvc_grant_deferred,
-=======
 static fl_owner_t nlmsvc_get_owner(fl_owner_t owner)
 {
 	return nlmsvc_get_lockowner(owner);
@@ -1139,7 +824,6 @@ const struct lock_manager_operations nlmsvc_lock_operations = {
 	.lm_grant = nlmsvc_grant_deferred,
 	.lm_get_owner = nlmsvc_get_owner,
 	.lm_put_owner = nlmsvc_put_owner,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1158,10 +842,7 @@ nlmsvc_grant_blocked(struct nlm_block *block)
 {
 	struct nlm_file		*file = block->b_file;
 	struct nlm_lock		*lock = &block->b_call->a_args.lock;
-<<<<<<< HEAD
-=======
 	int			mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			error;
 	loff_t			fl_start, fl_end;
 
@@ -1184,20 +865,12 @@ nlmsvc_grant_blocked(struct nlm_block *block)
 	/* vfs_lock_file() can mangle fl_start and fl_end, but we need
 	 * them unchanged for the GRANT_MSG
 	 */
-<<<<<<< HEAD
-	lock->fl.fl_flags |= FL_SLEEP;
-	fl_start = lock->fl.fl_start;
-	fl_end = lock->fl.fl_end;
-	error = vfs_lock_file(file->f_file, F_SETLK, &lock->fl, NULL);
-	lock->fl.fl_flags &= ~FL_SLEEP;
-=======
 	lock->fl.c.flc_flags |= FL_SLEEP;
 	fl_start = lock->fl.fl_start;
 	fl_end = lock->fl.fl_end;
 	mode = lock_to_openmode(&lock->fl);
 	error = vfs_lock_file(file->f_file[mode], F_SETLK, &lock->fl, NULL);
 	lock->fl.c.flc_flags &= ~FL_SLEEP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock->fl.fl_start = fl_start;
 	lock->fl.fl_end = fl_end;
 
@@ -1305,28 +978,14 @@ void
 nlmsvc_grant_reply(struct nlm_cookie *cookie, __be32 status)
 {
 	struct nlm_block	*block;
-<<<<<<< HEAD
-=======
 	struct file_lock	*fl;
 	int			error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("grant_reply: looking for cookie %x, s=%d \n",
 		*(unsigned int *)(cookie->data), status);
 	if (!(block = nlmsvc_find_block(cookie)))
 		return;
 
-<<<<<<< HEAD
-	if (block) {
-		if (status == nlm_lck_denied_grace_period) {
-			/* Try again in a couple of seconds */
-			nlmsvc_insert_block(block, 10 * HZ);
-		} else {
-			/* Lock is now held by client, or has been rejected.
-			 * In both cases, the block should be removed. */
-			nlmsvc_unlink_block(block);
-		}
-=======
 	switch (status) {
 	case nlm_lck_denied_grace_period:
 		/* Try again in a couple of seconds */
@@ -1347,7 +1006,6 @@ nlmsvc_grant_reply(struct nlm_cookie *cookie, __be32 status)
 		 * just unlink it either way.
 		 */
 		nlmsvc_unlink_block(block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	nlmsvc_release_block(block);
 }
@@ -1374,23 +1032,14 @@ retry_deferred_block(struct nlm_block *block)
  * picks up locks that can be granted, or grant notifications that must
  * be retransmitted.
  */
-<<<<<<< HEAD
-unsigned long
-nlmsvc_retry_blocked(void)
-=======
 void
 nlmsvc_retry_blocked(struct svc_rqst *rqstp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long	timeout = MAX_SCHEDULE_TIMEOUT;
 	struct nlm_block *block;
 
 	spin_lock(&nlm_blocked_lock);
-<<<<<<< HEAD
-	while (!list_empty(&nlm_blocked) && !kthread_should_stop()) {
-=======
 	while (!list_empty(&nlm_blocked) && !svc_thread_should_stop(rqstp)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		block = list_entry(nlm_blocked.next, struct nlm_block, b_list);
 
 		if (block->b_when == NLM_NEVER)
@@ -1413,10 +1062,6 @@ nlmsvc_retry_blocked(struct svc_rqst *rqstp)
 	}
 	spin_unlock(&nlm_blocked_lock);
 
-<<<<<<< HEAD
-	return timeout;
-=======
 	if (timeout < MAX_SCHEDULE_TIMEOUT)
 		mod_timer(&nlmsvc_retry, jiffies + timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET  is implemented using the  BSD Socket
@@ -19,14 +16,6 @@
  *		Alexey Kuznetsov:	Major changes for new routing code.
  *		Mike McLagan    :	Routing by source
  *		Robert Olsson   :	Added rt_cache statistics
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ROUTE_H
 #define _ROUTE_H
@@ -35,17 +24,12 @@
 #include <net/inetpeer.h>
 #include <net/flow.h>
 #include <net/inet_sock.h>
-<<<<<<< HEAD
-#include <linux/in_route.h>
-#include <linux/rtnetlink.h>
-=======
 #include <net/ip_fib.h>
 #include <net/arp.h>
 #include <net/ndisc.h>
 #include <linux/in_route.h>
 #include <linux/rtnetlink.h>
 #include <linux/rcupdate.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/route.h>
 #include <linux/ip.h>
 #include <linux/cache.h>
@@ -53,40 +37,6 @@
 
 #define RTO_ONLINK	0x01
 
-<<<<<<< HEAD
-#define RT_CONN_FLAGS(sk)   (RT_TOS(inet_sk(sk)->tos) | sock_flag(sk, SOCK_LOCALROUTE))
-
-struct fib_nh;
-struct inet_peer;
-struct fib_info;
-struct rtable {
-	struct dst_entry	dst;
-
-	/* Lookup key. */
-	__be32			rt_key_dst;
-	__be32			rt_key_src;
-
-	int			rt_genid;
-	unsigned		rt_flags;
-	__u16			rt_type;
-	__u8			rt_key_tos;
-
-	__be32			rt_dst;	/* Path destination	*/
-	__be32			rt_src;	/* Path source		*/
-	int			rt_route_iif;
-	int			rt_iif;
-	int			rt_oif;
-	__u32			rt_mark;
-
-	/* Info on neighbour */
-	__be32			rt_gateway;
-
-	/* Miscellaneous cached information */
-	__be32			rt_spec_dst; /* RFC1122 specific destination */
-	u32			rt_peer_genid;
-	struct inet_peer	*peer; /* long-living peer info */
-	struct fib_info		*fi; /* for client ref to shared metrics */
-=======
 static inline __u8 ip_sock_rt_scope(const struct sock *sk)
 {
 	if (sock_flag(sk, SOCK_LOCALROUTE))
@@ -125,23 +75,15 @@ struct rtable {
 	/* Miscellaneous cached information */
 	u32			rt_mtu_locked:1,
 				rt_pmtu:31;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline bool rt_is_input_route(const struct rtable *rt)
 {
-<<<<<<< HEAD
-	return rt->rt_route_iif != 0;
-=======
 	return rt->rt_is_input != 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool rt_is_output_route(const struct rtable *rt)
 {
-<<<<<<< HEAD
-	return rt->rt_route_iif == 0;
-=======
 	return rt->rt_is_input == 0;
 }
 
@@ -150,7 +92,6 @@ static inline __be32 rt_nexthop(const struct rtable *rt, __be32 daddr)
 	if (rt->rt_gw_family == AF_INET)
 		return rt->rt_gw4;
 	return daddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct ip_rt_acct {
@@ -161,46 +102,19 @@ struct ip_rt_acct {
 };
 
 struct rt_cache_stat {
-<<<<<<< HEAD
-        unsigned int in_hit;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         unsigned int in_slow_tot;
         unsigned int in_slow_mc;
         unsigned int in_no_route;
         unsigned int in_brd;
         unsigned int in_martian_dst;
         unsigned int in_martian_src;
-<<<<<<< HEAD
-        unsigned int out_hit;
         unsigned int out_slow_tot;
         unsigned int out_slow_mc;
-        unsigned int gc_total;
-        unsigned int gc_ignored;
-        unsigned int gc_goal_miss;
-        unsigned int gc_dst_overflow;
-        unsigned int in_hlist_search;
-        unsigned int out_hlist_search;
-=======
-        unsigned int out_slow_tot;
-        unsigned int out_slow_mc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct ip_rt_acct __percpu *ip_rt_acct;
 
 struct in_device;
-<<<<<<< HEAD
-extern int		ip_rt_init(void);
-extern void		ip_rt_redirect(__be32 old_gw, __be32 dst, __be32 new_gw,
-				       __be32 src, struct net_device *dev);
-extern void		rt_cache_flush(struct net *net, int how);
-extern void		rt_cache_flush_batch(struct net *net);
-extern struct rtable *__ip_route_output_key(struct net *, struct flowi4 *flp);
-extern struct rtable *ip_route_output_flow(struct net *, struct flowi4 *flp,
-					   struct sock *sk);
-extern struct dst_entry *ipv4_blackhole_route(struct net *net, struct dst_entry *dst_orig);
-=======
 
 int ip_rt_init(void);
 void rt_cache_flush(struct net *net);
@@ -221,7 +135,6 @@ struct rtable *ip_route_output_flow(struct net *, struct flowi4 *flp,
 				    const struct sock *sk);
 struct dst_entry *ipv4_blackhole_route(struct net *net,
 				       struct dst_entry *dst_orig);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct rtable *ip_route_output_key(struct net *net, struct flowi4 *flp)
 {
@@ -233,44 +146,25 @@ static inline struct rtable *ip_route_output(struct net *net, __be32 daddr,
 {
 	struct flowi4 fl4 = {
 		.flowi4_oif = oif,
-<<<<<<< HEAD
-		.daddr = daddr,
-		.saddr = saddr,
-		.flowi4_tos = tos,
-=======
 		.flowi4_tos = tos,
 		.daddr = daddr,
 		.saddr = saddr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	return ip_route_output_key(net, &fl4);
 }
 
 static inline struct rtable *ip_route_output_ports(struct net *net, struct flowi4 *fl4,
-<<<<<<< HEAD
-						   struct sock *sk,
-=======
 						   const struct sock *sk,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   __be32 daddr, __be32 saddr,
 						   __be16 dport, __be16 sport,
 						   __u8 proto, __u8 tos, int oif)
 {
-<<<<<<< HEAD
-	flowi4_init_output(fl4, oif, sk ? sk->sk_mark : 0, tos,
-			   RT_SCOPE_UNIVERSE, proto,
-			   sk ? inet_sk_flowi_flags(sk) : 0,
-			   daddr, saddr, dport, sport, sock_net_uid(net, sk));
-	if (sk)
-		security_sk_classify_flow(sk, flowi4_to_flowi(fl4));
-=======
 	flowi4_init_output(fl4, oif, sk ? READ_ONCE(sk->sk_mark) : 0, tos,
 			   sk ? ip_sock_rt_scope(sk) : RT_SCOPE_UNIVERSE,
 			   proto, sk ? inet_sk_flowi_flags(sk) : 0,
 			   daddr, saddr, dport, sport, sock_net_uid(net, sk));
 	if (sk)
 		security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ip_route_output_flow(net, fl4, sk);
 }
 
@@ -287,11 +181,6 @@ static inline struct rtable *ip_route_output_gre(struct net *net, struct flowi4 
 	fl4->fl4_gre_key = gre_key;
 	return ip_route_output_key(net, fl4);
 }
-<<<<<<< HEAD
-
-extern int ip_route_input_common(struct sk_buff *skb, __be32 dst, __be32 src,
-				 u8 tos, struct net_device *devin, bool noref);
-=======
 int ip_mc_validate_source(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 			  u8 tos, struct net_device *dev,
 			  struct in_device *in_dev, u32 *itag);
@@ -300,41 +189,10 @@ int ip_route_input_noref(struct sk_buff *skb, __be32 dst, __be32 src,
 int ip_route_use_hint(struct sk_buff *skb, __be32 dst, __be32 src,
 		      u8 tos, struct net_device *devin,
 		      const struct sk_buff *hint);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int ip_route_input(struct sk_buff *skb, __be32 dst, __be32 src,
 				 u8 tos, struct net_device *devin)
 {
-<<<<<<< HEAD
-	return ip_route_input_common(skb, dst, src, tos, devin, false);
-}
-
-static inline int ip_route_input_noref(struct sk_buff *skb, __be32 dst, __be32 src,
-				       u8 tos, struct net_device *devin)
-{
-	return ip_route_input_common(skb, dst, src, tos, devin, true);
-}
-
-extern unsigned short	ip_rt_frag_needed(struct net *net, const struct iphdr *iph,
-					  unsigned short new_mtu, struct net_device *dev);
-extern void		ip_rt_send_redirect(struct sk_buff *skb);
-
-extern unsigned		inet_addr_type(struct net *net, __be32 addr);
-extern unsigned		inet_dev_addr_type(struct net *net, const struct net_device *dev, __be32 addr);
-extern void		ip_rt_multicast_event(struct in_device *);
-extern int		ip_rt_ioctl(struct net *, unsigned int cmd, void __user *arg);
-extern void		ip_rt_get_source(u8 *src, struct sk_buff *skb, struct rtable *rt);
-extern int		ip_rt_dump(struct sk_buff *skb,  struct netlink_callback *cb);
-
-struct in_ifaddr;
-extern void fib_add_ifaddr(struct in_ifaddr *);
-extern void fib_del_ifaddr(struct in_ifaddr *, struct in_ifaddr *);
-
-static inline void ip_rt_put(struct rtable * rt)
-{
-	if (rt)
-		dst_release(&rt->dst);
-=======
 	int err;
 
 	rcu_read_lock();
@@ -389,7 +247,6 @@ static inline void ip_rt_put(struct rtable *rt)
 	 */
 	BUILD_BUG_ON(offsetof(struct rtable, dst) != 0);
 	dst_release(&rt->dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define IPTOS_RT_MASK	(IPTOS_TOS_MASK & ~3)
@@ -425,32 +282,6 @@ static inline char rt_tos2priority(u8 tos)
  * ip_route_newports() calls.
  */
 
-<<<<<<< HEAD
-static inline void ip_route_connect_init(struct flowi4 *fl4, __be32 dst, __be32 src,
-					 u32 tos, int oif, u8 protocol,
-					 __be16 sport, __be16 dport,
-					 struct sock *sk, bool can_sleep)
-{
-	__u8 flow_flags = 0;
-
-	if (inet_sk(sk)->transparent)
-		flow_flags |= FLOWI_FLAG_ANYSRC;
-	if (protocol == IPPROTO_TCP)
-		flow_flags |= FLOWI_FLAG_PRECOW_METRICS;
-	if (can_sleep)
-		flow_flags |= FLOWI_FLAG_CAN_SLEEP;
-
-	flowi4_init_output(fl4, oif, sk->sk_mark, tos, RT_SCOPE_UNIVERSE,
-			   protocol, flow_flags, dst, src, dport, sport,
-			   sk->sk_uid);
-}
-
-static inline struct rtable *ip_route_connect(struct flowi4 *fl4,
-					      __be32 dst, __be32 src, u32 tos,
-					      int oif, u8 protocol,
-					      __be16 sport, __be16 dport,
-					      struct sock *sk, bool can_sleep)
-=======
 static inline void ip_route_connect_init(struct flowi4 *fl4, __be32 dst,
 					 __be32 src, int oif, u8 protocol,
 					 __be16 sport, __be16 dport,
@@ -470,82 +301,40 @@ static inline struct rtable *ip_route_connect(struct flowi4 *fl4, __be32 dst,
 					      __be32 src, int oif, u8 protocol,
 					      __be16 sport, __be16 dport,
 					      const struct sock *sk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(sk);
 	struct rtable *rt;
 
-<<<<<<< HEAD
-	ip_route_connect_init(fl4, dst, src, tos, oif, protocol,
-			      sport, dport, sk, can_sleep);
-=======
 	ip_route_connect_init(fl4, dst, src, oif, protocol, sport, dport, sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dst || !src) {
 		rt = __ip_route_output_key(net, fl4);
 		if (IS_ERR(rt))
 			return rt;
 		ip_rt_put(rt);
-<<<<<<< HEAD
-		flowi4_update_output(fl4, oif, tos, fl4->daddr, fl4->saddr);
-	}
-	security_sk_classify_flow(sk, flowi4_to_flowi(fl4));
-=======
 		flowi4_update_output(fl4, oif, fl4->daddr, fl4->saddr);
 	}
 	security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ip_route_output_flow(net, fl4, sk);
 }
 
 static inline struct rtable *ip_route_newports(struct flowi4 *fl4, struct rtable *rt,
 					       __be16 orig_sport, __be16 orig_dport,
 					       __be16 sport, __be16 dport,
-<<<<<<< HEAD
-					       struct sock *sk)
-=======
 					       const struct sock *sk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (sport != orig_sport || dport != orig_dport) {
 		fl4->fl4_dport = dport;
 		fl4->fl4_sport = sport;
 		ip_rt_put(rt);
-<<<<<<< HEAD
-		flowi4_update_output(fl4, sk->sk_bound_dev_if,
-				     RT_CONN_FLAGS(sk), fl4->daddr,
-				     fl4->saddr);
-		security_sk_classify_flow(sk, flowi4_to_flowi(fl4));
-=======
 		flowi4_update_output(fl4, sk->sk_bound_dev_if, fl4->daddr,
 				     fl4->saddr);
 		security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ip_route_output_flow(sock_net(sk), fl4, sk);
 	}
 	return rt;
 }
 
-<<<<<<< HEAD
-extern void rt_bind_peer(struct rtable *rt, __be32 daddr, int create);
-
-static inline struct inet_peer *rt_get_peer(struct rtable *rt, __be32 daddr)
-{
-	if (rt->peer)
-		return rt->peer;
-
-	rt_bind_peer(rt, daddr, 0);
-	return rt->peer;
-}
-
-static inline int inet_iif(const struct sk_buff *skb)
-{
-	return skb_rtable(skb)->rt_iif;
-}
-
-extern int sysctl_ip_default_ttl;
-=======
 static inline int inet_iif(const struct sk_buff *skb)
 {
 	struct rtable *rt = skb_rtable(skb);
@@ -555,19 +344,10 @@ static inline int inet_iif(const struct sk_buff *skb)
 
 	return skb->skb_iif;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int ip4_dst_hoplimit(const struct dst_entry *dst)
 {
 	int hoplimit = dst_metric_raw(dst, RTAX_HOPLIMIT);
-<<<<<<< HEAD
-
-	if (hoplimit == 0)
-		hoplimit = sysctl_ip_default_ttl;
-	return hoplimit;
-}
-
-=======
 	struct net *net = dev_net(dst->dev);
 
 	if (hoplimit == 0)
@@ -605,5 +385,4 @@ static inline struct neighbour *ip_neigh_for_gw(struct rtable *rt,
 	return neigh;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _ROUTE_H */

@@ -1,31 +1,16 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Memory copy functions for 32-bit PowerPC.
  *
  * Copyright (C) 1996-2005 Paul Mackerras.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-=======
  */
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h>
 #include <asm/cache.h>
 #include <asm/errno.h>
 #include <asm/ppc_asm.h>
-<<<<<<< HEAD
-=======
 #include <asm/code-patching-asm.h>
 #include <asm/kasan.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define COPY_16_BYTES		\
 	lwz	r7,4(r4);	\
@@ -62,24 +47,6 @@
 9 ## n ## 1:					\
 	addi	r5,r5,-(16 * n);		\
 	b	105f;				\
-<<<<<<< HEAD
-.section __ex_table,"a";			\
-	.align	2;				\
-	.long	8 ## n ## 0b,9 ## n ## 0b;	\
-	.long	8 ## n ## 1b,9 ## n ## 0b;	\
-	.long	8 ## n ## 2b,9 ## n ## 0b;	\
-	.long	8 ## n ## 3b,9 ## n ## 0b;	\
-	.long	8 ## n ## 4b,9 ## n ## 1b;	\
-	.long	8 ## n ## 5b,9 ## n ## 1b;	\
-	.long	8 ## n ## 6b,9 ## n ## 1b;	\
-	.long	8 ## n ## 7b,9 ## n ## 1b;	\
-	.text
-
-	.text
-	.stabs	"arch/powerpc/lib/",N_SO,0,0,0f
-	.stabs	"copy_32.S",N_SO,0,0,0f
-0:
-=======
 	EX_TABLE(8 ## n ## 0b,9 ## n ## 0b);	\
 	EX_TABLE(8 ## n ## 1b,9 ## n ## 0b);	\
 	EX_TABLE(8 ## n ## 2b,9 ## n ## 0b);	\
@@ -90,14 +57,11 @@
 	EX_TABLE(8 ## n ## 7b,9 ## n ## 1b)
 
 	.text
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 CACHELINE_BYTES = L1_CACHE_BYTES
 LG_CACHELINE_BYTES = L1_CACHE_SHIFT
 CACHELINE_MASK = (L1_CACHE_BYTES-1)
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_KASAN
 _GLOBAL(memset16)
 	rlwinm.	r0 ,r5, 31, 1, 31
@@ -114,25 +78,10 @@ _GLOBAL(memset16)
 EXPORT_SYMBOL(memset16)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Use dcbz on the complete cache lines in the destination
  * to set them to zero.  This requires that the destination
  * area is cacheable.  -- paulus
-<<<<<<< HEAD
- */
-_GLOBAL(cacheable_memzero)
-	mr	r5,r4
-	li	r4,0
-	addi	r6,r3,-4
-	cmplwi	0,r5,4
-	blt	7f
-	stwu	r4,4(r6)
-	beqlr
-	andi.	r0,r6,3
-	add	r5,r0,r5
-	subf	r6,r0,r6
-=======
  *
  * During early init, cache might not be active yet, so dcbz cannot be used.
  * We therefore skip the optimised bloc that uses dcbz. This jump is
@@ -158,7 +107,6 @@ _GLOBAL_KASAN(memset)
 5:	b	2f
 	patch_site	5b, patch__memset_nocache
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clrlwi	r7,r6,32-LG_CACHELINE_BYTES
 	add	r8,r7,r5
 	srwi	r9,r8,LG_CACHELINE_BYTES
@@ -177,20 +125,13 @@ _GLOBAL_KASAN(memset)
 	bdnz	10b
 	clrlwi	r5,r8,32-LG_CACHELINE_BYTES
 	addi	r5,r5,4
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 2:	srwi	r0,r5,2
 	mtctr	r0
 	bdz	6f
 1:	stwu	r4,4(r6)
 	bdnz	1b
 6:	andi.	r5,r5,3
-<<<<<<< HEAD
-7:	cmpwi	0,r5,0
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	beqlr
 	mtctr	r5
 	addi	r6,r6,3
@@ -198,32 +139,6 @@ _GLOBAL_KASAN(memset)
 	bdnz	8b
 	blr
 
-<<<<<<< HEAD
-_GLOBAL(memset)
-	rlwimi	r4,r4,8,16,23
-	rlwimi	r4,r4,16,0,15
-	addi	r6,r3,-4
-	cmplwi	0,r5,4
-	blt	7f
-	stwu	r4,4(r6)
-	beqlr
-	andi.	r0,r6,3
-	add	r5,r0,r5
-	subf	r6,r0,r6
-	srwi	r0,r5,2
-	mtctr	r0
-	bdz	6f
-1:	stwu	r4,4(r6)
-	bdnz	1b
-6:	andi.	r5,r5,3
-7:	cmpwi	0,r5,0
-	beqlr
-	mtctr	r5
-	addi	r6,r6,3
-8:	stbu	r4,1(r6)
-	bdnz	8b
-	blr
-=======
 7:	cmpwi	0,r5,0
 	beqlr
 	mtctr	r5
@@ -233,7 +148,6 @@ _GLOBAL(memset)
 	blr
 EXPORT_SYMBOL(memset)
 EXPORT_SYMBOL_KASAN(memset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This version uses dcbz on the complete cache lines in the
@@ -241,10 +155,6 @@ EXPORT_SYMBOL_KASAN(memset)
  * the destination area is cacheable.
  * We only use this version if the source and dest don't overlap.
  * -- paulus.
-<<<<<<< HEAD
- */
-_GLOBAL(cacheable_memcpy)
-=======
  *
  * During early init, cache might not be active yet, so dcbz cannot be used.
  * We therefore jump to generic_memcpy which doesn't use dcbz. This jump is
@@ -259,17 +169,12 @@ _GLOBAL_KASAN(memcpy)
 1:	b	generic_memcpy
 	patch_site	1b, patch__memcpy_nocache
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add	r7,r3,r5		/* test if the src & dst overlap */
 	add	r8,r4,r5
 	cmplw	0,r4,r7
 	cmplw	1,r3,r8
 	crand	0,0,4			/* cr0.lt &= cr1.lt */
-<<<<<<< HEAD
-	blt	memcpy			/* if regions overlap */
-=======
 	blt	generic_memcpy		/* if regions overlap */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	addi	r4,r4,-4
 	addi	r6,r3,-4
@@ -284,15 +189,9 @@ _GLOBAL_KASAN(memcpy)
 	mtctr	r8
 	beq+	61f
 70:	lbz	r9,4(r4)		/* do some bytes */
-<<<<<<< HEAD
-	stb	r9,4(r6)
-	addi	r4,r4,1
-	addi	r6,r6,1
-=======
 	addi	r4,r4,1
 	addi	r6,r6,1
 	stb	r9,3(r6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bdnz	70b
 61:	srwi.	r0,r0,2
 	mtctr	r0
@@ -334,21 +233,6 @@ _GLOBAL_KASAN(memcpy)
 64:	andi.	r0,r5,3
 	mtctr	r0
 	beq+	65f
-<<<<<<< HEAD
-40:	lbz	r0,4(r4)
-	stb	r0,4(r6)
-	addi	r4,r4,1
-	addi	r6,r6,1
-	bdnz	40b
-65:	blr
-
-_GLOBAL(memmove)
-	cmplw	0,r3,r4
-	bgt	backwards_memcpy
-	/* fall through */
-
-_GLOBAL(memcpy)
-=======
 	addi	r4,r4,3
 	addi	r6,r6,3
 40:	lbzu	r0,1(r4)
@@ -361,7 +245,6 @@ EXPORT_SYMBOL_KASAN(memcpy)
 EXPORT_SYMBOL_KASAN(memmove)
 
 generic_memcpy:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srwi.	r7,r5,3
 	addi	r6,r3,-4
 	addi	r4,r4,-4
@@ -463,20 +346,10 @@ _GLOBAL(__copy_tofrom_user)
 73:	stwu	r9,4(r6)
 	bdnz	72b
 
-<<<<<<< HEAD
-	.section __ex_table,"a"
-	.align	2
-	.long	70b,100f
-	.long	71b,101f
-	.long	72b,102f
-	.long	73b,103f
-	.text
-=======
 	EX_TABLE(70b,100f)
 	EX_TABLE(71b,101f)
 	EX_TABLE(72b,102f)
 	EX_TABLE(73b,103f)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 58:	srwi.	r0,r5,LG_CACHELINE_BYTES /* # complete cachelines */
 	clrlwi	r5,r5,32-LG_CACHELINE_BYTES
@@ -511,14 +384,7 @@ _GLOBAL(__copy_tofrom_user)
 
 53:	dcbt	r3,r4
 54:	dcbz	r11,r6
-<<<<<<< HEAD
-	.section __ex_table,"a"
-	.align	2
-	.long	54b,105f
-	.text
-=======
 	EX_TABLE(54b,105f)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* the main body of the cacheline loop */
 	COPY_16_BYTES_WITHEX(0)
 #if L1_CACHE_BYTES >= 32
@@ -637,33 +503,6 @@ _GLOBAL(__copy_tofrom_user)
 	bdnz	130b
 /* then clear out the destination: r3 bytes starting at 4(r6) */
 132:	mfctr	r3
-<<<<<<< HEAD
-	srwi.	r0,r3,2
-	li	r9,0
-	mtctr	r0
-	beq	113f
-112:	stwu	r9,4(r6)
-	bdnz	112b
-113:	andi.	r0,r3,3
-	mtctr	r0
-	beq	120f
-114:	stb	r9,4(r6)
-	addi	r6,r6,1
-	bdnz	114b
-120:	blr
-
-	.section __ex_table,"a"
-	.align	2
-	.long	30b,108b
-	.long	31b,109b
-	.long	40b,110b
-	.long	41b,111b
-	.long	130b,132b
-	.long	131b,120b
-	.long	112b,120b
-	.long	114b,120b
-	.text
-=======
 120:	blr
 
 	EX_TABLE(30b,108b)
@@ -674,4 +513,3 @@ _GLOBAL(__copy_tofrom_user)
 	EX_TABLE(131b,120b)
 
 EXPORT_SYMBOL(__copy_tofrom_user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

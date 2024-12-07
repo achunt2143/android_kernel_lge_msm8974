@@ -1,34 +1,9 @@
-<<<<<<< HEAD
-/*
- *  linux/fs/9p/vfs_dentry.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file contians vfs dentry ops for the 9P2000 protocol.
  *
  *  Copyright (C) 2004 by Eric Van Hensbergen <ericvh@gmail.com>
  *  Copyright (C) 2002 by Ron Minnich <rminnich@lanl.gov>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2
- *  as published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to:
- *  Free Software Foundation
- *  51 Franklin Street, Fifth Floor
- *  Boston, MA  02111-1301  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -38,13 +13,7 @@
 #include <linux/pagemap.h>
 #include <linux/stat.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/inet.h>
 #include <linux/namei.h>
-#include <linux/idr.h>
-=======
-#include <linux/namei.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <net/9p/9p.h>
@@ -55,45 +24,17 @@
 #include "fid.h"
 
 /**
-<<<<<<< HEAD
- * v9fs_dentry_delete - called when dentry refcount equals 0
- * @dentry:  dentry in question
- *
- * By returning 1 here we should remove cacheing of unused
- * dentry components.
- *
- */
-
-static int v9fs_dentry_delete(const struct dentry *dentry)
-{
-	p9_debug(P9_DEBUG_VFS, " dentry: %s (%p)\n",
-		 dentry->d_name.name, dentry);
-
-	return 1;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * v9fs_cached_dentry_delete - called when dentry refcount equals 0
  * @dentry:  dentry in question
  *
  */
 static int v9fs_cached_dentry_delete(const struct dentry *dentry)
 {
-<<<<<<< HEAD
-	p9_debug(P9_DEBUG_VFS, " dentry: %s (%p)\n",
-		 dentry->d_name.name, dentry);
-
-	/* Don't cache negative dentries */
-	if (!dentry->d_inode)
-=======
 	p9_debug(P9_DEBUG_VFS, " dentry: %pd (%p)\n",
 		 dentry, dentry);
 
 	/* Don't cache negative dentries */
 	if (d_really_is_negative(dentry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	return 0;
 }
@@ -106,23 +47,6 @@ static int v9fs_cached_dentry_delete(const struct dentry *dentry)
 
 static void v9fs_dentry_release(struct dentry *dentry)
 {
-<<<<<<< HEAD
-	struct v9fs_dentry *dent;
-	struct p9_fid *temp, *current_fid;
-
-	p9_debug(P9_DEBUG_VFS, " dentry: %s (%p)\n",
-		 dentry->d_name.name, dentry);
-	dent = dentry->d_fsdata;
-	if (dent) {
-		list_for_each_entry_safe(current_fid, temp, &dent->fidlist,
-									dlist) {
-			p9_client_clunk(current_fid);
-		}
-
-		kfree(dent);
-		dentry->d_fsdata = NULL;
-	}
-=======
 	struct hlist_node *p, *n;
 
 	p9_debug(P9_DEBUG_VFS, " dentry: %pd (%p)\n",
@@ -130,7 +54,6 @@ static void v9fs_dentry_release(struct dentry *dentry)
 	hlist_for_each_safe(p, n, (struct hlist_head *)&dentry->d_fsdata)
 		p9_fid_put(hlist_entry(p, struct p9_fid, dlist));
 	dentry->d_fsdata = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int v9fs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
@@ -142,11 +65,7 @@ static int v9fs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
 	if (flags & LOOKUP_RCU)
 		return -ECHILD;
 
-<<<<<<< HEAD
-	inode = dentry->d_inode;
-=======
 	inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!inode)
 		goto out_valid;
 
@@ -154,10 +73,7 @@ static int v9fs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
 	if (v9inode->cache_validity & V9FS_INO_INVALID_ATTR) {
 		int retval;
 		struct v9fs_session_info *v9ses;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fid = v9fs_fid_lookup(dentry);
 		if (IS_ERR(fid))
 			return PTR_ERR(fid);
@@ -167,11 +83,8 @@ static int v9fs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
 			retval = v9fs_refresh_inode_dotl(fid, inode);
 		else
 			retval = v9fs_refresh_inode(fid, inode);
-<<<<<<< HEAD
-=======
 		p9_fid_put(fid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (retval == -ENOENT)
 			return 0;
 		if (retval < 0)
@@ -183,19 +96,12 @@ out_valid:
 
 const struct dentry_operations v9fs_cached_dentry_operations = {
 	.d_revalidate = v9fs_lookup_revalidate,
-<<<<<<< HEAD
-=======
 	.d_weak_revalidate = v9fs_lookup_revalidate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.d_delete = v9fs_cached_dentry_delete,
 	.d_release = v9fs_dentry_release,
 };
 
 const struct dentry_operations v9fs_dentry_operations = {
-<<<<<<< HEAD
-	.d_delete = v9fs_dentry_delete,
-=======
 	.d_delete = always_delete_dentry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.d_release = v9fs_dentry_release,
 };

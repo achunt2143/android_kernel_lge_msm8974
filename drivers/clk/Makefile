@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-
-obj-$(CONFIG_CLKDEV_LOOKUP)	+= clkdev.o
-obj-$(CONFIG_COMMON_CLK)	+= clk.o clk-fixed-rate.o clk-gate.o \
-				   clk-mux.o clk-divider.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 # common clock types
 obj-$(CONFIG_HAVE_CLK)		+= clk-devres.o clk-bulk.o clkdev.o
@@ -143,4 +137,3 @@ endif
 obj-y					+= xilinx/
 obj-$(CONFIG_ARCH_ZYNQ)			+= zynq/
 obj-$(CONFIG_COMMON_CLK_ZYNQMP)         += zynqmp/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
